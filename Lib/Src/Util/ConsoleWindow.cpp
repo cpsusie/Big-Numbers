@@ -63,7 +63,7 @@ void ConsoleWindow::draw() {
 
 void ConsoleWindow::setShadow(bool on) {
   if(on != m_shadow)
-    if(on) 
+    if(on)
       drawShadow();
     else
       hideShadow();

@@ -18,7 +18,7 @@ static void test(String input) {
   p.parse();
 }
 
-int main(int argc, char **argv) { 
+int main(int argc, char **argv) {
   for(;;) {
     TCHAR line[100];
     _tprintf(_T("Indtast inputstreng:"));

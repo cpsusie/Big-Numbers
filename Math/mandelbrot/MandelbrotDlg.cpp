@@ -158,7 +158,7 @@ BOOL CMandelbrotDlg::OnInitDialog() {
   setWindowSize(    this, IDC_STATIC_MOUSEINFO , CSize(imageRect.right - infoRect.right, 20));
 
   setClientRectSize(this, CSize(imageRect.Width(), infoRect.bottom));
-  
+
   m_layoutManager.OnInitDialog(this);
   m_layoutManager.addControl(IDC_STATIC_IMAGEWINDOW, RELATIVE_SIZE                  );
   m_layoutManager.addControl(IDC_STATIC_INFOWINDOW , RELATIVE_Y_POS | RELATIVE_WIDTH);
@@ -171,7 +171,7 @@ BOOL CMandelbrotDlg::OnInitDialog() {
   m_retainAspectRatio  = isMenuItemChecked(this, ID_OPTIONS_RETAIN_ASPECTRATIO );
   m_suspendingMenuTextIsSuspending = true;
 
-//  setWindowPosition(this, CPoint(0,0)); 
+//  setWindowPosition(this, CPoint(0,0));
   centerWindow(this);
   m_imageWindow = GetDlgItem(IDC_STATIC_IMAGEWINDOW);
 

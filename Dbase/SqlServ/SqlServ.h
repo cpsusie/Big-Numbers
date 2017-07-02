@@ -197,7 +197,7 @@ class OrderByExpression {
 public:
   SyntaxNode *m_expr;
   bool        m_asc;
-  OrderByExpression(SyntaxNode *expr, bool asc) { 
+  OrderByExpression(SyntaxNode *expr, bool asc) {
     m_expr = expr;
     m_asc  = asc;
   }
@@ -228,7 +228,7 @@ public:
   FromTable                 *m_table;
   int                        m_index;
   bool                       m_asc;
-  double                     m_indexSelectivity;  
+  double                     m_indexSelectivity;
   double                     m_selectivity;
   KeyPredicates              m_keyPredicates;
   TableReadMethod(FromTable *table);
@@ -538,7 +538,7 @@ void xstopcomp(const SyntaxNode *n, TCHAR *file, int line);
 #ifdef DEBUG_SQLCOMP
 #define stopcomp(n) xstopcomp(n,__TFILE__,__LINE__)
 #else
-#define stopcomp(n) 
+#define stopcomp(n)
 #endif
 
 
@@ -553,15 +553,15 @@ const SyntaxNode *findFirstAggregateFunction( const SyntaxNode *expr); // return
 
 bool sqlCompile(   const Database            &db        ,
                    SqlApiBindProgramId       &programid ,
-                   const SqlApiBindStmt      &bndstmt   , 
+                   const SqlApiBindStmt      &bndstmt   ,
                    VirtualCode               &vc        ,
-                   StringArray               &errmsg    , 
+                   StringArray               &errmsg    ,
                    sqlca                     &ca        );
 
 bool sqlCompile(   const Database            &db        ,
-                   const String              &stmt      , 
+                   const String              &stmt      ,
                    VirtualCode               &vc        ,
-                   StringArray               &errmsg    , 
+                   StringArray               &errmsg    ,
                    sqlca                     &ca        );
 
 void sqlExecute(   Database                  &db        ,
@@ -579,7 +579,7 @@ void sqlSaveCode(  Database                  &db        ,
                    int                        nr        ,
                    VirtualCode               &vc        );
 
-void sqlDeleteCode(Database                  &db        , 
+void sqlDeleteCode(Database                  &db        ,
                    const String              &filename  );
 
 void sqlExecute(   Database                  &db        ,

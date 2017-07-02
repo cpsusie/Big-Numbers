@@ -56,7 +56,7 @@ void MemoryBufferOp::getRect(CHAR_INFO *dst, int l, int t, int w, int h) const {
 void MemoryBufferOp::putRect(const CHAR_INFO *src, int op, int l, int t, int w, int h) {
   int right  = l + w;
   int bottom = t + h;
-  for(int r = t; r < bottom; r++) { 
+  for(int r = t; r < bottom; r++) {
     CHAR_INFO *dst = m_p + r*getWidth() + l;
     int c;
     switch(op) {

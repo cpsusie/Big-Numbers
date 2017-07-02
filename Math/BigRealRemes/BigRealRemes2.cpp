@@ -28,7 +28,7 @@ static void throwNoConvergenceException(const TCHAR *form, ...) {
 
 static BigReal DEFAULT_MMQUOT_EPS = e(BIGREAL_1,-22);
 
-#define DEFAULT_FLAGS ios::left | ios::showpos | ios::scientific 
+#define DEFAULT_FLAGS ios::left | ios::showpos | ios::scientific
 
 class FormatBigReal : public String {
 public:
@@ -49,7 +49,7 @@ static BigReal signedValue(int sign, const BigReal &x) {
   return sign >= 0 ? x : -x;
 }
 
-Remes::Remes(RemesTargetFunction &targetFunction, const bool useRelativeError, const bool verbose) 
+Remes::Remes(RemesTargetFunction &targetFunction, const bool useRelativeError, const bool verbose)
 : m_targetFunction(targetFunction)
 , m_left(targetFunction.getInterval().getMin())
 , m_right(targetFunction.getInterval().getMax())
@@ -64,7 +64,7 @@ Remes::Remes(RemesTargetFunction &targetFunction, const bool useRelativeError, c
   m_mmQuotEps = DEFAULT_MMQUOT_EPS;
 }
 
-Remes::Remes(const Remes &src) 
+Remes::Remes(const Remes &src)
 : m_targetFunction(src.m_targetFunction)
 , m_left(src.m_targetFunction.getInterval().getMin())
 , m_right(src.m_targetFunction.getInterval().getMax())
@@ -134,7 +134,7 @@ void Remes::solve(const int M, const int K) {
       }
 
       findCoefficients(QEpsilon);
-      
+
 //    if(m_verbose) plotError(i);
       if(m_verbose) {
         printCoefficients();
@@ -291,7 +291,7 @@ public:
 
 InterpolationFunction::InterpolationFunction(const BigRealVector &initialExtr, const BigRealVector &initialExtr1, const BigRealVector &finalExtr1)
 : CubicSpline(NATURAL_SPLINE, getInterpolationPoints(initialExtr1,finalExtr1), 0, 0)
-, m_initialExtr(initialExtr) 
+, m_initialExtr(initialExtr)
 {
 }
 
@@ -381,7 +381,7 @@ void Remes::findCoefficients(const BigReal &QEpsilon) {
   BigRealMatrix A(m_N+2,m_N+2,m_digits);
   for(int r = 0, s = 1; r <= m_N+1; r++, s = -s) {
     const BigReal &xr = m_extrema[r];
-    
+
     checkRange(xr, m_left, m_right);
 
     A(r,0) = sFunction(xr);
@@ -393,7 +393,7 @@ void Remes::findCoefficients(const BigReal &QEpsilon) {
     m_functionValue[r] = targetFunction(xr);
   }
 
-  if(m_K == 0) { 
+  if(m_K == 0) {
     // The coefficients a[0]..a[m] and E can be found by solving the linear system of equations
     BigRealLUMatrix LU(A);
 
@@ -481,7 +481,7 @@ void Remes::findExtrema(BigReal &minExtr, BigReal &maxExtr) {
     prevSign = s;
   }
 
-  int minIndex = 0; 
+  int minIndex = 0;
   int maxIndex = 0;
   for(int i = 1; i <= m_N+1; i++) {
     if(compareAbs(m_errorValue[i], m_errorValue[minIndex]) < 0) {
@@ -668,7 +668,7 @@ void Remes::printCoefficients() {
   }
   verbose(FIRSTCOEFFICIENTLINE+i,format(_T("b[ 0] = +1")));
   for(i = m_M + 1; i <= m_N; i++) {
-    verbose(FIRSTCOEFFICIENTLINE+i+1,format(_T("b[%2d] = %s     %s"), i-m_M,FormatBigReal(m_coefficient[i],25,35).cstr(), FormatBigReal(getReal(m_coefficient[i])).cstr())); 
+    verbose(FIRSTCOEFFICIENTLINE+i+1,format(_T("b[%2d] = %s     %s"), i-m_M,FormatBigReal(m_coefficient[i],25,35).cstr(), FormatBigReal(getReal(m_coefficient[i])).cstr()));
   }
   verbose(FIRSTCOEFFICIENTLINE+m_N+2,format(_T("Maxerror:%s"),FormatBigReal(m_maxError).cstr()));
 }

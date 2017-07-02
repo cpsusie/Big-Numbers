@@ -41,7 +41,7 @@ ULONG BinomialKey::hashCode() const {
 bool BinomialKey::operator==(const BinomialKey &key) const {
   return n == key.n && k == key.k;
 }
-  
+
 
 static ULONG binomialKeyHashCode(const BinomialKey &key) {
   return key.hashCode();

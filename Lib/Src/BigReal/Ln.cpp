@@ -189,7 +189,7 @@ BigReal ln(const BigReal &x, const BigReal &f) {
 
   BigReal y(pool);
   copy(y,x,PAPCprod(<,x, PAPCprod(<,f, LNC.c16,pool),pool));
-  
+
   const BRExpoType m = BigReal::getExpo10(y);
   y = e(y,-m,pool);
   BigReal z = BigReal::lnEstimate(y);
@@ -217,8 +217,8 @@ BigReal ln(const BigReal &x, const BigReal &f) {
   if(m == 0) {
     return z + quot(dif(y,r,v*g,pool),r,g*LNC.c23,pool);
   } else {
-    return z 
-         + quot(dif(y,r,v*g,pool),r,g*LNC.c21,pool) 
+    return z
+         + quot(dif(y,r,v*g,pool),r,g*LNC.c21,pool)
          + prod(BigReal(m,pool),BigReal::ln10(PAPCquot(<,PAPCprod(<,LNC.c24,f,pool),BigReal(abs(m),pool),pool)),prod(f,LNC.c25,BIGREAL_0,pool),pool);
   }
 }

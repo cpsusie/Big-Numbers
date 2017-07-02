@@ -153,7 +153,7 @@ size_t tcpRead(SOCKET s, void *buffer, size_t size) {
     }
   }
   return size;
-} 
+}
 
 size_t tcpWrite(SOCKET s, const void *buffer, size_t size) {
   int n;

@@ -34,7 +34,7 @@ public:
   }
 };
 
-TimerThread::TimerThread(Timer *timer, int msec, TimeoutHandler &handler, bool repeatTimeout) 
+TimerThread::TimerThread(Timer *timer, int msec, TimeoutHandler &handler, bool repeatTimeout)
 : m_timer(*timer)
 , m_msec(msec)
 , m_handler(handler)

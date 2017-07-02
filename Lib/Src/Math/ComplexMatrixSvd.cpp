@@ -38,12 +38,12 @@ static void svdDecompose(Matrix &a, ComplexVector &d, Matrix &v) {
 
   Complex anorm = 0.0;
   Complex c, z;
-  
+
   if (m < n)
     throwMathException("svdDecompose:Matrix a must be augmented with extra zero rows. Dimension = (%d,%d).", m, n);
-  
+
   Vector rv1(n);
-  
+
   // Householder reduction to bidigonal form
   for (i = 0; i < n; i++) {
     l = i + 1;
@@ -104,7 +104,7 @@ static void svdDecompose(Matrix &a, ComplexVector &d, Matrix &v) {
     }
     anorm = dmax(anorm, (fabs(d[i]) + fabs(rv1[i])));
   }
-  
+
   // Accumulation of right-hand transformations
   for (i = n - 1; i >= 0; i--) {
     if (i < nm1) {
@@ -125,7 +125,7 @@ static void svdDecompose(Matrix &a, ComplexVector &d, Matrix &v) {
     g = rv1[i];
     l = i;
   }
-  
+
   // Accumulation of left-hand transformations
   for (i = n - 1; i >= 0; i--) {
     l = i + 1;
@@ -205,7 +205,7 @@ static void svdDecompose(Matrix &a, ComplexVector &d, Matrix &v) {
       h = rv1[k];
       f = ((y - z) * (y + z) + (g - h) * (g + h)) / (2.0 * h * y);
       g = radius(f, 1.0);
-      
+
       // next QR transformation
       f = ((x - z) * (x + z) + h * ((y / (f + Sign(g, f))) - h)) / x;
       c = s = 1;
@@ -266,7 +266,7 @@ static ComplexVector svdSolve(const ComplexMatrix &u, const ComplexVector &d, co
   const int m = u.getRowCount();
   const int n = u.getColumnCount();
   int j;
-  
+
   ComplexVector tmp(n);
   for (j = 0; j < n; j++) { // calculate <U,b>
     Complex s = 0;

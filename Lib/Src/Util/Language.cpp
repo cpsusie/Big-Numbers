@@ -18,9 +18,9 @@ static BOOL CALLBACK enumLocalsCallback(LPTSTR localsString) {
 //  DWORD lcid = MAKELCID(MAKELANGID(langId,SUBLANG_DEFAULT), SORT_DEFAULT);
 
 /*
-  ERROR_INSUFFICIENT_BUFFER 
-  ERROR_INVALID_FLAGS 
-  ERROR_INVALID_PARAMETER 
+  ERROR_INSUFFICIENT_BUFFER
+  ERROR_INVALID_FLAGS
+  ERROR_INVALID_PARAMETER
 */
 
   TCHAR languageName[1000];
@@ -29,14 +29,14 @@ static BOOL CALLBACK enumLocalsCallback(LPTSTR localsString) {
 //  if(GetLocaleInfo(lcid, LOCALE_SENGLANGUAGE, languageName, sizeof(languageName)) == 0) {
     Language language;
     language.m_langID   = langID;
-    language.m_langName = languageName; 
+    language.m_langName = languageName;
     resultArray->add(language);
   }
   return TRUE;
 }
 
 
-const Array<Language> &Language::getSystemLanguages() { // static 
+const Array<Language> &Language::getSystemLanguages() { // static
   static Array<Language> result;
   static Semaphore gate;
 
@@ -82,10 +82,10 @@ const Array<Language> &Language::getSupportedLanguages() { // static
 }
 
 const Language &Language::getBestSupportedLanguage(LANGID langID) { // static
-  int englishIndex = 0;    
+  int englishIndex = 0;
   const Array<Language> &supportedLanguages = getSupportedLanguages();
   for(int i = 0; i < (int)supportedLanguages.size(); i++) {
-    const Language &language = supportedLanguages[i]; 
+    const Language &language = supportedLanguages[i];
     if(PRIMARYLANGID(language.m_langID) == PRIMARYLANGID(langID)) {
       return language;
     }

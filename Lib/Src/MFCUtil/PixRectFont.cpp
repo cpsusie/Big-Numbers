@@ -280,7 +280,7 @@ void applyToGlyphPolygon(const GlyphPolygon &polygon, CurveOperator &op) {
           const Point2D &end = pa[j+2];
           applyToBezier(*pp,pa[j],pa[j+1],end, op,false);
           pp = &end;
-        } 
+        }
       }
       break;
     }

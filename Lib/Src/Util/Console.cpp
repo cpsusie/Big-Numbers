@@ -39,7 +39,7 @@ static int getWidth(const SMALL_RECT &r) {
 }
 
 static int getHeight(const SMALL_RECT &r) {
-  return r.Bottom - r.Top  + 1; 
+  return r.Bottom - r.Top  + 1;
 }
 
 static void setWidth(SMALL_RECT &r, int width) {
@@ -152,7 +152,7 @@ void Console::setWindowAndBufferSize(int left, int top, int right, int bottom, i
   int newHeight = bottom - top;
   int newRight  = left + newWidth  - 1;
   int newBottom = top  + newHeight - 1;
-  
+
   s_gate.wait();
   try {
     if(newWidth <= winWidth && newHeight <= winHeight) {
@@ -181,7 +181,7 @@ void Console::setTitle(const String &title) {
   CHECK(SetConsoleTitle(title.cstr()));
 }
 
-String Console::getTitle() { // static 
+String Console::getTitle() { // static
   TCHAR title[4000];
   CHECK(GetConsoleTitle(title, ARRAYSIZE(title)));
   title[ARRAYSIZE(title)-1] = '\0';
@@ -450,7 +450,7 @@ int Console::getKeyEvent() {
 
   CHECK(SetConsoleMode(s_hStdIn,saveMode));
 
-  return KEYEVENT(r.Event.KeyEvent.dwControlKeyState, 
+  return KEYEVENT(r.Event.KeyEvent.dwControlKeyState,
                   r.Event.KeyEvent.bKeyDown,
                   r.Event.KeyEvent.wVirtualScanCode,
                   r.Event.KeyEvent.uChar.AsciiChar

@@ -108,7 +108,7 @@ void ListImpl::throwOutOfRangeException(const TCHAR *method, size_t index) const
 }
 
 void *ListImpl::getElement(size_t index) {
-  if(index >= m_size) { 
+  if(index >= m_size) {
     throwOutOfRangeException(__TFUNCTION__, index);
   }
   return (void*)findNode(index)->m_data;
@@ -322,7 +322,7 @@ AbstractIterator *ListImpl::getIterator() {
 
 ListNodePage::ListNodePage(ListNodePage *nextPage) : m_nextPage(nextPage) {
   ListNode *p = &LASTVALUE(m_nodeArray);
-  
+
   for((p--)->m_next = NULL; p >= m_nodeArray; p--) {
     p->m_next = p+1;
   }

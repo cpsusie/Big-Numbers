@@ -66,8 +66,8 @@ UINT SearchMachine::run() {
   try {
     if((m_result = doSearch()).isEmpty()) {
       m_resultMessage = isInterrupted()
-                      ? _T("Interrupted by user") 
-                      : format(_T("Bytesequence <%s> not found"), 
+                      ? _T("Interrupted by user")
+                      : format(_T("Bytesequence <%s> not found"),
                                 SearchPattern(m_findWhat).toString().cstr());
     }
   } catch(Exception e) {
@@ -114,7 +114,7 @@ AddrRange SearchMachine::doSearch() {
       m_fileIndex += bytesRead;
       const size_t newHeadSize = min(patternLength, (size_t)bytesRead);
       // move tail to the start of buffer, so they next buffer will be concatenated to them
-      memmove(buffer, buffer+headSize+bytesRead-newHeadSize, newHeadSize); 
+      memmove(buffer, buffer+headSize+bytesRead-newHeadSize, newHeadSize);
       headSize = newHeadSize;
     }
   } else {
@@ -132,7 +132,7 @@ AddrRange SearchMachine::doSearch() {
       }
       if(tailSize > 0) {
         // move head to end of buffer, so they can be concatenated with the next databuffer
-        memmove(buffer + bytesNeeded, buffer, tailSize); 
+        memmove(buffer + bytesNeeded, buffer, tailSize);
       }
       sbc.fseek(m_fileIndex);
       const int bytesRead = sbc.fread((UINT)bytesNeeded, buffer);

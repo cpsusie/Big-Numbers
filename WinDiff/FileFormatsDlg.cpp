@@ -23,7 +23,7 @@ END_MESSAGE_MAP()
 
 BOOL CFileFormatsDlg::OnInitDialog() {
   __super::OnInitDialog();
-    
+
   m_nameListCtrl.SetExtendedStyle(LVS_EX_FULLROWSELECT);
   m_nameListCtrl.InsertColumn( 0,EMPTYSTRING,LVCFMT_LEFT, 200);
   updateListCtrl();

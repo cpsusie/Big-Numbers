@@ -3,7 +3,7 @@
 static void sort(void *base, size_t nelem, size_t width, AbstractComparator &comparator, char *pivot) {
   memcpy(pivot, EPTR(nelem / 2), width);
 
-  char *pi = EPTR(0); 
+  char *pi = EPTR(0);
   char *pj = EPTR(nelem-1);
   do {
     while(pi <= pj && PNEEDSWAP(pivot, pi)) pi += width;
@@ -41,7 +41,7 @@ public:
 template <class T> void QuickSort1Class<T>::sort(T *base, size_t nelem, AbstractComparator &comparator) {
   const T pivot = base[nelem / 2];
 
-  T *pi = base; 
+  T *pi = base;
   T *pj = base + nelem-1;
   do {
     while(pi <= pj && PNEEDSWAP(&pivot, pi)) pi++;

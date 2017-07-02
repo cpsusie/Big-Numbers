@@ -35,7 +35,7 @@ USHORT FPU::getStatusWord() { // static
 USHORT FPU::getControlWord() { // static
   USHORT cw;
   __asm {
-    fnstcw cw 
+    fnstcw cw
   }
   return cw;
 }
@@ -89,7 +89,7 @@ FPUPrecisionMode FPU::getPrecisionMode() { // static
   case 0 : return FPU_LOW_PRECISION;
   case 2 : return FPU_NORMAL_PRECISION;
   case 3 : return FPU_HIGH_PRECISION;
-  case 1 : 
+  case 1 :
   default: throwException(_T("%s:Invalid precisionMode. bit[8,9] = %x")
                          ,__TFUNCTION__,precisionMode); // Should not come here
            return FPU_HIGH_PRECISION;
@@ -328,7 +328,7 @@ void Double80::init(const _TUCHAR *s) {
       exponent += 4900;
       result *= pow10(exponent);
     } else {
-      result *= pow10(exponent);    
+      result *= pow10(exponent);
     }
   }
   *this = isNegative ? -result : result;
@@ -431,7 +431,7 @@ int Double80::getExpo10(const Double80 &x) { // static
     mov eax, x
     fld TBYTE PTR [eax]
     fldz
-    fcomip st, st(1)            // compare x and pop 0 
+    fcomip st, st(1)            // compare x and pop 0
     jne x_not_zero              // if(x != 0) goto x_not_zero
     fstp st(0)                  // pop x
     mov result, 0               // x == 0 => result = 0
@@ -724,7 +724,7 @@ bool operator!=(const Double80 &x, const Double80 &y) {
     fld TBYTE PTR [eax]
     mov eax, DWORD PTR y
     fld TBYTE PTR [eax]
-    fcomip st, st(1)            // compare and pop y 
+    fcomip st, st(1)            // compare and pop y
     je Exit                     // if st(0) == st(1) (x < y) goto end
     mov result, 1
 Exit:
@@ -1245,7 +1245,7 @@ Double80 round(const Double80 &x, int dec) { // 5-rounding
         result *= p;
         FPU::restoreControlWord(cwSave);
         return result;
-      } 
+      }
     }
   }
   throwException(_T("round dropped to the end. x=%s. dec=%d"),x.toString().cstr(),dec);

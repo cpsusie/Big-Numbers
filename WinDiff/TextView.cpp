@@ -254,7 +254,7 @@ bool TextView::setFont(const LOGFONT &newValue, bool repaint) {
     throwLastErrorOnSysCallException(_T("CreateFontIndirect"));
   }
   getOptions().m_logFont = newValue;
-  if(hasPartner()) { 
+  if(hasPartner()) {
     getPartner()->setFont(newValue, false);
   }
   REFRESHBOTH;
@@ -268,7 +268,7 @@ bool TextView::setShow1000Separator(bool newValue, bool repaint) {
   SAVESTATE;
   setFlagValue(SHOW_1000SEPARATOR, newValue);
   getOptions().m_show1000Separator = newValue;
-  if(hasPartner()) { 
+  if(hasPartner()) {
     getPartner()->setFlagValue(SHOW_1000SEPARATOR, newValue);
   }
   REFRESHBOTH;
@@ -291,7 +291,7 @@ bool TextView::setHighLightCompareEqual(bool newValue, bool repaint) {
     return false;
   }
   setFlagValue(HIGHLIGhT_COMPAREEQUAL, newValue);
-  if(hasPartner()) { 
+  if(hasPartner()) {
     getPartner()->setFlagValue(HIGHLIGhT_COMPAREEQUAL, newValue);
   }
   REFRESHBOTH;
@@ -319,7 +319,7 @@ void TextView::setOptions(const Options &options) {
   recomp  |= setIgnoreRegex(       options.m_ignoreRegex      , false);
 
   bool refresh = recomp;
-  
+
   refresh |= setViewWhiteSpace(    options.m_viewWhiteSpace   , false);
   refresh |= setTabSize(           options.m_tabSize          , false);
   refresh |= setShow1000Separator( options.m_show1000Separator, false);
@@ -416,7 +416,7 @@ void TextView::paintArrow(CDC *pDC) {
       partner->unpaintArrow(&dc);
     }
   }
-  
+
   m_arrowLine = m_state.m_caret.y;
   const CPoint pos = getArrowPosition(getArrowLine());
   saveBackground(pDC);
@@ -425,7 +425,7 @@ void TextView::paintArrow(CDC *pDC) {
 
 void TextView::unpaintArrow(CDC *pDC) {
   if(!hasArrow()) return;
-  
+
   const CPoint pos = getArrowPosition(getArrowLine());
   CBitmap *oldBitmap = m_arrowDC.SelectObject(&m_backgroundBitmap);
   if(pDC) {
@@ -1199,7 +1199,7 @@ void TextView::redrawBoth() {
   CDC *dc  = GetDC();
   CDC *pdc = partner ? partner->GetDC() : NULL;
 
-  try { 
+  try {
     if(!partner) {
       OnDraw(dc);
     } else if(isActive()) {
@@ -1633,7 +1633,7 @@ void TextView::updateWindowSize(int cx, int cy) {
 
   m_maxOffset.m_column = max(0, m_diff->getMaxLineLength() - m_winSize.cx);
   m_maxOffset.m_line   = max(0, getLineCount() - m_winSize.cy);
-  
+
   setTopLine(getTopLine());
   setCaretY(getCaretPosition().y);
 

@@ -43,7 +43,7 @@ ExtremaMap Remes::s_extremaMap;
 const ConstBigReal Remes::s_defaultMMQuotEps = e(BIGREAL_1,-22);
 #define DEFAULT_SEARCHEMAXIT 700
 
-Remes::Remes(RemesTargetFunction &targetFunction, const bool useRelativeError) 
+Remes::Remes(RemesTargetFunction &targetFunction, const bool useRelativeError)
 : m_targetFunction(      targetFunction)
 , m_domain(              targetFunction.getDomain())
 , m_digits(              targetFunction.getDigits() + 8)
@@ -54,7 +54,7 @@ Remes::Remes(RemesTargetFunction &targetFunction, const bool useRelativeError)
   s_extremaMap.setName(getMapFileName());
 }
 
-Remes::Remes(const Remes &src) 
+Remes::Remes(const Remes &src)
 : PropertyContainer(src)
 , m_targetFunction(      src.m_targetFunction)
 , m_domain(              src.m_domain)
@@ -131,7 +131,7 @@ RestartMainIteration:
   for(setProperty(MAINITERATION, m_mainIteration, 1); m_mainIteration <= MAXIT; setProperty(MAINITERATION, m_mainIteration, m_mainIteration+1)) {
     try {
       findCoefficients();
-      
+
       if(m_E.isZero()) {
         break;
       }
@@ -250,7 +250,7 @@ void Remes::findCoefficients() {
     m_functionValue[r] = targetFunction(xr);
   }
 
-  if(m_K == 0) { 
+  if(m_K == 0) {
     // The coefficients a[0]..a[m] and E can be found by solving the linear system of equations
     BigRealLUMatrix LU(A);
 

@@ -4,13 +4,13 @@
 #include <MFCUtil/PixRect.h>
 #include <MFCUtil/ColorSpace.h>
 
-// --------------------------------- GrayScaleFilter --------------------------------- 
+// --------------------------------- GrayScaleFilter ---------------------------------
 
 void GrayScaleFilter::apply(const CPoint &p) {
   m_resultPixelAccessor->setPixel(p,getGrayColor(m_pixelAccessor->getPixel(p)));
 }
 
-// --------------------------------- SobelFilter --------------------------------- 
+// --------------------------------- SobelFilter ---------------------------------
 
 SobelFilter::SobelFilter() {
   Gx[0][0] = -1; Gx[0][1] =  0; Gx[0][2] =  1;
@@ -69,7 +69,7 @@ void SobelFilter::apply(const CPoint &p) {
   m_resultPixelAccessor->setPixel(p,D3DCOLOR_XRGB(255-SUMR,255-SUMG,255-SUMB));
 }
 
-// --------------------------------- LaplaceFilter --------------------------------- 
+// --------------------------------- LaplaceFilter ---------------------------------
 
 LaplaceFilter::LaplaceFilter() {
   MASK[0][0] = -1; MASK[0][1] = -1; MASK[0][2] = -1; MASK[0][3] = -1; MASK[0][4] = -1;
@@ -114,7 +114,7 @@ void LaplaceFilter::apply(const CPoint &p) {
   m_resultPixelAccessor->setPixel(p,D3DCOLOR_XRGB(255-SUMR,255-SUMG,255-SUMB));
 }
 
-// --------------------------------- GaussFilter --------------------------------- 
+// --------------------------------- GaussFilter ---------------------------------
 
 GaussFilter::GaussFilter() {
   MASK[0][0] =  2; MASK[0][1] =  4; MASK[0][2] =  5; MASK[0][3] =  4; MASK[0][4] =  2;
@@ -161,7 +161,7 @@ void GaussFilter::apply(const CPoint &p) {
 }
 
 
-// --------------------------------- EdgeDirectionFilter --------------------------------- 
+// --------------------------------- EdgeDirectionFilter ---------------------------------
 
 
 void EdgeDirectionFilter::setPixRect(PixRect *src) {
@@ -238,7 +238,7 @@ void EdgeDirectionFilter::apply(const CPoint &p) {
   }
 }
 
-// --------------------------------- CannyEdgeFilter --------------------------------- 
+// --------------------------------- CannyEdgeFilter ---------------------------------
 
 void CannyEdgeFilter::setPixRect(PixRect *src) {
   if(src != NULL) {

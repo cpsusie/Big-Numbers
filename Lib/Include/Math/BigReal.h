@@ -308,7 +308,7 @@ public:
       delete first;
       if(p == end) break;
       first = p;
-    } 
+    }
 #endif // USE_DIGITPOOL_FREELIST
   }
   inline const BigInt &get0() const {
@@ -341,7 +341,7 @@ class BigRealStream;
 #define _SETDIGITPOOL() m_digitPool(digitPool?*digitPool:DEFAULT_DIGITPOOL)
 
 #ifdef _DEBUG
-extern "C" { 
+extern "C" {
 void insertDigitAndIncrExpo(BigReal &v, BRDigitType n);
 }
 #endif
@@ -424,13 +424,13 @@ private:
     }
   }
 
-  inline void    incrExpo() { 
+  inline void    incrExpo() {
     if(isZero()) m_expo = m_low = 0; else m_expo++;
   }
-  
+
   inline BigReal &trimZeroes() {                                                                  // return this
     if(m_first) {
-      if(m_first->n == 0)     trimHead(); 
+      if(m_first->n == 0)     trimHead();
       else if(m_last->n == 0) trimTail();
       if(m_expo > BIGREAL_MAXEXPO) throwBigRealException(_T("Overflow"));
       if(m_low  < BIGREAL_MINEXPO) throwBigRealException(_T("Underflow"));
@@ -505,7 +505,7 @@ private:
   BigReal &rTrunc(size_t digits);  // assume *this != 0 and digits > 0 (digits is decimal digits). return this
   BigReal &rRound(size_t digits);  // assume *this != 0 and digits > 0 (digits is decimal digits). return this
 
-  // Division helperfunctions, 
+  // Division helperfunctions,
   // Result.digitPool = x.digitPool
   static BigReal  reciprocal(const BigReal &x, DigitPool *digitPool = NULL);                      // approximately 1/x
   BigReal &approxQuot32(     const BigReal &x, const BigReal           &y           );            // approximately x/y
@@ -522,7 +522,7 @@ private:
 
   // Misc
   BigReal  &adjustAPCResult(const char bias, const TCHAR *function); // return this
-  Double80 getDouble80NoLimitCheck() const; 
+  Double80 getDouble80NoLimitCheck() const;
   void     formatFixed(        String &result, streamsize precision, long flags, bool removeTrailingZeroes) const;
   void     formatScientific(   String &result, streamsize precision, long flags, BRExpoType expo10, bool removeTrailingZeroes) const;
   void     formatWithSpaceChar(String &result, TCHAR spaceChar) const;
@@ -687,7 +687,7 @@ public:
   static BigReal  apcProd(      const char bias,  const BigReal &x, const BigReal  &y, DigitPool *digitPool = NULL); // bias = '<','#' or '>'
   static BigReal  apcQuot(      const char bias,  const BigReal &x, const BigReal  &y, DigitPool *digitPool = NULL); // bias = '<','#' or '>'
   static BigReal  apcPow(       const char bias,  const BigReal &x, const BigInt   &y, DigitPool *digitPool = NULL); // bias = '<','#' or '>'
-  
+
   void           fractionate(BigInt *integerPart, BigReal *fractionPart) const;
   // result.digitPool = f.defaultDigitPool
   static BigReal ln10(         const BigReal &f);                                     // ln(10) with |error| < f
@@ -701,8 +701,8 @@ public:
 
   friend int compare(         const BigReal &x,  const BigReal &y);                   // sign(x-y)
   friend int compareAbs(      const BigReal &x,  const BigReal &y);                   // compare(|x|,|y|). (Faster than compare(fabs(x),fabs(y)))
-  
-  inline bool isZero() const { 
+
+  inline bool isZero() const {
     return m_expo == BIGREAL_ZEROEXPO;
   }
   inline void setToZero() {
@@ -721,14 +721,14 @@ public:
   inline  bool isPositive() const {
     return m_expo != BIGREAL_ZEROEXPO && !m_negative;
   }
-  
+
   inline bool isNegative() const {
     return m_expo != BIGREAL_ZEROEXPO && m_negative;
   }
-  
+
   inline size_t getLength() const {                                                         // BigReal of BASE digits. 0 has length 1
     return isZero() ? 1 : (m_expo - m_low + 1);
-  }      
+  }
   size_t getDecimalDigits()  const;                                                         // BigReal of decimal digits. 0 has length 1
   inline BRExpoType getLow() const {
     return isZero() ? 0 : m_low;
@@ -843,7 +843,7 @@ public:
     s_continueCalculation = true;
   }
 
-  static void terminateCalculation() { // Call this to make the calculation stop as soon as possible. In current version it will 
+  static void terminateCalculation() { // Call this to make the calculation stop as soon as possible. In current version it will
                                        // terminate all Threads started from BigRealThreadPool
     s_continueCalculation = false;
   }

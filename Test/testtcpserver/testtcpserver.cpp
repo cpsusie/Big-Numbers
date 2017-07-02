@@ -11,7 +11,7 @@ static int findclientindex(Array<SOCKET> &clientsockets,fd_set &fds) {
 int main(int argc, char **argv) {
   SOCKET listensocket;
   Array<SOCKET> clientsockets;
-  
+
   try {
     listensocket = tcpCreate(10459);
   } catch(Exception e) {

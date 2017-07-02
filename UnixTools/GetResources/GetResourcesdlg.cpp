@@ -61,9 +61,9 @@ BOOL CGetresourcesDlg::OnInitDialog() {
 
   SetIcon(m_hIcon, TRUE);         // Set big icon
   SetIcon(m_hIcon, FALSE);        // Set small icon
-  
+
   m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATOR1));
-  
+
   return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -268,7 +268,7 @@ ResourceImage::~ResourceImage() {
 CSize ResourceImage::getSize() const {
   DEFINEMETHODNAME;
   switch(m_type) {
-  case IMAGE_BITMAP: 
+  case IMAGE_BITMAP:
     { BITMAP info;
       if(GetObject(m_image,sizeof(info),&info) == 0) {
         throwException(_T("%s:GetObject failed. %s"), method, getLastErrorText().cstr());
@@ -277,7 +277,7 @@ CSize ResourceImage::getSize() const {
     }
     break;
   case IMAGE_ICON  :
-  case IMAGE_CURSOR: 
+  case IMAGE_CURSOR:
     { ICONINFO iconInfo;
       if(GetIconInfo((HICON)m_image,&iconInfo) == 0) {
         throwException(_T("%s:GetIconInfo failed. %s"), method, getLastErrorText().cstr());

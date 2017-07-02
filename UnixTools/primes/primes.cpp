@@ -43,7 +43,7 @@ bool BitSet64::contains(size_t i) const {
   if(i > m_capacity) {
     return false;
   }
-  
+
   return (ATOM(m_p,i) & ATOMBIT(i)) != 0;
 }
 
@@ -152,7 +152,7 @@ int main(int argc, char **argv) {
       }
       break;
     }
-  
+
     if(*argv) {
       usage();
     }

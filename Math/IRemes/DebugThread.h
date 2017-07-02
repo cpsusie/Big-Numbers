@@ -18,7 +18,7 @@ public:
   RemesProperty m_id;
   const void   *m_oldValue;
   const void   *m_newValue;
-  RemesPropertyData(const Remes &src, int id, const void *oldValue, const void *newValue) 
+  RemesPropertyData(const Remes &src, int id, const void *oldValue, const void *newValue)
     : m_src(src)
     , m_id((RemesProperty)id)
     , m_oldValue(oldValue)

@@ -137,7 +137,7 @@ void Session::dumpKeydef(const String &indexName) {
 }
 
 void Session::setOutput(const String &fname) {
-  if(m_output != stdout) { 
+  if(m_output != stdout) {
     fclose(m_output);
     m_output = stdout;
   }
@@ -417,7 +417,7 @@ bool Session::trySpecialCommand(const String &stmt) {
 
   switch(findCommand(cmd.cstr())) {
   case COMMAND_OUT:
-    if(arg1 == NULL) 
+    if(arg1 == NULL)
       setOutput(EMPTYSTRING);
     else
       setOutput(arg1);
@@ -448,7 +448,7 @@ bool Session::trySpecialCommand(const String &stmt) {
       _tprintf(_T("%s"), readTextFile(arg1).cstr());
       return true;
     }
-  
+
   case COMMAND_INVOKE:
     if(arg1 == NULL)
       error(_T("Invalid syntax. Usage:invoke <tablename>"));
@@ -492,7 +492,7 @@ bool Session::trySpecialCommand(const String &stmt) {
     return true;
 
   case COMMAND_UPDATE:
-    if(arg1 == NULL) 
+    if(arg1 == NULL)
       return false;
     if(_tcsicmp(arg1,_T("statistics")) == 0) {
       if(arg2 == NULL)
@@ -596,17 +596,17 @@ void Session::run(FILE *f) {
         return;
       doCommand(command);
     } catch(sqlca ca) {
-      if(f != stdin) 
+      if(f != stdin)
         throw ca;
       else
         ca.dump(m_output);
     } catch(UserBreak b) {
-      if(f != stdin) 
+      if(f != stdin)
         throw b;
       else
         _ftprintf(m_output,_T("%s\n"),b.what());
     } catch(Exception e) {
-      if(f != stdin) 
+      if(f != stdin)
         throw e;
       else
         _ftprintf(m_output,_T("Error:%s\n"),e.what());

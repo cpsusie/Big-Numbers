@@ -34,7 +34,7 @@ ProgressWindow::ProgressWindow(CWnd *parent, InteractiveRunnable &jobToDo, UINT 
                        ,programName.cstr()).cstr()
                 ,_T("Error")
                 ,MB_OK | MB_ICONERROR);
-  
+
       while(jobExecutor.stillActive()) {
         Sleep(200);
       }

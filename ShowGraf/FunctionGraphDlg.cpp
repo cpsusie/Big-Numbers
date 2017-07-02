@@ -57,7 +57,7 @@ BOOL CFunctionGraphDlg::OnInitDialog() {
   m_layoutManager.addControl(IDCANCEL            , RELATIVE_POSITION    );
   m_layoutManager.addControl(IDC_STATICEXPRLABEL , PCT_RELATIVE_Y_CENTER);
   m_layoutManager.addControl(IDC_EDITEXPR        , RELATIVE_SIZE        | RESIZE_FONT);
-  
+
   if(m_showFlags & SHOW_INTERVAL) {
     m_layoutManager.addControl(IDC_STATICINTERVAL, RELATIVE_Y_POS);
     m_layoutManager.addControl(IDC_EDITXFROM     , RELATIVE_Y_POS);

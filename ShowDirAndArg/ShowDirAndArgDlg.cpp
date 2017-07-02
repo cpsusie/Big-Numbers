@@ -31,9 +31,9 @@ BOOL CShowDirAndArgDlg::OnInitDialog() {
 
   SetIcon(m_hIcon, TRUE );
   SetIcon(m_hIcon, FALSE);
-  
+
   String wd = GETCWD();
-  
+
   String argStr;
   TCHAR *delim = NULL;
   for(TCHAR **argv = __targv; *argv; argv++) {

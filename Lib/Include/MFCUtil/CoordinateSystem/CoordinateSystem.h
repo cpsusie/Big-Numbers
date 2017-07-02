@@ -86,7 +86,7 @@ public:
   inline const RectangleTransformation &getTransformation() const {
     return m_vp.getTransformation();;
   }
-  
+
   inline RectangleTransformation &getTransformation() {
     return m_vp.getTransformation();
   }
@@ -115,7 +115,7 @@ public:
   inline DataRange getDataRange() const {
     return getTransformation().getFromRectangle();
   }
-  
+
   void zoom(const CPoint &p, bool in, int flags) {
     getTransformation().zoom(Point2DP(p), in, flags);
   }
@@ -149,7 +149,7 @@ public:
   void setBackGroundColor(COLORREF color) {
     m_backgroundColor = color;
   }
-  
+
   void setAxisColor(COLORREF color) {
     m_axisColor = color;
   }
@@ -169,7 +169,7 @@ public:
   AxisType getYAxisType() const {
     return m_yAxisType;
   }
-  
+
   Point2D getMouseToSystem(const CPoint &p) {
     return getTransformation().backwardTransform(p.x, p.y);
   }

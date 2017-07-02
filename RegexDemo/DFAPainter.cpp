@@ -60,7 +60,7 @@ String DFATransition::toString() const {
 
 // ----------------------------------------- DFAStatePoint ----------------------------------------
 
-DFAStatePoint::DFAStatePoint(const DFAState &state, int gridX, int gridY) 
+DFAStatePoint::DFAStatePoint(const DFAState &state, int gridX, int gridY)
   : m_stateID(state.m_id)
   , m_state(state)
   , m_gridX(gridX), m_gridY(gridY)
@@ -133,7 +133,7 @@ String DFAStatePoint::usedDirectionsToString() const {
   }
   return result;
 }
-    
+
 void DFAStatePoint::paint(HDC hdc, bool marked) const {
   const CPoint p = m_position;
   bool ring = true;
@@ -251,7 +251,7 @@ void DFAPainter::calculateAllPositions() {
     assert(n == statesInColumn.size());
     for(int i = 0; i < n; i++) {
       DFAStatePoint *sp = m_dfaPoints[statesInColumn[i]];
-      sp->setPosition(Point2DP((float)m_size.cx * (c + 0.5) / gridSize.cx 
+      sp->setPosition(Point2DP((float)m_size.cx * (c + 0.5) / gridSize.cx
                               ,(float)m_size.cy * (i + 0.5) / n));
     }
   }
@@ -313,8 +313,8 @@ void DFAPainter::paintOutgoingTransition(const DFAPointArray &pointArray, size_t
 
   if(&sf == &st) { // transition to the same state.
     throwException(_T("paintOutgoingTransition cannot paint loop transitions"));
-  } 
-  const Point2DP v = (ct - cf).normalize(); 
+  }
+  const Point2DP v = (ct - cf).normalize();
   Point2DP pFrom, pTo;
 
   pFrom = cf + v * CIRCLE_RADIUS;

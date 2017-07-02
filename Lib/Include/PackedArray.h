@@ -73,7 +73,7 @@ public:
   friend class PackedFileArray;
 };
 
-class PackedFileArray { // Read-only packed array of integers accessed by seeking the file, instead of loading 
+class PackedFileArray { // Read-only packed array of integers accessed by seeking the file, instead of loading
                         // the whole array into memory. Slow, but save space
                         // Bytes starting at startOffset must be written by PackedArray.save
 private:

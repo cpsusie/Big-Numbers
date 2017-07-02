@@ -58,7 +58,7 @@ MThreadArray &BigRealResourcePool::fetchMTThreadArray(MThreadArray &threads, int
       instance.m_maxActiveThreads = instance.m_activeThreads;
     }
   }
- 
+
   instance.m_gate.signal();
 
   return threads;
@@ -152,7 +152,7 @@ void BigRealResourcePool::releaseDigitPool(DigitPool *pool) { // static
   // Blocks until all jobs are done. If any of the jobs throws an exception
   // the rest of the jobs will be terminated and an exception with the same
   // message will be thrown to the caller
-void BigRealResourcePool::executeInParallel(CompactArray<Runnable*> &jobs) { // static 
+void BigRealResourcePool::executeInParallel(CompactArray<Runnable*> &jobs) { // static
   if(jobs.size() == 0) return;
   BigRealResourcePool &instance = getInstance();
   instance.m_gate.wait();  // get exclusive access to BigRealResourcePool

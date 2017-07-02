@@ -512,8 +512,8 @@ void MeshBuilder::pruneUnused() {
       }
     }
   }
-  if(unusedVertices.isEmpty() 
-  && unusedNormals.isEmpty() 
+  if(unusedVertices.isEmpty()
+  && unusedNormals.isEmpty()
   && unusedTextures.isEmpty()) {
 #ifdef DUMP_PRUNECOUNT
     debugLog(_T("Pruned 0 vertices, 0 normals, 0 textureVertices\n"));

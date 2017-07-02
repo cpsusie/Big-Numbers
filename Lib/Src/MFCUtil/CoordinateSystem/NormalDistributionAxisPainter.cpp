@@ -126,14 +126,14 @@ int NormalDistributionAxisPainter::getDecade(double x) { // static
     return -1-(int)floor(log10(1-x));
 }
 
-double NormalDistributionAxisPainter::getDecadeStep(int decade) { // static 
+double NormalDistributionAxisPainter::getDecadeStep(int decade) { // static
   if(decade == 0)
     return 0.1;
   else
     return pow(10,-fabs(decade-1))*10;
 }
 
-double NormalDistributionAxisPainter::getDecadeStart(int decade) { // static 
+double NormalDistributionAxisPainter::getDecadeStart(int decade) { // static
   if(decade < 0)
     return pow(10,decade-1);
   else if(decade > 0)
@@ -142,7 +142,7 @@ double NormalDistributionAxisPainter::getDecadeStart(int decade) { // static
     return 0.1;
 }
 
-double NormalDistributionAxisPainter::getDecadeStop(int decade) { // static 
+double NormalDistributionAxisPainter::getDecadeStop(int decade) { // static
   double decadeStart = getDecadeStart(decade);
   if(decade <= 0)
     return 9*decadeStart;

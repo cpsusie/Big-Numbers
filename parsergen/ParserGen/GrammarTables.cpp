@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "GrammarCode.h"
 
-GrammarTables::GrammarTables(const Grammar &grammar, const String &tablesClassName) 
+GrammarTables::GrammarTables(const Grammar &grammar, const String &tablesClassName)
 : m_compressibleStateSet(grammar.getStateCount())
 {
   m_terminalCount   = grammar.getTerminalCount();
@@ -71,7 +71,7 @@ ByteArray GrammarTables::bitSetToByteArray(const BitSet &set) { // static
   if(mask != 1) {
     result.append(b);
   }
-  return result; 
+  return result;
 }
 
 void GrammarTables::initCompressibleStateSet() {
@@ -107,7 +107,7 @@ bool GrammarTables::calcIsCompressibleState(unsigned int state) const {
   }
 }
 
-int GrammarTables::wordAlignedSize(int size) { // static 
+int GrammarTables::wordAlignedSize(int size) { // static
   const int rest = size%4;
   return rest ? (size + (4-rest)) : size;
 }

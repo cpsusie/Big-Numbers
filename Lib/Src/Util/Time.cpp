@@ -21,13 +21,13 @@ Time::Time(int hour, int minute, int second, int millisecond) {
   m_factor = getFactor(hour, minute, second, millisecond);
 }
 
-void Time::throwInvalidFactor(INT64 factor) { // static 
+void Time::throwInvalidFactor(INT64 factor) { // static
   throwException(_T("Time::Invalid factor:%I64d. Must be in the range [0..%d["), factor, getMaxFactor());
 }
 
 void Time::init(const TCHAR *src) {
   static const TCHAR *errmsg = _T("Invalid time-format <%s>");
-  
+
   int i = 0;
   int d[4];
   memset(d, 0, sizeof(d));

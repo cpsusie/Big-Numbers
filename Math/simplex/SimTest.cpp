@@ -195,7 +195,7 @@ Simplex::Simplex(FILE *f, int traceFlags) : m_integerConstraintsDone(integerCons
       throwException(_T("Unexpected input in line %d:<%s>"), m_lineCount, line.cstr());
     }
   }
-  
+
   int xCount = costFactors.size();
 
   m_tableau                  = new Tableau(xCount, constraintCount, traceFlags ? &m_tracer : NULL, traceFlags);
@@ -344,7 +344,7 @@ SimplexResult Simplex::solve() {
 }
 
 static bool isInteger(const Real &x) {
-  return fabs(x - round(x)) < 1e-13; 
+  return fabs(x - round(x)) < 1e-13;
 }
 
 void Simplex::backtrack(const Tableau &tableau0) {

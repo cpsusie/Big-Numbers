@@ -61,7 +61,7 @@ RealRectangle MBFrameGenerator::getInterpolatedRectangle() const {
   const Real w = fw * m_startRect.getWidth();
   const Real h = fw * m_startRect.getHeight();
   return RealRectangle(x,y,w,h);
-} 
+}
 
 HBITMAP MBFrameGenerator::nextBitmap() { // should return NULL when no more frames.
   DLOG((_T("enter nextBitmap\n")));

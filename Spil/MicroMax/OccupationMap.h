@@ -56,7 +56,7 @@ private:
 #endif
 
 public:
-  inline PieceIterator(const PlayerOccupationMap &map, int startPos) 
+  inline PieceIterator(const PlayerOccupationMap &map, int startPos)
     : m_set((UINT*)&map.m_set)
 #ifdef _DEBUG
     , m_map(map)
@@ -83,7 +83,7 @@ public:
         dec eax                         //
         not eax                         //    eax = mask = ~((1<<bit)-1) = highend bits of edx
         and edx, eax                    //    edx &= mask
-                                        // 
+                                        //
 //    TestBitNotZero:                   // most common case
         test edx, edx                   //
         jne SearchBit                   //    if(edx) goto SearchBit

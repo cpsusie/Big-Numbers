@@ -68,7 +68,7 @@ BOOL CTestAVIFileDlg::OnInitDialog() {
 
   SetIcon(m_hIcon, TRUE);
   SetIcon(m_hIcon, FALSE);
-  
+
   theApp.m_device.attach(m_hWnd);
   return TRUE;  // return TRUE  unless you set the focus to a control
 }

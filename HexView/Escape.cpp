@@ -48,7 +48,7 @@ BYTE escape(const TCHAR *&s) {
   if(*s != '\\') {
     asciiValue = *(s++);
   } else {
-    s++; // Skip the '\' 
+    s++; // Skip the '\'
     switch(toupper(*s)) {
     case '\\':
       asciiValue = '\\'  ;

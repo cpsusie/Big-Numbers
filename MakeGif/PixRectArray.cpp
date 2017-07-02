@@ -202,7 +202,7 @@ void PixRectArray::paintAll(HDC dc, const CRect &rect) const {
                        );
 */
   }
- 
+
   CPoint p = rect.TopLeft();
   for(int i = 0, lc = 0; i < n; i++) {
     const GifPixRect *pr = (*this)[i];
@@ -215,7 +215,7 @@ void PixRectArray::paintAll(HDC dc, const CRect &rect) const {
     const CPoint topLeft = pr->m_topLeft;
     const CSize  sz      = pr->getSize();
     CRect tmpRect = (scaleFactor == 1)
-                  ? CRect(p + topLeft, sz) 
+                  ? CRect(p + topLeft, sz)
                   : CRect(CPoint((int)(p.x + scaleFactor * topLeft.x), (int)(p.y + scaleFactor * topLeft.y))
                          ,CSize((int)(scaleFactor * sz.cx), (int)(scaleFactor * sz.cy))
                          );
@@ -237,7 +237,7 @@ void PixRectArray::paintPixRect(const PixRect *pr, HDC dc, const CRect &rect) { 
 }
 
 
-GifPixRect::GifPixRect(const SavedImage *image, const ColorMapObject *globalColorMap) 
+GifPixRect::GifPixRect(const SavedImage *image, const ColorMapObject *globalColorMap)
 : PixRect(theApp.m_device, PIXRECT_PLAINSURFACE, image->ImageDesc.Width, image->ImageDesc.Height) {
   copyRasterBits(image->RasterBits, image->ImageDesc.ColorMap ? image->ImageDesc.ColorMap->Colors : globalColorMap->Colors);
   m_topLeft = CPoint(image->ImageDesc.Left, image->ImageDesc.Top);
@@ -277,7 +277,7 @@ static CSize getImageSize(const GifFileType *gifFile, int index) {
   return CSize(image.ImageDesc.Width, image.ImageDesc.Height);
 }
 
-GifPixRect::GifPixRect(GifFileType *gifFile, int i) 
+GifPixRect::GifPixRect(GifFileType *gifFile, int i)
 : PixRect(theApp.m_device, PIXRECT_PLAINSURFACE, getImageSize(gifFile, i)) {
   const SavedImage &image = gifFile->SavedImages[i];
   copyRasterBits(image.RasterBits, image.ImageDesc.ColorMap ? image.ImageDesc.ColorMap->Colors : gifFile->SColorMap->Colors);

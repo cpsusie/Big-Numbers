@@ -10,7 +10,7 @@ private:
   void updateState();
   void loadGifResource(int resId);
 public:
-   
+
     CTestGIFDlg(CWnd *pParent = NULL);
 
     enum { IDD = IDD_TESTGIF_DIALOG };

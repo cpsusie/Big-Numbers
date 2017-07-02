@@ -4,8 +4,8 @@ static inline int squareIndex(int r, int c) {
   return (r/3) * 3 + c/3;
 }
 
-FieldPos::FieldPos(short r, short c) { 
-  m_r  = r; 
+FieldPos::FieldPos(short r, short c) {
+  m_r  = r;
   m_c  = c;
   m_sq = squareIndex(r, c);
 }

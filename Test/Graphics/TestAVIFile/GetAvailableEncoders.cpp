@@ -5,8 +5,8 @@
 // -------------------------------------------------------------------------------------------------
 
 HRESULT FindEncoder(
-    const GUID& subtype, 
-    BOOL bAudio, 
+    const GUID& subtype,
+    BOOL bAudio,
     IMFTransform **ppEncoder
     )
 {
@@ -20,7 +20,7 @@ HRESULT FindEncoder(
     info.guidMajorType = bAudio ? MFMediaType_Audio : MFMediaType_Video;
     info.guidSubtype = subtype;
 
-    hr = MFTEnum(   
+    hr = MFTEnum(
         bAudio ? MFT_CATEGORY_AUDIO_ENCODER : MFT_CATEGORY_VIDEO_ENCODER,
         0,          // Reserved
         NULL,       // Input type
@@ -49,7 +49,7 @@ HRESULT FindEncoder(
 
 
 HRESULT CTranscoder::GetVideoOutputAvailableTypes(
-    DWORD flags, 
+    DWORD flags,
     CComPtr<IMFCollection>& pTypeCollection)
 {
     HRESULT hr = S_OK;
@@ -64,7 +64,7 @@ HRESULT CTranscoder::GetVideoOutputAvailableTypes(
         BREAK_ON_FAIL(hr);
 
         // initialize the structure that describes the output streams that the encoders must
-        // be able to produce.  In this case we want video encoders - so major type is video, 
+        // be able to produce.  In this case we want video encoders - so major type is video,
         // and we want the specified subtype
         outputType.guidMajorType = MFMediaType_Video;
         outputType.guidSubtype = MFVideoFormat_WMV3;
@@ -80,7 +80,7 @@ HRESULT CTranscoder::GetVideoOutputAvailableTypes(
             &nMftsFound);
         BREAK_ON_FAIL(hr);
 
-        // now that we have an array of activation objects for matching MFTs, loop through 
+        // now that we have an array of activation objects for matching MFTs, loop through
         // each of those MFTs, extracting all possible and available formats from each of them
         for(UINT32 x = 0; x < nMftsFound; x++)
         {
@@ -88,18 +88,18 @@ HRESULT CTranscoder::GetVideoOutputAvailableTypes(
             UINT32 typeIndex = 0;
 
             // activate the encoder that corresponds to the activation object
-            hr = pActivateArray[x]->ActivateObject(IID_IMFTransform, 
+            hr = pActivateArray[x]->ActivateObject(IID_IMFTransform,
                 (void**)&pEncoder);
 
-            // while we don't have a failure, get each available output type for the MFT 
-            // encoder we keep looping until there are no more available types.  If there 
-            // are no more types for the encoder, IMFTransform::GetOutputAvailableTypes[] 
+            // while we don't have a failure, get each available output type for the MFT
+            // encoder we keep looping until there are no more available types.  If there
+            // are no more types for the encoder, IMFTransform::GetOutputAvailableTypes[]
             // will return MF_E_NO_MORE_TYPES
             while(SUCCEEDED(hr))
             {
                 IMFMediaType* pType;
 
-                // get the avilable type for the type index, and increment the typeIndex 
+                // get the avilable type for the type index, and increment the typeIndex
                 // counter
                 hr = pEncoder->GetOutputAvailableType(0, typeIndex++, &pType);
                 if(SUCCEEDED(hr))
@@ -115,8 +115,8 @@ HRESULT CTranscoder::GetVideoOutputAvailableTypes(
     if(hr == MF_E_NO_MORE_TYPES  ||  hr == MF_E_TRANSFORM_TYPE_NOT_SET)
         hr = S_OK;
 
-    // if we successfully used MFTEnumEx() to allocate an array of the MFT activation 
-    // objects, then it is our responsibility to release each one and free up the memory 
+    // if we successfully used MFTEnumEx() to allocate an array of the MFT activation
+    // objects, then it is our responsibility to release each one and free up the memory
     // used by the array
     if(pActivateArray != NULL)
     {

@@ -62,7 +62,7 @@ int Date::adjustYear100(int year) { // static
 
 void Date::init(const TCHAR *src) {
   static const TCHAR *errmsg = _T("Invalid date-format <%s>");
-  
+
   int i = 0;
   int d[3];
   for(Tokenizer tok(src, _T("./-")); tok.hasNext() && i < 3; i++) {
@@ -395,7 +395,7 @@ int Date::getWeeksInYear(int year) { // static
   case TUESDAY  :
   case WEDNESDAY: return Date(28, 12, year).getWeek();
 
-  case THURSDAY : 
+  case THURSDAY :
   case FRIDAY   :
   case SATURDAY :
   case SUNDAY   : return lastDay.getWeek();

@@ -14,7 +14,7 @@ private:
 public:
   DecompressSingleJob() : m_tb(NULL), m_compressedSize(0) {
   }
-  DecompressSingleJob(EndGameTablebase *tb) 
+  DecompressSingleJob(EndGameTablebase *tb)
     : m_tb(tb)
     , m_compressedSize(tb->getFileSize(COMPRESSEDTABLEBASE))
   {
@@ -153,8 +153,8 @@ public:
     return m_title;
   }
   int getSupportedFeatures() {
-    return IR_PROGRESSBAR     | IR_SUBPROGRESSBAR 
-         | IR_INTERRUPTABLE   | IR_SUSPENDABLE 
+    return IR_PROGRESSBAR     | IR_SUBPROGRESSBAR
+         | IR_INTERRUPTABLE   | IR_SUSPENDABLE
          | IR_SHOWPROGRESSMSG | IR_SHOWTIMEESTIMATE;
   }
   UINT run();

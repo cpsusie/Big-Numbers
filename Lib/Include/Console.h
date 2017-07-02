@@ -10,10 +10,10 @@
 #define BACKGROUNDCOLOR(c) ((c) & 0xf0)
 
 // see vc98\include\wincon.h for a complete list of console-attributes
-#define BACKGROUND_WHITE  BACKGROUND_RED   | BACKGROUND_GREEN | BACKGROUND_BLUE  
-#define FOREGROUND_WHITE  FOREGROUND_RED   | FOREGROUND_GREEN | FOREGROUND_BLUE  
-#define FOREGROUND_YELLOW FOREGROUND_RED   | FOREGROUND_GREEN 
-#define BACKGROUND_YELLOW BACKGROUND_RED   | BACKGROUND_GREEN 
+#define BACKGROUND_WHITE  BACKGROUND_RED   | BACKGROUND_GREEN | BACKGROUND_BLUE
+#define FOREGROUND_WHITE  FOREGROUND_RED   | FOREGROUND_GREEN | FOREGROUND_BLUE
+#define FOREGROUND_YELLOW FOREGROUND_RED   | FOREGROUND_GREEN
+#define BACKGROUND_YELLOW BACKGROUND_RED   | BACKGROUND_GREEN
 #define FOREGROUND_CYAN   FOREGROUND_RED   | FOREGROUND_BLUE
 #define BACKGROUND_CYAN   BACKGROUND_RED   | BACKGROUND_BLUE
 #define FOREGROUND_TURKEY FOREGROUND_GREEN | FOREGROUND_BLUE
@@ -198,14 +198,14 @@ public:
   ~ConsoleWindow();
   void create(bool shadowed, int left, int top, int right, int bottom, ConsoleWindow *parent = NULL);
   void destroy();
-  
+
   bool isVisible() const {
     return m_tw != NULL;
   }
-  
+
   void setShadow(bool on);
 
-  bool isShadowed() const { 
+  bool isShadowed() const {
     return m_shadow;
   }
 
@@ -289,11 +289,11 @@ public:
   bool wantEvent(        int event);
   void setHostWindow(ConsoleWindow *hostwindow);
   void setShadow(bool on);
-  
+
   bool isShadow() const {
     return m_shadowed;
   }
-  
+
   friend int showMenu(int left, int top, StaticMenuItem *items);
 
   Menu(StaticMenuItem *items);
@@ -330,47 +330,47 @@ private:
 public:
   DialogControl(Dialog *dlg, int id, int left, int top, int width, int height);
   virtual ~DialogControl() {};
-  
+
   Dialog &getDialog() {
     return m_dlg;
   }
-  
+
   int getLeft() const {
     return m_left;
   }
-  
+
   int getTop() const {
     return m_top;
   }
-  
+
   int getWidth() const {
     return m_width;
   }
-  
+
   int getHeight() const {
     return m_height;
   }
-  
+
   int getid() const {
     return m_id;
   }
-  
+
   int getTabIndex() const {
     return m_tabIndex;
   }
-  
+
   void setEnable(bool v);
-  
+
   bool isEnabled() const {
     return m_enabled;
   }
-  
+
   void setVisible(bool v);
-  
+
   bool isVisible()  const {
     return m_visible;
   }
-  
+
   void setTabIndex(int tabindex);
   WORD getColor();
 
@@ -444,10 +444,10 @@ public:
   void setSel(int  start, int  end);
   void getSel(int &start, int &end);
   String getSelText();
-  
+
   int getFieldPos() const {
     return getLeft() + (int)m_label.length();
-  } 
+  }
 
   bool isSelected()  const {
     return (0 <= m_selStart) && (m_selStart <= m_selEnd);
@@ -560,11 +560,11 @@ private:
   int           m_dropDownWidth;
   int           m_dropDownHeight;
   TextWin      *m_tw;
-  
+
   bool isDropDownVisible() const {
     return m_tw != NULL;
   }
-  
+
   void beginDropDown();
   void drawItem(int i, bool selected);
   void drawItem(int i);
@@ -574,11 +574,11 @@ private:
   void hideDropDown();
   int  getRealDropDownHeight();
   void setScrollOffset(int i);
-  
+
   int  getNoOfVisibleItems() {
     return getRealDropDownHeight() - 2;
   }
-  
+
   int  getMaxScrollOffset();
   bool isItemVisible(int i);
 public:
@@ -702,15 +702,15 @@ public:
   ProgressBar(Dialog *dlg, int type, int id, int left, int top, int width, int height);
   bool setMax(int value);
   void setPos(int value);
-  
+
   int getMax() const {
     return m_max;
   }
-  
+
   int getPos() const {
     return m_pos;
   }
-  
+
   void setColor(WORD color , WORD barcolor);
   void getColor(WORD &color, WORD &barcolor);
   static void drawvProgressBar(TextWin *tw, int left, int top, int height, int maxPos, int pos, WORD color, WORD barColor);
@@ -823,35 +823,35 @@ public:
   void getVar(  int id, bool   &b);
   void printf(  int left, int top, const TCHAR *format, ...);
   void setTitle(const String &title);
-  
+
   const String &getTitle() const {
     return m_title;
   }
 
   void setShadow(bool on);
-  
+
   bool isShadowed() const {
     return m_shadowed;
   }
-  
+
   void setLabel(int id, const String &label);
   void getRect(SMALL_RECT &rect);
-  
+
   int getTop() const {
     return m_top;
   }
-  
+
   int getLeft() const {
     return m_left;
   }
-  
+
   int getBottom() const {
     return m_top  + m_height;
   }
-  
+
   int getRight() const {
     return m_left + m_width;
   }
-  
+
   friend class DialogControl;
 };

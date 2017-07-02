@@ -19,7 +19,7 @@ unsigned int MovieThread::run() {
     const CSize size = m_frameGenerator.getFrameSize();
 
     bitmap = CreateCompatibleBitmap(screenDC, size.cx, size.cy);
-    
+
     ::ReleaseDC(0, screenDC);
 
     oldBitmap = SelectObject(dc, bitmap);

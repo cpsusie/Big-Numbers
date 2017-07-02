@@ -22,7 +22,7 @@ END_MESSAGE_MAP()
 
 BOOL CCheckFilesDlg::OnInitDialog() {
   __super::OnInitDialog();
-  
+
   SetIcon(m_hIcon, TRUE);
   SetIcon(m_hIcon, FALSE);
 
@@ -31,7 +31,7 @@ BOOL CCheckFilesDlg::OnInitDialog() {
   const MediaArray &list = w->getMediaArray();
   CProgressCtrl  *p = (CProgressCtrl*)GetDlgItem(IDC_PROGRESSCHECK);
   p->SetRange(0,list.size());
-    
+
   m_workerIsRunning = false;
   m_worker = (CCheckFilesThread*)AfxBeginThread(RUNTIME_CLASS(CCheckFilesThread));
   startTimer();

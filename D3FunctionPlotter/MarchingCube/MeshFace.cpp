@@ -27,8 +27,8 @@ void MeshFace::getMinMax(D3DXVECTOR3 *vmin, D3DXVECTOR3 *vmax) const {
 String MeshFace::toString() const {
   return format("v0:%s v1:%s v2:%s N:%s"
                ,::toString(*m_v[0]).cstr()
-               ,::toString(*m_v[1]).cstr() 
-               ,::toString(*m_v[2]).cstr() 
+               ,::toString(*m_v[1]).cstr()
+               ,::toString(*m_v[2]).cstr()
                ,::toString(m_planeNormal).cstr()
                );
 }

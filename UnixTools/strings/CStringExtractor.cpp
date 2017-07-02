@@ -24,7 +24,7 @@ bool CStringExtractor::nextString(FILE *input) {
   m_buffer.clear(-1);
   int state = 0;
   int ch;
-  while((ch = fgetc(input)) != EOF) { 
+  while((ch = fgetc(input)) != EOF) {
     switch(state) {
     case 0:                           // initial state
       switch(ch) {
@@ -43,7 +43,7 @@ bool CStringExtractor::nextString(FILE *input) {
       case '"' :
       case '\n': appendChar(0);       // exit double-quoted string literal
                  return true;
-                 
+
       default  : appendChar(ch);
                  continue;            // stay inside double-quoted string literal
       }
@@ -64,7 +64,7 @@ bool CStringExtractor::nextString(FILE *input) {
       case '\\': appendChar(ch);
                  state = 4;
                  continue;            // escape-character inside single-quoted string listeral
-      case '\'': 
+      case '\'':
       case '\n': appendChar(0);
                  return true;         // exit single-quoted string literal
 
@@ -103,9 +103,9 @@ bool CStringExtractor::nextString(FILE *input) {
       }
       break;
 
-    case 8:                           // after * inside /* ... */ comment, 
+    case 8:                           // after * inside /* ... */ comment,
       if(ch == '/') {                 // end of comment
-        state = 0; 
+        state = 0;
       } else {
         state = 7;
       }
@@ -128,7 +128,7 @@ bool CStringExtractor::nextString(FILE *input) {
 }
 
 void CStringExtractor::outputString() {
-  if(m_buffer.size() > m_minLength) { // dont include the 0-char 
+  if(m_buffer.size() > m_minLength) { // dont include the 0-char
     printString((const char*)m_buffer.getData());
   }
 }

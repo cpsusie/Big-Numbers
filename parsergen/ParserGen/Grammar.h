@@ -48,7 +48,7 @@ public:
   RightSideSymbol(int index, SymbolModifier modifier) {
     m_index = index; m_modifier = modifier;
   }
-  operator int() const { 
+  operator int() const {
     return m_index;
   }
 };
@@ -139,7 +139,7 @@ typedef HashMap<const LR1State*, int> StateHashMap;
 #define DUMP_WARNINGS   0x20
 #define DUMP_ERRORS     0x40
 
-#define DUMP_ALL        DUMP_SHIFTITEMS | DUMP_LOOKAHEAD  | DUMP_SUCC    
+#define DUMP_ALL        DUMP_SHIFTITEMS | DUMP_LOOKAHEAD  | DUMP_SUCC
 #define DUMP_DOCFORMAT  DUMP_SHIFTITEMS | DUMP_ACTIONS    | DUMP_ERRORS | DUMP_WARNINGS
 
 class Grammar {
@@ -198,8 +198,8 @@ public:
   GrammarSymbol &getSymbol(int symbolIndex) {
     return m_symbols[symbolIndex];
   }
-  
-  const GrammarSymbol &getSymbol(int symbolIndex) const { 
+
+  const GrammarSymbol &getSymbol(int symbolIndex) const {
     return m_symbols[symbolIndex];
   }
 
@@ -216,7 +216,7 @@ public:
   int  addNonTerminal(const String &name, const SourcePosition &pos);
   void addProduction( const Production &production);
   void addClosureProductions();
-  
+
   void findReachable();  // find all symbols that are reachable from startsymbol
   void findTerminate();  // find all symbols that can terminate
   void generateStates();
@@ -257,7 +257,7 @@ public:
     return m_startSymbol;
   }
 
-  Language getLanguage() const { 
+  Language getLanguage() const {
     return m_language;
   }
 
@@ -276,7 +276,7 @@ public:
   int getVerboseLevel() const {
     return m_verboseLevel;
   }
-  
+
   int getItemCount() const;
 
   String symbolSetToString(const BitSet &set) const; // convert symbolset to String

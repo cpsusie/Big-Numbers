@@ -7,7 +7,7 @@
 #define new DEBUG_NEW
 #endif
 
-CHighScoreDlg::CHighScoreDlg(int execiszeType, CWnd *pParent /*=NULL*/) 
+CHighScoreDlg::CHighScoreDlg(int execiszeType, CWnd *pParent /*=NULL*/)
 : m_execiszeType(execiszeType)
 , CDialog(CHighScoreDlg::IDD, pParent) {
 }
@@ -24,7 +24,7 @@ END_MESSAGE_MAP()
 
 BOOL CHighScoreDlg::OnInitDialog() {
   __super::OnInitDialog();
-  
+
   CTabCtrl  &tab  = m_execiszeTab;
   tab.InsertItem(0,_T("+"));
   tab.InsertItem(1,_T("-"));
@@ -41,7 +41,7 @@ BOOL CHighScoreDlg::OnInitDialog() {
   const int index = HighScore::execiseTypeToIndex(m_execiszeType);
   tab.SetCurSel(index);
   showHighScore(index);
-  
+
   list.SetFocus();
   setSelectedIndex(m_listBestTime, 0);
   return TRUE;

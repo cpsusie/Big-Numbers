@@ -39,7 +39,7 @@ private:
   ExtremaJobQueue    &m_jobQueue;
   ExtremaResultQueue &m_resultQueue;
 public:
-  WorkerThread(ExtremaJobQueue &jobQueue, ExtremaResultQueue &resultQueue) 
+  WorkerThread(ExtremaJobQueue &jobQueue, ExtremaResultQueue &resultQueue)
     : m_jobQueue(jobQueue)
     , m_resultQueue(resultQueue)
   {

@@ -24,7 +24,7 @@ ByteArray &getBitmapBits(HBITMAP bm, ByteArray &bytes, BITMAPINFO &bmInfo) {
   } catch(...) {
     delete[] byteArray;
     DeleteDC(hdc);
-    throw; 
+    throw;
   }
   return bytes;
 }

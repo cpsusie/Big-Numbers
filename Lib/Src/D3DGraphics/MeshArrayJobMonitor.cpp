@@ -176,7 +176,7 @@ UINT MeshArrayCreator::run() {
   return 0;
 }
 
-MeshBuilderWorker::MeshBuilderWorker(MeshArrayCreator *arrayCreator) 
+MeshBuilderWorker::MeshBuilderWorker(MeshArrayCreator *arrayCreator)
 : m_arrayCreator(*arrayCreator)
 {
   m_meshCreator = getJobMonitor().m_param.fetchMeshCreator();

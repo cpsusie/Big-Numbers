@@ -196,7 +196,7 @@ BigRealMatrix PSLQ::createHermiteReducingMatrix(const BigRealMatrix &m) {
 }
 
 // Returns Matrix D so D*m is diagonal
-BigRealMatrix PSLQ::createHermiteReducingMatrix0(const BigRealMatrix &m) { 
+BigRealMatrix PSLQ::createHermiteReducingMatrix0(const BigRealMatrix &m) {
   BigRealMatrix D = BigRealMatrix::one(m_n,m_digits);
   for(int i = 0; i < m_n; i++) {
     for(int j = i-1; j >= 0; j--) {
@@ -315,7 +315,7 @@ static void usage() {
                       "     -f[file]     : Same as -x, but x1..xn are read from file. If file is omitted, stdin is used.\n"
                       "     -t           : Test. Find integer polynomial for number 3.6502815398728847452 which is (9,-9,-5,14,-13,-1,1)\n")
            );
-              
+
   exit(-1);
 }
 
@@ -370,7 +370,7 @@ int main(int argc, char **argv) {
             }
             cmd = FIND_RELATION;
             char *fileName = cp+1;
-            
+
             tistream *input = (fileName[0] == '\0') ? (tistream*)&tcin : new tifstream(fileName);
             while(!input->eof() && !input->bad()) {
               BigReal x;

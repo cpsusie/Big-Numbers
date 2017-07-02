@@ -5,12 +5,12 @@
 //
 // Author: Dr. Yovav Gad, EMail: Sources@SuperMain.com ,Web: www.SuperMain.com
 //=============================================================================
-// 
+//
 // Full Story:
 // ~~~~~~~~~~~
 // There R Many Libraries To Handle Image Files, Anyway Most Of Them Do Not
 // Include Source Files Or Just Very Complicated To Implement / Understand,
-// 
+//
 // After Many Days Of Searching (And Not Finding) a Way To Load a JPG From a
 // Resource And Show It On a *Dialog Based* Application, I Decided 2 Take Steps
 //
@@ -38,7 +38,7 @@
 //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //	m_Picture.Load("Test.JPG"); // Load From a File - Just Load It (Show Later)
 //	m_Picture.Load(IDR_TEST, "JPG"); // Load From a Resource - Just Load It (Show Later)
-//  
+//
 //	m_Picture.UpdateSizeOnDC(&dc); // Get Picture Dimenions In Pixels
 //	m_Picture.Show(&dc, CPoint(0,0), CPoint(m_Picture.m_width, m_Picture.m_height), 0,0);
 //	m_Picture.Show(&dc, CRect(0,0,100,100)); // Change Original Dimenions
@@ -171,11 +171,11 @@ static const ExtensionType extensionTable[] = {
  ,"JPG" , PFT_JPG     , RM_PICTURE
  ,"JPEG", PFT_JPG     , RM_PICTURE
  ,"WMF" , PFT_WMF     , RM_PICTURE
- ,"ICO" , PFT_ICO     , RM_ICON   
- ,"CUR" , PFT_CUR     , RM_CURSOR 
- ,"PNG" , PFT_PNG     , RM_PNG    
- ,"TIF" , PFT_TIFF    , RM_TIFF   
- ,"TIFF", PFT_TIFF    , RM_TIFF   
+ ,"ICO" , PFT_ICO     , RM_ICON
+ ,"CUR" , PFT_CUR     , RM_CURSOR
+ ,"PNG" , PFT_PNG     , RM_PNG
+ ,"TIF" , PFT_TIFF    , RM_TIFF
+ ,"TIFF", PFT_TIFF    , RM_TIFF
 };
 
 static int getExtensionTypeIndexFromFileName(const String &fileName) {
@@ -193,7 +193,7 @@ static int getExtensionTypeIndexFromFileName(const String &fileName) {
   return 0;
 }
 
-PictureFormatType CPicture::getFormatTypeFromFileName(const String &fileName) { // static 
+PictureFormatType CPicture::getFormatTypeFromFileName(const String &fileName) { // static
   return extensionTable[getExtensionTypeIndexFromFileName(fileName)].m_type;
 }
 
@@ -215,7 +215,7 @@ CPicture &CPicture::load(const String &fileName) {
     try {
       switch(rm) {
       case RM_ICON   :
-        loadAsIcon(fileName); 
+        loadAsIcon(fileName);
         break;
       case RM_CURSOR :
         loadAsCursor(fileName);
@@ -438,7 +438,7 @@ void CPicture::createPictureFromIcon(HICON icon) {
     throwLastErrorOnSysCallException(_T("OleCreatePictureIndirect"));
   } else if(m_IPicture != NULL) {
     setSize();
-  } 
+  }
 }
 
 void CPicture::unload() {
@@ -450,7 +450,7 @@ void CPicture::unload() {
 // ~~~~    and load it into the current ipicture object in use
 //
 // input:  buffer of data source (file / resource) and its size
-// ~~~~~   
+// ~~~~~
 //
 // output: feed the ipicture object with the picture data
 // ~~~~~~  (use draw functions to show it on a device context)
@@ -488,7 +488,7 @@ void CPicture::loadPictureData(const BYTE *pBuffer, int size) {
     } else if(m_IPicture != NULL) {
       m_weight = size;
       setSize();
-    } 
+    }
 
     pStream->Release();
     pStream = NULL;
@@ -583,7 +583,7 @@ void CPicture::render(HDC dst, const CRect &dstRect, const CRect &srcRect) const
                                        ,width
                                        ,-height
                                        ,&dstRect);
-  
+
   if(FAILED(hr)) {
     throwException(_T("%s:%s"), __TFUNCTION__, getErrorText(hr).cstr());
   }
@@ -621,7 +621,7 @@ void CPicture::showBitmapResource(HDC hdc, int resId, const CPoint &p) { // stat
 }
 
 void CPicture::updateSizeOnDC(CDC *pDC) {
-  if(pDC == NULL) { 
+  if(pDC == NULL) {
     throwInvalidArgumentException(__TFUNCTION__, _T("pDC == NULL"));
   }
 

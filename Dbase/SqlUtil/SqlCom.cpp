@@ -108,6 +108,6 @@ Packer &operator>>(Packer &p, SqlApiBindStmt &stmt) {
 }
 
 bool operator==(const SqlApiBindProgramId &p1, const SqlApiBindProgramId &p2) {
-  return (_tcscmp(p1.m_fileName ,p2.m_fileName ) == 0) 
+  return (_tcscmp(p1.m_fileName ,p2.m_fileName ) == 0)
       && (_tcscmp(p1.m_timestamp,p2.m_timestamp) == 0);
 }

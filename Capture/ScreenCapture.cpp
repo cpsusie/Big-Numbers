@@ -18,7 +18,7 @@ static HBITMAP captureDC(HDC dc, int x, int y, const CSize &size) {
     if(!SelectObject(memDC, bitmap)) {
       throwException(_T("SelecetObject failed:%s"), getLastErrorText().cstr());
     }
- 
+
     if(!BitBlt(memDC, 0, 0, size.cx, size.cy, dc, x,y, SRCCOPY)) {
       throwException(_T("BitBlt failed:%s"), getLastErrorText().cstr());
     }
@@ -66,8 +66,8 @@ HBITMAP captureWindow(HWND hwnd) {
 
 /*
 // giver forkert resultat
-CSize getScreenSizeInMillimeters1() { 
-  HDC screenDC = CreateDC(_T("DISPLAY"), NULL, NULL, NULL); 
+CSize getScreenSizeInMillimeters1() {
+  HDC screenDC = CreateDC(_T("DISPLAY"), NULL, NULL, NULL);
   int w = GetDeviceCaps(screenDC,HORZSIZE);
   int h = GetDeviceCaps(screenDC,VERTSIZE);
   DeleteDC(screenDC);

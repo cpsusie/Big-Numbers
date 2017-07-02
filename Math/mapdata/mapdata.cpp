@@ -89,7 +89,7 @@ bool readcurve(FILE *f) {
     p.fi = M_PI/2 - p.fi;
     m = mercator(p);
     printf("%lf %lf\n",-m.E,m.N);
-    if(fscanf(f,"%d %d %d",&dx,&dz,&dy) != 3) 
+    if(fscanf(f,"%d %d %d",&dx,&dz,&dy) != 3)
       return false;
     c.x += dx; c.y += dy; c.z += dz;
   }

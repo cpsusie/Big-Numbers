@@ -108,7 +108,7 @@ private:
   CDC &getDC();
 public:
     CTestEdgeDetectionDlg(CWnd *pParent = NULL);
-    
+
     enum { IDD = IDD_TESTEDGEDETECTION_DIALOG };
 
 protected:
@@ -159,7 +159,7 @@ public:
   }
   FillInfo &getFillInfo();
 protected:
-    
+
     afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
     afx_msg HCURSOR OnQueryDragIcon();
     virtual BOOL OnInitDialog();

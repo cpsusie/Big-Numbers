@@ -107,7 +107,7 @@ void ProfileRotator::line(const Point2D &from, const Point2D &to) {
     m_meshNormalIndex  = m_meshBuilder.addNormal(normal.x,normal.y,normal.z);
   }
   if(m_pointsInOneSlice > 0) {
-    Face &face = m_param.m_useColor 
+    Face &face = m_param.m_useColor
                ? m_meshBuilder.addFace(m_param.m_color)
                : m_meshBuilder.addFace();
     int pIndex[4],nIndex[4];

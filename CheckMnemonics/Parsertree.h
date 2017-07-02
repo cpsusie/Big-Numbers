@@ -28,15 +28,15 @@ public:
   const SyntaxNode *getRoot() const {
     return m_root;
   }
-  
+
   SyntaxNode *getRoot() {
     return m_root;
   }
-  
+
   void setRoot(SyntaxNode *n) {
     m_root = n;
   }
-  
+
   bool isOk() const {
     return m_ok;
   }
@@ -58,5 +58,5 @@ public:
   void dumpTree(      FILE *f = stdout) const;
   void dumpTree(      const TCHAR *fname) const;
   void dumpNodeTable( FILE *f = stdout) const;
-  
+
 };

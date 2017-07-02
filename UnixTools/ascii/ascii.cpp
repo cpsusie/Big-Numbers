@@ -57,7 +57,7 @@ int main(int argc, char **argv) {
     printasciidec();
   else if(strcmp(*argv,"-h") == 0)
     printasciihex();
-  else 
+  else
     usage();
   return 0;
 }

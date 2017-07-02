@@ -2,7 +2,7 @@
 #include <MyUtil.h>
 #include "Game.h"
 
-static int def_board[WIDTH][HEIGHT] = { 
+static int def_board[WIDTH][HEIGHT] = {
     1,  0,  2, -4,  9, -5, -1,  0,
     7,  3, -2, 15,  8,  6, -3, -1,
    -7, -4, -6, -2,  3, -1, -9,  0,
@@ -50,7 +50,7 @@ int Game::findRow(int s, int &sm) {
   int r,row,res,sm1;
   int max = UNDEF;
   int sum = 0;
-  if(!m_depth--) { 
+  if(!m_depth--) {
     sm = 0;
     m_depth++;
     return 0;
@@ -116,7 +116,7 @@ int Game::findMoveC(int look) {
   return findCol(m_currentRow,s);
 }
 
-void Game::init() { 
+void Game::init() {
   for(int r = 0; r < HEIGHT; r++) {
     for(int s = 0; s < WIDTH; s++) {
       m_used[r][s]  = false;
@@ -139,16 +139,16 @@ public:
   }
 };
 
-void Game::scramble() { 
+void Game::scramble() {
   CompactArray<FieldInfo> tmp(HEIGHT*WIDTH);
   for(int r = 0; r < HEIGHT; r++) {
-    for(int s = 0; s < WIDTH; s++) { 
+    for(int s = 0; s < WIDTH; s++) {
       tmp.add(FieldInfo(m_board[r][s], m_used[r][s]));
     }
   }
   tmp.shuffle();
   for(int r = 0, i = 0; r < HEIGHT; r++) {
-    for(int s = 0; s < WIDTH; s++, i++) { 
+    for(int s = 0; s < WIDTH; s++, i++) {
       m_board[r][s] = tmp[i].m_v;
       m_used[r][s]  = tmp[i].m_used;
     }
@@ -157,15 +157,15 @@ void Game::scramble() {
   for(int r = 0; r < HEIGHT; r++) {
     int sc;
     bool rowUnused = false, rowUsed = false;
-    for(int s = 0; s < WIDTH; s++) { 
-      if(m_used[r][s]) { 
+    for(int s = 0; s < WIDTH; s++) {
+      if(m_used[r][s]) {
         rowUsed = true;
         sc = s;
       } else {
         rowUnused = true;
       }
     }
-    if(rowUsed && rowUnused) { 
+    if(rowUsed && rowUnused) {
       m_currentCol = sc;
       m_currentRow = r;
       break;

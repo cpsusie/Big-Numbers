@@ -62,13 +62,13 @@ sqlca sqlca;
 
 static void selectMyTable() {
 
-  
+
 #ifdef __NEVER__
   exec sql
     select
       c1
      ,longss
-    from mytable a 
+    from mytable a
     where
       a.i = cast("12" as int)
     and
@@ -136,7 +136,7 @@ static void selectMyTable() {
 }
 
 static void dbConnect() {
-  
+
 #ifdef __NEVER__
   EXEC SQL CONNECT To :dbname user :username using :password;
 #endif
@@ -174,7 +174,7 @@ static void dbConnect() {
 
 
 static void dbDisconnect() {
-  
+
 #ifdef __NEVER__
   EXEC SQL CONNECT RESET;
 #endif

@@ -61,7 +61,7 @@ BOOL CTestDirectionDlg::OnInitDialog() {
 
   SetIcon(m_hIcon, TRUE);         // Set big icon
   SetIcon(m_hIcon, FALSE);        // Set small icon
-  
+
   return TRUE;
 }
 

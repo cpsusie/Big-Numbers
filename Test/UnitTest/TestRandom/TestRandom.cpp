@@ -30,7 +30,7 @@ namespace TestRandom {
     }
     fclose(f);
   }
-  
+
   static CompactUintArray filterFactors(const CompactInt64Array &a) {
     CompactUintArray result;
     for (size_t i = 0; i < a.size(); i++) {

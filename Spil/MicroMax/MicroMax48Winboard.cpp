@@ -183,13 +183,13 @@ static void printState(int player = BLACK, bool detailed = true) {
 }
 #endif
 
-// Handle commands given in m_msgQueue 
+// Handle commands given in m_msgQueue
 UINT MoveFinder::run() {
 #ifdef _DEBUG
   replyMessage(_T("MoveFinderThread:Id:%d"), getThreadId());
 #endif
-// movesLeft moves have to be done within timeLeft+(movesLeft-1)*timeInc  
-// If movesLeft < 0, all remaining moves of the game have to be done in this time. 
+// movesLeft moves have to be done within timeLeft+(movesLeft-1)*timeInc
+// If movesLeft < 0, all remaining moves of the game have to be done in this time.
 // If maxMoves = 1 any leftover time is lost
   try {
     bool killed = false;
@@ -228,7 +228,7 @@ UINT MoveFinder::run() {
 
 // Think up a move. hangs until timelimit or stopCode is catched
 // When a search is started, we start a timer at the same time, which will call this->timeoutHandler() when
-// the given timelimit mseconds has elapsed. 
+// the given timelimit mseconds has elapsed.
 Move MoveFinder::evaluateMove(int timeLimit) {
   m_timer.startTimer(timeLimit, *this);
   try {
@@ -241,7 +241,7 @@ Move MoveFinder::evaluateMove(int timeLimit) {
     m_timer.stopTimer();
     if(stopCode & STOP_IMMEDIATELY) {
       throwException("Search cancelled");
-    } 
+    }
     return board.getBestMove();
   }
   return Move();
@@ -250,7 +250,7 @@ Move MoveFinder::evaluateMove(int timeLimit) {
 void MoveFinder::updateTimeLeft() {
   const int timeUsed = board.getTimeUsed();
 
-  // time-control accounting 
+  // time-control accounting
   timeLeft -= timeUsed;
   timeLeft += timeInc;
   if(--movesLeft == 0) {
@@ -373,7 +373,7 @@ int main(int argc, char **argv) {
       Tokenizer tok(line, _T(" "));
       const String command = tok.next();
       if(command == _T("ucinewgame")) {
-        // start new game 
+        // start new game
         board.initGame();
         continue;
       }

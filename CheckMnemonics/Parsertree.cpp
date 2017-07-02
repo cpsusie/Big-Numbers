@@ -151,7 +151,7 @@ void ParserTree::dumpSyntaxNode(const SyntaxNode *node, FILE *f, int level, bool
            );
     switch(node->getSymbol()) {
     case IDENTIFIER:
-      _ftprintf(f, _T(":[%s]\n"), node->getName().cstr() ); 
+      _ftprintf(f, _T(":[%s]\n"), node->getName().cstr() );
       break;
     case NUMBER    :
       _ftprintf(f, _T(":[%s]\n"), toString(node->getNumber()).cstr());
@@ -173,11 +173,11 @@ void ParserTree::dumpSyntaxNode(const SyntaxNode *node, FILE *f, int level, bool
   }
 }
 
-void ParserTree::dumpSyntaxTree(const SyntaxNode *root, FILE *f) { // static 
+void ParserTree::dumpSyntaxTree(const SyntaxNode *root, FILE *f) { // static
   dumpSyntaxNode(root, f, 0, true);
 }
 
-void ParserTree::dumpSyntaxTree(const SyntaxNode *root, const TCHAR *fname) { // static 
+void ParserTree::dumpSyntaxTree(const SyntaxNode *root, const TCHAR *fname) { // static
   FILE *f = _tfopen(fname,_T("w"));
   if(f == NULL) {
     _ftprintf(stdout, _T("Cannot open %s\n"), fname);

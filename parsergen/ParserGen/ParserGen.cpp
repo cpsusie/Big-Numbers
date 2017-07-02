@@ -81,7 +81,7 @@ int _tmain(int argc, TCHAR **argv) {
           break;
         case 'v':
           if(_stscanf(cp+1, _T("%d"), &verboseLevel) != 1) {
-            verboseLevel = 1; 
+            verboseLevel = 1;
             continue;
           }
           if(verboseLevel < 0 || verboseLevel > 2) {
@@ -106,7 +106,7 @@ int _tmain(int argc, TCHAR **argv) {
         case 'n':
           flags.m_generateNonTerminals = true;
           continue;
-        case 'f': 
+        case 'f':
           first1File = cp+1;
           if(first1File.length() == 0) {
             usage();
@@ -130,7 +130,7 @@ int _tmain(int argc, TCHAR **argv) {
             }
           }
           break;
-           
+
         case 'w':
           callWizard = true;
           wizardName = cp+1;
@@ -144,7 +144,7 @@ int _tmain(int argc, TCHAR **argv) {
           language = JAVA;
           continue;
         default :
-          usage();   
+          usage();
         }
         break;
       }

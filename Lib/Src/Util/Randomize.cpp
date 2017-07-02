@@ -22,7 +22,7 @@ INT64 Random::getRandomSeed() { // static
                 + guid.Data2) * 641
                 + guid.Data3) * 983
                 + w4        ) * 337
-                + w5        ) * 757 
+                + w5        ) * 757
                 + w6        ) * 599
                 + w7;
   return seed;

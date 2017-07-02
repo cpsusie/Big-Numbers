@@ -14,12 +14,9 @@ private:
 public:
     CGifCtrl();
 
-public:
-protected:
 #ifdef _DEBUG
     void trace(const char *format, ...);
 #endif
-public:
     void substituteControl(CWnd *wnd, int id);
     virtual ~CGifCtrl();
 
@@ -59,4 +56,3 @@ protected:
   DECLARE_MESSAGE_MAP()
 };
 
-//{{AFX_INSERT_LOCATION}}

@@ -1,4 +1,4 @@
-#pragma once 
+#pragma once
 
 #define BLACK  RGB(  0,  0,  0)
 #define YELLOW RGB(255,255,  0)
@@ -134,15 +134,15 @@ private:
   bool                 m_lastWasNext;
 
   void push(AvlNode *avlNode, AvlIteratorStatus status);
-  
+
   void pop() {
     m_top--;
   }
-  
+
   bool isEmpty() const {
     return m_top == 0;
   }
-  
+
   AvlIteratorStackElem *top() {
     return isEmpty() ? NULL : m_stack + m_top - 1;
   }

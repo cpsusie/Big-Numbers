@@ -43,22 +43,22 @@ class NumberSyntaxNode : public SyntaxNode {
 private:
   int m_value;
 public:
-  NumberSyntaxNode(const SourcePosition &pos, int value) : SyntaxNode(pos, NUMBER) { 
+  NumberSyntaxNode(const SourcePosition &pos, int value) : SyntaxNode(pos, NUMBER) {
     m_value = value;
   }
-  
+
   NumberSyntaxNode(int value) : SyntaxNode(NUMBER) {
     m_value = value;
   }
-  
+
   int getNumber() const {
     return m_value;
   }
-  
+
   SyntaxNode  *clone() const {
     return new NumberSyntaxNode(getPos(), m_value);
   }
-  
+
   String toString() const {
     return ::toString(m_value);
   }
@@ -69,14 +69,14 @@ private:
   String m_name;
 public:
 
-  NameSyntaxNode(const String &name) : SyntaxNode(IDENTIFIER) { 
+  NameSyntaxNode(const String &name) : SyntaxNode(IDENTIFIER) {
     m_name = name;
   }
-  
+
   NameSyntaxNode(const SourcePosition &pos, const String &name) : SyntaxNode(pos, IDENTIFIER)  {
     m_name = name;
   }
-  
+
   const String &getName() const {
     return m_name;
   }
@@ -95,14 +95,14 @@ private:
   String m_str;
 public:
 
-  StringSyntaxNode(const String &str) : SyntaxNode(STRING) { 
+  StringSyntaxNode(const String &str) : SyntaxNode(STRING) {
     m_str = str;
   }
-  
+
   StringSyntaxNode(const SourcePosition &pos, const String &str) : SyntaxNode(pos, STRING)  {
     m_str = str;
   }
-  
+
   const String &getString() const {
     return m_str;
   }

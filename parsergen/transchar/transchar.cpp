@@ -26,12 +26,12 @@ static void translateCharacter(char *src, char *pat, unsigned char c) {
   }
 }
 
-/* 
+/*
  * translate any special characters in String s. Note this is not (yet) a complete list of special characters used in HTML
  */
 static char *translateCharacters(char *s) {
   /* optimization. no need to do anything if we havent got a '&' */
-  if(strchr(s,'&') == NULL) return s; 
+  if(strchr(s,'&') == NULL) return s;
   translateCharacter(s,"&AElig;" ,146); /* Æ */
   translateCharacter(s,"&aelig;" ,145); /* æ */
   translateCharacter(s,"&Aring;" ,143); /* Å */

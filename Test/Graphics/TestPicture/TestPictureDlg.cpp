@@ -85,7 +85,7 @@ BOOL CTestPictureDlg::OnInitDialog() {
 
   SetIcon(m_hIcon, TRUE);
   SetIcon(m_hIcon, FALSE);
-  
+
   theApp.m_device.attach(*this);
   m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_MAINFRAME));
 
@@ -253,7 +253,7 @@ void CTestPictureDlg::showInfo() {
   } else {
     imageInfo = _T("\r\n");
   }
- 
+
   const String msg = format(_T("Current image:%d%sMem.Usage:%s\r\nGDI-objects:%d, User-objects:%d")
 //                             "Current image:%d%sMem.Usage:%s"
                            ,getCurrentImageIndex() + 1
@@ -460,7 +460,7 @@ void CTestPictureDlg::savePicture(PictureFileFormat fileFormat) {
       saveBitmap(bm, fileName, fileFormat);
       DeleteObject(bm);
     }
-  } 
+  }
 }
 
 void CTestPictureDlg::OnEditCurrent1() {

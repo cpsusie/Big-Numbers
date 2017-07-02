@@ -472,7 +472,7 @@ void EndGameKey::p5IndexToOffDiagPosEqualP345() {
   case 0x03: ADJUSTP5_OFFDIAG_CHECK1POS_EQUALP345(    2);  return; // p0,p1       < p <       p2
   case 0x04: ADJUSTP5_OFFDIAG_CHECK2POS_EQUALP345(0,1  );  return; //       p2      p < p0,p1
   case 0x05: ADJUSTP5_OFFDIAG_CHECK1POS_EQUALP345(  1  );  return; // p0   ,p2    < p <    p1
-  case 0x06: ADJUSTP5_OFFDIAG_CHECK1POS_EQUALP345(0    );  return; //    p1,p2    < p < p0   
+  case 0x06: ADJUSTP5_OFFDIAG_CHECK1POS_EQUALP345(0    );  return; //    p1,p2    < p < p0
   case 0x07: setPosition(5,p + 3);                         return; // p0,p1,p2    < p
   }
 }

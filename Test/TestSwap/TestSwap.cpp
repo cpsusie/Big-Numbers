@@ -10,7 +10,7 @@ inline void _swap(void *p1, void *p2, size_t w) {
     mov eax, p1
     mov edi, p2
     cmp ecx, 4
-    jb SwapWord 
+    jb SwapWord
 LoopDword:
     mov	ebx, DWORD PTR [eax]
     mov	edx, DWORD PTR [edi]
@@ -60,10 +60,10 @@ int main() {
     memcpy(buf1, data1, BUFIZE);
     memcpy(buf2, data2, BUFIZE);
     _swap(buf1, buf2, i);
-    if(memcmp(buf1, data2, i)) { 
+    if(memcmp(buf1, data2, i)) {
       pause();
     }
-    if(memcmp(buf2, data1, i)) { 
+    if(memcmp(buf2, data1, i)) {
       pause();
     }
     if(i < BUFIZE) {

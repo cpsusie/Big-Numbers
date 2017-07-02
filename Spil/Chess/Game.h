@@ -546,7 +546,7 @@ public:
   long hashCode() const;
 #else
   inline ULONG hashCode() const {
-    return (m_playerSignature[WHITEPLAYER].hashCode() * 2716389) 
+    return (m_playerSignature[WHITEPLAYER].hashCode() * 2716389)
           ^ m_playerSignature[BLACKPLAYER].hashCode();
   }
 #endif

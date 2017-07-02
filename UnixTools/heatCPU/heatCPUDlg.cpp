@@ -71,17 +71,17 @@ BOOL CHeatCPUDlg::OnInitDialog() {
 
   SetIcon(m_hIcon, TRUE );
   SetIcon(m_hIcon, FALSE);
-  
+
 #define SLIDERMAX 100
   SetPriorityClass(GetCurrentProcess(), IDLE_PRIORITY_CLASS);
   SetThreadPriorityBoost(GetCurrentThread(), TRUE);
 
   getSliderCtrl()->SetRange(0, SLIDERMAX);
   setCPULoad(m_options.m_cpuLoad);
-  checkMenuItem(this, ID_OPTIONS_LAUNCHATSTARTUP, m_options.m_autoLaunch  );  
+  checkMenuItem(this, ID_OPTIONS_LAUNCHATSTARTUP, m_options.m_autoLaunch  );
   checkMenuItem(this, ID_OPTIONS_SHOWCOUNTERS   , m_options.m_showCounters);
   showCounters(m_options.m_showCounters);
-  
+
   addStatusIcon();
 
   startTimer();

@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-void Board::setup(const String &str) { // static 
+void Board::setup(const String &str) { // static
   for(Tokenizer tok(str, _T(" ")); tok.hasNext();) {
     String command = tok.next();
     if(command == _T("fen")) {

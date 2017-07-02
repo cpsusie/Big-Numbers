@@ -25,7 +25,7 @@ public:
   const TCHAR *m_regStart;
   const TCHAR *m_regStartSegEnd;
   const TCHAR *m_regEnd;
-  inline _RegexStateRegister() { 
+  inline _RegexStateRegister() {
     m_regStart = (TCHAR*)-1; // Initialize \( and \) text positions to -1 to indicate, that no \( or \) has been seen
 #ifdef _DEBUG
     m_regStartSegEnd = m_regEnd = NULL;
@@ -184,7 +184,7 @@ public:
   const TCHAR *m_sp, *m_spEnd;
 
   _RegexMatchState(const Regex *regex, _RegexCounterTable &counterTable, intptr_t pos);
-  
+
   inline intptr_t getPos() const {
     return m_pos;
   }
@@ -295,7 +295,7 @@ public:
   const Regex   &m_regex;
   const intptr_t m_startPos;
   const intptr_t m_charIndex;
-  _RegexSearchState(const Regex *regex, intptr_t startPos, intptr_t charIndex) 
+  _RegexSearchState(const Regex *regex, intptr_t startPos, intptr_t charIndex)
     : m_regex(*regex)
     , m_startPos(startPos)
     , m_charIndex(charIndex)
@@ -314,7 +314,7 @@ public:
   const String  &m_fastMap;
   const intptr_t m_scannerIndex;
   const intptr_t m_pendingExact;
-  _RegexCompilerState(const Regex  *regex 
+  _RegexCompilerState(const Regex  *regex
                      ,const String &codeText
                      ,const String &compilerStack
                      ,const String &currentState
@@ -440,11 +440,11 @@ public:
   inline intptr_t getResultLength() const {
     return m_resultLength;
   }
-  
+
   const BitSet &getFastMap() const {
     return m_fastMap;
   }
-  
+
   inline bool getMatchEmpty() const {
     return m_matchEmpty;
   }
@@ -462,7 +462,7 @@ public:
   }
 
   BitSet first(intptr_t pcStart, intptr_t pcEnd, bool *matchEmpty = NULL) const;
-  // Return set of characters that can possibly begin a string matching 
+  // Return set of characters that can possibly begin a string matching
   // the commands in range [pcStart;pcEnd[. pcStart inclusive, pcEnd exclusive
 
 #ifdef _DEBUG

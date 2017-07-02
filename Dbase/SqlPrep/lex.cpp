@@ -105,7 +105,7 @@ void Scanner::getStringLit() {
     the_string[i++] = currentChar();
     advance();
   }
-  if(currentChar() == '\n') 
+  if(currentChar() == '\n')
     error(SQL_SYNTAX_ERROR,_T("Missing String terminator"));
 
   if(i == ARRAYSIZE(the_string)) {
@@ -155,7 +155,7 @@ typedef struct {
 
 static Symbol nameorkeyword(TCHAR *name);
 
-void Scanner::getName() { 
+void Scanner::getName() {
   /* getting SQL-names with _ (EXEC SQL and END-EXEC is a problem!) */
   int i = 0;
   TCHAR uppername[MAX_NAME_LEN + 1];
@@ -212,7 +212,7 @@ void Scanner::getName() {
 void Scanner::getNumber() {
   for(the_number = 0; isdigit( currentChar() ); advance()) {
     the_number = 10 * the_number + (currentChar() - '0');
-    if(the_number < 0) 
+    if(the_number < 0)
       error(SQL_ARITHMETIC_OVERFLOW,_T("number too big"));
   }
   token = SYM_NUMBER;
@@ -225,7 +225,7 @@ void Scanner::getComment() {
     }
     advance();
     if(currentChar() == '/') {
-      advance(); 
+      advance();
       break;
     }
   }
@@ -243,9 +243,9 @@ void Scanner::nextToken() {
   m_yytext = m_next;
 
   if(_istalpha( currentChar())) {
-    getName(); 
+    getName();
   } else if(isdigit(currentChar())) {
-    getNumber(); 
+    getNumber();
   } else {
     switch( currentChar() ) {
     case ':':
@@ -336,8 +336,8 @@ static keyword keywordlist[] = {
    _T("USING")     , SYM_USING     ,
    _T("VARCHAR")   , SYM_VARCHAR   ,
    _T("WCHAR_T")   , SYM_WCHAR     ,
-   _T("WORK")      , SYM_WORK      
-};                           
+   _T("WORK")      , SYM_WORK
+};
 
 typedef StrHashMap<Symbol> KeyWordMap;
 
@@ -350,7 +350,7 @@ KeyWordTable::KeyWordTable(int size) : KeyWordMap(size) {
   for(int i = 0; i < ARRAYSIZE(keywordlist); i++) {
     put(keywordlist[i].name,keywordlist[i].token);
   }
-}    
+}
 
 static KeyWordTable keywords(101);
 

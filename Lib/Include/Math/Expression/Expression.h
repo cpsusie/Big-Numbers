@@ -390,7 +390,7 @@ public:
     CHECKRETURNTYPE(EXPR_RETURN_REAL);
     return m_machineCode ? fastEvaluateReal() : evaluateStatementListReal(getRoot());
   }
-  inline bool evaluateBool() { 
+  inline bool evaluateBool() {
     CHECKRETURNTYPE(EXPR_RETURN_BOOL);
     return m_machineCode ? fastEvaluateBool() : evaluateStatementListBool(getRoot());
   }
@@ -413,7 +413,7 @@ public:
   }
 
   void setTrigonometricMode(TrigonometricMode mode);
-  
+
   inline TrigonometricMode getTrigonometricMode() const {
     return m_trigonometricMode;
   }

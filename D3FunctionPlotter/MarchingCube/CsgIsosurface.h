@@ -7,8 +7,8 @@ namespace ThreeD {
 class CsgIsosurface : public Isosurface {
 protected:
   typedef enum {
-    CSG_UNION 
-   ,CSG_INTERSECTION 
+    CSG_UNION
+   ,CSG_INTERSECTION
    ,CSG_DIFFERENCE
   } CSGMode;
 
@@ -30,7 +30,7 @@ public:
   virtual BoundingBox getBoundingBox(const D3DXMATRIX &combinedTrans);
   void fDensity_n(float x0, float y0, float z0
                  ,float dz, int pointCount, float *densities);
-  virtual void fDensity(float x0, float y0, float z0 
+  virtual void fDensity(float x0, float y0, float z0
                        ,float dz, int pointCount, float *densities);
   virtual void fNormal(const D3DXVECTOR3 &point, D3DXVECTOR3 &normal);
 

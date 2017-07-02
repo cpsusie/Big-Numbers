@@ -90,7 +90,7 @@ String ParserTree::nodeToString(SyntaxNode *n) {
 void dumpSyntaxTree( SyntaxNode *node, FILE *f, int indent) {
   if( node ) {
     fprintf(f,"%*.*s %2d pos:(%2d,%d) token:%s ",
-	  indent,indent," ",indent, 
+	  indent,indent," ",indent,
 	  node->getPosition().m_lineno,node->getPosition().m_col, tokenName(node->getToken()) );
     switch(node->getToken()) {
     case STRINGLITERAL : fprintf(f,":%s\n",node->getString());

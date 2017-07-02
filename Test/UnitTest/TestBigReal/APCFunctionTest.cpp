@@ -244,12 +244,12 @@ void testAPCPow(TestStatistic &stat) {
       for(BigInt y = minY; y < maxY; y++) {
         for(int xScale = MINSCALE; xScale < MAXSCALE; xScale += SCALESTEP) {
           const BigReal x = stat.getRandom(length, xScale, !y.isNegative());
-          
+
           if(stat.isTimeToPrint()) {
             stat.printLoopMessage(_T("bias:'%c', length:%4d, y:%4s, xscale:%4d")
                                  ,bias,length,y.toString().cstr(), xScale);
           }
-          
+
           const BigReal exactResult = rPow(x, y, 20);
           const BigReal APCResult   = BigReal::apcPow(bias, x, y, pool);
           const size_t  len         = APCResult.getLength();

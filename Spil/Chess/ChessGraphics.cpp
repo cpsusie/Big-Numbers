@@ -65,8 +65,8 @@ void ChessGraphics::deallocate() {
 // r,c might be an invalid position. See paintFieldNames
 Point2DP ChessGraphics::getFieldPosition(int r, int c, bool scaled) const {
   const Size2D fs = FIELDSIZE(scaled);
-  return UPPERLEFTCORNER(scaled) 
-       + ((m_computerPlayer == WHITEPLAYER) 
+  return UPPERLEFTCORNER(scaled)
+       + ((m_computerPlayer == WHITEPLAYER)
         ? Size2D( fs.cx*(7-c),fs.cy * r   )
         : Size2D((fs.cx* c  ),fs.cy *(7-r)))
         ;

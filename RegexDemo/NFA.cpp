@@ -198,4 +198,4 @@ String SubNFA::toString() const {
   result += format(_T("Start:%d End:%d\n"), m_start->getID(), m_end->getID());
   return result;
 }
-#endif  
+#endif

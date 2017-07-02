@@ -326,7 +326,7 @@ void GameTree::printDoneMark() {
 //  newLine();
 }
 
-void GameTree::newLine() { // static 
+void GameTree::newLine() { // static
   _tprintf(_T("\n"));
   atStartOfLine = true;
 }
@@ -357,7 +357,7 @@ void GameTree::indent() {
   }
 }
 
-void GameTree::_tprintf(const TCHAR *format, ...) { // static 
+void GameTree::_tprintf(const TCHAR *format, ...) { // static
   va_list argptr;
   va_start(argptr, format);
   _vtprintf(format, argptr);

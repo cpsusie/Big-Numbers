@@ -6,7 +6,7 @@ public:
   const ConstBigReal c2;
   const BigReal     &c3;
 
-  ACotConstants() 
+  ACotConstants()
     :c1( 0.2)
     ,c2( 0.9)
     ,c3(BIGREAL_HALF)

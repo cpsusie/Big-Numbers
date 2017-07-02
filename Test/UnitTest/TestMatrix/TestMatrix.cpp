@@ -484,7 +484,7 @@ namespace TestMatrix {
       }
     }
 
-    // Checks that inverse(Q) = transpose(Q) 
+    // Checks that inverse(Q) = transpose(Q)
     static void checkIsUnitary(const String &name, const Matrix &A) {
       try {
         const Matrix Ainverse      = inverse(A);

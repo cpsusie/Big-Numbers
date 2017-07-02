@@ -22,27 +22,27 @@ public:
   double getMinX() const {
     return m_xInterval.getFrom();
   }
-  
+
   double getMaxX() const {
     return m_xInterval.getTo();
   }
-  
+
   double getMinY() const {
     return m_yInterval.getFrom();
   }
-  
+
   double getMaxY() const {
     return m_yInterval.getTo();
   }
-  
+
   const DoubleInterval &getXInterval() const {
     return m_xInterval;
   }
-  
+
   const DoubleInterval &getYInterval() const {
     return m_yInterval;
   }
-  
+
   void init(double minX, double maxX, double minY, double maxY);
   inline void setToDefault() { // used for empty pointArray in PointGraph
     init(-1,1,-1,1);

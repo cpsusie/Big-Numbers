@@ -67,7 +67,7 @@ int SqlParser::reduceAction(unsigned int prod) {
   case 17: /* insert_stmt -> INSERT INTO name LPAR select_stmt RPAR opt_access */
 #line 196 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
     { m_dollardollar = newNode( getPos(1), INSERT,
-    																		getStackTop(4), 
+    																		getStackTop(4),
     																		newNode( getPos(4), COLUMN, NULL ),
     																		getStackTop(2),
     																		getStackTop(0),
@@ -89,9 +89,9 @@ int SqlParser::reduceAction(unsigned int prod) {
   case 19: /* insert_stmt -> INSERT INTO name select_stmt */
 #line 216 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
     { m_dollardollar = newNode( getPos(1), INSERT,
-    																		getStackTop(1), 
+    																		getStackTop(1),
     																		newNode( getPos(3), COLUMN, NULL   ),
-    																		getStackTop(0), 
+    																		getStackTop(0),
     																		newNode( getPos(), ACCESSS, NULL	   ),
     																		NULL );
     																}

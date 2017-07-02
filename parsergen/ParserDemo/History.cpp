@@ -15,7 +15,7 @@ History::History() {
       String str;
       key.getValue(format(_T("s%02d"), i), str);
       add(str);
-    }    
+    }
   } catch(Exception) {
     // ignore
   }

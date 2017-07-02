@@ -16,12 +16,12 @@ public:
   SourcePosition getMarkedPos() const {
     return m_pos;
   }
-  
+
   bool isMarked() const {
     return m_marked;
   }
-  
-  BOOL CreateEx(DWORD dwStyle, DWORD dwExStyle, const RECT& rect, CWnd* pParentWnd, UINT nID);
+
+  BOOL CreateEx(DWORD dwStyle, DWORD dwExStyle, const RECT& rect, CWnd *pParentWnd, UINT nID);
   void OnPaint();
-  void DoDataExchange(CDataExchange* pDX);
+  void DoDataExchange(CDataExchange *pDX);
 };

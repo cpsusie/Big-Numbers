@@ -1,7 +1,7 @@
 #include "pch.h"
 #include <Console.h>
 
-DialogField::DialogField(Dialog *dlg, int id, int left, int top, int width, int height, const String &label) 
+DialogField::DialogField(Dialog *dlg, int id, int left, int top, int width, int height, const String &label)
 : DialogControl(dlg,id,left,top,width,height)
 {
   m_label     = label;
@@ -261,7 +261,7 @@ bool DialogField::navigate(int event) {
     } else {
       deleteChar();
     }
-    ret = true; 
+    ret = true;
     break;
 
   case SCAN_BACKSPACE:
@@ -273,7 +273,7 @@ bool DialogField::navigate(int event) {
       deleteChar(m_cursorPos-1);
       charLeft();
     }
-    ret = true; 
+    ret = true;
     break;
 
   default            :
@@ -281,13 +281,13 @@ bool DialogField::navigate(int event) {
     case 3: // ctrl + c
       if(EVENTSTATE(event) & CTRL_PRESSED) {
         copyToClipboard();
-        ret = true; 
+        ret = true;
       }
       break;
     case 22: // ctrl + v
       if(EVENTSTATE(event) & CTRL_PRESSED) {
         copyFromClipboard();
-        ret = true; 
+        ret = true;
       }
       break;
     case 24: // ctrl + x

@@ -93,7 +93,7 @@ BOOL C4PaaStribeDlg::OnInitDialog() {
     m_starter = YOU;
     m_game.init(m_starter);
 
-/*    
+/*
     Message(_T("sizeof(Game):%d sizeof(Position):%d, sizeof(Stribe4):%d",sizeof(Game),sizeof(Position),sizeof(Stribe4)));
 */
     return TRUE;  // return TRUE  unless you set the focus to a control
@@ -147,7 +147,7 @@ void C4PaaStribeDlg::paintFieldValues() {
       CRect rect = getHoleRect(r,c);
       int textx = (rect.left + rect.right)/2 - 8;
       int texty = (rect.top  + rect.bottom)/2;
-      
+
       dc.SetTextColor(PLAYER_COLOR(ME));
       textOut(dc, textx,texty-14, _T("  "));
       textOut(dc, textx,texty-14, format(_T("%2d"), values_me[r][c]));
@@ -222,7 +222,7 @@ HCURSOR C4PaaStribeDlg::OnQueryDragIcon() {
 }
 
 void C4PaaStribeDlg::OnFileAfslut()  {
-  exit(0);  
+  exit(0);
 }
 
 static TCHAR *winningstring[] = {
@@ -340,7 +340,7 @@ Move C4PaaStribeDlg::executeMachineMove() {
   if(isMenuItemChecked(this, ID_OPTIONS_BEGYNDER)) {
     lookahead = 6;
   } else {
-    lookahead = br >= 14 ? 12 : br >= 8 ? 8 : 6; 
+    lookahead = br >= 14 ? 12 : br >= 8 ? 8 : 6;
   }
   Move m = m_game.findMove(lookahead);
 
@@ -404,5 +404,5 @@ void C4PaaStribeDlg::OnOptionsExpert() {
 
 void C4PaaStribeDlg::OnOptionsVisfeltvrdier() {
   toggleMenuItem(this, ID_OPTIONS_VISFELTVRDIER);
-  Invalidate(false);    
+  Invalidate(false);
 }

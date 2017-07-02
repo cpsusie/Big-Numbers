@@ -43,7 +43,7 @@ int Communication::readClientId(SOCKET s, const String &myName) {
   NetInitializer buf(myName,gameVersion);
   tcpWrite(s, &buf, sizeof(buf));
   int myId;
-  tcpRead(s,&myId,sizeof(myId)); 
+  tcpRead(s,&myId,sizeof(myId));
   return myId;
 }
 

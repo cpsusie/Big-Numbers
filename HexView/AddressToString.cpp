@@ -9,8 +9,8 @@ AddressToString::AddressToString(__int64 maxValue, const Settings &settings) {
 }
 
 void AddressToString::update(__int64 maxValue, const Settings &settings) {
-  if(m_maxValue   == maxValue 
-  && m_radix      == settings.getAddrRadix() 
+  if(m_maxValue   == maxValue
+  && m_radix      == settings.getAddrRadix()
   && m_uppercase  == settings.getAddrHexUppercase()
   && m_separators == settings.getAddrSeparators()) {
     return;

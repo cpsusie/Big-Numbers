@@ -20,13 +20,13 @@ public:
   int operator+=(double v);
 };
 
-IntegerStat::IntegerStat(double low,double high) { 
+IntegerStat::IntegerStat(double low,double high) {
   m_total = 0;
   m_low   = low;
   m_high  = high;
   int n = (int)(m_high-m_low+1);
   m_count = new int[n];
-  memset(m_count,0,sizeof(m_count[0])*n); 
+  memset(m_count,0,sizeof(m_count[0])*n);
 }
 
 int IntegerStat::operator+=(double v) {
@@ -127,7 +127,7 @@ static void usage() {
   exit(-1);
 }
 
-int main(int argc, char **argv) { 
+int main(int argc, char **argv) {
   char                   *cp;
   int                     n       = 1;
   bool                    setseed = false;

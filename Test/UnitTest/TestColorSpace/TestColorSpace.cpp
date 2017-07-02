@@ -82,7 +82,7 @@ namespace TestColorSpace {
             const RGBColor color = D3DCOLOR_XRGB(red,green,blue);
 
             sRGBColor sRGB(color);
-        
+
             const RGBColor color1 = sRGB;
 
             const D3DCOLOR c = color1;
@@ -118,7 +118,7 @@ namespace TestColorSpace {
             const RGBColor color = D3DCOLOR_XRGB(red,green,blue);
 
             CIEXYZ1931Color cieXYZ(color);
-        
+
             const RGBColor color1 = cieXYZ;
 
             const D3DCOLOR c = color1;
@@ -156,7 +156,7 @@ namespace TestColorSpace {
             const RGBColor color = D3DCOLOR_XRGB(red,green,blue);
 
             CIEXYZ1931Color cieXYZ(color);
-        
+
             CIELABColor cieLabColor(cieXYZ, CIEXYZ1931Color::monitorWhite);
 
             minL = min(minL, cieLabColor.m_L);

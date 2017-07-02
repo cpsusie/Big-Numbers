@@ -83,7 +83,7 @@ void CHexViewDoc::getBytes(unsigned __int64 start, UINT length, ByteArray &dst) 
     dst.clear();
     return;
   }
-  
+
   __int64 lastContentIndex = (__int64)m_contentOffset + m_content.size() - 1;
   __int64 lastWantedIndex  = (__int64)start + length - 1;
 

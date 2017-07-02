@@ -96,7 +96,7 @@ static const TableType succ0002[] = {  1,   4,   5};
 // Total size of all succNNNN tables:8 bytes.
 
 static const TableType *successor[6] = {
-   succ0000,NULL    ,succ0002,NULL    ,NULL    ,NULL    
+   succ0000,NULL    ,succ0002,NULL    ,NULL    ,NULL
 }; // Size of pointertable:48 bytes.
 
 /****************************************************************************\

@@ -17,7 +17,7 @@ static const WSAErrorMessage errorMessages[] = {
     ,"Permission denied."
     ,"An attempt was made to access a socket in a way forbidden by its access permissions. An example is using a broadcast address for sendto without broadcast permission being set using setsockopt(SO_BROADCAST)."
      "Another possible reason for the WSAEACCES error is that when the bind function is called (on Windows NT 4 SP4 or later), another application, service, or kernel mode driver is bound to the same address with exclusive access. Such exclusive access is a new feature of Windows NT 4 SP4 and later, and is implemented by using the SO_EXCLUSIVEADDRUSE option."
- 
+
   ,WSAEFAULT
     ,"Bad address."
     ,"The system detected an invalid pointer address in attempting to use a pointer argument of a call. This error occurs if an application passes an invalid pointer value, or if the length of the buffer is too small. For instance, if the length of an argument, which is a sockaddr structure, is smaller than the sizeof(sockaddr)."
@@ -152,7 +152,7 @@ static const WSAErrorMessage errorMessages[] = {
      "That the appropriate Windows Sockets DLL file is in the current path.\n"
      "That they are not trying to use more than one Windows Sockets implementation simultaneously. If there is more than one Winsock DLL on your system, be sure the first one in the path is appropriate for the network subsystem currently loaded.\n"
      "The Windows Sockets implementation documentation to be sure all necessary components are currently installed and configured correctly."
- 
+
   ,WSAVERNOTSUPPORTED
     ,"Winsock.dll version out of range."
     ,"The current Windows Sockets implementation does not support the Windows Sockets specification version requested by the application. Check that no old Windows Sockets DLL files are being accessed."
@@ -292,7 +292,7 @@ String getWSAErrorText(int errorCode) {
     prcase( TRY_AGAIN       );
     prcase( NO_RECOVERY     );
     prcase( NO_DATA         );
-    default: 
+    default:
 //      printf("unknown tcperror:%d\n",errorcode);
       return _T("Unknown tcp-error");
   }

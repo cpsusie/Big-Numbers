@@ -3,7 +3,7 @@
 static void insertionSortAnyWidth(void *base, size_t nelem, size_t width, AbstractComparator &comparator) {
   char *tmp = new char[width];
   char *pi = EPTR(1);
-  try { 
+  try {
     for(size_t i = 1; i < nelem; i++, pi += width) {
       size_t l,r;
       for(l = 0, r = i; l < r;) {

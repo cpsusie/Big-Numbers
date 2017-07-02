@@ -63,7 +63,7 @@ int _tmain(int argc, TCHAR **argv) {
                   break;
                }
                //
-               // Print the retrieved data. 
+               // Print the retrieved data.
                //
                _tprintf(_T("\n\tClient: %s\n"), pTmpBuf->sesi10_cname    );
                _tprintf(_T("\tUser:   %s\n"  ), pTmpBuf->sesi10_username );
@@ -88,10 +88,10 @@ int _tmain(int argc, TCHAR **argv) {
          pBuf = NULL;
       }
    }
-   // 
-   // Continue to call NetSessionEnum while 
-   //  there are more entries. 
-   // 
+   //
+   // Continue to call NetSessionEnum while
+   //  there are more entries.
+   //
    while (nStatus == ERROR_MORE_DATA); // end do
 
    // Check again for an allocated buffer.

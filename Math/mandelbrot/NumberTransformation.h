@@ -46,7 +46,7 @@ public:
   const NumberInterval<T> &getToInterval() const {
     return m_toInterval;
   }
-  
+
   virtual const NumberInterval<T> &setFromInterval(  const NumberInterval<T> &interval) {
     checkFromInterval(interval);
     m_fromInterval = interval;

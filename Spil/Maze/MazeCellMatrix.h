@@ -8,7 +8,7 @@ private:
   const int m_wallCount;
   void initWallArrays();
 public:
-  MazeCellMatrix(int wallCount, const MatrixDimension &dim) 
+  MazeCellMatrix(int wallCount, const MatrixDimension &dim)
   : m_wallCount(wallCount)
   , MatrixTemplate<MazeCell>(dim)
   {

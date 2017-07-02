@@ -71,14 +71,14 @@ SNode Expression::D(SNode n, const String &name) {
     return D(pow(n.left(), _2()), name);
 
   case SQRT      :        // sqrt(u(x)) = rootS(u(x),2)
-    return D(::root(n.left(), _2()), name); 
+    return D(::root(n.left(), _2()), name);
 
   case ROOT      :
     { const SNode l = n.left(), r = n.right();
-      if(r.isNumber()) { 
+      if(r.isNumber()) {
         if(r.isOne()) {  // take care of root(u(x),1) or we'ææ get division by zero
           return D(l, name);
-        } else {         // d/dx(rootS(l,c)) = l'*rootS(l,1/(1/c-1))/c  
+        } else {         // d/dx(rootS(l,c)) = l'*rootS(l,1/(1/c-1))/c
           return (D(l, name) * root(l, reciprocal(reciprocal(r) - _1()))) / r;
         }
       } else {           // d(dx(rootS(l,r))) = rootS(l,r)*(l'*r/l - ln(l)*r')/(r^2)

@@ -217,7 +217,7 @@ void PackedArray::addZeroes(unsigned __int64 index, unsigned __int64 count) {
       if(bitsToAdd == 0) {
         return;
       }
-      // continue case 
+      // continue case
     case  8:
     case 16:
     case 24:
@@ -258,7 +258,7 @@ void PackedArray::addZeroes(unsigned __int64 index, unsigned __int64 count) {
             *src &= mask;
             DUMP();
             break;
-          } 
+          }
         } else { // offset == 0
           if(bitsToAdd > 8) { // == dstOffset % 8 !
             memset(src, 0, dst-src);
@@ -293,7 +293,7 @@ void PackedArray::addZeroes(unsigned __int64 index, unsigned __int64 count) {
         } else {  // dstOffset > srcOffset
           shiftL = dstOffset - srcOffset;
           shiftR = 32 - shiftL;
-        } 
+        }
         if(dst == src) {
           for(;dst > dstp; dst--) {
 #ifdef TEST
@@ -339,7 +339,7 @@ void PackedArray::addZeroes(unsigned __int64 index, unsigned __int64 count) {
           DUMP();
         } else { // dstp > basep
           if(dstOffset > baseOffset) { // copy highend of basep to dstp[0]
-            *dstp = (basep[0] & ~mask) << (dstOffset - baseOffset); 
+            *dstp = (basep[0] & ~mask) << (dstOffset - baseOffset);
           } else {
             shiftL = baseOffset - dstOffset;
             *dstp = ((basep[0] & ~mask) >> shiftL) | ((basep[1] & mask) << (32-shiftL));
@@ -442,7 +442,7 @@ void PackedArray::remove(unsigned __int64 index, unsigned __int64 count) {
         } else {  // dstOffset > srcOffset
           shiftL = dstOffset - srcOffset;
           shiftR = 32 - shiftL;
-        } 
+        }
 
 #ifdef TEST
         markPointer(dst, dstOffset);

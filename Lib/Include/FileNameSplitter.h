@@ -12,7 +12,7 @@ private:
 public:
   FileNameSplitter(const String &fullPath);
 
-  String getDrive() const { 
+  String getDrive() const {
     return m_drive;
   }
 

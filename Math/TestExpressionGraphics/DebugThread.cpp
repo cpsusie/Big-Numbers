@@ -95,7 +95,7 @@ unsigned int DebugThread::run() {
   }
   setProperty(THREAD_TERMINATED, m_terminated, true );
   setProperty(THREAD_RUNNING   , m_running   , false);
-  
+
   return 0;
 }
 

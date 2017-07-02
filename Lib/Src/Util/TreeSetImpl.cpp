@@ -10,9 +10,9 @@ TreeSetImpl::TreeSetImpl(const AbstractObjectManager &objectManager, const Abstr
   m_updateCount   = 0;
 }
 
-TreeSetImpl::~TreeSetImpl() { 
+TreeSetImpl::~TreeSetImpl() {
   clear();
-  delete m_comparator; 
+  delete m_comparator;
   delete m_objectManager;
 }
 
@@ -78,10 +78,10 @@ bool TreeSetImpl::nodeInsert(TreeSetNode *&pp, TreeSetNode *n) {
 
     switch(p->m_balance) {             // Left subtree has grown.
     case 1 :
-      p->m_balance =  0; 
+      p->m_balance =  0;
       return false;
-    case 0 : 
-      p->m_balance = -1; 
+    case 0 :
+      p->m_balance = -1;
       return true;
     case -1:                           // Rebalance
       { TreeSetNode *p1 = p->m_left;
@@ -100,7 +100,7 @@ bool TreeSetImpl::nodeInsert(TreeSetNode *&pp, TreeSetNode *n) {
           p1->m_balance   = (p2->m_balance ==  1) ? -1 : 0;
           pp = p = p2;
         }
-        p->m_balance = 0;                                       
+        p->m_balance = 0;
         break;
       }
     }
@@ -114,10 +114,10 @@ bool TreeSetImpl::nodeInsert(TreeSetNode *&pp, TreeSetNode *n) {
 
     switch(p->m_balance) {             // Right subtree has grown.
     case -1:
-      p->m_balance = 0; 
+      p->m_balance = 0;
       return false;
     case  0:
-      p->m_balance = 1; 
+      p->m_balance = 1;
       return true;
     case  1:                           // Rebalance
       { TreeSetNode *p1 = p->m_right;
@@ -153,7 +153,7 @@ bool TreeSetImpl::balanceL(TreeSetNode *&pp) {
     p->m_balance = 0;
     return true;
   case  0:
-    p->m_balance = 1; 
+    p->m_balance = 1;
     return false;
   case  1:                         // Rebalance
     { TreeSetNode *p1 = p->m_right;
@@ -195,11 +195,11 @@ bool TreeSetImpl::balanceR(TreeSetNode *&pp) {
   TreeSetNode *p = pp;
 
   switch(p->m_balance) {
-  case  1: 
-    p->m_balance =  0; 
+  case  1:
+    p->m_balance =  0;
     return true;
-  case  0: 
-    p->m_balance = -1; 
+  case  0:
+    p->m_balance = -1;
     return false;
   case -1:                           // Rebalance
     { TreeSetNode *p1 = p->m_left;

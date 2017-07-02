@@ -230,7 +230,7 @@ String TablebaseInfo::formatMaxVariants(bool plies) const {
 int TablebaseInfo::getDataStringLength(TablebaseInfoStringFormat format) { // static
   switch(format) {
   case TBIFORMAT_PRINT_COLUMNS1:
-    return POSITIONWIDTH 
+    return POSITIONWIDTH
          + INDEXSIZEWIDTH
          + UNDEFINEDWIDTH
          + STALEMATEWIDTH
@@ -241,7 +241,7 @@ int TablebaseInfo::getDataStringLength(TablebaseInfoStringFormat format) { // st
          + VERSIONWIDTH
          + 9; // 1 extra space for each field
   case TBIFORMAT_PRINT_COLUMNS2:
-    return POSITIONWIDTH 
+    return POSITIONWIDTH
          + INDEXSIZEWIDTH
          + UNDEFINEDWIDTH
          + STALEMATEWIDTH

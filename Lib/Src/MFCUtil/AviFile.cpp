@@ -5,11 +5,11 @@
 
 #define SETFRAMEAPPENDER(f) { m_currentFrameAppender = &f; m_currentFrameBitsAppender = &f; }
 
-CAviFile::CAviFile(const String &fileName 
+CAviFile::CAviFile(const String &fileName
                   ,bool          writeMode
-                  ,DWORD         codec          
-                  ,DWORD         frameRate      
-                  )   
+                  ,DWORD         codec
+                  ,DWORD         frameRate
+                  )
 {
   m_fileName             = fileName;
   m_writeMode            = writeMode;
@@ -27,7 +27,7 @@ CAviFile::CAviFile(const String &fileName
   m_frameSize            = CSize(0,0);
   m_bitsPerPixel         = 0;
 
-  AVIFileInit();   
+  AVIFileInit();
   SETFRAMEAPPENDER(CAviFile::appendFrameFirstTime);
 
   if(!m_writeMode) {
@@ -36,24 +36,24 @@ CAviFile::CAviFile(const String &fileName
 }
 
 CAviFile::~CAviFile() {
-  releaseMemory();   
+  releaseMemory();
   AVIFileExit();
 }
 
-void CAviFile::releaseMemory() {   
+void CAviFile::releaseMemory() {
   SETFRAMEAPPENDER(CAviFile::appendDummy);
-  
-  if(m_compressedAviStream) {   
-    AVIStreamRelease(m_compressedAviStream);   
+
+  if(m_compressedAviStream) {
+    AVIStreamRelease(m_compressedAviStream);
     m_compressedAviStream = NULL;
   }
   if(m_aviStream) {
     AVIStreamRelease(m_aviStream);
     m_aviStream           = NULL;
   }
-  
+
   if(m_aviFile) {
-    AVIFileRelease(m_aviFile);   
+    AVIFileRelease(m_aviFile);
     m_aviFile             = NULL;
   }
   releaseHeapAndBuffer();
@@ -79,8 +79,8 @@ void CAviFile::releaseHeapAndBuffer() {
   if(m_lpBits) {
     HeapFree(m_heap, HEAP_NO_SERIALIZE, m_lpBits);
     m_lpBits = NULL;
-  }   
-  if(m_heap) {   
+  }
+  if(m_heap) {
     HeapDestroy(m_heap);
     m_heap = NULL;
   }
@@ -95,8 +95,8 @@ void CAviFile::allocateDC() {
 
 void CAviFile::releaseDC() {
   if(m_dc) {
-    DeleteDC(m_dc);   
-    m_dc = NULL;   
+    DeleteDC(m_dc);
+    m_dc = NULL;
   }
 }
 
@@ -121,7 +121,7 @@ void CAviFile::releaseBitmap() {
 void CAviFile::initMovieCreation(int nFrameWidth, int nFrameHeight, int bitsPerPixel) {
   int nMaxWidth = GetSystemMetrics(SM_CXSCREEN), nMaxHeight = GetSystemMetrics(SM_CYSCREEN);
   allocateDC();
-  
+
   if(nFrameWidth  > nMaxWidth ) nMaxWidth  = nFrameWidth;
   if(nFrameHeight > nMaxHeight) nMaxHeight = nFrameHeight;
 
@@ -153,7 +153,7 @@ void CAviFile::initMovieCreation(int nFrameWidth, int nFrameHeight, int bitsPerP
   //m_aviCompressOptions.dwQuality=100;
 
   AVICALL(AVIMakeCompressedStream(&m_compressedAviStream, m_aviStream, &m_aviCompressOptions, NULL));
-    // One reason this error might occur is if you are using a Codec that is not 
+    // One reason this error might occur is if you are using a Codec that is not
     // available on your system. Check the mmioFOURCC() code you are using and make
     // sure you have that codec installed properly on your machine.
 
@@ -168,12 +168,12 @@ void CAviFile::initMovieCreation(int nFrameWidth, int nFrameHeight, int bitsPerP
   bmpInfo.bmiHeader.biSizeImage         = m_frameSize.cx*m_frameSize.cy*m_bitsPerPixel/8;
 
   AVICALL(AVIStreamSetFormat(m_compressedAviStream, 0, (LPVOID)&bmpInfo.bmiHeader, bmpInfo.bmiHeader.biSize));
-    // One reason this error might occur is if your bitmap does not meet the Codec requirements.  
+    // One reason this error might occur is if your bitmap does not meet the Codec requirements.
     // For example,
-    //   your bitmap is 32bpp while the Codec supports only 16 or 24 bpp; Or  
-    //   your bitmap is 274 * 258 size, while the Codec supports only sizes that are powers of 2; etc...  
-    // Possible solution to avoid this is: make your bitmap suit the codec requirements,  
-    // or Choose a codec that is suitable for your bitmap.  
+    //   your bitmap is 32bpp while the Codec supports only 16 or 24 bpp; Or
+    //   your bitmap is 274 * 258 size, while the Codec supports only sizes that are powers of 2; etc...
+    // Possible solution to avoid this is: make your bitmap suit the codec requirements,
+    // or Choose a codec that is suitable for your bitmap.
 }
 
 void CAviFile::initMovieRead() {
@@ -222,7 +222,7 @@ void CAviFile::appendFrameFirstTime(HBITMAP bm) {
   if(GetObject(bm, sizeof(BITMAP), &info) == 0) {
     throwLastErrorOnSysCallException(_T("GetObject"));
   }
- 
+
   initMovieCreation(info.bmWidth,info.bmHeight,info.bmBitsPixel);
 
   SETFRAMEAPPENDER(CAviFile::appendFrameUsual);
@@ -234,7 +234,7 @@ void CAviFile::appendFrameUsual(HBITMAP bm) {
   BITMAPINFO bmpInfo;
   bmpInfo.bmiHeader.biBitCount = 0;
   bmpInfo.bmiHeader.biSize     = sizeof(BITMAPINFOHEADER);
-  
+
   if(GetDIBits(m_dc, bm, 0,0,NULL, &bmpInfo, DIB_RGB_COLORS) == 0) {
     throwLastErrorOnSysCallException(_T("GetDIBits"));
   }
@@ -254,10 +254,10 @@ void CAviFile::appendDummy(HBITMAP)  {
 void CAviFile::appendFrameFirstTime(int width, int height, LPVOID pBits, int bitsPerPixel) {
   checkIsWriteMode();
   initMovieCreation(width, height, bitsPerPixel);
-  
+
   SETFRAMEAPPENDER(CAviFile::appendFrameUsual);
 
-  appendFrameUsual(width, height, pBits, bitsPerPixel);  
+  appendFrameUsual(width, height, pBits, bitsPerPixel);
 }
 
 void CAviFile::appendFrameUsual(int width, int height, LPVOID pBits, int bitsPerPixel) {

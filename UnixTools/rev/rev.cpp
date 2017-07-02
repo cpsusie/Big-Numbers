@@ -14,7 +14,7 @@ int main(int argc, char **argv) {
   char *cp;
   TCHAR line[4096];
   bool reverseFile = false;
-  
+
   for(argv++; *argv && *(cp = *argv) == '-'; argv++) {
     for(cp++; *cp; cp++) {
       switch(*cp) {

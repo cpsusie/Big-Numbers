@@ -29,8 +29,8 @@
 // On an Intel system, 0x00020000 is the 32
 // memory page. At offset 0x0498 is the process
 // current directory (or startup directory, not sure yet)
-// followed by the system's PATH. After that is the  
-// process full command command line, followed by 
+// followed by the system's PATH. After that is the
+// process full command command line, followed by
 // the exe name and the window
 // station it's running on
 #define BLOCK_ADDRESS   (LPVOID)0x00020498
@@ -82,7 +82,7 @@ String getProcessCommandLine(HANDLE hProcess) {
     if(VirtualQueryEx(hProcess, BLOCK_ADDRESS, &mbi, sizeof(mbi)) == 0) {
       throwLastErrorOnSysCallException(_T("VirtualQueryEx"));
     }
-    
+
     // read memory begining at the start of the page
     // after that, we know that the env strings block
     // will be 0x498 bytes after the start of the page
@@ -137,27 +137,27 @@ String getProcessCommandLine(HANDLE hProcess) {
 //
 ///////////////////////////////////////////////////////////////////
 void enableTokenPrivilege(LPCTSTR privilege, bool enable) {
-  HANDLE token;        // process token 
+  HANDLE token;        // process token
 
   // open the process token
   if(OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES, &token) == 0) {
     throwLastErrorOnSysCallException(_T("OpenProcessToken"));
   }
-  
+
   try {
     // look up the privilege LUID and enable it
     TOKEN_PRIVILEGES tp;            // token provileges
     // initialize privilege structure
     ZeroMemory (&tp, sizeof (tp));
     tp.PrivilegeCount = 1;
-    if(LookupPrivilegeValue(NULL, privilege, &tp.Privileges[0].Luid) == 0) { 
+    if(LookupPrivilegeValue(NULL, privilege, &tp.Privileges[0].Luid) == 0) {
       throwException(_T("LookupPrivilegeValue(%s) failed. %s"), privilege, getLastErrorText().cstr());
     }
-  
+
     tp.Privileges[0].Attributes = enable ? SE_PRIVILEGE_ENABLED : 0;
 
     // adjust token privileges
-    DWORD dwSize;             
+    DWORD dwSize;
     if(AdjustTokenPrivileges(token, FALSE, &tp, 0, NULL, &dwSize) == 0) {
       throwException(_T("AdjustTokenPrivileges(%s) failed. %s"), privilege, getLastErrorText().cstr());
     } else if(GetLastError() != ERROR_SUCCESS) {
@@ -206,7 +206,7 @@ int xxx ( int argc, wchar_t *argv[] )
         return 0;
     }
 
-    // open process 
+    // open process
     hProcess = OpenProcess ( PROCESS_VM_OPERATION | PROCESS_VM_READ | PROCESS_QUERY_INFORMATION,
                             FALSE, pid );
 
@@ -225,7 +225,7 @@ int xxx ( int argc, wchar_t *argv[] )
 
     // close process
     CloseHandle ( hProcess );
-    
+
     return 0;
 }
 

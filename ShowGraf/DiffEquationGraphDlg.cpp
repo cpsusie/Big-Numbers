@@ -213,7 +213,7 @@ void CDiffEquationGraphDlg::OnFileOpen() {
 
 void CDiffEquationGraphDlg::OnFileSave() {
   if(!UpdateData() || !validate()) return;
-  
+
   DiffEquationGraphParameters param;
   winToParam(param);
 
@@ -226,7 +226,7 @@ void CDiffEquationGraphDlg::OnFileSave() {
 
 void CDiffEquationGraphDlg::OnFileSaveAs() {
   if(!UpdateData() || !validate()) return;
-  
+
   DiffEquationGraphParameters param;
   winToParam(param);
   saveAs(param);
@@ -412,15 +412,15 @@ void CDiffEquationGraphDlg::adjustWindowSize() {
   setClientRectSize(this, cr.Size());
   static const int bottomIdArray[] = {
     IDC_STATICINTERVAL
-   ,IDC_EDITXFROM     
-   ,IDC_STATICDASH    
-   ,IDC_EDITXTO       
-   ,IDC_STATICEPS     
-   ,IDC_EDITMAXERROR  
-   ,IDC_BUTTONADDEQ   
+   ,IDC_EDITXFROM
+   ,IDC_STATICDASH
+   ,IDC_EDITXTO
+   ,IDC_STATICEPS
+   ,IDC_EDITMAXERROR
+   ,IDC_BUTTONADDEQ
    ,IDOK
-   ,IDCANCEL          
-   ,IDC_LISTERRORS    
+   ,IDCANCEL
+   ,IDC_LISTERRORS
   };
   for (int i = 0; i < ARRAYSIZE(bottomIdArray); i++) {
     int ctrlId = bottomIdArray[i];
@@ -529,7 +529,7 @@ void CDiffEquationGraphDlg::adjustErrorPositions(const String &s, int sel, int d
         const int ci = SourcePosition::findCharIndex(m_currentText.cstr(), ep.m_pos);
         ep.m_pos = SourcePosition::findSourcePosition(s.cstr(), ci+delta);
       }
-    } 
+    }
   } else { // delta < 0 => new string is smaller
     const SourcePosition sp1 = SourcePosition::findSourcePosition(s.cstr(), sel);
     const SourcePosition sp2 = SourcePosition::findSourcePosition(m_currentText.cstr(), sel-delta);
@@ -539,7 +539,7 @@ void CDiffEquationGraphDlg::adjustErrorPositions(const String &s, int sel, int d
         const int ci = SourcePosition::findCharIndex(m_currentText.cstr(), ep.m_pos);
         ep.m_pos = SourcePosition::findSourcePosition(s.cstr(), ci+delta);
       }
-    } 
+    }
   }
 }
 
@@ -715,7 +715,7 @@ void CEquationEdit::Create(CWnd *parent, UINT eqIndex) {
   m_buttonDelete.Create(parent                       , dummyRect.TopLeft(), getDeleteId(),true);
 }
 
-#define FOREACHSUBWIN(i) for(Iterator<CWnd*> i = m_subWndArray.getIterator(); i.hasNext();) 
+#define FOREACHSUBWIN(i) for(Iterator<CWnd*> i = m_subWndArray.getIterator(); i.hasNext();)
 
 void CEquationEdit::DoDataExchange(CDataExchange *pDX) {
   DDX_Text(    pDX, getNameId()   , m_name      );

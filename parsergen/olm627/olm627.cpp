@@ -19,7 +19,7 @@ static void test(TCHAR *input) {
 }
 
 int main(int argc, char* argv[])
-{ 
+{
   for(;;) {
     TCHAR line[100];
     _tprintf(_T("Indtast inputstreng:"));

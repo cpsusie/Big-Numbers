@@ -36,6 +36,6 @@ protected:
   afx_msg void OnTestOBMButton();
   afx_msg void OnTestSelectFolder();
   afx_msg void OnTestTestSliderWithTransformation();
-  
+
   DECLARE_MESSAGE_MAP()
 };

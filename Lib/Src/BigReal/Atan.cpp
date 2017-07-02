@@ -28,7 +28,7 @@ public:
   const ConstBigReal  c25;
   const BigReal      &c26;
 
-  ATanConstants() 
+  ATanConstants()
     :c1  ( 0.001)
     ,c3  ( 1.58 )
     ,c4  ( BIGREAL_HALF)

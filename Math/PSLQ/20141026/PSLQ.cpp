@@ -45,7 +45,7 @@ private:
   BigRealVector m_x;
   double       m_gamma;
   int          m_n;       // = m_x.getDimension()
-  int          m_digits;  // = parameter or expo10(max(|m_x[i]|)) * m_n 
+  int          m_digits;  // = parameter or expo10(max(|m_x[i]|)) * m_n
   BigReal       m_maxNorm; // = 10^(m_digits-10)
   BigRealMatrix m_A;       // = m_n x m_n matrix
   BigRealVector m_solution;
@@ -196,7 +196,7 @@ BigRealMatrix PSLQ::createHermiteReducingMatrix(const BigRealMatrix &m) {
 }
 
 // Returns Matrix D so D*m is diagonal
-BigRealMatrix PSLQ::createHermiteReducingMatrix0(const BigRealMatrix &m) { 
+BigRealMatrix PSLQ::createHermiteReducingMatrix0(const BigRealMatrix &m) {
   BigRealMatrix D = BigRealMatrix::one(m_n,m_digits);
   for(int i = 0; i < m_n; i++) {
     for(int j = i-1; j >= 0; j--) {
@@ -239,7 +239,7 @@ int PSLQ::getZeroComponent(const BigRealVector &y) {
     }
   }
   BigReal q = rQuot(minimum,maximum,10);
-  
+
   if(m_verbose)
     tcout << _T("min:") << dparam(8) << minimum << _T("  |min/max|:") << dparam(8) << q << endl;
 
@@ -325,7 +325,7 @@ static void usage() {
                       "     -f[file]     : Same as -x, but x1..xn are read from file. If file is omitted, stdin is used.\n"
                       "     -t           : Test. Find integer polynomial for number 3.6502815398728847452 which is (9,-9,-5,14,-13,-1,1)\n")
            );
-              
+
   exit(-1);
 }
 
@@ -379,7 +379,7 @@ int main(int argc, char **argv) {
             }
             cmd = FIND_RELATION;
             char *fileName = cp+1;
-            
+
             istream *input = fileName[0] == '\0' ? (istream*)&cin : new ifstream(fileName);
             while(!input->eof() && !input->bad()) {
               BigReal x;

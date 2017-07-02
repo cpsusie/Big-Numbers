@@ -21,8 +21,8 @@ void SimpleLayoutManager::addControl(int ctrlId, int flags) {
 // Only one bit of each group may be set.
 // RELATIVE_LEFT    , PCT_RELATIVE_LEFT    , PCT_RELATIVE_X_CENTER
 // RELATIVE_TOP     , PCT_RELATIVE_TOP     , PCT_RELATIVE_Y_CENTER
-// RELATIVE_RIGHT   , PCT_RELATIVE_RIGHT   , PCT_RELATIVE_X_CENTER  
-// RELATIVE_BOTTOM  , PCT_RELATIVE_BOTTOM  , PCT_RELATIVE_Y_CENTER 
+// RELATIVE_RIGHT   , PCT_RELATIVE_RIGHT   , PCT_RELATIVE_X_CENTER
+// RELATIVE_BOTTOM  , PCT_RELATIVE_BOTTOM  , PCT_RELATIVE_Y_CENTER
 
 #define ANYSET( flags, bits) (( (flags)&(bits)) != 0)
 #define MANYSET(flags, bits) ((((flags)&(bits)) & (((flags)&(bits))-1)) != 0)

@@ -11,7 +11,7 @@ public:
 
 class StringPoolNodePage {
 public:
-  unsigned int        m_count;
+  UINT                m_count;
   StringPoolNodePage *m_next;
   StringPoolNode      m_nodes[20000];
 
@@ -23,7 +23,7 @@ public:
   inline StringPoolNode *fetchNode() {
     return &m_nodes[m_count++];
   }
-  
+
   inline bool isFull() const {
     return m_count == ARRAYSIZE(m_nodes);
   }

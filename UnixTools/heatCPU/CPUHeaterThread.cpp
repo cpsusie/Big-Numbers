@@ -69,7 +69,7 @@ void CPUHeaterThread::infiniteLoop() {
     if(drt != 0.0) {
       measuredCPULoad = (dtt/drt + MOMENTUM*m_lastCPULoad) / (1.0+MOMENTUM);
       m_lastCPULoad = measuredCPULoad;
-      
+
       if(m_wantedCPULoad == 1) {
         sleepTime = 0;
       } else {

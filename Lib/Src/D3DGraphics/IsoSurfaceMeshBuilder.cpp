@@ -41,7 +41,7 @@ public:
   }
 };
 
-IsoSurface::IsoSurface(const IsoSurfaceParameters &param) 
+IsoSurface::IsoSurface(const IsoSurfaceParameters &param)
 : m_param(param)
 , m_exprWrapper(param.m_expr,param.m_machineCode)
 {

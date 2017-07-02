@@ -94,7 +94,7 @@ public:
   // Only valid in state CPS_MOVEREADY
   SearchMoveResult getSearchResult() const;
 
-  void notifyGameChanged(const Game &game);     
+  void notifyGameChanged(const Game &game);
 
   // Only valid in state CPS_IDLE
   void notifyMove(const PrintableMove &m);
@@ -110,7 +110,7 @@ public:
   void connect(const SocketChannel &channel);
 
   // Only valid in state CPS_IDLE
-  void disconnect();                            
+  void disconnect();
 
   static const OpeningLibrary &getOpeningLibrary();
 

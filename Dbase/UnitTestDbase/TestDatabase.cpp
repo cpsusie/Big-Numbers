@@ -46,7 +46,7 @@ namespace UnitTestDatabase {
 
       Database::destroy(dbname);
     }
-    
+
     TEST_METHOD(testCreateDestroy) {
       createDestroy(_T("test"));
     }

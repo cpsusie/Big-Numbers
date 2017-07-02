@@ -181,7 +181,7 @@ static void saveGif(ByteOutputStream &out, GifFileType *gf) {
 
 void CMakeGifDoc::loadGif(const String &fileName) {
   GifFileType *oldGif = m_gif;
-  
+
   try {;
     m_gif = ::loadGif(ByteInputFile(fileName));
     setDocName(fileName);

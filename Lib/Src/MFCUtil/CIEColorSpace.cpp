@@ -87,7 +87,7 @@ CIEXYZ1931Color CIELABColor::getCIEXYZ1931Color(const CIEXYZ1931Color &white) co
                         );
 }
 
-double CIELABColor::f(double x) { // static 
+double CIELABColor::f(double x) { // static
 #define X0 0.008856451679035630817   // (6/29)^3
   if(x > X0) {
     return pow(x, 1.0/3.0);
@@ -96,7 +96,7 @@ double CIELABColor::f(double x) { // static
   }
 }
 
-double CIELABColor::finv(double x) { // static 
+double CIELABColor::finv(double x) { // static
   if(x > 6.0/29) {
     return x*x*x;
   } else {

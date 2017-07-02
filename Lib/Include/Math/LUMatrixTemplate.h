@@ -127,7 +127,7 @@ public:
   }
 
   // Computes x so that this*x=y. Assumes this has been LU decomposed with lowerupper
-  VectorTemplate<T> solve(const VectorTemplate<T> &y) const { 
+  VectorTemplate<T> solve(const VectorTemplate<T> &y) const {
     const LUMatrixTemplate<T> &a = *this;
     const intptr_t             n = getRowCount();
 

@@ -201,7 +201,7 @@ void CD3FunctionPlotterDlg::createSaddle() {
   m_function2DSurfaceParam.m_includeTime = false;
   m_function2DSurfaceParam.m_machineCode = true;
   m_function2DSurfaceParam.m_doubleSided = true;
-  
+
   setCalculatedObject(&m_function2DSurfaceParam);
 }
 
@@ -438,7 +438,7 @@ void CD3FunctionPlotterDlg::OnFileRead3DPointsFromFile() {
       const String fileName = dlg.m_ofn.lpstrFile;
       setCalculatedObject(new SceneObjectWithMesh(m_scene, createMeshFromVertexFile(m_scene, fileName, true)));
       REPAINT();
-    }   
+    }
   } catch(Exception e) {
     showException(e);
   }
@@ -458,7 +458,7 @@ void CD3FunctionPlotterDlg::OnFileReadObjFile() {
       const String fileName = dlg.m_ofn.lpstrFile;
       setCalculatedObject(new SceneObjectWithMesh(m_scene, createMeshFromObjFile(m_scene, fileName, false)));
       REPAINT();
-    }   
+    }
   } catch(Exception e) {
     showException(e);
   }

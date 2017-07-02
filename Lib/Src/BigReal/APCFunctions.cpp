@@ -96,7 +96,7 @@ BigReal BigReal::apcPow(const char bias, const BigReal &x, const BigInt &y, Digi
           tmpX   = SHORTPROD(tmpX  , tmpX); tmpY /= 2;
         }
       }
-    } else {                                                // use BigInt all the way down. guess this will almost never happen 
+    } else {                                                // use BigInt all the way down. guess this will almost never happen
       BigReal tmpY(y, pool);
       if(yNegative) tmpY.changeSign();
       while(!tmpY.isZero()) {

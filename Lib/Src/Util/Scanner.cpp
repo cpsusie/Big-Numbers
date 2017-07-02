@@ -31,8 +31,8 @@ void Scanner::init(LexStream *stream, const SourcePosition &pos) {
   m_termchar       = 0;
   m_eofRead        = false;
 
-  //  if pos.m_col == 0, we have to simulate an empty line before 
-  //  the first input line, so that lex start-of-line anchor 
+  //  if pos.m_col == 0, we have to simulate an empty line before
+  //  the first input line, so that lex start-of-line anchor
   //  will work on the first input line.
   //  use the same trick on eoi, see fillBuf
 
@@ -365,10 +365,10 @@ intptr_t Scanner::fillBuf(_TUCHAR *start) { // private
   }
 
   if(got < need && m_inputStream->eof()) {
-    // make sure that the last input line is terminated with '\n' so 
+    // make sure that the last input line is terminated with '\n' so
     // that lex end-of-line anchor will work for the last input line.
 
-    if(m_endBuf[-1] != NEWLINE) { 
+    if(m_endBuf[-1] != NEWLINE) {
       *(m_endBuf++) = NEWLINE;
       got++;
     } else if(got == 0) {

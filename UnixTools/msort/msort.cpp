@@ -65,7 +65,7 @@ static void usage() {
 int main(int argc, char **argv) {
   char *cp;
 //  CompoundComparator cc;
-  PartialComparator defaultComparator(_tcscmp); 
+  PartialComparator defaultComparator(_tcscmp);
   PartialComparator numericComparator(numericCompare);
   PartialComparator ignoreCaseComparator(streicmp);
   PartialComparator *currentComparator = &defaultComparator;

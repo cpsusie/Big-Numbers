@@ -68,7 +68,7 @@ private:
   void        turnBoard(int degree);
 public:
   CQuartoDlg(CWnd *pParent = NULL);
-  
+
   D3Scene &getScene() {
     return m_scene;
   }

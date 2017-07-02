@@ -55,7 +55,7 @@ void Tokenizer::init(const TCHAR *str, const TCHAR *delimiters, TCHAR textQualif
     m_delimiterSet += (unsigned long)(*cp);                    // m_delimiterSet never contains '\0'
   }
 
-  if(flags & TOK_INVERTSET) { 
+  if(flags & TOK_INVERTSET) {
     m_delimiterSet.invert();
     m_delimiterSet.remove(0);                                  // m_delimiterSet never contains '\0'
   }

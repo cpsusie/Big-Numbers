@@ -3,7 +3,7 @@
 #include "DFA.h"
 
 DFA::DFA(const NFA &nfa, Language language, bool verbose) : m_NFA(nfa), m_verboseFile(stdoutMarginFile) {
-  m_language = language; 
+  m_language = language;
   m_verbose  = verbose;
   makeTransitions();
 
@@ -181,7 +181,7 @@ void DFA::printStates(MarginFile &f) const {
   }
 }
 
-// Put states with equal AcceptAction into the same group. 
+// Put states with equal AcceptAction into the same group.
 // Note that all non-accept-states go to the same group
 void DFA::makeInitialGroups() {
   for(size_t i = 0; i < m_states.size(); i++) {
@@ -254,7 +254,7 @@ void DFA::minimize() {
       if(current.size() <= 1) {
         continue;
       }
-      
+
       BitSet newset(m_states.size());
       Iterator<size_t> it = current.getIterator();
       int first = (int)it.next();                     // state number of first element of current group

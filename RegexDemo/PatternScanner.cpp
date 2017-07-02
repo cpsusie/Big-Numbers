@@ -31,7 +31,7 @@ PatternToken PatternScanner::nextToken() {
 
   if(m_inSideCharClass) {
     switch(*m_current) {
-    case _T(']' ) : advance(); m_inSideCharClass = false; return RB; 
+    case _T(']' ) : advance(); m_inSideCharClass = false; return RB;
     case _T('-' ) : advance(); return DASH;
     case _T('\\') :
       advance();
@@ -41,7 +41,7 @@ PatternToken PatternScanner::nextToken() {
       case _T('\\') :
         return setNormalChar();
       case 0        : unexpectedEndOfPattern();
-      default       : 
+      default       :
         return setNormalChar(_T('\\'));
       }
       break;
@@ -63,7 +63,7 @@ PatternToken PatternScanner::nextToken() {
     }
     switch(*m_current) {
     case _T(',' ) : advance(); return COMMA;
-    case _T('}' ) : advance(); m_insideRange = false; return RC; 
+    case _T('}' ) : advance(); m_insideRange = false; return RC;
     case 0        : unexpectedEndOfPattern();
     default       : unexpectedInput();
     }
@@ -73,8 +73,8 @@ PatternToken PatternScanner::nextToken() {
     case _T('?' ) : advance(); return QUEST;
     case _T('+' ) : advance(); return PLUS;
     case _T('*' ) : advance(); return STAR;
-    case _T('{' ) : advance(); m_insideRange     = true;  return LC; 
-    case _T('[' ) : advance(); m_inSideCharClass = true;  return LB; 
+    case _T('{' ) : advance(); m_insideRange     = true;  return LC;
+    case _T('[' ) : advance(); m_inSideCharClass = true;  return LB;
     case _T('^' ) :
       if(m_current == m_source) {
         advance();
@@ -97,12 +97,12 @@ PatternToken PatternScanner::nextToken() {
       case _T('|' ) : advance(); return BAR;
       case _T('w' ) : advance(); return WORDCHAR;
       case _T('W' ) : advance(); return NONWORDCHAR;
-      case _T('.' ) : 
+      case _T('.' ) :
       case _T('?' ) :
       case _T('+' ) :
       case _T('*' ) :
       case _T('\\') :
-        setNormalChar(*m_current); 
+        setNormalChar(*m_current);
         advance();
         return NORMALCHAR;
       case 0        : unexpectedEndOfPattern();
@@ -127,7 +127,7 @@ PatternToken PatternScanner::nextToken() {
       case _T('>' ) : advance(); return ENDWORD;
       case _T('b' ) : advance(); return WORDBOUND;
       case _T('B' ) : advance(); return NOTWORDBOUND;
-*/      
+*/
 
       }
     default:

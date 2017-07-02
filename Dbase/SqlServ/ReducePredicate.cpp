@@ -264,7 +264,7 @@ static SyntaxNode *reduceLike(SqlCompiler &compiler, const SyntaxNode *e1, const
   const TCHAR *firstpercent    = _tcschr( str,'%');
   const TCHAR *lastpercent     = _tcschr(str,'%');
   const TCHAR *firstunderscore = _tcschr( str,'_');
-  const TCHAR *firstwildcard = (firstpercent    == NULL) ? firstunderscore 
+  const TCHAR *firstwildcard = (firstpercent    == NULL) ? firstunderscore
                              : (firstunderscore == NULL) ? firstpercent
                              : min(firstpercent,firstunderscore);
 
@@ -420,7 +420,7 @@ double SqlCompiler::evaluateConstNumericExpression(const SyntaxNode *expr, bool 
         return e1 + evaluateConstNumericExpression(expr->child(1),valueknown);
     }
     break;
-  case MINUS: 
+  case MINUS:
     { bool e1known;
       double e1 = evaluateConstNumericExpression(expr->child(0),e1known);
       if(!e1known) { valueknown = false; return 0; }
@@ -430,7 +430,7 @@ double SqlCompiler::evaluateConstNumericExpression(const SyntaxNode *expr, bool 
         return -e1;
     }
     break;
-  case MULT: 
+  case MULT:
     { bool e1known;
       double e1 = evaluateConstNumericExpression(expr->child(0), e1known);
       if(!e1known) { valueknown = false; return 0; }
@@ -449,7 +449,7 @@ double SqlCompiler::evaluateConstNumericExpression(const SyntaxNode *expr, bool 
       return evaluateConstNumericExpression(expr->child(0),valueknown) / e2;
     }
     break;
-  case MODOP: 
+  case MODOP:
     { bool e2known;
       double e2 = evaluateConstNumericExpression(expr->child(1),e2known);
       if(!e2known) { valueknown = false; return 0; }
@@ -770,7 +770,7 @@ SyntaxNode *SqlCompiler::reduceExpression(SyntaxNode *n, bool &isconst) {
     }
     return fetchTokenNode(EXPO,v1,v2,NULL);
 
-  case NUMBER   : 
+  case NUMBER   :
   case STRING   :
   case DATECONST:
   case TIMECONST:
@@ -970,8 +970,8 @@ void PossiblePredicateValues::dump(FILE *f) {
   _ftprintf(f,_T("\n"));
 }
 
-// returns const predicates as a number SyntaxNode with 
-// false     as  0 
+// returns const predicates as a number SyntaxNode with
+// false     as  0
 // true      as  1
 // undefined as -1
 SyntaxNode *SqlCompiler::reducePredicate(SyntaxNode *n, PossiblePredicateValues &values) {
@@ -993,7 +993,7 @@ SyntaxNode *SqlCompiler::reducePredicate(SyntaxNode *n, PossiblePredicateValues 
           case  0: return v2;     // result is false
           case  1: return v1;     // result is undef
           case -1: return v1;     // result is undef
-            
+
           }
         }
                                   // v1const = false
@@ -1213,12 +1213,12 @@ SyntaxNode *SqlCompiler::reducePredicate(SyntaxNode *n, PossiblePredicateValues 
             values = predundef;
             return fetchNumberNode(-1);
           }
-            
+
           if(!rexpr1.m_isconst || !rexpr2.m_isconst)
             nonconstset.add(i);
           else { // both are const
             if(rexpr1.m_expr->token() == NULLVAL || rexpr2.m_expr->token() == NULLVAL) {
-              if(!containsnull) 
+              if(!containsnull)
                 nonconstset.add(i);    // add the first undefined subpredicate
               containsnull = true;
             }
@@ -1350,7 +1350,7 @@ SyntaxNode *SqlCompiler::reducePredicate(SyntaxNode *n, PossiblePredicateValues 
         ReducedExpr &rexprmiddle = exprlistmiddle[i];
         ReducedExpr &rexprlower  = exprlistlower[i];
         ReducedExpr &rexprupper  = exprlistupper[i];
-        if(rexprmiddle.isConstNull()) { 
+        if(rexprmiddle.isConstNull()) {
           values = predundef;
           return fetchNumberNode(-1);
         }
@@ -1411,8 +1411,8 @@ SyntaxNode *SqlCompiler::reducePredicate(SyntaxNode *n, PossiblePredicateValues 
   return NULL;
 }
 
-// returns const predicates as a number SyntaxNode with 
-// false     as  0 
+// returns const predicates as a number SyntaxNode with
+// false     as  0
 // true      as  1
 // undefined as -1
 SyntaxNode *SqlCompiler::reducePredicate1(SyntaxNode *n, bool &isconst) {
@@ -1425,7 +1425,7 @@ SyntaxNode *SqlCompiler::reducePredicate1(SyntaxNode *n, bool &isconst) {
       if(v1const)
         switch((int)v1->number()) {
         case 0:        // result is false
-          isconst = true; 
+          isconst = true;
           return v1;
         case 1:        // result is v2
           isconst = v2const;
@@ -1649,12 +1649,12 @@ SyntaxNode *SqlCompiler::reducePredicate1(SyntaxNode *n, bool &isconst) {
             isconst = true;
             return fetchNumberNode(-1);
           }
-            
+
           if(!rexpr1.m_isconst || !rexpr2.m_isconst)
             nonconstset.add(i);
           else { // both are const
             if(rexpr1.m_expr->token() == NULLVAL || rexpr2.m_expr->token() == NULLVAL) {
-              if(!containsnull) 
+              if(!containsnull)
                 nonconstset.add(i);    // add the first undefined subpredicate
               containsnull = true;
             }

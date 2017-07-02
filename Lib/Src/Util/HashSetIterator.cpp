@@ -25,7 +25,7 @@ HashSetNode *HashSetIterator::nextNode() {
 
   m_current = m_next;
   m_next    = m_next->m_nextLink;
-  return m_current; 
+  return m_current;
 }
 
 void HashSetIterator::remove() {

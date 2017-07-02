@@ -15,11 +15,11 @@ void paintCross(CDC &dc, const CPoint &p, COLORREF color=0, int size=2);
 class vector {
 public:
   CPoint m_p;
-  inline vector(const CPoint &p) : m_p(p){ 
+  inline vector(const CPoint &p) : m_p(p){
   }
   inline vector(int x, int y) : m_p(x,y) {
   }
-  inline vector(const CPoint &p1, const CPoint &p2) 
+  inline vector(const CPoint &p1, const CPoint &p2)
     : m_p(p2.x-p1.x, p2.y-p1.y)
   {
   }

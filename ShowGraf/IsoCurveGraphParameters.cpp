@@ -3,7 +3,7 @@
 #include <MFCUtil/2DXML.h>
 #include "IsoCurveGraphParameters.h"
 
-IsoCurveGraphParameters::IsoCurveGraphParameters(const String &name, COLORREF color, GraphStyle style, TrigonometricMode trigonomtetricMode) 
+IsoCurveGraphParameters::IsoCurveGraphParameters(const String &name, COLORREF color, GraphStyle style, TrigonometricMode trigonomtetricMode)
 : GraphParameters(name,color,0,style) {
 
   m_trigonometricMode = trigonomtetricMode;

@@ -345,7 +345,7 @@ SearchRNonZeroAtom:
     mov edx, dword ptr[edi]
     cmp edi, p
     jb ScanBitsBackward
-                    
+
     mov ecx, start          ; mask edx &= _BS_MASKATOM(start % _BS_BITSINATOM + 1)
     and ecx, 31
     cmp ecx, 31

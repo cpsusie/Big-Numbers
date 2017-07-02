@@ -72,7 +72,7 @@ public:
   }
   PatternToken nextToken();
   String getTokenStr() const; // Return string containg the characters the last token consists of
-  
+
   inline unsigned short getTheNumber() const {
     return m_theNumber;
   }

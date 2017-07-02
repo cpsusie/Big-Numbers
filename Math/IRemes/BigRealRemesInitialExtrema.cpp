@@ -57,7 +57,7 @@ public:
 
 InterpolationFunction::InterpolationFunction(const BigRealVector &initialExtr, const BigRealVector &initialExtr1, const BigRealVector &finalExtr1)
 : CubicSpline(NATURAL_SPLINE, getInterpolationPoints(initialExtr1,finalExtr1), 0, 0)
-, m_initialExtr(initialExtr) 
+, m_initialExtr(initialExtr)
 {
 }
 

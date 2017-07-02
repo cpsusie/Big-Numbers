@@ -22,7 +22,7 @@ private:
   void changePositionMark(int pos);
   int  getMarkedCount() const;
   GameType  getSelectedGameType();
-  PlayLevel getSelectedLavel(); 
+  PlayLevel getSelectedLavel();
   void setGameType(int id);
   void selectLevel(int id);
   void enableRemoveButton();

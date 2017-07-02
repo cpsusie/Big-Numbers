@@ -83,7 +83,7 @@ void MemUsagePrinter::show() {
 
   PERFORMANCE_INFORMATION pi;
   GetPerformanceInfo(&pi,sizeof(pi));
-  
+
   _tprintf(_T("ProcessUsage  :%s\n"), formatMemoryAmount(processUsage).cstr());
   _tprintf(_T("KernelPaged   :%s\n"), formatMemoryAmount((double)pi.KernelPaged*pi.PageSize).cstr());
   _tprintf(_T("KernelNonpaged:%s\n"), formatMemoryAmount((double)pi.KernelNonpaged*pi.PageSize).cstr());
@@ -114,7 +114,7 @@ int _tmain(int argc, TCHAR **argv) {
     for(cp++; *cp; cp++) {
       switch(*cp) {
       case 'm':
-        monitoring = true; 
+        monitoring = true;
         continue;
       case 'k':
         format = KBYTE;

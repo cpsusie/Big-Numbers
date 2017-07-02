@@ -31,11 +31,11 @@ SNode Expression::toCForm(ExpressionNode *n) {
 
   case PRODUCT        :
   case PROD           :
-  case QUOT           : 
-  case POW            : 
-  case SQR            : 
-  case ROOT           : 
-  case SQRT           : 
+  case QUOT           :
+  case POW            :
+  case SQR            :
+  case ROOT           :
+  case SQRT           :
   case EXP            : return toCFormProduct(n);
 
   case SEC            : return sec(toCForm(n->left()));
@@ -81,7 +81,7 @@ AddentArray &Expression::toCFormSum(AddentArray &result, ExpressionNode *n, bool
 }
 
 SNode Expression::toCFormProduct(ExpressionNode *n) {
-  FactorArray a; 
+  FactorArray a;
   return getProduct(toCFormProduct(a, n, _1()));
 }
 
@@ -127,7 +127,7 @@ FactorArray &Expression::toCFormProduct(FactorArray &result, ExpressionNode *n, 
   return result;
 }
 
-// n.symbol == POW, 
+// n.symbol == POW,
 FactorArray &Expression::toCFormPower(FactorArray &result, ExpressionNode *n, SNode &exponent) {
   DEFINEMETHODNAME;
   SNode base = toCForm(n->left());

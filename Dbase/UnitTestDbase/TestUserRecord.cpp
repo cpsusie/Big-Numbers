@@ -406,7 +406,7 @@ namespace UnitTestUserRecord {
       TableCursor cursor(m_db,cursorParam,NULL,NULL);
       Iterator<KeyType> it = tableIndex.getIterator();
       Tuple dbTuple((UINT)cursorParam.m_fieldSet.size());
-  
+
       while(it.hasNext()) {
         static int callCount = 0;
         callCount++;
@@ -438,7 +438,7 @@ namespace UnitTestUserRecord {
       if(type == DBTYPE_DBADDR) {
         continue;
       }
-    
+
       tableDef.addColumn(ColumnDefinition(type,format(_T("column%02d"),tableDef.getColumnCount()+1),keyField.getLen()));
     }
 

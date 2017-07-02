@@ -33,7 +33,7 @@ Point2D RectAreaTransformation::toView(const Point2D &k) {
 
 // ----------------------- StretchTransformation -----------------------
 
-StretchTransformation::StretchTransformation(const Point2D &origin, const Point2D &u1, const Point2D &u2, const Point2D &p0, const Point2D &step) 
+StretchTransformation::StretchTransformation(const Point2D &origin, const Point2D &u1, const Point2D &u2, const Point2D &p0, const Point2D &step)
 : RectAreaTransformation(origin,u1,u2) {
   m_k0      = toBaseU(p0-getOrigin());
   m_step    = toBaseU(step);

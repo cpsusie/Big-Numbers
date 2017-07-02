@@ -3,7 +3,7 @@
 #include "RegexFilter.h"
 
 RegexFilter::RegexFilter() {
-  clear();  
+  clear();
 }
 
 void RegexFilter::clear() {
@@ -54,7 +54,7 @@ static const TCHAR *CASESENSITIVE  = _T("CaseSensitive");
 static const TCHAR *WHOLEWORDSONLY = _T("WholeWordsOnly");
 static const TCHAR *REGEX          = _T("RegExp");
 
-void RegexFilter::saveData(RegistryKey &key, const RegexFilter &rf) { // static 
+void RegexFilter::saveData(RegistryKey &key, const RegexFilter &rf) { // static
   key.setValue(CASESENSITIVE  ,rf.m_matchCase     );
   key.setValue(WHOLEWORDSONLY ,rf.m_matchWholeWord);
   key.setValue(REGEX          ,rf.m_regex         );

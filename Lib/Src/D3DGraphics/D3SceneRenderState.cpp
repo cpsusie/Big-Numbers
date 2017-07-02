@@ -49,7 +49,7 @@ void D3SceneRenderState::setValuesToDevice(LPDIRECT3DDEVICE device) {
 
 void D3SceneRenderState::setDefault() {
   m_fillMode                = D3DFILL_SOLID;
-  m_shadeMode               = D3DSHADE_GOURAUD; 
+  m_shadeMode               = D3DSHADE_GOURAUD;
   m_backgroundColor         = D3DCOLOR_XRGB(192,192,192);
   m_ambientColor            = D3DCOLOR_XRGB(50, 50, 50);
   m_cullMode                = D3DCULL_CCW;

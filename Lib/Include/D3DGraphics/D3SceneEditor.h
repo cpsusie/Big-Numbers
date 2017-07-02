@@ -60,7 +60,7 @@ private:
     D3Ray                             m_pickedRay;
     D3PickedInfo                      m_pickedInfo;
     String                            m_paramFileName;
-    
+
     inline CWnd *getMessageWindow() const {
       return m_sceneContainer->getMessageWindow();
     }
@@ -220,7 +220,7 @@ public:
       return m_currentSceneObject;
     }
     // return NULL, if type not {SOTYPE_VISUALOBJECT, SOTYPE_ANIMATEDOBJECT, }
-    D3SceneObject     *getCurrentVisualObject(); 
+    D3SceneObject     *getCurrentVisualObject();
     D3AnimatedSurface *getCurrentAnimatedobject() const;
     inline const D3DXVECTOR3 &getFocurPoint() const {
       return m_focusPoint;

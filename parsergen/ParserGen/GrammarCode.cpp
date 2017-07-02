@@ -15,7 +15,7 @@ GrammarCoder::GrammarCoder(const String &templateName
                           ,Grammar      &grammar
                           ,const String &implOutputDir
                           ,const String &headerOutputDir
-                          ,CodeFlags     flags) 
+                          ,CodeFlags     flags)
 : m_grammar(        grammar                                                     )
 , m_templateName(   templateName                                                )
 , m_implOutputDir(  implOutputDir                                               )
@@ -67,7 +67,7 @@ void ActionsWriter::handleKeyword(TemplateWriter &writer, String &line) const {
     output.printf(_T("case %d: /* %s */\n"), p, grammar.getProductionString(p).cstr());
     int m = output.getLeftMargin();
     output.setLeftMargin(m+2);
-    writeSourceText(output, prod.m_actionBody, writer.getPos(), flags.m_lineDirectives);    
+    writeSourceText(output, prod.m_actionBody, writer.getPos(), flags.m_lineDirectives);
     if(flags.m_generateBreaks) {
       output.printf(_T("break;\n"));
     }
@@ -103,7 +103,7 @@ public:
 };
 
 void SymbolsWriter::handleKeyword(TemplateWriter &writer, String &line) const {
-  const Grammar &grammar = m_coder.getGrammar();  
+  const Grammar &grammar = m_coder.getGrammar();
   switch(grammar.getLanguage()) {
   case CPP : writeCppSymbols(writer);
              break;
@@ -113,7 +113,7 @@ void SymbolsWriter::handleKeyword(TemplateWriter &writer, String &line) const {
 }
 
 void SymbolsWriter::writeCppSymbols(TemplateWriter &writer) const {
-  const Grammar &grammar = m_coder.getGrammar();  
+  const Grammar &grammar = m_coder.getGrammar();
   int   maxNameLength    = grammar.getMaxSymbolNameLength();
   MarginFile &output     = writer.getOutput();
   if(m_terminals) {
@@ -132,7 +132,7 @@ void SymbolsWriter::writeCppSymbols(TemplateWriter &writer) const {
 }
 
 void SymbolsWriter::writeJavaSymbols(TemplateWriter &writer) const {
-  const Grammar &grammar = m_coder.getGrammar();  
+  const Grammar &grammar = m_coder.getGrammar();
   int   maxNameLength    = grammar.getMaxSymbolNameLength();
   MarginFile &output     = writer.getOutput();
   if(m_terminals) {

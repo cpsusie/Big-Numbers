@@ -3,7 +3,7 @@
 static void sort(void *base, size_t nelem, size_t width, AbstractComparator &comparator, char *pivot) {
   memcpy(pivot,EPTR(rand() % nelem),width);
 
-  char *pi = EPTR(0); 
+  char *pi = EPTR(0);
   char *pj = EPTR(nelem-1);
   do {
     while(pi <= pj && comparator.cmp(pi,pivot) < 0) pi += width;

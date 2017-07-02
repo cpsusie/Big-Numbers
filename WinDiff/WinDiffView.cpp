@@ -63,7 +63,7 @@ void CWinDiffView::Dump(CDumpContext& dc) const {
   CView::Dump(dc);
 }
 
-CWinDiffDoc* CWinDiffView::GetDocument() { // non-debug version is inline 
+CWinDiffDoc* CWinDiffView::GetDocument() { // non-debug version is inline
   ASSERT(m_pDocument->IsKindOf(RUNTIME_CLASS(CWinDiffDoc)));
   return (CWinDiffDoc*)m_pDocument;
 }
@@ -281,7 +281,7 @@ void CWinDiffView::setNameFontSizePct(int pct, bool updatePartner) {
 
   if(updatePartner && hasPartner()) { // prevent infinte recursion
     getPartner()->setNameFontSizePct(pct, false);
-  } 
+  }
 }
 
 int CWinDiffView::OnCreate(LPCREATESTRUCT lpCreateStruct) {
@@ -505,10 +505,10 @@ void CWinDiffView::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) {
       const TextPosition &topLeft = m_textView.getTopLeft();
       nPos = scrinfo.nTrackPos;
       if((int)nPos > topLeft.m_column) {
-        handleAnchor(); 
+        handleAnchor();
         m_textView.scrollRight(nPos - topLeft.m_column);
       } else if((int)nPos < topLeft.m_column) {
-        handleAnchor(); 
+        handleAnchor();
         m_textView.scrollLeft(topLeft.m_column - nPos);
       }
       break;

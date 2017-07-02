@@ -46,7 +46,7 @@ ByteArray::~ByteArray() {
 ByteArray &ByteArray::clear(intptr_t newCapacity) {
   switch(newCapacity) {
   case 0 :
-    cleanup(); 
+    cleanup();
     break;
   case -1:
     m_size = 0;
@@ -200,7 +200,7 @@ void ByteArray::setCapacity(size_t capacity) {
     }
     m_data     = newData;
     m_capacity = capacity;
-  } 
+  }
 }
 
 bool ByteArray::operator==(const ByteArray &a) const {

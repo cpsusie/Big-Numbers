@@ -19,7 +19,7 @@ public:
   float red()   const { return _r; }
   float green() const { return _g; }
   float blue()  const { return _b; }
-  
+
   friend inline bool operator==(const Color &a, const Color &b);
   friend inline bool operator!=(const Color &a, const Color &b);
 

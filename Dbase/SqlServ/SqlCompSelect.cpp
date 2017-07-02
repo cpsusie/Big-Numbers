@@ -4,20 +4,20 @@ static void findent(FILE *f, int level) {
   _ftprintf(f,_T("%*.*s"),level,level,EMPTYSTRING);
 }
 
-StatementSymbolInfo::StatementSymbolInfo(StatementTable &ft, unsigned short colIndex, SyntaxNode *n) : 
-  m_table(ft), 
+StatementSymbolInfo::StatementSymbolInfo(StatementTable &ft, unsigned short colIndex, SyntaxNode *n) :
+  m_table(ft),
   SyntaxNodeData(n) {
   m_colIndex = colIndex;
 }
 
-SelectSymbolInfo::SelectSymbolInfo(FromTable &ft, unsigned short colIndex, SyntaxNode *n) : 
-  StatementSymbolInfo(ft,colIndex,n), 
+SelectSymbolInfo::SelectSymbolInfo(FromTable &ft, unsigned short colIndex, SyntaxNode *n) :
+  StatementSymbolInfo(ft,colIndex,n),
   m_fromTable(ft)
 {
 }
 
 void StatementSymbolInfo::dump(FILE *f, int level) const {
-  findent(f,level+2); 
+  findent(f,level+2);
   _ftprintf(f,_T("table:<%s>.<%s> fixedbyconst:%s\n")
     ,m_table.getTableName().cstr()
     ,getColumn().m_name.cstr()
@@ -25,7 +25,7 @@ void StatementSymbolInfo::dump(FILE *f, int level) const {
 }
 
 void SelectSymbolInfo::dump(FILE *f, int level) const {
-  findent(f,level+2); 
+  findent(f,level+2);
   _ftprintf(f,_T("table:<%s> corr:<%s>.<%s> fixedbyconst:%s\n")
     ,m_fromTable.getTableName().cstr()
     ,m_fromTable.m_correlationName.cstr()
@@ -70,18 +70,18 @@ static void defaultstat(SysTableStatData &stat, const IndexDefinition &indexDef)
   stat.m_field4 = (colCount >= 4) ? 1.0/81.0 : 0;
 }
 
-ColumnAttributes::ColumnAttributes() { 
+ColumnAttributes::ColumnAttributes() {
   memset(this,0,sizeof(ColumnAttributes));
 }
 
-bool ColumnAttributes::used() const { 
-  return m_whereUnaggr 
+bool ColumnAttributes::used() const {
+  return m_whereUnaggr
       || m_whereAggr
-      || m_selUnaggr 
+      || m_selUnaggr
       || m_selAggr
-      || m_havUnaggr 
+      || m_havUnaggr
       || m_havAggr
-      || m_orderAggr 
+      || m_orderAggr
       || m_orderUnaggr
       || m_inGroupBy;
 };
@@ -187,7 +187,7 @@ int FromTable::getNumberOfUsedColumns() const {
 }
 
 void FromTable::dump(FILE *f, int level) const {
-  
+
   findent(f,level); _ftprintf(f,_T("[%s] [%s] joinseq:%d\n"),getTableName().cstr(),m_correlationName.cstr(),m_joinSequence);
   int fixedbyindex = isFixedByUniqueKey();
   if(fixedbyindex >= 0) {
@@ -221,7 +221,7 @@ void FromTable::dump(FILE *f, int level) const {
     if(m_fixedByConst->contains(c)) _ftprintf(f,_T("fixed "));
     attr.dump(this,f);
   }
- 
+
   m_keyPredicates.dump(f);
 }
 
@@ -260,7 +260,7 @@ SelectStmt::SelectStmt(SqlCompiler        &compiler,
   // no validation or code-generation in constructor. !!!
 
   SyntaxNode *p;
-  
+
   if((p = n->findChild(INTO))   != NULL && p->childCount() >= 1) m_selectIntoList.findNodes(p->child(0));
   if((p = n->findChild(FROM))   != NULL && p->childCount() >= 1) m_fromList.findNodes(      p->child(0));
   if((p = n->findChild(WHERE))  != NULL && p->childCount() >= 1)
@@ -443,7 +443,7 @@ bool SelectStmt::hasAggregation() const {
   return false;
 }
 
-void SelectStmt::selectExpandStar(UINT i ) { 
+void SelectStmt::selectExpandStar(UINT i ) {
   SyntaxNode *n = m_selectExprList[i].m_expr; // n = <select_elem>
   switch(n->token()) {
   case STAR:
@@ -520,7 +520,7 @@ void SelectStmt::checkTypeIsString(SyntaxNode *expr,bool inaggr) {
 
 void SelectStmt::checkCountArgument(SyntaxNode *expr) {
   switch(expr->token()) {
-  case STAR: 
+  case STAR:
     { for(UINT i = 0; i < m_fromTable.size(); i++)
         m_fromTable[i]->m_countAggr = true;
       return;
@@ -728,7 +728,7 @@ DbMainType SelectStmt::checkExpressionType(SyntaxNode *expr, bool inaggr) {
 //        getTypeString(m_compiler.m_bndstmt.m_inHost[hostVarIndex].type),
 //        m_compiler.m_bndstmt.m_stmtHead.m_ninput
 //      );
-      
+
       if(hostVarIndex > (int)m_compiler.m_bndstmt.m_stmtHead.m_ninput) {
         hostVarIndex -= m_compiler.m_bndstmt.m_stmtHead.m_ninput;
         return getMainType(m_compiler.m_bndstmt.m_outHost[hostVarIndex].getType());
@@ -863,7 +863,7 @@ void SelectStmt::checkExpressionList(NodeList &left, NodeList &right) {
     DbMainType mtleft  = checkExpressionType(left[i] ,false);
     DbMainType mtright = checkExpressionType(right[i],false);
     if(!isCompatibleType(mtleft,mtright))
-      syntaxError(right[i],SQL_INVALID_EXPR_TYPE,_T("Type mismatch in expression")); 
+      syntaxError(right[i],SQL_INVALID_EXPR_TYPE,_T("Type mismatch in expression"));
   }
 }
 
@@ -1056,7 +1056,7 @@ void SelectStmt::checkSelectList() {
 
 void SelectStmt::checkOrderBy() {
   for(UINT i = 0; i < m_orderByList.size(); i++) {
-    SyntaxNode *by  = m_orderByList[i]; 
+    SyntaxNode *by  = m_orderByList[i];
     SyntaxNode *n   = by->child(0);         // n = <order_elem>
     bool         asc = by->child(1)->token() == ASCENDING;
     if(n->token() == NUMBER) { // refers to select_element
@@ -1315,7 +1315,7 @@ void SelectStmt::typeCheck() {
       if(m_fromTable[i]->m_correlationName.equalsIgnoreCase(m_fromTable[j]->m_correlationName))
         syntaxError(m_fromTable[j]->m_node,SQL_DUPLICATE_CORRELATIONNAME,
              _T("Tablename or correlationname %s already used"),m_fromTable[j]->m_correlationName.cstr());
-                                 
+
   if(!m_compiler.ok()) return;
   for(i = 0; i < m_selectExprList.size(); i++)
     selectExpandStar(i);
@@ -1589,7 +1589,7 @@ void SelectStmt::genScanOperator(FromTable &t, int outputpipe) {
   m_compiler.m_code.appendIns1(CODEJMP,loopstart);
   int afterloop = m_compiler.m_code.appendIns1(CODESENDEOF,outputpipe);
   m_compiler.m_code.appendIns0(CODERETURN);
-  m_compiler.m_code.fixins1(breakaddr,afterloop);  
+  m_compiler.m_code.fixins1(breakaddr,afterloop);
 }
 
 void SelectStmt::genJoinOperator(FromTable &t1, FromTable &t2, int outputpipe) {
@@ -1701,7 +1701,7 @@ void SelectSetOperator::checkCompatibleSelectLists() {
   }
 }
 
-SelectSetOperator::SelectSetOperator(SqlCompiler &compiler, SelectStmtPurpose purpose, SyntaxNode *n, SelectSetOperator *son1, SelectSetOperator *son2) : 
+SelectSetOperator::SelectSetOperator(SqlCompiler &compiler, SelectStmtPurpose purpose, SyntaxNode *n, SelectSetOperator *son1, SelectSetOperator *son2) :
   m_compiler(compiler),
   SyntaxNodeData(n)
 {
@@ -1724,7 +1724,7 @@ SelectSetOperator::SelectSetOperator(SqlCompiler &compiler, SelectStmtPurpose pu
   m_compiler(compiler),
   SyntaxNodeData(n)
 {
-  if(n->token() != SELECT) 
+  if(n->token() != SELECT)
     stopcomp(n);
   compiler.m_selectOperators.add(this);
   m_purpose = purpose;
@@ -1732,7 +1732,7 @@ SelectSetOperator::SelectSetOperator(SqlCompiler &compiler, SelectStmtPurpose pu
   m_desc    = NULL;
 }
 
-// SelectSetOperator *SqlCompiler::create_subselect(SelectStmtPurpose purpose, SyntaxNode *n, 
+// SelectSetOperator *SqlCompiler::create_subselect(SelectStmtPurpose purpose, SyntaxNode *n,
 
 DbMainType SelectSetOperator::getExpressionType(int i) {
   return getMainType(getDescription()[i].getType());
@@ -1897,7 +1897,7 @@ void SqlCompiler::genSelect(SyntaxNode *n) { // n == <SelectStmt>
   }
 
 #ifdef TRACECOMP
-  if(ok()) 
+  if(ok())
     for(UINT i = 0; i < m_selectOperators.size(); i++)
       m_selectOperators[i]->dump();
 #endif
@@ -1907,4 +1907,4 @@ void SqlCompiler::genSelect(SyntaxNode *n) { // n == <SelectStmt>
 void SqlCompiler::genDeclare(SyntaxNode *n) { // n == declare name for <SelectStmt>
   genSelect(n->child(1));
 }
- 
+

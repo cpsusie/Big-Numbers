@@ -110,7 +110,7 @@ void CDefineFileFormatDlg::OnRadioDelimited() {
 
 bool CDefineFileFormatDlg::validateAndAdd() {
   UpdateData();
-  
+
   if(m_columnFrom > m_columnTo) {
     Message(_T("From > To"));
     return false;
@@ -321,7 +321,7 @@ bool CDefineFileFormatDlg::checkSave() { // return true if the useroperation sho
   }
 
   switch(MessageBox(_T("Do you want to save the changes"), _T("Save"), MB_YESNOCANCEL|MB_ICONQUESTION)) {
-  case IDYES: 
+  case IDYES:
     if(!save()) {
       return false;
     }
@@ -368,7 +368,7 @@ void CDefineFileFormatDlg::OnCancel() {
   if(!checkSave()) {
     return;
   }
-    
+
   __super::OnCancel();
 }
 
@@ -614,15 +614,15 @@ void CDefineFileFormatDlg::addDelimiter(const TCHAR *s) {
 }
 
 void CDefineFileFormatDlg::OnDelimEscSymbolTab()       { addDelimiter(_T("\\t") ); }
-void CDefineFileFormatDlg::OnDelimEscSymbolSpace()     { addDelimiter(_T("\\S") ); }       
+void CDefineFileFormatDlg::OnDelimEscSymbolSpace()     { addDelimiter(_T("\\S") ); }
 void CDefineFileFormatDlg::OnDelimEscSymbolCr()        { addDelimiter(_T("\\r") ); }
 void CDefineFileFormatDlg::OnDelimEscSymbolNewLine()   { addDelimiter(_T("\\n") ); }
-void CDefineFileFormatDlg::OnDelimEscSymbolFormFeed()  { addDelimiter(_T("\\f") ); } 
+void CDefineFileFormatDlg::OnDelimEscSymbolFormFeed()  { addDelimiter(_T("\\f") ); }
 void CDefineFileFormatDlg::OnDelimEscSymbolBackSpace() { addDelimiter(_T("\\b") ); }
 void CDefineFileFormatDlg::OnDelimEscSymbolEsc()       { addDelimiter(_T("\\e") ); }
 void CDefineFileFormatDlg::OnDelimEscSymbolBackslash() { addDelimiter(_T("\\\\")); }
 void CDefineFileFormatDlg::OnDelimEscSymbolCtrl()      { addDelimiter(_T("\\^A")); }
-void CDefineFileFormatDlg::OnDelimEscSymbolUnicode()   { 
+void CDefineFileFormatDlg::OnDelimEscSymbolUnicode()   {
 #ifdef UNICODE
   addDelimiter(_T("\\u"));
 #endif
@@ -636,7 +636,7 @@ void CDefineFileFormatDlg::OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStr
 }
 
 void CDefineFileFormatDlg::OnCheckMultipleDelimiters() {
-  UpdateData(); 
+  UpdateData();
   ajourSample();
 }
 

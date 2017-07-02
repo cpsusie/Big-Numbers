@@ -23,7 +23,7 @@ END_MESSAGE_MAP()
 
 BOOL CEditModelSchemaDlg::OnInitDialog() {
   __super::OnInitDialog();
-    
+
   m_model.setModelSchema(m_schema);
   m_list.substituteControl(this, IDC_LISTBASESCHEMA, m_model);
 
@@ -50,7 +50,7 @@ void CEditModelSchemaDlg::OnButtonDown() {
 
 void CEditModelSchemaDlg::OnSize(UINT nType, int cx, int cy) {
   __super::OnSize(nType, cx, cy);
-  m_layoutManager.OnSize(nType, cx, cy);    
+  m_layoutManager.OnSize(nType, cx, cy);
 }
 
 BaseTableModel::BaseTableModel(const ListCtrlModelSchema &modelSchema) {

@@ -185,7 +185,7 @@ public:
   }
 
 
-  // works only for characters [0..255] 
+  // works only for characters [0..255]
   static const TCHAR  upperCaseTranslate[256];
   static const TCHAR *lowerCaseTranslate;
   static const TCHAR  upperCaseAccentTranslate[256];

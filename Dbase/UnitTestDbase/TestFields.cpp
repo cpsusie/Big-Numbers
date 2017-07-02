@@ -312,19 +312,19 @@ TupleField TestFields::getRandomField(UINT field) {
   case DBTYPE_USHORTN   : RANDOMNULL;
   case DBTYPE_USHORT    : return random.nextUShort();
 
-  case DBTYPE_INTN      : 
+  case DBTYPE_INTN      :
   case DBTYPE_LONGN     : RANDOMNULL;
-  case DBTYPE_INT       : 
+  case DBTYPE_INT       :
   case DBTYPE_LONG      : return random.nextInt();
-  
-  case DBTYPE_UINTN     : 
+
+  case DBTYPE_UINTN     :
   case DBTYPE_ULONGN    : RANDOMNULL;
-  case DBTYPE_UINT      : 
+  case DBTYPE_UINT      :
   case DBTYPE_ULONG     : return random.nextUInt();
 
   case DBTYPE_INT64N    : RANDOMNULL;
   case DBTYPE_INT64     : return random.nextInt64();
-  
+
   case DBTYPE_UINT64N   : RANDOMNULL;
   case DBTYPE_UINT64    : return random.nextUInt64();
 

@@ -21,14 +21,14 @@ void GameHistory::addResult(const GameDescription &gameDesc, const TrickCount &t
 
   int score[3];
   int p;
-  
+
   switch(gameDesc.getGameType()) {
   case GAMETYPE_SOL:
     for(p = 0; p < 3; p++) {
       score[p] = (gameDesc.getStandardTrickCount(p) - trickCount.getTrickCount(p)) * gameDesc.getPointsPerTrick();
     }
     break;
-    
+
   case GAMETYPE_SANS:
   case GAMETYPE_SPAR:
   case GAMETYPE_FARVE:
@@ -112,7 +112,7 @@ void GamesPlayed::setRandom(UINT count) {
     addPlayedGame(gameType,pointsPerTrick);
   }
 }
-  
+
 void GamesPlayed::addPlayedGame(GameType gameType, int pointsPerTrick) {
   DEFINEMETHODNAME;
   if(pointsPerTrick < 1 || pointsPerTrick > 4) {

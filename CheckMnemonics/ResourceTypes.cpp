@@ -15,7 +15,7 @@ static String forceToString(const SyntaxNode *n) {
 LanguageDirective::LanguageDirective(const ResourceFile *rf) : ResourceDefinition(LANGUAGE_DIRECTIVE, EMPTYSTRING,rf) {
 }
 
-LanguageDirective::LanguageDirective(const SyntaxNode *n, const ResourceFile *rf) 
+LanguageDirective::LanguageDirective(const SyntaxNode *n, const ResourceFile *rf)
 : ResourceDefinition(LANGUAGE_DIRECTIVE, forceToString(n->getChild(0)), rf) {
   m_subLangId = forceToString(n->getChild(1));
 }
@@ -58,7 +58,7 @@ String ControlDefinition::toString() const {
 
 static bool isInterestingControlNode(const SyntaxNode *n) {
   switch(n->getSymbol()) {
-  case LTEXT        : 
+  case LTEXT        :
   case PUSHBUTTON   :
   case DEFPUSHBUTTON:
     return true;
@@ -68,7 +68,7 @@ static bool isInterestingControlNode(const SyntaxNode *n) {
   return false;
 }
 
-DialogDefinition::DialogDefinition(const SyntaxNode *n, const ResourceFile *rf) 
+DialogDefinition::DialogDefinition(const SyntaxNode *n, const ResourceFile *rf)
 : ResourceDefinition(DIALOG_DEFINITION, n->getChild(0)->getName(), rf) {
   if(n->getChildCount() == 3) {
     m_menuId = n->getChild(2)->getChild(0)->getName();
@@ -92,7 +92,7 @@ StringArray DialogDefinition::getControlStringWithAltNeedingAccelerator() const 
     case CTRL_TEXT      :
       { const String &visibleText = getControlText(ctrl);
         String t = visibleText;
-      
+
         t.replace(_T("&&"),EMPTYSTRING);
         intptr_t index = t.find('&');
         if(index >= 0 && index < (int)t.length()-1) {
@@ -318,7 +318,7 @@ String PopupMenu::toString(int level) const {
   return result;
 }
 
-MenuDefinition::MenuDefinition(const MenuDefinition &src) 
+MenuDefinition::MenuDefinition(const MenuDefinition &src)
 : ResourceDefinition(MENU_DEFINITION, src.getId(), &src.getResourceFile()) {
   for(size_t i = 0; i < src.m_items.size(); i++) {
     m_items.add(src.m_items[i]->clone());
@@ -441,7 +441,7 @@ String Accelerator::flagsToString(int flags) { // static
   return result;
 }
 
-AcceleratorsDefinition::AcceleratorsDefinition(const SyntaxNode *n, const ResourceFile *rf) 
+AcceleratorsDefinition::AcceleratorsDefinition(const SyntaxNode *n, const ResourceFile *rf)
 : ResourceDefinition(ACCELERATOR_DEFNITION, n->getChild(0)->getName(), rf) {
   const NodeArray nodes = ParserTree::getListFromTree(n->getChild(1));
   for(size_t i = 0; i < nodes.size(); i++) {
@@ -478,11 +478,11 @@ String StringId::toString() const {
   return format(_T("%-35s text:<%s>"), m_id.cstr(), m_text.cstr());
 }
 
-StringTableDefinition::StringTableDefinition(const ResourceFile *rf) 
+StringTableDefinition::StringTableDefinition(const ResourceFile *rf)
 : ResourceDefinition(STRINGTABLE_DEFINITION, _T("no Id"), rf) {
 }
 
-StringTableDefinition::StringTableDefinition(const SyntaxNode *n, const ResourceFile *rf) 
+StringTableDefinition::StringTableDefinition(const SyntaxNode *n, const ResourceFile *rf)
 : ResourceDefinition(STRINGTABLE_DEFINITION, _T("no Id"), rf) {
   const NodeArray nodes = ParserTree::getListFromTree(n->getChild(0));
   for(size_t i = 0; i < nodes.size(); i++) {
@@ -539,8 +539,8 @@ void LanguageSection::compareSections(const LanguageSection &ls) const {
 }
 
 bool LanguageSection::isEmpty() const {
-  return m_dialogs.isEmpty() 
-      && m_menues.isEmpty() 
+  return m_dialogs.isEmpty()
+      && m_menues.isEmpty()
       && m_acceleratorDefinitions.isEmpty()
       && m_stringTable.isEmpty();
 }

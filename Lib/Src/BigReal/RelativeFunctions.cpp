@@ -95,7 +95,7 @@ BigReal rLn(const BigReal &x, size_t digits) {
   return ln(x, getLogError(x, digits));
 }
 
-BigReal rLog(const BigReal &base, const BigReal &x, size_t digits) { // log(x) base 
+BigReal rLog(const BigReal &base, const BigReal &x, size_t digits) { // log(x) base
   BigReal lBase = rLn(base, digits+8);
   BigReal lX    = rLn(x   , digits+8);
   return rQuot(lX,lBase,digits+8);
@@ -154,7 +154,7 @@ BigReal rSin(const BigReal &x, size_t digits) {
   if(x.isZero()) {
     return pool->get0();
   }
-  
+
   const BRExpoType piee = min(0,BigReal::getExpo10(x)) - (x.getDecimalDigits() + digits); // Exponent of precision of pi-value
   const BigReal Pi = pi(e(_1,piee - 8),pool);
   const BigReal xp = x % Pi;

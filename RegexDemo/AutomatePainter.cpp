@@ -43,7 +43,7 @@ void AutomatePainter::textOut(const CPoint &p, CFont &font, const String &text, 
   textOut(getDC(hdc), p, font, text);
 }
 
-void AutomatePainter::paintRing(HDC hdc, const CPoint &p, int radius, CPen *pen, CBrush *brush) { // static 
+void AutomatePainter::paintRing(HDC hdc, const CPoint &p, int radius, CPen *pen, CBrush *brush) { // static
   HGDIOBJ oldPen   = pen   ? SelectObject(hdc, *pen)   : NULL;
   HGDIOBJ oldBrush = brush ? SelectObject(hdc, *brush) : NULL;
 
@@ -59,7 +59,7 @@ void AutomatePainter::paintRing(HDC hdc, const CPoint &p, int radius, CPen *pen,
   if(brush) SelectObject(hdc, oldBrush);
 }
 
-void AutomatePainter::paintCircle(HDC hdc, const CPoint &p, int radius, CPen *pen, CBrush *brush) { // static 
+void AutomatePainter::paintCircle(HDC hdc, const CPoint &p, int radius, CPen *pen, CBrush *brush) { // static
   HGDIOBJ oldPen   = pen   ? SelectObject(hdc, *pen)   : NULL;
   HGDIOBJ oldBrush = brush ? SelectObject(hdc, *brush) : NULL;
 
@@ -384,7 +384,7 @@ CBrush AutomatePainter::pinkBrush;
 CBrush AutomatePainter::greenBrush;
 CBrush AutomatePainter::lightGreenBrush;
 
-void AutomatePainter::initStaticGDIObjects() { // static 
+void AutomatePainter::initStaticGDIObjects() { // static
   static bool initDone = false;
   if(!initDone) {
     blackPen.CreatePen(PS_SOLID, 1,  RGB(  0,  0,  0));

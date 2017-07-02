@@ -42,7 +42,7 @@ const String TestStatistic::s_signaturString[] = {
  ,_T("(const BigReal &x, const BigReal &y, const BigReal &f)")
 };
 
-TestStatistic::TestStatistic(int threadId, const String &name, DigitPool *pool, FunctionSignatur signatur, size_t maxTestCount, const BigReal &maxTolerance) 
+TestStatistic::TestStatistic(int threadId, const String &name, DigitPool *pool, FunctionSignatur signatur, size_t maxTestCount, const BigReal &maxTolerance)
 : m_threadId(threadId)
 , m_name(name)
 , m_digitPool(pool)
@@ -87,7 +87,7 @@ void TestStatistic::init() {
   }
   s_gate.signal();
 
-  printNameAndSignatur(); 
+  printNameAndSignatur();
   m_startTime = AllTime();
 }
 
@@ -161,7 +161,7 @@ void TestStatistic::printLoopMessage(const _TCHAR *format,...) {
   flushOutput();
 }
 
-String TestStatistic::toString(const BigReal &n, int digits) { // static 
+String TestStatistic::toString(const BigReal &n, int digits) { // static
   BigRealStream s(StreamParameters(digits,digits+9,ios::scientific | ios::showpos | ios::unitbuf));
   s << n;
   return s;
@@ -423,7 +423,7 @@ void TestStatistic::update(const BigReal &error, const BigReal &tolerance) {
     update(rQuot(error, tolerance, 8, m_digitPool));
   }
 }
- 
+
 void TestStatistic::updateZ(const BigReal &tolerance) {
   if(m_error.isZero()) {
     update(m_error);

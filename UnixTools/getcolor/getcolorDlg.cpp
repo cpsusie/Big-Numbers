@@ -66,10 +66,10 @@ BOOL CGetcolorDlg::OnInitDialog() {
     if(EnumDisplayDevices(NULL,i,&displaydevice,0) == 0) break;
   }
 */
-  hdcScreen     = CreateDC(_T("DISPLAY"), NULL, NULL, NULL); 
+  hdcScreen     = CreateDC(_T("DISPLAY"), NULL, NULL, NULL);
   scrw          = GetDeviceCaps(hdcScreen, HORZRES);
-  scrh          = GetDeviceCaps(hdcScreen, VERTRES); 
-  hdcCompatible = CreateCompatibleDC(hdcScreen); 
+  scrh          = GetDeviceCaps(hdcScreen, VERTRES);
+  hdcCompatible = CreateCompatibleDC(hdcScreen);
 
   hbmScreen = CreateCompatibleBitmap(hdcScreen, scrw, scrh);
 
@@ -84,7 +84,7 @@ BOOL CGetcolorDlg::OnInitDialog() {
     MessageBox(_T("BitBlt failed:%s"),getLastErrorText().cstr());
     exit(0);
   }
-  
+
   WINDOWPLACEMENT wp;
   GetWindowPlacement(&wp);
   wp.rcNormalPosition.left   = 0;

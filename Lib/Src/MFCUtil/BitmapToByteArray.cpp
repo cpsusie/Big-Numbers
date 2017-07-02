@@ -16,7 +16,7 @@ ByteArray &bitmapToByteArray(ByteArray &dst, HBITMAP bm) {
   dst.clear();
   PLWinBmp winBmp;
   winBmp.CreateFromHBitmap(bm);
-  
+
   PLJPEGEncoder().SaveBmp(&winBmp, &ByteStreamSink(ByteMemoryOutputStream(dst)));
   return dst;
 }

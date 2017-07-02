@@ -580,7 +580,7 @@ void CTestEdgeDetectionDlg::OnLButtonDown(UINT nFlags, CPoint point) {
   }
 }
 
-void CTestEdgeDetectionDlg::OnMouseMove(UINT nFlags, CPoint point) {    
+void CTestEdgeDetectionDlg::OnMouseMove(UINT nFlags, CPoint point) {
   if(nFlags & MK_LBUTTON) {
     const CPoint p = getPixelPointFromMousePoint(point);
     if((p != m_lastMousePoint) && isPointInside(p)) {

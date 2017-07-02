@@ -179,7 +179,7 @@ CharacterClass::CharacterClass() {
 
 static CharacterClass dummy;
 
-String getWord(const TCHAR *s, int pos) { 
+String getWord(const TCHAR *s, int pos) {
   String tmp(s);
   int start = pos, end = pos;
   _TUCHAR ch = s[pos];
@@ -245,7 +245,7 @@ int CParserDemoDlg::OnCreate(LPCREATESTRUCT lpCreateStruct) {
   if(__super::OnCreate(lpCreateStruct) == -1) {
     return -1;
   }
-    
+
   CRect rect;
   rect.left   = 255;
   rect.top    = 0;
@@ -258,7 +258,7 @@ int CParserDemoDlg::OnCreate(LPCREATESTRUCT lpCreateStruct) {
                     ,rect, this, IDC_EDITINPUTSTRING);
   return 0;
 }
-    
+
 void CParserDemoDlg::OnMaxTextEditInputString() {
   int inputLength = m_input.GetLength();
   int maxTextSize = m_textBox.GetLimitText();
@@ -615,7 +615,7 @@ BOOL CParserDemoDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
     result = TRUE;
   }
-    
+
   if(!result) {
     result = __super::PreTranslateMessage(pMsg);
   }
@@ -666,7 +666,7 @@ void CParserDemoDlg::gotoTextPosition(int id, const Array<SourcePosition> &list,
   }
 }
 
-String CParserDemoDlg::getCurrentWord() { 
+String CParserDemoDlg::getCurrentWord() {
   return getWord(getInputString().cstr(), getSourcePositionIndex());
 }
 
@@ -745,7 +745,7 @@ void CParserDemoDlg::OnGotoInputControl() {
 }
 
 void CParserDemoDlg::OnGotoErrorsControl() {
-  GetDlgItem(IDC_LISTERRORS)->SetFocus();   
+  GetDlgItem(IDC_LISTERRORS)->SetFocus();
 }
 
 void CParserDemoDlg::OnGotoDebugControl() {

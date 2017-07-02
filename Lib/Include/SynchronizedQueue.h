@@ -10,14 +10,14 @@ private:
 public:
   SynchronizedQueue() : m_emptySem(0) {
   }
-  
+
   void put(const T &v) {
     m_gate.wait();
     QueueList<T>::put(v);
     m_emptySem.signal(); // tell any thread, waiting in get that we are not empty anymore
     m_gate.signal(); // open gate
   }
-  
+
   T get(int milliseconds=INFINITE) {
     for(;;) {
       m_gate.wait();
@@ -33,7 +33,7 @@ public:
     m_gate.signal(); // open gate
     return result;
   }
-  
+
   void clear() {
     m_gate.wait();
     QueueList<T>::clear();
@@ -57,8 +57,8 @@ public:
   bool isEmpty() const {
     return size() == 0;
   }
-  
-  size_t size() const { 
+
+  size_t size() const {
     return QueueList<T>::size();
   }
 

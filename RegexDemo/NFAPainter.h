@@ -12,7 +12,7 @@ public:
   const NFAState *m_state;
   short           m_subNFAIndex;
   short           m_gridX, m_gridY;
-  NFAStatePoint(const NFAState *state, short subNFAIndex, int gridX, int gridY) 
+  NFAStatePoint(const NFAState *state, short subNFAIndex, int gridX, int gridY)
     : m_state(state)
     , m_subNFAIndex(subNFAIndex)
     , m_gridX(gridX), m_gridY(gridY)

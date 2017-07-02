@@ -71,8 +71,8 @@ int main(int argc, char **argv) {
         break;
       case 'E':
         useExponentielSteps = true;
-        break;              
-                
+        break;
+
       default :
         if(strcmp(cp,"help") == 0) {
           showHelp();

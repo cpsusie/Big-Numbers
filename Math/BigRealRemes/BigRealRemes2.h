@@ -38,7 +38,7 @@ private:
 public:
   ExtremaVector() {
   }
-  ExtremaVector(const BigRealVector &extrema, const BigReal &E, const BigReal &MMQuot) 
+  ExtremaVector(const BigRealVector &extrema, const BigReal &E, const BigReal &MMQuot)
     : BigRealVector(extrema), m_E(E), m_MMQuot(MMQuot) {
   }
   const BigReal &getMMQuot() const {
@@ -109,7 +109,7 @@ private:
   void                 findExtrema(BigReal &minExtr, BigReal &maxExtr);
   BigRealVector        findFinalExtrema(const int M, const int K, const bool highPrecision);
   void                 setExtremum(const int index, const BigReal &x);
-  void                 setMMQuotEpsilon(const BigReal &MMQuotEps);  // set stop criterium. 
+  void                 setMMQuotEpsilon(const BigReal &MMQuotEps);  // set stop criterium.
   BigReal              approximation( const BigReal &x); // Pm(x) / Pk(x)
   BigReal              errorFunction( const BigReal &x); // m_useRelativeError ? (1 - sFunction(x) * approximation(x)) : (m_targetFunction(x)-approximation(x))
   BigReal              sFunction(     const BigReal &x); // m_useRelativeError ? (1/m_targetFunction(x)) : 1

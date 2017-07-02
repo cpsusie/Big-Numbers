@@ -71,7 +71,7 @@ void CTestLayoutManagerDlg::DoDataExchange(CDataExchange *pDX) {
     __super::DoDataExchange(pDX);
     DDX_Check(pDX, IDC_CHECK_WINDOW_RETAIN_ASPECTRATIO        , m_windowRetainAspectRatio     );
     DDX_Check(pDX, IDC_CHECK_WINDOW_RESIZE_FONT               , m_windowResizeFont            );
-    DDX_Check(pDX, IDC_CHECK_WINDOW_FONT_RELATIVE_SIZE        , m_windowFontRelativeSize      ); 
+    DDX_Check(pDX, IDC_CHECK_WINDOW_FONT_RELATIVE_SIZE        , m_windowFontRelativeSize      );
     DDX_Check(pDX, IDC_CHECK_LIST1_RESIZE_FONT                , m_list1ResizeFont             );
     DDX_Check(pDX, IDC_CHECK_LIST1_FONT_RELATIVE_SIZE         , m_list1FontRelativeSize       );
     DDX_Check(pDX, IDC_CHECK_LIST1_RELATIVE_LEFT              , m_list1RelativeLeft           );

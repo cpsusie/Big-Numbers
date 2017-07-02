@@ -333,10 +333,10 @@ String Settings::getAddrAsString(__int64 addr) const {
 
 const TCHAR *Settings::getAsciiFormat() const {
   switch(m_dataRadix) {
-  case 8 : 
+  case 8 :
   case 10:
     break;
-  case 16: 
+  case 16:
     if(!m_hex3Pos) {
       return _T("%-2c ");
     }
@@ -366,10 +366,10 @@ CString Settings::getDataSampleText()  const {
   case 8 :
   case 10:
     break;
-  case 16: 
+  case 16:
     if(!m_hex3Pos) {
       return _T("00 ");
-    } 
+    }
     break;
   default:
     throwInvalidRadix(_T("getDataSampleText"), m_dataRadix);

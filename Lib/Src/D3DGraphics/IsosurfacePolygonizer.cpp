@@ -1,4 +1,4 @@
-// 
+//
 // An implicit surface polygonizer, translated from Mesa
 // applications should call polygonize()
 //
@@ -36,7 +36,7 @@ static const CubeEdgeInfo cubeEdgeTable[12] = {
  ,{ LBF,RBF, BFACE, FFACE, { NN, NN, LB, NN, NN, RF } }  // bottom far    edge
  ,{ LTN,RTN, TFACE, NFACE, { NN, NN, NN, LT, RN, NN } }  // top    near   edge
  ,{ LTF,RTF, FFACE, TFACE, { NN, NN, NN, RT, NN, LF } }  // top    far    edge
-}; 
+};
 
 #define HASHSIZE 100001
 #define BIT(i, bit) (((i)>>(bit))&1)
@@ -102,7 +102,7 @@ void IsoSurfacePolygonizer::polygonize(const Point3D &start
   m_vertexArray.setCapacity( HASHSIZE);
   m_cubesDoneSet.setCapacity(HASHSIZE);
   m_edgeMap.setCapacity(     HASHSIZE);
-  
+
   putInitialCube();
 
   while(hasActiveCubes()) { // process active cubes until none left

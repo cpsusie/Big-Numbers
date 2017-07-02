@@ -39,9 +39,9 @@ public:
   inline bool isPositive() const {
     return m_positive;
   }
-  
+
   bool isConstant() const;
-  
+
   int compare(const SumElement *e) const;
 
   String toString() const;

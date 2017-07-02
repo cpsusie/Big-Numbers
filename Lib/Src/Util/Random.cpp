@@ -12,7 +12,7 @@ UINT64 Random::next64(UINT bits) {
   return result;
 }
 
-/* 
+/*
  * return the next pseudorandom, uniformly distributed int
  * value between 0 (inclusive) and n (exclusive)
  * from this random number generator's sequence
@@ -28,7 +28,7 @@ int Random::nextInt(int n) {
   }
 
   int bits, val;
-  do { 
+  do {
     bits = next32(31);
     val = bits % n;
   } while(bits - val + (n-1) < 0);
@@ -69,7 +69,7 @@ double Random::nextDouble(double low, double high) {
   return (high-low)*nextDouble()+low;
 }
 
-double Random::nextGaussian(double mean, double s) { 
+double Random::nextGaussian(double mean, double s) {
   const double u1 = nextDouble();
   double u2;
   while((u2 = nextDouble()) == 0); // u2 != 0

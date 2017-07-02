@@ -77,7 +77,7 @@ private :
 protected :
   virtual void preRelease() = 0;
   T m_obj;
-  
+
   virtual ~ReferenceCountedType() {
   }
 
@@ -85,7 +85,7 @@ protected :
   ReferenceCountedType &operator=(const ReferenceCountedType &src);   // Restrict copying. Not implemented
 
 public:
-  ReferenceCountedType(T obj) : m_obj(obj), m_count(1) { 
+  ReferenceCountedType(T obj) : m_obj(obj), m_count(1) {
     REGISTRYLOG("new", this);
   }
 
@@ -119,7 +119,7 @@ class ReferenceCountedRegKey : public ReferenceCountedType<HKEY, ReferenceCounte
 private:
   ReferenceCountedRegKey(const ReferenceCountedRegKey &rhs);            // Restrict copying. Not implemented
   ReferenceCountedRegKey &operator=(const ReferenceCountedRegKey &rhs); // Restrict copying. Not implemented
-protected: 
+protected:
   void preRelease() {
     REGISTRYLOG("close", m_obj);
     RegCloseKey(m_obj);
@@ -154,7 +154,7 @@ public:
   // HKEY_PERFORMANCE_DATA
   // HKEY_CURRENT_CONFIG
   // HKEY_DYN_DATA
-  explicit RegistryKey(HKEY key); 
+  explicit RegistryKey(HKEY key);
   RegistryKey(const String &remoteMachine, HKEY key);
   RegistryKey(HKEY key, const String &subKey, REGSAM samDesired = KEY_ALL_ACCESS, const String &remoteMachine=_T(""));
   RegistryKey(const RegistryKey &src);

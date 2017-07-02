@@ -66,6 +66,6 @@ void EndGameTablebase::convert() {
   }
 #endif // __NEVER__
 
-} 
+}
 
 #endif

@@ -51,7 +51,7 @@ static _TUCHAR escape(const _TUCHAR *&s) {
   if(*s != _T('\\') ) {
     result = *(s++);
   } else {
-    s++; // Skip the _T('\') 
+    s++; // Skip the _T('\')
     switch(toUpper(*s)) {
     case _T('\0'):
       result = _T('\\')  ;
@@ -113,7 +113,7 @@ static _TUCHAR escape(const _TUCHAR *&s) {
         }
       }
       break;
-#endif      
+#endif
     default  :
       if(!isOctalDigit(*s)) {
         result = *s;

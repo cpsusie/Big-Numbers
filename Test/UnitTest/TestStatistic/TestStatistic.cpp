@@ -24,7 +24,7 @@ static double testData[] = {
 
   TEST_CLASS(TestStatistic) {
   public:
-    
+
     TEST_METHOD(Statistic) {
       CompactRealArray data;
 

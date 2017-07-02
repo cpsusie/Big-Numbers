@@ -407,7 +407,7 @@ void ColorMapGraphics::drawBorder(CDC &dc) {
   }
 /*
   const DWORD oldStyle = m_wnd->GetExStyle();
-  const DWORD newStyle = (m_clientEdge ? WS_EX_CLIENTEDGE    : 0) 
+  const DWORD newStyle = (m_clientEdge ? WS_EX_CLIENTEDGE    : 0)
                        | (m_staticEdge ? WS_EX_STATICEDGE    : 0)
                        | (m_modalFrame ? WS_EX_DLGMODALFRAME : 0);
 
@@ -415,7 +415,7 @@ void ColorMapGraphics::drawBorder(CDC &dc) {
 //  WINDOWPLACEMENT wp;
 //  m_wnd->GetWindowPlacement(&wp);
   const DWORD dwRemove = ( oldStyle & ~newStyle) & BORDERFLAGS;
-  const DWORD dwAdd    = (~oldStyle &  newStyle) & BORDERFLAGS; 
+  const DWORD dwAdd    = (~oldStyle &  newStyle) & BORDERFLAGS;
   if(dwRemove || dwAdd) {
     m_wnd->ModifyStyleEx(dwRemove, dwAdd);
   }

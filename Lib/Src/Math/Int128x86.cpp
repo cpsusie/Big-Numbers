@@ -121,10 +121,10 @@ void int128mul(void *dst, const void *x) {
       mov         eax, dword ptr[ebx+4]    //
       mul         dword ptr[ecx+8]         // [edx:eax] = x[1]*y[2]
       add         edi, eax                 // edi += eax
-      mov         eax, dword ptr[ebx+8]    
+      mov         eax, dword ptr[ebx+8]
       mul         dword ptr[ecx+4]         // [edx:eax] = x[2]*y[1]
       add         edi, eax                 // edi += eax
-      mov         eax, dword ptr[ebx+12]    
+      mov         eax, dword ptr[ebx+12]
       mul         dword ptr[ecx]           // [edx:eax] = x[3]*y[0]
       add         edi, eax                 // edi += eax
       add         dword ptr[ebp+12], edi   // result[3] += edi
@@ -266,7 +266,7 @@ More96:                                       ; 96 <= cl < 128
     mov         eax, dword ptr[esi + 12]
     sar         eax, cl
     mov         dword ptr[esi], eax           ; s4[0] = s4[3] >> cl (shift in signbit of s4[3])
-    sar         eax, 1fh      
+    sar         eax, 1fh
     mov         dword ptr[esi + 4 ], eax      ; s4[1] = sign og s4[3]
     mov         dword ptr[esi + 8 ], eax      ; s4[2] = sign og s4[3]
     mov         dword ptr[esi + 12], eax      ; s4[3] = sign og s4[3]
@@ -342,7 +342,7 @@ More96:                                       ; 96 <= cl < 128
     mov         eax, dword ptr[esi + 12]
     shr         eax, cl
     mov         dword ptr[esi], eax           ; s4[0] = s4[3] >> cl
-    xor         eax, eax      
+    xor         eax, eax
     mov         dword ptr[esi + 4 ], eax      ; s4[1] = 0
     mov         dword ptr[esi + 8 ], eax      ; s4[2] = 0
     mov         dword ptr[esi + 12], eax      ; s4[3] = 0
@@ -710,7 +710,7 @@ int int128cmp(const void *x1, const void *x2) {
     ja          greaterthan
     mov         eax, dword ptr[esi]         ;
     cmp         eax, dword ptr[edi]         ;
-    jb          lessthan           
+    jb          lessthan
     ja          greaterthan
     mov         result, 0                   ; they are equal
     jmp End
@@ -743,7 +743,7 @@ int uint128cmp(const void *x1, const void *x2) {
     ja          greaterthan
     mov         eax, dword ptr[esi]         ;
     cmp         eax, dword ptr[edi]         ;
-    jb          lessthan           
+    jb          lessthan
     ja          greaterthan
     mov         result, 0                   ; they are equal
     jmp End

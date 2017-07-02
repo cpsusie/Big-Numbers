@@ -122,7 +122,7 @@ Packer &Packer::operator>>(UINT &n) {
       *this >> ul; n = ul;
     }
     break;
-  default: 
+  default:
     throwException(_T("%s:Invalid type:%d. Expected E_CHAR/E_SHORT/E_INT/E_LONG"), __TFUNCTION__, peekType());
   }
   return *this;
@@ -158,7 +158,7 @@ Packer &Packer::operator>>(ULONG &n) {
       n = ntohl(nl);
     }
     break;
-  default: 
+  default:
     throwException(_T("%s:Invalid type:%d. Expected E_CHAR/E_SHORT/E_INT/E_LONG"), __TFUNCTION__, peekType());
   }
   return *this;

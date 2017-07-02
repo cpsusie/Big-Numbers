@@ -164,7 +164,7 @@ bool DependencyChecker::handleNode(ExpressionNode *n, int level) {
 
 void ParserTree::checkDependentOnLoopVariablesOnly(ExpressionNode *n) {
   DependencyChecker checker(*this);
-  n->traverseExpression(checker, 0); 
+  n->traverseExpression(checker, 0);
 }
 
 void ParserTree::copyValues(ParserTree &src) {

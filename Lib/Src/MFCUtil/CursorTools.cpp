@@ -5,7 +5,7 @@ void setWindowCursor(HWND wnd, const TCHAR *name) {
   setWindowCursor(wnd, ::LoadCursor(NULL,name));
 }
 
-void setWindowCursor(HWND wnd, int resId) { 
+void setWindowCursor(HWND wnd, int resId) {
   setWindowCursor(wnd, AfxGetApp()->LoadCursor(resId));
 }
 

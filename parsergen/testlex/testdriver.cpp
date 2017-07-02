@@ -76,7 +76,7 @@ static void scan(Scanner &lex) {
     casepr(DEFINE     );
     casepr(HASHMARK   );
     default:
-      _tprintf(_T("unknown token:%d:'%s'\n"), token,lex.getText()); 
+      _tprintf(_T("unknown token:%d:'%s'\n"), token,lex.getText());
       break;
     }
   } while(token != _EOI_);

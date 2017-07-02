@@ -63,7 +63,7 @@ private:
   class MemoryPage {
   public:
     ArrayPage *m_page;     // Loaded page. At any time there are at most 1024 pages in memory. The others are swapped out on m_pageFile
-    int        m_mapIndex; // -1 indicate, that page is not used. else 
+    int        m_mapIndex; // -1 indicate, that page is not used. else
                            // m_pageMap[m_memoryPage[i].m_mapIndex].m_pageIndex = i
                            // and m_pageMap[...].m_loaded = 1
 
@@ -114,8 +114,8 @@ private:
   mutable CompactArray<PageMapElement> m_pageMap;           // size = number of pages
   mutable BitSet                       m_freeFilePages;
   mutable UINT                         m_pageFileSize;      // In pages. NOT bytes
-  mutable unsigned __int64             m_referenceCounter;  // Incremented each time operator[] (non const) is called, and saved to PageMapElement. 
-  mutable MemoryPage                   m_memoryPage[MEMORYPAGE_COUNT]; 
+  mutable unsigned __int64             m_referenceCounter;  // Incremented each time operator[] (non const) is called, and saved to PageMapElement.
+  mutable MemoryPage                   m_memoryPage[MEMORYPAGE_COUNT];
                                                             // To find a good page to swap, search for the loaded page with the lowest m_lastReference
   mutable String                       m_pageFileName;      // name of m_pageFile
   mutable FILE                        *m_pageFile;          // An ArrayPage is swapped out to m_pageFile, when not accessed for some time,
@@ -394,7 +394,7 @@ public:
     CHECK_BIGARRAY_INVARIANT();
     return page[i];
   }
-  
+
   const T &operator[](size_t i) const {
     CHECK_BIGARRAY_INVARIANT();
     if(i >= m_size) {
@@ -410,7 +410,7 @@ public:
     CHECK_BIGARRAY_INVARIANT();
     return page[i];
   }
-  
+
   void add(size_t i, const T &e) {
     CHECK_BIGARRAY_INVARIANT();
     if(i > m_size) {

@@ -82,7 +82,7 @@ void AbstractAxisPainter::init() {
   setMinMaxStep(step * ceil(minimum / step), step * floor(maximum / step), step);
 }
 
-double AbstractAxisPainter::findNiceDecimalStep(double range) { // static 
+double AbstractAxisPainter::findNiceDecimalStep(double range) { // static
   int n;
   double step = range / 12;
   if(step < 1) {

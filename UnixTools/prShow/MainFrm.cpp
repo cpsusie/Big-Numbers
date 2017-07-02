@@ -44,7 +44,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
   if(__super::OnCreate(lpCreateStruct) == -1) {
     return -1;
   }
-    
+
   if(!m_wndStatusBar.Create(this) ||!m_wndStatusBar.SetIndicators(indicators,sizeof(indicators)/sizeof(UINT))) {
     TRACE0("Failed to create status bar\n");
     return -1;      // fail to create
@@ -180,7 +180,7 @@ void CMainFrame::setTitle() {
 }
 
 void CMainFrame::OnFileExit() {
-  exit(0);  
+  exit(0);
 }
 
 void CMainFrame::OnHelpAboutprshow() {

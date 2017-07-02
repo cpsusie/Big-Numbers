@@ -9,7 +9,7 @@ static String getModifierString(SymbolModifier modifier) {
   case ZEROORMANY        : return _T("*");
   case ONEORMANY         : return _T("+");
   default                : throwException(_T("Invalid modifier:%d"), modifier);
-                           return ""; 
+                           return "";
   }
 }
 
@@ -84,9 +84,9 @@ static unsigned long stateCoreHashFunction(const LR1State * const &s) { // used 
   return v;
 }
 
-LR1State::LR1State(int index) { 
+LR1State::LR1State(int index) {
   m_index           = index;
-  m_noOfKernelItems = 0; 
+  m_noOfKernelItems = 0;
 }
 
 void LR1State::addItem(const LR1Item &item) {
@@ -106,7 +106,7 @@ LR1Item *LR1State::findItem(const LR1Item &item) {
   return NULL;
 }
 
-static int itemCmp(const LR1Item &e1, const LR1Item &e2) { 
+static int itemCmp(const LR1Item &e1, const LR1Item &e2) {
   int c = e2.m_kernelItem - e1.m_kernelItem; // used by sortItems. put kernelitems first
   if(c) {
     return c;
@@ -119,7 +119,7 @@ void LR1State::sortItems() {
   m_items.sort(itemCmp);
 }
 
-Grammar::Grammar(Language language, int verboseLevel) 
+Grammar::Grammar(Language language, int verboseLevel)
 : m_stateMap(stateCoreHashFunction, stateCoreCompareFunction, 4001)
 , m_unfinishedSet(1001) {
 
@@ -128,7 +128,7 @@ Grammar::Grammar(Language language, int verboseLevel)
   m_terminalCount = 0;
 }
 
-Grammar::Grammar(Language language, const ParserTables &src) 
+Grammar::Grammar(Language language, const ParserTables &src)
 : m_stateMap(stateCoreHashFunction, stateCoreCompareFunction, 4001)
 , m_unfinishedSet(1001) {
 
@@ -154,7 +154,7 @@ Grammar::Grammar(Language language, const ParserTables &src)
   }
 }
 
-Grammar::~Grammar() { 
+Grammar::~Grammar() {
 }
 
 int Grammar::findSymbol(const String &name) const {
@@ -317,7 +317,7 @@ void Grammar::findEpsilonSymbols() {
     }
   } while(!stable);
 /*
-  for(int s = 0; s < getSymbolCount(); s++) 
+  for(int s = 0; s < getSymbolCount(); s++)
     if(getSymbol(s).m_deriveEpsilon)
       _tprintf(_T("%s -> eps\n"), getSymbol(s).m_name.cstr());
 */
@@ -359,7 +359,7 @@ void Grammar::findFirst1Sets() {
     }
 
 /*
-  gotoxy(0, 0); 
+  gotoxy(0, 0);
   for(long s = getTerminalCount(); s < getSymbolCount(); s++) {
     GrammarSymbol &nonTerm = getSymbol(s);
     _tprintf(_T("first(%-10s):"), nonTerm.m_name.cstr());
@@ -381,8 +381,8 @@ int Grammar::getItemCount() const {
 }
 
 // assume item = A -> alfa . B beta [la]
-// computes first1(beta la) 
-BitSet Grammar::first1(const LR1Item &item) const { 
+// computes first1(beta la)
+BitSet Grammar::first1(const LR1Item &item) const {
   const Production &prod = getProduction(item);
   const int length = prod.getLength();
   BitSet result(getTerminalCount());
@@ -590,7 +590,7 @@ ConflictSolution Grammar::resolveShiftReduceConflict(const GrammarSymbol &termin
     return CONFLICT_NOT_RESOLVED;
   }
 
-  if( (terminalPrecedence < productionPrecedence) 
+  if( (terminalPrecedence < productionPrecedence)
     || (productionPrecedence == terminalPrecedence && terminal.m_type != RIGHTASSOC_TERMINAL) ) {
     return CHOOSE_REDUCE;
   } else {
@@ -621,7 +621,7 @@ void Grammar::checkStateIsConsistent(const LR1State &state, StateResult &result)
         if(isReduceItem(item1) && item1.m_la.contains(t)) {
           const GrammarSymbol &terminal = getSymbol(t);
           switch(resolveShiftReduceConflict(terminal, item1)) {
-          case CONFLICT_NOT_RESOLVED: 
+          case CONFLICT_NOT_RESOLVED:
             m_SRconflicts++;
             result.m_errors.add(format(_T("Shift/reduce conflict. Shift or reduce by prod %-3d (prec=%d) on '%s' (prec=%d, %s).")
                                       ,item1.m_prod
@@ -707,7 +707,7 @@ void Grammar::checkStateIsConsistent(const LR1State &state, StateResult &result)
       }
     }
   }
-  
+
   for(int i = 0; i < itemCount; i++) {
     const LR1Item &itemi = state.m_items[i];
     if(!isShiftItem(itemi) && !isReduceItem(itemi)) {
@@ -720,7 +720,7 @@ void Grammar::checkStateIsConsistent(const LR1State &state, StateResult &result)
       }
     }
   } // for
-  
+
   result.m_actions.sort(parserActionCompareToken); // sort actions by symbolnumber (lookahead symbol)
   result.m_succs.sort(  parserActionCompareToken); // sort result by symbolnumber  (nonTerminal)
 }
@@ -814,7 +814,7 @@ String Grammar::itemToString(const LR1Item &item, int flags) const {
   if(flags & DUMP_LOOKAHEAD) {
     result += symbolSetToString(item.m_la);
   }
-  
+
   if((flags & DUMP_SUCC) && (item.m_succ >= 0)) {
     result += format(_T(" -> %d"), item.getSuccessor()); // ie not reduce-item
   }

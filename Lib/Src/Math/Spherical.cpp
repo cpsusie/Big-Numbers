@@ -27,7 +27,7 @@ void Spherical::init(double x, double y, double z) {
   } else { // y < 0
     r       = sqrt(dxy2 + z*z);
     fi      = acos(z / r);
-    theta   = 2*M_PI - acos(x / sqrt(dxy2)); 
+    theta   = 2*M_PI - acos(x / sqrt(dxy2));
   }
 }
 

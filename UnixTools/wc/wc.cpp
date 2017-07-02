@@ -176,7 +176,7 @@ int main(int argc, char **argv) {
         continue;
       case 't':
         printFileContent = false ;
-        printSubtotals   = false; 
+        printSubtotals   = false;
         continue;
       case 's':
         printFileContent = false;

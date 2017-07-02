@@ -430,22 +430,22 @@ static const TableType succ0147[] = { 10,  82, 151,  86,  93,  87,   9,  88,  10
 // Total size of all succNNNN tables:1676 bytes.
 
 static const TableType *successor[154] = {
-   succ0000,NULL    ,NULL    ,succ0003,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    
-  ,NULL    ,NULL    ,NULL    ,succ0013,succ0014,succ0015,NULL    ,NULL    ,NULL    ,NULL    
-  ,succ0020,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    
-  ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    
-  ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    
+   succ0000,NULL    ,NULL    ,succ0003,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL
+  ,NULL    ,NULL    ,NULL    ,succ0013,succ0014,succ0015,NULL    ,NULL    ,NULL    ,NULL
+  ,succ0020,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL
+  ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL
+  ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL
   ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,succ0059
-  ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    
+  ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL
   ,NULL    ,NULL    ,NULL    ,succ0073,succ0074,succ0075,succ0076,succ0077,succ0078,succ0079
   ,succ0080,succ0081,succ0082,succ0083,succ0084,succ0085,succ0086,NULL    ,succ0088,succ0089
   ,succ0090,NULL    ,NULL    ,NULL    ,NULL    ,succ0095,NULL    ,NULL    ,NULL    ,succ0099
-  ,succ0100,succ0101,succ0102,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    
-  ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    
-  ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    
-  ,NULL    ,NULL    ,succ0132,succ0133,succ0134,succ0135,NULL    ,succ0137,NULL    ,NULL    
-  ,NULL    ,NULL    ,succ0142,NULL    ,NULL    ,succ0145,succ0146,succ0147,NULL    ,NULL    
-  ,NULL    ,NULL    ,NULL    ,NULL    
+  ,succ0100,succ0101,succ0102,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL
+  ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL
+  ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL
+  ,NULL    ,NULL    ,succ0132,succ0133,succ0134,succ0135,NULL    ,succ0137,NULL    ,NULL
+  ,NULL    ,NULL    ,succ0142,NULL    ,NULL    ,succ0145,succ0146,succ0147,NULL    ,NULL
+  ,NULL    ,NULL    ,NULL    ,NULL
 }; // Size of pointertable:1232 bytes.
 
 /****************************************************************************\

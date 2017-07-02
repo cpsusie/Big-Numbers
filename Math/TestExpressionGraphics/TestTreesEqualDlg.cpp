@@ -42,7 +42,7 @@ BOOL CTestTreesEqualDlg::OnInitDialog() {
   __super::OnInitDialog();
 
   m_accelTabel = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDD_TREESEQUAL_ACCELERATOR));
-  
+
   m_cb[0].substituteControl(this, IDC_EDITEXPR1, _T("EqualExpr1"));
   m_cb[1].substituteControl(this, IDC_EDITEXPR2, _T("EqualExpr2"));
 

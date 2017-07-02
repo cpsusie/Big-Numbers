@@ -8,7 +8,7 @@ void textOutTransparentBackground(HDC hdc, const CPoint &p, const String &s, CFo
   }
   HGDIOBJ  oldFont  = SelectObject(hdc, font);
   COLORREF oldColor = SetTextColor(hdc, color);
-  
+
   BOOL ok = TextOut(hdc, p.x, p.y, s.cstr(), (int)s.length());
   String errorMsg;
   if(!ok) {

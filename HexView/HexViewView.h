@@ -21,7 +21,7 @@ private:
   int                   m_lineSize;          // Total number of bytes on 1 line
   int                   m_lastLineSize;      // Can be shorter than m_lineSize.
   __int64               m_lineCount;         // Number of lines in doc (depends on docSize and m_lineSize)
-  __int64               m_maxTopLine;        // Max value for m_topline, 
+  __int64               m_maxTopLine;        // Max value for m_topline,
   int                   m_maxLineOffset;     // Max value for m_lineoffset
   int                   m_maxLastLineOffset; // Max value for m_lineoffset for the last line
   CPoint                m_maxCaret;          // Max caret-position in window in units

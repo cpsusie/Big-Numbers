@@ -1,7 +1,7 @@
 #include "pch.h"
 #include <Math/MRIsPrime.h>
 
-bool MRisprime(int threadId, const BigInt &n, MillerRabinHandler *handler) { // Miller-Rabin probabilistic primality test 
+bool MRisprime(int threadId, const BigInt &n, MillerRabinHandler *handler) { // Miller-Rabin probabilistic primality test
   static const ConstBigReal BIGREAL_3(3);
 
   DigitPool *pool = n.getDigitPool();

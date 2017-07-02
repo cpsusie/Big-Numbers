@@ -123,7 +123,7 @@ void CFindDlg::addRegexSymbol(const TCHAR *s, int cursorpos) {
   CComboBox *b = (CComboBox*)GetDlgItem(IDC_COMBOFINDWHAT);
 
   UpdateData();
-  
+
   String reg = m_findWhat.GetBuffer(m_findWhat.GetLength());
 
   reg = substr(reg,0,m_selStart) + s + substr(reg,m_selEnd,reg.length());
@@ -190,7 +190,7 @@ BOOL CFindDlg::PreTranslateMessage(MSG* pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     return true;
   }
-    
+
   BOOL ret = __super::PreTranslateMessage(pMsg);
 
   if(m_currentControl == IDC_COMBOFINDWHAT) {
@@ -204,7 +204,7 @@ BOOL CFindDlg::PreTranslateMessage(MSG* pMsg) {
 }
 
 void CFindDlg::OnGotoFindWhat() {
-  GetDlgItem(IDC_COMBOFINDWHAT)->SetFocus();    
+  GetDlgItem(IDC_COMBOFINDWHAT)->SetFocus();
 }
 
 void CFindDlg::OnSelEndOkComboFindWhat() {

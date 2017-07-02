@@ -24,7 +24,7 @@ private:
   Stack<ByteCount> m_dirStack;
   void printInfo(const TCHAR *path, const ByteCount &byteCount);
 public:
-  CharCounter(bool printSubTotals, bool printTotalFirst, bool verbose);  
+  CharCounter(bool printSubTotals, bool printTotalFirst, bool verbose);
   void handleFileName(const TCHAR *name, DirListEntry &info);
   void handleStartDir(const TCHAR *name);
   void handleEndDir(  const TCHAR *name);

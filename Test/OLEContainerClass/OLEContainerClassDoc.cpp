@@ -27,7 +27,7 @@ BEGIN_DISPATCH_MAP(COLEContainerClassDoc, COleServerDoc)
 END_DISPATCH_MAP()
 
 // Note: we add support for IID_IOLEContainerClass to support typesafe binding
-//  from VBA.  This IID must match the GUID that is attached to the 
+//  from VBA.  This IID must match the GUID that is attached to the
 //  dispinterface in the .ODL file.
 
 // {2A8FCBEA-37C2-4561-BD3F-E3117DEAF484}

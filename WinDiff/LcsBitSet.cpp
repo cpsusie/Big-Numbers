@@ -2,7 +2,7 @@
 #include <BitSet.h>
 #include "LcsBitSet.h"
 
-LcsBitSet::LcsBitSet(const LineArray &a, const LineArray &b, LcsComparator &cmp) 
+LcsBitSet::LcsBitSet(const LineArray &a, const LineArray &b, LcsComparator &cmp)
 : Lcs(cmp, NULL)
 {
   m_X = m_Y = NULL;
@@ -219,7 +219,7 @@ void LcsBitSet::findLcs(ElementPairArray &result) {
   for(size_t i = 1; i <= m_m; i++) {
     M[m_X[i]].add(i);
   }
-  
+
   for(size_t i = 1; i <= m_symbolCount; i++) {
     Mm.add(compl(M[i]));
   }

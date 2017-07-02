@@ -17,7 +17,7 @@ namespace TestPolynomial {
 
   TEST_CLASS(TestPolynomial) {
   public:
-    
+
     TEST_METHOD(Poly) {
       const Real P_1[] = { 5, 3 };
       const Real P_2[] = { 7, 5, 3};

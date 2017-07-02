@@ -59,7 +59,7 @@ public:
     m_count++;
   }
 
-  int getCount() const { 
+  int getCount() const {
     return m_count;
   }
 };

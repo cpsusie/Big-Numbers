@@ -39,7 +39,7 @@ BigRealLUMatrix& BigRealLUMatrix::operator=(const BigRealMatrix& src) { // assig
 }
 
 /* --------------- crout algorithm --------------- */
-/*  Implements Crout LU-decomposition as described in 
+/*  Implements Crout LU-decomposition as described in
     "A first course in numerical analysis", Ralston & Rabinowitz 2. ed. p. 421
 */
 
@@ -114,7 +114,7 @@ void BigRealLUMatrix::lowerUpper() {
 }
 
 // Computes x so that A*x=y. Assumes A has been LU decomposed with lowerupper
-BigRealVector BigRealLUMatrix::solve(const BigRealVector &y) const { 
+BigRealVector BigRealLUMatrix::solve(const BigRealVector &y) const {
   const BigRealLUMatrix &a      = *this;
   const intptr_t         n      = getRowCount();
   const UINT             digits = getPrecision();

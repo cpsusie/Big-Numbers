@@ -293,9 +293,9 @@ void BigRealTestClass::measureQuot() {
                << udparam(9)  << lnt.m_timeUsage                        << _T(" ")
                << udparam(9)  << newtonTimeExpected                     << _T(" ")
                << udparam(9)  << lnt.m_timeUsage/newtonTimeExpected     << _T(" ")
-               << ta[0].m_method << _T("/") 
-               << ta[1].m_method << _T("/") 
-               << ta[2].m_method << _T("/") 
+               << ta[0].m_method << _T("/")
+               << ta[1].m_method << _T("/")
+               << ta[2].m_method << _T("/")
                << ta[3].m_method
                << NEWLINE;
       dataFile.flush();
@@ -314,9 +314,9 @@ void BigRealTestClass::measureQuot() {
                << udparam(9)  << lnt.m_timeUsage                        << _T(" ")
                << udparam(9)  << newtonTimeExpected                     << _T(" ")
                << udparam(9)  << lnt.m_timeUsage/newtonTimeExpected     << _T(" ")
-               << ta[0].m_method << _T("/") 
-               << ta[1].m_method << _T("/") 
-               << ta[2].m_method << _T("/") 
+               << ta[0].m_method << _T("/")
+               << ta[1].m_method << _T("/")
+               << ta[2].m_method << _T("/")
                << ta[3].m_method
                << NEWLINE;
       tcout.flush();

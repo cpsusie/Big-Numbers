@@ -1,7 +1,7 @@
 #include "pch.h"
 #include <Console.h>
 
-ComboBox::ComboBox(Dialog *dlg, int id, int left, int top, int width, int height, const String &label) : 
+ComboBox::ComboBox(Dialog *dlg, int id, int left, int top, int width, int height, const String &label) :
 DialogField(dlg,id,left,top,width,height,label)
 {
   m_tw = NULL;
@@ -63,7 +63,7 @@ bool ComboBox::key(int event) {
           setScrollOffset(m_scrollOffset + 1);
         setSel(m_currentSel + 1);
         return true;
-    
+
       case SCAN_UP    :
         if(m_currentSel == m_scrollOffset)
           setScrollOffset(m_scrollOffset - 1);

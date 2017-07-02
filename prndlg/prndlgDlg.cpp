@@ -65,7 +65,7 @@ BOOL CPrndlgDlg::OnInitDialog() {
 
   SetIcon(m_hIcon, TRUE);			// Set big icon
   SetIcon(m_hIcon, FALSE);		// Set small icon
-  
+
   return TRUE;  // return TRUE  unless you set the focus to a control
 }
 

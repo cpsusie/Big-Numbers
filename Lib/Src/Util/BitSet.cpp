@@ -69,7 +69,7 @@ BitSet::BitSet(const BitSet &set) {
   m_capacity = set.m_capacity;
   const size_t atomCount = _BS_ATOMCOUNT(m_capacity);
   m_p = new Atom[atomCount];
-  memcpy(m_p,set.m_p,atomCount * sizeof(Atom)); 
+  memcpy(m_p,set.m_p,atomCount * sizeof(Atom));
 }
 
 BitSet &BitSet::operator=(const BitSet &rhs) {
@@ -115,7 +115,7 @@ BitSet &BitSet::remove(size_t a, size_t b) {
   size_t bIndex = _BS_ATOMINDEX(b);
 
   if(aIndex < bIndex) {
-    if(a % _BS_BITSINATOM) { 
+    if(a % _BS_BITSINATOM) {
       m_p[aIndex] &= _BS_MASKATOM(a%_BS_BITSINATOM);
       aIndex++;
     }
@@ -143,7 +143,7 @@ BitSet &BitSet::add(size_t a, size_t b) {
   size_t bIndex = _BS_ATOMINDEX(b);
 
   if(aIndex < bIndex) {
-    if(a % _BS_BITSINATOM) { 
+    if(a % _BS_BITSINATOM) {
       m_p[aIndex] |= ~_BS_MASKATOM(a%_BS_BITSINATOM);
       aIndex++;
     }
@@ -501,7 +501,7 @@ void BitSet::getRangeTable(CompactInt64Array &rangeTable, BYTE shift) const {
   for(BitSetIterator it((BitSet&)(*this)); it.hasNext();) {
     const size_t &e = *(const size_t*)it.next();
     if(++counter >= currentLimit) {
-  
+
 //      printf("hashTable[%3d]:%11s -> %s\n", m_rangeTable.size(), format1000(currentLimit).cstr(), format1000(e).cstr());
 
       rangeTable.add(e+1);
@@ -551,7 +551,7 @@ size_t BitSet::oldGetCount(size_t from, size_t to) const {
   size_t fromIndex = BYTEINDEX(from);
   size_t toIndex   = BYTEINDEX(to  );
   const BYTE *p = (const BYTE*)m_p;
- 
+
   if(fromIndex < toIndex) {
     size_t result;
     if(from % 8) {
@@ -560,12 +560,12 @@ size_t BitSet::oldGetCount(size_t from, size_t to) const {
     } else {
       result = 0;
     }
- 
+
     if((to+1) % 8) {
       result += setBitsCount[p[toIndex] & _BS_MASKATOM(to%8+1)];
       toIndex--;
     }
- 
+
     intptr_t j = toIndex - fromIndex + 1;
     if(j > 0) {
       for(p += fromIndex; j--;) {

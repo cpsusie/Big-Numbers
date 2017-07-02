@@ -712,7 +712,7 @@ class Mesh {
   // Triangular bounding box vertices.
   Vertex infvertex1, infvertex2, infvertex3;
 
-  
+
   Triangle *dummytri;             // Pointer to the `Triangle' that occupies all of "outer space."
   Triangle *dummytribase;         // Keep base address so we can free() it later.
 
@@ -11573,7 +11573,7 @@ int triangleMain(int argc, char **argv)
   m.hullsize = m.delaunay();                // Triangulate the vertices.
 #else // not CDT_ONLY
   if (b.refine) {                           // Read and reconstruct a mesh.
-    
+
 #ifdef TRILIBRARY
     m.hullsize = m.reconstruct(in->trianglelist
                               ,in->triangleattributelist

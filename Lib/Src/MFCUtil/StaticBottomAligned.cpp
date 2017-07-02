@@ -49,7 +49,7 @@ void CStaticBottomAligned::substituteControl(CWnd *parent, int id) {
 
 void CStaticBottomAligned::OnPaint() {
   CPaintDC dc(this);
-  repaint(dc);  
+  repaint(dc);
 }
 
 void CStaticBottomAligned::repaint(CDC &dc) {

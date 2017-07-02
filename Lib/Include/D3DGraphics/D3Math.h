@@ -7,7 +7,7 @@
 #include "Math/Point3D.h"
 #include "D3Error.h"
 
-//#define LEFTHANDED 
+//#define LEFTHANDED
 
 #ifdef LEFTHANDED
 
@@ -297,7 +297,7 @@ public:
     D3DXMATRIX result;
     return *D3DXMatrixScaling(&result, m_scale.x, m_scale.y, m_scale.z);
   }
-  
+
   String toString(int dec=3) const;
   inline bool operator==(const D3PosDirUpScale &pdus) const {
     return (m_pos == pdus.m_pos) && (m_dir == pdus.m_dir) && (m_up == pdus.m_up) && (m_scale == pdus.m_scale);

@@ -70,7 +70,7 @@ SyntaxNode::SyntaxNode(const SyntaxNode *src) {
   default            :
     n = src->childCount();
     m_attributes.m_children.m_count = n;
-    if(n == 0) 
+    if(n == 0)
       m_attributes.m_children.m_child = NULL;
     else {
       m_attributes.m_children.m_child = new SyntaxNode*[n];

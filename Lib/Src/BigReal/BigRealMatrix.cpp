@@ -75,7 +75,7 @@ BigRealVector operator*(const BigRealMatrix &lts, const BigRealVector& rhs) {
   if(lts.getColumnCount() != rhs.getDimension()) {
     throwBigRealException(_T("operator*(BigRealMatrix,BigRealVector):Invalid dimension. Matrix.%s, Vector.%s"),lts.getDimensionString().cstr(),rhs.getDimensionString().cstr());
   }
-  
+
   BigRealVector result(lts.getRowCount(),digits);
   for(size_t r = 0; r < lts.getRowCount(); r++) {
     BigReal sum = 0;
@@ -131,14 +131,14 @@ BigRealMatrix operator+(const BigRealMatrix& lts, const BigRealMatrix& rhs) {
   const UINT   digits = min(lts.getPrecision(), rhs.getPrecision());
 
   lts.checkSameDimension(__TFUNCTION__, rhs);
-  
+
   BigRealMatrix result(rows,cols,digits);
   for(size_t r = 0; r < rows; r++) {
     for(size_t c = 0; c < cols; c++) {
       result(r,c) = rSum(lts(r,c), rhs(r,c), digits);
     }
   }
-  return result;   
+  return result;
 }
 
 BigRealMatrix operator-(const BigRealMatrix& lts, const BigRealMatrix& rhs) {

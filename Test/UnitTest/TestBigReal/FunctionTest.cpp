@@ -13,7 +13,7 @@ void FunctionTest1ArgND64D80::runTest(int threadId, DigitPool *pool) {
   for(size_t i = 0; i < testData.size(); i++) {
     const BigReal &x           = testData[i];
     const BigReal  exactResult = m_f1(x, maxTolerance);
-  
+
     if(m_f1_64 != NULL) {
       checkBigRealDouble64(m_functionName, m_f1_64, x, exactResult);
     }
@@ -189,7 +189,7 @@ void FunctionTest1ArgRelative::runTest(int threadId, DigitPool *pool) {
   for(size_t i = 0; i < testData.size(); i++) {
     const BigReal &x           = testData[i];
     const BigReal  exactResult = m_rf1(x, MAXDIGITS);
-  
+
     for(int digits = 1; digits <= MAXDIGITS; digits += DIGITSTEP) {
       if(stat.isTimeToPrint()) {
         stat.printLoopMessage(_T("i:%-4d[0..%d], digits:%-4d[0..%d]")
@@ -290,7 +290,7 @@ void testQuot3(TestStatistic &stat) {
                  << _T("quotNewton - quotLinear64  :")                 << FullFormatBigReal(qn - ql64)   << NEWLINE
                  << _T("quotLinear32 - quotLinear64:")                 << FullFormatBigReal(ql32 - ql64) << NEWLINE;
           throwException(_T("Error in testQuot3"));
-        } 
+        }
       }
     }
   }
@@ -323,7 +323,7 @@ void testPi(TestStatistic &stat) {
   const int  maxDecimals = 2000;
 
   stat.setTotalTestCount((maxDecimals - minDecimals) / step);
-  
+
   for(int digits = minDecimals; digits < maxDecimals; digits += step) {
     const BigReal tolerance = e(BIGREAL_1, -digits, pool);
     const BigReal result    = pi(tolerance, pool);

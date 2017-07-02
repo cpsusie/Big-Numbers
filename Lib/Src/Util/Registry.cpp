@@ -57,13 +57,13 @@ const TCHAR *RegistryKey::getRootName(HKEY key) { // static
   }
 }
 
-void RegistryKey::checkResult(long result, const TCHAR *function, const TCHAR *regFunction) { // static 
+void RegistryKey::checkResult(long result, const TCHAR *function, const TCHAR *regFunction) { // static
   if(result != ERROR_SUCCESS) {
     throwException(_T("%s:%s:%s"), function, regFunction, getErrorText(result).cstr());
   }
 }
 
-void RegistryKey::checkResult(long result, const TCHAR *function, const TCHAR *regFunction, const String &argument) { // static 
+void RegistryKey::checkResult(long result, const TCHAR *function, const TCHAR *regFunction, const String &argument) { // static
   if(result != ERROR_SUCCESS) {
     throwException(_T("%s:%s(\"%s\"):%s"), function, regFunction, argument.cstr(), getErrorText(result).cstr());
   }
@@ -136,7 +136,7 @@ ReferenceCountedRegKey *RegistryKey::newCountedKey(HKEY key, bool closeKeyOnFail
       REGISTRYLOG("close",key);
       RegCloseKey(key);
     }
-    throwException(_T("RegistryKey::newCountedKey() failed")); 
+    throwException(_T("RegistryKey::newCountedKey() failed"));
   }
   return result;
 }
@@ -153,10 +153,10 @@ RegistryKey RegistryKey::openKey(const String &subKey, REGSAM samDesired) const 
 
 void RegistryKey::deleteKey(const String &keyName) const {
   DEFINEMETHODNAME;
-   // deleteKey will always fail to delete a key with sub keys 
+   // deleteKey will always fail to delete a key with sub keys
    // and deleteKeyAndSubKeys will always work.
 
-  RegistryKey key = openKey(keyName); 
+  RegistryKey key = openKey(keyName);
   Iterator<String> it = key.getSubKeyIterator();
   if(it.hasNext()) {
     throwException(_T("%s(\"%s\") failed. Subkey exist"), method, key.getName().cstr());
@@ -179,14 +179,14 @@ void RegistryKey::deleteKeyAndSubkeys(const String &keyName) const {
 }
 
 RegistryKey RegistryKey::createKey(const String &subKey
-                                  ,const String &keyClass 
+                                  ,const String &keyClass
                                   ,unsigned long options
                                   ,REGSAM samDesired
                                   ,LPSECURITY_ATTRIBUTES securityAttributes) const {
   unsigned long disposition;
 
   RegistryKey key = createOrOpenKey(subKey, &disposition, keyClass, options, samDesired, securityAttributes);
-   
+
   if(disposition != REG_CREATED_NEW_KEY) {
     REGISTRYLOG("close",key.m_key->getObject());
     RegCloseKey(key.m_key->getObject());
@@ -263,7 +263,7 @@ bool RegistryKey::hasSubkey(const String &subKey, REGSAM samDesired) const {
     REGISTRYLOG("close",key);
 
     RegCloseKey(key);
-  } else { // should check for errors that mean we dont have it, or we 
+  } else { // should check for errors that mean we dont have it, or we
            // have it but not with the right access and throw if a real error
     hasKey = false;
   }
@@ -303,13 +303,13 @@ String RegistryKey::getClass() {
   return _T("unknown class");
 /*
   long result = RegQueryInfoKey(key.m_key->getObject()
-                               ,NULL    // Not interested in this key's class 
+                               ,NULL    // Not interested in this key's class
                                ,NULL    // ditto
                                ,NULL    // Reserved
                                ,&subKeyCount
                                ,&maxNameLength
                                ,&maxClassLength
-                               ,NULL    // Not interested in number of values 
+                               ,NULL    // Not interested in number of values
                                ,NULL    // Not interested in max length of value name
                                ,NULL    // Not interested in max length of value buffer
                                ,NULL    // Not interested in length of security descriptor
@@ -909,7 +909,7 @@ String RegistryValue::toString() const {
   }
 }
 
-String RegistryValue::typeAsString(unsigned long type) { // static 
+String RegistryValue::typeAsString(unsigned long type) { // static
   switch(type) {
   case REG_NONE                      : return _T("REG_NONE");
   case REG_SZ                        : return _T("REG_SZ");
@@ -977,13 +977,13 @@ void SubKeyIterator::queryKeyInfo() {
   unsigned long subKeyCount   = 0;
   unsigned long maxNameLength = 0;
   long result = RegQueryInfoKey(m_key.m_key->getObject()
-                               ,NULL    // Not interested in this key's class 
+                               ,NULL    // Not interested in this key's class
                                ,NULL    // ditto
                                ,NULL    // Reserved
                                ,&subKeyCount
                                ,&maxNameLength
                                ,NULL
-                               ,NULL    // Not interested in number of values 
+                               ,NULL    // Not interested in number of values
                                ,NULL    // Not interested in max length of value name
                                ,NULL    // Not interested in max length of value buffer
                                ,NULL    // Not interested in length of security descriptor
@@ -1034,7 +1034,7 @@ void *SubKeyIterator::next() {
       noNextElementError(s_className);
       break;
 
-    case ERROR_MORE_DATA: // Size has changed since we started 
+    case ERROR_MORE_DATA: // Size has changed since we started
       cleanup();
       queryKeyInfo();
       break;
@@ -1120,15 +1120,15 @@ void RegValueIterator::queryKeyInfo() {
   unsigned long maxNameLength  = 0;
   unsigned long maxValueLength = 0;
   long result = RegQueryInfoKey(m_key.m_key->getObject()
-                               ,NULL     // Not interested in this key's class 
+                               ,NULL     // Not interested in this key's class
                                ,NULL     // ditto
                                ,NULL     // Reserved
                                ,NULL     // Not interested in number of sub keys
                                ,NULL     // Not interested in max sub key name length
                                ,NULL     // Not interested in max sub key class length
-                               ,&valueCount 
-                               ,&maxNameLength 
-                               ,&maxValueLength 
+                               ,&valueCount
+                               ,&maxNameLength
+                               ,&maxValueLength
                                ,NULL     // Not interested in length of security descriptor
                                ,NULL);   // Not interested in last write time
   RegistryKey::checkResult(result, __TFUNCTION__, _T("RegQueryInfoKey"), m_key.getName());
@@ -1189,7 +1189,7 @@ void *RegValueIterator::next() {
       noNextElementError(s_className);
       break;
 
-    case ERROR_MORE_DATA:                // Size has changed since we started 
+    case ERROR_MORE_DATA:                // Size has changed since we started
       cleanup();
       queryKeyInfo();
       break;

@@ -2,7 +2,7 @@
 #include <XMLUtil.h>
 #include "ParametricGraph.h"
 
-ParametricGraphParameters::ParametricGraphParameters(const String &name, COLORREF color, int rollAvgSize, GraphStyle style, TrigonometricMode trigonomtetricMode) 
+ParametricGraphParameters::ParametricGraphParameters(const String &name, COLORREF color, int rollAvgSize, GraphStyle style, TrigonometricMode trigonomtetricMode)
 : GraphParameters(name,color,rollAvgSize,style) {
   m_trigonometricMode = trigonomtetricMode;
   m_interval          = DoubleInterval(0,1);

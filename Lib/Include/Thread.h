@@ -27,14 +27,14 @@ public:
   }
 };
 
-/* Threadpriorities defined in winbase.h 
- *  THREAD_PRIORITY_IDLE            
- *  THREAD_PRIORITY_LOWEST          
- *  THREAD_PRIORITY_BELOW_NORMAL    
- *  THREAD_PRIORITY_NORMAL          
- *  THREAD_PRIORITY_ABOVE_NORMAL    
- *  THREAD_PRIORITY_TIME_CRITICAL   
- *  THREAD_PRIORITY_HIGHEST         
+/* Threadpriorities defined in winbase.h
+ *  THREAD_PRIORITY_IDLE
+ *  THREAD_PRIORITY_LOWEST
+ *  THREAD_PRIORITY_BELOW_NORMAL
+ *  THREAD_PRIORITY_NORMAL
+ *  THREAD_PRIORITY_ABOVE_NORMAL
+ *  THREAD_PRIORITY_TIME_CRITICAL
+ *  THREAD_PRIORITY_HIGHEST
  */
 class Thread : public Runnable {
 private:

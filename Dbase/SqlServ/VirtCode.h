@@ -118,8 +118,8 @@ private:
   }
 public:
   friend class CodeGeneration;
-  inline VirtualCode() { 
-    m_head.m_totalSize = m_head.m_dataOffset = 0; 
+  inline VirtualCode() {
+    m_head.m_totalSize = m_head.m_dataOffset = 0;
     m_head.m_hostvarDescriptionList = -1;
   }
   UINT append(const void *data, UINT size);

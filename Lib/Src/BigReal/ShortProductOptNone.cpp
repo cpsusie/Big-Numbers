@@ -25,7 +25,7 @@ void BigReal::baseb(const BigReal &x) {
 }
 
 // Assume *this = zero and x != zero and length > 0
-void BigReal::baseb(const BigReal &x, int length) { // length in NUMBERDIGITS, 
+void BigReal::baseb(const BigReal &x, int length) { // length in NUMBERDIGITS,
   m_expo = expoBaseB2Baseb(x.m_expo);
   int i = length;
   for(Digit *p = x.m_first; i-- && p; p = p->next) {

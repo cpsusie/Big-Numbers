@@ -8,7 +8,7 @@ protected:
   int m_clientRectWidth;
   int m_columnWidthSum;
 
-  ClientRectWidthColumnWidthSum(int clientRectWidth, int columnWidthSum) 
+  ClientRectWidthColumnWidthSum(int clientRectWidth, int columnWidthSum)
     : m_clientRectWidth(clientRectWidth)
     , m_columnWidthSum(columnWidthSum)
   {
@@ -188,7 +188,7 @@ public:
   bool isInitialized() const {
     return m_wnd != NULL;
   }
-  void OnInitDialog(CWnd *wnd, int flags = 0);                    // flags any combination of 
+  void OnInitDialog(CWnd *wnd, int flags = 0);                    // flags any combination of
                                                                   // RESIZE_FONT, RESIZE_MENUFONT + (FONT_RELATIVE_SIZE or RETAIN_ASPECTRATIO)
   virtual void OnSize(UINT nType, int cx, int cy) {
   };

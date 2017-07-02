@@ -42,7 +42,7 @@ void turneringsplan::findturneringsplan(int antalhold) {
           kampe[dag][antalkampe[dag]++] = kamp(i,j);
           break;
         }
-      }  
+      }
     }
     startdag = (startdag+2) % antalspilledage;
   }
@@ -63,7 +63,7 @@ void turneringsplan::print(FILE *f) {
 
 int main(int argc, char **argv) {
   for(;;) {
-    int n = inputInt(_T("angiv antal hold:")); 
+    int n = inputInt(_T("angiv antal hold:"));
     turneringsplan s;
     s.findturneringsplan(n);
     s.print();

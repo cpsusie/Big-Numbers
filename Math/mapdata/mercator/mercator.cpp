@@ -14,17 +14,17 @@ Lo = longitude in radians (positive east)
 E = easting (meters)
 N = northing (meters)
 
-For the sphere 
+For the sphere
 
 E = r Lo
 N = r ln [ tan (pi/4 + L/2) ]
 
-where 
+where
 
 r = radius of the sphere (meters)
 ln() is the natural logarithm
 
-For the ellipsoid 
+For the ellipsoid
 
 
 E = a Lo

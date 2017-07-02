@@ -454,7 +454,7 @@ static void showfile(char *fname) {
 }
 
 void CWordsepgraphDlg::OnFileTrainingdata() {
-  showfile("ordliste"); 
+  showfile("ordliste");
 }
 
 void CWordsepgraphDlg::OnFileErrorwords() {

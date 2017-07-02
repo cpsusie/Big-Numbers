@@ -120,7 +120,7 @@ void D3LightControl::prepareEffect() {
 }
 
 void D3LightControl::createEffect() {
-  const char *effectSourceText = 
+  const char *effectSourceText =
       "float4   g_MaterialDiffuseColor;    // Material's diffuse color                             \r\n"
       "float3   g_LightDir;                // Light's direction in world space                     \r\n"
       "float4x4 g_mWorld;                  // World matrix for object                              \r\n"

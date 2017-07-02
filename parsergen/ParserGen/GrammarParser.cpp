@@ -20,7 +20,7 @@ void GrammarParser::readGrammar() {
       section++;
       break;
 
-    case TERM        : 
+    case TERM        :
     case LEFT        :
     case RIGHT       :
     case NONASSOC    :
@@ -93,7 +93,7 @@ void GrammarParser::parseTermDef() {
   case RIGHT   : type = RIGHTASSOC_TERMINAL; m_currentPrecedence++; break;
   case NONASSOC: type = NONASSOC_TERMINAL  ; m_currentPrecedence++; break;
   }
-  
+
   while(next() == NAME) {
     String name = m_lex.getText();
     bool ok = true;
@@ -162,7 +162,7 @@ void GrammarParser::parseRightSide(int leftSide) {
       rightIndex = m_grammar.addNonTerminal(name, pos);
     } else if(m_grammar.isTerminal(rightIndex)) {
       prod.m_precedence = m_grammar.getSymbol(rightIndex).m_precedence;
-    } 
+    }
     prod.m_rightSide.add(RightSideSymbol(rightIndex, modifier));
   }
   if(m_token == PREC) { // %prec specifier
@@ -197,12 +197,12 @@ void GrammarParser::parseRightSide(int leftSide) {
     }
   }
 
-  if(m_token == LCURL) { 
+  if(m_token == LCURL) {
     SourcePosition sourcePos = m_lex.getSourcePos();
     CompactShortArray usedDollar;
     m_actionBody = EMPTYSTRING;
     m_lex.collectBegin();
-    next(); 
+    next();
     parseActionBody(sourcePos, usedDollar, prod);
     if(m_token != RCURL) {
       m_lex.error(_T("Expected '}'."));

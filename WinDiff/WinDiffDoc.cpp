@@ -89,7 +89,7 @@ bool WinDiffFilter::setFileFormat(const FileFormat *fileFormat) {
     m_fileFormat.clear();
     changed = true;
   }
-  if(!m_fileFormat.isEmpty()) { 
+  if(!m_fileFormat.isEmpty()) {
     m_flags |= FLAG_IGNORE_COLUMNS;
   } else {
     m_flags &= ~FLAG_IGNORE_COLUMNS;
@@ -147,7 +147,7 @@ String WinDiffFilter::stripLineComments(const String &s) { // static
     case 1:                                      // inside double-quoted string literal
       switch(*cp) {
       case _T('\\'): state = 2;        break;    // escape-character inside double-quoted string literal
-      case _T('"') : 
+      case _T('"') :
       case NL      : state = 0;        break;    // exit double-quoted string literal
       default  :                       break;    // stay inside double-quoted string literal
       }
@@ -163,7 +163,7 @@ String WinDiffFilter::stripLineComments(const String &s) { // static
     case 3:                                      // inside single-quoted string literal
       switch(*cp) {
       case _T('\\'): state = 4;        break;    // escape-character inside single-quoted string listeral
-      case _T('\''): 
+      case _T('\''):
       case NL      : state = 0;        break;    // exit single-quoted string literal
       default      :                   break;    // stay inside single-quoted string literal
       }
@@ -197,9 +197,9 @@ String WinDiffFilter::stripLineComments(const String &s) { // static
       }
       break;
 
-    case 8:                                      // after * inside /* ... */ comment, 
+    case 8:                                      // after * inside /* ... */ comment,
       if(*cp == _T('/')) {                       // end of comment
-        state = 0; 
+        state = 0;
       } else {
         state = 7;
       }
@@ -233,7 +233,7 @@ String WinDiffFilter::stripStrings(const String &s) { // static
     case 1:                               // inside double-quoted string literal
       switch(*cp) {
       case _T('\\'): state = 2; continue; // escape-character inside double-quoted string literal
-      case _T('"') : 
+      case _T('"') :
       case NL      : state = 0; continue; // exit double-quoted string literal
       default      :            continue; // stay inside double-quoted string literal
       }
@@ -249,7 +249,7 @@ String WinDiffFilter::stripStrings(const String &s) { // static
     case 3:                               // inside single-quoted string literal
       switch(*cp) {
       case _T('\\'): state = 4; continue; // escape-character inside single-quoted string listeral
-      case _T('\''): 
+      case _T('\''):
       case NL      : state = 0; continue; // exit single-quoted string literal
       default      :            continue; // stay inside single-quoted string literal
       }
@@ -282,9 +282,9 @@ String WinDiffFilter::stripStrings(const String &s) { // static
       }
       break;
 
-    case 8:                               // after * inside /* ... */ comment, 
+    case 8:                               // after * inside /* ... */ comment,
       if(*cp == _T('/')) {                // end of comment
-        state = 0; 
+        state = 0;
       } else {
         state = 7;
       }
@@ -348,7 +348,7 @@ String WinDiffFilter::stripMultilineComments(const String &s) { // static.
     case 1:                                       // inside double-quoted string literal
       switch(*cp) {
       case _T('\\'): state = 2;        break;     // escape-character inside double-quoted string literal
-      case _T('"') : 
+      case _T('"') :
       case NL      : state = 0;        break;     // exit double-quoted string literal
       default      :                   break;     // stay inside double-quoted string literal
       }
@@ -364,7 +364,7 @@ String WinDiffFilter::stripMultilineComments(const String &s) { // static.
     case 3:                                       // inside single-quoted string literal
       switch(*cp) {
       case _T('\\'): state = 4;        break;     // escape-character inside single-quoted string listeral
-      case _T('\''): 
+      case _T('\''):
       case NL      : state = 0;        break;     // exit single-quoted string literal
       default      :                   break;     // stay inside single-quoted string literal
       }
@@ -380,7 +380,7 @@ String WinDiffFilter::stripMultilineComments(const String &s) { // static.
     case 5:                                      // just read /
       switch(*cp) {
       case _T('/'):  state = 6;        break;    // enter //... comment
-      case _T('*'):  state = 7; dst--; continue; // remove last added character ('/') and enter /* ... */ comment, 
+      case _T('*'):  state = 7; dst--; continue; // remove last added character ('/') and enter /* ... */ comment,
       default     :  state = 0;        break;
       }
       break;
@@ -397,7 +397,7 @@ String WinDiffFilter::stripMultilineComments(const String &s) { // static.
       }
       continue;                                  // don't add anything to result
 
-    case 8:                                      // after * inside /* ... */ comment, 
+    case 8:                                      // after * inside /* ... */ comment,
       if(*cp == _T('/')) {                       // end of comment
         state = 0;
       } else {

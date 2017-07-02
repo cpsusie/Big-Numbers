@@ -59,13 +59,13 @@ public:
     m_translateTable = translateTable;
 
     if(m_forwardSearch) {
-      compileForward(); 
-      m_search = m_translateTable 
+      compileForward();
+      m_search = m_translateTable
                ? &KMPAutomateTemplate<Ctype>::searchForwardTranslate
                : &KMPAutomateTemplate<Ctype>::searchForwardNoTranslate;
     } else {
       compileBackward();
-      m_search = m_translateTable 
+      m_search = m_translateTable
                ? &KMPAutomateTemplate<Ctype>::searchBackwardTranslate
                : &KMPAutomateTemplate<Ctype>::searchBackwardNoTranslate;
     }
@@ -118,13 +118,13 @@ private:
     m_next[0] = -1;
     int j = -1;
     size_t i = 0;
-    do { 
+    do {
       if(j == -1 || charsEqualC(m_pattern[i], m_pattern[j])) {
         i++;
         j++;
         m_next[i] = charsEqualC(m_pattern[j], m_pattern[i]) ? m_next[j] : j;
       } else {
-        j = m_next[j]; 
+        j = m_next[j];
       }
     }
     while(i < m_patternLength);
@@ -144,7 +144,7 @@ private:
   // searchForward finds the first occurence of the pattern in text
   intptr_t searchForwardNoTranslate(const Ctype *text, size_t textLength) const {
     for(intptr_t i = 0, j = 0; i < (intptr_t)textLength; ) {
-      if((j == -1) || (m_pattern[j] == text[i])) { 
+      if((j == -1) || (m_pattern[j] == text[i])) {
         i++; j++;
         if(j == m_patternLength) {
           return i - j;
@@ -159,7 +159,7 @@ private:
   // searchBackward finds the last occurence of the pattern in text
   intptr_t searchBackwardNoTranslate(const Ctype *text, size_t textLength) const {
     for(intptr_t i = textLength - 1, j = 0; i >= 0;) {
-      if((j == -1) || (m_pattern[j] == text[i])) { 
+      if((j == -1) || (m_pattern[j] == text[i])) {
         i--; j++;
         if(j == m_patternLength) {
           return i + 1;
@@ -173,7 +173,7 @@ private:
 
   intptr_t searchForwardTranslate(const Ctype *text, size_t textLength) const {
     for(intptr_t i = 0, j = 0; i < (intptr_t)textLength; ) {
-      if((j == -1) || charsEqual(m_pattern[j],text[i])) { 
+      if((j == -1) || charsEqual(m_pattern[j],text[i])) {
         i++; j++;
         if(j == m_patternLength) {
           return i - j;
@@ -188,7 +188,7 @@ private:
   // searchBackward finds the last occurence of the pattern in text
   intptr_t searchBackwardTranslate(const Ctype *text, size_t textLength) const {
     for(intptr_t i = textLength - 1, j = 0; i >= 0;) {
-      if((j == -1) || charsEqual(m_pattern[j],text[i])) { 
+      if((j == -1) || charsEqual(m_pattern[j],text[i])) {
         i--; j++;
         if(j == m_patternLength) {
           return i + 1;

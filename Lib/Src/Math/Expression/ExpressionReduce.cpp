@@ -436,7 +436,7 @@ SNode Expression::reduceSum(SNode n) {
 
   RETURNNODE( addentsToNode(reduced) );
 }
- 
+
 /*
  * n1,n2 expression in a sum
  * return true if n1 = cos^2(expression) and n2 = sin^2(expression) or vice versa
@@ -1102,7 +1102,7 @@ SNode Expression::reduceRationalPower(const Rational &base, const Rational &expo
     if(niceRootFactor != 1) {
       fa.add(numberExpression(niceRootFactor), numberExpression(exponent.getNumerator()));
     }
-    
+
     const Rational nonRootFactor = pow(Rational(bnPrimeFactors.getProduct(), bdPrimeFactors.getProduct()), (int)exponent.getNumerator());
     if(nonRootFactor != 1) {
       if(nonRootFactor.getNumerator() == 1) {
@@ -1132,9 +1132,9 @@ bool Expression::reducesToRational(SNode n, Rational *r) {
   ENTERMETHOD();
 
   switch(n.getSymbol()) {
-  case NUMBER         : 
+  case NUMBER         :
     if(!n.isRational()) {
-      RETURNBOOL( false ); 
+      RETURNBOOL( false );
     } else {
       if(r) *r = n.getRational();
       RETURNBOOL( true );

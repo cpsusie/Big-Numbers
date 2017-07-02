@@ -29,7 +29,7 @@ static void getValue(XMLDoc &doc, XMLNodePtr parent, EquationAttributes &attr) {
 void DiffEquationGraphParameters::putDataToDoc(XMLDoc &doc) {
   const DiffEquationSystemDescription &eqDescArray = m_equationsDescription;
   const UINT dim = (UINT)eqDescArray.size();
-  
+
   assert(dim == m_attrArray.size());
 
   XMLNodePtr root = doc.createRoot(_T("DiffEquation"));

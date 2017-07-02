@@ -93,7 +93,7 @@ typedef struct {
   String toString(bool longDescription = false) const;
   bool isSet(FeatureFlag flag) const;
   static const FeatureFlagText featureFlagText[];
-} FeatureInfo; 
+} FeatureInfo;
 
 typedef struct {
   UINT          steppingId     : 4;

@@ -56,13 +56,13 @@ static double measureThreadTime(MeasurableFunction &ftm) {
     } else {
       return totalTime / sumCallCount;
     }
-  } 
+  }
 }
 
 double measureTime(MeasurableFunction &ftm, TimeMeasureType timeType) {
   switch (timeType) {
   case MEASURE_THREADTIME : return measureThreadTime( ftm);
-  case MEASURE_PROCESSTIME: 
+  case MEASURE_PROCESSTIME:
   case MEASURE_REALTIME   : break;
   default                 : throwInvalidArgumentException(__TFUNCTION__, _T("timeType=%d"), timeType);
                             return 1000;

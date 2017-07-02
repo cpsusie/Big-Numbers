@@ -4,7 +4,7 @@
 #include "FunctionTest.h"
 
 // -----------------------------------------------------------------------------------------------------------------
-// This class is a friend of BigReal, so all functions that want special access to private members of BigReal 
+// This class is a friend of BigReal, so all functions that want special access to private members of BigReal
 // should be added here.
 // WARNING: Should NOT be run multithreaded, as they all use DEFAULT_DIGITPOOL
 

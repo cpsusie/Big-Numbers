@@ -61,7 +61,7 @@ public:
 
   String getProgressMessage(UINT index);
 
-  inline const _ProgressStep &getCurrentStep() const { 
+  inline const _ProgressStep &getCurrentStep() const {
     return m_stepArray[m_currentStep];
   }
 

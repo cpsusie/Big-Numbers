@@ -1,4 +1,4 @@
-// Remes2.cpp : Implements the second algorithm of Remes using double or Double80 (Real) 
+// Remes2.cpp : Implements the second algorithm of Remes using double or Double80 (Real)
 // as defined in "A first course in numerical Analysis"
 // by Anthony Ralston and Philip Rabinowitz, 2. edition, Page 315...
 
@@ -321,7 +321,7 @@ Remes::Remes(const Real &left, const Real &right, Function &inputFunction, bool 
   if(left > 0 || right < 0) {
     throwException(_T("Interval [%s;%s] does ont contain 0"),toString(left).cstr(),toString(right).cstr());
   }
-  
+
   m_name             = name;
   m_left             = left;
   m_right            = right;

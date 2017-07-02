@@ -46,7 +46,7 @@ BigReal dms(const BigReal &x, const BigReal &f) {
   m.multPow10(-2);
 //  cout << "m:" << m << "\n"; cout.flush();
 //  cout << "s:" << s << "\n"; cout.flush();
-  BigReal result(h + m + s); 
+  BigReal result(h + m + s);
   return negative ? -result : result;
 }
 
@@ -71,7 +71,7 @@ BigReal inversdms(const BigReal &x, const BigReal &f) {
 //  cout << "dec :" << dec  << "\n"; cout.flush();
   BigReal  m = quot(dec,60,f);
 //  cout << "m:" << m << "\n"; cout.flush();
-  BigReal  result(h + m); 
+  BigReal  result(h + m);
 //  cout << "result h.mm:" << result << "\n"; cout.flush();
   for(int i = 2; !rest.isZero(); i += 2) {
     rest.multPow10(2);

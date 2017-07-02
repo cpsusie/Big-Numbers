@@ -20,7 +20,7 @@ TreeSetIterator::TreeSetIterator(TreeSetImpl &set) : m_set(set) {
   m_current     = NULL;
 }
 
-bool TreeSetIterator::hasNext() const { 
+bool TreeSetIterator::hasNext() const {
   return m_next != NULL;
 }
 

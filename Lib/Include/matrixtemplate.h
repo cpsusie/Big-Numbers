@@ -407,7 +407,7 @@ public:
     const T *spl = lts.m_a, *last = spl + lts.m_dim.getElementCount(), *spr = rhs.m_a;
     T       *dp  = result.m_a;
     while(spl < last) *(dp++) = *(spl++) - *(spr++);
-    return result;   
+    return result;
   }
 
   friend MatrixTemplate<T> operator-(const MatrixTemplate<T> &m) {
@@ -418,7 +418,7 @@ public:
     const T *sp = m.m_a, *last = sp + m.m_dim.getElementCount();
     T       *dp  = result.m_a;
     while(sp < last) *(dp++) = -*(sp++);
-    return result;   
+    return result;
   }
 
   MatrixTemplate<T> &operator+=(const MatrixTemplate<T> &rhs) {
@@ -485,7 +485,7 @@ public:
     if(lts.getColumnCount() != rhs.getRowCount()) {
       throwMatrixException(_T("operator*(Matrix,Matrix):Invalid dimension. Left.%s. Right.%s"), lts.getDimensionString().cstr(), rhs.getDimensionString().cstr());
     }
-   
+
     const size_t rRows    = lts.getRowCount();
     const size_t rColumns = rhs.getColumnCount();
 
@@ -593,7 +593,7 @@ public:
         }
       }
     }
-    return result;     
+    return result;
   }
 
   friend bool operator==(const MatrixTemplate<T> &m1, const MatrixTemplate<T> &m2) {

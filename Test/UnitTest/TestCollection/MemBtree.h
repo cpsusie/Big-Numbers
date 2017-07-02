@@ -34,7 +34,7 @@ public:
   const void *key() const {
     return BTreePageItem::key();
   }
-  
+
   void *value() {
     return m_value;
   }

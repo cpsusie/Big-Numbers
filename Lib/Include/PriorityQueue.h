@@ -14,7 +14,7 @@ private:
   bool lessThan(const T &e1, const T &e2) {
     return m_reverseOrder ? (m_comparator->cmp(&e2, &e1) <  0) : (m_comparator->cmp(&e1, &e2) <  0);
   }
-  
+
   bool lessOrEqual(const T &e1, const T &e2) {
     return m_reverseOrder ? (m_comparator->cmp(&e2, &e1) <= 0) : (m_comparator->cmp(&e1, &e2) <= 0);
   }
@@ -42,7 +42,7 @@ public:
 
   void add(const T &e) {
     size_t s = size();
-    m_a.add(e); 
+    m_a.add(e);
     if(s > 0) {
       for(size_t parent = s/2;; s = parent, parent >>= 1) {
         if(lessOrEqual(m_a[parent], m_a[s])) {
@@ -75,15 +75,15 @@ public:
     m_a.removeIndex(last);
     return result;
   }
-  
+
   bool isEmpty() const {
     return m_a.size() == 0;
   }
-  
+
   size_t size() const {
     return m_a.size();
   }
-  
+
   void clear() {
     m_a.clear();
   }

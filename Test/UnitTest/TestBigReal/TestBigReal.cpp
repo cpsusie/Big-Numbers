@@ -111,7 +111,7 @@ static void testDif() {
   testOperator(_T("rDif"),rDif);
 }
 
-static void testProd() { 
+static void testProd() {
   testOperator(_T("prod" ), prod, prod, prod);
   testOperator(_T("rProd"),rProd);
 }

@@ -403,7 +403,7 @@ static const int runMenuRunningItems[] = {
 
 static const int runMenuPausedItems[] = {
   ITEM_CONTINUE
- ,ITEM_STOP     
+ ,ITEM_STOP
  ,ITEM_SEPARATOR
  ,ITEM_RESTART
  ,ITEM_SEPARATOR
@@ -699,7 +699,7 @@ void CIRemesDlg::handleRemesProperty(const Remes &r, int id, const void *oldValu
       Function            &f   = *(Function*)newValue;
       const DoubleInterval xRange(0, dim-1);
       CClientDC            dc(&m_coorSystemSpline);
-      
+
       m_gate.wait();
       m_coorSystemSpline.deleteAllObjects();
       m_coorSystemSpline.addFunctionObject(f, &xRange);
@@ -763,14 +763,14 @@ LRESULT CIRemesDlg::OnMsgStateChanged(WPARAM wp, LPARAM lp) {
 void CIRemesDlg::setSubMK(int subM, int subK) {
   if (subM != m_subM) {
     String str = ((subM>=0) && ((subM!=m_M) || (m_M!=m_MTo)))
-               ? format(_T("%u"), subM) 
+               ? format(_T("%u"), subM)
                : EMPTYSTRING;
     setWindowText(this, IDC_STATICSUBM, str);
     m_subM = subM;
   }
   if (subK != m_subK) {
     String str = ((subK>=0) && ((subK!=m_K) || (m_K!=m_KTo)))
-               ? format(_T("%u"), subK) 
+               ? format(_T("%u"), subK)
                : EMPTYSTRING;
     setWindowText(this, IDC_STATICSUBK, str);
     m_subK = subK;

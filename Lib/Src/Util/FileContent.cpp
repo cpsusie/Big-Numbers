@@ -116,7 +116,7 @@ String FileContent::converToString(UINT codePage) const {
 
 String FileContent::converToString() const {
   char *buffer = NULL;
-  
+
   try {
     buffer = new char[size()+1];
     memcpy(buffer, getData(), size());

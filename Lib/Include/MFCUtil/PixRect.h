@@ -259,7 +259,7 @@ public:
   }
   void render(const PixRect *pr);
   LPDIRECT3DTEXTURE createTexture(              const CSize &size, D3DFORMAT format, D3DPOOL pool);
-  LPDIRECT3DSURFACE createRenderTarget(         const CSize &size, D3DFORMAT format = D3DFMT_FORCE_DWORD, bool    lockable = false); // always in D3DPOOL_DEFAULT 
+  LPDIRECT3DSURFACE createRenderTarget(         const CSize &size, D3DFORMAT format = D3DFMT_FORCE_DWORD, bool    lockable = false); // always in D3DPOOL_DEFAULT
   LPDIRECT3DSURFACE createOffscreenPlainSurface(const CSize &size, D3DFORMAT format, D3DPOOL pool);
   void releaseTexture(LPDIRECT3DTEXTURE texture);
   void releaseSurface(LPDIRECT3DSURFACE surface, PixRectType type);
@@ -313,7 +313,7 @@ private:
   void create(PixRectType type, const CSize &sz, D3DFORMAT pixelFormat, D3DPOOL pool);
   void destroy();
   void createTexture(     const CSize &sz, D3DFORMAT pixelFormat, D3DPOOL pool);
-  void createRenderTarget(const CSize &sz, D3DFORMAT pixelFormat, bool    lockable = false);         // always in D3DPOOL_DEFAULT 
+  void createRenderTarget(const CSize &sz, D3DFORMAT pixelFormat, bool    lockable = false);         // always in D3DPOOL_DEFAULT
   void createPlainSurface(const CSize &sz, D3DFORMAT pixelFormat, D3DPOOL pool);
 
   void destroyTexture();
@@ -378,7 +378,7 @@ public:
 
   inline bool hasAlphaChannel() const {
     return hasAlphaChannel(getPixelFormat());
-  } 
+  }
 
   bool PixRect::isValidGDIFormat() const {
     return isValidGDIFormat(getPixelFormat());
@@ -433,7 +433,7 @@ public:
   void text(const CPoint &p, const String &text, const PixRectFont &font, D3DCOLOR color, bool invert=false);
   void drawGlyph(const CPoint &p, const GlyphCurveData &glyphCurve, D3DCOLOR color, bool invert=false);
   void drawText( const CPoint &p, const String &text, const PixRectFont &font, D3DCOLOR color, bool invert=false);
-  void copy(VIDEOHDR &videoHeader);  
+  void copy(VIDEOHDR &videoHeader);
   void formatConversion(const PixRect &pr);
 
   inline bool contains(const CPoint &p) const {
@@ -510,7 +510,7 @@ class GlyphPolygon {
 public:
   Point2D             m_start;
   Array<PolygonCurve> m_polygonCurveArray;
-  
+
   GlyphPolygon(const Point2DP &start) {
     m_start = start;
   }
@@ -518,7 +518,7 @@ public:
   void addCurve(PolygonCurve &curve) {
     m_polygonCurveArray.add(curve);
   }
-  
+
   Rectangle2D getBoundingBox() const;
   Point2DArray getAllPoints() const;
   void move(const Point2DP &dp);
@@ -539,11 +539,11 @@ public:
   Rectangle2D getBoundingBox() const;
   Point2DArray getAllPoints() const;
   Point2DArray getLinePoints() const;
-  
+
   void addPolygon(const GlyphPolygon &polygon) {
     m_glyphPolygonArray.add(polygon);
   }
-  
+
   void addLine(const Point2DP &p1, const Point2DP &p2);
   void move(const Point2DP &dp);
   const Array<GlyphPolygon> &getPolygonArray() const {
@@ -576,15 +576,15 @@ public:
  ~PixRectFont();
 
   void getLogFont(LOGFONT &logfont);
-  
+
   CFont &getFont() {
     return m_font;
   }
-  
+
   const TEXTMETRIC getTextMetrics() const {
     return m_textMetrics;
   }
-  
+
   const GlyphData *getGlyphData(_TUCHAR index) const;
 };
 

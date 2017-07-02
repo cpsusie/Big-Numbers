@@ -13,7 +13,7 @@ typedef enum { // When put these request into the request-queue, caller never ha
  ,REQUEST_MOVEDONE     // A move has been executed
  ,REQUEST_SHOWMESSAGE  // Show a message. mostly used for errormessages from moveFinder. Show and if param.m_reset then reset
  ,REQUEST_RESET        // Stop current search, if any, delete current moveFinder, if any, and goto state CPS_IDLE
- ,REQUEST_CONNECT      // Only valid if state == CPS_IDLE 
+ ,REQUEST_CONNECT      // Only valid if state == CPS_IDLE
  ,REQUEST_DISCONNECT   // Only valid if connected. Disconnect remoteMoveFinder
  ,REQUEST_KILL         // Stop current search, if any, delete current moveFinder, if any, and set sate to CPS_KILLED
 } ChessPlayerRequestType;

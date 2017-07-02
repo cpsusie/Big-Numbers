@@ -85,7 +85,7 @@ const DoubleInterval &IntervalTransformation::zoom(double x, double factor, bool
 
 // ----------------------------------- LinearTransformation -----------------------------------
 
-LinearTransformation::LinearTransformation(const DoubleInterval &fromInterval, const DoubleInterval &toInterval) 
+LinearTransformation::LinearTransformation(const DoubleInterval &fromInterval, const DoubleInterval &toInterval)
  : IntervalTransformation(fromInterval, toInterval) {
   computeTransformation();
 }
@@ -108,7 +108,7 @@ IntervalTransformation *LinearTransformation::clone() const {
 
 // ----------------------------------- LogarithmicTransformation -----------------------------------
 
-LogarithmicTransformation::LogarithmicTransformation(const DoubleInterval &fromInterval, const DoubleInterval &toInterval) 
+LogarithmicTransformation::LogarithmicTransformation(const DoubleInterval &fromInterval, const DoubleInterval &toInterval)
  : IntervalTransformation(fromInterval, toInterval) {
   computeTransformation();
 }

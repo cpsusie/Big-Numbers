@@ -22,7 +22,7 @@ public:
 };
 
 #define FAILURE -1                   // if no transition on c, then m_transition[c] = FAILURE
-                                    
+
 class DFA {
 private:
   const NFA      &m_NFA;

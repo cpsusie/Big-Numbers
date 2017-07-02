@@ -20,7 +20,7 @@
 1997 September 14 [Don Cross]
      Fixed a bug in WaveFile::Close.  It was calling Backpatch
    and getting confused when the the file had been opened for read.
-   (Backpatch returns an error in that case, which prevented 
+   (Backpatch returns an error in that case, which prevented
    WaveFile::Close from calling RiffFile::Close.)
 
 ==========================================================================*/
@@ -263,7 +263,7 @@ DDCRET WaveFile::OpenForWrite( const char  *Filename
 
 DDCRET WaveFile::Close() {
   DDCRET rc = DDC_SUCCESS;
-   
+
   if(fmode == RFM_WRITE) {
     rc = Backpatch(pcm_data_offset, &pcm_data, sizeof(pcm_data));
   }

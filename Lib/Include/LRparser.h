@@ -8,7 +8,7 @@ typedef enum {
  ,ZEROORMANY    // *
  ,ONEORMANY     // +
 } SymbolModifier;
- 
+
 class ParserTables {
 public:
   virtual int          getAction(           UINT state, int input) const = 0; // > 0:shift, <=0:reduce, _ParserError:Error
@@ -126,7 +126,7 @@ private:
   }
 
   int getLegalInputCountCompressed(unsigned long statev) const {
-    return isSingleItemActionState(statev) 
+    return isSingleItemActionState(statev)
          ? 1
          : getLegalInputCountCompressedMultiItem(statev);
   }
@@ -163,8 +163,8 @@ public:
 #pragma warning(disable:4311 4302)
 
   inline int getAction(UINT state, int token) const { // token is terminal. return > 0:shift, <=0:reduce, _ParserError:Error
-    return isCompressedState(state) 
-         ? findActionCompressed(   (unsigned long)m_action[state], token) 
+    return isCompressedState(state)
+         ? findActionCompressed(   (unsigned long)m_action[state], token)
          : findElementUncompressed((const Type  *)m_action[state], token);
   }
 
@@ -265,7 +265,7 @@ public:
   unsigned short m_state;
   unsigned short m_symbol;
   SourcePosition m_pos;
-  inline ParserStackElement() 
+  inline ParserStackElement()
     : m_state( 0)
     , m_symbol(0)
   {
@@ -439,5 +439,5 @@ public:
   void error(const SourcePosition &pos, const TCHAR *format, ...);
   void debug(const TCHAR *format, ...);                                                // Called on every step of the parse if m_debug is true
   virtual void verror(const SourcePosition &pos, const TCHAR *format, va_list argptr); // Errors can be caught by usersupplied error-handler
-  virtual void vdebug(const TCHAR *format, va_list argptr);                            
+  virtual void vdebug(const TCHAR *format, va_list argptr);
 };

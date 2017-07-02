@@ -136,10 +136,10 @@ int main(int argc, char **argv) {
         case 'D':
           { addr = getdbaddr(_T("Enter addr to delete:"));
             int found = -1;
-            for(i=0; found == -1 && i<MAXRECORDS;i++) 
-              if(newl.m_records[i] == addr) 
+            for(i=0; found == -1 && i<MAXRECORDS;i++)
+              if(newl.m_records[i] == addr)
                 found = i;
-            if(found < 0) 
+            if(found < 0)
               _tprintf(_T("None existing address\n"));
             else {
               dbf->remove(addr);

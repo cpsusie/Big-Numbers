@@ -52,7 +52,7 @@ public:
   int        m_rollAvgSize;
   GraphStyle m_style;
   GraphParameters(const String &name, COLORREF color, int rollAvgSize, GraphStyle style);
-  
+
   static const TCHAR      *graphStyleToString(GraphStyle style);
   static GraphStyle        graphStyleFromString(const String &s);
   static const TCHAR      *trigonometricModeToString(TrigonometricMode mode);

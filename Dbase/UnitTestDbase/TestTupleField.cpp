@@ -290,7 +290,7 @@ try {                                                                           
 
         Sleep(1);
       }
-        
+
       verifyThrows(verifyCast(1,DBTYPE_TIMESTAMP,Timestamp,Timestamp()),SQL_INVALIDCAST);
     }
   };

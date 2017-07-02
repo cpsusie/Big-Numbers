@@ -8,5 +8,4 @@
 
 #include "MarchingCube.h"
 
-//{{AFX_INSERT_LOCATION}}
 

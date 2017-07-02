@@ -49,12 +49,12 @@ public:
   const String &getImplOutputDir() const {
     return m_implOutputDir;
   }
-  
+
   const String &getHeaderOutputDir() const {
     return m_headerOutputDir;
   }
-  
-  MarginFile &getOutput() { 
+
+  MarginFile &getOutput() {
     return *m_output;
   }
 

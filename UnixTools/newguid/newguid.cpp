@@ -21,6 +21,6 @@ int main(int argc,  char **argv) {
   for(int i = 0; i < n; i++) {
     _tprintf(_T("%s\n"), newGUID(tmp));
   }
-  
+
   return 0;
 }

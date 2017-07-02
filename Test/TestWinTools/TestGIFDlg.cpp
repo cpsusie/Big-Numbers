@@ -9,7 +9,7 @@ CTestGIFDlg::CTestGIFDlg(CWnd *pParent /*=NULL*/) : CDialog(CTestGIFDlg::IDD, pP
 }
 
 void CTestGIFDlg::DoDataExchange(CDataExchange *pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CTestGIFDlg, CDialog)
@@ -29,7 +29,7 @@ BEGIN_MESSAGE_MAP(CTestGIFDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CTestGIFDlg::OnInitDialog() {
-    CDialog::OnInitDialog();
+    __super::OnInitDialog();
 
     m_gif.substituteControl(this, IDC_STATIC_GIFAREA);
 
@@ -51,7 +51,7 @@ BOOL CTestGIFDlg::OnInitDialog() {
     m_layoutManager.addControl(IDC_STATIC_STATE            , RELATIVE_X_POS | RELATIVE_HEIGHT);
 
     m_frameIndex = 0;
-    
+
     return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -113,7 +113,7 @@ void CTestGIFDlg::OnButtonUnload() {
 }
 
 void CTestGIFDlg::OnSize(UINT nType, int cx, int cy) {
-  CDialog::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
   m_layoutManager.OnSize(nType, cx, cy);
 }
 

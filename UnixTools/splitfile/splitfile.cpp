@@ -20,7 +20,7 @@ int main(int argc, char **argv) {
       case 'v':
         verbose = true;
         continue;
-      case 'l': 
+      case 'l':
         if(sscanf(cp+1,"%u",&maxLines) != 1) {
           usage();
         }

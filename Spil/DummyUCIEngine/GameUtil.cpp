@@ -41,7 +41,7 @@ static const TCHAR *promoteIndexToShortNameEnglish  = _T(" qnrb");
 Move::Move(const String &str) {
   setNoMove();
   if(!ISLEGALFIELD(str.cstr()) || !ISLEGALFIELD(str.cstr()+2)) {
-    throwException(_T("Illegal move:<%s>"), str.cstr()); // doesn't have move syntax 
+    throwException(_T("Illegal move:<%s>"), str.cstr()); // doesn't have move syntax
   }
 
   d.m_from = DECODEFIELD(str.cstr());
@@ -72,7 +72,7 @@ String FastMove::toString(char from, char to, BYTE promoteIndex) { // static
   return tmp;
 }
 
-int FastMove::toStr(TCHAR *dst, char from, char to, BYTE promoteIndex) { // static 
+int FastMove::toStr(TCHAR *dst, char from, char to, BYTE promoteIndex) { // static
   TCHAR *cp = dst;
   getFieldName(cp, from); cp += 2;
   getFieldName(cp, to  ); cp += 2;
@@ -96,7 +96,7 @@ String getFieldName(char pos) {
   return getFieldName(tmp, pos);
 }
 
-String Board::getGameResultString(GameResult result) { // static 
+String Board::getGameResultString(GameResult result) { // static
   switch(result) {
   case GR_NORESULT      : return _T("?");
   case GR_WHITECHECKMATE: return _T("0-1 (Black mates)");
@@ -110,11 +110,11 @@ String Board::getGameResultString(GameResult result) { // static
 
 #ifdef _DEBUG
 
-String Board::toString(int computerSide, bool detailed) {   // static 
+String Board::toString(int computerSide, bool detailed) {   // static
   return s_bc.toString(getHistorySize(), computerSide, detailed);
 }
 
-String Board::getHistoryString() { // static 
+String Board::getHistoryString() { // static
   if(s_historySize == 0) {
     return EMPTYSTRING;
   }
@@ -132,7 +132,7 @@ String Board::getHistoryString() { // static
   return result;
 }
 
-String Board::getBoardHistoryString(bool detailed) { // static 
+String Board::getBoardHistoryString(bool detailed) { // static
   String result;
   for(int i = 0; i < s_historySize; i++) {
     result += s_boardHistory[i].toString(BLACK, detailed);
@@ -205,7 +205,7 @@ TCHAR *formatTime(TCHAR *dst, int ms, bool showMS) {
       return dst;
     }
   }
-  // 
+  //
   const int sec = ms/1000;
   if(sec < 60*60) {
     _stprintf(dst, _T("%2d:%02d"), sec/60, sec%60);                             // mm:ss

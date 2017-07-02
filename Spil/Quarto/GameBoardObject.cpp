@@ -92,7 +92,7 @@ static int fieldResId[] = {
 #define GETFIELDRESID(   f,marked) fieldResId[GETFIELDRESINDEX(f,marked)]
 
 #ifdef _DEBUG
-CFont *BoardFieldObject::getFont() { // static 
+CFont *BoardFieldObject::getFont() { // static
   static CFont font;
   if(font.m_hObject==NULL) {
     font.CreateFont(22, 22, 0, 0, 400, FALSE, FALSE, 0, ANSI_CHARSET, OUT_DEFAULT_PRECIS
@@ -243,7 +243,7 @@ LPD3DXMESH GameBoardObject::createMesh(AbstractMeshFactory &amf) { // static
   }
 }
 
-GameBoardObject::GameBoardObject(D3Scene &scene) 
+GameBoardObject::GameBoardObject(D3Scene &scene)
 : BordObjectWithTexture(scene, createMesh(scene))
 {
   setName(_T("Board"));

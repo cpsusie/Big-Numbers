@@ -159,7 +159,7 @@ LRESULT CTestWebCamDlg::captureVideoStreamCallback(MMCapture &capture, PixRect *
 }
 
 LRESULT CTestWebCamDlg::captureStatusCallback(MMCapture &capture, int id, const TCHAR *description) {
-  log(_T("captureStatusCallback id=%d, description=\"%s\""), id, description); 
+  log(_T("captureStatusCallback id=%d, description=\"%s\""), id, description);
   if(id == IDS_CAP_BEGIN) {
     GetDlgItem(IDC_BUTTONSTARTCAPTURE)->EnableWindow(FALSE);
     GetDlgItem(IDC_BUTTONSTOPCAPTURE)->EnableWindow(TRUE);
@@ -262,7 +262,7 @@ void CTestWebCamDlg::OnClose() {
   OnFileExit();
 }
 
-void CTestWebCamDlg::OnMove(int x, int y) { 
+void CTestWebCamDlg::OnMove(int x, int y) {
   __super::OnMove(x, y);
 }
 

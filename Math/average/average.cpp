@@ -43,7 +43,7 @@ int _tmain(int argc, TCHAR **argv) {
 
     TCHAR line[100];
     int lineCount = 0;
-    
+
     DataSet fileData;
     fileData.fileName = *argv;
 

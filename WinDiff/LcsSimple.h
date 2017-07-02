@@ -6,7 +6,7 @@ typedef CompactArray<UINT> MatchArray;
 
 class LcsSimple : public Lcs {
 private:
-  CompactArray<LcsElement> m_A, m_B;       // len(A) = n >= len(B), both indexed from 1 
+  CompactArray<LcsElement> m_A, m_B;       // len(A) = n >= len(B), both indexed from 1
   Array<MatchArray>        m_tmpM;
   MatchArray             **m_matchList;
   UINT                     m_docSize[2];

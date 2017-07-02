@@ -68,7 +68,7 @@ int main(int argc, char **argv) {
           if(sscanf(cp+1,"%lu-%lu",&from,&to) != 2) usage();
           break;
         case 'f':
-          printfactors = true; 
+          printfactors = true;
           printprimes  = false;
           continue;
       }

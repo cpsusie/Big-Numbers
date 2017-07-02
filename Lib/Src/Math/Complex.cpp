@@ -221,7 +221,7 @@ Complex atan(const Complex &c) {
   const Real &a = c.re;
   const Real &b = c.im;
   const Real a2 = sqr(a);
-  return Complex( 
+  return Complex(
            atan2(2.0*a, 1.0 - a2 - b*b) / 2
           ,log((a2 + sqr(b+1)) / (a2 + sqr(b-1))) / 4
          );
@@ -264,7 +264,7 @@ template <class IStreamType, class CharType> void eatWhite(IStreamType &in) {
 }
 
 template <class IStreamType, class CharType> IStreamType &operator>>(IStreamType &in, Complex &c) {
-  /* inputformat for Complex; 
+  /* inputformat for Complex;
       re
       (re)
       (re,im)

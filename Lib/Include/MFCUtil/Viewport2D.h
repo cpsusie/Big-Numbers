@@ -58,7 +58,7 @@ public:
   inline void setFromRectangle(const Rectangle2DR &rect) {
     m_tr->setFromRectangle(rect);
   }
-  
+
   void setToRectangle(const Rectangle2DR &rect);
 
   inline void setScale(IntervalScale newScale, int flags) {
@@ -74,11 +74,11 @@ public:
   inline const IntervalTransformation &getXTransformation() const {
     return m_tr->getXTransformation();
   }
-  
+
   inline const IntervalTransformation &getYTransformation() const {
     return m_tr->getYTransformation();
   }
-  
+
   inline Point2DP forwardTransform(const Point2DP &p) const {
     return m_tr->forwardTransform(p);
   }

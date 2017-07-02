@@ -17,7 +17,7 @@ public:
   RotationData(const CSize &size, double degree);
 };
 
-RotationData::RotationData(const CSize &size, double degree) 
+RotationData::RotationData(const CSize &size, double degree)
 : m_rect(0,0,size.cx, size.cy)
 , m_degree(degree)
 {
@@ -154,7 +154,7 @@ PixRect *PixRect::rotateImage(const PixRect *src, double degree) { // static
   return result;
 }
 
-CSize PixRect::getRotatedSize(const CSize &size, double degree) { // static 
+CSize PixRect::getRotatedSize(const CSize &size, double degree) { // static
   const RotationData data(size, degree);
   return data.m_resultRect.Size();
 }

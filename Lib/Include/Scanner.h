@@ -132,19 +132,19 @@ public:
   SourcePosition(const String &fileName, int lineNumber, int column);
   SourcePosition(int lineNumber = 0, int column = 0);
   void setLocation(int lineNumber, int column);
-  
+
   inline const String &getFileName() const {
     return m_fileName;
   }
-  
+
   inline int getLineNumber() const {
     return m_lineNumber;
   }
-  
+
   inline int getColumn() const {
     return m_column;
   }
-  
+
   inline void incrLineNumber() {
     m_lineNumber++;
     m_column = 0;
@@ -242,7 +242,7 @@ protected:
   int input();
   void unput(int ch);
   void less(int n);
-  bool pushback(int count); // Push count characters back into the input. 
+  bool pushback(int count); // Push count characters back into the input.
   void terminateLexeme();
   void unTerminateLexeme();
   void terminateInput();    // when called, next call to getNextLexeme() will return EOS

@@ -24,7 +24,7 @@ public:
   virtual ~CMainFrame();
   void showPositon(const CPoint &p);
   void activateInitialOptions();
-  void              setRollAvg(bool on);  
+  void              setRollAvg(bool on);
   void              setGrid(bool grid);
   bool              hasGrid() const;
   void              setXAxisType(  AxisType          type    );

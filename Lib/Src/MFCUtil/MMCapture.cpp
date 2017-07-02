@@ -11,7 +11,7 @@
 #define VFWLIB VFWLIBROOT "x64/"
 #endif
 
-#pragma comment(lib, VFWLIB "vfw32.lib") 
+#pragma comment(lib, VFWLIB "vfw32.lib")
 
 #define V(f) checkMMResult(__TFILE__,__LINE__,f)
 
@@ -93,7 +93,7 @@ static LRESULT CALLBACK captureErrorCallback(HWND captureWindow, int id, TCHAR *
 
 // ******************************************** class MMCapture ********************************************
 
-MMCapture::MMCapture(BYTE captureWhat, CaptureReceiver &receiver, UINT framesPerSecond, bool playAudio, UINT audioBufferSize) 
+MMCapture::MMCapture(BYTE captureWhat, CaptureReceiver &receiver, UINT framesPerSecond, bool playAudio, UINT audioBufferSize)
 : m_captureWhat(captureWhat)
 , m_receiver(receiver)
 , m_playAudio(playAudio)
@@ -305,7 +305,7 @@ void MMCapture::blockCapturing(bool blocked) {
 
 bool MMCapture::saveVideoFrame(VIDEOHDR *videoHeader) {
   m_gate.wait();
-  
+
   bool result = false;
 
   if(!m_captureBlocked) {
@@ -352,7 +352,7 @@ void CaptureReceiver::log(const TCHAR *format, ...) {
   va_end(argptr);
 }
 
-// ******************************************** class AudioPlayerThread ******************************************** 
+// ******************************************** class AudioPlayerThread ********************************************
 
 void checkMMResult(TCHAR *fileName, int line, MMRESULT mmResult) {
   if(mmResult == MMSYSERR_NOERROR) {
@@ -444,9 +444,9 @@ static BOOL CALLBACK myAcmDriverEnumCallback(HACMDRIVERID hadid, DWORD dwInstanc
   ACMDRIVERDETAILS details;
   details.cbStruct = sizeof(ACMDRIVERDETAILS);
   CHECKRESULT(acmFilterDetails(had,&details,
-  HACMDRIVER had,           
-  LPACMFILTERDETAILS pafd,  
-  DWORD fdwDetails          
+  HACMDRIVER had,
+  LPACMFILTERDETAILS pafd,
+  DWORD fdwDetails
 );
 
   return TRUE;

@@ -12,7 +12,7 @@
 // Zero-bytes may appear in the compiled regular expression.
 
 typedef enum {
-    unused 
+    unused
    ,onFailureJump            // Followed by two bytes giving relative address of place
                              // to resume at in case of failure.
                              //
@@ -22,7 +22,7 @@ typedef enum {
                              // we can be sure that there is no use backtracking out of repetitions already completed,
                              // then we finalize.
                              //
-   ,popAndJump               // Throw away latest failure point and then jump to address. 
+   ,popAndJump               // Throw away latest failure point and then jump to address.
                              //
    ,jump                     // Followed by 2 bytes giving relative address to jump to
    ,dummyFailureJump         // Jump, and push a dummy failure point.
@@ -31,7 +31,7 @@ typedef enum {
                              // A '+' closure makes this before the first repeat.
                              //
    ,onFailureJumpPushCounter // Followed by 1 byte indicating counterIndex, and 2 bytes giving relative addres to jump to (like onFailureJump)
-   
+
    ,maybePopCountAndJump     // Almost like maybyPopAndJump.
                              // Followed by 1 byte indicating counterIndex, and 2 bytes giving relative address to jump to
    ,popCountAndJump          // Almost like popAndJump. Parameters like maybePopCounterAndJump
@@ -52,7 +52,7 @@ typedef enum {
                              // Followed by one byte containing the index of
                              // the memory register.
    ,exactMatch               // Followed by one byte giving n, and then by n literal TCHAR
-   ,anychar                  // Matches any TCHAR 
+   ,anychar                  // Matches any TCHAR
    ,charSet                  // Matches any char belonging to specified set.
                              // Followed by 2 UShort, specifying range of Bitset
                              // Then come bytes for a bit-map saying which TCHAR are in.bitset
@@ -171,7 +171,7 @@ class _CharSet {
 private:
   unsigned short m_minChar;               // multiplum of 8
   unsigned short m_maxChar;
-  BYTE m_bitSet[1];                       // the real length depends on min and maxChar. We just nead a pointer 
+  BYTE m_bitSet[1];                       // the real length depends on min and maxChar. We just nead a pointer
                                           // to this structure, save in Regex.m_buffer with ByteBitSet.append
 public:
   inline bool contains(_TUCHAR ch) const {
@@ -300,7 +300,7 @@ void ByteBitSet::add(_TUCHAR from, _TUCHAR to) {
   UINT toIndex   = BYTEINDEX(to  );
 
   if(fromIndex < toIndex) {
-    if(from % 8) { 
+    if(from % 8) {
       m_bitSet[fromIndex] |= ~MASKBYTE(from%8);
       fromIndex++;
     }
@@ -446,7 +446,7 @@ RegisterInfo &RegisterInfoTable::findByRegno(BYTE regno) {
 const RegisterInfo *RegisterInfoTable::findLastRegisterInCountingLoop(BYTE level, unsigned short loopStart) const {
   for(int i = (int)size(); i--;) {
     const RegisterInfo &ri = (*this)[i];
-    if((ri.m_level == level) 
+    if((ri.m_level == level)
     && (ri.m_addressStartMemory < loopStart) && (ri.m_addressStopMemory > loopStart)) {
       return &ri;
     }
@@ -459,7 +459,7 @@ private:
   CharSetMap        &m_charSetMap;
   RegisterInfoTable &m_registerTable;
 public:
-  ByteInsertHandler(CharSetMap &charSetMap, RegisterInfoTable &registerTable) 
+  ByteInsertHandler(CharSetMap &charSetMap, RegisterInfoTable &registerTable)
     : m_charSetMap(charSetMap)
     , m_registerTable(registerTable)
   {
@@ -649,7 +649,7 @@ Regex::Regex(const TCHAR *pattern, const TCHAR *translateTable) : m_fastMap(MAXC
 #define DBG_setHandler(handler)
 #define DBG_setCodeDirty(dirty)
 
-#define DBG_callCompilerHandler(fastMapStr) 
+#define DBG_callCompilerHandler(fastMapStr)
 #define DBG_callSearchHandler(startPos, charIndex)
 #define DBG_callMatchHandler()
 
@@ -777,7 +777,7 @@ public:
     return format(_T("%d,%d,%d,dbgAlt:%d, Fixups:%s")
           ,m_regno, m_lastStart, m_beginAlternative
           ,m_dbgStartAlternative
-          ,m_jumpFixups.toStringBasicType().cstr()); 
+          ,m_jumpFixups.toStringBasicType().cstr());
   }
 #endif
 };
@@ -861,7 +861,7 @@ void Regex::compilePattern1(const TCHAR *pattern) {
     case _T('*'):
     case _T('+'):
     case _T('?'):
-       
+
       { if(!state.hasLastStart()) { // If there is no previous pattern, char not special.
           goto NormalChar;
         }
@@ -873,7 +873,7 @@ void Regex::compilePattern1(const TCHAR *pattern) {
           appendJump(maybePopAndJump, LASTSTART - SIZE_JUMP);
           DBG_appendJump(scanner.getIndex()-1);
         }
-        
+
         insertJump(onFailureJump, LASTSTART, pc + SIZE_JUMP);
         DBG_insertJump(LASTSTART, DBG_getIndex(commandChar));
 
@@ -977,7 +977,7 @@ void Regex::compilePattern1(const TCHAR *pattern) {
         }
 
         ByteBitSet legalCharSet;
-          
+
         const int startIndex = scanner.getIndex();
         for(bool done = false; !done;) { // Read in characters and ranges, setting legal bits
           _TUCHAR c = scanner.fetch();
@@ -1169,7 +1169,7 @@ void Regex::compilePattern1(const TCHAR *pattern) {
         const _TUCHAR c1 = scanner.look();
         if((pendingExact < 0)
         ||  pendingExact + 1 + m_buffer[pendingExact] * sizeof(TCHAR) != (int)pc
-        ||  m_buffer[pendingExact] == 255 
+        ||  m_buffer[pendingExact] == 255
         ||  isClosureCharacter(c1) || c1 == _T('^')) {
           LASTSTART = pc;
           appendOpcode(exactMatch);
@@ -1354,7 +1354,7 @@ BitSet Regex::first(intptr_t pcStart,intptr_t pcEnd, bool *matchEmpty) const {  
       case notWordBound             :
         continue;
 
-      case endLine           :      
+      case endLine           :
         result.add(TRANSLATE(NEWLINE));
         break;
 
@@ -1382,7 +1382,7 @@ BitSet Regex::first(intptr_t pcStart,intptr_t pcEnd, bool *matchEmpty) const {  
 
       } // end switch
     } // end if
-    
+
 // Get here means we have successfully found the possible starting characters
 // of one path of the pattern. We need not follow this path any farther.
 // Instead, look at the next alternative remembered in the stack.
@@ -1622,7 +1622,7 @@ while(state.m_sp == state.m_spEnd) {       \
       }
     } // end if
 
-// Otherwise match next pattern command 
+// Otherwise match next pattern command
 
     const RegexOPCode opcode = (RegexOPCode)*(state.m_ip++);
     switch(opcode) {
@@ -1641,13 +1641,13 @@ while(state.m_sp == state.m_spEnd) {       \
 //
 // A smart repeat is similar but loops back to the onFailureJump
 // so that each repetition makes another failure point.
-       
+
     case onFailureJump:
       state.doOnFailureJump();
       break;
-                            
+
     case maybePopAndJump:   // The end of a smart repeat has a maybePopAndJump back.
-                            // Change it either to a popAndJump or an ordinary jump. 
+                            // Change it either to a popAndJump or an ordinary jump.
       state.doMaybePopAndJump();
       DBG_setCodeDirty(true);
       break;
@@ -1714,13 +1714,13 @@ while(state.m_sp == state.m_spEnd) {       \
             d2    = string2;
             dend2 = reg.m_regEnd;                                               // end of string1 => advance to string2.
           }
-           
+
           if(d2 == dend2) {                                                     // At end of register contents => success
             break;
           }
-           
+
           PREFETCH;                                                             // Advance to next segment in data being matched, if necessary
-           
+
           intptr_t count = state.m_spEnd - state.m_sp;                          // count gets # consecutive chars to compare
           if(count > dend2 - d2) {
             count = dend2 - d2;
@@ -1845,10 +1845,10 @@ while(state.m_sp == state.m_spEnd) {       \
       break;
 
     } // end switch
-                            
+
     continue; // Successfully matched one pattern command; keep matching
 
-                            
+
     Fail:                                                                       // Jump here if any matching operation fails.
       if(state.isStackEmpty()) {                                                // A restart point is known.
         break;                                                                  // No restartpoint => no Match
@@ -1861,7 +1861,7 @@ while(state.m_sp == state.m_spEnd) {       \
           state.popAndRestore();
         }
         if(state.m_ip == NULL) {                                                // If innermost failure point is dormant,
-          goto Fail;             
+          goto Fail;
         }
                                                                                 // flush it and keep looking
         if(state.m_sp >= string1 && state.m_sp <= state.m_end1) {
@@ -1874,7 +1874,7 @@ while(state.m_sp == state.m_spEnd) {       \
 
 // --------------------------------------------- _RegexMatchState --------------------------------------------
 
-_RegexMatchState::_RegexMatchState(const Regex *regex, _RegexCounterTable &counterTable, intptr_t pos) 
+_RegexMatchState::_RegexMatchState(const Regex *regex, _RegexCounterTable &counterTable, intptr_t pos)
 : m_regex(*regex)
 , m_pos(pos)
 , m_ip(regex->getCodeStart())
@@ -1889,8 +1889,8 @@ _RegexMatchState::_RegexMatchState(const Regex *regex, _RegexCounterTable &count
 }
 
 void _RegexMatchState::doMaybePopAndJump() {
-// The end of a smart repeat has a maybePopAndJump/maybePopCountAndJump back. 
-// Change it either to a popAndJump/popCountAndJump or jump/countAndJump, 
+// The end of a smart repeat has a maybePopAndJump/maybePopCountAndJump back.
+// Change it either to a popAndJump/popCountAndJump or jump/countAndJump,
 // depending on wether intersection of first(loop) and first(what follows loop) is empty or not
 
   BYTE       &opcodeRef    = ((BYTE*)m_ip)[-1];
@@ -1912,7 +1912,7 @@ void _RegexMatchState::doMaybePopAndJump() {
     popAndJumpOpcode = popCountAndJump;
     break;
   default                  :
-    throwException(unexpectedOpcodeMsg, opcodeRef); 
+    throwException(unexpectedOpcodeMsg, opcodeRef);
   }
 
 // Compare what follows with the begining of the repeat.
@@ -1956,7 +1956,7 @@ void _RegexMatchState::doMaybePopAndJump() {
     }
     break;
   default                  :
-    throwException(unexpectedOpcodeMsg, opcodeRef); 
+    throwException(unexpectedOpcodeMsg, opcodeRef);
   }
   m_ip += jumpCount; // do the jump
 }
@@ -2185,7 +2185,7 @@ String Regex::toString() const {
       ADDOPCODE(anychar);
       break;
 
-    case charSet      :       // Matches any one character belonging to specified set.          
+    case charSet      :       // Matches any one character belonging to specified set.
     case charSetNot   :
       { String setStr;
         if(*(unsigned short*)(p) > m_buffer.size()) {

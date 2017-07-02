@@ -12,12 +12,12 @@ static void addEventSource(const String &logName, const String &srcName, const S
   RegistryKey key0(HKEY_LOCAL_MACHINE,"SYSTEM\\CurrentControlSet\\Services\\EventLog");
   RegistryKey key1 = key0.createOrOpenKey(logName);
   RegistryKey key2 = key1.createOrOpenKey(srcName);
-  
+
   //  String keyName = format("%s\\%s",logName.cstr(),srcName.cstr());
 
-// Create the event source as a subkey of the logfile. 
+// Create the event source as a subkey of the logfile.
 //  RegistryKey key1 = key0.createOrOpenPath(keyName);
- 
+
 //  String keyName = format("SYSTEM\\CurrentControlSet\\Services\\EventLog\\%s\\%s",logName.cstr(),srcName.cstr());
 //  HKEY hk;
 //  long result = RegCreateKey(HKEY_LOCAL_MACHINE, keyName.cstr(), &hk);
@@ -25,15 +25,15 @@ static void addEventSource(const String &logName, const String &srcName, const S
 //    throwException("RegCreateKey(HKEY_LOCAL_MACHINE,%s) failed:%s", keyName.cstr(),getErrorText(result).cstr());
 //  }
 
-//  RegistryKey key1(hk); 
+//  RegistryKey key1(hk);
 
-   // Set the name of the message file. 
+   // Set the name of the message file.
   key1.setValue("EventMessageFile", msgDllPath, REG_EXPAND_SZ);
- 
-   // Set the supported event types. 
-  DWORD dwData = EVENTLOG_ERROR_TYPE | EVENTLOG_WARNING_TYPE | EVENTLOG_INFORMATION_TYPE; 
+
+   // Set the supported event types.
+  DWORD dwData = EVENTLOG_ERROR_TYPE | EVENTLOG_WARNING_TYPE | EVENTLOG_INFORMATION_TYPE;
   key1.setValue("TypesSupported",dwData);
- 
+
    // Set the category message file and number of categories.
   key1.setValue("CategoryMessageFile", msgDllPath, REG_EXPAND_SZ);
   key1.setValue("CategoryCount",categoriCount);
@@ -42,7 +42,7 @@ static void addEventSource(const String &logName, const String &srcName, const S
 static void removeEventSource(const String &logName, const String &srcName) {
   // logName = "Application" or a custom logfile name
   // srcName = event source name
- 
+
   RegistryKey key0(HKEY_LOCAL_MACHINE,format("SYSTEM\\CurrentControlSet\\Services\\EventLog\\%s",logName.cstr()));
   key0.deleteKey(srcName);
 }

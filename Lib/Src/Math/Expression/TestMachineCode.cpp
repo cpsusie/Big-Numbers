@@ -833,7 +833,7 @@ void MachineCode::genTestSequence() {
         }
       }
     }
-    
+
     emit(NOOP);
     emit(MEM_ADDR_ESP( op            ));            // size=3                      ex fld DWORD PTR[esp}
 

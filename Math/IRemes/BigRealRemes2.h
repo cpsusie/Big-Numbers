@@ -55,7 +55,7 @@ private:
 public:
   ExtremaVector() {
   }
-  ExtremaVector(const BigRealVector &extrema, const BigReal &E, const BigReal &MMQuot) 
+  ExtremaVector(const BigRealVector &extrema, const BigReal &E, const BigReal &MMQuot)
     : BigRealVector(extrema), m_E(E), m_MMQuot(MMQuot) {
   }
   const BigReal &getMMQuot() const {
@@ -108,7 +108,7 @@ typedef enum {
  ,MAINITERATION        // *int
  ,SEARCHEITERATION     // *int
  ,EXTREMACOUNT         // *int
- ,COEFFICIENTVECTOR    // *BigRealVector                
+ ,COEFFICIENTVECTOR    // *BigRealVector
  ,MMQUOT               // *BigReal
  ,Q                    // *BigReal
  ,E                    // *BigReal
@@ -187,7 +187,7 @@ private:
   BigRealVector                m_errorValue;             // Values of errorFunction(x) for x = m_extr[0..N+1].             Dim=N+2
   BigReal                      m_maxError;
   BigReal                      m_MMQuotEps;              // Default value is 1e-22. Stop criterium. Iteration stops when 1-|minExtr/maxExtr| < m_mmQuotEps
-  BigReal                      m_MMQuot, m_lastMMQuot; 
+  BigReal                      m_MMQuot, m_lastMMQuot;
   bool                         m_solveStateInterpolationDone;
   bool                         m_solveStateHighPrecision;
   bool                         m_solveStateDecrM;
@@ -222,7 +222,7 @@ private:
   int                  setExtremum(     UINT index, const BigReal &x); // return sign of errorfunction at extremum
   String               getExtremumString(UINT index) const;
   void                 resetExtremaCount();
-  void                 setMMQuotEpsilon(const BigReal &MMQuotEps);  // set stop criterium. 
+  void                 setMMQuotEpsilon(const BigReal &MMQuotEps);  // set stop criterium.
   BigReal              approximation(   const BigReal &x) const; // Pm(x) / Pk(x)
   BigReal              errorFunction(   const BigReal &x) const; // m_useRelativeError ? (1 - sFunction(x) * approximation(x)) : (m_targetFunction(x)-approximation(x))
   BigReal              sFunction(       const BigReal &x) const; // m_useRelativeError ? (1/m_targetFunction(x)) : 1

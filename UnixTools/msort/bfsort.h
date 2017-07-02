@@ -23,7 +23,7 @@ private:
   void makeRuns(int input);
   void finalMerge(int input);
   void verbose(const TCHAR *format,...);
-public:  
+public:
   void sort(FILE *inputFile, FILE *outputFile);
   ~BalancedFileSort();
   BalancedFileSort(AbstractComparator &comparator, bool verbose = false);

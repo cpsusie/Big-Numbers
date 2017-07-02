@@ -83,7 +83,7 @@ public:
   bool getShowAddr() const {
     return m_showAddr;
   }
-  
+
   bool getShowAscii() const {
     return m_showAscii;
   }
@@ -134,7 +134,7 @@ public:
   const TCHAR *getDataRadixShortName() const {
     return getRadixShortName(m_dataRadix);
   }
-  
+
   const TCHAR *getAddrRadixShortName() const {
     return getRadixShortName(m_addrRadix);
   }
@@ -142,7 +142,7 @@ public:
   const TCHAR *getDataRadixName() const {
     return getRadixName(m_dataRadix);
   }
-  
+
   const TCHAR *getAddrRadixName() const {
     return getRadixName(m_addrRadix);
   }

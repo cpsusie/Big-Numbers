@@ -238,7 +238,7 @@ void SqlCompiler::getType(const SyntaxNode *n, ColumnDefinition &col) {
     break;
 
   case TYPEDOUBLE:
-    col.m_type   = col.m_nullAllowed ? DBTYPE_DOUBLEN  : DBTYPE_DOUBLE; 
+    col.m_type   = col.m_nullAllowed ? DBTYPE_DOUBLEN  : DBTYPE_DOUBLE;
     break;
 
   case TYPEVARCHAR:
@@ -254,15 +254,15 @@ void SqlCompiler::getType(const SyntaxNode *n, ColumnDefinition &col) {
     break;
 
   case TYPEDATE  :
-    col.m_type   = col.m_nullAllowed ? DBTYPE_DATEN : DBTYPE_DATE; 
+    col.m_type   = col.m_nullAllowed ? DBTYPE_DATEN : DBTYPE_DATE;
     break;
 
   case TYPETIME  :
-    col.m_type   = col.m_nullAllowed ? DBTYPE_TIMEN : DBTYPE_TIME; 
+    col.m_type   = col.m_nullAllowed ? DBTYPE_TIMEN : DBTYPE_TIME;
     break;
 
-  case TYPETIMESTAMP: 
-    col.m_type   = col.m_nullAllowed ? DBTYPE_TIMESTAMPN : DBTYPE_TIMESTAMP; 
+  case TYPETIMESTAMP:
+    col.m_type   = col.m_nullAllowed ? DBTYPE_TIMESTAMPN : DBTYPE_TIMESTAMP;
     break;
 
   default        : stopcomp(t);
@@ -305,7 +305,7 @@ void SqlCompiler::genCreateTableAs(SyntaxNode *n) { // n = create_stmt
   }
 
   TableDefinition tableDef(TABLETYPE_USER,name);
-  
+
   indexDef.m_indexType = INDEXTYPE_PRIMARY;
   indexDef.m_tableName = tableDef.getTableName();
 
@@ -435,7 +435,7 @@ void SqlCompiler::genCreateIndex(SyntaxNode *n) { // n = create_stmt
 
 void SqlCompiler::genCreate(SyntaxNode *n) { // n = create_stmt
   switch(n->child(0)->token()) {
-  case TABLE   : 
+  case TABLE   :
     genCreateTable(n);
     break;
 

@@ -83,7 +83,7 @@ BOOL CAvlTreeWndDlg::OnInitDialog() {
 
   m_testTree.setAvlGraphics(this);
   m_itererator = new AvlIterator(m_testTree);
-  
+
   m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATOR_MAINDIALOG));
   m_font.CreateFont(10, 6, 0, 0, 400, FALSE, FALSE, 0, ANSI_CHARSET, OUT_DEFAULT_PRECIS
                    ,CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY

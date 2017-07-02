@@ -17,9 +17,9 @@ ULONG gcd(ULONG u, ULONG v) {
       gprinted=true;
     }
     printf("%d ", g);
-    u /= 2; // (right shift) 
+    u /= 2; // (right shift)
     v /= 2;
-    g *= 2; // (left shift) 
+    g *= 2; // (left shift)
   }
 
   // g == max(2^k), u0 == 0 mod g && v0 == 0 mod g
@@ -28,7 +28,7 @@ ULONG gcd(ULONG u, ULONG v) {
     printf("\ng=%d\n", g);
   }
   printf("(u,v):(%8d,%8d)\n", u, v);
-                                       // Now u or v (or both) are odd 
+                                       // Now u or v (or both) are odd
 
   while(u > 0) {                       // Invariant: g==2^k && u0 == g*v*n && v0 == g*v*m && (odd(u) || odd(v))
     if(even(u))      u /= 2;

@@ -31,7 +31,7 @@ static inline unsigned long pointKeyHash(const Point2DKey &key) {
 
 static HashKeyComparator pointKeyCmp;
 
-IsoCurveFinder::IsoCurveFinder(IsoCurveEvaluator &curveEvaluator) 
+IsoCurveFinder::IsoCurveFinder(IsoCurveEvaluator &curveEvaluator)
 : m_eval(curveEvaluator)
 , m_cornerMap(pointKeyHash, pointKeyCmp, HASHSIZE)
 {

@@ -20,7 +20,7 @@ public:
   int type(HostVarIndex &v) const;
 };
 
-int HostVar::type(HostVarIndex &v) const { 
+int HostVar::type(HostVarIndex &v) const {
   return v.hasIndicator() ? isNullAllowed(m_type) : m_type;
 }
 
@@ -197,7 +197,7 @@ void Parser::hostvarIndexPrint(HostVarIndex &c) {
   HostVar &vard = m_hostvarList[c.m_data];
   _tprintf(_T("%-20s,"),vard.m_name);
   HostVar *vari = (c.m_ind < 0) ? NULL : &m_hostvarList[c.m_ind];
-  _tprintf(_T("%-20s)\n"),vari?vari->m_name:_T("-")); 
+  _tprintf(_T("%-20s)\n"),vari?vari->m_name:_T("-"));
 }
 
 void HostVar::print() {
@@ -360,7 +360,7 @@ void Parser::emitDeclareVarlist(int n) {
 }
 
 void Parser::emitBindVarlist(int n) {
-/* 
+/*
   emit(_T("  sqlapi_bindvarlist(%d,sqlapi_varl);\n"),n);
   emitLineMark();
 */
@@ -531,7 +531,7 @@ void Parser::parseNameDef() {
   } else if(token == SYM_EXTERN) {
     nextToken();
   }
- 
+
   if(token == SYM_UNSIGNED) {
     nextToken();
     typesigned = false;
@@ -897,7 +897,7 @@ void Parser::parseConnectto() {
       emitBindVarlist(1);
       emitCall(SQL_CALL_CONNECT,SQL_CALL_CONNECT_DB,1,0);
     }
- 
+
     emitEnd();
     emitLineMark(m_endexeclineno-1);
   }
@@ -1019,7 +1019,7 @@ parse_end:
     emitEnd();
 
     emitBndStmt(stmt.m_nr,&stmt.m_inhostvarlist,&stmt.m_outhostvarlist);
-  }  
+  }
 }
 
 void Parser::parseStaticStatement() {
@@ -1116,7 +1116,7 @@ void Parser::parseDeclare() {
 
   checkToken(SYM_CURSOR);
   checkToken(SYM_FOR);
-  
+
   switch(token) {
   case SYM_SELECT: /* static Cursor */
     nextToken();
@@ -1170,7 +1170,7 @@ void Parser::parseOpen() {
     }
     emitCall(SQL_CALL_OPEN,cursor->m_nr,n,0);
     emitEnd();
-  }  
+  }
 }
 
 void Parser::parseFetchInto(CompactArray<HostVarIndex> &varlist) {
@@ -1316,7 +1316,7 @@ void Parser::parsePrepare() {
 void Parser::parseDescribe() {
   DynamicStatement *stmt;
   TCHAR sqldaname[MAX_NAME_LEN+1];
-  
+
   if(token != SYM_NAME) {
     error(SQL_SYNTAX_ERROR,_T("Expected statementname"));
   } else {
@@ -1593,7 +1593,7 @@ void Parser::parseFile() {
       break;
     }
   }
-end: 
+end:
   flushCollected();
   if(errorCount() > 0) {
     emitErrorMark();
@@ -1627,7 +1627,7 @@ void Parser::dumpSymbolTable() {
 }
 
 static void usage( void ) {
-  _ftprintf(stderr, 
+  _ftprintf(stderr,
             _T("Usage:sqlprep [-d] [-s] [-S] file(s)\n"
                "      -d:Trace lexical scanner\n"
                "      -s:Dump syboltable\n"

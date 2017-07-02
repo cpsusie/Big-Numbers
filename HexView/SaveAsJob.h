@@ -10,7 +10,7 @@ private:
   const __int64  m_size;
   __int64        m_fileIndex;
   String         m_errorMessage;
-  
+
   void doSave();
 public:
   SaveAsJob(const String &newName, ByteContainer &src);

@@ -29,7 +29,7 @@ public:
   ~SocketPair();
 };
 
-SocketPair::SocketPair(SOCKET rs, SOCKET ws) 
+SocketPair::SocketPair(SOCKET rs, SOCKET ws)
 : m_readSocket(rs), m_writeSocket(ws)
 {
   assert(rs != INVALID_SOCKET);

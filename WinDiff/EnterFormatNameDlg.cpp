@@ -19,7 +19,7 @@ BEGIN_MESSAGE_MAP(CGetFormatNameDlg, CDialog)
 END_MESSAGE_MAP()
 
 void CGetFormatNameDlg::OnOK() {
-  UpdateData(); 
+  UpdateData();
   __super::OnOK();
 }
 

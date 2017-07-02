@@ -123,7 +123,7 @@ void GrammarScanner::parseNumber() {
         }
         advance();
       }
-    }        
+    }
   }
   for(;isdigit(*m_next); advance()) {
     m_number = 10 * m_number + (*m_next - '0');
@@ -249,7 +249,7 @@ start: // restart here if we meet a comment /*...*/ of //
         }
         break;
       }
-      
+
       break;
     case '/':
       advance();

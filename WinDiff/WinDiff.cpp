@@ -168,7 +168,7 @@ void CWinDiffApp::removeFromRecentFiles(int index) {
 
 BOOL CAboutDlg::OnInitDialog() {
   __super::OnInitDialog();
-    
+
   GetDlgItem(IDC_STATICCOPYRIGHT)->SetWindowText(format(_T("Copyright %c 2007"),169).cstr());
   return TRUE;  // return TRUE unless you set the focus to a control
                 // EXCEPTION: OCX Property Pages should return FALSE

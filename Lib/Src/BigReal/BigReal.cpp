@@ -45,7 +45,7 @@ void BigReal::insertDigit(BRDigitType n) {
 #endif
 
 // Assume *this != zero. ie m_first != NULL (and m_last != NULL)
-void BigReal::insertZeroDigits(size_t count) { 
+void BigReal::insertZeroDigits(size_t count) {
   DECLARE_CALLCOUNTER;
 
   COUNTKEYCALL(count);
@@ -205,7 +205,7 @@ BigReal &BigReal::multPow10(BRExpoType exp) {
     const BRDigitType s = pow10(m);
     const BRDigitType t = BIGREALBASE / s;
     if(exp > 0) { // shift left
-      Digit *p = m_first; 
+      Digit *p = m_first;
       Digit *q = p->next; // *this != 0, =>. p != NULL
       if(p->n >= t) {
         insertDigit(p->n / t);
@@ -287,7 +287,7 @@ int compare(const BigReal &x, const BigReal &y) {
     return x.m_negative ? -1 : 1;
   }
 
-  // sign(x) == sign(y) 
+  // sign(x) == sign(y)
   if(x.m_expo > y.m_expo) { // abs(x) > abs(y)
     return x.m_negative ? -1 : 1;
   }
@@ -342,27 +342,27 @@ int compareAbs(const BigReal &x, const BigReal &y) {
 bool operator==(const BigReal &x,  const BigReal &y) {
   return compare(x,y) == 0;
 }
-  
+
 bool operator!=(const BigReal &x,  const BigReal &y) {
   return compare(x,y) != 0;
 }
-  
+
 bool operator>=(const BigReal &x,  const BigReal &y) {
   return compare(x,y) >= 0;
 }
-  
+
 bool operator<=(const BigReal &x,  const BigReal &y) {
   return compare(x,y) <= 0;
 }
-  
+
 bool operator>(const BigReal &x,  const BigReal &y) {
   return compare(x,y) >  0;
 }
-  
+
 bool operator<(const BigReal &x,  const BigReal &y) {
   return compare(x,y) <  0;
 }
-  
+
 int getInt(const BigReal &x) {
   return (int)getLong(x);
 }

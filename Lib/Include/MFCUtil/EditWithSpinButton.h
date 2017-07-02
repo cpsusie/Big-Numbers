@@ -8,15 +8,8 @@ private:
 public:
     CEditWithSpinButton();
 
-public:
-
-public:
     virtual ~CEditWithSpinButton();
-
-protected:
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
-
-  DECLARE_MESSAGE_MAP()
+    DECLARE_MESSAGE_MAP()
 };
 
-//{{AFX_INSERT_LOCATION}}

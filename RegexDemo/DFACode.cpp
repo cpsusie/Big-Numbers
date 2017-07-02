@@ -176,7 +176,7 @@ bool DFA::columnsEqual(size_t col1, size_t col2) const {
   return true;
 }
 
-  // Return true if two rows in transitionmatrix are equal, else return false 
+  // Return true if two rows in transitionmatrix are equal, else return false
 bool DFA::rowsEqual(size_t row1, size_t row2) const {
   return memcmp(m_states[row1].m_transition, m_states[row2].m_transition, sizeof(DFAtrans)) == 0;
 }

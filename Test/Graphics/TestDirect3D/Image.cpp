@@ -54,8 +54,8 @@ void Image::init(HWND wnd) { // static
   CHECKD3DRESULT(m_direct3D9->CreateDevice(D3DADAPTER_DEFAULT
                                           ,deviceType
                                           ,wnd
-                                          ,D3DCREATE_MIXED_VERTEXPROCESSING 
-                                         | D3DCREATE_FPU_PRESERVE 
+                                          ,D3DCREATE_MIXED_VERTEXPROCESSING
+                                         | D3DCREATE_FPU_PRESERVE
                                          | D3DCREATE_MULTITHREADED
                                           ,&param
                                           ,&m_device));
@@ -69,11 +69,11 @@ void Image::init(HWND wnd) { // static
   m_presentParameters = param;
 }
 
-void Image::beginScene() { // static 
+void Image::beginScene() { // static
   CHECKD3DRESULT(m_device->BeginScene());
 }
 
-void Image::endScene() { // static 
+void Image::endScene() { // static
   CHECKD3DRESULT(m_device->EndScene());
 }
 
@@ -206,7 +206,7 @@ void Image::makeWhiteTransparent() {
   CHECKD3DRESULT(m_surface->LockRect(&lockedRect, NULL, D3DLOCK_NOOVERWRITE/*D3DLOCK_DISCARD*/));
   D3DCOLOR *pixelRow = (D3DCOLOR*)lockedRect.pBits;
   const int PixelPerRow = lockedRect.Pitch / sizeof(D3DCOLOR);
-  for(int y = 0; y < m_size.cy; y++, pixelRow += PixelPerRow) {   
+  for(int y = 0; y < m_size.cy; y++, pixelRow += PixelPerRow) {
     D3DCOLOR *pixel = pixelRow;
     for(int x = 0; x < m_size.cx; x++, pixel++) {
       if((*pixel & 0xffffff) == 0xffffff) {
@@ -224,7 +224,7 @@ void Image::makeOpaque() {
   CHECKD3DRESULT(m_surface->LockRect(&lockedRect, NULL, D3DLOCK_DISCARD));
   D3DCOLOR *pixelRow = (D3DCOLOR*)lockedRect.pBits;
   const int PixelPerRow = lockedRect.Pitch / sizeof(D3DCOLOR);
-  for(int y = 0; y < m_size.cy; y++, pixelRow += PixelPerRow) {   
+  for(int y = 0; y < m_size.cy; y++, pixelRow += PixelPerRow) {
     D3DCOLOR *pixel = pixelRow;
     for(int x = 0; x < m_size.cx; x++, pixel++) {
       *pixel |= 0xff000000;

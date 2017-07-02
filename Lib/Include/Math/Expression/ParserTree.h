@@ -278,9 +278,9 @@ public:
   inline ExpressionNode *getRoot() {
     return m_root;
   }
-  
+
   void setRoot(ExpressionNode *n);
-  
+
   void unmarkAll();
   inline bool isOk() const {
     return m_ok;
@@ -389,7 +389,7 @@ typedef ExpressionNode *(ParserTree::*BinaryOperator)(ExpressionNode *n1, Expres
     return m_errors;
   }
 
-  static int decodeErrorString(const String &expr, String &error); // Error should be an element from StringArray returned by getErrors(). 
+  static int decodeErrorString(const String &expr, String &error); // Error should be an element from StringArray returned by getErrors().
                                                                    // Will return textposition in expr, remove the textposition "(line,column)" from error
   void listErrors(FILE *f = stdout) const;
   void listErrors(tostream &out) const;

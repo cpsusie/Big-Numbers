@@ -7,7 +7,7 @@ public:
   bool eventHandler(int event);
 };
 
-MyGrid::MyGrid(const String &title, int x, int y, int w, int h) : Dialog(title,x,y,w,h) { 
+MyGrid::MyGrid(const String &title, int x, int y, int w, int h) : Dialog(title,x,y,w,h) {
 };
 
 

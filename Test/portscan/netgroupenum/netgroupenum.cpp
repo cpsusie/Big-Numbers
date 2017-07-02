@@ -54,7 +54,7 @@ int _tmain(int argc, TCHAR **argv) {
    if ((nStatus == NERR_Success) || (nStatus == ERROR_MORE_DATA)) {
       if ((pTmpBuf = pBuf) != NULL) {
          //
-         // Loop through the entries and 
+         // Loop through the entries and
          //  print the data for all server types.
          //
          for (i = 0; i < dwEntriesRead; i++) {
@@ -76,7 +76,7 @@ int _tmain(int argc, TCHAR **argv) {
             dwTotalCount++;
          }
          // Display a warning if all available entries were
-         //  not enumerated, print the number actually 
+         //  not enumerated, print the number actually
          //  enumerated, and the total number available.
 
          if (nStatus == ERROR_MORE_DATA) {

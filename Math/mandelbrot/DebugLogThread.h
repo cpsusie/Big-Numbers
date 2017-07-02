@@ -42,7 +42,7 @@ public:
 
 #else
 
-#define REDIRECTLOG() 
+#define REDIRECTLOG()
 #define DLOG(s)
 
 #endif

@@ -22,7 +22,7 @@ Viewport2D::Viewport2D(CDC &dc, const Rectangle2DR &from, const Rectangle2DR &to
 }
 
 Viewport2D::Viewport2D(CDC &dc, RectangleTransformation &tr, bool retainAspectRatio) : m_dc(&dc) {
-  m_tr                = &tr; 
+  m_tr                = &tr;
   m_ownTransformation = false;
   m_currentPenWidth   = 0;
   setCurrentPen(PS_SOLID,1,RGB(0,0,0));

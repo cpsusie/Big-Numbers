@@ -3,7 +3,7 @@
 #include <Tokenizer.h>
 #include <Exception.h>
 
-RegistryKey FileFormat::getRootKey() { // static 
+RegistryKey FileFormat::getRootKey() { // static
   return Options::getSubKey(_T("Fileformats"));
 }
 
@@ -48,7 +48,7 @@ static const TCHAR *MULTIPLEDELIMITERS = _T("MultipleDelimiters");
 static const TCHAR *TEXTQUALIFIER      = _T("TextQualifier");
 static const TCHAR *COLUMNS            = _T("Columns");
 
-void FileFormat::saveData(RegistryKey &key, const FileFormat &param) { // static 
+void FileFormat::saveData(RegistryKey &key, const FileFormat &param) { // static
   key.setValue(DELIMITED          , param.m_delimited                  );
   key.setValue(FIELDDELIMITERS    , expandEscape(param.m_delimiters)   );
   key.setValue(MULTIPLEDELIMITERS , param.m_multipleDelimiters         );
@@ -106,7 +106,7 @@ Array<FileFormat> FileFormat::getExisting() { // static
 
 void FileFormat::columnsFromString(const String &s) {
   m_columns.clear();
-  
+
   for(Tokenizer tok(s,_T(",")); tok.hasNext();) {
     try {
       addInterval(ColumnInterval(tok.next()));
@@ -130,7 +130,7 @@ String ColumnInterval::toString() const {
   return format(_T("%3d - %3d"),m_from,m_to);
 }
 
-ColumnInterval::ColumnInterval(int from, int to) { 
+ColumnInterval::ColumnInterval(int from, int to) {
   if(from < 1 || to < from) {
     throwException(_T("Illegal interval (%d,%d)"),from,to);
   }
@@ -306,7 +306,7 @@ bool FileFormatList::remove(UINT index) {
   return true;
 }
 
-FileFormatEditData::FileFormatEditData(const String &name) 
+FileFormatEditData::FileFormatEditData(const String &name)
 : m_name(name)
 , m_originalName(name)
 {

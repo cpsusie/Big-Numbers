@@ -142,7 +142,7 @@ void BalancedFileSort::makeRuns(int input) {
     bool Continue1 = (l1 != NULL);
     while(Continue0 || Continue1) {
       if(!Continue1)      MOVE(0)
-      else if(!Continue0) MOVE(1) 
+      else if(!Continue0) MOVE(1)
       else if(leq(l0,l1)) MOVE(0)
       else                MOVE(1);
     }
@@ -166,7 +166,7 @@ void BalancedFileSort::finalMerge(int input) {
   readin(0);
   readin(1);
   while(l0 || l1) {
-    if(!l1)             FMOVE(0) 
+    if(!l1)             FMOVE(0)
     else if(!l0)        FMOVE(1)
     else if(leq(l0,l1)) FMOVE(0)
     else                FMOVE(1);

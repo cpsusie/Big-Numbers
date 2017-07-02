@@ -76,7 +76,7 @@ String WindowInfo::toString(const Array<WindowInfoField> &fields) const {
   return result;
 }
 
-String WindowInfo::getStyleToString(DWORD style) { // static 
+String WindowInfo::getStyleToString(DWORD style) { // static
   String result;
   TCHAR *delimiter = EMPTYSTRING;
 #define APPENDIFSTYLESET(s) if(style & WS_##s) { result += delimiter; result += _T(#s); delimiter = _T(" "); }

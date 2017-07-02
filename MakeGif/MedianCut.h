@@ -20,5 +20,5 @@ public:
 
 typedef CompactArray<DimPoint>          DimPointArray;
 typedef CompactArray<DimPointWithIndex> DimPointWithIndexArray;
- 
+
 DimPointArray medianCut(DimPointWithIndexArray &points, UINT desiredSize);

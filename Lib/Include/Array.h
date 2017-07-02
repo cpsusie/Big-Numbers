@@ -112,15 +112,15 @@ public:
   inline T &operator[](size_t i) {
     return *(T*)(((ArrayImpl*)m_collection)->getElement(i));
   }
-  
+
   inline const T &operator[](size_t i) const {
     return *(T*)(((ArrayImpl*)m_collection)->getElement(i));
   }
-  
+
   inline T &first() {
     return *(T*)(((ArrayImpl*)m_collection)->getElement(0));
   }
-  
+
   inline const T &first() const {
     return *(T*)(((ArrayImpl*)m_collection)->getElement(0));
   }
@@ -128,11 +128,11 @@ public:
   inline T &last() {
     return *(T*)(((ArrayImpl*)m_collection)->getElement(m_collection->size()-1));
   }
-  
+
   inline const T &last() const {
     return *(T*)(((ArrayImpl*)m_collection)->getElement(m_collection->size()-1));
   }
-  
+
   bool operator==(const Array<T> &a) const { // NB not virtual in Collection, because of ==
     const size_t n = size();
     if(n != a.size()) {

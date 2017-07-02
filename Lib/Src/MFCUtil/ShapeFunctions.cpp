@@ -52,7 +52,7 @@ void applyToRectangle(const CRect &rect, PointOperator &op) {
   } else if(r.top == r.bottom) {
     applyToLine(r.left , r.top   , r.right, r.top    , op); // rect is a horizontal line
   } else {                                                  // rect is a "real" rectangle
-    applyToLine(r.left , r.top   , r.right-1, r.top     , op); 
+    applyToLine(r.left , r.top   , r.right-1, r.top     , op);
     applyToLine(r.right, r.top   , r.right  , r.bottom-1, op);
     applyToLine(r.right, r.bottom, r.left+1 , r.bottom  , op);
     applyToLine(r.left , r.bottom, r.left   , r.top+1   , op);

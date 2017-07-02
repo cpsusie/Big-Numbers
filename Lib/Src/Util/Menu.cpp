@@ -254,7 +254,7 @@ startloop:
                 default       :
                   goto cleanup;
                 }
-              }           
+              }
               ret = item->m_command;
               goto cleanup;
             }

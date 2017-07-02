@@ -2,7 +2,7 @@
 #include <Exception.h>
 #include "GameTypes.h"
 
-void CardHand::clear() { 
+void CardHand::clear() {
   for(int i = 0; i < 13; i++) {
     m_card[i] = -1;
   }
@@ -248,7 +248,7 @@ int CardHand::findLowest() const { // find the index of the lowest card in the h
       result = i;
     }
   }
-  return result;  
+  return result;
 }
 
 int CardHand::findHigest() const { // find the index of the higest card in the hand, ace lowest
@@ -261,7 +261,7 @@ int CardHand::findHigest() const { // find the index of the higest card in the h
       result = i;
     }
   }
-  return result;  
+  return result;
 }
 
 int CardHand::findLowestAceHigest() const { // find the index of lowest card in the hand, ace higest
@@ -274,7 +274,7 @@ int CardHand::findLowestAceHigest() const { // find the index of lowest card in 
       result = i;
     }
   }
-  return result;  
+  return result;
 }
 
 int CardHand::findHigestAceHigest() const { // find the index of the higest card in the hand, ace higest
@@ -291,7 +291,7 @@ int CardHand::findHigestAceHigest() const { // find the index of the higest card
 }
 
 int CardHand::findLowestInSuit(Suit suit) const {     // find the index of the lowest card in the hand
-  int result = -1;                                    // with the specified suit 
+  int result = -1;                                    // with the specified suit
   int lv     = 15;                                    // returns -1 if none found
   for(int i = 0; i < 13; i++) {
     const Card c = m_card[i];
@@ -300,11 +300,11 @@ int CardHand::findLowestInSuit(Suit suit) const {     // find the index of the l
       result = i;
     }
   }
-  return result;  
+  return result;
 }
 
 int CardHand::findHigestInSuit(Suit suit) const {     // find the index of the higest card in the hand
-  int result = -1;                                    // with the specified suit 
+  int result = -1;                                    // with the specified suit
   int hv     = 0;                                     // returns -1 if none found
   for(int i = 0; i < 13; i++) {
     const Card c = m_card[i];
@@ -313,11 +313,11 @@ int CardHand::findHigestInSuit(Suit suit) const {     // find the index of the h
       result = i;
     }
   }
-  return result;  
+  return result;
 }
 
 int CardHand::findLowestInSuitAceHigest(Suit suit) const {     // find the index of lowest card in the hand
-  int result = -1;                                      // with the specified suit, ace higest 
+  int result = -1;                                      // with the specified suit, ace higest
   int lv     = 15;                                      // returns -1 if none found
   for(int i = 0; i < 13; i++) {
     const Card c = m_card[i];
@@ -326,7 +326,7 @@ int CardHand::findLowestInSuitAceHigest(Suit suit) const {     // find the index
       result = i;
     }
   }
-  return result;  
+  return result;
 }
 
 int CardHand::findHigestInSuitAceHigest(Suit suit) const {     // find the index of higest card in the hand
@@ -339,7 +339,7 @@ int CardHand::findHigestInSuitAceHigest(Suit suit) const {     // find the index
       result = i;
     }
   }
-  return result;  
+  return result;
 }
 
 int CardHand::findHigestLowerThan(Card card) const {
@@ -347,7 +347,7 @@ int CardHand::findHigestLowerThan(Card card) const {
   int hv = 0;
   for(int i = 0; i < 13; i++) {
     const Card c = m_card[i];
-    if(c >= 0 && CARDSUIT(c) == CARDSUIT(card) 
+    if(c >= 0 && CARDSUIT(c) == CARDSUIT(card)
               && CARDVALUE(c) < CARDVALUE(card)
               && CARDVALUE(c) > hv) {
       hv = CARDVALUE(c);
@@ -362,7 +362,7 @@ int CardHand::findLowestHigherThanAceHisgest(Card card) const {
   int lv = 15;
   for(int i = 0; i < 13; i++) {
     const Card c = m_card[i];
-    if(c >= 0 && CARDSUIT(c) == CARDSUIT(card) 
+    if(c >= 0 && CARDSUIT(c) == CARDSUIT(card)
               && CARDVALUEAH(c) > CARDVALUEAH(card)
               && CARDVALUEAH(c) < lv) {
       lv = CARDVALUEAH(c);

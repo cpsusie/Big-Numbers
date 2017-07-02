@@ -66,7 +66,7 @@ BOOL CAsciiwDlg::OnInitDialog() {
 
   SetIcon(m_hIcon, TRUE);         // Set big icon
   SetIcon(m_hIcon, FALSE);        // Set small icon
-  
+
   m_currentFont = NULL;
   m_defaultFont.CreateFont(10, 8, 0, 0, 400, FALSE, FALSE, 0, ANSI_CHARSET, OUT_DEFAULT_PRECIS,
                          CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
@@ -109,7 +109,7 @@ String formatCh3(int ch) {
     case 10: return _T("lf ");
     case 13: return _T("cr ");
 
-    default: 
+    default:
       return format(_T("%c"), ch);
 //      return isprint(ch) ? format("%c", ch) : ".";
     }
@@ -212,7 +212,7 @@ HCURSOR CAsciiwDlg::OnQueryDragIcon() {
 }
 
 void CAsciiwDlg::OnFileExit() {
-  exit(0);  
+  exit(0);
 }
 
 bool CAsciiwDlg::isHexChecked() {
@@ -281,13 +281,13 @@ void CAsciiwDlg::OnViewFont() {
 BOOL CAsciiwDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg))
     return true;
-    
+
   return __super::PreTranslateMessage(pMsg);
 }
 
 void CAsciiwDlg::OnSize(UINT nType, int cx, int cy) {
   __super::OnSize(nType, cx, cy);
-  m_layoutManager.OnSize(nType,cx,cy);    
+  m_layoutManager.OnSize(nType,cx,cy);
   if(!IsWindowVisible()) {
     Invalidate();
   }

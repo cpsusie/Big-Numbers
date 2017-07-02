@@ -40,7 +40,7 @@ unsigned int escape(const _TUCHAR *&s) {
   if(*s != '\\') {
     asciiVal = *(s++);
   } else {
-    s++; // Skip the '\' 
+    s++; // Skip the '\'
     switch(toupper(*s)) {
     case 'B' :
       asciiVal = '\b';

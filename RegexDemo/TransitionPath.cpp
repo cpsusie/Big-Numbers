@@ -14,7 +14,7 @@ static MatrixDimension getGridSize(const CSize winSize) {
   return MatrixDimension(gridHeight, gridWidth);
 }
 
-TransitionGrid::TransitionGrid(const CSize winSize) 
+TransitionGrid::TransitionGrid(const CSize winSize)
 : m_winSize(winSize)
 , m_grid(getGridSize(winSize)) {
 

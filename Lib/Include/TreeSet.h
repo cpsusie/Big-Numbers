@@ -154,7 +154,7 @@ public:
     : Set<T>(new TreeSetImpl(ObjectManager<T>(), FunctionComparator<T>(comparator)))
   {
   }
-  TreeSet(Comparator<T> &comparator) 
+  TreeSet(Comparator<T> &comparator)
     : Set<T>(new TreeSetImpl(ObjectManager<T>(), comparator))
   {
   }

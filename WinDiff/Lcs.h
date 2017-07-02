@@ -48,7 +48,7 @@ public:
 
 #define RESET_TIMEMEASURE(str)
 #define BEGIN_TIMEMEASURE(tm, label )
-#define END_TIMEMEASURE(  tm, divide) 
+#define END_TIMEMEASURE(  tm, divide)
 
 #endif
 

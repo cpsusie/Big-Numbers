@@ -30,7 +30,7 @@ public:
   FindDataFieldSortDefinition() : m_field(FILENAME), m_ascending(true) {
   }
 
-  FindDataFieldSortDefinition(FindDataField field, bool ascending = true) { 
+  FindDataFieldSortDefinition(FindDataField field, bool ascending = true) {
     m_field = field, m_ascending = ascending;
   }
 };

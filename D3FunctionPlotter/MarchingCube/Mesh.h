@@ -65,20 +65,20 @@ public:
 
   /* Apply the transform @p trans into this object. */
   virtual void transform(const D3DXMATRIX &trans);
-  
+
   /* Returns the bounding box for this object.  The origin of the box is
    * at the origin of the object, (0,0,0).  The negative bounding vertex
    * is place in @p v1, and the positive bounding vertex in @p v2.
    */
   virtual void getBoundingBox(D3DXVECTOR3 *v1, D3DXVECTOR3 *v2);
-  
+
   /* Returns the radius of the bounding sphere for this object.  The
    * origin of the sphere is at the origin of the object, (0,0,0).
    *
    * @return the radius of the bounding sphere.
    */
   virtual float getBoundingRadius();
-  
+
   /* Centralizes all vertices around (0,0,0), by computing the offset
    * of the center of the object to (0,0,0) and shifting all the
    * vertices by that offset.

@@ -19,7 +19,7 @@ AbstractGame::AbstractGame(GameType           gameType
                           ,UINT               positionCount
                           ,PositionStatus    *statusTable
                           ,UINT               moveCount
-                          ,const PositionSet *moveTable) 
+                          ,const PositionSet *moveTable)
 : m_gameType(gameType)
 , m_positionCount(positionCount)
 , m_statusTable(statusTable)
@@ -59,7 +59,7 @@ PositionStatus AbstractGame::getPositionStatus() {
     if(m_bricksOnBoard <= 1) {
       DEFINE_POSITION(m_bricksOnBoard == 0, m_bricksOnBoard);
     } else {
-      
+
       bool winnerMoveFound = false;
       int  pliesToWin      = 30;
       int  pliesToLoose    = 0;

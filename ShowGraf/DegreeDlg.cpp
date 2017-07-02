@@ -5,7 +5,7 @@
 #define new DEBUG_NEW
 #endif
 
-CDegreeDlg::CDegreeDlg(const Point2DArray &pointArray, FunctionPlotter &fp, CWnd *pParent) 
+CDegreeDlg::CDegreeDlg(const Point2DArray &pointArray, FunctionPlotter &fp, CWnd *pParent)
 : m_fp(fp)
 , CDialog(CDegreeDlg::IDD, pParent) {
 
@@ -57,6 +57,6 @@ void CDegreeDlg::OnDeltaposSpinDegree(NMHDR* pNMHDR, LRESULT* pResult) {
       return;
     }
     setDegree(degree);
-    
+
     *pResult = 0;
 }

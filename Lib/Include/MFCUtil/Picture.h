@@ -1,7 +1,7 @@
 #pragma once
 
-#include <afxwin.h>         
-#include <ocidl.h>        
+#include <afxwin.h>
+#include <ocidl.h>
 #include <MyString.h>
 
 typedef enum {

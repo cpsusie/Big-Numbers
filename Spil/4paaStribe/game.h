@@ -74,11 +74,11 @@ private:
   int evaluate() const {
     return evaluateMe();
   }
-  
+
   Move firstMove() const {
     return firstMoveFrw();
   }
-  
+
   Move nextMove(Move lastMove) const {
     return nextMoveFrw(lastMove);
   }
@@ -110,20 +110,20 @@ public:
   int getBestScore() const {
     return m_bestScore;
   }
-  
+
   void init(Player startPlayer);
   void doMove(Move m);
-  
+
   static long getEvalCount() {
     return m_evalCount;
   }
-  
+
   int getEvalCountPerSecond() const;
 
   Stribe4 findStribe(Move lastMove) const {
     return Stribe4(*this,lastMove);
   }
-  
+
   int getBrickCount() const;
   Move findRandomMove() const;
   Move findMove(int lookahead);

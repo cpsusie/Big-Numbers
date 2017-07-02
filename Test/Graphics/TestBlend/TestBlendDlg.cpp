@@ -83,7 +83,7 @@ void CTestBlendDlg::OnButtonblend() {
       return;
     }
 
-    
+
     CBitmap srcImage;
     srcImage.LoadBitmap(IDB_BITMAPBLACKKING);
     CBitmap dstImage;

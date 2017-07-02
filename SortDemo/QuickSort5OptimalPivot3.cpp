@@ -33,7 +33,7 @@ tailrecurse:
 
     char *pi = EPTR(1), *pj = EPTR(nelem-2);
     do {
-      while(pi <= pj && comparator.cmp(pi,pivot) < 0) pi += width; 
+      while(pi <= pj && comparator.cmp(pi,pivot) < 0) pi += width;
       while(pi <= pj && comparator.cmp(pivot,pj) < 0) pj -= width;
       if(pi < pj) {
         PSWAP(pi, pj);
@@ -56,7 +56,7 @@ tailrecurse:
       }
     } else {
       if(i < nelem-1) {              // Save start,count of elements to be sorted later. ie Sort(pi,nelem-i, width, comparator);
-        PUSH(stack, pi, nelem-i); 
+        PUSH(stack, pi, nelem-i);
       }
       if(j > 0) {                    // Sort(base,j+1,width, comparator);
         nelem = j+1;
@@ -136,7 +136,7 @@ tailrecurse:
       }
     } else {
       if(i < nelem-1) {       // Save start,count of elements to be sorted later. ie Sort(pi,nelem-i, width, comparator);
-        PUSH(stack, pi, nelem-i); 
+        PUSH(stack, pi, nelem-i);
       }
       if(j > 0) {             // Sort(base,j+1,width, comparator);
         nelem = j+1;

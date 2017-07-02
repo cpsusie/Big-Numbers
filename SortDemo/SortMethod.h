@@ -37,7 +37,7 @@ inline void swap(register char *p1, register char *p2, size_t w) {
     w -= sizeof(type);                      \
     p1 += sizeof(type); p2 += sizeof(type); \
    }
- 
+
 #ifdef IS32BIT
   swapBasicType(while,long ,w)   /* take 4 bytes at a time */
 #else
@@ -403,5 +403,5 @@ public:
 bool debugCheckOrder(const TCHAR *fileName, int line, void *base, int n, char *p1, char *p2);
 #define CHECKORDER(p1,p2) debugCheckOrder(__FILE__,__LINE__, base, nelem, p1, p2)
 #else
-#define CHECKORDER(p1,p2) 
+#define CHECKORDER(p1,p2)
 #endif

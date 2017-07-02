@@ -149,7 +149,7 @@ CRect Image::getVisiblePart(const CRect &r, double zoomFactor) const {
     } else {
       const CSize visibleSize = r.Size() / zoomFactor;
       return CRect(left, top, min(size.cx, left + visibleSize.cx), min(size.cy, top + visibleSize.cy));
-    } 
+    }
   }
 }
 

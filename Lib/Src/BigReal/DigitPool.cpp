@@ -81,7 +81,7 @@ DigitPool::~DigitPool() {
   }
 }
 
-void DigitPool::addToCount(intptr_t n) { //static 
+void DigitPool::addToCount(intptr_t n) { //static
   static Semaphore gate;
   gate.wait();
   s_totalDigitCount += n;

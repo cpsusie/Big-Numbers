@@ -21,7 +21,7 @@ BEGIN_MESSAGE_MAP(CSelectGameDlg, CDialog)
 END_MESSAGE_MAP()
 
 void CSelectGameDlg::OnOK() {
-  UpdateData(); 
+  UpdateData();
   __super::OnOK();
 }
 

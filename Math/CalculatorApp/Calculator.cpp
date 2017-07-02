@@ -34,7 +34,7 @@ BigReal Calculator::toRadians(const BigReal &x) const {
   switch(m_trigonometricBase) {
   case TRIGO_RADIANS:
     return x;
-  case TRIGO_DEGREES: 
+  case TRIGO_DEGREES:
   case TRIGO_GRADS  :
     { BRExpoType fpe;
       const BigReal base = (m_trigonometricBase == TRIGO_DEGREES) ? 180 : 200;
@@ -138,7 +138,7 @@ void Calculator::init() {
 
 Calculator::Calculator() : m_minusOne(-1) {
   m_digitGrouping  = false;
-  m_gotError       = false;     
+  m_gotError       = false;
   m_radix          = 10;
   init();
   initMemory();
@@ -275,7 +275,7 @@ void Calculator::handleSign() {
     setDisplay(-getDisplay());
   }
   m_lastWasBinOp = false;
-}  
+}
 
 void Calculator::handleEE() {
   if(m_inExponent)  {
@@ -347,7 +347,7 @@ static String sprintbin(unsigned __int64 n) {
     _tcscpy(str,_T("0"));
     return str;
   }
-    
+
   TCHAR *s = str;
   while(n != 0) {
     *(s++) = '0' + (n & 1);
@@ -402,7 +402,7 @@ String Calculator::groupDigits(const String &str) const {
   case 2 : groupSize = 4; break;
   case 8 : groupSize = 3; break;
   case 16: groupSize = 4; break;
-  case 10: 
+  case 10:
     { groupSize = 3;
       intptr_t comma    = str.find(',');
       intptr_t exponent = str.find('e');
@@ -467,7 +467,7 @@ String Calculator::printRadix(const BigReal &x) const {
     break;
   case 16:
     tmp = format(_T("%I64X"), cutWord(x.isNegative() ? getInt64(x) : getUint64(x)));
-    break;    
+    break;
   }
   return m_digitGrouping ? groupDigits(tmp) : tmp;
 }
@@ -670,14 +670,14 @@ void Calculator::handleRPar() {
 
 void Calculator::handleEqual() {
   if(m_lastWasBinOp) {
-    m_opStack.pop(); 
+    m_opStack.pop();
   } else {
     pushDisplay();
   }
   while(m_paranthesLevel > 0) { // terminate all open parantheses
     doParanthes();
   }
-  
+
   while(!m_opStack.isEmpty()) {
     doBinaryOp();
   }
@@ -890,13 +890,13 @@ void Calculator::enterButton(int button) {
     handleNumButton( 'F');
     break;
   case IDC_BUTTONSIGN        :
-    handleSign();         
+    handleSign();
     break;
   case IDC_BUTTONCOMMA       :
-    handleComma();        
+    handleComma();
     break;
   case IDC_BUTTONEE          :
-    handleEE();           
+    handleEE();
     break;
   case IDC_BUTTONPOW         :
   case IDC_BUTTONDIV         :
@@ -908,25 +908,25 @@ void Calculator::enterButton(int button) {
   case IDC_BUTTONOR          :
   case IDC_BUTTONXOR         :
   case IDC_BUTTONLSH         :
-    handleBinaryOperator(button);                    
+    handleBinaryOperator(button);
     break;
   case IDC_BUTTONLPAR        :
-    handleLPar();                                    
+    handleLPar();
     break;
   case IDC_BUTTONRPAR        :
-    handleRPar();                                    
+    handleRPar();
     break;
   case IDC_BUTTONEQUAL       :
-    handleEqual();                                   
+    handleEqual();
     break;
   case IDC_BUTTONMC          :
-    m_memory = 0;                                    
+    m_memory = 0;
     break;
   case IDC_BUTTONMR          :
-    setDisplay(m_memory);                            
+    setDisplay(m_memory);
     break;
   case IDC_BUTTONMS          :
-    m_memory = getDisplay();                         
+    m_memory = getDisplay();
     setDisplay(getDisplay());
     break;
   case IDC_BUTTONMADD        :

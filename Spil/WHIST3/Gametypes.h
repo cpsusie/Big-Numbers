@@ -38,7 +38,7 @@ typedef char Card; // can be negative
 #define LEFTFIELDWIDTH  6
 
 typedef enum {
-  STATE_INIT                  
+  STATE_INIT
  ,STATE_CONNECTING
  ,STATE_DEALING
  ,STATE_DECIDE_GAME
@@ -156,7 +156,7 @@ private:
   Card m_card[13];
 
 public:
-  CardHand() { 
+  CardHand() {
     clear();
   }
   void clear();
@@ -211,7 +211,7 @@ private:
   char    m_name[3][MAXNAMELENGTH+1]; // dont modify
 
 public:
-  PlayerList() { 
+  PlayerList() {
     clear();
   }
 

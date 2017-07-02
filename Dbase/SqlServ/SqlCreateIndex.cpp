@@ -3,7 +3,7 @@
 void sqlCreateIndex(Database &db, CreateIndexData &data) {
   const TableDefinition &tableDef = db.getTableDefinition(data.m_tableName);
   IndexDefinition        indexDef;
-  
+
   indexDef.m_tableName = tableDef.getTableName();
   indexDef.m_fileName  = EMPTYSTRING;
   indexDef.m_indexName = data.m_indexName;

@@ -23,7 +23,7 @@ END_MESSAGE_MAP()
 
 BOOL CFrameCountDlg::OnInitDialog() {
   __super::OnInitDialog();
-    
+
   gotoEditBox(this, IDC_EDIT_FRAMECOUNT);
   return FALSE;
 }

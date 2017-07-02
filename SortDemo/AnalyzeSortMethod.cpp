@@ -115,7 +115,7 @@ void SortMethodAnalyzer::analyzeSortMethod() {
     if(isWindowTerminated()) return;
     m_printer->printf(_T("%s\n"), result.toString().cstr());
   }
-  
+
   double logFactorTimeMean = 0, logFactorCompareMean = 0, squareFactorTimeMean = 0, squareFactorCompareMean = 0;
 
   for(size_t i = 0; i < data.size(); i++) {

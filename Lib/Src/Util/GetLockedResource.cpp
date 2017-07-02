@@ -27,7 +27,7 @@ static String typeNameToString(const TCHAR *typeName) {
   caseStr(RT_ANICURSOR   );
   caseStr(RT_ANIICON     );
   caseStr(RT_HTML        );
-  default: 
+  default:
     try {
       return typeName;
     } catch(...) {

@@ -72,7 +72,7 @@ EndGameKeyDefinition6Men2Pairs::EndGameKeyDefinition6Men2Pairs(PieceKey pk23, Pi
 }
 
 #ifdef _DEBUG
-    
+
 static EndGamePosIndex checkAndReturn(EndGamePosIndex index, EndGamePosIndex max) {
   max--;
   if (index > max) {

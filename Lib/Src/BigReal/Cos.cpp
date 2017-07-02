@@ -26,7 +26,7 @@ public:
   const BigReal      &c22;
   const ConstBigReal  c23;
 
-  CosConstants() 
+  CosConstants()
     :c1  ( 4    )
     ,c2  ( 0.1  )
     ,c3  ( 0.1  )

@@ -1,4 +1,4 @@
-// Topologisk sortering 
+// Topologisk sortering
 
 #include "stdafx.h"
 #pragma warning(disable:4786)

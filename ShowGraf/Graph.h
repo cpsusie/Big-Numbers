@@ -83,9 +83,9 @@ public:
   inline const DataRange &getDataRange() const {
     return m_range;
   }
-  
+
   const Point2DArray &getProcessedData() const;
-  
+
   inline const Point2DArray &getDataPoints() const {
     return m_pointArray;
   }

@@ -32,7 +32,7 @@ String VirtualCode::toString() const {
     casepr2(PUSHTUP        )  /* m_stack.push(m_tuplereg[ins.reg]->m_fields[ins.index])        */
     casepr1(PUSHHV         )  /* push(hostvar[ins.addr])                                       */
     caseprconst(PUSHCONST  )  /* push(data(ins.addr))                                          */
-   
+
     case CODEPUSHADR:         /* push(ins.addr)                                                */
       result += format(_T("%-20s adr  = %5d\n"),_T("PUSHADR"),ins.addr());
       { Instruction nextins;

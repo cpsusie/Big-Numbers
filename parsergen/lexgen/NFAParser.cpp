@@ -60,7 +60,7 @@ void NFAparser::leave(const TCHAR *function) {
 #else
 #pragma message("NB -------------------- Newline include \\n -------------------")
 #endif
-// In Windows a newline is \r\n, In Unix \n, 
+// In Windows a newline is \r\n, In Unix \n,
 // so charerterclasses involving newline depends on the platform
 
 void NFAparser::expr(NFAstate *&startp, NFAstate *&endp) {
@@ -180,7 +180,7 @@ bool NFAparser::firstInCatExpr(Token tok) {
 }
 
 void NFAparser::factor(NFAstate *&startp, NFAstate *&endp) {
-  // factor  => term 
+  // factor  => term
   //          | term STAR
   //          | term PLUS
   //          | term QUEST
@@ -219,7 +219,7 @@ void NFAparser::term(NFAstate *&startp, NFAstate *&endp) {
   //                 | LPAR expr RPAR
   //                 | character
   //                 ;
-  // 
+  //
   // charclass      => characterInterval
   //                 | epsilon
   //                 ;

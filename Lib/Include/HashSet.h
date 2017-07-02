@@ -121,7 +121,7 @@ public:
   }
 
   friend class HashSetIterator;
-  friend class HashSetTable;    
+  friend class HashSetTable;
 };
 
 class HashSetIterator : public AbstractIterator {

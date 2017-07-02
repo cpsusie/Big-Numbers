@@ -2,7 +2,7 @@
 #include <D3DGraphics/D3LightControl.h>
 #include <D3DGraphics/MeshCreators.h>
 
-D3LightControlPoint::D3LightControlPoint(D3Scene &scene, int lightIndex) 
+D3LightControlPoint::D3LightControlPoint(D3Scene &scene, int lightIndex)
 : D3LightControl(scene, lightIndex)
 {
   setSize(0.08f);

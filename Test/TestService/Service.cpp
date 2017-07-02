@@ -383,8 +383,8 @@ LPTSTR GetLastErrorText(LPTSTR lpszBuf, DWORD dwSize) {
   DWORD  dwRet;
   LPTSTR lpszTemp = NULL;
 
-  dwRet = FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER 
-                      | FORMAT_MESSAGE_FROM_SYSTEM 
+  dwRet = FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER
+                      | FORMAT_MESSAGE_FROM_SYSTEM
                       | FORMAT_MESSAGE_ARGUMENT_ARRAY
                        ,NULL
                        ,GetLastError()

@@ -14,7 +14,7 @@ Semaphore::~Semaphore() {
 bool Semaphore::wait(int milliseconds) {
   const int ret = WaitForSingleObject(m_sem, milliseconds);
   switch(ret) {
-  case WAIT_OBJECT_0: 
+  case WAIT_OBJECT_0:
     return true;
   case WAIT_TIMEOUT :
     return false;

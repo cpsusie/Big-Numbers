@@ -36,7 +36,7 @@ typedef struct {
 } ComboItem;
 
 #define CBITEM(id) id, _T(#id)
- 
+
 typedef ComboItem EnumItem;
 
 #define ENUMITEM(id) id, _T(#id)

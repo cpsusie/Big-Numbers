@@ -306,7 +306,7 @@ namespace UnitTestKeyFile {
     } catch(sqlca ca) {
       switch(ca.sqlcode) {
       case SQL_FATAL_ERROR      :
-        verify((start == -1) || (end == -1)); 
+        verify((start == -1) || (end == -1));
         break;
       case SQL_INVALID_KEYCOUNT :
         verify((beginFieldCount > (int)m_keydef.getKeyFieldCount()) || (endFieldCount > (int)m_keydef.getKeyFieldCount()));
@@ -323,7 +323,7 @@ namespace UnitTestKeyFile {
   public:
     TEST_METHOD(testSimpleKeyFile) {
       TestFields fields(false);
-  
+
       OUTPUT(_T("Inserting data"));
 
       KeyFileTester test(false,fields);

@@ -78,7 +78,7 @@ BOOL CSpectrumDlg::OnInitDialog() {
   SetIcon(m_hIcon, TRUE);         // Set big icon
   SetIcon(m_hIcon, FALSE);        // Set small icon
   m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATOR1));
-  
+
   m_waveSystem.substituteControl(     this, IDC_WAVESYSTEM);
   m_frequenceSystem.substituteControl(this, IDC_FREQUENCESYSTEM);
   m_waveSystem.setDataRange(DataRange(0,SAMPLECOUNT,-10,255), true);
@@ -91,7 +91,7 @@ BOOL CSpectrumDlg::OnInitDialog() {
     AfxMessageBox(e.what(),MB_ICONSTOP);
     exit(-1);
   }
-  
+
   return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -286,7 +286,7 @@ class BeepThread : public Thread {
 public:
   BeepThread(unsigned int frequence);
   void start();
-  void stop() { 
+  void stop() {
     m_cont = false;
   }
   void setFrequence(unsigned int frequence) {

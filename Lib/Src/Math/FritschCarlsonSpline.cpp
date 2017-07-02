@@ -110,7 +110,7 @@ FritschCarlsonSpline::FritschCarlsonSpline(const CompactArray<DataPoint> &data) 
     /* if not strictly monotonic, zero derivative */
     if(del1*del2 <= 0.0) {
       yd(i,1) = 0.0;
-    
+
       /*
        * else, if strictly monotonic, use Butland's formula:
        *      3*(h1+h2)*del1*del2

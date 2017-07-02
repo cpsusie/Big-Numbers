@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 #define PIPELINESIZE 10
-bool PipeLine::full()  const { 
+bool PipeLine::full()  const {
   return m_count == PIPELINESIZE;
 }
 

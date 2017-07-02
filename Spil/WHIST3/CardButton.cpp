@@ -48,8 +48,8 @@ void CardButton::SetAbove(CWnd *under) {
   }
 }
 
-MyCardButton::MyCardButton(CDialog *parent, Card card) : CardButton(parent,card) { 
-  m_marked = false; 
+MyCardButton::MyCardButton(CDialog *parent, Card card) : CardButton(parent,card) {
+  m_marked = false;
   m_pos    = 0;
 }
 

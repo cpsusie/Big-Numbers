@@ -50,7 +50,7 @@ BOOL CParametricGraphDlg::OnInitDialog() {
   m_layoutManager.addControl(IDC_STATICEXPRYLABEL, PCT_RELATIVE_Y_CENTER);
   m_layoutManager.addControl(IDC_BUTTON_HELPY    , PCT_RELATIVE_Y_CENTER);
   m_layoutManager.addControl(IDC_EDITEXPRY       , RELATIVE_WIDTH | RESIZE_FONT | PCT_RELATIVE_TOP | RELATIVE_BOTTOM);
-  
+
   m_layoutManager.addControl(IDC_STATICTINTERVAL , RELATIVE_Y_POS);
   m_layoutManager.addControl(IDC_EDITTFROM       , RELATIVE_Y_POS);
   m_layoutManager.addControl(IDC_STATICDASH      , RELATIVE_Y_POS);

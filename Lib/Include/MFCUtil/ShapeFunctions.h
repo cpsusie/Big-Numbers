@@ -15,20 +15,20 @@ public:
   CurveOperator() {
     beginCurve();
   }
-  
+
   void apply(const Point2D &p);
   virtual void line(const Point2D &from, const Point2D &to) = 0;
-  
+
   virtual void beginCurve() {
     m_firstTime = true;
   }
-  
+
   virtual void endCurve() {};
-  
+
   const Point2D &getCurrentPoint() const {
     return m_currentPoint;
   }
-  
+
   bool firstPointInCurve() const {
     return m_firstTime;
   }

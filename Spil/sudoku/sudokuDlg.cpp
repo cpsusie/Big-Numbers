@@ -93,7 +93,7 @@ BOOL CSudokuDlg::OnInitDialog() {
   }
   SetIcon(m_hIcon, TRUE);
   SetIcon(m_hIcon, FALSE);
-  
+
   m_accelTable     = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATOR1));
   m_level          = EASY;
   m_timerIsRunning = false;
@@ -255,7 +255,7 @@ void CSudokuDlg::OnGameClearUnmarked() {
     }
   }
   putMatrix(m);
-}  
+}
 
 void CSudokuDlg::messageFreeFieldCount() {
   int count = 0;
@@ -356,7 +356,7 @@ void CSudokuDlg::OnGameUnmarkAllFields() {
       }
     }
   }
-  Invalidate(); 
+  Invalidate();
 }
 
 bool CSudokuDlg::loadGame(FILE *f) {
@@ -415,7 +415,7 @@ static const TCHAR *FileDialogExtensions = _T("Sudoku files (*.sud)\0*.sud\0"
                                               "Text files (*.txt)\0*.txt\0"
                                               "All files (*.*)\0*.*\0\0");
 
-void CSudokuDlg::save(const TCHAR *fname) { 
+void CSudokuDlg::save(const TCHAR *fname) {
   try {
     FILE *f = FOPEN(fname,_T("w"));
     saveGame(f);
@@ -546,7 +546,7 @@ void CSudokuDlg::OnTimer(UINT_PTR nIDEvent) {
   } else {
     showTime(now - m_startTime);
   }
-    
+
   __super::OnTimer(nIDEvent);
 }
 

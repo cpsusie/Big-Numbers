@@ -118,7 +118,7 @@ public:
   }
   String toString() const;
   int toStr(TCHAR *dst) const;                                                      // return length
-  static String toString(     char from, char to, BYTE promoteIndex=0); 
+  static String toString(     char from, char to, BYTE promoteIndex=0);
   static int toStr(TCHAR *dst, char from, char to, BYTE promoteIndex=0);   // return length
   inline bool operator==(const FastMove &m) const {
     return m_data == m.m_data;

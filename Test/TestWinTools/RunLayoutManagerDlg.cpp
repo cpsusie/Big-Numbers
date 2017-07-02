@@ -127,7 +127,7 @@ void CRunLayoutManagerDlg::OnLayoutUpperListVisible() {
   const bool upperListVisible = toggleMenuItem(this, ID_LAYOUT_UPPERLISTVISIBLE);
   CRect upperRect = getRelativeWindowRect(this, IDC_LIST1);
   CRect lowerRect = getRelativeWindowRect(this, IDC_LIST2);
-  
+
   if(upperListVisible) {
     const int newLowerListTop = lowerRect.CenterPoint().y;
     upperRect = CRect(lowerRect.left, lowerRect.top   , lowerRect.right, lowerRect.top + lowerRect.Height()/2);

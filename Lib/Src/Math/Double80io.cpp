@@ -232,7 +232,7 @@ template <class IStreamType, class CharType> IStreamType &operator>>(IStreamType
     String   buf;
     CharType ch;
     bool     gotDigits = false;
-  
+
     eatWhite<IStreamType, CharType>(in);
     peekChar(in, ch);
     if((ch == _T('-')) || (ch == _T('+'))) {

@@ -138,7 +138,7 @@ private:
   DFATables             m_tables;
   BitSet                m_fastMap;
   const TCHAR          *m_translateTable;   // Translate table to apply to all characters before comparing.
-                                            // or NULL for no translation. Translation is applied to each 
+                                            // or NULL for no translation. Translation is applied to each
                                             // character in a pattern when compiled and to characters in the
                                             // text string it is matched/matched
   bool                  m_hasCompiled;

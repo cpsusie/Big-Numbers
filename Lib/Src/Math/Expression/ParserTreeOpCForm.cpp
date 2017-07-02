@@ -178,7 +178,7 @@ ExpressionNode *ParserTree::rootC(ExpressionNode *n1, ExpressionNode *n2) {
     return n1;
   } else if(n2->isMinusOne()) {
     return reciprocalC(n1);
-  } 
+  }
   return powerC(n1, reciprocalC(n2));
 }
 

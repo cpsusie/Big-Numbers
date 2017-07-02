@@ -6,7 +6,7 @@
 //
 //   Get latest version of C++ code for class WaveFile at:
 //   http://www.intersrv.com/~dcross/wavio.html
-//   
+//
 
 #include "stdafx.h"
 
@@ -102,7 +102,7 @@ int main ( int argc, char **argv) {
     }
 
     UINT32 i, startsamp = 0,endsamp = numsamp - 1,totalsamp;
-    
+
     if(remspace) {
       for(startsamp = 0; startsamp < numsamp; startsamp++)
         if(!SampleIsNull(data[startsamp])) break;

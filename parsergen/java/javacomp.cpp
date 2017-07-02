@@ -62,7 +62,7 @@ int main(int argc, char **argv) {
   bool recurse  = false;
   String dir;
 
-  
+
   for(argv++; *argv && *(cp = *argv) == '-'; argv++) {
     for(cp++;*cp;cp++) {
       switch(*cp) {
@@ -75,7 +75,7 @@ int main(int argc, char **argv) {
       break;
     }
   }
-        
+
   TestJavaParser test(testLex);
   if(recurse) {
     TCHAR *argv[] = { _T("*.java"), NULL };

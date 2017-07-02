@@ -85,7 +85,7 @@ intptr_t ShiftAnd::searchApprox(const String &str, UINT maxErrors) const {
     const UINT64 mask = m_mask[*cp++];
     UINT64      *sp   = sfirst, olds = *sfirst;
     *sp = (olds | mask) << 1;
- 
+
     while(sp++ < slast) {
       const UINT64 tmp = *sp;
       /* Substitution is all we care about */

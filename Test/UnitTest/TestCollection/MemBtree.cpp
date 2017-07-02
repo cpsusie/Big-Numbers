@@ -40,7 +40,7 @@ void BTreePage::decrItemCount() {
   m_itemCount--;
 }
 
-void BTreePage::insertItem(int i, const BTreePageItem &t) { 
+void BTreePage::insertItem(int i, const BTreePageItem &t) {
   if(getItemCount() >= MAXITEMCOUNT) {
     throwException(_T("BTreePage::insertItem:Page is full"));
   }
@@ -140,7 +140,7 @@ void BTreeMapPageImpl::setItem(int i, const BTreePageItem &v) {
 
 // ------------------------------------BTreeSetImpl--------------------------------------------------
 
-BTreeSetImpl::BTreeSetImpl(const AbstractObjectManager &objectManager, const AbstractComparator &comparator) { 
+BTreeSetImpl::BTreeSetImpl(const AbstractObjectManager &objectManager, const AbstractComparator &comparator) {
   m_objectManager = objectManager.clone();
   m_comparator    = comparator.clone();
   m_root          = NULL;
@@ -181,7 +181,7 @@ void BTreeSetImpl::deleteItem(BTreePageItem &item) const {
 
 //---------------------------------------------------------------------------------
 
-// Returns true if item.key is inserted in tree. 
+// Returns true if item.key is inserted in tree.
 // Returnvalue of h indicates if middleitem of page a is passed up because of overflow.
 bool BTreeSetImpl::pageInsert(BTreePage *a, const BTreePageItem &item, bool &h, BTreePageItem &passup) {
   if(a == NULL) {
@@ -201,7 +201,7 @@ bool BTreeSetImpl::pageInsert(BTreePage *a, const BTreePageItem &item, bool &h, 
     }
   }
   r--;
-  if(r > 0 && m_comparator->cmp(a->getItem(r).m_key,item.m_key) == 0) { // got it already 
+  if(r > 0 && m_comparator->cmp(a->getItem(r).m_key,item.m_key) == 0) { // got it already
     return false;
   }
 
@@ -479,7 +479,7 @@ const void *BTreeSetImpl::getMin() const {
 const void *BTreeSetImpl::getMax() const {
   return getMaxNode()->key();
 }
-  
+
 void BTreeSetImpl::traverse(const BTreePage *p, PageWalker &pw) const {
   if(p) {
     pw.handlePage(*p);
@@ -765,7 +765,7 @@ void BTreeSetImpl::showTree(AbstractFormatter &formatter) const {
 
 // ------------------------------------BTreeMapImpl----------------------------------------
 
-BTreeMapImpl::BTreeMapImpl(const AbstractObjectManager &keyManager, const AbstractObjectManager &dataManager, const AbstractComparator &comparator) 
+BTreeMapImpl::BTreeMapImpl(const AbstractObjectManager &keyManager, const AbstractObjectManager &dataManager, const AbstractComparator &comparator)
 : BTreeSetImpl(keyManager, comparator)
 {
   m_dataManager = dataManager.clone();

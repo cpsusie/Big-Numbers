@@ -41,7 +41,7 @@ END_MESSAGE_MAP()
 
 BOOL CRegexDlg::OnInitDialog() {
   __super::OnInitDialog();
-    
+
   m_regexCombo.substituteControl(this, IDC_COMBOREGEX, "RegexHistory");
 
   m_currentControl = 0;
@@ -86,7 +86,7 @@ BOOL CRegexDlg::PreTranslateMessage(MSG* pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     return true;
   }
-    
+
   BOOL ret = __super::PreTranslateMessage(pMsg);
 
   if(m_currentControl == IDC_COMBOREGEX) {
@@ -99,7 +99,7 @@ BOOL CRegexDlg::PreTranslateMessage(MSG* pMsg) {
 }
 
 void CRegexDlg::OnGotoRegex() {
-  GetDlgItem(IDC_COMBOREGEX)->SetFocus();   
+  GetDlgItem(IDC_COMBOREGEX)->SetFocus();
 }
 
 void CRegexDlg::OnButtonRegSymbolsMenu() {
@@ -118,7 +118,7 @@ void CRegexDlg::addRegexSymbol(const TCHAR *s, int cursorpos) {
   CComboBox *b = (CComboBox*)GetDlgItem(IDC_COMBOREGEX);
 
   UpdateData();
-  
+
   String reg = m_regex;
 
   reg = substr(reg,0,m_selStart) + s + substr(reg,m_selEnd,reg.length());

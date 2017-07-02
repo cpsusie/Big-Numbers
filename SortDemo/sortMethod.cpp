@@ -23,7 +23,7 @@ static const SortMethodId sortMethodTable[] = {
  ,SortMethodId(ID_SORT_MERGESORT                , mergeSort               )
 };
 
-SortMethodId::SortMethodId(int methodId, SortMethod sortMethod) 
+SortMethodId::SortMethodId(int methodId, SortMethod sortMethod)
 : m_methodId(methodId)
 , m_sortMethod(sortMethod)
 {

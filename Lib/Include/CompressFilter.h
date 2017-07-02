@@ -51,7 +51,7 @@ private:
   BYTE             *m_buffer;
   void             *m_zStreamp; // Actually z_stream*. Need zlib.h to get definition right. See DecompressFilter.cpp
   bool              m_eos, m_eoz;
-  
+
   void fillInputBuffer();
   void fillOutputBuffer();
   void setAvailableOut();

@@ -27,7 +27,7 @@ public:
   void puts(    const TCHAR *s);
   void vprintf( const TCHAR *format, va_list argptr);
   void printf(  const TCHAR *format, ...);
- 
+
   void setLeftMargin(int m)  {
     m_leftMargin = m;
   }

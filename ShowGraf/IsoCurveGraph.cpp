@@ -16,7 +16,7 @@ public:
   const Point2DArray *m_pointArray;
 };
 
-IsoCurveGraphEvaluator::IsoCurveGraphEvaluator(IsoCurveGraph *graph) 
+IsoCurveGraphEvaluator::IsoCurveGraphEvaluator(IsoCurveGraph *graph)
 : m_graph(*graph)
 , m_expr(((IsoCurveGraphParameters&)graph->getParam()).m_trigonometricMode) {
 

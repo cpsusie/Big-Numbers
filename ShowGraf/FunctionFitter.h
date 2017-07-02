@@ -32,42 +32,42 @@ public:
   void   solve();
   double eval(double x);
   String toString() const;
-  
+
   bool done() const {
     return m_done;
   }
 
   Vector getParam() const;
   void setParam(const Vector &values);
-  
+
   int getParamCount() const {
     return (int)m_parameterValue.size();
   }
-  
+
   const String &getParamName(size_t i) const {
     return m_parameterName[i];
   }
-  
+
   double getParamValue(size_t i) const {
     return *m_parameterValue[i];
   }
-  
+
   void setParamValue(size_t i, double value) {
     *m_parameterValue[i] = value;
   }
-  
+
   double getStepSize() const {
     return m_stepSize;
   }
-  
+
   double getSSD() const {
     return m_SSD;
   }
-  
+
   double getSSDDescent() const {
     return m_SSDDescent;
   }
-  
+
   int getIterationCount() const {
     return m_iteration;
   }
@@ -75,7 +75,7 @@ public:
   void terminate() {
     m_done = true;
   }
-  
+
   const Point2DArray &getData() const {
     return m_data;
   }

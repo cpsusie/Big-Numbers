@@ -20,7 +20,7 @@ String SqlRegex::convertWildCards(const String &wc) {
   }
   *t = 0;
 
-  // then replace all % with '.*' and '_' with '.' 
+  // then replace all % with '.*' and '_' with '.'
   // and escape all 'special regex characters' with '\'
   TCHAR tmp[1024], *dst;
   s = str.cstr();

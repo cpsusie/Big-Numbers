@@ -40,7 +40,7 @@ public:
   Point3D operator()(const Point2D &ts);
 };
 
-ExprParametricSurface::ExprParametricSurface(const ParametricSurfaceParameters &param) 
+ExprParametricSurface::ExprParametricSurface(const ParametricSurfaceParameters &param)
 : m_exprX(param.m_exprX, param.m_machineCode)
 , m_exprY(param.m_exprY, param.m_machineCode)
 , m_exprZ(param.m_exprZ, param.m_machineCode)

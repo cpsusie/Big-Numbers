@@ -125,7 +125,7 @@ void ScrollBar::drawhScrollBar(TextWin *tw, int left, int top, int width, int pa
 
 void ScrollBar::draw() {
   TextWin *tw = getDialog().getWin();
-  
+
   switch(m_type) {
   case SCROLLBAR_VERT:
     drawvScrollBar(tw,getLeft(), getTop(), getHeight(), m_pageSize, m_max - m_min + 1, m_max - m_min, m_pos - m_min, m_color, m_barColor);

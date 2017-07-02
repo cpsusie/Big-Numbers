@@ -7,7 +7,7 @@
 // ----------------------------------------- NFAStatePoint ----------------------------------------
 
 BYTE NFAStatePoint::createAttributes(const NFAState *s) { // static
-  return s->m_accept.m_acceptAttribute 
+  return s->m_accept.m_acceptAttribute
       | (s->isStartState()                              ? ATTR_ISSTARTSTATE   : ATTR_HASPREDECESSOR)
       | (((s->m_next1 != NULL) || (s->m_next2 != NULL)) ? ATTR_HASSUCCESSSORS : 0);
 }
@@ -282,7 +282,7 @@ void NFAPainter::setPositions(size_t subNFACount) {
 
   for(size_t i = 0; i < m_nfaPoints.size(); i++) {
     NFAStatePoint *sp = m_nfaPoints[i];
-    sp->setPosition(Point2DP((float)m_size.cx * (sp->m_gridX + 0.5) / gridSize.cx 
+    sp->setPosition(Point2DP((float)m_size.cx * (sp->m_gridX + 0.5) / gridSize.cx
                             ,(float)m_size.cy * (sp->m_gridY + 0.5) / gridSize.cy));
   }
 }
@@ -336,7 +336,7 @@ void NFAPainter::paintTransition(const NFAStatePoint *from, const NFAStatePoint 
     const Point2DP pTo   = cf + v2 * CIRCLE_RADIUS;
     paintBezierArrow(pFrom, pTo);
   } else {
-    v = (ct - cf).normalize(); 
+    v = (ct - cf).normalize();
     Point2DP pFrom, pTo;
 
     if((st.getID() < sf.getID()) && (st.m_next1 == &sf || st.m_next2 == &sf)) {
@@ -412,7 +412,7 @@ public:
   Point2DP       m_from, m_to;    // if m_oldP is NULL, then just *m_newP
   AnimationPoint() : m_oldP(NULL), m_newP(NULL), m_from(0,0), m_to(0,0) {
   }
-  AnimationPoint(NFAStatePoint *oldP, NFAStatePoint *newP) 
+  AnimationPoint(NFAStatePoint *oldP, NFAStatePoint *newP)
     : m_oldP(oldP)
     , m_newP(newP)
     , m_from(oldP?oldP->getPosition():newP->getPosition())

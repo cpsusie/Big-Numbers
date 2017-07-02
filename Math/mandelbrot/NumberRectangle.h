@@ -22,23 +22,23 @@ public:
 #ifdef LONGDOUBLE
   NumberRectangle(double _x, double _y, double _w, double _h) : x(_x), y(_y), w(_w), h(_h) {
   }
-#endif  
+#endif
   inline const T &getX() const {
     return x;
   }
-  
+
   inline const T &getY() const {
     return y;
   }
-  
+
   inline const T &getWidth() const {
     return w;
   }
-  
+
   inline const T &getHeight() const {
     return h;
   }
-  
+
   inline NumberPoint2D<T> getTopLeft()     const {
     return NumberPoint2D<T>(x,y);
   }
@@ -70,7 +70,7 @@ public:
   inline T getMinY() const {
     return min(y, y+h);
   }
-  
+
   inline T getMaxY() const {
     return max(y, y+h);
   }

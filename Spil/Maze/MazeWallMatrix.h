@@ -9,7 +9,7 @@ private:
   const ColorIndex m_colorIndex;
 
 public:
-  MazeWallMatrix(const String &name, int r, int c, ColorIndex colorIndex = Black) 
+  MazeWallMatrix(const String &name, int r, int c, ColorIndex colorIndex = Black)
   : m_name(name), m_colorIndex(colorIndex)
   , MatrixTemplate<MazeWall>(r,c)
   {

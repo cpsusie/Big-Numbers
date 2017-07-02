@@ -14,7 +14,7 @@ CompressFilter::CompressFilter(ByteOutputStream &dst, CompressionLevel level) : 
   zStream->zalloc   = NULL;
   zStream->zfree    = NULL;
   zStream->opaque   = (voidpf)0;
-  
+
   int err = deflateInit(zStream, (int)level);
   if (err != Z_OK) {
     delete zStream;

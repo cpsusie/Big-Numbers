@@ -405,7 +405,7 @@ void DFARegex::paint(CWnd *wnd, bool animate) const {
   }
 }
 
-int DFARegex::getAllocatedNFAStates() { // static 
+int DFARegex::getAllocatedNFAStates() { // static
   return NFAState::getAllocated();
 }
 

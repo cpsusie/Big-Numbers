@@ -3,7 +3,7 @@
 static double getTotalTime(const FILETIME &kernelTime, const FILETIME &userTime) {
   const double ht = (double)kernelTime.dwHighDateTime + userTime.dwHighDateTime;
   const double lt = (double)kernelTime.dwLowDateTime  + userTime.dwLowDateTime;
-  
+
   return (ht * (double)0x100000000 + lt) / 10;
 }
 
@@ -23,7 +23,7 @@ double getThreadTime(HANDLE thread) {
   }
   return getTotalTime(kernelTime,userTime);
 }
-  
+
 double getSystemTime() {
   FILETIME sysTime;
   GetSystemTimeAsFileTime(&sysTime);

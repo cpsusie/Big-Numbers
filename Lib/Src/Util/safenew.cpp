@@ -19,10 +19,10 @@ static InstallSafeNewHandler installer;
 
 InstallSafeNewHandler::InstallSafeNewHandler() {
   old_handler = _set_new_handler( SafeNewHandler );
-  _set_new_mode(1); 
+  _set_new_mode(1);
 
 }
 
 InstallSafeNewHandler::~InstallSafeNewHandler() {
-  _set_new_handler(old_handler); 
+  _set_new_handler(old_handler);
 }

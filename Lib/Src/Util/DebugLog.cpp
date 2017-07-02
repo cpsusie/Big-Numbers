@@ -46,7 +46,7 @@ void redirectDebugLog(bool append, const TCHAR *fileName) {
     fclose(traceFile);
     traceFile = stdout;
   }
-  
+
   if(fileName) {
     setRedirectFileName(fileName);
   } else {

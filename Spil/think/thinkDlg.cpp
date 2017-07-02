@@ -65,7 +65,7 @@ BOOL CThinkDlg::OnInitDialog() {
   SetIcon(m_hIcon, FALSE);
   randomize();
   g.init();
-    
+
   return TRUE;
 }
 
@@ -204,8 +204,8 @@ void CThinkDlg::showWinner() {
 void CThinkDlg::OnLButtonDown(UINT nFlags, CPoint point)  {
   __super::OnLButtonDown(nFlags, point);
   int r, c;
-  if(g.m_playerInTurn == YOU 
-    && findField(point,r,c) 
+  if(g.m_playerInTurn == YOU
+    && findField(point,r,c)
     && r == g.m_currentRow
     && !g.m_used[r][c]) {
     g.executeMove(c);

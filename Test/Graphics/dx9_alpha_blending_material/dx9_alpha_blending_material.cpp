@@ -3,8 +3,8 @@
 //         Author: Kevin Harris
 //  Last Modified: 04/04/05
 //    Description: This sample demonstrates how to perform alpha-blending using
-//                 a material. This alpha-blending technique is widely used to 
-//                 make entire objects fade out of existence over some amount 
+//                 a material. This alpha-blending technique is widely used to
+//                 make entire objects fade out of existence over some amount
 //                 of time.
 //
 //   Control Keys: b - Toggle blending
@@ -61,7 +61,7 @@ struct Vertex
 
 Vertex g_cubeVertices[] =
 {
-//     x     y     z      nx    ny    nz     tu   tv    
+//     x     y     z      nx    ny    nz     tu   tv
     // Front Face
     {-1.0f, 1.0f,-1.0f,  0.0f, 0.0f,-1.0f,  0.0f,0.0f, },
     { 1.0f, 1.0f,-1.0f,  0.0f, 0.0f,-1.0f,  1.0f,0.0f, },
@@ -97,7 +97,7 @@ Vertex g_cubeVertices[] =
 //-----------------------------------------------------------------------------
 // PROTOTYPES
 //-----------------------------------------------------------------------------
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, 
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 				   LPSTR lpCmdLine, int nCmdShow);
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 void loadTexture(void);
@@ -114,11 +114,11 @@ int WINAPI WinMain(	HINSTANCE hInstance,
 					LPSTR     lpCmdLine,
 					int       nCmdShow )
 {
-	WNDCLASSEX winClass; 
+	WNDCLASSEX winClass;
 	MSG        uMsg;
 
     memset(&uMsg,0,sizeof(uMsg));
-    
+
 	winClass.lpszClassName = "MY_WINDOWS_CLASS";
 	winClass.cbSize        = sizeof(WNDCLASSEX);
 	winClass.style         = CS_HREDRAW | CS_VREDRAW;
@@ -135,7 +135,7 @@ int WINAPI WinMain(	HINSTANCE hInstance,
 	if( !RegisterClassEx(&winClass) )
 		return E_FAIL;
 
-	g_hWnd = CreateWindowEx( NULL, "MY_WINDOWS_CLASS", 
+	g_hWnd = CreateWindowEx( NULL, "MY_WINDOWS_CLASS",
                              "Direct3D (DX9) - Alpha Blending with a Material",
 						     WS_OVERLAPPEDWINDOW | WS_VISIBLE,
 					         0, 0, 640, 480, NULL, NULL, hInstance, NULL );
@@ -151,7 +151,7 @@ int WINAPI WinMain(	HINSTANCE hInstance,
 	while( uMsg.message != WM_QUIT )
 	{
 		if( PeekMessage( &uMsg, NULL, 0, 0, PM_REMOVE ) )
-		{ 
+		{
 			TranslateMessage( &uMsg );
 			DispatchMessage( &uMsg );
 		}
@@ -170,11 +170,11 @@ int WINAPI WinMain(	HINSTANCE hInstance,
 // Name: WindowProc()
 // Desc: The window's message handler
 //-----------------------------------------------------------------------------
-LRESULT CALLBACK WindowProc( HWND   hWnd, 
-							 UINT   msg, 
-							 WPARAM wParam, 
+LRESULT CALLBACK WindowProc( HWND   hWnd,
+							 UINT   msg,
+							 WPARAM wParam,
 							 LPARAM lParam )
-{    
+{
     static POINT ptLastMousePosit;
 	static POINT ptCurrentMousePosit;
 	static bool bMousing;
@@ -274,7 +274,7 @@ LRESULT CALLBACK WindowProc( HWND   hWnd,
 
 //-----------------------------------------------------------------------------
 // Name: loadTexture()
-// Desc: 
+// Desc:
 //-----------------------------------------------------------------------------
 void loadTexture(void)
 {
@@ -286,7 +286,7 @@ void loadTexture(void)
 
 //-----------------------------------------------------------------------------
 // Name: init()
-// Desc: 
+// Desc:
 //-----------------------------------------------------------------------------
 void init( void )
 {
@@ -313,12 +313,12 @@ void init( void )
 	loadTexture();
 
     D3DXMATRIX matProj;
-    D3DXMatrixPerspectiveFovLH( &matProj, D3DXToRadian( 45.0f ), 
+    D3DXMatrixPerspectiveFovLH( &matProj, D3DXToRadian( 45.0f ),
                                 640.0f / 480.0f, 0.1f, 100.0f );
     g_pd3dDevice->SetTransform( D3DTS_PROJECTION, &matProj );
 
-	g_pd3dDevice->CreateVertexBuffer( 24*sizeof(Vertex), D3DUSAGE_WRITEONLY, 
-		                              Vertex::FVF_Flags, D3DPOOL_DEFAULT, 
+	g_pd3dDevice->CreateVertexBuffer( 24*sizeof(Vertex), D3DUSAGE_WRITEONLY,
+		                              Vertex::FVF_Flags, D3DPOOL_DEFAULT,
                                       &g_pVertexBuffer, NULL );
     void *pVertices = NULL;
 
@@ -351,15 +351,15 @@ void init( void )
 
 //-----------------------------------------------------------------------------
 // Name: shutDown()
-// Desc: 
+// Desc:
 //-----------------------------------------------------------------------------
 void shutDown( void )
 {
-    if( g_pTexture != NULL ) 
+    if( g_pTexture != NULL )
         g_pTexture->Release();
 
-    if( g_pVertexBuffer != NULL ) 
-        g_pVertexBuffer->Release(); 
+    if( g_pVertexBuffer != NULL )
+        g_pVertexBuffer->Release();
 
     if( g_pd3dDevice != NULL )
         g_pd3dDevice->Release();
@@ -370,7 +370,7 @@ void shutDown( void )
 
 //-----------------------------------------------------------------------------
 // Name: render()
-// Desc: 
+// Desc:
 //-----------------------------------------------------------------------------
 void render( void )
 {
@@ -383,9 +383,9 @@ void render( void )
 
     D3DXMatrixTranslation( &matTrans, 0.0f, 0.0f, g_fDistance );
 
-	D3DXMatrixRotationYawPitchRoll( &matRot, 
-		                            D3DXToRadian(g_fSpinX), 
-		                            D3DXToRadian(g_fSpinY), 
+	D3DXMatrixRotationYawPitchRoll( &matRot,
+		                            D3DXToRadian(g_fSpinX),
+		                            D3DXToRadian(g_fSpinY),
 		                            0.0f );
     matWorld = matRot * matTrans;
     g_pd3dDevice->SetTransform( D3DTS_WORLD, &matWorld );

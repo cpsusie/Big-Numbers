@@ -346,7 +346,7 @@ void Expression::compile(const String &expr, bool machineCode) {
   if(!isOk()) {
     return;
   }
-  
+
   setReturnType(findReturnType());
 
   if(machineCode) {
@@ -552,7 +552,7 @@ void Expression::genExpression(const ExpressionNode *n, const ExpressionDestinat
     break;
 #endif // LONGDOUBLE
 
-  case MINUS : 
+  case MINUS :
     if(n->isUnaryMinus()) {
       genExpression(n->left(), DST_FPU);
       m_code.emit(FCHS);
@@ -705,7 +705,7 @@ void Expression::genIndexedExpression(const ExpressionNode *n) {
   const ExpressionNode *loopVar         = startAssignment->left();
   const ExpressionNode *endExpr         = n->child(1);
   const ExpressionNode *expr            = n->child(2);
-  
+
   genExpression(endExpr, DST_FPU);                     // Evaluate end value for loopVar. and keep it in FPU-register
   m_code.emit(summation ? FLDZ : FLD1);                // Initialize accumulator
   genExpression(startAssignment->right(), DST_FPU);    // Evaluate start value for loopVar
@@ -814,19 +814,19 @@ JumpList Expression::genBoolExpression(const ExpressionNode *n) {
       case EQ:
         result.falseJumps.add(m_code.emitShortJmp(JNESHORT));
         break;
-      case NE: 
+      case NE:
         result.falseJumps.add(m_code.emitShortJmp(JESHORT));
         break;
-      case LE: 
+      case LE:
         result.falseJumps.add(m_code.emitShortJmp(JASHORT));
         break;
-      case LT: 
+      case LT:
         result.falseJumps.add(m_code.emitShortJmp(JAESHORT));
         break;
-      case GE: 
+      case GE:
         result.falseJumps.add(m_code.emitShortJmp(JBSHORT));
         break;
-      case GT: 
+      case GT:
         result.falseJumps.add(m_code.emitShortJmp(JBESHORT));
         break;
       }
@@ -1057,7 +1057,7 @@ void Expression::genCall(const ExpressionNode *n, BuiltInFunctionRef2 f, const E
   } else {
     offset2 = genSetRefParameter(n->right(), 1, stacked2);
     offset1 = genSetRefParameter(n->left() , 0, stacked1);
-  } 
+  }
   if (stacked1) {
     m_code.emit(REG_SRC(MOV_R64_QWORD(RCX), RSP));
     m_code.emit(ADD_R64_IMM_BYTE(RCX)); m_code.addBytes(&offset1, 1);
@@ -1098,7 +1098,7 @@ void Expression::genCall(const ExpressionNode *n, BuiltInFunctionRef2 f, const E
   } else {
     offset2 = genSetRefParameter(n->right(), 1, stacked2);
     offset1 = genSetRefParameter(n->left() , 0, stacked1);
-  } 
+  }
   if (stacked1) {
     m_code.emit(REG_SRC(MOV_R64_QWORD(RDX), RSP));
     if(offset1) {

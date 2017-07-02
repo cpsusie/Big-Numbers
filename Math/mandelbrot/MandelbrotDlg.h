@@ -31,7 +31,7 @@ typedef enum {
 } MoveDirection;
 
 class CMandelbrotDlg;
-      
+
 class ExpTransformation {
 private:
   Real m_a, m_b;
@@ -224,7 +224,7 @@ public:
       return m_transform;
     }
 
-    UINT getMaxIteration() const { 
+    UINT getMaxIteration() const {
       return m_colorMapData.m_maxIteration;
     }
 

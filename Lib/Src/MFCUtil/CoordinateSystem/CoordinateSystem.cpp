@@ -122,7 +122,7 @@ DoubleInterval CCoordinateSystem::getDefaultInterval(AxisType type) { // static
   }
 }
 
-DataRange CCoordinateSystem::getDefaultDataRange(AxisType xType, AxisType yType) { // static 
+DataRange CCoordinateSystem::getDefaultDataRange(AxisType xType, AxisType yType) { // static
   return DataRange(getDefaultInterval(xType), getDefaultInterval(yType));
 }
 

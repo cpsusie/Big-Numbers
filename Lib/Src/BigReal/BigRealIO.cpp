@@ -4,9 +4,9 @@
 
 using namespace std;
 
-TCHAR BigRealStream ::setSpaceChar(TCHAR value) { 
-  TCHAR ospac = m_spaceChar; 
-  m_spaceChar = value; 
+TCHAR BigRealStream ::setSpaceChar(TCHAR value) {
+  TCHAR ospac = m_spaceChar;
+  m_spaceChar = value;
   return ospac;
 }
 
@@ -195,7 +195,7 @@ void BigReal::formatWithSpaceChar(String &result, TCHAR spaceChar) const {
 #else
         result += format(_T("%0*.*llu%c"), LOG10_BIGREALBASE,LOG10_BIGREALBASE,digit->n,spaceChar);
 #endif
-        if(d-- == 0 && digit->next) 
+        if(d-- == 0 && digit->next)
           addDecimalPoint(result);
       }
       for(;d >= 0;d--) {

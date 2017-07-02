@@ -48,7 +48,7 @@ Packer &operator>>(Packer &p, BigReal &n) {
     size_t length;
     p >> length;
     BRDigitType *da = NULL;
-    try { 
+    try {
       da = new BRDigitType[length];
       p.getElement(Packer::BRPACKERTYPE, da, length * sizeof(BRDigitType));
       BRDigitType *d = da;

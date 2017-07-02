@@ -123,7 +123,7 @@ Number &Number::operator=(const Number &v) {
   case NUMBERTYPE_REAL    :
     *m_real     = *v.m_real;
     break;
-  
+
   case NUMBERTYPE_RATIONAL:
     *m_rational = *v.m_rational;
     break;

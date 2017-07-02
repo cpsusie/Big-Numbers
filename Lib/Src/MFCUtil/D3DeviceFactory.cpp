@@ -61,7 +61,7 @@ D3DPRESENT_PARAMETERS D3DeviceFactory::getDefaultPresentParameters(HWND hwnd, UI
   return param;
 }
 
-D3DDISPLAYMODE D3DeviceFactory::getDisplayMode(UINT adapter) { // static 
+D3DDISPLAYMODE D3DeviceFactory::getDisplayMode(UINT adapter) { // static
   D3DDISPLAYMODE result;
   CHECKRESULT(s_direct3D->GetAdapterDisplayMode(adapter, &result));
   return result;

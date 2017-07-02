@@ -77,11 +77,11 @@ static void xchecksql(TCHAR *file,int line) {
 
 static void openCursor() {
   dd = 12;
-  
+
 #ifdef __NEVER__
   EXEC SQL
     DECLARE curs cursor for
-	  select 
+	  select
 	    cast(firstcolumn as int),
 		firstcolumn
 	  from lilletable
@@ -92,7 +92,7 @@ static void openCursor() {
 #line 53 "C:/mytools2015/Dbase/testcursor/testcursor.sqc"
 
 
-  
+
 #ifdef __NEVER__
   EXEC SQL
     OPEN curs
@@ -115,7 +115,7 @@ static void openCursor() {
 }
 
 static bool fetchcursor() {
-  
+
 #ifdef __NEVER__
   EXEC SQL
     FETCH curs
@@ -149,7 +149,7 @@ static bool fetchcursor() {
 }
 
 static void closeCursor() {
-  
+
 #ifdef __NEVER__
   EXEC SQL
     CLOSE curs
@@ -166,7 +166,7 @@ static void closeCursor() {
 
 
 static void dbConnect() {
-  
+
 #ifdef __NEVER__
   EXEC SQL CONNECT TO :dbname user :username using :password;
 #endif
@@ -200,7 +200,7 @@ static void dbConnect() {
 }
 
 static void dbDisconnect() {
-  
+
 #ifdef __NEVER__
   EXEC SQL CONNECT RESET ;
 #endif

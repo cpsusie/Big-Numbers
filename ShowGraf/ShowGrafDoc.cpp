@@ -139,7 +139,7 @@ void CShowGrafDoc::init() {
           m_options.m_backgroundColor = bc->m_color;
         }
         if(!(*(++argv))) {
-          usage(); 
+          usage();
         } else {
           const ColorName *ac = findColorByName(*argv);
           if(ac == NULL) {
@@ -175,7 +175,7 @@ bool CShowGrafDoc::addInitialDataGraph(const String &name, COLORREF color) {
                             ,m_options.m_onePerLine
                             ,m_options.m_ignoreErrors
                             ,m_options.m_xRelativeToFirst
-                            ,m_options.m_yRelativeToFirst 
+                            ,m_options.m_yRelativeToFirst
                             ,*m_options.m_xReader
                             ,*m_options.m_yReader
                             ,m_options.m_rollAvg ? m_options.m_rollAvgSize : 0
@@ -250,7 +250,7 @@ void CShowGrafDoc::readDataFile(const String &fileName) {
                            ,m_onePerLine
                            ,isMenuItemChecked(ID_OPTIONS_IGNOREERRORS)
                            ,m_xRelativeToFirst
-                           ,m_yRelativeToFirst 
+                           ,m_yRelativeToFirst
                            ,*m_xReader
                            ,*m_yReader
                            ,isMenuItemChecked(ID_VIEW_ROLLAG) ? m_rollAvgSize : 0

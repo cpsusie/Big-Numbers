@@ -23,10 +23,10 @@ static String toXML(const TCHAR *s) {
     case _T('\''):
       result += _T("&apos;");
       break;
-    case _T('<'): 
+    case _T('<'):
       result += _T("&lt;");
       break;
-    case _T('>'): 
+    case _T('>'):
       result += _T("&gt;");
       break;
     case _T('&'):
@@ -64,7 +64,7 @@ XMLDoc::XMLDoc(XMLDocPtr doc) {
 void XMLDoc::loadFromString(const String &XML) {
   clear();
   String str(XML);
-  
+
   intptr_t start = str.find(_T("encoding"));
   if(start >= 0) {
     intptr_t slut=str.find(_T(" ?"),start);
@@ -73,7 +73,7 @@ void XMLDoc::loadFromString(const String &XML) {
 
   m_doc->put_async(VARIANT_FALSE);
   VARIANT_BOOL vb = m_doc->loadXML(str.cstr());
-  checkLoad();                   
+  checkLoad();
 }
 
 void XMLDoc::loadFromFile(const TCHAR *fileName) {
@@ -88,12 +88,12 @@ void XMLDoc::loadFromFile(const TCHAR *fileName) {
 #endif
 
   VARIANT_BOOL vb = m_doc->load(vName);
-  checkLoad();                   
+  checkLoad();
 }
 
 void XMLDoc::saveToFile(const TCHAR *fileName) {
 //  LogTrace("SaveToFile<%s>",fileName);
-  m_doc->put_async(VARIANT_FALSE);    
+  m_doc->put_async(VARIANT_FALSE);
 
 #ifdef UNICODE
   USES_CONVERSION;
@@ -134,9 +134,9 @@ void XMLDoc::checkLoad() {
     hr=pXMLError->get_reason(&pBReason);
 
     const String msg = format(_T("(%d,%d) : Error(%d) in XML:%s"), line, linePos, errorCode, BSTRToString(pBReason).cstr());
-    
+
     SysFreeString(pBURL);
-    SysFreeString(pBReason);       
+    SysFreeString(pBReason);
     throwException(_T("%s"), msg.cstr());
   }
 }
@@ -154,7 +154,7 @@ String XMLDoc::getXML(bool includePi) {
     XML = _T("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>") + XML;
   }
   return XML.trim();
-} 
+}
 
 XMLNodePtr XMLDoc::createNode(const TCHAR *nodeName, bool force) {
   return createNode(m_doc->documentElement, nodeName, force);
@@ -233,7 +233,7 @@ XMLNodePtr XMLDoc::findNode(const XMLNodePtr &node, const TCHAR *nodeName) {
       if(i < tokens.size()) {
         result = result->firstChild;
       }
-    } 
+    }
   }
 
   return result;
@@ -355,26 +355,26 @@ void XMLDoc::getValue(const XMLNodePtr &node, const TCHAR *tagName, double      
   }
 }
 
-void XMLDoc::getValue(const XMLNodePtr &node, const TCHAR *tagName, Date        &value, int instans) {       
+void XMLDoc::getValue(const XMLNodePtr &node, const TCHAR *tagName, Date        &value, int instans) {
   String str;
   getValue(node, tagName, str, instans);
   value = Date(str);
 }
 
-void XMLDoc::getValue(const XMLNodePtr &node, const TCHAR *tagName, Timestamp   &value, int instans) {       
+void XMLDoc::getValue(const XMLNodePtr &node, const TCHAR *tagName, Timestamp   &value, int instans) {
   String str;
   getValue(node, tagName, str, instans);
   value = Timestamp(str);
 }
 
-void XMLDoc::getValue(const XMLNodePtr &node, const TCHAR *tagName, bool        &value, int instans) {       
+void XMLDoc::getValue(const XMLNodePtr &node, const TCHAR *tagName, bool        &value, int instans) {
   int v;
   getValue(node, tagName, v, instans);
   value = v != 0;
 }
 // -----------------------------------------------------------------------------------------
 
-VARIANT XMLDoc::getVariant(const TCHAR *nodeName, const TCHAR *tagName, int instans) {   
+VARIANT XMLDoc::getVariant(const TCHAR *nodeName, const TCHAR *tagName, int instans) {
   return getVariant(findNode(nodeName),tagName,instans);
 }
 

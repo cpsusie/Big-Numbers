@@ -66,7 +66,7 @@ BOOL CTimtalkDlg::OnInitDialog() {
 
   SetIcon(m_hIcon, TRUE);
   SetIcon(m_hIcon, FALSE);
-  
+
   randomize();
   m_lix       = 75;
   m_lixfilter = FALSE;
@@ -355,7 +355,7 @@ static String randomSentence1(bool notFirst) {
 static String randomSentence() {
   setAllUnused();
   String s1 = randomSentence1(false);
-  if(islower(s1[0])) { 
+  if(islower(s1[0])) {
     s1[0] = toupper(s1[0]);
   }
   const String s2 = randomSentence1(true);
@@ -375,7 +375,7 @@ void CTimtalkDlg::OnButtonsentence() {
   } else {
     s = randomSentence();
   }
-    
+
   m_sentence = s.cstr();
   UpdateData(false);
 }

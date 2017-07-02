@@ -5,7 +5,7 @@
 
 class NetInitializer {
 public:
-  char m_myName[30]; 
+  char m_myName[30];
   char m_version[30];
   NetInitializer(const String &myName, const String &version);
   NetInitializer() {}

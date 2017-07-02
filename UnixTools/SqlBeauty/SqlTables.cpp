@@ -989,15 +989,15 @@ static const TableType succ0328[] = { 13,  98,  74, 100,  78, 105,  63, 106, 324
 #define succ0254 succ0032  /* Saved   8 bytes */
 
 static const TableType *successor[333] = {
-   succ0000,succ0001,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    
-  ,succ0010,succ0011,NULL    ,succ0013,succ0014,succ0015,succ0016,NULL    ,NULL    ,NULL    
+   succ0000,succ0001,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL
+  ,succ0010,succ0011,NULL    ,succ0013,succ0014,succ0015,succ0016,NULL    ,NULL    ,NULL
   ,NULL    ,succ0021,succ0022,succ0023,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,succ0029
-  ,NULL    ,NULL    ,succ0032,succ0033,NULL    ,succ0035,NULL    ,succ0037,succ0038,NULL    
+  ,NULL    ,NULL    ,succ0032,succ0033,NULL    ,succ0035,NULL    ,succ0037,succ0038,NULL
   ,NULL    ,NULL    ,succ0042,NULL    ,NULL    ,succ0045,succ0046,NULL    ,NULL    ,succ0049
-  ,succ0050,NULL    ,NULL    ,NULL    ,NULL    ,succ0055,succ0056,NULL    ,NULL    ,NULL    
-  ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,succ0068,NULL    
-  ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    
-  ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,succ0085,succ0086,succ0087,NULL    ,NULL    
+  ,succ0050,NULL    ,NULL    ,NULL    ,NULL    ,succ0055,succ0056,NULL    ,NULL    ,NULL
+  ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,succ0068,NULL
+  ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL
+  ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,succ0085,succ0086,succ0087,NULL    ,NULL
   ,NULL    ,succ0091,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,succ0099
   ,succ0100,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,succ0106,NULL    ,succ0108,succ0109
   ,NULL    ,NULL    ,succ0112,NULL    ,NULL    ,succ0115,NULL    ,succ0117,succ0118,succ0119
@@ -1005,24 +1005,24 @@ static const TableType *successor[333] = {
   ,succ0130,succ0131,succ0132,succ0133,succ0134,succ0135,succ0136,succ0137,succ0138,succ0139
   ,NULL    ,NULL    ,succ0142,succ0143,NULL    ,NULL    ,succ0146,succ0147,succ0148,succ0149
   ,NULL    ,NULL    ,NULL    ,NULL    ,succ0154,succ0155,NULL    ,NULL    ,NULL    ,succ0159
-  ,succ0160,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,succ0167,NULL    ,NULL    
-  ,succ0170,NULL    ,succ0172,succ0173,succ0174,NULL    ,NULL    ,NULL    ,NULL    ,NULL    
-  ,NULL    ,succ0181,NULL    ,succ0183,succ0184,NULL    ,NULL    ,NULL    ,NULL    ,NULL    
-  ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    
-  ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    
+  ,succ0160,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,succ0167,NULL    ,NULL
+  ,succ0170,NULL    ,succ0172,succ0173,succ0174,NULL    ,NULL    ,NULL    ,NULL    ,NULL
+  ,NULL    ,succ0181,NULL    ,succ0183,succ0184,NULL    ,NULL    ,NULL    ,NULL    ,NULL
+  ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL
+  ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL
   ,succ0210,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,succ0218,succ0219
   ,succ0220,succ0221,succ0222,NULL    ,NULL    ,NULL    ,NULL    ,succ0227,succ0228,succ0229
-  ,NULL    ,succ0231,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,succ0238,NULL    
-  ,NULL    ,NULL    ,succ0242,succ0243,NULL    ,NULL    ,NULL    ,succ0247,succ0248,NULL    
-  ,NULL    ,NULL    ,NULL    ,succ0253,succ0254,succ0255,succ0256,NULL    ,NULL    ,NULL    
-  ,NULL    ,succ0261,NULL    ,NULL    ,NULL    ,NULL    ,succ0266,NULL    ,succ0268,NULL    
-  ,NULL    ,NULL    ,succ0272,NULL    ,succ0274,NULL    ,succ0276,NULL    ,NULL    ,NULL    
-  ,NULL    ,succ0281,succ0282,succ0283,succ0284,NULL    ,NULL    ,NULL    ,NULL    ,NULL    
-  ,succ0290,NULL    ,succ0292,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    
-  ,NULL    ,NULL    ,NULL    ,NULL    ,succ0304,NULL    ,NULL    ,NULL    ,NULL    ,NULL    
-  ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,succ0315,succ0316,NULL    ,succ0318,NULL    
-  ,NULL    ,NULL    ,NULL    ,NULL    ,succ0324,NULL    ,NULL    ,NULL    ,succ0328,NULL    
-  ,NULL    ,NULL    ,NULL    
+  ,NULL    ,succ0231,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,succ0238,NULL
+  ,NULL    ,NULL    ,succ0242,succ0243,NULL    ,NULL    ,NULL    ,succ0247,succ0248,NULL
+  ,NULL    ,NULL    ,NULL    ,succ0253,succ0254,succ0255,succ0256,NULL    ,NULL    ,NULL
+  ,NULL    ,succ0261,NULL    ,NULL    ,NULL    ,NULL    ,succ0266,NULL    ,succ0268,NULL
+  ,NULL    ,NULL    ,succ0272,NULL    ,succ0274,NULL    ,succ0276,NULL    ,NULL    ,NULL
+  ,NULL    ,succ0281,succ0282,succ0283,succ0284,NULL    ,NULL    ,NULL    ,NULL    ,NULL
+  ,succ0290,NULL    ,succ0292,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL
+  ,NULL    ,NULL    ,NULL    ,NULL    ,succ0304,NULL    ,NULL    ,NULL    ,NULL    ,NULL
+  ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,succ0315,succ0316,NULL    ,succ0318,NULL
+  ,NULL    ,NULL    ,NULL    ,NULL    ,succ0324,NULL    ,NULL    ,NULL    ,succ0328,NULL
+  ,NULL    ,NULL    ,NULL
 }; // Size of pointertable:2664 bytes.
 
 /****************************************************************************\

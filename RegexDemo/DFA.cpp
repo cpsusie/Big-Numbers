@@ -50,7 +50,7 @@ void DFA::makeTransitions() {
 
   m_states.add(startState);
   bitsetMap.put(&m_states.last().m_NFAset, 0);
-  
+
   BitSet transitionSet(m_NFA.size());
   for(size_t index = 0; index < m_states.size(); index++) {
     DFAState &current = m_states[index];
@@ -180,7 +180,7 @@ BitSet *DFA::transition(BitSet &dst, BitSet &NFAset, int c) const {
   return result;
 }
 
-// Put states with equal AcceptAction into the same group. 
+// Put states with equal AcceptAction into the same group.
 // Note that all non-accept-states go to the same group
 void DFA::minimize() {
   bool stable;                                          // Did we anything in this pass
@@ -193,7 +193,7 @@ void DFA::minimize() {
       if(current.size() <= 1) {
         continue;
       }
-      
+
       BitSet newSet(m_states.size());
       Iterator<size_t> it = current.getIterator();
       int first = (int)it.next();                            // State number of first element of current group

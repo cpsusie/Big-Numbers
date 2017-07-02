@@ -10,7 +10,7 @@ HelpFile::HelpFile() {
   m_f = NULL;
 }
 
-HelpFile::~HelpFile() { 
+HelpFile::~HelpFile() {
   close();
 }
 

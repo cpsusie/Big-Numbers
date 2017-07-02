@@ -6,7 +6,7 @@ static void sort(void *base, size_t nelem, size_t width, AbstractComparator &com
   switch(nelem) {
   case 0:
   case 1:
-    return; 
+    return;
   case 2:
     SORT2(0, 1);
     return;
@@ -58,7 +58,7 @@ template <class T> void QuickSort3Class<T>::sort(T *base, size_t nelem, Abstract
   switch(nelem) {
   case 0:
   case 1:
-    return; 
+    return;
   case 2:
     TSORT2(0, 1);
     return;

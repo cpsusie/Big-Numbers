@@ -6,7 +6,7 @@ void SqlCompiler::genInsertSelect(SyntaxNode *n) { // n = insert_stmt
   dumpSyntaxTree(insertwhat);
 }
 
-InsertColumnExpression::InsertColumnExpression(StatementTable &ft, unsigned short colindex, SyntaxNode *expr) : 
+InsertColumnExpression::InsertColumnExpression(StatementTable &ft, unsigned short colindex, SyntaxNode *expr) :
   StatementSymbolInfo(ft,colindex,expr)
 {
   m_expr = expr;
@@ -242,7 +242,7 @@ void SqlCompiler::checkExpressionType(InsertColumnExpression &col) {
   p = findFirstAggregateFunction(col.m_expr);
   if(p != NULL)
     syntaxError(p,SQL_INVALID_EXPR_TYPE,_T("Aggregation not allowed in valuelist"));
-  
+
   DbMainType exprtype = checkValueExpressionMainType(col.m_expr);
   DbMainType coltype  = getMainType(col.getType());
   if(!isCompatibleType(exprtype,coltype)) {

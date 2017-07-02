@@ -40,7 +40,7 @@ BigInt::BigInt(const wchar_t *s, DigitPool *digitPool) : BigReal(digitPool) {
 }
 
 BigInt &BigInt::operator=(const BigReal &x) {
-  BigReal::operator=((BigInt)x); 
+  BigReal::operator=((BigInt)x);
   return *this;
 }
 

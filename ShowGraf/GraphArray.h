@@ -23,7 +23,7 @@ public:
   GraphArray() {
     m_selected = -1;
   }
-  
+
   void unselect();
   void select(intptr_t i);
   void add(Graph *g);
@@ -31,14 +31,14 @@ public:
   void clear();
   void refresh();
   bool needRefresh() const;
-  
+
   intptr_t  getCurrentSelection() const {
     return m_selected;
   }
   const GraphItem *getSelectedItem() const {
     return (m_selected >= 0) ? &(*this)[m_selected] : NULL;
   }
-  
+
   int  getMaxButtonWidth(CDC &dc, CFont &font) const;
   int  getButtonHeight(  CDC &dc, CFont &font) const;
 
@@ -54,11 +54,11 @@ public:
   void setStyle(GraphStyle style);
   void setRollAvgSize(int size);
   void setTrigoMode(TrigonometricMode mode);
-  
-  bool ok() const { 
+
+  bool ok() const {
     return m_error.length() == 0;
   }
-  
+
   const String &getErrorMsg() const {
     return m_error;
   }

@@ -77,14 +77,14 @@ public:
     return m_title;
   }
 
-  String getProgressMessage(UINT index) {  
+  String getProgressMessage(UINT index) {
     return format(_T("Job %d:%.1lf/%.0lf sec"), index, m_threadMsec / 1000000, m_totalMsec / 1000000);
   }
-  
+
   UINT run();
 };
 
-SomeJob::SomeJob(const TCHAR *title, int seconds, UINT supportedFeatures, USHORT jobCount) 
+SomeJob::SomeJob(const TCHAR *title, int seconds, UINT supportedFeatures, USHORT jobCount)
 : m_title(title)
 , m_supportedFeatures(supportedFeatures)
 , m_jobCount(jobCount)

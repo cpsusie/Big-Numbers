@@ -583,28 +583,28 @@
 //   goto 282 on a
 
 // The lexCharMap[] and lexStateMap arrays are used as follows:
-// 
+//
 // nextState = lexNext[lexStateMap[currentState]][lexCharMap[inputChar]];
 //
 // Character positions in the lexCharMap Array are:
 //
-//  \x00 \x01 \x02 \x03 \x04 \x05 \x06 \x07 \b   \t   \n   \x0b \f   \r   \x0e \x0f 
-//  \x10 \x11 \x12 \x13 \x14 \x15 \x16 \x17 \x18 \x19 \x1a \x1b \x1c \x1d \x1e \x1f 
-//  \s   !    "    #    $    %    &    \'   (    )    *    +    ,    -    .    /    
-//  0    1    2    3    4    5    6    7    8    9    :    ;    <    =    >    ?    
-//  @    A    B    C    D    E    F    G    H    I    J    K    L    M    N    O    
-//  P    Q    R    S    T    U    V    W    X    Y    Z    [    \\   ]    ^    _    
-//  `    a    b    c    d    e    f    g    h    i    j    k    l    m    n    o    
-//  p    q    r    s    t    u    v    w    x    y    z    {    |    }    ~    \x7f 
-//  \x80 \x81 \x82 \x83 \x84 \x85 \x86 \x87 \x88 \x89 \x8a \x8b \x8c \x8d \x8e \x8f 
-//  \x90 \x91 \x92 \x93 \x94 \x95 \x96 \x97 \x98 \x99 \x9a \x9b \x9c \x9d \x9e \x9f 
-//  \xa0 \xa1 \xa2 \xa3 \xa4 \xa5 \xa6 \xa7 \xa8 \xa9 \xaa \xab \xac \xad \xae \xaf 
-//  \xb0 \xb1 \xb2 \xb3 \xb4 \xb5 \xb6 \xb7 \xb8 \xb9 \xba \xbb \xbc \xbd \xbe \xbf 
-//  \xc0 \xc1 \xc2 \xc3 \xc4 \xc5 \xc6 \xc7 \xc8 \xc9 \xca \xcb \xcc \xcd \xce \xcf 
-//  \xd0 \xd1 \xd2 \xd3 \xd4 \xd5 \xd6 \xd7 \xd8 \xd9 \xda \xdb \xdc \xdd \xde \xdf 
-//  \xe0 \xe1 \xe2 \xe3 \xe4 \xe5 \xe6 \xe7 \xe8 \xe9 \xea \xeb \xec \xed \xee \xef 
-//  \xf0 \xf1 \xf2 \xf3 \xf4 \xf5 \xf6 \xf7 \xf8 \xf9 \xfa \xfb \xfc \xfd \xfe \xff 
-//  
+//  \x00 \x01 \x02 \x03 \x04 \x05 \x06 \x07 \b   \t   \n   \x0b \f   \r   \x0e \x0f
+//  \x10 \x11 \x12 \x13 \x14 \x15 \x16 \x17 \x18 \x19 \x1a \x1b \x1c \x1d \x1e \x1f
+//  \s   !    "    #    $    %    &    \'   (    )    *    +    ,    -    .    /
+//  0    1    2    3    4    5    6    7    8    9    :    ;    <    =    >    ?
+//  @    A    B    C    D    E    F    G    H    I    J    K    L    M    N    O
+//  P    Q    R    S    T    U    V    W    X    Y    Z    [    \\   ]    ^    _
+//  `    a    b    c    d    e    f    g    h    i    j    k    l    m    n    o
+//  p    q    r    s    t    u    v    w    x    y    z    {    |    }    ~    \x7f
+//  \x80 \x81 \x82 \x83 \x84 \x85 \x86 \x87 \x88 \x89 \x8a \x8b \x8c \x8d \x8e \x8f
+//  \x90 \x91 \x92 \x93 \x94 \x95 \x96 \x97 \x98 \x99 \x9a \x9b \x9c \x9d \x9e \x9f
+//  \xa0 \xa1 \xa2 \xa3 \xa4 \xa5 \xa6 \xa7 \xa8 \xa9 \xaa \xab \xac \xad \xae \xaf
+//  \xb0 \xb1 \xb2 \xb3 \xb4 \xb5 \xb6 \xb7 \xb8 \xb9 \xba \xbb \xbc \xbd \xbe \xbf
+//  \xc0 \xc1 \xc2 \xc3 \xc4 \xc5 \xc6 \xc7 \xc8 \xc9 \xca \xcb \xcc \xcd \xce \xcf
+//  \xd0 \xd1 \xd2 \xd3 \xd4 \xd5 \xd6 \xd7 \xd8 \xd9 \xda \xdb \xdc \xdd \xde \xdf
+//  \xe0 \xe1 \xe2 \xe3 \xe4 \xe5 \xe6 \xe7 \xe8 \xe9 \xea \xeb \xec \xed \xee \xef
+//  \xf0 \xf1 \xf2 \xf3 \xf4 \xf5 \xf6 \xf7 \xf8 \xf9 \xfa \xfb \xfc \xfd \xfe \xff
+//
 
 static unsigned char lexCharMap[256] = {
        0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   1,   0,   0,   2,   0,   0,
@@ -923,7 +923,7 @@ static const char lexAccept[] = {
     /* 250 */  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
     /* 260 */  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
     /* 270 */  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-    /* 280 */  0,  0,  0,  0 
+    /* 280 */  0,  0,  0,  0
 };
 
 #line 11 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
@@ -1013,310 +1013,310 @@ int TranscharLex::getNextLexeme() {
       case 53:
 #line 77 "C:\\mytools2015\\ParserGen\\transchar\\Transchar.lex"
         return getText()[0];
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 2:
 #line 78 "C:\\mytools2015\\ParserGen\\transchar\\Transchar.lex"
         return getText()[0];
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 3:
 #line 36 "C:\\mytools2015\\ParserGen\\transchar\\Transchar.lex"
         return 142; /* Ä */
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 4:
 #line 43 "C:\\mytools2015\\ParserGen\\transchar\\Transchar.lex"
         return 211; /* Ë */
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 5:
 #line 51 "C:\\mytools2015\\ParserGen\\transchar\\Transchar.lex"
         return 216; /* Ï */
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 6:
 #line 62 "C:\\mytools2015\\ParserGen\\transchar\\Transchar.lex"
         return 153; /* Ö */
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 7:
 #line 69 "C:\\mytools2015\\ParserGen\\transchar\\Transchar.lex"
         return 154; /* Ü */
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 8:
 #line 37 "C:\\mytools2015\\ParserGen\\transchar\\Transchar.lex"
         return 132; /* ä */
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 9:
 #line 44 "C:\\mytools2015\\ParserGen\\transchar\\Transchar.lex"
         return 137; /* ë */
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 10:
 #line 52 "C:\\mytools2015\\ParserGen\\transchar\\Transchar.lex"
         return 139; /* ï */
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 11:
 #line 63 "C:\\mytools2015\\ParserGen\\transchar\\Transchar.lex"
         return 148; /* ö */
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 12:
 #line 70 "C:\\mytools2015\\ParserGen\\transchar\\Transchar.lex"
         return 129; /* ü */
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 13:
 #line 28 "C:\\mytools2015\\ParserGen\\transchar\\Transchar.lex"
         return 146; /* Æ */
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 14:
 #line 30 "C:\\mytools2015\\ParserGen\\transchar\\Transchar.lex"
         return 143; /* Å */
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 15:
 #line 45 "C:\\mytools2015\\ParserGen\\transchar\\Transchar.lex"
         return 210; /* Ê */
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 16:
 #line 38 "C:\\mytools2015\\ParserGen\\transchar\\Transchar.lex"
         return 131; /* â */
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 17:
 #line 29 "C:\\mytools2015\\ParserGen\\transchar\\Transchar.lex"
         return 145; /* æ */
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 18:
 #line 31 "C:\\mytools2015\\ParserGen\\transchar\\Transchar.lex"
         return 134; /* å */
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 19:
 #line 46 "C:\\mytools2015\\ParserGen\\transchar\\Transchar.lex"
         return 136; /* ê */
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 20:
 #line 53 "C:\\mytools2015\\ParserGen\\transchar\\Transchar.lex"
         return 140; /* î */
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 21:
 #line 64 "C:\\mytools2015\\ParserGen\\transchar\\Transchar.lex"
         return 147; /* ô */
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 22:
 #line 74 "C:\\mytools2015\\ParserGen\\transchar\\Transchar.lex"
         return 225; /* ss */
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 23:
 #line 71 "C:\\mytools2015\\ParserGen\\transchar\\Transchar.lex"
         return 150; /* û */
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 24:
 #line 34 "C:\\mytools2015\\ParserGen\\transchar\\Transchar.lex"
         return 181; /* Á */
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 25:
 #line 32 "C:\\mytools2015\\ParserGen\\transchar\\Transchar.lex"
         return 183; /* À */
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 26:
 #line 76 "C:\\mytools2015\\ParserGen\\transchar\\Transchar.lex"
         return 128; /* C */
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 27:
 #line 41 "C:\\mytools2015\\ParserGen\\transchar\\Transchar.lex"
         return 144; /* É */
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 28:
 #line 39 "C:\\mytools2015\\ParserGen\\transchar\\Transchar.lex"
         return 212; /* È */
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 29:
 #line 49 "C:\\mytools2015\\ParserGen\\transchar\\Transchar.lex"
         return 214; /* Í */
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 30:
 #line 47 "C:\\mytools2015\\ParserGen\\transchar\\Transchar.lex"
         return 222; /* Ì */
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 31:
 #line 54 "C:\\mytools2015\\ParserGen\\transchar\\Transchar.lex"
         return 165; /* Ñ */
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 32:
 #line 60 "C:\\mytools2015\\ParserGen\\transchar\\Transchar.lex"
         return 224; /* Ó */
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 33:
 #line 58 "C:\\mytools2015\\ParserGen\\transchar\\Transchar.lex"
         return 227; /* Ò */
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 34:
 #line 56 "C:\\mytools2015\\ParserGen\\transchar\\Transchar.lex"
         return 157; /* Ø */
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 35:
 #line 67 "C:\\mytools2015\\ParserGen\\transchar\\Transchar.lex"
         return 233; /* Ú */
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 36:
 #line 65 "C:\\mytools2015\\ParserGen\\transchar\\Transchar.lex"
         return 235; /* Ù */
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 37:
 #line 72 "C:\\mytools2015\\ParserGen\\transchar\\Transchar.lex"
         return 237; /* Ý */
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 38:
 #line 35 "C:\\mytools2015\\ParserGen\\transchar\\Transchar.lex"
         return 160; /* á */
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 39:
 #line 33 "C:\\mytools2015\\ParserGen\\transchar\\Transchar.lex"
         return 133; /* à */
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 40:
 #line 75 "C:\\mytools2015\\ParserGen\\transchar\\Transchar.lex"
         return 135; /* c */
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 41:
 #line 42 "C:\\mytools2015\\ParserGen\\transchar\\Transchar.lex"
         return 130; /* é */
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 42:
 #line 40 "C:\\mytools2015\\ParserGen\\transchar\\Transchar.lex"
         return 138; /* è */
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 43:
 #line 50 "C:\\mytools2015\\ParserGen\\transchar\\Transchar.lex"
         return 161; /* í */
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 44:
 #line 48 "C:\\mytools2015\\ParserGen\\transchar\\Transchar.lex"
         return 141; /* ì */
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 45:
 #line 55 "C:\\mytools2015\\ParserGen\\transchar\\Transchar.lex"
         return 164; /* ñ */
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 46:
 #line 61 "C:\\mytools2015\\ParserGen\\transchar\\Transchar.lex"
         return 162; /* ó */
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 47:
 #line 59 "C:\\mytools2015\\ParserGen\\transchar\\Transchar.lex"
         return 149; /* ò */
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 48:
 #line 57 "C:\\mytools2015\\ParserGen\\transchar\\Transchar.lex"
         return 155; /* ø */
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 49:
 #line 68 "C:\\mytools2015\\ParserGen\\transchar\\Transchar.lex"
         return 163; /* ú */
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 50:
 #line 66 "C:\\mytools2015\\ParserGen\\transchar\\Transchar.lex"
         return 151; /* ù */
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 51:
 #line 73 "C:\\mytools2015\\ParserGen\\transchar\\Transchar.lex"
         return 236; /* ý */
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
-                  
+
       default:
         throwException(_T("%s:Unknown accept state:%d, text=<%s>"), __TFUNCTION__, lastAcceptState,getText());
         break;

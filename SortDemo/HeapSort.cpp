@@ -52,7 +52,7 @@ template <class T> void HeapSortClass<T>::sort(T *base, size_t nelem, AbstractCo
     }
   }
   for(size_t i = nelem-1; i > 0;) {                 // delete from ptqueue
-    cp = base + i--;                         // remove to root of ptqueue (biggest) and 
+    cp = base + i--;                         // remove to root of ptqueue (biggest) and
     TPSWAP(base, cp);
 
     for(f = 0, s = 1; s <= i; f = s, s*=2) { // bubble base[0] down to its place

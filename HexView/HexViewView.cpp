@@ -191,7 +191,7 @@ CRect CHexViewView::updateSettings(CDC *dc) {
 
   if(showAddr) {
     const String sampleText     = m_addrFormat.getSampleText();
-    
+
     m_addrTextSize              = getTextExtent(*dc,sampleText);
   } else {
     m_addrTextSize = CSize(0,0);
@@ -322,7 +322,7 @@ void CHexViewView::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar) {
   case SB_TOP           :
     setTopLine(0, false).setCaretY(0);
     break;
-  case SB_BOTTOM        :                                 
+  case SB_BOTTOM        :
     setTopLine(m_maxTopLine, false).setCaretY(m_maxCaret.y);
     break;
   case SB_ENDSCROLL     :                    break;
@@ -555,7 +555,7 @@ void CHexViewView::OnMouseMove(UINT nFlags, CPoint point) {
     const __int64 addr = getFileAddrFromPoint(point);
     if(addr >= 0) {
       setCurrentAddr(addr);
-    }          
+    }
   }
   CView::OnMouseMove(nFlags, point);
 }
@@ -606,7 +606,7 @@ unsigned __int64 CHexViewView::getCurrentAddr() const {    // Address of current
 }
 
 String CHexViewView::getAddrAsString(__int64 addr) const {
-  return m_addrFormat.addrToString(addr); 
+  return m_addrFormat.addrToString(addr);
 }
 
 __int64 CHexViewView::getBestTopLine(__int64 addr) const {

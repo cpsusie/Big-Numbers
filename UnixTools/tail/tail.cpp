@@ -44,7 +44,7 @@ static __int64 findStartOfTail(FILE *f, __int64 n) { // find start of n'th last 
 
     for(char *cp = buffer + c - 1; cp >= buffer; cp--) { // Search backwards for '\n'
       if(*cp == _T('\n')) {
-        if(nlCount++ >= n) { 
+        if(nlCount++ >= n) {
           return startPos + (cp - buffer) + 1;
         }
       }

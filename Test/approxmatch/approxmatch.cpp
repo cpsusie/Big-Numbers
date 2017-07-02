@@ -54,7 +54,7 @@ int diff::editdist() {
   for(int i = 0; i <= m_l1; i++)
     for(int j = 0; j <= m_l2; j++)
       editdist(i,j);
-*/    
+*/
   return editdist(m_l1,m_l2);
 }
 

@@ -15,7 +15,7 @@ int BigReal::logBASE(double x) { // static
 
 BRExpoType BigReal::getExpo2(const BigReal &x) { // static
   static const double log2_10 = 3.321928094887362; // = ln(10)/ln(2).
-                                                   // so expo10(x) * log2_10 is approximately ln(x)/ln(10) * ln(10)/ln(2) 
+                                                   // so expo10(x) * log2_10 is approximately ln(x)/ln(10) * ln(10)/ln(2)
                                                    // = ln(x)/ln(2) = ln2(x) approximately  expo2(x)
   if(x.isZero()) {
     return 0;

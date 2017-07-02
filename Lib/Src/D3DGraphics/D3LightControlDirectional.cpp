@@ -10,9 +10,9 @@ D3LightControlDirectional::D3LightControlDirectional(D3Scene &scene, int lightIn
 }
 
 static const Point2D dirLightMeshProfilePoints[] = {
-  Point2D(1   ,   0 ) 
- ,Point2D(1   , 0.1 ) 
- ,Point2D(0.47, 0.1 ) 
+  Point2D(1   ,   0 )
+ ,Point2D(1   , 0.1 )
+ ,Point2D(0.47, 0.1 )
  ,Point2D(0.47, 0.25)
  ,Point2D(0   , 0   )
 };

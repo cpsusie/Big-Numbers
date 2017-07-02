@@ -26,7 +26,7 @@ static double approximation(double x) {
   return sum1 / (sum2 * x + 1.0);
 }
 
-// assume 1 < x < 2 
+// assume 1 < x < 2
 static inline double gamma1_2R(double x) {
   return approximation(x-1.5);
 }

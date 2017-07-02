@@ -1,7 +1,7 @@
 #include "pch.h"
 #include <Math/SigmoidIterator.h>
 
-SigmoidIterator::SigmoidIterator(double from, double to, UINT steps) 
+SigmoidIterator::SigmoidIterator(double from, double to, UINT steps)
 : m_steps(steps)
 , m_tr(DoubleInterval(sigmoid(-1.0+1.0/steps), sigmoid(1.0-1.0/steps)), DoubleInterval(from, to))
 {

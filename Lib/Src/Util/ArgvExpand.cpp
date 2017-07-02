@@ -25,7 +25,7 @@ template<class Ctype> void expandArgv(int &argc, Ctype **&argv) {
     } else { // expand it
       STRCPY(path,*cpp);
       if(last = STRCHR(path, '\\')) {
-        last++; 
+        last++;
       } else if(path[1]==':') {
         last = path+2;
       } else {

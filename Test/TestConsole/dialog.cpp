@@ -139,7 +139,7 @@ public:
   bool eventHandler(int event);
 };
 
-MyDialog::MyDialog(const String &title, int x, int y, int w, int h) : Dialog(title,x,y,w,h), m_menu(dialogmenu) { 
+MyDialog::MyDialog(const String &title, int x, int y, int w, int h) : Dialog(title,x,y,w,h), m_menu(dialogmenu) {
   setMenu(&m_menu);
 //  m_menu.setBorderColor(BACKGROUND_GREEN | FOREGROUND_RED | BACKGROUND_INTENSITY | FOREGROUND_INTENSITY );
   setAccelerator(Accelerator(accel));

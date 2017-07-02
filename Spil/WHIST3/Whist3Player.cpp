@@ -5,7 +5,7 @@
 #include "Whist3Player.h"
 #include "Whist3EPlayer.h"
 
-Whist3Player::Whist3Player(const String &name, Whist3PlayerCallback *callback, const String &dealerName) 
+Whist3Player::Whist3Player(const String &name, Whist3PlayerCallback *callback, const String &dealerName)
 : m_callback(*callback)
 , m_isClient(dealerName.length() != 0)
 , m_myName(name)
@@ -103,7 +103,7 @@ void Whist3Player::play() {
       handleConnection();
       setState(m_prevState);
       break;
-    default: 
+    default:
       throwException(_T("Ukendt gamestate:%d"),m_gameState);
     }
   }
@@ -208,7 +208,7 @@ void Whist3Player::handleStateWaitingForSelect() {
   if(isDealer()) {
     switch(m_playerInTurn) {
     case 0:
-      writePlayerInTurn(m_socket[0]); 
+      writePlayerInTurn(m_socket[0]);
       writePlayerInTurn(m_socket[1]);
       if(m_kat.isEmpty()) {
         unmarkAllCards();
@@ -407,7 +407,7 @@ void Whist3Player::handleConnection() {
   String clientName = Communication::writeClientId(s, m_players.getCount());
   m_socket[m_players.getCount()-1] = s;
   m_players.addPlayer(clientName);
-  
+
   m_gameDesc.setRandomStarter();                      // decide whos starting
   for(int i = 1; i < m_players.getCount(); i++) {
     Communication::writePlayers(m_socket[i-1],m_players,m_gameDesc.getPlayer0());

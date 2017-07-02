@@ -3,7 +3,7 @@
 class TextPosition { // position in textDocument
 public:
   int m_line, m_column;
-  
+
   inline TextPosition() {
     reset();
   }
@@ -57,16 +57,16 @@ public:
 
   inline TextPositionPair() {
   }
-  
+
   inline TextPositionPair(const TextPosition &p1, const TextPosition &p2) : m_pos1(p1), m_pos2(p2) {
   }
 
   inline TextPositionPair(int line1, int column1, int line2, int column2) : m_pos1(line1,column1), m_pos2(line2,column2) {
   }
-  
+
   inline TextPositionPair(int line, int column, int len) : m_pos1(line,column), m_pos2(line,column+len) {
   }
-  
+
   inline bool isEmpty() const {
     return m_pos1.isEmpty();
   }

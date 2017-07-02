@@ -50,7 +50,7 @@ void CSliderCtrlWithTransformation::setTransformation(DoubleInterval &interval, 
   const DoubleInterval toInterval = stepsToToInterval(steps);
   cleanup();
   switch (type) {
-  case LINEAR             : 
+  case LINEAR             :
     m_tr = new LinearTransformation(interval, toInterval);
     break;
   case LOGARITHMIC        :

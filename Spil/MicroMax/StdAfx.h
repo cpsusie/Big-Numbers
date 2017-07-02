@@ -6,4 +6,3 @@
 #include "resource.h"
 #include "Board.h"
 
-//{{AFX_INSERT_LOCATION}}

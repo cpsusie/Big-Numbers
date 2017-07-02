@@ -51,7 +51,7 @@ private:
   void  setInputToLetter(WordBpnInputPattern &inputPattern, int n, BYTE ch);
   float m_result;
   bool  m_errorCount; // no of errors in the last learnword
-  bool  m_updateAlways;  
+  bool  m_updateAlways;
 public:
   WordBpn();
   bool   learnWordWindow(   const WordWindow    &ww    );

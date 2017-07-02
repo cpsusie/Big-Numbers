@@ -44,7 +44,7 @@ private:
   GameHistory            m_gameHistory;
   GameState              m_prevState;
   GameState              m_gameState;
-  int                    m_playerInTurn;     
+  int                    m_playerInTurn;
   int                    m_substituteCount;
   TrickCount             m_trickCount;
   CardIndexSet           m_markedCards;
@@ -100,7 +100,7 @@ public:
   UINT run();
 
   void markUnmarkCard(UINT index);
-  
+
   bool isCardMarked(  UINT index) {
     return m_markedCards.contains(index);
   }

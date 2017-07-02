@@ -82,7 +82,7 @@ CubicSpline::CubicSpline(FittingType type, const CompactArray<DataPoint> &data, 
   m_ok = true;
 }
 
-AbstractDataFit *CubicSpline::clone() const { 
+AbstractDataFit *CubicSpline::clone() const {
   return new CubicSpline(*this);
 }
 
@@ -149,7 +149,7 @@ NumberInterval<Real> CubicSpline::getDomain() const {
 }
 
 
-static const char *ctext_code1 = 
+static const char *ctext_code1 =
 "class CubicSpline {\n"
 "private:\n"
 "  mutable int m_lastInterval;\n"

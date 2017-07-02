@@ -37,7 +37,7 @@ private:
   const CompactIntArray     &m_vgMap;
   CompactArray<PointGraph*> &m_pointGraphArray;
 public:
-  DiffEquationHandler(DiffEquationGraph &graph, const CompactIntArray &vgMap) 
+  DiffEquationHandler(DiffEquationGraph &graph, const CompactIntArray &vgMap)
     : m_graph(graph)
     , m_vgMap(vgMap)
     , m_pointGraphArray(graph.m_pointGraphArray)

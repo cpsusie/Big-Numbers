@@ -47,7 +47,7 @@ String escape(unsigned char *s) {
     if(*s != '\\') {
       asciival = *(s++);
     } else {
-      s++; // Skip the '\' 
+      s++; // Skip the '\'
       switch(toupper(*s)) {
       case 'B' :
         asciival = '\b';   s++;

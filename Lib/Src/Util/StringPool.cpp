@@ -169,7 +169,7 @@ void StringPool::setIndexCapacity(size_t capacity) {
   if((m_size > 0) && (m_firstPage == NULL)) {
     buildPageList();
   }
-    
+
   m_indexCapacity = capacity;
   m_index         = allocateIndex(capacity);
 

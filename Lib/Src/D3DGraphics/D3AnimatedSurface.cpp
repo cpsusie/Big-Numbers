@@ -17,7 +17,7 @@ private:
   void nextIndex();
   int  getSleepTime() const;
 public:
-  MeshAnimationThread(D3AnimatedSurface &surface) 
+  MeshAnimationThread(D3AnimatedSurface &surface)
     : m_surface(surface)
     , m_nextMeshIndex(m_surface.m_nextMeshIndex)
     , m_frameCount((UINT)m_surface.m_meshArray.size())

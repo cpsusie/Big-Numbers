@@ -57,7 +57,7 @@ UINT MBCalculator::findITCountFast(const Real &X, const Real &Y, UINT maxIterati
     fld    st(1)        // Load x                              a=x        b          x          y          4
 
 forloop:                // Stacksize = 5                       a          b          x          y          4
-    fld	   st(0)        // Load a.                             a          a          b          x          y           4   
+    fld	   st(0)        // Load a.                             a          a          b          x          y           4
     fmul   st(0), st(0) // st0*=st0                            a*a        a          b          x          y           4
     fld    st(2)        // Load b                              b          a*a        a          b          x           y         4
     fmul   st(0), st(0) // st0*=st0                            b*b        a*a        a          b          x           y         4
@@ -75,10 +75,10 @@ forloop:                // Stacksize = 5                       a          b     
     fstp   st(3)        // b = 2*a*b+y, pop st0                a*a-b*b+x  a          new b      x          y           4
     fstp   st(1)        // a = a*a-b*b+x, pop st0              new a      new b      x          y          4
     loop   forloop      // Stacksize = 5. if(--ecx) goto forloop
-    
+
 /*
 getStackSize:
-    fnstsw sw 
+    fnstsw sw
     mov ax,sw
     shr ax,11
     and ax,7

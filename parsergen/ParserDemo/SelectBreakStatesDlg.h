@@ -5,7 +5,7 @@
 class CSelectBreakStatesDlg : public CDialog {
 public:
     CSelectBreakStatesDlg(const ParserTables &tables, BitSet &stateSet, CWnd *pParent = NULL);
-    
+
     enum { IDD = IDD_DIALOGSTATES };
 
     CString m_states;

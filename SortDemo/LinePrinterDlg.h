@@ -23,7 +23,7 @@ public:
 	virtual void DoDataExchange(CDataExchange* pDX);
 
 protected:
-	afx_msg LRESULT OnSetTitle(   WPARAM wp, LPARAM lp); 
+	afx_msg LRESULT OnSetTitle(   WPARAM wp, LPARAM lp);
 	afx_msg LRESULT OnClearWindow(WPARAM wp, LPARAM lp);
 	afx_msg LRESULT OnReceiveLine(WPARAM wp, LPARAM lp);
 	afx_msg void OnSize(UINT nType, int cx, int cy);

@@ -100,7 +100,7 @@ int main(int argc, char **argv) {
     }
     setvbuf(in,NULL,_IOFBF,0x10000);
     switch(command) {
-    case RemoveDuplicates  : 
+    case RemoveDuplicates  :
       removeDuplicates(in,compare);
       break;
     case CountDuplicates:

@@ -5,7 +5,7 @@
 #define new DEBUG_NEW
 #endif
 
-CIsoCurveGraphDlg::CIsoCurveGraphDlg(IsoCurveGraphParameters &param, CWnd *pParent) 
+CIsoCurveGraphDlg::CIsoCurveGraphDlg(IsoCurveGraphParameters &param, CWnd *pParent)
 : SaveLoadExprDialog<IsoCurveGraphParameters>(IDD, pParent, param, _T("iso curve"), _T("iso"))
 {
 }

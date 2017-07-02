@@ -10,11 +10,11 @@ protected:
 public:
   Plane() : m_a(0.0), m_b(0.0), m_c(1.0), m_d(0.0) {
   }
-  
+
   /* Constructs a plane using the components @p a, @p b, @p c and @p d.*/
   Plane(double a, double b, double c, double d) : m_a(a), m_b(b), m_c(c), m_d(d) {
   }
-  
+
   /* Constructs a plane using the three vertices @p v0, @p v1 and @p v2.*/
   Plane(const D3DXVECTOR3 &v0, const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2) {
     // _abc = (v0 - v1) % (v1 - v2);
@@ -42,28 +42,28 @@ public:
     }
     return Plane(m_a / len, m_b / len, m_c / len, m_d / len);
   }
-  
+
   double a() const { return m_a; }
   double b() const { return m_b; }
   double c() const { return m_c; }
   double d() const { return m_d; }
-  
+
   const D3DXVECTOR3 normal() const {
     return D3DXVECTOR3((float)m_a, (float)m_b, (float)m_c);
   }
-  
+
   /*
    * @return the product of this plane with the vector @p v.
    *
    * May be used to classify a point (a vector) with regards to the plane:
    * a zero result means the point is on the plane;  a negative result
    * means the point is behind the plane;  a positive result means the
-   * point is in front of the plane. 
+   * point is in front of the plane.
    */
   double classify(const D3DXVECTOR3 &v) const {
     return - (m_a * v.x + m_b * v.y + m_c * v.z + m_d);
   }
-  
+
   /*
    * Determines if a line bound by @p v1 and @p v2 intersects this plane.
    *
@@ -76,7 +76,7 @@ public:
    * @return the side of the intersection, or zero if no intersection.
    */
   int intersect(const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2, D3DXVECTOR3 *vx) const;
-  
+
   friend inline bool operator==(const Plane &a, const Plane &b);
   friend inline bool operator!=(const Plane &a, const Plane &b);
 
@@ -95,8 +95,8 @@ inline bool operator==(const Plane &a, const Plane &b) {
 
 inline bool operator!=(const Plane &a, const Plane &b) {
   return fabs(a.m_a - b.m_a) > 1e-1
-      || fabs(a.m_b - b.m_b) > 1e-1 
-      || fabs(a.m_c - b.m_c) > 1e-1 
+      || fabs(a.m_b - b.m_b) > 1e-1
+      || fabs(a.m_c - b.m_c) > 1e-1
       || fabs(a.m_d - b.m_d) > 1e-1;
 }
 

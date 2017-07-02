@@ -52,7 +52,7 @@ private:
   static Timer           s_timer;
   static BitSet32        s_timeToPrint;
   static const String    s_signaturString[];
-  
+
   void init();
   void endTest(const AllTime &timeUsage);
   const String &getSignaturString() const {

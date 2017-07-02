@@ -15,7 +15,7 @@ GameDescription::GameDescription(int player0) {
 }
 
 void GameDescription::setRandomStarter() {
-  m_player0 = rand() % 3; 
+  m_player0 = rand() % 3;
 }
 
 void GameDescription::nextPlayer0() {
@@ -35,7 +35,7 @@ int GameDescription::getStandardTrickCount(int player) const {
   };
 
   return (m_gameType == GAMETYPE_SOL)
-    ? tricksSol[m_player0][player] 
+    ? tricksSol[m_player0][player]
     : tricks[m_player0][player];
 }
 

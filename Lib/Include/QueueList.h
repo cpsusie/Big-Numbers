@@ -17,19 +17,19 @@ public:
   void clear() {
     LinkedList<T>::clear();
   }
-  
+
   bool isEmpty() const {
     return size() == 0;
   }
-  
+
   size_t size() const {
     return LinkedList<T>::size();
   }
-  
+
   T &operator[](size_t index) {
     return LinkedList<T>::operator[](index);
   }
-  
+
   const T &operator[](size_t index) const {
     return LinkedList<T>::operator[](index);
   }

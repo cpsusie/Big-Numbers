@@ -34,7 +34,7 @@ int CompoundFindDataComparator::compare(const DirListEntry &e1, const DirListEnt
       c = e1.size - e2.size;
       break;
     }
-    if(c) { 
+    if(c) {
       return s.m_ascending ? sign(c) : -sign(c);
     }
   }

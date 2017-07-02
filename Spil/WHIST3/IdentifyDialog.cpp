@@ -24,14 +24,14 @@ BEGIN_MESSAGE_MAP(IdentifyDialog, CDialog)
   ON_BN_CLICKED(IDC_CONNECT_RADIO, OnConnectRadio  )
   ON_BN_CLICKED(IDC_QUIT_BUTTON  , OnQuitButton    )
 END_MESSAGE_MAP()
-  
+
 BOOL IdentifyDialog::OnInitDialog() {
   __super::OnInitDialog();
 
   m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_IDENTIFY_ACCELERATOR));
 
   GetDlgItem(IDC_DEALER_NAME_EDIT)->EnableWindow(m_connected);
-  GetDlgItem(IDC_DEALER_NAME_TEXT)->EnableWindow(m_connected);  
+  GetDlgItem(IDC_DEALER_NAME_TEXT)->EnableWindow(m_connected);
 
   CEdit *editName = (CEdit*)GetDlgItem(IDC_MYNAME_EDIT);
   editName->SetSel(0,30);
@@ -49,16 +49,16 @@ BOOL IdentifyDialog::PreTranslateMessage(MSG *pMsg) {
 
 void IdentifyDialog::OnDealerRadio() {
   GetDlgItem(IDC_DEALER_NAME_EDIT)->EnableWindow(FALSE);
-  GetDlgItem(IDC_DEALER_NAME_TEXT)->EnableWindow(FALSE);    
+  GetDlgItem(IDC_DEALER_NAME_TEXT)->EnableWindow(FALSE);
 }
 
 void IdentifyDialog::OnConnectRadio() {
   GetDlgItem(IDC_DEALER_NAME_EDIT)->EnableWindow(TRUE);
-  GetDlgItem(IDC_DEALER_NAME_TEXT)->EnableWindow(TRUE); 
+  GetDlgItem(IDC_DEALER_NAME_TEXT)->EnableWindow(TRUE);
 }
 
 void IdentifyDialog::OnQuitButton() {
-  exit(0);  
+  exit(0);
 }
 
 static CString trim(const CString &s) {

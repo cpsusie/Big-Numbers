@@ -51,7 +51,7 @@ static void printsolution() {
 static void tryrow(int r) {
   trycount++;
   if(r == SIZE) {
-    solutioncounter++; 
+    solutioncounter++;
     if(solutioncounter % 1000 == 0)
       printsolution();
   } else {

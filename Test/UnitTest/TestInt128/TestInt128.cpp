@@ -786,7 +786,7 @@ static String int128ToString(_int128 v, int radix) {
       verify((b1 & b2) == ea);
       _int128 eo("0x7777777ffffffff77777777ffffffff");
       verify((b1 | b2) == eo);
-      
+
       _int128 x13 = b1 ^ b3;
       _int128 b1mb3 = b1 & ~b3;
       _int128 b3mb1 = b3 & ~b1;

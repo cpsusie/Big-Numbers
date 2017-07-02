@@ -56,7 +56,7 @@ ChessPlayerRequest::ChessPlayerRequest(ChessPlayerRequestType type) {
   }
 }
 
-ChessPlayerRequest::ChessPlayerRequest(const ChessPlayerRequest &src) 
+ChessPlayerRequest::ChessPlayerRequest(const ChessPlayerRequest &src)
 : m_type(src.getType())
 , m_param(src.m_param)
 {

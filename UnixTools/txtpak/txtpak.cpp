@@ -29,7 +29,7 @@ static bool canOverWrite(const String &fname) {
     case 'N': return false;
     case 'a':
     case 'A':
-      overwriteAll = true; 
+      overwriteAll = true;
       return true;
     case 'q':
     case 'Q':
@@ -352,8 +352,8 @@ static void printBanner() {
 typedef enum {
   NO_COMMAND
  ,CMD_UNPACK
- ,CMD_PACK  
- ,CMD_LIST   
+ ,CMD_PACK
+ ,CMD_LIST
 } CommandType;
 
 static String childName(const String &path, const String &fname) {

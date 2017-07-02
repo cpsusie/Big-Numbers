@@ -80,7 +80,7 @@ BOOL CZoomDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) {
     } else {
       scrollLeft();
     }
-  } else 
+  } else
 #endif
   if(zDelta > 0) {
     zoomIn();

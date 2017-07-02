@@ -14,7 +14,7 @@ private:
   Semaphore  m_gate;
 public:
 	CTestWebCamDlg(CWnd *pParent = NULL);	// standard constructor
-  HWND getWindow() { 
+  HWND getWindow() {
     return m_hWnd;
   }
   LRESULT captureVideoStreamCallback(MMCapture &capture, PixRect *image);

@@ -54,7 +54,7 @@ void LineArray::dump(const String &fname) const {
   fclose(f);
 }
 
-Lcs::Lcs(LcsComparator &cmp, CompareJob *job) 
+Lcs::Lcs(LcsComparator &cmp, CompareJob *job)
 : m_cmp(cmp)
 , m_job(job)
 {
@@ -62,7 +62,7 @@ Lcs::Lcs(LcsComparator &cmp, CompareJob *job)
   m_link          = NULL;
   m_firstLinkPage = new LinkPage(NULL);
   m_linkPageCount = 1;
-}  
+}
 
 Lcs::~Lcs() {
   clear();

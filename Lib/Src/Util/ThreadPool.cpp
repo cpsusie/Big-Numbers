@@ -67,7 +67,7 @@ void ThreadPool::executeInParallelNoWait(RunnableArray &jobs) { // static
 // Blocks until all jobs are done. If any of the jobs throws an exception
 // the rest of the jobs will be terminated and an exception with the same
 // message will be thrown to the caller
-void ThreadPool::executeInParallel(RunnableArray &jobs) { // static 
+void ThreadPool::executeInParallel(RunnableArray &jobs) { // static
   if(jobs.size() == 0) {
     return;
   }

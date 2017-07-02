@@ -86,7 +86,7 @@ bool Game::has4(int r, int c) const {
     break;
   }
   switch(c) { // check horinzontal stribe
-  case 0: 
+  case 0:
     if(C_R1 && C_R2 && C_R3) return true;
     break;
   case 1:

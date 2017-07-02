@@ -265,7 +265,7 @@ void PixRect::check3DResult(HRESULT hr) const {
 }
 #endif
 
-void PixRect::reOpenDirectX() { // static 
+void PixRect::reOpenDirectX() { // static
 //  uninitialize();
 //  initialize();
 }
@@ -511,7 +511,7 @@ void PixRect::init(HBITMAP src, D3DFORMAT pixelFormat, D3DPOOL pool) {
   if(!ok) {
     errMsg = getLastErrorText();
   }
-    
+
   SelectObject(bmDC, oldGDI);
 
   DeleteDC(bmDC);
@@ -561,7 +561,7 @@ void PixRect::destroy() {
   if (m_surface == NULL) return;
   switch (getType()) {
   case PIXRECT_TEXTURE     :
-    destroyTexture(); 
+    destroyTexture();
     break;
   case PIXRECT_RENDERTARGET:
   case PIXRECT_PLAINSURFACE:
@@ -976,7 +976,7 @@ void PixRect::stretchBlt(HDC dst, const CPoint &dp, const CSize &ds, ULONG op, c
   stretchBlt(dst, dp.x,dp.y,ds.cx,ds.cy, op, src, sp.x,sp.y,ss.cx,ss.cy);
 }
 
-void PixRect::stretchBlt(PixRect *dst, const CPoint &dp, const CSize &ds, ULONG op, const HDC src, const CPoint &sp, const CSize &ss) { // static 
+void PixRect::stretchBlt(PixRect *dst, const CPoint &dp, const CSize &ds, ULONG op, const HDC src, const CPoint &sp, const CSize &ss) { // static
   stretchBlt(dst, dp.x,dp.y,ds.cx,ds.cy, op, src, sp.x,sp.y,ss.cx,ss.cy);
 }
 
@@ -1016,7 +1016,7 @@ void PixRect::mask(int x, int y, int w, int h, ULONG op, const PixRect *src, int
 //  BitBlt(dstDC,x,y,w,h,maskDC,0,0,SRCCOPY);
 
   if(ok) {
-    BitBlt(dstDC,x,y,w,h,NULL,0,0,DSTINVERT); // this is only necessary, because windows has no DSTCOPY-rasteroperation to use for the 
+    BitBlt(dstDC,x,y,w,h,NULL,0,0,DSTINVERT); // this is only necessary, because windows has no DSTCOPY-rasteroperation to use for the
                                               // background-operation (used for 0-bits in maskBitmap), so we have to invert dst twice. #!&$?
     ok = MaskBlt(dstDC,x,y,w,h,srcDC,sx,sy,maskBitmap,0,0,MAKEROP4(op,DSTINVERT));
     if(!ok) {
@@ -1058,7 +1058,7 @@ void PixRect::setClipper(PixRectClipper *clipper) {
 void PixRect::copy(VIDEOHDR &videoHeader) {
   D3DLOCKED_RECT lr;
   CHECK3DRESULT(m_surface->LockRect(&lr, NULL, D3DLOCK_NOSYSLOCK));
-  memcpy(lr.pBits, videoHeader.lpData, videoHeader.dwBytesUsed); 
+  memcpy(lr.pBits, videoHeader.lpData, videoHeader.dwBytesUsed);
   CHECK3DRESULT(m_surface->UnlockRect());
 }
 

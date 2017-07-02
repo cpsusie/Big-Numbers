@@ -10,7 +10,7 @@ public:
   const void *key() const {
     return TreeSetNode::key();
   }
-  void *value() { 
+  void *value() {
     return m_value;
   }
   const void *value() const {

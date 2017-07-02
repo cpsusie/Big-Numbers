@@ -130,7 +130,7 @@ BOOL CWhist3Dialog::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     return TRUE;
   }
-    
+
   return __super::PreTranslateMessage(pMsg);
 }
 
@@ -164,7 +164,7 @@ void CWhist3Dialog::OnPaint() {
 
     // Draw the icon
     dc.DrawIcon(x, y, m_hIcon);
-  } else {  
+  } else {
     CPaintDC dc(this);
 
     paintAll(m_workDC);
@@ -266,7 +266,7 @@ void CWhist3Dialog::paintCards(CDC &dc) {
   const CardCount cardCount = m_player->getCardCount();
 
   const int backSide = getOptions().m_backside;
-  for(int i = 0; i < 13; i++) { // display cards of left player 
+  for(int i = 0; i < 13; i++) { // display cards of left player
     if(cardCount.hasCard(lPlayer,i)) {
       CardBitmap::paintCard(dc, 2,(i+4)*CARDDIST,backSide);
     }
@@ -518,7 +518,7 @@ void CWhist3Dialog::OnLButtonDown(UINT nFlags, CPoint point) {
     playCard(point);
     break;
   }
-    
+
   __super::OnLButtonDown(nFlags, point);
 }
 

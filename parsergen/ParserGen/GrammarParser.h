@@ -11,7 +11,7 @@ private:
   Token           m_token;
   String          m_actionBody;
   short           m_currentPrecedence;
-  Token next() { 
+  Token next() {
     return m_token = m_lex.next();
   }
   void parseTermDef();

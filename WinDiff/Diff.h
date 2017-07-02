@@ -186,33 +186,33 @@ public:
   inline int getFirstDiffLine() const {
     return m_firstDiffLine;
   }
-  
+
   inline int getLastDiffLine() const {
     return m_lastDiffLine;
   }
-  
+
   inline int getTabSize() const {
     return m_tabSize;
   }
-  
+
   bool setTabSize(int newValue, bool refresh);
-  
+
   bool setViewWhiteSpace(bool newValue, bool refresh);
-  
+
   inline bool getViewWhiteSpace() const {
     return m_viewWhiteSpace;
   }
-  
+
   int findLineIndex(int id, UINT line) const;
-  
+
   inline String getName(int id) const {
     return m_doc[id].getName();
   }
-  
+
   inline const DiffDoc &getDoc(int id) const {
     return m_doc[id];
   }
-  
+
   void swapDocs();
 
   inline bool isEmpty() const {

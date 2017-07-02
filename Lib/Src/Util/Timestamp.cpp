@@ -202,16 +202,16 @@ Timestamp &Timestamp::set(TimeComponent c, int value) {
   Time t = getTime();
   Date d = getDate();
   switch(c) {
-  case TMILLISECOND: 
-  case TSECOND     : 
-  case TMINUTE     : 
-  case THOUR       : 
+  case TMILLISECOND:
+  case TSECOND     :
+  case TMINUTE     :
+  case THOUR       :
     t.set(c, value);
     break;
 
-  case TDAYOFMONTH : 
+  case TDAYOFMONTH :
   case TDAYOFYEAR  :
-  case TWEEK       : 
+  case TWEEK       :
   case TMONTH      :
   case TYEAR       :
     d.set(c, value);
@@ -275,7 +275,7 @@ Timestamp::operator SYSTEMTIME() const {
   DWORD ret = GetTimeZoneInformation(&timeZoneInfo);
   Timestamp uts = *this;
   uts.add(TMINUTE, timeZoneInfo.Bias+timeZoneInfo.DaylightBias);
-  
+
   SYSTEMTIME ust;
   int day, month, year, hour, minute, second, ms;
   uts.getDMY(day, month, year);

@@ -16,7 +16,7 @@ DataGraphParameters::DataGraphParameters(const String &name
                                         ,DataReader   &xReader
                                         ,DataReader   &yReader
                                         ,int           rollAvgSize
-                                        ,GraphStyle    style) 
+                                        ,GraphStyle    style)
 : GraphParameters(lastComponent(name),color,rollAvgSize,style)
 , m_xReader(xReader)
 , m_yReader(yReader)

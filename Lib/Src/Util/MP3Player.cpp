@@ -60,7 +60,7 @@ void MP3Player::open(const TCHAR *fileName) {
   }
   TCHAR shortFileName[256];
   long lenShort = GetShortPathName(fileName, shortFileName, ARRAYSIZE(shortFileName));
-  
+
   if(FileNameSplitter(fileName).getExtension() == _T(".wav")) {
     sendString(_T("open \"waveaudio!%s\" alias %s buffer 6"), shortFileName, m_alias);
   } else {

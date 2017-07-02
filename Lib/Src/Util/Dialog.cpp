@@ -213,7 +213,7 @@ void Dialog::setVar(int id, double n) {
     f->draw();
 }
 
-void Dialog::setVar(int id, const String &s) { 
+void Dialog::setVar(int id, const String &s) {
   StringField *f = (StringField*)getDlgItem(id);
   f->getString() = s;
   f->dataToField();
@@ -340,7 +340,7 @@ int Dialog::domodal() {
   return m_return;
 }
 
-void Dialog::quit(int ret) { 
+void Dialog::quit(int ret) {
   m_return = ret;
   postEvent(MSG_QUIT);
 }

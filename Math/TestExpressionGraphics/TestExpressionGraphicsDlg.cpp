@@ -124,7 +124,7 @@ BOOL CTestExpressionGraphicsDlg::OnInitDialog() {
   SetIcon(m_hIcon, FALSE);        // Set small icon
 
   m_accelTabel = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_MAINFRAME));
-  
+
   m_reductionStackWindow.substituteControl(this, IDC_STATICREDUCTIONSTACK);
   m_layoutManager.OnInitDialog(this);
 
@@ -641,7 +641,7 @@ void CTestExpressionGraphicsDlg::OnFunctionsEvaluateFx() {
     const Real y0 = m_expr.evaluate();
     setWindowText(this, IDC_EDITRESULTVALUE, toString(y0));
     m_flags.add(HASFVALUE);
- 
+
     const Real x1 = (x0==0) ? EPS : x0 * (1.0+EPS);
     varX = x1;
     const Real y1   = m_expr.evaluate();

@@ -39,7 +39,7 @@ protected:
   virtual double next(double x) const;
   virtual AxisType getType() const = 0;
   bool   isXAxis() const;
-  const  DoubleInterval &getDataRange() const { 
+  const  DoubleInterval &getDataRange() const {
     return m_dataRange;
   }
 
@@ -50,15 +50,15 @@ protected:
   double getMin()  const {
     return m_min;
   }
-  
+
   double getMax()  const {
     return m_max;
   }
-  
+
   double getStep() const {
     return m_step;
   }
-  
+
   const  IntervalTransformation &getTransformation() const;
   virtual void paintXData() = 0;
   virtual void paintYData() = 0;
@@ -71,11 +71,11 @@ protected:
   void   yTextOut(     double y, const String &s, int xOffset);
   bool   xTextPossible(double x, const String &s);
   bool   yTextPossible(double y, const String &s);
-  
+
   bool   isPainting() const {
     return m_isPainting;
   }
-  
+
   void   paintHorizontalPin(double y, bool big);
   void   paintVerticalPin(  double x, bool big);
   const  CPoint &getOrigin() const;

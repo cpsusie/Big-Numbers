@@ -92,11 +92,11 @@ public:
   inline int getWidth() const {
     return m_currentWidth;
   }
-  
+
   inline int getPrecision() const {
     return m_currentPrecision;
   }
-  
+
   inline long getFlags()                 const { return m_currentFlags; }
   inline const double &getValue64()      const { return m_currentValue; }
   inline Double80      getValue80()      const { return m_currentValue; }
@@ -145,7 +145,7 @@ void StringParametersIterator::init(const CompactDoubleArray &values) {
   resetFlagIndex();
   resetPrecision();
   resetWidth();
-  
+
   m_hasNext = true;
 }
 
@@ -263,7 +263,7 @@ int getLastMantissaDigit(const char *s) {
   else
     return -2;
 }
-    
+
 static void testToString(const String &errorName, StringParametersIterator &it) {
   UINT totalCounter           = 0;
   UINT mismatchDouble80       = 0;
@@ -301,7 +301,7 @@ static void testToString(const String &errorName, StringParametersIterator &it) 
 
     if(!equal80 || !equalN) {
       errorLog << it.toString() << _T("\tbuf64:<") << buf64 << _T(">\tbuf80:<") << buf80 << _T(">\tbufN:<") << bufN << _T(">") << endl;
-    
+
       if(!equal80) {
         mismatchDouble80++;
         if(buf80.length() != buf64.length()) {

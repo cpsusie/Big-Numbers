@@ -8,7 +8,7 @@ private:
   bool m_showOldStrings;
   bool m_verbose;
 public:
-  StringSearcher(bool showOldStrings, bool showOldchars, bool verbose) 
+  StringSearcher(bool showOldStrings, bool showOldchars, bool verbose)
     : m_showOldStrings(showOldStrings)
     , m_showOldChars(showOldchars)
     , m_verbose(verbose)

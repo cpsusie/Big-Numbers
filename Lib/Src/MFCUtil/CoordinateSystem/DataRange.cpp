@@ -17,7 +17,7 @@ DataRange::DataRange(double minX, double maxX, double minY, double maxY) {
   init(minX, maxX, minY, maxY);
 }
 
-DataRange::DataRange(const Point2D &p) { 
+DataRange::DataRange(const Point2D &p) {
   init(p.x, p.x, p.y, p.y);
 }
 

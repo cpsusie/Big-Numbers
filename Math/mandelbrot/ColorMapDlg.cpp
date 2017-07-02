@@ -45,7 +45,7 @@ BOOL CColorMapDlg::PreTranslateMessage(MSG *pMsg) {
 }
 
 void CColorMapDlg::OnOK() {
-  UpdateData(); 
+  UpdateData();
   m_colorMapData.m_maxIteration = m_maxIteration;
   m_colorMapData.m_randomSeed   = m_randomSeed;
   m_colorMapData.m_seed         = m_seed;

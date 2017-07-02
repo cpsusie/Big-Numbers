@@ -12,7 +12,7 @@ inline void memSwap(void *p1, void *p2, size_t w) {
     mov eax, p1
     mov edi, p2
     cmp ecx, 4
-    jb SwapWord 
+    jb SwapWord
 LoopDword:
     mov	ebx, DWORD PTR [eax]
     mov	edx, DWORD PTR [edi]

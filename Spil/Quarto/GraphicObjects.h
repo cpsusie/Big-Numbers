@@ -58,7 +58,7 @@ public:
 
 class BrickObject : public SceneObjectWithMesh {
 private:
-  const BYTE          m_attr;               
+  const BYTE          m_attr;
   D3PosDirUpScale     m_pdus;
   D3SceneObject      *m_brickMarker;
   bool                m_marked;

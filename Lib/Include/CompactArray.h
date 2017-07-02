@@ -51,7 +51,7 @@ public:
   CompactArray() {
     init(0, 0);
   }
-  
+
   explicit CompactArray(size_t capacity) {
     init(capacity, 0);
   }
@@ -81,7 +81,7 @@ public:
       delete[] m_array;
     }
   }
-  
+
   void setCapacity(size_t capacity) {
     if(capacity < m_size) {
       capacity = m_size;
@@ -110,7 +110,7 @@ public:
     if(index >= m_size) indexError(index, __TFUNCTION__);
     return m_array[index];
   }
-  
+
   inline const T &select() const {
     if(m_size == 0) selectError(__TFUNCTION__);
     return m_array[randSizet() % m_size];
@@ -359,7 +359,7 @@ public:
   CompactArray<T> &sort(int (*cmp)(const T &e1, const T &e2)) {
     return sort(0, size(), FunctionComparator<T>(cmp));
   }
-    
+
   // Return index i so a[i] == key. If none exist, return -1
   intptr_t binarySearch(const T &key, Comparator<T> &cmp) const { // Assume array is sorted
     intptr_t l = 0, r = m_size-1;

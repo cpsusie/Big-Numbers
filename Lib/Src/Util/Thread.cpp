@@ -78,7 +78,7 @@ public:
 };
 
 void DefaultExceptionHandler::uncaughtException(Thread &thread, Exception &e) {
-  String errorText = format(_T("Uncaught Exception in thread %s(%lu)\n%s\n"), thread.getName().cstr(), thread.getId(), e.what()); 
+  String errorText = format(_T("Uncaught Exception in thread %s(%lu)\n%s\n"), thread.getName().cstr(), thread.getId(), e.what());
   if(isatty(stderr)) {
     _ftprintf(stderr, _T("\n%s\n"), errorText.cstr());
   } else {

@@ -9,7 +9,7 @@ void addData(CListCtrl &ctrl, int row, int col, const String &str, bool newItem)
   if(newItem) {
     ctrl.InsertItem(&lv);
   } else {
-    ctrl.SetItem(&lv);   
+    ctrl.SetItem(&lv);
   }
 }
 

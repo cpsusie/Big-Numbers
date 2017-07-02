@@ -21,8 +21,8 @@ inline float roundFloat(float f)
 }
 
 inline bool isBetween(const D3DXVECTOR3 &v, const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2) {
-  return v.x >= v1.x && v.x <= v2.x 
-      && v.y >= v1.y && v.y <= v2.y 
+  return v.x >= v1.x && v.x <= v2.x
+      && v.y >= v1.y && v.y <= v2.y
       && v.z >= v1.z && v.z <= v2.z;
 }
 

@@ -14,7 +14,7 @@ void SynchronizedStringQueue::waitForResults(int expectedResultCount) {
   }
 }
 
-MultiplierThread::MultiplierThread(int id) 
+MultiplierThread::MultiplierThread(int id)
 : Thread(format(_T("M%03d"), id), 2048)
 , BigRealResource(id)
 , m_digitPool(NULL)

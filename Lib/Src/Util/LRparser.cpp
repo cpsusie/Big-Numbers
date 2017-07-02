@@ -8,7 +8,7 @@
 LRparser::LRparser(const ParserTables &tables, Scanner *scanner, UINT stackSize) : m_tables(tables), m_scanner(scanner) {
   m_parserStack   = NULL;
   parserStackCreate(stackSize);
-  
+
   initialize();
   m_maxErrorCount = 100;
   m_cascadeCount  = 5;
@@ -329,7 +329,7 @@ String ParserTables::getRightString(UINT prod) const {
   const UINT length = getProductionLength(prod);
   if(length == 0) {
     return _T("epsilon");
-  } else { 
+  } else {
     UINT symbols[1000];
     getRightSide(prod, symbols);
     String result;

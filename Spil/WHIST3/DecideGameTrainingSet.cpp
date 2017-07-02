@@ -285,7 +285,7 @@ void DecideGameTrainingSet::save() {
   fclose(f);
 }
 
-Array<DecideGameTrainingSet> DecideGameTrainingSet::loadTrainingData() { // static 
+Array<DecideGameTrainingSet> DecideGameTrainingSet::loadTrainingData() { // static
   Array<DecideGameTrainingSet> result;
   FILE *f = NULL;
   try {

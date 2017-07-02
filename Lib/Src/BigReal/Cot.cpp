@@ -15,7 +15,7 @@ public:
   const ConstBigReal  c11;
   const BigReal      &c12;
 
-  CotConstants() 
+  CotConstants()
     :c1 ( 2.2  )
     ,c2 ( 0.26 )
     ,c3 ( 0.1  )

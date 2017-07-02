@@ -109,7 +109,7 @@ BOOL CShwGraphDlg::OnInitDialog() {
   m_layout.addControl(IDC_COORSYSTEM, RELATIVE_SIZE);
   m_layout.addControl(IDC_STATICINFO, RELATIVE_Y_POS | RELATIVE_WIDTH);
 
-  SetIcon(m_hIcon, TRUE); 
+  SetIcon(m_hIcon, TRUE);
   SetIcon(m_hIcon, FALSE);
 
   m_needSolve  = true;
@@ -304,7 +304,7 @@ void CShwGraphDlg::OnFileOpen() {
 }
 
 void CShwGraphDlg::OnFileQuit() {
-  exit(0);  
+  exit(0);
 }
 
 void CShwGraphDlg::OnEditDegree() {
@@ -360,7 +360,7 @@ void CShwGraphDlg::OnToolsZoomin() {
   }
 }
 
-void CShwGraphDlg::OnToolsZoomout() { 
+void CShwGraphDlg::OnToolsZoomout() {
   if(m_zoomStack.isEmpty()) {
     return;
   }
@@ -480,7 +480,7 @@ void CShwGraphDlg::OnMouseMove(UINT nFlags, CPoint point) {
   case STATE_MOVEPOINT:
     movePoint(m_movePoint, point);
     break;
-  case STATE_ZOOM_RESIZE: 
+  case STATE_ZOOM_RESIZE:
     { CClientDC dc(&m_cs);
       CRect     newRect;
       SIZE      ss;
@@ -654,7 +654,7 @@ FunctionDerived::FunctionDerived(DataFit &f, int d) : m_f(f) {
   m_d = d;
 }
 
-double FunctionDerived::operator()(const Real &x) { 
+double FunctionDerived::operator()(const Real &x) {
   return m_f(m_d,x);
 }
 

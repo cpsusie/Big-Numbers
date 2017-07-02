@@ -13,8 +13,8 @@ typedef enum {
 } FPUPrecisionMode;
 
 typedef enum {
-  FPU_ROUNDCONTROL_ROUND       // Round to nearest, or to even if equidistant 
- ,FPU_ROUNDCONTROL_ROUNDDOWN   // Round down (toward -infinity) 
+  FPU_ROUNDCONTROL_ROUND       // Round to nearest, or to even if equidistant
+ ,FPU_ROUNDCONTROL_ROUNDDOWN   // Round down (toward -infinity)
  ,FPU_ROUNDCONTROL_ROUNDUP     // Round up (toward +infinity)
  ,FPU_ROUNDCONTROL_TRUNCATE    // Truncate (toward 0)
 } FPURoundMode;
@@ -238,7 +238,7 @@ public:
 #else // !IS32BIT (ie IS64BIT)
 
   friend inline long getLong(const Double80 &x) {
-    long tmp; 
+    long tmp;
     D80ToLong(tmp, x);
     return tmp;
   }

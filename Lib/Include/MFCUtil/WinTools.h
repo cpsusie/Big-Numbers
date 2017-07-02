@@ -176,7 +176,7 @@ String getItemString(         const CListCtrl &ctrl, int row, int col);
 void   setSelectedIndex(            CListCtrl &ctrl, int index);
 void   filloutListHeaderWidth(      CListCtrl &ctrl);
 
-CRect  getScreenRect(); // the visible rectangle NOT overlapping the taskbar 
+CRect  getScreenRect(); // the visible rectangle NOT overlapping the taskbar
 CRect  getTaskBarRect();
 HDC    getScreenDC();   // after use of HDC, call DeleteDC.
 int    getScreenPlanes();

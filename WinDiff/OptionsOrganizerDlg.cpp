@@ -28,7 +28,7 @@ END_MESSAGE_MAP()
 
 BOOL COptionsOrganizerDlg::OnInitDialog() {
   __super::OnInitDialog();
-  
+
   m_nameListCtrl.SetExtendedStyle(LVS_EX_FULLROWSELECT);
   m_nameListCtrl.InsertColumn( 0,EMPTYSTRING,LVCFMT_LEFT, 200);
   updateListCtrl();
@@ -83,7 +83,7 @@ void COptionsOrganizerDlg::ajourButtons(int selected) {
   GetDlgItem(IDC_BUTTONRENAME  )->EnableWindow((selected >= 0             )?TRUE:FALSE);
   GetDlgItem(IDC_BUTTONDELETE  )->EnableWindow((selected >= 0             )?TRUE:FALSE);
   GetDlgItem(IDC_BUTTONMOVEUP  )->EnableWindow((selected >  0             )?TRUE:FALSE);
-  GetDlgItem(IDC_BUTTONMOVEDOWN)->EnableWindow((selected >= 0) 
+  GetDlgItem(IDC_BUTTONMOVEDOWN)->EnableWindow((selected >= 0)
                                             && (selected < getListSize()-1)?TRUE:FALSE);
 }
 

@@ -11,87 +11,87 @@ static BOOL AddEventSource(
    LPTSTR pszMsgDLL,  // path for message DLL
    DWORD  dwNum)      // number of categories
 {
-   HKEY hk; 
-   DWORD dwData; 
-   TCHAR szBuf[MAX_PATH]; 
+   HKEY hk;
+   DWORD dwData;
+   TCHAR szBuf[MAX_PATH];
 
-   // Create the event source as a subkey of the logfile. 
- 
-   wsprintf(szBuf, 
+   // Create the event source as a subkey of the logfile.
+
+   wsprintf(szBuf,
       "SYSTEM\\CurrentControlSet\\Services\\EventLog\\%s\\%s",
-      pszLogName, pszSrcName); 
- 
-   if (RegCreateKey(HKEY_LOCAL_MACHINE, szBuf, &hk)) 
+      pszLogName, pszSrcName);
+
+   if (RegCreateKey(HKEY_LOCAL_MACHINE, szBuf, &hk))
    {
-//      printf("Could not create the registry key."); 
+//      printf("Could not create the registry key.");
       return FALSE;
    }
- 
-   // Set the name of the message file. 
- 
-   if(RegSetValueEx(hk,              // subkey handle 
-           "EventMessageFile",        // value name 
-           0,                         // must be zero 
-           REG_EXPAND_SZ,             // value type 
-           (LPBYTE) pszMsgDLL,        // pointer to value data 
-           (DWORD) lstrlen(szBuf)+1) != ERROR_SUCCESS ) // length of value data 
+
+   // Set the name of the message file.
+
+   if(RegSetValueEx(hk,              // subkey handle
+           "EventMessageFile",        // value name
+           0,                         // must be zero
+           REG_EXPAND_SZ,             // value type
+           (LPBYTE) pszMsgDLL,        // pointer to value data
+           (DWORD) lstrlen(szBuf)+1) != ERROR_SUCCESS ) // length of value data
    {
-//      printf("Could not set the event message file."); 
+//      printf("Could not set the event message file.");
       return FALSE;
    }
- 
-   // Set the supported event types. 
- 
-   dwData = EVENTLOG_ERROR_TYPE | EVENTLOG_WARNING_TYPE | 
-        EVENTLOG_INFORMATION_TYPE; 
- 
-   if(RegSetValueEx(hk,      // subkey handle 
-           "TypesSupported",  // value name 
-           0,                 // must be zero 
-           REG_DWORD,         // value type 
-           (LPBYTE) &dwData,  // pointer to value data 
-           sizeof(DWORD)))    // length of value data 
+
+   // Set the supported event types.
+
+   dwData = EVENTLOG_ERROR_TYPE | EVENTLOG_WARNING_TYPE |
+        EVENTLOG_INFORMATION_TYPE;
+
+   if(RegSetValueEx(hk,      // subkey handle
+           "TypesSupported",  // value name
+           0,                 // must be zero
+           REG_DWORD,         // value type
+           (LPBYTE) &dwData,  // pointer to value data
+           sizeof(DWORD)))    // length of value data
    {
-//      printf("Could not set the supported types."); 
+//      printf("Could not set the supported types.");
       return FALSE;
    }
- 
+
    // Set the category message file and number of categories.
 
-   if(RegSetValueEx(hk,              // subkey handle 
-           "CategoryMessageFile",     // value name 
-           0,                         // must be zero 
-           REG_EXPAND_SZ,             // value type 
-           (LPBYTE) pszMsgDLL,        // pointer to value data 
-           (DWORD) lstrlen(szBuf)+1) != ERROR_SUCCESS) // length of value data 
+   if(RegSetValueEx(hk,              // subkey handle
+           "CategoryMessageFile",     // value name
+           0,                         // must be zero
+           REG_EXPAND_SZ,             // value type
+           (LPBYTE) pszMsgDLL,        // pointer to value data
+           (DWORD) lstrlen(szBuf)+1) != ERROR_SUCCESS) // length of value data
    {
-//      printf("Could not set the category message file."); 
-      return FALSE;
-   }
- 
-   if(RegSetValueEx(hk,      // subkey handle 
-           "CategoryCount",   // value name 
-           0,                 // must be zero 
-           REG_DWORD,         // value type 
-           (LPBYTE) &dwNum,   // pointer to value data 
-           sizeof(DWORD)) != ERROR_SUCCESS )    // length of value data 
-   {
-//      printf("Could not set the category count."); 
+//      printf("Could not set the category message file.");
       return FALSE;
    }
 
-   RegCloseKey(hk); 
+   if(RegSetValueEx(hk,      // subkey handle
+           "CategoryCount",   // value name
+           0,                 // must be zero
+           REG_DWORD,         // value type
+           (LPBYTE) &dwNum,   // pointer to value data
+           sizeof(DWORD)) != ERROR_SUCCESS )    // length of value data
+   {
+//      printf("Could not set the category count.");
+      return FALSE;
+   }
+
+   RegCloseKey(hk);
    return TRUE;
 }
 
 static bool RemoveEventSource(LPTSTR pszLogName, // "Application" or a custom logfile name
                               LPTSTR pszSrcName) // event source name
 {
-   TCHAR szBuf[MAX_PATH]; 
- 
-   wsprintf(szBuf, 
+   TCHAR szBuf[MAX_PATH];
+
+   wsprintf(szBuf,
       "SYSTEM\\CurrentControlSet\\Services\\EventLog\\%s\\%s",
-      pszLogName, pszSrcName); 
+      pszLogName, pszSrcName);
   return RegDeleteKey(HKEY_LOCAL_MACHINE,szBuf) == ERROR_SUCCESS;
 }
 

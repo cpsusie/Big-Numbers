@@ -15,7 +15,7 @@
 #define BACKGROUND_BLUE      0x0010 // background color contains blue.
 #define BACKGROUND_GREEN     0x0020 // background color contains green.
 #define BACKGROUND_RED       0x0040 // background color contains red.
-#define BACKGROUND_INTENSITY 
+#define BACKGROUND_INTENSITY
 */
 
 #define IDQUIT           1
@@ -129,8 +129,8 @@ int _tmain(int argc, TCHAR **argv) {
     Console::setWindowAndBufferSize(0,0,120,60);
 //    setScreenSize(100,40);
 //    setWindowSize(0,0,99,39);
-  
-  
+
+
     Console::getBufferSize(scrWidth, scrHeight);
 
     Console::clearRect(1,1,2,2,REVERSEVIDEO);
@@ -152,7 +152,7 @@ int _tmain(int argc, TCHAR **argv) {
   //  consoleprintf(1,1,_T("screensize:%d,%d"),scrWidth,scrHeight);
   //  getLey();
   //  m.enableitem(IDQUIT,false);
-    
+
     for(;;) {
       switch(m.domodal(0,0)) {
       case IDTESTDIALOG:

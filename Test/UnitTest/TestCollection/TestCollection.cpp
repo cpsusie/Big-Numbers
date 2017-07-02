@@ -792,7 +792,7 @@ namespace TestBitSet {
         setTestSuite(_T("HashSet"), s1);
         KeyHashSet hs(s1);
       }
- 
+
       TEST_METHOD(CollectionTreeSet) {
         KeyTreeSet s2;
         setTestSuite(_T("TreeSet"), s2);

@@ -11,7 +11,7 @@ void paintWindow(TextWin *w, FrameType type=SINGLE_FRAME) {
   w->set(0,0,w->getWidth(),w->getHeight(),TR_ALL,' ',color);
   for(int i = 0; i < w->getHeight(); i++)
     w->printf(0,i,color,_T(" %d %s"),i,_T("Hello World"));
-  
+
   drawBorder(w,type);
 }
 

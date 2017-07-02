@@ -12,12 +12,12 @@ public:
   void restoreBlackOutSideRegion();
 };
 
-PolygonFiller::PolygonFiller(PixRect *pixRect, MyPolygon &polygon) 
+PolygonFiller::PolygonFiller(PixRect *pixRect, MyPolygon &polygon)
 : m_polygon(polygon) {
   setPixRect(pixRect);
 }
 
-// Fills BLACK inside polygon, To speed up edge-scanner we fill RED outside, and collect all points used initially to fill 
+// Fills BLACK inside polygon, To speed up edge-scanner we fill RED outside, and collect all points used initially to fill
 // these regions. They are afterwards removed (filled whith BLACK) from mask, so mask finally contains WHITE inside (and edge),
 // and BLACK outside.
 void PolygonFiller::checkAndFill(const CPoint &p) {

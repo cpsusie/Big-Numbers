@@ -222,7 +222,7 @@ void BigReal::init(const String &s, bool allowDecimalPoint) {
         }
       }
       if(n) { // Remember the last, if any
-        integerPart.insertDigit(n); 
+        integerPart.insertDigit(n);
         integerPart.incrExpo();
       }
       integerPart.trimZeroes();

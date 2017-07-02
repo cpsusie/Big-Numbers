@@ -9,16 +9,16 @@ public:
   double m_x, m_y, m_w, m_h;
   inline Rectangle2D() : m_x(0), m_y(0), m_w(0), m_h(0) {
   }
-  inline Rectangle2D(double x, double y, double w, double h) 
+  inline Rectangle2D(double x, double y, double w, double h)
     : m_x(x), m_y(y), m_w(w), m_h(h)
   {
   }
-  inline Rectangle2D(const Point2D &topLeft, const Point2D &bottomRight) 
+  inline Rectangle2D(const Point2D &topLeft, const Point2D &bottomRight)
     : m_x(topLeft.x), m_y(topLeft.y)
     , m_w(bottomRight.x-topLeft.x), m_h(bottomRight.y-topLeft.y)
   {
   }
-  inline Rectangle2D(const Point2D &p, const Size2D &size) 
+  inline Rectangle2D(const Point2D &p, const Size2D &size)
     : m_x(p.x    ), m_y(p.y    )
     , m_w(size.cx), m_h(size.cy)
   {

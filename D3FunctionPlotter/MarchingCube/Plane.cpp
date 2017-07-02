@@ -7,9 +7,9 @@ using namespace ThreeD;
 
 int Plane::intersect(const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2, D3DXVECTOR3 *vx) const {
   // based on Graphics Gems III, partition3d
-  
+
   int sign1, sign2;
-  
+
   double c1 = classify(v1);
   if(c1 < -TOLERANCE) {
     sign1 = -1;
@@ -18,7 +18,7 @@ int Plane::intersect(const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2, D3DXVECTOR3 *
   } else {   // no intersection;  cases 1, 6, 7
     return 0;
   }
-  
+
   double c2 = classify(v2);
   if(c2 < -TOLERANCE) {
     sign2 = -1;
@@ -28,11 +28,11 @@ int Plane::intersect(const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2, D3DXVECTOR3 *
     *vx = v2;
     return sign1;
   }
-  
+
   if(sign1 == sign2) {   // no intersection;  cases 2, 3
     return 0;
   }
-  
+
   // intersection;  cases 4, 5
   /*
   D3DXVECTOR3 vd = v2 - v1;

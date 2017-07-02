@@ -96,7 +96,7 @@ BOOL CComboBoxWithHistory::PreTranslateMessage(MSG *pMsg) {
   return CComboBox::PreTranslateMessage(pMsg);
 }
 
-static RegistryKey getRootKey() { // static 
+static RegistryKey getRootKey() { // static
   static String rootPath;
   if(rootPath.length() == 0) {
     const FileNameSplitter info(getModuleFileName());

@@ -121,7 +121,7 @@ void ParserTree::vAppendError(const TCHAR *format, va_list argptr) {
   m_errmsg.add(vformat(format, argptr));
   m_ok = false;
 }
-  
+
 void ParserTree::appendError(const TCHAR *format,...) {
   va_list argptr;
   va_start(argptr, format);
@@ -268,7 +268,7 @@ String SyntaxNode::toString() const {
                              + child(0)->toString() + _T(",")
                              + child(1)->toString() + _T(",")
                              + child(2)->toString()+
-                               _T(")"); 
+                               _T(")");
   case NULLVAL        : return _T("null");
   case LIKE           : if(childCount() == 2) {
                           return child(0)->toString() + _T(" like ") + child(1)->toString();
@@ -276,12 +276,12 @@ String SyntaxNode::toString() const {
                           return _T(" like ");
                         }
   case ISNULL         : return child(0)->toString() + _T(" is null");
-  case BETWEEN        : return child(0)->toString() + _T(" between ") + 
-                               child(1)->toString() + _T(" and ") + 
+  case BETWEEN        : return child(0)->toString() + _T(" between ") +
+                               child(1)->toString() + _T(" and ") +
                                child(2)->toString();
   case INSYM          : return child(0)->toString() + _T(" in ") + child(1)->toString();
   case STAR           : return _T("*");
-  case UNION          : 
+  case UNION          :
     return String(_T("(")) + child(0)->toString() +  ((childCount()==3)?_T(" union all "):_T(" union ")) + child(1)->toString() + _T(")");
   case INTERSECT      :
     return String(_T("(")) + child(0)->toString() + _T(" intersect ")     + child(1)->toString() + _T(")");

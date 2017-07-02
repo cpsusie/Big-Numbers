@@ -49,8 +49,8 @@ sqlca sqlca;
 
 
 static void dbConnect() {
-  
-  
+
+
 #ifdef __NEVER__
   EXEC SQL CONNECT TO :dbname user :username using :password;
 #endif
@@ -88,7 +88,7 @@ static void dbConnect() {
 }
 
 static void dbDisconnect() {
-  
+
 #ifdef __NEVER__
   EXEC SQL CONNECT RESET END-EXEC
 #endif
@@ -244,7 +244,7 @@ static bool dropDatabase(const String &dbname) {
 }
 
 static void usage() {
-  fprintf( stderr, 
+  fprintf( stderr,
            "Usage:sqlbind [-v] -cdatabase : Create database\n"
            "      sqlbind [-v] -ddatabase : Drop database\n"
            "      sqlbind [-v] -bdatabase files : Bind files to database\n"

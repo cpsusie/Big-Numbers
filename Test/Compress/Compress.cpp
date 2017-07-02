@@ -47,7 +47,7 @@ int main(int argc, char **argv) {
   for(argv++; *argv && *(cp = *argv) == '-'; argv++) {
     for(cp++; *cp; cp++) {
       switch(*cp) {
-      case 'h': 
+      case 'h':
         compressor = new AdaptivHuffmanTree();
         continue;
       case 'a':

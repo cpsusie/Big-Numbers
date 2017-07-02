@@ -61,7 +61,7 @@ public:
     return m_faceIndex >= 0;
   }
   inline String toString(int dec=3) const {
-    return isSet() 
+    return isSet()
          ? format(_T("Face:%d (%5d,%5d,%5d) %s")
                  ,m_faceIndex
                  ,m_i1, m_i2, m_i3
@@ -117,7 +117,7 @@ private:
   float                             m_nearViewPlane;
   Timestamp                         m_renderTime;
   bool                              m_initDone;
-  
+
   void notifyPropertyChanged(int id, const void *oldValue, const void *newValue);
   void notifyIfObjectArrayChanged();
   void initCameraTrans(const D3DXVECTOR3 &pos, const D3DXVECTOR3 &lookAt, const D3DXVECTOR3 &up);
@@ -514,7 +514,7 @@ protected:
     m_scene.drawPrimitive(pt, startVertex, count);
   }
 public:
-  D3SceneObject(D3Scene &scene, const String &name=_T("Untitled")) 
+  D3SceneObject(D3Scene &scene, const String &name=_T("Untitled"))
     : m_scene(scene)
     , m_name(name)
     , m_visible(true)

@@ -24,7 +24,7 @@ private:
 public:
   ListAllocator(const ListAllocator &src);            // not defined
   ListAllocator &operator=(const ListAllocator &src); // not defined
-  
+
   ListAllocator(size_t elementSize) : m_elementSize(elementSize) {
   }
   ~ListAllocator();
@@ -121,7 +121,7 @@ void MergeSortAnyWidth::sort(void *list, size_t n) {
 
   sort(l1, n1);
   sort(l2, n2);
-  
+
   merge((char*)list, l1, n1, l2, n2);
   first.release();
   second.release();
@@ -182,7 +182,7 @@ template <class T> void MergeSortClass<T>::sort(T *list, size_t n) {
 
   sort(l1, n1);
   sort(l2, n2);
-  
+
   merge(list, l1, n1, l2, n2);
   first.release();
   second.release();

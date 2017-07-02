@@ -108,7 +108,7 @@ BOOL CRegneTesterDlg::OnInitDialog() {
   setEinsteinBitmap();
   setTableNumber(randInt(1,10));
   OnOpgavetypeMultiply();
-  
+
   return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -380,10 +380,10 @@ void CRegneTesterDlg::OnTabel10tabel() {  setTableNumber(10); }
 void CRegneTesterDlg::setTableNumber(int tableNumber) {
   static const int tableMenuItem[] = {
     0
-   ,ID_TABEL_1TABEL,    ID_TABEL_2TABEL 
-   ,ID_TABEL_3TABEL,    ID_TABEL_4TABEL 
-   ,ID_TABEL_5TABEL,    ID_TABEL_6TABEL 
-   ,ID_TABEL_7TABEL,    ID_TABEL_8TABEL 
+   ,ID_TABEL_1TABEL,    ID_TABEL_2TABEL
+   ,ID_TABEL_3TABEL,    ID_TABEL_4TABEL
+   ,ID_TABEL_5TABEL,    ID_TABEL_6TABEL
+   ,ID_TABEL_7TABEL,    ID_TABEL_8TABEL
    ,ID_TABEL_9TABEL,    ID_TABEL_10TABEL
   };
   for (int i = 1; i < ARRAYSIZE(tableMenuItem); i++) {
@@ -399,12 +399,12 @@ void CRegneTesterDlg::OnOpgavetypeMultiply() { setExeciseType(ID_OPGAVETYPE_MULT
 void CRegneTesterDlg::OnOpgavetypeDivide()   { setExeciseType(ID_OPGAVETYPE_DIVIDE  ); }
 
 void CRegneTesterDlg::setExeciseType(int type) {
-  checkMenuItem(this, ID_OPGAVETYPE_ADD      , false); 
+  checkMenuItem(this, ID_OPGAVETYPE_ADD      , false);
   checkMenuItem(this, ID_OPGAVETYPE_SUBTRACT , false);
   checkMenuItem(this, ID_OPGAVETYPE_MULTIPLY , false);
   checkMenuItem(this, ID_OPGAVETYPE_DIVIDE   , false);
 
-  checkMenuItem(this, type, true); 
+  checkMenuItem(this, type, true);
   m_execiseType = type;
   setWindowText(this, IDC_STATIC_OPERATOR, format(_T("%c"), getOperatorChar(type)));
 
@@ -412,7 +412,7 @@ void CRegneTesterDlg::setExeciseType(int type) {
 }
 
 void CRegneTesterDlg::ajourStartButtonVisible() {
-  const bool visible = !m_timerIsRunning 
+  const bool visible = !m_timerIsRunning
                     && isValidExeciseType(m_execiseType)
                     && isValidTableNumber(m_tableNumber);
   GetDlgItem(IDC_BUTTONSTART)->ShowWindow(visible?SW_SHOW:SW_HIDE);

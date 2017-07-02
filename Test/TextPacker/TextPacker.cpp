@@ -88,8 +88,8 @@ void TextPacker::addLine(const String &s) {
   for(Tokenizer tok(s.cstr(),_T(" \t")); tok.hasNext(); ) {
     words.add(WordSpace(tok.next()));
   }
-  for(size_t i = 0; i < words.size();) {
-    int firstWord = (int)i;
+  for(UINT i = 0; i < words.size();) {
+    int firstWord = i;
     // find the last word which can be placed at the line
     UINT l;
     for(l = m_lmargin; i < words.size() && l < m_rmargin;) {
@@ -116,7 +116,7 @@ void TextPacker::addLine(const String &s) {
         m_text += spaceString(w.m_spaceCount);
       }
     }
-    m_text += "\n";
+    m_text += _T("\n");
   }
 }
 

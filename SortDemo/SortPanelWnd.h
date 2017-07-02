@@ -46,7 +46,7 @@ public:
     return m_sortMethod;
   }
   void initArray();
-  void stopSort(int stopCode) { // any combination of PAUSE_SORT TERMINATE_SORT 
+  void stopSort(int stopCode) { // any combination of PAUSE_SORT TERMINATE_SORT
     m_threadSignal = stopCode;
   }
   void resumeSort();

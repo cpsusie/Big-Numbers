@@ -31,7 +31,7 @@ void CTestOBMButtonDlg::OnOK() {
 
 BOOL CTestOBMButtonDlg::OnInitDialog() {
   __super::OnInitDialog();
-    
+
   CPoint p(20, 20);
 
   m_dnArrayButton.Create(this, OBMIMAGE(DNARROW), p, IDC_DNARROW_BUTTON, true); p.y += 20;

@@ -71,7 +71,7 @@ static HBITMAP decodeToBitmap(const ByteArray &bytes, PLPicDecoder &decoder, boo
 
       dc     = getScreenDC();
 
-#if WINVER >= 0x0500 
+#if WINVER >= 0x0500
 
       BITMAPV5HEADER bmHeader;
       ZeroMemory(&bmHeader, sizeof(bmHeader));

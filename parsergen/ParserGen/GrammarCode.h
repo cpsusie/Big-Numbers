@@ -76,7 +76,7 @@ private:
   mutable unsigned int         m_uncompressedStateBytes;
   mutable unsigned int         m_compressedLASetBytes;
 
-  bool tableTypeIsShort() const { 
+  bool tableTypeIsShort() const {
     return getStateCount() >= 128 || getSymbolCount() >= 128 || getProductionCount() >= 128 || getMaxInputCount() >= 128;
   }
   int getTableTypeSize() const {

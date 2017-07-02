@@ -25,7 +25,7 @@ public:
   float m_alpha;
   float m_aRED,m_aGREEN,m_aBLUE;
   Alpha4(int dummy=0) {}
-  Alpha4(float aR, float aG, float aB) 
+  Alpha4(float aR, float aG, float aB)
     : m_aRED(  minMax(aR,0.f,1.f))
     , m_aGREEN(minMax(aG,0.f,1.f))
     , m_aBLUE( minMax(aB,0.f,1.f)) {

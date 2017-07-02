@@ -36,7 +36,7 @@ public:
   const KeyType &getKey() const {
     return m_key;
   }
-  
+
   TupleField getRandomField(UINT field);
   KeyType    getRandomKey();
   Tuple      getRandomTuple();

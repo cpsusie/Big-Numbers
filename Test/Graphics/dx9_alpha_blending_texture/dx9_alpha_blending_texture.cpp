@@ -52,7 +52,7 @@ struct Vertex
 {
     float x, y, z;
     float tu, tv;
-    
+
     enum FVF
     {
         FVF_Flags = D3DFVF_XYZ | D3DFVF_TEX1
@@ -65,17 +65,17 @@ Vertex g_cubeVertices[] =
   { 1.0f, 1.0f,-1.0f,  1.0f,0.0f },
   {-1.0f,-1.0f,-1.0f,  0.0f,1.0f },
   { 1.0f,-1.0f,-1.0f,  1.0f,1.0f },
-  
+
   {-1.0f, 1.0f, 1.0f,  1.0f,0.0f },
   {-1.0f,-1.0f, 1.0f,  1.0f,1.0f },
   { 1.0f, 1.0f, 1.0f,  0.0f,0.0f },
   { 1.0f,-1.0f, 1.0f,  0.0f,1.0f },
-  
+
   {-1.0f, 1.0f, 1.0f,  0.0f,0.0f },
   { 1.0f, 1.0f, 1.0f,  1.0f,0.0f },
   {-1.0f, 1.0f,-1.0f,  0.0f,1.0f },
   { 1.0f, 1.0f,-1.0f,  1.0f,1.0f },
-  
+
   {-1.0f,-1.0f, 1.0f,  0.0f,1.0f },
   {-1.0f,-1.0f,-1.0f,  0.0f,0.0f },
   { 1.0f,-1.0f, 1.0f,  1.0f,1.0f },
@@ -85,7 +85,7 @@ Vertex g_cubeVertices[] =
   { 1.0f, 1.0f, 1.0f,  1.0f,0.0f },
   { 1.0f,-1.0f,-1.0f,  0.0f,1.0f },
   { 1.0f,-1.0f, 1.0f,  1.0f,1.0f },
-  
+
   {-1.0f, 1.0f,-1.0f,  1.0f,0.0f },
   {-1.0f,-1.0f,-1.0f,  1.0f,1.0f },
   {-1.0f, 1.0f, 1.0f,  0.0f,0.0f },
@@ -95,7 +95,7 @@ Vertex g_cubeVertices[] =
 //-----------------------------------------------------------------------------
 // PROTOTYPES
 //-----------------------------------------------------------------------------
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, 
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
            LPSTR lpCmdLine, int nCmdShow);
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 void loadTexture(void);
@@ -112,11 +112,11 @@ int WINAPI WinMain(	HINSTANCE hInstance,
           LPSTR     lpCmdLine,
           int       nCmdShow )
 {
-  WNDCLASSEX winClass; 
+  WNDCLASSEX winClass;
   MSG        uMsg;
 
     memset(&uMsg,0,sizeof(uMsg));
-    
+
   winClass.lpszClassName = "MY_WINDOWS_CLASS";
   winClass.cbSize        = sizeof(WNDCLASSEX);
   winClass.style         = CS_HREDRAW | CS_VREDRAW;
@@ -133,7 +133,7 @@ int WINAPI WinMain(	HINSTANCE hInstance,
   if( !RegisterClassEx(&winClass) )
     return E_FAIL;
 
-  g_hWnd = CreateWindowEx( NULL, "MY_WINDOWS_CLASS", 
+  g_hWnd = CreateWindowEx( NULL, "MY_WINDOWS_CLASS",
                              "Direct3D (DX9) - Texture Alpha Blending",
                  WS_OVERLAPPEDWINDOW | WS_VISIBLE,
                    0, 0, 640, 480, NULL, NULL, hInstance, NULL );
@@ -149,7 +149,7 @@ int WINAPI WinMain(	HINSTANCE hInstance,
   while( uMsg.message != WM_QUIT )
   {
     if( PeekMessage( &uMsg, NULL, 0, 0, PM_REMOVE ) )
-    { 
+    {
       TranslateMessage( &uMsg );
       DispatchMessage( &uMsg );
     }
@@ -168,15 +168,15 @@ int WINAPI WinMain(	HINSTANCE hInstance,
 // Name: WindowProc()
 // Desc: The window's message handler
 //-----------------------------------------------------------------------------
-LRESULT CALLBACK WindowProc( HWND   hWnd, 
-               UINT   msg, 
-               WPARAM wParam, 
+LRESULT CALLBACK WindowProc( HWND   hWnd,
+               UINT   msg,
+               WPARAM wParam,
                LPARAM lParam )
 {
     static POINT ptLastMousePosit;
   static POINT ptCurrentMousePosit;
   static bool bMousing;
-  
+
     switch( msg )
   {	
         case WM_CHAR:
@@ -239,7 +239,7 @@ LRESULT CALLBACK WindowProc( HWND   hWnd,
         g_fSpinX -= (ptCurrentMousePosit.x - ptLastMousePosit.x);
         g_fSpinY -= (ptCurrentMousePosit.y - ptLastMousePosit.y);
       }
-      
+
       ptLastMousePosit.x = ptCurrentMousePosit.x;
             ptLastMousePosit.y = ptCurrentMousePosit.y;
     }
@@ -250,7 +250,7 @@ LRESULT CALLBACK WindowProc( HWND   hWnd,
       PostQuitMessage(0);	
     }
     break;
-    
+
         case WM_DESTROY:
     {
             PostQuitMessage(0);
@@ -269,7 +269,7 @@ LRESULT CALLBACK WindowProc( HWND   hWnd,
 
 //-----------------------------------------------------------------------------
 // Name: loadTexture()
-// Desc: 
+// Desc:
 //-----------------------------------------------------------------------------
 void loadTexture(void)
 {
@@ -281,7 +281,7 @@ void loadTexture(void)
 
 //-----------------------------------------------------------------------------
 // Name: init()
-// Desc: 
+// Desc:
 //-----------------------------------------------------------------------------
 void init( void )
 {
@@ -314,27 +314,27 @@ void init( void )
     g_pVertexBuffer->Lock( 0, sizeof(g_cubeVertices), (void**)&pVertices, 0 );
     memcpy( pVertices, g_cubeVertices, sizeof(g_cubeVertices) );
     g_pVertexBuffer->Unlock();
-  
+
   g_pd3dDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
     g_pd3dDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
     D3DXMATRIX matProj;
-    D3DXMatrixPerspectiveFovLH( &matProj, D3DXToRadian( 45.0f ), 
+    D3DXMatrixPerspectiveFovLH( &matProj, D3DXToRadian( 45.0f ),
                                 640.0f / 480.0f, 0.1f, 100.0f );
     g_pd3dDevice->SetTransform( D3DTS_PROJECTION, &matProj );
 }
 
 //-----------------------------------------------------------------------------
 // Name: shutDown()
-// Desc: 
+// Desc:
 //-----------------------------------------------------------------------------
 void shutDown( void )
 {
-    if( g_pTexture != NULL ) 
+    if( g_pTexture != NULL )
         g_pTexture->Release();
 
-    if( g_pVertexBuffer != NULL ) 
-        g_pVertexBuffer->Release(); 
+    if( g_pVertexBuffer != NULL )
+        g_pVertexBuffer->Release();
 
     if( g_pd3dDevice != NULL )
         g_pd3dDevice->Release();
@@ -345,7 +345,7 @@ void shutDown( void )
 
 //-----------------------------------------------------------------------------
 // Name: render()
-// Desc: 
+// Desc:
 //-----------------------------------------------------------------------------
 void render( void )
 {
@@ -358,9 +358,9 @@ void render( void )
 
     D3DXMatrixTranslation( &matTrans, 0.0f, 0.0f, g_fDistance );
 
-  D3DXMatrixRotationYawPitchRoll( &matRot, 
-                                D3DXToRadian(g_fSpinX), 
-                                D3DXToRadian(g_fSpinY), 
+  D3DXMatrixRotationYawPitchRoll( &matRot,
+                                D3DXToRadian(g_fSpinX),
+                                D3DXToRadian(g_fSpinY),
                                 0.0f );
     matWorld = matRot * matTrans;
     g_pd3dDevice->SetTransform( D3DTS_WORLD, &matWorld );
@@ -370,27 +370,27 @@ void render( void )
     //
     // Transparency sorting for our cube...
     //
-    // If you have a single transparent object, or multiple transparent objects 
-    // which do not overlap in screen space (i.e., each screen pixel is touched 
-    // by at most one of the transparent objects), there's a sorting short-cut 
+    // If you have a single transparent object, or multiple transparent objects
+    // which do not overlap in screen space (i.e., each screen pixel is touched
+    // by at most one of the transparent objects), there's a sorting short-cut
     // which can be used under certain conditions.
     //
-    // If your transparent objects are closed, convex, and viewed from the 
-    // outside, culling may be used to draw the back-facing polygons prior to 
+    // If your transparent objects are closed, convex, and viewed from the
+    // outside, culling may be used to draw the back-facing polygons prior to
     // the front-facing polygons. This will accomplish the same thing
     // as sorting your objects or polygons into back-to-front order.
-    // Fortunately for us, our cube is a perfect candidate for this sorting 
+    // Fortunately for us, our cube is a perfect candidate for this sorting
     // trick.
-    // 
-    // On the other hand, If we can't use the cull-mode sorting trick, we would 
-    // need to sort our objects manually, which would require us to transform 
-    // the geometry into eye-space so we could compare their final position 
-    // along the z axis. Only then, could we could render them in the proper 
+    //
+    // On the other hand, If we can't use the cull-mode sorting trick, we would
+    // need to sort our objects manually, which would require us to transform
+    // the geometry into eye-space so we could compare their final position
+    // along the z axis. Only then, could we could render them in the proper
     // back-to-front order for alpha blending.
     //
-    // Also, if transparent objects intersect in any way, the individual 
-    // triangles of the objects touching will have to be sorted and drawn 
-    // individually from back-to-front. And is some rare cases, triangles that 
+    // Also, if transparent objects intersect in any way, the individual
+    // triangles of the objects touching will have to be sorted and drawn
+    // individually from back-to-front. And is some rare cases, triangles that
     // intersect each other may have to be broken into smaller triangles so they
     // no longer intersect or blending artifacts will persist regardless of our
     // sorting efforts.
@@ -399,11 +399,11 @@ void render( void )
     //
     // http://www.opengl.org/resources/tutorials/sig99/advanced99/notes/node204.html
     //
-  
+
     if( g_bBlending == true )
   {
         //
-        // Use the texture's alpha channel to blend it with whatever’s already 
+        // Use the texture's alpha channel to blend it with whatever’s already
         // in the frame-buffer.
         //
 
@@ -418,7 +418,7 @@ void render( void )
         if( g_bSortUsingCullModeTrick == true )
       {
             //
-            // Use the cull-mode sorting trick for convex non-overlapping 
+            // Use the cull-mode sorting trick for convex non-overlapping
             // geometry.
             //
 
@@ -436,7 +436,7 @@ void render( void )
             g_pd3dDevice->DrawPrimitive( D3DPT_TRIANGLESTRIP, 20, 2 );
 
             //
-            // Render the cube again, but this time we only render the 
+            // Render the cube again, but this time we only render the
             // front-facing polygons.
             //
 
@@ -452,9 +452,9 @@ void render( void )
         else
         {
             //
-            // Do no sorting and hope for the best. From certain viewing 
+            // Do no sorting and hope for the best. From certain viewing
             // positions the cube's sides will appear sorted correctly, but this
-            // is typically rare and the cube will not look right most of the 
+            // is typically rare and the cube will not look right most of the
             // time.
             //
 

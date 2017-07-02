@@ -43,7 +43,7 @@ int SourcePosition::findCharIndex(const TCHAR *s, const SourcePosition &pos) { /
   return i;
 }
 
-SourcePosition SourcePosition::findSourcePosition(const TCHAR *s, int index) { // static 
+SourcePosition SourcePosition::findSourcePosition(const TCHAR *s, int index) { // static
   SourcePosition pos(0, 0);
   for(int i = 0; i < index && *s; i++) {
     if(*(s++) == _T('\n')) {

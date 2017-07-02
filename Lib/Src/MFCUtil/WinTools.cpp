@@ -133,7 +133,7 @@ CRect getTaskBarRect() {
   }
 }
 
-CRect getScreenRect() { // the visible rectangle NOT overlapping the taskbar 
+CRect getScreenRect() { // the visible rectangle NOT overlapping the taskbar
   const CSize screenSize  = getScreenSize();
   const CRect taskBarRect = getTaskBarRect();
   if(taskBarRect.Width() == 0 && taskBarRect.Height() == 0) {

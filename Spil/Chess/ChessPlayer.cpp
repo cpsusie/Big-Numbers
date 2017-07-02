@@ -27,7 +27,7 @@
 
 #ifdef _DEBUG_CHECKSTATE
 #define CHECKSTATE(s1,...) checkState(__TFUNCTION__, __LINE__, s1, __VA_ARGS__ ,-1)
-#else 
+#else
 #define CHECKSTATE(s1,...)
 #endif // _DEBUG_CHECKSTATE
 
@@ -755,7 +755,7 @@ String ChessPlayer::toString(bool detailed) const {
 }
 
 // public
-const TCHAR *ChessPlayer::getStateName(ChessPlayerState state) { // static 
+const TCHAR *ChessPlayer::getStateName(ChessPlayerState state) { // static
 #define caseStr(s) case CPS_##s: return _T(#s);
   switch(state) {
   caseStr(IDLE         )

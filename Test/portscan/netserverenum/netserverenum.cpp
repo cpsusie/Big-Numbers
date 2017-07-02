@@ -104,7 +104,7 @@ public:
 
 ServerInfo101::ServerInfo101(const SERVER_INFO_101 &src) {
   m_platformId   = src.sv101_platform_id;
-  
+
   m_name         = src.sv101_name;
   m_versionMajor = src.sv101_version_major;
   m_versionMinor = src.sv101_version_minor;

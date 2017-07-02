@@ -382,7 +382,7 @@ void ProfilePolygon::apply(CurveOperator &op) const {
           const Point2D &end = curve.m_points[j+2];
           applyToBezier(pp,curve.m_points[j],curve.m_points[j+1],end, op,false);
           pp = end;
-        } 
+        }
       }
       break;
     }
@@ -444,7 +444,7 @@ Profile::Profile(const String &name, const GlyphCurveData &src) {
 }
 */
 
-void Profile::init() { 
+void Profile::init() {
   m_name = _T("Untitled");
   m_polygonArray.clear();
 }

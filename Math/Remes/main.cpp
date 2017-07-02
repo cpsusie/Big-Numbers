@@ -70,12 +70,12 @@ int main(int argc, char **argv) {
   for(argv++; *argv && *(cp = *argv) == '-'; argv++) {
     for(cp++;*cp; cp++) {
       switch(*cp) {
-      case 'm': 
-        m = atoi(cp+1); 
+      case 'm':
+        m = atoi(cp+1);
         if(m < 0 || m > 10) usage();
         break;
-      case 'k': 
-        k = atoi(cp+1); 
+      case 'k':
+        k = atoi(cp+1);
         if(k < 0 || k > 10) usage();
         break;
       case 'r':

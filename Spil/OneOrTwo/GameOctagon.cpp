@@ -15,11 +15,11 @@ const UINT GameOctagon::moveTable[89] = {
  ,PS1( 3)
  ,PS1( 4)
  ,PS1( 5)
- ,PS1( 6)          
+ ,PS1( 6)
  ,PS1( 7)
 
  ,PS1( 8)    // 17 single inner points
- ,PS1( 9)          
+ ,PS1( 9)
  ,PS1(10)
  ,PS1(11)    // center point
  ,PS1(12)

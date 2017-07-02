@@ -24,7 +24,7 @@ public:
   const BigReal      &c16 ;
   const ConstBigReal  c17 ;
 
-  PiConstants() 
+  PiConstants()
     :c1 ( e(ConstBigReal(11),-12))
     ,c2 ( 3.14159265358979)
     ,c3 ( 1.45)

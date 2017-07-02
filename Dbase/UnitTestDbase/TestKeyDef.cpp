@@ -561,7 +561,7 @@ namespace UnitTestKeyDefinition {
 
       KeyType key2;
       key2.init();
-  
+
       keydef.put(key2, 0,ch1    );
       verify(keydef.keynCmp(key1,key2, 1) <  0);
 

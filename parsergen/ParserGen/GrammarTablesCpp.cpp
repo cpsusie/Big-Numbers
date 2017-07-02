@@ -3,7 +3,7 @@
 
 static const TCHAR *TABLETYPE = _T("static const TableType");
 
-static const TCHAR *comment1 = 
+static const TCHAR *comment1 =
 _T("/****************************************************************************\\\n"
    "* Bitset containing 1-bits for compressed states and 0-bits for              *\n"
    "* uncompressed states. Used by ParserTable to determine how to               *\n"
@@ -11,7 +11,7 @@ _T("/***************************************************************************
    "* Number of bytes in bitset = (statecount-1)/8+1                             *\n"
    "\\****************************************************************************/\n")
   ;
-static const TCHAR *comment2 = 
+static const TCHAR *comment2 =
 _T("/****************************************************************************\\\n"
    "* The action matrix holds the parse action(state,terminal)                   *\n"
    "* Used in LRParser::parserStep().                                            *\n"
@@ -58,7 +58,7 @@ _T("/***************************************************************************
    "*   action == _ParserError - not found (=unexpected input).                  *\n"
    "\\****************************************************************************/\n")
   ;
-static const TCHAR *comment3 = 
+static const TCHAR *comment3 =
 _T("/****************************************************************************\\\n"
    "* The successor matrix is used when the parser has reduced by prod A -> alfa *\n"
    "* Used by LRParser to find newstate = successor(state,A).                    *\n"
@@ -70,27 +70,27 @@ _T("/***************************************************************************
    "*   Go to this state-------------------+                                     *\n"
    "\\****************************************************************************/\n")
   ;
-static const TCHAR *comment4 = 
+static const TCHAR *comment4 =
 _T("/****************************************************************************\\\n"
    "* The productionLength[] array is indexed by production number and holds     *\n"
    "* the number of symbols on the right side of each production.                *\n"
    "\\****************************************************************************/\n")
   ;
-static const TCHAR *comment5 = 
+static const TCHAR *comment5 =
 _T("/****************************************************************************\\\n"
    "* The leftSide[] array is indexed by production number, and holds the        *\n"
    "* nonTerminal symbol on the left side of each production.                    *\n"
    "\\****************************************************************************/\n")
   ;
 
-static const TCHAR *comment6 = 
+static const TCHAR *comment6 =
 _T("/****************************************************************************\\\n"
    "* The rightSide[] matrix is indexed by production number and holds           *\n"
    "* the right side symbols of each production.                                 *\n"
    "* Compressed and only used for debugging.                                    *\n"
    "\\****************************************************************************/\n")
   ;
-static const TCHAR *comment7 = 
+static const TCHAR *comment7 =
 _T("/****************************************************************************\\\n"
    "* The symbolName[] array is indexed by symbol and holds                      *\n"
    "* the name of each symbol (terminal or nonTerminal).                         *\n"
@@ -250,7 +250,7 @@ int GrammarTables::printCompressedActionsCpp(MarginFile &output) const {
         const ParserAction  &pa         = m_stateActions[state][0];
         const short          action     = pa.m_action;                       // positive or negative
         const unsigned short token      = pa.m_token;
-        const String         comment    = (action <= 0) 
+        const String         comment    = (action <= 0)
                                         ? format(_T("reduce by %d on %s"), -action, getSymbolName(pa.m_token))
                                         : format(_T("shift to %d on %s"),   action, getSymbolName(pa.m_token));
         output.printf(_T("#define act%04d (void*)0x%08x    /* %-40s */\n"), state, (action<<16) | token, comment.cstr());
@@ -358,7 +358,7 @@ int GrammarTables::printSuccessorMatrixCpp(MarginFile &output) const {
       hasSuccessor += state;
     }
   }
-  
+
   output.printf(_T("\n"));
   output.printf(_T("// Total size of all succNNNN tables:%d bytes.\n\n"), byteCount);
 
@@ -395,7 +395,7 @@ int GrammarTables::printSuccessorMatrixCpp(MarginFile &output) const {
 int GrammarTables::printSuccessorArrayCpp(MarginFile &output, unsigned int state) const {
   const ActionArray &succlist = m_stateSucc[state];
   const int          count    = (int)succlist.size();
-  
+
   output.setLeftMargin(0);
   output.printf(_T("%s succ%04d[] = { %2d"), TABLETYPE, state, count);
   for(int a = 0; a < count; a++) {

@@ -540,7 +540,7 @@ void Cdx9_rectDemoDlg::makeWhiteTransparent(IDirect3DSurface9 *surface) {
 void Cdx9_rectDemoDlg::makeWhiteTransparent(D3DLOCKED_RECT &lockedRect, const CSize size) { // static
   D3DCOLOR *pixelRow = (D3DCOLOR*)lockedRect.pBits;
   const int PixelPerRow = lockedRect.Pitch / sizeof(D3DCOLOR);
-  for(int y = 0; y < size.cy; y++, pixelRow += PixelPerRow) {   
+  for(int y = 0; y < size.cy; y++, pixelRow += PixelPerRow) {
     D3DCOLOR *pixel = pixelRow;
     for(int x = 0; x < size.cx; x++, pixel++) {
       if((*pixel & 0xffffff) == 0xffffff) {
@@ -555,7 +555,7 @@ void Cdx9_rectDemoDlg::makeWhiteTransparent(D3DLOCKED_RECT &lockedRect, const CS
 void Cdx9_rectDemoDlg::makeSemiTransparentOpague(D3DLOCKED_RECT &lockedRect, const CSize size) { // static
   D3DCOLOR *pixelRow = (D3DCOLOR*)lockedRect.pBits;
   const int PixelPerRow = lockedRect.Pitch / sizeof(D3DCOLOR);
-  for(int y = 0; y < size.cy; y++, pixelRow += PixelPerRow) {   
+  for(int y = 0; y < size.cy; y++, pixelRow += PixelPerRow) {
     D3DCOLOR *pixel = pixelRow;
     for(int x = 0; x < size.cx; x++, pixel++) {
       if((*pixel & 0xff000000) != 0x00000000) {
@@ -568,7 +568,7 @@ void Cdx9_rectDemoDlg::makeSemiTransparentOpague(D3DLOCKED_RECT &lockedRect, con
 void Cdx9_rectDemoDlg::makeOpaque(D3DLOCKED_RECT &lockedRect, const CSize size) { // static
   D3DCOLOR *pixelRow = (D3DCOLOR*)lockedRect.pBits;
   const int PixelPerRow = lockedRect.Pitch / sizeof(D3DCOLOR);
-  for(int y = 0; y < size.cy; y++, pixelRow += PixelPerRow) {   
+  for(int y = 0; y < size.cy; y++, pixelRow += PixelPerRow) {
     D3DCOLOR *pixel = pixelRow;
     for(int x = 0; x < size.cx; x++, pixel++) {
       *pixel |= 0xff000000;

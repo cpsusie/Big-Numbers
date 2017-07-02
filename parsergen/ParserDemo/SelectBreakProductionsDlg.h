@@ -26,7 +26,7 @@ private:
   CListBox *getListBox();
 public:
   CSelectBreakProductionsDlg(const ParserTables &tables, BitSet &prodSet, CWnd *pParent = NULL);
-    
+
     enum { IDD = IDD_DIALOGPRODUCTIONS };
 
     protected:

@@ -272,28 +272,28 @@ static int nameOrKeyWord(TCHAR *lexeme);
 //   goto 67 on 0123456789ABCDEFabcdef
 
 // The lexCharMap[] and lexStateMap arrays are used as follows:
-// 
+//
 // nextState = lexNext[lexStateMap[currentState]][lexCharMap[inputChar]];
 //
 // Character positions in the lexCharMap Array are:
 //
-//  \x00 \x01 \x02 \x03 \x04 \x05 \x06 \x07 \b   \t   \n   \x0b \f   \r   \x0e \x0f 
-//  \x10 \x11 \x12 \x13 \x14 \x15 \x16 \x17 \x18 \x19 \x1a \x1b \x1c \x1d \x1e \x1f 
-//  \s   !    "    #    $    %    &    \'   (    )    *    +    ,    -    .    /    
-//  0    1    2    3    4    5    6    7    8    9    :    ;    <    =    >    ?    
-//  @    A    B    C    D    E    F    G    H    I    J    K    L    M    N    O    
-//  P    Q    R    S    T    U    V    W    X    Y    Z    [    \\   ]    ^    _    
-//  `    a    b    c    d    e    f    g    h    i    j    k    l    m    n    o    
-//  p    q    r    s    t    u    v    w    x    y    z    {    |    }    ~    \x7f 
-//  \x80 \x81 \x82 \x83 \x84 \x85 \x86 \x87 \x88 \x89 \x8a \x8b \x8c \x8d \x8e \x8f 
-//  \x90 \x91 \x92 \x93 \x94 \x95 \x96 \x97 \x98 \x99 \x9a \x9b \x9c \x9d \x9e \x9f 
-//  \xa0 \xa1 \xa2 \xa3 \xa4 \xa5 \xa6 \xa7 \xa8 \xa9 \xaa \xab \xac \xad \xae \xaf 
-//  \xb0 \xb1 \xb2 \xb3 \xb4 \xb5 \xb6 \xb7 \xb8 \xb9 \xba \xbb \xbc \xbd \xbe \xbf 
-//  \xc0 \xc1 \xc2 \xc3 \xc4 \xc5 \xc6 \xc7 \xc8 \xc9 \xca \xcb \xcc \xcd \xce \xcf 
-//  \xd0 \xd1 \xd2 \xd3 \xd4 \xd5 \xd6 \xd7 \xd8 \xd9 \xda \xdb \xdc \xdd \xde \xdf 
-//  \xe0 \xe1 \xe2 \xe3 \xe4 \xe5 \xe6 \xe7 \xe8 \xe9 \xea \xeb \xec \xed \xee \xef 
-//  \xf0 \xf1 \xf2 \xf3 \xf4 \xf5 \xf6 \xf7 \xf8 \xf9 \xfa \xfb \xfc \xfd \xfe \xff 
-//  
+//  \x00 \x01 \x02 \x03 \x04 \x05 \x06 \x07 \b   \t   \n   \x0b \f   \r   \x0e \x0f
+//  \x10 \x11 \x12 \x13 \x14 \x15 \x16 \x17 \x18 \x19 \x1a \x1b \x1c \x1d \x1e \x1f
+//  \s   !    "    #    $    %    &    \'   (    )    *    +    ,    -    .    /
+//  0    1    2    3    4    5    6    7    8    9    :    ;    <    =    >    ?
+//  @    A    B    C    D    E    F    G    H    I    J    K    L    M    N    O
+//  P    Q    R    S    T    U    V    W    X    Y    Z    [    \\   ]    ^    _
+//  `    a    b    c    d    e    f    g    h    i    j    k    l    m    n    o
+//  p    q    r    s    t    u    v    w    x    y    z    {    |    }    ~    \x7f
+//  \x80 \x81 \x82 \x83 \x84 \x85 \x86 \x87 \x88 \x89 \x8a \x8b \x8c \x8d \x8e \x8f
+//  \x90 \x91 \x92 \x93 \x94 \x95 \x96 \x97 \x98 \x99 \x9a \x9b \x9c \x9d \x9e \x9f
+//  \xa0 \xa1 \xa2 \xa3 \xa4 \xa5 \xa6 \xa7 \xa8 \xa9 \xaa \xab \xac \xad \xae \xaf
+//  \xb0 \xb1 \xb2 \xb3 \xb4 \xb5 \xb6 \xb7 \xb8 \xb9 \xba \xbb \xbc \xbd \xbe \xbf
+//  \xc0 \xc1 \xc2 \xc3 \xc4 \xc5 \xc6 \xc7 \xc8 \xc9 \xca \xcb \xcc \xcd \xce \xcf
+//  \xd0 \xd1 \xd2 \xd3 \xd4 \xd5 \xd6 \xd7 \xd8 \xd9 \xda \xdb \xdc \xdd \xde \xdf
+//  \xe0 \xe1 \xe2 \xe3 \xe4 \xe5 \xe6 \xe7 \xe8 \xe9 \xea \xeb \xec \xed \xee \xef
+//  \xf0 \xf1 \xf2 \xf3 \xf4 \xf5 \xf6 \xf7 \xf8 \xf9 \xfa \xfb \xfc \xfd \xfe \xff
+//
 
 static unsigned char lexCharMap[256] = {
        0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   1,   0,   2,   3,   2,   2,
@@ -442,7 +442,7 @@ static const char lexAccept[] = {
     /*  30 */  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,
     /*  40 */  4,  0,  4,  4,  4,  4,  4,  4,  4,  0,
     /*  50 */  4,  4,  4,  4,  0,  4,  4,  0,  4,  0,
-    /*  60 */  4,  0,  0,  0,  0,  0,  0,  0,  0 
+    /*  60 */  4,  0,  0,  0,  0,  0,  0,  0,  0
 };
 
 #line 11 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
@@ -531,13 +531,13 @@ int CppLex::getNextLexeme() {
       case 1:
 #line 102 "C:\\mytools2015\\ParserGen\\cpp\\Cpp.lex"
         ;
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 2:
 #line 103 "C:\\mytools2015\\ParserGen\\cpp\\Cpp.lex"
         ;
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 3:
@@ -545,13 +545,13 @@ int CppLex::getNextLexeme() {
       case 50:
 #line 132 "C:\\mytools2015\\ParserGen\\cpp\\Cpp.lex"
         error( getPos(), _T("Illegal character <%s>\n"), getText() );
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 4:
 #line 104 "C:\\mytools2015\\ParserGen\\cpp\\Cpp.lex"
         ;
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 5:
@@ -559,7 +559,7 @@ int CppLex::getNextLexeme() {
 #line 73 "C:\\mytools2015\\ParserGen\\cpp\\Cpp.lex"
         ascii = *getText();
         						return UNOP;
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 6:
@@ -567,49 +567,49 @@ int CppLex::getNextLexeme() {
 #line 76 "C:\\mytools2015\\ParserGen\\cpp\\Cpp.lex"
         ascii = *getText();
         						return DIVOP;
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 7:
 #line 89 "C:\\mytools2015\\ParserGen\\cpp\\Cpp.lex"
         return AND;
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 8:
 #line 63 "C:\\mytools2015\\ParserGen\\cpp\\Cpp.lex"
         return LPAR;
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 9:
 #line 64 "C:\\mytools2015\\ParserGen\\cpp\\Cpp.lex"
         return RPAR;
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 10:
 #line 75 "C:\\mytools2015\\ParserGen\\cpp\\Cpp.lex"
         return STAR;
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 11:
 #line 78 "C:\\mytools2015\\ParserGen\\cpp\\Cpp.lex"
         return PLUS;
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 12:
 #line 97 "C:\\mytools2015\\ParserGen\\cpp\\Cpp.lex"
         return COMMA;
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 13:
 #line 79 "C:\\mytools2015\\ParserGen\\cpp\\Cpp.lex"
         return MINUS;
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 14:
@@ -617,7 +617,7 @@ int CppLex::getNextLexeme() {
 #line 69 "C:\\mytools2015\\ParserGen\\cpp\\Cpp.lex"
         ascii = *getText();
         						return STRUCTOP;
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 15:
@@ -628,19 +628,19 @@ int CppLex::getNextLexeme() {
       case 60:
 #line 59 "C:\\mytools2015\\ParserGen\\cpp\\Cpp.lex"
         return ICON ;
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 16:
 #line 95 "C:\\mytools2015\\ParserGen\\cpp\\Cpp.lex"
         return COLON;
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 17:
 #line 98 "C:\\mytools2015\\ParserGen\\cpp\\Cpp.lex"
         return SEMI;
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 18:
@@ -649,101 +649,101 @@ int CppLex::getNextLexeme() {
 #line 82 "C:\\mytools2015\\ParserGen\\cpp\\Cpp.lex"
         ascii = getText()[1] ? (getText()[0]=='>' ? 'G' : 'L') : (getText()[0] );
         						return RELOP;
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 19:
 #line 88 "C:\\mytools2015\\ParserGen\\cpp\\Cpp.lex"
         return EQUAL;
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 20:
 #line 94 "C:\\mytools2015\\ParserGen\\cpp\\Cpp.lex"
         return QUEST;
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 21:
 #line 100 "C:\\mytools2015\\ParserGen\\cpp\\Cpp.lex"
         return nameOrKeyWord( getText() );
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 22:
 #line 67 "C:\\mytools2015\\ParserGen\\cpp\\Cpp.lex"
         return LB;
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 23:
 #line 68 "C:\\mytools2015\\ParserGen\\cpp\\Cpp.lex"
         return RB;
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 24:
 #line 90 "C:\\mytools2015\\ParserGen\\cpp\\Cpp.lex"
         return XOR;
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 25:
 #line 65 "C:\\mytools2015\\ParserGen\\cpp\\Cpp.lex"
         return LC;
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 26:
 #line 91 "C:\\mytools2015\\ParserGen\\cpp\\Cpp.lex"
         return OR;
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 27:
 #line 66 "C:\\mytools2015\\ParserGen\\cpp\\Cpp.lex"
         return RC;
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 28:
 #line 84 "C:\\mytools2015\\ParserGen\\cpp\\Cpp.lex"
         ascii = *getText();
         						return EQUOP;
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 29:
 #line 50 "C:\\mytools2015\\ParserGen\\cpp\\Cpp.lex"
         error(getPos(),_T("Adding missing \" to string constant\n"));
         						return STRING;
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 30:
 #line 48 "C:\\mytools2015\\ParserGen\\cpp\\Cpp.lex"
         return STRING; // (((\r\n)*{white}*)*{strlit})*
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 31:
 #line 86 "C:\\mytools2015\\ParserGen\\cpp\\Cpp.lex"
         ascii = *getText();
         						return ASSIGNOP;
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 32:
 #line 92 "C:\\mytools2015\\ParserGen\\cpp\\Cpp.lex"
         return ANDAND;
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 33:
 #line 71 "C:\\mytools2015\\ParserGen\\cpp\\Cpp.lex"
         ascii = *getText();
         						return INCOP;
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 34:
@@ -752,7 +752,7 @@ int CppLex::getNextLexeme() {
       case 56:
 #line 61 "C:\\mytools2015\\ParserGen\\cpp\\Cpp.lex"
         return FCON ;
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 35:
@@ -771,7 +771,7 @@ int CppLex::getNextLexeme() {
         				  if( i == 0 )
         					error(p,_T("End of file in comment\n"));
         				}
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 36:
@@ -785,35 +785,35 @@ int CppLex::getNextLexeme() {
         					break;
         				  }
         				}
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 37:
 #line 96 "C:\\mytools2015\\ParserGen\\cpp\\Cpp.lex"
         return COLONCOLON;
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 38:
 #line 80 "C:\\mytools2015\\ParserGen\\cpp\\Cpp.lex"
         ascii = *getText();
         						return SHIFTOP;
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 39:
 #line 93 "C:\\mytools2015\\ParserGen\\cpp\\Cpp.lex"
         return OROR;
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 40:
 #line 99 "C:\\mytools2015\\ParserGen\\cpp\\Cpp.lex"
         return ELLIPSIS;
-        
+
 #line 93 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
-                  
+
       default:
         throwException(_T("%s:Unknown accept state:%d, text=<%s>"), __TFUNCTION__, lastAcceptState,getText());
         break;

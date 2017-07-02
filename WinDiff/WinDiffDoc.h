@@ -11,9 +11,9 @@ public:
   WinDiffComparator();
 
   int compare(const TCHAR * const &s1, const TCHAR * const &s2);
-  
+
   bool setIgnoreCase(bool newValue); // return true if changed
-  
+
   AbstractComparator *clone() const {
     return new WinDiffComparator(*this);
   }
@@ -44,7 +44,7 @@ private:
 
 public:
   WinDiffFilter();
-  
+
   String lineFilter(const TCHAR *s) const;
   String docFilter( const TCHAR *s) const;
   bool   hasLineFilter() const {
@@ -53,7 +53,7 @@ public:
   bool   hasDocFilter()  const {
     return (m_flags & FLAG_STRIP_COMMENTS) != 0;
   }
-  
+
   bool setIgnoreWhiteSpace(bool newValue);                  // return true if changed
   bool setIgnoreComments(  bool newValue);                  // return true if changed
   bool setStripComments(   bool newValue);                  // return true if changed

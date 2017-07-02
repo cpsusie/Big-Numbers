@@ -95,7 +95,7 @@ static const TCHAR *tooManyCountersMsg  = _T("Too many counters in use. Max=%d")
 static const TCHAR *illegalJumpMsg      = _T("Regex::first(%d,%d):Jump to a previous address (=%d) not legal");
 static const TCHAR *missingRBMsg        = _T("Missing ] in character class");
 
-PatternParser::PatternParser(const String &pattern, NFA &nfa, const TCHAR *translateTable) 
+PatternParser::PatternParser(const String &pattern, NFA &nfa, const TCHAR *translateTable)
 : m_scanner(pattern.cstr(), pattern.length(), translateTable)
 , m_NFA(nfa)
 {
@@ -164,7 +164,7 @@ NFAState *PatternParser::compilePattern() {
 #pragma message("NB -------------------- Newline include \\n -------------------")
 #endif
 */
-// In Windows a newline is \r\n, In Unix \n, 
+// In Windows a newline is \r\n, In Unix \n,
 // so charerterclasses involving newline depends on the platform
 
 class _WordLetterSet : public BitSet {
@@ -245,7 +245,7 @@ static bool isClosureToken(PatternToken token) {
 
 SubNFA PatternParser::factor() {
   //
-  // factor             -> term 
+  // factor             -> term
   //                     | term ?
   //                     | term +
   //                     | term *
@@ -358,7 +358,7 @@ SubNFA PatternParser::term() {
   //                     | NORMALCHAR
   //                     | WORDCHAR    :
   //                     | NONWORDCHAR :
-  // 
+  //
   // optCharClass       -> charClass
   //                     | epsilon
   //

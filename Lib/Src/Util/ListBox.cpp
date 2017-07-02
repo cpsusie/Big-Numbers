@@ -159,7 +159,7 @@ bool ListBox::key(int event) {
     }
     setSel(m_currentSel + 1);
     return true;
-    
+
   case SCAN_UP    :
     if(m_currentSel == m_scrollOffset) {
       setScrollOffset(m_scrollOffset - 1);

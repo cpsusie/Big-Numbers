@@ -3,7 +3,7 @@
 
 void DebugRegex::compilePattern(const CompileParameters &cp) {
   switch(m_type) {
-  case EMACS_REGEX: 
+  case EMACS_REGEX:
     m_lastCompiledParameters[m_type].reset();
     m_regex.compilePattern(cp.m_pattern, cp.getTranslateTable());
     break;
@@ -133,7 +133,7 @@ void DebugRegex::paint(CWnd *wnd, bool animate) const {
   switch(m_type) {
   case EMACS_REGEX:
     break;
-  case DFA_REGEX  : 
+  case DFA_REGEX  :
     m_DFARegex.paint(wnd, animate);
     break;
   default         :
@@ -143,7 +143,7 @@ void DebugRegex::paint(CWnd *wnd, bool animate) const {
 
 void DebugRegex::setHandler(DebugThread *handler) {
   switch(m_type) {
-  case EMACS_REGEX: 
+  case EMACS_REGEX:
     m_regex.setHandler(handler);
     break;
   case DFA_REGEX  :

@@ -21,7 +21,7 @@ public:
   bool    remove(const void *key);
   void    update(const void *key, const void *value);
   void    clear();
-  
+
   unsigned __int64 size() const {
     return m_size;
   }
@@ -79,7 +79,7 @@ private:
       return m_key;
     }
 
-    void *value() { 
+    void *value() {
       return m_value;
     }
 

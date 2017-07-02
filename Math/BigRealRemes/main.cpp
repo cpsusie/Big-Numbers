@@ -15,7 +15,7 @@ public:
   String getName() const {
     return _T("lnxp2");
   }
-  
+
   const NumberInterval<BigReal> &getInterval() const {
     return m_interval;
   }
@@ -46,7 +46,7 @@ public:
   String getName() const {
     return _T("exp");
   }
-  
+
   const NumberInterval<BigReal> &getInterval() const {
     return m_interval;
   }
@@ -77,7 +77,7 @@ public:
   String getName() const {
     return _T("Rational1");
   }
-  
+
   const NumberInterval<BigReal> &getInterval() const {
     return m_interval;
   }

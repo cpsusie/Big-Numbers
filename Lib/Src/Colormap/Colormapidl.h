@@ -7,10 +7,10 @@
 /* at Tue Jan 19 04:14:07 2038
  */
 /* Compiler settings for Colormap.idl:
-    Oicf, W1, Zp8, env=Win64 (32b run), target_arch=AMD64 8.00.0613 
+    Oicf, W1, Zp8, env=Win64 (32b run), target_arch=AMD64 8.00.0613
     protocol : dce , ms_ext, c_ext, robust
-    error checks: allocation ref bounds_check enum stub_data 
-    VC __declspec() decoration level: 
+    error checks: allocation ref bounds_check enum stub_data
+    VC __declspec() decoration level:
          __declspec(uuid()), __declspec(selectany), __declspec(novtable)
          DECLSPEC_UUID(), MIDL_INTERFACE()
 */
@@ -39,7 +39,7 @@
 #pragma once
 #endif
 
-/* Forward Declarations */ 
+/* Forward Declarations */
 
 #ifndef ___DColormap_FWD_DEFINED__
 #define ___DColormap_FWD_DEFINED__
@@ -69,17 +69,17 @@ typedef struct Colormap Colormap;
 
 #ifdef __cplusplus
 extern "C"{
-#endif 
+#endif
 
 
 /* interface __MIDL_itf_Colormap_0000_0000 */
-/* [local] */ 
+/* [local] */
 
 #pragma warning(push)
-#pragma warning(disable:4001) 
+#pragma warning(disable:4001)
 #pragma once
 #pragma warning(push)
-#pragma warning(disable:4001) 
+#pragma warning(disable:4001)
 #pragma once
 #pragma warning(pop)
 #pragma warning(pop)
@@ -95,7 +95,7 @@ extern RPC_IF_HANDLE __MIDL_itf_Colormap_0000_0000_v0_0_s_ifspec;
 #define __ColormapLib_LIBRARY_DEFINED__
 
 /* library ColormapLib */
-/* [control][version][uuid] */ 
+/* [control][version][uuid] */
 
 
 EXTERN_C const IID LIBID_ColormapLib;
@@ -104,7 +104,7 @@ EXTERN_C const IID LIBID_ColormapLib;
 #define ___DColormap_DISPINTERFACE_DEFINED__
 
 /* dispinterface _DColormap */
-/* [uuid] */ 
+/* [uuid] */
 
 
 EXTERN_C const IID DIID__DColormap;
@@ -115,62 +115,62 @@ EXTERN_C const IID DIID__DColormap;
     _DColormap : public IDispatch
     {
     };
-    
+
 #else 	/* C style interface */
 
     typedef struct _DColormapVtbl
     {
         BEGIN_INTERFACE
-        
-        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )(
             _DColormap * This,
             /* [in] */ REFIID riid,
-            /* [annotation][iid_is][out] */ 
+            /* [annotation][iid_is][out] */
             _COM_Outptr_  void **ppvObject);
-        
-        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+
+        ULONG ( STDMETHODCALLTYPE *AddRef )(
             _DColormap * This);
-        
-        ULONG ( STDMETHODCALLTYPE *Release )( 
+
+        ULONG ( STDMETHODCALLTYPE *Release )(
             _DColormap * This);
-        
-        HRESULT ( STDMETHODCALLTYPE *GetTypeInfoCount )( 
+
+        HRESULT ( STDMETHODCALLTYPE *GetTypeInfoCount )(
             _DColormap * This,
             /* [out] */ UINT *pctinfo);
-        
-        HRESULT ( STDMETHODCALLTYPE *GetTypeInfo )( 
+
+        HRESULT ( STDMETHODCALLTYPE *GetTypeInfo )(
             _DColormap * This,
             /* [in] */ UINT iTInfo,
             /* [in] */ LCID lcid,
             /* [out] */ ITypeInfo **ppTInfo);
-        
-        HRESULT ( STDMETHODCALLTYPE *GetIDsOfNames )( 
+
+        HRESULT ( STDMETHODCALLTYPE *GetIDsOfNames )(
             _DColormap * This,
             /* [in] */ REFIID riid,
             /* [size_is][in] */ LPOLESTR *rgszNames,
             /* [range][in] */ UINT cNames,
             /* [in] */ LCID lcid,
             /* [size_is][out] */ DISPID *rgDispId);
-        
-        /* [local] */ HRESULT ( STDMETHODCALLTYPE *Invoke )( 
+
+        /* [local] */ HRESULT ( STDMETHODCALLTYPE *Invoke )(
             _DColormap * This,
-            /* [annotation][in] */ 
+            /* [annotation][in] */
             _In_  DISPID dispIdMember,
-            /* [annotation][in] */ 
+            /* [annotation][in] */
             _In_  REFIID riid,
-            /* [annotation][in] */ 
+            /* [annotation][in] */
             _In_  LCID lcid,
-            /* [annotation][in] */ 
+            /* [annotation][in] */
             _In_  WORD wFlags,
-            /* [annotation][out][in] */ 
+            /* [annotation][out][in] */
             _In_  DISPPARAMS *pDispParams,
-            /* [annotation][out] */ 
+            /* [annotation][out] */
             _Out_opt_  VARIANT *pVarResult,
-            /* [annotation][out] */ 
+            /* [annotation][out] */
             _Out_opt_  EXCEPINFO *pExcepInfo,
-            /* [annotation][out] */ 
+            /* [annotation][out] */
             _Out_opt_  UINT *puArgErr);
-        
+
         END_INTERFACE
     } _DColormapVtbl;
 
@@ -179,32 +179,32 @@ EXTERN_C const IID DIID__DColormap;
         CONST_VTBL struct _DColormapVtbl *lpVtbl;
     };
 
-    
+
 
 #ifdef COBJMACROS
 
 
 #define _DColormap_QueryInterface(This,riid,ppvObject)	\
-    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) )
 
 #define _DColormap_AddRef(This)	\
-    ( (This)->lpVtbl -> AddRef(This) ) 
+    ( (This)->lpVtbl -> AddRef(This) )
 
 #define _DColormap_Release(This)	\
-    ( (This)->lpVtbl -> Release(This) ) 
+    ( (This)->lpVtbl -> Release(This) )
 
 
 #define _DColormap_GetTypeInfoCount(This,pctinfo)	\
-    ( (This)->lpVtbl -> GetTypeInfoCount(This,pctinfo) ) 
+    ( (This)->lpVtbl -> GetTypeInfoCount(This,pctinfo) )
 
 #define _DColormap_GetTypeInfo(This,iTInfo,lcid,ppTInfo)	\
-    ( (This)->lpVtbl -> GetTypeInfo(This,iTInfo,lcid,ppTInfo) ) 
+    ( (This)->lpVtbl -> GetTypeInfo(This,iTInfo,lcid,ppTInfo) )
 
 #define _DColormap_GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId)	\
-    ( (This)->lpVtbl -> GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId) ) 
+    ( (This)->lpVtbl -> GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId) )
 
 #define _DColormap_Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr)	\
-    ( (This)->lpVtbl -> Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr) ) 
+    ( (This)->lpVtbl -> Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr) )
 
 #endif /* COBJMACROS */
 
@@ -219,7 +219,7 @@ EXTERN_C const IID DIID__DColormap;
 #define ___DColormapEvents_DISPINTERFACE_DEFINED__
 
 /* dispinterface _DColormapEvents */
-/* [uuid] */ 
+/* [uuid] */
 
 
 EXTERN_C const IID DIID__DColormapEvents;
@@ -230,62 +230,62 @@ EXTERN_C const IID DIID__DColormapEvents;
     _DColormapEvents : public IDispatch
     {
     };
-    
+
 #else 	/* C style interface */
 
     typedef struct _DColormapEventsVtbl
     {
         BEGIN_INTERFACE
-        
-        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )(
             _DColormapEvents * This,
             /* [in] */ REFIID riid,
-            /* [annotation][iid_is][out] */ 
+            /* [annotation][iid_is][out] */
             _COM_Outptr_  void **ppvObject);
-        
-        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+
+        ULONG ( STDMETHODCALLTYPE *AddRef )(
             _DColormapEvents * This);
-        
-        ULONG ( STDMETHODCALLTYPE *Release )( 
+
+        ULONG ( STDMETHODCALLTYPE *Release )(
             _DColormapEvents * This);
-        
-        HRESULT ( STDMETHODCALLTYPE *GetTypeInfoCount )( 
+
+        HRESULT ( STDMETHODCALLTYPE *GetTypeInfoCount )(
             _DColormapEvents * This,
             /* [out] */ UINT *pctinfo);
-        
-        HRESULT ( STDMETHODCALLTYPE *GetTypeInfo )( 
+
+        HRESULT ( STDMETHODCALLTYPE *GetTypeInfo )(
             _DColormapEvents * This,
             /* [in] */ UINT iTInfo,
             /* [in] */ LCID lcid,
             /* [out] */ ITypeInfo **ppTInfo);
-        
-        HRESULT ( STDMETHODCALLTYPE *GetIDsOfNames )( 
+
+        HRESULT ( STDMETHODCALLTYPE *GetIDsOfNames )(
             _DColormapEvents * This,
             /* [in] */ REFIID riid,
             /* [size_is][in] */ LPOLESTR *rgszNames,
             /* [range][in] */ UINT cNames,
             /* [in] */ LCID lcid,
             /* [size_is][out] */ DISPID *rgDispId);
-        
-        /* [local] */ HRESULT ( STDMETHODCALLTYPE *Invoke )( 
+
+        /* [local] */ HRESULT ( STDMETHODCALLTYPE *Invoke )(
             _DColormapEvents * This,
-            /* [annotation][in] */ 
+            /* [annotation][in] */
             _In_  DISPID dispIdMember,
-            /* [annotation][in] */ 
+            /* [annotation][in] */
             _In_  REFIID riid,
-            /* [annotation][in] */ 
+            /* [annotation][in] */
             _In_  LCID lcid,
-            /* [annotation][in] */ 
+            /* [annotation][in] */
             _In_  WORD wFlags,
-            /* [annotation][out][in] */ 
+            /* [annotation][out][in] */
             _In_  DISPPARAMS *pDispParams,
-            /* [annotation][out] */ 
+            /* [annotation][out] */
             _Out_opt_  VARIANT *pVarResult,
-            /* [annotation][out] */ 
+            /* [annotation][out] */
             _Out_opt_  EXCEPINFO *pExcepInfo,
-            /* [annotation][out] */ 
+            /* [annotation][out] */
             _Out_opt_  UINT *puArgErr);
-        
+
         END_INTERFACE
     } _DColormapEventsVtbl;
 
@@ -294,32 +294,32 @@ EXTERN_C const IID DIID__DColormapEvents;
         CONST_VTBL struct _DColormapEventsVtbl *lpVtbl;
     };
 
-    
+
 
 #ifdef COBJMACROS
 
 
 #define _DColormapEvents_QueryInterface(This,riid,ppvObject)	\
-    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) )
 
 #define _DColormapEvents_AddRef(This)	\
-    ( (This)->lpVtbl -> AddRef(This) ) 
+    ( (This)->lpVtbl -> AddRef(This) )
 
 #define _DColormapEvents_Release(This)	\
-    ( (This)->lpVtbl -> Release(This) ) 
+    ( (This)->lpVtbl -> Release(This) )
 
 
 #define _DColormapEvents_GetTypeInfoCount(This,pctinfo)	\
-    ( (This)->lpVtbl -> GetTypeInfoCount(This,pctinfo) ) 
+    ( (This)->lpVtbl -> GetTypeInfoCount(This,pctinfo) )
 
 #define _DColormapEvents_GetTypeInfo(This,iTInfo,lcid,ppTInfo)	\
-    ( (This)->lpVtbl -> GetTypeInfo(This,iTInfo,lcid,ppTInfo) ) 
+    ( (This)->lpVtbl -> GetTypeInfo(This,iTInfo,lcid,ppTInfo) )
 
 #define _DColormapEvents_GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId)	\
-    ( (This)->lpVtbl -> GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId) ) 
+    ( (This)->lpVtbl -> GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId) )
 
 #define _DColormapEvents_Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr)	\
-    ( (This)->lpVtbl -> Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr) ) 
+    ( (This)->lpVtbl -> Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr) )
 
 #endif /* COBJMACROS */
 

@@ -16,7 +16,7 @@ static inline void swap(register char *p1, register char *p2, size_t w) {
     w -= sizeof(type);                      \
     p1 += sizeof(type); p2 += sizeof(type); \
    }
- 
+
 #ifdef IS32BIT
   swapBasicType(while,long ,w)   /* take 4 bytes at a time */
 #else
@@ -161,15 +161,15 @@ static void quicksortNoRecursionAnyWidth(void *base, size_t nelem, size_t width,
 #define swap(p1,p2) { const T tmp = *p1; *p1 = *p2; *p2 = tmp; }
 
 
-// For T = bacic types (char,short,long,double), we can make swap and save operations 
+// For T = bacic types (char,short,long,double), we can make swap and save operations
 // very fast, and these cases occur very often
 template <class T> class QuicksortClass {
   public:
     void sort(T *base, size_t nelem, AbstractComparator &comparator);
 };
 
-// This is a private quicksort-template, where we use the fact, that the compiler 
-// generates much faster code to copy and swap elements, when we dont have 
+// This is a private quicksort-template, where we use the fact, that the compiler
+// generates much faster code to copy and swap elements, when we dont have
 // to call a function to do it.
 // Is only used for elements with size = sizeof(<primitive type>).
 // where <primitive type> is on of <char>,<short>,<long> and <double>.
@@ -188,7 +188,7 @@ tailrecurse:
     switch(nelem) {
     case 0:
     case 1:
-      continue; 
+      continue;
 
     case 2:
       ip = EPTR(0);
@@ -262,7 +262,7 @@ tailrecurse:
       }
     } else {
       if(i < (intptr_t)nelem-1) {  // Save start,count of elements to be sorted later. ie Sort(ip,nelem-i, width, comparator);
-        PUSH(ip, nelem-i); 
+        PUSH(ip, nelem-i);
       }
       if(j > 0) {                  // Sort(base,j+1,width, comparator);
         nelem = j+1;

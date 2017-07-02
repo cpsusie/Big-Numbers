@@ -146,14 +146,14 @@ double DateAxisPainter::firstInHour(double factor, int step) { // static
   return t.set(THOUR,h - h%step).set(TMINUTE,0).set(TSECOND,0).set(TMILLISECOND,0).getDATE();
 }
 
-double DateAxisPainter::firstInMonth(double factor, int step) { // static 
+double DateAxisPainter::firstInMonth(double factor, int step) { // static
   Timestamp t(factor);
   const int m = t.getMonth()-1; // m = [0..11]
   return t.set(TDAYOFMONTH,1).set(TMONTH,(m - (m%step)%12) + 1)
           .set(THOUR,0).set(TMINUTE,0).set(TSECOND,0).set(TMILLISECOND ,0).getDATE();
 }
 
-double DateAxisPainter::firstInYear(double factor, int step) { // static 
+double DateAxisPainter::firstInYear(double factor, int step) { // static
   Timestamp t(factor);
   const int y = t.getYear();
   if(step != 1) {

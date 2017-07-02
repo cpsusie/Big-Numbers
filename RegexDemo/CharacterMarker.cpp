@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "CharacterMarker.h"
 
-CharacterMarker::CharacterMarker(CDialog *dlg, int ctrlId, int bitmapId, bool above) 
+CharacterMarker::CharacterMarker(CDialog *dlg, int ctrlId, int bitmapId, bool above)
 : m_ctrlId(ctrlId)
 , m_above(above)
 , m_markSet(100)

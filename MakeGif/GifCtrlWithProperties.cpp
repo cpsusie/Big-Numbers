@@ -11,8 +11,8 @@ bool CGifCtrlWithProperties::isVisible() const {
 }
 
 int CGifCtrlWithProperties::getStatusFlags() const {
-  return (isVisible() ? FLAG_VISIBLE : 0) 
-       | (isLoaded()  ? FLAG_LOADED  : 0) 
+  return (isVisible() ? FLAG_VISIBLE : 0)
+       | (isLoaded()  ? FLAG_LOADED  : 0)
        | (isPlaying() ? FLAG_PLAYING : 0)
        | (isPainted() ? FLAG_SHOWALL : 0)
        ;

@@ -274,10 +274,10 @@ public:
       return &m_entry->m_key;
     }
 
-    void *value() { 
+    void *value() {
       return &m_entry->m_value;
     }
- 
+
     const void *value() const {
       return &m_entry->m_value;
     }
@@ -318,15 +318,15 @@ public:
     CompactMapEntryIterator(CompactHashMap *map) : m_map(*map), m_updateCount(map->m_updateCount) {
       first();
     }
- 
+
     AbstractIterator *clone() {
       return new CompactMapEntryIterator(*this);
     }
- 
+
     bool hasNext() const {
       return m_next != NULL;
     }
- 
+
     void *next() {
       if(m_next == NULL) {
         noNextElementError(_T("CompactMapEntryIterator"));
@@ -345,7 +345,7 @@ public:
       m_entry = m_current->m_e;
       return &m_entry;
     }
- 
+
     void remove() {
       if(m_current == NULL) {
         noCurrentElementError(_T("CompactMapEntryIterator"));
@@ -356,7 +356,7 @@ public:
       m_updateCount = m_map.m_updateCount;
     }
   };
- 
+
   Iterator<Entry<K,V> > getEntryIterator() const {
     return Iterator<Entry<K,V> >(new CompactMapEntryIterator((CompactHashMap*)this));
   }
@@ -370,7 +370,7 @@ public:
     AbstractIterator *clone() {
       return new CompactMapKeyIterator(*this);
     }
- 
+
     void *next() {
       __super::next();
       return (void*)m_entry.key();

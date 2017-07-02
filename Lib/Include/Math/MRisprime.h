@@ -10,7 +10,7 @@ public:
   const BigInt &m_number;
   int           m_count;
   String        m_msg;
-  MillerRabinCheck(int threadId, const BigInt &number, int count, const String &msg) 
+  MillerRabinCheck(int threadId, const BigInt &number, int count, const String &msg)
     : m_threadId(threadId)
     , m_number(number)
   {
@@ -21,5 +21,5 @@ public:
 
 typedef AlgorithmHandler<MillerRabinCheck> MillerRabinHandler;
 
-bool MRisprime(int threadId, const BigInt &n, MillerRabinHandler *handler = NULL); // Miller-Rabin probabilistic primality test 
+bool MRisprime(int threadId, const BigInt &n, MillerRabinHandler *handler = NULL); // Miller-Rabin probabilistic primality test
 BigInt findRandomPrime(int digitCount, int threadCount = 1, DigitPool *pool = NULL, MillerRabinHandler *handler = NULL);

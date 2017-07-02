@@ -76,7 +76,7 @@ BitSet SelectStmt::findFieldsFixedByConstPredicate(FromTable *table, const Synta
   if(pred == NULL) return res;
   switch(pred->token()) {
   case OR :
-    // if the user has specified the same Predicate in left and right subpredicate, 
+    // if the user has specified the same Predicate in left and right subpredicate,
     // ie (f=1 and (...)) or (f=1 and (...)) we could do better
     // but this is a rare case
     break;
@@ -125,7 +125,7 @@ BitSet SelectStmt::findFieldsFixedByConstPredicate(FromTable *table, const Synta
             table->m_attributes[leftColumnIndex].m_fixedBy = right[i];
           }
         }
-        else 
+        else
           if(rightColumnIndex >= 0)
             if(isFixedExpression(l)) {
               res += rightColumnIndex;
@@ -520,7 +520,7 @@ void KeyPredicates::find(const IndexDefinition &indexDef, PredicateList &predica
     int currrentLastKeyField = lastEqualKeyField;
     int lastRelOpToken       = EQUAL;
     switch(predicateList[i].m_relOpToken) {
-    case RELOPGE: 
+    case RELOPGE:
     case RELOPGT:
       { const CompactShortArray &list = predicateList[i].m_colIndex;
         int lastFieldIndex = lastEqualKeyField;
@@ -545,7 +545,7 @@ void KeyPredicates::find(const IndexDefinition &indexDef, PredicateList &predica
       }
       break;
 
-    case RELOPLE: 
+    case RELOPLE:
     case RELOPLT:
       { const CompactShortArray &list = predicateList[i].m_colIndex;
         int lastFieldIndex = lastEqualKeyField;
@@ -593,7 +593,7 @@ void KeyPredicates::find(const IndexDefinition &indexDef, PredicateList &predica
     int currrentLastKeyField = lastEqualKeyField;
     int lastRelOpToken       = EQUAL;
     switch(predicateList[i].m_relOpToken) {
-    case RELOPLE: 
+    case RELOPLE:
     case RELOPLT:
       { const CompactShortArray &list = predicateList[i].m_colIndex;
         int lastFieldIndex = lastEqualKeyField;
@@ -617,7 +617,7 @@ void KeyPredicates::find(const IndexDefinition &indexDef, PredicateList &predica
         }
       }
       break;
-    case RELOPGE: 
+    case RELOPGE:
     case RELOPGT:
       { const CompactShortArray &list = predicateList[i].m_colIndex;
         int lastFieldIndex = lastEqualKeyField;
@@ -689,7 +689,7 @@ double IndexStatistic::selectivity(PredicateList &predicateList, KeyPredicates &
   else {
     double res = m_stat.selectivity(minFieldCount);
     if(res >= 0.5) return res;
-    else 
+    else
       return res * 2;
   }
 }
@@ -803,7 +803,7 @@ void FromTable::findSetPredicate(const SyntaxNode *n, PredicateList &predicateLi
     };
     break;
 
-  default  : 
+  default  :
     return; // can do no more
   }
 }
@@ -980,7 +980,7 @@ static Monotonity changeMonotonity(Monotonity mono) {
   case MONOTONITY_DESC  : return MONOTONITY_ASC;
   case MONOTONITY_CONST : return MONOTONITY_CONST;
   case MONOTONITY_NON   : return MONOTONITY_NON;
-  default: 
+  default:
     throwSqlError(SQL_FATAL_ERROR,_T("Unknown Monotonity:%d"),mono);
     return MONOTONITY_NON; // just to make compiler happy
   }
@@ -1008,7 +1008,7 @@ void OrderGivenElement::dump(FILE *f) const {
   );
 }
 
-Monotonity OrderGivenElement::findMonotonity(SyntaxNode *expr) { 
+Monotonity OrderGivenElement::findMonotonity(SyntaxNode *expr) {
   SelectStmt &stmt     = m_fromTable->m_belongsTo;
   SqlCompiler &compiler = stmt.m_compiler;
 
@@ -1191,7 +1191,7 @@ bool MonotonityMatrix::findOrderPath(UINT match, UINT from) {
   SyntaxNode *expr = m_orderBy[match].m_expr;
 //  m_stmt->m_compiler.dumpSyntaxTree(expr);
   UINT n = (UINT)m_orderGivenByIndex.size();
-  if(from >= n) { // we have matched all the fields, given by index, 
+  if(from >= n) { // we have matched all the fields, given by index,
                   // but there are still requested orderby-fields. These must all be const
                   // in order to give a valid path
     for(UINT i = match; i < m_orderBy.size(); i++)
@@ -1375,7 +1375,7 @@ void SelectStmt::combinateReadDirection(int tableindex) {
       m_fromTable[i]->m_asc = true;
     estimateAndSaveCost();
   }
-  else { 
+  else {
     FromTable &table = *m_fromTable[tableindex];
     if(table.isFixedByUniqueKey() >= 0) // use asc only on this table
       combinateReadDirection(tableindex-1);
@@ -1525,7 +1525,7 @@ void SelectStmt::findJoinSequence() {
 #endif
 }
 
-bool SelectStmt::isEmptySelect() const { 
+bool SelectStmt::isEmptySelect() const {
   return ((m_whereClause  != NULL) && (m_whereClause->token()  == NUMBER) && (m_whereClause->number()  < 1))
       || ((m_havingClause != NULL) && (m_havingClause->token() == NUMBER) && (m_havingClause->number() < 1));
 }
@@ -1558,7 +1558,7 @@ static int syntaxNodeCmp( const SyntaxNodeP &key, const SyntaxNodeP &tablekey ) 
   return sign(key - tablekey);
 }
 
-KeyPredicatesHashMap::KeyPredicatesHashMap() 
+KeyPredicatesHashMap::KeyPredicatesHashMap()
 : HashMap<SyntaxNodeP,int>(syntaxNodeHash,syntaxNodeCmp) {
 }
 
@@ -1575,7 +1575,7 @@ void SelectStmt::reduceByKeyPredicates() {
       hash.put(table.m_keyPredicates.m_endKeyPredicate.m_expr[j],0);
   }
 //  _tprintf(_T("hashsize:%d\n"),hash.count());
-  
+
 
 #ifdef TRACECOMP
   i = 0;

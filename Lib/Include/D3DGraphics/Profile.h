@@ -84,19 +84,19 @@ public:
   Point2DArray    getCurvePoints() const;
   Point2DArray    getFlatNormals() const; // return noOfLines normals
   Point2DArray    getSmoothNormals() const; // return noOfPoints normals
-  
+
   inline ProfileCurve &getLastCurve() {
     return m_curveArray.last();
   }
-  
+
   inline const ProfileCurve &getLastCurve() const {
     return m_curveArray.last();
   }
-  
+
   inline Point2D &getLastPoint() {
     return getLastCurve().getLastPoint();
   }
-  
+
   inline const Point2D &getLastPoint() const {
     return getLastCurve().getLastPoint();
   }

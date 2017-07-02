@@ -40,7 +40,7 @@ protected:
   CClientDC m_dc;
   bool     &m_fast;
 public:
-  ComparatorWithUpdate(SortPanelWnd &wnd) 
+  ComparatorWithUpdate(SortPanelWnd &wnd)
     : SimpleComparator<T>(wnd)
     , m_fast(wnd.getFast())
     , m_dc(&wnd)
@@ -63,7 +63,7 @@ template <class T> class ComparatorWithUpdateBigSize : public ComparatorWithUpda
 private:
   const int m_elementSize;
 public:
-  ComparatorWithUpdateBigSize(SortPanelWnd &wnd) 
+  ComparatorWithUpdateBigSize(SortPanelWnd &wnd)
     : ComparatorWithUpdate<T>(wnd)
     , m_elementSize(wnd.getInitParameters().m_elementSize)
   {
@@ -134,7 +134,7 @@ void SortThread::doSort() {
   default:
     m_wnd.m_sortMethod.getMethod()(array.getData(), n, size, SimpleComparator<unsigned int>(m_wnd));
     break;
-  }          
+  }
 }
 
 void SortThread::doAnimatedSort() {
@@ -155,5 +155,5 @@ void SortThread::doAnimatedSort() {
   default:
     m_wnd.m_sortMethod.getMethod()(array.getData(), n, size, ComparatorWithUpdateBigSize<unsigned int>(m_wnd));
     break;
-  }          
+  }
 }

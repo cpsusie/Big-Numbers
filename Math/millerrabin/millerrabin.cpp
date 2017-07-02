@@ -91,7 +91,7 @@ int main(int argc, char **argv) {
         verbose = true;
         continue;
       case 'c':
-        checkBigReal = true; 
+        checkBigReal = true;
         if(isdigit(cp[1])) {
           numberToCheck = BigInt(cp+1);
           break;

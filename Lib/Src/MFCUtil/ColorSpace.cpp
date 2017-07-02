@@ -13,9 +13,9 @@ String D3PCOLOR::toString(bool showAlpha) const {
   }
 }
 
-RGBColor::RGBColor(float red, float green, float blue) { 
-  m_red   = red; 
-  m_green = green; 
+RGBColor::RGBColor(float red, float green, float blue) {
+  m_red   = red;
+  m_green = green;
   m_blue  = blue;
 }
 

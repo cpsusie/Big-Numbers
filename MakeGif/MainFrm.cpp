@@ -4,7 +4,7 @@
 #include "MainFrm.h"
 
 #ifdef _DEBUG
-static char THIS_FILE[] = __FILE__;
+#define new DEBUG_NEW
 #endif
 
 IMPLEMENT_DYNCREATE(CMainFrame, CFrameWnd)
@@ -41,7 +41,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 END_MESSAGE_MAP()
 
 static UINT indicators[] = {
-  ID_SEPARATOR      
+  ID_SEPARATOR
  ,ID_INDICATOR_CAPS
  ,ID_INDICATOR_NUM
 };
@@ -57,7 +57,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
   if(CFrameWnd::OnCreate(lpCreateStruct) == -1) {
     return -1;
   }
-  
+
   if(!m_wndToolBar.CreateEx(this, TBSTYLE_FLAT, WS_CHILD | WS_VISIBLE | CBRS_TOP
       | CBRS_GRIPPER | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC) ||
       !m_wndToolBar.LoadToolBar(IDR_MAINFRAME))
@@ -133,7 +133,7 @@ bool CMainFrame::confirmDiscard() { // should return true if user does not want 
     return true;
   }
   bool showAgain;
-  return confirmDialogBox(_T("Gif file not saved. Do you want to continue"), _T("MakeGif"), showAgain, MB_YESNO | MB_ICONQUESTION) 
+  return confirmDialogBox(_T("Gif file not saved. Do you want to continue"), _T("MakeGif"), showAgain, MB_YESNO | MB_ICONQUESTION)
          == IDYES;
 }
 

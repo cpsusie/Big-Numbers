@@ -89,7 +89,7 @@ void scanner::getstringlit( void ) {
     the_string[i++] = currentchar();
     advance();
   }
-  if( currentchar() == '\n' ) 
+  if( currentchar() == '\n' )
     error( SQL_SYNTAX_ERROR,"missing String terminator" );
 
   if( i == sizeof(the_string) ) {
@@ -134,7 +134,7 @@ typedef struct {
 
 static symbol nameorkeyword( char *name );
 
-void scanner::getname( void ) { 
+void scanner::getname( void ) {
   /* getting SQL-names with _ (EXEC SQL and END-EXEC is a problem!) */
   int i = 0;
   char uppername[ MAX_NAME_LEN + 1 ];
@@ -180,7 +180,7 @@ void scanner::getname( void ) {
 void scanner::getnumber( void ) {
   for( the_number = 0; isdigit( currentchar() ); advance() ) {
     the_number = 10 * the_number + (currentchar() - '0');
-    if( the_number < 0 ) 
+    if( the_number < 0 )
       error(SQL_ARITHMETIC_OVERFLOW,"number too big");
   }
   token = SYM_NUMBER;
@@ -191,7 +191,7 @@ void scanner::getcomment(void) {
     while(currentchar() != '*') advance();
     advance();
     if(currentchar() == '/') {
-      advance(); 
+      advance();
       break;
     }
   }
@@ -206,11 +206,11 @@ void scanner::nexttoken() {
 
   m_yytext = m_next;
 
-  if( isalpha( currentchar() ) ) 
-    getname(); 
+  if( isalpha( currentchar() ) )
+    getname();
   else
-  if( isdigit(currentchar()) ) 
-    getnumber(); 
+  if( isdigit(currentchar()) )
+    getnumber();
   else
     switch( currentchar() ) {
       case ':':
@@ -298,8 +298,8 @@ static keyword keywordlist[] = {
    "USER"      , SYM_USER      ,
    "USING"     , SYM_USING     ,
    "VARCHAR"   , SYM_VARCHAR   ,
-   "WORK"      , SYM_WORK      
-};                           
+   "WORK"      , SYM_WORK
+};
 
 typedef HashMap<const char*,symbol> keywordhash;
 
@@ -311,7 +311,7 @@ public:
 keywordtable::keywordtable( int size ) : keywordhash(size,strHash,strHashCmp) {
   for(int i=0;i<ARRAYSIZE(keywordlist);i++)
     insert( keywordlist[i].name,keywordlist[i].token );
-}    
+}
 
 static keywordtable keywords(101);
 

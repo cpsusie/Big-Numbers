@@ -78,11 +78,11 @@ public:
   }
   void vprintf(int x, int y, WORD color, const TCHAR   *format, va_list argptr);
   void printf( int x, int y, WORD color, const TCHAR   *format, ...);
-  
+
   int getWidth()  const {
     return m_bufferOp->getWidth();
   }
-  
+
   int getHeight() const {
     return m_bufferOp->getHeight();
   }

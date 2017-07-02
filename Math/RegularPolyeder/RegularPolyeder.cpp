@@ -533,7 +533,7 @@ void RegPolyEder::makeFace(int corners, double theta, const D3DXVECTOR3 &start, 
 #define dodeka_theta 63.43494655075848
 #define ikosa_theta  41.81031422363637
 
-RegPolyEder::RegPolyEder(int facecount, PrintFormat printFormat) 
+RegPolyEder::RegPolyEder(int facecount, PrintFormat printFormat)
 : m_printFormat(printFormat)
 {
   D3DXVECTOR3 start,normal,dir;

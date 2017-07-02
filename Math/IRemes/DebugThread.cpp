@@ -3,7 +3,7 @@
 
 DEFINECLASSNAME(DebugThread);
 
-DebugThread::DebugThread(Remes &r, const IntInterval &mInterval, const IntInterval &kInterval, int maxMKSum, bool skipExisting) 
+DebugThread::DebugThread(Remes &r, const IntInterval &mInterval, const IntInterval &kInterval, int maxMKSum, bool skipExisting)
 : m_r(r)
 , m_mInterval(   mInterval   )
 , m_kInterval(   kInterval   )

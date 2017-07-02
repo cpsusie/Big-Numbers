@@ -82,7 +82,7 @@ void TesterJob::startAll(int count) { // static
   }
 }
 
-void TesterJob::releaseAll() { // static 
+void TesterJob::releaseAll() { // static
   s_gate.wait();
   while(!s_doneQueue.isEmpty()) {
     AbstractFunctionTest *test = s_doneQueue.get();

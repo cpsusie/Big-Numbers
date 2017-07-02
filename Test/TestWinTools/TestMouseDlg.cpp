@@ -103,7 +103,7 @@ void CTestMouseDlg::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags) {
 }
 
 void CTestMouseDlg::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) {
-  MessageBox(_T("KeyDown"));    
+  MessageBox(_T("KeyDown"));
   __super::OnKeyDown(nChar, nRepCnt, nFlags);
 }
 
@@ -114,7 +114,7 @@ void CTestMouseDlg::OnNormalSystemCursor() {
 }
 
 void CTestMouseDlg::OnSetSystemCursor1() {
-  setSystemCursor(OCR_NORMAL, IDC_CURSOR1   ); 
+  setSystemCursor(OCR_NORMAL, IDC_CURSOR1   );
 }
 
 void CTestMouseDlg::OnSetSystemCursor2() {
@@ -174,7 +174,7 @@ void CTestMouseDlg::OnHideCursor() {
 void CTestMouseDlg::OnClipCursor() {
   CRect r;
   GetWindowRect(&r);
-  ClipCursor(&r);   
+  ClipCursor(&r);
 }
 
 void CTestMouseDlg::OnUnclipCursor() {

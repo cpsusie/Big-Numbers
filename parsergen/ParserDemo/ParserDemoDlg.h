@@ -20,11 +20,11 @@ public:
     SourcePosition   getSourcePosition();
     int              getSourcePositionIndex();
     String           getCurrentWord();
-    
+
     String           getInputString() {
       return m_input.GetBuffer(m_input.GetLength());
     }
-    
+
     void             updateSourcePosition(const SourcePosition &pos);
     int              findSourcePositionIndex(const Array<SourcePosition> &list, const SourcePosition &pos);
     void             gotoTextPosition(const SourcePosition &pos);

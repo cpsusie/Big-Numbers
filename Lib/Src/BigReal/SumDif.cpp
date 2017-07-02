@@ -3,7 +3,7 @@
 // Assume *this != 0.
 // Return Digit corresponding to BIGREALBASE^exponent.
 // Return NULL if exponent is outside interval [m_low;m_expo]
-Digit *BigReal::findDigit(const BRExpoType exponent) const { 
+Digit *BigReal::findDigit(const BRExpoType exponent) const {
   BRExpoType fwd = m_expo - exponent;
   BRExpoType bwd = exponent - m_low;
   Digit *p;
@@ -22,11 +22,11 @@ Digit *BigReal::findDigit(const BRExpoType exponent) const {
 // Return NULL if abs(this) < precisionen (=f)
 // low is set to the max(fexpo,m_low), where fexpo = f.expo - [f.first == 1]
 // Differs from findDigitSubtract in the special case where f = BIGREALBASE^n for some n
-Digit *BigReal::findDigitAdd(const BigReal &f, BRExpoType &low) const { 
+Digit *BigReal::findDigitAdd(const BigReal &f, BRExpoType &low) const {
   if(!f.isPositive()) {
     low = m_low;
     return m_last;
-  } 
+  }
   BRExpoType fexpo = f.m_expo;
   if(f.m_first->n == 1) {
     fexpo--;      // NB NB NB!
@@ -55,7 +55,7 @@ Digit *BigReal::findDigitAdd(const BigReal &f, BRExpoType &low) const {
 // Assume *this != 0.
 // Return last digit with precision f. Used in subtract
 // Return NULL if |this| < precisionen (=f)
-Digit *BigReal::findDigitSubtract(const BigReal &f) const { 
+Digit *BigReal::findDigitSubtract(const BigReal &f) const {
   if(!f.isPositive()) {
     return m_last;
   } else if(f.m_expo > m_expo) {
@@ -101,7 +101,7 @@ BigReal &BigReal::addAbs(const BigReal &x, const BigReal &y, const BigReal &f) {
     if(xLow < yLow) {
       for(d = yLow - xLow; xp && d--; xp = xp->prev) {
         insertDigit(xp->n);
-      }          
+      }
       if(d > 0) insertZeroDigits(d);
     } else if(yLow < xLow) {
       for(d = xLow - yLow; yp && d--; yp = yp->prev) {
@@ -158,7 +158,7 @@ BigReal &BigReal::addAbs(const BigReal &x) {
       insertZeroDigitsAfter(p, m_low-d);
     }
     m_low = x.m_low;
-  } else if(x.m_low > m_low) { 
+  } else if(x.m_low > m_low) {
     if((p = findDigit(x. m_low)) == NULL) {
       const BRExpoType t = x.m_low - 1 - m_expo;
       if(t > 0) {
@@ -181,7 +181,7 @@ BigReal &BigReal::addAbs(const BigReal &x) {
     if(p) {
       carry += p->n + xp->n;
       p->n = carry % BIGREALBASE;
-      p = p->prev; 
+      p = p->prev;
     } else {
       carry += xp->n;
       insertDigit(carry % BIGREALBASE);
@@ -206,14 +206,14 @@ BigReal &BigReal::addAbs(const BigReal &x) {
 
 // Assume &x != this && *this != 0 && x != 0 && |this| > |x|
 // Subtract |x| from |this| with maximal error = f
-BigReal &BigReal::subAbs(const BigReal &x, const BigReal &f) { 
+BigReal &BigReal::subAbs(const BigReal &x, const BigReal &f) {
   const Digit *xp = x.findDigitSubtract(f);
 
   if(xp == NULL) {
     return *this; // nothing to subtract
   }
 
-  Digit *p = findDigitSubtract(f); 
+  Digit *p = findDigitSubtract(f);
   const BRExpoType last = f.isPositive() ? max(f.m_expo, x.m_low) : x.m_low;
   if(last < m_low) {
     const BRExpoType k = m_low;
@@ -376,7 +376,7 @@ BigReal &BigReal::operator+=(const BigReal &x) {
 
   // *this != 0 && x != 0
   if(x.m_negative == m_negative) {   // sign(this) == sign(x). Calculate (sign(this) * (|this| + |x|)
-    addAbs(x); 
+    addAbs(x);
   } else {                           // sign(this) != sign(x)
     const int c = compareAbs(*this, x);
     if(c > 0) {                      // |this| > |x|. Calculate sign(this) * (|this| - |x|)
@@ -387,7 +387,7 @@ BigReal &BigReal::operator+=(const BigReal &x) {
     } else {                         // |this| == |x| => *this = 0
       *this = BIGREAL_0;
     }
-  }                        
+  }
   return *this;
 }
 

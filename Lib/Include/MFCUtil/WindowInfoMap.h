@@ -4,15 +4,15 @@
 #include "TreeMap.h"
 
 typedef enum {
-  SHOW_HWND        
- ,SHOW_THREAD      
- ,SHOW_RECT        
- ,SHOW_WINDOWTEXT  
- ,SHOW_CLASS       
- ,SHOW_STYLE       
- ,SHOW_EXSTYLE     
- ,SHOW_STYLETEXT   
- ,SHOW_EXSTYLETEXT 
+  SHOW_HWND
+ ,SHOW_THREAD
+ ,SHOW_RECT
+ ,SHOW_WINDOWTEXT
+ ,SHOW_CLASS
+ ,SHOW_STYLE
+ ,SHOW_EXSTYLE
+ ,SHOW_STYLETEXT
+ ,SHOW_EXSTYLETEXT
 } WindowInfoField;
 
 class WindowInfo {
@@ -69,7 +69,7 @@ typedef IntTreeMap<ProcessWindowInfo> ProcessWindowInfoMap; // key is processId
 // Retrieves information of active windows running on the system
 // styleFilter and notStyleFilter can be any combination of Window Styles as defined in WinUser.h. All beginning with WS_
 // exStyleFilter and notExStyleFilter can be any combination of Extended Window Styles as defined in WinUser.h. All beginning with WS_EX_
-// Any window with one or more (ex)style-bit common with (ex)styleFilter AND no (ex)style-bits common with not(Ex)styleFilter will be 
+// Any window with one or more (ex)style-bit common with (ex)styleFilter AND no (ex)style-bits common with not(Ex)styleFilter will be
 // added to the list.
 ProcessWindowInfoMap getProcessWindowInfoMap(DWORD styleFilter = -1, DWORD notStyleFilter = 0, DWORD exStyleFilter = -1, DWORD notExStyleFilter = 0);
 

@@ -113,7 +113,7 @@ Real random(const Real &lower, const Real &upper) {
   return _standardRandomGenerator->nextDouble() * (upper-lower) + lower;
 }
 
-Real randomGaussian(const Real &mean, const Real &s) { 
+Real randomGaussian(const Real &mean, const Real &s) {
   return _standardRandomGenerator->nextGaussian(getDouble(mean),getDouble(s));
 }
 

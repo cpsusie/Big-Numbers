@@ -124,11 +124,11 @@ public:
   const Matrix &getQMatrix() const {
     return m_Q;
   }
-  
+
   int getDeflatedSize() const {
     return m_deflatedSize;
   }
-  
+
   const ComplexVector &getEigenValues() const {
     return m_eigenValues;
   }

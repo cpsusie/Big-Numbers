@@ -17,7 +17,7 @@ public:
   void setTransform(const D3DXMATRIX &t);
   void addBoundingBox(const BoundingBox &bbox);
   virtual BoundingBox getBoundingBox(const D3DXMATRIX &combinedTrans);
-  virtual void fDensity(float x0, float y0, float z0 
+  virtual void fDensity(float x0, float y0, float z0
                        ,float dz, int pointCount, float *densities) = 0;
   virtual void fNormal(const D3DXVECTOR3 &point, D3DXVECTOR3 &normal) = 0;
 

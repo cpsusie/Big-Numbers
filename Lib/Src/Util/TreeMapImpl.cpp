@@ -1,7 +1,7 @@
 #include "pch.h"
 #include <TreeMap.h>
 
-TreeMapImpl::TreeMapImpl(const AbstractObjectManager &keyManager, const AbstractObjectManager &dataManager, const AbstractComparator &comparator) 
+TreeMapImpl::TreeMapImpl(const AbstractObjectManager &keyManager, const AbstractObjectManager &dataManager, const AbstractComparator &comparator)
 : TreeSetImpl(keyManager, comparator)
 {
   m_dataManager = dataManager.clone();

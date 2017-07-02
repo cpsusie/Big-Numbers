@@ -8,13 +8,13 @@ BigRational::BigRational(DigitPool *digitPool) : m_numerator(digitPool), m_denom
   init(digitPool->get0(), digitPool->get1());
 }
 
-BigRational::BigRational(const BigInt &numerator, const BigInt &denominator, DigitPool *digitPool) 
+BigRational::BigRational(const BigInt &numerator, const BigInt &denominator, DigitPool *digitPool)
 : m_numerator(  digitPool?digitPool:denominator.getDigitPool())
 , m_denominator(digitPool?digitPool:denominator.getDigitPool()) {
   init(numerator, denominator);
 }
 
-BigRational::BigRational(const BigInt &n, DigitPool *digitPool) 
+BigRational::BigRational(const BigInt &n, DigitPool *digitPool)
 : m_numerator(  n,        digitPool)
 , m_denominator(BIGREAL_1, digitPool?digitPool:n.getDigitPool()) {
 }

@@ -139,7 +139,7 @@ template <class T> PartitionJob<T> &MTQuicksortClass<T>::getJob(int id, Partitio
 
 template <class T> PartitioningThread<T>::PartitioningThread(MTQuicksortClass<T> &qc, int id)
 : m_qc(qc)
-, m_comparator(m_qc.getComparator()) 
+, m_comparator(m_qc.getComparator())
 {
   m_id = id;
   setDeamon(true);
@@ -228,7 +228,7 @@ tailrecurse:
         if(n < MINMTSPLITSIZE) {
           PUSH(stack, ip, n);
         } else {
-          m_qc.addJob(ip, n); 
+          m_qc.addJob(ip, n);
         }
       }
       if(j > 0) {
@@ -237,7 +237,7 @@ tailrecurse:
           nelem = n;
           goto tailrecurse;
         } else {
-          m_qc.addJob(base, n); 
+          m_qc.addJob(base, n);
         }
       }
     }

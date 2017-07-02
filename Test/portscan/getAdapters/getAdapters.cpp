@@ -66,7 +66,7 @@ void listAdaptersInfo(PIP_ADAPTER_INFO pAdapterInfo) {
         if (error)
             _tprintf("Invalid Argument to _localtime32_s\n");
         else {
-            // Convert to an ASCII representation 
+            // Convert to an ASCII representation
             error = asctime_s(buffer, 32, &newtime);
             if (error)
                 _tprintf("Invalid Argument to asctime_s\n");
@@ -80,7 +80,7 @@ void listAdaptersInfo(PIP_ADAPTER_INFO pAdapterInfo) {
         if (error)
             _tprintf("Invalid Argument to _localtime32_s\n");
         else {
-            // Convert to an ASCII representation 
+            // Convert to an ASCII representation
             error = asctime_s(buffer, 32, &newtime);
             if (error)
                 _tprintf("Invalid Argument to asctime_s\n");
@@ -108,7 +108,7 @@ void listAdaptersInfo(PIP_ADAPTER_INFO pAdapterInfo) {
 void getAdaptersInfo() {
   ULONG entryCount = 100;
   ULONG bufferSize = entryCount * sizeof(IP_ADAPTER_INFO);
-  
+
   PIP_ADAPTER_INFO pAdapterInfo = new IP_ADAPTER_INFO[entryCount];
   ULONG ret = GetAdaptersInfo(pAdapterInfo, &bufferSize);
   _tprintf(_T("return from GetAdaptersInfo:%lu\n"), ret);

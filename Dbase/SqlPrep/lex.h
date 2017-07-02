@@ -91,7 +91,7 @@ protected:
   void readLine();
   void getStringLit();
   void getHostvar(); /* getting C-names */
-  void getName(); 
+  void getName();
   void getNumber();
   void getComment();
 public:

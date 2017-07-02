@@ -82,7 +82,7 @@ void TemplateWriter::generateOutput() {
   FILE *templateFile = FOPEN(m_templateName, "r");
   m_currentPos = SourcePosition(m_templateName, 0, 0);
 
-//  if(m_verbose) 
+//  if(m_verbose)
 //    printf("Generating %s\n", m_outputName.cstr());
 
 //  m_output->printf("%s\n\n", dontEditMessage);

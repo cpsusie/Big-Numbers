@@ -33,7 +33,7 @@ private:
     return CPoint((int)(index % m_width + m_rect.left), (int)(index / m_width + m_rect.top));
   }
 public:
-  PointSet(const CRect &r) 
+  PointSet(const CRect &r)
     : BitSet(getPixelCount(r))
     , m_rect(r)
     , m_width(r.Width())
@@ -60,7 +60,7 @@ private:
   int                  m_calculatorId;
   PointSet             m_blackSet, m_edgeSet, m_innerSet;
 public:
-  CalculatorInfo(int calculatorId, const CRect &r) 
+  CalculatorInfo(int calculatorId, const CRect &r)
     : m_calculatorId(calculatorId)
     , m_blackSet(r)
     , m_edgeSet( r)

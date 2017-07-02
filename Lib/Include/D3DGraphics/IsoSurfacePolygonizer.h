@@ -148,7 +148,7 @@ public:
   UINT m_i1,m_i2,m_i3;  // Indices into vertexArray
   D3DCOLOR m_color;
   Face3() {}
-  inline Face3(UINT i1, UINT i2, UINT i3, D3DCOLOR color) 
+  inline Face3(UINT i1, UINT i2, UINT i3, D3DCOLOR color)
     : m_i1(i1), m_i2(i2), m_i3(i3), m_color(color)
   {
   }
@@ -247,7 +247,7 @@ public:
   String toString() const;
 #endif
 };
-           
+
 class IsoSurfacePolygonizer {
 private:
   static PolygonizerCubeArrayTable      s_cubetable;

@@ -3,7 +3,7 @@
 
 const TCHAR *Options::rootPath =  _T("JGMData\\WinDiff");
 
-RegistryKey Options::getRootKey() { // static 
+RegistryKey Options::getRootKey() { // static
   return RegistryKey(HKEY_CURRENT_USER, _T("Software")).createOrOpenPath(rootPath);
 }
 
@@ -42,7 +42,7 @@ String Options::getKeyName() const {
   return getKeyName(m_index);
 }
 
-String Options::getKeyName(int index) { // static 
+String Options::getKeyName(int index) { // static
   return format(_T("%02d"), index);
 }
 
@@ -80,10 +80,10 @@ bool Options::load(int index) {
     return false;
   }
   return true;
-  
+
 }
 
-bool Options::remove(int index) { // static 
+bool Options::remove(int index) { // static
   try {
     RegistryKey optroot = getOptionsRootKey();
     optroot.deleteKey(getKeyName(index));
@@ -155,7 +155,7 @@ void Options::loadData(RegistryKey &key, Options &options) { // static
   options.m_windowSize.cy         = key.getInt(   WINDOWHEIGHT         , defaultOptions.m_windowSize.cy         );
   options.m_nameFontSizePct       = key.getInt(   NAMEFONTSIZE         , defaultOptions.m_nameFontSizePct       );
   options.m_nameFontSizePct       = minMax(options.m_nameFontSizePct, 100, 200);
-  
+
   const String logFontStr         = key.getString(FONTDEF              , "");
   try {
     options.m_logFont = logFontFromString(logFontStr);
@@ -183,7 +183,7 @@ bool Options::validate() const {
   return true;
 }
 
-int Options::getNameToIndex(const String &name) { // static 
+int Options::getNameToIndex(const String &name) { // static
   const Array<Options> optionsArray = getExisting();
   for(size_t i = 0; i < optionsArray.size(); i++) {
     const Options &opt = optionsArray[i];
@@ -193,8 +193,8 @@ int Options::getNameToIndex(const String &name) { // static
   }
   return -1;
 }
-  
-StringArray Options::getExistingNames() { // static 
+
+StringArray Options::getExistingNames() { // static
   const Array<Options> optArray = getExisting();
   StringArray result;
 
@@ -239,7 +239,7 @@ void Options::setAsDefault() {
   save();
 }
 
-void Options::setDefaultOptionName(const String &name) { // static 
+void Options::setDefaultOptionName(const String &name) { // static
   getOptionsRootKey().setValue(DEFAULTNAME, name);
 }
 
@@ -356,7 +356,7 @@ bool OptionList::remove(UINT index) {
   return true;
 }
 
-OptionsEditData::OptionsEditData(const String &name, int index) 
+OptionsEditData::OptionsEditData(const String &name, int index)
 : m_name(name)
 , m_originalIndex(index)
 {
@@ -422,7 +422,7 @@ typedef enum {
  ,FACENAME
 } LogFontFields;
 
-LOGFONT Options::logFontFromString(const String &str) { // static 
+LOGFONT Options::logFontFromString(const String &str) { // static
   LOGFONT result;
   try {
     int field = 0;
@@ -441,7 +441,7 @@ LOGFONT Options::logFontFromString(const String &str) { // static
       case CLIPPRECISION  : result.lfClipPrecision  = tok.getInt();     break;
       case QUALITY        : result.lfQuality        = tok.getInt();     break;
       case PITCHANDFAMILY : result.lfPitchAndFamily = tok.getInt();     break;
-      case FACENAME       : 
+      case FACENAME       :
         { const String name = tok.next();
           _tcsncpy(result.lfFaceName, name.cstr(), LF_FACESIZE);
         }

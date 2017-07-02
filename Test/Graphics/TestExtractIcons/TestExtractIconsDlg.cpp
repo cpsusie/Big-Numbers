@@ -63,7 +63,7 @@ BOOL CTestExtractIconsDlg::OnInitDialog() {
 
     SetIcon(m_hIcon, TRUE);
     SetIcon(m_hIcon, FALSE);
-    
+
     m_layoutManager.OnInitDialog(this);
     m_layoutManager.addControl(IDC_STATIC_ICONFRAME, RELATIVE_SIZE    );
     m_layoutManager.addControl(IDC_BUTTON_OPEN     , RELATIVE_POSITION);
@@ -202,7 +202,7 @@ void CTestExtractIconsDlg::destroyAllIcons() {
 
 void CTestExtractIconsDlg::OnSize(UINT nType, int cx, int cy) {
   __super::OnSize(nType, cx, cy);
-  m_layoutManager.OnSize(nType, cx, cy);    
+  m_layoutManager.OnSize(nType, cx, cy);
 }
 
 void CTestExtractIconsDlg::OnCheckShowLarge() {

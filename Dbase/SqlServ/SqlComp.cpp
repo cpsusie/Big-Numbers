@@ -53,7 +53,7 @@ void SqlCompiler::findHostVarIndex(SyntaxNode *expr, int &hostvarcounter, int fl
 
   default     :
     { int sons = expr->childCount();
-      for(int i = 0; i < sons;i++) 
+      for(int i = 0; i < sons;i++)
         findHostVarIndex(expr->child(i), hostvarcounter, flags);
       break;
     }
@@ -280,25 +280,25 @@ void SqlCompiler::genExpression(const SyntaxNode *expr) {
     m_code.appendIns0(CODECONCAT);
     break;
   case SUBSTRING     :
-    { for(int i = 0; i < 3; i++) 
+    { for(int i = 0; i < 3; i++)
         genExpression( expr->child(i));
       m_code.appendIns0(CODESUBSTR);
     }
     break;
   case TYPEDATE      :
-    { for(int i = 0; i < 3; i++) 
+    { for(int i = 0; i < 3; i++)
         genExpression( expr->child(i));
       m_code.appendIns0(CODEDATE);
     }
     break;
   case TYPETIME      :
-    { for(int i = 0; i < 3; i++) 
+    { for(int i = 0; i < 3; i++)
         genExpression( expr->child(i));
       m_code.appendIns0(CODETIME);
     }
     break;
   case TYPETIMESTAMP :
-    { for(int i = 0; i < 6; i++) 
+    { for(int i = 0; i < 6; i++)
         genExpression( expr->child(i));
       m_code.appendIns0(CODETIMESTAMP);
     }
@@ -400,7 +400,7 @@ void SqlCompiler::genPredicate( const SyntaxNode *predicate) {
   switch(predicate->token()) {
   case NUMBER :
     switch((int)predicate->number()) {
-    case 0: 
+    case 0:
     case 1:
       m_code.appendIns1(CODEPUSHCONST,m_code.appendConst(predicate->number()));
       break;
@@ -686,11 +686,11 @@ SqlCompiler::~SqlCompiler() {
     delete m_selectOperators[i];
 }
 
-bool sqlCompile(   const Database            &db     , 
+bool sqlCompile(   const Database            &db     ,
                    SqlApiBindProgramId       &programid ,
                    const SqlApiBindStmt      &bndstmt,
                    VirtualCode               &vc     ,
-                   StringArray               &errmsg , 
+                   StringArray               &errmsg ,
                    sqlca                     &ca     ) {
   try {
     SqlCompiler comp(db,programid,bndstmt);

@@ -128,10 +128,10 @@ void diff::align(int p1, int p2, int q1, int q2) {
   }
 /*
       for(i=q1; i < q2; i++)
-       { if(i == memo) { 
+       { if(i == memo) {
            if(s2.charAt(i) == ch) {
              row1 += ch;
-             row2 += '|'; 
+             row2 += '|';
              row3 += s2.charAt(i);
            }
            else {
@@ -156,7 +156,7 @@ void diff::align(int p1, int p2, int q1, int q2) {
     int best = -1;
     for(i = q1; i <= q2; i++) { // look for cheapest split of s2
       int sum = fwd[mid%2][i] + rev[mid%2][i];
-      if( best == -1 || sum < best ) { 
+      if( best == -1 || sum < best ) {
         best = sum;
         s2mid= i;
       }

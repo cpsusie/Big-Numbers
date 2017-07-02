@@ -40,7 +40,7 @@ static UINT convertNumberChar(wchar_t digit) {
   }
 }
 
-// Conversion from _int128/_uint128 to string 
+// Conversion from _int128/_uint128 to string
 
 // Number of digits that should be appended to the string for each loop
 // (index = radix = [2..36])
@@ -207,7 +207,7 @@ wchar_t *_ui128tow(_uint128 value, wchar_t *str, int radix) {
 }
 
 
-// Conversion from string to _int128/_uint128 
+// Conversion from string to _int128/_uint128
 // decimal string to _int128. may begin with +,- og decimal digit
 template<class CharType> const CharType *parseDec(const CharType *str, _int128 &n) {
   bool negative = false;

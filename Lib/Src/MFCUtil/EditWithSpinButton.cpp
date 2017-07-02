@@ -12,9 +12,7 @@ CEditWithSpinButton::~CEditWithSpinButton() {
 }
 
 BEGIN_MESSAGE_MAP(CEditWithSpinButton, CEdit)
-    //{{AFX_MSG_MAP(CEditWithSpinButton)
     ON_WM_CREATE()
-    //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 int CEditWithSpinButton::OnCreate(LPCREATESTRUCT lpCreateStruct) {

@@ -103,7 +103,7 @@ public:
   void flushInstructionCache();
 };
 
-class ByteFileArray {   // Read-only BYTE array accessed by seeking the file, instead of loading 
+class ByteFileArray {   // Read-only BYTE array accessed by seeking the file, instead of loading
                         // the whole array into memory. Slow, but save space
                         // Bytes starting at startOffset must be written by ByteArray.save
 private:

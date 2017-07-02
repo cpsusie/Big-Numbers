@@ -209,7 +209,7 @@ void IsoMesher::intersectXaxis(const Point &p0, const Point &p1, Point &out) con
     if(fabs(xa - xb) < TOLERANCE_COORD) {
       break;
     }
-    
+
     if(fsign(density)) {        // pm < 0
       xa = xm;
     } else {                    // pm > 0
@@ -373,7 +373,7 @@ void IsoMesher::intersectXaxis(const Point &p0, const Point &p1, Point &out) con
     if(fabs(xa - xb) < TOLERANCE_COORD) {
       break;
     }
-    
+
     if(fsign(density)) {        // pm is negative
       xa = xm;
       fa = density;
@@ -426,7 +426,7 @@ void IsoMesher::intersectYaxis(const Point &p0, const Point &p1, Point &out) con
     if(fabs(ya - yb) < TOLERANCE_COORD) {
       break;
     }
-    
+
     if(fsign(density)) {        // pm is negative
       ya = ym;
       fa = density;
@@ -479,7 +479,7 @@ void IsoMesher::intersectZaxis(const Point &p0, const Point &p1, Point &out) con
     if(fabs(za - zb) < TOLERANCE_COORD) {
       break;
     }
-    
+
     if(fsign(density)) {        // pm is negative
       za = zm;
       fa = density;

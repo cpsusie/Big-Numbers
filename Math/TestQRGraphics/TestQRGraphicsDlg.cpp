@@ -75,14 +75,14 @@ BOOL CTestQRGraphicsDlg::OnInitDialog() {
 
   SetIcon(m_hIcon, TRUE);         // Set big icon
   SetIcon(m_hIcon, FALSE);        // Set small icon
-    
+
   a.setDimension(DEFAULTSIZE);
   randomize();
   m_font.CreateFont( 12, 8, 0, 0, 400, FALSE, FALSE, 0, ANSI_CHARSET, OUT_DEFAULT_PRECIS
                     ,CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY
                     ,DEFAULT_PITCH | FF_MODERN
                     ,_T("Ariel") ); //"Courier New" );
-    
+
   return TRUE;
 }
 
@@ -226,7 +226,7 @@ void CTestQRGraphicsDlg::OnFileUn() {
   try {
     size_t dim = a.getRowCount();
     a = Matrix::zero(dim,dim);
-    
+
     for(size_t i = 1; i < dim; i++) {
       a(i,i-1) = 1;
     }
@@ -244,7 +244,7 @@ void CTestQRGraphicsDlg::OnFileIllconditioned() {
   try {
     size_t dim = a.getRowCount();
     a = Matrix::zero(dim,dim);
-    
+
     for(size_t i = 1; i < dim; i++) {
       a(i,i-1) = 1;
     }
@@ -264,7 +264,7 @@ void CTestQRGraphicsDlg::OnFileIllconditioned() {
     for(size_t i = 0; i < dim; i++) {
       a(0,i) = -p1[dim-i-1];
     }
-    Invalidate(false);    
+    Invalidate(false);
   }
   catch (Exception e) {
     showException(e);
@@ -279,7 +279,7 @@ void CTestQRGraphicsDlg::OnFileSymmetric() {
         a(c,r) = a(r,c) = rand() % 10 - 5;
       }
     }
-    
+
     Invalidate(false);
   }
   catch (Exception e) {
@@ -303,7 +303,7 @@ void CTestQRGraphicsDlg::OnFileRandomAntiSymmetric() {
     a(4,0) = 2;
     a(3,0) = 2;
     a(2,0) = 2;
-    
+
     Invalidate(false);
   }
   catch (Exception e) {

@@ -62,12 +62,12 @@ public:
 
     if(m_forwardSearch) {
       compileForward();
-      m_search = m_translateTable 
+      m_search = m_translateTable
                ? &BMAutomateTemplate<Ctype>::searchForwardTranslate
                : &BMAutomateTemplate<Ctype>::searchForwardNoTranslate;
     } else {
       compileBackward();
-      m_search = m_translateTable 
+      m_search = m_translateTable
                ? &BMAutomateTemplate<Ctype>::searchBackwardTranslate
                : &BMAutomateTemplate<Ctype>::searchBackwardNoTranslate;
     }
@@ -184,7 +184,7 @@ private:
   // If c does not occur in pattern, then m_delta1[c] = patternLength.
   // If c is at textbuf[i] and c != pattern[patternLength-1], we can
   // safely shift i over by m_delta1[c], which is the minimum distance
-  // needed to shift pattern forward to get textbuf[i] lined up 
+  // needed to shift pattern forward to get textbuf[i] lined up
   // with some symbol in pattern.
   // This algorithm runs in time O(alphabet length + pattern length)
   void makeDelta1() {
@@ -195,8 +195,8 @@ private:
       m_delta1[translateC(m_pattern[i])] = m_plm1 - i;
     }
   }
- 
-  // delta2 table: given a mismatch at pattern[pos], we want to align 
+
+  // delta2 table: given a mismatch at pattern[pos], we want to align
   // with the next possible full match could be based on what we
   // know about pattern[pos+1] to pattern[patternLength-1].
   //
@@ -206,17 +206,17 @@ private:
   // If, within the substring pattern[pos+1 .. patternLength-1], lies a prefix
   // of pattern, the next plausible match is here (if there are multiple
   // prefixes in the substring, pick the longest). Otherwise, the
-  // next plausible match starts past the TCHAR aligned with 
+  // next plausible match starts past the TCHAR aligned with
   // pattern[patternLength-1].
-  // 
+  //
   // In case 2:
   // pattern[pos+1] to pattern[patternLength-1] does occur elsewhere in pattern. The
   // mismatch tells us that we are not looking at the end of a match.
   // We may, however, be looking at the middle of a match.
-  // 
+  //
   // The first loop, which takes care of case 1, is analogous to
   // the KMP table, adapted for a 'backwards' scan order with the
-  // additional restriction that the substrings it considers as 
+  // additional restriction that the substrings it considers as
   // potential prefixes are all suffixes. In the worst case scenario
   // pattern consists of the same letter repeated, so every suffix is
   // a prefix. This loop alone is not sufficient, however:
@@ -259,7 +259,7 @@ private:
     }
     return true;
   }
- 
+
   // length of the longest suffix of word ending on word[pos].
   // getSuffixLength("dddbcabc", 8, 4) = 2
   int getSuffixLength(const Ctype *word, int wordLength, int pos) const {

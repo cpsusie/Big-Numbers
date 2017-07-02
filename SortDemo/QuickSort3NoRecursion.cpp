@@ -30,7 +30,7 @@ tailrecurse:
 
     char *pi = EPTR(1), *pj = EPTR(nelem-2);
     do {
-      while(pi <= pj && PNEEDSWAP(pivot, pi)) pi += width; 
+      while(pi <= pj && PNEEDSWAP(pivot, pi)) pi += width;
       while(pi <= pj && PNEEDSWAP(pj, pivot)) pj -= width;
       if(pi < pj) {
         PSWAP(pi, pj);

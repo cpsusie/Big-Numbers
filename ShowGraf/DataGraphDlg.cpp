@@ -49,7 +49,7 @@ void CDataGraphDlg::OnOK() {
   if(!UpdateData()) return;
   if(m_name.GetLength() == 0) {
     MessageBox(_T("Must specify name"));
-    GetDlgItem(IDC_EDITNAME)->SetFocus();   
+    GetDlgItem(IDC_EDITNAME)->SetFocus();
     return;
   }
 

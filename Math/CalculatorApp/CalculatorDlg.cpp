@@ -425,7 +425,7 @@ bool MenuItemExists(CMenu *Menu, UINT id) {
   int count = Menu->GetMenuItemCount();
   for(int i = 0; i < count; i++) {
     CMenu *submenu = Menu->GetSubMenu(i);
-    int subcount = submenu->GetMenuItemCount();      
+    int subcount = submenu->GetMenuItemCount();
     for (int j = 0; j < subcount; j++) {
       if(submenu->GetMenuItemID(j) == id) {
         return true;
@@ -443,7 +443,7 @@ void CCalculatorDlg::enableButton(int id, bool enabled) {
 }
 
 void CCalculatorDlg::enableNumButtons(int radix) { // enable button "0","1","2",...radix
-  int buttonid[] = { 
+  int buttonid[] = {
     IDC_BUTTON0, IDC_BUTTON1, IDC_BUTTON2, IDC_BUTTON3,
     IDC_BUTTON4, IDC_BUTTON5, IDC_BUTTON6, IDC_BUTTON7,
     IDC_BUTTON8, IDC_BUTTON9, IDC_BUTTONA, IDC_BUTTONB,
@@ -825,8 +825,8 @@ BOOL CCalculatorDlg::PreTranslateMessage(MSG *pMsg) {
     case VK_HOME    :
     case VK_END     :                  break;
 /*
-    case VK_SHIFT   : 
-    case VK_CONTROL : 
+    case VK_SHIFT   :
+    case VK_CONTROL :
     case VK_MENU    : break;
     default         : return true;
 */

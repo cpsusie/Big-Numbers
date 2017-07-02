@@ -99,8 +99,8 @@ public:
     const D3DXVECTOR3 &vmin2 = bbox2.m_vmin;
     const D3DXVECTOR3 &vmax2 = bbox2.m_vmax;
 
-    bool non_overlapping = vmax1.x <= vmin2.x || vmax2.x <= vmin1.x 
-                        || vmax1.y <= vmin2.y || vmax2.y <= vmin1.y 
+    bool non_overlapping = vmax1.x <= vmin2.x || vmax2.x <= vmin1.x
+                        || vmax1.y <= vmin2.y || vmax2.y <= vmin1.y
                         || vmax1.z <= vmin2.z || vmax2.z <= vmin1.z;
     return !non_overlapping;
   }

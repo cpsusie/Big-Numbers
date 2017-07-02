@@ -308,7 +308,7 @@ public:
   }
 };
 
-class FileBitSetIndex {                 // use BitSetIndex saved with BitSetIndex.save 
+class FileBitSetIndex {                 // use BitSetIndex saved with BitSetIndex.save
 private:
   mutable ByteInputFile  m_f;
   const UINT64           m_startOffset;
@@ -343,12 +343,12 @@ private:
   friend class BitMatrixColumnIterator;
 
 public:
-  BitMatrix(size_t rowCount, size_t columnCount) 
+  BitMatrix(size_t rowCount, size_t columnCount)
     : m_dim(rowCount, columnCount)
     , BitSet(rowCount*columnCount)
   {
   }
-  BitMatrix(const MatrixDimension &dim) 
+  BitMatrix(const MatrixDimension &dim)
     : m_dim(dim)
     , BitSet(dim.getElementCount())
   {

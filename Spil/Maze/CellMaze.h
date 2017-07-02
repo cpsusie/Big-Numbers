@@ -14,7 +14,7 @@ protected:
   bool           m_reductionStable;
   MazeCellMatrix m_cell;
 
-  CellMaze(const CRect &rectangle, int doorWidth, int wallCount, const MatrixDimension &dim) 
+  CellMaze(const CRect &rectangle, int doorWidth, int wallCount, const MatrixDimension &dim)
     : Maze(rectangle,doorWidth)
     , m_cell(wallCount, dim)
   {

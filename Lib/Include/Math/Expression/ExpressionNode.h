@@ -10,10 +10,10 @@ class ExpressionVariable {
 private:
   String       m_name;
   int          m_valueIndex; // index into parserTree.m_valueTable
-  unsigned int m_constant : 1;
-  unsigned int m_defined  : 1;
-  unsigned int m_loopVar  : 1;
-  unsigned int m_marked   : 1;
+  UINT         m_constant : 1;
+  UINT         m_defined  : 1;
+  UINT         m_loopVar  : 1;
+  UINT         m_marked   : 1;
 public:
   ExpressionVariable(const String &name, bool isConstant, bool isDefined, bool isLoopVar);
   inline const String &getName()       const    { return m_name;                    }
@@ -160,10 +160,10 @@ typedef enum {
 class PackedSyntaxNodeInfo {
 public:
   const ExpressionInputSymbol m_symbol         : 15;
-          unsigned int  m_marked               : 1; // used for garbage-collection
-          unsigned int  m_breakPoint           : 1; // used for DebugThread
-  mutable unsigned int  m_coefficientsConstant : 1; // used by polynomials
-  mutable unsigned int  m_coefChecked          : 1; // used by polynomials
+          UINT          m_marked               : 1; // used for garbage-collection
+          UINT          m_breakPoint           : 1; // used for DebugThread
+  mutable UINT          m_coefficientsConstant : 1; // used by polynomials
+  mutable UINT          m_coefChecked          : 1; // used by polynomials
   PackedSyntaxNodeInfo(ExpressionInputSymbol symbol)
     : m_symbol(symbol)
     , m_marked(0)
@@ -218,11 +218,11 @@ public:
   virtual const FactorArray         &getFactorArray()               const   { throw createAttributeNotSupportedException("FactorArray");       }
   virtual       AddentArray         &getAddentArray()                       { throw createAttributeNotSupportedException("AddentArray");       }
   virtual const AddentArray         &getAddentArray()               const   { throw createAttributeNotSupportedException("AddentArray");       }
-  virtual       ExpressionNodeArray &getCoefficientArray()                  { throw createAttributeNotSupportedException("CoefficientArray");  } 
-  virtual const ExpressionNodeArray &getCoefficientArray()          const   { throw createAttributeNotSupportedException("CoefficientArray");  } 
-  virtual int                        getFirstCoefIndex()            const   { throw createAttributeNotSupportedException("FirstCoefIndex");    } 
-  virtual void                       setFirstCoefIndex(int index)           { throw createAttributeNotSupportedException("FirstCoefIndex");    } 
-  virtual int                        getDegree()                    const   { throw createAttributeNotSupportedException("Degree");            } 
+  virtual       ExpressionNodeArray &getCoefficientArray()                  { throw createAttributeNotSupportedException("CoefficientArray");  }
+  virtual const ExpressionNodeArray &getCoefficientArray()          const   { throw createAttributeNotSupportedException("CoefficientArray");  }
+  virtual int                        getFirstCoefIndex()            const   { throw createAttributeNotSupportedException("FirstCoefIndex");    }
+  virtual void                       setFirstCoefIndex(int index)           { throw createAttributeNotSupportedException("FirstCoefIndex");    }
+  virtual int                        getDegree()                    const   { throw createAttributeNotSupportedException("Degree");            }
   virtual const String              &getName()                      const   { throw createAttributeNotSupportedException("Name");              }
   virtual void                       setVariable(ExpressionVariable *var)   { throw createAttributeNotSupportedException("Variable");          }
   virtual       ExpressionVariable  &getVariable()                  const   { throw createAttributeNotSupportedException("Variable");          }

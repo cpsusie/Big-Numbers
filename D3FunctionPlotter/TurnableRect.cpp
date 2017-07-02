@@ -270,7 +270,7 @@ void TurnableRect::repaint(Viewport2D &vp, ProfileDialogState state) {
 
   CDC dc;
   dc.CreateCompatibleDC(vp. getDC());
-  
+
   for(size_t i = 0; i < m_marks.size(); i++) {
     RectMark &m = m_marks[i];
     dc.SelectObject(m.m_image);

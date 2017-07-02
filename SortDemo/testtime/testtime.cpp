@@ -14,7 +14,7 @@ int intcmp(int *i1, int *i2) {
   cmpcounter++;
   return *i1 - *i2;
 }
-typedef int  (__cdecl *sortcomparator)(const void*, const void*); 
+typedef int  (__cdecl *sortcomparator)(const void*, const void*);
 typedef void (*sortmethod)(void *, size_t, size_t, sortcomparator);
 
 void dosort(int *a, int n, sortmethod sortproc, char *name) {
@@ -50,7 +50,7 @@ int doublecmp(double *d1, double *d2) {
 int main(int argc, char* argv[]) {
 
 #ifdef QSORT_PERFORM_OK
-  for(int i = 0; i < MAXN;i++) 
+  for(int i = 0; i < MAXN;i++)
       save[i] = rand();
 #else
   for(int i = 0; i < MAXN; i++)
@@ -81,6 +81,6 @@ int main(int argc, char* argv[]) {
     dosort(a,n,quickSort,"quickSort");
     printf("\n");
   }
-  
+
   return 0;
 }

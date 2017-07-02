@@ -21,7 +21,7 @@ static void scan(TCHAR *s) {
     lex.markPrevious();
   } while(symbol != 0);
 }
-    
+
 int main(int argc, char **argv) {
   scan(_T("sin ( + * x = ;"));
   return 0;

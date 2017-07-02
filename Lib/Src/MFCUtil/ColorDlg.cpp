@@ -5,7 +5,7 @@
 #define new DEBUG_NEW
 #endif
 
-CColorDlg::CColorDlg(const String &caption, int propertyId, D3DCOLOR color, CWnd *pParent) 
+CColorDlg::CColorDlg(const String &caption, int propertyId, D3DCOLOR color, CWnd *pParent)
 : CColormapDialog<D3DCOLOR>(CColorDlg::IDD, propertyId, pParent)
 , m_caption(caption)
 {

@@ -17,7 +17,7 @@ void PixRectOperator::setPixRect(PixRect *pixRect) {
     delete m_pixelAccessor;
     m_pixelAccessor = NULL;
   }
-  
+
   if(m_pixRect != NULL) {
     m_pixelAccessor = PixelAccessor::createPixelAccessor(m_pixRect);
   }

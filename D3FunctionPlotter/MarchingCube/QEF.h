@@ -15,7 +15,7 @@ public:
   static void evaluate(
       double mat[][3], double *vec, int rows,
       D3DXVECTOR3 *point);
-  
+
   static void computeSVD(
       double mat[][3],                // matrix (rows x 3)
       double u[][3],                  // matrix (rows x 3)

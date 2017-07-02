@@ -43,11 +43,11 @@ static void handleDir(const String &dir, FileNameHandler &nameHandler, TCHAR **a
   }
 }
 
-void FileTreeWalker::walkFileTree(const TCHAR *path, FileNameHandler &nameHandler, TCHAR **argv) {    // static 
+void FileTreeWalker::walkFileTree(const TCHAR *path, FileNameHandler &nameHandler, TCHAR **argv) {    // static
   handleDir(path, nameHandler, argv, true);
 }
 
-void FileTreeWalker::walkFileTree(const String &path, FileNameHandler &nameHandler, TCHAR **argv) {  // static 
+void FileTreeWalker::walkFileTree(const String &path, FileNameHandler &nameHandler, TCHAR **argv) {  // static
   handleDir(path, nameHandler, argv, true);
 }
 

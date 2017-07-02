@@ -17,7 +17,7 @@ public:
     m_threadTime  = ::getThreadTime();
     m_realTime    = ::getSystemTime();
   }
-  AllTime(double processTime, double threadTime, double realTime) 
+  AllTime(double processTime, double threadTime, double realTime)
     : m_processTime(processTime)
     , m_threadTime( threadTime )
     , m_realTime(   realTime   ) {

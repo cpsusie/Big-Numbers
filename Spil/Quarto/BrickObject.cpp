@@ -48,7 +48,7 @@ static Profile createProfile(const Point2DArray &points) {
   polygon.addCurve(curve);
   polygon.reverseOrder();
   result.addPolygon(polygon);
-  
+
   return result;
 }
 

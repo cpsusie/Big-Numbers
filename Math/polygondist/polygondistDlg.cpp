@@ -150,7 +150,7 @@ void CPolygondistDlg::OnPaint()  {
     __super::OnPaint();
     CClientDC dc(GetDlgItem(IDC_STATICPANEL));
     switch(m_mode) {
-    case POLYGONMODE         : 
+    case POLYGONMODE         :
       m_poly.paint(dc);
       if(m_maxIndex1 >= 0) {
         const CPoint &p1 = m_poly.point(m_maxIndex1);
@@ -286,7 +286,7 @@ void CPolygondistDlg::OnToolsFindMaxDistance() {
     MessageBox(_T("Ingen punkter i polygon"));
     return;
   }
-  CWnd       *panel = GetDlgItem(IDC_STATICPANEL); 
+  CWnd       *panel = GetDlgItem(IDC_STATICPANEL);
   CClientDC   dc(panel);
   const CRect rect  = getClientRect(panel);
 

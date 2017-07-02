@@ -68,12 +68,12 @@ bool AvlTree::nodeInsert(AvlNode **pp, int key) {
     switch(p->m_balance) {
     case 1 :
       TRACETREE(p,TURKIS,format(_T("NodeInsert:(%d): Left brance has grown. Changing balance 1 -> 0"), p->m_key).cstr());
-      p->m_balance =  0; 
+      p->m_balance =  0;
       return false;
 
     case 0 :
       TRACETREE(p,TURKIS,format(_T("NodeInsert(%d): Left brance has grown. Changing balance 0 -> -1"), p->m_key).cstr());
-      p->m_balance = -1; 
+      p->m_balance = -1;
       return true;
 
     case -1:                     // rebalance
@@ -112,14 +112,14 @@ bool AvlTree::nodeInsert(AvlNode **pp, int key) {
 
                                  // right brance has grown
     switch(p->m_balance) {
-    case -1: 
+    case -1:
       TRACETREE(p,TURKIS,format(_T("NodeInsert(%d): Right brance has grown. Changing balance -1 -> 0"), p->m_key).cstr());
-      p->m_balance = 0; 
+      p->m_balance = 0;
       return false;
 
-    case  0: 
+    case  0:
       TRACETREE(p,TURKIS,format(_T("NodeInsert(%d): Right brance has grown. Changing balance 0 -> 1"), p->m_key).cstr());
-      p->m_balance = 1; 
+      p->m_balance = 1;
       return true;
 
     case  1:                     // rebalance
@@ -157,14 +157,14 @@ bool AvlTree::balanceLeft(AvlNode **pp) {
   char b;
 
   switch(p->m_balance) {
-  case -1: 
+  case -1:
     TRACETREE(p,TURKIS,format(_T("BalanceLeft(%d): Changing balance -1 -> 0"), p->m_key).cstr());
     p->m_balance =  0;
     return true;
 
   case  0:
     TRACETREE(p,TURKIS,format(_T("BalanceLeft(%d): Changing balance 0 -> 1"), p->m_key).cstr());
-    p->m_balance =  1; 
+    p->m_balance =  1;
     return false;
 
   case  1:                     // Rebalance
@@ -221,12 +221,12 @@ bool AvlTree::balanceRight(AvlNode **pp) {
   switch(p->m_balance) {
   case  1:
     TRACETREE(p,TURKIS,format(_T("BalanceRight(%d): Changing balance 1 -> 0"), p->m_key).cstr());
-    p->m_balance =  0; 
+    p->m_balance =  0;
     return true;
 
   case  0:
     TRACETREE(p,TURKIS,format(_T("BalanceRight(%d): Changing balance 0 -> -1"), p->m_key).cstr());
-    p->m_balance = -1; 
+    p->m_balance = -1;
     return false;
 
   case -1:                     // Rebalance
@@ -621,7 +621,7 @@ static void setNodePosition(AvlNode *p, int leftBound, int rightBound, int level
 
   CPoint &pos = newPos ? p->m_newPos : p->m_oldPos;
   pos = CPoint(middle,charHeight*(6*level+1));
-  
+
   if(p->m_left ) {
     setNodePosition(p->m_left, leftBound, middle - 1, level+1, charHeight, newPos);
   }
@@ -762,7 +762,7 @@ static int checkAvlNode(const AvlNode *n) { // Return height of tree.
   if(n == NULL)
     return 0;
 
-  if(n->m_left) { 
+  if(n->m_left) {
     if(n->m_left->m_key >= n->m_key) {
       throwException(_T("Node %d has left child with key = %d"), n->m_key, n->m_left->m_key);
     }

@@ -7,11 +7,11 @@ void PixRect::alphaBlend(PixRect &dst, const CPoint &dp, const CSize &ds, const 
   alphaBlend(dst, dp.x, dp.y, ds.cx, ds.cy, src, sp.x, sp.y, ss.cx, ss.cy, srcConstAlpha);
 }
 
-void PixRect::alphaBlend(PixRect &dst, const CRect &dr, const PixRect &src, const CRect &sr, int srcConstAlpha) { // static 
+void PixRect::alphaBlend(PixRect &dst, const CRect &dr, const PixRect &src, const CRect &sr, int srcConstAlpha) { // static
   alphaBlend(dst, dr.left, dr.top, dr.Width(), dr.Height(), src, sr.left, sr.top, sr.Width(), sr.Height(), srcConstAlpha);
 }
 
-void PixRect::alphaBlend(PixRect &dst, int x, int y, int w, int h, const PixRect &src, int sx, int sy, int sw, int sh, int srcConstAlpha) {  // static 
+void PixRect::alphaBlend(PixRect &dst, int x, int y, int w, int h, const PixRect &src, int sx, int sy, int sw, int sh, int srcConstAlpha) {  // static
   HDC dstDC = dst.getDC();
   try {
     alphaBlend(dstDC, x, y, w, h, src, sx, sy, sw, sh, srcConstAlpha);
@@ -26,11 +26,11 @@ void PixRect::alphaBlend(HDC dst, const CPoint &dp, const CSize &ds, const PixRe
   alphaBlend(dst, dp.x, dp.y, ds.cx, ds.cy, src, sp.x, sp.y, ss.cx, ss.cy, srcConstAlpha);
 }
 
-void PixRect::alphaBlend(HDC dst, const CRect &dr, const PixRect &src, const CRect &sr, int srcConstAlpha) { // static 
+void PixRect::alphaBlend(HDC dst, const CRect &dr, const PixRect &src, const CRect &sr, int srcConstAlpha) { // static
   alphaBlend(dst, dr.left, dr.top, dr.Width(), dr.Height(), src, sr.left, sr.top, sr.Width(), sr.Height(), srcConstAlpha);
 }
 
-void PixRect::alphaBlend(HDC dst, int x, int y, int w, int h,  const PixRect &src, int sx, int sy, int sw, int sh, int srcConstAlpha) {  // static 
+void PixRect::alphaBlend(HDC dst, int x, int y, int w, int h,  const PixRect &src, int sx, int sy, int sw, int sh, int srcConstAlpha) {  // static
   HDC srcDC = src.getDC();
   try {
     ::alphaBlend(dst, x,y,w,h, srcDC, sx,sy,sw,sh, srcConstAlpha);

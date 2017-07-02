@@ -2,35 +2,35 @@
 //           Name: dx9_dot3_bump_mapping.cpp
 //         Author: Kevin Harris
 //  Last Modified: 04/14/05
-//    Description: This sample demonstrates how to perform Dot3 per-pixel bump 
-//                 mapping using a normal map and the D3DTOP_DOTPRODUCT3 
-//                 texture-blending operation. This technique is sometimes 
-//                 referred to as per-pixel lighting or per-pixel attenuation, 
-//                 but Dot3 per-pixel bump-mapping is what most programmers 
+//    Description: This sample demonstrates how to perform Dot3 per-pixel bump
+//                 mapping using a normal map and the D3DTOP_DOTPRODUCT3
+//                 texture-blending operation. This technique is sometimes
+//                 referred to as per-pixel lighting or per-pixel attenuation,
+//                 but Dot3 per-pixel bump-mapping is what most programmers
 //                 know it as.
 //
-//                 This sample also demonstrates how to create tangent, 
+//                 This sample also demonstrates how to create tangent,
 //                 binormal, and normal vectors, for each vertex of our test
-//                 geometry (a simple cube). These vectors are used during 
+//                 geometry (a simple cube). These vectors are used during
 //                 rendering to define an inverse tangent matrix for each
-//                 vertex. This has to be done because a normal-map stores its 
-//                 normals in tangent-space. Therefore, we need an inverse 
-//                 tangent matrix  so we can transform our scene's light vector 
-//                 from model-space into tangent-space. Once transformed, we 
-//                 then encode this new light vector as a DWORD color and pass 
-//                 it into the texture blending stage as the vertex's Diffuse 
+//                 vertex. This has to be done because a normal-map stores its
+//                 normals in tangent-space. Therefore, we need an inverse
+//                 tangent matrix  so we can transform our scene's light vector
+//                 from model-space into tangent-space. Once transformed, we
+//                 then encode this new light vector as a DWORD color and pass
+//                 it into the texture blending stage as the vertex's Diffuse
 //                 color.
 //
 // Additional Notes:
 //
-//                 The phrase "Dot3" comes form the mathematical operation that 
+//                 The phrase "Dot3" comes form the mathematical operation that
 //                 combines a light vector with a surface normal.
 //
-//                 The phrase "Per-pixel" comes from the fact that for every 
-//                 pixel in the base texture map, we store a unique surface 
+//                 The phrase "Per-pixel" comes from the fact that for every
+//                 pixel in the base texture map, we store a unique surface
 //                 normal to light it. These surface normals are passed into the
-//                 texture blending stage via a normal-map. A normal-map is a 
-//                 texture where normals (x,y,z) have been encoded and stored 
+//                 texture blending stage via a normal-map. A normal-map is a
+//                 texture where normals (x,y,z) have been encoded and stored
 //                 as (r,g,b).
 //
 //   Control Keys: d/D - Toggle Dot3 bump mapping
@@ -146,7 +146,7 @@ D3DXVECTOR3 g_vNormals[NUM_VERTICES];
 //-----------------------------------------------------------------------------
 // PROTOTYPES
 //-----------------------------------------------------------------------------
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, 
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
                    LPSTR lpCmdLine, int nCmdShow);
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 void loadTexture(void);
@@ -156,7 +156,7 @@ void render(void);
 DWORD encodeVectorAsDWORDColor(D3DXVECTOR3* vVector);
 void computeTangentsMatricesForEachVertex(void);
 void createTangentSpaceVectors( D3DXVECTOR3 *v1, D3DXVECTOR3 *v2, D3DXVECTOR3 *v3,
-                                float v1u, float v1v, float v2u, float v2v, float v3u, float v3v, 
+                                float v1u, float v1v, float v2u, float v2v, float v3u, float v3v,
                                 D3DXVECTOR3 *vTangent, D3DXVECTOR3 *vBiNormal, D3DXVECTOR3 *vNormal );
 
 //-----------------------------------------------------------------------------
@@ -172,7 +172,7 @@ int WINAPI WinMain( HINSTANCE hInstance,
     MSG        uMsg;
 
     memset(&uMsg,0,sizeof(uMsg));
-    
+
     winClass.lpszClassName = "MY_WINDOWS_CLASS";
     winClass.cbSize        = sizeof(WNDCLASSEX);
     winClass.style         = CS_HREDRAW | CS_VREDRAW;
@@ -189,7 +189,7 @@ int WINAPI WinMain( HINSTANCE hInstance,
     if( !RegisterClassEx(&winClass) )
         return E_FAIL;
 
-    g_hWnd = CreateWindowEx( NULL, "MY_WINDOWS_CLASS", 
+    g_hWnd = CreateWindowEx( NULL, "MY_WINDOWS_CLASS",
                              "Direct3D (DX9) - Dot3 Per-Pixel Bump-Mapping",
                              WS_OVERLAPPEDWINDOW | WS_VISIBLE,
                              0, 0, 640, 480, NULL, NULL, hInstance, NULL );
@@ -205,7 +205,7 @@ int WINAPI WinMain( HINSTANCE hInstance,
     while( uMsg.message != WM_QUIT )
     {
         if( PeekMessage( &uMsg, NULL, 0, 0, PM_REMOVE ) )
-        { 
+        {
             TranslateMessage( &uMsg );
             DispatchMessage( &uMsg );
         }
@@ -230,9 +230,9 @@ int WINAPI WinMain( HINSTANCE hInstance,
 // Name: WindowProc()
 // Desc: The window's message handler
 //-----------------------------------------------------------------------------
-LRESULT CALLBACK WindowProc( HWND   hWnd, 
-                             UINT   msg, 
-                             WPARAM wParam, 
+LRESULT CALLBACK WindowProc( HWND   hWnd,
+                             UINT   msg,
+                             WPARAM wParam,
                              LPARAM lParam )
 {
     static POINT ptLastMousePosit;
@@ -306,7 +306,7 @@ LRESULT CALLBACK WindowProc( HWND   hWnd,
                 g_fSpinX -= (ptCurrentMousePosit.x - ptLastMousePosit.x);
                 g_fSpinY -= (ptCurrentMousePosit.y - ptLastMousePosit.y);
             }
-            
+
             ptLastMousePosit.x = ptCurrentMousePosit.x;
             ptLastMousePosit.y = ptCurrentMousePosit.y;
         }
@@ -314,9 +314,9 @@ LRESULT CALLBACK WindowProc( HWND   hWnd,
 
         case WM_CLOSE:
         {
-            PostQuitMessage(0); 
+            PostQuitMessage(0);
         }
-        
+
         case WM_DESTROY:
         {
             PostQuitMessage(0);
@@ -335,7 +335,7 @@ LRESULT CALLBACK WindowProc( HWND   hWnd,
 
 //-----------------------------------------------------------------------------
 // Name: loadTexture()
-// Desc: 
+// Desc:
 //-----------------------------------------------------------------------------
 void loadTexture( void )
 {
@@ -362,7 +362,7 @@ void loadTexture( void )
 
 //-----------------------------------------------------------------------------
 // Name: init()
-// Desc: 
+// Desc:
 //-----------------------------------------------------------------------------
 void init( void )
 {
@@ -375,7 +375,7 @@ void init( void )
     D3DCAPS9 d3dCaps;
 
     if( FAILED( g_pD3D->GetDeviceCaps( D3DADAPTER_DEFAULT,
-                                       D3DDEVTYPE_HAL, 
+                                       D3DDEVTYPE_HAL,
                                        &d3dCaps ) ) )
     {
         // Respond to failure of GetDeviceCaps
@@ -414,8 +414,8 @@ void init( void )
 
     loadTexture();
 
-    g_pd3dDevice->CreateVertexBuffer( 24*sizeof(Vertex), D3DUSAGE_DYNAMIC, 
-                                      Vertex::FVF_Flags, D3DPOOL_DEFAULT, 
+    g_pd3dDevice->CreateVertexBuffer( 24*sizeof(Vertex), D3DUSAGE_DYNAMIC,
+                                      Vertex::FVF_Flags, D3DPOOL_DEFAULT,
                                       &g_pVertexBuffer, NULL );
     void *pVertices = NULL;
 
@@ -424,11 +424,11 @@ void init( void )
     g_pVertexBuffer->Unlock();
 
     D3DXMATRIX matProj;
-    D3DXMatrixPerspectiveFovLH( &matProj, D3DXToRadian( 45.0f ), 
+    D3DXMatrixPerspectiveFovLH( &matProj, D3DXToRadian( 45.0f ),
                                 640.0f / 480.0f, 0.1f, 100.0f );
     g_pd3dDevice->SetTransform( D3DTS_PROJECTION, &matProj );
 
-    g_pd3dDevice->SetRenderState( D3DRS_ZENABLE, TRUE ); 
+    g_pd3dDevice->SetRenderState( D3DRS_ZENABLE, TRUE );
     //g_pd3dDevice->SetRenderState( D3DRS_SHADEMODE, D3DSHADE_FLAT ); // Direct3d doesn't like this at all when doing Dot3.
     g_pd3dDevice->SetRenderState( D3DRS_SHADEMODE, D3DSHADE_GOURAUD );
 
@@ -471,7 +471,7 @@ void init( void )
     // For each vertex, create a tangent vector, binormal, and normal
     //
 
-    // Initialize the inverse tangent matrix for each vertex to the identity 
+    // Initialize the inverse tangent matrix for each vertex to the identity
     // matrix before we get started.
     for( int i = 0; i < NUM_VERTICES; ++i )
     {
@@ -485,18 +485,18 @@ void init( void )
 
 //-----------------------------------------------------------------------------
 // Name: shutDown()
-// Desc: 
+// Desc:
 //-----------------------------------------------------------------------------
 void shutDown( void )
 {
     if( g_pSphereMesh != NULL )
         g_pSphereMesh->Release();
 
-    if( g_pNormalMapTexture != NULL ) 
+    if( g_pNormalMapTexture != NULL )
         g_pNormalMapTexture->Release();
 
-    if( g_pVertexBuffer != NULL ) 
-        g_pVertexBuffer->Release(); 
+    if( g_pVertexBuffer != NULL )
+        g_pVertexBuffer->Release();
 
     if( g_pd3dDevice != NULL )
         g_pd3dDevice->Release();
@@ -507,7 +507,7 @@ void shutDown( void )
 
 //-----------------------------------------------------------------------------
 // Name: computeTangentsMatricesForEachVertex()
-// Desc: 
+// Desc:
 //-----------------------------------------------------------------------------
 void computeTangentsMatricesForEachVertex( void )
 {
@@ -519,7 +519,7 @@ void computeTangentsMatricesForEachVertex( void )
     D3DXVECTOR3 vNormal;
 
     //
-    // For each cube face defined in the vertex array, compute a tangent matrix 
+    // For each cube face defined in the vertex array, compute a tangent matrix
     // for each of the four vertices that define it.
     //
 
@@ -628,9 +628,9 @@ void computeTangentsMatricesForEachVertex( void )
 
 //-----------------------------------------------------------------------------
 // Name: createTangentSpaceVectors()
-// Desc: Given a vertex (v1) and two other vertices (v2 & v3) which define a 
-//       triangle, this function will return Tangent, BiNormal, and Normal, 
-//       vectors which can be used to define the tangent matrix for the first 
+// Desc: Given a vertex (v1) and two other vertices (v2 & v3) which define a
+//       triangle, this function will return Tangent, BiNormal, and Normal,
+//       vectors which can be used to define the tangent matrix for the first
 //       vertex's position (v1).
 //
 // Args: v1        - vertex 1
@@ -669,12 +669,12 @@ void createTangentSpaceVectors( D3DXVECTOR3 *v1,
     float vDirVec_v3u_to_v1u = v3u - v1u;
     float vDirVec_v3v_to_v1v = v3v - v1v;
 
-    float fDenominator = vDirVec_v2u_to_v1u * vDirVec_v3v_to_v1v - 
+    float fDenominator = vDirVec_v2u_to_v1u * vDirVec_v3v_to_v1v -
                          vDirVec_v3u_to_v1u * vDirVec_v2v_to_v1v;
 
     if( fDenominator < 0.0001f && fDenominator > -0.0001f )
     {
-        // We're too close to zero and we're at risk of a divide-by-zero! 
+        // We're too close to zero and we're at risk of a divide-by-zero!
         // Set the tangent matrix to the identity matrix and do nothing.
         *vTangent  = D3DXVECTOR3( 1.0f, 0.0f, 0.0f );
         *vBiNormal = D3DXVECTOR3( 0.0f, 1.0f, 0.0f );
@@ -701,12 +701,12 @@ void createTangentSpaceVectors( D3DXVECTOR3 *v1,
         D3DXVec3Cross( &N, &T, &B );
 
         // Calculate and cache the reciprocal value
-        float fScale2 = 1.0f / ((T.x * B.y * N.z - T.z * B.y * N.x) + 
-                                (B.x * N.y * T.z - B.z * N.y * T.x) + 
+        float fScale2 = 1.0f / ((T.x * B.y * N.z - T.z * B.y * N.x) +
+                                (B.x * N.y * T.z - B.z * N.y * T.x) +
                                 (N.x * T.y * B.z - N.z * T.y * B.x));
 
         //
-        // Use the temporary T (Tangent), (B) Binormal, and N (Normal) vectors 
+        // Use the temporary T (Tangent), (B) Binormal, and N (Normal) vectors
         // to calculate the inverse of the tangent matrix that they represent.
         // The inverse of the tangent matrix is what we want since we need that
         // to transform the light's vector into tangent-space.
@@ -730,14 +730,14 @@ void createTangentSpaceVectors( D3DXVECTOR3 *v1,
         D3DXVec3Normalize( &(*vNormal), &(*vNormal) );
 
         //
-        // NOTE: Since the texture-space of Direct3D and OpenGL are laid-out 
-        //       differently, a single normal map can't look right in both 
+        // NOTE: Since the texture-space of Direct3D and OpenGL are laid-out
+        //       differently, a single normal map can't look right in both
         //       unless you make some adjustments somewhere.
         //
         //       You can adjust or fix this problem in three ways:
         //
         //       1. Create two normal maps: one for OpenGL and one for Direct3D.
-        //       2. Flip the normal map image over as you load it into a texture 
+        //       2. Flip the normal map image over as you load it into a texture
         //          object.
         //       3. Flip the binormal over when computing the tangent-space
         //          matrix.
@@ -751,7 +751,7 @@ void createTangentSpaceVectors( D3DXVECTOR3 *v1,
 
 //-----------------------------------------------------------------------------
 // Name: encodeVectorAsDWORDColor()
-// Desc: 
+// Desc:
 //-----------------------------------------------------------------------------
 DWORD encodeVectorAsDWORDColor( D3DXVECTOR3* vVector )
 {
@@ -764,7 +764,7 @@ DWORD encodeVectorAsDWORDColor( D3DXVECTOR3* vVector )
 
 //-----------------------------------------------------------------------------
 // Name: render()
-// Desc: 
+// Desc:
 //-----------------------------------------------------------------------------
 void render( void )
 {
@@ -801,11 +801,11 @@ void render( void )
 
     D3DXMatrixTranslation( &matTrans, 0.0f, 0.0f, g_fDistance );
 
-    D3DXMatrixRotationYawPitchRoll( &matRot, 
-                                    D3DXToRadian(g_fSpinX), 
-                                    D3DXToRadian(g_fSpinY), 
+    D3DXMatrixRotationYawPitchRoll( &matRot,
+                                    D3DXToRadian(g_fSpinX),
+                                    D3DXToRadian(g_fSpinY),
                                     0.0f );
-    
+
     // This sample is not really making use of a view matrix
     D3DXMatrixIdentity( &matView );
 
@@ -845,7 +845,7 @@ void render( void )
         //
         // Since our cube's vertex data is stored in a Vertex Buffer, we will
         // need to lock it briefly so we can encode the new tangent-space
-        // L vectors that we're going to create into the diffuse color of each 
+        // L vectors that we're going to create into the diffuse color of each
         // vertex.
         //
 
@@ -855,22 +855,22 @@ void render( void )
         for( int i = 0; i < NUM_VERTICES; ++i )
         {
             //
-            // For each vertex, rotate L (of N.L) into tangent-space and 
-            // pass it into Direct3D's texture blending system by packing it 
+            // For each vertex, rotate L (of N.L) into tangent-space and
+            // pass it into Direct3D's texture blending system by packing it
             // into the vertex's diffuse color.
             //
 
-            D3DXVECTOR3 vCurrentVertex = D3DXVECTOR3( g_cubeVertices[i].x, 
-                                                      g_cubeVertices[i].y, 
+            D3DXVECTOR3 vCurrentVertex = D3DXVECTOR3( g_cubeVertices[i].x,
+                                                      g_cubeVertices[i].y,
                                                       g_cubeVertices[i].z );
 
             vVertToLightMS = vLightPosMS - vCurrentVertex;
             D3DXVec3Normalize( &vVertToLightMS, &vVertToLightMS );
 
             //
-            // Build up an inverse tangent-space matrix using the Tangent, 
-            // Binormal, and Normal calculated for the current vertex and 
-            // then use it to transform our L vector (of N.L), which is in 
+            // Build up an inverse tangent-space matrix using the Tangent,
+            // Binormal, and Normal calculated for the current vertex and
+            // then use it to transform our L vector (of N.L), which is in
             // model-space, into tangent-space.
             //
             // A tangent matrix is of the form:
@@ -880,7 +880,7 @@ void render( void )
             // |Tz Bz Nz 0|
             // |0  0  0  1|
             //
-            // Note: Our vectors have already been inverted, so there is no 
+            // Note: Our vectors have already been inverted, so there is no
             // need to invert our tangent matrix once we build it up.
             //
 
@@ -893,10 +893,10 @@ void render( void )
             D3DXVec3TransformNormal( &vVertToLightTS, &vVertToLightMS, &invTangentMatrix );
 
             //
-            // Last but not least, we must encode our new L vector as a DWORD 
-            // value so we can set it as the new vertex color. Of course, the 
-            // hardware assumes that we are  going to do this, so it will 
-            // simply decode the original vector back out by reversing the 
+            // Last but not least, we must encode our new L vector as a DWORD
+            // value so we can set it as the new vertex color. Of course, the
+            // hardware assumes that we are  going to do this, so it will
+            // simply decode the original vector back out by reversing the
             // DOWRD encdoing we've performed here.
             //
 
@@ -908,11 +908,11 @@ void render( void )
         //
         // STAGE 0
         //
-        // Use D3DTOP_DOTPRODUCT3 to find the dot-product of (N.L), where N is 
-        // stored in the normal map, and L is passed in as the vertex color - 
+        // Use D3DTOP_DOTPRODUCT3 to find the dot-product of (N.L), where N is
+        // stored in the normal map, and L is passed in as the vertex color -
         // D3DTA_DIFFUSE.
         //
-        
+
         g_pd3dDevice->SetTexture( 0, g_pNormalMapTexture );
         g_pd3dDevice->SetTextureStageState( 0, D3DTSS_TEXCOORDINDEX, 0 );
 

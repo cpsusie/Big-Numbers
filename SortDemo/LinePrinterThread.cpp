@@ -66,7 +66,7 @@ void CLinePrinterThread::clear() {
   }
 }
 
-CLinePrinterThread *CLinePrinterThread::newThread(PropertyChangeListener *listener) { // static 
+CLinePrinterThread *CLinePrinterThread::newThread(PropertyChangeListener *listener) { // static
   CLinePrinterThread *thr = (CLinePrinterThread*)AfxBeginThread(RUNTIME_CLASS(CLinePrinterThread),THREAD_PRIORITY_NORMAL,0,CREATE_SUSPENDED);
   thr->addPropertyChangeListener(listener);
   thr->ResumeThread();

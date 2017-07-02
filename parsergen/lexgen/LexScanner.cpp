@@ -107,7 +107,7 @@ start: // restart here if we meet a comment /*...*/ of //
         m_token = NAME;
         break;
       }
-      
+
       break;
     case '/':
       nextChar();
@@ -336,8 +336,8 @@ Token LexScanner::nextToken() {                // called when we parse between %
   if(*m_next == '"') {                         // At start or end of a quoted String
                                                // All characters are treated as
     m_inQuote = !m_inQuote;                    // literals while m_inQuote is true
-    nextInput();                          
-    if(*m_next == '\0') {        
+    nextInput();
+    if(*m_next == '\0') {
       m_token  = EOS ;
       m_lexeme = 0;
       return m_token;
@@ -440,7 +440,7 @@ LexScanner::LexScanner(const String &fname) : m_macros(101) {
   m_length            = 0;
   m_collecting        = false;
   m_debug             = false;
-  m_inQuote           = false;      
+  m_inQuote           = false;
   m_ruleSection       = false;
   nextLine();
 }

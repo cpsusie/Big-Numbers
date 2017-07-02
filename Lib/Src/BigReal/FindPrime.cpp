@@ -94,7 +94,7 @@ public:
   UINT run();
 };
 
-PrimeSearcher::PrimeSearcher(int id, int digitCount, PrimeQueue &queue, MillerRabinHandler *handler) 
+PrimeSearcher::PrimeSearcher(int id, int digitCount, PrimeQueue &queue, MillerRabinHandler *handler)
 : m_id(        id        )
 , m_digitCount(digitCount)
 , m_queue(     queue     )

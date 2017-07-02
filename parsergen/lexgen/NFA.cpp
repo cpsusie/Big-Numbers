@@ -9,7 +9,7 @@ NFAstate::NFAstate(int edge) {
   m_accept    = NULL;
 }
 
-NFAstate *NFAstate::successor(int c) const { 
+NFAstate *NFAstate::successor(int c) const {
   return (m_edge == c || (m_edge == EDGE_CHCLASS && m_charClass->contains(c))) ? m_next1 : NULL;
 }
 

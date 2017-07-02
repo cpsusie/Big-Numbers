@@ -108,7 +108,7 @@ void DiffDoc::processBuffer(const TCHAR *buf, DiffFilter &filter, LineArray &la,
       *(nl-1) = 0;
       la.add(cp);
       { if(((la.size() & CHECK_INTERVAL) == 0) && runnable) runnable->checkInterruptAndSuspendFlags(); }
-    } else {    
+    } else {
       *nl = 0;
       la.add(cp);
       { if(((la.size() & CHECK_INTERVAL) == 0) && runnable) runnable->checkInterruptAndSuspendFlags(); }
@@ -272,7 +272,7 @@ void Diff::recalculateTextPointers() { // When this has been called, DONT do any
   if(!m_enableAddDiffLines) {
     throwException(_T("recalculateTextPointers already called")); // Should only be called once. Only after a call to clear, we can again addLines !!
   }
-  
+
   m_stringPool.clearIndex();
   m_stringPool.setTextCapacity(m_stringPool.getTextSize());
   m_lines.setCapacity(m_lines.size());
@@ -564,7 +564,7 @@ bool Diff::refreshLines(CompareJob *job) {
   return true;
 }
 
-void Diff::clear() { 
+void Diff::clear() {
   m_lines.clear();
   m_stringPool.clear();
   m_maxLineLength      = 0;
@@ -628,7 +628,7 @@ bool Diff::setTabSize(int newValue, bool refresh) {
   }
   return true;
 }
-  
+
 bool Diff::setViewWhiteSpace(bool newValue, bool refresh) {
   if(newValue == m_viewWhiteSpace) {
     return false;

@@ -12,7 +12,7 @@ BOOL CTextBox::CreateEx(DWORD dwStyle, DWORD dwExStyle, const RECT& rect, CWnd *
 	                         ,dwStyle | WS_CHILD
 	                         ,rect.left, rect.top
 	                         ,rect.right - rect.left, rect.bottom - rect.top
-	                         ,pParentWnd->GetSafeHwnd(), (HMENU)nID, NULL); 
+	                         ,pParentWnd->GetSafeHwnd(), (HMENU)nID, NULL);
   if(ret) {
     ret = ModifyStyleEx(0, dwExStyle);
   }

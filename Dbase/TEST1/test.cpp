@@ -83,7 +83,7 @@ static selectff() {
     select t || (select t from ff union select (substring(t,1,2) || t) from ff)
       into :firstcolumn
     from ff
-    where 
+    where
       k = (select k + 1 from ff intersect select k from ff)
     and :l1 is null
   end-exec
@@ -94,7 +94,7 @@ static selectff() {
 */
 
 static selectMyTable() {
-  
+
 #ifdef __NEVER__
   exec sql
     select firstcolumn
@@ -128,7 +128,7 @@ static selectMyTable() {
 }
 
 static void insertMyTable() {
-  
+
 #ifdef __NEVER__
   exec sql
    insert into mytable (
@@ -250,22 +250,22 @@ static void insertMyTable() {
 
 
 static void insertTabDate() {
-  
+
 #ifdef __NEVER__
   exec sql
 	INSERT INTO mytable (
 	   firstcolumn
 	  ,c1
 	  ,c2
-	  ,s 
-	  ,i 
+	  ,s
+	  ,i
 	  ,i1
 	  ,i2
-	  ,l 
+	  ,l
 	  ,l1
 	  ,l2
-	  ,f 
-	  ,d 
+	  ,f
+	  ,d
 	  ,varch1
 	  ,varch2
 	  ) values (
@@ -301,7 +301,7 @@ static void insertTabDate() {
       ch
      ,d
      )
-   values ( 
+   values (
      :ii - 120
     ,#28.01-03# - 2
     )
@@ -317,7 +317,7 @@ static void insertTabDate() {
 */
 
 static void insertLilleTable() {
-  
+
 #ifdef __NEVER__
   EXEC SQL
     insert into lilletable (
@@ -333,7 +333,7 @@ static void insertLilleTable() {
     ,:dd
     ,:ii
     ,:d
-    )    
+    )
   END-EXEC
 #endif
 #line 186 "C:/mytools2015/Dbase/TEST1/test.sqc"
@@ -371,10 +371,10 @@ static void insertLilleTable() {
 
 
 static void selectLilleTable() {
-  
+
 #ifdef __NEVER__
   EXEC SQL
-    select 
+    select
       " ",
       a.firstcolumn,
       b.firstcolumn,
@@ -424,7 +424,7 @@ static void selectLilleTable() {
 }
 
 static void dropMyTable() {
-  
+
 #ifdef __NEVER__
   exec sql
     drop table mytable
@@ -472,10 +472,10 @@ static void insertRowsIntoMyTable() {
 }
 
 static void createMyTable() {
-  
+
 #ifdef __NEVER__
   exec sql
-    create table mytable (  
+    create table mytable (
       firstcolumn char(30)  not null,
       c1  unsigned char not null default 2,
       c2  unsigned char not null default 255,
@@ -511,7 +511,7 @@ static void createMyTable() {
 }
 
 static void createLilleTable() {
-  
+
 #ifdef __NEVER__
   exec sql
     drop table lilletable
@@ -527,10 +527,10 @@ static void createLilleTable() {
 
   checkSql();
 
-  
+
 #ifdef __NEVER__
   exec sql
-    create table lilletable (  
+    create table lilletable (
       firstcolumn varchar(240) not null,
       nullcolumn1 char(7),
       dd          double,
@@ -550,7 +550,7 @@ static void createLilleTable() {
 
   checkSql();
 
-  
+
 #ifdef __NEVER__
   exec sql
     create index ddd on lilletable (ii,dd,firstcolumn)
@@ -566,7 +566,7 @@ static void createLilleTable() {
 
   checkSql();
 
-  
+
 #ifdef __NEVER__
   exec sql
     create index fff on lilletable (dd,ii,firstcolumn)
@@ -609,7 +609,7 @@ static void insertRowsIntoTabdate() {
 }
 
 static void dbConnect() {
-  
+
 #ifdef __NEVER__
   EXEC SQL CONNECT TO :dbname user :username using :password;
 #endif
@@ -643,7 +643,7 @@ static void dbConnect() {
 }
 
 static void dbDisconnect() {
-  
+
 #ifdef __NEVER__
   EXEC SQL CONNECT RESET;
 #endif
@@ -675,7 +675,7 @@ int main(int argc, char **argv) {
   time_t tt;
   time(&tt);
   srand(tt);
-  for(argv++;*argv && *(cp = *argv) == '-';argv++)    
+  for(argv++;*argv && *(cp = *argv) == '-';argv++)
     for(cp++;*cp;cp++) {
       switch(*cp) {
       case 'd':
@@ -698,14 +698,14 @@ int main(int argc, char **argv) {
   dbConnect();
   switch(cmd) {
     case CMD_DROP:
-      dropMyTable(); 
+      dropMyTable();
       break;
     case CMD_CREATE:
       createLilleTable();
-      createMyTable(); 
+      createMyTable();
       break;
     case CMD_INSERT:
-//      insertRowsIntoLilleTable(); 
+//      insertRowsIntoLilleTable();
     insertRowsIntoMyTable();
 //      insertRowsIntoTabdate();
       break;

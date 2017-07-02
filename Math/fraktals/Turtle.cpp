@@ -38,7 +38,7 @@ void Turtle::jumpTo(const Point2D &p) {
   m_currentp = p;
 }
 
-Point2D Turtle::pos() { 
+Point2D Turtle::pos() {
   return m_currentp;
 }
 
@@ -50,7 +50,7 @@ void Turtle::turnTo(double dir) {
   m_currentdir = GRAD2RAD(dir);
 }
 
-double Turtle::dir(void) { 
+double Turtle::dir(void) {
   return RAD2GRAD(m_currentdir);
 }
 

@@ -202,8 +202,8 @@ void VirtualMachine::checkRange(double minvalue, double maxvalue) {
 
 #ifdef __NEVER__
 static void checkhostvartype(sqlapi_varlist &hostvar, DbFieldType expectedtype) {
-  /* It should be checked, that the hostvar-type is the same as in the 
-     SqlApiBindStmt. The user, could have changed the type, in the file generated 
+  /* It should be checked, that the hostvar-type is the same as in the
+     SqlApiBindStmt. The user, could have changed the type, in the file generated
      by sqlprep, or generated wrong code with his own preprocessor.
      So we have to check it here too
   */
@@ -513,7 +513,7 @@ void VirtualMachine::run(int entrypoint) {
         v2 = m_stack.pop();
         m_stack.push(v2 == v1);
         break;
-        
+
       case CODENQ          :
         v1 = m_stack.pop();
         v2 = m_stack.pop();
@@ -689,7 +689,7 @@ void sqlExecute(   Database                  &db        ,
 
 void sqlExecute(   Database                  &db        ,
                    const String              &stmt      ,
-                   StringArray               &errmsg    , 
+                   StringArray               &errmsg    ,
                    sqlca                     &ca        ) {
 
   VirtualCode vc;

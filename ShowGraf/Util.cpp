@@ -1,21 +1,21 @@
 #include "stdafx.h"
 
 static const ColorName colorNameArray[] = {
-  _T("BLACK"       ) ,BLACK      
- ,_T("BLUE"        ) ,RGB(0  ,0  ,196)    
- ,_T("GREEN"       ) ,RGB(0  ,196,0  )    
- ,_T("CYAN"        ) ,RGB(0  ,196,196)  
- ,_T("RED"         ) ,RGB(196,0  ,0  )    
- ,_T("MAGENTA"     ) ,RGB(196,0  ,128)  
- ,_T("BROWN"       ) ,RGB(128,0  ,128)  
+  _T("BLACK"       ) ,BLACK
+ ,_T("BLUE"        ) ,RGB(0  ,0  ,196)
+ ,_T("GREEN"       ) ,RGB(0  ,196,0  )
+ ,_T("CYAN"        ) ,RGB(0  ,196,196)
+ ,_T("RED"         ) ,RGB(196,0  ,0  )
+ ,_T("MAGENTA"     ) ,RGB(196,0  ,128)
+ ,_T("BROWN"       ) ,RGB(128,0  ,128)
  ,_T("LIGHTGRAY"   ) ,RGB(200,200,200)
  ,_T("DARKGRAY"    ) ,RGB(128,128,128)
- ,_T("LIGHTBLUE"   ) ,RGB(0  ,0  ,255)    
- ,_T("LIGHTGREEN"  ) ,RGB(0  ,255,0  )    
- ,_T("LIGHTCYAN"   ) ,RGB(0  ,255,255)  
- ,_T("LIGHTRED"    ) ,RGB(255,0  ,0  )    
- ,_T("LIGHTMAGENTA") ,RGB(255,0  ,255)  
- ,_T("YELLOW"      ) ,RGB(255,255,0  )  
+ ,_T("LIGHTBLUE"   ) ,RGB(0  ,0  ,255)
+ ,_T("LIGHTGREEN"  ) ,RGB(0  ,255,0  )
+ ,_T("LIGHTCYAN"   ) ,RGB(0  ,255,255)
+ ,_T("LIGHTRED"    ) ,RGB(255,0  ,0  )
+ ,_T("LIGHTMAGENTA") ,RGB(255,0  ,255)
+ ,_T("YELLOW"      ) ,RGB(255,255,0  )
 };
 
 int getColorCount() {

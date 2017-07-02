@@ -13,7 +13,7 @@ ComplexVector root1(double *c) {
 ComplexVector root2(double *c) {
   const double A = c[0], B = c[1], C = c[2];
   const Complex D = B*B - 4*A*C;
-  
+
   ComplexVector roots(2);
   roots[0] = (-B + sqrt(D)) / (2*A);
   roots[1] = (-B - sqrt(D)) / (2*A);

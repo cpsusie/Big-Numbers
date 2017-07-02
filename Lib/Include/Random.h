@@ -27,7 +27,7 @@ public:
   double  nextDouble(double low, double high); // return uniform distributed random double between low (inclusive) and high (exlucisve)
   double  nextGaussian(double mean, double s); // return normal distributed(mean, s) random number with average = mean, and std. deviation = s
 
-  inline void randomize() {                    // randomize RandomNumber-generator, to start the sequence at a random number. 
+  inline void randomize() {                    // randomize RandomNumber-generator, to start the sequence at a random number.
     setSeed(getRandomSeed());
   }
                                                // actually setSeed(getRandomSeed()); see below
@@ -108,7 +108,7 @@ public:
     return _T("MMIX");
   }
 };
- 
+
 void randomize();                              // randomize standard random-generator and _standardRandomGenerator (declared below)
 
 extern Random *_standardRandomGenerator;

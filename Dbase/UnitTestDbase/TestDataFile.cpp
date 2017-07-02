@@ -23,7 +23,7 @@ namespace UnitTestDataFile {
     int   cmp(const char *rec);
   };
 
-  RecordData::RecordData(BYTE pattern, UINT size) { 
+  RecordData::RecordData(BYTE pattern, UINT size) {
     verify(size <= sizeof(m_record));
     m_size = size;
     setPattern(pattern);

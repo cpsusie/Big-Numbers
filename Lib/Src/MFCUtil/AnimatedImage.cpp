@@ -219,7 +219,7 @@ void AnimatedImage::releaseBackground() {
 void AnimatedImage::flushPr(const CPoint &p, PixRect *src, double scaleFactor) const {
   flushPr(CClientDC(m_parent), p, src, scaleFactor);
 }
-  
+
 void AnimatedImage::flushPr(CDC &dc, const CPoint &p, PixRect *src, double scaleFactor) const {
   if(scaleFactor == 1.0) {
     PixRect::bitBlt(dc, p, src->getSize(), SRCCOPY, src, ORIGIN);
@@ -375,7 +375,7 @@ void AnimatedImage::paintAllFrames(const CRect &r) {
                        );
 */
   }
- 
+
   CPoint p = r.TopLeft();
   saveBackground(p, &rSize);
   for(int i = 0, lc = 0; i < n; i++) {

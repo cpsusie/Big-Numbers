@@ -182,7 +182,7 @@ class DFARegexStepHandler;
 #else
 
 #define _DBG_callCompilerHandler(handler, codeString, stackString, fastMapStr, scannerIndex)
-#define DBG_callCompilerHandler(codeString, stackString, fastMapStr, scannerIndex) 
+#define DBG_callCompilerHandler(codeString, stackString, fastMapStr, scannerIndex)
 #define DBG_callSearchHandler(startPos, charIndex)
 #define DBG_callMatchHandler()
 
@@ -216,7 +216,7 @@ public:
 #ifdef _DEBUG
   void setCharIndex(intptr_t start, intptr_t end);
   String toString() const;
-#endif  
+#endif
 };
 
 class NFA : public CompactArray<NFAState*> {
@@ -243,7 +243,7 @@ public:
 #ifdef _DEBUG
   String toString() const;
   int getMaxCharIndex() const;
-#endif  
+#endif
 };
 
 #ifdef _DEBUG

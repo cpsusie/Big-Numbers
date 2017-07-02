@@ -4,7 +4,7 @@
 
 #define SETCONST(dst,src,type) { type *p = (type*)&(dst); *p = src; }
 
-KeyFileWrapper::KeyFileWrapper(const String &fileName, int keySize, int valueSize) 
+KeyFileWrapper::KeyFileWrapper(const String &fileName, int keySize, int valueSize)
 : m_fileName(fileName)
 , m_keySize(keySize)
 , m_valueSize(valueSize)
@@ -162,7 +162,7 @@ void KeyFileWrapper::load(ByteInputStream &s) {
 
 DEFINECLASSNAME(FileHashMapKeyIterator);
 
-FileHashMapKeyIterator::FileHashMapKeyIterator(KeyFileWrapper &keyFile) 
+FileHashMapKeyIterator::FileHashMapKeyIterator(KeyFileWrapper &keyFile)
   : m_keyFile(keyFile)
   , m_keyCursor(keyFile.getFile(), RELOP_TRUE, NULL, 0, RELOP_TRUE, NULL, 0, SORT_ASCENDING)
 {
@@ -202,7 +202,7 @@ void FileHashMapEntryIterator::flush() {
   }
 }
 
-FileHashMapEntryIterator::FileHashMapEntryIterator(KeyFileWrapper &keyFile) 
+FileHashMapEntryIterator::FileHashMapEntryIterator(KeyFileWrapper &keyFile)
   : m_keyFile(&keyFile)
   , m_keyCursor(keyFile.getFile(), RELOP_TRUE, NULL, 0, RELOP_TRUE, NULL, 0, SORT_ASCENDING)
 {

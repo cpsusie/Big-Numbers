@@ -13,7 +13,7 @@ public:
   const void *key() const {
     return HashSetNode::key();
   }
-  void *value() { 
+  void *value() {
     return m_value;
   }
   const void *value() const {

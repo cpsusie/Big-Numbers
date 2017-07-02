@@ -142,7 +142,7 @@ double getDouble(const BigReal &x) {
       return result * BigReal::pow10(firstDigitCount);
     } else if(scale10 < DBL_MIN_10_EXP) { // Prevent underflow
       result = pow(10,x.m_expo * LOG10_BIGREALBASE + firstDigitCount) * (x.m_negative ? -result : result);
-      return result / pow(10,digitCount); 
+      return result / pow(10,digitCount);
     } else {
       return pow(10,scale10) * (x.m_negative ? -result : result);
     }

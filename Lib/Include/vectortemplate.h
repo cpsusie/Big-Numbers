@@ -124,7 +124,7 @@ public:
     }
     return result;
   }
-  
+
   VectorTemplate<T> operator/(const T &d) const {
     const size_t n = m_dim;
     VectorTemplate<T> result(n);
@@ -133,7 +133,7 @@ public:
     }
     return result;
   }
-  
+
   friend VectorTemplate<T> operator+(const VectorTemplate<T> &lts, const VectorTemplate<T> &rhs) {
     const size_t n = lts.m_dim;
 
@@ -147,7 +147,7 @@ public:
     }
     return result;
   }
-  
+
   friend VectorTemplate<T> operator-(const VectorTemplate<T> &lts, const VectorTemplate<T> &rhs) {
     const size_t n = lts.m_dim;
 
@@ -161,7 +161,7 @@ public:
     }
     return result;
   }
-  
+
   friend VectorTemplate<T> operator-(const VectorTemplate<T> &v) {
     const size_t n = v.m_dim;
 

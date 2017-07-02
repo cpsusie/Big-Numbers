@@ -126,7 +126,7 @@ void CExprDialog::createExprHelpButton(int buttonId, int exprEditId) {
     return;
   }
   const CPoint bp = getWindowPosition(this, buttonId);
-  
+
   but->DestroyWindow();
   setExprFont(exprEditId);
   m_helpButton[m_helpButtonCount++].Create(this, OBMIMAGE(RGARROW), bp, buttonId);

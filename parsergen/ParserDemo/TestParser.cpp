@@ -27,7 +27,7 @@ class TestScanner : public ScannerToTest {
 private:
   LRparser &m_parser;
 
-  void verror(const SourcePosition &pos, const TCHAR *format, va_list argptr) { 
+  void verror(const SourcePosition &pos, const TCHAR *format, va_list argptr) {
     m_parser.verror(pos, format, argptr);
   }
 
@@ -142,7 +142,7 @@ void TestParser::waitForInitThread() {
   }
 }
 
-const String &TestParser::getStateItems(unsigned int state) { 
+const String &TestParser::getStateItems(unsigned int state) {
   if(m_initThread != NULL) {
     waitForInitThread();
   }
@@ -150,7 +150,7 @@ const String &TestParser::getStateItems(unsigned int state) {
 }
 
 void TestParser::userStackInit() {
-  m_stacktop = m_userStack; 
+  m_stacktop = m_userStack;
   m_root     = NULL;
   deleteNodeList();
 }
@@ -159,7 +159,7 @@ void TestParser::setStackSize(unsigned int newSize) {
   LRparser::setStackSize(newSize);
   delete[] m_userStack;
   m_userStack = new SyntaxNodep[getStackSize()];
-}  
+}
 
 void TestParser::setNewInput(const TCHAR *string) {
   m_inputStream.open(string);

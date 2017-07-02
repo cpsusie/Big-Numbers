@@ -77,7 +77,7 @@ int main(int argc, char **argv) {
   crit.add(S5);
 
   PairArray pairs = findDistinctRepresentatives(crit);
-  
+
   for(int i = 0; i < pairs.size(); i++) {
     ElementPair &p = pairs[i];
     printf("<%zd,%zd>\n",p.m_girl+1,p.m_boy); // +1 just to make the range of girls from 1 to 5

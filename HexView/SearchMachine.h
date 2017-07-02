@@ -51,11 +51,11 @@ public:
   bool isForwardSearch() const {
     return m_forwardSearch;
   }
-  
+
   __int64 getStartPosition() const {
     return m_startPosition;
   }
-  
+
   const String getFindWhat() const {
     return m_findWhat;
   }

@@ -199,7 +199,7 @@ void NFAState::setAccepting(BYTE anchor) {
   m_accept.setAccepting(anchor);
 }
 
-NFAState *NFAState::getSuccessor(int c) const { 
+NFAState *NFAState::getSuccessor(int c) const {
   return ((m_edge == c) || ((m_edge == EDGE_CHCLASS) && m_charClass->contains(c))) ? m_next1 : NULL;
 }
 
@@ -255,7 +255,7 @@ String NFAState::allAllocatedToString() { // static
   return result;
 }
 
-const CompactArray<NFAState*> &NFAState::getAllAllocated() { // static 
+const CompactArray<NFAState*> &NFAState::getAllAllocated() { // static
   int id = 0;
   CompactArray<NFAState*> tmp;
   for(size_t i = 0; i < s_allocatedStates.size(); i++) {

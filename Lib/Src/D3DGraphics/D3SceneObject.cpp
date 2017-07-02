@@ -98,7 +98,7 @@ String SceneObjectWithVertexBuffer::toString() const {
 SceneObjectWithIndexBuffer::SceneObjectWithIndexBuffer(D3Scene &scene) : SceneObjectWithVertexBuffer(scene) {
   m_indexBuffer = NULL;
 }
- 
+
 SceneObjectWithIndexBuffer::~SceneObjectWithIndexBuffer() {
   if(m_indexBuffer != NULL) {
     m_indexBuffer->Release();
@@ -127,7 +127,7 @@ String SceneObjectWithIndexBuffer::toString() const {
 
 // ------------------------------------------------ D3LineArray -----------------------------------------------------------
 
-SceneObjectWithMesh::SceneObjectWithMesh(D3Scene &scene, LPD3DXMESH mesh) 
+SceneObjectWithMesh::SceneObjectWithMesh(D3Scene &scene, LPD3DXMESH mesh)
 : D3SceneObject(scene)
 , m_fillMode(D3DFILL_SOLID)
 , m_shadeMode(D3DSHADE_GOURAUD)
@@ -336,7 +336,7 @@ void SceneObjectBox::makeSquareFace(MeshBuilder &mb, int v0, int v1, int v2, int
   f.addVertexNormalIndex(v3, nIndex);
 }
 
-SceneObjectBox::SceneObjectBox(D3Scene &scene, const D3DXCube3 &cube, int materialIndex) 
+SceneObjectBox::SceneObjectBox(D3Scene &scene, const D3DXCube3 &cube, int materialIndex)
 : SceneObjectWithMesh(scene)
 , m_materialIndex(materialIndex)
 , m_pdus(scene.getObjPDUS())

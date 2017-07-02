@@ -122,7 +122,7 @@ ExpressionNode *ParserTree::getPoly(ExpressionNode *oldPoly, ExpressionNodeArray
   const ExpressionNode       *oldArgument  = oldPoly->getArgument();
   ExpressionNode             *result       = (newCoefficientArray == oldCoefArray)
                                           && (newArgument         == oldArgument )
-                                           ? oldPoly 
+                                           ? oldPoly
                                            : getPoly(newCoefficientArray, newArgument);
   return result;
 }

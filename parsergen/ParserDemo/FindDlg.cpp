@@ -103,14 +103,14 @@ void FindDlg::OnButtonregsymbolsmenu() {
   CRect r;
   GetDlgItem(IDC_BUTTONREGSYMBOLSMENU)->GetWindowRect(&r);
   menu.GetSubMenu(0)->TrackPopupMenu(TPM_LEFTALIGN|TPM_RIGHTBUTTON, r.right, r.top, this );
-    
+
 }
 
 void FindDlg::addRegSymbol(const TCHAR *s, int cursorpos) {
   CComboBox *b = (CComboBox*)GetDlgItem(IDC_COMBOFINDWHAT);
 
   UpdateData();
-  
+
   String reg = m_findWhat.GetBuffer(m_findWhat.GetLength());
 
   reg = substr(reg, 0, m_selStart) + s + substr(reg, m_selEnd, reg.length());
@@ -156,7 +156,7 @@ BOOL FindDlg::PreTranslateMessage(MSG *pMsg) {
 }
 
 void FindDlg::OnGotofindwhat() {
-  GetDlgItem(IDC_COMBOFINDWHAT)->SetFocus();    
+  GetDlgItem(IDC_COMBOFINDWHAT)->SetFocus();
 }
 
 void FindDlg::OnSelendokCombofindwhat() {

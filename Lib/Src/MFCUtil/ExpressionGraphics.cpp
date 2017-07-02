@@ -180,7 +180,7 @@ public:
   }
 };
 
-AlignedTextImage::AlignedTextImage(PixRectDevice &device, FontCache &fontCache, const String &text, bool textFont, int fontSize, D3DCOLOR backgroundColor) 
+AlignedTextImage::AlignedTextImage(PixRectDevice &device, FontCache &fontCache, const String &text, bool textFont, int fontSize, D3DCOLOR backgroundColor)
 : AlignedImage(device, fontSize, CSize(10,10)) {
 
   CFont         *font   = fontCache.getFont(textFont, fontSize);
@@ -360,8 +360,8 @@ AlignedImage *ExpressionPainter::createImage(const CSize &size) {
 }
 
 AlignedImage *ExpressionPainter::createTextImage(const CSize &size) {
-  AlignedImage *image = (m_backgroundColor != D3D_WHITE) 
-                      ? new AlignedTextImage(m_device, s_fontCache, size, m_backgroundColor) 
+  AlignedImage *image = (m_backgroundColor != D3D_WHITE)
+                      ? new AlignedTextImage(m_device, s_fontCache, size, m_backgroundColor)
                       : new AlignedTextImage(m_device, s_fontCache, size);
   m_imageTable.add(image);
   return image;
@@ -714,7 +714,7 @@ AlignedImage *ExpressionPainter::getRootImage(const ExpressionNode *n, int fontS
   const ExpressionNode *root             = n->right();
   AlignedImage         *radImage         = getImage(radicand, fontSize, radRect);
   const int             rootSignFontSize = max(radImage->getHeight(),fontSize);
-  
+
 //  m_backgroundColor = D3DCOLOR_XRGB(255,0,0);
   AlignedImage         *rootSignImage = getOpImage(ROOT, rootSignFontSize, rootSignRect);
 //  m_backgroundColor = D3D_WHITE;
@@ -799,7 +799,7 @@ AlignedImage *ExpressionPainter::getFunctionImage(const ExpressionNode *n, int f
   AlignedImage *functionImage = getTextImage(ss.m_text, ss.m_textFont, fontSize, funcRect);
 
   ImageArray imageList;
-  imageList.add(functionImage); 
+  imageList.add(functionImage);
   imageList.add(getOpImage(LPAR, fontSize, lpRect));
   rect.addChild(funcRect).addChild(lpRect);
 
@@ -901,7 +901,7 @@ AlignedImage *ExpressionPainter::getStdPolyImage(const ExpressionNode *n, int fo
     }
     switch(pow) {
     case 0 : // dont paint
-      break; 
+      break;
     case 1 :
       { ExpressionRectangle argRect;
         result.add(getImage(n->getArgument(), fontSize, argRect));
@@ -1353,7 +1353,7 @@ ExpressionImage &ExpressionImage::operator=(const ExpressionImage &src) {
   }
   return *this;
 }
-  
+
 void ExpressionImage::setParents() {
   traverseRectangleTree(ParentInitializer());
 }

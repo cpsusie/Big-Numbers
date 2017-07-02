@@ -81,7 +81,7 @@ BOOL CGrabXmlDlg::OnInitDialog() {
 
   SetIcon(m_hIcon, TRUE);			// Set big icon
   SetIcon(m_hIcon, FALSE);		// Set small icon
-  
+
   m_cbUrl.substituteControl(this, IDC_COMBOURL, _T("UrlHistory"));
 
   m_layoutManager.OnInitDialog(this);
@@ -219,7 +219,7 @@ IHTMLInputElement *CGrabXmlDlg::findInputElementByName(const String &name) {
   IHTMLInputElement      *result = NULL;
 
   V(m_currentDoc->get_all(&array));
-  
+
   IDispatch         *pElemDisp = NULL;
   IHTMLInputElement *pElem     = NULL;
   _bstr_t            bname     = name.cstr();
@@ -258,7 +258,7 @@ String CGrabXmlDlg::getDocumentText(IHTMLDocument2 *doc) {
       varIndex.lVal = i;
       VARIANT var2;
       VariantInit( &var2 );
-      IDispatch *pDisp; 
+      IDispatch *pDisp;
 
       V(pColl->item( varIndex, var2, &pDisp ));
 

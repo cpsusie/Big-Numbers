@@ -120,7 +120,7 @@ void Game::newGame(bool colored, Player startPlayer) {
   m_state.m_hasWinner    = false;
 };
 
-#define BRICKUNUSED(b) (m_state.m_unused.contains(b)) 
+#define BRICKUNUSED(b) (m_state.m_unused.contains(b))
 #define ONBOARD(r,c)   (((BYTE)(r) < ROWCOUNT) && ((BYTE)(c) < COLCOUNT))
 
 int Game::firstBrick() const {
@@ -221,7 +221,7 @@ void Game::nextMove(Move &m) const {
 
 void Game::doMove(const Move &m, int lookahead) {
   m_state.m_board[m.m_field.m_row][m.m_field.m_col] = Brick::s_attr[m.m_brick];
-  m_state.m_unused.remove(m.m_brick); 
+  m_state.m_unused.remove(m.m_brick);
   if(isWinnerMove(m)) {
     m_state.m_gameOver  = true;
     m_state.m_hasWinner = true;

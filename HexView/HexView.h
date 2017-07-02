@@ -11,7 +11,7 @@ public:
   String getRecentFile(        int index);
   void   removeFromRecentFiles(int index);
   Settings m_settings;
-  
+
   virtual BOOL InitInstance();
 
   afx_msg void OnAppAbout();

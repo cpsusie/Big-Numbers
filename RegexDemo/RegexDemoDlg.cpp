@@ -128,7 +128,7 @@ BOOL CRegexDemoDlg::OnInitDialog() {
     m_charMarkers.add(new CharacterMarker(this, IDC_COMBOTARGET, IDB_BITMAP_PINK_UPARROW   , false)); // MATCH_STARTMARK
     m_charMarkers.add(new CharacterMarker(this, IDC_COMBOTARGET, IDB_BITMAP_GREEN_DOWNARROW, true )); // MATCH_DMARK
     m_charMarkers.add(new CharacterMarker(this, IDC_COMBOTARGET, IDB_BITMAP_GREEN_UPARROW  , false)); // LASTACCEPT_MARK
-    
+
     m_layoutManager.OnInitDialog(this);
 
     m_layoutManager.addControl(IDC_COMBOPATTERN            , RELATIVE_WIDTH                            );
@@ -303,7 +303,7 @@ void CRegexDemoDlg::ajourDialogItems() {
       return;
     }
     switch(getThreadState()) {
-    case REGEX_UNDEFINED: 
+    case REGEX_UNDEFINED:
       flags.remove(MENU_DEBUG);
       break;
     case REGEX_COMPILING:
@@ -383,7 +383,7 @@ void CRegexDemoDlg::OnEditCopy() {
   String copyText;
   switch(getFocusCtrlId(this)) {
   case IDC_COMBOPATTERN : copyText = getWindowText(getPatternWindow()); break;
-  case IDC_COMBOTARGET  : copyText = getWindowText(getTargetWindow());  break;   
+  case IDC_COMBOTARGET  : copyText = getWindowText(getTargetWindow());  break;
   case IDC_LISTBYTECODE : copyText = m_codeWindow.getText();            break;
   default: return;
   }
@@ -554,7 +554,7 @@ LRESULT CRegexDemoDlg::OnMsgThreadRunning(WPARAM wp, LPARAM lp) {
       if(m_regex.isCodeDirty()) {
         fillCodeWindow(getCompiledCodeText());
       }
-    
+
       if(isThreadFinished()) {
         clearThreadState();
         if(m_debugThread->getRegexPhase() == REGEX_SUCEEDED) {
@@ -579,7 +579,7 @@ LRESULT CRegexDemoDlg::OnMsgThreadRunning(WPARAM wp, LPARAM lp) {
         case REGEX_COMPILING: showCompilerState(); break;
         case REGEX_SEARCHING: showSearchState();   break;
         case REGEX_MATCHING : showMatchState();    break;
-        case REGEX_UNDEFINED: 
+        case REGEX_UNDEFINED:
           if(m_debugThread->getCommand() == COMMAND_COMPILE) { // compiler errors are given as exception, so thread is in undefined state when this happens
             showCompilerError(m_debugThread->getResultMsg());
           } else {
@@ -825,7 +825,7 @@ String CRegexDemoDlg::getCompiledCodeText() const {
 
 void CRegexDemoDlg::fillCodeWindow(const String &codeText) {
   CDebugTextWindow *cw = getCodeWindow();
-  
+
   cw->setText(codeText);
 
   if(m_regex.isCompiled() && !isCodeTextDFATables()) {

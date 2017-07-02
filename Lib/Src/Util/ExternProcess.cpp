@@ -53,7 +53,7 @@ void Pipe::close() {
 
 void Pipe::close(int index) {
   int &fd = m_fd[index];
-  if(fd != -1) { 
+  if(fd != -1) {
     ::_close(fd);
     fd = -1;
   }

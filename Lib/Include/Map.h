@@ -58,7 +58,7 @@ public:
 template <class K, class V> class Map {
 protected:
   AbstractMap *m_map;
-  Map(AbstractMap *map) { 
+  Map(AbstractMap *map) {
     m_map = map;
   }
   static int compareValues(const void *v1, const void *v2) {

@@ -62,7 +62,7 @@ int Board::getZobristKey(int t) { // static
 }
 
 #define TRANSLATE(table, n) getZobrist##table(n)
-#else 
+#else
 #define TRANSLATE(table, n) s_zobrist##table[n]
 #endif
 
@@ -73,11 +73,11 @@ int Board::getZobristKey(int t) { // static
 #define HASHINDEX(m)       HASHCODE(Index,m)
 #define HASHKEY(m)         HASHCODE(Key  ,m)
 
-static const char _wpSteps[]      = { 16, 15, 17, 0                     }; // WP 
-static const char _bpSteps[]      = {-16,-15,-17, 0                     }; // BP 
+static const char _wpSteps[]      = { 16, 15, 17, 0                     }; // WP
+static const char _bpSteps[]      = {-16,-15,-17, 0                     }; // BP
 static const char _knightSteps[]  = {-14, 14,-18, 18,-31, 31,-33, 33, 0 }; // N
 static const char _kqSteps[]      = { -1,  1,-16, 16,-15, 15,-17, 17, 0 }; // K/Q
-static const char _bishopSteps[]  = {-15, 15,-17, 17, 0                 }; // B  
+static const char _bishopSteps[]  = {-15, 15,-17, 17, 0                 }; // B
 static const char _rookSteps[]    = { -1,  1,-16, 16, 0                 }; // R
 
 const char *Board::s_stepList[] = {
@@ -148,7 +148,7 @@ void Board::initHashMap() {
 #define REQUEST_LOOKAHEAD   0x08
 #define REQUEST_SEARCHNULL  0x10
 
-bool Board::findMove() { // static 
+bool Board::findMove() { // static
   s_bestMove.setNoMove();
   if(s_gameOver) {
     return false;
@@ -219,10 +219,10 @@ String Board::getUCIScoreStr(int score) { // static
 
 GameResult Board::getGameResult() { // static
   int count = 0;
-// Search last 50 states with this stm for third repeat 
+// Search last 50 states with this stm for third repeat
   for(int j = s_historySize-4; j >= 0; j-=2) {
     if(s_bc == s_boardHistory[j]) {
-      if(++count == 2) {// third repeat 
+      if(++count == 2) {// third repeat
         return GR_REPETITION;
       }
     }
@@ -268,11 +268,11 @@ int Board::negamax(int side, int alfa, int beta, int e, int EP, char request, in
 
 
   alfa -= alfa <  e;                                                                                                         // adjust window: delay bonus
-  beta -= beta <= e;                                      
+  beta -= beta <= e;
 
   if((a.m_key-s_bc.m_hashCode.m_key)|(request&REQUEST_FINDMOVE)                                                              // miss: other pos. or empty
     |!(((bestScore <= alfa)|a.m_cutAlpha) && ((bestScore >= beta)|a.m_cutBeta))                                              // or window incompatible
-    ) {                                                                                                                 
+    ) {
     depth    = 0;
     bestMove.setNoMove();                                                                                                    // start iteration from scratch
     bestMove.d.m_from = a.m_move.d.m_from;
@@ -286,7 +286,7 @@ int Board::negamax(int side, int alfa, int beta, int e, int EP, char request, in
 
   while((depth++ < n)
      || (depth   < 3)                                                                                                        // min depth = 2 iterative deepening loop
-     || ((request&REQUEST_FINDMOVE)&&!s_bestMove.isMove()) 
+     || ((request&REQUEST_FINDMOVE)&&!s_bestMove.isMove())
        && ((depth<=s_maxDepth) || (s_bestMove = bestMove, depth=3))                                                          // root: deepen
        ) {
 
@@ -322,13 +322,13 @@ int Board::negamax(int side, int alfa, int beta, int e, int EP, char request, in
       }
 #endif
 
-      char movingPieceType, step; 
+      char movingPieceType, step;
       for(const char *stepp = s_stepList[movingPieceType=movingPiece&7]; step = *(stepp++);) {                            // loop over directions in stepList
 A:                                                                                                                        // resume normal after best
         int F, G;
         F = G = S;                                                                                                        // (F,G)=castling.rights
         char capturedPiece, capturedPieceType;
-        TO = FROM;                                                                                    
+        TO = FROM;
         do {                                                                                                              // traverse ray.
           if(h) {
             if(!bestMove.d.m_ybit) {                                                                                      // sneak in prev. best move
@@ -336,7 +336,7 @@ A:                                                                              
             }
             TO = bestMove.d.m_to;
             move.d.m_promoteIndex = bestMove.d.m_promoteIndex ? (bestMove.d.m_promoteIndex-1) : 0;
-          } else {                                                                                                      
+          } else {
             if((TO += step) & MASK88) {                                                                                   // check for board edge
               break;
             }

@@ -35,7 +35,7 @@ public:
     return m_buffer[(m_head+fromhead)%m_capacity];
   }
 };
-  
+
 Queue::Queue(int capacity) {
   m_capacity  = capacity;
   m_size      = 0;
@@ -111,7 +111,7 @@ public:
   }
 };
 
-Grepper::Grepper(bool useRegularExpression, const String &pattern, bool ignoreCase, IntInterval &surroundingInterval, bool printFname, bool fnameOnly, bool complement, bool verbose) 
+Grepper::Grepper(bool useRegularExpression, const String &pattern, bool ignoreCase, IntInterval &surroundingInterval, bool printFname, bool fnameOnly, bool complement, bool verbose)
 : m_useRegularExpression(useRegularExpression)
 , m_queue(-surroundingInterval.getFrom())
 , m_surroundingInterval(surroundingInterval)
@@ -211,7 +211,7 @@ void Grepper::handleFileName(const TCHAR *name, DirListEntry &info) {
 }
 
 static void usage() {
-  _ftprintf( stderr, 
+  _ftprintf( stderr,
     _T("Usage:grep options pattern [files...]\n"
        "      grep options -e pattern [files...]\n"
        "  Options: -i: Case-sensitive. Default is case-insensitive\n"

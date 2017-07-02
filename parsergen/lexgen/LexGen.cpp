@@ -106,7 +106,7 @@ static void printOutputFiles(const String &templateName
 }
 
 static void usage() {
-  _ftprintf(stderr, 
+  _ftprintf(stderr,
     _T("Usage:lexgen [options] input.\n"
        " -mS: Use String S as template rather than lexgenXXX.par.\n"
        " -l : Suppress #line directives in output.\n"
@@ -141,7 +141,7 @@ int _tmain(int argc, TCHAR **argv) {
     for(argv++; *argv && *(cp = *argv) == '-'; argv++) {
       for(cp++;*cp;cp++) {
         switch(*cp) {
-        case 'm': 
+        case 'm':
           templateName = cp+1;
           if(templateName.length() == 0) usage();
           break;
@@ -166,7 +166,7 @@ int _tmain(int argc, TCHAR **argv) {
           }
           break;
         case 'w':
-          callWizard = true; 
+          callWizard = true;
           wizardName = cp+1;
           break;
         case 'O':

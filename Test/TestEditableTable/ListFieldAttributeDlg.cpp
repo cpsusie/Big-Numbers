@@ -175,8 +175,8 @@ typedef struct {
 } ComboTypeElement;
 
 static const ComboTypeElement comboTypeTable[] = {
-  0, LFT_SHORT       
- ,1, LFT_INT         
+  0, LFT_SHORT
+ ,1, LFT_INT
  ,2, LFT_FLOAT
  ,3, LFT_DOUBLE
  ,4, LFT_STRING

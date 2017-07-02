@@ -38,7 +38,7 @@ GameDescription Whist3EPlayer::getDecidedGame(const Whist3Player &player) {
   } else if(n > 8) {
     point[GAMETYPE_SANS] = 3;
   } else if(n > 7) {
-    point[GAMETYPE_SANS] = 2; 
+    point[GAMETYPE_SANS] = 2;
   } else {
     point[GAMETYPE_SANS] = 1;
   }
@@ -54,7 +54,7 @@ GameDescription Whist3EPlayer::getDecidedGame(const Whist3Player &player) {
   } else if(i > 4) {
     point[GAMETYPE_SPAR] = 3;
   } else if(i > 3) {
-    point[GAMETYPE_SPAR] = 2; 
+    point[GAMETYPE_SPAR] = 2;
   } else {
     point[GAMETYPE_SPAR] = 1;
   }
@@ -63,7 +63,7 @@ GameDescription Whist3EPlayer::getDecidedGame(const Whist3Player &player) {
   if(n > 7.5) {
     point[GAMETYPE_SPAR]++; // bonus
   }
-                                                         
+
   Suit suit = hand.getMaxSuit(i,n);
 
   if(i > 5) {
@@ -108,7 +108,7 @@ GameDescription Whist3EPlayer::getDecidedGame(const Whist3Player &player) {
         break;
       }
     }
-  } else { // find the smallest that fit  
+  } else { // find the smallest that fit
     for(int p = 1; p <= 4; p++) {
       if(!history.isPointsUsed(m_myId,p)) {
         pointsPerTrick = p;
@@ -227,10 +227,10 @@ int Whist3EPlayer::findTopCard(const Whist3Player &player) const {
 UINT Whist3EPlayer::getCardToPlay(const Whist3Player &player) {
   GameType gameType = player.getGameDesc().getGameType();
   switch(gameType) {
-  case GAMETYPE_SOL  : return findCardToPlaySol(  player); 
-  case GAMETYPE_SANS : return findCardToPlaySans( player); 
-  case GAMETYPE_SPAR : return findCardToPlaySpar( player); 
-  case GAMETYPE_FARVE: return findCardToPlayFarve(player); 
+  case GAMETYPE_SOL  : return findCardToPlaySol(  player);
+  case GAMETYPE_SANS : return findCardToPlaySans( player);
+  case GAMETYPE_SPAR : return findCardToPlaySpar( player);
+  case GAMETYPE_FARVE: return findCardToPlayFarve(player);
   default            :
     throwException(_T("findCardToPlay:Illegal gametype=%d"),gameType);
     return 0;
@@ -278,7 +278,7 @@ UINT Whist3EPlayer::findCardToPlaySol(const Whist3Player &player) const {
     }
     break;
   }
-  throwException(_T("%s dropped to the end. played.getCount()=%d"),__TFUNCTION__, played.getCount()); 
+  throwException(_T("%s dropped to the end. played.getCount()=%d"),__TFUNCTION__, played.getCount());
   return 0;
 }
 
@@ -331,7 +331,7 @@ UINT Whist3EPlayer::findCardToPlaySans(const Whist3Player &player) const {
     }
     break;
   }
-  throwException(_T("%s dropped to the end. played.getCount()=%d"), __TFUNCTION__, played.getCount()); 
+  throwException(_T("%s dropped to the end. played.getCount()=%d"), __TFUNCTION__, played.getCount());
   return 0;
 }
 
@@ -425,7 +425,7 @@ UINT Whist3EPlayer::findCardToPlaySpar(const Whist3Player &player) const {
     }
     break;
   }
-  throwException(_T("%s dropped to the end. played.getCount()=%d"), __TFUNCTION__, played.getCount()); 
+  throwException(_T("%s dropped to the end. played.getCount()=%d"), __TFUNCTION__, played.getCount());
   return 0;
 }
 
@@ -518,7 +518,7 @@ UINT Whist3EPlayer::findCardToPlayFarve(const Whist3Player &player) const {
     }
     break;
   }
-  throwException(_T("%s dropped to the end. played.getCount()=%d"), __TFUNCTION__, played.getCount()); 
+  throwException(_T("%s dropped to the end. played.getCount()=%d"), __TFUNCTION__, played.getCount());
   return 0;
 }
 

@@ -266,24 +266,24 @@ public:
   const wchar_t *parseOct(const wchar_t *str); // do
 };
 
-// 4 version of all 5 binary arithmetic operators, 
+// 4 version of all 5 binary arithmetic operators,
 // 3 binary logical operators and 6 compare-operators
 //    signed   op signed
 //    signed   op unsigned
 //    unsigned op signed
 //    unsigned op unsigned
-//  For +,-,*,&,|,^,==,!= the called function is the same 
+//  For +,-,*,&,|,^,==,!= the called function is the same
 //  regardless of signed/unsigned combinations.
-//  For /,%,<,>,<=,>= however the signed function is used 
+//  For /,%,<,>,<=,>= however the signed function is used
 //  only for the "signed op signed" combination.
-//  For left shift (<<) there is no difference for 
+//  For left shift (<<) there is no difference for
 //  signed and unsigned function, but for right shift (>>)
 //  the leftmost bit (bit 127) indicates the sign, and will
 //  be copied to all new bits comming in from left for _int128
 //  and 0-bits will be shifted in for _uint128 (because there
 //  is no sign).
 //  For assign-operators (+=,-=...) the same rules apply.
-//  Vesions for built in integral types are then defined 
+//  Vesions for built in integral types are then defined
 //  on top of these
 
 // 4 basic combination of operator+ (128-bit integers - dont care about signed/unsigned)
@@ -308,7 +308,7 @@ inline _uint128 operator+(const _uint128 &lft, const _uint128 &rhs) {
   return result;
 }
 
-// 4 basic combination of operator- (128-bit integers - dont care about signed/unsigned) 
+// 4 basic combination of operator- (128-bit integers - dont care about signed/unsigned)
 inline _int128 operator-(const _int128 &lft, const _int128 &rhs) {
   _int128 result(lft);
   int128sub(&result, &rhs);
@@ -330,7 +330,7 @@ inline _uint128 operator-(const _uint128 &lft, const _uint128 &rhs) {
   return result;
 }
 
-// 4 basic combination of operator* (128-bit integers - dont care about signed/unsigned) 
+// 4 basic combination of operator* (128-bit integers - dont care about signed/unsigned)
 inline _int128 operator*(const _int128 &lft, const _int128 &rhs) {
   _int128 result(lft);
   int128mul(&result, &rhs);

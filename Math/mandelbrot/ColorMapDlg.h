@@ -9,7 +9,7 @@ public:
   ColorMapData() : m_maxIteration(2000), m_randomSeed(TRUE), m_seed(127) {
   }
   bool operator==(const ColorMapData &d) const {
-    return (m_maxIteration == d.m_maxIteration) 
+    return (m_maxIteration == d.m_maxIteration)
         && (m_randomSeed   == d.m_randomSeed  )
         && (m_randomSeed || (m_seed == d.m_seed));
   }

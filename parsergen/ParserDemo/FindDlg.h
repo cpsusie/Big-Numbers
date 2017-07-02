@@ -16,7 +16,7 @@ public:
   TextPosition(const SourcePosition &pos) : SourcePosition(pos) {
   }
 
-  void reset() { 
+  void reset() {
     setLocation(-1, -1);
   }
   bool isSet() const {

@@ -81,7 +81,7 @@ int main(int argc, char **argv) {
   }
 
   keydef.dump();
-    
+
   for(;;) {
     try {
       KeyType key1, key2;

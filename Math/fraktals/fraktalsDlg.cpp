@@ -72,10 +72,10 @@ BOOL CFraktalsDlg::OnInitDialog() {
 
   SetIcon(m_hIcon, TRUE);         // Set big icon
   SetIcon(m_hIcon, FALSE);        // Set small icon
-  
+
   m_currentlevel = 1;
   m_currentfraktal = ID_FILE_SIERPINSKI;
-  
+
   return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -201,7 +201,7 @@ void CFraktalsDlg::sirp2(int level, double l, int dir) {
     m_turtle.turn(dir);  sirp2(level,l,-dir) ; m_turtle.turn(-dir); m_turtle.move(l);
     sirp2(level,l, dir); m_turtle.turn(dir)  ; m_turtle.move(l);    m_turtle.turn(-dir);
     sirp2(level,l, dir); m_turtle.turn(2*dir); m_turtle.move(l);
-    m_turtle.turn(dir); sirp2(level,l, -dir) ; m_turtle.turn(dir); 
+    m_turtle.turn(dir); sirp2(level,l, -dir) ; m_turtle.turn(dir);
 
   }
 }
@@ -225,7 +225,7 @@ void CFraktalsDlg::trekant(int level, double l, int dir) {
     m_turtle.turn(dir) ; trekant(level,l,-dir);
     m_turtle.turn(-dir); trekant(level,l,dir);
     m_turtle.turn(-dir); trekant(level,l,-dir);
-    m_turtle.turn(dir) ; 
+    m_turtle.turn(dir) ;
   }
 }
 
@@ -370,7 +370,7 @@ void CFraktalsDlg::drawstjerne(int level) {
 
 void CFraktalsDlg::drawfraktal() {
   switch(m_currentfraktal) {
-  case ID_FILE_SIERPINSKI: 
+  case ID_FILE_SIERPINSKI:
     drawsierpinski(m_currentlevel);
     break;
   case ID_FILE_TREKANT   :
@@ -425,7 +425,7 @@ void CFraktalsDlg::setcurrentfraktype(int id) {
   m_currentfraktal = id;
 }
 
-void CFraktalsDlg::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) 
+void CFraktalsDlg::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
   switch(nChar) {
   case 34: /* Pagedown */
@@ -447,7 +447,7 @@ void CFraktalsDlg::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
   __super::OnKeyDown(nChar, nRepCnt, nFlags);
 }
 
-void CFraktalsDlg::OnSize(UINT nType, int cx, int cy) 
+void CFraktalsDlg::OnSize(UINT nType, int cx, int cy)
 {
   __super::OnSize(nType, cx, cy);
   m_turtle.OnSize(this);

@@ -45,7 +45,7 @@ Mesh::MeshPoint *Mesh::addPoint(const D3DXVECTOR3 &v) {
     it0 = m_points.lower_bound(key);
   }
   PointsMap::iterator it1 = m_points.upper_bound(key + 1);
-  
+
   PointsMap::iterator it = it0;
   while(it != it1) {
     const MeshPoint &mpoint = (*it).second;
@@ -269,7 +269,7 @@ void Mesh::computeVertexNormals() {
 
 #ifdef DEBUG
 
-String Mesh::toString(const FacesList &faceList) { // static 
+String Mesh::toString(const FacesList &faceList) { // static
   String result = "FaceList:\n";
   for(FacesList::const_iterator it = faceList.begin(); it != faceList.end(); ++it) {
     const MeshFace *face = (*it);
@@ -289,7 +289,7 @@ String Mesh::MeshPlane::toString() const {
   return format("MeshPlane:%s\n%s", p.toString().cstr(), Mesh::toString(faces).cstr());
 }
 
-String Mesh::toString(const Mesh::PointsMap &points) { // static 
+String Mesh::toString(const Mesh::PointsMap &points) { // static
   String result = "Points:\n";
   for(PointsMap::const_iterator it = points.begin(); it != points.end(); ++it) {
     const MeshPoint &point = (*it).second;

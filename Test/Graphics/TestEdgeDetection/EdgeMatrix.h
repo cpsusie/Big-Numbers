@@ -70,7 +70,7 @@ private:
     return CPoint((int)(index % m_width + m_rect.left), (int)(index / m_width + m_rect.top));
   }
 public:
-  PointSet(const CRect &r) 
+  PointSet(const CRect &r)
     : BitSet(getPixelCount(r))
     , m_rect(r)
     , m_width(r.Width())
@@ -95,7 +95,7 @@ class FillInfo {
 private:
   PointSet m_filledSet, m_edgeSet, m_innerSet;
 public:
-  FillInfo(const CRect &r) 
+  FillInfo(const CRect &r)
     : m_filledSet(r)
     , m_edgeSet( r)
     , m_innerSet(r)

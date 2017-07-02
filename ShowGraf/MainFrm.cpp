@@ -301,14 +301,14 @@ template<class T> T getRadioItemValue(const CWnd *wnd, const RadioMenuItem<T> *i
 static const RadioMenuItem<AxisType> XAxisTypeItems[] = {
   ID_VIEW_SCALE_X_LINEAR      , AXIS_LINEAR
  ,ID_VIEW_SCALE_X_LOGARITHMIC , AXIS_LOGARITHMIC
- ,ID_VIEW_SCALE_X_NORMALDIST  , AXIS_NORMAL_DISTRIBUTION     
+ ,ID_VIEW_SCALE_X_NORMALDIST  , AXIS_NORMAL_DISTRIBUTION
  ,ID_VIEW_SCALE_X_DATETIME    , AXIS_DATE
 };
 
 static const RadioMenuItem<AxisType> YAxisTypeItems[] = {
   ID_VIEW_SCALE_Y_LINEAR      , AXIS_LINEAR
  ,ID_VIEW_SCALE_Y_LOGARITHMIC , AXIS_LOGARITHMIC
- ,ID_VIEW_SCALE_Y_NORMALDIST  , AXIS_NORMAL_DISTRIBUTION     
+ ,ID_VIEW_SCALE_Y_NORMALDIST  , AXIS_NORMAL_DISTRIBUTION
  ,ID_VIEW_SCALE_Y_DATETIME    , AXIS_DATE
 };
 
@@ -321,7 +321,7 @@ static const RadioMenuItem<GraphStyle> graphStyleTypeItems[] = {
 static const RadioMenuItem<TrigonometricMode> trigonometricItems[] = {
   ID_OPTIONS_RADIANS          , RADIANS
  ,ID_OPTIONS_DEGREES          , DEGREES
- ,ID_OPTIONS_GRADS            , GRADS  
+ ,ID_OPTIONS_GRADS            , GRADS
 };
 
 void CMainFrame::setXAxisType(AxisType type) {
@@ -331,7 +331,7 @@ void CMainFrame::setXAxisType(AxisType type) {
   case AXIS_NORMAL_DISTRIBUTION :
   case AXIS_DATE                :
     break;
-  case AXIS_LOGARITHMIC         : 
+  case AXIS_LOGARITHMIC         :
     { DataRange cr = getView()->getDataRange();
       DataRange dr = getDoc()->getDataRange();
       if(cr.getMinX() < 0) {

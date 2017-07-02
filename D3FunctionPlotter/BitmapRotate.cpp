@@ -94,7 +94,7 @@ static void alphaBlend(LPDIRECT3DDEVICE device, LPDIRECT3DTEXTURE texture, const
   p[1] = BlendVertex(dstRect.right , dstRect.top     , qw, 0 );
   p[2] = BlendVertex(dstRect.right , dstRect.bottom  , qw, qh);
   p[3] = BlendVertex(dstRect.left  , dstRect.bottom  , 0 , qh);
-  
+
   V(device->SetRenderState( D3DRS_ALPHABLENDENABLE  , TRUE   ));
   V(device->SetRenderState( D3DRS_ALPHATESTENABLE   , TRUE   ));
 
@@ -120,7 +120,7 @@ static void render(LPDIRECT3DDEVICE device, LPDIRECT3DTEXTURE texture, const CSi
 
   CPoint leftTop(0,0);
   set2DProjection(device, getSurfaceSize(renderTarget));
-  
+
   V(device->BeginScene());
 
   alphaBlend(device, texture, CRect(leftTop, bmSize));

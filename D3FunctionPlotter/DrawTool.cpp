@@ -362,7 +362,7 @@ void DrawTool::invertNormals() {
 
 void DrawTool::mirror(bool horizontal) {
   if(!canMirror()) return;
-  
+
   m_polygonSet.mirror(horizontal);
   repaintProfile();
   repaintScreen();
@@ -573,7 +573,7 @@ void DistanceFinder::line(const Point2D &from, const Point2D &to) {
     m_minDist = dist;
   }
 }
-  
+
 #define MAXDIST 8
 
 ProfilePolygon *SelectTool::findNearestPolygon(const CPoint &p) {

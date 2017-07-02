@@ -32,9 +32,9 @@ SyntaxNode *SyntaxNode::getChild(int i) {
   if(i == 0) throwNoSonError(this,i);
 
   switch(getToken()) {
-  case IDENTIFIER      : 
-  case STRINGLITERAL : 
-  case NUMBER    : 
+  case IDENTIFIER      :
+  case STRINGLITERAL :
+  case NUMBER    :
     throwNoSonError(this,i);
     break;
   }
@@ -43,9 +43,9 @@ SyntaxNode *SyntaxNode::getChild(int i) {
 
 int SyntaxNode::getChildCount() const {
   switch(getToken()) {
-  case IDENTIFIER      : 
-  case STRINGLITERAL : 
-  case NUMBER    : 
+  case IDENTIFIER      :
+  case STRINGLITERAL :
+  case NUMBER    :
     return 0;
   }
   return u.m_children.m_count;

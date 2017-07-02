@@ -6,7 +6,7 @@
 #define new DEBUG_NEW
 #endif
 
-CLightDlg::CLightDlg(PropertyChangeListener *listener, CWnd *pParent) 
+CLightDlg::CLightDlg(PropertyChangeListener *listener, CWnd *pParent)
 : CColormapDialog<LIGHT>(CLightDlg::IDD, SP_LIGHTPARAMETERS, pParent)
 {
   if(listener) {

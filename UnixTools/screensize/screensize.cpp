@@ -19,9 +19,9 @@ int main(int argc, char **argv) {
     }
   }
 
-  HDC hdcScreen = getScreenDC(); 
+  HDC hdcScreen = getScreenDC();
   int scrWidth  = GetDeviceCaps(hdcScreen,HORZRES);
-  int scrHeight = GetDeviceCaps(hdcScreen,VERTRES); 
+  int scrHeight = GetDeviceCaps(hdcScreen,VERTRES);
   int planes    = GetDeviceCaps(hdcScreen,PLANES);
   int bitsPixel = GetDeviceCaps(hdcScreen,BITSPIXEL);
   DeleteDC(hdcScreen);

@@ -546,7 +546,7 @@ const TCHAR *getPlayerShortName(Player player) {
   case BLACKPLAYER : return playerShortName[player].cstr();
   default          : INVALIDPLAYERERROR(player);
                      return _T("?");
-  } 
+  }
 }
 
 const TCHAR *getPieceTypeName(PieceType pieceType, bool plur) {

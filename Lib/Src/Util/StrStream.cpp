@@ -47,10 +47,10 @@ void StrStream::formatZero(String &result, streamsize precision, long flags, str
       addDecimalPoint(result);
       if(precision > 0) {
         result += spaceString((maxPrecision<=0) ? precision : min(precision,maxPrecision),_T('0'));
-      } 
+      }
     }
     addExponentChar(result);
-    result += _T("+00"); 
+    result += _T("+00");
   } else if((flags & (std::ios::scientific|std::ios::fixed)) == std::ios::fixed) {
     result += _T("0");
     if((flags & std::ios::showpoint) || (precision > 0)) {

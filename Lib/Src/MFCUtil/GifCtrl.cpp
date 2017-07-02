@@ -44,7 +44,7 @@ void CGifCtrl::substituteControl(CWnd *wnd, int id) {
 
 void CGifCtrl::OnPaint() {
   CWnd::OnPaint();
-    
+
   if(isSuspended()) {
     resume();
   } else if(isPainted()) {

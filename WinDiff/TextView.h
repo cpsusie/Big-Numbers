@@ -211,7 +211,7 @@ private:
   }
   bool getShow1000Separator() const {
     return getFlagValue(SHOW_1000SEPARATOR);
-  }; 
+  };
   bool getHighLightCompareEqual() const {
     return getFlagValue(HIGHLIGhT_COMPAREEQUAL);
   }
@@ -231,17 +231,17 @@ public:
   bool hasPartner();
   void savePositionState();
   void restorePositionState();
-  
+
   inline void setSavedPositionState(const PositionState &state) {
     m_savedPositionState = state;
   }
-  
+
   inline const PositionState &getSavedPositionState() const {
     return m_savedPositionState;
   }
-  
+
   void refreshBoth();
-  
+
   inline int getId() const {
     return m_state.m_id;
   }
@@ -255,7 +255,7 @@ public:
   inline int getMargin() const { // in characters
     return m_margin;
   }
-  
+
   String           getTextLines(const TextPositionPair &tp);
   String           getSelectedText();
   String           getFirstSelectedLine() const;
@@ -307,7 +307,7 @@ public:
   bool setTabSize(          int  newValue, bool repaint = true);
   bool setFont(             const LOGFONT &newValue, bool repaint = true);
   bool setNameFontSizePct(  int  newValue, bool repaint = true);
-  bool setShow1000Separator(bool newValue, bool repaint = true); 
+  bool setShow1000Separator(bool newValue, bool repaint = true);
   bool setHighLightCompareEqual(bool newValue, bool repaint = true);
 #ifdef _DEBUG
   inline String flagValuesToString() const {

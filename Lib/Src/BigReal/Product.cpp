@@ -167,7 +167,7 @@ BigReal &BigReal::product(BigReal &result, const BigReal &x, const BigReal &y, c
   if(level < 3) {
     return productMT(result, X, Y, f, w, level+1);
   }
- 
+
   const BigReal g = PAPCprod(#, C1third, f, pool);
   BigReal gpm10(g);
   gpm10.multPow10(-10);
@@ -179,7 +179,7 @@ BigReal &BigReal::product(BigReal &result, const BigReal &x, const BigReal &y, c
   if((intptr_t)YLength < n) {                                                                            //
     BigReal p1(pool),p2(pool);
     return result = product(p1, a, Y, zero, level) + product(p2, b, Y, g, level);              // a*Y+b*Y     O(2*n/2*n+n/2)
-  }               
+  }
 
   BigReal c(pool), d(pool);
   Y.split(c, d, n, g.isZero() ? zero : PAPCprod(#,gpm10,reciprocal(X, pool),pool));           // c + d = Y   O(n)

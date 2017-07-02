@@ -111,7 +111,7 @@ public:
   inline StackedRectangle(int i, int j) : m_key(i,j) {
     initCornerArray();
   }
-  
+
 /*
   inline bool contains(const Point2D &p) const {
     return (m_corners[RC_SW]->m_point <= p) && (p <= m_corners[RC_NE]->m_point);

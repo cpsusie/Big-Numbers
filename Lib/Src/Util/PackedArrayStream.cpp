@@ -31,7 +31,7 @@ void PackedArray::load(ByteInputStream &s) {
 
 #endif
 
-PackedFileArray::PackedFileArray(const String &fileName, unsigned __int64 startOffset) 
+PackedFileArray::PackedFileArray(const String &fileName, unsigned __int64 startOffset)
 : m_data(fileName, startOffset + sizeof(UINT) + sizeof(unsigned __int64))
   // offset of ByteArray if startOffset + sizeof(m_bitsPerItem) + sizeof(PackedArray::m_firstFreeBit)
 {
@@ -42,7 +42,7 @@ PackedFileArray::PackedFileArray(const String &fileName, unsigned __int64 startO
   s.getBytesForced((BYTE*)&m_firstFreeBit, sizeof(m_firstFreeBit));
   m_maxValue = (1<<m_bitsPerItem)-1;
 }
- 
+
 UINT PackedFileArray::get(unsigned __int64 index) const { // this is the same algorithm as in PackedArray::get
   CHECK_INDEX("get")
   const UINT p0Index = (index * m_bitsPerItem) / 32;

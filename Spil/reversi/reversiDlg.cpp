@@ -312,7 +312,7 @@ void CReversiDlg::OnLButtonDown(UINT nFlags, CPoint point) {
 }
 
 void CReversiDlg::OnTimer(UINT_PTR nIDEvent) {
-  computerMove();   
+  computerMove();
   __super::OnTimer(nIDEvent);
 }
 
@@ -327,7 +327,7 @@ void CReversiDlg::OnSpilNytspil() {
 }
 
 void CReversiDlg::OnSpilQuit() {
-  exit(0);  
+  exit(0);
 }
 
 void CReversiDlg::OnOptionsVisScore() {

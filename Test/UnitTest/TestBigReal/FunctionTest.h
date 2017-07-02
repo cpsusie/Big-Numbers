@@ -30,7 +30,7 @@ public:
                          ,DoubleFunction1      f64
                          ,Double80Function1    f80) : AbstractFunctionTest(functionName)
                                                     , m_xexponentialStep(exponentialStep), m_xfrom(from), m_xto(to)
-                                                    , m_f1(f), m_f1_64(f64), m_f1_80(f80) 
+                                                    , m_f1(f), m_f1_64(f64), m_f1_80(f80)
   {
   }
   void runTest(int threadId, DigitPool *pool);
@@ -54,7 +54,7 @@ public:
                          ,Double80Function2    f80) : AbstractFunctionTest(functionName)
                                                     , m_xexponentialStep(xexponentialStep), m_xfrom(xfrom), m_xto(xto)
                                                     , m_yexponentialStep(yexponentialStep), m_yfrom(yfrom), m_yto(yto)
-                                                    , m_f2(f), m_f2_64(f64), m_f2_80(f80) 
+                                                    , m_f2(f), m_f2_64(f64), m_f2_80(f80)
   {
   }
   void runTest(int threadId, DigitPool *pool);
@@ -126,7 +126,7 @@ public:
                              ,BigRealFunction2Pool  f
                              ,DoubleFunction2       f64
                              ,Double80Function2     f80) : AbstractFunctionTest(functionName)
-                                                         , m_f2Pool(f), m_f2_64(f64), m_f2_80(f80) 
+                                                         , m_f2Pool(f), m_f2_64(f64), m_f2_80(f80)
   {
   }
   void runTest(int threadId, DigitPool *pool);
@@ -270,11 +270,11 @@ inline void testExactBinaryOperator(const String               &functionName
 inline void testOperator(const String        &functionName
                         ,BigRealFunction2Pool op
                         ,DoubleFunction2      op64 = NULL
-                        ,Double80Function2    op80 = NULL) { 
+                        ,Double80Function2    op80 = NULL) {
   TesterJob::addFunctionTest(new OperatorTest2ArgND64D80Pool(functionName, op, op64, op80));
 }
 
-static void testOperator(const String &functionName, rBigRealFunction2Pool op) { 
+static void testOperator(const String &functionName, rBigRealFunction2Pool op) {
   TesterJob::addFunctionTest(new OperatorTest2ArgRelative(functionName, op));
 }
 

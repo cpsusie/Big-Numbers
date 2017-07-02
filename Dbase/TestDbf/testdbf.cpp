@@ -111,7 +111,7 @@ int main(int argc, char **argv) {
         case 'Q':
           exit(0);
         default:
-          break;  
+          break;
         }
       } catch(sqlca ca) {
         ca.dump();

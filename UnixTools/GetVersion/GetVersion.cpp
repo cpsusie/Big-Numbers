@@ -95,7 +95,7 @@ int main(int argc, char **argv) {
         warnings = false;
         continue;
       case 'L':
-        alllang       = true; 
+        alllang       = true;
         printLanguage = true;
         continue;
       case 'l':

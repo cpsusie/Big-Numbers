@@ -31,7 +31,7 @@ tailrecurse:
         char *p3 = EPTR(nelem-1-k);
         char *p4 = EPTR(nelem-1);
 
-        SORT(0,1);  
+        SORT(0,1);
         SORT(3,4);
         if(NEEDSWAP(2,4)) {
           SWAP(0,1);
@@ -39,7 +39,7 @@ tailrecurse:
             SWAP(0,3);
             SORT(1,4);
             SORT(2,4);
-          } else {                    
+          } else {
             if(NEEDSWAP(0,3)) {
               SWAP(0,2);
               SORT(0,3);
@@ -48,12 +48,12 @@ tailrecurse:
               SORT(2,3);
             }
           }
-        } else {                      
+        } else {
           SWAP(1,3);
           if(NEEDSWAP(0,4)) {
             SWAP(0,2);
             SORT(2,4);
-          } else {                    
+          } else {
             if(NEEDSWAP(2,3)) {
               SORT(1,3);
               SORT(2,3);
@@ -61,7 +61,7 @@ tailrecurse:
               SWAP(3,4);
               if(NEEDSWAP(0,1)) {
                 SORT(0,2);
-              } else {                
+              } else {
                 if(NEEDSWAP(1,4)) {
                   SWAP(1,2);
                   SWAP(2,4);
@@ -90,7 +90,7 @@ tailrecurse:
     }
 
     do {
-      while(pi <= pj && comparator.cmp(pi,pivot) < 0) pi += width; 
+      while(pi <= pj && comparator.cmp(pi,pivot) < 0) pi += width;
       while(pi <= pj && comparator.cmp(pivot,pj) < 0) pj -= width;
       if(pi < pj) {
         PSWAP(pi,pj);
@@ -169,7 +169,7 @@ tailrecurse:
         T *p3 = TEPTR(nelem-1-k);
         T *p4 = TEPTR(nelem-1);
 
-        SORT(0,1);  
+        SORT(0,1);
         SORT(3,4);
         if(NEEDSWAP(2,4)) {
           SWAP(0,1);
@@ -177,7 +177,7 @@ tailrecurse:
             SWAP(0,3);
             SORT(1,4);
             SORT(2,4);
-          } else {                    
+          } else {
             if(NEEDSWAP(0,3)) {
               SWAP(0,2);
               SORT(0,3);
@@ -186,12 +186,12 @@ tailrecurse:
               SORT(2,3);
             }
           }
-        } else {                      
+        } else {
           SWAP(1,3);
           if(NEEDSWAP(0,4)) {
             SWAP(0,2);
             SORT(2,4);
-          } else {                    
+          } else {
             if(NEEDSWAP(2,3)) {
               SORT(1,3);
               SORT(2,3);
@@ -199,7 +199,7 @@ tailrecurse:
               SWAP(3,4);
               if(NEEDSWAP(0,1)) {
                 SORT(0,2);
-              } else {                
+              } else {
                 if(NEEDSWAP(1,4)) {
                   SWAP(1,2);
                   SWAP(2,4);
@@ -251,7 +251,7 @@ tailrecurse:
       }
     } else {
       if(i < nelem-1) {       // Save start,count of elements to be sorted later. ie Sort(pi,nelem-i, width, comparator);
-        PUSH(stack, pi, nelem-i); 
+        PUSH(stack, pi, nelem-i);
       }
       if(j > 0) {             // Sort(base,j+1,width, comparator);
         nelem = j+1;

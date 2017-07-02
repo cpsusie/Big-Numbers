@@ -18,7 +18,7 @@ CTestColorControlDlg::CTestColorControlDlg(CWnd *pParent) : CDialog(CTestColorCo
 }
 
 void CTestColorControlDlg::DoDataExchange(CDataExchange *pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
   DDX_Text(   pDX, IDC_EDIT_CAPTION    , m_caption   );
   DDX_Check(  pDX, IDC_CHECK_BORDER    , m_hasBorder );
   DDX_Check(  pDX, IDC_CHECK_ENABLED   , m_enabled   );
@@ -48,7 +48,7 @@ BEGIN_MESSAGE_MAP(CTestColorControlDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CTestColorControlDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   m_accelTable = LoadAccelerators(theApp.m_hInstance, MAKEINTRESOURCE(IDR_TESTCOLORCONTROL_ACCELERATOR));
 
@@ -82,11 +82,11 @@ BOOL CTestColorControlDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
     return true;
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 void CTestColorControlDlg::OnPaint() {
-  CDialog::OnPaint();
+  __super::OnPaint();
   OnColorchangedColormapctrl();
 }
 
@@ -104,9 +104,9 @@ void CTestColorControlDlg::OnButtonpickcolor() {
 }
 
 void CTestColorControlDlg::OnLButtonDown(UINT nFlags, CPoint point) {
-  CDialog::OnLButtonDown(nFlags, point);
+  __super::OnLButtonDown(nFlags, point);
   if(m_pickingColor) {
-    HDC hdcScreen = CreateDC(_T("DISPLAY"), NULL, NULL, NULL); 
+    HDC hdcScreen = CreateDC(_T("DISPLAY"), NULL, NULL, NULL);
     ClientToScreen(&point);
     m_colormap.SetColor(GetPixel(hdcScreen,point.x,point.y));
     DeleteDC(hdcScreen);
@@ -114,7 +114,7 @@ void CTestColorControlDlg::OnLButtonDown(UINT nFlags, CPoint point) {
 }
 
 void CTestColorControlDlg::OnLButtonUp(UINT nFlags, CPoint point) {
-  CDialog::OnLButtonUp(nFlags, point);
+  __super::OnLButtonUp(nFlags, point);
   if(m_pickingColor) {
     ReleaseCapture();
     m_pickingColor = false;
@@ -169,8 +169,8 @@ void CTestColorControlDlg::OnOK() {
 }
 
 void CTestColorControlDlg::OnSize(UINT nType, int cx, int cy) {
-  CDialog::OnSize(nType, cx, cy);
-  m_layoutManager.OnSize(nType, cx, cy);    
+  __super::OnSize(nType, cx, cy);
+  m_layoutManager.OnSize(nType, cx, cy);
 }
 
 BEGIN_EVENTSINK_MAP(CTestColorControlDlg, CDialog)

@@ -1,13 +1,13 @@
 #include "stdafx.h"
 #include <stdio.h>
 
-/* 
+/*
    Programmet løser følgende opgave ved at gennemløbe samtlige kombinationer
-   af hovedstæder, hoteller og planer, og checke at betingelserne 
+   af hovedstæder, hoteller og planer, og checke at betingelserne
    er opfyldt:
 
    1 Fem amerikanere på vej i fly fra USA til Frankfurt faldt i snak ved baren og
-   fortalte hinanden om deres planer for Europarejsen. Det viste sig at de 
+   fortalte hinanden om deres planer for Europarejsen. Det viste sig at de
    alle skulle skifte fly i Frankfurt og derfra flyve videre til hver sin
    europæiske hovedstad.
 
@@ -16,12 +16,12 @@
    2. Mrs. Gilbert skulle skifte til SAS-flyet til København.
    3. Turisten, der skulle til London, skulle bo på Regent Palace.
    4. Den, der skulle bo på Ritz, glædede sig til at besøge venner i byen.
-   5. Mr. Lundberg, der havde bestilt værelse på Grand Hotel, var en 
+   5. Mr. Lundberg, der havde bestilt værelse på Grand Hotel, var en
       stilfærdig type, der ikke rejste ud for at nyde det muntre natteliv.
    6. Ingen af damernes hotel hed Sheraton.
    7. Miss Monson glædede sig specielt til at gå i teatret i sin foretrukne
       hovedstad.
-   8. Turisten, der skulle til Stockholm, håbede om muligt at finde sine 
+   8. Turisten, der skulle til Stockholm, håbede om muligt at finde sine
       rødder. Han stammer nemlig fra Sverige.
 */
 
@@ -63,7 +63,7 @@ char planer[5];
 #define LUNDBERG    navn[2]
 #define MONSON      navn[3]
 #define SWANSON     navn[4]
-                    
+
 #define BRUXELLES   hovedstad[0]
 #define COPENHAGEN  hovedstad[1]
 #define LONDON      hovedstad[2]
@@ -82,11 +82,11 @@ char planer[5];
 #define TEATER      planer[3]
 #define GRANDPLACE  planer[4]
 
-char *navn_str[] = { 
-  "Mrs. Gilbert", "Mr. Harding","Mr. Lundberg","Miss Monson","Mr. Swanson" 
+char *navn_str[] = {
+  "Mrs. Gilbert", "Mr. Harding","Mr. Lundberg","Miss Monson","Mr. Swanson"
 };
-char *hovedstad_str[] = { 
-  "Bruxelles","København","London","Paris","Stockholm" 
+char *hovedstad_str[] = {
+  "Bruxelles","København","London","Paris","Stockholm"
 };
 char *hotel_str[] = {
   "Ambassador","Grand Hotel","Regent Hotel","Ritz","Sheraton"

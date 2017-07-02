@@ -62,7 +62,7 @@ double RiseSet(double f0, double tzone, double longit, double dlstime, double ti
 double f0(double declin, double latit) {
   double refract =  PI * 17.0 / 30.0 / 180.0;
   double Sundia = PI * 4.0 / 15.0 / 180.0;
-  
+
   double F0 = 0;
   double x1 = tan(declin + 0.5 * Sundia + refract) * tan(PI * latit / 180.0);
   if(x1 >= 1) F0 = PI;
@@ -138,8 +138,8 @@ typedef enum {
 int _tmain(int argc, TCHAR **argv) {
   Date d;
   int year;
-  double latitude  = 56.15; 
-  double longitude = 10.22; 
+  double latitude  = 56.15;
+  double longitude = 10.22;
   double timezone  = 1;
   COMMAND cmd = COMMAND_DATE;
   TCHAR *cp;
@@ -182,7 +182,7 @@ int _tmain(int argc, TCHAR **argv) {
       break;
     }
   } catch(Exception e) {
-    _ftprintf(stderr,_T("%s\n"), e.what());  
+    _ftprintf(stderr,_T("%s\n"), e.what());
     return -1;
   }
   return 0;

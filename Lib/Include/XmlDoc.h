@@ -47,7 +47,7 @@ public:
   XMLNodePtr createNode(const XMLNodePtr &parent, const TCHAR *nodeName, bool force=true);
   XMLNodePtr createRoot(const TCHAR *rootName);
   XMLNodePtr getRoot();
-  
+
   inline void getValue(const TCHAR *nodeName, const TCHAR *tagName, String    &value, int  instans = 0) {
     getValue(findNode(nodeName),tagName,value,instans);
   }
@@ -124,6 +124,6 @@ public:
   void setValue(const XMLNodePtr &node    , const TCHAR *tagName, const Date      &value, bool force=true);
   void setValue(const XMLNodePtr &node    , const TCHAR *tagName, const Timestamp &value, bool force=true);
   void setValue(const XMLNodePtr &node    , const TCHAR *tagName, bool             value, bool force=true);
-};  
+};
 
 String BSTRToString(const BSTR &s);

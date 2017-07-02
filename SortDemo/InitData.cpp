@@ -275,7 +275,7 @@ void InitializeParameters::readTextFile(const String &fileName) {
     while(FGETS(line, ARRAYSIZE(line), f)) {
       lineCount++;
       if(data.size() >= MAXDATACOUNT) {
-        throwException(_T("Too many data. Max = %d"), MAXDATACOUNT); 
+        throwException(_T("Too many data. Max = %d"), MAXDATACOUNT);
       }
       double x;
       int i;

@@ -74,7 +74,7 @@ Real CommonSpline::operator()(int d, const Real &x) {
   }
 }
 
-static const char *ctext_code1 = 
+static const char *ctext_code1 =
 "class Spline {\n"
 "private:\n"
 "  mutable int m_lastInterval;\n"

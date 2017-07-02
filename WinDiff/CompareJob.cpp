@@ -2,7 +2,7 @@
 #include "CompareJob.h"
 #include "WinDiffDoc.h"
 
-CompareJob::CompareJob(CWinDiffDoc *doc, bool recompare) 
+CompareJob::CompareJob(CWinDiffDoc *doc, bool recompare)
 : m_doc(*doc)
 , m_exe2(NULL)
 , m_recompare(recompare)

@@ -24,7 +24,7 @@ int _tmain(int argc, TCHAR **argv) {
     FILE *f = FOPEN(fileName, _T("r"));
     String line;
     int lineCount = 0;
-    UInt64HashMap<RefObject> pointerMap; 
+    UInt64HashMap<RefObject> pointerMap;
     try {
       while (readLine(f, line)) {
         lineCount++;
