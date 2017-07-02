@@ -2,6 +2,7 @@
 #include <Math.h>
 #include <float.h>
 #include <Math/MathLib.h>
+#include <Timemeasure.h>
 
 Real dfdx(Real x, Function &f) {
 #define EPS 5e-8
@@ -143,31 +144,36 @@ static void usage() {
   exit(-1);
 }
 
-void checkCast() {
-  for (;;) {
-    const double   x64  = inputDouble(_T("Enter double:"));
-    long     l32  = (long  )x64;
-    ULONG    ul32 = (ULONG )x64;
-    INT64    l64  = (INT64 )x64;
-    UINT64   ul64 = (UINT64)x64;
-    _tprintf(_T("double64-> long32:%le -> %ld\n"  ), x64,  l32);
-    _tprintf(_T("double64->ulong32:%le -> %lu\n"  ), x64, ul32);
-    _tprintf(_T("double64-> long64:%le -> %I64d\n"), x64,  l64);
-    _tprintf(_T("double64->ulong64:%le -> %I64u\n"), x64, ul64);
-    const Double80 x80  = x64;
-    l32  = getLong(  x80);
-    ul32 = getUlong( x80);
-    l64  = getInt64( x80);
-    ul64 = getUint64(x80);
-    _tprintf(_T("Double80-> long32:%s -> %ld\n"  ), toString(x80).cstr(),  l32);
-    _tprintf(_T("Double80->ulong32:%s -> %lu\n"  ), toString(x80).cstr(), ul32);
-    _tprintf(_T("Double80-> long64:%s -> %I64d\n"), toString(x64).cstr(),  l64);
-    _tprintf(_T("Double80->ulong64:%s -> %I64u\n"), toString(x64).cstr(), ul64);
+class GammeMeasure : public MeasurableFunction {
+private:
+  Real m_testValue;
+public:
+  GammeMeasure(const Real &x) : m_testValue(x) {
   }
-}
+  void f() {
+    volatile Real y = gamma(m_testValue);
+  }
+};
+
+class GammeStirlingMeasure : public MeasurableFunction {
+private:
+  Real m_testValue;
+public:
+  GammeStirlingMeasure(const Real &x) : m_testValue(x) {
+  }
+  void f() {
+    volatile Real y = gammaStirling(m_testValue);
+  }
+};
 
 int main(int argc, char **argv) {
-  checkCast();
+  for (Real x = 1.5; x < 200; x++) {
+    _tprintf(_T("%10s %.3le\n")
+            ,toString(x).cstr()
+            ,measureTime(GammeStirlingMeasure(x)));
+  }
+  return 0;
+
   gammaStirlingErrorPlot();
   return 0;
 //  makeLowerXPlot();
