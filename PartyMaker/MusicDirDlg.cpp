@@ -26,7 +26,7 @@ END_MESSAGE_MAP()
 BOOL CMusicDirDlg::OnInitDialog() {
   __super::OnInitDialog();
 
-  m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_MUSICDIR_ACCELERATOR));
+  m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_MUSICDIR_ACCELERATOR));
   CListBox *lb = getListBox();
 
   MusicDirList tmp(m_options.getDirList());

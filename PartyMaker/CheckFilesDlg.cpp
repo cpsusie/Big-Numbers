@@ -7,8 +7,7 @@
 #endif
 
 CCheckFilesDlg::CCheckFilesDlg(CWnd *pParent) : CDialog(CCheckFilesDlg::IDD, pParent) {
-
-  m_hIcon = AfxGetApp()->LoadIcon(IDI_CHECKFILESICON);
+  m_hIcon = theApp.LoadIcon(IDI_CHECKFILESICON);
 }
 
 void CCheckFilesDlg::DoDataExchange(CDataExchange *pDX) {
@@ -27,8 +26,8 @@ BOOL CCheckFilesDlg::OnInitDialog() {
   SetIcon(m_hIcon, TRUE);
   SetIcon(m_hIcon, FALSE);
 
-  CPartyMakerDlg *w = (CPartyMakerDlg*)AfxGetApp()->GetMainWnd();
-  m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_CHECKFILES_ACCELERATOR));
+  CPartyMakerDlg *w = theApp.GetMainWnd();
+  m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_CHECKFILES_ACCELERATOR));
   const MediaArray &list = w->getMediaArray();
   CProgressCtrl  *p = (CProgressCtrl*)GetDlgItem(IDC_PROGRESSCHECK);
   p->SetRange(0,list.size());
@@ -50,14 +49,14 @@ void CCheckFilesDlg::OnCheckstatus() {
 void CCheckFilesDlg::startWorker() {
   startTimer();
   m_worker->ResumeThread();
-  GetDlgItem(IDC_CHECKSTATUS)->SetWindowText(_T("&Suspend"));
+  setWindowText(this, IDC_CHECKSTATUS, _T("&Suspend"));
   Invalidate(false);
 }
 
 void CCheckFilesDlg::stopWorker() {
   stopTimer();
   m_worker->SuspendThread();
-  GetDlgItem(IDC_CHECKSTATUS)->SetWindowText(_T("&Resume"));
+  setWindowText(this, IDC_CHECKSTATUS, _T("&Resume"));
   Invalidate(false);
 }
 
@@ -85,14 +84,13 @@ void CCheckFilesDlg::OnTimer(UINT nIDEvent) {
     fname = m_worker->m_mediaArray[index].getFileName();
   } else {
     stopTimer();
-    GetDlgItem(IDCANCEL)->SetWindowText(_T("Ok"));
+    setWindowText(this, IDCANCEL, _T("Ok"));
   }
 
   CProgressCtrl *p = (CProgressCtrl*)GetDlgItem(IDC_PROGRESSCHECK);
   p->SetPos(m_worker->m_index);
-  const String tmp = format(_T("%d"),m_worker->m_errorCount);
-  GetDlgItem(IDC_STATICERRORS)->SetWindowText(tmp);
-  GetDlgItem(IDC_STATICMESSAGE)->SetWindowText(fname);
+  setWindowText(this, IDC_STATICERRORS , format(_T("%d"),m_worker->m_errorCount));
+  setWindowText(this, IDC_STATICMESSAGE, fname);
   __super::OnTimer(nIDEvent);
 }
 
@@ -105,7 +103,6 @@ BOOL CCheckFilesDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     return true;
   }
-    
   return __super::PreTranslateMessage(pMsg);
 }
 

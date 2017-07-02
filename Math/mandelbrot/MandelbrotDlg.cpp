@@ -20,7 +20,7 @@ public:
   enum { IDD = IDD_ABOUTBOX };
 
 protected:
-  virtual void DoDataExchange(CDataExchange* pDX);
+  virtual void DoDataExchange(CDataExchange *pDX);
 
 protected:
   DECLARE_MESSAGE_MAP()
@@ -29,7 +29,7 @@ protected:
 CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
-void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
+void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
 }
 
@@ -37,7 +37,7 @@ BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
 CMandelbrotDlg::CMandelbrotDlg(CWnd *pParent) : CDialog(CMandelbrotDlg::IDD, pParent) {
-  m_hIcon                     = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+  m_hIcon                     = theApp.LoadIcon(IDR_MAINFRAME);
   m_state                     = STATE_IDLE;
   m_precisionMode             = FPU_NORMAL_PRECISION;
   m_pixRect                   = NULL;
@@ -47,14 +47,14 @@ CMandelbrotDlg::CMandelbrotDlg(CWnd *pParent) : CDialog(CMandelbrotDlg::IDD, pPa
   m_frameGenerator            = NULL;
 }
 
-BOOL CMandelbrotDlg::PreTranslateMessage(MSG* pMsg) {
+BOOL CMandelbrotDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     return true;
   }
   return __super::PreTranslateMessage(pMsg);
 }
 
-void CMandelbrotDlg::DoDataExchange(CDataExchange* pDX) {
+void CMandelbrotDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
 }
 
@@ -135,8 +135,8 @@ BOOL CMandelbrotDlg::OnInitDialog() {
   SetIcon(m_hIcon, TRUE);   // Set big icon
   SetIcon(m_hIcon, FALSE);  // Set small icon
 
-  m_crossIcon  = createIcon(AfxGetApp()->m_hInstance, IDB_MARK_COLORBITMAP, IDB_MARK_MASKBITMAP);
-  m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_MAINFRAME));
+  m_crossIcon  = createIcon(theApp.m_hInstance, IDB_MARK_COLORBITMAP, IDB_MARK_MASKBITMAP);
+  m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_MAINFRAME));
 
   theApp.m_device.attach(*this);
 
@@ -802,7 +802,7 @@ void CMandelbrotDlg::makeColorMap() {
   if(m_colorMapData.m_randomSeed) {
     randomize();
   } else {
-    _standardRandomGenerator.setSeed(m_colorMapData.m_seed);
+    _standardRandomGenerator->setSeed(m_colorMapData.m_seed);
   }
 
   int r  = randInt(0,255);

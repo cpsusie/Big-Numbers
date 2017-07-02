@@ -29,7 +29,7 @@ END_MESSAGE_MAP()
 CTestDirectXDlg::CTestDirectXDlg(CWnd *pParent /*=NULL*/) : CDialog(CTestDirectXDlg::IDD, pParent) {
   DEBUGTRACE;
 
-    m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+    m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
 }
 
 void CTestDirectXDlg::DoDataExchange(CDataExchange *pDX) {
@@ -77,9 +77,8 @@ DEBUGTRACE;
 }
 
 void CTestDirectXDlg::OnSysCommand(UINT nID, LPARAM lParam) {
-  if ((nID & 0xFFF0) == IDM_ABOUTBOX) {
-    CAboutDlg dlgAbout;
-    dlgAbout.DoModal();
+  if((nID & 0xFFF0) == IDM_ABOUTBOX) {
+    CAboutDlg().DoModal();
   } else {
     __super::OnSysCommand(nID, lParam);
   }

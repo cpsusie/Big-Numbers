@@ -23,7 +23,7 @@ BEGIN_MESSAGE_MAP(CChangeOrderDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CChangeOrderDlg::OnInitDialog() {
-  m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_CHANGEORDER_ACCELERATOR));
+  m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_CHANGEORDER_ACCELERATOR));
 
   for(size_t i = 0; i < m_mediaQueue.size(); i++) {
     insertMediaFile(i,m_mediaQueue[i]);
@@ -131,9 +131,9 @@ void CChangeOrderDlg::insertMediaFile(size_t pos, const MediaFile &f) {
 }
 
 BOOL CChangeOrderDlg::PreTranslateMessage(MSG *pMsg) {
-  if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg))
+  if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     return true;
-
+  }
   return __super::PreTranslateMessage(pMsg);
 }
 

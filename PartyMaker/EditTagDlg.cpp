@@ -80,7 +80,7 @@ void CEditTagDlg::initListControl(CListCtrl &ctrl, const AttributeArray &attribu
 
 BOOL CEditTagDlg::OnInitDialog() {
   __super::OnInitDialog();
-  m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_EDITTAG_ACCELERATOR));
+  m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_EDITTAG_ACCELERATOR));
 
   if(m_mediaArray.size() == 1) {
     SetWindowText(m_mediaArray[0].getSourceURL());
@@ -123,7 +123,7 @@ BOOL CEditTagDlg::OnInitDialog() {
 void CEditTagDlg::OnOK() {
   UpdateData();
   if(m_attributes != m_origAttributes) {
-    AfxGetApp()->BeginWaitCursor();
+    theApp.BeginWaitCursor();
 
     try {
       for(size_t i = 0; i < m_mediaArray.size(); i++) {
@@ -135,7 +135,7 @@ void CEditTagDlg::OnOK() {
       return;
     }
 
-    AfxGetApp()->EndWaitCursor();
+    theApp.EndWaitCursor();
   }
   __super::OnOK();
 }

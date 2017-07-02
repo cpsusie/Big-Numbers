@@ -25,7 +25,7 @@ CAboutDlg::CAboutDlg() : CDialogEx(IDD_ABOUTBOX) {
 }
 
 void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-  CDialogEx::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
@@ -35,12 +35,12 @@ END_MESSAGE_MAP()
 Cdx9_rectDemoDlg::Cdx9_rectDemoDlg(CWnd *pParent /*=NULL*/)
   : CDialogEx(IDD_DX9_RECTDEMO_DIALOG, pParent)
 {
-  m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+  m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
   m_device = NULL;
 }
 
 void Cdx9_rectDemoDlg::DoDataExchange(CDataExchange *pDX) {
-  CDialogEx::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(Cdx9_rectDemoDlg, CDialogEx)
@@ -81,7 +81,7 @@ D3DPRESENT_PARAMETERS Cdx9_rectDemoDlg::getPresentParameters() const {
 }
 
 BOOL Cdx9_rectDemoDlg::OnInitDialog() {
-  CDialogEx::OnInitDialog();
+  __super::OnInitDialog();
 
   // Add "About..." menu item to system menu.
 
@@ -89,7 +89,7 @@ BOOL Cdx9_rectDemoDlg::OnInitDialog() {
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
-  CMenu* pSysMenu = GetSystemMenu(FALSE);
+  CMenu *pSysMenu = GetSystemMenu(FALSE);
   if (pSysMenu != NULL)
   {
     BOOL bNameValid;
@@ -169,11 +169,10 @@ BOOL Cdx9_rectDemoDlg::OnInitDialog() {
 }
 
 void Cdx9_rectDemoDlg::OnSysCommand(UINT nID, LPARAM lParam) {
-  if ((nID & 0xFFF0) == IDM_ABOUTBOX)	{
-    CAboutDlg dlgAbout;
-    dlgAbout.DoModal();
+  if((nID & 0xFFF0) == IDM_ABOUTBOX)	{
+    CAboutDlg().DoModal();
   } else {
-    CDialogEx::OnSysCommand(nID, lParam);
+    __super::OnSysCommand(nID, lParam);
   }
 }
 
@@ -198,7 +197,7 @@ void Cdx9_rectDemoDlg::OnPaint() {
     // Draw the icon
     dc.DrawIcon(x, y, m_hIcon);
   } else {
-    CDialogEx::OnPaint();
+    __super::OnPaint();
     render();
   }
 }

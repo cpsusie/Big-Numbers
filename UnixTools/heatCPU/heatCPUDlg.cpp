@@ -1,9 +1,7 @@
 #include "stdafx.h"
 #include <process.h>
-#include "heatCPU.h"
 #include "heatCPUDlg.h"
 #include <ByteFile.h>
-#include <MFCUtil/WinTools.h>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -16,7 +14,7 @@ public:
     enum { IDD = IDD_ABOUTBOX };
 
     protected:
-    virtual void DoDataExchange(CDataExchange* pDX);
+    virtual void DoDataExchange(CDataExchange *pDX);
 
 protected:
     DECLARE_MESSAGE_MAP()
@@ -25,19 +23,19 @@ protected:
 CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
-void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
+void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
     __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
-CHeatCPUDlg::CHeatCPUDlg(CWnd* pParent) : CDialog(CHeatCPUDlg::IDD, pParent) {
-    m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+CHeatCPUDlg::CHeatCPUDlg(CWnd *pParent) : CDialog(CHeatCPUDlg::IDD, pParent) {
+    m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
     m_timerIsRunning = false;
 }
 
-void CHeatCPUDlg::DoDataExchange(CDataExchange* pDX) {
+void CHeatCPUDlg::DoDataExchange(CDataExchange *pDX) {
     __super::DoDataExchange(pDX);
 }
 
@@ -92,7 +90,7 @@ BOOL CHeatCPUDlg::OnInitDialog() {
 }
 
 void CHeatCPUDlg::OnSysCommand(UINT nID, LPARAM lParam) {
-  if ((nID & 0xFFF0) == IDM_ABOUTBOX)   {
+  if((nID & 0xFFF0) == IDM_ABOUTBOX)   {
     CAboutDlg().DoModal();
   } else {
     if(nID == SC_MINIMIZE) {
@@ -178,7 +176,7 @@ void CHeatCPUDlg::deleteStatusIcon() {
 }
 
 HCURSOR CHeatCPUDlg::OnQueryDragIcon() {
-  return (HCURSOR) m_hIcon;
+  return (HCURSOR)m_hIcon;
 }
 
 void CHeatCPUDlg::OnFileExit() {
@@ -293,7 +291,7 @@ void CHeatCPUDlg::OnShowWindow(BOOL bShow, UINT nStatus) {
   showCounterWindows(bShow && m_options.m_showCounters);
 }
 
-BOOL CHeatCPUDlg::PreTranslateMessage(MSG* pMsg) {
+BOOL CHeatCPUDlg::PreTranslateMessage(MSG *pMsg) {
   switch(pMsg->message) {
   case WM_MOUSEWHEEL:
     { short zDelta = (short)(pMsg->wParam >> 16);

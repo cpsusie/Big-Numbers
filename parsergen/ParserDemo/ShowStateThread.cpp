@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "ParserDemo.h"
 #include "ParserDemoDlg.h"
 #include "ShowStateThread.h"
 #include "ShowStateDlg.h"

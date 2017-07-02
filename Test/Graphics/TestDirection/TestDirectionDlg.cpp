@@ -20,18 +20,18 @@ CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
 void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
 CTestDirectionDlg::CTestDirectionDlg(CWnd *pParent /*=NULL*/) : CDialog(CTestDirectionDlg::IDD, pParent) {
-    m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+    m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
 }
 
 void CTestDirectionDlg::DoDataExchange(CDataExchange *pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CTestDirectionDlg, CDialog)
@@ -44,12 +44,12 @@ BEGIN_MESSAGE_MAP(CTestDirectionDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CTestDirectionDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
-  CMenu* pSysMenu = GetSystemMenu(FALSE);
+  CMenu *pSysMenu = GetSystemMenu(FALSE);
   if (pSysMenu != NULL) {
     CString strAboutMenu;
     strAboutMenu.LoadString(IDS_ABOUTBOX);
@@ -66,10 +66,10 @@ BOOL CTestDirectionDlg::OnInitDialog() {
 }
 
 void CTestDirectionDlg::OnSysCommand(UINT nID, LPARAM lParam) {
-  if ((nID & 0xFFF0) == IDM_ABOUTBOX) {
+  if((nID & 0xFFF0) == IDM_ABOUTBOX) {
     CAboutDlg().DoModal();
   } else {
-    CDialog::OnSysCommand(nID, lParam);
+    __super::OnSysCommand(nID, lParam);
   }
 }
 
@@ -88,7 +88,7 @@ void CTestDirectionDlg::OnPaint() {
 
     dc.DrawIcon(x, y, m_hIcon);
   } else {
-    CDialog::OnPaint();
+    __super::OnPaint();
   }
 }
 
@@ -102,7 +102,7 @@ void CTestDirectionDlg::line(CPoint from, CPoint to, COLORREF color) {
 }
 
 HCURSOR CTestDirectionDlg::OnQueryDragIcon() {
-  return (HCURSOR) m_hIcon;
+  return (HCURSOR)m_hIcon;
 }
 
 #define WHITE RGB(255,255,255)
@@ -119,12 +119,12 @@ void CTestDirectionDlg::setMessage(const TCHAR *format,...) {
 void CTestDirectionDlg::OnLButtonDown(UINT nFlags, CPoint point) {
   m_mouseDown = point;
   m_lastMouse = point;
-  CDialog::OnLButtonDown(nFlags, point);
+  __super::OnLButtonDown(nFlags, point);
 }
 
 void CTestDirectionDlg::OnLButtonUp(UINT nFlags, CPoint point) {
   line(m_mouseDown, m_lastMouse, WHITE);
-  CDialog::OnLButtonUp(nFlags, point);
+  __super::OnLButtonUp(nFlags, point);
 }
 
 String getArrowDirection(const Point2D &vector) {
@@ -171,6 +171,6 @@ void CTestDirectionDlg::OnMouseMove(UINT nFlags, CPoint point) {
     double degree = RAD2GRAD(atan2(v.y,v.x));
     setMessage(_T("%.2lf degree %s"), degree, getArrowDirection(v).cstr());
   }
-  CDialog::OnMouseMove(nFlags, point);
+  __super::OnMouseMove(nFlags, point);
 }
 

@@ -16,26 +16,26 @@ public:
 
     enum { IDD = IDD_ABOUTBOX };
 protected:
-    virtual void DoDataExchange(CDataExchange* pDX);
+    virtual void DoDataExchange(CDataExchange *pDX);
     DECLARE_MESSAGE_MAP()
 };
 
 CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
-void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
+void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
     __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
-CKalenderDlg::CKalenderDlg(CWnd* pParent) : CDialog(CKalenderDlg::IDD, pParent) {
+CKalenderDlg::CKalenderDlg(CWnd *pParent) : CDialog(CKalenderDlg::IDD, pParent) {
     m_year = 0;
-    m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+    m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
 }
 
-void CKalenderDlg::DoDataExchange(CDataExchange* pDX) {
+void CKalenderDlg::DoDataExchange(CDataExchange *pDX) {
     __super::DoDataExchange(pDX);
     DDX_Text(pDX, IDC_EDITAAR, m_year);
     DDV_MinMaxInt(pDX, m_year, MIN_YEAR, MAX_YEAR);
@@ -55,7 +55,7 @@ BOOL CKalenderDlg::OnInitDialog() {
     ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
     ASSERT(IDM_ABOUTBOX < 0xF000);
 
-    CMenu* pSysMenu = GetSystemMenu(FALSE);
+    CMenu *pSysMenu = GetSystemMenu(FALSE);
     if (pSysMenu != NULL) {
         CString strAboutMenu;
         strAboutMenu.LoadString(IDS_ABOUTBOX);
@@ -81,13 +81,12 @@ BOOL CKalenderDlg::OnInitDialog() {
 }
 
 void CKalenderDlg::OnSysCommand(UINT nID, LPARAM lParam) {
-    if ((nID & 0xFFF0) == IDM_ABOUTBOX) {
-        CAboutDlg dlgAbout;
-        dlgAbout.DoModal();
-    }
-    else {
-        __super::OnSysCommand(nID, lParam);
-    }
+  if((nID & 0xFFF0) == IDM_ABOUTBOX) {
+    CAboutDlg().DoModal();
+  }
+  else {
+    __super::OnSysCommand(nID, lParam);
+  }
 }
 
 void CKalenderDlg::OnPaint() {
@@ -186,7 +185,7 @@ void CKalenderDlg::OnDageAfstand() {
   dlg.DoModal();
 }
 
-BOOL CKalenderDlg::PreTranslateMessage(MSG* pMsg) {
+BOOL CKalenderDlg::PreTranslateMessage(MSG *pMsg) {
   if(pMsg->message == WM_KEYDOWN) {
     switch(pMsg->wParam) {
       case VK_PRIOR:

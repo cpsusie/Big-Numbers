@@ -51,7 +51,7 @@ END_MESSAGE_MAP()
 
 BOOL SearchDlg::OnInitDialog() {
   __super::OnInitDialog();
-  m_accelTable   = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_SEARCH_ACCELERATOR));
+  m_accelTable   = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_SEARCH_ACCELERATOR));
   m_workerThread = new SearchThread(*this);
 
   if(!m_showMenu) {
@@ -259,7 +259,6 @@ BOOL SearchDlg::PreTranslateMessage(MSG *pMsg) {
     }
     break;
   }
-
   return __super::PreTranslateMessage(pMsg);
 }
 

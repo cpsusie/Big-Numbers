@@ -30,7 +30,7 @@ END_MESSAGE_MAP()
 BOOL CColorMapDlg::OnInitDialog() {
   __super::OnInitDialog();
 
-  m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance, MAKEINTRESOURCE(IDR_COLORMAP_ACCELERATOR));
+  m_accelTable = LoadAccelerators(theApp.m_hInstance, MAKEINTRESOURCE(IDR_COLORMAP_ACCELERATOR));
 
   enableFields();
   OnGotoMaxIteration();

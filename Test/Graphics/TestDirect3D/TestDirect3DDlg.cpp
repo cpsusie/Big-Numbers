@@ -28,7 +28,7 @@ BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
 CTestDirect3DDlg::CTestDirect3DDlg(CWnd *pParent /*=NULL*/) : CDialog(CTestDirect3DDlg::IDD, pParent) {
-  m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+  m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
 }
 
 void CTestDirect3DDlg::DoDataExchange(CDataExchange *pDX) {
@@ -69,9 +69,8 @@ BOOL CTestDirect3DDlg::OnInitDialog() {
 }
 
 void CTestDirect3DDlg::OnSysCommand(UINT nID, LPARAM lParam) {
-  if ((nID & 0xFFF0) == IDM_ABOUTBOX) {
-    CAboutDlg dlgAbout;
-    dlgAbout.DoModal();
+  if((nID & 0xFFF0) == IDM_ABOUTBOX) {
+    CAboutDlg().DoModal();
   } else {
     __super::OnSysCommand(nID, lParam);
   }
@@ -109,7 +108,7 @@ void CTestDirect3DDlg::OnPaint()  {
 }
 
 HCURSOR CTestDirect3DDlg::OnQueryDragIcon() {
-  return (HCURSOR) m_hIcon;
+  return (HCURSOR)m_hIcon;
 }
 
 void CTestDirect3DDlg::OnSizing(UINT fwSide, LPRECT pRect) {

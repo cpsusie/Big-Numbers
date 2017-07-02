@@ -18,7 +18,7 @@ public:
     enum { IDD = IDD_ABOUTBOX };
 
     protected:
-    virtual void DoDataExchange(CDataExchange* pDX);
+    virtual void DoDataExchange(CDataExchange *pDX);
 
 protected:
     DECLARE_MESSAGE_MAP()
@@ -27,19 +27,19 @@ protected:
 CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
-void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
+void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
     __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
-CShwGraphDlg::CShwGraphDlg(CWnd* pParent) : CDialog(CShwGraphDlg::IDD, pParent) {
-  m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+CShwGraphDlg::CShwGraphDlg(CWnd *pParent) : CDialog(CShwGraphDlg::IDD, pParent) {
+  m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
   m_preferredDegree = 0;
 }
 
-void CShwGraphDlg::DoDataExchange(CDataExchange* pDX) {
+void CShwGraphDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
 }
 
@@ -87,7 +87,7 @@ BOOL CShwGraphDlg::OnInitDialog() {
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
-  CMenu* pSysMenu = GetSystemMenu(FALSE);
+  CMenu *pSysMenu = GetSystemMenu(FALSE);
   if (pSysMenu != NULL) {
       CString strAboutMenu;
       strAboutMenu.LoadString(IDS_ABOUTBOX);
@@ -117,8 +117,8 @@ BOOL CShwGraphDlg::OnInitDialog() {
   setInterpolType(ID_EDIT_LEASTSUMOFSQUARES);
   setState(STATE_IDLE);
 
-  m_accelTable   = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATOR1));
-  m_systemCursor = CopyCursor(AfxGetApp()->LoadOEMCursor(OCR_NORMAL));
+  m_accelTable   = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATOR1));
+  m_systemCursor = CopyCursor(theApp.LoadOEMCursor(OCR_NORMAL));
 
   m_whiteBrush.CreateSolidBrush(RGB(255,255,255));
   return TRUE;  // return TRUE  unless you set the focus to a control
@@ -724,7 +724,7 @@ void CShwGraphDlg::OnEditDecrdegree() {
   }
 }
 
-BOOL CShwGraphDlg::PreTranslateMessage(MSG* pMsg) {
+BOOL CShwGraphDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     return true;
   }

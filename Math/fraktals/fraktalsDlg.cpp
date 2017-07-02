@@ -12,25 +12,25 @@ public:
     enum { IDD = IDD_ABOUTBOX };
 
 protected:
-    virtual void DoDataExchange(CDataExchange* pDX);
+    virtual void DoDataExchange(CDataExchange *pDX);
     DECLARE_MESSAGE_MAP()
 };
 
 CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
-void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
+void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
     __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
-CFraktalsDlg::CFraktalsDlg(CWnd* pParent /*=NULL*/) : CDialog(CFraktalsDlg::IDD, pParent) {
-    m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+CFraktalsDlg::CFraktalsDlg(CWnd *pParent /*=NULL*/) : CDialog(CFraktalsDlg::IDD, pParent) {
+    m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
 }
 
-void CFraktalsDlg::DoDataExchange(CDataExchange* pDX) {
+void CFraktalsDlg::DoDataExchange(CDataExchange *pDX) {
     __super::DoDataExchange(pDX);
 }
 
@@ -60,7 +60,7 @@ BOOL CFraktalsDlg::OnInitDialog() {
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
-  CMenu* pSysMenu = GetSystemMenu(FALSE);
+  CMenu *pSysMenu = GetSystemMenu(FALSE);
   if(pSysMenu != NULL) {
     CString strAboutMenu;
     strAboutMenu.LoadString(IDS_ABOUTBOX);
@@ -80,7 +80,7 @@ BOOL CFraktalsDlg::OnInitDialog() {
 }
 
 void CFraktalsDlg::OnSysCommand(UINT nID, LPARAM lParam) {
-  if ((nID & 0xFFF0) == IDM_ABOUTBOX) {
+  if((nID & 0xFFF0) == IDM_ABOUTBOX) {
     CAboutDlg().DoModal();
   } else {
     __super::OnSysCommand(nID, lParam);
@@ -109,7 +109,7 @@ void CFraktalsDlg::OnPaint() {
 }
 
 HCURSOR CFraktalsDlg::OnQueryDragIcon() {
-  return (HCURSOR) m_hIcon;
+  return (HCURSOR)m_hIcon;
 }
 
 void CFraktalsDlg::OnFileExit() {

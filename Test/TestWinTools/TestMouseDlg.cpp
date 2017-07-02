@@ -52,8 +52,8 @@ BOOL CTestMouseDlg::OnInitDialog() {
   // ------------- NB! NB! NB!   husk #define OEMRESOURCE i stdafx.h ----------------------
 
   initComboMouseCursor();
-  m_systemCursor = CopyCursor(AfxGetApp()->LoadOEMCursor(OCR_NORMAL));
-  //    m_systemCursor = CopyCursor(AfxGetApp()->LoadStandardCursor(IDC_ARROW));
+  m_systemCursor = CopyCursor(theApp.LoadOEMCursor(OCR_NORMAL));
+  //    m_systemCursor = CopyCursor(theApp.LoadStandardCursor(IDC_ARROW));
 
   /*
   WNDCLASS wc;
@@ -84,7 +84,7 @@ void CTestMouseDlg::showFlags(const TCHAR *function, UINT flags) {
 void CTestMouseDlg::OnLButtonDown(UINT nFlags, CPoint point) {
   SHOWFLAGS();
   __super::OnLButtonDown(nFlags, point);
-//  setWindowCursor(this,AfxGetApp()->LoadCursor(IDC_CURSOR2));
+//  setWindowCursor(this,theApp.LoadCursor(IDC_CURSOR2));
 }
 
 void CTestMouseDlg::OnRButtonDown(UINT nFlags, CPoint point) {
@@ -134,9 +134,9 @@ void CTestMouseDlg::OnSetWindowCursor2() {
 }
 
 void CTestMouseDlg::OnWaitCursor() {
-  AfxGetApp()->BeginWaitCursor();
+  theApp.BeginWaitCursor();
   Sleep(1000);
-//  AfxGetApp()->EndWaitCursor();
+//  theApp.EndWaitCursor();
 }
 
 BOOL CTestMouseDlg::DestroyWindow() {

@@ -22,26 +22,26 @@ public:
 #endif
 
 protected:
-  virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+  virtual void DoDataExchange(CDataExchange *pDX);    // DDX/DDV support
   DECLARE_MESSAGE_MAP()
 };
 
 CAboutDlg::CAboutDlg() : CDialogEx(IDD_ABOUTBOX) {
 }
 
-void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialogEx::DoDataExchange(pDX);
+void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
 END_MESSAGE_MAP()
 
-CGrabXmlDlg::CGrabXmlDlg(CWnd* pParent /*=NULL*/) : CDialogEx(IDD_GRABXML_DIALOG, pParent), m_url(EMPTYSTRING) {
+CGrabXmlDlg::CGrabXmlDlg(CWnd *pParent /*=NULL*/) : CDialogEx(IDD_GRABXML_DIALOG, pParent), m_url(EMPTYSTRING) {
   m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
 }
 
-void CGrabXmlDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialogEx::DoDataExchange(pDX);
+void CGrabXmlDlg::DoDataExchange(CDataExchange *pDX) {
+  __super::DoDataExchange(pDX);
   DDX_Control(pDX, IDC_EXPLORER1, m_browser);
   DDX_CBString(pDX, IDC_COMBOURL, m_url);
 }
@@ -62,12 +62,12 @@ BEGIN_MESSAGE_MAP(CGrabXmlDlg, CDialogEx)
 END_MESSAGE_MAP()
 
 BOOL CGrabXmlDlg::OnInitDialog() {
-  CDialogEx::OnInitDialog();
+  __super::OnInitDialog();
 
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
-  CMenu* pSysMenu = GetSystemMenu(FALSE);
+  CMenu *pSysMenu = GetSystemMenu(FALSE);
   if (pSysMenu != NULL) {
     BOOL bNameValid;
     CString strAboutMenu;
@@ -89,7 +89,7 @@ BOOL CGrabXmlDlg::OnInitDialog() {
   m_layoutManager.addControl(IDC_COMBOURL , RELATIVE_WIDTH);
   m_layoutManager.addControl(IDSEARCH     , RELATIVE_X_POS);
 
-  m_accelTable  = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_MAINFRAME));
+  m_accelTable  = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_MAINFRAME));
 
   m_cbUrl.SetFocus();
   m_currentDoc = NULL;
@@ -98,11 +98,10 @@ BOOL CGrabXmlDlg::OnInitDialog() {
 }
 
 void CGrabXmlDlg::OnSysCommand(UINT nID, LPARAM lParam) {
-  if ((nID & 0xFFF0) == IDM_ABOUTBOX) {
-    CAboutDlg dlgAbout;
-    dlgAbout.DoModal();
+  if((nID & 0xFFF0) == IDM_ABOUTBOX) {
+    CAboutDlg().DoModal();
   } else {
-    CDialogEx::OnSysCommand(nID, lParam);
+    __super::OnSysCommand(nID, lParam);
   }
 }
 
@@ -127,12 +126,12 @@ void CGrabXmlDlg::OnPaint() {
     // Draw the icon
     dc.DrawIcon(x, y, m_hIcon);
   } else {
-    CDialogEx::OnPaint();
+    __super::OnPaint();
   }
 }
 
 void CGrabXmlDlg::OnSize(UINT nType, int cx, int cy) {
-  CDialogEx::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
   m_layoutManager.OnSize(nType, cx, cy);
 }
 
@@ -164,7 +163,7 @@ void CGrabXmlDlg::OnToolsFindKnightTour() {
   MessageBox(_T("Find knight route"), _T("Message"));
 }
 
-BOOL CGrabXmlDlg::PreTranslateMessage(MSG* pMsg) {
+BOOL CGrabXmlDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
     return true;
   }
@@ -177,7 +176,7 @@ BOOL CGrabXmlDlg::PreTranslateMessage(MSG* pMsg) {
     SetTimer(1, 300, NULL);
     break;
   }
-  return CDialogEx::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 BEGIN_EVENTSINK_MAP(CGrabXmlDlg, CDialogEx)
@@ -191,7 +190,7 @@ void CGrabXmlDlg::DocumentCompleteExplorer1(LPDISPATCH pDisp, VARIANT* URL) {
 
 void CGrabXmlDlg::OnRButtonDblClk(UINT nFlags, CPoint point) {
   findRouteAndEnterSolution();
-  CDialogEx::OnRButtonDblClk(nFlags, point);
+  __super::OnRButtonDblClk(nFlags, point);
 }
 
 void CGrabXmlDlg::findRouteAndEnterSolution() {
@@ -318,7 +317,7 @@ void CGrabXmlDlg::enterText(const String &id, const String &text) {
 }
 
 void CGrabXmlDlg::OnTimer(UINT_PTR nIDEvent) {
-  CDialogEx::OnTimer(nIDEvent);
+  __super::OnTimer(nIDEvent);
   KillTimer(1);
   findRouteAndEnterSolution();
 }

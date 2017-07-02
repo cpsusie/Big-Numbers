@@ -29,7 +29,7 @@ BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
 CTestEdgeDetectionDlg::CTestEdgeDetectionDlg(CWnd *pParent /*=NULL*/) : CDialog(CTestEdgeDetectionDlg::IDD, pParent) {
-    m_hIcon            = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+    m_hIcon            = theApp.LoadIcon(IDR_MAINFRAME);
     m_dc               = NULL;
     m_arrowDirection   = NODIR;
     m_edgeMatrixCenter = CPoint(-1,-1);
@@ -79,7 +79,7 @@ BOOL CTestEdgeDetectionDlg::OnInitDialog() {
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
-  CMenu* pSysMenu = GetSystemMenu(FALSE);
+  CMenu *pSysMenu = GetSystemMenu(FALSE);
   if(pSysMenu != NULL) {
     CString strAboutMenu;
     strAboutMenu.LoadString(IDS_ABOUTBOX);
@@ -92,7 +92,7 @@ BOOL CTestEdgeDetectionDlg::OnInitDialog() {
   SetIcon(m_hIcon, TRUE);
   SetIcon(m_hIcon, FALSE);
 
-  m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance, MAKEINTRESOURCE(IDR_MAINFRAME));
+  m_accelTable = LoadAccelerators(theApp.m_hInstance, MAKEINTRESOURCE(IDR_MAINFRAME));
 
   m_layoutManager.OnInitDialog(this);
   m_layoutManager.addControl(IDC_PIXELAREA     , RELATIVE_SIZE  );
@@ -126,8 +126,7 @@ void CTestEdgeDetectionDlg::flush() {
 
 void CTestEdgeDetectionDlg::OnSysCommand(UINT nID, LPARAM lParam) {
   if((nID & 0xFFF0) == IDM_ABOUTBOX) {
-    CAboutDlg dlgAbout;
-    dlgAbout.DoModal();
+    CAboutDlg().DoModal();
   } else {
     __super::OnSysCommand(nID, lParam);
   }
@@ -182,7 +181,7 @@ void CTestEdgeDetectionDlg::adjustPixelMatrix() {
 }
 
 HCURSOR CTestEdgeDetectionDlg::OnQueryDragIcon() {
-  return (HCURSOR) m_hIcon;
+  return (HCURSOR)m_hIcon;
 }
 
 void CTestEdgeDetectionDlg::showCount(int count) {
@@ -498,7 +497,7 @@ void CTestEdgeDetectionDlg::setSearchDir(Direction dir) {
         DeleteObject(m_currentDirBitmap);
         m_currentDirBitmap = NULL;
       }
-      m_currentDirBitmap = ::LoadBitmap(AfxGetApp()->m_hInstance, MAKEINTRESOURCE(dm.m_bitmapId));
+      m_currentDirBitmap = ::LoadBitmap(theApp.m_hInstance, MAKEINTRESOURCE(dm.m_bitmapId));
       ((CStatic*)GetDlgItem(IDC_STATICDIRIMAGE))->SetBitmap(m_currentDirBitmap);
 ;   }
   }

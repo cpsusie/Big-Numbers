@@ -28,7 +28,7 @@ END_MESSAGE_MAP()
 
 CTestExtractIconsDlg::CTestExtractIconsDlg(CWnd *pParent) : CDialog(CTestExtractIconsDlg::IDD, pParent) {
     m_showLargeIcons = FALSE;
-    m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+    m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
 }
 
 void CTestExtractIconsDlg::DoDataExchange(CDataExchange *pDX) {

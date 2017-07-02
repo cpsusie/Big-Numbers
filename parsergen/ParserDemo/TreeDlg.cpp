@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "ParserDemo.h"
 #include "TreeDlg.h"
 
 #ifdef _DEBUG
@@ -36,7 +35,7 @@ void TreeDlg::traverse(CTreeCtrl *ctrl, SyntaxNodep tree, HTREEITEM p) {
 
 BOOL TreeDlg::OnInitDialog() {
   __super::OnInitDialog();
-  m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance, MAKEINTRESOURCE(IDR_ACCELERATORTREE));
+  m_accelTable = LoadAccelerators(theApp.m_hInstance, MAKEINTRESOURCE(IDR_ACCELERATORTREE));
 
   CTreeCtrl *ctrl = (CTreeCtrl*)GetDlgItem(IDC_DERIVATIONTREE);
   m_images.Create(IDB_BITMAPTERMINAL, 13, 1, RGB(255, 255, 255));
@@ -104,8 +103,9 @@ HTREEITEM TreeDlg::findTreeItem(CTreeCtrl *ctrl, const CPoint &pt) {
 }
 
 BOOL TreeDlg::PreTranslateMessage(MSG *pMsg) {
-  if(TranslateAccelerator(m_hWnd, m_accelTable, pMsg))
+  if(TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
     return true;
+  }
 
   switch(pMsg->message) {
   case WM_RBUTTONDOWN:

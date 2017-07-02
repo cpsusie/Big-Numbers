@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include <Registry.h>
-#include <Exception.h>
 #include "Options.h"
 
 Options::Options() {

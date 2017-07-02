@@ -8,7 +8,7 @@
 
 CProgressDlg::CProgressDlg(LoadableMediaArray *mediaArray, CWnd *pParent) : CDialog(CProgressDlg::IDD, pParent) {
     m_mediaArray = mediaArray;
-    m_hIcon = AfxGetApp()->LoadIcon(IDI_READFILESICON);
+    m_hIcon = theApp.LoadIcon(IDI_READFILESICON);
 }
 
 void CProgressDlg::DoDataExchange(CDataExchange *pDX) {
@@ -34,7 +34,7 @@ void CProgressDlg::OnCancel() {
 }
 
 void CProgressDlg::OnTimer(UINT_PTR nIDEvent) {
-  GetDlgItem(IDC_STATICDIRNAME)->SetWindowText(m_mediaArray->getCurrentFileName());
-  GetDlgItem(IDC_STATICOUNT)->SetWindowText(format(_T("%lu"), m_mediaArray->size()).cstr());
+  setWindowText(this, IDC_STATICDIRNAME, m_mediaArray->getCurrentFileName());
+  setWindowText(this, IDC_STATICOUNT   , format(_T("%lu"), m_mediaArray->size()));
   __super::OnTimer(nIDEvent);
 }

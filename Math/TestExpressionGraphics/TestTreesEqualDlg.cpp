@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "TestExpressionGraphics.h"
 #include "TestTreesEqualDlg.h"
 #include "ExpressionTreeDlg.h"
 
@@ -7,14 +6,14 @@
 #define new DEBUG_NEW
 #endif
 
-CTestTreesEqualDlg::CTestTreesEqualDlg(CWnd* pParent /*=NULL*/) : CDialog(CTestTreesEqualDlg::IDD, pParent) {
+CTestTreesEqualDlg::CTestTreesEqualDlg(CWnd *pParent /*=NULL*/) : CDialog(CTestTreesEqualDlg::IDD, pParent) {
 	m_expr1 = EMPTYSTRING;
 	m_expr2 = EMPTYSTRING;
 
   m_focusCtrlId = -1;
 }
 
-void CTestTreesEqualDlg::DoDataExchange(CDataExchange* pDX) {
+void CTestTreesEqualDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
 	DDX_CBString(pDX, IDC_EDITEXPR1, m_expr1);
 	DDX_CBString(pDX, IDC_EDITEXPR2, m_expr2);
@@ -42,7 +41,7 @@ END_MESSAGE_MAP()
 BOOL CTestTreesEqualDlg::OnInitDialog() {
   __super::OnInitDialog();
 
-  m_accelTabel = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDD_TREESEQUAL_ACCELERATOR));
+  m_accelTabel = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDD_TREESEQUAL_ACCELERATOR));
   
   m_cb[0].substituteControl(this, IDC_EDITEXPR1, _T("EqualExpr1"));
   m_cb[1].substituteControl(this, IDC_EDITEXPR2, _T("EqualExpr2"));
@@ -88,7 +87,7 @@ void CTestTreesEqualDlg::OnSize(UINT nType, int cx, int cy) {
   m_layoutManager.OnSize(nType, cx, cy);	
 }
 
-BOOL CTestTreesEqualDlg::PreTranslateMessage(MSG* pMsg) {
+BOOL CTestTreesEqualDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd, m_accelTabel, pMsg)) {
     return true;
   }
@@ -216,7 +215,7 @@ void CTestTreesEqualDlg::destroyImage(int index) {
   m_image[index].clear();
 }
 
-void CTestTreesEqualDlg::OnContextMenu(CWnd* pWnd, CPoint point) {
+void CTestTreesEqualDlg::OnContextMenu(CWnd *pWnd, CPoint point) {
   CPoint mouseDown = point;
   ScreenToClient(&mouseDown);
   const CRect image1Rect  = getWindowRect(this, IDC_STATICIMAGE1);

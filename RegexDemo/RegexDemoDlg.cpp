@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include <MFCUtil/Clipboard.h>
-#include "RegexDemo.h"
 #include "RegexDemoDlg.h"
 #include "TestRegexDlg.h"
 
@@ -14,7 +13,7 @@ public:
   enum { IDD = IDD_ABOUTBOX };
 
 protected:
-  virtual void DoDataExchange(CDataExchange* pDX);
+  virtual void DoDataExchange(CDataExchange *pDX);
 
 protected:
   DECLARE_MESSAGE_MAP()
@@ -23,17 +22,17 @@ protected:
 CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
-void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
+void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
-CRegexDemoDlg::CRegexDemoDlg(CWnd* pParent) : CDialog(CRegexDemoDlg::IDD, pParent) {
+CRegexDemoDlg::CRegexDemoDlg(CWnd *pParent) : CDialog(CRegexDemoDlg::IDD, pParent) {
 	m_pattern     = EMPTYSTRING;
 	m_target      = EMPTYSTRING;
-  m_hIcon       = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+  m_hIcon       = theApp.LoadIcon(IDR_MAINFRAME);
   m_debugThread = NULL;
 }
 
@@ -45,7 +44,7 @@ CRegexDemoDlg::~CRegexDemoDlg() {
   killThread();
 }
 
-void CRegexDemoDlg::DoDataExchange(CDataExchange* pDX) {
+void CRegexDemoDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
 	DDX_CBString(pDX, IDC_COMBOPATTERN, m_pattern);
 	DDX_CBString(pDX, IDC_COMBOTARGET, m_target);
@@ -96,7 +95,7 @@ BOOL CRegexDemoDlg::OnInitDialog() {
     ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
     ASSERT(IDM_ABOUTBOX < 0xF000);
 
-    CMenu* pSysMenu = GetSystemMenu(FALSE);
+    CMenu *pSysMenu = GetSystemMenu(FALSE);
     if (pSysMenu != NULL) {
       CString strAboutMenu;
       strAboutMenu.LoadString(IDS_ABOUTBOX);
@@ -122,7 +121,7 @@ BOOL CRegexDemoDlg::OnInitDialog() {
     m_patternCombo.SetFont(&m_comboFont);
     m_targetCombo.SetFont(&m_comboFont);
 
-    m_accelTable      = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_MAINFRAME));
+    m_accelTable      = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_MAINFRAME));
 
     m_charMarkers.add(new CharacterMarker(this, IDC_COMBOPATTERN,IDB_BITMAP_BLACK_DOWNARROW, true )); // PATTERN_POSMARK
     m_charMarkers.add(new CharacterMarker(this, IDC_COMBOTARGET, IDB_BITMAP_RED_UPARROW    , false)); // SEARCH_POSMARK
@@ -158,7 +157,7 @@ BOOL CRegexDemoDlg::OnInitDialog() {
 }
 
 void CRegexDemoDlg::OnSysCommand(UINT nID, LPARAM lParam) {
-  if ((nID & 0xFFF0) == IDM_ABOUTBOX) {
+  if((nID & 0xFFF0) == IDM_ABOUTBOX) {
     CAboutDlg().DoModal();
   } else {
     __super::OnSysCommand(nID, lParam);
@@ -169,7 +168,7 @@ HCURSOR CRegexDemoDlg::OnQueryDragIcon() {
   return (HCURSOR)m_hIcon;
 }
 
-BOOL CRegexDemoDlg::PreTranslateMessage(MSG* pMsg) {
+BOOL CRegexDemoDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
     return true;
   }

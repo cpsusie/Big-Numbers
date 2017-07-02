@@ -55,7 +55,7 @@ END_MESSAGE_MAP()
 BOOL CListFieldAttributeDlg::OnInitDialog() {
   __super::OnInitDialog();
 
-  m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATOR_LISTFIELDATTRIBUTE));
+  m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATOR_LISTFIELDATTRIBUTE));
 
   setFieldType(comboValueToFieldType(m_fieldType));
   gotoEditBox(this, IDC_STATICHEADER);

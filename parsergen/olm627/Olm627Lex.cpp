@@ -111,7 +111,7 @@ int Olm627Lex::getNextLexeme() {
 
     for(;;) {
       if(((int)(lookahead = look(1))) != EOF) {
-		assert(lookahead < 256);
+        assert(lookahead < 256);
         nextState = nextState(state, lookahead);
         break;
       } else if(lastAcceptState != 0) {   // still something to do
@@ -218,7 +218,7 @@ int Olm627Lex::getNextLexeme() {
         break;
                   
       default:
-        throwException(_T("Olm627Lex::getNextLexeme:Unknown accept state:%d, text=<%s>"), lastAcceptState,getText());
+        throwException(_T("%s:Unknown accept state:%d, text=<%s>"), __TFUNCTION__, lastAcceptState,getText());
         break;
       }
 

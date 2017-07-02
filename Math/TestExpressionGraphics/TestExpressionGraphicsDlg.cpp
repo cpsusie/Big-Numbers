@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include <Process.h>
-#include "TestExpressionGraphics.h"
 #include "TestExpressionGraphicsDlg.h"
 #include "EnterVariablesDlg.h"
 #include "ExpressionTreeDlg.h"
@@ -17,7 +16,7 @@ public:
     enum { IDD = IDD_ABOUTBOX };
 
     protected:
-    virtual void DoDataExchange(CDataExchange* pDX);
+    virtual void DoDataExchange(CDataExchange *pDX);
 
 protected:
     DECLARE_MESSAGE_MAP()
@@ -26,18 +25,18 @@ protected:
 CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
-void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
+void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
     __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
-CTestExpressionGraphicsDlg::CTestExpressionGraphicsDlg(CWnd* pParent /*=NULL*/) : CDialog(CTestExpressionGraphicsDlg::IDD, pParent), m_numberFormat(0)
+CTestExpressionGraphicsDlg::CTestExpressionGraphicsDlg(CWnd *pParent /*=NULL*/) : CDialog(CTestExpressionGraphicsDlg::IDD, pParent), m_numberFormat(0)
 {
     m_exprText        = EMPTYSTRING;
     m_x               = 0.0;
-    m_hIcon           = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+    m_hIcon           = theApp.LoadIcon(IDR_MAINFRAME);
     m_debugExpr       = NULL;
     m_debugThread     = NULL;
     m_debugWinId      = -1;
@@ -49,7 +48,7 @@ CTestExpressionGraphicsDlg::CTestExpressionGraphicsDlg(CWnd* pParent /*=NULL*/) 
 CTestExpressionGraphicsDlg::~CTestExpressionGraphicsDlg() {
 }
 
-void CTestExpressionGraphicsDlg::DoDataExchange(CDataExchange* pDX) {
+void CTestExpressionGraphicsDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
   DDX_Text(pDX, IDC_EDITEXPR  , m_exprText);
   DDX_Text(pDX, IDC_EDITX     , m_x       );
@@ -111,7 +110,7 @@ BOOL CTestExpressionGraphicsDlg::OnInitDialog() {
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
-  CMenu* pSysMenu = GetSystemMenu(FALSE);
+  CMenu *pSysMenu = GetSystemMenu(FALSE);
   if(pSysMenu != NULL) {
     CString strAboutMenu;
     strAboutMenu.LoadString(IDS_ABOUTBOX);
@@ -124,7 +123,7 @@ BOOL CTestExpressionGraphicsDlg::OnInitDialog() {
   SetIcon(m_hIcon, TRUE);         // Set big icon
   SetIcon(m_hIcon, FALSE);        // Set small icon
 
-  m_accelTabel = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_MAINFRAME));
+  m_accelTabel = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_MAINFRAME));
   
   m_reductionStackWindow.substituteControl(this, IDC_STATICREDUCTIONSTACK);
   m_layoutManager.OnInitDialog(this);
@@ -206,7 +205,7 @@ HCURSOR CTestExpressionGraphicsDlg::OnQueryDragIcon() {
   return (HCURSOR)m_hIcon;
 }
 
-BOOL CTestExpressionGraphicsDlg::PreTranslateMessage(MSG* pMsg) {
+BOOL CTestExpressionGraphicsDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd, m_accelTabel, pMsg)) {
     return true;
   }

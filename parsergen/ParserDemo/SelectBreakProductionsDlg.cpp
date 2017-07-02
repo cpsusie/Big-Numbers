@@ -1,6 +1,4 @@
 #include "stdafx.h"
-#include "ParserDemo.h"
-#include <Array.h>
 #include "SelectBreakProductionsDlg.h"
 
 #ifdef _DEBUG

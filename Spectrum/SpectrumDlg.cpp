@@ -17,7 +17,7 @@ public:
   enum { IDD = IDD_ABOUTBOX };
 
   protected:
-  virtual void DoDataExchange(CDataExchange* pDX);
+  virtual void DoDataExchange(CDataExchange *pDX);
 
 protected:
   DECLARE_MESSAGE_MAP()
@@ -26,18 +26,18 @@ protected:
 CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
-void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
+void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
-CSpectrumDlg::CSpectrumDlg(CWnd* pParent) : CDialog(CSpectrumDlg::IDD, pParent) {
-  m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+CSpectrumDlg::CSpectrumDlg(CWnd *pParent) : CDialog(CSpectrumDlg::IDD, pParent) {
+  m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
 }
 
-void CSpectrumDlg::DoDataExchange(CDataExchange* pDX) {
+void CSpectrumDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
 }
 
@@ -63,7 +63,7 @@ BOOL CSpectrumDlg::OnInitDialog() {
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
-  CMenu* pSysMenu = GetSystemMenu(FALSE);
+  CMenu *pSysMenu = GetSystemMenu(FALSE);
   if(pSysMenu != NULL) {
     CString strAboutMenu;
     strAboutMenu.LoadString(IDS_ABOUTBOX);
@@ -77,7 +77,7 @@ BOOL CSpectrumDlg::OnInitDialog() {
   //  when the application's main window is not a dialog
   SetIcon(m_hIcon, TRUE);         // Set big icon
   SetIcon(m_hIcon, FALSE);        // Set small icon
-  m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATOR1));
+  m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATOR1));
   
   m_waveSystem.substituteControl(     this, IDC_WAVESYSTEM);
   m_frequenceSystem.substituteControl(this, IDC_FREQUENCESYSTEM);
@@ -103,7 +103,7 @@ void CSpectrumDlg::OnSysCommand(UINT nID, LPARAM lParam) {
   }
 }
 
-BOOL CSpectrumDlg::PreTranslateMessage(MSG* pMsg) {
+BOOL CSpectrumDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     return true;
   }
@@ -151,7 +151,7 @@ void CSpectrumDlg::OnPaint() {
 }
 
 HCURSOR CSpectrumDlg::OnQueryDragIcon() {
-  return (HCURSOR) m_hIcon;
+  return (HCURSOR)m_hIcon;
 }
 
 void CSpectrumDlg::OnSize(UINT nType, int cx, int cy) {

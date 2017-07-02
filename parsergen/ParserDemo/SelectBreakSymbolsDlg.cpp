@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "ParserDemo.h"
 #include "SelectBreakSymbolsDlg.h"
 #include <HashMap.h>
 

@@ -18,7 +18,7 @@ public:
 #endif
 
   protected:
-  virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+  virtual void DoDataExchange(CDataExchange *pDX);    // DDX/DDV support
 
 protected:
   DECLARE_MESSAGE_MAP()
@@ -27,22 +27,22 @@ protected:
 CAboutDlg::CAboutDlg() : CDialogEx(IDD_ABOUTBOX) {
 }
 
-void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialogEx::DoDataExchange(pDX);
+void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
 END_MESSAGE_MAP()
 
 
-CtestlockrectDlg::CtestlockrectDlg(CWnd* pParent /*=NULL*/)
+CtestlockrectDlg::CtestlockrectDlg(CWnd *pParent /*=NULL*/)
   : CDialogEx(IDD_TESTLOCKRECT_DIALOG, pParent)
 {
-  m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+  m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
 }
 
-void CtestlockrectDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialogEx::DoDataExchange(pDX);
+void CtestlockrectDlg::DoDataExchange(CDataExchange *pDX) {
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CtestlockrectDlg, CDialogEx)
@@ -54,7 +54,7 @@ BEGIN_MESSAGE_MAP(CtestlockrectDlg, CDialogEx)
 END_MESSAGE_MAP()
 
 BOOL CtestlockrectDlg::OnInitDialog() {
-  CDialogEx::OnInitDialog();
+  __super::OnInitDialog();
 
   // Add "About..." menu item to system menu.
 
@@ -62,7 +62,7 @@ BOOL CtestlockrectDlg::OnInitDialog() {
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
-  CMenu* pSysMenu = GetSystemMenu(FALSE);
+  CMenu *pSysMenu = GetSystemMenu(FALSE);
   if (pSysMenu != NULL) {
     BOOL bNameValid;
     CString strAboutMenu;
@@ -84,12 +84,11 @@ BOOL CtestlockrectDlg::OnInitDialog() {
 }
 
 void CtestlockrectDlg::OnSysCommand(UINT nID, LPARAM lParam) {
-  if ((nID & 0xFFF0) == IDM_ABOUTBOX) {
-    CAboutDlg dlgAbout;
-    dlgAbout.DoModal();
+  if((nID & 0xFFF0) == IDM_ABOUTBOX) {
+    CAboutDlg().DoModal();
   }
   else {
-    CDialogEx::OnSysCommand(nID, lParam);
+    __super::OnSysCommand(nID, lParam);
   }
 }
 
@@ -111,7 +110,7 @@ void CtestlockrectDlg::OnPaint() {
     dc.DrawIcon(x, y, m_hIcon);
   }
   else {
-    CDialogEx::OnPaint();
+    __super::OnPaint();
   }
 }
 

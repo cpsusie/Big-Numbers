@@ -11,7 +11,7 @@
 IMPLEMENT_DYNCREATE(CCheckFilesThread, CWinThread)
 
 CCheckFilesThread::CCheckFilesThread()
-: m_mediaArray(((CPartyMakerDlg*)AfxGetApp()->GetMainWnd())->getMediaArray())
+: m_mediaArray(theApp.GetMainWnd()->getMediaArray())
 , m_player(_T("MP3Check"))
 {
 }

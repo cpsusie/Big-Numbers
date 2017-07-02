@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "ParserDemo.h"
 #include "GotoDlg.h"
 
 #ifdef _DEBUG

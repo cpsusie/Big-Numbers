@@ -48,7 +48,7 @@ END_MESSAGE_MAP()
 BOOL CShowDuplicatesDlg::OnInitDialog() {
   __super::OnInitDialog();
 
-  m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_SHOWDUPLICATES_ACCELERATOR));
+  m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_SHOWDUPLICATES_ACCELERATOR));
 
   m_duplicateList.InsertColumn(0,_T("Titel")      , LVCFMT_LEFT, 275);
   m_duplicateList.InsertColumn(1,_T("Medvirkende"), LVCFMT_LEFT, 130);
@@ -253,7 +253,7 @@ void CShowDuplicatesDlg::OnGotoList() {
 }
 
 LRESULT CShowDuplicatesDlg::OnShowStateMessage(WPARAM wp, LPARAM lp) {
-  GetDlgItem(IDC_STATETEXT)->SetWindowText(m_stateMessageQueue.get().cstr());
+  setWindowText(this, IDC_STATETEXT, m_stateMessageQueue.get());
   return 0;
 }
 

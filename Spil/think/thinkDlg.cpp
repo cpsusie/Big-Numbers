@@ -29,7 +29,7 @@ BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
 CThinkDlg::CThinkDlg(CWnd *pParent) : CDialog(CThinkDlg::IDD, pParent) {
-  m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+  m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
 }
 
 void CThinkDlg::DoDataExchange(CDataExchange *pDX) {
@@ -70,7 +70,7 @@ BOOL CThinkDlg::OnInitDialog() {
 }
 
 void CThinkDlg::OnSysCommand(UINT nID, LPARAM lParam) {
-  if ((nID & 0xFFF0) == IDM_ABOUTBOX) {
+  if((nID & 0xFFF0) == IDM_ABOUTBOX) {
     CAboutDlg().DoModal();
   } else {
     __super::OnSysCommand(nID, lParam);

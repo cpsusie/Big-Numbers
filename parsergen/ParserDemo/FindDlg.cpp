@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "ParserDemo.h"
 #include "FindDlg.h"
 #include "History.h"
 
@@ -89,7 +88,7 @@ BOOL FindDlg::OnInitDialog() {
     ((CButton*)GetDlgItem(IDC_RADIODOWN))->SetCheck(1);
   }
 
-  m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance, MAKEINTRESOURCE(IDR_ACCELERATORFIND));
+  m_accelTable = LoadAccelerators(theApp.m_hInstance, MAKEINTRESOURCE(IDR_ACCELERATORFIND));
   UpdateData(false);
   return false;
 }
@@ -141,9 +140,9 @@ void FindDlg::OnSetfocusCombofindwhat() {
 }
 
 BOOL FindDlg::PreTranslateMessage(MSG *pMsg) {
-  if(TranslateAccelerator(m_hWnd, m_accelTable, pMsg))
+  if(TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
     return true;
-    
+  }
   BOOL ret = __super::PreTranslateMessage(pMsg);
 
   if(getFocusCtrlId(this) == IDC_COMBOFINDWHAT) {

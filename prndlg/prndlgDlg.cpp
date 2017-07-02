@@ -13,27 +13,27 @@ public:
 
   enum { IDD = IDD_ABOUTBOX };
 protected:
-  virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+  virtual void DoDataExchange(CDataExchange *pDX);    // DDX/DDV support
   DECLARE_MESSAGE_MAP()
 };
 
 CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
-void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
+void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
-CPrndlgDlg::CPrndlgDlg(CWnd* pParent /*=NULL*/)
+CPrndlgDlg::CPrndlgDlg(CWnd *pParent /*=NULL*/)
   : CDialog(CPrndlgDlg::IDD, pParent)
 {
-  m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+  m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
 }
 
-void CPrndlgDlg::DoDataExchange(CDataExchange* pDX) {
+void CPrndlgDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
 }
 
@@ -51,7 +51,7 @@ BOOL CPrndlgDlg::OnInitDialog() {
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
-  CMenu* pSysMenu = GetSystemMenu(FALSE);
+  CMenu *pSysMenu = GetSystemMenu(FALSE);
   if (pSysMenu != NULL)
   {
     CString strAboutMenu;
@@ -70,7 +70,7 @@ BOOL CPrndlgDlg::OnInitDialog() {
 }
 
 void CPrndlgDlg::OnSysCommand(UINT nID, LPARAM lParam) {
-  if ((nID & 0xFFF0) == IDM_ABOUTBOX) {
+  if((nID & 0xFFF0) == IDM_ABOUTBOX) {
     CAboutDlg().DoModal();
   } else {
     __super::OnSysCommand(nID, lParam);

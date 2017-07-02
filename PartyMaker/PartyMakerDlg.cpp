@@ -40,7 +40,7 @@ BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
 CPartyMakerDlg::CPartyMakerDlg(CWnd *pParent) : CDialog(CPartyMakerDlg::IDD, pParent) {
-    m_hIcon = AfxGetApp()->LoadIcon(IDI_MAINFRAME);
+    m_hIcon = theApp.LoadIcon(IDI_MAINFRAME);
 }
 
 void CPartyMakerDlg::DoDataExchange(CDataExchange *pDX) {
@@ -186,7 +186,7 @@ BOOL CPartyMakerDlg::OnInitDialog() {
       setFlag(EDITORDERENABLED);
     }
     SetPriorityClass(GetCurrentProcess(),HIGH_PRIORITY_CLASS);
-    m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_MAINFRAME));
+    m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_MAINFRAME));
     gotoToListBox();
   } catch(Exception e) {
     Message(_T("Fatal error:%s"), e.what());
@@ -197,7 +197,7 @@ BOOL CPartyMakerDlg::OnInitDialog() {
 }
 
 void CPartyMakerDlg::OnSysCommand(UINT nID, LPARAM lParam) {
-  if ((nID & 0xFFF0) == IDM_ABOUTBOX) {
+  if((nID & 0xFFF0) == IDM_ABOUTBOX) {
     CAboutDlg().DoModal();
   } else {
     __super::OnSysCommand(nID, lParam);
@@ -240,7 +240,7 @@ void CPartyMakerDlg::OnPaint() {
 }
 
 HCURSOR CPartyMakerDlg::OnQueryDragIcon() {
-  return (HCURSOR) m_hIcon;
+  return (HCURSOR)m_hIcon;
 }
 
 #define TIMERUPDATERATE 1000
@@ -525,14 +525,14 @@ void CPartyMakerDlg::ajourPauseButton(WMPPlayState state) {
   case wmppsPlaying:
     if(!isFlagSet(PAUSEBUTTONISPAUSE)) {
       checkMenuItem(this,ID_FILE_PAUSE,false);
-      GetDlgItem(IDC_PAUSEBUTTON)->SetWindowText(_T("&Pause = Ctrl+P"));
+      setWindowText(this, IDC_PAUSEBUTTON, _T("&Pause = Ctrl+P"));
       setFlag(PAUSEBUTTONISPAUSE);
     }
     break;
   case wmppsPaused :
     if(isFlagSet(PAUSEBUTTONISPAUSE)) {
       checkMenuItem(this,ID_FILE_PAUSE,true);
-      GetDlgItem(IDC_PAUSEBUTTON)->SetWindowText(_T("Fortsæt = Ctrl+P"));
+      setWindowText(this, IDC_PAUSEBUTTON, _T("Fortsæt = Ctrl+P"));
       clrFlag(PAUSEBUTTONISPAUSE);
     }
   }

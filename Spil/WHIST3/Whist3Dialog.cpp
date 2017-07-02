@@ -17,7 +17,7 @@ public:
   enum { IDD = IDD_ABOUTBOX };
 
 protected:
-  virtual void DoDataExchange(CDataExchange* pDX);
+  virtual void DoDataExchange(CDataExchange *pDX);
 
 protected:
   DECLARE_MESSAGE_MAP()
@@ -26,16 +26,16 @@ protected:
 CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
-void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
+void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
-CWhist3Dialog::CWhist3Dialog(CWnd* pParent) : CDialog(CWhist3Dialog::IDD, pParent), m_sync(0) {
+CWhist3Dialog::CWhist3Dialog(CWnd *pParent) : CDialog(CWhist3Dialog::IDD, pParent), m_sync(0) {
 
-  m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+  m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
 
   IdentifyDialog dlg;
   dlg.DoModal();
@@ -48,7 +48,7 @@ CWhist3Dialog::CWhist3Dialog(CWnd* pParent) : CDialog(CWhist3Dialog::IDD, pParen
   }
 }
 
-void CWhist3Dialog::DoDataExchange(CDataExchange* pDX) {
+void CWhist3Dialog::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
 }
 
@@ -83,7 +83,7 @@ void CWhist3Dialog::OnSysCommand(UINT nID, LPARAM lParam) {
 }
 
 HCURSOR CWhist3Dialog::OnQueryDragIcon() {
-  return (HCURSOR) m_hIcon;
+  return (HCURSOR)m_hIcon;
 }
 
 void CWhist3Dialog::fatalError(const TCHAR *format, ... ) {
@@ -101,7 +101,7 @@ BOOL CWhist3Dialog::OnInitDialog() {
 
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
-  CMenu* pSysMenu = GetSystemMenu(FALSE);
+  CMenu *pSysMenu = GetSystemMenu(FALSE);
   if (pSysMenu != NULL) {
     CString strAboutMenu;
     strAboutMenu.LoadString(IDS_ABOUTBOX);
@@ -114,7 +114,7 @@ BOOL CWhist3Dialog::OnInitDialog() {
   SetIcon(m_hIcon, TRUE);         // Set big icon
   SetIcon(m_hIcon, FALSE);        // Set small icon
 
-  m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_MAINFRAME));
+  m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_MAINFRAME));
   randomize();
   CRect rect;
   GetClientRect(&rect);
@@ -126,7 +126,7 @@ BOOL CWhist3Dialog::OnInitDialog() {
   return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
-BOOL CWhist3Dialog::PreTranslateMessage(MSG* pMsg) {
+BOOL CWhist3Dialog::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     return TRUE;
   }

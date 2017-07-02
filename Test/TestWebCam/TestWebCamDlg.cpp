@@ -30,7 +30,7 @@ BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
 CTestWebCamDlg::CTestWebCamDlg(CWnd *pParent) : CDialog(CTestWebCamDlg::IDD, pParent) {
-  m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+  m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
   m_timerIsRunning  = false;
   m_edgeDetectionOn = false;
   m_lastImage       = 0;
@@ -42,15 +42,14 @@ void CTestWebCamDlg::DoDataExchange(CDataExchange *pDX) {
 
 void CTestWebCamDlg::OnSysCommand(UINT nID, LPARAM lParam) {
   if((nID & 0xFFF0) == IDM_ABOUTBOX) {
-    CAboutDlg dlgAbout;
-    dlgAbout.DoModal();
+    CAboutDlg().DoModal();
   } else {
     __super::OnSysCommand(nID, lParam);
   }
 }
 
 HCURSOR CTestWebCamDlg::OnQueryDragIcon() {
-  return (HCURSOR) m_hIcon;
+  return (HCURSOR)m_hIcon;
 }
 
 BEGIN_MESSAGE_MAP(CTestWebCamDlg, CDialog)

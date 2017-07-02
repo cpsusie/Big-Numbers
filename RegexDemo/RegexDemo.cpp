@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "RegexDemo.h"
 #include "RegexDemoDlg.h"
 
 #ifdef _DEBUG

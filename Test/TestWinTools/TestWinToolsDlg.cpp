@@ -37,7 +37,7 @@ CAboutDlg::CAboutDlg() : CDialogEx(IDD_ABOUTBOX) {
 }
 
 void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-    CDialogEx::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
@@ -47,11 +47,11 @@ END_MESSAGE_MAP()
 CTestWinToolsDlg::CTestWinToolsDlg(CWnd *pParent /*=NULL*/)
     : CDialogEx(IDD_TESTWINTOOLS_DIALOG, pParent)
 {
-    m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+    m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
 }
 
 void CTestWinToolsDlg::DoDataExchange(CDataExchange *pDX) {
-    CDialogEx::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CTestWinToolsDlg, CDialogEx)
@@ -73,7 +73,7 @@ BEGIN_MESSAGE_MAP(CTestWinToolsDlg, CDialogEx)
 END_MESSAGE_MAP()
 
 BOOL CTestWinToolsDlg::OnInitDialog() {
-  CDialogEx::OnInitDialog();
+  __super::OnInitDialog();
 
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
@@ -99,11 +99,10 @@ BOOL CTestWinToolsDlg::OnInitDialog() {
 }
 
 void CTestWinToolsDlg::OnSysCommand(UINT nID, LPARAM lParam) {
-  if ((nID & 0xFFF0) == IDM_ABOUTBOX) {
-    CAboutDlg dlgAbout;
-    dlgAbout.DoModal();
+  if((nID & 0xFFF0) == IDM_ABOUTBOX) {
+    CAboutDlg().DoModal();
   } else {
-    CDialogEx::OnSysCommand(nID, lParam);
+    __super::OnSysCommand(nID, lParam);
   }
 }
 
@@ -128,7 +127,7 @@ void CTestWinToolsDlg::OnPaint() {
         // Draw the icon
         dc.DrawIcon(x, y, m_hIcon);
     } else {
-        CDialogEx::OnPaint();
+        __super::OnPaint();
     showInfo();
   }
 }

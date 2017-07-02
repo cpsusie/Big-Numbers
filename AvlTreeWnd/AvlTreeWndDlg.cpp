@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "AvlTreeWnd.h"
 #include "AvlTreeWndDlg.h"
 #include "GetIntDlg.h"
 
@@ -13,25 +12,25 @@ public:
 
   enum { IDD = IDD_ABOUTBOX };
 
-  virtual void DoDataExchange(CDataExchange* pDX);
+  virtual void DoDataExchange(CDataExchange *pDX);
   DECLARE_MESSAGE_MAP()
 };
 
 CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
-void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
+void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
-CAvlTreeWndDlg::CAvlTreeWndDlg(CWnd* pParent) : CDialog(CAvlTreeWndDlg::IDD, pParent) {
-  m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+CAvlTreeWndDlg::CAvlTreeWndDlg(CWnd *pParent) : CDialog(CAvlTreeWndDlg::IDD, pParent) {
+  m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
 }
 
-void CAvlTreeWndDlg::DoDataExchange(CDataExchange* pDX) {
+void CAvlTreeWndDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
 }
 
@@ -65,7 +64,7 @@ BOOL CAvlTreeWndDlg::OnInitDialog() {
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
-  CMenu* pSysMenu = GetSystemMenu(FALSE);
+  CMenu *pSysMenu = GetSystemMenu(FALSE);
   if (pSysMenu != NULL) {
     CString strAboutMenu;
     strAboutMenu.LoadString(IDS_ABOUTBOX);
@@ -85,7 +84,7 @@ BOOL CAvlTreeWndDlg::OnInitDialog() {
   m_testTree.setAvlGraphics(this);
   m_itererator = new AvlIterator(m_testTree);
   
-  m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATOR_MAINDIALOG));
+  m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATOR_MAINDIALOG));
   m_font.CreateFont(10, 6, 0, 0, 400, FALSE, FALSE, 0, ANSI_CHARSET, OUT_DEFAULT_PRECIS
                    ,CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY
                    ,DEFAULT_PITCH | FF_MODERN
@@ -96,7 +95,7 @@ BOOL CAvlTreeWndDlg::OnInitDialog() {
 }
 
 void CAvlTreeWndDlg::OnSysCommand(UINT nID, LPARAM lParam) {
-  if ((nID & 0xFFF0) == IDM_ABOUTBOX)   {
+  if((nID & 0xFFF0) == IDM_ABOUTBOX)   {
     CAboutDlg().DoModal();
   } else {
     __super::OnSysCommand(nID, lParam);
@@ -130,7 +129,7 @@ void CAvlTreeWndDlg::OnPaint() {
 }
 
 void CAvlTreeWndDlg::vmessage(COLORREF color, const TCHAR *format, va_list argptr) {
-  GetDlgItem(IDC_MESSAGE)->SetWindowText(vformat(format,argptr).cstr());
+  setWindowText(this, IDC_MESSAGE, vformat(format,argptr));
 }
 
 CRect CAvlTreeWndDlg::getTreeRect() {
@@ -151,7 +150,7 @@ CSize CAvlTreeWndDlg::getCharSize() {
 }
 
 HCURSOR CAvlTreeWndDlg::OnQueryDragIcon() {
-  return (HCURSOR) m_hIcon;
+  return (HCURSOR)m_hIcon;
 }
 
 void CAvlTreeWndDlg::OnSize(UINT nType, int cx, int cy) {
@@ -159,7 +158,7 @@ void CAvlTreeWndDlg::OnSize(UINT nType, int cx, int cy) {
   __super::OnSize(nType, cx, cy);
 }
 
-BOOL CAvlTreeWndDlg::PreTranslateMessage(MSG* pMsg) {
+BOOL CAvlTreeWndDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     return true;
   }
@@ -252,7 +251,7 @@ void CAvlTreeWndDlg::OnHelpAboutavtree() {
   CAboutDlg().DoModal();
 }
 
-void CAvlTreeWndDlg::OnContextMenu(CWnd* pWnd, CPoint point) {
+void CAvlTreeWndDlg::OnContextMenu(CWnd *pWnd, CPoint point) {
   m_selectedNode = m_testTree.findNodeByPosition(point);
   if(m_selectedNode == NULL) {
     return;

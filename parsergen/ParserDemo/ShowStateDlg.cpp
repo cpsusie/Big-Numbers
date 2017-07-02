@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "ParserDemo.h"
 #include "ShowStateDlg.h"
 #include "ParserDemoDlg.h"
 
@@ -9,7 +8,7 @@
 
 ShowStateDlg::ShowStateDlg(CDialog *mainDialog, CWnd *pParent): CDialog(ShowStateDlg::IDD, pParent), m_mainDialog(mainDialog) {
 	m_data = EMPTYSTRING;
-	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
 }
 
 void ShowStateDlg::DoDataExchange(CDataExchange *pDX) {
@@ -41,7 +40,7 @@ BOOL ShowStateDlg::OnInitDialog() {
 
   ajourState();
 
-  m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance, MAKEINTRESOURCE(IDR_ACCELERATORSHOWSTATE));
+  m_accelTable = LoadAccelerators(theApp.m_hInstance, MAKEINTRESOURCE(IDR_ACCELERATORSHOWSTATE));
 
   m_layoutManager.OnInitDialog(this);
   m_layoutManager.addControl(IDC_EDITSTATE, RELATIVE_SIZE    );
@@ -59,7 +58,7 @@ void ShowStateDlg::OnSize(UINT nType, int cx, int cy) {
 
 BOOL ShowStateDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
-    AfxGetApp()->m_pMainWnd->PostMessage(pMsg->message, pMsg->wParam, pMsg->lParam);
+    theApp.m_pMainWnd->PostMessage(pMsg->message, pMsg->wParam, pMsg->lParam);
 	return true;
   }
 

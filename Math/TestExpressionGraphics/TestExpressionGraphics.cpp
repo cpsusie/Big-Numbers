@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "TestExpressionGraphics.h"
 #include "TestExpressionGraphicsDlg.h"
 
 #ifdef _DEBUG

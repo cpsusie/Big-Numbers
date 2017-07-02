@@ -6,14 +6,12 @@
 
 #include "resource.h"       // main symbols
 
-
 class CTestExpressionGraphicsApp : public CWinApp {
 public:
     CTestExpressionGraphicsApp();
 
-    public:
     virtual BOOL InitInstance();
-
     DECLARE_MESSAGE_MAP()
 };
 
+extern CTestExpressionGraphicsApp theApp;

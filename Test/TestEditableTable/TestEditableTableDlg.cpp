@@ -33,7 +33,7 @@ END_MESSAGE_MAP()
 
 CTestEditableTableDlg::CTestEditableTableDlg(CWnd *pParent /*=NULL*/) : CDialog(CTestEditableTableDlg::IDD, pParent) {
     m_someText = "JESPER";
-    m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+    m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
 }
 
 void CTestEditableTableDlg::DoDataExchange(CDataExchange *pDX) {
@@ -68,7 +68,7 @@ BOOL CTestEditableTableDlg::OnInitDialog() {
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
-  CMenu* pSysMenu = GetSystemMenu(FALSE);
+  CMenu *pSysMenu = GetSystemMenu(FALSE);
   if(pSysMenu != NULL) {
     CString strAboutMenu;
     strAboutMenu.LoadString(IDS_ABOUTBOX);
@@ -81,7 +81,7 @@ BOOL CTestEditableTableDlg::OnInitDialog() {
   SetIcon(m_hIcon, TRUE);
   SetIcon(m_hIcon, FALSE);
 
-  m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATOR_MAINDIALOG));
+  m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATOR_MAINDIALOG));
 
   debugLogSetTimePrefix(false, true);
   m_list.substituteControl(this, IDC_LIST, m_model);
@@ -105,8 +105,7 @@ BOOL CTestEditableTableDlg::OnInitDialog() {
 
 void CTestEditableTableDlg::OnSysCommand(UINT nID, LPARAM lParam) {
   if((nID & 0xFFF0) == IDM_ABOUTBOX) {
-    CAboutDlg dlgAbout;
-    dlgAbout.DoModal();
+    CAboutDlg().DoModal();
   } else {
     __super::OnSysCommand(nID, lParam);
   }

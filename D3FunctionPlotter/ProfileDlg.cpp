@@ -7,7 +7,7 @@
 #define new DEBUG_NEW
 #endif
 
-CProfileDlg::CProfileDlg(const Profile &profile, CWnd* pParent) : CDialog(CProfileDlg::IDD, pParent), m_profile(profile) {
+CProfileDlg::CProfileDlg(const Profile &profile, CWnd *pParent) : CDialog(CProfileDlg::IDD, pParent), m_profile(profile) {
   ProfileRotationParameters parameters;
   m_degree           = RAD2GRAD(parameters.m_rad);
   m_normalSmooth     = parameters.m_smoothness & NORMALSMOOTH;
@@ -29,15 +29,15 @@ CProfileDlg::~CProfileDlg() {
   destroyBitmapCache();
 }
 
-void CProfileDlg::DoDataExchange(CDataExchange* pDX) {
+void CProfileDlg::DoDataExchange(CDataExchange *pDX) {
     __super::DoDataExchange(pDX);
-    DDX_Text(pDX, IDC_EDIT_DEGREES, m_degree);
-    DDX_Check(pDX, IDC_CHECK_NORMALSMOOTH, m_normalSmooth);
-    DDX_Check(pDX, IDC_CHECK_ROTATESMOOTH, m_rotateSmooth);
-    DDX_Text( pDX, IDC_EDIT_EDGECOUNT    , m_edgeCount);
+    DDX_Text(     pDX, IDC_EDIT_DEGREES      , m_degree      );
+    DDX_Check(    pDX, IDC_CHECK_NORMALSMOOTH, m_normalSmooth);
+    DDX_Check(    pDX, IDC_CHECK_ROTATESMOOTH, m_rotateSmooth);
+    DDX_Text(     pDX, IDC_EDIT_EDGECOUNT    , m_edgeCount   );
     DDV_MinMaxInt(pDX, m_edgeCount, 1, 100);
-    DDX_Radio(pDX, IDC_RADIO_ROTATEXAXIS, m_rotateAxis);
-    DDX_Radio(pDX, IDC_RADIO_ROTATE, m_3dmode);
+    DDX_Radio(    pDX, IDC_RADIO_ROTATEXAXIS , m_rotateAxis  );
+    DDX_Radio(    pDX, IDC_RADIO_ROTATE      , m_3dmode      );
 }
 
 BEGIN_MESSAGE_MAP(CProfileDlg, CDialog)
@@ -101,7 +101,7 @@ static LOGFONT makeDefaultFont() {
 BOOL CProfileDlg::OnInitDialog() {
   __super::OnInitDialog();
 
-  m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_PROFILE));
+  m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_PROFILE));
   m_logFont  = makeDefaultFont();
   UpdateData(false);
   createWorkBitmap();
@@ -397,7 +397,7 @@ void CProfileDlg::OnFileSelectFromFont() {
 */
 }
 
-BOOL CProfileDlg::PreTranslateMessage(MSG* pMsg) {
+BOOL CProfileDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     return true;
   }
@@ -674,7 +674,7 @@ BOOL CProfileDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) {
 
 void CProfileDlg::showMousePosition(const CPoint &p) {
   Point2D fp = m_viewport->backwardTransform(p);
-  GetDlgItem(IDC_STATIC_INFO)->SetWindowText(format(_T("%.2lf,%.2lf"),fp.x,fp.y).cstr());
+  setWindowText(this, IDC_STATIC_INFO,format(_T("%.2lf,%.2lf"),fp.x,fp.y));
 }
 
 void CProfileDlg::OnCancel() {

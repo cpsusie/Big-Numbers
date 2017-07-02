@@ -3,8 +3,6 @@
 
 #include "stdafx.h"
 #include <MyUtil.h>
-#include <Array.h>
-#include <String.h>
 #include <math.h>
 #include <Random.h>
 
@@ -85,7 +83,7 @@ typedef enum {
 class RandomParameters {
 public:
   RandomType m_type;
-  double m_p1,m_p2;
+  double     m_p1, m_p2;
 
   RandomParameters(RandomType type, double p1, double p2);
   double getRandom(Random &rnd);
@@ -116,7 +114,7 @@ static void printRandom(Random &rnd, bool integer,double low, double high) {
 }
 
 static void printRandomLine(Random &rnd, Array<RandomParameters> &param) {
-  size_t dim = param.size();
+  size_t dim   = param.size();
   TCHAR *delim = EMPTYSTRING;
   for(size_t i = 0; i < dim; i++, delim = _T(" ")) {
     _tprintf(_T("%s%lg"), delim, param[i].getRandom(rnd));
@@ -125,19 +123,22 @@ static void printRandomLine(Random &rnd, Array<RandomParameters> &param) {
 }
 
 static void usage() {
-  _ftprintf(stderr,_T("Usage:random {[-iu[low,high]]|[-g[m[,v]]]}* [-ncount] [-ddimension] [-s[seed]]\n"));
+  _ftprintf(stderr,_T("Usage:random [-Rjava|mt32|mt64] {[-iu[low,high]]|[-g[m[,v]]]}* [-ncount] [-ddimension] [-s[seed]]\n"));
   exit(-1);
 }
 
 int main(int argc, char **argv) { 
-  char *cp;
-  int n = 1;
-  bool setseed = false;
-  UINT64 seed = 1;
-  RandomParameters u(UNIFORM,0,1);
+  char                   *cp;
+  int                     n       = 1;
+  bool                    setseed = false;
+  UINT64                  seed    = 1;
+  Random                 *rnd     = _standardRandomGenerator;
+  RandomParameters        u(UNIFORM, 0, 1);
   Array<RandomParameters> param;
-  int dim,i;
-  double p1,p2;
+  int                     dim, i;
+  double                  p1, p2;
+  MersenneTwister32       mt32Rnd;
+  MersenneTwister64       mt64Rnd;
 
   for(argv++;*argv && *(cp = *argv) == '-'; argv++) {
     for(cp++;*cp;cp++) {
@@ -207,6 +208,18 @@ int main(int argc, char **argv) {
         }
         param.add(RandomParameters(GAUSS,p1,p2));
         break;
+      case 'R':
+        if(strcmp(cp+1, "java") == 0) {
+          break;
+        } else if(strcmp(cp+1, "m32") == 0) {
+          rnd = &mt32Rnd;
+          break;
+        } else if(strcmp(cp+1, "m64") == 0) {
+          rnd = &mt64Rnd;
+          break;
+        } else {
+          usage();
+        }
       default:
         usage();
       }
@@ -218,9 +231,9 @@ int main(int argc, char **argv) {
     param.add(u);
   }
 
-  Random rnd(seed);
+  rnd->setSeed(seed);
   for(i = 0; i < n; i++) {
-    printRandomLine(rnd,param);
+    printRandomLine(*rnd,param);
   }
   return 0;
 }

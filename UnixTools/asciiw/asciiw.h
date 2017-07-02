@@ -9,10 +9,8 @@
 class CAsciiwApp : public CWinApp {
 public:
     CAsciiwApp();
-
-    public:
     virtual BOOL InitInstance();
-
     DECLARE_MESSAGE_MAP()
 };
 
+extern CAsciiwApp theApp;

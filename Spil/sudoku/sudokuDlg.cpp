@@ -35,7 +35,7 @@ END_MESSAGE_MAP()
 
 
 CSudokuDlg::CSudokuDlg(CWnd *pParent) : CDialog(CSudokuDlg::IDD, pParent) {
-  m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+  m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
 }
 
 BEGIN_MESSAGE_MAP(CSudokuDlg, CDialog)
@@ -94,7 +94,7 @@ BOOL CSudokuDlg::OnInitDialog() {
   SetIcon(m_hIcon, TRUE);
   SetIcon(m_hIcon, FALSE);
   
-  m_accelTable     = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATOR1));
+  m_accelTable     = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATOR1));
   m_level          = EASY;
   m_timerIsRunning = false;
   m_startPause     = 0;
@@ -106,7 +106,7 @@ BOOL CSudokuDlg::OnInitDialog() {
 }
 
 void CSudokuDlg::OnSysCommand(UINT nID, LPARAM lParam) {
-  if ((nID & 0xFFF0) == IDM_ABOUTBOX)   {
+  if((nID & 0xFFF0) == IDM_ABOUTBOX)   {
     CAboutDlg().DoModal();
   } else {
     __super::OnSysCommand(nID, lParam);
@@ -307,9 +307,9 @@ CString CSudokuDlg::getName() {
 
 void CSudokuDlg::newGame() {
   Game game;
-  AfxGetApp()->BeginWaitCursor();
+  theApp.BeginWaitCursor();
   game.generate(m_level);
-  AfxGetApp()->EndWaitCursor();
+  theApp.EndWaitCursor();
   putMatrix(game.getMatrix());
   OnGameLockFields();
   setName(_T("Untitled"));

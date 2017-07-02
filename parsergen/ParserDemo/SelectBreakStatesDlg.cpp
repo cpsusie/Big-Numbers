@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "ParserDemo.h"
 #include <Tokenizer.h>
 #include "SelectBreakStatesDlg.h"
 

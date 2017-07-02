@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "asciiw.h"
 #include "asciiwDlg.h"
 
 #ifdef _DEBUG
@@ -24,6 +23,5 @@ BOOL CAsciiwApp::InitInstance() {
     if (nResponse == IDOK) {
     } else if (nResponse == IDCANCEL) {
     }
-
     return FALSE;
 }

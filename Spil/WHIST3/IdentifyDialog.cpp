@@ -2,14 +2,14 @@
 #include "whist3.h"
 #include "IdentifyDialog.h"
 
-IdentifyDialog::IdentifyDialog(CWnd* pParent) : CDialog(IdentifyDialog::IDD, pParent) {
+IdentifyDialog::IdentifyDialog(CWnd *pParent) : CDialog(IdentifyDialog::IDD, pParent) {
   const Options &options = getOptions();
   m_myName     = options.m_myName.cstr();
   m_dealerName = options.m_dealerName.cstr();
   m_connected  = options.m_connected;
 }
 
-void IdentifyDialog::DoDataExchange(CDataExchange* pDX) {
+void IdentifyDialog::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
   DDX_Text( pDX, IDC_MYNAME_EDIT     , m_myName    );
   DDX_Text( pDX, IDC_DEALER_NAME_EDIT, m_dealerName);
@@ -28,7 +28,7 @@ END_MESSAGE_MAP()
 BOOL IdentifyDialog::OnInitDialog() {
   __super::OnInitDialog();
 
-  m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_IDENTIFY_ACCELERATOR));
+  m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_IDENTIFY_ACCELERATOR));
 
   GetDlgItem(IDC_DEALER_NAME_EDIT)->EnableWindow(m_connected);
   GetDlgItem(IDC_DEALER_NAME_TEXT)->EnableWindow(m_connected);  
@@ -40,7 +40,7 @@ BOOL IdentifyDialog::OnInitDialog() {
   return FALSE;
 }
 
-BOOL IdentifyDialog::PreTranslateMessage(MSG* pMsg) {
+BOOL IdentifyDialog::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     return TRUE;
   }

@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "heatCPU.h"
 #include "heatCPUDlg.h"
 
 #ifdef _DEBUG

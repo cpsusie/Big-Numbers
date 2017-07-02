@@ -11,7 +11,7 @@ CTestBlendDlg::CTestBlendDlg(CWnd *pParent /*=NULL*/) : CDialog(CTestBlendDlg::I
     m_alpha2        = 0;
     m_scale         = 100;
     m_stretchMode   = _T("BLACKONWHITE");
-    m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+    m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
 }
 
 void CTestBlendDlg::DoDataExchange(CDataExchange *pDX) {

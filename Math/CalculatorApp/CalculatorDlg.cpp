@@ -1,8 +1,5 @@
 #include "stdafx.h"
-#include <MyUtil.h>
-#include <MFCUtil/WinTools.h>
 #include <MFCUtil/Clipboard.h>
-#include "CalculatorApp.h"
 #include "CalculatorDlg.h"
 #include "PrecisionDlg.h"
 
@@ -17,7 +14,7 @@ public:
   enum { IDD = IDD_ABOUTBOX };
 
   protected:
-  virtual void DoDataExchange(CDataExchange* pDX);
+  virtual void DoDataExchange(CDataExchange *pDX);
 
 protected:
   DECLARE_MESSAGE_MAP()
@@ -26,7 +23,7 @@ protected:
 CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
-void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
+void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
 }
 
@@ -111,17 +108,17 @@ static ButtonAttribute *getAttribute(int id) {
   return NULL;
 }
 
-CCalculatorDlg::CCalculatorDlg(CWnd* pParent /*=NULL*/)	: CDialog(CCalculatorDlg::IDD, pParent) {
+CCalculatorDlg::CCalculatorDlg(CWnd *pParent /*=NULL*/)	: CDialog(CCalculatorDlg::IDD, pParent) {
   m_display = EMPTYSTRING;
   m_calc = new CalculatorThread();
-  m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+  m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
 }
 
 CCalculatorDlg::~CCalculatorDlg() {
   delete m_calc;
 }
 
-void CCalculatorDlg::DoDataExchange(CDataExchange* pDX) {
+void CCalculatorDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
   DDX_Text(pDX, IDC_DISPLAY, m_display);
 }
@@ -227,7 +224,7 @@ void CCalculatorDlg::OnHelpAbout() {
 }
 
 HCURSOR CCalculatorDlg::OnQueryDragIcon() {
-  return (HCURSOR) m_hIcon;
+  return (HCURSOR)m_hIcon;
 }
 
 MyButton::MyButton() {
@@ -332,7 +329,7 @@ BOOL CCalculatorDlg::OnInitDialog() {
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
-  CMenu* pSysMenu = GetSystemMenu(FALSE);
+  CMenu *pSysMenu = GetSystemMenu(FALSE);
   if (pSysMenu != NULL) {
   CString strAboutMenu;
   strAboutMenu.LoadString(IDS_ABOUTBOX);
@@ -346,7 +343,7 @@ BOOL CCalculatorDlg::OnInitDialog() {
   SetIcon(m_hIcon, FALSE);		// Set small icon
   setWindowCursor(GetDlgItem(IDC_DISPLAY    ),OCR_NORMAL);
 
-  m_accelTabel     = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDC_ACCELERATORTABEL));
+  m_accelTabel     = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDC_ACCELERATORTABEL));
   m_timerInterval  = 0;
   m_waitCursorOn   = false;
   m_selectedButton = NULL;
@@ -384,7 +381,7 @@ BOOL CCalculatorDlg::OnInitDialog() {
 }
 
 void CCalculatorDlg::OnSysCommand(UINT nID, LPARAM lParam) {
-  if ((nID & 0xFFF0) == IDM_ABOUTBOX) {
+  if((nID & 0xFFF0) == IDM_ABOUTBOX) {
     CAboutDlg().DoModal();
   } else {
     __super::OnSysCommand(nID, lParam);
@@ -427,7 +424,7 @@ void RemoveMenuItem(CMenu *Menu, UINT id) {
 bool MenuItemExists(CMenu *Menu, UINT id) {
   int count = Menu->GetMenuItemCount();
   for(int i = 0; i < count; i++) {
-    CMenu* submenu = Menu->GetSubMenu(i);
+    CMenu *submenu = Menu->GetSubMenu(i);
     int subcount = submenu->GetMenuItemCount();      
     for (int j = 0; j < subcount; j++) {
       if(submenu->GetMenuItemID(j) == id) {
@@ -702,12 +699,12 @@ void CCalculatorDlg::waitCursor(bool on) {
       setWindowCursor(this, IDC_WAIT);
       setWindowCursor(GetDlgItem(IDC_DISPLAY    ), IDC_WAIT);
       setWindowCursor(GetDlgItem(IDC_BUTTONCLEAR), IDC_WAIT);
-      AfxGetApp()->BeginWaitCursor();
+      theApp.BeginWaitCursor();
     } else {
       setWindowCursor(this,OCR_NORMAL);
       setWindowCursor(GetDlgItem(IDC_DISPLAY    ), OCR_NORMAL);
       setWindowCursor(GetDlgItem(IDC_BUTTONCLEAR), OCR_NORMAL);
-      AfxGetApp()->EndWaitCursor();
+      theApp.EndWaitCursor();
     }
     m_waitCursorOn = on;
   }
@@ -779,16 +776,14 @@ void CCalculatorDlg::scrollLine(int count) {
 }
 
 void CCalculatorDlg::info(const TCHAR *format,...) {
-  TCHAR tmp[100];
   va_list argptr;
   va_start(argptr, format);
-  _vstprintf(tmp, ARRAYSIZE(tmp), format, argptr);
+  const String str = vformat(format, argptr);
   va_end(argptr);
-  CStatic *info = (CStatic*)GetDlgItem(IDC_INFO);
-  info->SetWindowText(tmp);
+  setWindowText(this, IDC_INFO, str);
 }
 
-BOOL CCalculatorDlg::PreTranslateMessage(MSG* pMsg) {
+BOOL CCalculatorDlg::PreTranslateMessage(MSG *pMsg) {
 /*
   CStatic *stat = (CStatic*)GetDlgItem(IDC_CHARPRESSED);
   char tmp[100];
@@ -840,7 +835,7 @@ BOOL CCalculatorDlg::PreTranslateMessage(MSG* pMsg) {
   return __super::PreTranslateMessage(pMsg);
 }
 
-void CCalculatorDlg::OnContextMenu(CWnd* pWnd, CPoint point) {
+void CCalculatorDlg::OnContextMenu(CWnd *pWnd, CPoint point) {
   DWORD helpid = pWnd->GetWindowContextHelpId();
   if(helpid != 0) {
     m_helpid = helpid;

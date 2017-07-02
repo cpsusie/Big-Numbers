@@ -16,3 +16,4 @@ public:
 	DECLARE_MESSAGE_MAP()
 };
 
+extern CRegexDemoApp theApp;

@@ -29,7 +29,7 @@ BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
 CReversiDlg::CReversiDlg(CWnd *pParent /*=NULL*/) : CDialog(CReversiDlg::IDD, pParent) {
-    m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+    m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
 }
 
 void CReversiDlg::OnHjlpAboutreversi() {
@@ -62,7 +62,7 @@ BOOL CReversiDlg::OnInitDialog() {
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
-  CMenu* pSysMenu = GetSystemMenu(FALSE);
+  CMenu *pSysMenu = GetSystemMenu(FALSE);
   if(pSysMenu != NULL) {
     CString strAboutMenu;
     strAboutMenu.LoadString(IDS_ABOUTBOX);
@@ -83,7 +83,7 @@ BOOL CReversiDlg::OnInitDialog() {
   startGame();
 
   m_currentIsSystemCursor = true;
-  m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATOR1));
+  m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATOR1));
 
   m_layoutManager.OnInitDialog(this);
   m_layoutManager.addControl(IDC_BOARDFRAME, RELATIVE_SIZE );
@@ -100,7 +100,7 @@ void CReversiDlg::OnSysCommand(UINT nID, LPARAM lParam) {
   }
 }
 
-BOOL CReversiDlg::PreTranslateMessage(MSG* pMsg) {
+BOOL CReversiDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg))
     return true;
   return __super::PreTranslateMessage(pMsg);
@@ -208,7 +208,7 @@ void CReversiDlg::OnPaint() {
 // The system calls this to obtain the cursor to display while the user drags
 //  the minimized window.
 HCURSOR CReversiDlg::OnQueryDragIcon() {
-    return (HCURSOR) m_hIcon;
+    return (HCURSOR)m_hIcon;
 }
 
 void CReversiDlg::startTimer() {

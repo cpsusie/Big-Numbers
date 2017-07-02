@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "ParserDemo.h"
 #include "ErrorsDlg.h"
 
 #ifdef _DEBUG
@@ -29,7 +28,7 @@ void ErrorsDlg::OnOK() {
 
 BOOL ErrorsDlg::OnInitDialog() {
   __super::OnInitDialog();
-  m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance, MAKEINTRESOURCE(IDR_ACCELERATORERRORS));
+  m_accelTable = LoadAccelerators(theApp.m_hInstance, MAKEINTRESOURCE(IDR_ACCELERATORERRORS));
   gotoEditBox(this, IDC_EDITMAXERRORCOUNT);
   return false;
 }

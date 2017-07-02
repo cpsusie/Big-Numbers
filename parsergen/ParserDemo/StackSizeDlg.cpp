@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "ParserDemo.h"
 #include "StackSizeDlg.h"
 
 #ifdef _DEBUG
@@ -7,7 +6,7 @@
 #endif
 
 StackSizeDlg::StackSizeDlg(int oldSize, CWnd *pParent) : CDialog(StackSizeDlg::IDD, pParent) {
-    m_stackSize = oldSize;
+  m_stackSize = oldSize;
 }
 
 void StackSizeDlg::DoDataExchange(CDataExchange *pDX) {
@@ -21,7 +20,6 @@ END_MESSAGE_MAP()
 
 void StackSizeDlg::OnOK() {
   UpdateData();
-
   __super::OnOK();
 }
 

@@ -6,9 +6,7 @@ public:
 
     enum { IDD = IDD_ASCIIW_DIALOG };
 
-    public:
     virtual BOOL PreTranslateMessage(MSG* pMsg);
-    protected:
     virtual void DoDataExchange(CDataExchange* pDX);
 
 private:
@@ -40,4 +38,3 @@ protected:
 //  afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
     DECLARE_MESSAGE_MAP()
 };
-

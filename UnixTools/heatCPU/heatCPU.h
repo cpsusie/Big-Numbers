@@ -9,10 +9,8 @@
 class CHeatCPUApp : public CWinApp {
 public:
     CHeatCPUApp();
-
-    public:
     virtual BOOL InitInstance();
-
     DECLARE_MESSAGE_MAP()
 };
 
+extern CHeatCPUApp theApp;

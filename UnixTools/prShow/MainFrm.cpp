@@ -41,7 +41,7 @@ CMainFrame::~CMainFrame() {
 }
 
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
-  if(CFrameWnd::OnCreate(lpCreateStruct) == -1) {
+  if(__super::OnCreate(lpCreateStruct) == -1) {
     return -1;
   }
     
@@ -50,25 +50,25 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
     return -1;      // fail to create
   }
 
-  m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_MAINFRAME));
+  m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_MAINFRAME));
 
   return 0;
 }
 
-BOOL CMainFrame::PreTranslateMessage(MSG* pMsg) {
+BOOL CMainFrame::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     return true;
   }
-  return CFrameWnd::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 #ifdef _DEBUG
 void CMainFrame::AssertValid() const {
-  CFrameWnd::AssertValid();
+  __super::AssertValid();
 }
 
 void CMainFrame::Dump(CDumpContext& dc) const {
-  CFrameWnd::Dump(dc);
+  __super::Dump(dc);
 }
 
 #endif //_DEBUG
@@ -88,7 +88,7 @@ BOOL CMainFrame::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) {
   } else if(nFlags & MK_CONTROL) {
     getView()->zoom(zDelta > 0);
   } else {
-    return CFrameWnd::OnMouseWheel(nFlags, zDelta, pt);
+    return __super::OnMouseWheel(nFlags, zDelta, pt);
   }
   return TRUE;
 }
@@ -184,5 +184,5 @@ void CMainFrame::OnFileExit() {
 }
 
 void CMainFrame::OnHelpAboutprshow() {
-  ((CPrShowApp*)AfxGetApp())->OnAppAbout();
+  theApp.OnAppAbout();
 }

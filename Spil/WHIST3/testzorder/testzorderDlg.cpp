@@ -18,7 +18,7 @@ public:
     enum { IDD = IDD_ABOUTBOX };
 
 protected:
-    virtual void DoDataExchange(CDataExchange* pDX);
+    virtual void DoDataExchange(CDataExchange *pDX);
 
 protected:
     DECLARE_MESSAGE_MAP()
@@ -27,7 +27,7 @@ protected:
 CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
-void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
+void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
     __super::DoDataExchange(pDX);
 }
 
@@ -35,12 +35,12 @@ BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
 
-CTestzorderDlg::CTestzorderDlg(CWnd* pParent)
+CTestzorderDlg::CTestzorderDlg(CWnd *pParent)
     : CDialog(CTestzorderDlg::IDD, pParent) {
-    m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+    m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
 }
 
-void CTestzorderDlg::DoDataExchange(CDataExchange* pDX) {
+void CTestzorderDlg::DoDataExchange(CDataExchange *pDX) {
     __super::DoDataExchange(pDX);
 }
 
@@ -59,7 +59,7 @@ BOOL CTestzorderDlg::OnInitDialog() {
     ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
     ASSERT(IDM_ABOUTBOX < 0xF000);
 
-    CMenu* pSysMenu = GetSystemMenu(FALSE);
+    CMenu *pSysMenu = GetSystemMenu(FALSE);
     if (pSysMenu != NULL)
     {
         CString strAboutMenu;
@@ -80,39 +80,36 @@ BOOL CTestzorderDlg::OnInitDialog() {
 }
 
 void CTestzorderDlg::OnSysCommand(UINT nID, LPARAM lParam) {
-    if ((nID & 0xFFF0) == IDM_ABOUTBOX) {
-      CAboutDlg().DoModal();
-    } else {
-      __super::OnSysCommand(nID, lParam);
-    }
+  if((nID & 0xFFF0) == IDM_ABOUTBOX) {
+    CAboutDlg().DoModal();
+  } else {
+    __super::OnSysCommand(nID, lParam);
+  }
 }
 
 void CTestzorderDlg::OnPaint()  {
-    if (IsIconic())
-    {
-        CPaintDC dc(this);
+  if(IsIconic()) {
+    CPaintDC dc(this);
 
-        SendMessage(WM_ICONERASEBKGND, (WPARAM) dc.GetSafeHdc(), 0);
+    SendMessage(WM_ICONERASEBKGND, (WPARAM) dc.GetSafeHdc(), 0);
 
-        // Center icon in client rectangle
-        int cxIcon = GetSystemMetrics(SM_CXICON);
-        int cyIcon = GetSystemMetrics(SM_CYICON);
-        CRect rect;
-        GetClientRect(&rect);
-        int x = (rect.Width() - cxIcon + 1) / 2;
-        int y = (rect.Height() - cyIcon + 1) / 2;
+    // Center icon in client rectangle
+    int cxIcon = GetSystemMetrics(SM_CXICON);
+    int cyIcon = GetSystemMetrics(SM_CYICON);
+    CRect rect;
+    GetClientRect(&rect);
+    int x = (rect.Width() - cxIcon + 1) / 2;
+    int y = (rect.Height() - cyIcon + 1) / 2;
 
-        // Draw the icon
-        dc.DrawIcon(x, y, m_hIcon);
-    }
-    else
-    {
-        __super::OnPaint();
-    }
+    // Draw the icon
+    dc.DrawIcon(x, y, m_hIcon);
+  } else {
+    __super::OnPaint();
+  }
 }
 
 HCURSOR CTestzorderDlg::OnQueryDragIcon() {
-    return (HCURSOR) m_hIcon;
+  return (HCURSOR)m_hIcon;
 }
 
 static int myflags  = SWP_NOSIZE|SWP_NOMOVE|SWP_DRAWFRAME|SWP_SHOWWINDOW;

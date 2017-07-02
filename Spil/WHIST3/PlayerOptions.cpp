@@ -52,9 +52,9 @@ void Options::save() {
 }
 
 Options &OptionsAccessor::getOptions() {
-  return ((CWhist3App*)AfxGetApp())->m_options;
+  return theApp.m_options;
 }
 
 const Options &OptionsAccessor::getOptions() const {
-  return ((CWhist3App*)AfxGetApp())->m_options;
+  return theApp.m_options;
 }

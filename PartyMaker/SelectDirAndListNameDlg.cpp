@@ -46,7 +46,7 @@ BOOL CSelectDirAndListNameDlg::OnInitDialog() {
   __super::OnInitDialog();
   ULONG drives = _getdrives();
 
-  m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_SELECTDIRANDLISTNAME_ACCELERATOR));
+  m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_SELECTDIRANDLISTNAME_ACCELERATOR));
   m_images.Create(IDR_FOLDERIMAGES,18,1,RGB(255,255,255));
   CTreeCtrl *ctrl = (CTreeCtrl*)GetDlgItem(IDC_DIRTREE);
   ctrl->SetImageList(&m_images,TVSIL_NORMAL);
@@ -72,7 +72,7 @@ BOOL CSelectDirAndListNameDlg::PreTranslateMessage(MSG *pMsg) {
 }
 
 void CSelectDirAndListNameDlg::OnEditChangeDriveCombo() {
-  CComboBox *combo = (CComboBox *)GetDlgItem(IDC_DRIVECOMBO);
+  CComboBox *combo = (CComboBox*)GetDlgItem(IDC_DRIVECOMBO);
   UpdateData();
   const TCHAR *d = m_drive;
   fillTree(format(_T("%s\\"),d).cstr());

@@ -7,7 +7,7 @@ int main(int argc, char **argv) {
     FILE *input = *argv ? FOPEN(*argv,"r") : stdin;
     char line[1000];
     int linecount = 0;
-    Array<Real> dataArray;
+    CompactRealArray dataArray;
     while(fgets(line,sizeof(line),input)) {
       linecount++;
       double x;

@@ -9,11 +9,8 @@
 class CParserDemoApp : public CWinApp {
 public:
 	CParserDemoApp();
-
-	public:
 	virtual BOOL InitInstance();
-
-
 	DECLARE_MESSAGE_MAP()
 };
 
+extern CParserDemoApp theApp;

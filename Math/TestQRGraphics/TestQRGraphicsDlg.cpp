@@ -13,7 +13,7 @@ public:
   enum { IDD = IDD_ABOUTBOX };
 
 protected:
-  virtual void DoDataExchange(CDataExchange* pDX);
+  virtual void DoDataExchange(CDataExchange *pDX);
 
 protected:
   DECLARE_MESSAGE_MAP()
@@ -22,18 +22,18 @@ protected:
 CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
-void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
+void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
-CTestQRGraphicsDlg::CTestQRGraphicsDlg(CWnd* pParent) : CDialog(CTestQRGraphicsDlg::IDD, pParent) {
-  m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+CTestQRGraphicsDlg::CTestQRGraphicsDlg(CWnd *pParent) : CDialog(CTestQRGraphicsDlg::IDD, pParent) {
+  m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
 }
 
-void CTestQRGraphicsDlg::DoDataExchange(CDataExchange* pDX) {
+void CTestQRGraphicsDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
 }
 
@@ -63,7 +63,7 @@ BOOL CTestQRGraphicsDlg::OnInitDialog() {
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
-  CMenu* pSysMenu = GetSystemMenu(FALSE);
+  CMenu *pSysMenu = GetSystemMenu(FALSE);
   if (pSysMenu != NULL) {
       CString strAboutMenu;
       strAboutMenu.LoadString(IDS_ABOUTBOX);
@@ -87,7 +87,7 @@ BOOL CTestQRGraphicsDlg::OnInitDialog() {
 }
 
 void CTestQRGraphicsDlg::OnSysCommand(UINT nID, LPARAM lParam) {
-  if ((nID & 0xFFF0) == IDM_ABOUTBOX) {
+  if((nID & 0xFFF0) == IDM_ABOUTBOX) {
     CAboutDlg().DoModal();
   }
   else {
@@ -194,7 +194,7 @@ HCURSOR CTestQRGraphicsDlg::OnQueryDragIcon() {
 }
 
 void CTestQRGraphicsDlg::OnFileQuit()  {
-  exit(0);  
+  EndDialog(IDOK);
 }
 
 void CTestQRGraphicsDlg::OnFileNew() {

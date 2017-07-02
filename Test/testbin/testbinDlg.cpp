@@ -22,18 +22,18 @@ CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
 void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
 CTestbinDlg::CTestbinDlg(CWnd *pParent) : CDialog(CTestbinDlg::IDD, pParent) {
-    m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+    m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
 }
 
 void CTestbinDlg::DoDataExchange(CDataExchange *pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CTestbinDlg, CDialog)
@@ -52,7 +52,7 @@ END_MESSAGE_MAP()
 
 
 BOOL CTestbinDlg::OnInitDialog() {
-    CDialog::OnInitDialog();
+    __super::OnInitDialog();
 
     ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
     ASSERT(IDM_ABOUTBOX < 0xF000);
@@ -73,38 +73,38 @@ BOOL CTestbinDlg::OnInitDialog() {
     m_counterThread  = new CounterThread(*this);
     m_timerIsRunning = false;
     m_timerInterval  = 500;
-    m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATOR1));
+    m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATOR1));
     showCounter();
     return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
 void CTestbinDlg::OnSysCommand(UINT nID, LPARAM lParam) {
-  if ((nID & 0xFFF0) == IDM_ABOUTBOX) {
+  if((nID & 0xFFF0) == IDM_ABOUTBOX) {
     CAboutDlg().DoModal();
   } else {
-    CDialog::OnSysCommand(nID, lParam);
+    __super::OnSysCommand(nID, lParam);
   }
 }
 
 void CTestbinDlg::OnPaint() {
-    if (IsIconic()) {
-        CPaintDC dc(this);
+  if(IsIconic()) {
+    CPaintDC dc(this);
 
-        SendMessage(WM_ICONERASEBKGND, (WPARAM) dc.GetSafeHdc(), 0);
+    SendMessage(WM_ICONERASEBKGND, (WPARAM) dc.GetSafeHdc(), 0);
 
-        // Center icon in client rectangle
-        int cxIcon = GetSystemMetrics(SM_CXICON);
-        int cyIcon = GetSystemMetrics(SM_CYICON);
-        CRect rect;
-        GetClientRect(&rect);
-        int x = (rect.Width() - cxIcon + 1) / 2;
-        int y = (rect.Height() - cyIcon + 1) / 2;
+    // Center icon in client rectangle
+    int cxIcon = GetSystemMetrics(SM_CXICON);
+    int cyIcon = GetSystemMetrics(SM_CYICON);
+    CRect rect;
+    GetClientRect(&rect);
+    int x = (rect.Width() - cxIcon + 1) / 2;
+    int y = (rect.Height() - cyIcon + 1) / 2;
 
-        // Draw the icon
-        dc.DrawIcon(x, y, m_hIcon);
-    } else {
-        CDialog::OnPaint();
-    }
+    // Draw the icon
+    dc.DrawIcon(x, y, m_hIcon);
+  } else {
+    __super::OnPaint();
+  }
 }
 
 HCURSOR CTestbinDlg::OnQueryDragIcon() {
@@ -129,7 +129,7 @@ BOOL CTestbinDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     return true;
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 void CTestbinDlg::startTimer() {
@@ -193,7 +193,7 @@ void CTestbinDlg::OnResetbutton() {
 
 void CTestbinDlg::OnTimer(UINT_PTR nIDEvent) {
   showCounter();
-  CDialog::OnTimer(nIDEvent);
+  __super::OnTimer(nIDEvent);
 }
 
 void CTestbinDlg::OnViewTimer() {

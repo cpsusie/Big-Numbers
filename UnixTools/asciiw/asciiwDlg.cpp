@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "asciiw.h"
 #include "asciiwDlg.h"
 
 #ifdef _DEBUG
@@ -12,28 +11,25 @@ public:
 
   enum { IDD = IDD_ABOUTBOX };
 
-  protected:
-  virtual void DoDataExchange(CDataExchange* pDX);
-
-protected:
+  virtual void DoDataExchange(CDataExchange *pDX);
   DECLARE_MESSAGE_MAP()
 };
 
 CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
-void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
+void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
-CAsciiwDlg::CAsciiwDlg(CWnd* pParent /*=NULL*/) : CDialog(CAsciiwDlg::IDD, pParent) {
-  m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+CAsciiwDlg::CAsciiwDlg(CWnd *pParent /*=NULL*/) : CDialog(CAsciiwDlg::IDD, pParent) {
+  m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
 }
 
-void CAsciiwDlg::DoDataExchange(CDataExchange* pDX) {
+void CAsciiwDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
 }
 
@@ -58,7 +54,7 @@ BOOL CAsciiwDlg::OnInitDialog() {
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
-  CMenu* pSysMenu = GetSystemMenu(FALSE);
+  CMenu *pSysMenu = GetSystemMenu(FALSE);
   if (pSysMenu != NULL) {
     CString strAboutMenu;
     strAboutMenu.LoadString(IDS_ABOUTBOX);
@@ -77,7 +73,7 @@ BOOL CAsciiwDlg::OnInitDialog() {
                          DEFAULT_PITCH | FF_MODERN,
                          _T("Courier")
                         );
-  m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATOR1));
+  m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATOR1));
 
   setCurrentFont(&m_defaultFont);
 
@@ -93,7 +89,7 @@ BOOL CAsciiwDlg::OnInitDialog() {
 }
 
 void CAsciiwDlg::OnSysCommand(UINT nID, LPARAM lParam) {
-  if ((nID & 0xFFF0) == IDM_ABOUTBOX) {
+  if((nID & 0xFFF0) == IDM_ABOUTBOX) {
     CAboutDlg().DoModal();
   } else {
     __super::OnSysCommand(nID, lParam);
@@ -102,7 +98,7 @@ void CAsciiwDlg::OnSysCommand(UINT nID, LPARAM lParam) {
 
 String formatCh3(int ch) {
   if(ch > 255)
-    return "";
+    return EMPTYSTRING;
   else {
     switch(ch) {
 

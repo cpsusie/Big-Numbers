@@ -7,9 +7,8 @@
 class CTestQRGraphicsApp : public CWinApp {
 public:
     CTestQRGraphicsApp();
-
-public:
     virtual BOOL InitInstance();
-
     DECLARE_MESSAGE_MAP()
 };
+
+extern CTestQRGraphicsApp theApp;

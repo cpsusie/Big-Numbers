@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "AvlTreeWnd.h"
 #include "AvlTreeWndDlg.h"
 
 #ifdef _DEBUG
@@ -16,7 +15,6 @@ CAvlTreeWndApp::CAvlTreeWndApp() {
 CAvlTreeWndApp theApp;
 
 BOOL CAvlTreeWndApp::InitInstance() {
-
     CAvlTreeWndDlg dlg;
     m_pMainWnd = &dlg;
     INT_PTR nResponse = dlg.DoModal();

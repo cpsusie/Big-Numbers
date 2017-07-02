@@ -14,7 +14,7 @@ WordSpace::WordSpace(const String &s) : String(s) {
 }
 
 int WordSpace::length() const {
-  return String::length() + m_spaceCount;
+  return (int)String::length() + m_spaceCount;
 }
 
 class TextPacker {

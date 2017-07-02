@@ -9,3 +9,4 @@
 
 #include <MFCUtil/LayoutManager.h>
 #include <MFCUtil/ExpressionGraphics.h>
+#include "TestExpressionGraphics.h"

@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include <Math/Expression/Expression.h>
-#include "TestExpressionGraphics.h"
 #include "EnterVariablesDlg.h"
 
 #ifdef _DEBUG

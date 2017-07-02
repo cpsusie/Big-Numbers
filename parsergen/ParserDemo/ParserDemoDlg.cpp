@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "ParserDemo.h"
 #include "ParserDemoDlg.h"
 #include "ErrorsDlg.h"
 #include "SelectBreakProductionsDlg.h"
@@ -45,7 +44,7 @@ CParserDemoDlg::CParserDemoDlg(CWnd *pParent) : CDialog(CParserDemoDlg::IDD, pPa
   m_breakOnState      = FALSE;
   m_breakOnSymbol     = FALSE;
 
-  m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+  m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
   m_parser.setHandler(this);
   m_breakProductions = new BitSet(m_parser.getParserTables().getProductionCount());
   m_breakStates      = new BitSet(m_parser.getParserTables().getStateCount());
@@ -276,7 +275,7 @@ BOOL CParserDemoDlg::OnInitDialog() {
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
-  CMenu* pSysMenu = GetSystemMenu(FALSE);
+  CMenu *pSysMenu = GetSystemMenu(FALSE);
   if (pSysMenu != NULL) {
     CString strAboutMenu;
     strAboutMenu.LoadString(IDS_ABOUTBOX);
@@ -332,7 +331,7 @@ BOOL CParserDemoDlg::OnInitDialog() {
 
   m_showStateThread  = NULL;
 
-  m_accelTable       = LoadAccelerators(AfxGetApp()->m_hInstance, MAKEINTRESOURCE(IDR_ACCELERATORMAIN));
+  m_accelTable       = LoadAccelerators(theApp.m_hInstance, MAKEINTRESOURCE(IDR_ACCELERATORMAIN));
   m_animateOn        = isMenuItemChecked(this, ID_OPTIONS_ANIMATE);
   GetDlgItem(IDC_EDITINPUTSTRING)->SetFont(&m_printFont);
   GetDlgItem(IDC_EDITINPUTSTRING)->SetFocus();
@@ -340,7 +339,7 @@ BOOL CParserDemoDlg::OnInitDialog() {
 }
 
 void CParserDemoDlg::OnSysCommand(UINT nID, LPARAM lParam) {
-  if ((nID & 0xFFF0) == IDM_ABOUTBOX) {
+  if((nID & 0xFFF0) == IDM_ABOUTBOX) {
     CAboutDlg().DoModal();
   } else {
     __super::OnSysCommand(nID, lParam);
@@ -350,7 +349,7 @@ void CParserDemoDlg::OnSysCommand(UINT nID, LPARAM lParam) {
 // The system calls this to obtain the cursor to display while the user drags
 //  the minimized window.
 HCURSOR CParserDemoDlg::OnQueryDragIcon() {
-  return (HCURSOR) m_hIcon;
+  return (HCURSOR)m_hIcon;
 }
 
 void CParserDemoDlg::OnOk() {
@@ -631,7 +630,7 @@ BOOL CParserDemoDlg::PreTranslateMessage(MSG *pMsg) {
 }
 
 void CParserDemoDlg::updateSourcePosition(const SourcePosition &pos) {
-  GetDlgItem(IDC_SOURCEPOSITION)->SetWindowText(format(_T("Ln %d, Col %d"), pos.getLineNumber(), pos.getColumn()).cstr());
+  setWindowText(this, IDC_SOURCEPOSITION, format(_T("Ln %d, Col %d"), pos.getLineNumber(), pos.getColumn()));
 }
 
 int CParserDemoDlg::getSourcePositionIndex() {
@@ -849,7 +848,7 @@ void CParserDemoDlg::OnEditFindMatchingParanthes() {
 void CParserDemoDlg::setBreakText(int controlId, const StringArray &textArray) {
   CWnd *ctrl = GetDlgItem(controlId);
 
-  const String s = textArray.toString(' ');
+  const String s = textArray.toString(_T(" "));
   ctrl->ModifyStyle(0, SS_ENDELLIPSIS);
   ctrl->SetWindowText(s.cstr());
 }
