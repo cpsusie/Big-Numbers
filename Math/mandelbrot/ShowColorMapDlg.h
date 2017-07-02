@@ -9,18 +9,14 @@ private:
     const D3DCOLOR     *m_colorMap;     // last element is always BLACK
 
 public:
-    CShowColorMapDlg(UINT maxIteration, const D3DCOLOR *colorMap, CWnd* pParent = NULL);
+    CShowColorMapDlg(UINT maxIteration, const D3DCOLOR *colorMap, CWnd *pParent = NULL);
 
     enum { IDD = IDD_SHOWCOLORMAP_DIALOG };
 
-protected:
-    virtual void DoDataExchange(CDataExchange* pDX);
-
-protected:
-
-	virtual BOOL OnInitDialog();
-	afx_msg void OnSize(UINT nType, int cx, int cy);
-	afx_msg void OnPaint();
+    virtual void DoDataExchange(CDataExchange *pDX);
+    virtual BOOL OnInitDialog();
+    afx_msg void OnSize(UINT nType, int cx, int cy);
+    afx_msg void OnPaint();
     DECLARE_MESSAGE_MAP()
 };
 

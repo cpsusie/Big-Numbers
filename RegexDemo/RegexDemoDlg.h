@@ -120,58 +120,53 @@ private:
 
   void showException(Exception &e);
 public:
-  CRegexDemoDlg(CWnd* pParent = NULL);
+  CRegexDemoDlg(CWnd *pParent = NULL);
   ~CRegexDemoDlg();
-	enum { IDD = IDD_REGEXDEMO_DIALOG };
-	CString	m_pattern;
-	CString	m_target;
+    enum { IDD = IDD_REGEXDEMO_DIALOG };
+    CString m_pattern;
+    CString m_target;
 
-public:
-	  virtual BOOL PreTranslateMessage(MSG* pMsg);
-protected:
-    virtual void DoDataExchange(CDataExchange* pDX);
-
-protected:
-
-  virtual BOOL OnInitDialog();
-  afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
-  afx_msg HCURSOR OnQueryDragIcon();
-  afx_msg void OnPaint();
-	afx_msg void OnSize(UINT nType, int cx, int cy);
-  virtual void OnOK();
-	virtual void OnCancel();
-	afx_msg void OnClose();
-	afx_msg void OnFileExit();
-	afx_msg void OnEditCopy();
-	afx_msg void OnEditFind();
-	afx_msg void OnEditMatch();
-	afx_msg void OnEditCompilePattern();
-	afx_msg void OnEditFindMatchingParentesis();
-	afx_msg void OnEditStandardTest();
-	afx_msg void OnDebugCompile();
-	afx_msg void OnDebugFind();
-	afx_msg void OnDebugMatch();
-	afx_msg void OnDebugContinue();
-	afx_msg void OnDebugStep();
-	afx_msg void OnDebugToggleBreakPoint();
-	afx_msg void OnOptionsIgnoreCase();
-	afx_msg void OnOptionsSearchBackwards();
-	afx_msg void OnOptionsDFARegex();
-	afx_msg void OnOptionsDFAShowTables();
-	afx_msg void OnOptionsDFANoGraphics();
-	afx_msg void OnOptionsDFAPaintStates();
-	afx_msg void OnOptionsDFAAnimateCreate();
-	afx_msg void OnHelpAbout();
-	afx_msg void OnHelpShowctrlid();
-	afx_msg void OnGotoPattern();
-	afx_msg void OnGotoText();
-	afx_msg void OnGotoBytecode();
-	afx_msg void OnEditChangeComboPattern();
-	afx_msg void OnEditChangeComboTarget();
-	afx_msg void OnSelChangeComboPattern();
-	afx_msg void OnSelChangeComboTarget();
-	afx_msg void OnSelChangeListbyteCode();
-  afx_msg LRESULT OnMsgThreadRunning(WPARAM wp, LPARAM lp);
-  DECLARE_MESSAGE_MAP()
+    virtual BOOL PreTranslateMessage(MSG *pMsg);
+    virtual void DoDataExchange(CDataExchange *pDX);
+    virtual BOOL OnInitDialog();
+    afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
+    afx_msg HCURSOR OnQueryDragIcon();
+    afx_msg void OnPaint();
+    afx_msg void OnSize(UINT nType, int cx, int cy);
+    virtual void OnOK();
+    virtual void OnCancel();
+    afx_msg void OnClose();
+    afx_msg void OnFileExit();
+    afx_msg void OnEditCopy();
+    afx_msg void OnEditFind();
+    afx_msg void OnEditMatch();
+    afx_msg void OnEditCompilePattern();
+    afx_msg void OnEditFindMatchingParentesis();
+    afx_msg void OnEditStandardTest();
+    afx_msg void OnDebugCompile();
+    afx_msg void OnDebugFind();
+    afx_msg void OnDebugMatch();
+    afx_msg void OnDebugContinue();
+    afx_msg void OnDebugStep();
+    afx_msg void OnDebugToggleBreakPoint();
+    afx_msg void OnOptionsIgnoreCase();
+    afx_msg void OnOptionsSearchBackwards();
+    afx_msg void OnOptionsDFARegex();
+    afx_msg void OnOptionsDFAShowTables();
+    afx_msg void OnOptionsDFANoGraphics();
+    afx_msg void OnOptionsDFAPaintStates();
+    afx_msg void OnOptionsDFAAnimateCreate();
+    afx_msg void OnHelpAbout();
+    afx_msg void OnHelpShowctrlid();
+    afx_msg void OnGotoPattern();
+    afx_msg void OnGotoText();
+    afx_msg void OnGotoBytecode();
+    afx_msg void OnEditChangeComboPattern();
+    afx_msg void OnEditChangeComboTarget();
+    afx_msg void OnSelChangeComboPattern();
+    afx_msg void OnSelChangeComboTarget();
+    afx_msg void OnSelChangeListbyteCode();
+    afx_msg LRESULT OnMsgThreadRunning(WPARAM wp, LPARAM lp);
+    DECLARE_MESSAGE_MAP()
 };
 

@@ -17,16 +17,16 @@ private:
   void enterText(const String &id, const String &text);
   void findRouteAndEnterSolution();
 public:
-  CGrabXmlDlg(CWnd* pParent = NULL);	// standard constructor
+  CGrabXmlDlg(CWnd *pParent = NULL);    // standard constructor
 
 #ifdef AFX_DESIGN_TIME
   enum { IDD = IDD_GRABXML_DIALOG };
 #endif
 
 protected:
-  virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV support
+  virtual void DoDataExchange(CDataExchange *pDX);  // DDX/DDV support
   virtual BOOL OnInitDialog();
-  virtual BOOL PreTranslateMessage(MSG* pMsg);
+  virtual BOOL PreTranslateMessage(MSG *pMsg);
   afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
   afx_msg HCURSOR OnQueryDragIcon();
   afx_msg void OnPaint();

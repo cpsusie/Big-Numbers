@@ -8,10 +8,10 @@
 #define new DEBUG_NEW
 #endif
 
-BacksideDialog::BacksideDialog(CWnd* pParent) : CDialog(BacksideDialog::IDD, pParent) {
+BacksideDialog::BacksideDialog(CWnd *pParent) : CDialog(BacksideDialog::IDD, pParent) {
 }
 
-void BacksideDialog::DoDataExchange(CDataExchange* pDX) {
+void BacksideDialog::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
 }
 
@@ -24,15 +24,15 @@ END_MESSAGE_MAP()
 
 void BacksideDialog::OnPaint() {
   CPaintDC dc(this);
-  
+
   for(size_t i = 0; i < m_buttons.size(); i++) {
     m_buttons[i]->Draw();
   }
-    
+
   // Do not call __super::OnPaint() for painting messages
 }
 
-BOOL BacksideDialog::PreTranslateMessage(MSG* pMsg) {
+BOOL BacksideDialog::PreTranslateMessage(MSG *pMsg) {
   switch(pMsg->message) {
   case WM_LBUTTONDOWN:
   { for(size_t i = 0; i < m_buttons.size(); i++) {
@@ -55,7 +55,7 @@ int BacksideDialog::OnCreate(LPCREATESTRUCT lpCreateStruct) {
   if (__super::OnCreate(lpCreateStruct) == -1) {
     return -1;
   }
-    
+
   for(int i = 0, r = 0, c = 0; i < 16; i++) {
     CardButton *but = new CardButton(this,53+i);
     but->Create(c*(CardBitmap::getCardWidth()+2),r*(CardBitmap::getCardHeight()+2));
@@ -71,7 +71,7 @@ int BacksideDialog::OnCreate(LPCREATESTRUCT lpCreateStruct) {
 
 void BacksideDialog::OnDestroy() {
   __super::OnDestroy();
-  
+
   for(size_t i = 0; i < m_buttons.size(); i++) {
     CardButton *but = m_buttons[i];
     BOOL r = but->DestroyWindow();

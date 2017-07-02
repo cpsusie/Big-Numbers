@@ -6,30 +6,24 @@
 #define new DEBUG_NEW
 #endif
 
-CAfstandDlg::CAfstandDlg(CWnd* pParent /*=NULL*/)
+CAfstandDlg::CAfstandDlg(CWnd *pParent /*=NULL*/)
   : CDialog(CAfstandDlg::IDD, pParent) {
-  //{{AFX_DATA_INIT(CAfstandDlg)
   m_afstand = 0;
   m_dag1 = _T("");
   m_dag2 = _T("");
-  //}}AFX_DATA_INIT
 }
 
-void CAfstandDlg::DoDataExchange(CDataExchange* pDX) {
+void CAfstandDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
-  //{{AFX_DATA_MAP(CAfstandDlg)
   DDX_Text(pDX, IDC_EDITAFSTAND, m_afstand);
   DDX_Text(pDX, IDC_EDITDAG1, m_dag1);
   DDX_Text(pDX, IDC_EDITDAG2, m_dag2);
-  //}}AFX_DATA_MAP
 }
 
 BEGIN_MESSAGE_MAP(CAfstandDlg, CDialog)
-  //{{AFX_MSG_MAP(CAfstandDlg)
   ON_BN_CLICKED(IDC_RESULT, OnResult)
   ON_BN_CLICKED(IDC_RADIOADDER, OnRadioadder)
   ON_BN_CLICKED(IDC_RADIOAFSTAND, OnRadioafstand)
-  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 void CAfstandDlg::Beregnafstand() {
@@ -41,7 +35,7 @@ void CAfstandDlg::Beregnafstand() {
     GetDlgItem(IDC_EDITDAG1)->SetFocus();
     return;
   }
-    
+
   try {
     d2 = Date(m_dag2.GetBuffer(m_dag2.GetLength()));
   } catch(Exception e) {

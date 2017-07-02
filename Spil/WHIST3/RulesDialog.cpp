@@ -6,10 +6,10 @@
 #define new DEBUG_NEW
 #endif
 
-RulesDialog::RulesDialog(CWnd* pParent): CDialog(RulesDialog::IDD, pParent) {
+RulesDialog::RulesDialog(CWnd *pParent): CDialog(RulesDialog::IDD, pParent) {
 }
 
-void RulesDialog::DoDataExchange(CDataExchange* pDX) {
+void RulesDialog::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
 }
 
@@ -20,5 +20,5 @@ END_MESSAGE_MAP()
 BOOL RulesDialog::OnInitDialog() {
   __super::OnInitDialog();
   GetDlgItem(IDC_TEXT)->SetWindowText(_T("http://www.spillemagasinet.dk/spil/3-mands-whist"));
-  return TRUE;  
+  return TRUE;
 }

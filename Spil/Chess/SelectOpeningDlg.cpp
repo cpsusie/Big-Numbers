@@ -6,13 +6,13 @@
 #define new DEBUG_NEW
 #endif
 
-CSelectOpeningDlg::CSelectOpeningDlg(const StringArray &names, CWnd* pParent)
+CSelectOpeningDlg::CSelectOpeningDlg(const StringArray &names, CWnd *pParent)
 : m_names(names)
 , CDialog(CSelectOpeningDlg::IDD, pParent) {
   m_selectedIndex = -1;
 }
 
-void CSelectOpeningDlg::DoDataExchange(CDataExchange* pDX) {
+void CSelectOpeningDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
 }
 

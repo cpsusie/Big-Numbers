@@ -12,28 +12,28 @@
 class CColormap : public CWnd
 {
 protected:
-	DECLARE_DYNCREATE(CColormap)
+    DECLARE_DYNCREATE(CColormap)
 public:
-	CLSID const& GetClsid()
-	{
-		static CLSID const clsid
-			= { 0xB4097DDA, 0x446A, 0x4AB9, { 0xB2, 0x10, 0x3A, 0xF1, 0x92, 0x76, 0xDF, 0x6C } };
-		return clsid;
-	}
-	virtual BOOL Create(LPCTSTR lpszClassName, LPCTSTR lpszWindowName, DWORD dwStyle,
-						const RECT& rect, CWnd* pParentWnd, UINT nID, 
-						CCreateContext* pContext = NULL)
-	{ 
-		return CreateControl(GetClsid(), lpszWindowName, dwStyle, rect, pParentWnd, nID); 
-	}
+    CLSID const& GetClsid()
+    {
+        static CLSID const clsid
+            = { 0xB4097DDA, 0x446A, 0x4AB9, { 0xB2, 0x10, 0x3A, 0xF1, 0x92, 0x76, 0xDF, 0x6C } };
+        return clsid;
+    }
+    virtual BOOL Create(LPCTSTR lpszClassName, LPCTSTR lpszWindowName, DWORD dwStyle,
+                        const RECT& rect, CWnd *pParentWnd, UINT nID,
+                        CCreateContext *pContext = NULL)
+    {
+        return CreateControl(GetClsid(), lpszWindowName, dwStyle, rect, pParentWnd, nID);
+    }
 
-    BOOL Create(LPCTSTR lpszWindowName, DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, 
-				UINT nID, CFile* pPersist = NULL, BOOL bStorage = FALSE,
-				BSTR bstrLicKey = NULL)
-	{ 
-		return CreateControl(GetClsid(), lpszWindowName, dwStyle, rect, pParentWnd, nID,
-		pPersist, bStorage, bstrLicKey); 
-	}
+    BOOL Create(LPCTSTR lpszWindowName, DWORD dwStyle, const RECT& rect, CWnd *pParentWnd,
+                UINT nID, CFile* pPersist = NULL, BOOL bStorage = FALSE,
+                BSTR bstrLicKey = NULL)
+    {
+        return CreateControl(GetClsid(), lpszWindowName, dwStyle, rect, pParentWnd, nID,
+        pPersist, bStorage, bstrLicKey);
+    }
 
 // Attributes
 public:
@@ -47,113 +47,113 @@ public:
 // Functions
 //
 
-	void AboutBox()
-	{
-		InvokeHelper(DISPID_ABOUTBOX, DISPATCH_METHOD, VT_EMPTY, NULL, NULL);
-	}
+    void AboutBox()
+    {
+        InvokeHelper(DISPID_ABOUTBOX, DISPATCH_METHOD, VT_EMPTY, NULL, NULL);
+    }
 
 // Properties
 //
 
 long GetColor()
 {
-	long result;
-	GetProperty(0x1, VT_I4, (void*)&result);
-	return result;
+    long result;
+    GetProperty(0x1, VT_I4, (void*)&result);
+    return result;
 }
 void SetColor(long propVal)
 {
-	SetProperty(0x1, VT_I4, propVal);
+    SetProperty(0x1, VT_I4, propVal);
 }
 signed char GetSunken()
 {
-	signed char result;
-	GetProperty(0x2, VT_I1, (void*)&result);
-	return result;
+    signed char result;
+    GetProperty(0x2, VT_I1, (void*)&result);
+    return result;
 }
 void SetSunken(signed char propVal)
 {
-	SetProperty(0x2, VT_I1, propVal);
+    SetProperty(0x2, VT_I1, propVal);
 }
 signed char GetBorder()
 {
-	signed char result;
-	GetProperty(0x3, VT_I1, (void*)&result);
-	return result;
+    signed char result;
+    GetProperty(0x3, VT_I1, (void*)&result);
+    return result;
 }
 void SetBorder(signed char propVal)
 {
-	SetProperty(0x3, VT_I1, propVal);
+    SetProperty(0x3, VT_I1, propVal);
 }
 CString GetCaption()
 {
-	CString result;
-	GetProperty(0x4, VT_BSTR, (void*)&result);
-	return result;
+    CString result;
+    GetProperty(0x4, VT_BSTR, (void*)&result);
+    return result;
 }
 void SetCaption(CString propVal)
 {
-	SetProperty(0x4, VT_BSTR, propVal);
+    SetProperty(0x4, VT_BSTR, propVal);
 }
 COleFont GetFont()
 {
-	LPDISPATCH result;
-	GetProperty(DISPID_FONT, VT_DISPATCH, (void*)&result);
-	return COleFont(result);
+    LPDISPATCH result;
+    GetProperty(DISPID_FONT, VT_DISPATCH, (void*)&result);
+    return COleFont(result);
 }
 void SetFont(LPDISPATCH propVal)
 {
-	SetProperty(DISPID_FONT, VT_DISPATCH, propVal);
+    SetProperty(DISPID_FONT, VT_DISPATCH, propVal);
 }
 signed char GetEnabled()
 {
-	signed char result;
-	GetProperty(DISPID_ENABLED, VT_I1, (void*)&result);
-	return result;
+    signed char result;
+    GetProperty(DISPID_ENABLED, VT_I1, (void*)&result);
+    return result;
 }
 void SetEnabled(signed char propVal)
 {
-	SetProperty(DISPID_ENABLED, VT_I1, propVal);
+    SetProperty(DISPID_ENABLED, VT_I1, propVal);
 }
 signed char GetClientEdge()
 {
-	signed char result;
-	GetProperty(0x5, VT_I1, (void*)&result);
-	return result;
+    signed char result;
+    GetProperty(0x5, VT_I1, (void*)&result);
+    return result;
 }
 void SetClientEdge(signed char propVal)
 {
-	SetProperty(0x5, VT_I1, propVal);
+    SetProperty(0x5, VT_I1, propVal);
 }
 signed char GetStaticEdge()
 {
-	signed char result;
-	GetProperty(0x6, VT_I1, (void*)&result);
-	return result;
+    signed char result;
+    GetProperty(0x6, VT_I1, (void*)&result);
+    return result;
 }
 void SetStaticEdge(signed char propVal)
 {
-	SetProperty(0x6, VT_I1, propVal);
+    SetProperty(0x6, VT_I1, propVal);
 }
 signed char GetModalFrame()
 {
-	signed char result;
-	GetProperty(0x7, VT_I1, (void*)&result);
-	return result;
+    signed char result;
+    GetProperty(0x7, VT_I1, (void*)&result);
+    return result;
 }
 void SetModalFrame(signed char propVal)
 {
-	SetProperty(0x7, VT_I1, propVal);
+    SetProperty(0x7, VT_I1, propVal);
 }
 long GetTextAlignment()
 {
-	long result;
-	GetProperty(0x8, VT_I4, (void*)&result);
-	return result;
+    long result;
+    GetProperty(0x8, VT_I4, (void*)&result);
+    return result;
 }
 void SetTextAlignment(long propVal)
 {
-	SetProperty(0x8, VT_I4, propVal);
+    SetProperty(0x8, VT_I4, propVal);
 }
 
 

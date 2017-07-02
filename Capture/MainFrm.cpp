@@ -79,7 +79,7 @@ CMainFrame::~CMainFrame()
 
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
-  if(CFrameWndEx::OnCreate(lpCreateStruct) == -1)
+  if(__super::OnCreate(lpCreateStruct) == -1)
     return -1;
 
   BOOL bNameValid;
@@ -180,7 +180,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs)
 {
-    if(!CFrameWndEx::PreCreateWindow(cs) )
+    if(!__super::PreCreateWindow(cs) )
         return FALSE;
     return TRUE;
 }
@@ -190,12 +190,12 @@ BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs)
 #ifdef _DEBUG
 void CMainFrame::AssertValid() const
 {
-  CFrameWndEx::AssertValid();
+  __super::AssertValid();
 }
 
 void CMainFrame::Dump(CDumpContext& dc) const
 {
-  CFrameWndEx::Dump(dc);
+  __super::Dump(dc);
 }
 #endif //_DEBUG
 
@@ -211,7 +211,7 @@ void CMainFrame::OnViewCustomize()
 
 LRESULT CMainFrame::OnToolbarCreateNew(WPARAM wp,LPARAM lp)
 {
-    LRESULT lres = CFrameWndEx::OnToolbarCreateNew(wp,lp);
+    LRESULT lres = __super::OnToolbarCreateNew(wp,lp);
     if (lres == 0)
     {
         return 0;
@@ -230,12 +230,8 @@ LRESULT CMainFrame::OnToolbarCreateNew(WPARAM wp,LPARAM lp)
 }
 #endif
 
-BOOL CMainFrame::LoadFrame(UINT nIDResource, DWORD dwDefaultStyle, CWnd* pParentWnd, CCreateContext* pContext) 
-{
-    // base class does the real work
-
-    if (!CFrameWndEx::LoadFrame(nIDResource, dwDefaultStyle, pParentWnd, pContext))
-    {
+BOOL CMainFrame::LoadFrame(UINT nIDResource, DWORD dwDefaultStyle, CWnd *pParentWnd, CCreateContext *pContext) {
+    if (!__super::LoadFrame(nIDResource, dwDefaultStyle, pParentWnd, pContext)) {
         return FALSE;
     }
 
@@ -246,11 +242,9 @@ BOOL CMainFrame::LoadFrame(UINT nIDResource, DWORD dwDefaultStyle, CWnd* pParent
     bNameValid = strCustomize.LoadString(IDS_TOOLBAR_CUSTOMIZE);
     ASSERT(bNameValid);
 
-    for (int i = 0; i < iMaxUserToolbars; i ++)
-    {
+    for (int i = 0; i < iMaxUserToolbars; i ++) {
         CMFCToolBar* pUserToolbar = GetUserToolBarByIndex(i);
-        if (pUserToolbar != NULL)
-        {
+        if (pUserToolbar != NULL) {
             pUserToolbar->EnableCustomizeButton(TRUE, ID_VIEW_CUSTOMIZE, strCustomize);
         }
     }
@@ -281,9 +275,9 @@ void CMainFrame::OnFileSave() {
   }
 
   static const TCHAR *FileDialogExtensions = _T("Bitmap files (*.bmp)\0*.bmp;\0"
-                                               "JPEG files (*.jpg)\0*.jpg;\0"
-                                               "TIFF files (*.tiff)\0*.tiff;\0"
-                                               "PNG files (*.png)\0*.png;\0\0");
+                                                "JPEG files (*.jpg)\0*.jpg;\0"
+                                                "TIFF files (*.tiff)\0*.tiff;\0"
+                                                "PNG files (*.png)\0*.png;\0\0");
 
 
   CFileDialog dlg(FALSE);
@@ -534,7 +528,7 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point) {
       MessageBox(e.what(), _T("Exception"), MB_ICONERROR);
     }
   }
-  CFrameWnd::OnMouseMove(nFlags, point);
+  __super::OnMouseMove(nFlags, point);
 }
 
 void CMainFrame::OnLButtonUp(UINT nFlags, CPoint point) {
@@ -549,7 +543,7 @@ void CMainFrame::OnLButtonUp(UINT nFlags, CPoint point) {
       setCaptureAllEvents(false);
       repaint();
     }
-    CFrameWnd::OnLButtonUp(nFlags, point);
+    __super::OnLButtonUp(nFlags, point);
   } catch(Exception e) {
     MessageBox(format(_T("Exception:%s"), e.what()).cstr(), _T("Error"), MB_ICONWARNING);
   }
@@ -658,7 +652,7 @@ HWND CMainFrame::findWindow(const CPoint &point) {
   return child != NULL ? child : parent;
 }
 
-BOOL CMainFrame::PreTranslateMessage(MSG* pMsg) {
+BOOL CMainFrame::PreTranslateMessage(MSG *pMsg) {
   try {
     if(!isCapturingWindow()) {
       switch(pMsg->message) {
@@ -672,7 +666,7 @@ BOOL CMainFrame::PreTranslateMessage(MSG* pMsg) {
               const int id = m_wndToolBar.GetItemID(i);
               if(id == ID_APP_CAPTURE_WINDOW) {
                 OnAppCaptureWindow();
-  //              CFrameWnd::PreTranslateMessage(pMsg);
+  //              __super::PreTranslateMessage(pMsg);
                 return true;
               }
             }
@@ -693,7 +687,7 @@ BOOL CMainFrame::PreTranslateMessage(MSG* pMsg) {
         break;
       }
     }
-    return CFrameWnd::PreTranslateMessage(pMsg);
+    return __super::PreTranslateMessage(pMsg);
   } catch(Exception e) {
     MessageBox(format(_T("Exception:%s"), e.what()).cstr(), _T("Error"), MB_ICONWARNING);
     return TRUE;

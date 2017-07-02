@@ -41,7 +41,7 @@ CTraceDlgThread *CChessDlg::s_traceThread   = NULL;
 #define BEGINPAINT() m_graphics->beginPaint()
 #define ENDPAINT()   m_graphics->endPaint()
 
-CChessDlg::CChessDlg(const String &startupFileName, CWnd* pParent)
+CChessDlg::CChessDlg(const String &startupFileName, CWnd *pParent)
 : CDialog(CChessDlg::IDD, pParent)
 , m_initialMode(PLAYMODE)
 , m_startPlyIndex(0)
@@ -101,7 +101,7 @@ CChessDlg::~CChessDlg() {
   }
 }
 
-void CChessDlg::DoDataExchange(CDataExchange* pDX) {
+void CChessDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
 }
 
@@ -312,7 +312,7 @@ void CChessDlg::OnClose()  { OnFileExit(); }
 void CChessDlg::OnOK()     {}
 void CChessDlg::OnCancel() {}
 
-void CChessDlg::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized) {
+void CChessDlg::OnActivate(UINT nState, CWnd *pWndOther, BOOL bMinimized) {
   __super::OnActivate(nState, pWndOther, bMinimized);
   switch(nState) {
   case WA_INACTIVE    :
@@ -1064,7 +1064,7 @@ LRESULT CChessDlg::OnMsgTraceWindowChanged(WPARAM wp, LPARAM lp) {
   return 0;
 }
 
-BOOL CChessDlg::PreTranslateMessage(MSG* pMsg) {
+BOOL CChessDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
     return true;
   }
@@ -2107,7 +2107,7 @@ typedef struct {
   int       m_commandId;
 } ContextMenuItem;
 
-void CChessDlg::OnContextMenu(CWnd* pWnd, CPoint point) {
+void CChessDlg::OnContextMenu(CWnd *pWnd, CPoint point) {
   if(getDialogMode() != EDITMODE) {
     return;
   }
@@ -2386,7 +2386,7 @@ void CChessDlg::OnEscape() {
         paintGamePosition();
       }
       break;
-    case KNIGHTROUTEMODE: 
+    case KNIGHTROUTEMODE:
       popDialogMode();
       break;
 

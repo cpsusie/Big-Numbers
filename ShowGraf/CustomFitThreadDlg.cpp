@@ -9,8 +9,7 @@
 #define new DEBUG_NEW
 #endif
 
-
-CCustomFitThreadDlg::CCustomFitThreadDlg(const CString &expr, const DoubleInterval &range, const Point2DArray &pointArray, FunctionPlotter &fp, CWnd* pParent) 
+CCustomFitThreadDlg::CCustomFitThreadDlg(const CString &expr, const DoubleInterval &range, const Point2DArray &pointArray, FunctionPlotter &fp, CWnd *pParent)
 : m_pointArray(pointArray)
 , m_fp(fp)
 , CDialog(IDD, pParent) {
@@ -68,7 +67,7 @@ BOOL CCustomFitThreadDlg::OnInitDialog() {
   return TRUE;
 }
 
-BOOL CCustomFitThreadDlg::PreTranslateMessage(MSG* pMsg) {
+BOOL CCustomFitThreadDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     return true;
   }

@@ -43,7 +43,7 @@ private:
       m_xTo   = i.getTo();
     }
 public:
-    CCustomFitThreadDlg(const CString &expr, const DoubleInterval &range, const Point2DArray &pointArray, FunctionPlotter &fp, CWnd* pParent = NULL);
+    CCustomFitThreadDlg(const CString &expr, const DoubleInterval &range, const Point2DArray &pointArray, FunctionPlotter &fp, CWnd *pParent = NULL);
 
     enum { IDD = IDR_CUSTOMFIT };
 
@@ -82,7 +82,6 @@ protected:
     afx_msg void OnGotoName();
     afx_msg void OnGotoFunction();
     afx_msg void OnGotoXInterval();
-
     DECLARE_MESSAGE_MAP()
 };
 

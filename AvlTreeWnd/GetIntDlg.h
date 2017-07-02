@@ -8,7 +8,7 @@ private:
   IntInterval m_interval;
   bool m_intervalSpecified;
 public:
-  CGetIntDlg(const TCHAR *title, const TCHAR *prompt, const IntInterval *legalInterval = NULL, int defaultValue = 0, CWnd* pParent = NULL);
+  CGetIntDlg(const TCHAR *title, const TCHAR *prompt, const IntInterval *legalInterval = NULL, int defaultValue = 0, CWnd *pParent = NULL);
 
   int getValue() const {
     return m_int;
@@ -17,11 +17,8 @@ public:
   enum { IDD = IDD_GETINTDIALOG };
   int       m_int;
 
-  protected:
-  virtual void DoDataExchange(CDataExchange* pDX);
-
-protected:
-    virtual BOOL OnInitDialog();
-    virtual void OnOK();
+  virtual void DoDataExchange(CDataExchange *pDX);
+  virtual BOOL OnInitDialog();
+  virtual void OnOK();
   DECLARE_MESSAGE_MAP()
 };

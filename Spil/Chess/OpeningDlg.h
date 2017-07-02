@@ -17,27 +17,22 @@ private:
   Game &getSelectedVariant(Game &g);
   String getActiveOpenings();
 public:
-	COpeningDlg(CWnd* pParent = NULL);
+    COpeningDlg(CWnd *pParent = NULL);
 
-	enum { IDD = IDD_OPENINGLIB_DIALOG };
+    enum { IDD = IDD_OPENINGLIB_DIALOG };
 
-
-	public:
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);
-
-protected:
-  void traverse(   CTreeCtrl *ctrl, HTREEITEM p, const LibraryState &state, Game &g);
-  void expandAll(  CTreeCtrl *ctrl, HTREEITEM p);
-  void collapseAll(CTreeCtrl *ctrl, HTREEITEM p);
+    void traverse(   CTreeCtrl *ctrl, HTREEITEM p, const LibraryState &state, Game &g);
+    void expandAll(  CTreeCtrl *ctrl, HTREEITEM p);
+    void collapseAll(CTreeCtrl *ctrl, HTREEITEM p);
 
     virtual BOOL OnInitDialog();
+    virtual BOOL PreTranslateMessage(MSG *pMsg);
+    virtual void DoDataExchange(CDataExchange *pDX);
     afx_msg void OnSize(UINT nType, int cx, int cy);
     afx_msg void OnButtonExpand();
     afx_msg void OnButtonExpandAll();
     afx_msg void OnOpeningExpand();
-    afx_msg void OnSelChangedOpeningTree(NMHDR* pNMHDR, LRESULT* pResult);
-	DECLARE_MESSAGE_MAP()
+    afx_msg void OnSelChangedOpeningTree(NMHDR *pNMHDR, LRESULT *pResult);
+    DECLARE_MESSAGE_MAP()
 };
 

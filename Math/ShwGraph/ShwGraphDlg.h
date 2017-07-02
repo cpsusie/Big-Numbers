@@ -30,7 +30,7 @@ private:
 
   void showException(const Exception &e);
 public:
-  CShwGraphDlg(CWnd* pParent = NULL);
+  CShwGraphDlg(CWnd *pParent = NULL);
 
   void readData(FILE *f);
   void readTextFile(const String &fname);

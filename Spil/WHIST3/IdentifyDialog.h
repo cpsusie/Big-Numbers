@@ -7,21 +7,16 @@ private:
   HACCEL  m_accelTable;
 
 public:
-  IdentifyDialog(CWnd* pParent = NULL);
+  IdentifyDialog(CWnd *pParent = NULL);
 
   enum { IDD = IDD_IDENTIFY_DIALOG };
   CString   m_myName;
   CString   m_dealerName;
   int       m_connected;
 
-
 public:
-  virtual BOOL PreTranslateMessage(MSG* pMsg);
-protected:
-  virtual void DoDataExchange(CDataExchange* pDX);
-
-protected:
-
+  virtual BOOL PreTranslateMessage(MSG *pMsg);
+  virtual void DoDataExchange(CDataExchange *pDX);
   virtual BOOL OnInitDialog();
   afx_msg void OnDealerRadio();
   afx_msg void OnConnectRadio();

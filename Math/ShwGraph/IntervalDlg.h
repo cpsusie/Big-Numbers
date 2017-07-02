@@ -2,7 +2,7 @@
 
 class IntervalDlg : public CDialog {
 public:
-    IntervalDlg(CWnd* pParent = NULL);
+    IntervalDlg(CWnd *pParent = NULL);
 
     double m_minx, m_maxx, m_miny, m_maxy;
 
@@ -13,10 +13,7 @@ public:
     CString m_minystr;
     BOOL    m_autoscaley;
 
-    protected:
-    virtual void DoDataExchange(CDataExchange* pDX);
-
-protected:
+    virtual void DoDataExchange(CDataExchange *pDX);
     virtual void OnOK();
     virtual BOOL OnInitDialog();
     DECLARE_MESSAGE_MAP()

@@ -6,7 +6,7 @@
 #define new DEBUG_NEW
 #endif
 
-CJuliaDlg::CJuliaDlg(const RealPoint2D &point, CWnd* pParent /*=NULL*/)
+CJuliaDlg::CJuliaDlg(const RealPoint2D &point, CWnd *pParent /*=NULL*/)
 : m_point(point)
 , CDialog(CJuliaDlg::IDD, pParent)
 {
@@ -20,7 +20,7 @@ CJuliaDlg::~CJuliaDlg() {
   }
 }
 
-void CJuliaDlg::DoDataExchange(CDataExchange* pDX){
+void CJuliaDlg::DoDataExchange(CDataExchange *pDX){
     __super::DoDataExchange(pDX);
 }
 

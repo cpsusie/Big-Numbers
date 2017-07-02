@@ -10,41 +10,41 @@
 #define foreachPanel(p)      if(m_panels.size()) for(SortPanelWnd **_##p = &m_panels[0], *p = *_##p; _##p <= &m_panels.last(); p = *(++_##p))
 #define foreachConstPanel(p) if(m_panels.size()) for(const SortPanelWnd * const *_##p = &m_panels[0], *p = *_##p; _##p <= &m_panels.last(); p = *(++_##p))
 
-CSortDemoDlg::CSortDemoDlg(CWnd* pParent /*=NULL*/) : CDialog(CSortDemoDlg::IDD, pParent) {
+CSortDemoDlg::CSortDemoDlg(CWnd *pParent /*=NULL*/) : CDialog(CSortDemoDlg::IDD, pParent) {
   m_hIcon            = theApp.LoadIcon(IDR_MAINFRAME);
   m_ctrlId           = WM_USER;
   m_movingPanelIndex = -1;
   m_selectedPanel    = NULL;
 }
 
-void CSortDemoDlg::DoDataExchange(CDataExchange* pDX) {
+void CSortDemoDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CSortDemoDlg, CDialog)
-  ON_WM_SYSCOMMAND()
-  ON_WM_QUERYDRAGICON()
-  ON_WM_SIZE()
-  ON_WM_CLOSE()
-	ON_WM_RBUTTONDOWN()
-	ON_COMMAND(ID_FILE_INITIALIZE         , OnFileInitialize            )
-	ON_COMMAND(ID_FILE_GO                 , OnFileGo                    )
-	ON_COMMAND(ID_FILE_PAUSE              , OnFilePause                 )
-	ON_COMMAND(ID_FILE_RESUME             , OnFileResume                )
-  ON_COMMAND(ID_FILE_EXIT               , OnFileExit                  )
-  ON_COMMAND(ID_SELECT_ALLMETHODS       , OnSelectAllMethods          )
-	ON_COMMAND(ID_OPTIONS_PARAMETERS      , OnOptionsParameters         )
-  ON_COMMAND(ID_OPTIONS_ANIMATE         , OnOptionsAnimate            )
-  ON_COMMAND(ID_OPTIONS_SPEED_SLOW      , OnOptionsSpeedSlow          )
-  ON_COMMAND(ID_OPTIONS_SPEED_FAST      , OnOptionsSpeedFast          )
-	ON_COMMAND(ID_CONTEXTMENU_ANALYZE     , OnContextAnalyze            )
-	ON_COMMAND(ID_CONTEXTMENU_REMOVE      , OnContextmenuRemove         )
-	ON_MESSAGE(ID_MSG_RECEIVESTATESHIFT   , OnReceiveStateShift         )
-	ON_MESSAGE(ID_MSG_ENABLEGOMENUITEMS   , OnEnableGoMenuItems         )
-  ON_COMMAND_RANGE(ID_SORT_FIRSTMETHOD, ID_SORT_LASTMETHOD , OnToggleSortMethod)
-	ON_WM_LBUTTONDOWN()
-	ON_WM_LBUTTONUP()
-	ON_WM_MOUSEMOVE()
+    ON_WM_SYSCOMMAND()
+    ON_WM_QUERYDRAGICON()
+    ON_WM_SIZE()
+    ON_WM_CLOSE()
+    ON_WM_RBUTTONDOWN()
+    ON_COMMAND(ID_FILE_INITIALIZE         , OnFileInitialize            )
+    ON_COMMAND(ID_FILE_GO                 , OnFileGo                    )
+    ON_COMMAND(ID_FILE_PAUSE              , OnFilePause                 )
+    ON_COMMAND(ID_FILE_RESUME             , OnFileResume                )
+    ON_COMMAND(ID_FILE_EXIT               , OnFileExit                  )
+    ON_COMMAND(ID_SELECT_ALLMETHODS       , OnSelectAllMethods          )
+    ON_COMMAND(ID_OPTIONS_PARAMETERS      , OnOptionsParameters         )
+    ON_COMMAND(ID_OPTIONS_ANIMATE         , OnOptionsAnimate            )
+    ON_COMMAND(ID_OPTIONS_SPEED_SLOW      , OnOptionsSpeedSlow          )
+    ON_COMMAND(ID_OPTIONS_SPEED_FAST      , OnOptionsSpeedFast          )
+    ON_COMMAND(ID_CONTEXTMENU_ANALYZE     , OnContextAnalyze            )
+    ON_COMMAND(ID_CONTEXTMENU_REMOVE      , OnContextmenuRemove         )
+    ON_MESSAGE(ID_MSG_RECEIVESTATESHIFT   , OnReceiveStateShift         )
+    ON_MESSAGE(ID_MSG_ENABLEGOMENUITEMS   , OnEnableGoMenuItems         )
+    ON_COMMAND_RANGE(ID_SORT_FIRSTMETHOD  , ID_SORT_LASTMETHOD , OnToggleSortMethod)
+    ON_WM_LBUTTONDOWN()
+    ON_WM_LBUTTONUP()
+    ON_WM_MOUSEMOVE()
   ON_COMMAND(IDOK, &CSortDemoDlg::OnIdok)
 END_MESSAGE_MAP()
 
@@ -64,7 +64,7 @@ HCURSOR CSortDemoDlg::OnQueryDragIcon() {
 void CSortDemoDlg::OnSize(UINT nType, int cx, int cy) {
   __super::OnSize(nType, cx, cy);
   adjustLayout();
-  Invalidate(false);    
+  Invalidate(false);
 }
 
 void CSortDemoDlg::OnClose() {
@@ -75,7 +75,7 @@ void CSortDemoDlg::OnIdok() {
 void CSortDemoDlg::OnCancel() {
 }
 
-BOOL CSortDemoDlg::PreTranslateMessage(MSG* pMsg) {
+BOOL CSortDemoDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     return true;
   }
@@ -88,7 +88,7 @@ BOOL CSortDemoDlg::OnInitDialog() {
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
-  CMenu* pSysMenu = GetSystemMenu(FALSE);
+  CMenu *pSysMenu = GetSystemMenu(FALSE);
   if(pSysMenu != NULL) {
     CString strAboutMenu;
     strAboutMenu.LoadString(IDS_ABOUTBOX);
@@ -175,8 +175,8 @@ void CSortDemoDlg::OnFileGo() {
   if(allPanelsInState(STATE_IDLE)) {
     OnFileInitialize();
     foreachPanel(p) p->doSort();
-  } else { 
-    foreachPanel(p) { 
+  } else {
+    foreachPanel(p) {
       switch(p->getThreadState()) {
       case STATE_PAUSED:
         p->stopSort(TERMINATE_SORT);
@@ -238,7 +238,7 @@ LRESULT CSortDemoDlg::OnReceiveStateShift(WPARAM wp, LPARAM lp) {
   switch(newState) {
   case STATE_RUNNING:
     setMenuItemText(this, ID_FILE_GO, _T("&Stop\tF5")           );
-    if(menuItemExists(this, ID_FILE_RESUME)) { 
+    if(menuItemExists(this, ID_FILE_RESUME)) {
       insertMenuItem(this, ID_FILE_RESUME, 0, m_origMenuTextPause, ID_FILE_PAUSE);
       removeMenuItem(this, ID_FILE_RESUME);
     }

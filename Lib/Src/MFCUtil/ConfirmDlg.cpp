@@ -6,7 +6,7 @@
 #define new DEBUG_NEW
 #endif
 
-CConfirmDlg::CConfirmDlg(const TCHAR *message, const TCHAR *caption, UINT nType, CWnd* pParent /*=NULL*/)
+CConfirmDlg::CConfirmDlg(const TCHAR *message, const TCHAR *caption, UINT nType, CWnd *pParent /*=NULL*/)
 : m_message(message)
 , m_caption(caption)
 , m_nType(nType)
@@ -19,17 +19,17 @@ CConfirmDlg::CConfirmDlg(const TCHAR *message, const TCHAR *caption, UINT nType,
 }
 
 
-void CConfirmDlg::DoDataExchange(CDataExchange* pDX) {
+void CConfirmDlg::DoDataExchange(CDataExchange *pDX) {
     __super::DoDataExchange(pDX);
     DDX_Check(pDX, _IDC_CHECKDONTSHOWAGAIN, m_dontShowAgain);
 }
 
 
 BEGIN_MESSAGE_MAP(CConfirmDlg, CDialog)
-  ON_BN_CLICKED(_IDC_BUTTON0, OnButton0)
-  ON_BN_CLICKED(_IDC_BUTTON1, OnButton1)
-  ON_BN_CLICKED(_IDC_BUTTON2, OnButton2)
-	ON_WM_PAINT()
+    ON_BN_CLICKED(_IDC_BUTTON0, OnButton0)
+    ON_BN_CLICKED(_IDC_BUTTON1, OnButton1)
+    ON_BN_CLICKED(_IDC_BUTTON2, OnButton2)
+    ON_WM_PAINT()
 END_MESSAGE_MAP()
 
 #define LEFTMARG          25
@@ -111,11 +111,11 @@ BOOL CConfirmDlg::OnInitDialog() {
     break;
   }
 
-  switch(m_nType & MB_ICONMASK) { 
+  switch(m_nType & MB_ICONMASK) {
   case MB_ICONINFORMATION  : m_icon = LoadIcon(NULL, IDI_INFORMATION); break;
   case MB_ICONQUESTION     : m_icon = LoadIcon(NULL, IDI_QUESTION   ); break;
   case MB_ICONWARNING      : m_icon = LoadIcon(NULL, IDI_WARNING    ); break;
-  case MB_ICONERROR        : m_icon = LoadIcon(NULL, IDI_ERROR      ); break; 
+  case MB_ICONERROR        : m_icon = LoadIcon(NULL, IDI_ERROR      ); break;
   }
 
   CSize iconSize(0, 0);
@@ -189,7 +189,7 @@ BOOL CConfirmDlg::OnInitDialog() {
   }
 
 //  GetDlgItem(_IDC_STATICMESSAGEAREA)-> BringWindowToTop();
-//  GetDlgItem(_IDC_STATICMESSAGEAREA)->ShowWindow(SW_HIDE); 
+//  GetDlgItem(_IDC_STATICMESSAGEAREA)->ShowWindow(SW_HIDE);
 
   centerWindow(this);
   return TRUE;  // return TRUE unless you set the focus to a control
@@ -248,7 +248,7 @@ void CConfirmDlg::OnCancel() {
   }
 }
 
-BOOL CConfirmDlg::PreTranslateMessage(MSG* pMsg) {
+BOOL CConfirmDlg::PreTranslateMessage(MSG *pMsg) {
   if(m_accelTable && TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
     return true;
   }

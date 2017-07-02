@@ -6,7 +6,7 @@
 #define new DEBUG_NEW
 #endif
 
-IntervalDlg::IntervalDlg(CWnd* pParent /*=NULL*/) : CDialog(IntervalDlg::IDD, pParent) {
+IntervalDlg::IntervalDlg(CWnd *pParent /*=NULL*/) : CDialog(IntervalDlg::IDD, pParent) {
     m_maxxstr = EMPTYSTRING;
     m_maxystr = EMPTYSTRING;
     m_minxstr = EMPTYSTRING;
@@ -28,7 +28,7 @@ END_MESSAGE_MAP()
 
 BOOL IntervalDlg::OnInitDialog() {
   TCHAR tmp[40];
-  
+
   _stprintf(tmp,_T("%lg"), m_minx);
   m_minxstr = tmp;
 
@@ -41,9 +41,9 @@ BOOL IntervalDlg::OnInitDialog() {
   _stprintf(tmp,_T("%lg"), m_maxy);
   m_maxystr = tmp;
   UpdateData(FALSE);
-    
+
   __super::OnInitDialog();
-  return TRUE; 
+  return TRUE;
 }
 
 void IntervalDlg::OnOK() {
@@ -53,7 +53,7 @@ void IntervalDlg::OnOK() {
   if(_stscanf(m_minxstr,_T("%le"),&minx ) != 1 ||
      _stscanf(m_maxxstr,_T("%le"),&maxx ) != 1 ||
      _stscanf(m_minystr,_T("%le"),&miny ) != 1 ||
-     _stscanf(m_maxystr,_T("%le"),&maxy ) != 1 
+     _stscanf(m_maxystr,_T("%le"),&maxy ) != 1
     ) {
     MessageBox(_T("Invalid input"),_T("Error"), MB_ICONEXCLAMATION);
     return;

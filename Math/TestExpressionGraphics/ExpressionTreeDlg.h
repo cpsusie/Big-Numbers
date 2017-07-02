@@ -26,18 +26,14 @@ public:
 
     enum { IDD = IDD_EXPRESSIONTREE_DIALOG };
 
-    protected:
-    virtual void DoDataExchange(CDataExchange* pDX);
-
-protected:
-
-	afx_msg void OnClose();
-	virtual BOOL OnInitDialog();
-	afx_msg void OnSize(UINT nType, int cx, int cy);
-	afx_msg void OnContextMenu(CWnd* pWnd, CPoint point);
-	afx_msg void OnClearBreakPoint();
-	afx_msg void OnSetBreakPoint();
-	afx_msg void OnSelchangedTreeExpression(NMHDR* pNMHDR, LRESULT* pResult);
-  DECLARE_MESSAGE_MAP()
+    virtual void DoDataExchange(CDataExchange *pDX);
+    afx_msg void OnClose();
+    virtual BOOL OnInitDialog();
+    afx_msg void OnSize(UINT nType, int cx, int cy);
+    afx_msg void OnContextMenu(CWnd *pWnd, CPoint point);
+    afx_msg void OnClearBreakPoint();
+    afx_msg void OnSetBreakPoint();
+    afx_msg void OnSelchangedTreeExpression(NMHDR *pNMHDR, LRESULT *pResult);
+    DECLARE_MESSAGE_MAP()
 };
 

@@ -2,7 +2,7 @@
 
 class CFrequenceDlg : public CDialog {
 public:
-    CFrequenceDlg(unsigned int frequence, CWnd* pParent = NULL);
+    CFrequenceDlg(unsigned int frequence, CWnd *pParent = NULL);
     unsigned int getFrequence() const {
       return m_frequence;
     }
@@ -11,10 +11,8 @@ private:
     enum { IDD = IDD_FREQUENCEDIALOG };
     UINT    m_frequence;
 
-    protected:
-    virtual void DoDataExchange(CDataExchange* pDX);
-
 protected:
+    virtual void DoDataExchange(CDataExchange *pDX);
     virtual BOOL OnInitDialog();
     DECLARE_MESSAGE_MAP()
 };

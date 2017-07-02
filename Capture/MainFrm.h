@@ -10,13 +10,11 @@ protected:
   CMainFrame();
   DECLARE_DYNCREATE(CMainFrame)
 
-// Overrides
 public:
   virtual BOOL PreTranslateMessage(MSG *pMsg);
   virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
-  virtual BOOL LoadFrame(UINT nIDResource, DWORD dwDefaultStyle = WS_OVERLAPPEDWINDOW | FWS_ADDTOTITLE, CWnd* pParentWnd = NULL, CCreateContext* pContext = NULL);
+  virtual BOOL LoadFrame(UINT nIDResource, DWORD dwDefaultStyle = WS_OVERLAPPEDWINDOW | FWS_ADDTOTITLE, CWnd *pParentWnd = NULL, CCreateContext *pContext = NULL);
 
-// Implementation
 private:
   HWND            m_selectedWindow;
   HWND            m_capturedWindow;
@@ -83,8 +81,6 @@ protected:  // control bar embedded members
     CMFCStatusBar     m_wndStatusBar;
     CMFCToolBarImages m_UserImages;
 
-// Generated message map functions
-protected:
     afx_msg int     OnCreate(LPCREATESTRUCT lpCreateStruct);
     afx_msg void    OnViewCustomize();
     afx_msg LRESULT OnToolbarCreateNew(WPARAM wp, LPARAM lp);
@@ -123,5 +119,4 @@ protected:
     afx_msg void OnUpdateViewSizePixels(     CCmdUI *pCmdUI);
     afx_msg void OnUpdateViewSizeCentimeters(CCmdUI *pCmdUI);
     DECLARE_MESSAGE_MAP()
-
 };

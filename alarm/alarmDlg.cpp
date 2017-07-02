@@ -14,21 +14,21 @@ public:
   enum { IDD = IDD_ABOUTBOX };
 
 protected:
-  virtual void DoDataExchange(CDataExchange* pDX);
+  virtual void DoDataExchange(CDataExchange *pDX);
   DECLARE_MESSAGE_MAP()
 };
 
 CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
-void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
+void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
-CAlarmDlg::CAlarmDlg(CWnd* pParent) : CDialog(CAlarmDlg::IDD, pParent) {
+CAlarmDlg::CAlarmDlg(CWnd *pParent) : CDialog(CAlarmDlg::IDD, pParent) {
   m_time = EMPTYSTRING;
   m_hIcon = theApp.LoadIcon(IDR_MAINICON);
   for(int t = 0; t < MAXTIMERCOUNT; t++) {
@@ -36,7 +36,7 @@ CAlarmDlg::CAlarmDlg(CWnd* pParent) : CDialog(CAlarmDlg::IDD, pParent) {
   }
 }
 
-void CAlarmDlg::DoDataExchange(CDataExchange* pDX) {
+void CAlarmDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
   DDX_Text(pDX, IDC_EDITALARMTIME, m_time);
 }
@@ -46,19 +46,18 @@ BEGIN_MESSAGE_MAP(CAlarmDlg, CDialog)
   ON_WM_PAINT()
   ON_WM_QUERYDRAGICON()
   ON_WM_TIMER()
-  ON_COMMAND(ID_FILE_EXIT      , OnFileExit      )
-  ON_COMMAND(ID_OPTIONS_SOUND  , OnOptionsSound  )
-  ON_BN_CLICKED(IDC_BUTTONPLAY , OnButtonPlay    )
   ON_WM_LBUTTONDOWN()
-  ON_COMMAND(ID_MENU_EXIT      , OnMenuExit      )
-  ON_COMMAND(ID_MENU_OPEN      , OnMenuOpen      )
-  ON_WM_CLOSE()
-  ON_COMMAND(ID_HELP_ABOUTALARM, OnHelpAboutalarm)
-  ON_BN_CLICKED(IDC_SETALARM   , OnSetalarm      )
-  ON_COMMAND(ID_GOTO_ALARMTIME , OnGotoAlarmTime )
   ON_WM_MOUSEMOVE()
+  ON_WM_CLOSE()
+  ON_COMMAND(ID_FILE_EXIT               , OnFileExit               )
+  ON_COMMAND(ID_OPTIONS_SOUND           , OnOptionsSound           )
+  ON_COMMAND(ID_MENU_EXIT               , OnMenuExit               )
+  ON_COMMAND(ID_MENU_OPEN               , OnMenuOpen               )
+  ON_COMMAND(ID_HELP_ABOUTALARM         , OnHelpAboutalarm         )
+  ON_COMMAND(ID_GOTO_ALARMTIME          , OnGotoAlarmTime          )
   ON_COMMAND(ID_OPTIONS_HIDEWHENSETALARM, OnOptionsHidewhensetalarm)
-  //}}AFX_MSG_MAP
+  ON_BN_CLICKED(IDC_SETALARM            , OnSetalarm               )
+  ON_BN_CLICKED(IDC_BUTTONPLAY          , OnButtonPlay             )
 END_MESSAGE_MAP()
 
 class Options {
@@ -140,7 +139,7 @@ BOOL CAlarmDlg::OnInitDialog() {
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
-  CMenu* pSysMenu = GetSystemMenu(FALSE);
+  CMenu *pSysMenu = GetSystemMenu(FALSE);
   if(pSysMenu != NULL) {
     CString strAboutMenu;
     strAboutMenu.LoadString(IDS_ABOUTBOX);
@@ -156,10 +155,10 @@ BOOL CAlarmDlg::OnInitDialog() {
   SetIcon(m_hIcon, FALSE);      // Set small icon
   readSetup();
   m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATOR_MAINDIALOG));
-  m_hasStatusIcon = false;   
+  m_hasStatusIcon = false;
   GetDlgItem(IDC_STATICSOUNDFILE)->SetWindowText(m_soundFileName);
   gotoField(IDC_EDITALARMTIME);
-  startTimer(SHOWTIME_TIMER,1);  
+  startTimer(SHOWTIME_TIMER,1);
   return false;  // return TRUE  unless you set the focus to a control
 }
 
@@ -205,7 +204,7 @@ HCURSOR CAlarmDlg::OnQueryDragIcon() {
   return (HCURSOR) m_hIcon;
 }
 
-BOOL CAlarmDlg::PreTranslateMessage(MSG* pMsg) {
+BOOL CAlarmDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     return true;
   }

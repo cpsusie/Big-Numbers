@@ -66,14 +66,14 @@ END_EVENT_MAP()
 
 // TODO: Add more property pages as needed.  Remember to increase the count!
 BEGIN_PROPPAGEIDS(CColormapCtrl, 2)
-	PROPPAGEID(CColormapPropPage::guid)
-  PROPPAGEID(CLSID_StockFontPage) 
+    PROPPAGEID(CColormapPropPage::guid)
+  PROPPAGEID(CLSID_StockFontPage)
 END_PROPPAGEIDS(CColormapCtrl)
 
 // Initialize class factory and guid
 
 IMPLEMENT_OLECREATE_EX(CColormapCtrl, "COLORMAP.ColormapCtrl.1",
-	0xb4097dda, 0x446a, 0x4ab9, 0xb2, 0x10, 0x3a, 0xf1, 0x92, 0x76, 0xdf, 0x6c)
+    0xb4097dda, 0x446a, 0x4ab9, 0xb2, 0x10, 0x3a, 0xf1, 0x92, 0x76, 0xdf, 0x6c)
 
 // Type library ID and version
 
@@ -87,11 +87,11 @@ const IID IID_DColormapEvents = { 0xCE00D37, 0x27E5, 0x4C2E, { 0xA6, 0x41, 0xA5,
 // Control type information
 
 static const DWORD _dwColormapOleMisc =
-	OLEMISC_ACTIVATEWHENVISIBLE |
-	OLEMISC_SETCLIENTSITEFIRST |
-	OLEMISC_INSIDEOUT |
-	OLEMISC_CANTLINKINSIDE |
-	OLEMISC_RECOMPOSEONRESIZE;
+    OLEMISC_ACTIVATEWHENVISIBLE |
+    OLEMISC_SETCLIENTSITEFIRST |
+    OLEMISC_INSIDEOUT |
+    OLEMISC_CANTLINKINSIDE |
+    OLEMISC_RECOMPOSEONRESIZE;
 
 IMPLEMENT_OLECTLTYPE(CColormapCtrl, IDS_COLORMAP, _dwColormapOleMisc)
 
@@ -100,26 +100,26 @@ IMPLEMENT_OLECTLTYPE(CColormapCtrl, IDS_COLORMAP, _dwColormapOleMisc)
 
 BOOL CColormapCtrl::CColormapCtrlFactory::UpdateRegistry(BOOL bRegister)
 {
-	// TODO: Verify that your control follows apartment-model threading rules.
-	// Refer to MFC TechNote 64 for more information.
-	// If your control does not conform to the apartment-model rules, then
-	// you must modify the code below, changing the 6th parameter from
-	// afxRegApartmentThreading to 0.
+    // TODO: Verify that your control follows apartment-model threading rules.
+    // Refer to MFC TechNote 64 for more information.
+    // If your control does not conform to the apartment-model rules, then
+    // you must modify the code below, changing the 6th parameter from
+    // afxRegApartmentThreading to 0.
 
-	if (bRegister)
-		return AfxOleRegisterControlClass(
-			AfxGetInstanceHandle(),
-			m_clsid,
-			m_lpszProgID,
-			IDS_COLORMAP,
-			IDB_COLORMAP,
-			afxRegApartmentThreading,
-			_dwColormapOleMisc,
-			_tlid,
-			_wVerMajor,
-			_wVerMinor);
-	else
-		return AfxOleUnregisterClass(m_clsid, m_lpszProgID);
+    if (bRegister)
+        return AfxOleRegisterControlClass(
+            AfxGetInstanceHandle(),
+            m_clsid,
+            m_lpszProgID,
+            IDS_COLORMAP,
+            IDB_COLORMAP,
+            afxRegApartmentThreading,
+            _dwColormapOleMisc,
+            _tlid,
+            _wVerMajor,
+            _wVerMinor);
+    else
+        return AfxOleUnregisterClass(m_clsid, m_lpszProgID);
 }
 
 
@@ -127,7 +127,7 @@ BOOL CColormapCtrl::CColormapCtrlFactory::UpdateRegistry(BOOL bRegister)
 
 CColormapCtrl::CColormapCtrl()
 {
-	InitializeIIDs(&IID_DColormap, &IID_DColormapEvents);
+    InitializeIIDs(&IID_DColormap, &IID_DColormapEvents);
   m_currentField  = IDC_EDITRED;
   m_updateActive  = false;
   m_firstDrawDone = false;
@@ -208,12 +208,12 @@ void CColormapCtrl::OnDraw(CDC* pdc, const CRect& rcBounds, const CRect& /* rcIn
     dc.SelectObject(&m_font);
     m_colorMap.draw(dc, GetEnabled());
   }
-  
+
   // CColormapCtrl::DoPropExchange - Persistence support
 
 void CColormapCtrl::DoPropExchange(CPropExchange* pPX) {
-	ExchangeVersion(pPX, MAKELONG(_wVerMinor, _wVerMajor));
-	COleControl::DoPropExchange(pPX);
+    ExchangeVersion(pPX, MAKELONG(_wVerMinor, _wVerMajor));
+    COleControl::DoPropExchange(pPX);
 
   BOOL          isSunken      = m_colorMap.getIsSunken();
   BOOL          hasBorder     = m_colorMap.getHasBorder();
@@ -245,7 +245,7 @@ void CColormapCtrl::DoPropExchange(CPropExchange* pPX) {
 
 void CColormapCtrl::OnResetState()
 {
-	COleControl::OnResetState();  // Resets defaults found in DoPropExchange
+    COleControl::OnResetState();  // Resets defaults found in DoPropExchange
 
 }
 
@@ -254,8 +254,8 @@ void CColormapCtrl::OnResetState()
 
 void CColormapCtrl::AboutBox()
 {
-	CDialogEx dlgAbout(IDD_ABOUTBOX_COLORMAP);
-	dlgAbout.DoModal();
+    CDialogEx dlgAbout(IDD_ABOUTBOX_COLORMAP);
+    dlgAbout.DoModal();
 }
 
 
@@ -423,7 +423,7 @@ void CColormapCtrl::OnLButtonDown(UINT nFlags, CPoint point) {
     drawMap();
     updateFields();
     gotoField(IDC_COLORMAP);
-    ClipCursor(getMapRect());   
+    ClipCursor(getMapRect());
   } else if(m_colorMap.getScalePosRect().PtInRect(point) || m_colorMap.getScaleRect().PtInRect(point)) {
     m_colorMap.setCurrentScalePoint(point);
     drawMap();
@@ -478,7 +478,7 @@ void CColormapCtrl::OnLButtonUp(UINT nFlags, CPoint point) {
   ClipCursor(NULL);
 }
 
-BOOL CColormapCtrl::PreTranslateMessage(MSG* pMsg) {
+BOOL CColormapCtrl::PreTranslateMessage(MSG *pMsg) {
   switch(pMsg->message) {
   case WM_KEYDOWN:
     switch(pMsg->wParam) {
@@ -582,7 +582,7 @@ BOOL CColormapCtrl::PreTranslateMessage(MSG* pMsg) {
   return COleControl::PreTranslateMessage(pMsg);
 }
 
-void CColormapCtrl::OnSetFocus(CWnd* pOldWnd) {
+void CColormapCtrl::OnSetFocus(CWnd *pOldWnd) {
   gotoField(m_currentField);
 }
 

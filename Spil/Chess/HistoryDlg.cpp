@@ -9,7 +9,7 @@
 #define new DEBUG_NEW
 #endif
 
-CHistoryDlg::CHistoryDlg(Game &game, CWnd* pParent)
+CHistoryDlg::CHistoryDlg(Game &game, CWnd *pParent)
 : CDialog(CHistoryDlg::IDD, pParent)
 , m_gameName(game.getFileName())
 , m_gameStartPosition(game.getStartPosition()      )
@@ -22,7 +22,7 @@ CHistoryDlg::CHistoryDlg(Game &game, CWnd* pParent)
   m_origHistory = m_history;
 }
 
-void CHistoryDlg::DoDataExchange(CDataExchange* pDX) {
+void CHistoryDlg::DoDataExchange(CDataExchange *pDX) {
     __super::DoDataExchange(pDX);
     DDX_Text(pDX, IDC_EDIT_HISTORY, m_historyStr);
 }
@@ -155,7 +155,7 @@ void CHistoryDlg::updateHistoryText() {
   UpdateData(FALSE);
 }
 
-BOOL CHistoryDlg::PreTranslateMessage(MSG* pMsg) {
+BOOL CHistoryDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     return true;
   }
@@ -183,7 +183,7 @@ BOOL CHistoryDlg::PreTranslateMessage(MSG* pMsg) {
   return __super::PreTranslateMessage(pMsg);
 }
 
-bool CHistoryDlg::showContextMenu(CWnd* pWnd, CPoint point) {
+bool CHistoryDlg::showContextMenu(CWnd *pWnd, CPoint point) {
   CMenu menu;
   if(!menu.LoadMenu(IDR_HISTORY_CONTEXTMENU)) {
     AfxMessageBox(_T("Loadmenu failed"));

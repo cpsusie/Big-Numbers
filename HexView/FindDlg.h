@@ -25,47 +25,42 @@ private:
   void waitCursor(bool on);
   void enableControls(bool enable);
 public:
-  CFindDlg(SearchMachine &searchMachine, CWnd* pParent = NULL);
+  CFindDlg(SearchMachine &searchMachine, CWnd *pParent = NULL);
   ~CFindDlg();
   const AddrRange &getSearchResult() const {
     return m_result;
   }
 
-	enum { IDD = IDD_DIALOGFIND };
-	OBMButton	m_specialCharButton;
-	CString	  m_findWhat;
+    enum { IDD = IDD_DIALOGFIND };
+    OBMButton   m_specialCharButton;
+    CString   m_findWhat;
 
-	public:
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	protected:
-  virtual void DoDataExchange(CDataExchange* pDX);
-
-protected:
-
-	afx_msg void OnSize(UINT nType, int cx, int cy);
-	afx_msg void OnTimer(UINT_PTR nIDEvent);
-	virtual BOOL OnInitDialog();
-	afx_msg void OnFindNext();
-	afx_msg void OnButtonSpecialChar();
-  afx_msg void OnGotoFindWhat();
-	afx_msg void OnSpecialCharCarriageReturn();
-	afx_msg void OnSpecialCharNewline();
-	afx_msg void OnSpecialCharBackspace();
-	afx_msg void OnSpecialCharTab();
-	afx_msg void OnSpecialCharFormfeed();
-	afx_msg void OnSpecialCharEscapeCharacter();
-	afx_msg void OnSpecialCharOctalNumber();
-	afx_msg void OnSpecialCharDecimalNumber();
-	afx_msg void OnSpecialCharHexadecimalNumber();
-	afx_msg void OnSpecialCharBackslash();
-	afx_msg void OnSetFocusComboFindWhat();
-	afx_msg void OnKillFocusComboFindWhat();
-	afx_msg void OnEditChangeComboFindWhat();
-	afx_msg void OnEditUpdateComboFindWhat();
-	afx_msg void OnSelChangeComboFindWhat();
-	afx_msg void OnSelendOkComboFindWhat();
-	afx_msg void OnSelendCancelComboFindWhat();
-	virtual void OnCancel();
+    virtual BOOL PreTranslateMessage(MSG *pMsg);
+    virtual void DoDataExchange(CDataExchange *pDX);
+    afx_msg void OnSize(UINT nType, int cx, int cy);
+    afx_msg void OnTimer(UINT_PTR nIDEvent);
+    virtual BOOL OnInitDialog();
+    afx_msg void OnFindNext();
+    afx_msg void OnButtonSpecialChar();
+    afx_msg void OnGotoFindWhat();
+    afx_msg void OnSpecialCharCarriageReturn();
+    afx_msg void OnSpecialCharNewline();
+    afx_msg void OnSpecialCharBackspace();
+    afx_msg void OnSpecialCharTab();
+    afx_msg void OnSpecialCharFormfeed();
+    afx_msg void OnSpecialCharEscapeCharacter();
+    afx_msg void OnSpecialCharOctalNumber();
+    afx_msg void OnSpecialCharDecimalNumber();
+    afx_msg void OnSpecialCharHexadecimalNumber();
+    afx_msg void OnSpecialCharBackslash();
+    afx_msg void OnSetFocusComboFindWhat();
+    afx_msg void OnKillFocusComboFindWhat();
+    afx_msg void OnEditChangeComboFindWhat();
+    afx_msg void OnEditUpdateComboFindWhat();
+    afx_msg void OnSelChangeComboFindWhat();
+    afx_msg void OnSelendOkComboFindWhat();
+    afx_msg void OnSelendCancelComboFindWhat();
+    virtual void OnCancel();
   DECLARE_MESSAGE_MAP()
 };
 

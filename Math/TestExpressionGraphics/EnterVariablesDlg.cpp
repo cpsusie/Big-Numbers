@@ -6,13 +6,13 @@
 #define new DEBUG_NEW
 #endif
 
-CEnterVariablesDlg::CEnterVariablesDlg(Expression &expr, CWnd* pParent /*=NULL*/) 
+CEnterVariablesDlg::CEnterVariablesDlg(Expression &expr, CWnd *pParent /*=NULL*/)
 : m_expr(expr)
 , CDialog(CEnterVariablesDlg::IDD, pParent)
 {
 }
 
-void CEnterVariablesDlg::DoDataExchange(CDataExchange* pDX) {
+void CEnterVariablesDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
 }
 
@@ -26,7 +26,7 @@ BOOL CEnterVariablesDlg::OnInitDialog() {
   m_fieldArray.putValues(m_expr);
   m_fieldArray.gotoFirstField();
 
-  return FALSE; 
+  return FALSE;
 }
 
 void CEnterVariablesDlg::OnOK() {

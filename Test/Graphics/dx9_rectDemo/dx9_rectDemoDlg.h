@@ -34,6 +34,7 @@ public:
 // Cdx9_rectDemoDlg dialog
 class Cdx9_rectDemoDlg : public CDialogEx {
 private:
+  HICON               m_hIcon;
   IDirect3D9         *m_direct3d;
   IDirect3DDevice9   *m_device;
   IDirect3DSurface9  *m_boardSurface;
@@ -56,7 +57,7 @@ private:
   void makeOpaque(               IDirect3DSurface9 *surface);
   static void makeWhiteTransparent(D3DLOCKED_RECT &lockedRect, const CSize size);
   static void makeSemiTransparentOpague(D3DLOCKED_RECT &lockedRect, const CSize size);
-  static void makeOpaque(          D3DLOCKED_RECT &lockedRect, const CSize size);
+  static void makeOpaque(        D3DLOCKED_RECT &lockedRect, const CSize size);
   void copySurfaceToTexture(     IDirect3DTexture9 *dst, IDirect3DSurface9 *src);
   void paintPictureOnSurface(    IDirect3DSurface9 *surface, CPicture &picture);
   void alphaBlend(               IDirect3DTexture9 *texture, const CRect &dstRect);
@@ -86,23 +87,15 @@ private:
   int  getComboValue(int id, const ComboElement *a) const;
 
 public:
-  Cdx9_rectDemoDlg(CWnd* pParent = NULL);	// standard constructor
+  Cdx9_rectDemoDlg(CWnd *pParent = NULL);   // standard constructor
 
-// Dialog Data
 #ifdef AFX_DESIGN_TIME
   enum { IDD = IDD_DX9_RECTDEMO_DIALOG };
 #endif
 
 protected:
-  virtual BOOL PreTranslateMessage(MSG* pMsg);
-  virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV support
-
-
-// Implementation
-protected:
-  HICON m_hIcon;
-
-  // Generated message map functions
+  virtual BOOL PreTranslateMessage(MSG *pMsg);
+  virtual void DoDataExchange(CDataExchange *pDX);  // DDX/DDV support
   virtual BOOL OnInitDialog();
   afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
   afx_msg void OnPaint();
@@ -114,6 +107,6 @@ protected:
   afx_msg void OnSelchangeComboSrcblend();
   afx_msg void OnSelchangeComboDstblend();
   afx_msg void OnSizing(UINT fwSide, LPRECT pRect);
-  afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
+  afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar);
   DECLARE_MESSAGE_MAP()
 };

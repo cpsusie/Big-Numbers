@@ -1,14 +1,6 @@
 #pragma once
 
 class CAsciiwDlg : public CDialog {
-public:
-    CAsciiwDlg(CWnd* pParent = NULL);
-
-    enum { IDD = IDD_ASCIIW_DIALOG };
-
-    virtual BOOL PreTranslateMessage(MSG* pMsg);
-    virtual void DoDataExchange(CDataExchange* pDX);
-
 private:
     HICON               m_hIcon;
     HACCEL              m_accelTable;
@@ -17,6 +9,13 @@ private:
     CSize               m_currentFontSize;
 
     void setCurrentFont(CFont *newfont);
+public:
+    CAsciiwDlg(CWnd *pParent = NULL);
+
+    enum { IDD = IDD_ASCIIW_DIALOG };
+
+    virtual BOOL PreTranslateMessage(MSG *pMsg);
+    virtual void DoDataExchange(CDataExchange *pDX);
 
 protected:
     bool isHexChecked();
@@ -25,7 +24,6 @@ protected:
     }
     void printHeader(CDC &dc, int line, int radix);
     void printAscii(CDC &dc, int radix);
-
     virtual BOOL OnInitDialog();
     afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
     afx_msg void OnPaint();

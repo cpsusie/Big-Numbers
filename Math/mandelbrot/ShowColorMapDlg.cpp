@@ -6,14 +6,14 @@
 #define new DEBUG_NEW
 #endif
 
-CShowColorMapDlg::CShowColorMapDlg(UINT maxIteration, const D3DCOLOR *colorMap, CWnd* pParent /*=NULL*/) 
+CShowColorMapDlg::CShowColorMapDlg(UINT maxIteration, const D3DCOLOR *colorMap, CWnd *pParent /*=NULL*/)
 : CDialog(CShowColorMapDlg::IDD, pParent)
 , m_maxIteration(maxIteration)
 , m_colorMap(colorMap)
 {
 }
 
-void CShowColorMapDlg::DoDataExchange(CDataExchange* pDX) {
+void CShowColorMapDlg::DoDataExchange(CDataExchange *pDX) {
     __super::DoDataExchange(pDX);
 }
 
@@ -30,7 +30,7 @@ BOOL CShowColorMapDlg::OnInitDialog() {
   m_layoutManager.addControl(IDC_STATIC_COLORMAPWINDOW, RELATIVE_SIZE    );
   m_layoutManager.addControl(IDC_STATIC_INTERVALWINDOW, RELATIVE_HEIGHT  );
   m_layoutManager.addControl(IDOK                     , RELATIVE_POSITION);
-    
+
   return TRUE;
 }
 

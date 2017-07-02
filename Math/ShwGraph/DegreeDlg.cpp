@@ -1,4 +1,3 @@
-
 #include "stdafx.h"
 #include "ShwGraph.h"
 #include "DegreeDlg.h"
@@ -7,11 +6,11 @@
 #define new DEBUG_NEW
 #endif
 
-DegreeDlg::DegreeDlg(int degree, CWnd* pParent) : CDialog(DegreeDlg::IDD, pParent) {
+DegreeDlg::DegreeDlg(int degree, CWnd *pParent) : CDialog(DegreeDlg::IDD, pParent) {
   m_degree = degree;
 }
 
-void DegreeDlg::DoDataExchange(CDataExchange* pDX) {
+void DegreeDlg::DoDataExchange(CDataExchange *pDX) {
     __super::DoDataExchange(pDX);
     DDX_Text(pDX, IDC_EDIT_DEGREE, m_degree);
 }
@@ -28,7 +27,7 @@ BOOL DegreeDlg::OnInitDialog() {
   return false;
 }
 
-void DegreeDlg::OnOK() {   
+void DegreeDlg::OnOK() {
   UpdateData(TRUE);
   if(m_degree > MAXDEGREE) {
       TCHAR tmp[100];
@@ -39,7 +38,7 @@ void DegreeDlg::OnOK() {
   __super::OnOK();
 }
 
-void DegreeDlg::OnDeltaposSpin1(NMHDR* pNMHDR, LRESULT* pResult) {
+void DegreeDlg::OnDeltaposSpin1(NMHDR *pNMHDR, LRESULT *pResult) {
     NM_UPDOWN* pNMUpDown = (NM_UPDOWN*)pNMHDR;
 
     UpdateData();

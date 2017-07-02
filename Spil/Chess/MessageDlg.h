@@ -11,21 +11,15 @@ private:
   void startTimer(UINT milliSeconds);
   void stopTimer();
 public:
-  CMessageDlg(int milliSeconds, const String &caption, const String &message, CWnd* pParent = NULL);
+  CMessageDlg(int milliSeconds, const String &caption, const String &message, CWnd *pParent = NULL);
 
-	enum { IDD = IDD_MESSAGE_DIALOG };
+    enum { IDD = IDD_MESSAGE_DIALOG };
 
-
-	public:
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);
-
-protected:
-
-	virtual BOOL OnInitDialog();
-	afx_msg void OnTimer(UINT_PTR nIDEvent);
-	afx_msg void OnCloseWindow();
-	DECLARE_MESSAGE_MAP()
+    virtual BOOL PreTranslateMessage(MSG *pMsg);
+    virtual void DoDataExchange(CDataExchange *pDX);
+    virtual BOOL OnInitDialog();
+    afx_msg void OnTimer(UINT_PTR nIDEvent);
+    afx_msg void OnCloseWindow();
+    DECLARE_MESSAGE_MAP()
 };
 

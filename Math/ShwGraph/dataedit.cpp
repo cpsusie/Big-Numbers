@@ -6,19 +6,17 @@
 #define new DEBUG_NEW
 #endif
 
-dataedit::dataedit(CWnd* pParent /*=NULL*/) : CDialog(dataedit::IDD, pParent) {
+dataedit::dataedit(CWnd *pParent /*=NULL*/) : CDialog(dataedit::IDD, pParent) {
 }
 
-void dataedit::DoDataExchange(CDataExchange* pDX) {
+void dataedit::DoDataExchange(CDataExchange *pDX) {
     __super::DoDataExchange(pDX);
 }
 
-
 BEGIN_MESSAGE_MAP(dataedit, CDialog)
-        // NOTE: the ClassWizard will add message map macros here
 END_MESSAGE_MAP()
 
-BOOL dataedit::OnInitDialog() { 
+BOOL dataedit::OnInitDialog() {
   __super::OnInitDialog();
   CListBox *lb = (CListBox*)GetDlgItem(IDC_DATALIST);
 

@@ -21,7 +21,7 @@ private:
   void   gotoBlackMove(int nr);
   void   gotoPly(int index);
   void   markPly(int index);
-  bool   showContextMenu(CWnd* pWnd, CPoint point);
+  bool   showContextMenu(CWnd *pWnd, CPoint point);
   int    getPlyIndexByPosition(const CPoint &p); // p relative to CEditBox (IDC_EDIT_HISTORY)
   CEdit *getHistoryBox();
   String getHistoryString();
@@ -32,48 +32,42 @@ private:
   }
 
 public:
-    CHistoryDlg(Game &game, CWnd* pParent = NULL);
+    CHistoryDlg(Game &game, CWnd *pParent = NULL);
 
     bool isChanged() const;
     MoveAnnotation getAnnotation(int ply) const {
       return m_history[ply].getAnnotation();
     }
 
-	enum { IDD = IDD_HISTORY_DIALOG };
+    enum { IDD = IDD_HISTORY_DIALOG };
     CString m_historyStr;
 
-
-	public:
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	protected:
-    virtual void DoDataExchange(CDataExchange* pDX);
-
+    virtual BOOL PreTranslateMessage(MSG *pMsg);
+    virtual void DoDataExchange(CDataExchange *pDX);
     void updateHistoryText();
-protected:
-
-	virtual void OnCancel();
-	virtual BOOL OnInitDialog();
-	afx_msg void OnFileAnalyzePosition();
-	afx_msg void OnFilePrint();
-	afx_msg void OnEditSelectall();
-	afx_msg void OnEditCopy();
-	afx_msg void OnOptionsFormatShortNotation();
-	afx_msg void OnOptionsFormatLongNotation();
-	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar);
-	afx_msg void OnHistoryContextMenuGoodMove();
-	afx_msg void OnHistoryContextMenuExcellentMove();
-	afx_msg void OnHistoryContextMenuBadMove();
-	afx_msg void OnHistoryContextMenuVeryBadMove();
-	afx_msg void OnHistoryContextMenuInterestingMove();
-	afx_msg void OnHistoryContextMenuDoubiousMove();
-	afx_msg void OnHistoryContextMenuRemoveAnnotation();
-	afx_msg void OnFontsize75();
-	afx_msg void OnFontsize100();
-	afx_msg void OnFontsize125();
-	afx_msg void OnFontsize150();
-	afx_msg void OnFontsize175();
-	afx_msg void OnFontsize200();
-	afx_msg void OnSize(UINT nType, int cx, int cy);
+    virtual void OnCancel();
+    virtual BOOL OnInitDialog();
+    afx_msg void OnFileAnalyzePosition();
+    afx_msg void OnFilePrint();
+    afx_msg void OnEditSelectall();
+    afx_msg void OnEditCopy();
+    afx_msg void OnOptionsFormatShortNotation();
+    afx_msg void OnOptionsFormatLongNotation();
+    afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar);
+    afx_msg void OnHistoryContextMenuGoodMove();
+    afx_msg void OnHistoryContextMenuExcellentMove();
+    afx_msg void OnHistoryContextMenuBadMove();
+    afx_msg void OnHistoryContextMenuVeryBadMove();
+    afx_msg void OnHistoryContextMenuInterestingMove();
+    afx_msg void OnHistoryContextMenuDoubiousMove();
+    afx_msg void OnHistoryContextMenuRemoveAnnotation();
+    afx_msg void OnFontsize75();
+    afx_msg void OnFontsize100();
+    afx_msg void OnFontsize125();
+    afx_msg void OnFontsize150();
+    afx_msg void OnFontsize175();
+    afx_msg void OnFontsize200();
+    afx_msg void OnSize(UINT nType, int cx, int cy);
     DECLARE_MESSAGE_MAP()
 };
 

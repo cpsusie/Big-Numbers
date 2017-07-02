@@ -8,29 +8,23 @@
 #define new DEBUG_NEW
 #endif
 
-CSelectDirDlg::CSelectDirDlg(const String &startDir, CWnd* pParent) : CDialog(CSelectDirDlg::IDD, pParent) {
-	//{{AFX_DATA_INIT(CSelectDirDlg)
-	m_dir = startDir.cstr();
-	m_drive = EMPTYSTRING;
-	//}}AFX_DATA_INIT
+CSelectDirDlg::CSelectDirDlg(const String &startDir, CWnd *pParent) : CDialog(CSelectDirDlg::IDD, pParent) {
+    m_dir = startDir.cstr();
+    m_drive = EMPTYSTRING;
 }
 
-void CSelectDirDlg::DoDataExchange(CDataExchange* pDX) {
-	__super::DoDataExchange(pDX);
-	//{{AFX_DATA_MAP(CSelectDirDlg)
-	DDX_Text(pDX    , _IDC_EDIT_DIR, m_dir);
-	DDX_CBString(pDX, _IDC_COMBO_DRIVE, m_drive);
-	//}}AFX_DATA_MAP
+void CSelectDirDlg::DoDataExchange(CDataExchange *pDX) {
+    __super::DoDataExchange(pDX);
+    DDX_Text(pDX    , _IDC_EDIT_DIR, m_dir);
+    DDX_CBString(pDX, _IDC_COMBO_DRIVE, m_drive);
 }
 
 BEGIN_MESSAGE_MAP(CSelectDirDlg, CDialog)
-	//{{AFX_MSG_MAP(CSelectDirDlg)
-	ON_CBN_EDITCHANGE(_IDC_COMBO_DRIVE, OnEditChangeDriveCombo)
-	ON_COMMAND(_ID_GOTO_DIR           , OnGotoDir             )
-	ON_COMMAND(_ID_GOTO_DRIVE         , OnGotoDrive           )
-	ON_CBN_SELCHANGE(_IDC_COMBO_DRIVE , OnSelChangeDriveCombo )
-	ON_NOTIFY(NM_DBLCLK, _IDC_TREE_DIR, OnDblclkDirTree       )
-	//}}AFX_MSG_MAP
+    ON_CBN_EDITCHANGE(_IDC_COMBO_DRIVE, OnEditChangeDriveCombo)
+    ON_COMMAND(_ID_GOTO_DIR           , OnGotoDir             )
+    ON_COMMAND(_ID_GOTO_DRIVE         , OnGotoDrive           )
+    ON_CBN_SELCHANGE(_IDC_COMBO_DRIVE , OnSelChangeDriveCombo )
+    ON_NOTIFY(NM_DBLCLK, _IDC_TREE_DIR, OnDblclkDirTree       )
 END_MESSAGE_MAP()
 
 BOOL CSelectDirDlg::OnInitDialog() {
@@ -60,7 +54,7 @@ BOOL CSelectDirDlg::OnInitDialog() {
   return true;
 }
 
-BOOL CSelectDirDlg::PreTranslateMessage(MSG* pMsg) {
+BOOL CSelectDirDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
     return true;
   }
@@ -95,7 +89,7 @@ void CSelectDirDlg::fillTree(const TCHAR *path) {
 
   HTREEITEM p = TVI_ROOT;
   TCHAR tmp[256];
-  if(path[1] == ':' && path[2] == '\\') { // start with C:\ 
+  if(path[1] == ':' && path[2] == '\\') { /* start with C:\ */
     TCHAR first[10];
     _tcsncpy(first, path, 3);
     first[3] = '\0';

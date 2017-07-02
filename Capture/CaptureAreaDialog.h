@@ -3,7 +3,7 @@
 class CCaptureAreaDialog : public CDialog {
 
 public:
-  CCaptureAreaDialog(CWnd* pParent = NULL);
+  CCaptureAreaDialog(CWnd *pParent = NULL);
 
   inline const CRect &getCapturedRect() const {
     return m_rect;
@@ -14,16 +14,13 @@ private:
   CSize  m_screenSize;
   CPoint m_lastMark;
   CRect  m_rect;
-  
+
   void drawMarkLines(const CPoint &p);
   void removeMarkLines();
   enum { IDD = IDD_CAPTUREAREADIALOG };
 
-
 protected:
-  virtual void DoDataExchange(CDataExchange* pDX);
-
-protected:
+  virtual void DoDataExchange(CDataExchange *pDX);
   afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
   virtual BOOL OnInitDialog();
   afx_msg void OnLButtonUp(UINT nFlags, CPoint point);

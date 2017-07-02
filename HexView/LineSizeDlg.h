@@ -6,24 +6,18 @@ private:
 
   void enableLineSize();
 public:
-  CLineSizeDlg(CWnd* pParent = NULL);
+  CLineSizeDlg(CWnd *pParent = NULL);
   BOOL OnInitDialog();
 
-	enum { IDD = IDD_DIALOGLINESIZE };
+    enum { IDD = IDD_DIALOGLINESIZE };
     UINT  m_lineSize;
-	BOOL  m_fitLines;
+    BOOL  m_fitLines;
 
-
-	public:
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	protected:
-  virtual void DoDataExchange(CDataExchange* pDX);
-
-protected:
-
+    virtual BOOL PreTranslateMessage(MSG *pMsg);
+    virtual void DoDataExchange(CDataExchange *pDX);
     afx_msg void OnGotoLineSize();
-	afx_msg void OnCheckFitLines();
-	virtual void OnOK();
-  DECLARE_MESSAGE_MAP()
+    afx_msg void OnCheckFitLines();
+    virtual void OnOK();
+    DECLARE_MESSAGE_MAP()
 };
 

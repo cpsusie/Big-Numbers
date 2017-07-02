@@ -5,7 +5,7 @@
 #include "DecideGameTrainingDialog.h"
 #include "CardBitmap.h"
 
-DecideGameTrainingDialog::DecideGameTrainingDialog(CWnd* pParent) : CDialog(DecideGameTrainingDialog::IDD, pParent) {
+DecideGameTrainingDialog::DecideGameTrainingDialog(CWnd *pParent) : CDialog(DecideGameTrainingDialog::IDD, pParent) {
     m_pointPerStik = -1;
     m_gameType = -1;
 
@@ -14,7 +14,7 @@ DecideGameTrainingDialog::DecideGameTrainingDialog(CWnd* pParent) : CDialog(Deci
   m_bpn.load();
 }
 
-void DecideGameTrainingDialog::DoDataExchange(CDataExchange* pDX) {
+void DecideGameTrainingDialog::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
     DDX_Radio(pDX, IDC_1POINT_RADIO, m_pointPerStik);
     DDX_Radio(pDX, IDC_SOL_RADIO, m_gameType);
@@ -82,7 +82,7 @@ GameType DecideGameTrainingDialog::getSelectedGameType() const {
     return GAMETYPE_SPAR;
   } else if(IsDlgButtonChecked(IDC_FARVE_RADIO)) {
     return GAMETYPE_FARVE;
-  } 
+  }
   return GAMETYPE_SOL;
 }
 
@@ -171,7 +171,7 @@ void DecideGameTrainingDialog::OnButtontrain() {
     m_trainerThread = NULL;
     m_bpn.load();
     GetDlgItem(IDC_BUTTONTRAIN)->SetWindowText(_T("S&tart training"));
-  } 
+  }
 }
 
 class GameTypeScoreField {
@@ -265,7 +265,7 @@ double TrainerThread::getErrorSum() const {
 UINT TrainerThread::run() {
   m_errorSum = 0;
   while(!m_doStop) {
-    double errorSum = 0;  
+    double errorSum = 0;
     for(size_t i = 0; i < m_trainingData.size(); i++) {
       m_bpn.learn(m_trainingData[i]);
       errorSum += m_bpn.getPatternError(m_trainingData[i]);

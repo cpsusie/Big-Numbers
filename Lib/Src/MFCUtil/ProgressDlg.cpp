@@ -7,7 +7,7 @@
 
 #pragma warning(disable : 4244)
 
-CProgressDlg::CProgressDlg(CWnd* pParent, Thread &thread, InteractiveRunnable &jobToDo, UINT updateRate) 
+CProgressDlg::CProgressDlg(CWnd *pParent, Thread &thread, InteractiveRunnable &jobToDo, UINT updateRate)
 : CDialog(CProgressDlg::IDD, pParent)
 , m_thread(thread)
 , m_jobToDo(jobToDo)
@@ -18,7 +18,7 @@ CProgressDlg::CProgressDlg(CWnd* pParent, Thread &thread, InteractiveRunnable &j
   m_accelTable      = NULL;
 }
 
-void CProgressDlg::DoDataExchange(CDataExchange* pDX) {
+void CProgressDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
 }
 
@@ -145,9 +145,9 @@ int CProgressDlg::setVisibleJobs(UINT count) {
 
 static const int ctrlId[] = {
   _IDC_STATICTIMEESTIMATE
- ,_IDC_PROGRESSBAR       
- ,_IDC_BUTTONSUSPEND     
- ,IDCANCEL               
+ ,_IDC_PROGRESSBAR
+ ,_IDC_BUTTONSUSPEND
+ ,IDCANCEL
 };
 
 int CProgressDlg::moveControlsBelowUp(CWnd *win, int dh) {
@@ -213,7 +213,7 @@ void CProgressDlg::OnClose() {
   OnCancel();
 }
 
-BOOL CProgressDlg::PreTranslateMessage(MSG* pMsg) {
+BOOL CProgressDlg::PreTranslateMessage(MSG *pMsg) {
   if(m_accelTable && TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
     return true;
   }

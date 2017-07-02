@@ -1,13 +1,14 @@
 #pragma once
 
 class CPrndlgDlg : public CDialog {
+private:
+  HICON m_hIcon;
 public:
-  CPrndlgDlg(CWnd* pParent = NULL);	// standard constructor
+  CPrndlgDlg(CWnd *pParent = NULL); // standard constructor
 
   enum { IDD = IDD_PRNDLG_DIALOG };
 protected:
-  virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV support
-  HICON m_hIcon;
+  virtual void DoDataExchange(CDataExchange *pDX);  // DDX/DDV support
   virtual BOOL OnInitDialog();
   afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
   afx_msg void OnPaint();

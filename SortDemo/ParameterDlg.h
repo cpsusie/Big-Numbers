@@ -14,7 +14,7 @@ private:
     CComboBox *getComboElementSize() const;
     CComboBox *getComboRandomize()   const;
 public:
-    CParameterDlg(const InitializeParameters &parameters, CWnd* pParent = NULL);
+    CParameterDlg(const InitializeParameters &parameters, CWnd *pParent = NULL);
     const InitializeParameters &getParameters() const {
       return m_parameters;
     }
@@ -26,13 +26,8 @@ public:
     UINT    m_periodCount;
     CString m_fileName;
 
-    public:
-    virtual BOOL PreTranslateMessage(MSG* pMsg);
-    protected:
-    virtual void DoDataExchange(CDataExchange* pDX);
-
-protected:
-
+    virtual BOOL PreTranslateMessage(MSG *pMsg);
+    virtual void DoDataExchange(CDataExchange *pDX);
     virtual BOOL OnInitDialog();
     afx_msg void OnRadioRandom();
     afx_msg void OnRadioSorted();

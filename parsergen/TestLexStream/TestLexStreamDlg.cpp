@@ -24,17 +24,17 @@ void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
-CTestLexStreamDlg::CTestLexStreamDlg(CWnd* pParent /*=NULL*/) : CDialog(CTestLexStreamDlg::IDD, pParent) {
-	m_count = 0;
-	m_text  = EMPTYSTRING;
-  m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
+CTestLexStreamDlg::CTestLexStreamDlg(CWnd *pParent /*=NULL*/) : CDialog(CTestLexStreamDlg::IDD, pParent) {
+    m_count = 0;
+    m_text  = EMPTYSTRING;
+    m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
 }
 
-void CTestLexStreamDlg::DoDataExchange(CDataExchange* pDX) {
+void CTestLexStreamDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
-	DDX_Text(pDX, IDC_EDITCOUNT, m_count);
-	DDV_MinMaxUInt(pDX, m_count, 0, 10000);
-	DDX_Text(pDX, IDC_EDITTEXT, m_text);
+    DDX_Text(pDX, IDC_EDITCOUNT, m_count);
+    DDV_MinMaxUInt(pDX, m_count, 0, 10000);
+    DDX_Text(pDX, IDC_EDITTEXT, m_text);
 }
 
 BEGIN_MESSAGE_MAP(CTestLexStreamDlg, CDialog)
@@ -64,7 +64,7 @@ BOOL CTestLexStreamDlg::OnInitDialog() {
 
   SetIcon(m_hIcon, TRUE);
   SetIcon(m_hIcon, FALSE);
-    
+
   m_stream.close();
   return TRUE;
 }

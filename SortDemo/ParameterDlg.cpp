@@ -7,7 +7,7 @@
 #define new DEBUG_NEW
 #endif
 
-CParameterDlg::CParameterDlg(const InitializeParameters &parameters, CWnd* pParent) 
+CParameterDlg::CParameterDlg(const InitializeParameters &parameters, CWnd *pParent)
 : m_parameters(parameters)
 , CDialog(CParameterDlg::IDD, pParent) {
     m_elementCount = (UINT)m_parameters.m_elementCount;
@@ -16,7 +16,7 @@ CParameterDlg::CParameterDlg(const InitializeParameters &parameters, CWnd* pPare
     m_fileName     = m_parameters.m_fileName.cstr();
 }
 
-void CParameterDlg::DoDataExchange(CDataExchange* pDX) {
+void CParameterDlg::DoDataExchange(CDataExchange *pDX) {
     __super::DoDataExchange(pDX);
     DDX_Text(pDX, IDC_EDIT_ELEMENTCOUNT, m_elementCount);
     DDV_MinMaxUInt(pDX, m_elementCount, 2, 1000);
@@ -56,7 +56,7 @@ BOOL CParameterDlg::OnInitDialog() {
   return FALSE;
 }
 
-BOOL CParameterDlg::PreTranslateMessage(MSG* pMsg) {
+BOOL CParameterDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     return true;
   }
@@ -231,7 +231,7 @@ void CParameterDlg::OnOK() {
   m_parameters.m_seed                = m_seed;
   m_parameters.m_periodCount         = m_periodCount;
   m_parameters.m_fileName            = m_fileName;
-  
+
   if(m_parameters.m_initMethod == IDC_RADIO_FILEDATA) {
     if(m_parameters.m_fileName.length() == 0) {
       errorMessage(_T("Must specify filename"));

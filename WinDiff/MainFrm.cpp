@@ -102,7 +102,6 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
   ON_WM_PAINT()
 END_MESSAGE_MAP()
 
-
 static UINT indicators[] = {
   ID_SEPARATOR
  ,ID_INDICATOR_DELETEDLINES
@@ -134,7 +133,7 @@ CMainFrame::~CMainFrame() {
 }
 
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
-  if (CFrameWnd::OnCreate(lpCreateStruct) == -1) {
+  if (__super::OnCreate(lpCreateStruct) == -1) {
     return -1;
   }
   if(!m_wndToolBar.CreateEx(this, TBSTYLE_FLAT, WS_CHILD | WS_VISIBLE | CBRS_TOP
@@ -148,7 +147,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
     TRACE0("Failed to create status bar\n");
     return -1;      // fail to create
   }
- 
+
   m_wndToolBar.EnableDocking(CBRS_ALIGN_ANY);
 
   m_wndStatusBar.Invalidate();
@@ -159,7 +158,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
   return 0;
 }
 
-BOOL CMainFrame::OnCreateClient(LPCREATESTRUCT /*lpcs*/, CCreateContext* pContext) {
+BOOL CMainFrame::OnCreateClient(LPCREATESTRUCT /*lpcs*/, CCreateContext *pContext) {
   m_relativeWidth = 0.5;
 
   BOOL ret = m_wndSplitter.Create(
@@ -228,7 +227,7 @@ TextView *CMainFrame::getActiveTextView() {
 }
 
 BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs) {
-  if(!CFrameWnd::PreCreateWindow(cs)) {
+  if(!__super::PreCreateWindow(cs)) {
     return FALSE;
   }
   return TRUE;
@@ -236,11 +235,11 @@ BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs) {
 
 #ifdef _DEBUG
 void CMainFrame::AssertValid() const {
-  CFrameWnd::AssertValid();
+  __super::AssertValid();
 }
 
 void CMainFrame::Dump(CDumpContext& dc) const {
-  CFrameWnd::Dump(dc);
+  __super::Dump(dc);
 }
 
 #endif //_DEBUG
@@ -288,7 +287,7 @@ void CMainFrame::setRelativeWidth(int cx) {
 
 #define SC_WIDTH 18
 void CMainFrame::OnSize(UINT nType, int cx, int cy) {
-  CFrameWnd::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
   if(IsIconic())  {
     return;
   }
@@ -311,7 +310,7 @@ void CMainFrame::OnSize(UINT nType, int cx, int cy) {
 }
 
 void CMainFrame::OnShowWindow(BOOL bShow, UINT nStatus) {
-  CFrameWnd::OnShowWindow(bShow, nStatus);
+  __super::OnShowWindow(bShow, nStatus);
   updateLoadOptionsMenu();
   RECT r;
   GetClientRect(&r);
@@ -323,12 +322,12 @@ void CMainFrame::OnShowWindow(BOOL bShow, UINT nStatus) {
   }
 }
 
-void CMainFrame::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized) {
-  CFrameWnd::OnActivate(nState, pWndOther, bMinimized);
+void CMainFrame::OnActivate(UINT nState, CWnd *pWndOther, BOOL bMinimized) {
+  __super::OnActivate(nState, pWndOther, bMinimized);
   CWinDiffView *view = getActiveDiffView();
   if(view) {
     switch(nState) {
-    case WA_INACTIVE    : 
+    case WA_INACTIVE    :
       m_savedActivePanelIndex = getActivePanelIndex();
       setFocus(false);
       break;
@@ -351,7 +350,7 @@ void CMainFrame::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized) {
 
 void CMainFrame::OnPaint() {
   CPaintDC dc(this); // device context for painting
-  TextView   *view = getActiveTextView();
+  TextView *view = getActiveTextView();
   if(view) {
     view->refreshBoth();
   }
@@ -366,7 +365,7 @@ void CMainFrame::setFocus(bool value) {
 
 void CMainFrame::OnActivatePartner() {
   TextView *view = getActiveTextView();
-  if(view) { 
+  if(view) {
     view->activatePartner();
   }
 }
@@ -497,7 +496,6 @@ void CMainFrame::ajourMenuItems() {
     enableToolbarButtonAndMenuItem(ID_EDIT_NEXT_DIFF      , false);
     enableToolbarButtonAndMenuItem(ID_EDIT_SHOWDETAILS    , false);
     showStatusBarPanes(false);
-
   } else {
     const bool hasText = !diff.getDoc(view->getId()).isEmpty();
 
@@ -523,7 +521,7 @@ void CMainFrame::ajourMenuItems() {
     showStatusBarPanes(!diff.isEmpty());
   }
   updateNameFontSizeMenuItems(getOptions().m_nameFontSizePct);
-}  
+}
 
 void CMainFrame::updateCheckedMenuItems() {
   const Options &options = getOptions();
@@ -566,12 +564,12 @@ BYTE CMainFrame::getFocusFlags() {
   }
   return result;
 }
-  
+
 #define MSG_CARETBLINK 0x118
 
 #define IS_CARETBLINKMESSAGE(msg) (msg->message == MSG_CARETBLINK)
 
-BOOL CMainFrame::PreTranslateMessage(MSG* pMsg) {
+BOOL CMainFrame::PreTranslateMessage(MSG *pMsg) {
 //  const BYTE focus0 = getFocusFlags();
 
   if(!IS_CARETBLINKMESSAGE(pMsg)) {
@@ -594,8 +592,8 @@ BOOL CMainFrame::PreTranslateMessage(MSG* pMsg) {
   return ret;
 }
 
-BOOL CMainFrame::doPreTranslateMessage(MSG* pMsg) {
-  const BOOL ret  = CFrameWnd::PreTranslateMessage(pMsg);
+BOOL CMainFrame::doPreTranslateMessage(MSG *pMsg) {
+  const BOOL ret  = __super::PreTranslateMessage(pMsg);
   TextView  *view = getActiveTextView();
   if(view == NULL) return ret;
 
@@ -768,10 +766,10 @@ void CMainFrame::OnFilePrintPreview() {
     FindParameters param;
     CFindDlg dlg(param,view);
     dlg.DoModal();
-//CPrinter 
+//CPrinter
 //OnPrint
   // TODO: Add your command handler code here
-  } 
+  }
 }
 
 // -------------------------------------------- Edit menu ----------------------------------------
@@ -881,7 +879,7 @@ void CMainFrame::OnEditShowDetails() {
     s2 = view->getCurrentString();
     s1 = view->getPartner()->getCurrentString();
   }
-  
+
   CZoomDlg dlg(s1,s2, view);
   dlg.DoModal();
 }
@@ -928,7 +926,7 @@ void CMainFrame::OnViewShowWhiteSpace() {
   APPLY_TO_ACTIVE_TEXTVIEW(setViewWhiteSpace(toggleMenuItem(this, ID_VIEW_SHOWWHITESPACE)))
 }
 
-void CMainFrame::OnViewTabSize() { 
+void CMainFrame::OnViewTabSize() {
   TextView *view = getActiveTextView();
   if(view == NULL) {
     return;
@@ -963,7 +961,7 @@ void CMainFrame::OnViewFont() {
 
 void CMainFrame::setNameFontSize(int pct) {
   APPLY_TO_ACTIVE_TEXTVIEW(setNameFontSizePct(pct));
-  updateNameFontSizeMenuItems(pct);  
+  updateNameFontSizeMenuItems(pct);
 }
 
 void CMainFrame::OnViewShow1000separator() {

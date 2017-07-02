@@ -6,7 +6,7 @@
 #define new DEBUG_NEW
 #endif
 
-CViewDlg::CViewDlg(CWnd* pParent /*=NULL*/) : CDialog(CViewDlg::IDD, pParent) {
+CViewDlg::CViewDlg(CWnd *pParent /*=NULL*/) : CDialog(CViewDlg::IDD, pParent) {
   const Options &options = getOptions();
 
   m_animateCheckmate = options.getAnimateCheckmate();
@@ -18,7 +18,7 @@ CViewDlg::CViewDlg(CWnd* pParent /*=NULL*/) : CDialog(CViewDlg::IDD, pParent) {
   m_showLegalMoves   = options.getShowLegalMoves();
 }
 
-void CViewDlg::DoDataExchange(CDataExchange* pDX) {
+void CViewDlg::DoDataExchange(CDataExchange *pDX) {
     __super::DoDataExchange(pDX);
     DDX_Check(pDX, IDC_CHECK_ANIMATECHECKMATE    , m_animateCheckmate);
     DDX_Check(pDX, IDC_CHECK_ANIMATEMOVES        , m_animateMoves    );

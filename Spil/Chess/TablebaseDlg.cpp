@@ -8,12 +8,12 @@
 #define new DEBUG_NEW
 #endif
 
-CTablebaseDlg::CTablebaseDlg(CWnd* pParent /*=NULL*/) : CDialog(CTablebaseDlg::IDD, pParent) {
+CTablebaseDlg::CTablebaseDlg(CWnd *pParent /*=NULL*/) : CDialog(CTablebaseDlg::IDD, pParent) {
   const Options &options = getOptions();
   m_moveCount       = options.getMaxMovesWithoutCaptureOrPawnMove();
-	m_defendStrength  = options.getEndGameDefendStrength();
+    m_defendStrength  = options.getEndGameDefendStrength();
   m_tablebaseMetric = (options.getEndGameTablebaseMetric() == DEPTH_TO_MATE) ? 0 : 1;
-	m_depthFormat     = options.getDepthInPlies() ? 1 : 0;
+    m_depthFormat     = options.getDepthInPlies() ? 1 : 0;
   m_tablebasePath   = options.getEndGameTablebasePath().cstr();
 }
 
@@ -45,7 +45,7 @@ BOOL CTablebaseDlg::OnInitDialog() {
   return FALSE;
 }
 
-BOOL CTablebaseDlg::PreTranslateMessage(MSG* pMsg) {
+BOOL CTablebaseDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
     return true;
   }
@@ -114,7 +114,7 @@ void CTablebaseDlg::OnButtonDecompressAll() {
 #endif
 }
 
-void CTablebaseDlg::OnDeltaposSpinMoveCount(NMHDR* pNMHDR, LRESULT* pResult) {
+void CTablebaseDlg::OnDeltaposSpinMoveCount(NMHDR *pNMHDR, LRESULT *pResult) {
   NM_UPDOWN *pNMUpDown = (NM_UPDOWN*)pNMHDR;
   UpdateData();
   const int newValue = minMax(m_moveCount - pNMUpDown->iDelta, 0, 9999);
@@ -123,7 +123,7 @@ void CTablebaseDlg::OnDeltaposSpinMoveCount(NMHDR* pNMHDR, LRESULT* pResult) {
   *pResult = 0;
 }
 
-void CTablebaseDlg::OnDeltaposSpinDefendStrength(NMHDR* pNMHDR, LRESULT* pResult) {
+void CTablebaseDlg::OnDeltaposSpinDefendStrength(NMHDR *pNMHDR, LRESULT *pResult) {
   NM_UPDOWN *pNMUpDown = (NM_UPDOWN*)pNMHDR;
   UpdateData();
   const int newValue = minMax((int)m_defendStrength - pNMUpDown->iDelta, 0, 100);

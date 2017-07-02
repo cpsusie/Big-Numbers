@@ -6,7 +6,7 @@ class CFraktalsDlg : public CDialog {
 private:
     HICON m_hIcon;
 public:
-    CFraktalsDlg(CWnd* pParent = NULL);
+    CFraktalsDlg(CWnd *pParent = NULL);
     void setcheckstate(int id, bool on);
     bool ischecked(    int id);
     void togglestate(  int id);
@@ -35,7 +35,7 @@ public:
     enum { IDD = IDD_FRAKTALS_DIALOG };
 
 protected:
-    virtual void DoDataExchange(CDataExchange* pDX);
+    virtual void DoDataExchange(CDataExchange *pDX);
     virtual BOOL OnInitDialog();
     afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
     afx_msg void OnPaint();
@@ -59,4 +59,3 @@ protected:
     DECLARE_MESSAGE_MAP()
 };
 
-//{{AFX_INSERT_LOCATION}}

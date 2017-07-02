@@ -7,8 +7,10 @@
 #include "Whist3Eplayer.h"
 
 class CWhist3Dialog : public CDialog, public Whist3PlayerCallback, public OptionsAccessor {
+private:
+    HICON             m_hIcon;
 public:
-    CWhist3Dialog(CWnd* pParent = NULL);
+    CWhist3Dialog(CWnd *pParent = NULL);
 
     Whist3Player     *m_player;
     Whist3EPlayer     m_autoPlayer;
@@ -57,13 +59,8 @@ public:
     enum { IDD = IDD_WHIST3_DIALOG };
 
 public:
-    virtual BOOL PreTranslateMessage(MSG* pMsg);
-protected:
-    virtual void DoDataExchange(CDataExchange* pDX);
-
-protected:
-    HICON m_hIcon;
-
+    virtual BOOL PreTranslateMessage(MSG *pMsg);
+    virtual void DoDataExchange(CDataExchange *pDX);
     virtual BOOL OnInitDialog();
     afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
     afx_msg HCURSOR OnQueryDragIcon();

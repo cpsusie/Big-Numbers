@@ -6,20 +6,16 @@
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
 #endif
 
-CTestRegexDlg::CTestRegexDlg(CWnd* pParent /*=NULL*/) : CDialog(CTestRegexDlg::IDD, pParent) {
+CTestRegexDlg::CTestRegexDlg(CWnd *pParent /*=NULL*/) : CDialog(CTestRegexDlg::IDD, pParent) {
   m_text = EMPTYSTRING;
 }
 
-
-void CTestRegexDlg::DoDataExchange(CDataExchange* pDX) {
+void CTestRegexDlg::DoDataExchange(CDataExchange *pDX) {
     __super::DoDataExchange(pDX);
     DDX_Text(pDX, IDC_EDITOUTPUT, m_text);
 }
-
 
 BEGIN_MESSAGE_MAP(CTestRegexDlg, CDialog)
     ON_WM_SIZE()
@@ -63,5 +59,5 @@ BOOL CTestRegexDlg::OnInitDialog() {
 
 void CTestRegexDlg::OnSize(UINT nType, int cx, int cy) {
   __super::OnSize(nType, cx, cy);
-  m_layoutManager.OnSize(nType, cx, cy);    
+  m_layoutManager.OnSize(nType, cx, cy);
 }

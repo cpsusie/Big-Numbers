@@ -11,27 +11,25 @@ public:
 
   enum { IDD = IDD_ABOUTBOX };
 
-  virtual void DoDataExchange(CDataExchange* pDX);
-
-protected:
+  virtual void DoDataExchange(CDataExchange *pDX);
   DECLARE_MESSAGE_MAP()
 };
 
 CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
-void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
+void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
-CTestMediaPlayerDlg::CTestMediaPlayerDlg(CWnd* pParent) : CDialog(CTestMediaPlayerDlg::IDD, pParent) {
+CTestMediaPlayerDlg::CTestMediaPlayerDlg(CWnd *pParent) : CDialog(CTestMediaPlayerDlg::IDD, pParent) {
   m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
 }
 
-void CTestMediaPlayerDlg::DoDataExchange(CDataExchange* pDX) {
+void CTestMediaPlayerDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
   DDX_Control(pDX, IDC_MEDIAPLAYER, m_player);
 }
@@ -50,7 +48,7 @@ BOOL CTestMediaPlayerDlg::OnInitDialog() {
     ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
     ASSERT(IDM_ABOUTBOX < 0xF000);
 
-    CMenu* pSysMenu = GetSystemMenu(FALSE);
+    CMenu *pSysMenu = GetSystemMenu(FALSE);
     if (pSysMenu != NULL) {
         CString strAboutMenu;
         strAboutMenu.LoadString(IDS_ABOUTBOX);

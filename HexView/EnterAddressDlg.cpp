@@ -5,7 +5,7 @@
 #define new DEBUG_NEW
 #endif
 
-CEnterAddressDlg::CEnterAddressDlg(unsigned __int64 docSize, CWnd* pParent) 
+CEnterAddressDlg::CEnterAddressDlg(unsigned __int64 docSize, CWnd *pParent)
 : m_docSize(docSize)
 , CDialog(CEnterAddressDlg::IDD, pParent) {
 
@@ -14,10 +14,10 @@ CEnterAddressDlg::CEnterAddressDlg(unsigned __int64 docSize, CWnd* pParent)
   m_addrUppercase = settings.getAddrHexUppercase();
 
   m_changeEditAddressActive = false;
-    m_addressText = EMPTYSTRING;
+  m_addressText = EMPTYSTRING;
 }
 
-void CEnterAddressDlg::DoDataExchange(CDataExchange* pDX) {
+void CEnterAddressDlg::DoDataExchange(CDataExchange *pDX) {
     __super::DoDataExchange(pDX);
     DDX_Text(pDX, IDC_EDITADDRESS, m_addressText);
 }
@@ -29,7 +29,7 @@ END_MESSAGE_MAP()
 
 BOOL CEnterAddressDlg::OnInitDialog() {
   __super::OnInitDialog();
-  
+
   m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATORENTERADDR));
   OnGotoEditAddress();
   GetDlgItem(IDC_STATICADDRLABEL)->SetWindowText(format(_T("%s &Address:"), getSettings().getAddrRadixName()).cstr());
@@ -136,7 +136,7 @@ void CEnterAddressDlg::OnGotoEditAddress() {
   gotoEditBox(this, IDC_EDITADDRESS);
 }
 
-BOOL CEnterAddressDlg::PreTranslateMessage(MSG* pMsg) {
+BOOL CEnterAddressDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
     return TRUE;
   }

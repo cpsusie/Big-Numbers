@@ -15,7 +15,7 @@ typedef enum {
 
 class CColormapCtrl : public COleControl
 {
-	DECLARE_DYNCREATE(CColormapCtrl)
+    DECLARE_DYNCREATE(CColormapCtrl)
 
 private:
   ColorMapGraphics m_colorMap;
@@ -72,29 +72,29 @@ public:
 
 // Overrides
 public:
-	virtual void OnDraw(CDC* pdc, const CRect& rcBounds, const CRect& rcInvalid);
-	virtual void DoPropExchange(CPropExchange* pPX);
-	virtual void OnResetState();
-  virtual BOOL PreTranslateMessage(MSG* pMsg);
+    virtual void OnDraw(CDC* pdc, const CRect& rcBounds, const CRect& rcInvalid);
+    virtual void DoPropExchange(CPropExchange* pPX);
+    virtual void OnResetState();
+  virtual BOOL PreTranslateMessage(MSG *pMsg);
 
 // Implementation
 protected:
-	~CColormapCtrl();
+    ~CColormapCtrl();
 
-	DECLARE_OLECREATE_EX(CColormapCtrl)    // Class factory and guid
-	DECLARE_OLETYPELIB(CColormapCtrl)      // GetTypeInfo
-	DECLARE_PROPPAGEIDS(CColormapCtrl)     // Property page IDs
-	DECLARE_OLECTLTYPE(CColormapCtrl)		// Type name and misc status
+    DECLARE_OLECREATE_EX(CColormapCtrl)    // Class factory and guid
+    DECLARE_OLETYPELIB(CColormapCtrl)      // GetTypeInfo
+    DECLARE_PROPPAGEIDS(CColormapCtrl)     // Property page IDs
+    DECLARE_OLECTLTYPE(CColormapCtrl)       // Type name and misc status
 
   afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
   afx_msg void OnDestroy();
   afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
   afx_msg void OnMouseMove(UINT nFlags, CPoint point);
   afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
-  afx_msg void OnSetFocus(CWnd* pOldWnd);
+  afx_msg void OnSetFocus(CWnd *pOldWnd);
 
   // Message maps
-	DECLARE_MESSAGE_MAP()
+    DECLARE_MESSAGE_MAP()
 
   afx_msg long GetColor();
   afx_msg void SetColor(long nNewValue);
@@ -112,22 +112,22 @@ protected:
   afx_msg void SetModalFrame(BOOL bNewValue);
   afx_msg long GetTextAlignment();
   afx_msg void SetTextAlignment(long nNewValue);
-  
-  // Dispatch maps
-	DECLARE_DISPATCH_MAP()
 
-	afx_msg void AboutBox();
+  // Dispatch maps
+    DECLARE_DISPATCH_MAP()
+
+    afx_msg void AboutBox();
 
   void FireColorChanged()
   {
     FireEvent(eventidColorChanged, EVENT_PARAM(VTS_NONE));
   }
   // Event maps
-	DECLARE_EVENT_MAP()
+    DECLARE_EVENT_MAP()
 
 // Dispatch and event IDs
 public:
-	enum {
+    enum {
     dispidColor = 1L,
     dispidSunken = 2L,
     dispidBorder = 3L,

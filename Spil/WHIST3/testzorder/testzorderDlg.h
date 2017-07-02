@@ -1,16 +1,15 @@
 #pragma once
-public:
-    CTestzorderDlg(CWnd* pParent = NULL);
 
+class CTestzorderDlg : public CDialog {
+private:
+    HICON m_hIcon;
+public:
+    CTestzorderDlg(CWnd *pParent = NULL);
 
     enum { IDD = IDD_TESTZORDER_DIALOG };
 
 protected:
-    virtual void DoDataExchange(CDataExchange* pDX);
-
-protected:
-    HICON m_hIcon;
-
+    virtual void DoDataExchange(CDataExchange *pDX);
     virtual BOOL OnInitDialog();
     afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
     afx_msg void OnPaint();

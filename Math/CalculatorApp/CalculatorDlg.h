@@ -50,7 +50,7 @@ public:
     HINSTANCE m_hInstance;
     HICON     m_hIcon;
     HACCEL    m_accelTabel;
-    CCalculatorDlg(CWnd* pParent = NULL);
+    CCalculatorDlg(CWnd *pParent = NULL);
     ~CCalculatorDlg();
     void showStatus();
     void checkRadix(int radix);
@@ -58,21 +58,16 @@ public:
     void checkOpeandSize(OperandSize size);
 
   enum { IDD = IDD_CALCULATOR_DIALOG };
-  CString	m_display;
+  CString   m_display;
 
-  public:
-  virtual BOOL PreTranslateMessage(MSG* pMsg);
-  protected:
-  virtual void DoDataExchange(CDataExchange* pDX);
-
-protected:
-
+  virtual BOOL PreTranslateMessage(MSG *pMsg);
+  virtual void DoDataExchange(CDataExchange *pDX);
   virtual BOOL OnInitDialog();
   afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
   afx_msg void OnPaint();
   afx_msg HCURSOR OnQueryDragIcon();
   afx_msg void OnTimer(UINT_PTR nIDEvent);
-  afx_msg void OnContextMenu(CWnd* pWnd, CPoint point);
+  afx_msg void OnContextMenu(CWnd *pWnd, CPoint point);
   afx_msg void OnClose();
   afx_msg void OnFileQuit();
   afx_msg void OnRadioHex();
@@ -146,6 +141,6 @@ protected:
   afx_msg void OnLpar();
   afx_msg void OnRpar();
   afx_msg void OnShowinfo();
-  afx_msg BOOL OnToolTipNotify( UINT id, NMHDR* pNMHDR, LRESULT* pResult );
+  afx_msg BOOL OnToolTipNotify( UINT id, NMHDR *pNMHDR, LRESULT *pResult );
   DECLARE_MESSAGE_MAP()
 };

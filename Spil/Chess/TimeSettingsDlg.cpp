@@ -8,7 +8,7 @@
 #define new DEBUG_NEW
 #endif
 
-CTimeSettingsDlg::CTimeSettingsDlg(bool clockRunning, CWnd* pParent)
+CTimeSettingsDlg::CTimeSettingsDlg(bool clockRunning, CWnd *pParent)
 : m_clockRunning(clockRunning)
 , CDialog(CTimeSettingsDlg::IDD, pParent) {
 
@@ -39,7 +39,7 @@ void TimeParametersWithComboSelection::initSelectedComboItem() {
   }
 }
 
-void CTimeSettingsDlg::DoDataExchange(CDataExchange* pDX) {
+void CTimeSettingsDlg::DoDataExchange(CDataExchange *pDX) {
     __super::DoDataExchange(pDX);
     DDX_Control(pDX, IDC_TAB_CLOCKTYPE, m_clockType);
     DDX_Text(pDX, IDC_EDIT_TIMEOUTMINUTES1, m_min1);
@@ -156,7 +156,7 @@ ClockTab CTimeSettingsDlg::getCurrentTab() {
   return (ClockTab)m_clockType.GetCurSel();
 }
 
-void CTimeSettingsDlg::OnSelchangeTabClocktype(NMHDR* pNMHDR, LRESULT* pResult) {
+void CTimeSettingsDlg::OnSelchangeTabClocktype(NMHDR *pNMHDR, LRESULT *pResult) {
   switch(getCurrentTab()) {
   case TAB_LEVELS    : showLevelsTab();     break;
   case TAB_TIMEDGAME : showTimedGameTab();  break;

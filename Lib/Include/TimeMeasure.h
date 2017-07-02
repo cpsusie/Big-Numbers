@@ -13,4 +13,5 @@ typedef enum {
  ,MEASURE_REALTIME
 } TimeMeasureType;
 
-double measureTime(MeasurableFunction &ftm, TimeMeasureType timeType = MEASURE_THREADTIME); // return time in seconds
+// return time in seconds
+double measureTime(MeasurableFunction &ftm, TimeMeasureType timeType = MEASURE_THREADTIME);

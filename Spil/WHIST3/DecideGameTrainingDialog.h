@@ -16,7 +16,7 @@ private:
   double                       m_errorSum;
   void loadBpn();
   void saveBpn();
-  void learnTrainingSet(const DecideGameTrainingSet &data); 
+  void learnTrainingSet(const DecideGameTrainingSet &data);
 public:
   TrainerThread(DecideGameTrainingDialog *dlg);
   ~TrainerThread();
@@ -45,18 +45,13 @@ private:
   void startTraining();
   void stopTraining();
 public:
-    DecideGameTrainingDialog(CWnd* pParent = NULL);
+    DecideGameTrainingDialog(CWnd *pParent = NULL);
 
     enum { IDD = IDD_DECIDE_GAME_TRAINING_DIALOG };
     int     m_pointPerStik;
     int     m_gameType;
 
-
-protected:
-    virtual void DoDataExchange(CDataExchange* pDX);
-
-protected:
-
+    virtual void DoDataExchange(CDataExchange *pDX);
     virtual BOOL OnInitDialog();
     afx_msg void OnPaint();
     afx_msg void OnButtonNextdata();

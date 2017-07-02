@@ -8,10 +8,10 @@
 #define new DEBUG_NEW
 #endif
 
-CEnginesDlg::CEnginesDlg(CWnd* pParent /*=NULL*/) : CDialog(CEnginesDlg::IDD, pParent) {
+CEnginesDlg::CEnginesDlg(CWnd *pParent /*=NULL*/) : CDialog(CEnginesDlg::IDD, pParent) {
 }
 
-void CEnginesDlg::DoDataExchange(CDataExchange* pDX) {
+void CEnginesDlg::DoDataExchange(CDataExchange *pDX) {
     __super::DoDataExchange(pDX);
     DDX_Control(pDX, IDC_LIST_ENGINES, m_listCtrl);
 }
@@ -63,7 +63,7 @@ bool CEnginesDlg::isChanged() const {
   return m_engineList != m_origList;
 }
 
-void CEnginesDlg::OnItemChangedList(NMHDR* pNMHDR, LRESULT* pResult) {
+void CEnginesDlg::OnItemChangedList(NMHDR *pNMHDR, LRESULT *pResult) {
   NM_LISTVIEW &listView = *(NM_LISTVIEW*)pNMHDR;
   if ((listView.uChanged & LVIF_STATE) && (listView.uNewState & LVNI_SELECTED)) {
     ajourButtons(listView.iItem);

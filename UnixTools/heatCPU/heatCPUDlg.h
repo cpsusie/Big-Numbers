@@ -6,7 +6,6 @@
 
 class CHeatCPUDlg : public CDialog {
 private:
-
   HICON           m_hIcon;
   CPUHeaterThread m_CPUHeaterThread[4];
   Options         m_options;
@@ -29,16 +28,12 @@ private:
   void showCounters(bool show);
   String getToolTipText() const;
 public:
-    CHeatCPUDlg(CWnd* pParent = NULL);
+    CHeatCPUDlg(CWnd *pParent = NULL);
 
     enum { IDD = IDD_HEATCPU_DIALOG };
 
-    public:
-    virtual BOOL PreTranslateMessage(MSG* pMsg);
-    protected:
-    virtual void DoDataExchange(CDataExchange* pDX);
-
-protected:
+    virtual BOOL PreTranslateMessage(MSG *pMsg);
+    virtual void DoDataExchange(CDataExchange *pDX);
     virtual BOOL OnInitDialog();
     afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
     afx_msg void OnPaint();
@@ -52,7 +47,7 @@ protected:
     afx_msg void OnOptionsLaunchAtStartup();
     afx_msg void OnOptionsShowCounters();
     afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
-    afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
+    afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar);
     DECLARE_MESSAGE_MAP()
 };
 

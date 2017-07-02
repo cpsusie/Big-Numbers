@@ -2,8 +2,7 @@
 
 class DecideGameDialog : public CDialog {
 public:
-  DecideGameDialog(int myId, const PlayerList &players, const GameHistory &gameHistory, CWnd* pParent = NULL);
-
+  DecideGameDialog(int myId, const PlayerList &players, const GameHistory &gameHistory, CWnd *pParent = NULL);
   GameDescription getGameDescription() const;
 
 private:
@@ -33,13 +32,10 @@ private:
     CString m_playedGamesSans;
     int     m_suit;
 
-  void setColourEnabled(BOOL s);
+    void setColourEnabled(BOOL s);
 
 protected:
-    virtual void DoDataExchange(CDataExchange* pDX);
-
-protected:
-
+    virtual void DoDataExchange(CDataExchange *pDX);
     virtual BOOL OnInitDialog();
     afx_msg void OnSolRadio();
     afx_msg void OnSansRadio();

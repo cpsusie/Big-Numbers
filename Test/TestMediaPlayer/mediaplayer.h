@@ -11,28 +11,28 @@
 class CMediaplayer : public CWnd
 {
 protected:
-	DECLARE_DYNCREATE(CMediaplayer)
+    DECLARE_DYNCREATE(CMediaplayer)
 public:
-	CLSID const& GetClsid()
-	{
-		static CLSID const clsid
-			= { 0x6BF52A52, 0x394A, 0x11D3, { 0xB1, 0x53, 0x0, 0xC0, 0x4F, 0x79, 0xFA, 0xA6 } };
-		return clsid;
-	}
-	virtual BOOL Create(LPCTSTR lpszClassName, LPCTSTR lpszWindowName, DWORD dwStyle,
-						const RECT& rect, CWnd* pParentWnd, UINT nID, 
-						CCreateContext* pContext = NULL)
-	{ 
-		return CreateControl(GetClsid(), lpszWindowName, dwStyle, rect, pParentWnd, nID); 
-	}
+    CLSID const& GetClsid()
+    {
+        static CLSID const clsid
+            = { 0x6BF52A52, 0x394A, 0x11D3, { 0xB1, 0x53, 0x0, 0xC0, 0x4F, 0x79, 0xFA, 0xA6 } };
+        return clsid;
+    }
+    virtual BOOL Create(LPCTSTR lpszClassName, LPCTSTR lpszWindowName, DWORD dwStyle,
+                        const RECT& rect, CWnd *pParentWnd, UINT nID,
+                        CCreateContext *pContext = NULL)
+    {
+        return CreateControl(GetClsid(), lpszWindowName, dwStyle, rect, pParentWnd, nID);
+    }
 
-    BOOL Create(LPCTSTR lpszWindowName, DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, 
-				UINT nID, CFile* pPersist = NULL, BOOL bStorage = FALSE,
-				BSTR bstrLicKey = NULL)
-	{ 
-		return CreateControl(GetClsid(), lpszWindowName, dwStyle, rect, pParentWnd, nID,
-		pPersist, bStorage, bstrLicKey); 
-	}
+    BOOL Create(LPCTSTR lpszWindowName, DWORD dwStyle, const RECT& rect, CWnd *pParentWnd,
+                UINT nID, CFile* pPersist = NULL, BOOL bStorage = FALSE,
+                BSTR bstrLicKey = NULL)
+    {
+        return CreateControl(GetClsid(), lpszWindowName, dwStyle, rect, pParentWnd, nID,
+        pPersist, bStorage, bstrLicKey);
+    }
 
 // Attributes
 public:
@@ -115,7 +115,5 @@ enum
 
 // Operations
 public:
-
-
 
 };

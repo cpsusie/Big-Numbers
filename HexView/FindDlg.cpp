@@ -5,7 +5,7 @@
 #define new DEBUG_NEW
 #endif
 
-CFindDlg::CFindDlg(SearchMachine &searchMachine, CWnd* pParent) 
+CFindDlg::CFindDlg(SearchMachine &searchMachine, CWnd *pParent)
 : m_searchMachine(searchMachine)
 , CDialog(CFindDlg::IDD, pParent) {
   m_findWhat       = searchMachine.getFindWhat().cstr();
@@ -20,37 +20,37 @@ CFindDlg::~CFindDlg() {
   }
 }
 
-void CFindDlg::DoDataExchange(CDataExchange* pDX) {
+void CFindDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
-	DDX_CBString(pDX, IDC_COMBOFINDWHAT, m_findWhat);
+    DDX_CBString(pDX, IDC_COMBOFINDWHAT, m_findWhat);
   if(!pDX->m_bSaveAndValidate) {
     OnEditChangeComboFindWhat();
   }
 }
 
 BEGIN_MESSAGE_MAP(CFindDlg, CDialog)
-	ON_WM_SIZE()
-	ON_WM_TIMER()
-	ON_BN_CLICKED(IDC_FINDNEXT                  , OnFindNext                    )
-	ON_BN_CLICKED(IDC_BUTTONSPECIALCHAR         , OnButtonSpecialChar           )
-  ON_COMMAND(ID_GOTO_FINDWHAT                 , OnGotoFindWhat                )
-	ON_COMMAND(ID_SPECIALCHAR_CARRIAGERETURN    , OnSpecialCharCarriageReturn   )
-	ON_COMMAND(ID_SPECIALCHAR_NEWLINE           , OnSpecialCharNewline          )
-	ON_COMMAND(ID_SPECIALCHAR_BACKSPACE         , OnSpecialCharBackspace        )
-	ON_COMMAND(ID_SPECIALCHAR_TAB               , OnSpecialCharTab              )
-	ON_COMMAND(ID_SPECIALCHAR_FORMFEED          , OnSpecialCharFormfeed         )
-	ON_COMMAND(ID_SPECIALCHAR_ESCCHARACTER      , OnSpecialCharEscapeCharacter  )
-	ON_COMMAND(ID_SPECIALCHAR_OCTNUMBER         , OnSpecialCharOctalNumber      )
-	ON_COMMAND(ID_SPECIALCHAR_DECNUMBER         , OnSpecialCharDecimalNumber    )
-	ON_COMMAND(ID_SPECIALCHAR_HEXNUMBER         , OnSpecialCharHexadecimalNumber)
-	ON_COMMAND(ID_SPECIALCHAR_BACKSLASH         , OnSpecialCharBackslash        )
-	ON_CBN_SETFOCUS(    IDC_COMBOFINDWHAT       , OnSetFocusComboFindWhat       )
-	ON_CBN_KILLFOCUS(   IDC_COMBOFINDWHAT       , OnKillFocusComboFindWhat      )
-	ON_CBN_EDITCHANGE(  IDC_COMBOFINDWHAT       , OnEditChangeComboFindWhat     )
-	ON_CBN_EDITUPDATE(  IDC_COMBOFINDWHAT       , OnEditUpdateComboFindWhat     )
-	ON_CBN_SELCHANGE(   IDC_COMBOFINDWHAT       , OnSelChangeComboFindWhat      )
-	ON_CBN_SELENDOK(    IDC_COMBOFINDWHAT       , OnSelendOkComboFindWhat       )
-	ON_CBN_SELENDCANCEL(IDC_COMBOFINDWHAT       , OnSelendCancelComboFindWhat   )
+    ON_WM_SIZE()
+    ON_WM_TIMER()
+    ON_BN_CLICKED(IDC_FINDNEXT                  , OnFindNext                    )
+    ON_BN_CLICKED(IDC_BUTTONSPECIALCHAR         , OnButtonSpecialChar           )
+    ON_COMMAND(ID_GOTO_FINDWHAT                 , OnGotoFindWhat                )
+    ON_COMMAND(ID_SPECIALCHAR_CARRIAGERETURN    , OnSpecialCharCarriageReturn   )
+    ON_COMMAND(ID_SPECIALCHAR_NEWLINE           , OnSpecialCharNewline          )
+    ON_COMMAND(ID_SPECIALCHAR_BACKSPACE         , OnSpecialCharBackspace        )
+    ON_COMMAND(ID_SPECIALCHAR_TAB               , OnSpecialCharTab              )
+    ON_COMMAND(ID_SPECIALCHAR_FORMFEED          , OnSpecialCharFormfeed         )
+    ON_COMMAND(ID_SPECIALCHAR_ESCCHARACTER      , OnSpecialCharEscapeCharacter  )
+    ON_COMMAND(ID_SPECIALCHAR_OCTNUMBER         , OnSpecialCharOctalNumber      )
+    ON_COMMAND(ID_SPECIALCHAR_DECNUMBER         , OnSpecialCharDecimalNumber    )
+    ON_COMMAND(ID_SPECIALCHAR_HEXNUMBER         , OnSpecialCharHexadecimalNumber)
+    ON_COMMAND(ID_SPECIALCHAR_BACKSLASH         , OnSpecialCharBackslash        )
+    ON_CBN_SETFOCUS(    IDC_COMBOFINDWHAT       , OnSetFocusComboFindWhat       )
+    ON_CBN_KILLFOCUS(   IDC_COMBOFINDWHAT       , OnKillFocusComboFindWhat      )
+    ON_CBN_EDITCHANGE(  IDC_COMBOFINDWHAT       , OnEditChangeComboFindWhat     )
+    ON_CBN_EDITUPDATE(  IDC_COMBOFINDWHAT       , OnEditUpdateComboFindWhat     )
+    ON_CBN_SELCHANGE(   IDC_COMBOFINDWHAT       , OnSelChangeComboFindWhat      )
+    ON_CBN_SELENDOK(    IDC_COMBOFINDWHAT       , OnSelendOkComboFindWhat       )
+    ON_CBN_SELENDCANCEL(IDC_COMBOFINDWHAT       , OnSelendCancelComboFindWhat   )
 END_MESSAGE_MAP()
 
 class SearchThread : public Thread {
@@ -186,7 +186,7 @@ void CFindDlg::OnCancel() {
   }
 }
 
-BOOL CFindDlg::PreTranslateMessage(MSG* pMsg) {
+BOOL CFindDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
     return TRUE;
   }
@@ -221,12 +221,12 @@ void CFindDlg::OnSpecialCharOctalNumber()       { addSpecialChar(_T("\\0ddd"), 2
 void CFindDlg::OnSpecialCharDecimalNumber()     { addSpecialChar(_T("\\ddd") , 1); }
 void CFindDlg::OnSpecialCharHexadecimalNumber() { addSpecialChar(_T("\\xdd") , 2); }
 void CFindDlg::OnSpecialCharBackslash()         { addSpecialChar(_T("\\\\")  , 2); }
-void CFindDlg::OnSpecialCharTab()               { addSpecialChar(_T("\\t")   , 2); }     
+void CFindDlg::OnSpecialCharTab()               { addSpecialChar(_T("\\t")   , 2); }
 void CFindDlg::OnSpecialCharFormfeed()          { addSpecialChar(_T("\\f")   , 2); }
 
 void CFindDlg::addSpecialChar(const String &s, int cursorPos) {
   UpdateData();
-  
+
   String str = (LPCTSTR)m_findWhat;
 
   str = substr(str, 0, m_selStart) + s + substr(str, m_selEnd, str.length());
@@ -241,7 +241,7 @@ void CFindDlg::addSpecialChar(const String &s, int cursorPos) {
 }
 
 void CFindDlg::OnGotoFindWhat() {
-  getComboFindWhat()->SetFocus();    
+  getComboFindWhat()->SetFocus();
 }
 
 void CFindDlg::OnSetFocusComboFindWhat() {

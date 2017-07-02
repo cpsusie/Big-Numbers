@@ -41,7 +41,7 @@ private:
   int                             m_savedActivePanelIndex;
   void OnFileOpen(int id);
   void onFileMruFile(int index);
-  BOOL doPreTranslateMessage(MSG* pMsg);
+  BOOL doPreTranslateMessage(MSG *pMsg);
   void updateLoadOptionsMenu();
   void updateCheckedMenuItems();
   void updateNameFontSizeMenuItems(int pct);
@@ -78,9 +78,9 @@ public:
   void ajourMenuItems();
 
 public:
-    virtual BOOL OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext);
+    virtual BOOL OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext *pContext);
     virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
-    virtual BOOL PreTranslateMessage(MSG* pMsg);
+    virtual BOOL PreTranslateMessage(MSG *pMsg);
 
     virtual ~CMainFrame();
     void enableToolbarButtonAndMenuItem(int id, bool enable);
@@ -105,7 +105,7 @@ protected:
     afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
     afx_msg void OnSize(UINT nType, int cx, int cy);
     afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
-    afx_msg void OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized);
+    afx_msg void OnActivate(UINT nState, CWnd *pWndOther, BOOL bMinimized);
     afx_msg void OnActivatePartner();
     afx_msg void OnFileOpenPanel0();
     afx_msg void OnFileOpenPanel1();

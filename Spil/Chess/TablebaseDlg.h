@@ -2,25 +2,20 @@
 
 class CTablebaseDlg : public CDialog, OptionsAccessor {
 private:
-  HACCEL                  m_accelTable;
+    HACCEL  m_accelTable;
 public:
-    CTablebaseDlg(CWnd* pParent = NULL);
+    CTablebaseDlg(CWnd *pParent = NULL);
 
-	enum { IDD = IDD_TABLEBASE_DIALOG };
+    enum { IDD = IDD_TABLEBASE_DIALOG };
     int     m_moveCount;
-	UINT	m_defendStrength;
+    UINT    m_defendStrength;
     int     m_tablebaseMetric;
-	int		m_depthFormat;
+    int     m_depthFormat;
     CString m_tablebasePath;
 
-
 public:
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-protected:
-    virtual void DoDataExchange(CDataExchange* pDX);
-
-protected:
-
+    virtual BOOL PreTranslateMessage(MSG *pMsg);
+    virtual void DoDataExchange(CDataExchange *pDX);
     virtual BOOL OnInitDialog();
     virtual void OnOK();
     afx_msg void OnGotoMoveCount();

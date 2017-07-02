@@ -10,28 +10,28 @@ CExpressionTreeDlg::CExpressionTreeDlg(const Expression &expr, CWnd *pParent) : 
   m_selectedNode = NULL;
 }
 
-CExpressionTreeDlg::CExpressionTreeDlg(const ExpressionNode *n, CWnd* pParent) : m_node(n), CDialog(CExpressionTreeDlg::IDD, pParent) {
+CExpressionTreeDlg::CExpressionTreeDlg(const ExpressionNode *n, CWnd *pParent) : m_node(n), CDialog(CExpressionTreeDlg::IDD, pParent) {
   m_expr = m_node->getExpr();
 }
 
-void CExpressionTreeDlg::DoDataExchange(CDataExchange* pDX) {
+void CExpressionTreeDlg::DoDataExchange(CDataExchange *pDX) {
     __super::DoDataExchange(pDX);
 }
 
 
 BEGIN_MESSAGE_MAP(CExpressionTreeDlg, CDialog)
-	ON_BN_CLICKED(IDCLOSE, OnClose)
-	ON_WM_SIZE()
-	ON_WM_CONTEXTMENU()
-	ON_COMMAND(ID_CLEARBREAKPOINT, OnClearBreakPoint)
-	ON_COMMAND(ID_SETBREAKPOINT, OnSetBreakPoint)
-	ON_NOTIFY(TVN_SELCHANGED, IDC_TREE_EXPRESSION, OnSelchangedTreeExpression)
+    ON_BN_CLICKED(IDCLOSE, OnClose)
+    ON_WM_SIZE()
+    ON_WM_CONTEXTMENU()
+    ON_COMMAND(ID_CLEARBREAKPOINT, OnClearBreakPoint)
+    ON_COMMAND(ID_SETBREAKPOINT, OnSetBreakPoint)
+    ON_NOTIFY(TVN_SELCHANGED, IDC_TREE_EXPRESSION, OnSelchangedTreeExpression)
 END_MESSAGE_MAP()
 
 
 BOOL CExpressionTreeDlg::OnInitDialog() {
   __super::OnInitDialog();
-  
+
   m_layoutManager.OnInitDialog(this);
   m_layoutManager.addControl(IDC_TREE_EXPRESSION , RELATIVE_SIZE );
   m_layoutManager.addControl(IDCLOSE             , RELATIVE_X_POS);
@@ -46,7 +46,7 @@ BOOL CExpressionTreeDlg::OnInitDialog() {
   setWindowText(this, title);
 
   expandAll(treeCtrl, TVI_ROOT);
- 
+
   CListBox *lb = (CListBox*)GetDlgItem(IDC_LIST_SYMBOLTABLE);
   const ExpressionVariableArray variables = m_expr->getAllVariables();
   for(size_t i = 0; i < variables.size(); i++) {
@@ -133,7 +133,7 @@ void CExpressionTreeDlg::OnSize(UINT nType, int cx, int cy) {
   m_layoutManager.OnSize(nType, cx, cy);
 }
 
-void CExpressionTreeDlg::OnContextMenu(CWnd* pWnd, CPoint point) {
+void CExpressionTreeDlg::OnContextMenu(CWnd *pWnd, CPoint point) {
   CPoint treePoint = point;
   CTreeCtrl *treeCtrl = getTreeCtrl();
   treeCtrl->ScreenToClient(&treePoint);
@@ -147,7 +147,7 @@ void CExpressionTreeDlg::OnContextMenu(CWnd* pWnd, CPoint point) {
   if(m_selectedNode->isBreakPoint()) {
     removeMenuItem(menu, ID_SETBREAKPOINT);
   } else {
-	removeMenuItem(menu, ID_CLEARBREAKPOINT);
+    removeMenuItem(menu, ID_CLEARBREAKPOINT);
   }
   menu.GetSubMenu(0)->TrackPopupMenu(TPM_LEFTALIGN|TPM_RIGHTBUTTON, point.x,point.y, this);
 }

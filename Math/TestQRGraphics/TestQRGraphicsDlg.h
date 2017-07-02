@@ -8,16 +8,14 @@ class CTestQRGraphicsDlg : public CDialog {
 private:
     HICON     m_hIcon;
 public:
-    CTestQRGraphicsDlg(CWnd* pParent = NULL);
+    CTestQRGraphicsDlg(CWnd *pParent = NULL);
     CFont     m_font;
     Matrix    a;
 
     enum { IDD = IDD_TESTQRGRAPHICS_DIALOG };
 
 protected:
-    virtual void DoDataExchange(CDataExchange* pDX);
-
-protected:
+    virtual void DoDataExchange(CDataExchange *pDX);
     virtual BOOL OnInitDialog();
     afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
     afx_msg void OnPaint();

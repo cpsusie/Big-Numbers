@@ -124,7 +124,7 @@ CMainFrame::~CMainFrame() {
 }
 
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
-  if(CFrameWnd::OnCreate(lpCreateStruct) == -1) {
+  if(__super::OnCreate(lpCreateStruct) == -1) {
     return -1;
   }
   if(!m_wndToolBar.CreateEx(this, TBSTYLE_FLAT, WS_CHILD | WS_VISIBLE | CBRS_TOP
@@ -151,11 +151,11 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
 
 #ifdef _DEBUG
 void CMainFrame::AssertValid() const {
-  CFrameWnd::AssertValid();
+  __super::AssertValid();
 }
 
 void CMainFrame::Dump(CDumpContext& dc) const {
-  CFrameWnd::Dump(dc);
+  __super::Dump(dc);
 }
 
 #endif //_DEBUG
@@ -310,9 +310,9 @@ void CMainFrame::OnAppExit() {
   OnClose();
 }
 
-void CMainFrame::OnClose() {	
+void CMainFrame::OnClose() {
   if(checkSave()) {
-    CFrameWnd::OnClose();
+    __super::OnClose();
   }
 }
 
@@ -685,14 +685,14 @@ void CMainFrame::OnViewAddrHex() {
 }
 
 void CMainFrame::OnSize(UINT nType, int cx, int cy) {
-  CFrameWnd::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
   if(m_settingsActivated) {
     getSettings().setWindowSize(getWindowSize(this));
   }
 }
 
 void CMainFrame::OnShowWindow(BOOL bShow, UINT nStatus) {
-  CFrameWnd::OnShowWindow(bShow, nStatus);
+  __super::OnShowWindow(bShow, nStatus);
   if(bShow) {
     if(!m_settingsActivated) {
       PostMessage(WM_COMMAND, MAKELONG(ID_ACTIVATE_SETTINGS, 0), 0);
@@ -909,8 +909,8 @@ void CMainFrame::OnShiftPageDown() {
   getView()->pageDown(true);
 }
 
-BOOL CMainFrame::PreTranslateMessage(MSG* pMsg) {
-  BOOL ret = CFrameWnd::PreTranslateMessage(pMsg);
+BOOL CMainFrame::PreTranslateMessage(MSG *pMsg) {
+  BOOL ret = __super::PreTranslateMessage(pMsg);
   m_wndStatusBar.SetPaneText(1, format(_T("%s:%s"), getSettings().getAddrRadixShortName(), getView()->getCurrentAddrAsString().cstr()).cstr());
   m_wndStatusBar.SetPaneText(2, getDoc()->getModeString());
 #ifdef _DEBUG
@@ -919,12 +919,12 @@ BOOL CMainFrame::PreTranslateMessage(MSG* pMsg) {
   return ret;
 }
 
-void CMainFrame::OnKillFocus(CWnd* pNewWnd) {
-  CFrameWnd::OnKillFocus(pNewWnd);
+void CMainFrame::OnKillFocus(CWnd *pNewWnd) {
+  __super::OnKillFocus(pNewWnd);
   getView()->hideCaret();
 }
 
-void CMainFrame::OnSetFocus(CWnd* pOldWnd) {
-  CFrameWnd::OnSetFocus(pOldWnd);
+void CMainFrame::OnSetFocus(CWnd *pOldWnd) {
+  __super::OnSetFocus(pOldWnd);
   getView()->keepSelection().showCaret();
 }

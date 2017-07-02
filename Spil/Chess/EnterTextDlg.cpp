@@ -6,20 +6,17 @@
 #define new DEBUG_NEW
 #endif
 
-CEnterTextDlg::CEnterTextDlg(const String &str, CWnd* pParent) : CDialog(CEnterTextDlg::IDD, pParent) {
+CEnterTextDlg::CEnterTextDlg(const String &str, CWnd *pParent) : CDialog(CEnterTextDlg::IDD, pParent) {
   m_text = str.cstr();
 }
 
-
-void CEnterTextDlg::DoDataExchange(CDataExchange* pDX) {
+void CEnterTextDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
   DDX_Text(pDX, IDC_EDIT_TEXTBOX, m_text);
 }
 
-
 BEGIN_MESSAGE_MAP(CEnterTextDlg, CDialog)
 END_MESSAGE_MAP()
-
 
 void CEnterTextDlg::OnOK() {
   UpdateData();

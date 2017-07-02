@@ -7,30 +7,22 @@
 #define new DEBUG_NEW
 #endif
 
-SummaryDialog::SummaryDialog(int myId, const PlayerList &players, const GameHistory &gameHistory, CWnd* pParent) : CDialog(SummaryDialog::IDD, pParent) {
+SummaryDialog::SummaryDialog(int myId, const PlayerList &players, const GameHistory &gameHistory, CWnd *pParent) : CDialog(SummaryDialog::IDD, pParent) {
   m_myId        = myId;
   m_players     = players;
   m_gameHistory = gameHistory;
-
-      // NOTE: the ClassWizard will add member initialization here
 }
 
-
-void SummaryDialog::DoDataExchange(CDataExchange* pDX) {
+void SummaryDialog::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
-      // NOTE: the ClassWizard will add DDX and DDV calls here
 }
-
 
 BEGIN_MESSAGE_MAP(SummaryDialog, CDialog)
 END_MESSAGE_MAP()
 
-/////////////////////////////////////////////////////////////////////////////
-// SummaryDialog message handlers
-
 BOOL SummaryDialog::OnInitDialog() {
   __super::OnInitDialog();
-    
+
   CListBox *lb = (CListBox*)GetDlgItem(IDC_SUMMARY_LIST);
 
   lb->InsertString(-1,m_players.toString(m_myId).cstr());
@@ -43,7 +35,7 @@ BOOL SummaryDialog::OnInitDialog() {
     lb->InsertString(-1,m_gameHistory.toString(m_myId,i).cstr());
   }
 
-/*  
+/*
   char tmp[100];
   sprintf(tmp,_T("%-10.10s %10.10s %10.10s %10.10s"),
       _T(" "),

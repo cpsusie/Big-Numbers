@@ -52,7 +52,7 @@ private:
   bool dirtyCheck();
   void showMousePosition(const CPoint &p);
 public:
-  CProfileDlg(const Profile &profile, CWnd* pParent = NULL);
+  CProfileDlg(const Profile &profile, CWnd *pParent = NULL);
  ~CProfileDlg();
   void setProfileName(const String &name);
 
@@ -85,14 +85,9 @@ public:
   int       m_rotateAxis;
   int       m_3dmode;
 
-
-  public:
-  virtual BOOL PreTranslateMessage(MSG* pMsg);
-  protected:
-  virtual void DoDataExchange(CDataExchange* pDX);
-
-protected:
-
+public:
+    virtual BOOL PreTranslateMessage(MSG *pMsg);
+    virtual void DoDataExchange(CDataExchange *pDX);
     virtual BOOL OnInitDialog();
     virtual void OnCancel();
     virtual void OnOK();
@@ -103,7 +98,7 @@ protected:
     afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
     afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
     afx_msg BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
-    afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
+    afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar);
     afx_msg void OnPaint();
     afx_msg void OnFileNew();
     afx_msg void OnFileOpen();

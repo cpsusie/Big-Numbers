@@ -8,10 +8,10 @@
 #define new DEBUG_NEW
 #endif
 
-COpeningDlg::COpeningDlg(CWnd* pParent)	: CDialog(COpeningDlg::IDD, pParent) {
+COpeningDlg::COpeningDlg(CWnd *pParent) : CDialog(COpeningDlg::IDD, pParent) {
 }
 
-void COpeningDlg::DoDataExchange(CDataExchange* pDX) {
+void COpeningDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
 }
 
@@ -49,7 +49,7 @@ BOOL COpeningDlg::OnInitDialog() {
   return false;
 }
 
-BOOL COpeningDlg::PreTranslateMessage(MSG* pMsg) {
+BOOL COpeningDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
     return true;
   }

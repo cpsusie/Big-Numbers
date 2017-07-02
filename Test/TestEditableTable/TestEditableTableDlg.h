@@ -36,30 +36,24 @@ public:
     return m_elementArray[index];
   }
   const StringArray getStrComboStringArray(UINT column);
-
 };
 
 class CTestEditableTableDlg : public CDialog {
 private:
-  SimpleLayoutManager m_layoutManager;
+  HICON               m_hIcon;
   HACCEL              m_accelTable;
+  SimpleLayoutManager m_layoutManager;
 
 public:
-  CTestEditableTableDlg(CWnd* pParent = NULL);
+  CTestEditableTableDlg(CWnd *pParent = NULL);
   TestTableModel m_model;
 
   enum { IDD = IDD_TESTEDITABLETABLE_DIALOG };
-  CEditListCtrl   m_list;
-  CString m_someText;
+  CEditListCtrl m_list;
+  CString       m_someText;
 
-public:
-  virtual BOOL PreTranslateMessage(MSG* pMsg);
-protected:
-  virtual void DoDataExchange(CDataExchange* pDX);
-
-protected:
-  HICON m_hIcon;
-
+  virtual BOOL PreTranslateMessage(MSG *pMsg);
+  virtual void DoDataExchange(CDataExchange *pDX);
   virtual BOOL OnInitDialog();
   afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
   afx_msg void OnPaint();

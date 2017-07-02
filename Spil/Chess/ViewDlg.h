@@ -2,7 +2,7 @@
 
 class CViewDlg : public CDialog, OptionsAccessor {
 public:
-    CViewDlg(CWnd* pParent = NULL);
+    CViewDlg(CWnd *pParent = NULL);
 
     enum { IDD = IDD_VIEW_DIALOG };
     BOOL    m_animateCheckmate;
@@ -14,10 +14,7 @@ public:
     BOOL    m_showLegalMoves;
 
 protected:
-    virtual void DoDataExchange(CDataExchange* pDX);
-
-protected:
-
+    virtual void DoDataExchange(CDataExchange *pDX);
     virtual BOOL OnInitDialog();
     virtual void OnOK();
     DECLARE_MESSAGE_MAP()

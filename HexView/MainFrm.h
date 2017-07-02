@@ -44,7 +44,7 @@ public:
   }
 
 public:
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
+    virtual BOOL PreTranslateMessage(MSG *pMsg);
 
 public:
   virtual ~CMainFrame();
@@ -59,16 +59,16 @@ protected:  // control bar embedded members
 
 protected:
   afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
-	afx_msg void OnClose();
-	afx_msg void OnSize(UINT nType, int cx, int cy);
-	afx_msg void OnKillFocus(CWnd* pNewWnd);
-	afx_msg void OnSetFocus(CWnd* pOldWnd);
-	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
+    afx_msg void OnClose();
+    afx_msg void OnSize(UINT nType, int cx, int cy);
+    afx_msg void OnKillFocus(CWnd *pNewWnd);
+    afx_msg void OnSetFocus(CWnd *pOldWnd);
+    afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
   afx_msg void OnFileOpen();
-	afx_msg void OnFileOpenForUpdate();
-	afx_msg void OnFileCloseDoc();
-	afx_msg void OnFileSaveDoc();
-	afx_msg void OnFileSaveDocAs();
+    afx_msg void OnFileOpenForUpdate();
+    afx_msg void OnFileCloseDoc();
+    afx_msg void OnFileSaveDoc();
+    afx_msg void OnFileSaveDocAs();
   afx_msg void OnFileMruFile1();
   afx_msg void OnFileMruFile2();
   afx_msg void OnFileMruFile3();
@@ -85,16 +85,16 @@ protected:
   afx_msg void OnFileMruFile14();
   afx_msg void OnFileMruFile15();
   afx_msg void OnFileMruFile16();
-	afx_msg void OnAppExit();
-	afx_msg void OnEditAllowEdit();
-	afx_msg void OnEditUndo();
-	afx_msg void OnEditRedo();
-	afx_msg void OnEditCopy();
+    afx_msg void OnAppExit();
+    afx_msg void OnEditAllowEdit();
+    afx_msg void OnEditUndo();
+    afx_msg void OnEditRedo();
+    afx_msg void OnEditCopy();
   afx_msg void OnEditFind();
   afx_msg void OnEditFindNext();
   afx_msg void OnEditFindPrev();
-	afx_msg void OnEditGotoAddress();
-	afx_msg void OnEditRefreshFile();
+    afx_msg void OnEditGotoAddress();
+    afx_msg void OnEditRefreshFile();
   afx_msg void OnViewDataOct();
   afx_msg void OnViewDataDec();
   afx_msg void OnViewDataHex3Pos();
@@ -105,17 +105,17 @@ protected:
   afx_msg void OnViewAddrOct();
   afx_msg void OnViewAddrDec();
   afx_msg void OnViewAddrHex();
-	afx_msg void OnActivateSettings();
-	afx_msg void OnViewColorsDataText();
-	afx_msg void OnViewColorsDataBack();
-	afx_msg void OnViewColorsAsciiBack();
-	afx_msg void OnViewColorsAsciiText();
-	afx_msg void OnViewColorsAddrText();
-	afx_msg void OnViewColorsAddrBack();
-	afx_msg void OnViewWrapEndOfLine();
-	afx_msg void OnViewDataHexUppercase();
-	afx_msg void OnViewAddrHexUppercase();
-	afx_msg void OnViewAddrSeparators();
+    afx_msg void OnActivateSettings();
+    afx_msg void OnViewColorsDataText();
+    afx_msg void OnViewColorsDataBack();
+    afx_msg void OnViewColorsAsciiBack();
+    afx_msg void OnViewColorsAsciiText();
+    afx_msg void OnViewColorsAddrText();
+    afx_msg void OnViewColorsAddrBack();
+    afx_msg void OnViewWrapEndOfLine();
+    afx_msg void OnViewDataHexUppercase();
+    afx_msg void OnViewAddrHexUppercase();
+    afx_msg void OnViewAddrSeparators();
   afx_msg void OnCharLeft();
   afx_msg void OnCharRight();
   afx_msg void OnCtrlCharLeft();

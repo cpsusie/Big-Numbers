@@ -7,7 +7,7 @@
 #define new DEBUG_NEW
 #endif
 
-DecideGameDialog::DecideGameDialog(int myId, const PlayerList &players, const GameHistory &gameHistory, CWnd* pParent) : CDialog(DecideGameDialog::IDD, pParent) {
+DecideGameDialog::DecideGameDialog(int myId, const PlayerList &players, const GameHistory &gameHistory, CWnd *pParent) : CDialog(DecideGameDialog::IDD, pParent) {
   m_selectedPointButton = -1;
   m_playedGamesColours  = EMPTYSTRING;
   m_playedGamesNames    = EMPTYSTRING;
@@ -22,7 +22,7 @@ DecideGameDialog::DecideGameDialog(int myId, const PlayerList &players, const Ga
   m_gameHistory = gameHistory;
 }
 
-void DecideGameDialog::DoDataExchange(CDataExchange* pDX) {
+void DecideGameDialog::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
   DDX_Radio(pDX, IDC_SOL_RADIO          , m_gameType);
   DDX_Radio(pDX, IDC_KLOER_RADIO        , m_suit);
@@ -61,7 +61,7 @@ BOOL DecideGameDialog::OnInitDialog() {
   wp.ptMaxPosition.y -= 10;
 
   SetWindowPlacement( &wp );
-     
+
   m_playedGamesNames   = m_players.toString(m_myId).cstr();
   m_playedGamesSol     = m_gameHistory.toString(m_myId,GAMETYPE_SOL) .cstr();
   m_playedGamesSans    = m_gameHistory.toString(m_myId,GAMETYPE_SANS ).cstr();
@@ -91,7 +91,7 @@ BOOL DecideGameDialog::OnInitDialog() {
   GetDlgItem(IDC_2POINT_RADIO)->EnableWindow(!pointUsed[1]);
   GetDlgItem(IDC_3POINT_RADIO)->EnableWindow(!pointUsed[2]);
   GetDlgItem(IDC_4POINT_RADIO)->EnableWindow(!pointUsed[3]);
-    
+
   if(!pointUsed[0]) {
     m_selectedPointButton = 0;
   } else if(!pointUsed[1]) {
@@ -112,11 +112,11 @@ BOOL DecideGameDialog::OnInitDialog() {
 }
 
 void DecideGameDialog::OnSolRadio() {
-  setColourEnabled(FALSE);  
+  setColourEnabled(FALSE);
 }
 
 void DecideGameDialog::OnSansRadio() {
-  setColourEnabled(FALSE);  
+  setColourEnabled(FALSE);
 }
 
 void DecideGameDialog::OnSparRadio() {

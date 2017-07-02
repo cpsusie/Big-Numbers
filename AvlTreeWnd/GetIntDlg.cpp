@@ -5,7 +5,7 @@
 #define new DEBUG_NEW
 #endif
 
-CGetIntDlg::CGetIntDlg(const TCHAR *title, const TCHAR *prompt, const IntInterval *legalInterval, int defaultValue, CWnd* pParent) 
+CGetIntDlg::CGetIntDlg(const TCHAR *title, const TCHAR *prompt, const IntInterval *legalInterval, int defaultValue, CWnd *pParent)
 : CDialog(CGetIntDlg::IDD, pParent), m_title(title), m_prompt(prompt)
 {
   m_intervalSpecified = legalInterval != NULL;
@@ -17,7 +17,7 @@ CGetIntDlg::CGetIntDlg(const TCHAR *title, const TCHAR *prompt, const IntInterva
 }
 
 
-void CGetIntDlg::DoDataExchange(CDataExchange* pDX) {
+void CGetIntDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
   DDX_Text(pDX, IDC_EDITINT, m_int);
 }
@@ -28,7 +28,7 @@ END_MESSAGE_MAP()
 
 BOOL CGetIntDlg::OnInitDialog() {
   __super::OnInitDialog();
-  
+
   SetWindowText(m_title);
   GetDlgItem(IDC_PROMPT)->SetWindowText(m_prompt);
 

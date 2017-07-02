@@ -16,51 +16,51 @@ public:
 
     enum { IDD = IDD_ABOUTBOX };
 
-    virtual void DoDataExchange(CDataExchange* pDX);
+    virtual void DoDataExchange(CDataExchange *pDX);
     DECLARE_MESSAGE_MAP()
 };
 
 CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
-void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
+void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
     __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
-CMakeAviDlg::CMakeAviDlg(CWnd* pParent /*=NULL*/) : CDialog(CMakeAviDlg::IDD, pParent) {
-	m_framePerSecond = 15;
-	m_useEvery       = 1;
+CMakeAviDlg::CMakeAviDlg(CWnd *pParent /*=NULL*/) : CDialog(CMakeAviDlg::IDD, pParent) {
+  m_framePerSecond = 15;
+  m_useEvery       = 1;
   m_hIcon          = theApp.LoadIcon(IDR_MAINFRAME);
 }
 
-void CMakeAviDlg::DoDataExchange(CDataExchange* pDX) {
-  __super::DoDataExchange(pDX);
-	DDX_Control(pDX   , IDC_LISTNAMES      , m_nameList      );
-	DDX_Text(pDX      , IDC_EDITFRAMEPERSEC, m_framePerSecond);
-	DDV_MinMaxUInt(pDX, m_framePerSecond   , 1, 30           );
-	DDX_Text(pDX      , IDC_EDITUSEEVERY   , m_useEvery      );
-	DDV_MinMaxUInt(pDX, m_useEvery         , 1, 1000         );
+void CMakeAviDlg::DoDataExchange(CDataExchange *pDX) {
+    __super::DoDataExchange(pDX);
+    DDX_Control(pDX   , IDC_LISTNAMES      , m_nameList      );
+    DDX_Text(pDX      , IDC_EDITFRAMEPERSEC, m_framePerSecond);
+    DDV_MinMaxUInt(pDX, m_framePerSecond   , 1, 30           );
+    DDX_Text(pDX      , IDC_EDITUSEEVERY   , m_useEvery      );
+    DDV_MinMaxUInt(pDX, m_useEvery         , 1, 1000         );
 }
 
 BEGIN_MESSAGE_MAP(CMakeAviDlg, CDialog)
-  ON_WM_QUERYDRAGICON()
-  ON_WM_SYSCOMMAND()
-	ON_WM_SIZE()
-  ON_WM_PAINT()
-  ON_WM_CLOSE()
-  ON_COMMAND(ID_FILE_EXIT          , OnFileExit                           )
-	ON_COMMAND(ID_FILE_ADDFILES      , OnFileAddfFiles                      )
-	ON_COMMAND(ID_EDIT_DELETESELECTED, OnEditDeleteSelected                 )
-	ON_COMMAND(ID_EDIT_CLEARLIST     , OnEditClearList                      )
-	ON_COMMAND(ID_HELP_ABOUTMAKEAVI  , OnHelpAbout                          )
-	ON_BN_CLICKED(IDC_BUTTONREADAVI  , OnButtonReadAVI                      )
-	ON_BN_CLICKED(IDC_BUTTONMAKEAVI  , OnButtonMakeAVI                      )
-	ON_NOTIFY(LVN_ITEMCHANGED        , IDC_LISTNAMES, OnItemChangedListNames)
-	ON_EN_CHANGE(IDC_EDITFRAMEPERSEC , OnChangeEditFramePerSec              )
-	ON_EN_CHANGE(IDC_EDITUSEEVERY    , OnChangeEditUseEvery                 )
+    ON_WM_QUERYDRAGICON()
+    ON_WM_SYSCOMMAND()
+    ON_WM_SIZE()
+    ON_WM_PAINT()
+    ON_WM_CLOSE()
+    ON_COMMAND(ID_FILE_EXIT          , OnFileExit                           )
+    ON_COMMAND(ID_FILE_ADDFILES      , OnFileAddfFiles                      )
+    ON_COMMAND(ID_EDIT_DELETESELECTED, OnEditDeleteSelected                 )
+    ON_COMMAND(ID_EDIT_CLEARLIST     , OnEditClearList                      )
+    ON_COMMAND(ID_HELP_ABOUTMAKEAVI  , OnHelpAbout                          )
+    ON_BN_CLICKED(IDC_BUTTONREADAVI  , OnButtonReadAVI                      )
+    ON_BN_CLICKED(IDC_BUTTONMAKEAVI  , OnButtonMakeAVI                      )
+    ON_NOTIFY(LVN_ITEMCHANGED        , IDC_LISTNAMES, OnItemChangedListNames)
+    ON_EN_CHANGE(IDC_EDITFRAMEPERSEC , OnChangeEditFramePerSec              )
+    ON_EN_CHANGE(IDC_EDITUSEEVERY    , OnChangeEditUseEvery                 )
 END_MESSAGE_MAP()
 
 BOOL CMakeAviDlg::OnInitDialog() {
@@ -69,7 +69,7 @@ BOOL CMakeAviDlg::OnInitDialog() {
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
-  CMenu* pSysMenu = GetSystemMenu(FALSE);
+  CMenu *pSysMenu = GetSystemMenu(FALSE);
   if(pSysMenu != NULL) {
     CString strAboutMenu;
     strAboutMenu.LoadString(IDS_ABOUTBOX);
@@ -290,7 +290,7 @@ void CMakeAviDlg::updateWindowState() {
 
 void CMakeAviDlg::OnItemChangedListNames(NMHDR *pNMHDR, LRESULT *pResult) {
   NM_LISTVIEW *pNMListView = (NM_LISTVIEW*)pNMHDR;
-  
+
   if((pNMListView->uChanged & LVIF_STATE) && (pNMListView->uNewState & LVNI_SELECTED)) {
     int index = getSelectedIndex();
     if(index >= 0) {
@@ -321,7 +321,7 @@ private:
   bool               m_ok;
   String             m_msg;
 public:
-  AviConverter(const String &outFileName, const StringArray &nameArray, UINT framesPerSecond, UINT useEvery) 
+  AviConverter(const String &outFileName, const StringArray &nameArray, UINT framesPerSecond, UINT useEvery)
     : m_outFileName(outFileName)
     , m_nameArray(nameArray)
     , m_framesPerSecond(framesPerSecond)
@@ -374,12 +374,12 @@ UINT AviConverter::run() {
     m_dc     = CreateCompatibleDC(screenDC);
     m_bitmap = CreateCompatibleBitmap(screenDC, imageSize.cx, imageSize.cy);
     DeleteDC(screenDC);
-    
+
     if(ACCESS(m_outFileName, 0) == 0) {
       UNLINK(m_outFileName);
     }
     CAviFile aviFile(m_outFileName, true, 0, m_framesPerSecond);
-  
+
     for(m_index = 0; m_index < (int)m_nameArray.size(); m_index += m_useEvery) {
       if(isInterrupted()) {
         throwException(_T("Interrupted by user"));
@@ -518,7 +518,7 @@ void CMakeAviDlg::OnButtonReadAVI() {
   }
 }
 
-BOOL CMakeAviDlg::PreTranslateMessage(MSG* pMsg) {
+BOOL CMakeAviDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     return true;
   }

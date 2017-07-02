@@ -5,15 +5,15 @@
 
 IMPLEMENT_DYNAMIC(CSelectInfoFieldsDlg, CDialog)
 
-CSelectInfoFieldsDlg::CSelectInfoFieldsDlg(CWnd* pParent /*=NULL*/)	: CDialog(IDD, pParent) {
+CSelectInfoFieldsDlg::CSelectInfoFieldsDlg(CWnd *pParent /*=NULL*/) : CDialog(IDD, pParent) {
   dataToWindow(getOptions().getengineVerboseFields());
 }
 
 CSelectInfoFieldsDlg::~CSelectInfoFieldsDlg() {
 }
 
-void CSelectInfoFieldsDlg::DoDataExchange(CDataExchange* pDX) {
-	__super::DoDataExchange(pDX);
+void CSelectInfoFieldsDlg::DoDataExchange(CDataExchange *pDX) {
+    __super::DoDataExchange(pDX);
     DDX_Check(pDX, IDC_CHECK_DEPTH    , m_depth           );
     DDX_Check(pDX, IDC_CHECK_SELDEPTH , m_seldepth        );
     DDX_Check(pDX, IDC_CHECK_SCORE    , m_score           );
