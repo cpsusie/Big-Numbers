@@ -375,12 +375,13 @@ int GrammarTables::printSuccessorMatrixCpp(MarginFile &output) const {
   output.setLeftMargin(2);
   for(int state = 0; state < stateCount; state++) {
     output.printf(state > 0 ? _T(","):_T(" "));
+    const bool lastOnLine = (state % 10 == 9) || (state == stateCount-1);
     if(hasSuccessor.contains(state)) {
       output.printf(_T("succ%04d"), state);
     } else {
-      output.printf(_T("NULL    "));
+      output.printf(lastOnLine ? _T("NULL") : _T("NULL    "));
     }
-    if(state % 10 == 9 || state == stateCount-1) {
+    if(lastOnLine) {
       output.printf(_T("\n"));
     }
   }

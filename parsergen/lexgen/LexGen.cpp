@@ -24,14 +24,15 @@ ActionsWriter::ActionsWriter(const DFA &dfa, bool lineDirectives, bool generateB
 }
 
 void ActionsWriter::handleKeyword(TemplateWriter &writer, String &line) const {
-  BitSet done(m_dfa.m_states.size());
-  MarginFile &output = writer.getOutput();
-  int indent = output.getLeftMargin();
-  for(size_t i = 0; i < m_dfa.m_states.size(); i++) {
+  const size_t stateCount = m_dfa.m_states.size();
+  BitSet       done(stateCount);
+  MarginFile  &output  = writer.getOutput();
+  const int    indent  = output.getLeftMargin();
+  for(size_t i = 0; i < stateCount; i++) {
     const DFAstate &s = m_dfa.m_states[i];
     if(s.m_accept && !done.contains(i)) {
       output.setLeftMargin(indent);
-      for(size_t j = i; j < m_dfa.m_states.size(); j++) {
+      for(size_t j = i; j < stateCount; j++) {
         if(m_dfa.m_states[j].m_accept == s.m_accept && !done.contains(j)) {
           output.printf(_T("case %d:\n"), (int)j);
           done.add(j);
@@ -84,7 +85,7 @@ static void printOutputFiles(const String &templateName
   String lexName    = FileNameSplitter(lexFileName).getFileName();
   String sourceName = FileNameSplitter(lexFileName).getAbsolutePath();
 
-  TemplateWriter writer(templateName, implOutputDir, headerOutputDir, verbose);
+  TemplateWriter   writer(templateName, implOutputDir, headerOutputDir, verbose);
   SourceTextWriter headerWriter(    dfa.getHeader()    , lineDirectives);
   SourceTextWriter driverHeadWriter(dfa.getDriverHead(), lineDirectives);
   SourceTextWriter driverTailWriter(dfa.getDriverTail(), lineDirectives);
@@ -117,25 +118,25 @@ static void usage() {
        "         : 2: dump DFA-construction steps stdout.\n"
        "    Default level = 0.\n"
        " -wS: lex-wizard. write template lex-file with classname Slex to stdout.\n"
-	     " -j : Generate java-lex. Default is C++.\n"
+       " -j : Generate java-lex. Default is C++.\n"
        " -Ooutputdir1[,outputdir2]: Output goes to outputdir1. If outputdir2 specified, .h-files will go here.\n")
   );
   exit(-1);
 }
 
 int _tmain(int argc, TCHAR **argv) {
-  TCHAR *cp;
-  String implOutputDir   = _T(".");
-  String headerOutputDir = implOutputDir;
-  String templateName    = EMPTYSTRING;
-  bool   verbose         = false;
-  bool   generateBreaks  = true;
-  bool   dumpStates      = false;
-  bool   DFAVerbose      = false;
-  bool   lineDirectives  = true;
-  bool   callWizard      = false;
-  TCHAR *wizardName      = EMPTYSTRING;
-  Language language      = CPP;
+  TCHAR   *cp;
+  String   implOutputDir   = _T(".");
+  String   headerOutputDir = implOutputDir;
+  String   templateName    = EMPTYSTRING;
+  bool     verbose         = false;
+  bool     generateBreaks  = true;
+  bool     dumpStates      = false;
+  bool     DFAVerbose      = false;
+  bool     lineDirectives  = true;
+  bool     callWizard      = false;
+  TCHAR   *wizardName      = EMPTYSTRING;
+  Language language        = CPP;
 
   try {
     for(argv++; *argv && *(cp = *argv) == '-'; argv++) {
@@ -154,8 +155,9 @@ int _tmain(int argc, TCHAR **argv) {
         case 'v':
           verbose        = true;
           { int level;
-            if(_stscanf(cp+1, _T("%d"), &level) != 1)
+            if(_stscanf(cp+1, _T("%d"), &level) != 1) {
               continue;
+            }
             switch(level) {
             case 2: DFAVerbose = true; // continue case
             case 1: dumpStates = true; // continue case
@@ -187,9 +189,9 @@ int _tmain(int argc, TCHAR **argv) {
             }
             break;
           }
-		case 'j':
-		  language = JAVA;
-		  continue;
+    case 'j':
+      language = JAVA;
+      continue;
         default:
           usage();
           break;
@@ -201,14 +203,14 @@ int _tmain(int argc, TCHAR **argv) {
     String skeletonFileName = EMPTYSTRING;
     String wizardTemplate   = EMPTYSTRING;
     switch(language) {
-	case CPP :
+    case CPP :
       skeletonFileName = _T("lexgencpp.par");
       wizardTemplate   = _T("lexgencpp.wzr");
       break;
-	case JAVA:
+    case JAVA:
       skeletonFileName = _T("lexgenjava.par");
       wizardTemplate   = _T("lexgenjava.wzr");
-	  lineDirectives   = false;
+      lineDirectives   = false;
       break;
     default  :
       usage();
@@ -254,7 +256,8 @@ int _tmain(int argc, TCHAR **argv) {
 
       DFA dfa(nfa, language, DFAVerbose);
       if(!DFAVerbose && dumpStates) {
-        for(size_t i = 0; i < dfa.m_states.size(); i++) {
+        const size_t stateCount = dfa.m_states.size();
+        for(size_t i = 0; i < stateCount; i++) {
           dfa.m_states[i].print(stdoutMarginFile);
         }
       }

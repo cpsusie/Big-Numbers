@@ -4,7 +4,7 @@
   // Compress and output transitionmatrix eliminating equal columns and rows
 void DFA::printTables(MarginFile &f) const {
   int    *columnMap = new int[MAX_CHARS];
-  int    *rowMap = new int[m_states.size()];
+  int    *rowMap    = new int[m_states.size()];
   BitSet  columnSave(MAX_CHARS);       // columns that will remain in table
   BitSet  rowSave(m_states.size());    // rows    that will remain in table
 
@@ -94,7 +94,7 @@ void DFA::printCharMap(MarginFile &f, const int *map) const {
   const TCHAR *text =
   _T("\n"
      "// The lexCharMap[] and lexStateMap arrays are used as follows:\n"
-     "// \n"
+     "//\n"
      "// nextState = lexNext[lexStateMap[currentState]][lexCharMap[inputChar]];\n"
      "//\n"
      "// Character positions in the lexCharMap Array are:\n"
@@ -130,10 +130,11 @@ void DFA::printCharMap(MarginFile &f, const int *map) const {
 
 void DFA::printCharMap(MarginFile &f) const {
   f.printf(_T("//  "));
-  for(unsigned int i = 0; i < MAX_CHARS; i++) {
-    f.printf(_T("%-4s "), binToAscii(i).cstr());
-    if(i % 16 == 15)
+  for(UINT i = 0; i < MAX_CHARS; i++) {
+    f.printf(((i % 16 == 15) || (i == MAX_CHARS-1)) ? _T("%s") : _T("%-4s "), binToAscii(i).cstr());
+    if((i % 16 == 15) && (i < MAX_CHARS-1)) {
       f.printf(_T("\n//  "));
+    }
   }
   f.printf(_T("\n\n"));
 }
@@ -269,7 +270,8 @@ void DFA::printAcceptTable(MarginFile &f) const {
 
   int oldMargin = f.getLeftMargin();
   f.setLeftMargin(oldMargin+4);
-  for(size_t i = 0; i < m_states.size(); i++) {
+  const size_t stateCount = m_states.size();
+  for(size_t i = 0; i < stateCount; i++) {
     const DFAstate &state = m_states[i];
     if(i % 10 == 0) {
       f.printf(_T("/* %3d */"), i);
@@ -279,8 +281,10 @@ void DFA::printAcceptTable(MarginFile &f) const {
     } else {
       f.printf(_T("  %d"), state.m_accept->m_anchor ? state.m_accept->m_anchor : 4);
     }
-    f.printf(_T("%c"), (i < m_states.size()-1) ? ',' : ' ');
-    if(i % 10 == 9 || i == m_states.size() - 1) {
+    if(i < stateCount-1) {
+      f.printf(_T(","));
+    }
+    if((i % 10 == 9) || (i == stateCount - 1)) {
       f.printf(_T("\n"));
     }
   }

@@ -158,6 +158,7 @@ void NewFileHandler::handleKeyword(TemplateWriter &writer, String &line) const {
     }
     String newOutputName = FileNameSplitter::getChildName(trim(outputDir), substr(line, assign+1, line.length()).trim());
     writer.openOutput(newOutputName);
+    writer.getOutput().setTrimRight(true);
     writer.getOutput().printf(_T("%s\n"), dontEditMessage);
   }
 }
