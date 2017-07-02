@@ -12,23 +12,25 @@ MarginFile::MarginFile(const String &name) {
 }
 
 void MarginFile::init(FILE *file, const String &name, const String &absolutName, bool openedByMe) {
-  m_file        = file;
-  m_name        = name;
-  m_absolutName = absolutName;
-  m_openedByMe  = openedByMe;
-  m_lineNumber  = 1;
-  m_leftMargin  = 0;
-  m_lineStart   = true;
-  m_bufSize     = 0x4000;
-  m_buffer      = new TCHAR[m_bufSize];
+  m_file             = file;
+  m_name             = name;
+  m_absolutName      = absolutName;
+  m_openedByMe       = openedByMe;
+  m_trimRight        = false;
+  m_lineNumber       = 1;
+  m_formatBufferSize = 0x4000;
+  m_formatBuffer     = new TCHAR[m_formatBufferSize];
 }
 
 MarginFile::~MarginFile() {
   close();
-  delete[] m_buffer;
+  delete[] m_formatBuffer;
 }
 
 void MarginFile::close() {
+  if(m_currentLine.length() > 0) {
+    flushLine();
+  }
   if(m_file && m_openedByMe) {
     fclose(m_file);
   }
@@ -36,61 +38,52 @@ void MarginFile::close() {
 }
 
 void MarginFile::indent() {
-  if(m_leftMargin > 0) {
-    _ftprintf(m_file,_T("%*.*s"),m_leftMargin,m_leftMargin,EMPTYSTRING);
-  }
-  m_lineStart = false;
-  m_currentLineLength = m_leftMargin;
+  m_currentLine = m_leftFiller;
 }
 
-void MarginFile::putch(int c) {
-  if(m_file == NULL) {
-    return;
+void MarginFile::flushLine() {
+  if(m_trimRight) {
+    m_currentLine.trimRight();
   }
-  if(m_lineStart) {
-    indent();
+  if(m_currentLine.length()) {
+    _fputts(m_currentLine.cstr(), m_file);
   }
-  _fputtc(c, m_file);
-  m_currentLineLength++;
-  switch(c) {
+  _fputtc(_T('\n'), m_file);
+  m_lineNumber++;
+  m_currentLine = EMPTYSTRING;
+}
+
+void MarginFile::putch(TCHAR ch) {
+  if(m_file == NULL) return;
+  if(m_currentLine.length() == 0) indent();
+  switch(ch) {
   case _T('\n'):
   case _T('\r'):
-    m_lineStart = true;
+    flushLine();
     break;
   default:
-    m_lineStart = false;
+    m_currentLine += ch;
     break;
   }
 }
 
 void MarginFile::puts(const TCHAR *s) {
-  if(m_file == NULL) {
-    return;
-  }
+  if(m_file == NULL) return;
   for(;*s; s++) {
     putch(*s);
   }
 }
 
-static int countNewLines(const TCHAR *str) {
-  int count = 0;
-  for(const TCHAR *s = _tcschr(str,_T('\n')); s; s = _tcschr(s+1, _T('\n'))) {
-    count++;
-  }
-  return count;
-}
-
 void MarginFile::vprintf(const TCHAR *format, va_list argptr) {
   for(;;) {
-    if(_vsntprintf(m_buffer, m_bufSize, format, argptr) >= 0) {
+    if(_vsntprintf(m_formatBuffer, m_formatBufferSize, format, argptr) >= 0) {
       break;
     }
-    delete m_buffer;
-    m_bufSize <<= 1;
-    m_buffer = new TCHAR[m_bufSize];
+    delete m_formatBuffer;
+    m_formatBufferSize <<= 1;
+    m_formatBuffer = new TCHAR[m_formatBufferSize];
   }
-  m_lineNumber += countNewLines(m_buffer);
-  puts(m_buffer);
+  puts(m_formatBuffer);
 }
 
 void MarginFile::printf(const TCHAR *format,...) {

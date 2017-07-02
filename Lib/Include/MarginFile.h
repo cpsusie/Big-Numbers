@@ -5,50 +5,52 @@
 
 class MarginFile { // print to file, with control of leftmargin
 private:
-  String m_name, m_absolutName;
+  String     m_name, m_absolutName;
   FILE      *m_file;
-  int        m_leftMargin;
   bool       m_openedByMe;
-  bool       m_lineStart;
+  bool       m_trimRight;
   int        m_lineNumber;
-  TCHAR *m_buffer;
-  int        m_bufSize;
-  int        m_currentLineLength;
+  String     m_currentLine, m_leftFiller;
+  TCHAR     *m_formatBuffer;
+  int        m_formatBufferSize;
 
   void  init(FILE *file, const String &name, const String &absolutName, bool openedByMe);
   void  indent();
+  void  flushLine();
 public:
   MarginFile(const String &name);
   MarginFile(const MarginFile &src);             // not defined
   MarginFile &operator=(const MarginFile &src);  // not defined
  ~MarginFile();
   void close();
-  void putch(   int c);
+  void putch(   TCHAR c);
   void puts(    const TCHAR *s);
   void vprintf( const TCHAR *format, va_list argptr);
   void printf(  const TCHAR *format, ...);
 
   void setLeftMargin(int m)  {
-    m_leftMargin = m;
+    m_leftFiller = spaceString(m);
   }
-
   int getLeftMargin() const {
-    return m_leftMargin;
+    return (int)m_leftFiller.length();
   }
-
+  // if trimRight = true, then all trailing spaces will be reoved from the stream
+  void setTrimRight(bool trimRight) {
+    m_trimRight = trimRight;
+  }
+  bool getTrimRight() const {
+    return m_trimRight;
+  }
   int getLineNumber() const {
     return m_lineNumber;
   }
-
   int getCurrentLineLength() const {
-    return m_currentLineLength;
+    return (int)m_currentLine.length();
   }
-
-  String getName() const {
+  const String &getName() const {
     return m_name;
   }
-
-  String getAbsolutName() const {
+  const String &getAbsolutName() const {
     return m_absolutName;
   }
 };
@@ -60,4 +62,3 @@ extern MarginFile stderrMarginFile;
 
 #define tostdout (&stdoutMarginFile)
 #define tostderr (&stderrMarginFile)
-
