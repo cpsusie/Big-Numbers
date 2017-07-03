@@ -80,7 +80,7 @@
     ,LB              =  76
     ,RB              =  77
   } ExpressionInputSymbol;
-	
+
   typedef enum {
   } ExpressionNonTerminal;
 
