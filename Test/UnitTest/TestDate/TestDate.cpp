@@ -295,119 +295,216 @@ namespace TestDate {
 
     TEST_METHOD(DateGetWeek) {
       testGetWeek(29, 12, 2002, 52);
-      testGetWeek(30, 12, 2002, 1);
-      testGetWeek(31, 12, 2002, 1);
-      testGetWeek(1, 1, 2003, 1);
-      testGetWeek(5, 1, 2003, 1);
-      testGetWeek(6, 1, 2003, 2);
+      testGetWeek(30, 12, 2002,  1);
+      testGetWeek(31, 12, 2002,  1);
+      testGetWeek( 1,  1, 2003,  1);
+      testGetWeek( 5,  1, 2003,  1);
+      testGetWeek( 6,  1, 2003,  2);
       testGetWeek(22, 12, 2003, 52);
       testGetWeek(28, 12, 2003, 52);
-      testGetWeek(29, 12, 2003, 1);
-      testGetWeek(31, 12, 2003, 1);
-      testGetWeek(1, 1, 2004, 1);
-      testGetWeek(4, 1, 2004, 1);
-      testGetWeek(5, 1, 2004, 2);
+      testGetWeek(29, 12, 2003,  1);
+      testGetWeek(31, 12, 2003,  1);
+      testGetWeek( 1,  1, 2004,  1);
+      testGetWeek( 4,  1, 2004,  1);
+      testGetWeek( 5,  1, 2004,  2);
       testGetWeek(26, 12, 2004, 52);
       testGetWeek(27, 12, 2004, 53);
       testGetWeek(31, 12, 2004, 53);
-      testGetWeek(1, 1, 2005, 53);
-      testGetWeek(2, 1, 2005, 53);
-      testGetWeek(3, 1, 2005, 1);
+      testGetWeek( 1,  1, 2005, 53);
+      testGetWeek( 2,  1, 2005, 53);
+      testGetWeek( 3,  1, 2005,  1);
       testGetWeek(25, 12, 2005, 51);
       testGetWeek(26, 12, 2005, 52);
       testGetWeek(31, 12, 2005, 52);
-      testGetWeek(1, 1, 2006, 52);
-      testGetWeek(2, 1, 2006, 1);
-      testGetWeek(8, 1, 2006, 1);
-      testGetWeek(9, 1, 2006, 2);
+      testGetWeek( 1,  1, 2006, 52);
+      testGetWeek( 2,  1, 2006,  1);
+      testGetWeek( 8,  1, 2006,  1);
+      testGetWeek( 9,  1, 2006,  2);
       testGetWeek(24, 12, 2006, 51);
       testGetWeek(25, 12, 2006, 52);
       testGetWeek(31, 12, 2006, 52);
-      testGetWeek(1, 1, 2007, 1);
-      testGetWeek(7, 1, 2007, 1);
-      testGetWeek(8, 1, 2007, 2);
+      testGetWeek( 1,  1, 2007,  1);
+      testGetWeek( 7,  1, 2007,  1);
+      testGetWeek( 8,  1, 2007,  2);
       testGetWeek(23, 12, 2007, 51);
       testGetWeek(24, 12, 2007, 52);
       testGetWeek(30, 12, 2007, 52);
-      testGetWeek(31, 12, 2007, 1);
-      testGetWeek(1, 1, 2008, 1);
-      testGetWeek(6, 1, 2008, 1);
-      testGetWeek(7, 1, 2008, 2);
+      testGetWeek(31, 12, 2007,  1);
+      testGetWeek( 1,  1, 2008,  1);
+      testGetWeek( 6,  1, 2008,  1);
+      testGetWeek( 7,  1, 2008,  2);
       testGetWeek(21, 12, 2008, 51);
       testGetWeek(22, 12, 2008, 52);
       testGetWeek(28, 12, 2008, 52);
-      testGetWeek(29, 12, 2008, 1);
-      testGetWeek(31, 12, 2008, 1);
-      testGetWeek(1, 1, 2009, 1);
-      testGetWeek(4, 1, 2009, 1);
-      testGetWeek(5, 1, 2009, 2);
+      testGetWeek(29, 12, 2008,  1);
+      testGetWeek(31, 12, 2008,  1);
+      testGetWeek( 1,  1, 2009,  1);
+      testGetWeek( 4,  1, 2009,  1);
+      testGetWeek( 5,  1, 2009,  2);
       testGetWeek(20, 12, 2009, 51);
       testGetWeek(21, 12, 2009, 52);
       testGetWeek(27, 12, 2009, 52);
       testGetWeek(28, 12, 2009, 53);
       testGetWeek(31, 12, 2009, 53);
-      testGetWeek(1, 1, 2010, 53);
-      testGetWeek(3, 1, 2010, 53);
-      testGetWeek(4, 1, 2010, 1);
-      testGetWeek(10, 1, 2010, 1);
-      testGetWeek(11, 1, 2010, 2);
+      testGetWeek( 1,  1, 2010, 53);
+      testGetWeek( 3,  1, 2010, 53);
+      testGetWeek( 4,  1, 2010,  1);
+      testGetWeek(10,  1, 2010,  1);
+      testGetWeek(11,  1, 2010,  2);
       testGetWeek(20, 12, 2010, 51);
       testGetWeek(26, 12, 2010, 51);
       testGetWeek(27, 12, 2010, 52);
       testGetWeek(31, 12, 2010, 52);
-      testGetWeek(1, 1, 2011, 52);
-      testGetWeek(2, 1, 2011, 52);
-      testGetWeek(3, 1, 2011, 1);
+      testGetWeek( 1,  1, 2011, 52);
+      testGetWeek( 2,  1, 2011, 52);
+      testGetWeek( 3,  1, 2011,  1);
       testGetWeek(19, 12, 2011, 51);
       testGetWeek(25, 12, 2011, 51);
       testGetWeek(26, 12, 2011, 52);
       testGetWeek(31, 12, 2011, 52);
-      testGetWeek(1, 1, 2012, 52);
-      testGetWeek(2, 1, 2012, 1);
-      testGetWeek(8, 1, 2012, 1);
-      testGetWeek(9, 1, 2012, 2);
+      testGetWeek( 1,  1, 2012, 52);
+      testGetWeek( 2,  1, 2012,  1);
+      testGetWeek( 8,  1, 2012,  1);
+      testGetWeek( 9,  1, 2012,  2);
       testGetWeek(24, 12, 2012, 52);
       testGetWeek(30, 12, 2012, 52);
-      testGetWeek(31, 12, 2012, 1); // her siger outlook express uge 53 !!
-      testGetWeek(1, 1, 2013, 1);
-      testGetWeek(6, 1, 2013, 1);
-      testGetWeek(7, 1, 2013, 2);
+      testGetWeek(31, 12, 2012,  1); // her siger outlook express uge 53 !!
+      testGetWeek( 1,  1, 2013,  1);
+      testGetWeek( 6,  1, 2013,  1);
+      testGetWeek( 7,  1, 2013,  2);
       testGetWeek(22, 12, 2013, 51);
       testGetWeek(23, 12, 2013, 52);
       testGetWeek(29, 12, 2013, 52);
-      testGetWeek(30, 12, 2013, 1);
-      testGetWeek(31, 12, 2013, 1);
-      testGetWeek(1, 1, 2014, 1);
-      testGetWeek(5, 1, 2014, 1);
-      testGetWeek(6, 1, 2014, 2);
+      testGetWeek(30, 12, 2013,  1);
+      testGetWeek(31, 12, 2013,  1);
+      testGetWeek( 1,  1, 2014,  1);
+      testGetWeek( 5,  1, 2014,  1);
+      testGetWeek( 6,  1, 2014,  2);
       testGetWeek(28, 12, 2014, 52);
-      testGetWeek(29, 12, 2014, 1);
-      testGetWeek(31, 12, 2014, 1);
-      testGetWeek(1, 1, 2015, 1);
-      testGetWeek(4, 1, 2015, 1);
-      testGetWeek(5, 1, 2015, 2);
+      testGetWeek(29, 12, 2014,  1);
+      testGetWeek(31, 12, 2014,  1);
+      testGetWeek( 1,  1, 2015,  1);
+      testGetWeek( 4,  1, 2015,  1);
+      testGetWeek( 5,  1, 2015,  2);
       testGetWeek(27, 12, 2015, 52);
       testGetWeek(28, 12, 2015, 53);
       testGetWeek(31, 12, 2015, 53);
-      testGetWeek(1, 1, 2016, 53);
-      testGetWeek(4, 1, 2016, 1);
+      testGetWeek( 1,  1, 2016, 53);
+      testGetWeek( 4,  1, 2016,  1);
 
       testGetWeek(25, 12, 2016, 51);
       testGetWeek(26, 12, 2016, 52);
       testGetWeek(31, 12, 2016, 52);
-      testGetWeek(1, 1, 2017, 52);
-      testGetWeek(2, 1, 2017, 1);
+      testGetWeek( 1,  1, 2017, 52);
+      testGetWeek( 2,  1, 2017,  1);
 
       testGetWeek(24, 12, 2017, 51);
       testGetWeek(25, 12, 2017, 52);
       testGetWeek(31, 12, 2017, 52);
-      testGetWeek(1, 1, 2018, 1);
+      testGetWeek( 1,  1, 2018,  1);
 
       testGetWeek(23, 12, 2018, 51);
       testGetWeek(24, 12, 2018, 52);
       testGetWeek(30, 12, 2018, 52);
-      testGetWeek(31, 12, 2018, 1);
-      testGetWeek(1, 1, 2019, 1);
+      testGetWeek(31, 12, 2018,  1);
+      testGetWeek( 1,  1, 2019,  1);
+    }
+
+    /*
+      Author: Charles B. Chapman, London, Ontario, Canada [74370,516]
+      Thanks to Leonard Erickson who supplied a test suite of values.
+
+      Algorithm "E" from Knuth's "Art of Computer Programming", vol. 1
+      Computes date of Easter for any year in the Gregorian calendar
+      The local variables are the variable names used by Knuth.
+      GIVEN:   Yr - year
+      RETURNS: Mo - month of Easter (3 or 4)
+                Da - day of Easter
+
+      Bemærkning:
+          Funktionen er testet op imod DATE.EasterDay og de giver samme
+          output såfremt: 1500 < year < 2300.
+    */
+    bool DatoForPaaske(const int yyyy, int &mm, int &dd) {
+      if (yyyy >= 10000) {
+        return false;
+      }
+
+      // Golden number of the year in Metonic cycle
+      int m_G = yyyy % 19 + 1;
+
+      // Century
+      int m_C = yyyy / 100 + 1;
+
+      // Corrections:
+      // <X> is the no. of years in which leap-year was dropped in
+      // order to keep step with the sun
+      // <Z> is a special correction to synchronize Easter with the
+      // moon's orbit.
+      int m_X = (3 * m_C) / 4 - 12;
+      int m_Z = (8 * m_C + 5) / 25 - 5;
+      // <D> Find Sunday
+      int m_D = (5 * yyyy) / 4 - m_X - 10;
+      // Set Epact
+      int m_E = (11 * m_G + 20 + m_Z - m_X) % 30;
+
+      if (m_E < 0) {
+        m_E = m_E + 30;
+      }
+
+      if (((m_E == 25) && (m_G > 11)) || (m_E == 24)) {
+        m_E = m_E + 1;
+      }
+
+      // Find full moon - the Nth of MARCH is a "calendar" full moon
+      int m_N = 44 - m_E;
+
+      if (m_N < 21) {
+        m_N = m_N + 30;
+      }
+
+      // Advance to Sunday
+      m_N = m_N + 7 - ((m_D + m_N) % 7);
+
+      // Get Month and Day
+      if (m_N > 31) {
+        mm = 4;
+        dd = m_N - 31;
+      } else {
+        mm = 3;
+        dd = m_N;
+      }
+      return true;
+    }
+
+    // from http://astro.nmsu.edu/~lhuber/leaphist.html
+    void ecclesiastical_DatoForPaaske(const int Y, int &mm, int &dd) {
+      int C = Y / 100;
+      int N = Y % 19;
+      int I = (C - C/4 - (C - (C - 17)/25)/3 + 19*N + 15) % 30;
+      I -= (I/28)*(1 - (I/28)*(29/(I + 1))*((21 - N)/11));
+      int J = (Y + Y/4 + I + 2 - C + C/4) % 7;
+      int L = I - J;
+      int M = 3 + (L + 40)/44;
+      int D = L + 28 - 31*(M/4);
+
+      mm = M;
+      dd = D;
+    }
+
+    TEST_METHOD(TestEaster) {
+      for(int year = 1600; year < 4100; year++) {
+        const Date date = Date::getEaster(year);
+        int d,m,y;
+        date.getDMY(d,m,y);
+        int month1,day1,month2,day2;
+        DatoForPaaske(year,month1,day1);
+        ecclesiastical_DatoForPaaske(year,month2,day2);
+        verify(y == year  );
+        verify(d == day1  );
+        verify(m == month1);
+        verify((day1 == day2) && (month1 == month2));
+      }
     }
 
     TEST_METHOD(DateConvertionSYSTEMTIME) {
