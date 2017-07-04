@@ -1046,8 +1046,5 @@
     <CustomBuild Include="CPUInfox64.asm">
       <Filter>Source Files\Asm Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="MemSwapx64.asm">
-      <Filter>Source Files\Asm Files</Filter>
-    </CustomBuild>
   </ItemGroup>
 </Project>

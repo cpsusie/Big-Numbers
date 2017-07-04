@@ -2,9 +2,26 @@
 
 #ifdef IS64BIT
 
-extern "C" void memSwap(void *p1, void *p2, size_t w);
+#pragma check_stack(off)
 
-#else IS64BIT
+inline void memSwap(register char *p1, register char *p2, size_t w) {
+#define _memSwapT(p1,p2,T) { const T tmp=*(T*)p1; *(T*)p1=*(T*)p2; *(T*)p2=tmp; }
+#define _swapBasicType(if_or_while,type,w)  \
+  if_or_while(w >= sizeof(type)) {          \
+    _memSwapT(p1,p2,type)                   \
+    w -= sizeof(type);                      \
+    p1 += sizeof(type); p2 += sizeof(type); \
+   }
+
+  _swapBasicType(while,INT64,w)   /* take 8 bytes at a time */
+  _swapBasicType(if   ,long ,w)   /* take 4 bytes at a time */
+  _swapBasicType(if   ,short,w)   /* take 2 bytes at a time */
+  _swapBasicType(if   ,char ,w)   /* take the last (if any) */
+}
+
+//extern "C" void memSwap(void *p1, void *p2, size_t w);
+
+#else // IS64BIT
 
 inline void memSwap(void *p1, void *p2, size_t w) {
   __asm {

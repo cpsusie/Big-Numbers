@@ -1,6 +1,11 @@
 #pragma once
 
 #include <Comparator.h>
+#include <MemSwap.h>
+
+inline void swap(char *p1, char *p2, size_t w) {
+  memSwap(p1,p2,w);
+}
 
 typedef void (*SortMethod)(void *, size_t nelem, size_t width, AbstractComparator &comparator);
 
@@ -25,35 +30,6 @@ void shakerSort(             void *base, size_t nelem, size_t width, AbstractCom
 void bubbleSort(             void *base, size_t nelem, size_t width, AbstractComparator &comparator);
 void shortSortMS(            void *base, size_t nelem, size_t width, AbstractComparator &comparator);
 void mergeSort(              void *base, size_t nelem, size_t width, AbstractComparator &comparator);
-
-//#define OLDSWAP
-#ifdef OLDSWAP
-inline void swap(register char *p1, register char *p2, size_t w) {
-#define swapBasicType(if_or_while,type,w)   \
-  if_or_while(w >= sizeof(type)) {          \
-    type tmp   = *(type*)p1;                \
-    *(type*)p1 = *(type*)p2;                \
-    *(type*)p2 = tmp;                       \
-    w -= sizeof(type);                      \
-    p1 += sizeof(type); p2 += sizeof(type); \
-   }
-
-#ifdef IS32BIT
-  swapBasicType(while,long ,w)   /* take 4 bytes at a time */
-#else
-  swapBasicType(while,INT64,w)   /* take 4 bytes at a time */
-  swapBasicType(if   ,long ,w)   /* take 4 bytes at a time */
-#endif
-  swapBasicType(if   ,short,w)   /* take 2 bytes at a time */
-  swapBasicType(if   ,char ,w)   /* take the last (if any) */
-}
-
-#else
-#include <MemSwap.h>
-inline void swap(char *p1, char *p2, size_t w) {
-  memSwap(p1,p2,w);
-}
-#endif // OLDSWAP
 
 typedef struct {
   void  *m_base;

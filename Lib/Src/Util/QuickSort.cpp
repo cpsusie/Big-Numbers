@@ -1,37 +1,9 @@
 #include "pch.h"
 #include <Thread.h>
 #include <SynchronizedQueue.h>
-
-#pragma check_stack(off)
-
-#define _swap(p1,p2,T) { const T tmp=*(T*)p1; *(T*)p1=*(T*)p2; *(T*)p2=tmp; }
-
-#define OLDSWAP
-#ifdef OLDSWAP
-
-static inline void swap(register char *p1, register char *p2, size_t w) {
-#define swapBasicType(if_or_while,type,w)   \
-  if_or_while(w >= sizeof(type)) {          \
-    _swap(p1,p2,type)                       \
-    w -= sizeof(type);                      \
-    p1 += sizeof(type); p2 += sizeof(type); \
-   }
-
-#ifdef IS32BIT
-  swapBasicType(while,long ,w)   /* take 4 bytes at a time */
-#else
-  swapBasicType(while,INT64,w)   /* take 8 bytes at a time */
-  swapBasicType(if   ,long ,w)   /* take 4 bytes at a time */
-#endif
-  swapBasicType(if   ,short,w)   /* take 2 bytes at a time */
-  swapBasicType(if   ,char ,w)   /* take the last (if any) */
-}
-
-#else // !OLDSWAP
-
 #include <MemSwap.h>
+
 #define swap(p1, p2,w) memSwap(p1,p2,w)
-#endif // OLDSWAP
 
 #define PUSH(base,size) { baseStack[stackTop] = base; sizeStack[stackTop++] = size; }
 #define POP(base,size)  { base = baseStack[--stackTop]; size = sizeStack[stackTop]; }
