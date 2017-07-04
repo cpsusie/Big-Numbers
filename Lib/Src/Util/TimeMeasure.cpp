@@ -29,11 +29,14 @@ double static getTime(TimeMeasureType timeType) {
   }
 }
 
+#define NEW_MEASURE_METHOD
+
+#ifdef NEW_MEASURE_METHOD
 static double measureThreadTime(MeasurableFunction &ftm) {
 //  UINT64 interruptTime;
 //  QueryInterruptTimePrecise(&interruptTime);
 //  const double interruptTimeSec = (double)interruptTime / 1e7;
-  const double interruptTimeSec = 150E-6;
+  const double interruptTimeSec = 150E-3;
 
   LARGE_INTEGER freq;
   QueryPerformanceFrequency(&freq);
@@ -58,8 +61,9 @@ static double measureThreadTime(MeasurableFunction &ftm) {
     }
   }
 }
-
+#endif
 double measureTime(MeasurableFunction &ftm, TimeMeasureType timeType) {
+#ifdef NEW_MEASURE_METHOD
   switch (timeType) {
   case MEASURE_THREADTIME : return measureThreadTime( ftm);
   case MEASURE_PROCESSTIME:
@@ -68,6 +72,7 @@ double measureTime(MeasurableFunction &ftm, TimeMeasureType timeType) {
                             return 1000;
 
   }
+#endif
   double totalUsage;
   double count = 1;
 
