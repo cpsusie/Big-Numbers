@@ -2,7 +2,7 @@
 
 class CMyPaintDoc : public CDocument {
 private:
-  static const CString defaultName;
+  static const CString   s_defaultName;
   PixRect               *m_image, *m_fileImage;
   CompactArray<PixRect*> m_history;
   int                    m_index; // Invariant: 0 <= m_index <= m_history.size()

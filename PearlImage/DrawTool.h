@@ -23,6 +23,7 @@ typedef enum {
 class DrawTool {
 protected:
   PixRectContainer *m_container;
+
   void repaint() {
     m_container->repaint();
   }
@@ -46,7 +47,8 @@ public:
   virtual void copy();
   virtual void OnDelete() {
   }
-
+  virtual void reset() {
+  }
   PixRect *getPixRect() {
     return m_container->getPixRect();
   }
@@ -79,6 +81,7 @@ public:
   void OnLButtonDown(UINT nFlags, const CPoint &point);
   void OnMouseMove(  UINT nFlags, const CPoint &point);
   void OnLButtonUp(  UINT nFlags, const CPoint &point);
+  void reset();
   DrawToolType getType() const {
     return MOVERECTANGLETOOL;
   }
@@ -104,6 +107,7 @@ public:
   void OnLButtonDown(UINT nFlags, const CPoint &point);
   void OnMouseMove(  UINT nFlags, const CPoint &point);
   void OnLButtonUp(  UINT nFlags, const CPoint &point);
+  void reset();
   DrawToolType getType() const {
     return MOVEREGIONTOOL;
   }

@@ -13,7 +13,7 @@ private:
   D3DCOLOR         m_currentColor;
   FontParameters   m_currentFontParameters;
   String           m_currentText;
-  unsigned int     m_approximateFillTolerance;
+  UINT             m_approximateFillTolerance;
   CSize            m_eraseToolSize;
 
   void onFileMruFile(int index);
@@ -29,7 +29,6 @@ private:
   }
 
   CPearlImageDoc *getDocument();
-  void updateTitle();
   void scroll(int dx, int dy);
   CPoint getMaxScroll();
   void applyFilter(PixRectFilter &filter);
@@ -41,13 +40,14 @@ protected:
   DECLARE_DYNCREATE(CMainFrame)
 
 public:
-  virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
   virtual BOOL PreTranslateMessage(MSG *pMsg);
   virtual ~CMainFrame();
 
-  void loadFile(const String &fileName);
+  // return true, if a new image was loaded into doc and showed in view
+  bool loadFile(const String &fileName);
   void setCurrentZoomFactor(int id);
   void saveDocState();
+  void updateTitle();
   void pushTool(DrawTool *tool);
   void popTool();
 
@@ -58,6 +58,8 @@ public:
   bool hasDrawTool() const {
     return !m_toolStack.isEmpty();
   }
+
+  void resetCurrentDrawTool();
 
   D3DCOLOR getCurrentColor() const {
     return m_currentColor;
@@ -108,16 +110,8 @@ protected:
     afx_msg void OnOptionsZoomX2();
     afx_msg void OnOptionsZoomX4();
     afx_msg void OnOptionsZoomX8();
-    afx_msg void OnToolsPen();
-    afx_msg void OnToolsLine();
-    afx_msg void OnToolsRectangle();
-    afx_msg void OnToolsPolygon();
-    afx_msg void OnToolsEllipse();
-    afx_msg void OnToolsText();
-    afx_msg void OnToolsFill();
     afx_msg void OnToolsMoveRectangle();
     afx_msg void OnToolsMoveRegion();
-    afx_msg void OnToolsErase();
     afx_msg void OnFunctionRotate();
     afx_msg void OnFunctionScale();
     afx_msg void OnFunctionMirrorHorizontal();

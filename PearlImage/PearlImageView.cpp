@@ -73,17 +73,17 @@ void EdgeMark::setPosition(const CPoint &p) {
 CPearlImageView::~CPearlImageView() {
 }
 
-BOOL CPearlImageView::PreCreateWindow(CREATESTRUCT& cs) {
+BOOL CPearlImageView::PreCreateWindow(CREATESTRUCT &cs) {
   return __super::PreCreateWindow(cs);
 }
 
-void CPearlImageView::OnDraw(CDC* pDC) {
+void CPearlImageView::OnDraw(CDC *pDC) {
 
-  CPearlImageDoc *doc     = GetDocument();
-  PixRect     *pr         = doc->getPixRect();
-  CSize        docSizePix = doc->getSize();
-  HDC          hdc        = pr->getDC();
-  CDC         *docDC      = CDC::FromHandle(hdc);
+  CPearlImageDoc *doc        = GetDocument();
+  PixRect        *pr         = doc->getImage();
+  CSize           docSizePix = doc->getSize();
+  HDC             hdc        = pr->getDC();
+  CDC            *docDC      = CDC::FromHandle(hdc);
   if(!pDC->IsPrinting()) {
     if(m_currentZoomFactor == 1) {
       pDC->BitBlt(0,0,docSizePix.cx,docSizePix.cy
@@ -108,40 +108,49 @@ void CPearlImageView::OnDraw(CDC* pDC) {
 
 void CPearlImageView::paintBackgroundAndEdge(CDC &dc) {
   CSize  docSize = GetDocument()->getSize();
-  CPoint bottomRightMark = getViewPoint(docSize);
-  CPoint rightMark       = getViewPoint(CPoint(docSize.cx  , docSize.cy/2));
-  CPoint bottomMark      = getViewPoint(CPoint(docSize.cx/2, docSize.cy  ));
-  CRect clRect;
-  GetClientRect(&clRect);
-  CPoint topLeft = getTopLeft();
+  CPoint cornerMarkPos      = getViewPoint(docSize);
+  CPoint rightMarkPos       = getViewPoint(CPoint(docSize.cx  , docSize.cy/2));
+  CPoint bottomMarkPos      = getViewPoint(CPoint(docSize.cx/2, docSize.cy  ));
+  CPoint topLeft            = getTopLeft();
+  CRect  clRect             = getClientRect(this);
 
-  int markCount = 0;
-  for(int i = 0; i < m_edgeMark.size(); i++) {
+  int visibleMarkCount = 0;
+  for(size_t i = 0; i < m_edgeMark.size(); i++) {
     m_edgeMark[i].setVisible(false);
   }
 
-  if(0 < bottomRightMark.x && bottomRightMark.x < clRect.right) {
-    dc.FillSolidRect(bottomRightMark.x,0,clRect.right - bottomRightMark.x+topLeft.x,clRect.bottom+topLeft.y,BACKGROUNDCOLOR);
-    if(0 <= rightMark.y && rightMark.y < clRect.bottom) {
-      m_edgeMark[RIGHTMARK].setPosition(rightMark);
-      markCount++;
+  if(0 < cornerMarkPos.x && cornerMarkPos.x < clRect.right) {
+    dc.FillSolidRect(cornerMarkPos.x, topLeft.y, clRect.right - cornerMarkPos.x, clRect.bottom, BACKGROUNDCOLOR);
+    if(clRect.PtInRect(rightMarkPos)) {
+      m_edgeMark[RIGHTMARK].setPosition(rightMarkPos);
+      visibleMarkCount++;
     }
   }
-  if(0 < bottomRightMark.y && bottomRightMark.y < clRect.bottom) {
-    dc.FillSolidRect(0,bottomRightMark.y,clRect.right + topLeft.x,clRect.bottom - bottomRightMark.y + topLeft.y,BACKGROUNDCOLOR);
-    if(0 <= bottomMark.x && bottomMark.x < clRect.right) {
-      m_edgeMark[BOTTOMMARK].setPosition(bottomMark);
-      markCount++;
+  if(0 < cornerMarkPos.y && cornerMarkPos.y < clRect.bottom) {
+    dc.FillSolidRect(topLeft.x, cornerMarkPos.y, clRect.right - max(0,clRect.right-cornerMarkPos.x), clRect.bottom - cornerMarkPos.y, BACKGROUNDCOLOR);
+    if(clRect.PtInRect(bottomMarkPos)) {
+      m_edgeMark[BOTTOMMARK].setPosition(bottomMarkPos);
+      visibleMarkCount++;
     }
   }
-  if(markCount == 2) { // both right- and bottom-mark is visible. Then bottomRightMark is also visible
-    m_edgeMark[RIGHTBOTTOMMARK].setPosition(bottomRightMark);
+  if(visibleMarkCount == 2) { // both right- and bottom-mark are visible => bottomRightMark is visible
+    m_edgeMark[RIGHTBOTTOMMARK].setPosition(cornerMarkPos);
+    visibleMarkCount++;
   }
-  for(size_t i = 0; i < m_edgeMark.size(); i++) {
-    const EdgeMark &m = m_edgeMark[i];
-    if(m.isVisible()) {
-      dc.Rectangle(m.getVisibleRect());
+  if(visibleMarkCount > 0) {
+    CBrush whiteBrush(WHITE);
+    CPen blackPen;
+    blackPen.CreatePen(PS_SOLID, 1, BLACK);
+    CBrush* pOldBrush = dc.SelectObject(&whiteBrush);
+    CPen  * pOldPen   = dc.SelectObject(&blackPen  );
+    for(size_t i = 0; i < m_edgeMark.size(); i++) {
+      const EdgeMark &m = m_edgeMark[i];
+      if(m.isVisible()) {
+        dc.Rectangle(m.getVisibleRect()-topLeft);
+      }
     }
+    dc.SelectObject(pOldBrush);
+    dc.SelectObject(pOldPen  );
   }
 }
 
@@ -154,7 +163,7 @@ void CPearlImageView::restoreOldTool() {
 }
 
 PixRect *CPearlImageView::getPixRect() {
-  return GetDocument()->getPixRect();
+  return GetDocument()->getImage();
 }
 
 D3DCOLOR CPearlImageView::getColor() {
@@ -196,15 +205,15 @@ void CPearlImageView::setCurrentZoomFactor(int factor) {
   refreshDoc();
 }
 
-BOOL CPearlImageView::OnPreparePrinting(CPrintInfo* pInfo) {
+BOOL CPearlImageView::OnPreparePrinting(CPrintInfo *pInfo) {
   m_printInfo = pInfo;
   return DoPreparePrinting(pInfo);
 }
 
-void CPearlImageView::OnBeginPrinting(CDC* pDC, CPrintInfo* pInfo) {
+void CPearlImageView::OnBeginPrinting(CDC *pDC, CPrintInfo *pInfo) {
 }
 
-void CPearlImageView::OnEndPrinting(CDC* pDC, CPrintInfo* pInfo) {
+void CPearlImageView::OnEndPrinting(CDC *pDC, CPrintInfo *pInfo) {
   m_printInfo = NULL;
 }
 
@@ -261,12 +270,12 @@ CRect CPearlImageView::getViewRect() const {
 }
 
 CPoint CPearlImageView::getViewPoint(const CPoint &docPoint) const {
-  CPoint topLeft = getTopLeft();
+  const CPoint topLeft = getTopLeft();
   return CPoint(docPoint.x * m_currentZoomFactor - topLeft.x, docPoint.y * m_currentZoomFactor - topLeft.y);
 }
 
 CPoint CPearlImageView::getDocPoint(const CPoint &viewPoint) const {
-  CPoint topLeft = getTopLeft();
+  const CPoint topLeft = getTopLeft();
   return CPoint((viewPoint.x+topLeft.x)/m_currentZoomFactor, (viewPoint.y+topLeft.y)/m_currentZoomFactor);
 }
 
@@ -293,7 +302,7 @@ void CPearlImageView::OnLButtonUp(UINT nFlags, CPoint point) {
 }
 
 void CPearlImageView::OnMouseMove(UINT nFlags, CPoint point) {
-  CPoint newPoint = getDocPoint(point);
+  const CPoint newPoint = getDocPoint(point);
   if(newPoint != m_lastPoint) {
     getMainFrame()->getCurrentDrawTool()->OnMouseMove(nFlags,newPoint);
     m_lastPoint = newPoint;
@@ -338,6 +347,8 @@ BOOL CPearlImageView::PreTranslateMessage(MSG *pMsg) {
       }
       repaint();
       return TRUE;
+    } else if(!getViewRect().PtInRect(p)) {
+      return TRUE;
     }
     break;
 
@@ -355,7 +366,6 @@ BOOL CPearlImageView::PreTranslateMessage(MSG *pMsg) {
     }
     break;
   }
-
   return __super::PreTranslateMessage(pMsg);
 }
 
@@ -366,6 +376,7 @@ void CPearlImageView::resizeDocument(const CPoint &p) {
     newSize.cy /= m_currentZoomFactor;
     if(newSize.cx != 0 && newSize.cy != 0) {
       GetDocument()->setSize(newSize);
+      getMainFrame()->updateTitle();
     }
   }
 }

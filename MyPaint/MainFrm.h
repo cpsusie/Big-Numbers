@@ -44,7 +44,7 @@ public:
   virtual BOOL PreTranslateMessage(MSG *pMsg);
   virtual ~CMainFrame();
 
-  void loadFile(const String &fileName);
+  bool loadFile(const String &fileName);
   void setCurrentZoomFactor(int id);
   void saveDocState();
   void pushTool(DrawTool *tool);

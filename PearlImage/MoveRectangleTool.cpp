@@ -7,18 +7,7 @@ MoveRectangleTool::MoveRectangleTool(PixRectContainer *container) : DrawTool(con
 }
 
 MoveRectangleTool::~MoveRectangleTool() {
-  if(m_copy != NULL) {
-    invertDragRect();
-    releaseCopy();
-  }
-}
-
-void MoveRectangleTool::releaseCopy() {
-  if(m_copy != NULL) {
-    delete m_copy;
-    delete m_old;
-  }
-  m_copy = m_old = NULL;
+  reset();
 }
 
 void MoveRectangleTool::invertDragRect() {
@@ -83,8 +72,8 @@ void MoveRectangleTool::OnLButtonUp(UINT nFlags, const CPoint &point) {
     invertDragRect();   // remove dragrect
     m_rect = CRect(min(m_p0.x,m_p1.x),min(m_p0.y,m_p1.y),max(m_p0.x,m_p1.x),max(m_p0.y,m_p1.y)); // define rect
     if(m_rect.Width() > 0 && m_rect.Height() > 0) {                                              // if valid rectangle
-      m_copy = new PixRect(theApp.m_device, PIXRECT_PLAINSURFACE, m_rect.Size());                                      //   define copy
-      m_old  = new PixRect(theApp.m_device, PIXRECT_PLAINSURFACE, m_rect.Size());                                      //   define old
+      m_copy = theApp.fetchPixRect(m_rect.Size());                                               //   define copy
+      m_old  = theApp.fetchPixRect(m_rect.Size());                                               //   define old
       m_copy->rop(ORIGIN,m_rect.Size(),SRCCOPY, getPixRect(),m_rect.TopLeft());                  //   take a copy
       m_old->rop( ORIGIN,m_rect.Size(),SRCCOPY, getPixRect(),m_rect.TopLeft());                  //   take a copy
 
@@ -95,16 +84,30 @@ void MoveRectangleTool::OnLButtonUp(UINT nFlags, const CPoint &point) {
   }
 }
 
-void MoveRectangleTool::cut() {
+void MoveRectangleTool::reset() {
+  if(m_copy != NULL) {
+    invertDragRect();
+    releaseCopy();
+  }
+}
 
+void MoveRectangleTool::releaseCopy() {
+  if(m_copy != NULL) {
+    delete m_copy;
+    delete m_old;
+  }
+  m_copy = m_old = NULL;
+}
+
+void MoveRectangleTool::cut() {
 }
 
 void MoveRectangleTool::copy() {
   if(m_copy == NULL) {
-    DrawTool::copy();
+    __super::copy();
   } else {
     HBITMAP bm = *m_copy;
-    putClipboard(AfxGetMainWnd()->m_hWnd,bm);
+    putClipboard(theApp.GetMainWnd()->m_hWnd,bm);
     DeleteObject(bm);
   }
 }

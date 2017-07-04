@@ -270,19 +270,22 @@ void CMainFrame::onFileMruFile(int index) {
   if(!checkSave()) {
     return;
   }
-  const String name = theApp.getRecentFile(index);
-  loadFile(name);
+  if(!loadFile(theApp.getRecentFile(index))) {
+    theApp.removeRecentFile(index);
+  }
 }
 
-void CMainFrame::loadFile(const String &fileName) {
+bool CMainFrame::loadFile(const String &fileName) {
   resetCurrentDrawTool();
   try {
     getDocument()->OnOpenDocument(fileName.cstr());
     updateTitle();
     getView()->clear();
     getView()->refreshDoc();
+    return true;
   } catch(Exception e) {
     MessageBox(e.what());
+    return false;
   }
 }
 

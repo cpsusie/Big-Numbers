@@ -10,7 +10,7 @@ IMPLEMENT_DYNCREATE(CMyPaintDoc, CDocument)
 BEGIN_MESSAGE_MAP(CMyPaintDoc, CDocument)
 END_MESSAGE_MAP()
 
-const CString CMyPaintDoc::defaultName = _T("Untitled");
+const CString CMyPaintDoc::s_defaultName = _T("Untitled");
 
 CMyPaintDoc::CMyPaintDoc() {
   m_image     = NULL;
@@ -39,7 +39,7 @@ BOOL CMyPaintDoc::OnOpenDocument(LPCTSTR name) {
 }
 
 BOOL CMyPaintDoc::OnNewDocument() {
-  if(!CDocument::OnNewDocument()) {
+  if(!__super::OnNewDocument()) {
     return FALSE;
   }
   init();
@@ -48,7 +48,7 @@ BOOL CMyPaintDoc::OnNewDocument() {
 
 void CMyPaintDoc::init() {
   resetHistory();
-  SetTitle(defaultName);
+  SetTitle(s_defaultName);
   CHECKINVARIANT;
 }
 
@@ -62,7 +62,7 @@ bool CMyPaintDoc::isModified() const {
 }
 
 bool CMyPaintDoc::hasDefaultName() const {
-  return GetTitle() == defaultName;
+  return GetTitle() == s_defaultName;
 }
 
 BOOL CMyPaintDoc::OnSaveDocument(LPCTSTR name) {
@@ -198,7 +198,7 @@ bool CMyPaintDoc::canRedo() const {
 #ifdef _DEBUG
 void CMyPaintDoc::checkInvariant(int line) const {
   if(m_index < 0 || m_index > getHistorySize()) {
-    throwException(_T("Broken invariant in %s, line %d:index=%d, historySize=%d"), __FILE__, line, m_index, m_history.size());
+    throwException(_T("Broken invariant in %s, line %d:index=%d, historySize=%d"), __TFILE__, line, m_index, m_history.size());
   }
 }
 #endif
@@ -211,10 +211,10 @@ void CMyPaintDoc::Serialize(CArchive& ar) {
 
 #ifdef _DEBUG
 void CMyPaintDoc::AssertValid() const {
-  CDocument::AssertValid();
+  __super::AssertValid();
 }
 
 void CMyPaintDoc::Dump(CDumpContext& dc) const {
-  CDocument::Dump(dc);
+  __super::Dump(dc);
 }
 #endif //_DEBUG

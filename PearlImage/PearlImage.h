@@ -17,6 +17,8 @@ public:
   PixRectDevice m_device;
   CPearlImageApp();
   String getRecentFile(int index);
+  void   removeRecentFile(int index);
+  PixRect *fetchPixRect(const CSize &size);
 
   virtual BOOL InitInstance();
   afx_msg void OnAppAbout();

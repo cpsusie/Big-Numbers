@@ -6,20 +6,7 @@ MoveRegionTool::MoveRegionTool(PixRectContainer *container) : DrawTool(container
 }
 
 MoveRegionTool::~MoveRegionTool() {
-  if(m_copy != NULL) {
-    invertPolygon();
-    releaseCopy();
-  }
-}
-
-void MoveRegionTool::releaseCopy() {
-  if(m_copy != NULL) {
-    delete m_copy;
-    delete m_mask;
-    delete m_old;
-  }
-  m_copy = m_mask = m_old = NULL;
-  m_polygon.clear();
+  reset();
 }
 
 void MoveRegionTool::invertPolygon(bool redraw) {
@@ -34,7 +21,7 @@ void MoveRegionTool::OnLButtonDown(UINT nFlags, const CPoint &point) {
     m_polygon.add(point);
     invertPolygon();
   } else if(m_polygon.contains(point) == 1) {
-    m_lastPoint = point;
+    m_lastPoint     = point;
     m_docStateSaved = false;
     invertPolygon(); // remove polygon
   } else {
@@ -75,10 +62,10 @@ void MoveRegionTool::OnLButtonUp(UINT nFlags, const CPoint &point) {
   if(m_copy == NULL) {
     invertPolygon();   // remove polygon
     m_rect = m_polygon.getBoundsRect();                                                             // define rect
-    if(m_polygon.size() > 2 && m_rect.Width() > 0 && m_rect.Height() > 0) {                         // if valid rectangle
-      m_copy = new PixRect(theApp.m_device, PIXRECT_PLAINSURFACE, m_rect.Size());                   //   define copy
-      m_mask = new PixRect(theApp.m_device, PIXRECT_PLAINSURFACE, m_rect.Size());                   //   define mask
-      m_old  = new PixRect(theApp.m_device, PIXRECT_PLAINSURFACE, m_rect.Size());                   //   define old
+    if((m_polygon.size() > 2) && (m_rect.Width() > 0) && (m_rect.Height() > 0)) {                   // if valid rectangle
+      m_copy = theApp.fetchPixRect(m_rect.Size());                                                  //   define copy
+      m_mask = theApp.fetchPixRect(m_rect.Size());                                                  //   define mask
+      m_old  = theApp.fetchPixRect(m_rect.Size());                                                  //   define old
       m_copy->rop(ORIGIN,m_rect.Size(),SRCCOPY, getPixRect(),m_rect.TopLeft());                     //   take a copy
       m_old->rop( ORIGIN,m_rect.Size(),SRCCOPY, getPixRect(),m_rect.TopLeft());                     //   take a copy
       createMask();
@@ -90,6 +77,23 @@ void MoveRegionTool::OnLButtonUp(UINT nFlags, const CPoint &point) {
   } else {
     invertPolygon(); // draw polygon
   }
+}
+
+void MoveRegionTool::reset() {
+  if(m_copy != NULL) {
+    invertPolygon();
+    releaseCopy();
+  }
+}
+
+void MoveRegionTool::releaseCopy() {
+  if(m_copy != NULL) {
+    delete m_copy;
+    delete m_mask;
+    delete m_old;
+  }
+  m_copy = m_mask = m_old = NULL;
+  m_polygon.clear();
 }
 
 void MoveRegionTool::createMask() {

@@ -71,6 +71,13 @@ String CMyPaintApp::getRecentFile(int index) {
   return (LPCTSTR)list[index];
 }
 
+void CMyPaintApp::removeRecentFile(int index) {
+  CRecentFileList &list = *m_pRecentFileList;
+  if((UINT)index < (UINT)list.GetSize()) {
+    return list.Remove(index);
+  }
+}
+
 PixRect *CMyPaintApp::fetchPixRect(const CSize &size) {
   PixRect *pr = new PixRect(m_device, PIXRECT_PLAINSURFACE, size);
   pr->fillColor(WHITE);

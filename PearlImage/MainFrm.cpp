@@ -113,13 +113,6 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
   return 0;
 }
 
-BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs) {
-  if(!__super::PreCreateWindow(cs)) {
-    return FALSE;
-  }
-  return TRUE;
-}
-
 BOOL CMainFrame::PreTranslateMessage(MSG *pMsg) {
   BOOL result;
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
@@ -178,18 +171,20 @@ void CMainFrame::OnFileNew() {
 }
 
 static String getLoadFileName() {
-  static const TCHAR *loadFileDialogExtensions = _T("Picture files\0*.bmp;*.dib;*.jpg;*.emf;*.gif;*.ico;*.wmf;\0"
+  static const TCHAR *loadFileDialogExtensions = _T("Picture files\0*.bmp;*.jpg;*.png;*.tiff;*.gif;*.ico;*.cur;*.dib;\0"
                                                     "BMP-Files (*.bmp)\0*.bmp;\0"
-                                                    "DIB-files (*.dib)\0*.dib;\0"
                                                     "JPG-files (*.jpg)\0*.jpg;\0"
+                                                    "PNG-files (*.png)\0*.png;\0"
                                                     "TIFF-files (*.tiff)\0*.tiff;\0"
                                                     "GIF-files (*.gif)\0*.gif;\0"
                                                     "ICO-files (*.ico)\0*.ico;\0"
                                                     "CUR-files (*.cur)\0*.cur;\0"
+                                                    "DIB-files (*.dib)\0*.dib;\0"
                                                     "All files (*.*)\0*.*\0\0");
   CFileDialog dlg(TRUE);
   dlg.m_ofn.lpstrFilter = loadFileDialogExtensions;
   dlg.m_ofn.lpstrTitle  = _T("Open file");
+  dlg.m_ofn.Flags |= OFN_FILEMUSTEXIST | OFN_EXPLORER | OFN_ENABLESIZING;
 
   if(dlg.DoModal() != IDOK) {
     return EMPTYSTRING;
@@ -202,8 +197,7 @@ void CMainFrame::OnFileOpen() {
   if(!checkSave()) {
     return;
   }
-
-  String fileName = getLoadFileName();
+  const String fileName = getLoadFileName();
   if(fileName.length() == 0) {
     return;
   }
@@ -228,21 +222,25 @@ void CMainFrame::OnFileMruFile15() { onFileMruFile(14); }
 void CMainFrame::OnFileMruFile16() { onFileMruFile(15); }
 
 void CMainFrame::onFileMruFile(int index) {
-  String name = theApp.getRecentFile(index);
-  loadFile(name);
-}
-
-void CMainFrame::loadFile(const String &fileName) {
   if(!checkSave()) {
     return;
   }
+  if(!loadFile(theApp.getRecentFile(index))) {
+    theApp.removeRecentFile(index);
+  }
+}
+
+bool CMainFrame::loadFile(const String &fileName) {
+  resetCurrentDrawTool();
   try {
     getDocument()->OnOpenDocument(fileName.cstr());
     updateTitle();
     getView()->clear();
     getView()->refreshDoc();
+    return true;
   } catch(Exception e) {
     MessageBox(e.what());
+    return false;
   }
 }
 
@@ -250,8 +248,7 @@ void CMainFrame::updateTitle() {
   CPearlImageDoc *doc = getDocument();
   CString title    = doc->GetTitle();
   CSize   size     = doc->getSize();
-  String text      = format(_T("PearlImage %s - %dx%d"), (LPCTSTR)title, size.cx,size.cy);
-  setWindowText(this, text);
+  setWindowText(this, format(_T("PearlImage %s - %dx%d"), (LPCTSTR)title, size.cx,size.cy));
 }
 
 static const TCHAR *saveFileDialogExtensions = _T("Bitmap files (*.bmp)\0*.bmp;\0"
@@ -283,8 +280,8 @@ void CMainFrame::OnFileSaveAs() {
   CString name = getDocument()->GetPathName();
   FileNameSplitter info((LPCTSTR)name);
   CFileDialog dlg(FALSE,info.getExtension().cstr(),name);
-  dlg.m_ofn.lpstrFilter = saveFileDialogExtensions;
   dlg.m_ofn.lpstrTitle  = _T("Save image");
+  dlg.m_ofn.lpstrFilter = saveFileDialogExtensions;
   if(dlg.DoModal() == IDOK) {
     name = dlg.m_ofn.lpstrFile;
     save(name);
@@ -307,13 +304,17 @@ void CMainFrame::saveDocState() {
 }
 
 void CMainFrame::OnEditUndo() {
-  getDocument()->undo();
-  getView()->repaint();
+  if(getDocument()->undo()) {
+    getView()->repaint();
+    updateTitle();
+  }
 }
 
 void CMainFrame::OnEditRedo() {
-  getDocument()->redo();
-  getView()->repaint();
+  if(getDocument()->redo()) {
+    getView()->repaint();
+    updateTitle();
+  }
 }
 
 void CMainFrame::OnEditCut() {
@@ -374,7 +375,6 @@ void CMainFrame::setCurrentZoomFactor(int id) {
   }
 }
 
-
 void CMainFrame::OnToolsMoveRectangle() {
   setCurrentDrawTool(ID_TOOLS_MOVERECTANGLE);
 }
@@ -394,7 +394,7 @@ void CMainFrame::OnFunctionRotate() {
 
   CPearlImageDoc *doc = getDocument();
   saveDocState();
-  doc->setPixRect(PixRect::rotateImage(doc->getPixRect(),m_currentDegree));
+  doc->setImage(PixRect::rotateImage(doc->getImage(),m_currentDegree));
 
   theApp.EndWaitCursor();
   getView()->refreshDoc();
@@ -412,7 +412,7 @@ void CMainFrame::OnFunctionScale() {
 
   CPearlImageDoc *doc = getDocument();
   saveDocState();
-  doc->setPixRect(PixRect::scaleImage(doc->getPixRect(),m_currentScale));
+  doc->setImage(PixRect::scaleImage(doc->getImage(),m_currentScale));
 
   theApp.EndWaitCursor();
   getView()->refreshDoc();
@@ -427,7 +427,7 @@ void CMainFrame::applyMirror(bool vertical) {
   theApp.BeginWaitCursor();
   saveDocState();
   CPearlImageDoc *doc = getDocument();
-  doc->setPixRect(PixRect::mirror(doc->getPixRect(),vertical));
+  doc->setImage(PixRect::mirror(doc->getImage(),vertical));
   Invalidate();
   theApp.EndWaitCursor();
 }
@@ -435,7 +435,7 @@ void CMainFrame::applyMirror(bool vertical) {
 void CMainFrame::applyFilter(PixRectFilter &filter) {
   theApp.BeginWaitCursor();
   saveDocState();
-  getDocument()->getPixRect()->apply(filter);
+  getDocument()->getImage()->apply(filter);
   Invalidate();
   theApp.EndWaitCursor();
 }
@@ -463,6 +463,12 @@ void CMainFrame::setCurrentDrawTool(int id) {
   }
 }
 
+void CMainFrame::resetCurrentDrawTool() {
+  if(hasDrawTool()) {
+    getCurrentDrawTool()->reset();
+  }
+}
+
 void CMainFrame::setCurrentDrawTool(DrawTool *newDrawTool) {
   if(hasDrawTool()) {
     popTool();
@@ -480,7 +486,8 @@ void CMainFrame::pushTool(DrawTool *tool) {
 }
 
 static int toolItems[] = {
-  ID_TOOLS_MOVERECTANGLE, ID_TOOLS_MOVEREGION
+  ID_TOOLS_MOVERECTANGLE
+ ,ID_TOOLS_MOVEREGION
 };
 
 void CMainFrame::checkToolItem(int id) {
@@ -491,20 +498,17 @@ void CMainFrame::checkToolItem(int id) {
 }
 
 CPoint CMainFrame::getMaxScroll() {
-  CRect r;
-  getView()->GetClientRect(&r);
-  CSize rectSize = r.Size();
-  CSize docSize = getDocument()->getSize();
-  int zoom = getView()->getCurrentZoomFactor();
+  const CSize rectSize = getClientRect(getView()).Size();
+  const CSize docSize  = getDocument()->getSize();
+  const int   zoom     = getView()->getCurrentZoomFactor();
   return CPoint(max(0,docSize.cx*zoom-rectSize.cx),max(0,docSize.cy*zoom-rectSize.cy));
 }
 
 void CMainFrame::scroll(int dx, int dy) {
-  CPoint topLeft   = getView()->GetScrollPosition();
-  CPoint maxScroll = getMaxScroll();
-  int newX = minMax(topLeft.x+dx,0,maxScroll.x);
-  int newY = minMax(topLeft.y+dy,0,maxScroll.y);
-
+  const CPoint topLeft   = getView()->GetScrollPosition();
+  const CPoint maxScroll = getMaxScroll();
+  const int    newX      = minMax(topLeft.x+dx,0,maxScroll.x);
+  const int    newY      = minMax(topLeft.y+dy,0,maxScroll.y);
   getView()->ScrollToPosition(CPoint(newX,newY));
 }
 
@@ -517,15 +521,11 @@ void CMainFrame::OnScrollLineUp() {
 }
 
 void CMainFrame::OnScrollPageDown() {
-  CRect r;
-  getView()->GetClientRect(&r);
-  scroll(0,r.Height());
+  scroll(0,getClientRect(getView()).Height());
 }
 
 void CMainFrame::OnScrollPageUp() {
-  CRect r;
-  getView()->GetClientRect(&r);
-  scroll(0,-r.Height());
+  scroll(0,-getClientRect(getView()).Height());
 }
 
 void CMainFrame::OnScrollLeft() {
@@ -537,34 +537,30 @@ void CMainFrame::OnScrollRight() {
 }
 
 void CMainFrame::OnScrollPageLeft() {
-  CRect r;
-  getView()->GetClientRect(&r);
-  scroll(-r.Width(),0);
+  scroll(-getClientRect(getView()).Width(),0);
 }
 
 void CMainFrame::OnScrollPageRight() {
-  CRect r;
-  getView()->GetClientRect(&r);
-  scroll(r.Width(),0);
+  scroll(getClientRect(getView()).Width(),0);
 }
 
 void CMainFrame::OnScrollToTop() {
-  CPoint topLeft = getView()->GetScrollPosition();
+  const CPoint topLeft = getView()->GetScrollPosition();
   getView()->ScrollToPosition(CPoint(topLeft.x,0));
 }
 
 void CMainFrame::OnScrollToBottom() {
-  CPoint topLeft = getView()->GetScrollPosition();
+  const CPoint topLeft = getView()->GetScrollPosition();
   getView()->ScrollToPosition(CPoint(topLeft.x,getMaxScroll().y));
 }
 
 void CMainFrame::OnScrollToLeft() {
-  CPoint topLeft = getView()->GetScrollPosition();
+  const CPoint topLeft = getView()->GetScrollPosition();
   getView()->ScrollToPosition(CPoint(0,topLeft.y));
 }
 
 void CMainFrame::OnScrollToRight() {
-  CPoint topLeft = getView()->GetScrollPosition();
+  const CPoint topLeft = getView()->GetScrollPosition();
   getView()->ScrollToPosition(CPoint(getMaxScroll().x,topLeft.y));
 }
 
@@ -572,7 +568,7 @@ void CMainFrame::OnAppExit() {
   if(!checkSave()) {
     return;
   }
-  exit(0);
+  PostMessage(WM_QUIT);
 }
 
 void CMainFrame::OnClose() {

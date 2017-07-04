@@ -16,9 +16,9 @@ BEGIN_MESSAGE_MAP(CMyPaintView, CScrollView)
     ON_WM_LBUTTONUP()
     ON_WM_LBUTTONDBLCLK()
     // Standard printing commands
-    ON_COMMAND(ID_FILE_PRINT, CScrollView::OnFilePrint)
-    ON_COMMAND(ID_FILE_PRINT_DIRECT, CScrollView::OnFilePrint)
-    ON_COMMAND(ID_FILE_PRINT_PREVIEW, CScrollView::OnFilePrintPreview)
+    ON_COMMAND(ID_FILE_PRINT        , OnFilePrint       )
+    ON_COMMAND(ID_FILE_PRINT_DIRECT , OnFilePrint       )
+    ON_COMMAND(ID_FILE_PRINT_PREVIEW, OnFilePrintPreview)
 END_MESSAGE_MAP()
 
 CMyPaintView::CMyPaintView() {
@@ -73,10 +73,6 @@ void EdgeMark::setPosition(const CPoint &p) {
 CMyPaintView::~CMyPaintView() {
 }
 
-BOOL CMyPaintView::PreCreateWindow(CREATESTRUCT& cs) {
-  return CView::PreCreateWindow(cs);
-}
-
 void CMyPaintView::OnDraw(CDC *pDC) {
   CMyPaintDoc *doc        = GetDocument();
   PixRect     *pr         = doc->getImage();
@@ -112,8 +108,7 @@ void CMyPaintView::paintBackgroundAndEdge(CDC &dc) {
   CPoint rightMarkPos       = getViewPoint(CPoint(docSize.cx  , docSize.cy/2));
   CPoint bottomMarkPos      = getViewPoint(CPoint(docSize.cx/2, docSize.cy  ));
   CPoint topLeft            = getTopLeft();
-  CRect clRect;
-  GetClientRect(&clRect);
+  CRect  clRect             = getClientRect(this);
 
   int visibleMarkCount = 0;
   for(size_t i = 0; i < m_edgeMark.size(); i++) {
@@ -220,11 +215,11 @@ void CMyPaintView::OnEndPrinting(CDC *pDC, CPrintInfo *pInfo) {
 
 #ifdef _DEBUG
 void CMyPaintView::AssertValid() const {
-  CView::AssertValid();
+  __super::AssertValid();
 }
 
 void CMyPaintView::Dump(CDumpContext& dc) const {
-  CView::Dump(dc);
+  __super::Dump(dc);
 }
 
 CMyPaintDoc* CMyPaintView::GetDocument() {
@@ -235,7 +230,7 @@ CMyPaintDoc* CMyPaintView::GetDocument() {
 
 
 void CMyPaintView::OnInitialUpdate() {
-  CScrollView::OnInitialUpdate();
+  __super::OnInitialUpdate();
   getMainFrame()->setCurrentZoomFactor(ID_OPTIONS_ZOOM_X1);
   setScrollRange();
   m_initialized  = true;
@@ -254,7 +249,7 @@ void CMyPaintView::setScrollRange() {
 }
 
 void CMyPaintView::OnSize(UINT nType, int cx, int cy) {
-  CScrollView::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
   if(m_initialized) {
     repaint();
   } else {
@@ -287,19 +282,19 @@ bool CMyPaintView::isMouseOnDocument() const {
 void CMyPaintView::OnLButtonDown(UINT nFlags, CPoint point) {
   m_lastPoint = getDocPoint(point);
   getMainFrame()->getCurrentDrawTool()->OnLButtonDown(nFlags,m_lastPoint);
-  CScrollView::OnLButtonDown(nFlags, point);
+  __super::OnLButtonDown(nFlags, point);
 }
 
 void CMyPaintView::OnLButtonDblClk(UINT nFlags, CPoint point) {
   m_lastPoint = getDocPoint(point);
   getMainFrame()->getCurrentDrawTool()->OnLButtonDblClk(nFlags,m_lastPoint);
-  CScrollView::OnLButtonDblClk(nFlags, point);
+  __super::OnLButtonDblClk(nFlags, point);
 }
 
 void CMyPaintView::OnLButtonUp(UINT nFlags, CPoint point) {
   m_lastPoint = getDocPoint(point);
   getMainFrame()->getCurrentDrawTool()->OnLButtonUp(nFlags,m_lastPoint);
-  CScrollView::OnLButtonUp(nFlags, point);
+  __super::OnLButtonUp(nFlags, point);
 }
 
 void CMyPaintView::OnMouseMove(UINT nFlags, CPoint point) {
@@ -308,7 +303,7 @@ void CMyPaintView::OnMouseMove(UINT nFlags, CPoint point) {
     getMainFrame()->getCurrentDrawTool()->OnMouseMove(nFlags,newPoint);
     m_lastPoint = newPoint;
   }
-  CScrollView::OnMouseMove(nFlags, point);
+  __super::OnMouseMove(nFlags, point);
 }
 
 EdgeMark *CMyPaintView::findEdgeMark(const CPoint &point) {
@@ -367,8 +362,7 @@ BOOL CMyPaintView::PreTranslateMessage(MSG *pMsg) {
     }
     break;
   }
-
-  return CScrollView::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 void CMyPaintView::resizeDocument(const CPoint &p) {

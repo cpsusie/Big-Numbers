@@ -76,13 +76,11 @@ private:
 protected:
   CMyPaintView();
   DECLARE_DYNCREATE(CMyPaintView)
-
 public:
   CMyPaintDoc *GetDocument();
   const CMyPaintDoc *GetDocument() const {
      return (const CMyPaintDoc*)m_pDocument;
   }
-
   PixRect     *getImage();
   D3DCOLOR     getColor();
   int          getApproximateFillTolerance() const;
@@ -111,29 +109,22 @@ public:
     return GetScrollPosition();
   }
 
-public:
+    virtual ~CMyPaintView();
     virtual void OnDraw(CDC *pDC);  // overridden to draw this view
-    virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
     virtual void OnInitialUpdate();
     virtual BOOL PreTranslateMessage(MSG *pMsg);
-protected:
     virtual BOOL OnPreparePrinting(CPrintInfo *pInfo);
     virtual void OnBeginPrinting(CDC *pDC, CPrintInfo *pInfo);
     virtual void OnEndPrinting(CDC *pDC, CPrintInfo *pInfo);
-
-public:
-    virtual ~CMyPaintView();
-#ifdef _DEBUG
-    virtual void AssertValid() const;
-    virtual void Dump(CDumpContext& dc) const;
-#endif
-
-protected:
     afx_msg void OnSize(UINT nType, int cx, int cy);
     afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
     afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
     afx_msg void OnMouseMove(UINT nFlags, CPoint point);
     afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
+#ifdef _DEBUG
+    virtual void AssertValid() const;
+    virtual void Dump(CDumpContext& dc) const;
+#endif
     DECLARE_MESSAGE_MAP()
 };
 
@@ -141,4 +132,3 @@ protected:
 inline CMyPaintDoc* CMyPaintView::GetDocument()
    { return (CMyPaintDoc*)m_pDocument; }
 #endif
-

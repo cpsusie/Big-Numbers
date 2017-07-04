@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include <afxadv.h>
 
 #include "MainFrm.h"
 #include "PearlImageDoc.h"
@@ -10,9 +9,9 @@
 #endif
 
 BEGIN_MESSAGE_MAP(CPearlImageApp, CWinApp)
-  ON_COMMAND(ID_APP_ABOUT, OnAppAbout)
-  ON_COMMAND(ID_FILE_NEW,  OnFileNew)
-  ON_COMMAND(ID_FILE_OPEN, OnFileOpen)
+  ON_COMMAND(ID_APP_ABOUT       , OnAppAbout      )
+  ON_COMMAND(ID_FILE_NEW        , OnFileNew       )
+  ON_COMMAND(ID_FILE_OPEN       , OnFileOpen      )
   ON_COMMAND(ID_FILE_PRINT_SETUP, OnFilePrintSetup)
 END_MESSAGE_MAP()
 
@@ -22,7 +21,16 @@ CPearlImageApp::CPearlImageApp() {
 CPearlImageApp theApp;
 
 BOOL CPearlImageApp::InitInstance() {
-  AfxEnableControlContainer();
+  INITCOMMONCONTROLSEX InitCtrls;
+  InitCtrls.dwSize = sizeof(InitCtrls);
+  // Set this to include all the common control classes you want to use
+  // in your application.
+  InitCtrls.dwICC = ICC_WIN95_CLASSES;
+  InitCommonControlsEx(&InitCtrls);
+
+  __super::InitInstance();
+
+  EnableTaskbarInteraction(FALSE);
 
   // Change the registry key under which our settings are stored.
   SetRegistryKey(_T("JGMData"));
@@ -62,11 +70,26 @@ BOOL CPearlImageApp::InitInstance() {
 
 String CPearlImageApp::getRecentFile(int index) {
   CRecentFileList &list = *m_pRecentFileList;
-  if(index >= list.GetSize())
+  if(index >= list.GetSize()) {
     return EMPTYSTRING;
+  }
   CString name = list[index];
-  return name.GetBuffer(name.GetLength());
+  return (LPCTSTR)name;
 }
+
+void CPearlImageApp::removeRecentFile(int index) {
+  CRecentFileList &list = *m_pRecentFileList;
+  if((UINT)index < (UINT)list.GetSize()) {
+    return list.Remove(index);
+  }
+}
+
+PixRect *CPearlImageApp::fetchPixRect(const CSize &size) {
+  PixRect *pr = new PixRect(m_device, PIXRECT_PLAINSURFACE, size);
+  pr->fillColor(WHITE);
+  return pr;
+}
+
 
 class CAboutDlg : public CDialog {
 public:

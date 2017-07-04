@@ -76,7 +76,6 @@ private:
 protected:
   CPearlImageView();
   DECLARE_DYNCREATE(CPearlImageView)
-
 public:
     CPearlImageDoc *GetDocument();
     const CPearlImageDoc *GetDocument() const {
@@ -89,7 +88,6 @@ public:
     void         repaint();
     void         enableCut(bool enabled);
     void         saveDocState();
-
     void         setScrollRange();
     void         refreshDoc();
     void         clear();
@@ -103,7 +101,6 @@ public:
     }
 
     bool         isMouseOnDocument() const;
-
     CPoint       getDocPoint( const CPoint &viewPoint) const;
     CPoint       getViewPoint(const CPoint &docPoint)  const;
     EdgeMark    *findEdgeMark(const CPoint &point);
@@ -113,13 +110,13 @@ public:
     }
 
     virtual ~CPearlImageView();
-    virtual void OnDraw(CDC* pDC);  // overridden to draw this view
-    virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
+    virtual void OnDraw(CDC *pDC);  // overridden to draw this view
+    virtual BOOL PreCreateWindow(CREATESTRUCT &cs);
     virtual void OnInitialUpdate();
     virtual BOOL PreTranslateMessage(MSG *pMsg);
-    virtual BOOL OnPreparePrinting(CPrintInfo* pInfo);
-    virtual void OnBeginPrinting(CDC* pDC, CPrintInfo* pInfo);
-    virtual void OnEndPrinting(CDC* pDC, CPrintInfo* pInfo);
+    virtual BOOL OnPreparePrinting(CPrintInfo *pInfo);
+    virtual void OnBeginPrinting(CDC *pDC, CPrintInfo *pInfo);
+    virtual void OnEndPrinting(CDC *pDC, CPrintInfo *pInfo);
     afx_msg void OnSize(UINT nType, int cx, int cy);
     afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
     afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
@@ -129,7 +126,6 @@ public:
     virtual void AssertValid() const;
     virtual void Dump(CDumpContext& dc) const;
 #endif
-
     DECLARE_MESSAGE_MAP()
 };
 
