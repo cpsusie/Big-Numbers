@@ -15,45 +15,45 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="alarm.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="alarmDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="StdAfx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="alarm.rc">
+    <ClCompile Include="Alarm.cpp">
       <Filter>Source Files</Filter>
-    </ResourceCompile>
+    </ClCompile>
+    <ClCompile Include="AlarmDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="alarm.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="alarmDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="StdAfx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Alarm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AlarmDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="res\alarm.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="res\newAlarmIcon.ico">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="res\Alarm.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="res\alarm.rc2">
+    <ResourceCompile Include="Alarm.rc">
+      <Filter>Source Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="res\Alarm.rc2">
       <Filter>Resource Files</Filter>
     </CustomBuild>
   </ItemGroup>

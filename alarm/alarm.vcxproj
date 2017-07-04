@@ -24,6 +24,7 @@
     <Keyword>MFCProj</Keyword>
     <ProjectGuid>{C8DC2B40-7FEF-44C8-9A45-37C52F97C28B}</ProjectGuid>
     <WindowsTargetPlatformVersion>10.0.10586.0</WindowsTargetPlatformVersion>
+    <ProjectName>Alarm</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -266,8 +267,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="alarm.cpp" />
-    <ClCompile Include="alarmDlg.cpp" />
+    <ClCompile Include="Alarm.cpp" />
+    <ClCompile Include="AlarmDlg.cpp" />
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
@@ -280,20 +281,20 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="alarm.rc" />
+    <ResourceCompile Include="Alarm.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="alarm.h" />
-    <ClInclude Include="alarmDlg.h" />
+    <ClInclude Include="Alarm.h" />
+    <ClInclude Include="AlarmDlg.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="StdAfx.h" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="res\alarm.ico" />
+    <Image Include="res\Alarm.ico" />
     <Image Include="res\newAlarmIcon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="res\alarm.rc2" />
+    <CustomBuild Include="res\Alarm.rc2" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
