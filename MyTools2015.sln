@@ -163,7 +163,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "prndlg", "prndlg\prndlg.vcx
 		{EC9661C7-AA70-418D-BC1C-4F9A87837BFD} = {EC9661C7-AA70-418D-BC1C-4F9A87837BFD}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "alarm", "alarm\alarm.vcxproj", "{C8DC2B40-7FEF-44C8-9A45-37C52F97C28B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Alarm", "Alarm\alarm.vcxproj", "{C8DC2B40-7FEF-44C8-9A45-37C52F97C28B}"
 	ProjectSection(ProjectDependencies) = postProject
 		{DA57B57F-CFF3-4620-87AE-69D3598B492D} = {DA57B57F-CFF3-4620-87AE-69D3598B492D}
 		{EC9661C7-AA70-418D-BC1C-4F9A87837BFD} = {EC9661C7-AA70-418D-BC1C-4F9A87837BFD}
@@ -176,6 +176,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "kalender", "kalender\kalend
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cprgen", "cprgen\cprgen.vcxproj", "{3AA876A4-4D54-4089-8EA9-4A7D7B52AE73}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PearlImage", "PearlImage\PearlImage.vcxproj", "{F1CFEEA4-CAAC-4756-A665-6418E92DDC3C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -845,6 +847,24 @@ Global
 		{3AA876A4-4D54-4089-8EA9-4A7D7B52AE73}.Release|x64.Build.0 = Release|x64
 		{3AA876A4-4D54-4089-8EA9-4A7D7B52AE73}.Release|x86.ActiveCfg = Release|Win32
 		{3AA876A4-4D54-4089-8EA9-4A7D7B52AE73}.Release|x86.Build.0 = Release|Win32
+		{F1CFEEA4-CAAC-4756-A665-6418E92DDC3C}.Debug|x64.ActiveCfg = Debug|Win32
+		{F1CFEEA4-CAAC-4756-A665-6418E92DDC3C}.Debug|x86.ActiveCfg = Debug|Win32
+		{F1CFEEA4-CAAC-4756-A665-6418E92DDC3C}.Debug|x86.Build.0 = Debug|Win32
+		{F1CFEEA4-CAAC-4756-A665-6418E92DDC3C}.LDDebug|x64.ActiveCfg = Release|Win32
+		{F1CFEEA4-CAAC-4756-A665-6418E92DDC3C}.LDDebug|x64.Build.0 = Release|Win32
+		{F1CFEEA4-CAAC-4756-A665-6418E92DDC3C}.LDDebug|x86.ActiveCfg = Debug|Win32
+		{F1CFEEA4-CAAC-4756-A665-6418E92DDC3C}.LDDebug|x86.Build.0 = Debug|Win32
+		{F1CFEEA4-CAAC-4756-A665-6418E92DDC3C}.LDRelease|x64.ActiveCfg = Release|Win32
+		{F1CFEEA4-CAAC-4756-A665-6418E92DDC3C}.LDRelease|x64.Build.0 = Release|Win32
+		{F1CFEEA4-CAAC-4756-A665-6418E92DDC3C}.LDRelease|x86.ActiveCfg = Release|Win32
+		{F1CFEEA4-CAAC-4756-A665-6418E92DDC3C}.LDRelease|x86.Build.0 = Release|Win32
+		{F1CFEEA4-CAAC-4756-A665-6418E92DDC3C}.Profilling|x64.ActiveCfg = Release|Win32
+		{F1CFEEA4-CAAC-4756-A665-6418E92DDC3C}.Profilling|x64.Build.0 = Release|Win32
+		{F1CFEEA4-CAAC-4756-A665-6418E92DDC3C}.Profilling|x86.ActiveCfg = Release|Win32
+		{F1CFEEA4-CAAC-4756-A665-6418E92DDC3C}.Profilling|x86.Build.0 = Release|Win32
+		{F1CFEEA4-CAAC-4756-A665-6418E92DDC3C}.Release|x64.ActiveCfg = Release|Win32
+		{F1CFEEA4-CAAC-4756-A665-6418E92DDC3C}.Release|x86.ActiveCfg = Release|Win32
+		{F1CFEEA4-CAAC-4756-A665-6418E92DDC3C}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
