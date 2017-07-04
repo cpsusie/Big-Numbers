@@ -108,7 +108,7 @@ CMainFrame::~CMainFrame() {
 }
 
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
-  if(CFrameWnd::OnCreate(lpCreateStruct) == -1) {
+  if(__super::OnCreate(lpCreateStruct) == -1) {
     return -1;
   }
 
@@ -137,7 +137,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
 }
 
 BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs) {
-  if(!CFrameWnd::PreCreateWindow(cs)) {
+  if(!__super::PreCreateWindow(cs)) {
     return FALSE;
   }
   return TRUE;
@@ -148,7 +148,7 @@ BOOL CMainFrame::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     result = TRUE;
   } else {
-    result = CFrameWnd::PreTranslateMessage(pMsg);
+    result = __super::PreTranslateMessage(pMsg);
   }
   CMyPaintView *view = getView();
   if(view->isMouseOnDocument()) {
@@ -171,11 +171,11 @@ void CMainFrame::ajourRedoUndo() {
 
 #ifdef _DEBUG
 void CMainFrame::AssertValid() const {
-  CFrameWnd::AssertValid();
+  __super::AssertValid();
 }
 
 void CMainFrame::Dump(CDumpContext& dc) const {
-  CFrameWnd::Dump(dc);
+  __super::Dump(dc);
 }
 
 #endif //_DEBUG
@@ -186,7 +186,7 @@ CMyPaintDoc *CMainFrame::getDocument() {
 }
 
 void CMainFrame::OnSize(UINT nType, int cx, int cy) {
-  CFrameWnd::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
 
   if(getView() != NULL && !hasDrawTool()) {
     OnToolsPen();
