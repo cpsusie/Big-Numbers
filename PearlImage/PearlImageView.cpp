@@ -162,7 +162,7 @@ void CPearlImageView::restoreOldTool() {
   getMainFrame()->PostMessage(WM_COMMAND, MAKELONG(ID_POPTOOL, 0));
 }
 
-PixRect *CPearlImageView::getPixRect() {
+PixRect *CPearlImageView::getImage() {
   return GetDocument()->getImage();
 }
 

@@ -10,7 +10,7 @@ MoveRegionTool::~MoveRegionTool() {
 }
 
 void MoveRegionTool::invertPolygon(bool redraw) {
-  getPixRect()->polygon(m_polygon,BLACK,true,m_copy!=NULL);
+  getImage()->polygon(m_polygon,BLACK,true,m_copy!=NULL);
   if(redraw) {
     repaint();
   }
@@ -45,14 +45,14 @@ void MoveRegionTool::OnMouseMove(UINT nFlags, const CPoint &point) {
         m_docStateSaved = true;
       }
 
-      getPixRect()->rop(m_rect.TopLeft(),m_rect.Size(),SRCCOPY, m_old,ORIGIN);
+      getImage()->rop(m_rect.TopLeft(),m_rect.Size(),SRCCOPY, m_old,ORIGIN);
       m_rect += point - m_lastPoint;
       m_polygon.move(point - m_lastPoint);
       m_lastPoint = point;
-      m_old->rop(ORIGIN,m_rect.Size(),SRCCOPY, getPixRect(),m_rect.TopLeft());
-//      getPixRect()->rop(m_rect.TopLeft(),m_rect.Size(),DSTINVERT,NULL,ORIGIN);
-//      getPixRect()->mask(m_rect.TopLeft(),m_rect.Size(),MAKEROP4(SRCCOPY,DSTINVERT), m_copy,ORIGIN, m_mask);
-      getPixRect()->mask(m_rect.TopLeft(),m_rect.Size(),SRCCOPY, m_copy,ORIGIN, m_mask);
+      m_old->rop(ORIGIN,m_rect.Size(),SRCCOPY, getImage(),m_rect.TopLeft());
+//      getImage()->rop(m_rect.TopLeft(),m_rect.Size(),DSTINVERT,NULL,ORIGIN);
+//      getImage()->mask(m_rect.TopLeft(),m_rect.Size(),MAKEROP4(SRCCOPY,DSTINVERT), m_copy,ORIGIN, m_mask);
+      getImage()->mask(m_rect.TopLeft(),m_rect.Size(),SRCCOPY, m_copy,ORIGIN, m_mask);
       repaint();
     }
   }
@@ -66,8 +66,8 @@ void MoveRegionTool::OnLButtonUp(UINT nFlags, const CPoint &point) {
       m_copy = theApp.fetchPixRect(m_rect.Size());                                                  //   define copy
       m_mask = theApp.fetchPixRect(m_rect.Size());                                                  //   define mask
       m_old  = theApp.fetchPixRect(m_rect.Size());                                                  //   define old
-      m_copy->rop(ORIGIN,m_rect.Size(),SRCCOPY, getPixRect(),m_rect.TopLeft());                     //   take a copy
-      m_old->rop( ORIGIN,m_rect.Size(),SRCCOPY, getPixRect(),m_rect.TopLeft());                     //   take a copy
+      m_copy->rop(ORIGIN,m_rect.Size(),SRCCOPY, getImage(),m_rect.TopLeft());                     //   take a copy
+      m_old->rop( ORIGIN,m_rect.Size(),SRCCOPY, getImage(),m_rect.TopLeft());                     //   take a copy
       createMask();
 
       invertPolygon(); // draw polygon

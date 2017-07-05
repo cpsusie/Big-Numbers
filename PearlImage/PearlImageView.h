@@ -81,7 +81,7 @@ public:
     const CPearlImageDoc *GetDocument() const {
        return (const CPearlImageDoc*)m_pDocument;
     }
-    PixRect     *getPixRect();
+    PixRect     *getImage();
     D3DCOLOR     getColor();
     int          getApproximateFillTolerance() const;
 

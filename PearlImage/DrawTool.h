@@ -2,7 +2,7 @@
 
 class PixRectContainer {
 public:
-  virtual PixRect *getPixRect()                        = 0;
+  virtual PixRect *getImage()                          = 0;
   virtual D3DCOLOR getColor()                          = 0;
   virtual int      getCurrentZoomFactor()        const = 0;
   virtual int      getApproximateFillTolerance() const = 0;
@@ -17,8 +17,6 @@ typedef enum {
  ,MOVEREGIONTOOL
  ,NULLTOOL
 } DrawToolType;
-
-#define ORIGIN CPoint(0,0)
 
 class DrawTool {
 protected:
@@ -49,8 +47,8 @@ public:
   }
   virtual void reset() {
   }
-  PixRect *getPixRect() {
-    return m_container->getPixRect();
+  PixRect *getImage() {
+    return m_container->getImage();
   }
   virtual DrawToolType getType()     const = 0;
   virtual int          getCursorId() const {

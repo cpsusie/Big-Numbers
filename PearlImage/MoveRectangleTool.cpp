@@ -13,13 +13,13 @@ MoveRectangleTool::~MoveRectangleTool() {
 void MoveRectangleTool::invertDragRect() {
   static const CSize size(1,1);
   if(m_dragRectVisible) {
-    getPixRect()->drawDragRect(&m_lastDragRect,CSize(0,0),&m_lastDragRect,size);
+    getImage()->drawDragRect(&m_lastDragRect,CSize(0,0),&m_lastDragRect,size);
   } else {
     m_lastDragRect = CRect(m_p0,m_p1);
-    getPixRect()->drawDragRect(&m_lastDragRect,size,NULL,size);
+    getImage()->drawDragRect(&m_lastDragRect,size,NULL,size);
   }
 
-//  getPixRect()->rectangle(CRect(m_p0,m_p1),0,true);
+//  getImage()->rectangle(CRect(m_p0,m_p1),0,true);
 
   m_dragRectVisible = !m_dragRectVisible;
 
@@ -55,13 +55,13 @@ void MoveRectangleTool::OnMouseMove(UINT nFlags, const CPoint &point) {
         m_docStateSaved = true;
       }
 
-      getPixRect()->rop(m_rect.TopLeft(),m_rect.Size(),SRCCOPY, m_old,ORIGIN); // restore old picture
+      getImage()->rop(m_rect.TopLeft(),m_rect.Size(),SRCCOPY, m_old,ORIGIN); // restore old picture
       m_rect += point - m_lastPoint;
       m_p0 += point - m_lastPoint;
       m_p1 += point - m_lastPoint;
       m_lastPoint = point;
-      m_old->rop(ORIGIN,m_rect.Size(),SRCCOPY, getPixRect(),m_rect.TopLeft());
-      getPixRect()->rop(m_rect.TopLeft(),m_rect.Size(),SRCCOPY, m_copy,ORIGIN);
+      m_old->rop(ORIGIN,m_rect.Size(),SRCCOPY, getImage(),m_rect.TopLeft());
+      getImage()->rop(m_rect.TopLeft(),m_rect.Size(),SRCCOPY, m_copy,ORIGIN);
       repaint();
     }
   }
@@ -74,8 +74,8 @@ void MoveRectangleTool::OnLButtonUp(UINT nFlags, const CPoint &point) {
     if(m_rect.Width() > 0 && m_rect.Height() > 0) {                                              // if valid rectangle
       m_copy = theApp.fetchPixRect(m_rect.Size());                                               //   define copy
       m_old  = theApp.fetchPixRect(m_rect.Size());                                               //   define old
-      m_copy->rop(ORIGIN,m_rect.Size(),SRCCOPY, getPixRect(),m_rect.TopLeft());                  //   take a copy
-      m_old->rop( ORIGIN,m_rect.Size(),SRCCOPY, getPixRect(),m_rect.TopLeft());                  //   take a copy
+      m_copy->rop(ORIGIN,m_rect.Size(),SRCCOPY, getImage(),m_rect.TopLeft());                  //   take a copy
+      m_old->rop( ORIGIN,m_rect.Size(),SRCCOPY, getImage(),m_rect.TopLeft());                  //   take a copy
 
       invertDragRect(); // draw dragrect
     }
