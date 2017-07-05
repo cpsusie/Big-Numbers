@@ -87,7 +87,10 @@ D3DCOLOR getGrayColor(     D3DCOLOR  c);
 #define D3DCOLORVALUE2COLORREF(c) RGB((DWORD)((c.r)*255.f),(DWORD)((c.g)*255.f),(DWORD)((c.b)*255.f))
 D3DCOLORVALUE COLORREF2COLORVALUE(COLORREF c);
 
-D3DCOLORVALUE colorToColorValue(D3DCOLOR c);
+D3DCOLORVALUE   colorToColorValue(D3DCOLOR c);
+inline D3DCOLOR colorValueToD3DColor(const D3DCOLORVALUE &cv) {
+  return D3DCOLOR_COLORVALUE(cv.r, cv.g, cv.b, cv.a);
+}
 
 class ColorComparator {
 public:
