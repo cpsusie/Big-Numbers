@@ -1,7 +1,7 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <PriorityQueue.h>
 #include <algorithm>
-#include "MedianCut.h"
+#include <MedianCut.h>
 
 class Block {
 private:

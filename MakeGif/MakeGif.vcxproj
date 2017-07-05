@@ -305,7 +305,6 @@
     <ClCompile Include="MakeGif.cpp" />
     <ClCompile Include="MakeGifDoc.cpp" />
     <ClCompile Include="MakeGifView.cpp" />
-    <ClCompile Include="MedianCut.cpp" />
     <ClCompile Include="PixRectArray.cpp" />
     <ClCompile Include="SavedImageArray.cpp" />
     <ClCompile Include="SettingsDlg.cpp" />
@@ -330,7 +329,6 @@
     <ClInclude Include="MakeGif.h" />
     <ClInclude Include="MakeGifDoc.h" />
     <ClInclude Include="MakeGifView.h" />
-    <ClInclude Include="MedianCut.h" />
     <ClInclude Include="PixRectArray.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SettingsDlg.h" />
