@@ -269,6 +269,8 @@
     <ClCompile Include="DegreeDlg.cpp" />
     <ClCompile Include="DrawTool.cpp" />
     <ClCompile Include="FontParameters.cpp" />
+    <ClCompile Include="GridDlg.cpp" />
+    <ClCompile Include="GridParameters.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="MoveRectangleTool.cpp" />
     <ClCompile Include="MoveRegionTool.cpp" />
@@ -294,6 +296,8 @@
   <ItemGroup>
     <ClInclude Include="DegreeDlg.h" />
     <ClInclude Include="DrawTool.h" />
+    <ClInclude Include="GridDlg.h" />
+    <ClInclude Include="GridParameters.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="PearlImage.h" />
     <ClInclude Include="PearlImageDoc.h" />
@@ -323,4 +327,9 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties RESOURCE_FILE="PearlImage.rc" />
+    </VisualStudio>
+  </ProjectExtensions>
 </Project>

@@ -31,7 +31,7 @@ END_MESSAGE_MAP()
 BOOL CScaleDlg::OnInitDialog() {
   __super::OnInitDialog();
 
-  m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATOR_SCALEDIALOG));
+  m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_SCALE));
   if(!m_toSize) {
     m_scaleWidth *= 100;
     m_scaleHeight *= 100;
@@ -112,9 +112,7 @@ BOOL CScaleDlg::PreTranslateMessage(MSG *pMsg) {
 }
 
 void CScaleDlg::gotoField(int id) {
-  CEdit *e = (CEdit*)GetDlgItem(id);
-  e->SetSel(0,100);
-  e->SetFocus();
+  gotoEditBox(this, id);
 }
 
 void CScaleDlg::OnGotoWidth() {

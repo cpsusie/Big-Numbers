@@ -3,6 +3,7 @@
 #include "MainFrm.h"
 #include "Degreedlg.h"
 #include "ScaleDlg.h"
+#include "GridDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -12,6 +13,7 @@ IMPLEMENT_DYNCREATE(CMainFrame, CFrameWnd)
 
 BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
     ON_WM_CREATE()
+    ON_WM_DESTROY()
     ON_WM_CLOSE()
     ON_WM_SIZE()
     ON_COMMAND(ID_FILE_NEW                        , OnFileNew                         )
@@ -51,6 +53,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
     ON_COMMAND(ID_FUNCTION_MIRROR_HORIZONTAL      , OnFunctionMirrorHorizontal        )
     ON_COMMAND(ID_FUNCTION_MIRROR_VERTICAL        , OnFunctionMirrorVertical          )
     ON_COMMAND(ID_FUNCTION_MAKEGRAYSCALE          , OnFunctionMakegrayscale           )
+    ON_COMMAND(ID_FUNCTIONS_MAKEPEARLGRID         , OnFunctionsMakePearlGrid          )
     ON_COMMAND(ID_SCROLL_LINE_DOWN                , OnScrollLineDown                  )
     ON_COMMAND(ID_SCROLL_LINE_UP                  , OnScrollLineUp                    )
     ON_COMMAND(ID_SCROLL_PAGE_DOWN                , OnScrollPageDown                  )
@@ -65,6 +68,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
     ON_COMMAND(ID_SCROLL_TO_RIGHT                 , OnScrollToRight                   )
     ON_COMMAND(ID_POPTOOL                         , OnPopTool                         )
     ON_COMMAND(ID_DELETE                          , OnDelete                          )
+    ON_MESSAGE(ID_MSG_CALCULATEIMAGE              , OnMsgCalculateImage               )
 END_MESSAGE_MAP()
 
 static UINT indicators[] = {
@@ -78,6 +82,8 @@ CMainFrame::CMainFrame() {
   m_currentDegree            = 0;
   m_eraseToolSize            = CSize(10,5);
   m_approximateFillTolerance = 1;
+  m_gridDlg                  = NULL;
+  m_gridDlgThread            = NULL;
 }
 
 CMainFrame::~CMainFrame() {
@@ -110,7 +116,13 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
   theApp.m_device.attach(*this);
 
   setCurrentDrawTool(-1);
+  createGridDlg();
   return 0;
+}
+
+void CMainFrame::OnDestroy() {
+  destroyGridDlg();
+  __super::OnDestroy();
 }
 
 BOOL CMainFrame::PreTranslateMessage(MSG *pMsg) {
@@ -253,6 +265,7 @@ void CMainFrame::updateTitle() {
 
 static const TCHAR *saveFileDialogExtensions = _T("Bitmap files (*.bmp)\0*.bmp;\0"
                                                   "JPEG files (*.jpg)\0*.jpg;\0"
+                                                  "PNG-files (*.png)\0*.png;\0"
                                                   "TIFF files (*.tiff)\0*.tiff;\0"
                                                   "All files (*.*)\0*.*\0\0");
 
@@ -422,6 +435,59 @@ void CMainFrame::OnFunctionScale() {
 void CMainFrame::OnFunctionMirrorHorizontal()    { applyMirror(false);                 }
 void CMainFrame::OnFunctionMirrorVertical()      { applyMirror(true);                  }
 void CMainFrame::OnFunctionMakegrayscale()       { applyFilter(GrayScaleFilter());     }
+
+void CMainFrame::OnFunctionsMakePearlGrid() {
+  if(getDocument()->isEmpty()) return;
+
+  m_gridDlg->setImage(getDocument()->getImage());
+  m_gridDlgThread->setCurrentDialogProperty(&m_currentGridParam);
+  if(!m_gridDlgThread->isDialogVisible()) {
+    m_gridDlgThread->setDialogVisible(true);
+  }
+}
+
+bool CMainFrame::hasGridDlg() const {
+  return m_gridDlgThread != NULL;
+}
+
+void CMainFrame::createGridDlg() {
+  if(m_gridDlg == NULL) {
+    m_gridDlg = new CGridDlg();
+    m_gridDlg->addPropertyChangeListener(this);
+  }
+  if(m_gridDlgThread == NULL) {
+    m_gridDlgThread = CPropertyDlgThread::startThread(m_gridDlg);
+  }
+}
+
+void CMainFrame::destroyGridDlg() {
+  if (m_gridDlg) {
+    m_gridDlg->removePropertyChangeListener(this);
+  }
+  if(m_gridDlgThread) {
+    m_gridDlgThread->kill();
+    m_gridDlgThread = NULL;
+  }
+}
+
+void CMainFrame::handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
+  if(source == m_gridDlg) {
+    switch (id) {
+    case PROP_GRIDPARAM:
+      const GridParameters *param = (GridParameters*)newValue;
+      SendMessage(ID_MSG_CALCULATEIMAGE, (WPARAM)param,0);
+      break;
+    }
+  }
+}
+
+LRESULT CMainFrame::OnMsgCalculateImage(WPARAM wp, LPARAM lp) {
+  CPearlImageDoc       *doc   = getDocument();
+  const GridParameters *param = (GridParameters*)wp;
+  doc->setImage(param->calculateImage(m_gridDlg->getImage()));
+  Invalidate();
+  return 0;
+}
 
 void CMainFrame::applyMirror(bool vertical) {
   theApp.BeginWaitCursor();

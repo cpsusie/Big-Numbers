@@ -1,20 +1,26 @@
 #pragma once
 
+#include <Stack.h>
+#include <MFCUtil/PropertyDlgThread.h>
 #include "DrawTool.h"
 #include "PearlImageView.h"
-#include <Stack.h>
+#include "GridDlg.h"
 
-class CMainFrame : public CFrameWnd {
+class CMainFrame : public CFrameWnd, public PropertyChangeListener {
 private:
-  HACCEL           m_accelTable;
-  double           m_currentDegree;
-  ScaleParameters  m_currentScale;
-  Stack<DrawTool*> m_toolStack;
-  D3DCOLOR         m_currentColor;
-  FontParameters   m_currentFontParameters;
-  String           m_currentText;
-  UINT             m_approximateFillTolerance;
-  CSize            m_eraseToolSize;
+  HACCEL              m_accelTable;
+  double              m_currentDegree;
+  ScaleParameters     m_currentScale;
+  Stack<DrawTool*>    m_toolStack;
+  D3DCOLOR            m_currentColor;
+  FontParameters      m_currentFontParameters;
+  String              m_currentText;
+  UINT                m_approximateFillTolerance;
+  CSize               m_eraseToolSize;
+  GridParameters      m_currentGridParam;
+  CGridDlg           *m_gridDlg;
+  CPropertyDlgThread *m_gridDlgThread;
+
 
   void onFileMruFile(int index);
   void setCurrentDrawTool(int id);
@@ -50,7 +56,9 @@ public:
   void updateTitle();
   void pushTool(DrawTool *tool);
   void popTool();
-
+  bool hasGridDlg() const;
+  void createGridDlg();
+  void destroyGridDlg();
   DrawTool *getCurrentDrawTool() {
     return m_toolStack.top();
   }
@@ -68,7 +76,7 @@ public:
   int getApproximateFillTolerance() const {
     return m_approximateFillTolerance;
   }
-
+  void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
 #ifdef _DEBUG
   virtual void AssertValid() const;
   virtual void Dump(CDumpContext& dc) const;
@@ -76,6 +84,7 @@ public:
 
 protected:
     afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
+    afx_msg void OnDestroy();
     afx_msg void OnClose();
     afx_msg void OnSize(UINT nType, int cx, int cy);
     afx_msg void OnFileNew();
@@ -117,6 +126,7 @@ protected:
     afx_msg void OnFunctionMirrorHorizontal();
     afx_msg void OnFunctionMirrorVertical();
     afx_msg void OnFunctionMakegrayscale();
+    afx_msg void OnFunctionsMakePearlGrid();
     afx_msg void OnScrollLineDown();
     afx_msg void OnScrollLineUp();
     afx_msg void OnScrollPageDown();
@@ -131,5 +141,6 @@ protected:
     afx_msg void OnScrollToRight();
     afx_msg void OnPopTool();
     afx_msg void OnDelete();
+    afx_msg LRESULT OnMsgCalculateImage(WPARAM wp, LPARAM lp);
     DECLARE_MESSAGE_MAP()
 };

@@ -16,7 +16,7 @@ private:
   void setLabels();
   void gotoField(int id);
 
-  enum { IDD = IDD_SCALEDIALOG };
+  enum { IDD = IDR_SCALE };
   int     m_toSize;
   double  m_scaleWidth;
   double  m_scaleHeight;

@@ -43,6 +43,9 @@ public:
 
   String getInfo() const;
 
+  bool isEmpty() const {
+    return m_image == NULL;
+  }
   CSize getSize() const {
     return m_image ? m_image->getSize() : CSize(0,0);
   }
