@@ -477,6 +477,7 @@
     <ClInclude Include="..\..\Include\MatrixDimension.h" />
     <ClInclude Include="..\..\Include\MatrixTemplate.h" />
     <ClInclude Include="..\..\Include\md5.h" />
+    <ClInclude Include="..\..\Include\MedianCut.h" />
     <ClInclude Include="..\..\Include\MP3Player.h" />
     <ClInclude Include="..\..\Include\MyAssert.h" />
     <ClInclude Include="..\..\Include\MyString.h" />
@@ -655,6 +656,7 @@
     <ClCompile Include="MarginFile.cpp" />
     <ClCompile Include="MatchParanthes.cpp" />
     <ClCompile Include="md5c.cpp" />
+    <ClCompile Include="MedianCut.cpp" />
     <ClCompile Include="Menu.cpp" />
     <ClCompile Include="MersenneTwister32.cpp" />
     <ClCompile Include="MersenneTwister64.cpp" />
