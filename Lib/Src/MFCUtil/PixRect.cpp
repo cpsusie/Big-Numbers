@@ -888,8 +888,7 @@ void PixRect::rop(const CRect &dr, ULONG op, const PixRect *src, const CRect &sr
       stretchBlt(dstDC, dr, op, src, sr);
     }
     releaseDC(dstDC);
-  }
-  catch (...) {
+  } catch (...) {
     releaseDC(dstDC);
     throw;
   }
