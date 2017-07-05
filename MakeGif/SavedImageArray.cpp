@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "MedianCut.h"
+#include <MedianCut.h>
 #include "PixRectArray.h"
 
 #define MAXCOLORCOUNT 0x1000000
