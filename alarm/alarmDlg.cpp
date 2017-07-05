@@ -463,8 +463,7 @@ void CAlarmDlg::OnMenuOpen() {
 }
 
 void CAlarmDlg::OnHelpAboutalarm() {
-  CAboutDlg dlg;
-  dlg.DoModal();
+  CAboutDlg().DoModal();
 }
 
 void CAlarmDlg::OnOptionsHidewhensetalarm() {
