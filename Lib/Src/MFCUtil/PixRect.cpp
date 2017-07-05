@@ -946,7 +946,10 @@ void PixRect::stretchBlt(HDC dst, int x, int y, int w, int h, ULONG op, const Pi
   String errorMsg;
 
   HDC  srcDC = src ? src->getDC() : NULL;
+  const int oldStretchMode = GetStretchBltMode(dst);
+  SetStretchBltMode(dst, HALFTONE);
   BOOL ok    = StretchBlt(dst,x,y,w,h,srcDC,sx,sy,sw,sh,op);
+  SetStretchBltMode(dst, oldStretchMode);
   if(!ok) {
     errorMsg = getLastErrorText();
   }
@@ -962,6 +965,7 @@ void PixRect::stretchBlt(PixRect *dst, int x, int y, int w, int h, ULONG op, con
   String errorMsg;
 
   HDC  dstDC = dst->getDC();
+  SetStretchBltMode(dstDC, HALFTONE);
   BOOL ok    = StretchBlt(dstDC,x,y,w,h,src,sx,sy,sw,sh,op);
   if(!ok) {
     errorMsg = getLastErrorText();
