@@ -9,7 +9,7 @@ typedef enum {
  ,PICTYPE_TIFF
 } PictureFileFormat;
 
-static void writePixRect(PixRect *pr, ByteOutputStream &out, PictureFileFormat format) {
+static void writePixRect(const PixRect *pr, ByteOutputStream &out, PictureFileFormat format) {
   HBITMAP bm = *pr;
   try {
     switch(format) {
@@ -27,10 +27,10 @@ static void writePixRect(PixRect *pr, ByteOutputStream &out, PictureFileFormat f
   }
 }
 
-void PixRect::writeAsBMP( ByteOutputStream &out) { writePixRect(this, out, PICTYPE_BMP);  }
-void PixRect::writeAsJPG( ByteOutputStream &out) { writePixRect(this, out, PICTYPE_JPG);  }
-void PixRect::writeAsPNG( ByteOutputStream &out) { writePixRect(this, out, PICTYPE_PNG);  }
-void PixRect::writeAsTIFF(ByteOutputStream &out) { writePixRect(this, out, PICTYPE_TIFF); }
+void PixRect::writeAsBMP( ByteOutputStream &out) const { writePixRect(this, out, PICTYPE_BMP);  }
+void PixRect::writeAsJPG( ByteOutputStream &out) const { writePixRect(this, out, PICTYPE_JPG);  }
+void PixRect::writeAsPNG( ByteOutputStream &out) const { writePixRect(this, out, PICTYPE_PNG);  }
+void PixRect::writeAsTIFF(ByteOutputStream &out) const { writePixRect(this, out, PICTYPE_TIFF); }
 
 // ---------------------------------- load ------------------------------------
 

@@ -495,10 +495,10 @@ public:
   void fromBitmap( CBitmap &src);
   void toBitmap(   CBitmap &dst) const;
 
-  void writeAsBMP( ByteOutputStream &out);
-  void writeAsJPG( ByteOutputStream &out);
-  void writeAsPNG( ByteOutputStream &out);
-  void writeAsTIFF(ByteOutputStream &out);
+  void writeAsBMP( ByteOutputStream &out) const;
+  void writeAsJPG( ByteOutputStream &out) const;
+  void writeAsPNG( ByteOutputStream &out) const;
+  void writeAsTIFF(ByteOutputStream &out) const;
 
   static PixRect *load(PixRectDevice &device, ByteInputStream &in);
 
