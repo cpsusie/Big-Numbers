@@ -16,7 +16,6 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
     ON_WM_DESTROY()
     ON_WM_CLOSE()
     ON_WM_SIZE()
-    ON_COMMAND(ID_FILE_NEW                        , OnFileNew                         )
     ON_COMMAND(ID_FILE_OPEN                       , OnFileOpen                        )
     ON_COMMAND(ID_FILE_GEM                        , OnFileSave                        )
     ON_COMMAND(ID_FILE_GEM_SOM                    , OnFileSaveAs                      )
@@ -41,13 +40,11 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
     ON_COMMAND(ID_EDIT_REDO                       , OnEditRedo                        )
     ON_COMMAND(ID_EDIT_CUT                        , OnEditCut                         )
     ON_COMMAND(ID_EDIT_COPY                       , OnEditCopy                        )
-    ON_COMMAND(ID_OPTIONS_COLOR                   , OnOptionsColor                    )
     ON_COMMAND(ID_OPTIONS_ZOOM_X1                 , OnOptionsZoomX1                   )
     ON_COMMAND(ID_OPTIONS_ZOOM_X2                 , OnOptionsZoomX2                   )
     ON_COMMAND(ID_OPTIONS_ZOOM_X4                 , OnOptionsZoomX4                   )
     ON_COMMAND(ID_OPTIONS_ZOOM_X8                 , OnOptionsZoomX8                   )
     ON_COMMAND(ID_TOOLS_MOVERECTANGLE             , OnToolsMoveRectangle              )
-    ON_COMMAND(ID_TOOLS_MOVEREGION                , OnToolsMoveRegion                 )
     ON_COMMAND(ID_FUNCTION_ROTATE                 , OnFunctionRotate                  )
     ON_COMMAND(ID_FUNCTION_SCALE                  , OnFunctionScale                   )
     ON_COMMAND(ID_FUNCTION_MIRROR_HORIZONTAL      , OnFunctionMirrorHorizontal        )
@@ -78,10 +75,7 @@ static UINT indicators[] = {
 };
 
 CMainFrame::CMainFrame() {
-  m_currentColor             = BLACK;
   m_currentDegree            = 0;
-  m_eraseToolSize            = CSize(10,5);
-  m_approximateFillTolerance = 1;
   m_gridDlg                  = NULL;
   m_gridDlgThread            = NULL;
 }
@@ -171,15 +165,6 @@ CPearlImageDoc *CMainFrame::getDocument() {
 
 void CMainFrame::OnSize(UINT nType, int cx, int cy) {
   __super::OnSize(nType, cx, cy);
-}
-
-void CMainFrame::OnFileNew() {
-  if(!checkSave()) {
-    return;
-  }
-  getDocument()->OnNewDocument();
-  updateTitle();
-  getView()->refreshDoc();
 }
 
 static String getLoadFileName() {
@@ -342,15 +327,6 @@ void CMainFrame::OnEditCopy() {
   }
 }
 
-void CMainFrame::OnOptionsColor() {
-  CColorDialog dlg;
-  dlg.m_cc.Flags |= CC_RGBINIT;
-  dlg.m_cc.rgbResult = D3DCOLOR2COLORREF(m_currentColor);
-  if(dlg.DoModal() == IDOK) {
-    m_currentColor = COLORREF2D3DCOLOR(dlg.m_cc.rgbResult);
-  }
-}
-
 void CMainFrame::OnOptionsZoomX1() {
   setCurrentZoomFactor(ID_OPTIONS_ZOOM_X1);
 }
@@ -390,10 +366,6 @@ void CMainFrame::setCurrentZoomFactor(int id) {
 
 void CMainFrame::OnToolsMoveRectangle() {
   setCurrentDrawTool(ID_TOOLS_MOVERECTANGLE);
-}
-
-void CMainFrame::OnToolsMoveRegion() {
-  setCurrentDrawTool(ID_TOOLS_MOVEREGION);
 }
 
 void CMainFrame::OnFunctionRotate() {
@@ -520,9 +492,6 @@ void CMainFrame::setCurrentDrawTool(int id) {
   case ID_TOOLS_MOVERECTANGLE:
     setCurrentDrawTool(new MoveRectangleTool(getView()));
     break;
-  case ID_TOOLS_MOVEREGION:
-    setCurrentDrawTool(new MoveRegionTool(getView()));
-    break;
   default:
     setCurrentDrawTool(new NullTool());
     break;
@@ -553,7 +522,6 @@ void CMainFrame::pushTool(DrawTool *tool) {
 
 static int toolItems[] = {
   ID_TOOLS_MOVERECTANGLE
- ,ID_TOOLS_MOVEREGION
 };
 
 void CMainFrame::checkToolItem(int id) {
@@ -645,7 +613,6 @@ bool CMainFrame::checkSave() { // return true to continue user action
   if(!getDocument()->IsModified()) {
     return true;
   }
-
   switch(MessageBox(_T("Save changes?"),_T("Save"),MB_YESNOCANCEL | MB_ICONEXCLAMATION)) {
   case IDYES   :
     return onFileSave();

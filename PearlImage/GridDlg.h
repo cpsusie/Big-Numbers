@@ -59,9 +59,9 @@ private:
   afx_msg void OnEnChangeEditHorizontalCellCount();
   afx_msg void OnEnChangeEditVerticalCellCount();
   afx_msg void OnEnChangeEditColorCount();
-  afx_msg void OnDeltaposSpinHorizontal(NMHDR *pNMHDR, LRESULT *pResult);
-  afx_msg void OnDeltaposSpinVertical(  NMHDR *pNMHDR, LRESULT *pResult);
-  afx_msg void OnDeltaposSpinColor(     NMHDR *pNMHDR, LRESULT *pResult);
+  afx_msg void OnDeltaposSpinHorizontalCount(NMHDR *pNMHDR, LRESULT *pResult);
+  afx_msg void OnDeltaposSpinVerticalCount(  NMHDR *pNMHDR, LRESULT *pResult);
+  afx_msg void OnDeltaposSpinColorCount(     NMHDR *pNMHDR, LRESULT *pResult);
   afx_msg void OnGotoHorizontalCount();
   afx_msg void OnGotoVerticalCount();
   afx_msg void OnGotoCellSize();

@@ -14,7 +14,6 @@ public:
 
 typedef enum {
   MOVERECTANGLETOOL
- ,MOVEREGIONTOOL
  ,NULLTOOL
 } DrawToolType;
 
@@ -56,13 +55,6 @@ public:
   }
 };
 
-class FontParameters {
-public:
-  LOGFONT m_logFont;
-  float   m_orientation;
-  FontParameters();
-};
-
 class MoveRectangleTool : public DrawTool {
 private:
   bool     m_docStateSaved;
@@ -85,30 +77,6 @@ public:
   }
   void cut();
   void copy();
-  int getCursorId() const;
-};
-
-class MoveRegionTool : public DrawTool {
-private:
-  bool      m_docStateSaved;
-  CPoint    m_lastPoint;
-  MyPolygon m_polygon;
-  CRect     m_rect;
-  PixRect  *m_copy, *m_mask, *m_old;
-  void releaseCopy();
-  void invertPolygon(bool redraw = true);
-  void createMask();
-public:
-  MoveRegionTool(PixRectContainer *container);
-  ~MoveRegionTool();
-
-  void OnLButtonDown(UINT nFlags, const CPoint &point);
-  void OnMouseMove(  UINT nFlags, const CPoint &point);
-  void OnLButtonUp(  UINT nFlags, const CPoint &point);
-  void reset();
-  DrawToolType getType() const {
-    return MOVEREGIONTOOL;
-  }
   int getCursorId() const;
 };
 

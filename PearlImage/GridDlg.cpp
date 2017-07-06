@@ -39,23 +39,23 @@ void CGridDlg::DoDataExchange(CDataExchange *pDX) {
   DDX_Text(pDX, IDC_EDITHORIZONTALCOUNT, m_horizontalCount);
   DDX_Text(pDX, IDC_EDITVERTICALCOUNT  , m_verticalCount  );
   DDX_Text(pDX, IDC_EDITCOLORCOUNT     , m_colorCount     );
-  DDX_Text(pDX, IDC_EDITTOTALCELLCOUNT , m_totalCellCount );
+  DDX_Text(pDX, IDC_EDITTOTALCOUNT     , m_totalCellCount );
 }
 
 BEGIN_MESSAGE_MAP(CGridDlg, CDialog)
-  ON_BN_CLICKED(ID_CALCULATE                   , OnClickedCalculate               )
-  ON_EN_CHANGE(IDC_EDITCELLSIZE                , OnEnChangeEditCellSize           )
-  ON_EN_CHANGE(IDC_EDITHORIZONTALCOUNT         , OnEnChangeEditHorizontalCellCount)
-  ON_EN_CHANGE(IDC_EDITVERTICALCOUNT           , OnEnChangeEditVerticalCellCount  )
-  ON_EN_CHANGE(IDC_EDITCOLORCOUNT              , OnEnChangeEditColorCount         )
-  ON_NOTIFY(UDN_DELTAPOS, IDC_SPINHORIZONTAL   , OnDeltaposSpinHorizontal         )
-  ON_NOTIFY(UDN_DELTAPOS, IDC_SPINVERTICAL     , OnDeltaposSpinVertical           )
-  ON_NOTIFY(UDN_DELTAPOS, IDC_SPINCOLOR        , OnDeltaposSpinColor              )
-  ON_COMMAND(ID_GOTO_HORIZONTALCOUNT           , OnGotoHorizontalCount            )
-  ON_COMMAND(ID_GOTO_VERTICALCOUNT             , OnGotoVerticalCount              )
-  ON_COMMAND(ID_GOTO_CELLSIZE                  , OnGotoCellSize                   )
-  ON_COMMAND(ID_GOTO_COLORCOUNT                , OnGotoColorCount                 )
-  ON_MESSAGE(_ID_MSG_RESETCONTROLS             , OnMsgResetControls               )
+  ON_BN_CLICKED(ID_CALCULATE                     , OnClickedCalculate               )
+  ON_EN_CHANGE(IDC_EDITCELLSIZE                  , OnEnChangeEditCellSize           )
+  ON_EN_CHANGE(IDC_EDITHORIZONTALCOUNT           , OnEnChangeEditHorizontalCellCount)
+  ON_EN_CHANGE(IDC_EDITVERTICALCOUNT             , OnEnChangeEditVerticalCellCount  )
+  ON_EN_CHANGE(IDC_EDITCOLORCOUNT                , OnEnChangeEditColorCount         )
+  ON_NOTIFY(UDN_DELTAPOS, IDC_SPINHORIZONTALCOUNT, OnDeltaposSpinHorizontalCount    )
+  ON_NOTIFY(UDN_DELTAPOS, IDC_SPINVERTICALCOUNT  , OnDeltaposSpinVerticalCount      )
+  ON_NOTIFY(UDN_DELTAPOS, IDC_SPINCOLORCOUNT     , OnDeltaposSpinColorCount         )
+  ON_COMMAND(ID_GOTO_HORIZONTALCOUNT             , OnGotoHorizontalCount            )
+  ON_COMMAND(ID_GOTO_VERTICALCOUNT               , OnGotoVerticalCount              )
+  ON_COMMAND(ID_GOTO_CELLSIZE                    , OnGotoCellSize                   )
+  ON_COMMAND(ID_GOTO_COLORCOUNT                  , OnGotoColorCount                 )
+  ON_MESSAGE(_ID_MSG_RESETCONTROLS               , OnMsgResetControls               )
   ON_WM_SHOWWINDOW()
   ON_WM_CLOSE()
 END_MESSAGE_MAP()
@@ -174,7 +174,7 @@ void CGridDlg::OnEnChangeEditColorCount() {
   m_changeHandlerActive = false;
 }
 
-void CGridDlg::OnDeltaposSpinHorizontal(NMHDR *pNMHDR, LRESULT *pResult) {
+void CGridDlg::OnDeltaposSpinHorizontalCount(NMHDR *pNMHDR, LRESULT *pResult) {
   LPNMUPDOWN pNMUpDown = reinterpret_cast<LPNMUPDOWN>(pNMHDR);
   UINT value;
   if(getUintValue(IDC_EDITHORIZONTALCOUNT, value)) {
@@ -184,7 +184,7 @@ void CGridDlg::OnDeltaposSpinHorizontal(NMHDR *pNMHDR, LRESULT *pResult) {
 }
 
 
-void CGridDlg::OnDeltaposSpinVertical(NMHDR *pNMHDR, LRESULT *pResult) {
+void CGridDlg::OnDeltaposSpinVerticalCount(NMHDR *pNMHDR, LRESULT *pResult) {
   LPNMUPDOWN pNMUpDown = reinterpret_cast<LPNMUPDOWN>(pNMHDR);
   UINT value;
   if(getUintValue(IDC_EDITVERTICALCOUNT, value)) {
@@ -193,7 +193,7 @@ void CGridDlg::OnDeltaposSpinVertical(NMHDR *pNMHDR, LRESULT *pResult) {
   *pResult = 0;
 }
 
-void CGridDlg::OnDeltaposSpinColor(NMHDR *pNMHDR, LRESULT *pResult) {
+void CGridDlg::OnDeltaposSpinColorCount(NMHDR *pNMHDR, LRESULT *pResult) {
   LPNMUPDOWN pNMUpDown = reinterpret_cast<LPNMUPDOWN>(pNMHDR);
   UINT value;
   if(getUintValue(IDC_EDITCOLORCOUNT, value)) {

@@ -12,11 +12,6 @@ private:
   double              m_currentDegree;
   ScaleParameters     m_currentScale;
   Stack<DrawTool*>    m_toolStack;
-  D3DCOLOR            m_currentColor;
-  FontParameters      m_currentFontParameters;
-  String              m_currentText;
-  UINT                m_approximateFillTolerance;
-  CSize               m_eraseToolSize;
   GridParameters      m_currentGridParam;
   CGridDlg           *m_gridDlg;
   CPropertyDlgThread *m_gridDlgThread;
@@ -69,13 +64,6 @@ public:
 
   void resetCurrentDrawTool();
 
-  D3DCOLOR getCurrentColor() const {
-    return m_currentColor;
-  }
-
-  int getApproximateFillTolerance() const {
-    return m_approximateFillTolerance;
-  }
   void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
 #ifdef _DEBUG
   virtual void AssertValid() const;
@@ -87,7 +75,6 @@ protected:
     afx_msg void OnDestroy();
     afx_msg void OnClose();
     afx_msg void OnSize(UINT nType, int cx, int cy);
-    afx_msg void OnFileNew();
     afx_msg void OnFileOpen();
     afx_msg void OnFileInsert();
     afx_msg void OnAppExit();
@@ -114,13 +101,11 @@ protected:
     afx_msg void OnEditCut();
     afx_msg void OnEditCopy();
     afx_msg void OnEditPaste();
-    afx_msg void OnOptionsColor();
     afx_msg void OnOptionsZoomX1();
     afx_msg void OnOptionsZoomX2();
     afx_msg void OnOptionsZoomX4();
     afx_msg void OnOptionsZoomX8();
     afx_msg void OnToolsMoveRectangle();
-    afx_msg void OnToolsMoveRegion();
     afx_msg void OnFunctionRotate();
     afx_msg void OnFunctionScale();
     afx_msg void OnFunctionMirrorHorizontal();

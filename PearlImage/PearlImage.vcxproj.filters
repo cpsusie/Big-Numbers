@@ -21,16 +21,10 @@
     <ClCompile Include="DrawTool.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FontParameters.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="MainFrm.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MoveRectangleTool.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MoveRegionTool.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PearlImage.cpp">
@@ -46,9 +40,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="StdAfx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TextDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GridDlg.cpp">
@@ -91,9 +82,6 @@
     <ClInclude Include="StdAfx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TextDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -114,9 +102,6 @@
     <Image Include="res\PearlImageDoc.ico">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="res\pencil32x32.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="res\Toolbar.bmp">
       <Filter>Resource Files</Filter>
     </Image>
@@ -125,22 +110,10 @@
     <CustomBuild Include="res\4WAY02.CUR">
       <Filter>Resource Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="res\cursorErase.cur">
-      <Filter>Resource Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="res\cursorFill.cur">
-      <Filter>Resource Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="res\cursorHairCross.cur">
       <Filter>Resource Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="res\cursorPen.cur">
-      <Filter>Resource Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="res\PearlImage.rc2">
-      <Filter>Resource Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="res\PENCIL.CUR">
       <Filter>Resource Files</Filter>
     </CustomBuild>
   </ItemGroup>

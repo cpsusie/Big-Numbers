@@ -63,18 +63,9 @@ END
 // Cursor
 //
 
-IDC_CURSORPENCIL1       CURSOR                  "res\\PENCIL.CUR"
-
 IDC_CURSORHAIRCROSS     CURSOR                  "res\\cursorHairCross.cur"
 
-IDC_CURSORFILLCOLOR     CURSOR                  "res\\cursorFill.cur"
-
 IDC_CURSORMOVE4WAYS     CURSOR                  "res\\4WAY02.CUR"
-
-IDC_CURSORERASE         CURSOR                  "res\\cursorErase.cur"
-
-IDC_CURSORPENCIL        CURSOR                  "res\\cursorPen.cur"
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -88,11 +79,11 @@ FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     EDITTEXT        IDC_EDITCELLSIZE,119,27,48,12,ES_AUTOHSCROLL
     EDITTEXT        IDC_EDITHORIZONTALCOUNT,119,45,48,12,ES_AUTOHSCROLL
-    CONTROL         "",IDC_SPINHORIZONTAL,"msctls_updown32",UDS_ARROWKEYS,167,45,11,12
+    CONTROL         "",IDC_SPINHORIZONTALCOUNT,"msctls_updown32",UDS_ARROWKEYS,167,45,11,12
     EDITTEXT        IDC_EDITVERTICALCOUNT,120,63,48,12,ES_AUTOHSCROLL
-    CONTROL         "",IDC_SPINVERTICAL,"msctls_updown32",UDS_ARROWKEYS,167,63,11,12
+    CONTROL         "",IDC_SPINVERTICALCOUNT,"msctls_updown32",UDS_ARROWKEYS,167,63,11,12
     EDITTEXT        IDC_EDITCOLORCOUNT,120,81,48,12,ES_AUTOHSCROLL
-    CONTROL         "",IDC_SPINCOLOR,"msctls_updown32",UDS_ARROWKEYS,167,81,11,12
+    CONTROL         "",IDC_SPINCOLORCOUNT,"msctls_updown32",UDS_ARROWKEYS,167,81,11,12
     CONTROL         "&Auto calculate:",IDC_CHECKAUTOCALCULATE,"Button",BS_AUTOCHECKBOX | BS_LEFTTEXT | WS_TABSTOP,26,125,110,19
     DEFPUSHBUTTON   "&Calculate",ID_CALCULATE,142,184,50,14
     DEFPUSHBUTTON   "OK",IDOK,197,184,50,14
@@ -101,7 +92,7 @@ BEGIN
     LTEXT           "Cell si&ze (In pixels):",IDC_STATIC,25,27,87,12
     LTEXT           "&Horizontal no. of cells:",IDC_STATIC,25,45,87,12
     LTEXT           "&No of colors:",IDC_STATIC,26,81,87,12
-    EDITTEXT        IDC_EDITTOTALCELLCOUNT,121,100,48,12,ES_AUTOHSCROLL | WS_DISABLED
+    EDITTEXT        IDC_EDITTOTALCOUNT,121,100,48,12,ES_AUTOHSCROLL | WS_DISABLED
     LTEXT           "Total no of cells:",IDC_STATIC,26,100,87,12
 END
 
@@ -206,21 +197,6 @@ BEGIN
     GROUPBOX        "Type",IDC_STATIC,15,14,120,48
 END
 
-IDD_TEXTDIALOG DIALOG 0, 0, 309, 202
-STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Text"
-FONT 8, "MS Sans Serif"
-BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,252,7,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,252,24,50,14
-    EDITTEXT        IDC_EDITTEXT,56,50,213,63,ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL
-    LTEXT           "&Text:",IDC_STATIC,15,73,21,15
-    EDITTEXT        IDC_EDITORIENTATION,56,126,48,18,ES_AUTOHSCROLL
-    LTEXT           "Orientation:",IDC_STATIC,15,129,40,16
-    PUSHBUTTON      "&Font...",IDC_BUTTONFONT,55,154,49,17
-END
-
-
 /////////////////////////////////////////////////////////////////////////////
 //
 // DESIGNINFO
@@ -243,14 +219,6 @@ BEGIN
         RIGHTMARGIN, 200
         TOPMARGIN, 7
         BOTTOMMARGIN, 142
-    END
-
-    IDD_TEXTDIALOG, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 302
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 195
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -336,7 +304,6 @@ IDR_MAINFRAME           BITMAP                  "res\\Toolbar.bmp"
 
 IDR_MAINFRAME TOOLBAR 16, 15
 BEGIN
-    BUTTON      ID_FILE_NEW
     BUTTON      ID_FILE_OPEN
     BUTTON      ID_FILE_SAVE
     SEPARATOR
@@ -359,7 +326,6 @@ IDR_MAINFRAME MENU
 BEGIN
     POPUP "&File"
     BEGIN
-        MENUITEM "&New\tCtrl+N",                ID_FILE_NEW
         MENUITEM "&Open...\tCtrl+O",            ID_FILE_OPEN
         MENUITEM SEPARATOR
         MENUITEM "&Save\tCtrl+S",               ID_FILE_GEM
@@ -389,7 +355,6 @@ BEGIN
     END
     POPUP "&Options"
     BEGIN
-        MENUITEM "&Color...",                   ID_OPTIONS_COLOR
         POPUP "&Zoom"
         BEGIN
             MENUITEM "x 1\tCtrl + 1",               ID_OPTIONS_ZOOM_X1
@@ -401,7 +366,6 @@ BEGIN
     POPUP "&Tools"
     BEGIN
         MENUITEM "Move rectangle",              ID_TOOLS_MOVERECTANGLE
-        MENUITEM "Move region",                 ID_TOOLS_MOVEREGION
     END
     POPUP "Fu&nctions"
     BEGIN
@@ -590,8 +554,6 @@ STRINGTABLE
 BEGIN
     ID_FILE_GEM             "Saves document"
     ID_FILE_GEM_SOM         "Saves document with a new name"
-    ID_FILE_INSERT          "Adds another image to this"
-    ID_OPTIONS_COLOR        "Selects a new color "
     ID_OPTIONS_ZOOM_X1      "No zoom"
     ID_OPTIONS_ZOOM_X2      "Zoom factor 2"
     ID_OPTIONS_ZOOM_X4      "Zoom factor 4"
