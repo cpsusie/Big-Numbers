@@ -12,19 +12,22 @@ private:
 	DECLARE_DYNAMIC(CGridDlg)
   HACCEL         m_accelTable;
   const PixRect *m_image;
-  bool           m_changeHandlerActive;
+  bool           m_changeHandlerActive,m_updateTotalActive;
   bool validate();
   void windowToValue();
   void valueToWindow(const GridParameters &param);
+  void flushData();
   void setCellSize(     double value);
   void setHorizontalCount(UINT value);
   void setVerticalCount(  UINT value);
-  void setColorCount(     UINT value);
+  void setColorCount(     int  value);
   void resetControls();
   void cellCountFromSize();
   void updateTotalCellCount();
   void releaseImage();
   bool getUintValue(int id, UINT &value);
+  bool getDoubleValue(int id, double &value);
+  CSize getImageSize() const;
 public:
 	CGridDlg(CWnd *pParent = NULL);
 	virtual ~CGridDlg();
@@ -33,7 +36,7 @@ public:
   const GridParameters &getParam() const {
     return getCurrentValue();
   }
-  void setImage(PixRect *image);
+  void setImage(const PixRect *image);
   const PixRect *getImage() const {
     return m_image;
   }
@@ -46,18 +49,18 @@ private:
   unsigned int m_horizontalCount;
   unsigned int m_verticalCount;
   unsigned int m_colorCount;
-  unsigned int m_totalCellCount;
   virtual BOOL OnInitDialog();
   virtual void OnOK();
   virtual void OnCancel();
   afx_msg void OnClose();
   afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
   afx_msg LRESULT OnMsgResetControls(WPARAM wp, LPARAM lp);
+  afx_msg LRESULT OnMsgNewImage(WPARAM wp, LPARAM lp);
   afx_msg void OnHideWindow();
   afx_msg void OnClickedCalculate();
   afx_msg void OnEnChangeEditCellSize();
-  afx_msg void OnEnChangeEditHorizontalCellCount();
-  afx_msg void OnEnChangeEditVerticalCellCount();
+  afx_msg void OnEnChangeEditHorizontalCount();
+  afx_msg void OnEnChangeEditVerticalCount();
   afx_msg void OnEnChangeEditColorCount();
   afx_msg void OnDeltaposSpinHorizontalCount(NMHDR *pNMHDR, LRESULT *pResult);
   afx_msg void OnDeltaposSpinVerticalCount(  NMHDR *pNMHDR, LRESULT *pResult);

@@ -2,7 +2,6 @@
 
 #include <Stack.h>
 #include <MFCUtil/PropertyDlgThread.h>
-#include "DrawTool.h"
 #include "PearlImageView.h"
 #include "GridDlg.h"
 
@@ -11,17 +10,12 @@ private:
   HACCEL              m_accelTable;
   double              m_currentDegree;
   ScaleParameters     m_currentScale;
-  Stack<DrawTool*>    m_toolStack;
   GridParameters      m_currentGridParam;
   CGridDlg           *m_gridDlg;
   CPropertyDlgThread *m_gridDlgThread;
 
-
   void onFileMruFile(int index);
-  void setCurrentDrawTool(int id);
-  void setCurrentDrawTool(DrawTool *newDrawTool);
-  void checkToolItem(int id);
-  void ajourRedoUndo();
+  void ajourEnabling();
   bool save(const CString &name);
   bool onFileSave();
   bool checkSave();
@@ -49,20 +43,9 @@ public:
   void setCurrentZoomFactor(int id);
   void saveDocState();
   void updateTitle();
-  void pushTool(DrawTool *tool);
-  void popTool();
   bool hasGridDlg() const;
   void createGridDlg();
   void destroyGridDlg();
-  DrawTool *getCurrentDrawTool() {
-    return m_toolStack.top();
-  }
-
-  bool hasDrawTool() const {
-    return !m_toolStack.isEmpty();
-  }
-
-  void resetCurrentDrawTool();
 
   void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
 #ifdef _DEBUG
@@ -98,14 +81,11 @@ protected:
     afx_msg void OnFileSaveAs();
     afx_msg void OnEditUndo();
     afx_msg void OnEditRedo();
-    afx_msg void OnEditCut();
     afx_msg void OnEditCopy();
-    afx_msg void OnEditPaste();
     afx_msg void OnOptionsZoomX1();
     afx_msg void OnOptionsZoomX2();
     afx_msg void OnOptionsZoomX4();
     afx_msg void OnOptionsZoomX8();
-    afx_msg void OnToolsMoveRectangle();
     afx_msg void OnFunctionRotate();
     afx_msg void OnFunctionScale();
     afx_msg void OnFunctionMirrorHorizontal();
@@ -124,8 +104,6 @@ protected:
     afx_msg void OnScrollToBottom();
     afx_msg void OnScrollToLeft();
     afx_msg void OnScrollToRight();
-    afx_msg void OnPopTool();
-    afx_msg void OnDelete();
     afx_msg LRESULT OnMsgCalculateImage(WPARAM wp, LPARAM lp);
     DECLARE_MESSAGE_MAP()
 };

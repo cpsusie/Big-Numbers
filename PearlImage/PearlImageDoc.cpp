@@ -13,45 +13,37 @@ END_MESSAGE_MAP()
 const CString CPearlImageDoc::s_defaultName = _T("Untitled");
 
 CPearlImageDoc::CPearlImageDoc() {
-  m_image     = NULL;
-  m_fileImage = NULL;
   init();
 }
 
 CPearlImageDoc::~CPearlImageDoc() {
+  CHECKINVARIANT;
   resetHistory();
   setImage(NULL);
-  setFileImage();
 }
 
 BOOL CPearlImageDoc::OnOpenDocument(LPCTSTR name) {
+  CHECKINVARIANT;
+  if(!__super::OnOpenDocument(name)) {
+    return FALSE;
+  }
   PixRect *image = PixRect::load(theApp.m_device, ByteInputFile(name));
 
-  OnNewDocument();
+  resetHistory();
   setImage(image);
   FileNameSplitter info(name);
   SetTitle(info.getFileName().cstr());
   SetPathName(name);
-  setFileImage();
-  return TRUE;
-}
-
-BOOL CPearlImageDoc::OnNewDocument() {
-  if(!__super::OnNewDocument()) {
-    return FALSE;
-  }
-  init();
+  setSaveTime();
+  CHECKINVARIANT;
   return TRUE;
 }
 
 void CPearlImageDoc::init() {
   resetHistory();
-  if(m_image != NULL) {
-    delete m_image  ;
-    m_image   = NULL;
-  }
+  setImage(NULL);
   SetTitle(s_defaultName);
-  setFileImage();
+  setSaveTime();
   CHECKINVARIANT;
 }
 
@@ -61,13 +53,7 @@ BOOL CPearlImageDoc::IsModified() {
 
 bool CPearlImageDoc::isModified() const {
   CHECKINVARIANT;
-  if(m_image == NULL) {
-    return m_fileImage != NULL;
-  } else if(m_fileImage == NULL) {
-    return true;
-  } else {
-    return *m_image   != *m_fileImage;
-  }
+  return hasImage() && (m_image.m_ts != m_lastImageSave);
 }
 
 bool CPearlImageDoc::hasDefaultName() const {
@@ -75,58 +61,49 @@ bool CPearlImageDoc::hasDefaultName() const {
 }
 
 BOOL CPearlImageDoc::OnSaveDocument(LPCTSTR name) {
+  CHECKINVARIANT;
+  if(!hasImage()) return FALSE;
   FileNameSplitter info(name);
+  const PixRect *pr = m_image.m_pr;
   if(info.getExtension() == _T(".jpg")) {
-    m_image->writeAsJPG(ByteOutputFile(info.setExtension( _T("jpg" )).getFullPath()));
+    pr->writeAsJPG(ByteOutputFile(info.setExtension( _T("jpg" )).getFullPath()));
   } else if(info.getExtension() == _T(".tiff")) {
-    m_image->writeAsTIFF(ByteOutputFile(info.setExtension(_T("tiff")).getFullPath()));
+    pr->writeAsTIFF(ByteOutputFile(info.setExtension(_T("tiff")).getFullPath()));
   } else if(info.getExtension() == _T(".bmp")) {
-    m_image->writeAsBMP(ByteOutputFile(info.setExtension( _T("bmp" )).getFullPath()));
+    pr->writeAsBMP(ByteOutputFile(info.setExtension( _T("bmp" )).getFullPath()));
   } else if(info.getExtension() == _T(".png")) {
-    m_image->writeAsPNG(ByteOutputFile(info.setExtension( _T("png" )).getFullPath()));
+    pr->writeAsPNG(ByteOutputFile(info.setExtension( _T("png" )).getFullPath()));
   } else {
     throwException(_T("Unknown fileformat:%s"), info.getExtension().cstr());
   }
   SetTitle(info.getFileName().cstr());
   SetPathName(name);
-  setFileImage();
+  setSaveTime();
   return TRUE;
 }
 
 void CPearlImageDoc::setImage(PixRect *image) {
-  if(image != m_image) {
-    if(m_image != NULL) {
-      delete m_image;
-      m_image = NULL;
-    }
-    m_image = image;
+  if(image == m_image.m_pr) return;
+  if(image == NULL) {
+    m_image.clear();
+  } else if (!m_image.hasImage()) {
+    m_image.set(image);
+  } else if(*image != *m_image.m_pr) {  // both are != NULL
+    m_image.set(image);
   }
 }
 
-PixRect *CPearlImageDoc::getImage() {
-  if(m_image == NULL) {
-    setImage(theApp.fetchPixRect(CSize(400,400)));
-    setFileImage();
-  }
-  return m_image;
-}
-
-void CPearlImageDoc::setFileImage() {
-  if(m_fileImage) {
-    delete m_fileImage;
-    m_fileImage = NULL;
-  }
-  if(m_image) {
-    m_fileImage = m_image->clone(true);
-  }
+void CPearlImageDoc::setSaveTime() {
+  m_lastImageSave = m_image.m_ts;
 }
 
 void CPearlImageDoc::setSize(const CSize &newSize) {
+  if(!hasImage()) return;
   if(newSize != getSize()) {
     saveState();
     PixRect *newImage = theApp.fetchPixRect(newSize);
     const CSize oldSize = getSize();
-    newImage->rop(0,0,oldSize.cx, oldSize.cy,SRCCOPY,m_image,0,0);
+    newImage->rop(0,0,oldSize.cx, oldSize.cy,SRCCOPY,m_image.m_pr,0,0);
     setImage(newImage);
   }
 }
@@ -148,7 +125,7 @@ void CPearlImageDoc::resetHistory() {
 }
 
 void CPearlImageDoc::removeLast() {
-  delete m_history.last();
+  m_history.last().clear();
   m_history.removeLast();
 }
 
@@ -167,12 +144,12 @@ void CPearlImageDoc::saveState() {
 
 void CPearlImageDoc::addImage() {
   if(canAddImage()) {
-    m_history.add(m_image->clone(true));
+    m_history.add(PixRectWithTimestamp(m_image.m_pr->clone(true), m_image.m_ts));
   }
 }
 
 bool CPearlImageDoc::canAddImage() const {
-  return m_history.isEmpty() || (*m_image != *m_history.last());
+  return hasImage() && (m_history.isEmpty() || (m_image != m_history.last()));
 }
 
 bool CPearlImageDoc::undo() {
@@ -183,7 +160,7 @@ bool CPearlImageDoc::undo() {
       addImage();
       m_index = max(getHistorySize() - 1, 1);
     }
-    setImage(m_history[--m_index]->clone(true));
+    m_image.set(m_history[--m_index]);
     done = true;
   }
   CHECKINVARIANT;
@@ -194,7 +171,7 @@ bool CPearlImageDoc::redo() {
   CHECKINVARIANT;
   bool done = false;
   if(canRedo()) {
-    setImage(m_history[++m_index]->clone(true));
+    m_image.set(m_history[++m_index]);
     done = true;
   }
   CHECKINVARIANT;
@@ -203,7 +180,7 @@ bool CPearlImageDoc::redo() {
 
 bool CPearlImageDoc::canUndo() const {
   CHECKINVARIANT;
-  return (m_index > 0) && (*m_image != *m_history[m_index-1]);
+  return (m_index > 0) && (m_image != m_history[m_index-1]);
 }
 
 bool CPearlImageDoc::canRedo() const {
@@ -213,8 +190,15 @@ bool CPearlImageDoc::canRedo() const {
 
 #ifdef _DEBUG
 void CPearlImageDoc::checkInvariant(int line) const {
+  if(hasImage() && (m_image.m_ts < m_lastImageSave)) {
+    throwException(_T("Broken in %s, line %d:lastImageChange:%s, lastImageSave:%s")
+                  ,__TFILE__, line
+                  ,m_image.m_ts.toString().cstr()
+                  ,m_lastImageSave.toString().cstr()
+                  );
+  }
   if(m_index < 0 || m_index > getHistorySize()) {
-    throwException(_T("Broken invariant in %s, line %d:index=%d, historySize=%d"), __TFILE__, line, m_index, m_history.size());
+    throwException(_T("Broken history invariant in %s, line %d:index=%d, historySize=%d"), __TFILE__, line, m_index, m_history.size());
   }
 }
 #endif

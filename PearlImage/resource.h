@@ -9,8 +9,6 @@
 #define IDD_DEGREEDIALOG                130
 #define IDR_SCALE                       132
 #define IDR_PEARLGRID                   133
-#define IDC_CURSORHAIRCROSS             136
-#define IDC_CURSORMOVE4WAYS             148
 #define IDC_EDITDEGREE                  1000
 #define IDC_SCALEWIDTHEDIT              1001
 #define IDC_SCALEHEIGHTEDIT             1002
@@ -24,7 +22,7 @@
 #define IDC_EDITVERTICALCOUNT           1013
 #define IDC_EDITCELLSIZE                1014
 #define IDC_EDITCOLORCOUNT              1015
-#define IDC_EDITTOTALCOUNT              1016
+#define IDC_STATICTOTALCOUNT            1016
 #define IDC_CHECKAUTOCALCULATE          1020
 #define IDC_SPINHORIZONTALCOUNT         1021
 #define IDC_SPINVERTICALCOUNT           1022
@@ -38,7 +36,6 @@
 #define ID_OPTIONS_ZOOM_X2              32777
 #define ID_OPTIONS_ZOOM_X4              32778
 #define ID_OPTIONS_ZOOM_X8              32779
-#define ID_TOOLS_MOVERECTANGLE          32790
 #define ID_FUNCTION_ROTATE              32800
 #define ID_FUNCTION_SCALE               32801
 #define ID_FUNCTION_MIRROR_HORIZONTAL   32802
@@ -66,6 +63,7 @@
 #define ID_POPTOOL                      32860
 #define ID_DELETE                       32861
 #define ID_MSG_CALCULATEIMAGE           32880
+#define ID_MSG_NEWIMAGE                 32881
 
 // Next default values for new objects
 // 

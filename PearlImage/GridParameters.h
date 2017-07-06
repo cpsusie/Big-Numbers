@@ -10,9 +10,9 @@ public:
     reset();
   }
   void reset() {
-    m_cellSize   = 4;
+    m_cellSize   = 1;
     m_cellCount  = CSize(0,0);
-    m_colorCount = 20;
+    m_colorCount = 128;
   }
 
   PixRect *calculateImage(const PixRect *image) const;

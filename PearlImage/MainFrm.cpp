@@ -38,13 +38,11 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
     ON_COMMAND(ID_APP_EXIT                        , OnAppExit                         )
     ON_COMMAND(ID_EDIT_UNDO                       , OnEditUndo                        )
     ON_COMMAND(ID_EDIT_REDO                       , OnEditRedo                        )
-    ON_COMMAND(ID_EDIT_CUT                        , OnEditCut                         )
     ON_COMMAND(ID_EDIT_COPY                       , OnEditCopy                        )
     ON_COMMAND(ID_OPTIONS_ZOOM_X1                 , OnOptionsZoomX1                   )
     ON_COMMAND(ID_OPTIONS_ZOOM_X2                 , OnOptionsZoomX2                   )
     ON_COMMAND(ID_OPTIONS_ZOOM_X4                 , OnOptionsZoomX4                   )
     ON_COMMAND(ID_OPTIONS_ZOOM_X8                 , OnOptionsZoomX8                   )
-    ON_COMMAND(ID_TOOLS_MOVERECTANGLE             , OnToolsMoveRectangle              )
     ON_COMMAND(ID_FUNCTION_ROTATE                 , OnFunctionRotate                  )
     ON_COMMAND(ID_FUNCTION_SCALE                  , OnFunctionScale                   )
     ON_COMMAND(ID_FUNCTION_MIRROR_HORIZONTAL      , OnFunctionMirrorHorizontal        )
@@ -63,8 +61,6 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
     ON_COMMAND(ID_SCROLL_TO_BOTTOM                , OnScrollToBottom                  )
     ON_COMMAND(ID_SCROLL_TO_LEFT                  , OnScrollToLeft                    )
     ON_COMMAND(ID_SCROLL_TO_RIGHT                 , OnScrollToRight                   )
-    ON_COMMAND(ID_POPTOOL                         , OnPopTool                         )
-    ON_COMMAND(ID_DELETE                          , OnDelete                          )
     ON_MESSAGE(ID_MSG_CALCULATEIMAGE              , OnMsgCalculateImage               )
 END_MESSAGE_MAP()
 
@@ -109,7 +105,6 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
   m_bAutoMenuEnable = false;
   theApp.m_device.attach(*this);
 
-  setCurrentDrawTool(-1);
   createGridDlg();
   return 0;
 }
@@ -134,18 +129,26 @@ BOOL CMainFrame::PreTranslateMessage(MSG *pMsg) {
     m_wndStatusBar.SetPaneText(0,EMPTYSTRING);
   }
   m_wndStatusBar.SetPaneText(2,getDocument()->getInfo().cstr());
-  ajourRedoUndo();
+  ajourEnabling();
   return result;
 }
 
-void CMainFrame::ajourRedoUndo() {
-//  CMenu *menu = GetMenu();
-//  menu->EnableMenuItem(ID_EDIT_UNDO,getDocument()->canUndo() ? MF_ENABLED : MF_GRAYED);// menu->EnableMenuItem(ID_EDIT_REDO,getDocument()->canRedo() ? MF_ENABLED : MF_GRAYED);
+void CMainFrame::ajourEnabling() {
+  CPearlImageDoc *doc = getDocument();
+  const bool hasImage = doc->hasImage();
+  enableMenuItem(this, ID_FILE_GEM          , doc->IsModified()?true:false);
+  enableMenuItem(this, ID_FILE_GEM_SOM      , hasImage);
+  enableMenuItem(this, ID_EDIT_COPY         , hasImage);
+  enableMenuItem(this, ID_FILE_PRINT        , hasImage);
+  enableMenuItem(this, ID_FILE_PRINT_DIRECT , hasImage);
+  enableMenuItem(this, ID_FILE_PRINT_PREVIEW, hasImage);
 
-  enableMenuItem(this,ID_EDIT_UNDO,getDocument()->canUndo());
-  enableMenuItem(this,ID_EDIT_REDO,getDocument()->canRedo());
+  enableMenuItem(this, ID_EDIT_UNDO         , doc->canUndo());
+  enableMenuItem(this, ID_EDIT_REDO         , doc->canRedo());
+
+  enableSubMenuContainingId(this, ID_OPTIONS_ZOOM_X1, hasImage);
+  enableSubMenuContainingId(this, ID_FUNCTION_ROTATE, hasImage);
 }
-
 
 #ifdef _DEBUG
 void CMainFrame::AssertValid() const {
@@ -228,12 +231,16 @@ void CMainFrame::onFileMruFile(int index) {
 }
 
 bool CMainFrame::loadFile(const String &fileName) {
-  resetCurrentDrawTool();
   try {
-    getDocument()->OnOpenDocument(fileName.cstr());
+    CPearlImageDoc *doc = getDocument();
+    doc->OnOpenDocument(fileName.cstr());
     updateTitle();
     getView()->clear();
-    getView()->refreshDoc();
+    if(m_gridDlgThread->isDialogVisible()) {
+      m_gridDlg->setImage(doc->getImage());
+    } else {
+      getView()->refreshDoc();
+    }
     return true;
   } catch(Exception e) {
     MessageBox(e.what());
@@ -242,9 +249,9 @@ bool CMainFrame::loadFile(const String &fileName) {
 }
 
 void CMainFrame::updateTitle() {
-  CPearlImageDoc *doc = getDocument();
-  CString title    = doc->GetTitle();
-  CSize   size     = doc->getSize();
+  CPearlImageDoc *doc   = getDocument();
+  CString         title = doc->GetTitle();
+  CSize           size  = doc->getSize();
   setWindowText(this, format(_T("PearlImage %s - %dx%d"), (LPCTSTR)title, size.cx,size.cy));
 }
 
@@ -315,15 +322,12 @@ void CMainFrame::OnEditRedo() {
   }
 }
 
-void CMainFrame::OnEditCut() {
-  if(hasDrawTool()) {
-    getCurrentDrawTool()->cut();
-  }
-}
-
 void CMainFrame::OnEditCopy() {
-  if(hasDrawTool()) {
-    getCurrentDrawTool()->copy();
+  if(getDocument()->hasImage()) {
+    const PixRect *pr = getDocument()->getImage();
+    HBITMAP bitmap = *pr;
+    putClipboard(*theApp.GetMainWnd(),bitmap);
+    DeleteObject(bitmap);
   }
 }
 
@@ -362,10 +366,6 @@ void CMainFrame::setCurrentZoomFactor(int id) {
   case ID_OPTIONS_ZOOM_X8: getView()->setCurrentZoomFactor(8); break;
   default                : getView()->setCurrentZoomFactor(1); break;
   }
-}
-
-void CMainFrame::OnToolsMoveRectangle() {
-  setCurrentDrawTool(ID_TOOLS_MOVERECTANGLE);
 }
 
 void CMainFrame::OnFunctionRotate() {
@@ -409,10 +409,10 @@ void CMainFrame::OnFunctionMirrorVertical()      { applyMirror(true);           
 void CMainFrame::OnFunctionMakegrayscale()       { applyFilter(GrayScaleFilter());     }
 
 void CMainFrame::OnFunctionsMakePearlGrid() {
-  if(getDocument()->isEmpty()) return;
+  if(!getDocument()->hasImage()) return;
 
-  m_gridDlg->setImage(getDocument()->getImage());
   m_gridDlgThread->setCurrentDialogProperty(&m_currentGridParam);
+  m_gridDlg->setImage(getDocument()->getImage());
   if(!m_gridDlgThread->isDialogVisible()) {
     m_gridDlgThread->setDialogVisible(true);
   }
@@ -471,64 +471,14 @@ void CMainFrame::applyMirror(bool vertical) {
 }
 
 void CMainFrame::applyFilter(PixRectFilter &filter) {
+  CPearlImageDoc *doc = getDocument();
+  if(!doc->hasImage()) return;
   theApp.BeginWaitCursor();
   saveDocState();
-  getDocument()->getImage()->apply(filter);
+  PixRect *pr = doc->getImage()->clone(true);
+  doc->setImage(&(pr->apply(filter)));
   Invalidate();
   theApp.EndWaitCursor();
-}
-
-void CMainFrame::OnPopTool() {
-  popTool();
-}
-
-void CMainFrame::OnDelete() {
-  getCurrentDrawTool()->OnDelete();
-}
-
-void CMainFrame::setCurrentDrawTool(int id) {
-  checkToolItem(id);
-  switch(id) {
-  case ID_TOOLS_MOVERECTANGLE:
-    setCurrentDrawTool(new MoveRectangleTool(getView()));
-    break;
-  default:
-    setCurrentDrawTool(new NullTool());
-    break;
-  }
-}
-
-void CMainFrame::resetCurrentDrawTool() {
-  if(hasDrawTool()) {
-    getCurrentDrawTool()->reset();
-  }
-}
-
-void CMainFrame::setCurrentDrawTool(DrawTool *newDrawTool) {
-  if(hasDrawTool()) {
-    popTool();
-  }
-  pushTool(newDrawTool);
-}
-
-void CMainFrame::popTool() {
-  DrawTool *tool = m_toolStack.pop();
-  delete tool;
-}
-
-void CMainFrame::pushTool(DrawTool *tool) {
-  m_toolStack.push(tool);
-}
-
-static int toolItems[] = {
-  ID_TOOLS_MOVERECTANGLE
-};
-
-void CMainFrame::checkToolItem(int id) {
-  for(int i = 0; i < ARRAYSIZE(toolItems); i++) {
-    checkMenuItem(this,toolItems[i],false);
-  }
-  checkMenuItem(this,id,true);
 }
 
 CPoint CMainFrame::getMaxScroll() {

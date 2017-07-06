@@ -60,15 +60,6 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
-// Cursor
-//
-
-IDC_CURSORHAIRCROSS     CURSOR                  "res\\cursorHairCross.cur"
-
-IDC_CURSORMOVE4WAYS     CURSOR                  "res\\4WAY02.CUR"
-
-/////////////////////////////////////////////////////////////////////////////
-//
 // Dialog
 //
 
@@ -92,7 +83,7 @@ BEGIN
     LTEXT           "Cell si&ze (In pixels):",IDC_STATIC,25,27,87,12
     LTEXT           "&Horizontal no. of cells:",IDC_STATIC,25,45,87,12
     LTEXT           "&No of colors:",IDC_STATIC,26,81,87,12
-    EDITTEXT        IDC_EDITTOTALCOUNT,121,100,48,12,ES_AUTOHSCROLL | WS_DISABLED
+    RTEXT           "",IDC_STATICTOTALCOUNT,121,100,48,12
     LTEXT           "Total no of cells:",IDC_STATIC,26,100,87,12
 END
 
@@ -197,6 +188,7 @@ BEGIN
     GROUPBOX        "Type",IDC_STATIC,15,14,120,48
 END
 
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // DESIGNINFO
@@ -234,14 +226,9 @@ BEGIN
     VK_DELETE,      ID_DELETE,              VIRTKEY, NOINVERT
     "C",            ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
     VK_INSERT,      ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
-    VK_DELETE,      ID_EDIT_CUT,            VIRTKEY, SHIFT, NOINVERT
-    "X",            ID_EDIT_CUT,            VIRTKEY, CONTROL, NOINVERT
-    "V",            ID_EDIT_PASTE,          VIRTKEY, CONTROL, NOINVERT
-    VK_INSERT,      ID_EDIT_PASTE,          VIRTKEY, SHIFT, NOINVERT
     "Y",            ID_EDIT_REDO,           VIRTKEY, CONTROL, NOINVERT
     VK_BACK,        ID_EDIT_UNDO,           VIRTKEY, ALT, NOINVERT
     "Z",            ID_EDIT_UNDO,           VIRTKEY, CONTROL, NOINVERT
-    "N",            ID_FILE_NEW,            VIRTKEY, CONTROL, NOINVERT
     "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL, NOINVERT
     "P",            ID_FILE_PRINT,          VIRTKEY, CONTROL, NOINVERT
     "S",            ID_FILE_SAVE,           VIRTKEY, CONTROL, NOINVERT
@@ -286,8 +273,6 @@ END
 // remains consistent on all systems.
 IDR_MAINFRAME           ICON                    "res\\PearlImage.ico"
 
-IDR_MYPAINTYPE          ICON                    "res\\PearlImage.ico"
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -307,9 +292,7 @@ BEGIN
     BUTTON      ID_FILE_OPEN
     BUTTON      ID_FILE_SAVE
     SEPARATOR
-    BUTTON      ID_EDIT_CUT
     BUTTON      ID_EDIT_COPY
-    BUTTON      ID_EDIT_PASTE
     SEPARATOR
     BUTTON      ID_FILE_PRINT
     SEPARATOR
@@ -344,16 +327,9 @@ BEGIN
         MENUITEM "&Undo\tCtrl+Z",               ID_EDIT_UNDO
         MENUITEM "&Redo\tCtrl+Y",               ID_EDIT_REDO
         MENUITEM SEPARATOR
-        MENUITEM "Cu&t\tCtrl+X",                ID_EDIT_CUT
         MENUITEM "&Copy\tCtrl+C",               ID_EDIT_COPY
-        MENUITEM "&Paste\tCtrl+V",              ID_EDIT_PASTE
     END
     POPUP "&View"
-    BEGIN
-        MENUITEM "&Toolbar",                    ID_VIEW_TOOLBAR
-        MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
-    END
-    POPUP "&Options"
     BEGIN
         POPUP "&Zoom"
         BEGIN
@@ -362,12 +338,11 @@ BEGIN
             MENUITEM "x 4\tCtrl + 4",               ID_OPTIONS_ZOOM_X4
             MENUITEM "x 8\tCtrl + 8",               ID_OPTIONS_ZOOM_X8
         END
+        MENUITEM SEPARATOR
+        MENUITEM "&Toolbar",                    ID_VIEW_TOOLBAR
+        MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
     END
     POPUP "&Tools"
-    BEGIN
-        MENUITEM "Move rectangle",              ID_TOOLS_MOVERECTANGLE
-    END
-    POPUP "Fu&nctions"
     BEGIN
         MENUITEM "&Rotate...\tCtrl+R",          ID_FUNCTION_ROTATE
         MENUITEM "Scale...\tCtrl+K",            ID_FUNCTION_SCALE

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "PearlImageDoc.h"
-#include "DrawTool.h"
 
 class CMainFrame;
 
@@ -47,7 +46,7 @@ public:
   }
 };
 
-class CPearlImageView : public CScrollView, public PixRectContainer {
+class CPearlImageView : public CScrollView {
 private:
   HACCEL           m_accelTable;
   bool             m_initialized;
@@ -66,8 +65,6 @@ private:
     return (const CMainFrame*)GetParent();
   }
 
-  int  getCurrentToolCursor();
-  void restoreOldTool();
   void paintBackgroundAndEdge(CDC &dc);
   void resizeDocument(const CPoint &p);
   void paintResizingFrame(const CPoint &p);
@@ -81,13 +78,9 @@ public:
     const CPearlImageDoc *GetDocument() const {
        return (const CPearlImageDoc*)m_pDocument;
     }
-    PixRect     *getImage();
-    D3DCOLOR     getColor();
-    int          getApproximateFillTolerance() const;
+    const PixRect *getImage();
 
     void         repaint();
-    void         enableCut(bool enabled);
-    void         saveDocState();
     void         setScrollRange();
     void         refreshDoc();
     void         clear();
@@ -111,7 +104,6 @@ public:
 
     virtual ~CPearlImageView();
     virtual void OnDraw(CDC *pDC);  // overridden to draw this view
-    virtual BOOL PreCreateWindow(CREATESTRUCT &cs);
     virtual void OnInitialUpdate();
     virtual BOOL PreTranslateMessage(MSG *pMsg);
     virtual BOOL OnPreparePrinting(CPrintInfo *pInfo);

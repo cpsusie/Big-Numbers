@@ -267,11 +267,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="DegreeDlg.cpp" />
-    <ClCompile Include="DrawTool.cpp" />
     <ClCompile Include="GridDlg.cpp" />
     <ClCompile Include="GridParameters.cpp" />
     <ClCompile Include="MainFrm.cpp" />
-    <ClCompile Include="MoveRectangleTool.cpp" />
     <ClCompile Include="PearlImage.cpp" />
     <ClCompile Include="PearlImageDoc.cpp" />
     <ClCompile Include="PearlImageView.cpp" />
@@ -292,7 +290,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DegreeDlg.h" />
-    <ClInclude Include="DrawTool.h" />
     <ClInclude Include="GridDlg.h" />
     <ClInclude Include="GridParameters.h" />
     <ClInclude Include="MainFrm.h" />
@@ -305,8 +302,6 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="res\4WAY02.CUR" />
-    <CustomBuild Include="res\cursorHairCross.cur" />
     <CustomBuild Include="res\PearlImage.rc2" />
   </ItemGroup>
   <ItemGroup>

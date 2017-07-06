@@ -10,11 +10,11 @@ static void reduceColors(PixRect *image, int colorCount) {
   CPoint p;
   for(p.y = 0; p.y < size.cy; p.y++) {
     for(p.x = 0; p.x < size.cx; p.x++) {
-      const D3DCOLORVALUE cv = colorToColorValue(pa->getPixel(p));
+      const D3DCOLOR c = pa->getPixel(p);
       DimPoint dp;
-      dp.m_x[0] = cv.r;
-      dp.m_x[1] = cv.g;
-      dp.m_x[2] = cv.b;
+      dp.m_x[0] = (BYTE)ARGB_GETRED(c);
+      dp.m_x[1] = (BYTE)ARGB_GETGREEN(c);
+      dp.m_x[2] = (BYTE)ARGB_GETBLUE(c);
       a.add(dp);
     }
   }
@@ -23,11 +23,7 @@ static void reduceColors(PixRect *image, int colorCount) {
   for(p.y = 0; p.y < size.cy; p.y++) {
     for(p.x = 0; p.x < size.cx; p.x++) {
       const DimPoint &dp = dpa[a[pixelCount++].m_index];
-      D3DCOLORVALUE cv;
-      cv.r = dp.m_x[0];
-      cv.g = dp.m_x[1];
-      cv.b = dp.m_x[2];
-      pa->setPixel(p, colorValueToD3DColor(cv));
+      pa->setPixel(p, D3DCOLOR_XRGB((BYTE)dp.m_x[0],(BYTE)dp.m_x[1],(BYTE)dp.m_x[2]));
     }
   }
   delete pa;

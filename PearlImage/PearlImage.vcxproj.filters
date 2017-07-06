@@ -18,13 +18,7 @@
     <ClCompile Include="DegreeDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DrawTool.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="MainFrm.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MoveRectangleTool.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PearlImage.cpp">
@@ -56,9 +50,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DegreeDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DrawTool.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MainFrm.h">
@@ -107,12 +98,6 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="res\4WAY02.CUR">
-      <Filter>Resource Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="res\cursorHairCross.cur">
-      <Filter>Resource Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="res\PearlImage.rc2">
       <Filter>Resource Files</Filter>
     </CustomBuild>

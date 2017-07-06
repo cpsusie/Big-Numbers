@@ -5,12 +5,12 @@
 IMPLEMENT_DYNAMIC(CGridDlg, CDialog)
 
 CGridDlg::CGridDlg(CWnd* pParent /*=NULL*/)
-  : m_image(NULL)
-  , CPropertyDialog<GridParameters>(IDD, PROP_GRIDPARAM, pParent)
-  , m_colorCount(0)
+  : CPropertyDialog<GridParameters>(IDD, PROP_GRIDPARAM, pParent)
+  , m_image(NULL)
+  , m_cellSize(1)
+  , m_colorCount(128)
   , m_horizontalCount(0)
   , m_verticalCount(0)
-  , m_cellSize(0)
 {
   m_changeHandlerActive = false;
 }
@@ -19,34 +19,19 @@ CGridDlg::~CGridDlg() {
   releaseImage();
 }
 
-void CGridDlg::setImage(PixRect *image) {
-  releaseImage();
-  if(image) {
-    m_image = image->clone(true);
-  }
-}
-
-void CGridDlg::releaseImage() {
-  if(m_image != NULL) {
-    delete m_image;
-    m_image = NULL;
-  }
-}
-
 void CGridDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
   DDX_Text(pDX, IDC_EDITCELLSIZE       , m_cellSize       );
   DDX_Text(pDX, IDC_EDITHORIZONTALCOUNT, m_horizontalCount);
   DDX_Text(pDX, IDC_EDITVERTICALCOUNT  , m_verticalCount  );
   DDX_Text(pDX, IDC_EDITCOLORCOUNT     , m_colorCount     );
-  DDX_Text(pDX, IDC_EDITTOTALCOUNT     , m_totalCellCount );
 }
 
 BEGIN_MESSAGE_MAP(CGridDlg, CDialog)
   ON_BN_CLICKED(ID_CALCULATE                     , OnClickedCalculate               )
   ON_EN_CHANGE(IDC_EDITCELLSIZE                  , OnEnChangeEditCellSize           )
-  ON_EN_CHANGE(IDC_EDITHORIZONTALCOUNT           , OnEnChangeEditHorizontalCellCount)
-  ON_EN_CHANGE(IDC_EDITVERTICALCOUNT             , OnEnChangeEditVerticalCellCount  )
+  ON_EN_CHANGE(IDC_EDITHORIZONTALCOUNT           , OnEnChangeEditHorizontalCount    )
+  ON_EN_CHANGE(IDC_EDITVERTICALCOUNT             , OnEnChangeEditVerticalCount      )
   ON_EN_CHANGE(IDC_EDITCOLORCOUNT                , OnEnChangeEditColorCount         )
   ON_NOTIFY(UDN_DELTAPOS, IDC_SPINHORIZONTALCOUNT, OnDeltaposSpinHorizontalCount    )
   ON_NOTIFY(UDN_DELTAPOS, IDC_SPINVERTICALCOUNT  , OnDeltaposSpinVerticalCount      )
@@ -56,6 +41,7 @@ BEGIN_MESSAGE_MAP(CGridDlg, CDialog)
   ON_COMMAND(ID_GOTO_CELLSIZE                    , OnGotoCellSize                   )
   ON_COMMAND(ID_GOTO_COLORCOUNT                  , OnGotoColorCount                 )
   ON_MESSAGE(_ID_MSG_RESETCONTROLS               , OnMsgResetControls               )
+  ON_MESSAGE(ID_MSG_NEWIMAGE                     , OnMsgNewImage                    )
   ON_WM_SHOWWINDOW()
   ON_WM_CLOSE()
 END_MESSAGE_MAP()
@@ -81,6 +67,7 @@ void CGridDlg::OnShowWindow(BOOL bShow, UINT nStatus) {
   if(bShow) {
     CheckDlgButton(IDC_CHECKAUTOCALCULATE, BST_CHECKED);
     gotoEditBox(this, IDC_EDITCELLSIZE);
+    OnClickedCalculate();
   }
 }
 
@@ -110,6 +97,13 @@ LRESULT CGridDlg::OnMsgResetControls(WPARAM wp, LPARAM lp) {
   return 0;
 }
 
+LRESULT CGridDlg::OnMsgNewImage(WPARAM wp, LPARAM lp) {
+  cellCountFromSize();
+  flushData();
+  OnClickedCalculate();
+  return 0;
+}
+
 void CGridDlg::resetControls() {
   setNotifyEnabled(false);
   const GridParameters &v = getStartValue();
@@ -136,15 +130,14 @@ void CGridDlg::OnEnChangeEditCellSize() {
   if(m_changeHandlerActive) return;
   m_changeHandlerActive = true;
 
-  const String str = getWindowText(this, IDC_EDITCELLSIZE);
-  double cellSize;
-  if(_stscanf(str.cstr(), _T("%le"), &cellSize) == 1) {
-    setCellSize(cellSize);
+  double value;
+  if(getDoubleValue(IDC_EDITCELLSIZE, value)) {
+    setCellSize(value);
   }
   m_changeHandlerActive = false;
 }
 
-void CGridDlg::OnEnChangeEditHorizontalCellCount() {
+void CGridDlg::OnEnChangeEditHorizontalCount() {
   if(m_changeHandlerActive) return;
   m_changeHandlerActive = true;
   UINT value;
@@ -154,7 +147,7 @@ void CGridDlg::OnEnChangeEditHorizontalCellCount() {
   m_changeHandlerActive = false;
 }
 
-void CGridDlg::OnEnChangeEditVerticalCellCount() {
+void CGridDlg::OnEnChangeEditVerticalCount() {
   if(m_changeHandlerActive) return;
   m_changeHandlerActive = true;
   UINT value;
@@ -182,7 +175,6 @@ void CGridDlg::OnDeltaposSpinHorizontalCount(NMHDR *pNMHDR, LRESULT *pResult) {
   }
   *pResult = 0;
 }
-
 
 void CGridDlg::OnDeltaposSpinVerticalCount(NMHDR *pNMHDR, LRESULT *pResult) {
   LPNMUPDOWN pNMUpDown = reinterpret_cast<LPNMUPDOWN>(pNMHDR);
@@ -227,7 +219,7 @@ bool CGridDlg::validate() {
     return false;
   }
 
-  const CSize sz = m_image->getSize();
+  const CSize sz = getImageSize();
   if((m_horizontalCount < 5) || (m_horizontalCount > (UINT)sz.cx)) {
     MessageBox(format(_T("Must be in range 5-%d"), sz.cx).cstr(), _T("Error"), MB_ICONWARNING);
     gotoEditBox(this, IDC_EDITHORIZONTALCOUNT);
@@ -268,64 +260,87 @@ void CGridDlg::valueToWindow(const GridParameters &param) {
     m_horizontalCount = param.m_cellCount.cx;
     m_verticalCount   = param.m_cellCount.cy;
   }
-  updateTotalCellCount();
   m_colorCount        = param.m_colorCount;
-  UpdateData(FALSE);
+  flushData();
 }
 
 void CGridDlg::setCellSize(double value) {
   if(value >= 1) {
     m_cellSize = value;
     cellCountFromSize();
-    UpdateData(FALSE);
+    flushData();
     windowToValue();
   }
 }
 
 void CGridDlg::setHorizontalCount(UINT value) {
-  const CSize sz = m_image->getSize();
+  const CSize sz = getImageSize();
   if((5 <= value) && (value <= (UINT)sz.cx)) {
     m_horizontalCount = value;
     m_verticalCount   = (UINT)round((double)sz.cy * m_horizontalCount / sz.cx);
     m_cellSize        =       round((double)sz.cx / m_horizontalCount,3);
-    updateTotalCellCount();
-    UpdateData(FALSE);
+    flushData();
     windowToValue();
   }
 }
 
 void CGridDlg::setVerticalCount(UINT value) {
-  const CSize sz = m_image->getSize();
+  const CSize sz = getImageSize();
   if((5 <= value) && (value <= (UINT)sz.cy)) {
     m_verticalCount   = value;
     m_horizontalCount = (UINT)round((double)sz.cx * m_verticalCount / sz.cy);
     m_cellSize        =       round((double)sz.cy / m_verticalCount,3);
-    updateTotalCellCount();
-    UpdateData(FALSE);
+    flushData();
     windowToValue();
   }
 }
 
-void CGridDlg::setColorCount(UINT value) {
+void CGridDlg::setColorCount(int value) {
   if(value >= 2) {
     m_colorCount = value;
-    UpdateData(FALSE);
+    flushData();
     windowToValue();
+  }
+}
+
+void CGridDlg::flushData() {
+  UpdateData(false);
+  setWindowText(this, IDC_STATICTOTALCOUNT, format1000(m_horizontalCount * m_verticalCount));
+}
+
+void CGridDlg::setImage(const PixRect *image) {
+  releaseImage();
+  if(image) {
+    m_image = image->clone(true);
+    if(isVisible()) {
+      PostMessage(ID_MSG_NEWIMAGE);
+    }
+  }
+}
+
+void CGridDlg::releaseImage() {
+  if(m_image != NULL) {
+    delete m_image;
+    m_image = NULL;
   }
 }
 
 void CGridDlg::cellCountFromSize() {
-  const CSize sz = m_image->getSize();
+  const CSize sz = getImageSize();
   m_horizontalCount = (UINT)round((double)sz.cx / m_cellSize);
   m_verticalCount   = (UINT)round((double)sz.cy / m_cellSize);
-  updateTotalCellCount();
-}
-
-void CGridDlg::updateTotalCellCount() {
-  m_totalCellCount = m_horizontalCount * m_verticalCount;
 }
 
 bool CGridDlg::getUintValue(int id, UINT &value) {
   const String str = getWindowText(this, id);
   return _stscanf(str.cstr(), _T("%u"), &value) == 1;
+}
+
+bool CGridDlg::getDoubleValue(int id, double &value) {
+  const String str = getWindowText(this, id);
+  return _stscanf(str.cstr(), _T("%le"), &value) == 1;
+}
+
+CSize CGridDlg::getImageSize() const {
+  return m_image ? m_image->getSize() : CSize(1,1);
 }
