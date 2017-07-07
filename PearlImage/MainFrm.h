@@ -7,6 +7,8 @@
 
 class CMainFrame : public CFrameWnd, public PropertyChangeListener {
 private:
+  static const TCHAR *s_saveFileDialogExtensions;
+  static const TCHAR *s_loadFileDialogExtensions;
   HACCEL              m_accelTable;
   double              m_currentDegree;
   ScaleParameters     m_currentScale;
@@ -14,20 +16,30 @@ private:
   CGridDlg           *m_gridDlg;
   CPropertyDlgThread *m_gridDlgThread;
 
-  void onFileMruFile(int index);
-  void ajourEnabling();
-  bool save(const CString &name);
-  bool onFileSave();
-  bool checkSave();
-  CPearlImageView *getView() {
+  String getLoadFileName();
+  void   onFileMruFile(int index);
+  bool   onFileSave();
+  bool   save(const CString &name);
+  bool   checkSave();
+  void   saveDocState();
+  void   ajourEnabling();
+  void   scroll(int dx, int dy);
+  CPoint getMaxScroll();
+  void   applyFilter(PixRectFilter &filter);
+  void   applyMirror(bool vertical);
+  void   createGridDlg();
+  void   destroyGridDlg();
+  bool   hasGridDlg() const;
+
+  inline CPearlImageView *getView() {
     return (CPearlImageView*)GetActiveView();
   }
 
-  CPearlImageDoc *getDocument();
-  void scroll(int dx, int dy);
-  CPoint getMaxScroll();
-  void applyFilter(PixRectFilter &filter);
-  void applyMirror(bool vertical);
+  inline CPearlImageDoc *getDocument() {
+    CPearlImageView *view = getView();
+    return view ? view->GetDocument() : NULL;
+  }
+
 protected:
   CMainFrame();
   CStatusBar  m_wndStatusBar;
@@ -35,17 +47,13 @@ protected:
   DECLARE_DYNCREATE(CMainFrame)
 
 public:
-  virtual BOOL PreTranslateMessage(MSG *pMsg);
   virtual ~CMainFrame();
+  virtual BOOL PreTranslateMessage(MSG *pMsg);
 
   // return true, if a new image was loaded into doc and showed in view
   bool loadFile(const String &fileName);
   void setCurrentZoomFactor(int id);
-  void saveDocState();
   void updateTitle();
-  bool hasGridDlg() const;
-  void createGridDlg();
-  void destroyGridDlg();
 
   void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
 #ifdef _DEBUG
@@ -54,13 +62,13 @@ public:
 #endif
 
 protected:
-    afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
+    afx_msg int  OnCreate(LPCREATESTRUCT lpCreateStruct);
     afx_msg void OnDestroy();
     afx_msg void OnClose();
-    afx_msg void OnSize(UINT nType, int cx, int cy);
-    afx_msg void OnFileOpen();
-    afx_msg void OnFileInsert();
     afx_msg void OnAppExit();
+    afx_msg void OnFileOpen();
+    afx_msg void OnFileSave();
+    afx_msg void OnFileSaveAs();
     afx_msg void OnFileMruFile1();
     afx_msg void OnFileMruFile2();
     afx_msg void OnFileMruFile3();
@@ -77,8 +85,6 @@ protected:
     afx_msg void OnFileMruFile14();
     afx_msg void OnFileMruFile15();
     afx_msg void OnFileMruFile16();
-    afx_msg void OnFileSave();
-    afx_msg void OnFileSaveAs();
     afx_msg void OnEditUndo();
     afx_msg void OnEditRedo();
     afx_msg void OnEditCopy();
@@ -91,7 +97,7 @@ protected:
     afx_msg void OnFunctionMirrorHorizontal();
     afx_msg void OnFunctionMirrorVertical();
     afx_msg void OnFunctionMakegrayscale();
-    afx_msg void OnFunctionsMakePearlGrid();
+    afx_msg void OnFunctionMakePearlGrid();
     afx_msg void OnScrollLineDown();
     afx_msg void OnScrollLineUp();
     afx_msg void OnScrollPageDown();

@@ -15,7 +15,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
     ON_WM_CREATE()
     ON_WM_DESTROY()
     ON_WM_CLOSE()
-    ON_WM_SIZE()
+    ON_COMMAND(ID_APP_EXIT                        , OnAppExit                         )
     ON_COMMAND(ID_FILE_OPEN                       , OnFileOpen                        )
     ON_COMMAND(ID_FILE_GEM                        , OnFileSave                        )
     ON_COMMAND(ID_FILE_GEM_SOM                    , OnFileSaveAs                      )
@@ -35,7 +35,6 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
     ON_COMMAND(ID_FILE_MRU_FILE14                 , OnFileMruFile14                   )
     ON_COMMAND(ID_FILE_MRU_FILE15                 , OnFileMruFile15                   )
     ON_COMMAND(ID_FILE_MRU_FILE16                 , OnFileMruFile16                   )
-    ON_COMMAND(ID_APP_EXIT                        , OnAppExit                         )
     ON_COMMAND(ID_EDIT_UNDO                       , OnEditUndo                        )
     ON_COMMAND(ID_EDIT_REDO                       , OnEditRedo                        )
     ON_COMMAND(ID_EDIT_COPY                       , OnEditCopy                        )
@@ -48,7 +47,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
     ON_COMMAND(ID_FUNCTION_MIRROR_HORIZONTAL      , OnFunctionMirrorHorizontal        )
     ON_COMMAND(ID_FUNCTION_MIRROR_VERTICAL        , OnFunctionMirrorVertical          )
     ON_COMMAND(ID_FUNCTION_MAKEGRAYSCALE          , OnFunctionMakegrayscale           )
-    ON_COMMAND(ID_FUNCTIONS_MAKEPEARLGRID         , OnFunctionsMakePearlGrid          )
+    ON_COMMAND(ID_FUNCTION_MAKEPEARLGRID          , OnFunctionMakePearlGrid           )
     ON_COMMAND(ID_SCROLL_LINE_DOWN                , OnScrollLineDown                  )
     ON_COMMAND(ID_SCROLL_LINE_UP                  , OnScrollLineUp                    )
     ON_COMMAND(ID_SCROLL_PAGE_DOWN                , OnScrollPageDown                  )
@@ -70,14 +69,107 @@ static UINT indicators[] = {
  ,IDS_INFOFIELD
 };
 
+// --------------------------- Protected ---------------------------
+
 CMainFrame::CMainFrame() {
   m_currentDegree            = 0;
   m_gridDlg                  = NULL;
   m_gridDlgThread            = NULL;
 }
 
+// --------------------------- Public ---------------------------
+
 CMainFrame::~CMainFrame() {
 }
+
+BOOL CMainFrame::PreTranslateMessage(MSG *pMsg) {
+  BOOL result;
+  if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
+    result = TRUE;
+  } else {
+    result = __super::PreTranslateMessage(pMsg);
+  }
+  CPearlImageView *view = getView();
+  if(view->isMouseOnDocument()) {
+    CPoint mp = getView()->getCurrentMousePoint();
+    m_wndStatusBar.SetPaneText(0,format(_T("%3d,%3d px"),mp.x,mp.y).cstr());
+  } else {
+    m_wndStatusBar.SetPaneText(0,EMPTYSTRING);
+  }
+  m_wndStatusBar.SetPaneText(2,getDocument()->getInfo().cstr());
+  ajourEnabling();
+  return result;
+}
+
+bool CMainFrame::loadFile(const String &fileName) {
+  try {
+    CPearlImageDoc *doc = getDocument();
+    doc->OnOpenDocument(fileName.cstr());
+    updateTitle();
+    getView()->clear();
+    if(m_gridDlgThread->isDialogVisible()) {
+      m_gridDlg->setImage(doc->getImage());
+    } else {
+      getView()->refreshDoc();
+    }
+    return true;
+  } catch(Exception e) {
+    MessageBox(e.what());
+    return false;
+  }
+}
+
+static const int zoomItems[] = {
+  ID_OPTIONS_ZOOM_X1
+ ,ID_OPTIONS_ZOOM_X2
+ ,ID_OPTIONS_ZOOM_X4
+ ,ID_OPTIONS_ZOOM_X8
+};
+
+void CMainFrame::setCurrentZoomFactor(int id) {
+  for(int i = 0; i < ARRAYSIZE(zoomItems); i++) {
+    checkMenuItem(this,zoomItems[i],false);
+  }
+  checkMenuItem(this,id,true);
+  switch(id) {
+  case ID_OPTIONS_ZOOM_X1: getView()->setCurrentZoomFactor(1); break;
+  case ID_OPTIONS_ZOOM_X2: getView()->setCurrentZoomFactor(2); break;
+  case ID_OPTIONS_ZOOM_X4: getView()->setCurrentZoomFactor(4); break;
+  case ID_OPTIONS_ZOOM_X8: getView()->setCurrentZoomFactor(8); break;
+  default                : getView()->setCurrentZoomFactor(1); break;
+  }
+}
+
+void CMainFrame::updateTitle() {
+  CPearlImageDoc *doc   = getDocument();
+  CString         title = doc->GetTitle();
+  CSize           size  = doc->getSize();
+  setWindowText(this, format(_T("PearlImage %s - %dx%d"), (LPCTSTR)title, size.cx,size.cy));
+}
+
+void CMainFrame::handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
+  if(source == m_gridDlg) {
+    switch (id) {
+    case PROP_GRIDPARAM:
+      const GridParameters *param = (GridParameters*)newValue;
+      SendMessage(ID_MSG_CALCULATEIMAGE, (WPARAM)param,0);
+      break;
+    }
+  }
+}
+
+#ifdef _DEBUG
+void CMainFrame::AssertValid() const {
+  __super::AssertValid();
+}
+
+void CMainFrame::Dump(CDumpContext& dc) const {
+  __super::Dump(dc);
+}
+
+#endif //_DEBUG
+
+// -------------------------- Message handlers ---------------------------
 
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
   if(__super::OnCreate(lpCreateStruct) == -1) {
@@ -114,83 +206,15 @@ void CMainFrame::OnDestroy() {
   __super::OnDestroy();
 }
 
-BOOL CMainFrame::PreTranslateMessage(MSG *pMsg) {
-  BOOL result;
-  if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
-    result = TRUE;
-  } else {
-    result = __super::PreTranslateMessage(pMsg);
+void CMainFrame::OnClose() {
+  OnAppExit();
+}
+
+void CMainFrame::OnAppExit() {
+  if(!checkSave()) {
+    return;
   }
-  CPearlImageView *view = getView();
-  if(view->isMouseOnDocument()) {
-    CPoint mp = getView()->getCurrentMousePoint();
-    m_wndStatusBar.SetPaneText(0,format(_T("%3d,%3d px"),mp.x,mp.y).cstr());
-  } else {
-    m_wndStatusBar.SetPaneText(0,EMPTYSTRING);
-  }
-  m_wndStatusBar.SetPaneText(2,getDocument()->getInfo().cstr());
-  ajourEnabling();
-  return result;
-}
-
-void CMainFrame::ajourEnabling() {
-  CPearlImageDoc *doc = getDocument();
-  const bool hasImage = doc->hasImage();
-  enableMenuItem(this, ID_FILE_GEM          , doc->IsModified()?true:false);
-  enableMenuItem(this, ID_FILE_GEM_SOM      , hasImage);
-  enableMenuItem(this, ID_EDIT_COPY         , hasImage);
-  enableMenuItem(this, ID_FILE_PRINT        , hasImage);
-  enableMenuItem(this, ID_FILE_PRINT_DIRECT , hasImage);
-  enableMenuItem(this, ID_FILE_PRINT_PREVIEW, hasImage);
-
-  enableMenuItem(this, ID_EDIT_UNDO         , doc->canUndo());
-  enableMenuItem(this, ID_EDIT_REDO         , doc->canRedo());
-
-  enableSubMenuContainingId(this, ID_OPTIONS_ZOOM_X1, hasImage);
-  enableSubMenuContainingId(this, ID_FUNCTION_ROTATE, hasImage);
-}
-
-#ifdef _DEBUG
-void CMainFrame::AssertValid() const {
-  __super::AssertValid();
-}
-
-void CMainFrame::Dump(CDumpContext& dc) const {
-  __super::Dump(dc);
-}
-
-#endif //_DEBUG
-
-CPearlImageDoc *CMainFrame::getDocument() {
-  CPearlImageView *view = getView();
-  return view ? view->GetDocument() : NULL;
-}
-
-void CMainFrame::OnSize(UINT nType, int cx, int cy) {
-  __super::OnSize(nType, cx, cy);
-}
-
-static String getLoadFileName() {
-  static const TCHAR *loadFileDialogExtensions = _T("Picture files\0*.bmp;*.jpg;*.png;*.tiff;*.gif;*.ico;*.cur;*.dib;\0"
-                                                    "BMP-Files (*.bmp)\0*.bmp;\0"
-                                                    "JPG-files (*.jpg)\0*.jpg;\0"
-                                                    "PNG-files (*.png)\0*.png;\0"
-                                                    "TIFF-files (*.tiff)\0*.tiff;\0"
-                                                    "GIF-files (*.gif)\0*.gif;\0"
-                                                    "ICO-files (*.ico)\0*.ico;\0"
-                                                    "CUR-files (*.cur)\0*.cur;\0"
-                                                    "DIB-files (*.dib)\0*.dib;\0"
-                                                    "All files (*.*)\0*.*\0\0");
-  CFileDialog dlg(TRUE);
-  dlg.m_ofn.lpstrFilter = loadFileDialogExtensions;
-  dlg.m_ofn.lpstrTitle  = _T("Open file");
-  dlg.m_ofn.Flags |= OFN_FILEMUSTEXIST | OFN_EXPLORER | OFN_ENABLESIZING;
-
-  if(dlg.DoModal() != IDOK) {
-    return EMPTYSTRING;
-  } else {
-    return dlg.m_ofn.lpstrFile;
-  }
+  PostMessage(WM_QUIT);
 }
 
 void CMainFrame::OnFileOpen() {
@@ -202,6 +226,22 @@ void CMainFrame::OnFileOpen() {
     return;
   }
   loadFile(fileName);
+}
+
+void CMainFrame::OnFileSave() {
+  onFileSave();
+}
+
+void CMainFrame::OnFileSaveAs() {
+  CString name = getDocument()->GetPathName();
+  FileNameSplitter info((LPCTSTR)name);
+  CFileDialog dlg(FALSE,info.getExtension().cstr(),name);
+  dlg.m_ofn.lpstrTitle  = _T("Save image");
+  dlg.m_ofn.lpstrFilter = s_saveFileDialogExtensions;
+  if(dlg.DoModal() == IDOK) {
+    name = dlg.m_ofn.lpstrFile;
+    save(name);
+  }
 }
 
 void CMainFrame::OnFileMruFile1()  { onFileMruFile( 0); }
@@ -220,93 +260,6 @@ void CMainFrame::OnFileMruFile13() { onFileMruFile(12); }
 void CMainFrame::OnFileMruFile14() { onFileMruFile(13); }
 void CMainFrame::OnFileMruFile15() { onFileMruFile(14); }
 void CMainFrame::OnFileMruFile16() { onFileMruFile(15); }
-
-void CMainFrame::onFileMruFile(int index) {
-  if(!checkSave()) {
-    return;
-  }
-  if(!loadFile(theApp.getRecentFile(index))) {
-    theApp.removeRecentFile(index);
-  }
-}
-
-bool CMainFrame::loadFile(const String &fileName) {
-  try {
-    CPearlImageDoc *doc = getDocument();
-    doc->OnOpenDocument(fileName.cstr());
-    updateTitle();
-    getView()->clear();
-    if(m_gridDlgThread->isDialogVisible()) {
-      m_gridDlg->setImage(doc->getImage());
-    } else {
-      getView()->refreshDoc();
-    }
-    return true;
-  } catch(Exception e) {
-    MessageBox(e.what());
-    return false;
-  }
-}
-
-void CMainFrame::updateTitle() {
-  CPearlImageDoc *doc   = getDocument();
-  CString         title = doc->GetTitle();
-  CSize           size  = doc->getSize();
-  setWindowText(this, format(_T("PearlImage %s - %dx%d"), (LPCTSTR)title, size.cx,size.cy));
-}
-
-static const TCHAR *saveFileDialogExtensions = _T("Bitmap files (*.bmp)\0*.bmp;\0"
-                                                  "JPEG files (*.jpg)\0*.jpg;\0"
-                                                  "PNG-files (*.png)\0*.png;\0"
-                                                  "TIFF files (*.tiff)\0*.tiff;\0"
-                                                  "All files (*.*)\0*.*\0\0");
-
-void CMainFrame::OnFileSave() {
-  onFileSave();
-}
-
-bool CMainFrame::onFileSave() { // retuns true if succeeded
-  CPearlImageDoc *doc = getDocument();
-  CString name = doc->GetPathName();
-  if(doc->hasDefaultName()) {
-    CFileDialog dlg(FALSE,_T("bmp"),name);
-    dlg.m_ofn.lpstrTitle  = _T("Save image");
-    dlg.m_ofn.lpstrFilter = saveFileDialogExtensions;
-    if(dlg.DoModal() == IDOK) {
-      name = dlg.m_ofn.lpstrFile;
-    } else {
-      return false;
-    }
-  }
-  return save(name);
-}
-
-void CMainFrame::OnFileSaveAs() {
-  CString name = getDocument()->GetPathName();
-  FileNameSplitter info((LPCTSTR)name);
-  CFileDialog dlg(FALSE,info.getExtension().cstr(),name);
-  dlg.m_ofn.lpstrTitle  = _T("Save image");
-  dlg.m_ofn.lpstrFilter = saveFileDialogExtensions;
-  if(dlg.DoModal() == IDOK) {
-    name = dlg.m_ofn.lpstrFile;
-    save(name);
-  }
-}
-
-bool CMainFrame::save(const CString &name) { // returns true if succeeded
-  try {
-    getDocument()->OnSaveDocument(name);
-    updateTitle();
-    return true;
-  } catch(Exception e) {
-    MessageBox(e.what());
-    return false;
-  }
-}
-
-void CMainFrame::saveDocState() {
-  getDocument()->saveState();
-}
 
 void CMainFrame::OnEditUndo() {
   if(getDocument()->undo()) {
@@ -345,27 +298,6 @@ void CMainFrame::OnOptionsZoomX4() {
 
 void CMainFrame::OnOptionsZoomX8() {
   setCurrentZoomFactor(ID_OPTIONS_ZOOM_X8);
-}
-
-static int zoomItems[] = {
-  ID_OPTIONS_ZOOM_X1
- ,ID_OPTIONS_ZOOM_X2
- ,ID_OPTIONS_ZOOM_X4
- ,ID_OPTIONS_ZOOM_X8
-};
-
-void CMainFrame::setCurrentZoomFactor(int id) {
-  for(int i = 0; i < ARRAYSIZE(zoomItems); i++) {
-    checkMenuItem(this,zoomItems[i],false);
-  }
-  checkMenuItem(this,id,true);
-  switch(id) {
-  case ID_OPTIONS_ZOOM_X1: getView()->setCurrentZoomFactor(1); break;
-  case ID_OPTIONS_ZOOM_X2: getView()->setCurrentZoomFactor(2); break;
-  case ID_OPTIONS_ZOOM_X4: getView()->setCurrentZoomFactor(4); break;
-  case ID_OPTIONS_ZOOM_X8: getView()->setCurrentZoomFactor(8); break;
-  default                : getView()->setCurrentZoomFactor(1); break;
-  }
 }
 
 void CMainFrame::OnFunctionRotate() {
@@ -408,92 +340,15 @@ void CMainFrame::OnFunctionMirrorHorizontal()    { applyMirror(false);          
 void CMainFrame::OnFunctionMirrorVertical()      { applyMirror(true);                  }
 void CMainFrame::OnFunctionMakegrayscale()       { applyFilter(GrayScaleFilter());     }
 
-void CMainFrame::OnFunctionsMakePearlGrid() {
+void CMainFrame::OnFunctionMakePearlGrid() {
   if(!getDocument()->hasImage()) return;
 
+  saveDocState();
   m_gridDlgThread->setCurrentDialogProperty(&m_currentGridParam);
   m_gridDlg->setImage(getDocument()->getImage());
   if(!m_gridDlgThread->isDialogVisible()) {
     m_gridDlgThread->setDialogVisible(true);
   }
-}
-
-bool CMainFrame::hasGridDlg() const {
-  return m_gridDlgThread != NULL;
-}
-
-void CMainFrame::createGridDlg() {
-  if(m_gridDlg == NULL) {
-    m_gridDlg = new CGridDlg();
-    m_gridDlg->addPropertyChangeListener(this);
-  }
-  if(m_gridDlgThread == NULL) {
-    m_gridDlgThread = CPropertyDlgThread::startThread(m_gridDlg);
-  }
-}
-
-void CMainFrame::destroyGridDlg() {
-  if (m_gridDlg) {
-    m_gridDlg->removePropertyChangeListener(this);
-  }
-  if(m_gridDlgThread) {
-    m_gridDlgThread->kill();
-    m_gridDlgThread = NULL;
-  }
-}
-
-void CMainFrame::handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
-  if(source == m_gridDlg) {
-    switch (id) {
-    case PROP_GRIDPARAM:
-      const GridParameters *param = (GridParameters*)newValue;
-      SendMessage(ID_MSG_CALCULATEIMAGE, (WPARAM)param,0);
-      break;
-    }
-  }
-}
-
-LRESULT CMainFrame::OnMsgCalculateImage(WPARAM wp, LPARAM lp) {
-  CPearlImageDoc       *doc   = getDocument();
-  const GridParameters *param = (GridParameters*)wp;
-  doc->setImage(param->calculateImage(m_gridDlg->getImage()));
-  Invalidate();
-  return 0;
-}
-
-void CMainFrame::applyMirror(bool vertical) {
-  theApp.BeginWaitCursor();
-  saveDocState();
-  CPearlImageDoc *doc = getDocument();
-  doc->setImage(PixRect::mirror(doc->getImage(),vertical));
-  Invalidate();
-  theApp.EndWaitCursor();
-}
-
-void CMainFrame::applyFilter(PixRectFilter &filter) {
-  CPearlImageDoc *doc = getDocument();
-  if(!doc->hasImage()) return;
-  theApp.BeginWaitCursor();
-  saveDocState();
-  PixRect *pr = doc->getImage()->clone(true);
-  doc->setImage(&(pr->apply(filter)));
-  Invalidate();
-  theApp.EndWaitCursor();
-}
-
-CPoint CMainFrame::getMaxScroll() {
-  const CSize rectSize = getClientRect(getView()).Size();
-  const CSize docSize  = getDocument()->getSize();
-  const int   zoom     = getView()->getCurrentZoomFactor();
-  return CPoint(max(0,docSize.cx*zoom-rectSize.cx),max(0,docSize.cy*zoom-rectSize.cy));
-}
-
-void CMainFrame::scroll(int dx, int dy) {
-  const CPoint topLeft   = getView()->GetScrollPosition();
-  const CPoint maxScroll = getMaxScroll();
-  const int    newX      = minMax(topLeft.x+dx,0,maxScroll.x);
-  const int    newY      = minMax(topLeft.y+dy,0,maxScroll.y);
-  getView()->ScrollToPosition(CPoint(newX,newY));
 }
 
 void CMainFrame::OnScrollLineDown() {
@@ -548,15 +403,81 @@ void CMainFrame::OnScrollToRight() {
   getView()->ScrollToPosition(CPoint(getMaxScroll().x,topLeft.y));
 }
 
-void CMainFrame::OnAppExit() {
+LRESULT CMainFrame::OnMsgCalculateImage(WPARAM wp, LPARAM lp) {
+  CPearlImageDoc       *doc   = getDocument();
+  const GridParameters *param = (GridParameters*)wp;
+  doc->setImage(param->calculateImage(m_gridDlg->getImage()));
+  Invalidate();
+  return 0;
+}
+
+// -------------------------- Private ----------------------------------
+
+const TCHAR *CMainFrame::s_saveFileDialogExtensions = _T("Bitmap files (*.bmp)\0*.bmp;\0"
+                                                         "JPEG files (*.jpg)\0*.jpg;\0"
+                                                         "PNG-files (*.png)\0*.png;\0"
+                                                         "TIFF files (*.tiff)\0*.tiff;\0"
+                                                         "All files (*.*)\0*.*\0\0");
+
+const TCHAR *CMainFrame::s_loadFileDialogExtensions = _T("Picture files\0*.bmp;*.jpg;*.png;*.tiff;*.gif;*.ico;*.cur;*.dib;\0"
+                                                         "BMP-Files (*.bmp)\0*.bmp;\0"
+                                                         "JPG-files (*.jpg)\0*.jpg;\0"
+                                                         "PNG-files (*.png)\0*.png;\0"
+                                                         "TIFF-files (*.tiff)\0*.tiff;\0"
+                                                         "GIF-files (*.gif)\0*.gif;\0"
+                                                         "ICO-files (*.ico)\0*.ico;\0"
+                                                         "CUR-files (*.cur)\0*.cur;\0"
+                                                         "DIB-files (*.dib)\0*.dib;\0"
+                                                         "All files (*.*)\0*.*\0\0");
+
+
+String CMainFrame::getLoadFileName() {
+  CFileDialog dlg(TRUE);
+  dlg.m_ofn.lpstrFilter = s_loadFileDialogExtensions;
+  dlg.m_ofn.lpstrTitle  = _T("Open file");
+  dlg.m_ofn.Flags |= OFN_FILEMUSTEXIST | OFN_EXPLORER | OFN_ENABLESIZING;
+
+  if(dlg.DoModal() != IDOK) {
+    return EMPTYSTRING;
+  } else {
+    return dlg.m_ofn.lpstrFile;
+  }
+}
+
+void CMainFrame::onFileMruFile(int index) {
   if(!checkSave()) {
     return;
   }
-  PostMessage(WM_QUIT);
+  if(!loadFile(theApp.getRecentFile(index))) {
+    theApp.removeRecentFile(index);
+  }
 }
 
-void CMainFrame::OnClose() {
-  OnAppExit();
+bool CMainFrame::onFileSave() { // retuns true if succeeded
+  CPearlImageDoc *doc = getDocument();
+  CString name = doc->GetPathName();
+  if(doc->hasDefaultName()) {
+    CFileDialog dlg(FALSE,_T("bmp"),name);
+    dlg.m_ofn.lpstrTitle  = _T("Save image");
+    dlg.m_ofn.lpstrFilter = s_saveFileDialogExtensions;
+    if(dlg.DoModal() == IDOK) {
+      name = dlg.m_ofn.lpstrFile;
+    } else {
+      return false;
+    }
+  }
+  return save(name);
+}
+
+bool CMainFrame::save(const CString &name) { // returns true if succeeded
+  try {
+    getDocument()->OnSaveDocument(name);
+    updateTitle();
+    return true;
+  } catch(Exception e) {
+    MessageBox(e.what());
+    return false;
+  }
 }
 
 bool CMainFrame::checkSave() { // return true to continue user action
@@ -572,4 +493,86 @@ bool CMainFrame::checkSave() { // return true to continue user action
     return false;
   }
   return false;
+}
+
+void CMainFrame::saveDocState() {
+  getDocument()->saveState();
+}
+
+void CMainFrame::ajourEnabling() {
+  CPearlImageDoc *doc            = getDocument();
+  const bool      hasImage       = doc->hasImage();
+  const bool      gridDlgVisible = m_gridDlgThread->isDialogVisible();
+
+  enableMenuItem(this, ID_FILE_GEM          , doc->IsModified()?true:false);
+  enableMenuItem(this, ID_FILE_GEM_SOM      , hasImage);
+  enableMenuItem(this, ID_EDIT_COPY         , hasImage);
+  enableMenuItem(this, ID_FILE_PRINT        , hasImage);
+  enableMenuItem(this, ID_FILE_PRINT_DIRECT , hasImage);
+  enableMenuItem(this, ID_FILE_PRINT_PREVIEW, hasImage);
+
+  enableMenuItem(this, ID_EDIT_UNDO         , !gridDlgVisible && doc->canUndo());
+  enableMenuItem(this, ID_EDIT_REDO         , !gridDlgVisible && doc->canRedo());
+
+  enableSubMenuContainingId(this, ID_OPTIONS_ZOOM_X1, hasImage);
+  enableSubMenuContainingId(this, ID_FUNCTION_ROTATE, hasImage && !gridDlgVisible);
+}
+
+void CMainFrame::scroll(int dx, int dy) {
+  const CPoint topLeft   = getView()->GetScrollPosition();
+  const CPoint maxScroll = getMaxScroll();
+  const int    newX      = minMax(topLeft.x+dx,0,maxScroll.x);
+  const int    newY      = minMax(topLeft.y+dy,0,maxScroll.y);
+  getView()->ScrollToPosition(CPoint(newX,newY));
+}
+
+CPoint CMainFrame::getMaxScroll() {
+  const CSize rectSize = getClientRect(getView()).Size();
+  const CSize docSize  = getDocument()->getSize();
+  const int   zoom     = getView()->getCurrentZoomFactor();
+  return CPoint(max(0,docSize.cx*zoom-rectSize.cx),max(0,docSize.cy*zoom-rectSize.cy));
+}
+
+void CMainFrame::applyFilter(PixRectFilter &filter) {
+  CPearlImageDoc *doc = getDocument();
+  if(!doc->hasImage()) return;
+  theApp.BeginWaitCursor();
+  saveDocState();
+  PixRect *pr = doc->getImage()->clone(true);
+  doc->setImage(&(pr->apply(filter)));
+  Invalidate();
+  theApp.EndWaitCursor();
+}
+
+void CMainFrame::applyMirror(bool vertical) {
+  theApp.BeginWaitCursor();
+  saveDocState();
+  CPearlImageDoc *doc = getDocument();
+  doc->setImage(PixRect::mirror(doc->getImage(),vertical));
+  Invalidate();
+  theApp.EndWaitCursor();
+}
+
+void CMainFrame::createGridDlg() {
+  if(m_gridDlg == NULL) {
+    m_gridDlg = new CGridDlg();
+    m_gridDlg->addPropertyChangeListener(this);
+  }
+  if(m_gridDlgThread == NULL) {
+    m_gridDlgThread = CPropertyDlgThread::startThread(m_gridDlg);
+  }
+}
+
+void CMainFrame::destroyGridDlg() {
+  if (m_gridDlg) {
+    m_gridDlg->removePropertyChangeListener(this);
+  }
+  if(m_gridDlgThread) {
+    m_gridDlgThread->kill();
+    m_gridDlgThread = NULL;
+  }
+}
+
+bool CMainFrame::hasGridDlg() const {
+  return m_gridDlgThread != NULL;
 }
