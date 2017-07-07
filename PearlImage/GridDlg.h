@@ -12,10 +12,11 @@ private:
 	DECLARE_DYNAMIC(CGridDlg)
   HACCEL         m_accelTable;
   const PixRect *m_image;
-  bool           m_changeHandlerActive,m_updateTotalActive;
+  bool           m_changeHandlerActive;
   bool validate();
   void windowToValue();
   void valueToWindow(const GridParameters &param);
+  bool getData();
   void flushData();
   void setCellSize(     double value);
   void setHorizontalCount(UINT value);
@@ -23,9 +24,10 @@ private:
   void setColorCount(     int  value);
   void resetControls();
   void cellCountFromSize();
-  void updateTotalCellCount();
   void releaseImage();
   bool getUintValue(int id, UINT &value);
+  bool getUintEmptyZero(int id, UINT &value);
+  void setUintEmptyZero(int id, UINT value);
   bool getDoubleValue(int id, double &value);
   CSize getImageSize() const;
 public:
@@ -58,6 +60,7 @@ private:
   afx_msg LRESULT OnMsgNewImage(WPARAM wp, LPARAM lp);
   afx_msg void OnHideWindow();
   afx_msg void OnClickedCalculate();
+  afx_msg void OnBnClickedCheckAutoCalculate();
   afx_msg void OnEnChangeEditCellSize();
   afx_msg void OnEnChangeEditHorizontalCount();
   afx_msg void OnEnChangeEditVerticalCount();

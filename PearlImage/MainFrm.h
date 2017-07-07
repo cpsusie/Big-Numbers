@@ -12,7 +12,6 @@ private:
   HACCEL              m_accelTable;
   double              m_currentDegree;
   ScaleParameters     m_currentScale;
-  GridParameters      m_currentGridParam;
   CGridDlg           *m_gridDlg;
   CPropertyDlgThread *m_gridDlgThread;
 

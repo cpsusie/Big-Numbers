@@ -4,6 +4,7 @@
 #include <MedianCut.h>
 
 static void reduceColors(PixRect *image, int colorCount) {
+  if(colorCount < 2) return;
   const CSize    size = image->getSize();
   PixelAccessor *pa   = image->getPixelAccessor();
   DimPointWithIndexArray a(size.cx*size.cy);
@@ -30,21 +31,32 @@ static void reduceColors(PixRect *image, int colorCount) {
 }
 
 PixRect *GridParameters::calculateImage(const PixRect *image) const {
-  const CSize size      = image->getSize();
-  CSize       cellCount = m_cellCount;
-  if(getArea(cellCount) == 0) {
-    cellCount.cx = (UINT)round((double)size.cx / m_cellSize);
-    cellCount.cy = (UINT)round((double)size.cy / m_cellSize);
+  const CSize imageSize = image->getSize();
+  const CSize cellCount = findCellCount(imageSize);
+  PixRect *result;
+  if(cellCount == imageSize) {
+    result = image->clone(true);
+    reduceColors(result, m_colorCount);
+  } else {
+    result = theApp.fetchPixRect(imageSize     );
+    PixRect *tmp = theApp.fetchPixRect(cellCount);
+    HDC      hdc = tmp->getDC();
+    PixRect::stretchBlt(hdc, ORIGIN, cellCount, SRCCOPY, image, ORIGIN, imageSize);
+    tmp->releaseDC(hdc);
+
+    reduceColors(tmp, m_colorCount);
+
+    hdc = result->getDC();
+    PixRect::stretchBlt(hdc, ORIGIN, imageSize, SRCCOPY, tmp, ORIGIN, tmp->getSize());
+    result->releaseDC(hdc);
+    delete tmp;
   }
-  PixRect *result = theApp.fetchPixRect(size     );
-  PixRect *tmp    = theApp.fetchPixRect(cellCount);
-  HDC hdc = tmp->getDC();
-  PixRect::stretchBlt(hdc, ORIGIN, cellCount, SRCCOPY, image, ORIGIN, size);
-  tmp->releaseDC(hdc);
-  reduceColors(tmp, m_colorCount);
-  hdc = result->getDC();
-  PixRect::stretchBlt(hdc, ORIGIN, size, SRCCOPY, tmp, ORIGIN, tmp->getSize());
-  result->releaseDC(hdc);
-  delete tmp;
+  return result;
+}
+
+CSize GridParameters::findCellCount(const CSize &imageSize) const {
+  CSize result;
+  result.cx = (UINT)round((double)imageSize.cx / m_cellSize);
+  result.cy = (UINT)round((double)imageSize.cy / m_cellSize);
   return result;
 }

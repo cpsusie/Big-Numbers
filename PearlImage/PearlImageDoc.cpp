@@ -30,6 +30,7 @@ BOOL CPearlImageDoc::OnOpenDocument(LPCTSTR name) {
   PixRect *image = PixRect::load(theApp.m_device, ByteInputFile(name));
 
   resetHistory();
+  m_gridParam.m_cellCount = m_gridParam.reset().findCellCount(image->getSize());
   setImage(image);
   FileNameSplitter info(name);
   SetTitle(info.getFileName().cstr());

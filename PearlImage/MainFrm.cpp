@@ -341,11 +341,12 @@ void CMainFrame::OnFunctionMirrorVertical()      { applyMirror(true);           
 void CMainFrame::OnFunctionMakegrayscale()       { applyFilter(GrayScaleFilter());     }
 
 void CMainFrame::OnFunctionMakePearlGrid() {
-  if(!getDocument()->hasImage()) return;
+  CPearlImageDoc *doc = getDocument();
+  if(!doc->hasImage()) return;
 
   saveDocState();
-  m_gridDlgThread->setCurrentDialogProperty(&m_currentGridParam);
-  m_gridDlg->setImage(getDocument()->getImage());
+  m_gridDlgThread->setCurrentDialogProperty(&doc->getGridParameters());
+  m_gridDlg->setImage(doc->getImage());
   if(!m_gridDlgThread->isDialogVisible()) {
     m_gridDlgThread->setDialogVisible(true);
   }

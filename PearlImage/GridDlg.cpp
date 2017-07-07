@@ -7,11 +7,13 @@ IMPLEMENT_DYNAMIC(CGridDlg, CDialog)
 CGridDlg::CGridDlg(CWnd* pParent /*=NULL*/)
   : CPropertyDialog<GridParameters>(IDD, PROP_GRIDPARAM, pParent)
   , m_image(NULL)
-  , m_cellSize(1)
-  , m_colorCount(128)
-  , m_horizontalCount(0)
-  , m_verticalCount(0)
 {
+  GridParameters defaultValue;
+  m_cellSize        = defaultValue.m_cellSize;
+  m_colorCount      = defaultValue.m_colorCount;
+  m_horizontalCount = defaultValue.m_cellCount.cx;
+  m_verticalCount   = defaultValue.m_cellCount.cy;
+
   m_changeHandlerActive = false;
 }
 
@@ -24,11 +26,11 @@ void CGridDlg::DoDataExchange(CDataExchange *pDX) {
   DDX_Text(pDX, IDC_EDITCELLSIZE       , m_cellSize       );
   DDX_Text(pDX, IDC_EDITHORIZONTALCOUNT, m_horizontalCount);
   DDX_Text(pDX, IDC_EDITVERTICALCOUNT  , m_verticalCount  );
-  DDX_Text(pDX, IDC_EDITCOLORCOUNT     , m_colorCount     );
 }
 
 BEGIN_MESSAGE_MAP(CGridDlg, CDialog)
   ON_BN_CLICKED(ID_CALCULATE                     , OnClickedCalculate               )
+  ON_BN_CLICKED(IDC_CHECKAUTOCALCULATE           , OnBnClickedCheckAutoCalculate    )
   ON_EN_CHANGE(IDC_EDITCELLSIZE                  , OnEnChangeEditCellSize           )
   ON_EN_CHANGE(IDC_EDITHORIZONTALCOUNT           , OnEnChangeEditHorizontalCount    )
   ON_EN_CHANGE(IDC_EDITVERTICALCOUNT             , OnEnChangeEditVerticalCount      )
@@ -126,6 +128,12 @@ void CGridDlg::OnClickedCalculate() {
   setCurrentValue(v);
 }
 
+void CGridDlg::OnBnClickedCheckAutoCalculate() {
+  if(IsDlgButtonChecked(IDC_CHECKAUTOCALCULATE)) {
+    OnClickedCalculate();
+  }
+}
+
 void CGridDlg::OnEnChangeEditCellSize() {
   if(m_changeHandlerActive) return;
   m_changeHandlerActive = true;
@@ -161,7 +169,7 @@ void CGridDlg::OnEnChangeEditColorCount() {
   if(m_changeHandlerActive) return;
   m_changeHandlerActive = true;
   UINT value;
-  if(getUintValue(IDC_EDITCOLORCOUNT, value)) {
+  if(getUintEmptyZero(IDC_EDITCOLORCOUNT, value)) {
     setColorCount(value);
   }
   m_changeHandlerActive = false;
@@ -188,8 +196,15 @@ void CGridDlg::OnDeltaposSpinVerticalCount(NMHDR *pNMHDR, LRESULT *pResult) {
 void CGridDlg::OnDeltaposSpinColorCount(NMHDR *pNMHDR, LRESULT *pResult) {
   LPNMUPDOWN pNMUpDown = reinterpret_cast<LPNMUPDOWN>(pNMHDR);
   UINT value;
-  if(getUintValue(IDC_EDITCOLORCOUNT, value)) {
-    setColorCount(value - pNMUpDown->iDelta);
+  if(getUintEmptyZero(IDC_EDITCOLORCOUNT, value)) {
+    const int delta = -pNMUpDown->iDelta;
+    if(value == 0) {
+      if(delta < 0) {
+        setColorCount(400);
+      }
+    } else {
+      setColorCount(value + delta);
+    }
   }
   *pResult = 0;
 }
@@ -212,7 +227,7 @@ bool CGridDlg::validate() {
     MessageBox(_T("No image"), _T("Error"), MB_ICONWARNING);
     return false;
   }
-  if(!UpdateData()) return false;
+  if(!getData()) return false;
   if(m_cellSize < 1) {
     MessageBox(_T("Must be >= 1"), _T("Error"), MB_ICONWARNING);
     gotoEditBox(this, IDC_EDITCELLSIZE);
@@ -230,7 +245,7 @@ bool CGridDlg::validate() {
     gotoEditBox(this, IDC_EDITVERTICALCOUNT);
     return false;
   }
-  if(m_colorCount < 2) {
+  if((m_colorCount < 2) && (m_colorCount != 0)) {
     MessageBox(_T("Must be >= 2"), _T("Error"), MB_ICONWARNING);
     gotoEditBox(this, IDC_EDITCOLORCOUNT);
     return false;
@@ -296,15 +311,24 @@ void CGridDlg::setVerticalCount(UINT value) {
 }
 
 void CGridDlg::setColorCount(int value) {
-  if(value >= 2) {
+  if(value >= 2 || (value == 0)) {
+    CEdit *e = (CEdit*)GetDlgItem(IDC_EDITCOLORCOUNT);
+    const DWORD sel = e->GetSel();
     m_colorCount = value;
     flushData();
     windowToValue();
+    e->SetSel(sel);
   }
+}
+
+bool CGridDlg::getData() {
+  if(!UpdateData()) return false;
+  return getUintEmptyZero(IDC_EDITCOLORCOUNT, m_colorCount);
 }
 
 void CGridDlg::flushData() {
   UpdateData(false);
+  setUintEmptyZero(IDC_EDITCOLORCOUNT, m_colorCount);
   setWindowText(this, IDC_STATICTOTALCOUNT, format1000(m_horizontalCount * m_verticalCount));
 }
 
@@ -334,6 +358,20 @@ void CGridDlg::cellCountFromSize() {
 bool CGridDlg::getUintValue(int id, UINT &value) {
   const String str = getWindowText(this, id);
   return _stscanf(str.cstr(), _T("%u"), &value) == 1;
+}
+
+bool CGridDlg::getUintEmptyZero(int id, UINT &value) {
+  const String str = getWindowText(this, id).trim();
+  if(str.length() == 0) {
+    value = 0;
+    return true;
+  } else {
+    return _stscanf(str.cstr(), _T("%u"), &value) == 1;
+  }
+}
+
+void CGridDlg::setUintEmptyZero(int id, UINT value) {
+  setWindowText(this, id, value?format(_T("%u"),value):EMPTYSTRING);
 }
 
 bool CGridDlg::getDoubleValue(int id, double &value) {

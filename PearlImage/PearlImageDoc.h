@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Date.h>
+#include "GridParameters.h"
 
 class PixRectWithTimestamp {
 private:
@@ -53,6 +54,7 @@ class CPearlImageDoc : public CDocument {
 private:
   static const CString               s_defaultName;
   PixRectWithTimestamp               m_image;
+  GridParameters                     m_gridParam;
   Timestamp                          m_lastImageSave;
   CompactArray<PixRectWithTimestamp> m_history;
   int                                m_index; // Invariant: -1 <= m_index < m_history.size()
@@ -104,6 +106,9 @@ public:
   }
   void setImage(PixRect *image);
 
+  const GridParameters &getGridParameters() const {
+    return m_gridParam;
+  }
   void saveState();
   bool undo();
   bool redo();
