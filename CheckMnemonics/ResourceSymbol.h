@@ -330,7 +330,7 @@
     ,LPAR                         = 326
     ,RPAR                         = 327
   } ResourceInputSymbol;
-	
+
   typedef enum {
      start                        = 328
     ,resourceFile                 = 329
