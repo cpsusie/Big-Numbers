@@ -1,4 +1,4 @@
-//Microsoft Developer Studio generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
 
@@ -13,13 +13,11 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Danish resources
+// Danish (Denmark) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DAN)
-#ifdef _WIN32
 LANGUAGE LANG_DANISH, SUBLANG_DEFAULT
 #pragma code_page(1252)
-#endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -27,18 +25,18 @@ LANGUAGE LANG_DANISH, SUBLANG_DEFAULT
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE DISCARDABLE 
+1 TEXTINCLUDE 
 BEGIN
     "resource.h\0"
 END
 
-2 TEXTINCLUDE DISCARDABLE 
+2 TEXTINCLUDE 
 BEGIN
     "#include ""afxres.h""\r\n"
     "\0"
 END
 
-3 TEXTINCLUDE DISCARDABLE 
+3 TEXTINCLUDE 
 BEGIN
     "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
     "#define _AFX_NO_OLE_RESOURCES\r\n"
@@ -66,29 +64,32 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDR_MAINFRAME           ICON    DISCARDABLE     "res\\TestBlend.ico"
+IDR_MAINFRAME           ICON                    "res\\TestBlend.ico"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Bitmap
 //
 
-IDB_BITMAPGIRL          BITMAP  DISCARDABLE     "res\\20.bmp"
-IDB_BITMAPSASHA         BITMAP  DISCARDABLE     "res\\Billede020.bmp"
-IDB_BITMAPBLACKKING     BITMAP  DISCARDABLE     "res\\BlackKing.bmp"
-IDB_BITMAPBOARD         BITMAP  DISCARDABLE     "res\\Board.bmp"
-#endif    // Danish resources
+IDB_BITMAPGIRL          BITMAP                  "res\\20.bmp"
+
+IDB_BITMAPSASHA         BITMAP                  "res\\Billede020.bmp"
+
+IDB_BITMAPBLACKKING     BITMAP                  "res\\BlackKing.bmp"
+
+IDB_BITMAPBOARD         BITMAP                  "res\\Board.bmp"
+
+#endif    // Danish (Denmark) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
 /////////////////////////////////////////////////////////////////////////////
-// English (U.S.) resources
+// English (United States) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-#ifdef _WIN32
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
-#endif //_WIN32
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -96,30 +97,37 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 //
 
 IDD_TESTBLEND_DIALOG DIALOGEX 0, 0, 458, 338
-STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_APPWINDOW
 CAPTION "TestBlend"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,401,7,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,401,23,50,14
-    PUSHBUTTON      "Draw image",IDC_BUTTONDRAW,396,50,55,15
-    PUSHBUTTON      "Blend image",IDC_BUTTONBLEND,394,75,57,19
-    LTEXT           "SourceConstantAlpha:",IDC_STATIC,323,268,78,13
-    EDITTEXT        IDC_EDITSRCCONSTALPHA,413,261,38,19,ES_AUTOHSCROLL
-    LTEXT           "Alpha1:",IDC_STATIC,323,292,78,13
-    EDITTEXT        IDC_EDITALPHA1,413,286,38,19,ES_AUTOHSCROLL
-    LTEXT           "Alpha2:",IDC_STATIC,323,316,78,13
-    EDITTEXT        IDC_EDITALPHA2,413,311,38,19,ES_AUTOHSCROLL
-    LTEXT           "Scale:",IDC_STATIC,323,244,78,13
-    EDITTEXT        IDC_EDITSCALE,411,236,38,19,ES_AUTOHSCROLL
-    COMBOBOX        IDC_COMBOSTRETCHMODE,210,301,96,70,CBS_DROPDOWNLIST | 
-                    WS_VSCROLL | WS_TABSTOP
-    LTEXT           "Stretchmode:",IDC_STATIC,152,302,50,14
+    EDITTEXT        IDC_EDITSCALE,411,194,38,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDITSRCCONSTALPHA,411,213,38,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDITALPHA1,411,232,38,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDITALPHA2,411,251,38,12,ES_AUTOHSCROLL
+    COMBOBOX        IDC_COMBOSTRETCHMODE,355,281,96,70,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Pixk rot.destination",IDC_BUTTONPICKROTATIONDESTINATION,138,315,64,16
+    PUSHBUTTON      "Pixk rot.center",IDC_BUTTONPICKROTATIONCENTER,209,315,55,16
+    PUSHBUTTON      "Draw image",IDC_BUTTONDRAW,271,316,55,16
+    PUSHBUTTON      "Blend image",IDC_BUTTONBLEND,333,316,55,16
+    DEFPUSHBUTTON   "Exit",IDOK,395,316,55,16
+    LTEXT           "SourceConstantAlpha:",IDC_STATIC,323,213,78,12
+    LTEXT           "Alpha1:",IDC_STATIC,323,232,78,12
+    LTEXT           "Alpha2:",IDC_STATIC,323,251,78,12
+    LTEXT           "Scale:",IDC_STATIC,323,194,78,12
+    LTEXT           "Stretchmode:",IDC_STATIC,301,281,47,12
+    CONTROL         IDB_BITMAPBLACKKING,IDC_STATICKINGIMAGE,"Static",SS_BITMAP,402,7,49,46,WS_EX_STATICEDGE
+    LTEXT           "Rotationcenter:",IDC_STATIC,323,174,78,12
+    LTEXT           "",IDC_STATICROTATIONCENTER,411,174,38,12,SS_SUNKEN
+    LTEXT           "Rotation dest:",IDC_STATIC,323,154,78,12
+    LTEXT           "",IDC_STATICROTATIONDESTINATION,411,154,38,12,SS_SUNKEN
+    CONTROL         "",IDC_SLIDERDEGREE,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,326,111,125,15
+    LTEXT           "Rotation angle",IDC_STATIC,323,133,78,12
+    LTEXT           "",IDC_STATICROTATIONANGLE,411,133,38,12,SS_SUNKEN
 END
 
 
-#ifndef _MAC
 /////////////////////////////////////////////////////////////////////////////
 //
 // Version
@@ -142,15 +150,13 @@ BEGIN
     BEGIN
         BLOCK "040904B0"
         BEGIN
-            VALUE "CompanyName", "\0"
-            VALUE "FileDescription", "TestBlend MFC Application\0"
-            VALUE "FileVersion", "1, 0, 0, 1\0"
-            VALUE "InternalName", "TestBlend\0"
-            VALUE "LegalCopyright", "Copyright (C) 2014\0"
-            VALUE "LegalTrademarks", "\0"
-            VALUE "OriginalFilename", "TestBlend.EXE\0"
-            VALUE "ProductName", "TestBlend Application\0"
-            VALUE "ProductVersion", "1, 0, 0, 1\0"
+            VALUE "FileDescription", "TestBlend MFC Application"
+            VALUE "FileVersion", "1, 0, 0, 1"
+            VALUE "InternalName", "TestBlend"
+            VALUE "LegalCopyright", "Copyright (C) 2014"
+            VALUE "OriginalFilename", "TestBlend.EXE"
+            VALUE "ProductName", "TestBlend Application"
+            VALUE "ProductVersion", "1, 0, 0, 1"
         END
     END
     BLOCK "VarFileInfo"
@@ -159,8 +165,6 @@ BEGIN
     END
 END
 
-#endif    // !_MAC
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -168,7 +172,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO DISCARDABLE 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_TESTBLEND_DIALOG, DIALOG
     BEGIN
@@ -199,7 +203,18 @@ BEGIN
     0
 END
 
-#endif    // English (U.S.) resources
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_TESTBLEND_DIALOG AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+#endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

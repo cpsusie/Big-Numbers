@@ -4,7 +4,7 @@
  header section, followed by messages in two languages.
 
  */
- // This is the header section.
+ // This is the header section. 
  // The following are message definitions.
 //
 //  Values are 32 bit values laid out as follows:
