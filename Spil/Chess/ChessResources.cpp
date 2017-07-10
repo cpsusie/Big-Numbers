@@ -73,7 +73,7 @@ void ChessResources::load() {
   }
 
   s_selectionFrameImage     = new Image(IDB_SELECTIONFRAME , RESOURCE_PNG);
-  s_playerIndicator         = new Image(IDB_PLAYERINDICATOR, RESOURCE_BITMAP, true);
+  s_playerIndicator         = new Image(IDB_PLAYERINDICATOR, RESOURCE_PNG);
 
   static const int pieceImages[][7] = {
     {  IDB_BITMAPNOPIECE
@@ -97,8 +97,7 @@ void ChessResources::load() {
   forEachPlayer(p) {
     ImageArray &imageArray = s_pieceImage[p];
     for(int i = 0; i < ARRAYSIZE(pieceImages[p]); i++) {
-      imageArray.add(new Image(pieceImages[p][i]
-                              ,i?RESOURCE_PNG:RESOURCE_BITMAP, true));
+      imageArray.add(new Image(pieceImages[p][i],RESOURCE_PNG));
     }
   }
 

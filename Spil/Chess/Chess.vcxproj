@@ -3232,10 +3232,10 @@
     <Image Include="res\DstFieldMark.png" />
     <Image Include="res\GreenField.bmp" />
     <Image Include="res\Hourglasses.bmp" />
-    <Image Include="res\NoPiece.bmp" />
+    <Image Include="res\NoPiece.png" />
     <Image Include="res\OpeningTreeImages.bmp" />
     <Image Include="res\PinkField.bmp" />
-    <Image Include="res\PlayerIndicator.bmp" />
+    <Image Include="res\PlayerIndicator.png" />
     <Image Include="res\PurpleField.bmp" />
     <Image Include="res\SelectionFrame.png" />
     <Image Include="res\SrcFieldMark.png" />

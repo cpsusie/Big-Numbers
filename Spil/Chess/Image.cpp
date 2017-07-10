@@ -47,9 +47,11 @@ Image::Image(int resId, ImageType type, bool transparentWhite)
     m_hasTransparentPixels = true;
   } else {
     makeOpaque();
+/*
     if(transparentWhite) {
       makeWhiteTransparent();
     }
+*/
   }
 }
 
@@ -58,6 +60,7 @@ void Image::makeOpaque() {
   m_hasTransparentPixels = false;
 }
 
+/*
 #define OPAQUE_WHITE      D3DCOLOR_ARGB(255,255,255,255)
 #define TRANSPARENT_WHITE D3DCOLOR_ARGB(  0,255,255,255)
 
@@ -91,12 +94,12 @@ void FadeEdgePixels::apply(const CPoint &p) {
     m_pixelAccessor->setPixel(p,SETALPHA(c,alpha));
   }
 }
-
 void Image::makeWhiteTransparent() {
   apply(SubstituteColor(OPAQUE_WHITE, TRANSPARENT_WHITE));
   apply(FadeEdgePixels());
   m_hasTransparentPixels = true;
 }
+*/
 
 void Image::loadBMP( int resId) {
   DEFINEMETHODNAME;
@@ -172,16 +175,12 @@ void Image::paintImage(HDC dc, const CPoint &dst, const CSize &size, const CPoin
 }
 
 void Image::paintRotated(HDC dc, const CPoint &dst, const CSize &size, const CPoint &src, double scale, double rotation) const {
-  PixRect *rotatedImage = PixRect::rotateImage(this, rotation);
-//  showPixRect(rotatedImage);
+  PixRect *rotatedImage = PixRect::rotateImage(this, rotation, D3DCOLOR_ARGB(0,255,0,0));
   const CSize rsize = rotatedImage->getSize();
   if(scale == 1) {
-//    const CPoint rdst(dst.x - (rsize.cx-size.cx)/2, dst.y - (rsize.cy-size.cy)/2);
-    PixRect::alphaBlend(dc, dst, size, *rotatedImage, ORIGIN, size, 255);
+    PixRect::alphaBlend(dc, dst, rsize, *rotatedImage, ORIGIN, rsize, 255);
   } else {
     const CSize dstsize((int)(rsize.cx * scale), (int)(rsize.cy*scale));
-//    const CSize srcSize((int)(size.cx  * scale), (int)(size.cy *scale));
-//    const CPoint rdst(dst.x - (dstsize.cx-srcSize.cx)/2, dst.y - (dstsize.cy-srcSize.cy)/2);
     PixRect::alphaBlend(dc, dst, dstsize, *rotatedImage, ORIGIN, rsize, 255);
   }
   delete rotatedImage;

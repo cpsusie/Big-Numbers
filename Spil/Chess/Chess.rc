@@ -154,6 +154,9 @@ IDB_BITMAPWHITEQUEEN    PNG                     "res\\WhiteQueen.png"
 
 IDB_BITMAPWHITEROOK     PNG                     "res\\WhiteRook.png"
 
+IDB_PLAYERINDICATOR     PNG                     "res\\PlayerIndicator.png"
+
+IDB_BITMAPNOPIECE       PNG                     "res\\NoPiece.png"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -171,10 +174,6 @@ IDB_PURPLEFIELD         BITMAP                  "res\\purpleField.bmp"
 IDB_PINKFIELD           BITMAP                  "res\\pinkField.bmp"
 
 IDB_HOURGLASS           BITMAP                  "res\\Hourglasses.bmp"
-
-IDB_PLAYERINDICATOR     BITMAP                  "res\\PlayerIndicator.bmp"
-
-IDB_BITMAPNOPIECE       BITMAP                  "res\\NoPiece.bmp"
 
 IDB_BITMAPWHITEBLACK    BITMAP                  "res\\OpeningTreeImages.bmp"
 
@@ -1996,7 +1995,8 @@ LANGUAGE 9, 1
 #if !defined(_AFXDLL)
 #include "afxribbon.rc"   // MFC ribbon and control bar resources
 #endif
-#endif
+#endif
+
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
 

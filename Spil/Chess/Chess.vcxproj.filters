@@ -1103,16 +1103,10 @@
     <Image Include="res\Hourglasses.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="res\NoPiece.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="res\OpeningTreeImages.bmp">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\PinkField.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\PlayerIndicator.bmp">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\PurpleField.bmp">
@@ -1167,6 +1161,12 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\SrcFieldMark.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\NoPiece.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\PlayerIndicator.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
