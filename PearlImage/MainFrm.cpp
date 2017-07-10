@@ -309,9 +309,12 @@ void CMainFrame::OnFunctionRotate() {
 
   theApp.BeginWaitCursor();
 
-  CPearlImageDoc *doc = getDocument();
   saveDocState();
-  doc->setImage(PixRect::rotateImage(doc->getImage(),m_currentDegree));
+  CPearlImageDoc *doc      = getDocument();
+  const PixRect  *image    = doc->getImage();
+  const COLORREF  bckColor = getView()->getBackgroundColor();
+
+  doc->setImage(PixRect::rotateImage(image,m_currentDegree, COLORREF2D3DCOLOR(bckColor)));
 
   theApp.EndWaitCursor();
   getView()->refreshDoc();

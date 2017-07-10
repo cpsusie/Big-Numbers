@@ -45,7 +45,6 @@ int EdgeMark::getCursorId() const {
 
 #define EDGEMARKSIZE 6
 #define EDGEWINSIZE 26
-#define BACKGROUNDCOLOR RGB(207,217,232)
 
 CRect EdgeMark::createRect(const CPoint &p, int size) const {
   switch(m_type) {
@@ -108,7 +107,7 @@ void CPearlImageView::OnDraw(CDC *pDC) {
 void CPearlImageView::paintBackgroundAndEdge(CDC &dc) {
   if(!GetDocument()->hasImage()) {
     CRect  clRect = getClientRect(this);
-    dc.FillSolidRect(&clRect, BACKGROUNDCOLOR);
+    dc.FillSolidRect(&clRect, getBackgroundColor());
   } else {
     const CSize  docSize            = GetDocument()->getSize();
     const CPoint cornerMarkPos      = getViewPoint(docSize);
@@ -123,14 +122,14 @@ void CPearlImageView::paintBackgroundAndEdge(CDC &dc) {
     }
 
     if(0 < cornerMarkPos.x && cornerMarkPos.x < clRect.right) {
-      dc.FillSolidRect(cornerMarkPos.x, topLeft.y, clRect.right - cornerMarkPos.x, clRect.bottom, BACKGROUNDCOLOR);
+      dc.FillSolidRect(cornerMarkPos.x, topLeft.y, clRect.right - cornerMarkPos.x, clRect.bottom, getBackgroundColor());
       if(clRect.PtInRect(rightMarkPos)) {
         m_edgeMark[RIGHTMARK].setPosition(rightMarkPos);
         visibleMarkCount++;
       }
     }
     if(0 < cornerMarkPos.y && cornerMarkPos.y < clRect.bottom) {
-      dc.FillSolidRect(topLeft.x, cornerMarkPos.y, clRect.right - max(0,clRect.right-cornerMarkPos.x), clRect.bottom - cornerMarkPos.y, BACKGROUNDCOLOR);
+      dc.FillSolidRect(topLeft.x, cornerMarkPos.y, clRect.right - max(0,clRect.right-cornerMarkPos.x), clRect.bottom - cornerMarkPos.y, getBackgroundColor());
       if(clRect.PtInRect(bottomMarkPos)) {
         m_edgeMark[BOTTOMMARK].setPosition(bottomMarkPos);
         visibleMarkCount++;
