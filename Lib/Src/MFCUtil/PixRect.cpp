@@ -397,16 +397,9 @@ void PixRect::fillColor(D3DCOLOR color, const CRect *r) {
     CHECK3DRESULT(m_device.getD3Device()->ColorFill(surface, r, color));
     surface->Release();
   } else {
-    CRect tmpr;
-    if (r == NULL) {
-      tmpr = CRect(CPoint(0,0), getSize());
-      r = &tmpr;
-    }
-    HBRUSH hbr = CreateSolidBrush(D3DCOLOR2COLORREF(color));
-    HDC hdc = getDC();
-    FillRect(hdc, r, hbr);
-    DeleteObject(hbr);
-    releaseDC(hdc);
+    PixelAccessor *pa = getPixelAccessor();
+    pa->fillRect(color, r);
+    delete pa;
   }
 }
 

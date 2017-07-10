@@ -60,12 +60,16 @@ public:
 
   void fill(const CPoint &p, D3DCOLOR color, ColorComparator &cmp);
   void fill(const CPoint &p, D3DCOLOR color);
+  virtual void fillRect(D3DCOLOR color, const CRect *r = NULL) = 0; // if r == NULL, entire surface will be filled
 };
 
 class DWordPixelAccessor : public PixelAccessor {
 private:
   DWORD *m_pixels;
   UINT   m_pixelsPerLine;
+  inline DWORD *getPixelAddr(UINT x, UINT y) {
+    return m_pixels + m_pixelsPerLine * y + x;
+  }
 public:
   DWordPixelAccessor(PixRect *pixRect, DWORD flags) : PixelAccessor(pixRect, flags) {
     m_pixels        = (DWORD*)m_lockedRect.pBits;
@@ -75,6 +79,7 @@ public:
   D3DCOLOR getPixel(UINT x, UINT y);
   void     setPixel(const CPoint &p, D3DCOLOR color);
   D3DCOLOR getPixel(const CPoint &p);
+  void fillRect(D3DCOLOR color, const CRect *r); // if r == NULL, entire surface will be filled
 };
 
 class PixRectOperator : public PointOperator {
@@ -286,6 +291,7 @@ public:
     m_exceptionInProgress = false;
   }
   void alphaBlend(const PixRect *texture, const CRect &dstRect);
+  void draw(      const PixRect *pr     , const CRect &dstRect);
 };
 
 class PixRect {
@@ -426,10 +432,12 @@ public:
   void fillPolygon(const MyPolygon &polygon, D3DCOLOR color, bool invert=false);
   void fillEllipse(const CRect &rect, D3DCOLOR color, bool invert=false);
   static PixRect *mirror(     const PixRect *src, bool vertical);
-  static PixRect *rotateImage(const PixRect *src, double degree);
+  static PixRect *rotateImage(const PixRect *src, double degree, D3DCOLOR background);
   static PixRect *scaleImage( const PixRect *src, const ScaleParameters &param);
   static CSize    getRotatedSize(const CSize &size, double degree);
-  void            drawRotated(const PixRect *src, const CPoint &dst, double degree);
+  // rotationCenter is the point in src pixRect about which the rotation occurs
+  // dst is the point in this, where the rotationCenter is placed
+  void            drawRotated(const PixRect *src, const CPoint &dst, double degree, const Point2DP &rotationCenter);
   void text(const CPoint &p, const String &text, const PixRectFont &font, D3DCOLOR color, bool invert=false);
   void drawGlyph(const CPoint &p, const GlyphCurveData &glyphCurve, D3DCOLOR color, bool invert=false);
   void drawText( const CPoint &p, const String &text, const PixRectFont &font, D3DCOLOR color, bool invert=false);
