@@ -347,6 +347,8 @@ typedef Array<const TCHAR*> StrArray;
 class StringArray : public Array<String> {
 public:
   StringArray() {}
+  explicit StringArray(size_t capacity) : Array(capacity) {
+  }
   StringArray(const TCHAR **strArray); // terminate with NULL-pointer
 #ifdef UNICODE
   StringArray(const char  **strArray); // terminate with NULL-pointer
