@@ -417,10 +417,10 @@ LRESULT CMainFrame::OnMsgCalculateImage(WPARAM wp, LPARAM lp) {
 
 // -------------------------- Private ----------------------------------
 
-const TCHAR *CMainFrame::s_saveFileDialogExtensions = _T("Bitmap files (*.bmp)\0*.bmp;\0"
-                                                         "JPEG files (*.jpg)\0*.jpg;\0"
+const TCHAR *CMainFrame::s_saveFileDialogExtensions = _T("BMP-files (*.bmp)\0*.bmp;\0"
+                                                         "JPG-files (*.jpg)\0*.jpg;\0"
                                                          "PNG-files (*.png)\0*.png;\0"
-                                                         "TIFF files (*.tiff)\0*.tiff;\0"
+                                                         "TIFF-files (*.tiff)\0*.tiff;\0"
                                                          "All files (*.*)\0*.*\0\0");
 
 const TCHAR *CMainFrame::s_loadFileDialogExtensions = _T("Picture files\0*.bmp;*.jpg;*.png;*.tiff;*.gif;*.ico;*.cur;*.dib;\0"
