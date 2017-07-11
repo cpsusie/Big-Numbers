@@ -284,6 +284,24 @@ void XMLDoc::setValue(const XMLNodePtr     &node,     const TCHAR *tagName, UINT
   setValue(node,tagName,s.cstr(),force);
 }
 
+void XMLDoc::setValue(const XMLNodePtr     &node,     const TCHAR *tagName, long             value, bool force) {
+  setValue(node,tagName,(int)value,force);
+}
+
+void XMLDoc::setValue(const XMLNodePtr     &node,     const TCHAR *tagName, ULONG            value, bool force) {
+  setValue(node,tagName,(UINT)value,force);
+}
+
+void XMLDoc::setValue(const XMLNodePtr     &node,     const TCHAR *tagName, INT64            value, bool force) {
+  const String s = format(_T("%I64d"), value);
+  setValue(node,tagName,s.cstr(),force);
+}
+
+void XMLDoc::setValue(const XMLNodePtr     &node,     const TCHAR *tagName, UINT64           value, bool force) {
+  const String s = format(_T("%I64u"), value);
+  setValue(node,tagName,s.cstr(),force);
+}
+
 void XMLDoc::setValue(const XMLNodePtr     &node,     const TCHAR *tagName, float            value, bool force) {
   String s = toString(value,7,0,ios::scientific);
   setValue(node,tagName,s.cstr(),force);
@@ -324,6 +342,10 @@ void XMLDoc::getValue(const XMLNodePtr     &node,     const TCHAR *tagName, Stri
   }
 }
 
+static void throwNotNumericException(const TCHAR *tagName, const String &str) {
+  throwException(_T("Invalid content. Tag=\"%s\". content=\"%s\". Must be numeric"),tagName,str.cstr());
+}
+
 void XMLDoc::getValueLF(const XMLNodePtr   &node,     const TCHAR *tagName, String      &value, int instans) {
   getValue(node, tagName, value, instans);
   value.replace(_T('\n'), _T("\r\n"));
@@ -333,12 +355,40 @@ void XMLDoc::getValue(const XMLNodePtr &node, const TCHAR *tagName, int         
   String str;
   getValue(node,tagName,str,instans);
   if(_stscanf(str.cstr(),_T("%d"),&value) != 1) {
-    throwException(_T("Invalid content. Tag=\"%s\". content=\"%s\". Must be numeric"),tagName,str.cstr());
+    throwNotNumericException(tagName, str);
   }
 }
 
 void XMLDoc::getValue(const XMLNodePtr &node, const TCHAR *tagName, UINT        &value, int instans) {
-  getValue(node, tagName, (int&)value, instans);
+  String str;
+  getValue(node,tagName,str,instans);
+  if(_stscanf(str.cstr(),_T("%u"),&value) != 1) {
+    throwNotNumericException(tagName, str);
+  }
+}
+
+void XMLDoc::getValue(const XMLNodePtr &node, const TCHAR *tagName, long        &value, int instans) {
+  getValue(node,tagName,(int&)value,instans);
+}
+
+void XMLDoc::getValue(const XMLNodePtr &node, const TCHAR *tagName, ULONG       &value, int instans) {
+  getValue(node,tagName,(UINT&)value,instans);
+}
+
+void XMLDoc::getValue(const XMLNodePtr &node, const TCHAR *tagName, INT64       &value, int instans) {
+  String str;
+  getValue(node,tagName,str,instans);
+  if(_stscanf(str.cstr(),_T("%I64d"),&value) != 1) {
+    throwNotNumericException(tagName, str);
+  }
+}
+
+void XMLDoc::getValue(const XMLNodePtr &node, const TCHAR *tagName, UINT64      &value, int instans) {
+  String str;
+  getValue(node,tagName,str,instans);
+  if(_stscanf(str.cstr(),_T("%I64u"),&value) != 1) {
+    throwNotNumericException(tagName, str);
+  }
 }
 
 void XMLDoc::getValue(const XMLNodePtr &node, const TCHAR *tagName, float       &value, int instans) {
@@ -351,7 +401,7 @@ void XMLDoc::getValue(const XMLNodePtr &node, const TCHAR *tagName, double      
   String str;
   getValue(node,tagName,str,instans);
   if(_stscanf(str.cstr(),_T("%le"),&value) != 1) {
-    throwException(_T("Invalid content. Tag=\"%s\". content=\"%s\". Must be numeric"), tagName,str.cstr());
+    throwNotNumericException(tagName, str);
   }
 }
 
