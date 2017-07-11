@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Stack.h>
 #include <MFCUtil/PropertyDlgThread.h>
 #include "PearlImageView.h"
 #include "GridDlg.h"

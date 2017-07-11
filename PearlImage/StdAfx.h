@@ -5,4 +5,3 @@
 #include <MFCUtil/ClipBoard.h>
 #include "resource.h"
 #include "PearlImage.h"
-#include <afxwin.h>

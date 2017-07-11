@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <MFCUtil/resource.h>
+#include <ExternProcess.h>
 #include "GridDlg.h"
 
 IMPLEMENT_DYNAMIC(CGridDlg, CDialog)
@@ -13,7 +14,7 @@ CGridDlg::CGridDlg(CWnd* pParent /*=NULL*/)
   m_colorCount      = defaultValue.m_colorCount;
   m_horizontalCount = defaultValue.m_cellCount.cx;
   m_verticalCount   = defaultValue.m_cellCount.cy;
-
+  m_cellSizeMM      = defaultValue.m_cellSizeMM;
   m_changeHandlerActive = false;
 }
 
@@ -26,15 +27,18 @@ void CGridDlg::DoDataExchange(CDataExchange *pDX) {
   DDX_Text(pDX, IDC_EDITCELLSIZE       , m_cellSize       );
   DDX_Text(pDX, IDC_EDITHORIZONTALCOUNT, m_horizontalCount);
   DDX_Text(pDX, IDC_EDITVERTICALCOUNT  , m_verticalCount  );
+  DDX_Text(pDX, IDC_EDITCELLSIZEMM     , m_cellSizeMM     );
 }
 
 BEGIN_MESSAGE_MAP(CGridDlg, CDialog)
-  ON_BN_CLICKED(ID_CALCULATE                     , OnClickedCalculate               )
+  ON_BN_CLICKED(IDC_BUTTONCALCULATE              , OnClickedCalculate               )
   ON_BN_CLICKED(IDC_CHECKAUTOCALCULATE           , OnBnClickedCheckAutoCalculate    )
+  ON_BN_CLICKED(IDC_BUTTONDIAGRAM                , OnBnClickedButtonDiagram         )
   ON_EN_CHANGE(IDC_EDITCELLSIZE                  , OnEnChangeEditCellSize           )
   ON_EN_CHANGE(IDC_EDITHORIZONTALCOUNT           , OnEnChangeEditHorizontalCount    )
   ON_EN_CHANGE(IDC_EDITVERTICALCOUNT             , OnEnChangeEditVerticalCount      )
   ON_EN_CHANGE(IDC_EDITCOLORCOUNT                , OnEnChangeEditColorCount         )
+  ON_EN_CHANGE(IDC_EDITCELLSIZEMM                , OnEnChangeEditCellSizeMM         )
   ON_NOTIFY(UDN_DELTAPOS, IDC_SPINHORIZONTALCOUNT, OnDeltaposSpinHorizontalCount    )
   ON_NOTIFY(UDN_DELTAPOS, IDC_SPINVERTICALCOUNT  , OnDeltaposSpinVerticalCount      )
   ON_NOTIFY(UDN_DELTAPOS, IDC_SPINCOLORCOUNT     , OnDeltaposSpinColorCount         )
@@ -44,6 +48,7 @@ BEGIN_MESSAGE_MAP(CGridDlg, CDialog)
   ON_COMMAND(ID_GOTO_COLORCOUNT                  , OnGotoColorCount                 )
   ON_MESSAGE(_ID_MSG_RESETCONTROLS               , OnMsgResetControls               )
   ON_MESSAGE(ID_MSG_NEWIMAGE                     , OnMsgNewImage                    )
+  ON_MESSAGE(ID_MSG_WINDOWTOTOP                  , OnMsgWindowToTop                 )
   ON_WM_SHOWWINDOW()
   ON_WM_CLOSE()
 END_MESSAGE_MAP()
@@ -54,14 +59,17 @@ BOOL CGridDlg::OnInitDialog() {
   m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_PEARLGRID));
   const GridParameters &param = getStartValue();
   valueToWindow(param);
+  PostMessage(ID_MSG_WINDOWTOTOP);
   return FALSE;
 }
 
 BOOL CGridDlg::PreTranslateMessage(MSG *pMsg) {
-  if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
-    return true;
+  BOOL ret = TranslateAccelerator(m_hWnd,m_accelTable,pMsg);
+  if(!ret) {
+    ret = __super::PreTranslateMessage(pMsg);
   }
-  return __super::PreTranslateMessage(pMsg);
+  GetDlgItem(IDC_BUTTONCALCULATE)->EnableWindow(!IsDlgButtonChecked(IDC_CHECKAUTOCALCULATE));
+  return ret;
 }
 
 void CGridDlg::OnShowWindow(BOOL bShow, UINT nStatus) {
@@ -69,7 +77,8 @@ void CGridDlg::OnShowWindow(BOOL bShow, UINT nStatus) {
   if(bShow) {
     CheckDlgButton(IDC_CHECKAUTOCALCULATE, BST_CHECKED);
     gotoEditBox(this, IDC_EDITCELLSIZE);
-    OnClickedCalculate();
+    calculate();
+    PostMessage(ID_MSG_WINDOWTOTOP);
   }
 }
 
@@ -102,7 +111,14 @@ LRESULT CGridDlg::OnMsgResetControls(WPARAM wp, LPARAM lp) {
 LRESULT CGridDlg::OnMsgNewImage(WPARAM wp, LPARAM lp) {
   cellCountFromSize();
   flushData();
-  OnClickedCalculate();
+  calculate();
+  return 0;
+}
+
+LRESULT CGridDlg::OnMsgWindowToTop(WPARAM wp, LPARAM lp) {
+  if(!::BringWindowToTop(*this)) {
+    Message(_T("%s"), getLastErrorText().cstr());
+  };
   return 0;
 }
 
@@ -116,6 +132,10 @@ void CGridDlg::resetControls() {
 }
 
 void CGridDlg::OnClickedCalculate() {
+  calculate();
+}
+
+void CGridDlg::calculate() {
   if (!validate()) return;
 
   setNotifyEnabled(false);
@@ -130,7 +150,43 @@ void CGridDlg::OnClickedCalculate() {
 
 void CGridDlg::OnBnClickedCheckAutoCalculate() {
   if(IsDlgButtonChecked(IDC_CHECKAUTOCALCULATE)) {
-    OnClickedCalculate();
+    calculate();
+  }
+}
+
+String getTempFileName(const String &fileName) {
+  return FileNameSplitter::getChildName(_T("c:\\temp"), fileName);
+}
+
+String createTempFileName(const String &ext) {
+  String fileName = getTempFileName(_T("cXXXXXX"));
+  _tmktemp(fileName.cstr());
+  return FileNameSplitter(fileName).setExtension(ext).getAbsolutePath();
+}
+
+void CGridDlg::OnBnClickedButtonDiagram() {
+  if(!validate()) return;
+
+  windowToValue();
+  const GridParameters v = getCurrentValue();
+  PearlDiagram diagram;
+  PixRect *tmp = v.calculateImage(getImage(), &diagram);
+  delete tmp;
+
+  const String dumpFileName = createTempFileName(_T("txt"));
+  FILE *f = NULL;
+  try {
+    const String dstr = diagram.toString();
+    f = MKFOPEN(dumpFileName,_T("w"));
+
+    _ftprintf(f, _T("%s"), dstr.cstr());
+    fclose(f); f = NULL;
+
+    ExternProcess::run(false, _T("c:\\windows\\system32\\notepad.exe"), dumpFileName.cstr(), NULL);
+    UNLINK(dumpFileName);
+  } catch (Exception e) {
+    if(f) { fclose(f); f = NULL; }
+    Message(_T("%s"), e.what());
   }
 }
 
@@ -141,6 +197,17 @@ void CGridDlg::OnEnChangeEditCellSize() {
   double value;
   if(getDoubleValue(IDC_EDITCELLSIZE, value)) {
     setCellSize(value);
+  }
+  m_changeHandlerActive = false;
+}
+
+void CGridDlg::OnEnChangeEditCellSizeMM() {
+  if(m_changeHandlerActive) return;
+  m_changeHandlerActive = true;
+
+  double value;
+  if(getDoubleValue(IDC_EDITCELLSIZEMM, value)) {
+    setCellSizeMM(value);
   }
   m_changeHandlerActive = false;
 }
@@ -227,10 +294,18 @@ bool CGridDlg::validate() {
     MessageBox(_T("No image"), _T("Error"), MB_ICONWARNING);
     return false;
   }
-  if(!getData()) return false;
+  if(!getData()) {
+    return false;
+  }
   if(m_cellSize < 1) {
     MessageBox(_T("Must be >= 1"), _T("Error"), MB_ICONWARNING);
     gotoEditBox(this, IDC_EDITCELLSIZE);
+    return false;
+  }
+
+  if(m_cellSizeMM <= 0) {
+    MessageBox(_T("Must be > 0"), _T("Error"), MB_ICONWARNING);
+    gotoEditBox(this, IDC_EDITCELLSIZEMM);
     return false;
   }
 
@@ -259,6 +334,7 @@ void CGridDlg::windowToValue() {
   param.m_cellCount.cx  = m_horizontalCount;
   param.m_cellCount.cy  = m_verticalCount;
   param.m_colorCount    = m_colorCount;
+  param.m_cellSizeMM    = m_cellSizeMM;
   const bool wasEnabled = isNotifyEnabled();
   if(!IsDlgButtonChecked(IDC_CHECKAUTOCALCULATE)) {
     setNotifyEnabled(false);
@@ -276,6 +352,7 @@ void CGridDlg::valueToWindow(const GridParameters &param) {
     m_verticalCount   = param.m_cellCount.cy;
   }
   m_colorCount        = param.m_colorCount;
+  m_cellSizeMM        = param.m_cellSizeMM;
   flushData();
 }
 
@@ -283,6 +360,14 @@ void CGridDlg::setCellSize(double value) {
   if(value >= 1) {
     m_cellSize = value;
     cellCountFromSize();
+    flushData();
+    windowToValue();
+  }
+}
+
+void CGridDlg::setCellSizeMM(double value) {
+  if(value > 0) {
+    m_cellSizeMM = value;
     flushData();
     windowToValue();
   }
@@ -330,6 +415,7 @@ void CGridDlg::flushData() {
   UpdateData(false);
   setUintEmptyZero(IDC_EDITCOLORCOUNT, m_colorCount);
   setWindowText(this, IDC_STATICTOTALCOUNT, format1000(m_horizontalCount * m_verticalCount));
+  setWindowText(this, IDC_STATICIMAGESIZEMM, format(_T("%.1lf x %.1lf"), m_cellSizeMM*m_horizontalCount, m_cellSizeMM * m_verticalCount));
 }
 
 void CGridDlg::setImage(const PixRect *image) {

@@ -2,7 +2,6 @@
 // Microsoft Visual C++ generated include file.
 // Used by PearlImage.rc
 //
-#define ID_CALCULATE                    3
 #define IDD_ABOUTBOX                    100
 #define IDR_MAINFRAME                   128
 #define IDR_PEARLIMAGETYPE              129
@@ -22,11 +21,15 @@
 #define IDC_EDITVERTICALCOUNT           1013
 #define IDC_EDITCELLSIZE                1014
 #define IDC_EDITCOLORCOUNT              1015
-#define IDC_STATICTOTALCOUNT            1016
-#define IDC_CHECKAUTOCALCULATE          1020
+#define IDC_EDITCELLSIZEMM              1016
+#define IDC_STATICTOTALCOUNT            1017
+#define IDC_STATICIMAGESIZEMM           1018
 #define IDC_SPINHORIZONTALCOUNT         1021
 #define IDC_SPINVERTICALCOUNT           1022
 #define IDC_SPINCOLORCOUNT              1023
+#define IDC_CHECKAUTOCALCULATE          1024
+#define IDC_BUTTONCALCULATE             1025
+#define IDC_BUTTONDIAGRAM               1026
 #define IDS_INFOFIELD                   1030
 #define IDS_MOUSEPOSITION               1031
 #define ID_FILE_GEM                     32771
@@ -64,15 +67,16 @@
 #define ID_DELETE                       32861
 #define ID_MSG_CALCULATEIMAGE           32880
 #define ID_MSG_NEWIMAGE                 32881
+#define ID_MSG_WINDOWTOTOP              32882
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        147
-#define _APS_NEXT_COMMAND_VALUE         32835
-#define _APS_NEXT_CONTROL_VALUE         1022
+#define _APS_NEXT_RESOURCE_VALUE        140
+#define _APS_NEXT_COMMAND_VALUE         32890
+#define _APS_NEXT_CONTROL_VALUE         1033
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

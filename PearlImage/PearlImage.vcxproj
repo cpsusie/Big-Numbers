@@ -270,6 +270,7 @@
     <ClCompile Include="GridDlg.cpp" />
     <ClCompile Include="GridParameters.cpp" />
     <ClCompile Include="MainFrm.cpp" />
+    <ClCompile Include="PearlDiagram.cpp" />
     <ClCompile Include="PearlImage.cpp" />
     <ClCompile Include="PearlImageDoc.cpp" />
     <ClCompile Include="PearlImageView.cpp" />

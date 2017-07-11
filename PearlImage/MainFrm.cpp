@@ -91,7 +91,7 @@ BOOL CMainFrame::PreTranslateMessage(MSG *pMsg) {
   }
   CPearlImageView *view = getView();
   if(view->isMouseOnDocument()) {
-    CPoint mp = getView()->getCurrentMousePoint();
+    const CPoint mp = getView()->getCurrentMousePoint();
     m_wndStatusBar.SetPaneText(0,format(_T("%3d,%3d px"),mp.x,mp.y).cstr());
   } else {
     m_wndStatusBar.SetPaneText(0,EMPTYSTRING);
@@ -434,7 +434,6 @@ const TCHAR *CMainFrame::s_loadFileDialogExtensions = _T("Picture files\0*.bmp;*
                                                          "DIB-files (*.dib)\0*.dib;\0"
                                                          "All files (*.*)\0*.*\0\0");
 
-
 String CMainFrame::getLoadFileName() {
   CFileDialog dlg(TRUE);
   dlg.m_ofn.lpstrFilter = s_loadFileDialogExtensions;
@@ -458,8 +457,8 @@ void CMainFrame::onFileMruFile(int index) {
 }
 
 bool CMainFrame::onFileSave() { // retuns true if succeeded
-  CPearlImageDoc *doc = getDocument();
-  CString name = doc->GetPathName();
+  CPearlImageDoc *doc  = getDocument();
+  CString         name = doc->GetPathName();
   if(doc->hasDefaultName()) {
     CFileDialog dlg(FALSE,_T("bmp"),name);
     dlg.m_ofn.lpstrTitle  = _T("Save image");
