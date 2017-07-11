@@ -100,6 +100,10 @@ public:
     return m_lastPoint;
   }
 
+  inline COLORREF getBackgroundColor() const {
+    return RGB(207,217,232);
+  }
+
   bool         isMouseOnDocument() const;
   CPoint       getDocPoint( const CPoint &viewPoint) const;
   CPoint       getViewPoint(const CPoint &docPoint)  const;

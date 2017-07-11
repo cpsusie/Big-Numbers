@@ -6,6 +6,8 @@
 
 class CMainFrame : public CFrameWnd {
 private:
+  static const TCHAR *s_saveFileDialogExtensions;
+  static const TCHAR *s_loadFileDialogExtensions;
   HACCEL           m_accelTable;
   double           m_currentDegree;
   ScaleParameters  m_currentScale;
@@ -16,23 +18,27 @@ private:
   UINT             m_approximateFillTolerance;
   CSize            m_eraseToolSize;
 
+  String getLoadFileName();
   void onFileMruFile(int index);
   void setCurrentDrawTool(int id);
   void setCurrentDrawTool(DrawTool *newDrawTool);
   void checkToolItem(int id);
-  void ajourRedoUndo();
-  bool save(const CString &name);
   bool onFileSave();
+  bool save(const CString &name);
   bool checkSave();
-  CMyPaintView *getView() {
-    return (CMyPaintView*)GetActiveView();
-  }
-
-  CMyPaintDoc *getDocument();
   void scroll(int dx, int dy);
   CPoint getMaxScroll();
   void applyFilter(PixRectFilter &filter);
   void applyMirror(bool vertical);
+  inline CMyPaintView *getView() {
+    return (CMyPaintView*)GetActiveView();
+  }
+
+  inline CMyPaintDoc *getDocument() {
+    CMyPaintView *view = getView();
+    return view ? view->GetDocument() : NULL;
+  }
+
 protected:
   CMainFrame();
   CStatusBar  m_wndStatusBar;
@@ -40,16 +46,17 @@ protected:
   DECLARE_DYNCREATE(CMainFrame)
 
 public:
-  virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
-  virtual BOOL PreTranslateMessage(MSG *pMsg);
   virtual ~CMainFrame();
+  virtual BOOL PreTranslateMessage(MSG *pMsg);
 
+  // return true, if a new image was loaded into doc and showed in view
   bool loadFile(const String &fileName);
   void setCurrentZoomFactor(int id);
+  void updateTitle();
   void saveDocState();
+  void ajourRedoUndo();
   void pushTool(DrawTool *tool);
   void popTool();
-  void updateTitle();
 
   DrawTool *getCurrentDrawTool() {
     return m_toolStack.top();
@@ -76,12 +83,14 @@ public:
 
 protected:
     afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
-    afx_msg void OnClose();
     afx_msg void OnSize(UINT nType, int cx, int cy);
+    afx_msg void OnClose();
+    afx_msg void OnAppExit();
     afx_msg void OnFileNew();
     afx_msg void OnFileOpen();
     afx_msg void OnFileInsert();
-    afx_msg void OnAppExit();
+    afx_msg void OnFileSave();
+    afx_msg void OnFileSaveAs();
     afx_msg void OnFileMruFile1();
     afx_msg void OnFileMruFile2();
     afx_msg void OnFileMruFile3();
@@ -98,8 +107,6 @@ protected:
     afx_msg void OnFileMruFile14();
     afx_msg void OnFileMruFile15();
     afx_msg void OnFileMruFile16();
-    afx_msg void OnFileSave();
-    afx_msg void OnFileSaveAs();
     afx_msg void OnEditUndo();
     afx_msg void OnEditRedo();
     afx_msg void OnEditCut();
