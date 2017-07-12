@@ -267,6 +267,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="DegreeDlg.cpp" />
+    <ClCompile Include="EdgeMark.cpp" />
     <ClCompile Include="GridDlg.cpp" />
     <ClCompile Include="GridParameters.cpp" />
     <ClCompile Include="MainFrm.cpp" />
@@ -291,6 +292,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DegreeDlg.h" />
+    <ClInclude Include="EdgeMark.h" />
     <ClInclude Include="GridDlg.h" />
     <ClInclude Include="GridParameters.h" />
     <ClInclude Include="MainFrm.h" />

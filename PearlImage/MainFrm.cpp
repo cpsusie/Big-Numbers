@@ -529,13 +529,6 @@ void CMainFrame::scroll(int dx, int dy) {
   getView()->ScrollToPosition(CPoint(newX,newY));
 }
 
-CPoint CMainFrame::getMaxScroll() {
-  const CSize rectSize = getClientRect(getView()).Size();
-  const CSize docSize  = getDocument()->getSize();
-  const int   zoom     = getView()->getCurrentZoomFactor();
-  return CPoint(max(0,docSize.cx*zoom-rectSize.cx),max(0,docSize.cy*zoom-rectSize.cy));
-}
-
 void CMainFrame::applyFilter(PixRectFilter &filter) {
   CPearlImageDoc *doc = getDocument();
   if(!doc->hasImage()) return;

@@ -1,59 +1,17 @@
 #pragma once
 
 #include "PearlImageDoc.h"
+#include "EdgeMark.h"
 
 class CMainFrame;
 
-typedef enum {
-  RIGHTMARK
- ,BOTTOMMARK
- ,RIGHTBOTTOMMARK
-} EdgeMarkType;
-
-class EdgeMark {
-private:
-  const EdgeMarkType m_type;
-  CRect              m_activeRect;
-  CRect              m_visibleRect;
-  bool               m_visible;
-
-  CRect createRect(const CPoint &p, int size) const;
-  CRect createActiveRect( const CPoint &p) const;
-  CRect createVisibleRect(const CPoint &p) const;
-public:
-  EdgeMark(EdgeMarkType type) : m_type(type) {
-  }
-
-  int getCursorId() const;
-
-  EdgeMarkType getType() const {
-    return m_type;
-  }
-  void setPosition(const CPoint &p);
-  void setVisible(bool visible) {
-    m_visible = visible;
-  }
-  bool isVisible()  const {
-    return m_visible;
-  }
-
-  const CRect &getActiveRect() const {
-    return m_activeRect;
-  }
-
-  const CRect &getVisibleRect() const {
-    return m_visibleRect;
-  }
-};
-
 class CPearlImageView : public CScrollView {
 private:
-  HACCEL           m_accelTable;
   bool             m_initialized;
   int              m_currentZoomFactor;
-  CPoint           m_lastPoint;
+  CPoint           m_lastPoint, m_maxScroll;
   CPrintInfo      *m_printInfo;
-  Array<EdgeMark>  m_edgeMark;
+  EdgeMarkArray    m_edgeMark;
   const EdgeMark  *m_currentEdgeMark;
   CRect            m_dragRect,*m_lastDragRect;
 
@@ -65,11 +23,38 @@ private:
     return (const CMainFrame*)GetParent();
   }
 
-  void paintBackgroundAndEdge(CDC &dc);
-  void resizeDocument(const CPoint &p);
-  void paintResizingFrame(const CPoint &p);
-  CRect getDocumentRect() const;
-  CRect getViewRect() const;
+  void         paintBackgroundAndEdge(CDC &dc);
+  void         setScrollRange();
+  inline const EdgeMark *findEdgeMark(const CPoint &viewp) const {
+    return m_edgeMark.findEdgeMark(viewp);
+  }
+  void         setCursor(int id);
+  void         paintResizingFrame(const CPoint &docp);
+  void         resizeDocument();
+  inline CSize getDocSize() const {
+    return GetDocument()->getSize();
+  }
+  inline CSize getZoomedDocSize() const {
+    const CSize ds = getDocSize();
+    return CSize(ds.cx*m_currentZoomFactor, ds.cy*m_currentZoomFactor);
+  }
+  inline CRect getDocumentRect() const {
+   return CRect(ORIGIN, getDocSize());
+  }
+  inline CRect getViewRect() const {
+    return CRect(ORIGIN,docToView(getDocSize()));
+  }
+  CPoint       viewToDoc(const CPoint &viewPoint) const;
+  CPoint       docToView(const CPoint &docPoint)  const;
+  // coordinates of upper-left corner of visible part image in 
+  inline CPoint getViewTopLeft() const {
+    return GetScrollPosition();
+  }
+  inline CPoint getDocTopLeft() const {
+    CPoint tp = getViewTopLeft();
+    tp.x /= getCurrentZoomFactor(); tp.y /= getCurrentZoomFactor();
+    return tp;
+  }
 protected:
   CPearlImageView();
   DECLARE_DYNCREATE(CPearlImageView)
@@ -80,16 +65,15 @@ public:
     }
     const PixRect *getImage();
 
-    void         repaint();
-    void         setScrollRange();
-    void         refreshDoc();
-    void         clear();
-    void         setCurrentZoomFactor(int factor);
-    int          getCurrentZoomFactor() const {
+    void       repaint();
+    void       refreshDoc();
+    void       clear();
+    void       setCurrentZoomFactor(int factor);
+    inline int getCurrentZoomFactor() const {
       return m_currentZoomFactor;
     }
 
-    CPoint       getCurrentMousePoint() const {
+    CPoint     getCurrentMousePoint() const {
       return m_lastPoint;
     }
 
@@ -97,12 +81,10 @@ public:
       return RGB(207,217,232);
     }
     bool         isMouseOnDocument() const;
-    CPoint       getDocPoint( const CPoint &viewPoint) const;
-    CPoint       getViewPoint(const CPoint &docPoint)  const;
-    EdgeMark    *findEdgeMark(const CPoint &point);
 
-    CPoint       getTopLeft() const { // coordinates of upper-left corner of visible part image
-      return GetScrollPosition();
+    // in zoomed Doc
+    const CPoint &getMaxScroll() const {
+      return m_maxScroll;
     }
 
     virtual ~CPearlImageView();

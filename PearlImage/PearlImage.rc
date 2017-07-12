@@ -13,9 +13,6 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Danish (Denmark) resources
-
-/////////////////////////////////////////////////////////////////////////////
 // English (United States) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
@@ -78,7 +75,7 @@ BEGIN
 END
 
 IDR_PEARLGRID DIALOGEX 0, 0, 273, 186
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+STYLE DS_SETFONT | DS_MODALFRAME | DS_NOIDLEMSG | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Define Grid"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
@@ -107,10 +104,10 @@ BEGIN
     LTEXT           "Cell si&ze (In pixels):",IDC_STATIC,25,27,87,12
 END
 
-IDD_DEGREEDIALOG DIALOG 0, 0, 186, 95
-STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_DEGREEDIALOG DIALOGEX 0, 0, 186, 95
+STYLE DS_SETFONT | DS_MODALFRAME | DS_NOIDLEMSG | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Degree"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,129,7,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,129,24,50,14
@@ -118,10 +115,10 @@ BEGIN
     LTEXT           "Degree:",IDC_STATIC,13,50,28,14
 END
 
-IDR_SCALE DIALOG 0, 0, 207, 149
-STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDR_SCALE DIALOGEX 0, 0, 207, 149
+STYLE DS_SETFONT | DS_MODALFRAME | DS_NOIDLEMSG | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Scale"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
     CONTROL         "Per&cent",IDC_RADIOPERCENT,"Button",BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,21,23,62,15
     CONTROL         "Pi&xels",IDC_RADIOPIXELS,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,21,43,38,15
@@ -147,6 +144,17 @@ IDR_PEARLGRID AFX_DIALOG_LAYOUT
 BEGIN
     0
 END
+
+IDR_SCALE AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_DEGREEDIALOG AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -179,7 +187,6 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 142
     END
-
 END
 #endif    // APSTUDIO_INVOKED
 
@@ -239,6 +246,7 @@ BEGIN
     "W",            ID_GOTO_WIDTH,          VIRTKEY, ALT, NOINVERT
 END
 
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // Icon
@@ -247,6 +255,7 @@ END
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDR_MAINFRAME           ICON                    "res\\PearlImage.ico"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //

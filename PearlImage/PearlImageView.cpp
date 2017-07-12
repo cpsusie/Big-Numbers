@@ -26,47 +26,6 @@ CPearlImageView::CPearlImageView() {
   m_printInfo         = NULL;
   m_initialized       = false;
   m_currentEdgeMark   = NULL;
-  m_edgeMark.add(EdgeMark(RIGHTMARK      ));
-  m_edgeMark.add(EdgeMark(BOTTOMMARK     ));
-  m_edgeMark.add(EdgeMark(RIGHTBOTTOMMARK));
-}
-
-static CBrush whiteBrush(RGB(255, 255, 255));
-static CPen   blackPen(PS_SOLID, 1, RGB(0, 0, 0));
-
-int EdgeMark::getCursorId() const {
-  switch(m_type) {
-  case RIGHTMARK      : return OCR_SIZEWE;
-  case BOTTOMMARK     : return OCR_SIZENS;
-  case RIGHTBOTTOMMARK: return OCR_SIZENWSE;
-  default             : return OCR_SIZEALL;
-  }
-}
-
-#define EDGEMARKSIZE 6
-#define EDGEWINSIZE 26
-
-CRect EdgeMark::createRect(const CPoint &p, int size) const {
-  switch(m_type) {
-  case RIGHTMARK      : return CRect(p.x        ,p.y-size/2 , p.x+size  ,p.y+size/2);
-  case BOTTOMMARK     : return CRect(p.x-size/2 ,p.y        , p.x+size/2,p.y+size  );
-  case RIGHTBOTTOMMARK: return CRect(p.x        ,p.y        , p.x+size  ,p.y+size  );
-  default             : return CRect(0,0,0,0);
-  }
-}
-
-CRect EdgeMark::createActiveRect(const CPoint &p) const {
-  return createRect(p,EDGEWINSIZE);
-}
-
-CRect EdgeMark::createVisibleRect(const CPoint &p) const {
-  return createRect(p,EDGEMARKSIZE);
-}
-
-void EdgeMark::setPosition(const CPoint &p) {
-  m_activeRect  = createActiveRect(p);
-  m_visibleRect = createVisibleRect(p);
-  setVisible(true);
 }
 
 CPearlImageView::~CPearlImageView() {
@@ -94,7 +53,6 @@ void CPearlImageView::OnDraw(CDC *pDC) {
                        ,SRCCOPY);
       }
       paintBackgroundAndEdge(*pDC);
-
     } else {
       CSize printSizePix = pr->getSizeInMillimeters() * m_printInfo->m_rectDraw.Size() / getDCSizeInMillimeters(pDC->m_hAttribDC);
       pDC->StretchBlt(0, 0, printSizePix.cx, printSizePix.cy, docDC, 0, 0, docSizePix.cx, docSizePix.cy, SRCCOPY);
@@ -105,56 +63,55 @@ void CPearlImageView::OnDraw(CDC *pDC) {
 }
 
 void CPearlImageView::paintBackgroundAndEdge(CDC &dc) {
+  const CRect clRect = getClientRect(this);
   if(!GetDocument()->hasImage()) {
-    CRect  clRect = getClientRect(this);
     dc.FillSolidRect(&clRect, getBackgroundColor());
   } else {
-    const CSize  docSize            = GetDocument()->getSize();
-    const CPoint cornerMarkPos      = getViewPoint(docSize);
-    const CPoint rightMarkPos       = getViewPoint(CPoint(docSize.cx  , docSize.cy/2));
-    const CPoint bottomMarkPos      = getViewPoint(CPoint(docSize.cx/2, docSize.cy  ));
-    const CPoint topLeft            = getTopLeft();
-    const CRect  clRect             = getClientRect(this);
+    const CPoint cornerMarkPos = getZoomedDocSize();
+    const CPoint rightMarkPos( cornerMarkPos.x  ,cornerMarkPos.y/2);
+    const CPoint bottomMarkPos(cornerMarkPos.x/2,cornerMarkPos.y  );
 
-    int visibleMarkCount = 0;
-    for(size_t i = 0; i < m_edgeMark.size(); i++) {
-      m_edgeMark[i].setVisible(false);
+    m_edgeMark.clear();
+    const CPoint vtl  = getViewTopLeft();
+    const CSize  bckWH = clRect.Size() - cornerMarkPos + vtl;
+    if(bckWH.cx > 0) {   // paint right background
+      dc.FillSolidRect(rightMarkPos.x
+                      ,vtl.y
+                      ,bckWH.cx
+                      ,clRect.bottom
+                      ,getBackgroundColor());
+      m_edgeMark.setPosition(RIGHTMARK,rightMarkPos);
+    }
+    if(bckWH.cy > 0) { // paint lower background
+      dc.FillSolidRect(vtl.x
+                      ,bottomMarkPos.y
+                      ,clRect.right
+                      ,bckWH.cy
+                      ,getBackgroundColor());
+      m_edgeMark.setPosition(BOTTOMMARK,bottomMarkPos);
+    }
+    if(m_edgeMark.getVisibleCount() == 2) { // both right- and bottom-mark are visible => bottomRightMark is visible
+      m_edgeMark.setPosition(RIGHTBOTTOMMARK,cornerMarkPos);
+    }
+    if(m_edgeMark.getVisibleCount() > 0) {
+      m_edgeMark.paintAll(dc);
     }
 
-    if(0 < cornerMarkPos.x && cornerMarkPos.x < clRect.right) {
-      dc.FillSolidRect(cornerMarkPos.x, topLeft.y, clRect.right - cornerMarkPos.x, clRect.bottom, getBackgroundColor());
-      if(clRect.PtInRect(rightMarkPos)) {
-        m_edgeMark[RIGHTMARK].setPosition(rightMarkPos);
-        visibleMarkCount++;
-      }
-    }
-    if(0 < cornerMarkPos.y && cornerMarkPos.y < clRect.bottom) {
-      dc.FillSolidRect(topLeft.x, cornerMarkPos.y, clRect.right - max(0,clRect.right-cornerMarkPos.x), clRect.bottom - cornerMarkPos.y, getBackgroundColor());
-      if(clRect.PtInRect(bottomMarkPos)) {
-        m_edgeMark[BOTTOMMARK].setPosition(bottomMarkPos);
-        visibleMarkCount++;
-      }
-    }
-    if(visibleMarkCount == 2) { // both right- and bottom-mark are visible => bottomRightMark is visible
-      m_edgeMark[RIGHTBOTTOMMARK].setPosition(cornerMarkPos);
-      visibleMarkCount++;
-    }
-    if(visibleMarkCount > 0) {
-      CBrush whiteBrush(WHITE);
-      CPen blackPen;
-      blackPen.CreatePen(PS_SOLID, 1, BLACK);
-      CBrush* pOldBrush = dc.SelectObject(&whiteBrush);
-      CPen  * pOldPen   = dc.SelectObject(&blackPen  );
-      for(size_t i = 0; i < m_edgeMark.size(); i++) {
-        const EdgeMark &m = m_edgeMark[i];
-        if(m.isVisible()) {
-          dc.Rectangle(m.getVisibleRect()-topLeft);
-        }
-      }
-      dc.SelectObject(pOldBrush);
-      dc.SelectObject(pOldPen  );
-    }
+#ifdef __NEVER__
+  debugLog(_T("clRect.size:(%3d,%3d) vtl:(%3d,%3d) em:%s\n")
+          ,clRect.Size().cx, clRect.Size().cy
+          ,vtl.x,vtl.y
+          ,m_edgeMark.toString().cstr()
+          );
+#endif // _DEBUG
+
   }
+/*
+  dc.FillSolidRect(0,0,5,5,BLACK);
+  dc.FillSolidRect(clRect.right-5,0,5,5,RED);
+  dc.FillSolidRect(clRect.right-5,clRect.bottom-5,5,5,GREEN);
+  dc.FillSolidRect(0,clRect.bottom-5,5,5,BLUE);
+*/
 }
 
 const PixRect *CPearlImageView::getImage() {
@@ -211,7 +168,6 @@ CPearlImageDoc* CPearlImageView::GetDocument() {
 }
 #endif //_DEBUG
 
-
 void CPearlImageView::OnInitialUpdate() {
   __super::OnInitialUpdate();
   getMainFrame()->setCurrentZoomFactor(ID_OPTIONS_ZOOM_X1);
@@ -220,15 +176,19 @@ void CPearlImageView::OnInitialUpdate() {
 }
 
 void CPearlImageView::setScrollRange() {
-  CRect clientRect;
-  GetClientRect(&clientRect);
-  CSize clientSize = clientRect.Size();
-
-  CSize imageSize = GetDocument()->getSize();
+  const CSize clientSize = getClientRect(this).Size();
+  CSize       imageSize  = GetDocument()->getSize();
   imageSize.cx *= m_currentZoomFactor;
   imageSize.cy *= m_currentZoomFactor;
+  imageSize.cx += EDGEMARKSIZE;
+  imageSize.cy += EDGEMARKSIZE;
 
   SetScrollSizes(MM_TEXT,imageSize,clientSize,CSize(20,20));
+  m_maxScroll = CPoint(max(0,imageSize.cx-clientSize.cx),max(0,imageSize.cy-clientSize.cy));
+}
+
+void CPearlImageView::setCursor(int id) {
+  setWindowCursor(this,MAKEINTRESOURCE(id));
 }
 
 void CPearlImageView::OnSize(UINT nType, int cx, int cy) {
@@ -240,22 +200,13 @@ void CPearlImageView::OnSize(UINT nType, int cx, int cy) {
   }
 }
 
-CRect CPearlImageView::getDocumentRect() const {
-  return CRect(ORIGIN,GetDocument()->getSize());
+CPoint CPearlImageView::docToView(const CPoint &docPoint) const {
+  return CPoint(docPoint.x * m_currentZoomFactor, docPoint.y * m_currentZoomFactor) - getViewTopLeft();
 }
 
-CRect CPearlImageView::getViewRect() const {
-  return CRect(ORIGIN,getViewPoint(GetDocument()->getSize()));
-}
-
-CPoint CPearlImageView::getViewPoint(const CPoint &docPoint) const {
-  const CPoint topLeft = getTopLeft();
-  return CPoint(docPoint.x * m_currentZoomFactor - topLeft.x, docPoint.y * m_currentZoomFactor - topLeft.y);
-}
-
-CPoint CPearlImageView::getDocPoint(const CPoint &viewPoint) const {
-  const CPoint topLeft = getTopLeft();
-  return CPoint((viewPoint.x+topLeft.x)/m_currentZoomFactor, (viewPoint.y+topLeft.y)/m_currentZoomFactor);
+CPoint CPearlImageView::viewToDoc(const CPoint &viewPoint) const {
+  const CPoint vtl = getViewTopLeft();
+  return CPoint((viewPoint.x+vtl.x)/m_currentZoomFactor, (viewPoint.y+vtl.y)/m_currentZoomFactor);
 }
 
 bool CPearlImageView::isMouseOnDocument() const {
@@ -263,47 +214,38 @@ bool CPearlImageView::isMouseOnDocument() const {
 }
 
 void CPearlImageView::OnLButtonDown(UINT nFlags, CPoint point) {
-  m_lastPoint = getDocPoint(point);
+  m_lastPoint = viewToDoc(point);
   __super::OnLButtonDown(nFlags, point);
 }
 
 void CPearlImageView::OnLButtonDblClk(UINT nFlags, CPoint point) {
-  m_lastPoint = getDocPoint(point);
+  m_lastPoint = viewToDoc(point);
   __super::OnLButtonDblClk(nFlags, point);
 }
 
 void CPearlImageView::OnLButtonUp(UINT nFlags, CPoint point) {
-  m_lastPoint = getDocPoint(point);
+  m_lastPoint = viewToDoc(point);
   __super::OnLButtonUp(nFlags, point);
 }
 
 void CPearlImageView::OnMouseMove(UINT nFlags, CPoint point) {
-  const CPoint newPoint = getDocPoint(point);
+  const CPoint newPoint = viewToDoc(point);
   if(newPoint != m_lastPoint) {
     m_lastPoint = newPoint;
   }
   __super::OnMouseMove(nFlags, point);
 }
 
-EdgeMark *CPearlImageView::findEdgeMark(const CPoint &point) {
-  for(int i = 0; i < m_edgeMark.size(); i++) {
-    EdgeMark &m = m_edgeMark[i];
-    if(m.isVisible() && m.getActiveRect().PtInRect(point)) {
-      return &m;
-    }
-  }
-  return NULL;
-}
-
 BOOL CPearlImageView::PreTranslateMessage(MSG *pMsg) {
   CPoint p = pMsg->pt;
   ScreenToClient(&p);
-  EdgeMark *m = findEdgeMark(p);
+  const EdgeMark *mm       = findEdgeMark(p+getViewTopLeft());
+  const CPoint    docPoint = viewToDoc(p);
   switch(pMsg->message) {
   case WM_LBUTTONDOWN:
-    if(m != NULL) {
-      m_lastDragRect = NULL;
-      m_currentEdgeMark = m;
+    if(mm != NULL) {
+      m_lastDragRect    = NULL;
+      m_currentEdgeMark = mm;
       return TRUE;
     } else if(!getViewRect().PtInRect(p)) {
       return TRUE;
@@ -311,12 +253,12 @@ BOOL CPearlImageView::PreTranslateMessage(MSG *pMsg) {
     break;
   case WM_LBUTTONUP  :
     if(m_currentEdgeMark != NULL) {
-      resizeDocument(p);
+      resizeDocument();
       m_currentEdgeMark = NULL;
-      if(m != NULL) {
-        setWindowCursor(this,MAKEINTRESOURCE(m->getCursorId()));
+      if(mm != NULL) {
+        setCursor(mm->getCursorId());
       } else {
-        setWindowCursor(this,MAKEINTRESOURCE(OCR_NORMAL));
+        setCursor(OCR_NORMAL);
       }
       repaint();
       return TRUE;
@@ -327,40 +269,43 @@ BOOL CPearlImageView::PreTranslateMessage(MSG *pMsg) {
 
   case WM_MOUSEMOVE  :
     if(m_currentEdgeMark != NULL) {
-      paintResizingFrame(p);
+      paintResizingFrame(docPoint);
       return TRUE;
-    } else if(m != NULL) {
-      setWindowCursor(this,MAKEINTRESOURCE(m->getCursorId()));
+    } else if(mm != NULL) {
+      setCursor(mm->getCursorId());
       return TRUE;
     } else {
-      setWindowCursor(this,MAKEINTRESOURCE(OCR_NORMAL));
+      setCursor(OCR_NORMAL);
     }
     break;
   }
   return __super::PreTranslateMessage(pMsg);
 }
 
-void CPearlImageView::resizeDocument(const CPoint &p) {
+void CPearlImageView::paintResizingFrame(const CPoint &docp) {
+  const CPoint lrCorner = docToView(getDocSize());
+  const CPoint vp       = docToView(docp);
+  CRect        newRect;
+  switch(m_currentEdgeMark->getType()) {
+  case RIGHTMARK      : newRect = CRect(0,0,vp.x      , lrCorner.y); break;
+  case BOTTOMMARK     : newRect = CRect(0,0,lrCorner.x, vp.y      ); break;
+  case RIGHTBOTTOMMARK: newRect = CRect(0,0,vp.x      , vp.y      ); break;
+  }
+
+  CClientDC dc(this);
+  OnPrepareDC(&dc);
+  dc.DrawDragRect(&newRect,CSize(1,1),m_lastDragRect,CSize(1,1));
+  m_dragRect     = newRect;
+  m_lastDragRect = &m_dragRect;
+}
+
+void CPearlImageView::resizeDocument() {
   if(m_lastDragRect != NULL) {
-    CSize newSize = m_lastDragRect->Size();
-    newSize.cx /= m_currentZoomFactor;
-    newSize.cy /= m_currentZoomFactor;
+    const CPoint vp      = m_lastDragRect->Size();
+    const CSize  newSize = viewToDoc(vp);
     if(newSize.cx != 0 && newSize.cy != 0) {
       GetDocument()->setSize(newSize);
       getMainFrame()->updateTitle();
     }
   }
-}
-
-void CPearlImageView::paintResizingFrame(const CPoint &p) {
-  CRect newRect;
-  switch(m_currentEdgeMark->getType()) {
-  case RIGHTMARK      : newRect = CRect(0,0,p.x                                     , getViewPoint(GetDocument()->getSize()).y); break;
-  case BOTTOMMARK     : newRect = CRect(0,0,getViewPoint(GetDocument()->getSize()).x, p.y                                     ); break;
-  case RIGHTBOTTOMMARK: newRect = CRect(0,0,p.x                                     , p.y                                     ); break;
-  }
-  CClientDC dc(this);
-  dc.DrawDragRect(&newRect,CSize(1,1),m_lastDragRect,CSize(1,1));
-  m_dragRect = newRect;
-  m_lastDragRect = &m_dragRect;
 }

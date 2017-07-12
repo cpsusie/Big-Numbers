@@ -22,7 +22,9 @@ private:
   void   saveDocState();
   void   ajourEnabling();
   void   scroll(int dx, int dy);
-  CPoint getMaxScroll();
+  inline CPoint getMaxScroll() {
+    return getView()->getMaxScroll();
+  }
   void   applyFilter(PixRectFilter &filter);
   void   applyMirror(bool vertical);
   void   createGridDlg();
