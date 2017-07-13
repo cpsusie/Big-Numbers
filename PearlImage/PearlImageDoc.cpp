@@ -30,7 +30,7 @@ BOOL CPearlImageDoc::OnOpenDocument(LPCTSTR name) {
   PixRect *image = PixRect::load(theApp.m_device, ByteInputFile(name));
 
   resetHistory();
-  m_gridParam.m_cellCount = m_gridParam.reset().findCellCount(image->getSize());
+  m_gridParam.reset();
   setImage(image);
   FileNameSplitter info(name);
   SetTitle(info.getFileName().cstr());
@@ -85,12 +85,19 @@ BOOL CPearlImageDoc::OnSaveDocument(LPCTSTR name) {
 
 void CPearlImageDoc::setImage(PixRect *image) {
   if(image == m_image.m_pr) return;
+  const CSize oldSize = getSize();
   if(image == NULL) {
     m_image.clear();
   } else if (!m_image.hasImage()) {
     m_image.set(image);
   } else if(*image != *m_image.m_pr) {  // both are != NULL
     m_image.set(image);
+  }
+  if(hasImage()) {
+    const CSize newSize = getSize();
+    if(newSize != oldSize) {
+      m_gridParam.m_cellCount = m_gridParam.findCellCount(newSize);
+    }
   }
 }
 
