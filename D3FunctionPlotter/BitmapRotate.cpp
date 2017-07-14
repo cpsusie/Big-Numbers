@@ -31,13 +31,13 @@ D3DXVECTOR2 operator*(const D3DXMATRIX &m, const D3DXVECTOR2 &v) {
   return D3DXVECTOR2(v4.x, v4.y);
 }
 
-static CSize getSurfaceSize(LPDIRECT3DSURFACE9 surface) {
+static CSize getSurfaceSize(LPDIRECT3DSURFACE surface) {
   D3DSURFACE_DESC desc;
   V(surface->GetDesc(&desc));
   return CSize(desc.Width, desc.Height);
 }
 
-static CSize getTextureSize(LPDIRECT3DTEXTURE9 texture) {
+static CSize getTextureSize(LPDIRECT3DTEXTURE texture) {
   LPDIRECT3DSURFACE9 surface;
   V(texture->GetSurfaceLevel(0, &surface));
   const CSize sz = getSurfaceSize(surface);
@@ -78,7 +78,6 @@ static void alphaBlend(LPDIRECT3DDEVICE device, LPDIRECT3DTEXTURE texture, const
   const CSize  size        = dstRect.Size();
   const CSize  textureSize = getTextureSize(texture);
 
-
 /*
   debugLog("TextureSize:(%3d,%3d), DstRect:(%3d,%3d,%3d,%3d), Size:(%3d,%3d)\n"
           ,textureSize.cx, textureSize.cy
@@ -114,9 +113,8 @@ static void render(LPDIRECT3DDEVICE device, LPDIRECT3DTEXTURE texture, const CSi
   unsigned long clearColor = 0xffffffff;
   V(device->Clear(0, NULL, D3DCLEAR_TARGET, clearColor, 1.0f, 0));
 
-  LPDIRECT3DSURFACE9 renderTarget;
+  LPDIRECT3DSURFACE renderTarget;
   V(device->GetRenderTarget(0, &renderTarget));
-
 
   CPoint leftTop(0,0);
   set2DProjection(device, getSurfaceSize(renderTarget));
