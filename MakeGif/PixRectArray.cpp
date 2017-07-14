@@ -310,7 +310,7 @@ void GifPixRect::copyRasterBits(GifPixelType *rasterBits, const GifColorType *co
       pa->setPixel(p, D3DCOLOR_ARGB(c.Red, c.Green, c.Blue, 0xff));
     }
   }
-  delete pa;
+  releasePixelAccessor();
 }
 
 GraphicsControlBlock GifPixRect::getDefaultGCB() { // static

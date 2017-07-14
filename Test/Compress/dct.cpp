@@ -288,7 +288,7 @@ void DCT::writeImage(PixRect *p, ByteOutputStream &output, BYTE quality) {
       }
     }
   }
-  delete pa;
+  p->releasePixelAccessor();
   outputCode(out,1);
   m_compressedSize = (int)counter.getCount();
 }
@@ -327,7 +327,7 @@ PixRect *DCT::readImage(ByteInputStream &input) {
       }
     }
   }
-  delete pa;
+  result->releasePixelAccessor();
   m_compressedSize = (int)counter.getCount();
   return result;
 }

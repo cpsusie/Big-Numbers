@@ -188,7 +188,7 @@ void CtestlockrectDlg::OnClickedButtonstart() {
               }
             }
             log(_T("success. type=%s, pool=%s, flags=[%s]"), tn.name, pn.name, fs.cstr());
-            delete pa;
+            pr.releasePixelAccessor();
           }
           catch (...) {
           }

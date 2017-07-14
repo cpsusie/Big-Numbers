@@ -82,13 +82,14 @@ SavedImageArray::SavedImageArray(const PixRectArray &prArray, int maxColorCount)
   if(maxColorCount > 256) {
     throwInvalidArgumentException(_T("SavedImageArray"), _T("maxColorCount=%d. max=256"), maxColorCount);
   }
-  PixelAccessor *pa          = NULL;
-  BYTE          *bigColorMap = NULL;
+  const GifPixRect *pr          = NULL;
+  PixelAccessor    *pa          = NULL;
+  BYTE             *bigColorMap = NULL;
   try {
     BitSet usedColors(MAXCOLORCOUNT);
     for(size_t i = 0; i < prArray.size(); i++) {
-      const GifPixRect *pr = prArray[i];
-      pa = ((GifPixRect*)pr)->getPixelAccessor();
+      pr = prArray[i];
+      pa = pr->getPixelAccessor();
       const int w = pr->getWidth();
       const int h = pr->getHeight();
       for(CPoint p(0,0); p.y < h; p.y++) {
@@ -96,7 +97,7 @@ SavedImageArray::SavedImageArray(const PixRectArray &prArray, int maxColorCount)
           usedColors.add(pa->getPixel(p) & 0xffffff);
         }
       }
-      delete pa; pa = NULL;
+      pr->releasePixelAccessor(); pa = NULL;
     }
     CompactArray<D3DCOLOR> allColors;
     for(Iterator<size_t> it = usedColors.getIterator(); it.hasNext();) {
@@ -116,14 +117,14 @@ SavedImageArray::SavedImageArray(const PixRectArray &prArray, int maxColorCount)
     }
 
     for(size_t i = 0; i < prArray.size(); i++) {
-      const GifPixRect *pr = prArray[i];
+      pr = prArray[i];
       const int w = pr->getWidth();
       const int h = pr->getHeight();
 
       SavedImage *image = allocateSavedImage(w, h, colorCount);
       add(image);
 
-      pa = ((GifPixRect*)pr)->getPixelAccessor();
+      pa = pr->getPixelAccessor();
       GifPixelType  *gifPixel = image->RasterBits;
       for(CPoint p(0,0); p.y < h; p.y++) {
         for(p.x = 0; p.x < w; p.x++) {
@@ -131,7 +132,7 @@ SavedImageArray::SavedImageArray(const PixRectArray &prArray, int maxColorCount)
           *(gifPixel++) = bigColorMap[srcPixel];
         }
       }
-      delete pa; pa = NULL;
+      pr->releasePixelAccessor(); pa = NULL;
 
       CompactArray<D3DCOLOR> newColors = pointArrayToColorArray(mc);
       GifColorType          *gifColor  = image->ImageDesc.ColorMap->Colors;
@@ -147,7 +148,7 @@ SavedImageArray::SavedImageArray(const PixRectArray &prArray, int maxColorCount)
     }
     delete[] bigColorMap; bigColorMap = NULL;
   } catch(...) {
-    if(pa)          { delete pa;          pa          = NULL; }
+    if(pa)          { pr->releasePixelAccessor(); pa  = NULL; }
     if(bigColorMap) { delete bigColorMap; bigColorMap = NULL; }
     clear();
     throw;

@@ -29,7 +29,7 @@ static void createFullColorDiagram(PixRect &image, PearlDiagram &diagram) {
       cm(p.y,p.x) = index;
     }
   }
-  delete pa;
+  image.releasePixelAccessor();
 }
 
 static void reduceColors(PixRect &image, int colorCount, PearlDiagram *diagram) {
@@ -87,7 +87,7 @@ static void reduceColors(PixRect &image, int colorCount, PearlDiagram *diagram) 
       }
     }
   }
-  delete pa;
+  image.releasePixelAccessor();
 }
 
 PixRect *GridParameters::calculateImage(const PixRect *image, PearlDiagram *diagram) const {

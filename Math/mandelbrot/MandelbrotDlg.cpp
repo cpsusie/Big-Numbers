@@ -1048,7 +1048,7 @@ PixelAccessor *CMandelbrotDlg::getPixelAccessor() {
 
 void CMandelbrotDlg::clearPixelAccessor() {
   if(m_pixelAccessor) {
-    delete m_pixelAccessor;
+    m_pixRect->releasePixelAccessor();
     m_pixelAccessor = NULL;
     DLOG((_T("pixRect unlocked\n")));
   }
