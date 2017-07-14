@@ -194,7 +194,7 @@ void Rational::init(const INT64 &numerator, const INT64 &denominator) {
     m_numerator   = 0;
     m_denominator = 1;
   } else {
-    const UINT64 gcd = findGCD(UINT64(abs(numerator)),UINT64(abs(denominator)));
+    const INT64 gcd = findGCD(UINT64(abs(numerator)),UINT64(abs(denominator)));
     m_numerator   = numerator   / gcd;
     m_denominator = denominator / gcd;
     if(denominator < 0) { // Negative numbers are represented with negative numerator and positive denominator
