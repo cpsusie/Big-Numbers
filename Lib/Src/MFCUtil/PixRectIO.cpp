@@ -41,6 +41,7 @@ PixRect *PixRect::load(PixRectDevice &device, ByteInputStream &in) { // static
     CPicture picture; // handles BMP,JPEG,TIFF,PNG,GIF,ICO,,,...
     picture.load(in);
     result = new PixRect(device, PIXRECT_PLAINSURFACE, picture.getWidth(), picture.getHeight());
+    TRACE_NEW(result);
     HDC hdc = result->getDC();
     picture.show(hdc);
     result->releaseDC(hdc);
@@ -51,9 +52,7 @@ PixRect *PixRect::load(PixRectDevice &device, ByteInputStream &in) { // static
       result->releaseDC(hdc);
       hdc = NULL;
     }
-    if(result) {
-      delete result;
-    }
+    SAFEDELETE(result);
     throw;
   }
 }

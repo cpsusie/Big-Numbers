@@ -328,6 +328,7 @@
     <ClCompile Include="PixRect.cpp" />
     <ClCompile Include="PixRectAverageColor.cpp" />
     <ClCompile Include="PixRectBlend.cpp" />
+    <ClCompile Include="PixRectDevice.cpp" />
     <ClCompile Include="PixRectError.cpp" />
     <ClCompile Include="PixRectFill.cpp" />
     <ClCompile Include="PixRectFilter.cpp" />

@@ -8,7 +8,6 @@
 #include "ShapeFunctions.h"
 #include "ColorSpace.h"
 
-class PixRect;
 class PixRectFont;
 class GlyphCurveData;
 
@@ -30,6 +29,7 @@ String get3DErrorMsg(HRESULT hr);
 #endif
 
 class PixelAccessor {
+  friend class PixRect;
 protected:
   PixRect          &m_pixRect;
   D3DLOCKED_RECT    m_lockedRect;
@@ -44,11 +44,9 @@ protected:
     }
   }
 #endif
-public:
-  PixelAccessor(PixRect *pixRect, DWORD flags = 0);
+  PixelAccessor(PixRect *pixRect, DWORD flags);
   virtual ~PixelAccessor();
-  static PixelAccessor *createPixelAccessor(PixRect *pixRect, DWORD flags = 0);
-
+public:
   virtual void     setPixel(UINT x, UINT y, D3DCOLOR color)  = 0;
   virtual D3DCOLOR getPixel(UINT x, UINT y)                  = 0;
   virtual void     setPixel(const CPoint &p, D3DCOLOR color) = 0;
@@ -88,6 +86,7 @@ private:
 protected:
   PixRect       *m_pixRect;
   PixelAccessor *m_pixelAccessor;
+  void releasePixelAccessor();
 public:
   PixRectOperator(PixRect *pr = NULL);
   virtual ~PixRectOperator();
@@ -100,11 +99,14 @@ private:
 protected:
   PixRect       *m_result;
   PixelAccessor *m_resultPixelAccessor;
-  friend class PixRect;
+  void releasePixelAccessor();
 public:
   PixRectFilter() { init(); }
-  void setPixRect(PixRect *pixRect); // set m_result = m_pixRect = pixRect
-  virtual CRect getRect() const; // returns default CRect(0, 0, m_pixRrect->getWidth(), m_pixRect->getHeight())
+  // if(pr == NULL && m_result!=m_pixrect) => releasePixelAcc(); rop(m_pixRect,m_result); delete m_result;
+  // After that call __super::setPixRect(pr); m_result = m_pixRect, m_resultPA = m_pa;
+  void setPixRect(PixRect *pr);
+  // returns default CRect(0, 0, m_pixRrect->getWidth(), m_pixRect->getHeight())
+  virtual CRect getRect() const; 
 };
 
 class SetColor : public PixRectOperator {
@@ -120,7 +122,7 @@ class SetAlpha : public PixRectOperator {
 private:
   const D3DCOLOR m_alphaMask;
 public:
-  SetAlpha(unsigned char alpha, PixRect *pr = NULL) : m_alphaMask(D3DCOLOR_ARGB(alpha,0,0,0)), PixRectOperator(pr) {
+  SetAlpha(BYTE alpha, PixRect *pr = NULL) : m_alphaMask(D3DCOLOR_ARGB(alpha,0,0,0)), PixRectOperator(pr) {
   }
   void apply(const CPoint &p);
 };
@@ -214,11 +216,11 @@ public:
 
 class MyPolygon : public PointArray {
 public:
-  void move(const CPoint &dp);
+  void  move(const CPoint &dp);
   CRect getBoundsRect() const;
-  int contains(const CPoint &p) const; // 1=inside, -1=outside, 0=edge
-  void applyToEdge(PointOperator &f, bool closingEdge = true) const;
-  bool add(const CPoint &p);
+  int   contains(const CPoint &p) const; // 1=inside, -1=outside, 0=edge
+  void  applyToEdge(PointOperator &f, bool closingEdge = true) const;
+  bool  add(const CPoint &p);
 };
 
 /*
@@ -266,8 +268,12 @@ public:
   LPDIRECT3DTEXTURE createTexture(              const CSize &size, D3DFORMAT format, D3DPOOL pool);
   LPDIRECT3DSURFACE createRenderTarget(         const CSize &size, D3DFORMAT format = D3DFMT_FORCE_DWORD, bool    lockable = false); // always in D3DPOOL_DEFAULT
   LPDIRECT3DSURFACE createOffscreenPlainSurface(const CSize &size, D3DFORMAT format, D3DPOOL pool);
-  void releaseTexture(LPDIRECT3DTEXTURE texture);
-  void releaseSurface(LPDIRECT3DSURFACE surface, PixRectType type);
+  inline void releaseTexture(LPDIRECT3DTEXTURE &texture) {
+    SAFERELEASE(texture);
+  }
+  inline void releaseSurface(LPDIRECT3DSURFACE &surface, PixRectType type) {
+    SAFERELEASE(surface)
+  }
 
   inline D3DFORMAT getDefaultPixelFormat() const {
     return m_defaultPixelFormat;
@@ -306,6 +312,8 @@ private:
   PixRectDevice            &m_device;
   PixRectType               m_type;
   D3DSURFACE_DESC           m_desc;
+  mutable PixelAccessor    *m_pixelAccessor;
+  mutable int               m_paRefCount;
   mutable LPDIRECT3DSURFACE m_DCSurface; // only valid when we have an outstanding DC
 
   union {
@@ -315,6 +323,8 @@ private:
 
   inline void initSurfaces() {
     m_surface = m_DCSurface = NULL;
+    m_pixelAccessor = NULL;
+    m_paRefCount = 0;
   }
   void create(PixRectType type, const CSize &sz, D3DFORMAT pixelFormat, D3DPOOL pool);
   void destroy();
@@ -324,6 +334,8 @@ private:
 
   void destroyTexture();
   void destroySurface();
+  PixelAccessor *createPixelAccessor(DWORD flags = 0) const;
+  void destroyPixelAccessor() const;
   void drawEllipsePart(const CPoint &start, const CPoint &end, CPoint &center, D3DCOLOR color, bool invert);
   void fill(const CPoint &p, D3DCOLOR color, ColorComparator &cmp);
   void init(HBITMAP src, D3DFORMAT pixelFormat, D3DPOOL pool);
@@ -357,10 +369,16 @@ public:
   LPDIRECT3DSURFACE &getPlainSurface();
 
   //  static DDCAPS getEmulatorCaps();
-  inline PixelAccessor *getPixelAccessor(DWORD flags = 0) {
-    return PixelAccessor::createPixelAccessor(this, flags);
+  inline PixelAccessor *getPixelAccessor(DWORD flags = 0) const {
+    if(m_paRefCount++ == 0) {
+      m_pixelAccessor = createPixelAccessor(flags);
+    }
+    return m_pixelAccessor;
   }
-
+  inline void releasePixelAccessor() const {
+    assert(m_paRefCount > 0);
+    if(--m_paRefCount==0) destroyPixelAccessor();
+  }
   inline PixRectDevice &getDevice() const {
     return m_device;
   }

@@ -17,20 +17,6 @@ PixelAccessor::~PixelAccessor() {
   m_pixRect.unlockRect();
 }
 
-PixelAccessor *PixelAccessor::createPixelAccessor(PixRect *pixRect, DWORD flags) {
-  DEFINEMETHODNAME;
-  switch(pixRect->getPixelFormat()) {
-    //  case 8 : return new BytePixelAccessor(pixRect);
-    //  case 16: return new WordPixelAccessor(pixRect);
-  case D3DFMT_A8R8G8B8:
-  case D3DFMT_X8R8G8B8:
-    return new DWordPixelAccessor(pixRect, flags);
-  default:
-    throwException(_T("%s:Unknown pixel format:%d. Must be 8, 16 or 32"),method, pixRect->getPixelFormat());
-    return NULL;
-  }
-}
-
 void PixelAccessor::fill(const CPoint &p, D3DCOLOR color) {
   fill(p, color, SimpleColorComparator());
 }

@@ -125,13 +125,9 @@ PixRect &PixRect::apply(PixRectOperator &op) {
 PixRect &PixRect::apply(PixRectFilter &filter) {
   filter.setPixRect(this);
   applyToFullRectangle(filter.getRect(),filter);
-  if(filter.m_result != this) {
-    rop(0,0,getWidth(),getHeight(),SRCCOPY,filter.m_result,0,0);
-  }
   filter.setPixRect(NULL);
   return *this;
 }
-
 
 void PixRect::fillEllipse(const CRect &rect, D3DCOLOR color, bool invert) {
   CRect r = rect;
@@ -140,7 +136,9 @@ void PixRect::fillEllipse(const CRect &rect, D3DCOLOR color, bool invert) {
   }
   r -= rect.TopLeft();
   PixRect *psrc  = new PixRect(m_device, getType(), r.Size(), getPool(), getPixelFormat());
+  TRACE_NEW(psrc);
   PixRect *pmask = new PixRect(m_device, getType(), r.Size(), getPool(), getPixelFormat());
+  TRACE_NEW(pmask);
   psrc->fillRect(0,0,r.Width(),r.Height(),color);
   pmask->fillRect(0,0,r.Width(),r.Height(),D3D_BLACK);  // set mask to black
   pmask->ellipse(r,D3D_WHITE);                          // draw white ellipse on mask
@@ -150,6 +148,6 @@ void PixRect::fillEllipse(const CRect &rect, D3DCOLOR color, bool invert) {
 //  mask(rect.left,rect.top,rect.Width(),rect.Height(), MAKEROP4(SRCCOPY,DSTINVERT), psrc, 0,0, pmask);
   mask(rect.left,rect.top,rect.Width(),rect.Height(), SRCCOPY, psrc, 0,0, pmask);
 
-  delete pmask;
-  delete psrc;
+  SAFEDELETE(pmask);
+  SAFEDELETE(psrc);
 }

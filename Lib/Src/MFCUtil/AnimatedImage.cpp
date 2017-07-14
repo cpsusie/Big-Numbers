@@ -77,8 +77,8 @@ void AnimatedImage::load(CWnd *parent, ByteInputStream &in) {
 }
 
 void AnimatedImage::extractGifData(const GifFileType *gifFile) {
-  PixelAccessor *pa = NULL;
-
+  PixelAccessor *pa    = NULL;
+  GifFrame      *frame = NULL;
   try {
     m_size.cx = gifFile->SWidth;
     m_size.cy = gifFile->SHeight;
@@ -106,7 +106,7 @@ void AnimatedImage::extractGifData(const GifFileType *gifFile) {
     for(int i = 0; i < imageCount; i++) {
       SavedImage &image = gifFile->SavedImages[i];
       m_frameTable.add(GifFrame());
-      GifFrame &frame = m_frameTable.last();
+      frame = &m_frameTable.last();
 
       String imageComment;
       for(int k = 0; k < image.ExtensionBlockCount; k++) {
@@ -125,36 +125,36 @@ void AnimatedImage::extractGifData(const GifFileType *gifFile) {
         m_comment += _T("\n") + imageComment;
       }
 
-      frame.m_owner        = this;
-      frame.m_rect.left    = image.ImageDesc.Left;
-      frame.m_rect.top     = image.ImageDesc.Top;
-      frame.m_rect.right   = image.ImageDesc.Left + image.ImageDesc.Width;
-      frame.m_rect.bottom  = image.ImageDesc.Top  + image.ImageDesc.Height;
-      frame.m_srcRect      = CRect(0,0, image.ImageDesc.Width, image.ImageDesc.Height);
+      frame->m_owner        = this;
+      frame->m_rect.left    = image.ImageDesc.Left;
+      frame->m_rect.top     = image.ImageDesc.Top;
+      frame->m_rect.right   = image.ImageDesc.Left + image.ImageDesc.Width;
+      frame->m_rect.bottom  = image.ImageDesc.Top  + image.ImageDesc.Height;
+      frame->m_srcRect      = CRect(0,0, image.ImageDesc.Width, image.ImageDesc.Height);
 
       int transparentColor = NO_TRANSPARENT_COLOR;
 
       GraphicsControlBlock gcb;
       if(DGifSavedExtensionToGCB((GifFileType*)gifFile, i, &gcb) == GIF_OK) {
-        frame.m_disposalMode = gcb.DisposalMode;
-        frame.m_delayTime    = max(60,10*gcb.DelayTime);
+        frame->m_disposalMode = gcb.DisposalMode;
+        frame->m_delayTime    = max(60,10*gcb.DelayTime);
         if((transparentColor = gcb.TransparentColor) != NO_TRANSPARENT_COLOR) {
-          frame.m_useTransparency = true;
+          frame->m_useTransparency = true;
         }
       }
 
-      const CSize sz = frame.m_rect.Size();
-      frame.m_pr = new PixRect(m_device, PIXRECT_TEXTURE, sz, D3DPOOL_SYSTEMMEM, D3DFMT_A8R8G8B8);
+      const CSize sz = frame->m_rect.Size();
+      frame->m_pr = new PixRect(m_device, PIXRECT_TEXTURE, sz, D3DPOOL_SYSTEMMEM, D3DFMT_A8R8G8B8);
 
       const ColorMapObject *colorMap = image.ImageDesc.ColorMap ? image.ImageDesc.ColorMap : gfColorMap;
       const GifColorType   *colors   = colorMap->Colors;
       const GifPixelType   *pixelp   = image.RasterBits;
 
-      pa = frame.m_pr->getPixelAccessor(0 /*D3DLOCK_NOSYSLOCK | D3DLOCK_NO_DIRTY_UPDATE | D3DLOCK_NOOVERWRITE*/);
+      pa = frame->m_pr->getPixelAccessor(0 /*D3DLOCK_NOSYSLOCK | D3DLOCK_NO_DIRTY_UPDATE | D3DLOCK_NOOVERWRITE*/);
       for(CPoint p(0,0); p.y < sz.cy; p.y++) {
         for(p.x = 0; p.x < sz.cx; p.x++) {
           const int entry = *(pixelp++);
-          if((entry == transparentColor) && frame.m_useTransparency) {
+          if((entry == transparentColor) && frame->m_useTransparency) {
             pa->setPixel(p, D3DCOLOR_RGBA(0,0,0,0));
           } else {
             const GifColorType &mapEntry = colors[entry];
@@ -162,13 +162,13 @@ void AnimatedImage::extractGifData(const GifFileType *gifFile) {
           }
         }
       }
-      delete pa;
+      frame->m_pr->releasePixelAccessor();
       pa = NULL;
 //      frame.m_pr->moveToPool(D3DPOOL_DEFAULT);
     }
   } catch(...) {
     if(pa) {
-      delete pa;
+      frame->m_pr->releasePixelAccessor();
     }
     unload();
     throw;

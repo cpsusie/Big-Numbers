@@ -4,14 +4,14 @@
 void PixRect::fill(const CPoint &p, D3DCOLOR color, ColorComparator &cmp) {
   PixelAccessor *pa = getPixelAccessor();
   pa->fill(p, color, cmp);
-  delete pa;
+  releasePixelAccessor();
 }
 
 void PixRect::fill(const CPoint &p, D3DCOLOR color) {
   fill(p,color,SimpleColorComparator());
 }
 
-void PixRect::fillTransparent(const CPoint &p, unsigned char alpha) { // alpha = 0 => opaque, 255 = transparent
+void PixRect::fillTransparent(const CPoint &p, BYTE alpha) { // alpha = 0 => opaque, 255 = transparent
   if(!contains(p)) {
     return;
   }
@@ -36,9 +36,9 @@ void PixRect::fillTransparent(const CPoint &p, unsigned char alpha) { // alpha =
       }
     }
   }
-  delete pa;
-  delete cpa;
-  delete copy;
+  releasePixelAccessor();
+  copy->releasePixelAccessor();
+  SAFEDELETE(copy);
 }
 
 class ApproximateColorComparator : public ColorComparator {

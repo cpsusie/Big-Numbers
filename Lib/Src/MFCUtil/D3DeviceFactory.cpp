@@ -10,13 +10,11 @@ void D3DeviceFactory::initDirect3D() { // static
     Message(_T("%s"), msg);
     throwException(_T("%s"), msg);
   }
+  TRACE_CREATE(s_direct3D);
 }
 
 D3DeviceFactory::~D3DeviceFactory() {
-  if(s_direct3D != NULL) {
-    s_direct3D->Release();
-    s_direct3D = NULL;
-  }
+  SAFERELEASE(s_direct3D);
 }
 
 static D3DeviceFactory deviceFactory;
@@ -40,6 +38,8 @@ LPDIRECT3DDEVICE D3DeviceFactory::createDevice(HWND hwnd, D3DPRESENT_PARAMETERS 
                                         ,param
                                         ,NULL
                                         ,&device));
+  TRACE_CREATE(device);
+
   return device;
 }
 

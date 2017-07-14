@@ -58,5 +58,5 @@ void PixRect::preMultiplyAlpha() {
       }
     }
   }
-  delete pa;
+  releasePixelAccessor();
 }

@@ -34,6 +34,7 @@ PixRect *PixRect::scaleImage(const PixRect *src, const ScaleParameters &param) {
     return src->clone(true);
   } else {
     PixRect *result = new PixRect(src->getDevice(), src->getType(), resultRect.Size(), src->getPool(), src->getPixelFormat());
+    TRACE_NEW(result);
     HDC dc = result->getDC();
     stretchBlt(dc, resultRect, SRCCOPY, src, src->getRect());
     result->releaseDC(dc);

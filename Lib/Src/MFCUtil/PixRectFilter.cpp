@@ -23,11 +23,8 @@ SobelFilter::SobelFilter() {
 }
 
 void SobelFilter::setPixRect(PixRect *src) {
-  PixRectOperator::setPixRect(src);
-  if(src == NULL) {
-    delete m_resultPixelAccessor;
-    delete m_result;
-  } else {
+  __super::setPixRect(src);
+  if(src != NULL) {
     m_result         = src->clone();
     const CSize size = src->getSize();
     m_result->rectangle(0,0,size.cx-1,size.cy-1,D3D_WHITE);
@@ -60,12 +57,9 @@ void SobelFilter::apply(const CPoint &p) {
     }
   }
 
-  int SUMR = abs(sumxR) + abs(sumyR);
-  int SUMG = abs(sumxG) + abs(sumyG);
-  int SUMB = abs(sumxB) + abs(sumyB);
-  if(SUMR > 255) SUMR = 255; else if(SUMR < 0) SUMR = 0;
-  if(SUMG > 255) SUMG = 255; else if(SUMG < 0) SUMG = 0;
-  if(SUMB > 255) SUMB = 255; else if(SUMB < 0) SUMB = 0;
+  const int SUMR = minMax(abs(sumxR) + abs(sumyR),0,255);
+  const int SUMG = minMax(abs(sumxG) + abs(sumyG),0,255);
+  const int SUMB = minMax(abs(sumxB) + abs(sumyB),0,255);
   m_resultPixelAccessor->setPixel(p,D3DCOLOR_XRGB(255-SUMR,255-SUMG,255-SUMB));
 }
 
@@ -80,11 +74,8 @@ LaplaceFilter::LaplaceFilter() {
 }
 
 void LaplaceFilter::setPixRect(PixRect *src) {
-  PixRectOperator::setPixRect(src);
-  if(src == NULL) {
-    delete m_resultPixelAccessor;
-    delete m_result;
-  } else {
+  __super::setPixRect(src);
+  if(src != NULL) {
     m_result         = src->clone();
     const CSize size = src->getSize();
     m_result->rectangle(0,0,size.cx-1,size.cy-1,D3D_WHITE);
@@ -108,9 +99,9 @@ void LaplaceFilter::apply(const CPoint &p) {
       SUMB += f * ARGB_GETBLUE(c);
     }
   }
-  if(SUMR > 255) SUMR = 255; else if(SUMR < 0) SUMR = 0;
-  if(SUMG > 255) SUMG = 255; else if(SUMG < 0) SUMG = 0;
-  if(SUMB > 255) SUMB = 255; else if(SUMB < 0) SUMB = 0;
+  SUMR = minMax(SUMR,0,255);
+  SUMG = minMax(SUMG,0,255);
+  SUMB = minMax(SUMB,0,255);
   m_resultPixelAccessor->setPixel(p,D3DCOLOR_XRGB(255-SUMR,255-SUMG,255-SUMB));
 }
 
@@ -125,11 +116,8 @@ GaussFilter::GaussFilter() {
 }
 
 void GaussFilter::setPixRect(PixRect *src) {
-  PixRectOperator::setPixRect(src);
-  if(src == NULL) {
-    delete m_resultPixelAccessor;
-    delete m_result;
-  } else {
+  __super::setPixRect(src);
+  if(src != NULL) {
     m_result         = src->clone();
     const CSize size = src->getSize();
     m_result->rectangle(0,0,size.cx-1,size.cy-1,D3D_WHITE);
@@ -154,22 +142,20 @@ void GaussFilter::apply(const CPoint &p) {
     }
   }
   SUMR /= 115; SUMG /= 115; SUMB /= 115;
-  if(SUMR > 255) SUMR = 255; else if(SUMR < 0) SUMR = 0;
-  if(SUMG > 255) SUMG = 255; else if(SUMG < 0) SUMG = 0;
-  if(SUMB > 255) SUMB = 255; else if(SUMB < 0) SUMB = 0;
+  SUMR = minMax(SUMR,0,255);
+  SUMG = minMax(SUMG,0,255);
+  SUMB = minMax(SUMB,0,255);
   m_resultPixelAccessor->setPixel(p,D3DCOLOR_XRGB(SUMR,SUMG,SUMB));
 }
-
 
 // --------------------------------- EdgeDirectionFilter ---------------------------------
 
 
 void EdgeDirectionFilter::setPixRect(PixRect *src) {
-  PixRectOperator::setPixRect(src);
   if(src == NULL) {
-    delete m_resultPixelAccessor;
-    delete m_result;
+    __super::setPixRect(NULL);
   } else {
+    PixRectFilter::setPixRect(src); // NB Not __super::
     m_result         = src->clone();
     const CSize size = src->getSize();
     m_result->rectangle(0,0,size.cx-1,size.cy-1,D3D_WHITE);
@@ -241,14 +227,11 @@ void EdgeDirectionFilter::apply(const CPoint &p) {
 // --------------------------------- CannyEdgeFilter ---------------------------------
 
 void CannyEdgeFilter::setPixRect(PixRect *src) {
-  if(src != NULL) {
-    src->apply(GaussFilter()).apply(EdgeDirectionFilter());
-  }
-  PixRectOperator::setPixRect(src);
-  if(src == NULL) {
-    delete m_resultPixelAccessor;
-    delete m_result;
+  if (src == NULL) {
+    __super::setPixRect(NULL);
   } else {
+    src->apply(GaussFilter()).apply(EdgeDirectionFilter());
+    __super::setPixRect(src);
     m_result              = src->clone();
     m_resultPixelAccessor = m_result->getPixelAccessor();
   }

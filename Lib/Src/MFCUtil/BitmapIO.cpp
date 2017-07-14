@@ -45,7 +45,7 @@ static void showAlphaBitmap(HDC dst, const CPoint &p, HBITMAP bm) {
   PixRect::alphaBlend(tmpDC, r0, pr, r0, 255);
   tmpDst->releaseDC(tmpDC);
   PixRect::bitBlt(dst, p, r0.Size(), SRCCOPY, tmpDst, ORIGIN);
-  delete tmpDst;
+  SAFEDELETE(tmpDst);
 }
 
 static void showNormalBitmap(HDC dst, const CPoint &p, HBITMAP bm) {

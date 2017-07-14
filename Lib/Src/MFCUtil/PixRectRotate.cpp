@@ -51,109 +51,6 @@ Rectangle2DR getTransformedRectangle(const D3DXMATRIX &m, const Rectangle2DR &r)
 
 #define V CHECK3DRESULT
 
-class TextureVertex2D {
-  float m_x, m_y, m_z, m_tu, m_tv;
-public:
-  enum FVF {
-    FVF_Flags = D3DFVF_XYZ | D3DFVF_TEX1
-  };
-  TextureVertex2D() {
-  }
-  TextureVertex2D(int x, int y, float tu, float tv) : m_x((float)x), m_y((float)y), m_z(0), m_tu(tu), m_tv(tv) {
-  }
-  TextureVertex2D(const CPoint &p, const Point2DP &tp) : m_x((float)p.x), m_y((float)p.y), m_z(0), m_tu((float)tp.x), m_tv((float)tp.y) {
-  }
-};
-
-class TextureTriangleFan2D {
-  DECLARERESULTCHECKER;
-  PixRectDevice &m_device;
-public:
-  TextureVertex2D m_vtx[4];
-
-  TextureTriangleFan2D(PixRectDevice *device, const CRect &dstRect, const CSize &textureSize);
-  void draw() const;
-};
-
-TextureTriangleFan2D::TextureTriangleFan2D(PixRectDevice *device, const CRect &dstRect, const CSize &textureSize)
-: m_device(*device)
-{
-  const CSize size = dstRect.Size();
-  const float qw   = (size.cx == textureSize.cx) ? 1.0f : ((float)(size.cx) / (textureSize.cx));
-  const float qh   = (size.cy == textureSize.cy) ? 1.0f : ((float)(size.cy) / (textureSize.cy));
-
-  m_vtx[0] = TextureVertex2D(dstRect.left  , dstRect.top     , 0 , 0 );
-  m_vtx[1] = TextureVertex2D(dstRect.right , dstRect.top     , qw, 0 );
-  m_vtx[2] = TextureVertex2D(dstRect.right , dstRect.bottom  , qw, qh);
-  m_vtx[3] = TextureVertex2D(dstRect.left  , dstRect.bottom  , 0 , qh);
-}
-
-void TextureTriangleFan2D::draw() const {
-  LPDIRECT3DDEVICE &device = m_device.getD3Device();
-  V(device->SetFVF(TextureVertex2D::FVF_Flags));
-  V(device->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, 2, m_vtx, sizeof(TextureVertex2D)));
-}
-
-#ifdef _DEBUG
-void TextureTriangleFan2D::check3DResult(TCHAR *fileName, int line, HRESULT hr) const {
-  m_device.check3DResult(fileName, line, hr);
-}
-#else
-void TextureTriangleFan2D::check3DResult(HRESULT hr) const {
-  m_device.check3DResult(hr);
-}
-#endif
-
-#define SetTextureColorStage(dev, stage, arg1, op, arg2)        \
-  V(dev->SetTextureStageState(stage, D3DTSS_COLOROP  , op   )); \
-  V(dev->SetTextureStageState(stage, D3DTSS_COLORARG1, arg1 )); \
-  V(dev->SetTextureStageState(stage, D3DTSS_COLORARG2, arg2 ));
-
-#define SetTextureAlphaStage(dev, stage, arg1, op, arg2)        \
-  V(dev->SetTextureStageState(stage, D3DTSS_ALPHAOP  , op   )); \
-  V(dev->SetTextureStageState(stage, D3DTSS_ALPHAARG1, arg1 )); \
-  V(dev->SetTextureStageState(stage, D3DTSS_ALPHAARG2, arg2 ));
-
-void PixRectDevice::alphaBlend(const PixRect *texture, const CRect &dstRect) {
-  V(m_device->SetRenderState( D3DRS_ALPHABLENDENABLE  , TRUE   ));
-  V(m_device->SetRenderState( D3DRS_ALPHATESTENABLE   , TRUE   ));
-
-  SetTextureColorStage(m_device, 0, D3DTA_TEXTURE, D3DTOP_BLENDTEXTUREALPHA, D3DTA_DIFFUSE);
-  SetTextureAlphaStage(m_device, 0, D3DTA_TEXTURE, D3DTOP_MODULATE         , D3DTA_DIFFUSE);
-
-  V(m_device->SetRenderState( D3DRS_LIGHTING          , FALSE               ));
-  V(m_device->SetRenderState( D3DRS_CULLMODE          , D3DCULL_NONE        ));
-  V(m_device->SetRenderState( D3DRS_ZENABLE           , FALSE               ));
-  V(m_device->SetRenderState( D3DRS_SRCBLEND          , D3DBLEND_SRCALPHA   ));
-  V(m_device->SetRenderState( D3DRS_DESTBLEND         , D3DBLEND_INVSRCALPHA));
-  V(m_device->SetTexture(0, ((PixRect*)texture)->getTexture()));
-  TextureTriangleFan2D(this, dstRect, texture->getSize()).draw();
-
-  V(m_device->SetRenderState( D3DRS_ALPHABLENDENABLE  , FALSE));
-}
-
-void PixRectDevice::draw(const PixRect *pr, const CRect &dstRect) {
-  const PixRect *texture = (pr->getType() == PIXRECT_TEXTURE) ? pr  : pr->clone(true, PIXRECT_TEXTURE, D3DPOOL_DEFAULT);
-
-  V(m_device->SetRenderState( D3DRS_ALPHABLENDENABLE  , TRUE   ));
-  V(m_device->SetRenderState( D3DRS_ALPHATESTENABLE   , TRUE   ));
-
-  SetTextureColorStage(m_device, 0, D3DTA_TEXTURE, D3DTOP_BLENDTEXTUREALPHA, D3DTA_DIFFUSE);
-  SetTextureAlphaStage(m_device, 0, D3DTA_TEXTURE, D3DTOP_MODULATE         , D3DTA_DIFFUSE);
-
-  V(m_device->SetRenderState( D3DRS_LIGHTING          , FALSE               ));
-  V(m_device->SetRenderState( D3DRS_CULLMODE          , D3DCULL_NONE        ));
-  V(m_device->SetRenderState( D3DRS_ZENABLE           , FALSE               ));
-  V(m_device->SetRenderState( D3DRS_SRCBLEND          , D3DBLEND_SRCALPHA   ));
-  V(m_device->SetRenderState( D3DRS_DESTBLEND         , D3DBLEND_ZERO       ));
-  V(m_device->SetTexture(0, ((PixRect*)texture)->getTexture()));
-  TextureTriangleFan2D(this, dstRect, texture->getSize()).draw();
-
-  V(m_device->SetRenderState( D3DRS_ALPHABLENDENABLE  , FALSE));
-
-  if(texture != pr) delete texture;
-}
-
 void PixRect::drawRotated(const PixRect *src, const CPoint &dst, double degree, const Point2DP &rotationCenter) {
   const CSize           dstSize = getSize();
   LPDIRECT3DDEVICE     &device  = m_device.getD3Device();
@@ -165,6 +62,7 @@ void PixRect::drawRotated(const PixRect *src, const CPoint &dst, double degree, 
                              ,FALSE
                              ,(D3DFORMAT)0
                              ,&tmpRender));
+  TRACE_CREATE(tmpRender);
   D3DVIEWPORT vp;
   vp.X = vp.Y = 0;
   vp.Width  = dstSize.cx;
@@ -175,8 +73,8 @@ void PixRect::drawRotated(const PixRect *src, const CPoint &dst, double degree, 
 //showPixRect(src);
 //showPixRect(this);
   V(tmpRender->BeginScene(m_surface, &vp));
+  TRACE_REFCOUNT(m_surface);
   m_device.set2DTransform(dstSize);
-
   m_device.setWorldMatrix(createIdWorld());
   m_device.draw(this, getRect());
 //showPixRect(this);
@@ -189,18 +87,21 @@ void PixRect::drawRotated(const PixRect *src, const CPoint &dst, double degree, 
 //  V(device->Clear(0, NULL, D3DCLEAR_TARGET, background, 1.0f, 0));
   m_device.alphaBlend(texture, src->getRect());
   V(tmpRender->EndScene(D3DX_DEFAULT));
-  tmpRender->Release();
+  TRACE_REFCOUNT(m_surface);
+  SAFERELEASE(tmpRender);
 
   V(device->SetTexture(0, NULL));
 
-  if(texture != src)  delete texture;
-
+  if(texture != src) {
+    SAFEDELETE(texture);
+  }
 //showPixRect(this);
 }
 
 PixRect *PixRect::rotateImage(const PixRect *src, double degree, D3DCOLOR background) { // static
   const CSize resultSize = getRotatedSize(src->getSize(), degree);
   PixRect    *result     = new PixRect(src->getDevice(), src->getType(), resultSize, src->getPool(), src->getPixelFormat());
+  TRACE_NEW(result);
   result->fillColor(background);
   result->drawRotated(src, resultSize/2, degree, src->getRect().CenterPoint());
   return result;
@@ -208,6 +109,7 @@ PixRect *PixRect::rotateImage(const PixRect *src, double degree, D3DCOLOR backgr
 
 CSize PixRect::getRotatedSize(const CSize &size, double degree) { // static
   const Point2DP center = ORIGIN;
-  return Size2DS(getTransformedRectangle(createTransformedWorld(1, &center, GRAD2RAD(degree), NULL)
-                                ,CRect(ORIGIN,size)).getSize());
+  const CSize result = Size2DS(getTransformedRectangle(createTransformedWorld(1, &center, GRAD2RAD(degree), NULL)
+                                                      ,CRect(ORIGIN,size)).getSize());
+  return result;
 }

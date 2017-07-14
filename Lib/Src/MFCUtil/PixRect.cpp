@@ -2,7 +2,6 @@
 #include <Math.h>
 #include <float.h>
 #include <MFCUtil/PixRect.h>
-#include <MFCUtil/D3DeviceFactory.h>
 
 #pragma warning(disable : 4073)
 #pragma init_seg(lib)
@@ -29,213 +28,6 @@ CSize getTextureSize(LPDIRECT3DTEXTURE texture) {
   return CSize(desc.Width, desc.Height);
 }
 
-PixRectDevice::PixRectDevice() {
-  m_device       = NULL;
-  m_renderTarget = NULL;
-  resetException();
-}
-
-PixRectDevice::~PixRectDevice() {
-  detach();
-}
-
-void PixRectDevice::attach(HWND hwnd, bool windowed, const CSize *size) {
-  detach();
-
-  resetException();
-  CSize sz;
-  if(!windowed) {
-    sz = getScreenSize(false);
-  } else if(size == NULL) {
-    sz = getClientRect(hwnd).Size();
-  } else {
-    sz = *size;
-  }
-
-  HDC screenDC = getScreenDC();
-  m_appScaleX = (float)(GetDeviceCaps(screenDC, LOGPIXELSX) / 96.0);
-  m_appScaleY = (float)(GetDeviceCaps(screenDC, LOGPIXELSX) / 96.0);
-  DeleteDC(screenDC);
-
-  D3DPRESENT_PARAMETERS param;
-  ZeroMemory(&param, sizeof(param));
-
-  param.Windowed               = windowed ? TRUE : FALSE;
-  param.MultiSampleType        = D3DMULTISAMPLE_NONE;
-  param.SwapEffect             = D3DSWAPEFFECT_DISCARD;
-  param.EnableAutoDepthStencil = FALSE;
-  param.BackBufferFormat       = D3DFMT_X8R8G8B8;
-  param.hDeviceWindow          = hwnd;
-  param.Flags                  = D3DPRESENTFLAG_LOCKABLE_BACKBUFFER;
-  param.BackBufferCount        = 1;
-  param.BackBufferWidth        = sz.cx;
-  param.BackBufferHeight       = sz.cy;
-  param.PresentationInterval   = D3DPRESENT_INTERVAL_IMMEDIATE;
-
-  m_device = D3DeviceFactory::createDevice(hwnd, &param, D3DADAPTER_DEFAULT);
-
-  D3DDISPLAYMODE displayMode;
-  CHECK3DRESULT(m_device->GetDisplayMode(0, &displayMode));
-  m_defaultPixelFormat = displayMode.Format;
-}
-
-void PixRectDevice::detach() {
-  if (m_device != NULL) {
-    m_device->Release();
-    m_device = NULL;
-  }
-  releaseRenderTarget();
-  resetException();
-}
-
-void PixRectDevice::releaseRenderTarget() {
-  if (m_renderTarget != NULL) {
-    m_renderTarget->Release();
-    m_renderTarget = NULL;
-  }
-}
-
-void PixRectDevice::setRenderTargetSize(const CSize &size) {
-  if((m_renderTarget == NULL) || (size != m_renderTargetSize)) {
-    releaseRenderTarget();
-    m_renderTarget = createRenderTarget(size);
-    m_renderTargetSize = size;
-  }
-}
-
-
-LPDIRECT3DTEXTURE PixRectDevice::createTexture(const CSize &size, D3DFORMAT format, D3DPOOL pool) {
-  LPDIRECT3DTEXTURE texture;
-
-  // Create an alpha texture
-  if (format == D3DFMT_FORCE_DWORD) {
-    format = getDefaultPixelFormat();
-  }
-  if (pool == D3DPOOL_FORCE_DWORD) {
-    pool = D3DPOOL_SYSTEMMEM;
-  }
-  DWORD usage = D3DUSAGE_DYNAMIC; // (pool == D3DPOOL_MANAGED) ? 0 : D3DUSAGE_DYNAMIC;
-
-  CHECK3DRESULT(m_device->CreateTexture(size.cx, size.cy, 1, usage, format, pool, &texture, NULL));
-  return texture;
-}
-
-LPDIRECT3DSURFACE PixRectDevice::createRenderTarget(const CSize &size, D3DFORMAT format, bool lockable) {
-  LPDIRECT3DSURFACE surface;
-
-  LPDIRECT3DSURFACE oldRenderTarget;
-  CHECK3DRESULT(m_device->GetRenderTarget(0, &oldRenderTarget));
-  D3DSURFACE_DESC desc;
-  CHECK3DRESULT(oldRenderTarget->GetDesc(&desc));
-  releaseSurface(oldRenderTarget, PIXRECT_RENDERTARGET);
-  if(format == D3DFMT_FORCE_DWORD) {
-    format = desc.Format;
-  }
-  CHECK3DRESULT(m_device->CreateRenderTarget(size.cx, size.cy, format, desc.MultiSampleType, desc.MultiSampleQuality, lockable, &surface, NULL));
-  return surface;
-}
-
-LPDIRECT3DSURFACE PixRectDevice::createOffscreenPlainSurface(const CSize &size, D3DFORMAT format, D3DPOOL pool) {
-  if (format == D3DFMT_FORCE_DWORD) {
-    format = getDefaultPixelFormat();
-  }
-  if (pool == D3DPOOL_FORCE_DWORD) {
-    pool = D3DPOOL_SYSTEMMEM;
-  }
-  LPDIRECT3DSURFACE surface;
-  CHECK3DRESULT(m_device->CreateOffscreenPlainSurface(size.cx, size.cy, format, pool, &surface, NULL));
-  return surface;
-}
-
-void PixRectDevice::releaseTexture(LPDIRECT3DTEXTURE texture) {
-  texture->Release();
-}
-
-void PixRectDevice::releaseSurface(LPDIRECT3DSURFACE surface, PixRectType type) {
-  surface->Release();
-}
-
-LPDIRECT3DSURFACE PixRectDevice::getRenderTarget() {
-  LPDIRECT3DSURFACE surface;
-  CHECK3DRESULT(m_device->GetRenderTarget(0,&surface));
-  return surface;
-}
-
-bool PixRectDevice::supportFormatConversion(D3DFORMAT srcFormat, D3DFORMAT dstFormat, UINT adapter) const {
-  const D3DDEVTYPE deviceType = getDeviceCaps().DeviceType;
-  return D3DeviceFactory::supportFormatConversion(deviceType, srcFormat, dstFormat, adapter);
-}
-
-D3DCAPS PixRectDevice::getDeviceCaps() const {
-  D3DCAPS caps;
-  CHECK3DRESULT(m_device->GetDeviceCaps(&caps));
-  return caps;
-}
-
-/*
-DDCAPS PixRect::getEmulatorCaps() { // static
-  DDCAPS result;
-  result.dwSize = sizeof(DDCAPS);
-  CHECK3DRESULT(directDraw->GetCaps(NULL, &result));
-  return result;
-}
-*/
-
-#define SAFERELEASE(s) { if(s) (s)->Release(); s = NULL; }
-
-void PixRectDevice::render(const PixRect *pr) {
-  if(!m_device) {
-    return;  // Haven't been initialized yet!
-  }
-
-  LPDIRECT3DSURFACE oldRenderTarget = NULL;
-  try {
-    beginScene();
-    CHECK3DRESULT(m_device->SetRenderState(D3DRS_LIGHTING, FALSE));
-    endScene();
-
-    oldRenderTarget = getRenderTarget();
-    if (pr->m_desc.Pool != D3DPOOL_DEFAULT) {
-      setRenderTargetSize(pr->getSize());
-      CHECK3DRESULT(m_device->UpdateSurface(pr->m_surface, NULL, m_renderTarget, NULL));
-      CHECK3DRESULT(m_device->StretchRect(m_renderTarget, NULL, oldRenderTarget, NULL, D3DTEXF_NONE));
-    } else {
-      CHECK3DRESULT(m_device->StretchRect(pr->m_surface, NULL, oldRenderTarget, NULL, D3DTEXF_NONE));
-    }
-
-    SAFERELEASE(oldRenderTarget);
-    CHECK3DRESULT(m_device->Present(NULL, NULL, NULL, NULL));
-  } catch (...) {
-    endScene();
-    SAFERELEASE(oldRenderTarget);
-    throw;
-  }
-}
-
-void PixRectDevice::set2DTransform(const CSize &size) {
-  D3DMATRIX projection;
-  memset(&projection, 0, sizeof(D3DMATRIX));
-
-  projection._11 = 2.0f * m_appScaleX / (float)size.cx;
-  projection._41 = -m_appScaleX;
-  projection._22 = -2.0f * m_appScaleY / (float)size.cy;
-  projection._42 = m_appScaleY;
-
-  projection._33 = 1;
-  projection._43 = 0;
-
-  projection._34 = 0;
-  projection._44 = 1;
-
-  CHECK3DRESULT(m_device->SetTransform(D3DTS_PROJECTION, &projection));
-/*
-  const CSize sz = getSize(m_someTexture);
-  const D3DXVECTOR2 rotationCenter(37,37);
-  D3DXMATRIX matWorld;
-  CHECKD3DRESULT(m_device->SetTransform( D3DTS_WORLD, D3DXMatrixAffineTransformation2D(&matWorld, 1, &rotationCenter, (float)GRAD2RAD(m_rotation), NULL)));
-*/
-}
-
 const TCHAR *PixRect::s_typeName[] {
   _T("PIXRECT_TEXTURE")
  ,_T("PIXRECT_RENDERTARGET")
@@ -243,23 +35,10 @@ const TCHAR *PixRect::s_typeName[] {
 };
 
 #ifdef _DEBUG
-void PixRectDevice::check3DResult(TCHAR *fileName, int line, HRESULT hr) const {
-  if((hr != D3D_OK) && !m_exceptionInProgress) {
-    m_exceptionInProgress = true;
-    throwException(_T("D3D-error %s in %s, line %d"), get3DErrorMsg(hr).cstr(), fileName, line);
-  }
-}
 void PixRect::check3DResult(TCHAR *fileName, int line, HRESULT hr) const {
   m_device.check3DResult(fileName, line, hr);
 }
 #else
-void PixRectDevice::check3DResult(HRESULT hr) const {
-  if((hr != D3D_OK) && !m_exceptionInProgress) {
-    m_exceptionInProgress = true;
-    AfxMessageBox(format(_T("D3D-error %s"), get3DErrorMsg(hr).cstr()).cstr(), MB_ICONSTOP);
-    exit(-1);
-  }
-}
 void PixRect::check3DResult(HRESULT hr) const {
   m_device.check3DResult(hr);
 }
@@ -317,6 +96,7 @@ PixRect *PixRect::clone(bool cloneImage, PixRectType type, D3DPOOL pool) const {
     pool = getPool();
   }
   PixRect *copy = new PixRect(m_device, type, getSize(), pool, getPixelFormat());
+  TRACE_NEW(copy);
   if(cloneImage) {
     if ((getPool() == D3DPOOL_SYSTEMMEM) && (pool == D3DPOOL_DEFAULT)) {
       LPDIRECT3DSURFACE srcSurface = NULL, dstSurface = NULL;
@@ -329,7 +109,7 @@ PixRect *PixRect::clone(bool cloneImage, PixRectType type, D3DPOOL pool) const {
       } catch(...) {
         SAFERELEASE(srcSurface);
         SAFERELEASE(dstSurface);
-        delete copy;
+        SAFEDELETE(copy);
         throw;
       }
     } else {
@@ -361,7 +141,7 @@ void PixRect::moveToPool(D3DPOOL pool) {
   default:
     unknownTypeError(method);
   }
-  delete tmp;
+  SAFEDELETE(tmp);
 }
 
 LPDIRECT3DSURFACE PixRect::cloneSurface(D3DPOOL pool) const {
@@ -395,11 +175,11 @@ void PixRect::fillColor(D3DCOLOR color, const CRect *r) {
   if(canUseColorFill()) {
     LPDIRECT3DSURFACE surface = getSurface();
     CHECK3DRESULT(m_device.getD3Device()->ColorFill(surface, r, color));
-    surface->Release();
+    SAFERELEASE(surface);
   } else {
     PixelAccessor *pa = getPixelAccessor();
     pa->fillRect(color, r);
-    delete pa;
+    releasePixelAccessor();
   }
 }
 
@@ -552,6 +332,7 @@ void PixRect::createPlainSurface(const CSize &sz, D3DFORMAT pixelFormat, D3DPOOL
 
 void PixRect::destroy() {
   if (m_surface == NULL) return;
+  destroyPixelAccessor();
   switch (getType()) {
   case PIXRECT_TEXTURE     :
     destroyTexture();
@@ -716,16 +497,39 @@ LPDIRECT3DSURFACE PixRect::getSurface() const {
   switch (getType()) {
   case PIXRECT_TEXTURE:
     CHECK3DRESULT(m_texture->GetSurfaceLevel(0, &surface));
+    TRACE_REFCOUNT(surface);
     break;
   case PIXRECT_RENDERTARGET:
   case PIXRECT_PLAINSURFACE:
     surface = m_surface;
-    surface->AddRef();
+    SAFEADDREF(surface);
     break;
   default:
     unknownTypeError(__TFUNCTION__);
   }
   return surface;
+}
+
+PixelAccessor *PixRect::createPixelAccessor(DWORD flags) const {
+  DEFINEMETHODNAME;
+  switch(getPixelFormat()) {
+    //  case 8 : return new BytePixelAccessor(pixRect);
+    //  case 16: return new WordPixelAccessor(pixRect);
+  case D3DFMT_A8R8G8B8:
+  case D3DFMT_X8R8G8B8:
+    { PixelAccessor *result = new DWordPixelAccessor((PixRect*)this, flags);
+      TRACE_NEW(result);
+      return result;
+    }
+  default:
+    throwException(_T("%s:Unknown pixel format:%d. Must be 8, 16 or 32"),method, getPixelFormat());
+    return NULL;
+  }
+}
+
+void PixRect::destroyPixelAccessor() const {
+  SAFEDELETE(m_pixelAccessor);
+  m_paRefCount = 0;
 }
 
 D3DLOCKED_RECT PixRect::lockRect(DWORD flags, const CRect *rect) {
@@ -793,8 +597,8 @@ bool operator==(const PixRect &p1, const PixRect &p2) {
   if(p1.m_desc != p2.m_desc) {
     return false;
   }
-  PixelAccessor *pa1 = PixelAccessor::createPixelAccessor(&(PixRect&)p1);
-  PixelAccessor *pa2 = PixelAccessor::createPixelAccessor(&(PixRect&)p2);
+  PixelAccessor *pa1 = p1.getPixelAccessor();
+  PixelAccessor *pa2 = p2.getPixelAccessor();
   const int width  = p1.getWidth();
   const int height = p1.getHeight();
   bool equals = true;
@@ -808,8 +612,8 @@ bool operator==(const PixRect &p1, const PixRect &p2) {
     }
   }
 done:
-  delete pa1;
-  delete pa2;
+  p1.releasePixelAccessor();
+  p2.releasePixelAccessor();
   return equals;
 }
 
@@ -831,16 +635,16 @@ void PixRect::setPixel(UINT x, UINT y, D3DCOLOR color) {
   }
   PixelAccessor *pixelAccessor = getPixelAccessor();
   pixelAccessor->setPixel(x,y,color);
-  delete pixelAccessor;
+  SAFEDELETE(pixelAccessor);
 }
 
 D3DCOLOR PixRect::getPixel(UINT x, UINT y) const {
   if(!contains(x,y)) {
     return 0;
   }
-  PixelAccessor *pixelAccessor = PixelAccessor::createPixelAccessor((PixRect*)this);
+  PixelAccessor *pixelAccessor = getPixelAccessor();
   D3DCOLOR result = pixelAccessor->getPixel(x,y);
-  delete pixelAccessor;
+  releasePixelAccessor();
   return result;
 }
 
@@ -1062,12 +866,11 @@ void PixRect::formatConversion(const PixRect &pr) {
   CHECKRESULT(m_device.getD3Device()->StretchRect(pr.m_surface, NULL, m_surface, NULL, D3DTEXF_NONE));
 }
 
-
 PixRect *PixRect::mirror(const PixRect *src, bool vertical) { // static
   PixRect *result = src->clone();
   const int width  = result->getWidth();
   const int height = result->getHeight();
-  PixelAccessor *srcPA = PixelAccessor::createPixelAccessor((PixRect*)src);
+  PixelAccessor *srcPA = src->getPixelAccessor();
   PixelAccessor *dstPA = result->getPixelAccessor();
   if(vertical) {
     for(int x1 = 0, x2=width-1; x1 < width; x1++, x2--) {
@@ -1082,8 +885,8 @@ PixRect *PixRect::mirror(const PixRect *src, bool vertical) { // static
       }
     }
   }
-  delete srcPA;
-  delete dstPA;
+  src->releasePixelAccessor();
+  result->releasePixelAccessor();
   return result;
 }
 

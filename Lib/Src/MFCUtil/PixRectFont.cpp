@@ -81,7 +81,7 @@ GlyphData::GlyphData(PixRectDevice &device, HDC hdc, _TUCHAR ch, const MAT2 &m) 
   }
 //  fprintf(logFile,"\n\n");
 //  fclose(logFile);
-  delete pa;
+  m_pixRect->releasePixelAccessor();
   delete[] buffer;
 }
 
