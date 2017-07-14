@@ -28,7 +28,6 @@ BOOL CMyPaintApp::InitInstance() {
   InitCommonControlsEx(&InitCtrls);
 
   __super::InitInstance();
-
   EnableTaskbarInteraction(FALSE);
 
   // Change the registry key under which our settings are stored.
@@ -80,6 +79,7 @@ void CMyPaintApp::removeRecentFile(int index) {
 
 PixRect *CMyPaintApp::fetchPixRect(const CSize &size) {
   PixRect *pr = new PixRect(m_device, PIXRECT_PLAINSURFACE, size);
+  TRACE_NEW(pr);
   pr->fillColor(WHITE);
   return pr;
 }
@@ -107,4 +107,11 @@ END_MESSAGE_MAP()
 
 void CMyPaintApp::OnAppAbout() {
   CAboutDlg().DoModal();
+}
+
+
+int CMyPaintApp::ExitInstance()
+{
+  m_device.detach();
+  return CWinApp::ExitInstance();
 }

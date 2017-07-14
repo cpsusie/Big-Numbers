@@ -45,6 +45,7 @@ public:
     return m_image ? m_image->getSize() : CSize(0,0);
   }
 
+  void clear();
   void setSize(const CSize &newSize);
 
   PixRect *getImage();

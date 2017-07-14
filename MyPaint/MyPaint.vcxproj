@@ -287,6 +287,7 @@
     <ClCompile Include="CombineImagesTool.cpp" />
     <ClCompile Include="DegreeDlg.cpp" />
     <ClCompile Include="DrawTool.cpp" />
+    <ClCompile Include="EdgeMark.cpp" />
     <ClCompile Include="EllipseTool.cpp" />
     <ClCompile Include="EraseTool.cpp" />
     <ClCompile Include="EraseToolSizeDlg.cpp" />
@@ -325,6 +326,7 @@
     <ClInclude Include="colormap.h" />
     <ClInclude Include="DegreeDlg.h" />
     <ClInclude Include="DrawTool.h" />
+    <ClInclude Include="EdgeMark.h" />
     <ClInclude Include="EraseToolSizeDlg.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="MyPaint.h" />
@@ -355,4 +357,9 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties RESOURCE_FILE="MyPaint.rc" />
+    </VisualStudio>
+  </ProjectExtensions>
 </Project>

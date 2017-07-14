@@ -23,6 +23,7 @@ public:
   virtual BOOL InitInstance();
   afx_msg void OnAppAbout();
   DECLARE_MESSAGE_MAP()
+  virtual int ExitInstance();
 };
 
 extern CMyPaintApp theApp;

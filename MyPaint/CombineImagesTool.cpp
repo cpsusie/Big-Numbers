@@ -103,9 +103,9 @@ void CombineImagesTool::makeFinalImage() {
       }
     }
   }
-  delete rpa;
-  delete opa;
-  delete mpa;
+  result->releasePixelAccessor();
+  m_old->releasePixelAccessor();
+  m->releasePixelAccessor();
 
   delete m;
   getImage()->rop(m_rect.TopLeft(),m_rect.Size(),SRCCOPY,result,ORIGIN);

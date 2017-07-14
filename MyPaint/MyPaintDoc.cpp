@@ -19,9 +19,7 @@ CMyPaintDoc::CMyPaintDoc() {
 }
 
 CMyPaintDoc::~CMyPaintDoc() {
-  resetHistory();
-  setImage(NULL);
-  setFileImage();
+  clear();
 }
 
 BOOL CMyPaintDoc::OnOpenDocument(LPCTSTR name) {
@@ -85,15 +83,12 @@ BOOL CMyPaintDoc::OnSaveDocument(LPCTSTR name) {
 }
 
 void CMyPaintDoc::setImage(PixRect *image) {
-  if(m_image != NULL) {
-    delete m_image;
-    m_image = NULL;
-  }
+  SAFEDELETE(m_image);
   m_image = image;
 }
 
 PixRect *CMyPaintDoc::getImage() {
-  if (m_image == NULL) {
+  if(m_image == NULL) {
     setImage(theApp.fetchPixRect(CSize(400,400)));
     setFileImage();
   }
@@ -101,13 +96,16 @@ PixRect *CMyPaintDoc::getImage() {
 }
 
 void CMyPaintDoc::setFileImage() {
-  if(m_fileImage) {
-    delete m_fileImage;
-    m_fileImage = NULL;
-  }
+  SAFEDELETE(m_fileImage);
   if(m_image) {
     m_fileImage = m_image->clone(true);
   }
+}
+
+void CMyPaintDoc::clear() {
+  resetHistory();
+  setImage(NULL);
+  setFileImage();
 }
 
 void CMyPaintDoc::setSize(const CSize &newSize) {
@@ -132,7 +130,8 @@ void CMyPaintDoc::resetHistory() {
 }
 
 void CMyPaintDoc::removeLast() {
-  delete m_history.last();
+  PixRect *last = m_history.last();
+  SAFEDELETE(last);
   m_history.removeLast();
 }
 

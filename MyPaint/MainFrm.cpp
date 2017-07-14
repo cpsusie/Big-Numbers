@@ -228,6 +228,8 @@ void CMainFrame::OnAppExit() {
   if(!checkSave()) {
     return;
   }
+  resetCurrentDrawTool();
+  getDocument()->clear();
   PostMessage(WM_QUIT);
 }
 
@@ -326,7 +328,9 @@ void CMainFrame::OnEditCopy() {
 void CMainFrame::OnEditPaste() {
   HBITMAP bitmap = getClipboardBitmap();
   if(bitmap != NULL) {
-    pushTool(new InsertImageTool(getView(),new PixRect(theApp.m_device, bitmap)));
+    PixRect *pr = new PixRect(theApp.m_device, bitmap);
+    TRACE_NEW(pr);
+    pushTool(new InsertImageTool(getView(),pr));
   }
 }
 
