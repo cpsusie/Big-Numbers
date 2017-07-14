@@ -280,7 +280,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="AdjustColorDialog.cpp" />
+    <ClCompile Include="AdjustColorDlg.cpp" />
     <ClCompile Include="ApproximateFillDlg.cpp" />
     <ClCompile Include="ChangeHueTool.cpp" />
     <ClCompile Include="colormap.cpp" />
@@ -321,7 +321,7 @@
     <ResourceCompile Include="MyPaint.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AdjustColorDialog.h" />
+    <ClInclude Include="AdjustColorDlg.h" />
     <ClInclude Include="ApproximateFillDlg.h" />
     <ClInclude Include="colormap.h" />
     <ClInclude Include="DegreeDlg.h" />

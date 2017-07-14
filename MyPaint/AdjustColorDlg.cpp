@@ -1,14 +1,14 @@
 #include "stdafx.h"
-#include "AdjustColorDialog.h"
+#include "AdjustColorDlg.h"
 #include "DrawTool.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
 
-CAdjustColorDialog::CAdjustColorDialog(PixRectContainer &container, CWnd *pParent)
+CAdjustColorDlg::CAdjustColorDlg(PixRectContainer &container, CWnd *pParent)
 : m_container(container)
-, CDialog(CAdjustColorDialog::IDD, pParent) {
+, CDialog(CAdjustColorDlg::IDD, pParent) {
 
   m_origImage     = m_container.getImage()->clone(true);
   m_size          = m_origImage->getSize();
@@ -16,23 +16,23 @@ CAdjustColorDialog::CAdjustColorDialog(PixRectContainer &container, CWnd *pParen
   m_container.saveDocState();
 }
 
-CAdjustColorDialog::~CAdjustColorDialog() {
+CAdjustColorDlg::~CAdjustColorDlg() {
   delete m_origImage;
 }
 
-void CAdjustColorDialog::DoDataExchange(CDataExchange *pDX) {
-    __super::DoDataExchange(pDX);
-    DDX_Control(pDX, IDC_COLORMAPCTRL, m_colorMap);
+void CAdjustColorDlg::DoDataExchange(CDataExchange *pDX) {
+  __super::DoDataExchange(pDX);
+  DDX_Control(pDX, IDC_COLORMAPCTRL, m_colorMap);
 }
 
-BEGIN_MESSAGE_MAP(CAdjustColorDialog, CDialog)
+BEGIN_MESSAGE_MAP(CAdjustColorDlg, CDialog)
 END_MESSAGE_MAP()
 
-BEGIN_EVENTSINK_MAP(CAdjustColorDialog, CDialog)
-    ON_EVENT(CAdjustColorDialog, IDC_COLORMAPCTRL, 1 /* ColorChanged */, OnColorChangedColorMapCtrl, VTS_NONE)
+BEGIN_EVENTSINK_MAP(CAdjustColorDlg, CDialog)
+    ON_EVENT(CAdjustColorDlg, IDC_COLORMAPCTRL, 1 /* ColorChanged */, OnColorChangedColorMapCtrl, VTS_NONE)
 END_EVENTSINK_MAP()
 
-BOOL CAdjustColorDialog::OnInitDialog() {
+BOOL CAdjustColorDlg::OnInitDialog() {
   __super::OnInitDialog();
   CColormap *map = (CColormap*)GetDlgItem(IDC_COLORMAPCTRL);
   const D3DCOLOR avgColor = m_origImage->getAverageColor();
@@ -44,7 +44,7 @@ BOOL CAdjustColorDialog::OnInitDialog() {
   return TRUE;
 }
 
-void CAdjustColorDialog::OnColorChangedColorMapCtrl() {
+void CAdjustColorDlg::OnColorChangedColorMapCtrl() {
   if(!m_initDone) {
     return;
   }
@@ -69,11 +69,7 @@ void CAdjustColorDialog::OnColorChangedColorMapCtrl() {
   m_lastColor = color;
 }
 
-void CAdjustColorDialog::OnOK() {
-  __super::OnOK();
-}
-
-void CAdjustColorDialog::OnCancel() {
+void CAdjustColorDlg::OnCancel() {
   m_container.getImage()->rop(ORIGIN, m_size, SRCCOPY, m_origImage, ORIGIN);
   m_container.repaint();
   __super::OnCancel();

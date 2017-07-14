@@ -2,7 +2,7 @@
 #include "MainFrm.h"
 #include "Degreedlg.h"
 #include "ScaleDlg.h"
-#include "AdjustColorDialog.h"
+#include "AdjustColorDlg.h"
 #include "ApproximateFillDlg.h"
 #include "EraseToolSizedlg.h"
 
@@ -474,7 +474,7 @@ void CMainFrame::OnFunctionGaussFilter()         { applyFilter(GaussFilter());  
 void CMainFrame::OnFunctionDirectionalFilter()   { applyFilter(EdgeDirectionFilter()); }
 
 void CMainFrame::OnFunctionChangeHue() {
-  CAdjustColorDialog dlg(*getView(),this);
+  CAdjustColorDlg dlg(*getView(),this);
   dlg.DoModal();
 }
 

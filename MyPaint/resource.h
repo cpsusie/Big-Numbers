@@ -6,19 +6,19 @@
 #define IDR_MAINFRAME                   128
 #define IDR_MYPAINTYPE                  129
 #define IDD_DEGREEDIALOG                130
-#define IDR_ACCELERATOR_MAINDIALOG      131
 #define IDD_SCALEDIALOG                 132
 #define IDD_TEXTDIALOG                  133
-#define IDD_APPROXIMATEFILLDIALOG       134
-#define IDD_ERASETOOLSIZEDIALOG         135
-#define IDR_ACCELERATOR_SCALEDIALOG     136
-#define IDC_CURSORPENCIL1               137
-#define IDC_CURSORHAIRCROSS             138
-#define IDC_CURSORFILLCOLOR             139
-#define IDC_CURSORMOVE4WAYS             140
-#define IDC_CURSORERASE                 141
-#define IDC_CURSORPENCIL                142
-#define IDD_ADJUSTLSHDIALOG             143
+#define IDD_ADJUSTLSHDIALOG             134
+#define IDD_APPROXIMATEFILLDIALOG       135
+#define IDD_ERASETOOLSIZEDIALOG         136
+#define IDR_ACCELERATOR_MAINDIALOG      140
+#define IDR_ACCELERATOR_SCALEDIALOG     141
+#define IDC_CURSORPENCIL1               150
+#define IDC_CURSORHAIRCROSS             151
+#define IDC_CURSORFILLCOLOR             152
+#define IDC_CURSORMOVE4WAYS             153
+#define IDC_CURSORERASE                 154
+#define IDC_CURSORPENCIL                155
 #define IDC_EDITDEGREE                  1000
 #define IDC_SCALEWIDTHEDIT              1001
 #define IDC_SCALEHEIGHTEDIT             1002
@@ -95,7 +95,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        147
+#define _APS_NEXT_RESOURCE_VALUE        156
 #define _APS_NEXT_COMMAND_VALUE         32825
 #define _APS_NEXT_CONTROL_VALUE         1017
 #define _APS_NEXT_SYMED_VALUE           101
