@@ -635,7 +635,7 @@ void PixRect::setPixel(UINT x, UINT y, D3DCOLOR color) {
   }
   PixelAccessor *pixelAccessor = getPixelAccessor();
   pixelAccessor->setPixel(x,y,color);
-  SAFEDELETE(pixelAccessor);
+  releasePixelAccessor();
 }
 
 D3DCOLOR PixRect::getPixel(UINT x, UINT y) const {
