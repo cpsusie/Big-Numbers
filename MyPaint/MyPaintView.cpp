@@ -26,6 +26,7 @@ CMyPaintView::CMyPaintView() {
   m_printInfo         = NULL;
   m_initialized       = false;
   m_currentEdgeMark   = NULL;
+  resetResizingFrame();
 }
 
 CMyPaintView::~CMyPaintView() {
@@ -119,11 +120,19 @@ void CMyPaintView::clear() {
   OnPrepareDC(&dc);
   CSize docSize = GetDocument()->getSize();
   dc.FillSolidRect(0,0,docSize.cx*m_currentZoomFactor,docSize.cy*m_currentZoomFactor,WHITE);
+  resetResizingFrame();
 }
 
 void CMyPaintView::setCurrentZoomFactor(int factor) {
   m_currentZoomFactor = factor;
   refreshDoc();
+}
+
+void CMyPaintView::setCurrentDocPoint(const CPoint &p) {
+  if(p != m_currentDocPoint) {
+    m_currentDocPoint = p;
+    getMainFrame()->PostMessage(ID_MSG_SHOWDOCPOINT);
+  }
 }
 
 BOOL CMyPaintView::OnPreparePrinting(CPrintInfo *pInfo) {
@@ -153,7 +162,6 @@ CMyPaintDoc* CMyPaintView::GetDocument() {
 }
 #endif //_DEBUG
 
-
 void CMyPaintView::OnInitialUpdate() {
   __super::OnInitialUpdate();
   getMainFrame()->setCurrentZoomFactor(ID_OPTIONS_ZOOM_X1);
@@ -171,10 +179,6 @@ void CMyPaintView::setScrollRange() {
 
   SetScrollSizes(MM_TEXT,imageSize,clientSize,CSize(20,20));
   m_maxScroll = CPoint(max(0,imageSize.cx-clientSize.cx),max(0,imageSize.cy-clientSize.cy));
-}
-
-void CMyPaintView::setCursor(int id) {
-  setWindowCursor(this,MAKEINTRESOURCE(id));
 }
 
 void CMyPaintView::OnSize(UINT nType, int cx, int cy) {
@@ -195,33 +199,29 @@ CPoint CMyPaintView::viewToDoc(const CPoint &viewPoint) const {
   return CPoint((viewPoint.x+vtl.x)/m_currentZoomFactor, (viewPoint.y+vtl.y)/m_currentZoomFactor);
 }
 
-bool CMyPaintView::isMouseOnDocument() const {
-  return getDocumentRect().PtInRect(m_lastPoint) ? true : false;
-}
-
 void CMyPaintView::OnLButtonDown(UINT nFlags, CPoint point) {
-  m_lastPoint = viewToDoc(point);
-  getMainFrame()->getCurrentDrawTool()->OnLButtonDown(nFlags,m_lastPoint);
+  setCurrentDocPoint(viewToDoc(point));
+  getMainFrame()->getCurrentDrawTool()->OnLButtonDown(nFlags,m_currentDocPoint);
   __super::OnLButtonDown(nFlags, point);
 }
 
 void CMyPaintView::OnLButtonDblClk(UINT nFlags, CPoint point) {
-  m_lastPoint = viewToDoc(point);
-  getMainFrame()->getCurrentDrawTool()->OnLButtonDblClk(nFlags,m_lastPoint);
+  setCurrentDocPoint(viewToDoc(point));
+  getMainFrame()->getCurrentDrawTool()->OnLButtonDblClk(nFlags,m_currentDocPoint);
   __super::OnLButtonDblClk(nFlags, point);
 }
 
 void CMyPaintView::OnLButtonUp(UINT nFlags, CPoint point) {
-  m_lastPoint = viewToDoc(point);
-  getMainFrame()->getCurrentDrawTool()->OnLButtonUp(nFlags,m_lastPoint);
+  setCurrentDocPoint(viewToDoc(point));
+  getMainFrame()->getCurrentDrawTool()->OnLButtonUp(nFlags,m_currentDocPoint);
   __super::OnLButtonUp(nFlags, point);
 }
 
 void CMyPaintView::OnMouseMove(UINT nFlags, CPoint point) {
   const CPoint newPoint = viewToDoc(point);
-  if(newPoint != m_lastPoint) {
+  if(newPoint != m_currentDocPoint) {
     getMainFrame()->getCurrentDrawTool()->OnMouseMove(nFlags,newPoint);
-    m_lastPoint = newPoint;
+    setCurrentDocPoint(newPoint);
   }
   __super::OnMouseMove(nFlags, point);
 }
@@ -234,7 +234,7 @@ BOOL CMyPaintView::PreTranslateMessage(MSG *pMsg) {
   switch(pMsg->message) {
   case WM_LBUTTONDOWN:
     if(mm != NULL) {
-      m_lastDragRect    = NULL;
+      resetResizingFrame();
       m_currentEdgeMark = mm;
       return TRUE;
     } else if(!getViewRect().PtInRect(p)) {
@@ -244,6 +244,7 @@ BOOL CMyPaintView::PreTranslateMessage(MSG *pMsg) {
   case WM_LBUTTONUP  :
     if(m_currentEdgeMark != NULL) {
       resizeDocument();
+      resetResizingFrame();
       m_currentEdgeMark = NULL;
       if(mm != NULL) {
         setCursor(mm->getCursorId());
@@ -276,6 +277,11 @@ BOOL CMyPaintView::PreTranslateMessage(MSG *pMsg) {
   return __super::PreTranslateMessage(pMsg);
 }
 
+void CMyPaintView::resetResizingFrame() {
+  m_lastDragRect  = NULL;
+  m_dragRect.left = m_dragRect.top = m_dragRect.right = m_dragRect.bottom = 0;
+}
+
 void CMyPaintView::paintResizingFrame(const CPoint &docp) {
   const CPoint lrCorner = docToView(getDocSize());
   const CPoint vp       = docToView(docp);
@@ -285,12 +291,15 @@ void CMyPaintView::paintResizingFrame(const CPoint &docp) {
   case BOTTOMMARK     : newRect = CRect(0,0,lrCorner.x, vp.y      ); break;
   case RIGHTBOTTOMMARK: newRect = CRect(0,0,vp.x      , vp.y      ); break;
   }
-
-  CClientDC dc(this);
-  OnPrepareDC(&dc);
-  dc.DrawDragRect(&newRect,CSize(1,1),m_lastDragRect,CSize(1,1));
-  m_dragRect     = newRect;
-  m_lastDragRect = &m_dragRect;
+  if(newRect != m_dragRect) {
+    CClientDC dc(this);
+    OnPrepareDC(&dc);
+    dc.DrawDragRect(&newRect,CSize(1,1),m_lastDragRect,CSize(1,1));
+    m_dragRect     = newRect;
+    m_lastDragRect = &m_dragRect;
+    CPoint docSize = viewToDoc(newRect.Size());
+    getMainFrame()->PostMessage(ID_MSG_SHOWRESIZESIZE, docSize.x,docSize.y);
+  }
 }
 
 void CMyPaintView::resizeDocument() {
@@ -309,7 +318,7 @@ int CMyPaintView::getCurrentToolCursor() {
 }
 
 void CMyPaintView::restoreOldTool() {
-  getMainFrame()->PostMessage(WM_COMMAND, MAKELONG(ID_POPTOOL, 0));
+  getMainFrame()->PostMessage(ID_MSG_POPTOOL);
 }
 
 D3DCOLOR CMyPaintView::getColor() {
@@ -327,4 +336,3 @@ void CMyPaintView::enableCut(bool enabled) {
 void CMyPaintView::saveDocState() {
   getMainFrame()->saveDocState();
 }
-

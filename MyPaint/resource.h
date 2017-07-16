@@ -83,12 +83,14 @@
 #define ID_SCROLL_TO_BOTTOM             32816
 #define ID_SCROLL_TO_LEFT               32817
 #define ID_SCROLL_TO_RIGHT              32818
+#define ID_DELETE                       32819
 #define ID_GOTO_WIDTH                   32819
 #define ID_GOTO_HEIGHT                  32820
-#define IDS_INFOFIELD                   32821
-#define IDS_MOUSEPOSITION               32822
-#define ID_POPTOOL                      32823
-#define ID_DELETE                       32824
+#define ID_MSG_POPTOOL                  32830
+#define ID_MSG_SHOWDOCPOINT             32831
+#define ID_MSG_SHOWRESIZESIZE           32832
+#define IDS_INFOFIELD                   32840
+#define IDS_MOUSEPOSITION               32841
 
 // Next default values for new objects
 //

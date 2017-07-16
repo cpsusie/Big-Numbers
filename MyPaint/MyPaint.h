@@ -16,14 +16,14 @@ class CMyPaintApp : public CWinApp {
 public:
   PixRectDevice m_device;
   CMyPaintApp();
-  String getRecentFile(int index);
-  void   removeRecentFile(int index);
+  String   getRecentFile(int index);
+  void     removeRecentFile(int index);
   PixRect *fetchPixRect(const CSize &size);
 
   virtual BOOL InitInstance();
+  virtual int  ExitInstance();
   afx_msg void OnAppAbout();
   DECLARE_MESSAGE_MAP()
-  virtual int ExitInstance();
 };
 
 extern CMyPaintApp theApp;

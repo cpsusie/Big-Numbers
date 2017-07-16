@@ -87,8 +87,10 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
     ON_COMMAND(ID_SCROLL_TO_BOTTOM                , OnScrollToBottom                  )
     ON_COMMAND(ID_SCROLL_TO_LEFT                  , OnScrollToLeft                    )
     ON_COMMAND(ID_SCROLL_TO_RIGHT                 , OnScrollToRight                   )
-    ON_COMMAND(ID_POPTOOL                         , OnPopTool                         )
     ON_COMMAND(ID_DELETE                          , OnDelete                          )
+    ON_MESSAGE(ID_MSG_POPTOOL                     , OnMsgPopTool                      )
+    ON_MESSAGE(ID_MSG_SHOWDOCPOINT                , OnMsgShowDocPoint                 )
+    ON_MESSAGE(ID_MSG_SHOWRESIZESIZE              , OnMsgShowResizeSize               )
 END_MESSAGE_MAP()
 
 static UINT indicators[] = {
@@ -116,14 +118,6 @@ BOOL CMainFrame::PreTranslateMessage(MSG *pMsg) {
   } else {
     result = __super::PreTranslateMessage(pMsg);
   }
-  CMyPaintView *view = getView();
-  if(view->isMouseOnDocument()) {
-    CPoint mp = getView()->getCurrentMousePoint();
-    m_wndStatusBar.SetPaneText(1,format(_T("%3d,%3d px"),mp.x,mp.y).cstr());
-  } else {
-    m_wndStatusBar.SetPaneText(1,EMPTYSTRING);
-  }
-
 //m_wndStatusBar.SetPaneText(2,getDocument()->getInfo().cstr());
   ajourRedoUndo();
   return result;
@@ -478,12 +472,32 @@ void CMainFrame::OnFunctionChangeHue() {
   dlg.DoModal();
 }
 
-void CMainFrame::OnPopTool() {
-  popTool();
-}
-
 void CMainFrame::OnDelete() {
   getCurrentDrawTool()->OnDelete();
+}
+
+LRESULT CMainFrame::OnMsgPopTool(WPARAM wp, LPARAM lp) {
+  popTool();
+  return 0;
+}
+
+LRESULT CMainFrame::OnMsgShowDocPoint(WPARAM wp, LPARAM lp) {
+  CMyPaintView *view = getView();
+  if(view->isMouseOnDocument()) {
+    showPoint(view->getCurrentDocPoint());
+  } else {
+    m_wndStatusBar.SetPaneText(1,EMPTYSTRING);
+  }
+  return 0;
+}
+
+LRESULT CMainFrame::OnMsgShowResizeSize(WPARAM wp, LPARAM lp) {
+  showPoint(CPoint((int)wp, (int)lp));
+  return 0;
+}
+
+void CMainFrame::showPoint(const CPoint &p) {
+  m_wndStatusBar.SetPaneText(1,format(_T("%3d,%3d px"),p.x,p.y).cstr());
 }
 
 void CMainFrame::setCurrentDrawTool(int id) {

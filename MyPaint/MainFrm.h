@@ -55,6 +55,7 @@ public:
   void updateTitle();
   void saveDocState();
   void ajourRedoUndo();
+  void showPoint(const CPoint &p);
   void pushTool(DrawTool *tool);
   void popTool();
 
@@ -156,7 +157,9 @@ protected:
     afx_msg void OnScrollToBottom();
     afx_msg void OnScrollToLeft();
     afx_msg void OnScrollToRight();
-    afx_msg void OnPopTool();
     afx_msg void OnDelete();
+    afx_msg LRESULT OnMsgPopTool(WPARAM wp, LPARAM lp);
+    afx_msg LRESULT OnMsgShowDocPoint(WPARAM wp, LPARAM lp);
+    afx_msg LRESULT OnMsgShowResizeSize(WPARAM wp, LPARAM lp);
     DECLARE_MESSAGE_MAP()
 };
