@@ -145,6 +145,7 @@ protected:
     afx_msg void OnFunctionCannyEdgeDetection();
     afx_msg void OnFunctionDirectionalFilter();
     afx_msg void OnFunctionGaussFilter();
+    afx_msg void OnFunctionSimpleEdgeDetection();
     afx_msg void OnScrollLineDown();
     afx_msg void OnScrollLineUp();
     afx_msg void OnScrollPageDown();

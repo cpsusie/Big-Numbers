@@ -1,5 +1,5 @@
 //{{NO_DEPENDENCIES}}
-// Microsoft Developer Studio generated include file.
+// Microsoft Visual C++ generated include file.
 // Used by MyPaint.rc
 //
 #define IDD_ABOUTBOX                    100
@@ -38,67 +38,68 @@
 #define ID_FILE_GEM                     32771
 #define ID_FILE_GEM_SOM                 32772
 #define ID_FILE_INSERT                  32773
-#define ID_OPTIONS_COLOR                32774
-#define ID_OPTIONS_SCALE                32775
-#define ID_OPTIONS_ZOOM_X1              32776
-#define ID_OPTIONS_ZOOM_X2              32777
-#define ID_OPTIONS_ZOOM_X4              32778
-#define ID_OPTIONS_ZOOM_X8              32779
-#define ID_OPTIONS_APPROXIMATEFILLTOLERANCE 32780
-#define ID_OPTIONS_GRABCOLOR            32781
-#define ID_TOOLS_PEN                    32782
-#define ID_TOOLS_LINE                   32783
-#define ID_TOOLS_RECTANGLE              32784
-#define ID_TOOLS_POLYGON                32785
-#define ID_TOOLS_ELLIPSE                32786
-#define ID_TOOLS_TEXT                   32787
-#define ID_TOOLS_DRAWTEXT               32788
-#define ID_TOOLS_FILL                   32789
-#define ID_TOOLS_FILLTRANSPARENT        32790
-#define ID_TOOLS_APPROXIMATEFILL        32791
-#define ID_TOOLS_CHANGEHUE              32792
-#define ID_TOOLS_MOVERECTANGLE          32793
-#define ID_TOOLS_MOVEREGION             32794
-#define ID_TOOLS_ERASE                  32795
-#define ID_FUNCTION_ROTATE              32796
-#define ID_FUNCTION_SCALE               32797
-#define ID_FUNCTION_MIRROR_HORIZONTAL   32798
-#define ID_FUNCTION_MIRROR_VERTICAL     32799
-#define ID_FUNCTION_MAKEGRAYSCALE       32800
-#define ID_FUNCTION_CHANGEHUE           32801
-#define ID_FUNCTION_SOBELEDGEDETECTION  32802
-#define ID_FUNCTION_LAPACEEDGEDETECTION 32803
-#define ID_FUNCTION_CANNYEDGEDETECTION  32804
-#define ID_FUNCTION_DIRECTIONFILTER     32805
-#define ID_FUNCTION_GAUSSFILTER         32806
-#define ID_SCROLL_LINE_DOWN             32807
-#define ID_SCROLL_LINE_UP               32808
-#define ID_SCROLL_PAGE_DOWN             32809
-#define ID_SCROLL_PAGE_UP               32810
-#define ID_SCROLL_LEFT                  32811
-#define ID_SCROLL_RIGHT                 32812
-#define ID_SCROLL_PAGE_LEFT             32813
-#define ID_SCROLL_PAGE_RIGHT            32814
-#define ID_SCROLL_TO_TOP                32815
-#define ID_SCROLL_TO_BOTTOM             32816
-#define ID_SCROLL_TO_LEFT               32817
-#define ID_SCROLL_TO_RIGHT              32818
-#define ID_DELETE                       32819
-#define ID_GOTO_WIDTH                   32819
-#define ID_GOTO_HEIGHT                  32820
-#define ID_MSG_POPTOOL                  32830
-#define ID_MSG_SHOWDOCPOINT             32831
-#define ID_MSG_SHOWRESIZESIZE           32832
-#define IDS_INFOFIELD                   32840
-#define IDS_MOUSEPOSITION               32841
+#define ID_OPTIONS_COLOR                32780
+#define ID_OPTIONS_SCALE                32781
+#define ID_OPTIONS_ZOOM_X1              32782
+#define ID_OPTIONS_ZOOM_X2              32783
+#define ID_OPTIONS_ZOOM_X4              32784
+#define ID_OPTIONS_ZOOM_X8              32785
+#define ID_OPTIONS_APPROXIMATEFILLTOLERANCE 32786
+#define ID_OPTIONS_GRABCOLOR            32787
+#define ID_TOOLS_PEN                    32790
+#define ID_TOOLS_LINE                   32791
+#define ID_TOOLS_RECTANGLE              32792
+#define ID_TOOLS_POLYGON                32793
+#define ID_TOOLS_ELLIPSE                32794
+#define ID_TOOLS_TEXT                   32795
+#define ID_TOOLS_DRAWTEXT               32796
+#define ID_TOOLS_FILL                   32797
+#define ID_TOOLS_FILLTRANSPARENT        32798
+#define ID_TOOLS_APPROXIMATEFILL        32799
+#define ID_TOOLS_CHANGEHUE              32800
+#define ID_TOOLS_MOVERECTANGLE          32801
+#define ID_TOOLS_MOVEREGION             32802
+#define ID_TOOLS_ERASE                  32803
+#define ID_FUNCTION_ROTATE              32810
+#define ID_FUNCTION_SCALE               32811
+#define ID_FUNCTION_MIRROR_HORIZONTAL   32812
+#define ID_FUNCTION_MIRROR_VERTICAL     32813
+#define ID_FUNCTION_MAKEGRAYSCALE       32814
+#define ID_FUNCTION_CHANGEHUE           32815
+#define ID_FUNCTION_SOBELEDGEDETECTION  32820
+#define ID_FUNCTION_LAPACEEDGEDETECTION 32821
+#define ID_FUNCTION_CANNYEDGEDETECTION  32822
+#define ID_FUNCTION_DIRECTIONFILTER     32823
+#define ID_FUNCTION_GAUSSFILTER         32824
+#define ID_FUNCTION_SIMPLEEDGEDETECTION 32825
+#define ID_SCROLL_LINE_DOWN             32840
+#define ID_SCROLL_LINE_UP               32841
+#define ID_SCROLL_PAGE_DOWN             32842
+#define ID_SCROLL_PAGE_UP               32843
+#define ID_SCROLL_LEFT                  32844
+#define ID_SCROLL_RIGHT                 32845
+#define ID_SCROLL_PAGE_LEFT             32846
+#define ID_SCROLL_PAGE_RIGHT            32847
+#define ID_SCROLL_TO_TOP                32848
+#define ID_SCROLL_TO_BOTTOM             32849
+#define ID_SCROLL_TO_LEFT               32850
+#define ID_SCROLL_TO_RIGHT              32851
+#define ID_DELETE                       32860
+#define ID_GOTO_WIDTH                   32870
+#define ID_GOTO_HEIGHT                  32871
+#define ID_MSG_POPTOOL                  32880
+#define ID_MSG_SHOWDOCPOINT             32881
+#define ID_MSG_SHOWRESIZESIZE           32882
+#define IDS_INFOFIELD                   32890
+#define IDS_MOUSEPOSITION               32891
 
 // Next default values for new objects
-//
+// 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        156
-#define _APS_NEXT_COMMAND_VALUE         32825
+#define _APS_NEXT_COMMAND_VALUE         32826
 #define _APS_NEXT_CONTROL_VALUE         1017
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

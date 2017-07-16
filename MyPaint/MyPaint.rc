@@ -1,4 +1,4 @@
-//Microsoft Developer Studio generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
 
@@ -13,13 +13,11 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Danish resources
+// Danish (Denmark) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DAN)
-#ifdef _WIN32
 LANGUAGE LANG_DANISH, SUBLANG_DEFAULT
 #pragma code_page(1252)
-#endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -27,18 +25,18 @@ LANGUAGE LANG_DANISH, SUBLANG_DEFAULT
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE DISCARDABLE 
+1 TEXTINCLUDE 
 BEGIN
     "resource.h\0"
 END
 
-2 TEXTINCLUDE DISCARDABLE 
+2 TEXTINCLUDE 
 BEGIN
     "#include ""afxres.h""\r\n"
     "\0"
 END
 
-3 TEXTINCLUDE DISCARDABLE 
+3 TEXTINCLUDE 
 BEGIN
     "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
     "#define _AFX_NO_OLE_RESOURCES\r\n"
@@ -59,50 +57,53 @@ END
 
 #endif    // APSTUDIO_INVOKED
 
-#endif    // Danish resources
+#endif    // Danish (Denmark) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
 /////////////////////////////////////////////////////////////////////////////
-// English (U.S.) resources
+// English (United States) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-#ifdef _WIN32
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
-#endif //_WIN32
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Cursor
 //
 
-IDC_CURSORPENCIL1       CURSOR  DISCARDABLE     "res\\PENCIL.CUR"
-IDC_CURSORHAIRCROSS     CURSOR  DISCARDABLE     "res\\cursorHairCross.cur"
-IDC_CURSORFILLCOLOR     CURSOR  DISCARDABLE     "res\\cursorFill.cur"
-IDC_CURSORMOVE4WAYS     CURSOR  DISCARDABLE     "res\\4WAY02.CUR"
-IDC_CURSORERASE         CURSOR  DISCARDABLE     "res\\cursorErase.cur"
-IDC_CURSORPENCIL        CURSOR  DISCARDABLE     "res\\cursorPen.cur"
+IDC_CURSORPENCIL1       CURSOR                  "res\\PENCIL.CUR"
+
+IDC_CURSORHAIRCROSS     CURSOR                  "res\\cursorHairCross.cur"
+
+IDC_CURSORFILLCOLOR     CURSOR                  "res\\cursorFill.cur"
+
+IDC_CURSORMOVE4WAYS     CURSOR                  "res\\4WAY02.CUR"
+
+IDC_CURSORERASE         CURSOR                  "res\\cursorErase.cur"
+
+IDC_CURSORPENCIL        CURSOR                  "res\\cursorPen.cur"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Dialog
 //
 
-IDD_ADJUSTLSHDIALOG DIALOG DISCARDABLE  0, 0, 255, 206
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_ADJUSTLSHDIALOG DIALOG 0, 0, 255, 206
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Adjust colors"
 FONT 8, "MS Sans Serif"
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,198,7,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,198,24,50,14
     CONTROL         "",IDC_COLORMAPCTRL,
-                    "{5C04522B-C18B-4485-8389-5C896BF59881}",WS_TABSTOP,13,
-                    12,176,176
+                    "{5C04522B-C18B-4485-8389-5C896BF59881}",WS_TABSTOP,13,12,176,176
 END
 
-IDD_ABOUTBOX DIALOG DISCARDABLE  0, 0, 235, 55
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_ABOUTBOX DIALOG 0, 0, 235, 55
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About MyPaint"
 FONT 8, "MS Sans Serif"
 BEGIN
@@ -112,8 +113,8 @@ BEGIN
     DEFPUSHBUTTON   "OK",IDOK,178,7,50,14,WS_GROUP
 END
 
-IDD_DEGREEDIALOG DIALOG DISCARDABLE  0, 0, 186, 95
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_DEGREEDIALOG DIALOG 0, 0, 186, 95
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Degree"
 FONT 8, "MS Sans Serif"
 BEGIN
@@ -123,15 +124,13 @@ BEGIN
     LTEXT           "Degree:",IDC_STATIC,13,50,28,14
 END
 
-IDD_SCALEDIALOG DIALOG DISCARDABLE  0, 0, 207, 149
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_SCALEDIALOG DIALOG 0, 0, 207, 149
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Scale"
 FONT 8, "MS Sans Serif"
 BEGIN
-    CONTROL         "Per&cent",IDC_RADIOPERCENT,"Button",BS_AUTORADIOBUTTON | 
-                    WS_GROUP | WS_TABSTOP,21,23,62,15
-    CONTROL         "Pi&xels",IDC_RADIOPIXELS,"Button",BS_AUTORADIOBUTTON | 
-                    WS_TABSTOP,21,43,38,15
+    CONTROL         "Per&cent",IDC_RADIOPERCENT,"Button",BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,21,23,62,15
+    CONTROL         "Pi&xels",IDC_RADIOPIXELS,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,21,43,38,15
     EDITTEXT        IDC_SCALEWIDTHEDIT,60,89,36,12,ES_AUTOHSCROLL
     EDITTEXT        IDC_SCALEHEIGHTEDIT,60,109,36,12,ES_AUTOHSCROLL
     DEFPUSHBUTTON   "OK",IDOK,150,7,50,14
@@ -144,23 +143,22 @@ BEGIN
     GROUPBOX        "Type",IDC_STATIC,15,14,120,48
 END
 
-IDD_TEXTDIALOG DIALOG DISCARDABLE  0, 0, 309, 202
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_TEXTDIALOG DIALOG 0, 0, 309, 202
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Text"
 FONT 8, "MS Sans Serif"
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,252,7,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,252,24,50,14
-    EDITTEXT        IDC_EDITTEXT,56,50,213,63,ES_MULTILINE | ES_AUTOVSCROLL | 
-                    ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDITTEXT,56,50,213,63,ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL
     LTEXT           "&Text:",IDC_STATIC,15,73,21,15
     EDITTEXT        IDC_EDITORIENTATION,56,126,48,18,ES_AUTOHSCROLL
     LTEXT           "Orientation:",IDC_STATIC,15,129,40,16
     PUSHBUTTON      "&Font...",IDC_BUTTONFONT,55,154,49,17
 END
 
-IDD_APPROXIMATEFILLDIALOG DIALOG DISCARDABLE  0, 0, 164, 75
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_APPROXIMATEFILLDIALOG DIALOG 0, 0, 164, 75
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Approximate fill tolerance"
 FONT 8, "MS Sans Serif"
 BEGIN
@@ -170,8 +168,8 @@ BEGIN
     EDITTEXT        IDC_EDITTOLERANCE,59,41,35,13,ES_AUTOHSCROLL
 END
 
-IDD_ERASETOOLSIZEDIALOG DIALOG DISCARDABLE  0, 0, 186, 93
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_ERASETOOLSIZEDIALOG DIALOG 0, 0, 186, 93
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Erasetool size"
 FONT 8, "MS Sans Serif"
 BEGIN
@@ -190,7 +188,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO DISCARDABLE 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_ADJUSTLSHDIALOG, DIALOG
     BEGIN
@@ -264,22 +262,25 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDR_MAINFRAME           ICON    DISCARDABLE     "res\\MyPaint.ico"
-IDR_MYPAINTYPE          ICON    DISCARDABLE     "res\\MyPaintDoc.ico"
+IDR_MAINFRAME           ICON                    "res\\MyPaint.ico"
+
+IDR_MYPAINTYPE          ICON                    "res\\MyPaintDoc.ico"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Bitmap
 //
 
-IDR_MAINFRAME           BITMAP  MOVEABLE PURE   "res\\Toolbar.bmp"
+IDR_MAINFRAME           BITMAP                  "res\\Toolbar.bmp"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Toolbar
 //
 
-IDR_MAINFRAME TOOLBAR DISCARDABLE  16, 15
+IDR_MAINFRAME TOOLBAR 16, 15
 BEGIN
     BUTTON      ID_FILE_NEW
     BUTTON      ID_FILE_OPEN
@@ -300,7 +301,7 @@ END
 // Menu
 //
 
-IDR_MAINFRAME MENU PRELOAD DISCARDABLE 
+IDR_MAINFRAME MENU
 BEGIN
     POPUP "&File"
     BEGIN
@@ -344,9 +345,7 @@ BEGIN
             MENUITEM "x 8\tCtrl + 8",               ID_OPTIONS_ZOOM_X8
         END
         MENUITEM SEPARATOR
-        MENUITEM "Appro&ximate fill tolerance...", 
-                                                ID_OPTIONS_APPROXIMATEFILLTOLERANCE
-
+        MENUITEM "Appro&ximate fill tolerance...", ID_OPTIONS_APPROXIMATEFILLTOLERANCE
         MENUITEM "Grab color",                  ID_OPTIONS_GRABCOLOR
     END
     POPUP "&Tools"
@@ -378,21 +377,17 @@ BEGIN
         POPUP "Mirror"
         BEGIN
             MENUITEM "&Horizontal\tCtrl+H",         ID_FUNCTION_MIRROR_HORIZONTAL
-
             MENUITEM "Vert&ical\tCtrl+I",           ID_FUNCTION_MIRROR_VERTICAL
-
         END
         MENUITEM "Make grayscale\tCtrl+G",      ID_FUNCTION_MAKEGRAYSCALE
         MENUITEM "Change hue...\tCtrl+U",       ID_FUNCTION_CHANGEHUE
         MENUITEM SEPARATOR
         MENUITEM "Sobel edge-detection",        ID_FUNCTION_SOBELEDGEDETECTION
-
         MENUITEM "Lapace edge-detection",       ID_FUNCTION_LAPACEEDGEDETECTION
-
         MENUITEM "Canny edge-detection",        ID_FUNCTION_CANNYEDGEDETECTION
-
         MENUITEM "Directional edge filter",     ID_FUNCTION_DIRECTIONFILTER
         MENUITEM "Gauss filter",                ID_FUNCTION_GAUSSFILTER
+        MENUITEM "Simple Edge detection",       ID_FUNCTION_SIMPLEEDGEDETECTION
     END
     POPUP "&Help"
     BEGIN
@@ -406,7 +401,7 @@ END
 // Accelerator
 //
 
-IDR_MAINFRAME ACCELERATORS PRELOAD MOVEABLE PURE 
+IDR_MAINFRAME ACCELERATORS
 BEGIN
     "1",            ID_OPTIONS_ZOOM_X1,     VIRTKEY, CONTROL, NOINVERT
     "2",            ID_OPTIONS_ZOOM_X2,     VIRTKEY, CONTROL, NOINVERT
@@ -414,8 +409,7 @@ BEGIN
     "8",            ID_OPTIONS_ZOOM_X8,     VIRTKEY, CONTROL, NOINVERT
     "C",            ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
     "G",            ID_FUNCTION_MAKEGRAYSCALE, VIRTKEY, CONTROL, NOINVERT
-    "H",            ID_FUNCTION_MIRROR_HORIZONTAL, VIRTKEY, CONTROL, 
-                                                    NOINVERT
+    "H",            ID_FUNCTION_MIRROR_HORIZONTAL, VIRTKEY, CONTROL, NOINVERT
     "I",            ID_FUNCTION_MIRROR_VERTICAL, VIRTKEY, CONTROL, NOINVERT
     "K",            ID_FUNCTION_SCALE,      VIRTKEY, CONTROL, NOINVERT
     "N",            ID_FILE_NEW,            VIRTKEY, CONTROL, NOINVERT
@@ -449,14 +443,13 @@ BEGIN
     "Z",            ID_EDIT_UNDO,           VIRTKEY, CONTROL, NOINVERT
 END
 
-IDR_ACCELERATOR_SCALEDIALOG ACCELERATORS DISCARDABLE 
+IDR_ACCELERATOR_SCALEDIALOG ACCELERATORS
 BEGIN
     "H",            ID_GOTO_HEIGHT,         VIRTKEY, ALT, NOINVERT
     "W",            ID_GOTO_WIDTH,          VIRTKEY, ALT, NOINVERT
 END
 
 
-#ifndef _MAC
 /////////////////////////////////////////////////////////////////////////////
 //
 // Version
@@ -479,18 +472,13 @@ BEGIN
     BEGIN
         BLOCK "040904b0"
         BEGIN
-            VALUE "Comments", "\0"
-            VALUE "CompanyName", "\0"
-            VALUE "FileDescription", "MyPaint\0"
-            VALUE "FileVersion", "1, 0, 0, 1\0"
-            VALUE "InternalName", "MyPaint\0"
-            VALUE "LegalCopyright", "Copyright (C) 2012\0"
-            VALUE "LegalTrademarks", "\0"
-            VALUE "OriginalFilename", "MyPaint.EXE\0"
-            VALUE "PrivateBuild", "\0"
-            VALUE "ProductName", "MyPaint\0"
-            VALUE "ProductVersion", "1, 0, 0, 1\0"
-            VALUE "SpecialBuild", "\0"
+            VALUE "FileDescription", "MyPaint"
+            VALUE "FileVersion", "1, 0, 0, 1"
+            VALUE "InternalName", "MyPaint"
+            VALUE "LegalCopyright", "Copyright (C) 2012"
+            VALUE "OriginalFilename", "MyPaint.EXE"
+            VALUE "ProductName", "MyPaint"
+            VALUE "ProductVersion", "1, 0, 0, 1"
         END
     END
     BLOCK "VarFileInfo"
@@ -499,26 +487,24 @@ BEGIN
     END
 END
 
-#endif    // !_MAC
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // String Table
 //
 
-STRINGTABLE PRELOAD DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDR_MAINFRAME           "MyPaint\n\nMyPain\n\n\nMyPaint.Document\nMyPain Document"
 END
 
-STRINGTABLE PRELOAD DISCARDABLE 
+STRINGTABLE
 BEGIN
     AFX_IDS_APP_TITLE       "MyPaint"
     AFX_IDS_IDLEMESSAGE     "Ready"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     ID_INDICATOR_EXT        "EXT"
     ID_INDICATOR_CAPS       "CAP"
@@ -528,7 +514,7 @@ BEGIN
     ID_INDICATOR_REC        "REC"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     ID_FILE_NEW             "Create a new document\nNew"
     ID_FILE_OPEN            "Open an existing document\nOpen"
@@ -541,13 +527,13 @@ BEGIN
     ID_FILE_PRINT_PREVIEW   "Display full pages\nPrint Preview"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     ID_APP_ABOUT            "Display program information, version number and copyright\nAbout"
     ID_APP_EXIT             "Quit the application; prompts to save documents\nExit"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     ID_FILE_MRU_FILE1       "Open this document"
     ID_FILE_MRU_FILE2       "Open this document"
@@ -567,18 +553,18 @@ BEGIN
     ID_FILE_MRU_FILE16      "Open this document"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     ID_NEXT_PANE            "Switch to the next window pane\nNext Pane"
     ID_PREV_PANE            "Switch back to the previous window pane\nPrevious Pane"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     ID_WINDOW_SPLIT         "Split the active window into panes\nSplit"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     ID_EDIT_CLEAR           "Erase the selection\nErase"
     ID_EDIT_CLEAR_ALL       "Erase everything\nErase All"
@@ -593,13 +579,13 @@ BEGIN
     ID_EDIT_REDO            "Redo the previously undone action\nRedo"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     ID_VIEW_TOOLBAR         "Show or hide the toolbar\nToggle ToolBar"
     ID_VIEW_STATUS_BAR      "Show or hide the status bar\nToggle StatusBar"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     AFX_IDS_SCSIZE          "Change the window size"
     AFX_IDS_SCMOVE          "Change the window position"
@@ -610,24 +596,24 @@ BEGIN
     AFX_IDS_SCCLOSE         "Close the active window and prompts to save the documents"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     AFX_IDS_SCRESTORE       "Restore the window to normal size"
     AFX_IDS_SCTASKLIST      "Activate Task List"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     AFX_IDS_PREVIEW_CLOSE   "Close print preview mode\nCancel Preview"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDS_INFOFIELD           "My Documentinfo                                              "
     IDS_MOUSEPOSITION       "MMM,MMM px"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     ID_FILE_GEM             "Saves document"
     ID_FILE_GEM_SOM         "Saves document with a new name"
@@ -642,7 +628,7 @@ BEGIN
     ID_TOOLS_LINE           "Draw a line"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     ID_TOOLS_RECTANGLE      "Draw a rectangle"
     ID_TOOLS_ELLIPSE        "Draw an ellipse"
@@ -653,7 +639,7 @@ BEGIN
     ID_FUNCTION_MIRROR_VERTICAL "Vertical mirror"
 END
 
-#endif    // English (U.S.) resources
+#endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

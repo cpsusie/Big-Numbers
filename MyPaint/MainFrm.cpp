@@ -75,6 +75,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
     ON_COMMAND(ID_FUNCTION_CANNYEDGEDETECTION     , OnFunctionCannyEdgeDetection      )
     ON_COMMAND(ID_FUNCTION_DIRECTIONFILTER        , OnFunctionDirectionalFilter       )
     ON_COMMAND(ID_FUNCTION_GAUSSFILTER            , OnFunctionGaussFilter             )
+    ON_COMMAND(ID_FUNCTION_SIMPLEEDGEDETECTION    , OnFunctionSimpleEdgeDetection     )
     ON_COMMAND(ID_SCROLL_LINE_DOWN                , OnScrollLineDown                  )
     ON_COMMAND(ID_SCROLL_LINE_UP                  , OnScrollLineUp                    )
     ON_COMMAND(ID_SCROLL_PAGE_DOWN                , OnScrollPageDown                  )
@@ -466,6 +467,17 @@ void CMainFrame::OnFunctionLapaceEdgeDetection() { applyFilter(LaplaceFilter());
 void CMainFrame::OnFunctionCannyEdgeDetection()  { applyFilter(CannyEdgeFilter());     }
 void CMainFrame::OnFunctionGaussFilter()         { applyFilter(GaussFilter());         }
 void CMainFrame::OnFunctionDirectionalFilter()   { applyFilter(EdgeDirectionFilter()); }
+
+void CMainFrame::OnFunctionSimpleEdgeDetection() {
+  CMyPaintDoc *doc = getDocument();
+  PixRect     *image = doc->getImage();
+  PixRect     *copy  = image->clone(true);
+  const CSize  size  = image->getSize();
+  copy->rop(0,0,size.cx,size.cy,SRCINVERT,image,1,1);
+  saveDocState();
+  doc->setImage(copy);
+  Invalidate();
+}
 
 void CMainFrame::OnFunctionChangeHue() {
   CAdjustColorDlg dlg(*getView(),this);
