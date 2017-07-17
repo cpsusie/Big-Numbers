@@ -226,26 +226,37 @@ private:
     return m_eofRead && (m_nextChar >= m_endBuf);
   }
 
-  _TUCHAR *end() {                         // Just past last char in buf
+  // Just past last char in buf
+  _TUCHAR *end() {
     return m_inputBuffer + SCANNERBUFSIZE;
   }
 
 protected:
-  bool m_debug;             // If true, call debug on every cycle
-  int look(int n);          // Return the n'th TCHAR of lookahead.
-                            // Return EOF if you try to look past end of file,
-                            // 0 if you try to look past end of the buffer..
+  // If true, call debug on every cycle
+  bool m_debug;
 
-  int advance();            // Returns the next TCHAR from input and advances past it
+  // Return the n'th TCHAR of lookahead.
+  // Return EOF if you try to look past end of file,
+  // 0 if you try to look past end of the buffer..
+  int look(int n);
+
+  // Returns the next TCHAR from input and advances past it
+  int advance();
   int flushBuf();
   int flush(bool force);
   int input();
   void unput(int ch);
   void less(int n);
-  bool pushback(int count); // Push count characters back into the input.
+
+  // Push count characters back into the input.
+  bool pushback(int count);
+
+  // when called, next call to getNextLexeme() will return EOS (0)
   void terminateLexeme();
   void unTerminateLexeme();
-  void terminateInput();    // when called, next call to getNextLexeme() will return EOS
+
+  // when called, next call to getNextLexeme() will return EOS
+  void terminateInput();
   virtual void setMore();
   virtual void initMore();
   virtual bool isMore() const;
@@ -304,5 +315,8 @@ public:
   void debug(const TCHAR *format, ...);
   virtual void verror(const SourcePosition &pos, const TCHAR *format, va_list argptr);
   virtual void vdebug(const TCHAR *format, va_list argptr);
-  virtual int getNextLexeme();
+  // virtual. default inputfunction. Will be generated in derived class by lexgen
+  virtual int getNextLexeme() {
+    return 0;
+  }
 };

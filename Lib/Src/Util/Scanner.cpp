@@ -165,7 +165,7 @@ int Scanner::flushBuf() { // protected
 }
 
 #define SCANNERDANGER   (m_endBuf - SCANNERMAXLOOK)
-                                                    // Flush buffer when Next passes this address
+// Flush buffer when Next passes this address
 // Flush the input buffer. Do nothing if the current input TCHAR isn't
 // in the SCANNERDANGER zone, otherwise move all unread characters to the left end
 // of the buffer and fill the remainder of the buffer. Note that input()
@@ -245,7 +245,6 @@ int Scanner::input() { // protected
     ch = advance();
     markEnd();
   }
-
   return ch;
 }
 
@@ -269,7 +268,8 @@ void Scanner::less(int count) { // protected
   terminateLexeme();
 }
 
-static unsigned short findColumn(const TCHAR *s, const TCHAR *first) { // search backwards for the the first '\n'
+// search backwards for the the first '\n'
+static unsigned short findColumn(const TCHAR *s, const TCHAR *first) {
   UINT count;
   for(count = 0; s >= first && *s != NEWLINE; s--) {
     count++;
@@ -315,7 +315,7 @@ void Scanner::unTerminateLexeme() { // protected
   }
 }
 
-void Scanner::terminateInput() { // protected. when called, next call to getNextLexeme() will return EOS (0)
+void Scanner::terminateInput() { // protected.
   m_eofRead  = true;
   m_nextChar = m_endBuf;
 }
@@ -430,8 +430,4 @@ SourcePosition Scanner::getPos() const {
     p.m_column = findColumn(s,(TCHAR*)m_inputBuffer);
     return p;
   }
-}
-
-int Scanner::getNextLexeme() { // virtual. default inputfunction. Will be generated in derived class by lexgen
-  return 0;
 }
