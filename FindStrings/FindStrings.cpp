@@ -25,7 +25,6 @@ void StringSearcher::scan(const String &name) {
     _ftprintf(stderr, _T("Scanning %-50s             \r"), name.cstr());
   }
   LexFileStream input(name);
-
   if(!input.ok()) {
     _tperror(name.cstr());
     return;
@@ -43,7 +42,7 @@ void StringSearcher::scan(const String &name) {
     case OLDSTRING :
       if(!lastWasDirective) {
         String tmp = lex.getText();
-        _tprintf(_T("%-50s:%s\n"), name.cstr(), tmp.trim().cstr());
+        _tprintf(_T("%s%s: %s\n"), name.cstr(), lex.getPos().toString().cstr(), tmp.trim().cstr());
       }
       lastWasDirective = false;
       break;
@@ -52,7 +51,7 @@ void StringSearcher::scan(const String &name) {
         if(m_showOldChars) {
           if(!lastWasDirective) {
             String tmp = lex.getText();
-            _tprintf(_T("%-50s:%s\n"), name.cstr(), tmp.trim().cstr());
+            _tprintf(_T("%s%s: %s\n"), name.cstr(), lex.getPos().toString().cstr(), tmp.trim().cstr());
           }
         }
       }
