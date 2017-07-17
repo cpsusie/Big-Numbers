@@ -459,18 +459,19 @@ public:
   void text(const CPoint &p, const String &text, const PixRectFont &font, D3DCOLOR color, bool invert=false);
   void drawGlyph(const CPoint &p, const GlyphCurveData &glyphCurve, D3DCOLOR color, bool invert=false);
   void drawText( const CPoint &p, const String &text, const PixRectFont &font, D3DCOLOR color, bool invert=false);
-  void copy(VIDEOHDR &videoHeader);
+  void copy(const VIDEOHDR &videoHeader);
   void formatConversion(const PixRect &pr);
 
   inline bool contains(const CPoint &p) const {
-    return (UINT)p.x < m_desc.Width && (UINT)p.y < m_desc.Height;
+    return ((UINT)p.x < m_desc.Width) && ((UINT)p.y < m_desc.Height);
   }
 
   inline bool contains(UINT x, UINT y) const {
-    return x < m_desc.Width && y < m_desc.Height;
+    return (x < m_desc.Width) && (y < m_desc.Height);
   }
-  bool contains(        const Point2D &p) const;
-  bool containsExtended(const Point2D &p) const;
+  inline bool contains(const Point2D &p) const {
+    return p.x >= 0 && p.x < m_desc.Width && p.y >= 0 && p.y < m_desc.Height;
+  }
 
   void rop( const CRect  &dr                 , ULONG op, const PixRect *src, const CPoint &sp);
   void rop( const CRect  &dr                 , ULONG op, const PixRect *src, const CRect  &sr);
@@ -501,7 +502,7 @@ public:
 
   void replicate(int x, int y, int w, int h, const PixRect *src);
   void fill(const CPoint &p, D3DCOLOR color);
-  void fillTransparent(const CPoint &p, unsigned char alpha=255); // alpha = 0 => transparent, 255 = opaque
+  void fillTransparent(const CPoint &p, BYTE alpha=255); // alpha = 0 => transparent, 255 = opaque
   void approximateFill(const CPoint &p, D3DCOLOR color, double tolerance);
   void preMultiplyAlpha();
   PixRect &apply(PixRectOperator &op    );                                                // return *this

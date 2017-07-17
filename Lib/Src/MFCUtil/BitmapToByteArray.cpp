@@ -9,8 +9,8 @@
 
 
 #pragma comment(lib, LIB_VERSION "libjpeg.lib")
-#pragma comment(lib,LIB_VERSION "common.lib")
-#pragma comment(lib,LIB_VERSION "zlib.lib")
+#pragma comment(lib, LIB_VERSION "common.lib" )
+#pragma comment(lib, LIB_VERSION "zlib.lib"   )
 
 ByteArray &bitmapToByteArray(ByteArray &dst, HBITMAP bm) {
   dst.clear();

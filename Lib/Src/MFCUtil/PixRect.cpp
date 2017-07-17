@@ -572,14 +572,6 @@ void PixRect::unknownTypeError(const TCHAR *method) const {
 }
 
 
-bool PixRect::contains(const Point2D &p) const {
-  return p.x >= 0 && p.x < m_desc.Width && p.y >= 0 && p.y < m_desc.Height;
-}
-
-bool PixRect::containsExtended(const Point2D &p) const {
-  return p.x > -1 && p.x < m_desc.Width && p.y > -1 && p.y < m_desc.Height;
-}
-
 bool operator==(const D3DSURFACE_DESC &d1, const D3DSURFACE_DESC &d2) {
   return d1.Width  == d2.Width
       && d1.Height == d2.Height
@@ -855,7 +847,8 @@ void PixRect::setClipper(PixRectClipper *clipper) {
   }
 }
 */
-void PixRect::copy(VIDEOHDR &videoHeader) {
+
+void PixRect::copy(const VIDEOHDR &videoHeader) {
   D3DLOCKED_RECT lr;
   CHECK3DRESULT(m_surface->LockRect(&lr, NULL, D3DLOCK_NOSYSLOCK));
   memcpy(lr.pBits, videoHeader.lpData, videoHeader.dwBytesUsed);

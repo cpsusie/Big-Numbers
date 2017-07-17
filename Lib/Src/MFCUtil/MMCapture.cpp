@@ -1,7 +1,7 @@
 #include "pch.h"
 #include <MFCUtil/MMCapture.h>
 
-#pragma comment(lib,"winmm.lib")
+#pragma comment(lib, "winmm.lib")
 
 #define VFWLIBROOT "c:/Program Files (x86)/Windows Kits/8.1/Lib/winv6.3/um/"
 
