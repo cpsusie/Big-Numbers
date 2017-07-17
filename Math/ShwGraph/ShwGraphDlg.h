@@ -39,7 +39,10 @@ public:
   void movePoint(  intptr_t index, const CPoint &point);
   intptr_t findDataPoint(const CPoint &point);
   void adjustTransform();
-  RectangleTransformation &getTr() {
+  inline RectangleTransformation &getTr() {
+    return m_cs.getTransformation();
+  }
+  inline const RectangleTransformation &getTr() const {
     return m_cs.getTransformation();
   }
   CPoint mouseToCS(const CPoint &p) const;
@@ -62,18 +65,18 @@ public:
   void pushZoom(CRect &rect);
   void pushZoom(double minx, double maxx, double miny, double maxy);
   void popZoom();
-  DoubleInterval getXInterval();
+  DoubleInterval getXInterval() const;
   DoubleInterval findYInterval(const DoubleInterval &xInterval);
-  void setState(DialogState newstate);
-  double evaluate(      double x);
-  void   solve();
-  double minXValue() const;
-  double maxXValue() const;
+  void           setState(DialogState newstate);
+  double         evaluate(      double x);
+  void           solve();
 
   void setCurrentFont(CFont *newfont);
 
   Point2DArray              m_points;
   DataPointArray            m_dataPoints;
+  mutable DataRange         m_pointRange;
+  mutable bool              m_needUpdateRange;
   bool                      m_needSolve;
   bool                      m_canDraw;
   int                       m_iptype;

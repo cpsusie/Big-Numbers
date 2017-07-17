@@ -1,4 +1,3 @@
-
 #pragma once
 
 #ifndef __AFXWIN_H__
@@ -9,7 +8,6 @@ class CShwgraphApp : public CWinApp {
 public:
     CShwgraphApp();
 
-    public:
     virtual BOOL InitInstance();
 
     DECLARE_MESSAGE_MAP()

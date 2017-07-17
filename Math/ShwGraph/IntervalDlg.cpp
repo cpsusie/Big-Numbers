@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "ShwGraph.h"
 #include "IntervalDlg.h"
 
 #ifdef _DEBUG

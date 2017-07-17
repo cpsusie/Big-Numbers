@@ -1,10 +1,9 @@
 #include "stdafx.h"
 #include <process.h>
-#include "ShwGraph.h"
-#include "ShwGraphDlg.h"
-#include "DegreeDlg.h"
 #include <Math/MathFunctions.h>
 #include <Math/MathException.h>
+#include "ShwGraphDlg.h"
+#include "DegreeDlg.h"
 #include "IntervalDlg.h"
 
 #ifdef _DEBUG
@@ -214,12 +213,14 @@ void CShwGraphDlg::setState(DialogState newstate) {
 
 void CShwGraphDlg::addPoint(const Point2DP &p) {
   m_points.add(p);
+  m_needUpdateRange = true;
   m_needSolve = true;
 }
 
 void CShwGraphDlg::removePoint(intptr_t index) {
   m_points.remove(index);
-  m_needSolve = true;
+  m_needUpdateRange = true;
+  m_needSolve       = true;
 }
 
 void CShwGraphDlg::movePoint(intptr_t index, const CPoint &point) {
@@ -229,7 +230,8 @@ void CShwGraphDlg::movePoint(intptr_t index, const CPoint &point) {
   vp.paintCross(m_points[index],WHITE);
   m_points[index] = getTr().backwardTransform(Point2DP(point));
   vp.paintCross(m_points[index],BLACK);
-  m_needSolve = true;
+  m_needUpdateRange = true;
+  m_needSolve       = true;
   if(autoUpdateScreen()) {
     Invalidate(FALSE);
   }
@@ -319,7 +321,8 @@ void CShwGraphDlg::OnEditDegree() {
 
 void CShwGraphDlg::OnEditClear() {
   m_points.clear();
-  m_needSolve = true;
+  m_needUpdateRange = true;
+  m_needSolve       = true;
   Invalidate(FALSE);
 }
 
@@ -368,11 +371,15 @@ void CShwGraphDlg::OnToolsZoomout() {
   Invalidate(FALSE);
 }
 
-DoubleInterval CShwGraphDlg::getXInterval() {
+DoubleInterval CShwGraphDlg::getXInterval() const {
   if(uselssd()) {
     return getTr().getXTransformation().getFromInterval();
   } else {
-    return DoubleInterval(minXValue(),maxXValue());
+    if(m_needUpdateRange) {
+      m_pointRange      = DataRange(m_points);
+      m_needUpdateRange = false;
+    }
+    return m_pointRange.getXInterval();
   }
 }
 
@@ -380,8 +387,7 @@ DoubleInterval CShwGraphDlg::findYInterval(const DoubleInterval &xInterval) {
   solve();
   if(!m_canDraw) {
     return DoubleInterval(-10,10);
-  }
-  else {
+  } else {
     double step = (xInterval.getTo() - xInterval.getFrom()) / 200;
     double x = xInterval.getFrom();
     double miny,maxy;
@@ -389,8 +395,7 @@ DoubleInterval CShwGraphDlg::findYInterval(const DoubleInterval &xInterval) {
       double y = evaluate(x);
       if(i == 0) {
         maxy = miny = y;
-      }
-      else {
+      } else {
         miny = min(y,miny);
         maxy = max(y,maxy);
       }
@@ -606,14 +611,6 @@ void CShwGraphDlg::solve() {
   } catch(MathException e) {
     showException(e);
   }
-}
-
-double CShwGraphDlg::minXValue() const {
-  return m_points.isEmpty() ? 0 : m_points.getBoundingBox().getMinX();
-}
-
-double CShwGraphDlg::maxXValue() const {
-  return m_points.isEmpty() ? 0 : m_points.getBoundingBox().getMaxX();
 }
 
 double CShwGraphDlg::evaluate(double x) {

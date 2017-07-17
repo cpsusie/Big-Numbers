@@ -6,5 +6,5 @@
 #include <Math.h>
 #include <MFCUtil/CoordinateSystem/CoordinateSystem.h>
 #include <Math/Polynomial.h>
-
 #include "resource.h"
+#include "ShwGraph.h"

@@ -185,14 +185,14 @@ LssdPolynomial::operator Polynomial() const {
   return Polynomial(coef);
 }
 
-static const char *ctext_code1 =
-  "double _poly(int degree, double *p, double x) {\n"
-  "  double result = p[degree--];\n"
-  "  while(degree >= 0)\n"
-  "    result = result * x + p[degree--];\n"
-  "  return result;\n"
-  "}\n\n"
-  "static double _c[] = {\n";
+static const TCHAR *ctext_code1 =
+  _T("double _poly(int degree, double *p, double x) {\n"
+     "  double result = p[degree--];\n"
+     "  while(degree >= 0)\n"
+     "    result = result * x + p[degree--];\n"
+     "  return result;\n"
+     "}\n\n"
+     "static double _c[] = {\n");
 
 
 String LssdPolynomial::generateCFunction() const {
@@ -203,10 +203,10 @@ String LssdPolynomial::generateCFunction() const {
   for(int i = 0; i <= degree; i++) {
     result += format(_T("  %.16le%s"),ptmp.getCoef(i).re,(i < degree) ? _T(",\n") : _T("\n"));
   }
-  const String declareStrFormat = "};\n\n"
-                                  "double f(double x) {\n"
-                                  "  return _poly(%d,_c,x);\n"
-                                  "}\n";
+  const String declareStrFormat = _T("};\n\n"
+                                     "double f(double x) {\n"
+                                     "  return _poly(%d,_c,x);\n"
+                                     "}\n");
   result += format(declareStrFormat.cstr(), degree);
   return result;
 }

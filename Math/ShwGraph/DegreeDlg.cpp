@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "ShwGraph.h"
 #include "DegreeDlg.h"
 
 #ifdef _DEBUG
@@ -15,14 +14,12 @@ void DegreeDlg::DoDataExchange(CDataExchange *pDX) {
     DDX_Text(pDX, IDC_EDIT_DEGREE, m_degree);
 }
 
-
 BEGIN_MESSAGE_MAP(DegreeDlg, CDialog)
     ON_NOTIFY(UDN_DELTAPOS, IDC_SPIN1, OnDeltaposSpin1)
 END_MESSAGE_MAP()
 
 BOOL DegreeDlg::OnInitDialog() {
   __super::OnInitDialog();
-
   gotoEditBox(this,IDC_EDIT_DEGREE);
   return false;
 }

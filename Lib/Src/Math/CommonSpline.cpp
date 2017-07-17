@@ -74,52 +74,50 @@ Real CommonSpline::operator()(int d, const Real &x) {
   }
 }
 
-static const char *ctext_code1 =
-"class Spline {\n"
-"private:\n"
-"  mutable int m_lastInterval;\n"
-"  int n;\n"
-"  const double **yd;\n"
-"  const double *a;\n"
-"  int findInterval(double x) const;\n"
-"public:\n"
-"  Spline(int _n, const double **_yd, const double *_a);\n"
-"  double evaluate(double x) const;\n"
-"};\n"
-"\n"
-"Spline::Spline(int _n, const double **_yd, const double *_a) {\n"
-"  n = _n;\n"
-"  yd = _yd;\n"
-"  a = _a;\n"
-"  m_lastInterval = -1;\n"
-"}\n"
-"\n"
-"int Spline::findInterval(double x) const {\n"
-"  if(m_lastInterval >= 0 && m_lastInterval < n && x >= a[m_lastInterval] && x < a[m_lastInterval+1]) \n"
-"    return m_lastInterval;\n"
-"  if(x < a[0] || x > a[n-1])\n"
-"    return -1;\n"
-"  for(int i = 1; i < n; i++) {\n"
-"    if(a[i] >= x) {\n"
-"      m_lastInterval = i-1;\n"
-"      return m_lastInterval;\n"
-"    }\n"
-"  }\n"
-"  return -1;\n"
-"}\n"
-"\n"
-"double Spline::evaluate(double x) const {\n"
-"  int i = findInterval(x);\n"
-"  if(i < 0) return 0;\n"
-"  double h = x - a[i];\n"
-"  return yd[0][i]+h*(yd[1][i]+h*(yd[2][i]/2.0+h*yd[3][i]/6.0));\n"
-"}\n"
-"\n";
+static const TCHAR *ctext_code1 =
+_T("class Spline {\n"
+   "private:\n"
+   "  mutable int m_lastInterval;\n"
+   "  int n;\n"
+   "  const double **yd;\n"
+   "  const double *a;\n"
+   "  int findInterval(double x) const;\n"
+   "public:\n"
+   "  Spline(int _n, const double **_yd, const double *_a);\n"
+   "  double evaluate(double x) const;\n"
+   "};\n"
+   "\n"
+   "Spline::Spline(int _n, const double **_yd, const double *_a) {\n"
+   "  n = _n;\n"
+   "  yd = _yd;\n"
+   "  a = _a;\n"
+   "  m_lastInterval = -1;\n"
+   "}\n"
+   "\n"
+   "int Spline::findInterval(double x) const {\n"
+   "  if(m_lastInterval >= 0 && m_lastInterval < n && x >= a[m_lastInterval] && x < a[m_lastInterval+1]) \n"
+   "    return m_lastInterval;\n"
+   "  if(x < a[0] || x > a[n-1])\n"
+   "    return -1;\n"
+   "  for(int i = 1; i < n; i++) {\n"
+   "    if(a[i] >= x) {\n"
+   "      m_lastInterval = i-1;\n"
+   "      return m_lastInterval;\n"
+   "    }\n"
+   "  }\n"
+   "  return -1;\n"
+   "}\n"
+   "\n"
+   "double Spline::evaluate(double x) const {\n"
+   "  int i = findInterval(x);\n"
+   "  if(i < 0) return 0;\n"
+   "  double h = x - a[i];\n"
+   "  return yd[0][i]+h*(yd[1][i]+h*(yd[2][i]/2.0+h*yd[3][i]/6.0));\n"
+   "}\n"
+   "\n");
 
-static String declareData(const char *name, const Vector &v) {
-  char tmp[256];
-  sprintf(tmp, "static double %s[] = {\n",name);
-  String result = tmp;
+static String declareData(const String &name, const Vector &v) {
+  String result = format(_T("static double %s[] = {\n"),name.cstr());
   for(UINT i = 0; i < v.getDimension(); i++) {
     result += format(_T("  %.16le%s"),v[i],i < v.getDimension()-1?_T(",\n"):_T("\n"));
   }
@@ -130,8 +128,7 @@ static String declareData(const char *name, const Vector &v) {
 String CommonSpline::generateCFunction() const {
   String result = ctext_code1;
   for(int c = 0; c < 4; c++) {
-    char name[10];
-    sprintf(name,"_yd%d",c);
+    String name = format(_T("_yd%d"),c);
     result += declareData(name,yd.getColumn(c));
   }
   result += "static const double *_yd[] = { _yd0,_yd1,_yd2,_yd3 };\n";
