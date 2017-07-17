@@ -48,9 +48,13 @@ protected:
   virtual ~PixelAccessor();
 public:
   virtual void     setPixel(UINT x, UINT y, D3DCOLOR color)  = 0;
-  virtual D3DCOLOR getPixel(UINT x, UINT y)                  = 0;
-  virtual void     setPixel(const CPoint &p, D3DCOLOR color) = 0;
-  virtual D3DCOLOR getPixel(const CPoint &p)                 = 0;
+  virtual D3DCOLOR getPixel(UINT x, UINT y) const            = 0;
+  inline  void     setPixel(const CPoint &p, D3DCOLOR color) {
+    setPixel(p.x,p.y,color);
+  }
+  inline D3DCOLOR  getPixel(const CPoint &p) const {
+    return getPixel(p.x,p.y);
+  }
 
   const PixRect *getPixRect() const {
     return &m_pixRect;
@@ -65,7 +69,7 @@ class DWordPixelAccessor : public PixelAccessor {
 private:
   DWORD *m_pixels;
   UINT   m_pixelsPerLine;
-  inline DWORD *getPixelAddr(UINT x, UINT y) {
+  inline DWORD *getPixelAddr(UINT x, UINT y) const {
     return m_pixels + m_pixelsPerLine * y + x;
   }
 public:
@@ -74,10 +78,9 @@ public:
     m_pixelsPerLine = m_lockedRect.Pitch / sizeof(m_pixels[0]);
   }
   void     setPixel(UINT x, UINT y, D3DCOLOR color);
-  D3DCOLOR getPixel(UINT x, UINT y);
-  void     setPixel(const CPoint &p, D3DCOLOR color);
-  D3DCOLOR getPixel(const CPoint &p);
-  void fillRect(D3DCOLOR color, const CRect *r); // if r == NULL, entire surface will be filled
+  D3DCOLOR getPixel(UINT x, UINT y) const;
+  // if r == NULL, entire surface will be filled
+  void fillRect(D3DCOLOR color, const CRect *r);
 };
 
 class PixRectOperator : public PointOperator {

@@ -178,9 +178,7 @@ public:
     m_pixelsPerLine = m_ddsd.lPitch / sizeof(m_pixels[0]);
   }
   void setPixel(UINT x, UINT y, D3DCOLOR color);
-  D3DCOLOR getPixel(UINT x, UINT y);
-  void setPixel(const CPoint &p, D3DCOLOR color);
-  D3DCOLOR getPixel(const CPoint &p);
+  D3DCOLOR getPixel(UINT x, UINT y) const;
 };
 
 void BytePixelAccessor::setPixel(UINT x, UINT y, D3DCOLOR color) {
@@ -188,19 +186,9 @@ void BytePixelAccessor::setPixel(UINT x, UINT y, D3DCOLOR color) {
   m_pixels[m_pixelsPerLine * y + x] = D3DColorToByteColor(color);
 }
 
-D3DCOLOR BytePixelAccessor::getPixel(UINT x, UINT y) {
+D3DCOLOR BytePixelAccessor::getPixel(UINT x, UINT y) const {
   CHECKPOINTINSIDE(x, y);
   return byteColorToD3DColor(m_pixels[m_pixelsPerLine * y + x]);
-}
-
-void BytePixelAccessor::setPixel(const CPoint &p, D3DCOLOR color) {
-  CHECKPOINTINSIDE(p.x, p.y);
-  m_pixels[m_pixelsPerLine * p.y + p.x] = D3DColorToByteColor(color);
-}
-
-D3DCOLOR BytePixelAccessor::getPixel(const CPoint &p) {
-  CHECKPOINTINSIDE(p.x, p.y);
-  return byteColorToD3DColor(m_pixels[m_pixelsPerLine * p.y + p.x]);
 }
 
 class WordPixelAccessor : public PixelAccessor {
@@ -213,9 +201,7 @@ public:
     m_pixelsPerLine = m_ddsd.lPitch / sizeof(m_pixels[0]);
   }
   void setPixel(UINT x, UINT y, D3DCOLOR color);
-  D3DCOLOR getPixel(UINT x, UINT y);
-  void setPixel(const CPoint &p, D3DCOLOR color);
-  D3DCOLOR getPixel(const CPoint &p);
+  D3DCOLOR getPixel(UINT x, UINT y) const;
 };
 
 void WordPixelAccessor::setPixel(UINT x, UINT y, D3DCOLOR color) {
@@ -223,19 +209,9 @@ void WordPixelAccessor::setPixel(UINT x, UINT y, D3DCOLOR color) {
   m_pixels[m_pixelsPerLine * y + x] = D3DColorToShortColor(color);
 }
 
-D3DCOLOR WordPixelAccessor::getPixel(UINT x, UINT y) {
+D3DCOLOR WordPixelAccessor::getPixel(UINT x, UINT y) const {
   CHECKPOINTINSIDE(x, y);
   return shortColorToD3DColor(m_pixels[m_pixelsPerLine * y + x]);
-}
-
-void WordPixelAccessor::setPixel(const CPoint &p, D3DCOLOR color) {
-  CHECKPOINTINSIDE(p.x, p.y);
-  m_pixels[m_pixelsPerLine * p.y + p.x] = D3DColorToShortColor(color);
-}
-
-D3DCOLOR WordPixelAccessor::getPixel(const CPoint &p) {
-  CHECKPOINTINSIDE(p.x, p.y);
-  return shortColorToD3DColor(m_pixels[m_pixelsPerLine * p.y + p.x]);
 }
 #endif
 
@@ -244,19 +220,9 @@ void DWordPixelAccessor::setPixel(UINT x, UINT y, D3DCOLOR color) {
   *getPixelAddr(x,y) = color;
 }
 
-D3DCOLOR DWordPixelAccessor::getPixel(UINT x, UINT y) {
+D3DCOLOR DWordPixelAccessor::getPixel(UINT x, UINT y) const {
   CHECKPOINTINSIDE(x, y);
   return *getPixelAddr(x,y);
-}
-
-void DWordPixelAccessor::setPixel(const CPoint &p, D3DCOLOR color) {
-  CHECKPOINTINSIDE(p.x, p.y);
-  *getPixelAddr(p.x,p.y) = color;
-}
-
-D3DCOLOR DWordPixelAccessor::getPixel(const CPoint &p) {
-  CHECKPOINTINSIDE(p.x, p.y);
-  return *getPixelAddr(p.x,p.y);
 }
 
 void DWordPixelAccessor::fillRect(D3DCOLOR color, const CRect *r) {
