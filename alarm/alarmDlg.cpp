@@ -397,7 +397,7 @@ void CAlarmDlg::OnOptionsSound() {
     return;
   }
 
-  FILE *f = fopen(dlg.m_ofn.lpstrFile,"rb");
+  FILE *f = fopen(dlg.m_ofn.lpstrFile,_T("rb"));
   if(f == NULL) {
     Message(_T("Cannot open %s"),dlg.m_ofn.lpstrFile);
     return;
@@ -416,7 +416,7 @@ bool CAlarmDlg::startPlayer() {
     }
     m_player.play(m_soundFileName);
     startTimer(PLAYSOUND_TIMER,1);
-    setWindowText(this, IDC_BUTTONPLAY, "S&top");
+    setWindowText(this, IDC_BUTTONPLAY, _T("S&top"));
     return true;
   } catch(Exception e) {
     Message(_T("%s"), e.what());
@@ -427,7 +427,7 @@ bool CAlarmDlg::startPlayer() {
 void CAlarmDlg::stopPlayer() {
   try {
     stopTimer(PLAYSOUND_TIMER);
-    setWindowText(this, IDC_BUTTONPLAY, "&Play");
+    setWindowText(this, IDC_BUTTONPLAY, _T("&Play"));
 
     if(m_player.getStatus() != stopped) {
       m_player.stop();
