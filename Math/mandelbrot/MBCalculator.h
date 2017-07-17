@@ -106,9 +106,9 @@ typedef NumberIntervalTransformation<Real>  RealIntervalTransformation;
 typedef LinearNumberTransformation<Real>    RealLinearTransformation;
 typedef NumberRectangleTransformation<Real> RealRectangleTransformation;
 
-class MBContainer : public PixelAccessor, public PropertyChangeListener {
+class MBContainer : public DWordPixelAccessor, public PropertyChangeListener {
 public:
-  MBContainer(PixRect *pr) : PixelAccessor(pr) {
+  MBContainer(PixRect *pr) : DWordPixelAccessor(pr,0) {
   }
   virtual const RealRectangleTransformation &getTransformation()       const  = 0;
   virtual UINT                               getMaxIteration()         const  = 0;
@@ -158,9 +158,9 @@ private:
 
   UINT  findITCountPaintOrbit(const Real &X, const Real &Y, UINT maxIteration);
   UINT  findITCountFast(      const Real &X, const Real &Y, UINT maxIteration);
-  void followBlackEdge(const CPoint &p);
-  void fillInnerArea(PointSet &innerSet);
-  void releaseOrbitPoints();
+  void  followBlackEdge(const CPoint &p);
+  void  fillInnerArea(PointSet &innerSet);
+  void  releaseOrbitPoints();
   PixelAccessor *handlePending();
 
   inline UINT findItCount(const Real &X, const Real &Y, UINT maxIteration) {

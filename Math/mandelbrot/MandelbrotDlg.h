@@ -107,9 +107,7 @@ public:
   bool                               getJobToDo(CRect &rect);
   void                               paintMark(const CPoint &p);
   void                               setPixel(UINT x, UINT y, D3DCOLOR color);
-  D3DCOLOR                           getPixel(UINT x, UINT y);
-  void                               setPixel(const CPoint &p, D3DCOLOR color);
-  D3DCOLOR                           getPixel(const CPoint &p);
+  D3DCOLOR                           getPixel(UINT x, UINT y) const;
   void                               handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
 };
 
@@ -208,13 +206,10 @@ public:
     CWnd *getImageWindow() {
       return m_imageWindow;
     }
-    CSize getImageSize();
-    void setScale(const RealRectangle &scale, bool allowAdjustAspectRatio=true);
-// ----------------------------------- virtuals from PixelReceiver -------------------------
+    CSize    getImageSize();
+    void     setScale(const RealRectangle &scale, bool allowAdjustAspectRatio=true);
     void     setPixel(UINT x, UINT y, D3DCOLOR color);
-    D3DCOLOR getPixel(UINT x, UINT y);
-    void     setPixel(const CPoint &p, D3DCOLOR color);
-    D3DCOLOR getPixel(const CPoint &p);
+    D3DCOLOR getPixel(UINT x, UINT y) const;
 
     const RealRectangleTransformation &getTransformation() const {
       return m_transform;
@@ -272,11 +267,6 @@ public:
 
 public:
   virtual BOOL PreTranslateMessage(MSG* pMsg);
-protected:
-  virtual void DoDataExchange(CDataExchange* pDX);
-
-protected:
-
   afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
   afx_msg void OnPaint();
   afx_msg HCURSOR OnQueryDragIcon();
@@ -288,6 +278,7 @@ protected:
   virtual void OnOK();
   afx_msg void OnCancel();
   afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+  afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
   afx_msg void OnLButtonUp(  UINT nFlags, CPoint point);
   afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
   afx_msg void OnRButtonUp(  UINT nFlags, CPoint point);
@@ -322,7 +313,6 @@ protected:
   afx_msg LRESULT OnMsgStartCalculation( WPARAM wp, LPARAM lp);
   afx_msg LRESULT OnMsgUpdateWindowState(WPARAM wp, LPARAM lp);
   afx_msg LRESULT OnMsgMovieDone(        WPARAM wp, LPARAM lp);
-  afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
   DECLARE_MESSAGE_MAP()
 };
 

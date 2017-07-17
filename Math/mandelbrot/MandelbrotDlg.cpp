@@ -19,18 +19,10 @@ public:
 
   enum { IDD = IDD_ABOUTBOX };
 
-protected:
-  virtual void DoDataExchange(CDataExchange *pDX);
-
-protected:
   DECLARE_MESSAGE_MAP()
 };
 
 CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
-}
-
-void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
@@ -54,19 +46,16 @@ BOOL CMandelbrotDlg::PreTranslateMessage(MSG *pMsg) {
   return __super::PreTranslateMessage(pMsg);
 }
 
-void CMandelbrotDlg::DoDataExchange(CDataExchange *pDX) {
-  __super::DoDataExchange(pDX);
-}
-
 BEGIN_MESSAGE_MAP(CMandelbrotDlg, CDialog)
     ON_WM_SYSCOMMAND()
     ON_WM_PAINT()
     ON_WM_QUERYDRAGICON()
     ON_WM_SIZING()
-	  ON_WM_SIZE()
-	  ON_WM_CLOSE()
-	  ON_WM_TIMER()
+    ON_WM_SIZE()
+    ON_WM_CLOSE()
+    ON_WM_TIMER()
     ON_WM_LBUTTONDOWN()
+    ON_WM_LBUTTONDBLCLK()
     ON_WM_LBUTTONUP()
     ON_WM_RBUTTONDOWN()
     ON_WM_RBUTTONUP()
@@ -74,21 +63,21 @@ BEGIN_MESSAGE_MAP(CMandelbrotDlg, CDialog)
     ON_WM_MOUSEWHEEL()
     ON_WM_NCLBUTTONDOWN()
     ON_WM_NCMOUSEMOVE()
-	  ON_COMMAND(ID_FILE_SAVERECTANGLE                   , OnFileSaveRectangle                  )
-	  ON_COMMAND(ID_FILE_SAVECOLORMAP                    , OnFileSaveColorMap                   )
-	  ON_COMMAND(ID_FILE_SAVEIMAGE                       , OnFileSaveImage                      )
-	  ON_COMMAND(ID_FILE_LOADRECTANGLE                   , OnFileLoadRectangle                  )
-	  ON_COMMAND(ID_FILE_LOADCOLORMAP                    , OnFileLoadColorMap                   )
-	  ON_COMMAND(ID_FILE_MAKEMOVIE                       , OnFileMakeMovie                      )
+    ON_COMMAND(ID_FILE_SAVERECTANGLE                   , OnFileSaveRectangle                  )
+    ON_COMMAND(ID_FILE_SAVECOLORMAP                    , OnFileSaveColorMap                   )
+    ON_COMMAND(ID_FILE_SAVEIMAGE                       , OnFileSaveImage                      )
+    ON_COMMAND(ID_FILE_LOADRECTANGLE                   , OnFileLoadRectangle                  )
+    ON_COMMAND(ID_FILE_LOADCOLORMAP                    , OnFileLoadColorMap                   )
+    ON_COMMAND(ID_FILE_MAKEMOVIE                       , OnFileMakeMovie                      )
     ON_COMMAND(ID_FILE_STOPMOVIE                       , OnFileStopMovie                      )
     ON_COMMAND(ID_FILE_EXIT                            , OnFileExit                           )
-	  ON_COMMAND(ID_EDIT_CALCULATEIMAGE                  , OnEditCalculateImage                 )
-	  ON_COMMAND(ID_EDIT_SUSPENDCALCULATION              , OnEditSuspendCalculation             )
-	  ON_COMMAND(ID_EDIT_ABORTCALCULATION                , OnEditAbortCalculation               )
-	  ON_COMMAND(ID_EDIT_NEWCOLORMAP                     , OnEditNewColorMap                    )
+    ON_COMMAND(ID_EDIT_CALCULATEIMAGE                  , OnEditCalculateImage                 )
+    ON_COMMAND(ID_EDIT_SUSPENDCALCULATION              , OnEditSuspendCalculation             )
+    ON_COMMAND(ID_EDIT_ABORTCALCULATION                , OnEditAbortCalculation               )
+    ON_COMMAND(ID_EDIT_NEWCOLORMAP                     , OnEditNewColorMap                    )
     ON_COMMAND(ID_EDIT_BACK                            , OnEditBack                           )
-	  ON_COMMAND(ID_OPTIONS_COLORMAP                     , OnOptionsColorMap                    )
-	  ON_COMMAND(ID_OPTIONS_SHOWCOLORMAP                 , OnOptionsShowColorMap                )
+    ON_COMMAND(ID_OPTIONS_COLORMAP                     , OnOptionsColorMap                    )
+    ON_COMMAND(ID_OPTIONS_SHOWCOLORMAP                 , OnOptionsShowColorMap                )
     ON_COMMAND(ID_OPTIONS_32BITSFLOATINGPOINT          , OnOptions32BitsFloatingPoint         )
     ON_COMMAND(ID_OPTIONS_64BITSFLOATINGPOINT          , OnOptions64BitsFloatingPoint         )
     ON_COMMAND(ID_OPTIONS_80BITSFLOATINGPOINT          , OnOptions80BitsFloatingPoint         )
@@ -101,7 +90,6 @@ BEGIN_MESSAGE_MAP(CMandelbrotDlg, CDialog)
     ON_MESSAGE(ID_MSG_STARTCALCULATION                 , OnMsgStartCalculation                )
     ON_MESSAGE(ID_MSG_UPDATEWINDOWSTATE                , OnMsgUpdateWindowState               )
     ON_MESSAGE(ID_MSG_MOVIEDONE                        , OnMsgMovieDone                       )
-    ON_WM_LBUTTONDBLCLK()
 END_MESSAGE_MAP()
 
 void CMandelbrotDlg::OnSysCommand(UINT nID, LPARAM lParam) {
@@ -764,10 +752,7 @@ void CMandelbrotDlg::setWorkSize(const CSize &size) {
 }
 
 void CMandelbrotDlg::createPixRect(const CSize &size) {
-  if(m_pixRect != NULL) {
-    delete m_pixRect;
-    m_pixRect = NULL;
-  }
+  SAFEDELETE(m_pixRect);
 
   if(size.cx <= 0 || size.cy <= 0) {
     return;
@@ -986,7 +971,7 @@ void CMandelbrotDlg::calculateMovedImage(const CSize &dp) {
 PixRect *CMandelbrotDlg::getCalculatedPart(const CSize &dp) {
   const int  adx    = abs(dp.cx);
   const int  ady    = abs(dp.cy);
-  PixRect   *result = m_pixRect->clone(true, PIXRECT_PLAINSURFACE);
+  PixRect   *result = m_pixRect->clone(false, PIXRECT_PLAINSURFACE);
   const int  w      = m_pixRect->getWidth();
   const int  h      = m_pixRect->getHeight();
   switch(getMoveDirection(dp)) {
@@ -1065,25 +1050,11 @@ void CMandelbrotDlg::setPixel(UINT x, UINT y, D3DCOLOR color) {
   }
 }
 
-D3DCOLOR CMandelbrotDlg::getPixel(UINT x, UINT y) {
+D3DCOLOR CMandelbrotDlg::getPixel(UINT x, UINT y) const {
   if(!m_pixRect->contains(x,y)) {
     return BLACK;
   }
   return m_pixelAccessor->getPixel(x,y);
-}
-
-void CMandelbrotDlg::setPixel(const CPoint &p, D3DCOLOR color) {
-  if(m_pixRect->contains(p)) {
-    m_pixelAccessor->setPixel(p,color);
-    SetPixel(m_imageDC, p.x,p.y,D3DCOLOR2COLORREF(color));
-  }
-}
-
-D3DCOLOR CMandelbrotDlg::getPixel(const CPoint &p) {
-  if(!m_pixRect->contains(p)) {
-    return BLACK;
-  }
-  return m_pixelAccessor->getPixel(p);
 }
 
 void CMandelbrotDlg::paintMark(const CPoint &p) {
@@ -1303,16 +1274,8 @@ void DialogMBContainer::setPixel(UINT x, UINT y, D3DCOLOR color) {
   m_dlg->setPixel(x,y,color);
 }
 
-D3DCOLOR DialogMBContainer::getPixel(UINT x, UINT y) {
+D3DCOLOR DialogMBContainer::getPixel(UINT x, UINT y) const {
   return m_dlg->getPixel(x,y);
-}
-
-void DialogMBContainer::setPixel(const CPoint &p, D3DCOLOR color) {
-  m_dlg->setPixel(p,color);
-}
-
-D3DCOLOR DialogMBContainer::getPixel(const CPoint &p) {
-  return m_dlg->getPixel(p);
 }
 
 void DialogMBContainer::handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
