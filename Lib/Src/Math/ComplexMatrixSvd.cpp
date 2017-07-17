@@ -253,7 +253,7 @@ static void svdDecompose(Matrix &a, ComplexVector &d, Matrix &v) {
 //    cout << "k:" << k << " Iterations:" << iteration << "\n";
 
     if (iteration == MAXITERATION)
-      throwException("No convergence in %d svdDecompose iterations", MAXITERATION);
+      throwException(_T("No convergence in %d svdDecompose iterations"), MAXITERATION);
   }
 }
 
