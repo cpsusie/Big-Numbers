@@ -160,13 +160,6 @@ start: // restart here if we meet a comment /*...*/ of //
 }
 
 bool LexScanner::nextExpr() {
-  // Gets a regular expression and the associated String from input
-  // Returns a pointer to the input String normally.
-  // Returns NULL on end of file or if a line beginning with % is
-  // encountered. All blank lines are discarded and all lines that start with
-  // whitespace are concatenated to the previous line.
-  // Lineno is set to the line number of the top line of a multiple-line block
-
   while(m_lineBuffer[0] == '\n') { // skip blank lines
     if(!nextLine()) {
       return false;
@@ -235,7 +228,7 @@ MacroStackElement::MacroStackElement(MacroDefinition &m, TCHAR *next) : m_macroD
   m_next = (_TUCHAR*)next;
 }
 
-void LexScanner::addMacro() { // assume we have just scanned a name
+void LexScanner::addMacro() {
   String macroName = getText();
   while(_istspace(*m_next)) {
     nextChar();
@@ -254,14 +247,9 @@ void LexScanner::addMacro() { // assume we have just scanned a name
 }
 
 MacroDefinition &LexScanner::parseMacro() {
-  // assume *m_next is '{'
-  // Return a pointer to the contents of a macro having the indicated
-  // name. Abort with a message if no macro exists.
-  // Advances m_next to point past the '}'
-
   TCHAR *p;
   m_next++;                                     // skip {
-  if(!(p = _tcschr( (TCHAR*)m_next, '}')) ) {     // and find }
+  if(!(p = _tcschr( (TCHAR*)m_next, '}')) ) {   // and find }
     error(_T("Missing } in macro expansion"));
   } else {
     *p = '\0';                                  // overwrite close brace.
@@ -305,7 +293,7 @@ Token LexScanner::nextToken() {                // called when we parse between %
         return m_token;
       }
 //      printf(_T("advance:m_next:<%s>\n"), m_next);
-      while(_istspace(*m_next)) {                // Ignore leading white space
+      while(_istspace(*m_next)) {              // Ignore leading white space
         nextInput();
       }
     } while(!*m_next );                        // and blank lines.

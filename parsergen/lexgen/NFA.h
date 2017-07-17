@@ -4,30 +4,39 @@
 #include <Scanner.h>
 #include "LexScanner.h"
 
-#define EDGE_EPSILON  -1                              // non-character values of NFAstate.m_edge
+// non-character values of NFAstate.m_edge
+#define EDGE_EPSILON  -1
 #define EDGE_CHCLASS  -2
 
-
-#define MAX_CHARS   256                               // maximal character value
+// maximal character value
+#define MAX_CHARS   256
 
 #define RMARGIN 118
 
 class AcceptAction : public SourceText {
 public:
-  char m_anchor;            // is the pattern anchored to START, END, BOTH or none
+  // is the pattern anchored to START, END, BOTH or none
+  char m_anchor;
   String dumpFormat() const;
 };
 
 class NFAstate {
 public:
-  int           m_id;        // The states id
-  int           m_edge;      // Label for outgoing edge: character (>=0), EDGE_CHCLASS or EDGE_EPSILON
-  BitSet       *m_charClass; // Characterclass when m_edge = EDGE_CHCLASS
-  NFAstate     *m_next1;     // Next state (or NULL if none)
-  NFAstate     *m_next2;     // Alternative next state if m_edge = EDGE_EPSILON. NULL if no alternative.
-  AcceptAction *m_accept;    // AcceptAction if accepting state, else NULL
+  // The states id
+  int           m_id;
+  // Label for outgoing edge: character (>=0), EDGE_CHCLASS or EDGE_EPSILON
+  int           m_edge;
+  // Characterclass when m_edge = EDGE_CHCLASS
+  BitSet       *m_charClass;
+  // Next state (or NULL if none)
+  NFAstate     *m_next1;
+  // Alternative next state if m_edge = EDGE_EPSILON. NULL if no alternative.
+  NFAstate     *m_next2;
+  // AcceptAction if accepting state, else NULL
+  AcceptAction *m_accept;
   NFAstate(int edge = EDGE_EPSILON);
-  NFAstate *successor(int c) const; // Returns successor-state on transition c (character). NULL if none
+  // Returns successor-state on transition c (character). NULL if none
+  NFAstate *successor(int c) const;
   int getID() const {
     return m_id;
   }
@@ -38,8 +47,10 @@ class NFA : public Array<NFAstate*> {
 public:
   SourceText m_header, m_driverHead, m_driverTail;
   NFA() {};
-  NFA(const NFA &src);      // not defined
-  NFA &operator=(NFA &src); // not defined
+  // not defined
+  NFA(const NFA &src);
+  // not defined
+  NFA &operator=(NFA &src);
 };
 
 class NFAparser {
@@ -66,35 +77,42 @@ private:
   void factor(NFAstate *&startp, NFAstate *&endp);
   void term(NFAstate *&startp, NFAstate *&endp);
   void characterInterval(BitSet &set);
-  bool match(Token t) const {
+  inline bool match(Token t) const {
     return m_scanner.getToken() == t;
   }
 
-  void nextToken() {
+  inline void nextToken() {
     m_scanner.nextToken();
   }
 
-  void error(TCHAR *message) {
+  inline void error(TCHAR *message) {
     m_scanner.error(_T("%s"), message);
   }
 
-  void warning(TCHAR *message)  {
+  inline void warning(TCHAR *message)  {
     m_scanner.warning(_T("%s"), message);
   }
 
-  unsigned int getLexeme() const {
+  inline UINT getLexeme() const {
     return m_scanner.getLexeme();
   }
 
 public:
   NFAparser(const String &fname, NFA &nfa);
-  NFAparser(NFAparser &src);                  // not defined
-  NFAparser &operator=(const NFAparser &src); // not defined
+  // not defined
+  NFAparser(NFAparser &src);                 
+  // not defined
+  NFAparser &operator=(const NFAparser &src);
   void thompsonConstruction();
 };
 
-String binToAscii(int c, bool use_hex = true); // Returns a String that represents c, using escape-sequences. ie opposite of escape
-void printChar(     MarginFile &f, int c);     // f.printf(_T("%s"),binToAscii(c));
+// Returns a String that represents c. This will be the character itself for normal characters,
+// and an escape sequence (\n, \t, \x00, ...), for most others. A ' is represented as \'.
+// Returns a String that represents c, using escape-sequences. ie opposite of escape
+// If useHex is true, then \xDD escape sequences are used. Otherwise, octal sequences (\DDD) are used.
+String binToAscii(int c, bool use_hex = true);
+// f.printf(_T("%s"),binToAscii(c));
+void printChar(     MarginFile &f, int c);
 void printCharClass(MarginFile &f, BitSet &set);
 void printSet(      MarginFile &f, BitSet &set);
 

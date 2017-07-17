@@ -66,47 +66,63 @@ private:
   void nextInput() {
     m_next++;
   }
+  // Gets a regular expression and the associated String from input
+  // Returns a pointer to the input String normally.
+  // Returns NULL on end of file or if a line beginning with % is
+  // encountered. All blank lines are discarded and all lines that start with
+  // whitespace are concatenated to the previous line.
+  // Lineno is set to the line number of the top line of a multiple-line block
   bool nextExpr();
   void parseName();
   void parseString();
+  // assume *m_next is '{'
+  // Return a pointer to the contents of a macro having the indicated
+  // name. Abort with a message if no macro exists.
+  // Advances m_next to point past the '}'
   MacroDefinition &parseMacro();
 public:
   LexScanner(const String &fname);
-  LexScanner(const LexScanner &src);            // not defined
-  LexScanner &operator=(const LexScanner &src); // not defined
+  // not defined
+  LexScanner(const LexScanner &src);
+  // not defined
+  LexScanner &operator=(const LexScanner &src);
   virtual ~LexScanner();
   TCHAR *getfname() {
     return m_fileName.cstr();
   }
-  String getText();             // get the text just scanned. used before first %%
-  Token hnext();                // next to be used before first %%
-  Token nextToken();            // get next token. to be used between %% and %%
-  Token getToken() const {
+  // get the text just scanned. used before first %%
+  String getText();
+  // next to be used before first %%
+  Token hnext();
+  // get next token. to be used between %% and %%
+  Token nextToken();
+  inline Token getToken() const {
     return m_token;
   }
-  const _TUCHAR *getInput() const {
+  inline const _TUCHAR *getInput() const {
     return m_next;
   }
-  unsigned int getLexeme() const {
+  inline UINT getLexeme() const {
     return m_lexeme;
   }
   void skipSpace();
   void beginRuleSection();
   void endRuleSection();
   void collectChar(TCHAR ch);
-  void collectInit() {
+  inline void collectInit() {
     m_collector.init();
   }
   void collectBegin();
-  void collectEnd() {
+  inline void collectEnd() {
     m_collecting = false;
   }
   void getCollected(SourceText &src);
+  // assume we have just scanned a name
   void addMacro();
-  unsigned int getLineno() const {
+  UINT getLineno() const {
     return m_lineNo;
   }
-  SourcePosition getRulePosition() const {
+  inline SourcePosition getRulePosition() const {
     return SourcePosition(m_absoluteFileName, m_ruleLineNo, 0);
   }
   void verror( const TCHAR *format, va_list argptr);
@@ -114,4 +130,5 @@ public:
   void warning(const TCHAR *format, ...);
 };
 
-unsigned int escape(const _TUCHAR *&s); // scan escape sequences, return equivalent ASCII character. f.ex. "\n" = 10
+// scan escape sequences, return equivalent ASCII character. f.ex. "\n" = 10
+UINT escape(const _TUCHAR *&s);

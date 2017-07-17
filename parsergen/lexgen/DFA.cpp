@@ -31,10 +31,6 @@ DFAstate::DFAstate(int id, BitSet *NFAset, AcceptAction *action) {
 }
 
 void DFA::makeTransitions() {
-  // Initially m_states contains a single, start state formed by
-  // taking the epsilon closure of the NFA start state. m_states[0]
-  // is the DFA start state.
-
   BitSet *NFAset = newNFAset();           // set of NFA states that defines the next DFA state.
   NFAset->add(0);
   DFAstate startState(0);
@@ -68,9 +64,6 @@ void DFA::makeTransitions() {
 }
 
 int DFA::stateExist(const BitSet &NFAset) const {
-  // If there's a DFA-state with m_NFAset identical to NFA_set, return the
-  // index of the state entry, else return -1.
-
   for(size_t i = 0; i < m_states.size(); i++) {
     if(*m_states[i].m_NFAset == NFAset) {
       return (int)i;
@@ -136,10 +129,6 @@ void DFA::epsClosure(BitSet &NFAset, AcceptAction *&accept) const {
 }
 
 BitSet *DFA::transition(BitSet &NFAset, int c) const {
-  // Return a set that contains all NFA states that can be reached by making
-  // transitions on "c" from any NFA state in NFAset. Returns NULL if
-  // there are no such transitions.
-
   BitSet *result = NULL;
 
   for(Iterator<size_t> it = NFAset.getIterator(); it.hasNext();) {
@@ -181,8 +170,6 @@ void DFA::printStates(MarginFile &f) const {
   }
 }
 
-// Put states with equal AcceptAction into the same group.
-// Note that all non-accept-states go to the same group
 void DFA::makeInitialGroups() {
   for(size_t i = 0; i < m_states.size(); i++) {
     m_inGroup.add(-1);
@@ -220,11 +207,6 @@ Continue:; // Group already exists.
   }
 }
 
-  // Reduce the size of the m_states to the number of groups.
-  // Consider the first element of each group (state) to be a
-  // "representative" state. Insert this state to the new transition table,
-  // modifying all the transitions, so that the successors
-  // are the groups within which the old state is found.
 void DFA::fixupTransitions() {
   Array<DFAstate> newStates;
 
@@ -257,20 +239,20 @@ void DFA::minimize() {
 
       BitSet newset(m_states.size());
       Iterator<size_t> it = current.getIterator();
-      int first = (int)it.next();                     // state number of first element of current group
+      int first = (int)it.next();                 // state number of first element of current group
       while(it.hasNext()) {
-        int next = (int)it.next();               // state number of next  element of current group
+        int next = (int)it.next();                // state number of next  element of current group
         for(int c = 0; c < MAX_CHARS; c++) {
           int firstSuccessor = m_states[first].m_transition[c];
           int nextSuccessor  = m_states[next ].m_transition[c];
 
-          if(firstSuccessor != nextSuccessor            // if successor-states differ or belong to different groups
+          if(firstSuccessor != nextSuccessor      // if successor-states differ or belong to different groups
              && (   firstSuccessor == FAILURE
                  || nextSuccessor  == FAILURE
                  || m_inGroup[firstSuccessor] != m_inGroup[nextSuccessor]
                 )
             ) {
-            current.remove(next);                // move the state to newset
+            current.remove(next);                 // move the state to newset
             newset.add(next);
             m_inGroup[next] = (int)m_groups.size();
             break;
@@ -334,10 +316,10 @@ void DFAstate::print(MarginFile &f) const {
     tmp = format(formatStr, FORMATCHAR(first).cstr(), FORMATCHAR(last).cstr()); \
   }                                                                             \
   if(charsPrinted + tmp.length() > RMARGIN) {                                   \
-    f.printf(_T("\n//              "));                                                             \
+    f.printf(_T("\n//              "));                                         \
     charsPrinted = f.getLeftMargin();                                           \
   }                                                                             \
-  f.printf(_T("%s"), tmp.cstr());                                                   \
+  f.printf(_T("%s"), tmp.cstr());                                               \
   charsPrinted += tmp.length();                                                 \
 }
 

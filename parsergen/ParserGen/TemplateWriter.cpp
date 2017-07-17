@@ -13,7 +13,7 @@ TemplateWriter::TemplateWriter(const String &templateName, const String &implOut
   m_headerOutputDir = headerOutputDir;
   m_verbose         = verbose;
   m_output          = NULL;
-  openOutput("stdout");
+  openOutput(_T("stdout"));
 }
 
 void TemplateWriter::openOutput(const String &name) {
@@ -79,7 +79,7 @@ String TemplateWriter::replaceMacroes(const TCHAR *line) {
 }
 
 void TemplateWriter::generateOutput() {
-  FILE *templateFile = FOPEN(m_templateName, "r");
+  FILE *templateFile = FOPEN(m_templateName, _T("r"));
   m_currentPos = SourcePosition(m_templateName, 0, 0);
 
 //  if(m_verbose)
@@ -151,7 +151,7 @@ void NewFileHandler::handleKeyword(TemplateWriter &writer, String &line) const {
   if(assign >= 0) {
     String keyword = trim(substr(line, 0, assign));
     String outputDir;
-    if(keyword == "$NEWFILE$") {
+    if(keyword == _T("$NEWFILE$")) {
       outputDir = writer.getImplOutputDir();
     } else {
       outputDir = writer.getHeaderOutputDir();

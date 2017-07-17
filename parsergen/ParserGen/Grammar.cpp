@@ -9,7 +9,7 @@ static String getModifierString(SymbolModifier modifier) {
   case ZEROORMANY        : return _T("*");
   case ONEORMANY         : return _T("+");
   default                : throwException(_T("Invalid modifier:%d"), modifier);
-                           return "";
+                           return EMPTYSTRING;
   }
 }
 
@@ -745,7 +745,7 @@ String Grammar::getRightSide(int p) const {
   for(int i = 0; i < n; i++) {
     const int s = prod.m_rightSide[i];
     if(i > 0) {
-      result += " ";
+      result += _T(" ");
     }
     result += getSymbol(s).m_name;
   }

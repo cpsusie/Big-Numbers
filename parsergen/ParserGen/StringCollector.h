@@ -6,7 +6,8 @@ class SourceText {
 public:
   SourcePosition m_pos;
   String         m_sourceText;
-  SourceText() : m_pos(-1, 0) { // -1 indicates that text is empty
+  // -1 indicates that text is empty
+  SourceText() : m_pos(-1, 0) {
   }
   bool isDefined() const {
     return m_pos.getLineNumber() != -1;
@@ -18,15 +19,15 @@ private:
   SourcePosition m_startPos;
 public:
   void begin(TCHAR *str, int length, const SourcePosition &startPos);
-  void init() {
-    ((String&)*this) = _T("");
+  inline void init() {
+    ((String&)*this) = EMPTYSTRING;
   }
   void addChar(TCHAR ch);
-  TCHAR *getBuffer() {
+  inline TCHAR *getBuffer() {
     return cstr();
   }
   SourceText getSourceText(int lastSymbolLength);
-  SourcePosition getSourcePos() const {
+  inline const SourcePosition &getSourcePos() const {
     return m_startPos;
   }
 };

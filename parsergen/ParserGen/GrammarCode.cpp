@@ -25,7 +25,7 @@ GrammarCoder::GrammarCoder(const String &templateName
 , m_grammarName(    FileNameSplitter(m_grammar.getName()).getFileName()         )
 , m_parserClassName(m_grammarName + _T("Parser")                                )
 , m_tablesClassName(m_grammarName + _T("Tables")                                )
-, m_docFileName(    FileNameSplitter(m_sourceName).setExtension("txt").getFullPath())
+, m_docFileName(    FileNameSplitter(m_sourceName).setExtension(_T("txt")).getFullPath())
 {
   m_tablesByteCount  = 0;
 }

@@ -17,11 +17,11 @@ private:
 public:
   KeywordTrigger(KeywordHandler &handler, const String &verboseString);
 
-  const KeywordHandler &getHandler() const {
+  inline const KeywordHandler &getHandler() const {
     return m_handler;
   }
 
-  const String &getVerboseString() const {
+  inline const String &getVerboseString() const {
     return m_verboseString;
   }
 };
@@ -46,23 +46,23 @@ public:
   void addMacro(const String &macro, const String &value);
   void generateOutput();
 
-  const String &getImplOutputDir() const {
+  inline const String &getImplOutputDir() const {
     return m_implOutputDir;
   }
 
-  const String &getHeaderOutputDir() const {
+  inline const String &getHeaderOutputDir() const {
     return m_headerOutputDir;
   }
 
-  MarginFile &getOutput() {
+  inline MarginFile &getOutput() {
     return *m_output;
   }
 
-  const SourcePosition &getPos() const {
+  inline const SourcePosition &getPos() const {
     return m_currentPos;
   }
 
-  int getLineNumber() const {
+  inline int getLineNumber() const {
     return getPos().getLineNumber();
   }
 

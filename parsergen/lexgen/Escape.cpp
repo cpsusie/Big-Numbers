@@ -33,9 +33,9 @@ static inline int octalToBin(int c) {
 //  \^C     C = any letter. Control code ie C-'\x40'
 //  \xDD    number formed of 1-2 hex digits
 //  \DDD    number formed of 1-3 octal digits
-unsigned int escape(const _TUCHAR *&s) {
+UINT escape(const _TUCHAR *&s) {
 
-  unsigned int asciiVal;
+  UINT asciiVal;
 
   if(*s != '\\') {
     asciiVal = *(s++);

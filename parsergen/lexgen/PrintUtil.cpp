@@ -1,9 +1,6 @@
 #include "stdafx.h"
 #include "NFA.h"
 
-// Returns a String that represents c. This will be the character itself for normal characters,
-// and an escape sequence (\n, \t, \x00, ...), for most others. A ' is represented as \'.
-// If "useHex" is true, then \xDD escape sequences are used. Otherwise, octal sequences (\DDD) are used.
 String binToAscii(int c, bool useHex) {
   char result[10];
   c &= 0xff;

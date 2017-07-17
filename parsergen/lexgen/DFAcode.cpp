@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "DFA.h"
 
-  // Compress and output transitionmatrix eliminating equal columns and rows
 void DFA::printTables(MarginFile &f) const {
   int    *columnMap = new int[MAX_CHARS];
   int    *rowMap    = new int[m_states.size()];
@@ -19,7 +18,6 @@ void DFA::printTables(MarginFile &f) const {
   delete[] rowMap;
 }
 
-// Return true if two columns in transitionmatrix are equal, else return false
 bool DFA::columnsEqual(size_t col1, size_t col2) const {
   for(size_t i = 0; i < m_states.size(); i++) {
     if(m_states[i].m_transition[col1] != m_states[i].m_transition[col2]) {
@@ -29,7 +27,6 @@ bool DFA::columnsEqual(size_t col1, size_t col2) const {
   return true;
 }
 
-  // Return true if two rows in transitionmatrix are equal, else return false
 bool DFA::rowsEqual(size_t row1, size_t row2) const {
   return memcmp(m_states[row1].m_transition, m_states[row2].m_transition, sizeof(DFAtrans)) == 0;
 }
