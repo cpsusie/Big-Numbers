@@ -69,7 +69,7 @@ String getTriangleSyntax() {
   return msg;
 }
 
-// Return striung with complete instructions
+// Return string with complete instructions
 String getTriangleInfo() {
   String msg;
 
