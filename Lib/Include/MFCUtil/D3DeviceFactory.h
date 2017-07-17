@@ -17,9 +17,7 @@ typedef LPDIRECT3DINDEXBUFFER9  LPDIRECT3DINDEXBUFFER;
 #ifdef _DEBUG
 
 inline int _getrc(IUnknown *p) {
-  int rc1 = p->AddRef();
-  int rc = p->Release();
-  return rc;
+  p->AddRef(); return p->Release();
 }
 
 #define TRACE_NEW(     p)    debugLog(_T("NEW:%p:%s(%d):%s\n")                       ,(void*)p          ,__TFUNCTION__,__LINE__,_T(#p))
