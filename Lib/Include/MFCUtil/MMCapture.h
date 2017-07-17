@@ -1,10 +1,9 @@
 #pragma once
 
-#include <MyUtil.h>
+#include "PixRect.h"
 #include <Thread.h>
 #include <Semaphore.h>
 #include <SynchronizedQueue.h>
-#include "PixRect.h"
 
 class MMCaptureDevice {
 private:
