@@ -56,6 +56,14 @@ inline int _getrc(IUnknown *p) {
   }                                    \
 }
 
+#define SAFEDELETEARRAY(p)             \
+{ if((p) != NULL) {                    \
+    TRACE_DELETE(p);                   \
+    delete[] p;                        \
+    p = NULL;                          \
+  }                                    \
+}
+
 class D3DeviceFactory {
 private:
   static LPDIRECT3D s_direct3D;
