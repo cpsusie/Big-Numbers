@@ -15,15 +15,8 @@ CJuliaDlg::CJuliaDlg(const RealPoint2D &point, CWnd *pParent /*=NULL*/)
 }
 
 CJuliaDlg::~CJuliaDlg() {
-  if(m_thread != NULL) {
-    delete m_thread;
-  }
+  SAFEDELETE(m_thread);
 }
-
-void CJuliaDlg::DoDataExchange(CDataExchange *pDX){
-    __super::DoDataExchange(pDX);
-}
-
 
 BEGIN_MESSAGE_MAP(CJuliaDlg, CDialog)
 END_MESSAGE_MAP()
@@ -36,7 +29,7 @@ BOOL CJuliaDlg::OnInitDialog() {
   m_transform.setFromRectangle(rr);
   adjustToRectangle();
 
-  m_thread = new JuliaCalculatorThread(*this);
+  m_thread = new JuliaCalculatorThread(*this); TRACE_NEW(m_thread);
   m_thread->start();
   return TRUE;
 }

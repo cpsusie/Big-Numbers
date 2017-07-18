@@ -77,7 +77,8 @@ public:
     return NumberInterval<T>(backwardTransform(interval.getFrom()), backwardTransform(interval.getTo()));
   }
 
-  const NumberInterval<T> &zoom(const T &x, const T &factor, bool xInToInterval=true) { // Returns new fromInterval.
+  // Returns new fromInterval.
+  const NumberInterval<T> &zoom(const T &x, const T &factor, bool xInToInterval=true) {
     if(xInToInterval) {
       if(!getToInterval().contains(x)) {
         return m_fromInterval;
@@ -116,7 +117,8 @@ public:
     return true;
   }
   NumberIntervalTransformation<T> *clone() const {
-    return new LinearNumberTransformation<T>(*this);
+    NumberIntervalTransformation<T> *result = new LinearNumberTransformation<T>(*this);  TRACE_NEW(result);
+    return result;
   }
 };
 
@@ -142,7 +144,8 @@ public:
     computeTransformation();
   }
   NumberIntervalTransformation<T> *clone() const {
-    return new LogarithmicNumberTransformation<T>(*this);
+    LogarithmicNumberTransformation<T> *result = new LogarithmicNumberTransformation<T>(*this); TRACE_NEW(result);
+    return result;
   }
 };
 
@@ -168,7 +171,8 @@ public:
     computeTransformation();
   }
   NumberIntervalTransformation<T> *clone() const {
-    return new ExponentialNumberTransformation<T>(*this);
+    NumberIntervalTransformation<T> *result = new ExponentialNumberTransformation<T>(*this); TRACE_NEW(result);
+    return result;
   }
 };
 
@@ -194,29 +198,20 @@ private:
       m_xtransform = newXtransform;
       m_ytransform = newYtransform;
     } catch(Exception e) {
-      if(newXtransform != NULL) {
-        delete newXtransform;
-      }
-      if(newYtransform != NULL) {
-        delete newYtransform;
-      }
+      SAFEDELETE(newXtransform);
+      SAFEDELETE(newYtransform);
       throw;
     }
   }
 
   void cleanup() {
-    if(m_xtransform != NULL) {
-      delete m_xtransform;
-      m_xtransform = NULL;
-    }
-    if(m_ytransform != NULL) {
-      delete m_ytransform;
-      m_ytransform = NULL;
-    }
+    SAFEDELETE(m_xtransform);
+    SAFEDELETE(m_ytransform);
   }
 
   NumberIntervalTransformation<T> *allocateTransformation(const NumberInterval<T> &from, const NumberInterval<T> &to) const {
-    return new LinearNumberTransformation<T>(from, to);
+    LinearNumberTransformation<T> *result = new LinearNumberTransformation<T>(from, to); TRACE_NEW(result);
+    return result;
   }
 
   NumberRectangleTransformation(const NumberIntervalTransformation<T> &tx, const NumberIntervalTransformation<T> &ty) {
@@ -315,7 +310,8 @@ public:
     return NumberRectangle<T>(p1.x,p1.y,p2.x-p1.x,p2.y-p1.y);
   }
 
-  NumberRectangle<T> zoom(const NumberPoint2D<T> &p, T factor, int flags = X_AXIS | Y_AXIS, bool pInToRectangle=true) { // Returns new fromRectangle.
+  // Returns new fromRectangle.
+  NumberRectangle<T> zoom(const NumberPoint2D<T> &p, T factor, int flags = X_AXIS | Y_AXIS, bool pInToRectangle=true) {
     if(flags & X_AXIS) {
       m_xtransform->zoom(p.x, factor, pInToRectangle);
     }

@@ -10,6 +10,7 @@ public:
 
 public:
 	virtual BOOL InitInstance();
+  virtual int ExitInstance();
   PixRectDevice m_device;
 
   DECLARE_MESSAGE_MAP()

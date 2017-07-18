@@ -155,7 +155,7 @@ MBCalculator::MBCalculator(CalculatorPool *pool, int id)
   setDeamon(true);
   if(m_mbc.paintOrbit()) {
     m_itCount      = &MBCalculator::findITCountPaintOrbit;
-    m_orbitPoints  = new OrbitPoint[m_mbc.getMaxIteration()];
+    m_orbitPoints  = new OrbitPoint[m_mbc.getMaxIteration()]; TRACE_NEW(m_orbitPoints);
   } else {
     m_itCount      = &MBCalculator::findITCountFast;
     m_orbitPoints  =  NULL;
@@ -167,10 +167,7 @@ MBCalculator::MBCalculator(CalculatorPool *pool, int id)
 
 void MBCalculator::releaseOrbitPoints() {
   m_gate.wait();
-  if(m_orbitPoints) {
-    delete[] m_orbitPoints;
-    m_orbitPoints = NULL;
-  }
+  SAFEDELETEARRAY(m_orbitPoints);
   m_gate.signal();
 }
 
@@ -361,7 +358,7 @@ void MBCalculator::followBlackEdge(const CPoint &p) {
 
 void MBCalculator::addInfoToPool() {
   m_info->addEdgeSetToBlackSet();
-  m_pool.addCalculatorInfo(*m_info);  delete m_info;  m_info = NULL;
+  m_pool.addCalculatorInfo(*m_info);  SAFEDELETE(m_info);
 }
 
 #define ADDPPTOINFO m_info->addBlack(pp)

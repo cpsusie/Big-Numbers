@@ -34,8 +34,6 @@ public:
     }
     enum { IDD = IDD_JULIA_DIALOG };
 
-
-    virtual void DoDataExchange(CDataExchange *pDX);
     virtual BOOL OnInitDialog();
     DECLARE_MESSAGE_MAP()
 };

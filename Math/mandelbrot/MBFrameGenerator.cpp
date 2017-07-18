@@ -12,15 +12,15 @@ MBFrameGenerator::MBFrameGenerator(CMandelbrotDlg *dlg, const String &dirName)
   m_startRect       = m_dlg.getTransformation().getFromRectangle();
   m_totalFrameCount = findTotalFrameCount(m_startRect, m_finalRect);
   m_frameIndex      = 0;
-  m_expTransform    = new ExpTransformation(RealInterval(0, m_totalFrameCount), RealInterval(1,m_finalRect.getWidth()/m_startRect.getWidth()));
-  m_linearTransform = new RealLinearTransformation(m_expTransform->getToInterval(), RealInterval(1,0));
+  m_expTransform    = new ExpTransformation(RealInterval(0, m_totalFrameCount), RealInterval(1,m_finalRect.getWidth()/m_startRect.getWidth())); TRACE_NEW(m_expTransform   );
+  m_linearTransform = new RealLinearTransformation(m_expTransform->getToInterval(), RealInterval(1,0));                                         TRACE_NEW(m_linearTransform);
 
   HDC screenDC = getScreenDC();
   m_dc = CreateCompatibleDC(screenDC);
   m_bm = CreateCompatibleBitmap(screenDC, m_imageSize.cx, m_imageSize.cy);
   DeleteDC(screenDC);
 
-  m_imageListThread  = new ImageListThread(this);
+  m_imageListThread  = new ImageListThread(this); TRACE_NEW(m_imageListThread);
   m_imageListThread->start();
 }
 
@@ -31,15 +31,15 @@ MBFrameGenerator::~MBFrameGenerator() {
   while(m_imageListThread->stillActive()) {
     Sleep(50);
   }
-  delete m_imageListThread;
+  SAFEDELETE(m_imageListThread);
   DeleteObject(m_bm);
   DeleteDC(m_dc);
-  delete m_expTransform;
-  delete m_linearTransform;
+  SAFEDELETE(m_expTransform);
+  SAFEDELETE(m_linearTransform);
   DLOG((_T("leave ~MBFrameGenerator\n")));
 }
 
-#define ZOOMSTEP 0.03
+#define ZOOMSTEP 0.02
 
 ExpTransformation::ExpTransformation(const RealInterval &from, const RealInterval &to) : m_toInterval(to) {
   m_a = root(to.getTo() / to.getFrom(), from.getTo()-from.getFrom());
@@ -98,4 +98,3 @@ void MBFrameGenerator::postMovieDone() {
   DLOG((_T("Post MOVIEDONE\n")));
   m_dlg.PostMessage(ID_MSG_MOVIEDONE);
 }
-

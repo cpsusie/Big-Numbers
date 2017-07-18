@@ -37,7 +37,8 @@ void CalculatorPool::startCalculators(int count) {
   count = min(count, s_CPUCount);
 
   for(int i = 0; i < count; i++) {
-    add(new MBCalculator(this, i));
+    MBCalculator *calculator = new MBCalculator(this, i); TRACE_NEW(calculator);
+    add(calculator);
     addToExistingInternal(i);
     setStateInternal(i, CALC_SUSPENDED);
   }
@@ -69,7 +70,8 @@ void CalculatorPool::killAllInternal() {
   }
 
   for(size_t i = 0; i < size(); i++) {
-    delete (*this)[i];
+    MBCalculator *calculator = (*this)[i];
+    SAFEDELETE(calculator);
   }
   clear();
 

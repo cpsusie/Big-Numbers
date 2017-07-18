@@ -151,13 +151,15 @@ private:
     void showMousePoint(const CPoint &p);
     void saveRectangle(const String &fileName);
     void loadRectangle(const String &fileName);
-    void makeColorMap();
+    void createColorMap();
+    void destroyColorMap();
     void saveColorMap(const String &fileName);
     void loadColorMap(const String &fileName);
     void setWorkSize();
     void setWorkSize(const PixRect *src);
     void setWorkSize(  const CSize &size);
     void createPixRect(const CSize &size);
+    void destroyPixRect();
     void setUncalculatedPixelsToEmpty();
     void clearUncalculatedWindowArea();
     int  getCPUCountToUse() const;
@@ -182,6 +184,7 @@ private:
     void     putPixRect(const PixRect *src);
     void     pushImage();
     void     popImage();
+    void     resetImageStack();
     void     paintPointSet(const PointSet &ps, COLORREF color);
     void     startCalculation();
     void     setRectanglesToCalculate(const CompactArray<CRect> &rectangles);
@@ -249,7 +252,7 @@ public:
 
   void initScale();
   bool isCalculationActive(bool checkMovie = true) const {
-    return m_calculatorPool->isCalculationActive() || (checkMovie && isMakingMovie());
+    return (m_calculatorPool && m_calculatorPool->isCalculationActive()) || (checkMovie && isMakingMovie());
   }
   bool isCalculationSuspended() const {
     return isCalculationActive() && m_calculatorPool->getCalculatorsInState(CALC_RUNNING).isEmpty();
