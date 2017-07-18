@@ -86,6 +86,7 @@ BEGIN_MESSAGE_MAP(CMandelbrotDlg, CDialog)
     ON_COMMAND(ID_OPTIONS_USEEDGEDETECTION             , OnOptionsUseEdgeDetection            )
     ON_COMMAND(ID_OPTIONS_USEONLY1CPU                  , OnOptionsUseOnly1CPU                 )
     ON_COMMAND(ID_OPTIONS_RETAIN_ASPECTRATIO           , OnOptionsRetainAspectRatio           )
+    ON_COMMAND(ID_OPTIONS_SHOWZOOMFACTOR               , OnOptionsShowZoomFactor              )
     ON_COMMAND(ID_HELP_ABOUTMANDELBROT                 , OnHelpAboutMandelbrot                )
     ON_MESSAGE(ID_MSG_STARTCALCULATION                 , OnMsgStartCalculation                )
     ON_MESSAGE(ID_MSG_UPDATEWINDOWSTATE                , OnMsgUpdateWindowState               )
@@ -125,19 +126,20 @@ BOOL CMandelbrotDlg::OnInitDialog() {
 
   m_crossIcon  = createIcon(theApp.m_hInstance, IDB_MARK_COLORBITMAP, IDB_MARK_MASKBITMAP);
   m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_MAINFRAME));
+  m_rect0      = RealRectangle(-4.5,-4, 8,8);
 
   theApp.m_device.attach(*this);
 
   m_dummyPr        = new PixRect(theApp.m_device, PIXRECT_PLAINSURFACE, 10, 10); TRACE_NEW(m_dummyPr);
   m_mbContainer    = new DialogMBContainer(this, m_dummyPr);                     TRACE_NEW(m_mbContainer);
   m_calculatorPool = new CalculatorPool(*m_mbContainer);                         TRACE_NEW(m_calculatorPool);
-  const CSize startSize(750,750);;
+  const CSize startSize(750,750);
 
   setClientRectSize(this, CSize(startSize.cx+50, startSize.cy+50));
   setWindowPosition(this, IDC_STATIC_IMAGEWINDOW, CPoint(0, 0));
   setClientRectSize(this, IDC_STATIC_IMAGEWINDOW, startSize);
   const CRect imageRect = ::getWindowRect(this, IDC_STATIC_IMAGEWINDOW);
-  const int infoWidth = imageRect.Width() *3 / 7;
+  const int infoWidth = imageRect.Width() * 3 / 7;
   setWindowPosition(this, IDC_STATIC_INFOWINDOW, CPoint(0, imageRect.bottom));
   setWindowSize(    this, IDC_STATIC_INFOWINDOW, CSize(infoWidth, 20));
   const CRect infoRect = ::getWindowRect(this, IDC_STATIC_INFOWINDOW);
@@ -152,10 +154,11 @@ BOOL CMandelbrotDlg::OnInitDialog() {
   m_layoutManager.addControl(IDC_STATIC_MOUSEINFO  , RELATIVE_POSITION              );
 
   m_animateCalculation = isMenuItemChecked(this, ID_OPTIONS_ANIMATE_CALCULATION);
-  m_paintOrbit         = isMenuItemChecked(this, ID_OPTIONS_PAINTORBIT         );
+  m_calculateWithOrbit = isMenuItemChecked(this, ID_OPTIONS_PAINTORBIT         );
   m_useOnly1CPU        = isMenuItemChecked(this, ID_OPTIONS_USEONLY1CPU        );
   m_useEdgeDetection   = isMenuItemChecked(this, ID_OPTIONS_USEEDGEDETECTION   );
   m_retainAspectRatio  = isMenuItemChecked(this, ID_OPTIONS_RETAIN_ASPECTRATIO );
+  m_showZoomFactor     = isMenuItemChecked(this, ID_OPTIONS_SHOWZOOMFACTOR     );
   m_suspendingMenuTextIsSuspending = true;
 
 //  setWindowPosition(this, CPoint(0,0));
@@ -283,7 +286,6 @@ void CMandelbrotDlg::OnFileLoadColorMap() {
 
 void CMandelbrotDlg::OnFileMakeMovie() {
   if(isMakingMovie()) return;
-  REDIRECTLOG();
   TCHAR cwd[1024];
   _tgetcwd(cwd, ARRAYSIZE(cwd));
   CSelectDirDlg dlg(cwd);
@@ -304,6 +306,7 @@ void CMandelbrotDlg::OnFileStopMovie() {
 }
 
 void CMandelbrotDlg::OnFileExit() {
+  OnFileStopMovie();
   SAFEDELETE(m_calculatorPool);
   SAFEDELETE(m_mbContainer   );
   SAFEDELETE(m_dummyPr       );
@@ -388,7 +391,7 @@ void CMandelbrotDlg::OnOptionsAnimateCalculation() {
 }
 
 void CMandelbrotDlg::OnOptionsPaintOrbit() {
-  m_paintOrbit = toggleMenuItem(this, ID_OPTIONS_PAINTORBIT);
+  m_calculateWithOrbit = toggleMenuItem(this, ID_OPTIONS_PAINTORBIT);
 }
 
 void CMandelbrotDlg::OnOptionsUseOnly1CPU() {
@@ -407,9 +410,13 @@ void CMandelbrotDlg::OnOptionsRetainAspectRatio() {
   }
 }
 
+void CMandelbrotDlg::OnOptionsShowZoomFactor() {
+  m_showZoomFactor = toggleMenuItem(this, ID_OPTIONS_SHOWZOOMFACTOR);
+  Invalidate(false);
+}
+
 void CMandelbrotDlg::OnHelpAboutMandelbrot() {
-  CAboutDlg dlg;
-  dlg.DoModal();
+  CAboutDlg().DoModal();
 }
 
 // ----------------------------------- Mouse --------------------------------------------
@@ -595,7 +602,6 @@ void CMandelbrotDlg::OnPaint() {
   } else {
     if(!isCalculationActive(false)) {
       updateWindowStateInternal();
-      clearPixelAccessor();
       flushPixRect();
       m_hasResized = false;
       if(isMakingMovie()) {
@@ -636,8 +642,24 @@ void CMandelbrotDlg::flushPixRect() {
   clearPixelAccessor();
   CClientDC dc(m_imageWindow);
   PixRect::bitBlt(dc,0,0,m_pixRect->getWidth(),m_pixRect->getHeight(),SRCCOPY,m_pixRect,0,0);
-
+  if(showZoomFactor()) {
+    paintZoomFactor(dc);
+  }
   m_gate.signal();
+}
+
+static String zoomToStr(double z) {
+  return (z < 100000) ? format(_T("%.1lf"),z) : format(_T("%.2lg"),z);
+}
+
+void CMandelbrotDlg::paintZoomFactor(CDC &dc) {
+  const Size2D &zoom    = getZoomFactor();
+  String        zoomStr = (zoom.cx == zoom.cy) 
+                        ? zoomToStr(zoom.cx)
+                        : format(_T("(%s,%s)"), zoomToStr(zoom.cx).cstr(), zoomToStr(zoom.cy).cstr());
+  const CSize   sz      = getImageSize();
+  const CSize   tsz     = getTextExtent(dc, zoomStr);
+  textOut(dc, 10, sz.cy-tsz.cy-10,zoomStr);
 }
 
 void CMandelbrotDlg::updateWindowStateInternal() {
@@ -661,6 +683,7 @@ void CMandelbrotDlg::updateWindowStateInternal() {
   enableMenuItem(this, ID_OPTIONS_USEEDGEDETECTION     ,!isActive   );
   enableMenuItem(this, ID_OPTIONS_USEONLY1CPU          ,!isActive   );
   enableMenuItem(this, ID_OPTIONS_RETAIN_ASPECTRATIO   ,!isActive   );
+  enableMenuItem(this, ID_OPTIONS_SHOWZOOMFACTOR       ,!isActive   );
   showWindowState();
 }
 
@@ -747,9 +770,10 @@ void CMandelbrotDlg::setWorkSize(const CSize &size) {
   }
   if(isValidSize()) {
     m_transform.setToRectangle(CRect(0,0,size.cx, size.cy));
-    if(m_retainAspectRatio) {
+    if(isRetainAspectRatio()) {
       m_transform.adjustAspectRatio();
     }
+    m_zoom1Rect = m_transform.getFromRectangle();
   }
 }
 
@@ -891,13 +915,19 @@ void CMandelbrotDlg::setScale(const RealRectangle &scale, bool allowAdjustAspect
 void CMandelbrotDlg::setScale(const Real &minX, const Real &maxX, const Real &minY, const Real &maxY, bool allowAdjustAspectRatio) {
   FPU::setPrecisionMode(getPrecisionMode());
   m_transform.setFromRectangle(RealRectangle(minX, maxY, maxX-minX, minY-maxY));
-  if(m_retainAspectRatio && allowAdjustAspectRatio) {
+  if(isRetainAspectRatio() && allowAdjustAspectRatio) {
     m_transform.adjustAspectRatio();
   }
 }
 
-bool CMandelbrotDlg::isValidSize() const {
-  return m_pixRect != NULL;
+void CMandelbrotDlg::updateZoomFactor() {
+  const RealRectangle r = m_transform.getFromRectangle();
+  if(isRetainAspectRatio()) {
+    const double z = getDouble(m_zoom1Rect.getWidth()/r.getWidth());
+    m_zoomFactor = Size2D(z,z);
+  } else {
+    m_zoomFactor = Size2D(getDouble(m_zoom1Rect.getWidth()/r.getWidth()), getDouble(m_zoom1Rect.getHeight()/r.getHeight()));
+  }
 }
 
 void CMandelbrotDlg::setDragRect(const CPoint &topLeft, const CPoint &bottomRight) {
@@ -916,10 +946,10 @@ void CMandelbrotDlg::setDragRect(const CPoint &topLeft, const CPoint &bottomRigh
 }
 
 CRect CMandelbrotDlg::createDragRect(const CPoint &topLeft, const CPoint &bottomRight) {
-  if(!m_retainAspectRatio) {
+  if(!isRetainAspectRatio()) {
     return CRect(topLeft,bottomRight);
   } else {
-    CSize prSize = m_pixRect->getSize();
+    const CSize prSize = m_pixRect->getSize();
     return CRect(topLeft.x, topLeft.y, bottomRight.x, topLeft.y + (bottomRight.x - topLeft.x) * prSize.cy / prSize.cx);
   }
 }
@@ -1018,6 +1048,7 @@ void CMandelbrotDlg::popImage() {
     putPixRect(image.m_pixRect);
     SAFEDELETE(image.m_pixRect);
     setScale(image.m_scale, false);
+    updateZoomFactor();
     PostMessage(WM_PAINT);
   }
 }
@@ -1041,7 +1072,7 @@ PixelAccessor *CMandelbrotDlg::getPixelAccessor() {
     m_pixelAccessor = m_pixRect->getPixelAccessor();
     DLOG((_T("pixRect locked with pixelAccessor\n")));
   }
-  return (paintOrbit() || animateCalculation()) ? m_mbContainer : m_pixelAccessor;
+  return (calculateWithOrbit() || animateCalculation()) ? m_mbContainer : m_pixelAccessor;
 }
 
 void CMandelbrotDlg::clearPixelAccessor() {
@@ -1050,10 +1081,6 @@ void CMandelbrotDlg::clearPixelAccessor() {
     m_pixelAccessor = NULL;
     DLOG((_T("pixRect unlocked\n")));
   }
-}
-
-CSize CMandelbrotDlg::getImageSize() {
-  return getClientRect(m_imageWindow).Size();
 }
 
 void CMandelbrotDlg::setPixel(UINT x, UINT y, D3DCOLOR color) {
@@ -1095,8 +1122,7 @@ bool CMandelbrotDlg::getJobToDo(CRect &rect) {
 // -----------------------------------------------------------------------------------------
 
 void CMandelbrotDlg::initScale() {
-//  setScale(-2.075601671068005, -2.0756016710594397, 1.1087372571168186e-1, 1.1087372571176775e-1, m_retainAspectRatio);
-  setScale(-4.5,3.5,-4,4, m_retainAspectRatio);
+  setScale(m_rect0, isRetainAspectRatio());
 }
 
 void CMandelbrotDlg::startCalculation() {
@@ -1112,10 +1138,10 @@ void CMandelbrotDlg::startCalculation() {
   }
   clearPixelAccessor();
   setUncalculatedPixelsToEmpty();
-  if(paintOrbit() || animateCalculation()) {
+  if(calculateWithOrbit() || animateCalculation()) {
     clearUncalculatedWindowArea();
   }
-
+  updateZoomFactor();
   getPixelAccessor();
 
   startTimer(1, 500);
@@ -1172,7 +1198,7 @@ void CMandelbrotDlg::setRectangleToCalculate(const CRect &rectangle) {
 }
 
 int CMandelbrotDlg::getCPUCountToUse() const {
-  return (paintOrbit() || m_useOnly1CPU) ? 1 : CalculatorPool::getCPUCount();
+  return (calculateWithOrbit() || m_useOnly1CPU) ? 1 : CalculatorPool::getCPUCount();
 }
 
 void CMandelbrotDlg::OnNcLButtonDown(UINT nHitTest, CPoint point) {
@@ -1267,8 +1293,8 @@ PixelAccessor *DialogMBContainer::getPixelAccessor() {
   return m_dlg->getPixelAccessor();
 }
 
-bool DialogMBContainer::paintOrbit() const {
-  return m_dlg->paintOrbit();
+bool DialogMBContainer::calculateWithOrbit() const {
+  return m_dlg->calculateWithOrbit();
 }
 
 bool DialogMBContainer::useEdgeDetection() const {
@@ -1294,4 +1320,3 @@ D3DCOLOR DialogMBContainer::getPixel(UINT x, UINT y) const {
 void DialogMBContainer::handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
   m_dlg->handlePropertyChanged(source, id, oldValue, newValue);
 }
-

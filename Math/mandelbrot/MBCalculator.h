@@ -115,7 +115,7 @@ public:
   virtual const D3DCOLOR                    *getColorMap()             const  = 0;
   virtual FPUPrecisionMode                   getPrecisionMode()        const  = 0;
   virtual PixelAccessor                     *getPixelAccessor()               = 0;
-  virtual bool                               paintOrbit()              const  = 0;
+  virtual bool                               calculateWithOrbit()      const  = 0;
   virtual bool                               useEdgeDetection()        const  = 0;
   virtual bool                               getJobToDo(CRect &rect)          = 0;
   virtual void                               paintMark(const CPoint &p)       = 0;

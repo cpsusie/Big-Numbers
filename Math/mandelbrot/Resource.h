@@ -1,5 +1,5 @@
-
-// Microsoft Developer Studio generated include file.
+//{{NO_DEPENDENCIES}}
+// Microsoft Visual C++ generated include file.
 // Used by Mandelbrot.rc
 //
 #define IDM_ABOUTBOX                    0x0010
@@ -45,6 +45,7 @@
 #define ID_OPTIONS_USEEDGEDETECTION     32842
 #define ID_OPTIONS_USEONLY1CPU          32843
 #define ID_OPTIONS_RETAIN_ASPECTRATIO   32844
+#define ID_OPTIONS_SHOWZOOMFACTOR       32845
 #define ID_HELP_ABOUTMANDELBROT         32850
 #define ID_GOTO_MAXITERATION            32900
 #define ID_GOTO_SEED                    32901
@@ -57,7 +58,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        139
-#define _APS_NEXT_COMMAND_VALUE         32919
+#define _APS_NEXT_COMMAND_VALUE         32922
 #define _APS_NEXT_CONTROL_VALUE         1009
 #define _APS_NEXT_SYMED_VALUE           103
 #endif

@@ -102,7 +102,7 @@ public:
   const D3DCOLOR                    *getColorMap()             const;
   FPUPrecisionMode                   getPrecisionMode()        const;
   PixelAccessor                     *getPixelAccessor();
-  bool                               paintOrbit()              const;
+  bool                               calculateWithOrbit()      const;
   bool                               useEdgeDetection()        const;
   bool                               getJobToDo(CRect &rect);
   void                               paintMark(const CPoint &p);
@@ -113,21 +113,25 @@ public:
 
 class CMandelbrotDlg : public CDialog, public PropertyChangeListener {
 private:
+    static const TCHAR         *s_stateName[];
     HICON                       m_hIcon;
     HACCEL                      m_accelTable;
     HICON                       m_crossIcon;
     SimpleLayoutManager         m_layoutManager;
     MBContainer                *m_mbContainer;
-    static const TCHAR         *s_stateName[];
 
     FPUPrecisionMode            m_precisionMode;
     ColorMapData                m_colorMapData;
+    RealRectangle               m_rect0, m_zoom1Rect;
+
     bool                        m_animateCalculation;
-    bool                        m_paintOrbit;
+    bool                        m_calculateWithOrbit;
     bool                        m_useOnly1CPU;
     bool                        m_useEdgeDetection;
     bool                        m_retainAspectRatio;
+    bool                        m_showZoomFactor;
     bool                        m_suspendingMenuTextIsSuspending;
+    Size2D                      m_zoomFactor;
     DlgState                    m_state;
     CalculatorPool             *m_calculatorPool;
     MBFrameGenerator           *m_frameGenerator;
@@ -166,10 +170,13 @@ private:
     bool setColorMapData(const ColorMapData &colorMapData);
     void setPrecision(int id);
     void setScale(const Real &minX, const Real &maxX, const Real &minY, const Real &maxY, bool allowAdjustAspectRatio);
+    void updateZoomFactor();
     void startTimer(UINT id, int msec);
     void stopTimer(UINT id);
-    bool isValidSize() const;
-    RealRectangle getScale() const {
+    inline bool isValidSize() const {
+      return m_pixRect != NULL;
+    }
+    inline RealRectangle getScale() const {
       return m_transform.getFromRectangle();
     }
     void     setDragRect(   const CPoint &topLeft, const CPoint &bottomRight);
@@ -181,6 +188,7 @@ private:
     void     calculateMovedImage(  const CSize &dp);
     static   MoveDirection getMoveDirection(const CSize &dp);
     void     flushPixRect();
+    void     paintZoomFactor(CDC &dc);
     void     putPixRect(const PixRect *src);
     void     pushImage();
     void     popImage();
@@ -195,7 +203,7 @@ private:
     }
     void clearPixelAccessor();
     void setState(DlgState newState);
-    DlgState getState()  const {
+    inline DlgState getState()  const {
       return m_state;
     }
     inline const TCHAR *getStateName() const {
@@ -206,42 +214,56 @@ public:
 
     void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
 
-    CWnd *getImageWindow() {
+    inline CWnd *getImageWindow() {
       return m_imageWindow;
     }
-    CSize    getImageSize();
-    void     setScale(const RealRectangle &scale, bool allowAdjustAspectRatio=true);
+    inline CSize getImageSize() {
+      return getClientRect(m_imageWindow).Size();
+    }
+    void     setScale(const RealRectangle &scale, bool allowAdjustAspectRatio = true);
     void     setPixel(UINT x, UINT y, D3DCOLOR color);
     D3DCOLOR getPixel(UINT x, UINT y) const;
 
-    const RealRectangleTransformation &getTransformation() const {
+    inline const RealRectangleTransformation &getTransformation() const {
       return m_transform;
     }
 
-    RealRectangleTransformation &getTransformation() {
+    inline RealRectangleTransformation &getTransformation() {
       return m_transform;
     }
 
-    UINT getMaxIteration() const {
+    inline UINT getMaxIteration() const {
       return m_colorMapData.m_maxIteration;
     }
 
-    const D3DCOLOR *getColorMap() const {
+    inline const D3DCOLOR *getColorMap() const {
       return m_colorMap;
     }
 
-    FPUPrecisionMode getPrecisionMode() const {
+    inline FPUPrecisionMode getPrecisionMode() const {
       return m_precisionMode;
     }
 
     PixelAccessor *getPixelAccessor();
 
-    bool paintOrbit() const {
-      return m_paintOrbit;
+    inline bool calculateWithOrbit() const {
+      return m_calculateWithOrbit;
     }
 
-    bool useEdgeDetection() const {
+    inline bool useEdgeDetection() const {
       return m_useEdgeDetection;
+    }
+
+    inline bool isRetainAspectRatio() const {
+      return m_retainAspectRatio;
+    }
+
+    inline bool showZoomFactor() const {
+      return m_showZoomFactor;
+    }
+
+    inline const Size2D &getZoomFactor() const {
+      return m_zoomFactor;
     }
 
     void paintMark(const CPoint &p);
@@ -251,16 +273,16 @@ public:
 //-----------------------------------------------
 
   void initScale();
-  bool isCalculationActive(bool checkMovie = true) const {
+  inline bool isCalculationActive(bool checkMovie = true) const {
     return (m_calculatorPool && m_calculatorPool->isCalculationActive()) || (checkMovie && isMakingMovie());
   }
-  bool isCalculationSuspended() const {
+  inline bool isCalculationSuspended() const {
     return isCalculationActive() && m_calculatorPool->getCalculatorsInState(CALC_RUNNING).isEmpty();
   }
-  bool animateCalculation() const {
+  inline bool animateCalculation() const {
     return m_animateCalculation;
   }
-  bool isMakingMovie() const {
+  inline bool isMakingMovie() const {
     return m_frameGenerator != NULL;
   }
   void updateMovieMenuItem();
@@ -269,7 +291,7 @@ public:
   enum { IDD = IDD_MANDELBROT_DIALOG };
 
 public:
-  virtual BOOL PreTranslateMessage(MSG* pMsg);
+  virtual BOOL PreTranslateMessage(MSG *pMsg);
   afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
   afx_msg void OnPaint();
   afx_msg HCURSOR OnQueryDragIcon();
@@ -312,6 +334,7 @@ public:
   afx_msg void OnOptionsUseEdgeDetection();
   afx_msg void OnOptionsUseOnly1CPU();
   afx_msg void OnOptionsRetainAspectRatio();
+  afx_msg void OnOptionsShowZoomFactor();
   afx_msg void OnHelpAboutMandelbrot();
   afx_msg LRESULT OnMsgStartCalculation( WPARAM wp, LPARAM lp);
   afx_msg LRESULT OnMsgUpdateWindowState(WPARAM wp, LPARAM lp);

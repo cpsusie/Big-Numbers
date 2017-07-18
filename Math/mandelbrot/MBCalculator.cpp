@@ -153,7 +153,7 @@ MBCalculator::MBCalculator(CalculatorPool *pool, int id)
 , m_pendingMask(pool->getPendingMask(id))
 {
   setDeamon(true);
-  if(m_mbc.paintOrbit()) {
+  if(m_mbc.calculateWithOrbit()) {
     m_itCount      = &MBCalculator::findITCountPaintOrbit;
     m_orbitPoints  = new OrbitPoint[m_mbc.getMaxIteration()]; TRACE_NEW(m_orbitPoints);
   } else {
