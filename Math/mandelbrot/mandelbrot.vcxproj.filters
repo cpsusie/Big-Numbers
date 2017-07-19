@@ -125,6 +125,8 @@
     <CustomBuild Include="res\Mandelbrot.rc2">
       <Filter>Resource Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="MBLoopx64.asm" />
+    <CustomBuild Include="MBLoopx64.asm">
+      <Filter>Source Files\Asm Files</Filter>
+    </CustomBuild>
   </ItemGroup>
 </Project>
