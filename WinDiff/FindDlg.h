@@ -24,21 +24,16 @@ public:
   FindParameters &m_param;
 
   enum { IDD = IDD_DIALOGFIND };
-  BOOL  m_matchCase;
-  BOOL  m_matchWholeWord;
-  BOOL  m_useRegex;
-  CString   m_findWhat;
-  BOOL  m_diffOnly;
-  BOOL  m_nonDiffOnly;
-
+  BOOL    m_matchCase;
+  BOOL    m_matchWholeWord;
+  BOOL    m_useRegex;
+  CString m_findWhat;
+  BOOL    m_diffOnly;
+  BOOL    m_nonDiffOnly;
 
 public:
-  virtual BOOL PreTranslateMessage(MSG* pMsg);
-protected:
-  virtual void DoDataExchange(CDataExchange* pDX);
-
-protected:
-
+  virtual BOOL PreTranslateMessage(MSG *pMsg);
+  virtual void DoDataExchange(CDataExchange *pDX);
   afx_msg void OnFindNext();
   virtual void OnCancel();
   virtual BOOL OnInitDialog();

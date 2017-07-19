@@ -42,11 +42,7 @@ public:
     return m_history.getMaxHistoryLength();
   }
 public:
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-
-public:
-	virtual ~CComboBoxWithHistory();
-
-protected:
-	DECLARE_MESSAGE_MAP()
+    virtual BOOL PreTranslateMessage(MSG *pMsg);
+    virtual ~CComboBoxWithHistory();
+    DECLARE_MESSAGE_MAP()
 };

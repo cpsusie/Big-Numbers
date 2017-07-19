@@ -11,7 +11,7 @@ CEnterOptionsNameDlg::CEnterOptionsNameDlg(const String &currentName, CWnd *pPar
     m_name = currentName.cstr();
 }
 
-void CEnterOptionsNameDlg::DoDataExchange(CDataExchange* pDX) {
+void CEnterOptionsNameDlg::DoDataExchange(CDataExchange *pDX) {
     __super::DoDataExchange(pDX);
     DDX_CBString(pDX, IDC_COMBOOPTIONSNAME, m_name);
 }

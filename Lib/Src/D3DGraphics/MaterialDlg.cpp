@@ -14,7 +14,7 @@ CMaterialDlg::CMaterialDlg(PropertyChangeListener *listener, CWnd *pParent)
   }
 }
 
-void CMaterialDlg::DoDataExchange(CDataExchange* pDX) {
+void CMaterialDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
   DDX_Control(pDX, IDC_COLORMAP_AMBIENT, m_colormapAmbient);
   DDX_Control(pDX, IDC_COLORMAP_DIFFUSE, m_colormapDiffuse);
@@ -25,10 +25,10 @@ void CMaterialDlg::DoDataExchange(CDataExchange* pDX) {
 BEGIN_MESSAGE_MAP(CMaterialDlg, CDialog)
     ON_WM_HSCROLL()
     ON_WM_VSCROLL()
-	  ON_WM_SHOWWINDOW()
+      ON_WM_SHOWWINDOW()
     ON_MESSAGE(_ID_MSG_RESETCONTROLS  , OnMsgResetControls)
-	  ON_BN_CLICKED(ID_BUTTON_HIDEWINDOW, OnHideWindow      )
-	  ON_WM_CLOSE()
+      ON_BN_CLICKED(ID_BUTTON_HIDEWINDOW, OnHideWindow      )
+      ON_WM_CLOSE()
 END_MESSAGE_MAP()
 
 BOOL CMaterialDlg::OnInitDialog() {

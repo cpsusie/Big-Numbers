@@ -144,14 +144,14 @@ void CMainFrame::initMenuItems() {
 */
 }
 
-BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs) {
+BOOL CMainFrame::PreCreateWindow(CREATESTRUCT &cs) {
   if(!__super::PreCreateWindow(cs)) {
     return FALSE;
   }
   return TRUE;
 }
 
-BOOL CMainFrame::PreTranslateMessage(MSG* pMsg) {
+BOOL CMainFrame::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     return true;
   }

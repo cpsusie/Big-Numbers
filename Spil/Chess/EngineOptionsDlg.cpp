@@ -50,7 +50,7 @@ void CEngineOptionsDlg::commonInit() {
 
 }
 
-void CEngineOptionsDlg::DoDataExchange(CDataExchange* pDX) {
+void CEngineOptionsDlg::DoDataExchange(CDataExchange *pDX) {
     __super::DoDataExchange(pDX);
 }
 
@@ -91,13 +91,13 @@ int CEngineOptionsDlg::nextSpinCtrlId() {
 }
 
 BEGIN_MESSAGE_MAP(CEngineOptionsDlg, CDialog)
-	ON_WM_CREATE()
-	ON_WM_SHOWWINDOW()
-	ON_WM_CLOSE()
-	ON_BN_CLICKED(IDC_BUTTON_SENDTOENGINE                                   , OnButtonSendToEngine)
-	ON_BN_CLICKED(IDC_BUTTON_SETDEFAULT                                     , OnButtonSetDefault  )
+    ON_WM_CREATE()
+    ON_WM_SHOWWINDOW()
+    ON_WM_CLOSE()
+    ON_BN_CLICKED(IDC_BUTTON_SENDTOENGINE                                   , OnButtonSendToEngine)
+    ON_BN_CLICKED(IDC_BUTTON_SETDEFAULT                                     , OnButtonSetDefault  )
     ON_CONTROL_RANGE(  BN_CLICKED  , FIRST_BUTTON_CTRLID, LAST_BUTTON_CTRLID, OnUserButton        )
-	ON_NOTIFY_RANGE(   UDN_DELTAPOS, FIRST_SPIN_CTRLID  , LAST_SPIN_CTRLID  , OnDeltaPosSpin      )
+    ON_NOTIFY_RANGE(   UDN_DELTAPOS, FIRST_SPIN_CTRLID  , LAST_SPIN_CTRLID  , OnDeltaPosSpin      )
     ON_NOTIFY_EX_RANGE(TTN_NEEDTEXT, 0                  , 0xffff            , OnToolTipNotify     )
 END_MESSAGE_MAP()
 

@@ -60,11 +60,8 @@ public:
   UINT    m_width;
 
 public:
-  virtual BOOL PreTranslateMessage(MSG* pMsg);
-protected:
-  virtual void DoDataExchange(CDataExchange* pDX);
-
-protected:
+  virtual BOOL PreTranslateMessage(MSG *pMsg);
+  virtual void DoDataExchange(CDataExchange *pDX);
   afx_msg void OnSelChangeComboFieldType();
   virtual BOOL OnInitDialog();
   virtual void OnOK();

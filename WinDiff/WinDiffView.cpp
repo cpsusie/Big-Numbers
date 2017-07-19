@@ -11,7 +11,7 @@
 
 IMPLEMENT_DYNCREATE(CWinDiffView, CFormView)
 
-void CWinDiffView::DoDataExchange(CDataExchange* pDX) {
+void CWinDiffView::DoDataExchange(CDataExchange *pDX) {
   CFormView::DoDataExchange(pDX);
 }
 
@@ -40,11 +40,11 @@ CWinDiffView::CWinDiffView() : CFormView(CWinDiffView::IDD) {
 CWinDiffView::~CWinDiffView() {
 }
 
-BOOL CWinDiffView::PreCreateWindow(CREATESTRUCT& cs) {
+BOOL CWinDiffView::PreCreateWindow(CREATESTRUCT &cs) {
   return CView::PreCreateWindow(cs);
 }
 
-BOOL CWinDiffView::OnPreparePrinting(CPrintInfo* pInfo) {
+BOOL CWinDiffView::OnPreparePrinting(CPrintInfo *pInfo) {
   return DoPreparePrinting(pInfo);
 }
 
@@ -357,7 +357,7 @@ void CWinDiffView::OnTimer(UINT_PTR nIDEvent) {
   CView::OnTimer(nIDEvent);
 }
 
-BOOL CWinDiffView::PreTranslateMessage(MSG* pMsg) {
+BOOL CWinDiffView::PreTranslateMessage(MSG *pMsg) {
   switch(pMsg->message) {
   case WM_LBUTTONDOWN:
     { m_mousePos = m_textView.getNearestCaretPos(pMsg->pt);
@@ -453,7 +453,7 @@ void CWinDiffView::OnInitialUpdate() {
   setScrollRange(false);
 }
 
-void CWinDiffView::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) {
+void CWinDiffView::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar) {
   if(pScrollBar == NULL) {
     return;
   }
@@ -486,7 +486,7 @@ void CWinDiffView::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) {
   CFormView::OnVScroll(nSBCode, nPos, pScrollBar);
 }
 
-void CWinDiffView::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) {
+void CWinDiffView::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar) {
   if(pScrollBar == NULL) {
     return;
   }

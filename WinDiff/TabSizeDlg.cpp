@@ -9,7 +9,7 @@ CTabSizeDlg::CTabSizeDlg(int tabSize, CWnd *pParent) : CDialog(CTabSizeDlg::IDD,
   m_tabSize = tabSize;
 }
 
-void CTabSizeDlg::DoDataExchange(CDataExchange* pDX) {
+void CTabSizeDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
   DDX_Text(pDX, IDC_EDITTABSIZE, m_tabSize);
   DDV_MinMaxUInt(pDX, m_tabSize, 0, 20);

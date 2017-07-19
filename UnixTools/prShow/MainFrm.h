@@ -19,7 +19,7 @@ protected:
 
 public:
 
-  virtual BOOL PreTranslateMessage(MSG* pMsg);
+  virtual BOOL PreTranslateMessage(MSG *pMsg);
 
 public:
   virtual ~CMainFrame();

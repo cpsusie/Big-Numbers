@@ -7,11 +7,8 @@ public:
   enum { IDD = IDD_DIALOGENTERFORMATNAME };
   CString   m_name;
 
-
 protected:
-  virtual void DoDataExchange(CDataExchange* pDX);
-
-protected:
+  virtual void DoDataExchange(CDataExchange *pDX);
   virtual void OnOK();
   virtual BOOL OnInitDialog();
   DECLARE_MESSAGE_MAP()

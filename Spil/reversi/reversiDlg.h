@@ -32,7 +32,7 @@ public:
     enum { IDD = IDD_REVERSI_DIALOG };
 
 protected:
-    virtual BOOL PreTranslateMessage(MSG* pMsg);
+    virtual BOOL PreTranslateMessage(MSG *pMsg);
     virtual void DoDataExchange(CDataExchange *pDX);
     virtual BOOL OnInitDialog();
     afx_msg void OnSysCommand(UINT nID, LPARAM lParam);

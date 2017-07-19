@@ -763,10 +763,10 @@
     <Image Include="..\chess\res\DialogBackground.jpg" />
     <Image Include="..\Chess\res\DstFieldMark.png" />
     <Image Include="..\chess\res\Hourglasses.bmp" />
-    <Image Include="..\chess\res\NoPiece.bmp" />
+    <Image Include="..\Chess\res\NoPiece.png" />
     <Image Include="..\chess\res\OpeningTreeImages.bmp" />
     <Image Include="..\chess\res\pinkField.bmp" />
-    <Image Include="..\chess\res\PlayerIndicator.bmp" />
+    <Image Include="..\Chess\res\PlayerIndicator.png" />
     <Image Include="..\chess\res\purpleField.bmp" />
     <Image Include="..\Chess\res\SrcFieldMark.png" />
     <Image Include="..\Chess\res\WhiteBishop.png" />

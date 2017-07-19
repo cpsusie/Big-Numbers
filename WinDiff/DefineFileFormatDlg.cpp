@@ -21,7 +21,7 @@ CDefineFileFormatDlg::CDefineFileFormatDlg(FileFormat &param, const String &samp
   m_currentControl = 0;
 }
 
-void CDefineFileFormatDlg::DoDataExchange(CDataExchange* pDX) {
+void CDefineFileFormatDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
   DDX_Text(    pDX, IDC_EDITFROM, m_columnFrom);
   DDX_Text(    pDX, IDC_EDITTO, m_columnTo);
@@ -208,7 +208,7 @@ BOOL CDefineFileFormatDlg::OnInitDialog() {
   return false;
 }
 
-BOOL CDefineFileFormatDlg::PreTranslateMessage(MSG* pMsg) {
+BOOL CDefineFileFormatDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     return true;
   }

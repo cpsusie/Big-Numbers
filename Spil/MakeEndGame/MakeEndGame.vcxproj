@@ -784,10 +784,10 @@
     <Image Include="..\chess\res\GreenField.bmp" />
     <Image Include="..\chess\res\Hourglasses.bmp" />
     <Image Include="..\chess\res\Image2\Skull.bmp" />
-    <Image Include="..\chess\res\NoPiece.bmp" />
+    <Image Include="..\Chess\res\NoPiece.png" />
     <Image Include="..\chess\res\OpeningTreeImages.bmp" />
     <Image Include="..\chess\res\pinkField.bmp" />
-    <Image Include="..\chess\res\PlayerIndicator.bmp" />
+    <Image Include="..\Chess\res\PlayerIndicator.png" />
     <Image Include="..\chess\res\purpleField.bmp" />
     <Image Include="..\Chess\res\WhiteMark.bmp" />
     <Image Include="..\chess\res\yellowField.bmp" />

@@ -10,8 +10,8 @@ public:
     enum { IDD = IDD_DIALOGPREC };
     long    m_precision;
 
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-  virtual void DoDataExchange(CDataExchange* pDX);
+  virtual BOOL PreTranslateMessage(MSG *pMsg);
+  virtual void DoDataExchange(CDataExchange *pDX);
   virtual void OnOK();
   virtual BOOL OnInitDialog();
   afx_msg void OnGotoPrecision();

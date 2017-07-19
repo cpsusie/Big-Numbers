@@ -19,7 +19,6 @@ END_MESSAGE_MAP()
 
 CCaptureApp::CCaptureApp() {
     m_bHiColorIcons = TRUE;
-
     SetAppID(_T("Capture"));
 }
 
@@ -27,27 +26,27 @@ CCaptureApp theApp;
 
 BOOL CCaptureApp::InitInstance() {
 
-	// InitCommonControlsEx() is required on Windows XP if an application
-	// manifest specifies use of ComCtl32.dll version 6 or later to enable
-	// visual styles.  Otherwise, any window creation will fail.
-	INITCOMMONCONTROLSEX InitCtrls;
-	InitCtrls.dwSize = sizeof(InitCtrls);
-	// Set this to include all the common control classes you want to use
-	// in your application.
-	InitCtrls.dwICC = ICC_WIN95_CLASSES;
-	InitCommonControlsEx(&InitCtrls);
+    // InitCommonControlsEx() is required on Windows XP if an application
+    // manifest specifies use of ComCtl32.dll version 6 or later to enable
+    // visual styles.  Otherwise, any window creation will fail.
+    INITCOMMONCONTROLSEX InitCtrls;
+    InitCtrls.dwSize = sizeof(InitCtrls);
+    // Set this to include all the common control classes you want to use
+    // in your application.
+    InitCtrls.dwICC = ICC_WIN95_CLASSES;
+    InitCommonControlsEx(&InitCtrls);
 
-	CWinAppEx::InitInstance();
+    CWinAppEx::InitInstance();
 
-	// Initialize OLE libraries
-	if (!AfxOleInit()) {
-		AfxMessageBox(IDP_OLE_INIT_FAILED);
-		return FALSE;
-	}
+    // Initialize OLE libraries
+    if (!AfxOleInit()) {
+        AfxMessageBox(IDP_OLE_INIT_FAILED);
+        return FALSE;
+    }
 
-	AfxEnableControlContainer();
+    AfxEnableControlContainer();
 
-	EnableTaskbarInteraction(FALSE);
+    EnableTaskbarInteraction(FALSE);
 
     SetRegistryKey(_T("JGMData"));
 
@@ -101,8 +100,8 @@ public:
 
   enum { IDD = IDD_ABOUTBOX };
 
-  virtual BOOL PreTranslateMessage(MSG* pMsg);
-  virtual void DoDataExchange(CDataExchange* pDX);
+  virtual BOOL PreTranslateMessage(MSG *pMsg);
+  virtual void DoDataExchange(CDataExchange *pDX);
   virtual BOOL OnInitDialog();
   DECLARE_MESSAGE_MAP()
 };
@@ -116,7 +115,7 @@ BOOL CAboutDlg::OnInitDialog() {
   return TRUE;
 }
 
-void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
+void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
 }
 
@@ -151,7 +150,7 @@ static const char *browsers[] = {
  ,"C:\\Program Files\\Internet Explorer\\iexplore"
 };
 
-BOOL CAboutDlg::PreTranslateMessage(MSG* pMsg) {
+BOOL CAboutDlg::PreTranslateMessage(MSG *pMsg) {
   USES_CONVERSION;
   switch(pMsg->message) {
   case WM_LBUTTONDBLCLK:

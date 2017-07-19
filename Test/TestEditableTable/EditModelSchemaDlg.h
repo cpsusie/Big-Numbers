@@ -99,9 +99,7 @@ public:
   CEditListCtrl   m_list;
 
 protected:
-  virtual void DoDataExchange(CDataExchange* pDX);
-
-protected:
+  virtual void DoDataExchange(CDataExchange *pDX);
   virtual BOOL OnInitDialog();
   virtual void OnOK();
   afx_msg void OnButtonUp();

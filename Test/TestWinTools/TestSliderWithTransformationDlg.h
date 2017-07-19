@@ -3,7 +3,7 @@
 #include <MFCUtil/SliderCtrlWithTransformation.h>
 
 class CTestSliderWithTransformationDlg : public CDialog {
-	DECLARE_DYNAMIC(CTestSliderWithTransformationDlg)
+    DECLARE_DYNAMIC(CTestSliderWithTransformationDlg)
 
 private:
   HACCEL                        m_accelTable;
@@ -19,26 +19,24 @@ private:
   void sliderTypeToRadiobutton();
   void showSliderValue();
 public:
-	CTestSliderWithTransformationDlg(CWnd *pParent = NULL);   // standard constructor
-	virtual ~CTestSliderWithTransformationDlg();
+    CTestSliderWithTransformationDlg(CWnd *pParent = NULL);   // standard constructor
+    virtual ~CTestSliderWithTransformationDlg();
 
 // Dialog Data
 #ifdef AFX_DESIGN_TIME
-	enum { IDD = IDD_TESTSLIDER_DIALOG };
+    enum { IDD = IDD_TESTSLIDER_DIALOG };
 #endif
 
 protected:
-	virtual void DoDataExchange(CDataExchange *pDX);    // DDX/DDV support
-
-	DECLARE_MESSAGE_MAP()
-public:
+  virtual void DoDataExchange(CDataExchange *pDX);    // DDX/DDV support
   virtual BOOL OnInitDialog();
-  afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
-  afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
+  afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar);
+  afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar);
   afx_msg void OnBnClickedRadioLinear();
   afx_msg void OnBnClickedRadioLogarithmic();
   afx_msg void OnBnClickedRadioNormaldistribution();
   afx_msg void OnBnClickedButtonUpdateSlider();
   afx_msg void OnGotoRange();
-virtual BOOL PreTranslateMessage(MSG* pMsg);
+  virtual BOOL PreTranslateMessage(MSG *pMsg);
+  DECLARE_MESSAGE_MAP()
 };

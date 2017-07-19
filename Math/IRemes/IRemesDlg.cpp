@@ -10,8 +10,7 @@ public:
   CAboutDlg();
   enum { IDD = IDD_ABOUTBOX };
 protected:
-  virtual void DoDataExchange(CDataExchange* pDX);
-protected:
+  virtual void DoDataExchange(CDataExchange *pDX);
   DECLARE_MESSAGE_MAP()
 };
 
@@ -48,7 +47,7 @@ CIRemesDlg::CIRemesDlg(CWnd *pParent /*=NULL*/) : CDialog(CIRemesDlg::IDD, pPare
   m_subM = m_subK        = -1;
 }
 
-void CIRemesDlg::DoDataExchange(CDataExchange* pDX) {
+void CIRemesDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
   DDX_Text(pDX, IDC_EDITNAME, m_name);
   DDX_Text(pDX, IDC_EDITM, m_M);
@@ -308,7 +307,7 @@ void CIRemesDlg::OnSize(UINT nType, int cx, int cy) {
   m_layoutManager.OnSize(nType, cx, cy);
 }
 
-BOOL CIRemesDlg::PreTranslateMessage(MSG* pMsg) {
+BOOL CIRemesDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
     return true;
   }

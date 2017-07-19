@@ -13,19 +13,19 @@ CLinePrinterDlg::CLinePrinterDlg(CLinePrinterThread &thread) : CDialog(CLinePrin
   m_visible   = false;
 }
 
-void CLinePrinterDlg::DoDataExchange(CDataExchange* pDX) {
+void CLinePrinterDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CLinePrinterDlg, CDialog)
-  ON_MESSAGE(ID_MSG_SETTITLE    , OnSetTitle    )
-  ON_MESSAGE(ID_MSG_CLEARWINDOW , OnClearWindow )
-  ON_MESSAGE(ID_MSG_RECEIVELINE , OnReceiveLine )
-  ON_WM_SIZE()
-  ON_WM_SHOWWINDOW()
-	ON_BN_CLICKED(IDC_BUTTON_COPY , OnButtonCopy  )
-	ON_BN_CLICKED(IDC_BUTTON_SAVE , OnButtonSave  )
-	ON_BN_CLICKED(IDC_BUTTON_CLOSE, OnButtonClose )
+    ON_MESSAGE(ID_MSG_SETTITLE    , OnSetTitle    )
+    ON_MESSAGE(ID_MSG_CLEARWINDOW , OnClearWindow )
+    ON_MESSAGE(ID_MSG_RECEIVELINE , OnReceiveLine )
+    ON_WM_SIZE()
+    ON_WM_SHOWWINDOW()
+    ON_BN_CLICKED(IDC_BUTTON_COPY , OnButtonCopy  )
+    ON_BN_CLICKED(IDC_BUTTON_SAVE , OnButtonSave  )
+    ON_BN_CLICKED(IDC_BUTTON_CLOSE, OnButtonClose )
 END_MESSAGE_MAP()
 
 BOOL CLinePrinterDlg::OnInitDialog() {

@@ -22,22 +22,22 @@ CPrShowApp::CPrShowApp() {
 CPrShowApp theApp;
 
 BOOL CPrShowApp::InitInstance() {
-	INITCOMMONCONTROLSEX InitCtrls;
-	InitCtrls.dwSize = sizeof(InitCtrls);
-	InitCtrls.dwICC = ICC_WIN95_CLASSES;
-	InitCommonControlsEx(&InitCtrls);
+    INITCOMMONCONTROLSEX InitCtrls;
+    InitCtrls.dwSize = sizeof(InitCtrls);
+    InitCtrls.dwICC = ICC_WIN95_CLASSES;
+    InitCommonControlsEx(&InitCtrls);
 
-	__super::InitInstance();
+    __super::InitInstance();
 
-	// Initialize OLE libraries
-	if (!AfxOleInit()) {
-		AfxMessageBox(IDP_OLE_INIT_FAILED);
-		return FALSE;
-	}
+    // Initialize OLE libraries
+    if (!AfxOleInit()) {
+        AfxMessageBox(IDP_OLE_INIT_FAILED);
+        return FALSE;
+    }
 
-	AfxEnableControlContainer();
+    AfxEnableControlContainer();
 
-	EnableTaskbarInteraction(FALSE);
+    EnableTaskbarInteraction(FALSE);
 
   SetRegistryKey(_T("JGMData"));
 
@@ -98,15 +98,14 @@ public:
 
   enum { IDD = IDD_ABOUTBOX };
 
-protected:
-  virtual void DoDataExchange(CDataExchange* pDX);
+  virtual void DoDataExchange(CDataExchange *pDX);
   DECLARE_MESSAGE_MAP()
 };
 
 CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
-void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
+void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
 }
 

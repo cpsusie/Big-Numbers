@@ -11,24 +11,20 @@ private:
     void ajourButtons(int selected = -1);
     bool anythingChanged() const;
 public:
-  CFileFormatsDlg(CWnd *pParent = NULL);
-  String m_selected;
-
-    enum { IDD = IDD_DIALOGLISTFORMATNAMES };
+    CFileFormatsDlg(CWnd *pParent = NULL);
+    String      m_selected;
     CListCtrl   m_nameListCtrl;
 
+    enum { IDD = IDD_DIALOGLISTFORMATNAMES };
 
 protected:
-  virtual void DoDataExchange(CDataExchange* pDX);
-
-protected:
-
+    virtual void DoDataExchange(CDataExchange *pDX);
     virtual void OnOK();
     afx_msg void OnButtonRename();
     afx_msg void OnButtonDelete();
     virtual BOOL OnInitDialog();
-    afx_msg void OnItemChangedList( NMHDR* pNMHDR, LRESULT* pResult);
-    afx_msg void OnEndLabelEditList(NMHDR* pNMHDR, LRESULT* pResult);
-  DECLARE_MESSAGE_MAP()
+    afx_msg void OnItemChangedList( NMHDR *pNMHDR, LRESULT *pResult);
+    afx_msg void OnEndLabelEditList(NMHDR *pNMHDR, LRESULT *pResult);
+    DECLARE_MESSAGE_MAP()
 };
 

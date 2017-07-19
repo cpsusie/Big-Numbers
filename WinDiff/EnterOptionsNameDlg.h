@@ -2,7 +2,7 @@
 
 class CEnterOptionsNameDlg : public CDialog {
 private:
-  CComboBox *getNameCombo();
+    CComboBox *getNameCombo();
 public:
     CEnterOptionsNameDlg(const String &currentName, CWnd *pParent = NULL);
 
@@ -10,9 +10,7 @@ public:
     CString m_name;
 
 protected:
-    virtual void DoDataExchange(CDataExchange* pDX);
-
-protected:
+    virtual void DoDataExchange(CDataExchange *pDX);
     virtual void OnOK();
     virtual void OnCancel();
     virtual BOOL OnInitDialog();

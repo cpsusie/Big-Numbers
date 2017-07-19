@@ -9,9 +9,9 @@
 CFileFormatsDlg::CFileFormatsDlg(CWnd *pParent) : CDialog(CFileFormatsDlg::IDD, pParent) {
 }
 
-void CFileFormatsDlg::DoDataExchange(CDataExchange* pDX) {
+void CFileFormatsDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
-    DDX_Control(pDX, IDC_LISTFORMATNAMES, m_nameListCtrl);
+  DDX_Control(pDX, IDC_LISTFORMATNAMES, m_nameListCtrl);
 }
 
 BEGIN_MESSAGE_MAP(CFileFormatsDlg, CDialog)
@@ -51,14 +51,14 @@ int CFileFormatsDlg::getListSize() {
   return m_nameListCtrl.GetItemCount();
 }
 
-void CFileFormatsDlg::OnItemChangedList(NMHDR* pNMHDR, LRESULT* pResult) {
+void CFileFormatsDlg::OnItemChangedList(NMHDR *pNMHDR, LRESULT *pResult) {
   NM_LISTVIEW &listView = *(NM_LISTVIEW*)pNMHDR;
   if((listView.uChanged & LVIF_STATE) && (listView.uNewState & LVNI_SELECTED)) {
     ajourButtons(listView.iItem);
   }
 }
 
-void CFileFormatsDlg::OnEndLabelEditList(NMHDR* pNMHDR, LRESULT* pResult) {
+void CFileFormatsDlg::OnEndLabelEditList(NMHDR *pNMHDR, LRESULT *pResult) {
   LV_DISPINFO* pDispInfo = (LV_DISPINFO*)pNMHDR;
 
   LVITEM &lv = pDispInfo->item;

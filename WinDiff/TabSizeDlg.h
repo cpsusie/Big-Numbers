@@ -9,10 +9,7 @@ public:
   UINT  m_tabSize;
 
 protected:
-  virtual void DoDataExchange(CDataExchange* pDX);
-
-protected:
-
+  virtual void DoDataExchange(CDataExchange *pDX);
   virtual void OnOK();
   virtual BOOL OnInitDialog();
   DECLARE_MESSAGE_MAP()

@@ -4,7 +4,7 @@
 CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
-void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
+void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
 }
 

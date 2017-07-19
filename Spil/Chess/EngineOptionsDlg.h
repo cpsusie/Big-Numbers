@@ -133,19 +133,16 @@ public:
     enum { IDD = IDD_ENGINEOPTIONS_DIALOG };
 
 public:
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-protected:
-    virtual void DoDataExchange(CDataExchange* pDX);
-
-protected:
+    virtual BOOL PreTranslateMessage(MSG *pMsg);
+    virtual void DoDataExchange(CDataExchange *pDX);
     virtual BOOL OnInitDialog();
-	  afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
-	  afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
-	  virtual void OnOK();
-	  virtual void OnCancel();
-	  afx_msg void OnClose();
+    afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
+    afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
+    virtual void OnOK();
+    virtual void OnCancel();
+    afx_msg void OnClose();
     afx_msg void OnButtonSendToEngine();
-	  afx_msg void OnButtonSetDefault();
+    afx_msg void OnButtonSetDefault();
     DECLARE_MESSAGE_MAP()
 };
 

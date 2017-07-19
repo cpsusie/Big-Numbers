@@ -9,10 +9,17 @@ typedef enum {
 
 class CGridDlg : public CPropertyDialog<GridParameters> {
 private:
-	DECLARE_DYNAMIC(CGridDlg)
   HACCEL         m_accelTable;
   const PixRect *m_image;
   bool           m_changeHandlerActive;
+  double       m_cellSize;
+  unsigned int m_horizontalCount;
+  unsigned int m_verticalCount;
+  unsigned int m_colorCount;
+  double       m_cellSizeMM;
+
+  DECLARE_DYNAMIC(CGridDlg)
+
   bool validate();
   void windowToValue();
   void calculate();
@@ -33,10 +40,10 @@ private:
   bool getDoubleValue(int id, double &value);
   CSize getImageSize() const;
 public:
-	CGridDlg(CWnd *pParent = NULL);
-	virtual ~CGridDlg();
+    CGridDlg(CWnd *pParent = NULL);
+    virtual ~CGridDlg();
 
-	enum { IDD = IDR_PEARLGRID };
+    enum { IDD = IDR_PEARLGRID };
   const GridParameters &getParam() const {
     return getCurrentValue();
   }
@@ -46,14 +53,7 @@ public:
   }
 protected:
   virtual BOOL PreTranslateMessage(MSG *pMsg);
-	virtual void DoDataExchange(CDataExchange* pDX);
-	DECLARE_MESSAGE_MAP()
-private:
-  double       m_cellSize;
-  unsigned int m_horizontalCount;
-  unsigned int m_verticalCount;
-  unsigned int m_colorCount;
-  double       m_cellSizeMM;
+  virtual void DoDataExchange(CDataExchange *pDX);
   virtual BOOL OnInitDialog();
   virtual void OnOK();
   virtual void OnCancel();
@@ -78,4 +78,5 @@ private:
   afx_msg void OnGotoVerticalCount();
   afx_msg void OnGotoCellSize();
   afx_msg void OnGotoColorCount();
+  DECLARE_MESSAGE_MAP()
 };

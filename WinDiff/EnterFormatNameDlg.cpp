@@ -10,7 +10,7 @@ CGetFormatNameDlg::CGetFormatNameDlg(const String &name, CWnd *pParent) : CDialo
   m_name = name.cstr();
 }
 
-void CGetFormatNameDlg::DoDataExchange(CDataExchange* pDX) {
+void CGetFormatNameDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
   DDX_Text(pDX, IDC_EDITNAME, m_name);
 }

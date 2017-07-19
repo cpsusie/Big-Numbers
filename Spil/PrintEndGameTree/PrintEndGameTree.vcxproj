@@ -533,10 +533,10 @@
     <Image Include="..\Chess\res\DeleteMark.bmp" />
     <Image Include="..\Chess\res\GreenField.bmp" />
     <Image Include="..\Chess\res\Hourglasses.bmp" />
-    <Image Include="..\Chess\res\NoPiece.bmp" />
+    <Image Include="..\Chess\res\NoPiece.png" />
     <Image Include="..\Chess\res\OpeningTreeImages.bmp" />
     <Image Include="..\Chess\res\PinkField.bmp" />
-    <Image Include="..\Chess\res\PlayerIndicator.bmp" />
+    <Image Include="..\Chess\res\PlayerIndicator.png" />
     <Image Include="..\Chess\res\PurpleField.bmp" />
     <Image Include="..\Chess\res\WhiteMark.bmp" />
     <Image Include="..\Chess\res\YellowField.bmp" />

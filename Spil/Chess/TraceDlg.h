@@ -25,10 +25,10 @@ public:
     void reposition();
 
   enum { IDD = IDD_TRACE_DIALOG };
-  BOOL	m_keepText;
+  BOOL  m_keepText;
 
 protected:
-  virtual void DoDataExchange(CDataExchange* pDX);
+  virtual void DoDataExchange(CDataExchange *pDX);
   afx_msg void    OnMove(              int x, int y);
   afx_msg void    OnSize(              UINT nType, int cx, int cy);
   afx_msg LRESULT OnPrintText(         WPARAM wp, LPARAM lp);

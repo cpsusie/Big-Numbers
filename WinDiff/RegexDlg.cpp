@@ -13,7 +13,7 @@ CRegexDlg::CRegexDlg(RegexFilter &param, CWnd *pParent) : m_param(param), CDialo
   m_regex          = m_param.m_regex.cstr();
 }
 
-void CRegexDlg::DoDataExchange(CDataExchange* pDX) {
+void CRegexDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
   DDX_Check(pDX   , IDC_CHECKMATCHCASE     , m_matchCase     );
   DDX_Check(pDX   , IDC_CHECKMATCHWHOLEWORD, m_matchWholeWord);
@@ -82,7 +82,7 @@ void CRegexDlg::OnKillFocusComboRegex() {
   m_currentControl = 0;
 }
 
-BOOL CRegexDlg::PreTranslateMessage(MSG* pMsg) {
+BOOL CRegexDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     return true;
   }

@@ -11,11 +11,10 @@ COptionsOrganizerDlg::COptionsOrganizerDlg(CWnd *pParent /*=NULL*/)
 {
 }
 
-void COptionsOrganizerDlg::DoDataExchange(CDataExchange* pDX) {
+void COptionsOrganizerDlg::DoDataExchange(CDataExchange *pDX) {
     __super::DoDataExchange(pDX);
     DDX_Control(pDX, IDC_LISTOPTIONNAMES, m_nameListCtrl);
 }
-
 
 BEGIN_MESSAGE_MAP(COptionsOrganizerDlg, CDialog)
     ON_BN_CLICKED(IDC_BUTTONRENAME  , OnButtonRename    )

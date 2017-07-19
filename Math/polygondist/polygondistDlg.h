@@ -45,7 +45,7 @@ protected:
   afx_msg void OnLButtonUp(  UINT nFlags, CPoint point);
   afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
   afx_msg void OnMouseMove(  UINT nFlags, CPoint point);
-  virtual BOOL PreTranslateMessage(MSG* pMsg);
+  virtual BOOL PreTranslateMessage(MSG *pMsg);
   virtual void OnOK();
   virtual void OnCancel();
   afx_msg void OnFileExit();
@@ -53,8 +53,7 @@ protected:
   afx_msg void OnToolsDrawPolygon();
   afx_msg void OnToolsFindMaxDistance();
   afx_msg void OnToolsFindIntersectionOfLines();
+  afx_msg void OnToolsClear();
   afx_msg void OnHelpAboutPolygonDist();
   DECLARE_MESSAGE_MAP()
-public:
-  afx_msg void OnToolsClear();
 };

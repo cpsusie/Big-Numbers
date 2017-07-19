@@ -803,16 +803,10 @@
     <Image Include="..\Chess\res\Hourglasses.bmp">
       <Filter>Source Files\Game\Resource Files</Filter>
     </Image>
-    <Image Include="..\Chess\res\NoPiece.bmp">
-      <Filter>Source Files\Game\Resource Files</Filter>
-    </Image>
     <Image Include="..\Chess\res\OpeningTreeImages.bmp">
       <Filter>Source Files\Game\Resource Files</Filter>
     </Image>
     <Image Include="..\Chess\res\PinkField.bmp">
-      <Filter>Source Files\Game\Resource Files</Filter>
-    </Image>
-    <Image Include="..\Chess\res\PlayerIndicator.bmp">
       <Filter>Source Files\Game\Resource Files</Filter>
     </Image>
     <Image Include="..\Chess\res\PurpleField.bmp">
@@ -822,6 +816,12 @@
       <Filter>Source Files\Game\Resource Files</Filter>
     </Image>
     <Image Include="..\Chess\res\YellowField.bmp">
+      <Filter>Source Files\Game\Resource Files</Filter>
+    </Image>
+    <Image Include="..\Chess\res\NoPiece.png">
+      <Filter>Source Files\Game\Resource Files</Filter>
+    </Image>
+    <Image Include="..\Chess\res\PlayerIndicator.png">
       <Filter>Source Files\Game\Resource Files</Filter>
     </Image>
   </ItemGroup>

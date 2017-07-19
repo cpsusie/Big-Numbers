@@ -15,7 +15,7 @@ CMessageDlg::CMessageDlg(int milliSeconds, const String &caption, const String &
   m_timerIsRunning = false;
 }
 
-void CMessageDlg::DoDataExchange(CDataExchange* pDX) {
+void CMessageDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
 }
 
@@ -92,7 +92,7 @@ void CMessageDlg::OnCloseWindow() {
   OnOK();
 }
 
-BOOL CMessageDlg::PreTranslateMessage(MSG* pMsg) {
+BOOL CMessageDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
     return true;
   }

@@ -52,17 +52,6 @@ public:
   MousePosition m_mousePos;
 
 public:
-  virtual void OnDraw(           CDC* pDC);  // overridden to draw this view
-  virtual BOOL PreCreateWindow(  CREATESTRUCT& cs);
-  virtual void DoDataExchange(CDataExchange* pDX);
-  virtual BOOL PreTranslateMessage(MSG* pMsg);
-  virtual void OnInitialUpdate();
-protected:
-  virtual BOOL OnPreparePrinting(CPrintInfo* pInfo);
-  virtual void OnBeginPrinting(  CDC* pDC, CPrintInfo* pInfo);
-  virtual void OnEndPrinting(    CDC* pDC, CPrintInfo* pInfo);
-
-public:
     virtual ~CWinDiffView();
 #ifdef _DEBUG
     virtual void AssertValid() const;
@@ -70,10 +59,18 @@ public:
 #endif
 
 protected:
+  virtual void OnDraw(           CDC *pDC);  // overridden to draw this view
+  virtual BOOL PreCreateWindow(  CREATESTRUCT &cs);
+  virtual void DoDataExchange(CDataExchange *pDX);
+  virtual BOOL PreTranslateMessage(MSG *pMsg);
+  virtual void OnInitialUpdate();
+  virtual BOOL OnPreparePrinting(CPrintInfo *pInfo);
+  virtual void OnBeginPrinting(  CDC *pDC, CPrintInfo *pInfo);
+  virtual void OnEndPrinting(    CDC *pDC, CPrintInfo *pInfo);
   afx_msg void OnSize(UINT nType, int cx, int cy);
   afx_msg int  OnCreate(LPCREATESTRUCT lpCreateStruct);
-  afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
-  afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
+  afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar);
+  afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar);
   afx_msg void OnDropFiles(HDROP hDropInfo);
   afx_msg void OnDestroy();
   afx_msg void OnTimer(UINT_PTR nIDEvent);

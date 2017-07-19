@@ -6,21 +6,18 @@
 
 class CColorDlg : public CColormapDialog<D3DCOLOR> {
 private:
+  DECLARE_EVENTSINK_MAP()
   const String m_caption;
+  CColormap    m_color;
+  void OnColorchangedColormapColor();
 public:
   CColorDlg(const String &caption, int propertyId, D3DCOLOR color, CWnd *pParent = NULL);
 
-	enum { IDD = _IDD_COLOR_DIALOG };
+    enum { IDD = _IDD_COLOR_DIALOG };
 
 protected:
-  virtual void DoDataExchange(CDataExchange* pDX);
-
-protected:
-	virtual BOOL OnInitDialog();
+  virtual void DoDataExchange(CDataExchange *pDX);
+  virtual BOOL OnInitDialog();
   DECLARE_MESSAGE_MAP()
-private:
-  CColormap m_color;
-  DECLARE_EVENTSINK_MAP()
-  void OnColorchangedColormapColor();
 };
 

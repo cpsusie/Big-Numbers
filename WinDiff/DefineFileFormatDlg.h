@@ -49,12 +49,8 @@ public:
     void addDelimiter(const TCHAR *s);
 
 public:
-    virtual BOOL PreTranslateMessage(MSG* pMsg);
-protected:
-    virtual void DoDataExchange(CDataExchange* pDX);
-
-protected:
-
+    virtual BOOL PreTranslateMessage(MSG *pMsg);
+    virtual void DoDataExchange(CDataExchange *pDX);
     virtual BOOL OnInitDialog();
     afx_msg void OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruct);
     virtual void OnOK();

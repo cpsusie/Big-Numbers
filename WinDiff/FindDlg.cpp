@@ -15,7 +15,7 @@ CFindDlg::CFindDlg(FindParameters &param, TextContainer *tc, CWnd *pParent) : CD
   m_nonDiffOnly    = param.m_nonDiffOnly;
 }
 
-void CFindDlg::DoDataExchange(CDataExchange* pDX) {
+void CFindDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
   DDX_Check(   pDX, IDC_CHECKMATCHCASE     , m_matchCase     );
   DDX_Check(   pDX, IDC_CHECKMATCHWHOLEWORD, m_matchWholeWord);
@@ -186,7 +186,7 @@ void CFindDlg::OnKillFocusComboFindWhat() {
   m_currentControl = 0;
 }
 
-BOOL CFindDlg::PreTranslateMessage(MSG* pMsg) {
+BOOL CFindDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     return true;
   }

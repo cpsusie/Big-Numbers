@@ -17,17 +17,17 @@ CConnectDlg::CConnectDlg(Game &game, CWnd *pParent /*=NULL*/) : m_game(game), CD
   m_timerIsRunning     = false;
 }
 
-void CConnectDlg::DoDataExchange(CDataExchange* pDX) {
+void CConnectDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
   DDX_Text(pDX , IDC_EDIT_COMPUTERNAME, m_serverComputerName);
   DDX_Radio(pDX, IDC_RADIO_CREATEGAME , m_connectedToServer );
 }
 
 BEGIN_MESSAGE_MAP(CConnectDlg, CDialog)
-	ON_COMMAND(ID_GOTO_COMPUTERNAME , OnGotoComputerName    )
-	ON_BN_CLICKED(IDC_RADIO_CREATEGAME, OnRadioCreateGame)
-	ON_BN_CLICKED(IDC_RADIO_CONNECTTOGAME, OnRadioConnectToGame)
-	ON_WM_TIMER()
+    ON_COMMAND(ID_GOTO_COMPUTERNAME , OnGotoComputerName    )
+    ON_BN_CLICKED(IDC_RADIO_CREATEGAME, OnRadioCreateGame)
+    ON_BN_CLICKED(IDC_RADIO_CONNECTTOGAME, OnRadioConnectToGame)
+    ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 BOOL CConnectDlg::OnInitDialog() {
@@ -64,7 +64,7 @@ void CConnectDlg::OnGotoComputerName() {
   gotoEditBox(this, IDC_EDIT_COMPUTERNAME);
 }
 
-BOOL CConnectDlg::PreTranslateMessage(MSG* pMsg) {
+BOOL CConnectDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
     return true;
   }

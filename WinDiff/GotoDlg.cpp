@@ -9,7 +9,7 @@ CGotoDlg::CGotoDlg(CWnd *pParent)   : CDialog(CGotoDlg::IDD, pParent) {
   m_line = 0;
 }
 
-void CGotoDlg::DoDataExchange(CDataExchange* pDX) {
+void CGotoDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
   DDX_Text(pDX, IDC_EDITLINENUMBER, m_line);
 }

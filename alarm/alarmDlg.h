@@ -33,12 +33,12 @@ private:
   void checkMenuItem(    int id, bool checked);
   bool toggleMenuItem(   int id);
 
-	enum { IDD = IDD_ALARM_DIALOG };
+  enum { IDD = IDD_ALARM_DIALOG };
   CString m_time;
 
-	public:
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-  virtual void DoDataExchange(CDataExchange* pDX);
+public:
+  virtual BOOL PreTranslateMessage(MSG *pMsg);
+  virtual void DoDataExchange(CDataExchange *pDX);
   virtual BOOL OnInitDialog();
   afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
   afx_msg void OnPaint();
@@ -52,10 +52,10 @@ private:
   afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
   afx_msg void OnMenuExit();
   afx_msg void OnMenuOpen();
-	afx_msg void OnClose();
-	afx_msg void OnHelpAboutalarm();
-	afx_msg void OnSetalarm();
-	afx_msg void OnGotoAlarmTime();
-	afx_msg void OnOptionsHidewhensetalarm();
+  afx_msg void OnClose();
+  afx_msg void OnHelpAboutalarm();
+  afx_msg void OnSetalarm();
+  afx_msg void OnGotoAlarmTime();
+  afx_msg void OnOptionsHidewhensetalarm();
   DECLARE_MESSAGE_MAP()
 };

@@ -11,7 +11,7 @@ CZoomDlg::CZoomDlg(const String &s1, const String &s2, CWnd *pParent) : m_s1(s1)
   m_ignorecase = FALSE;
 }
 
-void CZoomDlg::DoDataExchange(CDataExchange* pDX) {
+void CZoomDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
   DDX_Check(pDX, IDC_CHECKIGNORECASE, m_ignorecase);
   DDX_Text( pDX, IDC_EDIT2LINES, m_lines);
@@ -52,7 +52,7 @@ void CZoomDlg::OnSize(UINT nType, int cx, int cy) {
   m_layoutManager.OnSize(nType, cx, cy);
 }
 
-BOOL CZoomDlg::PreTranslateMessage(MSG* pMsg) {
+BOOL CZoomDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
     return true;
   }

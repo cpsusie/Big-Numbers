@@ -20,35 +20,35 @@ BEGIN_MESSAGE_MAP(CWinDiffApp, CWinApp)
 END_MESSAGE_MAP()
 
 CWinDiffApp::CWinDiffApp() {
-	SetAppID(_T("WinDiff version 3.00"));
+    SetAppID(_T("WinDiff version 3.00"));
 }
 
 CWinDiffApp theApp;
 
 BOOL CWinDiffApp::InitInstance() {
 
-	// InitCommonControlsEx() is required on Windows XP if an application
-	// manifest specifies use of ComCtl32.dll version 6 or later to enable
-	// visual styles.  Otherwise, any window creation will fail.
-	INITCOMMONCONTROLSEX InitCtrls;
-	InitCtrls.dwSize = sizeof(InitCtrls);
-	// Set this to include all the common control classes you want to use
-	// in your application.
-	InitCtrls.dwICC = ICC_WIN95_CLASSES;
-	InitCommonControlsEx(&InitCtrls);
+    // InitCommonControlsEx() is required on Windows XP if an application
+    // manifest specifies use of ComCtl32.dll version 6 or later to enable
+    // visual styles.  Otherwise, any window creation will fail.
+    INITCOMMONCONTROLSEX InitCtrls;
+    InitCtrls.dwSize = sizeof(InitCtrls);
+    // Set this to include all the common control classes you want to use
+    // in your application.
+    InitCtrls.dwICC = ICC_WIN95_CLASSES;
+    InitCommonControlsEx(&InitCtrls);
 
 
-	__super::InitInstance();
+    __super::InitInstance();
 
-	// Initialize OLE libraries
-	if (!AfxOleInit()) {
-		AfxMessageBox(IDP_OLE_INIT_FAILED);
-		return FALSE;
-	}
+    // Initialize OLE libraries
+    if (!AfxOleInit()) {
+        AfxMessageBox(IDP_OLE_INIT_FAILED);
+        return FALSE;
+    }
 
-	AfxEnableControlContainer();
+    AfxEnableControlContainer();
 
-	EnableTaskbarInteraction(FALSE);
+    EnableTaskbarInteraction(FALSE);
 
   SetRegistryKey(_T("JGMData"));
 
@@ -116,9 +116,7 @@ public:
   enum { IDD = IDD_ABOUTBOX };
 
 protected:
-  virtual void DoDataExchange(CDataExchange* pDX);
-
-protected:
+  virtual void DoDataExchange(CDataExchange *pDX);
   virtual BOOL OnInitDialog();
   DECLARE_MESSAGE_MAP()
 };
@@ -126,7 +124,7 @@ protected:
 CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
-void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
+void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
 }
 

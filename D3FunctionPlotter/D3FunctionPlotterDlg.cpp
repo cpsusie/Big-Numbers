@@ -16,14 +16,14 @@ public:
 
   enum { IDD = IDD_ABOUTBOX };
 
-  virtual void DoDataExchange(CDataExchange* pDX);
+  virtual void DoDataExchange(CDataExchange *pDX);
   DECLARE_MESSAGE_MAP()
 };
 
 CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
-void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
+void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
     __super::DoDataExchange(pDX);
 }
 

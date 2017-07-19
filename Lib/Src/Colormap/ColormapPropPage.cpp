@@ -27,24 +27,24 @@ END_MESSAGE_MAP()
 // Initialize class factory and guid
 
 IMPLEMENT_OLECREATE_EX(CColormapPropPage, "COLORMAP.ColormapPropPage.1",
-	0x5ae8d2b0, 0xe7c0, 0x4328, 0xbe, 0x67, 0x8b, 0x43, 0x5d, 0xdc, 0xfc, 0x68)
+    0x5ae8d2b0, 0xe7c0, 0x4328, 0xbe, 0x67, 0x8b, 0x43, 0x5d, 0xdc, 0xfc, 0x68)
 
 // CColormapPropPage::CColormapPropPageFactory::UpdateRegistry -
 // Adds or removes system registry entries for CColormapPropPage
 
 BOOL CColormapPropPage::CColormapPropPageFactory::UpdateRegistry(BOOL bRegister)
 {
-	if (bRegister)
-		return AfxOleRegisterPropertyPageClass(AfxGetInstanceHandle(),
-			m_clsid, IDS_COLORMAP_PPG);
-	else
-		return AfxOleUnregisterClass(m_clsid, NULL);
+    if (bRegister)
+        return AfxOleRegisterPropertyPageClass(AfxGetInstanceHandle(),
+            m_clsid, IDS_COLORMAP_PPG);
+    else
+        return AfxOleUnregisterClass(m_clsid, NULL);
 }
 
 // CColormapPropPage::CColormapPropPage - Constructor
 
 CColormapPropPage::CColormapPropPage() :
-	COlePropertyPage(IDD, IDS_COLORMAP_PPG_CAPTION)
+    COlePropertyPage(IDD, IDS_COLORMAP_PPG_CAPTION)
 {
   m_sunken     = FALSE;
   m_hasBorder  = FALSE;
@@ -57,7 +57,7 @@ CColormapPropPage::CColormapPropPage() :
 
 // CColormapPropPage::DoDataExchange - Moves data between page and properties
 
-void CColormapPropPage::DoDataExchange(CDataExchange* pDX)
+void CColormapPropPage::DoDataExchange(CDataExchange *pDX)
 {
   DDP_Check(pDX, IDC_CHECKSUNKEN    , m_sunken, _T("Sunken") );
   DDX_Check(pDX, IDC_CHECKSUNKEN    , m_sunken);

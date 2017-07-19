@@ -17,7 +17,7 @@ CTraceDlg::CTraceDlg(CTraceDlgThread &thread) : CDialog(CTraceDlg::IDD, NULL), m
   m_keepText = FALSE;
 }
 
-void CTraceDlg::DoDataExchange(CDataExchange* pDX) {
+void CTraceDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
   DDX_Check(pDX, IDC_CHECK_KEEPTEXT, m_keepText);
 }
