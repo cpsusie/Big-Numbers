@@ -138,9 +138,6 @@
     <ClCompile Include="Picture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="BitmapIO.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="BitmapToByteArray.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -311,6 +308,21 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PixRectDevice.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BitmapCodec.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BitmapCodecJPG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BitmapCodecPNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BitmapCodecTIFF.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BitmapCodecBMP.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -493,6 +505,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\MFCUtil\ExprDialog.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BitmapCodec.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

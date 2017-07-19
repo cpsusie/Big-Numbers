@@ -267,7 +267,11 @@
     <ClCompile Include="AnimatedImage.cpp" />
     <ClCompile Include="AviFile.cpp" />
     <ClCompile Include="BitmapBits.cpp" />
-    <ClCompile Include="BitmapIO.cpp" />
+    <ClCompile Include="BitmapCodec.cpp" />
+    <ClCompile Include="BitmapCodecJPG.cpp" />
+    <ClCompile Include="BitmapCodecPNG.cpp" />
+    <ClCompile Include="BitmapCodecTIFF.cpp" />
+    <ClCompile Include="BitmapCodecBMP.cpp" />
     <ClCompile Include="BitmapToByteArray.cpp" />
     <ClCompile Include="BitmapTools.cpp" />
     <ClCompile Include="CIEColorSpace.cpp" />
@@ -425,6 +429,7 @@
     <ClInclude Include="..\..\Include\MFCUtil\Viewport2D.h" />
     <ClInclude Include="..\..\Include\MFCUtil\WinTools.h" />
     <ClInclude Include="..\..\Include\MFCUtil\_Font.h" />
+    <ClInclude Include="BitmapCodec.h" />
     <ClInclude Include="CoordinateSystem\pch.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="targetver.h" />
