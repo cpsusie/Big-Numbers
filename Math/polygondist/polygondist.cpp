@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "polygondist.h"
 #include "polygondistDlg.h"
 
 #ifdef _DEBUG

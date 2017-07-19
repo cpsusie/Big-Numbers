@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include <math.h>
-#include "polygondist.h"
 #include "polygondistDlg.h"
 #include <BitSet.h>
 
@@ -16,8 +15,6 @@ public:
 
 protected:
   virtual void DoDataExchange(CDataExchange *pDX);
-
-protected:
   DECLARE_MESSAGE_MAP()
 };
 
@@ -113,8 +110,7 @@ void CPolygondistDlg::OnFileExit() {
   EndDialog(IDOK);
 }
 void CPolygondistDlg::OnHelpAboutPolygonDist() {
-  CAboutDlg dlg;
-  dlg.DoModal();
+  CAboutDlg().DoModal();
 }
 
 BOOL CPolygondistDlg::PreTranslateMessage(MSG *pMsg) {
