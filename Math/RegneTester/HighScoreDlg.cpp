@@ -47,7 +47,7 @@ BOOL CHighScoreDlg::OnInitDialog() {
   return TRUE;
 }
 
-void CHighScoreDlg::OnSelchangeTabExecise(NMHDR* pNMHDR, LRESULT* pResult) {
+void CHighScoreDlg::OnSelchangeTabExecise(NMHDR *pNMHDR, LRESULT *pResult) {
   *pResult = 0;
   showHighScore(m_execiszeTab.GetCurSel());
 }

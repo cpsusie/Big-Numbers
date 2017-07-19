@@ -46,7 +46,7 @@ void CDegreeDlg::setDegree(int degree) {
   m_fp.plotFunction( m_fit, getColor());
 }
 
-void CDegreeDlg::OnDeltaposSpinDegree(NMHDR* pNMHDR, LRESULT* pResult) {
+void CDegreeDlg::OnDeltaposSpinDegree(NMHDR *pNMHDR, LRESULT *pResult) {
     NM_UPDOWN* pNMUpDown = (NM_UPDOWN*)pNMHDR;
 
     const int delta = -pNMUpDown->iDelta;

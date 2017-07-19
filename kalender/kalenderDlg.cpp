@@ -165,7 +165,7 @@ void CKalenderDlg::OnCancel() {
     __super::OnCancel();
 }
 
-void CKalenderDlg::OnDeltaposSpinyear(NMHDR* pNMHDR, LRESULT* pResult) {
+void CKalenderDlg::OnDeltaposSpinyear(NMHDR *pNMHDR, LRESULT *pResult) {
     NM_UPDOWN* pNMUpDown = (NM_UPDOWN*)pNMHDR;
 
     int u = pNMUpDown->iDelta;
