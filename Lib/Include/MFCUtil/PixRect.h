@@ -426,7 +426,7 @@ public:
   CSize getSizeInMillimeters(HDC hdc = NULL) const;
 
   inline CRect getRect() const {
-    return CRect(0, 0, getWidth(), getHeight());
+    return CRect(ORIGIN, getSize());
   }
 
   void     setPixel(UINT x, UINT y, D3DCOLOR color);
