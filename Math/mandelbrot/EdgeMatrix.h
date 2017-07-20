@@ -8,7 +8,7 @@ typedef enum {
  ,NODIR
 } Direction;
 
-typedef unsigned char EdgeAttribute;
+typedef BYTE EdgeAttribute;
 #define ATTR_INSIDE 0x1
 #define ATTR_DIRTY  0x2
 
@@ -19,10 +19,10 @@ Direction turnAround(Direction dir);
 class EdgeMatrix {
 private:
   union {
-    unsigned long m_allAttr;
-    unsigned char m_attrRow[3];
+    ULONG m_allAttr;
+    BYTE  m_attrRow[3];
   };
-  static const TCHAR *directionName[5];
+  static const TCHAR *s_directionName[5];
 public:
   EdgeMatrix();
   inline bool isDirty(UINT i, UINT j) {
@@ -41,6 +41,6 @@ public:
   void      adjustAttributes( Direction dir);
   EdgeAttribute getLeftAttr(  Direction dir) const;
   String toString() const;
-  static const CPoint dirStep[4];
-  static const CPoint leftStep[4];
+  static const CPoint s_dirStep[4];
+  static const CPoint s_leftStep[4];
 };

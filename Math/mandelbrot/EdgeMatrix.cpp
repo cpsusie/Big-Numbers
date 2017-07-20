@@ -17,20 +17,19 @@ Direction turnAround(Direction dir) {
   return oppositeDir[dir];
 }
 
-const CPoint EdgeMatrix::dirStep[4] = {
+const CPoint EdgeMatrix::s_dirStep[4] = {
   CPoint( 0, 1) // S
  ,CPoint( 1, 0) // E
  ,CPoint( 0,-1) // N
  ,CPoint(-1, 0) // W
 };
 
-const CPoint EdgeMatrix::leftStep[4] = {
+const CPoint EdgeMatrix::s_leftStep[4] = {
   CPoint( 1, 0) // S
  ,CPoint( 0,-1) // E
  ,CPoint(-1, 0) // N
  ,CPoint( 0, 1) // W
 };
-
 
 // Inside attribute bits
 #define A00 0x000001
@@ -99,20 +98,20 @@ void EdgeMatrix ::adjustAttributes(Direction dir) {
     m_allAttr = ((m_allAttr << 2) & (A01|A02|A11|A12|A21|A22)) | (D00|D10|D20);
     break;
   default   :
-    throwException(_T("adjustAttributes:Illegal direction:%s"), directionName[dir]);
+    throwInvalidArgumentException(__TFUNCTION__,_T("dir=%s"), s_directionName[dir]);
   }
 }
 
 #define GETATTR(r,c) ((m_attrRow[r] >> (2*(c))) & 3)
 
-EdgeAttribute EdgeMatrix ::getLeftAttr(  Direction dir) const {
+EdgeAttribute EdgeMatrix ::getLeftAttr(Direction dir) const {
   switch(dir) {
   case S    : return GETATTR(1,2);
   case E    : return GETATTR(0,1);
   case N    : return GETATTR(1,0);
   case W    : return GETATTR(2,1);
   default   :
-    throwException(_T("getLeftAttr Illegal direction:%s"), directionName[dir]);
+    throwInvalidArgumentException(__TFUNCTION__,_T("dir=%s"), s_directionName[dir]);
     return 0;
   }
 }
@@ -125,11 +124,10 @@ String EdgeMatrix::toString() const {
   return s;
 }
 
-const TCHAR *EdgeMatrix::directionName[5] = {
+const TCHAR *EdgeMatrix::s_directionName[5] = {
   _T("S")
  ,_T("E")
  ,_T("N")
  ,_T("W")
  ,_T("NODIR")
 };
-

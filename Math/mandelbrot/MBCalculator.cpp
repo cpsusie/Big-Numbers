@@ -249,28 +249,28 @@ UINT MBCalculator::run() {
 }
 
 void MBCalculator::followBlackEdge(const CPoint &p) {
-  PixelAccessor                  &pa       = *m_mbc.getPixelAccessor();
-  const D3DCOLOR                 *colorMap =  m_mbc.getColorMap();
-  CPoint                          q        = p;
-  Direction                       dir      = S, firstDir = NODIR;
-  PointSet                        edgeSet(m_currentRect), innerSet(m_currentRect);
+  PixelAccessor                     &pa            = *m_mbc.getPixelAccessor();
+  const D3DCOLOR                    *colorMap      =  m_mbc.getColorMap();
+  CPoint                             q             = p;
+  Direction                          dir           = S, firstDir = NODIR;
+  PointSet                           edgeSet(m_currentRect), innerSet(m_currentRect);
   edgeSet.add(p);
-  int                             edgeCount     = 1; // p assumed to be set to black
-  bool                            innerDetected = false;
+  int                                edgeCount     = 1; // p assumed to be set to black
+  bool                               innerDetected = false;
 
   SETPHASE(_T("FOLLOWEDGE"))
 
-  const RealRectangleTransformation&tr    = m_mbc.getTransformation();
-  const RealIntervalTransformation &xtr   = tr.getXTransformation();
-  const RealIntervalTransformation &ytr   = tr.getYTransformation();
-  const int                         maxIt = m_mbc.getMaxIteration();
+  const RealRectangleTransformation &tr    = m_mbc.getTransformation();
+  const RealIntervalTransformation  &xtr   = tr.getXTransformation();
+  const RealIntervalTransformation  &ytr   = tr.getYTransformation();
+  const int                          maxIt = m_mbc.getMaxIteration();
 
 #ifdef SAVE_CALCULATORINFO
   m_info = new CalculatorInfo(m_id, m_currentRect);
 #endif
 //  DLOG((_T("Follow black edge starting at (%d,%d)\n"), p.x,p.y));
 
-  EdgeMatrix                      edgeMatrix;
+  EdgeMatrix edgeMatrix;
   for(;;) {
     for(int dy = -1; dy <= 1; dy++) {
       const int qy = q.y + dy;
@@ -325,17 +325,16 @@ void MBCalculator::followBlackEdge(const CPoint &p) {
     }
 
     if(edgeMatrix.getLeftAttr(dir)) {
-      innerSet.add(q + EdgeMatrix::leftStep[dir]);
+      innerSet.add(q + EdgeMatrix::s_leftStep[dir]);
       innerDetected = true;
       if(m_pool.isPending(m_pendingMask)) handlePending();
     }
-    q += EdgeMatrix::dirStep[dir];
+    q += EdgeMatrix::s_dirStep[dir];
     if(!edgeSet.contains(q)) {
       pa.setPixel(q, BLACK);
       edgeSet.add(q);
       edgeCount++;
     }
-
     edgeMatrix.adjustAttributes(dir);
   }
 
