@@ -177,7 +177,7 @@ static const KeyWord keywordTable[] = {
  ,KW(CAPTION)
  ,KW(DISCARDABLE)
  ,KW(MOVEABLE)
- ,KW(PURE)
+ ,UKW(PURE)
  ,KW(IMPURE)
  ,KW(PRELOAD)
  ,KW(LOADONCALL)

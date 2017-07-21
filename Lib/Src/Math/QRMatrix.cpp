@@ -8,9 +8,9 @@
 
 using namespace std;
 
-//#define DEBUG 1
+//#define DEBUGMODULE 1
 
-#ifdef DEBUG
+#ifdef DEBUGMODULE
 bool traceQR = false;
 static StreamParameters param(9,14,ios::fixed);
 #endif
@@ -483,7 +483,7 @@ void QRMatrix::singleQRStep(int iteration, const Real &shift) {
   const int n = (int)a.getRowCount();
 
   checkIsUnitary(_T("Q"), m_Q);
-#if DEBUG>0
+#if DEBUGMODULE>0
 if(traceQR) {
   cout << "*********************** Begin of singleQRStep(iteration=" << iteration << ", shift=" << shift << ", deflated Size=" << m_deflatedSize << ") ************************" << endl;
   cout << "QR:\n" << param << a;
@@ -511,7 +511,7 @@ if(traceQR) {
   }
   a(m_deflatedSize-1,m_deflatedSize-1) += shift;
 
-#if DEBUG>0
+#if DEBUGMODULE>0
 if(traceQR) {
   cout << "QR(end, deflated Size=" << m_deflatedSize << "):" << endl;
   cout << param << a;
@@ -525,7 +525,7 @@ if(traceQR) {
 void QRMatrix ::doubleQRStep(int iteration) {
   QRMatrix &a = *this;
 
-#if DEBUG>0
+#if DEBUGMODULE>0
 if(traceQR) {
   cout << "*********************** Begin of doubleQRStep(iteration=" << iteration << ", deflated Size=" << m_deflatedSize << ") ************************" << endl;
   cout << "QR:\n" << param << a;
@@ -536,7 +536,7 @@ if(traceQR) {
 
     const ElementaryReflector reflector = (k==-1) ? ElementaryReflector(a) : ElementaryReflector(a,k+1,k);
 
-#if DEBUG>1
+#if DEBUGMODULE>1
 if(traceQR) {
     cout << "k=" << k << " - " << reflector << endl;
 }
@@ -551,7 +551,7 @@ if(traceQR) {
     for(int j = k+1; j < (int)getColumnCount(); j++) { // 3 Premultiply
       reflector.preMultiply(a,k+1,j);
 
-#if DEBUG>1
+#if DEBUGMODULE>1
 if(traceQR) {
       cout << "After reflector.preMultiply(j=" << j << "):\n" << param << a;
 }
@@ -562,14 +562,14 @@ if(traceQR) {
       reflector.postMultiply(a  ,i,k+1);
       reflector.postMultiply(m_Q,i,k+1);
 
-#if DEBUG>1
+#if DEBUGMODULE>1
 if(traceQR) {
       cout << "After reflector.postMultiply(i=" << i << "):\n" << param << a;
 }
 #endif
     }
 
-#if DEBUG>0
+#if DEBUGMODULE>0
 if(traceQR) {
       cout << "QR(k=" << k << ", deflated Size=" << m_deflatedSize << "):\n" << param << a;
 }
@@ -578,14 +578,14 @@ if(traceQR) {
   }
 
   const PlaneRotation rotation(a,m_deflatedSize-2,m_deflatedSize-3);
-#if DEBUG>1
+#if DEBUGMODULE>1
 if(traceQR) {
   cout << rotation << endl;
 }
 #endif
   for(int j = m_deflatedSize-2; j < (int)getColumnCount(); j++) {
     rotation.preMultiply(a,m_deflatedSize-2,j);
-#if DEBUG>1
+#if DEBUGMODULE>1
 if(traceQR) {
     cout << "After rotation.preMultiply(j=" << j << "):\n" << param << a;
 }
@@ -595,14 +595,14 @@ if(traceQR) {
   for(int i = 0; i < (int)getRowCount(); i++) {
     rotation.postMultiply(a  ,i,m_deflatedSize-2);
     rotation.postMultiply(m_Q,i,m_deflatedSize-2);
-#if DEBUG>1
+#if DEBUGMODULE>1
 if(traceQR) {
     cout << "After rotation.postMultiply(i=" << i << "):\n" << param << a;
 }
 #endif
   }
 
-#if DEBUG>0
+#if DEBUGMODULE>0
 if(traceQR) {
   cout << "QR(end, deflated Size=" << m_deflatedSize << "):" << endl;
   cout << param << a;
@@ -729,7 +729,7 @@ void QRMatrix::getEigenValues2x2(Complex &l1, Complex &l2) const {
   const int offset = m_deflatedSize-2;
   ::getEigenValues2x2(getSubMatrix(offset,offset,2,2),l1,l2);
 
-#if DEBUG>0
+#if DEBUGMODULE>0
 if(traceQR) {
   StreamParameters ss(15,0,ios::scientific);
   cout << "Found nr. " << m_deflatedSize << " and " << (m_deflatedSize-1) << ":" << ss << l1 << "," << ss << l2;
@@ -747,7 +747,7 @@ Real QRMatrix::getEigenValue1x1() const {
   const int       offset = m_deflatedSize-1;
   const Real      lambda = a(offset,offset);
 
-#if DEBUG>0
+#if DEBUGMODULE>0
 if(traceQR) {
   StreamParameters ss(15,0,ios::scientific);
   cout << "Found nr. " << m_deflatedSize << ":" << ss << lambda;

@@ -36,7 +36,7 @@ private:
 %term DIALOG DIALOGEX 
 %term AFX_DIALOG_LAYOUT
 
-%term STYLE EXSTYLE CAPTION DISCARDABLE MOVEABLE PURE IMPURE PRELOAD LOADONCALL 
+%term STYLE EXSTYLE CAPTION DISCARDABLE MOVEABLE _PURE IMPURE PRELOAD LOADONCALL 
 %term PUSHBUTTON DEFPUSHBUTTON EDITTEXT SCROLLBAR COMBOBOX LISTBOX
 %term GROUPBOX LTEXT RTEXT CTEXT CONTROL 
 
@@ -329,7 +329,7 @@ resourceAttributeList       : /* empty */
 
 resourceAttribute           : DISCARDABLE 
                             | MOVEABLE
-                            | PURE
+                            | _PURE
                             | IMPURE
                             | PRELOAD
                             | LOADONCALL

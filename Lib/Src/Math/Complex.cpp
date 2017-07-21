@@ -34,20 +34,12 @@ void Complex::init(const _TUCHAR *s) {
 }
 
 Complex::Complex(const char    *s) {
-#ifdef UNICODE
-  USES_CONVERSION;
-  init((_TUCHAR*)A2T(s));
-#else
-  init(s);
-#endif
+  USES_ACONVERSION;
+  init(ASTR2TSTR(s));
 }
 Complex::Complex(const wchar_t *s) {
-#ifndef UNICODE
-  USES_CONVERSION;
-  init((_TUCHAR*)W2T(s));
-#else
-  init((_TUCHAR*)s);
-#endif
+  USES_WCONVERSION;
+  init(WSTR2TSTR(s));
 }
 
 Complex operator+(const Complex &lts, const Complex &rhs) {

@@ -58,11 +58,24 @@ void StringPool::copy(const StringPool &src) {
   setIndexCapacity(src.getIndexCapacity());
 }
 
-size_t StringPool::addString(const TCHAR *s) {
-  unsigned long hashCode;
+size_t StringPool::addString(const char *s) {
   if(*s == 0) {
     return 0; // offset 0 is a 0-byte. see setTextCapacity
   }
+  USES_ACONVERSION;
+  return addTStr(ASTR2TSTR(s));
+}
+
+size_t StringPool::addString(const wchar_t *s) {
+  if(*s == 0) {
+    return 0; // offset 0 is a 0-byte. see setTextCapacity
+  }
+  USES_WCONVERSION;
+  return addTStr(WSTR2TSTR(s));
+}
+
+size_t StringPool::addTStr(const TCHAR *s) {
+  ULONG hashCode;
   for(;;) {
     if(m_indexCapacity) {
       hashCode = strHash(s) % m_indexCapacity;

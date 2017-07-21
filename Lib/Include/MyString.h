@@ -3,12 +3,39 @@
 #include <stdarg.h>
 #include "Unicode.h"
 #include "PragmaLib.h"
+#include <comdef.h>
+#include <atlconv.h>
 
 #define __TFILE__                   _T(__FILE__)
 #define __TFUNCTION__               _T(__FUNCTION__)
 #define DEFINEMETHODNAME            static TCHAR const* const method = __TFUNCTION__
 #define DECLARECLASSNAME            static TCHAR const* const s_className
 #define DEFINECLASSNAME(className)  TCHAR const* const className::s_className = _T(#className)
+
+#ifndef UNICODE
+
+#define USES_ACONVERSION
+#define USES_WCONVERSION USES_CONVERSION
+
+#define ASTR2TSTR(s)     (s)
+#define TSTR2ASTR(s)     (s)
+#define WSTR2TSTR(s)  W2T(s)
+#define TSTR2WSTR(s)  T2W(s)
+
+#else // UNICODE
+
+#define USES_ACONVERSION USES_CONVERSION
+#define USES_WCONVERSION
+
+#define ASTR2TSTR(s)  A2T(s)
+#define TSTR2ASTR(s)  T2A(s)
+#define WSTR2TSTR(s)     (s)
+#define TSTR2WSTR(s)     (s)
+
+#endif // UNICODE
+
+#define A2TNULL(s) ((s)?ASTR2TSTR(s):_T("null"))
+#define W2TNULL(s) ((s)?WSTR2TSTR(s):_T("null"))
 
 ULONG strHash(const TCHAR * const &s);
 inline int strHashCmp(   const TCHAR * const &s1, const TCHAR * const &s2) {
@@ -31,13 +58,9 @@ private:
   void indexError(size_t index) const;
 public:
   String();
-  String(const String &s);
-  String(const TCHAR  *s);
-#ifdef UNICODE
-  String(            const char *s);
-  String &operator=( const char *s);
-  String &operator+=(const char *rhs);
-#endif
+  String(const String  &s);
+  String(const wchar_t *s);
+  String(const char    *s);
   explicit String(char    ch);
   explicit String(SHORT   n );
   explicit String(USHORT  n );
@@ -51,8 +74,9 @@ public:
   explicit String(double  x );
 
   ~String();
-  String      &operator=(const String &rhs);
-  String      &operator=(const TCHAR *s);
+  String      &operator=(const String  &rhs);
+  String      &operator=(const char    *rhs);
+  String      &operator=(const wchar_t *rhs);
 
   // Returns TCHAR at position index
   inline TCHAR &operator[](size_t index) {
@@ -100,7 +124,8 @@ public:
   String &operator+=(const String &rhs);
 
   // Append rhs to this. return *this
-  String &operator+=(const TCHAR  *rhs);
+  String &operator+=(const char    *rhs);
+  String &operator+=(const wchar_t *rhs);
 
   // Append ch to this. return *this
   inline String &operator+=(TCHAR ch) {

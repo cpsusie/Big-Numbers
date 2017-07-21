@@ -13,8 +13,8 @@ static void usage() {
   exit(-1);
 }
 
-int main(int argc, char **argv) {
-  char *cp;
+int main(int argc, const char **argv) {
+  const char *cp;
   bool danish    = false;
   bool showNames = false;
   bool recurse   = false;

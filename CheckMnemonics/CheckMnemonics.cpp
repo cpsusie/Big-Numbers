@@ -73,10 +73,10 @@ static void usage() {
   exit(-1);
 }
 
-int main(int argc, char **argv) {
+int main(int argc, const char **argv) {
   bool   recurse = false;
   bool   verbose = false;
-  char *cp;
+  const char *cp;
 // ResourceLex::findBestHashMapSize();
 // return 0;
 

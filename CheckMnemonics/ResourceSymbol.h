@@ -57,7 +57,7 @@
     ,CAPTION                      =  53
     ,DISCARDABLE                  =  54
     ,MOVEABLE                     =  55
-    ,PURE                         =  56
+    ,_PURE                        =  56
     ,IMPURE                       =  57
     ,PRELOAD                      =  58
     ,LOADONCALL                   =  59

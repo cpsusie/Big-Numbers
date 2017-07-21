@@ -74,8 +74,8 @@ static void usage() {
   exit(-1);
 }
 
-int main(int argc, char **argv) {
-  char *cp;
+int main(int argc, const char **argv) {
+  const char *cp;
   bool verbose       = false;
   bool warnings      = true;
   bool printLanguage = false;

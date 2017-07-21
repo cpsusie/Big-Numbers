@@ -55,87 +55,60 @@ void FileTreeWalker::walkDir(const String &path, FileNameHandler &nameHandler, T
   handleDir(path, nameHandler, argv, false);
 }
 
-class Argv {
-private:
-  StringArray m_a;
-  TCHAR **m_argv;
-  void createArgvFromArray();
-public:
-  Argv();
-  Argv(const StringArray &a);
-#ifdef UNICODE
-  Argv(char **argv);
-#endif
-  ~Argv();
-  operator TCHAR**() {
-    return m_argv;
-  }
-  int getArgc() {
-    return (int)m_a.size();
-  }
-};
-
-Argv::Argv() {
-  m_argv = NULL;
-}
-
-Argv::Argv(const StringArray &a) : m_a(a) {
-  createArgvFromArray();
-}
-
-#ifdef UNICODE
-Argv::Argv(char **argv) {
-  while (*argv) {
-    m_a.add(*(argv++));
-  }
-  createArgvFromArray();
-}
-#endif
-
-Argv::~Argv() {
-  if(m_argv != NULL) {
-    delete[] m_argv;
-  }
-}
-
-void Argv::createArgvFromArray() {
-  if(m_a.size() == NULL) {
-    m_argv = NULL;
-  } else {
-    m_argv = new TCHAR*[m_a.size()+1];
-    size_t i;
-    for(i = 0; i < m_a.size(); i++) {
-      m_argv[i] = m_a[i].cstr();
-    }
-    m_argv[i] = NULL;
-  }
-}
-
-static bool hasWildCard(const String name) {
+static bool hasWildCard(const String &name) {
   return name.find('*') >= 0 || name.find('?') >= 0;
 }
 
 class IndexedStringArray : public StringArray {
 private:
-  static int m_currrentIndex;
-public:
   const int    m_index;
   const String m_path;
   const bool   m_isDir;
-  IndexedStringArray(const String &path, bool isDir=true) : m_index(m_currrentIndex++), m_path(path), m_isDir(isDir) {
+  mutable CompactStrArray m_argv;
+public:
+  IndexedStringArray(const String &path, int index, bool isDir) : m_index(index), m_path(path), m_isDir(isDir) {
   }
+  inline const String &getPath() const {
+    return m_path;
+  }
+  inline bool isDir() const {
+    return m_isDir;
+  }
+  inline int getIndex() const {
+    return m_index;
+  }
+  operator TCHAR**() const;
 };
 
-int IndexedStringArray::m_currrentIndex = 0;
-
-static int compareByIndex(IndexedStringArray * const &a1, IndexedStringArray * const &a2) {
-  return a1->m_index - a2->m_index;
+IndexedStringArray::operator TCHAR**() const {
+  if(m_argv.isEmpty() && !isEmpty()) {
+    for(size_t i = 0; i < size(); i++) {
+      const TCHAR * const s = (*this)[i].cstr();
+      m_argv.add((TCHAR * const)s);
+    }
+    m_argv.add(NULL);
+  }
+  return (TCHAR**)m_argv.getBuffer();
 }
 
-void FileTreeWalker::traverseArgv(TCHAR **argv, FileNameHandler &nameHandler, bool recurse) { // static
+static int compareByIndex(IndexedStringArray * const &a1, IndexedStringArray * const &a2) {
+  return a1->getIndex() - a2->getIndex();
+}
+
+void FileTreeWalker::traverseArgv(const char **argv, FileNameHandler &nameHandler, bool recurse) { // static
+  traverseArgv(StringArray(argv), nameHandler, recurse);
+}
+
+void FileTreeWalker::traverseArgv(const wchar_t **argv, FileNameHandler &nameHandler, bool recurse) { // static
+  traverseArgv(StringArray(argv), nameHandler, recurse);
+}
+
+void FileTreeWalker::traverseArgv(const StringArray &a, FileNameHandler &nameHandler, bool recurse) { // static
   StringHashMap<IndexedStringArray> dirMap;
-  for(;*argv; argv++) {
-    String name = *argv;
+  int arrayIndex = 0;
+
+  for(size_t i = 0; i < a.size(); i++) {
+    String name = a[i];
     if(name[name.length()-1] == '\\') {
       name = left(name,name.length()-1);
     }
@@ -146,9 +119,9 @@ void FileTreeWalker::traverseArgv(TCHAR **argv, FileNameHandler &nameHandler, bo
 
       IndexedStringArray *wcArray = dirMap.get(path);
       if(wcArray == NULL) {
-        IndexedStringArray a(path);
-        a.add(wildCard);
-        dirMap.put(path,a);
+        IndexedStringArray ia(path, arrayIndex++, true);
+        ia.add(wildCard);
+        dirMap.put(path,ia);
       } else {
         wcArray->add(wildCard);
       }
@@ -157,28 +130,21 @@ void FileTreeWalker::traverseArgv(TCHAR **argv, FileNameHandler &nameHandler, bo
       if(stat(name,st) < 0) {
         continue;
       }
-      dirMap.put(name,IndexedStringArray(name, (st.st_mode & _S_IFDIR) ? true : false));
+      dirMap.put(name,IndexedStringArray(name, arrayIndex++, (st.st_mode & _S_IFDIR) ? true : false));
     }
   }
-  Array<IndexedStringArray*> a;
+  CompactArray<IndexedStringArray*> a1;
   for(Iterator<IndexedStringArray> it = dirMap.values().getIterator(); it.hasNext();) {
-    a.add(&it.next());
+    a1.add(&it.next());
   }
 
-  a.sort(compareByIndex);
-  for(size_t i = 0; i < a.size(); i++) {
-    IndexedStringArray *ia = a[i];
-    if(ia->m_isDir) {
-      handleDir(ia->m_path, nameHandler, Argv(*ia), recurse);
+  a1.sort(compareByIndex);
+  for(size_t i = 0; i < a1.size(); i++) {
+    const IndexedStringArray *ia = a1[i];
+    if(ia->isDir()) {
+      handleDir(ia->getPath(), nameHandler, *ia, recurse);
     } else {
-      handleSingleFile(ia->m_path, nameHandler);
+      handleSingleFile(ia->getPath(), nameHandler);
     }
   }
 }
-
-#ifdef UNICODE
-
-void FileTreeWalker::traverseArgv(char **argv, FileNameHandler &nameHandler, bool recurse) { // static
-  traverseArgv(Argv(argv), nameHandler, recurse);
-}
-#endif // UNICODE

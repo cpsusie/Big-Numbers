@@ -1,7 +1,5 @@
 #include "pch.h"
 #include <SocketStream.h>
-#include <comdef.h>
-#include <atlconv.h>
 
 void SocketStream::open(int portNr, const TCHAR *hostName) {
   USES_CONVERSION;

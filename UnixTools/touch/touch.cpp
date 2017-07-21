@@ -25,7 +25,7 @@ void FileToucher::touch(const TCHAR *name) {
   }
 }
 
-static void usage(char *cp = NULL) {
+static void usage(const char *cp = NULL) {
   if(cp) {
     fprintf(stderr,"Invalid argument:%s\n", cp);
   }
@@ -36,8 +36,8 @@ static void usage(char *cp = NULL) {
   exit(-1);
 }
 
-int main(int argc, char **argv) {
-  char *cp;
+int main(int argc, const char **argv) {
+  const char *cp;
   time_t touchTime = Timestamp::getSystemTime();
   bool recurse = false;
 

@@ -228,9 +228,9 @@ static void usage() {
   exit(-1);
 }
 
-int main(int argc, char **argv) {
-  char *cp;
-  char *fileSetFileName = NULL;
+int main(int argc, const char **argv) {
+  const char *cp;
+  const char *fileSetFileName = NULL;
   bool  recurse         = false;
   bool  ignoreCase      = true;
   bool  fnameOnly       = false;
@@ -301,8 +301,8 @@ EndOfOptions:
   if(*argv == NULL) {
     usage();
   }
-  bool  regexp          = false;
-  char *pattern;
+  bool        regexp          = false;
+  const char *pattern;
   if(strcmp(*argv,"-e") == 0) {
     argv++;
     if(*argv == NULL) {

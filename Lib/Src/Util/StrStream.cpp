@@ -1,31 +1,6 @@
 #include "pch.h"
 #include <String.h>
-
-#ifdef UNICODE
-#include <comdef.h>
-#include <atlconv.h>
-#endif
-
 #include <StrStream.h>
-
-#ifdef UNICODE
-//StrStream::StrStream(tostream &stream) : StreamParameters(stream) {//
-//}
-
-StrStream &StrStream::append(const char *str) {
-  USES_CONVERSION;
-  return append(A2W(str));
-}
-
-StrStream &StrStream::operator<<(const char *str) {
-  return append(str);
-}
-
-StrStream &StrStream::operator<<(char ch) {
-  const char tmp[2] = { ch, 0 };
-  return append(tmp);
-}
-#endif
 
 TCHAR StrStream::unputc() {
   TCHAR ch = 0;

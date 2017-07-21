@@ -68,12 +68,12 @@ static void usage()  {
   exit(-1);
 }
 
-int main(int argc, char **argv) {
+int main(int argc, const char **argv) {
   bool recurse   = false;
   bool force     = false;
   bool rmdirs    = true;
   bool verbose   = false;
-  char *cp;
+  const char *cp;
 
   for(argv++; *argv && *(cp = *argv) == '-'; argv++) {
     for(cp++; *cp; cp++) {

@@ -378,7 +378,7 @@ State 23:
 
    reduce by 104 on DISCARDABLE
    reduce by 104 on MOVEABLE
-   reduce by 104 on PURE
+   reduce by 104 on _PURE
    reduce by 104 on IMPURE
    reduce by 104 on PRELOAD
    reduce by 104 on LOADONCALL
@@ -564,7 +564,7 @@ State 29:
    reduce by 473 on CAPTION
    reduce by 473 on DISCARDABLE
    reduce by 473 on MOVEABLE
-   reduce by 473 on PURE
+   reduce by 473 on _PURE
    reduce by 473 on IMPURE
    reduce by 473 on PRELOAD
    reduce by 473 on LOADONCALL
@@ -604,7 +604,7 @@ State 31:
    reduce by 104 on STRING
    reduce by 104 on DISCARDABLE
    reduce by 104 on MOVEABLE
-   reduce by 104 on PURE
+   reduce by 104 on _PURE
    reduce by 104 on IMPURE
    reduce by 104 on PRELOAD
    reduce by 104 on LOADONCALL
@@ -618,7 +618,7 @@ State 32:
    reduce by 104 on STRING
    reduce by 104 on DISCARDABLE
    reduce by 104 on MOVEABLE
-   reduce by 104 on PURE
+   reduce by 104 on _PURE
    reduce by 104 on IMPURE
    reduce by 104 on PRELOAD
    reduce by 104 on LOADONCALL
@@ -632,7 +632,7 @@ State 33:
    reduce by 104 on STRING
    reduce by 104 on DISCARDABLE
    reduce by 104 on MOVEABLE
-   reduce by 104 on PURE
+   reduce by 104 on _PURE
    reduce by 104 on IMPURE
    reduce by 104 on PRELOAD
    reduce by 104 on LOADONCALL
@@ -646,7 +646,7 @@ State 34:
    reduce by 104 on NUMBER
    reduce by 104 on DISCARDABLE
    reduce by 104 on MOVEABLE
-   reduce by 104 on PURE
+   reduce by 104 on _PURE
    reduce by 104 on IMPURE
    reduce by 104 on PRELOAD
    reduce by 104 on LOADONCALL
@@ -669,7 +669,7 @@ State 36:
    reduce by 104 on NUMBER
    reduce by 104 on DISCARDABLE
    reduce by 104 on MOVEABLE
-   reduce by 104 on PURE
+   reduce by 104 on _PURE
    reduce by 104 on IMPURE
    reduce by 104 on PRELOAD
    reduce by 104 on LOADONCALL
@@ -682,7 +682,7 @@ State 37:
 
    reduce by 104 on DISCARDABLE
    reduce by 104 on MOVEABLE
-   reduce by 104 on PURE
+   reduce by 104 on _PURE
    reduce by 104 on IMPURE
    reduce by 104 on PRELOAD
    reduce by 104 on LOADONCALL
@@ -701,7 +701,7 @@ State 39:
 
    reduce by 104 on DISCARDABLE
    reduce by 104 on MOVEABLE
-   reduce by 104 on PURE
+   reduce by 104 on _PURE
    reduce by 104 on IMPURE
    reduce by 104 on PRELOAD
    reduce by 104 on LOADONCALL
@@ -717,7 +717,7 @@ State 40:
    reduce by 104 on STRING
    reduce by 104 on DISCARDABLE
    reduce by 104 on MOVEABLE
-   reduce by 104 on PURE
+   reduce by 104 on _PURE
    reduce by 104 on IMPURE
    reduce by 104 on PRELOAD
    reduce by 104 on LOADONCALL
@@ -738,7 +738,7 @@ State 41:
    reduce by 104 on FILESUBTYPE
    reduce by 104 on DISCARDABLE
    reduce by 104 on MOVEABLE
-   reduce by 104 on PURE
+   reduce by 104 on _PURE
    reduce by 104 on IMPURE
    reduce by 104 on PRELOAD
    reduce by 104 on LOADONCALL
@@ -754,7 +754,7 @@ State 43:
 
    reduce by 361 on DISCARDABLE
    reduce by 361 on MOVEABLE
-   reduce by 361 on PURE
+   reduce by 361 on _PURE
    reduce by 361 on IMPURE
    reduce by 361 on PRELOAD
    reduce by 361 on LOADONCALL
@@ -765,7 +765,7 @@ State 44:
 
    reduce by 362 on DISCARDABLE
    reduce by 362 on MOVEABLE
-   reduce by 362 on PURE
+   reduce by 362 on _PURE
    reduce by 362 on IMPURE
    reduce by 362 on PRELOAD
    reduce by 362 on LOADONCALL
@@ -778,7 +778,7 @@ State 45:
 
    reduce by 104 on DISCARDABLE
    reduce by 104 on MOVEABLE
-   reduce by 104 on PURE
+   reduce by 104 on _PURE
    reduce by 104 on IMPURE
    reduce by 104 on PRELOAD
    reduce by 104 on LOADONCALL
@@ -790,14 +790,14 @@ State 46:
  (426)K stringTableDefinition -> STRINGTABLE resourceAttributeList .BEGIN stringSpecList END
  (106)  resourceAttribute -> .DISCARDABLE
  (107)  resourceAttribute -> .MOVEABLE
- (108)  resourceAttribute -> .PURE
+ (108)  resourceAttribute -> ._PURE
  (109)  resourceAttribute -> .IMPURE
  (110)  resourceAttribute -> .PRELOAD
  (111)  resourceAttribute -> .LOADONCALL
 
    shift to 70 on DISCARDABLE
    shift to 71 on MOVEABLE
-   shift to 72 on PURE
+   shift to 72 on _PURE
    shift to 73 on IMPURE
    shift to 74 on PRELOAD
    shift to 75 on LOADONCALL
@@ -811,7 +811,7 @@ State 47:
 
    reduce by 104 on DISCARDABLE
    reduce by 104 on MOVEABLE
-   reduce by 104 on PURE
+   reduce by 104 on _PURE
    reduce by 104 on IMPURE
    reduce by 104 on PRELOAD
    reduce by 104 on LOADONCALL
@@ -947,7 +947,7 @@ State 54:
  (105)K resourceAttributeList -> resourceAttributeList .resourceAttribute
  (106)  resourceAttribute -> .DISCARDABLE
  (107)  resourceAttribute -> .MOVEABLE
- (108)  resourceAttribute -> .PURE
+ (108)  resourceAttribute -> ._PURE
  (109)  resourceAttribute -> .IMPURE
  (110)  resourceAttribute -> .PRELOAD
  (111)  resourceAttribute -> .LOADONCALL
@@ -956,7 +956,7 @@ State 54:
    shift to 53 on STRING
    shift to 70 on DISCARDABLE
    shift to 71 on MOVEABLE
-   shift to 72 on PURE
+   shift to 72 on _PURE
    shift to 73 on IMPURE
    shift to 74 on PRELOAD
    shift to 75 on LOADONCALL
@@ -968,7 +968,7 @@ State 55:
  (105)K resourceAttributeList -> resourceAttributeList .resourceAttribute
  (106)  resourceAttribute -> .DISCARDABLE
  (107)  resourceAttribute -> .MOVEABLE
- (108)  resourceAttribute -> .PURE
+ (108)  resourceAttribute -> ._PURE
  (109)  resourceAttribute -> .IMPURE
  (110)  resourceAttribute -> .PRELOAD
  (111)  resourceAttribute -> .LOADONCALL
@@ -977,7 +977,7 @@ State 55:
    shift to 53 on STRING
    shift to 70 on DISCARDABLE
    shift to 71 on MOVEABLE
-   shift to 72 on PURE
+   shift to 72 on _PURE
    shift to 73 on IMPURE
    shift to 74 on PRELOAD
    shift to 75 on LOADONCALL
@@ -989,7 +989,7 @@ State 56:
  (105)K resourceAttributeList -> resourceAttributeList .resourceAttribute
  (106)  resourceAttribute -> .DISCARDABLE
  (107)  resourceAttribute -> .MOVEABLE
- (108)  resourceAttribute -> .PURE
+ (108)  resourceAttribute -> ._PURE
  (109)  resourceAttribute -> .IMPURE
  (110)  resourceAttribute -> .PRELOAD
  (111)  resourceAttribute -> .LOADONCALL
@@ -998,7 +998,7 @@ State 56:
    shift to 53 on STRING
    shift to 70 on DISCARDABLE
    shift to 71 on MOVEABLE
-   shift to 72 on PURE
+   shift to 72 on _PURE
    shift to 73 on IMPURE
    shift to 74 on PRELOAD
    shift to 75 on LOADONCALL
@@ -1010,7 +1010,7 @@ State 57:
  (105)K resourceAttributeList -> resourceAttributeList .resourceAttribute
  (106)  resourceAttribute -> .DISCARDABLE
  (107)  resourceAttribute -> .MOVEABLE
- (108)  resourceAttribute -> .PURE
+ (108)  resourceAttribute -> ._PURE
  (109)  resourceAttribute -> .IMPURE
  (110)  resourceAttribute -> .PRELOAD
  (111)  resourceAttribute -> .LOADONCALL
@@ -1020,7 +1020,7 @@ State 57:
    shift to 28 on NUMBER
    shift to 70 on DISCARDABLE
    shift to 71 on MOVEABLE
-   shift to 72 on PURE
+   shift to 72 on _PURE
    shift to 73 on IMPURE
    shift to 74 on PRELOAD
    shift to 75 on LOADONCALL
@@ -1056,7 +1056,7 @@ State 60:
  (355)K toolbarDefnition -> resourceId TOOLBAR resourceAttributeList .sizeSpec BEGIN buttonSpecList END
  (106)  resourceAttribute -> .DISCARDABLE
  (107)  resourceAttribute -> .MOVEABLE
- (108)  resourceAttribute -> .PURE
+ (108)  resourceAttribute -> ._PURE
  (109)  resourceAttribute -> .IMPURE
  (110)  resourceAttribute -> .PRELOAD
  (111)  resourceAttribute -> .LOADONCALL
@@ -1066,7 +1066,7 @@ State 60:
    shift to 28 on NUMBER
    shift to 70 on DISCARDABLE
    shift to 71 on MOVEABLE
-   shift to 72 on PURE
+   shift to 72 on _PURE
    shift to 73 on IMPURE
    shift to 74 on PRELOAD
    shift to 75 on LOADONCALL
@@ -1079,7 +1079,7 @@ State 61:
  (360)K menuDefinition  -> resourceId menuType resourceAttributeList .menuBody
  (106)  resourceAttribute -> .DISCARDABLE
  (107)  resourceAttribute -> .MOVEABLE
- (108)  resourceAttribute -> .PURE
+ (108)  resourceAttribute -> ._PURE
  (109)  resourceAttribute -> .IMPURE
  (110)  resourceAttribute -> .PRELOAD
  (111)  resourceAttribute -> .LOADONCALL
@@ -1087,7 +1087,7 @@ State 61:
 
    shift to 70 on DISCARDABLE
    shift to 71 on MOVEABLE
-   shift to 72 on PURE
+   shift to 72 on _PURE
    shift to 73 on IMPURE
    shift to 74 on PRELOAD
    shift to 75 on LOADONCALL
@@ -1125,14 +1125,14 @@ State 63:
  (408)K acceleratorsDefinition -> resourceId ACCELERATORS resourceAttributeList .BEGIN acceleratorList END
  (106)  resourceAttribute -> .DISCARDABLE
  (107)  resourceAttribute -> .MOVEABLE
- (108)  resourceAttribute -> .PURE
+ (108)  resourceAttribute -> ._PURE
  (109)  resourceAttribute -> .IMPURE
  (110)  resourceAttribute -> .PRELOAD
  (111)  resourceAttribute -> .LOADONCALL
 
    shift to 70 on DISCARDABLE
    shift to 71 on MOVEABLE
-   shift to 72 on PURE
+   shift to 72 on _PURE
    shift to 73 on IMPURE
    shift to 74 on PRELOAD
    shift to 75 on LOADONCALL
@@ -1145,7 +1145,7 @@ State 64:
  (423)K rcdataDefinition -> resourceId RCDATA resourceAttributeList .string
  (106)  resourceAttribute -> .DISCARDABLE
  (107)  resourceAttribute -> .MOVEABLE
- (108)  resourceAttribute -> .PURE
+ (108)  resourceAttribute -> ._PURE
  (109)  resourceAttribute -> .IMPURE
  (110)  resourceAttribute -> .PRELOAD
  (111)  resourceAttribute -> .LOADONCALL
@@ -1154,7 +1154,7 @@ State 64:
    shift to 53 on STRING
    shift to 70 on DISCARDABLE
    shift to 71 on MOVEABLE
-   shift to 72 on PURE
+   shift to 72 on _PURE
    shift to 73 on IMPURE
    shift to 74 on PRELOAD
    shift to 75 on LOADONCALL
@@ -1167,7 +1167,7 @@ State 65:
  (434)K versionDefinition -> resourceId VERSIONINFO resourceAttributeList .versionSpecList BEGIN blockList END
  (106)  resourceAttribute -> .DISCARDABLE
  (107)  resourceAttribute -> .MOVEABLE
- (108)  resourceAttribute -> .PURE
+ (108)  resourceAttribute -> ._PURE
  (109)  resourceAttribute -> .IMPURE
  (110)  resourceAttribute -> .PRELOAD
  (111)  resourceAttribute -> .LOADONCALL
@@ -1190,7 +1190,7 @@ State 65:
    shift to 114 on FILESUBTYPE
    shift to 70 on DISCARDABLE
    shift to 71 on MOVEABLE
-   shift to 72 on PURE
+   shift to 72 on _PURE
    shift to 73 on IMPURE
    shift to 74 on PRELOAD
    shift to 75 on LOADONCALL
@@ -1215,14 +1215,14 @@ State 67:
  (339)K guideLinesDefinition -> GUIDELINES DESIGNINFO resourceAttributeList .BEGIN designInfoList END
  (106)  resourceAttribute -> .DISCARDABLE
  (107)  resourceAttribute -> .MOVEABLE
- (108)  resourceAttribute -> .PURE
+ (108)  resourceAttribute -> ._PURE
  (109)  resourceAttribute -> .IMPURE
  (110)  resourceAttribute -> .PRELOAD
  (111)  resourceAttribute -> .LOADONCALL
 
    shift to 70 on DISCARDABLE
    shift to 71 on MOVEABLE
-   shift to 72 on PURE
+   shift to 72 on _PURE
    shift to 73 on IMPURE
    shift to 74 on PRELOAD
    shift to 75 on LOADONCALL
@@ -1243,7 +1243,7 @@ State 68:
    reduce by 105 on FILESUBTYPE
    reduce by 105 on DISCARDABLE
    reduce by 105 on MOVEABLE
-   reduce by 105 on PURE
+   reduce by 105 on _PURE
    reduce by 105 on IMPURE
    reduce by 105 on PRELOAD
    reduce by 105 on LOADONCALL
@@ -1275,7 +1275,7 @@ State 70:
    reduce by 106 on FILESUBTYPE
    reduce by 106 on DISCARDABLE
    reduce by 106 on MOVEABLE
-   reduce by 106 on PURE
+   reduce by 106 on _PURE
    reduce by 106 on IMPURE
    reduce by 106 on PRELOAD
    reduce by 106 on LOADONCALL
@@ -1295,14 +1295,14 @@ State 71:
    reduce by 107 on FILESUBTYPE
    reduce by 107 on DISCARDABLE
    reduce by 107 on MOVEABLE
-   reduce by 107 on PURE
+   reduce by 107 on _PURE
    reduce by 107 on IMPURE
    reduce by 107 on PRELOAD
    reduce by 107 on LOADONCALL
    reduce by 107 on BEGIN
 
 State 72:
- (108)K resourceAttribute -> PURE .
+ (108)K resourceAttribute -> _PURE .
 
    reduce by 108 on NUMBER
    reduce by 108 on STRING
@@ -1315,7 +1315,7 @@ State 72:
    reduce by 108 on FILESUBTYPE
    reduce by 108 on DISCARDABLE
    reduce by 108 on MOVEABLE
-   reduce by 108 on PURE
+   reduce by 108 on _PURE
    reduce by 108 on IMPURE
    reduce by 108 on PRELOAD
    reduce by 108 on LOADONCALL
@@ -1335,7 +1335,7 @@ State 73:
    reduce by 109 on FILESUBTYPE
    reduce by 109 on DISCARDABLE
    reduce by 109 on MOVEABLE
-   reduce by 109 on PURE
+   reduce by 109 on _PURE
    reduce by 109 on IMPURE
    reduce by 109 on PRELOAD
    reduce by 109 on LOADONCALL
@@ -1355,7 +1355,7 @@ State 74:
    reduce by 110 on FILESUBTYPE
    reduce by 110 on DISCARDABLE
    reduce by 110 on MOVEABLE
-   reduce by 110 on PURE
+   reduce by 110 on _PURE
    reduce by 110 on IMPURE
    reduce by 110 on PRELOAD
    reduce by 110 on LOADONCALL
@@ -1375,7 +1375,7 @@ State 75:
    reduce by 111 on FILESUBTYPE
    reduce by 111 on DISCARDABLE
    reduce by 111 on MOVEABLE
-   reduce by 111 on PURE
+   reduce by 111 on _PURE
    reduce by 111 on IMPURE
    reduce by 111 on PRELOAD
    reduce by 111 on LOADONCALL
@@ -1386,14 +1386,14 @@ State 76:
  (430)K textIncludeDirective -> number TEXTINCLUDE resourceAttributeList .BEGIN stringList END
  (106)  resourceAttribute -> .DISCARDABLE
  (107)  resourceAttribute -> .MOVEABLE
- (108)  resourceAttribute -> .PURE
+ (108)  resourceAttribute -> ._PURE
  (109)  resourceAttribute -> .IMPURE
  (110)  resourceAttribute -> .PRELOAD
  (111)  resourceAttribute -> .LOADONCALL
 
    shift to 70 on DISCARDABLE
    shift to 71 on MOVEABLE
-   shift to 72 on PURE
+   shift to 72 on _PURE
    shift to 73 on IMPURE
    shift to 74 on PRELOAD
    shift to 75 on LOADONCALL

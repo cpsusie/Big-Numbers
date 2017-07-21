@@ -1,36 +1,29 @@
 #include "pch.h"
-#include <comdef.h>
-#include <atlconv.h>
-
-#ifdef UNICODE
-
-#define A2WNULL(s) ((s)?A2W(s):_T("null"))
 
 String::String(const char *s) {
-  USES_CONVERSION;
-  m_buf = newCharBuffer(A2WNULL(s), m_len, m_capacity);
+  USES_ACONVERSION;
+  m_buf = newCharBuffer(A2TNULL(s), m_len, m_capacity);
 }
 
 String &String::operator=(const char *s) {
-  USES_CONVERSION;
-  TCHAR *ms = A2WNULL(s);
-
+  USES_ACONVERSION;
+  const TCHAR *ms     = A2TNULL(s);
   const size_t length = _tcsclen(ms);
+
   if(length < m_capacity && length + 100 > m_capacity) {
     _tcscpy(m_buf, ms);
     m_len = length;
   } else {
     TCHAR *old = m_buf;
-    m_buf     = newCharBuffer(ms, m_len, m_capacity);
+    m_buf      = newCharBuffer(ms, m_len, m_capacity);
     delete[] old;
   }
   return *this;
 }
 
 String &String::operator+=(const char *rhs) {
-  USES_CONVERSION;
-  TCHAR *mrhs = A2WNULL(rhs);
-
+  USES_ACONVERSION;
+  const TCHAR *mrhs   = A2TNULL(rhs);
   const size_t length = _tcsclen(mrhs);
   if(length == 0) {
     return *this;
@@ -49,5 +42,3 @@ String &String::operator+=(const char *rhs) {
   }
   return *this;
 }
-
-#endif

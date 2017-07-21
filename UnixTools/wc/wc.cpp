@@ -161,8 +161,8 @@ static void usage() {
   exit(-1);
 }
 
-int main(int argc, char **argv) {
-  char *cp;
+int main(int argc, const char **argv) {
+  const char *cp;
   bool recurse          = false;
   bool verbose          = false;
   bool printFileContent = true;

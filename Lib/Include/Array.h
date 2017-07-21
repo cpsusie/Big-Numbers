@@ -349,10 +349,8 @@ public:
   StringArray() {}
   explicit StringArray(size_t capacity) : Array(capacity) {
   }
-  StringArray(const TCHAR **strArray); // terminate with NULL-pointer
-#ifdef UNICODE
-  StringArray(const char  **strArray); // terminate with NULL-pointer
-#endif
+  StringArray(const char    **strArray); // terminate with NULL-pointer
+  StringArray(const wchar_t **strArray); // terminate with NULL-pointer
   StringArray(Tokenizer &tok);
   size_t maxLength() const;
   size_t minLength() const;

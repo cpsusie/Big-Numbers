@@ -6,7 +6,7 @@
 #pragma warning(disable:4312)
 
 
-#line 33 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
+#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
 
 #pragma warning(disable : 4312)
 
@@ -1927,7 +1927,7 @@ static const TCHAR *symbolName[446] = {
   /*  53 */ _T("CAPTION"),
   /*  54 */ _T("DISCARDABLE"),
   /*  55 */ _T("MOVEABLE"),
-  /*  56 */ _T("PURE"),
+  /*  56 */ _T("_PURE"),
   /*  57 */ _T("IMPURE"),
   /*  58 */ _T("PRELOAD"),
   /*  59 */ _T("LOADONCALL"),

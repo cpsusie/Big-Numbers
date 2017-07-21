@@ -15,7 +15,7 @@ public:
   }
 
   inline void clear() {
-    String::operator=(_T(""));
+    String::operator=(EMPTYSTRING);
   }
 
   inline TCHAR getLast() const {
@@ -29,17 +29,35 @@ public:
     *this += str;
     return *this;
   }
-  inline StrStream &append(const TCHAR *str) {
+  inline StrStream &append(const char *str) {
     *this += str;
     return *this;
   }
-  inline StrStream &operator<<(TCHAR ch) {
-    return append(format(getCharFormat().cstr(), ch));
+  inline StrStream &append(const wchar_t *str) {
+    *this += str;
+    return *this;
   }
-  inline StrStream &operator<<(unsigned char ch);
-  StrStream &operator<<(const unsigned char *str);
-  inline StrStream &operator<<(const TCHAR *str) {
-    return append(format(getStringFormat().cstr(), str));
+
+  inline StrStream &operator<<(wchar_t ch) {
+    return append(format(getCharFormat().cstr(), (TCHAR)ch));
+  }
+  inline StrStream &operator<<(char ch) {
+    return append(format(getCharFormat().cstr(), (TCHAR)ch));
+  }
+  StrStream &operator<<(      BYTE ch) {
+    return append(format(getCharFormat().cstr(), (_TUCHAR)ch));
+  }
+  inline StrStream &operator<<(const BYTE *str) {
+    USES_ACONVERSION;
+    return append(format(getStringFormat().cstr(), ASTR2TSTR((char*)str)));
+  }
+  inline StrStream &operator<<(const char   *str) {
+    USES_ACONVERSION;
+    return append(format(getStringFormat().cstr(), ASTR2TSTR(str)));
+  }
+  inline StrStream &operator<<(const wchar_t *str) {
+    USES_WCONVERSION;
+    return append(format(getStringFormat().cstr(), WSTR2TSTR(str)));
   }
   inline StrStream &operator<<(const String &str) {
     return append(format(getStringFormat().cstr(), str.cstr()));
@@ -53,13 +71,13 @@ public:
   inline StrStream &operator<<(long n) {
     return append(format(getLongFormat().cstr(), n));
   }
-  inline StrStream &operator<<(unsigned long n) {
+  inline StrStream &operator<<(ULONG n) {
     return append(format(getULongFormat().cstr(), n));
   }
-  inline StrStream &operator<<(__int64 n) {
+  inline StrStream &operator<<(INT64 n) {
     return append(format(getInt64Format().cstr(), n));
   }
-  inline StrStream &operator<<(unsigned __int64 n) {
+  inline StrStream &operator<<(UINT64 n) {
     return append(format(getUInt64Format().cstr(), n));
   }
   inline StrStream &operator<<(float f) {
@@ -75,10 +93,4 @@ public:
     ((StreamParameters&)(*this)) = param;
     return *this;
   }
-
-#ifdef UNICODE
-  StrStream &append(    const char *str);
-  StrStream &operator<<(const char *str);
-  StrStream &operator<<(char        ch);
-#endif
 };

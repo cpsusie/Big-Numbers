@@ -78,7 +78,7 @@ static void usage() {
   exit(-1);
 }
 
-int _tmain(int argc, TCHAR **argv) {
+int _tmain(int argc, const TCHAR **argv) {
   bool recurse = false;
   bool showStrings = true;
   bool showChars   = true;

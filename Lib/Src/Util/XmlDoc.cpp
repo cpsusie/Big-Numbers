@@ -80,12 +80,9 @@ void XMLDoc::loadFromFile(const TCHAR *fileName) {
   clear();
   m_doc->put_async(VARIANT_FALSE);
 
-#ifdef UNICODE
   USES_CONVERSION;
-  _variant_t vName(W2A(fileName));
-#else
-  _variant_t vName(fileName);
-#endif
+  const char *fileNameA = T2A(fileName);
+  _variant_t vName(fileNameA);
 
   VARIANT_BOOL vb = m_doc->load(vName);
   checkLoad();
@@ -95,12 +92,9 @@ void XMLDoc::saveToFile(const TCHAR *fileName) {
 //  LogTrace("SaveToFile<%s>",fileName);
   m_doc->put_async(VARIANT_FALSE);
 
-#ifdef UNICODE
   USES_CONVERSION;
-  _variant_t vName(W2A(fileName));
-#else
-  _variant_t vName(fileName);
-#endif
+  const char *fileNameA = T2A(fileName);
+  _variant_t vName(fileNameA);
 
   V(m_doc->save(vName));
 }

@@ -265,25 +265,17 @@ Double80::Double80(const BYTE *bytes) {
 }
 
 Double80::Double80(const String &s) {
-  init((const _TUCHAR*)(s.cstr()));
+  init(s.cstr());
 }
 
 Double80::Double80(const wchar_t *s) {
-#ifdef UNICODE
-  init((const _TUCHAR*)s);
-#else
-  USES_CONVERSION;
-  init(W2T(s));
-#endif
+  USES_WCONVERSION;
+  init(WSTR2TSTR(s));
 }
 
 Double80::Double80(const char *s) {
-#ifdef UNICODE
-  USES_CONVERSION;
-  init(A2T(s));
-#else
-  init((_TUCHAR*)s);
-#endif
+  USES_ACONVERSION;
+  init(ASTR2TSTR(s));
 }
 
 void Double80::init(const _TUCHAR *s) {
@@ -1301,9 +1293,9 @@ char *Double80::d80toa(char *dst, const Double80 &x) {
 #ifndef UNICODE
   return d80tot(dst, x);
 #else
-  USES_CONVERSION;
+  USES_ACONVERSION;
   TCHAR tmp[30];
-  return strcpy(dst, T2A(d80tot(tmp, x)));
+  return strcpy(dst, TSTR2ASTR(d80tot(tmp, x)));
 #endif
 }
 
@@ -1311,9 +1303,9 @@ wchar_t *Double80::d80tow(wchar_t *dst, const Double80 &x) {
 #ifdef UNICODE
   return d80tot(dst, x);
 #else
-  USES_CONVERSION;
+  USES_WCONVERSION;
   TCHAR tmp[30];
-  return wtrcpy(dst, T2W(d80tot(tmp, x)));
+  return wtrcpy(dst, TSTR22WSTR(d80tot(tmp, x)));
 #endif
 }
 

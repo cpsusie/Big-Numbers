@@ -49,6 +49,7 @@ private:
   inline const TCHAR *getNodeString(const StringPoolNode *n) const {
     return getString(n->m_offset);
   }
+  size_t addTStr(const TCHAR *s);
 
 public:
   StringPool(size_t indexCapacity = 100, size_t textCapacity = 1000);
@@ -75,13 +76,11 @@ public:
     return m_textData.size();
   }
 
-  size_t addString(const TCHAR *s); // return index to be used when lookup string using getString
-                                          // If the string already exist in the pool, the index of this will be returned
-                                          // instead of adding the new copy
-
-#ifdef UNICODE
-  size_t addString(const char *s);
-#endif
+  // return index to be used when lookup string using getString
+  // If the string already exist in the pool, the index of this will be returned
+  // instead of adding the new copy
+  size_t addString(const char    *s);
+  size_t addString(const wchar_t *s);
 
   inline const TCHAR *getString(size_t index) const {
     return (const TCHAR*)m_textData.getBuffer() + index;
