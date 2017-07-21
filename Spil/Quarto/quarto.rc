@@ -105,7 +105,7 @@ BEGIN
         MENUITEM "Turn &left\tCtrl+T",          ID_VIEW_LEFT
         MENUITEM "Turn &right\tCtrl+Shift+T",   ID_VIEW_RIGHT
         MENUITEM SEPARATOR
-        MENUITEM "&Reset view\tCtrl+R",         ID_VIEW_RESETVIEW
+        MENUITEM "R&eset view\tCtrl+R",         ID_VIEW_RESETVIEW
     END
     POPUP "Options"
     BEGIN
@@ -232,14 +232,6 @@ BEGIN
         VALUE "Translation", 0x409, 1200
     END
 END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Cursor
-//
-
-IDC_INVISIBLECURSOR     CURSOR                  "res\\cursor1.cur"
 
 
 /////////////////////////////////////////////////////////////////////////////
