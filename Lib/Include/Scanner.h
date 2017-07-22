@@ -207,9 +207,10 @@ private:
   _TUCHAR        *m_startMark;                   // Start of current lexeme
   _TUCHAR        *m_endMark;                     // End of current lexeme
   _TUCHAR        *m_previousMark;                // Start of previous lexeme
-  SourcePosition  m_previousPos;                 // Position of previous lexeme
   intptr_t        m_previousLength;              // Length of previous lexeme
-  SourcePosition  m_pos;                         // Position of current lexeme
+  SourcePosition  m_pos;                         // Current scanner position
+  SourcePosition  m_previousPos;                 // Position of previous accepted lexeme
+  SourcePosition  m_startPos;                    // Position of last accepted lexeme
   SourcePosition  m_markPos;                     // Position when markEnd() called
   _TUCHAR         m_termchar;                    // Holds the TCHAR that was overwritten by a 0.
                                                  // See terminateLexeme()/unTerminateLexeme()
@@ -227,7 +228,7 @@ private:
   }
 
   // Just past last char in buf
-  _TUCHAR *end() {
+  inline _TUCHAR *end() {
     return m_inputBuffer + SCANNERBUFSIZE;
   }
 
@@ -238,13 +239,13 @@ protected:
   // Return the n'th TCHAR of lookahead.
   // Return EOF if you try to look past end of file,
   // 0 if you try to look past end of the buffer..
-  int look(int n);
+  int  look(int n);
 
   // Returns the next TCHAR from input and advances past it
-  int advance();
-  int flushBuf();
-  int flush(bool force);
-  int input();
+  int  advance();
+  int  flushBuf();
+  int  flush(bool force);
+  int  input();
   void unput(int ch);
   void less(int n);
 
@@ -296,6 +297,10 @@ public:
 
   inline const SourcePosition &getPreviousPos() const {
     return m_previousPos;
+  }
+
+  inline const SourcePosition &getStartPos() const {
+    return m_startPos;
   }
 
   inline int getPreviousLineNumber() const {

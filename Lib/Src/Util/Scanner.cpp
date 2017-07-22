@@ -46,7 +46,7 @@ void Scanner::init(LexStream *stream, const SourcePosition &pos) {
     flushBuf();
   }
 
-  m_previousPos = m_pos;
+  m_startPos = m_previousPos = m_pos;
 
   if(m_debug) {
     debug(_T("Initialize Scanner"));
@@ -72,7 +72,7 @@ SourcePosition Scanner::setPos(const SourcePosition &pos) {
 }
 
 _TUCHAR *Scanner::markStart() {
-  m_markPos = m_pos;
+  m_startPos = m_markPos = m_pos;
   return m_endMark = m_startMark = m_nextChar;
 }
 
