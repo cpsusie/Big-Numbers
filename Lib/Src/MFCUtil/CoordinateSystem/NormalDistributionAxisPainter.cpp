@@ -2,7 +2,7 @@
 #include <MFCUtil/Coordinatesystem/SystemPainter.h>
 #include <MFCUtil/Coordinatesystem/NormalDistributionAxisPainter.h>
 
-const String NormalDistributionAxisPainter::startDecadeFormat = "%0.8lg";
+const String NormalDistributionAxisPainter::startDecadeFormat = _T("%0.8lg");
 
 NormalDistributionAxisPainter::NormalDistributionAxisPainter(SystemPainter &systemPainter, bool xAxis) : AbstractAxisPainter(systemPainter, xAxis) {
   doInvisiblePaint();
@@ -24,7 +24,7 @@ double NormalDistributionAxisPainter::getAxisPoint() const {
 
 String NormalDistributionAxisPainter::getText(double x) {
   if(x == 0)
-    return "0";
+    return _T("0");
   int decade = getDecade(x);
   if(fabs(decade) <= 2)
     return format(getDoubleFormat(),x);

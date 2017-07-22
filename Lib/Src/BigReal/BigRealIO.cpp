@@ -10,7 +10,7 @@ TCHAR BigRealStream ::setSpaceChar(TCHAR value) {
   return ospac;
 }
 
-#define addDecimalPoint(s) { if(!decimalPointAdded) { s += "."; decimalPointAdded = true; } }
+#define addDecimalPoint(s) { if(!decimalPointAdded) { s += _T("."); decimalPointAdded = true; } }
 #define addExponentChar(s) { s += ((flags & ios::uppercase) ? _T("E") : _T("e")); }
 
 void BigReal::formatFixed(String &result, streamsize precision, long flags, bool removeTrailingZeroes) const {

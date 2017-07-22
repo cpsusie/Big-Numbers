@@ -2,7 +2,7 @@
 #include <MFCUtil/Coordinatesystem/SystemPainter.h>
 #include <MFCUtil/Coordinatesystem/LogarithmicAxisPainter.h>
 
-const String LogarithmicAxisPainter::startDecadeFormat = "%.0lg";
+const String LogarithmicAxisPainter::startDecadeFormat = _T("%.0lg");
 
 LogarithmicAxisPainter::LogarithmicAxisPainter(SystemPainter &systemPainter, bool xAxis) : AbstractAxisPainter(systemPainter,xAxis) {
   doInvisiblePaint();

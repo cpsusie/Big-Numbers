@@ -15,10 +15,10 @@ private:
 
   static void validateBitsPerItem(UINT bitsPerItem);
 #ifdef _DEBUG
-  void indexError(UINT64 index, const TCHAR *method=_T("")) const {
+  void indexError(UINT64 index, const TCHAR *method=EMPTYSTRING) const {
     throwInvalidArgumentException(method, _T("Index %I64u out of range. size=%I64u"), index, size());
   }
-  void valueError(UINT v, const TCHAR *method=_T("")) const {
+  void valueError(UINT v, const TCHAR *method=EMPTYSTRING) const {
     throwInvalidArgumentException(method, _T("v=%lu, maxValue=%lu"), v, m_maxValue);
   }
   static void selectError() {
@@ -27,7 +27,7 @@ private:
 #endif
 
 public:
-  explicit PackedArray(unsigned char bitsPerItem);
+  explicit PackedArray(BYTE bitsPerItem);
   UINT get(      UINT64 index) const;
   UINT select() const;
   void set(      UINT64 index, UINT v);
@@ -83,7 +83,7 @@ private:
   UINT64                 m_firstFreeBit;
 
 #ifdef _DEBUG
-  void indexError(UINT64 index, const TCHAR *method=_T("")) const {
+  void indexError(UINT64 index, const TCHAR *method=EMPTYSTRING) const {
     throwInvalidArgumentException(method, _T("Index %I64u out of range. size=%I64u"), index, size());
   }
 #endif

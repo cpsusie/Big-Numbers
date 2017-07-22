@@ -95,7 +95,7 @@ BigReal::BigReal(float x) {
 }
 
 float getFloat(const BigReal &x) {
-  static const char *method = "getFloat";
+  DEFINEMETHODNAME;
 
   if(x.isZero()) {
     return 0;

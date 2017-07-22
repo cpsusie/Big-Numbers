@@ -19,20 +19,20 @@ void PackedArray::load(ByteInputStream &s) {
 
 #ifdef _DEBUG
 
-#define CHECK_INDEX(f)            \
-{ if(index >= size()) {           \
-    indexError(index, _T(f));     \
-  }                               \
+#define CHECK_INDEX()                 \
+{ if(index >= size()) {               \
+    indexError(index, __TFUNCTION__); \
+  }                                   \
 }
 
 #else
 
-#define CHECK_INDEX(f)
+#define CHECK_INDEX()
 
 #endif
 
-PackedFileArray::PackedFileArray(const String &fileName, unsigned __int64 startOffset)
-: m_data(fileName, startOffset + sizeof(UINT) + sizeof(unsigned __int64))
+PackedFileArray::PackedFileArray(const String &fileName, UINT64 startOffset)
+: m_data(fileName, startOffset + sizeof(UINT) + sizeof(UINT64))
   // offset of ByteArray if startOffset + sizeof(m_bitsPerItem) + sizeof(PackedArray::m_firstFreeBit)
 {
   ByteInputFile s(fileName);
@@ -43,8 +43,8 @@ PackedFileArray::PackedFileArray(const String &fileName, unsigned __int64 startO
   m_maxValue = (1<<m_bitsPerItem)-1;
 }
 
-UINT PackedFileArray::get(unsigned __int64 index) const { // this is the same algorithm as in PackedArray::get
-  CHECK_INDEX("get")
+UINT PackedFileArray::get(UINT64 index) const { // this is the same algorithm as in PackedArray::get
+  CHECK_INDEX();
   const UINT p0Index = (index * m_bitsPerItem) / 32;
   const UINT offset  = (index * m_bitsPerItem) % 32;
   const UINT p0      = m_data[p0Index];

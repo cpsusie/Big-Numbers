@@ -104,7 +104,7 @@ BigReal::BigReal(double x) {
 }
 
 double getDouble(const BigReal &x) {
-  static const char *method = "getDouble";
+  DEFINEMETHODNAME;
 
   if(x.isZero()) {
     return 0;

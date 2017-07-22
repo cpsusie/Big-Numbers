@@ -179,7 +179,7 @@ void ParserTree::vAddError(const SourcePosition *pos, const TCHAR *format, va_li
 }
 
 int ParserTree::decodeErrorString(const String &expr, String &error) { // static
-  Tokenizer tok(error, ":");
+  Tokenizer tok(error, _T(":"));
   String posStr = tok.next();
   int line, col;
   String tmp;

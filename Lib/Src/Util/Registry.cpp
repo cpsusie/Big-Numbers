@@ -1052,7 +1052,7 @@ void SubKeyIterator::remove() {
     noCurrentElementError(s_className);
   }
   m_key.deleteKey(m_resultBuffer);
-  m_resultBuffer = "";
+  m_resultBuffer = EMPTYSTRING;
   if(m_subKeyCount > 0) {
     m_index--;
     m_subKeyCount--;

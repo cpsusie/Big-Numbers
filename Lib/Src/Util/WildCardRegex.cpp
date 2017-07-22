@@ -34,7 +34,7 @@ void WildCardRegex::compile(const TCHAR **fnames) {
       reg += _T("\\|") + convertWildCard(*fnames);
     }
   }
-  reg = String("\\`\\(") + reg + "\\)\\'";
+  reg = String(_T("\\`\\(")) + reg + _T("\\)\\'");
   Regex::compilePattern(reg, String::upperCaseTranslate);
 }
 

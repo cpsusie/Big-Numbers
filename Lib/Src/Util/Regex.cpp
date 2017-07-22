@@ -1223,7 +1223,7 @@ void Regex::compilePattern1(const TCHAR *pattern) {
 // that can possibly start a string that matches the pattern.
 // This is used by search to skip quickly over totally implausible text.
 
-#define DUMPSTACK { int n = stack.getHeight(); for(int i=0;i<n;i++){debugLog("%d ",stack.top(n-i-1)-m_buffer.getData());} debugLog("\n"); }
+#define DUMPSTACK { int n = stack.getHeight(); for(int i=0;i<n;i++){debugLog(_T("%d "),stack.top(n-i-1)-m_buffer.getData());} debugLog(_T("\n")); }
 
 BitSet Regex::first(intptr_t pcStart,intptr_t pcEnd, bool *matchEmpty) const {  // in range [pcstart;pcend[. pcstart inclusive, pcend exclusive
   CompactStack<const BYTE*> stack;

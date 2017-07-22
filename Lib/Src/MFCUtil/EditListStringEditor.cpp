@@ -18,7 +18,7 @@ BEGIN_MESSAGE_MAP(CEditListStringEditor, CEdit)
 END_MESSAGE_MAP()
 
 BOOL CEditListStringEditor::Create(CWnd *parent, int id, UINT flags) {
-  const char *function = "CEditListStringEditor::Create";
+  DEFINEMETHODNAME;
   const CRect r(10,10,20,20);
   const BOOL ok = CEdit::Create(WS_CHILD | ES_AUTOHSCROLL, r, parent, id);
   if(ok) {

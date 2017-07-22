@@ -97,7 +97,7 @@ void DateAxisPainter::init() {
 String DateAxisPainter::getText(double x) {
   Timestamp t(x);
   if(m_timeComponent == TMILLISECOND) {
-    return t.toString("ss:SSS");
+    return t.toString(_T("ss:SSS"));
   }
 
   t.add(TMILLISECOND, 50); // add a small amount to fix rounding error from double, so we wont get 1.59.59 instead of 2

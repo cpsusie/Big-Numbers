@@ -53,7 +53,7 @@ String SumElement::toString() const {
   if(m_positive) {
     return m_n->toString();
   } else {
-    return "-(" + m_n->toString() + ")";
+    return _T("-(") + m_n->toString() + _T(")");
   }
 }
 

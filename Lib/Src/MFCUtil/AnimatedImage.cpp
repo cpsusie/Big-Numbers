@@ -13,7 +13,7 @@ void checkGifErrorCode(int errorCode, const TCHAR *fileName, int line);
 String gifErrorCodeToString(int errorCode) {
   const char *errorMsg = GifErrorString(errorCode);
   if(errorMsg == NULL) {
-    return "No error";
+    return _T("No error");
   } else {
     return errorMsg;
   }
