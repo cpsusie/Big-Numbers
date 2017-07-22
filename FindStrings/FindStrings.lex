@@ -10,6 +10,7 @@ typedef enum {
  ,NEWSTRING
  ,NEWCHAR
  ,DIRECTIVE
+ ,OTHER
 } InputToken;
 
 class FindStringsLex : public Scanner {
@@ -34,14 +35,15 @@ let     [_a-zA-Z]              /* Letter                                */
 alnum   [_a-zA-Z0-9]           /* Alphanumeric character                */
 d       [0-9]                  /* Decimal digit                         */
 white   [\x00-\x09\x0b\s\r\n]  /* White space: all control chars        */
-strlit1 \"(\\.|[^\\\"])*\"
+strlit  \"(\\.|[^\\\"])*\"
 %%
 
-({white}*{strlit1})+                        return OLDSTRING;
+{strlit}({white}*{strlit})*                 return OLDSTRING;
 
 '([^'\\]|\\.)'                              return OLDCHAR;
 
-_T\({white}*({white}*{strlit1})+{white}*\)  return NEWSTRING;
+L{strlit}({white}*{strlit})* |              
+_T\({white}*({white}*{strlit})+{white}*\)   return NEWSTRING;
 
 _T\({white}*'([^'\\]|\\.)'{white}*\)        return NEWCHAR;
 
@@ -75,5 +77,5 @@ extern                      return DIRECTIVE;
                }
 
 {white}+	;
-.         ;
+.         return OTHER;
 %%

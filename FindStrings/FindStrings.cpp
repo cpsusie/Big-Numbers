@@ -31,18 +31,19 @@ void StringSearcher::scan(const String &name) {
   }
   FindStringsLex lex;
   lex.newStream(&input);
-
+//  lex.setDebug(true);
   bool lastWasDirective = false;
-  int sym;
-  while (sym = lex.getNextLexeme()) {
+  InputToken sym;
+  while (sym = (InputToken)lex.getNextLexeme()) {
     switch (sym) {
     case DIRECTIVE :
       lastWasDirective = true;
       break;
     case OLDSTRING :
       if(!lastWasDirective) {
-        String tmp = lex.getText();
-        _tprintf(_T("%s%s: %s\n"), name.cstr(), lex.getPos().toString().cstr(), tmp.trim().cstr());
+        String         tmp = lex.getText();
+        SourcePosition pos = lex.getStartPos(); pos.incrColumn();
+        _tprintf(_T("%s%s: %s\n"), name.cstr(), pos.toString().cstr(), tmp.trim().cstr());
       }
       lastWasDirective = false;
       break;
@@ -59,6 +60,9 @@ void StringSearcher::scan(const String &name) {
       break;
     case NEWSTRING :
     case NEWCHAR   :
+      lastWasDirective = false;
+      break;
+    case OTHER     :
       lastWasDirective = false;
       break;
     default:

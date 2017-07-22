@@ -14,6 +14,7 @@ typedef enum {
  ,NEWSTRING
  ,NEWCHAR
  ,DIRECTIVE
+ ,OTHER
 } InputToken;
 
 class FindStringsLex : public Scanner {
