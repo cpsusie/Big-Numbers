@@ -54,7 +54,7 @@ BOOL CFindDlg::OnInitDialog() {
   m_font.CreateFontIndirect(&getOptions().m_logFont);
 //  SetFont(&m_font);
 
-  m_findWhatCombo.substituteControl( this, IDC_COMBOFINDWHAT, "FindHistory");
+  m_findWhatCombo.substituteControl( this, IDC_COMBOFINDWHAT, _T("FindHistory"));
   m_findWhatCombo.SetFont(&m_font);
 
   m_currentControl = 0;

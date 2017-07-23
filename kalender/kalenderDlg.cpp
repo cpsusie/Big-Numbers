@@ -139,20 +139,20 @@ void CKalenderDlg::printhelligdag(CClientDC &dc, int row, const String &name, co
 void CKalenderDlg::printhelligdage(CClientDC &dc, int year) {
   Date paaske = Date::getEaster(year);
 
-  printhelligdag(dc, 0,"Nytårsdag"   , Date(1,1,year));
-  printhelligdag(dc, 1,"Skærtorsdag" , Date(paaske - 3));
-  printhelligdag(dc, 2,"Langfredag"  , Date(paaske - 2));
-  printhelligdag(dc, 3,"Påskedag"    , paaske);
-  printhelligdag(dc, 4,"2. påskedag" , Date(paaske + 1));
-  printhelligdag(dc, 5,"Storebededag", Date(paaske + 26));
-  printhelligdag(dc, 6,"Kristihimmelfartsdag", Date(paaske + 39));
-  printhelligdag(dc, 7,"Pinsedag"    , Date(paaske + 49));
-  printhelligdag(dc, 8,"2. pinsedag" , Date(paaske + 50));
-  printhelligdag(dc, 9,"Grundlovsdag", Date(5,6,year));
-  printhelligdag(dc,10,"Juleaften"   , Date(24,12,year));
-  printhelligdag(dc,11,"1. juledag"  , Date(25,12,year));
-  printhelligdag(dc,12,"2. juledag"  , Date(26,12,year));
-  printhelligdag(dc,13,"Nytårsaften" , Date(31,12,year));
+  printhelligdag(dc, 0,_T("Nytårsdag"           ), Date(1, 1 ,year ));
+  printhelligdag(dc, 1,_T("Skærtorsdag"         ), Date(paaske - 3 ));
+  printhelligdag(dc, 2,_T("Langfredag"          ), Date(paaske - 2 ));
+  printhelligdag(dc, 3,_T("Påskedag"            ), paaske);
+  printhelligdag(dc, 4,_T("2. påskedag"         ), Date(paaske + 1 ));
+  printhelligdag(dc, 5,_T("Storebededag"        ), Date(paaske + 26));
+  printhelligdag(dc, 6,_T("Kristihimmelfartsdag"), Date(paaske + 39));
+  printhelligdag(dc, 7,_T("Pinsedag"            ), Date(paaske + 49));
+  printhelligdag(dc, 8,_T("2. pinsedag"         ), Date(paaske + 50));
+  printhelligdag(dc, 9,_T("Grundlovsdag"        ), Date(5 ,6 ,year ));
+  printhelligdag(dc,10,_T("Juleaften"           ), Date(24,12,year ));
+  printhelligdag(dc,11,_T("1. juledag"          ), Date(25,12,year ));
+  printhelligdag(dc,12,_T("2. juledag"          ), Date(26,12,year ));
+  printhelligdag(dc,13,_T("Nytårsaften"         ), Date(31,12,year ));
 }
 
 void CKalenderDlg::OnOK() {

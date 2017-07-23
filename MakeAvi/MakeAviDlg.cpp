@@ -409,7 +409,7 @@ void CMakeAviDlg::OnButtonMakeAVI() {
     outFileName = _T("MakeAVIOut");
   }
 
-  String outName = FileNameSplitter(first).setFileName(outFileName).setExtension("avi").getFullPath();
+  String outName = FileNameSplitter(first).setFileName(outFileName).setExtension(_T("avi")).getFullPath();
 
   FileNameSplitter nameInfo(outName);
   String initialDir = nameInfo.getDrive() + nameInfo.getDir();
@@ -455,7 +455,7 @@ public:
     return m_index;
   };
   String getTitle() {
-    return "Reading AVI file";
+    return _T("Reading AVI file");
   }
 
   virtual int getSupportedFeatures() {

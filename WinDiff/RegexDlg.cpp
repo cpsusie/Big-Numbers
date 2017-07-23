@@ -42,7 +42,7 @@ END_MESSAGE_MAP()
 BOOL CRegexDlg::OnInitDialog() {
   __super::OnInitDialog();
 
-  m_regexCombo.substituteControl(this, IDC_COMBOREGEX, "RegexHistory");
+  m_regexCombo.substituteControl(this, IDC_COMBOREGEX, _T("RegexHistory"));
 
   m_currentControl = 0;
   m_selStart       = 0;
