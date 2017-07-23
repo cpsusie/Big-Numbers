@@ -27,6 +27,7 @@ const ExpressionDescription ExpressionDescription::expressionHelpList[] = {
    ,DESCRIPTION("asinh(x)"                             , "The inverse hyperbolic sine function")
    ,DESCRIPTION("a = x*x;"                             , "Create the variable a and assign the value x*x to it")
    ,DESCRIPTION("atan(x)"                              , "The inverse tangent function")
+   ,DESCRIPTION("atan2(y,x)"                           , "The inverse tangent function of \"y/x\", returning the angle for vector(x,y) with x-axes")
    ,DESCRIPTION("atanh(x)"                             , "The inverse hyperbolic tangent function over the domain [-1;1]")
    ,DESCRIPTION("binomial(x,y)"                        , "The binomial coefficient of x and y")
    ,DESCRIPTION("ceil(x)"                              , "The smallest integer greater than or equal to x. ceil(2.4) = 3. ceil(-2.1) = -2")

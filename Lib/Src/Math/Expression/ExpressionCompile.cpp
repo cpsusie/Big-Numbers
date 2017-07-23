@@ -632,6 +632,7 @@ void Expression::genExpression(const ExpressionNode *n, const ExpressionDestinat
   case ASIN          :    GENTRIGOCALL(n, asin                  );
   case ACOS          :    GENTRIGOCALL(n, acos                  );
   case ATAN          :    GENTRIGOCALL(n, atan                  );
+  case ATAN2         :    GENTRIGOCALL(n, atan2                 );
   case ACOT          :    GENTRIGOCALL(n, acot                  );
   case ACSC          :    GENTRIGOCALL(n, acsc                  );
   case ASEC          :    GENTRIGOCALL(n, asec                  );

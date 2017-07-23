@@ -1125,6 +1125,16 @@ namespace TestExpression {
     }
   };
 
+  class Test102 : public RealExpressionTest {
+  public:
+    String getExpr() const {
+      return _T("atan2(x+7,5)");
+    }
+    Real fr(const Real &x) const {
+      return atan2(x + 7, 5);
+    }
+  };
+
   static Test00  test00;
   static Test01  test01;
   static Test02  test02;
@@ -1227,6 +1237,7 @@ namespace TestExpression {
   static Test99  test99;
   static Test100 test100;
   static Test101 test101;
+  static Test102 test102;
 
   static ExpressionTest *testCases[] = {
      (ExpressionTest*)&test00
@@ -1331,6 +1342,7 @@ namespace TestExpression {
     ,(ExpressionTest*)&test99
     ,(ExpressionTest*)&test100
     ,(ExpressionTest*)&test101
+    ,(ExpressionTest*)&test102
   };
 
 	TEST_CLASS(TestExpression) {
@@ -1340,7 +1352,7 @@ namespace TestExpression {
       FPU::init();
 //      redirectDebugLog();
       try {
-        for (int i = 0; i < ARRAYSIZE(testCases); i++) {
+        for(int i = 0; i < ARRAYSIZE(testCases); i++) {
           ExpressionTest &test = *testCases[i];
           const String expr = test.getExpr();
 //            tcout << _T("Test[") << i << _T("]:") << expr << spaceString(40) << _T("\r");
@@ -1350,18 +1362,18 @@ namespace TestExpression {
 //          debugLog(_T("Test %d %s\n%s\n"), i, expr.cstr(), compiledExpr.treeToString().cstr());
 
           interpreterExpr.compile(expr, false);
-          if (!compiledExpr.isOk()) {
+          if(!compiledExpr.isOk()) {
             OUTPUT(_T("Error in testcase[%d]<%s>"), i, expr.cstr());
             const StringArray &errors = compiledExpr.getErrors();
-            for (size_t i = 0; i < errors.size(); i++) {
+            for(size_t i = 0; i < errors.size(); i++) {
               OUTPUT(_T("%s"), errors[i].cstr());
             }
             verify(false);
           } else {
-            for (Real x = -2; x <= 2; x += 0.5) {
+            for(Real x = -2; x <= 2; x += 0.5) {
               interpreterExpr.setValue(_T("x"), x);
               compiledExpr.setValue(_T("x"), x);
-              switch (compiledExpr.getReturnType()) {
+              switch(compiledExpr.getReturnType()) {
               case EXPR_RETURN_REAL:
                 { const Real cppResult          = test.fr(x);
                   const Real interpreterResult  = interpreterExpr.evaluate();
@@ -1370,7 +1382,7 @@ namespace TestExpression {
                   const bool interpreterDefined = !isNan(interpreterResult);
                   const bool compiledDefined    = !isNan(compiledResult);
 
-                  if ((compiledDefined != interpreterDefined) || (compiledDefined && fabs(compiledResult - interpreterResult) > 3e-15)) {
+                  if((compiledDefined != interpreterDefined) || (compiledDefined && fabs(compiledResult - interpreterResult) > 3e-15)) {
                     LOG log;
                     log << _T("TestCase[") << i << _T("]:<") << expr << _T(">(x=") << toString(x) << _T(") failed.") << endl
                         << _T("Result(Compiled   ):") << toString(compiledResult) << _T(".") << endl
@@ -1378,7 +1390,7 @@ namespace TestExpression {
                         << _T("Difference         :") << toString(compiledResult - interpreterResult) << _T(".") << endl;
                     verify(false);
                   }
-                  if ((cppDefined != interpreterDefined) || (cppDefined && fabs(cppResult - interpreterResult) > 3e-15)) {
+                  if((cppDefined != interpreterDefined) || (cppDefined && fabs(cppResult - interpreterResult) > 3e-15)) {
                     LOG log;
                     log << _T("TestCase[") << i << _T("]:<") << expr << _T(">(x=") << toString(x) << _T(") failed.") << endl
                         << _T("Result(C++        ):") << toString(cppResult) << _T(".") << endl
@@ -1392,7 +1404,7 @@ namespace TestExpression {
                 { const bool compiledResult = compiledExpr.evaluateBool();
                   const bool interpreterResult = interpreterExpr.evaluateBool();
                   const bool cppResult = test.fb(x);
-                  if ((compiledResult != cppResult) || (interpreterResult != cppResult)) {
+                  if((compiledResult != cppResult) || (interpreterResult != cppResult)) {
                     LOG log;
                     log << _T("TestCase[") << i << _T("]:<") << expr << _T(">(x=") << toString(x) << _T(") failed.") << endl
                         << _T("Result(Compiled   ):") << toString(compiledResult) << _T(".") << endl

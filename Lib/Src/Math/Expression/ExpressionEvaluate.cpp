@@ -54,6 +54,7 @@ Real Expression::evaluateRealExpr(const ExpressionNode *n) const {
   case CHI2DIST : return chiSquaredDistribution( evaluateRealExpr(n->left()),  evaluateRealExpr(n->right()));
   case CHI2DENS : return chiSquaredDensity(      evaluateRealExpr(n->left()),  evaluateRealExpr(n->right()));
   case LINCGAMMA: return lowerIncGamma(          evaluateRealExpr(n->left()),  evaluateRealExpr(n->right()));
+  case ATAN2    : return atan2(                  evaluateRealExpr(n->left()),  evaluateRealExpr(n->right()), getTrigonometricMode());
   case MAX      : return dmax(                   evaluateRealExpr(n->left()),  evaluateRealExpr(n->right()));
   case MIN      : return dmin(                   evaluateRealExpr(n->left()),  evaluateRealExpr(n->right()));
   case RAND     : return random(                 evaluateRealExpr(n->left()),  evaluateRealExpr(n->right()));

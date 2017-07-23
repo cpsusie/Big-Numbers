@@ -115,6 +115,7 @@ static const KeyWord keywordtable[] = {
 ,_T("ASIN")      ,ASIN
 ,_T("ASINH")     ,ASINH
 ,_T("ATAN")      ,ATAN
+,_T("ATAN2")     ,ATAN2
 ,_T("ATANH")     ,ATANH
 ,_T("BINOMIAL")  ,BINOMIAL
 ,_T("CEIL")      ,CEIL

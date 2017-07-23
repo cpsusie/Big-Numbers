@@ -36,6 +36,7 @@ Real cotDegrees(          const Real &x);
 Real asinDegrees(         const Real &x);
 Real acosDegrees(         const Real &x);
 Real atanDegrees(         const Real &x);
+Real atan2Degrees(        const Real &y, const Real &x);
 Real acotDegrees(         const Real &x);
 
 Real cscDegrees(          const Real &x);
@@ -50,6 +51,7 @@ Real cotGrads(            const Real &x);
 Real asinGrads(           const Real &x);
 Real acosGrads(           const Real &x);
 Real atanGrads(           const Real &x);
+Real atan2Grads(          const Real &y, const Real &x);
 Real acotGrads(           const Real &x);
 
 Real cscGrads(            const Real &x);
@@ -64,6 +66,7 @@ Real cot(                 const Real &x, TrigonometricMode mode);
 Real asin(                const Real &x, TrigonometricMode mode);
 Real acos(                const Real &x, TrigonometricMode mode);
 Real atan(                const Real &x, TrigonometricMode mode);
+Real atan2(               const Real &y, const Real &x, TrigonometricMode mode);
 Real acot(                const Real &x, TrigonometricMode mode);
 Real csc(                 const Real &x, TrigonometricMode mode);
 Real sec(                 const Real &x, TrigonometricMode mode);

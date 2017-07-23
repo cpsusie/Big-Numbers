@@ -32,7 +32,7 @@ private:
 %left SUM PLUS MINUS             /*  + - (lowest precedence)      */
 %left PRODUCT PROD QUOT MOD      /*  * / %                        */
 %left POW                        /*  ^                            */
-%term ACOS ACOSH ACOT ACSC ASEC ASIN ASINH ATAN ATANH COS COSH COT CSC SEC SIN SINH TAN TANH
+%term ACOS ACOSH ACOT ACSC ASEC ASIN ASINH ATAN ATAN2 ATANH COS COSH COT CSC SEC SIN SINH TAN TANH
 %term ABS CEIL ERF EXP FAC FLOOR GAMMA GAUSS INVERF LN LOG10 
 %term NORM PROBIT CHI2DIST CHI2DENS LINCGAMMA
 %term ROOT SIGN SQR SQRT
@@ -177,6 +177,7 @@ function2           : MAX                                   { $$ = newNode( getP
                     | CHI2DENS                              { $$ = newNode( getPos(1), CHI2DENS , NULL);                }
                     | CHI2DIST                              { $$ = newNode( getPos(1), CHI2DIST , NULL);                }
                     | LINCGAMMA                             { $$ = newNode( getPos(1), LINCGAMMA, NULL);                }
+                    | ATAN2                                 { $$ = newNode( getPos(1), ATAN2    , NULL);                }
                     ;
 
 name                : NAME                                  { $$ = newNode( getPos(1), NAME    , getText());            }

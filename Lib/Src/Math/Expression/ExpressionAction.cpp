@@ -400,13 +400,18 @@ int ExpressionParser::reduceAction(unsigned int prod) {
     { m_dollardollar = newNode( getPos(1), LINCGAMMA, NULL);                }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 87: /* name -> NAME */
-#line 182 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
+  case 87: /* function2 -> ATAN2 */
+#line 180 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
+    { m_dollardollar = newNode( getPos(1), ATAN2    , NULL);                }
+#line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
+    break;
+  case 88: /* name -> NAME */
+#line 183 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
     { m_dollardollar = newNode( getPos(1), NAME    , getText());            }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 88: /* number -> NUMBER */
-#line 185 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
+  case 89: /* number -> NUMBER */
+#line 186 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
     { m_dollardollar = newNode( getPos(1), NUMBER  , ttor(getText()));      }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
@@ -414,7 +419,7 @@ int ExpressionParser::reduceAction(unsigned int prod) {
   return 0;
 }
 
-#line 190 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
+#line 191 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
 ExpressionNode *ExpressionParser::newNode(const SourcePosition &pos, ExpressionInputSymbol symbol, ...) {
   va_list argptr;
   va_start(argptr, symbol);

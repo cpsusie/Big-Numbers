@@ -28,6 +28,10 @@ Real atanGrads(const Real &x) {
   return atan(x) / M_PI * 200.0;
 }
 
+Real atan2Grads(const Real &y, const Real &x) {
+  return atan2(y,x) / M_PI * 200.0;
+}
+
 Real acotGrads(const Real &x) {
   return acot(x) / M_PI * 200.0;
 }

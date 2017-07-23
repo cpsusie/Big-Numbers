@@ -81,6 +81,17 @@ Real atan(const Real &x, TrigonometricMode mode) {
   }
 }
 
+Real atan2(const Real &y, const Real &x, TrigonometricMode mode) {
+  DEFINEMETHODNAME;
+  switch(mode) {
+  case RADIANS: return atan2(y,x);
+  case DEGREES: return atan2Degrees(y,x);
+  case GRADS  : return atan2Grads(y,x);
+  default     : invalidTrigonometricMode(method, mode);
+                return 0;
+  }
+}
+
 Real acot(const Real &x, TrigonometricMode mode) {
   DEFINEMETHODNAME;
   switch(mode) {
