@@ -132,6 +132,7 @@ static const KeyWord keywordtable[] = {
 ,_T("FLOOR")     ,FLOOR
 ,_T("GAMMA")     ,GAMMA
 ,_T("GAUSS")     ,GAUSS
+,_T("HYPOT")     ,HYPOT
 ,_T("IF")        ,IIF
 ,_T("INVERF")    ,INVERF
 ,_T("LN")        ,LN

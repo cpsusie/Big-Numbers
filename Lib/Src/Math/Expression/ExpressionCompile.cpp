@@ -650,6 +650,7 @@ void Expression::genExpression(const ExpressionNode *n, const ExpressionDestinat
   case ABS           :    GENCALL(     n, fabs                  );
   case FLOOR         :    GENCALL(     n, floor                 );
   case CEIL          :    GENCALL(     n, ceil                  );
+  case HYPOT         :    GENCALL(     n, hypot                 );
   case LINCGAMMA     :    GENCALL(     n, lowerIncGamma         );
   case CHI2DENS      :    GENCALL(     n, chiSquaredDensity     );
   case CHI2DIST      :    GENCALL(     n, chiSquaredDistribution);

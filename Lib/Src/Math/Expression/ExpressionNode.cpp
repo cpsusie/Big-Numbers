@@ -136,7 +136,7 @@ static ExpressionNodeSelector *getBuiltInFunctionSelector() {
     , COSH    , SINH    , TANH    , ACOSH   , ASINH   , ATANH   , LN      , LOG10
     , EXP     , SQR     , SQRT    , ABS     , FLOOR   , CEIL    , BINOMIAL, GAMMA
     , GAUSS   , FAC     , NORM    , PROBIT  , ERF     , INVERF  , SIGN    , MAX
-    , MIN     , RAND    , NORMRAND, POLY    , CHI2DIST, CHI2DENS, LINCGAMMA
+    , MIN     , HYPOT   , RAND    , NORMRAND, POLY    , CHI2DIST, CHI2DENS, LINCGAMMA
   };
   static bool                         initDone = false;
   static ExpressionSymbolSet          functionSet;

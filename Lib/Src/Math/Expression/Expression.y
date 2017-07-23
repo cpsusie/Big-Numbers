@@ -33,7 +33,7 @@ private:
 %left PRODUCT PROD QUOT MOD      /*  * / %                        */
 %left POW                        /*  ^                            */
 %term ACOS ACOSH ACOT ACSC ASEC ASIN ASINH ATAN ATAN2 ATANH COS COSH COT CSC SEC SIN SINH TAN TANH
-%term ABS CEIL ERF EXP FAC FLOOR GAMMA GAUSS INVERF LN LOG10 
+%term ABS CEIL ERF EXP FAC FLOOR HYPOT GAMMA GAUSS INVERF LN LOG10 
 %term NORM PROBIT CHI2DIST CHI2DENS LINCGAMMA
 %term ROOT SIGN SQR SQRT
 %term BINOMIAL MAX MIN NORMRAND POLY RAND 
@@ -178,6 +178,7 @@ function2           : MAX                                   { $$ = newNode( getP
                     | CHI2DIST                              { $$ = newNode( getPos(1), CHI2DIST , NULL);                }
                     | LINCGAMMA                             { $$ = newNode( getPos(1), LINCGAMMA, NULL);                }
                     | ATAN2                                 { $$ = newNode( getPos(1), ATAN2    , NULL);                }
+                    | HYPOT                                 { $$ = newNode( getPos(1), HYPOT    , NULL);                }
                     ;
 
 name                : NAME                                  { $$ = newNode( getPos(1), NAME    , getText());            }

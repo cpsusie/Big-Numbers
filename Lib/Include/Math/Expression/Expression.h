@@ -259,7 +259,6 @@ private:
   void genCode();
   void genProlog();
   void genEpilog();
-  void genCode(                                            const ExpressionNode *n);
   void genStatementList(                                   const ExpressionNode *n);
   void genReturnBoolExpression(                            const ExpressionNode *n);
   void genExpression(                                      const ExpressionNode *n, const ExpressionDestination &dst);

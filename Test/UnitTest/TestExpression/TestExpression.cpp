@@ -1135,6 +1135,16 @@ namespace TestExpression {
     }
   };
 
+  class Test103 : public RealExpressionTest {
+  public:
+    String getExpr() const {
+      return _T("hypot(x+7, x-5)");
+    }
+    Real fr(const Real &x) const {
+      return hypot(x+7, x-5);
+    }
+  };
+
   static Test00  test00;
   static Test01  test01;
   static Test02  test02;
@@ -1238,6 +1248,7 @@ namespace TestExpression {
   static Test100 test100;
   static Test101 test101;
   static Test102 test102;
+  static Test103 test103;
 
   static ExpressionTest *testCases[] = {
      (ExpressionTest*)&test00
@@ -1343,6 +1354,7 @@ namespace TestExpression {
     ,(ExpressionTest*)&test100
     ,(ExpressionTest*)&test101
     ,(ExpressionTest*)&test102
+    ,(ExpressionTest*)&test103
   };
 
 	TEST_CLASS(TestExpression) {

@@ -1188,6 +1188,10 @@ Double80 atanh(const Double80 &x) {
   return log(sqrt((Double80::one+x)/(Double80::one-x)));
 }
 
+Double80 hypot(const Double80 &x, const Double80 &y) {
+  return sqrt(x*x+y*y);
+}
+
 Double80 root(const Double80 &x, const Double80 &y) {
   return pow(x,Double80::one/y);
 }
