@@ -79,9 +79,11 @@ public:
 #endif // IS32BIT
 
   static void             clearStatusWord();
-  static USHORT           setPrecisionMode(FPUPrecisionMode p); // returns currnet FPU controlwoed
+  // returns current FPU controlwoed
+  static USHORT           setPrecisionMode(FPUPrecisionMode p);
   static FPUPrecisionMode getPrecisionMode();
-  static USHORT           setRoundMode(FPURoundMode mode);      // returns current FPU controlword
+  // returns current FPU controlword
+  static USHORT           setRoundMode(FPURoundMode mode);
   static FPURoundMode     getRoundMode();
   static inline void      restoreControlWord(USHORT ctrlWord) {
     setControlWord(ctrlWord);
@@ -337,8 +339,8 @@ public:
   static char    *d80toa(char    *dst, const Double80 &x); // dst must point to memory with at least 26 free char
   static wchar_t *d80tow(wchar_t *dst, const Double80 &x); // dst must point to memory with at least 26 free wchar_t
 
-  bool isPositive() const { return (m_value[9] & 0x80) == 0; }
-  bool isNegative() const { return (m_value[9] & 0x80) != 0; }
+  inline bool isPositive() const { return (m_value[9] & 0x80) == 0; }
+  inline bool isNegative() const { return (m_value[9] & 0x80) != 0; }
 
   ULONG hashCode() const;
 
@@ -356,7 +358,7 @@ public:
     return p.addElement(Packer::E_DOUBLE, d.m_value, sizeof(d.m_value));
   }
 
-  friend inline Packer &operator >> (Packer &p, Double80 &d) {
+  friend inline Packer &operator>>(Packer &p, Double80 &d) {
     p.getElement(Packer::E_DOUBLE, d.m_value, sizeof(d.m_value));
     return p;
   }
