@@ -129,8 +129,18 @@ private:
   int    m_lineNumber;
   int    m_column;
 public:
-  SourcePosition(const String &fileName, int lineNumber, int column);
-  SourcePosition(int lineNumber = 0, int column = 0);
+  inline SourcePosition(const String &fileName, int lineNumber, int column)
+    : m_fileName(fileName)
+    , m_lineNumber(lineNumber)
+    , m_column(column)
+  {
+  }
+
+  inline SourcePosition(int lineNumber = 0, int column = 0)
+    : m_lineNumber(lineNumber)
+    , m_column(column)
+  {
+  }
   void setLocation(int lineNumber, int column);
 
   inline const String &getFileName() const {

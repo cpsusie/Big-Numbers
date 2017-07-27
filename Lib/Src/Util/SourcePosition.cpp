@@ -1,17 +1,6 @@
 #include "pch.h"
 #include <Scanner.h>
 
-SourcePosition::SourcePosition(const String &fileName, int lineNumber, int column) {
-  m_fileName   = fileName;
-  m_lineNumber = lineNumber;
-  m_column     = column;
-}
-
-SourcePosition::SourcePosition(int lineNumber, int column) {
-  m_lineNumber = lineNumber;
-  m_column     = column;
-}
-
 void SourcePosition::setLocation(int lineNumber, int column) {
   m_lineNumber = lineNumber;
   m_column     = column;
