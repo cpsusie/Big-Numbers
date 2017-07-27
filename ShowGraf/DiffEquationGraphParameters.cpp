@@ -38,6 +38,7 @@ void DiffEquationGraphParameters::putDataToDoc(XMLDoc &doc) {
   setValue(doc, root                 , m_style            );
   setValue(doc, root                 , m_trigonometricMode);
   doc.setValue( root, _T("dim"      ), dim                );
+  doc.setValue( root, _T("common"   ), eqDescArray.m_commonText);
 
   XMLNodePtr eqListNode = doc.createNode(root,_T("equations"));
   for (UINT i = 0; i < dim; i++) {
@@ -59,7 +60,11 @@ void DiffEquationGraphParameters::getDataFromDoc(XMLDoc &doc) {
   getValue(doc, root                 , m_style            );
   getValue(doc, root                 , m_trigonometricMode);
   doc.getValue( root, _T("dim"      ), dim                );
-
+  if(doc.findChild(root, _T("common")) != NULL) {
+    doc.getValueLF(root, _T("common"), m_equationsDescription.m_commonText);
+  } else {
+    m_equationsDescription.m_commonText = EMPTYSTRING;
+  }
   XMLNodePtr eqListNode = getChild(doc, root, _T("equations"));
   for (int i = 0; i < dim; i++) {
     XMLNodePtr eq = getChild(doc, eqListNode, format(_T("eq%d"),i).cstr());

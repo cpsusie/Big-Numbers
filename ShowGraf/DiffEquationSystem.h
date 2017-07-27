@@ -14,7 +14,11 @@ public:
   static bool isValidName(const String &name);
 };
 
-typedef Array<DiffEquationDescription> DiffEquationSystemDescription;
+class DiffEquationSystemDescription : public Array<DiffEquationDescription> {
+public:
+  // prefixed to all expression
+  String m_commonText;
+};
 
 class ExpressionInputIndex {
 public:
@@ -32,10 +36,16 @@ public:
   Real evaluate(const Vector &x);
 };
 
+typedef enum {
+  ERROR_INNAME   = 'N'
+ ,ERROR_INCOMMON = 'C'
+ ,ERROR_INEXPR   = 'E'
+} ErrorLocation;
+
 class ErrorPosition {
 public:
+  ErrorLocation  m_location;
   int            m_eqIndex;
-  bool           m_inExpr;
   SourcePosition m_pos;
   ErrorPosition(const String &error);
   inline ErrorPosition() {}
@@ -43,9 +53,10 @@ public:
 
 class CompilerErrorList : public StringArray {
 public:
-  void vaddError(UINT eqIndex, bool expr, const TCHAR *format, va_list argptr);
-  void addError( UINT eqIndex, bool expr, const TCHAR *format, ...);
-  void addErrors(UINT eqIndex, const StringArray &errors); // errors from Expression.compile()
+  void vaddError(UINT eqIndex, ErrorLocation expr, const TCHAR *format, va_list argptr);
+  void addError( UINT eqIndex, ErrorLocation expr, const TCHAR *format, ...);
+  // add errors from Expression.compile(). return true if any errors from common text
+  bool addErrors(UINT eqIndex, const StringArray &errors, const String &expr, int prefixLen);
   bool isOk() const {
     return isEmpty();
   }

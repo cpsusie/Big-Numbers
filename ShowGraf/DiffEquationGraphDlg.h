@@ -76,8 +76,12 @@ public:
 
 class CDiffEquationGraphDlg : public CDialog {
 private:
+    static const int             s_bottomIdArray[];
     HACCEL                       m_accelTable;
     SimpleLayoutManager          m_layoutManager;
+    int                          m_lowerPanelHeight;
+    int                          m_equationHeight;
+    int                          m_upperPanelBottom;
     CFont                        m_exprFont;
     String                       m_fullName;
     CompactArray<CEquationEdit*> m_equationControlArray;
@@ -87,12 +91,33 @@ private:
 
     CComboBox *getStyleCombo();
     void adjustWindowSize();
-    void distributeEquationRectangles(int totalEquationsHeight);
-    void adjustTabOrder(const CompactIntArray &oldTabOrder);
-    bool validate();
-    void showErrors(const CompilerErrorList &errorList);
-    void clearErrorList();
-    bool isErrorListVisible() {
+    void adjustTopPanel();
+    void adjustLowerPanel();
+    void adjustPanels(int totalEquationHeight);
+    void resetLowerPanelHeight();
+    inline int findTopPanelBottom(int eqCount) {
+      return getWindowRect(this, IDC_EDITNAME).bottom + ((eqCount <= 1)?0:(eqCount*5));
+    }
+    inline int getTopPanelBottom() {
+      return getWindowRect(this, IDC_EDITCOMMON).bottom;
+    }
+    inline int getLowerPanelHeight() const {
+      return m_lowerPanelHeight;
+    }
+    int getLowerPanelTop();
+    inline int getSumEquationHeight() const {
+      return m_equationHeight * getEquationCount();
+    }
+    inline int getSpaceBetweenTopAndBottomPanel(int eqCount) {
+      return getLowerPanelTop() - findTopPanelBottom(eqCount);
+    }
+    CRect getUnionRect(const int *ids, int n);
+    int   getMaxHeight(const int *ids, int n);
+    void  adjustTabOrder(const CompactIntArray &oldTabOrder);
+    bool  validate();
+    void  showErrors(const CompilerErrorList &errorList);
+    void  clearErrorList();
+    bool  isErrorListVisible() {
       return getErrorList()->IsWindowVisible() ? true : false;
     }
     inline int getErrorCount() {
@@ -124,6 +149,8 @@ private:
     void setEquationCount(size_t n);
     void addEquation();
     void removeEquation(size_t index);
+    void addEquationsToLOManager();
+    void removeEquationsFromLOManager();
     void addEquationToLOManager(     size_t index);
     void removeEquationFromLOManager(size_t index);
     int            findEquationIndexByCtrlId(UINT id) const; // return -1 if id does not belong to any equation
@@ -135,8 +162,8 @@ private:
       return findEquationByCtrlId(getFocusCtrlId(this));
     }
     void gotoEquation(size_t index);
-    size_t getEquationCount() const {
-      return m_equationControlArray.size();
+    UINT getEquationCount() const {
+      return (UINT)m_equationControlArray.size();
     }
     inline CEquationEdit *getEquationEdit(size_t index) const {
       return m_equationControlArray[index];
@@ -147,8 +174,7 @@ private:
     CListBox *getErrorList() {
       return (CListBox*)GetDlgItem(IDC_LISTERRORS);
     }
-    CRect getTotalEquationRect() const;
-
+    void ajourCommonEnabled();
     DECLARE_DYNAMIC(CDiffEquationGraphDlg)
 
 public:
@@ -159,6 +185,7 @@ public:
     enum { IDD = IDR_DIFFEQUATION };
   CString   m_style;
   CString   m_name;
+  CString   m_commonText;
   double    m_maxError;
   double    m_xFrom;
   double    m_xTo;
@@ -174,6 +201,9 @@ protected:
     afx_msg void OnEditChangeEquation(   UINT id);
     afx_msg void OnEditSetFocusEquation( UINT id);
     afx_msg void OnEditKillFocusEquation(UINT id);
+    afx_msg void OnEditChangeCommon();
+    afx_msg void OnEditSetFocusCommon();
+    afx_msg void OnEditKillFocusCommon();
     afx_msg void OnOK();
     afx_msg void OnFileNew();
     afx_msg void OnFileOpen();
@@ -185,6 +215,7 @@ protected:
     afx_msg void OnLbnSelchangeListerrors();
     afx_msg void OnGotoName();
     afx_msg void OnGotoStyle();
+    afx_msg void OnGotoCommon();
     afx_msg void OnGotoMaxError();
     afx_msg void OnGotoXInterval();
     DECLARE_MESSAGE_MAP()

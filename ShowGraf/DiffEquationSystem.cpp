@@ -42,27 +42,32 @@ bool DiffEquationSystem::compile(CompilerErrorList &errorList) {
     for(UINT i = 0; i < m_equationSystemDescription.size(); i++) {
       const DiffEquationDescription &desc = m_equationSystemDescription[i];
       if(!DiffEquationDescription::isValidName(desc.m_name)) {
-        errorList.addError(i, false, _T("<%s> is not a valid function name"), desc.m_name.cstr());
+        errorList.addError(i, ERROR_INNAME, _T("<%s> is not a valid function name"), desc.m_name.cstr());
       }
     }
-    for (UINT i = 1; i < m_equationSystemDescription.size(); i++) {
+    for(UINT i = 1; i < m_equationSystemDescription.size(); i++) {
       const String &name1 = m_equationSystemDescription[i].m_name;
       for(UINT j = 0; j < i; j++) {
         const String &name2 = m_equationSystemDescription[j].m_name;
         if(name1 == name2) {
-          errorList.addError(i, false, _T("Cannot have more than 1 definition of %s'"), name1.cstr());
+          errorList.addError(i, ERROR_INNAME, _T("Cannot have more than 1 definition of %s'"), name1.cstr());
         }
       }
     }
+    const String &commonText = m_equationSystemDescription.m_commonText;
     for(UINT i = 0; i < m_equationSystemDescription.size(); i++) {
       const DiffEquationDescription &desc = m_equationSystemDescription[i];
+      const String                   expr = commonText + desc.m_expr;
       ExpressionWithInputVector     *e    = new ExpressionWithInputVector();
-      e->compile(desc.m_expr, true);
+      e->compile(expr, true);
       if (e->isOk()) {
         m_exprArray.add(e);
       } else {
-        errorList.addErrors(i, e->getErrors());
+        bool hasCommonErrors = errorList.addErrors(i, e->getErrors(), expr, (int)commonText.length());
         delete e;
+        if (hasCommonErrors) {
+          break;
+        }
       }
     }
     if(!errorList.isOk()) return false;
@@ -72,7 +77,7 @@ bool DiffEquationSystem::compile(CompilerErrorList &errorList) {
       if(vx) {
         e->m_input.add(ExpressionInputIndex(0, &(e->getValueRef(*vx))));
         if (!vx->isInput()) {
-          errorList.addError(i, true, _T("Variable 'x' is not input in this equation"));
+          errorList.addError(i, ERROR_INEXPR, _T("Variable 'x' is not input in this equation"));
         }
       }
       for(UINT j = 0; j < m_equationSystemDescription.size(); j++) {
@@ -80,7 +85,7 @@ bool DiffEquationSystem::compile(CompilerErrorList &errorList) {
         const ExpressionVariable *vj    = e->getVariable(namej);
         if(vj == NULL) continue;
         if (!vj->isInput()) {
-          errorList.addError(i, true, _T("Variable '%s' is not input in this equation"), namej.cstr());
+          errorList.addError(i, ERROR_INEXPR, _T("Variable '%s' is not input in this equation"), namej.cstr());
         } else {
           e->m_input.add(ExpressionInputIndex(j+1, &(e->getValueRef(*vj)))); // +1 because v[0] is variable "x"
         }
@@ -139,22 +144,41 @@ Vector DiffEquationSystem::operator()(const Vector &x) {
   return dx;
 }
 
-void CompilerErrorList::vaddError(UINT eqIndex, bool expr, const TCHAR *form, va_list argptr) {
+void CompilerErrorList::vaddError(UINT eqIndex, ErrorLocation loc, const TCHAR *form, va_list argptr) {
   const String msg = vformat(form, argptr);
-  add(format(_T("(%d,%c):%s"), eqIndex, expr?_T('E'):_T('N'), msg.cstr()));
+  add(format(_T("(%d,%c):%s"), eqIndex, loc, msg.cstr()));
 }
 
-void CompilerErrorList::addError(UINT eqIndex, bool expr, const TCHAR *format, ...) {
+void CompilerErrorList::addError(UINT eqIndex, ErrorLocation loc, const TCHAR *format, ...) {
   va_list argptr;
   va_start(argptr, format);
-  vaddError(eqIndex, expr, format, argptr);
+  vaddError(eqIndex, loc, format, argptr);
   va_end(argptr);
 }
 
-void CompilerErrorList::addErrors(UINT eqIndex, const StringArray &errors) { // errors from Expression.compile()
+bool CompilerErrorList::addErrors(UINT eqIndex, const StringArray &errors, const String &expr, int prefixLen) { // errors from Expression.compile()
+  bool result = false;
   for(size_t i = 0; i < errors.size(); i++) {
-    addError(eqIndex, true, _T("%s"), errors[i].cstr());
+    const String &e = errors[i];
+    if(prefixLen == 0) {
+      addError(eqIndex, ERROR_INEXPR, _T("%s"), errors[i].cstr());
+    } else {
+      Tokenizer      tok(e, _T("(,)"));
+      const int      line = tok.getInt();
+      const int      col  = tok.getInt();
+      const String   errText = tok.getRemaining();
+      SourcePosition pos(line,col);
+      int index = SourcePosition::findCharIndex(expr.cstr(), pos);
+      if(index < prefixLen) {
+        addError(-1, ERROR_INCOMMON, _T("%s"), e.cstr());
+        result = true;
+      } else {
+        pos = SourcePosition::findSourcePosition(expr.cstr(), index - prefixLen);
+        addError(eqIndex, ERROR_INEXPR, _T("%s"), (pos.toString() + errText).cstr());
+      }
+    }
   }
+  return result;
 }
 
 ErrorPosition::ErrorPosition(const String &error) {
@@ -163,21 +187,29 @@ ErrorPosition::ErrorPosition(const String &error) {
   Tokenizer tok(error, _T(":"));
   const String eqMark = tok.next();
   if (_stscanf(eqMark.cstr(), _T("(%d,%c)"), &eqIndex, &fieldMark) != 2) {
-    m_eqIndex = -1;
+    m_eqIndex  = -1;
+    m_location = (ErrorLocation)-1;
   } else {
-    m_eqIndex = eqIndex;
-    m_inExpr  = (fieldMark == _T('E'));
+    m_eqIndex  = eqIndex;
+    m_location = (ErrorLocation)fieldMark;
 
-    if(m_inExpr) {
-      const String posStr = tok.next();
-      int line, col;
-      if(_stscanf(posStr.cstr(), _T("(%d,%d)"), &line,&col) == 2) {
-        m_pos.setLocation(line, col);
-      } else {
-        m_pos.setLocation(0,0);
+    switch(m_location) {
+    case ERROR_INCOMMON:
+      m_eqIndex = -1;
+      // NB continue case
+    case ERROR_INEXPR  :
+      { const String posStr = tok.next();
+        int line, col;
+        if(_stscanf(posStr.cstr(), _T("(%d,%d)"), &line,&col) == 2) {
+          m_pos.setLocation(line, col);
+        } else {
+          m_pos.setLocation(0,0);
+        }
       }
-    } else {
+      break;
+    default:
       m_pos.setLocation(0,0);
+      break;
     }
   }
 }

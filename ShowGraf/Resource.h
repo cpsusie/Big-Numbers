@@ -63,6 +63,8 @@
 #define IDC_STATICTINTERVAL             1100
 #define IDC_EDITTFROM                   1101
 #define IDC_EDITTTO                     1102
+#define IDC_EDITCOMMON                  1103
+#define IDC_STATICEQFRAME               1104
 #define IDC_BUTTON_HELP                 1110
 #define IDC_BUTTON_HELPX                1111
 #define IDC_BUTTON_HELPY                1112
@@ -121,16 +123,17 @@
 #define ID_GOTO_STEP                    32907
 #define ID_GOTO_CELLSIZE                32908
 #define ID_GOTO_STYLE                   32909
-#define ID_GOTO_MAXERROR                32910
+#define ID_GOTO_COMMON                  32910
+#define ID_GOTO_MAXERROR                32911
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        125
-#define _APS_NEXT_COMMAND_VALUE         32928
-#define _APS_NEXT_CONTROL_VALUE         1103
+#define _APS_NEXT_RESOURCE_VALUE        128
+#define _APS_NEXT_COMMAND_VALUE         32931
+#define _APS_NEXT_CONTROL_VALUE         1108
 #define _APS_NEXT_SYMED_VALUE           153
 #endif
 #endif
