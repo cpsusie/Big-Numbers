@@ -91,19 +91,11 @@ bool CExprDialog::validateMinMax(int id, double min, double max) {
 
 void CExprDialog::showExprError(const String &msg, int id) {
   try {
-    Tokenizer tok(msg, _T(":"));
-    String posStr = tok.next();
-    int line, col;
-    String tmp;
-    if(_stscanf(posStr.cstr(), _T("(%d,%d)"), &line,&col) == 2) {
-      tmp = tok.getRemaining();
-    } else {
-      throwException(_T("No sourceposition"));
-    }
-    int charIndex = SourcePosition::findCharIndex(getExprString(id).cstr(), SourcePosition(line,col));
+    String errorMsg = msg;
+    const int charIndex = ParserTree::decodeErrorString(getExprString(id), errorMsg);
     gotoExpr(id);
     getExprField(id)->SetSel(charIndex, charIndex);
-    Message(_T("%s"), tmp.cstr());
+    Message(_T("%s"), errorMsg.cstr());
   } catch(Exception) { // ignore Exception, and just show msg
     gotoExpr(id);
     Message(_T(":%s"), msg.cstr());

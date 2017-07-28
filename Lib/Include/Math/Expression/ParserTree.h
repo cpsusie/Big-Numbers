@@ -389,8 +389,19 @@ typedef ExpressionNode *(ParserTree::*BinaryOperator)(ExpressionNode *n1, Expres
     return m_errors;
   }
 
-  static int decodeErrorString(const String &expr, String &error); // Error should be an element from StringArray returned by getErrors().
-                                                                   // Will return textposition in expr, remove the textposition "(line,column)" from error
+  // Error should be an element from StringArray returned by getErrors().
+  // Will return sourcePosition specified in error as "(line,col):errorText"
+  // and modify error to be text after "(line,col):"
+  // If no leading "(line,col):" an Exception is thrown
+  static SourcePosition decodeErrorString(String &error);
+
+  // Error should be an element from StringArray returned by getErrors().
+  // Will return textposition in expr, remove the textposition "(line,column)" from error
+  // If no leading "(line,col):" an Exception is thrown
+  static inline int decodeErrorString(const String &expr, String &error) {
+    return SourcePosition::findCharIndex(expr.cstr(), decodeErrorString(error));
+  }
+
   void listErrors(FILE *f = stdout) const;
   void listErrors(tostream &out) const;
   void listErrors(const TCHAR *fname) const;

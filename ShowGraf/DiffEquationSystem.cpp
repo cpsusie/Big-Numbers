@@ -159,22 +159,18 @@ void CompilerErrorList::addError(UINT eqIndex, ErrorLocation loc, const TCHAR *f
 bool CompilerErrorList::addErrors(UINT eqIndex, const StringArray &errors, const String &expr, int prefixLen) { // errors from Expression.compile()
   bool result = false;
   for(size_t i = 0; i < errors.size(); i++) {
-    const String &e = errors[i];
+    const String &errorText = errors[i];
     if(prefixLen == 0) {
-      addError(eqIndex, ERROR_INEXPR, _T("%s"), errors[i].cstr());
+      addError(eqIndex, ERROR_INEXPR, _T("%s"), errorText.cstr());
     } else {
-      Tokenizer      tok(e, _T("(,)"));
-      const int      line = tok.getInt();
-      const int      col  = tok.getInt();
-      const String   errText = tok.getRemaining();
-      SourcePosition pos(line,col);
-      int index = SourcePosition::findCharIndex(expr.cstr(), pos);
+      String tmp = errorText;
+      const int index = ParserTree::decodeErrorString(expr, tmp);
       if(index < prefixLen) {
-        addError(-1, ERROR_INCOMMON, _T("%s"), e.cstr());
+        addError(-1, ERROR_INCOMMON, _T("%s"), errorText.cstr());
         result = true;
       } else {
-        pos = SourcePosition::findSourcePosition(expr.cstr(), index - prefixLen);
-        addError(eqIndex, ERROR_INEXPR, _T("%s"), (pos.toString() + errText).cstr());
+        const SourcePosition pos = SourcePosition::findSourcePosition(expr.cstr(), index - prefixLen);
+        addError(eqIndex, ERROR_INEXPR, _T("%s:%s"), pos.toString().cstr(),tmp.cstr());
       }
     }
   }
@@ -198,13 +194,11 @@ ErrorPosition::ErrorPosition(const String &error) {
       m_eqIndex = -1;
       // NB continue case
     case ERROR_INEXPR  :
-      { const String posStr = tok.next();
-        int line, col;
-        if(_stscanf(posStr.cstr(), _T("(%d,%d)"), &line,&col) == 2) {
-          m_pos.setLocation(line, col);
-        } else {
-          m_pos.setLocation(0,0);
-        }
+      try {
+        String errorStr = tok.next();
+        m_pos = ParserTree::decodeErrorString(errorStr);
+      } catch(Exception) {
+        m_pos.setLocation(0,0);
       }
       break;
     default:

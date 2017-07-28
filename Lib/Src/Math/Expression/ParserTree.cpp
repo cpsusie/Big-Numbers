@@ -178,17 +178,16 @@ void ParserTree::vAddError(const SourcePosition *pos, const TCHAR *format, va_li
   setOk(false);
 }
 
-int ParserTree::decodeErrorString(const String &expr, String &error) { // static
+SourcePosition ParserTree::decodeErrorString(String &error) { // static
   Tokenizer tok(error, _T(":"));
   String posStr = tok.next();
   int line, col;
-  String tmp;
   if(_stscanf(posStr.cstr(), _T("(%d,%d)"), &line, &col) == 2) {
     error = tok.getRemaining();
   } else {
     throwException(_T("No sourceposition"));
   }
-  return SourcePosition::findCharIndex(expr.cstr(), SourcePosition(line, col));
+  return SourcePosition(line,col);
 }
 
 void ParserTree::listErrors(FILE *f) const {
