@@ -5,28 +5,28 @@
 
 class CIsoCurveGraphDlg : public SaveLoadExprDialog<IsoCurveGraphParameters> {
 private:
-    CString             m_style;
-    CString             m_expr;
-    double              m_cellSize;
-    double              m_xFrom;
-    double              m_xTo;
-    double              m_yFrom;
-    double              m_yTo;
+  CString  m_style;
+  CString  m_expr;
+  double   m_cellSize;
+  double   m_xFrom;
+  double   m_xTo;
+  double   m_yFrom;
+  double   m_yTo;
 
-    CComboBox *getStyleCombo() const {
-      return (CComboBox*)GetDlgItem(IDC_COMBOSTYLE);
-    }
-    CMFCColorButton *getColorButton() const {
-      return (CMFCColorButton*)GetDlgItem(IDC_BUTTONCOLOR);
-    }
+  inline CComboBox *getStyleCombo() const {
+    return (CComboBox*)GetDlgItem(IDC_COMBOSTYLE);
+  }
+  inline CMFCColorButton *getColorButton() const {
+    return (CMFCColorButton*)GetDlgItem(IDC_BUTTONCOLOR);
+  }
 
-    bool validate();
-    void paramToWin(const IsoCurveGraphParameters &param);
-    void winToParam(      IsoCurveGraphParameters &param) const;
-    void addToRecent(const String &fileName);
+  bool validate();
+  void paramToWin(const IsoCurveGraphParameters &param);
+  void winToParam(      IsoCurveGraphParameters &param) const;
+  void addToRecent(const String &fileName);
 public:
-    CIsoCurveGraphDlg(IsoCurveGraphParameters &param, CWnd *pParent = NULL);
-    enum { IDD = IDR_ISOCURVE };
+  CIsoCurveGraphDlg(IsoCurveGraphParameters &param, CWnd *pParent = NULL);
+  enum { IDD = IDR_ISOCURVE };
 protected:
     virtual void DoDataExchange(CDataExchange *pDX);
     virtual BOOL OnInitDialog();

@@ -5,7 +5,8 @@
 
 class DiffEquationDescription {
 public:
-  String m_name;     // name of the function;
+  // name of the function;
+  String m_name;
   String m_expr;
   DiffEquationDescription() {
   }
@@ -78,7 +79,8 @@ public:
   DiffEquationSystem &operator=(const DiffEquationSystem &src);
   bool        compile(CompilerErrorList &errorList);
   bool        compile(        const DiffEquationSystemDescription &desc, CompilerErrorList &errorList);
-  void        setDescription( const DiffEquationSystemDescription &desc); // throw Exception if desc does not compile
+  // throw Exception if desc does not compile
+  void        setDescription( const DiffEquationSystemDescription &desc);
   static bool validate(       const DiffEquationSystemDescription &desc, CompilerErrorList &errorList);
   inline bool isCompiled() const {
     return m_exprArray.size() > 0;

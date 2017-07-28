@@ -8,26 +8,26 @@
 
 class CFunctionGraphDlg : public SaveLoadExprDialog<FunctionGraphParameters> {
 private:
-    CString             m_style;
-    CString             m_expr;
-    double              m_xFrom;
-    double              m_xTo;
-    UINT                m_steps;
-    int                 m_showFlags;
+  CString             m_style;
+  CString             m_expr;
+  double              m_xFrom;
+  double              m_xTo;
+  UINT                m_steps;
+  int                 m_showFlags;
 
-    CComboBox *getStyleCombo() const {
-      return (CComboBox*)GetDlgItem(IDC_COMBOSTYLE);
-    }
-    CMFCColorButton *getColorButton() const {
-      return (CMFCColorButton*)GetDlgItem(IDC_BUTTONCOLOR);
-    }
-    bool validate();
-    void paramToWin(const FunctionGraphParameters &param);
-    void winToParam(      FunctionGraphParameters &param) const;
-    void addToRecent(const String &fileName);
+  inline CComboBox *getStyleCombo() const {
+    return (CComboBox*)GetDlgItem(IDC_COMBOSTYLE);
+  }
+  inline CMFCColorButton *getColorButton() const {
+    return (CMFCColorButton*)GetDlgItem(IDC_BUTTONCOLOR);
+  }
+  bool validate();
+  void paramToWin(const FunctionGraphParameters &param);
+  void winToParam(      FunctionGraphParameters &param) const;
+  void addToRecent(const String &fileName);
 public:
-    CFunctionGraphDlg(FunctionGraphParameters &param, int showFlags = SHOW_INTERVAL|SHOW_STEP, CWnd *pParent = NULL);   // standard constructor
-    enum { IDD = IDR_FUNCTION };
+  CFunctionGraphDlg(FunctionGraphParameters &param, int showFlags = SHOW_INTERVAL|SHOW_STEP, CWnd *pParent = NULL);   // standard constructor
+  enum { IDD = IDR_FUNCTION };
 protected:
     virtual void DoDataExchange(CDataExchange *pDX);
     virtual BOOL OnInitDialog();

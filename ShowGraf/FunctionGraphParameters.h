@@ -24,4 +24,3 @@ public:
   virtual void plotFunction(Function &f, const DoubleInterval &interval, COLORREF color) = 0;
   virtual void addFunctionGraph(FunctionGraphParameters &param)      = 0;
 };
-
