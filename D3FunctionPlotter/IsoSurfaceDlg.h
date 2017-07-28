@@ -5,33 +5,34 @@
 
 class CIsoSurfaceDlg : public SaveLoadExprDialog<IsoSurfaceParameters> {
 private:
-    bool validate();
-    void paramToWin(const IsoSurfaceParameters &param);
-    void winToParam(      IsoSurfaceParameters &param) const;
-    void enableCheckBox();
-    void enableTimeFields();
+  CString m_expr;
+  double  m_cellSize;
+  UINT    m_bounds;
+  BOOL    m_tetrahedral;
+  BOOL    m_adaptiveCellSize;
+  BOOL    m_originOutside;
+  BOOL    m_machineCode;
+  BOOL    m_doubleSided;
+  BOOL    m_includeTime;
+  UINT    m_frameCount;
+  double  m_timeFrom;
+  double  m_timeTo;
+  double  m_xfrom;
+  double  m_xto;
+  double  m_yfrom;
+  double  m_yto;
+  double  m_zfrom;
+  double  m_zto;
+
+  bool validate();
+  void paramToWin(const IsoSurfaceParameters &param);
+  void winToParam(      IsoSurfaceParameters &param) const;
+  void enableCheckBox();
+  void enableTimeFields();
 public:
-    CIsoSurfaceDlg(const IsoSurfaceParameters &param, CWnd *pParent = NULL);
+  CIsoSurfaceDlg(const IsoSurfaceParameters &param, CWnd *pParent = NULL);
 
   enum { IDD = IDR_ISOSURFACE };
-    CString m_expr;
-    double  m_cellSize;
-    UINT    m_bounds;
-    BOOL    m_tetrahedral;
-    BOOL	  m_adaptiveCellSize;
-    BOOL    m_originOutside;
-    BOOL    m_machineCode;
-    BOOL	  m_doubleSided;
-    BOOL	  m_includeTime;
-    UINT	  m_frameCount;
-    double	m_timeFrom;
-    double	m_timeTo;
-    double	m_xfrom;
-    double	m_xto;
-    double	m_yfrom;
-    double	m_yto;
-    double	m_zfrom;
-    double	m_zto;
 
 protected:
     virtual void DoDataExchange(CDataExchange *pDX);
@@ -49,4 +50,3 @@ protected:
     afx_msg void OnButtonHelp();
     DECLARE_MESSAGE_MAP()
 };
-

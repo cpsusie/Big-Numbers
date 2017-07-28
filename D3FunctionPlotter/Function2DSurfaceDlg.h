@@ -5,6 +5,19 @@
 
 class CFunction2DSurfaceDlg : public SaveLoadExprDialog<Function2DSurfaceParameters> {
 private:
+  CString m_expr;
+  double  m_xfrom;
+  double  m_xto;
+  double  m_yfrom;
+  double  m_yto;
+  int     m_pointCount;
+  BOOL    m_machineCode;
+  UINT    m_frameCount;
+  double  m_timeFrom;
+  double  m_timeTo;
+  BOOL    m_includeTime;
+  BOOL    m_doubleSided;
+
   bool validate();
   void paramToWin(const Function2DSurfaceParameters &param);
   void winToParam(      Function2DSurfaceParameters &param) const;
@@ -13,18 +26,6 @@ public:
   CFunction2DSurfaceDlg(const Function2DSurfaceParameters &param, CWnd *pParent = NULL);
 
   enum { IDD = IDR_FUNC2DSURFACE };
-    CString m_expr;
-    double  m_xfrom;
-    double  m_xto;
-    double  m_yfrom;
-    double  m_yto;
-    int     m_pointCount;
-    BOOL    m_machineCode;
-    UINT	  m_frameCount;
-    double	m_timeFrom;
-    double	m_timeTo;
-    BOOL	  m_includeTime;
-    BOOL	  m_doubleSided;
 
 protected:
     virtual void DoDataExchange(CDataExchange *pDX);

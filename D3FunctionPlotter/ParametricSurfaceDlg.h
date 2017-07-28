@@ -5,6 +5,22 @@
 
 class CParametricSurfaceDlg : public SaveLoadExprDialog<ParametricSurfaceParameters> {
 private:
+  CString m_exprX;
+  CString m_exprY;
+  CString m_exprZ;
+  double  m_tfrom;
+  double  m_tto;
+  double  m_sfrom;
+  double  m_sto;
+  UINT    m_tStepCount;
+  UINT    m_sStepCount;
+  BOOL    m_includeTime;
+  BOOL    m_doubleSided;
+  double  m_timeFrom;
+  double  m_timeTo;
+  UINT    m_frameCount;
+  BOOL    m_machineCode;
+
   bool validate();
   void paramToWin(const ParametricSurfaceParameters &param);
   void winToParam(      ParametricSurfaceParameters &param) const;
@@ -22,30 +38,13 @@ private:
   }
 
 public:
-	CParametricSurfaceDlg(const ParametricSurfaceParameters &param, CWnd *pParent = NULL);
-	virtual ~CParametricSurfaceDlg();
+  CParametricSurfaceDlg(const ParametricSurfaceParameters &param, CWnd *pParent = NULL);
+  virtual ~CParametricSurfaceDlg();
 
-	enum { IDD = IDR_PARAMETRICSURFACE };
-
-private:
-  CString m_exprX;
-  CString m_exprY;
-  CString m_exprZ;
-  double  m_tfrom;
-  double  m_tto;
-  double  m_sfrom;
-  double  m_sto;
-  UINT    m_tStepCount;
-  UINT    m_sStepCount;
-  BOOL    m_includeTime;
-  BOOL    m_doubleSided;
-  double  m_timeFrom;
-  double  m_timeTo;
-  UINT    m_frameCount;
-  BOOL    m_machineCode;
+  enum { IDD = IDR_PARAMETRICSURFACE };
 
 protected:
-	  virtual void DoDataExchange(CDataExchange *pDX);
+    virtual void DoDataExchange(CDataExchange *pDX);
     afx_msg BOOL OnInitDialog();
     afx_msg void OnEditFindMatchingParentesis();
     afx_msg void OnGotoExprX();
