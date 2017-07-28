@@ -150,6 +150,9 @@
     <ClCompile Include="PointGraph.cpp">
       <Filter>Source Files\DataGraph</Filter>
     </ClCompile>
+    <ClCompile Include="DiffEquationEdit.cpp">
+      <Filter>Source Files\DiffEquationGraph</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DegreeDlg.h">
@@ -256,6 +259,9 @@
     </ClInclude>
     <ClInclude Include="RollAvgSizeDlg.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DiffEquationEdit.h">
+      <Filter>Source Files\DiffEquationGraph\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

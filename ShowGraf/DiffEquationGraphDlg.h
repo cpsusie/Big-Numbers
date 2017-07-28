@@ -3,91 +3,29 @@
 #include <MFCUtil/LayoutManager.h>
 #include <MFCUtil/Deletebutton.h>
 #include "DiffEquationGraph.h"
-
-#define TOP_EQUATION    0x1
-#define BOTTOM_EQUATION 0x2
-
-typedef enum {
-  EQ_NAME_EDIT
- ,EQ_LABEL_STATIC
- ,EQ_EXPR_EDIT
- ,EQ_STARTV_EDIT
- ,EQ_VISIBLE_BUTTON
- ,EQ_COLOR_BUTTON
- ,EQ_DELETE_BUTTON
-} DiffEquationField;
-
-class CEquationEdit : public CEdit {
-private:
-  CFont              &m_font;
-  CompactArray<CWnd*> m_subWndArray;
-  CString             m_name;
-  CString             m_expr;
-  double              m_startValue;
-  BOOL                m_visible;
-
-  CompactArray<CRect> calculateSubWinRect(const CRect &r) const;
-private:
-  int             m_exprId;
-  CEdit           m_editName;
-  CStatic         m_label;
-  CEdit           m_editStartV;
-  CButton         m_checkVisible;
-  CMFCColorButton m_colorButton;
-  CDeleteButton   m_buttonDelete;
-public:
-  CEquationEdit(CFont &font);
-  ~CEquationEdit();
-  void  Create(CWnd *parent, UINT eqIndex);
-  void  DoDataExchange(CDataExchange *pDX);
-  void  addToLayoutManager(     SimpleLayoutManager &layoutManager, int flags);
-  void  removeFromLayoutManager(SimpleLayoutManager &layoutManager);
-  void  setWindowRect(const CRect &r);
-  CRect getWindowRect();
-  int   getNameId()    const;
-  int   getLabelId()   const;
-  int   getExprId()    const;
-  int   getStartVId()  const;
-  int   getVisibleId() const;
-  int   getColorId()   const;
-  int   getDeleteId()  const;
-  inline int getFieldCount() const {
-    return (int)m_subWndArray.size();
-  }
-  inline int getFirstCtrlId() const {
-    return m_exprId;
-  }
-  inline int getLastCtrlId() const {
-    return getFirstCtrlId() + getFieldCount() - 1;
-  }
-  inline bool containsCtrlId(int ctrlId) const {
-    return (ctrlId >= getFirstCtrlId()) && (ctrlId <= getLastCtrlId());
-  }
-  CompactIntArray getTabOrderArray() const;
-  DiffEquationField findFieldByCtrlId(UINT id) const;
-  inline DiffEquationField getFocusField() const {
-    return findFieldByCtrlId(getFocusCtrlId(this));
-  }
-  bool  getVisibleChecked();
-  void  setVisibleChecked(bool checked);
-  void  paramToWin(  const DiffEquationDescription &desc, const EquationAttributes &attr);
-  void  winToParam(        DiffEquationDescription &desc,       EquationAttributes &attr);
-};
+#include "DiffEquationEdit.h"
 
 class CDiffEquationGraphDlg : public CDialog {
 private:
-    static const int             s_bottomIdArray[];
-    HACCEL                       m_accelTable;
-    SimpleLayoutManager          m_layoutManager;
-    int                          m_lowerPanelHeight;
-    int                          m_equationHeight;
-    int                          m_upperPanelBottom;
-    CFont                        m_exprFont;
-    String                       m_fullName;
-    CompactArray<CEquationEdit*> m_equationControlArray;
-    Array<ErrorPosition>         m_errorPosArray;
-    CompactIntArray              m_currentAdjustSet;
-    String                       m_currentText;
+  static const int       s_bottomIdArray[];
+  HACCEL                 m_accelTable;
+  SimpleLayoutManager    m_layoutManager;
+  int                    m_lowerPanelHeight;
+  int                    m_equationHeight;
+  int                    m_upperPanelBottom;
+  CFont                  m_exprFont;
+  String                 m_fullName;
+  CDiffEquationEditArray m_equationControlArray;
+  Array<ErrorPosition>   m_errorPosArray;
+  CompactIntArray        m_currentAdjustSet;
+  String                 m_currentText;
+
+  CString   m_style;
+  CString   m_name;
+  CString   m_commonText;
+  double    m_maxError;
+  double    m_xFrom;
+  double    m_xTo;
 
     CComboBox *getStyleCombo();
     void adjustWindowSize();
@@ -117,13 +55,13 @@ private:
     bool  validate();
     void  showErrors(const CompilerErrorList &errorList);
     void  clearErrorList();
-    bool  isErrorListVisible() {
+    inline bool isErrorListVisible() {
       return getErrorList()->IsWindowVisible() ? true : false;
     }
     inline int getErrorCount() {
       return getErrorList()->GetCount();
     }
-    int getSelectedError() {
+    inline int getSelectedError() {
       return getErrorCount() ? getErrorList()->GetCurSel() : -1;
     }
     void setSelectedError( int index);
@@ -133,7 +71,7 @@ private:
       m_currentAdjustSet.clear();
       traceCurrentAdjustSet();
     }
-    bool isCurrentAdjustSetEmpty() const {
+    inline bool isCurrentAdjustSetEmpty() const {
       return m_currentAdjustSet.isEmpty();
     }
     void traceCurrentAdjustSet();
@@ -141,37 +79,45 @@ private:
     void gotoTextPosition( int ctrlId, const SourcePosition &pos);
     void paramToWin(                 const DiffEquationGraphParameters &param);
     void winToParam(                       DiffEquationGraphParameters &param);
-    void equationToWin(size_t index, const DiffEquationDescription &desc, const EquationAttributes &attr);
-    void winToEquation(size_t index,       DiffEquationDescription &desc,       EquationAttributes &attr);
     void saveAs(                           DiffEquationGraphParameters &param);
     void save(const String &fileName,      DiffEquationGraphParameters &param);
     void addToRecent(const String &fileName);
     void setEquationCount(size_t n);
     void addEquation();
     void removeEquation(size_t index);
-    void addEquationsToLOManager();
-    void removeEquationsFromLOManager();
-    void addEquationToLOManager(     size_t index);
-    void removeEquationFromLOManager(size_t index);
-    int            findEquationIndexByCtrlId(UINT id) const; // return -1 if id does not belong to any equation
-    CEquationEdit *findEquationByCtrlId(     UINT id); // return NULL if not in any diff-equation
-    inline int     getFocusEquationIndex() {           // return -1 if not in any diff-equation
+    inline void addEquationsToLOManager() {
+      m_equationControlArray.addAllToLayoutManager(m_layoutManager);
+    }
+    inline void removeEquationsFromLOManager() {
+      m_equationControlArray.removeAllFromLayoutManager(m_layoutManager);
+    }
+    // return -1 if id does not belong to any equation
+    inline int                findEquationIndexByCtrlId(UINT id) const {
+      return m_equationControlArray.findEquationIndexByCtrlId(id);
+    }
+    // return NULL if not in any diff-equation
+    inline CDiffEquationEdit *findEquationByCtrlId(     UINT id) const {
+      return m_equationControlArray.findEquationByCtrlId(id);
+    }
+    // return -1 if not in any diff-equation
+    inline int                getFocusEquationIndex() const {
       return findEquationIndexByCtrlId(getFocusCtrlId(this));
     }
-    inline CEquationEdit *getFocusEquation() {         // return NULL if not in any diff-equation
+    // return NULL if not in any diff-equation
+    inline CDiffEquationEdit *getFocusEquation() const {
       return findEquationByCtrlId(getFocusCtrlId(this));
     }
     void gotoEquation(size_t index);
-    UINT getEquationCount() const {
+    inline UINT getEquationCount() const {
       return (UINT)m_equationControlArray.size();
     }
-    inline CEquationEdit *getEquationEdit(size_t index) const {
+    inline CDiffEquationEdit *getEquationEdit(size_t index) const {
       return m_equationControlArray[index];
     }
-    inline CEquationEdit *getLastEquationEdit() const {
-      return getEquationCount() ? getEquationEdit(getEquationCount()-1) : NULL;
+    inline CDiffEquationEdit *getLastEquationEdit() const {
+      return m_equationControlArray.getLastEquationEdit();
     }
-    CListBox *getErrorList() {
+    inline CListBox *getErrorList() {
       return (CListBox*)GetDlgItem(IDC_LISTERRORS);
     }
     void ajourCommonEnabled();
@@ -183,12 +129,6 @@ public:
     DiffEquationGraphParameters &m_param;
 
     enum { IDD = IDR_DIFFEQUATION };
-  CString   m_style;
-  CString   m_name;
-  CString   m_commonText;
-  double    m_maxError;
-  double    m_xFrom;
-  double    m_xTo;
 
 protected:
     virtual void DoDataExchange(CDataExchange *pDX);
