@@ -399,7 +399,7 @@ typedef ExpressionNode *(ParserTree::*BinaryOperator)(ExpressionNode *n1, Expres
   // Will return textposition in expr, remove the textposition "(line,column)" from error
   // If no leading "(line,col):" an Exception is thrown
   static inline int decodeErrorString(const String &expr, String &error) {
-    return SourcePosition::findCharIndex(expr.cstr(), decodeErrorString(error));
+    return decodeErrorString(error).findCharIndex(expr);
   }
 
   void listErrors(FILE *f = stdout) const;

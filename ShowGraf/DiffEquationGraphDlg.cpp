@@ -175,7 +175,7 @@ void CDiffEquationGraphDlg::setSelectedError(int index) {
 
 void CDiffEquationGraphDlg::gotoTextPosition(int ctrlId, const SourcePosition &pos) {
   gotoEditBox(this, ctrlId);
-  const int selstart = SourcePosition::findCharIndex(getWindowText(this, ctrlId).cstr(), pos);
+  const int selstart = pos.findCharIndex(getWindowText(this, ctrlId));
   ((CEdit*)GetDlgItem(ctrlId))->SetSel(selstart, selstart+1);
 }
 
@@ -560,25 +560,11 @@ void CDiffEquationGraphDlg::OnBnClickedEquation(UINT id) {
 }
 
 void CDiffEquationGraphDlg::adjustErrorPositions(const String &s, int sel, int delta) {
-  if(delta > 0) { // string has grown
-    const SourcePosition sp1 = SourcePosition::findSourcePosition(m_currentText.cstr(), sel-delta);
-    const SourcePosition sp2 = SourcePosition::findSourcePosition(s.cstr(), sel);
-    for (UINT i = 0; i < m_currentAdjustSet.size(); i++) {
-      ErrorPosition &ep = m_errorPosArray[m_currentAdjustSet[i]];
-      if(ep.m_pos >= sp1) {
-        const int ci = SourcePosition::findCharIndex(m_currentText.cstr(), ep.m_pos);
-        ep.m_pos = SourcePosition::findSourcePosition(s.cstr(), ci+delta);
-      }
-    }
-  } else { // delta < 0 => new string is smaller
-    const SourcePosition sp1 = SourcePosition::findSourcePosition(s.cstr(), sel);
-    const SourcePosition sp2 = SourcePosition::findSourcePosition(m_currentText.cstr(), sel-delta);
-    for(UINT i = 0; i < m_currentAdjustSet.size(); i++) {
-      ErrorPosition &ep = m_errorPosArray[m_currentAdjustSet[i]];
-      if(ep.m_pos >= sp2) {
-        const int ci = SourcePosition::findCharIndex(m_currentText.cstr(), ep.m_pos);
-        ep.m_pos = SourcePosition::findSourcePosition(s.cstr(), ci+delta);
-      }
+  const SourcePosition sp(m_currentText, sel-delta);
+  for(UINT i = 0; i < m_currentAdjustSet.size(); i++) {
+    ErrorPosition &ep = m_errorPosArray[m_currentAdjustSet[i]];
+    if(ep.m_pos >= sp) {
+      ep.m_pos = SourcePosition(s, ep.m_pos.findCharIndex(m_currentText)+delta);
     }
   }
 }
@@ -587,7 +573,7 @@ void CDiffEquationGraphDlg::traceCurrentAdjustSet() {
 #ifdef _DEBUG
   String str;
   for (UINT i = 0; i < m_currentAdjustSet.size(); i++) {
-    ErrorPosition &ep = m_errorPosArray[m_currentAdjustSet[i]];
+    const ErrorPosition &ep = m_errorPosArray[m_currentAdjustSet[i]];
     str += ep.m_pos.toString();
   }
   setWindowText(this, IDC_STATICADJUSTSET, str);

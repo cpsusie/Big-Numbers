@@ -169,8 +169,7 @@ bool CompilerErrorList::addErrors(UINT eqIndex, const StringArray &errors, const
         addError(-1, ERROR_INCOMMON, _T("%s"), errorText.cstr());
         result = true;
       } else {
-        const SourcePosition pos = SourcePosition::findSourcePosition(expr.cstr(), index - prefixLen);
-        addError(eqIndex, ERROR_INEXPR, _T("%s:%s"), pos.toString().cstr(),tmp.cstr());
+        addError(eqIndex, ERROR_INEXPR, _T("%s:%s"), SourcePosition(expr, index - prefixLen).toString().cstr(),tmp.cstr());
       }
     }
   }

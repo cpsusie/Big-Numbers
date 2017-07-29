@@ -28,11 +28,11 @@ public:
     clear();
   }
   inline void clear() {
-    ByteArray::clear();
+    __super::clear();
     m_firstRead = true;
   }
   inline size_t size() const {
-    return ByteArray::size();
+    return __super::size();
   }
   inline bool isEmpty() const {
     return size() == 0;
@@ -49,10 +49,10 @@ public:
   CharQueue() {
   }
   inline void clear() {
-    (String&)(*this) = _T("");
+    (String&)(*this) = EMPTYSTRING;
   };
   inline size_t size() const {
-    return (size_t)length();
+    return length();
   }
   inline bool isEmpty() const {
     return size() == 0;
@@ -103,14 +103,14 @@ private:
   intptr_t m_pos;
 public:
   LexStringStream() {
-    open("");
+    open(EMPTYSTRING);
   }
   LexStringStream(const String &str) {
     open(str);
   }
   bool open(const String &str);
   void close() {
-    open("");
+    open(EMPTYSTRING);
   }
   intptr_t getChars(_TUCHAR *dst, size_t n);
 
@@ -141,7 +141,12 @@ public:
     , m_column(column)
   {
   }
+  SourcePosition(const String &s, UINT index);
+
   void setLocation(int lineNumber, int column);
+
+  // SourcePosition(s, index).findCharIndex(s) == index; index = [0..s.length()[
+  int findCharIndex(const String &s) const;
 
   inline const String &getFileName() const {
     return m_fileName;
@@ -190,11 +195,6 @@ public:
   }
   String toString() const;
   friend class Scanner;
-
-  static int findCharIndex(const TCHAR *s, const SourcePosition &pos);
-  static SourcePosition findSourcePosition(const TCHAR *s, int index);
-
-  // findCharIndex(s, findSourcePosition(s, index)) == index; index = [0..len(s)[
 };
 
 class Scanner {
