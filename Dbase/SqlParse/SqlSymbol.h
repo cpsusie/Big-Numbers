@@ -108,7 +108,7 @@
     ,CONCAT           = 104
     ,NAME             = 105
   } SqlInputSymbol;
-	
+
   typedef enum {
   } SqlNonTerminal;
 

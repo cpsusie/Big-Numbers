@@ -220,7 +220,6 @@ static int nameOrKeyWord(const TCHAR *lexeme);
 //  \xd0 \xd1 \xd2 \xd3 \xd4 \xd5 \xd6 \xd7 \xd8 \xd9 \xda \xdb \xdc \xdd \xde \xdf
 //  \xe0 \xe1 \xe2 \xe3 \xe4 \xe5 \xe6 \xe7 \xe8 \xe9 \xea \xeb \xec \xed \xee \xef
 //  \xf0 \xf1 \xf2 \xf3 \xf4 \xf5 \xf6 \xf7 \xf8 \xf9 \xfa \xfb \xfc \xfd \xfe \xff
-//
 
 static unsigned char lexCharMap[256] = {
        0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   1,   0,   2,   3,   2,   2,
@@ -339,7 +338,7 @@ int SqlLex::getNextLexeme() {
 
     for(;;) {
       if(((int)(lookahead = look(1))) != EOF) {
-		assert(lookahead < 256);
+        assert(lookahead < 256);
         nextState = nextState(state, lookahead);
         break;
       } else if(lastAcceptState != 0) {   // still something to do
@@ -605,7 +604,7 @@ int SqlLex::getNextLexeme() {
         break;
 
       default:
-        throwException(_T("SqlLex::getNextLexeme:Unknown accept state:%d, text=<%s>"), lastAcceptState,getText());
+        throwException(_T("%s:Unknown accept state:%d, text=<%s>"), __TFUNCTION__, lastAcceptState,getText());
         break;
       }
 
@@ -711,7 +710,7 @@ static KeyWord keywordTable[] = {
   _T("VALUES")			 ,VALUES			,
   _T("VARCHAR") 		 ,TYPEVARCHAR 	    ,
   _T("WCHAR")			 ,TYPEWCHAR			,
-  _T("WHERE")			 ,WHERE				
+  _T("WHERE")			 ,WHERE
 };
 
 typedef StrHashMap<int> HashMapType;

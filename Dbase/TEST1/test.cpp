@@ -2,8 +2,8 @@ static char sqlapi_program_id[240] = {
 116,  0,101,  0,115,  0,116,  0, 46,  0,115,  0,113,  0, 99,  0,  0,  0,  0,  0,
   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
- 83,  0,117,  0,110,  0, 32,  0, 77,  0, 97,  0,114,  0, 32,  0, 50,  0, 54,  0,
- 32,  0, 49,  0, 52,  0, 58,  0, 48,  0, 57,  0, 58,  0, 52,  0, 57,  0, 32,  0,
+ 83,  0,117,  0,110,  0, 32,  0, 74,  0,117,  0,108,  0, 32,  0, 51,  0, 48,  0,
+ 32,  0, 49,  0, 56,  0, 58,  0, 53,  0, 50,  0, 58,  0, 52,  0, 52,  0, 32,  0,
  50,  0, 48,  0, 49,  0, 55,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -13,7 +13,7 @@ static char sqlapi_program_id[240] = {
   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0
 
 };
-/* test.sqc Sun Mar 26 14:09:49 2017 */
+/* test.sqc Sun Jul 30 18:52:44 2017 */
 #line 1 "C:/mytools2015/Dbase/TEST1/test.sqc"
 #include "stdafx.h"
 
@@ -66,18 +66,18 @@ sqlca sqlca;
 #line 32 "C:/mytools2015/Dbase/TEST1/test.sqc"
 
 
-static void xchecksql(char *file,int line) {
+static void xchecksql(TCHAR *file,int line) {
   if(sqlca.sqlcode != SQL_OK) {
-    printf("sql failure in %s line %d\n",file,line);
+    _tprintf(_T("sql failure in %s line %d\n"),file,line);
     sqlca.dump();
     exit(-1);
   }
 }
 
-#define checkSql() xchecksql(__FILE__,__LINE__)
+#define checkSql() xchecksql(_T(__FILE__),__LINE__)
 
 /*
-static selectff() {
+static void selectff() {
 
   exec sql
     select t || (select t from ff union select (substring(t,1,2) || t) from ff)
@@ -93,7 +93,7 @@ static selectff() {
 }
 */
 
-static selectMyTable() {
+static void selectMyTable() {
 
 #ifdef __NEVER__
   exec sql
@@ -369,7 +369,6 @@ static void insertLilleTable() {
   checkSql();
 }
 
-
 static void selectLilleTable() {
 
 #ifdef __NEVER__
@@ -392,34 +391,34 @@ static void selectLilleTable() {
     order by a.firstcolumn
   END-EXEC
 #endif
-#line 210 "C:/mytools2015/Dbase/TEST1/test.sqc"
+#line 209 "C:/mytools2015/Dbase/TEST1/test.sqc"
 {
   SqlApiVarList sqlapi_varl[4];
-#line 210 "C:/mytools2015/Dbase/TEST1/test.sqc"
+#line 209 "C:/mytools2015/Dbase/TEST1/test.sqc"
   sqlapi_varl[0].sqltype = 27;
   sqlapi_varl[0].sqllen  = 30;
   sqlapi_varl[0].sqldata = (void*)firstcolumn;
   sqlapi_varl[0].sqlind = 0L;
-#line 210 "C:/mytools2015/Dbase/TEST1/test.sqc"
+#line 209 "C:/mytools2015/Dbase/TEST1/test.sqc"
   sqlapi_varl[1].sqltype = 27;
   sqlapi_varl[1].sqllen  = 30;
   sqlapi_varl[1].sqldata = (void*)firstcolumn;
   sqlapi_varl[1].sqlind = 0L;
-#line 210 "C:/mytools2015/Dbase/TEST1/test.sqc"
+#line 209 "C:/mytools2015/Dbase/TEST1/test.sqc"
   sqlapi_varl[2].sqltype = 27;
   sqlapi_varl[2].sqllen  = 30;
   sqlapi_varl[2].sqldata = (void*)firstcolumn;
   sqlapi_varl[2].sqlind = 0L;
-#line 210 "C:/mytools2015/Dbase/TEST1/test.sqc"
+#line 209 "C:/mytools2015/Dbase/TEST1/test.sqc"
   sqlapi_varl[3].sqltype = 0;
   sqlapi_varl[3].sqllen  = 4;
   sqlapi_varl[3].sqldata = (void*)&dddd2;
   sqlapi_varl[3].sqlind = &s;
-#line 210 "C:/mytools2015/Dbase/TEST1/test.sqc"
-  sqlapi_call(9,5,sqlapi_program_id,0,4,sqlapi_varl,sqlca);
-#line 210 "C:/mytools2015/Dbase/TEST1/test.sqc"
-}
 #line 209 "C:/mytools2015/Dbase/TEST1/test.sqc"
+  sqlapi_call(9,5,sqlapi_program_id,0,4,sqlapi_varl,sqlca);
+#line 209 "C:/mytools2015/Dbase/TEST1/test.sqc"
+}
+#line 208 "C:/mytools2015/Dbase/TEST1/test.sqc"
 
 }
 
@@ -430,12 +429,12 @@ static void dropMyTable() {
     drop table mytable
   end-exec
 #endif
-#line 216 "C:/mytools2015/Dbase/TEST1/test.sqc"
+#line 215 "C:/mytools2015/Dbase/TEST1/test.sqc"
 {
   sqlapi_call(9,6,sqlapi_program_id,0,0,NULL,sqlca);
-#line 217 "C:/mytools2015/Dbase/TEST1/test.sqc"
-}
 #line 216 "C:/mytools2015/Dbase/TEST1/test.sqc"
+}
+#line 215 "C:/mytools2015/Dbase/TEST1/test.sqc"
 
 
   checkSql();
@@ -499,12 +498,12 @@ static void createMyTable() {
     )
   end-exec
 #endif
-#line 275 "C:/mytools2015/Dbase/TEST1/test.sqc"
+#line 274 "C:/mytools2015/Dbase/TEST1/test.sqc"
 {
   sqlapi_call(9,7,sqlapi_program_id,0,0,NULL,sqlca);
-#line 276 "C:/mytools2015/Dbase/TEST1/test.sqc"
-}
 #line 275 "C:/mytools2015/Dbase/TEST1/test.sqc"
+}
+#line 274 "C:/mytools2015/Dbase/TEST1/test.sqc"
 
 
   checkSql();
@@ -517,12 +516,12 @@ static void createLilleTable() {
     drop table lilletable
   end-exec
 #endif
-#line 283 "C:/mytools2015/Dbase/TEST1/test.sqc"
+#line 282 "C:/mytools2015/Dbase/TEST1/test.sqc"
 {
   sqlapi_call(9,8,sqlapi_program_id,0,0,NULL,sqlca);
-#line 284 "C:/mytools2015/Dbase/TEST1/test.sqc"
-}
 #line 283 "C:/mytools2015/Dbase/TEST1/test.sqc"
+}
+#line 282 "C:/mytools2015/Dbase/TEST1/test.sqc"
 
 
   checkSql();
@@ -540,12 +539,12 @@ static void createLilleTable() {
     )
   end-exec
 #endif
-#line 296 "C:/mytools2015/Dbase/TEST1/test.sqc"
+#line 295 "C:/mytools2015/Dbase/TEST1/test.sqc"
 {
   sqlapi_call(9,9,sqlapi_program_id,0,0,NULL,sqlca);
-#line 297 "C:/mytools2015/Dbase/TEST1/test.sqc"
-}
 #line 296 "C:/mytools2015/Dbase/TEST1/test.sqc"
+}
+#line 295 "C:/mytools2015/Dbase/TEST1/test.sqc"
 
 
   checkSql();
@@ -556,12 +555,12 @@ static void createLilleTable() {
     create index ddd on lilletable (ii,dd,firstcolumn)
   end-exec
 #endif
-#line 302 "C:/mytools2015/Dbase/TEST1/test.sqc"
+#line 301 "C:/mytools2015/Dbase/TEST1/test.sqc"
 {
   sqlapi_call(9,10,sqlapi_program_id,0,0,NULL,sqlca);
-#line 303 "C:/mytools2015/Dbase/TEST1/test.sqc"
-}
 #line 302 "C:/mytools2015/Dbase/TEST1/test.sqc"
+}
+#line 301 "C:/mytools2015/Dbase/TEST1/test.sqc"
 
 
   checkSql();
@@ -572,12 +571,12 @@ static void createLilleTable() {
     create index fff on lilletable (dd,ii,firstcolumn)
   end-exec
 #endif
-#line 308 "C:/mytools2015/Dbase/TEST1/test.sqc"
+#line 307 "C:/mytools2015/Dbase/TEST1/test.sqc"
 {
   sqlapi_call(9,11,sqlapi_program_id,0,0,NULL,sqlca);
-#line 309 "C:/mytools2015/Dbase/TEST1/test.sqc"
-}
 #line 308 "C:/mytools2015/Dbase/TEST1/test.sqc"
+}
+#line 307 "C:/mytools2015/Dbase/TEST1/test.sqc"
 
 
   checkSql();
@@ -613,30 +612,30 @@ static void dbConnect() {
 #ifdef __NEVER__
   EXEC SQL CONNECT TO :dbname user :username using :password;
 #endif
-#line 339 "C:/mytools2015/Dbase/TEST1/test.sqc"
+#line 338 "C:/mytools2015/Dbase/TEST1/test.sqc"
 {
   SqlApiVarList sqlapi_varl[3];
-#line 340 "C:/mytools2015/Dbase/TEST1/test.sqc"
+#line 339 "C:/mytools2015/Dbase/TEST1/test.sqc"
   sqlapi_varl[0].sqltype = 29;
   sqlapi_varl[0].sqllen  = 20;
   sqlapi_varl[0].sqldata = (void*)dbname;
   sqlapi_varl[0].sqlind = 0L;
-#line 340 "C:/mytools2015/Dbase/TEST1/test.sqc"
+#line 339 "C:/mytools2015/Dbase/TEST1/test.sqc"
   sqlapi_varl[1].sqltype = 29;
   sqlapi_varl[1].sqllen  = 30;
   sqlapi_varl[1].sqldata = (void*)username;
   sqlapi_varl[1].sqlind = 0L;
-#line 340 "C:/mytools2015/Dbase/TEST1/test.sqc"
+#line 339 "C:/mytools2015/Dbase/TEST1/test.sqc"
   sqlapi_varl[2].sqltype = 29;
   sqlapi_varl[2].sqllen  = 30;
   sqlapi_varl[2].sqldata = (void*)password;
   sqlapi_varl[2].sqlind = 0L;
-#line 340 "C:/mytools2015/Dbase/TEST1/test.sqc"
-  sqlapi_call(1,5,sqlapi_program_id,3,0,sqlapi_varl,sqlca);
-#line 340 "C:/mytools2015/Dbase/TEST1/test.sqc"
-}
 #line 339 "C:/mytools2015/Dbase/TEST1/test.sqc"
+  sqlapi_call(1,5,sqlapi_program_id,3,0,sqlapi_varl,sqlca);
+#line 339 "C:/mytools2015/Dbase/TEST1/test.sqc"
+}
 #line 338 "C:/mytools2015/Dbase/TEST1/test.sqc"
+#line 337 "C:/mytools2015/Dbase/TEST1/test.sqc"
 
 
   checkSql();
@@ -647,13 +646,13 @@ static void dbDisconnect() {
 #ifdef __NEVER__
   EXEC SQL CONNECT RESET;
 #endif
-#line 345 "C:/mytools2015/Dbase/TEST1/test.sqc"
+#line 344 "C:/mytools2015/Dbase/TEST1/test.sqc"
 {
   sqlapi_call(1,3,sqlapi_program_id,0,0,NULL,sqlca);
-#line 345 "C:/mytools2015/Dbase/TEST1/test.sqc"
+#line 344 "C:/mytools2015/Dbase/TEST1/test.sqc"
 }
-#line 344 "C:/mytools2015/Dbase/TEST1/test.sqc"
-#line 344 "C:/mytools2015/Dbase/TEST1/test.sqc"
+#line 343 "C:/mytools2015/Dbase/TEST1/test.sqc"
+#line 343 "C:/mytools2015/Dbase/TEST1/test.sqc"
 
 }
 

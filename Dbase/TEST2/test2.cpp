@@ -2,8 +2,8 @@ static char sqlapi_program_id[240] = {
 116,  0,101,  0,115,  0,116,  0, 50,  0, 46,  0,115,  0,113,  0, 99,  0,  0,  0,
   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
- 83,  0,117,  0,110,  0, 32,  0, 77,  0, 97,  0,114,  0, 32,  0, 50,  0, 54,  0,
- 32,  0, 49,  0, 52,  0, 58,  0, 53,  0, 48,  0, 58,  0, 50,  0, 51,  0, 32,  0,
+ 83,  0,117,  0,110,  0, 32,  0, 74,  0,117,  0,108,  0, 32,  0, 51,  0, 48,  0,
+ 32,  0, 49,  0, 56,  0, 58,  0, 53,  0, 50,  0, 58,  0, 52,  0, 52,  0, 32,  0,
  50,  0, 48,  0, 49,  0, 55,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -13,7 +13,7 @@ static char sqlapi_program_id[240] = {
   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0
 
 };
-/* test2.sqc Sun Mar 26 14:50:23 2017 */
+/* test2.sqc Sun Jul 30 18:52:44 2017 */
 #line 1 "C:/mytools2015/Dbase/TEST2/test2.sqc"
 #include "stdafx.h"
 
@@ -33,26 +33,26 @@ sqlca sqlca;
 #endif
 #line 5 "C:/mytools2015/Dbase/TEST2/test2.sqc"
 
-  static char   dbname[20];
-  static short  dbnameindi;
-  static char   username[30];
-  static char   password[30];
-  static char   firstcolumn[30];
-  static short  s;
+  static char           dbname[20];
+  static short          dbnameindi;
+  static char           username[30];
+  static char           password[30];
+  static char           firstcolumn[30];
+  static short          s;
   static unsigned short s1;
-  static short  s2;
-  static float  f;
-  static double d;
-  static int    i;
-  static unsigned int i1;
-  static int    i2;
-  static long   l;
-  static unsigned long l1;
-  static long   l2;
-  static char   varch1[20];
-  static char   ch[1];
-  static char   outstr[30];
-  static char   outint;
+  static short          s2;
+  static float          f;
+  static double         d;
+  static int            i;
+  static unsigned int   i1;
+  static int            i2;
+  static long           l;
+  static unsigned long  l1;
+  static long           l2;
+  static char           varch1[20];
+  static char           ch[1];
+  static char           outstr[30];
+  static char           outint;
 
 #ifdef __NEVER__
   EXEC SQL END   DECLARE SECTION;
@@ -189,11 +189,12 @@ static void dbDisconnect() {
 }
 
 int main(int argc, char **argv) {
-  strcpy(dbname   , "fisk");
-  strcpy(username , "ADM" );
-  strcpy(password , "ADM" );
+  strcpy(dbname  , "fisk");
+  strcpy(username, "ADM" );
+  strcpy(password, "ADM" );
   dbConnect();
   selectMyTable();
+
   if(sqlca.sqlcode != SQL_OK) {
     sqlca.dump();
   }
