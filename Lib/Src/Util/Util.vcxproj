@@ -504,6 +504,7 @@
     <ClInclude Include="..\..\Include\Semaphore.h" />
     <ClInclude Include="..\..\Include\Set.h" />
     <ClInclude Include="..\..\Include\SocketStream.h" />
+    <ClInclude Include="..\..\Include\SourcePosition.h" />
     <ClInclude Include="..\..\Include\Stack.h" />
     <ClInclude Include="..\..\Include\StreamParameters.h" />
     <ClInclude Include="..\..\Include\StringPool.h" />

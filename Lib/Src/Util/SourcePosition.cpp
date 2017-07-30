@@ -1,5 +1,5 @@
 #include "pch.h"
-#include <Scanner.h>
+#include <SourcePosition.h>
 
 SourcePosition::SourcePosition(const String &s, UINT index) {
   setLocation(0,0);

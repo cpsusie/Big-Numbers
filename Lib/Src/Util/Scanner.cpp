@@ -37,10 +37,10 @@ void Scanner::init(LexStream *stream, const SourcePosition &pos) {
   //  use the same trick on eoi, see fillBuf
 
   m_pos = pos;
-  if(pos.m_column == 0) {
+  if(m_pos.getColumn() == 0) {
     m_nextChar  = m_startMark = m_endMark = end() - 1;
     *m_nextChar = NEWLINE;
-    m_pos.m_lineNumber--; // -1 to cancel the "\n" we just added
+    m_pos.setLocation(m_pos.getLineNumber()-1,0); // -1 to cancel the "\n" we just added
   } else {
     m_nextChar  = m_startMark = m_endMark = end();
     flushBuf();
@@ -66,7 +66,7 @@ int Scanner::setLineNumber(int lineNumber) {
 }
 
 SourcePosition Scanner::setPos(const SourcePosition &pos) {
-  SourcePosition old = m_pos;
+  const SourcePosition old = m_pos;
   m_pos = pos;
   return old;
 }
@@ -107,7 +107,7 @@ _TUCHAR *Scanner::gotoMark() {
 }
 
 int Scanner::look(int n) { // protected
-  if(n == 1 && m_termchar) {
+  if((n == 1) && m_termchar) {
     return m_termchar;
   }
 
@@ -134,7 +134,7 @@ int Scanner::advance() { // protected
   // from input and advances past it. The buffer is flushed if the current
   // TCHAR is within SCANNERMAXLOOK characters of the end of the buffer. 0 is
   // returned at end of file. -1 is returned if the buffer can't be flushed
-  // because it's too full. In this case you can call flush(1) to do a
+  // because it's too full. In this case you can call flush(true) to do a
   // buffer flush but you'll loose the current lexeme as a consequence.
 
 
@@ -147,10 +147,9 @@ int Scanner::advance() { // protected
   }
 
   if(*m_nextChar == NEWLINE) {
-    m_pos.m_lineNumber++;
-    m_pos.m_column = 0;
+    m_pos.incrLineNumber();
   } else {
-    m_pos.m_column++;
+    m_pos.incrColumn();
   }
 
   return *m_nextChar++;
@@ -160,7 +159,6 @@ int Scanner::flushBuf() { // protected
   if(m_termchar) {
     unTerminateLexeme();
   }
-
   return flush(true);
 }
 
@@ -169,8 +167,7 @@ int Scanner::flushBuf() { // protected
 // Flush the input buffer. Do nothing if the current input TCHAR isn't
 // in the SCANNERDANGER zone, otherwise move all unread characters to the left end
 // of the buffer and fill the remainder of the buffer. Note that input()
-// flushes the buffer willy-nilly if you read past the end of buffer.
-// Similarly, input_line() flushes the buffer at the beginning of each line.
+// flushes the buffer om the fly if you read past the end of buffer.
 //
 //                                 pMark    SCANNERDANGER
 //                                  |          |
@@ -196,7 +193,7 @@ int Scanner::flush(bool force) { // protected
     return 0;
   }
 
-  if(m_eofRead) {            // nothing more to read
+  if(m_eofRead) {                     // nothing more to read
     return 1;
   }
 
@@ -204,12 +201,12 @@ int Scanner::flush(bool force) { // protected
     _TUCHAR *leftEdge = m_previousMark ? min(m_startMark, m_previousMark) : m_startMark;
     intptr_t shiftAmount = leftEdge - m_inputBuffer ;
 
-    if(shiftAmount < SCANNERMAXLEX) {               // if(not enough room)
+    if(shiftAmount < SCANNERMAXLEX) { // if(not enough space)
       if(!force) {
         return -1;
       }
 
-      leftEdge = markStart();  // Reset start to current TCHAR
+      leftEdge = markStart();         // Reset start to current TCHAR
       markPrevious();
 
       shiftAmount = leftEdge - m_inputBuffer ;
@@ -219,7 +216,7 @@ int Scanner::flush(bool force) { // protected
     MEMMOVE(m_inputBuffer, leftEdge, copyAmount);
 
     if(!fillBuf(m_inputBuffer + copyAmount)) {
-      throwException(_T("Scanner::flush():INTERNAL ERROR: Buffer full, can't read."));
+      throwException(_T("%s:INTERNAL ERROR: Buffer full, can't read"), __TFUNCTION__);
     }
 
     if(m_previousMark) {
@@ -269,37 +266,31 @@ void Scanner::less(int count) { // protected
 }
 
 // search backwards for the the first '\n'
-static unsigned short findColumn(const TCHAR *s, const TCHAR *first) {
-  UINT count;
-  for(count = 0; s >= first && *s != NEWLINE; s--) {
-    count++;
-  }
-  return count - 1;
+static int findColumn(const TCHAR *s, const TCHAR *first) {
+  int count;
+  for(count = 0; (s >= first) && (*(s--) != NEWLINE); count++);
+  return max(count-1,0);
 }
 
-// Push count characters back into the input. You can't push past the current
-// startMark. You can, however, push back characters after end of file has been encountered.
 bool Scanner::pushback(int count) {  // protected
-  bool lineChanged = false;
-
+  int line = m_pos.getLineNumber();
+  int col  = m_pos.getColumn();
   while(--count >= 0 && m_nextChar > m_startMark) {
     if(*--m_nextChar == NEWLINE || !*m_nextChar) {
-      m_pos.m_lineNumber--;
-      lineChanged = true;
+      line--;
     } else {
-      m_pos.m_column--;
+      col--;
     }
   }
 
-  if(lineChanged) {
-    m_pos.m_column = findColumn((TCHAR*)m_nextChar,(TCHAR*)m_startMark);
+  if(line != m_pos.getLineNumber()) {
+    col = findColumn(m_nextChar,m_startMark);
   }
-
+  m_pos.setLocation(line,col);
   if(m_nextChar < m_endMark) {
     m_endMark = m_nextChar;
     m_markPos = m_pos;
   }
-
   return m_nextChar > m_startMark;
 }
 
@@ -353,7 +344,8 @@ intptr_t Scanner::fillBuf(_TUCHAR *start) { // private
   }
 
   if(need < 0) {
-    throwException(_T("Scanner::fillBuf():INTERNAL ERROR: Bad starting address. need=%d, start=%p, end=%p"), need, start, end());
+    throwException(_T("%s:INTERNAL ERROR: Bad starting address. need=%d, start=%p, end=%p")
+                  ,__TFUNCTION__, need, start, end());
   }
 
   intptr_t got; // Number of bytes actually read.
@@ -372,8 +364,8 @@ intptr_t Scanner::fillBuf(_TUCHAR *start) { // private
       *(m_endBuf++) = NEWLINE;
       got++;
     } else if(got == 0) {
-      got = 1; // to catch the extreme case where the inputstream is empty
-               // the buffer is initialized to \n, so there is always 1 TCHAR
+      got = 1; // to handle the extreme case where the inputstream is empty
+               // the buffer is initialized to '\n', so there is always 1 TCHAR
     }
     m_eofRead = true; // At end of file
   }
@@ -382,26 +374,26 @@ intptr_t Scanner::fillBuf(_TUCHAR *start) { // private
 
 void Scanner::error(const SourcePosition &pos, const TCHAR *format, ...) {
   va_list argptr;
-  va_start(argptr,format);
-  verror(pos,format,argptr);
+  va_start(argptr, format);
+  verror(pos,format, argptr);
   va_end(argptr);
 }
 
 void Scanner::verror(const SourcePosition &pos, const TCHAR *format, va_list argptr) {
   _tprintf(_T("error in line %d:"),pos.getLineNumber());
-  _vtprintf(format,argptr);
+  _vtprintf(format, argptr);
   _tprintf(_T("\n")); // we default append a newline.
 }
 
 void Scanner::debug(const TCHAR *format,...) {
   va_list argptr;
-  va_start(argptr,format);
-  vdebug(format,argptr);
+  va_start(argptr, format);
+  vdebug(format, argptr);
   va_end(argptr);
 }
 
 void Scanner::vdebug(const TCHAR *format, va_list argptr) {
-  _vtprintf(format,argptr);
+  _vtprintf(format, argptr);
   _tprintf(_T("\n"));
 }
 
@@ -420,14 +412,13 @@ SourcePosition Scanner::getPos() const {
   if(length <= m_pos.getColumn()) {
     return SourcePosition(m_pos.getFileName(),m_pos.getLineNumber(),m_pos.getColumn() - length);
   } else { // we have one or more newlines in the lexeme
-    SourcePosition p(m_pos);
+    int line = m_pos.getLineNumber();
     const TCHAR *s;
     for(s = (const TCHAR*)getText() + length; length > 0; s--, length--) {
       if(*s == NEWLINE) {
-        p.m_lineNumber--;
+        line--;
       }
     }
-    p.m_column = findColumn(s,(TCHAR*)m_inputBuffer);
-    return p;
+    return SourcePosition(m_pos.getFileName(), line, findColumn(s,m_inputBuffer));
   }
 }
