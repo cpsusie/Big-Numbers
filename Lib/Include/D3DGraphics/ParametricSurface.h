@@ -5,15 +5,17 @@
 
 class ParametricSurfaceParameters : public PersistentData {
 public:
-  String         m_exprX, m_exprY, m_exprZ;
+  String         m_commonText, m_exprX, m_exprY, m_exprZ;
   DoubleInterval m_tInterval;
   DoubleInterval m_sInterval;
   UINT           m_tStepCount;
   UINT           m_sStepCount;
   DoubleInterval m_timeInterval;
-  UINT           m_frameCount;   // number of frames (meshes) that will be generated
+  // number of frames (meshes) that will be generated
+  UINT           m_frameCount;
   bool           m_machineCode;
-  bool           m_includeTime; // if true, an animation will be generated
+  // if true, an animation will be generated
+  bool           m_includeTime;
   bool           m_doubleSided;
 
   ParametricSurfaceParameters();

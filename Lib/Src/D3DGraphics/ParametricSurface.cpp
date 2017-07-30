@@ -16,6 +16,7 @@ ParametricSurfaceParameters::ParametricSurfaceParameters() {
 
 void ParametricSurfaceParameters::putDataToDoc(XMLDoc &doc) {
   XMLNodePtr root = doc.createRoot(_T("ParametricSurface"));
+  doc.setValue(  root, _T("common"            ), m_commonText      );
   doc.setValue(  root, _T("exprx"             ), m_exprX           );
   doc.setValue(  root, _T("expry"             ), m_exprY           );
   doc.setValue(  root, _T("exprz"             ), m_exprZ           );
@@ -35,6 +36,11 @@ void ParametricSurfaceParameters::putDataToDoc(XMLDoc &doc) {
 void ParametricSurfaceParameters::getDataFromDoc(XMLDoc &doc) {
   XMLNodePtr root = doc.getRoot();
   checkTag(root, _T("ParametricSurface"));
+  if(doc.findChild(root, _T("common")) != NULL) {
+    doc.getValueLF(root, _T("common"), m_commonText);
+  } else {
+    m_commonText = EMPTYSTRING;
+  }
   doc.getValueLF(root, _T("exprx"             ), m_exprX           );
   doc.getValueLF(root, _T("expry"             ), m_exprY           );
   doc.getValueLF(root, _T("exprz"             ), m_exprZ           );

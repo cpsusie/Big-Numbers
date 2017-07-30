@@ -1,5 +1,4 @@
-<ParametricSurface><exprx>a = s*cos(2*pi*t);
-a</exprx><expry>b = 2*s*sin(2*pi*t);
-b</expry><exprz>a = s*cos(2*pi*t);
-b = 2*s*sin(2*pi*t);
-a * b/5</exprz><tinterval><from>0.000000000000000e+00</from><to>1.000000000000000e+00</to></tinterval><sinterval><from>0.000000000000000e+00</from><to>3.000000000000000e+00</to></sinterval><tstepcount>40</tstepcount><sstepcount>30</sstepcount><machinecode>1</machinecode><doublesided>1</doublesided><includetime>0</includetime></ParametricSurface>
+<ParametricSurface><common>t2pi = 2*pi*t;
+a = s*cos(t2pi);
+b = 2*s*sin(t2pi);
+</common><exprx>a</exprx><expry>b</expry><exprz>a * b/5</exprz><tinterval><from>0.000000000000000e+00</from><to>1.000000000000000e+00</to></tinterval><sinterval><from>0.000000000000000e+00</from><to>3.000000000000000e+00</to></sinterval><tstepcount>40</tstepcount><sstepcount>30</sstepcount><machinecode>1</machinecode><doublesided>1</doublesided><includetime>0</includetime></ParametricSurface>

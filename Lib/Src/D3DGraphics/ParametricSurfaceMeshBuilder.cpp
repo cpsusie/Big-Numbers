@@ -41,9 +41,9 @@ public:
 };
 
 ExprParametricSurface::ExprParametricSurface(const ParametricSurfaceParameters &param)
-: m_exprX(param.m_exprX, param.m_machineCode)
-, m_exprY(param.m_exprY, param.m_machineCode)
-, m_exprZ(param.m_exprZ, param.m_machineCode)
+: m_exprX(param.m_commonText+param.m_exprX, param.m_machineCode)
+, m_exprY(param.m_commonText+param.m_exprY, param.m_machineCode)
+, m_exprZ(param.m_commonText+param.m_exprZ, param.m_machineCode)
 {
   m_tXp    = m_exprX.getVariableByName(_T("t"   ));
   m_sXp    = m_exprX.getVariableByName(_T("s"   ));

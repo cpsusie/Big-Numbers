@@ -14,23 +14,24 @@ CParametricSurfaceDlg::~CParametricSurfaceDlg() {
 
 void CParametricSurfaceDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
-  DDX_Text(pDX, IDC_EDIT_EXPRX, m_exprX);
-  DDX_Text(pDX, IDC_EDIT_EXPRY, m_exprY);
-  DDX_Text(pDX, IDC_EDIT_EXPRZ, m_exprZ);
-  DDX_Text(pDX, IDC_EDIT_TFROM, m_tfrom);
-  DDX_Text(pDX, IDC_EDIT_TTO, m_tto);
-  DDX_Text(pDX, IDC_EDIT_SFROM, m_sfrom);
-  DDX_Text(pDX, IDC_EDIT_STO, m_sto);
+  DDX_Text(pDX, IDC_EDITCOMMON        , m_commonText );
+  DDX_Text(pDX, IDC_EDIT_EXPRX        , m_exprX      );
+  DDX_Text(pDX, IDC_EDIT_EXPRY        , m_exprY      );
+  DDX_Text(pDX, IDC_EDIT_EXPRZ        , m_exprZ      );
+  DDX_Text(pDX, IDC_EDIT_TFROM        , m_tfrom      );
+  DDX_Text(pDX, IDC_EDIT_TTO          , m_tto        );
+  DDX_Text(pDX, IDC_EDIT_SFROM        , m_sfrom      );
+  DDX_Text(pDX, IDC_EDIT_STO          , m_sto        );
   DDX_Check(pDX, IDC_CHECK_INCLUDETIME, m_includeTime);
   DDX_Check(pDX, IDC_CHECK_DOUBLESIDED, m_doubleSided);
-  DDX_Text(pDX, IDC_EDIT_TIMEFROM, m_timeFrom);
-  DDX_Text(pDX, IDC_EDIT_TIMETO, m_timeTo);
-  DDX_Text(pDX, IDC_EDIT_TSTEPCOUNT, m_tStepCount);
-  DDV_MinMaxUInt(pDX, m_tStepCount, 1, 200);
-  DDX_Text(pDX, IDC_EDIT_SSTEPCOUNT, m_sStepCount);
-  DDV_MinMaxUInt(pDX, m_sStepCount, 1, 200);
-  DDX_Text(pDX, IDC_EDIT_FRAMECOUNT, m_frameCount);
-  DDV_MinMaxUInt(pDX, m_frameCount, 1, 300);
+  DDX_Text(pDX, IDC_EDIT_TIMEFROM     , m_timeFrom   );
+  DDX_Text(pDX, IDC_EDIT_TIMETO       , m_timeTo     );
+  DDX_Text(pDX, IDC_EDIT_TSTEPCOUNT   , m_tStepCount );
+  DDV_MinMaxUInt(pDX, m_tStepCount    , 1, 200       );
+  DDX_Text(pDX, IDC_EDIT_SSTEPCOUNT   , m_sStepCount );
+  DDV_MinMaxUInt(pDX, m_sStepCount    , 1, 200       );
+  DDX_Text(pDX, IDC_EDIT_FRAMECOUNT   , m_frameCount );
+  DDV_MinMaxUInt(pDX, m_frameCount    , 1, 300       );
   DDX_Check(pDX, IDC_CHECK_MACHINECODE, m_machineCode);
 }
 
@@ -40,6 +41,7 @@ BEGIN_MESSAGE_MAP(CParametricSurfaceDlg, CDialog)
     ON_COMMAND(ID_FILE_SAVE                  , OnFileSave                       )
     ON_COMMAND(ID_FILE_SAVE_AS               , OnFileSaveAs                     )
     ON_COMMAND(ID_EDIT_FINDMATCHINGPARENTESIS, OnEditFindMatchingParentesis     )
+    ON_COMMAND(ID_GOTO_COMMON                , OnGotoCommon                     )
     ON_COMMAND(ID_GOTO_EXPRX                 , OnGotoExprX                      )
     ON_COMMAND(ID_GOTO_EXPRY                 , OnGotoExprY                      )
     ON_COMMAND(ID_GOTO_EXPRZ                 , OnGotoExprZ                      )
@@ -47,7 +49,6 @@ BEGIN_MESSAGE_MAP(CParametricSurfaceDlg, CDialog)
     ON_COMMAND(ID_GOTO_SINTERVAL             , OnGotoSInterval                  )
     ON_COMMAND(ID_GOTO_TSTEPCOUNT            , OnGotoTStepCount                 )
     ON_COMMAND(ID_GOTO_SSTEPCOUNT            , OnGotoSStepCount                 )
-
     ON_COMMAND(ID_GOTO_TIMEINTERVAL          , OnGotoTimeInterval               )
     ON_COMMAND(ID_GOTO_FRAMECOUNT            , OnGotoFrameCount                 )
     ON_BN_CLICKED(IDC_BUTTON_HELPX           , OnButtonHelpX                    )
@@ -63,10 +64,13 @@ BOOL CParametricSurfaceDlg::OnInitDialog() {
   createExprHelpButton(IDC_BUTTON_HELPX, IDC_EDIT_EXPRX);
   createExprHelpButton(IDC_BUTTON_HELPY, IDC_EDIT_EXPRY);
   createExprHelpButton(IDC_BUTTON_HELPZ, IDC_EDIT_EXPRZ);
-
+  setCommonExprFieldId(IDC_EDITCOMMON);
   m_layoutManager.OnInitDialog(this);
+  m_layoutManager.addControl(IDC_STATICCOMMON        , PCT_RELATIVE_Y_CENTER);
+  m_layoutManager.addControl(IDC_EDITCOMMON          , PCT_RELATIVE_BOTTOM | RELATIVE_WIDTH);
   m_layoutManager.addControl(IDC_STATIC_FUNCTIONX    , PCT_RELATIVE_Y_CENTER);
-  m_layoutManager.addControl(IDC_EDIT_EXPRX          , PCT_RELATIVE_BOTTOM | RELATIVE_WIDTH);
+  m_layoutManager.addControl(IDC_BUTTON_HELPX        , PCT_RELATIVE_Y_CENTER);
+  m_layoutManager.addControl(IDC_EDIT_EXPRX          , PCT_RELATIVE_TOP    | PCT_RELATIVE_BOTTOM | RELATIVE_WIDTH);
   m_layoutManager.addControl(IDC_STATIC_FUNCTIONY    , PCT_RELATIVE_Y_CENTER);
   m_layoutManager.addControl(IDC_BUTTON_HELPY        , PCT_RELATIVE_Y_CENTER);
   m_layoutManager.addControl(IDC_EDIT_EXPRY          , PCT_RELATIVE_TOP    | PCT_RELATIVE_BOTTOM | RELATIVE_WIDTH);
@@ -152,6 +156,9 @@ void CParametricSurfaceDlg::OnEditFindMatchingParentesis() {
   gotoMatchingParentesis();
 }
 
+void CParametricSurfaceDlg::OnGotoCommon() {
+  gotoExpr(IDC_EDITCOMMON);
+}
 void CParametricSurfaceDlg::OnGotoExprX() {
   gotoExprX();
 }
@@ -193,6 +200,7 @@ void CParametricSurfaceDlg::OnButtonHelpZ() {
 }
 
 void CParametricSurfaceDlg::paramToWin(const ParametricSurfaceParameters &param) {
+  m_commonText    = param.m_commonText.cstr();
   m_exprX         = param.m_exprX.cstr();
   m_exprY         = param.m_exprY.cstr();
   m_exprZ         = param.m_exprZ.cstr();
@@ -215,6 +223,7 @@ void CParametricSurfaceDlg::paramToWin(const ParametricSurfaceParameters &param)
 }
 
 void CParametricSurfaceDlg::winToParam(ParametricSurfaceParameters &param) const {
+  param.m_commonText  = m_commonText;
   param.m_exprX       = m_exprX;
   param.m_exprY       = m_exprY;
   param.m_exprZ       = m_exprZ;

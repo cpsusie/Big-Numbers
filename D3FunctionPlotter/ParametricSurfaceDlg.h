@@ -5,6 +5,7 @@
 
 class CParametricSurfaceDlg : public SaveLoadExprDialog<ParametricSurfaceParameters> {
 private:
+  CString m_commonText;
   CString m_exprX;
   CString m_exprY;
   CString m_exprZ;
@@ -47,6 +48,7 @@ protected:
     virtual void DoDataExchange(CDataExchange *pDX);
     afx_msg BOOL OnInitDialog();
     afx_msg void OnEditFindMatchingParentesis();
+    afx_msg void OnGotoCommon();
     afx_msg void OnGotoExprX();
     afx_msg void OnGotoExprY();
     afx_msg void OnGotoExprZ();
