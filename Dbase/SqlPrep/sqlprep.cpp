@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include <ctype.h>
 #include <time.h>
-#include <comdef.h>
-#include <atlconv.h>
 
 class HostVarIndex {
 public:
@@ -146,7 +144,6 @@ Parser::Parser(const String &fname) : CollectScanner(fname, SQLAPI_MAXSTMTSIZE )
   m_dumpStatements   = false;
   m_dumpbnd          = false;
   m_genLineMarks     = true;
-  m_listfile         = NULL;
   m_bndfile          = NULL;
 
   String bndFileName = FileNameSplitter(fname).setExtension(_T("bnd")).getFullPath();
@@ -160,9 +157,12 @@ Parser::Parser(const String &fname) : CollectScanner(fname, SQLAPI_MAXSTMTSIZE )
   }
 
   if(allok()) {
-    m_listfile = fopen(cppFileName, _T("w"));
-    if(m_listfile == NULL)
-      error(SQL_FILE_OPEN_ERROR,_T("Cannot open %s\n"),cppFileName.cstr());
+    try {
+      m_listfile.open(cppFileName);
+      m_listfile.setTrimRight(true);
+    } catch(Exception e) {
+      error(SQL_FILE_OPEN_ERROR,_T("%s:%s\n"),e.what(), cppFileName.cstr());
+    }
     m_bndfile  = fopen(bndFileName, _T("wb"));
     if(m_bndfile == NULL) {
       error(SQL_FILE_OPEN_ERROR,_T("Cannot open %s\n"),bndFileName.cstr());
@@ -176,9 +176,7 @@ Parser::Parser(const String &fname) : CollectScanner(fname, SQLAPI_MAXSTMTSIZE )
 }
 
 Parser::~Parser() {
-  if(m_listfile != NULL) {
-    fclose(m_listfile);
-  }
+  m_listfile.close();
 
   if(m_bndfile != NULL) {
     Packer p;
@@ -292,8 +290,7 @@ DynamicStatement *Parser::findDynStatement(TCHAR *name) {
 void Parser::emit(TCHAR *format,...) {
   va_list argptr;
   va_start(argptr,format);
-  _vftprintf(m_listfile,format,argptr);
-  fflush(m_listfile);
+  vfprintf(&m_listfile,format,argptr);
   va_end(argptr);
 }
 

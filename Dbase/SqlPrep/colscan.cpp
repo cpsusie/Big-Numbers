@@ -36,7 +36,7 @@ int CollectScanner::getUntilLastSym(TCHAR *dst, bool inc_space) {
 void CollectScanner::flushUntilLastSym(bool inc_space) {
   int n = inc_space ? collect_lastsym_inc_space : collect_lastsym;
   while(collect_head != n) {
-    fputc(collect_buffer[collect_head],m_listfile);
+    fputc(collect_buffer[collect_head],&m_listfile);
     incmod(collect_head);
     collect_count--;
   }
@@ -44,7 +44,7 @@ void CollectScanner::flushUntilLastSym(bool inc_space) {
 
 void CollectScanner::flushLastSym() {
   while(collect_lastsym != collect_tail) {
-    fputc(collect_buffer[collect_lastsym],m_listfile);
+    fputc(collect_buffer[collect_lastsym],&m_listfile);
     incmod(collect_lastsym);
   }
 }

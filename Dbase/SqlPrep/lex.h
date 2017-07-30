@@ -1,5 +1,7 @@
 #pragma once
 
+#include <MarginFile.h>
+
 typedef enum {
   SYM_BEGIN
  ,SYM_CHAR
@@ -108,7 +110,8 @@ public:
   bool   m_lex_trace;
   bool   m_traceon;
   bool   m_traceinput;
-  FILE  *m_listfile,*m_errorfile;
+  MarginFile m_listfile;
+  FILE  *m_errorfile;
 
   Scanner( const String &fname );
   virtual ~Scanner();

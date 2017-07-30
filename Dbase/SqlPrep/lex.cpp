@@ -15,7 +15,6 @@ Scanner::Scanner(const String &fname) {
   m_traceon        = false;
   m_traceinput     = false;
   m_errorfile      = stdout;
-  m_listfile       = stdout;
   memset(m_line,0,sizeof(m_line));
   m_next           = m_line;
 
@@ -29,8 +28,9 @@ Scanner::Scanner(const String &fname) {
 }
 
 Scanner::~Scanner() {
-  if(m_input != NULL)
+  if(m_input != NULL) {
     fclose(m_input);
+  }
 }
 
 void Scanner::readLine() {
