@@ -11,8 +11,8 @@ void ParametricGraph::calculate() {
   const ParametricGraphParameters &param = (ParametricGraphParameters&)getParam();
   Expression exprX(param.m_trigonometricMode);
   Expression exprY(param.m_trigonometricMode);
-  exprX.compile(param.m_exprX, true);
-  exprY.compile(param.m_exprY, true);
+  exprX.compile(param.m_commonText + param.m_exprX, true);
+  exprY.compile(param.m_commonText + param.m_exprY, true);
 //  m_image = expressionToImage(theApp.m_device, expr, 18);
   Real                      dummyT;
   const ExpressionVariable *tvp       = exprX.getVariable(_T("t"));

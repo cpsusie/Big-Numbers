@@ -6,7 +6,7 @@
 
 class ParametricGraphParameters : public GraphParameters {
 public:
-  String            m_exprX, m_exprY;
+  String            m_commonText, m_exprX, m_exprY;
   DoubleInterval    m_interval;
   UINT              m_steps;
   TrigonometricMode m_trigonometricMode;

@@ -1,1 +1,1 @@
-<ParametricCurve><exprx>cos(t)*4</exprx><expry>sin(t)*4</expry><interval><from>0.000000000000000e+00</from><to>6.290000000000000e+00</to></interval><steps>500</steps><trigo>radians</trigo><style>curve</style><color>00d67f29</color><rollsize>0</rollsize></ParametricCurve>
+<ParametricCurve><common>r = 4;</common><exprx>r*cos(t)</exprx><expry>r*sin(t)</expry><interval><from>0.000000000000000e+00</from><to>6.290000000000000e+00</to></interval><steps>500</steps><trigo>radians</trigo><style>curve</style><color>00d67f29</color><rollsize>0</rollsize></ParametricCurve>

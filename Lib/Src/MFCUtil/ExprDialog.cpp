@@ -19,26 +19,6 @@ void CExprDialog::setExprFont(int id) {
   getExprField(id)->SetFont(&m_exprFont, FALSE);
 }
 
-void CExprDialog::gotoMatchingParentesis() {
-  const int id = getFocusCtrlId(this);
-  CEdit *e = getExprField(id);
-  int cursorPos, endChar;
-  e->GetSel(cursorPos,endChar);
-  const String expr = getExprString(id);
-  int m = findMatchingpParanthes(expr.cstr(), cursorPos);
-  if(m >= 0) {
-    e->SetSel(m, m);
-  }
-}
-
-String CExprDialog::getExprString(int id) {
-  return getWindowText(this, id);
-}
-
-CEdit *CExprDialog::getExprField(int id) {
-  return (CEdit*)GetDlgItem(id);
-}
-
 bool CExprDialog::validateAllExpr() {
   for (Iterator<int> it = m_helpButtonMap.values().getIterator(); it.hasNext();) {
     if(!validateExpr(it.next())) {
@@ -91,10 +71,17 @@ bool CExprDialog::validateMinMax(int id, double min, double max) {
 
 void CExprDialog::showExprError(const String &msg, int id) {
   try {
-    String errorMsg = msg;
-    const int charIndex = ParserTree::decodeErrorString(getExprString(id), errorMsg);
-    gotoExpr(id);
-    getExprField(id)->SetSel(charIndex, charIndex);
+    String    errorMsg  = msg;
+    int       charIndex = ParserTree::decodeErrorString(getExprString(id), errorMsg);
+    const int prefixLen = (int)getCommonExprString().length();
+    if(charIndex < prefixLen) {
+      gotoExpr(getCommonExprFieldId());
+      getExprField(getCommonExprFieldId())->SetSel(charIndex, charIndex);
+    } else {
+      gotoExpr(id);
+      charIndex -= prefixLen;
+      getExprField(id)->SetSel(charIndex, charIndex);
+    }
     Message(_T("%s"), errorMsg.cstr());
   } catch(Exception) { // ignore Exception, and just show msg
     gotoExpr(id);

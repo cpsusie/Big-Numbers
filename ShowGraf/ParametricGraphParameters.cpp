@@ -11,6 +11,7 @@ ParametricGraphParameters::ParametricGraphParameters(const String &name, COLORRE
 
 void ParametricGraphParameters::putDataToDoc(XMLDoc &doc) {
   XMLNodePtr root = doc.createRoot(_T("ParametricCurve"));
+  doc.setValue( root, _T("common"    ), m_commonText       );
   doc.setValue( root, _T("exprx"     ), m_exprX            );
   doc.setValue( root, _T("expry"     ), m_exprY            );
   setValue(doc, root, _T("interval"  ), m_interval         );
@@ -22,6 +23,11 @@ void ParametricGraphParameters::putDataToDoc(XMLDoc &doc) {
 void ParametricGraphParameters::getDataFromDoc(XMLDoc &doc) {
   XMLNodePtr root = doc.getRoot();
   checkTag(root, _T("ParametricCurve"));
+  if(doc.findChild(root, _T("common")) != NULL) {
+    doc.getValueLF(root, _T("common"), m_commonText);
+  } else {
+    m_commonText = EMPTYSTRING;
+  }
   doc.getValue( root, _T("exprx"     ), m_exprX            );
   doc.getValue( root, _T("expry"     ), m_exprY            );
   getValue(doc, root, _T("interval"  ), m_interval         );

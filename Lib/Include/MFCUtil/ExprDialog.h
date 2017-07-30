@@ -11,6 +11,8 @@ private:
   int                    m_helpButtonCount;
   OBMButton              m_helpButton[MAXHELPBUTTONS];
   CFont                  m_exprFont;
+  // if >= 0, fieldId of CEdit that will be prefixed to all expressions in dialog
+  int                    m_commonExprId;
   IntHashMap<int>        m_helpButtonMap;
   int                    m_selectedExprId;
   void createExprFont();
@@ -27,6 +29,7 @@ protected:
 
   CExprDialog(int resId, CWnd *pParent) : CDialog(resId, pParent) {
     m_helpButtonCount = 0;
+    m_commonExprId    = -1;
   }
   void createExprHelpButton(int buttonId, int exprEditId);
   void handleExprHelpButtonClick(int buttonId);
@@ -34,10 +37,29 @@ protected:
     GetDlgItem(id)->SetFocus();
   }
 
-  CEdit *getExprField( int id);
-  String getExprString(int id);
+  inline void   setCommonExprFieldId(int id) {
+    m_commonExprId = id;
+    if(id >= 0) setExprFont(id);
 
-  void gotoMatchingParentesis();
+  }
+  inline int    getCommonExprFieldId() const {
+    return m_commonExprId;
+  }
+  inline bool   hasCommonExprField() const {
+    return m_commonExprId >= 0;
+  }
+  inline String getCommonExprString() const {
+    return hasCommonExprField() ? getWindowText(this, getCommonExprFieldId()) : EMPTYSTRING;
+  }
+  inline CEdit *getExprField(int id) {
+    return (CEdit*)GetDlgItem(id);
+  }
+  inline String getExprString(int id) const {
+    return getCommonExprString() + getWindowText(this, id);
+  }
+  inline void gotoMatchingParentesis() {
+    ::gotoMatchingParanthes(this, getFocusCtrlId(this));
+  }
 
   bool validateAllExpr();
   bool validateExpr(int id);

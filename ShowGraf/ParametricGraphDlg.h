@@ -6,6 +6,7 @@
 class CParametricGraphDlg : public SaveLoadExprDialog<ParametricGraphParameters> {
 private:
   CString  m_style;
+  CString  m_commonText;
   CString  m_exprX;
   CString  m_exprY;
   double   m_tFrom;
@@ -33,6 +34,7 @@ protected:
     virtual void DoDataExchange(CDataExchange *pDX);
     virtual BOOL OnInitDialog();
     afx_msg void OnGotoStyle();
+    afx_msg void OnGotoCommon();
     afx_msg void OnGotoExprX();
     afx_msg void OnGotoExprY();
     afx_msg void OnGotoTInterval();
