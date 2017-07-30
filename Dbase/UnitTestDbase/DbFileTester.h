@@ -2,7 +2,7 @@
 
 #include <Random.h>
 
-class RandomData : public Random {
+class RandomData : public JavaRandom {
 public:
   String    nextString(int maxLen);
   char      nextChar();
