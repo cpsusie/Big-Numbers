@@ -76,7 +76,7 @@
     ,NAME              =  72
     ,ELSE              =  73
   } CppInputSymbol;
-	
+
   typedef enum {
   } CppNonTerminal;
 

@@ -1,0 +1,95 @@
+State 0:
+ (  0)K start           -> .S[EOI]
+ (  1)  S               -> .a A d[EOI]
+ (  2)  S               -> .a B c[EOI]
+ (  3)  S               -> .b A c[EOI]
+ (  4)  S               -> .b B d[EOI]
+
+   shift to 2 on a
+   shift to 3 on b
+   goto 1 on S
+
+State 1:
+ (  0)K start           -> S .[EOI]
+
+   accept on EOI
+
+State 2:
+ (  1)K S               -> a .A d[EOI]
+ (  2)K S               -> a .B c[EOI]
+ (  5)  A               -> .f[d]
+ (  6)  B               -> .f[c]
+
+   shift to 6 on f
+   goto 4 on A
+   goto 5 on B
+
+State 3:
+ (  3)K S               -> b .A c[EOI]
+ (  4)K S               -> b .B d[EOI]
+ (  5)  A               -> .f[c]
+ (  6)  B               -> .f[d]
+
+   shift to 6 on f
+   goto 7 on A
+   goto 8 on B
+
+State 4:
+ (  1)K S               -> a A .d[EOI]
+
+   shift to 9 on d
+
+State 5:
+ (  2)K S               -> a B .c[EOI]
+
+   shift to 10 on c
+
+State 6:
+ (  5)K A               -> f .[c d]
+ (  6)K B               -> f .[c d]
+
+   reduce by 5 on c
+   reduce by 5 on d
+
+warning --- Reduce/reduce conflict on [c d] between prod 5 and prod 6. Choose prod 5.
+State 7:
+ (  3)K S               -> b A .c[EOI]
+
+   shift to 11 on c
+
+State 8:
+ (  4)K S               -> b B .d[EOI]
+
+   shift to 12 on d
+
+State 9:
+ (  1)K S               -> a A d .[EOI]
+
+   reduce by 1 on EOI
+
+State 10:
+ (  2)K S               -> a B c .[EOI]
+
+   reduce by 2 on EOI
+
+State 11:
+ (  3)K S               -> b A c .[EOI]
+
+   reduce by 3 on EOI
+
+State 12:
+ (  4)K S               -> b B d .[EOI]
+
+   reduce by 4 on EOI
+
+
+   6	terminals
+   4	nonterminals
+   7	productions
+  13	LALR(1) states
+  24	items
+ 496	bytes required for parsertables
+
+   0	shift/reduce  conflicts
+   0	reduce/reduce conflicts
+   1	warnings
