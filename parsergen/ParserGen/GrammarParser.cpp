@@ -198,7 +198,7 @@ void GrammarParser::parseRightSide(int leftSide) {
   }
 
   if(m_token == LCURL) {
-    SourcePosition sourcePos = m_lex.getSourcePos();
+    const SourcePosition sourcePos = m_lex.getSourcePos();
     CompactShortArray usedDollar;
     m_actionBody = EMPTYSTRING;
     m_lex.collectBegin();
@@ -213,7 +213,7 @@ void GrammarParser::parseRightSide(int leftSide) {
     SourceText tmp;
     m_lex.getCollected(tmp);
     prod.m_actionBody.m_sourceText = trim(m_actionBody + tmp.m_sourceText);
-    prod.m_actionBody.m_pos        = sourcePos;
+    prod.m_actionBody.m_pos        = SourcePositionWithName(m_lex.getAbsoluteFileName(), sourcePos);
 /*
     printf("body:<%s> at line %d\n",
       prod.m_actionBody.m_sourceText.cstr(),

@@ -126,7 +126,7 @@ bool LRparser::recover() {
 }
 
 SourcePosition LRparser::getPos() const {
-  return SourcePosition(m_pos.getFileName(),m_pos.getLineNumber(),m_pos.getColumn()-m_textLength);
+  return SourcePosition(m_pos.getLineNumber(),m_pos.getColumn()-m_textLength);
 }
 
 const SourcePosition &LRparser::getPos(int i) const {

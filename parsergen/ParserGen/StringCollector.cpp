@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-void StringCollector::begin(TCHAR *str, int length, const SourcePosition &startPos) {
+void StringCollector::begin(TCHAR *str, int length, const SourcePositionWithName &startPos) {
   const TCHAR save  = str[length];
   str[length]       = '\0';
   ((String&)*this)  = str;

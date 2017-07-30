@@ -64,7 +64,7 @@ void TablesWriter::handleKeyword(TemplateWriter &writer, String &line) const {
   }
   m_dfa.printTables(writer.getOutput());
   if(m_lineDirectives) {
-    writeLineDirective(writer.getOutput(), writer.getPos().getFileName(), writer.getPos().getLineNumber()+1);
+    writeLineDirective(writer.getOutput(), writer.getPos().getName(), writer.getPos().getLineNumber()+1);
   }
 }
 

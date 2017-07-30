@@ -4,10 +4,10 @@
 
 class SourceText {
 public:
-  SourcePosition m_pos;
-  String         m_sourceText;
+  SourcePositionWithName m_pos;
+  String                 m_sourceText;
   // -1 indicates that text is empty
-  SourceText() : m_pos(-1, 0) {
+  SourceText() : m_pos(EMPTYSTRING, -1, 0) {
   }
   bool isDefined() const {
     return m_pos.getLineNumber() != -1;
@@ -16,9 +16,9 @@ public:
 
 class StringCollector : public String {
 private:
-  SourcePosition m_startPos;
+  SourcePositionWithName m_startPos;
 public:
-  void begin(TCHAR *str, int length, const SourcePosition &startPos);
+  void begin(TCHAR *str, int length, const SourcePositionWithName &startPos);
   inline void init() {
     ((String&)*this) = EMPTYSTRING;
   }
@@ -27,7 +27,7 @@ public:
     return cstr();
   }
   SourceText getSourceText(int lastSymbolLength);
-  inline const SourcePosition &getSourcePos() const {
+  inline const SourcePositionWithName &getSourcePos() const {
     return m_startPos;
   }
 };

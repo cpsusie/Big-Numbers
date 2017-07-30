@@ -39,12 +39,13 @@ private:
   StringCollector m_collector;
   bool            m_collecting;
   String          m_fileName;
-  TCHAR          *m_next;
+  String          m_absoluteFileName;
   SourcePosition  m_sourcePos;
   SourcePosition  m_currentPos;
   bool            m_debug;
   bool            m_ok;
   int             m_length;
+  TCHAR          *m_next;
   TCHAR          *m_text;
   FILE           *m_input;
   double          m_number;
@@ -74,6 +75,9 @@ public:
   }
   SourcePosition getSourcePos() const {
     return m_sourcePos;
+  }
+  const String &getAbsoluteFileName() const {
+    return m_absoluteFileName;
   }
   void error(TCHAR *format, ...);
   void error(const SourcePosition &pos, TCHAR *format, ...);

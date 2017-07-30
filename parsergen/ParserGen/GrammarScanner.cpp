@@ -3,15 +3,16 @@
 #include "GrammarScanner.h"
 
 GrammarScanner::GrammarScanner(const String &fileName, int tabulatorSize) {
-  m_fileName      = fileName;
-  m_input         = FOPEN(m_fileName, _T("r"));
-  m_currentPos    = SourcePosition(FileNameSplitter(fileName).getAbsolutePath(), 0, 0);
-  m_text          = m_lineBuffer;
-  m_length        = 0;
-  m_collecting    = false;
-  m_debug         = false;
-  m_ok            = true;
-  m_tabulatorSize = tabulatorSize;
+  m_fileName         = fileName;
+  m_absoluteFileName = FileNameSplitter(fileName).getAbsolutePath();
+  m_input            = FOPEN(m_fileName, _T("r"));
+  m_currentPos       = SourcePosition(0, 0);
+  m_text             = m_lineBuffer;
+  m_length           = 0;
+  m_collecting       = false;
+  m_debug            = false;
+  m_ok               = true;
+  m_tabulatorSize    = tabulatorSize;
   nextLine();
 }
 
@@ -310,7 +311,7 @@ String GrammarScanner::getText() {
 
 void GrammarScanner::collectBegin() {
   m_collecting = true;
-  m_collector.begin(m_text, m_length, m_sourcePos);
+  m_collector.begin(m_text, m_length, SourcePositionWithName(m_absoluteFileName, m_sourcePos));
 }
 
 void GrammarScanner::collectChar() {
@@ -321,20 +322,25 @@ void GrammarScanner::getCollected(SourceText &sourceText) {
   sourceText = m_collector.getSourceText(m_length);
 }
 
-static void verror(const SourcePosition &pos, TCHAR *format, va_list argptr) {
-  String tmp = vformat(format, argptr).replace('\n', ' ');
-  _tprintf(_T("%s(%d,%d) : error %s\n"), pos.getFileName().cstr(), pos.getLineNumber(), pos.getColumn(), tmp.cstr());
+static void verrorwarning(const TCHAR *prefix, const SourcePositionWithName &pos, TCHAR *format, va_list argptr) {
+  _tprintf(_T("%s(%d,%d) : %s %s\n")
+          ,pos.getName().cstr(), pos.getLineNumber(), pos.getColumn()+1
+          ,prefix
+          ,vformat(format, argptr).replace('\n', ' ').cstr());
 }
 
-static void vwarning(const SourcePosition &pos, TCHAR *format, va_list argptr) {
-  String tmp = vformat(format, argptr).replace('\n', ' ');
-  _tprintf(_T("%s(%d,%d) : warning %s\n"), pos.getFileName().cstr(), pos.getLineNumber(), pos.getColumn(), tmp.cstr());
+static void verror(const SourcePositionWithName &pos, TCHAR *format, va_list argptr) {
+  verrorwarning(_T("error"), pos, format, argptr);
+}
+
+static void vwarning(const SourcePositionWithName &pos, TCHAR *format, va_list argptr) {
+  verrorwarning(_T("warning"), pos, format, argptr);
 }
 
 void GrammarScanner::error(TCHAR *format, ...) {
   va_list argptr;
   va_start(argptr, format);
-  ::verror(m_sourcePos, format, argptr);
+  ::verror(SourcePositionWithName(m_absoluteFileName, m_sourcePos), format, argptr);
   va_end(argptr);
   m_ok = false;
 }
@@ -342,7 +348,7 @@ void GrammarScanner::error(TCHAR *format, ...) {
 void GrammarScanner::error(const SourcePosition &pos, TCHAR *format, ...) {
   va_list argptr;
   va_start(argptr, format);
-  ::verror(pos, format, argptr);
+  ::verror(SourcePositionWithName(m_absoluteFileName, pos), format, argptr);
   va_end(argptr);
   m_ok = false;
 }
@@ -350,13 +356,13 @@ void GrammarScanner::error(const SourcePosition &pos, TCHAR *format, ...) {
 void GrammarScanner::warning(TCHAR *format, ...) {
   va_list argptr;
   va_start(argptr, format);
-  ::vwarning(m_sourcePos, format, argptr);
+  ::vwarning(SourcePositionWithName(m_absoluteFileName, m_sourcePos), format, argptr);
   va_end(argptr);
 }
 
 void GrammarScanner::warning(const SourcePosition &pos, TCHAR *format, ...) {
   va_list argptr;
   va_start(argptr, format);
-  ::vwarning(pos, format, argptr);
+  ::vwarning(SourcePositionWithName(m_absoluteFileName, pos), format, argptr);
   va_end(argptr);
 }

@@ -35,7 +35,7 @@ private:
   MarginFile                    *m_output;
   StringHashMap<KeywordTrigger*> m_keywords;
   StringHashMap<String>          m_macroes;
-  SourcePosition                 m_currentPos;
+  SourcePositionWithName         m_currentPos;
   String getKeyword(const TCHAR *dollar);
   String replaceMacroes(const TCHAR *line);
   void closeOutput();
@@ -58,7 +58,7 @@ public:
     return *m_output;
   }
 
-  inline const SourcePosition &getPos() const {
+  inline const SourcePositionWithName &getPos() const {
     return m_currentPos;
   }
 
@@ -84,5 +84,5 @@ public:
   void handleKeyword(TemplateWriter &writer, String &line) const;
 };
 
-void writeSourceText(   MarginFile &f, const SourceText &sourceText, const SourcePosition &pos, bool lineDirective);
+void writeSourceText(   MarginFile &f, const SourceText &sourceText, const SourcePositionWithName &pos, bool lineDirective);
 void writeLineDirective(MarginFile &f, const String &sourceName, int lineNumber);

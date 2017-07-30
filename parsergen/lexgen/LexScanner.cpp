@@ -367,7 +367,7 @@ String LexScanner::getText() {
 
 void LexScanner::collectBegin() {
   m_collecting = true;
-  m_collector.begin(m_text, m_length, SourcePosition(m_absoluteFileName, m_lineNo, 0));
+  m_collector.begin(m_text, m_length, SourcePositionWithName(m_absoluteFileName, m_lineNo, 0));
 }
 
 void LexScanner::collectChar(TCHAR ch) {

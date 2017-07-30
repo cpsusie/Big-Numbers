@@ -122,8 +122,8 @@ public:
   UINT getLineno() const {
     return m_lineNo;
   }
-  inline SourcePosition getRulePosition() const {
-    return SourcePosition(m_absoluteFileName, m_ruleLineNo, 0);
+  inline SourcePositionWithName getRulePosition() const {
+    return SourcePositionWithName(m_absoluteFileName, m_ruleLineNo, 0);
   }
   void verror( const TCHAR *format, va_list argptr);
   void error(  const TCHAR *format, ...);

@@ -80,7 +80,7 @@ String TemplateWriter::replaceMacroes(const TCHAR *line) {
 
 void TemplateWriter::generateOutput() {
   FILE *templateFile = FOPEN(m_templateName, _T("r"));
-  m_currentPos = SourcePosition(m_templateName, 0, 0);
+  m_currentPos = SourcePositionWithName(m_templateName, 0, 0);
 
 //  if(m_verbose)
 //    printf("Generating %s\n", m_outputName.cstr());
@@ -126,13 +126,13 @@ void writeLineDirective(MarginFile &f, const String &sourceName, int lineNumber)
   f.setLeftMargin(m);
 }
 
-void writeSourceText(MarginFile &f, const SourceText &sourceText, const SourcePosition &pos, bool lineDirective) {
+void writeSourceText(MarginFile &f, const SourceText &sourceText, const SourcePositionWithName &pos, bool lineDirective) {
   if(lineDirective) {
-    writeLineDirective(f, sourceText.m_pos.getFileName(), sourceText.m_pos.getLineNumber());
+    writeLineDirective(f, sourceText.m_pos.getName(), sourceText.m_pos.getLineNumber());
   }
   f.printf(_T("%s\n"), sourceText.m_sourceText.cstr());
   if(lineDirective) {
-    writeLineDirective(f, pos.getFileName(), pos.getLineNumber());
+    writeLineDirective(f, pos.getName(), pos.getLineNumber());
   }
 }
 

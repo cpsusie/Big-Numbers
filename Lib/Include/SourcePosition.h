@@ -4,17 +4,9 @@
 
 class SourcePosition {
 private:
-  String m_fileName;
   int    m_lineNumber;
   int    m_column;
 public:
-  inline SourcePosition(const String &fileName, int lineNumber, int column)
-    : m_fileName(fileName)
-    , m_lineNumber(lineNumber)
-    , m_column(column)
-  {
-  }
-
   inline SourcePosition(int lineNumber = 0, int column = 0)
     : m_lineNumber(lineNumber)
     , m_column(column)
@@ -26,10 +18,6 @@ public:
 
   // SourcePosition(s, index).findCharIndex(s) == index; index = [0..s.length()[
   int findCharIndex(const String &s) const;
-
-  inline const String &getFileName() const {
-    return m_fileName;
-  }
 
   inline int getLineNumber() const {
     return m_lineNumber;
@@ -72,6 +60,32 @@ public:
   }
   inline bool operator!=(const SourcePosition &pos) const {
     return !(*this == pos);
+  }
+  String toString() const {
+    return format(_T("(%d,%d)"), m_lineNumber, m_column);
+  }
+};
+
+class SourcePositionWithName : public SourcePosition {
+private:
+  String m_name;
+public:
+  inline SourcePositionWithName(const String &name, const SourcePosition &pos)
+    : m_name(name)
+    , SourcePosition(pos)
+  {
+  }
+  inline SourcePositionWithName(const String &name = EMPTYSTRING, int lineNumber = 0, int column = 0)
+    : m_name(name)
+    , SourcePosition(lineNumber, column)
+  {
+  }
+  SourcePositionWithName(const String &name, const String &s, UINT index)
+    : m_name(name)
+    , SourcePosition(s, index) {
+  }
+  const String &getName() const {
+    return m_name;
   }
   String toString() const;
 };

@@ -410,7 +410,7 @@ void Scanner::debugState(const TCHAR *label, int state, int lookahead) {
 SourcePosition Scanner::getPos() const {
   int length = (int)getLength();
   if(length <= m_pos.getColumn()) {
-    return SourcePosition(m_pos.getFileName(),m_pos.getLineNumber(),m_pos.getColumn() - length);
+    return SourcePosition(m_pos.getLineNumber(),m_pos.getColumn() - length);
   } else { // we have one or more newlines in the lexeme
     int line = m_pos.getLineNumber();
     const TCHAR *s;
@@ -419,6 +419,6 @@ SourcePosition Scanner::getPos() const {
         line--;
       }
     }
-    return SourcePosition(m_pos.getFileName(), line, findColumn(s,m_inputBuffer));
+    return SourcePosition(line, findColumn(s,m_inputBuffer));
   }
 }
