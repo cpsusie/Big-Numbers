@@ -38,8 +38,8 @@ o				[0-7]                   /* Octal digit                              */
 %%
 
 {d}+[lL]?					|
-0{o}+[lL]?					|
-0[xX]{h}+[lL]?				return INTEGERLITERAL;
+0{o}+[lL]?				|
+0[xX]{h}+[lL]?		return INTEGERLITERAL;
 
 ({d}|{d}+\.{d}*|{d}*\.{d}+)([eE][\-+]?{d}+)?[fFdD]? return FLOATLITERAL;
 
