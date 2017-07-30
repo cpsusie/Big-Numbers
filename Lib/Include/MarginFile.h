@@ -14,15 +14,20 @@ private:
   TCHAR     *m_formatBuffer;
   int        m_formatBufferSize;
 
-  void  init(FILE *file, const String &name, const String &absolutName, bool openedByMe);
+  void  init();
+  void  open(FILE *file, const String &name, const String &absolutName, bool openedByMe);
   void  indent();
   void  flushLine();
 public:
-  MarginFile(const String &name);
+  MarginFile(const String &name = EMPTYSTRING);
   MarginFile(const MarginFile &src);             // not defined
   MarginFile &operator=(const MarginFile &src);  // not defined
  ~MarginFile();
+  void open(const String &name);
   void close();
+  inline bool isOpen() const {
+    return m_file != NULL;
+  }
   void putch(   TCHAR c);
   void puts(    const TCHAR *s);
   void vprintf( const TCHAR *format, va_list argptr);
@@ -55,7 +60,14 @@ public:
   }
 };
 
-void fprintf(MarginFile *f, const TCHAR *format, ...);
+inline void vfprintf(MarginFile *f, const TCHAR *format, va_list argptr) {
+  f->vprintf(format, argptr);
+}
+void fprintf( MarginFile *f, const TCHAR *format, ...);
+
+inline void fputc(int ch, MarginFile *f) {
+  f->putch((TCHAR)ch);
+}
 
 extern MarginFile stdoutMarginFile;
 extern MarginFile stderrMarginFile;

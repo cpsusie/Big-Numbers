@@ -2,16 +2,26 @@
 #include <MarginFile.h>
 
 MarginFile::MarginFile(const String &name) {
-  if(name == _T("stdout")) {
-    init(stdout,name,name,false);
-  } else if(name == _T("stderr")) {
-    init(stderr,name,name,false);
-  } else {
-    init(MKFOPEN(name,_T("w")),name, FileNameSplitter(name).getAbsolutePath(), true);
+  init();
+  if(name.length() > 0) {
+    open(name);
   }
 }
 
-void MarginFile::init(FILE *file, const String &name, const String &absolutName, bool openedByMe) {
+void MarginFile::open(const String &name) {
+  if(name == _T("stdout")) {
+    open(stdout,name,name,false);
+  } else if(name == _T("stderr")) {
+    open(stderr,name,name,false);
+  } else {
+    open(MKFOPEN(name,_T("w")),name, FileNameSplitter(name).getAbsolutePath(), true);
+  }
+}
+
+void MarginFile::open(FILE *file, const String &name, const String &absolutName, bool openedByMe) {
+  if (isOpen()) {
+    throwException(_T("%s:(%s) - Already open"), __TFUNCTION__, name.cstr());
+  }
   m_file             = file;
   m_name             = name;
   m_absolutName      = absolutName;
@@ -22,19 +32,36 @@ void MarginFile::init(FILE *file, const String &name, const String &absolutName,
   m_formatBuffer     = new TCHAR[m_formatBufferSize];
 }
 
+void  MarginFile::init() {
+  m_name             = EMPTYSTRING;
+  m_absolutName      = EMPTYSTRING;
+  m_file             = NULL;
+  m_openedByMe       = false;
+  m_trimRight        = false;
+  m_lineNumber       = 1;
+  m_currentLine      = EMPTYSTRING;
+  m_leftFiller       = EMPTYSTRING;
+  m_formatBuffer     = NULL;
+  m_formatBufferSize = 0;
+}
+
 MarginFile::~MarginFile() {
   close();
-  delete[] m_formatBuffer;
 }
 
 void MarginFile::close() {
+  if(!isOpen()) {
+    return;
+  }
+
   if(m_currentLine.length() > 0) {
     flushLine();
   }
   if(m_file && m_openedByMe) {
     fclose(m_file);
   }
-  m_file = NULL;
+  delete[] m_formatBuffer;
+  init();
 }
 
 void MarginFile::indent() {
