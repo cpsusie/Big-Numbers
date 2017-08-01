@@ -30,7 +30,8 @@ public:
   }
 
   StringSearchAlgorithm<Ctype> *clone() const {
-    return new KMPAutomateTemplate<Ctype>(*this);
+    KMPAutomateTemplate *result = new KMPAutomateTemplate<Ctype>(*this); TRACE_NEW(result);
+    return result;
   }
 
   ~KMPAutomateTemplate() {
@@ -82,17 +83,13 @@ private:
       throwInvalidArgumentException(__TFUNCTION__, _T("patternLength > %u not allowed"), INT_MAX);
     }
     m_tableSize = (m_patternLength = patternLength) + 1;
-    m_next      = new int[  m_tableSize];
-    m_pattern   = new Ctype[m_tableSize];
+    m_next      = new int[  m_tableSize]; TRACE_NEW(m_next   );
+    m_pattern   = new Ctype[m_tableSize]; TRACE_NEW(m_pattern);
   }
 
   void deallocate() {
-    if(m_pattern) {
-      delete[] m_pattern;
-    }
-    if(m_next) {
-      delete[] m_next;
-    }
+    SAFEDELETEARRAY(m_pattern);
+    SAFEDELETEARRAY(m_next);
     initPointers();
   }
 

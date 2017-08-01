@@ -4,12 +4,12 @@
 HashMapImpl::HashMapImpl(const AbstractObjectManager &keyManager, const AbstractObjectManager &dataManager, HashFunction hash, const AbstractComparator &comparator, size_t capacity)
 : HashSetImpl(keyManager, hash, comparator, capacity)
 {
-  m_dataManager = dataManager.clone();
+  m_dataManager = dataManager.clone(); TRACE_NEW(m_dataManager);
 }
 
 HashMapImpl::~HashMapImpl() {
   clear();
-  delete m_dataManager;
+  SAFEDELETE(m_dataManager);
 }
 
 class HashMapIterator : public HashSetIterator {
@@ -34,18 +34,19 @@ AbstractIterator *HashMapImpl::getIterator() {
 AbstractMap *HashMapImpl::cloneMap(bool cloneData) const {
   HashMapImpl *clone = new HashMapImpl(*getKeyManager(), *getDataManager(), getHashFunction(),*getComparator(),getCapacity());
   if(cloneData) {
-    AbstractIterator *it = ((HashMapImpl*)this)->getIterator();
+    AbstractIterator *it = ((HashMapImpl*)this)->getIterator(); TRACE_NEW(it);
     while(it->hasNext()) {
       const AbstractEntry *n = (AbstractEntry*)it->next();
       clone->put(n->key(), n->value());
     }
-    delete it;
+    SAFEDELETE(it);
   }
   return clone;
 }
 
 HashSetNode *HashMapImpl::allocateNode() const {
-  return new HashMapNode();
+  HashMapNode *n = new HashMapNode(); TRACE_NEW(n);
+  return n;
 }
 
 HashMapNode *HashMapImpl::createNode(const void *key, const void *value) const {

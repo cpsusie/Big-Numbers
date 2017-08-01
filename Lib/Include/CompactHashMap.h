@@ -26,7 +26,7 @@ private:
   UINT64                                           m_updateCount;
 
   LinkElement<MapEntry<K,V> > **allocateBuffer(size_t capacity) const {
-    LinkElement<MapEntry<K,V> > **result = capacity ? new LinkElement<MapEntry<K,V> >*[capacity] : NULL;
+    LinkElement<MapEntry<K,V> > **result = capacity ? new LinkElement<MapEntry<K,V> >*[capacity] : NULL; TRACE_NEW(result);
     if(capacity) {
       memset(result, 0, sizeof(result[0])*capacity);
     }
@@ -106,9 +106,7 @@ public:
         }
       }
     }
-    if(oldBuffer) {
-      delete[] oldBuffer;
-    }
+    SAFEDELETEARRAY(oldBuffer);
   }
 
   inline size_t getCapacity() const {

@@ -70,7 +70,7 @@ String getProcessCommandLine(HANDLE hProcess) {
     GetSystemInfo(&sysInfo);
     // allocate one on the heap to retrieve a full page
     // of memory
-    lpBuffer = new BYTE[sysInfo.dwPageSize];
+    lpBuffer = new BYTE[sysInfo.dwPageSize]; TRACE_NEW(lpBuffer);
     if(lpBuffer == NULL) {
       throwException(_T("Out of memory"));
     }
@@ -117,12 +117,10 @@ String getProcessCommandLine(HANDLE hProcess) {
       *(dst++) = (unsigned char)wCmdLine[i];
     }
     *dst = '\0';
-    delete[] lpBuffer;
+    SAFEDELETEARRAY(lpBuffer);
     return result;
   } catch(...) {
-    if(lpBuffer != NULL) {
-      delete[] lpBuffer;
-    }
+    SAFEDELETEARRAY(lpBuffer);
     throw;
   }
 }

@@ -25,6 +25,10 @@ static const TCHAR *timeFormats[] = {
  ,_T("ddMMYY hh:mm:ss")
 };
 
+bool isDebugLogRedirected() {
+  return traceFlags.contains(FLAG_REDIDRECT);
+}
+
 void unredirectDebugLog() {
   if(traceFile != stdout) {
     fclose(traceFile);

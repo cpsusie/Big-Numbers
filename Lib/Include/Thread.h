@@ -145,7 +145,8 @@ protected:
     UINT id = (UINT)size();
     for(size_t i = 0; i < count; i++, id++) {
       m_freeId.push(id);
-      add(new T(id));
+      T *r =  new T(id); TRACE_NEW(r);
+      add(r);
     }
   }
 public:
@@ -166,7 +167,8 @@ public:
 
   void deleteAll() {
     for(size_t i = 0; i < size(); i++) {
-      delete (*this)[i];
+      T *r = (*this)[i];
+      SAFEDELETE(r);
     }
     clear();
     m_freeId.clear();

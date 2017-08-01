@@ -105,7 +105,7 @@ public:
       } catch (...) {
       }
       REGISTRYLOG("delete", this);
-      delete this;
+      TRACE_DELETE(this); delete this;
     }
     return NULL;
   }

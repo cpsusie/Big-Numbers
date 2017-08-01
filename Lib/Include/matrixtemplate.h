@@ -53,7 +53,7 @@ private:
       throwMatrixException(_T("allocate:Number of columns=0"));
     }
     const size_t n = rows * columns;
-    T *a = new T[n];
+    T *a = new T[n]; TRACE_NEW(a);
     if(initialize) {
       T *p = a, *last = p + n;
       const T z(0);
@@ -63,7 +63,7 @@ private:
   }
 
   inline void cleanup() {
-    delete[] m_a;
+    SAFEDELETEARRAY(m_a);
   }
 
 protected:

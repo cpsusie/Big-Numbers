@@ -195,38 +195,38 @@ void Bpn::adjustWeights() {
 void BpnLayer::allocate(LayerType type, int noutputs, int ninputs, bool bias) {
   m_noutputs = noutputs;
   m_ninputs  = ninputs;
-  m_outputs  = new float[m_noutputs];
+  m_outputs  = new float[m_noutputs]; TRACE_NEW(m_outputs);
   m_type     = type;
   m_bias     = bias;
 
   if(type != LAYER_INPUT) {
-    m_errors    = new float[m_noutputs];
-    m_weights   = new float*[m_noutputs];
-    m_lastdelta = new float*[m_noutputs];
+    m_errors    = new float[ m_noutputs]; TRACE_NEW(m_errors   );
+    m_weights   = new float*[m_noutputs]; TRACE_NEW(m_weights  );
+    m_lastdelta = new float*[m_noutputs]; TRACE_NEW(m_lastdelta);
     for(int i = 0; i < m_noutputs; i++ ) {
-      m_weights[i]   = new float[m_ninputs];
-      m_lastdelta[i] = new float[m_ninputs];
+      m_weights[i]   = new float[m_ninputs]; TRACE_NEW(m_weights[i]);
+      m_lastdelta[i] = new float[m_ninputs]; TRACE_NEW(m_lastdelta[i]);
     }
   }
   if(m_bias) {
-    m_biasweights = new float[m_noutputs];
+    m_biasweights = new float[m_noutputs]; TRACE_NEW(m_biasweights);
   }
 }
 
 void BpnLayer::deallocate() {
-  delete[] m_outputs;
+  SAFEDELETEARRAY(m_outputs);
 
   if(m_type != LAYER_INPUT) {
     for(int i = 0; i < m_noutputs; i++) {
-      delete[] m_weights[i];
-      delete[] m_lastdelta[i];
+      SAFEDELETEARRAY(m_weights[i]  );
+      SAFEDELETEARRAY(m_lastdelta[i]);
     }
-    delete[] m_weights;
-    delete[] m_lastdelta;
-    delete[] m_errors;
+    SAFEDELETEARRAY(m_weights  );
+    SAFEDELETEARRAY(m_lastdelta);
+    SAFEDELETEARRAY(m_errors   );
   }
   if(m_bias) {
-    delete[] m_biasweights;
+    SAFEDELETEARRAY(m_biasweights);
   }
 }
 
@@ -363,12 +363,12 @@ void Bpn::allocateLayers(const CompactIntArray &layerunits, bool bias) {
   }
   m_nhiddenlayers = layerCount - 2;
   m_bias          = bias;
-  m_inunits       = new BpnLayer(LAYER_INPUT,layerunits[0], 0, false ); // no bias weights on inputlayer
-  m_hiddenlayers  = new BpnLayer*[m_nhiddenlayers];
+  m_inunits       = new BpnLayer(LAYER_INPUT,layerunits[0], 0, false ); TRACE_NEW(m_inunits     ); // no bias weights on inputlayer
+  m_hiddenlayers  = new BpnLayer*[m_nhiddenlayers];                     TRACE_NEW(m_hiddenlayers);
   for(int i = 0; i < m_nhiddenlayers; i++) {
-    m_hiddenlayers[i] = new BpnLayer(LAYER_HIDDEN,layerunits[i+1],layerunits[i], bias);
+    m_hiddenlayers[i] = new BpnLayer(LAYER_HIDDEN,layerunits[i+1],layerunits[i], bias); TRACE_NEW(m_hiddenlayers[i]);
   }
-  m_outunits = new BpnLayer(LAYER_OUTPUT,layerunits[layerCount-1], layerunits[layerCount-2], bias);
+  m_outunits = new BpnLayer(LAYER_OUTPUT,layerunits[layerCount-1], layerunits[layerCount-2], bias); TRACE_NEW(m_outunits);
 }
 
 CompactIntArray Bpn::getLayerUnits() const {
@@ -402,12 +402,12 @@ void Bpn::initLayers() {
 }
 
 void Bpn::deallocateLayers() {
-  delete m_inunits;
+  SAFEDELETE(m_inunits);
   for( int i = 0; i < m_nhiddenlayers; i++ ) {
-    delete m_hiddenlayers[i];
+    SAFEDELETE(m_hiddenlayers[i]);
   }
-  delete[] m_hiddenlayers;
-  delete m_outunits;
+  SAFEDELETEARRAY(m_hiddenlayers);
+  SAFEDELETE(m_outunits);
   initLayers();
 }
 

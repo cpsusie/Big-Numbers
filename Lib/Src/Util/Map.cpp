@@ -46,7 +46,7 @@ public:
   }
   ~EntrySet() {
     if(m_deleteMap) {
-      delete m_map;
+      SAFEDELETE(m_map);
     }
   }
 };
@@ -113,7 +113,7 @@ public:
   }
   ~KeySet() {
     if(m_deleteMap) {
-      delete m_map;
+      SAFEDELETE(m_map);
     }
   }
 };
@@ -173,14 +173,14 @@ public:
 
   ~ValueCollection() {
     if(m_deleteMap) {
-      delete m_map;
+      SAFEDELETE(m_map);
     }
   }
 };
 
 bool ValueCollection::contains(const void *e) const {
   bool result = false;
-  AbstractIterator *it = ((ValueCollection*)this)->getIterator();
+  AbstractIterator *it = ((ValueCollection*)this)->getIterator(); TRACE_NEW(it);
   while(it->hasNext()) {
     void *e1 = it->next();
     if(m_cmp(e,e1) == 0) {
@@ -188,7 +188,7 @@ bool ValueCollection::contains(const void *e) const {
       break;
     }
   }
-  delete it;
+  SAFEDELETE(it);
   return result;
 }
 
@@ -216,17 +216,17 @@ class ValueIterator : public AbstractIterator {
 private:
   AbstractIterator *m_it;
   ValueIterator(const ValueIterator *src) {
-    m_it = src->m_it->clone();
+    m_it = src->m_it->clone(); TRACE_NEW(m_it);
   }
 public:
   ValueIterator(AbstractMap *map) {
-    m_it = map->getIterator();
+    m_it = map->getIterator(); TRACE_NEW(m_it);
   }
   AbstractIterator *clone() {
     return new ValueIterator(this);
   }
   ~ValueIterator() {
-    delete m_it;
+    SAFEDELETE(m_it);
   }
   bool hasNext() const {
     return m_it->hasNext();

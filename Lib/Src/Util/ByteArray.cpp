@@ -171,11 +171,11 @@ void ByteArray::init() {
 }
 
 BYTE *ByteArray::allocateBytes(size_t size) {
-  return new BYTE[size];
+  BYTE *b = new BYTE[size]; TRACE_NEW(b); return b;
 }
 
 void  ByteArray::deallocateBytes(BYTE *buffer) {
-  delete[] buffer;
+  SAFEDELETEARRAY(buffer);
 }
 
 void ByteArray::cleanup() {

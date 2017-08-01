@@ -4,12 +4,12 @@
 TreeMapImpl::TreeMapImpl(const AbstractObjectManager &keyManager, const AbstractObjectManager &dataManager, const AbstractComparator &comparator)
 : TreeSetImpl(keyManager, comparator)
 {
-  m_dataManager = dataManager.clone();
+  m_dataManager = dataManager.clone(); TRACE_NEW(m_dataManager);
 }
 
 TreeMapImpl::~TreeMapImpl() {
   clear();
-  delete m_dataManager;
+  SAFEDELETE(m_dataManager);
 }
 
 class TreeMapIterator : public TreeSetIterator {
@@ -33,18 +33,18 @@ AbstractIterator *TreeMapImpl::getIterator() {
 AbstractMap *TreeMapImpl::cloneMap(bool cloneData) const {
   TreeMapImpl *clone = new TreeMapImpl(*TreeSetImpl::getObjectManager(),*m_dataManager,*getComparator());
   if(cloneData) {
-    AbstractIterator *it = ((TreeMapImpl*)this)->getIterator();
+    AbstractIterator *it = ((TreeMapImpl*)this)->getIterator(); TRACE_NEW(it);
     while(it->hasNext()) {
       AbstractEntry *n = (AbstractEntry*)it->next();
       clone->put(n->key(), n->value());
     }
-    delete it;
+    SAFEDELETE(it);
   }
   return clone;
 }
 
 TreeSetNode *TreeMapImpl::allocateNode() const {
-  return new TreeMapNode();
+  TreeMapNode *n = new TreeMapNode(); TRACE_NEW(n); return n;
 }
 
 TreeSetNode *TreeMapImpl::createNode(const void *key, const void *value) const {

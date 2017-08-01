@@ -19,27 +19,27 @@ Packer &Packer::operator>>(String &s) {
   *this >> l;
   switch(peekType()) {
   case E_CSTR  :
-    { char *tmp = new char[l+1];
+    { char *tmp = new char[l+1]; TRACE_NEW(tmp);
       try {
         getElement(E_CSTR, tmp, l);
         tmp[l] = 0;
         s = tmp;
-        delete[] tmp;
+        SAFEDELETEARRAY(tmp);
       } catch (...) {
-        delete[] tmp;
+        SAFEDELETEARRAY(tmp);
         throw;
       }
     }
     break;
   case E_WSTR :
-    { wchar_t *tmp = new wchar_t[l+1];
+    { wchar_t *tmp = new wchar_t[l+1]; TRACE_NEW(tmp);
       try {
         getElement(E_WSTR, tmp, l*sizeof(wchar_t));
         tmp[l] = 0;
         s = tmp;
-        delete[] tmp;
+        SAFEDELETEARRAY(tmp);
       } catch (...) {
-        delete[] tmp;
+        SAFEDELETEARRAY(tmp);
         throw;
       }
     }
@@ -49,4 +49,3 @@ Packer &Packer::operator>>(String &s) {
   }
   return *this;
 }
-

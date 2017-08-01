@@ -23,15 +23,15 @@ protected:
   AbstractCollection *m_collection;
 public:
   Collection(AbstractCollection *collection) {
-    m_collection = collection;
+    m_collection = collection; TRACE_NEW(collection);
   }
 
   Collection(const Collection<T> &src) {
-    m_collection = src.m_collection->clone(true);
+    m_collection = src.m_collection->clone(true); TRACE_NEW(m_collection);
   }
 
   virtual ~Collection() {
-    delete m_collection;
+    SAFEDELETE(m_collection);
   }
 
   Collection<T> &operator=(const Collection<T> &src) {

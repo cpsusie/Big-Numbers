@@ -61,14 +61,14 @@ BitSet::BitSet(size_t capacity) {
   }
   m_capacity = capacity;
   const size_t atomCount = _BS_ATOMCOUNT(m_capacity);
-  m_p = new Atom[atomCount];
+  m_p = new Atom[atomCount]; TRACE_NEW(m_p)
   memset(m_p,0,atomCount * sizeof(Atom));
 }
 
 BitSet::BitSet(const BitSet &set) {
   m_capacity = set.m_capacity;
   const size_t atomCount = _BS_ATOMCOUNT(m_capacity);
-  m_p = new Atom[atomCount];
+  m_p = new Atom[atomCount]; TRACE_NEW(m_p)
   memcpy(m_p,set.m_p,atomCount * sizeof(Atom));
 }
 
@@ -78,12 +78,11 @@ BitSet &BitSet::operator=(const BitSet &rhs) {
   }
   const size_t atomCount = _BS_ATOMCOUNT(rhs.m_capacity);
   if(rhs.m_capacity != m_capacity) {
-    delete[] m_p;
+    SAFEDELETEARRAY(m_p);
     m_capacity = rhs.m_capacity;
-    m_p = new Atom[atomCount];
+    m_p = new Atom[atomCount]; TRACE_NEW(m_p);
   }
   memcpy(m_p,rhs.m_p,atomCount * sizeof(Atom));
-
   return *this;
 }
 
@@ -91,14 +90,14 @@ void BitSet::setCapacity(size_t newCapacity) {
   const size_t newAtomCount = _BS_ATOMCOUNT(newCapacity);
   const size_t oldAtomCount = _BS_ATOMCOUNT(m_capacity );
   if(newAtomCount != oldAtomCount) {
-    Atom *p = new Atom[newAtomCount];
+    Atom *p = new Atom[newAtomCount]; TRACE_NEW(p);
     if(newAtomCount > oldAtomCount) {
       memcpy(p, m_p, oldAtomCount * sizeof(Atom));
       memset(p + oldAtomCount, 0, (newAtomCount-oldAtomCount) * sizeof(Atom));
     } else {
       memcpy(p, m_p, newAtomCount * sizeof(Atom));
     }
-    delete[] m_p;
+    SAFEDELETEARRAY(m_p);
     m_p = p;
   }
   m_capacity = newCapacity;
@@ -166,7 +165,7 @@ size_t BitSet::select() const {
   for(Iterator<size_t> it = ((BitSet*)this)->getIterator(i); it.hasNext();) {
     return it.next();
   }
-  for (Iterator<size_t> it = ((BitSet*)this)->getReverseIterator(i); it.hasNext();) {
+  for(Iterator<size_t> it = ((BitSet*)this)->getReverseIterator(i); it.hasNext();) {
     return it.next();
   }
   throwException(_T("Cannot select from empty BitSet"));

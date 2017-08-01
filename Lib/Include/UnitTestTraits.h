@@ -18,3 +18,12 @@ void OUTPUT(const TCHAR *format, ...) {
   va_end(argptr);
   Logger::WriteMessage(msg.cstr());
 }
+
+class DebugLogRedirector {
+public:
+  inline DebugLogRedirector() {
+    if(!isDebugLogRedirected()) redirectDebugLog(true);
+  }
+};
+
+static DebugLogRedirector _redirector;

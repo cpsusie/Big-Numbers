@@ -32,7 +32,7 @@ private:
   size_t                 m_updateCount;
 
   inline void allocatePage() { // m_freeList is always NULL when this is called
-    m_firstPage = new ListNodePage(m_firstPage);
+    m_firstPage = new ListNodePage(m_firstPage); TRACE_NEW(m_firstPage);
     m_freeList  = m_firstPage->m_nodeArray;
   }
   void releaseAllPages();

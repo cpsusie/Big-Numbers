@@ -62,7 +62,7 @@ FileVersion::FileVersion(const String &filename) {
   if(fvsize == 0) {
     throwLastErrorOnSysCallException(_T("GetFileVersionInfoSize"));
   }
-  BYTE *data = new BYTE[fvsize];
+  BYTE *data = new BYTE[fvsize]; TRACE_NEW(data);
   try {
     if(GetFileVersionInfo(filename1,dummyhandle,fvsize,data) == 0) {
       throwLastErrorOnSysCallException(_T("GetFileVersionInfo"));
@@ -75,7 +75,7 @@ FileVersion::FileVersion(const String &filename) {
     m_fixedFileInfo = *(VS_FIXEDFILEINFO*)p;
 
     if(VerQueryValue(data,_T("\\VarFileInfo\\Translation"),&p,&pulen) == 0) {
-      delete[] data;
+      SAFEDELETEARRAY(data);
       return;
     }
     int transcount = pulen / 4;
@@ -83,9 +83,9 @@ FileVersion::FileVersion(const String &filename) {
     for(int i = 0; i < transcount; i++) {
       m_fileInfo.add(StringFileInfo(data,trans+i));
     }
-    delete[] data;
+    SAFEDELETEARRAY(data);
   } catch(...) {
-    delete[] data;
+    SAFEDELETEARRAY(data);
     throw;
   }
 }

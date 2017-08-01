@@ -42,11 +42,11 @@ void ArrayImpl::setCapacity(size_t capacity) {
       capacity = 1;
     }
 
-    void **newBuffer = new void*[capacity];
+    void **newBuffer = new void*[capacity]; TRACE_NEW(newBuffer);
     if(m_size > 0) {
       memcpy(newBuffer,m_elem,sizeof(m_elem[0])*m_size);
     }
-    delete[] m_elem;
+    SAFEDELETEARRAY(m_elem);
     m_elem = newBuffer;
 
 #ifdef DEBUG_ARRAYIMPL
@@ -61,10 +61,10 @@ void ArrayImpl::setCapacity(size_t capacity) {
 }
 
 void ArrayImpl::init(const AbstractObjectManager &objectManager, size_t size, size_t capacity) {
-  m_objectManager = objectManager.clone();
+  m_objectManager = objectManager.clone(); TRACE_NEW(m_objectManager);
   m_capacity = capacity;
 
-  m_elem = new void*[m_capacity];
+  m_elem = new void*[m_capacity]; TRACE_NEW(m_elem);
 
   m_updateCount = 0;
 
@@ -77,8 +77,8 @@ void ArrayImpl::init(const AbstractObjectManager &objectManager, size_t size, si
 
 ArrayImpl::~ArrayImpl() {
   clear();
-  delete m_objectManager;
-  delete[] m_elem;
+  SAFEDELETE(m_objectManager);
+  SAFEDELETEARRAY(m_elem);
 
 #ifdef DEBUG_ARRAYIMPL
   descounter++;

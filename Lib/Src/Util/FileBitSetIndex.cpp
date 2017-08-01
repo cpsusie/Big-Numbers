@@ -15,8 +15,8 @@ FileBitSetIndex::FileBitSetIndex(const String &fileName, UINT64 startOffset)
   in.getBytesForced((BYTE*)&capacity64, sizeof(capacity64));      // load 8 bytes:setCapacity
   CHECKUINT64ISVALIDSIZET(capacity64)
   m_rangeTable.load(in);                                          // load rangeTable
-  m_loadedIntervals   = new BitSet(m_rangeTable.size()+1);
-  m_bitSet            = new BitSet((size_t)capacity64);           // allocate bitset. dont read it
+  m_loadedIntervals   = new BitSet(m_rangeTable.size()+1); TRACE_NEW(m_loadedIntervals);
+  m_bitSet            = new BitSet((size_t)capacity64);    TRACE_NEW(m_bitSet); // allocate bitset. dont read it
   m_bitsStartOffset   = startOffset + byteCounter.getCount() + sizeof(capacity64); // bits begin after bitet.capacity
 }
 
@@ -29,8 +29,8 @@ void BitSetIndex::save(ByteOutputStream &s) const {
 }
 
 FileBitSetIndex::~FileBitSetIndex() {
-  delete m_bitSet;
-  delete m_loadedIntervals;
+  SAFEDELETE(m_bitSet);
+  SAFEDELETE(m_loadedIntervals);
 }
 
 #define BYTESINATOM sizeof(m_bitSet->m_p[0])

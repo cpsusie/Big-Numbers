@@ -155,7 +155,7 @@ BitMatrix BitMatrix::operator*(const BitMatrix &rhs) const { // like normal matr
     }
   }
   for(size_t c = 0; c < columnArray.size(); c++) {
-    delete columnArray[c];
+    SAFEDELETE(columnArray[c]);
   }
   return result;
 }

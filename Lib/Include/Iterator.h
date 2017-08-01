@@ -23,24 +23,24 @@ public:
     m_it = NULL;
   }
   Iterator(AbstractIterator *it) {
-    m_it = it;
+    m_it = it; TRACE_NEW(it);
   }
 
   Iterator(const Iterator<T> &src) {
-    m_it = src.m_it ? src.m_it->clone() : NULL;
+    m_it = src.m_it ? src.m_it->clone() : NULL; TRACE_NEW(m_it);
   }
 
   Iterator<T> &operator=(const Iterator<T> &src) {
     if(this == &src) {
       return *this;
     }
-    delete m_it;
-    m_it = src.m_it ? src.m_it->clone() : NULL;
+    SAFEDELETE(m_it);
+    m_it = src.m_it ? src.m_it->clone() : NULL; TRACE_NEW(m_it);
     return *this;
   }
 
   ~Iterator() {
-    delete m_it;
+    SAFEDELETE(m_it);
   }
 
   inline bool hasNext() const {

@@ -32,7 +32,7 @@ namespace TestStringSearch {
       if (target != saveTarget) {
         throwException(_T("target has changed: <%s> -> <%s>"), saveTarget.cstr(), target.cstr());
       }
-      delete a1;
+      SAFEDELETE(a1);
   #ifdef _DEBUG
       OUTPUT(_T("--------------------"));
   #endif

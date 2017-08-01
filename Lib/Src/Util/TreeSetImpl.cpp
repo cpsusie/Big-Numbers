@@ -3,8 +3,8 @@
 #include <TreeSet.h>
 
 TreeSetImpl::TreeSetImpl(const AbstractObjectManager &objectManager, const AbstractComparator &comparator) {
-  m_objectManager = objectManager.clone();
-  m_comparator    = comparator.clone();
+  m_objectManager = objectManager.clone(); TRACE_NEW(m_objectManager);
+  m_comparator    = comparator.clone();    TRACE_NEW(m_comparator);
   m_root          = NULL;
   m_size          = 0;
   m_updateCount   = 0;
@@ -12,8 +12,8 @@ TreeSetImpl::TreeSetImpl(const AbstractObjectManager &objectManager, const Abstr
 
 TreeSetImpl::~TreeSetImpl() {
   clear();
-  delete m_comparator;
-  delete m_objectManager;
+  SAFEDELETE(m_comparator);
+  SAFEDELETE(m_objectManager);
 }
 
 void TreeSetImpl::throwEmptySetException(const TCHAR *method) const {
@@ -23,17 +23,17 @@ void TreeSetImpl::throwEmptySetException(const TCHAR *method) const {
 AbstractCollection *TreeSetImpl::clone(bool cloneData) const {
   TreeSetImpl *clone = new TreeSetImpl(*m_objectManager, *m_comparator);
   if(cloneData) {
-    AbstractIterator *it = ((TreeSetImpl*)this)->getIterator();
+    AbstractIterator *it = ((TreeSetImpl*)this)->getIterator(); TRACE_NEW(it);
     while(it->hasNext()) {
       clone->add(it->next());
     }
-    delete it;
+    SAFEDELETE(it);
   }
   return clone;
 }
 
 TreeSetNode *TreeSetImpl::allocateNode() const {
-  return new TreeSetNode();
+  TreeSetNode *n = new TreeSetNode(); TRACE_NEW(n); return n;
 }
 
 TreeSetNode *TreeSetImpl::createNode(const void *key) const {
@@ -51,7 +51,7 @@ TreeSetNode *TreeSetImpl::cloneNode(TreeSetNode *n) const {
 void TreeSetImpl::deleteNode(TreeSetNode *n) const {
   m_objectManager->deleteObject(n->m_key);
   n->m_key = NULL;
-  delete n;
+  SAFEDELETE(n);
 }
 
 void TreeSetImpl::swapContent(TreeSetNode *p1, TreeSetNode *p2) {

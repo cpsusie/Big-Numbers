@@ -15,10 +15,10 @@ Packer &Packer::operator>>(ByteArray &a) {
   *this >> l;
   a.clear();
   if(l) {
-    BYTE *tmp = new BYTE[l];
+    BYTE *tmp = new BYTE[l]; TRACE_NEW(tmp);
     getElement(E_CHAR, tmp, l);
     a.setData(tmp, l);
-    delete[] tmp;
+    SAFEDELETEARRAY(tmp);
   }
   return *this;
 }

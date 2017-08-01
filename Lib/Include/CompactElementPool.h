@@ -55,7 +55,7 @@ public:
 
   inline T *fetchElement() {
     if(m_firstPage == NULL || m_firstPage->isFull()) {
-      m_firstPage = new CompactElementPage(m_firstPage);
+      m_firstPage = new CompactElementPage(m_firstPage); TRACE_NEW(m_firstPage);
     }
     return m_firstPage->fetchElement();
   }
@@ -68,7 +68,7 @@ public:
     CompactElementPage *p, *q;
     for(p = m_firstPage; p; p = q) {
       q = p->nextPage();
-      delete p;
+      SAFEDELETE(p);
     }
     m_firstPage = NULL;
   }

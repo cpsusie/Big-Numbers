@@ -59,17 +59,17 @@ template <class K, class V> class Map {
 protected:
   AbstractMap *m_map;
   Map(AbstractMap *map) {
-    m_map = map;
+    m_map = map; TRACE_NEW(map);
   }
   static int compareValues(const void *v1, const void *v2) {
     return *(V*)v1 == *(V*)v2 ? 0 : 1;
   }
 public:
   Map(const Map<K, V> &src) {
-    m_map = src.m_map->cloneMap(true);
+    m_map = src.m_map->cloneMap(true); TRACE_NEW(m_map);
   }
   virtual ~Map() {
-    delete m_map;
+    SAFEDELETE(m_map);
   }
 
   Map &operator=(const Map<K, V> &src) {

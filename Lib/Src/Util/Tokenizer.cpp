@@ -41,8 +41,7 @@ Tokenizer::~Tokenizer() {
 }
 
 void Tokenizer::cleanup() {
-  delete[] m_stringBuffer;
-  m_stringBuffer     = NULL;
+  SAFEDELETEARRAY(m_stringBuffer);
   m_stringBufferSize = 0;
 }
 
@@ -73,10 +72,8 @@ String Tokenizer::next() {
   StringIndex tmp;
   nextIndex(tmp);
   if(tmp.m_length >= m_stringBufferSize) {
-    if(m_stringBuffer) {
-      delete[] m_stringBuffer;
-    }
-    m_stringBuffer = new TCHAR[m_stringBufferSize = 2 * (tmp.m_length+1)];
+    SAFEDELETEARRAY(m_stringBuffer);
+    m_stringBuffer = new TCHAR[m_stringBufferSize = 2 * (tmp.m_length+1)]; TRACE_NEW(m_stringBuffer);
   }
   _tcsncpy(m_stringBuffer,(const TCHAR*)m_str+tmp.m_start, tmp.m_length);
   m_stringBuffer[tmp.m_length] = 0;

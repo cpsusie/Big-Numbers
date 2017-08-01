@@ -30,6 +30,7 @@ protected:
   void OnShowWindow(BOOL bShow, UINT nStatus);
 public:
   virtual ~PropertyDialog() {
+    PropertyContainer::clear();
   }
   inline int getPropertyId() const {
     return m_propertyId;

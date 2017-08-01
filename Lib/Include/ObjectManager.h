@@ -11,13 +11,12 @@ public:
 template <class E> class ObjectManager : public AbstractObjectManager {
 public:
   void *cloneObject(const void *e) const {
-    return new E(*(E*)e);
+    E *e1 = new E(*(E*)e); TRACE_NEW(e1); return e1;
   }
   void  deleteObject(const void *e) const {
-    delete (E*)e;
+    E *e1 = (E*)e; SAFEDELETE(e1);
   }
   AbstractObjectManager *clone() const {
     return new ObjectManager<E>();
   }
 };
-

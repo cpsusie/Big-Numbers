@@ -74,15 +74,12 @@ private:
 
     void allocate() {
       if(m_page == NULL) {
-        m_page = new ArrayPage;
+        m_page = new ArrayPage; TRACE_NEW(m_page)
       }
     }
 
     void deallocate() {
-      if(m_page) {
-        delete m_page;
-        m_page = NULL;
-      }
+      SAFEDELETE(m_page);
       m_mapIndex = -1;
     }
 

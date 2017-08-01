@@ -25,6 +25,12 @@ protected:
     setProperty<String>(id, v, String(newValue));
   }
 public:
+  virtual ~PropertyContainer() {
+    clear();
+  }
   void addPropertyChangeListener(   PropertyChangeListener *listener, bool first = false);
   void removePropertyChangeListener(PropertyChangeListener *listener);
+  void clear() {
+    m_listeners.clear();
+  }
 };

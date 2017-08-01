@@ -143,7 +143,7 @@ private:
 
   const Type **getRightSides() const {
     if(m_rightSides == NULL) {
-      m_rightSides = new const Type*[m_productionCount];
+      m_rightSides = new const Type*[m_productionCount]; TRACE_NEW(m_rightSides);
       int index = 0;;
       for(int p = 0; p < m_productionCount; p++) {
         const UINT prodLen = m_productionLength[p];
@@ -253,7 +253,7 @@ public:
     m_rightSides = NULL;
   }
   ~ParserTablesTemplate() {
-    delete[] m_rightSides;
+    SAFEDELETEARRAY(m_rightSides);
   }
 };
 

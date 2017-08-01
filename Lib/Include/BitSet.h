@@ -51,7 +51,7 @@ public:
   explicit BitSet(size_t capacity);
   BitSet(const BitSet &set);
   ~BitSet() {
-    delete[] m_p;
+    SAFEDELETEARRAY(m_p);
   }
   BitSet &operator=(const BitSet &rhs);
   // Union        = set containing all elements from lts and rhs
@@ -419,4 +419,3 @@ public:
     return format(_T("Dimension=%s"), m_dim.toString().cstr());
   }
 };
-

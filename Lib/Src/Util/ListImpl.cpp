@@ -25,7 +25,7 @@ ListImpl::ListImpl(AbstractObjectManager &objectManager) {
 }
 
 void ListImpl::init(AbstractObjectManager &objectManager) {
-  m_objectManager = objectManager.clone();
+  m_objectManager = objectManager.clone(); TRACE_NEW(m_objectManager);
   m_firstPage     = NULL;
   m_freeList      = NULL;
   m_first         = m_last = NULL;
@@ -39,7 +39,7 @@ void ListImpl::init(AbstractObjectManager &objectManager) {
 ListImpl::~ListImpl() {
   clear();
   releaseAllPages();
-  delete m_objectManager;
+  SAFEDELETE(m_objectManager);
 #ifdef DEBUG
   descounter++;
 #endif
@@ -72,11 +72,11 @@ const ListNode *ListImpl::findNode(size_t index) const {
 AbstractCollection *ListImpl::clone(bool cloneData) const {
   ListImpl *copy = new ListImpl(*m_objectManager);
   if(cloneData) {
-    AbstractIterator *it = ((ListImpl*)this)->getIterator();
+    AbstractIterator *it = ((ListImpl*)this)->getIterator(); TRACE_NEW(it);
     while(it->hasNext()) {
       copy->add(it->next());
     }
-    delete it;
+    SAFEDELETE(it);
   }
   return copy;
 }
@@ -95,7 +95,7 @@ void ListImpl::clear() {
 void ListImpl::releaseAllPages() {
   for(ListNodePage *p = m_firstPage, *q = NULL; p; p = q) {
     q = p->m_nextPage;
-    delete p;
+    SAFEDELETE(p);
   }
   m_firstPage = NULL;
   m_freeList  = NULL;

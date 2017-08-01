@@ -10,7 +10,7 @@ DecompressFilter::DecompressFilter(ByteInputStream &src) : m_src(src) {
   m_zStreamp  = NULL;
   m_buffer    = NULL;
 
-  z_stream *zStream = new z_stream;
+  z_stream *zStream = new z_stream; TRACE_NEW(zStream);
   zStream->zalloc   = NULL;
   zStream->zfree    = NULL;
   zStream->opaque   = (voidpf)0;
@@ -21,7 +21,7 @@ DecompressFilter::DecompressFilter(ByteInputStream &src) : m_src(src) {
     throwException(_T("%s:inflateInit:returncode=%d"), __TFUNCTION__, err);
   }
   m_zStreamp  = zStream;
-  m_buffer    = new BYTE[MAX_BUFFERSIZE];
+  m_buffer    = new BYTE[MAX_BUFFERSIZE]; TRACE_NEW(m_buffer);
   m_pos       = 0;
   m_eos       = false;
   m_eoz       = false;
@@ -29,8 +29,9 @@ DecompressFilter::DecompressFilter(ByteInputStream &src) : m_src(src) {
 }
 
 DecompressFilter::~DecompressFilter() {
-  delete (z_streamp)m_zStreamp;
-  delete[] m_buffer;
+  z_streamp streamp = (z_streamp)m_zStreamp;
+  SAFEDELETE(streamp);
+  SAFEDELETEARRAY(m_buffer);
 }
 
 int DecompressFilter::getByte() {

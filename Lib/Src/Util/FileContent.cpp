@@ -96,18 +96,17 @@ String FileContent::converToString(UINT codePage) const {
   TCHAR *buffer = NULL;
   try {
     const int bufferSize = requiredSize + 1;
-    TCHAR *buffer = new TCHAR[bufferSize];
+    TCHAR *buffer = new TCHAR[bufferSize]; TRACE_NEW(buffer);
     const int ret = MultiByteToWideChar(codePage, MB_ERR_INVALID_CHARS, (char*)data, byteCount, buffer, requiredSize);
     if(ret == 0) {
       throwLastErrorOnSysCallException(_T("MultiByteToWideChar"));
     }
     buffer[requiredSize] = 0;
     const String result = buffer;
-    delete[] buffer;
-    buffer = NULL;
+    SAFEDELETEARRAY(buffer);
     return result;
   } catch(...) {
-    if(buffer) delete[] buffer;
+    SAFEDELETEARRAY(buffer);
     throw;
   }
 }
@@ -118,15 +117,14 @@ String FileContent::converToString() const {
   char *buffer = NULL;
 
   try {
-    buffer = new char[size()+1];
+    buffer = new char[size()+1]; TRACE_NEW(buffer);
     memcpy(buffer, getData(), size());
     buffer[size()] = 0;
     const String result = buffer;
-    delete[] buffer;
-    buffer = NULL;
+    SAFEDELETEARRAY(buffer);
     return result;
   } catch(...) {
-    if(buffer) delete[] buffer;
+    SAFEDELETEARRAY(buffer);
     throw;
   }
 }

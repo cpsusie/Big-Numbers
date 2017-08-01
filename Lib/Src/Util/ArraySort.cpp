@@ -14,7 +14,7 @@ public:
     return m_userSuppliedCmp(*(const void**)e1, *(const void**)e2);
   }
   AbstractComparator *clone() const {
-	return new ArrayImplComparator1(m_userSuppliedCmp);
+    return new ArrayImplComparator1(m_userSuppliedCmp);
   }
 };
 
@@ -29,7 +29,7 @@ public:
     return m_userSuppliedCmp((const void **)e1, (const void **)e2);
   }
   AbstractComparator *clone() const {
-	return new ArrayImplComparator0(m_userSuppliedCmp);
+    return new ArrayImplComparator0(m_userSuppliedCmp);
   }
 };
 
@@ -43,7 +43,7 @@ public:
     return m_userSuppliedComparator.cmp(*((const void**)e1), *((const void**)e2));
   }
   AbstractComparator *clone() const {
-	  return new ArrayImplComparator(m_userSuppliedComparator);
+    return new ArrayImplComparator(m_userSuppliedComparator);
   }
 };
 

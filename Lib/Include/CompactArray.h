@@ -35,15 +35,13 @@ private:
     m_size        = size;
     m_updateCount = 0;
     m_capacity    = capacity;
-    m_array       = m_capacity ? new T[m_capacity] : NULL;
+    m_array       = m_capacity ? new T[m_capacity] : NULL; TRACE_NEW(m_array);
   }
 
   void setCapacityNoCopy(size_t capacity) {
     if(capacity == m_capacity) return;
-    if(m_array) {
-      delete[] m_array;
-    }
-    m_array    = capacity ? new T[capacity] : NULL;
+    SAFEDELETEARRAY(m_array);
+    m_array    = capacity ? new T[capacity] : NULL; TRACE_NEW(m_array);
     m_capacity = capacity;
   }
 
@@ -77,22 +75,18 @@ public:
   }
 
   ~CompactArray() {
-    if(m_array) {
-      delete[] m_array;
-    }
+    SAFEDELETEARRAY(m_array);
   }
 
   void setCapacity(size_t capacity) {
     if(capacity < m_size) {
       capacity = m_size;
     }
-    T *newArray = capacity ? new T[capacity] : NULL;
+    T *newArray = capacity ? new T[capacity] : NULL; TRACE_NEW(newArray);
     if(m_size) {
       memcpy(newArray, m_array, m_size * sizeof(T));
     }
-    if(m_array) {
-      delete[] m_array;
-    }
+    SAFEDELETEARRAY(m_array);
     m_array    = newArray;
     m_capacity = capacity;
   }

@@ -199,10 +199,10 @@ String ByteQueue::getConvertedString(size_t count) { // convert count bytes to s
       }
       if ((UINT)requiredSize + 1 > bufferSize) {
         if (buffer != tmp) {
-          delete[] buffer;
+          SAFEDELETEARRAY(buffer);
         }
         bufferSize = requiredSize + 1;
-        buffer = new TCHAR[bufferSize];
+        buffer = new TCHAR[bufferSize]; TRACE_NEW(buffer);
       }
       const int ret = MultiByteToWideChar(CP_UTF8, 0, (char*)getData(), (int)count, buffer, requiredSize);
       if (ret == 0) {
@@ -211,13 +211,13 @@ String ByteQueue::getConvertedString(size_t count) { // convert count bytes to s
       buffer[requiredSize] = 0;
       result = buffer;
       if (buffer != tmp) {
-        delete[] buffer;
+        SAFEDELETEARRAY(buffer);
       }
       remove(0, count);
     }
     catch (...) {
       if (buffer != tmp) {
-        delete[] buffer;
+        SAFEDELETEARRAY(buffer);
       }
       throw;
     }

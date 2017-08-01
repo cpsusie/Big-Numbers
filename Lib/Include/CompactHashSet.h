@@ -28,7 +28,7 @@ private:
   UINT64                                         m_updateCount;
 
   LinkElement<SetEntry<K> > **allocateBuffer(size_t capacity) const {
-    LinkElement<SetEntry<K> > **result = capacity ? new LinkElement<SetEntry<K> >*[capacity] : NULL;
+    LinkElement<SetEntry<K> > **result = capacity ? new LinkElement<SetEntry<K> >*[capacity] : NULL; TRACE_NEW(result);
     if(capacity) {
       memset(result, 0, sizeof(result[0])*capacity);
     }
@@ -108,9 +108,7 @@ public:
         }
       }
     }
-    if(oldBuffer) {
-      delete[] oldBuffer;
-    }
+    SAFEDELETEARRAY(oldBuffer);
   }
 
   inline size_t getCapacity() const {

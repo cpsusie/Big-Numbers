@@ -32,7 +32,7 @@ private:
     if(dim == 0) {
       throwVectorException(_T("allocate:Dimension=0"));
     }
-    T *v = new T[dim];
+    T *v = new T[dim]; TRACE_NEW(v);
     if(initialize) {
       for(size_t i = 0; i < dim; i++) {
         v[i] = T(0);
@@ -42,8 +42,7 @@ private:
   }
 
   inline void cleanup() {
-    delete[] m_e;
-    m_e = NULL;
+    SAFEDELETEARRAY(m_e);
   }
 
 protected:

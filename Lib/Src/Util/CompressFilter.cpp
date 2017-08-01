@@ -10,7 +10,7 @@ CompressFilter::CompressFilter(ByteOutputStream &dst, CompressionLevel level) : 
   m_zStreamp  = NULL;
   m_buffer    = NULL;
 
-  z_stream *zStream = new z_stream;
+  z_stream *zStream = new z_stream; TRACE_NEW(zStream);
   zStream->zalloc   = NULL;
   zStream->zfree    = NULL;
   zStream->opaque   = (voidpf)0;
@@ -21,15 +21,16 @@ CompressFilter::CompressFilter(ByteOutputStream &dst, CompressionLevel level) : 
     throwException(_T("%s:deflateInit:returncode=%d"), __TFUNCTION__, err);
   }
   m_zStreamp  = zStream;
-  m_buffer    = new BYTE[MAX_BUFFERSIZE*2];
+  m_buffer    = new BYTE[MAX_BUFFERSIZE*2]; TRACE_NEW(m_buffer);
 
   setAvailableOut();
 };
 
 CompressFilter::~CompressFilter() {
   finalFlush();
-  delete (z_streamp)m_zStreamp;
-  delete[] m_buffer;
+  z_streamp streamp = (z_streamp)m_zStreamp;
+  SAFEDELETE(streamp);
+  SAFEDELETEARRAY(m_buffer);
 }
 
 void CompressFilter::putByte(BYTE b) {

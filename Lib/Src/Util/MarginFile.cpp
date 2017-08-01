@@ -29,7 +29,7 @@ void MarginFile::open(FILE *file, const String &name, const String &absolutName,
   m_trimRight        = false;
   m_lineNumber       = 1;
   m_formatBufferSize = 0x4000;
-  m_formatBuffer     = new TCHAR[m_formatBufferSize];
+  m_formatBuffer     = new TCHAR[m_formatBufferSize]; TRACE_NEW(m_formatBuffer);
 }
 
 void  MarginFile::init() {
@@ -60,7 +60,7 @@ void MarginFile::close() {
   if(m_file && m_openedByMe) {
     fclose(m_file);
   }
-  delete[] m_formatBuffer;
+  SAFEDELETEARRAY(m_formatBuffer);
   init();
 }
 
@@ -106,9 +106,9 @@ void MarginFile::vprintf(const TCHAR *format, va_list argptr) {
     if(_vsntprintf(m_formatBuffer, m_formatBufferSize, format, argptr) >= 0) {
       break;
     }
-    delete m_formatBuffer;
+    SAFEDELETEARRAY(m_formatBuffer);
     m_formatBufferSize <<= 1;
-    m_formatBuffer = new TCHAR[m_formatBufferSize];
+    m_formatBuffer = new TCHAR[m_formatBufferSize]; TRACE_NEW(m_formatBuffer);
   }
   puts(m_formatBuffer);
 }

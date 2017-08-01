@@ -32,13 +32,13 @@ void StringPool::init(size_t indexCapacity, size_t textCapacity) {
 
 StringPoolNode *StringPool::fetchNode() {
   if(m_firstPage == NULL || m_firstPage->isFull()) {
-    m_firstPage = new StringPoolNodePage(m_firstPage);
+    m_firstPage = new StringPoolNodePage(m_firstPage); TRACE_NEW(m_firstPage);
   }
   return m_firstPage->fetchNode();
 }
 
 StringPoolNode **StringPool::allocateIndex(size_t capacity) { // static
-  StringPoolNode **result = capacity ? new StringPoolNode*[capacity] : NULL;
+  StringPoolNode **result = capacity ? new StringPoolNode*[capacity] : NULL; TRACE_NEW(result);
   if(result) {
     memset(result, 0, sizeof(result[0])*capacity);
   }
@@ -51,7 +51,7 @@ void StringPool::copy(const StringPool &src) {
   m_size     = src.m_size;
   StringPoolNodePage **last = &m_firstPage;
   for(StringPoolNodePage *page = src.m_firstPage; page; page = page->m_next, last = &(*last)->m_next) {
-    StringPoolNodePage *newPage = new StringPoolNodePage(*page);
+    StringPoolNodePage *newPage = new StringPoolNodePage(*page); TRACE_NEW(newPage);
     *last = newPage;
   }
   *last = NULL;
@@ -111,7 +111,7 @@ void StringPool::clear() {
 void StringPool::clearIndex() {
   for(StringPoolNodePage *p = m_firstPage, *q = NULL; p; p = q) {
     q = p->m_next;
-    delete p;
+    SAFEDELETE(p);
   }
   m_firstPage = NULL;
   const size_t tmp = m_size;
@@ -174,10 +174,7 @@ void StringPool::setIndexCapacity(size_t capacity) {
   if(capacity == m_indexCapacity) {
     return;
   }
-  if(m_index) {
-    delete[] m_index;
-    m_index = NULL;
-  }
+  SAFEDELETEARRAY(m_index);
 
   if((m_size > 0) && (m_firstPage == NULL)) {
     buildPageList();

@@ -36,7 +36,7 @@ public:
 
   virtual ~PriorityQueue() {
     if(m_comparator != &m_functionComparator) {
-      delete m_comparator;
+      SAFEDELETE(m_comparator);
     }
   }
 

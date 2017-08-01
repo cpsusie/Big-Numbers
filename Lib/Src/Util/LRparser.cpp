@@ -32,16 +32,13 @@ void LRparser::initialize() {
 }
 
 void LRparser::parserStackDestroy() {
-  if(m_parserStack != NULL) {
-    delete[] m_parserStack;
-    m_parserStack = NULL;
-    m_stackSize   = 0;
-  }
+  SAFEDELETEARRAY(m_parserStack);
+  m_stackSize   = 0;
 }
 
 void LRparser::parserStackCreate(UINT stackSize) {
   m_stackSize   = max(256, stackSize);
-  m_parserStack = new ParserStackElement[m_stackSize];
+  m_parserStack = new ParserStackElement[m_stackSize]; TRACE_NEW(m_parserStack);
 }
 
 void LRparser::setStackSize(UINT newSize) {

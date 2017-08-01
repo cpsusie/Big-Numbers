@@ -32,14 +32,12 @@ BOOL CPropertyDlgThread::InitInstance() {
   m_pMainWnd    = m_dlg;
   m_pActiveWnd  = m_dlg;
   SuspendThread(); // next line will be executed when the first call to setActive is done (by ChessDlg)
-  if(m_killed) {
-    return TRUE;
+  if(!m_killed) {
+    m_inModalLoop = true;
+    intptr_t nResponse = m_dlg->DoModal();
+    m_inModalLoop = false;
   }
-  m_inModalLoop = true;
-  intptr_t nResponse = m_dlg->DoModal();
-  m_inModalLoop = false;
-  delete m_dlg;
-  m_dlg = NULL;
+  SAFEDELETE(m_dlg);
   return TRUE;
 }
 

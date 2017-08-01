@@ -2,33 +2,17 @@
 #include <Random.h>
 #include <HashSet.h>
 
-//#define TRACE_MEMORY
-
-#ifdef TRACE_MEMORY
-
-#define TRACE_NEW(p)    debugLog(_T("new %p %s(%d)\n")   , p, __TFILE__, __LINE__)
-#define TRACE_DELETE(p) debugLog(_T("delete %p %s(%d)\n"), p, __TFILE__, __LINE__)
-
-#else
-
-#define TRACE_NEW(p)
-#define TRACE_DELETE(p)
-
-#endif
-
 HashSetTable::HashSetTable(const HashSetImpl &owner, size_t capacity) : m_owner(owner), m_capacity(max(5, capacity)) {
   m_size        = 0;
   m_updateCount = 0;
-  m_table       = new HashSetNode*[m_capacity];
-  TRACE_NEW(m_table);
+  m_table       = new HashSetNode*[m_capacity]; TRACE_NEW(m_table);
   memset(m_table, 0, sizeof(m_table[0])*m_capacity);
   m_firstLink   = m_lastLink = NULL;
 }
 
 HashSetTable::~HashSetTable() {
   clear();
-  TRACE_DELETE(m_table);
-  delete[] m_table;
+  SAFEDELETEARRAY(m_table);
 }
 
 void HashSetTable::insert(size_t index, HashSetNode *n) {
@@ -152,34 +136,29 @@ int HashSetTable::getMaxChainLength() const {
 }
 
 HashSetImpl::HashSetImpl(const AbstractObjectManager &objectManager, HashFunction hash, const AbstractComparator &comparator, size_t capacity) {
-  m_objectManager = objectManager.clone();
-  m_comparator    = comparator.clone();
+  m_objectManager = objectManager.clone(); TRACE_NEW(m_objectManager);
+  m_comparator    = comparator.clone();    TRACE_NEW(m_comparator   );
   m_hash          = hash;
-  m_table         = new HashSetTable(*this, capacity);
-  TRACE_NEW(m_table);
+  m_table         = new HashSetTable(*this, capacity); TRACE_NEW(m_table);
 }
 
 AbstractCollection *HashSetImpl::clone(bool cloneData) const {
   HashSetImpl *clone = new HashSetImpl(*m_objectManager, m_hash, *m_comparator, getCapacity());
-  TRACE_NEW(clone);
   if(cloneData) {
-    AbstractIterator *it = ((HashSetImpl*)this)->getIterator();
+    AbstractIterator *it = ((HashSetImpl*)this)->getIterator(); TRACE_NEW(it);
     while(it->hasNext()) {
       clone->add(it->next());
     }
-    TRACE_DELETE(it);
-    delete it;
+    SAFEDELETE(it);
   }
   return clone;
 }
 
 HashSetImpl::~HashSetImpl() {
   clear();
-  TRACE_DELETE(m_table);
-  delete m_table;
-
-  delete m_comparator;
-  delete m_objectManager;
+  SAFEDELETE(m_table);
+  SAFEDELETE(m_comparator);
+  SAFEDELETE(m_objectManager);
 }
 
 HashSetNode::HashSetNode() {
@@ -191,8 +170,7 @@ HashSetNode::HashSetNode() {
 }
 
 HashSetNode *HashSetImpl::allocateNode() const {
-  HashSetNode *result = new HashSetNode();
-  TRACE_NEW(result);
+  HashSetNode *result = new HashSetNode(); TRACE_NEW(result);
   return result;
 }
 
@@ -208,25 +186,21 @@ HashSetNode *HashSetImpl::cloneNode(HashSetNode *n) const {
 
 void HashSetImpl::deleteNode(HashSetNode *n) const {
   m_objectManager->deleteObject(n->m_key);
-  TRACE_DELETE(n);
-  delete n;
+  SAFEDELETE(n);
 }
 
 void HashSetImpl::resize(size_t newCapacity) {
-  HashSetTable *newTable = new HashSetTable(*this, newCapacity);
-  TRACE_NEW(newTable);
+  HashSetTable *newTable = new HashSetTable(*this, newCapacity); TRACE_NEW(newTable);
   try {
     size_t capacity = newTable->getCapacity();
     for(HashSetNode *p = m_table->m_firstLink; p; p = p->m_nextLink) {
-      unsigned long hashIndex = m_hash(p->m_key) % capacity;
+      ULONG hashIndex = m_hash(p->m_key) % capacity;
       newTable->insert(hashIndex, cloneNode(p));
     }
-    TRACE_DELETE(m_table);
-    delete m_table;
+    SAFEDELETE(m_table);
     m_table = newTable;
   } catch(...) { // clean up the mess
-    TRACE_DELETE(newTable);
-    delete newTable;
+    SAFEDELETE(newTable);
     throw;
   }
 }
@@ -301,9 +275,7 @@ const void *HashSetImpl::getMax() const {
 }
 
 AbstractIterator *HashSetImpl::getIterator() {
-  AbstractIterator *result = new HashSetIterator(*this);
-  TRACE_NEW(result);
-  return result;
+  return new HashSetIterator(*this);
 }
 
 const HashSetNode *HashSetImpl::findNode(const void *key) const {

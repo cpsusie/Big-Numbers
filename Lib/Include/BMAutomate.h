@@ -32,7 +32,7 @@ public:
   }
 
   StringSearchAlgorithm<Ctype> *clone() const {
-    return new BMAutomateTemplate<Ctype>(*this);
+    BMAutomateTemplate *a = new BMAutomateTemplate<Ctype>(*this); TRACE_NEW(a); return a;
   }
 
   ~BMAutomateTemplate() {
@@ -138,11 +138,11 @@ private:
   }
 
   void allocate(size_t patternLength) {
-    if (patternLength > INT_MAX) {
+    if(patternLength > INT_MAX) {
       throwInvalidArgumentException(__TFUNCTION__, _T("patternLength > %u not allowed"), INT_MAX);
     }
     m_plm1    = (m_patternLength = (int)patternLength) - 1;
-    m_pattern = new Ctype[patternLength+1];
+    m_pattern = new Ctype[patternLength+1]; TRACE_NEW(m_pattern);
     int CtypeMaxValue;
     switch (sizeof(Ctype)) {
     case 1 : CtypeMaxValue = 0xff  ; break;
@@ -150,14 +150,14 @@ private:
     default: throwException(_T("BMAutomateTemplate is valid for sizeof(Ctype) <= 2 only"));
     }
     m_delta1Size = CtypeMaxValue + 1;
-    m_delta1     = new int[m_delta1Size];
-    m_delta2     = new int[patternLength];
+    m_delta1     = new int[m_delta1Size ]; TRACE_NEW(m_delta1);
+    m_delta2     = new int[patternLength]; TRACE_NEW(m_delta2);
   }
 
   void deallocate() {
-    if(m_pattern) delete[] m_pattern;
-    if(m_delta1)  delete[] m_delta1;
-    if(m_delta2)  delete[] m_delta2;
+    SAFEDELETEARRAY(m_pattern);
+    SAFEDELETEARRAY(m_delta1);
+    SAFEDELETEARRAY(m_delta2);
     initPointers();
   }
 
