@@ -1,11 +1,6 @@
 #include "stdafx.h"
 #include <HashMap.h>
 
-static void usage() {
-  _ftprintf(stderr, _T("Usage:CheckRefCount filename\n"));
-  exit(-1);
-}
-
 class PointerObject {
 public:
   const int m_createLine;
@@ -66,9 +61,16 @@ KeywordMap::KeywordMap() {
 static const KeywordMap keywords;
 
 class PointerMap : public UInt64HashMap<PointerObject> {
+private:
+  bool m_ok;
 public:
+  PointerMap() : m_ok(true) {
+  }
   void handlePointerCommand(Keyword kw, Tokenizer &tok, int lineCount, const String &line);
   void logErrors();
+  inline bool isOk() const {
+    return m_ok;
+  }
 };
 
 void PointerMap::handlePointerCommand(Keyword kw, Tokenizer &tok, int lineCount, const String &line) {
@@ -83,6 +85,7 @@ void PointerMap::handlePointerCommand(Keyword kw, Tokenizer &tok, int lineCount,
       if(obj != NULL) {
         _tprintf(_T("Line %d<%s>:%s already allocated\n")
                 ,lineCount, line.cstr(), addrStr.cstr());
+        m_ok = false;
       }
       put(addr, PointerObject(lineCount, tok.getRemaining()));
     }
@@ -92,6 +95,7 @@ void PointerMap::handlePointerCommand(Keyword kw, Tokenizer &tok, int lineCount,
       if(obj == NULL) {
         _tprintf(_T("Line %d<%s>:%s not allocated\n")
                 ,lineCount, line.cstr(), addrStr.cstr());
+        m_ok = false;
       } else {
         remove(addr);
       }
@@ -99,23 +103,24 @@ void PointerMap::handlePointerCommand(Keyword kw, Tokenizer &tok, int lineCount,
     break;
   default:
     _tprintf(_T("Line %d<%s>:Invalid Heap-command\n"), lineCount, line.cstr());
+    m_ok = false;
   }
 }
 
 void PointerMap::logErrors() {
-  if(!isEmpty()) {
-    _tprintf(_T("Heap objects not deleted (memory leaks)\n"));
-    for(Iterator<Entry<UINT64, PointerObject> > it = entrySet().getIterator(); it.hasNext();) {
-      const Entry<UINT64, PointerObject> &e = it.next();
-      const UINT64         addr = e.getKey();
-      const PointerObject &obj  = e.getValue();
-      _tprintf(_T("%p created in line %5d still allocated (%s)\n")
-              ,(void*)addr
-              ,obj.m_createLine
-              ,obj.m_text.cstr()
-              );
-    }
+  if(isEmpty()) return;
+  _tprintf(_T("Heap objects not deleted (memory leaks)\n"));
+  for(Iterator<Entry<UINT64, PointerObject> > it = entrySet().getIterator(); it.hasNext();) {
+    const Entry<UINT64, PointerObject> &e = it.next();
+    const UINT64         addr = e.getKey();
+    const PointerObject &obj  = e.getValue();
+    _tprintf(_T("%p created in line %5d still allocated (%s)\n")
+            ,(void*)addr
+            ,obj.m_createLine
+            ,obj.m_text.cstr()
+            );
   }
+  m_ok = false;
 }
 
 class RefObject : public PointerObject {
@@ -130,9 +135,17 @@ public:
 };
 
 class RefObjectMap : public UInt64HashMap<RefObject> {
+private:
+  bool m_ok;
 public:
+public:
+  RefObjectMap() : m_ok(true) {
+  }
   void handleREFCNTCommand(Tokenizer &tok, int lineCount, const String &line);
   void logErrors();
+  inline bool isOk() const {
+    return m_ok;
+  }
 };
 
 void RefObjectMap::handleREFCNTCommand(Tokenizer &tok, int lineCount, const String &line) {
@@ -150,6 +163,7 @@ void RefObjectMap::handleREFCNTCommand(Tokenizer &tok, int lineCount, const Stri
   if(refCount < 0) {
     _tprintf(_T("Line %d<%s>:Negative refCount\n")
             ,lineCount, line.cstr());
+    m_ok = false;
   }
   switch(kw) {
   case KCREATE:
@@ -157,6 +171,7 @@ void RefObjectMap::handleREFCNTCommand(Tokenizer &tok, int lineCount, const Stri
       if(obj != NULL) {
         _tprintf(_T("Line %d<%s>:%s already allocated\n")
                 ,lineCount, line.cstr(), addrStr.cstr());
+        m_ok = false;
       } else if(refCount != 1) {
         _tprintf(_T("Line %d<%s>:%s created with refCount=%d (should be 1)\n")
                 ,lineCount, line.cstr(), addrStr.cstr(), refCount);
@@ -169,6 +184,7 @@ void RefObjectMap::handleREFCNTCommand(Tokenizer &tok, int lineCount, const Stri
       if(obj == NULL) {
         _tprintf(_T("Line %d<%s>:%s not allocated\n")
                 ,lineCount, line.cstr(), addrStr.cstr());
+        m_ok = false;
       } else {
         const int dr = refCount - obj->m_refCount;
         if(dr != 1) {
@@ -184,6 +200,7 @@ void RefObjectMap::handleREFCNTCommand(Tokenizer &tok, int lineCount, const Stri
       if(obj == NULL) {
         _tprintf(_T("Line %d<%s>:%s not allocated\n")
                 ,lineCount, line.cstr(), addrStr.cstr());
+        m_ok = false;
       } else {
         const int dr = refCount - obj->m_refCount;
         if(dr != -1) {
@@ -218,6 +235,7 @@ void RefObjectMap::handleREFCNTCommand(Tokenizer &tok, int lineCount, const Stri
       if(obj == NULL) {
         _tprintf(_T("Line %d<%s>:%s not allocated\n")
                 ,lineCount, line.cstr(), addrStr.cstr());
+        m_ok = false;
       } else {
         const int dr = refCount - obj->m_refCount;
         if((dr != -1) && (dr != 1)) {
@@ -233,6 +251,7 @@ void RefObjectMap::handleREFCNTCommand(Tokenizer &tok, int lineCount, const Stri
       if(obj == NULL) {
         _tprintf(_T("Line %d<%s>:%s not allocated\n")
                 ,lineCount, line.cstr(), addrStr.cstr());
+        m_ok = false;
       } else {
         remove(addr);
       }
@@ -241,31 +260,49 @@ void RefObjectMap::handleREFCNTCommand(Tokenizer &tok, int lineCount, const Stri
   default:
     _tprintf(_T("Line %d<%s>:Invalid REFCNT-command\n")
             ,lineCount, line.cstr());
+    m_ok = false;
   }
 }
 
 void RefObjectMap::logErrors() {
-  if(!isEmpty()) {
-    _tprintf(_T("RefCounted objects not deleted (memory leaks)\n"));
-    for (Iterator<Entry<UINT64, RefObject> > it = entrySet().getIterator(); it.hasNext();) {
-      const Entry<UINT64, RefObject> &e = it.next();
-      const UINT64     addr = e.getKey();
-      const RefObject &obj  = e.getValue();
-      _tprintf(_T("%p created in line %5d still allocated (refCount=%d) (%s)\n")
-              ,(void*)addr
-              ,obj.m_createLine
-              ,obj.m_refCount
-              ,obj.m_text.cstr()
-              );
-    }
+  if(isEmpty()) return;
+  _tprintf(_T("RefCounted objects not deleted (memory leaks)\n"));
+  for(Iterator<Entry<UINT64, RefObject> > it = entrySet().getIterator(); it.hasNext();) {
+    const Entry<UINT64, RefObject> &e = it.next();
+    const UINT64     addr = e.getKey();
+    const RefObject &obj  = e.getValue();
+    _tprintf(_T("%p created in line %5d still allocated (refCount=%d) (%s)\n")
+            ,(void*)addr
+            ,obj.m_createLine
+            ,obj.m_refCount
+            ,obj.m_text.cstr()
+            );
   }
+  m_ok = false;
+}
+
+static void usage() {
+  fprintf(stderr, "Usage: CheckRefCount [-v] file\n");
+  exit(-1);
 }
 
 int _tmain(int argc, TCHAR **argv) {
-  argv++;
+  bool verbose = false;
+  TCHAR *cp;
+  for(argv++; *argv && (*(cp = *argv) == '-'); argv++) {
+    for(cp++; *cp; cp++) {
+      switch(*cp) {
+      case 'v': verbose = true; continue;
+      default : usage();
+      }
+      break;
+    }
+  }
   if(!*argv) usage();
   String fileName = *argv;
   try {
+    const INT64 fileSize = STAT64( fileName).st_size;
+
     FILE *f = FOPEN(fileName, _T("r"));
     String line;
     int lineCount = 0;
@@ -274,6 +311,12 @@ int _tmain(int argc, TCHAR **argv) {
     try {
       while(readLine(f, line)) {
         lineCount++;
+        if(verbose && ((lineCount & 0xffff) == 0)) {
+          _ftprintf(stderr, _T("%5.1lf%%, Line:%s  \r")
+                          , PERCENT(GETPOS(f), fileSize)
+                          , format1000(lineCount).cstr()
+                   );
+        }
         Tokenizer tok(line,_T(":"));
         if(!tok.hasNext()) continue;
         const Keyword cmd = keywords.findKeyword(tok.next());
@@ -289,6 +332,9 @@ int _tmain(int argc, TCHAR **argv) {
       }
       refPointerMap.logErrors();
       pointerMap.logErrors();
+      if(refPointerMap.isOk() && pointerMap.isOk()) {
+        _tprintf(_T("All ok                   \n"));
+      }
     } catch (Exception e) {
       fclose(f);
       throwException(_T("Error in line %d:%s"), lineCount, e.what());
