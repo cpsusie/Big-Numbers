@@ -1,5 +1,4 @@
 #include "stdafx.h"
-
 #include "MainFrm.h"
 #include "PearlImageDoc.h"
 #include "PearlImageView.h"
@@ -29,15 +28,12 @@ BOOL CPearlImageApp::InitInstance() {
   InitCommonControlsEx(&InitCtrls);
 
   __super::InitInstance();
-
   EnableTaskbarInteraction(FALSE);
 
   // Change the registry key under which our settings are stored.
   SetRegistryKey(_T("JGMData"));
 
   LoadStdProfileSettings(16);  // Load standard INI file options (including MRU)
-
-  // Register document templates
 
   CSingleDocTemplate *pDocTemplate;
   pDocTemplate = new CSingleDocTemplate(
@@ -47,11 +43,9 @@ BOOL CPearlImageApp::InitInstance() {
       RUNTIME_CLASS(CPearlImageView));
   AddDocTemplate(pDocTemplate);
 
-  // Parse command line for standard shell commands, DDE, file open
   CCommandLineInfo cmdInfo;
   ParseCommandLine(cmdInfo);
 
-  // Dispatch commands specified on the command line
   if(!ProcessShellCommand(cmdInfo)) {
     return FALSE;
   }
@@ -68,13 +62,17 @@ BOOL CPearlImageApp::InitInstance() {
   return TRUE;
 }
 
+int CPearlImageApp::ExitInstance() {
+  m_device.detach();
+  return __super::ExitInstance();
+}
+
 String CPearlImageApp::getRecentFile(int index) {
   CRecentFileList &list = *m_pRecentFileList;
   if(index >= list.GetSize()) {
     return EMPTYSTRING;
   }
-  CString name = list[index];
-  return (LPCTSTR)name;
+  return (LPCTSTR)list[index];
 }
 
 void CPearlImageApp::removeRecentFile(int index) {
@@ -85,11 +83,10 @@ void CPearlImageApp::removeRecentFile(int index) {
 }
 
 PixRect *CPearlImageApp::fetchPixRect(const CSize &size) {
-  PixRect *pr = new PixRect(m_device, PIXRECT_PLAINSURFACE, size);
+  PixRect *pr = new PixRect(m_device, PIXRECT_PLAINSURFACE, size); TRACE_NEW(pr);
   pr->fillColor(WHITE);
   return pr;
 }
-
 
 class CAboutDlg : public CDialog {
 public:

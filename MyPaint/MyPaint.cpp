@@ -70,7 +70,7 @@ int CMyPaintApp::ExitInstance() {
 String CMyPaintApp::getRecentFile(int index) {
   CRecentFileList &list = *m_pRecentFileList;
   if(index >= list.GetSize()) {
-    return EMPTYSTRING;;
+    return EMPTYSTRING;
   }
   return (LPCTSTR)list[index];
 }
@@ -83,8 +83,7 @@ void CMyPaintApp::removeRecentFile(int index) {
 }
 
 PixRect *CMyPaintApp::fetchPixRect(const CSize &size) {
-  PixRect *pr = new PixRect(m_device, PIXRECT_PLAINSURFACE, size);
-  TRACE_NEW(pr);
+  PixRect *pr = new PixRect(m_device, PIXRECT_PLAINSURFACE, size); TRACE_NEW(pr);
   pr->fillColor(WHITE);
   return pr;
 }

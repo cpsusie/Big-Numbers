@@ -27,4 +27,3 @@ public:
 };
 
 extern CMyPaintApp theApp;
-

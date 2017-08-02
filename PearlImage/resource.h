@@ -66,8 +66,10 @@
 #define ID_POPTOOL                      32860
 #define ID_DELETE                       32861
 #define ID_MSG_CALCULATEIMAGE           32880
-#define ID_MSG_NEWIMAGE                 32881
-#define ID_MSG_WINDOWTOTOP              32882
+#define ID_MSG_SHOWDOCPOINT             32881
+#define ID_MSG_SHOWRESIZESIZE           32882
+#define ID_MSG_NEWIMAGE                 32883
+#define ID_MSG_WINDOWTOTOP              32884
 
 // Next default values for new objects
 // 

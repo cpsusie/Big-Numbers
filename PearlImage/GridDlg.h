@@ -12,11 +12,11 @@ private:
   HACCEL         m_accelTable;
   const PixRect *m_image;
   bool           m_changeHandlerActive;
-  double       m_cellSize;
-  unsigned int m_horizontalCount;
-  unsigned int m_verticalCount;
-  unsigned int m_colorCount;
-  double       m_cellSizeMM;
+  double         m_cellSize;
+  unsigned int   m_horizontalCount;
+  unsigned int   m_verticalCount;
+  unsigned int   m_colorCount;
+  double         m_cellSizeMM;
 
   DECLARE_DYNAMIC(CGridDlg)
 

@@ -9,6 +9,7 @@ private:
   static const TCHAR *s_saveFileDialogExtensions;
   static const TCHAR *s_loadFileDialogExtensions;
   HACCEL              m_accelTable;
+  bool                m_created;
   double              m_currentDegree;
   ScaleParameters     m_currentScale;
   CGridDlg           *m_gridDlg;
@@ -32,7 +33,7 @@ private:
   bool   hasGridDlg() const;
 
   inline CPearlImageView *getView() {
-    return (CPearlImageView*)GetActiveView();
+    return m_created ? (CPearlImageView*)GetActiveView() : NULL;
   }
 
   inline CPearlImageDoc *getDocument() {
@@ -54,6 +55,7 @@ public:
   bool loadFile(const String &fileName);
   void setCurrentZoomFactor(int id);
   void updateTitle();
+  void showPoint(const CPoint &p);
 
   void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
 #ifdef _DEBUG
@@ -111,5 +113,7 @@ protected:
     afx_msg void OnScrollToLeft();
     afx_msg void OnScrollToRight();
     afx_msg LRESULT OnMsgCalculateImage(WPARAM wp, LPARAM lp);
+    afx_msg LRESULT OnMsgShowDocPoint(WPARAM wp, LPARAM lp);
+    afx_msg LRESULT OnMsgShowResizeSize(WPARAM wp, LPARAM lp);
     DECLARE_MESSAGE_MAP()
 };

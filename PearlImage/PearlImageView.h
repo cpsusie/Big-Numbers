@@ -9,17 +9,19 @@ class CPearlImageView : public CScrollView {
 private:
   bool             m_initialized;
   int              m_currentZoomFactor;
-  CPoint           m_lastPoint, m_maxScroll;
-  CPrintInfo      *m_printInfo;
+  // last point in document coordinates
+  CPoint           m_currentDocPoint;
+  CPoint           m_maxScroll;
+   CPrintInfo     *m_printInfo;
   EdgeMarkArray    m_edgeMark;
   const EdgeMark  *m_currentEdgeMark;
   CRect            m_dragRect,*m_lastDragRect;
 
-  CMainFrame *getMainFrame() {
+  inline CMainFrame *getMainFrame() {
     return (CMainFrame*)GetParent();
   }
 
-  const CMainFrame *getMainFrame() const {
+  inline const CMainFrame *getMainFrame() const {
     return (const CMainFrame*)GetParent();
   }
 
@@ -28,7 +30,11 @@ private:
   inline const EdgeMark *findEdgeMark(const CPoint &viewp) const {
     return m_edgeMark.findEdgeMark(viewp);
   }
-  void         setCursor(int id);
+  inline void  setCursor(int id) {
+    setWindowCursor(this,MAKEINTRESOURCE(id));
+  }
+
+  void         resetResizingFrame();
   void         paintResizingFrame(const CPoint &docp);
   void         resizeDocument();
   inline CSize getDocSize() const {
@@ -60,7 +66,7 @@ protected:
   DECLARE_DYNCREATE(CPearlImageView)
 public:
     CPearlImageDoc *GetDocument();
-    const CPearlImageDoc *GetDocument() const {
+    inline const CPearlImageDoc *GetDocument() const {
        return (const CPearlImageDoc*)m_pDocument;
     }
     const PixRect *getImage();
@@ -73,21 +79,23 @@ public:
       return m_currentZoomFactor;
     }
 
-    CPoint     getCurrentMousePoint() const {
-      return m_lastPoint;
+    inline CPoint   getCurrentDocPoint() const {
+      return m_currentDocPoint;
     }
+    void       setCurrentDocPoint(const CPoint &p);
 
     inline COLORREF getBackgroundColor() const {
       return RGB(207,217,232);
     }
-    bool         isMouseOnDocument() const;
+    inline bool         isMouseOnDocument() const {
+      return getDocumentRect().PtInRect(m_currentDocPoint) ? true : false;
+    }
 
     // in zoomed Doc
-    const CPoint &getMaxScroll() const {
+    inline const CPoint &getMaxScroll() const {
       return m_maxScroll;
     }
 
-    virtual ~CPearlImageView();
     virtual void OnDraw(CDC *pDC);  // overridden to draw this view
     virtual void OnInitialUpdate();
     virtual BOOL PreTranslateMessage(MSG *pMsg);

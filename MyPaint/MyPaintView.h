@@ -103,7 +103,6 @@ public:
       return m_maxScroll;
     }
 
-    virtual ~CMyPaintView();
     virtual void OnDraw(CDC *pDC);  // overridden to draw this view
     virtual void OnInitialUpdate();
     virtual BOOL PreTranslateMessage(MSG *pMsg);

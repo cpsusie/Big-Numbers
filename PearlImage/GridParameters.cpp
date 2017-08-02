@@ -109,7 +109,7 @@ PixRect *GridParameters::calculateImage(const PixRect *image, PearlDiagram *diag
     hdc = result->getDC();
     PixRect::stretchBlt(hdc, ORIGIN, imageSize, SRCCOPY, tmp, ORIGIN, tmp->getSize());
     result->releaseDC(hdc);
-    delete tmp;
+    SAFEDELETE(tmp);
   }
   return result;
 }

@@ -171,7 +171,7 @@ void CGridDlg::OnBnClickedButtonDiagram() {
   const GridParameters v = getCurrentValue();
   PearlDiagram diagram;
   PixRect *tmp = v.calculateImage(getImage(), &diagram);
-  delete tmp;
+  SAFEDELETE(tmp);
 
   const String dumpFileName = createTempFileName(_T("txt"));
   FILE *f = NULL;
@@ -429,10 +429,7 @@ void CGridDlg::setImage(const PixRect *image) {
 }
 
 void CGridDlg::releaseImage() {
-  if(m_image != NULL) {
-    delete m_image;
-    m_image = NULL;
-  }
+  SAFEDELETE(m_image);
 }
 
 void CGridDlg::cellCountFromSize() {

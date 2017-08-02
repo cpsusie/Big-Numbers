@@ -61,6 +61,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
     ON_COMMAND(ID_SCROLL_TO_LEFT                  , OnScrollToLeft                    )
     ON_COMMAND(ID_SCROLL_TO_RIGHT                 , OnScrollToRight                   )
     ON_MESSAGE(ID_MSG_CALCULATEIMAGE              , OnMsgCalculateImage               )
+    ON_MESSAGE(ID_MSG_SHOWDOCPOINT                , OnMsgShowDocPoint                 )
+    ON_MESSAGE(ID_MSG_SHOWRESIZESIZE              , OnMsgShowResizeSize               )
 END_MESSAGE_MAP()
 
 static UINT indicators[] = {
@@ -75,6 +77,7 @@ CMainFrame::CMainFrame() {
   m_currentDegree            = 0;
   m_gridDlg                  = NULL;
   m_gridDlgThread            = NULL;
+  m_created                  = false;
 }
 
 // --------------------------- Public ---------------------------
@@ -89,14 +92,6 @@ BOOL CMainFrame::PreTranslateMessage(MSG *pMsg) {
   } else {
     result = __super::PreTranslateMessage(pMsg);
   }
-  CPearlImageView *view = getView();
-  if(view->isMouseOnDocument()) {
-    const CPoint mp = getView()->getCurrentMousePoint();
-    m_wndStatusBar.SetPaneText(0,format(_T("%3d,%3d px"),mp.x,mp.y).cstr());
-  } else {
-    m_wndStatusBar.SetPaneText(0,EMPTYSTRING);
-  }
-  m_wndStatusBar.SetPaneText(2,getDocument()->getInfo().cstr());
   ajourEnabling();
   return result;
 }
@@ -196,6 +191,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
   m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_MAINFRAME));
   m_bAutoMenuEnable = false;
   theApp.m_device.attach(*this);
+  m_created = true;
 
   createGridDlg();
   return 0;
@@ -214,7 +210,8 @@ void CMainFrame::OnAppExit() {
   if(!checkSave()) {
     return;
   }
-  PostMessage(WM_QUIT);
+  m_created = false;
+  DestroyWindow();
 }
 
 void CMainFrame::OnFileOpen() {
@@ -355,6 +352,26 @@ void CMainFrame::OnFunctionMakePearlGrid() {
   }
 }
 
+LRESULT CMainFrame::OnMsgShowDocPoint(WPARAM wp, LPARAM lp) {
+  if(m_created) return 0;
+  CPearlImageView *view = getView();
+  if(view->isMouseOnDocument()) {
+    showPoint(view->getCurrentDocPoint());
+  } else {
+    m_wndStatusBar.SetPaneText(1,EMPTYSTRING);
+  }
+  return 0;
+}
+
+LRESULT CMainFrame::OnMsgShowResizeSize(WPARAM wp, LPARAM lp) {
+  showPoint(CPoint((int)wp, (int)lp));
+  return 0;
+}
+
+void CMainFrame::showPoint(const CPoint &p) {
+  m_wndStatusBar.SetPaneText(1,format(_T("%3d,%3d px"),p.x,p.y).cstr());
+}
+
 void CMainFrame::OnScrollLineDown() {
   scroll(0,20);
 }
@@ -434,6 +451,7 @@ const TCHAR *CMainFrame::s_loadFileDialogExtensions = _T("Picture files\0*.bmp;*
                                                          "DIB-files (*.dib)\0*.dib;\0"
                                                          "All files (*.*)\0*.*\0\0");
 
+
 String CMainFrame::getLoadFileName() {
   CFileDialog dlg(TRUE);
   dlg.m_ofn.lpstrFilter = s_loadFileDialogExtensions;
@@ -487,7 +505,7 @@ bool CMainFrame::checkSave() { // return true to continue user action
   if(!getDocument()->IsModified()) {
     return true;
   }
-  switch(MessageBox(_T("Save changes?"),_T("Save"),MB_YESNOCANCEL | MB_ICONEXCLAMATION)) {
+  switch(MessageBox(_T("Save changes"),_T("Save"),MB_YESNOCANCEL | MB_ICONQUESTION)) {
   case IDYES   :
     return onFileSave();
   case IDNO    :
@@ -551,7 +569,7 @@ void CMainFrame::applyMirror(bool vertical) {
 
 void CMainFrame::createGridDlg() {
   if(m_gridDlg == NULL) {
-    m_gridDlg = new CGridDlg();
+    m_gridDlg = new CGridDlg(); TRACE_NEW(m_gridDlg);
     m_gridDlg->addPropertyChangeListener(this);
   }
   if(m_gridDlgThread == NULL) {

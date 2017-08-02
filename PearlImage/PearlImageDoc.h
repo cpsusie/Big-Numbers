@@ -21,8 +21,7 @@ public:
   // NB... No destructor, copy constructor or operator=
   void clear() {
     if(m_pr != NULL) {
-      delete m_pr;
-      m_pr = NULL;
+      SAFEDELETE(m_pr);
       updateTimeStamp();
     }
   }
@@ -100,6 +99,7 @@ public:
   }
 
   void setSize(const CSize &newSize);
+  void clear();
 
   const PixRect *getImage() {
     return m_image.m_pr;

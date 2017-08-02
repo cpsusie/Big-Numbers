@@ -26,9 +26,7 @@ CPearlImageView::CPearlImageView() {
   m_printInfo         = NULL;
   m_initialized       = false;
   m_currentEdgeMark   = NULL;
-}
-
-CPearlImageView::~CPearlImageView() {
+  resetResizingFrame();
 }
 
 void CPearlImageView::OnDraw(CDC *pDC) {
@@ -71,7 +69,7 @@ void CPearlImageView::paintBackgroundAndEdge(CDC &dc) {
     const CPoint rightMarkPos( cornerMarkPos.x  ,cornerMarkPos.y/2);
     const CPoint bottomMarkPos(cornerMarkPos.x/2,cornerMarkPos.y  );
 
-    m_edgeMark.clear();
+    m_edgeMark.setAllInvisible();
     const CPoint vtl  = getViewTopLeft();
     const CSize  bckWH = clRect.Size() - cornerMarkPos + vtl;
     if(bckWH.cx > 0) {   // paint right background
@@ -134,11 +132,18 @@ void CPearlImageView::clear() {
   OnPrepareDC(&dc);
   CSize docSize = GetDocument()->getSize();
   dc.FillSolidRect(0,0,docSize.cx*m_currentZoomFactor,docSize.cy*m_currentZoomFactor,WHITE);
+  resetResizingFrame();
 }
 
 void CPearlImageView::setCurrentZoomFactor(int factor) {
   m_currentZoomFactor = factor;
   refreshDoc();
+}
+
+void CPearlImageView::setCurrentDocPoint(const CPoint &p) {
+  if(p != m_currentDocPoint) {
+    m_currentDocPoint = p;
+  }
 }
 
 BOOL CPearlImageView::OnPreparePrinting(CPrintInfo *pInfo) {
@@ -187,10 +192,6 @@ void CPearlImageView::setScrollRange() {
   m_maxScroll = CPoint(max(0,imageSize.cx-clientSize.cx),max(0,imageSize.cy-clientSize.cy));
 }
 
-void CPearlImageView::setCursor(int id) {
-  setWindowCursor(this,MAKEINTRESOURCE(id));
-}
-
 void CPearlImageView::OnSize(UINT nType, int cx, int cy) {
   __super::OnSize(nType, cx, cy);
   if(m_initialized) {
@@ -209,29 +210,25 @@ CPoint CPearlImageView::viewToDoc(const CPoint &viewPoint) const {
   return CPoint((viewPoint.x+vtl.x)/m_currentZoomFactor, (viewPoint.y+vtl.y)/m_currentZoomFactor);
 }
 
-bool CPearlImageView::isMouseOnDocument() const {
-  return getDocumentRect().PtInRect(m_lastPoint) ? true : false;
-}
-
 void CPearlImageView::OnLButtonDown(UINT nFlags, CPoint point) {
-  m_lastPoint = viewToDoc(point);
+  setCurrentDocPoint(viewToDoc(point));
   __super::OnLButtonDown(nFlags, point);
 }
 
 void CPearlImageView::OnLButtonDblClk(UINT nFlags, CPoint point) {
-  m_lastPoint = viewToDoc(point);
+  setCurrentDocPoint(viewToDoc(point));
   __super::OnLButtonDblClk(nFlags, point);
 }
 
 void CPearlImageView::OnLButtonUp(UINT nFlags, CPoint point) {
-  m_lastPoint = viewToDoc(point);
+  setCurrentDocPoint(viewToDoc(point));
   __super::OnLButtonUp(nFlags, point);
 }
 
 void CPearlImageView::OnMouseMove(UINT nFlags, CPoint point) {
   const CPoint newPoint = viewToDoc(point);
-  if(newPoint != m_lastPoint) {
-    m_lastPoint = newPoint;
+  if(newPoint != m_currentDocPoint) {
+    setCurrentDocPoint(newPoint);
   }
   __super::OnMouseMove(nFlags, point);
 }
@@ -244,7 +241,7 @@ BOOL CPearlImageView::PreTranslateMessage(MSG *pMsg) {
   switch(pMsg->message) {
   case WM_LBUTTONDOWN:
     if(mm != NULL) {
-      m_lastDragRect    = NULL;
+      resetResizingFrame();
       m_currentEdgeMark = mm;
       return TRUE;
     } else if(!getViewRect().PtInRect(p)) {
@@ -254,6 +251,7 @@ BOOL CPearlImageView::PreTranslateMessage(MSG *pMsg) {
   case WM_LBUTTONUP  :
     if(m_currentEdgeMark != NULL) {
       resizeDocument();
+      resetResizingFrame();
       m_currentEdgeMark = NULL;
       if(mm != NULL) {
         setCursor(mm->getCursorId());
@@ -282,6 +280,11 @@ BOOL CPearlImageView::PreTranslateMessage(MSG *pMsg) {
   return __super::PreTranslateMessage(pMsg);
 }
 
+void CPearlImageView::resetResizingFrame() {
+  m_lastDragRect  = NULL;
+  m_dragRect.left = m_dragRect.top = m_dragRect.right = m_dragRect.bottom = 0;
+}
+
 void CPearlImageView::paintResizingFrame(const CPoint &docp) {
   const CPoint lrCorner = docToView(getDocSize());
   const CPoint vp       = docToView(docp);
@@ -291,12 +294,13 @@ void CPearlImageView::paintResizingFrame(const CPoint &docp) {
   case BOTTOMMARK     : newRect = CRect(0,0,lrCorner.x, vp.y      ); break;
   case RIGHTBOTTOMMARK: newRect = CRect(0,0,vp.x      , vp.y      ); break;
   }
-
-  CClientDC dc(this);
-  OnPrepareDC(&dc);
-  dc.DrawDragRect(&newRect,CSize(1,1),m_lastDragRect,CSize(1,1));
-  m_dragRect     = newRect;
-  m_lastDragRect = &m_dragRect;
+  if(newRect != m_dragRect) {
+    CClientDC dc(this);
+    OnPrepareDC(&dc);
+    dc.DrawDragRect(&newRect,CSize(1,1),m_lastDragRect,CSize(1,1));
+    m_dragRect     = newRect;
+    m_lastDragRect = &m_dragRect;
+  }
 }
 
 void CPearlImageView::resizeDocument() {

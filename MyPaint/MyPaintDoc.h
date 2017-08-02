@@ -45,8 +45,8 @@ public:
     return m_image ? m_image->getSize() : CSize(0,0);
   }
 
-  void clear();
   void setSize(const CSize &newSize);
+  void clear();
 
   PixRect *getImage();
   void setImage(PixRect *image);
@@ -63,4 +63,3 @@ public:
   virtual void Dump(CDumpContext& dc) const;
 #endif
 };
-

@@ -63,6 +63,7 @@ String EdgeMark::toString() const {
 #endif // _DEBUG
 
 EdgeMarkArray::EdgeMarkArray() {
+  setCapacity(3);
   add(EdgeMark(RIGHTMARK      ));
   add(EdgeMark(BOTTOMMARK     ));
   add(EdgeMark(RIGHTBOTTOMMARK));
@@ -74,7 +75,7 @@ void EdgeMarkArray::setPosition(EdgeMarkType type, const CPoint &pos) {
   m_visibleCount++;
 }
 
-void EdgeMarkArray::clear() {
+void EdgeMarkArray::setAllInvisible() {
   for(size_t i = 0; i < size(); i++) {
     (*this)[i].setVisible(false);
   }

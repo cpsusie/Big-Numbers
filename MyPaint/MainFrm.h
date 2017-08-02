@@ -9,6 +9,7 @@ private:
   static const TCHAR *s_saveFileDialogExtensions;
   static const TCHAR *s_loadFileDialogExtensions;
   HACCEL           m_accelTable;
+  bool             m_created;
   double           m_currentDegree;
   ScaleParameters  m_currentScale;
   Stack<DrawTool*> m_toolStack;
@@ -27,11 +28,13 @@ private:
   bool save(const CString &name);
   bool checkSave();
   void scroll(int dx, int dy);
-  CPoint getMaxScroll();
+  inline CPoint getMaxScroll() {
+    return getView()->getMaxScroll();
+  }
   void applyFilter(PixRectFilter &filter);
   void applyMirror(bool vertical);
   inline CMyPaintView *getView() {
-    return (CMyPaintView*)GetActiveView();
+    return m_created ? (CMyPaintView*)GetActiveView() : NULL;
   }
 
   inline CMyPaintDoc *getDocument() {

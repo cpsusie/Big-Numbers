@@ -19,24 +19,26 @@ private:
   CRect createActiveRect( const CPoint &p) const;
   CRect createVisibleRect(const CPoint &p) const;
 public:
-  EdgeMark(EdgeMarkType type) : m_type(type), m_visible(false) {
+  inline EdgeMark() {
+  }
+  inline EdgeMark(EdgeMarkType type) : m_type(type), m_visible(false) {
   }
   int getCursorId() const;
 
-  EdgeMarkType getType() const {
+  inline EdgeMarkType getType() const {
     return m_type;
   }
   void setPosition(const CPoint &p);
-  void setVisible(bool visible) {
+  inline void setVisible(bool visible) {
     m_visible = visible;
   }
-  bool isVisible()  const {
+  inline bool isVisible()  const {
     return m_visible;
   }
-  const CRect &getActiveRect() const {
+  inline const CRect &getActiveRect() const {
     return m_activeRect;
   }
-  const CRect &getVisibleRect() const {
+  inline const CRect &getVisibleRect() const {
     return m_visibleRect;
   }
 #ifdef _DEBUG
@@ -44,13 +46,13 @@ public:
 #endif
 };
 
-class EdgeMarkArray : private Array<EdgeMark> {
+class EdgeMarkArray : private CompactArray<EdgeMark> {
 private:
   int m_visibleCount;
 public:
   EdgeMarkArray();
+  void setAllInvisible();
   void setPosition(EdgeMarkType type, const CPoint &pos);
-  void clear();
   inline int getVisibleCount() const {
     return m_visibleCount;
   }

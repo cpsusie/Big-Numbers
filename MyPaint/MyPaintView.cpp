@@ -29,15 +29,12 @@ CMyPaintView::CMyPaintView() {
   resetResizingFrame();
 }
 
-CMyPaintView::~CMyPaintView() {
-}
-
 void CMyPaintView::OnDraw(CDC *pDC) {
-  CMyPaintDoc *doc        = GetDocument();
-  PixRect     *pr         = doc->getImage();
-  CSize        docSizePix = doc->getSize();
-  HDC          hdc        = pr->getDC();
-  CDC         *docDC      = CDC::FromHandle(hdc);
+  CMyPaintDoc   *doc        = GetDocument();
+  const PixRect *pr         = doc->getImage();
+  CSize          docSizePix = doc->getSize();
+  HDC            hdc        = pr->getDC();
+  CDC           *docDC      = CDC::FromHandle(hdc);
   if(!pDC->IsPrinting()) {
     if(m_currentZoomFactor == 1) {
       pDC->BitBlt(0,0,docSizePix.cx,docSizePix.cy
@@ -65,7 +62,7 @@ void CMyPaintView::paintBackgroundAndEdge(CDC &dc) {
   const CPoint rightMarkPos( cornerMarkPos.x  ,cornerMarkPos.y/2);
   const CPoint bottomMarkPos(cornerMarkPos.x/2,cornerMarkPos.y  );
 
-  m_edgeMark.clear();
+  m_edgeMark.setAllInvisible();
   const CPoint vtl  = getViewTopLeft();
   const CSize  bckWH = clRect.Size() - cornerMarkPos + vtl;
   if(bckWH.cx > 0) {   // paint right background

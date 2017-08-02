@@ -105,6 +105,7 @@ CMainFrame::CMainFrame() {
   m_currentDegree            = 0;
   m_eraseToolSize            = CSize(10,5);
   m_approximateFillTolerance = 1;
+  m_created                  = false;
 }
 
 // --------------------------- Public ---------------------------
@@ -160,9 +161,9 @@ void CMainFrame::setCurrentZoomFactor(int id) {
 }
 
 void CMainFrame::updateTitle() {
-  CMyPaintDoc *doc = getDocument();
-  CString title    = doc->GetTitle();
-  CSize   size     = doc->getSize();
+  CMyPaintDoc *doc   = getDocument();
+  CString      title = doc->GetTitle();
+  CSize        size  = doc->getSize();
   setWindowText(this, format(_T("%s - %dx%d"), (LPCTSTR)title, size.cx,size.cy));
 }
 
@@ -204,7 +205,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
   m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_MAINFRAME));
   m_bAutoMenuEnable = false;
   theApp.m_device.attach(*this);
-
+  m_created = true;
   return 0;
 }
 
@@ -225,7 +226,8 @@ void CMainFrame::OnAppExit() {
   }
   resetCurrentDrawTool();
   getDocument()->clear();
-  PostMessage(WM_QUIT);
+  m_created = false;
+  DestroyWindow();
 }
 
 void CMainFrame::OnFileNew() {
@@ -494,6 +496,7 @@ LRESULT CMainFrame::OnMsgPopTool(WPARAM wp, LPARAM lp) {
 }
 
 LRESULT CMainFrame::OnMsgShowDocPoint(WPARAM wp, LPARAM lp) {
+  if(m_created) return 0;
   CMyPaintView *view = getView();
   if(view->isMouseOnDocument()) {
     showPoint(view->getCurrentDocPoint());
@@ -755,13 +758,6 @@ void CMainFrame::scroll(int dx, int dy) {
   const int newX = minMax(topLeft.x+dx,0,maxScroll.x);
   const int newY = minMax(topLeft.y+dy,0,maxScroll.y);
   getView()->ScrollToPosition(CPoint(newX,newY));
-}
-
-CPoint CMainFrame::getMaxScroll() {
-  const CSize rectSize = getClientRect(getView()).Size();
-  const CSize docSize  = getDocument()->getSize();
-  const int   zoom     = getView()->getCurrentZoomFactor();
-  return CPoint(max(0,docSize.cx*zoom-rectSize.cx),max(0,docSize.cy*zoom-rectSize.cy));
 }
 
 void CMainFrame::applyFilter(PixRectFilter &filter) {
