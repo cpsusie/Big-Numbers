@@ -8,7 +8,7 @@
 
 DEFINECLASSNAME(Thread);
 
-static unsigned long threadHash(const Thread * const &t) {
+static ULONG threadHash(const Thread * const &t) {
   return t->getId();
 }
 
@@ -34,6 +34,9 @@ public:
     m_gate.signal();
   }
   void killDeamonThreads();
+  inline bool isEmpty() const {
+    return __super::isEmpty();
+  }
 };
 
 void ThreadSet::killDeamonThreads() {
@@ -101,12 +104,15 @@ public:
 };
 
 InitThreadClass::InitThreadClass() {
-  runningThreadSet = new ThreadSet;
+  runningThreadSet = new ThreadSet; TRACE_NEW(runningThreadSet);
   Thread::s_defaultUncaughtExceptionHandler = &_defaultExceptionHandler;
 }
 
 InitThreadClass::~InitThreadClass() {
   runningThreadSet->killDeamonThreads();
+  if(runningThreadSet->isEmpty()) {
+    SAFEDELETE(runningThreadSet);
+  }
 }
 
 static InitThreadClass ThreadClassInitializer;

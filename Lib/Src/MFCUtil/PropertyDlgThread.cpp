@@ -37,8 +37,13 @@ BOOL CPropertyDlgThread::InitInstance() {
     intptr_t nResponse = m_dlg->DoModal();
     m_inModalLoop = false;
   }
-  SAFEDELETE(m_dlg);
+  PostThreadMessage(WM_QUIT,0,0);
   return TRUE;
+}
+
+int CPropertyDlgThread::ExitInstance() {
+  SAFEDELETE(m_dlg);
+  return CWinThread::ExitInstance();
 }
 
 void CPropertyDlgThread::setDialogVisible(bool visible) {
@@ -88,9 +93,10 @@ void CPropertyDlgThread::reposition() {
 
 void CPropertyDlgThread::kill() {
   m_killed = true;
-  PostThreadMessage(WM_QUIT,0,0);
   if(!m_inModalLoop) {
     ResumeThread();
+  } else {
+    m_dlg->EndDialog(IDOK);
   }
 
   for(;;) {

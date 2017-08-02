@@ -72,10 +72,12 @@ public:
 
   void   addObject(   CoordinateSystemObject *object);
   void   removeObject(CoordinateSystemObject *object);
-  void   removeAllObjects() { // will not delete objects
+  // will not delete objects
+  void   removeAllObjects() {
     m_objectArray.clear();
   }
-  void deleteAllObjects(); // remove AND delete all objects
+  // remove AND delete all objects
+  void deleteAllObjects();
   int    getObjectCount() const {
     return (int)m_objectArray.size();
   }
@@ -178,4 +180,3 @@ public:
 
   DECLARE_MESSAGE_MAP()
 };
-

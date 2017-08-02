@@ -12,7 +12,7 @@ void PropertyDialogMap::addDialog(PropertyDialog *dlg) {
 void PropertyDialogMap::removeDialog(int id) {
   CPropertyDlgThread **thr = get(id);
   if(thr) {
-    if (*thr == m_visibleDlgThread) {
+    if(*thr == m_visibleDlgThread) {
       m_visibleDlgThread = NULL;
     }
     (*thr)->kill();
@@ -26,7 +26,7 @@ void PropertyDialogMap::clear() {
     Entry<int, CPropertyDlgThread*> &e = it.next();
     e.getValue()->kill();
   }
-  HashMap<int, CPropertyDlgThread*>::clear();
+  __super::clear();
 }
 
 bool PropertyDialogMap::isDialogVisible() const {
@@ -59,7 +59,7 @@ void PropertyDialogMap::showDialog(int id, const void *data) const {
 
 bool PropertyDialogMap::hasPropertyContainer(const PropertyContainer *pc) const {
   for(Iterator<CPropertyDlgThread*> it = ((PropertyDialogMap*)this)->values().getIterator(); it.hasNext();) {
-    if (it.next()->getPropertyContainer() == pc) {
+    if(it.next()->getPropertyContainer() == pc) {
       return true;
     }
   }

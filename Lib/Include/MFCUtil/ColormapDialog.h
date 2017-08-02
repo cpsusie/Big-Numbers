@@ -13,16 +13,17 @@ public:
   }
   ~CColormapDialog() {
     for (size_t i = 0; i < m_sliderArray.size(); i++) {
-      delete m_sliderArray[i];
+      CSliderCtrlWithTransformation *ctrl = m_sliderArray[i];
+      SAFEDELETE(ctrl);
     }
     m_sliderArray.clear();
   }
 protected:
   void initSlider(int ctrlId, double from, double to, UINT stepCount = 100, IntervalScale type=LINEAR) {
-    m_sliderArray.add(new CSliderCtrlWithTransformation());
-    CSliderCtrlWithTransformation &ctrl = *m_sliderArray.last();
+    CSliderCtrlWithTransformation *ctrl = new CSliderCtrlWithTransformation(); TRACE_NEW(ctrl);
+    m_sliderArray.add(ctrl);
     try {
-      ctrl.substituteControl(this, ctrlId, DoubleInterval(from,to), stepCount, type);
+      ctrl->substituteControl(this, ctrlId, DoubleInterval(from,to), stepCount, type);
     } catch (Exception e) {
       Message(_T("%s"), e.what());
     }

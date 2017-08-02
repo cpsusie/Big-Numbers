@@ -129,6 +129,7 @@ AbstractAxisPainter *SystemPainter::createAxisPainter(bool xAxis, AxisType type)
                                  return NULL;
   }
   TRACE_NEW(result);
+  return result;
 }
 
 void SystemPainter::setOccupiedRect(const CRect &r) {

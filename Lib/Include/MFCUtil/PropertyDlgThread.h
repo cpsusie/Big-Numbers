@@ -30,6 +30,7 @@ public:
     return m_dlg->getPropertyId();
   }
   virtual BOOL InitInstance();
+  virtual int ExitInstance();
   static CPropertyDlgThread *startThread(PropertyDialog *dlg);
 };
 
