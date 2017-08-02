@@ -135,10 +135,8 @@ void PixRect::fillEllipse(const CRect &rect, D3DCOLOR color, bool invert) {
     return;
   }
   r -= rect.TopLeft();
-  PixRect *psrc  = new PixRect(m_device, getType(), r.Size(), getPool(), getPixelFormat());
-  TRACE_NEW(psrc);
-  PixRect *pmask = new PixRect(m_device, getType(), r.Size(), getPool(), getPixelFormat());
-  TRACE_NEW(pmask);
+  PixRect *psrc  = new PixRect(m_device, getType(), r.Size(), getPool(), getPixelFormat()); TRACE_NEW(psrc);
+  PixRect *pmask = new PixRect(m_device, getType(), r.Size(), getPool(), getPixelFormat()); TRACE_NEW(pmask);
   psrc->fillRect(0,0,r.Width(),r.Height(),color);
   pmask->fillRect(0,0,r.Width(),r.Height(),D3D_BLACK);  // set mask to black
   pmask->ellipse(r,D3D_WHITE);                          // draw white ellipse on mask

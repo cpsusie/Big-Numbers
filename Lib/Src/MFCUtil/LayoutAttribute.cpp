@@ -45,7 +45,7 @@ void LayoutAttribute::setControlRect(const CRect &r) {
 void LayoutAttribute::setFont(CFont *font) {
   if(m_font && (m_font != m_startFont)) {
     m_font->DeleteObject();
-    delete m_font;
+    SAFEDELETE(m_font);
   }
   m_font = font;
 }

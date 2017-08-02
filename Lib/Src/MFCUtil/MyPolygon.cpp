@@ -55,22 +55,22 @@ void PixRect::fillPolygon(const MyPolygon &polygon, D3DCOLOR color, bool invert)
   CRect rect = polygon.getBoundsRect();
   MyPolygon poly = polygon;
   poly.move(-rect.TopLeft());
-  PixRect *psrc  = new PixRect(m_device, getType(), rect.Size(), getPool(), getPixelFormat());
-  PixRect *pmask = new PixRect(m_device, getType(), rect.Size(), getPool(), getPixelFormat());
+  PixRect *psrc  = new PixRect(m_device, getType(), rect.Size(), getPool(), getPixelFormat()); TRACE_NEW(psrc);
+  PixRect *pmask = new PixRect(m_device, getType(), rect.Size(), getPool(), getPixelFormat()); TRACE_NEW(pmask);
   psrc->fillRect(0,0,rect.Width(),rect.Height(),color);
   pmask->fillRect(0,0,rect.Width(),rect.Height(),0);   // set mask to black
   pmask->polygon(poly,D3D_WHITE);                      // draw white frame around polygon on mask
 
-  PolygonFiller *polygonFiller = new PolygonFiller(pmask, poly);
+  PolygonFiller *polygonFiller = new PolygonFiller(pmask, poly); TRACE_NEW(polygonFiller);
   poly.applyToEdge(*polygonFiller);
   polygonFiller->restoreBlackOutSideRegion();
-  delete polygonFiller;
+  SAFEDELETE(polygonFiller);
 
 //  rop(rect.left,rect.top,rect.Width(),rect.Height(),DSTINVERT,NULL,0,0);
 //  mask(rect.left,rect.top,rect.Width(),rect.Height(), MAKEROP4(SRCCOPY,DSTINVERT), psrc, 0,0, pmask);
   mask(rect.left,rect.top,rect.Width(),rect.Height(), SRCCOPY, psrc, 0,0, pmask);
-  delete pmask;
-  delete psrc;
+  SAFEDELETE(pmask);
+  SAFEDELETE(psrc );
 }
 
 void MyPolygon::move(const CPoint &dp) {

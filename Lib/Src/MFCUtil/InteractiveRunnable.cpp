@@ -4,17 +4,14 @@
 #pragma warning(disable : 4244)
 
 void InteractiveRunnable::cleanup() {
-  if(m_timeEstimator) {
-    delete m_timeEstimator;
-    m_timeEstimator = NULL;
-  }
+  SAFEDELETE(m_timeEstimator);
 }
 
 void InteractiveRunnable::setStartTime() {
   cleanup();
   m_jobStartTime = Timestamp();
-  if (getSupportedFeatures() & IR_SHOWTIMEESTIMATE) {
-    m_timeEstimator = new TimeEstimator(*this);
+  if(getSupportedFeatures() & IR_SHOWTIMEESTIMATE) {
+    m_timeEstimator = new TimeEstimator(*this); TRACE_NEW(m_timeEstimator);
   }
 }
 

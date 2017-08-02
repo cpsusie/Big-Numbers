@@ -57,13 +57,13 @@ static String setItemText(HMENU menu, UINT index, const String &itemText) {
   itemInfo.dwTypeData = NULL;
   GetMenuItemInfo(menu, index, TRUE, &itemInfo);
   const int bufferSize = itemInfo.cch+1;
-  TCHAR *buffer = new TCHAR[bufferSize];
+  TCHAR *buffer = new TCHAR[bufferSize]; TRACE_NEW(buffer);
   itemInfo.dwTypeData = buffer;
   itemInfo.cch++;
   GetMenuItemInfo(menu, index, TRUE, &itemInfo);
   String result = itemInfo.dwTypeData ? itemInfo.dwTypeData : EMPTYSTRING;
   String tmp = itemText;
-  delete[] buffer;
+  SAFEDELETEARRAY(buffer);
   itemInfo.dwTypeData = tmp.cstr();
   SetMenuItemInfo(menu, index, TRUE, &itemInfo);
   return result;

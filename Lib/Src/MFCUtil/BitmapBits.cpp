@@ -11,7 +11,7 @@ ByteArray &getBitmapBits(HBITMAP bm, ByteArray &bytes, BITMAPINFO &bmInfo) {
   bmInfo.bmiHeader.biCompression = BI_RGB;
 
   const int byteCount  = info.bmWidthBytes * info.bmHeight;
-  BYTE     *byteArray  = new BYTE[byteCount];
+  BYTE     *byteArray  = new BYTE[byteCount]; TRACE_NEW(byteArray);
   HDC       hdc        = getScreenDC();
   try {
     if(!GetDIBits(hdc, bm, 0, info.bmHeight, byteArray, &bmInfo, DIB_RGB_COLORS)) {
@@ -19,10 +19,10 @@ ByteArray &getBitmapBits(HBITMAP bm, ByteArray &bytes, BITMAPINFO &bmInfo) {
     }
     bytes.clear();
     bytes.setData(byteArray, byteCount);
-    delete[] byteArray;
+    SAFEDELETEARRAY(byteArray);
     DeleteDC(hdc);
   } catch(...) {
-    delete[] byteArray;
+    SAFEDELETEARRAY(byteArray);
     DeleteDC(hdc);
     throw;
   }

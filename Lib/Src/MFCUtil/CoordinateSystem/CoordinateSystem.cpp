@@ -71,7 +71,8 @@ void CCoordinateSystem::removeObject(CoordinateSystemObject *object) {
 
 void CCoordinateSystem::deleteAllObjects() { // remove AND delete all objects
   for(size_t i = 0; i < m_objectArray.size(); i++) {
-    delete m_objectArray[i];
+    CoordinateSystemObject *obj = m_objectArray[i];
+    SAFEDELETE(obj);
   }
   m_objectArray.clear();
 }
@@ -204,7 +205,8 @@ void PointArrayObject::paint(CCoordinateSystem &cs) {
 }
 
 void CCoordinateSystem::addPointObject(const Point2DArray &a, COLORREF color) {
-  addObject(new PointArrayObject(a, color));
+  CoordinateSystemObject *obj = new PointArrayObject(a, color); TRACE_NEW(obj);
+  addObject(obj);
 }
 
 class FunctionObject : public PointArrayObject {
@@ -220,8 +222,7 @@ FunctionObject::FunctionObject(Function &f, const DoubleInterval &range, UINT n,
       const Real x = range.getFrom() * (1.0-t) + t * range.getTo();
       const Real y = f(x);
       m_points.add(Point2D(x, y));
-    }
-    catch (...) {
+    } catch (...) {
       // ignore
     }
   }
@@ -233,8 +234,8 @@ void CCoordinateSystem::addFunctionObject(Function &f, const DoubleInterval *ran
   const IntervalTransformation &tr      = m_vp.getXTransformation();
   const DoubleInterval          xRange  = range ? *range : tr.backwardTransform(toRange);
   const UINT                    n       = (UINT)toRange.getLength() + 1;
-
-  addObject(new FunctionObject(f, xRange, n, color));
+  CoordinateSystemObject       *obj     = new FunctionObject(f, xRange, n, color); TRACE_NEW(obj);
+  addObject(obj);
 }
 
 void CCoordinateSystem::setDC(CDC &dc) {

@@ -49,12 +49,13 @@ void SimpleLayoutManager::addControl(int ctrlId, int flags) {
   }
 
 #define WIDTH_CHANGING(flags) (ONESET(flags, RELATIVE_LEFT|RELATIVE_RIGHT) || ANYSET(flags, PCT_RELATIVE_LEFT|PCT_RELATIVE_RIGHT))
-
+  LayoutAttribute *la;
   if(WIDTH_CHANGING(flags) && (flags & RESIZE_LISTHEADERS)) {
-    m_attributes.add(new ListCtrlLayoutAttribute(this, ctrlId, flags));
+    la = new ListCtrlLayoutAttribute(this, ctrlId, flags); TRACE_NEW(la);
   } else {
-    m_attributes.add(new LayoutAttribute(this, ctrlId, flags));
+    la = new LayoutAttribute(this, ctrlId, flags); TRACE_NEW(la);
   }
+  m_attributes.add(la);
   m_arrayModified = true;
 }
 
@@ -63,7 +64,7 @@ void SimpleLayoutManager::removeControl(int ctrlId) {
     LayoutAttribute *attr = m_attributes[i];
     if (attr->getCtrlId() == ctrlId) {
       m_attributes.remove(i);
-      delete attr;
+      SAFEDELETE(attr);
       m_arrayModified = true;
       return;
     }
@@ -77,7 +78,8 @@ void SimpleLayoutManager::removeControl(int ctrlId) {
 void SimpleLayoutManager::removeAll() {
   if(m_attributes.size() == 0) return;
   for (size_t i = 0; i < m_attributes.size(); i++) {
-    delete m_attributes[i];
+    LayoutAttribute *la = m_attributes[i];
+    SAFEDELETE(la);
   }
   m_attributes.clear();
   m_arrayModified = true;

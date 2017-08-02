@@ -23,7 +23,7 @@ FontCache::~FontCache() {
   for(Iterator<Entry<FontSizeKey, CFont*> > it = getEntryIterator(); it.hasNext();) {
     CFont *font = it.next().getValue();
     font->DeleteObject();
-    delete font;
+    SAFEDELETE(font);
   }
   clear();
 }
@@ -32,7 +32,7 @@ CFont *FontCache::getFont(bool text, int fontSize) {
   const UINT key = (text ? (1<<31) : 0) | fontSize;
   CFont **font = get(key);
   if(font == NULL) {
-    CFont *newFont = new CFont;
+    CFont *newFont = new CFont; TRACE_NEW(newFont);
 
 //#define TEXTFONT _T(""DejaVu Sans Mono")
 #define TEXTFONT   _T("DejaVu Serif")
@@ -354,7 +354,7 @@ PixRect *ExpressionPainter::paintExpression(int fontSize) {
 }
 
 AlignedImage *ExpressionPainter::createImage(const CSize &size) {
-  AlignedImage *image = (m_backgroundColor != D3D_WHITE) ? new AlignedImage(m_device, 0, size, m_backgroundColor) : new AlignedImage(m_device, 0, size);
+  AlignedImage *image = (m_backgroundColor != D3D_WHITE) ? new AlignedImage(m_device, 0, size, m_backgroundColor) : new AlignedImage(m_device, 0, size); TRACE_NEW(image);
   m_imageTable.add(image);
   return image;
 }
@@ -363,6 +363,7 @@ AlignedImage *ExpressionPainter::createTextImage(const CSize &size) {
   AlignedImage *image = (m_backgroundColor != D3D_WHITE)
                       ? new AlignedTextImage(m_device, s_fontCache, size, m_backgroundColor)
                       : new AlignedTextImage(m_device, s_fontCache, size);
+  TRACE_NEW(image);
   m_imageTable.add(image);
   return image;
 }
@@ -397,8 +398,7 @@ AlignedImage *ExpressionPainter::cutImage(AlignedImage *image, UINT percent, int
 
 void ExpressionPainter::clearImageTable() {
   for(size_t i = 0; i < m_imageTable.size(); i++) {
-    delete m_imageTable[i];
-    m_imageTable[i] = NULL;
+    SAFEDELETE(m_imageTable[i]);
   }
   m_imageTable.clear();
 }
@@ -1204,7 +1204,7 @@ bool ExpressionPainter::mustConvertNumber(const Number &n) const {
 }
 
 AlignedTextImage *ExpressionPainter::getTextImage(const String &str, bool textFont, int fontSize, ExpressionRectangle &rect) {
-  AlignedTextImage *image = new AlignedTextImage(m_device, s_fontCache, str, textFont, fontSize, m_backgroundColor);
+  AlignedTextImage *image = new AlignedTextImage(m_device, s_fontCache, str, textFont, fontSize, m_backgroundColor); TRACE_NEW(image);
   m_imageTable.add(image);
   rect.setSize(image);
   return image;
@@ -1363,10 +1363,7 @@ ExpressionImage::~ExpressionImage() {
 }
 
 void ExpressionImage::clear() {
-  if(m_pr) {
-    delete m_pr;
-    m_pr = NULL;
-  }
+  SAFEDELETE(m_pr);
   m_rectangle.clear();
 }
 

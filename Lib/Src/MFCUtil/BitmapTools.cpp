@@ -38,7 +38,7 @@ CBitmap *createFromHandle(HBITMAP bm) {
   HDC srcDC = CreateCompatibleDC(NULL);
   HDC dstDC = CreateCompatibleDC(NULL);
 
-  CBitmap *result = new CBitmap;
+  CBitmap *result = new CBitmap; TRACE_NEW(result);
   result->CreateBitmap(info.bmWidth, info.bmHeight, info.bmPlanes, info.bmBitsPixel, NULL);
   HBITMAP bm1 = *result;
 

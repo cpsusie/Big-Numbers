@@ -21,12 +21,8 @@ SystemPainter::SystemPainter(CCoordinateSystem *system) : m_system(*system) {
 }
 
 SystemPainter::~SystemPainter() {
-  if(m_xAxisPainter != NULL) {
-    delete m_xAxisPainter;
-  }
-  if(m_yAxisPainter != NULL) {
-    delete m_yAxisPainter;
-  }
+  SAFEDELETE(m_xAxisPainter);
+  SAFEDELETE(m_yAxisPainter);
   if(m_oldFont) {
     CDC *dc = getViewport().getDC();
     dc->SelectObject(m_oldFont);
@@ -123,14 +119,16 @@ CRect SystemPainter::getToRectangle() const {
 }
 
 AbstractAxisPainter *SystemPainter::createAxisPainter(bool xAxis, AxisType type) {
+  AbstractAxisPainter *result;
   switch(type) {
-  case AXIS_LINEAR             : return new LinearAxisPainter(            *this, xAxis);
-  case AXIS_LOGARITHMIC        : return new LogarithmicAxisPainter(       *this, xAxis);
-  case AXIS_NORMAL_DISTRIBUTION: return new NormalDistributionAxisPainter(*this, xAxis);
-  case AXIS_DATE               : return new DateAxisPainter(              *this, xAxis);
+  case AXIS_LINEAR             : result = new LinearAxisPainter(            *this, xAxis); break;
+  case AXIS_LOGARITHMIC        : result = new LogarithmicAxisPainter(       *this, xAxis); break;
+  case AXIS_NORMAL_DISTRIBUTION: result = new NormalDistributionAxisPainter(*this, xAxis); break;
+  case AXIS_DATE               : result = new DateAxisPainter(              *this, xAxis); break;
   default                      : throwException(_T("Invalid AxisType (=%d)"),type);
                                  return NULL;
   }
+  TRACE_NEW(result);
 }
 
 void SystemPainter::setOccupiedRect(const CRect &r) {

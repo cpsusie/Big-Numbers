@@ -18,7 +18,7 @@ static HBITMAP swapRB(HBITMAP bm) {
   bmInfo.bmiHeader.biCompression = BI_RGB;
   const int byteCount = info.bmWidthBytes * info.bmHeight;
   const int pixelCount = byteCount / sizeof(DWORD);
-  DWORD *pixelArray = new DWORD[pixelCount];
+  DWORD *pixelArray = new DWORD[pixelCount]; TRACE_NEW(pixelArray);
   HDC hdc = getScreenDC();
   GetDIBits(hdc, bm, 0, info.bmHeight, pixelArray, &bmInfo, DIB_RGB_COLORS);
   DWORD *p = pixelArray;

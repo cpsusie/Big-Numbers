@@ -100,8 +100,7 @@ void PixRect::drawRotated(const PixRect *src, const CPoint &dst, double degree, 
 
 PixRect *PixRect::rotateImage(const PixRect *src, double degree, D3DCOLOR background) { // static
   const CSize resultSize = getRotatedSize(src->getSize(), degree);
-  PixRect    *result     = new PixRect(src->getDevice(), src->getType(), resultSize, src->getPool(), src->getPixelFormat());
-  TRACE_NEW(result);
+  PixRect    *result     = new PixRect(src->getDevice(), src->getType(), resultSize, src->getPool(), src->getPixelFormat()); TRACE_NEW(result);
   result->fillColor(background);
   result->drawRotated(src, resultSize/2, degree, src->getRect().CenterPoint());
   return result;

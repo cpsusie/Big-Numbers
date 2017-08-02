@@ -178,7 +178,7 @@ void MMCapture::captureInit(UINT framesPerSecond, UINT audioBufferSize) {
     CHECKRESULT(capSetCallbackOnError(      m_captureWindow, captureErrorCallback));
 
     if(captureAudio() && m_playAudio) {
-      m_audioThread = new AudioPlayerThread(*this);
+      m_audioThread = new AudioPlayerThread(*this); TRACE_NEW(m_audioThread);
       m_audioThread->start();
     }
   } catch(...) {
@@ -193,8 +193,7 @@ void MMCapture::captureCleanup() {
     while(m_audioThread->stillActive()) {
       Sleep(100);
     }
-    delete m_audioThread;
-    m_audioThread = NULL;
+    SAFEDELETE(m_audioThread);
   }
   if(m_webCamConnected) {
     CHECKRESULT(capDriverDisconnect(m_captureWindow));
@@ -213,11 +212,11 @@ void MMCapture::pixRectInit() {
     const BITMAPINFOHEADER &bmiHeader   = m_videoFormat.bmiHeader;
     m_videoRect = CRect(0,0,bmiHeader.biWidth, bmiHeader.biHeight);
     // Create screen pixRect
-    m_imagePr = new PixRect(m_device, PIXRECT_PLAINSURFACE, m_videoRect.Size(), D3DPOOL_DEFAULT);
+    m_imagePr = new PixRect(m_device, PIXRECT_PLAINSURFACE, m_videoRect.Size(), D3DPOOL_DEFAULT); TRACE_NEW(m_imagePr);
 
     // Create memory surface with pixelformat equals to videoFormat
     const D3DFORMAT videoPixelFormat = (D3DFORMAT)bmiHeader.biCompression; // D3DFMT_YUY2;
-    m_videoPr = new PixRect(m_device, PIXRECT_PLAINSURFACE, m_videoRect.Size(), D3DPOOL_DEFAULT, videoPixelFormat);
+    m_videoPr = new PixRect(m_device, PIXRECT_PLAINSURFACE, m_videoRect.Size(), D3DPOOL_DEFAULT, videoPixelFormat); TRACE_NEW(m_videoPr);
     bool convsupported = m_device.supportFormatConversion(videoPixelFormat, m_imagePr->getPixelFormat());
   } catch(...) {
     pixRectCleanup();
@@ -226,8 +225,8 @@ void MMCapture::pixRectInit() {
 }
 
 void MMCapture::pixRectCleanup() {
-  delete m_videoPr;
-  delete m_imagePr;
+  SAFEDELETE(m_videoPr);
+  SAFEDELETE(m_imagePr);
   m_device.detach();
 }
 

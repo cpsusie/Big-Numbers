@@ -11,7 +11,7 @@ CTableModel::~CTableModel() {
     CWnd *e = m_editorArray[i];
     if(e) {
       e->DestroyWindow();
-      delete e;
+      SAFEDELETE(e);
     }
   }
 }
@@ -25,7 +25,7 @@ void CTableModel::saveEditor(UINT column, CWnd *editor) {
   if(m_editorArray[column] != NULL) {
     CWnd *e = m_editorArray[column];
     e->DestroyWindow();
-    delete e;
+    SAFEDELETE(e);
   }
   m_editorArray[column] = editor;
 }
@@ -45,6 +45,7 @@ CWnd *CTableModel::getEditor(CWnd *listCtrl, UINT column) {
 
 CWnd *CTableModel::createEditor(CWnd *listCtrl, UINT column) {
   const UINT flags = getFieldFlags(column);
+  CWnd      *result;
   switch(LF_GETTYPE(flags)) {
   case LFT_SHORT   :
   case LFT_INT     :
@@ -59,33 +60,39 @@ CWnd *CTableModel::createEditor(CWnd *listCtrl, UINT column) {
       if(!e->Create(listCtrl, MAKE_EDITLIST_CONTROL_ID(column), flags, intervalp)) {
         throwException(_T("Cannot create CEditListNumericEditor for column %d"), column);
       }
-      return e;
+      result = e;
     }
+    break;
   case LFT_STRING  :
     { CEditListStringEditor *e = new CEditListStringEditor;
       if(!e->Create(listCtrl, MAKE_EDITLIST_CONTROL_ID(column))) {
         throwException(_T("Cannot create CEditListStringEditor for column %d"), column);
       };
-      return e;
+      result = e;
     }
+    break;
   case LFT_STRCOMBO:
     { CEditListStringCombo *e = new CEditListStringCombo;
       if(!e->Create(listCtrl, MAKE_EDITLIST_CONTROL_ID(column), getStrComboStringArray(column), flags)) {
         throwException(_T("Cannot create CEditListStringCombo for column %d"), column);
       };
-      return e;
+      result = e;
     }
+    break;
   case LFT_BOOL    :
     { CEditListBooleanEditor *b = new CEditListBooleanEditor();
       if(!b->Create(listCtrl, MAKE_EDITLIST_CONTROL_ID(column))) {
         throwException(_T("Cannot create CEditListBooleanEditor for column %d"), column);
       }
-      return b;
+      result = b;
     }
+    break;
   default          :
     throwException(_T("Unknown editorType for column %d (=%d)"), column, LF_GETTYPE(flags));
     return NULL;
   }
+  TRACE_NEW(result);
+  return result;
 }
 
 bool CTableModel::isNumericType(ListFieldType type) { // static

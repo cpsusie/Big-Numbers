@@ -2,7 +2,7 @@
 #include <MFCUtil/Viewport2D.h>
 
 Viewport2D::Viewport2D(bool retainAspectRatio) {
-  m_tr                = new RectangleTransformation();
+  m_tr                = new RectangleTransformation(); TRACE_NEW(m_tr);
   m_ownTransformation = true;
   m_dc                = NULL;
   m_retainAspectRatio = retainAspectRatio;
@@ -11,7 +11,7 @@ Viewport2D::Viewport2D(bool retainAspectRatio) {
 }
 
 Viewport2D::Viewport2D(CDC &dc, const Rectangle2DR &from, const Rectangle2DR &to, bool retainAspectRatio) : m_dc(&dc) {
-  m_tr                = new RectangleTransformation(from, to);
+  m_tr                = new RectangleTransformation(from, to); TRACE_NEW(m_tr);
   m_ownTransformation = true;
   m_currentPenWidth   = 0;
   m_retainAspectRatio = retainAspectRatio;
@@ -48,7 +48,7 @@ void Viewport2D::destroyClipRgn() {
 
 void Viewport2D::destroyTransformation() {
   if(m_ownTransformation && m_tr) {
-    delete m_tr;
+    SAFEDELETE(m_tr);
   }
   m_tr = NULL;
 }

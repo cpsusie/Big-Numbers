@@ -95,8 +95,7 @@ PixRect *PixRect::clone(bool cloneImage, PixRectType type, D3DPOOL pool) const {
   if (pool == D3DPOOL_FORCE_DWORD) {
     pool = getPool();
   }
-  PixRect *copy = new PixRect(m_device, type, getSize(), pool, getPixelFormat());
-  TRACE_NEW(copy);
+  PixRect *copy = new PixRect(m_device, type, getSize(), pool, getPixelFormat()); TRACE_NEW(copy);
   if(cloneImage) {
     if ((getPool() == D3DPOOL_SYSTEMMEM) && (pool == D3DPOOL_DEFAULT)) {
       LPDIRECT3DSURFACE srcSurface = NULL, dstSurface = NULL;
@@ -517,8 +516,7 @@ PixelAccessor *PixRect::createPixelAccessor(DWORD flags) const {
     //  case 16: return new WordPixelAccessor(pixRect);
   case D3DFMT_A8R8G8B8:
   case D3DFMT_X8R8G8B8:
-    { PixelAccessor *result = new DWordPixelAccessor((PixRect*)this, flags);
-      TRACE_NEW(result);
+    { PixelAccessor *result = new DWordPixelAccessor((PixRect*)this, flags); TRACE_NEW(result);
       return result;
     }
   default:

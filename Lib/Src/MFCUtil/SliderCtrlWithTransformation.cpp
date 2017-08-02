@@ -35,7 +35,7 @@ void CSliderCtrlWithTransformation::init() {
 }
 
 void CSliderCtrlWithTransformation::cleanup() {
-  delete m_tr;
+  SAFEDELETE(m_tr);
   init();
 }
 
@@ -51,13 +51,13 @@ void CSliderCtrlWithTransformation::setTransformation(DoubleInterval &interval, 
   cleanup();
   switch (type) {
   case LINEAR             :
-    m_tr = new LinearTransformation(interval, toInterval);
+    m_tr = new LinearTransformation(interval, toInterval); TRACE_NEW(m_tr);
     break;
   case LOGARITHMIC        :
-    m_tr = new LogarithmicTransformation(interval, toInterval);
+    m_tr = new LogarithmicTransformation(interval, toInterval); TRACE_NEW(m_tr);
     break;
   case NORMAL_DISTRIBUTION:
-    m_tr = new NormalDistributionTransformation(interval, toInterval);
+    m_tr = new NormalDistributionTransformation(interval, toInterval); TRACE_NEW(m_tr);
     break;
   default:
     throwInvalidArgumentException(method, _T("type=%d"), type);

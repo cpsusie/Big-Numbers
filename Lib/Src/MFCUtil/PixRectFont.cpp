@@ -53,11 +53,11 @@ GlyphData::GlyphData(PixRectDevice &device, HDC hdc, _TUCHAR ch, const MAT2 &m) 
     return;
   }
 
-  DWORD *buffer = new DWORD[buffersize/sizeof(DWORD)];
+  DWORD *buffer = new DWORD[buffersize/sizeof(DWORD)]; TRACE_NEW(buffer);
   GetGlyphOutline(hdc,ch, GGO_BITMAP,&m_metrics,buffersize,buffer,&m);
   const int width  = m_metrics.gmBlackBoxX;
   const int height = m_metrics.gmBlackBoxY;
-  m_pixRect = new PixRect(device, PIXRECT_PLAINSURFACE, width,height);
+  m_pixRect = new PixRect(device, PIXRECT_PLAINSURFACE, width,height); TRACE_NEW(m_pixRect);
   m_pixRect->fillRect(0,0,width,height,BLACK);
 
 //  FILE *logFile = FOPEN("c:\\temp\\glyph.txt", "a");
@@ -82,11 +82,11 @@ GlyphData::GlyphData(PixRectDevice &device, HDC hdc, _TUCHAR ch, const MAT2 &m) 
 //  fprintf(logFile,"\n\n");
 //  fclose(logFile);
   m_pixRect->releasePixelAccessor();
-  delete[] buffer;
+  SAFEDELETEARRAY(buffer);
 }
 
 GlyphData::~GlyphData() {
-  delete m_pixRect;
+  SAFEDELETE(m_pixRect);
 }
 
 // ------------------------------------ GlyphCurveData ------------------------------
@@ -101,7 +101,7 @@ GlyphCurveData::GlyphCurveData(HDC hdc, _TUCHAR ch, const MAT2 &m) {
     return;
   }
 
-  char *buffer = new char[buffersize];
+  char *buffer = new char[buffersize]; TRACE_NEW(buffer);
   GetGlyphOutline(hdc,ch, GGO_BEZIER,&m_metrics,buffersize,buffer,&m);
 
   for(int index = 0;index < (int)buffersize;) {
@@ -123,7 +123,7 @@ GlyphCurveData::GlyphCurveData(HDC hdc, _TUCHAR ch, const MAT2 &m) {
 
 //  String s = dumphex(buffer+index,buffersize-index);
   String s = toString();
-  delete[] buffer;
+  SAFEDELETEARRAY(buffer);
 }
 
 Point2DArray GlyphCurveData::getAllPoints() const {
@@ -194,7 +194,8 @@ PixRectFont::PixRectFont(PixRectDevice &device, const LOGFONT &logfont, float or
 PixRectFont::~PixRectFont() {
   m_font.DeleteObject();
   for(size_t i = 0; i < m_glyphData.size(); i++) {
-    delete m_glyphData[i];
+    GlyphData *gd = m_glyphData[i];
+    SAFEDELETE(gd);
   }
 }
 
@@ -209,9 +210,9 @@ void PixRectFont::initGlyphData(float orientation) {
   MAT2 m = orientation == 0 ? getMAT2Id() : getMAT2Rotation(orientation);
 
   for(int i = 0; i < 256; i++) {
-    m_glyphData.add(new GlyphData(m_device, screenDC,i, m));
+    GlyphData *gd = new GlyphData(m_device, screenDC,i, m); TRACE_NEW(gd);
+    m_glyphData.add(gd);
   }
-
   DeleteDC(screenDC);
 }
 
@@ -238,7 +239,7 @@ String dumphex(DWORD *buffer, int count) {
 void PixRect::text(const CPoint &p, const String &text, const PixRectFont &font, D3DCOLOR color, bool invert) {
   int x = p.x;
   int y = p.y;
-  PixRect *csrc = new PixRect(m_device,PIXRECT_PLAINSURFACE, font.getTextMetrics().tmMaxCharWidth,font.getTextMetrics().tmHeight);
+  PixRect *csrc = new PixRect(m_device,PIXRECT_PLAINSURFACE, font.getTextMetrics().tmMaxCharWidth,font.getTextMetrics().tmHeight); TRACE_NEW(csrc);
   csrc->fillRect(0,0,csrc->getWidth(),csrc->getHeight(),color);
   for(int i = 0; text[i] != '\0'; i++) {
     _TUCHAR ch = text[i];
@@ -250,7 +251,7 @@ void PixRect::text(const CPoint &p, const String &text, const PixRectFont &font,
       y += gd->m_metrics.gmCellIncY;
     }
   }
-  delete csrc;
+  SAFEDELETE(csrc);
 }
 
 void applyToGlyphPolygon(const GlyphPolygon &polygon, CurveOperator &op) {

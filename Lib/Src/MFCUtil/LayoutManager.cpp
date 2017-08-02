@@ -16,7 +16,7 @@ LayoutManager::~LayoutManager() {
 void LayoutManager::setFont(CFont *font) {
   if(m_font && (m_font != m_startFont)) {
     m_font->DeleteObject();
-    delete m_font;
+    SAFEDELETE(m_font);
   }
   m_font = font;
 }
@@ -136,7 +136,7 @@ CFont *LayoutManager::createScaledFont(const CFont &src, double scale) { // stat
   LOGFONT lf;
   ((CFont&)src).GetLogFont(&lf);
   lf.lfHeight = (int)(scale * lf.lfHeight);
-  CFont *nf = new CFont();
+  CFont *nf = new CFont(); TRACE_NEW(nf);
   nf->CreateFontIndirect(&lf);
   return nf;
 }

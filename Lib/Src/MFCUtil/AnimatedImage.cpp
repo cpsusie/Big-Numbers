@@ -82,7 +82,7 @@ void AnimatedImage::extractGifData(const GifFileType *gifFile) {
   try {
     m_size.cx = gifFile->SWidth;
     m_size.cy = gifFile->SHeight;
-    m_workPr  = new PixRect(m_device, PIXRECT_TEXTURE, m_size);
+    m_workPr  = new PixRect(m_device, PIXRECT_TEXTURE, m_size); TRACE_NEW(m_workPr);
 
     const int           imageCount   = gifFile->ImageCount;
     ColorMapObject     *gfColorMap   = gifFile->SColorMap;
@@ -144,7 +144,7 @@ void AnimatedImage::extractGifData(const GifFileType *gifFile) {
       }
 
       const CSize sz = frame->m_rect.Size();
-      frame->m_pr = new PixRect(m_device, PIXRECT_TEXTURE, sz, D3DPOOL_SYSTEMMEM, D3DFMT_A8R8G8B8);
+      frame->m_pr = new PixRect(m_device, PIXRECT_TEXTURE, sz, D3DPOOL_SYSTEMMEM, D3DFMT_A8R8G8B8); TRACE_NEW(frame->m_pr);
 
       const ColorMapObject *colorMap = image.ImageDesc.ColorMap ? image.ImageDesc.ColorMap : gfColorMap;
       const GifColorType   *colors   = colorMap->Colors;
@@ -194,7 +194,7 @@ bool AnimatedImage::hasSavedBackground() const {
 void AnimatedImage::saveBackground(const CPoint &p, const CSize *size) {
   releaseBackground();
   const CSize sz = size ? *size : m_size;
-  m_background = new PixRect(m_device, PIXRECT_PLAINSURFACE, sz);
+  m_background = new PixRect(m_device, PIXRECT_PLAINSURFACE, sz); TRACE_NEW(m_background);
   CClientDC dc(m_parent);
   PixRect::bitBlt(m_background, ORIGIN, sz, SRCCOPY, dc, p);
   m_savedPosition = p;
@@ -210,10 +210,7 @@ void AnimatedImage::restoreBackground() {
 }
 
 void AnimatedImage::releaseBackground() {
-  if(m_background) {
-    delete m_background;
-    m_background = NULL;
-  }
+  SAFEDELETE(m_background);
 }
 
 void AnimatedImage::flushPr(const CPoint &p, PixRect *src, double scaleFactor) const {
@@ -240,14 +237,8 @@ void AnimatedImage::unload() {
   clearDisposeTable();
   m_size = CSize(0,0);
   m_comment = EMPTYSTRING;
-  if(m_workPr) {
-    delete m_workPr;
-    m_workPr = NULL;
-  }
-  if(m_background) {
-    delete m_background;
-    m_background = NULL;
-  }
+  SAFEDELETE(m_workPr);
+  SAFEDELETE(m_background);
 }
 
 void AnimatedImage::addToDisposeTable(PixRect *pr) {
@@ -265,7 +256,7 @@ void AnimatedImage::addToDisposeTable(PixRect *pr) {
           }
         }
         if(!used) {
-          delete pr;
+          SAFEDELETE(pr);
           m_disposeTable[i] = NULL;
         }
       }
@@ -285,7 +276,7 @@ const PixRect *AnimatedImage::findLastNonDisposed() const {
 void AnimatedImage::clearDisposeTable() {
   for(size_t i = 0; i < m_disposeTable.size(); i++) {
     PixRect *pr = m_disposeTable[i];
-    if(pr) delete pr;
+    SAFEDELETE(pr);
   }
   m_disposeTable.clear();
 }
@@ -541,8 +532,5 @@ void GifFrame::cleanup() {
   m_delayTime        = 0;
   m_useTransparency  = false;
   m_srcRect = m_rect = CRect(0,0,0,0);
-  if(m_pr) {
-    delete m_pr;
-    m_pr = NULL;
-  }
+  SAFEDELETE(m_pr);
 }

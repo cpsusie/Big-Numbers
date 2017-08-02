@@ -823,12 +823,12 @@ void CEditListCtrl::OnItemchanged(NMHDR *pNMHDR, LRESULT *pResult) {
 
 ColumnOrderArray::ColumnOrderArray(CListCtrl *listCtrl) {
   const int n = listCtrl->GetHeaderCtrl()->GetItemCount();
-  int *indexArray = new int[n];
+  int *indexArray = new int[n]; TRACE_NEW(indexArray);
   listCtrl->GetColumnOrderArray(indexArray);
   for(int i = 0; i < n; i++) {
     add(indexArray[i]);
   }
-  delete[] indexArray;
+  SAFEDELETEARRAY(indexArray);
 }
 
 int ColumnOrderArray::findColumnIndex(UINT column) const {

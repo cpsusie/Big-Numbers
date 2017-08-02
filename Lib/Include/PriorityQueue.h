@@ -30,7 +30,7 @@ public:
   }
 
   PriorityQueue(Comparator<T> &comparator, bool reverseOrder = false) {
-    m_comparator   = comparator.clone();
+    m_comparator   = comparator.clone(); TRACE_NEW(m_comparator);
     m_reverseOrder = reverseOrder;
   }
 
