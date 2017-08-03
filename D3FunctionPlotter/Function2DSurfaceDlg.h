@@ -13,8 +13,8 @@ private:
   int     m_pointCount;
   BOOL    m_machineCode;
   UINT    m_frameCount;
-  double  m_timeFrom;
-  double  m_timeTo;
+  double  m_timefrom;
+  double  m_timeto;
   BOOL    m_includeTime;
   BOOL    m_doubleSided;
 
@@ -30,6 +30,7 @@ public:
 protected:
     virtual void DoDataExchange(CDataExchange *pDX);
     afx_msg BOOL OnInitDialog();
+    afx_msg void OnFileOpen();
     afx_msg void OnEditFindMatchingParentesis();
     afx_msg void OnGotoExpr();
     afx_msg void OnGotoXInterval();

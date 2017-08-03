@@ -23,8 +23,8 @@ void CFunction2DSurfaceDlg::DoDataExchange(CDataExchange *pDX) {
     DDX_Check(pDX, IDC_CHECK_INCLUDETIME     , m_includeTime               );
     DDX_Text(pDX , IDC_EDIT_FRAMECOUNT       , m_frameCount                );
     DDV_MinMaxUInt(pDX, m_frameCount, 1, 300            );
-    DDX_Text(pDX , IDC_EDIT_TIMEFROM         , m_timeFrom                  );
-    DDX_Text(pDX , IDC_EDIT_TIMETO           , m_timeTo                    );
+    DDX_Text(pDX , IDC_EDIT_TIMEFROM         , m_timefrom                  );
+    DDX_Text(pDX , IDC_EDIT_TIMETO           , m_timeto                    );
 }
 
 BEGIN_MESSAGE_MAP(CFunction2DSurfaceDlg, CDialog)
@@ -75,6 +75,11 @@ BOOL CFunction2DSurfaceDlg::OnInitDialog() {
 
   gotoEditBox(this, IDC_EDIT_EXPR);
   return FALSE;  // return TRUE  unless you set the focus to a control
+}
+
+void CFunction2DSurfaceDlg::OnFileOpen() {
+  __super::OnFileOpen();
+  enableTimeFields();
 }
 
 #define MAXPOINTCOUNT 200
@@ -157,8 +162,8 @@ void CFunction2DSurfaceDlg::paramToWin(const Function2DSurfaceParameters &param)
   m_xto           = param.getXInterval().getMax();
   m_yfrom         = param.getYInterval().getMin();
   m_yto           = param.getYInterval().getMax();
-  m_timeFrom      = param.getTimeInterval().getMin();
-  m_timeTo        = param.getTimeInterval().getMax();
+  m_timefrom      = param.getTimeInterval().getMin();
+  m_timeto        = param.getTimeInterval().getMax();
   m_pointCount    = param.m_pointCount;
   m_frameCount    = param.m_frameCount;
   m_machineCode   = param.m_machineCode ? TRUE : FALSE;
@@ -174,8 +179,8 @@ void CFunction2DSurfaceDlg::winToParam(Function2DSurfaceParameters &param) const
   param.m_xInterval.setTo(     m_xto);
   param.m_yInterval.setFrom(   m_yfrom);
   param.m_yInterval.setTo(     m_yto);
-  param.m_timeInterval.setFrom(m_timeFrom);
-  param.m_timeInterval.setTo(  m_timeTo);
+  param.m_timeInterval.setFrom(m_timefrom);
+  param.m_timeInterval.setTo(  m_timeto);
   param.m_pointCount  = m_pointCount;
   param.m_frameCount  = m_frameCount;
   param.m_machineCode = m_machineCode?true:false;

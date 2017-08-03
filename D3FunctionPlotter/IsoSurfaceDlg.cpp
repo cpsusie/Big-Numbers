@@ -41,8 +41,8 @@ void CIsoSurfaceDlg::DoDataExchange(CDataExchange *pDX) {
 	DDX_Check(pDX, IDC_CHECK_INCLUDETIME     , m_includeTime               );
 	DDX_Text( pDX, IDC_EDIT_FRAMECOUNT       , m_frameCount                );
   DDV_MinMaxUInt(pDX, m_frameCount, 1, 300            );
-	DDX_Text( pDX, IDC_EDIT_TIMEFROM         , m_timeFrom                  );
-	DDX_Text( pDX, IDC_EDIT_TIMETO           , m_timeTo                    );
+	DDX_Text( pDX, IDC_EDIT_TIMEFROM         , m_timefrom                  );
+	DDX_Text( pDX, IDC_EDIT_TIMETO           , m_timeto                    );
 	DDX_Text( pDX, IDC_EDIT_XFROM            , m_xfrom                     );
 	DDX_Text( pDX, IDC_EDIT_XTO              , m_xto                       );
 	DDX_Text( pDX, IDC_EDIT_YFROM            , m_yfrom                     );
@@ -110,6 +110,11 @@ BOOL CIsoSurfaceDlg::OnInitDialog() {
   m_layoutManager.addControl(IDCANCEL                , RELATIVE_POSITION      );
   gotoEditBox(this, IDC_EDIT_EXPR);
   return FALSE;
+}
+
+void CIsoSurfaceDlg::OnFileOpen() {
+  __super::OnFileOpen();
+  enableTimeFields();
 }
 
 #define MAXFRAMECOUNT 300
@@ -194,16 +199,11 @@ void CIsoSurfaceDlg::OnButtonHelp() {
 }
 
 void CIsoSurfaceDlg::paramToWin(const IsoSurfaceParameters &param) {
-  const Point3D &lbn = param.m_boundingBox.m_lbn;
-  const Point3D &rtf = param.m_boundingBox.m_rtf;
   m_expr             = param.m_expr.cstr();
   m_cellSize         = param.m_cellSize;
-  m_xfrom            = lbn.x;
-  m_yfrom            = lbn.y;
-  m_zfrom            = lbn.z;
-  m_xto              = rtf.x;
-  m_yto              = rtf.y;
-  m_zto              = rtf.z;
+  setXInterval(param.m_boundingBox.getXInterval());
+  setYInterval(param.m_boundingBox.getYInterval());
+  setZInterval(param.m_boundingBox.getZInterval());
   m_tetrahedral      = param.m_tetrahedral      ? TRUE : FALSE;
   m_adaptiveCellSize = param.m_adaptiveCellSize ? TRUE : FALSE;
   m_doubleSided      = param.m_doubleSided      ? TRUE : FALSE;
@@ -211,8 +211,7 @@ void CIsoSurfaceDlg::paramToWin(const IsoSurfaceParameters &param) {
   m_machineCode      = param.m_machineCode      ? TRUE : FALSE;
   m_includeTime      = param.m_includeTime      ? TRUE : FALSE;
   m_frameCount       = param.m_frameCount;
-  m_timeFrom         = param.getTimeInterval().getMin();
-  m_timeTo           = param.getTimeInterval().getMax();
+  setTimeInterval(param.getTimeInterval());
 
   enableCheckBox();
   enableTimeFields();
@@ -220,17 +219,11 @@ void CIsoSurfaceDlg::paramToWin(const IsoSurfaceParameters &param) {
 }
 
 void CIsoSurfaceDlg::winToParam(IsoSurfaceParameters &param) const {
-  Point3D &lbn = param.m_boundingBox.m_lbn;
-  Point3D &rtf = param.m_boundingBox.m_rtf;
-
   param.m_expr             = m_expr;
   param.m_cellSize         = m_cellSize;
-  lbn.x                    = m_xfrom;
-  lbn.y                    = m_yfrom;
-  lbn.z                    = m_zfrom;
-  rtf.x                    = m_xto  ;
-  rtf.y                    = m_yto  ;
-  rtf.z                    = m_zto  ;
+  param.m_boundingBox.setXInterval(getXInterval());
+  param.m_boundingBox.setYInterval(getYInterval());
+  param.m_boundingBox.setZInterval(getZInterval());
   param.m_tetrahedral      = m_tetrahedral      ? true : false;
   param.m_adaptiveCellSize = m_adaptiveCellSize ? true : false;
   param.m_doubleSided      = m_doubleSided      ? true : false;
@@ -238,8 +231,6 @@ void CIsoSurfaceDlg::winToParam(IsoSurfaceParameters &param) const {
   param.m_machineCode      = m_machineCode      ? true : false;
   param.m_includeTime      = m_includeTime      ? true : false;
   param.m_frameCount       = m_frameCount;
-  param.m_timeInterval.setFrom(m_timeFrom);
-  param.m_timeInterval.setTo(  m_timeTo  );
+  param.m_timeInterval     = getTimeInterval();
   __super::winToParam(param);
 }
-

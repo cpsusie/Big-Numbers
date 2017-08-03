@@ -13,7 +13,7 @@ public:
     m_debugLines = NULL;
   }
   ~IsoSurfaceDebugObject() {
-    delete m_debugLines;
+    SAFEDELETE(m_debugLines);
   }
   void createDebugLines(IsoSurface &surface);
   void draw();
@@ -38,7 +38,7 @@ void IsoSurfaceDebugObject::createDebugLines(IsoSurface &surface) {
       lines.add(Line(p-e2,p+e2));
       lines.add(Line(p-e3,p+e3));
     }
-    m_debugLines = new D3LineArray(m_scene, lines.getBuffer(), (int)lines.size());
+    m_debugLines = new D3LineArray(m_scene, lines.getBuffer(), (int)lines.size()); TRACE_NEW(m_debugLines);
   }
 }
 
@@ -46,7 +46,7 @@ D3SceneObject *createIsoSurfaceDebugObject(D3Scene &scene, const IsoSurfaceParam
   IsoSurface surface(param);
   surface.createData();
   LPD3DXMESH mesh = surface.getMeshbuilder().createMesh(scene.getDevice(), param.m_doubleSided);
-  IsoSurfaceDebugObject *object = new IsoSurfaceDebugObject(scene, mesh);
+  IsoSurfaceDebugObject *object = new IsoSurfaceDebugObject(scene, mesh); TRACE_NEW(object);
   object->createDebugLines(surface);
   return object;
 }

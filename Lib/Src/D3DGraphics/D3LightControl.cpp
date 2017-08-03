@@ -12,11 +12,11 @@ D3LightControl::D3LightControl(D3Scene &scene, int lightIndex) : SceneObjectWith
 }
 
 D3LightControl::~D3LightControl() {
-  SAFE_RELEASE(m_effect);
+  SAFERELEASE(m_effect);
 }
 
 LPD3DXMESH &D3LightControl::optimizeMesh(LPD3DXMESH &mesh) { // static
-  DWORD *rgdwAdjacency = new DWORD[mesh->GetNumFaces() * 3];
+  DWORD *rgdwAdjacency = new DWORD[mesh->GetNumFaces() * 3]; TRACE_NEW(rgdwAdjacency);
   if(rgdwAdjacency == NULL ) {
     throwException(_T("Out of memory"));
   }
@@ -24,9 +24,9 @@ LPD3DXMESH &D3LightControl::optimizeMesh(LPD3DXMESH &mesh) { // static
   try {
     V(mesh->GenerateAdjacency(1e-6f, rgdwAdjacency));
     V(mesh->OptimizeInplace(D3DXMESHOPT_VERTEXCACHE, rgdwAdjacency, NULL, NULL, NULL));
-    delete[] rgdwAdjacency;
+    SAFEDELETEARRAY(rgdwAdjacency);
   } catch(...) {
-    delete[] rgdwAdjacency;
+    SAFEDELETEARRAY(rgdwAdjacency);
     throw;
   }
   return mesh;

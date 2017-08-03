@@ -39,12 +39,11 @@ void createBitmapCache(HWND hwnd) {
   if(bitmapCache != NULL) {
     destroyBitmapCache();
   }
-  bitmapCache = new BitmapCache(hwnd);
+  bitmapCache = new BitmapCache(hwnd); TRACE_NEW(bitmapCache);
 }
 
 void destroyBitmapCache() {
-  delete bitmapCache;
-  bitmapCache = NULL;
+  SAFEDELETE(bitmapCache);
 }
 
 static int MarkerBitmaps[] = {
@@ -60,9 +59,9 @@ BitmapCache::BitmapCache(HWND hwnd) : m_hwnd(hwnd) {
 
   for(int i = 0; i < ARRAYSIZE(MarkerBitmaps); i++) {
     int id = MarkerBitmaps[i];
-    CBitmap *b = new CBitmap();
+    CBitmap *b = new CBitmap(); TRACE_NEW(b);
     if(b->LoadBitmap(id) == 0) {
-      delete b;
+      SAFEDELETE(b);
       throwException(_T("LoadBitmap(%d) failed"), id);
     }
     put(BitmapKey(id, 0), b);
@@ -76,7 +75,7 @@ BitmapCache::~BitmapCache() {
     Entry<BitmapKey, CBitmap*> &e = it.next();
     CBitmap *b = e.getValue();
     b->DeleteObject();
-    delete b;
+    SAFEDELETE(b);
   }
 }
 
@@ -119,7 +118,7 @@ static CBitmap *cloneBitmap(CBitmap *bm) {
   HDC srcDC = CreateCompatibleDC(NULL);
   HDC dstDC = CreateCompatibleDC(NULL);
 
-  CBitmap *result = new CBitmap;
+  CBitmap *result = new CBitmap; TRACE_NEW(result);
   result->CreateBitmap(info.bmWidth, info.bmHeight, info.bmPlanes, info.bmBitsPixel, NULL);
 
   SelectObject(srcDC, *bm);

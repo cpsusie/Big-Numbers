@@ -149,12 +149,12 @@ D3AnimatedSurface::D3AnimatedSurface(D3Scene &scene, const MeshArray &meshArray)
   m_meshArray         = meshArray;
   m_nextMeshIndex     = 0;
   m_lastRenderedIndex = -1;
-  m_animator          = new MeshAnimationThread(*this);
+  m_animator          = new MeshAnimationThread(*this); TRACE_NEW(m_animator);
 }
 
 D3AnimatedSurface::~D3AnimatedSurface() {
   m_animator->kill();
-  delete m_animator;
+  SAFEDELETE(m_animator);
 }
 
 void D3AnimatedSurface::startAnimation(AnimationType type) {

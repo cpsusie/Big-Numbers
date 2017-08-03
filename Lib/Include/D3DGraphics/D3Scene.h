@@ -32,8 +32,6 @@ typedef enum {
  ,SP_ANIMATIONFRAMEINDEX
 } D3SceneProperty;
 
-#define SAFE_RELEASE(p)      { if (p) { (p)->Release(); (p)=NULL; } }
-
 typedef enum {
   SOTYPE_VISUALOBJECT
  ,SOTYPE_LIGHTCONTROL
@@ -141,11 +139,17 @@ private:
   int getFirstFreeMaterialIndex();
   D3LightControl *findLightControlByLightIndex(int lightIndex);
   D3LightControl *addLightControl(    UINT lightIndex);
+  // Remove the lightControl associated with the given lightIndex from the scene, if its allocated,
+  // AND delete the LightControl. the light will remain in its current state
   void destroyLightControl(           UINT lightIndex);
+  // Remove and destroy all allocated lightcontrols
+  // The lights will remain in their current states
+  void destroyAllLightControls();
 public:
   D3Scene();
   ~D3Scene();
   void init(HWND hwnd);
+  void close();
   void initTrans();
   void render();
   void OnSize();
@@ -153,6 +157,8 @@ public:
     return m_hwnd;
   }
   void addSceneObject(   D3SceneObject *obj);
+  // remove obj from scene. if obj is an animated object, the animationthread will be stopped.
+  // Does NOT delete the object
   void removeSceneObject(D3SceneObject *obj);
   void removeAllSceneObjects();
   Iterator<D3SceneObject*> getObjectIterator() const {
@@ -248,7 +254,7 @@ public:
     }
     return *this;
   }
-  bool isZEnable() const {
+  inline bool isZEnable() const {
     return m_renderState.m_zEnable;
   }
   D3Scene &setNormalizeNormalsEnable(bool enabled) {
@@ -258,7 +264,7 @@ public:
     }
     return *this;
   }
-  bool isNormalizeNormalsEnable() const {
+  inline bool isNormalizeNormalsEnable() const {
     return m_renderState.m_normalizeNormals;
   }
   D3Scene &D3Scene::setAlphaBlendEnable(bool enabled) {
@@ -268,7 +274,7 @@ public:
     }
     return *this;
   }
-  bool isAlphaBlendEnable() const {
+  inline bool isAlphaBlendEnable() const {
     return m_renderState.m_alphaBlendEnable;
   }
   D3Scene &setLightingEnable(bool enabled) {
@@ -291,25 +297,7 @@ public:
   inline bool isSpecularEnabled() const {
     return m_renderState.m_specularHighLightEnable;
   }
-  D3Scene &selectMaterial(int materialIndex) {
-    if(materialIndex != m_renderState.m_selectedMaterialIndex) {
-      if((UINT)materialIndex < m_materials.size()) {
-        const MATERIAL &mat = getMaterial(materialIndex);
-        FV(m_device->SetMaterial(&mat));
-        if (mat.Diffuse.a < 1.0) {
-          setCullMode(D3DCULL_CCW)
-         .setZEnable(false)
-         .setAlphaBlendEnable(true)
-         .setSrcBlend(D3DBLEND_SRCALPHA)
-         .setDstBlend(D3DBLEND_INVSRCALPHA);
-        } else {
-          setCullMode(D3DCULL_CCW).setZEnable(true).setAlphaBlendEnable(false);
-        }
-      }
-      m_renderState.m_selectedMaterialIndex = materialIndex;
-    }
-    return *this;
-  }
+  D3Scene &selectMaterial(int materialIndex);
   inline D3Scene &unselectMaterial() {
     m_renderState.m_selectedMaterialIndex = -1;
     return *this;
@@ -456,11 +444,7 @@ public:
 
   LPDIRECT3DVERTEXBUFFER  allocateVertexBuffer(DWORD fvf , UINT count, UINT *bufferSize = NULL);
   LPDIRECT3DINDEXBUFFER   allocateIndexBuffer( bool int32, UINT count, UINT *bufferSize = NULL);
-  LPD3DXMESH              allocateMesh(        DWORD fvf , UINT faceCount, UINT vertexCount, DWORD options) {
-    LPD3DXMESH mesh;
-    FV(D3DXCreateMeshFVF(faceCount, vertexCount, options, fvf, m_device, &mesh));
-    return mesh;
-  }
+  LPD3DXMESH              allocateMesh(        DWORD fvf , UINT faceCount, UINT vertexCount, DWORD options);
   LPDIRECT3DTEXTURE loadTextureFromFile(const String &fileName) {
     return AbstractTextureFactory::loadTextureFromFile(m_device, fileName);
   }
@@ -619,13 +603,15 @@ public:
 };
 
 class SceneObjectWithVertexBuffer : public D3SceneObject {
+private:
+  void releaseVertexBuffer();
 protected:
   int                    m_primitiveCount;
   DWORD                  m_fvf;
   int                    m_vertexSize;
   LPDIRECT3DVERTEXBUFFER m_vertexBuffer;
   void *allocateVertexBuffer(int vertexSize, UINT count, DWORD fvf);
-  void unlockVertexBuffer();
+  void  unlockVertexBuffer();
   inline void setStreamSource() {
     getScene().setStreamSource(m_vertexBuffer, m_vertexSize, m_fvf);
   }
@@ -637,10 +623,15 @@ public:
   inline LPDIRECT3DVERTEXBUFFER &getVertexBuffer() {
     return m_vertexBuffer;
   }
+  inline bool hasVertexBuffer() const {
+    return m_vertexBuffer != NULL;
+  }
   String toString() const;
 };
 
 class SceneObjectWithIndexBuffer : public SceneObjectWithVertexBuffer {
+private:
+  void releaseIndexBuffer();
 protected:
   LPDIRECT3DINDEXBUFFER m_indexBuffer;
   void *allocateIndexBuffer(bool int32, int count);
@@ -653,6 +644,9 @@ protected:
 public:
   SceneObjectWithIndexBuffer(D3Scene &scene);
   ~SceneObjectWithIndexBuffer();
+  inline bool hasIndexBuffer() const {
+    return m_indexBuffer != NULL;
+  }
   String toString() const;
 };
 
@@ -699,13 +693,13 @@ public:
   String toString() const;
 };
 
-class SceneObjectBox : public SceneObjectWithMesh {
+class SceneObjectSolidBox : public SceneObjectWithMesh {
 private:
   int             m_materialIndex;
   D3PosDirUpScale m_pdus;
   void makeSquareFace(MeshBuilder &mb, int v0, int v1, int v2, int v3);
 public:
-  SceneObjectBox(D3Scene &scene, const D3DXCube3 &cube, int materialIndex = 0);
+  SceneObjectSolidBox(D3Scene &scene, const D3DXCube3 &cube, int materialIndex = 0);
   D3PosDirUpScale &getPDUS() {
     return m_pdus;
   }
@@ -715,12 +709,19 @@ public:
 };
 
 class D3LineArray : public SceneObjectWithVertexBuffer {
-private:
-  void initBuffer(const Line *lines, int n);
+protected:
+  void initBuffer(const Line3D *lines, int n);
 public:
-  D3LineArray(D3Scene &scene, const Line *lines, int n);
-  D3LineArray(D3Scene &scene, const Vertex p1, const Vertex p2); // make a wireframe box
+  D3LineArray(D3Scene &scene) : SceneObjectWithVertexBuffer(scene) {
+  }
+  D3LineArray(D3Scene &scene, const Line3D *lines, int n);
   void draw();
+};
+
+class D3WireFrameBox : public D3LineArray {
+public:
+  D3WireFrameBox(D3Scene &scene, const D3DXCube3 &cube);
+  D3WireFrameBox(D3Scene &scene, const Vertex &p1, const Vertex &p2);
 };
 
 class D3Curve : public SceneObjectWithVertexBuffer {

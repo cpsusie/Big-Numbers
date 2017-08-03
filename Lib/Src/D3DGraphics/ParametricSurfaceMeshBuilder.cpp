@@ -149,7 +149,8 @@ public:
     return m_param.m_frameCount;
   }
   AbstractVariableMeshCreator *fetchMeshCreator() const {
-    return new VariableParametricSurfaceMeshCreator(m_amf, m_param);
+    VariableParametricSurfaceMeshCreator *result = new VariableParametricSurfaceMeshCreator(m_amf, m_param); TRACE_NEW(result);
+    return result;
   }
 };
 

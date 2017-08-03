@@ -6,22 +6,24 @@ DECLARE_THISFILE;
 // -----------------------------------------------------------------------------------------------------------
 
 String toString(LPD3DXMESH mesh) {
+  if(mesh == NULL) return _T("null");
   LPDIRECT3DVERTEXBUFFER vertexBuffer;
   LPDIRECT3DINDEXBUFFER  indexBuffer;
 
-  V(mesh->GetVertexBuffer(&vertexBuffer));
-  V(mesh->GetIndexBuffer( &indexBuffer ));
+  V(mesh->GetVertexBuffer(&vertexBuffer)); TRACE_REFCOUNT(vertexBuffer);
+  V(mesh->GetIndexBuffer( &indexBuffer )); TRACE_REFCOUNT(indexBuffer );
   String result = _T("VertexBuffer:\n");
   result += indentString(toString(vertexBuffer), 2);
   result += _T("IndexBuffer:\n");
   result += indentString(toString(indexBuffer), 2);
 
-  indexBuffer->Release();
-  vertexBuffer->Release();
+  SAFERELEASE(indexBuffer);
+  SAFERELEASE(vertexBuffer);
   return result;
 }
 
 String toString(LPDIRECT3DVERTEXBUFFER vertexBuffer) {
+  if(vertexBuffer == NULL) return _T("null");
   D3DVERTEXBUFFER_DESC desc;
   V(vertexBuffer->GetDesc(&desc));
   const int itemSize = FVFToSize(desc.FVF);
@@ -45,6 +47,7 @@ String toString(LPDIRECT3DVERTEXBUFFER vertexBuffer) {
 }
 
 String toString(LPDIRECT3DINDEXBUFFER indexBuffer) {
+  if(indexBuffer == NULL) return _T("null");
   D3DINDEXBUFFER_DESC desc;
   V(indexBuffer->GetDesc(&desc));
   const int itemSize  = formatToSize(desc.Format);

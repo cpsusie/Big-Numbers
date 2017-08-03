@@ -219,14 +219,15 @@ typedef struct {
 int    FVFToSize(   DWORD     fvf);
 int    formatToSize(D3DFORMAT f  );
 
-typedef struct Line {
+class Line3D {
+public:
   Vertex m_p1, m_p2;
-  inline Line() {}
-  inline Line(const Vertex &p1, const Vertex &p2) : m_p1(p1), m_p2(p2) {
+  inline Line3D() {}
+  inline Line3D(const Vertex &p1, const Vertex &p2) : m_p1(p1), m_p2(p2) {
   }
-  inline Line(const Point3D &p1, const Point3D &p2) : m_p1(p1), m_p2(p2) {
+  inline Line3D(const Point3D &p1, const Point3D &p2) : m_p1(p1), m_p2(p2) {
   }
-} Line;
+};
 
 typedef CompactArray<Vertex>        VertexArray;
 typedef CompactArray<TextureVertex> TextureVertexArray;

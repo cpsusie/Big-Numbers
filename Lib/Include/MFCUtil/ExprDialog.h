@@ -75,6 +75,14 @@ protected:
   }
 
   BOOL PreTranslateMessage(MSG *pMsg);
+  virtual void OnFileNew() {
+  }
+  virtual void OnFileOpen() {
+  }
+  virtual void OnFileSave() {
+  }
+  virtual void OnFileSaveAs() {
+  }
 };
 
 template <class T> class SaveLoadExprDialog : public CExprDialog {

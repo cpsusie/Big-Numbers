@@ -37,7 +37,7 @@ private:
     CPoint get3DPanelPoint(CPoint point, bool screenRelative) const;
     D3SceneObject *createRotatedProfile();
     void createSaddle();
-
+    void deleteCalculatedObject();
     void setCalculatedObject(D3SceneObject *obj, PersistentData *param = NULL);
     void setCalculatedObject(Function2DSurfaceParameters *param);
     void setCalculatedObject(ParametricSurfaceParameters *param);

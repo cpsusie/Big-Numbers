@@ -171,7 +171,7 @@ bool MeshBuilder::use32BitIndices(bool doubleSided) const {
 }
 
 D3DXCube3 MeshBuilder::getBoundingBox() const {
-  D3DXCube3    result;
+  D3DXVECTOR3  pmin,pmax;
   const size_t faceCount = m_faceArray.size();
   size_t       i;
   bool         firstTime = true;
@@ -186,29 +186,29 @@ D3DXCube3 MeshBuilder::getBoundingBox() const {
       if((vi >= 0) && (vi <= maxVertexIndex)) {
         const Vertex &v = m_vertices[vi];
         if(firstTime) {
-          result.m_rtf = result.m_lbn = v;
+          pmin = pmax = v;
           firstTime = false;
         } else {
-          if(v.x < result.m_lbn.x) {
-            result.m_lbn.x = v.x;
-          } else if(v.x > result.m_rtf.x) {
-            result.m_rtf.x = v.x;
+          if(v.x < pmin.x) {
+            pmin.x = v.x;
+          } else if(v.x > pmax.x) {
+            pmax.x = v.x;
           }
-          if(v.y < result.m_lbn.y) {
-            result.m_lbn.y = v.y;
-          } else if(v.y > result.m_rtf.y) {
-            result.m_rtf.y = v.y;
+          if(v.y < pmin.y) {
+            pmin.y = v.y;
+          } else if(v.y > pmax.y) {
+            pmax.y = v.y;
           }
-          if(v.z < result.m_lbn.z) {
-            result.m_lbn.z = v.z;
-          } else if(v.z > result.m_rtf.z) {
-            result.m_rtf.z = v.z;
+          if(v.z < pmin.z) {
+            pmin.z = v.z;
+          } else if(v.z > pmax.z) {
+            pmax.z = v.z;
           }
         }
       }
     }
   }
-  return result;
+  return D3DXCube3(pmin,pmax);
 }
 
 static Semaphore   meshCreatorGate;
@@ -293,7 +293,7 @@ private:
       if(mesh) {
         mesh->UnlockIndexBuffer();
         mesh->UnlockVertexBuffer();
-        mesh->Release();
+        SAFERELEASE(mesh);
       }
       if(inCriticalSection) {
         meshCreatorGate.signal();
@@ -373,7 +373,7 @@ private:
       if(mesh) {
         mesh->UnlockIndexBuffer();
         mesh->UnlockVertexBuffer();
-        mesh->Release();
+        SAFERELEASE(mesh);
       }
       if(inCriticalSection) {
         meshCreatorGate.signal();

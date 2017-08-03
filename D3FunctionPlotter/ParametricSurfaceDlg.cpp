@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "ParametricSurfaceDlg.h"
-#include "afxdialogex.h"
 
 CParametricSurfaceDlg::CParametricSurfaceDlg(const ParametricSurfaceParameters &param, CWnd *pParent /*=NULL*/)
 : SaveLoadExprDialog<ParametricSurfaceParameters>(IDD, pParent, param,_T("Parametric Surface"), _T("par"))
@@ -24,8 +23,8 @@ void CParametricSurfaceDlg::DoDataExchange(CDataExchange *pDX) {
   DDX_Text(pDX, IDC_EDIT_STO          , m_sto        );
   DDX_Check(pDX, IDC_CHECK_INCLUDETIME, m_includeTime);
   DDX_Check(pDX, IDC_CHECK_DOUBLESIDED, m_doubleSided);
-  DDX_Text(pDX, IDC_EDIT_TIMEFROM     , m_timeFrom   );
-  DDX_Text(pDX, IDC_EDIT_TIMETO       , m_timeTo     );
+  DDX_Text(pDX, IDC_EDIT_TIMEFROM     , m_timefrom   );
+  DDX_Text(pDX, IDC_EDIT_TIMETO       , m_timeto     );
   DDX_Text(pDX, IDC_EDIT_TSTEPCOUNT   , m_tStepCount );
   DDV_MinMaxUInt(pDX, m_tStepCount    , 1, 200       );
   DDX_Text(pDX, IDC_EDIT_SSTEPCOUNT   , m_sStepCount );
@@ -56,7 +55,6 @@ BEGIN_MESSAGE_MAP(CParametricSurfaceDlg, CDialog)
     ON_BN_CLICKED(IDC_BUTTON_HELPZ           , OnButtonHelpZ                    )
     ON_BN_CLICKED(IDC_CHECK_INCLUDETIME      , OnCheckIncludeTime               )
 END_MESSAGE_MAP()
-
 
 BOOL CParametricSurfaceDlg::OnInitDialog() {
   __super::OnInitDialog();
@@ -103,6 +101,11 @@ BOOL CParametricSurfaceDlg::OnInitDialog() {
 
   gotoEditBox(this, IDC_EDIT_EXPRX);
   return FALSE;  // return TRUE  unless you set the focus to a control
+}
+
+void CParametricSurfaceDlg::OnFileOpen() {
+  __super::OnFileOpen();
+  enableTimeFields();
 }
 
 #define MAXPOINTCOUNT 200
@@ -208,8 +211,8 @@ void CParametricSurfaceDlg::paramToWin(const ParametricSurfaceParameters &param)
   m_tto           = param.getTInterval().getMax();
   m_sfrom         = param.getSInterval().getMin();
   m_sto           = param.getSInterval().getMax();
-  m_timeFrom      = param.getTimeInterval().getMin();
-  m_timeTo        = param.getTimeInterval().getMax();
+  m_timefrom      = param.getTimeInterval().getMin();
+  m_timeto        = param.getTimeInterval().getMax();
   m_tStepCount    = param.m_tStepCount;
   m_sStepCount    = param.m_sStepCount;
   m_frameCount    = param.m_frameCount;
@@ -231,8 +234,8 @@ void CParametricSurfaceDlg::winToParam(ParametricSurfaceParameters &param) const
   param.m_tInterval.setTo(     m_tto);
   param.m_sInterval.setFrom(   m_sfrom);
   param.m_sInterval.setTo(     m_sto);
-  param.m_timeInterval.setFrom(m_timeFrom);
-  param.m_timeInterval.setTo(  m_timeTo);
+  param.m_timeInterval.setFrom(m_timefrom);
+  param.m_timeInterval.setTo(  m_timeto);
   param.m_tStepCount  = m_tStepCount;
   param.m_sStepCount  = m_sStepCount;
   param.m_frameCount  = m_frameCount;

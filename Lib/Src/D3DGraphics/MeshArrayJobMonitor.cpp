@@ -88,7 +88,8 @@ int MeshArrayJobMonitor::getJobsDone() const {
 
 void MeshArrayJobMonitor::clearResultQueue() { // private. No need to synchronize
   for(size_t i = 0; i < m_resultArray.size(); i++) {
-    m_resultArray[i].m_mesh->Release();
+    LPD3DXMESH mesh = m_resultArray[i].m_mesh;
+    SAFERELEASE(mesh);
   }
   m_resultArray.clear();
 }
@@ -166,11 +167,13 @@ UINT MeshArrayCreator::run() {
   const int processorCount = getProcessorCount();
   RunnableArray workerArray;
   for (int i = 0; i < processorCount; i++) {
-    workerArray.add(new MeshBuilderWorker(this));
+    Runnable *r = new MeshBuilderWorker(this); TRACE_NEW(r);
+    workerArray.add(r);
   }
   ThreadPool::executeInParallel(workerArray);
   for(size_t i = 0; i < workerArray.size(); i++) {
-    delete workerArray[i];
+    Runnable *r = workerArray[i];
+    SAFEDELETE(r);
   }
   workerArray.clear();
   return 0;
@@ -183,7 +186,7 @@ MeshBuilderWorker::MeshBuilderWorker(MeshArrayCreator *arrayCreator)
 }
 
 MeshBuilderWorker::~MeshBuilderWorker(){
-  delete m_meshCreator;
+  SAFEDELETE(m_meshCreator);
 }
 
 MeshArrayJobMonitor &MeshBuilderWorker::getJobMonitor() {

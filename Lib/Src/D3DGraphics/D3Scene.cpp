@@ -20,16 +20,7 @@ D3Scene::D3Scene() {
 }
 
 D3Scene::~D3Scene() {
-  removeAllSceneObjects();
-  if(m_lightsEnabled) {
-    delete m_lightsEnabled;
-  }
-  if(m_lightsDefined) {
-    delete m_lightsDefined;
-  }
-  if(m_device != NULL) {
-    m_device->Release();
-  }
+  close();
 }
 
 void D3Scene::notifyPropertyChanged(int id, const void *oldValue, const void *newValue) {
@@ -39,6 +30,9 @@ void D3Scene::notifyPropertyChanged(int id, const void *oldValue, const void *ne
 }
 
 void D3Scene::init(HWND hwnd) {
+  if(m_initDone) {
+    throwException(_T("%s:Scene already initialized"), __TFUNCTION__);
+  }
   m_hwnd = hwnd;
 
   m_device = D3DeviceFactory::createDevice(m_hwnd);
@@ -48,8 +42,8 @@ void D3Scene::init(HWND hwnd) {
 
   s_textureCoordCount = deviceCaps.FVFCaps & D3DFVFCAPS_TEXCOORDCOUNTMASK;
   m_maxLightCount     = deviceCaps.MaxActiveLights;
-  m_lightsEnabled     = new BitSet(m_maxLightCount);
-  m_lightsDefined     = new BitSet(m_maxLightCount);
+  m_lightsEnabled     = new BitSet(m_maxLightCount); TRACE_NEW(m_lightsEnabled);
+  m_lightsDefined     = new BitSet(m_maxLightCount); TRACE_NEW(m_lightsDefined);
 
   addLight(     getDefaultLight());
   addMaterial(  getDefaultMaterial());
@@ -61,12 +55,43 @@ void D3Scene::init(HWND hwnd) {
   m_initDone = true;
 }
 
+void D3Scene::close() {
+  if(!m_initDone) return;
+  PropertyContainer::clear();
+  destroyAllLightControls();
+  removeAllSceneObjects();
+  SAFEDELETE(m_lightsEnabled);
+  SAFEDELETE(m_lightsDefined);
+  SAFERELEASE(m_device);
+  m_initDone = false;
+}
+
 void D3Scene::initTrans() {
   m_viewAngel      = radians(45);
   m_nearViewPlane  = 0.1f;
   updateProjMatrix();
   initCameraTrans(D3DXVECTOR3(0,-5,0), D3DXVECTOR3(0,0,0), D3DXVECTOR3(0,0,1));
   initObjTrans();
+}
+
+D3Scene &D3Scene::selectMaterial(int materialIndex) {
+  if(materialIndex != m_renderState.m_selectedMaterialIndex) {
+    if((UINT)materialIndex < m_materials.size()) {
+      const MATERIAL &mat = getMaterial(materialIndex);
+      FV(m_device->SetMaterial(&mat));
+      if (mat.Diffuse.a < 1.0) {
+        setCullMode(D3DCULL_CCW)
+        .setZEnable(false)
+        .setAlphaBlendEnable(true)
+        .setSrcBlend(D3DBLEND_SRCALPHA)
+        .setDstBlend(D3DBLEND_INVSRCALPHA);
+      } else {
+        setCullMode(D3DCULL_CCW).setZEnable(true).setAlphaBlendEnable(false);
+      }
+    }
+    m_renderState.m_selectedMaterialIndex = materialIndex;
+  }
+  return *this;
 }
 
 void D3Scene::setCameraPDUS(const D3PosDirUpScale &pdus) {
@@ -195,9 +220,9 @@ D3LightControl *D3Scene::addLightControl(UINT index) {
   if(result != NULL) return result;
   LIGHT param = getLight(index);
   switch(param.Type) {
-  case D3DLIGHT_DIRECTIONAL    : result = new D3LightControlDirectional(*this, index); break;
-  case D3DLIGHT_POINT          : result = new D3LightControlPoint(      *this, index); break;
-  case D3DLIGHT_SPOT           : result = new D3LightControlSpot(       *this, index); break;
+  case D3DLIGHT_DIRECTIONAL    : result = new D3LightControlDirectional(*this, index); TRACE_NEW(result); break;
+  case D3DLIGHT_POINT          : result = new D3LightControlPoint(      *this, index); TRACE_NEW(result); break;
+  case D3DLIGHT_SPOT           : result = new D3LightControlSpot(       *this, index); TRACE_NEW(result); break;
   default                      : throwException(_T("Unknown lighttype for light %d:%d"), index, param.Type);
   }
   addSceneObject(result);
@@ -208,7 +233,15 @@ void D3Scene::destroyLightControl(UINT index) {
   D3LightControl *lc = findLightControlByLightIndex(index);
   if(lc == NULL) return;
   removeSceneObject(lc);
-  delete lc;
+  SAFEDELETE(lc);
+}
+
+void D3Scene::destroyAllLightControls() {
+  const CompactArray<LIGHT> la = getAllLights();
+  for (size_t i = 0; i < la.size(); i++) {
+    const LIGHT &l = la[i];
+    destroyLightControl(l.m_index);
+  }
 }
 
 int D3Scene::addLight(const D3DLIGHT &light) {
@@ -486,6 +519,7 @@ LPDIRECT3DVERTEXBUFFER D3Scene::allocateVertexBuffer(DWORD fvf, UINT count, UINT
   totalSize = vertexSize*count;
   LPDIRECT3DVERTEXBUFFER result;
   V(m_device->CreateVertexBuffer(totalSize, 0, fvf, D3DPOOL_DEFAULT, &result, NULL));
+  TRACE_CREATE(result);
   return result;
 }
 
@@ -496,6 +530,14 @@ LPDIRECT3DINDEXBUFFER D3Scene::allocateIndexBuffer(bool int32, UINT count, UINT 
   totalSize = itemSize*count;
   LPDIRECT3DINDEXBUFFER result;
   V(m_device->CreateIndexBuffer(totalSize, 0, int32 ? D3DFMT_INDEX32 : D3DFMT_INDEX16, D3DPOOL_DEFAULT, &result, NULL));
+  TRACE_CREATE(result);
+  return result;
+}
+
+LPD3DXMESH D3Scene::allocateMesh(DWORD fvf , UINT faceCount, UINT vertexCount, DWORD options) {
+  LPD3DXMESH result;
+  FV(D3DXCreateMeshFVF(faceCount, vertexCount, options, fvf, m_device, &result));
+  TRACE_CREATE(result);
   return result;
 }
 
@@ -511,13 +553,13 @@ LPD3DXEFFECT D3Scene::compileEffect(const String &srcText, StringArray &errorMsg
   int textLen = (int)strlen(text);
   try {
     V(D3DXCreateEffect(m_device, text, textLen, NULL, NULL, flags, NULL, &effect, &compilerErrors));
+    TRACE_CREATE(effect);
     return effect;
   } catch (Exception e) {
     const String errorText = (char*)compilerErrors->GetBufferPointer();
     errorMsg = StringArray(Tokenizer(errorText, _T("\n\r")));
     return NULL;
   }
-
 }
 
 void D3Scene::OnSize() {
@@ -542,8 +584,8 @@ void D3Scene::removeSceneObject(D3SceneObject *obj) {
       ((D3AnimatedSurface*)obj)->stopAnimation();
     }
     m_objectArray.remove(index);
+    notifyIfObjectArrayChanged();
   }
-  notifyIfObjectArrayChanged();
 }
 
 void D3Scene::removeAllSceneObjects() {

@@ -6,12 +6,11 @@
 
 class CD3FunctionPlotterApp : public CWinApp {
 public:
-    CD3FunctionPlotterApp();
+  CD3FunctionPlotterApp();
 
-    public:
-    virtual BOOL InitInstance();
+  virtual BOOL InitInstance();
 
-    DECLARE_MESSAGE_MAP()
+  DECLARE_MESSAGE_MAP()
 };
 
 extern CD3FunctionPlotterApp theApp;

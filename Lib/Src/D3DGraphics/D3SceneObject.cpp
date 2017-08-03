@@ -65,12 +65,11 @@ SceneObjectWithVertexBuffer::SceneObjectWithVertexBuffer(D3Scene &scene) : D3Sce
 }
 
 SceneObjectWithVertexBuffer::~SceneObjectWithVertexBuffer() {
-  if(m_vertexBuffer != NULL) {
-    m_vertexBuffer->Release();
-  }
+  releaseVertexBuffer();
 }
 
 void *SceneObjectWithVertexBuffer::allocateVertexBuffer(int vertexSize, UINT count, DWORD fvf) {
+  releaseVertexBuffer();
   UINT bufferSize;
   m_vertexBuffer = getScene().allocateVertexBuffer(fvf, count, &bufferSize);
   m_vertexSize   = vertexSize;
@@ -85,12 +84,17 @@ void SceneObjectWithVertexBuffer::unlockVertexBuffer() {
   V(m_vertexBuffer->Unlock());
 }
 
+void SceneObjectWithVertexBuffer::releaseVertexBuffer() {
+  SAFERELEASE(m_vertexBuffer);
+}
+
 #define GETLOCKEDVERTEXBUFFER(type, count) (type*)allocateVertexBuffer(sizeof(type), count, type::FVF_Flags)
 
 String SceneObjectWithVertexBuffer::toString() const {
   return format(_T("%s\nVertexBuffer:\n%s")
                 ,__super::toString().cstr()
-                ,indentString(::toString(m_vertexBuffer),2).cstr());
+                ,indentString(::toString(m_vertexBuffer),2).cstr()
+               );
 }
 
 // ------------------------------------------------ SceneObjectWithIndexBuffer ---------------------------------------------------
@@ -100,12 +104,11 @@ SceneObjectWithIndexBuffer::SceneObjectWithIndexBuffer(D3Scene &scene) : SceneOb
 }
 
 SceneObjectWithIndexBuffer::~SceneObjectWithIndexBuffer() {
-  if(m_indexBuffer != NULL) {
-    m_indexBuffer->Release();
-  }
+  releaseIndexBuffer();
 }
 
 void *SceneObjectWithIndexBuffer::allocateIndexBuffer(bool int32, int count) {
+  releaseIndexBuffer();
   void *bufferItems = NULL;
   m_indexBuffer = getScene().allocateIndexBuffer(int32, count);
   V(m_indexBuffer->Lock(0,0,&bufferItems, 0));
@@ -114,6 +117,10 @@ void *SceneObjectWithIndexBuffer::allocateIndexBuffer(bool int32, int count) {
 
 void SceneObjectWithIndexBuffer::unlockIndexBuffer() {
   V(m_indexBuffer->Unlock());
+}
+
+void SceneObjectWithIndexBuffer::releaseIndexBuffer() {
+  SAFERELEASE(m_indexBuffer)
 }
 
 #define GETLOCKEDSHORTBUFFER(count) (USHORT*)allocateIndexBuffer(false, count)
@@ -125,7 +132,7 @@ String SceneObjectWithIndexBuffer::toString() const {
                 ,indentString(::toString(m_indexBuffer),2).cstr());
 }
 
-// ------------------------------------------------ D3LineArray -----------------------------------------------------------
+// ----------------------------------- SceneObjectWithMesh --------------------------------------------
 
 SceneObjectWithMesh::SceneObjectWithMesh(D3Scene &scene, LPD3DXMESH mesh)
 : D3SceneObject(scene)
@@ -145,7 +152,7 @@ void SceneObjectWithMesh::createMesh(DWORD faceCount, DWORD vertexCount, DWORD f
 }
 
 void SceneObjectWithMesh::releaseMesh() {
-  SAFE_RELEASE(m_mesh);
+  SAFERELEASE(m_mesh);
 }
 
 void *SceneObjectWithMesh::lockVertexBuffer() {
@@ -181,15 +188,29 @@ String SceneObjectWithMesh::toString() const {
                 ,indentString(::toString(getMesh()),2).cstr());
 }
 
-// -----------------------------------------------------------------------------------------------------------
+// ------------------------------------------------ D3LineArray -----------------------------------------------------------
 
-
-D3LineArray::D3LineArray(D3Scene &scene, const Line *lines, int n) : SceneObjectWithVertexBuffer(scene) {
+D3LineArray::D3LineArray(D3Scene &scene, const Line3D *lines, int n) : SceneObjectWithVertexBuffer(scene) {
   initBuffer(lines, n);
 }
 
-D3LineArray::D3LineArray(D3Scene &scene, const Vertex p1, const Vertex p2) : SceneObjectWithVertexBuffer(scene) {
-  Line lines[12], *lp = lines, *ll;
+void D3LineArray::initBuffer(const Line3D *lines, int n) {
+  Vertex *vertices = GETLOCKEDVERTEXBUFFER(Vertex, 2*n);
+  m_primitiveCount = n;
+  memcpy(vertices, lines, sizeof(Line3D)*n);
+  unlockVertexBuffer();
+}
+
+void D3LineArray::draw() {
+  if(hasVertexBuffer()) {
+    setStreamSource();
+    setLightingEnable(true);
+    drawPrimitive(D3DPT_LINELIST, 0, m_primitiveCount);
+  }
+}
+
+D3WireFrameBox::D3WireFrameBox(D3Scene &scene, const Vertex &p1, const Vertex &p2) : D3LineArray(scene) {
+  Line3D lines[12], *lp = lines, *ll;
   lp->m_p1 = p1;                           lp->m_p2 = Vertex(p1.x,p2.y,p1.z); ll = lp++;
   lp->m_p1 = ll->m_p2;                     lp->m_p2 = Vertex(p2.x,p2.y,p1.z); ll = lp++;
   lp->m_p1 = ll->m_p2;                     lp->m_p2 = Vertex(p2.x,p1.y,p1.z); ll = lp++;
@@ -204,19 +225,6 @@ D3LineArray::D3LineArray(D3Scene &scene, const Vertex p1, const Vertex p2) : Sce
     lines[i+8].m_p2 = lines[i+4].m_p1;
   }
   initBuffer(lines, 12);
-}
-
-void D3LineArray::initBuffer(const Line *lines, int n) {
-  Vertex *vertices = GETLOCKEDVERTEXBUFFER(Vertex, 2*n);
-  m_primitiveCount = n;
-  memcpy(vertices, lines, sizeof(Line)*n);
-  unlockVertexBuffer();
-}
-
-void D3LineArray::draw() {
-  setStreamSource();
-  setLightingEnable(true);
-  drawPrimitive(D3DPT_LINELIST, 0, m_primitiveCount);
 }
 
 // ----------------------------------------------------- D3LineArrow ------------------------------------------------------
@@ -255,13 +263,15 @@ D3LineArrow::D3LineArrow(D3Scene &scene, const Vertex &from, const Vertex &to, D
 }
 
 void D3LineArrow::draw() {
-  getScene().setFillMode(D3DFILL_SOLID).setShadeMode(D3DSHADE_GOURAUD);
-  setStreamSource();
-  setLightingEnable(true);
-  setSceneMaterial();
-  drawPrimitive( D3DPT_LINELIST   , 0         , 1       );
-  drawPrimitive( D3DPT_TRIANGLEFAN, 1         , FANCOUNT);
-  drawPrimitive( D3DPT_TRIANGLEFAN, FANCOUNT+3, FANCOUNT);
+  if(hasVertexBuffer()) {
+    getScene().setFillMode(D3DFILL_SOLID).setShadeMode(D3DSHADE_GOURAUD);
+    setStreamSource();
+    setLightingEnable(true);
+    setSceneMaterial();
+    drawPrimitive( D3DPT_LINELIST   , 0         , 1       );
+    drawPrimitive( D3DPT_TRIANGLEFAN, 1         , FANCOUNT);
+    drawPrimitive( D3DPT_TRIANGLEFAN, FANCOUNT+3, FANCOUNT);
+  }
 }
 
 void D3LineArrow::setColor(D3DCOLOR color) {
@@ -291,9 +301,11 @@ D3Curve::D3Curve(D3Scene &scene, const VertexArray &points) : SceneObjectWithVer
 }
 
 void D3Curve::draw() {
-  setStreamSource();
-  setLightingEnable(true);
-  drawPrimitive(D3DPT_LINESTRIP, 0, m_primitiveCount);
+  if(hasVertexBuffer()) {
+    setStreamSource();
+    setLightingEnable(true);
+    drawPrimitive(D3DPT_LINESTRIP, 0, m_primitiveCount);
+  }
 }
 
 D3CurveArray::D3CurveArray(D3Scene &scene, const CurveArray &curves) : SceneObjectWithVertexBuffer(scene) {
@@ -317,17 +329,19 @@ D3CurveArray::D3CurveArray(D3Scene &scene, const CurveArray &curves) : SceneObje
 }
 
 void D3CurveArray::draw() {
-  setStreamSource();
-  setLightingEnable(true);
-  int startIndex = 0;
-  for(size_t i = 0; i < m_curveSize.size(); i++) {
-    const int vertexCount = m_curveSize[i];
-    drawPrimitive(D3DPT_LINESTRIP, startIndex, vertexCount-1);
-    startIndex += vertexCount;
+  if(hasVertexBuffer()) {
+    setStreamSource();
+    setLightingEnable(true);
+    int startIndex = 0;
+    for(size_t i = 0; i < m_curveSize.size(); i++) {
+      const int vertexCount = m_curveSize[i];
+      drawPrimitive(D3DPT_LINESTRIP, startIndex, vertexCount-1);
+      startIndex += vertexCount;
+    }
   }
 }
 
-void SceneObjectBox::makeSquareFace(MeshBuilder &mb, int v0, int v1, int v2, int v3) {
+void SceneObjectSolidBox::makeSquareFace(MeshBuilder &mb, int v0, int v1, int v2, int v3) {
   Face &f = mb.addFace();
   const int nIndex = mb.addNormal(mb.calculateNormal(v0,v1,v2));
   f.addVertexNormalIndex(v0, nIndex);
@@ -336,21 +350,21 @@ void SceneObjectBox::makeSquareFace(MeshBuilder &mb, int v0, int v1, int v2, int
   f.addVertexNormalIndex(v3, nIndex);
 }
 
-SceneObjectBox::SceneObjectBox(D3Scene &scene, const D3DXCube3 &cube, int materialIndex)
+SceneObjectSolidBox::SceneObjectSolidBox(D3Scene &scene, const D3DXCube3 &cube, int materialIndex)
 : SceneObjectWithMesh(scene)
 , m_materialIndex(materialIndex)
 , m_pdus(scene.getObjPDUS())
 {
   MeshBuilder mb;
-
-  const int  lbn = mb.addVertex(cube.m_lbn.x,cube.m_lbn.y,cube.m_lbn.z); // left  bottom near corner
-  const int  lbf = mb.addVertex(cube.m_lbn.x,cube.m_lbn.y,cube.m_rtf.z); // left  bottom far  corner
-  const int  ltn = mb.addVertex(cube.m_lbn.x,cube.m_rtf.y,cube.m_lbn.z); // left  top    near corner
-  const int  ltf = mb.addVertex(cube.m_lbn.x,cube.m_rtf.y,cube.m_rtf.z); // left  top    far  corner
-  const int  rbn = mb.addVertex(cube.m_rtf.x,cube.m_lbn.y,cube.m_lbn.z); // right bottom near corner
-  const int  rbf = mb.addVertex(cube.m_rtf.x,cube.m_lbn.y,cube.m_rtf.z); // right bottom far  corner
-  const int  rtn = mb.addVertex(cube.m_rtf.x,cube.m_rtf.y,cube.m_lbn.z); // right top    near corner
-  const int  rtf = mb.addVertex(cube.m_rtf.x,cube.m_rtf.y,cube.m_rtf.z); // right top    far  corner
+  const D3DXVECTOR3 &pmin = cube.getMin(), &pmax = cube.getMax();
+  const int  lbn = mb.addVertex(pmin.x,pmin.y,pmin.z); // left  bottom near corner
+  const int  lbf = mb.addVertex(pmin.x,pmin.y,pmax.z); // left  bottom far  corner
+  const int  ltn = mb.addVertex(pmin.x,pmax.y,pmin.z); // left  top    near corner
+  const int  ltf = mb.addVertex(pmin.x,pmax.y,pmax.z); // left  top    far  corner
+  const int  rbn = mb.addVertex(pmax.x,pmin.y,pmin.z); // right bottom near corner
+  const int  rbf = mb.addVertex(pmax.x,pmin.y,pmax.z); // right bottom far  corner
+  const int  rtn = mb.addVertex(pmax.x,pmax.y,pmin.z); // right top    near corner
+  const int  rtf = mb.addVertex(pmax.x,pmax.y,pmax.z); // right top    far  corner
 
   makeSquareFace(mb,lbn,lbf,rbf,rbn);              // bottom
   makeSquareFace(mb,ltn,rtn,rtf,ltf);              // top

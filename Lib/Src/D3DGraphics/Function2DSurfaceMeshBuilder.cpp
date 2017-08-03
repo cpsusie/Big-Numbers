@@ -38,7 +38,7 @@ static void findMax16BitMeshVertexCount(LPDIRECT3DDEVICE device) {
       h = vertexCount - 1;
     } else {
       l = vertexCount;
-      mesh->Release();
+      SAFERELEASE(mesh);
     }
   }
   AfxMessageBox(format(_T("l:%d, h:%d"), l, h).cstr());
@@ -133,7 +133,8 @@ public:
     return m_param.m_frameCount;
   }
   AbstractVariableMeshCreator *fetchMeshCreator() const {
-    return new VariableFunction2DMeshCreator(m_amf, m_param);
+    VariableFunction2DMeshCreator *result = new VariableFunction2DMeshCreator(m_amf, m_param); TRACE_NEW(result);
+    return result;
   }
 };
 

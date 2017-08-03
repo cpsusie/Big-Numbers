@@ -16,31 +16,31 @@ D3DXCube3 getBoundingBox(LPD3DXMESH mesh) {
   const int itemSize = FVFToSize(desc.FVF);
   void *bufferItems = NULL;
   V(vertexBuffer->Lock(0, 0, &bufferItems, D3DLOCK_READONLY));
-  D3DXCube3 result;
+  D3DXVECTOR3 pmin, pmax;
   bool   firstTime = true;
   for(size_t bp = 0; bp < desc.Size; bp += itemSize) {
     const Vertex &v = *(Vertex*)(((const char*)bufferItems) + bp);
     if(firstTime) {
-      result.m_rtf = result.m_lbn = v;
+      pmax = pmin = v;
       firstTime    = false;
     } else {
-      if(v.x < result.m_lbn.x) {
-        result.m_lbn.x = v.x;
-      } else if(v.x > result.m_rtf.x) {
-        result.m_rtf.x = v.x;
+      if(v.x < pmin.x) {
+        pmin.x = v.x;
+      } else if(v.x > pmax.x) {
+        pmax.x = v.x;
       }
-      if(v.y < result.m_lbn.y) {
-        result.m_lbn.y = v.y;
-      } else if(v.y > result.m_rtf.y) {
-        result.m_rtf.y = v.y;
+      if(v.y < pmin.y) {
+        pmin.y = v.y;
+      } else if(v.y > pmax.y) {
+        pmax.y = v.y;
       }
-      if(v.z < result.m_lbn.z) {
-        result.m_lbn.z = v.z;
-      } else if(v.z > result.m_rtf.z) {
-        result.m_rtf.z = v.z;
+      if(v.z < pmin.z) {
+        pmin.z = v.z;
+      } else if(v.z > pmax.z) {
+        pmax.z = v.z;
       }
     }
   }
   V(vertexBuffer->Unlock());
-  return result;
+  return D3DXCube3(pmin,pmax);
 }

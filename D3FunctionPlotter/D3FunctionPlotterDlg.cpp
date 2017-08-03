@@ -136,34 +136,34 @@ static D3DXVECTOR3  bc = (b+c)/2;
 static D3DXVECTOR3  bd = (b+d)/2;
 static D3DXVECTOR3  cd = (c+d)/2;
 
-static Line tetraEder[] = {
-  Line( a,b)
- ,Line( a,c)
- ,Line( a,d)
- ,Line( b,c)
- ,Line( b,d)
- ,Line( c,d)
- ,Line(ab,ac)
- ,Line(ac,ad)
- ,Line(ad,ab)
+static Line3D tetraEder[] = {
+  Line3D( a,b)
+ ,Line3D( a,c)
+ ,Line3D( a,d)
+ ,Line3D( b,c)
+ ,Line3D( b,d)
+ ,Line3D( c,d)
+ ,Line3D(ab,ac)
+ ,Line3D(ac,ad)
+ ,Line3D(ad,ab)
 
- ,Line(ab,bc)
- ,Line(bc,bd)
- ,Line(bd,ab)
+ ,Line3D(ab,bc)
+ ,Line3D(bc,bd)
+ ,Line3D(bd,ab)
 
- ,Line(ac,bc)
- ,Line(bc,cd)
- ,Line(cd,ac)
+ ,Line3D(ac,bc)
+ ,Line3D(bc,cd)
+ ,Line3D(cd,ac)
 
- ,Line(ad,bd)
- ,Line(bd,cd)
- ,Line(cd,ad)
+ ,Line3D(ad,bd)
+ ,Line3D(bd,cd)
+ ,Line3D(cd,ad)
 
 };
 
 void CD3FunctionPlotterDlg::createInitialObject() {
   try {
-//  D3LineArray *tt = new D3LineArray(m_scene, tetraEder, ARRAYSIZE(tetraEder));
+//  D3LineArray *tt = new D3LineArray(m_scene, tetraEder, ARRAYSIZE(tetraEder)); TRACE_NEW(tt);
 //  setCalculatedObject(tt);
 
   createSaddle();
@@ -187,7 +187,7 @@ D3SceneObject *CD3FunctionPlotterDlg::createRotatedProfile() {
   param.m_edgeCount  = 20;
   param.m_smoothness = NORMALSMOOTH | ROTATESMOOTH;
   param.m_rotateAxis = 0;
-  SceneObjectWithMesh *obj = new SceneObjectWithMesh(m_scene, rotateProfile(m_scene, prof, param, true));
+  SceneObjectWithMesh *obj = new SceneObjectWithMesh(m_scene, rotateProfile(m_scene, prof, param, true)); TRACE_NEW(obj);
   obj->setName(prof.getDisplayName());
   return obj;
 }
@@ -290,9 +290,11 @@ public:
 
 void CD3FunctionPlotterDlg::setCalculatedObject(Function2DSurfaceParameters *param) {
   if(param->m_includeTime) {
-    setCalculatedObject(new D3AnimatedFunctionSurface(m_scene, createMeshArray(this, m_scene, *param)), param);
+    D3AnimatedFunctionSurface *obj = new D3AnimatedFunctionSurface(m_scene, createMeshArray(this, m_scene, *param)); TRACE_NEW(obj);
+    setCalculatedObject(obj, param);
   } else {
-    setCalculatedObject(new D3FunctionSurface(m_scene, createMesh(m_scene, *param)), param);
+    D3FunctionSurface *obj = new D3FunctionSurface(m_scene, createMesh(m_scene, *param)); TRACE_NEW(obj);
+    setCalculatedObject(obj, param);
   }
 }
 /*
@@ -303,31 +305,34 @@ void CD3FunctionPlotterDlg::setCalculatedObject(IsoSurfaceParameters *param) {
 
 void CD3FunctionPlotterDlg::setCalculatedObject(ParametricSurfaceParameters *param) {
   if(param->m_includeTime) {
-    setCalculatedObject(new D3AnimatedFunctionSurface(m_scene, createMeshArray(this, m_scene, *param)), param);
+    D3AnimatedFunctionSurface *obj = new D3AnimatedFunctionSurface(m_scene, createMeshArray(this, m_scene, *param)); TRACE_NEW(obj);
+    setCalculatedObject(obj, param);
   } else {
-    setCalculatedObject(new D3FunctionSurface(m_scene, createMesh(m_scene, *param)), param);
+    D3FunctionSurface *obj = new D3FunctionSurface(m_scene, createMesh(m_scene, *param)); TRACE_NEW(obj);
+    setCalculatedObject(obj, param);
   }
 }
 
 void CD3FunctionPlotterDlg::setCalculatedObject(IsoSurfaceParameters *param) {
-
-//  if(param->m_adaptiveCellSize) {
-//    setCalculatedObject(new SceneObjectWithMesh(m_scene, createMeshMarchingCube(device, *param)), param);
-//  } else {
-    if(param->m_includeTime) {
-      setCalculatedObject(new D3AnimatedFunctionSurface(m_scene, createMeshArray(this, m_scene, *param)), param);
-    } else {
-      setCalculatedObject(new D3FunctionSurface(m_scene, createMesh(m_scene, *param)), param);
-    }
-//  }
+  if(param->m_includeTime) {
+    D3AnimatedFunctionSurface *obj = new D3AnimatedFunctionSurface(m_scene, createMeshArray(this, m_scene, *param)); TRACE_NEW(obj);
+    setCalculatedObject(obj, param);
+  } else {
+    D3FunctionSurface *obj = new D3FunctionSurface(m_scene, createMesh(m_scene, *param)); TRACE_NEW(obj);
+    setCalculatedObject(obj, param);
+  }
 }
 
-void CD3FunctionPlotterDlg::setCalculatedObject(D3SceneObject *obj, PersistentData *param) {
+void CD3FunctionPlotterDlg::deleteCalculatedObject() {
   D3SceneObject *oldObj = getCalculatedObject();
   if(oldObj) {
     m_scene.removeSceneObject(oldObj);
-    delete oldObj;
+    SAFEDELETE(oldObj);
   }
+}
+
+void CD3FunctionPlotterDlg::setCalculatedObject(D3SceneObject *obj, PersistentData *param) {
+  deleteCalculatedObject();
   if(obj) {
     obj->setUserData(param);
     if(param) {
@@ -436,7 +441,8 @@ void CD3FunctionPlotterDlg::OnFileRead3DPointsFromFile() {
       return;
     } else {
       const String fileName = dlg.m_ofn.lpstrFile;
-      setCalculatedObject(new SceneObjectWithMesh(m_scene, createMeshFromVertexFile(m_scene, fileName, true)));
+      SceneObjectWithMesh *obj = new SceneObjectWithMesh(m_scene, createMeshFromVertexFile(m_scene, fileName, true)); TRACE_NEW(obj);
+      setCalculatedObject(obj);
       REPAINT();
     }
   } catch(Exception e) {
@@ -456,7 +462,8 @@ void CD3FunctionPlotterDlg::OnFileReadObjFile() {
       return;
     } else {
       const String fileName = dlg.m_ofn.lpstrFile;
-      setCalculatedObject(new SceneObjectWithMesh(m_scene, createMeshFromObjFile(m_scene, fileName, false)));
+      SceneObjectWithMesh *obj = new SceneObjectWithMesh(m_scene, createMeshFromObjFile(m_scene, fileName, false)); TRACE_NEW(obj);
+      setCalculatedObject(obj);
       REPAINT();
     }
   } catch(Exception e) {
@@ -475,7 +482,8 @@ void CD3FunctionPlotterDlg::OnFileNexttry() {
 
 void CD3FunctionPlotterDlg::OnFileExit() {
   m_editor.close();
-  m_scene.removeAllSceneObjects();
+  deleteCalculatedObject();
+  m_scene.close();
   EndDialog(IDOK);
 }
 
@@ -552,7 +560,8 @@ void CD3FunctionPlotterDlg::OnObjectEditFunction() {
 void CD3FunctionPlotterDlg::OnAddBoxObject() {
   D3DXCube3 cube(D3DXVECTOR3(-1,-1,-1), D3DXVECTOR3(1,1,1));
   const int matIndex = m_scene.addMaterial(D3Scene::getDefaultMaterial());
-  m_scene.addSceneObject(new SceneObjectBox(m_scene, cube, matIndex));
+  SceneObjectSolidBox *box = new SceneObjectSolidBox(m_scene, cube, matIndex); TRACE_NEW(box);
+  m_scene.addSceneObject(box);
   render(RENDER_ALL);
 }
 

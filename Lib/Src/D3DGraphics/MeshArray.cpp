@@ -8,19 +8,21 @@ MeshArray &MeshArray::operator=(const MeshArray &src) {
 }
 
 void MeshArray::add(UINT index, const LPD3DXMESH &m, UINT count) {
-  CompactArray<LPD3DXMESH>::add(index, m, count);
+  __super::add(index, m, count);
   while(count--) {
-    int ref = (*this)[index++]->AddRef();
+    LPD3DXMESH mesh = (*this)[index++];
+    SAFEADDREF(mesh);
   }
 }
 
 bool MeshArray::addAll(const MeshArray &src) {
   size_t index = size();
-  if(!CompactArray<LPD3DXMESH>::addAll(src)) {
+  if(!__super::addAll(src)) {
     return false;
   } else {
     while(index < size()) {
-      int ref = (*this)[index++]->AddRef();
+      LPD3DXMESH mesh = (*this)[index++];
+      SAFEADDREF(mesh);
     }
     return true;
   }
@@ -31,14 +33,16 @@ void MeshArray::remove(UINT index, UINT count) {
     return;
   }
   for(int i = index, j = count; j--;) {
-    int ref = (*this)[i++]->Release();
+    LPD3DXMESH mesh = (*this)[i++];
+    SAFERELEASE(mesh);
   }
-  CompactArray<LPD3DXMESH>::remove(index, count);
+  __super::remove(index, count);
 }
 
 void MeshArray::clear(int capacity) {
   for(size_t i = 0; i < size(); i++) {
-    int ref = (*this)[i]->Release();
+    LPD3DXMESH mesh = (*this)[i];
+    SAFERELEASE(mesh);
   }
-  CompactArray<LPD3DXMESH>::clear(capacity);
+  __super::clear(capacity);
 }

@@ -155,15 +155,12 @@ void CProfileDlg::initViewport() {
 
   destroyViewport();
 
-  m_viewport = new Viewport2D(m_workDC,profileRect,m_workRect,true);
+  m_viewport = new Viewport2D(m_workDC,profileRect,m_workRect,true); TRACE_NEW(m_viewport);
   m_viewport->clear(RGB(255,255,255));
 }
 
 void CProfileDlg::destroyViewport() {
-  if(m_viewport != NULL) {
-    delete m_viewport;
-    m_viewport = NULL;
-  }
+  SAFEDELETE(m_viewport);
 }
 
 void CProfileDlg::resetView() {
@@ -233,8 +230,9 @@ void CProfileDlg::refresh3d() {
 void CProfileDlg::rotateProfile() {
   try {
     if(!m_profile.isEmpty()) {
-      LPD3DXMESH mesh = ::rotateProfile(m_scene, m_profile, getRotateParameters(), true);
-      set3DObject(new SceneObjectWithMesh(m_scene, mesh));
+      LPD3DXMESH     mesh = ::rotateProfile(m_scene, m_profile, getRotateParameters(), true);
+      D3SceneObject *obj  = new SceneObjectWithMesh(m_scene, mesh); TRACE_NEW(obj);
+      set3DObject(obj);
     }
   } catch(Exception e) {
     MessageBox(e.what());
@@ -254,10 +252,7 @@ void CProfileDlg::stretchProfile() {
 
 void CProfileDlg::set3DObject(D3SceneObject *obj) {
   m_scene.removeAllSceneObjects();
-  if(m_3DObject != NULL) {
-    delete m_3DObject;
-    m_3DObject = NULL;
-  }
+  SAFEDELETE(m_3DObject);
   if(obj != NULL) {
     m_scene.addSceneObject(obj);
   }
@@ -375,7 +370,7 @@ void CProfileDlg::OnFileOpen() {
   Profile *profile = selectAndLoadProfile();
   if(profile != NULL) {
     m_profile = *profile;
-    delete profile;
+    SAFEDELETE(profile);
     resetView();
   }
 }
@@ -533,9 +528,8 @@ void CProfileDlg::setCurrentDrawToolId(int id) {
 }
 
 void CProfileDlg::setCurrentDrawTool(DrawTool *newDrawTool) {
-  if(m_currentDrawTool != NULL) {
-    delete m_currentDrawTool;
-  }
+  SAFEDELETE(m_currentDrawTool);
+  TRACE_NEW(newDrawTool);
   m_currentDrawTool = newDrawTool;
 }
 
@@ -588,7 +582,6 @@ void CProfileDlg::OnLButtonDown(UINT nFlags, CPoint point) {
 //    m_d3.OnLButtonDown(nFlags,getRelativePoint(IDC_STATIC_PROFILEIMAGE3D,point));
     break;
   }
-
   __super::OnLButtonDown(nFlags, point);
 }
 
@@ -615,7 +608,6 @@ void CProfileDlg::OnLButtonUp(UINT nFlags, CPoint point) {
 //    m_d3.OnLButtonUp(nFlags,getRelativePoint(IDC_STATIC_PROFILEIMAGE3D,point));
     break;
   }
-
   __super::OnLButtonUp(nFlags, point);
 }
 
@@ -730,17 +722,14 @@ int CProfileDlg::getControlAtPoint(const CPoint &point) {
   return m_currentControl;
 }
 
-
 void CProfileDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) {
   __super::OnHScroll(nSBCode, nPos, pScrollBar);
-
 
   CSliderCtrl *slider = (CSliderCtrl*)GetDlgItem(IDC_SLIDER_DEGREE);
   int degree = slider->GetPos();
 
   static const CSize testSize = getBitmapSize(m_testBitmap);
   static const CSize maxSize(2*testSize.cx, 2*testSize.cy);
-
 
   HBITMAP rotBM = rotateBitmap(getBitmapCacheDevice(), m_testBitmap, degree);
   CBitmap *bm = CBitmap::FromHandle(rotBM);

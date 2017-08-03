@@ -15,8 +15,8 @@ private:
   BOOL    m_doubleSided;
   BOOL    m_includeTime;
   UINT    m_frameCount;
-  double  m_timeFrom;
-  double  m_timeTo;
+  double  m_timefrom;
+  double  m_timeto;
   double  m_xfrom;
   double  m_xto;
   double  m_yfrom;
@@ -29,6 +29,30 @@ private:
   void winToParam(      IsoSurfaceParameters &param) const;
   void enableCheckBox();
   void enableTimeFields();
+  inline void setXInterval(const DoubleInterval &interval) {
+    m_xfrom = interval.getMin(); m_xto = interval.getMax();
+  }
+  inline void setYInterval(const DoubleInterval &interval) {
+    m_yfrom = interval.getMin(); m_yto = interval.getMax();
+  }
+  inline void setZInterval(const DoubleInterval &interval) {
+    m_zfrom = interval.getMin(); m_zto = interval.getMax();
+  }
+  inline void setTimeInterval(const DoubleInterval &interval) {
+    m_timefrom = interval.getMin(); m_timeto = interval.getMax();
+  }
+  inline DoubleInterval getXInterval() const {
+    return DoubleInterval(m_xfrom, m_xto);
+  }
+  inline DoubleInterval getYInterval() const {
+    return DoubleInterval(m_yfrom, m_yto);
+  }
+  inline DoubleInterval getZInterval() const {
+    return DoubleInterval(m_zfrom, m_zto);
+  }
+  inline DoubleInterval getTimeInterval() const {
+    return DoubleInterval(m_timefrom, m_timeto);
+  }
 public:
   CIsoSurfaceDlg(const IsoSurfaceParameters &param, CWnd *pParent = NULL);
 
@@ -37,6 +61,7 @@ public:
 protected:
     virtual void DoDataExchange(CDataExchange *pDX);
     afx_msg BOOL OnInitDialog();
+    afx_msg void OnFileOpen();
     afx_msg void OnEditFindMatchingParentesis();
     afx_msg void OnGotoExpr();
     afx_msg void OnGotoCellSize();

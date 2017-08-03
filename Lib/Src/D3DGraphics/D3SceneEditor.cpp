@@ -22,8 +22,10 @@ D3SceneEditor::~D3SceneEditor() {
 
 void D3SceneEditor::init(D3SceneContainer *sceneContainer) {
   m_sceneContainer    = sceneContainer;
-  m_propertyDialogMap.addDialog(new CLightDlg(   this));
-  m_propertyDialogMap.addDialog(new CMaterialDlg(this));
+  CLightDlg *dlg1 = new CLightDlg(   this); TRACE_NEW(dlg1);
+  m_propertyDialogMap.addDialog(dlg1);
+  CMaterialDlg *dlg2 = new CMaterialDlg(this); TRACE_NEW(dlg2);
+  m_propertyDialogMap.addDialog(dlg2);
 
   m_currentControl = CONTROL_IDLE;
   getScene().addPropertyChangeListener(this);
@@ -32,6 +34,8 @@ void D3SceneEditor::init(D3SceneContainer *sceneContainer) {
 void D3SceneEditor::close() {
   getScene().removePropertyChangeListener(this);
   m_propertyDialogMap.clear();
+  getScene().removeSceneObject(m_coordinateSystem);
+  SAFEDELETE(m_coordinateSystem);
 }
 
 void D3SceneEditor::setEnabled(bool enabled) {
@@ -1212,7 +1216,7 @@ void D3SceneEditor::OnObjectStopAnimation() {
 void D3SceneEditor::OnObjectRemove() {
   if(m_currentSceneObject == NULL) return;
   getScene().removeSceneObject(m_currentSceneObject);
-  delete m_currentSceneObject;
+  SAFEDELETE(m_currentSceneObject);
   setCurrentObject(NULL);
   render(RENDER_ALL);
 }
@@ -1291,7 +1295,7 @@ void D3SceneEditor::OnShadingPhong()      { getCurrentObject()->setShadeMode(D3D
 void D3SceneEditor::setCoordinateSystemVisible(bool visible) {
   if(visible) {
     if(m_coordinateSystem == NULL) {
-      m_coordinateSystem = new D3CoordinateSystem(getScene());
+      m_coordinateSystem = new D3CoordinateSystem(getScene()); TRACE_NEW(m_coordinateSystem);
       getScene().addSceneObject(m_coordinateSystem);
     } else {
       m_coordinateSystem->setVisible(true);

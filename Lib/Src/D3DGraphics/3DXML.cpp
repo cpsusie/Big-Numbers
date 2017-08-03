@@ -32,24 +32,26 @@ void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, D3DXVECTOR3 &v) 
 
 void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3DXCube3 &cube) {
   XMLNodePtr n = doc.createNode(parent, tag);
-  setValue(doc, n, _T("lbn"), cube.m_lbn);
-  setValue(doc, n, _T("rtf"), cube.m_rtf);
+  setValue(doc, n, _T("lbn"), cube.getMin());
+  setValue(doc, n, _T("rtf"), cube.getMax());
 }
 
 void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, D3DXCube3 &cube) {
   XMLNodePtr n = PersistentData::getChild(doc, parent, tag);
-  getValue(doc, n, _T("lbn"), cube.m_lbn);
-  getValue(doc, n, _T("rtf"), cube.m_rtf);
+  D3DXVECTOR3 tmp;
+  getValue(doc, n, _T("lbn"), tmp); cube.setMin(tmp);
+  getValue(doc, n, _T("rtf"), tmp); cube.setMax(tmp);
 }
 
 void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const Cube3D &cube) {
   XMLNodePtr n = doc.createNode(parent, tag);
-  setValue(doc, n, _T("lbn"), cube.m_lbn);
-  setValue(doc, n, _T("rtf"), cube.m_rtf);
+  setValue(doc, n, _T("lbn"), cube.getMin());
+  setValue(doc, n, _T("rtf"), cube.getMax());
 }
 
 void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, Cube3D &cube) {
   XMLNodePtr n = PersistentData::getChild(doc, parent, tag);
-  getValue(doc, n, _T("lbn"), cube.m_lbn);
-  getValue(doc, n, _T("rtf"), cube.m_rtf);
+  Point3D tmp;
+  getValue(doc, n, _T("lbn"), tmp); cube.setMin(tmp);
+  getValue(doc, n, _T("rtf"), tmp); cube.setMax(tmp);
 }

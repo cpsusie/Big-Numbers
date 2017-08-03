@@ -17,8 +17,8 @@ private:
   UINT    m_sStepCount;
   BOOL    m_includeTime;
   BOOL    m_doubleSided;
-  double  m_timeFrom;
-  double  m_timeTo;
+  double  m_timefrom;
+  double  m_timeto;
   UINT    m_frameCount;
   BOOL    m_machineCode;
 
@@ -47,6 +47,7 @@ public:
 protected:
     virtual void DoDataExchange(CDataExchange *pDX);
     afx_msg BOOL OnInitDialog();
+    afx_msg void OnFileOpen();
     afx_msg void OnEditFindMatchingParentesis();
     afx_msg void OnGotoCommon();
     afx_msg void OnGotoExprX();

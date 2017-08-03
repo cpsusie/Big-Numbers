@@ -95,34 +95,40 @@ Point2D TurnableRect::getRotateDir() {
 // ----------------------------------- PointTransformations ----------------------------------
 
 Point2DFunction *TurnableRect::getMoveTransformation(const Point2D &dp) {
-  return new MoveTransformation(dp);
+  Point2DFunction *result = new MoveTransformation(dp); TRACE_NEW(result);
+  return result;
 }
 
 Point2DFunction *TurnableRect::getStretchTransformation(const Point2D &dp) {
-  const Point2D dir   = unit(getStretchDir());
-  const Point2D step  = (dp * dir) * dir;
-  return new StretchTransformation(getStretchOrigin(),getU1(),getU2(),getSelectedMarkPoint(),step);
+  const Point2D    dir    = unit(getStretchDir());
+  const Point2D    step   = (dp * dir) * dir;
+  Point2DFunction *result = new StretchTransformation(getStretchOrigin(),getU1(),getU2(),getSelectedMarkPoint(),step); TRACE_NEW(result);
+  return result;
 }
 
 Point2DFunction *TurnableRect::getRotateTransformation(const Point2D &dp) {
-  const Point2D dir   = unit(getRotateDir());
-  const Point2D step  = (dp * dir) * dir;
-  const double  theta = angle(getSelectedMarkPoint() - m_rotationCenter, getSelectedMarkPoint() + step - m_rotationCenter);
-  return new RotateTransformation(m_rotationCenter, theta);
+  const Point2D    dir    = unit(getRotateDir());
+  const Point2D    step   = (dp * dir) * dir;
+  const double     theta  = angle(getSelectedMarkPoint() - m_rotationCenter, getSelectedMarkPoint() + step - m_rotationCenter);
+  Point2DFunction *result = new RotateTransformation(m_rotationCenter, theta); TRACE_NEW(result);
+  return result;
 }
 
 Point2DFunction *TurnableRect::getSkewTransformation(const Point2D &dp) {
-  const Point2D dir   = unit(getSkewDir());
-  const Point2D step  = (dp * dir) * dir;
-  return new SkewTransformation(getStretchOrigin(),getU1(),getU2(),getSelectedMarkPoint(),step);
+  const Point2D    dir    = unit(getSkewDir());
+  const Point2D    step   = (dp * dir) * dir;
+  Point2DFunction *result = new SkewTransformation(getStretchOrigin(),getU1(),getU2(),getSelectedMarkPoint(),step); TRACE_NEW(result);
+  return result;
 }
 
 Point2DFunction *TurnableRect::getMirrorTransformation(bool horizontal) {
+  Point2DFunction *result;
   if(horizontal) {
-    return new MirrorTransformation(getLeftCenter(),getRightCenter());
+    result = new MirrorTransformation(getLeftCenter(),getRightCenter()); TRACE_NEW(result);
   } else {
-    return new MirrorTransformation(getTopCenter(),getBottomCenter());
+    result = new MirrorTransformation(getTopCenter(),getBottomCenter()); TRACE_NEW(result);
   }
+  return result;
 }
 
 void TurnableRect::applyFunction(Point2DFunction *f, Point2DRefArray &pointArray) {
@@ -138,13 +144,13 @@ void TurnableRect::applyFunction(Point2DFunction *f, Point2DRefArray &pointArray
 void TurnableRect::move(const Point2D &dp, Point2DRefArray &pointArray) {
   Point2DFunction *f = getMoveTransformation(dp);
   applyFunction(f, pointArray);
-  delete f;
+  SAFEDELETE(f);
 }
 
 void TurnableRect::stretch(const Point2D &dp, Point2DRefArray &pointArray) {
   Point2DFunction *f = getStretchTransformation(dp);
   applyFunction(f, pointArray);
-  delete f;
+  SAFEDELETE(f);
 }
 
 void TurnableRect::rotate(const Point2D &dp, Point2DRefArray &pointArray) {
@@ -156,7 +162,7 @@ void TurnableRect::rotate(const Point2D &dp, Point2DRefArray &pointArray) {
   case BR:
     f = getRotateTransformation(dp);
     applyFunction(f, pointArray);
-    delete f;
+    SAFEDELETE(f);
     break;
   case TC:
   case BC:
@@ -164,7 +170,7 @@ void TurnableRect::rotate(const Point2D &dp, Point2DRefArray &pointArray) {
   case RC:
     f = getSkewTransformation(dp);
     applyFunction(f, pointArray);
-    delete f;
+    SAFEDELETE(f);
     break;
   case C:
     m_rotationCenter += dp;
@@ -175,7 +181,7 @@ void TurnableRect::rotate(const Point2D &dp, Point2DRefArray &pointArray) {
 void TurnableRect::mirror(bool horizontal, Point2DRefArray &pointArray) {
   Point2DFunction *f = getMirrorTransformation(horizontal);
   applyFunction(f, pointArray);
-  delete f;
+  SAFEDELETE(f);
 }
 
 void TurnableRect::scale(double factor) {

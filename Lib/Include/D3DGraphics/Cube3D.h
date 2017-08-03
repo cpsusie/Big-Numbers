@@ -1,15 +1,27 @@
 #pragma once
 
+#include <NumberInterval.h>
 #include <Math/Point3D.h>
 #include <D3DX9.h>
 
 template<class C, class V> class Cube3DTemplate {
-public:
+  private:
   C m_lbn;
   C m_rtf;
+public:
   Cube3DTemplate() {
   }
-  Cube3DTemplate(const C &lbn, const C &rtf) : m_lbn(lbn), m_rtf(rtf) {
+  inline Cube3DTemplate(const C &lbn, const C &rtf) : m_lbn(lbn), m_rtf(rtf) {
+  }
+  inline Cube3DTemplate(V minX, V minY, V minZ, V maxX, V maxY, V maxZ)
+    : m_lbn(minX, minY, minZ)
+    , m_rtf(maxX, maxY, maxZ)
+  {
+  }
+  inline Cube3DTemplate(const NumberInterval<V> &xInterval, const NumberInterval<V> &yInterval, const NumberInterval<V> &zInterval) 
+    : m_lbn(xInterval.getMin(), yInterval.getMin(), zInterval.getMin())
+    , m_rtf(xInterval.getMax(), yInterval.getMax(), zInterval.getMax())
+  {
   }
   inline V getLength() const { // dimension x
     return m_rtf.x - m_lbn.x;
@@ -20,8 +32,26 @@ public:
   inline V getDepth() const {  // dimension z
     return m_rtf.z - m_lbn.z;
   }
-  inline V volume() const {
+  inline V getVolume() const {
     return getLength() * getHeight() * getDepth();
+  }
+  inline void setMinX(V v) {
+    m_lbn.x = v;
+  }
+  inline void setMaxX(V v) {
+    m_rtf.x = v;
+  }
+  inline void setMinY(V v) {
+    m_lbn.y = v;
+  }
+  inline void setMaxY(V v) {
+    m_rtf.y = v;
+  }
+  inline void setMinZ(V v) {
+    m_lbn.z = v;
+  }
+  inline void setMaxZ(V v) {
+    m_rtf.z = v;
   }
   inline V getMinX() const {
     return m_lbn.x;
@@ -40,6 +70,36 @@ public:
   }
   inline V getMaxZ() const {
     return m_rtf.z;
+  }
+  inline void setXInterval(const NumberInterval<V> &interval) {
+    setMinX(interval.getMin()); setMaxX(interval.getMax());
+  }
+  inline void setYInterval(const NumberInterval<V> &interval) {
+    setMinY(interval.getMin()); setMaxY(interval.getMax());
+  }
+  inline void setZInterval(const NumberInterval<V> &interval) {
+    setMinZ(interval.getMin()); setMaxZ(interval.getMax());
+  }
+  inline NumberInterval<V> getXInterval() const {
+    return NumberInterval<V>(getMinX(), getMaxX());
+  }
+  inline NumberInterval<V> getYInterval() const {
+    return NumberInterval<V>(getMinY(), getMaxY());
+  }
+  inline NumberInterval<V> getZInterval() const {
+    return NumberInterval<V>(getMinZ(), getMaxZ());
+  }
+  inline void setMin(const C &p) {
+    m_lbn = p; 
+  }
+  inline void setMax(const C &p) {
+    m_rtf = p; 
+  }
+  inline const C &getMin() const {
+    return m_lbn;
+  }
+  inline const C &getMax() const {
+    return m_rtf;
   }
   inline bool contains(const C &p) const {
     return (m_lbn <= p) && (p <= m_rtf);
