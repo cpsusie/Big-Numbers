@@ -150,7 +150,7 @@ protected:
     }
   }
 public:
-  PoolIdentifiedResources() {
+  virtual ~PoolIdentifiedResources() {
     deleteAll();
   }
   T *fetchResource() {
@@ -215,7 +215,7 @@ private:
 protected:
   void allocateNewResources(size_t count) {
     const UINT oldSize = (UINT)size();
-    PoolIdentifiedResources<ThreadPoolThread>::allocateNewResources(count);
+    __super::allocateNewResources(count);
     for(UINT i = oldSize; i < size(); i++) {
       Thread &thr = get(i);
       thr.setPriority(m_threadPriority);
