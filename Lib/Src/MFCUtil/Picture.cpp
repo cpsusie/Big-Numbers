@@ -110,13 +110,13 @@ void CPicture::copyPictureData(const CPicture &src) {
     m_weight   = src.m_weight;
     m_IPicture = src.m_IPicture;
     m_hasAlpha = src.m_hasAlpha;
-    m_IPicture->AddRef();
+    SAFEADDREF(m_IPicture);
   }
 }
 
 void CPicture::freePictureData() {
   if(m_IPicture != NULL) {
-    m_IPicture->Release();
+    SAFERELEASE(m_IPicture);
     initPictureData();
   }
 }
@@ -383,6 +383,7 @@ void CPicture::createPictureFromBitmap(HBITMAP bitmap) {
   if((hr = OleCreatePictureIndirect(&desc, IID_IPicture, true, (LPVOID*)&m_IPicture)) != S_OK) {
     throwLastErrorOnSysCallException(_T("OleCreatePictureIndirect"));
   } else if(m_IPicture != NULL) {
+    TRACE_CREATE(m_IPicture);
     setSize();
   }
 }
@@ -437,6 +438,7 @@ void CPicture::createPictureFromIcon(HICON icon) {
   if((hr = OleCreatePictureIndirect(&desc, IID_IPicture, true, (LPVOID*)&m_IPicture)) != S_OK) {
     throwLastErrorOnSysCallException(_T("OleCreatePictureIndirect"));
   } else if(m_IPicture != NULL) {
+    TRACE_CREATE(m_IPicture);
     setSize();
   }
 }
@@ -476,6 +478,7 @@ void CPicture::loadPictureData(const BYTE *pBuffer, int size) {
     errormsg = getErrorText(hr);
     ok = false;
   } else {
+    TRACE_CREATE(pStream);
     if((hr = OleLoadPicture(pStream, size, false, IID_IPicture, (LPVOID*)&m_IPicture)) != S_OK) {
       switch(hr) {
       case E_OUTOFMEMORY: errormsg = _T("Ran out of memory"          ); break;
@@ -487,11 +490,11 @@ void CPicture::loadPictureData(const BYTE *pBuffer, int size) {
       ok = false;
     } else if(m_IPicture != NULL) {
       m_weight = size;
+      TRACE_CREATE(m_IPicture);
       setSize();
     }
 
-    pStream->Release();
-    pStream = NULL;
+    SAFERELEASE(pStream)
   }
 
   FreeResource(hGlobal); // 16Bit Windows Needs This (32Bit - Automatic Release)
