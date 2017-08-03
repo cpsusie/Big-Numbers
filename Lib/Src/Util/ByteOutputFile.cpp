@@ -22,7 +22,7 @@ ByteOutputFile::ByteOutputFile(FILE *f) {
   m_file    = f;
   m_oldMode = setFileMode(f, _O_BINARY);
 
-  init("");
+  init(EMPTYSTRING);
 }
 
 ByteOutputFile::~ByteOutputFile() {
