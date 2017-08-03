@@ -105,12 +105,8 @@ void BitmapCache::initDevice() {
 }
 
 void BitmapCache::releaseDevice() {
-  if(m_device != NULL) {
-    m_device->Release();
-    m_device = NULL;
-  }
+  SAFERELEASE(m_device);
 }
-
 
 static CBitmap *cloneBitmap(CBitmap *bm) {
   const BITMAP info = getBitmapInfo(*bm);

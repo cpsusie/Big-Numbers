@@ -37,6 +37,7 @@ static void findMax16BitMeshVertexCount(LPDIRECT3DDEVICE device) {
     if(hr != D3D_OK) {
       h = vertexCount - 1;
     } else {
+      TRACE_CREATE(mesh);
       l = vertexCount;
       SAFERELEASE(mesh);
     }

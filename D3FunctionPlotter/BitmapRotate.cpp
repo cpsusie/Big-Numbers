@@ -39,9 +39,9 @@ static CSize getSurfaceSize(LPDIRECT3DSURFACE surface) {
 
 static CSize getTextureSize(LPDIRECT3DTEXTURE texture) {
   LPDIRECT3DSURFACE9 surface;
-  V(texture->GetSurfaceLevel(0, &surface));
+  V(texture->GetSurfaceLevel(0, &surface)); TRACE_REFCOUNT(surface);
   const CSize sz = getSurfaceSize(surface);
-  surface->Release();
+  SAFERELEASE(surface);
   return sz;
 }
 
@@ -110,11 +110,11 @@ static void alphaBlend(LPDIRECT3DDEVICE device, LPDIRECT3DTEXTURE texture, const
 }
 
 static void render(LPDIRECT3DDEVICE device, LPDIRECT3DTEXTURE texture, const CSize &bmSize, HBITMAP result, const CSize &trSize) {
-  unsigned long clearColor = 0xffffffff;
+  ULONG clearColor = 0xffffffff;
   V(device->Clear(0, NULL, D3DCLEAR_TARGET, clearColor, 1.0f, 0));
 
   LPDIRECT3DSURFACE renderTarget;
-  V(device->GetRenderTarget(0, &renderTarget));
+  V(device->GetRenderTarget(0, &renderTarget)); TRACE_REFCOUNT(renderTarget);
 
   CPoint leftTop(0,0);
   set2DProjection(device, getSurfaceSize(renderTarget));
@@ -135,7 +135,7 @@ static void render(LPDIRECT3DDEVICE device, LPDIRECT3DTEXTURE texture, const CSi
   DeleteDC(resultDC);
 
   V(renderTarget->ReleaseDC(renderDC));
-  renderTarget->Release();
+  SAFERELEASE(renderTarget);
 
 //  V(device->Present(NULL, NULL, NULL, NULL));
 }
@@ -195,7 +195,7 @@ HBITMAP rotateBitmap(LPDIRECT3DDEVICE device, HBITMAP bm, double degree) {
 
   LPDIRECT3DTEXTURE texture = AbstractTextureFactory::getTextureFromBitmap(device, bm);
   render(device, texture, bmSize, result, trSize);
-  texture->Release();
+  SAFERELEASE(texture);
 
   return result;
 }

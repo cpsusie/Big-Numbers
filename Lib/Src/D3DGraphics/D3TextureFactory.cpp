@@ -17,7 +17,7 @@ LPDIRECT3DTEXTURE AbstractTextureFactory::loadTextureFromFile(LPDIRECT3DDEVICE d
                                 ,NULL
                                 ,NULL
                                 ,&result));
-
+  TRACE_CREATE(result);
   return result;
 }
 
@@ -35,6 +35,7 @@ LPDIRECT3DTEXTURE AbstractTextureFactory::loadTextureFromByteArray(LPDIRECT3DDEV
                                        ,NULL
                                        ,NULL
                                        ,&result));
+  TRACE_CREATE(result);
   return result;
 }
 
