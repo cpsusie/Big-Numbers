@@ -43,7 +43,7 @@ static const CubeEdgeInfo cubeEdgeTable[12] = {
 #define FLIP(i,bit) ((i)^(1<<(bit))) // flip the given bit of i
 
 #pragma check_stack(off)
-
+/*
 class PointKeyComparator : public Comparator<Point3DKey> {
 public:
   inline int compare(const Point3DKey &k1, const Point3DKey &k2) {
@@ -59,14 +59,15 @@ static inline ULONG pointKeyHash(const Point3DKey &key) {
 }
 
 static PointKeyComparator pointKeyCmp;
-
+*/
 PolygonizerCubeArrayTable IsoSurfacePolygonizer::s_cubetable;
 
 #pragma check_stack(on)
 
 IsoSurfacePolygonizer::IsoSurfacePolygonizer(IsoSurfaceEvaluator &eval)
 : m_eval(eval)
-, m_cornerMap(pointKeyHash, pointKeyCmp, HASHSIZE)
+/*, m_cornerMap(pointKeyHash, pointKeyCmp, HASHSIZE)*/
+, m_cornerMap(HASHSIZE)
 {
 }
 
@@ -406,7 +407,7 @@ String PolygonizerCubeArrayTable::toString() const {
   String result;
   for (UINT i = 0; i < ARRAYSIZE(m_table); i++) {
     result += format(_T("%3d,%s\n"), i, sprintbin((BYTE)i).cstr());
-    result += indentString(m_table[i]->toString(),2);
+    result += indentString(get(i).toString(),2);
   }
   return result;
 }

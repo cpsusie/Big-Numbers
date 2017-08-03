@@ -106,11 +106,13 @@ public:
   }
 };
 
-class HashedCubeCorner {            // Corner of a cube
+class HashedCubeCorner {          // Corner of a cube
 public:
   Point3DKey m_key;
   Point3D    m_point;             // Location
   bool       m_positive;
+  inline HashedCubeCorner() {
+  }
   inline HashedCubeCorner(const Point3DKey &k, const Point3D &p) : m_key(k) {
     m_point = p;
   }
@@ -143,7 +145,7 @@ public:
   String toString() const;
 };
 
-class Face3 {                   // Parameter to receiveFace
+class Face3 {           // Parameter to receiveFace
 public:
   UINT m_i1,m_i2,m_i3;  // Indices into vertexArray
   D3DCOLOR m_color;
@@ -225,20 +227,29 @@ public:
 
 class PolygonizerCubeArrayTable {
 private:
-  PolygonizerCubeArray *m_table[256];
-public:
-  inline PolygonizerCubeArrayTable() {
-    for (UINT i = 0; i < ARRAYSIZE(m_table); i++) {
-      m_table[i] = new PolygonizerCubeArray(i);
+  mutable PolygonizerCubeArray *m_table[256];
+  void createTable() const {
+    for(UINT i = 0; i < ARRAYSIZE(m_table); i++) {
+      m_table[i] = new PolygonizerCubeArray(i); TRACE_NEW(m_table[i]);
     }
 #ifdef DUMP_CUBETABLE
     debugLog(_T("CubeArray:\n%s"), toString().cstr());
 #endif
   }
-  ~PolygonizerCubeArrayTable() {
+  void destroyTable() {
     for(UINT i = 0; i < ARRAYSIZE(m_table); i++) {
-      delete m_table[i];
+      SAFEDELETE(m_table[i]);
     }
+  }
+  inline bool isTableCreated() const {
+    return m_table[0] != NULL;
+  }
+public:
+  inline PolygonizerCubeArrayTable() {
+    createTable(); // memset(m_table, 0, sizeof(m_table));
+  }
+  ~PolygonizerCubeArrayTable() {
+    destroyTable();
   }
   inline const PolygonizerCubeArray &get(UINT index) const {
     return *m_table[index];
@@ -250,20 +261,20 @@ public:
 
 class IsoSurfacePolygonizer {
 private:
-  static PolygonizerCubeArrayTable      s_cubetable;
-  IsoSurfaceEvaluator                  &m_eval;            // Implicit surface function
-  double                                m_cellSize, m_delta;   // Cube size, normal delta
-  Cube3D                                m_boundingBox;     // bounding box
-  Point3D                               m_start;           // Start point on surface
-  bool                                  m_tetrahedralMode; // Use tetrahedral decomposition
-  Stack<StackedCube>                    m_cubeStack;       // Active cubes
-  CompactArray<IsoSurfaceVertex>        m_vertexArray;     // Surface vertices
-  CompactHashSet<Point3DKey>            m_cubesDoneSet;    // Cubes done so far
-  HashMap<Point3DKey, HashedCubeCorner> m_cornerMap;       // Corners of cubes
-  CompactHashMap<CubeEdgeHashKey, int>  m_edgeMap;         // Edge -> vertex id Map
-  CompactArray<Face3>                   m_face3Buffer;
-  PolygonizerStatistics                 m_statistics;
-  D3DCOLOR                              m_color;
+  static PolygonizerCubeArrayTable             s_cubetable;
+  IsoSurfaceEvaluator                         &m_eval;              // Implicit surface function
+  double                                       m_cellSize, m_delta; // Cube size, normal delta
+  Cube3D                                       m_boundingBox;       // bounding box
+  Point3D                                      m_start;             // Start point on surface
+  bool                                         m_tetrahedralMode;   // Use tetrahedral decomposition
+  Stack<StackedCube>                           m_cubeStack;         // Active cubes
+  CompactArray<IsoSurfaceVertex>               m_vertexArray;       // Surface vertices
+  CompactHashSet<Point3DKey>                   m_cubesDoneSet;      // Cubes done so far
+  CompactHashMap<Point3DKey, HashedCubeCorner> m_cornerMap;         // Corners of cubes
+  CompactHashMap<CubeEdgeHashKey, int>         m_edgeMap;           // Edge -> vertex id Map
+  CompactArray<Face3>                          m_face3Buffer;
+  PolygonizerStatistics                        m_statistics;
+  D3DCOLOR                                     m_color;
 
   Point3D             findStartPoint(const Point3D &start);
   IsoSurfaceTest      findStartPoint(bool positive, const Point3D &start);
