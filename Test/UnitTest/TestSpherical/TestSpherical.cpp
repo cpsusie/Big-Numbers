@@ -8,7 +8,7 @@ namespace TestSpherical {
 
 #include <UnitTestTraits.h>
 
-	TEST_CLASS(TestSpherical)	{
+  TEST_CLASS(TestSpherical)	{
     public:
 
     TEST_METHOD(SphericalTest) {
