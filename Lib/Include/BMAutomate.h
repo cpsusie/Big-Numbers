@@ -35,7 +35,7 @@ public:
     BMAutomateTemplate *a = new BMAutomateTemplate<Ctype>(*this); TRACE_NEW(a); return a;
   }
 
-  ~BMAutomateTemplate() {
+  virtual ~BMAutomateTemplate() {
     deallocate();
   }
 

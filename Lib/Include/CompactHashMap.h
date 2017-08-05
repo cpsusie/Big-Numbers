@@ -72,7 +72,7 @@ public:
     return *this;
   }
 
-  ~CompactHashMap() {
+  virtual ~CompactHashMap() {
     clear();
   }
 

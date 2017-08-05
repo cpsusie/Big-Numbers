@@ -74,7 +74,7 @@ public:
     return *this;
   }
 
-  ~CompactArray() {
+  virtual ~CompactArray() {
     SAFEDELETEARRAY(m_array);
   }
 

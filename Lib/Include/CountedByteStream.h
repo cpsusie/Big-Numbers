@@ -8,7 +8,8 @@ private:
 public:
   ByteCounter() : m_counter(0) {
   }
-  virtual void incrCount(UINT64 n) { // will be called every time n bytes are read/written from/to CountedByteInput/OutputStream
+  // will be called every time n bytes are read/written from/to CountedByteInput/OutputStream
+  virtual void incrCount(UINT64 n) {
     m_counter += n;
   }
   virtual UINT getMaxChunkSize() const {

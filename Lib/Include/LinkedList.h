@@ -57,7 +57,7 @@ private:
   friend class ListIterator;
 public:
   ListImpl(AbstractObjectManager &objectManager);
-  ~ListImpl();
+  virtual ~ListImpl();
   AbstractCollection *clone(bool cloneData) const;
   ListImpl &operator=(const ListImpl &src);
   bool add(const void *e);

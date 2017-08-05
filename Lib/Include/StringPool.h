@@ -55,7 +55,7 @@ public:
   StringPool(size_t indexCapacity = 100, size_t textCapacity = 1000);
   StringPool(           const StringPool &src);
   StringPool &operator=(const StringPool &src);
-  ~StringPool();
+  virtual ~StringPool();
 
   void setIndexCapacity(size_t capacity);
   void setTextCapacity(size_t capacity);

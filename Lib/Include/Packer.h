@@ -22,6 +22,9 @@ public:
    ,E_LONG_LONG
   };
   Packer();
+  virtual ~Packer() {
+    clear();
+  }
   void   clear();
   void   write(    ByteOutputStream &s) const;
   bool   read(     ByteInputStream  &s);

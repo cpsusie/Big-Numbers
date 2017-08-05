@@ -49,7 +49,7 @@ public:
   CompactElementPool() : m_firstPage(NULL) {
   }
 
-  ~CompactElementPool() {
+  virtual ~CompactElementPool() {
     releaseAll();
   }
 

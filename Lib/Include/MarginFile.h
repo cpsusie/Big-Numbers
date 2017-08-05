@@ -22,7 +22,7 @@ public:
   MarginFile(const String &name = EMPTYSTRING);
   MarginFile(const MarginFile &src);             // not defined
   MarginFile &operator=(const MarginFile &src);  // not defined
- ~MarginFile();
+  virtual ~MarginFile();
   void open(const String &name);
   void close();
   inline bool isOpen() const {

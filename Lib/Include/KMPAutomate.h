@@ -34,7 +34,7 @@ public:
     return result;
   }
 
-  ~KMPAutomateTemplate() {
+  virtual ~KMPAutomateTemplate() {
     deallocate();
   }
 

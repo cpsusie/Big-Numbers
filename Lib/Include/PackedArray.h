@@ -28,6 +28,9 @@ private:
 
 public:
   explicit PackedArray(BYTE bitsPerItem);
+  virtual ~PackedArray() {
+    clear();
+  }
   UINT get(      UINT64 index) const;
   UINT select() const;
   void set(      UINT64 index, UINT v);

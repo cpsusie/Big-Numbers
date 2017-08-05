@@ -74,7 +74,7 @@ public:
     return *this;
   }
 
-  ~CompactHashSet() {
+  virtual ~CompactHashSet() {
     clear();
   }
 

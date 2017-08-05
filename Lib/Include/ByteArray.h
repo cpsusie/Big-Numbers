@@ -31,25 +31,33 @@ public:
     return append(byte);
   }
 
-  ByteArray &clear(intptr_t newCapacity = 0);                   // return this, if newCapcity == -1 it will not be changed
+  // return this, if newCapcity == -1 it will not be changed
+  ByteArray &clear(intptr_t newCapacity = 0);
   ByteArray &append( const ByteArray &d);
   ByteArray &append( const BYTE *data, size_t size);
+  // return this
   inline ByteArray &append(BYTE byte) {
     return appendConstant(byte, 1);
   }
+  // return this
   inline ByteArray &appendZeroes(size_t count) {
     return appendConstant(0, count);
   }
+  // return this
   inline ByteArray &insertZeroes(size_t index, size_t count) {
     return insertConstant(index, 0, count);
   }
+  // return this
   inline ByteArray &appendConstant(BYTE b, size_t count) {
     return insertConstant(size(), b, count);
   }
 
+  // return this
   ByteArray &insertConstant(size_t index, BYTE c, size_t count);
-  ByteArray &setData(const BYTE *data, size_t size); // return this
+  // return this
+  ByteArray &setData(const BYTE *data, size_t size);
 
+  // return this
   ByteArray &remove(size_t index, size_t count);
 
   inline size_t size() const {
@@ -84,7 +92,8 @@ public:
 
   void save(ByteOutputStream &s) const;
   void load(ByteInputStream  &s);
-  ByteArray &loadFromResource(int resId, const TCHAR *typeName); // return *this. typeName cannot be String, because of MAKEINTRESOURCE
+  // return *this. typeName cannot be String, because of MAKEINTRESOURCE
+  ByteArray &loadFromResource(int resId, const TCHAR *typeName);
 };
 
 class ExecutableByteArray : public ByteArray {

@@ -66,7 +66,7 @@ public:
   Bpn(const Bpn &src);
   Bpn(const CompactIntArray &nunits, bool bias = false);
   Bpn(char *fname);
-  ~Bpn();
+  virtual ~Bpn();
   Bpn &operator=(const Bpn &rhs);
   void   save(const TCHAR  *fileName) const;
   void   save(const String &fileName) const;
