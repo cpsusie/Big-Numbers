@@ -5,7 +5,7 @@
 #pragma pack(push,1)
 
 #include "CompactKeyType.h"
-#include "CompactElementPool.h"
+#include "HeapElementPool.h"
 
 template <class K> class SetEntry {
 public:
@@ -21,11 +21,11 @@ public:
 // and bool operator==(const K &) defined
 template <class K> class CompactHashSet {
 private:
-  size_t                                         m_size;
-  size_t                                         m_capacity;
-  LinkElement<SetEntry<K> >                    **m_buffer;
-  CompactElementPool<LinkElement<SetEntry<K> > > m_elementPool;
-  UINT64                                         m_updateCount;
+  size_t                                      m_size;
+  size_t                                      m_capacity;
+  LinkElement<SetEntry<K> >                 **m_buffer;
+  HeapElementPool<LinkElement<SetEntry<K> > > m_elementPool;
+  UINT64                                      m_updateCount;
 
   LinkElement<SetEntry<K> > **allocateBuffer(size_t capacity) const {
     LinkElement<SetEntry<K> > **result = capacity ? new LinkElement<SetEntry<K> >*[capacity] : NULL; TRACE_NEW(result);

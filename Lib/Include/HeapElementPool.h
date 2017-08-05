@@ -1,12 +1,12 @@
 #pragma once
 
 // Assume T has a public field T *m_next
-template<class T> class CompactElementPool {
+template<class T> class HeapElementPool {
 private:
-  class CompactElementPage {
+  class HeapElementPage {
   private:
-    CompactElementPage *m_nextPage;
-    T                   m_elements[20000], *m_freeList;
+    HeapElementPage *m_nextPage;
+    T                m_elements[20000], *m_freeList;
 
     void makeChain() {
       memset(m_elements,0,sizeof(m_elements));
@@ -17,7 +17,7 @@ private:
     }
 
   public:
-    CompactElementPage(CompactElementPage *nextPage) {
+    HeapElementPage(HeapElementPage *nextPage) {
       makeChain();
       m_nextPage = nextPage;
     }
@@ -38,24 +38,24 @@ private:
       return m_freeList == NULL;
     }
 
-    CompactElementPage *nextPage() const {
+    HeapElementPage *nextPage() const {
       return m_nextPage;
     }
   };
 
-  CompactElementPage *m_firstPage;
+  HeapElementPage *m_firstPage;
 
 public:
-  CompactElementPool() : m_firstPage(NULL) {
+  HeapElementPool() : m_firstPage(NULL) {
   }
 
-  virtual ~CompactElementPool() {
+  virtual ~HeapElementPool() {
     releaseAll();
   }
 
   inline T *fetchElement() {
     if(m_firstPage == NULL || m_firstPage->isFull()) {
-      m_firstPage = new CompactElementPage(m_firstPage); TRACE_NEW(m_firstPage);
+      m_firstPage = new HeapElementPage(m_firstPage); TRACE_NEW(m_firstPage);
     }
     return m_firstPage->fetchElement();
   }
@@ -65,7 +65,7 @@ public:
   }
 
   void releaseAll() {
-    CompactElementPage *p, *q;
+    HeapElementPage *p, *q;
     for(p = m_firstPage; p; p = q) {
       q = p->nextPage();
       SAFEDELETE(p);
@@ -75,7 +75,7 @@ public:
 
   int getPageCount() const {
     int count = 0;
-    for(const CompactElementPage *p = m_firstPage; p; p = p->m_next) {
+    for(const HeapElementPage *p = m_firstPage; p; p = p->m_next) {
       count++;
     }
     return count;

@@ -19,11 +19,11 @@ public:
 
 template <class K, class V> class CompactHashMap {
 private:
-  size_t                                           m_size;
-  size_t                                           m_capacity;
-  LinkElement<MapEntry<K,V> >                    **m_buffer;
-  CompactElementPool<LinkElement<MapEntry<K,V> > > m_elementPool;
-  UINT64                                           m_updateCount;
+  size_t                                        m_size;
+  size_t                                        m_capacity;
+  LinkElement<MapEntry<K,V> >                 **m_buffer;
+  HeapElementPool<LinkElement<MapEntry<K,V> > > m_elementPool;
+  UINT64                                        m_updateCount;
 
   LinkElement<MapEntry<K,V> > **allocateBuffer(size_t capacity) const {
     LinkElement<MapEntry<K,V> > **result = capacity ? new LinkElement<MapEntry<K,V> >*[capacity] : NULL; TRACE_NEW(result);

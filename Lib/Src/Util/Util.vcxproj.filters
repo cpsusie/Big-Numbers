@@ -1035,13 +1035,13 @@
     <ClInclude Include="..\..\Include\PersistentData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\CompactElementPool.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\MedianCut.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\SourcePosition.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\HeapElementPool.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
