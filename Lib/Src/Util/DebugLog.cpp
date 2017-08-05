@@ -1,40 +1,49 @@
 #include "pch.h"
 #include <TinyBitSet.h>
 #include <Date.h>
+#include <Semaphore.h>
 
 typedef enum {
   FLAG_REDIDRECT
  ,FLAG_APPEND
  ,FLAG_STDOUTATTY
  ,FLAG_STDOUTISCHECKED
+ ,FLAG_ENVIRONCHECKED
+ ,FLAG_ENVIRONSET
 } DebugLogFlags;
 
 #pragma warning(disable : 4073)
 #pragma init_seg(lib)
 
-static FILE    *traceFile        = stdout;
-static BitSet8  traceFlags;
-static TCHAR   *redirectFileName = NULL; // has to be a pointer, so it will not be deallocated before any
+static FILE     *traceFile        = stdout;
+static BitSet8   traceFlags;
+static TCHAR    *redirectFileName = NULL; // has to be a pointer, so it will not be deallocated before any
                                          // destructors of static variables do som logging
-static BYTE     timeFormatCode   = 0;
+static Semaphore gate;
+static BYTE      timeFormatCode   = 0;
 
-static const TCHAR *timeFormats[] = {
-  NULL
+static const String timeFormats[] = {
+  EMPTYSTRING
  ,_T("hh:mm:ss")
  ,_T("ddMMYY")
  ,_T("ddMMYY hh:mm:ss")
 };
 
 bool isDebugLogRedirected() {
-  return traceFlags.contains(FLAG_REDIDRECT);
+  gate.wait();
+  const bool result = traceFlags.contains(FLAG_REDIDRECT) || (traceFile != stdout);
+  gate.signal();
+  return result;
 }
 
 void unredirectDebugLog() {
+  gate.wait();
   if(traceFile != stdout) {
     fclose(traceFile);
     traceFile = stdout;
   }
   traceFlags.remove(FLAG_REDIDRECT);
+  gate.signal();
 }
 
 static void setRedirectFileName(const String &fileName) {
@@ -46,6 +55,7 @@ static void setRedirectFileName(const String &fileName) {
 }
 
 void redirectDebugLog(bool append, const TCHAR *fileName) {
+  gate.wait();
   if(traceFile != stdout) {
     fclose(traceFile);
     traceFile = stdout;
@@ -79,6 +89,7 @@ void redirectDebugLog(bool append, const TCHAR *fileName) {
   } else {
     traceFlags.remove(FLAG_APPEND);
   }
+  gate.signal();
 }
 
 void debugLogSetTimePrefix(bool prefixWithDate, bool prefixWithTime) {
@@ -87,12 +98,29 @@ void debugLogSetTimePrefix(bool prefixWithDate, bool prefixWithTime) {
 
 static bool stdoutAtty() {
   if(!traceFlags.contains(FLAG_STDOUTISCHECKED)) {
+    gate.wait();
     if(isatty(stdout)) {
       traceFlags.add(FLAG_STDOUTATTY);
     }
     traceFlags.add(FLAG_STDOUTISCHECKED);
+    gate.signal();
   }
   return traceFlags.contains(FLAG_STDOUTATTY);
+}
+
+static inline bool isEnvironRedirection() {
+  if(!traceFlags.contains(FLAG_ENVIRONCHECKED)) {
+    gate.wait();
+    TCHAR *v = _tgetenv(_T("DEBUGLOG")); // could parse v, if it contains info about append, timeformat,etc.
+    if(v != NULL) traceFlags.add(FLAG_ENVIRONSET);
+    traceFlags.add(FLAG_ENVIRONCHECKED);
+    gate.signal();
+  }
+  return traceFlags.contains(FLAG_ENVIRONSET);
+}
+
+static inline bool mustRedirect() {
+  return !stdoutAtty() || isEnvironRedirection();
 }
 
 void debugLog(const TCHAR *format, ...) {
@@ -103,14 +131,18 @@ void debugLog(const TCHAR *format, ...) {
 }
 
 void vdebugLog(const TCHAR *format, va_list argptr) {
-  if (traceFile == NULL) traceFile = stdout;
-  if(!traceFlags.contains(FLAG_REDIDRECT) && (traceFile == stdout) && !stdoutAtty()) {
+  if(traceFile == NULL) {
+    traceFile = stdout;
+  }
+  if(!traceFlags.contains(FLAG_REDIDRECT) && (traceFile == stdout) && mustRedirect()) {
     redirectDebugLog();
   }
   if(traceFlags.contains(FLAG_REDIDRECT) && (traceFile == stdout)) {
+    gate.wait();
     traceFile = MKFOPEN(redirectFileName, traceFlags.contains(FLAG_APPEND) ? _T("a") : _T("w"));
 //    setvbuf(traceFile, NULL, _IONBF, 100);
     traceFlags.remove(FLAG_REDIDRECT);
+    gate.signal();
   }
 
   if(timeFormatCode) {
