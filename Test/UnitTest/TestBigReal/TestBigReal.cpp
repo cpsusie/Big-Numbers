@@ -346,7 +346,9 @@ void testBigReal(int threadCount) {
 
   AllTime startTime;
 
-  redirectDebugLog();
+  if(!isDebugLogRedirected()) {
+    redirectDebugLog();
+  }
 
 //StartAll:
 
@@ -364,6 +366,7 @@ void testBigReal(int threadCount) {
   testAPCsum();
   testAPCprod();
   testAPCquot();
+
   testAPCpow();
   testSum();
   testDif();

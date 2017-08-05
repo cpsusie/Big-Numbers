@@ -41,7 +41,6 @@ MThreadArray::~MThreadArray() {
 MThreadArray &BigRealResourcePool::fetchMTThreadArray(MThreadArray &threads, int count) { // static
   BigRealResourcePool &instance = getInstance();
   instance.m_gate.wait();
-
   threads.clear(count);
   if(count > 0) {
     SynchronizedStringQueue *queue = instance.m_queuePool.fetchResource();
@@ -58,7 +57,6 @@ MThreadArray &BigRealResourcePool::fetchMTThreadArray(MThreadArray &threads, int
       instance.m_maxActiveThreads = instance.m_activeThreads;
     }
   }
-
   instance.m_gate.signal();
 
   return threads;
@@ -66,8 +64,8 @@ MThreadArray &BigRealResourcePool::fetchMTThreadArray(MThreadArray &threads, int
 
 void BigRealResourcePool::releaseMTThreadArray(MThreadArray &threads) { // static
   BigRealResourcePool &instance = getInstance();
-  instance.m_gate.wait();
 
+  instance.m_gate.wait();
   if(threads.size() > 0) {
     instance.m_queuePool.releaseResource(threads[0]->m_resultQueue);
     for(size_t i = 0; i < threads.size(); i++) {
@@ -88,7 +86,6 @@ void BigRealResourcePool::setPriority(int priority) { // static
   BigRealResourcePool &instance = getInstance();
 
   instance.m_gate.wait();
-
   try {
     if(priority != instance.m_threadPool.getPriority()) {
       instance.m_threadPool.setPriority(priority);
@@ -100,7 +97,6 @@ void BigRealResourcePool::setPriority(int priority) { // static
     instance.m_gate.signal();
     throw;
   }
-
   instance.m_gate.signal();
 }
 
@@ -108,7 +104,6 @@ void BigRealResourcePool::setPriorityBoost(bool disablePriorityBoost) { // stati
   BigRealResourcePool &instance = getInstance();
 
   instance.m_gate.wait();
-
   try {
     if(disablePriorityBoost != instance.m_threadPool.getPriorityBoost()) {
       instance.m_threadPool.setPriorityBoost(disablePriorityBoost);
@@ -120,7 +115,6 @@ void BigRealResourcePool::setPriorityBoost(bool disablePriorityBoost) { // stati
     instance.m_gate.signal();
     throw;
   }
-
   instance.m_gate.signal();
 }
 
@@ -196,10 +190,29 @@ String BigRealResourcePool::toString() { // static
   return result;
 }
 
-BigRealResourcePool BigRealResourcePool::s_instance;
+class BigRealResourcePoolCreator {
+private:
+  BigRealResourcePool *m_instance;
+  Semaphore            m_gate;
+public:
+  BigRealResourcePoolCreator() : m_instance(NULL) {
+  }
+  ~BigRealResourcePoolCreator() {
+    SAFEDELETE(m_instance);
+  }
+  BigRealResourcePool &getInstance() {
+    m_gate.wait();
+    if(m_instance == NULL) {
+      m_instance = new BigRealResourcePool; TRACE_NEW(m_instance);
+    }
+    m_gate.signal();
+    return *m_instance;
+  }
+};
 
 BigRealResourcePool &BigRealResourcePool::getInstance() {
-  return s_instance;
+  static BigRealResourcePoolCreator creator;
+  return creator.getInstance();
 }
 
 class PoolLoggingThread : public Thread {

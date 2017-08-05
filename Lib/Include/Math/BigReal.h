@@ -235,7 +235,6 @@ public:
   bool hasCacheFile() const;
   void load();
   void save();
-
 };
 
 class BigRealResource : public IdentifiedResource {
@@ -293,7 +292,8 @@ public:
     m_freeDigits = p->next;
     return p;
 #else
-    return new Digit;
+    Digit *d = new Digit; TRACE_NEW(d);
+    return d;
 #endif // USE_DIGITPOOL_FREELIST
   }
 
@@ -305,7 +305,7 @@ public:
     const Digit *end = last->next;
     for(;;) {
       Digit *p = first->next;
-      delete first;
+      SAFEDELETE(first);
       if(p == end) break;
       first = p;
     }
@@ -528,7 +528,7 @@ private:
   void     formatWithSpaceChar(String &result, TCHAR spaceChar) const;
 
 public:
-  inline BigReal(                          DigitPool *digitPool = NULL) : _SETDIGITPOOL() {
+  inline BigReal(                  DigitPool *digitPool = NULL) : _SETDIGITPOOL() {
     init();
   }
 
@@ -1329,11 +1329,12 @@ protected:
     int id = (int)size();
     for(size_t i = 0; i < count; i++, id++) {
       m_freeId.push(id);
-      add(new T(id));
+      T *r = new T(id); TRACE_NEW(r);
+      add(r);
     }
   }
 public:
-  ResourcePool() {
+  virtual ~ResourcePool() {
     deleteAll();
   }
   T *fetchResource() {
@@ -1350,7 +1351,7 @@ public:
 
   void deleteAll() {
     for(size_t i = 0; i < size(); i++) {
-      delete (*this)[i];
+      SAFEDELETE((*this)[i]);
     }
     clear();
     m_freeId.clear();
@@ -1424,7 +1425,7 @@ private:
 protected:
   void allocateNewResources(size_t count) {
     const int oldSize = (int)size();
-    ResourcePool<T>::allocateNewResources(count);
+    __super::allocateNewResources(count);
     for(int i = oldSize; i < (int)size(); i++) {
       Thread &thr = get(i);
       thr.setPriority(m_threadPriority);
@@ -1467,11 +1468,11 @@ private:
   mutable Semaphore                     m_gate;
   int                                   m_processorCount;
   int                                   m_activeThreads, m_maxActiveThreads;
-  static BigRealResourcePool            s_instance;
 
   BigRealResourcePool();
   BigRealResourcePool(const BigRealResourcePool &src);            // not implemented
   BigRealResourcePool &operator=(const BigRealResourcePool &src); // not implemented
+  friend class BigRealResourcePoolCreator;
 public:
   ~BigRealResourcePool();
   static MThreadArray &fetchMTThreadArray(  MThreadArray &threads, int count);
@@ -1502,9 +1503,9 @@ public:
 void traceRecursion(int level, _In_z_ _Printf_format_string_ const TCHAR *format,...);
 
 #ifdef _DEBUG
-#define TRACERECURSION(p) traceRecursion p
+#define TRACERECURSION(...) traceRecursion(__VA_ARGS__)
 #else
-#define TRACERECURSION(p)
+#define TRACERECURSION(...)
 #endif _DEBUG
 
 BigReal oldFraction(const BigReal &x); // Old version sign(x) * (|x| - floor(|x|))

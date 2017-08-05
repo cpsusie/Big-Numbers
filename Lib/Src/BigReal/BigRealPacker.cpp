@@ -49,16 +49,16 @@ Packer &operator>>(Packer &p, BigReal &n) {
     p >> length;
     BRDigitType *da = NULL;
     try {
-      da = new BRDigitType[length];
+      da = new BRDigitType[length]; TRACE_NEW(da);
       p.getElement(Packer::BRPACKERTYPE, da, length * sizeof(BRDigitType));
       BRDigitType *d = da;
       for(size_t i = length; i--;) {
         n.appendDigit(ntohDigit(*(d++)));
       }
       n.m_low = n.m_expo - length + 1;
-      delete[] da;
+      SAFEDELETEARRAY(da);
     } catch(...) {
-      if(da) delete[] da;
+      SAFEDELETEARRAY(da);
       throw;
     }
   }

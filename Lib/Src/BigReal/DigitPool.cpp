@@ -54,23 +54,23 @@ DigitPool::DigitPool(int id, size_t intialDigitCount) : BigRealResource(id) {
     allocatePage();
   }
 
-  m_zero = new BigInt(0, this);
-  m_one  = new BigInt(1, this);
-  m_two  = new BigInt(2, this);
-  m_half = new BigReal(e(BigReal(5, this), -1));
+  m_zero = new BigInt(0, this); TRACE_NEW(m_zero);
+  m_one  = new BigInt(1, this); TRACE_NEW(m_one);
+  m_two  = new BigInt(2, this); TRACE_NEW(m_two);
+  m_half = new BigReal(e(BigReal(5, this), -1));  TRACE_NEW(m_half);
 }
 
 DigitPool::~DigitPool() {
   const size_t digitCount = m_digitCount;
-  delete m_half;
-  delete m_two;
-  delete m_one;
-  delete m_zero;
+  SAFEDELETE(m_half);
+  SAFEDELETE(m_two);
+  SAFEDELETE(m_one);
+  SAFEDELETE(m_zero);
 
   int pageCount = 0;
   for(DigitPage *p = m_firstPage, *q = NULL; p; p = q) {
     q = p->m_next;
-    delete p;
+    SAFEDELETE(p);
     pageCount++;
   }
   if(pageCount) {
@@ -89,7 +89,7 @@ void DigitPool::addToCount(intptr_t n) { //static
 }
 
 void DigitPool::allocatePage() {
-  m_firstPage  = new DigitPage(m_firstPage, m_freeDigits);
+  m_firstPage  = new DigitPage(m_firstPage, m_freeDigits); TRACE_NEW(m_firstPage);
   m_freeDigits = m_firstPage->m_page;
   m_digitCount += DIGITPAGESIZE;
 

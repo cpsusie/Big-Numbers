@@ -18,7 +18,7 @@ size_t Pow2Cache::s_cacheRequestCount = 0;
 #define BITPERBRDIGIT (sizeof(BRDigitType)*8)
 
 Pow2Cache::Pow2Cache() {
-  m_state     = CACHE_EMPTY;
+  m_state       = CACHE_EMPTY;
   m_updateCount = m_savedCount = 0;
 }
 
@@ -31,7 +31,7 @@ bool Pow2Cache::hasCacheFile() const {
 }
 
 void Pow2Cache::load() {
-  if (hasCacheFile()) {
+  if(hasCacheFile()) {
     m_gate.wait();
     while(!isEmpty()) {
       m_gate.signal();
@@ -46,7 +46,7 @@ void Pow2Cache::load() {
 }
 
 void Pow2Cache::save() {
-  if (isChanged()) {
+  if(isChanged()) {
     m_gate.wait();
     save(CACHEFILENAME);
     m_savedCount = m_updateCount;
@@ -57,7 +57,8 @@ void Pow2Cache::save() {
 void Pow2Cache::clear() {
   m_gate.wait();
   for(Iterator<Entry<Pow2ArgumentKey, BigReal*> > it = getEntryIterator(); it.hasNext();) {
-    delete it.next().getValue();
+    BigReal *v = it.next().getValue();
+    SAFEDELETE(v);
   }
   __super::clear();
   m_state = CACHE_EMPTY;
@@ -68,8 +69,8 @@ void Pow2Cache::clear() {
 bool Pow2Cache::put(const Pow2ArgumentKey &key, BigReal * const &v) {
   DEFINEMETHODNAME;
   bool ret;
-  if (m_state & (CACHE_LOADED|CACHE_LOADING)) {
-    if (isLoaded()) {
+  if(m_state & (CACHE_LOADED|CACHE_LOADING)) {
+    if(isLoaded()) {
       throwException(_T("%s:Not allowed when cache is loaded from file"), method);
     }
     m_state &= ~CACHE_EMPTY;
@@ -80,12 +81,17 @@ bool Pow2Cache::put(const Pow2ArgumentKey &key, BigReal * const &v) {
     ret = __super::put(key, v);
     m_gate.signal();
   }
-  if(ret) m_updateCount++;
+  if(ret) {
+    TRACE_NEW(v);
+    m_updateCount++;
+  } else {
+    delete v; // NB not SAFEDELETE
+  }
   return ret;
 }
 
 BigReal **Pow2Cache::get(const Pow2ArgumentKey &key) {
-  if (isLoaded()) {
+  if(isLoaded()) {
     return __super::get(key);
   }
   m_gate.wait();
@@ -105,13 +111,15 @@ void Pow2Cache::load(const String &fileName) {
 void Pow2Cache::save(ByteOutputStream &s) const {
   const UINT capacity = (UINT)getCapacity();
   const UINT n        = (UINT)size();
+#ifdef _DEBUG
   debugLog(_T("Saving Pow2Cache to %s. size:%lu, capacity:%lu\n"), CACHEFILENAME, n, capacity);
+#endif
   const BYTE signaturByte = BITPERBRDIGIT;
   s.putByte(signaturByte);
   s.putBytes((BYTE*)&capacity, sizeof(capacity));
   s.putBytes((BYTE*)&n       , sizeof(n));
   for(Iterator<Entry<Pow2ArgumentKey, BigReal*> > it = getEntryIterator(); it.hasNext();) {
-    Entry<Pow2ArgumentKey, BigReal*> &e = it.next();
+    const Entry<Pow2ArgumentKey, BigReal*> &e = it.next();
     e.getKey().save(s);
     e.getValue()->save(s);
   }
@@ -124,19 +132,19 @@ void Pow2Cache::load(ByteInputStream &s) {
   UINT capacity;
   UINT n;
   const BYTE signaturByte = s.getByte();
-  if (signaturByte != BITPERBRDIGIT) {
+  if(signaturByte != BITPERBRDIGIT) {
     throwException(_T("Wrong bits/Digit in cache-file. Expected %d, got %d bits"), BITPERBRDIGIT, signaturByte);
   }
   s.getBytesForced((BYTE*)&capacity, sizeof(capacity));
   s.getBytesForced((BYTE*)&n       , sizeof(n));
 
 #ifdef _DEBUG
-  debugLog(_T("Loading Pow2Cache. size:%lu, capacity:%lu..."), n, capacity);
+  debugLog(_T("Loading Pow2Cache. size:%lu, capacity:%lu...\n"), n, capacity);
 #endif
   setCapacity(capacity);
   m_state |= CACHE_LOADING;
   for(UINT i = 0; i < n; i++) {
-    Pow2ArgumentKey key(s);
+    const Pow2ArgumentKey key(s);
     put(key, new BigReal(s, &DEFAULT_DIGITPOOL));
   }
   m_state = CACHE_LOADED;
@@ -180,12 +188,15 @@ const BigReal &BigReal::pow2(int n, size_t digits) { // static
 void BigReal::loadPow2Cache() {
   s_pow2Cache.load();
 }
+
 void BigReal::savePow2Cache() {
   s_pow2Cache.save();
 }
+
 bool BigReal::hasPow2CacheFile() {
   return s_pow2Cache.hasCacheFile();
 }
+
 bool BigReal::pow2CacheChanged() {
   return s_pow2Cache.isChanged();
 }

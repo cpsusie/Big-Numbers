@@ -222,6 +222,7 @@ public:
     s_allDone.wait();
   }
   static inline void addFunctionTest(AbstractFunctionTest *test) {
+    TRACE_NEW(test);
     s_testQueue.put(test);
   }
   static bool allOk() {

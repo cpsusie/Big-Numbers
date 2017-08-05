@@ -299,7 +299,7 @@ int _tmain(int argc, TCHAR **argv) {
         throwLastErrorOnSysCallException(_T("SetThreadPriorityBoost"));
       }
     }
-    if (BigReal::hasPow2CacheFile()) {
+    if(BigReal::hasPow2CacheFile()) {
       BigReal::loadPow2Cache();
     }
     if(specialTest) {
@@ -308,7 +308,7 @@ int _tmain(int argc, TCHAR **argv) {
     } else {
       testBigReal(threadCount);
     }
-    if (BigReal::pow2CacheChanged()) {
+    if(BigReal::pow2CacheChanged()) {
       BigReal::savePow2Cache();
     }
   } catch(Exception e) {

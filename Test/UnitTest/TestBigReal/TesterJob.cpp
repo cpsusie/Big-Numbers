@@ -75,7 +75,8 @@ void TesterJob::startAll(int count) { // static
   } else {
     s_gate.wait();
     for(int i = 0; i < count; i++) {
-      s_testerJobs.add(new TesterJob(i));
+      Runnable *job = new TesterJob(i); TRACE_NEW(job);
+      s_testerJobs.add(job);
     }
     s_gate.signal();
     BigRealResourcePool::executeInParallel(s_testerJobs);
@@ -86,10 +87,10 @@ void TesterJob::releaseAll() { // static
   s_gate.wait();
   while(!s_doneQueue.isEmpty()) {
     AbstractFunctionTest *test = s_doneQueue.get();
-    delete test;
+    SAFEDELETE(test);
   }
   for(size_t i = 0; i < s_testerJobs.size(); i++) {
-    delete s_testerJobs[i];
+    SAFEDELETE(s_testerJobs[i]);
   }
   s_testerJobs.clear();
   s_gate.signal();

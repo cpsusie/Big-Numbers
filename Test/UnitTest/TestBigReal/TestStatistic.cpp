@@ -120,7 +120,7 @@ tostream &TestStatistic::getErrorLog(bool logTime) { // static
     finfo.setDir(getSourceDir()).setFileName(finfo.getFileName() + _T("Errors")).setExtension(_T("log"));
     const String fileName = finfo.getFullPath();
     FILE *f = MKFOPEN(fileName, _T("a")); fclose(f);
-    s_errorLogStream = new tofstream(fileName.cstr(), ios::out | ios::app | ios::unitbuf);
+    s_errorLogStream = new tofstream(fileName.cstr(), ios::out | ios::app | ios::unitbuf); TRACE_NEW(s_errorLogStream);
   }
   if(logTime) {
     *s_errorLogStream << Timestamp().toString() << NEWLINE;
@@ -133,8 +133,7 @@ void TestStatistic::flushAndCloseErorLog() { // static
   s_gate.wait();
   if(s_errorLogStream != NULL) {
     s_errorLogStream->flush();
-    delete s_errorLogStream;
-    s_errorLogStream = NULL;
+    SAFEDELETE(s_errorLogStream);
   }
   s_gate.signal();
 }

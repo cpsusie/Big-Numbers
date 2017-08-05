@@ -155,14 +155,15 @@ BigInt findRandomPrime(int digitCount, int threadCount, DigitPool *pool, MillerR
 
   CompactArray<PrimeSearcher*> jobs;
   for(int i = 0; i < threadCount; i++) {
-    jobs.add(new PrimeSearcher(i, digitCount, resultQueue, handler));
+    PrimeSearcher *ps = new PrimeSearcher(i, digitCount, resultQueue, handler); TRACE_NEW(ps);
+    jobs.add(ps);
     jobs.last()->start();
   }
   const BigInt n = resultQueue.get();
   BigReal::terminateCalculation();
 
   for(int i = 0; i < threadCount; i++) {
-    delete jobs[i];
+    SAFEDELETE(jobs[i]);
   }
 
   jobs.clear();
