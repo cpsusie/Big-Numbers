@@ -48,7 +48,8 @@ typedef enum {
 class D3PickedInfo {
 public:
   int           m_faceIndex;
-  int           m_i1, m_i2, m_i3;           // Indices into vertexArray
+  // Indices into vertexArray
+  int           m_i1, m_i2, m_i3;
   TextureVertex m_tv;
   inline D3PickedInfo() : m_faceIndex(-1) {
   }
@@ -135,7 +136,8 @@ private:
 
   void setTransformation(D3DTRANSFORMSTATETYPE id, const D3DXMATRIX &m);
   D3DXMATRIX getTransformation(D3DTRANSFORMSTATETYPE id) const;
-  int getFirstFreeLightIndex() const; // return -1 if none exist
+  // Return -1 if none exist
+  int getFirstFreeLightIndex() const;
   int getFirstFreeMaterialIndex();
   D3LightControl *findLightControlByLightIndex(int lightIndex);
   D3LightControl *addLightControl(    UINT lightIndex);
@@ -157,7 +159,7 @@ public:
     return m_hwnd;
   }
   void addSceneObject(   D3SceneObject *obj);
-  // remove obj from scene. if obj is an animated object, the animationthread will be stopped.
+  // Remove obj from scene. if obj is an animated object, the animationthread will be stopped.
   // Does NOT delete the object
   void removeSceneObject(D3SceneObject *obj);
   void removeAllSceneObjects();
@@ -666,7 +668,8 @@ protected:
     FV(m_mesh->DrawSubset(attribId));
   }
 public:
-  SceneObjectWithMesh(D3Scene &scene, LPD3DXMESH mesh = NULL); // if mesh != NULL, it will be released when Object is destroyed
+  // if mesh != NULL, it will be released when Object is destroyed
+  SceneObjectWithMesh(D3Scene &scene, LPD3DXMESH mesh = NULL);
   ~SceneObjectWithMesh();
   LPD3DXMESH getMesh() const {
     return m_mesh;
@@ -757,7 +760,8 @@ public:
   void stopAnimation();
   bool isRunning() const;
   AnimationType getAnimationType() const;
-  void scaleSpeed(double factor); // sleepTime /= factor
+  // sleepTime /= factor
+  void scaleSpeed(double factor);
   double getFramePerSec() const;
   LPD3DXMESH getMesh() const;
   void draw();

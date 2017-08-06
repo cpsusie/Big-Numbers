@@ -11,9 +11,11 @@ public:
   Rectangle2D    m_boundingBox;
   Point2D        m_startPoint;
   bool           m_machineCode;
-  bool           m_includeTime; // if true, an animation will be generated
+  // if true, an animation will be generated
+  bool           m_includeTime;
   DoubleInterval m_tInterval;
-  UINT           m_frameCount;  // number of frames (meshes) that will be generated
+  // Number of frames (meshes) that will be generated
+  UINT           m_frameCount;
 
   IsoCurveParameters();
 

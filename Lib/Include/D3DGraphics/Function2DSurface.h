@@ -10,9 +10,11 @@ public:
   DoubleInterval m_yInterval;
   DoubleInterval m_timeInterval;
   UINT           m_pointCount;
-  UINT           m_frameCount;  // number of frames (meshes) that will be generated
+  // number of frames (meshes) that will be generated
+  UINT           m_frameCount;
   bool           m_machineCode;
-  bool           m_includeTime; // if true, an animation will be generated
+  // if true, an animation will be generated
+  bool           m_includeTime;
   bool           m_doubleSided;
 
   Function2DSurfaceParameters();

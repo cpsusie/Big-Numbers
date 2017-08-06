@@ -11,9 +11,11 @@ inline bool operator!=(const D3DMATERIAL &m1, const D3DMATERIAL &m2) {
   return !(m1 == m2);
 }
 
-class MATERIAL : public D3DMATERIAL { // sent to listener for id=SP_MATERIALPARAMETERS
+// Sent to listener for id=SP_MATERIALPARAMETERS
+class MATERIAL : public D3DMATERIAL {
 public:
-  int m_index;   // if < 0, material is undefined.
+  // If < 0, material is undefined.
+  int m_index;
   inline MATERIAL() : m_index(-1) {
   }
   inline bool isDefined() const {

@@ -13,9 +13,11 @@ public:
   bool           m_originOutside;
   bool           m_machineCode;
   bool           m_doubleSided;
-  bool           m_includeTime;  // if true, an animation will be generated
+  // if true, an animation will be generated
+  bool           m_includeTime;
   DoubleInterval m_timeInterval;
-  UINT           m_frameCount;   // number of frames (meshes) that will be generated
+  // number of frames (meshes) that will be generated
+  UINT           m_frameCount;
 
   IsoSurfaceParameters();
 

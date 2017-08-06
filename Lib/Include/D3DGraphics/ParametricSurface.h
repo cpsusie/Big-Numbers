@@ -11,10 +11,10 @@ public:
   UINT           m_tStepCount;
   UINT           m_sStepCount;
   DoubleInterval m_timeInterval;
-  // number of frames (meshes) that will be generated
+  // Number of frames (meshes) that will be generated
   UINT           m_frameCount;
   bool           m_machineCode;
-  // if true, an animation will be generated
+  // If true, an animation will be generated
   bool           m_includeTime;
   bool           m_doubleSided;
 

@@ -18,19 +18,19 @@ public:
   D3CoordinateSystem &operator=(const D3CoordinateSystem &src);
   ~D3CoordinateSystem();
   void setCube(const D3DXCube3 &cube);
-  const D3DXCube3 getCube() const {
+  inline const D3DXCube3 &getCube() const {
     return m_cube;
   }
-  void setBoxVisible(bool visible) {
+  inline void setBoxVisible(bool visible) {
     m_boxVisible = visible;
   }
-  bool getBoxVisible() const {
+  inline bool getBoxVisible() const {
     return m_boxVisible;
   }
-  void setAxesVisible(bool visible) {
+  inline void setAxesVisible(bool visible) {
     m_axesVisible = visible;
   }
-  bool getAxesVisible() const {
+  inline bool getAxesVisible() const {
     return m_axesVisible;
   }
   D3PosDirUpScale &getPDUS() {
@@ -39,4 +39,3 @@ public:
   }
   void draw();
 };
-

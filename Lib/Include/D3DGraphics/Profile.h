@@ -34,7 +34,8 @@ bool operator!=(const ProfileStretchParameters  &p1, const ProfileStretchParamet
 
 class ProfileCurve {
 public:
-  short          m_type; // TT_PRIM_LINE, TT_PRIM_QSPLINE or TT_PRIM_CSPLINE
+  // TT_PRIM_LINE, TT_PRIM_QSPLINE or TT_PRIM_CSPLINE
+  short          m_type;
   Point2DArray   m_points;
 
   inline ProfileCurve(short type) {
@@ -82,8 +83,10 @@ public:
   Point2DArray    getAllPoints() const;
   CompactArray<Point2D*> getAllPointsRef();
   Point2DArray    getCurvePoints() const;
-  Point2DArray    getFlatNormals() const; // return noOfLines normals
-  Point2DArray    getSmoothNormals() const; // return noOfPoints normals
+  // Return noOfLines normals
+  Point2DArray    getFlatNormals() const;
+  // Return noOfPoints normals
+  Point2DArray    getSmoothNormals() const;
 
   inline ProfileCurve &getLastCurve() {
     return m_curveArray.last();
@@ -125,7 +128,8 @@ public:
   String getDisplayName() const;
 
   void addLine(const Point2D &p1, const Point2D &p2);
-  void addLineStrip(const Point2D *points, int n); // n is number of points. number of lines will be n-1
+  // n is number of points. number of lines will be n-1
+  void addLineStrip(const Point2D *points, int n);
 
   inline void addPolygon(const ProfilePolygon &polygon) {
     m_polygonArray.add(polygon);
@@ -138,8 +142,10 @@ public:
   Point2DArray    getAllPoints() const;
   CompactArray<Point2D*> getAllPointsRef();
   Point2DArray    getCurvePoints() const;
-  Point2DArray    getFlatNormals() const; // return noOfLines normals
-  Point2DArray    getSmoothNormals() const; // return noOfPoints normals
+  // Return noOfLines normals
+  Point2DArray    getFlatNormals() const;
+  // Return noOfPoints normals
+  Point2DArray    getSmoothNormals() const;
   bool canConnect(const Point2D *p1, const Point2D *p2) const;
   void connect(const Point2D *p1, const Point2D *p2);
   void move(const Point2D &dp);

@@ -23,13 +23,16 @@ public:
     , m_rtf(xInterval.getMax(), yInterval.getMax(), zInterval.getMax())
   {
   }
-  inline V getLength() const { // dimension x
+  // x-dimension
+  inline V getLength() const {
     return m_rtf.x - m_lbn.x;
   }
-  inline V getHeight() const { // dimension y
+  // y-dimension
+  inline V getHeight() const {
     return m_rtf.y - m_lbn.y;
   }
-  inline V getDepth() const {  // dimension z
+  // z-dimension
+  inline V getDepth() const {
     return m_rtf.z - m_lbn.z;
   }
   inline V getVolume() const {

@@ -17,14 +17,14 @@ typedef enum {
 } CubeFace;
 
 typedef enum {
-  LBN // left  bottom near corner
- ,LBF // left  bottom far  corner
- ,LTN // left  top    near corner
- ,LTF // left  top    far  corner
- ,RBN // right bottom near corner
- ,RBF // right bottom far  corner
- ,RTN // right top    near corner
- ,RTF // right top    far  corner
+  LBN   // left  bottom near corner
+ ,LBF   // left  bottom far  corner
+ ,LTN   // left  top    near corner
+ ,LTF   // left  top    far  corner
+ ,RBN   // right bottom near corner
+ ,RBF   // right bottom far  corner
+ ,RTN   // right top    near corner
+ ,RTF   // right top    far  corner
 } CubeCorner;
 
 String toString(CubeCorner cb);
@@ -34,31 +34,37 @@ String toString(CubeCorner cb);
 
 //**** Cubical Polygonization ****
 typedef enum {
-  LB  // left   bottom edge
- ,LT  // left   top    edge
- ,LN  // left   near   edge
- ,LF  // left   far    edge
- ,RB  // right  bottom edge
- ,RT  // right  top    edge
- ,RN  // right  near   edge
- ,RF  // right  far    edge
- ,BN  // bottom near   edge
- ,BF  // bottom far    edge
- ,TN  // top    near   edge
- ,TF  // top    far    edge
- ,NN  // No edge
+  LB    // left   bottom edge
+ ,LT    // left   top    edge
+ ,LN    // left   near   edge
+ ,LF    // left   far    edge
+ ,RB    // right  bottom edge
+ ,RT    // right  top    edge
+ ,RN    // right  near   edge
+ ,RF    // right  far    edge
+ ,BN    // bottom near   edge
+ ,BF    // bottom far    edge
+ ,TN    // top    near   edge
+ ,TF    // top    far    edge
+ ,NN    // No edge
 } CubeEdge;
 
-class IsoSurfaceTest {          // Test the function for a signed value
+// Test the function for a signed value
+class IsoSurfaceTest {
 public:
-  Point3D m_point;              // Location of test
-  bool    m_positive;           // Function value at m_point
-  bool    m_ok;                 // true if value is of correct sign
+  // Location of test
+  Point3D m_point;
+  // Function value at m_point
+  bool    m_positive;
+  // True if value is of correct sign
+  bool    m_ok;
 };
 
-class IsoSurfaceVertex {        // Surface vertex
+// Surface vertex
+class IsoSurfaceVertex {
 public:
-  Point3D m_position, m_normal; // Position and surface normal
+  // Position and surface normal
+  Point3D m_position, m_normal;
   String toString(int dec=4) const {
     return format(_T("P:%s, N:%s"), m_position.toString(dec).cstr(), m_normal.toString(dec).cstr());
   }
@@ -106,10 +112,12 @@ public:
   }
 };
 
-class HashedCubeCorner {          // Corner of a cube
+// Corner of a cube
+class HashedCubeCorner {
 public:
   Point3DKey m_key;
-  Point3D    m_point;             // Location
+  // Location
+  Point3D    m_point;
   bool       m_positive;
   inline HashedCubeCorner() {
   }
@@ -145,9 +153,11 @@ public:
   String toString() const;
 };
 
-class Face3 {           // Parameter to receiveFace
+// Parameter to receiveFace
+class Face3 {
 public:
-  UINT m_i1,m_i2,m_i3;  // Indices into vertexArray
+  // Indices into vertexArray
+  UINT m_i1,m_i2,m_i3;
   D3DCOLOR m_color;
   Face3() {}
   inline Face3(UINT i1, UINT i2, UINT i3, D3DCOLOR color)
@@ -156,10 +166,13 @@ public:
   }
 };
 
-class StackedCube {                     // Partitioning cell (cube)
+// Partitioning cell (cube)
+class StackedCube {
 public:
-  Point3DKey              m_key;        // Lattice location of cube
-  const HashedCubeCorner *m_corners[8]; // Eight corners, each one in m_cornerMap
+  // Lattice location of cube
+  Point3DKey              m_key;
+  // Eight corners, each one in m_cornerMap
+  const HashedCubeCorner *m_corners[8];
   inline StackedCube(int i, int j, int k) : m_key(i,j,k) {
     memset(m_corners, 0, sizeof(m_corners));
   }
@@ -262,16 +275,26 @@ public:
 class IsoSurfacePolygonizer {
 private:
   static PolygonizerCubeArrayTable             s_cubetable;
-  IsoSurfaceEvaluator                         &m_eval;              // Implicit surface function
-  double                                       m_cellSize, m_delta; // Cube size, normal delta
-  Cube3D                                       m_boundingBox;       // bounding box
-  Point3D                                      m_start;             // Start point on surface
-  bool                                         m_tetrahedralMode;   // Use tetrahedral decomposition
-  Stack<StackedCube>                           m_cubeStack;         // Active cubes
-  CompactArray<IsoSurfaceVertex>               m_vertexArray;       // Surface vertices
-  CompactHashSet<Point3DKey>                   m_cubesDoneSet;      // Cubes done so far
-  CompactHashMap<Point3DKey, HashedCubeCorner> m_cornerMap;         // Corners of cubes
-  CompactHashMap<CubeEdgeHashKey, int>         m_edgeMap;           // Edge -> vertex id Map
+  // Implicit surface function
+  IsoSurfaceEvaluator                         &m_eval;
+  // Cube size, normal delta
+  double                                       m_cellSize, m_delta;
+  // Bounding box. surface will be contained in this
+  Cube3D                                       m_boundingBox;
+  // Start point on surface
+  Point3D                                      m_start;
+  // Use tetrahedral decomposition
+  bool                                         m_tetrahedralMode;
+  // Active cubes
+  Stack<StackedCube>                           m_cubeStack;
+  // Surface vertices
+  CompactArray<IsoSurfaceVertex>               m_vertexArray;
+  // Cubes done so far
+  CompactHashSet<Point3DKey>                   m_cubesDoneSet;
+  // Corners of cubes
+  CompactHashMap<Point3DKey, HashedCubeCorner> m_cornerMap;
+  // Edge -> vertex id Map
+  CompactHashMap<CubeEdgeHashKey, int>         m_edgeMap;
   CompactArray<Face3>                          m_face3Buffer;
   PolygonizerStatistics                        m_statistics;
   D3DCOLOR                                     m_color;

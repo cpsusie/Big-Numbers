@@ -41,7 +41,8 @@ public:
   virtual D3Scene &getScene()               = 0;
   virtual CWnd    *getMessageWindow()       = 0;
   virtual CWnd    *get3DWindow()            = 0;
-  virtual void     render(BYTE renderFlags) = 0; // any combination of RENDER_3D,RENDER_INFO
+  // renderFlags is any combination of RENDER_3D,RENDER_INFO
+  virtual void     render(BYTE renderFlags) = 0;
   virtual void     modifyContextMenu(CMenu &menu) {
   }
 };
@@ -219,7 +220,7 @@ public:
     inline D3SceneObject *getCurrentObject() const {
       return m_currentSceneObject;
     }
-    // return NULL, if type not {SOTYPE_VISUALOBJECT, SOTYPE_ANIMATEDOBJECT, }
+    // Return NULL, if type not {SOTYPE_VISUALOBJECT, SOTYPE_ANIMATEDOBJECT, }
     D3SceneObject     *getCurrentVisualObject();
     D3AnimatedSurface *getCurrentAnimatedobject() const;
     inline const D3DXVECTOR3 &getFocurPoint() const {
