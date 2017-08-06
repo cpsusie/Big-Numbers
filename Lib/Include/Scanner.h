@@ -4,10 +4,13 @@
 #include "SourcePosition.h"
 #include <ctype.h>
 
-class LexStream { // abstract class for inputstreams
+// Abstract class (interface) for inputstreams
+class LexStream {
 public:
-  virtual bool open(const String &s)                  = NULL; // Opens a new inputstream. return true on success, false on error
-  virtual void close()                                = NULL; // Close stream
+  // Opens a new inputstream. return true on success, false on error
+  virtual bool open(const String &s)                  = NULL;
+  // Close stream
+  virtual void close()                                = NULL;
   virtual bool eof()                                  = NULL;
   virtual bool ok()                                   = NULL;
   virtual intptr_t getChars(_TUCHAR *dst, size_t n)   = NULL;
@@ -39,7 +42,8 @@ public:
     return size() == 0;
   }
 
-  String getConvertedString(size_t count); // count is the number of bytes to convert
+  // count is the number of bytes to convert
+  String getConvertedString(size_t count);
   size_t readUntilHasNewLine(FILE *f);
 };
 
@@ -58,7 +62,6 @@ public:
   inline bool isEmpty() const {
     return size() == 0;
   }
-
   inline void put(const String &s) {
     *this += s;
   }
@@ -83,7 +86,6 @@ public:
 
   LexFileStream();
   LexFileStream(const String &name);
-
   ~LexFileStream() {
     close();
   }
@@ -137,23 +139,38 @@ class Scanner {
 #define ANCHOR_BOTH  (ANCHOR_START | ANCHOR_END) //  Both start and end of line.
 
 private:
-  LexStream      *m_inputStream;                 // Input source
-  _TUCHAR         m_inputBuffer[SCANNERBUFSIZE]; // Input buffer
-  _TUCHAR        *m_endBuf;                      // Just past last TCHAR
-  _TUCHAR        *m_nextChar;                    // Next input TCHAR
-  _TUCHAR        *m_startMark;                   // Start of current lexeme
-  _TUCHAR        *m_endMark;                     // End of current lexeme
-  _TUCHAR        *m_previousMark;                // Start of previous lexeme
-  intptr_t        m_previousLength;              // Length of previous lexeme
-  SourcePosition  m_pos;                         // Current scanner position
-  SourcePosition  m_previousPos;                 // Position of previous accepted lexeme
-  SourcePosition  m_startPos;                    // Position of last accepted lexeme
-  SourcePosition  m_markPos;                     // Position when markEnd() called
-  _TUCHAR         m_termchar;                    // Holds the TCHAR that was overwritten by a 0.
-                                                 // See terminateLexeme()/unTerminateLexeme()
-  bool            m_eofRead;                     // true if end of file has been read.
-                                                 // It's possible for this to be true,
-                                                 // and for characters to still be in the input buffer.
+  // Input source
+  LexStream      *m_inputStream;                
+   // Input buffer
+  _TUCHAR         m_inputBuffer[SCANNERBUFSIZE];
+  // Just past last TCHAR
+  _TUCHAR        *m_endBuf;
+  // Next input TCHAR
+  _TUCHAR        *m_nextChar;
+  // Start of current lexeme
+  _TUCHAR        *m_startMark;
+  // End of current lexeme
+  _TUCHAR        *m_endMark;
+  // Start of previous lexeme
+  _TUCHAR        *m_previousMark;
+  // Length of previous lexeme
+  intptr_t        m_previousLength;
+  // Current scanner position
+  SourcePosition  m_pos;
+  // Position of previous accepted lexeme
+  SourcePosition  m_previousPos;
+  // Position of last accepted lexeme
+  SourcePosition  m_startPos;
+  // Position when markEnd() called
+  SourcePosition  m_markPos;
+  // Holds the TCHAR that was overwritten by a 0
+  // See terminateLexeme()/unTerminateLexeme()
+  _TUCHAR         m_termchar;
+
+  // true if end of file has been read.
+  // It's possible for this to be true,
+  // and for characters to still be in the input buffer.
+  bool            m_eofRead;
   bool            m_moreFlag;
 
   void init(LexStream *stream, const SourcePosition &pos);
@@ -245,11 +262,16 @@ public:
     return m_previousPos.getLineNumber();
   }
 
-  _TUCHAR *markStart();    // Set start- and endMark to current position. Returns next TCHAR
-  _TUCHAR *markEnd();      // Set endMark to current position. Returns next TCHAR
-  _TUCHAR *moveStart();    // If startMark is set, advance it one TCHAR
-  _TUCHAR *markPrevious(); // Set previousMark and Length = position remembered by markStart/markEnd
-  _TUCHAR *gotoMark();     // Set current position = position remembered by markEnd()
+  // Set start- and endMark to current position. Returns next TCHAR
+  _TUCHAR *markStart();
+  // Set endMark to current position. Returns next TCHAR
+  _TUCHAR *markEnd();
+  // If startMark is set, advance it one TCHAR
+  _TUCHAR *moveStart();
+  // Set previousMark and Length = position remembered by markStart/markEnd
+  _TUCHAR *markPrevious();
+  // Set current position = position remembered by markEnd()
+  _TUCHAR *gotoMark();
 
   inline void setDebug(bool newvalue) {
     m_debug = newvalue;
