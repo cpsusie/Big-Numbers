@@ -80,7 +80,7 @@ SearchFirst1Bit:
   const BitSet::Atom *p         = firstAtom + _BS_ATOMINDEX(start);
   const BitSet::Atom *endAtom   = firstAtom + _BS_ATOMINDEX(m_end);
   end                           = m_end;
-  unsigned long i;
+  ULONG i;
   int hasNext;
 
   __asm {
@@ -324,7 +324,7 @@ SearchRFirst1Bit:
   const BitSet::Atom *p         = firstAtom + _BS_ATOMINDEX(start);
   const BitSet::Atom *endAtom   = firstAtom + _BS_ATOMINDEX(m_end);
   end                           = m_end;
-  unsigned long i;
+  ULONG i;
   int hasNext;
 
   __asm {

@@ -12,7 +12,7 @@ public:
   bool operator==(const BitmapKey &key) const {
     return (m_id == key.m_id) && (m_theta == key.m_theta);
   }
-  unsigned long hashCode() const {
+  ULONG hashCode() const {
     return 360 * m_id + m_theta;
   }
 };

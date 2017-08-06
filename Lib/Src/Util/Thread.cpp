@@ -165,7 +165,7 @@ UINT Thread::run() {
   return m_target ? m_target->run() : 0;
 }
 
-unsigned long Thread::getExitCode() const {
+ULONG Thread::getExitCode() const {
   DWORD exitCode = 0;
   if(!GetExitCodeThread(m_threadHandle,&exitCode)) {
     throwLastErrorOnSysCallException(__TFUNCTION__);

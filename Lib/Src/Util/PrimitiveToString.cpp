@@ -37,19 +37,19 @@ String toString(long n, int precision, int width, int flags) {
   return stream;
 }
 
-String toString(unsigned long n, int precision, int width, int flags) {
+String toString(ULONG n, int precision, int width, int flags) {
   StrStream stream(precision,width,flags);
   stream << n;
   return stream;
 }
 
-String toString(__int64 n, int precision, int width, int flags) {
+String toString(INT64 n, int precision, int width, int flags) {
   StrStream stream(precision,width,flags);
   stream << n;
   return stream;
 }
 
-String toString(unsigned __int64 n, int precision, int width, int flags) {
+String toString(UINT64 n, int precision, int width, int flags) {
   StrStream stream(precision,width,flags);
   stream << n;
   return stream;

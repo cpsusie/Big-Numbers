@@ -1,6 +1,6 @@
 #include "pch.h"
 
-unsigned long stringiHash(const String &str) {
+ULONG stringiHash(const String &str) {
   return striHash(str.cstr());
 }
 

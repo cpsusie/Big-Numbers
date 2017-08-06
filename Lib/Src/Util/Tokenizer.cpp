@@ -51,7 +51,7 @@ void Tokenizer::init(const TCHAR *str, const TCHAR *delimiters, TCHAR textQualif
   m_stringBuffer     = NULL;
   m_stringBufferSize = 0;
   for(const TCHAR *cp = (const TCHAR*)delimiters; *cp; cp++) {
-    m_delimiterSet += (unsigned long)(*cp);                    // m_delimiterSet never contains '\0'
+    m_delimiterSet += (ULONG)(*cp);                    // m_delimiterSet never contains '\0'
   }
 
   if(flags & TOK_INVERTSET) {
@@ -62,7 +62,7 @@ void Tokenizer::init(const TCHAR *str, const TCHAR *delimiters, TCHAR textQualif
   m_next = str;
 
   if(!m_singleDelimiter) {
-    while(m_delimiterSet.contains((unsigned long)(*m_next))) { // m_delimiterSet never contains '\0'
+    while(m_delimiterSet.contains((ULONG)(*m_next))) { // m_delimiterSet never contains '\0'
       m_next++;
     }
   }
