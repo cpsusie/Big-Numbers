@@ -7,24 +7,38 @@
 
 template<class T> class CColormapDialog : public CPropertyDialog<T>  {
 private:
-  CompactArray<CSliderCtrlWithTransformation*> m_sliderArray;
+  IntHashMap<CSliderCtrlWithTransformation*> m_sliderMap;
 public:
   CColormapDialog(int resId, int propertyId, CWnd *pParent) : CPropertyDialog<T>(resId, propertyId, pParent) {
   }
   ~CColormapDialog() {
-    for (size_t i = 0; i < m_sliderArray.size(); i++) {
-      CSliderCtrlWithTransformation *ctrl = m_sliderArray[i];
+    for(Iterator<CSliderCtrlWithTransformation*> it = m_sliderMap.values().getIterator(); it.hasNext();) {
+      CSliderCtrlWithTransformation *ctrl = it.next();
       SAFEDELETE(ctrl);
     }
-    m_sliderArray.clear();
+    m_sliderMap.clear();
   }
 protected:
+  BOOL PreTranslateMessage(MSG *pMsg) {
+    if(pMsg->message == WM_MOUSEWHEEL) {
+      short zDelta = (short)(pMsg->wParam >> 16);
+      zDelta = -zDelta;
+      pMsg->wParam &= ~WPARAM(0xffff0000);
+      pMsg->wParam |= zDelta << 16;
+    }
+    return __super::PreTranslateMessage(pMsg);
+  }
+
   void initSlider(int ctrlId, double from, double to, UINT stepCount = 100, IntervalScale type=LINEAR) {
-    CSliderCtrlWithTransformation *ctrl = new CSliderCtrlWithTransformation(); TRACE_NEW(ctrl);
-    m_sliderArray.add(ctrl);
+    CSliderCtrlWithTransformation *ctrl = NULL;
     try {
+      ctrl = new CSliderCtrlWithTransformation(); TRACE_NEW(ctrl);
+      if(!m_sliderMap.put(ctrlId,ctrl)) {
+        throwInvalidArgumentException(__TFUNCTION__, _T("ctrlID=%d already exist"), ctrlId);
+      }
       ctrl->substituteControl(this, ctrlId, DoubleInterval(from,to), stepCount, type);
     } catch (Exception e) {
+      SAFEDELETE(ctrl);
       Message(_T("%s"), e.what());
     }
   }

@@ -343,4 +343,9 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties RESOURCE_FILE="\mytools2015\Lib\Include\D3DGraphics\D3DGraphics.rc" />
+    </VisualStudio>
+  </ProjectExtensions>
 </Project>
