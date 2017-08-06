@@ -270,3 +270,9 @@ public:
   StringIHashSet(size_t capacity=31) : HashSet<String>(stringiHash, stringiHashCmp, capacity) {
   }
 };
+
+template<class T> class PointerHashSet : public HashSet<T> {
+public:
+  PointerHashSet(size_t capacity=31) : HashSet<T>(pointerHash, pointerHashCmp, capacity) {
+  }
+};

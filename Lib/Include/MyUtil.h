@@ -394,4 +394,12 @@ inline int doubleHashCmp(const double &d1, const double &d2 ) {
   return sign(d1 - d2);
 }
 
+template<class T> ULONG pointerHash(const T * const &p) {
+  return sizetHash((size_t)p);
+}
+
+template<class T> int pointerHashCmp(const T * const &p1, const T * const &p2) {
+  return sizetHashCmp((size_t)p1, size_t(p2));
+}
+
 #include "Array.h"

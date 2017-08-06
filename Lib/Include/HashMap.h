@@ -184,6 +184,12 @@ public:
 
 template <class T> class StringIHashMap    : public HashMap<String, T> {
 public:
-  StringIHashMap(size_t capacity=31): HashMap<String, T>(stringiHash, stringiHashCmp, capacity) {
+  StringIHashMap(size_t capacity=31) : HashMap<String, T>(stringiHash, stringiHashCmp, capacity) {
+  }
+};
+
+template <class K, class V> class PointerHashMap : public HashMap<K, V> {
+public:
+  PointerHashMap(size_t capacity=31) : HashMap<K, V>(pointerHash, pointerHashCmp, capacity) {
   }
 };
