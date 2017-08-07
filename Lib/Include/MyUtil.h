@@ -41,7 +41,7 @@ String getMessageName(int msg);
 #define LEAVEFUNC  debugLog(_T("Leave %s\n"), __TFUNCTION__)
 bool getDebuggerPresent();
 
-#ifdef _DEBUG
+#ifdef TRACE_MEMORY
 
 inline int _getrc(IUnknown *p) {
   p->AddRef(); return p->Release();

@@ -3,6 +3,6 @@
 #include <PragmaLib.h>
 
 #ifdef GIVE_LINK_MESSAGE
-#pragma message("link with " LIB_VERSION)
+#pragma message("link with " TM_LIB_VERSION)
 #endif
-#pragma comment(lib, LIB_VERSION "MFCUtil.lib")
+#pragma comment(lib, TM_LIB_VERSION "MFCUtil.lib")

@@ -3,8 +3,8 @@
 #include <PragmaLib.h>
 
 #ifdef LONGDOUBLE
-#pragma comment(lib,LIB_VERSION "LDMath.lib")
+#pragma comment(lib,TM_LIB_VERSION "LDMath.lib")
 #else
-#pragma comment(lib,LIB_VERSION "Math.lib")
+#pragma comment(lib,TM_LIB_VERSION "Math.lib")
 #endif
 

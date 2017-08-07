@@ -1512,4 +1512,4 @@ BigReal oldFraction(const BigReal &x); // Old version sign(x) * (|x| - floor(|x|
 BigReal modulusOperator64( const BigReal &x, const BigReal &y); // old operator%(const BigReal &x, const BigReal &y);
 BigReal modulusOperator128(const BigReal &x, const BigReal &y); // old operator%(const BigReal &x, const BigReal &y);
 
-#pragma comment(lib,  LIB_VERSION "BigReal.lib")
+#pragma comment(lib,  TM_LIB_VERSION "BigReal.lib")

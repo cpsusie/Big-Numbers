@@ -95,7 +95,7 @@ CFont *scaleFont(CFont *src, double scale) {
   src->GetLogFont(&lf);
   lf.lfHeight = (int)(scale * lf.lfHeight);
   lf.lfWidth  = (int)(scale * lf.lfWidth);
-  CFont *nf = new CFont();
+  CFont *nf = new CFont(); TRACE_NEW(nf);
   nf->CreateFontIndirect(&lf);
   return nf;
 }
