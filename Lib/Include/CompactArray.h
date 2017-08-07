@@ -82,6 +82,7 @@ public:
     if(capacity < m_size) {
       capacity = m_size;
     }
+    if(capacity == m_capacity) return;
     T *newArray = capacity ? new T[capacity] : NULL; TRACE_NEW(newArray);
     if(m_size) {
       memcpy(newArray, m_array, m_size * sizeof(T));
@@ -174,7 +175,7 @@ public:
 
   void add(const T &e) {
     if(m_size == m_capacity) {
-      setCapacity(2*m_capacity+5);
+      setCapacity(3*m_capacity+5);
     }
     m_array[m_size++] = e;
     m_updateCount++;
@@ -185,7 +186,7 @@ public:
     if(count == 0) return;
     const size_t newSize = m_size + count;
     if(newSize > m_capacity) {
-      setCapacity(2*(newSize) + 5);
+      setCapacity(3*(newSize) + 5);
     }
     if(index < m_size) {
       memmove(m_array+index+count, m_array+index, (m_size-index)*sizeof(T));
@@ -202,7 +203,7 @@ public:
     if(count == 0) return;
     const size_t newSize = m_size + count;
     if(newSize > m_capacity) {
-      setCapacity(2*(newSize) + 5);
+      setCapacity(3*(newSize) + 5);
     }
     if(index < m_size) {
       memmove(m_array+index+count, m_array+index, (m_size-index)*sizeof(T));
@@ -242,7 +243,7 @@ public:
       memmove(m_array+index, m_array+j, (m_size-j) * sizeof(T));
     }
     m_size -= count;
-    if(m_size < m_capacity/2) {
+    if(m_size < m_capacity/4) {
       setCapacity(m_size);
     }
     m_updateCount++;
