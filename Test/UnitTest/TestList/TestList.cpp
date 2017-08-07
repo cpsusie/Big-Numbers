@@ -36,8 +36,7 @@ namespace TestList {
   };
 
 
-	TEST_CLASS(TestList)
-	{
+  TEST_CLASS(TestList) {
     public:
 
     TEST_METHOD(LinkedListPrimitiveOperations) {
