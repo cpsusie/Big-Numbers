@@ -3,6 +3,7 @@
 #include "MyString.h"
 #include "Collection.h"
 #include "Comparator.h"
+#include "HeapElementPool.h"
 #include "ObjectManager.h"
 
 class ListNode {
@@ -11,41 +12,14 @@ public:
   ListNode *m_prev, *m_next;
 };
 
-#define LISTNODEPAGESIZE 10000
-
-class ListNodePage {
-private:
-  friend class ListImpl;
-  ListNode      m_nodeArray[LISTNODEPAGESIZE];
-  ListNodePage *m_nextPage;
-  ListNodePage(ListNodePage *nextPage);
-};
-
 class ListImpl : public AbstractCollection {
 private:
   DECLARECLASSNAME;
-  AbstractObjectManager *m_objectManager;
-  ListNodePage          *m_firstPage;
-  ListNode              *m_freeList;
-  ListNode              *m_first, *m_last;
-  size_t                 m_size;
-  size_t                 m_updateCount;
-
-  inline void allocatePage() { // m_freeList is always NULL when this is called
-    m_firstPage = new ListNodePage(m_firstPage); TRACE_NEW(m_firstPage);
-    m_freeList  = m_firstPage->m_nodeArray;
-  }
-  void releaseAllPages();
-  inline ListNode *fetchNode() {
-    if(m_freeList == NULL) allocatePage();
-    ListNode *p = m_freeList;
-    m_freeList  = p->m_next;
-    return p;
-  }
-  inline void releaseNode(ListNode *node) {
-    node->m_next = m_freeList;
-    m_freeList   = node;
-  }
+  AbstractObjectManager    *m_objectManager;
+  HeapElementPool<ListNode> m_nodePool;
+  ListNode                 *m_first, *m_last;
+  size_t                    m_size;
+  size_t                    m_updateCount;
 
   void init(AbstractObjectManager &objectManager);
   ListNode *createNode(const void *e);

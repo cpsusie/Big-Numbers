@@ -26,8 +26,6 @@ ListImpl::ListImpl(AbstractObjectManager &objectManager) {
 
 void ListImpl::init(AbstractObjectManager &objectManager) {
   m_objectManager = objectManager.clone(); TRACE_NEW(m_objectManager);
-  m_firstPage     = NULL;
-  m_freeList      = NULL;
   m_first         = m_last = NULL;
   m_size          = 0;
   m_updateCount   = 0;
@@ -38,7 +36,7 @@ void ListImpl::init(AbstractObjectManager &objectManager) {
 
 ListImpl::~ListImpl() {
   clear();
-  releaseAllPages();
+  m_nodePool.releaseAll();
   SAFEDELETE(m_objectManager);
 #ifdef DEBUG
   descounter++;
@@ -46,7 +44,7 @@ ListImpl::~ListImpl() {
 }
 
 ListNode *ListImpl::createNode(const void *e) {
-  ListNode *result = fetchNode();
+  ListNode *result = m_nodePool.fetchElement();
   result->m_data   = m_objectManager->cloneObject(e);
   result->m_next   = result->m_prev = NULL;
   return result;
@@ -54,7 +52,7 @@ ListNode *ListImpl::createNode(const void *e) {
 
 void ListImpl::deleteNode(ListNode *n) {
   m_objectManager->deleteObject(n->m_data);
-  releaseNode(n);
+  m_nodePool.releaseElement(n);
 }
 
 const ListNode *ListImpl::findNode(size_t index) const {
@@ -90,15 +88,6 @@ void ListImpl::clear() {
   m_first = m_last = NULL;
   m_size = 0;
   m_updateCount++;
-}
-
-void ListImpl::releaseAllPages() {
-  for(ListNodePage *p = m_firstPage, *q = NULL; p; p = q) {
-    q = p->m_nextPage;
-    SAFEDELETE(p);
-  }
-  m_firstPage = NULL;
-  m_freeList  = NULL;
 }
 
 void ListImpl::throwOutOfRangeException(const TCHAR *method, size_t index) const {
@@ -318,12 +307,4 @@ void ListIterator::remove() {
 
 AbstractIterator *ListImpl::getIterator() {
   return new ListIterator(*this);
-}
-
-ListNodePage::ListNodePage(ListNodePage *nextPage) : m_nextPage(nextPage) {
-  ListNode *p = &LASTVALUE(m_nodeArray);
-
-  for((p--)->m_next = NULL; p >= m_nodeArray; p--) {
-    p->m_next = p+1;
-  }
 }
