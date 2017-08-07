@@ -58,6 +58,30 @@ public:
   }
 };
 
+class CompactStrIKeyType {
+private:
+  const TCHAR *m_value;
+public:
+  CompactStrIKeyType() : m_value(EMPTYSTRING) {
+  }
+  inline CompactStrIKeyType(const TCHAR *value) : m_value(value) {
+  }
+#pragma warning( push )
+#pragma warning(disable:4311 4302)
+
+  inline ULONG hashCode() const {
+    return striHash(m_value);
+  }
+#pragma warning( pop )
+
+  inline bool operator==(const CompactStrIKeyType &k) const {
+    return _tcsicmp(m_value,k.m_value) == 0;
+  }
+  operator const TCHAR*() const {
+    return m_value;
+  }
+};
+
 typedef CompactKeyType<short > CompactShortKeyType;
 typedef CompactKeyType<USHORT> CompactUShortKeyType;
 typedef CompactKeyType<int   > CompactIntKeyType;

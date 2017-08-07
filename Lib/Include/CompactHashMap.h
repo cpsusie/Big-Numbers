@@ -524,3 +524,13 @@ public:
   CompactStrHashMap(const CompactStrHashMap<T> &src) : CompactHashMap<CompactStrKeyType, T>(src) {
   }
 };
+
+template <class T> class CompactStrIHashMap    : public CompactHashMap<CompactStrIKeyType, T> {
+public:
+  CompactStrIHashMap() {
+  }
+  explicit CompactStrIHashMap(size_t capacity)  : CompactHashMap<CompactStrIKeyType, T>(capacity) {
+  }
+  CompactStrIHashMap(const CompactStrIHashMap<T> &src) : CompactHashMap<CompactStrIKeyType, T>(src) {
+  }
+};
