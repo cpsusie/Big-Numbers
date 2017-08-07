@@ -147,7 +147,7 @@ static Rectangle2D getTransformedRectangle(const D3DXMATRIX &m, const CSize bmSi
   corner[2] = D3DXVECTOR2(0               , (float)bmSize.cy);
   corner[3] = D3DXVECTOR2((float)bmSize.cx, (float)bmSize.cy);
 
-  Point2DArray trCorners;
+  Point2DArray trCorners(4);
   for(int i = 0; i < 4; i++) {
     const D3DXVECTOR2 tp = m * corner[i];
     trCorners.add(Point2D(tp.x,tp.y));
