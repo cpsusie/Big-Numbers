@@ -10,6 +10,8 @@ protected:
 public:
   PersistentData() : m_name(s_defaultName) {
   }
+  virtual ~PersistentData() {
+  }
   void load(const String &fileName);
   void save(const String &fileName);
   static void           checkTag(XMLNodePtr node, const TCHAR *expectedTag);
