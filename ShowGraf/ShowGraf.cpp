@@ -51,7 +51,7 @@ BOOL CShowGrafApp::InitInstance() {
     m_pMainWnd->ShowWindow(SW_SHOW);
     m_pMainWnd->UpdateWindow();
 
-    if (getMainWindow()->getDoc()->isOK()) {
+    if(getMainWindow()->getDoc()->isOK()) {
       getMainWindow()->activateInitialOptions();
     } else {
       const String msg = getMainWindow()->getDoc()->getErrorMessage();
@@ -59,6 +59,11 @@ BOOL CShowGrafApp::InitInstance() {
       PostMessage(*m_pMainWnd, WM_QUIT,0,0);
     }
     return TRUE;
+}
+
+int CShowGrafApp::ExitInstance() {
+  m_device.detach();
+  return __super::ExitInstance();
 }
 
 String CShowGrafApp::getRecentFile(int index) {
@@ -75,15 +80,10 @@ public:
   CAboutDlg();
   enum { IDD = IDD_ABOUTBOX };
 protected:
-  virtual void DoDataExchange(CDataExchange *pDX);
   DECLARE_MESSAGE_MAP()
 };
 
 CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
-}
-
-void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)

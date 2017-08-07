@@ -180,12 +180,12 @@ bool CShowGrafDoc::addInitialDataGraph(const String &name, COLORREF color) {
                             ,*m_options.m_yReader
                             ,m_options.m_rollAvg ? m_options.m_rollAvgSize : 0
                             ,m_options.m_graphStyle);
-  Graph *g = new DataGraph(param);
+  Graph *g = new DataGraph(param); TRACE_NEW(g);
   if(!g->isEmpty()) {
     m_graphArray.add(g);
     return true;
   } else {
-    delete g;
+    SAFEDELETE(g);
     return false;
   }
 }
@@ -210,13 +210,6 @@ bool CShowGrafDoc::refreshFiles() {
     return true;
   }
   return false;
-}
-
-BOOL CShowGrafDoc::OnNewDocument() {
-  if (!CDocument::OnNewDocument())
-    return FALSE;
-
-  return TRUE;
 }
 
 void CShowGrafDoc::Serialize(CArchive& ar) {
@@ -255,12 +248,12 @@ void CShowGrafDoc::readDataFile(const String &fileName) {
                            ,*m_yReader
                            ,isMenuItemChecked(ID_VIEW_ROLLAG) ? m_rollAvgSize : 0
                            ,theApp.getMainWindow()->getGraphStyle());
-  Graph *g = new DataGraph(param);
+  Graph *g = new DataGraph(param); TRACE_NEW(g);
   if(!g->isEmpty()) {
     m_graphArray.add(g);
     initScaleIfSingleGraph();
   } else {
-    delete g;
+    SAFEDELETE(g);
   }
 */
 }
@@ -268,7 +261,7 @@ void CShowGrafDoc::readDataFile(const String &fileName) {
 void CShowGrafDoc::readFunctionFile(const String &fileName) {
   FunctionGraphParameters param;
   param.load(fileName);
-  Graph *g = new FunctionGraph(param);
+  Graph *g = new FunctionGraph(param); TRACE_NEW(g);
   m_graphArray.add(g);
   initScaleIfSingleGraph();
 }
@@ -276,7 +269,7 @@ void CShowGrafDoc::readFunctionFile(const String &fileName) {
 void CShowGrafDoc::readParametricFile(const String &fileName) {
   ParametricGraphParameters param;
   param.load(fileName);
-  Graph *g = new ParametricGraph(param);
+  Graph *g = new ParametricGraph(param); TRACE_NEW(g);
   m_graphArray.add(g);
   initScaleIfSingleGraph();
 }
@@ -284,7 +277,7 @@ void CShowGrafDoc::readParametricFile(const String &fileName) {
 void CShowGrafDoc::readIsoFile(const String &fileName) {
   IsoCurveGraphParameters param;
   param.load(fileName);
-  Graph *g = new IsoCurveGraph(param);
+  Graph *g = new IsoCurveGraph(param); TRACE_NEW(g);
   m_graphArray.add(g);
   initScaleIfSingleGraph();
 }
@@ -292,31 +285,35 @@ void CShowGrafDoc::readIsoFile(const String &fileName) {
 void CShowGrafDoc::readDiffEqFile(const String &fileName) {
   DiffEquationGraphParameters param;
   param.load(fileName);
-  Graph *g = new DiffEquationGraph(param);
+  Graph *g = new DiffEquationGraph(param); TRACE_NEW(g);
   m_graphArray.add(g);
   initScaleIfSingleGraph();
 }
 
 void CShowGrafDoc::addFunctionGraph(const FunctionGraphParameters &param) {
-  m_graphArray.add(new FunctionGraph(param));
+  Graph *g = new FunctionGraph(param); TRACE_NEW(g);
+  m_graphArray.add(g);
   m_graphArray.select(m_graphArray.size()-1);
   initScaleIfSingleGraph();
 }
 
 void CShowGrafDoc::addParametricGraph(const ParametricGraphParameters &param) {
-  m_graphArray.add(new ParametricGraph(param));
+  Graph *g = new ParametricGraph(param); TRACE_NEW(g);
+  m_graphArray.add(g);
   m_graphArray.select(m_graphArray.size()-1);
   initScaleIfSingleGraph();
 }
 
 void CShowGrafDoc::addIsoCurveGraph(const IsoCurveGraphParameters &param) {
-  m_graphArray.add(new IsoCurveGraph(param));
+  Graph *g = new IsoCurveGraph(param); TRACE_NEW(g);
+  m_graphArray.add(g);
   m_graphArray.select(m_graphArray.size()-1);
   initScaleIfSingleGraph();
 }
 
 void CShowGrafDoc::addDiffEquationGraph(const DiffEquationGraphParameters &param) {
-  m_graphArray.add(new DiffEquationGraph(param));
+  Graph *g = new DiffEquationGraph(param); TRACE_NEW(g);
+  m_graphArray.add(g);
   m_graphArray.select(m_graphArray.size()-1);
   initScaleIfSingleGraph();
 }

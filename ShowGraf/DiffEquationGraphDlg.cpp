@@ -323,9 +323,13 @@ void CDiffEquationGraphDlg::save(const String &fileName, DiffEquationGraphParame
 
 void CDiffEquationGraphDlg::setEquationCount(size_t n) {
   if(getEquationCount() > n) {
-    while(getEquationCount() > n) removeEquation(getEquationCount()-1);
+    while(getEquationCount() > n) {
+      removeEquation(getEquationCount()-1);
+    }
   } else {
-    while(getEquationCount() < n) addEquation();
+    while(getEquationCount() < n) {
+      addEquation();
+    }
   }
 }
 

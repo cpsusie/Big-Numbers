@@ -119,7 +119,7 @@ void GraphArray::remove(size_t index) {
     unselect();
   }
   GraphItem &item = getItem(index);
-  delete item.m_graph;
+  SAFEDELETE(item.m_graph);
   __super::removeIndex(index);
   calculateDataRange();
 
@@ -141,7 +141,7 @@ void GraphArray::calculateDataRange() {
 
 void GraphArray::clear() {
   for(size_t i = 0; i < size(); i++) {
-    delete getItem(i).m_graph;
+    SAFEDELETE(getItem(i).m_graph);
   }
   __super::clear();
 }

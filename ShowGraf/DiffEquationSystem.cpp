@@ -7,7 +7,7 @@ DiffEquationSystem::~DiffEquationSystem() {
 
 void DiffEquationSystem::cleanup() {
   for (size_t i = 0; i < m_exprArray.size(); i++) {
-    delete m_exprArray[i];
+    SAFEDELETE(m_exprArray[i]);
   }
   m_exprArray.clear();
 }
@@ -58,14 +58,14 @@ bool DiffEquationSystem::compile(CompilerErrorList &errorList) {
     for(UINT i = 0; i < m_equationSystemDescription.size(); i++) {
       const DiffEquationDescription &desc = m_equationSystemDescription[i];
       const String                   expr = commonText + desc.m_expr;
-      ExpressionWithInputVector     *e    = new ExpressionWithInputVector();
+      ExpressionWithInputVector     *e    = new ExpressionWithInputVector(); TRACE_NEW(e);
       e->compile(expr, true);
-      if (e->isOk()) {
+      if(e->isOk()) {
         m_exprArray.add(e);
       } else {
         bool hasCommonErrors = errorList.addErrors(i, e->getErrors(), expr, (int)commonText.length());
-        delete e;
-        if (hasCommonErrors) {
+        SAFEDELETE(e);
+        if(hasCommonErrors) {
           break;
         }
       }

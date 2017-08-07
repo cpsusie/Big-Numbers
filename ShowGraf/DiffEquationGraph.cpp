@@ -14,7 +14,7 @@ DiffEquationGraph::~DiffEquationGraph() {
 
 void DiffEquationGraph::clear() {
   for (size_t i = 0; i < m_pointGraphArray.size(); i++) {
-    delete m_pointGraphArray[i];
+    SAFEDELETE(m_pointGraphArray[i]);
   }
   m_pointGraphArray.clear();
   updateDataRange();
@@ -66,12 +66,13 @@ void DiffEquationGraph::calculate() {
     throwException(_T("%s:No visible graphs selected"), __TFUNCTION__);
   }
   CompactIntArray vectorGraphMap;
-  for (Iterator<UINT> it = eqSet.getIterator(); it.hasNext();) {
+  for(Iterator<UINT> it = eqSet.getIterator(); it.hasNext();) {
     const UINT                     index = it.next();
     const EquationAttributes      &attr  = param.m_attrArray[index];
     const DiffEquationDescription &desc  = param.m_equationsDescription[index];
     vectorGraphMap.add(index+1); // v[0] is x, so add 1 to get mapping right
     m_pointGraphArray.add(new PointGraph(new PointGraphParameters(desc.m_name, attr.m_color, 1, param.m_style)));
+    TRACE_NEW(m_pointGraphArray.last());
   }
   DiffEquationHandler handler(*this, vectorGraphMap);
   RungeKuttaFehlberg(eq, handler).calculate(param.getStartVector(), param.m_interval.getTo(), param.m_eps);

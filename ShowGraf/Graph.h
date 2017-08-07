@@ -14,7 +14,7 @@ private:
   Graph &operator=(const Graph &src); // Not implemented
 protected:
   Graph(GraphParameters *param) {
-    m_param = param;
+    m_param = param; TRACE_NEW(m_param);
   }
   static bool pointDefined(const Point2D &p) {
     return _finite(p.x) && !_isnan(p.x) && _finite(p.y) && !_isnan(p.y);
@@ -22,7 +22,7 @@ protected:
 
 public:
   virtual ~Graph() {
-    delete m_param;
+    SAFEDELETE(m_param);
   }
   GraphParameters &getParam() const {
     return *m_param;
@@ -56,7 +56,6 @@ public:
   virtual bool needRefresh() const {
     return false;
   }
-
 };
 
 class PointGraph : public Graph {

@@ -248,7 +248,7 @@ CDiffEquationEdit *CDiffEquationEditArray::findEquationByCtrlId(UINT id) const {
 }
 
 void CDiffEquationEditArray::addEquation(CWnd *wnd, CFont &font) {
-  CDiffEquationEdit *eq = new CDiffEquationEdit(font);
+  CDiffEquationEdit *eq = new CDiffEquationEdit(font); TRACE_NEW(eq);
   eq->Create(wnd, (UINT)size());
   eq->setVisibleChecked(true);
   add(eq);
@@ -256,7 +256,7 @@ void CDiffEquationEditArray::addEquation(CWnd *wnd, CFont &font) {
 
 void CDiffEquationEditArray::remove(size_t index) {
   CDiffEquationEdit *eq = (*this)[index];
-  delete eq;
+  SAFEDELETE(eq);
   __super::remove(index);
 }
 

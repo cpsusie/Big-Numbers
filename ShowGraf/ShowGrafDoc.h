@@ -102,7 +102,6 @@ public:
   }
   // return true if any data-graphs were updated
   bool refreshFiles();
-  virtual BOOL OnNewDocument();
   virtual void Serialize(CArchive& ar);
   virtual ~CShowGrafDoc();
 #ifdef _DEBUG

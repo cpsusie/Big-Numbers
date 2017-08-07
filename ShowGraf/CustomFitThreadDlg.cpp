@@ -115,14 +115,13 @@ Point2DArray selectPointsInInterval(const DoubleInterval &interval, const Point2
 void CCustomFitThreadDlg::allocateFunctionFitter() {
   deallocateFunctionFitter();
 
-  m_functionFitter  = new FunctionFitter((LPCTSTR)m_expr,selectPointsInInterval(getXInterval(), m_pointArray));
+  m_functionFitter  = new FunctionFitter((LPCTSTR)m_expr,selectPointsInInterval(getXInterval(), m_pointArray)); TRACE_NEW(m_functionFitter);
   if(!m_functionFitter->isOk()) {
     MessageBox(m_functionFitter->getErrors()[0].cstr());
-    delete m_functionFitter;
-    m_functionFitter = NULL;
+    SAFEDELETE(m_functionFitter);
     return;
   }
-  m_worker = new FitThread(this,*m_functionFitter);
+  m_worker = new FitThread(this,*m_functionFitter); TRACE_NEW(m_worker);
 
   allocateInfoFields(m_functionFitter->getParamCount() + 5);
 }
@@ -130,13 +129,9 @@ void CCustomFitThreadDlg::allocateFunctionFitter() {
 void CCustomFitThreadDlg::deallocateFunctionFitter() {
   if(m_worker) {
     m_worker->kill();
-    delete m_worker;
-    m_worker = NULL;
+    SAFEDELETE(m_worker);
   }
-  if(m_functionFitter) {
-    delete m_functionFitter;
-    m_functionFitter  = NULL;
-  }
+  SAFEDELETE(m_functionFitter);
   deallocateInfoFields();
 }
 
@@ -151,7 +146,7 @@ void CCustomFitThreadDlg::deallocateInfoFields() {
   for(size_t i = 0; i < m_infoField.size(); i++) {
     CStatic *st = m_infoField[i];
     st->DestroyWindow();
-    delete st;
+    SAFEDELETE(st);
   }
   m_infoField.clear();
 }
@@ -164,7 +159,7 @@ CStatic *CCustomFitThreadDlg::infofield(int i) {
   rect.bottom = rect.top  + 18;
   rect.left   = 10;
   rect.right  = rect.left + 200;
-  CStatic *st = new CStatic;
+  CStatic *st = new CStatic; TRACE_NEW(st);
   st->Create(EMPTYSTRING,WS_VISIBLE | WS_GROUP | WS_TABSTOP,rect,this,FIELDID(i));
   return st;
 }
