@@ -19,8 +19,10 @@ public:
   void setParser(LRparser *parser) {
     m_parser = parser;
   }
-  int  getNextLexeme();
-  void verror(const SourcePosition &pos, const TCHAR *format, va_list argptr);
+
+  int    getNextLexeme();
+  void   verror(const SourcePosition &pos, const TCHAR *format, va_list argptr);
+  static ExpressionInputSymbol nameOrKeyWord(const _TUCHAR *lexeme);
 };
 
 

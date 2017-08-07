@@ -15,8 +15,10 @@ public:
   void setParser(LRparser *parser) {
     m_parser = parser;
   }
-  int  getNextLexeme();
-  void verror(const SourcePosition &pos, const TCHAR *format, va_list argptr);
+
+  int    getNextLexeme();
+  void   verror(const SourcePosition &pos, const TCHAR *format, va_list argptr);
+  static ExpressionInputSymbol nameOrKeyWord(const _TUCHAR *lexeme);
 };
 
 %}
@@ -26,11 +28,11 @@ public:
  /* This part goes to the first part of the cpp file */
 
 #include "pch.h"
-#include <HashMap.h>
+#include <CompactHashMap.h>
 #include <Math/Expression/ExpressionSymbol.h>
 #include <Math/Expression/ExpressionLex.h>
 
-static int nameOrKeyWord(const _TUCHAR *lexeme);
+static ExpressionInputSymbol nameOrKeyWord(const _TUCHAR *lexeme);
 
 %}
 
@@ -100,8 +102,8 @@ white   [\x00-\x09\x0b\s\r\n]  /* White space: all control chars        */
   /* This part goes to the last part of exprlex.cpp */
 
 typedef struct {
-  const TCHAR *m_name;
-  const int    m_token;
+  const TCHAR                *m_name;
+  const ExpressionInputSymbol m_token;
 } KeyWord;
 
 static const KeyWord keywordtable[] = {
@@ -165,21 +167,21 @@ static const KeyWord keywordtable[] = {
 ,_T("TO")        ,TO
 };
 
-typedef StrIHashMap<int> HashMapType;
+typedef CompactStrIHashMap<ExpressionInputSymbol> HashMapType;
 
 class ExpressionKeyWordMap : public HashMapType {
 public:
-  ExpressionKeyWordMap() : HashMapType(23) {
+  ExpressionKeyWordMap(size_t capacity) : HashMapType(capacity) {
     for(int i = 0; i < ARRAYSIZE(keywordtable); i++) {
       put(keywordtable[i].m_name,keywordtable[i].m_token);
     }
   }
 };
 
-static ExpressionKeyWordMap keywords;
+static ExpressionKeyWordMap keywords(405);
 
-static int nameOrKeyWord(const _TUCHAR *lexeme) {
-  const int *p = keywords.get(lexeme);
+ExpressionInputSymbol ExpressionLex::nameOrKeyWord(const _TUCHAR *lexeme) { // static
+  const ExpressionInputSymbol *p = keywords.get(lexeme);
   return p ? *p : NAME;
 }
 
@@ -190,3 +192,37 @@ void ExpressionLex::verror(const SourcePosition &pos, const TCHAR *format, va_li
     Scanner::verror(pos, format, argptr);
   }
 }
+
+#ifdef CHECKKEYWORDMAP
+
+class CheckKeywordMap {
+private:
+  void findBestHashMapSize();
+public:
+  CheckKeywordMap() {
+    findBestHashMapSize();
+  }
+};
+
+void ExpressionLex::findBestHashMapSize() { // static
+  int  bestTableSize   = -1;
+  UINT bestChainLength = 0;
+  for(int tableSize = 20; tableSize < 2000; tableSize++) {
+    ExpressionKeyWordMap ht(tableSize);
+    const int chainLength = ht.getMaxChainLength();
+    debugLog(_T("tableSize:%4d, maxChainLength:%d\n"), tableSize, chainLength);
+    if((bestTableSize < 0) || (chainLength < bestChainLength)) {
+      bestTableSize   = tableSize;
+      bestChainLength = chainLength;
+    }
+    if(bestChainLength == 1) {
+      break;
+    }
+  }
+  debugLog(_T("\nTablesize=%d gives best hashmap (maxchainLength=%u\n")
+          ,bestTableSize, bestChainLength);
+}
+
+static CheckKeywordMap checkKeywordMap;
+
+#endif
