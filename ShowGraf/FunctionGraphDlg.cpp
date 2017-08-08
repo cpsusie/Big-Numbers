@@ -123,12 +123,13 @@ void CFunctionGraphDlg::paramToWin(const FunctionGraphParameters &param) {
   __super::paramToWin(param);
 }
 
-void CFunctionGraphDlg::winToParam(FunctionGraphParameters &param) const {
+bool CFunctionGraphDlg::winToParam(FunctionGraphParameters &param) {
+  if(!__super::winToParam(param)) return false;
   param.m_expr  = m_expr;
   param.m_style = (GraphStyle)getStyleCombo()->GetCurSel();
   param.m_color = getColorButton()->GetColor();
   param.m_interval.setFrom(m_xFrom);
   param.m_interval.setTo(m_xTo);
   param.m_steps = m_steps;
-  __super::winToParam(param);
+  return true;
 }

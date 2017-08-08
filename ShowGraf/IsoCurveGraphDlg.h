@@ -22,7 +22,7 @@ private:
 
   bool validate();
   void paramToWin(const IsoCurveGraphParameters &param);
-  void winToParam(      IsoCurveGraphParameters &param) const;
+  bool winToParam(      IsoCurveGraphParameters &param);
   void addToRecent(const String &fileName);
 public:
   CIsoCurveGraphDlg(IsoCurveGraphParameters &param, CWnd *pParent = NULL);

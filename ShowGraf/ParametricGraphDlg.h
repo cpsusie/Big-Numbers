@@ -21,7 +21,7 @@ private:
   }
   bool validate();
   void paramToWin(const ParametricGraphParameters &param);
-  void winToParam(      ParametricGraphParameters &param) const;
+  bool winToParam(      ParametricGraphParameters &param);
   void addToRecent(const String &fileName);
 
 public:

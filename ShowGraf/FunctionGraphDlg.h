@@ -23,7 +23,7 @@ private:
   }
   bool validate();
   void paramToWin(const FunctionGraphParameters &param);
-  void winToParam(      FunctionGraphParameters &param) const;
+  bool winToParam(      FunctionGraphParameters &param);
   void addToRecent(const String &fileName);
 public:
   CFunctionGraphDlg(FunctionGraphParameters &param, int showFlags = SHOW_INTERVAL|SHOW_STEP, CWnd *pParent = NULL);   // standard constructor

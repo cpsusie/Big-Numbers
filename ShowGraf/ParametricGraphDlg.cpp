@@ -130,7 +130,8 @@ void CParametricGraphDlg::paramToWin(const ParametricGraphParameters &param) {
   __super::paramToWin(param);
 }
 
-void CParametricGraphDlg::winToParam(ParametricGraphParameters &param) const {
+bool CParametricGraphDlg::winToParam(ParametricGraphParameters &param) {
+  if(!__super::winToParam(param)) return false;
   param.m_commonText = m_commonText;
   param.m_exprX      = m_exprX;
   param.m_exprY      = m_exprY;
@@ -139,5 +140,5 @@ void CParametricGraphDlg::winToParam(ParametricGraphParameters &param) const {
   param.m_interval.setFrom(m_tFrom);
   param.m_interval.setTo(m_tTo);
   param.m_steps      = m_steps;
-  __super::winToParam(param);
+  return true;
 }

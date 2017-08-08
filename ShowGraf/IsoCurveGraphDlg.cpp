@@ -112,11 +112,12 @@ void CIsoCurveGraphDlg::paramToWin(const IsoCurveGraphParameters &param) {
   __super::paramToWin(param);
 }
 
-void CIsoCurveGraphDlg::winToParam(IsoCurveGraphParameters &param) const {
+bool CIsoCurveGraphDlg::winToParam(IsoCurveGraphParameters &param) {
+  if(!__super::winToParam(param)) return false;
   param.m_expr        = m_expr;
   param.m_style       = (GraphStyle)getStyleCombo()->GetCurSel();
   param.m_color       = getColorButton()->GetColor();
   param.m_boundingBox = Rectangle2D(m_xFrom, m_yFrom, m_xTo-m_xFrom, m_yTo-m_yFrom);
   param.m_cellSize    = m_cellSize;
-  __super::winToParam(param);
+  return true;
 }
