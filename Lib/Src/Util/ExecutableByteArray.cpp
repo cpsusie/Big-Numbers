@@ -52,7 +52,7 @@ void  ExecutableByteArray::deallocateBytes(BYTE *buffer) {
   }
 }
 
-size_t ExecutableByteArray::getSystemPageSize() {
+size_t ExecutableByteArray::getSystemPageSize() { // static
   static size_t pageSize = 0;
   if (pageSize == 0) {
     SYSTEM_INFO systemInfo;
