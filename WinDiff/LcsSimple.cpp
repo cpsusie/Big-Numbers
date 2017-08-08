@@ -29,8 +29,7 @@ LcsSimple::~LcsSimple() {
 }
 
 void LcsSimple::clear() {
-  delete[] m_matchList;
-  m_matchList = NULL;
+  SAFEDELETEARRAY(m_matchList);
 }
 
 void LcsSimple::init(const LineArray &a, const LineArray &b) {
@@ -59,13 +58,13 @@ void LcsSimple::init(const LineArray &a, const LineArray &b) {
     }
     m_n = bs;
   }
-  m_matchList = new MatchArray*[m_n+1];
+  m_matchList = new MatchArray*[m_n+1]; TRACE_NEW(m_matchList);
   for(size_t i = 0; i <= m_n; i++) {
     m_matchList[i] = NULL;
   }
 
-  m_tresh = new UINT[m_n+1];
-  m_link  = new Link*[m_n+1];
+  m_tresh = new UINT[m_n+1];  TRACE_NEW(m_tresh);
+  m_link  = new Link*[m_n+1]; TRACE_NEW(m_link );
 }
 
 void LcsSimple::findLcs(ElementPairArray &result) {

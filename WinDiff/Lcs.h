@@ -107,31 +107,6 @@ public:
   Link *m_next;
 };
 
-#define LINKPAGESIZE 30000
-
-class LinkPage {
-private:
-  int  m_count;
-  Link m_page[LINKPAGESIZE];
-public:
-  LinkPage *m_next;
-  inline LinkPage(LinkPage *next) {
-    m_count = 0;
-    m_next  = next;
-  }
-  inline Link *fetchLink(int i, int j, Link *next) {
-    Link *result   = m_page + m_count++;
-    result->m_i    = i;
-    result->m_j    = j;
-    result->m_next = next;
-    return result;
-  }
-
-  inline bool isFull() const {
-    return m_count == ARRAYSIZE(m_page);
-  }
-};
-
 class ElementPair {
 public:
   int m_aIndex, m_bIndex;
@@ -195,7 +170,7 @@ public:
 
 class Lcs {
 private:
-  LinkPage              *m_firstLinkPage;
+  HeapObjectPool<Link>   m_linkPool;
 protected:
   size_t                 m_n;           // Number of elements in longest input-Array
   bool                   m_seqReversed; // true if b (parameter to constructor) is longest, and a and b are swapped
@@ -203,11 +178,11 @@ protected:
   UINT                  *m_tresh;
   Link                 **m_link;
   CompareJob            *m_job;
-  size_t                 m_linkPageCount;
 
   inline Link *newLink(int i, int j, Link *next) {
-    if(m_firstLinkPage->isFull()) { m_firstLinkPage = new LinkPage(m_firstLinkPage); m_linkPageCount++; }
-    return m_firstLinkPage->fetchLink(i, j, next);
+    Link *l = m_linkPool.fetch();
+    l->m_i = i; l->m_j = j; l->m_next = next;
+    return l;
   }
 
   void            clear();

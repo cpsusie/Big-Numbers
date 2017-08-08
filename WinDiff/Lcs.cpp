@@ -3,7 +3,7 @@
 #include "Lcs.h"
 
 LineArray::LineArray() : m_ownStringPool(true) {
-  m_stringPool = new StringPool();
+  m_stringPool = new StringPool(); TRACE_NEW(m_stringPool);
 }
 
 LineArray::LineArray(StringPool &stringPool) : m_ownStringPool(false), m_stringPool(&stringPool) {
@@ -11,7 +11,7 @@ LineArray::LineArray(StringPool &stringPool) : m_ownStringPool(false), m_stringP
 
 LineArray::~LineArray() {
   if(m_ownStringPool) {
-    delete m_stringPool;
+    SAFEDELETE(m_stringPool);
   }
 }
 
@@ -60,8 +60,6 @@ Lcs::Lcs(LcsComparator &cmp, CompareJob *job)
 {
   m_tresh         = NULL;
   m_link          = NULL;
-  m_firstLinkPage = new LinkPage(NULL);
-  m_linkPageCount = 1;
 }
 
 Lcs::~Lcs() {
@@ -69,15 +67,11 @@ Lcs::~Lcs() {
 }
 
 void Lcs::clear() {
-  delete[] m_tresh;
-  delete[] m_link;
+  SAFEDELETEARRAY(m_tresh);
+  SAFEDELETEARRAY(m_link );
   m_tresh     = NULL;
   m_link      = NULL;
-  for(LinkPage *page = m_firstLinkPage, *nextPage = NULL; page; page = nextPage) {
-    nextPage = page->m_next;
-    delete page;
-  }
-  m_firstLinkPage = NULL;
+  m_linkPool.releaseAll();
 }
 
 void Lcs::stopAndThrow() {

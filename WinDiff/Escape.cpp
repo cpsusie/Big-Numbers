@@ -132,7 +132,7 @@ static _TUCHAR escape(const _TUCHAR *&s) {
 }
 
 String convertEscape(const String &s) {
-  TCHAR *tmp = new TCHAR[s.length() + 1];
+  TCHAR *tmp = new TCHAR[s.length() + 1]; TRACE_NEW(tmp);
   _TUCHAR *d = (_TUCHAR*)tmp;
   for(const _TUCHAR *t = (_TUCHAR*)s.cstr();*t;) {
     if(*t == _T('\\')) {
@@ -143,7 +143,7 @@ String convertEscape(const String &s) {
   }
   *d = 0;
   String result(tmp);
-  delete[] tmp;
+  SAFEDELETEARRAY(tmp);
   return result;
 }
 

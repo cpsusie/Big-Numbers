@@ -205,12 +205,12 @@ static void tabExpand(String &s, int tabSize, bool viewWhiteSpace) {
     } else if(s.find('\t') < 0) {
       strReplace(s.cstr(), _T(' '), VISIBLE_SPACE);
     } else {
-      TCHAR *buf = new TCHAR[s.length() + 1];
+      TCHAR *buf = new TCHAR[s.length() + 1]; TRACE_NEW(buf);
       _tcscpy(buf, s.cstr());
       strRemove(buf,_T('\t'));
       strReplace(buf, _T(' '), VISIBLE_SPACE);
       s = buf;
-      delete[] buf;
+      SAFEDELETEARRAY(buf);
     }
   } else { // tabSize > 0
     if(s.find(_T('\t')) < 0) {
@@ -218,7 +218,7 @@ static void tabExpand(String &s, int tabSize, bool viewWhiteSpace) {
         strReplace(s.cstr(), _T(' '), VISIBLE_SPACE);
       }
     } else {
-      TCHAR *buf = new TCHAR[s.length() * tabSize + 1];
+      TCHAR *buf = new TCHAR[s.length() * tabSize + 1]; TRACE_NEW(buf);
       if(viewWhiteSpace) {
         strReplace(s.cstr(), _T(' '), VISIBLE_SPACE);
         strTabExpand(buf, s.cstr(), tabSize, VISIBLE_TAB);
@@ -226,7 +226,7 @@ static void tabExpand(String &s, int tabSize, bool viewWhiteSpace) {
         strTabExpand(buf, s.cstr(), tabSize);
       }
       s = buf;
-      delete[] buf;
+      SAFEDELETEARRAY(buf);
     }
   }
 }

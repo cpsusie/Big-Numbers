@@ -15,9 +15,8 @@ LcsBitSet::~LcsBitSet() {
 
 void LcsBitSet::clear() {
   Lcs::clear();
-  delete[] m_X;
-  delete[] m_Y;
-  m_X = m_Y = NULL;
+  SAFEDELETEARRAY(m_X);
+  SAFEDELETEARRAY(m_Y);
 }
 
 void LcsBitSet::init(const LineArray &a, const LineArray &b) {
@@ -50,8 +49,8 @@ void LcsBitSet::init1(const LineArray &a, const LineArray &b) { // assume b.size
   A.sort(1, A.size()-1, cmp);
   B.sort(1, B.size()-1, cmp);
 
-  m_X = new UINT[m_m+1];
-  m_Y = new UINT[m_n+1];
+  m_X = new UINT[m_m+1]; TRACE_NEW(m_X);
+  m_Y = new UINT[m_n+1]; TRACE_NEW(m_Y);
   LcsElement *lastA = NULL;
   LcsElement *lastB = NULL;
 
@@ -102,8 +101,8 @@ void LcsBitSet::init1(const LineArray &a, const LineArray &b) { // assume b.size
     }
   }
 
-  m_tresh = new UINT[m_m+1];
-  m_link  = new Link*[m_m+1];
+  m_tresh = new UINT[m_m+1];  TRACE_NEW(m_tresh);
+  m_link  = new Link*[m_m+1]; TRACE_NEW(m_link);
 }
 
 class BitSetWithPlus : public BitSet {
