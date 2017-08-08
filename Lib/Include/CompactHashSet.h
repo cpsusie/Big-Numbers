@@ -5,7 +5,7 @@
 #pragma pack(push,1)
 
 #include "CompactKeyType.h"
-#include "HeapElementPool.h"
+#include "HeapObjectPool.h"
 
 template <class K> class SetEntry {
 public:
@@ -24,7 +24,7 @@ private:
   size_t                                      m_size;
   size_t                                      m_capacity;
   LinkElement<SetEntry<K> >                 **m_buffer;
-  HeapElementPool<LinkElement<SetEntry<K> > > m_elementPool;
+  HeapObjectPool<LinkElement<SetEntry<K> > >  m_elementPool;
   UINT64                                      m_updateCount;
 
   LinkElement<SetEntry<K> > **allocateBuffer(size_t capacity) const {
@@ -133,7 +133,7 @@ public:
       setCapacity(m_size*5+5);
       index = key.hashCode() % m_capacity; // no need to search key again. if m_capacity was 0, the set is empty
     }
-    LinkElement<SetEntry<K> > *p = m_elementPool.fetchElement();
+    LinkElement<SetEntry<K> > *p = m_elementPool.fetch();
     p->m_e.m_key                 = key;
     p->m_next                    = m_buffer[index];
     m_buffer[index]              = p;
@@ -152,7 +152,7 @@ public:
           } else {
             m_buffer[index] = p->m_next;
           }
-          m_elementPool.releaseElement(p);
+          m_elementPool.release(p);
           m_size--;
           m_updateCount++;
           return true;

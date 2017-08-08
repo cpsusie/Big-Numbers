@@ -1041,7 +1041,7 @@
     <ClInclude Include="..\..\Include\SourcePosition.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\HeapElementPool.h">
+    <ClInclude Include="..\..\Include\HeapObjectPool.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

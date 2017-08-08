@@ -3,7 +3,7 @@
 #include "MyString.h"
 #include "Collection.h"
 #include "Comparator.h"
-#include "HeapElementPool.h"
+#include "HeapObjectPool.h"
 #include "ObjectManager.h"
 
 class ListNode {
@@ -16,7 +16,7 @@ class ListImpl : public AbstractCollection {
 private:
   DECLARECLASSNAME;
   AbstractObjectManager    *m_objectManager;
-  HeapElementPool<ListNode> m_nodePool;
+  HeapObjectPool<ListNode>  m_nodePool;
   ListNode                 *m_first, *m_last;
   size_t                    m_size;
   size_t                    m_updateCount;

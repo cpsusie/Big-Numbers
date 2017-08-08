@@ -22,7 +22,7 @@ private:
   size_t                                        m_size;
   size_t                                        m_capacity;
   LinkElement<MapEntry<K,V> >                 **m_buffer;
-  HeapElementPool<LinkElement<MapEntry<K,V> > > m_elementPool;
+  HeapObjectPool<LinkElement<MapEntry<K,V> > >  m_entryPool;
   UINT64                                        m_updateCount;
 
   LinkElement<MapEntry<K,V> > **allocateBuffer(size_t capacity) const {
@@ -114,7 +114,7 @@ public:
   }
 
   inline int getPageCount() const {
-    return m_elementPool.getPageCount();
+    return m_entryPool.getPageCount();
   }
 
   bool put(const K &key, const V &value) {
@@ -131,7 +131,7 @@ public:
       setCapacity(m_size*5+5);
       index = key.hashCode() % m_capacity; // no need to search key again. if m_capacity was 0, the set is empty
     }
-    LinkElement<MapEntry<K,V> > *p = m_elementPool.fetchElement();
+    LinkElement<MapEntry<K,V> > *p = m_entryPool.fetch();
     p->m_e.m_key                   = key;
     p->m_e.m_value                 = value;
     p->m_next                      = m_buffer[index];
@@ -151,7 +151,7 @@ public:
           } else {
             m_buffer[index] = p->m_next;
           }
-          m_elementPool.releaseElement(p);
+          m_entryPool.release(p);
           m_size--;
           m_updateCount++;
           return true;
@@ -174,7 +174,7 @@ public:
   }
 
   void clear() {
-    m_elementPool.releaseAll();
+    m_entryPool.releaseAll();
     if(m_size) {
       m_size = 0;
       m_updateCount++;

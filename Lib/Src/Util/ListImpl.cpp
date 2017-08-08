@@ -44,7 +44,7 @@ ListImpl::~ListImpl() {
 }
 
 ListNode *ListImpl::createNode(const void *e) {
-  ListNode *result = m_nodePool.fetchElement();
+  ListNode *result = m_nodePool.fetch();
   result->m_data   = m_objectManager->cloneObject(e);
   result->m_next   = result->m_prev = NULL;
   return result;
@@ -52,7 +52,7 @@ ListNode *ListImpl::createNode(const void *e) {
 
 void ListImpl::deleteNode(ListNode *n) {
   m_objectManager->deleteObject(n->m_data);
-  m_nodePool.releaseElement(n);
+  m_nodePool.release(n);
 }
 
 const ListNode *ListImpl::findNode(size_t index) const {
