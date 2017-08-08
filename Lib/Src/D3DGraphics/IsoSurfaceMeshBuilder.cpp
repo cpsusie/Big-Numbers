@@ -18,10 +18,15 @@ private:
   PolygonizerStatistics                 m_statistics;
   const CompactArray<IsoSurfaceVertex> *m_vertexArray;
   CompactArray<Point3D>                 m_debugPoints;
-
+  InterruptableRunnable                *m_interruptable;
+  void checkUserAction() const {
+    if(m_interruptable) {
+      m_interruptable->checkInterruptAndSuspendFlags();
+    }
+  }
 public:
   IsoSurface(const IsoSurfaceParameters &param);
-  void   createData();
+  void   createData(InterruptableRunnable *ir);
   double evaluate(const Point3D &p);
   void   receiveFace(const Face3 &face);
   void   receiveDebugVertices(int id,...);
@@ -44,6 +49,7 @@ public:
 IsoSurface::IsoSurface(const IsoSurfaceParameters &param)
 : m_param(param)
 , m_exprWrapper(param.m_expr,param.m_machineCode)
+, m_interruptable(NULL)
 {
   m_xp = m_exprWrapper.getVariableByName(_T("x"));
   m_yp = m_exprWrapper.getVariableByName(_T("y"));
@@ -51,29 +57,35 @@ IsoSurface::IsoSurface(const IsoSurfaceParameters &param)
   m_tp = m_exprWrapper.getVariableByName(_T("t"));
 }
 
-void IsoSurface::createData() {
-  Point3D origin(0,0,0);
+void IsoSurface::createData(InterruptableRunnable *ir) {
+  m_interruptable   = ir;
+  try {
+    Point3D origin(0,0,0);
 
-  m_reverseSign     = false; // dont delete this. Used in evaluate !!
-  m_reverseSign     = m_param.m_originOutside == (evaluate(origin) < 0);
-  m_lastVertexCount = 0;
-  m_mb.clear(30000);
+    m_reverseSign     = false; // dont delete this. Used in evaluate !!
+    m_reverseSign     = m_param.m_originOutside == (evaluate(origin) < 0);
+    m_lastVertexCount = 0;
+    m_mb.clear(30000);
 
-  IsoSurfacePolygonizer polygonizer(*this);
-  m_vertexArray = &polygonizer.getVertexArray();
+    IsoSurfacePolygonizer polygonizer(*this);
+    m_vertexArray = &polygonizer.getVertexArray();
 
-  polygonizer.polygonize(Point3D(0,0,0)
-                        ,m_param.m_cellSize
-                        ,m_param.m_boundingBox
-                        ,m_param.m_tetrahedral);
-  if(m_mb.isEmpty()) {
-    throwException(_T("No polygons generated. Cannot create object"));
+    polygonizer.polygonize(Point3D(0,0,0)
+                          ,m_param.m_cellSize
+                          ,m_param.m_boundingBox
+                          ,m_param.m_tetrahedral);
+    if(m_mb.isEmpty()) {
+      throwException(_T("No polygons generated. Cannot create object"));
+    }
+
+    m_statistics = polygonizer.getStatistics();
+    m_mb.validate();
+  //  m_mb.dump();
+  //  m_mb.optimize();
+  } catch (...) {
+    m_interruptable = NULL;
+    throw;
   }
-
-  m_statistics = polygonizer.getStatistics();
-  m_mb.validate();
-//  m_mb.dump();
-//  m_mb.optimize();
 }
 
 String IsoSurface::getInfoMessage() const {
@@ -99,6 +111,7 @@ void IsoSurface::receiveFace(const Face3 &face) {
       m_mb.addNormal(sv->m_normal  );
     }
     m_lastVertexCount = size;
+    checkUserAction();
   }
   Face &f = m_mb.addFace();
   f.addVertexNormalIndex(face.m_i1, face.m_i1);
@@ -116,16 +129,21 @@ void IsoSurface::receiveDebugVertices(int id,...) {
   va_end(argptr);
 }
 
-LPD3DXMESH createMesh(AbstractMeshFactory &amf, IsoSurface &surface) {
-  surface.createData();
-  return surface.getMeshbuilder().createMesh(amf, surface.getParam().m_doubleSided);
+LPD3DXMESH createMesh(AbstractMeshFactory &amf, IsoSurface &surface, InterruptableRunnable *ir) {
+  try {
+    surface.createData(ir);
+    return surface.getMeshbuilder().createMesh(amf, surface.getParam().m_doubleSided);
+  } catch (...) {
+    int fisk = 1;
+    throw;
+  }
 }
 
 LPD3DXMESH createMesh(AbstractMeshFactory &amf, const IsoSurfaceParameters &param) {
   if(param.m_includeTime) {
     throwInvalidArgumentException(__TFUNCTION__, _T("param.includeTime=true"));
   }
-  return createMesh(amf, IsoSurface(param));
+  return createMesh(amf, IsoSurface(param), NULL);
 }
 
 class VariableIsoSurfaceMeshCreator : public AbstractVariableMeshCreator {
@@ -138,12 +156,17 @@ public:
   , m_surface(param)
   {
   }
-  LPD3DXMESH createMesh(double time) const;
+  LPD3DXMESH createMesh(double time, InterruptableRunnable *ir) const;
 };
 
-LPD3DXMESH VariableIsoSurfaceMeshCreator::createMesh(double time) const {
-  m_surface.setT(time);
-  return ::createMesh(m_amf, m_surface);
+LPD3DXMESH VariableIsoSurfaceMeshCreator::createMesh(double time, InterruptableRunnable *ir) const {
+  try {
+    m_surface.setT(time);
+    return ::createMesh(m_amf, m_surface, ir);
+  } catch (...) {
+    int fisk = 1;
+    throw;
+  }
 }
 
 class IsoSurfaceMeshArrayJobParameter : public AbstractMeshArrayJobParameter {

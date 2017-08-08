@@ -118,9 +118,12 @@ protected:
                       , firstLetterToUpperCase(m_paramTypeName).cstr()
                       , param.getDisplayName().cstr()));
     m_name = param.getName().cstr();
+    UpdateData(FALSE);
   }
-  virtual void winToParam(T &param) const {
+  virtual bool winToParam(T &param) {
+    if(!updateAndValidate()) return false;
     param.setName((LPCTSTR)m_name);
+    return true;
   };
 
   SaveLoadExprDialog(int resId, CWnd *pParent, const T &param, const String &paramTypeName, const String &extension)
@@ -136,7 +139,6 @@ protected:
     __super::OnInitDialog();
     m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(m_resId));
     paramToWin(m_param);
-    UpdateData(FALSE);
     return TRUE;
   }
 
@@ -148,54 +150,65 @@ protected:
   }
 
   void OnOK() {
-    if(!updateAndValidate()) return;
-    winToParam(m_param);
-    __super::OnOK();
+    try {
+      if(!winToParam(m_param)) return;
+      __super::OnOK();
+    } catch(Exception e) {
+      showException(e);
+    }
   }
 
   void OnFileNew() {
-    T param;
-    paramToWin(param);
-    UpdateData(false);
+    try {
+      T param;
+      paramToWin(param);
+    } catch(Exception e) {
+      showException(e);
+    }
   }
 
   void OnFileOpen() {
-    CFileDialog dlg(TRUE);
-    const String dlgTitle  = format(_T("Open %s"), m_paramTypeName.cstr());
-    const String dlgFilter = getFileDialogFilter();
-    dlg.m_ofn.lpstrFilter = dlgFilter.cstr();
-    dlg.m_ofn.lpstrTitle  = dlgTitle.cstr();
-    if(!nameEntered(dlg)) {
-      return;
-    }
     try {
+      CFileDialog dlg(TRUE);
+      const String dlgTitle  = format(_T("Open %s"), m_paramTypeName.cstr());
+      const String dlgFilter = getFileDialogFilter();
+      dlg.m_ofn.lpstrFilter = dlgFilter.cstr();
+      dlg.m_ofn.lpstrTitle  = dlgTitle.cstr();
+      if(!nameEntered(dlg)) {
+        return;
+      }
       T param;
       const String fileName = dlg.m_ofn.lpstrFile;
       param.load(fileName);
       paramToWin(param);
       addToRecent(fileName);
-      UpdateData(false);
     } catch(Exception e) {
       showException(e);
     }
   }
 
   void OnFileSave() {
-    if(!updateAndValidate()) return;
-    T param;
-    winToParam(param);
-    if(param.hasDefaultName()) {
-      saveAs(param);
-    } else {
-      save(param.getName(), param);
+    try {
+      T param;
+      if(!winToParam(param)) return;
+      if(param.hasDefaultName()) {
+        saveAs(param);
+      } else {
+        save(param.getName(), param);
+      }
+    } catch (Exception e) {
+      showException(e);
     }
   }
 
   void OnFileSaveAs() {
-    if(!updateAndValidate()) return;
-    T param;
-    winToParam(param);
-    saveAs(param);
+    try {
+      T param;
+      if(!winToParam(param)) return;
+      saveAs(param);
+    } catch (Exception e) {
+      showException(e);
+    }
   }
 
   void saveAs(T &param) {
@@ -216,7 +229,6 @@ protected:
     try {
       param.save(fileName);
       paramToWin(param);
-      UpdateData(FALSE);
       addToRecent(fileName);
     } catch(Exception e) {
       showException(e);

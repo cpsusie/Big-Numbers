@@ -1,11 +1,12 @@
 #pragma once
 
 #include <NumberInterval.h>
+#include <InterruptableRunnable.h>
 #include <D3DGraphics/MeshArray.h>
 
 class AbstractVariableMeshCreator {
 public:
-  virtual LPD3DXMESH createMesh(double time) const = 0;
+  virtual LPD3DXMESH createMesh(double time, InterruptableRunnable *ir = NULL) const = 0;
   virtual ~AbstractVariableMeshCreator() {
   }
 };

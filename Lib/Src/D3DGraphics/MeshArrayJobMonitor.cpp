@@ -202,7 +202,7 @@ UINT MeshBuilderWorker::run() {
       break;
     }
     try {
-      jm.addResult(t, m_meshCreator->createMesh(t));
+      jm.addResult(t, m_meshCreator->createMesh(t, &m_arrayCreator));
     } catch(Exception e) {
       jm.addError(e.what());
     } catch(...) {

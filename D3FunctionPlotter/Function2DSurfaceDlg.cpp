@@ -77,11 +77,6 @@ BOOL CFunction2DSurfaceDlg::OnInitDialog() {
   return FALSE;  // return TRUE  unless you set the focus to a control
 }
 
-void CFunction2DSurfaceDlg::OnFileOpen() {
-  __super::OnFileOpen();
-  enableTimeFields();
-}
-
 #define MAXPOINTCOUNT 200
 #define MAXFRAMECOUNT 300
 
@@ -169,22 +164,23 @@ void CFunction2DSurfaceDlg::paramToWin(const Function2DSurfaceParameters &param)
   m_machineCode   = param.m_machineCode ? TRUE : FALSE;
   m_includeTime   = param.m_includeTime ? TRUE : FALSE;
   m_doubleSided   = param.m_doubleSided ? TRUE : FALSE;
-  enableTimeFields();
   __super::paramToWin(param);
+  enableTimeFields();
 }
 
-void CFunction2DSurfaceDlg::winToParam(Function2DSurfaceParameters &param) const {
+bool CFunction2DSurfaceDlg::winToParam(Function2DSurfaceParameters &param) {
+  if(!__super::winToParam(param)) return false;
   param.m_expr        = m_expr;
-  param.m_xInterval.setFrom(   m_xfrom);
-  param.m_xInterval.setTo(     m_xto);
-  param.m_yInterval.setFrom(   m_yfrom);
-  param.m_yInterval.setTo(     m_yto);
+  param.m_xInterval.setFrom(   m_xfrom   );
+  param.m_xInterval.setTo(     m_xto     );
+  param.m_yInterval.setFrom(   m_yfrom   );
+  param.m_yInterval.setTo(     m_yto     );
   param.m_timeInterval.setFrom(m_timefrom);
-  param.m_timeInterval.setTo(  m_timeto);
+  param.m_timeInterval.setTo(  m_timeto  );
   param.m_pointCount  = m_pointCount;
   param.m_frameCount  = m_frameCount;
-  param.m_machineCode = m_machineCode?true:false;
-  param.m_includeTime = m_includeTime?true:false;
-  param.m_doubleSided = m_doubleSided?true:false;
-  __super::winToParam(param);
+  param.m_machineCode = m_machineCode ? true : false;
+  param.m_includeTime = m_includeTime ? true : false;
+  param.m_doubleSided = m_doubleSided ? true : false;
+  return true;
 }

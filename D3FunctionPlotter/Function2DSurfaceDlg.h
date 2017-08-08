@@ -20,7 +20,7 @@ private:
 
   bool validate();
   void paramToWin(const Function2DSurfaceParameters &param);
-  void winToParam(      Function2DSurfaceParameters &param) const;
+  bool winToParam(      Function2DSurfaceParameters &param);
   void enableTimeFields();
 public:
   CFunction2DSurfaceDlg(const Function2DSurfaceParameters &param, CWnd *pParent = NULL);
@@ -30,7 +30,6 @@ public:
 protected:
     virtual void DoDataExchange(CDataExchange *pDX);
     afx_msg BOOL OnInitDialog();
-    afx_msg void OnFileOpen();
     afx_msg void OnEditFindMatchingParentesis();
     afx_msg void OnGotoExpr();
     afx_msg void OnGotoXInterval();

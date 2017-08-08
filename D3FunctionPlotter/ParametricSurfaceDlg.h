@@ -24,7 +24,7 @@ private:
 
   bool validate();
   void paramToWin(const ParametricSurfaceParameters &param);
-  void winToParam(      ParametricSurfaceParameters &param) const;
+  bool winToParam(      ParametricSurfaceParameters &param);
 
   void enableTimeFields();
 
@@ -47,7 +47,6 @@ public:
 protected:
     virtual void DoDataExchange(CDataExchange *pDX);
     afx_msg BOOL OnInitDialog();
-    afx_msg void OnFileOpen();
     afx_msg void OnEditFindMatchingParentesis();
     afx_msg void OnGotoCommon();
     afx_msg void OnGotoExprX();

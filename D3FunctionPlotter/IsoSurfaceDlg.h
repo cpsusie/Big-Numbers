@@ -26,7 +26,7 @@ private:
 
   bool validate();
   void paramToWin(const IsoSurfaceParameters &param);
-  void winToParam(      IsoSurfaceParameters &param) const;
+  bool winToParam(      IsoSurfaceParameters &param);
   void enableCheckBox();
   void enableTimeFields();
   inline void setXInterval(const DoubleInterval &interval) {
@@ -61,7 +61,6 @@ public:
 protected:
     virtual void DoDataExchange(CDataExchange *pDX);
     afx_msg BOOL OnInitDialog();
-    afx_msg void OnFileOpen();
     afx_msg void OnEditFindMatchingParentesis();
     afx_msg void OnGotoExpr();
     afx_msg void OnGotoCellSize();

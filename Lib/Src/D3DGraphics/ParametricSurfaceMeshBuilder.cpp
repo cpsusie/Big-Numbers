@@ -110,7 +110,7 @@ private:
   mutable ExprParametricSurface      m_ps;
 public:
   VariableParametricSurfaceMeshCreator(AbstractMeshFactory &amf, const ParametricSurfaceParameters &param);
-  LPD3DXMESH createMesh(double time) const;
+  LPD3DXMESH createMesh(double time, InterruptableRunnable *ir) const;
 };
 
 VariableParametricSurfaceMeshCreator::VariableParametricSurfaceMeshCreator(AbstractMeshFactory &amf, const ParametricSurfaceParameters &param)
@@ -120,7 +120,7 @@ VariableParametricSurfaceMeshCreator::VariableParametricSurfaceMeshCreator(Abstr
 {
 }
 
-LPD3DXMESH VariableParametricSurfaceMeshCreator::createMesh(double time) const {
+LPD3DXMESH VariableParametricSurfaceMeshCreator::createMesh(double time, InterruptableRunnable *ir) const {
   m_ps.setTime(time);
   return createMeshFromParametricSurface(m_amf
                                         ,m_ps

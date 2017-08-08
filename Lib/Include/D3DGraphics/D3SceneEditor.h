@@ -223,7 +223,7 @@ public:
     // Return NULL, if type not {SOTYPE_VISUALOBJECT, SOTYPE_ANIMATEDOBJECT, }
     D3SceneObject     *getCurrentVisualObject();
     D3AnimatedSurface *getCurrentAnimatedobject() const;
-    inline const D3DXVECTOR3 &getFocurPoint() const {
+    inline const D3DXVECTOR3 &getFocusPoint() const {
       return m_focusPoint;
     }
     inline const D3DXVECTOR3 &getPickedPoint() const {

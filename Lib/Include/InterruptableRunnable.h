@@ -15,20 +15,23 @@ private:
   }
 
 protected:
-  // the next 3 functions should only be called by this (operate on currentthread)
-  void die(const TCHAR *msg = NULL);  // throw Exception. If msg = NULL, exception-text is "Interrupted"
+  // The next 3 functions should only be called by this (operate on currentthread)
+  // Throw Exception. If msg == NULL, exception-text is "Interrupted"
+  void die(const TCHAR *msg = NULL);
   void suspend();
   inline void setTerminated() {
     m_flags |= 4;
   }
   virtual void handleInterruptOrSuspend();
-  void clearAllFlags() { // if job has to be started again, use this to reset
+  // if job has to be started again, use this to reset
+  void clearAllFlags() {
     m_flags = 0;
   }
 public:
   inline InterruptableRunnable() : m_thr(INVALID_HANDLE_VALUE), m_flags(0) {
   }
-  void setInterrupted(); // mark this as interrupted. If isSuspended(), resume will be called
+  // Mark this as interrupted. If isSuspended(), resume will be called
+  void setInterrupted();
 
   inline void setSuspended() {
     m_flags |= 1;

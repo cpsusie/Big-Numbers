@@ -103,11 +103,6 @@ BOOL CParametricSurfaceDlg::OnInitDialog() {
   return FALSE;  // return TRUE  unless you set the focus to a control
 }
 
-void CParametricSurfaceDlg::OnFileOpen() {
-  __super::OnFileOpen();
-  enableTimeFields();
-}
-
 #define MAXPOINTCOUNT 200
 #define MAXFRAMECOUNT 300
 
@@ -219,13 +214,12 @@ void CParametricSurfaceDlg::paramToWin(const ParametricSurfaceParameters &param)
   m_machineCode   = param.m_machineCode ? TRUE : FALSE;
   m_includeTime   = param.m_includeTime ? TRUE : FALSE;
   m_doubleSided   = param.m_doubleSided ? TRUE : FALSE;
-
-  UpdateData(false);
-  enableTimeFields();
   __super::paramToWin(param);
+  enableTimeFields();
 }
 
-void CParametricSurfaceDlg::winToParam(ParametricSurfaceParameters &param) const {
+bool CParametricSurfaceDlg::winToParam(ParametricSurfaceParameters &param) {
+  if(!__super::winToParam(param)) return false;
   param.m_commonText  = m_commonText;
   param.m_exprX       = m_exprX;
   param.m_exprY       = m_exprY;
@@ -242,5 +236,5 @@ void CParametricSurfaceDlg::winToParam(ParametricSurfaceParameters &param) const
   param.m_machineCode = m_machineCode ? true : false;
   param.m_includeTime = m_includeTime ? true : false;
   param.m_doubleSided = m_doubleSided ? true : false;
-  __super::winToParam(param);
+  return true;
 }

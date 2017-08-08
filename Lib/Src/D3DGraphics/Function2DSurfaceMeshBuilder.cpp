@@ -92,7 +92,7 @@ private:
   mutable ExpressionWrapper          m_expr;
 public:
   VariableFunction2DMeshCreator(AbstractMeshFactory &amf, const Function2DSurfaceParameters &param);
-  LPD3DXMESH createMesh(double time) const;
+  LPD3DXMESH createMesh(double time, InterruptableRunnable *ir) const;
 };
 
 VariableFunction2DMeshCreator::VariableFunction2DMeshCreator(AbstractMeshFactory &amf, const Function2DSurfaceParameters &param)
@@ -105,7 +105,7 @@ VariableFunction2DMeshCreator::VariableFunction2DMeshCreator(AbstractMeshFactory
   }
 }
 
-LPD3DXMESH VariableFunction2DMeshCreator::createMesh(double time) const {
+LPD3DXMESH VariableFunction2DMeshCreator::createMesh(double time, InterruptableRunnable *ir) const {
   m_expr.setT(time);
   return createMeshFrom2DFunction(m_amf
                                  ,m_expr

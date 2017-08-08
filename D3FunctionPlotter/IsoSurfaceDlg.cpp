@@ -112,11 +112,6 @@ BOOL CIsoSurfaceDlg::OnInitDialog() {
   return FALSE;
 }
 
-void CIsoSurfaceDlg::OnFileOpen() {
-  __super::OnFileOpen();
-  enableTimeFields();
-}
-
 #define MAXFRAMECOUNT 300
 
 bool CIsoSurfaceDlg::validate() {
@@ -212,13 +207,13 @@ void CIsoSurfaceDlg::paramToWin(const IsoSurfaceParameters &param) {
   m_includeTime      = param.m_includeTime      ? TRUE : FALSE;
   m_frameCount       = param.m_frameCount;
   setTimeInterval(param.getTimeInterval());
-
+  __super::paramToWin(param);
   enableCheckBox();
   enableTimeFields();
-  __super::paramToWin(param);
 }
 
-void CIsoSurfaceDlg::winToParam(IsoSurfaceParameters &param) const {
+bool CIsoSurfaceDlg::winToParam(IsoSurfaceParameters &param) {
+  if(!__super::winToParam(param)) return false;
   param.m_expr             = m_expr;
   param.m_cellSize         = m_cellSize;
   param.m_boundingBox.setXInterval(getXInterval());
@@ -232,5 +227,5 @@ void CIsoSurfaceDlg::winToParam(IsoSurfaceParameters &param) const {
   param.m_includeTime      = m_includeTime      ? true : false;
   param.m_frameCount       = m_frameCount;
   param.m_timeInterval     = getTimeInterval();
-  __super::winToParam(param);
+  return true;
 }
