@@ -19,7 +19,7 @@ const Point2DArray &PointGraph::getProcessedData() const {
     return m_processedData;
   }
 
-  if(getParam().m_rollAvgSize == 0) {
+  if(getParam().m_rollAvgSize <= 1) {
     m_processedData = m_pointArray;
   } else {
     m_processedData.clear();
