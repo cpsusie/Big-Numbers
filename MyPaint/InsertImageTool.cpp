@@ -12,8 +12,8 @@ InsertImageTool::InsertImageTool(PixRectContainer *container, PixRect *image) : 
 }
 
 InsertImageTool::~InsertImageTool() {
-  delete m_old;
-  delete m_image;
+  SAFEDELETE(m_old);
+  SAFEDELETE(m_image);
 }
 
 void InsertImageTool::paintImage() {

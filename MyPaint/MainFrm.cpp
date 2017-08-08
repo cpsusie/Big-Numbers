@@ -92,6 +92,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
     ON_MESSAGE(ID_MSG_POPTOOL                     , OnMsgPopTool                      )
     ON_MESSAGE(ID_MSG_SHOWDOCPOINT                , OnMsgShowDocPoint                 )
     ON_MESSAGE(ID_MSG_SHOWRESIZESIZE              , OnMsgShowResizeSize               )
+  ON_WM_DESTROY()
 END_MESSAGE_MAP()
 
 static UINT indicators[] = {
@@ -207,6 +208,13 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
   theApp.m_device.attach(*this);
   m_created = true;
   return 0;
+}
+
+
+void CMainFrame::OnDestroy() {
+  clearToolStack();
+  __super::OnDestroy();
+
 }
 
 void CMainFrame::OnSize(UINT nType, int cx, int cy) {
@@ -325,8 +333,7 @@ void CMainFrame::OnEditCopy() {
 void CMainFrame::OnEditPaste() {
   HBITMAP bitmap = getClipboardBitmap();
   if(bitmap != NULL) {
-    PixRect *pr = new PixRect(theApp.m_device, bitmap);
-    TRACE_NEW(pr);
+    PixRect *pr = new PixRect(theApp.m_device, bitmap); TRACE_NEW(pr);
     pushTool(new InsertImageTool(getView(),pr));
   }
 }
@@ -581,14 +588,21 @@ void CMainFrame::setCurrentDrawTool(DrawTool *newDrawTool) {
 
 void CMainFrame::popTool() {
   DrawTool *tool = m_toolStack.pop();
-  delete tool;
+  SAFEDELETE(tool);
 }
 
 void CMainFrame::pushTool(DrawTool *tool) {
   if(hasDrawTool() && getCurrentDrawTool()->getType() == INSERTIMAGETOOL && tool->getType() == INSERTIMAGETOOL) {
     popTool();
   }
+  TRACE_NEW(tool);
   m_toolStack.push(tool);
+}
+
+void CMainFrame::clearToolStack() {
+  while (hasDrawTool()) {
+    popTool();
+  }
 }
 
 static int toolItems[] = { ID_TOOLS_PEN          , ID_TOOLS_LINE

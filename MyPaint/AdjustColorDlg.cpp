@@ -17,7 +17,7 @@ CAdjustColorDlg::CAdjustColorDlg(PixRectContainer &container, CWnd *pParent)
 }
 
 CAdjustColorDlg::~CAdjustColorDlg() {
-  delete m_origImage;
+  SAFEDELETE(m_origImage);
 }
 
 void CAdjustColorDlg::DoDataExchange(CDataExchange *pDX) {
@@ -64,7 +64,7 @@ void CAdjustColorDlg::OnColorChangedColorMapCtrl() {
   PixRect *pr = m_origImage->clone(true);
   pr->apply(ChangeLSHOperator(pr,deltaHue,deltaSat,deltaLum));
   m_container.getImage()->rop(ORIGIN,m_size,SRCCOPY,pr,ORIGIN);
-  delete pr;
+  SAFEDELETE(pr);
   m_container.repaint();
   m_lastColor = color;
 }

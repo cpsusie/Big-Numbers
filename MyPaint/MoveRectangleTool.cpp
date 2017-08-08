@@ -15,11 +15,8 @@ MoveRectangleTool::~MoveRectangleTool() {
 }
 
 void MoveRectangleTool::releaseCopy() {
-  if(m_copy != NULL) {
-    delete m_copy;
-    delete m_old;
-  }
-  m_copy = m_old = NULL;
+  SAFEDELETE(m_copy);
+  SAFEDELETE(m_old );
 }
 
 void MoveRectangleTool::invertDragRect() {

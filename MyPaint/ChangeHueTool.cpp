@@ -113,7 +113,7 @@ void ChangeHueTool::OnLButtonUp(UINT nFlags, const CPoint &point) {
         getImage()->rop(rect.TopLeft(),rect.Size(),SRCCOPY, copy, ORIGIN);
         repaint();
       }
-      delete copy;
+      SAFEDELETE(copy);
     }
   } else if(m_dragRectVisible) {
     invertDragRect(); // remove dragrect

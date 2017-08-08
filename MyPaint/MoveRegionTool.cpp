@@ -13,12 +13,9 @@ MoveRegionTool::~MoveRegionTool() {
 }
 
 void MoveRegionTool::releaseCopy() {
-  if(m_copy != NULL) {
-    delete m_copy;
-    delete m_mask;
-    delete m_old;
-  }
-  m_copy = m_mask = m_old = NULL;
+  SAFEDELETE(m_copy);
+  SAFEDELETE(m_mask);
+  SAFEDELETE(m_old );
   m_polygon.clear();
 }
 

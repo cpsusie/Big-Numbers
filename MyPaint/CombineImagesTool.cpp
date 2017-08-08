@@ -14,11 +14,8 @@ CombineImagesTool::~CombineImagesTool() {
 }
 
 void CombineImagesTool::releaseCopy() {
-  if(m_copy != NULL) {
-    delete m_copy;
-    delete m_old;
-  }
-  m_copy = m_old = NULL;
+  SAFEDELETE(m_copy);
+  SAFEDELETE(m_old );
 }
 
 void CombineImagesTool::invertDragRect() {
@@ -107,7 +104,7 @@ void CombineImagesTool::makeFinalImage() {
   m_old->releasePixelAccessor();
   m->releasePixelAccessor();
 
-  delete m;
+  SAFEDELETE(m);
   getImage()->rop(m_rect.TopLeft(),m_rect.Size(),SRCCOPY,result,ORIGIN);
-  delete result;
+  SAFEDELETE(result);
 }

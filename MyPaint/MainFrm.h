@@ -61,6 +61,7 @@ public:
   void showPoint(const CPoint &p);
   void pushTool(DrawTool *tool);
   void popTool();
+  void clearToolStack();
 
   DrawTool *getCurrentDrawTool() {
     return m_toolStack.top();
@@ -166,4 +167,6 @@ protected:
     afx_msg LRESULT OnMsgShowDocPoint(WPARAM wp, LPARAM lp);
     afx_msg LRESULT OnMsgShowResizeSize(WPARAM wp, LPARAM lp);
     DECLARE_MESSAGE_MAP()
+public:
+  afx_msg void OnDestroy();
 };
