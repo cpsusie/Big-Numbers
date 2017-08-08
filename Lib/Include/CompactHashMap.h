@@ -19,14 +19,14 @@ public:
 
 template <class K, class V> class CompactHashMap {
 private:
-  size_t                                        m_size;
-  size_t                                        m_capacity;
-  LinkElement<MapEntry<K,V> >                 **m_buffer;
-  HeapObjectPool<LinkElement<MapEntry<K,V> > >  m_entryPool;
-  UINT64                                        m_updateCount;
+  size_t                                       m_size;
+  size_t                                       m_capacity;
+  LinkObject<MapEntry<K,V> >                 **m_buffer;
+  HeapObjectPool<LinkObject<MapEntry<K,V> > >  m_entryPool;
+  UINT64                                       m_updateCount;
 
-  LinkElement<MapEntry<K,V> > **allocateBuffer(size_t capacity) const {
-    LinkElement<MapEntry<K,V> > **result = capacity ? new LinkElement<MapEntry<K,V> >*[capacity] : NULL; TRACE_NEW(result);
+  LinkObject<MapEntry<K,V> > **allocateBuffer(size_t capacity) const {
+    LinkObject<MapEntry<K,V> > **result = capacity ? new LinkObject<MapEntry<K,V> >*[capacity] : NULL; TRACE_NEW(result);
     if(capacity) {
       memset(result, 0, sizeof(result[0])*capacity);
     }
@@ -42,7 +42,7 @@ private:
 
   int getChainLength(size_t index) const {
     int count = 0;
-    for(LinkElement<MapEntry<K,V> > *p = m_buffer[index]; p; p = p->m_next) {
+    for(LinkObject<MapEntry<K,V> > *p = m_buffer[index]; p; p = p->m_next) {
       count++;
     }
     return count;
@@ -87,19 +87,18 @@ public:
     if(capacity == m_capacity) {
       return;
     }
-    LinkElement<MapEntry<K,V> > **oldBuffer   = m_buffer;
-    const size_t                  oldCapacity = m_capacity;
+    LinkObject<MapEntry<K,V> > **oldBuffer   = m_buffer;
+    const size_t                 oldCapacity = m_capacity;
 
     m_capacity = capacity;
     m_buffer   = allocateBuffer(capacity);
 
     if(!isEmpty()) {
       for(size_t i = 0; i < oldCapacity; i++) {
-        LinkElement<MapEntry<K,V> > *n = oldBuffer[i];
-        while(n) {
+        for(LinkObject<MapEntry<K,V> > *n = oldBuffer[i]; n;) {
           const ULONG index = n->m_e.m_key.hashCode() % m_capacity;
-          LinkElement<MapEntry<K,V> > *&bp  = m_buffer[index];
-          LinkElement<MapEntry<K,V> > *next = n->m_next;
+          LinkObject<MapEntry<K,V> > *&bp  = m_buffer[index];
+          LinkObject<MapEntry<K,V> > *next = n->m_next;
           n->m_next = bp;
           bp        = n;
           n         = next;
@@ -121,7 +120,7 @@ public:
     ULONG index;
     if(m_capacity) {
       index = key.hashCode() % m_capacity;
-      for(LinkElement<MapEntry<K,V> > *p = m_buffer[index]; p; p = p->m_next) {
+      for(LinkObject<MapEntry<K,V> > *p = m_buffer[index]; p; p = p->m_next) {
         if(key == p->m_e.m_key) {
           return false;
         }
@@ -131,11 +130,11 @@ public:
       setCapacity(m_size*5+5);
       index = key.hashCode() % m_capacity; // no need to search key again. if m_capacity was 0, the set is empty
     }
-    LinkElement<MapEntry<K,V> > *p = m_entryPool.fetch();
-    p->m_e.m_key                   = key;
-    p->m_e.m_value                 = value;
-    p->m_next                      = m_buffer[index];
-    m_buffer[index]                = p;
+    LinkObject<MapEntry<K,V> > *p = m_entryPool.fetch();
+    p->m_e.m_key                  = key;
+    p->m_e.m_value                = value;
+    p->m_next                     = m_buffer[index];
+    m_buffer[index]               = p;
     m_size++;
     m_updateCount++;
     return true;
@@ -144,7 +143,7 @@ public:
   bool remove(const K &key) {
     if(m_capacity) {
       const ULONG index = key.hashCode() % m_capacity;
-      for(LinkElement<MapEntry<K,V> > *p = m_buffer[index], *last = NULL; p; last = p, p = p->m_next) {
+      for(LinkObject<MapEntry<K,V> > *p = m_buffer[index], *last = NULL; p; last = p, p = p->m_next) {
         if(key == p->m_e.m_key) {
           if(last) {
             last->m_next = p->m_next;
@@ -164,7 +163,7 @@ public:
   V *get(const K &key) const {
     if(m_capacity) {
       const ULONG index = key.hashCode() % m_capacity;
-      for(LinkElement<MapEntry<K,V> > *p = m_buffer[index]; p; p = p->m_next) {
+      for(LinkObject<MapEntry<K,V> > *p = m_buffer[index]; p; p = p->m_next) {
         if(key == p->m_e.m_key) {
           return &(p->m_e.m_value);
         }
@@ -283,15 +282,15 @@ public:
 
   class CompactMapEntryIterator : public AbstractIterator {
   private:
-    CompactHashMap              &m_map;
-    LinkElement<MapEntry<K,V> > *m_current, *m_next, **m_bufp, **m_endBuf;
-    UINT64                       m_updateCount;
+    CompactHashMap             &m_map;
+    LinkObject<MapEntry<K,V> > *m_current, *m_next, **m_bufp, **m_endBuf;
+    UINT64                      m_updateCount;
 
     void first() {
       m_current = NULL;
       if(m_map.m_buffer) {
         m_endBuf = m_map.m_buffer + m_map.getCapacity();
-        for(LinkElement<MapEntry<K,V> > **p = m_map.m_buffer; p < m_endBuf; p++) {
+        for(LinkObject<MapEntry<K,V> > **p = m_map.m_buffer; p < m_endBuf; p++) {
           if(*p) {
             m_bufp = p;
             m_next = *p;
@@ -332,7 +331,7 @@ public:
       checkUpdateCount();
       m_current = m_next;
       if((m_next = m_next->m_next) == NULL) {
-        for(LinkElement<MapEntry<K,V> > **p = m_bufp; ++p < m_endBuf;) {
+        for(LinkObject<MapEntry<K,V> > **p = m_bufp; ++p < m_endBuf;) {
           if(*p) {
             m_bufp = p;
             m_next = *p;

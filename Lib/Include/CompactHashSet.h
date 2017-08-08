@@ -21,14 +21,14 @@ public:
 // and bool operator==(const K &) defined
 template <class K> class CompactHashSet {
 private:
-  size_t                                      m_size;
-  size_t                                      m_capacity;
-  LinkElement<SetEntry<K> >                 **m_buffer;
-  HeapObjectPool<LinkElement<SetEntry<K> > >  m_elementPool;
-  UINT64                                      m_updateCount;
+  size_t                                    m_size;
+  size_t                                    m_capacity;
+  LinkObject<SetEntry<K> >                **m_buffer;
+  HeapObjectPool<LinkObject<SetEntry<K> > > m_entryPool;
+  UINT64                                    m_updateCount;
 
-  LinkElement<SetEntry<K> > **allocateBuffer(size_t capacity) const {
-    LinkElement<SetEntry<K> > **result = capacity ? new LinkElement<SetEntry<K> >*[capacity] : NULL; TRACE_NEW(result);
+  LinkObject<SetEntry<K> > **allocateBuffer(size_t capacity) const {
+    LinkObject<SetEntry<K> > **result = capacity ? new LinkObject<SetEntry<K> >*[capacity] : NULL; TRACE_NEW(result);
     if(capacity) {
       memset(result, 0, sizeof(result[0])*capacity);
     }
@@ -44,7 +44,7 @@ private:
 
   int getChainLength(size_t index) const {
     int count = 0;
-    for(LinkElement<SetEntry<K> > *p = m_buffer[index]; p; p = p->m_next) {
+    for(LinkObject<SetEntry<K> > *p = m_buffer[index]; p; p = p->m_next) {
       count++;
     }
     return count;
@@ -89,19 +89,18 @@ public:
     if(capacity == m_capacity) {
       return;
     }
-    LinkElement<SetEntry<K> > **oldBuffer   = m_buffer;
-    const size_t                oldCapacity = m_capacity;
+    LinkObject<SetEntry<K> > **oldBuffer   = m_buffer;
+    const size_t               oldCapacity = m_capacity;
 
     m_capacity = capacity;
     m_buffer   = allocateBuffer(capacity);
 
     if(!isEmpty()) {
       for(size_t i = 0; i < oldCapacity; i++) {
-        LinkElement<SetEntry<K> > *n = oldBuffer[i];
-        while(n) {
+        for(LinkObject<SetEntry<K> > *n = oldBuffer[i]; n;) {
           const ULONG index = n->m_e.m_key.hashCode() % m_capacity;
-          LinkElement<SetEntry<K> > *&bp = m_buffer[index];
-          LinkElement<SetEntry<K> > *next = n->m_next;
+          LinkObject<SetEntry<K> > *&bp = m_buffer[index];
+          LinkObject<SetEntry<K> > *next = n->m_next;
           n->m_next = bp;
           bp        = n;
           n         = next;
@@ -116,14 +115,14 @@ public:
   }
 
   inline int getPageCount() const {
-    return m_elementPool.getPageCount();
+    return m_entryPool.getPageCount();
   }
 
   bool add(const K &key) {
     ULONG index;
     if(m_capacity) {
       index = key.hashCode() % m_capacity;
-      for(LinkElement<SetEntry<K> > *p = m_buffer[index]; p; p = p->m_next) {
+      for(LinkObject<SetEntry<K> > *p = m_buffer[index]; p; p = p->m_next) {
         if(key == p->m_e.m_key) {
           return false;
         }
@@ -133,10 +132,10 @@ public:
       setCapacity(m_size*5+5);
       index = key.hashCode() % m_capacity; // no need to search key again. if m_capacity was 0, the set is empty
     }
-    LinkElement<SetEntry<K> > *p = m_elementPool.fetch();
-    p->m_e.m_key                 = key;
-    p->m_next                    = m_buffer[index];
-    m_buffer[index]              = p;
+    LinkObject<SetEntry<K> > *p = m_entryPool.fetch();
+    p->m_e.m_key                = key;
+    p->m_next                   = m_buffer[index];
+    m_buffer[index]             = p;
     m_size++;
     m_updateCount++;
     return true;
@@ -145,14 +144,14 @@ public:
   bool remove(const K &key) {
     if(m_capacity) {
       const ULONG index = key.hashCode() % m_capacity;
-      for(LinkElement<SetEntry<K> > *p = m_buffer[index], *last = NULL; p; last = p, p = p->m_next) {
+      for(LinkObject<SetEntry<K> > *p = m_buffer[index], *last = NULL; p; last = p, p = p->m_next) {
         if(key == p->m_e.m_key) {
           if(last) {
             last->m_next = p->m_next;
           } else {
             m_buffer[index] = p->m_next;
           }
-          m_elementPool.release(p);
+          m_entryPool.release(p);
           m_size--;
           m_updateCount++;
           return true;
@@ -165,7 +164,7 @@ public:
   bool contains(const K &key) const {
     if(m_capacity) {
       const ULONG index = key.hashCode() % m_capacity;
-      for(const LinkElement<SetEntry<K> > *p = m_buffer[index]; p; p = p->m_next) {
+      for(const LinkObject<SetEntry<K> > *p = m_buffer[index]; p; p = p->m_next) {
         if(key == p->m_e.m_key) {
           return true;
         }
@@ -175,7 +174,7 @@ public:
   }
 
   void clear() {
-    m_elementPool.releaseAll();
+    m_entryPool.releaseAll();
     if(m_size) {
       m_size = 0;
       m_updateCount++;
@@ -284,15 +283,15 @@ public:
   // as there are pointers directy into the sets buffer-array
   class CompactSetIterator : public AbstractIterator {
   private:
-    CompactHashSet            &m_set;
-    LinkElement<SetEntry<K> > *m_current, *m_next, **m_bufp, **m_endBuf;
-    UINT64                     m_updateCount;
+    CompactHashSet           &m_set;
+    LinkObject<SetEntry<K> > *m_current, *m_next, **m_bufp, **m_endBuf;
+    UINT64                    m_updateCount;
 
     void first() {
       m_current = NULL;
       if(m_set.m_buffer) {
         m_endBuf = m_set.m_buffer + m_set.getCapacity();
-        for(LinkElement<SetEntry<K> > **p = m_set.m_buffer; p < m_endBuf; p++) {
+        for(LinkObject<SetEntry<K> > **p = m_set.m_buffer; p < m_endBuf; p++) {
           if(*p) {
             m_bufp = p;
             m_next = *p;
@@ -330,7 +329,7 @@ public:
       checkUpdateCount();
       m_current = m_next;
       if((m_next = m_next->m_next) == NULL) {
-        for(LinkElement<SetEntry<K> > **p = m_bufp; ++p < m_endBuf;) {
+        for(LinkObject<SetEntry<K> > **p = m_bufp; ++p < m_endBuf;) {
           if(*p) {
             m_bufp = p;
             m_next = *p;

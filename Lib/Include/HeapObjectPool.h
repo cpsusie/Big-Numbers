@@ -72,10 +72,10 @@ public:
 
 #pragma pack(push,1)
 
-template <class T> class LinkElement {
+template <class T> class LinkObject {
 public:
-  LinkElement *m_next;
-  T            m_e;
+  LinkObject *m_next;
+  T           m_e;
 };
 
 #pragma pack(pop)
