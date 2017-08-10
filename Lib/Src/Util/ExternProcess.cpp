@@ -178,7 +178,9 @@ void ExternProcess::start(bool silent, const ArgArray &argv) {
 
     const FileNameSplitter info(program);
     const String childWorkDir = info.getDrive() + info.getDir();
-    CHDIR(childWorkDir);
+    if(childWorkDir.length()) {
+      CHDIR(childWorkDir);
+    }
 
     if(silent) {
       startCreateProcess(program, argv.getCommandLine());

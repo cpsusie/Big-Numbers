@@ -40,23 +40,31 @@ protected:
     return m_output;
   }
 public:
-  ExternProcess(bool verbose = false);                 // if verbose, functioncalls will be traced with debugLog
+  // If verbose, functioncalls will be traced with debugLog
+  ExternProcess(bool verbose = false);
   ExternProcess(const ExternProcess &src);             // not defined. ExternProcess not cloneable
   ExternProcess &operator=(const ExternProcess &src);  // do
   virtual ~ExternProcess();
 
+  // No wait
   void start( bool silent, const String &program, const StringArray &args);
-  void vstart(bool silent, const String &program, va_list argptr); // no wait
-  void start( bool silent, const String program, ...); // cannot use String &, because va_start will fail
-                                                       // terminate argumentlist with NULL
+  // No wait
+  void vstart(bool silent, const String &program, va_list argptr);
+  // No wait
+  // Cannot use String &, because va_start will fail
+  // Terminate argumentlist with NULL
+  void start( bool silent, const String program, ...);
 
-  // return exit code
+  // Return exit code
   static int  run(bool silent, const String &program, const StringArray &args);
-  static int vrun(bool silent, const String &program, va_list argptr); // wait for termination
-  static int  run(bool silent, const String program, ...); // cannot use String &, because va_start will fail
-                                                           // terminate argumentlist with NULL
+  // Wait for termination
+  static int vrun(bool silent, const String &program, va_list argptr);
+  // Wait for termination
+  // Cannot use String &, because va_start will fail
+  // Terminate argumentlist with NULL
+  static int  run(bool silent, const String program, ...);
 
-  // works only together with vstart, start.
+  // Works only together with vstart, start.
   void stop();
   void send(const TCHAR *format, ...) const;
   String receive();
