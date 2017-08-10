@@ -18,14 +18,13 @@ public:
   String toString() const;
 };
 
-class DiffEquationGraphParameters : public GraphParameters {
+class DiffEquationGraphParameters : public ExprGraphParameters {
 public:
   DiffEquationSystemDescription    m_equationsDescription;
   CompactArray<EquationAttributes> m_attrArray;
   DoubleInterval                   m_interval;
   double                           m_eps;
-  TrigonometricMode                m_trigonometricMode;
-  DiffEquationGraphParameters(const String &name=_T("Untitled"), GraphStyle style=GSCURVE, TrigonometricMode trigonomtetricMode=RADIANS);
+  DiffEquationGraphParameters(const String &name=_T("Untitled"), GraphStyle style=GSCURVE, TrigonometricMode trigonometricMode=RADIANS);
   UINT getEquationCount() const {
     return (UINT)m_equationsDescription.size();
   }

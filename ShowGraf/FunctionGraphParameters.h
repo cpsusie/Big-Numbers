@@ -4,13 +4,12 @@
 #include <Math/MathLib.h>
 #include "GraphParameters.h"
 
-class FunctionGraphParameters : public GraphParameters {
+class FunctionGraphParameters : public ExprGraphParameters {
 public:
   String            m_expr;
   DoubleInterval    m_interval;
   UINT              m_steps;
-  TrigonometricMode m_trigonometricMode;
-  FunctionGraphParameters(const String &name=_T("Untitled"), COLORREF color=BLACK, int rollAvgSize=0, GraphStyle style=GSCURVE, TrigonometricMode trigonomtetricMode=RADIANS);
+  FunctionGraphParameters(const String &name=_T("Untitled"), COLORREF color=BLACK, int rollAvgSize=0, GraphStyle style=GSCURVE, TrigonometricMode trigonometricMode=RADIANS);
   void putDataToDoc(XMLDoc &doc);
   void getDataFromDoc(XMLDoc &doc);
   int getType() const {

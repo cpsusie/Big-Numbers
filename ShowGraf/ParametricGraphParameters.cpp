@@ -2,9 +2,8 @@
 #include <XMLUtil.h>
 #include "ParametricGraph.h"
 
-ParametricGraphParameters::ParametricGraphParameters(const String &name, COLORREF color, int rollAvgSize, GraphStyle style, TrigonometricMode trigonomtetricMode)
-: GraphParameters(name,color,rollAvgSize,style) {
-  m_trigonometricMode = trigonomtetricMode;
+ParametricGraphParameters::ParametricGraphParameters(const String &name, COLORREF color, int rollAvgSize, GraphStyle style, TrigonometricMode trigonometricMode)
+: ExprGraphParameters(name,color,rollAvgSize,style, trigonometricMode) {
   m_interval          = DoubleInterval(0,1);
   m_steps             = 500;
 }
@@ -16,8 +15,7 @@ void ParametricGraphParameters::putDataToDoc(XMLDoc &doc) {
   doc.setValue( root, _T("expry"     ), m_exprY            );
   setValue(doc, root, _T("interval"  ), m_interval         );
   doc.setValue( root, _T("steps"     ), m_steps            );
-  setValue(doc, root,                   m_trigonometricMode);
-  setStdValues(doc, root);
+  __super::putDataToDoc(doc);
 }
 
 void ParametricGraphParameters::getDataFromDoc(XMLDoc &doc) {
@@ -32,6 +30,5 @@ void ParametricGraphParameters::getDataFromDoc(XMLDoc &doc) {
   doc.getValue( root, _T("expry"     ), m_exprY            );
   getValue(doc, root, _T("interval"  ), m_interval         );
   doc.getValue( root, _T("steps"     ), m_steps            );
-  getValue(doc, root                  , m_trigonometricMode);
-  getStdValues(doc, root);
+  __super::getDataFromDoc(doc);
 }

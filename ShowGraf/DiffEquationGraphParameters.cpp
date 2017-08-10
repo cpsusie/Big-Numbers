@@ -2,10 +2,8 @@
 #include <XMLUtil.h>
 #include "DiffEquationGraph.h"
 
-DiffEquationGraphParameters::DiffEquationGraphParameters(const String &name, GraphStyle style, TrigonometricMode trigonomtetricMode)
-  : GraphParameters(name, 0, 1, style) {
-
-  m_trigonometricMode = trigonomtetricMode;
+DiffEquationGraphParameters::DiffEquationGraphParameters(const String &name, GraphStyle style, TrigonometricMode trigonometricMode)
+  : ExprGraphParameters(name, 0, 1, style,trigonometricMode) {
   m_interval          = DoubleInterval(0, 1);
   m_eps               = 0.1;
 }

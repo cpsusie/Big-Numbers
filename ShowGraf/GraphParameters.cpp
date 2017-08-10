@@ -8,29 +8,20 @@ GraphParameters::GraphParameters(const String &name, COLORREF color, int rollAvg
   m_style       = style;
 };
 
-void GraphParameters::setStdValues(XMLDoc &doc, XMLNodePtr n) {
-  setValue(doc, n, m_style);
-  doc.setValue( n, _T("color"      ), format(_T("%08x"), m_color));
-  doc.setValue( n, _T("rollsize"   ), m_rollAvgSize   );
+void GraphParameters::putDataToDoc(  XMLDoc &doc) {
+  XMLNodePtr root = doc.getRoot();
+  setValue(doc, root, m_style);
+  doc.setValue( root, _T("color"      ), format(_T("%08x"), m_color));
+  doc.setValue( root, _T("rollsize"   ), m_rollAvgSize   );
 }
 
-void GraphParameters::getStdValues(XMLDoc &doc, XMLNodePtr n) {
-  getValue(doc, n, m_style);
+void GraphParameters::getDataFromDoc(XMLDoc &doc) {
+  XMLNodePtr root = doc.getRoot();
+  getValue(doc, root, m_style);
   String str;
-  doc.getValue( n, _T("color"      ), str           );
+  doc.getValue( root, _T("color"      ), str           );
   _stscanf(str.cstr(), _T("%x"), &m_color);
-  doc.getValue( n, _T("rollsize"   ), m_rollAvgSize );
-}
-
-void setValue(XMLDoc &doc, XMLNodePtr n, TrigonometricMode trigoMode) {
-  String str = toLowerCase(GraphParameters::trigonometricModeToString(trigoMode));
-  doc.setValue(n, _T("trigo"), str);
-}
-
-void getValue(XMLDoc &doc, XMLNodePtr n, TrigonometricMode &trigoMode) {
-  String str;
-  doc.getValue(n, _T("trigo"), str);
-  trigoMode = GraphParameters::trigonometricModeFromString(str);
+  doc.getValue( root, _T("rollsize"   ), m_rollAvgSize );
 }
 
 void setValue(XMLDoc &doc, XMLNodePtr n, GraphStyle style) {
@@ -66,7 +57,19 @@ GraphStyle GraphParameters::graphStyleFromString(const String &s) {  // static
   return GSCURVE;
 }
 
-const TCHAR *GraphParameters::trigonometricModeToString(TrigonometricMode mode) {  // static
+void ExprGraphParameters::putDataToDoc(XMLDoc &doc) {
+  XMLNodePtr root = doc.getRoot();
+  setValue(doc, root, m_trigonometricMode);
+  __super::putDataToDoc(doc);
+}
+
+void ExprGraphParameters::getDataFromDoc(XMLDoc &doc) {
+  XMLNodePtr root = doc.getRoot();
+  getValue(doc, root, m_trigonometricMode);
+  __super::getDataFromDoc(doc);
+}
+
+const TCHAR *ExprGraphParameters::trigonometricModeToString(TrigonometricMode mode) {  // static
   switch(mode) {
   case RADIANS : return _T("Radians");
   case DEGREES : return _T("Degrees");
@@ -75,7 +78,7 @@ const TCHAR *GraphParameters::trigonometricModeToString(TrigonometricMode mode) 
   }
 }
 
-TrigonometricMode GraphParameters::trigonometricModeFromString(const String &str) { // static
+TrigonometricMode ExprGraphParameters::trigonometricModeFromString(const String &str) { // static
   if(str.equalsIgnoreCase(_T("radians"))) {
     return RADIANS;
   } else if(str.equalsIgnoreCase(_T("degrees"))) {
@@ -87,3 +90,13 @@ TrigonometricMode GraphParameters::trigonometricModeFromString(const String &str
   }
 }
 
+void setValue(XMLDoc &doc, XMLNodePtr n, TrigonometricMode trigoMode) {
+  String str = toLowerCase(ExprGraphParameters::trigonometricModeToString(trigoMode));
+  doc.setValue(n, _T("trigo"), str);
+}
+
+void getValue(XMLDoc &doc, XMLNodePtr n, TrigonometricMode &trigoMode) {
+  String str;
+  doc.getValue(n, _T("trigo"), str);
+  trigoMode = ExprGraphParameters::trigonometricModeFromString(str);
+}
