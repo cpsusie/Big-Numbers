@@ -50,7 +50,8 @@ class _RegexCounterRange {
 public:
   USHORT m_minRepeat;
   USHORT m_maxRepeat;
-  BYTE   m_regno; // index of associated StateRegister (not counterRegister)
+  // index of associated StateRegister (not counterRegister)
+  BYTE   m_regno;
   _RegexCounterRange()
     : m_minRepeat(-1)
     , m_maxRepeat(-1)
@@ -99,7 +100,8 @@ public:
   const BYTE                        *m_ip;
   const TCHAR                       *m_sp;
   BYTE                               m_counterIndex;
-  UINT                               m_counterValue; // only set when hasCounter() = true
+  // only set when hasCounter() = true
+  UINT                               m_counterValue;
 //  const TCHAR                       *m_regEnd;       // only set when hasCounter() = true
   inline _RegexMatchStackElement() {
   }
@@ -139,7 +141,8 @@ private:
   _RegexStateRegister                   m_register[RE_NREGS];
   _RegexCounterTable                   &m_counterTable;
   const Regex                          &m_regex;
-  const intptr_t                        m_pos;                  // Index of first character in targetstring we try to match
+  // Index of first character in targetstring we try to match
+  const intptr_t                        m_pos;
 
   inline void push(const BYTE *ip, const TCHAR *sp) {
     m_stack.push(_RegexMatchStackElement(ip,sp));
@@ -153,7 +156,8 @@ private:
     m_counterTable[counterIndex].m_value = 0;
   }
 
-  inline bool incrCounter(BYTE counterIndex) { // Returns true if jump should be done
+  // Returns true if jump should be done
+  inline bool incrCounter(BYTE counterIndex) {
     _RegexCounterRegister &counter = m_counterTable[counterIndex];
     return counter.isBelowMax(++counter.m_value);
   }
@@ -177,9 +181,12 @@ private:
   }
 
 public:
-  const BYTE  *m_ip;                    // Instruction pointer
-  const BYTE  *m_ipEnd;                 // end of instructions
-  const TCHAR *m_end1,      *m_end2;    // End of first and second String
+  // Instruction pointer
+  const BYTE  *m_ip;
+  // End of instructions
+  const BYTE  *m_ipEnd;
+  // End of first and second String
+  const TCHAR *m_end1,      *m_end2;
   const TCHAR *m_endMatch1, *m_endMatch2;
   const TCHAR *m_sp, *m_spEnd;
 
@@ -263,7 +270,8 @@ public:
     return m_stack.top().hasCounter();
   }
 
-  bool handleCounterFailure(); // return true if handled. false if another pop is required
+  // Return true if handled. false if another pop is required
+  bool handleCounterFailure();
 
   void convertRegisters(const TCHAR    *string1
                        ,intptr_t        size1
@@ -337,7 +345,6 @@ public:
   }
 };
 
-
 class RegexStepHandler {
 public:
   virtual void handleCompileStep(const _RegexCompilerState &state) {
@@ -349,36 +356,47 @@ public:
 };
 #endif
 
-// This data structure is used to represent a compiled pattern.
-
 class _RegexByteInsertHandler {
 public:
   virtual void insertBytes(UINT addr, UINT incr) = 0;
 };
 
+// This data structure is used to represent a compiled pattern.
 class Regex {
 private:
-  ByteArray                  m_buffer;           // Space holding the compiled pattern commands.
-  UINT                       m_codeSize;         // Number of bytes in code-segment. m_buffer may contain extra bytes holding the used charsets
-  BitSet                     m_fastMap;          // search uses the fastmap, to skip quickly over totally implausible characters
-  mutable _RegexCounterTable m_counterTable;     // Counters used in ...{m,n} constructs
-  UINT                       m_counterTableSize; // Number of counters in use.
-  const TCHAR               *m_translateTable;   // Translate table to apply to all characters before comparing.
-                                                 // Or NULL for no translation.
-                                                 // The translation is applied to a pattern when it is compiled
-                                                 // and to data when it is matched.
-  bool                       m_matchEmpty;       // Set to true in compilePattern, if the compiled pattern match the empty string
+  // Space holding the compiled pattern commands.
+  ByteArray                  m_buffer;
+  // Number of bytes in code-segment. m_buffer may contain extra bytes holding the used charsets
+  UINT                       m_codeSize;
+  // search uses the fastmap, to skip quickly over totally implausible characters
+  BitSet                     m_fastMap;
+  // Counters used in ...{m,n} constructs
+  mutable _RegexCounterTable m_counterTable;
+  // Number of counters in use.
+  UINT                       m_counterTableSize;
+  // Translate table to apply to all characters before comparing.
+  // Or NULL for no translation.
+  // The translation is applied to a pattern when it is compiled
+  // and to data when it is matched.
+  const TCHAR               *m_translateTable;
+  // Set to true in compilePattern, if the compiled pattern match the empty string
+  bool                       m_matchEmpty;
   bool                       m_hasCompiled;
-  mutable intptr_t           m_resultLength;     // Length of tha text-segment that match the pattern
-  _RegexByteInsertHandler   *m_insertHandler;    // call this each time bytes are inserted (not appended) to adjust references to bytes into m_buffer
+  // Length of the text-segment that match the pattern
+  mutable intptr_t           m_resultLength;
+  // Call this each time some bytes are inserted (not appended) to adjust references to bytes into m_buffer
+  _RegexByteInsertHandler   *m_insertHandler;
 
 #ifdef _DEBUG
   RegexStepHandler          *m_stepHandler;
-  mutable CompactIntArray    m_PCToLineArray;    // Built by compilePattern/toString(). Indexed by byte-index of each command in m_buffer.
-                                                 // Highorder 16 bits of each elemenet holds the line into code text returned by toString()
-                                                 // Loworder 16 bits holds the index into pattern-string
-  mutable bool               m_codeDirty;        // Set to true when anything in m_buffer has changed, and false when toString() is called.
-  mutable UINT               m_cycleCount;       // Counts the number of cycles from the search/match begin til return
+    // Built by compilePattern/toString(). Indexed by byte-index of each command in m_buffer.
+    // Highorder 16 bits of each elemenet holds the line into code text returned by toString()
+    // Loworder 16 bits holds the index into pattern-string
+  mutable CompactIntArray    m_PCToLineArray;
+    // Set to true when anything in m_buffer has changed, and false when toString() is called.
+  mutable bool               m_codeDirty;
+    // Counts the number of cycles from the search/match begin til return
+  mutable UINT               m_cycleCount;
 #endif
 
   void compilePattern1(   const TCHAR    *pattern);
@@ -412,7 +430,8 @@ private:
                          ,size_t          mstop) const;
   int  compareStrings(const TCHAR *s1, const TCHAR *s2, register size_t length) const;
   void init();
-  void insertZeroes(UINT addr,   UINT count); // Always call this. instead of m_buffer.insertZeroes
+  // Always call this. instead of m_buffer.insertZeroes
+  void insertZeroes(UINT addr,   UINT count);
   void storeData(                        UINT addr, const void *data, UINT size);
   void insertOpcode(      BYTE opcode,   UINT addr                           );
   void insertJump(        BYTE opcode,   UINT addr, int to                   );
@@ -425,16 +444,21 @@ private:
   void storeShort(                       UINT addr, short s                  );
   void appendUShort(                     USHORT           s                  );
   void appendCharacter(TCHAR ch);
-  void assertHasSpace(UINT addr, UINT count); // extend m_buffer if needed
+  // Extend m_buffer if needed
+  void assertHasSpace(UINT addr, UINT count);
 public:
   Regex();
   Regex(const String &pattern, const TCHAR *translateTable = NULL);
   Regex(const TCHAR  *pattern, const TCHAR *translateTable = NULL);
   void compilePattern(const String &pattern, const TCHAR *translateTable = NULL);
   void compilePattern(const TCHAR  *pattern, const TCHAR *translateTable = NULL);
-  intptr_t search(    const String &text, bool forward = true, intptr_t startPos = -1, RegexRegisters *registers = NULL) const; // search for the compiled expression in text
+  // Search for the compiled expression in text
+  intptr_t search(    const String &text, bool forward = true, intptr_t startPos = -1, RegexRegisters *registers = NULL) const;
+  // Search for the compiled expression in text
   intptr_t search(    const TCHAR  *text, bool forward = true, intptr_t startPos = -1, RegexRegisters *registers = NULL) const;
-  bool     match(     const String &text, RegexRegisters *registers = NULL) const;  // check for exact match
+  // Check for exact match
+  bool     match(     const String &text, RegexRegisters *registers = NULL) const;
+  // Check for exact match
   bool     match(     const TCHAR  *text, RegexRegisters *registers = NULL) const;
 
   inline intptr_t getResultLength() const {
@@ -461,10 +485,12 @@ public:
     return m_codeSize;
   }
 
-  BitSet first(intptr_t pcStart, intptr_t pcEnd, bool *matchEmpty = NULL) const;
   // Return set of characters that can possibly begin a string matching
   // the commands in range [pcStart;pcEnd[. pcStart inclusive, pcEnd exclusive
+  BitSet first(intptr_t pcStart, intptr_t pcEnd, bool *matchEmpty = NULL) const;
 
+  // Return help text,syntax-description terminated with NULL-pointer
+  static const TCHAR **getHelpText();
 #ifdef _DEBUG
   RegexStepHandler *setHandler(RegexStepHandler *handler);
 
@@ -484,5 +510,3 @@ public:
   }
 #endif
 };
-
-extern TCHAR *regexDescription[]; // help text,syntax-description terminated with NULL-pointer

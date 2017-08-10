@@ -210,8 +210,19 @@ void Grepper::handleFileName(const TCHAR *name, DirListEntry &info) {
   grep(name);
 }
 
-static void usage() {
-  _ftprintf( stderr,
+static void usage(bool showRegexHelp = false) {
+  FILE *output     = stderr;
+  bool  usingPopen = false;
+  if(showRegexHelp) {
+    if(!isatty(stdout)) {
+      output = stdout;
+    } else {
+      output = _popen("more","wt");
+      usingPopen = true;
+    }
+  }
+
+  _ftprintf( output,
     _T("Usage:grep options pattern [files...]\n"
        "      grep options -e pattern [files...]\n"
        "  Options: -i: Case-sensitive. Default is case-insensitive\n"
@@ -223,98 +234,114 @@ static void usage() {
        "             then count1 lines before and after the matching line is shown. If both count1 and count2 is specified\n"
        "             then count1 lines before and count2 lines after the matching line is shown. Default:count1=count2=3\n"
        "           -f[file]:Read <file> to get the name of the files to be searched. Default is stdin\n"
-       "           -v: Verbose-mode. Show filenames while searching\n")
+       "           -v: Verbose-mode. Show filenames while searching\n"
+       "           -help:Print detailed description of syntax of regular expression when using -e pattern\n"
+      )
   );
+  if(showRegexHelp) {
+    _ftprintf(output, _T("\n"));
+    for(const TCHAR **line = Regex::getHelpText(); *line; line++) {
+      _ftprintf(output, _T("%s\n"), *line);
+    }
+  }
+  fflush(output);
+  if(usingPopen) {
+    _pclose(output);
+  }
+
   exit(-1);
 }
 
 int main(int argc, const char **argv) {
   const char *cp;
   const char *fileSetFileName = NULL;
-  bool  recurse         = false;
-  bool  ignoreCase      = true;
-  bool  fnameOnly       = false;
-  bool  printFname      = true;
-  bool  verbose         = false;
-  bool  complement      = false;
-
+  bool        recurse         = false;
+  bool        ignoreCase      = true;
+  bool        fnameOnly       = false;
+  bool        printFname      = true;
+  bool        verbose         = false;
+  bool        complement      = false;
   IntInterval surroundingLines;
 
-  for(argv++; *argv && *(cp = *argv) == '-'; argv++) {
-    for(cp++; *cp; cp++) {
-      switch(*cp) {
-      case 'e':
-        goto EndOfOptions;
-      case 'i':
-        ignoreCase   = false;
-        continue;
-      case 'f':
-        fileSetFileName = cp+1;
-        break;
-      case 'h':
-        printFname   = false;
-        continue;
-      case 'H':
-        fnameOnly    = true;
-        continue;
-      case 'n':
-        { int count1, count2;
-          if(sscanf(cp+1,"%d,%d",&count1,&count2) == 2) {
-            if(count1 < 0 || count2 < 0) {
-              fprintf(stderr,"Number of surrounding lines to show must be >= 0. =[%d,%d]\n",count1,count2);
-              usage();
+  try {
+
+    for(argv++; *argv && *(cp = *argv) == '-'; argv++) {
+      if(strcmp(cp+1,"help") == 0) {
+        usage(true);
+      }
+      for(cp++; *cp; cp++) {
+        switch(*cp) {
+        case 'e':
+          goto EndOfOptions;
+        case 'i':
+          ignoreCase   = false;
+          continue;
+        case 'f':
+          fileSetFileName = cp+1;
+          break;
+        case 'h':
+          printFname   = false;
+          continue;
+        case 'H':
+          fnameOnly    = true;
+          continue;
+        case 'n':
+          { int count1, count2;
+            if(sscanf(cp+1,"%d,%d",&count1,&count2) == 2) {
+              if(count1 < 0 || count2 < 0) {
+                fprintf(stderr,"Number of surrounding lines to show must be >= 0. =[%d,%d]\n",count1,count2);
+                usage();
+              }
+              if(count1 == 0 && count2 == 0) {
+                fprintf(stderr,"Number of surrounding lines to show is 0\n");
+                usage();
+              }
+            } else if(sscanf(cp+1,"%d", &count1) == 1) {
+              if(count1 < 1) {
+                fprintf(stderr,"Number of surrounding lines to show must be >= 1. (=%d)\n",count1);
+                usage();
+              }
+              count2 = count1;
+            } else {
+              count2 = count1 = 3;
             }
-            if(count1 == 0 && count2 == 0) {
-              fprintf(stderr,"Number of surrounding lines to show is 0\n");
-              usage();
-            }
-          } else if(sscanf(cp+1,"%d", &count1) == 1) {
-            if(count1 < 1) {
-              fprintf(stderr,"Number of surrounding lines to show must be >= 1. (=%d)\n",count1);
-              usage();
-            }
-            count2 = count1;
-          } else {
-            count2 = count1 = 3;
+            surroundingLines.setFrom(-count1);
+            surroundingLines.setTo(count2);
           }
-          surroundingLines.setFrom(-count1);
-          surroundingLines.setTo(count2);
+          break;
+        case 'r':
+          recurse      = true;
+          continue;
+        case 'c':
+          complement   = true;
+          continue;
+        case 'v':
+          verbose      = true;
+          continue;
+        default :
+          usage();
         }
         break;
-      case 'r':
-        recurse      = true;
-        continue;
-      case 'c':
-        complement   = true;
-        continue;
-      case 'v':
-        verbose      = true;
-        continue;
-      default :
-        usage();
       }
-      break;
     }
-  }
 
 EndOfOptions:
-  if(*argv == NULL) {
-    usage();
-  }
-  bool        regexp          = false;
-  const char *pattern;
-  if(strcmp(*argv,"-e") == 0) {
-    argv++;
     if(*argv == NULL) {
       usage();
     }
-    pattern = *(argv++);
-    regexp = true;
-  } else {
-    pattern = *(argv++);
-  }
+    bool        regexp = false;
+    const char *pattern;
+    if(strcmp(*argv,"-e") == 0) {
+      argv++;
+      if(*argv == NULL) {
+        usage();
+      }
+      pattern = *(argv++);
+      regexp = true;
+    } else {
+      pattern = *(argv++);
+    }
 
-  try {
     Grepper grepper(regexp, pattern, ignoreCase, surroundingLines, printFname, fnameOnly, complement, verbose);
 
     if(fileSetFileName) { // read the file to get the filenames to search in
