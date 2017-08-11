@@ -7,6 +7,7 @@ class Timer;
 class TimeoutHandler {
 public:
   virtual void handleTimeout(Timer &timer) = 0;
+  virtual ~TimeoutHandler() {}
 };
 
 class TimerThread;
@@ -18,7 +19,7 @@ private:
   mutable Semaphore m_gate;
 public:
   Timer(int id);
-  ~Timer();
+  virtual ~Timer();
   void startTimer(int msec, TimeoutHandler &handler, bool repeatTimeout = false);
   void stopTimer();
   inline int getId() const {
