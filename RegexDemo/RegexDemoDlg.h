@@ -25,7 +25,7 @@ private:
   CDebugTextWindow               m_codeWindow;
   CStaticBottomAligned           m_stackWindow;
   SimpleLayoutManager            m_layoutManager;
-  CompactArray<CharacterMarker*> m_charMarkers;
+  CharacterMarkerArray           m_charMarkers;
   bool                           m_patternOk;
   bool                           m_patternDirty;
   bool                           m_targetDirty;
@@ -33,7 +33,7 @@ private:
   DebugThread                   *m_debugThread;
 
   void clearResult() {
-    showResult(_T(""));
+    showResult(EMPTYSTRING);
   }
   void showResult(const String &result, const String &registerString = _T(""));
   void showRegisters(const RegexRegisters &registers);
@@ -121,7 +121,6 @@ private:
   void showException(Exception &e);
 public:
   CRegexDemoDlg(CWnd *pParent = NULL);
-  ~CRegexDemoDlg();
     enum { IDD = IDD_REGEXDEMO_DIALOG };
     CString m_pattern;
     CString m_target;
@@ -129,6 +128,7 @@ public:
     virtual BOOL PreTranslateMessage(MSG *pMsg);
     virtual void DoDataExchange(CDataExchange *pDX);
     virtual BOOL OnInitDialog();
+    virtual BOOL DestroyWindow();
     afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
     afx_msg HCURSOR OnQueryDragIcon();
     afx_msg void OnPaint();

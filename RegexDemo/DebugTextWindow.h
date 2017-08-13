@@ -16,25 +16,26 @@ private:
   bool isItemVisible(int index);
   void setItemVisible(int index);
 public:
-    CDebugTextWindow();
-    void substituteControl(CWnd *parent, int id);
-    void clear();
-    void setText(const String &text);
-    const String &getText() const {
-      return m_codeText;
-    }
-    void markCurrentLine(int line);
-    void setAllowMarking(bool allowMarking, const BitSet *possibleBreakPointLines = NULL);
-    void addBreakPoint(UINT line);
-    void removeBreakPoint(UINT line);
-    void scrollToBottom();
-    const BitSet &getBreakPoints() const {
-      return m_breakPoints;
-    }
-    bool isBreakPointLine(UINT line) const {
-      return m_breakPoints.contains(line);
-    }
-    int  getHighestBreakPointLine(int line) const; // return l so l = max(0..line) and m_possibleBreakPointLines.contains(l). -1 if none exist
+  CDebugTextWindow();
+  void substituteControl(CWnd *parent, int id);
+  void clear();
+  void setText(const String &text);
+  const String &getText() const {
+    return m_codeText;
+  }
+  void markCurrentLine(int line);
+  void setAllowMarking(bool allowMarking, const BitSet *possibleBreakPointLines = NULL);
+  void addBreakPoint(UINT line);
+  void removeBreakPoint(UINT line);
+  void scrollToBottom();
+  const BitSet &getBreakPoints() const {
+    return m_breakPoints;
+  }
+  bool isBreakPointLine(UINT line) const {
+    return m_breakPoints.contains(line);
+  }
+  // return l so l = max(0..line) and m_possibleBreakPointLines.contains(l). -1 if none exist
+  int  getHighestBreakPointLine(int line) const;
 public:
   virtual void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct);
   virtual ~CDebugTextWindow();
@@ -46,4 +47,3 @@ protected:
 
   DECLARE_MESSAGE_MAP()
 };
-

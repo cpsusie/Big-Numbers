@@ -21,7 +21,7 @@ void NFA::addIfNotMarked(NFAState *s) {
     s->m_id = m_idCounter++;
     s->setMark(true);
     add(s);
-    addIfNotMarked(s->m_next1);
+    addIfNotMarked(s->m_next );
     addIfNotMarked(s->m_next2);
   }
 }
@@ -29,7 +29,7 @@ void NFA::addIfNotMarked(NFAState *s) {
 void NFA::unmarkAll(NFAState *s) { // static
   if(s && s->isMarked()) {
     s->setMark(false);
-    unmarkAll(s->m_next1);
+    unmarkAll(s->m_next );
     unmarkAll(s->m_next2);
   }
 }
@@ -84,7 +84,7 @@ SubNFA SubNFA::clone() const {
   for(size_t i = 0; i < srcNFA.size(); i++) {
     NFAState *s1 = srcNFA[i];
     NFAState *s2 = newNFA[i];
-    if(s1->m_next1) s2->m_next1 = newNFA[s1->m_next1->getID()];
+    if(s1->m_next ) s2->m_next  = newNFA[s1->m_next->getID() ];
     if(s2->m_next2) s2->m_next2 = newNFA[s1->m_next2->getID()];
   }
   newNFA.clear();
@@ -96,13 +96,13 @@ SubNFA SubNFA::clone() const {
 
 SubNFA &SubNFA::create2StateNFA(_TUCHAR ch) {
   m_start = NFAState::fetch(ch);
-  m_end   = m_start->m_next1 = NFAState::fetch();
+  m_end   = m_start->m_next = NFAState::fetch();
   return *this;
 }
 
 SubNFA &SubNFA::create2StateNFA(const CharacterSet &charSet) {
   m_start = NFAState::fetch(EDGE_CHCLASS);
-  m_end   = m_start->m_next1 = NFAState::fetch();
+  m_end   = m_start->m_next = NFAState::fetch();
   m_start->getCharacterSet() = charSet;
   return *this;
 }
@@ -128,20 +128,20 @@ SubNFA &SubNFA::operator|=(const SubNFA &s) {
 
   NFAState *p       = NFAState::fetch(EDGE_EPSILON);
   p->m_next2        = t.m_start;
-  p->m_next1        = m_start;
+  p->m_next         = m_start;
   m_start           = p;
 
   p                 = NFAState::fetch(EDGE_EPSILON);
-  m_end->m_next1    = p;
-  t.m_end->m_next1  = p;
+  m_end->m_next     = p;
+  t.m_end->m_next   = p;
   m_end             = p;
   return *this;
 }
 
 SubNFA &SubNFA::createEpsilon() {
-  m_start = NFAState::fetch(EDGE_EPSILON); // make an epsilon-transition directly from start to end
-  m_end    = m_start;
-  m_start->m_next1 = m_end;
+  m_start         = NFAState::fetch(EDGE_EPSILON); // make an epsilon-transition directly from start to end
+  m_end           = m_start;
+  m_start->m_next = m_end;
   return *this;
 }
 
@@ -151,8 +151,8 @@ SubNFA SubNFA::questClosure() const {
   }
   SubNFA result(true);
 
-  result.m_start->m_next1 = m_start;
-  m_end->m_next1          = result.m_end;
+  result.m_start->m_next  = m_start;
+  m_end->m_next           = result.m_end;
   result.m_start->m_next2 = result.m_end;
   return result;
 }
@@ -163,9 +163,9 @@ SubNFA SubNFA::plusClosure()  const {
   }
   SubNFA result(true);
 
-  result.m_start->m_next1 = m_start;
-  m_end->m_next1          = result.m_end;
-  m_end->m_next2          = m_start;
+  result.m_start->m_next = m_start;
+  m_end->m_next          = result.m_end;
+  m_end->m_next2         = m_start;
   return result;
 }
 
@@ -175,8 +175,8 @@ SubNFA SubNFA::starClosure()  const {
   }
   SubNFA result(true);
 
-  result.m_start->m_next1 = m_start;
-  m_end->m_next1          = result.m_end;
+  result.m_start->m_next  = m_start;
+  m_end->m_next           = result.m_end;
   result.m_start->m_next2 = result.m_end;
   m_end->m_next2          = m_start;
   return result;

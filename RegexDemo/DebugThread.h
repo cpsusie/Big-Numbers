@@ -40,7 +40,7 @@ class CompileParameters {
 public:
   String m_pattern;
   bool   m_ignoreCase;
-  CompileParameters(const String &pattern=_T(""), bool ignoreCase = false) : m_pattern(pattern), m_ignoreCase(ignoreCase) {
+  CompileParameters(const String &pattern=EMPTYSTRING, bool ignoreCase = false) : m_pattern(pattern), m_ignoreCase(ignoreCase) {
   }
   inline void reset() {
     m_pattern    = _T("");
@@ -143,9 +143,9 @@ public:
   RegexPhaseType getRegexPhase() const {
     return m_regexPhase;
   }
-  void  getFoundPosition(int &start, int &end);
-  const String               getResultMsg()     const;
-  String registersToString()                    const;
+  void   getFoundPosition(int &start, int &end);
+  String getResultMsg()      const;
+  String registersToString() const;
   const _RegexCompilerState         &getEmacsCompilerState() const;
   const _RegexSearchState           &getEmacsSearchState()   const;
   const _RegexMatchState            &getEmacsMatchState()    const;

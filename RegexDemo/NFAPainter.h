@@ -38,18 +38,7 @@ public:
   inline void setNoPredecessor() {
     m_attributes &= ~ATTR_HASPREDECESSOR;
   }
-  inline bool hasPredecessor() const {
-    return (m_attributes & ATTR_HASPREDECESSOR) != 0;
-  }
-  inline bool hasSuccessor() const {
-    return (m_attributes & ATTR_HASSUCCESSSORS) != 0;
-  }
-  inline bool isStartState() const {
-    return (m_attributes & ATTR_ISSTARTSTATE  ) != 0;
-  }
-  inline bool isAcceptingState() const {
-    return (m_attributes & ATTR_ISACCEPTSTATE ) != 0;
-  }
+  DEFINE_ATTRIBUTE_TRAITS
 };
 
 class FallingNFAState {
@@ -67,8 +56,19 @@ typedef CompactArray<FallingNFAState> FallingNFAStateArray;
 
 class NFAPointArray : public CompactArray<NFAStatePoint*> {
 public:
-  ~NFAPointArray();
-  void deleteAll();
+  ~NFAPointArray() {
+    deleteAll();
+  }
+  void add(NFAStatePoint *p) {
+    TRACE_NEW(p);
+    __super::add(p);
+  }
+  void deleteAll() {
+    for(size_t i = 0; i < size(); i++) {
+      SAFEDELETE((*this)[i]);
+    }
+    __super::clear();
+  }
 };
 
 class NFAPainter : public AutomatePainter {

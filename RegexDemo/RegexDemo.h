@@ -8,12 +8,11 @@
 
 class CRegexDemoApp : public CWinApp {
 public:
-	CRegexDemoApp();
+  CRegexDemoApp();
 
-	public:
-	virtual BOOL InitInstance();
+  virtual BOOL InitInstance();
 
-	DECLARE_MESSAGE_MAP()
+  DECLARE_MESSAGE_MAP()
 };
 
 extern CRegexDemoApp theApp;

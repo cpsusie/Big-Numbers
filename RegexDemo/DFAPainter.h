@@ -2,11 +2,12 @@
 
 #include <CompactStack.h>
 #include <Math/Point2D.h>
+#include <Math/Transformation.h>
 #include <TinyBitSet.h>
 #include <MatrixTemplate.h>
+#include <Timer.h>
 #include "AutomatePainter.h"
 #include "DFA.h"
-#include <Math/Transformation.h>
 
 class DFATransition {
 private:
@@ -84,12 +85,24 @@ public:
   void paint(HDC hdc, bool marked = false) const;
   DirectionPair findBestLoopPosition() const;
   String usedDirectionsToString() const;
+  DEFINE_ATTRIBUTE_TRAITS
 };
 
 class DFAPointArray : public CompactArray<DFAStatePoint*> {
 public:
-  ~DFAPointArray();
-  void deleteAll();
+  ~DFAPointArray() {
+    deleteAll();
+  }
+  void add(DFAStatePoint *p) {
+    TRACE_NEW(p);
+    __super::add(p);
+  }
+  void deleteAll() {
+    for(size_t i = 0; i < size(); i++) {
+      SAFEDELETE((*this)[i]);
+    }
+    __super::clear();
+  }
   void findPredecessors();
 };
 
@@ -187,14 +200,35 @@ public:
   String distancesToString() const;
 };
 
+#ifdef _DEBUG
+class DFAStateBlinker : public TimeoutHandler {
+private:
+  CWnd *m_wnd;
+  Timer m_timer;
+  bool  m_colorOn;
+  int   m_state;
+public:
+  DFAStateBlinker() : m_timer(1) {
+  }
+  ~DFAStateBlinker() {
+    stopBlinking();
+  }
+  void handleTimeout(Timer &timer);
+
+  void startBlinking(CWnd *wnd, int state);
+  void stopBlinking();
+};
+#endif
+
 class DFAPainter : public AutomatePainter {
 private:
-  const DFA           &m_dfa;
-  DFAPointArray        m_dfaPoints;
-  static DFAPointArray s_newPoints;
-  static int           s_edgeMarkStep;
-  static size_t        s_lastPaintedSize;
-  TransitionGrid       m_grid;
+  const DFA             &m_dfa;
+  DFAPointArray          m_dfaPoints;
+  static DFAPointArray   s_newPoints;
+  static int             s_edgeMarkStep;
+  static size_t          s_lastPaintedSize;
+  static DFAStateBlinker s_blinker;
+  TransitionGrid         m_grid;
 
   void paint(                   const DFAPointArray &pointArray                                                , HDC hdc = NULL);
   void paintStates(             const DFAPointArray &pointArray                                                , HDC hdc = NULL);
@@ -213,6 +247,12 @@ public:
   void paintNew(  HDC hdc, int currentState);
   static bool markState( HDC hdc, int state, bool marked); // for marking lastAcceptState as blinking
   void shiftCurrentToNew();
-  static void stopBlinker();
+#ifdef _DEBUG
+  static void startBlinking(CWnd *wnd, int state) {
+    s_blinker.startBlinking(wnd, state);
+  }
+  static void stopBlinking() {
+    s_blinker.stopBlinking();
+  }
+#endif
 };
-

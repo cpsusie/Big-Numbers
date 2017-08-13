@@ -24,7 +24,7 @@ DFARegex::DFARegex(const TCHAR *pattern, const TCHAR *translateTable) : m_fastMa
 #ifdef _DEBUG
 
 #define DBG_setCodeText(s)      setCodeText(s)
-#define DBG_setMode(mode, dfa)  { m_currentMode = mode; m_currentDFA = dfa; DFAPainter::stopBlinker(); }
+#define DBG_setMode(mode, dfa)  { m_currentMode = mode; m_currentDFA = dfa; DFAPainter::stopBlinking(); }
 #define DBG_saveMode(tmp)       const DFARegexMode savedMode_##tmp = m_currentMode
 #define DBG_restoreMode(tmp)    DBG_setMode(savedMode_##tmp, NULL)
 

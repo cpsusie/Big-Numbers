@@ -15,7 +15,7 @@ DFATransition::DFATransition(int fromState, int successor, _TUCHAR ch) {
 DFATransition::DFATransition(int fromState, int successor, const CharacterSet &set) {
   m_fromState = fromState;
   m_successor = successor;
-  m_set       = new CharacterSet(set);
+  m_set       = new CharacterSet(set); TRACE_NEW(m_set);
   m_ch        = 0;
 }
 
@@ -38,7 +38,7 @@ void DFATransition::copy(const DFATransition &src) {
   m_successor = src.m_successor;
   m_path      = src.m_path;
   if(src.m_set) {
-    m_set = new CharacterSet(*src.m_set);
+    m_set = new CharacterSet(*src.m_set); TRACE_NEW(m_set);
     m_ch  = 0;
   } else {
     m_set = NULL;
@@ -47,7 +47,7 @@ void DFATransition::copy(const DFATransition &src) {
 }
 
 void DFATransition::cleanup() {
-  if(m_set) delete m_set;
+  SAFEDELETE(m_set);
 }
 
 String DFATransition::toString() const {
@@ -137,13 +137,14 @@ String DFAStatePoint::usedDirectionsToString() const {
 void DFAStatePoint::paint(HDC hdc, bool marked) const {
   const CPoint p = m_position;
   bool ring = true;
-  if(m_attributes & ATTR_ISACCEPTSTATE) {
+
+  if(isAcceptingState()) {
     AutomatePainter::paintRing(  hdc, p, CIRCLE_RADIUS, AutomatePainter::getBlackPen(), AutomatePainter::getGreenBrush()     );
-  } else if(m_attributes & ATTR_ISSTARTSTATE) {
+  } else if(isStartState()) {
     AutomatePainter::paintRing(  hdc, p, CIRCLE_RADIUS, AutomatePainter::getBlackPen(), AutomatePainter::getRedBrush()       );
-  } else if(!(m_attributes & ATTR_HASPREDECESSOR)) {
+  } else if(!hasPredecessor()) {
     AutomatePainter::paintRing(  hdc, p, CIRCLE_RADIUS, AutomatePainter::getBlackPen(), AutomatePainter::getPinkBrush()      );
-  } else if(!(m_attributes & ATTR_HASSUCCESSSORS)) {
+  } else if(!hasSuccessor()) {
     AutomatePainter::paintRing(  hdc, p, CIRCLE_RADIUS, AutomatePainter::getBlackPen(), AutomatePainter::getLightGreenBrush());
   } else {
     AutomatePainter::paintCircle(hdc, p, CIRCLE_RADIUS, AutomatePainter::getBlackPen(), NULL              );
@@ -163,17 +164,6 @@ void DFAStatePoint::paint(HDC hdc, bool marked) const {
 }
 
 // ----------------------------------------- DFAPointArray ----------------------------------------
-
-DFAPointArray::~DFAPointArray() {
-  deleteAll();
-}
-
-void DFAPointArray::deleteAll() {
-  for(size_t i = 0; i < size(); i++) {
-    delete (*this)[i];
-  }
-  clear();
-}
 
 void DFAPointArray::findPredecessors() {
   for(size_t i = 0; i < size(); i++) {

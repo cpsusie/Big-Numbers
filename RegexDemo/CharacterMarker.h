@@ -32,3 +32,19 @@ public:
   void setMark(size_t index);
 };
 
+class CharacterMarkerArray : public CompactArray<CharacterMarker*> {
+public:
+  ~CharacterMarkerArray() {
+    clear();
+  }
+  void add(CharacterMarker *m) {
+    TRACE_NEW(m);
+    __super::add(m);
+  }
+  void clear() {
+    for(size_t i = 0; i < size(); i++) {
+      SAFEDELETE((*this)[i]);
+    }
+    __super::clear();
+  }
+};

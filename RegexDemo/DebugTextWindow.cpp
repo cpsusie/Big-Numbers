@@ -19,9 +19,10 @@ BEGIN_MESSAGE_MAP(CDebugTextWindow, CListBox)
 END_MESSAGE_MAP()
 
 void CDebugTextWindow::substituteControl(CWnd *parent, int id) {
+  DEFINEMETHODNAME;
   CListBox *oldCtrl = (CListBox*)parent->GetDlgItem(id);
   if(oldCtrl == NULL) {
-    AfxMessageBox(format(_T("CDebugTextWindow::substituteControl:Control with id=%d does not exist"), id).cstr(), MB_ICONWARNING);
+    AfxMessageBox(format(_T("%s:Control with id=%d does not exist"), method,id).cstr(), MB_ICONWARNING);
     return;
   }
   CRect wr;
@@ -41,7 +42,7 @@ void CDebugTextWindow::substituteControl(CWnd *parent, int id) {
   oldCtrl->DestroyWindow();
 
   if(!Create(style, wr, parent, id)) {
-    AfxMessageBox(_T("CDebugTextWindow::substituteControl:Create failed"), MB_ICONWARNING);
+    AfxMessageBox(format(_T("%s:Create failed"), method).cstr(), MB_ICONWARNING);
     return;
   }
   ModifyStyleEx(0, exStyle | WS_EX_CLIENTEDGE | WS_EX_STATICEDGE);

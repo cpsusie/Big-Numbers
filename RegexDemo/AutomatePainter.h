@@ -142,3 +142,18 @@ public:
 #define ATTR_ISSTARTSTATE      0x08
 #define ATTR_HASPREDECESSOR    0x10
 #define ATTR_HASSUCCESSSORS    0x20
+
+
+#define DEFINE_ATTRIBUTE_TRAITS                     \
+inline bool isAcceptingState() const {              \
+  return (m_attributes & ATTR_ISACCEPTSTATE ) != 0; \
+}                                                   \
+inline bool isStartState() const {                  \
+  return (m_attributes & ATTR_ISSTARTSTATE  ) != 0; \
+}                                                   \
+inline bool hasPredecessor() const {                \
+  return (m_attributes & ATTR_HASPREDECESSOR) != 0; \
+}                                                   \
+inline bool hasSuccessor() const {                  \
+  return (m_attributes & ATTR_HASSUCCESSSORS) != 0; \
+}

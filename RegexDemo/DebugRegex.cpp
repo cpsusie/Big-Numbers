@@ -41,7 +41,6 @@ String DebugRegex::registersToString() const {
   case EMACS_REGEX: return m_registers.toString(m_text);
   case DFA_REGEX  : return EMPTYSTRING;
   default         : throwUnknownTypeException();
-
   }
   return EMPTYSTRING;
 }

@@ -41,30 +41,22 @@ void DFATables::copy(const DFATables &src) {
 void DFATables::allocate(size_t stateCount) {
   clear();
   m_stateCount  = stateCount;
-  m_charMap     = new short[MAX_CHARS];
-  m_stateMap    = new short[stateCount];
-  m_acceptTable = new BYTE[stateCount];
+  m_charMap     = new short[MAX_CHARS ]; TRACE_NEW(m_charMap    );
+  m_stateMap    = new short[stateCount]; TRACE_NEW(m_stateMap   );
+  m_acceptTable = new BYTE[stateCount ]; TRACE_NEW(m_acceptTable);
 }
 
 void DFATables::allocateMatrix(size_t rowCount, size_t columnCount) {
   m_rowCount         = rowCount;
   m_columnCount      = columnCount;
-  m_transitionMatrix = new short[m_rowCount * m_columnCount];
+  m_transitionMatrix = new short[m_rowCount * m_columnCount]; TRACE_NEW(m_transitionMatrix);
 }
 
 void DFATables::clear() {
-  if(m_charMap) {
-    delete[] m_charMap;
-  }
-  if(m_stateMap) {
-    delete[] m_stateMap;
-  }
-  if(m_acceptTable) {
-    delete[] m_acceptTable;
-  }
-  if(m_transitionMatrix) {
-    delete[] m_transitionMatrix;
-  }
+  SAFEDELETEARRAY(m_charMap);
+  SAFEDELETEARRAY(m_stateMap);
+  SAFEDELETEARRAY(m_acceptTable);
+  SAFEDELETEARRAY(m_transitionMatrix);
   init();
 }
 

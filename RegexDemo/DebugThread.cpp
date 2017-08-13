@@ -50,7 +50,6 @@ void DebugThread::singleStep() {
   if(isFinished()) {
     throwException(_T("singleStep:Thread has exited"));
   }
-
   m_singleStep = true;
   enableHandleStep(true);
   resume();
@@ -90,10 +89,10 @@ UINT DebugThread::run() {
       m_foundStart = m_regex.search(m_text, m_command == COMMAND_SEARCHFORWARD);
       if(m_foundStart >= 0) {
         m_resultLength = m_regex.getResultLength();
-        m_resultMsg  = format(_T("Found at %d. length:%d"), m_foundStart, m_resultLength);
-        m_regexPhase = REGEX_SUCEEDED;
+        m_resultMsg    = format(_T("Found at %d. length:%d"), m_foundStart, m_resultLength);
+        m_regexPhase   = REGEX_SUCEEDED;
       } else {
-        m_resultMsg  = _T("Not found");
+        m_resultMsg    = _T("Not found");
       }
       break;
     case COMMAND_MATCH  :
@@ -115,7 +114,6 @@ UINT DebugThread::run() {
     m_resultMsg  = _T("Unknown exception");
     m_regexPhase = REGEX_UNDEFINED;
   }
-
   setPropRunning(false);
   return 0;
 }
@@ -177,7 +175,7 @@ void DebugThread::getFoundPosition(int &start, int &end) {
   }
 }
 
-const String DebugThread::getResultMsg() const {
+String DebugThread::getResultMsg() const {
   if(isRunning()) {
     return _T("No result yet. Thread not finished");
   }

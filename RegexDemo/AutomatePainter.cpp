@@ -406,7 +406,7 @@ FontCache::~FontCache() {
   for(Iterator<Entry<FontKey, CFont*> > it = getEntryIterator(); it.hasNext();) {
     Entry<FontKey, CFont*> &e = it.next();
     e.getValue()->DeleteObject();
-    delete e.getValue();
+    SAFEDELETE(e.getValue());
   }
   clear();
 }
@@ -429,7 +429,7 @@ CFont &AutomatePainter::getFont(bool symbol, const Point2D &vector) { // static
   if(fontpp) {
     fontp = *fontpp;
   } else {
-    fontp = new CFont();
+    fontp = new CFont(); TRACE_NEW(fontp);
     const FontInfo &fi = fontInfo[symbol?1:0];
     fontp->CreateFont(fi.m_height, fi.m_width, degree*10, degree*10, 400, FALSE, FALSE, 0, ANSI_CHARSET, OUT_DEFAULT_PRECIS
                      ,CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY

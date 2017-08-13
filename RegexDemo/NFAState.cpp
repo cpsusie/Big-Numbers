@@ -31,74 +31,15 @@ CompactArray<NFAState*> NFAState::s_allocatedStates;
 
 #endif
 
-#define STATESPERPAGE 2000
 
-class NFAStatePage {
-private:
-  friend class NFAStateManager;
-  NFAStatePage *m_next;
-public:
-  NFAState m_stateArray[STATESPERPAGE];
-
-  NFAStatePage();
-  ~NFAStatePage();
-};
-
-class NFAStateManager {
-public:
-  NFAStatePage *m_firstPage;
-  NFAState     *m_firstState;
-
-  NFAStateManager();
-  ~NFAStateManager() {
-    deleteAll();
-  }
-  void deleteAll();
-};
-
-NFAStateManager::NFAStateManager() {
-  m_firstPage  = NULL;
-  m_firstState = NULL;
-}
-
-void NFAStateManager::deleteAll() {
-  for(NFAStatePage *p = m_firstPage, *q = NULL; p; p = q) {
-    q = p->m_next;
-    delete p;
-  }
-  m_firstPage  = NULL;
-  m_firstState = NULL;
-}
-
-static NFAStateManager stateManager;
-
-NFAStatePage::NFAStatePage() {
-  NFAState *p = &LASTVALUE(m_stateArray);
-  p->m_next1 = stateManager.m_firstState;
-  for(NFAState *q = p-1; q >= m_stateArray; p = q--) {
-    q->m_next1 = p;
-  }
-  stateManager.m_firstState = m_stateArray;
-
-  m_next = stateManager.m_firstPage;
-  stateManager.m_firstPage = this;
-}
-
-NFAStatePage::~NFAStatePage() {
-  stateManager.m_firstPage = m_next;
-}
+HeapObjectPool<NFAState> NFAState::s_stateManager;
 
 NFAState *NFAState::fetch(int edge) {  // static
-  if(stateManager.m_firstState == NULL) {
-    new NFAStatePage;
-  }
-  NFAState *s = stateManager.m_firstState;
-  stateManager.m_firstState = s->m_next1;
-  s->m_next1 = NULL;
+  NFAState *s = s_stateManager.fetch();
+  s->m_next = NULL;
   assert(s->m_edge == EDGE_UNUSED);
   assert(!s->isMarked());
   s->setEdge(edge);
-
 #ifdef _DEBUG
   s->m_patternCharIndex = -1;
   s_allocatedStates.add(s);
@@ -111,15 +52,14 @@ void NFAState::release(NFAState *s) {  // static
   assert(!s->isMarked());
   s->cleanup();
   s->m_edge  = EDGE_UNUSED;
-  s->m_next1 = stateManager.m_firstState;
-  stateManager.m_firstState = s;
+  s_stateManager.release(s);
 }
 
 void NFAState::releaseAll() {          // static
 #ifdef _DEBUG
   s_allocatedStates.clear();
 #endif
-  stateManager.deleteAll();
+  s_stateManager.releaseAll();
 }
 
 NFAState::NFAState() { // private
@@ -128,7 +68,7 @@ NFAState::NFAState() { // private
   m_marked     = false;
   m_edge       = EDGE_UNUSED;
   m_charClass  = NULL;
-  m_next1      = m_next2 = NULL;
+  m_next       = m_next2 = NULL;
   incrCount();
 }
 
@@ -150,12 +90,12 @@ void NFAState::copy(const NFAState &src) {
   m_startState = src.m_startState;
   m_edge       = src.m_edge;
   m_accept     = src.m_accept;
-  m_next1      = src.m_next1;
+  m_next       = src.m_next;
   m_next2      = src.m_next2;
 
   if(src.m_charClass) {
     assert(src.m_edge == EDGE_CHCLASS);
-    m_charClass = new CharacterSet(*src.m_charClass);
+    m_charClass = new CharacterSet(*src.m_charClass); TRACE_NEW(m_charClass);
   } else {
     assert(src.m_edge != EDGE_CHCLASS);
     m_charClass = NULL;
@@ -169,7 +109,7 @@ void NFAState::cleanup() {
   assert(!isMarked());
   if(m_charClass) {
     assert(m_edge == EDGE_CHCLASS);
-    delete m_charClass;
+    SAFEDELETE(m_charClass);
     m_charClass = NULL;
   } else {
     assert(m_edge != EDGE_CHCLASS);
@@ -178,20 +118,20 @@ void NFAState::cleanup() {
   m_id                       = -1;
   m_startState               = false;
   m_edge                     = EDGE_EPSILON;
-  m_next1                    = m_next2 = NULL;
+  m_next                     = m_next2 = NULL;
   m_accept.m_acceptAttribute = 0;
 }
 
 void NFAState::setEdge(int edge) {
   if(edge != m_edge) {
     if(m_edge == EDGE_CHCLASS) {
-      delete m_charClass;
+      SAFEDELETE(m_charClass);
       m_charClass = NULL;
     }
   }
   m_edge = edge;
   if(m_edge == EDGE_CHCLASS) {
-    m_charClass = new CharacterSet;
+    m_charClass = new CharacterSet; TRACE_NEW(m_charClass);
   }
 }
 
@@ -200,7 +140,7 @@ void NFAState::setAccepting(BYTE anchor) {
 }
 
 NFAState *NFAState::getSuccessor(int c) const {
-  return ((m_edge == c) || ((m_edge == EDGE_CHCLASS) && m_charClass->contains(c))) ? m_next1 : NULL;
+  return ((m_edge == c) || ((m_edge == EDGE_CHCLASS) && m_charClass->contains(c))) ? m_next : NULL;
 }
 
 CharacterSet &NFAState::getCharacterSet() const {
@@ -212,8 +152,8 @@ CharacterSet &NFAState::getCharacterSet() const {
 String NFAState::toString() const {
   String result = format(_T("NFA state %3d "), m_id);
 
-  if(m_next1 != NULL) {
-    result += format(_T("Goto %3d"), m_next1->m_id);
+  if(m_next != NULL) {
+    result += format(_T("Goto %3d"), m_next->m_id);
     if(m_next2) {
       result += format(_T(" or %3d"), m_next2->m_id);
     }

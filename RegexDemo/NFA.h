@@ -1,12 +1,14 @@
 #pragma once
 
+#include <HeapObjectPool.h>
+
 #define EDGE_EPSILON  -1                              // non-character values of NFAState.m_edge
 #define EDGE_CHCLASS  -2
 #define EDGE_UNUSED   -3
 
 #define ANCHOR_NONE  0                           //  Not anchored
-#define ANCHOR_START 0x1                           //  Pattern Anchored at start of line
-#define ANCHOR_END   0x2                           //  At end of line
+#define ANCHOR_START 0x1                         //  Pattern Anchored at start of line
+#define ANCHOR_END   0x2                         //  At end of line
 #define ACCEPT_STATE 0x4
 
 #define ANCHOR_BOTH  (ANCHOR_START | ANCHOR_END) //  Both start and end of line.
@@ -71,7 +73,7 @@ private:
   static CompactArray<NFAState*> s_allocatedStates;
 
 #endif
-  friend class NFAStatePage;
+  static HeapObjectPool<NFAState> s_stateManager;
   friend class NFA;
   void cleanup();
   void copy(const NFAState &src);
@@ -80,8 +82,7 @@ private:
   bool          m_marked     :  1; // Only true inside NFA constructor
   int           m_edge;            // Label for outgoing edge: character (>=0), EDGE_CHCLASS or EDGE_EPSILON
   CharacterSet *m_charClass;       // Characterclass when m_edge = EDGE_CHCLASS
-  NFAState();
-  ~NFAState();
+  NFAState(const NFAState &src);   // not defined
   inline void setMark(bool value) {
     m_marked = value;
   }
@@ -89,7 +90,7 @@ private:
     return m_marked;
   }
 public:
-  NFAState     *m_next1;           // Next state (or NULL if none), or tonext free if UNUSED
+  NFAState     *m_next;            // Next state (or NULL if none), or tonext free if UNUSED
   NFAState     *m_next2;           // Alternative next state if m_edge = EDGE_EPSILON. NULL if no alternative.
   AcceptType    m_accept;
 
@@ -97,8 +98,8 @@ public:
   static void      release(NFAState *s);
   static void      releaseAll();
 
-  NFAState(const NFAState &src); // not defined
-
+  NFAState();
+  ~NFAState();
   NFAState &operator=(const NFAState &src);
 
   NFAState *getSuccessor(int c) const; // Returns successor-state on transition c (character). NULL if none

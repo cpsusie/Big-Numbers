@@ -51,6 +51,10 @@ private:
 #endif
   BitSet     *transition(BitSet &dst, BitSet &NFAset, int c) const;
   void        epsClosure(BitSet &NFAset, AcceptType &accept) const;
+
+  // Initially m_states contains a single, start state formed by
+  // taking the epsilon closure of the NFA start state. m_states[0]
+  // is the DFA start state.
   void        makeTransitions();
   void        makeInitialGroups();
   void        fixupTransitions();

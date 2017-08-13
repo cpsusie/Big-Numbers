@@ -8,8 +8,8 @@
 
 BYTE NFAStatePoint::createAttributes(const NFAState *s) { // static
   return s->m_accept.m_acceptAttribute
-      | (s->isStartState()                              ? ATTR_ISSTARTSTATE   : ATTR_HASPREDECESSOR)
-      | (((s->m_next1 != NULL) || (s->m_next2 != NULL)) ? ATTR_HASSUCCESSSORS : 0);
+      | (s->isStartState()                             ? ATTR_ISSTARTSTATE   : ATTR_HASPREDECESSOR)
+      | (((s->m_next != NULL) || (s->m_next2 != NULL)) ? ATTR_HASSUCCESSSORS : 0);
 }
 
 static int compareById(NFAState * const &s1, NFAState * const &s2) { // static
@@ -18,19 +18,6 @@ static int compareById(NFAState * const &s1, NFAState * const &s2) { // static
 
 static int compareById(NFAStatePoint * const &s1, NFAStatePoint * const &s2) { // static
   return s1->getStateID() - s2->getStateID();
-}
-
-// ----------------------------------------- NFAPointArray ----------------------------------------
-
-NFAPointArray::~NFAPointArray() {
-  deleteAll();
-}
-
-void NFAPointArray::deleteAll() {
-  for(size_t i = 0; i < size(); i++) {
-    delete (*this)[i];
-  }
-  clear();
 }
 
 // ----------------------------------------- NFAPainter ----------------------------------------
@@ -90,7 +77,7 @@ void NFAPainter::calculateAllPositions() {
   BitSet hasPredecessor(stateCount);
   for(size_t i = 0; i < stateCount; i++) {
     const NFAState *state = allStates[i];
-    if(state->m_next1) hasPredecessor.add(state->m_next1->getID());
+    if(state->m_next ) hasPredecessor.add(state->m_next->getID());
     if(state->m_next2) hasPredecessor.add(state->m_next2->getID());
   }
   BitSet leftStateSet = hasPredecessor;
@@ -122,10 +109,10 @@ void NFAPainter::calculateAllPositions() {
     int succesorCount = 0;
 
     NFAStatePoint *sp1 = NULL, *sp2 = NULL;
-    if(sp->m_state->m_next1) {
-      const int id = sp->m_state->m_next1->getID();
+    if(sp->m_state->m_next) {
+      const int id = sp->m_state->m_next->getID();
       if(!done.contains(id)) {
-        sp1 = new NFAStatePoint(sp->m_state->m_next1, sp->m_subNFAIndex, sp->m_gridX+1, sp->m_gridY);
+        sp1 = new NFAStatePoint(sp->m_state->m_next, sp->m_subNFAIndex, sp->m_gridX+1, sp->m_gridY);
         succesorCount++;
       }
     }
@@ -290,8 +277,8 @@ void NFAPainter::setPositions(size_t subNFACount) {
 void NFAPainter::paintState(const NFAPointArray &pointArray, size_t i) {
   const NFAStatePoint *sp = pointArray[i];
   paintState(m_dc, sp->getPosition(), sp->getStateID(), sp->getAttributes());
-  if(sp->m_state->m_next1) {
-    paintTransition(sp, pointArray[sp->m_state->m_next1->getID()]);
+  if(sp->m_state->m_next) {
+    paintTransition(sp, pointArray[sp->m_state->m_next->getID()]);
   }
   if(sp->m_state->m_next2) {
     paintTransition(sp, pointArray[sp->m_state->m_next2->getID()]);
@@ -339,7 +326,7 @@ void NFAPainter::paintTransition(const NFAStatePoint *from, const NFAStatePoint 
     v = (ct - cf).normalize();
     Point2DP pFrom, pTo;
 
-    if((st.getID() < sf.getID()) && (st.m_next1 == &sf || st.m_next2 == &sf)) {
+    if((st.getID() < sf.getID()) && (st.m_next == &sf || st.m_next2 == &sf)) {
       Point2DP v2 = -v;
       v = v.rotate(  GRAD2RAD(-45));
       v2 = v2.rotate(GRAD2RAD(45));
@@ -377,10 +364,8 @@ void NFAPainter::paintTransition(const NFAStatePoint *from, const NFAStatePoint 
 void NFAPainter::checkAllocated() {
   const int allocated = NFAState::getAllocated();
   if(allocated == 0) {
-    for(size_t i = 0; i < s_oldNFAPoints.size(); i++) delete s_oldNFAPoints[i];
-    s_oldNFAPoints.clear();
-    for(size_t i = 0; i < s_newNFAPoints.size(); i++) delete s_newNFAPoints[i];
-    s_newNFAPoints.clear();
+    s_oldNFAPoints.deleteAll();
+    s_newNFAPoints.deleteAll();
   }
 }
 
@@ -436,7 +421,7 @@ int AnimationPoint::getUpdateFlags() const {
   }
   const NFAState *p1 = m_oldP->m_state;
   const NFAState *p2 = m_newP->m_state;
-  if((p1->m_next1 != p2->m_next1) || (p1->m_next2 != p2->m_next2)) {
+  if((p1->m_next != p2->m_next) || (p1->m_next2 != p2->m_next2)) {
     result |= TRANSITIONS_CHANGED;
   }
   if(m_oldP->getAttributes() != m_newP->getAttributes()) {

@@ -34,9 +34,6 @@ static int bitSetCompare(BitSet * const &s1, BitSet * const &s2) {
   return bitSetCmp(*s1, *s2);
 }
 
-// Initially m_states contains a single, start state formed by
-// taking the epsilon closure of the NFA start state. m_states[0]
-// is the DFA start state.
 void DFA::makeTransitions() {
   DBG_callDFAStepHandler(format(_T("%sConstructing unminimized DFA\n"), m_NFA.toString().cstr()));
   HashMap<BitSet*, int> bitsetMap(bitSetHashCode, bitSetCompare, 991);
@@ -102,32 +99,32 @@ void DFA::makeTransitions() {
   }
 }
 
-// NFAset   is the set of start states to examine. also used as output
-// *accept  is modified to point to the AcceptAction associated with an accepting
-//          state (or NULL if the state isn't an accepting state).
+// NFAset  is the set of start states to examine. also used as output
+// *accept is modified to point to the AcceptAction associated with an accepting
+//         state (or NULL if the state isn't an accepting state).
 //
-// Computes the epsilon closure set for the NFAset. This set
-// will contain all states that can be reached by making epsilon transitions
-// from all NFA states in the original set. Returns an empty set if the
-// set or the closure set is empty. Modifies *accept to point to the
+// Computes the epsilon closure set for the NFAset. This set will contain all states
+// that can be reached by making epsilon transitions from all NFA states in the original set.
+// Returns an empty set if the set or the closure set is empty.
+// Modifies *accept to point to the
 // accepting String with LOWEST lineno, if one of the NFA states in the output set is an
 // accepting state.
 void DFA::epsClosure(BitSet &NFAset, AcceptType &accept) const {
 // The algorithm is:
 //
-//     push all NFA-states in NFAset set onto stateStack
-//     while(stateStack is not empty) {
-//       pop the top element p
-//       if(p is an accept state) {
-//         accept = p.accept
-//       }
-//       if(there's an epsilon transition from p to q) {
-//         if(q isn't in NFAset) {
-//           add q to NFAset
-//           push q onto stateStack
-//         }
+//   push all NFA-states in NFAset set onto stateStack
+//   while(stateStack is not empty) {
+//     pop the top element p
+//     if(p is an accept state) {
+//       accept = p.accept
+//     }
+//     if(there's an epsilon transition from p to q) {
+//       if(q isn't in NFAset) {
+//         add q to NFAset
+//         push q onto stateStack
 //       }
 //     }
+//   }
 
   CompactStack<int> stateStack; // stack of NFA-states remaining to be tested
 
@@ -142,8 +139,8 @@ void DFA::epsClosure(BitSet &NFAset, AcceptType &accept) const {
     }
 
     if(p.getEdge() == EDGE_EPSILON) {                                              // 5
-      if(p.m_next1) {
-        int next = p.m_next1->getID();
+      if(p.m_next) {
+        int next = p.m_next->getID();
         if(!NFAset.contains(next)) {                                               // 6
           NFAset.add(next);                                                        // 7
           stateStack.push(next);                                                   // 8

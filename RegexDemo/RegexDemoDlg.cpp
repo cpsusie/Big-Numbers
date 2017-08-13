@@ -13,79 +13,70 @@ public:
   enum { IDD = IDD_ABOUTBOX };
 
 protected:
-  virtual void DoDataExchange(CDataExchange *pDX);
-
-protected:
   DECLARE_MESSAGE_MAP()
 };
 
 CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
-void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-  __super::DoDataExchange(pDX);
-}
-
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
 CRegexDemoDlg::CRegexDemoDlg(CWnd *pParent) : CDialog(CRegexDemoDlg::IDD, pParent) {
-	m_pattern     = EMPTYSTRING;
-	m_target      = EMPTYSTRING;
+  m_pattern     = EMPTYSTRING;
+  m_target      = EMPTYSTRING;
   m_hIcon       = theApp.LoadIcon(IDR_MAINFRAME);
   m_debugThread = NULL;
 }
 
-CRegexDemoDlg::~CRegexDemoDlg() {
-  for(size_t i = 0; i < m_charMarkers.size(); i++) {
-    delete m_charMarkers[i];
-  }
+BOOL CRegexDemoDlg::DestroyWindow() {
   m_charMarkers.clear();
   killThread();
+  return __super::DestroyWindow();
 }
 
 void CRegexDemoDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
-	DDX_CBString(pDX, IDC_COMBOPATTERN, m_pattern);
-	DDX_CBString(pDX, IDC_COMBOTARGET, m_target);
+  DDX_CBString(pDX, IDC_COMBOPATTERN, m_pattern);
+  DDX_CBString(pDX, IDC_COMBOTARGET, m_target);
 }
 
 BEGIN_MESSAGE_MAP(CRegexDemoDlg, CDialog)
   ON_WM_SYSCOMMAND()
   ON_WM_QUERYDRAGICON()
   ON_WM_PAINT()
-	ON_WM_SIZE()
-	ON_WM_CLOSE()
-	ON_COMMAND(ID_FILE_EXIT                  , OnFileExit                   )
-	ON_COMMAND(ID_EDIT_COPY                  , OnEditCopy                   )
-	ON_COMMAND(ID_EDIT_FIND                  , OnEditFind                   )
-	ON_COMMAND(ID_EDIT_MATCH                 , OnEditMatch                  )
-	ON_COMMAND(ID_EDIT_COMPILEPATTERN        , OnEditCompilePattern         )
-	ON_COMMAND(ID_EDIT_FINDMATCHINGPAR       , OnEditFindMatchingParentesis )
-	ON_COMMAND(ID_EDIT_STANDARDTEST          , OnEditStandardTest           )
-	ON_COMMAND(ID_DEBUG_COMPILE              , OnDebugCompile               )
-	ON_COMMAND(ID_DEBUG_FIND                 , OnDebugFind                  )
-	ON_COMMAND(ID_DEBUG_MATCH                , OnDebugMatch                 )
-	ON_COMMAND(ID_DEBUG_CONTINUE             , OnDebugContinue              )
-	ON_COMMAND(ID_DEBUG_STEP                 , OnDebugStep                  )
-	ON_COMMAND(ID_DEBUG_TOGGLEBREAKPOINT     , OnDebugToggleBreakPoint      )
-	ON_COMMAND(ID_OPTIONS_IGNORECASE         , OnOptionsIgnoreCase          )
-	ON_COMMAND(ID_OPTIONS_SEARCHBACKWARDS    , OnOptionsSearchBackwards     )
-	ON_COMMAND(ID_OPTIONS_DFA_REGEX          , OnOptionsDFARegex            )
-	ON_COMMAND(ID_OPTIONS_DFA_SHOWTABLES     , OnOptionsDFAShowTables       )
-	ON_COMMAND(ID_OPTIONS_DFA_NO_GRAPHICS    , OnOptionsDFANoGraphics       )
-	ON_COMMAND(ID_OPTIONS_DFA_PAINT_STATES   , OnOptionsDFAPaintStates      )
-	ON_COMMAND(ID_OPTIONS_DFA_ANIMATE_CREATE , OnOptionsDFAAnimateCreate    )
-	ON_COMMAND(ID_HELP_ABOUT                 , OnHelpAbout                  )
-	ON_COMMAND(ID_HELP_SHOWCTRLID            , OnHelpShowctrlid             )
-	ON_COMMAND(ID_GOTO_PATTERN               , OnGotoPattern                )
-	ON_COMMAND(ID_GOTO_TEXT                  , OnGotoText                   )
-	ON_COMMAND(ID_GOTO_BYTECODE              , OnGotoBytecode               )
-	ON_CBN_EDITCHANGE(IDC_COMBOPATTERN       , OnEditChangeComboPattern     )
-	ON_CBN_EDITCHANGE(IDC_COMBOTARGET        , OnEditChangeComboTarget      )
-	ON_CBN_SELCHANGE( IDC_COMBOPATTERN       , OnSelChangeComboPattern      )
-	ON_CBN_SELCHANGE( IDC_COMBOTARGET        , OnSelChangeComboTarget       )
-	ON_LBN_SELCHANGE( IDC_LISTBYTECODE       , OnSelChangeListbyteCode      )
+  ON_WM_SIZE()
+  ON_WM_CLOSE()
+  ON_COMMAND(ID_FILE_EXIT                  , OnFileExit                   )
+  ON_COMMAND(ID_EDIT_COPY                  , OnEditCopy                   )
+  ON_COMMAND(ID_EDIT_FIND                  , OnEditFind                   )
+  ON_COMMAND(ID_EDIT_MATCH                 , OnEditMatch                  )
+  ON_COMMAND(ID_EDIT_COMPILEPATTERN        , OnEditCompilePattern         )
+  ON_COMMAND(ID_EDIT_FINDMATCHINGPAR       , OnEditFindMatchingParentesis )
+  ON_COMMAND(ID_EDIT_STANDARDTEST          , OnEditStandardTest           )
+  ON_COMMAND(ID_DEBUG_COMPILE              , OnDebugCompile               )
+  ON_COMMAND(ID_DEBUG_FIND                 , OnDebugFind                  )
+  ON_COMMAND(ID_DEBUG_MATCH                , OnDebugMatch                 )
+  ON_COMMAND(ID_DEBUG_CONTINUE             , OnDebugContinue              )
+  ON_COMMAND(ID_DEBUG_STEP                 , OnDebugStep                  )
+  ON_COMMAND(ID_DEBUG_TOGGLEBREAKPOINT     , OnDebugToggleBreakPoint      )
+  ON_COMMAND(ID_OPTIONS_IGNORECASE         , OnOptionsIgnoreCase          )
+  ON_COMMAND(ID_OPTIONS_SEARCHBACKWARDS    , OnOptionsSearchBackwards     )
+  ON_COMMAND(ID_OPTIONS_DFA_REGEX          , OnOptionsDFARegex            )
+  ON_COMMAND(ID_OPTIONS_DFA_SHOWTABLES     , OnOptionsDFAShowTables       )
+  ON_COMMAND(ID_OPTIONS_DFA_NO_GRAPHICS    , OnOptionsDFANoGraphics       )
+  ON_COMMAND(ID_OPTIONS_DFA_PAINT_STATES   , OnOptionsDFAPaintStates      )
+  ON_COMMAND(ID_OPTIONS_DFA_ANIMATE_CREATE , OnOptionsDFAAnimateCreate    )
+  ON_COMMAND(ID_HELP_ABOUT                 , OnHelpAbout                  )
+  ON_COMMAND(ID_HELP_SHOWCTRLID            , OnHelpShowctrlid             )
+  ON_COMMAND(ID_GOTO_PATTERN               , OnGotoPattern                )
+  ON_COMMAND(ID_GOTO_TEXT                  , OnGotoText                   )
+  ON_COMMAND(ID_GOTO_BYTECODE              , OnGotoBytecode               )
+  ON_CBN_EDITCHANGE(IDC_COMBOPATTERN       , OnEditChangeComboPattern     )
+  ON_CBN_EDITCHANGE(IDC_COMBOTARGET        , OnEditChangeComboTarget      )
+  ON_CBN_SELCHANGE( IDC_COMBOPATTERN       , OnSelChangeComboPattern      )
+  ON_CBN_SELCHANGE( IDC_COMBOTARGET        , OnSelChangeComboTarget       )
+  ON_LBN_SELCHANGE( IDC_LISTBYTECODE       , OnSelChangeListbyteCode      )
   ON_MESSAGE(       ID_MSG_THREADRUNNING   , OnMsgThreadRunning           )
 END_MESSAGE_MAP()
 
@@ -96,10 +87,10 @@ BOOL CRegexDemoDlg::OnInitDialog() {
     ASSERT(IDM_ABOUTBOX < 0xF000);
 
     CMenu *pSysMenu = GetSystemMenu(FALSE);
-    if (pSysMenu != NULL) {
+    if(pSysMenu != NULL) {
       CString strAboutMenu;
       strAboutMenu.LoadString(IDS_ABOUTBOX);
-      if (!strAboutMenu.IsEmpty()) {
+      if(!strAboutMenu.IsEmpty()) {
         pSysMenu->AppendMenu(MF_SEPARATOR);
         pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, strAboutMenu);
       }
@@ -491,7 +482,7 @@ void CRegexDemoDlg::startDebugCompile() {
     clearCodeWindow();
     const String pattern = m_pattern;
 
-    m_debugThread = new DebugThread(m_regex, getCompileParameters(), getCodeWindow()->getBreakPoints());
+    m_debugThread = new DebugThread(m_regex, getCompileParameters(), getCodeWindow()->getBreakPoints()); TRACE_NEW(m_debugThread);
     m_debugThread->addPropertyChangeListener(this);
     m_debugThread->singleStep();
   } catch(Exception e) {
@@ -507,7 +498,7 @@ void CRegexDemoDlg::startThread(ThreadCommand command, bool singleStep) {
     m_targetDirty = false;
     getTargetWindow()->SetEditSel(-1,-1);
     const String target = m_target;
-    m_debugThread = new DebugThread(command, m_regex, target, getCodeWindow()->getBreakPoints());
+    m_debugThread = new DebugThread(command, m_regex, target, getCodeWindow()->getBreakPoints()); TRACE_NEW(m_debugThread);
     m_debugThread->addPropertyChangeListener(this);
     if(singleStep) {
       m_debugThread->singleStep();
@@ -522,7 +513,7 @@ void CRegexDemoDlg::startThread(ThreadCommand command, bool singleStep) {
 void CRegexDemoDlg::killThread() {
   if(m_debugThread != NULL) {
     m_debugThread->removePropertyChangeListener(this);
-    delete m_debugThread;
+    SAFEDELETE(m_debugThread);
     m_debugThread = NULL;
   }
   unmarkAllCharacters();
