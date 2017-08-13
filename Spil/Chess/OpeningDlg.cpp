@@ -136,7 +136,7 @@ void COpeningDlg::OnSelChangedOpeningTree(NMHDR *pNMHDR, LRESULT *pResult) {
   try {
     setWindowText(this, format(_T("%s:%s"), m_dialogName.cstr(), getActiveOpenings().cstr()));
   } catch(Exception e) {
-    MessageBox(e.what());
+    showException(e);
   }
   *pResult = 0;
 }

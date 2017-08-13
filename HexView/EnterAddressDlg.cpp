@@ -44,12 +44,11 @@ void CEnterAddressDlg::OnOK() {
 }
 
 void CEnterAddressDlg::errorMessage(const TCHAR *format, ...) {
+  OnGotoEditAddress();
   va_list argptr;
   va_start(argptr,format);
-  const String msg = vformat(format, argptr);
+  vshowMessageBox(MB_ICONWARNING, format,argptr);
   va_end(argptr);
-  MessageBox(msg.cstr(), _T("Error"), MB_ICONWARNING);
-  OnGotoEditAddress();
 }
 
 bool CEnterAddressDlg::validateAddress() {

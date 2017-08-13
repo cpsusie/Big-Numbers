@@ -328,7 +328,7 @@ void CFernDlg::startTimer() {
     return;
   }
   if(SetTimer(1,0,NULL) == 0) {
-    AfxMessageBox(_T("Cannot install timer"));
+    showWarning(_T("Cannot install timer"));
   } else {
     m_timerIsRunning = true;
   }

@@ -32,7 +32,7 @@ void CCoordinateSystem::substituteControl(CWnd *parent, int id) {
   DEFINEMETHODNAME;
   CWnd *ctrl = parent->GetDlgItem(id);
   if(ctrl == NULL) {
-    parent->MessageBox(format(_T("%s:Control %d not found"), method, id).cstr(), _T("Error"), MB_ICONWARNING);
+    showError(_T("%s:Control %d not found"), method, id);
     return;
   }
   const DWORD  style   = ctrl->GetStyle();
@@ -46,7 +46,7 @@ void CCoordinateSystem::substituteControl(CWnd *parent, int id) {
   ctrl->DestroyWindow();
 
   if(!Create(EMPTYSTRING, style, rect, parent, id)) {
-    parent->MessageBox(format(_T("%s:Create failed"), method).cstr(), _T("Error"), MB_ICONWARNING);
+    showError(_T("%s:Create failed"), method);
     return;
   }
   ModifyStyleEx(0, exStyle);

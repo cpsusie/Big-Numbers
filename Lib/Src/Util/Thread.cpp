@@ -85,7 +85,7 @@ void DefaultExceptionHandler::uncaughtException(Thread &thread, Exception &e) {
   if(isatty(stderr)) {
     _ftprintf(stderr, _T("\n%s\n"), errorText.cstr());
   } else {
-    MessageBox(NULL, errorText. replace(_T('\n'),_T("\r\n")).cstr(), _T("Error"), MB_OK | MB_ICONERROR);
+    MessageBox(NULL, errorText.replace(_T('\n'),_T("\r\n")).cstr(), _T("Error"), MB_OK | MB_ICONERROR);
   }
   abort();
 }

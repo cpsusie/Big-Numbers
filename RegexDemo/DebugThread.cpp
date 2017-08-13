@@ -42,7 +42,7 @@ DebugThread::~DebugThread() {
     Sleep(50);
   }
   if(stillActive()) {
-    AfxMessageBox(_T("DebugThread still active in destructor"));
+    showWarning(_T("DebugThread still active in destructor"));
   }
 }
 

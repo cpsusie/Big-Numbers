@@ -26,7 +26,7 @@ END_MESSAGE_MAP()
 void CPasswordDlg::OnOK() {
   UpdateData();
   if(m_password != m_expectedPassword) {
-    MessageBox(_T("Forkert kodeord"), _T("Fejl"), MB_ICONEXCLAMATION);
+    showWarning(_T("Forkert kodeord"));
     OnCancel();
   } else {
     __super::OnOK();

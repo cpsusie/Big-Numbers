@@ -42,7 +42,7 @@ void CGetIntDlg::OnOK() {
   if(!UpdateData())
     return;
   if(m_intervalSpecified && !m_interval.contains(getValue())) {
-    MessageBox(format(_T("Please enter an integer in the interval [%d..%d]"),m_interval.getMin(),m_interval.getMax()).cstr(), _T("Invalid input"));
+    showWarning(_T("Please enter an integer in the interval [%d..%d]"),m_interval.getMin(),m_interval.getMax());
     return;
   }
   __super::OnOK();

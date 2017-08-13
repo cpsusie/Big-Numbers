@@ -36,11 +36,10 @@ BOOL CNameDlg::OnInitDialog() {
 void CNameDlg::OnOK() {
   UpdateData();
   if(m_name.GetLength() == 0) {
-    MessageBox(_T("Indtast dit navn"), _T("Fejl"), MB_ICONWARNING);
     gotoEditBox(this, IDC_EDITNAME);
+    showWarning(_T("Indtast dit navn"));
     return;
   }
-
   __super::OnOK();
 }
 

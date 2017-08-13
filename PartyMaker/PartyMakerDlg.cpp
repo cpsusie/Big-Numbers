@@ -189,7 +189,7 @@ BOOL CPartyMakerDlg::OnInitDialog() {
     m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_MAINFRAME));
     gotoToListBox();
   } catch(Exception e) {
-    Message(_T("Fatal error:%s"), e.what());
+    showException(e);
     exit(-1);
   }
   startTimer();
@@ -490,13 +490,13 @@ void CPartyMakerDlg::OnSortByAlbum() {
 bool CPartyMakerDlg::appendToMediaQueue(const MediaFile &f, bool silence) {
   if((int)m_mediaQueue->size() >= m_options.getMaxChoise()) {
     if(!silence) {
-      Message(_T("Jeg kan desværre ikke huske mere end %d numre"), m_options.getMaxChoise());
+      showInformation(_T("Jeg kan desværre ikke huske mere end %d numre"), m_options.getMaxChoise());
     }
     return false;
   }
   if(!m_options.getAllowDuplicates() && m_mediaQueue->contains(f)) {
     if(!silence) {
-      Message(_T("%s er allerede valgt"),f.getTitle());
+      showInformation(_T("%s er allerede valgt"),f.getTitle());
     }
     return false;
   }
@@ -508,7 +508,7 @@ bool CPartyMakerDlg::appendToMediaQueue(const MediaFile &f, bool silence) {
     CTime now(CTime::GetCurrentTime());
     now = now + CTimeSpan(0,0,0,secondsUntilPlayed);
     const String klstr = format(_T("%d:%02d"),now.GetHour(),now.GetMinute());
-    Message(_T("%s vil blive spillet ca. kl. %s"), f.getTitle(),klstr.cstr());
+    showInformation(_T("%s vil blive spillet ca. kl. %s"), f.getTitle(),klstr.cstr());
   }
   return true;
 }
@@ -885,7 +885,7 @@ void CPartyMakerDlg::OnEditCopy() {
     try {
       clipboardDropFile(m_hWnd,m_mediaArray[selected].getSourceURL());
     } catch(Exception e) {
-      Message(_T("clipboardDropFiles failed:%s"),e.what());
+      showException(e);
     }
   }
 }
@@ -1060,7 +1060,7 @@ void CPartyMakerDlg::OnContextMenu(CWnd *pWnd, CPoint point) {
     CMenu menu;
     int ret = menu.LoadMenu(IDR_CONTEXTMENU);
     if(!ret) {
-      Message(_T("Loadmenu failed"));
+      showWarning(_T("Loadmenu failed"));
       return;
     }
     menu.GetSubMenu(0)->TrackPopupMenu(TPM_LEFTALIGN|TPM_RIGHTBUTTON, point.x,point.y, this);
@@ -1230,12 +1230,10 @@ bool CPartyMakerDlg::colorEdit(COLORREF &c) {
 void CPartyMakerDlg::OnShowCount() {
   const UINT   duration       = (UINT)m_mediaArray.getDuration();
   const String durationString = format(_T("%d:%02d:%02d"), duration/3600, (duration/60)%60, duration%60);
-  MessageBox(format(_T("Der er %d numre i kartoteket\r\n%s Timer")
-                   ,(int)m_mediaArray.size()
-                   ,durationString.cstr()
-                   ).cstr()
-            ,_T("Total")
-            ,MB_ICONINFORMATION);
+  showInformation(_T("Der er %d numre i kartoteket\r\n%s Timer")
+                 ,(int)m_mediaArray.size()
+                 ,durationString.cstr()
+                 );
 }
 
 int CPartyMakerDlg::findMediaFileInMediaQueue(const CPoint &point) {

@@ -15,6 +15,6 @@ void CChessApp::createFileAssociation() {
     RegistryKey commandKey = handlerKey.createOrOpenPath(_T("shell\\open\\Command"));
     commandKey.setValue(EMPTYSTRING, fileName + _T(" \"%1\""));
   } catch(Exception e) {
-    AfxMessageBox(e.what(), MB_ICONWARNING);
+    showException(e);
   }
 }

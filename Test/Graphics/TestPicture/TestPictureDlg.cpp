@@ -114,7 +114,7 @@ BOOL CTestPictureDlg::OnInitDialog() {
     try {
       getCurrentImage().load(*argv);
     } catch(Exception e) {
-      MessageBox(e.what(), _T("Error"), MB_ICONWARNING);
+      showException(e);
     }
   }
   return TRUE;
@@ -397,7 +397,7 @@ void CTestPictureDlg::OnFileLoad() {
     Image &image = getCurrentImage();
     image.load(fileName);
   } catch(Exception e) {
-    MessageBox(e.what(), _T("Error"), MB_ICONWARNING);
+    showException(e);
     return;
   }
   Invalidate();
@@ -513,7 +513,7 @@ void CTestPictureDlg::OnEditSwapRedAndBlue() {
       DeleteObject(bm);
       Invalidate(FALSE);
     } catch(Exception e) {
-      MessageBox(e.what(), _T("Error"), MB_ICONWARNING);
+      showException(e);
     }
   }
 }
@@ -564,7 +564,7 @@ void CTestPictureDlg::OnDropFiles(HDROP hDropInfo) {
       image.load(fileName);
       Invalidate();
     } catch(Exception e) {
-      MessageBox(e.what(), _T("Error"), MB_ICONWARNING);
+      showException(e);
     }
   }
   __super::OnDropFiles(hDropInfo);

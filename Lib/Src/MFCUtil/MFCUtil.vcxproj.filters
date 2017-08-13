@@ -192,9 +192,6 @@
     <ClCompile Include="CoordinateSystem\SystemPainter.cpp">
       <Filter>Source Files\CoordinateSystem</Filter>
     </ClCompile>
-    <ClCompile Include="ShowException.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="TextOut.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

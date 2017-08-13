@@ -154,7 +154,7 @@ void CTestBlendDlg::OnButtonBlend() {
     SetStretchBltMode(screenDC, getStretchMode());
     PixRect::stretchBlt(screenDC,0,0,dstWidth,dstHeight,SRCCOPY,&dstPr,0,0,dstSize.cx, dstSize.cy);
   } catch(Exception e) {
-    MessageBox(e.what(), _T("Exception"));
+    showException(e);
   }
 }
 
@@ -171,7 +171,7 @@ int CTestBlendDlg::getStretchMode() {
   if(m_stretchMode == _T("WHITEONBLACK")) {
     return WHITEONBLACK;
   }
-  MessageBox(format(_T("Unknown stretchmode:%s"), (LPCTSTR)m_stretchMode).cstr(),_T("Error"));
+  showWarning(_T("Unknown stretchmode:%s"), (LPCTSTR)m_stretchMode).cstr());
   return BLACKONWHITE;
 }
 
@@ -244,6 +244,6 @@ void CTestBlendDlg::drawKingRotated() {
     SetStretchBltMode(screenDC, getStretchMode());
     PixRect::stretchBlt(screenDC,0,0,dstWidth,dstHeight,SRCCOPY,&dstPr,0,0,dstSize.cx, dstSize.cy);
   } catch(Exception e) {
-    MessageBox(e.what(), _T("Exception"));
+    showException(e);
   }
 }

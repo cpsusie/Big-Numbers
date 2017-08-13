@@ -75,13 +75,13 @@ BOOL CGetcolorDlg::OnInitDialog() {
 
   if(!SelectObject(hdcCompatible, hbmScreen)) {
     DeleteDC(hdcScreen);
-    MessageBox(_T("SelecetObject failed"));
+    showError(_T("SelecetObject failed"));
     exit(0);
   }
 
   if(!BitBlt(hdcCompatible, 0,0, scrw, scrh, hdcScreen, 0,0, SRCCOPY)) {
     DeleteDC(hdcScreen);
-    MessageBox(_T("BitBlt failed:%s"),getLastErrorText().cstr());
+    showError(_T("BitBlt failed:%s"),getLastErrorText().cstr());
     exit(0);
   }
 
@@ -122,7 +122,7 @@ void CGetcolorDlg::OnPaint() {
     CClientDC dc(this);
     if(!BitBlt(dc.m_hDC,0,0, scrw, scrh, hdcCompatible, 0,0, SRCCOPY)) {
       DeleteDC(hdcScreen);
-      MessageBox(_T("BitBlt failed:%s"), getLastErrorText().cstr());
+      showError(_T("BitBlt failed:%s"), getLastErrorText().cstr());
       exit(0);
     }
   }

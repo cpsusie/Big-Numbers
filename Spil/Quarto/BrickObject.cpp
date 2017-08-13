@@ -87,12 +87,12 @@ LPD3DXMESH BrickObject::createMesh(AbstractMeshFactory &amf, BYTE attr) { // sta
   return rotateProfile(amf, profile, param, true);
 }
 
-class BrickMarker : public D3LineArray {
+class BrickMarker : public D3WireFrameBox {
 private:
   D3PosDirUpScale &m_pdus;
 public:
   BrickMarker(D3Scene &scene, const D3DXCube3 &box, D3PosDirUpScale &pdus)
-    : D3LineArray(scene, box.m_lbn, box.m_rtf)
+    : D3WireFrameBox(scene, box)
     , m_pdus(pdus)
   {}
   D3PosDirUpScale getPDUS() const {

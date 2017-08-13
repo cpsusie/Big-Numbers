@@ -279,7 +279,7 @@ void CPolygondistDlg::OnToolsFindMaxDistance() {
   UINT       index1 = m_poly.findTopPoint();
   UINT       index2 = m_poly.findBottomPoint();
   if(index1 < 0) {
-    MessageBox(_T("Ingen punkter i polygon"));
+    showInformation(_T("Ingen punkter i polygon"));
     return;
   }
   CWnd       *panel = GetDlgItem(IDC_STATICPANEL);
@@ -344,7 +344,7 @@ void CPolygondistDlg::OnToolsFindIntersectionOfLines() {
     bool intersect;
     const Point2DP p = pointOfIntersection(l1,l2, intersect);
     if (!intersect) {
-      Message(_T("lines do not intersect"));
+      showWarning(_T("lines do not intersect"));
       return;
     }
     CPoint cp = p;

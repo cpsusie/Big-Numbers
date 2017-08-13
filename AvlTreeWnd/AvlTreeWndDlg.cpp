@@ -259,7 +259,7 @@ void CAvlTreeWndDlg::OnContextMenu(CWnd *pWnd, CPoint point) {
   CMenu menu;
   int ret = menu.LoadMenu(IDR_CONTEXTMENU);
   if(!ret) {
-    AfxMessageBox(_T("Loadmenu failed"));
+    showWarning(_T("Loadmenu failed"));
     return;
   }
   menu.GetSubMenu(0)->TrackPopupMenu(TPM_LEFTALIGN|TPM_RIGHTBUTTON, point.x,point.y, this);

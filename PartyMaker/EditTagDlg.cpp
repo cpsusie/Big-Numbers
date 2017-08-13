@@ -131,7 +131,7 @@ void CEditTagDlg::OnOK() {
         m_changed = true;
       }
     } catch(Exception e) {
-      Message(_T("%s"), e.what());
+      showException(e);
       return;
     }
 

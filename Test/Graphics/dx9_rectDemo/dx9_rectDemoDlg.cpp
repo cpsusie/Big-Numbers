@@ -837,8 +837,8 @@ String getD3DErrorMsg(HRESULT hr) {
 
 void checkD3DResult(TCHAR *fileName, int line, HRESULT hr) {
   if(hr != D3D_OK) {
-    AfxMessageBox(format(_T("D3D-error %s in %s, line %d"), getD3DErrorMsg(hr).cstr(), fileName, line).cstr(), MB_ICONSTOP);
-    exit(-1);;
+    showError(_T("D3D-error %s in %s, line %d"), getD3DErrorMsg(hr).cstr(), fileName, line);
+    exit(-1);
   }
 }
 
@@ -846,7 +846,7 @@ void checkD3DResult(TCHAR *fileName, int line, HRESULT hr) {
 
 void checkD3DResult(HRESULT hr) {
   if(hr != D3D_OK) {
-    AfxMessageBox(format(_T("D3D-error %s"), getD3DErrorMsg(hr).cstr()).cstr(), MB_ICONSTOP);
+    showError(_T("D3D-error %s"), getD3DErrorMsg(hr).cstr());
     exit(-1);
   }
 }

@@ -130,7 +130,7 @@ void CTestConfirmDlg::OnButtonShowStandardMessageBox() {
 
   int ret = MessageBox((LPCTSTR)m_confirmMessage, (LPCTSTR)m_confirmCaption, getSelectedConfirmButtons() | getSelectedConfirmIcon());
 
-  MessageBox(format(_T("MesasgeBox return %s.")
+  MessageBox(format(_T("MessageBox return %s.")
                    ,findEnumName(ret, replyItems, ARRAYSIZE(replyItems))
                    ).cstr()
             ,_T("Result"));

@@ -82,7 +82,6 @@ private:
   void setSubMK(int subM, int subK);
   void adjustMaxMKSum();
   String getThreadStateName() const;
-  void showError(const Exception &e);
   inline bool hasDebugThread() const {
     return m_debugThread != NULL;
   }

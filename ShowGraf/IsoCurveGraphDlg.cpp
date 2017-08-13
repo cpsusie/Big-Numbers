@@ -62,7 +62,7 @@ bool CIsoCurveGraphDlg::validate() {
   }
   if(m_cellSize <= 0) {
     OnGotoCellSize();
-    MessageBox(_T("Cellsize must be > 0"));
+    showWarning(_T("Cellsize must be > 0"));
     return false;
   }
   return true;

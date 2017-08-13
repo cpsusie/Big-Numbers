@@ -111,7 +111,7 @@ BOOL DrawTool::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) {
       try {
         paste();
       } catch(Exception e) {
-        AfxMessageBox(e.what());
+        showException(e);
       }
     }
     return true;

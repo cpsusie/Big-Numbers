@@ -13,11 +13,7 @@
 class CAboutDlg : public CDialog {
 public:
   CAboutDlg();
-
   enum { IDD = IDD_ABOUTBOX };
-
-protected:
-  virtual void DoDataExchange(CDataExchange *pDX);
 
 protected:
   DECLARE_MESSAGE_MAP()
@@ -26,20 +22,14 @@ protected:
 CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
-void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-  __super::DoDataExchange(pDX);
-}
-
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
 CWhist3Dialog::CWhist3Dialog(CWnd *pParent) : CDialog(CWhist3Dialog::IDD, pParent), m_sync(0) {
-
   m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
 
   IdentifyDialog dlg;
   dlg.DoModal();
-
   try {
     const Options &options = getOptions();
     m_player = new Whist3Player(options.m_myName, this, options.m_connected ? options.m_dealerName : EMPTYSTRING);
@@ -89,23 +79,21 @@ HCURSOR CWhist3Dialog::OnQueryDragIcon() {
 void CWhist3Dialog::fatalError(const TCHAR *format, ... ) {
   va_list argptr;
   va_start(argptr, format);
-  const String msg = vformat(format,argptr);
+  vshowMessageBox(MB_ICONERROR, format, argptr);
   va_end(argptr);
-  MessageBox(msg.cstr(),_T("Fatal fejl"), MB_ICONSTOP);
   exit(-1);
 }
 
 BOOL CWhist3Dialog::OnInitDialog() {
   __super::OnInitDialog();
 
-
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
   CMenu *pSysMenu = GetSystemMenu(FALSE);
-  if (pSysMenu != NULL) {
+  if(pSysMenu != NULL) {
     CString strAboutMenu;
     strAboutMenu.LoadString(IDS_ABOUTBOX);
-    if (!strAboutMenu.IsEmpty()) {
+    if(!strAboutMenu.IsEmpty()) {
       pSysMenu->AppendMenu(MF_SEPARATOR);
       pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, strAboutMenu);
     }
@@ -116,13 +104,11 @@ BOOL CWhist3Dialog::OnInitDialog() {
 
   m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_MAINFRAME));
   randomize();
-  CRect rect;
-  GetClientRect(&rect);
+  CRect rect = getClientRect(this);
   createWorkBitmap(rect.Size());
   m_backgroundBrush = CreateSolidBrush(RGB(0,128,0));
 
   m_player->start();
-
   return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -154,23 +140,17 @@ void CWhist3Dialog::OnPaint() {
 
     SendMessage(WM_ICONERASEBKGND, (WPARAM) dc.GetSafeHdc(), 0);
 
-    // Center icon in client rectangle
-    int cxIcon = GetSystemMetrics(SM_CXICON);
-    int cyIcon = GetSystemMetrics(SM_CYICON);
-    CRect rect;
-    GetClientRect(&rect);
-    int x = (rect.Width() - cxIcon + 1) / 2;
-    int y = (rect.Height() - cyIcon + 1) / 2;
+    const int   cxIcon = GetSystemMetrics(SM_CXICON);
+    const int   cyIcon = GetSystemMetrics(SM_CYICON);
+    const CRect rect   = getClientRect(this);
+    const int   x      = (rect.Width()  - cxIcon + 1) / 2;
+    const int   y      = (rect.Height() - cyIcon + 1) / 2;
 
-    // Draw the icon
     dc.DrawIcon(x, y, m_hIcon);
   } else {
     CPaintDC dc(this);
-
     paintAll(m_workDC);
-
     dc.BitBlt(0,0,m_workSize.cx,m_workSize.cy,&m_workDC,0,0,SRCCOPY);
-
     __super::OnPaint();
   }
 }

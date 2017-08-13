@@ -161,7 +161,7 @@ void CMainFrame::Dump(CDumpContext& dc) const {
 #endif //_DEBUG
 
 void CMainFrame::errorMsg(const Exception &e) {
-  MessageBox(e.what(), appName, MB_ICONERROR);
+  showException(e, MB_ICONERROR);
 }
 
 #define INVALIDATE getView()->Invalidate(false)
@@ -277,7 +277,7 @@ void CMainFrame::OnFileMruFile(int index) {
   const String fname = theApp.getRecentFile(index);
   if(ACCESS(fname, 4) < 0) {
     const int errorCode = errno;
-    MessageBox(getErrnoText().cstr(), _T("Error"), MB_ICONWARNING);
+    showWarning(_T("%s"), getErrnoText().cstr());
     if(errorCode == ENOENT) {
       theApp.removeFromRecentFiles(index);
     }
@@ -321,7 +321,7 @@ bool CMainFrame::checkSave() { // return true if the operation should continue, 
     if(!getDoc()->IsModified()) {
       return true;
     }
-    switch(MessageBox(format(_T("Save file %s"), getDoc()->getFileName().cstr()).cstr(), appName, MB_YESNOCANCEL | MB_ICONQUESTION)) {
+    switch(showMessageBox(MB_YESNOCANCEL | MB_ICONQUESTION, _T("Save file %s"), getDoc()->getFileName().cstr())) {
     case IDYES   : return saveFile();
     case IDNO    : return true;
     case IDCANCEL: return false;
@@ -390,22 +390,20 @@ void CMainFrame::OnEditCopy() {
       return;
     }
     if(selection.getLength() > 0xfffff) {
-      MessageBox(format(_T("Selected number of bytes (=%s) is too big to be copied to the clipboard. Max is %s = 1Mb.")
-                       ,format1000(selection.getLength()).cstr()
-                       ,format1000(0xfffff).cstr()).cstr()
-                       ,_T("Error")
-                       ,MB_ICONINFORMATION);
+      showInformation(_T("Selected number of bytes (=%s) is too big to be copied to the clipboard. Max is %s = 1Mb.")
+                     ,format1000(selection.getLength()).cstr()
+                     ,format1000(0xfffff).cstr());
       return;
     }
 
-    const unsigned int length = (unsigned int)selection.getLength();
+    const UINT length = (UINT)selection.getLength();
     ByteArray selectedBytes;
     getDoc()->getBytes(selection.getFirst(), length, selectedBytes);
     if(containsNullByte(selectedBytes)) {
-      if(MessageBox( _T("The selected bytes contains a 0-byte,  which will terminate the string.\r\n")
-                    _T("Do you still want to copy the first part of the selected bytes to the clipboard")
-                   ,_T("String will be terminated")
-                   ,MB_YESNO | MB_ICONQUESTION) == IDNO) {
+      if(showMessageBox(MB_YESNO | MB_ICONQUESTION
+                       ,_T("The selected bytes contains a 0-byte,  which will terminate the string.\r\n"
+                           "Do you still want to copy the first part of the selected bytes to the clipboard")
+                       ) == IDNO) {
         return;
       }
     }
@@ -480,7 +478,7 @@ void CMainFrame::searchText(UINT64 startPos, bool forwardSearch) {
 
   if(result.isEmpty()) {
     if(!m_searchMachine.isInterrupted()) {
-      MessageBox(m_searchMachine.getResultMessage().cstr(), appName, MB_ICONINFORMATION);
+      showInformation(m_searchMachine.getResultMessage());
     }
   } else {
     CHexViewView *view = getView();

@@ -32,7 +32,7 @@ BOOL CShwgraphApp::InitInstance() {
       } else if (nResponse == IDCANCEL) {
       }
     } catch(Exception e) {
-      AfxMessageBox( e.what());
+      showException(e);
     }
 
     // Since the dialog has been closed, return FALSE so that we exit the

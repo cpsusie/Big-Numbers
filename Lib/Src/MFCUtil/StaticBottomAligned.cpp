@@ -19,7 +19,7 @@ void CStaticBottomAligned::substituteControl(CWnd *parent, int id) {
   DEFINEMETHODNAME;
   CStatic *oldCtrl = (CStatic*)parent->GetDlgItem(id);
   if(oldCtrl == NULL) {
-    AfxMessageBox(format(_T("%s:Control with id=%d does not exist"), method, id).cstr(), MB_ICONWARNING);
+    showError(_T("%s:Control with id=%d does not exist"), method, id);
     return;
   }
   oldCtrl->GetWindowText(m_text);
@@ -40,7 +40,7 @@ void CStaticBottomAligned::substituteControl(CWnd *parent, int id) {
   oldCtrl->DestroyWindow();
 
   if(!Create(m_text, style, wr, parent, id)) {
-    AfxMessageBox(format(_T("%s:Create failed"), method).cstr(), MB_ICONWARNING);
+    showError(_T("%s:Create failed"), method);
     return;
   }
   SetFont(font);

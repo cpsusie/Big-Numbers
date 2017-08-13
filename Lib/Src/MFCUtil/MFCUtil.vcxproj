@@ -723,7 +723,6 @@
     <ClCompile Include="SetControlText.cpp" />
     <ClCompile Include="ShapeFunctions.cpp" />
     <ClCompile Include="ShowBitmap.cpp" />
-    <ClCompile Include="ShowException.cpp" />
     <ClCompile Include="SimpleLayoutManager.cpp" />
     <ClCompile Include="SliderCtrlWithTransformation.cpp" />
     <ClCompile Include="StaticBottomAligned.cpp" />

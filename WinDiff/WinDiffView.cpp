@@ -252,7 +252,7 @@ void CWinDiffView::setNameFontSizePct(int pct, bool updatePartner) {
   if(m_origNameFont.lfFaceName[0] == 0) { // not yet initialized
     CFont *origFont = nameWindow->GetFont();
     if(!origFont->GetLogFont(&m_origNameFont)) {
-      Message(_T("GetLogFont failed"));
+      showWarning(_T("GetLogFont failed"));
       return;
     }
 /*
@@ -267,7 +267,7 @@ void CWinDiffView::setNameFontSizePct(int pct, bool updatePartner) {
   LOGFONT lf = m_origNameFont;
   lf.lfHeight = (int)((double)pct * lf.lfHeight/100.0);
   if(!m_currentNameFont.CreateFontIndirect(&lf)) {
-    Message(_T("CreateFontIndirect failed"));
+    showWarning(_T("CreateFontIndirect failed"));
     return;
   }
   nameWindow->SetFont(&m_currentNameFont);
@@ -323,7 +323,7 @@ void CWinDiffView::copyToClipboard() {
   try {
     putClipboard(m_hWnd,m_textView.getSelectedText());
   } catch(Exception e) {
-    Message(_T("copy to clipboard failed:%s"),e.what());
+    showException(e);
   }
 }
 

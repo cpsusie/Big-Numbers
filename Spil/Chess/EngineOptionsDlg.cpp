@@ -40,7 +40,7 @@ EngineOptionDescriptionArray CEngineOptionsDlg::createEngineOptionDescriptionArr
     EngineOptionDescriptionArray result = engine.getOptionDescriptionArray();
     return result; //.removeOptionsByType(OptionTypeButton);
   } catch(Exception e) {
-    AfxMessageBox(e.what(), MB_ICONWARNING);
+    showException(e);
     return EngineOptionDescriptionArray();
   }
 }
@@ -327,7 +327,7 @@ void CEngineOptionsDlg::OnUserButton(UINT id) { // do nothing if m_engine == NUL
       m_engine->clickButton(ctrl->m_option);
       break;
     default:
-      MessageBox( format(_T("Control %s not a button"), ctrl->m_option.getName()).cstr(),  _T("Error"), MB_ICONEXCLAMATION);
+      showWarning(_T("Control %s not a button"), ctrl->m_option.getName().cstr());
       break;
     }
   }

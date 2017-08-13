@@ -115,57 +115,44 @@ Timer::Timer(int id) : m_id(id) {
 
 Timer::~Timer() {
   stopTimer();
-  if(m_thread) {
-    delete m_thread;
-  }
+  SAFEDELETE(m_thread);
 }
 
 void Timer::startTimer(int msec, TimeoutHandler &handler, bool repeatTimeout) {
   m_gate.wait();
-
   if(m_thread == NULL || m_thread->isKilled()) {
-    delete m_thread;
-    m_thread = NULL;
-    m_thread = new TimerThread(this, msec, handler, repeatTimeout);
+    SAFEDELETE(m_thread);
+    m_thread = new TimerThread(this, msec, handler, repeatTimeout); TRACE_NEW(m_thread);
   }
-
   m_gate.signal();
 }
 
 void Timer::stopTimer() {
   m_gate.wait();
-
   if(m_thread) {
     m_thread->kill();
   }
-
   m_gate.signal();
 }
 
 bool Timer::isRunning() const {
   m_gate.wait();
-
   const bool result = m_thread && !m_thread->isKilled();
-
   m_gate.signal();
   return result;
 }
 
 int Timer::getTimeout() const {
   m_gate.wait();
-
   const int result = m_thread ? m_thread->getTimeout() : 0;
-
   m_gate.signal();
   return result;
 }
 
 void Timer::setTimeout(int msec, bool repeatTimeout) {
   m_gate.wait();
-
   if(m_thread && !m_thread->isKilled()) {
     m_thread->setTimeout(msec, repeatTimeout);
   }
-
   m_gate.signal();
 }

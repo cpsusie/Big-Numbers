@@ -135,7 +135,7 @@ void QRDialog::handleData(const QRTraceElement &data) {
         if(evypos >= windowrect.Height()-30) { evypos = YPOS(DEFAULTSIZE+1); evxpos += 350; }
       }
       if(isMenuItemChecked(m_dlg, ID_OPTIONS_PAUSE)) {
-        AfxMessageBox( _T("Press Enter..."));
+        showInformation(_T("Press Enter..."));
       }
     }
   }
@@ -181,9 +181,8 @@ void CTestQRGraphicsDlg::OnPaint() {
       QRTraceElement element(QR);
       QRDialog qrDialog(this);
       qrDialog.handleData(element);
-    }
-    catch (Exception e) {
-      MessageBox(e.what(), _T("Error"), MB_ICONWARNING);
+    } catch (Exception e) {
+      showException(e);
     }
     __super::OnPaint();
   }

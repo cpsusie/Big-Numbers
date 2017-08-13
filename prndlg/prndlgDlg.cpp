@@ -108,13 +108,12 @@ void CPrndlgDlg::OnButton1() {
   CString port = dlg.GetPortName();
   LPDEVMODE mode = dlg.GetDevMode();
   int source = mode->dmDefaultSource;
-  String tmp = format(_T("device:%s driver:%s port:%s source:%d")
-                      ,(LPCTSTR)device
-                      ,(LPCTSTR)driver
-                      ,(LPCTSTR)port
-                      ,source
-                      );
-  MessageBox(tmp.cstr());
+  showInformation(_T("device:%s driver:%s port:%s source:%d")
+                 ,(LPCTSTR)device
+                 ,(LPCTSTR)driver
+                 ,(LPCTSTR)port
+                 ,source
+                 );
 }
 
 void CPrndlgDlg::OnButton3() {

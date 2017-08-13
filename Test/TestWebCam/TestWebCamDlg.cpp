@@ -93,10 +93,9 @@ BOOL CTestWebCamDlg::OnInitDialog() {
   try {
     m_capture = new MMCapture(CAPTURE_VIDEO|CAPTURE_AUDIO, *this,15,true,512);
   } catch(Exception e) {
-    AfxMessageBox(e.what(),MB_ICONSTOP);
+    showException(e, MB_ICONSTOP);
     exit(-1);
   }
-
   CheckDlgButton(IDC_CHECKLOG,BST_CHECKED);
 
 //    startTimer();
@@ -107,9 +106,8 @@ BOOL CTestWebCamDlg::OnInitDialog() {
 void fatalError(TCHAR *format, ... ) {
   va_list argptr;
   va_start(argptr, format );
-  const String msg = vformat(format,argptr);
+  vshowMessageBox(MB_ICONSTOP, format,argptr);
   va_end(argptr);
-  AfxMessageBox(msg.cstr(),MB_ICONSTOP);
   exit(-1);
 }
 

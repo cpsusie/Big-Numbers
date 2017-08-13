@@ -186,7 +186,7 @@ BOOL CHistoryDlg::PreTranslateMessage(MSG *pMsg) {
 bool CHistoryDlg::showContextMenu(CWnd *pWnd, CPoint point) {
   CMenu menu;
   if(!menu.LoadMenu(IDR_HISTORY_CONTEXTMENU)) {
-    AfxMessageBox(_T("Loadmenu failed"));
+    showWarning(_T("Loadmenu failed"));
     return false;
   }
 

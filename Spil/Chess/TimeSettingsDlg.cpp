@@ -548,7 +548,7 @@ BOOL CTimeSettingsDlg::PreTranslateMessage(MSG *pMsg) {
       setCurrentControl(newTab, getFocusCtrlId(this));
     }
   } catch(Exception e) {
-    MessageBox(e.what(), _T("Error"));
+    showException(e);
   }
   return result;
 }

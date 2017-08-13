@@ -325,7 +325,7 @@ void CGetresourcesDlg::OnFileOpenmodule() {
 
   HMODULE module = LoadLibrary(dlg.m_ofn.lpstrFile);
   if(module == NULL) {
-    MessageBox(getLastErrorText().cstr(),_T("Error"),MB_ICONWARNING);
+    showWarning(getLastErrorText());
     return;
   }
 
@@ -367,7 +367,7 @@ void CGetresourcesDlg::OnFileOpenmodule() {
       }
     }
   } catch(Exception e) {
-    MessageBox(e.what(),_T("Error"),MB_ICONWARNING);
+    showException(e);
   }
   FreeLibrary(module);
 }

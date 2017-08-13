@@ -27,10 +27,8 @@ BOOL DegreeDlg::OnInitDialog() {
 void DegreeDlg::OnOK() {
   UpdateData(TRUE);
   if(m_degree > MAXDEGREE) {
-      TCHAR tmp[100];
-      _stprintf(tmp,_T("Sorry. Maxdegree = %d"),MAXDEGREE);
-      MessageBox(tmp,_T("Error"), MB_ICONEXCLAMATION);
-      return;
+    showWarning(_T("Maxdegree = %d"),MAXDEGREE);
+    return;
   }
   __super::OnOK();
 }

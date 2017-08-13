@@ -56,7 +56,7 @@ BOOL CRegexDlg::OnInitDialog() {
 void CRegexDlg::OnOK() {
   UpdateData();
   if(m_regex.GetLength() == 0) {
-    Message(_T("Empty regular expression not allowed"));
+    showWarning(_T("Empty regular expression not allowed"));
     return;
   }
   m_param.m_regex          = m_regex;

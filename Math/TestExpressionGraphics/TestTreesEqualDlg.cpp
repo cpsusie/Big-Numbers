@@ -99,18 +99,18 @@ void CTestTreesEqualDlg::OnTestTreesEqual() {
     const ExpressionNode *root1 = m_e[0].getRoot();
     const ExpressionNode *root2 = m_e[1].getRoot();
     const bool            eq    = m_e[0].treesEqual(root1, root2);
-    MessageBox(format(_T("Exspressions are %sequal"), eq?EMPTYSTRING:_T("not ")).cstr(), _T("Test"), MB_ICONINFORMATION);
+    showInformation(_T("Exspressions are %sequal"), eq?EMPTYSTRING:_T("not "));
   } catch(Exception e) {
-    MessageBox(e.what(), _T("Error"), MB_ICONWARNING);
+    showException(e);
   }
 }
 
 void CTestTreesEqualDlg::OnTestTreesEqualMinus() {
   try {
     const bool eq = m_e[0].equalMinus(m_e[1]);
-    MessageBox(format(_T("Exspressions are %sNegative-Equal"), eq?EMPTYSTRING:_T("not ")).cstr(), _T("Test"), MB_ICONINFORMATION);
+    showInformation(_T("Exspressions are %sNegative-Equal"), eq?EMPTYSTRING:_T("not "));
   } catch(Exception e) {
-    MessageBox(e.what(), _T("Error"), MB_ICONWARNING);
+    showException(e);
   }
 }
 
@@ -175,7 +175,7 @@ bool CTestTreesEqualDlg::compile(int index) {
   const StringArray &errors = e.getErrors();
   String error = errors[0];
   int pos = e.decodeErrorString(str, error);
-  MessageBox(error.cstr(), _T("Error"), MB_ICONWARNING);
+  showWarning(error);
   return false;
 }
 
@@ -188,7 +188,7 @@ ExpressionImage CTestTreesEqualDlg::makeImage(const Expression &e) {
   try {
     return expressionToImage(m_device, e, 24);
   } catch(Exception e) {
-    MessageBox(e.what(), _T("Error"), MB_ICONWARNING);
+    showException(e);
     return ExpressionImage();
   }
 }
@@ -234,7 +234,7 @@ void CTestTreesEqualDlg::OnContextMenu(CWnd *pWnd, CPoint point) {
   CMenu menu;
   int ret = menu.LoadMenu(IDR_CONTEXTMENUSTACK);
   if(!ret) {
-    MessageBox(_T("Loadmenu failed"), _T("Error"), MB_ICONWARNING);
+    showWarning(_T("Loadmenu failed"));
     return;
   }
   menu.GetSubMenu(0)->TrackPopupMenu(TPM_LEFTALIGN|TPM_RIGHTBUTTON, point.x,point.y, this);

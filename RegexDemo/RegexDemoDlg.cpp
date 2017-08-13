@@ -311,7 +311,7 @@ void CRegexDemoDlg::ajourDialogItems() {
       flags.add(WIN_REGISTERS);
       break;
     default:
-      MessageBox(format(_T("ajourDialogItems:Unnknown threadState:%d"), getThreadState()).cstr(), _T("Error"), MB_ICONWARNING);
+      showError(_T("%s:Unnknown threadState:%d"), __TFUNCTION__, getThreadState());
       break;
     }
   }
@@ -392,7 +392,7 @@ void CRegexDemoDlg::OnDebugCompile() {
 }
 
 void CRegexDemoDlg::OnEditStandardTest() {
-  MessageBox(_T("this function is disabled for the moment"));
+  showInformation(_T("this function is disabled for the moment"));
 //  CTestRegexDlg dlg;
 //  dlg.DoModal();
 }
@@ -530,7 +530,7 @@ void CRegexDemoDlg::handlePropertyChanged(const PropertyContainer *source, int i
   case SEARCH_REGEXFINISHED:
     break;
   default:
-    MessageBox(format(_T("Unknown property:%d"), id).cstr(), _T("Error"), MB_ICONWARNING);
+    showError(_T("%s:Unknown property:%d"), __TFUNCTION__,id);
     break;
   }
 }
@@ -586,10 +586,6 @@ LRESULT CRegexDemoDlg::OnMsgThreadRunning(WPARAM wp, LPARAM lp) {
   return 0;
 }
 
-void CRegexDemoDlg::showException(Exception &e) {
-  MessageBox(format(_T("Exception:%s"), e.what()).cstr(), _T("Error"), MB_ICONWARNING);
-}
-
 void CRegexDemoDlg::clearThreadState() {
   setCurrentCodeLine(-1);
   setWindowText(this, IDC_STATICSTACK, EMPTYSTRING);
@@ -641,7 +637,7 @@ bool CRegexDemoDlg::isGraphicsOn() {
   case ID_OPTIONS_DFA_ANIMATE_CREATE:
     return true;
   default:
-    MessageBox(format(_T("Unknown DFAGraphicsmode:%d"), getDFAGraphicsMode()).cstr(), _T("Error"), MB_ICONWARNING);
+    showError(_T("%s:Unknown DFAGraphicsmode:%d"), __TFUNCTION__,getDFAGraphicsMode());
     return false;
   }
 }
@@ -957,8 +953,7 @@ void CRegexDemoDlg::OnHelpAbout() {
 }
 
 void CRegexDemoDlg::OnHelpShowctrlid() {
-  int id = getFocusCtrlId(this);
-  MessageBox(format(_T("Focus control has Id:%d"), id).cstr(), _T("Info"), MB_ICONINFORMATION);
+  showInformation(_T("Focus control has Id:%d"), getFocusCtrlId(this));
 }
 
 void CRegexDemoDlg::OnGotoPattern() {

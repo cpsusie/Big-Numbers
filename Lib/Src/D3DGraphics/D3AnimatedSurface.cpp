@@ -78,7 +78,7 @@ void MeshAnimationThread::kill() {
     Sleep(20);
   }
   if(stillActive()) {
-    AfxMessageBox(_T("Cannot not stop animationThread"), MB_ICONSTOP);
+    showWarning(_T("Cannot not stop animationThread"));
   }
 }
 

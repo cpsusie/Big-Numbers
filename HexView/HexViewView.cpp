@@ -780,7 +780,7 @@ bool CHexViewView::resetAnchor() {
 
 bool CHexViewView::dropAnchor(unsigned __int64 index) {
   if(index > m_docSize) {
-    MessageBox(format(_T("dropAnchor:index=%I64u, docSize=%I64d"), index, m_docSize).cstr(), _T("Error"), MB_ICONERROR);
+    showWarning(_T("dropAnchor:index=%I64u, docSize=%I64d"), index, m_docSize);
     return false;
   }
   const bool ret = index != m_anchor;

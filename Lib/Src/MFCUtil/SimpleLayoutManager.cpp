@@ -14,7 +14,7 @@ void SimpleLayoutManager::addControl(int ctrlId, int flags) {
   if(wnd == NULL) return;
   CWnd *ctrl = wnd->GetDlgItem(ctrlId);
   if(ctrl == NULL) {
-    AfxMessageBox(format(_T("%s:Control %d not found in window"), method, ctrlId).cstr(), MB_ICONSTOP);
+    showError(_T("%s:Control %d not found in window"), method, ctrlId);
     return;
   }
 
@@ -34,7 +34,7 @@ void SimpleLayoutManager::addControl(int ctrlId, int flags) {
 #define BOTTOM_EDGE_BITS     (RELATIVE_BOTTOM | PCT_RELATIVE_BOTTOM | PCT_RELATIVE_Y_CENTER)
 
   if(MANYSET(flags, LEFT_EDGE_BITS) || MANYSET(flags, TOP_EDGE_BITS) || MANYSET(flags, RIGHT_EDGE_BITS) || MANYSET(flags, RIGHT_EDGE_BITS)) {
-    AfxMessageBox(format(_T("%s:Invalid bit-combination for ctrlId %d:%s"), method, ctrlId, sprintbin((char)flags).cstr()).cstr(), MB_ICONSTOP);
+    showError(_T("%s:Invalid bit-combination for ctrlId %d:%s"), method, ctrlId, sprintbin((char)flags).cstr());
     return;
   }
   if((flags & CONSTANT_WIDTH) && ANYSET(flags, LEFT_EDGE_BITS)) {
@@ -70,8 +70,8 @@ void SimpleLayoutManager::removeControl(int ctrlId) {
     }
   }
 #ifdef TEST_DEBUG
-  AfxMessageBox(format(_T("%s:control with id=%d not found in layoutmanager")
-               ,__TFUNCTION__, ctrlId).cstr(), MB_ICONEXCLAMATION);
+  showError(_T("%s:control with id=%d not found in layoutmanager")
+           ,__TFUNCTION__, ctrlId);
 #endif
 }
 

@@ -102,9 +102,9 @@ unsigned int SortThread::run() {
     } catch(bool) {
       // ignore
     } catch(Exception e) {
-      AfxMessageBox(e.what(), MB_ICONWARNING);
+      showException(e);
     } catch(...) {
-      AfxMessageBox(_T("Unknown Exception in Sortthread"), MB_ICONWARNING);
+      showError(_T("%s:Unknown Exception in Sortthread"), __TFUNCTION__);
     }
     if(m_wnd.m_threadSignal & KILL_THREAD) {
       break;

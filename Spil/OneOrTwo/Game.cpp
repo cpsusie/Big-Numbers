@@ -147,7 +147,7 @@ void MoveResultArray::sort() {
 void AbstractGame::executeMove(PositionSet markedPositions) {
   Move m = findMove(markedPositions);
   if(m == NULL) {
-    AfxMessageBox(format(_T("Illegal move:%s"), sprintbin(markedPositions).cstr()).cstr(), MB_ICONSTOP);
+    showError(_T("Illegal move:%s"), sprintbin(markedPositions).cstr());
     return;
   }
   doMove(m);

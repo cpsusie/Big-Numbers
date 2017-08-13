@@ -4,7 +4,6 @@
 
 class CGifCtrl : public CStatic {
 private:
-    DECLARECLASSNAME;
     AnimatedImage m_image;
     bool          m_isPainted : 1;
     bool          m_suspended : 1; // set to true when window becomes invisible. so thread can be restarted when it becomes visible again

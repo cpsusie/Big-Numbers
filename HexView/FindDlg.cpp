@@ -154,7 +154,7 @@ void CFindDlg::OnFindNext() {
     startTimer();
   } catch(Exception e) {
     OnGotoFindWhat();
-    MessageBox(e.what(),_T("Error"), MB_ICONERROR);
+    showException(e);
   }
 }
 
@@ -166,7 +166,7 @@ void CFindDlg::OnTimer(UINT_PTR nIDEvent) {
     if(m_result.isEmpty()) {
       OnGotoFindWhat();
       if(!m_searchMachine.isInterrupted()) {
-        MessageBox(m_searchMachine.getResultMessage().cstr(), _T("HexView"), MB_ICONWARNING);
+        showWarning(_T("%s"), m_searchMachine.getResultMessage().cstr());
       }
     } else {
       m_history.add(m_searchMachine.getFindWhat());
@@ -205,7 +205,7 @@ void CFindDlg::OnButtonSpecialChar() {
   CMenu menu;
   int ret = menu.LoadMenu(IDR_MENUSPECIALCHAR);
   if(!ret) {
-    AfxMessageBox(_T("Loadmenu failed"), MB_ICONERROR);
+    showWarning(_T("Loadmenu failed"));
     return;
   }
   CRect r;
@@ -261,7 +261,7 @@ void CFindDlg::updateByteSequence(const CString &findWhat) {
   try {
     GetDlgItem(IDC_STATICBYTESEQUENCE)->SetWindowText(SearchPattern((LPCTSTR)findWhat).toString().cstr());
   } catch(Exception e) {
-    MessageBox(e.what(), _T("Error"), MB_ICONERROR);
+    showException(e);
   }
 }
 

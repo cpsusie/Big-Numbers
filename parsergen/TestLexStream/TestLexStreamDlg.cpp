@@ -118,7 +118,7 @@ void CTestLexStreamDlg::OnOpen() {
   CString fileName = dlg.m_ofn.lpstrFile;
   m_stream.open((LPCTSTR)fileName);
   if(!m_stream.ok()) {
-    MessageBox(format(_T("Cannot open %s"), (LPCTSTR)fileName).cstr(), _T("Error"), MB_ICONWARNING);
+    showWarning(_T("Cannot open %s"), (LPCTSTR)fileName);
     return;
   }
   m_text = EMPTYSTRING;
@@ -132,7 +132,7 @@ void CTestLexStreamDlg::OnButtonRead() {
     if(!UpdateData()) {
       return;
     }
-    buf = new TCHAR[m_count+1];
+    buf = new TCHAR[m_count+1]; TRACE_NEW(buf);
     intptr_t got = m_stream.getChars((_TUCHAR*)buf, m_count);
     if(got > 0) {
       buf[got] = 0;
@@ -140,9 +140,7 @@ void CTestLexStreamDlg::OnButtonRead() {
       UpdateData(FALSE);
     }
   } catch(Exception e) {
-    MessageBox(e.what(), _T("Error"), MB_ICONWARNING);
+    showException(e);
   }
-  if(buf) {
-    delete[] buf;
-  }
+  SAFEDELETE(buf);
 }

@@ -235,7 +235,7 @@ void CProfileDlg::rotateProfile() {
       set3DObject(obj);
     }
   } catch(Exception e) {
-    MessageBox(e.what());
+    showException(e);
   }
 }
 
@@ -245,7 +245,7 @@ void CProfileDlg::stretchProfile() {
     m_imageFrame->AddVisual(m_d3.stretchProfile(m_profile,getStretchParameters()));
     m_d3.addInnerSide(m_imageFrame);
   } catch(Exception e) {
-    MessageBox(e.what());
+    showException(e);
   }
 */
 }
@@ -428,7 +428,7 @@ void CProfileDlg::OnEditPaste() {
   try {
     m_currentDrawTool->paste();
   } catch(Exception e) {
-    MessageBox(e.what());
+    showException(e);
   }
 }
 

@@ -255,7 +255,7 @@ void CHeatCPUDlg::OnOptionsLaunchAtStartup() {
       m_options.m_autoLaunch = true;
       m_options.save();
     } catch(Exception e) {
-      MessageBox(e.what(), _T("Error"), MB_ICONEXCLAMATION);
+      showException(e);
     }
   }
 }

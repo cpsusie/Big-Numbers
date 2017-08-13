@@ -141,7 +141,7 @@ void CExpressionTreeDlg::OnContextMenu(CWnd *pWnd, CPoint point) {
   if(m_selectedNode == NULL) return;
   CMenu menu;
   if(!menu.LoadMenu(IDR_CONTEXTMENU_TREE)) {
-    MessageBox(_T("LoadMenu failed"), _T("Error"), MB_ICONWARNING);
+    showWarning(_T("LoadMenu failed"));
     return;
   }
   if(m_selectedNode->isBreakPoint()) {

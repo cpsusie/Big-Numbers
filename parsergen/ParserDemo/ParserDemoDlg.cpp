@@ -195,7 +195,6 @@ String getWord(const TCHAR *s, int pos) {
       end++;
     }
   }
-
   return substr(tmp, start, end-start+1);
 }
 
@@ -205,8 +204,9 @@ void CParserDemoDlg::handleError(const SourcePosition &pos, const TCHAR *form, v
   enableMenuItem(this, ID_EDIT_NEXTERROR, true);
   enableMenuItem(this, ID_EDIT_PREVERROR, true);
   m_errorPos.add(pos);
-  if(m_animateOn)
+  if(m_animateOn) {
     Invalidate(false);
+  }
 }
 
 void CParserDemoDlg::handleDebug(const SourcePosition &pos, const TCHAR *form, va_list argptr) {
@@ -231,13 +231,6 @@ static void printf(CClientDC &dc, int x, int y, int width, const TCHAR *form, ..
   va_list argptr;
   va_start(argptr, form);
   dc.TextOut(x, y, format(_T("%-*.*s"), width, width, vformat(form, argptr).cstr()).cstr());
-  va_end(argptr);
-}
-
-void CParserDemoDlg::message(const TCHAR *format, ...) {
-  va_list argptr;
-  va_start(argptr, format);
-  MessageBox(vformat(format, argptr).cstr());
   va_end(argptr);
 }
 
@@ -476,33 +469,22 @@ void CParserDemoDlg::showLastDebugLine() {
 
 void CParserDemoDlg::OnFileOpen() {
   CFileDialog dlg(true);
-  if(dlg.DoModal() != IDOK) {
-    return;
-  }
-  if(_tcsclen(dlg.m_ofn.lpstrFile) == 0) {
+  if((dlg.DoModal() != IDOK) || (_tcsclen(dlg.m_ofn.lpstrFile) == 0)) {
     return;
   }
 
   try {
     TCHAR *fname = dlg.m_ofn.lpstrFile;
-    struct _stat st = STAT(fname);
-    int fileSize = st.st_size;
-    char *buffer = new char[fileSize+1];
-    memset(buffer, 0, fileSize);
-    FILE *f = FOPEN(fname, _T("rb"));
-    fread(buffer, 1, fileSize, f);
-    fclose(f);
-    buffer[fileSize] = '\0';
-    m_input = buffer;
+    String str = readTextFile(fname).replace('\n',_T("\r\n"));
+    m_input = str.cstr();
     UpdateData(FALSE);
     m_inputHasChanged = true;
     SetWindowText(fname);
     OnMaxTextEditInputString();
     resetListBoxes();
     m_textBox.markPos(NULL);
-    delete[] buffer;
   } catch(Exception e) {
-    message(_T("%s"), e.what());
+    showException(e);
   }
 }
 

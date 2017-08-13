@@ -49,11 +49,9 @@ BOOL CTestRegexDlg::OnInitDialog() {
     if(output) {
       fclose(output);
     }
-    MessageBox(e.what(), _T("Error"), MB_ICONWARNING);
+    showException(e);
   }
-
   GetDlgItem(IDC_EDITOUTPUT)->SetFocus();
-
   return FALSE;
 }
 

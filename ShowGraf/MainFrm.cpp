@@ -606,16 +606,16 @@ static COLORREF getShiftedColor(COLORREF c) {
 void CMainFrame::makeExpoFit() {
   const GraphItem *item = getDoc()->getSelectedGraphItem();
   if(item == NULL) {
-    MessageBox(_T("No data selected"), _T("Error"),MB_ICONEXCLAMATION);
+    showWarning(_T("No data selected"));
     return;
   }
   if(!item->getGraph().isPointGraph()) {
-    MessageBox(_T("Select datapoints to make exponential regression"), _T("Error"),MB_ICONEXCLAMATION);
+    showWarning(_T("Select datapoints to make exponential regression"));
     return;
   }
   const DoubleInterval &yRange = item->getGraph().getDataRange().getYInterval();
   if(sign(yRange.getFrom()) != sign(yRange.getTo())) {
-    MessageBox(_T("There are both negative and positive y-values in the dataset"), _T("Error"),MB_ICONEXCLAMATION);
+    showWarning(_T("There are both negative and positive y-values in the dataset"));
     return;
   }
   const Point2DArray &points = ((PointGraph&)item->getGraph()).getDataPoints();
@@ -644,21 +644,21 @@ void CMainFrame::makeExpoFit() {
 void CMainFrame::makePotensFit() {
   const GraphItem *item = getDoc()->getSelectedGraphItem();
   if(item == NULL) {
-    MessageBox(_T("No data selected"), _T("Error"),MB_ICONEXCLAMATION);
+    showWarning(_T("No data selected"));
     return;
   }
   if(!item->getGraph().isPointGraph()) {
-    MessageBox(_T("Select datapoints to make potens regression"), _T("Error"),MB_ICONEXCLAMATION);
+    showWarning(_T("Select datapoints to make potens regression"));
     return;
   }
   const DoubleInterval &yRange = item->getGraph().getDataRange().getYInterval();
   if(sign(yRange.getFrom()) != sign(yRange.getTo())) {
-    MessageBox(_T("There are both negative and positive y-values in the dataset"), _T("Error"), MB_ICONEXCLAMATION);
+    showWarning(_T("There are both negative and positive y-values in the dataset"));
     return;
   }
   const DoubleInterval &xRange = item->getGraph().getDataRange().getXInterval();
   if(xRange.getMin() < 0) {
-    MessageBox(_T("There cannot be negative x-values"), _T("Error"), MB_ICONEXCLAMATION);
+    showWarning(_T("There cannot be negative x-values"));
     return;
   }
 
@@ -756,7 +756,7 @@ void CMainFrame::OnSelectMenuEdit() {
       break;
 
     default:
-      MessageBox(format(_T("%s:Unknown graph type:%d"), __TFUNCTION__, g.getType()).cstr());
+      showWarning(_T("%s:Unknown graph type:%d"), __TFUNCTION__, g.getType());
       return;
     }
     Invalidate();

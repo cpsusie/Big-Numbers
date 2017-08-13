@@ -71,7 +71,7 @@ void CTestGIFDlg::OnButtonLoadGif() {
     updateState();
   } catch(Exception e) {
     updateState();
-    MessageBox(e.what(), _T("Error"), MB_ICONWARNING);
+    showException(e);
   }
 }
 
@@ -90,7 +90,7 @@ void CTestGIFDlg::loadGifResource(int resId) {
     updateState();
   } catch(Exception e) {
     updateState();
-    MessageBox(e.what(), _T("Error"), MB_ICONWARNING);
+    showException(e);
   }
 }
 

@@ -334,7 +334,7 @@ bool CSortDemoDlg::addSortPanel(int methodId) {
     adjustLayout();
     return true;
   } catch(Exception e) {
-    MessageBox(e.what(), _T("Error"), MB_ICONSTOP);
+    showException(e);
     return false;
   }
 }

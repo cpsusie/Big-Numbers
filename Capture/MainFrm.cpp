@@ -254,7 +254,7 @@ BOOL CMainFrame::LoadFrame(UINT nIDResource, DWORD dwDefaultStyle, CWnd *pParent
 
 void CMainFrame::OnFilePrint() {
   if(!hasImage()) {
-    MessageBox(_T("No image to print"), _T("Error"), MB_ICONINFORMATION);
+    showInformation(_T("No image to print"));
     return;
   }
   getView()->OnFilePrint();
@@ -262,7 +262,7 @@ void CMainFrame::OnFilePrint() {
 
 void CMainFrame::OnFilePrintPreview() {
   if(!hasImage()) {
-    MessageBox(_T("No image to show"), _T("Error"), MB_ICONINFORMATION);
+    showInformation(_T("No image to show"));
     return;
   }
   getView()->OnFilePrintPreview();
@@ -270,7 +270,7 @@ void CMainFrame::OnFilePrintPreview() {
 
 void CMainFrame::OnFileSave() {
   if(!hasImage()) {
-    MessageBox(_T("No image to save"), _T("Error"), MB_ICONINFORMATION);
+    showInformation(_T("No image to save"));
     return;
   }
 
@@ -294,13 +294,13 @@ void CMainFrame::OnFileSave() {
     const TCHAR *ext = dlg.m_ofn.lpstrFilter;
     doc->save(dlg.m_ofn.lpstrFile);
   } catch(Exception e) {
-    MessageBox(e.what());
+    showException(e);
   }
 }
 
 void CMainFrame::OnEditCopy() {
   if(!hasImage()) {
-    MessageBox(_T("No image to copy"), _T("Error"), MB_ICONINFORMATION);
+    showInformation(_T("No image to copy"));
     return;
   }
 
@@ -308,7 +308,7 @@ void CMainFrame::OnEditCopy() {
   try {
     putClipboard(theApp.m_pMainWnd->m_hWnd,bitmap);
   } catch(Exception e) {
-    MessageBox(format(_T("putClipboard failed:%s"), e.what()).cstr(), _T("Error"), MB_ICONWARNING);
+    showException(e);
   }
 }
 
@@ -458,7 +458,7 @@ void CMainFrame::OnStartMSPaint() {
   try {
     CCaptureDoc *doc = GetDocument();
     if(!doc->hasImage()) {
-      MessageBox(_T("No image"), _T("Error"), MB_ICONINFORMATION);
+      showInformation(_T("No image"));
       return;
     }
     const String tempName = createTempFileName(_T("bmp"));
@@ -470,7 +470,7 @@ void CMainFrame::OnStartMSPaint() {
       throwErrNoOnSysCallException(_T("_spawnlp(\"mapaint.exe\")"));
     }
   } catch(Exception e) {
-    MessageBox(e.what());
+    showException(e);
   }
 }
 
@@ -525,7 +525,7 @@ void CMainFrame::OnMouseMove(UINT nFlags, CPoint point) {
         selectWindow(window);
       }
     } catch(Exception e) {
-      MessageBox(e.what(), _T("Exception"), MB_ICONERROR);
+      showException(e);
     }
   }
   __super::OnMouseMove(nFlags, point);
@@ -545,7 +545,7 @@ void CMainFrame::OnLButtonUp(UINT nFlags, CPoint point) {
     }
     __super::OnLButtonUp(nFlags, point);
   } catch(Exception e) {
-    MessageBox(format(_T("Exception:%s"), e.what()).cstr(), _T("Error"), MB_ICONWARNING);
+    showException(e);
   }
 }
 
@@ -689,7 +689,7 @@ BOOL CMainFrame::PreTranslateMessage(MSG *pMsg) {
     }
     return __super::PreTranslateMessage(pMsg);
   } catch(Exception e) {
-    MessageBox(format(_T("Exception:%s"), e.what()).cstr(), _T("Error"), MB_ICONWARNING);
+    showException(e);
     return TRUE;
   }
 }

@@ -113,7 +113,7 @@ BOOL TreeDlg::PreTranslateMessage(MSG *pMsg) {
       HTREEITEM item = findTreeItem(ctrl, pMsg->pt);
       if(item != NULL) {
         String derivation = getDerivation(ctrl, item, 160);
-        MessageBox(derivation.cstr(), _T("Derived String"));
+        showInformation(derivation);
         break;
       }
     }

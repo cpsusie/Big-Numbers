@@ -196,7 +196,7 @@ void CThinkDlg::showWinner() {
   } else {
     str = _T("Uafgjort");
   }
-  MessageBox(str.cstr());
+  showInformation(str);
   g.init();
   Invalidate(true);
 }

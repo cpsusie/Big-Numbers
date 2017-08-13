@@ -135,7 +135,7 @@ bool CMainFrame::loadFile(const String &fileName) {
     getView()->refreshDoc();
     return true;
   } catch(Exception e) {
-    MessageBox(e.what());
+    showException(e);
     return false;
   }
 }
@@ -283,7 +283,7 @@ void CMainFrame::OnFileInsert() {
     PixRect *image = PixRect::load(theApp.m_device, ByteInputFile(fileName));
     pushTool(new InsertImageTool(getView(),image));
   } catch(Exception e) {
-    MessageBox(e.what(),_T("Error"),MB_ICONWARNING);
+    showException(e);
   }
 }
 
@@ -737,7 +737,7 @@ bool CMainFrame::save(const CString &name) { // returns true if succeeded
     updateTitle();
     return true;
   } catch(Exception e) {
-    MessageBox(e.what());
+    showException(e);
     return false;
   }
 }

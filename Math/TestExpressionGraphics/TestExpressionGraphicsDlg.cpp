@@ -11,22 +11,14 @@
 
 class CAboutDlg : public CDialog {
 public:
-    CAboutDlg();
-
-    enum { IDD = IDD_ABOUTBOX };
-
-    protected:
-    virtual void DoDataExchange(CDataExchange *pDX);
+  CAboutDlg();
+  enum { IDD = IDD_ABOUTBOX };
 
 protected:
-    DECLARE_MESSAGE_MAP()
+  DECLARE_MESSAGE_MAP()
 };
 
 CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
-}
-
-void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-    __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
@@ -333,7 +325,7 @@ void CTestExpressionGraphicsDlg::startThread(int debugWinId, bool singleStep) {
       ee = &m_derivedExpr;
       break;
     default:
-      showError(_T("startThread:Invalid debugWinId:%d"), debugWinId);
+      showWarning(_T("startThread:Invalid debugWinId:%d"), debugWinId);
       return;
     }
     m_debugWinId = debugWinId;
@@ -345,7 +337,7 @@ void CTestExpressionGraphicsDlg::startThread(int debugWinId, bool singleStep) {
       m_debugThread->go();
     }
   } catch(Exception e) {
-    showError(e);
+    showException(e);
   }
 }
 
@@ -372,18 +364,6 @@ void CTestExpressionGraphicsDlg::destroyThread() {
     m_debugWinId  = -1;
     clearDebugInfo();
   }
-}
-
-void CTestExpressionGraphicsDlg::showError(const Exception &e) {
-  showError(_T("%s"), e.what());
-}
-
-void CTestExpressionGraphicsDlg::showError(const TCHAR *format,...) {
-  va_list argptr;
-  va_start(argptr, format);
-  const String msg = vformat(format, argptr);
-  va_end(argptr);
-  MessageBox(msg.cstr(), _T("Error"), MB_ICONWARNING);
 }
 
 void CTestExpressionGraphicsDlg::handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
@@ -437,7 +417,7 @@ LRESULT CTestExpressionGraphicsDlg::OnMsgRunStateChanged(WPARAM wp, LPARAM lp) {
 }
 
 LRESULT CTestExpressionGraphicsDlg::OnMsgShowDebugError(WPARAM wp, LPARAM lp) {
-  showError(_T("%s"), m_debugError.cstr());
+  showWarning(m_debugError);
   return 0;
 }
 
@@ -545,7 +525,7 @@ void CTestExpressionGraphicsDlg::paintDebugExpr() {
     setWindowText(this, IDC_EDITDERIVED      , m_debugExpr->toString());
     INVALIDATE();
   } catch(Exception e) {
-    showError(e);
+    showException(e);
   }
 }
 
@@ -564,9 +544,8 @@ void CTestExpressionGraphicsDlg::OnFunctionsCompileFx() {
     if(oldFlags.contains(HASFVALUE) && restoreExprVariables()) {
       OnFunctionsEvaluateFx();
     }
-
   } catch(Exception e) {
-    showError(e);
+    showException(e);
   }
   INVALIDATE();
 }
@@ -591,7 +570,7 @@ void CTestExpressionGraphicsDlg::OnFunctionsReduceFx() {
       INVALIDATE();
     }
   } catch(Exception e) {
-    showError(e);
+    showException(e);
   }
 }
 
@@ -609,7 +588,7 @@ void CTestExpressionGraphicsDlg::OnFunctionsReduceDerived() {
       INVALIDATE();
     }
   } catch(Exception e) {
-    showError(e);
+    showException(e);
   }
 }
 
@@ -648,7 +627,7 @@ void CTestExpressionGraphicsDlg::OnFunctionsEvaluateFx() {
     setWindowText(this, IDC_EDITDERIVEDVALUE1, toString((y1-y0)/(x1-x0)));
     m_flags.add(HASDERIVEDVALUE1);
   } catch(Exception e) {
-    showError(e);
+    showException(e);
   }
   varX = x0;
 }
@@ -675,7 +654,7 @@ void CTestExpressionGraphicsDlg::OnFunctionsEvaluateDerived() {
     setWindowText(this, IDC_EDITDERIVEDVALUE2, toString(m_derivedExpr.evaluate()));
     m_flags.add(HASDERIVEDVALUE2);
   } catch(Exception e) {
-    showError(e);
+    showException(e);
   }
 }
 
@@ -830,7 +809,7 @@ int CTestExpressionGraphicsDlg::getWindowIdFromPoint(CPoint &p) { // assume p re
 
 bool CTestExpressionGraphicsDlg::loadMenu(CMenu &menu, int id) {
   if(!menu.LoadMenu(id)) {
-    showError(_T("Loadmenu failed"));
+    showWarning(_T("Loadmenu failed"));
     return false;
   }
   return true;
@@ -867,7 +846,7 @@ void CTestExpressionGraphicsDlg::OnContextMenuShowExprTree() {
   }
 
   if(expr == NULL) {
-    showError(_T("No expression to show"));
+    showWarning(_T("No expression to show"));
     return;
   }
   if(node) {
@@ -891,7 +870,7 @@ void CTestExpressionGraphicsDlg::OnContextMenuShowExprTree() {
 void CTestExpressionGraphicsDlg::OnContextMenuToStandardForm() {
   Expression *expr = getContextExpression();
   if(expr == NULL) {
-    showError(_T("No expression to convert"));
+    showWarning(_T("No expression to convert"));
     return;
   }
   expr->toStandardForm();
@@ -902,7 +881,7 @@ void CTestExpressionGraphicsDlg::OnContextMenuToStandardForm() {
 void CTestExpressionGraphicsDlg::OnContextMenuToCanoncalForm() {
   Expression *expr = getContextExpression();
   if(expr == NULL) {
-    showError(_T("No expression to convert"));
+    showWarning(_T("No expression to convert"));
     return;
   }
   expr->toCanonicalForm();
@@ -913,7 +892,7 @@ void CTestExpressionGraphicsDlg::OnContextMenuToCanoncalForm() {
 void CTestExpressionGraphicsDlg::OnContextMenuToNumericForm() {
   Expression *expr = getContextExpression();
   if(expr == NULL) {
-    showError(_T("No expression to convert"));
+    showWarning(_T("No expression to convert"));
     return;
   }
   expr->toNumericForm();
@@ -932,7 +911,7 @@ void CTestExpressionGraphicsDlg::OnContextMenuExpand() {
   if(!hasContextNode()) return;
   Expression *expr = getContextExpression();
   if(expr == NULL) {
-    showError(_T("No expression to expand"));
+    showWarning(_T("No expression to expand"));
     return;
   }
   expr->unmarkAll();
@@ -946,7 +925,7 @@ void CTestExpressionGraphicsDlg::OnContextMenuMultiply() {
   if(!hasContextNode()) return;
   Expression *expr = getContextExpression();
   if(expr == NULL) {
-    showError(_T("No expression to multiply"));
+    showWarning(_T("No expression to multiply"));
     return;
   }
   expr->unmarkAll();
@@ -1002,7 +981,7 @@ void CTestExpressionGraphicsDlg::OnDebugStop() {
       m_debugThread->kill();
     }
   } catch(Exception e) {
-    showError(e);
+    showException(e);
   }
 }
 
@@ -1036,7 +1015,7 @@ void CTestExpressionGraphicsDlg::compileExpr() {
       gotoEditBox(this, IDC_EDITEXPR);
       CEdit *eb = (CEdit*)GetDlgItem(IDC_EDITEXPR);
       eb->SetSel(pos, pos);
-      showError(_T("%s"), error.cstr());
+      showWarning(error);
     }
   }
 }
@@ -1049,7 +1028,7 @@ void CTestExpressionGraphicsDlg::deriveExpr() {
       m_flags.add(ISDERIVED);
       setWindowText(this, IDC_EDITDERIVED, m_derivedExpr.toString());
     } catch(Exception e) {
-      showError(e);
+      showException(e);
     }
   }
 }
@@ -1061,7 +1040,7 @@ void CTestExpressionGraphicsDlg::makeExprImage() {
       makeExprImage(m_expr);
     }
   } catch(Exception e) {
-    showError(e);
+    showException(e);
   }
 }
 
@@ -1084,9 +1063,9 @@ void CTestExpressionGraphicsDlg::makeExprImage(const Expression &expr) {
       setContextWindow(oldContextWindow);
     }
   } catch(Exception e) {
-    showError(e);
+    showException(e);
   } catch (...) {
-    showError(_T("Unknown exception in %s"), __TFUNCTION__);
+    showWarning(_T("Unknown exception in %s"), __TFUNCTION__);
   }
 }
 
@@ -1099,7 +1078,7 @@ void CTestExpressionGraphicsDlg::makeDerivedImage(const Expression &expr) {
       setContextWindow(oldContextWindow);
     }
   } catch(Exception e) {
-    showError(e);
+    showException(e);
   }
 }
 
@@ -1317,7 +1296,7 @@ ExpressionImage &CTestExpressionGraphicsDlg::getImageFromWinId(int winId) {
   switch(winId) {
   case IDC_STATICEXPRIMAGE   : return m_exprImage;
   case IDC_STATICDERIVEDIMAGE: return m_derivedImage;
-  default                    : showError(_T("Invalid winId:%d"), winId);
+  default                    : showWarning(_T("Invalid winId:%d"), winId);
                                return m_exprImage;
   }
 }

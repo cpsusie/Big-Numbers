@@ -358,7 +358,7 @@ static const String stateFileName = _T("c:\\temp\\D3FunctionPlotter.dat");
 void CD3FunctionPlotterDlg::OnFileSaveState() {
   try {
     m_scene.saveState(stateFileName);
-    Message(_T("State saved"));
+    showInformation(_T("State saved"));
   } catch(Exception e) {
     showException(e);
   }
@@ -552,7 +552,7 @@ void CD3FunctionPlotterDlg::OnObjectEditFunction() {
     OnFileIsoSurface();
     break;
   default:
-    AfxMessageBox(format(_T("Unknown PersistentDataType:%d"), param->getType()).cstr());
+    showWarning(_T("Unknown PersistentDataType:%d"), param->getType());
     break;
   }
 }

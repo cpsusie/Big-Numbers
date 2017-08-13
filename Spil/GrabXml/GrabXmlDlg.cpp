@@ -160,7 +160,7 @@ void CGrabXmlDlg::OnBnClickedSearch() {
 }
 
 void CGrabXmlDlg::OnToolsFindKnightTour() {
-  MessageBox(_T("Find knight route"), _T("Message"));
+  showInformation(_T("Find knight route"));
 }
 
 BOOL CGrabXmlDlg::PreTranslateMessage(MSG *pMsg) {

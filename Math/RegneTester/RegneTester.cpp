@@ -58,7 +58,7 @@ BOOL CRegneTesterApp::InitInstance() {
             Sleep(300);
           }
           if(deleteDone) {
-            AfxMessageBox(_T("Indstillinger gemt"));
+            showInformation(_T("Indstillinger gemt"));
             _tspawnl(P_NOWAIT, getModuleFileName().cstr(), getModuleFileName().cstr(), NULL);
           }
           exit(0);

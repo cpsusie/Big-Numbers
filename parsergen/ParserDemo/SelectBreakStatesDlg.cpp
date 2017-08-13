@@ -49,10 +49,10 @@ void CSelectBreakStatesDlg::OnOK() {
     int tmp;
     if(_stscanf(tok.next().cstr(), _T("%d"), &tmp) != 1) {
       ok = false;
-      MessageBox(format(_T("Please enter state-numbers in the interval [0..%d]"), maxStateNumber).cstr());
+      showWarning(_T("Please enter state-numbers in the interval [0..%d]"), maxStateNumber);
     } else if(tmp < 0 || tmp > maxStateNumber) {
       ok = false;
-      MessageBox(format(_T("%d is an illegal statenumber. Legal interval is [0..%d]"), tmp, maxStateNumber).cstr());
+      showWarning(_T("%d is an illegal statenumber. Legal interval is [0..%d]"), tmp, maxStateNumber);
     }
     if(ok) {
       stateSet.add(tmp);

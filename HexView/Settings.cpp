@@ -86,7 +86,7 @@ void Settings::save() {
     key.setValue(FIELD_WINDOWHEIGHT     ,m_windowSize.cy    );
     key.setValue(FIELD_WRAPENDOFLINE    ,m_wrapEndOfLine    );
   } catch(Exception e) {
-    AfxMessageBox(e.what(), MB_ICONWARNING);
+    showException(e);
   }
 }
 
@@ -129,7 +129,7 @@ void Settings::load() {
     checkRadix(m_addrRadix);
     m_lineSize = min(m_lineSize, 65536);
   } catch(Exception e) {
-    AfxMessageBox(e.what(), MB_ICONWARNING);
+    showException(e);
   }
 }
 

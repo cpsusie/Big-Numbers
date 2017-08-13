@@ -85,7 +85,7 @@ void usage() {
 void errorMessage(TCHAR *format,...) {
   va_list argptr;
   va_start(argptr, format);
-  AfxMessageBox(vformat(format, argptr).cstr(),MB_ICONSTOP);
+  vshowMessageBox(MB_ICONSTOP, format, argptr);
   va_end(argptr);
   exit(-1);
 }

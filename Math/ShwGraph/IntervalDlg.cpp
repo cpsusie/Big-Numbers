@@ -54,20 +54,19 @@ void IntervalDlg::OnOK() {
      _stscanf(m_minystr,_T("%le"),&miny ) != 1 ||
      _stscanf(m_maxystr,_T("%le"),&maxy ) != 1
     ) {
-    MessageBox(_T("Invalid input"),_T("Error"), MB_ICONEXCLAMATION);
+    showWarning(_T("Invalid input"));
     return;
   }
   if(minx >= maxx) {
-    MessageBox(_T("Invalid X-interval"),_T("Error"), MB_ICONEXCLAMATION);
+    showWarning(_T("Invalid X-interval"));
     return;
   }
   if(miny >= maxy) {
-    MessageBox(_T("Invalid Y-interval"),_T("Error"), MB_ICONEXCLAMATION);
+    showWarning(_T("Invalid Y-interval"));
     return;
   }
   m_minx = minx; m_maxx = maxx;
   m_miny = miny; m_maxy = maxy;
-
   __super::OnOK();
 }
 

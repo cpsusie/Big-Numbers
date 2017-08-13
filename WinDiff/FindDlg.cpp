@@ -86,13 +86,11 @@ void CFindDlg::OnFindNext() {
     SearchMachine sm(m_param);
     m_findWhatCombo.updateList();
     if(m_textContainer->searchText(m_param).isEmpty()) {
-      String tmp;
       if(m_param.m_useRegex) {
-        tmp = format(_T("Cannot find a match for the regular expression '%s'."),m_param.m_findWhat.cstr());
+        showWarning(_T("Cannot find a match for the regular expression '%s'."),m_param.m_findWhat.cstr());
       } else {
-        tmp = format(_T("Cannot find the String '%s'."),m_param.m_findWhat.cstr());
+        showWarning(_T("Cannot find the String '%s'."),m_param.m_findWhat.cstr());
       }
-      MessageBox(tmp.cstr(),NULL,MB_ICONWARNING);
       return;
     }
   } catch(Exception e) {

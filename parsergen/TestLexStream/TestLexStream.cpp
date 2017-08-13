@@ -25,7 +25,7 @@ BOOL CTestLexStreamApp::InitInstance() {
       } else if(nResponse == IDCANCEL) {
       }
     } catch(Exception e) {
-      AfxMessageBox(e.what(), MB_ICONWARNING);
+      showException(e);
     }
     return FALSE;
 }

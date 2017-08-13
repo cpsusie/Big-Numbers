@@ -39,13 +39,13 @@ BOOL COptionsDlg::OnInitDialog() {
 void COptionsDlg::OnOK() {
   UpdateData();
   if((LPCTSTR)m_oldPassword != m_options.m_password) {
-    MessageBox(_T("Forkert kodeord"), _T("Fejl"), MB_ICONEXCLAMATION);
     gotoEditBox(this, IDC_EDITPASSWORD);
+    showWarning(_T("Forkert kodeord"));
     return;
   }
   if(m_password != m_confirmPassword) {
-    MessageBox( _T("De 2 kodeord er ikke ens"));
     gotoEditBox(this, IDC_EDITCONFIRMPASSWORD);
+    showWarning(_T("De 2 kodeord er ikke ens"));
     return;
   }
 

@@ -232,7 +232,7 @@ void CShowGrafDoc::addGraphFromFile(const String &fileName) {
     } catch(Exception e) {
     }
   }
-  Message(_T("%s is not a valid format"), fileName.cstr());
+  showWarning(_T("%s is not a valid format"), fileName.cstr());
 }
 
 void CShowGrafDoc::readDataFile(const String &fileName) {

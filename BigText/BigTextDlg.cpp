@@ -112,7 +112,7 @@ void CBigTextDlg::OnClickedMakeBigText() {
   String text = m_text;
   if(text.length() == 0) {
     gotoEditBox(this, IDC_EDITTEXT);
-    Message(_T("Must fill text"));
+    showWarning(_T("Must fill text"));
     return;
   }
   CWnd       *e = GetDlgItem(IDC_EDITTEXT);

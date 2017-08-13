@@ -289,9 +289,7 @@ void CAlarmDlg::deleteStatusIcon() {
 
 void CAlarmDlg::startTimer(unsigned int timerIndex, int waitSeconds) {
   if(timerIndex >= MAXTIMERCOUNT) {
-    MessageBox(format(_T("startTimer:Timerindex %d too big. Max=%d"), timerIndex, MAXTIMERCOUNT-1).cstr()
-              ,_T("Error")
-              ,MB_ICONERROR);
+    showWarning(_T("%s:Timerindex %d too big. Max=%d"), __TFUNCTION__, timerIndex, MAXTIMERCOUNT-1);
     return;
   }
   if(m_timerIsRunning[timerIndex]) {
@@ -300,14 +298,13 @@ void CAlarmDlg::startTimer(unsigned int timerIndex, int waitSeconds) {
   if(SetTimer(timerIndex,1000 * waitSeconds,NULL)) {
     m_timerIsRunning[timerIndex] = true;
   } else {
-    MessageBox(_T("Cannot install timer"));
+    showWarning(_T("Cannot install timer"));
   }
 }
 
 void CAlarmDlg::stopTimer(unsigned int timerIndex) {
   if(timerIndex >= MAXTIMERCOUNT) {
-    MessageBox(format(_T("stopTimer:Timerindex %d too big. Max=%d"),timerIndex, MAXTIMERCOUNT-1).cstr()
-              ,_T("Error"),MB_ICONERROR);
+    showWarning(_T("%s:Timerindex %d too big. Max=%d"),__TFUNCTION__,timerIndex, MAXTIMERCOUNT-1);
     return;
   }
   if(m_timerIsRunning[timerIndex]) {
@@ -327,12 +324,12 @@ void CAlarmDlg::OnSetalarm() {
   if(_stscanf(timestr,_T("%d:%d:%d"),&alarmhour,&alarmminute,&alarmsecond) != 3) {
     alarmsecond = 0;
     if(_stscanf(timestr,_T("%d:%d"),&alarmhour,&alarmminute) != 2) {
-      MessageBox(_T("Illegal input. (hh:mm:[ss])"));
+      showWarning(_T("Illegal input. (hh:mm:[ss])"));
       return;
     }
   }
   if(alarmhour > 23 || alarmminute > 59 || alarmsecond > 59) {
-    MessageBox(_T("Illegal time"));
+    showWarning(_T("Illegal time"));
     return;
   }
   time_t now;
@@ -366,10 +363,10 @@ void CAlarmDlg::OnTimer(UINT_PTR nIDEvent) {
     ShowWindow(SW_SHOW);
     BringWindowToTop();
     if(m_soundFileName == EMPTYSTRING) {
-      MessageBox(_T("Time is up!!!"),_T("Alarm"),MB_ICONEXCLAMATION);
+      showInformation(_T("Time is up!!!"));
     } else {
       startPlayer();
-      MessageBox(_T("Time is up!!!"),_T("Alarm"));
+      showInformation(_T("Time is up!!!"));
       stopPlayer();
     }
     break;
@@ -391,22 +388,20 @@ void CAlarmDlg::OnOptionsSound() {
   CFileDialog dlg(TRUE);
   dlg.m_ofn.lpstrFilter = FileDialogExtensions;
   dlg.m_ofn.lpstrTitle  = _T("Select sound");
-  dlg.DoModal();
 
-  if(_tcslen(dlg.m_ofn.lpstrFile) == 0) {
+  if((dlg.DoModal() != IDOK) || (_tcslen(dlg.m_ofn.lpstrFile) == 0)) {
     return;
   }
-
-  FILE *f = fopen(dlg.m_ofn.lpstrFile,_T("rb"));
-  if(f == NULL) {
-    Message(_T("Cannot open %s"),dlg.m_ofn.lpstrFile);
-    return;
+  try {
+    FILE *f = FOPEN(dlg.m_ofn.lpstrFile,_T("rb"));
+    m_soundFileName = dlg.m_ofn.lpstrFile;
+    fclose(f);
+    writeSetup();
+    GetDlgItem(IDC_STATICSOUNDFILE)->SetWindowText(m_soundFileName);
+  } catch (Exception e) {
+    showException(e);
   }
 
-  m_soundFileName = dlg.m_ofn.lpstrFile;
-  fclose(f);
-  writeSetup();
-  GetDlgItem(IDC_STATICSOUNDFILE)->SetWindowText(m_soundFileName);
 }
 
 bool CAlarmDlg::startPlayer() {
@@ -419,7 +414,7 @@ bool CAlarmDlg::startPlayer() {
     setWindowText(this, IDC_BUTTONPLAY, _T("S&top"));
     return true;
   } catch(Exception e) {
-    Message(_T("%s"), e.what());
+    showException(e);
     return false;
   }
 }
@@ -433,14 +428,14 @@ void CAlarmDlg::stopPlayer() {
       m_player.stop();
     }
   } catch(Exception e) {
-    Message(_T("%s"),e.what());
+    showException(e);
   }
 }
 
 void CAlarmDlg::OnButtonPlay() {
   if(m_player.getStatus() == stopped) {
     if(m_soundFileName == EMPTYSTRING) {
-      MessageBox(_T("No sound to play"),EMPTYSTRING,MB_ICONEXCLAMATION);
+      showWarning(_T("No sound to play"));
     } else {
       startPlayer();
     }

@@ -511,7 +511,7 @@ void Options::save() {
     clrDirty();
 
   } catch(Exception e) {
-    AfxMessageBox(e.what(), MB_ICONWARNING);
+    showException(e);
   }
 }
 

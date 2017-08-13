@@ -40,7 +40,7 @@ void CCaptureView::OnDraw(CDC* pDC) {
     setScrollRange();
   } else { // print or printPreview
     if(!doc->hasImage()) {
-      MessageBox(_T("Nothing to print"),_T("No image"),MB_ICONINFORMATION);
+      showInformation(_T("Nothing to print"));
       return;
     }
     CSize printSizePix = doc->getSizeInMillimeters() * m_printInfo->m_rectDraw.Size() / getDCSizeInMillimeters(pDC->m_hAttribDC);

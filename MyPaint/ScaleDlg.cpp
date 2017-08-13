@@ -52,24 +52,24 @@ void CScaleDlg::OnOK() {
   }
   if(m_toSize) {
     if(!isInteger(m_scaleWidth)) {
-      MessageBox(_T("Must be integer"));
       gotoField(IDC_SCALEWIDTHEDIT);
+      showWarning(_T("Must be integer"));
       return;
     }
     if(!isInteger(m_scaleHeight)) {
-      MessageBox(_T("Must be integer"));
       gotoField(IDC_SCALEHEIGHTEDIT);
+      showWarning(_T("Must be integer"));
       return;
     }
   }
   if(m_scaleWidth <= 0) {
-    MessageBox(_T("Must be positive"));
     gotoField(IDC_SCALEWIDTHEDIT);
+    showWarning(_T("Must be positive"));
     return;
   }
   if(m_scaleHeight <= 0) {
-    MessageBox(_T("Must be positive"));
     gotoField(IDC_SCALEHEIGHTEDIT);
+    showWarning(_T("Must be positive"));
     return;
   }
 
@@ -80,7 +80,6 @@ void CScaleDlg::OnOK() {
     m_scale.m_scale.x /= 100;
     m_scale.m_scale.y /= 100;
   }
-
   __super::OnOK();
 }
 

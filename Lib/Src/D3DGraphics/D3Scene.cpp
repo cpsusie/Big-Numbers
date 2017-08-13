@@ -198,7 +198,7 @@ BitSet D3Scene::getLightsVisible() const {
 
 D3LightControl *D3Scene::setLightControlVisible(UINT index, bool visible) {
   if(!isLightDefined(index)) {
-    Message(_T("%s:Light %d is undefined"), __TFUNCTION__, index);
+    showWarning(_T("%s:Light %d is undefined"), __TFUNCTION__, index);
     return NULL;
   }
   D3LightControl *lc = findLightControlByLightIndex(index);
@@ -213,7 +213,7 @@ D3LightControl *D3Scene::setLightControlVisible(UINT index, bool visible) {
 
 D3LightControl *D3Scene::addLightControl(UINT index) {
   if(!isLightDefined(index)) {
-    Message(_T("%s:Light %d is undefined"), __TFUNCTION__, index);
+    showWarning(_T("%s:Light %d is undefined"), __TFUNCTION__, index);
     return NULL;
   }
   D3LightControl *result = findLightControlByLightIndex(index);
@@ -292,8 +292,7 @@ void D3Scene::setLightPosition(UINT index, const D3DXVECTOR3 &pos) {
 
 void D3Scene::setLight(const LIGHT &param) {
   if(!isLightDefined(param.m_index)) {
-    Message(_T("%s:Light %d is undefined")
-            ,__TFUNCTION__, param.m_index);
+    showWarning(_T("%s:Light %d is undefined"),__TFUNCTION__, param.m_index);
     return;
   }
   const LIGHT oldLp = getLight(param.m_index);

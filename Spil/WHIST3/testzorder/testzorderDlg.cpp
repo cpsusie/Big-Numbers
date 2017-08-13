@@ -119,7 +119,7 @@ void CTestzorderDlg::OnStatic1()  {
   CStatic *s1 = (CStatic *)GetDlgItem(IDC_STATIC1);
   CStatic *s2 = (CStatic *)GetDlgItem(IDC_STATIC2);
 
-  MessageBox(_T("Click on 1"));
+  showInformation(_T("Click on 1"));
 
   assert(s1->SetWindowPos(&wndTopMost,0,0,0,0,myflags));
   assert(s2->SetWindowPos(&wndBottom,0,0,0,0,myflags));
@@ -131,7 +131,7 @@ void CTestzorderDlg::OnStatic2()  {
   CStatic *s1 = (CStatic *)GetDlgItem(IDC_STATIC1);
   CStatic *s2 = (CStatic *)GetDlgItem(IDC_STATIC2);
 
-  MessageBox(_T("Click on 2"));
+  showInformation(_T("Click on 2"));
 
   assert(s2->SetWindowPos(&wndTopMost,0,0,0,0,myflags));
   assert(s1->SetWindowPos(&wndBottom,0,0,0,0,myflags));

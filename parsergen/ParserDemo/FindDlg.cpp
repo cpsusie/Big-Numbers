@@ -53,21 +53,18 @@ void FindDlg::OnFindnext() {
     SearchMachine sm(m_param);
     m_history.add(m_param.m_findWhat);
     if(!m_TextContainer.searchText(m_param).isSet()) {
-      String msg;
       if(m_param.m_useRegExp) {
-        msg = format(_T("Cannot find a match for the regular expression '%s'."), m_param.m_findWhat.cstr());
+        showWarning(_T("Cannot find a match for the regular expression '%s'."), m_param.m_findWhat.cstr());
       } else {
-        msg = format(_T("Cannot find the String '%s'."), m_param.m_findWhat.cstr());
+        showWarning(_T("Cannot find the String '%s'."), m_param.m_findWhat.cstr());
       }
-      MessageBox(msg.cstr(), NULL, MB_ICONWARNING);
       return;
     }
   } catch(Exception e) {
-    MessageBox(e.what(), _T("Error"), MB_ICONWARNING);
+    showException(e);
     GetDlgItem(IDC_COMBOFINDWHAT)->SetFocus();
     return;
   }
-
   __super::OnOK();
 }
 
@@ -97,7 +94,7 @@ void FindDlg::OnButtonregsymbolsmenu() {
   CMenu menu;
   int ret = menu.LoadMenu(IDR_MENUREGSYMBOLS);
   if(!ret) {
-    AfxMessageBox(_T("Loadmenu failed"), MB_ICONERROR);
+    showWarning(_T("Loadmenu failed"));
     return;
   }
   CRect r;

@@ -362,28 +362,6 @@ OptionsEditData::OptionsEditData(const String &name, int index)
 {
 }
 
-static void vshowMessage(int id, const TCHAR *format, va_list argptr) {
-  AfxMessageBox(vformat(format, argptr).cstr(), id);
-}
-
-void showWarning(const TCHAR *format, ...) {
-  va_list argptr;
-  va_start(argptr, format);
-  vshowMessage(MB_ICONWARNING, format, argptr);
-  va_end(argptr);
-}
-
-void showError(const TCHAR *format, ...) {
-  va_list argptr;
-  va_start(argptr, format);
-  vshowMessage(MB_ICONERROR, format, argptr);
-  va_end(argptr);
-}
-
-void showException(const Exception &e) {
-  showWarning(_T("%s"), e.what());
-}
-
 #define FORMAT14 _T("%d;%d;%d;%d;%d;%d;%d;%d;%d;%d;%d;%d;%d;%s")
 
 String Options::logFontToString(const LOGFONT &lf) { // static

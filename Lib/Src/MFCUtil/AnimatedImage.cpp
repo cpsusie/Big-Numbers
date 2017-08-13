@@ -439,7 +439,7 @@ void AnimationThread::kill() {
     Sleep(10);
   }
   if(stillActive()) {
-    AfxMessageBox(_T("Cannot stop animationThread!"));
+    showWarning(_T("Cannot stop animationThread!"));
   }
 }
 

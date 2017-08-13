@@ -187,7 +187,7 @@ void CTestMouseDlg::OnCreateCursor() {
     m_createdCursor = createCursor(theApp.m_hInstance, IDB_BITMAPCOLOR, IDB_BITMAPMASK, 24,24);
     setWindowCursor(this, m_createdCursor);
   } catch(Exception e) {
-    MessageBox(e.what(), _T("CreateCursor failed"), MB_ICONEXCLAMATION);
+    showException(e);
   }
 }
 
@@ -285,6 +285,6 @@ void CTestMouseDlg::OnLoadAnimatedCursor() {
     }
     setWindowCursor(this, m_createdCursor);
   } catch(Exception e) {
-    MessageBox(e.what(), _T("Error"), MB_ICONWARNING);
+    showException(e);
   }
 }

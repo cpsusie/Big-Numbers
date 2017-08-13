@@ -22,7 +22,7 @@ void CProgressWithPctCtrl::substituteControl(CWnd *parent, int id) {
   DEFINEMETHODNAME;
   CProgressCtrl *ctrl = (CProgressCtrl*)parent->GetDlgItem(id);
   if(ctrl == NULL) {
-    AfxMessageBox(format(_T("%s:Control %d not found"), method, id).cstr(), MB_ICONWARNING);
+    showError(_T("%s:Control %d not found"), method, id);
     return;
   }
   const int      style    = ctrl->GetStyle();
@@ -32,7 +32,7 @@ void CProgressWithPctCtrl::substituteControl(CWnd *parent, int id) {
   const COLORREF bkColor  = ctrl->GetBkColor();
   ctrl->DestroyWindow();
   if(!Create(style, rect, parent, id)) {
-    AfxMessageBox(format(_T("%s:Create failed"), method).cstr(), MB_ICONWARNING);
+    showError(_T("%s:Create failed"), method);
     return;
   }
   ModifyStyleEx(0, exStyle);

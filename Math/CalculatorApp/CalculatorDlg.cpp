@@ -13,18 +13,11 @@ public:
 
   enum { IDD = IDD_ABOUTBOX };
 
-  protected:
-  virtual void DoDataExchange(CDataExchange *pDX);
-
 protected:
   DECLARE_MESSAGE_MAP()
 };
 
 CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
-}
-
-void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
@@ -841,7 +834,7 @@ void CCalculatorDlg::OnContextMenu(CWnd *pWnd, CPoint point) {
     m_helpid = helpid;
     CMenu menu;
     if(!menu.LoadMenu(IDR_MENU2)) {
-      AfxMessageBox(_T("Loadmenu failed"));
+      showWarning(_T("Loadmenu failed"));
       return;
     }
     menu.GetSubMenu(0)->TrackPopupMenu(TPM_LEFTALIGN|TPM_RIGHTBUTTON, point.x,point.y, this);
@@ -849,9 +842,7 @@ void CCalculatorDlg::OnContextMenu(CWnd *pWnd, CPoint point) {
 }
 
 void CCalculatorDlg::OnControlWhatsthis() {
-  TCHAR tmp[100];
-  _stprintf(tmp,_T("helpid:%lx"),m_helpid);
-  AfxMessageBox(tmp);	
+  showInformation(_T("helpid:%lx"),m_helpid);
 }
 
 void CCalculatorDlg::OnEditCopy() {

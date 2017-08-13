@@ -210,7 +210,7 @@ void CMandelbrotDlg::OnFileSaveRectangle() {
     }
     saveRectangle(nameInfo.getAbsolutePath());
   } catch(Exception e) {
-    MessageBox(e.what());
+    showException(e);
   }
 }
 
@@ -229,7 +229,7 @@ void CMandelbrotDlg::OnFileSaveColorMap() {
     }
     saveColorMap(nameInfo.getAbsolutePath());
   } catch(Exception e) {
-    MessageBox(e.what());
+    showException(e);
   }
 }
 
@@ -248,7 +248,7 @@ void CMandelbrotDlg::OnFileSaveImage() {
   try {
     m_pixRect->writeAsBMP(ByteOutputFile(FileNameSplitter(dlg.m_ofn.lpstrFile).setExtension(_T("bmp")).getFullPath()));
   } catch(Exception e) {
-    MessageBox(e.what());
+    showException(e);
   }
 }
 
@@ -264,7 +264,7 @@ void CMandelbrotDlg::OnFileLoadRectangle() {
     loadRectangle(dlg.m_ofn.lpstrFile);
     startCalculation();
   } catch(Exception e) {
-    MessageBox(e.what());
+    showException(e);
   }
 }
 
@@ -280,7 +280,7 @@ void CMandelbrotDlg::OnFileLoadColorMap() {
     loadColorMap(dlg.m_ofn.lpstrFile);
     startCalculation();
   } catch(Exception e) {
-    MessageBox(e.what());
+    showException(e);
   }
 }
 
@@ -438,7 +438,7 @@ void CMandelbrotDlg::OnLButtonDown(UINT nFlags, CPoint point) {
       if(info != NULL) {
         paintPointSet(info->getEdgeSet() , RGB(255,255,255));
         paintPointSet(info->getInnerSet(), RGB(255,255,0));
-        MessageBox(info->toString().cstr(), _T("Info"));
+        showInformation(info->toString());
         paintPointSet(info->getEdgeSet() , BLACK);
         paintPointSet(info->getInnerSet(), BLACK);
       }

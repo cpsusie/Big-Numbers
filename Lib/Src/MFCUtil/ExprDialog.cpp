@@ -37,7 +37,7 @@ bool CExprDialog::validateExpr(int id) {
   }
   if(!expr.isReturnTypeReal()) {
     gotoExpr(id);
-    Message(_T("Expression must return real value"));
+    showWarning(_T("Expression must return real value"));
     return false;
   }
   return true;
@@ -51,7 +51,7 @@ bool CExprDialog::validateInterval(int fromId, int toId) {
   _stscanf(toStr.cstr()  ,_T("%le"), &to  );
   if(from >= to) {
     gotoEditBox(this, fromId);
-    Message(_T("Invalid interval"));
+    showWarning(_T("Invalid interval"));
     return false;
   }
   return true;
@@ -63,7 +63,7 @@ bool CExprDialog::validateMinMax(int id, double min, double max) {
   _stscanf(str.cstr(),_T("%le"), &value);
   if((value < min) || (value > max)) {
     gotoEditBox(this, id);
-    Message(_T("Value must be in range [%lg..%lg]"), min, max);
+    showWarning(_T("Value must be in range [%lg..%lg]"), min, max);
     return false;
   }
   return true;
@@ -82,26 +82,26 @@ void CExprDialog::showExprError(const String &msg, int id) {
       charIndex -= prefixLen;
       getExprField(id)->SetSel(charIndex, charIndex);
     }
-    Message(_T("%s"), errorMsg.cstr());
+    showWarning(errorMsg);
   } catch(Exception) { // ignore Exception, and just show msg
     gotoExpr(id);
-    Message(_T(":%s"), msg.cstr());
+    showWarning(msg);
   }
 }
 
 void CExprDialog::createExprHelpButton(int buttonId, int exprEditId) {
-  if (m_helpButtonCount >= MAXHELPBUTTONS) {
-    Message(_T("Too many expr-helpbuttons. Max=%d"), MAXHELPBUTTONS);
+  if(m_helpButtonCount >= MAXHELPBUTTONS) {
+    showWarning(_T("Too many expr-helpbuttons. Max=%d"), MAXHELPBUTTONS);
     return;
   }
   CButton *but  = (CButton*)GetDlgItem(buttonId  );
   CEdit   *edit = (CEdit  *)GetDlgItem(exprEditId);
   if(but == NULL) {
-    Message(_T("Button %d doesn't exist"), buttonId);
+    showWarning(_T("Button %d doesn't exist"), buttonId);
     return;
   }
   if(edit == NULL) {
-    Message(_T("EditBox %d doesn't exist"), exprEditId);
+    showWarning(_T("EditBox %d doesn't exist"), exprEditId);
     return;
   }
   const CPoint bp = getWindowPosition(this, buttonId);
@@ -151,7 +151,7 @@ void CExprDialog::substituteSelectedText(int ctrlId, const String &s) {
   if(s.length() > 0) {
     CEdit *e = getExprField(ctrlId);
     if (e == NULL) {
-      MessageBox(format(_T("No ctrlId %d in window"), ctrlId).cstr(), _T("Error"), MB_ICONWARNING);
+      showWarning(_T("No ctrlId %d in window"), ctrlId);
       return;
     }
     int startIndex, endIndex;

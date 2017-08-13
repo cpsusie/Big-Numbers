@@ -117,7 +117,7 @@ void CCustomFitThreadDlg::allocateFunctionFitter() {
 
   m_functionFitter  = new FunctionFitter((LPCTSTR)m_expr,selectPointsInInterval(getXInterval(), m_pointArray)); TRACE_NEW(m_functionFitter);
   if(!m_functionFitter->isOk()) {
-    MessageBox(m_functionFitter->getErrors()[0].cstr());
+    showWarning(m_functionFitter->getErrors()[0]);
     SAFEDELETE(m_functionFitter);
     return;
   }
@@ -209,11 +209,11 @@ void CCustomFitThreadDlg::OnOK() {
   UpdateData();
   if(m_name.GetLength() == 0) {
     gotoEditBox(this, IDC_EDITNAME);
-    MessageBox(_T("Must specify name"));
+    showWarning(_T("Must specify name"));
     return;
   }
   if(m_functionFitter == NULL) {
-    MessageBox(_T("Illegal state:called OnOk with no functionfitter defined"), _T("Error"), MB_ICONEXCLAMATION);
+    showWarning(_T("Illegal state:called OnOk with no functionfitter defined"));
     return;
   }
 
@@ -236,7 +236,7 @@ void CCustomFitThreadDlg::OnCancel() {
 
 void CCustomFitThreadDlg::startWorker(int loopCounter) {
   if(m_functionFitter == NULL || m_worker == NULL) {
-    MessageBox(_T("Illegal state:called startWorker with no functionfitter defined"), _T("Error"),MB_ICONEXCLAMATION);
+    showWarning(_T("Illegal state:called startWorker with no functionfitter defined"));
     return;
   }
   m_running = true;

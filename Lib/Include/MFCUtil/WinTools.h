@@ -171,6 +171,51 @@ void textOut(                     HDC hdc, int x, int y, const String &s);
 
 void Message(const TCHAR *format, ... );
 
+int vshowMessageBox(int flags, const TCHAR *format, va_list argptr);
+
+inline int showMessageBox(int flags, const TCHAR *format, ...) {
+  va_list argptr;
+  va_start(argptr, format);
+  const int result = vshowMessageBox(flags, format, argptr);
+  va_end(argptr);
+  return result;
+}
+
+inline void showInformation(const TCHAR *format, ...) {
+  va_list argptr;
+  va_start(argptr, format);
+  vshowMessageBox(MB_ICONINFORMATION, format, argptr);
+  va_end(argptr);
+}
+
+inline void showInformation(const String &msg) {
+  showInformation(_T("%s"), msg.cstr());
+}
+
+inline void showWarning(const TCHAR *format, ...) {
+  va_list argptr;
+  va_start(argptr, format);
+  vshowMessageBox(MB_ICONWARNING, format, argptr);
+  va_end(argptr);
+}
+
+inline void showWarning(const String &msg) {
+  showWarning(_T("%s"), msg.cstr());
+}
+
+inline void showError(const TCHAR *format, ...) {
+  va_list argptr;
+  va_start(argptr, format);
+  vshowMessageBox(MB_ICONERROR, format, argptr);
+  va_end(argptr);
+}
+
+inline void showError(const String &msg) {
+  showError(_T("%s"), msg.cstr());
+}
+
+void showException(const Exception &e, int flags = MB_ICONERROR);
+
 void   addData(                     CListCtrl &ctrl, int row, int col, const String &str, bool newItem = false);
 String getItemString(         const CListCtrl &ctrl, int row, int col);
 void   setSelectedIndex(            CListCtrl &ctrl, int index);
@@ -259,8 +304,6 @@ bool isBorderHit(UINT hitTestCode); // hitTestCode comes from OnNcLButtonDown(UI
 // extra tools to set in HeaderCtrl (HDITEM.fmt)
 #define HDF_SORTUP              0x0400
 #define HDF_SORTDOWN            0x0200
-
-void showException(const Exception &e);
 
 class DebugBitmap {
 public:

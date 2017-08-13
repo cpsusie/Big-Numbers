@@ -7,7 +7,7 @@ void D3DeviceFactory::initDirect3D() { // static
   Direct3DCreate9Ex( D3D_SDK_VERSION, &s_direct3D);
   if(s_direct3D == NULL) {
     const TCHAR *msg = _T("Cannot initialize Direct3D");
-    Message(_T("%s"), msg);
+    showError(msg);
     throwException(_T("%s"), msg);
   }
   TRACE_CREATE(s_direct3D);

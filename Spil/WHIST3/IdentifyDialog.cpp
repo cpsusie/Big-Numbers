@@ -75,14 +75,14 @@ void IdentifyDialog::OnOK() {
 
   if(m_myName == EMPTYSTRING) {
     UpdateData(false);
-    MessageBox(_T("Indtast dit navn"),_T("Udfyld navn"), MB_ICONEXCLAMATION );
     OnGotoName();
+    showWarning(_T("Indtast dit navn"));
     return;
   }
   if(m_connected && m_dealerName == EMPTYSTRING) {
     UpdateData(false);
-    MessageBox(_T("Indtast kortgivers computernavn"), _T("Udfyld computernavn"), MB_ICONEXCLAMATION);
     OnGotoDealerName();
+    showWarning(_T("Indtast kortgivers computernavn"));
     return;
   }
 
@@ -92,7 +92,6 @@ void IdentifyDialog::OnOK() {
   options.m_dealerName = (LPCTSTR)m_dealerName;
   options.m_connected  = m_connected ? true : false;
   options.save();
-
   __super::OnOK();
 }
 

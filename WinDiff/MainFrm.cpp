@@ -685,7 +685,7 @@ void CMainFrame::OnFileOpenPanel1() {
 void CMainFrame::OnFileOpen(int id) {
   TextView   *view = getActiveTextView();
   if(view == NULL) {
-    Message(_T("No active view"));
+    showWarning(_T("No active view"));
     return;
   }
   CFileDialog dlg(TRUE);
@@ -743,7 +743,7 @@ void CMainFrame::onFileMruFile(int index) {
 
     if(ACCESS(fname, 4) < 0) {
       const int errorCode = errno;
-      Message(_T("%s"), getErrnoText().cstr());
+      showWarning(getErrnoText());
       if(errorCode == ENOENT) {
         theApp.removeFromRecentFiles(index);
       }

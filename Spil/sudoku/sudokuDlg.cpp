@@ -225,7 +225,7 @@ void CSudokuDlg::OnSolve() {
     putMatrix(solution);
     showMessage(_T("%d kombinationer gennemløbet"),game.getTryCount());
   } else {
-    MessageBox(_T("Kan ikke løses"));
+    showInformation(_T("Kan ikke løses"));
   }
 }
 
@@ -422,7 +422,7 @@ void CSudokuDlg::save(const TCHAR *fname) {
     setName(fname);
     fclose(f);
   } catch(Exception e) {
-    Message(_T("%s"), e.what());
+    showException(e);
   }
 }
 
@@ -471,11 +471,11 @@ void CSudokuDlg::OnFileOpen() {
         setName(fname);
         startTimer();
       } else {
-        Message(_T("Error loading %s"), fname);
+        showWarning(_T("Error loading %s"), fname);
       }
       fclose(f);
     } catch(Exception e) {
-      Message(_T("%s"), e.what());
+      showException(e);
     }
   }
 }

@@ -94,7 +94,7 @@ BOOL C4PaaStribeDlg::OnInitDialog() {
     m_game.init(m_starter);
 
 /*
-    Message(_T("sizeof(Game):%d sizeof(Position):%d, sizeof(Stribe4):%d",sizeof(Game),sizeof(Position),sizeof(Stribe4)));
+    showInformation(_T("sizeof(Game):%d sizeof(Position):%d, sizeof(Stribe4):%d",sizeof(Game),sizeof(Position),sizeof(Stribe4)));
 */
     return TRUE;  // return TRUE  unless you set the focus to a control
 }

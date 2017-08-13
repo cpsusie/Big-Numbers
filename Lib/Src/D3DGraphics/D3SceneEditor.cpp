@@ -97,9 +97,8 @@ void D3SceneEditor::handlePropertyChanged(const PropertyContainer *source, int i
     case SP_LIGHTPARAMETERS:
       { const LIGHT &lp = *(LIGHT*)newValue;
         LIGHT tmp = getScene().getLight(lp.m_index); // to keep pos and direction as they are
-        if (tmp.m_index != lp.m_index) {
-          Message(_T("%s:Light %d is undefined")
-                 ,__TFUNCTION__,lp.m_index);
+        if(tmp.m_index != lp.m_index) {
+          showWarning(_T("%s:Light %d is undefined"), __TFUNCTION__,lp.m_index);
         }
         getScene().setLight(CLightDlg::copyModifiableValues(tmp, lp));
       }
@@ -1325,7 +1324,7 @@ void D3SceneEditor::OnSaveSceneParameters() {
     getScene().save(ByteOutputFile(dlg.m_ofn.lpstrFile));
     m_paramFileName = dlg.m_ofn.lpstrFile;
   } catch (Exception e) {
-    Message(_T("%s"), e.what());
+    showException(e);
   }
 }
 
@@ -1345,7 +1344,7 @@ void D3SceneEditor::OnLoadSceneParameters() {
     render(RENDER_ALL);
     m_paramFileName = dlg.m_ofn.lpstrFile;
   } catch(Exception e) {
-    Message(_T("%s"), e.what());
+    showException(e);
   }
 }
 

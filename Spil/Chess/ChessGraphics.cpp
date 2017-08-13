@@ -685,7 +685,7 @@ void ChessGraphics::paintClock(const CPoint &pos, int seconds) {
 
 CSize ChessGraphics::flushImage() {
   if(m_paintLevel != 0) {
-    AfxMessageBox(format(_T("flushImage called with paintLevel=%d"), m_paintLevel).cstr());
+    showWarning(_T("%s:called with paintLevel=%d"), __TFUNCTION__, m_paintLevel);
   }
   pushLevel();
   paintKings();
@@ -808,8 +808,8 @@ void ChessGraphics::markLastMoveAsComputerMove() {
   unmarkLastMove();
   if(m_game->getPlyCount() > 0) {
     const MoveBase m = m_game->getLastMove();
-    m_computerFrom          = m.getFrom();
-    m_computerTo            = m.getTo();
+    m_computerFrom   = m.getFrom();
+    m_computerTo     = m.getTo();
     paintComputerMoveMarks();
   }
   popLevel();

@@ -120,7 +120,7 @@ bool CIsoSurfaceDlg::validate() {
   }
   if(m_cellSize <= 0) {
     OnGotoCellSize();
-    Message(_T("Size must be > 0"));
+    showWarning(_T("Size must be > 0"));
     return false;
   }
   if(!validateInterval(IDC_EDIT_XFROM, IDC_EDIT_XTO)) {

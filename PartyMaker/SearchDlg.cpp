@@ -203,7 +203,7 @@ void SearchDlg::OnEditCopy() {
     try {
       clipboardDropFiles(m_hWnd, fnames);
     } catch(Exception e) {
-      Message(_T("clipboardDropFiles failed:%s"),e.what());
+      showException(e);
     }
     delete[] items;
   } else if(GetFocus() == eb) {
@@ -215,7 +215,7 @@ void SearchDlg::OnEditCopy() {
       try {
         putClipboard(m_hWnd, (LPCTSTR)m_searchText.Mid(start,len));
       } catch(Exception e) {
-        Message(_T("copy to clipboard failed:%s"),e.what());
+        showException(e);
       }
     }
   }

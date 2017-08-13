@@ -22,7 +22,7 @@ void setControlText(int id, CWnd *wnd) {
 void substituteControl(int id, CWnd *wnd, CWnd &newCtrl) {
   CWnd      *oldCtrl = wnd->GetDlgItem(id);
   if(oldCtrl == NULL) {
-    AfxMessageBox(format("Control with id=%d not found in window <%s>", id, getWindowText(wnd).cstr()).cstr(), MB_ICONWARNING);
+    showError(_T("Control with id=%d not found in window <%s>"), id, getWindowText(wnd).cstr());
     return;
   }
   const int style   = oldCtrl->GetStyle();

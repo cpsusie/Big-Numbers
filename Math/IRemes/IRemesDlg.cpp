@@ -522,7 +522,7 @@ void CIRemesDlg::OnRunStop() {
       m_debugThread->kill();
     }
   } catch(Exception e) {
-    showError(e);
+    showException(e);
   }
 }
 
@@ -644,7 +644,7 @@ void CIRemesDlg::handlePropertyChanged(const PropertyContainer *source, int id, 
         break;
       }
     default:
-      MessageBox(format(_T("Unknown property id:%d"), id).cstr(), _T("Error"), MB_ICONEXCLAMATION);
+      showWarning(_T("Unknown property id:%d"), id);
       break;
     }
   }
@@ -723,7 +723,7 @@ void CIRemesDlg::handleRemesProperty(const Remes &r, int id, const void *oldValu
     PostMessage(ID_MSG_WARNING_CHANGED, 0, 0);
     break;
   default:
-    MessageBox(format(_T("Unknown remes property id:%d"), id).cstr(), _T("Error"), MB_ICONEXCLAMATION);
+    showWarning(_T("Unknown remes property id:%d"), id);
     break;
   }
 }
@@ -745,7 +745,7 @@ LRESULT CIRemesDlg::OnMsgThrErrorChanged(WPARAM wp, LPARAM lp) {
   m_gate.wait();
   const String error = m_error;
   m_gate.signal();
-  MessageBox(error.cstr(), _T("Error"), MB_ICONEXCLAMATION);
+  showWarning(error);
   return 0;
 }
 
@@ -846,45 +846,44 @@ void CIRemesDlg::startThread(bool singleStep) {
       m_debugThread->go();
     }
   } catch(Exception e) {
-    showError(e);
+    showException(e);
   }
 }
 
 bool CIRemesDlg::validateInput() {
-  const TCHAR *title = _T("Error");
-  if (m_name.GetLength() == 0) {
+  if(m_name.GetLength() == 0) {
     gotoEditBox(this, IDC_EDITNAME);
-    MessageBox(_T("Name cannot be empty"), title, MB_ICONWARNING);
+    showWarning(_T("Name cannot be empty"));
     return false;
   }
   if (m_xFrom > 0 || m_xTo < 0) {
     gotoEditBox(this, IDC_EDITXFROM);
-    MessageBox(_T("Domain must contain 0"), title, MB_ICONWARNING);
+    showWarning(_T("Domain must contain 0"));
     return false;
   }
   if (m_xFrom >= m_xTo) {
     gotoEditBox(this, IDC_EDITXFROM);
-    MessageBox(_T("Invalid interval. from must be < to"), title, MB_ICONWARNING);
+    showWarning(_T("Invalid interval. from must be < to"));
     return false;
   }
   if (m_M < 1) {
     gotoEditBox(this, IDC_EDITM);
-    MessageBox(_T("M must be >= 1"), title, MB_ICONWARNING);
+    showWarning(_T("M must be >= 1"));
     return false;
   }
   if (m_K < 0) {
     gotoEditBox(this, IDC_EDITK);
-    MessageBox(_T("K must be >= 0"), title, MB_ICONWARNING);
+    showWarning(_T("K must be >= 0"));
     return false;
   }
   if (m_M > m_MTo) {
     gotoEditBox(this, IDC_EDITM);
-    MessageBox(_T("M start > M end"), title, MB_ICONWARNING);
+    showWarning(_T("M start > M end"));
     return false;
   }
   if (m_K > m_KTo) {
     gotoEditBox(this, IDC_EDITK);
-    MessageBox(_T("K start > K end"), title, MB_ICONWARNING);
+    showWarning(_T("K start > K end"));
     return false;
   }
   return true;
@@ -896,20 +895,20 @@ void CIRemesDlg::createThread() {
   m_targetFunction.setDomain(m_xFrom, m_xTo);
   setSubMK(-1,-1);
   m_reduceToInterpolate = false;
-  m_remes               = new Remes(m_targetFunction, m_relativeError?true:false);
+  m_remes               = new Remes(m_targetFunction, m_relativeError?true:false); TRACE_NEW(m_remes);
   m_remes->setSearchEMaxIterations(m_maxSearchEIterations);
   const IntInterval mInterval(m_M, m_MTo);
   const IntInterval kInterval(m_K, m_KTo);
-  m_debugThread         = new DebugThread(*m_remes, mInterval, kInterval, m_maxMKSum, m_skipExisting?true:false);
+  m_debugThread         = new DebugThread(*m_remes, mInterval, kInterval, m_maxMKSum, m_skipExisting?true:false); TRACE_NEW(m_debugThread);
   m_debugThread->addPropertyChangeListener(this);
 }
 
 void CIRemesDlg::destroyThread() {
   if(hasDebugThread()) {
     m_debugThread->kill();
-    delete m_debugThread;
+    SAFEDELETE(m_debugThread);
     m_debugThread = NULL;
-    delete m_remes;
+    SAFEDELETE(m_remes);
     m_remes = NULL;
   }
 }
@@ -920,10 +919,6 @@ String CIRemesDlg::getThreadStateName() const {
   } else {
     return m_debugThread->getStateName();
   }
-}
-
-void CIRemesDlg::showError(const Exception &e) {
-  MessageBox(format(_T("Exception:%s"), e.what()).cstr(), _T("Error"), MB_ICONWARNING | MB_OK);
 }
 
 BigReal DynamicTargetFunction::operator()(const BigReal &x) {

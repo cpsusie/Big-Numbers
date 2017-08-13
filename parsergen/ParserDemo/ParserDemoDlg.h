@@ -7,7 +7,6 @@
 class CParserDemoDlg : public CDialog, public TextContainer, public ParserHandler {
 public:
     CParserDemoDlg(CWnd *pParent = NULL);
-    void             message(const TCHAR *format, ...);
     void             showLastDebugLine();
     void             showStatus(bool gotoLastDebug = true);
     int              findStackElement(const CPoint &p);

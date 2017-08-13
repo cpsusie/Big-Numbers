@@ -174,7 +174,7 @@ void CWordsepgraphDlg::OnButtonSeparate() {
     setWindowText(this, IDC_STATICRESULT, result);
     showResultDetail(word);
   } catch(Exception e) {
-    MessageBox(e.what());
+    showException(e);
   }
 }
 
@@ -188,7 +188,7 @@ void CWordsepgraphDlg::OnButtonLearn() {
     setWindowText(this, IDC_STATICRESULT, word);
     showResultDetail(word);
   } catch(Exception e) {
-    MessageBox(e.what());
+    showException(e);
   }
 }
 
@@ -196,7 +196,7 @@ void CWordsepgraphDlg::OnFileLoadNetwork() {
   try {
     m_network.load();
   } catch(Exception e) {
-    MessageBox(e.what());
+    showException(e);
   }
 }
 
@@ -204,7 +204,7 @@ void CWordsepgraphDlg::OnFileSaveNetwork() {
   try {
     m_network.save();
   } catch(Exception e) {
-    MessageBox(e.what());
+    showException(e);
   }
 }
 
@@ -449,7 +449,7 @@ void CWordsepgraphDlg::OnSize(UINT nType, int cx, int cy) {
 
 static void showfile(char *fname) {
   if(_spawnl(_P_NOWAIT,"c:\\windows\\system32\\notepad.exe","notepad.exe",fname, NULL ) < 0) {
-    AfxMessageBox(_T("Kan ikke starte notepad"),MB_ICONEXCLAMATION);
+    showWarning(_T("Kan ikke starte notepad"));
   }
 }
 

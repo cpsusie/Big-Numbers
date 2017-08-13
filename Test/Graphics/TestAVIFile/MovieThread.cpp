@@ -32,9 +32,9 @@ unsigned int MovieThread::run() {
       avi.appendNewFrame(bitmap);
     }
   } catch(Exception e) {
-    Message(_T("Exception:%s"), e.what());
+    showException(e);
   } catch(...) {
-    Message(_T("Unknown Exception"));
+    showError(_T("Unknown Exception"));
   }
 
   if(oldBitmap != NULL) {

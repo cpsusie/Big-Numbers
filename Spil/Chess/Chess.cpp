@@ -78,12 +78,12 @@ BOOL CChessApp::InitInstance() {
       saveOptions.saveIfDirty();
     }
   } catch(Exception e) {
-    AfxMessageBox(format(_T("Exception:%s"), e.what()).cstr(), MB_ICONSTOP);
+    showException(e);
   } catch(CSimpleException *e) {
     TCHAR msg[1024];
     e->GetErrorMessage(msg, ARRAYSIZE(msg));
     e->Delete();
-    AfxMessageBox(format(_T("Exception:%s"), msg).cstr(), MB_ICONSTOP);
+    showError(_T("Exception:%s"), msg);
   }
 
   return FALSE;

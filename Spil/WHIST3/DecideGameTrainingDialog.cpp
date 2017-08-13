@@ -149,25 +149,25 @@ void DecideGameTrainingDialog::OnButtonSave() {
     m_trainingSet.save();
     OnButtonNextdata();
   } catch(Exception e) {
-    MessageBox(e.what(),_T("Skrivefejl"));
+    showException(e);
   }
 }
 
 void DecideGameTrainingDialog::OnButtontrain() {
   if(m_trainerThread == NULL) {
     try {
-      m_trainerThread = new TrainerThread(this);
+      m_trainerThread = new TrainerThread(this); TRACE_NEW(m_trainerThread);
       m_trainerThread->start();
       GetDlgItem(IDC_BUTTONTRAIN)->SetWindowText(_T("St&op training"));
       startTimer();
     } catch(Exception e) {
-      MessageBox(e.what());
+      showException(e);
     }
   } else {
     stopTimer();
     m_trainerThread->stopTraining();
     while(m_trainerThread->stillActive());
-    delete m_trainerThread;
+    SAFEDELETE(m_trainerThread);
     m_trainerThread = NULL;
     m_bpn.load();
     GetDlgItem(IDC_BUTTONTRAIN)->SetWindowText(_T("S&tart training"));

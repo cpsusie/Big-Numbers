@@ -31,7 +31,7 @@ void Options::load() {
     m_connected  = key.getBool(  _T("connected") ,false);
     m_backside   = key.getInt(   _T("backside")  ,53   );
   } catch(Exception e) {
-    AfxMessageBox(e.what(),MB_ICONEXCLAMATION);
+    showException(e);
   }
 
   if(m_backside < 53) {
@@ -47,7 +47,7 @@ void Options::save() {
     key.setValue(_T("connected") ,m_connected );
     key.setValue(_T("backside")  ,m_backside  );
   } catch(Exception e) {
-    AfxMessageBox(e.what(),MB_ICONEXCLAMATION);
+    showException(e);
   }
 }
 

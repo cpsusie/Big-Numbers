@@ -28,7 +28,6 @@ private:
   SimpleLayoutManager m_layout;
   CCoordinateSystem   m_cs;
 
-  void showException(const Exception &e);
 public:
   CShwGraphDlg(CWnd *pParent = NULL);
 

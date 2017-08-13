@@ -305,7 +305,7 @@ void COneOrTwoDlg::OnButtonShowMoves() {
     tmp += a[i].toString();
     tmp += _T("\n\r");
   }
-  MessageBox(tmp.cstr(), _T("Mulige træk"));
+  showInformation(tmp);
 }
 
 void COneOrTwoDlg::OnTimer(UINT_PTR nIDEvent) {
@@ -357,7 +357,7 @@ GameType COneOrTwoDlg::getSelectedGameType() {
   } else if(isMenuItemChecked(this, ID_SPIL_OCTAGON)) {
     return OCTAGON;
   } else {
-    MessageBox(_T("Ingen spiltype valgt!!"), _T("Fejl"), MB_ICONWARNING);
+    showWarning(_T("Ingen spiltype valgt!!"));
     return PENTAGON;
   }
 }
@@ -396,7 +396,7 @@ PlayLevel COneOrTwoDlg::getSelectedLavel() {
   } else if(isMenuItemChecked(this, ID_LEVEL_EXPERT      )) {
     return LEVEL_EXPERT;
   } else {
-    MessageBox(_T("Niveau ikke valgt!!"), _T("Fejl"), MB_ICONWARNING);
+    showWarning(_T("Niveau ikke valgt"));
     return LEVEL_BEGINNER;;
   }
 }

@@ -89,7 +89,3 @@ public:
   bool move(  UINT index, bool up);
   bool remove(UINT index);
 };
-
-void showWarning(  const TCHAR *format, ...);
-void showError(    const TCHAR *format, ...);
-void showException(const Exception &e);

@@ -104,29 +104,29 @@ END_MESSAGE_MAP()
 bool CDiffEquationGraphDlg::validate() {
   if(m_name.GetLength() == 0) {
     OnGotoName();
-    MessageBox(_T("Must specify name"));
+    showWarning(_T("Must specify name"));
     return false;
   }
   if(m_xFrom >= m_xTo) {
     OnGotoXInterval();
-    MessageBox(_T("x-from must be less than x-to"));
+    showWarning(_T("x-from must be less than x-to"));
     return false;
   }
   if(m_maxError <= 0) {
     OnGotoMaxError();
-    MessageBox(_T("Maximal error must be > 0"));
+    showWarning(_T("Maximal error must be > 0"));
     return false;
   }
   if(getEquationCount() == 0) {
     OnGotoName();
-    MessageBox(_T("At least 1 equation is required"));
+    showWarning(_T("At least 1 equation is required"));
     return false;
   }
   DiffEquationGraphParameters param;
   winToParam(param);
   if(param.getVisibleEquationSet().size() == 0) {
     gotoEquation(0);
-    MessageBox(_T("At least 1 function must be visible"));
+    showWarning(_T("At least 1 function must be visible"));
     return false;
   }
   try {
@@ -138,7 +138,7 @@ bool CDiffEquationGraphDlg::validate() {
       clearErrorList();
     }
   } catch (Exception e) {
-    MessageBox(e.what());
+    showException(e);
     return false;
   }
   return true;

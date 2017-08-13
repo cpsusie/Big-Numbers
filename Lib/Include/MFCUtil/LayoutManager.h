@@ -157,7 +157,6 @@ public:
 
 class LayoutManager {
 private:
-  DECLARECLASSNAME;
   CWnd  *m_wnd;
   int    m_flags;
   CSize  m_winStartSize;                                          // original size of clientRect
@@ -181,7 +180,7 @@ protected:
   int getFlags() const {
     return m_flags;
   }
-  void checkIsInitialized() const;
+  void checkIsInitialized(const TCHAR *method) const;
 public:
   LayoutManager();
   virtual ~LayoutManager();

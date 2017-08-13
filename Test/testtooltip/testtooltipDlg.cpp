@@ -101,7 +101,7 @@ HCURSOR CTesttooltipDlg::OnQueryDragIcon() {
 }
 
 void CTesttooltipDlg::OnButton1() {
-  MessageBox(_T("this is Button 1"));
+  showInformation(_T("this is Button 1"));
 }
 
 BOOL CTesttooltipDlg::OnToolTipNotify(UINT id, NMHDR *pNMHDR, LRESULT *pResult) {

@@ -32,7 +32,7 @@ void CPasswordDlg::OnOK() {
       OnCancel();
     }
   } catch (Exception e) {
-    Message(_T("%s"), e.what());
+    showException(e);
     OnCancel();
   }
 }

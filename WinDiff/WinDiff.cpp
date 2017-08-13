@@ -13,20 +13,17 @@
 
 BEGIN_MESSAGE_MAP(CWinDiffApp, CWinApp)
   ON_COMMAND(ID_APP_ABOUT, OnAppAbout)
-  // Standard file based document commands
   ON_COMMAND(ID_FILE_OPEN, CWinApp::OnFileOpen)
-  // Standard print setup command
   ON_COMMAND(ID_FILE_PRINT_SETUP, CWinApp::OnFilePrintSetup)
 END_MESSAGE_MAP()
 
 CWinDiffApp::CWinDiffApp() {
-    SetAppID(_T("WinDiff version 3.00"));
+  SetAppID(_T("WinDiff version 3.00"));
 }
 
 CWinDiffApp theApp;
 
 BOOL CWinDiffApp::InitInstance() {
-
     // InitCommonControlsEx() is required on Windows XP if an application
     // manifest specifies use of ComCtl32.dll version 6 or later to enable
     // visual styles.  Otherwise, any window creation will fail.
@@ -37,17 +34,15 @@ BOOL CWinDiffApp::InitInstance() {
     InitCtrls.dwICC = ICC_WIN95_CLASSES;
     InitCommonControlsEx(&InitCtrls);
 
-
     __super::InitInstance();
 
     // Initialize OLE libraries
-    if (!AfxOleInit()) {
-        AfxMessageBox(IDP_OLE_INIT_FAILED);
-        return FALSE;
+    if(!AfxOleInit()) {
+      AfxMessageBox(IDP_OLE_INIT_FAILED);
+      return FALSE;
     }
 
     AfxEnableControlContainer();
-
     EnableTaskbarInteraction(FALSE);
 
   SetRegistryKey(_T("JGMData"));

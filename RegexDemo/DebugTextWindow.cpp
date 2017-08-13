@@ -22,7 +22,7 @@ void CDebugTextWindow::substituteControl(CWnd *parent, int id) {
   DEFINEMETHODNAME;
   CListBox *oldCtrl = (CListBox*)parent->GetDlgItem(id);
   if(oldCtrl == NULL) {
-    AfxMessageBox(format(_T("%s:Control with id=%d does not exist"), method,id).cstr(), MB_ICONWARNING);
+    showError(_T("%s:Control with id=%d does not exist"), method,id);
     return;
   }
   CRect wr;
@@ -42,7 +42,7 @@ void CDebugTextWindow::substituteControl(CWnd *parent, int id) {
   oldCtrl->DestroyWindow();
 
   if(!Create(style, wr, parent, id)) {
-    AfxMessageBox(format(_T("%s:Create failed"), method).cstr(), MB_ICONWARNING);
+    showError(_T("%s:Create failed"), method);
     return;
   }
   ModifyStyleEx(0, exStyle | WS_EX_CLIENTEDGE | WS_EX_STATICEDGE);

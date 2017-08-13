@@ -78,8 +78,6 @@ private:
   void startThread(int debugWinId, bool singleStep);
   void createThread(Expression &expr);
   void destroyThread();
-  void showError(const Exception &e);
-  void showError(const TCHAR *format, ...);
   void paintDebugExpr();
   void enableFieldList(const int *ids, int n, bool enabled);
   void ajourDialogItems();

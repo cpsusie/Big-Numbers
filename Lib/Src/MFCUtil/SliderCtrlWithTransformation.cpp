@@ -15,7 +15,7 @@ void CSliderCtrlWithTransformation::substituteControl(CWnd *parent, int id, Doub
   DEFINEMETHODNAME;
   CSliderCtrl *ctrl = (CSliderCtrl*)parent->GetDlgItem(id);
   if(ctrl == NULL) {
-    AfxMessageBox(format(_T("%s:Control %d not found"), method, id).cstr(), MB_ICONWARNING);
+    showError(_T("%s:Control %d not found"), method, id);
     return;
   }
   const int   style   = ctrl->GetStyle();
@@ -23,7 +23,7 @@ void CSliderCtrlWithTransformation::substituteControl(CWnd *parent, int id, Doub
   const CRect rect    = getWindowRect(ctrl);
   ctrl->DestroyWindow();
   if(!Create(style, rect, parent, id)) {
-    AfxMessageBox(format(_T("%s:Create failed"), method).cstr(), MB_ICONWARNING);
+    showError(_T("%s:Create failed"), method);
     return;
   }
   ModifyStyleEx(0, exStyle);

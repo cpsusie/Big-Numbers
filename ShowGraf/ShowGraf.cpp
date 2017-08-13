@@ -55,7 +55,7 @@ BOOL CShowGrafApp::InitInstance() {
       getMainWindow()->activateInitialOptions();
     } else {
       const String msg = getMainWindow()->getDoc()->getErrorMessage();
-      Message(_T("%s"), msg.cstr());
+      showWarning(msg);
       PostMessage(*m_pMainWnd, WM_QUIT,0,0);
     }
     return TRUE;

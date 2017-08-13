@@ -42,7 +42,7 @@ static void findMax16BitMeshVertexCount(LPDIRECT3DDEVICE device) {
       SAFERELEASE(mesh);
     }
   }
-  AfxMessageBox(format(_T("l:%d, h:%d"), l, h).cstr());
+  showInformation(_T("l:%d, h:%d"), l, h);
 }
 #endif
 

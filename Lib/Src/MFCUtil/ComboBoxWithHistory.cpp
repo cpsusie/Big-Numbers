@@ -16,7 +16,7 @@ void CComboBoxWithHistory::substituteControl(CWnd *parent, int id, const String 
 
   CComboBox *oldCtrl = (CComboBox*)parent->GetDlgItem(id);
   if(oldCtrl == NULL) {
-    AfxMessageBox(format(_T("%s:Control with id=%d does not exist"), method, id).cstr(), MB_ICONWARNING);
+    showError(_T("%s:Control with id=%d does not exist"), method, id);
     return;
   }
   CRect wr;
@@ -33,7 +33,7 @@ void CComboBoxWithHistory::substituteControl(CWnd *parent, int id, const String 
   oldCtrl->DestroyWindow();
 
   if(!Create(style, wr, parent, id)) {
-    AfxMessageBox(format(_T("%s:Create failed"), method).cstr(),  MB_ICONWARNING);
+    showError(_T("%s:Create failed"), method);
     return;
   }
   setTabOrder(parent, tabOrder);

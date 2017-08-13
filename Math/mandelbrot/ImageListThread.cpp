@@ -21,10 +21,10 @@ UINT ImageListThread::run() {
     }
   } catch(Exception e) {
     DLOG((_T("ImageListThread got Exception:%s\n"), e.what()));
-    Message(_T("Exception:%s"), e.what());
+    showException(e);
   } catch(...) {
     DLOG((_T("ImageListThread got unknown Exception\n")));
-    Message(_T("Unknown Exception"));
+    showError(_T("Unknown Exception"));
   }
   return 0;
 }

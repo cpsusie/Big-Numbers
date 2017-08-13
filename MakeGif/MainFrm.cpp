@@ -161,7 +161,7 @@ bool CMainFrame::load(const String &name) {
     theApp.AddToRecentFileList(name.cstr());
     return true;
   } catch(Exception e) {
-    MessageBox(e.what(), _T("Error"), MB_ICONWARNING);
+    showException(e);
     return false;
   }
 }
@@ -199,7 +199,7 @@ void CMainFrame::save(const String &name) { // returns true if succeeded
     getDoc()->saveGif(fullName);
     theApp.AddToRecentFileList(fullName.cstr());
   } catch(Exception e) {
-    MessageBox(e.what());
+    showException(e);
   }
 }
 
@@ -319,7 +319,7 @@ void CMainFrame::OnEditInserIimages() {
     for(size_t i = 0; i < errors.size(); i++) {
       msg += errors[i] + _T("\r\n");
     }
-    MessageBox(msg.cstr(), _T("Error"), MB_ICONWARNING);
+    showWarning(msg);
   }
   if(prArray.size() > 0) {
     getDoc()->addPixRectArray(prArray);

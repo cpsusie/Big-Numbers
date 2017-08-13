@@ -378,7 +378,7 @@ void ExternEngine::setParameterValue(const EngineOptionValue &v) {
   ENTERFUNC();
   const EngineOptionDescription *optionDesc = m_optionArray.findOptionByName(v.getName());
   if(optionDesc == NULL) {
-    Message(_T("Option %s not found for engine %s"), v.getName().cstr(), m_desc.getName().cstr());
+    showWarning(_T("Option %s not found for engine %s"), v.getName().cstr(), m_desc.getName().cstr());
     LEAVEFUNC();
     return;
   }

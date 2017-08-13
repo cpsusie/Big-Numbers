@@ -33,7 +33,7 @@ void CEnterVariablesDlg::OnOK() {
   try {
     m_fieldArray.validate();
   } catch(Exception e) {
-    MessageBox(e.what(), _T("Error"), MB_ICONWARNING);
+    showException(e);
     return;
   }
   const ExpressionVariableArray values = m_fieldArray.getValues();

@@ -9,7 +9,7 @@ String getWindowText(const CWnd *wnd) {
 String getWindowText(const CWnd *wnd, int id) {
   CWnd *ctrl = wnd->GetDlgItem(id);
   if(ctrl == NULL) {
-    AfxMessageBox(format(_T("No dlgItem %d in window"), id).cstr(), MB_ICONERROR);
+    showWarning(_T("No dlgItem %d in window"), id);
     return EMPTYSTRING;
   }
   return getWindowText(ctrl);
@@ -22,7 +22,7 @@ void setWindowText(CWnd *wnd, const String &str) {
 void setWindowText(CWnd *wnd, int id, const String &str) {
   CWnd *ctrl = wnd->GetDlgItem(id);
   if(ctrl == NULL) {
-    AfxMessageBox(format(_T("No dlgItem %d in window"), id).cstr(), MB_ICONERROR);
+    showWarning(_T("No dlgItem %d in window"), id);
     return;
   }
   setWindowText(ctrl, str);

@@ -55,7 +55,7 @@ END_MESSAGE_MAP()
 #define CLRCONTROLFLAG(  flag) m_controlFlags.remove(  flag)
 #define ISCONTROLFLAGSET(flag) m_controlFlags.contains(flag)
 
-#define V(f) { if(!f) AfxMessageBox(format(_T("%s failed. %s"), #f, getLastErrorText().cstr()).cstr(), MB_ICONWARNING); }
+#define V(f) { if(!f) showError(_T("%s failed. %s"), _T(#f), getLastErrorText().cstr()); }
 
 static LRESULT CALLBACK privateHeaderCtrlWinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
   CEditListCtrl *listCtrl = (CEditListCtrl*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
@@ -73,7 +73,7 @@ void CEditListCtrl::substituteControl(CWnd *wnd, int id, CTableModel &model) {
   m_model = &model;
   CWnd *ctrl = wnd->GetDlgItem(id);
   if(ctrl == NULL) {
-    wnd->MessageBox(format(_T("%s:Control %d not found"), method, id).cstr(), _T("Error"), MB_ICONWARNING);
+    showError(_T("%s:Control %d not found"), method, id);
     return;
   }
 
@@ -90,7 +90,7 @@ void CEditListCtrl::substituteControl(CWnd *wnd, int id, CTableModel &model) {
   m_itemHeight = getItemHeight();
 
   if(!Create(style, rect, wnd, id)) {
-    wnd->MessageBox(format(_T("%s::Create failed"), method).cstr(), _T("Error"), MB_ICONWARNING);
+    showError(_T("%s::Create failed"), method);
     return;
   }
 
@@ -151,11 +151,11 @@ bool CEditListCtrl::lastMessageWasMouseClick() const {
 void CEditListCtrl::setItem(LVITEM &lv, bool newItem) {
   if(newItem) {
     if(InsertItem(&lv) < 0) {
-      AfxMessageBox(format(_T("InsertItem(%d,%d) failed"), lv.iItem, lv.iSubItem).cstr(), MB_ICONWARNING);
+      showWarning(_T("InsertItem(%d,%d) failed"), lv.iItem, lv.iSubItem);
     }
   } else {
     if(!SetItem(&lv)) {
-      AfxMessageBox(format(_T("SetItem(%d,%d) failed"), lv.iItem, lv.iSubItem).cstr(), MB_ICONWARNING);
+      showWarning(_T("SetItem(%d,%d) failed"), lv.iItem, lv.iSubItem);
     }
   }
 }
@@ -212,7 +212,7 @@ void CEditListCtrl::beginEdit() {
   const ListCell cell = getCurrentCell();
 
   if(hasCurrentEditor()) {
-    AfxMessageBox(format(_T("%s(%d,%d) called with existing editor!!\n"), method, cell.y, cell.x).cstr(), MB_ICONERROR);
+    showError(_T("%s(%d,%d) called with existing editor!!\n"), method, cell.y, cell.x);
     return;
   }
   EnsureVisible(cell.y, FALSE);
@@ -293,7 +293,7 @@ bool CEditListCtrl::commitEdit() {
     } catch(Exception e) {
       SETCONTROLFLAG(GOTERROR);
 //      trace("commitEdit:enter Messagebox(%s)", e.what());
-      MessageBox(e.what(), _T("Error"), MB_ICONWARNING);
+      showException(e);
       ret = false;
     }
   }

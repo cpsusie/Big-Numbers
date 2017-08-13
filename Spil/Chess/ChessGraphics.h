@@ -318,7 +318,7 @@ private:
   inline void popLevel() {
 #ifdef _DEBUG
     if(m_paintLevel == 0) {
-      AfxMessageBox(format(_T("%s:m_paintLevel already 0"), __TFUNCTION__).cstr());
+      showWarning(_T("%s:m_paintLevel already 0"), __TFUNCTION__);
     }
 #endif
     if(--m_paintLevel == 0) flushImage();

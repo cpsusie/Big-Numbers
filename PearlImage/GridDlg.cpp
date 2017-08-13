@@ -117,7 +117,7 @@ LRESULT CGridDlg::OnMsgNewImage(WPARAM wp, LPARAM lp) {
 
 LRESULT CGridDlg::OnMsgWindowToTop(WPARAM wp, LPARAM lp) {
   if(!::BringWindowToTop(*this)) {
-    Message(_T("%s"), getLastErrorText().cstr());
+    showWarning(getLastErrorText());
   };
   return 0;
 }
@@ -186,7 +186,7 @@ void CGridDlg::OnBnClickedButtonDiagram() {
     UNLINK(dumpFileName);
   } catch (Exception e) {
     if(f) { fclose(f); f = NULL; }
-    Message(_T("%s"), e.what());
+    showException(e);
   }
 }
 
@@ -291,38 +291,38 @@ void CGridDlg::OnGotoColorCount() {
 
 bool CGridDlg::validate() {
   if(m_image == NULL) {
-    MessageBox(_T("No image"), _T("Error"), MB_ICONWARNING);
+    showWarning(_T("No image"));
     return false;
   }
   if(!getData()) {
     return false;
   }
   if(m_cellSize < 1) {
-    MessageBox(_T("Must be >= 1"), _T("Error"), MB_ICONWARNING);
     gotoEditBox(this, IDC_EDITCELLSIZE);
+    showWarning(_T("Must be >= 1"));
     return false;
   }
 
   if(m_cellSizeMM <= 0) {
-    MessageBox(_T("Must be > 0"), _T("Error"), MB_ICONWARNING);
     gotoEditBox(this, IDC_EDITCELLSIZEMM);
+    showWarning(_T("Must be > 0"));
     return false;
   }
 
   const CSize sz = getImageSize();
   if((m_horizontalCount < 5) || (m_horizontalCount > (UINT)sz.cx)) {
-    MessageBox(format(_T("Must be in range 5-%d"), sz.cx).cstr(), _T("Error"), MB_ICONWARNING);
     gotoEditBox(this, IDC_EDITHORIZONTALCOUNT);
+    showWarning(_T("Must be in range 5-%d"), sz.cx);
     return false;
   }
   if((m_verticalCount < 5) || (m_verticalCount > (UINT)sz.cy)) {
-    MessageBox(format(_T("Must be in range 5-%d"), m_verticalCount).cstr(), _T("Error"), MB_ICONWARNING);
     gotoEditBox(this, IDC_EDITVERTICALCOUNT);
+    showWarning(_T("Must be in range 5-%d"), m_verticalCount);
     return false;
   }
   if((m_colorCount < 2) && (m_colorCount != 0)) {
-    MessageBox(_T("Must be >= 2"), _T("Error"), MB_ICONWARNING);
     gotoEditBox(this, IDC_EDITCOLORCOUNT);
+    showWarning(_T("Must be >= 2"));
     return false;
   }
   return true;

@@ -118,7 +118,6 @@ private:
     return &m_stackWindow;
   }
 
-  void showException(Exception &e);
 public:
   CRegexDemoDlg(CWnd *pParent = NULL);
     enum { IDD = IDD_REGEXDEMO_DIALOG };

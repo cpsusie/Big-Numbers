@@ -43,12 +43,12 @@ void CIntervalDlg::OnOK() {
 
   if(m_minx >= m_maxx) {
     OnGotoXInterval();
-    MessageBox(_T("Invalid X-interval"), _T("Error"), MB_ICONEXCLAMATION);
+    showWarning(_T("Invalid X-interval"));
     return;
   }
   if(m_miny >= m_maxy) {
     OnGotoYInterval();
-    MessageBox(_T("Invalid Y-interval"), _T("Error"), MB_ICONEXCLAMATION);
+    showWarning(_T("Invalid Y-interval"));
     return;
   }
   try {
@@ -57,7 +57,7 @@ void CIntervalDlg::OnOK() {
     m_tr = tmp;
     __super::OnOK();
   } catch(Exception e) {
-    MessageBox(e.what(), _T("Error"), MB_ICONEXCLAMATION);
+    showException(e);
   }
 }
 

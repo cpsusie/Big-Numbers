@@ -2,8 +2,6 @@
 
 #pragma warning(disable : 4244)
 
-DEFINECLASSNAME(LayoutManager);
-
 LayoutManager::LayoutManager() : m_wnd(NULL) {
   m_currentFontScale = 1;
   m_font             = NULL;
@@ -24,12 +22,13 @@ void LayoutManager::setFont(CFont *font) {
 #define BOTHSET(flags, f1,f2) (((flags) & ((f1)|(f2))) == ((f1)|(f2)))
 
 void LayoutManager::OnInitDialog(CWnd *wnd, int flags) {
+  DEFINEMETHODNAME;
   if(wnd == NULL) {
-    AfxMessageBox(format(_T("%s::OnInitDialog:wnd==NULL"), s_className).cstr(), MB_ICONSTOP);
+    showError(_T("%s:wnd==NULL"), method);
   }
 
   if(BOTHSET(flags, FONT_RELATIVE_SIZE, RETAIN_ASPECTRATIO)) {
-    AfxMessageBox(format(_T("%s:Invalid bit-combination for window flags:%s"), s_className, sprintbin((short)flags).cstr()).cstr(), MB_ICONSTOP);
+    showError(_T("%s:Invalid bit-combination for window flags:%s"), method, sprintbin((short)flags).cstr());
     return;
   }
 
@@ -93,7 +92,7 @@ void LayoutManager::OnSizing(UINT fwSide, LPRECT pRect) {
 }
 
 void LayoutManager::setFontScale(double scale, bool resizeWindow, bool redraw) {
-  checkIsInitialized();
+  checkIsInitialized(__TFUNCTION__);
   if(scale <= 0) {
     return;
   }
@@ -108,19 +107,19 @@ void LayoutManager::setFontScale(double scale, bool resizeWindow, bool redraw) {
   }
 }
 
-void LayoutManager::checkIsInitialized() const {
+void LayoutManager::checkIsInitialized(const TCHAR *method) const {
   if(!isInitialized()) {
-    AfxMessageBox(format(_T("%s not initialized. Call OnInitDialog"), s_className).cstr(), MB_ICONSTOP);
+    showError(_T("%s:LayoutManger not initialized. Call OnInitDialog"), method);
   }
 }
 
 CWnd *LayoutManager::getWindow() {
-  checkIsInitialized();
+  checkIsInitialized(__TFUNCTION__);
   return m_wnd;
 }
 
 const CWnd *LayoutManager::getWindow() const {
-  checkIsInitialized();
+  checkIsInitialized(__TFUNCTION__);
   return m_wnd;
 }
 

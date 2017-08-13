@@ -722,9 +722,19 @@ public:
 };
 
 class D3WireFrameBox : public D3LineArray {
+private:
+  void init(const Vertex &p1, const Vertex &p2);
 public:
-  D3WireFrameBox(D3Scene &scene, const D3DXCube3 &cube);
-  D3WireFrameBox(D3Scene &scene, const Vertex &p1, const Vertex &p2);
+  inline D3WireFrameBox(D3Scene &scene, const D3DXCube3 &cube)
+    : D3LineArray(scene)
+  {
+    init(cube.getMin(), cube.getMax());
+  }
+  inline D3WireFrameBox(D3Scene &scene, const Vertex &p1, const Vertex &p2)
+    : D3LineArray(scene)
+  {
+    init(p1,p2);
+  }
 };
 
 class D3Curve : public SceneObjectWithVertexBuffer {

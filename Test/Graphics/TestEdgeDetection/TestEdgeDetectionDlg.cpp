@@ -538,7 +538,7 @@ void CTestEdgeDetectionDlg::OnEditShowFillInfo() {
   paintPointSet(info.getEdgeSet() , RGB(255,255,255));
   paintPointSet(info.getInnerSet(), RGB(255,255,0));
   flush();
-  MessageBox(info.toString().cstr(), _T("Info"));
+  showInformation(info.toString());
   restorePixelMatrix();
 }
 
@@ -604,7 +604,7 @@ void CTestEdgeDetectionDlg::OnRButtonDown(UINT nFlags, CPoint point) {
     if(ep.x >= 0) {
       followEdge(ep, getSearchDir());
     } else {
-      MessageBox(format(_T("No object found in %s direction"), directionName[getSearchDir()]).cstr(), _T("Message"), MB_ICONINFORMATION);
+      showInformation(_T("No object found in %s direction"), directionName[getSearchDir()]);
       return;
     }
   }

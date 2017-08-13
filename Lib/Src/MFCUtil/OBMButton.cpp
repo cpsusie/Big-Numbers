@@ -23,7 +23,7 @@ void OBMButton::Create(CWnd *parent, int res, int resD, int resI, const CPoint &
 void OBMButton::loadBitmap(CBitmap &bm, int id) {
   if(id) {
     if(!bm.LoadOEMBitmap(id)) {
-      AfxMessageBox(format(_T("%s:LoadOEMBitmap(%d) failed"), __TFUNCTION__, id).cstr(), MB_ICONWARNING);
+      showError(_T("%s:LoadOEMBitmap(%d) failed"), __TFUNCTION__, id);
     }
   }
 };

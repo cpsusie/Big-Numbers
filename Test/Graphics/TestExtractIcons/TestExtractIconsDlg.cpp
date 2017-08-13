@@ -173,7 +173,7 @@ void CTestExtractIconsDlg::OnButtonOpen() {
         smallIcons.add(NULL);
       }
       if(n + m_largeIcons.size() + m_smallIcons.size() > 8000) {
-        MessageBox(format(_T("Too many icons to load. max is 9000")).cstr(), _T("Warning"), MB_ICONWARNING);
+        showWarning(_T("Too many icons to load. max is 9000"));
         break;
       }
       n = ExtractIconEx(name.cstr(), 0, &largeIcons[0], &smallIcons[0], n);

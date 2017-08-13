@@ -209,7 +209,7 @@ void D3LineArray::draw() {
   }
 }
 
-D3WireFrameBox::D3WireFrameBox(D3Scene &scene, const Vertex &p1, const Vertex &p2) : D3LineArray(scene) {
+void D3WireFrameBox::init(const Vertex &p1, const Vertex &p2) {
   Line3D lines[12], *lp = lines, *ll;
   lp->m_p1 = p1;                           lp->m_p2 = Vertex(p1.x,p2.y,p1.z); ll = lp++;
   lp->m_p1 = ll->m_p2;                     lp->m_p2 = Vertex(p2.x,p2.y,p1.z); ll = lp++;

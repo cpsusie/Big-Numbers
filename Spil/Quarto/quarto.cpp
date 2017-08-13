@@ -22,7 +22,7 @@ BOOL CQuartoApp::InitInstance() {
 	  m_pMainWnd = &dlg;
 	  dlg.DoModal();
   } catch(Exception e) {
-    AfxMessageBox(format(_T("Exception:%s"),e.what()).cstr());
+    showException(e);
   }
   return FALSE;
 }

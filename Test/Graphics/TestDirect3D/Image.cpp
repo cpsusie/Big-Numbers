@@ -21,10 +21,8 @@ void Image::init(HWND wnd) { // static
   D3DDEVTYPE deviceType = D3DDEVTYPE_HAL;
 
    if((m_caps.TextureOpCaps & D3DTOP_DOTPRODUCT3) == 0) {
-     AfxMessageBox(_T("Current Direct3D driver does not support the "
-                      "D3DTOP_DOTPRODUCT3 texture-blending operation! \n\nSwitching to reference rasterizer!")
-                  , MB_OK|MB_ICONEXCLAMATION);
-
+     showWarning(_T("Current Direct3D driver does not support the "
+                      "D3DTOP_DOTPRODUCT3 texture-blending operation! \n\nSwitching to reference rasterizer!"));
      deviceType = D3DDEVTYPE_REF;
   }
 
@@ -403,7 +401,7 @@ String getD3DErrorMsg(HRESULT hr) {
 
 void checkD3DResult(TCHAR *fileName, int line, HRESULT hr) {
   if(hr != D3D_OK) {
-    AfxMessageBox(format(_T("D3D-error %s in %s, line %d"), getD3DErrorMsg(hr).cstr(), fileName, line).cstr(), MB_ICONWARNING);
+    showWarning(_T("D3D-error %s in %s, line %d"), getD3DErrorMsg(hr).cstr(), fileName, line);
     return;
   }
 }
@@ -412,7 +410,7 @@ void checkD3DResult(TCHAR *fileName, int line, HRESULT hr) {
 
 void checkD3DResult(HRESULT hr) {
   if(hr != D3D_OK) {
-    AfxMessageBox(format(_T("D3D-error %s"), getD3DErrorMsg(hr).cstr()).cstr(), MB_ICONWARNING);
+    showWarning(_T("D3D-error %s"), getD3DErrorMsg(hr).cstr());
     return;
   }
 }

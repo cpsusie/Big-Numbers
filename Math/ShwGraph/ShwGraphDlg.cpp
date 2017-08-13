@@ -123,10 +123,6 @@ BOOL CShwGraphDlg::OnInitDialog() {
   return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
-void CShwGraphDlg::showException(const Exception &e) {
-  MessageBox(e.what(), _T("Error"), MB_ICONWARNING);
-}
-
 void CShwGraphDlg::OnSysCommand(UINT nID, LPARAM lParam) {
   if((nID & 0xFFF0) == IDM_ABOUTBOX) {
     CAboutDlg().DoModal();
@@ -250,7 +246,7 @@ void CShwGraphDlg::readData(FILE *f) {
     }
   }
   if(errMsg.length() > 0) {
-    MessageBox(errMsg.cstr(), _T("Warning"), MB_ICONWARNING);
+    showWarning(errMsg);
   }
 }
 
@@ -293,7 +289,7 @@ void CShwGraphDlg::readTextFile(const String &fname) {
     Invalidate(FALSE);
   } catch(Exception e) {
     if(f) fclose(f);
-    MessageBox(e.what(), _T("Error"), MB_ICONWARNING);
+    showException(e);
   }
 }
 
@@ -789,7 +785,7 @@ static void showfile(const TCHAR *fname) {
   USES_CONVERSION;
   const char *aname = T2A(fname);
   if(_spawnl(_P_NOWAIT,"c:\\windows\\system32\\notepad.exe","notepad.exe",aname, NULL ) < 0) {
-    AfxMessageBox(_T("Kan ikke starte notepad"), MB_ICONEXCLAMATION);
+    showWarning(_T("Kan ikke starte notepad");
   }
 }
 

@@ -69,7 +69,7 @@ BOOL CPrShowApp::InitInstance() {
       pr = PixRect::load(m_device, ByteInputFile(fileName));
     } else {
       if(isatty(stdin)) {
-        AfxMessageBox(_T("prShow:Cannot read image from keyboard"),MB_ICONSTOP);
+        showError(_T("prShow:Cannot read image from keyboard"),MB_ICONSTOP);
         exit(-1);
       }
 
@@ -77,7 +77,7 @@ BOOL CPrShowApp::InitInstance() {
       pr = PixRect::load(m_device, ByteInputFile(stdin));
     }
   } catch(Exception e) {
-    AfxMessageBox(format(_T("prShow:%s:%s"), fileName.cstr(), e.what()).cstr(), MB_ICONSTOP);
+    showException(e, MB_ICONSTOP);
     exit(-1);
   }
 

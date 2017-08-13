@@ -39,7 +39,7 @@ protected:
       ctrl->substituteControl(this, ctrlId, DoubleInterval(from,to), stepCount, type);
     } catch (Exception e) {
       SAFEDELETE(ctrl);
-      Message(_T("%s"), e.what());
+      showException(e);
     }
   }
 

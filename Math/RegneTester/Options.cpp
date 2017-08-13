@@ -34,14 +34,14 @@ bool Options::save() const {
   try {
     copyFile(outFileName, fileName);
   } catch(Exception e) {
-    AfxMessageBox(getLastErrorText().cstr(), MB_ICONWARNING);
+    showWarning(getLastErrorText());
     return false;
   }
 
   HANDLE exeHandle = BeginUpdateResource(outFileName.cstr(), FALSE);
   if(exeHandle == NULL) {
     unlink(outFileName);
-    AfxMessageBox(getLastErrorText().cstr(), MB_ICONWARNING);
+    showWarning(getLastErrorText());
     return false;
   }
 
@@ -49,17 +49,17 @@ bool Options::save() const {
   save(CompressFilter(ByteMemoryOutputStream(buffer)));
 
   if(!UpdateResource(exeHandle, _T("OPTIONS"), MAKEINTRESOURCE(IDR_OPTIONS), MAKELANGID(LANG_DANISH,SUBLANG_DEFAULT), (BYTE*)buffer.getData(), (DWORD)buffer.size())) {
-    AfxMessageBox(getLastErrorText().cstr(), MB_ICONWARNING);
+    showWarning(getLastErrorText());
     return false;
   }
 
   if(!EndUpdateResource(exeHandle, FALSE)) {
-    AfxMessageBox(getLastErrorText().cstr(), MB_ICONWARNING);
+    showWarning(getLastErrorText());
     return false;
   }
 
   if(_tspawnl(_P_NOWAIT, outFileName.cstr(), outFileName.cstr(), _T("-c"), getMD5Password().cstr(), fileName.cstr(), NULL) < 0) {
-    AfxMessageBox(format(_T("spawn failed:%s"), _sys_errlist[errno]).cstr(), MB_ICONWARNING);
+    showWarning(_T("spawn failed:%s"), getErrnoText().cstr());
     return false;
   }
 /*

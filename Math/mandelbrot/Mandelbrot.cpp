@@ -36,7 +36,7 @@ BOOL CMandelbrotApp::InitInstance() {
     } else if (nResponse == IDCANCEL) {
     }
   } catch(Exception e) {
-    AfxMessageBox(e.what(),MB_ICONSTOP);
+    showException(e);
   }
   return FALSE;
 }

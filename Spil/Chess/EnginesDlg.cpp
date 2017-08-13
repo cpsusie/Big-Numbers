@@ -144,10 +144,10 @@ void CEnginesDlg::OnButtonAdd() {
       setSelectedIndex(m_listCtrl, (int)m_engineList.size() - 1);
     }
   } catch(Exception e) {
-    MessageBox(e.what(), _T("Error"), MB_ICONWARNING);
+    showException(e);
   }
 #else
-  MessageBox(_T("Cannot add extern engines in BUILDER_MODE"), _T("Error"), MB_ICONEXCLAMATION);
+  showWarning(_T("Cannot add extern engines in BUILDER_MODE"));
 #endif
 }
 
@@ -205,7 +205,7 @@ void CEnginesDlg::OnButtonCheck() {
     }
   }
 #else
-  MessageBox(_T("Cannot check extern engines in BUILDER_MODE"), _T("Error"), MB_ICONEXCLAMATION);
+  showWarning(_T("Cannot check extern engines in BUILDER_MODE"));
 #endif
 }
 

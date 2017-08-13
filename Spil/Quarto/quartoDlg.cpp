@@ -84,7 +84,7 @@ BOOL CQuartoDlg::OnInitDialog() {
     createScene();
     OnFileNew();
   } catch(Exception e) {
-    Message(_T("%s"), e.what());
+    showException(e, MB_ICONERROR);
     exit(-1);
   }
   return TRUE;  // return TRUE  unless you set the focus to a control
@@ -310,7 +310,7 @@ void CQuartoDlg::OnFileOpen() {
     if(f != NULL) {
       fclose(f);
     }
-    MessageBox(e.what(), _T("Error"), MB_ICONWARNING);
+    showException(e);
   }
 }
 
@@ -347,7 +347,7 @@ void CQuartoDlg::save(const String &name) {
     if(f != NULL) {
       fclose(f);
     }
-    MessageBox(e.what(), _T("Error"), MB_ICONWARNING);
+    showException(e);
   }
 }
 
@@ -526,5 +526,5 @@ void CQuartoDlg::OnDumpSetup() {
                            , toString(m_boardObject->getDir()).cstr()
                            , toString(m_boardObject->getUp() ).cstr()
                            );
-  MessageBox(msg.cstr(), _T("Info"));
+  showInformation(msg);
 }

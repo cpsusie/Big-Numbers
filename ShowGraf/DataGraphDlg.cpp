@@ -48,8 +48,8 @@ BOOL CDataGraphDlg::OnInitDialog() {
 void CDataGraphDlg::OnOK() {
   if(!UpdateData()) return;
   if(m_name.GetLength() == 0) {
-    MessageBox(_T("Must specify name"));
-    GetDlgItem(IDC_EDITNAME)->SetFocus();
+    gotoEditBox(this, IDC_EDITNAME);
+    showWarning(_T("Must specify name"));
     return;
   }
 

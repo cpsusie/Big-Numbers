@@ -27,7 +27,7 @@ BOOL GotoDlg::OnInitDialog() {
 void GotoDlg::OnOK() {
   UpdateData();	
   if(m_line < 1) {
-    MessageBox(_T("Please enter a linenumber > 0"));
+    showWarning(_T("Please enter a linenumber > 0"));
   } else {
     __super::OnOK();
   }

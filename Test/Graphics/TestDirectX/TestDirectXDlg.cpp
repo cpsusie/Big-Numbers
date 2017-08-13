@@ -124,7 +124,7 @@ DEBUGTRACE;
       }
 */
     } catch(Exception e) {
-      AfxMessageBox(e.what());
+      showException(e);
     }
   }
 }

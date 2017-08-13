@@ -28,12 +28,9 @@ ProgressWindow::ProgressWindow(CWnd *parent, InteractiveRunnable &jobToDo, UINT 
     break;
   default:
     { const String programName = FileNameSplitter(getModuleFileName()).getFileName();
-      MessageBox(NULL
-                ,format(_T("Cannot open CProgressDlg. Add \"#include <MFCUtil/MFCUtil.rc>\" to \"%s\\res\\%s.rc2\"")
-                       ,programName.cstr()
-                       ,programName.cstr()).cstr()
-                ,_T("Error")
-                ,MB_OK | MB_ICONERROR);
+      showError(_T("Cannot open CProgressDlg. Add \"#include <MFCUtil/MFCUtil.rc>\" to \"%s\\res\\%s.rc2\"")
+               ,programName.cstr()
+               ,programName.cstr());
 
       while(jobExecutor.stillActive()) {
         Sleep(200);

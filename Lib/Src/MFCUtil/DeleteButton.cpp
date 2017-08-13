@@ -24,7 +24,7 @@ void CDeleteButton::Create(CWnd *parent, const CPoint &pos, UINT id, bool tabSto
 void CDeleteButton::loadBitmap(CBitmap &bm, int id) {
   if(id) {
     if(!bm.LoadBitmap(id)) {
-      AfxMessageBox(format(_T("LoadBitmap(%d) failed"), id).cstr(), MB_ICONWARNING);
+      showWarning(_T("LoadBitmap(%d) failed"), id);
     }
   }
 };

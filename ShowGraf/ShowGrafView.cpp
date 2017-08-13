@@ -195,7 +195,7 @@ void CShowGrafView::OnRButtonDown(UINT nFlags, CPoint point) {
   if(ga.OnLButtonDown(nFlags, point, m_coordinateSystem.getTransformation())) {
     CMenu menu;
     if(!menu.LoadMenu(IDR_MENUSELECTGRAF)) {
-      MessageBox(_T("Loadmenu failed"), _T("Error"), MB_ICONEXCLAMATION);
+      showWarning(_T("Loadmenu failed"));
       return;
     }
     removeMenuItem(menu, ga.getSelectedItem()->getGraph().isVisible() ? ID_SELECTMENU_SHOW : ID_SELECTMENU_HIDE);

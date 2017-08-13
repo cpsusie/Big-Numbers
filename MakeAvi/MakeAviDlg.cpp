@@ -12,19 +12,12 @@
 
 class CAboutDlg : public CDialog {
 public:
-    CAboutDlg();
-
-    enum { IDD = IDD_ABOUTBOX };
-
-    virtual void DoDataExchange(CDataExchange *pDX);
-    DECLARE_MESSAGE_MAP()
+  CAboutDlg();
+  enum { IDD = IDD_ABOUTBOX };
+  DECLARE_MESSAGE_MAP()
 };
 
 CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
-}
-
-void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-    __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
@@ -133,13 +126,11 @@ void CMakeAviDlg::OnPaint()  {
     SendMessage(WM_ICONERASEBKGND, (WPARAM)dc.GetSafeHdc(), 0);
 
     // Center icon in client rectangle
-    int cxIcon = GetSystemMetrics(SM_CXICON);
-    int cyIcon = GetSystemMetrics(SM_CYICON);
-    CRect rect;
-    GetClientRect(&rect);
-    int x = (rect.Width() - cxIcon + 1) / 2;
-    int y = (rect.Height() - cyIcon + 1) / 2;
-
+    const int   cxIcon = GetSystemMetrics(SM_CXICON);
+    const int   cyIcon = GetSystemMetrics(SM_CYICON);
+    const CRect rect   = getClientRect(this);
+    const int   x      = (rect.Width() - cxIcon + 1) / 2;
+    const int   y      = (rect.Height() - cyIcon + 1) / 2;
     dc.DrawIcon(x, y, m_hIcon);
   } else {
     __super::OnPaint();
@@ -250,7 +241,7 @@ void CMakeAviDlg::loadPicture(const String &fileName) {
   try {
     m_currentPicture.load(fileName);
   } catch(Exception e) {
-    Message(_T("Error:%s"), e.what());
+    showException(e);
   }
 }
 
@@ -430,7 +421,7 @@ void CMakeAviDlg::OnButtonMakeAVI() {
   AviConverter converter(outName, m_nameArray, m_framePerSecond, m_useEvery);
   ProgressWindow(this, converter);
   if(!converter.isOk()) {
-    Message(_T("%s"), converter.getMessage());
+    showWarning(converter.getMessage());
   }
 }
 
@@ -514,7 +505,7 @@ void CMakeAviDlg::OnButtonReadAVI() {
   AviReader reader(aviFileName);
   ProgressWindow(this, reader);
   if(!reader.isOk()) {
-    Message(_T("%s"), reader.getMessage());
+    showWarning(reader.getMessage());
   }
 }
 

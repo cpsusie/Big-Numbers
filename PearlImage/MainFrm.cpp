@@ -109,7 +109,7 @@ bool CMainFrame::loadFile(const String &fileName) {
     }
     return true;
   } catch(Exception e) {
-    MessageBox(e.what());
+    showException(e);
     return false;
   }
 }
@@ -496,7 +496,7 @@ bool CMainFrame::save(const CString &name) { // returns true if succeeded
     updateTitle();
     return true;
   } catch(Exception e) {
-    MessageBox(e.what());
+    showException(e);
     return false;
   }
 }

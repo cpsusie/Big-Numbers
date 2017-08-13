@@ -31,7 +31,7 @@ void PasswordDlg::OnOK() {
   if(Options::validatePassword((LPCTSTR)m_password)) {
     __super::OnOK();
   } else {
-    Message(_T("Forkert password"));
+    showInformation(_T("Forkert password"));
     m_tryCount++;
     if(m_tryCount == 3) {
       OnCancel();

@@ -88,7 +88,7 @@ BOOL CSpectrumDlg::OnInitDialog() {
   try {
     m_capture = new MMCapture(CAPTURE_VIDEO|CAPTURE_AUDIO, *this,1,false,SAMPLECOUNT);
   } catch(Exception e) {
-    AfxMessageBox(e.what(),MB_ICONSTOP);
+    showException(e);
     exit(-1);
   }
 

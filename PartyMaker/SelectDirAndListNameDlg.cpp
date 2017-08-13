@@ -194,12 +194,12 @@ bool CSelectDirAndListNameDlg::validate() {
   UpdateData();
   if(m_listName.GetLength() == 0) {
     OnGotoListName();
-    Message(_T("Navn skal udfyldes"));
+    showWarning(_T("Navn skal udfyldes"));
     return false;
   }
   if(m_dir.GetLength() == 0) {
     OnGotoDir();
-    Message(_T("Ingen mappe falgt"));
+    showWarning(_T("Ingen mappe valgt"));
     return false;
   }
 
@@ -211,17 +211,17 @@ bool CSelectDirAndListNameDlg::validate() {
     return false;
   }
   if(m_mediaArray.size() == 0) {
-    MessageBox(_T("Ingen media filer fundet i den angivne mappe"));
+    showWarning(_T("Ingen media filer fundet i den angivne mappe"));
     return false;
   }
   try {
     m_playList = MediaDatabase::createPlayList((LPCTSTR)m_listName);
     if(m_playList == NULL) {
-      Message(_T("Kan ikke oprette playlisten med navn %s"), (LPCTSTR)m_listName);
+      showWarning(_T("Kan ikke oprette playlisten med navn %s"), (LPCTSTR)m_listName);
       return false;
     }
   } catch(Exception e) {
-    Message(_T("Kan ikke oprette playlisten med navn %s\r\n%s"), (LPCTSTR)m_listName, e.what());
+    showWarning(_T("Kan ikke oprette playlisten med navn %s\r\n%s"), (LPCTSTR)m_listName, e.what());
     return false;
   }
   return true;

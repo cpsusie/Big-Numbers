@@ -35,9 +35,9 @@ LPD3DXMESH &D3LightControl::optimizeMesh(LPD3DXMESH &mesh) { // static
 LIGHT D3LightControl::getLight() const {
   const LIGHT result = m_scene.getLight(m_lightIndex);
   if ((result.m_index != m_lightIndex) || (result.Type != getLightType())) {
-    Message(_T("%s:Light %d is undefined")
-           ,__TFUNCTION__
-           ,m_lightIndex);
+    showError(_T("%s:Light %d is undefined")
+             ,__TFUNCTION__
+             ,m_lightIndex);
   }
   return result;
 }
@@ -169,8 +169,7 @@ void D3LightControl::createEffect() {
   StringArray compilerErrors;
   m_effect = getScene().compileEffect(effectSourceText, compilerErrors);
   if(m_effect == NULL) {
-    const String errorMsg = compilerErrors.toString(_T("\n"));
-    Message(_T("%s"), errorMsg.cstr());
+    showWarning(compilerErrors.toString(_T("\n")));
     return;
   }
 

@@ -31,7 +31,7 @@ void CAfstandDlg::Beregnafstand() {
   try {
     d1 = Date(m_dag1.GetBuffer(m_dag1.GetLength()));
   } catch(Exception e) {
-    MessageBox(e.what(),_T("Helligdage"));
+    showException(e);
     GetDlgItem(IDC_EDITDAG1)->SetFocus();
     return;
   }
@@ -39,7 +39,7 @@ void CAfstandDlg::Beregnafstand() {
   try {
     d2 = Date(m_dag2.GetBuffer(m_dag2.GetLength()));
   } catch(Exception e) {
-    MessageBox(e.what(),_T("Helligdage"));
+    showException(e);
     GetDlgItem(IDC_EDITDAG2)->SetFocus();
     return;
   }
@@ -51,7 +51,7 @@ void CAfstandDlg::Adder() {
   try {
     d1 = Date(m_dag1.GetBuffer(m_dag1.GetLength()));
   } catch(Exception e) {
-    MessageBox(e.what(),_T("Helligdage"));
+    showException(e);
     GetDlgItem(IDC_EDITDAG1)->SetFocus();
     return;
   }

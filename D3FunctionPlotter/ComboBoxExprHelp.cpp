@@ -30,9 +30,9 @@ void CComboBoxExprHelp::substituteControl(CWnd *parent, int ctrlId) {
   ctrl->DestroyWindow();
   findColumnWidth(parent);
   if(!Create(style, r, parent, ctrlId)) {
-    parent->MessageBox("CComboBoxExprHelp::Create() failed", "Error", MB_ICONSTOP);
+    showError(_T("%s:Create() failed"), __TFUNCTION__);
     return;
-  }  ;
+  }
   ModifyStyleEx(0,exStyle);
   SetFont(font, false);
   SetDroppedWidth(getDropDownWidth());

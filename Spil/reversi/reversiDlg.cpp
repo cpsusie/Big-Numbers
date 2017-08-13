@@ -259,7 +259,7 @@ void CReversiDlg::showWinner() {
     s = _T("Draw");
   }
 
-  MessageBox(format(_T("Me:%d You %d. %s"),me,you,s).cstr(),_T("Game over"),MB_ICONINFORMATION);
+  showInformation(_T("Me:%d You %d. %s"),me,you,s);
   m_whoStarts = -m_whoStarts;
   startGame();
 }
@@ -278,7 +278,7 @@ void CReversiDlg::computerMove() {
       showWinner();
     } else
       if(userMustPass()) {
-        MessageBox(_T("You must pass"), EMPTYSTRING, MB_ICONINFORMATION);
+        showInformation(_T("You must pass"));
         startTimer();
       } else {
         m_computerTurn = false;
@@ -299,7 +299,7 @@ void CReversiDlg::OnLButtonDown(UINT nFlags, CPoint point) {
         showWinner();
       } else {
         if(computerMustPass()) {
-          MessageBox(_T("I must pass"),EMPTYSTRING, MB_ICONINFORMATION);
+          showInformation(_T("I must pass"));
           return;
         } else {
           m_computerTurn = true;

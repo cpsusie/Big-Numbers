@@ -25,7 +25,7 @@ BOOL CTestEdgeDetectionApp::InitInstance() {
       } else if(nResponse == IDCANCEL) {
       }
     } catch(Exception e) {
-      AfxMessageBox(e.what(), MB_ICONERROR);
+      showException(e);
     }
     return FALSE;
 }

@@ -50,7 +50,7 @@ int HighScore::execiseTypeToIndex(int execiseType) { // static
   case ID_OPGAVETYPE_SUBTRACT : return 1;
   case ID_OPGAVETYPE_MULTIPLY : return 2;
   case ID_OPGAVETYPE_DIVIDE   : return 3;
-  default                     : AfxMessageBox(format(_T("Invalid execiseType:%d."), execiseType).cstr());
+  default                     : showWarning_T("Invalid execiseType:%d."), execiseType);
                                 return 0;
   }
 }
@@ -146,7 +146,7 @@ void HighScore::load() {
   try {
     load(DecompressFilter(ByteInputFile(getFileName())));
   } catch(Exception e) {
-//    AfxMessageBox(e.what(), MB_ICONWARNING);
+//    showException(e);
   }
 }
 
@@ -154,7 +154,7 @@ void HighScore::save() const {
   try {
     save(CompressFilter(ByteOutputFile(getFileName())));
   } catch(Exception e) {
-    AfxMessageBox(e.what(), MB_ICONWARNING);
+    showException(e);
   }
 }
 

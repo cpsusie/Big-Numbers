@@ -268,7 +268,7 @@ UINT MMCapture::run() {
       return 0;
 
     default:
-      AfxMessageBox(format(_T("MMCapture:Unknown message in messageQueue:%d"), message).cstr(), MB_ICONSTOP);
+      showError(_T("%s:Unknown message in messageQueue:%d"), __TFUNCTION__,message);
       exit(-1);
     }
   }

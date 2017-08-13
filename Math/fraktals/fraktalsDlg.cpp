@@ -152,7 +152,7 @@ void CFraktalsDlg::OnFileStjerne() {
 }
 
 void CFraktalsDlg::OnCancel() {
-  if(MessageBox( _T("Er du sikker på at du vil stoppe"),_T(""), MB_YESNO + MB_ICONQUESTION) == IDYES) {
+  if(MessageBox( _T("Er du sikker på at du vil stoppe"),EMPTYSTRING, MB_YESNO + MB_ICONQUESTION) == IDYES) {
     exit(0);
   }
 }

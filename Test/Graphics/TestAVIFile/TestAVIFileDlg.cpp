@@ -240,8 +240,8 @@ void CTestAVIFileDlg::startMovieThread(UINT frameCount) {
   m_frameCount  = frameCount;
   m_frameSize   = getClientRect(this).Size();
   m_frameIndex  = 0;
-  m_frame       = new PixRect(theApp.m_device, PIXRECT_PLAINSURFACE, m_frameSize);
-  m_movieThread = new MovieThread(this);
+  m_frame       = new PixRect(theApp.m_device, PIXRECT_PLAINSURFACE, m_frameSize); TRACE_NEW(m_frame);
+  m_movieThread = new MovieThread(this); TRACE_NEW(m_movieThread);
 
   m_p1.x = randInt(m_frameSize.cx);
   m_p1.y = randInt(m_frameSize.cy);
@@ -274,15 +274,11 @@ void CTestAVIFileDlg::stopMovieThread() {
       Sleep(100);
     }
     if(m_movieThread->stillActive()) {
-      MessageBox(_T("Cannot stop movieThread"), _T("Warning"), MB_ICONWARNING);
+      showWarning(_T("Cannot stop movieThread"));
     }
-    delete m_movieThread;
-    m_movieThread = NULL;
+    SAFEDELETE(m_movieThread);
   }
-  if(m_frame) {
-    delete m_frame;
-    m_frame = NULL;
-  }
+  SAFEDELETE(m_frame);
   stopTimer(1);
   showState();
 }

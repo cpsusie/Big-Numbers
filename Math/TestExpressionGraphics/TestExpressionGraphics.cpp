@@ -26,9 +26,8 @@ BOOL CTestExpressionGraphicsApp::InitInstance() {
       if (nResponse == IDOK) {
       } else if (nResponse == IDCANCEL) {
       }
-    }
-    catch (Exception e) {
-      MessageBox(NULL, e.what(), _T("Fatal error"), MB_ICONSTOP);
+    } catch (Exception e) {
+      showException(e);
     }
     return FALSE;
 }

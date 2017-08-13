@@ -22,7 +22,7 @@ void CEdit2Lines::substituteControl(CWnd *parent, int id, const StrDiff &diff) {
   m_diff = &diff;
   CEdit *oldCtrl = (CEdit*)parent->GetDlgItem(id);
   if(oldCtrl == NULL) {
-    Message(_T("%s:Control with id=%d does not exist"), method, id);
+    showError(_T("%s:Control with id=%d does not exist"), method, id);
     return;
   }
   const String s = getWindowText(oldCtrl);
@@ -38,7 +38,7 @@ void CEdit2Lines::substituteControl(CWnd *parent, int id, const StrDiff &diff) {
   oldCtrl->DestroyWindow();
 
   if(!Create(style, wr, parent, id)) {
-    Message(_T("%s:Create failed"), method);
+    showError(_T("%s:Create failed"), method);
     return;
   }
   setTabOrder(parent, tabOrder);
