@@ -17,13 +17,18 @@ private:
   bool                         m_verbose;
   mutable short                m_level;
 
-  void startSpawn(             const String &program, const TCHAR * const *argv); // no wait
+  // No wait. Can communicate with process' stdin/stdout by send/receive
+  void startSpawn(             const String &program, const TCHAR * const *argv);
+  // No wait. Can communicate with process' stdin/stdout by send/receive
   void startCreateProcess(     const String &program, const String &commandLine);
+  // No wait. Can communicate with process' stdin/stdout by send/receive
   void start(                  bool silent, const ArgArray &argv);
 
-  // return exit-code
-  static int runSpawn(         const String &program, const TCHAR * const *argv); // wait until exit
+  // Wait for termination. Return exit-code
+  static int runSpawn(         const String &program, const TCHAR * const *argv);
+  // Wait for termination. Return exit-code
   static int runCreateProcess( const String &program, const String &commandLine);
+  // Wait for termination. Return exit-code
   static int run(              bool silent, const ArgArray &argv);
 
   void cleanup();
@@ -46,27 +51,29 @@ public:
   ExternProcess &operator=(const ExternProcess &src);  // do
   virtual ~ExternProcess();
 
-  // No wait
+  // No wait. Can communicate with process' stdin/stdout by send/receive
   void start( bool silent, const String &program, const StringArray &args);
-  // No wait
+  // No wait. Can communicate with process' stdin/stdout by send/receive
   void vstart(bool silent, const String &program, va_list argptr);
-  // No wait
+  // No wait. Can communicate with process' stdin/stdout by send/receive
   // Cannot use String &, because va_start will fail
   // Terminate argumentlist with NULL
   void start( bool silent, const String program, ...);
 
-  // Return exit code
+  // Wait for termination. Return exit-code
   static int  run(bool silent, const String &program, const StringArray &args);
-  // Wait for termination
+  // Wait for termination. Return exit-code
   static int vrun(bool silent, const String &program, va_list argptr);
-  // Wait for termination
+  // Wait for termination. Return exit-code
   // Cannot use String &, because va_start will fail
   // Terminate argumentlist with NULL
   static int  run(bool silent, const String program, ...);
 
   // Works only together with vstart, start.
   void stop();
+  // Works only together with vstart, start. Send strings can be read on stdin by child-process
   void send(const TCHAR *format, ...) const;
+  // Works only together with vstart, start. Can receive text written to stdout by child-process
   String receive();
   inline bool isStarted() const {
     return m_input != NULL;
