@@ -66,14 +66,14 @@ void CalculatorPool::killAllInternal() {
 
   if(m_calculatorsInState[CALC_TERMINATED] != m_existing) {
     DLOG((_T("Cannot kill all calculators. Still running:%s. Delete them anyway.\n")
-              ,(m_calculatorsInState[CALC_RUNNING] | m_calculatorsInState[CALC_SUSPENDED]).toString().cstr()));
+          ,(m_calculatorsInState[CALC_RUNNING] | m_calculatorsInState[CALC_SUSPENDED]).toString().cstr()));
   }
 
   for(size_t i = 0; i < size(); i++) {
     MBCalculator *calculator = (*this)[i];
     SAFEDELETE(calculator);
   }
-  clear();
+  CompactArray<MBCalculator*>::clear();
 
   const CalculatorSet oldRunningSet = m_calculatorsInState[CALC_RUNNING];
 

@@ -785,7 +785,7 @@ static void showfile(const TCHAR *fname) {
   USES_CONVERSION;
   const char *aname = T2A(fname);
   if(_spawnl(_P_NOWAIT,"c:\\windows\\system32\\notepad.exe","notepad.exe",aname, NULL ) < 0) {
-    showWarning(_T("Kan ikke starte notepad");
+    showWarning(_T("Kan ikke starte notepad"));
   }
 }
 

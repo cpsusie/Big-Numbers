@@ -238,7 +238,6 @@ public:
   inline int isPending(ULONG mask) {
     return m_pendingFlags & mask;
   }
-
   inline CalculatorSet getCalculatorsInState(CalculatorState state) const {
     return m_calculatorsInState[state];
   }

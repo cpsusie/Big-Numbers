@@ -171,7 +171,7 @@ int CTestBlendDlg::getStretchMode() {
   if(m_stretchMode == _T("WHITEONBLACK")) {
     return WHITEONBLACK;
   }
-  showWarning(_T("Unknown stretchmode:%s"), (LPCTSTR)m_stretchMode).cstr());
+  showWarning(_T("Unknown stretchmode:%s"), (LPCTSTR)m_stretchMode);
   return BLACKONWHITE;
 }
 

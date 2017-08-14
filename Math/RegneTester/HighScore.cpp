@@ -50,7 +50,7 @@ int HighScore::execiseTypeToIndex(int execiseType) { // static
   case ID_OPGAVETYPE_SUBTRACT : return 1;
   case ID_OPGAVETYPE_MULTIPLY : return 2;
   case ID_OPGAVETYPE_DIVIDE   : return 3;
-  default                     : showWarning_T("Invalid execiseType:%d."), execiseType);
+  default                     : showWarning(_T("Invalid execiseType:%d"), execiseType);
                                 return 0;
   }
 }

@@ -30,9 +30,9 @@ static void usage() {
   exit(-1);
 }
 
-int _tmain(int argc, TCHAR **argv) {
+int _tmain(int argc, const TCHAR **argv) {
   bool   recurse = false;
-  TCHAR *cp;
+  const TCHAR *cp;
   for(argv++; *argv && *(cp = *argv) == '-'; argv++) {
     for(cp++; *cp; cp++) {
       switch(*cp) {

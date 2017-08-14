@@ -644,7 +644,7 @@ void CIRemesDlg::handlePropertyChanged(const PropertyContainer *source, int id, 
         break;
       }
     default:
-      showWarning(_T("Unknown property id:%d"), id);
+      showError(_T("Unknown property id:%d"), id);
       break;
     }
   }
@@ -723,7 +723,7 @@ void CIRemesDlg::handleRemesProperty(const Remes &r, int id, const void *oldValu
     PostMessage(ID_MSG_WARNING_CHANGED, 0, 0);
     break;
   default:
-    showWarning(_T("Unknown remes property id:%d"), id);
+    showError(_T("Unknown remes property id:%d"), id);
     break;
   }
 }

@@ -40,7 +40,7 @@ void CListBoxDiffMarks::substituteControl(CWnd *parent, int id) {
   oldCtrl->DestroyWindow();
 
   if(!Create(style, wr, parent, id)) {
-    showError(_T("%s:Create failed"), method));
+    showError(_T("%s:Create failed"), method);
     return;
   }
   setTabOrder(parent, tabOrder);
