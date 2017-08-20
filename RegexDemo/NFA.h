@@ -248,6 +248,6 @@ public:
 };
 
 #ifdef _DEBUG
-void NFAPaint(           CWnd *wnd);
+void NFAPaint(           CWnd *wnd, CDC &dc);
 void NFAAnimateBuildStep(CWnd *wnd);
 #endif

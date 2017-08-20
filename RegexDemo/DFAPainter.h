@@ -207,6 +207,7 @@ private:
   Timer m_timer;
   bool  m_colorOn;
   int   m_state;
+  bool updateImage();
 public:
   DFAStateBlinker() : m_timer(1) {
   }

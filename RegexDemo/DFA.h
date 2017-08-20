@@ -79,6 +79,8 @@ public:
   size_t getStateCount() const {
     return m_states.size();
   }
-  void paint(CWnd *wnd, int currentState = -1, int lastAcceptState = -1) const;
+  void paint(CWnd *wnd, CDC &dc, int currentState = -1, int lastAcceptState = -1) const;
+  static void unpaintAll();
+
 #endif
 };

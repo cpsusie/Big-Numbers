@@ -3,11 +3,11 @@
 
 #ifdef _DEBUG
 
-void NFAPaint(CWnd *wnd) {
+void NFAPaint(CWnd *wnd, CDC &dc) {
   NFAPainter np(getClientRect(wnd).Size());
   np.calculateAllPositions();
   np.shiftCurrentToNew();
-  np.paintNew(CClientDC(wnd));
+  np.paintNew(dc);
 }
 
 void NFAAnimateBuildStep(CWnd *wnd) {

@@ -119,6 +119,15 @@ BitSet DebugRegex::getPossibleBreakPointLines() const {
   return BitSet(1);
 }
 
+int DebugRegex::getPatternFoundCodeLine() const {
+  switch(m_type) {
+  case EMACS_REGEX: return m_regex.getLastCodeLine();
+  case DFA_REGEX  : return m_DFARegex.getCurrentCodeLine();
+  default         : throwUnknownTypeException();
+  }
+  return -1;
+}
+
 int DebugRegex::getCycleCount() const {
   switch(m_type) {
   case EMACS_REGEX: return m_regex.getCycleCount();
@@ -128,12 +137,24 @@ int DebugRegex::getCycleCount() const {
   return 0;
 }
 
-void DebugRegex::paint(CWnd *wnd, bool animate) const {
+void DebugRegex::paint(CWnd *wnd, CDC &dc, bool animate) const {
   switch(m_type) {
   case EMACS_REGEX:
     break;
   case DFA_REGEX  :
-    m_DFARegex.paint(wnd, animate);
+    m_DFARegex.paint(wnd, dc, animate);
+    break;
+  default         :
+    throwUnknownTypeException();
+  }
+}
+
+void DebugRegex::unpaintAll(CWnd *wnd, CDC &dc) {
+  switch(m_type) {
+  case EMACS_REGEX:
+    break;
+  case DFA_REGEX  :
+    m_DFARegex.unpaintAll(wnd, dc);
     break;
   default         :
     throwUnknownTypeException();

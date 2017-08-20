@@ -13,6 +13,10 @@ void DFAStateBlinker::startBlinking(CWnd *wnd, int state) {
 
 void DFAStateBlinker::stopBlinking() {
   m_timer.stopTimer();
+  if(m_colorOn) {
+    m_colorOn = false;
+    updateImage();
+  }
 }
 
 void DFAStateBlinker::handleTimeout(Timer &timer) {
@@ -21,24 +25,32 @@ void DFAStateBlinker::handleTimeout(Timer &timer) {
     stopBlinking();
     return;
   }
-  if(!DFAPainter::markState(CClientDC(m_wnd), m_state, m_colorOn)) {
+  if(!updateImage()) {
     stopBlinking();
   }
 }
 
+bool DFAStateBlinker::updateImage() {
+  return DFAPainter::markState(CClientDC(m_wnd), m_state, m_colorOn);
+}
+
 DFAStateBlinker DFAPainter::s_blinker;
 
-void DFA::paint(CWnd *wnd, int currentState, int lastAcceptState) const {
+void DFA::paint(CWnd *wnd, CDC &dc, int currentState, int lastAcceptState) const {
   DFAPainter dp(*this, getClientRect(wnd).Size());
   dp.calculateAllPositions();
   dp.shiftCurrentToNew();
-  dp.paintNew(CClientDC(wnd), currentState);
+  dp.paintNew(dc, currentState);
 
   if(lastAcceptState >= 0) {
-    DFAPainter::startBlinking(wnd,lastAcceptState);
+    DFAPainter::startBlinking(wnd, lastAcceptState);
   } else {
     DFAPainter::stopBlinking();
   }
+}
+
+void DFA::unpaintAll() { // static
+  DFAPainter::stopBlinking();
 }
 
 #endif

@@ -31,6 +31,7 @@ CRegexDemoDlg::CRegexDemoDlg(CWnd *pParent) : CDialog(CRegexDemoDlg::IDD, pParen
 
 BOOL CRegexDemoDlg::DestroyWindow() {
   m_charMarkers.clear();
+  unpaintRegex();
   killThread();
   return __super::DestroyWindow();
 }
@@ -44,8 +45,8 @@ void CRegexDemoDlg::DoDataExchange(CDataExchange *pDX) {
 BEGIN_MESSAGE_MAP(CRegexDemoDlg, CDialog)
   ON_WM_SYSCOMMAND()
   ON_WM_QUERYDRAGICON()
-  ON_WM_PAINT()
   ON_WM_SIZE()
+  ON_WM_PAINT()
   ON_WM_CLOSE()
   ON_COMMAND(ID_FILE_EXIT                  , OnFileExit                   )
   ON_COMMAND(ID_EDIT_COPY                  , OnEditCopy                   )
@@ -79,6 +80,18 @@ BEGIN_MESSAGE_MAP(CRegexDemoDlg, CDialog)
   ON_LBN_SELCHANGE( IDC_LISTBYTECODE       , OnSelChangeListbyteCode      )
   ON_MESSAGE(       ID_MSG_THREADRUNNING   , OnMsgThreadRunning           )
 END_MESSAGE_MAP()
+
+void CRegexDemoDlg::OnSysCommand(UINT nID, LPARAM lParam) {
+  if((nID & 0xFFF0) == IDM_ABOUTBOX) {
+    CAboutDlg().DoModal();
+  } else {
+    __super::OnSysCommand(nID, lParam);
+  }
+}
+
+HCURSOR CRegexDemoDlg::OnQueryDragIcon() {
+  return (HCURSOR)m_hIcon;
+}
 
 BOOL CRegexDemoDlg::OnInitDialog() {
     __super::OnInitDialog();
@@ -147,49 +160,6 @@ BOOL CRegexDemoDlg::OnInitDialog() {
     return FALSE;
 }
 
-void CRegexDemoDlg::OnSysCommand(UINT nID, LPARAM lParam) {
-  if((nID & 0xFFF0) == IDM_ABOUTBOX) {
-    CAboutDlg().DoModal();
-  } else {
-    __super::OnSysCommand(nID, lParam);
-  }
-}
-
-HCURSOR CRegexDemoDlg::OnQueryDragIcon() {
-  return (HCURSOR)m_hIcon;
-}
-
-BOOL CRegexDemoDlg::PreTranslateMessage(MSG *pMsg) {
-  if(TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
-    return true;
-  }
-  BOOL ret = __super::PreTranslateMessage(pMsg);
-  switch(getFocusCtrlId(this)) {
-  case IDC_COMBOPATTERN:
-  case IDC_COMBOTARGET :
-    enableMenuItem(this, ID_EDIT_FINDMATCHINGPAR, true);
-    break;
-  default:
-    enableMenuItem(this, ID_EDIT_FINDMATCHINGPAR, false);
-    break;
-  }
-  return ret;
-}
-
-void CRegexDemoDlg::OnOK() {
-}
-
-void CRegexDemoDlg::OnCancel() {
-}
-
-void CRegexDemoDlg::OnFileExit() {
-  EndDialog(IDOK);
-}
-
-void CRegexDemoDlg::OnClose() {
-  OnFileExit();
-}
-
 void CRegexDemoDlg::OnSize(UINT nType, int cx, int cy) {
   __super::OnSize(nType, cx, cy);
   m_layoutManager.OnSize(nType, cx, cy);
@@ -216,10 +186,296 @@ void CRegexDemoDlg::OnPaint() {
     dc.DrawIcon(x, y, m_hIcon);
   } else {
     __super::OnPaint();
-    if(isGraphicsOn()) {
-      m_regex.paint(getGraphicsWindow(), false);
-    }
+    paintRegex(true);
   }
+}
+
+BOOL CRegexDemoDlg::PreTranslateMessage(MSG *pMsg) {
+  if(TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
+    return true;
+  }
+  BOOL ret = __super::PreTranslateMessage(pMsg);
+  switch(getFocusCtrlId(this)) {
+  case IDC_COMBOPATTERN:
+  case IDC_COMBOTARGET :
+    enableMenuItem(this, ID_EDIT_FINDMATCHINGPAR, true);
+    break;
+  default:
+    enableMenuItem(this, ID_EDIT_FINDMATCHINGPAR, false);
+    break;
+  }
+  return ret;
+}
+
+void CRegexDemoDlg::OnOK() {
+}
+
+void CRegexDemoDlg::OnCancel() {
+}
+
+void CRegexDemoDlg::OnClose() {
+  OnFileExit();
+}
+
+void CRegexDemoDlg::OnFileExit() {
+  EndDialog(IDOK);
+}
+
+void CRegexDemoDlg::OnEditCopy() {
+  String copyText;
+  switch(getFocusCtrlId(this)) {
+  case IDC_COMBOPATTERN : copyText = getWindowText(getPatternWindow()); break;
+  case IDC_COMBOTARGET  : copyText = getWindowText(getTargetWindow());  break;
+  case IDC_LISTBYTECODE : copyText = m_codeWindow.getText();            break;
+  default: return;
+  }
+  putClipboard(*this, copyText);
+}
+
+void CRegexDemoDlg::OnEditFind() {
+  unmarkAllCharacters();
+  unmarkFoundPattern();
+  if(checkPattern()) {
+    startThread(searchForward() ? COMMAND_SEARCHFORWARD:COMMAND_SEARCHBACKWRD      );
+  }
+}
+
+void CRegexDemoDlg::OnEditMatch()  {
+  unmarkAllCharacters();
+  unmarkFoundPattern();
+  if(checkPattern()) {
+    startThread(COMMAND_MATCH);
+  }
+}
+
+void CRegexDemoDlg::OnEditCompilePattern() {
+  killThread();
+  clearCyclesWindow();
+  unmarkAllCharacters();
+  try {
+    m_regex.compilePattern(getCompileParameters());
+    setPatternCompiledOk();
+  } catch(Exception e) {
+    showCompilerError(e.what());
+  }
+}
+
+void CRegexDemoDlg::OnEditFindMatchingParentesis() {
+  const int ctrlId = getFocusCtrlId(this);
+  switch(ctrlId) {
+  case IDC_COMBOPATTERN:
+  case IDC_COMBOTARGET :
+    { CComboBox *cb = (CComboBox*)GetDlgItem(ctrlId);
+      const String text = getWindowText(this, ctrlId);
+      int cursorPos = cb->GetEditSel() & 0xffff;
+      const int m = findMatchingpParanthes(text.cstr(), cursorPos);
+      if(m >= 0) {
+        cb->SetEditSel(m, m);
+      }
+    }
+    break;
+  }
+}
+
+void CRegexDemoDlg::OnEditStandardTest() {
+  showInformation(_T("this function is disabled for the moment"));
+//  CTestRegexDlg dlg;
+//  dlg.DoModal();
+}
+
+void CRegexDemoDlg::OnDebugCompile() {
+  UpdateData();
+  startDebugCompile();
+}
+
+void CRegexDemoDlg::OnDebugFind()  {
+  unmarkAllCharacters();
+  unmarkFoundPattern();
+  if(checkPattern()) {
+    startThread(searchForward() ? COMMAND_SEARCHFORWARD:COMMAND_SEARCHBACKWRD, true);
+  }
+}
+
+void CRegexDemoDlg::OnDebugMatch() {
+  unmarkAllCharacters();
+  unmarkFoundPattern();
+  if(checkPattern()) {
+    startThread(COMMAND_MATCH, true);
+  }
+}
+
+void CRegexDemoDlg::OnDebugContinue() {
+  if(isThreadStopped()) {
+    m_debugThread->go();
+  }
+}
+
+void CRegexDemoDlg::OnDebugStep() {
+  if(isThreadStopped()) {
+    m_debugThread->singleStep();
+  }
+}
+
+void CRegexDemoDlg::OnDebugToggleBreakPoint() {
+  CDebugTextWindow *cw = getCodeWindow();
+  const int line = cw->getHighestBreakPointLine(cw->GetCurSel());
+
+  if(cw->isBreakPointLine(line)) {
+    cw->removeBreakPoint(line);
+  } else {
+    cw->addBreakPoint(line);
+  }
+}
+
+void CRegexDemoDlg::OnOptionsIgnoreCase() {
+  killThread();
+  toggleMenuItem(this, ID_OPTIONS_IGNORECASE);
+  if(getCompileParameters() == m_regex.getLastCompiledPattern()) {
+    fillCodeWindow(getCompiledCodeText());
+  } else {
+    m_patternDirty = true;
+    clearCodeWindow();
+  }
+  ajourDialogItems();
+}
+
+void CRegexDemoDlg::OnOptionsSearchBackwards() {
+  killThread();
+  toggleMenuItem(this, ID_OPTIONS_SEARCHBACKWARDS);
+}
+
+void CRegexDemoDlg::OnOptionsDFARegex() {
+  killThread();
+  unpaintRegex();
+  unmarkFoundPattern();
+  toggleMenuItem(this, ID_OPTIONS_DFA_REGEX);
+  m_regex.setType(isMenuItemChecked(this, ID_OPTIONS_DFA_REGEX)?DFA_REGEX:EMACS_REGEX);
+  if(getCompileParameters() == m_regex.getLastCompiledPattern()) {
+    fillCodeWindow(getCompiledCodeText());
+  } else {
+    m_patternDirty = true;
+    clearCodeWindow();
+  }
+  ajourDialogItems();
+  Invalidate();
+}
+
+void CRegexDemoDlg::OnOptionsDFAShowTables() {
+  toggleMenuItem(this, ID_OPTIONS_DFA_SHOWTABLES);
+  fillCodeWindow(getCompiledCodeText());
+  ajourDialogItems();
+}
+
+void CRegexDemoDlg::OnOptionsDFANoGraphics() {
+  setDFAGraphicsMode(ID_OPTIONS_DFA_NO_GRAPHICS);
+}
+
+void CRegexDemoDlg::OnOptionsDFAPaintStates() {
+  setDFAGraphicsMode(ID_OPTIONS_DFA_PAINT_STATES);
+}
+
+void CRegexDemoDlg::OnOptionsDFAAnimateCreate() {
+  setDFAGraphicsMode(ID_OPTIONS_DFA_ANIMATE_CREATE);
+}
+
+void CRegexDemoDlg::OnHelpAbout() {
+  CAboutDlg().DoModal();
+}
+
+void CRegexDemoDlg::OnHelpShowctrlid() {
+  showInformation(_T("Focus control has Id:%d"), getFocusCtrlId(this));
+}
+
+void CRegexDemoDlg::OnGotoPattern() {
+  getPatternWindow()->SetFocus();
+}
+
+void CRegexDemoDlg::OnGotoText() {
+  getTargetWindow()->SetFocus();
+}
+
+void CRegexDemoDlg::OnGotoBytecode() {
+  getCodeWindow()->SetFocus();
+}
+
+void CRegexDemoDlg::OnEditChangeComboPattern() {
+  if(!m_patternDirty) {
+    m_patternDirty = true;
+    ajourDialogItems();
+  }
+}
+
+void CRegexDemoDlg::OnSelChangeComboPattern() {
+  OnEditChangeComboPattern();
+}
+
+void CRegexDemoDlg::OnEditChangeComboTarget() {
+  if(!m_targetDirty) {
+    m_targetDirty = true;
+    ajourDialogItems();
+  }
+}
+
+void CRegexDemoDlg::OnSelChangeComboTarget() {
+  OnEditChangeComboTarget();
+}
+
+void CRegexDemoDlg::OnSelChangeListbyteCode() {
+  ajourDialogItems();
+}
+
+LRESULT CRegexDemoDlg::OnMsgThreadRunning(WPARAM wp, LPARAM lp) {
+  try {
+    const bool newRunning = (lp != 0);
+    if(newRunning) {
+      unmarkCodeLine();
+      unmarkAllCharacters(PATTERN_POSMARK);
+    } else {
+      if(m_regex.isCodeDirty()) {
+        fillCodeWindow(getCompiledCodeText());
+      }
+
+      if(isThreadFinished()) {
+        clearThreadState();
+        if(m_debugThread->getRegexPhase() == REGEX_SUCEEDED) {
+          if(m_debugThread->getCommand() == COMMAND_COMPILE) {
+            setPatternCompiledOk();
+          } else {
+            showPatternFound();
+          }
+        } else {
+          showResult(m_debugThread->getResultMsg());
+          showCycleCount();
+        }
+
+      } else if(isThreadStopped()) {
+        switch(m_debugThread->getRegexPhase()) {
+        case REGEX_COMPILING: showCompilerState(); break;
+        case REGEX_SEARCHING: showSearchState();   break;
+        case REGEX_MATCHING : showMatchState();    break;
+        case REGEX_UNDEFINED:
+          if(m_debugThread->getCommand() == COMMAND_COMPILE) { // compiler errors are given as exception, so thread is in undefined state when this happens
+            showCompilerError(m_debugThread->getResultMsg());
+          } else {
+            showResult(m_debugThread->getResultMsg()); break; // may an exception, access-violation or somthing like that
+          }
+        }
+      }
+    }
+    ajourDialogItems();
+  } catch(Exception e) {
+    showException(e);
+  }
+  return 0;
+}
+
+bool CRegexDemoDlg::checkPattern() {
+  if(m_patternDirty || !m_patternOk) {
+    OnEditCompilePattern();
+  } else {
+    UpdateData();
+  }
+  return m_patternOk;
 }
 
 String CRegexDemoDlg::getThreadStateName() const {
@@ -344,79 +600,6 @@ void CRegexDemoDlg::enableDialogItems(BitSet16 flags) {
   enableSubMenuContainingId(this, ID_OPTIONS_DFA_NO_GRAPHICS , flags.contains(MENU_DFAGRAPHICS  ));
 }
 
-void CRegexDemoDlg::OnEditChangeComboPattern() {
-  if(!m_patternDirty) {
-    m_patternDirty = true;
-    ajourDialogItems();
-  }
-}
-
-void CRegexDemoDlg::OnSelChangeComboPattern() {
-  OnEditChangeComboPattern();
-}
-
-void CRegexDemoDlg::OnEditChangeComboTarget() {
-  if(!m_targetDirty) {
-    m_targetDirty = true;
-    ajourDialogItems();
-  }
-}
-
-void CRegexDemoDlg::OnSelChangeComboTarget() {
-  OnEditChangeComboTarget();
-}
-
-void CRegexDemoDlg::OnSelChangeListbyteCode() {
-  ajourDialogItems();
-}
-
-void CRegexDemoDlg::OnEditCopy() {
-  String copyText;
-  switch(getFocusCtrlId(this)) {
-  case IDC_COMBOPATTERN : copyText = getWindowText(getPatternWindow()); break;
-  case IDC_COMBOTARGET  : copyText = getWindowText(getTargetWindow());  break;
-  case IDC_LISTBYTECODE : copyText = m_codeWindow.getText();            break;
-  default: return;
-  }
-  putClipboard(*this, copyText);
-}
-
-void CRegexDemoDlg::OnEditFind()   { if(checkPattern()) startThread(searchForward() ? COMMAND_SEARCHFORWARD:COMMAND_SEARCHBACKWRD      ); }
-void CRegexDemoDlg::OnEditMatch()  { if(checkPattern()) startThread(                  COMMAND_MATCH                                    ); }
-void CRegexDemoDlg::OnDebugFind()  { if(checkPattern()) startThread(searchForward() ? COMMAND_SEARCHFORWARD:COMMAND_SEARCHBACKWRD, true); }
-void CRegexDemoDlg::OnDebugMatch() { if(checkPattern()) startThread(                  COMMAND_MATCH                              , true); }
-
-void CRegexDemoDlg::OnDebugCompile() {
-  UpdateData();
-  startDebugCompile();
-}
-
-void CRegexDemoDlg::OnEditStandardTest() {
-  showInformation(_T("this function is disabled for the moment"));
-//  CTestRegexDlg dlg;
-//  dlg.DoModal();
-}
-
-bool CRegexDemoDlg::checkPattern() {
-  if(m_patternDirty || !m_patternOk) {
-    OnEditCompilePattern();
-  } else {
-    UpdateData();
-  }
-  return m_patternOk;
-}
-
-void CRegexDemoDlg::OnEditCompilePattern() {
-  killThread();
-  clearCyclesWindow();
-  try {
-    m_regex.compilePattern(getCompileParameters());
-    setPatternCompiledOk();
-  } catch(Exception e) {
-    showCompilerError(e.what());
-  }
-}
-
 void CRegexDemoDlg::setPatternCompiledOk() {
   const String codeText = getCompiledCodeText();
 
@@ -428,9 +611,7 @@ void CRegexDemoDlg::setPatternCompiledOk() {
   m_patternCombo.updateList();
   ajourDialogItems();
   clearResult();
-  if(isGraphicsOn()) {
-    m_regex.paint(getGraphicsWindow(), false);
-  }
+  paintRegex();
   if(m_target.GetLength() == 0) {
     OnGotoText();
   } else {
@@ -460,18 +641,6 @@ void CRegexDemoDlg::showCompilerError(const String &errorMsg) {
   OnGotoPattern();
   if(errorIndex >= 0) {
     getPatternWindow()->SetEditSel(errorIndex, errorIndex);
-  }
-}
-
-void CRegexDemoDlg::OnDebugContinue() {
-  if(isThreadStopped()) {
-    m_debugThread->go();
-  }
-}
-
-void CRegexDemoDlg::OnDebugStep() {
-  if(isThreadStopped()) {
-    m_debugThread->singleStep();
   }
 }
 
@@ -514,7 +683,6 @@ void CRegexDemoDlg::killThread() {
   if(m_debugThread != NULL) {
     m_debugThread->removePropertyChangeListener(this);
     SAFEDELETE(m_debugThread);
-    m_debugThread = NULL;
   }
   unmarkAllCharacters();
 }
@@ -535,59 +703,8 @@ void CRegexDemoDlg::handlePropertyChanged(const PropertyContainer *source, int i
   }
 }
 
-LRESULT CRegexDemoDlg::OnMsgThreadRunning(WPARAM wp, LPARAM lp) {
-  try {
-    const bool newRunning = (lp != 0);
-    if(newRunning) {
-      setCurrentCodeLine(-1);
-      unmarkAllCharacters(PATTERN_POSMARK);
-    } else {
-      if(m_regex.isCodeDirty()) {
-        fillCodeWindow(getCompiledCodeText());
-      }
-
-      if(isThreadFinished()) {
-        clearThreadState();
-        if(m_debugThread->getRegexPhase() == REGEX_SUCEEDED) {
-          if(m_debugThread->getCommand() == COMMAND_COMPILE) {
-            setPatternCompiledOk();
-          } else {
-            showResult(m_debugThread->getResultMsg(), m_debugThread->registersToString());
-            showCyclesText(format(_T("Cycles:%d"), m_regex.getCycleCount()));
-            getTargetWindow()->SetFocus();
-            int start, end;
-            m_debugThread->getFoundPosition(start, end);
-            getTargetWindow()->SetEditSel(start, end);
-            unmarkAllCharacters();
-          }
-        } else {
-          showResult(m_debugThread->getResultMsg());
-          showCyclesText(format(_T("Cycles:%d"), m_regex.getCycleCount()));
-        }
-
-      } else if(isThreadStopped()) {
-        switch(m_debugThread->getRegexPhase()) {
-        case REGEX_COMPILING: showCompilerState(); break;
-        case REGEX_SEARCHING: showSearchState();   break;
-        case REGEX_MATCHING : showMatchState();    break;
-        case REGEX_UNDEFINED:
-          if(m_debugThread->getCommand() == COMMAND_COMPILE) { // compiler errors are given as exception, so thread is in undefined state when this happens
-            showCompilerError(m_debugThread->getResultMsg());
-          } else {
-            showResult(m_debugThread->getResultMsg()); break; // may an exception, access-violation or somthing like that
-          }
-        }
-      }
-    }
-    ajourDialogItems();
-  } catch(Exception e) {
-    showException(e);
-  }
-  return 0;
-}
-
 void CRegexDemoDlg::clearThreadState() {
-  setCurrentCodeLine(-1);
+  unmarkCodeLine();
   setWindowText(this, IDC_STATICSTACK, EMPTYSTRING);
   unmarkAllCharacters(SEARCH_POSMARK );
   unmarkAllCharacters(MATCH_STARTMARK);
@@ -655,10 +772,10 @@ void CRegexDemoDlg::showDFACompilerState() {
   case ID_OPTIONS_DFA_NO_GRAPHICS   :
     break;
   case ID_OPTIONS_DFA_PAINT_STATES  :
-    m_regex.paint(getGraphicsWindow(), false);
+    paintRegex();
     break;
   case ID_OPTIONS_DFA_ANIMATE_CREATE:
-    m_regex.paint(getGraphicsWindow(), true);
+    paintRegex(false, true);
     break;
   }
 }
@@ -672,7 +789,7 @@ void CRegexDemoDlg::showSearchState() {
     showDFASearchState();
     break;
   }
-  showCyclesText(format(_T("Cycles:%d"), m_regex.getCycleCount()));
+  showCycleCount();
 }
 
 void CRegexDemoDlg::showEmacsSearchState() {
@@ -732,12 +849,36 @@ void CRegexDemoDlg::showDFAMatchState() {
   markCurrentChar(MATCH_STARTMARK, state.getPos());
   markCurrentChar(MATCH_DMARK    , state.getDBGTextCharIndex());
   markCurrentChar(LASTACCEPT_MARK, state.getDBGLastAcceptIndex());
-  showCyclesText(format(_T("Cycles:%d"), m_regex.getCycleCount()));
-  m_regex.paint(getGraphicsWindow(), false);
+  showCycleCount();
+  paintRegex();
+}
+
+void CRegexDemoDlg::showPatternFound() {
+  showResult(m_debugThread->getResultMsg(), m_debugThread->registersToString());
+  showCycleCount();
+  getTargetWindow()->SetFocus();
+  markFoundPattern();
+  unmarkAllCharacters();
+  paintRegex();
+  setCurrentCodeLine(m_regex.getPatternFoundCodeLine());
+}
+
+void CRegexDemoDlg::markFoundPattern() {
+  int start, end;
+  m_debugThread->getFoundPosition(start, end);
+  getTargetWindow()->SetEditSel(start, end);
+}
+
+void CRegexDemoDlg::unmarkFoundPattern() {
+  getTargetWindow()->SetEditSel(-1,-1);
 }
 
 void CRegexDemoDlg::clearCyclesWindow() {
   showCyclesText(EMPTYSTRING);
+}
+
+void CRegexDemoDlg::showCycleCount() {
+  showCyclesText(format(_T("Cycles:%d"), m_regex.getCycleCount()));
 }
 
 void CRegexDemoDlg::showCyclesText(const String &text) {
@@ -769,6 +910,7 @@ void CRegexDemoDlg::setRegisterWindowMode() {
   } else {
     GetDlgItem(IDC_STATICREGISTERSLABEL)->ShowWindow(SW_SHOW);
     getRegistersWindow()->ShowWindow(SW_SHOW);
+    unpaintRegex();
     getGraphicsWindow()->ShowWindow(SW_HIDE);
     setCylceAndStackWindowTop(getWindowRect(getRegistersWindow()).bottom);
   }
@@ -800,6 +942,7 @@ void CRegexDemoDlg::clearCodeWindow() {
   getCodeWindow()->setText(EMPTYSTRING);
   setWindowText(this, IDC_STATICFASTMAP, EMPTYSTRING);
   m_codeWindow.setAllowMarking(false);
+  unmarkAllCharacters();
 }
 
 String CRegexDemoDlg::getCompiledCodeText() const {
@@ -832,89 +975,24 @@ void CRegexDemoDlg::fillCodeWindow(const String &codeText) {
   setWindowText(this, IDC_STATICFASTMAP, fastMapStr);
 }
 
+void CRegexDemoDlg::paintRegex(bool msgPaint, bool animate) {
+  if(isGraphicsOn()) {
+    CWnd *wnd = getGraphicsWindow();
+    if(msgPaint) {
+      m_regex.paint(wnd, CPaintDC(wnd), animate);
+    } else {
+      m_regex.paint(wnd, CClientDC(wnd), animate);
+    }
+  }
+}
+
+void CRegexDemoDlg::unpaintRegex() {
+  CWnd *wnd = getGraphicsWindow();
+  m_regex.unpaintAll(wnd, CClientDC(wnd));
+}
+
 bool CRegexDemoDlg::isCodeTextDFATables() const {
   return isMenuItemChecked(this, ID_OPTIONS_DFA_REGEX) && isMenuItemChecked(this, ID_OPTIONS_DFA_SHOWTABLES) && m_regex.hasDFATables();
-}
-
-void CRegexDemoDlg::OnEditFindMatchingParentesis() {
-  const int ctrlId = getFocusCtrlId(this);
-  switch(ctrlId) {
-  case IDC_COMBOPATTERN:
-  case IDC_COMBOTARGET :
-    { CComboBox *cb = (CComboBox*)GetDlgItem(ctrlId);
-      const String text = getWindowText(this, ctrlId);
-      int cursorPos = cb->GetEditSel() & 0xffff;
-      const int m = findMatchingpParanthes(text.cstr(), cursorPos);
-      if(m >= 0) {
-        cb->SetEditSel(m, m);
-      }
-    }
-    break;
-  }
-}
-
-void CRegexDemoDlg::OnDebugToggleBreakPoint() {
-  CDebugTextWindow *cw = getCodeWindow();
-  const int line = cw->getHighestBreakPointLine(cw->GetCurSel());
-
-  if(cw->isBreakPointLine(line)) {
-    cw->removeBreakPoint(line);
-  } else {
-    cw->addBreakPoint(line);
-  }
-}
-
-void CRegexDemoDlg::setCurrentCodeLine(int line) {
-  CDebugTextWindow *cw = getCodeWindow();
-  cw->markCurrentLine(line);
-}
-
-void CRegexDemoDlg::OnOptionsIgnoreCase() {
-  killThread();
-  toggleMenuItem(this, ID_OPTIONS_IGNORECASE);
-  if(getCompileParameters() == m_regex.getLastCompiledPattern()) {
-    fillCodeWindow(getCompiledCodeText());
-  } else {
-    m_patternDirty = true;
-    clearCodeWindow();
-  }
-  ajourDialogItems();
-}
-
-void CRegexDemoDlg::OnOptionsSearchBackwards() {
-  killThread();
-  toggleMenuItem(this, ID_OPTIONS_SEARCHBACKWARDS);
-}
-
-void CRegexDemoDlg::OnOptionsDFARegex() {
-  killThread();
-  toggleMenuItem(this, ID_OPTIONS_DFA_REGEX);
-  m_regex.setType(isMenuItemChecked(this, ID_OPTIONS_DFA_REGEX)?DFA_REGEX:EMACS_REGEX);
-  if(getCompileParameters() == m_regex.getLastCompiledPattern()) {
-    fillCodeWindow(getCompiledCodeText());
-  } else {
-    m_patternDirty = true;
-    clearCodeWindow();
-  }
-  ajourDialogItems();
-}
-
-void CRegexDemoDlg::OnOptionsDFAShowTables() {
-  toggleMenuItem(this, ID_OPTIONS_DFA_SHOWTABLES);
-  fillCodeWindow(getCompiledCodeText());
-  ajourDialogItems();
-}
-
-void CRegexDemoDlg::OnOptionsDFANoGraphics() {
-  setDFAGraphicsMode(ID_OPTIONS_DFA_NO_GRAPHICS);
-}
-
-void CRegexDemoDlg::OnOptionsDFAPaintStates() {
-  setDFAGraphicsMode(ID_OPTIONS_DFA_PAINT_STATES);
-}
-
-void CRegexDemoDlg::OnOptionsDFAAnimateCreate() {
-  setDFAGraphicsMode(ID_OPTIONS_DFA_ANIMATE_CREATE);
 }
 
 void CRegexDemoDlg::setDFAGraphicsMode(int id) {
@@ -929,7 +1007,7 @@ void CRegexDemoDlg::setDFAGraphicsMode(int id) {
   ajourDialogItems();
   if(id != ID_OPTIONS_DFA_NO_GRAPHICS) {
     if(m_regex.isCompiled()) {
-      m_regex.paint(getGraphicsWindow(), false);
+      paintRegex();
     }
   }
 }
@@ -945,25 +1023,4 @@ int CRegexDemoDlg::getDFAGraphicsMode() {
   } else {
     return ID_OPTIONS_DFA_NO_GRAPHICS;
   }
-}
-
-void CRegexDemoDlg::OnHelpAbout() {
-  CAboutDlg dlg;
-  dlg.DoModal();
-}
-
-void CRegexDemoDlg::OnHelpShowctrlid() {
-  showInformation(_T("Focus control has Id:%d"), getFocusCtrlId(this));
-}
-
-void CRegexDemoDlg::OnGotoPattern() {
-  getPatternWindow()->SetFocus();
-}
-
-void CRegexDemoDlg::OnGotoText() {
-  getTargetWindow()->SetFocus();
-}
-
-void CRegexDemoDlg::OnGotoBytecode() {
-  getCodeWindow()->SetFocus();
 }

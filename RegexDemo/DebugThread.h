@@ -43,7 +43,7 @@ public:
   CompileParameters(const String &pattern=EMPTYSTRING, bool ignoreCase = false) : m_pattern(pattern), m_ignoreCase(ignoreCase) {
   }
   inline void reset() {
-    m_pattern    = _T("");
+    m_pattern    = EMPTYSTRING;
     m_ignoreCase = false;
   }
 
@@ -89,8 +89,10 @@ public:
   bool     isCodeDirty() const;
   bool     isCompiled() const;
   BitSet   getPossibleBreakPointLines() const;
+  int      getPatternFoundCodeLine() const;
   int      getCycleCount() const;
-  void     paint(CWnd *wnd, bool animate) const;
+  void     paint(CWnd *wnd, CDC &dc, bool animate) const;
+  void     unpaintAll(CWnd *wnd, CDC &dc);
   void     setHandler(DebugThread *handler);
   intptr_t getResultLength() const;
   CompileParameters getLastCompiledPattern() const;

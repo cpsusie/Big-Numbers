@@ -38,16 +38,19 @@ DFARegex::DFARegex(const TCHAR *pattern, const TCHAR *translateTable) : m_fastMa
 #endif
 
 void DFARegex::init() {
-  m_translateTable = NULL;
-  m_hasCompiled    = false;
-  m_resultLength   = -1;
+  m_translateTable  = NULL;
+  m_hasCompiled     = false;
+  m_currentState    = -1;
+  m_lastAcceptState = -1;
+  m_patternFound    = false;
+  m_resultLength    = -1;
 
 #ifdef _DEBUG
-  m_codeDirty      = false;
-  m_cycleCount     = 0;
-  m_stepHandler    = NULL;
+  m_codeDirty       = false;
+  m_cycleCount      = 0;
+  m_stepHandler     = NULL;
   DBG_setMode(DFA_IDLE, NULL);
-  m_currentDFA     = NULL;
+  m_currentDFA      = NULL;
 #endif
 }
 
@@ -69,7 +72,8 @@ void DFARegex::compilePattern(const String &pattern, const TCHAR *translateTable
     DBG_setCodeText(EMPTYSTRING);
 
     m_translateTable = translateTable;
-    m_hasCompiled = false;
+    m_hasCompiled    = false;
+    m_patternFound   = false;
     DBG_setMode(DFA_PARSING, NULL);
     PatternParser parser(pattern, nfa, translateTable);
 
@@ -117,7 +121,7 @@ void DFARegex::createFastMap() {
 static const TCHAR *noRegExpressionMsg  = _T("No regular expression specified");
 
 #ifdef _DEBUG
-#define DBG_resetCycleCount()   m_cycleCount = 0
+#define DBG_resetCycleCount()   { m_cycleCount = 0; m_patternFound = false; }
 #define DBG_incrCycleCount()    m_cycleCount++
 #else
 #define DBG_resetCycleCount()
@@ -155,9 +159,9 @@ intptr_t DFARegex::search(const TCHAR  *text
 }
 
 intptr_t DFARegex::search(const TCHAR *string
-                          ,size_t       size
-                          ,intptr_t     startPos
-                          ,intptr_t     range
+                         ,size_t       size
+                         ,intptr_t     startPos
+                         ,intptr_t     range
                          ) const {
   DBG_setMode(DFA_SEARCHING, NULL);
   for(;;) {
@@ -247,19 +251,15 @@ intptr_t DFARegex::match(const TCHAR *string, size_t size, intptr_t pos) const {
   int            nextState;             // Next state
   int            anchor;                // Anchor mode for most recently seen accepting state
   _TUCHAR        lookahead;             // Lookahead character
-  const _TUCHAR *matchEndp       = (const _TUCHAR*)string + pos;
+  const _TUCHAR *matchEndp = (const _TUCHAR*)string + pos;
+
   DBG_saveMode(oldMode);
   DBG_setMode(DFA_MATCHING, NULL);
 
-  m_currentState    = 0;  // Current state
+  m_currentState    = 0;
   m_lastAcceptState = m_tables.m_acceptTable[0] ? 0 : -1;  // Most recently seen accept state
-  const _TUCHAR *cp, *endString;
-  for(cp = matchEndp, endString = (_TUCHAR*)string + size; cp < endString;) {
-    // Check end of file. If there's an unprocessed accepting state,
-    // lastAcceptState will be nonzero. In this case, ignore EOF for now so
-    // that you can do the accepting action; otherwise, try to open another
-    // file and return if you can't.
-
+  const _TUCHAR *cp, *endString = (_TUCHAR*)string + size;
+  for(cp = matchEndp; cp < endString;) {
     for(;;) {
       DBG_incrCycleCount();
       DBG_callMatchHandler()
@@ -276,7 +276,7 @@ intptr_t DFARegex::match(const TCHAR *string, size_t size, intptr_t pos) const {
     if(nextState != -1) {
       if(anchor = m_tables.m_acceptTable[nextState]) { // Is this an accept state
         m_lastAcceptState = nextState;
-        matchEndp = ++cp;
+        matchEndp = cp++;
       } else {
         cp++;
       }
@@ -284,6 +284,7 @@ intptr_t DFARegex::match(const TCHAR *string, size_t size, intptr_t pos) const {
     } else if(m_lastAcceptState < 0) {    // No match
       goto NoMatch;
     } else {
+      m_patternFound = true;
       break; // found it
 /*
       if(anchor & ANCHOR_END) {           // If end anchor is active
@@ -297,7 +298,7 @@ intptr_t DFARegex::match(const TCHAR *string, size_t size, intptr_t pos) const {
   }
   DBG_callMatchHandler()
   DBG_restoreMode(oldMode);
-  return m_resultLength = (m_lastAcceptState < 0) ? -1 : ((matchEndp - ((_TUCHAR*)string + pos)));
+  return m_resultLength = (m_lastAcceptState < 0) ? -1 : ((matchEndp - ((_TUCHAR*)string + pos)) + 1);
 
 NoMatch:
   DBG_restoreMode(oldMode);
@@ -366,7 +367,7 @@ BitSet DFARegex::getPossibleBreakPointLines() const {
   for(size_t s = 0; s < m_DBGInfo.size(); s++) {
     const _DFADbgStateInfo *info = getDBGStateInfo(s);
     if(info->m_lineNumber > maxLineNumber) {
-      maxLineNumber= info->m_lineNumber;
+      maxLineNumber = info->m_lineNumber;
     }
   }
   BitSet result(maxLineNumber+1);
@@ -376,31 +377,56 @@ BitSet DFARegex::getPossibleBreakPointLines() const {
   return result;
 }
 
-void DFARegex::paint(CWnd *wnd, bool animate) const {
+int DFARegex::getCurrentCodeLine() const {
+  const _DFADbgStateInfo *info = NULL;
+  switch(m_currentMode) {
+  case DFA_SEARCHING:
+    info = m_patternFound ? getDBGStateInfo(m_lastAcceptState) : NULL;
+    break;
+  case DFA_MATCHING:
+    info = getDBGStateInfo(m_currentState);
+    break;
+  }
+  return info ? info->m_lineNumber : -1;
+}
+
+void DFARegex::paint(CWnd *wnd, CDC &dc, bool animate) const {
   switch(m_currentMode) {
   case DFA_PARSING:
     if(animate) {
       NFAAnimateBuildStep(wnd);
     } else {
-      NFAPaint(wnd);
+      NFAPaint(wnd, dc);
     }
     break;
   case DFA_CONSTRUCTING_UNMIMIMZED_DFA:
   case DFA_CONSTRUCTING_DFA           :
-    m_currentDFA->paint(wnd);
+    m_currentDFA->paint(wnd, dc);
     break;
   default:
-    { NFA dummy;
-      DFA dfa(m_tables, dummy);
-      int state, lastAcceptState;
-      if(m_currentMode != DFA_MATCHING) {
-        state = lastAcceptState = -1;
-      } else {
-        state           = m_currentState;
+    { int state, lastAcceptState;
+      if((m_currentMode == DFA_MATCHING) || m_patternFound) {
+        state           = (m_currentMode == DFA_MATCHING) ? m_currentState : -1;
         lastAcceptState = m_lastAcceptState;
+      } else {
+        state = lastAcceptState = -1;
       }
-      dfa.paint(wnd, state, lastAcceptState);
+      DFA(m_tables, NFA()).paint(wnd, dc, state, lastAcceptState);
     }
+    break;
+  }
+}
+
+void DFARegex::unpaintAll(CWnd *wnd, CDC &dc) {
+  switch(m_currentMode) {
+  case DFA_PARSING                    :
+  case DFA_CONSTRUCTING_UNMIMIMZED_DFA:
+  case DFA_CONSTRUCTING_DFA           :
+    break;
+  default:
+    m_patternFound = false;
+    m_currentState = m_lastAcceptState = -1;
+    DFA(m_tables, NFA()).paint(wnd, dc);
     break;
   }
 }

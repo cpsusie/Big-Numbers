@@ -57,8 +57,12 @@ private:
   void showEmacsMatchState();
   void showMatchStack(const _RegexMatchState &state);
   void showDFAMatchState();
+  void showPatternFound();
+  void markFoundPattern();
+  void unmarkFoundPattern();
   void clearCyclesWindow();
   void showCyclesText(const String &text);
+  void showCycleCount();
   void markCurrentChar(CharMarkType type, intptr_t index);
   void markMultiPatternChars(const BitSet &markSet);
   void unmarkAllCharacters(CharMarkType type);
@@ -69,8 +73,15 @@ private:
   void clearCodeWindow();
   String getCompiledCodeText() const;
   void fillCodeWindow(const String &codeText);
+  void paintRegex(bool msgPaint=false, bool animate=false);
+  void unpaintRegex();
   bool isCodeTextDFATables() const;
-  void setCurrentCodeLine(  int line);
+  inline void setCurrentCodeLine(int line) {
+    getCodeWindow()->markCurrentLine(line);
+  }
+  inline void unmarkCodeLine() {
+    setCurrentCodeLine(-1);
+  }
   void startThread(ThreadCommand command, bool singleStep=false);
   void startDebugCompile();
   void killThread();
@@ -130,8 +141,8 @@ public:
     virtual BOOL DestroyWindow();
     afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
     afx_msg HCURSOR OnQueryDragIcon();
-    afx_msg void OnPaint();
     afx_msg void OnSize(UINT nType, int cx, int cy);
+    afx_msg void OnPaint();
     virtual void OnOK();
     virtual void OnCancel();
     afx_msg void OnClose();

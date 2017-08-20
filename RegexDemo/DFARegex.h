@@ -142,6 +142,7 @@ private:
                                             // character in a pattern when compiled and to characters in the
                                             // text string it is matched/matched
   bool                  m_hasCompiled;
+  mutable bool          m_patternFound;
   bool                  m_matchEmpty;
   mutable intptr_t      m_resultLength;     // initialized to -1
   mutable int           m_currentState;
@@ -201,10 +202,12 @@ public:
   }
   const _DFADbgStateInfo *getDBGStateInfo(size_t state) const;
   BitSet                  getPossibleBreakPointLines() const;
+  int                     getCurrentCodeLine() const;
   UINT                    getCycleCount() const {
     return m_cycleCount;
   }
-  void paint(CWnd *wnd, bool animate) const;
+  void paint(CWnd *wnd, CDC &dc, bool animate) const;
+  void unpaintAll(CWnd *wnd, CDC &dc);
   static int   getAllocatedNFAStates();
 #endif
 };
