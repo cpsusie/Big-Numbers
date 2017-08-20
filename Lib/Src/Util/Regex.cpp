@@ -2041,8 +2041,10 @@ RegexStepHandler *Regex::setHandler(RegexStepHandler *handler) {
 
 #define ADDNEWLINE     ADD(_T("\n"))
 
-#define SETLINENUMBERS     { for(;lastp < p; lastp++) m_PCToLineArray[lastp - start] |= (lineCount<<16); lineCount++; }
-#define CLEARLINENUMBERS() { for(int n = (int)m_PCToLineArray.size(), *lp = n?(&m_PCToLineArray.first()):NULL; n--;) *(lp++) &= 0x0000ffff; }
+#define SETLINENUMBERS       { for(;lastp < p; lastp++) m_PCToLineArray[lastp - start] |= (lineCount<<16); lineCount++; }
+#define CLEARLINENUMBERS()   { for(int n = (int)m_PCToLineArray.size(), *lp = n?(&m_PCToLineArray.first()):NULL; n--;) *(lp++) &= 0x0000ffff; }
+#define GETDBGLINENO(   dbg) ((dbg)>>16   )
+#define GETDBGCHARINDEX(dbg) ((dbg)&0xffff)
 
 String Regex::toString() const {
   String result;
@@ -2152,14 +2154,14 @@ String Regex::toString() const {
       break;
 
     case startMemory:         // Starts remembering the text that is matched
-      { const unsigned char regno = *p++;
+      { const BYTE regno = *p++;
         ADDOPCODE(startMemory);
         ADDINT(regno);
       }
       break;
 
     case stopMemory:          // Stops remembering the text that is matched
-      { const unsigned char regno = *p++;
+      { const BYTE regno = *p++;
         ADDOPCODE(stopMemory);
         ADDINT(regno);
       }
@@ -2167,14 +2169,14 @@ String Regex::toString() const {
 
     case duplicate:           // Match a duplicate of something remembered.
                               // Followed by one byte containing the index of the memory register.
-      { const unsigned char regno = *p++;
+      { const BYTE regno = *p++;
         ADDOPCODE(duplicate);
         ADDINT(regno);
       }
       break;
 
     case exactMatch:          // Followed by one byte giving n, and then by n literal TCHARS
-      { const unsigned char n = *p++;
+      { const BYTE n = *p++;
         ADDOPCODE(exactMatch);
         ADD(format(_T("%u <%*.*s>"),n,n,n,(TCHAR*)p));
         p += n * sizeof(TCHAR);
@@ -2188,7 +2190,7 @@ String Regex::toString() const {
     case charSet      :       // Matches any one character belonging to specified set.
     case charSetNot   :
       { String setStr;
-        if(*(unsigned short*)(p) > m_buffer.size()) {
+        if(*(USHORT*)(p) > m_buffer.size()) {
           setStr = _T("--");
           getShort(p);
         } else {
@@ -2282,16 +2284,20 @@ BitSet Regex::getPossibleBreakPointLines() const {
   }
   int maxLine = 0;
   for(size_t i = 0; i < m_PCToLineArray.size(); i++) {
-    const int l = m_PCToLineArray[i] >> 16;
+    const int l = GETDBGLINENO(m_PCToLineArray[i]);
     if(l > maxLine) {
       maxLine = l;
     }
   }
   BitSet result(maxLine+1);
   for(size_t i = 0; i < m_PCToLineArray.size(); i++) {
-    result.add(m_PCToLineArray[i] >> 16);
+    result.add(GETDBGLINENO(m_PCToLineArray[i]));
   }
   return result;
+}
+
+int Regex::getLastCodeLine() const {
+  return m_PCToLineArray.isEmpty() ? -1 : GETDBGLINENO(m_PCToLineArray.last());
 }
 
 UINT _RegexMatchState::getDBGIpElement() const {
@@ -2301,11 +2307,11 @@ UINT _RegexMatchState::getDBGIpElement() const {
 }
 
 UINT _RegexMatchState::getDBGPatternCharIndex() const {
-  return getDBGIpElement() & 0xffff;
+  return GETDBGCHARINDEX(getDBGIpElement());
 }
 
 UINT _RegexMatchState::getDBGLineNumber() const {
-  return getDBGIpElement() >> 16;
+  return GETDBGLINENO(getDBGIpElement());
 }
 
 String _RegexMatchState::stackToString() const {

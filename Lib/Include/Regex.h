@@ -354,7 +354,7 @@ public:
   virtual void handleMatchStep(  const _RegexMatchState    &state) {
   }
 };
-#endif
+#endif // _DEBUG
 
 class _RegexByteInsertHandler {
 public:
@@ -505,6 +505,7 @@ public:
     return m_PCToLineArray;
   }
   BitSet       getPossibleBreakPointLines() const;
+  int          getLastCodeLine() const;
   UINT         getCycleCount() const {
     return m_cycleCount;
   }
