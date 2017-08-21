@@ -1,4 +1,4 @@
-//Microsoft Developer Studio generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
 
@@ -13,13 +13,11 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Danish resources
+// Danish (Denmark) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DAN)
-#ifdef _WIN32
 LANGUAGE LANG_DANISH, SUBLANG_DEFAULT
 #pragma code_page(1252)
-#endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -27,18 +25,18 @@ LANGUAGE LANG_DANISH, SUBLANG_DEFAULT
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE DISCARDABLE 
+1 TEXTINCLUDE 
 BEGIN
     "resource.h\0"
 END
 
-2 TEXTINCLUDE DISCARDABLE 
+2 TEXTINCLUDE 
 BEGIN
     "#include ""afxres.h""\r\n"
     "\0"
 END
 
-3 TEXTINCLUDE DISCARDABLE 
+3 TEXTINCLUDE 
 BEGIN
     "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
     "#define _AFX_NO_OLE_RESOURCES\r\n"
@@ -66,27 +64,30 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDR_MAINFRAME           ICON    DISCARDABLE     "res\\RegexDemo.ico"
+IDR_MAINFRAME           ICON                    "res\\RegexDemo.ico"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Bitmap
 //
 
-IDB_BITMAP_GREEN_UPARROW BITMAP  DISCARDABLE     "res\\GreenUpArrow.bmp"
-IDB_BITMAP_GREEN_DOWNARROW BITMAP  DISCARDABLE     "res\\GreenDownArrow.bmp"
-IDB_BITMAP_RED_UPARROW  BITMAP  DISCARDABLE     "res\\RedUpArrow.bmp"
-IDB_BITMAP_PINK_UPARROW BITMAP  DISCARDABLE     "res\\PinkUpArrow.bmp"
-IDB_BITMAP_BLACK_DOWNARROW BITMAP  DISCARDABLE     "res\\BlackDownArrow.bmp"
-IDB_BITMAP_BLACK_RIGHTARROW BITMAP  DISCARDABLE     "res\\BlackRightArrow.bmp"
-IDB_BITMAP_BREAKPOINT   BITMAP  DISCARDABLE     "res\\BreakPointMark.bmp"
+IDB_BITMAP_GREEN_UPARROW BITMAP                 "res\\GreenUpArrow.bmp"
+IDB_BITMAP_YELLOW_DOWNARROW BITMAP              "res\\YellowDownArrow.bmp"
+IDB_BITMAP_RED_UPARROW  BITMAP                  "res\\RedUpArrow.bmp"
+IDB_BITMAP_PINK_UPARROW BITMAP                  "res\\PinkUpArrow.bmp"
+IDB_BITMAP_BLACK_DOWNARROW BITMAP               "res\\BlackDownArrow.bmp"
+IDB_BITMAP_BLACK_RIGHTARROW BITMAP              "res\\BlackRightArrow.bmp"
+IDB_BITMAP_BLUE_UPARROW BITMAP                  "res\\BlueUpArrow.bmp"
+IDB_BITMAP_BREAKPOINT   BITMAP                  "res\\BreakPointMark.bmp"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Menu
 //
 
-IDR_MAINFRAME MENU DISCARDABLE 
+IDR_MAINFRAME MENU
 BEGIN
     POPUP "&File"
     BEGIN
@@ -101,8 +102,7 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "C&ompile pattern\tF7",        ID_EDIT_COMPILEPATTERN
         MENUITEM SEPARATOR
-        MENUITEM "Find matching &parentesis\tCtrl+E", 
-                                                ID_EDIT_FINDMATCHINGPAR
+        MENUITEM "Find matching &parentesis\tCtrl+E", ID_EDIT_FINDMATCHINGPAR
     END
     POPUP "Debug"
     BEGIN
@@ -124,12 +124,9 @@ BEGIN
         MENUITEM "Show DFA &tables\tCtrl+T",    ID_OPTIONS_DFA_SHOWTABLES
         POPUP "DFA graphics"
         BEGIN
-            MENUITEM "&No graphics\tCtrl+0",        ID_OPTIONS_DFA_NO_GRAPHICS
-            , CHECKED
+            MENUITEM "&No graphics\tCtrl+0",        ID_OPTIONS_DFA_NO_GRAPHICS, CHECKED
             MENUITEM "&Paint states\tCtrl+1",       ID_OPTIONS_DFA_PAINT_STATES
-
             MENUITEM "&Animations\tCtrl+2",         ID_OPTIONS_DFA_ANIMATE_CREATE
-
         END
     END
     POPUP "&Help"
@@ -145,23 +142,20 @@ END
 // Accelerator
 //
 
-IDR_MAINFRAME ACCELERATORS DISCARDABLE 
+IDR_MAINFRAME ACCELERATORS
 BEGIN
     "0",            ID_OPTIONS_DFA_NO_GRAPHICS, VIRTKEY, CONTROL, NOINVERT
     "1",            ID_OPTIONS_DFA_PAINT_STATES, VIRTKEY, CONTROL, NOINVERT
-    "2",            ID_OPTIONS_DFA_ANIMATE_CREATE, VIRTKEY, CONTROL, 
-                                                    NOINVERT
+    "2",            ID_OPTIONS_DFA_ANIMATE_CREATE, VIRTKEY, CONTROL, NOINVERT
     "B",            ID_GOTO_BYTECODE,       VIRTKEY, ALT, NOINVERT
     "C",            ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
     "D",            ID_OPTIONS_DFA_REGEX,   VIRTKEY, CONTROL, NOINVERT
     "E",            ID_EDIT_FINDMATCHINGPAR, VIRTKEY, CONTROL, NOINVERT
     "F",            ID_EDIT_FIND,           VIRTKEY, CONTROL, NOINVERT
-    "F",            ID_DEBUG_FIND,          VIRTKEY, SHIFT, CONTROL, 
-                                                    NOINVERT
+    "F",            ID_DEBUG_FIND,          VIRTKEY, SHIFT, CONTROL, NOINVERT
     "I",            ID_OPTIONS_IGNORECASE,  VIRTKEY, ALT, NOINVERT
     "M",            ID_EDIT_MATCH,          VIRTKEY, CONTROL, NOINVERT
-    "M",            ID_DEBUG_MATCH,         VIRTKEY, SHIFT, CONTROL, 
-                                                    NOINVERT
+    "M",            ID_DEBUG_MATCH,         VIRTKEY, SHIFT, CONTROL, NOINVERT
     "P",            ID_GOTO_PATTERN,        VIRTKEY, ALT, NOINVERT
     "R",            ID_HELP_SHOWCTRLID,     VIRTKEY, ALT, NOINVERT
     "T",            ID_OPTIONS_DFA_SHOWTABLES, VIRTKEY, CONTROL, NOINVERT
@@ -169,8 +163,7 @@ BEGIN
     VK_F10,         ID_DEBUG_STEP,          VIRTKEY, NOINVERT
     VK_F5,          ID_DEBUG_CONTINUE,      VIRTKEY, NOINVERT
     VK_F7,          ID_EDIT_COMPILEPATTERN, VIRTKEY, NOINVERT
-    VK_F7,          ID_DEBUG_COMPILE,       VIRTKEY, SHIFT, CONTROL, 
-                                                    NOINVERT
+    VK_F7,          ID_DEBUG_COMPILE,       VIRTKEY, SHIFT, CONTROL, NOINVERT
     VK_F9,          ID_DEBUG_TOGGLEBREAKPOINT, VIRTKEY, NOINVERT
     "W",            ID_OPTIONS_SEARCHBACKWARDS, VIRTKEY, ALT, NOINVERT
 END
@@ -181,56 +174,45 @@ END
 // Dialog
 //
 
-IDD_ABOUTBOX DIALOG DISCARDABLE  0, 0, 235, 55
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_ABOUTBOX DIALOG 0, 0, 235, 55
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About RegexDemo"
 FONT 8, "MS Sans Serif"
 BEGIN
     ICON            IDR_MAINFRAME,IDC_STATIC,11,17,20,20
-    LTEXT           "RegexDemo Version 1.0",IDC_STATIC,40,10,119,8,
-                    SS_NOPREFIX
+    LTEXT           "RegexDemo Version 1.0",IDC_STATIC,40,10,119,8,SS_NOPREFIX
     LTEXT           "Copyright (C) 2010",IDC_STATIC,40,25,119,8
     DEFPUSHBUTTON   "OK",IDOK,178,7,50,14,WS_GROUP
 END
 
 IDR_MAINFRAME DIALOGEX 0, 0, 465, 419
-STYLE DS_NOIDLEMSG | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | WS_VISIBLE | 
-    WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+STYLE DS_SETFONT | DS_NOIDLEMSG | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
 EXSTYLE WS_EX_APPWINDOW
 CAPTION "Test Regex"
 MENU IDR_MAINFRAME
 FONT 8, "Courier New", 0, 0, 0x1
 BEGIN
-    COMBOBOX        IDC_COMBOPATTERN,46,8,412,115,CBS_DROPDOWN | 
-                    CBS_AUTOHSCROLL | CBS_DISABLENOSCROLL | WS_VSCROLL | 
-                    WS_TABSTOP
-    COMBOBOX        IDC_COMBOTARGET,46,29,412,129,CBS_DROPDOWN | WS_VSCROLL | 
-                    WS_TABSTOP
-    LISTBOX         IDC_LISTBYTECODE,11,86,220,297,LBS_OWNERDRAWFIXED | 
-                    LBS_USETABSTOPS | LBS_NOINTEGRALHEIGHT | 
-                    LBS_WANTKEYBOARDINPUT | LBS_DISABLENOSCROLL | WS_VSCROLL | 
-                    WS_TABSTOP,WS_EX_STATICEDGE
+    COMBOBOX        IDC_COMBOPATTERN,46,8,412,115,CBS_DROPDOWN | CBS_AUTOHSCROLL | CBS_DISABLENOSCROLL | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBOTARGET,46,29,412,129,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    LISTBOX         IDC_LISTBYTECODE,11,86,220,297,LBS_OWNERDRAWFIXED | LBS_USETABSTOPS | LBS_NOINTEGRALHEIGHT | LBS_WANTKEYBOARDINPUT | LBS_DISABLENOSCROLL | WS_VSCROLL | WS_TABSTOP,WS_EX_STATICEDGE
     LTEXT           "",IDC_STATICFASTMAP,47,388,182,24,SS_SUNKEN
     LTEXT           "&Pattern:",IDC_STATICPATTERNLABEL,11,11,31,9
     LTEXT           "Fastmap:",IDC_STATICFASTMAPLABEL,11,394,32,11
     LTEXT           "Registers:",IDC_STATICREGISTERSLABEL,235,49,44,31
     LTEXT           "&Text:",IDC_STATICTARGETLABEL,11,31,31,9
     LTEXT           "Result:",IDC_STATICRESULTLABEL,11,52,31,9
-    LTEXT           "",IDC_STATICRESULT,46,50,185,12,SS_CENTERIMAGE | 
-                    SS_SUNKEN
+    LTEXT           "",IDC_STATICRESULT,46,50,185,12,SS_CENTERIMAGE | SS_SUNKEN
     LTEXT           "&Bytecode",IDC_STATICBYTECODELABEL,11,72,31,9
     LTEXT           "",IDC_STATICSTACK,284,180,174,232,SS_SUNKEN
     LTEXT           "Alternative stack",IDC_STATICSTACKLABEL,235,180,45,35
     LTEXT           "State:",IDC_STATICSTATENAMELABEL,122,69,22,9
-    LTEXT           "",IDC_STATICSTATENAME,151,68,80,12,SS_CENTERIMAGE | 
-                    SS_SUNKEN
+    LTEXT           "",IDC_STATICSTATENAME,151,68,80,12,SS_CENTERIMAGE | SS_SUNKEN
     LTEXT           "",IDC_STATICREGISTERS,284,49,174,119,SS_SUNKEN
     LTEXT           "",IDC_STATICCYCLES,284,168,174,12,SS_SUNKEN
-    LTEXT           "",IDC_STATICDFAGRAPHICSWINDOW,234,50,224,222,SS_SUNKEN | 
-                    NOT WS_VISIBLE | NOT WS_GROUP
+    LTEXT           "",IDC_STATICDFAGRAPHICSWINDOW,234,50,224,222,SS_SUNKEN | NOT WS_VISIBLE | NOT WS_GROUP
 END
 
-#ifndef _MAC
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // Version
@@ -253,15 +235,13 @@ BEGIN
     BEGIN
         BLOCK "040904B0"
         BEGIN
-            VALUE "CompanyName", "\0"
-            VALUE "FileDescription", "RegexDemo MFC Application\0"
-            VALUE "FileVersion", "1, 0, 0, 1\0"
-            VALUE "InternalName", "RegexDemo\0"
-            VALUE "LegalCopyright", "Copyright (C) 2010\0"
-            VALUE "LegalTrademarks", "\0"
-            VALUE "OriginalFilename", "RegexDemo.EXE\0"
-            VALUE "ProductName", "RegexDemo Application\0"
-            VALUE "ProductVersion", "1, 0, 0, 1\0"
+            VALUE "FileDescription", "RegexDemo MFC Application"
+            VALUE "FileVersion", "1, 0, 0, 1"
+            VALUE "InternalName", "RegexDemo"
+            VALUE "LegalCopyright", "Copyright (C) 2010"
+            VALUE "OriginalFilename", "RegexDemo.EXE"
+            VALUE "ProductName", "RegexDemo Application"
+            VALUE "ProductVersion", "1, 0, 0, 1"
         END
     END
     BLOCK "VarFileInfo"
@@ -270,8 +250,6 @@ BEGIN
     END
 END
 
-#endif    // !_MAC
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -279,7 +257,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO DISCARDABLE 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_ABOUTBOX, DIALOG
     BEGIN
@@ -305,12 +283,12 @@ END
 // String Table
 //
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDS_ABOUTBOX            "&About RegexDemo..."
 END
 
-#endif    // Danish resources
+#endif    // Danish (Denmark) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

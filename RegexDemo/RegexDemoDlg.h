@@ -39,6 +39,7 @@ private:
   void showRegisters(const RegexRegisters &registers);
   void clearRegisterWindow();
   void setRegisterWindowMode();
+  void setRegistersWindowVisible(bool visible);
   void setCylceAndStackWindowTop(int top);
   void clearThreadState();
   CompileParameters getCompileParameters();
@@ -98,8 +99,8 @@ private:
     return hasThread() && !m_debugThread->isRunning() && m_debugThread->isFinished();
   }
 
-  String getThreadStateName() const;
-  RegexPhaseType getThreadState() const {
+  String getThreadPhaseName() const;
+  RegexPhaseType getThreadPhase() const {
     return hasThread() ? m_debugThread->getRegexPhase() : REGEX_UNDEFINED;
   }
 
@@ -175,7 +176,7 @@ public:
     afx_msg void OnEditChangeComboTarget();
     afx_msg void OnSelChangeComboPattern();
     afx_msg void OnSelChangeComboTarget();
-    afx_msg void OnSelChangeListbyteCode();
+    afx_msg void OnSelChangeListByteCode();
     afx_msg LRESULT OnMsgThreadRunning(WPARAM wp, LPARAM lp);
     DECLARE_MESSAGE_MAP()
 };

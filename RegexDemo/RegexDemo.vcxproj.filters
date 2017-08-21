@@ -148,9 +148,6 @@
     <Image Include="res\BreakPointMark.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="res\GreenDownArrow.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="res\GreenUpArrow.bmp">
       <Filter>Resource Files</Filter>
     </Image>
@@ -161,6 +158,12 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\RegexDemo.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\BlueUpArrow.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\YellowDownArrow.bmp">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

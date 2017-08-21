@@ -10,16 +10,19 @@
 #include "DFARegex.h"
 
 typedef enum {
-  SEARCH_RUNNING
- ,SEARCH_REGEXFINISHED
+  THREAD_RUNNING
 } DebugThreadProperties;
 
 typedef enum {
   REGEX_UNDEFINED
  ,REGEX_COMPILING
+ ,REGEX_COMPILEDOK
+ ,REGEX_COMPILEDFAILED
  ,REGEX_SEARCHING
  ,REGEX_MATCHING
- ,REGEX_SUCEEDED
+ ,REGEX_PATTERNFOUND
+ ,REGEX_SEARCHFAILED
+ ,REGEX_MATCHFAILED
 } RegexPhaseType;
 
 typedef enum {
@@ -115,9 +118,9 @@ private:
   String                             m_resultMsg;
   void validateRegexTypeAndPhase(RegexType expectedType, RegexPhaseType expectedPhase) const;
   void setPropRunning(bool value);
-  void setPropFinished();
   void suspendOnSingleStep(RegexPhaseType phase, int lineNumber = -1);
   void enableHandleStep(bool enabled);
+  void initThread(bool singleStep);
   void clearStates();
 public:
   DebugThread(DebugRegex &regex, const CompileParameters &cp, const BitSet &breakPoints);
@@ -145,6 +148,11 @@ public:
   RegexPhaseType getRegexPhase() const {
     return m_regexPhase;
   }
+  static String getPhaseName(RegexPhaseType phase);
+  String getPhaseName() const {
+    return getPhaseName(getRegexPhase());
+  }
+
   void   getFoundPosition(int &start, int &end);
   String getResultMsg()      const;
   String registersToString() const;

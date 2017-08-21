@@ -75,7 +75,7 @@ BEGIN_MESSAGE_MAP(CRegexDemoDlg, CDialog)
   ON_CBN_EDITCHANGE(IDC_COMBOTARGET        , OnEditChangeComboTarget      )
   ON_CBN_SELCHANGE( IDC_COMBOPATTERN       , OnSelChangeComboPattern      )
   ON_CBN_SELCHANGE( IDC_COMBOTARGET        , OnSelChangeComboTarget       )
-  ON_LBN_SELCHANGE( IDC_LISTBYTECODE       , OnSelChangeListbyteCode      )
+  ON_LBN_SELCHANGE( IDC_LISTBYTECODE       , OnSelChangeListByteCode      )
   ON_MESSAGE(       ID_MSG_THREADRUNNING   , OnMsgThreadRunning           )
 END_MESSAGE_MAP()
 
@@ -125,11 +125,11 @@ BOOL CRegexDemoDlg::OnInitDialog() {
 
     m_accelTable      = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_MAINFRAME));
 
-    m_charMarkers.add(new CharacterMarker(this, IDC_COMBOPATTERN,IDB_BITMAP_BLACK_DOWNARROW, true )); // PATTERN_POSMARK
-    m_charMarkers.add(new CharacterMarker(this, IDC_COMBOTARGET, IDB_BITMAP_RED_UPARROW    , false)); // SEARCH_POSMARK
-    m_charMarkers.add(new CharacterMarker(this, IDC_COMBOTARGET, IDB_BITMAP_PINK_UPARROW   , false)); // MATCH_STARTMARK
-    m_charMarkers.add(new CharacterMarker(this, IDC_COMBOTARGET, IDB_BITMAP_GREEN_DOWNARROW, true )); // MATCH_DMARK
-    m_charMarkers.add(new CharacterMarker(this, IDC_COMBOTARGET, IDB_BITMAP_GREEN_UPARROW  , false)); // LASTACCEPT_MARK
+    m_charMarkers.add(new CharacterMarker(this, IDC_COMBOPATTERN,IDB_BITMAP_BLACK_DOWNARROW , true )); // PATTERN_POSMARK
+    m_charMarkers.add(new CharacterMarker(this, IDC_COMBOTARGET, IDB_BITMAP_RED_UPARROW     , false)); // SEARCH_POSMARK
+    m_charMarkers.add(new CharacterMarker(this, IDC_COMBOTARGET, IDB_BITMAP_BLUE_UPARROW    , false)); // MATCH_STARTMARK
+    m_charMarkers.add(new CharacterMarker(this, IDC_COMBOTARGET, IDB_BITMAP_YELLOW_DOWNARROW, true )); // MATCH_DMARK
+    m_charMarkers.add(new CharacterMarker(this, IDC_COMBOTARGET, IDB_BITMAP_GREEN_UPARROW   , false)); // LASTACCEPT_MARK
     m_charMarkers.last()->setBlinking(true);
 
     m_layoutManager.OnInitDialog(this);
@@ -349,6 +349,11 @@ void CRegexDemoDlg::OnOptionsDFARegex() {
     m_patternDirty = true;
     clearCodeWindow();
   }
+  setWindowText(this, IDC_STATICSTACKLABEL
+                    , (m_regex.getType()==DFA_REGEX)
+                    ?_T("ParserStack")
+                    :_T("Alternative stack"));
+
   ajourDialogItems();
   Invalidate();
 }
@@ -413,7 +418,7 @@ void CRegexDemoDlg::OnSelChangeComboTarget() {
   OnEditChangeComboTarget();
 }
 
-void CRegexDemoDlg::OnSelChangeListbyteCode() {
+void CRegexDemoDlg::OnSelChangeListByteCode() {
   ajourDialogItems();
 }
 
@@ -430,29 +435,34 @@ LRESULT CRegexDemoDlg::OnMsgThreadRunning(WPARAM wp, LPARAM lp) {
 
       if(isThreadFinished()) {
         clearThreadState();
-        if(m_debugThread->getRegexPhase() == REGEX_SUCEEDED) {
-          if(m_debugThread->getCommand() == COMMAND_COMPILE) {
-            setPatternCompiledOk();
-          } else {
-            showPatternFound();
-          }
-        } else {
-          showResult(m_debugThread->getResultMsg());
-          showCycleCount();
-        }
-
-      } else if(isThreadStopped()) {
-        switch(m_debugThread->getRegexPhase()) {
-        case REGEX_COMPILING: showCompilerState(); break;
-        case REGEX_SEARCHING: showSearchState();   break;
-        case REGEX_MATCHING : showMatchState();    break;
-        case REGEX_UNDEFINED:
-          if(m_debugThread->getCommand() == COMMAND_COMPILE) { // compiler errors are given as exception, so thread is in undefined state when this happens
-            showCompilerError(m_debugThread->getResultMsg());
-          } else {
-            showResult(m_debugThread->getResultMsg()); break; // may an exception, access-violation or somthing like that
-          }
-        }
+      }
+      switch(m_debugThread->getRegexPhase()) {
+      case REGEX_COMPILING    :
+        showCompilerState();
+        break;
+      case REGEX_COMPILEDOK   :
+        setPatternCompiledOk();
+        break;
+      case REGEX_COMPILEDFAILED:
+        showCompilerError(m_debugThread->getResultMsg());
+        break;
+      case REGEX_SEARCHING    :
+        showSearchState();
+        break;
+      case REGEX_MATCHING     :
+        showMatchState();
+        break;
+      case REGEX_PATTERNFOUND :
+        showPatternFound();
+        break;
+      case REGEX_SEARCHFAILED :
+      case REGEX_MATCHFAILED  :
+        showResult(m_debugThread->getResultMsg());
+        showCycleCount();
+        break;
+      case REGEX_UNDEFINED:
+        showResult(m_debugThread->getResultMsg());
+        break; // maybe an exception, access-violation or somthing like that
       }
     }
     ajourDialogItems();
@@ -471,23 +481,10 @@ bool CRegexDemoDlg::checkPattern() {
   return m_patternOk;
 }
 
-String CRegexDemoDlg::getThreadStateName() const {
-  if(!hasThread()) {
-    return _T("No thread");
-  } else {
-    const RegexPhaseType phase = m_debugThread->getRegexPhase();
-    if(m_debugThread->isFinished() && (phase != REGEX_SUCEEDED)) {
-      return _T("Failed");
-    }
-    switch(phase) {
-    case REGEX_UNDEFINED : return _T("Undefined");
-    case REGEX_COMPILING : return _T("Compiling");
-    case REGEX_SEARCHING : return _T("Searching");
-    case REGEX_MATCHING  : return _T("Matching");
-    case REGEX_SUCEEDED  : return _T("Succeeded");
-    }
-  }
-  return _T("?");
+String CRegexDemoDlg::getThreadPhaseName() const {
+  return hasThread()
+       ? m_debugThread->getPhaseName()
+       : _T("No thread");
 }
 
 void CRegexDemoDlg::markCurrentChar(CharMarkType type, intptr_t index) {
@@ -517,6 +514,7 @@ void CRegexDemoDlg::markMultiPatternChars(const BitSet &markSet) {
 typedef enum {
   WIN_REGISTERS
  ,WIN_STACK
+ ,WIN_CYCLES
  ,MENU_SEARCH
  ,MENU_DEBUG
  ,MENU_BREAKPOINTS
@@ -527,13 +525,16 @@ typedef enum {
 void CRegexDemoDlg::ajourDialogItems() {
   BitSet16 flags;
 
-  if(!m_patternDirty && m_patternOk) {
-    flags.add(MENU_SEARCH);
-  }
-  if(isThreadStopped() && ((m_debugThread->getCommand() == COMMAND_COMPILE) || (!m_patternDirty && m_patternOk && !m_targetDirty))) {
+  if(isThreadStopped() 
+    && ((m_debugThread->getCommand() == COMMAND_COMPILE)
+     || (!m_patternDirty && m_patternOk && !m_targetDirty))) {
     flags.add(MENU_DEBUG);
   }
-  if(isMenuItemChecked(this, ID_OPTIONS_DFA_REGEX)) {
+  if(!m_patternDirty && m_patternOk) {
+    flags.add(MENU_SEARCH);
+    flags.add(WIN_CYCLES);
+  }
+  if(m_regex.getType() == DFA_REGEX) {
     flags.add(MENU_SHOWDFATABLES);
     flags.add(MENU_DFAGRAPHICS);
   }
@@ -541,46 +542,55 @@ void CRegexDemoDlg::ajourDialogItems() {
     flags.add(MENU_BREAKPOINTS);
   }
 
-  setWindowText(this, IDC_STATICSTATENAME, getThreadStateName());
+  setWindowText(this, IDC_STATICSTATENAME, getThreadPhaseName());
   if(hasThread()) {
     if(m_debugThread->isRunning()) {
       return;
     }
-    switch(getThreadState()) {
-    case REGEX_UNDEFINED:
+    switch(getThreadPhase()) {
+    case REGEX_UNDEFINED     :
+    case REGEX_COMPILEDFAILED:
+    case REGEX_SEARCHFAILED  :
+    case REGEX_MATCHFAILED   :
       flags.remove(MENU_DEBUG);
       break;
-    case REGEX_COMPILING:
+    case REGEX_COMPILING     :
       flags.add(WIN_REGISTERS);
       flags.add(WIN_STACK);
       break;
-    case REGEX_SEARCHING:
+    case REGEX_SEARCHING     :
       break;
-    case REGEX_MATCHING :
-      flags.add(WIN_REGISTERS);
-      flags.add(WIN_STACK);
+    case REGEX_MATCHING      :
+      if(m_regex.getType()==EMACS_REGEX) {
+        flags.add(WIN_REGISTERS);
+        flags.add(WIN_STACK);
+      }
       break;
-    case REGEX_SUCEEDED :
-      flags.add(WIN_REGISTERS);
+    case REGEX_PATTERNFOUND:
+    case REGEX_COMPILEDOK  :
+      if(m_regex.getType()==EMACS_REGEX) {
+        flags.add(WIN_REGISTERS);
+      }
       break;
     default:
-      showError(_T("%s:Unnknown threadState:%d"), __TFUNCTION__, getThreadState());
+      showError(_T("%s:Unnknown threadState:%d"), __TFUNCTION__, getThreadPhase());
       break;
     }
   }
-  GetDlgItem(IDC_STATICCYCLES)->EnableWindow(m_patternOk);
   enableDialogItems(flags);
   setRegisterWindowMode();
 }
 
 void CRegexDemoDlg::enableDialogItems(BitSet16 flags) {
   const BOOL enableRegisters  = flags.contains(WIN_REGISTERS);
-  const BOOL enableMatchStack = flags.contains(WIN_STACK    );
+  const BOOL enableStack      = flags.contains(WIN_STACK    );
+  const BOOL enableCycles     = flags.contains(WIN_CYCLES   );
 
   GetDlgItem(IDC_STATICREGISTERSLABEL   )->EnableWindow(enableRegisters );
   GetDlgItem(IDC_STATICREGISTERS        )->EnableWindow(enableRegisters );
-  GetDlgItem(IDC_STATICSTACKLABEL       )->EnableWindow(enableMatchStack);
-  GetDlgItem(IDC_STATICSTACK            )->EnableWindow(enableMatchStack);
+  GetDlgItem(IDC_STATICSTACKLABEL       )->EnableWindow(enableStack     );
+  GetDlgItem(IDC_STATICSTACK            )->EnableWindow(enableStack     );
+  GetDlgItem(IDC_STATICCYCLES           )->EnableWindow(enableCycles    );
 
   enableMenuItem(this, ID_DEBUG_TOGGLEBREAKPOINT, flags.contains(MENU_BREAKPOINTS));
 
@@ -686,13 +696,11 @@ void CRegexDemoDlg::killThread() {
 
 void CRegexDemoDlg::handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
   switch(id) {
-  case SEARCH_RUNNING      :
+  case THREAD_RUNNING      :
     { const bool oldRunning = *(bool*)oldValue;
       const bool newRunning = *(bool*)newValue;
       PostMessage(ID_MSG_THREADRUNNING, oldRunning, newRunning);
     }
-    break;
-  case SEARCH_REGEXFINISHED:
     break;
   default:
     showError(_T("%s:Unknown property:%d"), __TFUNCTION__,id);
@@ -801,6 +809,7 @@ void CRegexDemoDlg::showDFASearchState() {
   unmarkAllCharacters(MATCH_STARTMARK);
   unmarkAllCharacters(MATCH_DMARK    );
   markCurrentChar(  SEARCH_POSMARK, state.m_charIndex);
+  paintRegex();
 }
 
 void CRegexDemoDlg::showMatchState() { // assume thread exists and is stopped but not finished
@@ -812,6 +821,7 @@ void CRegexDemoDlg::showMatchState() { // assume thread exists and is stopped bu
     showDFAMatchState();
     break;
   }
+  showCycleCount();
 }
 
 void CRegexDemoDlg::showEmacsMatchState() { // assume thread exists and is stopped but not finished
@@ -846,16 +856,15 @@ void CRegexDemoDlg::showDFAMatchState() {
   markCurrentChar(MATCH_STARTMARK, state.getPos());
   markCurrentChar(MATCH_DMARK    , state.getDBGTextCharIndex());
   markCurrentChar(LASTACCEPT_MARK, state.getDBGLastAcceptIndex());
-  showCycleCount();
   paintRegex();
 }
 
 void CRegexDemoDlg::showPatternFound() {
   showResult(m_debugThread->getResultMsg(), m_debugThread->registersToString());
-  showCycleCount();
   getTargetWindow()->SetFocus();
   markFoundPattern();
   unmarkAllCharacters();
+  showCycleCount();
   paintRegex();
   setCurrentCodeLine(m_regex.getPatternFoundCodeLine());
 }
@@ -892,9 +901,8 @@ void CRegexDemoDlg::clearRegisterWindow() {
 }
 
 void CRegexDemoDlg::setRegisterWindowMode() {
-  if(isMenuItemChecked(this, ID_OPTIONS_DFA_REGEX) && isGraphicsOn()) {
-    GetDlgItem(IDC_STATICREGISTERSLABEL)->ShowWindow(SW_HIDE);
-    getRegistersWindow()->ShowWindow(SW_HIDE);
+  if((m_regex.getType() == DFA_REGEX) && isGraphicsOn()) {
+    setRegistersWindowVisible(false);
 /*
     CRect rect;
     rect.left   = getWindowRect(this, IDC_STATICSTACKLABEL).left;
@@ -905,12 +913,17 @@ void CRegexDemoDlg::setRegisterWindowMode() {
     getGraphicsWindow()->ShowWindow(SW_SHOW);
     setCylceAndStackWindowTop(getWindowRect(getGraphicsWindow()).bottom);
   } else {
-    GetDlgItem(IDC_STATICREGISTERSLABEL)->ShowWindow(SW_SHOW);
-    getRegistersWindow()->ShowWindow(SW_SHOW);
+    setRegistersWindowVisible(true);
     unpaintRegex();
     getGraphicsWindow()->ShowWindow(SW_HIDE);
     setCylceAndStackWindowTop(getWindowRect(getRegistersWindow()).bottom);
   }
+}
+
+void CRegexDemoDlg::setRegistersWindowVisible(bool visible) {
+  int mode = visible?SW_SHOW:SW_HIDE;
+  GetDlgItem(IDC_STATICREGISTERSLABEL)->ShowWindow(mode);
+  getRegistersWindow()->ShowWindow(mode);
 }
 
 void CRegexDemoDlg::setCylceAndStackWindowTop(int top) {

@@ -492,12 +492,13 @@
   <ItemGroup>
     <Image Include="res\BlackDownArrow.bmp" />
     <Image Include="res\BlackRightArrow.bmp" />
+    <Image Include="res\BlueUpArrow.bmp" />
     <Image Include="res\BreakPointMark.bmp" />
-    <Image Include="res\GreenDownArrow.bmp" />
     <Image Include="res\GreenUpArrow.bmp" />
     <Image Include="res\PinkUpArrow.bmp" />
     <Image Include="res\RedUpArrow.bmp" />
     <Image Include="res\RegexDemo.ico" />
+    <Image Include="res\YellowDownArrow.bmp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="res\RegexDemo.rc2" />

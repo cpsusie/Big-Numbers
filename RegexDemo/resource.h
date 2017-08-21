@@ -1,4 +1,5 @@
-// Microsoft Developer Studio generated include file.
+//{{NO_DEPENDENCIES}}
+// Microsoft Visual C++ generated include file.
 // Used by RegexDemo.rc
 //
 #define IDM_ABOUTBOX                    0x0010
@@ -11,7 +12,9 @@
 #define IDB_BITMAP_PINK_UPARROW         133
 #define IDB_BITMAP_BLACK_DOWNARROW      134
 #define IDB_BITMAP_BLACK_RIGHTARROW     135
-#define IDB_BITMAP_BREAKPOINT           136
+#define IDB_BITMAP_YELLOW_DOWNARROW     136
+#define IDB_BITMAP_BLUE_UPARROW         137
+#define IDB_BITMAP_BREAKPOINT           138
 #define IDC_STATICPATTERNLABEL          1000
 #define IDC_COMBOPATTERN                1001
 #define IDC_STATICTARGETLABEL           1002
@@ -58,7 +61,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        137
+#define _APS_NEXT_RESOURCE_VALUE        138
 #define _APS_NEXT_COMMAND_VALUE         32851
 #define _APS_NEXT_CONTROL_VALUE         1023
 #define _APS_NEXT_SYMED_VALUE           102

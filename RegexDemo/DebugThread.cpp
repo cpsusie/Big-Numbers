@@ -7,10 +7,7 @@ DebugThread::DebugThread(DebugRegex &regex, const CompileParameters &cp, const B
 , m_compileParameters(cp)
 , m_breakPoints(breakPoints)
 {
-  clearStates();
-  m_running     = m_finished = m_killed = false;
-  m_singleStep  = true;
-  m_regexPhase  = REGEX_UNDEFINED;
+  initThread(true);
 }
 
 DebugThread::DebugThread(ThreadCommand command, DebugRegex &regex, const String &text, const BitSet &breakPoints)
@@ -19,12 +16,16 @@ DebugThread::DebugThread(ThreadCommand command, DebugRegex &regex, const String 
 , m_text(text)
 , m_breakPoints(breakPoints)
 {
-  clearStates();
-  m_running     = m_finished = m_killed = false;
-  m_singleStep  = m_command == COMMAND_COMPILE;
+  initThread(m_command == COMMAND_COMPILE);
   if(m_command == COMMAND_COMPILE) {
     m_compileParameters = text;
   }
+}
+
+void DebugThread::initThread(bool singleStep) {
+  clearStates();
+  m_running     = m_finished = m_killed = false;
+  m_singleStep  = singleStep;
   m_regexPhase  = REGEX_UNDEFINED;
 }
 
@@ -48,7 +49,7 @@ DebugThread::~DebugThread() {
 
 void DebugThread::singleStep() {
   if(isFinished()) {
-    throwException(_T("singleStep:Thread has exited"));
+    throwException(_T("%s:Thread has exited"),__TFUNCTION__);
   }
   m_singleStep = true;
   enableHandleStep(true);
@@ -57,7 +58,7 @@ void DebugThread::singleStep() {
 
 void DebugThread::go() {
   if(isFinished()) {
-    throwException(_T("singleStep:Thread has exited"));
+    throwException(_T("%s:Thread has exited"),__TFUNCTION__);
   }
   m_singleStep = false;
   enableHandleStep(!m_breakPoints.isEmpty());
@@ -82,7 +83,7 @@ UINT DebugThread::run() {
     case COMMAND_COMPILE:
       m_regex.compilePattern(m_compileParameters);
       m_resultMsg  = _T("Pattern Ok");
-      m_regexPhase = REGEX_SUCEEDED;
+      m_regexPhase = REGEX_COMPILEDOK;
       break;
     case COMMAND_SEARCHFORWARD:
     case COMMAND_SEARCHBACKWRD:
@@ -90,9 +91,10 @@ UINT DebugThread::run() {
       if(m_foundStart >= 0) {
         m_resultLength = m_regex.getResultLength();
         m_resultMsg    = format(_T("Found at %d. length:%d"), m_foundStart, m_resultLength);
-        m_regexPhase   = REGEX_SUCEEDED;
+        m_regexPhase   = REGEX_PATTERNFOUND;
       } else {
         m_resultMsg    = _T("Not found");
+        m_regexPhase   = REGEX_SEARCHFAILED;
       }
       break;
     case COMMAND_MATCH  :
@@ -100,13 +102,13 @@ UINT DebugThread::run() {
         m_foundStart   = 0;
         m_resultLength = (int)m_text.length();
         m_resultMsg    = _T("Match");
-        m_regexPhase   = REGEX_SUCEEDED;
+        m_regexPhase   = REGEX_PATTERNFOUND;
       } else {
         m_resultMsg    = _T("No match");
+        m_regexPhase   = REGEX_MATCHFAILED;
       }
       break;
     }
-    setPropFinished();
   } catch(Exception e) {
     m_resultMsg  = e.what();
     m_regexPhase = REGEX_UNDEFINED;
@@ -114,6 +116,7 @@ UINT DebugThread::run() {
     m_resultMsg  = _T("Unknown exception");
     m_regexPhase = REGEX_UNDEFINED;
   }
+  m_finished = true;
   setPropRunning(false);
   return 0;
 }
@@ -167,7 +170,7 @@ void DebugThread::suspendOnSingleStep(RegexPhaseType phase, int lineNumber) {
 }
 
 void DebugThread::getFoundPosition(int &start, int &end) {
-  if(getRegexPhase() != REGEX_SUCEEDED) {
+  if(getRegexPhase() != REGEX_PATTERNFOUND) {
     start = end = -1;
   } else {
     start = (int)m_foundStart;
@@ -183,7 +186,7 @@ String DebugThread::getResultMsg() const {
 }
 
 String DebugThread::registersToString() const {
-  if(m_regexPhase != REGEX_SUCEEDED) {
+  if(m_regexPhase != REGEX_PATTERNFOUND) {
     throwException(_T("Cannot get register at this time of the search"));
   }
   return m_regex.registersToString();
@@ -223,15 +226,7 @@ void DebugThread::setPropRunning(bool value) {
   const bool oldValue = m_running;
   m_running = value;
   if(m_running != oldValue) {
-    notifyPropertyChanged(SEARCH_RUNNING, &oldValue, &m_running);
-  }
-}
-
-void DebugThread::setPropFinished() {
-  const bool oldValue = m_finished;
-  m_finished = true;
-  if(m_finished != oldValue) {
-    notifyPropertyChanged(SEARCH_REGEXFINISHED, &oldValue, &m_finished);
+    notifyPropertyChanged(THREAD_RUNNING, &oldValue, &m_running);
   }
 }
 
@@ -240,12 +235,18 @@ static const TCHAR *regexTypeName[] = {
  ,_T("DFA_REGEX")
 };
 
-static const TCHAR *getPhaseName(RegexPhaseType phase) {
+String DebugThread::getPhaseName(RegexPhaseType phase) { // static
   switch(phase) {
-  case REGEX_COMPILING: return _T("compiler");
-  case REGEX_SEARCHING: return _T("search");
-  case REGEX_MATCHING : return _T("match");
-  default: return _T("unknown state");
+  case REGEX_UNDEFINED     : return _T("Undefined"      );
+  case REGEX_COMPILING     : return _T("Compiling"      );
+  case REGEX_COMPILEDOK    : return _T("Compiled ok"    );
+  case REGEX_COMPILEDFAILED: return _T("Compiled failed");
+  case REGEX_SEARCHING     : return _T("Searching"      );
+  case REGEX_MATCHING      : return _T("Matching"       );
+  case REGEX_PATTERNFOUND  : return _T("Pattern found"  );
+  case REGEX_SEARCHFAILED  : return _T("Search failed"  );
+  case REGEX_MATCHFAILED   : return _T("Match failed"   );
+  default                  : return format(_T("Unknown phase (=%d)"), phase);
   }
 }
 
@@ -256,6 +257,7 @@ void DebugThread::validateRegexTypeAndPhase(RegexType expectedType, RegexPhaseTy
                   ,regexTypeName[m_regex.getType()]);
   }
   if(m_running || m_finished || (m_regexPhase != expectedPhase)) {
-    throwException(_T("Cannot get %s-state at this time"), getPhaseName(expectedPhase));
+    throwException(_T("Cannot get %s-state at this time")
+                  ,getPhaseName(expectedPhase).cstr());
   }
 }
