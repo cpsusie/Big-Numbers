@@ -130,7 +130,7 @@ static const TCHAR *noRegExpressionMsg  = _T("No regular expression specified");
 
 // --------------------------------------- search -----------------------------------------
 
-intptr_t DFARegex::search(const String &text, bool forward, intptr_t startPos) const { // search for the compiled expression in text
+intptr_t DFARegex::search(const String &text, bool forward, intptr_t startPos) const {
   return search(text.cstr(), text.length(), forward, startPos);
 }
 

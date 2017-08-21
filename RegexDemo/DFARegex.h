@@ -6,12 +6,18 @@ private:
   void copy(const DFATables &src);
 public:
   size_t      m_stateCount;
-  size_t      m_rowCount;          // number of rows in m_transitionMatrix. maybe != m_stateCount
-  size_t      m_columnCount;       // width of each row in m_transisitonMatrix
-  short      *m_charMap;           // size = MAX_CHARS
-  short      *m_stateMap;          // size = m_stateCount
-  short      *m_transitionMatrix;  // size = m_rowCount * m_columnCount
-  BYTE       *m_acceptTable;       // size = m_stateCount
+  // number of rows in m_transitionMatrix. maybe != m_stateCount
+  size_t      m_rowCount;
+  // width of each row in m_transisitonMatrix
+  size_t      m_columnCount;
+  // size = MAX_CHARS
+  short      *m_charMap;
+  // size = m_stateCount
+  short      *m_stateMap;
+  // size = m_rowCount * m_columnCount
+  short      *m_transitionMatrix;
+  // size = m_stateCount
+  BYTE       *m_acceptTable;
   DFATables() {
     init();
   }
@@ -137,21 +143,26 @@ class DFARegex {
 private:
   DFATables             m_tables;
   BitSet                m_fastMap;
-  const TCHAR          *m_translateTable;   // Translate table to apply to all characters before comparing.
-                                            // or NULL for no translation. Translation is applied to each
-                                            // character in a pattern when compiled and to characters in the
-                                            // text string it is matched/matched
+
+  // Translate table to apply to all characters before comparing.
+  // or NULL for no translation. Translation is applied to each
+  // character in a pattern when compiled and to characters in the
+  // text string it is matched/matched
+  const TCHAR          *m_translateTable;
   bool                  m_hasCompiled;
   mutable bool          m_patternFound;
   bool                  m_matchEmpty;
-  mutable intptr_t      m_resultLength;     // initialized to -1
+  // initialized to -1
+  mutable intptr_t      m_resultLength;
   mutable int           m_currentState;
   mutable int           m_lastAcceptState;
   void init();
   void createFastMap();
+  // Return resultlength, or -1 if no match
   intptr_t  match( const TCHAR     *string
                   ,size_t           size
-                  ,intptr_t         pos) const;      // Return resultlength, or -1 if no match
+                  ,intptr_t         pos) const;
+  // Return resultlength, or -1 if no match
   intptr_t  search(const TCHAR     *string
                   ,size_t           size
                   ,intptr_t         startPos
@@ -161,13 +172,14 @@ private:
   String                          m_codeText;
   mutable bool                    m_codeDirty;
   mutable UINT                    m_cycleCount;
-  mutable _DFADbgInfo             m_DBGInfo;    // Built by compilePattern/DFA::toString(). Indexed by stateNumber
+  // Built by compilePattern/DFA::toString(). Indexed by stateNumber
+  mutable _DFADbgInfo             m_DBGInfo;
   DFARegexStepHandler            *m_stepHandler;
   mutable DFARegexMode            m_currentMode;
   mutable const DFA              *m_currentDFA;
   void setCodeText(const String codeText);
   void setDBGCharIndexForAcceptStates(size_t patternLength);
-#endif
+#endif // _DEBUG
 
 public:
   DFARegex();
@@ -175,10 +187,15 @@ public:
   DFARegex(           const TCHAR  *pattern, const TCHAR *translateTable = NULL);
   void compilePattern(const String &pattern, const TCHAR *translateTable = NULL);
   void compilePattern(const TCHAR  *pattern, const TCHAR *translateTable = NULL);
-  intptr_t  search(   const String &text, bool forward = true, intptr_t startPos = -1) const; // Search for the compiled expression in text
+  // Search for the compiled expression in text
+  intptr_t  search(   const String &text, bool forward = true, intptr_t startPos = -1) const;
+  // Search for the compiled expression in text
   intptr_t  search(   const TCHAR  *text, bool forward = true, intptr_t startPos = -1) const;
+  // Search for the compiled expression in text
   intptr_t  search(   const TCHAR  *text, size_t size, bool forward = true, intptr_t startPos = -1) const;
-  bool match(         const String &text) const;                                         // Check for exact match
+  // Check for exact match
+  bool match(         const String &text) const;
+  // Check for exact match
   bool match(         const TCHAR  *text) const;
 
   inline intptr_t getResultLength() const {
@@ -209,5 +226,5 @@ public:
   void paint(CWnd *wnd, CDC &dc, bool animate) const;
   void unpaintAll(CWnd *wnd, CDC &dc);
   static int   getAllocatedNFAStates();
-#endif
+#endif // _DEBUG
 };

@@ -132,6 +132,7 @@ BOOL CRegexDemoDlg::OnInitDialog() {
     m_charMarkers.add(new CharacterMarker(this, IDC_COMBOTARGET, IDB_BITMAP_PINK_UPARROW   , false)); // MATCH_STARTMARK
     m_charMarkers.add(new CharacterMarker(this, IDC_COMBOTARGET, IDB_BITMAP_GREEN_DOWNARROW, true )); // MATCH_DMARK
     m_charMarkers.add(new CharacterMarker(this, IDC_COMBOTARGET, IDB_BITMAP_GREEN_UPARROW  , false)); // LASTACCEPT_MARK
+    m_charMarkers.last()->setBlinking(true);
 
     m_layoutManager.OnInitDialog(this);
 
@@ -498,7 +499,11 @@ String CRegexDemoDlg::getThreadStateName() const {
 }
 
 void CRegexDemoDlg::markCurrentChar(CharMarkType type, intptr_t index) {
-  m_charMarkers[type]->setMark(index);
+  if(index < 0) {
+    unmarkAllCharacters(type);
+  } else {
+    m_charMarkers[type]->setMark(index);
+  }
 }
 
 void CRegexDemoDlg::unmarkAllCharacters(CharMarkType type) {
