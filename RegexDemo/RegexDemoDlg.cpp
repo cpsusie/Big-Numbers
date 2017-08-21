@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include <MFCUtil/Clipboard.h>
 #include "RegexDemoDlg.h"
-#include "TestRegexDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -54,7 +53,6 @@ BEGIN_MESSAGE_MAP(CRegexDemoDlg, CDialog)
   ON_COMMAND(ID_EDIT_MATCH                 , OnEditMatch                  )
   ON_COMMAND(ID_EDIT_COMPILEPATTERN        , OnEditCompilePattern         )
   ON_COMMAND(ID_EDIT_FINDMATCHINGPAR       , OnEditFindMatchingParentesis )
-  ON_COMMAND(ID_EDIT_STANDARDTEST          , OnEditStandardTest           )
   ON_COMMAND(ID_DEBUG_COMPILE              , OnDebugCompile               )
   ON_COMMAND(ID_DEBUG_FIND                 , OnDebugFind                  )
   ON_COMMAND(ID_DEBUG_MATCH                , OnDebugMatch                 )
@@ -276,12 +274,6 @@ void CRegexDemoDlg::OnEditFindMatchingParentesis() {
     }
     break;
   }
-}
-
-void CRegexDemoDlg::OnEditStandardTest() {
-  showInformation(_T("this function is disabled for the moment"));
-//  CTestRegexDlg dlg;
-//  dlg.DoModal();
 }
 
 void CRegexDemoDlg::OnDebugCompile() {

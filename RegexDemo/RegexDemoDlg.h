@@ -131,7 +131,7 @@ private:
 
 public:
   CRegexDemoDlg(CWnd *pParent = NULL);
-    enum { IDD = IDD_REGEXDEMO_DIALOG };
+    enum { IDD = IDR_MAINFRAME };
     CString m_pattern;
     CString m_target;
 

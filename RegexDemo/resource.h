@@ -4,8 +4,6 @@
 #define IDM_ABOUTBOX                    0x0010
 #define IDD_ABOUTBOX                    100
 #define IDS_ABOUTBOX                    101
-#define IDD_REGEXDEMO_DIALOG            102
-#define IDD_REGEXDEMOGEX_DIALOG         103
 #define IDR_MAINFRAME                   128
 #define IDB_BITMAP_GREEN_UPARROW        130
 #define IDB_BITMAP_GREEN_DOWNARROW      131
@@ -30,14 +28,12 @@
 #define IDC_STATICREGISTERS             1013
 #define IDC_STATICSTACKLABEL            1014
 #define IDC_STATICSTACK                 1015
-#define IDC_STATICCYCLES                1020
-#define IDC_EDITOUTPUT                  1021
+#define IDC_STATICCYCLES                1016
 #define IDC_STATICDFAGRAPHICSWINDOW     1022
 #define ID_FILE_EXIT                    32771
 #define ID_EDIT_MATCH                   32780
 #define ID_EDIT_COMPILEPATTERN          32781
 #define ID_EDIT_FINDMATCHINGPAR         32782
-#define ID_EDIT_STANDARDTEST            32783
 #define ID_DEBUG_COMPILE                32790
 #define ID_DEBUG_FIND                   32791
 #define ID_DEBUG_MATCH                  32792
@@ -62,9 +58,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        140
-#define _APS_NEXT_COMMAND_VALUE         32868
+#define _APS_NEXT_RESOURCE_VALUE        137
+#define _APS_NEXT_COMMAND_VALUE         32851
 #define _APS_NEXT_CONTROL_VALUE         1023
-#define _APS_NEXT_SYMED_VALUE           104
+#define _APS_NEXT_SYMED_VALUE           102
 #endif
 #endif
