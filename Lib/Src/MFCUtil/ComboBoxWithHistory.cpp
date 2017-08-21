@@ -42,6 +42,7 @@ void CComboBoxWithHistory::substituteControl(CWnd *parent, int id, const String 
   SetFont(font);
   m_history.setRegistryName(registryName);
   load();
+  SetCurSel(-1);
 }
 
 void CComboBoxWithHistory::load() {
