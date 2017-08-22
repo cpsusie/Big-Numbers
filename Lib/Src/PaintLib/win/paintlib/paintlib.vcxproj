@@ -1,0 +1,295 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <SccProjectName>"$/paintlib", CAAAAAAA</SccProjectName>
+    <SccLocalPath>.</SccLocalPath>
+    <ProjectGuid>{BB992CF3-42B5-4108-A774-B96705C8BCC5}</ProjectGuid>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>14.0.25431.1</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>.\..\..\lib\Debug\</OutDir>
+    <IntDir>.\..\..\obj\Debug\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>.\..\..\lib\Release\</OutDir>
+    <IntDir>.\..\..\obj\Release\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/Yd  %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>.;..\..\common;..\..\common\filter;..\libtiff;..\..\otherlib\libtiff\libtiff;..\libjpeg;..\..\otherlib\libjpeg;..\..\otherlib\libpng;..\..\otherlib\zlib;..\..\otherlib\libungif\lib;..\..\otherlib\libcurl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <SmallerTypeCheck>false</SmallerTypeCheck>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader />
+      <PrecompiledHeaderFile />
+      <PrecompiledHeaderOutputFile>.\..\..\obj\Debug/paintlib.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\..\..\obj\Debug/</AssemblerListingLocation>
+      <ObjectFileName>.\..\..\obj\Debug/</ObjectFileName>
+      <ProgramDataBaseFileName>$(OutDir)vc70.pdb</ProgramDataBaseFileName>
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+    </ClCompile>
+    <Lib>
+      <AdditionalDependencies>winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>.\..\..\lib\Debug\paintlib.lib</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </Lib>
+    <ResourceCompile>
+      <Culture>0x0407</Culture>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>.;..\..\common;..\..\common\filter;..\libtiff;..\..\otherlib\libtiff\libtiff;..\libjpeg;..\..\otherlib\libjpeg;..\..\otherlib\libpng;..\..\otherlib\zlib;..\..\otherlib\libungif\lib;..\..\otherlib\libcurl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader />
+      <PrecompiledHeaderFile />
+      <PrecompiledHeaderOutputFile>.\..\..\obj\Release/paintlib.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\..\..\obj\Release/</AssemblerListingLocation>
+      <ObjectFileName>.\..\..\obj\Release/</ObjectFileName>
+      <ProgramDataBaseFileName>$(OutDir)vc70.pdb</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <CompileAs>Default</CompileAs>
+    </ClCompile>
+    <Lib>
+      <AdditionalDependencies>winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>.\..\..\lib\Release\paintlib.lib</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </Lib>
+    <ResourceCompile>
+      <Culture>0x0407</Culture>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\common\Filter\PLFilter.cpp" />
+    <ClCompile Include="..\..\common\Filter\plfiltercolorize.cpp" />
+    <ClCompile Include="..\..\common\Filter\PLFilterContrast.cpp" />
+    <ClCompile Include="..\..\common\Filter\PLFilterCrop.cpp" />
+    <ClCompile Include="..\..\common\Filter\PLFilterFlip.cpp" />
+    <ClCompile Include="..\..\common\Filter\plfilterfliprgb.cpp" />
+    <ClCompile Include="..\..\common\Filter\PLFilterGetAlpha.cpp" />
+    <ClCompile Include="..\..\common\Filter\PLFilterGrayscale.cpp" />
+    <ClCompile Include="..\..\common\Filter\PLFilterIntensity.cpp" />
+    <ClCompile Include="..\..\common\Filter\PLFilterLightness.cpp" />
+    <ClCompile Include="..\..\common\Filter\PLFilterMirror.cpp" />
+    <ClCompile Include="..\..\common\Filter\PLFilterQuantize.cpp" />
+    <ClCompile Include="..\..\common\Filter\PLFilterResize.cpp" />
+    <ClCompile Include="..\..\common\Filter\PLFilterResizeBilinear.cpp" />
+    <ClCompile Include="..\..\common\Filter\PLFilterResizeBox.cpp" />
+    <ClCompile Include="..\..\common\Filter\PLFilterResizeGaussian.cpp" />
+    <ClCompile Include="..\..\common\Filter\PLFilterResizeHamming.cpp" />
+    <ClCompile Include="..\..\common\Filter\plfilterrotate.cpp" />
+    <ClCompile Include="..\..\common\Filter\PLFilterThreshold.cpp" />
+    <ClCompile Include="..\..\common\Filter\plfiltervideoinvert.cpp" />
+    <ClCompile Include="..\..\common\Filter\plhsvconvert.cpp" />
+    <ClCompile Include="..\..\common\Filter\plinplacefilter.cpp" />
+    <ClCompile Include="..\..\common\jmemdest.cpp" />
+    <ClCompile Include="..\..\common\jmemsrc.cpp" />
+    <ClCompile Include="..\..\common\planybmp.cpp" />
+    <ClCompile Include="..\..\common\planydec.cpp" />
+    <ClCompile Include="..\..\common\plbitmap.cpp" />
+    <ClCompile Include="..\..\common\plbmpbase.cpp" />
+    <ClCompile Include="..\..\common\plbmpdec.cpp" />
+    <ClCompile Include="..\..\common\plbmpenc.cpp" />
+    <ClCompile Include="..\..\common\plbmpinfo.cpp" />
+    <ClCompile Include="..\..\common\pldatasink.cpp" />
+    <ClCompile Include="..\..\common\pldatasrc.cpp" />
+    <ClCompile Include="..\..\common\plexcept.cpp" />
+    <ClCompile Include="..\..\common\plexif.cpp" />
+    <ClCompile Include="..\..\common\plfilesink.cpp" />
+    <ClCompile Include="..\..\common\plfilesrc.cpp" />
+    <ClCompile Include="..\..\common\plgifdec.cpp" />
+    <ClCompile Include="..\..\common\pliff85dec.cpp" />
+    <ClCompile Include="..\..\common\pljpegdec.cpp" />
+    <ClCompile Include="..\..\common\pljpegenc.cpp" />
+    <ClCompile Include="..\..\common\plmemsink.cpp" />
+    <ClCompile Include="..\..\common\plmemsrc.cpp" />
+    <ClCompile Include="..\..\common\PLObject.cpp" />
+    <ClCompile Include="..\..\common\plpcxdec.cpp" />
+    <ClCompile Include="..\..\common\plpgmdec.cpp" />
+    <ClCompile Include="..\..\common\plpicdec.cpp" />
+    <ClCompile Include="..\..\common\plpicenc.cpp" />
+    <ClCompile Include="..\..\common\plpictdec.cpp" />
+    <ClCompile Include="..\..\common\plpixelformat.cpp" />
+    <ClCompile Include="..\..\common\plpngdec.cpp" />
+    <ClCompile Include="..\..\common\plpngenc.cpp" />
+    <ClCompile Include="..\..\common\plppmdec.cpp" />
+    <ClCompile Include="..\..\common\plpsddec.cpp" />
+    <ClCompile Include="..\..\common\plsgidec.cpp" />
+    <ClCompile Include="..\..\common\plsubbmp.cpp" />
+    <ClCompile Include="..\..\common\pltgadec.cpp" />
+    <ClCompile Include="..\..\common\pltiffdec.cpp" />
+    <ClCompile Include="..\..\common\pltiffenc.cpp" />
+    <ClCompile Include="..\..\common\pltiffencex.cpp" />
+    <ClCompile Include="..\..\common\plurlsrc.cpp" />
+    <ClCompile Include="..\..\Common\tif_msrc.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="pldibsect.cpp" />
+    <ClCompile Include="plressrc.cpp" />
+    <ClCompile Include="plStreamSink.cpp" />
+    <ClCompile Include="plwemfdec.cpp" />
+    <ClCompile Include="plwinbmp.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Common\config.h" />
+    <ClInclude Include="..\..\common\Filter\pl2PassScale.h" />
+    <ClInclude Include="..\..\common\Filter\plcontribdefs.h" />
+    <ClInclude Include="..\..\common\Filter\PLFilter.h" />
+    <ClInclude Include="..\..\common\Filter\plfiltercolorize.h" />
+    <ClInclude Include="..\..\common\Filter\PLFilterContrast.h" />
+    <ClInclude Include="..\..\common\Filter\PLFilterCrop.h" />
+    <ClInclude Include="..\..\common\Filter\PLFilterFill.h" />
+    <ClInclude Include="..\..\common\Filter\PLFilterFillRect.h" />
+    <ClInclude Include="..\..\common\Filter\PLFilterFlip.h" />
+    <ClInclude Include="..\..\common\Filter\plfilterfliprgb.h" />
+    <ClInclude Include="..\..\common\Filter\PLFilterGetAlpha.h" />
+    <ClInclude Include="..\..\common\Filter\PLFilterGrayscale.h" />
+    <ClInclude Include="..\..\common\Filter\PLFilterIntensity.h" />
+    <ClInclude Include="..\..\common\Filter\PLFilterLightness.h" />
+    <ClInclude Include="..\..\common\Filter\PLFilterMirror.h" />
+    <ClInclude Include="..\..\common\Filter\plfilterpixel.h" />
+    <ClInclude Include="..\..\common\Filter\PLFilterQuantize.h" />
+    <ClInclude Include="..\..\common\Filter\PLFilterResize.h" />
+    <ClInclude Include="..\..\common\Filter\PLFilterResizeBilinear.h" />
+    <ClInclude Include="..\..\common\Filter\PLFilterResizeBox.h" />
+    <ClInclude Include="..\..\common\Filter\PLFilterResizeGaussian.h" />
+    <ClInclude Include="..\..\common\Filter\PLFilterResizeHamming.h" />
+    <ClInclude Include="..\..\common\Filter\plfilterrotate.h" />
+    <ClInclude Include="..\..\common\Filter\PLFilterThreshold.h" />
+    <ClInclude Include="..\..\common\Filter\PLFilterVideoInvert.h" />
+    <ClInclude Include="..\..\common\Filter\plhsvconvert.h" />
+    <ClInclude Include="..\..\common\Filter\plinplacefilter.h" />
+    <ClInclude Include="..\..\common\jmemdest.h" />
+    <ClInclude Include="..\..\Common\jmemsrc.h" />
+    <ClInclude Include="..\..\common\planybmp.h" />
+    <ClInclude Include="..\..\common\planydec.h" />
+    <ClInclude Include="..\..\common\plbitmap.h" />
+    <ClInclude Include="..\..\common\plbmpbase.h" />
+    <ClInclude Include="..\..\common\plbmpdec.h" />
+    <ClInclude Include="..\..\common\plbmpenc.h" />
+    <ClInclude Include="..\..\common\plbmpinfo.h" />
+    <ClInclude Include="..\..\common\plcountedpointer.h" />
+    <ClInclude Include="..\..\common\pldatasink.h" />
+    <ClInclude Include="..\..\common\pldatasrc.h" />
+    <ClInclude Include="..\..\common\pldebug.h" />
+    <ClInclude Include="..\..\common\pldecoderfactory.h" />
+    <ClInclude Include="..\..\common\plexcept.h" />
+    <ClInclude Include="..\..\common\plexif.h" />
+    <ClInclude Include="..\..\common\plfilesink.h" />
+    <ClInclude Include="..\..\common\plfilesrc.h" />
+    <ClInclude Include="..\..\common\plgifdec.h" />
+    <ClInclude Include="..\..\common\pliff85.h" />
+    <ClInclude Include="..\..\common\pliff85dec.h" />
+    <ClInclude Include="..\..\common\pljpegdec.h" />
+    <ClInclude Include="..\..\common\pljpegenc.h" />
+    <ClInclude Include="..\..\common\plmemsink.h" />
+    <ClInclude Include="..\..\common\plmemsrc.h" />
+    <ClInclude Include="..\..\common\PLObject.h" />
+    <ClInclude Include="..\..\common\plpaintlibdefs.h" />
+    <ClInclude Include="..\..\common\plpcx.h" />
+    <ClInclude Include="..\..\common\plpcxdec.h" />
+    <ClInclude Include="..\..\common\plpgm.h" />
+    <ClInclude Include="..\..\common\plpgmdec.h" />
+    <ClInclude Include="..\..\common\plpicdec.h" />
+    <ClInclude Include="..\..\common\plpicenc.h" />
+    <ClInclude Include="..\..\common\plpictdec.h" />
+    <ClInclude Include="..\..\common\plpixel24.h" />
+    <ClInclude Include="..\..\common\plpixel32.h" />
+    <ClInclude Include="..\..\common\plpixel8.h" />
+    <ClInclude Include="..\..\common\plpixeldefs.h" />
+    <ClInclude Include="..\..\common\plpixelformat.h" />
+    <ClInclude Include="..\..\common\plpngdec.h" />
+    <ClInclude Include="..\..\common\plpngenc.h" />
+    <ClInclude Include="..\..\common\plpoint.h" />
+    <ClInclude Include="..\..\common\plppm.h" />
+    <ClInclude Include="..\..\common\plppmdec.h" />
+    <ClInclude Include="..\..\common\plprognot.h" />
+    <ClInclude Include="..\..\common\plpsddec.h" />
+    <ClInclude Include="..\..\common\plrect.h" />
+    <ClInclude Include="..\..\common\plsgidec.h" />
+    <ClInclude Include="..\..\common\plsubbmp.h" />
+    <ClInclude Include="..\..\common\pltga.h" />
+    <ClInclude Include="..\..\common\pltgadec.h" />
+    <ClInclude Include="..\..\common\pltiffdec.h" />
+    <ClInclude Include="..\..\common\pltiffenc.h" />
+    <ClInclude Include="..\..\common\pltiffencex.h" />
+    <ClInclude Include="..\..\common\plurlsrc.h" />
+    <ClInclude Include="..\..\common\plwindefs.h" />
+    <ClInclude Include="..\..\Common\tif_msrc.h" />
+    <ClInclude Include="pldibsect.h" />
+    <ClInclude Include="plressrc.h" />
+    <ClInclude Include="plStreamSink.h" />
+    <ClInclude Include="plwemfdec.h" />
+    <ClInclude Include="plwinbmp.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\common\config.vc">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Copying config.vc</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">copy ..\..\common\config.vc ..\..\common\config.h
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\common\config.h;%(Outputs)</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">copy ..\..\common\config.vc ..\..\common\config.h
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\common\config.h;%(Outputs)</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
