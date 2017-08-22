@@ -6,10 +6,10 @@
 
 #define PL_SUPPORT_TGA 1
 #define PL_SUPPORT_BMP 1
-#define PL_SUPPORT_TIFF 0
+#define PL_SUPPORT_TIFF 1
 #define PL_SUPPORT_PICT 1
 #define PL_SUPPORT_JPEG 1
-#define PL_SUPPORT_PNG 0
+#define PL_SUPPORT_PNG 1
 #define PL_SUPPORT_GIF 1
 #define PL_SUPPORT_WEMF 1
 #define PL_SUPPORT_PCX 1

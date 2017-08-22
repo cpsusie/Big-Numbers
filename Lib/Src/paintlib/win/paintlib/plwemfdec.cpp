@@ -90,26 +90,26 @@ void PLWEMFDecoder::Open (PLDataSource * pDataSrc)
 
 	// Get the type of the file (WMF or EMF) from the file name
       if (pDataSrc->NameIsWide()){
-        wchar_t* strname = wcsdup(pDataSrc->GetNameW());
+        wchar_t* strname = _wcsdup(pDataSrc->GetNameW());
         PLASSERT(strname);
         if (strname == NULL) {
                 // This should never happen under 32-Bit, but who knows?
                 PLASSERT(false);
                 raiseError (PL_ERRNO_MEMORY,"Out of memory during strdup.");
         }
-        wcsupr(strname);
+        _wcsupr(strname);
         isemf = wcsstr(strname,L".EMF") != NULL;
         free(strname);
       }
       else{
-	char* strname = strdup(pDataSrc->GetName());
+	char* strname = _strdup(pDataSrc->GetName());
 	PLASSERT(strname);
 	if (strname == NULL) {
 		// This should never happen under 32-Bit, but who knows?
 		PLASSERT(false);
 		raiseError (PL_ERRNO_MEMORY,"Out of memory during strdup.");
 	}
-	strupr(strname);
+	_strupr(strname);
 	bool isemf = strstr(strname,".EMF") != NULL;
 	free(strname);
       }
