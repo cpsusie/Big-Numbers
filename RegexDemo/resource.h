@@ -7,7 +7,7 @@
 #define IDS_ABOUTBOX                    101
 #define IDR_MAINFRAME                   128
 #define IDB_BITMAP_GREEN_UPARROW        130
-#define IDB_BITMAP_GREEN_DOWNARROW      131
+#define IDB_BITMAP_GREEN_LEFTARROW      131
 #define IDB_BITMAP_RED_UPARROW          132
 #define IDB_BITMAP_PINK_UPARROW         133
 #define IDB_BITMAP_BLACK_DOWNARROW      134
@@ -61,7 +61,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        138
+#define _APS_NEXT_RESOURCE_VALUE        140
 #define _APS_NEXT_COMMAND_VALUE         32851
 #define _APS_NEXT_CONTROL_VALUE         1023
 #define _APS_NEXT_SYMED_VALUE           102

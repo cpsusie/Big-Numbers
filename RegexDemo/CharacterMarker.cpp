@@ -7,7 +7,7 @@ CharacterMarker::CharacterMarker(CDialog *dlg, int ctrlId, int bitmapId, bool ab
   , m_multiMarksAllowed(false)
   , m_marksVisible(true)
   , m_markSet(64)
-  , m_blinkTimer(NULL)
+  , m_blinking(false)
 {
   m_dlg = dlg;
   m_markBitmap.LoadBitmap(bitmapId);
@@ -29,10 +29,6 @@ CharacterMarker::CharacterMarker(CDialog *dlg, int ctrlId, int bitmapId, bool ab
   dc.SelectObject(font);
   saveCtrlRect();
   m_charWidth = getTextExtent(dc, _T("FFF")).cx - getTextExtent(dc, _T("FF")).cx;
-}
-
-CharacterMarker::~CharacterMarker() {
-  SAFEDELETE(m_blinkTimer);
 }
 
 void CharacterMarker::setMark(size_t index) {
@@ -64,20 +60,13 @@ void CharacterMarker::setMultiMarksAllowed(bool multiMarksAllowed) {
   }
 }
 
-void CharacterMarker::setBlinking(bool on, int msec) {
+void CharacterMarker::setBlinking(bool on) {
   if(on) {
-    if(m_blinkTimer == NULL) {
-      m_blinkTimer = new Timer(1); TRACE_NEW(m_blinkTimer);
-    }
-    m_blinkTimer->startTimer(msec, *this, true);
+    m_blinking = true;
   } else if(isBlinking()) {
-    m_blinkTimer->stopTimer();
+    m_blinking = false;
     setMarksVisible(true);
   }
-}
-
-void CharacterMarker::handleTimeout(Timer &timer) {
-  setMarksVisible(!m_marksVisible);
 }
 
 void CharacterMarker::setMarksVisible(bool visible) {
@@ -148,4 +137,32 @@ void CharacterMarker::saveCtrlRect() {
 
 void CharacterMarker::saveTextLength() {
   m_textLength = getWindowText(m_dlg, m_ctrlId).length();
+}
+
+void CharacterMarkerArray::add(CharacterMarker *m) {
+  m_gate.wait();
+  TRACE_NEW(m);
+  __super::add(m);
+  m_gate.signal();
+}
+
+void CharacterMarkerArray::clear() {
+  m_gate.wait();
+  for(size_t i = 0; i < size(); i++) {
+    SAFEDELETE((*this)[i]);
+  }
+  __super::clear();
+  m_gate.signal();
+}
+
+void CharacterMarkerArray::handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
+  m_gate.wait();
+  const bool blinkersVisible = *(bool*)newValue;
+  for(size_t i = 0; i < size(); i++) {
+    CharacterMarker *cm = (*this)[i];
+    if(cm->isBlinking()) {
+      cm->setMarksVisible(blinkersVisible);
+    }
+  }
+  m_gate.signal();
 }

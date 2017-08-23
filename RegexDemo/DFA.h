@@ -4,7 +4,8 @@
 #include "NFA.h"
 #include "DFARegex.h"
 
-typedef int DFAtrans[MAX_CHARS];     // transitions for each DFAState
+// Transitions for each DFAState
+typedef int DFAtrans[MAX_CHARS];
 
 #ifdef _DEBUG
 typedef IntTreeMap<CharacterSet> DFATransitionMap;
@@ -19,8 +20,10 @@ private:
 public:
   const UINT    m_id;
   AcceptType    m_accept;
-  BitSet        m_NFAset;            // Set of NFA states
-  DFAtrans      m_transition;        // Next state for each character
+  // Set of NFA states
+  BitSet        m_NFAset;
+  // Next state for each character
+  DFAtrans      m_transition;
 
   inline DFAState(UINT id, const BitSet &NFAset) : m_id(id), m_NFAset(NFAset) {
     initTransisition();
@@ -42,8 +45,10 @@ class DFA {
 private:
   const NFA      &m_NFA;
   Array<DFAState> m_states;
-  Array<BitSet>   m_groups;          // Groups with equal AcceptAction in m_states
-  CompactIntArray m_inGroup;         // Indexed by DFAState-number. Holds the index of the group, a state belongs to
+  // Groups with equal AcceptAction in m_states
+  Array<BitSet>   m_groups;
+  // Indexed by DFAState-number. Holds the index of the group, a state belongs to
+  CompactIntArray m_inGroup;
   BitSet          getNFASetForGroup(UINT g) const;
 #ifdef _DEBUG
   String          m_logString;
@@ -71,16 +76,16 @@ public:
 
 #ifdef _DEBUG
   DFA(const DFATables &tables, const NFA &dummy);
-  String toString(bool showNFASets = false, _DFADbgInfo *dbgInfo=NULL) const;
+  String toString(bool showNFASets = false, _DFADbgInfo *dbgInfo = NULL) const;
   String groupsToString() const;
-  const Array<DFAState> &getStateArray() const {
+  inline const Array<DFAState> &getStateArray() const {
     return m_states;
   }
-  size_t getStateCount() const {
+  inline size_t getStateCount() const {
     return m_states.size();
   }
   void paint(CWnd *wnd, CDC &dc, int currentState = -1, int lastAcceptState = -1) const;
-  static void unpaintAll();
+  static void unmarkAll();
 
-#endif
+#endif _DEBUG
 };

@@ -5,7 +5,6 @@
 #include <Math/Transformation.h>
 #include <TinyBitSet.h>
 #include <MatrixTemplate.h>
-#include <Timer.h>
 #include "AutomatePainter.h"
 #include "DFA.h"
 
@@ -43,7 +42,8 @@ private:
   const int                    m_stateID;
   CPoint                       m_position;
   Array<DFATransition>         m_transitions;
-  BYTE                         m_attributes; // accept,startState,etc...
+  // accept,startState,etc...
+  BYTE                         m_attributes;
   static BYTE createAttributes(const DFAState &s);
 public:
   const DFAState              &m_state;
@@ -151,27 +151,34 @@ private:
   int                         m_horzDist, m_vertDist, m_diagDist;
   int                         m_edgeMarkStep;
 
-  inline CPoint winToGrid(int x, int y) const {          // convert window point to grid point
+  // convert window point to grid point
+  inline CPoint winToGrid(int x, int y) const {
     return (Point2DP)m_tr.forwardTransform(x, y);
   }
-  inline CPoint winToGrid(const CPoint &p) const {       // convert window point to grid point
+  // convert window point to grid point
+  inline CPoint winToGrid(const CPoint &p) const {
     return (Point2DP)m_tr.forwardTransform(p.x, p.y);
   }
   inline CPoint gridToWin(const CPoint &p) const {
     return (Point2DP)m_tr.backwardTransform((Point2DP)p);
   }
-  void markCircle(int x, int y);                         // x,y in window space
+  // x,y in window space
+  void markCircle(int x, int y);
 
-  inline void markCircle(const CPoint &center) {         // center in window space
+  // center in window space
+  inline void markCircle(const CPoint &center) {
     markCircle(center.x, center.y);
   }
-  inline GridElement &getGridElement(const CPoint &gp) { // gp is in grid space
+  // gp is in grid space
+  inline GridElement &getGridElement(const CPoint &gp) {
     return m_grid(gp.y, gp.x);
   }
-  inline const GridElement &getGridElement(const CPoint &gp) const { // gp is in grid space
+  // gp is in grid space
+  inline const GridElement &getGridElement(const CPoint &gp) const {
     return m_grid(gp.y, gp.x);
   }
-  GridElement &getGridElement(int x, int y) {            // x,y is in window space
+  // x,y is in window space
+  inline GridElement &getGridElement(int x, int y) {
     return getGridElement(winToGrid(x, y));
   }
   inline bool isInsideGrid(const CPoint &gp) const {
@@ -180,7 +187,8 @@ private:
   }
   UINT getMindistance(const CPoint &gp) const;
   CPoint findNeighbourWithMinDistance(const CPoint &gp) const;
-  void initGrid();                                       // occupied is not touched
+  // occupied is not touched
+  void initGrid();
 public:
   TransitionGrid(const CSize winSize);
   void markStateCircles(const DFAPointArray &pointArray);
@@ -200,27 +208,6 @@ public:
   String distancesToString() const;
 };
 
-#ifdef _DEBUG
-class DFAStateBlinker : public TimeoutHandler {
-private:
-  CWnd *m_wnd;
-  Timer m_timer;
-  bool  m_colorOn;
-  int   m_state;
-  bool updateImage();
-public:
-  DFAStateBlinker() : m_timer(1) {
-  }
-  ~DFAStateBlinker() {
-    stopBlinking();
-  }
-  void handleTimeout(Timer &timer);
-
-  void startBlinking(CWnd *wnd, int state);
-  void stopBlinking();
-};
-#endif
-
 class DFAPainter : public AutomatePainter {
 private:
   const DFA             &m_dfa;
@@ -228,7 +215,9 @@ private:
   static DFAPointArray   s_newPoints;
   static int             s_edgeMarkStep;
   static size_t          s_lastPaintedSize;
-  static DFAStateBlinker s_blinker;
+  // if < 0, no blinking. else index of blinking state
+  static int             s_blinkingState;
+  static CWnd           *s_wnd;
   TransitionGrid         m_grid;
 
   void paint(                   const DFAPointArray &pointArray                                                , HDC hdc = NULL);
@@ -246,14 +235,12 @@ public:
   }
   void calculateAllPositions();
   void paintNew(  HDC hdc, int currentState);
-  static bool markState( HDC hdc, int state, bool marked); // for marking lastAcceptState as blinking
+  // for marking lastAcceptState as blinking
+  static bool markState( HDC hdc, int state, bool marked);
   void shiftCurrentToNew();
 #ifdef _DEBUG
-  static void startBlinking(CWnd *wnd, int state) {
-    s_blinker.startBlinking(wnd, state);
-  }
-  static void stopBlinking() {
-    s_blinker.stopBlinking();
-  }
+  static void startBlinking(CWnd *wnd, int state);
+  static void stopBlinking();
+  static void setBlinkersVisible(bool visible);
 #endif
 };

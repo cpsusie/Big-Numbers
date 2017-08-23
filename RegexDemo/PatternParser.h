@@ -49,7 +49,8 @@ private:
   inline void advance() {
     if(m_current < m_end) m_current++;
   }
-  PatternToken setNormalChar(_TUCHAR ch = 0); // ch = 0 use *m_current and advance
+  // ch = 0 use *m_current and advance
+  PatternToken setNormalChar(_TUCHAR ch = 0);
   void unexpectedEndOfPattern();
   void unexpectedInput();
   void error(intptr_t index, const TCHAR *format,...);
@@ -71,7 +72,8 @@ public:
     return (TCHAR*)m_current;
   }
   PatternToken nextToken();
-  String getTokenStr() const; // Return string containg the characters the last token consists of
+  // Return string containg the characters the last token consists of
+  String getTokenStr() const;
 
   inline unsigned short getTheNumber() const {
     return m_theNumber;

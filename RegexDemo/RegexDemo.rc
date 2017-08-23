@@ -72,14 +72,23 @@ IDR_MAINFRAME           ICON                    "res\\RegexDemo.ico"
 // Bitmap
 //
 
-IDB_BITMAP_GREEN_UPARROW BITMAP                 "res\\GreenUpArrow.bmp"
-IDB_BITMAP_YELLOW_DOWNARROW BITMAP              "res\\YellowDownArrow.bmp"
+IDB_BITMAP_GREEN_UPARROW BITMAP                  "res\\GreenUpArrow.bmp"
+
+IDB_BITMAP_YELLOW_DOWNARROW BITMAP                  "res\\YellowDownArrow.bmp"
+
 IDB_BITMAP_RED_UPARROW  BITMAP                  "res\\RedUpArrow.bmp"
+
 IDB_BITMAP_PINK_UPARROW BITMAP                  "res\\PinkUpArrow.bmp"
-IDB_BITMAP_BLACK_DOWNARROW BITMAP               "res\\BlackDownArrow.bmp"
-IDB_BITMAP_BLACK_RIGHTARROW BITMAP              "res\\BlackRightArrow.bmp"
+
+IDB_BITMAP_BLACK_DOWNARROW BITMAP                  "res\\BlackDownArrow.bmp"
+
+IDB_BITMAP_BLACK_RIGHTARROW BITMAP                  "res\\BlackRightArrow.bmp"
+
 IDB_BITMAP_BLUE_UPARROW BITMAP                  "res\\BlueUpArrow.bmp"
+
 IDB_BITMAP_BREAKPOINT   BITMAP                  "res\\BreakPointMark.bmp"
+
+IDB_BITMAP_GREEN_LEFTARROW BITMAP                  "res\\GreenLeftArrow.bmp"
 
 
 /////////////////////////////////////////////////////////////////////////////

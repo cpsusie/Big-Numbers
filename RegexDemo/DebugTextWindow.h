@@ -2,11 +2,11 @@
 
 class CDebugTextWindow : public CListBox {
 private:
-  CBitmap     m_lineMarkBitmap , m_breakPointBitmap;
+  CBitmap     m_lineMarkBitmap , m_breakPointBitmap, m_acceptMarkBitmap;
   CSize       m_arrowBitmapSize, m_breakPointBitmapSize;
   String      m_codeText;
   StringArray m_textLines;
-  int         m_currentLine;
+  int         m_currentLine, m_lastAcceptLine;
   BitSet      m_breakPoints, m_possibleBreakPointLines;
   bool        m_hasFocus;
   int         m_itemHeight;
@@ -24,6 +24,7 @@ public:
     return m_codeText;
   }
   void markCurrentLine(int line);
+  void markLastAcceptLine(int line);
   void setAllowMarking(bool allowMarking, const BitSet *possibleBreakPointLines = NULL);
   void addBreakPoint(UINT line);
   void removeBreakPoint(UINT line);

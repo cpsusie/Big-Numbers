@@ -63,7 +63,7 @@ public:
   }
 };
 
-class DebugRegex {
+class DebugRegex : public PropertyChangeListener {
 private:
   RegexType         m_type;
   Regex             m_regex;
@@ -86,7 +86,7 @@ public:
   bool      hasDFATables() const;
   bool      getMatchEmpty() const;
   void      setType(RegexType type);
-  RegexType getType() const {
+  inline RegexType getType() const {
     return m_type;
   }
   bool     isCodeDirty() const;
@@ -95,7 +95,8 @@ public:
   int      getPatternFoundCodeLine() const;
   int      getCycleCount() const;
   void     paint(CWnd *wnd, CDC &dc, bool animate) const;
-  void     unpaintAll(CWnd *wnd, CDC &dc);
+  void     handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
+  void     unmarkAll(CWnd *wnd, CDC &dc);
   void     setHandler(DebugThread *handler);
   intptr_t getResultLength() const;
   CompileParameters getLastCompiledPattern() const;

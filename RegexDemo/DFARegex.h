@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Semaphore.h>
+
 class DFATables {
 private:
   void init();
@@ -177,6 +179,7 @@ private:
   DFARegexStepHandler            *m_stepHandler;
   mutable DFARegexMode            m_currentMode;
   mutable const DFA              *m_currentDFA;
+  mutable Semaphore               m_gate;
   void setCodeText(const String codeText);
   void setDBGCharIndexForAcceptStates(size_t patternLength);
 #endif // _DEBUG
@@ -224,7 +227,8 @@ public:
     return m_cycleCount;
   }
   void paint(CWnd *wnd, CDC &dc, bool animate) const;
-  void unpaintAll(CWnd *wnd, CDC &dc);
+  void unmarkAll(CWnd *wnd, CDC &dc);
+  void setBlinkersVisible(bool visible);
   static int   getAllocatedNFAStates();
 #endif // _DEBUG
 };

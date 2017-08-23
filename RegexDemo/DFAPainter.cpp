@@ -199,7 +199,8 @@ void DFAPainter::calculateAllPositions() {
   pointIndexStack.push(0);
   done.add(0);
 
-  CompactShortArray columnSize; // counts elements with same gridx. indexed by gridX
+  // counts elements with same gridx. indexed by gridX
+  CompactShortArray columnSize;
   columnSize.add(1);
 
   int maxGridX = 1, maxGridY = 1;
@@ -390,6 +391,8 @@ void DFAPainter::paintNew(HDC hdc, int currentState) {
 DFAPointArray DFAPainter::s_newPoints;
 int           DFAPainter::s_edgeMarkStep    = 2;
 size_t        DFAPainter::s_lastPaintedSize = 0;
+int           DFAPainter::s_blinkingState   = -1;
+CWnd         *DFAPainter::s_wnd             = NULL;
 
 void DFAPainter::shiftCurrentToNew() {
   s_newPoints.deleteAll();
@@ -405,12 +408,31 @@ void DFAPainter::markCurrentState(int state, HDC hdc) {
   }
 }
 
-bool DFAPainter::markState(HDC hdc, int state, bool marked) {
+bool DFAPainter::markState(HDC hdc, int state, bool marked) { // static
   if((state >= 0) && (state < (int)s_newPoints.size())) {
     s_newPoints[state]->paint(hdc, marked);
     return true;
   } else {
     return false;
+  }
+}
+
+void DFAPainter::startBlinking(CWnd *wnd, int state) { // static
+  s_wnd           = wnd;
+  s_blinkingState = state;
+}
+
+void DFAPainter::stopBlinking() { // static
+  if(s_blinkingState >= 0) {
+    int state = s_blinkingState;
+    s_blinkingState = -1;
+    markState(CClientDC(s_wnd), state, false);
+  }
+}
+
+void DFAPainter::setBlinkersVisible(bool visible) { // static
+  if(s_blinkingState >= 0) {
+    markState(CClientDC(s_wnd), s_blinkingState, visible);
   }
 }
 

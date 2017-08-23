@@ -391,6 +391,7 @@ int DFARegex::getCurrentCodeLine() const {
 }
 
 void DFARegex::paint(CWnd *wnd, CDC &dc, bool animate) const {
+  m_gate.wait();
   switch(m_currentMode) {
   case DFA_PARSING:
     if(animate) {
@@ -415,9 +416,11 @@ void DFARegex::paint(CWnd *wnd, CDC &dc, bool animate) const {
     }
     break;
   }
+  m_gate.signal();
 }
 
-void DFARegex::unpaintAll(CWnd *wnd, CDC &dc) {
+void DFARegex::unmarkAll(CWnd *wnd, CDC &dc) {
+  m_gate.wait();
   switch(m_currentMode) {
   case DFA_PARSING                    :
   case DFA_CONSTRUCTING_UNMIMIMZED_DFA:
@@ -429,6 +432,13 @@ void DFARegex::unpaintAll(CWnd *wnd, CDC &dc) {
     DFA(m_tables, NFA()).paint(wnd, dc);
     break;
   }
+  m_gate.signal();
+}
+
+void DFARegex::setBlinkersVisible(bool visible) {
+  m_gate.wait();
+  DFAPainter::setBlinkersVisible(visible);
+  m_gate.signal();
 }
 
 int DFARegex::getAllocatedNFAStates() { // static
@@ -462,5 +472,4 @@ intptr_t _DFARegexMatchState::getPos() const {
   return m_pos;
 }
 
-#endif
-
+#endif // _DEBUG

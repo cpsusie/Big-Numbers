@@ -494,6 +494,7 @@
     <Image Include="res\BlackRightArrow.bmp" />
     <Image Include="res\BlueUpArrow.bmp" />
     <Image Include="res\BreakPointMark.bmp" />
+    <Image Include="res\GreenLeftArrow.bmp" />
     <Image Include="res\GreenUpArrow.bmp" />
     <Image Include="res\PinkUpArrow.bmp" />
     <Image Include="res\RedUpArrow.bmp" />

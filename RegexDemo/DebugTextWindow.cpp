@@ -5,7 +5,10 @@
 #define new DEBUG_NEW
 #endif
 
-CDebugTextWindow::CDebugTextWindow() : m_breakPoints(10), m_possibleBreakPointLines(10) {
+CDebugTextWindow::CDebugTextWindow()
+: m_breakPoints(10)
+, m_possibleBreakPointLines(10)
+{
   m_allowMarking = true;
 }
 
@@ -47,11 +50,12 @@ void CDebugTextWindow::substituteControl(CWnd *parent, int id) {
   }
   ModifyStyleEx(0, exStyle | WS_EX_CLIENTEDGE | WS_EX_STATICEDGE);
   SetFont(font);
-  m_currentLine = -1;
+  m_currentLine = m_lastAcceptLine = -1;
   m_lineMarkBitmap.LoadBitmap(IDB_BITMAP_BLACK_RIGHTARROW);
   m_arrowBitmapSize = getBitmapSize(m_lineMarkBitmap);
   m_breakPointBitmap.LoadBitmap(IDB_BITMAP_BREAKPOINT);
   m_breakPointBitmapSize = getBitmapSize(m_breakPointBitmap);
+  m_acceptMarkBitmap.LoadBitmap(IDB_BITMAP_GREEN_LEFTARROW);
 }
 
 void CDebugTextWindow::clear() {
@@ -71,7 +75,7 @@ void CDebugTextWindow::setText(const String &text) {
     return;
   }
   m_breakPoints.clear();
-  m_currentLine = -1;
+  m_currentLine = m_lastAcceptLine = -1;
   ResetContent();
   m_textLines = StringArray(Tokenizer(text, _T("\n")));
   for(size_t i = 0; i < m_textLines.size(); i++) {
@@ -131,6 +135,10 @@ void CDebugTextWindow::markCurrentLine(int line) {
       }
     }
   }
+}
+
+void CDebugTextWindow::markLastAcceptLine(int line) {
+
 }
 
 void CDebugTextWindow::setAllowMarking(bool allowMarking, const BitSet *possibleBreakPointLines) {
@@ -197,24 +205,33 @@ void CDebugTextWindow::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct) {
     dc.FillSolidRect(&lpDrawItemStruct->rcItem, crOldBkColor);
   }
 
-  const CRect       &rc    = lpDrawItemStruct->rcItem;
+  const CRect      &rc    = lpDrawItemStruct->rcItem;
   const UINT        index = lpDrawItemStruct->itemID;
 
   if(index < m_textLines.size()) {
-    if(m_allowMarking && ((index == m_currentLine) || m_breakPoints.contains(index))) {
+    if(m_allowMarking && ( (index == m_currentLine)
+                        || (index == m_lastAcceptLine)
+                        || m_breakPoints.contains(index))) {
       CDC tmpDC;
       tmpDC.CreateCompatibleDC(NULL);
 
       if(index == m_currentLine) {
-        CBitmap *oldBitmap = tmpDC.SelectObject(&m_lineMarkBitmap);
+        CBitmap  *oldBitmap = tmpDC.SelectObject(&m_lineMarkBitmap);
         const int arrowLeft = m_breakPointBitmapSize.cx + 3;
+        const int arrowTop  = (m_itemHeight - m_arrowBitmapSize.cy)/2;
+        dc.BitBlt(arrowLeft, rc.top + arrowTop, m_arrowBitmapSize.cx, m_arrowBitmapSize.cy, &tmpDC, 0,0, SRCCOPY);
+        tmpDC.SelectObject(oldBitmap);
+      }
+      if(index == m_lastAcceptLine) {
+        CBitmap  *oldBitmap = tmpDC.SelectObject(&m_acceptMarkBitmap);
+        const int arrowLeft = rc.right - m_arrowBitmapSize.cx - 3;
         const int arrowTop  = (m_itemHeight - m_arrowBitmapSize.cy)/2;
         dc.BitBlt(arrowLeft, rc.top + arrowTop, m_arrowBitmapSize.cx, m_arrowBitmapSize.cy, &tmpDC, 0,0, SRCCOPY);
         tmpDC.SelectObject(oldBitmap);
       }
       if(m_breakPoints.contains(index)) {
         const int breakOffset = (m_itemHeight - m_breakPointBitmapSize.cy)/2;
-        CBitmap *oldBitmap = tmpDC.SelectObject(&m_breakPointBitmap);
+        CBitmap  *oldBitmap   = tmpDC.SelectObject(&m_breakPointBitmap);
         dc.BitBlt(1, rc.top+breakOffset, m_breakPointBitmapSize.cx, m_breakPointBitmapSize.cy, &tmpDC, 0,0, SRCCOPY);
         tmpDC.SelectObject(oldBitmap);
       }

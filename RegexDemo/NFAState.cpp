@@ -159,18 +159,18 @@ String NFAState::toString() const {
     }
     result += _T(" on ");
     switch(m_edge) {
-      case EDGE_CHCLASS :
-        result += charBitSetToString(*m_charClass, s_formater);
-        break;
-      case EDGE_EPSILON :
-        result += _T("EPSILON ");
-        break;
-      case EDGE_UNUSED  :
-        throwException(_T("NFAState::toString:m_edge==EDGE_UNUSED"));
-        break;
-      default           :
-        result += s_formater->toString(m_edge) + _T(" ");
-        break;
+    case EDGE_CHCLASS :
+      result += charBitSetToString(*m_charClass, s_formater);
+      break;
+    case EDGE_EPSILON :
+      result += _T("EPSILON ");
+      break;
+    case EDGE_UNUSED  :
+      throwException(_T("NFAState::toString:m_edge==EDGE_UNUSED"));
+      break;
+    default           :
+      result += s_formater->toString(m_edge) + _T(" ");
+      break;
     }
   }
 

@@ -16,7 +16,11 @@ typedef enum {
  ,LASTACCEPT_MARK
 } CharMarkType;
 
-class CRegexDemoDlg : public CDialog, public PropertyChangeListener {
+typedef enum {
+  PROP_BLINKERSVISIBLE
+} DialogProperty;
+
+class CRegexDemoDlg : public CDialog, public PropertyChangeListener, public PropertyContainer {
 private:
   HICON                          m_hIcon;
   HACCEL                         m_accelTable;
@@ -29,13 +33,18 @@ private:
   bool                           m_patternOk;
   bool                           m_patternDirty;
   bool                           m_targetDirty;
+  bool                           m_timerIsRunning;
+  // Change every 500msec by timer
+  bool                           m_blinkersVisible;
   DebugRegex                     m_regex;
   DebugThread                   *m_debugThread;
 
   void clearResult() {
     showResult(EMPTYSTRING);
   }
-  void showResult(const String &result, const String &registerString = _T(""));
+  void startTimer();
+  void stopTimer();
+  void showResult(const String &result, const String &registerString = EMPTYSTRING);
   void showRegisters(const RegexRegisters &registers);
   void clearRegisterWindow();
   void setRegisterWindowMode();
@@ -59,6 +68,7 @@ private:
   void showMatchStack(const _RegexMatchState &state);
   void showDFAMatchState();
   void showPatternFound();
+  void showPatternNotFound();
   void markFoundPattern();
   void unmarkFoundPattern();
   void clearCyclesWindow();
@@ -86,47 +96,47 @@ private:
   void startThread(ThreadCommand command, bool singleStep=false);
   void startDebugCompile();
   void killThread();
-  bool hasThread() const {
+  inline bool hasThread() const {
     return m_debugThread != NULL;
   }
-  bool searchForward() {
+  inline bool searchForward() {
     return !isMenuItemChecked(this, ID_OPTIONS_SEARCHBACKWARDS);
   }
-  bool isThreadStopped() const {
+  inline bool isThreadStopped() const {
     return hasThread() && !m_debugThread->isRunning() && !m_debugThread->isFinished();
   }
-  bool isThreadFinished() const {
+  inline bool isThreadFinished() const {
     return hasThread() && !m_debugThread->isRunning() && m_debugThread->isFinished();
   }
 
   String getThreadPhaseName() const;
-  RegexPhaseType getThreadPhase() const {
+  inline RegexPhaseType getThreadPhase() const {
     return hasThread() ? m_debugThread->getRegexPhase() : REGEX_UNDEFINED;
   }
 
   void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
 
-  CComboBox *getPatternWindow() {
+  inline CComboBox *getPatternWindow() {
     return (CComboBox*)GetDlgItem(IDC_COMBOPATTERN);
   }
 
-  CComboBox *getTargetWindow() {
+  inline CComboBox *getTargetWindow() {
     return (CComboBox*)GetDlgItem(IDC_COMBOTARGET);
   }
 
-  CDebugTextWindow *getCodeWindow() {
+  inline CDebugTextWindow *getCodeWindow() {
     return &m_codeWindow;
   }
 
-  CStatic *getRegistersWindow() {
+  inline CStatic *getRegistersWindow() {
     return (CStatic*)GetDlgItem(IDC_STATICREGISTERS);
   }
 
-  CStatic *getGraphicsWindow() {
+  inline CStatic *getGraphicsWindow() {
     return (CStatic*)GetDlgItem(IDC_STATICDFAGRAPHICSWINDOW);
   }
 
-  CStaticBottomAligned *getStackWindow() {
+  inline CStaticBottomAligned *getStackWindow() {
     return &m_stackWindow;
   }
 
@@ -147,13 +157,13 @@ public:
     virtual void OnOK();
     virtual void OnCancel();
     afx_msg void OnClose();
+    afx_msg void OnTimer(UINT_PTR nIDEvent);
     afx_msg void OnFileExit();
     afx_msg void OnEditCopy();
     afx_msg void OnEditFind();
     afx_msg void OnEditMatch();
     afx_msg void OnEditCompilePattern();
     afx_msg void OnEditFindMatchingParentesis();
-    afx_msg void OnEditStandardTest();
     afx_msg void OnDebugCompile();
     afx_msg void OnDebugFind();
     afx_msg void OnDebugMatch();
@@ -180,4 +190,3 @@ public:
     afx_msg LRESULT OnMsgThreadRunning(WPARAM wp, LPARAM lp);
     DECLARE_MESSAGE_MAP()
 };
-

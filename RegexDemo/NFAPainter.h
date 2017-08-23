@@ -6,7 +6,8 @@
 class NFAStatePoint {
 private:
   CPoint          m_position;
-  BYTE            m_attributes; // accept,startState,etc...
+  // accept,startState,etc...
+  BYTE            m_attributes;
   static BYTE createAttributes(const NFAState *s);
 public:
   const NFAState *m_state;

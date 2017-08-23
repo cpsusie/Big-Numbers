@@ -2,7 +2,7 @@
 #include "DebugThread.h"
 
 void DebugRegex::compilePattern(const CompileParameters &cp) {
-  switch(m_type) {
+  switch(getType()) {
   case EMACS_REGEX:
     m_lastCompiledParameters[m_type].reset();
     m_regex.compilePattern(cp.m_pattern, cp.getTranslateTable());
@@ -18,7 +18,7 @@ void DebugRegex::compilePattern(const CompileParameters &cp) {
 
 bool DebugRegex::match(const String &text) {
   m_text = text;
-  switch(m_type) {
+  switch(getType()) {
   case EMACS_REGEX: return m_regex.match(text, &m_registers);
   case DFA_REGEX  : return m_DFARegex.match(text);
   default         : throwUnknownTypeException();
@@ -28,7 +28,7 @@ bool DebugRegex::match(const String &text) {
 
 intptr_t DebugRegex::search(const String &text, bool forward) {
   m_text = text;
-  switch(m_type) {
+  switch(getType()) {
   case EMACS_REGEX: return m_regex.search(text, forward, -1, &m_registers);
   case DFA_REGEX  : return m_DFARegex.search(text, forward);
   default         : throwUnknownTypeException();
@@ -37,7 +37,7 @@ intptr_t DebugRegex::search(const String &text, bool forward) {
 }
 
 String DebugRegex::registersToString() const {
-  switch(m_type) {
+  switch(getType()) {
   case EMACS_REGEX: return m_registers.toString(m_text);
   case DFA_REGEX  : return EMPTYSTRING;
   default         : throwUnknownTypeException();
@@ -46,7 +46,7 @@ String DebugRegex::registersToString() const {
 }
 
 String DebugRegex::codeToString() const {
-  switch(m_type) {
+  switch(getType()) {
   case EMACS_REGEX: return m_regex.toString();
   case DFA_REGEX  : return m_DFARegex.toString();
   default         : throwUnknownTypeException();
@@ -55,7 +55,7 @@ String DebugRegex::codeToString() const {
 }
 
 String DebugRegex::fastMapToString() const {
-  switch(m_type) {
+  switch(getType()) {
   case EMACS_REGEX: return m_regex.fastMapToString();
   case DFA_REGEX  : return m_DFARegex.fastMapToString();
   default         : throwUnknownTypeException();
@@ -71,7 +71,7 @@ String DebugRegex::getDFATablesToString() const {
 }
 
 bool DebugRegex::hasDFATables() const {
-  switch(m_type) {
+  switch(getType()) {
   case DFA_REGEX  :
     return m_DFARegex.isCompiled();
   default:
@@ -80,7 +80,7 @@ bool DebugRegex::hasDFATables() const {
 }
 
 bool DebugRegex::getMatchEmpty() const {
-  switch(m_type) {
+  switch(getType()) {
   case EMACS_REGEX: return m_regex.getMatchEmpty();
   case DFA_REGEX  : return m_DFARegex.getMatchEmpty();
   default         : throwUnknownTypeException();
@@ -93,7 +93,7 @@ void DebugRegex::setType(RegexType type) {
 }
 
 bool DebugRegex::isCodeDirty() const {
-  switch(m_type) {
+  switch(getType()) {
   case EMACS_REGEX: return m_regex.isCodeDirty();
   case DFA_REGEX  : return m_DFARegex.isCodeDirty();
   default         : throwUnknownTypeException();
@@ -102,7 +102,7 @@ bool DebugRegex::isCodeDirty() const {
 }
 
 bool DebugRegex::isCompiled() const {
-  switch(m_type) {
+  switch(getType()) {
   case EMACS_REGEX: return m_regex.isCompiled();
   case DFA_REGEX  : return m_DFARegex.isCompiled();
   default         : throwUnknownTypeException();
@@ -111,7 +111,7 @@ bool DebugRegex::isCompiled() const {
 }
 
 BitSet DebugRegex::getPossibleBreakPointLines() const {
-  switch(m_type) {
+  switch(getType()) {
   case EMACS_REGEX: return m_regex.getPossibleBreakPointLines();
   case DFA_REGEX  : return m_DFARegex.getPossibleBreakPointLines();
   default         : throwUnknownTypeException();
@@ -120,7 +120,7 @@ BitSet DebugRegex::getPossibleBreakPointLines() const {
 }
 
 int DebugRegex::getPatternFoundCodeLine() const {
-  switch(m_type) {
+  switch(getType()) {
   case EMACS_REGEX: return m_regex.getLastCodeLine();
   case DFA_REGEX  : return m_DFARegex.getCurrentCodeLine();
   default         : throwUnknownTypeException();
@@ -129,7 +129,7 @@ int DebugRegex::getPatternFoundCodeLine() const {
 }
 
 int DebugRegex::getCycleCount() const {
-  switch(m_type) {
+  switch(getType()) {
   case EMACS_REGEX: return m_regex.getCycleCount();
   case DFA_REGEX  : return m_DFARegex.getCycleCount();
   default         : throwUnknownTypeException();
@@ -138,7 +138,7 @@ int DebugRegex::getCycleCount() const {
 }
 
 void DebugRegex::paint(CWnd *wnd, CDC &dc, bool animate) const {
-  switch(m_type) {
+  switch(getType()) {
   case EMACS_REGEX:
     break;
   case DFA_REGEX  :
@@ -149,12 +149,26 @@ void DebugRegex::paint(CWnd *wnd, CDC &dc, bool animate) const {
   }
 }
 
-void DebugRegex::unpaintAll(CWnd *wnd, CDC &dc) {
-  switch(m_type) {
+void DebugRegex::unmarkAll(CWnd *wnd, CDC &dc) {
+  switch(getType()) {
   case EMACS_REGEX:
     break;
   case DFA_REGEX  :
-    m_DFARegex.unpaintAll(wnd, dc);
+    m_DFARegex.unmarkAll(wnd, dc);
+    break;
+  default         :
+    throwUnknownTypeException();
+  }
+}
+
+void DebugRegex::handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
+  switch(getType()) {
+  case EMACS_REGEX:
+    break;
+  case DFA_REGEX  :
+    { const bool blinkersVisible = *(bool*)newValue;
+      m_DFARegex.setBlinkersVisible(blinkersVisible);
+    }
     break;
   default         :
     throwUnknownTypeException();
@@ -162,7 +176,7 @@ void DebugRegex::unpaintAll(CWnd *wnd, CDC &dc) {
 }
 
 void DebugRegex::setHandler(DebugThread *handler) {
-  switch(m_type) {
+  switch(getType()) {
   case EMACS_REGEX:
     m_regex.setHandler(handler);
     break;
@@ -175,7 +189,7 @@ void DebugRegex::setHandler(DebugThread *handler) {
 }
 
 intptr_t DebugRegex::getResultLength() const {
-  switch(m_type) {
+  switch(getType()) {
   case EMACS_REGEX: return m_regex.getResultLength();
   case DFA_REGEX  : return m_DFARegex.getResultLength();
   default         : throwUnknownTypeException();
@@ -184,7 +198,7 @@ intptr_t DebugRegex::getResultLength() const {
 }
 
 CompileParameters DebugRegex::getLastCompiledPattern() const {
-  switch(m_type) {
+  switch(getType()) {
   case EMACS_REGEX:
   case DFA_REGEX  : return m_lastCompiledParameters[m_type];
   default         : throwUnknownTypeException();

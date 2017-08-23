@@ -14,7 +14,7 @@ public:
   inline bool operator==(const FontKey &k) const {
     return (m_symbol == k.m_symbol) && (m_degree == k.m_degree);
   }
-  unsigned long hashCode() const {
+  ULONG hashCode() const {
     return (m_symbol ? 180 : 0) + m_degree;
   }
 };
@@ -65,16 +65,16 @@ typedef CompactArray<CPoint> TransitionPath;
 
 class AutomatePainter {
 private:
-  static CPen                 whitePen, blackPen;
-  static CBrush               blackBrush, whiteBrush, redBrush, orangeBrush, pinkBrush, greenBrush, lightGreenBrush;
-  static FontCache            fontCache;
-  static const Point2D        dirVector[8];
-  static const ArrowDirection oppositeDir[8];
+  static CPen                 s_whitePen, s_blackPen;
+  static CBrush               s_blackBrush, s_whiteBrush, s_redBrush, s_orangeBrush, s_pinkBrush, s_greenBrush, s_lightGreenBrush;
+  static FontCache            s_fontCache;
+  static const Point2D        s_dirVector[8];
+  static const ArrowDirection s_oppositeDir[8];
 
   CBitmap                     m_bm;
   static void initStaticGDIObjects();
   static inline const Point2D &getDirectionVector(ArrowDirection dir) {
-    return dirVector[dir];
+    return s_dirVector[dir];
   }
 
 protected:
@@ -88,6 +88,7 @@ protected:
   DirectionPair paintBezierArrow(    const CPoint &from, const CPoint &to                                     , HDC hdc = NULL);
   void          paintLoopArrow(      const CPoint &from, int radius, DirectionPair dir, const String &text    , HDC hdc = NULL);
   void          paintPathArrow(      const TransitionPath &path                                               , HDC hdc = NULL);
+  // assume pen if selected.
   void          paintArrowEnd(       const CPoint &from, const CPoint &to                                     , HDC hdc);
   CPoint        findBestTextPosition(const CPoint pFrom, ArrowDirection direction, const CSize &textSize) const;
   CSize         getTextSize(CFont &font, const String &text);
@@ -97,7 +98,7 @@ protected:
   void          flushImage(HDC hdc);
   static        ArrowDirection getVectorDirection(const Point2D &vector);
   static inline ArrowDirection getOppositeDirection(ArrowDirection dir) {
-    return oppositeDir[dir];
+    return s_oppositeDir[dir];
   }
   AutomatePainter(const CSize &size);
  ~AutomatePainter();
@@ -108,31 +109,31 @@ public:
   void        markStartState( HDC hdc, const CPoint &p);
 
   static CPen *getWhitePen() {
-    return &whitePen;
+    return &s_whitePen;
   }
   static CPen *getBlackPen() {
-    return &blackPen;
+    return &s_blackPen;
   }
   static CBrush *getBlackBrush() {
-    return &blackBrush;
+    return &s_blackBrush;
   }
   static CBrush *getWhiteBrush() {
-    return &whiteBrush;
+    return &s_whiteBrush;
   }
   static CBrush *getRedBrush() {
-    return &redBrush;
+    return &s_redBrush;
   }
   static CBrush *getOrangeBrush() {
-    return &orangeBrush;
+    return &s_orangeBrush;
   }
   static CBrush *getPinkBrush() {
-    return &pinkBrush;
+    return &s_pinkBrush;
   }
   static CBrush *getGreenBrush() {
-    return &greenBrush;
+    return &s_greenBrush;
   }
   static CBrush *getLightGreenBrush() {
-    return &lightGreenBrush;
+    return &s_lightGreenBrush;
   }
   static CFont &getFont();
 };

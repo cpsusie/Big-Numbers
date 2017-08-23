@@ -23,8 +23,8 @@ void AutomatePainter::setToWhite(HDC hdc) {
   if(hdc == NULL) {
     m_dc.FillSolidRect(0,0,m_size.cx, m_size.cy, RGB(255,255,255));
   } else {
-    HGDIOBJ oldBrush = SelectObject(hdc, whiteBrush);
-    HGDIOBJ oldPen   = SelectObject(hdc, whitePen  );
+    HGDIOBJ oldBrush = SelectObject(hdc, s_whiteBrush);
+    HGDIOBJ oldPen   = SelectObject(hdc, s_whitePen  );
     Rectangle(hdc, 0,0, m_size.cx, m_size.cy);
     SelectObject(hdc, oldPen  );
     SelectObject(hdc, oldBrush);
@@ -49,8 +49,8 @@ void AutomatePainter::paintRing(HDC hdc, const CPoint &p, int radius, CPen *pen,
 
   Ellipse(hdc, p.x - radius, p.y - radius, p.x + radius, p.y + radius);
 
-  SelectObject(hdc, whitePen);
-  SelectObject(hdc, whiteBrush);
+  SelectObject(hdc, s_whitePen);
+  SelectObject(hdc, s_whiteBrush);
   radius -= 4;
 
   Ellipse(hdc, p.x - radius, p.y - radius, p.x + radius, p.y + radius);
@@ -114,7 +114,7 @@ ArrowDirection AutomatePainter::getVectorDirection(const Point2D &vector) { // s
 DirectionPair AutomatePainter::paintLineArrow(const CPoint &from, const CPoint &to, HDC hdc) {
   hdc = getDC(hdc);
 
-  HGDIOBJ oldPen = SelectObject(hdc, blackPen);
+  HGDIOBJ oldPen = SelectObject(hdc, s_blackPen);
   MoveToEx(hdc, from.x, from.y, NULL);
   LineTo(hdc, to .x, to.y);
   paintArrowEnd(from, to, hdc);
@@ -137,7 +137,7 @@ DirectionPair AutomatePainter::paintBezierArrow(const CPoint &from, const CPoint
 
   hdc = getDC(hdc);
 
-  HGDIOBJ oldPen = SelectObject(hdc, blackPen);
+  HGDIOBJ oldPen = SelectObject(hdc, s_blackPen);
   PolyBezier(hdc, bp, 4);
   paintArrowEnd(bp[2], to, hdc);
   SelectObject(hdc, oldPen);
@@ -148,7 +148,7 @@ void AutomatePainter::paintPathArrow(const TransitionPath &path , HDC hdc) {
   if(path.size() < 2) return;
   hdc = getDC(hdc);
   CPen redPen;
-  HGDIOBJ oldPen = SelectObject(hdc, blackPen);
+  HGDIOBJ oldPen = SelectObject(hdc, s_blackPen);
   const CPoint &p0 = path[0];
   MoveToEx(hdc, p0.x, p0.y, NULL);
   for(size_t i = 1; i < path.size(); i++) {
@@ -166,7 +166,7 @@ const TCHAR *directionToStr(ArrowDirection dir) {
   return dirNames[dir];
 }
 
-const Point2D AutomatePainter::dirVector[8] = {
+const Point2D AutomatePainter::s_dirVector[8] = {
   Point2D( 0,-1)             // DIR_N
  ,Point2D( 1,-1).normalize() // DIR_NE
  ,Point2D( 1, 0)             // DIR_E
@@ -177,7 +177,7 @@ const Point2D AutomatePainter::dirVector[8] = {
  ,Point2D(-1,-1).normalize() // DIR_NW
 };
 
-const ArrowDirection AutomatePainter::oppositeDir[8] = {
+const ArrowDirection AutomatePainter::s_oppositeDir[8] = {
   DIR_S
  ,DIR_SW
  ,DIR_W
@@ -212,7 +212,7 @@ void AutomatePainter::paintLoopArrow(const CPoint &from, int radius, DirectionPa
   bp[2] = Point2DP(center + ve * LOOPSIZE);
   bp[3] = pTo;
 
-  HGDIOBJ oldPen = SelectObject(hdc, blackPen);
+  HGDIOBJ oldPen = SelectObject(hdc, s_blackPen);
   PolyBezier(hdc, bp, 4);
   paintArrowEnd(bp[2], pTo, hdc);
   SelectObject(hdc, oldPen);
@@ -353,7 +353,7 @@ CSize AutomatePainter::getTextSize(CFont &font, const String &text) {
   return result;
 }
 
-void AutomatePainter::paintArrowEnd(const CPoint &from, const CPoint &to, HDC hdc) { // assume pen if selected.
+void AutomatePainter::paintArrowEnd(const CPoint &from, const CPoint &to, HDC hdc) {
   if(hdc == NULL) hdc = m_dc;
 
   Point2DP v  = from - to;
@@ -364,7 +364,7 @@ void AutomatePainter::paintArrowEnd(const CPoint &from, const CPoint &to, HDC hd
   vertices[0] = to;
   vertices[1] = to + vleft;
   vertices[2] = to + vright;
-  HGDIOBJ oldBrush = SelectObject(hdc, blackBrush);
+  HGDIOBJ oldBrush = SelectObject(hdc, s_blackBrush);
   Polygon(hdc, vertices, 3);
   SelectObject(hdc, oldBrush);
 }
@@ -374,33 +374,33 @@ CFont &AutomatePainter::getFont() { // static
   return defaultFont;
 }
 
-CPen   AutomatePainter::whitePen;
-CPen   AutomatePainter::blackPen;
-CBrush AutomatePainter::blackBrush;
-CBrush AutomatePainter::whiteBrush;
-CBrush AutomatePainter::redBrush;
-CBrush AutomatePainter::orangeBrush;
-CBrush AutomatePainter::pinkBrush;
-CBrush AutomatePainter::greenBrush;
-CBrush AutomatePainter::lightGreenBrush;
+CPen   AutomatePainter::s_whitePen;
+CPen   AutomatePainter::s_blackPen;
+CBrush AutomatePainter::s_blackBrush;
+CBrush AutomatePainter::s_whiteBrush;
+CBrush AutomatePainter::s_redBrush;
+CBrush AutomatePainter::s_orangeBrush;
+CBrush AutomatePainter::s_pinkBrush;
+CBrush AutomatePainter::s_greenBrush;
+CBrush AutomatePainter::s_lightGreenBrush;
 
 void AutomatePainter::initStaticGDIObjects() { // static
   static bool initDone = false;
   if(!initDone) {
-    blackPen.CreatePen(PS_SOLID, 1,  RGB(  0,  0,  0));
-    whitePen.CreatePen(PS_SOLID, 1,  RGB(255,255,255));
-    blackBrush.CreateSolidBrush(     RGB(  0,  0,  0));
-    whiteBrush.CreateSolidBrush(     RGB(255,255,255));
-    redBrush.CreateSolidBrush(       RGB(160,  0,  0));
-    orangeBrush.CreateSolidBrush(    RGB(240,105, 23));
-    pinkBrush.CreateSolidBrush(      RGB(237,101,121));
-    greenBrush.CreateSolidBrush(     RGB(  0,127,  0));
-    lightGreenBrush.CreateSolidBrush(RGB(  0,255,  0));
+    s_blackPen.CreatePen(PS_SOLID, 1,  RGB(  0,  0,  0));
+    s_whitePen.CreatePen(PS_SOLID, 1,  RGB(255,255,255));
+    s_blackBrush.CreateSolidBrush(     RGB(  0,  0,  0));
+    s_whiteBrush.CreateSolidBrush(     RGB(255,255,255));
+    s_redBrush.CreateSolidBrush(       RGB(160,  0,  0));
+    s_orangeBrush.CreateSolidBrush(    RGB(240,105, 23));
+    s_pinkBrush.CreateSolidBrush(      RGB(237,101,121));
+    s_greenBrush.CreateSolidBrush(     RGB(  0,127,  0));
+    s_lightGreenBrush.CreateSolidBrush(RGB(  0,255,  0));
     initDone = true;
   }
 }
 
-FontCache  AutomatePainter::fontCache;
+FontCache  AutomatePainter::s_fontCache;
 
 FontCache::~FontCache() {
   for(Iterator<Entry<FontKey, CFont*> > it = getEntryIterator(); it.hasNext();) {
@@ -422,10 +422,9 @@ static const FontInfo fontInfo[2] = {
 };
 
 CFont &AutomatePainter::getFont(bool symbol, const Point2D &vector) { // static
-  const Point2D e1(1,0);
-  int degree = (int)RAD2GRAD(angle(vector, e1));
+  int degree = (int)RAD2GRAD(atan2(vector.y,vector.x));
   const FontKey key(symbol, degree);
-  CFont **fontpp = fontCache.get(key), *fontp;
+  CFont **fontpp = s_fontCache.get(key), *fontp;
   if(fontpp) {
     fontp = *fontpp;
   } else {
@@ -436,7 +435,7 @@ CFont &AutomatePainter::getFont(bool symbol, const Point2D &vector) { // static
                      ,DEFAULT_PITCH | FF_MODERN
                      ,fi.m_fontName
                      );
-    fontCache.put(key, fontp);
+    s_fontCache.put(key, fontp);
   }
   return *fontp;
 }
