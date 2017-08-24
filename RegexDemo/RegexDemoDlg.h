@@ -9,7 +9,8 @@
 #include "DebugTextWindow.h"
 
 typedef enum {
-  PATTERN_POSMARK
+  COMPILE_POSMARK
+ ,PATTERN_POSMARK
  ,SEARCH_POSMARK
  ,MATCH_STARTMARK
  ,MATCH_DMARK
@@ -63,7 +64,9 @@ private:
   void showSearchState();
   void showEmacsSearchState();
   void showDFASearchState();
+  // assume thread exists and is stopped but not finished
   void showMatchState();
+  // assume thread exists and is stopped but not finished
   void showEmacsMatchState();
   void showMatchStack(const _RegexMatchState &state);
   void showDFAMatchState();
@@ -78,6 +81,7 @@ private:
   void markMultiPatternChars(const BitSet &markSet);
   void unmarkAllCharacters(CharMarkType type);
   void unmarkAllCharacters();
+  void unmarkAll();
   bool checkPattern();
   void ajourDialogItems();
   void enableDialogItems(BitSet16 flags);
@@ -91,7 +95,13 @@ private:
     getCodeWindow()->markCurrentLine(line);
   }
   inline void unmarkCodeLine() {
-    setCurrentCodeLine(-1);
+    getCodeWindow()->unmarkCurrentLine();
+  }
+  inline void markLastAcceptLine(int line) {
+    getCodeWindow()->markLastAcceptLine(line);
+  }
+  inline void unmarkLastAcceptLine() {
+    getCodeWindow()->unmarkLastAcceptLine();
   }
   void startThread(ThreadCommand command, bool singleStep=false);
   void startDebugCompile();
@@ -131,11 +141,12 @@ private:
   inline CStatic *getRegistersWindow() {
     return (CStatic*)GetDlgItem(IDC_STATICREGISTERS);
   }
-
   inline CStatic *getGraphicsWindow() {
     return (CStatic*)GetDlgItem(IDC_STATICDFAGRAPHICSWINDOW);
   }
-
+  inline CStatic *getCyclesWindow() {
+    return (CStatic*)GetDlgItem(IDC_STATICCYCLES);
+  }
   inline CStaticBottomAligned *getStackWindow() {
     return &m_stackWindow;
   }

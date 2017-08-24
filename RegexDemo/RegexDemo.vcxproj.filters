@@ -169,6 +169,9 @@
     <Image Include="res\GreenLeftArrow.bmp">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="res\BlackUpArrow.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="res\RegexDemo.rc2">

@@ -56,11 +56,13 @@ void CComboBoxWithHistory::save() {
 void CComboBoxWithHistory::updateList() {
   CString current;
   GetWindowText(current);
+  DWORD sel = GetEditSel();
   m_history.add((LPCTSTR)current);
   load();
   for(UINT i = 0; i < m_history.size(); i++) {
     if(m_history[i].cstr() == current) {
       SetCurSel(i);
+      SetEditSel(LOWORD(sel),HIWORD(sel));
       return;
     }
   }

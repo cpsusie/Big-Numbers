@@ -137,8 +137,32 @@ void CDebugTextWindow::markCurrentLine(int line) {
   }
 }
 
-void CDebugTextWindow::markLastAcceptLine(int line) {
+void CDebugTextWindow::unmarkCurrentLine() {
+  markCurrentLine(-1);
+}
 
+void CDebugTextWindow::markLastAcceptLine(int line) {
+  if(line != m_lastAcceptLine) {
+    unmarkLastAcceptLine();
+    const UINT lineCount = GetCount();
+    if((UINT)line < lineCount) {
+      m_lastAcceptLine = line;
+      if(isItemVisible(line)) {
+        redrawItem(line);
+      }
+    }
+  }
+}
+
+void CDebugTextWindow::unmarkLastAcceptLine() {
+  if(hasLastAcceptLine()) {
+    const int lineCount = GetCount();
+    const int itemIndex = m_lastAcceptLine;
+    m_lastAcceptLine = -1;
+    if((itemIndex < lineCount) && isItemVisible(itemIndex)) {
+      redrawItem(itemIndex);
+    }
+  }
 }
 
 void CDebugTextWindow::setAllowMarking(bool allowMarking, const BitSet *possibleBreakPointLines) {
@@ -185,6 +209,16 @@ void CDebugTextWindow::redrawItem(UINT index) {
   }
 }
 
+void CDebugTextWindow::handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
+  m_blinkersVisible = *(bool*)newValue;
+  if(!hasLastAcceptLine()) {
+    return;
+  }
+  if(isItemVisible(m_lastAcceptLine)) {
+    redrawItem(m_lastAcceptLine);
+  }
+}
+
 void CDebugTextWindow::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct) {
   CDC dc;
   dc.Attach(lpDrawItemStruct->hDC);
@@ -222,7 +256,7 @@ void CDebugTextWindow::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct) {
         dc.BitBlt(arrowLeft, rc.top + arrowTop, m_arrowBitmapSize.cx, m_arrowBitmapSize.cy, &tmpDC, 0,0, SRCCOPY);
         tmpDC.SelectObject(oldBitmap);
       }
-      if(index == m_lastAcceptLine) {
+      if((index == m_lastAcceptLine) && m_blinkersVisible) {
         CBitmap  *oldBitmap = tmpDC.SelectObject(&m_acceptMarkBitmap);
         const int arrowLeft = rc.right - m_arrowBitmapSize.cx - 3;
         const int arrowTop  = (m_itemHeight - m_arrowBitmapSize.cy)/2;

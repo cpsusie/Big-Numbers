@@ -80,15 +80,18 @@ IDB_BITMAP_RED_UPARROW  BITMAP                  "res\\RedUpArrow.bmp"
 
 IDB_BITMAP_PINK_UPARROW BITMAP                  "res\\PinkUpArrow.bmp"
 
-IDB_BITMAP_BLACK_DOWNARROW BITMAP                  "res\\BlackDownArrow.bmp"
+IDB_BITMAP_BLACK_DOWNARROW BITMAP               "res\\BlackDownArrow.bmp"
 
-IDB_BITMAP_BLACK_RIGHTARROW BITMAP                  "res\\BlackRightArrow.bmp"
+IDB_BITMAP_BLACK_RIGHTARROW BITMAP              "res\\BlackRightArrow.bmp"
+
+IDB_BITMAP_BLACK_UPARROW BITMAP                 "res\\BlackUpArrow.bmp"
 
 IDB_BITMAP_BLUE_UPARROW BITMAP                  "res\\BlueUpArrow.bmp"
 
 IDB_BITMAP_BREAKPOINT   BITMAP                  "res\\BreakPointMark.bmp"
 
-IDB_BITMAP_GREEN_LEFTARROW BITMAP                  "res\\GreenLeftArrow.bmp"
+IDB_BITMAP_GREEN_LEFTARROW BITMAP               "res\\GreenLeftArrow.bmp"
+
 
 
 /////////////////////////////////////////////////////////////////////////////

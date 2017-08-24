@@ -490,6 +490,7 @@
     <ResourceCompile Include="RegexDemo.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="res\BlackUpArrow.bmp" />
     <Image Include="res\BlackDownArrow.bmp" />
     <Image Include="res\BlackRightArrow.bmp" />
     <Image Include="res\BlueUpArrow.bmp" />
