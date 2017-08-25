@@ -30,7 +30,7 @@ void ResourceChecker::checkResources(const String &fileName) {
     log = MKFOPEN(_T("c:\\temp\\checkMnemonics.txt"), _T("w"));
 #endif
     if (m_verbose) {
-      _tprintf(_T("Analyzing %s\n"), fileName.cstr());
+      _ftprintf(stderr, _T("Analyzing %s                                                      \r"), fileName.cstr());
     }
     ResourceFile rf(fileName);
     if(!rf.isOk()) {
