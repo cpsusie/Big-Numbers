@@ -13,11 +13,11 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Danish resources
+// English (U.S.) resources
 
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DAN)
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
 #ifdef _WIN32
-LANGUAGE LANG_DANISH, SUBLANG_DEFAULT
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
 #endif //_WIN32
 
@@ -80,19 +80,6 @@ BEGIN
         MENUITEM "&Quit",                       ID_FILE_QUIT
     END
 END
-
-#endif    // Danish resources
-/////////////////////////////////////////////////////////////////////////////
-
-
-/////////////////////////////////////////////////////////////////////////////
-// English (U.S.) resources
-
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-#ifdef _WIN32
-LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
-#pragma code_page(1252)
-#endif //_WIN32
 
 /////////////////////////////////////////////////////////////////////////////
 //

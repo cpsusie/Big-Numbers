@@ -13,11 +13,11 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Danish resources
+// English (U.S.) resources
 
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DAN)
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
 #ifdef _WIN32
-LANGUAGE LANG_DANISH, SUBLANG_DEFAULT
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
 #endif //_WIN32
 
@@ -75,18 +75,6 @@ IDR_MAINFRAME           ICON    DISCARDABLE     "res\\TestDirect3D.ico"
 
 IDB_BITMAP_BOARD        BITMAP  DISCARDABLE     "res\\Board.bmp"
 IDB_BITMAP_BLACKKNIGHT  BITMAP  DISCARDABLE     "res\\BlackKnight.bmp"
-#endif    // Danish resources
-/////////////////////////////////////////////////////////////////////////////
-
-
-/////////////////////////////////////////////////////////////////////////////
-// English (U.S.) resources
-
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-#ifdef _WIN32
-LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
-#pragma code_page(1252)
-#endif //_WIN32
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -221,4 +209,3 @@ LANGUAGE 9, 1
 
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
-

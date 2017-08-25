@@ -13,10 +13,10 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Danish (Denmark) resources
+// English (United States) resources
 
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DAN)
-LANGUAGE LANG_DANISH, SUBLANG_DEFAULT
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
 
 #ifdef APSTUDIO_INVOKED
@@ -157,17 +157,6 @@ BEGIN
     "S",            ID_OPTIONS_SPEED_SLOW,  VIRTKEY, CONTROL, NOINVERT
     "T",            ID_OPTIONS_LEVEL_TRIANGULAR, VIRTKEY, CONTROL, NOINVERT
 END
-
-#endif    // Danish (Denmark) resources
-/////////////////////////////////////////////////////////////////////////////
-
-
-/////////////////////////////////////////////////////////////////////////////
-// English (United States) resources
-
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
-#pragma code_page(1252)
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -313,4 +302,3 @@ LANGUAGE 9, 1
 
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
-

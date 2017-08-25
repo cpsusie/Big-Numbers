@@ -13,10 +13,10 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Danish (Denmark) resources
+// English (United States) resources
 
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DAN)
-LANGUAGE LANG_DANISH, SUBLANG_DEFAULT
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
 
 #ifdef APSTUDIO_INVOKED
@@ -233,57 +233,6 @@ BEGIN
     LISTBOX         IDC_LIST_SYMBOLTABLE,7,287,381,65,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
 END
 
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// DESIGNINFO
-//
-
-#ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO
-BEGIN
-    IDD_TREESEQUAL_DIALOG, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 410
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 313
-    END
-
-    IDD_ENTER_VARIABLES_DIALOG, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 263
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 192
-    END
-
-    IDD_EXPRESSIONTREE_DIALOG, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 388
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 352
-    END
-END
-#endif    // APSTUDIO_INVOKED
-
-#endif    // Danish (Denmark) resources
-/////////////////////////////////////////////////////////////////////////////
-
-
-/////////////////////////////////////////////////////////////////////////////
-// English (United States) resources
-
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
-#pragma code_page(1252)
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Dialog
-//
-
 IDD_ABOUTBOX DIALOG 0, 0, 235, 55
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About TestExpressionGraphics"
@@ -334,6 +283,29 @@ END
 #ifdef APSTUDIO_INVOKED
 GUIDELINES DESIGNINFO
 BEGIN
+    IDD_TREESEQUAL_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 410
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 313
+    END
+
+    IDD_ENTER_VARIABLES_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 263
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 192
+    END
+
+    IDD_EXPRESSIONTREE_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 388
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 352
+    END
     IDD_ABOUTBOX, DIALOG
     BEGIN
         LEFTMARGIN, 7

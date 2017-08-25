@@ -12,12 +12,13 @@
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
 
-/////////////////////////////////////////////////////////////////////////////
-// Danish resources
 
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DAN)
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
 #ifdef _WIN32
-LANGUAGE LANG_DANISH, SUBLANG_DEFAULT
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
 #endif //_WIN32
 
@@ -77,44 +78,6 @@ IDB_BITMAP1             BITMAP  DISCARDABLE     "res\\tjacobse.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
-// Dialog
-//
-
-IDD_LIXDIALOG DIALOG DISCARDABLE  0, 0, 186, 95
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Lix"
-FONT 8, "MS Sans Serif"
-BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,129,7,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,129,24,50,14
-    EDITTEXT        IDC_EDITLIX,37,36,41,15,ES_AUTOHSCROLL
-    LTEXT           "Lix:",IDC_STATIC,20,39,15,13
-    CONTROL         "Brug LixFilter",IDC_CHECKLIXFILTER,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,20,17,63,9
-END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// DESIGNINFO
-//
-
-#ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO DISCARDABLE 
-BEGIN
-    IDD_LIXDIALOG, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 179
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 88
-    END
-END
-#endif    // APSTUDIO_INVOKED
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
 // Menu
 //
 
@@ -134,18 +97,6 @@ BEGIN
     END
 END
 
-#endif    // Danish resources
-/////////////////////////////////////////////////////////////////////////////
-
-
-/////////////////////////////////////////////////////////////////////////////
-// English (U.S.) resources
-
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-#ifdef _WIN32
-LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
-#pragma code_page(1252)
-#endif //_WIN32
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -180,6 +131,19 @@ BEGIN
                     IDC_STATIC,43,21,239,17
     CONTROL         129,IDC_STATIC,"Static",SS_BITMAP | SS_SUNKEN | 
                     WS_BORDER,41,155,246,185
+END
+
+IDD_LIXDIALOG DIALOG DISCARDABLE  0, 0, 186, 95
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Lix"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,129,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,129,24,50,14
+    EDITTEXT        IDC_EDITLIX,37,36,41,15,ES_AUTOHSCROLL
+    LTEXT           "Lix:",IDC_STATIC,20,39,15,13
+    CONTROL         "Brug LixFilter",IDC_CHECKLIXFILTER,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,20,17,63,9
 END
 
 
@@ -234,6 +198,13 @@ END
 #ifdef APSTUDIO_INVOKED
 GUIDELINES DESIGNINFO DISCARDABLE 
 BEGIN
+    IDD_LIXDIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 88
+    END
     IDD_ABOUTBOX, DIALOG
     BEGIN
         LEFTMARGIN, 7
@@ -289,4 +260,3 @@ LANGUAGE 9, 1
 
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
-

@@ -13,11 +13,11 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Danish resources
+// English (U.S.) resources
 
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DAN)
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
 #ifdef _WIN32
-LANGUAGE LANG_DANISH, SUBLANG_DEFAULT
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
 #endif //_WIN32
 
@@ -58,7 +58,6 @@ END
 
 #endif    // APSTUDIO_INVOKED
 
-
 /////////////////////////////////////////////////////////////////////////////
 //
 // Icon
@@ -67,42 +66,6 @@ END
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDR_MAINFRAME           ICON    DISCARDABLE     "res\\testbin.ico"
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Dialog
-//
-
-IDD_DIALOGTIMER DIALOG DISCARDABLE  0, 0, 186, 95
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Timerinterval"
-FONT 8, "MS Sans Serif"
-BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,129,7,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,129,24,50,14
-    EDITTEXT        IDC_EDITTIMERINTERVAL,21,44,56,13,ES_AUTOHSCROLL
-    LTEXT           "msec.",IDC_STATIC,82,47,27,8
-END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// DESIGNINFO
-//
-
-#ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO DISCARDABLE 
-BEGIN
-    IDD_DIALOGTIMER, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 179
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 88
-    END
-END
-#endif    // APSTUDIO_INVOKED
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -132,23 +95,21 @@ BEGIN
     "T",            ID_VIEW_TIMER,          VIRTKEY, CONTROL, NOINVERT
 END
 
-#endif    // Danish resources
-/////////////////////////////////////////////////////////////////////////////
-
-
-/////////////////////////////////////////////////////////////////////////////
-// English (U.S.) resources
-
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-#ifdef _WIN32
-LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
-#pragma code_page(1252)
-#endif //_WIN32
-
 /////////////////////////////////////////////////////////////////////////////
 //
 // Dialog
 //
+
+IDD_DIALOGTIMER DIALOG DISCARDABLE  0, 0, 186, 95
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Timerinterval"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,129,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,129,24,50,14
+    EDITTEXT        IDC_EDITTIMERINTERVAL,21,44,56,13,ES_AUTOHSCROLL
+    LTEXT           "msec.",IDC_STATIC,82,47,27,8
+END
 
 IDD_ABOUTBOX DIALOG DISCARDABLE  0, 0, 235, 55
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
@@ -181,9 +142,21 @@ END
 // DESIGNINFO
 //
 
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
 #ifdef APSTUDIO_INVOKED
 GUIDELINES DESIGNINFO DISCARDABLE 
 BEGIN
+    IDD_DIALOGTIMER, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 88
+    END
     IDD_ABOUTBOX, DIALOG
     BEGIN
         LEFTMARGIN, 7
@@ -258,7 +231,6 @@ END
 
 #endif    // English (U.S.) resources
 /////////////////////////////////////////////////////////////////////////////
-
 
 
 #ifndef APSTUDIO_INVOKED

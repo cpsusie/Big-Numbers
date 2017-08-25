@@ -13,11 +13,11 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Danish resources
+// English (U.S.) resources
 
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DAN)
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
 #ifdef _WIN32
-LANGUAGE LANG_DANISH, SUBLANG_DEFAULT
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
 #endif //_WIN32
 
@@ -70,6 +70,13 @@ IDR_MYICON              ICON    DISCARDABLE     "res\\TestPicture.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
+// Cursor
+//
+
+IDC_CURSOR1             CURSOR  DISCARDABLE     "res\\cursor1.cur"
+
+/////////////////////////////////////////////////////////////////////////////
+//
 // Menu
 //
 
@@ -117,13 +124,6 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
-// Cursor
-//
-
-IDC_CURSOR1             CURSOR  DISCARDABLE     "res\\cursor1.cur"
-
-/////////////////////////////////////////////////////////////////////////////
-//
 // Accelerator
 //
 
@@ -137,19 +137,6 @@ BEGIN
     "R",            ID_VIEW_KEEPASPECTRATIO, VIRTKEY, ALT, NOINVERT
     "U",            ID_FILE_UNLOAD,         VIRTKEY, CONTROL, NOINVERT
 END
-
-#endif    // Danish resources
-/////////////////////////////////////////////////////////////////////////////
-
-
-/////////////////////////////////////////////////////////////////////////////
-// English (U.S.) resources
-
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-#ifdef _WIN32
-LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
-#pragma code_page(1252)
-#endif //_WIN32
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -289,4 +276,3 @@ LANGUAGE 9, 1
 
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
-

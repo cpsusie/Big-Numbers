@@ -13,10 +13,10 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Danish (Denmark) resources
+// English (United States) resources
 
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DAN)
-LANGUAGE LANG_DANISH, SUBLANG_DEFAULT
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
 
 #ifdef APSTUDIO_INVOKED
@@ -56,7 +56,6 @@ END
 
 #endif    // APSTUDIO_INVOKED
 
-
 /////////////////////////////////////////////////////////////////////////////
 //
 // Icon
@@ -65,42 +64,6 @@ END
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDR_MAINFRAME           ICON                    "res\\TestQRGraphics.ico"
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Dialog
-//
-
-IDD_DIMENSIONDIALOG DIALOG 0, 0, 227, 92
-STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Dimension"
-FONT 8, "MS Sans Serif"
-BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,170,7,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,170,24,50,14
-    EDITTEXT        IDC_EDITDIMENSION,66,39,63,16,ES_AUTOHSCROLL
-    LTEXT           "Dimension",IDC_STATIC,24,43,38,18
-END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// DESIGNINFO
-//
-
-#ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO
-BEGIN
-    IDD_DIMENSIONDIALOG, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 220
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 85
-    END
-END
-#endif    // APSTUDIO_INVOKED
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -128,21 +91,22 @@ BEGIN
     END
 END
 
-#endif    // Danish (Denmark) resources
-/////////////////////////////////////////////////////////////////////////////
-
-
-/////////////////////////////////////////////////////////////////////////////
-// English (United States) resources
-
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
-#pragma code_page(1252)
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Dialog
 //
+
+IDD_DIMENSIONDIALOG DIALOG 0, 0, 227, 92
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Dimension"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,170,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,170,24,50,14
+    EDITTEXT        IDC_EDITDIMENSION,66,39,63,16,ES_AUTOHSCROLL
+    LTEXT           "Dimension",IDC_STATIC,24,43,38,18
+END
 
 IDD_ABOUTBOX DIALOG 0, 0, 235, 55
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
@@ -167,12 +131,29 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_ABOUTBOX            "&About testqrgraphic..."
+END
+
+/////////////////////////////////////////////////////////////////////////////
+//
 // DESIGNINFO
 //
 
 #ifdef APSTUDIO_INVOKED
 GUIDELINES DESIGNINFO
 BEGIN
+    IDD_DIMENSIONDIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 220
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 85
+    END
     IDD_ABOUTBOX, DIALOG
     BEGIN
         , 50
@@ -223,16 +204,6 @@ BEGIN
 END
 
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// String Table
-//
-
-STRINGTABLE
-BEGIN
-    IDS_ABOUTBOX            "&About testqrgraphic..."
-END
-
 #endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 
@@ -259,4 +230,3 @@ LANGUAGE 9, 1
 
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
-
