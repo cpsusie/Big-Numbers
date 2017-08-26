@@ -353,12 +353,12 @@ void CMainFrame::OnFunctionMakePearlGrid() {
 }
 
 LRESULT CMainFrame::OnMsgShowDocPoint(WPARAM wp, LPARAM lp) {
-  if(m_created) return 0;
+  if(!m_created) return 0;
   CPearlImageView *view = getView();
   if(view->isMouseOnDocument()) {
     showPoint(view->getCurrentDocPoint());
   } else {
-    m_wndStatusBar.SetPaneText(1,EMPTYSTRING);
+    m_wndStatusBar.SetPaneText(0,EMPTYSTRING);
   }
   return 0;
 }
@@ -369,7 +369,7 @@ LRESULT CMainFrame::OnMsgShowResizeSize(WPARAM wp, LPARAM lp) {
 }
 
 void CMainFrame::showPoint(const CPoint &p) {
-  m_wndStatusBar.SetPaneText(1,format(_T("%3d,%3d px"),p.x,p.y).cstr());
+  m_wndStatusBar.SetPaneText(0,format(_T("%3d,%3d px"),p.x,p.y).cstr());
 }
 
 void CMainFrame::OnScrollLineDown() {

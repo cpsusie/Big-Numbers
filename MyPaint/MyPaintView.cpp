@@ -294,7 +294,7 @@ void CMyPaintView::paintResizingFrame(const CPoint &docp) {
     dc.DrawDragRect(&newRect,CSize(1,1),m_lastDragRect,CSize(1,1));
     m_dragRect     = newRect;
     m_lastDragRect = &m_dragRect;
-    CPoint docSize = viewToDoc(newRect.Size());
+    const CPoint docSize = viewToDoc(newRect.Size());
     getMainFrame()->PostMessage(ID_MSG_SHOWRESIZESIZE, docSize.x,docSize.y);
   }
 }

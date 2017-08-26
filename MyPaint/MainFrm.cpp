@@ -14,6 +14,7 @@ IMPLEMENT_DYNCREATE(CMainFrame, CFrameWnd)
 
 BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
     ON_WM_CREATE()
+    ON_WM_DESTROY()
     ON_WM_SIZE()
     ON_WM_CLOSE()
     ON_COMMAND(ID_APP_EXIT                        , OnAppExit                         )
@@ -92,7 +93,6 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
     ON_MESSAGE(ID_MSG_POPTOOL                     , OnMsgPopTool                      )
     ON_MESSAGE(ID_MSG_SHOWDOCPOINT                , OnMsgShowDocPoint                 )
     ON_MESSAGE(ID_MSG_SHOWRESIZESIZE              , OnMsgShowResizeSize               )
-  ON_WM_DESTROY()
 END_MESSAGE_MAP()
 
 static UINT indicators[] = {
@@ -503,7 +503,7 @@ LRESULT CMainFrame::OnMsgPopTool(WPARAM wp, LPARAM lp) {
 }
 
 LRESULT CMainFrame::OnMsgShowDocPoint(WPARAM wp, LPARAM lp) {
-  if(m_created) return 0;
+  if(!m_created) return 0;
   CMyPaintView *view = getView();
   if(view->isMouseOnDocument()) {
     showPoint(view->getCurrentDocPoint());

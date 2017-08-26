@@ -88,6 +88,7 @@ public:
 
 protected:
     afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
+    afx_msg void OnDestroy();
     afx_msg void OnSize(UINT nType, int cx, int cy);
     afx_msg void OnClose();
     afx_msg void OnAppExit();
@@ -167,6 +168,4 @@ protected:
     afx_msg LRESULT OnMsgShowDocPoint(WPARAM wp, LPARAM lp);
     afx_msg LRESULT OnMsgShowResizeSize(WPARAM wp, LPARAM lp);
     DECLARE_MESSAGE_MAP()
-public:
-  afx_msg void OnDestroy();
 };

@@ -143,6 +143,7 @@ void CPearlImageView::setCurrentZoomFactor(int factor) {
 void CPearlImageView::setCurrentDocPoint(const CPoint &p) {
   if(p != m_currentDocPoint) {
     m_currentDocPoint = p;
+    getMainFrame()->PostMessage(ID_MSG_SHOWDOCPOINT);
   }
 }
 
@@ -300,6 +301,8 @@ void CPearlImageView::paintResizingFrame(const CPoint &docp) {
     dc.DrawDragRect(&newRect,CSize(1,1),m_lastDragRect,CSize(1,1));
     m_dragRect     = newRect;
     m_lastDragRect = &m_dragRect;
+    const CPoint docSize = viewToDoc(newRect.Size());
+    getMainFrame()->PostMessage(ID_MSG_SHOWRESIZESIZE, docSize.x,docSize.y);
   }
 }
 
