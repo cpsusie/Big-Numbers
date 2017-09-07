@@ -1042,7 +1042,6 @@
     <ClCompile Include="xfree.cpp" />
     <ClCompile Include="xmalloc.cpp" />
     <ClCompile Include="XmlDoc.cpp" />
-    <ClCompile Include="XMLUtil.cpp" />
     <ClCompile Include="xrealloc.cpp" />
     <ClCompile Include="xstrdup.cpp" />
   </ItemGroup>
