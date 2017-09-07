@@ -8,8 +8,8 @@ DirList scandir(const TCHAR *pattern, FindDataSelector *selector, FindDataCompar
   DirList       list;
 
   try {
-    for(done = 0, nameIterator = _tfindfirst((TCHAR*)pattern, &entry);
-        nameIterator >= 0 && done == 0; done = _tfindnext(nameIterator, &entry)) {
+    for(done = 0, nameIterator = _tfindfirst64((TCHAR*)pattern, &entry);
+        nameIterator >= 0 && done == 0; done = _tfindnext64(nameIterator, &entry)) {
       if(selector == NULL || selector->select(entry)) {
         list.add(entry);
       }

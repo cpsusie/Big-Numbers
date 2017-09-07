@@ -3,11 +3,7 @@
 #include "MyUtil.h"
 #include <io.h>
 
-#ifdef UNICODE
-typedef _wfinddata_t DirListEntry;
-#else
-typedef _finddata_t  DirListEntry;
-#endif
+typedef _tfinddata64_t DirListEntry;
 
 typedef Comparator<DirListEntry> FindDataComparator;
 typedef Selector<  DirListEntry> FindDataSelector;
