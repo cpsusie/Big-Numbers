@@ -17,12 +17,11 @@ private:
 protected:
   DECLARE_DYNCREATE(CMainFrame)
 public:
-  virtual BOOL PreCreateWindow(CREATESTRUCT &cs);
   virtual BOOL PreTranslateMessage(MSG *pMsg);
 
   CMainFrame();
   virtual ~CMainFrame();
-  void showPositon(const CPoint &p);
+  void showPosition(const Point2DP &p);
   void activateInitialOptions();
   void              setRollAvg(bool on);
   void              setGrid(bool grid);

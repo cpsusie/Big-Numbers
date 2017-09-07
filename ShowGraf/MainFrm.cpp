@@ -79,7 +79,7 @@ static UINT indicators[] = {
 };
 
 CMainFrame::CMainFrame() {
-  m_fitThread        = NULL;
+  m_fitThread = NULL;
 }
 
 CMainFrame::~CMainFrame() {
@@ -144,13 +144,6 @@ void CMainFrame::initMenuItems() {
 */
 }
 
-BOOL CMainFrame::PreCreateWindow(CREATESTRUCT &cs) {
-  if(!__super::PreCreateWindow(cs)) {
-    return FALSE;
-  }
-  return TRUE;
-}
-
 BOOL CMainFrame::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     return true;
@@ -158,8 +151,8 @@ BOOL CMainFrame::PreTranslateMessage(MSG *pMsg) {
   return __super::PreTranslateMessage(pMsg);
 }
 
-void CMainFrame::showPositon(const CPoint &p) {
-  m_wndStatusBar.SetPaneText(1,format(_T("%3d,%3d"),p.x,p.y).cstr());
+void CMainFrame::showPosition(const Point2DP &p) {
+  m_wndStatusBar.SetPaneText(1,p.toString().cstr());
 }
 
 void CMainFrame::activateInitialOptions() {

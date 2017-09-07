@@ -103,7 +103,7 @@ void CShowGrafView::OnDraw(CDC *pDC) {
       m_coordinateSystem.substituteControl(this, IDC_SYSTEMPANEL);
       m_firstDraw = false;
     }
-    CRect rect = getClientRect(this);
+    const CRect rect = getClientRect(this);
 
     if(paintAll(*pDC, rect, &m_axisFont, &m_buttonFont)) {
       DoubleInterval maxNormInterval(0,1);
@@ -172,6 +172,7 @@ void CShowGrafView::OnMouseMove(UINT nFlags, CPoint point) {
       }
     }
   }
+  theApp.getMainWindow()->showPosition(m_coordinateSystem.getTransformation().backwardTransform((Point2DP)point));
 }
 
 void CShowGrafView::startDragging(const CPoint &point) {
