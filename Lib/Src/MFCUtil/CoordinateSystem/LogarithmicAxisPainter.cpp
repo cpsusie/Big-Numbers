@@ -10,7 +10,7 @@ LogarithmicAxisPainter::LogarithmicAxisPainter(SystemPainter &systemPainter, boo
 
 void LogarithmicAxisPainter::init() {
   if(isSingleDecade()) {
-    AbstractAxisPainter::init();
+    __super::init();
   } else {
     const double start = pow(10, floor(log10(getDataRange().getMin())));
     setMinMaxStep(start, getDataRange().getMax(), start);
@@ -24,7 +24,7 @@ double LogarithmicAxisPainter::getAxisPoint() const {
 const TCHAR *LogarithmicAxisPainter::getDoubleFormat() {
   if(m_doubleFormat.length() == 0) {
     if(isSingleDecade()) {
-      m_doubleFormat = AbstractAxisPainter::getDoubleFormat();
+      m_doubleFormat = __super::getDoubleFormat();
     } else {
       m_doubleFormat = _T("%lg");
     }
@@ -69,7 +69,7 @@ void LogarithmicAxisPainter::paintXDataMultipleDecades() {
       if(!dataRange.contains(t)) {
         continue;
       }
-      double xt = transform(t);
+      const double xt = transform(t);
       if(isPainting() && xt <= getOrigin().x) {
         continue;
       }
@@ -111,7 +111,7 @@ void LogarithmicAxisPainter::paintYDataMultipleDecades() {
       if(!dataRange.contains(t)) {
         continue;
       }
-      double yt = transform(t);
+      const double yt = transform(t);
       if(isPainting() && yt >= getOrigin().y) {
         continue;
       }

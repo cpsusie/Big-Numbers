@@ -66,28 +66,28 @@ void DateAxisPainter::init() {
   double maximum = getDataRange().getMax();
   double range   = maximum - minimum;
 
-  if(       range <= 10 * LENGTH_OF_SECOND) {   //             range <= 10 sec   => divide in milliseconds
+  if(       range <= 10 * LENGTH_OF_SECOND) {  //                range <= 10 sec    => divide in milliseconds
     int step = FIND_NICEMILLISECONDSTEP(range);
     step = max(step, 1);
     setMinMaxStep(findFirstMillisecond(minimum,step), maximum  , step                      , TMILLISECOND);
-  } else if(range <= 10 * LENGTH_OF_MINUTE ) { //  10 sec    < range <=  10 min   => divide in seconds
+  } else if(range <= 10 * LENGTH_OF_MINUTE ) { //  10 sec      < range <=  10 min   => divide in seconds
     int step = FIND_NICESECONDSTEP(range);
     setMinMaxStep(firstInSecond(minimum,step)       , maximum  , step                      , TSECOND     );
-  } else if(range <= 8 * LENGTH_OF_HOUR    ) { //  10 min    < range <=   8 hours => divide in minutes
+  } else if(range <= 8 * LENGTH_OF_HOUR    ) { //  10 min      < range <=   8 hours => divide in minutes
     int step = FIND_NICEMINUTSTEP(range);
     setMinMaxStep(firstInMinute(minimum,step)       , maximum  , step                      , TMINUTE     );
-  } else if(range <= 14.0 * LENGTH_OF_DAY  ) { //   8 hours  < range <=   2 weeks => divide in hours
+  } else if(range <= 14.0 * LENGTH_OF_DAY  ) { //   8 hours    < range <=   2 weeks => divide in hours
     int step = FIND_NICEHOURSTEP(range);
     setMinMaxStep(firstInHour(  minimum,step)       , maximum  , step                      , THOUR       );
-  } else if(range <= 60.0 * LENGTH_OF_DAY  ) { //   2 weeks  < range <=  60 days  => divide in days  (1)
+  } else if(range <= 60.0 * LENGTH_OF_DAY  ) { //   2 weeks    < range <=  60 days  => divide in days  (1)
     setMinMaxStep(minimum                           , maximum  , 1                         , TDAYOFMONTH );
-  } else if(range <= 180.0 * LENGTH_OF_DAY ) { //  60 days   < range <= 180 days  => divide in days  (5,10,20)
+  } else if(range <= 180.0 * LENGTH_OF_DAY ) { //  60 days     < range <= 180 days  => divide in days  (5,10,20)
     int step = FIND_NICEDAYSTEP(range);
     setMinMaxStep(minimum                           , maximum  , step                      , TDAYOFMONTH );
-  } else if(range <= 10.0 * LENGTH_OF_YEAR ) { // 120 days    < range <= 10 years => divide in month
+  } else if(range <= 10.0 * LENGTH_OF_YEAR) {  // 120 days     < range <= 10 years => divide in month
     int step = FIND_NICEMONTHSTEP(range);
     setMinMaxStep(firstInMonth( minimum,step)       , maximum  , step                      , TMONTH      );
-  } else {                                    //   10 years   < range             => divide in years (2,5,10,20,50,...
+  } else {                                     //   10 years   < range             => divide in years (2,5,10,20,50,...
     int step = FIND_NICEYEARSTEP(range);
     step = max(step,1);
     setMinMaxStep(firstInYear(minimum, step)        , maximum  , step                      , TYEAR       );
@@ -108,13 +108,13 @@ String DateAxisPainter::getText(double x) {
   case TDAYOFMONTH : return t.toString(ddMMyy);
   case TMONTH      : return t.toString(MMyyyy);
   case TYEAR       : return t.toString(yyyy);
-  default          : throwException(_T("DateAxisPainter::getText:Illegal timecomponent(=%d)"),(int)m_timeComponent);
+  default          : throwException(_T("%s:Illegal timecomponent(=%d)"),__TFUNCTION__,(int)m_timeComponent);
                      return EMPTYSTRING;
   }
 }
 
 void DateAxisPainter::setMinMaxStep(double min, double max, double step, TimeComponent timeComponent) {
-  AbstractAxisPainter::setMinMaxStep(min,max,step);
+  __super::setMinMaxStep(min,max,step);
   m_timeComponent = timeComponent;
 }
 

@@ -10,10 +10,10 @@ NormalDistributionAxisPainter::NormalDistributionAxisPainter(SystemPainter &syst
 
 void NormalDistributionAxisPainter::init() {
   if(getDecadeCount() <= 2) {
-    AbstractAxisPainter::init();
+    __super::init();
   } else {
-    DoubleInterval dataRange = getDataRange();
-    double step = pow(10, -abs(getDecade(dataRange.getMin())));
+    const DoubleInterval dataRange = getDataRange();
+    const double         step = pow(10, -abs(getDecade(dataRange.getMin())));
     setMinMaxStep(step, dataRange.getMax(), step);
   }
 }
@@ -23,19 +23,19 @@ double NormalDistributionAxisPainter::getAxisPoint() const {
 }
 
 String NormalDistributionAxisPainter::getText(double x) {
-  if(x == 0)
+  if(x == 0) {
     return _T("0");
-  int decade = getDecade(x);
-  if(fabs(decade) <= 2)
-    return format(getDoubleFormat(),x);
-  else
-    return format(startDecadeFormat.cstr(),x);
+  }
+  const int decade = getDecade(x);
+  return fabs(decade) <= 2
+       ? format(getDoubleFormat(),x)
+       : format(startDecadeFormat.cstr(),x);
 }
 
 const TCHAR *NormalDistributionAxisPainter::getDoubleFormat() {
   if(m_doubleFormat.length() == 0) {
     if(useSuperAxisScale()) {
-      m_doubleFormat = AbstractAxisPainter::getDoubleFormat();
+      m_doubleFormat = __super::getDoubleFormat();
     } else {
       m_doubleFormat = _T("%.8lg");
     }
@@ -46,8 +46,7 @@ const TCHAR *NormalDistributionAxisPainter::getDoubleFormat() {
 void NormalDistributionAxisPainter::paintXData() {
   if(useSuperAxisScale()) {
     paintXDataSingleDecade();
-  }
-  else {
+  } else {
     paintXDataMultipleDecades();
   }
 }
@@ -55,26 +54,27 @@ void NormalDistributionAxisPainter::paintXData() {
 void NormalDistributionAxisPainter::paintYData() {
   if(useSuperAxisScale()) {
     paintYDataSingleDecade();
-  }
-  else {
+  } else {
     paintYDataMultipleDecades();
   }
 }
 
 void NormalDistributionAxisPainter::paintXDataMultipleDecades() {
-  DoubleInterval dataRange = getDataRange();
-  double max = dataRange.getMax();
-  double t = 0;
+  const DoubleInterval dataRange = getDataRange();
+  const double         max       = dataRange.getMax();
+  double               t         = 0;
   for(int decade = getDecade(dataRange.getMin()); t <= max; decade++) {
-    double decadeStop = getDecadeStop(decade);
-    double step = getDecadeStep(decade);
+    const double decadeStop = getDecadeStop(decade);
+    const double step       = getDecadeStep(decade);
     for(t = getDecadeStart(decade); t <= decadeStop; t += step) {
-      if(!dataRange.contains(t))
+      if(!dataRange.contains(t)) {
         continue;
-      double xt = transform(t);
-      if(isPainting() && xt <= getOrigin().x)
+      }
+      const double xt = transform(t);
+      if(isPainting() && xt <= getOrigin().x) {
         continue;
-      String tmp = getText(t);
+      }
+      const String tmp = getText(t);
       if(xTextPossible(xt, tmp)) {
         xTextOut(xt, tmp, 0);
       }
@@ -85,19 +85,21 @@ void NormalDistributionAxisPainter::paintXDataMultipleDecades() {
 }
 
 void NormalDistributionAxisPainter::paintYDataMultipleDecades() {
-  DoubleInterval dataRange = getDataRange();
-  double max = dataRange.getMax();
-  double t = 0;
+  const DoubleInterval dataRange = getDataRange();
+  const double         max       = dataRange.getMax();
+  double               t         = 0;
   for(int decade = getDecade(dataRange.getMin()); t <= max; decade++) {
-    double decadeStop = getDecadeStop(decade);
-    double step = getDecadeStep(decade);
+    const double decadeStop = getDecadeStop(decade);
+    const double step       = getDecadeStep(decade);
     for(t = getDecadeStart(decade); t <= decadeStop; t += step) {
-      if(!dataRange.contains(t))
+      if(!dataRange.contains(t)) {
         continue;
-      double yt = transform(t);
-      if(isPainting() && yt >= getOrigin().y)
+      }
+      const double yt = transform(t);
+      if(isPainting() && yt >= getOrigin().y) {
         continue;
-      String tmp = getText(t);
+      }
+      const String tmp = getText(t);
       if(yTextPossible(yt, tmp)) {
         yTextOut(yt, tmp, 0);
       }
@@ -118,34 +120,30 @@ int NormalDistributionAxisPainter::getDecadeCount() const {
 // Values between 0.1 and 0.9 have decade 0.
 // Values below 0.1 has negative decade. Values above 0.9 has positive decade
 int NormalDistributionAxisPainter::getDecade(double x) { // static
-  if(x >= 0.1-1e-6 && x <= 0.9+1e-6)
+  if((x >= 0.1-1e-6) && (x <= 0.9+1e-6)) {
     return 0;
-  else if(x < 0.1)
+  } else if(x < 0.1) {
     return (int)floor(log10(x)) + 1;
-  else
+  } else {
     return -1-(int)floor(log10(1-x));
+  }
 }
 
 double NormalDistributionAxisPainter::getDecadeStep(int decade) { // static
-  if(decade == 0)
-    return 0.1;
-  else
-    return pow(10,-fabs(decade-1))*10;
+  return (decade == 0) ? 0.1 : pow(10,-fabs(decade-1))*10;
 }
 
 double NormalDistributionAxisPainter::getDecadeStart(int decade) { // static
-  if(decade < 0)
-    return pow(10,decade-1);
-  else if(decade > 0)
-    return 1 - pow(10,-(decade+1));
-  else
+  if(decade < 0) {
+    return pow(10, decade-1);
+  } else if(decade > 0) {
+    return 1 - pow(10, -(decade+1));
+  } else {
     return 0.1;
+  }
 }
 
 double NormalDistributionAxisPainter::getDecadeStop(int decade) { // static
-  double decadeStart = getDecadeStart(decade);
-  if(decade <= 0)
-    return 9*decadeStart;
-  else
-    return decadeStart + ((1-decadeStart)/10*9);
+  const double decadeStart = getDecadeStart(decade);
+  return (decade <= 0) ? 9*decadeStart : (decadeStart + ((1-decadeStart)/10*9));
 }
