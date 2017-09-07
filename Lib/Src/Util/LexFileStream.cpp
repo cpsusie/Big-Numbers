@@ -85,7 +85,8 @@ intptr_t LexFileStream::getChars(_TUCHAR *dst, size_t n) {
   return d - dst;
 }
 
-static inline BYTE *memrchr(const BYTE *s, BYTE ch, size_t n) { // s point to the beginning of the buffer to search
+// s point to the beginning of the buffer to search
+static inline BYTE *memrchr(const BYTE *s, BYTE ch, size_t n) {
   for(s += n; n--;) {
     if(*(--s) == ch) {
       return (BYTE*)s;
@@ -127,17 +128,13 @@ size_t ByteQueue::readUntilHasNewLine(FILE *f) {
   return nl ? (nl - getData() + 1) : size();
 }
 
-// --------------------------------------------------------------------------------------------
-
-
-// Assume there is at least count bytes in ByteQueue.
-String ByteQueue::getConvertedString(size_t count) { // convert count bytes to string
-  TCHAR tmp[4096];
+String ByteQueue::getConvertedString(size_t count) {
+  TCHAR  tmp[4096];
   TCHAR *buffer     = tmp;
   size_t bufferSize = ARRAYSIZE(tmp);
   String result;
 
-  if (m_firstRead) {
+  if(m_firstRead) {
     m_firstRead = false;
     UINT bytesToSkip = 0;
     m_textFormat = TextFormatDetecter::detectFormat(getData(), (int)size(), bytesToSkip);
@@ -150,16 +147,16 @@ String ByteQueue::getConvertedString(size_t count) { // convert count bytes to s
   switch(m_textFormat) {
   case TF_UNDEFINED: // just read it as ascii bytes
   case TF_ASCII8:
-    { for (size_t i = 0; (i < count) && !isEmpty();) {
-        const size_t rest = count - i; // in bytes
+    { for(size_t i = 0; (i < count) && !isEmpty();) {
+        const size_t rest      = count - i; // in bytes
         const size_t charCount = min(rest, bufferSize - 1); // characters to copy = bytes to copy
-        const BYTE *src = getData();
-        const BYTE *lastByte = src + charCount;
-        _TUCHAR *dst = (_TUCHAR*)buffer;
-        while (src < lastByte) {
+        const BYTE  *src       = getData();
+        const BYTE  *lastByte  = src + charCount;
+        _TUCHAR     *dst       = (_TUCHAR*)buffer;
+        while(src < lastByte) {
           *(dst++) = *(src++);
         }
-        *dst = _T('\0');
+        *dst = 0;
         result += buffer;
         remove(0, charCount);
         i += charCount;
@@ -170,18 +167,18 @@ String ByteQueue::getConvertedString(size_t count) { // convert count bytes to s
     throwException(_T("%s:Textformat TF_ASCII16_BE not implemented yet"), s_className);
     break;
   case TF_ASCII16_LE:
-    { if (count & 1) {  // make sure count is even, or we'll get an infinite loop
-        if (count > 1) {
+    { if(count & 1) {  // make sure count is even, or we'll get an infinite loop
+        if(count > 1) {
           count--;
-        } else if (++count > size()) {
+        } else if(++count > size()) {
           append(0); // add a 0-byte to end the stream
         }
       }
-      for (size_t i = 0; (i < count) && !isEmpty();) {
-        const size_t rest = count - i; // in bytes
+      for(size_t i = 0; (i < count) && !isEmpty();) {
+        const size_t rest       = count - i; // in bytes
         const size_t tcharCount = min(rest / sizeof(TCHAR), bufferSize - 1); // in TCHAR's
         MEMCPY(buffer, (const TCHAR*)getData(), tcharCount);
-        buffer[tcharCount] = _T('\0');
+        buffer[tcharCount] = 0;
         result += buffer;
         const size_t byteCount = tcharCount * sizeof(TCHAR);
         remove(0, byteCount);
@@ -194,29 +191,28 @@ String ByteQueue::getConvertedString(size_t count) { // convert count bytes to s
   case TF_UTF16_LE:
     try {
       const int requiredSize = MultiByteToWideChar(CP_UTF8, 0, (char*)getData(), (int)count, NULL, 0);
-      if (requiredSize == 0) {
+      if(requiredSize == 0) {
         throwMethodLastErrorOnSysCallException(s_className, _T("MultiByteToWideChar"));
       }
-      if ((UINT)requiredSize + 1 > bufferSize) {
-        if (buffer != tmp) {
+      if((UINT)requiredSize + 1 > bufferSize) {
+        if(buffer != tmp) {
           SAFEDELETEARRAY(buffer);
         }
         bufferSize = requiredSize + 1;
         buffer = new TCHAR[bufferSize]; TRACE_NEW(buffer);
       }
       const int ret = MultiByteToWideChar(CP_UTF8, 0, (char*)getData(), (int)count, buffer, requiredSize);
-      if (ret == 0) {
+      if(ret == 0) {
         throwMethodLastErrorOnSysCallException(s_className, _T("MultiByteToWideChar"));
       }
       buffer[requiredSize] = 0;
       result = buffer;
-      if (buffer != tmp) {
+      if(buffer != tmp) {
         SAFEDELETEARRAY(buffer);
       }
       remove(0, count);
-    }
-    catch (...) {
-      if (buffer != tmp) {
+    } catch (...) {
+      if(buffer != tmp) {
         SAFEDELETEARRAY(buffer);
       }
       throw;
@@ -225,6 +221,8 @@ String ByteQueue::getConvertedString(size_t count) { // convert count bytes to s
   }
   return result;
 }
+
+// --------------------------------------------------------------------------------------------
 
 DEFINECLASSNAME(CharQueue);
 

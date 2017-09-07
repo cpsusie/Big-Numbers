@@ -42,7 +42,8 @@ public:
     return size() == 0;
   }
 
-  // count is the number of bytes to convert
+  // Assume there are at least count bytes in ByteQueue.
+  // Convert count bytes to string
   String getConvertedString(size_t count);
   size_t readUntilHasNewLine(FILE *f);
 };
