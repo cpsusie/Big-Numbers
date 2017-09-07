@@ -116,7 +116,7 @@ void BigReal::insertBorrowDigitsAfter(Digit *p, size_t count) {
   }
 }
 
-void BigReal::trimHead() { // assume m_first && m_first == 0
+void BigReal::trimHead() {
   m_expo--;
   Digit *p;
   for(p = m_first->next; p && (p->n == 0); p = p->next, m_expo--);
@@ -135,7 +135,7 @@ void BigReal::trimHead() { // assume m_first && m_first == 0
   }
 }
 
-void BigReal::trimTail() { // assume m_first != NULL => m_last != NULL and m_last->n == 0
+void BigReal::trimTail() {
   m_low++;
   Digit *p;
   for(p = m_last->prev; p && (p->n == 0); p = p->prev, m_low++);
@@ -394,7 +394,7 @@ long getLong(const BigReal &x) {
   return (long)(x.isNegative() ? -result : result);
 }
 
-unsigned long getUlong(const BigReal &x) {
+ULONG getUlong(const BigReal &x) {
   DEFINEMETHODNAME;
   if(x.isZero()) {
     return 0;
@@ -414,10 +414,10 @@ unsigned long getUlong(const BigReal &x) {
   }
   for(;i-- >= 0;) result *= BIGREALBASE;
 
-  return (unsigned long)result;
+  return (ULONG)result;
 }
 
-__int64 getInt64(const BigReal &x) {
+INT64 getInt64(const BigReal &x) {
   DEFINEMETHODNAME;
   if(x.isZero()) {
     return 0;
@@ -430,7 +430,7 @@ __int64 getInt64(const BigReal &x) {
     throwBigRealGetIntegralTypeUnderflowException(method, x, toString(ConstBigReal::_i64_min));
   }
 
-  __int64    result = 0;
+  INT64      result = 0;
   BRExpoType i      = x.m_expo;
   for(const Digit *p = x.m_first; p && (i-- >= 0); p = p->next) {
     result = result * BIGREALBASE + p->n;
@@ -439,7 +439,7 @@ __int64 getInt64(const BigReal &x) {
   return x.isNegative() ? -result : result;
 }
 
-unsigned __int64 getUint64(const BigReal &x) {
+UINT64 getUint64(const BigReal &x) {
   DEFINEMETHODNAME;
   if(x.isZero()) {
     return 0;
@@ -452,8 +452,8 @@ unsigned __int64 getUint64(const BigReal &x) {
     throwBigRealGetIntegralTypeOverflowException(method, x, toString(ConstBigReal::_ui64_max));
   }
 
-  unsigned __int64 result = 0;
-  BRExpoType       i      = x.m_expo;
+  UINT64     result = 0;
+  BRExpoType i      = x.m_expo;
   for(const Digit *p = x.m_first; p && (i-- >= 0); p = p->next) {
     result = result * BIGREALBASE + p->n;
   }
@@ -505,7 +505,7 @@ _uint128 getUint128(const BigReal &x) {
   return result;
 }
 
-unsigned long BigReal::hashCode() const {
+ULONG BigReal::hashCode() const {
   size_t s = m_expo;
   if(isZero()) {
     return 0;

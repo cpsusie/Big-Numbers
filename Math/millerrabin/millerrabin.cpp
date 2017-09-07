@@ -75,14 +75,20 @@ void MRHandler::handleData(const MillerRabinCheck &data) {
   m_gate.signal();
 }
 
+typedef enum {
+  CMD_CHECKISPRIME
+ ,CMD_FINDPRIME
+ ,CMD_POWMOD
+} Command;
+
 int main(int argc, char **argv) {
   char    *cp;
-  BigInt  numberToCheck;
-  bool    verbose      = false;
-  bool    checkBigReal = false;
-  int     threadCount  = 1;
-  UINT    count        = 1;
-  UINT    digits       = 100;
+  BigInt   numberToCheck;
+  bool     verbose      = false;
+  Command  cmd          = CMD_FINDPRIME;
+  int      threadCount  = 1;
+  UINT     count        = 1;
+  UINT     digits       = 100;
 
   for(argv++; *argv && *(cp = *argv) == '-'; argv++) {
     for(cp++;*cp; cp++) {
@@ -91,7 +97,7 @@ int main(int argc, char **argv) {
         verbose = true;
         continue;
       case 'c':
-        checkBigReal = true;
+        cmd = CMD_CHECKISPRIME;
         if(isdigit(cp[1])) {
           numberToCheck = BigInt(cp+1);
           break;
@@ -115,6 +121,9 @@ int main(int argc, char **argv) {
           usage();
         }
         break;
+      case 'p':
+        cmd = CMD_POWMOD;
+        break;
       default:
         usage();
       }
@@ -128,7 +137,8 @@ int main(int argc, char **argv) {
   }
 
   try {
-    if(checkBigReal) {
+    switch(cmd) {
+    case CMD_CHECKISPRIME:
       if(numberToCheck.isZero()) {
         tcout << _T("Enter BigReal:");
         tcin >> numberToCheck;
@@ -138,22 +148,33 @@ int main(int argc, char **argv) {
       } else {
         tcout << numberToCheck << _T(" is composite\n");
       }
-      return 0;
-    }
-
-    randomize();
-
-    int winW, winH;
-    if(verbose) {
-      Console::getLargestConsoleWindowSize(winW, winH);
-      winW -= 10;
-      winH --;
-      Console::setWindowAndBufferSize(0,0,winW, winH);
-      Console::clear();
-    }
-    for(UINT i = 1; i <= count; i++) {
-      BigInt n = findRandomPrime(digits, threadCount, NULL, verbose?&MRHandler(i,threadCount, winH):NULL);
-      tcout << n << endl;
+      break;
+    case CMD_FINDPRIME:
+      { randomize();
+        int winW, winH;
+        if(verbose) {
+          Console::getLargestConsoleWindowSize(winW, winH);
+          winW -= 10;
+          winH --;
+          Console::setWindowAndBufferSize(0,0,winW, winH);
+          Console::clear();
+        }
+        for(UINT i = 1; i <= count; i++) {
+          BigInt n = findRandomPrime(digits, threadCount, NULL, verbose?&MRHandler(i,threadCount, winH):NULL);
+          tcout << n << endl;
+        }
+      }
+      break;
+    case CMD_POWMOD:
+      { tcout << _T("Will calculate a^r mod n.");
+        for(;;) {
+          tcout << _T("Enter a,r,n:");
+          BigInt a,r,n;
+          tcin >> a >> r >> n;
+          BigInt p = powmod(a, r, n, verbose);
+          tcout << _T("powmod(a,r,n)=") << p << endl;
+        }
+      }
     }
   } catch(Exception e) {
     _tprintf(_T("Exception:%s\n"), e.what());

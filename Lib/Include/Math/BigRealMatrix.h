@@ -76,7 +76,8 @@ BigRealMatrix operator-(const BigRealMatrix &m);
 BigReal       det(      const BigRealMatrix &a);
 BigRealMatrix inverse(  const BigRealMatrix &a);
 BigRealMatrix transpose(const BigRealMatrix &a);
-BigReal       normf(    const BigRealMatrix &a); // Frobenius norm
+// Frobenius norm
+BigReal       normf(    const BigRealMatrix &a);
 
 class BigRealLUMatrix : private BigRealMatrix {
 private:
