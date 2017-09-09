@@ -4,7 +4,6 @@
 #include <CompactArray.h>
 #include <CompactHashSet.h>
 #include <CompactHashMap.h>
-#include <HashMap.h>
 #include "Cube3D.h"
 
 typedef enum {
@@ -359,6 +358,11 @@ private:
 public:
   IsoSurfacePolygonizer(IsoSurfaceEvaluator &eval);
   ~IsoSurfacePolygonizer();
+  // Polygonize eval (set of points, p, where eval.evaluate(p) == 0)
+  // start                 : The point where the search for a zero-value of eval will start.
+  // double size           : Width of the partitioning cube
+  // int bounds            : max. range of cubes (+/- on the three axes) from first cube
+  // bool tetrahedralmode  : if true, use tetrahedral decomposition of a rectangular cube. false to use cube directly
   void polygonize(const Point3D &start
                  ,double         cellSize
                  ,const Cube3D  &boundingBox

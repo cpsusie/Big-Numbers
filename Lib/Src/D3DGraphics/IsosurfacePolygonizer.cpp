@@ -20,7 +20,7 @@ typedef struct {
   CubeCorner corner2;
   CubeFace   leftface;
   CubeFace   rightface;
-  CubeEdge   nextClockwiseEdge[6]; // indexet by face
+  CubeEdge   nextClockwiseEdge[6]; // indexed by face
 } CubeEdgeInfo;
 
 static const CubeEdgeInfo cubeEdgeTable[12] = {
@@ -42,31 +42,10 @@ static const CubeEdgeInfo cubeEdgeTable[12] = {
 #define BIT(i, bit) (((i)>>(bit))&1)
 #define FLIP(i,bit) ((i)^(1<<(bit))) // flip the given bit of i
 
-#pragma check_stack(off)
-/*
-class PointKeyComparator : public Comparator<Point3DKey> {
-public:
-  inline int compare(const Point3DKey &k1, const Point3DKey &k2) {
-    return (k1 == k2) ? 0 : 1;
-  }
-  inline AbstractComparator *clone() const {
-    return new PointKeyComparator();
-  }
-};
-
-static inline ULONG pointKeyHash(const Point3DKey &key) {
-  return key.hashCode();
-}
-
-static PointKeyComparator pointKeyCmp;
-*/
 PolygonizerCubeArrayTable IsoSurfacePolygonizer::s_cubetable;
-
-#pragma check_stack(on)
 
 IsoSurfacePolygonizer::IsoSurfacePolygonizer(IsoSurfaceEvaluator &eval)
 : m_eval(eval)
-/*, m_cornerMap(pointKeyHash, pointKeyCmp, HASHSIZE)*/
 , m_cornerMap(HASHSIZE)
 {
 }
@@ -74,12 +53,6 @@ IsoSurfacePolygonizer::IsoSurfacePolygonizer(IsoSurfaceEvaluator &eval)
 IsoSurfacePolygonizer::~IsoSurfacePolygonizer() {
 }
 
-// polygonize: polygonize the implicit surface function
-// Arguments:
-// start                 : The point where the search for a zero-value of the surfacefunction will start.
-// double size           : Width of the partitioning cube
-// int bounds            : max. range of cubes (+/- on the three axes) from first cube
-// bool tetrahedralmode  : true to use tetrahedral decomposition of a rectangular cube. false to use cube directly
 void IsoSurfacePolygonizer::polygonize(const Point3D &start
                                       ,double         cellSize
                                       ,const Cube3D  &boundingBox
