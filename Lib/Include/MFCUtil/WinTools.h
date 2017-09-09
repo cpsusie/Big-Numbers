@@ -169,7 +169,7 @@ void textOutTransparentBackground(HDC hdc, const CPoint &p, const String &s, CFo
 void textOut(                     HDC hdc, const CPoint &p, const String &s);
 void textOut(                     HDC hdc, int x, int y, const String &s);
 
-void Message(const TCHAR *format, ... );
+// void Message(const TCHAR *format, ... );
 
 int vshowMessageBox(int flags, const TCHAR *format, va_list argptr);
 
