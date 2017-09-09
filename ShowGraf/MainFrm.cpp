@@ -478,21 +478,14 @@ LRESULT CMainFrame::OnMsgSearchInterval(WPARAM wp, LPARAM lp) {
   int xTo   = (int)lp;
   if(xFrom > xTo) std::swap(xFrom,xTo);
   const DoubleInterval xIinterval = getView()->getCoordinateSystem().getTransformation().getXTransformation().backwardTransform(DoubleInterval(xFrom,xTo));
-  const GraphArray &ga = getDoc()->getGraphArray();
-  String text;
+  const GraphArray    &ga         = getDoc()->getGraphArray();
+  GraphZeroesResultArray result;
   for(size_t i = 0; i < ga.size(); i++) {
-    const GraphItem &gi = ga[i];
-    CompactDoubleArray zeroes = gi.getGraph().findZeroes(xIinterval);
-    if(!zeroes.isEmpty()) {
-      text += format(_T("Zeroes of %s:%s\n\r")
-                    ,gi.getDisplayName().cstr()
-                    ,zeroes.toStringBasicType().cstr());
+    if(ga[i].getGraph().isVisible()) {
+      result.addAll(ga[i].getGraph().findZeroes(xIinterval));
     }
   }
-  if(text.length() == 0) {
-    text = _T("No zeroes found");
-  }
-  showInformation(text);
+  showInformation(result.toString().cstr());
   getView()->setMouseTool(TOOL_DRAG);
   return 0;
 }

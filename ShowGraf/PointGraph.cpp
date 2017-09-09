@@ -190,11 +190,11 @@ static int point2DcmpX(const Point2D &p1, const Point2D &p2) {
   return sign(p1.x-p2.x);
 }
 
-CompactDoubleArray PointGraph::findZeroes(const DoubleInterval &i) const {
+GraphZeroesResultArray PointGraph::findZeroes(const DoubleInterval &i) const {
   Point2DArray       data = getProcessedData();
   CompactDoubleArray result;
   if(data.isEmpty()) {
-    return result;
+    return makeZeroesResult(result);
   }
   data.sort(point2DcmpX);
   const size_t n = data.size();
@@ -203,7 +203,7 @@ CompactDoubleArray PointGraph::findZeroes(const DoubleInterval &i) const {
     if((p.y == 0) && i.contains(p.x)) {
       result.add(p.x);
     }
-    return result;
+    return makeZeroesResult(result);
   } else if (n == 2) {
     const Point2D &p0 = data[0];
     const Point2D &p1 = data[0];
@@ -216,6 +216,7 @@ CompactDoubleArray PointGraph::findZeroes(const DoubleInterval &i) const {
       if((p0.y == 0) && i.contains(p0.x)) result.add(p0.x);
       if((p1.y == 0) && i.contains(p1.x)) result.add(p1.x);
     }
+    return makeZeroesResult(result);
   }
 
   const Point2D *lastp      = &data[0];
@@ -247,5 +248,5 @@ CompactDoubleArray PointGraph::findZeroes(const DoubleInterval &i) const {
   if(lastInside && (lastp->y == 0)) {
     result.add(lastp->x);
   }
-  return result;
+  return makeZeroesResult(result);
 }

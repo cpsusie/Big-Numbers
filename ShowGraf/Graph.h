@@ -6,6 +6,28 @@
 
 #define EMPTY_DISTANCE 1e40
 
+class GraphZeroesResult {
+public:
+  String             m_name;
+  CompactDoubleArray m_zeroes;
+  GraphZeroesResult(const String &name, const CompactDoubleArray &zeroes)
+    : m_name(name)
+    , m_zeroes(zeroes)
+  {
+  }
+  String toString() const {
+    return format(_T("Zeroes of %s:%s")
+                 ,m_name.cstr(), m_zeroes.toStringBasicType().cstr());
+  }
+};
+
+class GraphZeroesResultArray : public Array<GraphZeroesResult> {
+public:
+  String toString() const {
+    return isEmpty() ? _T("No zeroes found") : __super::toString(_T("\n"));
+  }
+};
+
 class Graph : public CoordinateSystemObject {
 private:
   bool             m_visible;
@@ -18,6 +40,13 @@ protected:
   }
   static bool pointDefined(const Point2D &p) {
     return _finite(p.x) && !_isnan(p.x) && _finite(p.y) && !_isnan(p.y);
+  }
+  GraphZeroesResultArray makeZeroesResult(const CompactDoubleArray &zeroes) const {
+    GraphZeroesResultArray result;
+    if(!zeroes.isEmpty()) {
+      result.add(GraphZeroesResult(getParam().getDisplayName(), zeroes));
+    }
+    return result;
   }
 public:
   virtual ~Graph() {
@@ -55,7 +84,7 @@ public:
   virtual bool needRefresh() const {
     return false;
   }
-  virtual CompactDoubleArray findZeroes(const DoubleInterval &i) const = 0;
+  virtual GraphZeroesResultArray findZeroes(const DoubleInterval &i) const = 0;
   // Find zero of line going through p1,p2
   // Assume y1 != y2
   static inline double inverseLinearInterpolate0(const Point2D &p1, const Point2D &p2) {
@@ -101,5 +130,5 @@ public:
   inline bool isPointGraph() const {
     return true;
   }
-  CompactDoubleArray findZeroes(const DoubleInterval &i) const;
+  GraphZeroesResultArray findZeroes(const DoubleInterval &i) const;
 };

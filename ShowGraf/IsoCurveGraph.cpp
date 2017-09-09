@@ -250,6 +250,6 @@ public:
   }
 };
 
-CompactDoubleArray IsoCurveGraph::findZeroes(const DoubleInterval &i) const {
-  return ::findZeroes(IsoCurveY0Function(this), i);
+GraphZeroesResultArray IsoCurveGraph::findZeroes(const DoubleInterval &i) const {
+  return makeZeroesResult(::findZeroes(IsoCurveY0Function(this), i));
 }

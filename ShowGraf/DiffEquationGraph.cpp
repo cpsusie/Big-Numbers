@@ -150,3 +150,21 @@ void DiffEquationGraph::setVisible(bool visible) {
     m_pointGraphArray[i]->setVisible(visible);
   }
 }
+
+GraphZeroesResultArray DiffEquationGraph::findZeroes(const DoubleInterval &i) const {
+  GraphZeroesResultArray result;
+  const size_t n = m_pointGraphArray.size();
+  for(size_t t = 0; t < n; t++) {
+    const PointGraph *g = m_pointGraphArray[t];
+    if(g->isVisible()) {
+      result.addAll(g->findZeroes(i));
+    }
+  }
+  for (size_t g = 0; g < result.size(); g++) {
+    String &name = result[g].m_name;
+    name = format(_T("%s.%s")
+                 ,getParam().getDisplayName().cstr()
+                 ,name.cstr());
+  }
+  return result;
+}

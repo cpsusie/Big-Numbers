@@ -72,6 +72,6 @@ void FunctionGraph::paint(CCoordinateSystem &cs) {
 */
 }
 
-CompactDoubleArray FunctionGraph::findZeroes(const DoubleInterval &i) const {
-  return ::findZeroes(FunctionGraphFunction(this),i);
+GraphZeroesResultArray FunctionGraph::findZeroes(const DoubleInterval &i) const {
+  return makeZeroesResult(::findZeroes(FunctionGraphFunction(this),i));
 }
