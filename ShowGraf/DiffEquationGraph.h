@@ -35,4 +35,7 @@ public:
   }
   void   setStyle(GraphStyle style);
   void   setVisible(bool visible);
+  CompactDoubleArray findZeroes(const DoubleInterval &i) const {
+    return CompactDoubleArray();
+  }
 };

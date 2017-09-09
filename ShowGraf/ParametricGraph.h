@@ -16,4 +16,7 @@ public:
   inline GraphType getType() const {
     return PARAMETRICGRAPH;
   }
+  CompactDoubleArray findZeroes(const DoubleInterval &i) const {
+    return CompactDoubleArray();
+  }
 };

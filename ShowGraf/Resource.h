@@ -100,6 +100,10 @@
 #define ID_TOOLS_PARAMETRICCURVE        32851
 #define ID_TOOLS_IMPLICITDEFINEDCURVE   32852
 #define ID_TOOLS_DIFFERENTIALEQUATIONS  32853
+#define ID_FIND_ZEROES                  32854
+#define ID_FIND_MINIMUM                 32855
+#define ID_FIND_MAXIMUM                 32856
+#define ID_FIND_INTERSECTION            32857
 #define ID_OPTIONS_IGNOREERRORS         32860
 #define ID_OPTIONS_DEGREES              32861
 #define ID_OPTIONS_RADIANS              32862
@@ -125,6 +129,7 @@
 #define ID_GOTO_STYLE                   32909
 #define ID_GOTO_COMMON                  32910
 #define ID_GOTO_MAXERROR                32911
+#define ID_MSG_SEARCHINTERVAL           32930
 
 // Next default values for new objects
 // 
@@ -132,7 +137,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        128
-#define _APS_NEXT_COMMAND_VALUE         32933
+#define _APS_NEXT_COMMAND_VALUE         32941
 #define _APS_NEXT_CONTROL_VALUE         1108
 #define _APS_NEXT_SYMED_VALUE           153
 #endif

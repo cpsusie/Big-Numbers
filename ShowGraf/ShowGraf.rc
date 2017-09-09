@@ -602,14 +602,15 @@ IDR_MAINFRAME ACCELERATORS
 BEGIN
     "N",            ID_FILE_NEW,            VIRTKEY, CONTROL, NOINVERT
     "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL, NOINVERT
+    "Z",            ID_FIND_ZEROES,         VIRTKEY, CONTROL, NOINVERT
     "D",            ID_OPTIONS_DEGREES,     VIRTKEY, ALT, NOINVERT
     "A",            ID_OPTIONS_GRADS,       VIRTKEY, ALT, NOINVERT
     "E",            ID_OPTIONS_IGNOREERRORS, VIRTKEY, ALT, NOINVERT
     "R",            ID_OPTIONS_RADIANS,     VIRTKEY, ALT, NOINVERT
     "D",            ID_TOOLS_DIFFERENTIALEQUATIONS, VIRTKEY, CONTROL, NOINVERT
     "M",            ID_TOOLS_IMPLICITDEFINEDCURVE, VIRTKEY, CONTROL, NOINVERT
-    "P",            ID_TOOLS_PARAMETRICCURVE, VIRTKEY, CONTROL, NOINVERT
-    "F",            ID_TOOLS_PLOTFUNCTION,  VIRTKEY, CONTROL, NOINVERT
+    "A",            ID_TOOLS_PARAMETRICCURVE, VIRTKEY, CONTROL, NOINVERT
+    "P",            ID_TOOLS_PLOTFUNCTION,  VIRTKEY, CONTROL, NOINVERT
     "G",            ID_VIEW_GRID,           VIRTKEY, CONTROL, NOINVERT
     "I",            ID_VIEW_INTERVAL,       VIRTKEY, CONTROL, NOINVERT
     "R",            ID_VIEW_REFRESHFILES,   VIRTKEY, CONTROL, NOINVERT
@@ -754,6 +755,17 @@ BEGIN
     END
     POPUP "&Tools"
     BEGIN
+        MENUITEM "&Plot function...\tCtrl+P",   ID_TOOLS_PLOTFUNCTION
+        MENUITEM "I&mplicit defined curve...\tCtrl+M", ID_TOOLS_IMPLICITDEFINEDCURVE
+        MENUITEM "Differential equations...\tCtrl+D", ID_TOOLS_DIFFERENTIALEQUATIONS
+        MENUITEM "P&arametric curve...\tCtrl+A", ID_TOOLS_PARAMETRICCURVE
+        POPUP "&Find"
+        BEGIN
+            MENUITEM "&Zeroes\tCtrl+Z",             ID_FIND_ZEROES
+            MENUITEM "&Minimum",                    ID_FIND_MINIMUM
+            MENUITEM "Ma&ximum",                    ID_FIND_MAXIMUM
+            MENUITEM "Inter&section",               ID_FIND_INTERSECTION
+        END
         POPUP "&DataFitting"
         BEGIN
             MENUITEM "Polynomial",                  ID_TOOLS_FIT_POLYNOMIAL
@@ -761,10 +773,6 @@ BEGIN
             MENUITEM "Potens function",             ID_TOOLS_FIT_POTENS_FUNCTION
             MENUITEM "Custom function...",          ID_TOOLS_FIT_CUSTOM_FUNCTION
         END
-        MENUITEM "Plot &function...\tCtrl+F",   ID_TOOLS_PLOTFUNCTION
-        MENUITEM "I&mplicit defined curve...\tCtrl+M", ID_TOOLS_IMPLICITDEFINEDCURVE
-        MENUITEM "Differential equations...\tCtrl+D", ID_TOOLS_DIFFERENTIALEQUATIONS
-        MENUITEM "Parametric curve\tCtrl+P",    ID_TOOLS_PARAMETRICCURVE
     END
     POPUP "&Options"
     BEGIN

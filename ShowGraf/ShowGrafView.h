@@ -3,27 +3,48 @@
 #include <MFCUtil/Coordinatesystem/CoordinateSystem.h>
 #include "ShowGrafDoc.h"
 
+typedef enum {
+  TOOL_DRAG
+ ,TOOL_FINDSEARCHINTERVAL
+} MouseTool;
+
+class CMainFrame;
+
 class CShowGrafView : public CFormView, public FunctionPlotter {
 private:
-    enum { IDD = IDD_SHOWGRAFVIEW };
+  enum { IDD = IDD_SHOWGRAFVIEW };
 
-    CCoordinateSystem           m_coordinateSystem;
-    bool                        m_firstDraw;
-    CFont                       m_axisFont;
-    CFont                       m_buttonFont;
-    bool                        m_dragging;
-    RectangleTransformation     m_mouseDownTransform;
-    CPoint                      m_mouseDownPoint;
+  CCoordinateSystem           m_coordinateSystem;
+  bool                        m_firstDraw;
+  CFont                       m_axisFont;
+  CFont                       m_buttonFont;
+  MouseTool                   m_mouseTool;
+  bool                        m_dragging;
+  RectangleTransformation     m_mouseDownTransform;
+  CPoint                      m_mouseDownPoint;
+  CRect                       m_dragRect;
+  void plotFunction(Function &f, const DoubleInterval &interval, COLORREF color);
+  void plotFunction(Function &f, COLORREF color);
+  bool paintAll(CDC &dc, const CRect &rect, CFont *axisFont, CFont *buttonFont);
+  bool isMenuItemChecked(int id);
+  void enableMenuItem(int id, bool enabled);
+  void checkMenuItem( int id, bool checked);
+  CShowGrafDoc *getDoc();
+  void lbuttonDownDragging(    UINT nFlags, const CPoint &point);
+  void lbuttonUpDragging(      UINT nFlags, const CPoint &point);
+  void mouseMoveDragging(      UINT nFlags, const CPoint &point);
+  void lbuttonDownMarkInterval(UINT nFlags, const CPoint &point);
+  void lbuttonUpMarkInterval(  UINT nFlags, const CPoint &point);
+  void mouseMoveMarkInterval(  UINT nFlags, const CPoint &point);
 
-    void plotFunction(Function &f, const DoubleInterval &interval, COLORREF color);
-    void plotFunction(Function &f, COLORREF color);
-    bool paintAll(CDC &dc, const CRect &rect, CFont *axisFont, CFont *buttonFont);
-    bool isMenuItemChecked(int id);
-    void enableMenuItem(int id, bool enabled);
-    void checkMenuItem( int id, bool checked);
-    CShowGrafDoc *getDoc();
-    void startDragging(const CPoint &point);
-    void stopDragging();
+  inline CMainFrame *getMainFrame() {
+    return (CMainFrame*)GetParent();
+  }
+
+  inline const CMainFrame *getMainFrame() const {
+    return (const CMainFrame*)GetParent();
+  }
+
 protected: // create from serialization only
   DECLARE_DYNCREATE(CShowGrafView)
 
@@ -75,7 +96,9 @@ public:
       getCoordinateSystem().setYAxisType(type);
     }
     void addFunctionGraph(FunctionGraphParameters &param);
-
+    void setMouseTool(MouseTool tool) {
+      m_mouseTool = tool;
+    }
     virtual void OnDraw(CDC *pDC);  // overridden to draw this view
     virtual BOOL OnPreparePrinting(          CPrintInfo *pInfo);
     virtual void OnBeginPrinting(  CDC *pDC, CPrintInfo *pInfo);

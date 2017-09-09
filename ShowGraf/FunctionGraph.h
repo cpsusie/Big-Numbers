@@ -16,4 +16,5 @@ public:
   inline GraphType getType() const {
     return FUNCTIONGRAPH;
   }
+  CompactDoubleArray findZeroes(const DoubleInterval &i) const;
 };

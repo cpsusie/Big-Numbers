@@ -60,6 +60,10 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
   ON_COMMAND(ID_TOOLS_PARAMETRICCURVE          , OnToolsParametricCurve        )
   ON_COMMAND(ID_TOOLS_IMPLICITDEFINEDCURVE     , OnToolsImplicitDefinedCurve   )
   ON_COMMAND(ID_TOOLS_DIFFERENTIALEQUATIONS    , OnToolsDifferentialEquations  )
+  ON_COMMAND(ID_FIND_ZEROES                    , OnFindZeroes                  )
+  ON_COMMAND(ID_FIND_MINIMUM                   , OnFindMinimum                 )
+  ON_COMMAND(ID_FIND_MAXIMUM                   , OnFindMaximum                 )
+  ON_COMMAND(ID_FIND_INTERSECTION              , OnFindIntersection            )
   ON_COMMAND(ID_OPTIONS_IGNOREERRORS           , OnOptionsIgnoreErrors         )
   ON_COMMAND(ID_OPTIONS_RADIANS                , OnOptionsRadians              )
   ON_COMMAND(ID_OPTIONS_DEGREES                , OnOptionsDegrees              )
@@ -71,6 +75,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
   ON_COMMAND(ID_SELECTMENU_STYLE_CURVE         , OnSelectMenuStyleCurve        )
   ON_COMMAND(ID_SELECTMENU_STYLE_POINT         , OnSelectMenuStylePoint        )
   ON_COMMAND(ID_SELECTMENU_STYLE_CROSS         , OnSelectMenuStyleCross        )
+  ON_MESSAGE(ID_MSG_SEARCHINTERVAL             , OnMsgSearchInterval           )
 END_MESSAGE_MAP()
 
 static UINT indicators[] = {
@@ -453,6 +458,43 @@ void CMainFrame::OnViewRefreshFiles() {
   if(getDoc()->refreshFiles()) {
     Invalidate(FALSE);
   }
+}
+
+void CMainFrame::OnFindZeroes() {
+  getView()->setMouseTool(TOOL_FINDSEARCHINTERVAL);
+}
+
+void CMainFrame::OnFindMinimum() {
+}
+
+void CMainFrame::OnFindMaximum() {
+}
+
+void CMainFrame::OnFindIntersection() {
+}
+
+LRESULT CMainFrame::OnMsgSearchInterval(WPARAM wp, LPARAM lp) {
+  int xFrom = (int)wp;
+  int xTo   = (int)lp;
+  if(xFrom > xTo) std::swap(xFrom,xTo);
+  const DoubleInterval xIinterval = getView()->getCoordinateSystem().getTransformation().getXTransformation().backwardTransform(DoubleInterval(xFrom,xTo));
+  const GraphArray &ga = getDoc()->getGraphArray();
+  String text;
+  for(size_t i = 0; i < ga.size(); i++) {
+    const GraphItem &gi = ga[i];
+    CompactDoubleArray zeroes = gi.getGraph().findZeroes(xIinterval);
+    if(!zeroes.isEmpty()) {
+      text += format(_T("Zeroes of %s:%s\n\r")
+                    ,gi.getDisplayName().cstr()
+                    ,zeroes.toStringBasicType().cstr());
+    }
+  }
+  if(text.length() == 0) {
+    text = _T("No zeroes found");
+  }
+  showInformation(text);
+  getView()->setMouseTool(TOOL_DRAG);
+  return 0;
 }
 
 void CMainFrame::OnToolsFitPolynomial() {

@@ -107,6 +107,10 @@ protected:
   afx_msg void OnViewRollAvg();
   afx_msg void OnViewSetRollAvgSize();
   afx_msg void OnViewRefreshFiles();
+  afx_msg void OnFindZeroes();
+  afx_msg void OnFindMinimum();
+  afx_msg void OnFindMaximum();
+  afx_msg void OnFindIntersection();
   afx_msg void OnToolsFitPolynomial();
   afx_msg void OnToolsFitExpoFunction();
   afx_msg void OnToolsFitPotensFunction();
@@ -126,6 +130,6 @@ protected:
   afx_msg void OnSelectMenuStyleCurve();
   afx_msg void OnSelectMenuStylePoint();
   afx_msg void OnSelectMenuStyleCross();
-
+  afx_msg LRESULT OnMsgSearchInterval(WPARAM wp, LPARAM lp);
   DECLARE_MESSAGE_MAP()
 };

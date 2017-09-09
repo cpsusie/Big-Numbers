@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "MainFrm.h"
 #include "ShowGrafDoc.h"
 #include "ShowGrafView.h"
 
@@ -31,6 +30,7 @@ CShowGrafView::CShowGrafView() : CFormView(IDD) {
                           DEFAULT_PITCH | FF_MODERN,
                           _T("Arial") );
   m_firstDraw        = true;
+  m_mouseTool        = TOOL_DRAG;
   m_dragging         = false;
 }
 
@@ -144,25 +144,68 @@ void CShowGrafView::Dump(CDumpContext& dc) const {
 
 void CShowGrafView::OnLButtonDown(UINT nFlags, CPoint point) {
   __super::OnLButtonDown(nFlags, point);
-  CRect cr = getClientRect(this, IDC_SYSTEMPANEL);
-  if(cr.PtInRect(point)) {
-    startDragging(point);
+  switch(m_mouseTool) {
+  case TOOL_DRAG              :
+    if(getClientRect(this, IDC_SYSTEMPANEL).PtInRect(point)) {
+      lbuttonDownDragging(nFlags, point);
+    }
+    break;
+  case TOOL_FINDSEARCHINTERVAL:
+    if(getClientRect(this, IDC_SYSTEMPANEL).PtInRect(point)) {
+      lbuttonDownMarkInterval(nFlags, point);
+    }
+    break;
   }
 }
 
 void CShowGrafView::OnLButtonUp(UINT nFlags, CPoint point) {
   __super::OnLButtonUp(nFlags, point);
-  stopDragging();
+  switch(m_mouseTool) {
+  case TOOL_DRAG              :
+    lbuttonUpDragging(nFlags, point);
+    break;
+  case TOOL_FINDSEARCHINTERVAL:
+    lbuttonUpMarkInterval(nFlags, point);
+    break;
+  }
 }
 
 void CShowGrafView::OnMouseMove(UINT nFlags, CPoint point) {
   __super::OnMouseMove(nFlags, point);
+  switch(m_mouseTool) {
+  case TOOL_DRAG              :
+    mouseMoveDragging(nFlags, point);
+    break;
+  case TOOL_FINDSEARCHINTERVAL:
+    mouseMoveMarkInterval(nFlags, point);
+    break;
+  }
+  theApp.getMainWindow()->showPosition(m_coordinateSystem.getTransformation().backwardTransform((Point2DP)point));
+}
+
+void CShowGrafView::lbuttonDownDragging(UINT nFlags, const CPoint &point) {
+  m_dragging           = true;
+  m_mouseDownPoint     = point;
+  m_mouseDownTransform = m_coordinateSystem.getTransformation();
+  CRect cr             = getClientRect(this, IDC_SYSTEMPANEL);
+  ClientToScreen(&cr);
+  ClipCursor(&cr);
+  setWindowCursor(this, MAKEINTRESOURCE(OCR_HAND));
+}
+
+void CShowGrafView::lbuttonUpDragging(UINT nFlags, const CPoint &point) {
+  m_dragging = false;
+  setWindowCursor(this, MAKEINTRESOURCE(OCR_NORMAL));
+  ClipCursor(NULL);
+}
+
+void CShowGrafView::mouseMoveDragging(UINT nFlags, const CPoint &point) {
   if(m_dragging) {
     if(nFlags && MK_LBUTTON) {
       Rectangle2D   fr         = m_mouseDownTransform.getFromRectangle();
       Point2D       startPoint = m_mouseDownTransform.backwardTransform((Point2DP)m_mouseDownPoint);
       Point2D       newPoint   = m_mouseDownTransform.backwardTransform((Point2DP)point);
-      const Point2D dp = newPoint - startPoint;
+      const Point2D dp         = newPoint - startPoint;
       fr -= dp;
       try {
         m_coordinateSystem.getTransformation().setFromRectangle(fr);
@@ -172,23 +215,38 @@ void CShowGrafView::OnMouseMove(UINT nFlags, CPoint point) {
       }
     }
   }
-  theApp.getMainWindow()->showPosition(m_coordinateSystem.getTransformation().backwardTransform((Point2DP)point));
 }
 
-void CShowGrafView::startDragging(const CPoint &point) {
-  m_dragging           = true;
-  m_mouseDownPoint     = point;
-  m_mouseDownTransform = m_coordinateSystem.getTransformation();
-  CRect cr = getClientRect(this, IDC_SYSTEMPANEL);
+void CShowGrafView::lbuttonDownMarkInterval(UINT nFlags, const CPoint &point) {
+  m_mouseDownPoint = point;
+  m_dragging       = true;
+  CRect cr   = getClientRect(this, IDC_SYSTEMPANEL);
+  m_dragRect = CRect(m_mouseDownPoint.x, cr.bottom, m_mouseDownPoint.x, cr.top);
   ClientToScreen(&cr);
   ClipCursor(&cr);
-  setWindowCursor(this, MAKEINTRESOURCE(OCR_HAND));
+  CClientDC(GetDlgItem(IDC_SYSTEMPANEL)).DrawDragRect(&m_dragRect, CSize(1,1), NULL, CSize(1,1));
 }
 
-void CShowGrafView::stopDragging() {
+void CShowGrafView::lbuttonUpMarkInterval(UINT nFlags, const CPoint &point) {
+  CClientDC(GetDlgItem(IDC_SYSTEMPANEL)).DrawDragRect(&m_dragRect, CSize(1,1), NULL, CSize(1,1));
   m_dragging = false;
-  setWindowCursor(this, MAKEINTRESOURCE(OCR_NORMAL));
   ClipCursor(NULL);
+  getMainFrame()->PostMessage(ID_MSG_SEARCHINTERVAL, m_dragRect.left,m_dragRect.right);
+}
+
+void CShowGrafView::mouseMoveMarkInterval(UINT nFlags, const CPoint &point) {
+  if(m_dragging) {
+    if(nFlags && MK_LBUTTON) {
+      const CRect cr      = getClientRect(this, IDC_SYSTEMPANEL);
+      const CRect newRect = CRect(m_mouseDownPoint.x, cr.bottom, point.x, cr.top);
+      CClientDC(GetDlgItem(IDC_SYSTEMPANEL)).DrawDragRect(&newRect, CSize(1,1), &m_dragRect, CSize(1,1));
+      m_dragRect = newRect;
+    } else {
+      CClientDC(GetDlgItem(IDC_SYSTEMPANEL)).DrawDragRect(&m_dragRect, CSize(1,1), NULL, CSize(1,1));
+      m_dragging = false;
+      ClipCursor(NULL);
+    }
+  }
 }
 
 void CShowGrafView::OnRButtonDown(UINT nFlags, CPoint point) {

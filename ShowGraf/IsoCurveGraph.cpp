@@ -238,3 +238,18 @@ double IsoCurveGraph::getSmallestPositiveY() const {
   }
   return result;
 }
+
+class IsoCurveY0Function : public Function {
+private:
+  IsoCurveGraphEvaluator m_eval;
+public:
+  IsoCurveY0Function(const IsoCurveGraph *graph) : m_eval((IsoCurveGraph*)graph) {
+  }
+  Real operator()(const Real &x) {
+    return m_eval.evaluate(Point2D(x,0));
+  }
+};
+
+CompactDoubleArray IsoCurveGraph::findZeroes(const DoubleInterval &i) const {
+  return ::findZeroes(IsoCurveY0Function(this), i);
+}

@@ -185,3 +185,67 @@ double PointGraph::getSmallestPositiveY() const {
   }
   return result;
 }
+
+static int point2DcmpX(const Point2D &p1, const Point2D &p2) {
+  return sign(p1.x-p2.x);
+}
+
+CompactDoubleArray PointGraph::findZeroes(const DoubleInterval &i) const {
+  Point2DArray       data = getProcessedData();
+  CompactDoubleArray result;
+  if(data.isEmpty()) {
+    return result;
+  }
+  data.sort(point2DcmpX);
+  const size_t n = data.size();
+  if(n == 1) {
+    const Point2D &p = data[0];
+    if((p.y == 0) && i.contains(p.x)) {
+      result.add(p.x);
+    }
+    return result;
+  } else if (n == 2) {
+    const Point2D &p0 = data[0];
+    const Point2D &p1 = data[0];
+    if(p0.y != p1.y) {
+      const double x = inverseLinearInterpolate0(p0, p1);
+      if(i.contains(x)) {
+        result.add(x);
+      }
+    } else {
+      if((p0.y == 0) && i.contains(p0.x)) result.add(p0.x);
+      if((p1.y == 0) && i.contains(p1.x)) result.add(p1.x);
+    }
+  }
+
+  const Point2D *lastp      = &data[0];
+  bool           lastInside = i.contains(lastp->x);
+  for(size_t t = 1; t < n; t++) {
+    const Point2D &p       = data[t];
+    const bool     pinside = i.contains(p.x);
+    if(sign(lastp->y) * sign(p.y) != 1) {
+      if(lastp->y == 0) {
+        if(lastInside) {
+          result.add(lastp->x);
+        }
+      } else if(lastInside || pinside) { // && lastp->y != 0
+        if(p.y != 0) { // lastp->y != 0 && p.y != 0 => opposite sign
+          const double x = inverseLinearInterpolate0(p, *lastp);
+          if(i.contains(x)) {
+            result.add(x);
+          }
+        }
+      }
+    }
+    if(lastInside && !pinside) { // we're done
+      lastInside = false;
+      break;
+    }
+    lastp      = &p;
+    lastInside = pinside;
+  }
+  if(lastInside && (lastp->y == 0)) {
+    result.add(lastp->x);
+  }
+  return result;
+}

@@ -19,5 +19,8 @@ public:
   GraphType getType() const {
     return DATAGRAPH;
   }
+  CompactDoubleArray findZeroes(const DoubleInterval &i) const {
+    return CompactDoubleArray();
+  }
 };
 

@@ -28,4 +28,5 @@ public:
   bool             isPointGraph() const {
     return false;
   }
+  CompactDoubleArray findZeroes(const DoubleInterval &i) const;
 };

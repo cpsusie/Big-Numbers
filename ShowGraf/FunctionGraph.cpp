@@ -2,28 +2,49 @@
 #include <Math/Expression/Expression.h>
 #include "FunctionGraph.h"
 
+class FunctionGraphFunction : public Function {
+private:
+  FunctionGraph       &m_graph;
+  Expression           m_expr;
+  Real                 m_dummyX;
+  Real                *m_x;
+public:
+  FunctionGraphFunction(const FunctionGraph *graph);
+  Real operator()(const Real &x);
+};
+
+FunctionGraphFunction::FunctionGraphFunction(const FunctionGraph *graph)
+: m_graph(*(FunctionGraph*)graph)
+, m_expr(((FunctionGraphParameters&)graph->getParam()).m_trigonometricMode) {
+
+  const FunctionGraphParameters &param = (FunctionGraphParameters&)m_graph.getParam();
+  m_expr.compile(param.m_expr, true);
+  const ExpressionVariable *xvp = m_expr.getVariable(_T("x"));
+  m_x = xvp ? &m_expr.getValueRef(*xvp) : &m_dummyX;
+}
+
+Real FunctionGraphFunction::operator()(const Real &x) {
+  *m_x = x;
+  return m_expr.evaluate();
+}
+
 FunctionGraph::FunctionGraph(const FunctionGraphParameters &param) : PointGraph(new FunctionGraphParameters(param)) {
   calculate();
 }
 
 void FunctionGraph::calculate() {
   clear();
-  const FunctionGraphParameters &param = (FunctionGraphParameters&)getParam();
-  Expression expr(param.m_trigonometricMode);
-  expr.compile(param.m_expr, true);
-//  m_image = expressionToImage(theApp.m_device, expr, 18);
-  Real                      dummyX;
-  const ExpressionVariable *xvp       = expr.getVariable(_T("x"));
-  Real                     &x         = xvp ? expr.getValueRef(*xvp) : dummyX;
-  const int                 stepCount = param.m_steps;
-  double                    step      = (param.m_interval.getMax() - param.m_interval.getMin()) / stepCount;
-  x = param.m_interval.getMin();
+  FunctionGraphFunction          f(this);
+  const FunctionGraphParameters &param     = (FunctionGraphParameters&)getParam();
+  const int                      stepCount = param.m_steps;
+  const double                   step      = param.m_interval.getLength() / stepCount;
+  Real                           x         = param.m_interval.getMin();
   for(int i = 0; i <= stepCount; x += step, i++) {
     try {
       if(i == stepCount) {
         x = param.m_interval.getMax();
       }
-      addPoint(Point2D(x,expr.evaluate()));
+      addPoint(Point2D(x,f(x)));
     } catch(Exception e) {
       // ignore
     }
@@ -49,4 +70,8 @@ void FunctionGraph::paint(CCoordinateSystem &cs) {
   const CRect imageRect(topLeft, m_image.getImage()->getSize());
   cs.getOccupationMap().setOccupiedRect(imageRect);
 */
+}
+
+CompactDoubleArray FunctionGraph::findZeroes(const DoubleInterval &i) const {
+  return ::findZeroes(FunctionGraphFunction(this),i);
 }
