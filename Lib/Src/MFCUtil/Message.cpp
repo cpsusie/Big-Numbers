@@ -15,8 +15,11 @@ void Message(const TCHAR *format,... ) {
 */
 
 int vshowMessageBox(int flags, const TCHAR *format, va_list argptr) {
+  String msg = vformat(format, argptr)
+              .replace(_T('\r'),_T(""))
+              .replace(_T('\n'), _T("\n\r"));
   return MessageBox(NULL
-                   ,vformat(format, argptr).cstr()
+                   ,msg.cstr()
                    ,FileNameSplitter(getModuleFileName()).getFileName().cstr()
                    ,flags);
 }
