@@ -331,6 +331,9 @@
     <ClCompile Include="GammaStirling.cpp">
       <Filter>Source Files\Functions</Filter>
     </ClCompile>
+    <ClCompile Include="FindZeroes.cpp">
+      <Filter>Source Files\Misc</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="NatvisFile.natvis" />

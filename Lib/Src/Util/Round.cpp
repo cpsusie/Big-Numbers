@@ -34,7 +34,7 @@ double round(double x) { // 5-rounding
 }
 */
 
-double round(double x, int dec) { // 5-rounding
+double round(double x, int dec) {
   if(dec == 0) {
     return x < 0 ? -floor(0.5-x) : floor(0.5+x);
   } else {

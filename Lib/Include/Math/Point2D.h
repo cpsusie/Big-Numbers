@@ -203,7 +203,8 @@ inline bool isParallel(const Line2D &line1, const Line2D &line2) {
   return det(line1.m_p2 - line1.m_p1, line2.m_p2 - line2.m_p1) == 0;
 }
 
-double angle(const Point2D &p1, const Point2D &p2);  // angle in radians between p1 and p2
+// angle in radians between p1 and p2
+double angle(const Point2D &p1, const Point2D &p2);
 
 class Point2DOperator {
 public:

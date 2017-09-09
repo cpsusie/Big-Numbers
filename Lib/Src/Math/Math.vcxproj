@@ -743,6 +743,7 @@
     <ClCompile Include="Expression\SumElement.cpp" />
     <ClCompile Include="Expression\TestMachineCode.cpp" />
     <ClCompile Include="fft.cpp" />
+    <ClCompile Include="FindZeroes.cpp" />
     <ClCompile Include="FritschCarlsonSpline.cpp" />
     <ClCompile Include="gammaR.cpp" />
     <ClCompile Include="GammaStirling.cpp" />

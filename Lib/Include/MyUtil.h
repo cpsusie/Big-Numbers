@@ -75,26 +75,26 @@ inline int _getrc(IUnknown *p) {
   }                                     \
 }
 
-#define SAFEDELETE(p)                  \
-{ if((p) != NULL) {                    \
-    TRACE_DELETE(p);                   \
-    delete p;                          \
-    p = NULL;                          \
-  }                                    \
+#define SAFEDELETE(p)                   \
+{ if((p) != NULL) {                     \
+    TRACE_DELETE(p);                    \
+    delete p;                           \
+    p = NULL;                           \
+  }                                     \
 }
 
-#define SAFEDELETEARRAY(p)             \
-{ if((p) != NULL) {                    \
-    TRACE_DELETE(p);                   \
-    delete[] p;                        \
-    p = NULL;                          \
-  }                                    \
+#define SAFEDELETEARRAY(p)              \
+{ if((p) != NULL) {                     \
+    TRACE_DELETE(p);                    \
+    delete[] p;                         \
+    p = NULL;                           \
+  }                                     \
 }
 
 
-void *xmalloc(UINT n);
-void *xrealloc(void *q, UINT n);
-TCHAR *xstrdup(const TCHAR *str);
+void  *xmalloc( UINT n);
+void  *xrealloc(void *q, UINT n);
+TCHAR *xstrdup( const TCHAR *str);
 void  xfree(void *p);
 
 #ifdef ARRAYSIZE
@@ -122,7 +122,8 @@ int              chmod(  const String &name, int mode);
 int              rmdir(  const String &name);
 int              chdir(  const String &dir );
 bool             isatty( FILE *f);
-int              setFileMode(FILE *f, int mode); // mode = { _O_TEXT, _O_BINARY }. Returns old mode.
+// mode = { _O_TEXT, _O_BINARY }. Returns old mode.
+int              setFileMode(FILE *f, int mode);
 HANDLE           getHandle(FILE *f);
 
 String           getSysErrorText(int errno);
@@ -171,14 +172,20 @@ bool keyPressed(int vk);
 bool shiftKeyPressed();
 bool ctrlKeyPressed();
 unsigned char toAscii(UINT virtualCode);
-
-String  inputString(  const TCHAR *format, ...); // read String     from stdin, terminate with enter. result string NOT containing '\n\r'
-String  inputPassword(const TCHAR *format, ...); // read password   from console
-int     inputInt(     const TCHAR *format, ...); // read an integer from stdin
-UINT    inputUint(    const TCHAR *format, ...); // read an UINT    from stdin
-INT64   inputInt64(   const TCHAR *format, ...); // read an INT64   from stdin
-UINT64  inputUint64(  const TCHAR *format, ...); // read an UINT64  from stdin
-double  inputDouble(  const TCHAR *format, ...); // read a  double  from stdin
+// read String     from stdin, terminate with enter. result string NOT containing '\n\r'
+String  inputString(  const TCHAR *format, ...);
+// read password   from console
+String  inputPassword(const TCHAR *format, ...);
+// read integer from stdin
+int     inputInt(     const TCHAR *format, ...);
+// read UINT    from stdin
+UINT    inputUint(    const TCHAR *format, ...);
+// read INT64   from stdin
+INT64   inputInt64(   const TCHAR *format, ...);
+// read UINT64  from stdin
+UINT64  inputUint64(  const TCHAR *format, ...);
+// read double  from stdin
+double  inputDouble(  const TCHAR *format, ...);
 
 TCHAR   *searchenv(  TCHAR *dst, const TCHAR *fileName, const TCHAR *envName);
 String   searchenv(  const String &fileName, const String &envName);
@@ -190,7 +197,8 @@ const wchar_t **argv2wargv(const char    **argv );
 const char    **wargv2argv(const wchar_t **targv);
 const TCHAR   **argv2targv(const char    **argv );
 
-String getModuleFileName(HMODULE module = NULL); // if module == NULL, path of executable
+// if module == NULL, path of executable
+String getModuleFileName(HMODULE module = NULL);
 String getUserName();
 String getHostName();
 
@@ -203,13 +211,16 @@ void checkResult(const TCHAR *fileName, int line, BOOL    ok     );
 #define CHECKRESULT(result) checkResult(__TFILE__, __LINE__, result)
 
 void   sleep(int seconds);
-double getProcessTime(HANDLE process = NULL); // microseconds. if process == NULL, return time for current Process
-double getThreadTime( HANDLE thread  = NULL); // do            if thread  == NULL, return time for current Thread
+// microseconds. if process == NULL, return time for current Process
+double getProcessTime(HANDLE process = NULL);
+// microseconds. if thread  == NULL, return time for current Thread
+double getThreadTime( HANDLE thread  = NULL);
 double getSystemTime();
 
 extern int UseSafeNew; // assign something to this, and we use safe new_handler, which throws Exception on out of memory
 String hexdumpString(const void *data, int size);
-void   hexdump(      const void *data, int size, FILE *f = NULL); // if(f == NULL, use debugLog as output
+// if f == NULL, use debugLog as output
+void   hexdump(      const void *data, int size, FILE *f = NULL);
 String bytesToString(const void *data, int size);
 
 TCHAR *newGUID(TCHAR *dst);
@@ -219,11 +230,6 @@ GUID  *newGUID(GUID *guid);
 void quickSort(void *base, size_t nelem, size_t width, AbstractComparator &comparator);
 void quickSort(void *base, size_t nelem, size_t width, int (__cdecl *compare)(const void*, const void*));
 
-/*
-template<class T> void swap(T &e1, T &e2) {
-  T tmp = e1; e1 = e2; e2 = tmp;
-}
-*/
 String sprintbin(char    c);
 String sprintbin(UCHAR   c);
 String sprintbin(short   s);
@@ -245,36 +251,44 @@ inline const TCHAR *boolToStr(BOOL b) {
 
 bool strToBool(const TCHAR *s);
 
+// 5-rounding
 double round(   double x, int dec);
 double trunc(   double x, int dec=0);
 double fraction(double x);
 
-inline int sign(int x) {             // return (x > 0) ? +1 : (x < 0) ? -1 : 0
+// return (x > 0) ? +1 : (x < 0) ? -1 : 0
+inline int sign(int x) {
   return x < 0 ? -1 : x > 0 ? 1 : 0;
 }
 
-inline int sign(const INT64 &x) {  // return (x > 0) ? +1 : (x < 0) ? -1 : 0
+// return (x > 0) ? +1 : (x < 0) ? -1 : 0
+inline int sign(const INT64 &x) {
   return x < 0 ? -1 : x > 0 ? 1 : 0;
 }
 
-inline int sign(float x) {           // return (x > 0) ? +1 : (x < 0) ? -1 : 0
+// return (x > 0) ? +1 : (x < 0) ? -1 : 0
+inline int sign(float x) {
   return x < 0 ? -1 : x > 0 ? 1 : 0;
 }
 
-inline int sign(const double &x) {   // return (x > 0) ? +1 : (x < 0) ? -1 : 0
+// return (x > 0) ? +1 : (x < 0) ? -1 : 0
+inline int sign(const double &x) {
   return x < 0 ? -1 : x > 0 ? 1 : 0;
 }
 
 
-inline UINT  sqr(int x) {            // return x*x
+// return x*x
+inline UINT  sqr(int x) {
   return x * x;
 }
 
-inline float sqr(float x) {          // return x*x
+// return x*x
+inline float sqr(float x) {
   return x * x;
 }
 
-inline double sqr(const double &x) { // return x*x
+// return x*x
+inline double sqr(const double &x) {
   return x * x;
 }
 

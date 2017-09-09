@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Unicode.h>
+#include <NumberInterval.h>
 //#define LONGDOUBLE // defined in configurations "Debug long double" and "Release long double"
 
 #ifdef LONGDOUBLE
@@ -11,7 +12,8 @@ typedef Double80 Real;
 typedef double Real;
 #endif
 
-typedef CompactArray<Real> CompactRealArray;
+typedef CompactArray<Real>   CompactRealArray;
+typedef NumberInterval<Real> RealInterval;
 
 inline double getDouble(double x) {
   return x;
@@ -41,10 +43,10 @@ inline UINT64 getUint64(double x) {
   return (UINT64)x;
 }
 
-const _TUCHAR *parseReal(const _TUCHAR *s); // Return pointer to the character after parsing the string with the regular expression:
-                                            // {s}*[\-+]?({d}+|{d}+\.{d}*|{d}*\.{d}+)([eE][\-+]?{d}+)?
-                                            // where {d} = [0-9] and {s} = all characters c, where isspace(c) is true
-                                            // Return NULL if string is not recognized by the regular expression.
-
+// Return pointer to the character after parsing the string with the regular
+// expression: {s}*[\-+]?({d}+|{d}+\.{d}*|{d}*\.{d}+)([eE][\-+]?{d}+)?
+// where {d} = [0-9] and {s} = all characters c, where isspace(c) is true
+// Return NULL if string is not recognized by the regular expression.
+const _TUCHAR *parseReal(const _TUCHAR *s);
 
 #include "PragmaLib.h"
