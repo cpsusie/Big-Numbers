@@ -15,25 +15,9 @@ typedef enum {
 #define BIT(i, bit) (((i)>>(bit))&1)
 #define FLIP(i,bit) ((i)^(1<<(bit))) // flip the given bit of i
 
-class HashKeyComparator : public Comparator<Point2DKey> {
-public:
-  inline int compare(const Point2DKey &k1, const Point2DKey &k2) {
-    return (k1 == k2) ? 0 : 1;
-  }
-  inline AbstractComparator *clone() const {
-    return new HashKeyComparator();
-  }
-};
-
-static inline unsigned long pointKeyHash(const Point2DKey &key) {
-  return key.hashCode();
-}
-
-static HashKeyComparator pointKeyCmp;
-
 IsoCurveFinder::IsoCurveFinder(IsoCurveEvaluator &curveEvaluator)
 : m_eval(curveEvaluator)
-, m_cornerMap(pointKeyHash, pointKeyCmp, HASHSIZE)
+, m_cornerMap(HASHSIZE)
 {
 }
 
@@ -160,7 +144,9 @@ void IsoCurveFinder::doTriangle(const StackedRectangle &rectangle, RectCorner c1
     m_eval.receiveLineSegment(LineSegment(getPointId(a, c), getPointId(a, b)));
     break;
   }
-  m_statistics.m_lineCount++;
+  if(m_statistics.m_lineCount++ > 500000) {
+    throwException(_T("%s:Too many linesegments. Try a bigger cellsize"), __TFUNCTION__);
+  }
 }
 
 int IsoCurveFinder::getPointId(const HashedRectCorner &c1, const HashedRectCorner &c2) {
@@ -257,8 +243,11 @@ const HashedRectCorner *IsoCurveFinder::getCorner(int i, int j) {
     return result;
   } else {
     HashedRectCorner corner(key, getCornerPoint(i,j));
-    corner.m_positive = evaluate(corner.m_point) > 0;;
+    corner.m_positive = evaluate(corner.m_point) > 0;
     m_cornerMap.put(key, corner);
+    if(m_statistics.m_cornerCount++ > 1000000) {
+      throwException(_T("%s:Too many corners. Try a bigger cellsize"), __TFUNCTION__);
+    }
     return m_cornerMap.get(key);
   }
 }

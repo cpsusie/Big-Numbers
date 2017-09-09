@@ -17,7 +17,8 @@ typedef enum {
     // the RC_NW corner of rectangle (i, j), corresponds with location
     // (m_start.x+(i-0.5)*m_cellSize, m_start.y+(j-0.5)*m_cellSize)
 
-class IsoCurveTest {   // test the function for a signed value
+// test the function for a signed value
+class IsoCurveTest {
 public:
   Point2D m_point;
   bool    m_positive;
@@ -32,8 +33,8 @@ public:
 
   inline Point2DKey(int _i, int _j) : i(_i), j(_j) {
   }
-  inline unsigned long hashCode() const {
-    return i*2347 + j;
+  inline ULONG hashCode() const {
+    return i*10937 + j;
   }
   inline bool operator==(const Point2DKey &key) const {
     return i==key.i && j==key.j;
@@ -61,7 +62,7 @@ public:
   inline RectEdgeHashKey(const Point2DKey &key1, const Point2DKey &key2) : m_key1(key1), m_key2(key2) {
     checkAndSwap();
   }
-  unsigned long hashCode() const {
+  ULONG hashCode() const {
     return m_key1.hashCode() + m_key2.hashCode();
   }
   inline bool operator==(const RectEdgeHashKey &e) const {
@@ -69,25 +70,29 @@ public:
   }
 };
 
-class HashedRectCorner { // corner of a rectangle
+// Corner of a rectangle
+class HashedRectCorner {
 public:
   Point2DKey  m_key;
   Point2D     m_point;
   bool        m_positive;
-
-  HashedRectCorner(const Point2DKey &k, const Point2D &p) : m_key(k), m_point(p) {
+  inline HashedRectCorner() {
+  }
+  inline HashedRectCorner(const Point2DKey &k, const Point2D &p) : m_key(k), m_point(p) {
   }
   String toString() const {
     return format(_T("HashedRectCorner:(K:%s, P:%s, %c)"), m_key.toString().cstr(), m_point.toString(6).cstr(), m_positive?'+':'-');
   }
 };
 
-class LineSegment { // parameter to receiveLineSegment
+// Parameter to receiveLineSegment
+class LineSegment {
 public:
-  unsigned int m_i1,m_i2;         // indices into pointArray
+  // Indices into pointArray
+  UINT m_i1,m_i2;
   inline LineSegment() : m_i1(0), m_i2(0) {
   }
-  inline LineSegment(unsigned int i1, unsigned int i2) : m_i1(i1), m_i2(i2) {
+  inline LineSegment(UINT i1, UINT i2) : m_i1(i1), m_i2(i2) {
   }
 
   String toString() const {
@@ -136,19 +141,19 @@ public:
 
 class IsoCurveFinderStatistics {
 public:
-  double       m_threadTime;
-  unsigned int m_lineCount;
-  unsigned int m_pointCount;
-  unsigned int m_rectCount;
-  unsigned int m_cornerCount;
-  unsigned int m_edgeCount;
-  unsigned int m_cornerHits;
-  unsigned int m_edgeHits;
-  unsigned int m_zeroHits;
-  unsigned int m_evalCount;
-  unsigned int m_doTriangleCalls;
-  unsigned int m_nonProductiveCalls;
-  String       m_hashStat;
+  double m_threadTime;
+  UINT   m_lineCount;
+  UINT   m_pointCount;
+  UINT   m_rectCount;
+  UINT   m_cornerCount;
+  UINT   m_edgeCount;
+  UINT   m_cornerHits;
+  UINT   m_edgeHits;
+  UINT   m_zeroHits;
+  UINT   m_evalCount;
+  UINT   m_doTriangleCalls;
+  UINT   m_nonProductiveCalls;
+  String m_hashStat;
 
   IsoCurveFinderStatistics();
   void clear();
@@ -157,14 +162,20 @@ public:
 
 class IsoCurveFinder {
 private:
-  IsoCurveEvaluator                    &m_eval;            // Implicit surface function
+  // Implicit surface function
+  IsoCurveEvaluator                    &m_eval;
   double                                m_cellSize;
-  Rectangle2D                           m_boundingBox;     // bounding box
-  Stack<StackedRectangle>               m_rectangleStack;  // Active cubes
+  // Bounding box
+  Rectangle2D                           m_boundingBox;
+  // Active cubes
+  Stack<StackedRectangle>               m_rectangleStack;
   Point2DArray                          m_pointArray;
-  CompactHashSet<Point2DKey>            m_centerSet;       // done so far
-  HashMap<Point2DKey, HashedRectCorner> m_cornerMap;       // Corners of cubes
-  CompactHashMap<RectEdgeHashKey, int>  m_edgeMap;         // Edge -> point
+  // Centerpoints done so far
+  CompactHashSet<Point2DKey>            m_centerSet;
+  // Corners of cubes
+  CompactHashMap<Point2DKey, HashedRectCorner> m_cornerMap;
+  // Edge -> point
+  CompactHashMap<RectEdgeHashKey, int>  m_edgeMap;
   IsoCurveFinderStatistics              m_statistics;
 
   Point2D      findStartPoint(const Point2D &start);
@@ -208,4 +219,3 @@ public:
     return m_pointArray;
   }
 };
-
