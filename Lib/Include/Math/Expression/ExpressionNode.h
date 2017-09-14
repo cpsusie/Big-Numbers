@@ -9,7 +9,8 @@
 class ExpressionVariable {
 private:
   String       m_name;
-  int          m_valueIndex; // index into parserTree.m_valueTable
+  // Index into parserTree.m_valueTable
+  int          m_valueIndex;
   UINT         m_constant : 1;
   UINT         m_defined  : 1;
   UINT         m_loopVar  : 1;
@@ -160,10 +161,14 @@ typedef enum {
 class PackedSyntaxNodeInfo {
 public:
   const ExpressionInputSymbol m_symbol         : 15;
-          UINT          m_marked               : 1; // used for garbage-collection
-          UINT          m_breakPoint           : 1; // used for DebugThread
-  mutable UINT          m_coefficientsConstant : 1; // used by polynomials
-  mutable UINT          m_coefChecked          : 1; // used by polynomials
+  // used for garbage-collection
+          UINT          m_marked               : 1;
+  // used for DebugThread
+          UINT          m_breakPoint           : 1;
+  // used by polynomials
+  mutable UINT          m_coefficientsConstant : 1;
+  // used by polynomials
+  mutable UINT          m_coefChecked          : 1;
   PackedSyntaxNodeInfo(ExpressionInputSymbol symbol)
     : m_symbol(symbol)
     , m_marked(0)
@@ -276,8 +281,9 @@ public:
 
   bool    isCoefficientArrayConstant()  const;
   bool    dependsOn(const String &name) const;
-  int     getNodeCount(ExpressionNodeSelector *selector = NULL) const; // If selector specified, only nodes wher selector.select(n) is true will be counted.
-                                                                 // If not specified, all nodes is counted
+  // If selector specified, only nodes wher selector.select(n) is true will be counted.
+  // If not specified, all nodes is counted
+  int     getNodeCount(ExpressionNodeSelector *selector = NULL) const;
   bool    containsFunctionCall()        const;
   Real   &getValueRef()                 const;
   bool    isBinaryOperator()            const;
@@ -449,7 +455,8 @@ private:
   ExpressionNodeArray m_childArray;
   void initChildArray(va_list argptr);
 protected:
-  ExpressionNodeTree(ParserTree *tree, ExpressionInputSymbol symbol, ...); // terminate arguemnt list with NULL
+  // Terminate arguemnt list with NULL
+  ExpressionNodeTree(ParserTree *tree, ExpressionInputSymbol symbol, ...);
 
 public:
   ExpressionNodeTree(ParserTree *tree, ExpressionInputSymbol symbol, va_list argptr);
@@ -699,7 +706,8 @@ public:
   }
 };
 
-class SNode { // Wrapper class til ExpressionNode
+// Wrapper class til ExpressionNode
+class SNode {
 private:
   ExpressionNode *m_node;
 public:
@@ -818,8 +826,10 @@ public:
     return m_node->getInverseFunction();
   }
   SNode operator+(  const SNode &n) const;
-  SNode operator-(  const SNode &n) const;   // binary -
-  SNode operator-() const;                  // unary  -
+  // binary -
+  SNode operator-(  const SNode &n) const;
+  // unary  -
+  SNode operator-() const;
   SNode operator*(  const SNode &n) const;
   SNode operator/(  const SNode &n) const;
   SNode operator%(  const SNode &n) const;

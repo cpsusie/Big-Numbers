@@ -148,7 +148,8 @@ private:
   DECLARECLASSNAME;
   ExpressionNode               *m_root;
   int                           m_indexNameCounter;
-  StringTreeMap<int>            m_nameTable; // map name -> index in m_variableTable
+  // map name -> index in m_variableTable
+  StringTreeMap<int>            m_nameTable;
   Array<ExpressionVariable>     m_variableTable;
   mutable CompactArray<Real>    m_valueTable;
   CompactArray<ExpressionNode*> m_nodeTable;
@@ -162,7 +163,8 @@ private:
   ExpressionVariable   *allocateSymbol(     ExpressionNode *n        , bool isConstant, bool isLeftSide, bool isLoopVar);
   ExpressionVariable   *allocateConstant(   ExpressionNode *n, const String &name, const Real &value);
   void                  allocateNumber(     ExpressionNode *n);
-  int                   insertValue(Real value); // insert value into m_valueTable, return index of position
+  // insert value into m_valueTable, return index of position
+  int                   insertValue(Real value);
   void buildSymbolTable(                    ExpressionNode *n);
   void buildSymbolTableIndexedExpression(   ExpressionNode *n);
   void buildSymbolTableAssign(              ExpressionNode *n, bool loopAssignment);
@@ -207,8 +209,10 @@ protected:
 
   ExpressionNodeVariable *fetchVariableNode( const String               &name    );
   ExpressionNode         *constExpression(   const String               &name    );
-  ExpressionFactor       *fetchFactorNode(   ExpressionNode *base, ExpressionNode *exponent = NULL); // if exponent not specified, it is set to 1
-  ExpressionNodeTree     *fetchTreeNode(     ExpressionInputSymbol     symbol, ...               ); // terminate argumentlist with NULL
+  // if exponent not specified, it is set to 1
+  ExpressionFactor       *fetchFactorNode(   ExpressionNode *base, ExpressionNode *exponent = NULL);
+  // terminate argumentlist with NULL
+  ExpressionNodeTree     *fetchTreeNode(     ExpressionInputSymbol     symbol, ...                );
 
   inline ExpressionNodeNumber *numberExpression(const Real     &v) {
     return new ExpressionNodeNumber(this, v);
@@ -342,7 +346,8 @@ public:
 
   ExpressionNode         *expandPower(       ExpressionNode *base, const Rational &exponent);
 
-  ExpressionNode         *vFetchNode(const SourcePosition &pos, ExpressionInputSymbol symbol, va_list argptr); // used by parser
+  // used by parser
+  ExpressionNode         *vFetchNode(const SourcePosition &pos, ExpressionInputSymbol symbol, va_list argptr);
 
 typedef ExpressionNode *(ParserTree::*UnaryOperator)( ExpressionNode *n);
 typedef ExpressionNode *(ParserTree::*BinaryOperator)(ExpressionNode *n1, ExpressionNode *n2);
@@ -409,7 +414,8 @@ typedef ExpressionNode *(ParserTree::*BinaryOperator)(ExpressionNode *n1, Expres
   const ExpressionVariable *getVariable(const String &name) const;
 
   int getNodeCount(ExpressionNodeSelector *selector = NULL);
-  int getNodeCount(bool ignoreMarked, ExpressionInputSymbol s1,...); // terminate symbolset with 0. Only specified symbols will be counted
+  // Terminate symbolset with 0. Only specified symbols will be counted
+  int getNodeCount(bool ignoreMarked, ExpressionInputSymbol s1,...);
   int getTreeDepth() const;
   ParserTreeComplexity getComplexity();
 #ifdef TRACE_REDUCTION_CALLSTACK

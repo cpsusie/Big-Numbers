@@ -12,8 +12,10 @@ class SumElement {
 private:
   DECLARECLASSNAME;
   ExpressionNode *m_n;
-  bool            m_positive; // true for +, false for -
-  bool            m_marked;   // used for garbage-collection
+  // true for +, false for -
+  bool            m_positive;
+  // Used for garbage-collection
+  bool            m_marked;
 public:
   SumElement(ExpressionNode *n, bool positive);
   SumElement *clone(ParserTree *tree) const;

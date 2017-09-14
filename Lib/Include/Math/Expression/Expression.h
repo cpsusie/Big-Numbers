@@ -86,8 +86,10 @@ typedef int ExpressionDestination;
 
 class MemoryReference {
 public:
-  int             m_byteIndex; // index of address in Machinecode
-  const BYTE     *m_memAddr;   // 4/8 byte absolute address (depending on x86/x64 mode)
+  // index of address in Machinecode
+  int             m_byteIndex;
+  // 4/8 byte absolute address (depending on x86/x64 mode)
+  const BYTE     *m_memAddr;
   inline MemoryReference() {
   }
   inline MemoryReference(int byteIndex, const BYTE *memAddr) : m_byteIndex(byteIndex), m_memAddr(memAddr) {
@@ -137,7 +139,8 @@ public:
 #endif
   bool emitFLoad(       const ExpressionNode *n, const ExpressionDestination &dst);
 #endif
-  int  emitShortJmp(const IntelInstruction &ins);  // return address of fixup address
+  // return address of fixup address
+  int  emitShortJmp(const IntelInstruction &ins);
   inline void fixupShortJump(int addr, int jmpAddr) {
     m_jumpFixups.add(JumpFixup(addr, jmpAddr));
   }
@@ -425,10 +428,15 @@ public:
     return m_reduceIteration;
   }
 
-  Expression &toCanonicalForm(); // return this
+  // return this
+  Expression &toCanonicalForm();
+  // return this
   Expression &toStandardForm();
+  // return this
   Expression &toNumericForm();
+  // return this
   Expression &expandMarkedNodes();
+  // return this
   Expression &multiplyMarkedNodes();
 
   String toString() const;
