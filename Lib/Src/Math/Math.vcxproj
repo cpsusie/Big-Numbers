@@ -713,6 +713,7 @@
     <ClCompile Include="Expression\ExpressionDerive.cpp" />
     <ClCompile Include="Expression\ExpressionEvaluate.cpp" />
     <ClCompile Include="Expression\ExpressionFactor.cpp" />
+    <ClCompile Include="Expression\ExpressionFunction.cpp" />
     <ClCompile Include="Expression\ExpressionHelp.cpp" />
     <ClCompile Include="Expression\ExpressionLex.cpp" />
     <ClCompile Include="Expression\ExpressionNode.cpp" />
@@ -969,6 +970,7 @@
     <ClInclude Include="..\..\Include\Math\Double80.h" />
     <ClInclude Include="..\..\Include\Math\Expression\Expression.h" />
     <ClInclude Include="..\..\Include\Math\Expression\ExpressionFactor.h" />
+    <ClInclude Include="..\..\Include\Math\Expression\ExpressionFunction.h" />
     <ClInclude Include="..\..\Include\Math\Expression\ExpressionLex.h" />
     <ClInclude Include="..\..\Include\Math\Expression\ExpressionNode.h" />
     <ClInclude Include="..\..\Include\Math\Expression\ExpressionParser.h" />

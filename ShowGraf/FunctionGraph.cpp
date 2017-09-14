@@ -1,32 +1,14 @@
 #include "stdafx.h"
-#include <Math/Expression/Expression.h>
+#include <Math/Expression/ExpressionFunction.h>
 #include "FunctionGraph.h"
 
-class FunctionGraphFunction : public Function {
-private:
-  FunctionGraph       &m_graph;
-  Expression           m_expr;
-  Real                 m_dummyX;
-  Real                *m_x;
+class FunctionGraphFunction : public ExpressionFunction {
 public:
-  FunctionGraphFunction(const FunctionGraph *graph);
-  Real operator()(const Real &x);
+  inline FunctionGraphFunction(const FunctionGraph *graph) {
+    const FunctionGraphParameters &param = (FunctionGraphParameters&)graph->getParam();
+    compile(param.m_expr, _T("x"), param.m_trigonometricMode);
+  }
 };
-
-FunctionGraphFunction::FunctionGraphFunction(const FunctionGraph *graph)
-: m_graph(*(FunctionGraph*)graph)
-, m_expr(((FunctionGraphParameters&)graph->getParam()).m_trigonometricMode) {
-
-  const FunctionGraphParameters &param = (FunctionGraphParameters&)m_graph.getParam();
-  m_expr.compile(param.m_expr, true);
-  const ExpressionVariable *xvp = m_expr.getVariable(_T("x"));
-  m_x = xvp ? &m_expr.getValueRef(*xvp) : &m_dummyX;
-}
-
-Real FunctionGraphFunction::operator()(const Real &x) {
-  *m_x = x;
-  return m_expr.evaluate();
-}
 
 FunctionGraph::FunctionGraph(const FunctionGraphParameters &param) : PointGraph(new FunctionGraphParameters(param)) {
   calculate();

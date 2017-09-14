@@ -334,6 +334,9 @@
     <ClCompile Include="FindZeroes.cpp">
       <Filter>Source Files\Misc</Filter>
     </ClCompile>
+    <ClCompile Include="Expression\ExpressionFunction.cpp">
+      <Filter>Source Files\Expression</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="NatvisFile.natvis" />
@@ -501,6 +504,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\Math\PrimeFactors.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Expression\ExpressionFunction.h">
+      <Filter>Header Files\Expression</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

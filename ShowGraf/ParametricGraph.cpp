@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include <Math/Expression/Expression.h>
+#include <Math/Expression/ExpressionFunction.h>
 #include "ParametricGraph.h"
 
 ParametricGraph::ParametricGraph(const ParametricGraphParameters &param) : PointGraph(new ParametricGraphParameters(param)) {
@@ -9,25 +9,17 @@ ParametricGraph::ParametricGraph(const ParametricGraphParameters &param) : Point
 void ParametricGraph::calculate() {
   clear();
   const ParametricGraphParameters &param = (ParametricGraphParameters&)getParam();
-  Expression exprX(param.m_trigonometricMode);
-  Expression exprY(param.m_trigonometricMode);
-  exprX.compile(param.m_commonText + param.m_exprX, true);
-  exprY.compile(param.m_commonText + param.m_exprY, true);
-//  m_image = expressionToImage(theApp.m_device, expr, 18);
-  Real                      dummyT;
-  const ExpressionVariable *tvp       = exprX.getVariable(_T("t"));
-  Real                     &tx        = tvp ? exprX.getValueRef(*tvp) : dummyT;
-                            tvp       = exprY.getVariable(_T("t"));
-  Real                     &ty        = tvp ? exprY.getValueRef(*tvp) : dummyT;
-  const int                 stepCount = param.m_steps;
-  double                    step      = (param.m_interval.getMax() - param.m_interval.getMin()) / stepCount;
-  ty = tx = param.m_interval.getMin();
-  for(int i = 0; i <= stepCount; tx += step, ty=tx, i++) {
+  ExpressionFunction Xt(param.m_commonText + param.m_exprX, _T("t"), param.m_trigonometricMode);
+  ExpressionFunction Yt(param.m_commonText + param.m_exprY, _T("t"), param.m_trigonometricMode);
+  const int          stepCount = param.m_steps;
+  double             step      = (param.m_interval.getMax() - param.m_interval.getMin()) / stepCount;
+  Real               t         = param.m_interval.getMin();
+  for(int i = 0; i <= stepCount; t += step, i++) {
     try {
       if(i == stepCount) {
-        ty = tx = param.m_interval.getMax();
+        t = param.m_interval.getMax();
       }
-      addPoint(Point2D(exprX.evaluate(), exprY.evaluate()));
+      addPoint(Point2D(Xt(t), Yt(t)));
     } catch(Exception e) {
       // ignore
     }
