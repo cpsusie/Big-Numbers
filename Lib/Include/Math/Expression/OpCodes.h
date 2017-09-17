@@ -84,12 +84,12 @@
 #define _SWAP5(op)     ((_SWAP4(op) << 8) | (((op)>>32)&0xff))
 #define _SWAP6(op)     ((_SWAP4(op) <<16) | (_SWAP2((op)>>32)))
 
-#define I64(n)        ((unsigned __int64)(n))
+#define I64(n)        ((UINT64)(n))
 
 
 class IntelOpcode {
 public:
-  static inline unsigned __int64 swapBytes(unsigned __int64 bytes, int sz) {
+  static inline UINT64 swapBytes(UINT64 bytes, int sz) {
     switch(sz) {
     case 1 : return bytes;
     case 2 : return _SWAP2(bytes);
@@ -103,13 +103,13 @@ public:
   }
 public:
   union {
-    unsigned __int64 m_bytes;
-    unsigned char    m_byte[8];
+    UINT64 m_bytes;
+    BYTE   m_byte[8];
   };
   UINT             m_size        : 6; // = [0..15]. We can take only 6
   UINT             m_memAddrMode : 1;
   UINT             m_regSrcMode  : 1;
-  inline IntelOpcode(BYTE size, unsigned __int64 bytes, bool memAddrMode, bool regSrcMode)
+  inline IntelOpcode(BYTE size, UINT64 bytes, bool memAddrMode, bool regSrcMode)
     : m_bytes(swapBytes(bytes,size))
     , m_size(size)
     , m_memAddrMode(memAddrMode)
@@ -126,23 +126,23 @@ public:
 
 class IntelInstruction : public IntelOpcode {
 private:
-  inline IntelInstruction &or(BYTE b) { // always |= the last byte in instruction
+  // Always |= the last byte in instruction
+  inline IntelInstruction &or(BYTE b) {
     m_byte[m_size - 1] |= b;
     return *this;
   }
   // size=#bytes of opcode, ofSize=#bytes of offset
-  inline IntelInstruction &add(__int64 bytesToAdd, BYTE count) {
+  inline IntelInstruction &add(INT64 bytesToAdd, BYTE count) {
     if (count == 1) {
       m_byte[m_size++] = (BYTE)bytesToAdd;
-    }
-    else {
+    } else {
       m_bytes |= (bytesToAdd) << (8 * m_size);
       m_size += count;
     }
     return *this;
   }
 public:
-  inline IntelInstruction(BYTE size, unsigned __int64 bytes) : IntelOpcode(size, bytes, false, false) {
+  inline IntelInstruction(BYTE size, UINT64 bytes) : IntelOpcode(size, bytes, false, false) {
   }
   inline IntelInstruction(const IntelOpcode &op) : IntelOpcode(op) {
   }
@@ -192,7 +192,7 @@ public:
   }
   inline IntelInstruction &regSrc(BYTE reg) {
     assert(m_regSrcMode);
-    if(reg < 8) {
+    if(reg < R8) {
       return or(0xc0 | reg);
     } else {
       m_byte[0]++;
@@ -358,8 +358,8 @@ public:
 
 #ifdef IS64BIT
 
-#define REX(op,r64)  (((r64)<8)?PREFIX48(op(r64)):PREFIX4C(op((r64)&7)))
-#define REX1(op,r64) (((r64)<8)?PREFIX48(op(r64)):PREFIX49(op((r64)&7)))                // use for IMM operations
+#define REX( op,r64) (((r64)<R8)?PREFIX48(op(r64)):PREFIX4C(op((r64)&7)))
+#define REX1(op,r64) (((r64)<R8)?PREFIX48(op(r64)):PREFIX49(op((r64)&7)))               // use for IMM operations
 
 #define MOV_R64_QWORD(       r64)              REX(MOV_R32_DWORD,r64)                   // Build src with MEM_ADDR-*,REG_SRC-macroes
 #define MOV_QWORD_R64(       r64)              REX(MOV_DWORD_R32,r64)                   // Build dst with MEM_ADDR-*,REG_SRC-macroes
