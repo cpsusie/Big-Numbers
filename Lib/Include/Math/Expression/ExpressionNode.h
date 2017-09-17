@@ -80,7 +80,7 @@ public:
   }
   void add(ExpressionNode *n, bool positive);
   inline void add(SumElement *e) {
-    CompactArray<SumElement*>::add(e);
+    __super::add(e);
   }
   inline AddentArray &operator+=(ExpressionNode *n) {
     add(n, true);
@@ -177,7 +177,7 @@ public:
     , m_coefChecked(0)
   {
   }
-} ;
+};
 
 class ExpressionNode {
 private:
