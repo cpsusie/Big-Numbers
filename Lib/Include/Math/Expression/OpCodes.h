@@ -192,12 +192,16 @@ public:
   }
   inline IntelInstruction &regSrc(BYTE reg) {
     assert(m_regSrcMode);
+#ifdef IS32BIT
+    return or(0xc0 | reg);
+#else
     if(reg < R8) {
       return or(0xc0 | reg);
     } else {
       m_byte[0]++;
       return or(0xc0 | (reg&7));
     }
+#endif
   }
 };
 
