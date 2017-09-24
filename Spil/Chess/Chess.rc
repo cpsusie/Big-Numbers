@@ -1338,7 +1338,7 @@ BEGIN
             MENUITEM "Rotate c&ounter clockwise",   ID_EDIT_ROTATELEFT
             MENUITEM "Rotate 180 &degrees",         ID_EDIT_ROTATE180
         END
-        MENUITEM "S&witch player to move\tAlt+S", ID_EDIT_SWITCHPLAYERTOMOVE, GRAYED
+        MENUITEM "S&witch player to move\tAlt+S", ID_EDIT_SWITCHPLAYERINTURN, GRAYED
         MENUITEM SEPARATOR
         MENUITEM "&End setup\tF2",              ID_EDIT_ENDSETUP, GRAYED
         MENUITEM "Cancel edit\tEsc",            ID_ESCAPE, GRAYED

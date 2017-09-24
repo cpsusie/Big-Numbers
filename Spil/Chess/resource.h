@@ -520,15 +520,13 @@
 #define ID_INTERESTING_MOVE             33284
 #define ID_DOUBIOUS_MOVE                33285
 #define ID_REMOVE_ANNOTATION            33286
-#define ID_REDIGER_SKIFTSPILLERITR33307 33307
-#define ID_EDIT_SWITCHPLAYERTOMOVE      33308
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        427
-#define _APS_NEXT_COMMAND_VALUE         33309
+#define _APS_NEXT_COMMAND_VALUE         33310
 #define _APS_NEXT_CONTROL_VALUE         1205
 #define _APS_NEXT_SYMED_VALUE           117
 #endif
