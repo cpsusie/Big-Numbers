@@ -3,6 +3,7 @@
 #include "MyUtil.h"         // MFC core and standard components
 #include <Math.h>
 #include <Math/MathLib.h>
+#include <Math/Double80.h>
 
 class Size2D {
 public:
@@ -12,6 +13,8 @@ public:
   }
 
   inline Size2D(double _cx, double _cy) : cx(_cx), cy(_cy) {
+  }
+  inline Size2D(const Double80 &_cx, const Double80 &_cy) : cx(getDouble(_cx)), cy(getDouble(_cy)) {
   }
   inline Size2D operator-(const Size2D &s) const {
     return Size2D(cx-s.cx, cy-s.cy);
@@ -73,6 +76,8 @@ public:
   }
 
   inline Point2D(double _x, double _y) : x(_x), y(_y) {
+  }
+  inline Point2D(const Double80 &_x, const Double80 &_y) : x(getDouble(_x)), y(getDouble(_y)) {
   }
   explicit Point2D(const String &s);
   inline Point2D(const Size2D &s) : x(s.cx), y(s.cy) {

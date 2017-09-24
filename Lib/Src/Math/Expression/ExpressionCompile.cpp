@@ -400,7 +400,7 @@ bool Expression::fastEvaluateBool() {
 
 ExpressionReturnType Expression::findReturnType() const {
   DEFINEMETHODNAME;
-  ExpressionNodeArray stmtList = getStatementList((ExpressionNode*)getRoot());
+  const ExpressionNodeArray stmtList = getStatementList((ExpressionNode*)getRoot());
   switch(stmtList.last()->getSymbol()) {
   case RETURNREAL : return EXPR_RETURN_REAL;
   case RETURNBOOL : return EXPR_RETURN_BOOL;
@@ -484,9 +484,9 @@ void Expression::genAssignment(const ExpressionNode *n) {
 #endif IS32BIT
 
 void Expression::genReturnBoolExpression(const ExpressionNode *n) {
-  JumpList jumps = genBoolExpression(n->left());
-  int trueValue = 1;
-  const int trueLabel  = m_code.emit(MOV_R32_IMM_DWORD(EAX));
+  const JumpList jumps     = genBoolExpression(n->left());
+  const int      trueValue = 1;
+  const int      trueLabel = m_code.emit(MOV_R32_IMM_DWORD(EAX));
   m_code.addBytes(&trueValue,4);
   genEpilog();
 
@@ -730,7 +730,7 @@ void Expression::genIndexedExpression(const ExpressionNode *n) {
 }
 
 void Expression::genIf(const ExpressionNode *n, const ExpressionDestination &dst) {
-  JumpList jumps = genBoolExpression(n->child(0));
+  const JumpList jumps = genBoolExpression(n->child(0));
   m_code.fixupShortJumps(jumps.trueJumps,(int)m_code.size());
   GENEXPRESSION(n->child(1)); // true-expression
   const int trueResultJump  = m_code.emitShortJmp(JMPSHORT);
@@ -757,16 +757,16 @@ JumpList Expression::genBoolExpression(const ExpressionNode *n) {
   JumpList result;
   switch(n->getSymbol()) {
   case NOT  :
-    { JumpList jumps = genBoolExpression(n->child(0));
-      int trueJump   = m_code.emitShortJmp(JMPSHORT);
+    { const JumpList jumps    = genBoolExpression(n->child(0));
+      const int      trueJump = m_code.emitShortJmp(JMPSHORT);
       result.falseJumps.addAll(jumps.trueJumps);
       result.falseJumps.add(trueJump);
       result.trueJumps.addAll(jumps.falseJumps);
     }
     break;
   case AND  :
-    { JumpList jump1 = genBoolExpression(n->left());
-      JumpList jump2 = genBoolExpression(n->right());
+    { const JumpList jump1 = genBoolExpression(n->left());
+      const JumpList jump2 = genBoolExpression(n->right());
       m_code.fixupShortJumps(jump1.trueJumps,(int)m_code.size());
       result.falseJumps.addAll(jump1.falseJumps);
       result.falseJumps.addAll(jump2.falseJumps);
@@ -774,10 +774,10 @@ JumpList Expression::genBoolExpression(const ExpressionNode *n) {
     }
     break;
   case OR   :
-    { JumpList jump1 = genBoolExpression(n->left());
-      int trueJump   = m_code.emitShortJmp(JMPSHORT);
+    { const JumpList jump1 = genBoolExpression(n->left());
+      const int trueJump   = m_code.emitShortJmp(JMPSHORT);
       m_code.fixupShortJumps(jump1.falseJumps,(int)m_code.size());
-      JumpList jump2 = genBoolExpression(n->right());
+      const JumpList jump2 = genBoolExpression(n->right());
       result.falseJumps.addAll(jump2.falseJumps);
       result.trueJumps.addAll(jump1.trueJumps);
       result.trueJumps.addAll(jump2.trueJumps);
