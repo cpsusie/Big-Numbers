@@ -3,9 +3,6 @@
 #include <MFCUtil/Picture.h>
 #include "Image.h"
 
-#pragma warning(disable : 4073)
-#pragma init_seg(lib)
-
 Image::Image(const CSize &size) : PixRect(theApp.m_device, PIXRECT_PLAINSURFACE, size) {
 }
 

@@ -467,9 +467,6 @@ String getSymmetricTransformationToString(SymmetricTransformation st) {
   }
 }
 
-#pragma warning(disable : 4073)
-#pragma init_seg(lib)
-
 static StringArray playerName;
 static StringArray playerShortName;
 static StringArray pieceName;

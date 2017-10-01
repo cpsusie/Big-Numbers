@@ -65,7 +65,6 @@ BOOL CChessApp::InitInstance() {
       redirectDebugLog(true);
       RemoteEndGameSubTablebase::remoteService(argv);
     } else {
-      redirectDebugLog();
       setCurrentLanguage(m_options.getLangID());
       CChessDlg dlg(argument);
       m_pMainWnd = &dlg;
@@ -87,4 +86,9 @@ BOOL CChessApp::InitInstance() {
   }
 
   return FALSE;
+}
+
+int CChessApp::ExitInstance() {
+  m_device.detach();
+  return __super::ExitInstance();
 }
