@@ -66,14 +66,15 @@ static const FieldMarkAttributes fmattr[] = {
 };
 
 void ChessResources::load() {
-  s_boardImage              = new Image(IDR_BOARD          , RESOURCE_JPEG);
+  s_boardImage              = new Image(IDR_BOARD, RESOURCE_JPEG); TRACE_NEW(s_boardImage);
   for(int i = 0; i < ARRAYSIZE(fmattr); i++) {
     const FieldMarkAttributes &fma = fmattr[i];
-    s_markImage.add(new Image(fma.m_resid, fma.m_type, fma.m_transparentWhite));
+    Image *im = new Image(fma.m_resid, fma.m_type, fma.m_transparentWhite); TRACE_NEW(im);
+    s_markImage.add(im);
   }
 
-  s_selectionFrameImage     = new Image(IDB_SELECTIONFRAME , RESOURCE_PNG);
-  s_playerIndicator         = new Image(IDB_PLAYERINDICATOR, RESOURCE_PNG);
+  s_selectionFrameImage     = new Image(IDB_SELECTIONFRAME , RESOURCE_PNG); TRACE_NEW(s_selectionFrameImage);
+  s_playerIndicator         = new Image(IDB_PLAYERINDICATOR, RESOURCE_PNG); TRACE_NEW(s_playerIndicator    );
 
   static const int pieceImages[][7] = {
     {  IDB_BITMAPNOPIECE
@@ -97,7 +98,8 @@ void ChessResources::load() {
   forEachPlayer(p) {
     ImageArray &imageArray = s_pieceImage[p];
     for(int i = 0; i < ARRAYSIZE(pieceImages[p]); i++) {
-      imageArray.add(new Image(pieceImages[p][i],RESOURCE_PNG));
+      Image *im = new Image(pieceImages[p][i],RESOURCE_PNG); TRACE_NEW(im);
+      imageArray.add(im);
     }
   }
 
@@ -111,18 +113,18 @@ void ChessResources::unload() {
   for(int i = 0; i < 2; i++) {
     ImageArray &a = s_pieceImage[i];
     for(size_t j = 0; j < a.size(); j++) {
-      delete a[j];
+      SAFEDELETE(a[j]);
     }
     a.clear();
   }
-  delete s_boardImage; s_boardImage = NULL;
+  SAFEDELETE(s_boardImage);
   for(size_t i = 0; i < s_markImage.size(); i++) {
-    delete s_markImage[i];
+    SAFEDELETE(s_markImage[i]);
   }
   s_markImage.clear();
 
-  delete s_selectionFrameImage;  s_selectionFrameImage = NULL;
-  delete s_playerIndicator;      s_playerIndicator     = NULL;
+  SAFEDELETE(s_selectionFrameImage);
+  SAFEDELETE(s_playerIndicator    );
 }
 
 CBitmap &ChessResources::getSmallPieceBitmap(CBitmap &dst, PieceKey pk) const { // for promote-menu

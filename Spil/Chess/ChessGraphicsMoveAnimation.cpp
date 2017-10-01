@@ -34,7 +34,8 @@ bool MoveSinglePieceAnimation::step() {
 }
 
 void MoveAnimation::addMovePiece(const int from, const int to) {
-  add(new MoveSinglePieceAnimation(m_graphics, from, to, m_steps));
+  MoveSinglePieceAnimation *mspa = new MoveSinglePieceAnimation(m_graphics, from, to, m_steps); TRACE_NEW(mspa);
+  add(mspa);
   if(size() == 1) {
     m_steps = (*this)[0]->getSteps();
   }

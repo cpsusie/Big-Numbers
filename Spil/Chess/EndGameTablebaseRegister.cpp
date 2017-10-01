@@ -7,6 +7,11 @@
 #include "EndGame6MenNoPawns.h"
 
 class TablebaseRegister : public EndGameTablebaseList {
+private:
+  void add(EndGameTablebase *tb) {
+    TRACE_NEW(tb);
+    __super::add(tb);
+  }
 public:
   TablebaseRegister();
   ~TablebaseRegister();
@@ -193,7 +198,7 @@ TablebaseRegister::TablebaseRegister() {
 
 TablebaseRegister::~TablebaseRegister() {
   for(size_t i = 0; i < size(); i++) {
-    delete (*this)[i];
+    SAFEDELETE((*this)[i]);
   }
   clear();
 }

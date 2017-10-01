@@ -8,8 +8,7 @@ PlayerState::PlayerState() {
 
 PlayerState::~PlayerState() {
   for(int i = 0; i < ARRAYSIZE(m_pieces); i++) {
-    delete m_pieces[i];
-    m_pieces[i] = NULL;
+    SAFEDELETE(m_pieces[i]);
   }
 }
 
@@ -30,7 +29,7 @@ void PlayerState::allocatePieceTable(Player player, PlayerState &enemyState, con
       row  = player == WHITEPLAYER ? 1 : 6;
       col  = i % 8;
     }
-    m_pieces[i] = new Piece(type, *this, enemyState, i, row, col);
+    m_pieces[i] = new Piece(type, *this, enemyState, i, row, col); TRACE_NEW(m_pieces[i]);
     if(type == King) {
       m_king = m_pieces[i];
     }

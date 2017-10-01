@@ -80,7 +80,7 @@ SubTablebasePositionInfo::SubTablebasePositionInfo(const Game &game) {
 #endif
     if(error) {
       m_tablebase->unload();
-      m_tablebase = new RemoteEndGameSubTablebase(m_tablebase->getKeyDefinition());
+      m_tablebase = new RemoteEndGameSubTablebase(m_tablebase->getKeyDefinition()); TRACE_NEW(m_tablebase);
       m_tablebase->LOADASSUBTABLEBASE();
     }
   } else { // Non found.
@@ -108,7 +108,7 @@ void SubTablebasePositionInfo::unload() {
   if(m_tablebase != NULL) {
     m_tablebase->unload();
     if(m_tablebase->isRemote()) {
-      delete m_tablebase;
+      SAFEDELETE(m_tablebase);
     }
     m_tablebase = NULL;
   }

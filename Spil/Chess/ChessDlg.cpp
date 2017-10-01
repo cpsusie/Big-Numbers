@@ -79,7 +79,7 @@ void CChessDlg::commonInit() {
   m_graphics       = NULL;
   m_gameResult     = NORESULT;
   m_selectedPiece  = m_removedPiece = EMPTYPIECEKEY;
-  forEachPlayer(p) m_chessPlayer[p]  = new ChessPlayer(p);
+  forEachPlayer(p) { m_chessPlayer[p]  = new ChessPlayer(p); TRACE_NEW(m_chessPlayer[p]); }
   m_controlFlags   = CTRL_VERBOSEATGAMEEND | CTRL_AUTOUPDATETITLE | CTRL_APPACTIVE;
 
   if(s_instanceCount++ == 0) {
@@ -90,15 +90,13 @@ void CChessDlg::commonInit() {
 }
 
 CChessDlg::~CChessDlg() {
-  forEachPlayer(p) delete m_chessPlayer[p];
+  forEachPlayer(p) SAFEDELETE(m_chessPlayer[p]);
 
   if(--s_instanceCount == 0) {
     s_traceThread->kill();
     s_traceThread = NULL;
   }
-  if(m_graphics) {
-    delete m_graphics;
-  }
+  SAFEDELETE(m_graphics);
 }
 
 void CChessDlg::DoDataExchange(CDataExchange *pDX) {
@@ -346,7 +344,7 @@ BOOL CChessDlg::OnInitDialog() {
   SetIcon(m_hIcon, FALSE);        // Set small icon
 
   theApp.m_device.attach(m_hWnd);
-  m_graphics = new ChessGraphics(this);
+  m_graphics = new ChessGraphics(this); TRACE_NEW(m_graphics);
 
   m_accelTable = LoadAccelerators(theApp.m_hInstance, MAKEINTRESOURCE(IDR_MAINFRAME));
 

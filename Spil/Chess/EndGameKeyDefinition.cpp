@@ -1455,7 +1455,7 @@ void EndGameKeyDefinition::selfCheck(EndGameKeyWithOccupiedPositions &key) const
 
 void EndGameKeyDefinition::selfCheckInit() const {
   m_selfCheckInfo.reset();
-  m_usedIndex      = new BitSet((size_t)getIndexSize());
+  m_usedIndex      = new BitSet((size_t)getIndexSize()); TRACE_NEW(m_usedIndex);
   m_checkStartTime = getProcessTime();
 }
 
@@ -1501,8 +1501,7 @@ UINT64 EndGameKeyDefinition::selfCheckSummary(const SelfCheckStatusPrinter &stat
   fclose(f);
 #endif // LIST_UNUSED
 
-  delete m_usedIndex;
-  m_usedIndex = NULL;
+  SAFEDELETE(m_usedIndex);
   return distinctKeys;
 }
 

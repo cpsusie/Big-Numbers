@@ -87,7 +87,7 @@ void ExternEngine::start(AbstractMoveReceiver *mr) {
   try {
     __super::start(!Options::getOptions().getShowEngineConsole(), m_desc.getPath(), NULL);
     m_moveReceiver = mr;
-    m_inputThread  = new RedirectingInputThread(getInput());
+    m_inputThread  = new RedirectingInputThread(getInput()); TRACE_NEW(m_inputThread);
     sendUCI();
     if(m_moveReceiver) {
       resume();
@@ -157,7 +157,7 @@ void ExternEngine::deleteInputThread() {
     }
     if(!m_inputThread->stillActive()) {
       DEBUGMSG(_T("Trying to delete inputThread"));
-      delete m_inputThread;
+      SAFEDELETE(m_inputThread);
       DEBUGMSG(_T("InputThread deleted"));
     } else {
       verbose(_T("Cannot kill inputthread\n"));

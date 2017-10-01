@@ -127,10 +127,7 @@ void EndGameTablebase::load(ByteInputStream &s) {
 void EndGameTablebase::clear() {
 #ifdef TABLEBASE_BUILDER
   m_info.clear();
-  if(m_packedIndex) {
-    delete m_packedIndex;
-    m_packedIndex = NULL;
-  }
+  SAFEDELETE(m_packedIndex);
 #endif
   m_positionIndex.clear();
 }

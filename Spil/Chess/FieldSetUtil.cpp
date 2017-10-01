@@ -136,7 +136,7 @@ FieldSetMatrix::FieldSetMatrix() {
       } else if(sets[p2][p1] != NULL) {
         sets[p1][p2] = sets[p2][p1];
       } else {
-        sets[p1][p2] = new FieldSet(s);
+        sets[p1][p2] = new FieldSet(s); TRACE_NEW(sets[p1][p2]);
       }
     }
   }
@@ -147,7 +147,7 @@ FieldSetMatrix::~FieldSetMatrix() {
     for(int p2 = 0; p2 < 64; p2++) {
       FieldSet *s = sets[p1][p2];
       if(s  && (s != &m_emptySet)) {
-        delete s;
+        SAFEDELETE(s);
       }
       sets[p1][p2] = sets[p2][p1] = NULL;
     }

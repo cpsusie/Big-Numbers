@@ -152,17 +152,17 @@ public:
 #define BACKMOVEGEN_NOMOVES         5
 
 void Game::allocateBackMoveGenerators() {
-  m_backMoveGenerator[BACKMOVEGEN_NO_CHECK       ] = new BackMoveGeneratorNoCheck(      *this);
-  m_backMoveGenerator[BACKMOVEGEN_LD_CHECK       ] = new BackMoveGeneratorLDCheck(      *this);
-  m_backMoveGenerator[BACKMOVEGEN_SD_CHECK       ] = new BackMoveGeneratorSDCheck(      *this);
-  m_backMoveGenerator[BACKMOVEGEN_LD_DOUBLE_CHECK] = new BackMoveGeneratorLDDoubleCheck(*this);
-  m_backMoveGenerator[BACKMOVEGEN_SD_DOUBLE_CHECK] = new BackMoveGeneratorSDDoubleCheck(*this);
-  m_backMoveGenerator[BACKMOVEGEN_NOMOVES        ] = new BackMoveGeneratorNoMoves(      *this);
+  m_backMoveGenerator[BACKMOVEGEN_NO_CHECK       ] = new BackMoveGeneratorNoCheck(      *this); TRACE_NEW(m_backMoveGenerator[BACKMOVEGEN_NO_CHECK       ]);
+  m_backMoveGenerator[BACKMOVEGEN_LD_CHECK       ] = new BackMoveGeneratorLDCheck(      *this); TRACE_NEW(m_backMoveGenerator[BACKMOVEGEN_LD_CHECK       ]);
+  m_backMoveGenerator[BACKMOVEGEN_SD_CHECK       ] = new BackMoveGeneratorSDCheck(      *this); TRACE_NEW(m_backMoveGenerator[BACKMOVEGEN_SD_CHECK       ]);
+  m_backMoveGenerator[BACKMOVEGEN_LD_DOUBLE_CHECK] = new BackMoveGeneratorLDDoubleCheck(*this); TRACE_NEW(m_backMoveGenerator[BACKMOVEGEN_LD_DOUBLE_CHECK]);
+  m_backMoveGenerator[BACKMOVEGEN_SD_DOUBLE_CHECK] = new BackMoveGeneratorSDDoubleCheck(*this); TRACE_NEW(m_backMoveGenerator[BACKMOVEGEN_SD_DOUBLE_CHECK]);
+  m_backMoveGenerator[BACKMOVEGEN_NOMOVES        ] = new BackMoveGeneratorNoMoves(      *this); TRACE_NEW(m_backMoveGenerator[BACKMOVEGEN_NOMOVES        ]);
 }
 
 void Game::deallocateBackMoveGenerators() {
   for(int i = 0; i < ARRAYSIZE(m_backMoveGenerator); i++) {
-    delete m_backMoveGenerator[i];
+    SAFEDELETE(m_backMoveGenerator[i]);
   }
 }
 

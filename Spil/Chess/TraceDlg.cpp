@@ -9,12 +9,13 @@
 #define new DEBUG_NEW
 #endif
 
-CTraceDlg::CTraceDlg(CTraceDlgThread &thread) : CDialog(CTraceDlg::IDD, NULL), m_thread(thread) {
-  m_hIcon    = theApp.LoadIcon(IDR_MAINFRAME);
-  m_initDone = false;
-  m_textBox  = NULL;
-  m_caretPos = 0;
-  m_keepText = FALSE;
+CTraceDlg::CTraceDlg(CTraceDlgThread &thread) : CDialog(IDD, NULL), m_thread(thread) {
+  m_hIcon          = theApp.LoadIcon(IDR_MAINFRAME);
+  m_initDone       = false;
+  m_optionSizedone = false;
+  m_textBox        = NULL;
+  m_caretPos       = 0;
+  m_keepText       = FALSE;
 }
 
 void CTraceDlg::DoDataExchange(CDataExchange *pDX) {
@@ -25,22 +26,23 @@ void CTraceDlg::DoDataExchange(CDataExchange *pDX) {
 BEGIN_MESSAGE_MAP(CTraceDlg, CDialog)
     ON_WM_MOVE()
     ON_WM_SIZE()
-    ON_MESSAGE(ID_MSG_PRINTTEXT             , OnPrintText          )
-    ON_MESSAGE(ID_MSG_UPDATEMESSAGEFIELD    , OnUpdateMessageField )
-    ON_MESSAGE(ID_MSG_CLEARTRACE            , OnClearTrace         )
-    ON_MESSAGE(ID_MSG_REPOSITIONTRACEWINDOW , OnReposition         )
-    ON_BN_CLICKED(IDC_BUTTON_HIDE           , OnButtonhide         )
     ON_WM_CLOSE()
+    ON_WM_TIMER()
     ON_WM_SHOWWINDOW()
-    ON_BN_CLICKED(IDC_BUTTON_CLEAR          , OnButtonClear        )
-    ON_BN_CLICKED(IDC_CHECK_KEEPTEXT        , OnCheckKeepText      )
-    ON_COMMAND(ID_FONTSIZE_75               , OnFontsize75         )
-    ON_COMMAND(ID_FONTSIZE_100              , OnFontsize100        )
-    ON_COMMAND(ID_FONTSIZE_125              , OnFontsize125        )
-    ON_COMMAND(ID_FONTSIZE_150              , OnFontsize150        )
-    ON_COMMAND(ID_FONTSIZE_175              , OnFontsize175        )
-    ON_COMMAND(ID_FONTSIZE_200              , OnFontsize200        )
-    ON_COMMAND(ID_VIEW_INFOFIELDS           , OnViewInfofields     )
+    ON_BN_CLICKED(IDC_BUTTON_HIDE           , OnButtonhide            )
+    ON_BN_CLICKED(IDC_BUTTON_CLEAR          , OnButtonClear           )
+    ON_BN_CLICKED(IDC_CHECK_KEEPTEXT        , OnCheckKeepText         )
+    ON_COMMAND(ID_FONTSIZE_75               , OnFontsize75            )
+    ON_COMMAND(ID_FONTSIZE_100              , OnFontsize100           )
+    ON_COMMAND(ID_FONTSIZE_125              , OnFontsize125           )
+    ON_COMMAND(ID_FONTSIZE_150              , OnFontsize150           )
+    ON_COMMAND(ID_FONTSIZE_175              , OnFontsize175           )
+    ON_COMMAND(ID_FONTSIZE_200              , OnFontsize200           )
+    ON_COMMAND(ID_VIEW_INFOFIELDS           , OnViewInfofields        )
+    ON_MESSAGE(ID_MSG_PRINTTEXT             , OnMsgPrintText          )
+    ON_MESSAGE(ID_MSG_UPDATEMESSAGEFIELD    , OnMsgUpdateMessageField )
+    ON_MESSAGE(ID_MSG_CLEARTRACE            , OnMsgClearTrace         )
+    ON_MESSAGE(ID_MSG_REPOSITIONTRACEWINDOW , OnMsgReposition         )
 END_MESSAGE_MAP()
 
 BOOL CTraceDlg::OnInitDialog() {
@@ -57,15 +59,36 @@ BOOL CTraceDlg::OnInitDialog() {
   m_layoutManager.addControl(IDC_BUTTON_HIDE   , PCT_RELATIVE_X_CENTER | RELATIVE_Y_POS              );
   m_layoutManager.addControl(IDC_BUTTON_CLEAR  , PCT_RELATIVE_X_CENTER | RELATIVE_Y_POS              );
   m_layoutManager.addControl(IDC_CHECK_KEEPTEXT, PCT_RELATIVE_X_CENTER | RELATIVE_Y_POS              );
-
   setWindowPosition(this, getOptions().getTraceWindowPos());
   setWindowSize(    this, getOptions().getTraceWindowSize());
-
   setFontSize(getOptions().getTraceFontSize(), false);
-
   m_initDone = true;
-
   return TRUE;
+}
+
+void CTraceDlg::OnTimer(UINT_PTR nIDEvent) {
+  if(m_optionSizedone) return;
+  KillTimer(1);
+//  setWindowPosition(this, getOptions().getTraceWindowPos());
+//  setFontSize(getOptions().getTraceFontSize(), false);
+  setWindowSize(this, getOptions().getTraceWindowSize());
+  m_optionSizedone = true;
+  __super::OnTimer(nIDEvent);
+}
+
+void CTraceDlg::OnMove(int x, int y) {
+  __super::OnMove(x, y);
+  if(m_initDone) {
+    getOptions().setTraceWindowPos(getWindowPosition(this));
+  }
+}
+
+void CTraceDlg::OnSize(UINT nType, int cx, int cy) {
+  __super::OnSize(nType, cx, cy);
+  m_layoutManager.OnSize(nType, cx, cy);
+  if(m_initDone) {
+    getOptions().setTraceWindowSize(getWindowSize(this));
+  }
 }
 
 void CTraceDlg::print(const String &s) {
@@ -89,7 +112,7 @@ void CTraceDlg::reposition() {
   SendMessage(ID_MSG_REPOSITIONTRACEWINDOW);
 }
 
-LRESULT CTraceDlg::OnPrintText(WPARAM wp, LPARAM lp) {
+LRESULT CTraceDlg::OnMsgPrintText(WPARAM wp, LPARAM lp) {
   if(m_textQueue.isEmpty()) {
     return 0;
   }
@@ -99,7 +122,7 @@ LRESULT CTraceDlg::OnPrintText(WPARAM wp, LPARAM lp) {
   if(m_caretPos < currentText.length()) {
     currentText = left(currentText, m_caretPos);
   }
-  intptr_t bsIndex = text.find('\b');
+  const intptr_t bsIndex = text.find('\b');
   if(bsIndex >= 0) {  // dont incr caretPos
     text.cstr()[bsIndex] = '\0';
     currentText += text.cstr();
@@ -113,7 +136,7 @@ LRESULT CTraceDlg::OnPrintText(WPARAM wp, LPARAM lp) {
   return 0;
 }
 
-LRESULT  CTraceDlg::OnUpdateMessageField(WPARAM wp, LPARAM lp) {
+LRESULT CTraceDlg::OnMsgUpdateMessageField(WPARAM wp, LPARAM lp) {
   if(m_textQueue.isEmpty()) {
     return 0;
   }
@@ -121,7 +144,7 @@ LRESULT  CTraceDlg::OnUpdateMessageField(WPARAM wp, LPARAM lp) {
   return 0;
 }
 
-LRESULT  CTraceDlg::OnClearTrace(WPARAM wp, LPARAM lp) {
+LRESULT CTraceDlg::OnMsgClearTrace(WPARAM wp, LPARAM lp) {
   m_textQueue.clear();
   m_textBox->SetWindowText(EMPTYSTRING);
   m_messageField->SetWindowText(EMPTYSTRING);
@@ -129,7 +152,7 @@ LRESULT  CTraceDlg::OnClearTrace(WPARAM wp, LPARAM lp) {
   return 0;
 }
 
-LRESULT CTraceDlg::OnReposition(WPARAM wp, LPARAM lp) {
+LRESULT CTraceDlg::OnMsgReposition(WPARAM wp, LPARAM lp) {
   putWindowBesideWindow(this, theApp.GetMainWnd());
 /*
   const CSize screenSize = getScreenSize();
@@ -152,21 +175,6 @@ LRESULT CTraceDlg::OnReposition(WPARAM wp, LPARAM lp) {
   return 0;
 }
 
-void CTraceDlg::OnMove(int x, int y) {
-  __super::OnMove(x, y);
-  if(m_initDone) {
-    getOptions().setTraceWindowPos(getWindowPosition(this));
-  }
-}
-
-void CTraceDlg::OnSize(UINT nType, int cx, int cy) {
-  __super::OnSize(nType, cx, cy);
-  m_layoutManager.OnSize(nType, cx, cy);
-  if(m_initDone) {
-    getOptions().setTraceWindowSize(getWindowSize(this));
-  }
-}
-
 void CTraceDlg::scrollToBottom() {
   m_textBox->LineScroll(m_textBox->GetLineCount());
 }
@@ -176,7 +184,7 @@ void CTraceDlg::OnButtonhide() {
 }
 
 void CTraceDlg::OnButtonClear() {
-  OnClearTrace(0,0);
+  OnMsgClearTrace(0,0);
 }
 
 void CTraceDlg::OnCancel() {
@@ -213,8 +221,6 @@ void CTraceDlg::setFontSize(int pct, bool redraw) {
   FontSizeMenuManager::setFontSize(this, pct);
 }
 
-
 void CTraceDlg::OnViewInfofields(){
-  CSelectInfoFieldsDlg dlg;
-  dlg.DoModal();
+  CSelectInfoFieldsDlg().DoModal();
 }

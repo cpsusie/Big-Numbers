@@ -32,12 +32,12 @@ void GameKeyHashStack::init(UINT stackCapacity) {
   m_stackCapacity = stackCapacity;
   m_stackTop      = 0;
 
-  m_hashTable = new GameKeyHashElement*[m_hashCapacity];
+  m_hashTable = new GameKeyHashElement*[m_hashCapacity]; TRACE_NEW(m_hashTable);
   for(UINT i = 0; i < m_hashCapacity; i++) {
     m_hashTable[i] = NULL;
   }
 
-  m_stack = new GameKeyHashElement*[m_stackCapacity];
+  m_stack = new GameKeyHashElement*[m_stackCapacity]; TRACE_NEW(m_stack);
   for(UINT i = 0; i < m_stackCapacity; i++) {
     m_stack[i] = NULL;
   }
@@ -46,16 +46,15 @@ void GameKeyHashStack::init(UINT stackCapacity) {
 
 void GameKeyHashStack::cleanUp() {
   clear();
-  delete[] m_hashTable;
-  delete[] m_stack;
-  m_hashTable = m_stack = NULL;
+  SAFEDELETEARRAY(m_hashTable);
+  SAFEDELETEARRAY(m_stack    );
   deleteFreeList();
 }
 
 void GameKeyHashStack::initFreeList() {
   m_freeList = NULL;
   for(int i = 0; i < 100; i++) {
-    GameKeyHashElement *p = new GameKeyHashElement;
+    GameKeyHashElement *p = new GameKeyHashElement; TRACE_NEW(p);
     p->m_next = m_freeList;
     m_freeList = p;
   }
@@ -64,7 +63,7 @@ void GameKeyHashStack::initFreeList() {
 void GameKeyHashStack::deleteFreeList() {
   for(GameKeyHashElement *p = m_freeList, *next = NULL; p; p = next) {
     next = p->m_next;
-    delete p;
+    SAFEDELETE(p);
   }
   m_freeList = NULL;
 }
@@ -75,7 +74,8 @@ GameKeyHashElement *GameKeyHashStack::fetchElement() {
     m_freeList = result->m_next;
     return result;
   } else {
-    return new GameKeyHashElement;
+    GameKeyHashElement *result = new GameKeyHashElement; TRACE_NEW(result);
+    return result;
   }
 }
 
@@ -119,11 +119,11 @@ int GameKeyHashStack::getRepeatCount() const {
 
 void GameKeyHashStack::expandStack() {
   const UINT newStackCapacity = 2 * m_stackCapacity;
-  GameKeyHashElement **newStack = new GameKeyHashElement*[newStackCapacity];
+  GameKeyHashElement **newStack = new GameKeyHashElement*[newStackCapacity]; TRACE_NEW(newStack);
   for(UINT i = 0; i < m_stackCapacity; i++) {
     newStack[i] = m_stack[i];
   }
-  delete[] m_stack;
+  SAFEDELETEARRAY(m_stack);
   m_stack         = newStack;
   m_stackCapacity = newStackCapacity;
 }

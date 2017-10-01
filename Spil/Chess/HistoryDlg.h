@@ -47,6 +47,7 @@ public:
     void updateHistoryText();
     virtual void OnCancel();
     virtual BOOL OnInitDialog();
+    afx_msg void OnSize(UINT nType, int cx, int cy);
     afx_msg void OnFileAnalyzePosition();
     afx_msg void OnFilePrint();
     afx_msg void OnEditSelectall();
@@ -67,7 +68,6 @@ public:
     afx_msg void OnFontsize150();
     afx_msg void OnFontsize175();
     afx_msg void OnFontsize200();
-    afx_msg void OnSize(UINT nType, int cx, int cy);
     DECLARE_MESSAGE_MAP()
 };
 

@@ -49,13 +49,13 @@ SocketChannel::SocketChannel(int portnr, const String &serverName) {
   const char *aserverName = T2A(serverName.cstr());
   SOCKET ws = tcpOpen(portnr, aserverName);
   SOCKET rs = tcpOpen(portnr, aserverName);
-  m_socketPair = new SocketPair(rs,ws);
+  m_socketPair = new SocketPair(rs,ws); TRACE_NEW(m_socketPair);
 }
 
 SocketChannel::SocketChannel(SOCKET listener) {
   SOCKET rs = tcpAccept(listener);
   SOCKET ws = tcpAccept(listener);
-  m_socketPair = new SocketPair(rs,ws);
+  m_socketPair = new SocketPair(rs,ws); TRACE_NEW(m_socketPair);
 }
 
 SocketChannel::SocketChannel(const SocketChannel &src) {
@@ -83,7 +83,7 @@ void SocketChannel::addref() {
 
 void SocketChannel::release() {
   if (m_socketPair && (m_socketPair->release() == 0)) {
-    delete m_socketPair;
+    SAFEDELETE(m_socketPair);
   }
 }
 

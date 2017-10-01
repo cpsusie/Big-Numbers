@@ -63,7 +63,7 @@ void PackedIndexedMap::load(ByteInputStream &s) {
   EndGameResult *buffer = NULL;
 #define BUFFERSIZE 30000
   try {
-    buffer = new EndGameResult[BUFFERSIZE];
+    buffer = new EndGameResult[BUFFERSIZE]; TRACE_NEW(buffer);
 
     for(size_t i = 0; i < m_indexSize;) {
       UINT64 n = min(BUFFERSIZE, m_indexSize-i);
@@ -86,12 +86,12 @@ void PackedIndexedMap::load(ByteInputStream &s) {
         }
       }
     }
-    delete[] buffer;
+    SAFEDELETEARRAY(buffer);
   } catch(Exception e) {
-    delete[] buffer;
+    SAFEDELETEARRAY(buffer);
     throw e;
   } catch(...) {
-    delete[] buffer;
+    SAFEDELETEARRAY(buffer);
     throw;
   }
 }

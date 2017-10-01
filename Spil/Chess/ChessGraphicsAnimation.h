@@ -47,9 +47,10 @@ public:
     , m_fieldSize(graphics->getResources().getFieldSize0())
     , m_helper(new PixRect(theApp.m_device, PIXRECT_PLAINSURFACE,size))
   {
+    TRACE_NEW(m_helper);
   }
   ~AbstractPieceMoveAnimation() {
-    delete m_helper;
+    SAFEDELETE(m_helper);
   }
 };
 
@@ -82,7 +83,7 @@ public:
   MoveAnimation(ChessGraphics *graphics) : m_graphics(graphics), m_steps(0) {
   }
   ~MoveAnimation() {
-    for (size_t i = 0; i < size(); i++) delete (*this)[i];
+    for (size_t i = 0; i < size(); i++) SAFEDELETE((*this)[i]);
     clear();
   }
   void addMovePiece(const int from, const int to);

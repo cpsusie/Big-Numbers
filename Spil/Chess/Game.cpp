@@ -436,12 +436,11 @@ const GameStackElement &Game::restoreState() {
 
 void Game::allocateStack(int stackCapacity) {
   m_stackCapacity = stackCapacity;
-  m_gameStack     = new GameStackElement[m_stackCapacity];
+  m_gameStack     = new GameStackElement[m_stackCapacity]; TRACE_NEW(m_gameStack);
 }
 
 void Game::deallocateStack() {
-  delete[] m_gameStack;
-  m_gameStack     = NULL;
+  SAFEDELETEARRAY(m_gameStack);
   m_stackCapacity = 0;
 }
 
@@ -452,6 +451,6 @@ void Game::resizeStack() { // doubles the size of the stack
   allocateStack(2*m_stackCapacity);
   memcpy(m_gameStack, stack, sizeof(m_gameStack[0]) * capacity);
 
-  delete[] stack;
+  SAFEDELETEARRAY(stack);
 }
 

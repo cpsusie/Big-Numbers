@@ -11,7 +11,7 @@ AnimatedImage::AnimatedImage(int resId, UINT imageCount) {
   const int frameHeight = rawImage.getHeight();
 
   for(UINT i = 0; i < imageCount; i++) {
-    Image *frame = new Image(CSize(frameWidth, frameHeight));
+    Image *frame = new Image(CSize(frameWidth, frameHeight)); TRACE_NEW(frame);
     frame->rop(0,0,frameWidth, frameHeight, SRCCOPY, &rawImage, i*frameWidth, 0);
     m_imageArray.add(frame);
   }
@@ -23,7 +23,7 @@ AnimatedImage::AnimatedImage(int resId, UINT imageCount) {
 
 AnimatedImage::~AnimatedImage() {
   for(size_t i = 0; i < m_imageArray.size(); i++) {
-    delete m_imageArray[i];
+    SAFEDELETE(m_imageArray[i]);
   }
   releaseBackground();
 }
@@ -50,7 +50,7 @@ void AnimatedImage::saveBackground() {
     return;
   }
   const CSize frameSize = getFrameSize();
-  m_background = new Image(frameSize);
+  m_background = new Image(frameSize); TRACE_NEW(m_background);
   CClientDC dc(m_wnd);
   PixRect::bitBlt(m_background, ORIGIN, frameSize, SRCCOPY, dc, m_point);
 }
@@ -66,10 +66,7 @@ void AnimatedImage::restoreBackground() {
 }
 
 void AnimatedImage::releaseBackground() {
-  if(m_background) {
-    delete m_background;
-    m_background = NULL;
-  }
+  SAFEDELETE(m_background);
 }
 
 CSize AnimatedImage::getFrameSize() const {

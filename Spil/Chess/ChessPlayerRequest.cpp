@@ -6,38 +6,38 @@
 ChessPlayerRequest::ChessPlayerRequest(const Game &game, const TimeLimit &timeLimit, bool hint, bool verbose)
 :m_type(REQUEST_FINDMOVE)
 {
-  m_param = new RequestParamFindMove(game, timeLimit, hint, verbose);
+  m_param = new RequestParamFindMove(game, timeLimit, hint, verbose); TRACE_NEW(m_param);
 }
 
 ChessPlayerRequest::ChessPlayerRequest(const MoveBase &move, bool hint)
 :m_type(REQUEST_FETCHMOVE)
 {
-  m_param = new RequestParamFetchMove(SearchMoveResult(move, hint));
+  m_param = new RequestParamFetchMove(SearchMoveResult(move, hint)); TRACE_NEW(m_param);
 }
 
 ChessPlayerRequest::ChessPlayerRequest(const Game &game)
 :m_type(REQUEST_GAMECHANGED)
 {
-  m_param = new RequestParamGameChanged(game);
+  m_param = new RequestParamGameChanged(game); TRACE_NEW(m_param);
 }
 
 ChessPlayerRequest::ChessPlayerRequest(const PrintableMove &move)
 : m_type(REQUEST_MOVEDONE)
 {
-  m_param = new RequestParamMoveDone(move);
+  m_param = new RequestParamMoveDone(move); TRACE_NEW(m_param);
 }
 
 ChessPlayerRequest::ChessPlayerRequest(const String &msgText, bool error)
 :m_type(REQUEST_SHOWMESSAGE)
 {
-  m_param = new RequestParamShowMessage(msgText, error);
+  m_param = new RequestParamShowMessage(msgText, error); TRACE_NEW(m_param);
 }
 
   // REQUEST_CONNECT
 ChessPlayerRequest::ChessPlayerRequest(const SocketChannel &channel)
 :m_type(REQUEST_CONNECT)
 {
-  m_param = new RequestParamConnect(channel);
+  m_param = new RequestParamConnect(channel); TRACE_NEW(m_param);
 }
 
 ChessPlayerRequest::ChessPlayerRequest(ChessPlayerRequestType type) {
@@ -80,7 +80,7 @@ void ChessPlayerRequest::release() {
   if(m_param != NULL) {
     const int refCount = m_param->release();
     if(refCount == 0) {
-      delete m_param;
+      SAFEDELETE(m_param);
     }
     m_param = NULL;
 #ifdef TEST_REFCOUNT

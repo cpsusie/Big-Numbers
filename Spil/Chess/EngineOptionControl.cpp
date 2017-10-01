@@ -17,7 +17,7 @@ EngineOptionControl::EngineOptionControl(CEngineOptionsDlg *parent, const Engine
   m_ctrl  = m_spinCtrl = NULL;
   switch(option.getType()) {
   case OptionTypeCheckbox:
-    { CButton *ctrl = new CButton();
+    { CButton *ctrl = new CButton(); TRACE_NEW(ctrl);
       ctrl->Create(option.getLabelName().cstr(), STD_STYLES | BS_AUTOCHECKBOX | BS_LEFTTEXT, r, parent, m_ctrlId);
       m_ctrl = ctrl;
     }
@@ -26,8 +26,8 @@ EngineOptionControl::EngineOptionControl(CEngineOptionsDlg *parent, const Engine
   case OptionTypeSpin    :
     { m_label  = newStaticLabel(parent, option.getLabelName());
       m_label2 = newStaticLabel(parent, format(_T("(%d-%d)"), option.getMin(), option.getMax()));
-      CEdit           *ctrl     = new CEdit();
-      CSpinButtonCtrl *spinCtrl = new CSpinButtonCtrl();
+      CEdit           *ctrl     = new CEdit();           TRACE_NEW(ctrl    );
+      CSpinButtonCtrl *spinCtrl = new CSpinButtonCtrl(); TRACE_NEW(spinCtrl);
 
       ctrl->Create(STD_STYLES, r, parent, m_ctrlId);
       ctrl->ModifyStyleEx(0,WS_EX_CLIENTEDGE);
@@ -41,7 +41,7 @@ EngineOptionControl::EngineOptionControl(CEngineOptionsDlg *parent, const Engine
 
   case OptionTypeCombo   :
     { m_label = newStaticLabel(parent, option.getLabelName());
-      CComboBox *ctrl  = new CComboBox();
+      CComboBox *ctrl  = new CComboBox(); TRACE_NEW(ctrl);
       ctrl->Create(STD_STYLES | WS_VSCROLL | CBS_DROPDOWN , r, parent, m_ctrlId);
       const StringArray &values = m_option.getComboValues();
       for(size_t i = 0; i < values.size(); i++) {
@@ -53,7 +53,7 @@ EngineOptionControl::EngineOptionControl(CEngineOptionsDlg *parent, const Engine
 
   case OptionTypeString  :
     { m_label = newStaticLabel(parent, option.getLabelName());
-      CEdit   *ctrl  = new CEdit();
+      CEdit   *ctrl  = new CEdit(); TRACE_NEW(ctrl);
       ctrl->Create(STD_STYLES | ES_AUTOHSCROLL, r, parent, m_ctrlId);
       ctrl->ModifyStyleEx(0,WS_EX_CLIENTEDGE);
       m_ctrl  = ctrl;
@@ -61,7 +61,7 @@ EngineOptionControl::EngineOptionControl(CEngineOptionsDlg *parent, const Engine
     break;
 
   case OptionTypeButton  :
-    { CButton *ctrl = new CButton();
+    { CButton *ctrl = new CButton(); TRACE_NEW(ctrl);
       ctrl->Create(option.getLabelName().cstr(), STD_STYLES | BS_PUSHBUTTON, r, parent, m_ctrlId);
       ctrl->ModifyStyleEx(0, WS_EX_NOPARENTNOTIFY);
       m_ctrl = ctrl;
@@ -76,7 +76,7 @@ EngineOptionControl::EngineOptionControl(CEngineOptionsDlg *parent, const Engine
 
 CStatic *EngineOptionControl::newStaticLabel(CWnd *parent, const String &s) { // static
   const CRect r(10,10,20,20);
-  CStatic *label = new CStatic();
+  CStatic *label = new CStatic(); TRACE_NEW(label);
   label->Create(s.cstr(), WS_VISIBLE|SS_CENTERIMAGE, r, parent, IDC_STATIC);
   return label;
 }
@@ -178,14 +178,10 @@ int EngineOptionControl::findEditBoxWidth(CDC &dc) const {
 }
 
 void EngineOptionControl::cleanup() {
-  delete m_ctrl;
-  delete m_label;
-  delete m_label2;
-  delete m_spinCtrl;
-  m_ctrl     = NULL;
-  m_label    = NULL;
-  m_label2   = NULL;
-  m_spinCtrl = NULL;
+  SAFEDELETE(m_ctrl    );
+  SAFEDELETE(m_label   );
+  SAFEDELETE(m_label2  );
+  SAFEDELETE(m_spinCtrl);
 }
 
 void EngineOptionControl::setValue(bool value) {

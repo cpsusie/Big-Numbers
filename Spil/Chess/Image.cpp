@@ -183,5 +183,5 @@ void Image::paintRotated(HDC dc, const CPoint &dst, const CSize &size, const CPo
     const CSize dstsize((int)(rsize.cx * scale), (int)(rsize.cy*scale));
     PixRect::alphaBlend(dc, dst, dstsize, *rotatedImage, ORIGIN, rsize, 255);
   }
-  delete rotatedImage;
+  SAFEDELETE(rotatedImage);
 }

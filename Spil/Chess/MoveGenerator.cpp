@@ -244,10 +244,10 @@ public:
 #define MOVEGEN_DOUBLE_CHECK     3
 
 void Game::allocateMoveGenerators() {
-  m_moveGenerator[MOVEGEN_NO_CHECK    ] = new MoveGeneratorNoCheck(    *this);
-  m_moveGenerator[MOVEGEN_LD_CHECK    ] = new MoveGeneratorLDCheck(    *this);
-  m_moveGenerator[MOVEGEN_SD_CHECK    ] = new MoveGeneratorSDCheck(    *this);
-  m_moveGenerator[MOVEGEN_DOUBLE_CHECK] = new MoveGeneratorDoubleCheck(*this);
+  m_moveGenerator[MOVEGEN_NO_CHECK    ] = new MoveGeneratorNoCheck(    *this); TRACE_NEW(m_moveGenerator[MOVEGEN_NO_CHECK    ]);
+  m_moveGenerator[MOVEGEN_LD_CHECK    ] = new MoveGeneratorLDCheck(    *this); TRACE_NEW(m_moveGenerator[MOVEGEN_LD_CHECK    ]);
+  m_moveGenerator[MOVEGEN_SD_CHECK    ] = new MoveGeneratorSDCheck(    *this); TRACE_NEW(m_moveGenerator[MOVEGEN_SD_CHECK    ]);
+  m_moveGenerator[MOVEGEN_DOUBLE_CHECK] = new MoveGeneratorDoubleCheck(*this); TRACE_NEW(m_moveGenerator[MOVEGEN_DOUBLE_CHECK]);
 
 #ifdef TABLEBASE_BUILDER
   allocateBackMoveGenerators();
@@ -256,7 +256,7 @@ void Game::allocateMoveGenerators() {
 
 void Game::deallocateMoveGenerators() {
   for(int i = 0; i < ARRAYSIZE(m_moveGenerator); i++) {
-    delete m_moveGenerator[i];
+    SAFEDELETE(m_moveGenerator[i]);
   }
 
 #ifdef TABLEBASE_BUILDER

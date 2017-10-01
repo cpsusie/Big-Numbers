@@ -600,7 +600,7 @@ IndexedMapEntryIterator::IndexedMapEntryIterator(IndexedMap &map)
 , m_odd(         true                                 )
 {
   m_current = m_firstElement+1;
-  m_timeEstimator = new TimeEstimator(*this);
+  m_timeEstimator = new TimeEstimator(*this); TRACE_NEW(m_timeEstimator);
   for(;; m_odd = false, m_current = m_firstElement) {
     for(; m_current <= m_lastElement; m_current+=2) {
       if(m_current->exists()) return;
@@ -618,11 +618,11 @@ IndexedMapEntryIterator::IndexedMapEntryIterator(const IndexedMapEntryIterator &
 , m_startTime(   src.m_startTime   )
 , m_odd(         src.m_odd         )
 {
-  m_timeEstimator = new TimeEstimator(*this);
+  m_timeEstimator = new TimeEstimator(*this); TRACE_NEW(m_timeEstimator);
 }
 
 IndexedMapEntryIterator::~IndexedMapEntryIterator() {
-  delete m_timeEstimator;
+  SAFEDELETE(m_timeEstimator);
 }
 
 UINT64 EndGameEntryIterator::getCount() {
@@ -848,14 +848,8 @@ IndexedMap::~IndexedMap() {
 }
 
 void IndexedMap::clear() {
-  if(m_positionIndex) {
-    delete m_positionIndex;
-    m_positionIndex = NULL;
-  }
-  if(m_infoArray) {
-    delete m_infoArray;
-    m_infoArray = NULL;
-  }
+  SAFEDELETE(m_positionIndex);
+  SAFEDELETE(m_infoArray    );
 }
 
 class DecompressedHeader : public TablebaseInfo {
@@ -1045,8 +1039,8 @@ void IndexedMap::load() {
   const String fileName = m_keydef.getDecompressedFileName();
   const DecompressedHeader header(fileName);
   m_canWinFlags   = header.getCanWinFlags();
-  m_positionIndex = new FileBitSetIndex(fileName, header.m_bitSetIndexOffset);
-  m_infoArray     = new PackedFileArray(fileName, header.m_arrayStartOffset);
+  m_positionIndex = new FileBitSetIndex(fileName, header.m_bitSetIndexOffset); TRACE_NEW(m_positionIndex);
+  m_infoArray     = new PackedFileArray(fileName, header.m_arrayStartOffset ); TRACE_NEW(m_infoArray);
 //  verbose(_T("%s"), m_positionIndex->getInfoString().cstr());
 }
 
@@ -1119,10 +1113,10 @@ IndexedMap::~IndexedMap() {
 }
 
 void IndexedMap::clear() {
-  delete m_wpIndex;
-  delete m_npIndex;
-  delete m_whoWinSet;
-  delete m_infoArray;
+  SAFEDELETE(m_wpIndex  );
+  SAFEDELETE(m_npIndex  );
+  SAFEDELETE(m_whoWinSet);
+  SAFEDELETE(m_infoArray);
 
   init();
 }
@@ -1223,12 +1217,12 @@ void IndexedMap::load() {
   DecompressedHeader header(fileName);
   m_canWinFlags    = header.getCanWinFlags();
   m_npFlags        = header.getNPFlags();
-  m_wpIndex = new FileBitSetIndex(fileName, header.m_wpIndexAddress);
-  m_npIndex     = new FileBitSetIndex(fileName, header.m_npIndexAddress);
+  m_wpIndex        = new FileBitSetIndex(fileName, header.m_wpIndexAddress); TRACE_NEW(m_wpIndex);
+  m_npIndex        = new FileBitSetIndex(fileName, header.m_npIndexAddress); TRACE_NEW(m_npIndex);
   if (m_canWinFlags == BOTHCANWIN) {
-    m_whoWinSet = new FileBitSet(fileName, header.m_whoWinAddress);
+    m_whoWinSet = new FileBitSet(fileName, header.m_whoWinAddress); TRACE_NEW(m_whoWinSet);
   }
-  m_infoArray      = new PackedFileArray(fileName, header.m_arrayAddress);
+  m_infoArray      = new PackedFileArray(fileName, header.m_arrayAddress); TRACE_NEW(m_infoArray);
 }
 
 EndGameResult IndexedMap::get(EndGameKey key) const {

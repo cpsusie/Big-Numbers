@@ -616,7 +616,8 @@ EndGameTablebase *ChessPlayer::findMatchingTablebase(const Game &g) const {
 
 void ChessPlayer::allocateRemoteMoveFinder() {
   assert(isRemote());
-  setMoveFinder(new MoveFinderRemotePlayer(getPlayer(), m_inputQueue, m_channel));
+  AbstractMoveFinder *amf = new MoveFinderRemotePlayer(getPlayer(), m_inputQueue, m_channel); TRACE_NEW(amf);
+  setMoveFinder(amf);
 }
 
 // private
@@ -633,7 +634,8 @@ void ChessPlayer::allocateMoveFinder(const RequestParamFindMove &param) {
       if(tablebase == NULL) {
         setMoveFinder(newMoveFinderNormalPlay(param));
       } else {
-        setMoveFinder(new MoveFinderEndGame(getPlayer(), m_inputQueue, tablebase));
+        AbstractMoveFinder *amf = new MoveFinderEndGame(getPlayer(), m_inputQueue, tablebase); TRACE_NEW(amf);
+        setMoveFinder(amf);
       }
     }
     break;
@@ -642,15 +644,18 @@ void ChessPlayer::allocateMoveFinder(const RequestParamFindMove &param) {
 
 // private
 AbstractMoveFinder *ChessPlayer::newMoveFinderNormalPlay(const RequestParamFindMove &param) {
+  AbstractMoveFinder *amf;
 #ifndef TABLEBASE_BUILDER
   if(param.getTimeLimit().m_timeout == 0) {
-    return new MoveFinderRandomPlay(getPlayer(), m_inputQueue);
+    amf = new MoveFinderRandomPlay(getPlayer(), m_inputQueue);
   } else {
-    return new MoveFinderExternEngine(getPlayer(), m_inputQueue);
+    amf = new MoveFinderExternEngine(getPlayer(), m_inputQueue);
   }
 #else
-    return new MoveFinderRandomPlay(getPlayer(), m_inputQueue);
+  amf = new MoveFinderRandomPlay(getPlayer(), m_inputQueue);
 #endif
+  TRACE_NEW(amf);
+  return amf;
 }
 
 class StateStringifier : public AbstractStringifier<UINT> {
@@ -720,9 +725,7 @@ void ChessPlayer::setMoveFinder(AbstractMoveFinder *moveFinder) {
     const AbstractMoveFinder *old = m_moveFinder;
     setProperty(CPP_MOVEFINDER, m_moveFinder, moveFinder);
 
-    if(old != NULL) {
-      delete old;
-    }
+    SAFEDELETE(old);
   }
   UNLOCK_LEAVE();
 }

@@ -51,7 +51,7 @@ void EndGameTablebase::loadPacked(ByteInputStream &s) {
   if(!m_info.isConsistent()) {
     throwException(_T("Not checked for consistency"));
   }
-  m_packedIndex = new PackedIndexedMap(m_keydef, EndGameKeyDefinition::isMetricDTM(), m_info.m_maxPlies.getMax());
+  m_packedIndex = new PackedIndexedMap(m_keydef, EndGameKeyDefinition::isMetricDTM(), m_info.m_maxPlies.getMax()); TRACE_NEW(m_packedIndex);
   m_packedIndex->load(s);
 }
 
@@ -1895,7 +1895,7 @@ CheckHeader:
 
 CompactArray<PositionCount64> EndGameTablebase::getWinnerPositionCountArray() {
   const int            maxPlies = m_info.m_maxPlies.getMax();
-  PositionCount64     *wpCount  = new PositionCount64[maxPlies+1];
+  PositionCount64     *wpCount  = new PositionCount64[maxPlies+1]; TRACE_NEW(wpCount);
   startVerboseTrigger(1);
   for(EndGameEntryIterator it = m_positionIndex.getIteratorAllWinnerEntries(); it.hasNext();) {
     const EndGameResult &res = it.next().getValue();
@@ -1909,7 +1909,7 @@ CompactArray<PositionCount64> EndGameTablebase::getWinnerPositionCountArray() {
   for(int i = 0; i <= maxPlies; i++) {
     result.add(wpCount[i]);
   }
-  delete[] wpCount;
+  SAFEDELETEARRAY(wpCount);
   return result;
 }
 

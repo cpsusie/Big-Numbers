@@ -169,9 +169,6 @@
     <ClCompile Include="SocketChannel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="StdAfx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="StopWatch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -895,6 +892,7 @@
     <ClCompile Include="ChessPlayerRequest.cpp">
       <Filter>Source Files\MoveFinders</Filter>
     </ClCompile>
+    <ClCompile Include="StdAfx.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Chess.h">
@@ -930,9 +928,6 @@
     <ClInclude Include="SocketChannel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="StdAfx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="StopWatch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -953,9 +948,6 @@
     </ClInclude>
     <ClInclude Include="EndGame5MenWithPawns.h">
       <Filter>EndGames\5Men\5MenWithPawns</Filter>
-    </ClInclude>
-    <ClInclude Include="targetver.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AboutDlg.h">
       <Filter>Source Files\Dialogs\Include</Filter>
@@ -1074,6 +1066,8 @@
     <ClInclude Include="ChessPlayerRequest.h">
       <Filter>Source Files\MoveFinders\Include</Filter>
     </ClInclude>
+    <ClInclude Include="StdAfx.h" />
+    <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\BlackMark.bmp">

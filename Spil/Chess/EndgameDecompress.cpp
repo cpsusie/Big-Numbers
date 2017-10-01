@@ -169,7 +169,8 @@ DecompressJob::DecompressJob(const EndGameTablebaseList &list) : m_jobQueue(list
   const int cpuCount = getProcessorCount();
 #endif // _DEBUG
   for (int i = 0; i < cpuCount; i++) {
-    m_decompArray.add(new Decompressor(m_jobQueue));
+    Decompressor *dc = new Decompressor(m_jobQueue); TRACE_NEW(dc);
+    m_decompArray.add(dc);
   }
 
   m_title = format(_T("%s - %s:%s")
@@ -203,7 +204,7 @@ UINT64 DecompressJob::sumDecompressorsBytesDone() const {
 void DecompressJob::clearDecompArray() {
   interruptAll();
   for (size_t i = 0; i < m_decompArray.size(); i++) {
-    delete m_decompArray[i];
+    SAFEDELETE(m_decompArray[i]);
   }
   m_decompArray.clear();
 }

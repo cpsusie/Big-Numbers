@@ -51,12 +51,12 @@ void ChessGraphics::reopen() {
 }
 
 void ChessGraphics::allocate() {
-  m_bufferPr      = new PixRect(theApp.m_device, PIXRECT_PLAINSURFACE, m_resources.getBoardSize0()         );
+  m_bufferPr = new PixRect(theApp.m_device, PIXRECT_PLAINSURFACE, m_resources.getBoardSize0()); TRACE_NEW(m_bufferPr);
   m_resources.setClientRectSize(getClientRect(m_hwnd).Size());
 }
 
 void ChessGraphics::deallocate() {
-  delete m_bufferPr;
+  SAFEDELETE(m_bufferPr);
   m_selectedRect.cleanup();
   m_bufferPr   = NULL;
   m_paintLevel = 0;
@@ -569,7 +569,7 @@ void ChessGraphics::beginDragPiece(const CPoint &point, PieceKey key) {
 
 void ChessGraphics::beginDragPiece(const CPoint &point, const OffboardPiece *obp) {
   pushLevel();
-  m_pieceDragger = new PieceDragger(this, point, obp);
+  m_pieceDragger = new PieceDragger(this, point, obp); TRACE_NEW(m_pieceDragger);
   paintGamePositions();
   popLevel();
 }
@@ -581,8 +581,7 @@ void ChessGraphics::dragPiece(const CPoint &point) {
 void ChessGraphics::endDragPiece() {
   const Player p = GET_PLAYER_FROMKEY(m_pieceDragger->getPieceKey());
   m_pieceDragger->endDrag();
-  delete m_pieceDragger;
-  m_pieceDragger = NULL;
+  SAFEDELETE(m_pieceDragger);
 
   pushLevel();
   repaintOffboardPieces(p);
@@ -1031,7 +1030,7 @@ void ChessGraphics::unmarkSelectedPiece() {
 PixRect *SavedImageRect::getPixRect(const CSize &size) {
   if(m_pr == NULL || needResize(m_pr->getSize(), size)) {
     cleanup();
-    m_pr = new PixRect(theApp.m_device, PIXRECT_PLAINSURFACE, size);
+    m_pr = new PixRect(theApp.m_device, PIXRECT_PLAINSURFACE, size); TRACE_NEW(m_pr);
   }
   return m_pr;
 }
@@ -1048,10 +1047,7 @@ void SavedImageRect::restore(PixRect *dst) const {
 }
 
 void SavedImageRect::cleanup() {
-  if(m_pr) {
-    delete m_pr;
-    m_pr = NULL;
-  }
+  SAFEDELETE(m_pr);
 }
 
 bool confirmCancel(CWnd *parent) {
