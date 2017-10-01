@@ -4,7 +4,7 @@
 #define DEFAULTBUFSIZE 1024
 
 String tcpReadString(SOCKET s) {
-  size_t len;
+  UINT len;
   tcpRead(s, &len, sizeof(len));
   if(len == 0) {
     return EMPTYSTRING;
@@ -27,7 +27,10 @@ String tcpReadString(SOCKET s) {
 }
 
 void tcpWriteString(SOCKET s, const String &str) {
-  const size_t len = str.length();
+  if(str.length() >= UINT_MAX) {
+    throwInvalidArgumentException(__TFUNCTION__,__T("String too long. must not exceed %lu"), UINT_MAX-1);
+  }
+  const UINT len = (UINT)str.length();
   tcpWrite(s, &len, sizeof(len));
   if(len > 0) {
     tcpWrite(s, str.cstr(), len*sizeof(TCHAR));
