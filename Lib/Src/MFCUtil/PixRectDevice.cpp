@@ -85,15 +85,14 @@ void PixRectDevice::setRenderTargetSize(const CSize &size) {
   }
 }
 
-
 LPDIRECT3DTEXTURE PixRectDevice::createTexture(const CSize &size, D3DFORMAT format, D3DPOOL pool) {
   LPDIRECT3DTEXTURE texture;
 
   // Create an alpha texture
-  if (format == D3DFMT_FORCE_DWORD) {
+  if(format == D3DFMT_FORCE_DWORD) {
     format = getDefaultPixelFormat();
   }
-  if (pool == D3DPOOL_FORCE_DWORD) {
+  if(pool == D3DPOOL_FORCE_DWORD) {
     pool = D3DPOOL_SYSTEMMEM;
   }
   DWORD usage = D3DUSAGE_DYNAMIC; // (pool == D3DPOOL_MANAGED) ? 0 : D3DUSAGE_DYNAMIC;
@@ -121,10 +120,10 @@ LPDIRECT3DSURFACE PixRectDevice::createRenderTarget(const CSize &size, D3DFORMAT
 }
 
 LPDIRECT3DSURFACE PixRectDevice::createOffscreenPlainSurface(const CSize &size, D3DFORMAT format, D3DPOOL pool) {
-  if (format == D3DFMT_FORCE_DWORD) {
+  if(format == D3DFMT_FORCE_DWORD) {
     format = getDefaultPixelFormat();
   }
-  if (pool == D3DPOOL_FORCE_DWORD) {
+  if(pool == D3DPOOL_FORCE_DWORD) {
     pool = D3DPOOL_SYSTEMMEM;
   }
   LPDIRECT3DSURFACE surface;
@@ -136,7 +135,7 @@ LPDIRECT3DSURFACE PixRectDevice::createOffscreenPlainSurface(const CSize &size, 
 LPDIRECT3DSURFACE PixRectDevice::getRenderTarget() {
   LPDIRECT3DSURFACE surface;
   CHECK3DRESULT(m_device->GetRenderTarget(0,&surface));
-  TRACE_REFCOUNT(surface);
+  TRACE_CREATE(surface);
   return surface;
 }
 
@@ -172,7 +171,7 @@ void PixRectDevice::render(const PixRect *pr) {
     endScene();
 
     oldRenderTarget = getRenderTarget();
-    if (pr->m_desc.Pool != D3DPOOL_DEFAULT) {
+    if(pr->m_desc.Pool != D3DPOOL_DEFAULT) {
       setRenderTargetSize(pr->getSize());
       CHECK3DRESULT(m_device->UpdateSurface(pr->m_surface, NULL, m_renderTarget, NULL));
       CHECK3DRESULT(m_device->StretchRect(m_renderTarget, NULL, oldRenderTarget, NULL, D3DTEXF_NONE));
