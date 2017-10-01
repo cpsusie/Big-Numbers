@@ -120,9 +120,6 @@
     <ClCompile Include="..\Chess\PositionSignature.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="StdAfx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\Chess\UpdateBishopMove.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -735,6 +732,7 @@
     <ClCompile Include="..\Chess\PrintableMove.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="StdAfx.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\chess\FieldNames.h">
@@ -752,9 +750,6 @@
     <ClInclude Include="..\chess\Resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="stdAfx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\Chess\EndGame3Men.h">
       <Filter>EndGames\3Men</Filter>
     </ClInclude>
@@ -769,9 +764,6 @@
     </ClInclude>
     <ClInclude Include="..\Chess\EndGame5MenWithPawns.h">
       <Filter>EndGames\5Men\5MenWithPawns</Filter>
-    </ClInclude>
-    <ClInclude Include="targetver.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\chess\EndGameKey.h">
       <Filter>EndGames\Include</Filter>
@@ -812,6 +804,8 @@
     <ClInclude Include="PackedArrayCompression.h">
       <Filter>EndGames\Compression</Filter>
     </ClInclude>
+    <ClInclude Include="stdAfx.h" />
+    <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\chess\res\blueField.bmp">

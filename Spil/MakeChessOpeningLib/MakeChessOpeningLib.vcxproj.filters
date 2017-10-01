@@ -108,15 +108,13 @@
     <ClCompile Include="..\Chess\UpdateRookMove.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="StdAfx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\Chess\MoveBase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\Chess\PrintableMove.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="StdAfx.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Chess\FieldNames.h">
@@ -131,8 +129,6 @@
     <ClInclude Include="..\chess\OpeningLibrary.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="StdAfx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    <ClInclude Include="StdAfx.h" />
   </ItemGroup>
 </Project>

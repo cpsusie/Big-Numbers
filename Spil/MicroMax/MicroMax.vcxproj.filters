@@ -30,12 +30,10 @@
     <ClCompile Include="OccupationMap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="StdAfx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="BoardConfig.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="StdAfx.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MicroMax.rc">
@@ -55,9 +53,7 @@
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="StdAfx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    <ClInclude Include="StdAfx.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\chess.ico">

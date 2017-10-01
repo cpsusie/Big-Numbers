@@ -106,15 +106,11 @@
     <ClInclude Include="..\Chess\EndGameTablebase.h">
       <Filter>Source Files\Game\EndGames</Filter>
     </ClInclude>
-    <ClInclude Include="StdAfx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="targetver.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\Chess\EndGame6MenNoPawns.h">
       <Filter>Source Files\Game\EndGames\6Men\6MenNoPawns</Filter>
     </ClInclude>
+    <ClInclude Include="StdAfx.h" />
+    <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Chess\EndGameKBBBK.cpp">
@@ -744,9 +740,6 @@
     <ClCompile Include="PrintEndGameTree.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="StdAfx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\Chess\EndGameKeyDefinition6Men.cpp">
       <Filter>Source Files\Game\EndGames\EndGameKeyDefinitions</Filter>
     </ClCompile>
@@ -777,6 +770,7 @@
     <ClCompile Include="..\Chess\PrintableMove.cpp">
       <Filter>Source Files\Game</Filter>
     </ClCompile>
+    <ClCompile Include="StdAfx.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\Chess\res\BlackMark.bmp">
