@@ -327,9 +327,16 @@ static const TCHAR *EVFHASHFULL              = _T("HashFull");
 static const TCHAR *EVFMULTIPV               = _T("MultiPV");
 static const TCHAR *EVFCPULOAD               = _T("CPULoad");
 
-static void savePos( RegistryKey key, const CPoint &p) {
+static void savePos(RegistryKey key, const CPoint &p) {
   key.setValue(_X , p.x);
   key.setValue(_Y , p.y);
+}
+
+static CPoint loadPos(RegistryKey key, const CPoint &defaultValue) {
+  CPoint result;
+  result.x = key.getInt(_X, defaultValue.x);
+  result.y = key.getInt(_Y, defaultValue.y);
+  return result;
 }
 
 static void saveSize(RegistryKey key, const CSize &s) {
@@ -337,23 +344,16 @@ static void saveSize(RegistryKey key, const CSize &s) {
   key.setValue(HEIGHT , s.cy);
 }
 
-static void saveRect(RegistryKey key, const CRect &r) {
-  savePos( key, r.TopLeft());
-  saveSize(key, r.Size());
-}
-
-static CPoint loadPos( RegistryKey key, const CPoint &defaultValue) {
-  CPoint result;
-  result.x = key.getInt(_X, defaultValue.x);
-  result.y = key.getInt(_Y, defaultValue.y);
-  return result;
-}
-
 static CSize loadSize(RegistryKey key, const CSize &defaultValue) {
   CSize result;
   result.cx = key.getInt(WIDTH , defaultValue.cx);
   result.cy = key.getInt(HEIGHT, defaultValue.cy);
   return result;
+}
+
+static void saveRect(RegistryKey key, const CRect &r) {
+  savePos( key, r.TopLeft());
+  saveSize(key, r.Size());
 }
 
 static CRect loadRect(RegistryKey key, const CRect &defaultValue) {

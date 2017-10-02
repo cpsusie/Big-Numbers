@@ -12,7 +12,7 @@
 CTraceDlg::CTraceDlg(CTraceDlgThread &thread) : CDialog(IDD, NULL), m_thread(thread) {
   m_hIcon          = theApp.LoadIcon(IDR_MAINFRAME);
   m_initDone       = false;
-  m_optionSizedone = false;
+  m_timerCount     = 0;
   m_textBox        = NULL;
   m_caretPos       = 0;
   m_keepText       = FALSE;
@@ -59,26 +59,40 @@ BOOL CTraceDlg::OnInitDialog() {
   m_layoutManager.addControl(IDC_BUTTON_HIDE   , PCT_RELATIVE_X_CENTER | RELATIVE_Y_POS              );
   m_layoutManager.addControl(IDC_BUTTON_CLEAR  , PCT_RELATIVE_X_CENTER | RELATIVE_Y_POS              );
   m_layoutManager.addControl(IDC_CHECK_KEEPTEXT, PCT_RELATIVE_X_CENTER | RELATIVE_Y_POS              );
-  setWindowPosition(this, getOptions().getTraceWindowPos());
-  setWindowSize(    this, getOptions().getTraceWindowSize());
-  setFontSize(getOptions().getTraceFontSize(), false);
   m_initDone = true;
   return TRUE;
 }
 
 void CTraceDlg::OnTimer(UINT_PTR nIDEvent) {
-  if(m_optionSizedone) return;
-  KillTimer(1);
-//  setWindowPosition(this, getOptions().getTraceWindowPos());
-//  setFontSize(getOptions().getTraceFontSize(), false);
-  setWindowSize(this, getOptions().getTraceWindowSize());
-  m_optionSizedone = true;
+  CPoint newPos;
+  CSize  newSize;
+  switch(m_timerCount++) {
+  case 0:
+    { const CRect r = getWindowRect(this);
+      newPos  = r.TopLeft();
+      newSize = r.Size();
+      newPos.x++;
+      newSize.cx++;
+    }
+    break;
+  case 1:
+    newPos  = getOptions().getTraceWindowPos();
+    newSize = getOptions().getTraceWindowSize();
+    break;
+  default:
+    KillTimer(1);
+    return;
+  }
+
+  setWindowPosition(this, newPos );
+  setWindowSize(    this, newSize);
+  setFontSize(getOptions().getTraceFontSize(), false);
   __super::OnTimer(nIDEvent);
 }
 
 void CTraceDlg::OnMove(int x, int y) {
   __super::OnMove(x, y);
-  if(m_initDone) {
+  if(m_timerCount > 2) {
     getOptions().setTraceWindowPos(getWindowPosition(this));
   }
 }
@@ -86,7 +100,7 @@ void CTraceDlg::OnMove(int x, int y) {
 void CTraceDlg::OnSize(UINT nType, int cx, int cy) {
   __super::OnSize(nType, cx, cy);
   m_layoutManager.OnSize(nType, cx, cy);
-  if(m_initDone) {
+  if(m_timerCount > 2) {
     getOptions().setTraceWindowSize(getWindowSize(this));
   }
 }
@@ -200,6 +214,9 @@ void CTraceDlg::OnShowWindow(BOOL bShow, UINT nStatus) {
 
   if(bShow) {
     BringWindowToTop();
+    if(m_timerCount == 0) {
+      SetTimer(1, 50, NULL);
+    }
   }
   m_thread.setActiveProperty(bShow?true:false);
 }

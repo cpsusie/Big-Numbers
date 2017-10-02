@@ -9,8 +9,8 @@ class CTraceDlg : public CDialog, OptionsAccessor {
 private:
   HICON                     m_hIcon;
   SimpleLayoutManager       m_layoutManager;
-  bool                      m_initDone       : 1;
-  bool                      m_optionSizedone : 1;
+  bool                      m_initDone;
+  UINT                      m_timerCount;
   SynchronizedQueue<String> m_textQueue;
   CEdit                    *m_textBox;
   CEdit                    *m_messageField;
