@@ -29,7 +29,7 @@ BEGIN_MESSAGE_MAP(CTraceDlg, CDialog)
     ON_WM_CLOSE()
     ON_WM_TIMER()
     ON_WM_SHOWWINDOW()
-    ON_BN_CLICKED(IDC_BUTTON_HIDE           , OnButtonhide            )
+    ON_BN_CLICKED(IDC_BUTTON_HIDE           , OnButtonHide            )
     ON_BN_CLICKED(IDC_BUTTON_CLEAR          , OnButtonClear           )
     ON_BN_CLICKED(IDC_CHECK_KEEPTEXT        , OnCheckKeepText         )
     ON_COMMAND(ID_FONTSIZE_75               , OnFontsize75            )
@@ -193,7 +193,7 @@ void CTraceDlg::scrollToBottom() {
   m_textBox->LineScroll(m_textBox->GetLineCount());
 }
 
-void CTraceDlg::OnButtonhide() {
+void CTraceDlg::OnButtonHide() {
   OnClose();
 }
 

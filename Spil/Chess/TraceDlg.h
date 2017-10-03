@@ -38,7 +38,7 @@ protected:
   afx_msg void    OnCancel();
   afx_msg void    OnShowWindow(BOOL bShow, UINT nStatus);
   afx_msg void    OnTimer(UINT_PTR nIDEvent);
-  afx_msg void    OnButtonhide();
+  afx_msg void    OnButtonHide();
   afx_msg void    OnButtonClear();
   afx_msg void    OnCheckKeepText();
   afx_msg void    OnFontsize75();

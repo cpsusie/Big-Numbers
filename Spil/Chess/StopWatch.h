@@ -16,8 +16,10 @@ public:
   void stop();
   void resume();
   void addSeconds(UINT seconds);
-  UINT getElapsedTime() const;   // in milliseconds
-  UINT getSecondsRemaining() const; // in seconds. call only if counting down
+  // in milliseconds
+  UINT getElapsedTime() const;
+  // in seconds. call only if counting down
+  UINT getSecondsRemaining() const;
   inline bool isRunnning() const {
     return m_running;
   }
