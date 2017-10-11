@@ -5,72 +5,120 @@
 #include <Math/BigRealMatrix.h>
 #include <StreamParameters.h>
 
+// #define TEST_ROTATION
+// #define TEST_ORTHOGONALITY
+// #define TEST_REDUCEEXACT
+
 class RotationMatrix {
 private:
-  int m_row,m_column;
+  int m_row;
   BigReal m_gamma, m_sigma;
 public:
-  RotationMatrix(const BigRealMatrix &m, int row, int column);
-  friend BigRealMatrix &operator*=(BigRealMatrix &m, const RotationMatrix &p);
+  RotationMatrix(const BigRealMatrix &m, int row);
+  friend BigRealMatrix &operator*=(BigRealMatrix &Q, const RotationMatrix &P);
 };
 
-RotationMatrix::RotationMatrix(const BigRealMatrix &m, int row, int column) {
-  m_row           = row;
-  m_column        = column;
-  const BigReal &a = m(row,column);
-  const BigReal &b = m(row,column+1);
+RotationMatrix::RotationMatrix(const BigRealMatrix &m, int row) {
+  m_row            = row;
+  const BigReal &a = m(row,row);
+  const BigReal &b = m(row,row+1);
   const BigReal d  = rSqrt(a*a+b*b,m.getPrecision());
   m_gamma = rQuot(a,d,m.getPrecision());
   m_sigma = rQuot(b,d,m.getPrecision());
 }
 
-BigRealMatrix &operator*=(BigRealMatrix &m, const RotationMatrix &p) {
-  for(size_t r = max(p.m_row-1,0); r < m.getRowCount(); r++) {
-    BigReal &m1 = m(r,p.m_column);
-    BigReal &m2 = m(r,p.m_column+1);
-    BigReal r1  = m1*p.m_gamma + m2*p.m_sigma;
-    BigReal r2  = m2*p.m_gamma - m1*p.m_sigma;
-
-    m1 = r1;
-    m2 = r2;
+BigRealMatrix &operator*=(BigRealMatrix &Q, const RotationMatrix &P) {
+  const UINT digits = Q.getPrecision();
+  for(size_t r = max(P.m_row-1,0); r < Q.getRowCount(); r++) {
+    BigReal      &q1 = Q(r,P.m_row);
+    BigReal      &q2 = Q(r,P.m_row+1);
+    const BigReal r1 = rProd(q1,P.m_gamma,digits) + rProd(q2,P.m_sigma,digits);
+    const BigReal r2 = rProd(q2,P.m_gamma,digits) - rProd(q1,P.m_sigma,digits);
+    q1 = r1;
+    q2 = r2;
   }
-  m(p.m_row,p.m_column+1) = BIGREAL_0;
-  return m;
+  Q(P.m_row,P.m_row+1) = BIGREAL_0;
+  return Q;
 }
+
+#ifdef TEST_ROTATION
+class RotationMatrix1 : public BigRealMatrix {
+public:
+  RotationMatrix1(const BigRealMatrix &m, int row);
+};
+
+RotationMatrix1::RotationMatrix1(const BigRealMatrix &m, int row) : BigRealMatrix(m.getColumnCount(),m.getColumnCount()) {
+  const BigReal &a    = m(row,row);
+  const BigReal &b    = m(row,row+1);
+  const BigReal d     = rSqrt(a*a+b*b,m.getPrecision());
+  const BigReal gamma = rQuot(a,d,m.getPrecision());
+  const BigReal sigma = rQuot(b,d,m.getPrecision());
+  const UINT    dim   = (UINT)getRowCount();
+  for(UINT i = 0; i < dim; i++) {
+    for(UINT j = 0; j < dim; j++) {
+      if(i == j) {
+        (*this)(i,j) = ((i==row)||(i==row+1)) ? gamma : BIGREAL_1;
+      } else if((i == row+1) && (j == row)) {
+        (*this)(i,j) = sigma;
+      } else if((i == row) && (j == row+1)) {
+        (*this)(i,j) = -sigma;
+      } else {
+        (*this)(i,j) = BIGREAL_0;
+      }
+    }
+  }
+}
+#endif // TEST_ROTATION
+
+#define VERBOSE_DATA      0x01
+#define VERBOSE_MATRIX    0x02
+#define VERBOSE_PIVOT     0x04
+#define VERBOSE_Y         0x08
+#define VERBOSE_INVA      0x10
+#define VERBOSE_ALL       0x1f
 
 class PSLQ {
 private:
-  BigRealVector m_x;
+  BigRealVector m_x;        // = inputvector. dimension = N (= m_n)
   double        m_gamma;
-  int           m_n;       // = m_x.getDimension()
-  int           m_digits;  // = m_x.getPrecision()
-  BigReal       m_maxNorm; // = 10^(m_digits-10)
-  BigRealMatrix m_A;       // = N x N matrix
+  int           m_n;        // = m_x.getDimension()
+  int           m_digits;   // = m_x.getPrecision()
+  BigReal       m_minBound; // = 1/max(|AHQ(j,j)|)
+  BigRealMatrix m_A;        // = N x N matrix
   BigRealVector m_solution;
-  bool          m_verbose;
+  int           m_verbose;
 
   static const double m_minGamma;
 
-  BigRealMatrix createH(const BigRealVector &x);
-  BigRealMatrix createHermiteReducingMatrix( const BigRealMatrix &m);
-  BigRealMatrix createHermiteReducingMatrix0(const BigRealMatrix &m);
-  int  findPivotRow(                         const BigRealMatrix &m) const;
-  void checkOrthogonality(                   const BigRealMatrix &m);
-  int  getZeroComponent(  const BigRealVector &y);
-  int  findPrecision(     const BigRealVector &x) const;
+  BigRealMatrix createH() const;
+#ifdef TEST_REDUCEEXACT
+  BigRealMatrix createHermiteReducingMatrix0(const BigRealMatrix &H) const;
+#endif // TEST_REDUCEEXACT
+#ifdef TEST_ORTHOGONALITY
+  void          checkOrthogonality(          const BigRealMatrix &m) const;
+#endif // TEST_ORTHOGONALITY
+  BigRealMatrix createHermiteReducingMatrix( const BigRealMatrix &H) const;
+  int           findPivotRow(                const BigRealMatrix &m) const;
+  int           getZeroComponent(            const BigRealVector &y) const;
+  int           findPrecision(               const BigRealVector &x) const;
+  BigReal       getMaxDiagElement(           const BigRealMatrix &m) const;
 public:
-  PSLQ(const BigRealVector &x, int digits = 0, bool verbose = false, double gamma = 2.0 / sqrt(3)+0.1);
-  bool solve();
-  BigRealVector getSolution() const {
+  PSLQ(const BigRealVector &x, int digits = 0, int verbose = 0, double gamma = 2.0 / sqrt(3)+0.1);
+  // maxDigits is the maximal allowed digits in each integer in solution
+  bool solve(UINT maxDigits);
+  const BigRealVector &getSolution() const {
     return m_solution;
+  }
+  const BigReal &getMinBound() const {
+    return m_minBound;
   }
 };
 
 const double PSLQ::m_minGamma = 2.0/sqrt(3);
 
-PSLQ::PSLQ(const BigRealVector &x, int digits, bool verbose, double gamma) {
+PSLQ::PSLQ(const BigRealVector &x, int digits, int verbose, double gamma) {
   if(gamma <= m_minGamma) {
-    throwException(_T("PSLQ:gamma must be > %.16lf. (=%.16lf)"),m_minGamma,gamma);
+    throwInvalidArgumentException(__TFUNCTION__,_T("gamma=%.16lf. Must be > %.16lf"),gamma,m_minGamma);
   }
 
   m_verbose = verbose;
@@ -79,50 +127,211 @@ PSLQ::PSLQ(const BigRealVector &x, int digits, bool verbose, double gamma) {
   m_n       = (int)x.getDimension();
   m_digits  = digits ? digits : findPrecision(x);
   m_x.setPrecision(m_digits);
-  m_maxNorm = e(1,m_digits-10);
 }
 
-bool PSLQ::solve() {
-  BigRealMatrix H  = createH(m_x);
-  m_A              = createHermiteReducingMatrix(H);
-  BigRealMatrix AH = m_A * H; // N x (N-1)-matrix
+int PSLQ::findPrecision(const BigRealVector &x) const {
+  BRExpoType maxExpo = BigReal::getExpo10(x[0]);
+  BRExpoType minExpo = BigReal::getExpo10(x[0]) - x[0].getDecimalDigits();
+  for(size_t i = 1; i < x.getDimension(); i++) {
+    const BRExpoType expo1 = BigReal::getExpo10(x[i]);
+    const BRExpoType expo2 = BigReal::getExpo10(x[i]) - x[i].getDecimalDigits();
+    if(expo1 > maxExpo) maxExpo = expo1;
+    if(expo2 < minExpo) minExpo = expo2;
+  }
+  const int result = (int)(maxExpo - minExpo);
+
+  if(m_verbose&VERBOSE_DATA) {
+    tcout << _T("Used precision:") << result << _T(" digits.") << endl;
+  }
+  return result;
+}
+
+BigReal PSLQ::getMaxDiagElement(const BigRealMatrix &m) const {
+  BigReal   currentMax = -1;
+  const int n          = min((int)m.getRowCount(), (int)m.getColumnCount());
+  for(int j = 0; j < n; j++) {
+    const BigReal v = fabs(m(j,j));
+    if(v > currentMax) {
+      currentMax = v;
+    }
+  }
+  return currentMax;
+}
+
+// Return Nx(n-1) matrix of partiel sums of vector x
+BigRealMatrix PSLQ::createH() const {
+  const int           n = (int)m_x.getDimension();
+  const BigRealVector x = m_x / m_x.length();
+  BigRealVector s2(n, m_digits);
+  s2[n-1] = x[n-1]*x[n-1];
+  for(int k = n-1; k--;) {
+    s2[k] = s2[k+1] + x[k]*x[k];
+  }
+
+  BigRealMatrix H(n,n-1,m_digits);
+
+  for(int column = 0; column < n-1; column++) {
+    H(column,column) = rSqrt(rQuot(s2[column+1],s2[column],m_digits),m_digits);
+    const BigReal d = rSqrt(s2[column]*s2[column+1],m_digits);
+    for(int row = column+1; row < n; row++) {
+      H(row,column) = -rQuot(x[column]*x[row],d,m_digits);
+    }
+  }
+#ifdef TEST_ORTHOGONALITY
+  checkOrthogonality(H);
+#endif // TEST_ORTHOGONALITY
+  return H;
+}
+
+#ifdef TEST_ORTHOGONALITY
+void PSLQ::checkOrthogonality(const BigRealMatrix &m) const {
+  tcout << _T("Checking ortogonality") << endl;
+  const int columnCount = (int)m.getColumnCount();
+  for(int c1 = 0; c1 < columnCount; c1++) {
+    const VectorTemplate<BigReal> v1 = m.getColumn(c1);
+    for(int c2 = c1+1; c2 < columnCount; c2++) {
+      const VectorTemplate<BigReal> v2 = m.getColumn(c2);
+      tcout << _T("H[") << c1 << _T("]*H[(") << c2 << _T("]=") << v1*v2 << endl;
+    }
+    tcout << _T("H[") << c1 << _T("]*X=") << v1*m_x << endl;
+  }
+  tcout << _T("________________________________________") << endl;
+}
+#endif // TEST_ORTHOGONALITY
+
+#ifdef TEST_REDUCEEXACT
+// Returns NxN matrix D0 so D*H is diagonal
+BigRealMatrix PSLQ::createHermiteReducingMatrix0(const BigRealMatrix &H) const {
+  BigRealMatrix D0 = BigRealMatrix::one(m_n,m_digits);
+  for(int i = 0; i < m_n; i++) {
+    for(int j = i-1; j >= 0; j--) {
+      BigReal sum;
+      for(int k = j+1; k <= i; k++) {
+        sum += D0(i,k) * H(k,j);
+      }
+      D0(i,j) = -quot(sum,H(j,j),e(BIGREAL_1,-10));
+    }
+  }
+  return D0;
+}
+#endif // TEST_REDUCEEXACT
+
+// Returns NxN matrix D so D*H is "as diagonal as possible"
+BigRealMatrix PSLQ::createHermiteReducingMatrix(const BigRealMatrix &H) const {
+  BigRealMatrix D = BigRealMatrix::one(m_n,m_digits);
+  for(int i = 0; i < m_n; i++) {
+    for(int j = i-1; j >= 0; j--) {
+      BigReal sum;
+      for(int k = j+1; k <= i; k++) {
+        sum -= D(i,k) * H(k,j);
+      }
+      D(i,j) = floor(quot(sum,H(j,j),e(BIGREAL_1,-10)) + BIGREAL_HALF);
+    }
+  }
+  return D;
+}
+
+int PSLQ::findPivotRow(const BigRealMatrix &m) const {
+  BigReal   currentMax = -1;
+  int       r          = 0;
+  const int n          = min((int)m.getRowCount(), (int)m.getColumnCount());
+  double    gpowj      = m_gamma; 
+  for(int j = 0; j < n; j++, gpowj *= m_gamma) {
+    const BigReal v = gpowj * fabs(m(j,j));
+    if(v > currentMax) {
+      r          = j;
+      currentMax = v;
+    }
+  }
+  return r;
+}
+
+inline BigReal sqr(const BigReal &x) {
+  return x*x;
+}
+
+BigRealMatrix round(const BigRealMatrix &a) {
+  BigRealMatrix result = a;
+  const size_t  n = result.getRowCount();
+  const size_t  m = result.getColumnCount();
+  for(size_t i = 0; i < n; i++) {
+    for(size_t j = 0; j < m; j++) {
+      BigReal &r = result(i,j);
+      r = round(r);
+    }
+  }
+  return result;
+}
+
+bool PSLQ::solve(UINT maxDigits) {
+  const BigReal       maxNorm = rSqrt(sqr(e(1,maxDigits+1)-1)*m_x.getDimension(),10);
+  const BigRealMatrix H       = createH();
+  m_A                         = createHermiteReducingMatrix(H);
+  BigRealMatrix       AHQ     = m_A * H; // N x (N-1)-matrix
+
+  tcout << _T("Digits in calculation           :") << iparam(3) << m_digits  << endl
+        << _T("Max number of digits in solution:") << iparam(3) << maxDigits << endl
+        << _T("Max bound                       :") << dparam(5) << maxNorm   << endl;
 
   for(;;) {
-    if(normf(m_A) > m_maxNorm)
+    m_minBound = rQuot(BIGREAL_1, getMaxDiagElement(AHQ), 10);
+    if(m_minBound > maxNorm) {
       return false; // we are out of digits
+    }
 
-    int r = findPivotRow(AH); // Step 1: Exchange. r = [N..N-2]
+    const int r = findPivotRow(AHQ); // Step 1: Exchange. r = [0..N-2]
 
-    if(m_verbose) {
+    if(m_verbose&VERBOSE_PIVOT) {
       tcout << _T("Pivotrow:") << r << endl;
     }
 
-    m_A.swapRows(r,r+1);
-    AH.swapRows(r,r+1);
+    m_A.swapRows(r, r+1);
+    AHQ.swapRows(r, r+1);
 
     if(r != m_n - 2) {   // Step 2: Corner
-      AH *= RotationMatrix(AH,r,r);
+#ifdef TEST_ROTATION
+      BigRealMatrix AHQTest = AHQ;
+      AHQTest *= RotationMatrix1(AHQTest, r);
+#endif // TEST_ROTATION
+      AHQ *= RotationMatrix(AHQ, r);
     }
 
     // Step 3: Reduction
-    BigRealMatrix D = createHermiteReducingMatrix(AH);
-    if(m_verbose)
-      tcout << _T("Hermite reducing Matrix:") << endl << StreamParameters(0,6,ios::fixed) << D;
+#ifdef TEST_REDUCEEXACT
+    if(m_verbose&VERBOSE_MATRIX) {
+      const BigRealMatrix D0    = createHermiteReducingMatrix0(AHQ);
+      const BigRealMatrix D0AHQ = D0 * AHQ;
+      tcout << _T("Hermite reducing Matrix D0:") << endl << dparam(8) << D0;
+      tcout << _T("D0*AHQ:")                     << endl << dparam(8) << D0AHQ;
+    }
+#endif
+
+    const BigRealMatrix D = createHermiteReducingMatrix(AHQ);
+    if(m_verbose&VERBOSE_MATRIX) {
+      tcout << _T("Hermite reducing Matrix D:") << endl << iparam(6) << D;
+    }
 
     m_A = D * m_A;
-    AH  = D * AH;
+    AHQ = D * AHQ;
 
-    if(m_verbose) {
-      tcout << _T("AH:") << endl << dparam(8)  << AH;
-      tcout << _T("A:")  << endl << iparam(12) << m_A;
+    if(m_verbose&VERBOSE_MATRIX) {
+      tcout << _T("AHQ:") << endl << dparam(8)  << AHQ;
+      tcout << _T("A:"  ) << endl << iparam(16) << m_A;
     }
 
     // Step 4: check Termination
     try {
-      BigRealVector y = m_x * inverse(m_A);
-      int z = getZeroComponent(y);
+      const BigRealMatrix Ainv = round(inverse(m_A));
+      const BigRealVector y    = m_x * Ainv;
+      const int           z    = getZeroComponent(y);
       if(z >= 0) {
-        m_solution = inverse(m_A).getColumn(z);
+        if(m_verbose&VERBOSE_INVA) {
+          tcout << _T("inv(A):") << endl << iparam(12) << Ainv;
+        }
+        if(m_verbose&VERBOSE_DATA) {
+          tcout << _T("column:") << z << endl;
+        }
+        m_solution = Ainv.getColumn(z);
         return true;
       }
     } catch(Exception e) {
@@ -131,106 +340,15 @@ bool PSLQ::solve() {
   }
 }
 
-int PSLQ::findPrecision(const BigRealVector &x) const {
-  BigReal m = BIGREAL_0;
-  for(size_t i = 0; i < x.getDimension(); i++) {
-    if(compareAbs(x[i],m) > 0) {
-      m = x[i];
-    }
+int PSLQ::getZeroComponent(const BigRealVector &y) const {
+  if(m_verbose&VERBOSE_Y) {
+    tcout << _T("y:") << dparam(8) << y << endl;
   }
-  int result = (int)(x.getDimension() * BigReal::getExpo10(m));
-
-  if(m_verbose) {
-    tcout << _T("Used precision:") << result << _T(" digits.") << endl;
-
-  }
-  return result;
-}
-
-BigRealMatrix PSLQ::createH(const BigRealVector &x) {
-  const int n = (int)x.getDimension();
-  BigRealVector s(n,m_digits);
-  s[n-1] = x[n-1];
-  for(int k = n-2; k >= 0; k--) {
-    s[k] = rSqrt(s[k+1]*s[k+1] + x[k]*x[k],m_digits);
-  }
-
-  BigRealMatrix H(n,n-1,m_digits);
-
-  for(int column = 0; column < n-1; column++) {
-    H(column,column) = rQuot(s[column+1],s[column],m_digits);
-    BigReal d = -s[column]*s[column+1];
-    for(int row = column+1; row < n; row++) {
-      H(row,column) = rQuot(x[column]*x[row],d,m_digits);
-    }
-  }
-  return H;
-}
-
-void PSLQ::checkOrthogonality(const BigRealMatrix &m) {
-  const int columnCount = (int)m.getColumnCount();
-  for(int c1 = 0; c1 < columnCount; c1++) {
-    VectorTemplate<BigReal> v1 = m.getColumn(c1);
-    for(int c2 = c1+1; c2 < columnCount; c2++) {
-      VectorTemplate<BigReal> v2 = m.getColumn(c2);
-      tcout << _T("(") << v1 << _T(")*(") << v2 << _T(")=") << v1*v2 << endl;
-    }
-    tcout << _T("(") << v1 << _T(")*(") << m_x << _T(")=") << v1*m_x << endl;
-  }
-}
-
-// Returns Matrix D so D*m is "as diagonal as possible"
-BigRealMatrix PSLQ::createHermiteReducingMatrix(const BigRealMatrix &m) {
-  static const BigReal half = BIGREAL_HALF;
-  BigRealMatrix D = BigRealMatrix::one(m_n,m_digits);
-  for(int i = 0; i < m_n; i++) {
-    for(int j = i-1; j >= 0; j--) {
-      BigReal sum;
-      for(int k = j+1; k <= i; k++) {
-        sum += D(i,k) * m(k,j);
-      }
-      D(i,j) = floor(half-rQuot(sum,m(j,j),m_digits));
-    }
-  }
-  return D;
-}
-
-// Returns Matrix D so D*m is diagonal
-BigRealMatrix PSLQ::createHermiteReducingMatrix0(const BigRealMatrix &m) {
-  BigRealMatrix D = BigRealMatrix::one(m_n,m_digits);
-  for(int i = 0; i < m_n; i++) {
-    for(int j = i-1; j >= 0; j--) {
-      BigReal sum;
-      for(int k = j+1; k <= i; k++) {
-        sum += D(i,k) * m(k,j);
-      }
-      D(i,j) = -rQuot(sum,m(j,j),m_digits);
-    }
-  }
-  return D;
-}
-
-int PSLQ::findPivotRow(const BigRealMatrix &m) const {
-  BigReal currentMax = -1;
-  int r;
-  const int n = min((int)m.getRowCount(), (int)m.getColumnCount());
-  for(int j = 0; j < n; j++) {
-    BigReal v = pow(m_gamma,j+1) * fabs(m(j,j));
-    if(v > currentMax) {
-      r = j;
-      currentMax = v;
-    }
-  }
-  return r;
-}
-
-int PSLQ::getZeroComponent(const BigRealVector &y) {
-//  tcout << _T("y:") << nparam << y << endl;
-  BigReal minimum,maximum;
+  BigReal minimum, maximum;
   maximum = minimum = fabs(y[0]);
   int result = 0;
   for(UINT i = 1; i < y.getDimension(); i++) {
-    BigReal tmp = fabs(y[i]);
+    const BigReal tmp = fabs(y[i]);
     if(tmp < minimum) {
       minimum = tmp;
       result = i;
@@ -238,10 +356,14 @@ int PSLQ::getZeroComponent(const BigRealVector &y) {
       maximum = tmp;
     }
   }
-  BigReal q = rQuot(minimum,maximum,10);
+  const BigReal q = rQuot(minimum,maximum,10);
 
-  if(m_verbose)
-    tcout << _T("min:") << dparam(8) << minimum << _T("  |min/max|:") << dparam(8) << q << endl;
+  if(m_verbose&VERBOSE_DATA) {
+    tcout << _T("min:")         << dparam(8) << minimum 
+          << _T("  |min/max|:") << dparam(8) << q
+          << _T("  Min Bound:") << dparam(8) << getMinBound()
+          << endl;
+  }
 
   if(q < 1e-7) {
     return result;
@@ -249,49 +371,57 @@ int PSLQ::getZeroComponent(const BigRealVector &y) {
   return -1;
 }
 
-static void findIntegerPolynomial(const BigReal &r, int digits, bool verbose) {
-  for(int degree = 2; degree <= 30; degree++) {
+static void findIntegerPolynomial(const BigReal &r, int digits, int verbose) {
+  const int xdigits = (int)r.getDecimalDigits()+1;
+  bool solutionFound = false;
+  for(int degree = 2; !solutionFound && (degree <= 30); degree++) {
     BigRealVector x(degree+1);
-    x[0] = 1;
+    x[0] = BIGREAL_1;
     for(int i = 1; i <= degree; i++) {
-      x[i] = r * x[i-1];
+      x[i] = rProd(r,x[i-1],xdigits);
     }
 
-    if(verbose)
-      tcout << _T("x:") << StreamParameters(15,23,ios::scientific) << x << endl;
+    if(verbose&VERBOSE_DATA) {
+      tcout << _T("Trying degree ") << iparam(2)       << degree << endl;
+      tcout << _T("x:")             << dparam(xdigits) << x      << endl;
+    }
 
     PSLQ pslq(x,digits,verbose);
-    if(pslq.solve()) {
-      tcout << _T("Found integer polynomial of degree:") << degree << _T(".")
-            << _T(" c(0)..c(") << degree << _T("):")
-            << _T(":") << iparam(1) << pslq.getSolution() << endl;
 
-      return;
+    if(pslq.solve(6)) {
+      tcout << _T("Found integer polynomial of degree ") << iparam(2) << degree << _T(".")
+            << _T(" c(0)..c(") << degree << _T("):")
+            << iparam(1) << pslq.getSolution() << endl;
+
+      solutionFound = true;
     } else {
       if(verbose) {
-        tcout << _T("No solution of degree ") << degree << endl;
+        tcout << _T("No solution of degree ") << iparam(1) << degree << endl;
       }
     }
   }
-  tcout << _T("No solution of degree [2..30] found.") << endl;
+  if(!solutionFound)  {
+    tcout << _T("No solution of degree [2..30] found.") << endl;
+  }
 }
 
-static void findIntegerRelation(const Array<BigReal> &a, int digits, bool verbose) {
+static void findIntegerRelation(const Array<BigReal> &a, int digits, int verbose) {
   BigRealVector x(a.size());
   for(size_t i = 0; i < a.size(); i++) {
     x[i] = a[i];
   }
   PSLQ pslq(x,digits,verbose);
-  if(pslq.solve()) {
-    tcout << _T("Integer relation:") << iparam(1) << _T(":") << pslq.getSolution() << endl;
+  if(pslq.solve(6)) {
+    tcout << _T("Integer relation:") << iparam(1) << pslq.getSolution() << endl;
     return;
   } else {
     tcout << _T("No solution found.") << endl;
   }
 }
 
-static void testSuite(int digits, bool verbose) {
-  _tprintf(_T("Test PSLQ:Find integer polynomial for 3.6502815398728847452. Expected solution is 9 -9 -5 14 -13 -1 1\n"));
+static void testSuite(int digits, int verbose) {
+  _tprintf(_T("Test PSLQ:Find integer polynomial for 3.6502815398728847452."
+              "Expected solution is 9 0 -14 0 1\n"));
   findIntegerPolynomial(BigReal("3.6502815398728847452"),digits,verbose);
 }
 
@@ -307,15 +437,19 @@ void BaileyBorwein(int digits) {
 }
 
 static void usage() {
-  _ftprintf(stderr,_T("pslq:Usage:pslq [-v] [-pDigits] -rx|-xx1,x2,...xn|-f[file]|-t\n"
-                      "     -v: Verbose  . Write temporary information to stdout\n"
+  _ftprintf(stderr,_T("pslq:Usage:pslq [-v[dmpyi]] [-pDigits] -rx|-xx1,x2,...xn|-f[file]|-t\n"
+                      "     -v[dmpyi]    : Verbose. Write temporary information to stdout.\n"
+                      "           d:Loop data\n"
+                      "           m:Matrices\n"
+                      "           p:Pivot row\n"
+                      "           y:x*inv(A)\n"
+                      "           i:inv(A)\n"
                       "     -pDigits     : Specify the number of digits used in the calculation\n"
                       "     -rx          : Try to find the integer polynomial with x as root\n"
                       "     -xx1,x2,...xn: Try to find an integer relation between the specified x1,x2,...xn\n"
                       "     -f[file]     : Same as -x, but x1..xn are read from file. If file is omitted, stdin is used.\n"
                       "     -t           : Test. Find integer polynomial for number 3.6502815398728847452 which is (9,-9,-5,14,-13,-1,1)\n")
            );
-
   exit(-1);
 }
 
@@ -329,7 +463,7 @@ typedef enum {
 int main(int argc, char **argv) {
   Command        cmd     = NO_COMMAND;
   char          *cp;
-  bool           verbose = false;
+  int            verbose = 0;
   int            digits  = 0;
   BigReal        x;
   Array<BigReal> v;
@@ -339,8 +473,18 @@ int main(int argc, char **argv) {
       for(cp++; *cp; cp++) {
         switch(*cp) {
         case 'v':
-          verbose = true;
-          continue;
+          for(cp++;*cp;cp++) {
+            switch(*cp) {
+            case 'd': verbose |= VERBOSE_DATA   ; continue;
+            case 'm': verbose |= VERBOSE_MATRIX ; continue;
+            case 'p': verbose |= VERBOSE_PIVOT  ; continue;
+            case 'y': verbose |= VERBOSE_Y      ; continue;
+            case 'i': verbose |= VERBOSE_INVA   ; continue;
+            default : verbose  = VERBOSE_ALL    ; break;
+            }
+            break;
+          }
+          if(*cp) continue; else break;
         case 'p':
           if(sscanf(cp+1, "%u", &digits) != 1) {
             usage();
