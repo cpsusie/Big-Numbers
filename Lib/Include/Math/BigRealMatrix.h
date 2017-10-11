@@ -64,20 +64,26 @@ public:
   BigRealMatrix &operator/=(const BigReal &d);
 };
 
-BigRealVector operator*(const BigRealVector &lts, const BigRealMatrix &rhs);
-BigRealVector operator*(const BigRealMatrix &lts, const BigRealVector &rhs);
-BigRealMatrix operator+(const BigRealMatrix &lts, const BigRealMatrix &rhs);
-BigRealMatrix operator-(const BigRealMatrix &lts, const BigRealMatrix &rhs);
-BigRealMatrix operator*(const BigRealMatrix &lts, const BigRealMatrix &rhs);
-BigRealMatrix operator*(const BigReal       &d  , const BigRealMatrix &rhs);
-BigRealMatrix operator*(const BigRealMatrix &lts, const BigReal       &d  );
-BigRealMatrix operator/(const BigRealMatrix &lts, const BigReal       &d  );
-BigRealMatrix operator-(const BigRealMatrix &m);
-BigReal       det(      const BigRealMatrix &a);
-BigRealMatrix inverse(  const BigRealMatrix &a);
-BigRealMatrix transpose(const BigRealMatrix &a);
+BigRealVector  operator*(const BigRealVector &lts, const BigRealMatrix &rhs);
+BigRealVector  operator*(const BigRealMatrix &lts, const BigRealVector &rhs);
+BigRealMatrix  operator+(const BigRealMatrix &lts, const BigRealMatrix &rhs);
+BigRealMatrix  operator-(const BigRealMatrix &lts, const BigRealMatrix &rhs);
+BigRealMatrix  operator*(const BigRealMatrix &lts, const BigRealMatrix &rhs);
+
+inline BigRealMatrix &operator*=(BigRealMatrix &lts, const BigRealMatrix &rhs) {
+  lts = lts * rhs;
+  return lts;
+}
+
+BigRealMatrix  operator*(const BigReal       &d  , const BigRealMatrix &rhs);
+BigRealMatrix  operator*(const BigRealMatrix &lts, const BigReal       &d  );
+BigRealMatrix  operator/(const BigRealMatrix &lts, const BigReal       &d  );
+BigRealMatrix  operator-(const BigRealMatrix &m);
+BigReal        det(      const BigRealMatrix &a);
+BigRealMatrix  inverse(  const BigRealMatrix &a);
+BigRealMatrix  transpose(const BigRealMatrix &a);
 // Frobenius norm
-BigReal       normf(    const BigRealMatrix &a);
+BigReal        normf(    const BigRealMatrix &a);
 
 class BigRealLUMatrix : private BigRealMatrix {
 private:
