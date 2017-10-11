@@ -508,6 +508,11 @@ public:
     return result;
   }
 
+  MatrixTemplate<T> &operator*=(const MatrixTemplate<T> &rhs) {
+    *this = *this * rhs;
+    return *this;
+  }
+
   friend MatrixTemplate<T> operator*(const T &d, const MatrixTemplate<T> &rhs) {
     const size_t rows    = rhs.getRowCount();
     const size_t columns = rhs.getColumnCount();
