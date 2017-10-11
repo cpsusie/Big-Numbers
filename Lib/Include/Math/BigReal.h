@@ -777,11 +777,11 @@ public:
   inline bool isNegative() const {
     return m_expo != BIGREAL_ZEROEXPO && m_negative;
   }
-  // BigReal of BASE digits. 0 has length 1
+  // Number of BASE digits. 0 has length 1
   inline size_t getLength() const {
     return isZero() ? 1 : (m_expo - m_low + 1);
   }
-  // BigReal of decimal digits. 0 has length 1
+  // Number of decimal digits. 0 has length 1
   size_t getDecimalDigits()  const;
   inline BRExpoType getLow() const {
     return isZero() ? 0 : m_low;
