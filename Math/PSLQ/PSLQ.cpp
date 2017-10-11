@@ -5,6 +5,9 @@
 #include <Math/BigRealMatrix.h>
 #include <StreamParameters.h>
 
+// Implementation of PLSQ algorithm described at the following site:
+// http://arminstraub.com/downloads/math/pslq.pdf
+
 // #define TEST_ROTATION
 // #define TEST_ORTHOGONALITY
 // #define TEST_REDUCEEXACT
@@ -158,7 +161,7 @@ BigReal PSLQ::getMaxDiagElement(const BigRealMatrix &m) const {
   return currentMax;
 }
 
-// Return Nx(n-1) matrix of partiel sums of vector x
+// Return Nx(N-1) matrix of partiel sums of vector x
 BigRealMatrix PSLQ::createH() const {
   const int           n = (int)m_x.getDimension();
   const BigRealVector x = m_x / m_x.length();
@@ -216,7 +219,7 @@ BigRealMatrix PSLQ::createHermiteReducingMatrix0(const BigRealMatrix &H) const {
 }
 #endif // TEST_REDUCEEXACT
 
-// Returns NxN matrix D so D*H is "as diagonal as possible"
+// Returns NxN matrix D so D*H is "as diagonal as possible while preserving the diagonal"
 BigRealMatrix PSLQ::createHermiteReducingMatrix(const BigRealMatrix &H) const {
   BigRealMatrix D = BigRealMatrix::one(m_n,m_digits);
   for(int i = 0; i < m_n; i++) {
@@ -244,6 +247,37 @@ int PSLQ::findPivotRow(const BigRealMatrix &m) const {
     }
   }
   return r;
+}
+
+int PSLQ::getZeroComponent(const BigRealVector &y) const {
+  if(m_verbose&VERBOSE_Y) {
+    tcout << _T("y:") << dparam(8) << y << endl;
+  }
+  BigReal minimum, maximum;
+  maximum = minimum = fabs(y[0]);
+  int result = 0;
+  for(UINT i = 1; i < y.getDimension(); i++) {
+    const BigReal tmp = fabs(y[i]);
+    if(tmp < minimum) {
+      minimum = tmp;
+      result = i;
+    } else if(tmp > maximum) {
+      maximum = tmp;
+    }
+  }
+  const BigReal q = rQuot(minimum,maximum,10);
+
+  if(m_verbose&VERBOSE_DATA) {
+    tcout << _T("min:")         << dparam(8) << minimum 
+          << _T("  |min/max|:") << dparam(8) << q
+          << _T("  Min Bound:") << dparam(8) << getMinBound()
+          << endl;
+  }
+
+  if(q < 1e-7) {
+    return result;
+  }
+  return -1;
 }
 
 inline BigReal sqr(const BigReal &x) {
@@ -338,37 +372,6 @@ bool PSLQ::solve(UINT maxDigits) {
       return false; // Occurs when m_A is singular (Exception comes from inverse(m_A))
     }
   }
-}
-
-int PSLQ::getZeroComponent(const BigRealVector &y) const {
-  if(m_verbose&VERBOSE_Y) {
-    tcout << _T("y:") << dparam(8) << y << endl;
-  }
-  BigReal minimum, maximum;
-  maximum = minimum = fabs(y[0]);
-  int result = 0;
-  for(UINT i = 1; i < y.getDimension(); i++) {
-    const BigReal tmp = fabs(y[i]);
-    if(tmp < minimum) {
-      minimum = tmp;
-      result = i;
-    } else if(tmp > maximum) {
-      maximum = tmp;
-    }
-  }
-  const BigReal q = rQuot(minimum,maximum,10);
-
-  if(m_verbose&VERBOSE_DATA) {
-    tcout << _T("min:")         << dparam(8) << minimum 
-          << _T("  |min/max|:") << dparam(8) << q
-          << _T("  Min Bound:") << dparam(8) << getMinBound()
-          << endl;
-  }
-
-  if(q < 1e-7) {
-    return result;
-  }
-  return -1;
 }
 
 static void findIntegerPolynomial(const BigReal &r, int digits, int verbose) {
