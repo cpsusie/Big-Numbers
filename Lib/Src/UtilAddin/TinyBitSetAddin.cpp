@@ -10,7 +10,7 @@ static String tinyBitSetToString(BYTE *bits, int byteCount) {
         if(b & 1) {
           TCHAR numStr[20];
           _itot(k, numStr, 10);
-          size_t nl = _tcslen(numStr)+1;
+//          size_t nl = _tcslen(numStr)+1;
           size_t rl = result.length();
           if(rl) result += _T(' ');
           result += numStr;
@@ -25,65 +25,57 @@ static String tinyBitSetToString(BYTE *bits, int byteCount) {
 }
 
 ADDIN_API HRESULT WINAPI AddIn_BitSet8(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t maxResult, DWORD /*reserved*/) {
-  String tmpStr;
   try {
     BitSet8 set;
     pHelper->getRealObject(&set, sizeof(set));
-    tmpStr = tinyBitSetToString((BYTE*)&set,sizeof(set));
+    const String tmpStr = tinyBitSetToString((BYTE*)&set,sizeof(set));
+    USES_CONVERSION;
+    const char *cp = T2A(tmpStr.cstr());
+    strncpy(pResult, cp, maxResult);
   } catch (...) {
-    tmpStr = _T("Invalid address");
+    strncpy(pResult, "undefined", maxResult);
   }
-
-  USES_CONVERSION;
-  const char *cp = T2A(tmpStr.cstr());
-  strncpy(pResult, cp, maxResult);
   return S_OK;
 }
 
 ADDIN_API HRESULT WINAPI AddIn_BitSet16(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t maxResult, DWORD /*reserved*/) {
-  String tmpStr;
   try {
     BitSet16 set;
     pHelper->getRealObject(&set, sizeof(set));
-    tmpStr = tinyBitSetToString((BYTE*)&set,sizeof(set));
+    const String tmpStr = tinyBitSetToString((BYTE*)&set,sizeof(set));
+    USES_CONVERSION;
+    const char *cp = T2A(tmpStr.cstr());
+    strncpy(pResult, cp, maxResult);
   } catch (...) {
-    tmpStr = _T("Invalid address");
+    strncpy(pResult, "undefined", maxResult);
   }
-
-  USES_CONVERSION;
-  const char *cp = T2A(tmpStr.cstr());
-  strncpy(pResult, cp, maxResult);
   return S_OK;
 }
 
 ADDIN_API HRESULT WINAPI AddIn_BitSet32(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t maxResult, DWORD /*reserved*/) {
-  String tmpStr;
   try {
     BitSet32 set;
     pHelper->getRealObject(&set, sizeof(set));
-    tmpStr = tinyBitSetToString((BYTE*)&set,sizeof(set));
+    const String tmpStr = tinyBitSetToString((BYTE*)&set,sizeof(set));
+    USES_CONVERSION;
+    const char *cp = T2A(tmpStr.cstr());
+    strncpy(pResult, cp, maxResult);
   } catch (...) {
-    tmpStr = _T("Invalid address");
+    strncpy(pResult, "undefined", maxResult);
   }
-
-  USES_CONVERSION;
-  const char *cp = T2A(tmpStr.cstr());
-  strncpy(pResult, cp, maxResult);
   return S_OK;
 }
 
 ADDIN_API HRESULT WINAPI AddIn_BitSet64(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t maxResult, DWORD /*reserved*/) {
-  String tmpStr;
   try {
     BitSet64 set;
     pHelper->getRealObject(&set, sizeof(set));
-    tmpStr = tinyBitSetToString((BYTE*)&set,sizeof(set));
+    const String tmpStr = tinyBitSetToString((BYTE*)&set,sizeof(set));
+    USES_CONVERSION;
+    const char *cp = T2A(tmpStr.cstr());
+    strncpy(pResult, cp, maxResult);
   } catch (...) {
-    tmpStr = _T("Invalid address");
+    strncpy(pResult, "undefined", maxResult);
   }
-
-  USES_CONVERSION;
-  const char *cp = T2A(tmpStr.cstr());
-  strncpy(pResult, cp, maxResult);
   return S_OK;
 }
