@@ -93,7 +93,6 @@ public:
   static bool             stackUnderflow();
   static bool             stackFault();
   static void             enableExceptions(bool enable, USHORT flags);
-
 };
 
 class Double80;
@@ -112,44 +111,40 @@ void D80ToLongLong(     INT64    &dst, const Double80 &src);
 void D80ToULongLong(    UINT64   &dst, const Double80 &src);
 void D80ToFloat(        float    &dst, const Double80 &src);
 void D80ToDouble(       double   &dst, const Double80 &src);
-void D80D80sum(         Double80 &dst, const Double80 &x, const Double80 &y);
-void D80D80dif(         Double80 &dst, const Double80 &x, const Double80 &y);
-void D80D80mul(         Double80 &dst, const Double80 &x, const Double80 &y);
-void D80D80div(         Double80 &dst, const Double80 &x, const Double80 &y);
-int  D80D80Compare(     const Double80 &x, const Double80 &y);
+int  D80cmp(            const Double80 &x, const Double80 &y);
 int  D80isZero(         const Double80 &x);
-void D80assignAdd(      Double80 &dst, const Double80 &x);
-void D80assignSub(      Double80 &dst, const Double80 &x);
-void D80assignMul(      Double80 &dst, const Double80 &x);
-void D80assignDiv(      Double80 &dst, const Double80 &x);
-void D80neg(            Double80 &dst, const Double80 &x);
-void D80increment(      Double80 &dst);
-void D80decrement(      Double80 &dst);
+void D80add(            Double80 &dst, const Double80 &x);
+void D80sub(            Double80 &dst, const Double80 &x);
+void D80mul(            Double80 &dst, const Double80 &x);
+void D80div(            Double80 &dst, const Double80 &x);
+void D80rem(            Double80 &dst, const Double80 &x);
+void D80neg(            Double80 &x);
+void D80inc(            Double80 &x);
+void D80dec(            Double80 &x);
 void D80getPi(          Double80 &dst);
 void D80getEps(         Double80 &dst);
 void D80getMin(         Double80 &dst);
 void D80getMax(         Double80 &dst);
 void D80getExpo2(       int      &dst, const Double80 &x);
 void D80getExpo10(      int      &dst, const Double80 &x);
-void D80fabs(           Double80 &dst, const Double80 &x);
-void D80sqr(            Double80 &dst, const Double80 &x);
-void D80sqrt(           Double80 &dst, const Double80 &x);
-void D80modulus(        Double80 &dst, const Double80 &x, const Double80 &y);
-void D80sin(            Double80 &dst, const Double80 &x);
-void D80cos(            Double80 &dst, const Double80 &x);
-void D80tan(            Double80 &dst, const Double80 &x);
-void D80atan(           Double80 &dst, const Double80 &x);
-void D80atan2(          Double80 &dst, const Double80 &y, const Double80 &x);
-void D80sincos(         Double80 &c  , Double80       &s);
-void D80exp(            Double80 &dst, const Double80 &x);
-void D80log(            Double80 &dst, const Double80 &x);
-void D80log10(          Double80 &dst, const Double80 &x);
-void D80log2(           Double80 &dst, const Double80 &x);
-void D80pow(            Double80 &dst, const Double80 &x, const Double80 &y);
-void D80pow10(          Double80 &dst, const Double80 &x);
-void D80pow2(           Double80 &dst, const Double80 &x);
-void D80floor(          Double80 &dst, const Double80 &x);
-void D80ceil(           Double80 &dst, const Double80 &x);
+void D80fabs(           Double80 &x);
+void D80sqr(            Double80 &x);
+void D80sqrt(           Double80 &x);
+void D80sin(            Double80 &x);
+void D80cos(            Double80 &x);
+void D80tan(            Double80 &x);
+void D80atan(           Double80 &x);
+void D80atan2(          Double80 &y, const Double80 &x);
+void D80sincos(         Double80 &c, Double80       &s); // inout is c, out s
+void D80exp(            Double80 &x);
+void D80log(            Double80 &x);
+void D80log10(          Double80 &x);
+void D80log2(           Double80 &x);
+void D80pow(            Double80 &x, const Double80 &y); // x = pow(x,y)
+void D80pow10(          Double80 &x);
+void D80pow2(           Double80 &x);
+void D80floor(          Double80 &x);
+void D80ceil(           Double80 &x);
 void D80ToBCD(BYTE bcd[10], const Double80 &src);
 void D80ToBCDAutoScale(BYTE bcd[10], const Double80 &x, int &expo10);
 }
@@ -288,44 +283,44 @@ public:
   }
 
   inline Double80 &operator+=(const Double80 &x) {
-    D80assignAdd(*this, x);
+    D80add(*this, x);
     return *this;
   }
 
   inline Double80 &operator-=(const Double80 &x) {
-    D80assignSub(*this, x);
+    D80sub(*this, x);
     return *this;
   }
 
   inline Double80 &operator*=(const Double80 &x) {
-    D80assignMul(*this, x);
+    D80mul(*this, x);
     return *this;
   }
 
   inline Double80 &operator/=(const Double80 &x) {
-    D80assignDiv(*this, x);
+    D80div(*this, x);
     return *this;
   }
 
   inline Double80 &operator++() {   // prefix-form
-    D80increment(*this);
+    D80inc(*this);
     return *this;
   }
 
   inline Double80 &operator--() {   // prefix-form
-    D80decrement(*this);
+    D80dec(*this);
     return *this;
   }
 
   inline Double80 operator++(int) { // postfix-form
     Double80 result(*this);
-    D80increment(*this);
+    D80inc(*this);
     return result;
   }
 
   inline Double80 operator--(int) { // postfix-form
     Double80 result(*this);
-    D80decrement(*this);
+    D80dec(*this);
     return result;
   }
 
@@ -389,134 +384,134 @@ bool operator>=(const Double80 &x, const Double80 &y);
 bool operator< (const Double80 &x, const Double80 &y);
 bool operator> (const Double80 &x, const Double80 &y);
 
-Double80 fabs(const Double80 &x);
-Double80 fmod(const Double80 &x, const Double80 &y);
-Double80 sqr( const Double80 &x);
-Double80 sqrt(const Double80 &x);
-Double80 sin( const Double80 &x);
-Double80 cos( const Double80 &x);
-Double80 tan( const Double80 &x);
-Double80 atan(const Double80 &x);
-Double80 atan2(const Double80 &y, const Double80 &x);
+Double80 fabs(  const Double80 &x);
+Double80 fmod(  const Double80 &x, const Double80 &y);
+Double80 sqr(   const Double80 &x);
+Double80 sqrt(  const Double80 &x);
+Double80 sin(   const Double80 &x);
+Double80 cos(   const Double80 &x);
+Double80 tan(   const Double80 &x);
+Double80 atan(  const Double80 &x);
+Double80 atan2( const Double80 &y, const Double80 &x);
 void     sincos(Double80 &c, Double80 &s); // calculate both cos and sin. c:inout c, s:out
-Double80 exp(const Double80 &x);
-Double80 log(const Double80 &x);
+Double80 exp(  const Double80 &x);
+Double80 log(  const Double80 &x);
 Double80 log10(const Double80 &x);
-Double80 log2(const Double80 &x);
-Double80 pow(const Double80 &x, const Double80 &y);
+Double80 log2( const Double80 &x);
+Double80 pow(  const Double80 &x, const Double80 &y);
 Double80 pow10(const Double80 &x);
-Double80 pow2(const Double80 &x);
+Double80 pow2( const Double80 &x);
 Double80 floor(const Double80 &x);
-Double80 ceil(const Double80 &x);
+Double80 ceil( const Double80 &x);
 
 #else // !IS32BIT (ie IS64BIT)
 
 inline Double80 operator+(const Double80 &x, const Double80 &y) {
-  Double80 tmp;
-  D80D80sum(tmp, x, y);
+  Double80 tmp(x);
+  D80add(tmp, y);
   return tmp;
 }
 
 inline Double80 operator-(const Double80 &x, const Double80 &y) {
-  Double80 tmp;
-  D80D80dif(tmp, x, y);
+  Double80 tmp(x);
+  D80sub(tmp, y);
   return tmp;
 }
 
 inline Double80 operator-(const Double80 &x) {
-  Double80 tmp;
-  D80neg(tmp, x);
+  Double80 tmp(x);
+  D80neg(tmp);
   return tmp;
 }
 
 inline Double80 operator*(const Double80 &x, const Double80 &y) {
-  Double80 tmp;
-  D80D80mul(tmp, x, y);
+  Double80 tmp(x);
+  D80mul(tmp, y);
   return tmp;
 }
 
 inline Double80 operator/(const Double80 &x, const Double80 &y) {
-  Double80 tmp;
-  D80D80div(tmp, x, y);
+  Double80 tmp(x);
+  D80div(tmp, y);
   return tmp;
 }
 
 inline bool operator==(const Double80 &x, const Double80 &y) {
-  return D80D80Compare(x, y) == 0;
+  return D80cmp(x, y) == 0;
 }
 
 inline bool operator!=(const Double80 &x, const Double80 &y) {
-  return D80D80Compare(x, y) != 0;
+  return D80cmp(x, y) != 0;
 }
 
 inline bool operator<=(const Double80 &x, const Double80 &y) {
-  return D80D80Compare(x, y) <= 0;
+  return D80cmp(x, y) <= 0;
 }
 
 inline bool operator>=(const Double80 &x, const Double80 &y) {
-  return D80D80Compare(x, y) >= 0;
+  return D80cmp(x, y) >= 0;
 }
 
 inline bool operator< (const Double80 &x, const Double80 &y) {
-  return D80D80Compare(x, y) < 0;
+  return D80cmp(x, y) < 0;
 }
 
 inline bool operator> (const Double80 &x, const Double80 &y) {
-  return D80D80Compare(x, y) > 0;
+  return D80cmp(x, y) > 0;
 }
 
 inline Double80 fabs(const Double80 &x) {
-  Double80 result;
-  D80fabs(result, x);
-  return result;
+  Double80 tmp(x);
+  D80fabs(tmp);
+  return tmp;
 }
 
 inline Double80 fmod(const Double80 &x, const Double80 &y) {
-  Double80 result;
-  D80modulus(result, x, y);
-  return result;
+  Double80 tmp(x);
+  D80rem(tmp, y);
+  return tmp;
 }
 
 inline Double80 sqr(const Double80 &x) {
-  Double80 result;
-  D80sqr(result, x);
-  return result;
+  Double80 tmp(x);
+  D80sqr(tmp);
+  return tmp;
 }
 
 inline Double80 sqrt(const Double80 &x) {
-  Double80 result;
-  D80sqrt(result, x);
-  return result;
+  Double80 tmp(x);
+  D80sqrt(tmp);
+  return tmp;
 }
 
 inline Double80 sin(const Double80 &x) {
-  Double80 result;
-  D80sin(result, x);
-  return result;
+  Double80 tmp(x);
+  D80sin(tmp);
+  return tmp;
 }
 
 inline Double80 cos(const Double80 &x) {
-  Double80 result;
-  D80cos(result, x);
-  return result;
+  Double80 tmp(x);
+  D80cos(tmp);
+  return tmp;
 }
 
 inline Double80 tan(const Double80 &x) {
-  Double80 result;
-  D80tan(result, x);
-  return result;
+  Double80 tmp(x);
+  D80tan(tmp);
+  return tmp;
 }
 
 inline Double80 atan(const Double80 &x) {
-  Double80 result;
-  D80atan(result, x);
-  return result;
+  Double80 tmp(x);
+  D80atan(tmp);
+  return tmp;
 }
 
 inline Double80 atan2(const Double80 &y, const Double80 &x) {
-  Double80 result;
-  D80atan2(result, y, x);
-  return result;
+  Double80 tmp(y);
+  D80atan2(tmp, x);
+  return tmp;
 }
 
 inline void sincos(Double80 &c, Double80 &s) { // calculate both cos and sin. c:inout c, s:out
@@ -524,57 +519,57 @@ inline void sincos(Double80 &c, Double80 &s) { // calculate both cos and sin. c:
 }
 
 inline Double80 exp(const Double80 &x) {
-  Double80 result;
-  D80exp(result, x);
-  return result;
+  Double80 tmp(x);
+  D80exp(tmp);
+  return tmp;
 }
 
 inline Double80 log(const Double80 &x) {
-  Double80 result;
-  D80log(result, x);
-  return result;
+  Double80 tmp(x);
+  D80log(tmp);
+  return tmp;
 }
 
 inline Double80 log10(const Double80 &x) {
-  Double80 result;
-  D80log10(result, x);
-  return result;
+  Double80 tmp(x);
+  D80log10(tmp);
+  return tmp;
 }
 
 inline Double80 log2(const Double80 &x) {
-  Double80 result;
-  D80log2(result, x);
-  return result;
+  Double80 tmp(x);
+  D80log2(tmp);
+  return tmp;
 }
 
 inline Double80 pow(const Double80 &x, const Double80 &y) {
-  Double80 result;
-  D80pow(result, x, y);
-  return result;
+  Double80 tmp(x);
+  D80pow(tmp, y);
+  return tmp;
 }
 
 inline Double80 pow10(const Double80 &x) {
-  Double80 result;
-  D80pow10(result, x);
-  return result;
+  Double80 tmp(x);
+  D80pow10(tmp);
+  return tmp;
 }
 
 inline Double80 pow2(const Double80 &x) {
-  Double80 result;
-  D80pow2(result, x);
-  return result;
+  Double80 tmp(x);
+  D80pow2(tmp);
+  return tmp;
 }
 
 inline Double80 floor(const Double80 &x) {
-  Double80 result;
-  D80floor(result, x);
-  return result;
+  Double80 tmp(x);
+  D80floor(tmp);
+  return tmp;
 }
 
 inline Double80 ceil(const Double80 &x) {
-  Double80 result;
-  D80ceil(result, x);
-  return result;
+  Double80 tmp(x);
+  D80ceil(tmp);
+  return tmp;
 }
 
 #endif // IS32BIT

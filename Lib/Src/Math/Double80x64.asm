@@ -246,54 +246,73 @@ D80ToDouble PROC
     ret
 D80ToDouble ENDP
 
-; ---------------------- Binary operators +,-,*,- (and unary minus) and compare ------------------------------------------
+; ---------------------- Binary operators +,-,*,- (and unary minus) and compare -----------------
+; ---------------------- assign operators +=,-=,*=,/=,++,-- -------------------------------------
 
-;void D80D80sum(TenByteClass &dst, const Double80 &x, const Double80 &y);
-D80D80sum PROC
+;void D80add(Double80 &dst, const Double80 &x);
+D80add PROC
+    fld     tbyte ptr[rcx]  ; load dst
     fld     tbyte ptr[rdx]  ; load x
-    fld     tbyte ptr[r8 ]  ; load y
     fadd
-    fstp    tbyte ptr[rcx]  ; pop result
+    fstp    tbyte ptr[rcx]  ; pop to dst
     ret
-D80D80sum ENDP
+D80add ENDP
 
-;void D80D80dif(TenByteClass &dst, const Double80 &x, const Double80 &y);
-D80D80dif PROC
+;void D80sub(Double80 &dst, const Double80 &x);
+D80sub PROC
+    fld     tbyte ptr[rcx]  ; load dst
     fld     tbyte ptr[rdx]  ; load x
-    fld     tbyte ptr[r8 ]  ; load y
     fsub
-    fstp    tbyte ptr[rcx]  ; pop result
+    fstp    tbyte ptr[rcx]  ; pop to dst
     ret
-D80D80dif ENDP
+D80sub ENDP
 
-;void D80neg(TenByteClass &dst, const Double80 &x);
-D80neg PROC
+;void D80mul(Double80 &dst, const Double80 &x);
+D80mul PROC
+    fld     tbyte ptr[rcx]  ; load dst
     fld     tbyte ptr[rdx]  ; load x
+    fmul
+    fstp    tbyte ptr[rcx]  ; pop to dst
+    ret
+D80mul ENDP
+
+;void D80div(Double80 &dst, const Double80 &x);
+D80div PROC
+    fld     tbyte ptr[rcx]  ; load dst
+    fld     tbyte ptr[rdx]  ; load x
+    fdiv
+    fstp    tbyte ptr[rcx]  ; pop to dst
+    ret
+D80div ENDP
+
+;void D80inc(Double80 &x);
+D80inc PROC
+    fld     tbyte ptr[rcx]  ; load x
+    fld1
+    fadd
+    fstp    tbyte ptr[rcx]  ; pop to x
+    ret
+D80inc ENDP
+
+;void D80dec(Double80 &x);
+D80dec PROC
+    fld     tbyte ptr[rcx]  ; load x
+    fld1
+    fsub
+    fstp    tbyte ptr[rcx]  ; pop to x
+    ret
+D80dec ENDP
+
+;void D80neg(Double80 &x);
+D80neg PROC
+    fld     tbyte ptr[rcx]  ; load x
     fchs
-    fstp    tbyte ptr[rcx]  ; pop result
+    fstp    tbyte ptr[rcx]  ; pop to x
     ret
 D80neg ENDP
 
-;void D80D80mul(TenByteClass &dst, const Double80 &x, const Double80 &y);
-D80D80mul PROC
-    fld     tbyte ptr[rdx]  ; load x
-    fld     tbyte ptr[r8 ]  ; load y
-    fmul
-    fstp    tbyte ptr[rcx]  ; pop result
-    ret
-D80D80mul ENDP
-
-;void D80D80div(TenByteClass &dst, const Double80 &x, const Double80 &y);
-D80D80div PROC
-    fld     tbyte ptr[rdx]  ; load x
-    fld     tbyte ptr[r8 ]  ; load y
-    fdiv
-    fstp    tbyte ptr[rcx]  ; pop result
-    ret
-D80D80div ENDP
-
-;int D80D80Compare(const Double80 &x, const Double80 &y);
-D80D80Compare PROC
+;int D80cmp(const Double80 &x, const Double80 &y);
+D80cmp PROC
     fld     tbyte ptr[rdx]  ; load y
     fld     tbyte ptr[rcx]  ; load x
     fcomip  st, st(1)       ; st(0)=x, st(1)=y
@@ -310,7 +329,7 @@ XBelowY:
     fstp    st(0)
     mov     rax, -1
     ret
-D80D80Compare ENDP
+D80cmp ENDP
 
 ;int D80isZero(const Double80 &x);
 D80isZero PROC
@@ -326,62 +345,6 @@ IsZero:
     mov     rax, 1               ; rax = 1 (true)
     ret
 D80isZero ENDP
-
-; ---------------------------------------- assign operators +=,-=,*=,/=,++,-- -------------------------------------
-
-;void D80assignAdd(Double80 &dst, const Double80 &x);
-D80assignAdd PROC
-    fld     tbyte ptr[rcx]  ; load dst
-    fld     tbyte ptr[rdx]  ; load x
-    fadd
-    fstp    tbyte ptr[rcx]  ; pop to dst
-    ret
-D80assignAdd ENDP
-
-;void D80assignSub(Double80 &dst, const Double80 &x);
-D80assignSub PROC
-    fld     tbyte ptr[rcx]  ; load dst
-    fld     tbyte ptr[rdx]  ; load x
-    fsub
-    fstp    tbyte ptr[rcx]  ; pop to dst
-    ret
-D80assignSub ENDP
-
-;void D80assignMul(Double80 &dst, const Double80 &x);
-D80assignMul PROC
-    fld     tbyte ptr[rcx]  ; load dst
-    fld     tbyte ptr[rdx]  ; load x
-    fmul
-    fstp    tbyte ptr[rcx]  ; pop to dst
-    ret
-D80assignMul ENDP
-
-;void D80assignDiv(Double80 &dst, const Double80 &x);
-D80assignDiv PROC
-    fld     tbyte ptr[rcx]  ; load dst
-    fld     tbyte ptr[rdx]  ; load x
-    fdiv
-    fstp    tbyte ptr[rcx]  ; pop to dst
-    ret
-D80assignDiv ENDP
-
-;void D80increment(Double80 &dst);
-D80increment PROC
-    fld     tbyte ptr[rcx]  ; load dst
-    fld1
-    fadd
-    fstp    tbyte ptr[rcx]  ; pop to dst
-    ret
-D80increment ENDP
-
-;void D80decrement(Double80 &dst);
-D80decrement PROC
-    fld     tbyte ptr[rcx]  ; load dst
-    fld1
-    fsub
-    fstp    tbyte ptr[rcx]  ; pop to dst
-    ret
-D80decrement ENDP
 
 ; ------------------------------------------Misc functions ---------------------------------------------------------
 ;void D80getPi(Double80 &dst);
@@ -446,96 +409,96 @@ x_not_zero:
     ret
 D80getExpo10 ENDP
 
-;void D80fabs(TenByteClass &dst, const Double80 &x);
+;void D80fabs(Double80 &x);
 D80fabs PROC
-    fld     tbyte ptr[rdx]
+    fld     tbyte ptr[rcx]
     fabs
     fstp    tbyte ptr[rcx]
     ret
 D80fabs ENDP
 
-;void D80sqr(TenByteClass &dst, const Double80 &x);
+;void D80sqr(Double80 &x);
 D80sqr PROC
-    fld     tbyte ptr[rdx]
+    fld     tbyte ptr[rcx]
     fld     st(0)
     fmul
     fstp    tbyte ptr[rcx]
     ret
 D80sqr ENDP
 
-;void D80sqrt(TenByteClass &dst, const Double80 &x);
+;void D80sqrt(Double80 &x);
 D80sqrt PROC
-    fld     tbyte ptr[rdx]
+    fld     tbyte ptr[rcx]
     fsqrt
     fstp    tbyte ptr[rcx]
     ret
 D80sqrt ENDP
 
-;void D80modulus(TenByteClass &dst, const Double80 &x, const Double80 &y);
-D80modulus PROC
-    fld     tbyte ptr[r8]       ;                                                     st0=y
+;void D80rem(Double80 &dst, const Double80 &y);
+D80rem PROC
+    fld     tbyte ptr[rdx]      ;                                                     st0=y
     fabs                        ; y = abs(y)                                          st0=|y|
-    fld     tbyte ptr[rdx]      ;                                                     st0=x,st1=|y|
-    fldz                        ;                                                     st0=0,st1=x,st2=|y|
-    fcomip  st, st(1)           ; compare and pop zero                                st0=x,st1=|y|
+    fld     tbyte ptr[rcx]      ;                                                     st0=dst,st1=|y|
+    fldz                        ;                                                     st0=0  ,st1=dst,st2=|y|
+    fcomip  st, st(1)           ; compare and pop zero                                st0=dst,st1=|y|
     ja      RepeatNegativeX     ; if st(0) > st(1) (0 > x) goto RepeatNegativeX
 
-RepeatPositiveX:                ; do {                                                st0=x,st1=|y|, x > 0
+RepeatPositiveX:                ; do {                                                st0=dst,st1=|y|, dst > 0
     fprem                       ;   st0 %= y                                       
-    fstsw  ax
+    fstsw   ax
     sahf
     jpe     RepeatPositiveX     ; } while(statusword.c2 != 0);
     fldz                        ;                                                     st0=0,st1=x,st2=|y|
     fcomip  st, st(1)           ; compare and pop zero
     jbe     pop2                ; if(st(0) <= st(1) (0 <= remainder) goto pop2
     fadd                        ; remainder += y
-    fstp    tbyte ptr[rcx]      ; pop result
+    fstp    tbyte ptr[rcx]      ; pop dst
     ret                         ; return
 
 RepeatNegativeX:                ; do {                                                st0=x,st=|y|, x < 0
     fprem                       ;    st0 %= y
-    fstsw  ax
+    fstsw   ax
     sahf
     jpe     RepeatNegativeX     ; } while(statusword.c2 != 0)
     fldz
     fcomip  st, st(1)           ; compare and pop zero
     jae     pop2                ; if(st(0) >= st(1) (0 >= remainder) goto pop2
     fsubr                       ; remainder -= y
-    fstp    tbyte ptr[rcx]      ; pop result
+    fstp    tbyte ptr[rcx]      ; pop dst
     ret                         ; return
 
 pop2:                           ;                                                     st0=x%y,st1=y
-    fstp    tbyte ptr[rcx]      ; pop result
+    fstp    tbyte ptr[rcx]      ; pop dst
     fstp    st(0)               ; pop y
     ret
-D80modulus ENDP
+D80rem ENDP
 
 ; ----------------------------------------- Double80 trigonometric functions ----------------------------------------
 
-;void D80sin(TenByteClass &dst, const Double80 &x);
+;void D80sin(Double80 &x);
 D80sin PROC
-    lea     r8, TB2Pi2Pow60
-    call    D80modulus
+    lea     rdx, TB2Pi2Pow60
+    call    D80rem
     fld     tbyte ptr[rcx]
     fsin
     fstp    tbyte ptr[rcx]
     ret
 D80sin ENDP
 
-;void D80cos(TenByteClass &dst, const Double80 &x);
+;void D80cos(Double80 &x);
 D80cos PROC
-    lea     r8, TB2Pi2Pow60
-    call    D80modulus
+    lea     rdx, TB2Pi2Pow60
+    call    D80rem
     fld     tbyte ptr[rcx]
     fcos
     fstp    tbyte ptr[rcx]
     ret
 D80cos ENDP
 
-;void D80tan(TenByteClass &dst, const Double80 &x);
+;void D80tan(Double80 &x);
 D80tan PROC
-    lea     r8, TB2Pi2Pow60
-    call    D80modulus
+    lea     rdx, TB2Pi2Pow60
+    call    D80rem
     fld     tbyte ptr[rcx]
     fptan
     fstp    st
@@ -543,44 +506,43 @@ D80tan PROC
     ret
 D80tan ENDP
 
-;void D80atan(TenByteClass &dst, const Double80 &x);
+;void D80atan(Double80 &x);
 D80atan PROC
-    fld     tbyte ptr[rdx]
+    fld     tbyte ptr[rcx]
     fld1
     fpatan
     fstp    tbyte ptr[rcx]
     ret
 D80atan ENDP
 
-;void D80atan2(TenByteClass &dst, const Double80 &y, const Double80 &x);
+;void D80atan2(Double80 &y, const Double80 &x);
 D80atan2 PROC
+    fld     tbyte ptr[rcx]
     fld     tbyte ptr[rdx]
-    fld     tbyte ptr[r8]
     fpatan
     fstp    tbyte ptr[rcx]
     ret
 D80atan2 ENDP
 
+; inout c, out s
 ;void D80sincos(Double80 &c, Double80 &s);
 D80sincos PROC
-    push    rdx
-    mov     rdx, rcx
-    lea     r8, TB2Pi2Pow60
-    call    D80modulus
-    pop     rdx
+    mov     r8, rdx
+    lea     rdx, TB2Pi2Pow60
+    call    D80rem
     fld     tbyte ptr[rcx]
     fsincos
     fstp    tbyte ptr[rcx]
-    fstp    tbyte ptr[rdx]
+    fstp    tbyte ptr[r8]
     ret
 D80sincos ENDP
 
 ; --------------------------------------------------- Double80 Exponential and Logarithmic functions ------------------
 
-;void D80exp(TenByteClass &dst, const Double80 &x);
+;void D80exp(Double80 &x);
 D80exp PROC
     pushRoundMode ROUNDDOWN
-    fld     tbyte ptr[rdx]
+    fld     tbyte ptr[rcx]
     fldl2e
     fmul
     fld     st(0)
@@ -597,10 +559,10 @@ D80exp PROC
     ret
 D80exp ENDP
 
-;void D80log(TenByteClass &dst, const Double80 &x);
+;void D80log(Double80 &x);
 D80log PROC
     fld1
-    fld     tbyte ptr[rdx]
+    fld     tbyte ptr[rcx]
     fyl2x
     fldln2
     fmul
@@ -608,10 +570,10 @@ D80log PROC
     ret
 D80log ENDP
 
-;void D80log10(TenByteClass &dst, const Double80 &x);
+;void D80log10(Double80 &x);
 D80log10 PROC
     fld1
-    fld     tbyte ptr[rdx]
+    fld     tbyte ptr[rcx]
     fyl2x
     fldlg2
     fmul
@@ -619,26 +581,26 @@ D80log10 PROC
     ret
 D80log10 ENDP
 
-;void D80log2(TenByteClass &dst, const Double80 &x);
+;void D80log2(Double80 &x);
 D80log2 PROC
     fld1
-    fld     tbyte ptr[rdx]
+    fld     tbyte ptr[rcx]
     fyl2x
     fstp    tbyte ptr[rcx]
     ret
 D80log2 ENDP
 
-;void D80pow(TenByteClass &dst, const Double80 &x, const Double80 &y);
+;void D80pow(Double80 &x, const Double80 &y);
 D80pow PROC
-    fld     tbyte ptr[r8]
-    fldz
-    fcomip  st, st(1)
-    je ZeroExponent
-
     fld     tbyte ptr[rdx]
     fldz
     fcomip  st, st(1)
-    je      ZeroBase
+    je ZeroExponent        ; if(y == 0) goto ZeroExponent;
+
+    fld     tbyte ptr[rcx]
+    fldz
+    fcomip  st, st(1)
+    je      ZeroBase        ; if(x == 0) goto ZeroExponent;
                             ; st(0)=x, st(1)=y
     pushRoundMode ROUNDDOWN
     fyl2x
@@ -675,9 +637,9 @@ ZeroBaseNegativeExponent:   ; st(0)=y
     ret
 D80pow ENDP
 
-;void D80pow10(TenByteClass &dst, const Double80 &x);
+;void D80pow10(Double80 &x);
 D80pow10 PROC
-    fld     tbyte ptr[rdx]
+    fld     tbyte ptr[rcx]
     fldz
     fcomip  st, st(1)
     je      ZeroExponent
@@ -705,9 +667,9 @@ ZeroExponent:               ; st(0)=x
     ret
 D80pow10 ENDP
 
-;void D80pow2(TenByteClass &dst, const Double80 &x);
+;void D80pow2(Double80 &x);
 D80pow2 PROC
-    fld     tbyte ptr[rdx]
+    fld     tbyte ptr[rcx]
     fldz
     fcomip  st, st(1)
     je      ZeroExponent
@@ -735,9 +697,9 @@ D80pow2 ENDP
 
 ; ------------------------------------------------- Double80 floor,ceil --------------------------------
 
-;void D80floor(TenByteClass &dst, const Double80 &x);
+;void D80floor(Double80 &x);
 D80floor PROC
-    fld     tbyte ptr[rdx]
+    fld     tbyte ptr[rcx]
     pushRoundMode ROUNDDOWN
     frndint
     fstp    tbyte ptr[rcx]
@@ -745,9 +707,9 @@ D80floor PROC
     ret
 D80floor ENDP
 
-;void D80ceil(TenByteClass &dst, const Double80 &x);
+;void D80ceil(Double80 &x);
 D80ceil PROC
-    fld     tbyte ptr[rdx]
+    fld     tbyte ptr[rcx]
     pushRoundMode ROUNDUP
     frndint
     fstp    tbyte ptr[rcx]
