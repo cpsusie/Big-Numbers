@@ -1,9 +1,7 @@
 #include "stdafx.h"
 #include <Tokenizer.h>
 #include <Console.h>
-#include <Math/BigReal.h>
 #include <Math/BigRealMatrix.h>
-#include <StreamParameters.h>
 
 // Implementation of PLSQ algorithm described at the following site:
 // http://arminstraub.com/downloads/math/pslq.pdf
