@@ -273,7 +273,7 @@ Double80::Double80(const wchar_t *s) {
   init(WSTR2TSTR(s));
 }
 
-Double80::Double80(const char *s) {
+Double80::Double80(const char  *s) {
   USES_ACONVERSION;
   init(ASTR2TSTR(s));
 }
@@ -291,7 +291,8 @@ void Double80::init(const _TUCHAR *s) {
     s++;
   }
   while(_istdigit(*s)) {
-    result = result * ten + digitLookupTable[*(s++) - _T('0')];
+    result *= ten;
+    result += digitLookupTable[*(s++) - _T('0')];
   }
   if(*s == _T('.') && _istdigit(s[1])) {
     s++;

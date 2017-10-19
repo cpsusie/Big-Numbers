@@ -10,19 +10,19 @@ DWmaxI32        dword              7fffffffh
 DWmaxI32P1      dword              80000000h
 QWmaxI64        qword      7fffffffffffffffh
 QWmaxI64P1      qword      8000000000000000h
-DmaxI32         qword      41dfffffffc00000h ;  maxI32   as double
-DmaxI32P1       qword      41e0000000000000h ;  maxI32P1 as double 
-DNegmaxI32      qword     0c1dfffffffc00000h ; -maxI32   as double  
-TBmaxI64        tbyte  403dfffffffffffffffeh ;  maxI64   as Double80
-TBmaxI64P1      tbyte  403e8000000000000000h ;  maxI64P1 as Double80
-TBNegMaxI64     tbyte 0c03dfffffffffffffffeh ; -maxI64   as Double80
-TBEpsilon       tbyte  0000000000000080c03fh ; 1.08420217248550443e-019
-TBMinimum       tbyte  00000000000000800100h ; 3.36210314311209209e-4932
-TBMaximum       tbyte 0fffffffffffffffffe7fh ; 1.18973149535723227e+4932
-TB2Pi2Pow60     tbyte  403dc90fdaa22168c235h ; 2*pi*pow2(60) (=7.244019458077122e+018)
-TB1e18          tbyte  403ade0b6b3a76400000h ; 1e18
-TB1e18M1        tbyte  403ade0b6b3a763ffff0h ; TB1e18 - 1
-TB10            tbyte  4002a000000000000000h ; 10
+DmaxI32         qword      41dfffffffc00000h   ;  maxI32   as double
+DmaxI32P1       qword      41e0000000000000h   ;  maxI32P1 as double
+DNegmaxI32      qword     0c1dfffffffc00000h   ; -maxI32   as double
+TBmaxI64        tbyte  403dfffffffffffffffeh   ;  maxI64   as Double80
+TBmaxI64P1      tbyte  403e8000000000000000h   ;  maxI64P1 as Double80
+TBNegMaxI64     tbyte 0c03dfffffffffffffffeh   ; -maxI64   as Double80
+TBEpsilon       tbyte  0000000000000080c03fh   ; 1.08420217248550443e-019
+TBMinimum       tbyte  00000000000000800100h   ; 3.36210314311209209e-4932
+TBMaximum       tbyte 0fffffffffffffffffe7fh   ; 1.18973149535723227e+4932
+TB2Pi2Pow60     tbyte  403dc90fdaa22168c235h   ; 2*pi*pow2(60) (=7.244019458077122e+018)
+TB1e18          tbyte  403ade0b6b3a76400000h   ; 1e18
+TB1e18M1        tbyte  403ade0b6b3a763ffff0h   ; TB1e18 - 1
+TB10            tbyte  4002a000000000000000h   ; 10
 
 .CODE
 
@@ -82,13 +82,11 @@ D80consULong PROC
     and     edx, DWmaxI32
     push    rdx
     fild    dword ptr[rsp]
-    push    7fffffffh
-    fild    dword ptr[rsp]
-    faddp
+    fadd    DmaxI32
     fld1
     faddp
     fstp    tbyte ptr[rcx]
-    add     rsp, 16
+    add     rsp, 8
     ret
 
 DoSmallInt32:
@@ -108,19 +106,18 @@ D80consLongLong ENDP
 
 ; void D80consULongLong(Double80 &dst, const UINT64 x);
 D80consULongLong PROC
-    cmp     rdx,QWmaxI64
+    cmp     rdx, QWmaxI64
     jbe     DoSmallInt64
 
     and     rdx, QWmaxI64
     push    rdx
     fild    qword ptr[rsp]
-    push    QWmaxI64
-    fild    qword ptr[rsp]
+    fld     TBmaxI64
     faddp
     fld1
     faddp
     fstp    tbyte ptr[rcx]
-    add     rsp, 16
+    add     rsp, 8
     ret
 
 DoSmallInt64:
@@ -163,16 +160,16 @@ D80ToULong PROC
     fcomip  st, st(1)
     jb      AboveMaxInt32
 
-    fld     DNegmaxI32                 ; x <= maxInt32
+    fld     DNegmaxI32                         ; x <= maxInt32
     fcomip  st, st(1)
     ja      BeloveNegMaxInt32
 
-    pushRoundMode TRUNCATE             ; -maxInt32 <= x <= maxInt32
+    pushRoundMode TRUNCATE                     ; -maxInt32 <= x <= maxInt32
     fistp   dword ptr[rcx]
     popRoundMode
     ret
 
-  AboveMaxInt32:                       ; x > maxInt32
+  AboveMaxInt32:                               ; x > maxInt32
     fld     DmaxI32P1
     fsub
     pushRoundMode TRUNCATE
@@ -183,7 +180,7 @@ D80ToULong PROC
     mov     dword ptr[rcx], eax
     ret
 
-  BeloveNegMaxInt32:                   ; x < -maxInt32
+  BeloveNegMaxInt32:                           ; x < -maxInt32
     fchs
     fsub    DmaxI32P1
     pushRoundMode TRUNCATE
@@ -212,13 +209,13 @@ D80ToULongLong PROC
     fcomip  st, st(1)
     jb      AboveMaxInt64
 
-    pushRoundMode TRUNCATE             ; -maxInt64 <= x <= maxInt64
+    pushRoundMode TRUNCATE                     ; -maxInt64 <= x <= maxInt64
     fistp   qword ptr[rcx]
     popRoundMode
     ret
 
   AboveMaxInt64:
-    fld     TBmaxI64P1                 ; x > maxInt64
+    fld     TBmaxI64P1                         ; x > maxInt64
     fsub
     pushRoundMode TRUNCATE
     fistp   qword ptr[rcx]
@@ -251,71 +248,71 @@ D80ToDouble ENDP
 
 ;void D80add(Double80 &dst, const Double80 &x);
 D80add PROC
-    fld     tbyte ptr[rcx]  ; load dst
-    fld     tbyte ptr[rdx]  ; load x
+    fld     tbyte ptr[rcx]                     ; load dst
+    fld     tbyte ptr[rdx]                     ; load x
     fadd
-    fstp    tbyte ptr[rcx]  ; pop to dst
+    fstp    tbyte ptr[rcx]                     ; pop to dst
     ret
 D80add ENDP
 
 ;void D80sub(Double80 &dst, const Double80 &x);
 D80sub PROC
-    fld     tbyte ptr[rcx]  ; load dst
-    fld     tbyte ptr[rdx]  ; load x
+    fld     tbyte ptr[rcx]                     ; load dst
+    fld     tbyte ptr[rdx]                     ; load x
     fsub
-    fstp    tbyte ptr[rcx]  ; pop to dst
+    fstp    tbyte ptr[rcx]                     ; pop to dst
     ret
 D80sub ENDP
 
 ;void D80mul(Double80 &dst, const Double80 &x);
 D80mul PROC
-    fld     tbyte ptr[rcx]  ; load dst
-    fld     tbyte ptr[rdx]  ; load x
+    fld     tbyte ptr[rcx]                     ; load dst
+    fld     tbyte ptr[rdx]                     ; load x
     fmul
-    fstp    tbyte ptr[rcx]  ; pop to dst
+    fstp    tbyte ptr[rcx]                     ; pop to dst
     ret
 D80mul ENDP
 
 ;void D80div(Double80 &dst, const Double80 &x);
 D80div PROC
-    fld     tbyte ptr[rcx]  ; load dst
-    fld     tbyte ptr[rdx]  ; load x
+    fld     tbyte ptr[rcx]                     ; load dst
+    fld     tbyte ptr[rdx]                     ; load x
     fdiv
-    fstp    tbyte ptr[rcx]  ; pop to dst
+    fstp    tbyte ptr[rcx]                     ; pop to dst
     ret
 D80div ENDP
 
 ;void D80inc(Double80 &x);
 D80inc PROC
-    fld     tbyte ptr[rcx]  ; load x
+    fld     tbyte ptr[rcx]                     ; load x
     fld1
     fadd
-    fstp    tbyte ptr[rcx]  ; pop to x
+    fstp    tbyte ptr[rcx]                     ; pop to x
     ret
 D80inc ENDP
 
 ;void D80dec(Double80 &x);
 D80dec PROC
-    fld     tbyte ptr[rcx]  ; load x
+    fld     tbyte ptr[rcx]                     ; load x
     fld1
     fsub
-    fstp    tbyte ptr[rcx]  ; pop to x
+    fstp    tbyte ptr[rcx]                     ; pop to x
     ret
 D80dec ENDP
 
 ;void D80neg(Double80 &x);
 D80neg PROC
-    fld     tbyte ptr[rcx]  ; load x
+    fld     tbyte ptr[rcx]                     ; load x
     fchs
-    fstp    tbyte ptr[rcx]  ; pop to x
+    fstp    tbyte ptr[rcx]                     ; pop to x
     ret
 D80neg ENDP
 
 ;int D80cmp(const Double80 &x, const Double80 &y);
 D80cmp PROC
-    fld     tbyte ptr[rdx]  ; load y
-    fld     tbyte ptr[rcx]  ; load x
-    fcomip  st, st(1)       ; st(0)=x, st(1)=y
+    fld     tbyte ptr[rdx]                     ; load y
+    fld     tbyte ptr[rcx]                     ; load x
+    fcomip  st, st(1)                          ; st(0)=x, st(1)=y
     ja      XAboveY
     jb      XBelowY
     xor     rax,rax
@@ -338,11 +335,11 @@ D80isZero PROC
     fnstsw  ax
     sahf
     fstp    st(0)
-    je      IsZero               ; if st(0) == st(1) (this != zero) goto IsZero
-    xor     rax, rax             ; rax = 0 (false)
+    je      IsZero                             ; if st(0) == st(1) (this != zero) goto IsZero
+    xor     rax, rax                           ; rax = 0 (false)
     ret
 IsZero:
-    mov     rax, 1               ; rax = 1 (true)
+    mov     rax, 1                             ; rax = 1 (true)
     ret
 D80isZero ENDP
 
@@ -390,10 +387,10 @@ D80getExpo2 ENDP
 D80getExpo10 PROC
     fld     tbyte ptr[rdx]
     fldz
-    fcomip  st, st(1)            ; compare x and pop 0 
-    jne     x_not_zero           ; if(x != 0) goto x_not_zero
-    fstp    st(0)                ; pop x
-    mov     dword ptr[rcx], 0    ; x == 0 => result = 0
+    fcomip  st, st(1)                          ; compare x and pop 0
+    jne     x_not_zero                         ; if(x != 0) goto x_not_zero
+    fstp    st(0)                              ; pop x
+    mov     dword ptr[rcx], 0                  ; x == 0 => result = 0
     ret
 x_not_zero:
     fld1
@@ -436,45 +433,44 @@ D80sqrt ENDP
 
 ;void D80rem(Double80 &dst, const Double80 &y);
 D80rem PROC
-    fld     tbyte ptr[rdx]      ;                                                     st0=y
-    fabs                        ; y = abs(y)                                          st0=|y|
-    fld     tbyte ptr[rcx]      ;                                                     st0=dst,st1=|y|
-    fldz                        ;                                                     st0=0  ,st1=dst,st2=|y|
-    fcomip  st, st(1)           ; compare and pop zero                                st0=dst,st1=|y|
-    ja      RepeatNegativeX     ; if st(0) > st(1) (0 > x) goto RepeatNegativeX
-
-RepeatPositiveX:                ; do {                                                st0=dst,st1=|y|, dst > 0
-    fprem                       ;   st0 %= y                                       
+    fld     tbyte ptr[rdx]                     ;                                              st0=y
+    fabs                                       ; y = abs(y)                                   st0=|y|
+    fld     tbyte ptr[rcx]                     ;                                              st0=dst,st1=|y|
+    fldz                                       ;                                              st0=0  ,st1=dst,st2=|y|
+    fcomip  st, st(1)                          ; compare and pop zero                         st0=dst,st1=|y|
+    ja      RepeatNegativeX                    ; if(st(0) > st(1)) // (0 > x)
+                                               ;   goto RepeatNegativeX
+RepeatPositiveX:                               ; do {                                         st0=dst,st1=|y|, dst > 0
+    fprem                                      ;   st0 %= y
     fstsw   ax
     sahf
-    jpe     RepeatPositiveX     ; } while(statusword.c2 != 0);
-    fldz                        ;                                                     st0=0,st1=x,st2=|y|
-    fcomip  st, st(1)           ; compare and pop zero
-    jbe     pop2                ; if(st(0) <= st(1) (0 <= remainder) goto pop2
-    fadd                        ; remainder += y
-    fstp    tbyte ptr[rcx]      ; pop dst
-    ret                         ; return
+    jpe     RepeatPositiveX                    ; } while(statusword.c2 != 0);
+    fldz                                       ;                                              st0=0  ,st1=x,st2=|y|
+    fcomip  st, st(1)                          ; compare and pop zero
+    jbe     pop2                               ; if(st(0) <= st(1)) (0 <= remainder) goto pop2
+    fadd                                       ; remainder += y
+    fstp    tbyte ptr[rcx]                     ; pop dst
+    ret                                        ; return
 
-RepeatNegativeX:                ; do {                                                st0=x,st=|y|, x < 0
-    fprem                       ;    st0 %= y
+RepeatNegativeX:                               ; do {                                          st0=x  ,st=|y|, x < 0
+    fprem                                      ;   st0 %= y
     fstsw   ax
     sahf
-    jpe     RepeatNegativeX     ; } while(statusword.c2 != 0)
+    jpe     RepeatNegativeX                    ; } while(statusword.c2 != 0)
     fldz
-    fcomip  st, st(1)           ; compare and pop zero
-    jae     pop2                ; if(st(0) >= st(1) (0 >= remainder) goto pop2
-    fsubr                       ; remainder -= y
-    fstp    tbyte ptr[rcx]      ; pop dst
-    ret                         ; return
+    fcomip  st, st(1)                          ; compare and pop zero
+    jae     pop2                               ; if(st(0) >= st(1)) (0 >= remainder) goto pop2
+    fsubr                                      ; remainder -= y
+    fstp    tbyte ptr[rcx]                     ; pop dst
+    ret                                        ; return
 
-pop2:                           ;                                                     st0=x%y,st1=y
-    fstp    tbyte ptr[rcx]      ; pop dst
-    fstp    st(0)               ; pop y
+pop2:                                          ;                                               st0=x%y,st1=y
+    fstp    tbyte ptr[rcx]                     ; pop dst
+    fstp    st(0)                              ; pop y
     ret
 D80rem ENDP
 
 ; ----------------------------------------- Double80 trigonometric functions ----------------------------------------
-
 ;void D80sin(Double80 &x);
 D80sin PROC
     lea     rdx, TB2Pi2Pow60
@@ -595,13 +591,13 @@ D80pow PROC
     fld     tbyte ptr[rdx]
     fldz
     fcomip  st, st(1)
-    je ZeroExponent        ; if(y == 0) goto ZeroExponent;
+    je ZeroExponent                            ; if(y == 0) goto ZeroExponent;
 
     fld     tbyte ptr[rcx]
     fldz
     fcomip  st, st(1)
-    je      ZeroBase        ; if(x == 0) goto ZeroExponent;
-                            ; st(0)=x, st(1)=y
+    je      ZeroBase                           ; if(x == 0) goto ZeroExponent;
+                                               ; st(0)=x, st(1)=y
     pushRoundMode ROUNDDOWN
     fyl2x
     fld     st(0)
@@ -616,24 +612,24 @@ D80pow PROC
     fstp    tbyte ptr[rcx]
     popRoundMode
     ret
-ZeroExponent:               ; st(0)=y
-    fstp    st(0)           ; pop y
+ZeroExponent:                                  ; st(0)=y
+    fstp    st(0)                              ; pop y
     fld1
     fstp    tbyte ptr[rcx]
     ret
-ZeroBase:                   ; st(0)=x, st(1)=y. x = 0. so st(0) = 0
+ZeroBase:                                      ; st(0)=x, st(1)=y. x = 0. so st(0) = 0
     fcomip  st, st(1)
     ja      ZeroBaseNegativeExponent    
-    fstp    st(0)           ; pop y
+    fstp    st(0)                              ; pop y
     fldz
-    fstp    tbyte ptr[rcx]  ; return 0
+    fstp    tbyte ptr[rcx]                     ; return 0
     ret
-ZeroBaseNegativeExponent:   ; st(0)=y
+ZeroBaseNegativeExponent:                      ; st(0)=y
     fstp    st(0)
     fld1
     fldz
     fdiv
-    fstp    tbyte ptr[rcx]  ; return 1/0 - error
+    fstp    tbyte ptr[rcx]                     ; return 1/0 - error
     ret
 D80pow ENDP
 
@@ -660,10 +656,10 @@ D80pow10 PROC
     popRoundMode
     ret
 
-ZeroExponent:               ; st(0)=x
-    fstp    st(0)           ; pop x
+ZeroExponent:                                  ; st(0)=x
+    fstp    st(0)                              ; pop x
     fld1
-    fstp    tbyte ptr[rcx]  ; return 1
+    fstp    tbyte ptr[rcx]                     ; return 1
     ret
 D80pow10 ENDP
 
@@ -688,8 +684,8 @@ D80pow2 PROC
     popRoundMode
     ret
 
-ZeroExponent:               ; st(0)=x
-    fstp    st(0)           ; pop x
+ZeroExponent:                                  ; st(0)=x
+    fstp    st(0)                              ; pop x
     fld1
     fstp    tbyte ptr[rcx]
     ret
@@ -728,52 +724,52 @@ D80ToBCD ENDP
 
 ;void D80ToBCDAutoScale(BYTE bcd[10], const Double80 &x, int &expo10);
 D80ToBCDAutoScale PROC
-    pushRoundMode ROUND         ;
-    mov     eax, dword ptr[r8]  ;
-    cmp     eax, 0              ;
-    jne     scaleX              ;
-                                ;
-    fld     tbyte ptr[rdx]      ; 
-    jmp     rescale             ;
-                                ;
-scaleX:                         ; Find m = x / 10^abs(expo10)
-    fild    dword ptr[r8]       ;                                       st0=expo10
-    fldl2t                      ;                                       st0=log2(10)         , st1=expo10
-    fmul                        ;                                       st0=expo10*log2(10)
-    fld     st(0)               ;                                       st0=expo10*log2(10)  , st1=st0
-    pushRoundMode ROUNDDOWN     ;
-    frndint                     ; Round down
-    popRoundMode                ; Restore control word
-    fsub    st(1), st(0)        ;
-    fxch    st(1)               ;
-    f2xm1                       ;
-    fld1                        ;
-    fadd                        ;
-    fscale                      ;
-    fstp    st(1)               ;                                       st0=10^expo10
-                                ;
-    fld     tbyte ptr[rdx]      ;                                       st0=x          , st1=10^expo10
-    fdivr                       ;                                       st0=x/10^expo10
-                                ;
-Rescale:                        ;                                       st0=m
-    fld     TB1e18              ;                                       st0=1e18       , st1=m
-    fmul                        ; m *= 1e18                             st0=m
-    mov     eax, dword ptr[r8]  ;                                       eax=expo10
-    fld     TB1e18M1            ;                                       st0=1e18-1     , st1=m
-WhileLoop:                      ; while(|m| >= 1e18-1) {                st0=1e18-1     , st1=m
-    fld     st(1)               ;                                       st0=m          , st1=1e18-1     , st2=m
-    fabs                        ;                                       st0=|m|        , st1=1e18-1     , st2=m
-    fcomip  st, st(1)           ;   compare |m| and 1e18-1 and pop |m|  st0=1e18-1     , st1=m
-    jb      ExitLoop            ;   if(|m| < 1e18-1) break;             st0=1e18-1     , st1=m
-    fld     TB10                ;                                       st0=10         , st1=1e18-1     , st2=m
-    fdivp   st(2), st(0)        ;   m /= 10 and pop st0                 st0=1e18-1     , st1=m
-    inc     eax                 ;   expo10++
-    jmp     WhileLoop           ; }
-ExitLoop:                            ;
-    fstp    st(0)               ; Pop st(0)                             st0=m
-    fbstp   tbyte ptr[rcx]      ; Pop m into bcd                        Assertion: 1 <= |st0| < 1e18-1 and x = st0 * 10^(eax-18)
-    mov     dword ptr[r8], eax  ; Restore expo10
-    popRoundMode                ; Restore control word
+    pushRoundMode ROUND                        ;
+    mov     eax, dword ptr[r8]                 ;
+    cmp     eax, 0                             ;
+    jne     ScaleX                             ;
+                                               ;
+    fld     tbyte ptr[rdx]                     ;
+    jmp     Rescale                            ;
+                                               ;
+ScaleX:                                        ; Find m = x / 10^abs(expo10)
+    fild    dword ptr[r8]                      ;                                       st0=expo10
+    fldl2t                                     ;                                       st0=log2(10)       , st1=expo10
+    fmul                                       ;                                       st0=expo10*log2(10)
+    fld     st(0)                              ;                                       st0=expo10*log2(10), st1=st0
+    pushRoundMode ROUNDDOWN                    ;
+    frndint                                    ; Round down
+    popRoundMode                               ; Restore control word
+    fsub    st(1), st(0)                       ;
+    fxch    st(1)                              ;
+    f2xm1                                      ;
+    fld1                                       ;
+    fadd                                       ;
+    fscale                                     ;
+    fstp    st(1)                              ;                                       st0=10^expo10
+                                               ;
+    fld     tbyte ptr[rdx]                     ;                                       st0=x          , st1=10^expo10
+    fdivr                                      ;                                       st0=x/10^expo10
+                                               ;
+Rescale:                                       ;                                       st0=m
+    fld     TB1e18                             ;                                       st0=1e18       , st1=m
+    fmul                                       ; m *= 1e18                             st0=m
+    mov     eax, dword ptr[r8]                 ;                                       eax=expo10
+    fld     TB1e18M1                           ;                                       st0=1e18-1     , st1=m
+WhileLoop:                                     ; while(|m| >= 1e18-1) {                st0=1e18-1     , st1=m
+    fld     st(1)                              ;                                       st0=m          , st1=1e18-1     , st2=m
+    fabs                                       ;                                       st0=|m|        , st1=1e18-1     , st2=m
+    fcomip  st, st(1)                          ;   compare |m| and 1e18-1 and pop |m|  st0=1e18-1     , st1=m
+    jb      ExitLoop                           ;   if(|m| < 1e18-1) break;             st0=1e18-1     , st1=m
+    fld     TB10                               ;                                       st0=10         , st1=1e18-1     , st2=m
+    fdivp   st(2), st(0)                       ;   m /= 10 and pop st0                 st0=1e18-1     , st1=m
+    inc     eax                                ;   expo10++
+    jmp     WhileLoop                          ; }
+ExitLoop:                                      ;
+    fstp    st(0)                              ; Pop st(0)                             st0=m
+    fbstp   tbyte ptr[rcx]                     ; Pop m into bcd                        Assertion: 1 <= |st0| < 1e18-1 and x = st0 * 10^(eax-18)
+    mov     dword ptr[r8], eax                 ; Restore expo10
+    popRoundMode                               ; Restore control word
     ret
 D80ToBCDAutoScale ENDP
 
