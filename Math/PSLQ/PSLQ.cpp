@@ -449,7 +449,7 @@ static void usage() {
                       "     -rx          : Try to find the integer polynomial with x as root\n"
                       "     -xx1,x2,...xn: Try to find an integer relation between the specified x1,x2,...xn\n"
                       "     -f[file]     : Same as -x, but x1..xn are read from file. If file is omitted, stdin is used.\n"
-                      "     -t           : Test. Find integer polynomial for number 3.6502815398728847452 which is (9,-9,-5,14,-13,-1,1)\n")
+                      "     -t           : Test. Find integer polynomial for number 3.6502815398728847452 which is (9 0 -14 0 1)\n")
            );
   exit(-1);
 }
