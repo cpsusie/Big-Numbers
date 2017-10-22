@@ -1,5 +1,6 @@
 #pragma once
 
+#include <StrStream.h>
 #include "PragmaLib.h"
 
 typedef struct {
@@ -1877,12 +1878,13 @@ inline _uint128 &operator^=(_uint128 &lft, unsigned short rhs) {
 }
 
 
-
 char    * _i128toa( _int128  value, char    *str, int radix);
 char    * _ui128toa(_uint128 value, char    *str, int radix);
 wchar_t * _i128tow( _int128  value, wchar_t *str, int radix);
 wchar_t * _ui128tow(_uint128 value, wchar_t *str, int radix);
 
+String toString(const _int128  &n , int precision = 0, int width = 0, int flags = 0);
+String toString(const _uint128 &n , int precision = 0, int width = 0, int flags = 0);
 
 #ifdef _UNICODE
 #define _i128tot   _i128tow
@@ -1943,3 +1945,5 @@ std::wostream &operator<<(std::wostream &s, const _int128  &n);
 std::wistream &operator>>(std::wistream &s,       _uint128 &n);
 std::wostream &operator<<(std::wostream &s, const _uint128 &n);
 
+StrStream &operator<<(StrStream &stream   , const _int128  &n);
+StrStream &operator<<(StrStream &stream   , const _uint128 &n);

@@ -752,6 +752,7 @@
     <ClCompile Include="Gradient.cpp" />
     <ClCompile Include="Int128IO.cpp" />
     <ClCompile Include="Int128Str.cpp" />
+    <ClCompile Include="Int128ToString.cpp" />
     <ClCompile Include="Int128x86.cpp" />
     <ClCompile Include="Jacobi.cpp" />
     <ClCompile Include="LssdPolynomial.cpp" />

@@ -13,7 +13,7 @@ String toString(short n, int precision, int width, int flags) {
   return stream;
 }
 
-String toString(unsigned short n, int precision, int width, int flags) {
+String toString(USHORT n, int precision, int width, int flags) {
   StrStream stream(precision,width,flags);
   stream << n;
   return stream;
