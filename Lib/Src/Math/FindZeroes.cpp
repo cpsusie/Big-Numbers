@@ -3,7 +3,7 @@
 #include <Math/Rectangle2D.h>
 
 // Regula falsi. assume sign(f(l)) == -sign(f(r)) => f(l) != 0 && f(r) != 0
-static Real converge(Function &f, double l, double r) {
+static Real converge(Function &f, const Real &l, const Real &r) {
   Real       x1       = l, y1 = f(x1);
   Real       x2       = r, y2 = f(x2);
   Real       bestX, bestE;
@@ -42,25 +42,25 @@ static Real converge(Function &f, double l, double r) {
 #define SEARCHCOUNT 1000
 CompactRealArray findZeroes(Function &f, const RealInterval &i) {
   CompactRealArray result;
-  Point2DArray     pointArray(SEARCHCOUNT);
+  RealPoint2DArray pointArray(SEARCHCOUNT);
   Real             step = i.getLength() / (SEARCHCOUNT-1);
   Real             x    = i.getFrom();
   for(int t = 0; t < SEARCHCOUNT-1; t++, x += step) {
     try {
-      pointArray.add(Point2D(x,f(x)));
+      pointArray.add(RealPoint2D(x,f(x)));
     } catch (...) {
       // ignore
     }
   }
   try {
-    pointArray.add(Point2D(i.getTo(), f(i.getTo())));
+    pointArray.add(RealPoint2D(i.getTo(), f(i.getTo())));
   } catch (...) {
     // ignore
   }
-  const size_t   n     = pointArray.size();
-  const Point2D *lastp = &pointArray[0];
+  const size_t       n     = pointArray.size();
+  const RealPoint2D *lastp = &pointArray[0];
   for(size_t t = 1; t < n; t++) {
-    const Point2D &p       = pointArray[t];
+    const RealPoint2D &p = pointArray[t];
     if(sign(lastp->y) * sign(p.y) != 1) {
       if(lastp->y == 0) {
         result.add(lastp->x);
@@ -68,7 +68,7 @@ CompactRealArray findZeroes(Function &f, const RealInterval &i) {
         result.add(converge(f,lastp->x, p.x));
       }
     }
-    lastp      = &p;
+    lastp = &p;
   }
   if(lastp->y == 0) {
     result.add(lastp->x);

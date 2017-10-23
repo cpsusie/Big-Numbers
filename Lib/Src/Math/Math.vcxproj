@@ -786,7 +786,6 @@
     <ClCompile Include="QRMatrix.cpp" />
     <ClCompile Include="Rational.cpp" />
     <ClCompile Include="RationalIO.cpp" />
-    <ClCompile Include="Rectangle2D.cpp" />
     <ClCompile Include="Rungekutta.cpp" />
     <ClCompile Include="RungekuttaFehlberg.cpp" />
     <ClCompile Include="SigmoidIterator.cpp" />
@@ -794,7 +793,6 @@
     <ClCompile Include="SolveTriDiag.cpp" />
     <ClCompile Include="Spherical.cpp" />
     <ClCompile Include="Statistic.cpp" />
-    <ClCompile Include="Transformation.cpp" />
     <ClCompile Include="Triangle.cpp" />
     <ClCompile Include="TriangleInfo.cpp" />
     <ClCompile Include="TriangleIO.cpp" />

@@ -307,7 +307,7 @@ Rational pow(const Rational &r, int e) {
     return Rational(1);
   } else if(e < 0) {
     if(r.isZero()) {
-      throwMethodInvalidArgumentException(Rational::s_className, method, _T("r == 0, e=%d"), e);
+      throwInvalidArgumentException(method, _T("r == 0, e=%d"), e);
     }
     return Rational(Rational::pow(r.m_denominator,-e), Rational::pow(r.m_numerator,-e));
   } else {
@@ -363,10 +363,9 @@ bool Rational::operator!=(const Rational &r) const {
 }
 
 long getLong(const Rational &r) {
-  DEFINEMETHODNAME;
   const INT64 v = getInt64(r);
   if((v < _I32_MIN) || (v > _I32_MAX)) {
-    throwMethodException(Rational::s_className, method, _T("Value (=%I64d) out of range. Legal range is [%d..%d]"), v, _I32_MIN, _I32_MAX);
+    throwInvalidArgumentException(__TFUNCTION__, _T("Value (=%I64d) out of range. Legal range is [%d..%d]"), v, _I32_MIN, _I32_MAX);
   }
   return (long)v;
 }
@@ -374,11 +373,11 @@ long getLong(const Rational &r) {
 ULONG getUlong(const Rational &r) {
   DEFINEMETHODNAME;
   if(r.isNegative()) {
-    throwMethodException(Rational::s_className, method, _T("Value is negative(=%s)"), r.toString().cstr());
+    throwInvalidArgumentException(method, _T("Value is negative(=%s)"), r.toString().cstr());
   }
   const UINT64 v = getUint64(r);
   if(v > _UI32_MAX) {
-    throwMethodException(Rational::s_className, method, _T("OverFlow. Rational=%I64u, _UI32_MAX=%lu"), v, _UI32_MAX);
+    throwInvalidArgumentException(method, _T("OverFlow. Rational=%I64u, _UI32_MAX=%lu"), v, _UI32_MAX);
   }
   return (ULONG)v;
 }
@@ -390,28 +389,26 @@ INT64 getInt64(const Rational &r) {
 UINT64 getUint64(const Rational &r) {
   DEFINEMETHODNAME;
   if(r.isNegative()) {
-    throwMethodException(Rational::s_className, method, _T("Value is negative (=%s)"), r.toString().cstr());
+    throwInvalidArgumentException(method, _T("Value is negative (=%s)"), r.toString().cstr());
   }
   return r.m_numerator / r.m_denominator;
 }
 
 INT64 Rational::safeProd(const INT64 &a, const INT64 &b, int line) { // static
-  DEFINEMETHODNAME;
   if(a == 0 || b == 0) return 0;
   const int sa = sign(a), sb = sign(b);
   const int expectedSign = sa * sb;
   INT64 result = a * b;
   const int sr = sign(result);
   if(sr != expectedSign) {
-    throwException(method, _T("%s line %d: Product overflow. a=%I64d, b=%I64d"), thisFile, line, a, b);
+    throwInvalidArgumentException(__TFUNCTION__,_T("%s line %d: Product overflow. a=%I64d, b=%I64d"), thisFile, line, a, b);
   }
   return result;
 }
 
 UINT64 Rational::findGCD(const UINT64 &a, const UINT64 &b) { // static
-  DEFINEMETHODNAME;
   if(a == 0 || b == 0) {
-    throwInvalidArgumentException(method, _T("a=%I64u, b=%I64u"), a, b);
+    throwInvalidArgumentException(__TFUNCTION__, _T("a=%I64u, b=%I64u"), a, b);
   }
   UINT64 g = 1;
   UINT64 u = a;

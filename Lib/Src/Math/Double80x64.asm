@@ -385,7 +385,7 @@ D80getExpo2 ENDP
 
 ;void D80getExpo10(int &dst, const Double80 &x);
 D80getExpo10 PROC
-    fld     tbyte ptr[rdx]
+    fld     tbyte ptr[rdx]                     ; st0 = x
     fldz
     fcomip  st, st(1)                          ; compare x and pop 0
     jne     x_not_zero                         ; if(x != 0) goto x_not_zero
@@ -393,12 +393,12 @@ D80getExpo10 PROC
     mov     dword ptr[rcx], 0                  ; x == 0 => result = 0
     ret
 x_not_zero:
-    fld1
-    fxch    st(1)
-    fabs
-    fyl2x
-    fldlg2
-    fmul
+    fld1                                       ; st0 = 1       , st1 = x
+    fxch    st(1)                              ; st0 = x       , st1 = 1
+    fabs                                       ; st0 = |x|     , st1 = 1
+    fyl2x                                      ; st0 = st1*log2(st0) = log2(|x|)
+    fldlg2                                     ; st0 = log10(2), st1 = log2(|x|)
+    fmul                                       ; st0 = log2(|x|)*log10(2) = log10(|x|)
     pushRoundMode ROUNDDOWN
     frndint
     popRoundMode
@@ -535,161 +535,160 @@ D80sincos ENDP
 
 ; --------------------------------------------------- Double80 Exponential and Logarithmic functions ------------------
 
+;void D80pow2(Double80 &x);
+D80pow2 PROC
+    fld     tbyte ptr[rcx]                     ; st0 = x
+    fldz
+    fcomip  st, st(1)
+    je      ZeroExponent
+
+    pushRoundMode ROUNDDOWN                    ; st0 = x (!= 0)
+    fld     st(0)                              ; st0 = x                    , st1 = x
+    frndint                                    ; st0 = floor(  x         )  , st1 = x
+    fsub    st(1), st(0)                       ; st0 = floor(  x         )  , st1 = frac(x)
+    fxch    st(1)                              ; st0 = frac(   x         )  , st1 = floor(x)
+    f2xm1                                      ; st0 = 2^ frac(x         )-1, st1 = floor(x)
+    fld1
+    fadd                                       ; st0 = 2^ frac(x         )  , st1 = floor(x)
+    fscale                                     ; st0 = 2^(frac(x         )+floor(x         ))=2 ^x, st1 = floor(x)
+    fstp    st(1)                              ; pop st0
+    fstp    tbyte ptr[rcx]                     ; pop to x
+    popRoundMode
+    ret
+ZeroExponent:                                  ; st0 = x
+    fstp    st(0)                              ; pop st0
+    fld1                                       ; st0 = 1
+    fstp    tbyte ptr[rcx]                     ; pop to x
+    ret
+D80pow2 ENDP
+
+;void D80pow10(Double80 &x);
+D80pow10 PROC
+    fld     tbyte ptr[rcx]                     ; st0 = x
+    fldz
+    fcomip  st, st(1)
+    je      ZeroExponent
+
+    pushRoundMode ROUNDDOWN                    ; st0 = x (!= 0)
+    fldl2t                                     ; st0 = log2(10)             , st1 = x
+    fmul                                       ; st0 = x*log2(10)
+    fld     st(0)
+    frndint                                    ; st0 = floor(  x*log2(10))  , st1 = x*log2(10)
+    fsub    st(1), st(0)                       ; st0 = floor(  x*log2(10))  , st1 = frac( x*log2(10))
+    fxch    st(1)                              ; st0 = frac(   x*log2(10))  , st1 = floor(x*log2(10))
+    f2xm1                                      ; st0 = 2^ frac(x*log2(10))-1, st1 = floor(x*log2(10))
+    fld1
+    fadd                                       ; st0 = 2^ frac(x*log2(10))  , st1 = floor(x*log2(10))
+    fscale                                     ; st0 = 2^(frac(x*log2(10))+floor(x*log2(10)))=10^x, st1 = floor(x*log2(10))
+    fstp    st(1)                              ; pop st1
+    fstp    tbyte ptr[rcx]                     ; pop to x
+    popRoundMode
+    ret
+ZeroExponent:                                  ; st0 = x
+    fstp    st(0)                              ; pop st0
+    fld1                                       ; st0 = 1
+    fstp    tbyte ptr[rcx]                     ; pop to x
+    ret
+D80pow10 ENDP
+
 ;void D80exp(Double80 &x);
 D80exp PROC
+    fld     tbyte ptr[rcx]                     ; st0 = x
+
     pushRoundMode ROUNDDOWN
-    fld     tbyte ptr[rcx]
-    fldl2e
-    fmul
-    fld     st(0)
-    frndint
-    fsub    st(1), st(0)
-    fxch    st(1)
-    f2xm1
+    fldl2e                                     ; st0 = log2(e)              , st1 = x
+    fmul                                       ; st0 = x/ln(2)
+    fld     st(0)                              ; st0 = x/ln(2)              , st1 = x/ln(2)
+    frndint                                    ; st0 = floor(  x/ln(2   ))  , st1 = x/ln(2)
+    fsub    st(1), st(0)                       ; st0 = floor(  x/ln(2   ))  , st1 = frac( x/ln(2))
+    fxch    st(1)                              ; st0 = frac(   x/ln(2   ))  , st1 = floor(x/ln(2))
+    f2xm1                                      ; st0 = 2^ frac(x/ln(2   ))-1, st1 = floor(x/ln(2))
     fld1
-    fadd
-    fscale
-    fstp    st(1)
-    fstp    tbyte ptr[rcx]
+    fadd                                       ; st0 = 2^ frac(x/ln(2   ))   , st1 = floor(x/ln(2))
+    fscale                                     ; st0 = 2^(frac(x/ln(2   ))+floor(x/ln(2   )))=e ^x, st1 = floor(x/ln(2))
+    fstp    st(1)                              ; pop st1
+    fstp    tbyte ptr[rcx]                     ; pop to x
     popRoundMode
     ret
 D80exp ENDP
 
-;void D80log(Double80 &x);
-D80log PROC
-    fld1
-    fld     tbyte ptr[rcx]
-    fyl2x
-    fldln2
-    fmul
-    fstp    tbyte ptr[rcx]
-    ret
-D80log ENDP
-
-;void D80log10(Double80 &x);
-D80log10 PROC
-    fld1
-    fld     tbyte ptr[rcx]
-    fyl2x
-    fldlg2
-    fmul
-    fstp    tbyte ptr[rcx]
-    ret
-D80log10 ENDP
-
-;void D80log2(Double80 &x);
-D80log2 PROC
-    fld1
-    fld     tbyte ptr[rcx]
-    fyl2x
-    fstp    tbyte ptr[rcx]
-    ret
-D80log2 ENDP
-
 ;void D80pow(Double80 &x, const Double80 &y);
 D80pow PROC
-    fld     tbyte ptr[rdx]
+    fld     tbyte ptr[rdx]                     ; st0 = y
     fldz
     fcomip  st, st(1)
     je ZeroExponent                            ; if(y == 0) goto ZeroExponent;
 
-    fld     tbyte ptr[rcx]
+    fld     tbyte ptr[rcx]                     ; st0 = x                    , st1 = y
     fldz
     fcomip  st, st(1)
     je      ZeroBase                           ; if(x == 0) goto ZeroExponent;
-                                               ; st(0)=x, st(1)=y
-    pushRoundMode ROUNDDOWN
-    fyl2x
-    fld     st(0)
-    frndint
-    fsub    st(1), st(0)
-    fxch    st(1)
-    f2xm1
+
+    pushRoundMode ROUNDDOWN                    ; st0 = x (!= 0)             , st1 = y (!= 0)
+    fyl2x                                      ; st0 = st1*log2(st0) = y*log2(x)
+    fld     st(0)                              ;
+    frndint                                    ; st0 = floor(  y*log2(x ))  , st1 = y*log2(x )
+    fsub    st(1), st(0)                       ; st0 = floor(  y*log2(x ))  , st1 = frac( y*log2(x ))
+    fxch    st(1)                              ; st0 = frac(   y*log2(x ))  , st1 = floor(y*log2(x ))
+    f2xm1                                      ; st0 = 2^ frac(y*log2(x ))-1, st1 = floor(y*log2(x ))
     fld1
-    fadd
-    fscale
-    fstp    st(1)
-    fstp    tbyte ptr[rcx]
+    fadd                                       ; st0 = 2^ frac(y*log2(x ))  , st1 = floor(y*log2(x ))
+    fscale                                     ; st0 = 2^(frac(y*log2(x ))+floor(y*log2(x )))=x ^y, st1 = floor(y*log2(x))
+    fstp    st(1)                              ; pop st1
+    fstp    tbyte ptr[rcx]                     ; pop to x
     popRoundMode
     ret
-ZeroExponent:                                  ; st(0)=y
-    fstp    st(0)                              ; pop y
-    fld1
-    fstp    tbyte ptr[rcx]
+ZeroExponent:                                  ; st0 = y
+    fstp    st(0)                              ; pop st0
+    fld1                                       ; st0 = 1
+    fstp    tbyte ptr[rcx]                     ; pop to x
     ret
-ZeroBase:                                      ; st(0)=x, st(1)=y. x = 0. so st(0) = 0
+ZeroBase:                                      ; st0 = x, st1 = y. x = 0. so st0 = 0
     fcomip  st, st(1)
     ja      ZeroBaseNegativeExponent    
-    fstp    st(0)                              ; pop y
-    fldz
-    fstp    tbyte ptr[rcx]                     ; return 0
+    fstp    st(0)                              ; pop st0
+    fldz                                       ; st0 = 0
+    fstp    tbyte ptr[rcx]                     ; pop to x
     ret
-ZeroBaseNegativeExponent:                      ; st(0)=y
-    fstp    st(0)
-    fld1
-    fldz
-    fdiv
-    fstp    tbyte ptr[rcx]                     ; return 1/0 - error
+ZeroBaseNegativeExponent:                      ; st0 = y
+    fstp    st(0)                              ; pop st0
+    fld1                                       ; st0 = 1
+    fldz                                       ; st0 = 0, st1 = 1
+    fdiv                                       ; st0 = 1/0
+    fstp    tbyte ptr[rcx]                     ; pop to x - error
     ret
 D80pow ENDP
 
-;void D80pow10(Double80 &x);
-D80pow10 PROC
-    fld     tbyte ptr[rcx]
-    fldz
-    fcomip  st, st(1)
-    je      ZeroExponent
-
-    pushRoundMode ROUNDDOWN
-    fldl2t
-    fmul
-    fld     st(0)
-    frndint
-    fsub    st(1), st(0)
-    fxch    st(1)
-    f2xm1
-    fld1
-    fadd
-    fscale
-    fstp    st(1)
-    fstp    tbyte ptr[rcx]
-    popRoundMode
+;void D80log2(Double80 &x);
+D80log2 PROC
+    fld1                                       ; st0 = 1
+    fld     tbyte ptr[rcx]                     ; st0 = x     , st1 = 1
+    fyl2x                                      ; st0 = st1*log2(st0) = log2(x)
+    fstp    tbyte ptr[rcx]                     ; pop to x
     ret
+D80log2 ENDP
 
-ZeroExponent:                                  ; st(0)=x
-    fstp    st(0)                              ; pop x
-    fld1
-    fstp    tbyte ptr[rcx]                     ; return 1
+;void D80log10(Double80 &x);
+D80log10 PROC
+    fld1                                       ; st0 = 1
+    fld     tbyte ptr[rcx]                     ; st0 = x       , st1 = 1
+    fyl2x                                      ; st0 = st1*log2(st0) = log2(x)
+    fldlg2                                     ; st0 = log10(2), st1 = log2(x)
+    fmul                                       ; st0 = log2(x)*log10(2) = log10(x)
+    fstp    tbyte ptr[rcx]                     ; pop to x
     ret
-D80pow10 ENDP
+D80log10 ENDP
 
-;void D80pow2(Double80 &x);
-D80pow2 PROC
-    fld     tbyte ptr[rcx]
-    fldz
-    fcomip  st, st(1)
-    je      ZeroExponent
-
-    fld     st(0)
-    pushRoundMode ROUNDDOWN
-    frndint
-    fsub    st(1), st(0)
-    fxch    st(1)
-    f2xm1
-    fld1
-    fadd
-    fscale
-    fstp    st(1)
-    fstp    tbyte ptr[rcx]
-    popRoundMode
+;void D80log(Double80 &x);
+D80log PROC
+    fld1                                       ; st0 = 1
+    fld     tbyte ptr[rcx]                     ; st0 = x     , st1 = 1
+    fyl2x                                      ; st0 = st1*log2(st0) = log2(x)
+    fldln2                                     ; st0 = ln(2) , st1 = log2(x)
+    fmul                                       ; st0 = ln(x)
+    fstp    tbyte ptr[rcx]                     ; pop to x
     ret
-
-ZeroExponent:                                  ; st(0)=x
-    fstp    st(0)                              ; pop x
-    fld1
-    fstp    tbyte ptr[rcx]
-    ret
-D80pow2 ENDP
+D80log ENDP
 
 ; ------------------------------------------------- Double80 floor,ceil --------------------------------
 

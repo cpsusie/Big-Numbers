@@ -77,7 +77,11 @@ public:
   T getLength() const {
     return m_to - m_from;
   }
+  String toString(int precision = 3) const {
+    return format(_T("[%s-%s]"), ::toString(m_from, precision).cstr(), ::toString(m_to, precision).cstr());
+  }
 };
 
-typedef NumberInterval<double> DoubleInterval;
-typedef NumberInterval<int>    IntInterval;
+typedef NumberInterval<float   > FloatInterval;
+typedef NumberInterval<double  > DoubleInterval;
+typedef NumberInterval<int>      IntInterval;

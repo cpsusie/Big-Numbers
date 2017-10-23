@@ -232,9 +232,6 @@
     <ClCompile Include="Newton.cpp">
       <Filter>Source Files\Matrix</Filter>
     </ClCompile>
-    <ClCompile Include="Transformation.cpp">
-      <Filter>Source Files\Matrix</Filter>
-    </ClCompile>
     <ClCompile Include="Point2DTransformations.cpp">
       <Filter>Source Files\Geometri</Filter>
     </ClCompile>
@@ -242,9 +239,6 @@
       <Filter>Source Files\Geometri</Filter>
     </ClCompile>
     <ClCompile Include="Polygon2D.cpp">
-      <Filter>Source Files\Geometri</Filter>
-    </ClCompile>
-    <ClCompile Include="Rectangle2D.cpp">
       <Filter>Source Files\Geometri</Filter>
     </ClCompile>
     <ClCompile Include="Polar.cpp">
