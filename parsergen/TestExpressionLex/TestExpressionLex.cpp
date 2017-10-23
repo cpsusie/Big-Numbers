@@ -12,11 +12,10 @@ static void scan(TCHAR *s) {
   int symbol;
   do {
     symbol = lex.getNextLexeme();
-    SourcePosition pos = lex.getPos();
-    SourcePosition ppos = lex.getPreviousPos();
-    _tprintf(_T("ppos:(%d,%d). startPos:(%d,%d) : symbol:%s\n")
-            ,ppos.getLineNumber(),ppos.getColumn()
-            ,pos.getLineNumber(),pos.getColumn()
+    const SourcePosition pos = lex.getPos();
+    const SourcePosition ppos = lex.getPreviousPos();
+    _tprintf(_T("ppos:%s. startPos:%s : symbol:%s\n")
+            ,ppos.toString().cstr(), pos.toString().cstr()
             ,ExpressionTables->getSymbolName(symbol));
     lex.markPrevious();
   } while(symbol != 0);
