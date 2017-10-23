@@ -76,18 +76,6 @@ static void checkExact(int line, unsigned __int64 x, DigitPool *pool) {
   }
 }
 
-String toString(const _int128 &n) {
-  TCHAR buf[200];
-  _i128tot(n, buf, 10);
-  return buf;
-}
-
-String toString(const _uint128 &n) {
-  TCHAR buf[200];
-  _ui128tot(n, buf, 10);
-  return buf;
-}
-
 static void checkExact(int line, _int128 x, DigitPool *pool) {
   BigReal n(x, pool);
   n.assertIsValidBigReal();
