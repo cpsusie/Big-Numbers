@@ -293,9 +293,6 @@
     <ClInclude Include="Mandelbrot.h" />
     <ClInclude Include="MandelbrotDlg.h" />
     <ClInclude Include="MBCalculator.h" />
-    <ClInclude Include="NumberPoint2D.h" />
-    <ClInclude Include="NumberRectangle.h" />
-    <ClInclude Include="NumberTransformation.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ShowColorMapDlg.h" />
     <ClInclude Include="StdAfx.h" />

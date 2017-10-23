@@ -46,21 +46,21 @@ ExpTransformation::ExpTransformation(const RealInterval &from, const RealInterva
   m_b = to.getFrom() / pow(m_a, from.getFrom());
 }
 
-int MBFrameGenerator::findTotalFrameCount(const RealRectangle &startRect, const RealRectangle &finalRect) { // static
+int MBFrameGenerator::findTotalFrameCount(const RealRectangle2D &startRect, const RealRectangle2D &finalRect) { // static
   const Real l0 = startRect.getWidth();
   const Real lf = finalRect.getWidth();
   return getInt((log(lf/l0) / log(Double80::one - ZOOMSTEP))) + 1;
 }
 
-RealRectangle MBFrameGenerator::getInterpolatedRectangle() const {
+RealRectangle2D MBFrameGenerator::getInterpolatedRectangle() const {
   const Real fw = m_expTransform->transform(m_frameIndex);       // 1 -> finalWidth/startWidth
   const Real t1 = m_linearTransform->forwardTransform(fw);       // 1 -> 0
   const Real t2 = (1 - t1);                                      // 0 -> 1
-  const Real x = t1 * m_startRect.x + t2 * m_finalRect.x;
-  const Real y = t1 * m_startRect.y + t2 * m_finalRect.y;
+  const Real x = t1 * m_startRect.m_x + t2 * m_finalRect.m_x;
+  const Real y = t1 * m_startRect.m_y + t2 * m_finalRect.m_y;
   const Real w = fw * m_startRect.getWidth();
   const Real h = fw * m_startRect.getHeight();
-  return RealRectangle(x,y,w,h);
+  return RealRectangle2D(x,y,w,h);
 }
 
 HBITMAP MBFrameGenerator::nextBitmap() { // should return NULL when no more frames.

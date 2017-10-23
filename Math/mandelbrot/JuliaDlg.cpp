@@ -24,7 +24,7 @@ END_MESSAGE_MAP()
 BOOL CJuliaDlg::OnInitDialog() {
   __super::OnInitDialog();
 
-  const RealRectangle rr(-2,-2,4,4);
+  const RealRectangle2D rr(-2,-2,4,4);
 
   m_transform.setFromRectangle(rr);
   adjustToRectangle();
@@ -39,7 +39,7 @@ void CJuliaDlg::adjustToRectangle() {
 //  const int t = cl.bottom;
 //  cl.bottom = cl.top;
 //  cl.top = t;
-  m_transform.setToRectangle(cl);
+  m_transform.setToRectangle(toRealRect(cl));
 }
 
 JuliaCalculatorThread::JuliaCalculatorThread(CJuliaDlg &dlg) : m_dlg(dlg) {
@@ -67,7 +67,7 @@ UINT JuliaCalculatorThread::run() {
   CPoint pointBuffer[POINTBUFFERSIZE];
   int index = 0;
   while(!m_killed) {
-    pointBuffer[index++] = tr.forwardTransform(z);
+    pointBuffer[index++] = toCPoint(tr.forwardTransform(z));
     if(index == POINTBUFFERSIZE) {
       CClientDC dc(&m_dlg);
       for(const CPoint *p = pointBuffer; index--; p++) {

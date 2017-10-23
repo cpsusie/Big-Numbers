@@ -14,9 +14,9 @@ typedef enum {
 
 class FractalImage {
 public:
-  RealRectangle m_scale;
-  PixRect      *m_pixRect;
-  FractalImage(const RealRectangle &scale, PixRect *pixRect)
+  RealRectangle2D m_scale;
+  PixRect        *m_pixRect;
+  FractalImage(const RealRectangle2D &scale, PixRect *pixRect)
   : m_scale(scale)
   , m_pixRect(pixRect)
   {
@@ -50,8 +50,8 @@ class MBFrameGenerator : public FrameGenerator {
 private:
   CMandelbrotDlg            &m_dlg;
   const String               m_dirName;
-  const RealRectangle        m_finalRect; // in complex plane
-  RealRectangle              m_startRect;
+  const RealRectangle2D      m_finalRect; // in complex plane
+  RealRectangle2D            m_startRect;
   ExpTransformation         *m_expTransform;
   RealLinearTransformation  *m_linearTransform;
   const CSize                m_imageSize; // in pixels
@@ -62,10 +62,10 @@ private:
   HBITMAP                    m_bm;
   HDC                        m_dc;
 
-  static int findTotalFrameCount(const RealRectangle &startRect, const RealRectangle &finalRect);
+  static int findTotalFrameCount(const RealRectangle2D &startRect, const RealRectangle2D &finalRect);
   void postMovieDone();
   bool requestNextFrame(); // return false if done
-  RealRectangle getInterpolatedRectangle() const;
+  RealRectangle2D getInterpolatedRectangle() const;
 public:
   MBFrameGenerator(CMandelbrotDlg *dlg, const String &dirName);
   ~MBFrameGenerator();
@@ -122,7 +122,7 @@ private:
 
     FPUPrecisionMode            m_precisionMode;
     ColorMapData                m_colorMapData;
-    RealRectangle               m_rect0, m_zoom1Rect;
+    RealRectangle2D             m_rect0, m_zoom1Rect;
 
     bool                        m_animateCalculation;
     bool                        m_calculateWithOrbit;
@@ -176,7 +176,7 @@ private:
     inline bool isValidSize() const {
       return m_pixRect != NULL;
     }
-    inline RealRectangle getScale() const {
+    inline RealRectangle2D getScale() const {
       return m_transform.getFromRectangle();
     }
     void     setDragRect(   const CPoint &topLeft, const CPoint &bottomRight);
@@ -220,7 +220,7 @@ public:
     inline CSize getImageSize() {
       return getClientRect(m_imageWindow).Size();
     }
-    void     setScale(const RealRectangle &scale, bool allowAdjustAspectRatio = true);
+    void     setScale(const RealRectangle2D &scale, bool allowAdjustAspectRatio = true);
     void     setPixel(UINT x, UINT y, D3DCOLOR color);
     D3DCOLOR getPixel(UINT x, UINT y) const;
 

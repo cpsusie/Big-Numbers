@@ -121,11 +121,11 @@ UINT MBCalculator::findITCountPaintOrbit(const Real &X, const Real &Y, UINT maxI
   double b = y;;
   const RealRectangleTransformation &tr = m_mbc.getTransformation();
   OrbitPoint                        *op = m_orbitPoints;
-  const CPoint p0 = tr.forwardTransform(a,b);
+  const CPoint p0 = toCPoint(tr.forwardTransform(a,b));
   if(m_edgeTracing) m_mbc.paintMark(p0);
   UINT count;
   for(count = 0; count < maxIteration; count++) {
-    const CPoint p = tr.forwardTransform(a,b);
+    const CPoint p = toCPoint(tr.forwardTransform(a,b));
     *(op++) = OrbitPoint(p, m_mbc.getPixel(p.x,p.y));
     m_mbc.setPixel(p.x,p.y, RGB(0,0,255));
     const double a2 = a*a;

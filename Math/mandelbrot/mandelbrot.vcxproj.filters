@@ -85,15 +85,6 @@
     <ClInclude Include="MBCalculator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="NumberPoint2D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="NumberRectangle.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="NumberTransformation.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>

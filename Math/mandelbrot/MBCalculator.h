@@ -4,10 +4,26 @@
 #include <CompactStack.h>
 #include <TinyBitSet.h>
 #include <PropertyContainer.h>
-#include "NumberTransformation.h"
+#include <Math/Transformation.h>
 #include <Math/Double80.h>
 
 //#define SAVE_CALCULATORINFO
+
+inline CPoint toCPoint(const RealPoint2D &p) {
+  return CPoint(getInt(p.x), getInt(p.y));
+}
+
+inline RealPoint2D toRealPoint(const CPoint &p) {
+  return RealPoint2D(p.x, p.y);
+}
+
+inline CRect toCRect(const RealRectangle2D &r) {
+  return CRect(getInt(r.m_x),getInt(r.m_y),getInt(r.m_x+r.m_w),getInt(r.m_y+r.m_h));
+}
+
+inline RealRectangle2D toRealRect(const CRect &r) {
+  return RealRectangle2D(r.left,r.top,r.Width(),r.Height());
+}
 
 class OrbitPoint : public CPoint {
 public:
@@ -98,13 +114,6 @@ public:
 #define NEXTTO_EMPTY_COLOR RGB(255,255,254)
 #define NEXTTO_BLACK       RGB(  0,  0,  1)
 #define NEXTTO_FILL_COLOR  RGB(255,  0,  1)
-
-typedef NumberPoint2D<Real>                 RealPoint2D;
-typedef NumberInterval<Real>                RealInterval;
-typedef NumberRectangle<Real>               RealRectangle;
-typedef NumberIntervalTransformation<Real>  RealIntervalTransformation;
-typedef LinearNumberTransformation<Real>    RealLinearTransformation;
-typedef NumberRectangleTransformation<Real> RealRectangleTransformation;
 
 class MBContainer : public DWordPixelAccessor, public PropertyChangeListener {
 public:
