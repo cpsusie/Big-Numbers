@@ -2,8 +2,8 @@
 //
 
 #include "stdafx.h"
-#include <Math/Expression/ExpressionLex.h>
 #include <Math/Expression/ExpressionParser.h>
+#include <Math/Expression/ExpressionLex.h>
 
 static void scan(TCHAR *s) {
   LexStringStream stream(s);
