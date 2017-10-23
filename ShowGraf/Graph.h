@@ -60,7 +60,7 @@ public:
   virtual GraphType getType() const = 0;
   virtual double  distance(const CPoint &p, const RectangleTransformation &tr) const = 0;
   inline double  distance(const Point2DP &p) const {
-    return distance(p,RectangleTransformation::id);
+    return distance(p,RectangleTransformation::getId());
   }
   static inline double getMinPositive(double x, double r) {
     return (x > 0 && (r == 0 || x < r)) ? x : r;
