@@ -96,8 +96,8 @@ static void testDoubleConversion(TestStatistic &stat, int sign) {
 
 static void testDouble80Conversion(TestStatistic &stat, int sign) {
   DigitPool     *pool       = stat.getDigitPool();
-  const Double80 loopStart  = sign * Double80::DBL80_MIN;
-  const Double80 loopEnd    = sign * Double80::DBL80_MAX / 2;
+  const Double80 loopStart  = Double80::DBL80_MIN * sign;
+  const Double80 loopEnd    = Double80::DBL80_MAX / 2 * sign;
   const Double80 stepFactor = 1 + 0.012345/4;
   size_t         length;
   ConversionTest convTest(stat);

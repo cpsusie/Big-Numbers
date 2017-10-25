@@ -83,7 +83,8 @@ Double80 BigReal::getDouble80NoLimitCheck() const {
   Double80 result = 0;
   int digitCount = 0;
   for(const Digit *p = xi.m_first; p && (digitCount < 24); p = p->next, digitCount += LOG10_BIGREALBASE) {
-    result = result * BIGREALBASE + p->n;
+    result *= BIGREALBASE;
+    result += p->n;
   }
 
   const BRExpoType e = xi.m_expo * LOG10_BIGREALBASE - digitCount + LOG10_BIGREALBASE;

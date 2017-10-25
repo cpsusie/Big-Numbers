@@ -86,9 +86,9 @@ namespace TestDouble80 {
     return pow(2, x);
   }
 
-  static void checkResult(double x64, Double80 x80, TCHAR *op) {
+  static void checkResult(double x64, Double80 x80, TCHAR *op, double tolerance = EPS) {
     const double relativeError = getRelativeError(x64, x80);
-    if (relativeError > EPS) {
+    if (relativeError > tolerance) {
       OUTPUT(_T("operator %s failed. x64=%20.16le x80=%s. Relative error:%le"), op, x64, toString(x80).cstr(), relativeError);
       verify(false);
     }
@@ -104,25 +104,89 @@ namespace TestDouble80 {
     }
   }
 
-#define testOperator(op)        checkResult((x64 op y64),(x80 op y80)  ,_T(#op))
-#define testRelation(r)         checkResult(x64,y64,x64 r y64,x80,y80,x80 r y80,_T(#r))
-#define testAssignOperator(op)  { z64 op (z64*4.2); z80 op (z80*4.2); checkResult(z64,z80,_T(#op)); }
+#define CHECKOPERATOR(op,allowZero,x64,y1,x80,y2,...) \
+  if(allowZero || (((y1)!=0) && ((y2)!=0))) checkResult((x64 op y1),(x80 op y2),_T(#op),__VA_ARGS__)
 
-  static void testFunction(const String &name, Double80(*f80)(const Double80 &, const Double80 &), double(*f64)(double, double), double low1, double high1, double low2, double high2) {
+#define CHECKASSIGNOPERATOR(op,allowZero,y1,y2) \
+  if(allowZero || (((y1)!=0) && ((y2)!=0))) {   \
+    double   s64 = z64;                         \
+    Double80 s80 = z80;                         \
+    s64 op (y1);                                \
+    s80 op (y2);                                \
+    checkResult(s64,s80,_T(#op));               \
+  }
+
+#define testOperatorD80(   op,allowZero)    CHECKOPERATOR(op,allowZero,x64,            y64,x80,          y80)
+#define testOperatorI32(   op,allowZero)    CHECKOPERATOR(op,allowZero,x64,   (int    )y64,x80,  (int   )y64)
+#define testOperatorI64(   op,allowZero)    CHECKOPERATOR(op,allowZero,x64,   (INT64  )y64,x80,  (INT64 )y64)
+#define testOperatorUI32(  op,allowZero)  { CHECKOPERATOR(op,allowZero,x64,   (UINT32 )y64,x80,  (UINT32)y64); \
+                                            const UINT32 _ui32 = (UINT32 )(y64+_I32_MAX);                      \
+                                            CHECKOPERATOR(op,allowZero,x64,          _ui32,x80,        _ui32); \
+                                          }
+
+#define testOperatorUI64(  op,allowZero)  { CHECKOPERATOR(op,allowZero,x64,   (UINT64 )y64,x80,  (UINT64)y64); \
+                                            const UINT64 _ui64 = (UINT64 )(y64+_I64_MAX);                      \
+                                            CHECKOPERATOR(op,allowZero,x64,          _ui64,x80,        _ui64); \
+                                          }
+
+#define testOperatorFloat( op,allowZero)    CHECKOPERATOR(op,allowZero,x32,            y32,x80,          y32, 1e-6)
+#define testOperatorDouble(op,allowZero)    CHECKOPERATOR(op,allowZero,x64,            y64,x80,          y64)
+
+
+#define testAssignOpD80(   op,allowZero)    CHECKASSIGNOPERATOR(op,allowZero,            y64,          y80)
+#define testAssignOpI32(   op,allowZero)    CHECKASSIGNOPERATOR(op,allowZero,   (int    )y64,  (int   )y64)
+#define testAssignOpI64(   op,allowZero)    CHECKASSIGNOPERATOR(op,allowZero,   (INT64  )y64,  (INT64 )y64)
+#define testAssignOpUI32(  op,allowZero)  { CHECKASSIGNOPERATOR(op,allowZero,   (UINT32 )y64,  (UINT32)y64); \
+                                            const UINT32 _ui32 = (UINT32 )(y64+_I32_MAX);                    \
+                                            CHECKASSIGNOPERATOR(op,allowZero,          _ui32,        _ui32); \
+                                          }
+
+#define testAssignOpUI64(  op,allowZero)  { CHECKASSIGNOPERATOR(op,allowZero,   (UINT64 )y64,  (UINT64)y64); \
+                                            const UINT64 _ui64 = (UINT64 )(y64+_I64_MAX);                    \
+                                            CHECKASSIGNOPERATOR(op,allowZero,          _ui64,        _ui64); \
+                                          }
+
+#define testAssignOpFloat( op,allowZero)    CHECKASSIGNOPERATOR(op,allowZero,            y32,          y32)
+#define testAssignOpDouble(op,allowZero)    CHECKASSIGNOPERATOR(op,allowZero,            y64,          y64)
+
+#define testOperator(op,allowZero)  \
+  testOperatorD80(   op,allowZero); \
+  testOperatorI32(   op,allowZero); \
+  testOperatorI64(   op,allowZero); \
+  testOperatorUI32(  op,allowZero); \
+  testOperatorUI64(  op,allowZero); \
+  testOperatorFloat( op,allowZero); \
+  testOperatorDouble(op,allowZero);
+
+#define testAssignOperator(op,allowZero) \
+  testAssignOpD80(   op,allowZero);      \
+  testAssignOpI32(   op,allowZero);      \
+  testAssignOpI64(   op,allowZero);      \
+  testAssignOpUI32(  op,allowZero);      \
+  testAssignOpUI64(  op,allowZero);      \
+  testAssignOpFloat( op,allowZero);      \
+  testAssignOpDouble(op,allowZero);
+
+#define testRelation(      r )  checkResult(x64,y64,x64 r y64,x80,y80,x80 r y80,_T(#r))
+
+
+static void testFunction(const String &name, Double80(*f80)(const Double80 &, const Double80 &), double(*f64)(double, double), double low1, double high1, double low2, double high2) {
     double maxRelativeError = 0;
     const double step1 = (high1 - low1) / 10;
     const double step2 = (high2 - low2) / 10;
-    for (double x64 = low1; x64 <= high1; x64 += step1) {
-      for (double y64 = low2; y64 <= high2; y64 += step2) {
+    for(double x64 = low1; x64 <= high1; x64 += step1) {
+      for(double y64 = low2; y64 <= high2; y64 += step2) {
         double z64 = f64(x64, y64);
 
         const Double80 x80 = x64;
         const Double80 y80 = y64;
-        Double80 z80 = f80(x80, y80);
+        const float    x32 = (float)x64;
+        const float    y32 = (float)y64;
+        Double80       z80 = f80(x80, y80);
 
         const double relativeError = getRelativeError(z64, z80);
 
-        if (x64 != getDouble(x80) || y64 != getDouble(y80) || relativeError > EPS) {
+        if(x64 != getDouble(x80) || y64 != getDouble(y80) || relativeError > EPS) {
           LOG log;
           log << _T("Function ") << name << _T(" failed.") << endl
               << _T("(x64,y64,z64):(") << dparam(16) << x64 << _T(",") << dparam(16) << y64 << _T(",") << dparam(16) << z64 << _T(").") << endl
@@ -132,28 +196,27 @@ namespace TestDouble80 {
               << _T("RelativeError:") << dparam(16) << relativeError << endl;
           verify(false);
         }
-        if (relativeError > maxRelativeError) {
+        if(relativeError > maxRelativeError) {
           maxRelativeError = relativeError;
         }
 
-        testOperator(+);
-        testOperator(-);
-        testOperator(*);
-        if (y64 != 0 && y80 != 0) {
-          testOperator(/ );
-        }
+        testOperator(+,true );
+        testOperator(-,true );
+        testOperator(*,true );
+        testOperator(/,false);
+
+        testAssignOperator(+= ,true );
+        testAssignOperator(-= ,true );
+        testAssignOperator(*= ,true );
+        testAssignOperator(/= ,false);
+
         testRelation(== );
         testRelation(!= );
         testRelation(<= );
         testRelation(>= );
         testRelation(<);
         testRelation(>);
-        testAssignOperator(+= );
-        testAssignOperator(-= );
-        testAssignOperator(*= );
-        if (z64 != 0 && z80 != 0) {
-          testAssignOperator(/= );
-        }
+
       }
     }
     OUTPUT(_T("%-10s:Max relative error:%.16le"), name.cstr(), maxRelativeError);
@@ -712,10 +775,10 @@ namespace TestDouble80 {
       verify(!FPU::stackUnderflow());
 #endif
       USHORT exp = FPU_INVALID_OPERATION_EXCEPTION
-        | FPU_DENORMALIZED_EXCEPTION
-        | FPU_DIVIDE_BY_ZERO_EXCEPTION
-        | FPU_OVERFLOW_EXCEPTION
-        | FPU_UNDERFLOW_EXCEPTION;
+                 | FPU_DENORMALIZED_EXCEPTION
+                 | FPU_DIVIDE_BY_ZERO_EXCEPTION
+                 | FPU_OVERFLOW_EXCEPTION
+                 | FPU_UNDERFLOW_EXCEPTION;
 
       FPU::enableExceptions(true, exp);
       cw1 = FPU::getControlWord();

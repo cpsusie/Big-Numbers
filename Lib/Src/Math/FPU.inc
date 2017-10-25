@@ -26,3 +26,41 @@ popRoundMode MACRO
     fldcw	WORD PTR[rsp]          ; restore FPU  ctrlWord (=cwSave)
     add		rsp, 8
 ENDM
+
+popRoundMode MACRO
+    fldcw	WORD PTR[rsp]          ; restore FPU  ctrlWord (=cwSave)
+    add		rsp, 8
+ENDM
+
+fildUI32 MACRO reg
+  cmp     reg, 07fffffffh
+  jbe     _LoadSmallUI32
+  and     reg, 07fffffffh
+  push    reg
+  fild    DWORD PTR[rsp]
+  pop     reg
+  fadd    Dmaxi32P1
+  jmp     _Done
+_LoadSmallUI32:
+  push    reg
+  fild    DWORD PTR[rsp]
+  pop     reg
+_Done:
+ENDM
+
+fildUI64 MACRO reg
+  cmp     reg, QWmaxI64
+  jbe     _LoadSmallUI64
+  and     reg, QWmaxI64
+  push    reg
+  fild    QWORD PTR[rsp]
+  pop     reg
+  fld     TBmaxI64P1
+  fadd
+  jmp     _Done
+_LoadSmallUI64:
+  push    reg
+  fild    QWORD PTR[rsp]
+  pop     reg
+_Done:
+ENDM

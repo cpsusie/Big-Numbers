@@ -35,8 +35,8 @@
 #define BIGREAL_MINEXPO   -99999999
 
 typedef ULONG BRDigitType;
-typedef long          BRExpoType;
-typedef long          BRDigitDiffType;
+typedef long  BRExpoType;
+typedef long  BRDigitDiffType;
 
 #else // IS64BIT
 
