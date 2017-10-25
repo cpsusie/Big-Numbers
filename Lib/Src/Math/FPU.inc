@@ -36,15 +36,13 @@ fildUI32 MACRO reg
   cmp     reg, 07fffffffh
   jbe     _LoadSmallUI32
   and     reg, 07fffffffh
-  push    reg
-  fild    DWORD PTR[rsp]
-  pop     reg
+  mov     QWORD ptr[rsp-8], reg
+  fild    DWORD PTR[rsp-8]
   fadd    Dmaxi32P1
   jmp     _Done
 _LoadSmallUI32:
-  push    reg
-  fild    DWORD PTR[rsp]
-  pop     reg
+  mov     QWORD ptr[rsp-8], reg
+  fild    DWORD PTR[rsp-8]
 _Done:
 ENDM
 
@@ -52,15 +50,13 @@ fildUI64 MACRO reg
   cmp     reg, QWmaxI64
   jbe     _LoadSmallUI64
   and     reg, QWmaxI64
-  push    reg
-  fild    QWORD PTR[rsp]
-  pop     reg
+  mov     QWORD ptr[rsp-8], reg
+  fild    QWORD PTR[rsp-8]
   fld     TBmaxI64P1
   fadd
   jmp     _Done
 _LoadSmallUI64:
-  push    reg
-  fild    QWORD PTR[rsp]
-  pop     reg
+  mov     QWORD ptr[rsp-8], reg
+  fild    QWORD PTR[rsp-8]
 _Done:
 ENDM

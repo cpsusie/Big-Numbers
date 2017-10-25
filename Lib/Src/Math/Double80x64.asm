@@ -6,16 +6,11 @@ include fpu.inc
 
 .DATA
 
-DWmaxI32        dword              7fffffffh
 DWmaxI32P1      dword              80000000h
 QWmaxI64        qword      7fffffffffffffffh
 QWmaxI64P1      qword      8000000000000000h
-DmaxI32         qword      41dfffffffc00000h   ;  maxI32   as double
 DmaxI32P1       qword      41e0000000000000h   ;  maxI32P1 as double
-DNegmaxI32      qword     0c1dfffffffc00000h   ; -maxI32   as double
-TBmaxI64        tbyte  403dfffffffffffffffeh   ;  maxI64   as Double80
 TBmaxI64P1      tbyte  403e8000000000000000h   ;  maxI64P1 as Double80
-TBNegMaxI64     tbyte 0c03dfffffffffffffffeh   ; -maxI64   as Double80
 TBEpsilon       tbyte  0000000000000080c03fh   ; 1.08420217248550443e-019
 TBMinimum       tbyte  00000000000000800100h   ; 3.36210314311209209e-4932
 TBMaximum       tbyte 0fffffffffffffffffe7fh   ; 1.18973149535723227e+4932
@@ -113,7 +108,7 @@ D80consDouble ENDP
 
 ;int D80ToI32(const Double80 &x);
 D80ToI32 PROC
-    fld     tbyte ptr[rcx]
+    fld     tbyte ptr[rcx]                     ; load x
     pushRoundMode TRUNCATE
     fistp   dword ptr[rsp-4]
     mov     eax, dword ptr[rsp-4]
@@ -123,15 +118,16 @@ D80ToI32 ENDP
 
 ;ULONG D80ToUI32(const Double80 &x);
 D80ToUI32 PROC
-    fld     tbyte ptr[rcx]
-    fld     DmaxI32
-    fcomip  st, st(1)
-    jb      AboveMaxInt32
+    fld     tbyte ptr[rcx]                    ; load x
+    fld     DmaxI32P1
+    fcomi   st, st(1)
+    jbe     AboveMaxInt32
 
-    fld     DNegmaxI32                         ; x <= maxInt32
-    fcomip  st, st(1)
-    ja      BeloveNegMaxInt32
+    fchs                                       ; x <= maxInt32
+    fcomi   st, st(1)
+    jae     BeloveNegMaxInt32
 
+    fstp    st(0)
     pushRoundMode TRUNCATE                     ; -maxInt32 <= x <= maxInt32
     fistp   dword ptr[rsp-4]
     mov     eax, dword ptr[rsp-4]
@@ -139,7 +135,6 @@ D80ToUI32 PROC
     ret
 
   AboveMaxInt32:                               ; x > maxInt32
-    fld     DmaxI32P1
     fsub
     pushRoundMode TRUNCATE
     fistp   dword ptr[rsp-4]
@@ -149,13 +144,11 @@ D80ToUI32 PROC
     ret
 
   BeloveNegMaxInt32:                           ; x < -maxInt32
-    fchs
-    fsub    DmaxI32P1
+    fsub
     pushRoundMode TRUNCATE
     fistp   dword ptr[rsp-4]
     mov     eax, dword ptr[rsp-4]
     popRoundMode
-    neg     eax
     sub     eax, DWmaxI32P1
     ret
 D80ToUI32 ENDP
@@ -173,25 +166,25 @@ D80ToI64 ENDP
 ;UINT64 D80ToUI64(const Double80 &x);
 D80ToUI64 PROC
     fld     tbyte ptr[rcx]
-    fld     TBmaxI64
-    fcomip  st, st(1)
-    jb      AboveMaxInt64
+    fld     TBmaxI64P1
+    fcomi   st, st(1)
+    jbe     AboveMaxInt64
 
+    fstp    st(0)
     pushRoundMode TRUNCATE                     ; -maxInt64 <= x <= maxInt64
     fistp   qword ptr[rsp-8]
     mov     rax,  qword ptr[rsp-8]
     popRoundMode
     ret
 
-  AboveMaxInt64:
-    fld     TBmaxI64P1                         ; x > maxInt64
+  AboveMaxInt64:                                ; x > maxInt64
     fsub
     pushRoundMode TRUNCATE
     fistp   qword ptr[rsp-8]
     mov     rax,  qword ptr[rsp-8]
     popRoundMode
-    cmp     rax, QWmaxI64
-    ja      Return     
+    cmp     rax, QWmaxI64P1
+    jae     Return
     add     rax, QWmaxI64P1
 Return:
     ret
@@ -280,7 +273,7 @@ D80divI32 PROC
     fstp    tbyte ptr[rcx]                     ; pop to dst
     ret
 D80divI32 ENDP
-;void D80addUI32(Double80 &dst, UINT   x);
+;void D80addUI32(Double80 &dst, UINT x);
 D80addUI32 PROC
     fld      tbyte ptr[rcx]                    ; load dst
     fildUI32 rdx                               ; load x
@@ -288,7 +281,7 @@ D80addUI32 PROC
     fstp     tbyte ptr[rcx]                    ; pop to dst
     ret
 D80addUI32 ENDP
-;void D80subUI32(Double80 &dst, UINT   x);
+;void D80subUI32(Double80 &dst, UINT x);
 D80subUI32 PROC
     fld      tbyte ptr[rcx]                    ; load dst
     fildUI32 rdx                               ; load x
@@ -296,7 +289,7 @@ D80subUI32 PROC
     fstp     tbyte ptr[rcx]                    ; pop to dst
     ret
 D80subUI32 ENDP
-;void D80mulUI32(Double80 &dst, UINT   x);
+;void D80mulUI32(Double80 &dst, UINT x);
 D80mulUI32 PROC
     fld      tbyte ptr[rcx]                    ; load dst
     fildUI32 rdx                               ; load x
@@ -304,7 +297,7 @@ D80mulUI32 PROC
     fstp     tbyte ptr[rcx]                    ; pop to dst
     ret
 D80mulUI32 ENDP
-;void D80divUI32(Double80 &dst, UINT   x);
+;void D80divUI32(Double80 &dst, UINT x);
 D80divUI32 PROC
     fld      tbyte ptr[rcx]                    ; load dst
     fildUI32 rdx                               ; load x
@@ -312,7 +305,7 @@ D80divUI32 PROC
     fstp     tbyte ptr[rcx]                    ; pop to dst
     ret
 D80divUI32 ENDP
-;void D80addI64(Double80 &dst, INT64  &x);
+;void D80addI64(Double80 &dst, INT64 &x);
 D80addI64 PROC
     fld     tbyte ptr[rcx]                     ; load dst
     fild    QWORD ptr[rdx]                     ; load x
@@ -320,7 +313,7 @@ D80addI64 PROC
     fstp    tbyte ptr[rcx]                     ; pop to dst
     ret
 D80addI64 ENDP
-;void D80subI64(Double80 &dst, INT64  &x);
+;void D80subI64(Double80 &dst, INT64 &x);
 D80subI64 PROC
     fld     tbyte ptr[rcx]                     ; load dst
     fild    QWORD ptr[rdx]                     ; load x
@@ -328,7 +321,7 @@ D80subI64 PROC
     fstp    tbyte ptr[rcx]                     ; pop to dst
     ret
 D80subI64 ENDP
-;void D80mulI64(Double80 &dst, INT64  &x);
+;void D80mulI64(Double80 &dst, INT64 &x);
 D80mulI64 PROC
     fld     tbyte ptr[rcx]                     ; load dst
     fild    QWORD ptr[rdx]                     ; load x
@@ -336,7 +329,7 @@ D80mulI64 PROC
     fstp    tbyte ptr[rcx]                     ; pop to dst
     ret
 D80mulI64 ENDP
-;void D80divI64(Double80 &dst, INT64  &x);
+;void D80divI64(Double80 &dst, INT64 &x);
 D80divI64 PROC
     fld     tbyte ptr[rcx]                     ; load dst
     fild    QWORD ptr[rdx]                     ; load x
@@ -376,28 +369,28 @@ D80divUI64 PROC
     fstp     tbyte ptr[rcx]                    ; pop to dst
     ret
 D80divUI64 ENDP
-;void D80addFloat(Double80 &dst, float  &x);
+;void D80addFloat(Double80 &dst, float &x);
 D80addFloat PROC
     fld     tbyte ptr[rcx]                     ; load dst
     fadd    DWORD ptr[rdx]                     ; add  x
     fstp    tbyte ptr[rcx]                     ; pop to dst
     ret
 D80addFloat ENDP
-;void D80subFloat(Double80 &dst, float  &x);
+;void D80subFloat(Double80 &dst, float &x);
 D80subFloat PROC
     fld     tbyte ptr[rcx]                     ; load dst
     fsub    DWORD ptr[rdx]                     ; sub  x
     fstp    tbyte ptr[rcx]                     ; pop to dst
     ret
 D80subFloat ENDP
-;void D80mulFloat(Double80 &dst, float  &x);
+;void D80mulFloat(Double80 &dst, float &x);
 D80mulFloat PROC
     fld     tbyte ptr[rcx]                     ; load dst
     fmul    DWORD ptr[rdx]                     ; mul  x
     fstp    tbyte ptr[rcx]                     ; pop to dst
     ret
 D80mulFloat ENDP
-;void D80divFloat(Double80 &dst, float  &x);
+;void D80divFloat(Double80 &dst, float &x);
 D80divFloat PROC
     fld     tbyte ptr[rcx]                     ; load dst
     fdiv    DWORD ptr[rdx]                     ; div  x
