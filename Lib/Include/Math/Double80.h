@@ -143,78 +143,78 @@ class Double80;
 
 #ifdef IS64BIT
 extern "C" {
-void D80consI32(        Double80 &s  , const long     &x  );
-void D80consUI32(       Double80 &s  , const ULONG     x  );
-void D80consI64(        Double80 &s  , const INT64    &x  );
-void D80consUI64(       Double80 &s  , const UINT64    x  );
-void D80consFloat(      Double80 &s  , float          &x  );
-void D80consDouble(     Double80 &s  , const double   &x  );
-void D80ToI32(          long     &dst, const Double80 &src);
-void D80ToUI32(         ULONG    &dst, const Double80 &src);
-void D80ToI64(          INT64    &dst, const Double80 &src);
-void D80ToUI64(         UINT64   &dst, const Double80 &src);
-void D80ToFloat(        float    &dst, const Double80 &src);
-void D80ToDouble(       double   &dst, const Double80 &src);
-int  D80cmp(            const Double80 &x, const Double80 &y);
-int  D80isZero(         const Double80 &x);
-void D80add(            Double80 &dst, const Double80 &x);
-void D80sub(            Double80 &dst, const Double80 &x);
-void D80mul(            Double80 &dst, const Double80 &x);
-void D80div(            Double80 &dst, const Double80 &x);
-void D80rem(            Double80 &dst, const Double80 &x);
-void D80neg(            Double80 &x);
-void D80addI32(         Double80 &dst, int    &x);
-void D80subI32(         Double80 &dst, int    &x);
-void D80mulI32(         Double80 &dst, int    &x);
-void D80divI32(         Double80 &dst, int    &x);
-void D80addUI32(        Double80 &dst, UINT    x);
-void D80subUI32(        Double80 &dst, UINT    x);
-void D80mulUI32(        Double80 &dst, UINT    x);
-void D80divUI32(        Double80 &dst, UINT    x);
-void D80addI64(         Double80 &dst, INT64  &x);
-void D80subI64(         Double80 &dst, INT64  &x);
-void D80mulI64(         Double80 &dst, INT64  &x);
-void D80divI64(         Double80 &dst, INT64  &x);
-void D80addUI64(        Double80 &dst, UINT64  x);
-void D80subUI64(        Double80 &dst, UINT64  x);
-void D80mulUI64(        Double80 &dst, UINT64  x);
-void D80divUI64(        Double80 &dst, UINT64  x);
-void D80addFloat(       Double80 &dst, float  &x);
-void D80subFloat(       Double80 &dst, float  &x);
-void D80mulFloat(       Double80 &dst, float  &x);
-void D80divFloat(       Double80 &dst, float  &x);
-void D80addDouble(      Double80 &dst, double &x);
-void D80subDouble(      Double80 &dst, double &x);
-void D80mulDouble(      Double80 &dst, double &x);
-void D80divDouble(      Double80 &dst, double &x);
-void D80inc(            Double80 &x);
-void D80dec(            Double80 &x);
-void D80getPi(          Double80 &dst);
-void D80getEps(         Double80 &dst);
-void D80getMin(         Double80 &dst);
-void D80getMax(         Double80 &dst);
-int  D80getExpo2(       const Double80 &x);
-int  D80getExpo10(      const Double80 &x);
-void D80fabs(           Double80 &x);
-void D80sqr(            Double80 &x);
-void D80sqrt(           Double80 &x);
-void D80sin(            Double80 &x);
-void D80cos(            Double80 &x);
-void D80tan(            Double80 &x);
-void D80atan(           Double80 &x);
-void D80atan2(          Double80 &y, const Double80 &x);
-void D80sincos(         Double80 &c, Double80       &s); // inout is c, out s
-void D80exp(            Double80 &x);
-void D80log(            Double80 &x);
-void D80log10(          Double80 &x);
-void D80log2(           Double80 &x);
-void D80pow(            Double80 &x, const Double80 &y); // x = pow(x,y)
-void D80pow10(          Double80 &x);
-void D80pow2(           Double80 &x);
-void D80floor(          Double80 &x);
-void D80ceil(           Double80 &x);
-void D80ToBCD(BYTE bcd[10], const Double80 &src);
-void D80ToBCDAutoScale(BYTE bcd[10], const Double80 &x, int &expo10);
+void   D80consI32(        Double80 &s  , const long     &x  );
+void   D80consUI32(       Double80 &s  , const ULONG     x  );
+void   D80consI64(        Double80 &s  , const INT64    &x  );
+void   D80consUI64(       Double80 &s  , const UINT64    x  );
+void   D80consFloat(      Double80 &s  , float          &x  );
+void   D80consDouble(     Double80 &s  , const double   &x  );
+long   D80ToI32(          const Double80 &x);
+ULONG  D80ToUI32(         const Double80 &x);
+INT64  D80ToI64(          const Double80 &x);
+UINT64 D80ToUI64(         const Double80 &x);
+float  D80ToFloat(        const Double80 &x);
+double D80ToDouble(       const Double80 &x);
+int    D80cmp(            const Double80 &x, const Double80 &y);
+int    D80isZero(         const Double80 &x);
+void   D80add(            Double80 &dst, const Double80 &x);
+void   D80sub(            Double80 &dst, const Double80 &x);
+void   D80mul(            Double80 &dst, const Double80 &x);
+void   D80div(            Double80 &dst, const Double80 &x);
+void   D80rem(            Double80 &dst, const Double80 &x);
+void   D80neg(            Double80 &x);
+void   D80addI32(         Double80 &dst, int    &x);
+void   D80subI32(         Double80 &dst, int    &x);
+void   D80mulI32(         Double80 &dst, int    &x);
+void   D80divI32(         Double80 &dst, int    &x);
+void   D80addUI32(        Double80 &dst, UINT    x);
+void   D80subUI32(        Double80 &dst, UINT    x);
+void   D80mulUI32(        Double80 &dst, UINT    x);
+void   D80divUI32(        Double80 &dst, UINT    x);
+void   D80addI64(         Double80 &dst, INT64  &x);
+void   D80subI64(         Double80 &dst, INT64  &x);
+void   D80mulI64(         Double80 &dst, INT64  &x);
+void   D80divI64(         Double80 &dst, INT64  &x);
+void   D80addUI64(        Double80 &dst, UINT64  x);
+void   D80subUI64(        Double80 &dst, UINT64  x);
+void   D80mulUI64(        Double80 &dst, UINT64  x);
+void   D80divUI64(        Double80 &dst, UINT64  x);
+void   D80addFloat(       Double80 &dst, float  &x);
+void   D80subFloat(       Double80 &dst, float  &x);
+void   D80mulFloat(       Double80 &dst, float  &x);
+void   D80divFloat(       Double80 &dst, float  &x);
+void   D80addDouble(      Double80 &dst, double &x);
+void   D80subDouble(      Double80 &dst, double &x);
+void   D80mulDouble(      Double80 &dst, double &x);
+void   D80divDouble(      Double80 &dst, double &x);
+void   D80inc(            Double80 &x);
+void   D80dec(            Double80 &x);
+void   D80getPi(          Double80 &dst);
+void   D80getEps(         Double80 &dst);
+void   D80getMin(         Double80 &dst);
+void   D80getMax(         Double80 &dst);
+int    D80getExpo2(       const Double80 &x);
+int    D80getExpo10(      const Double80 &x);
+void   D80fabs(           Double80 &x);
+void   D80sqr(            Double80 &x);
+void   D80sqrt(           Double80 &x);
+void   D80sin(            Double80 &x);
+void   D80cos(            Double80 &x);
+void   D80tan(            Double80 &x);
+void   D80atan(           Double80 &x);
+void   D80atan2(          Double80 &y, const Double80 &x);
+void   D80sincos(         Double80 &c, Double80       &s); // inout is c, out s
+void   D80exp(            Double80 &x);
+void   D80log(            Double80 &x);
+void   D80log10(          Double80 &x);
+void   D80log2(           Double80 &x);
+void   D80pow(            Double80 &x, const Double80 &y); // x = pow(x,y)
+void   D80pow10(          Double80 &x);
+void   D80pow2(           Double80 &x);
+void   D80floor(          Double80 &x);
+void   D80ceil(           Double80 &x);
+void   D80ToBCD(BYTE bcd[10], const Double80 &src);
+void   D80ToBCDAutoScale(BYTE bcd[10], const Double80 &x, int &expo10);
 }
 #endif // IS64BIT
 
@@ -889,39 +889,27 @@ public:
 #else // !IS32BIT (ie IS64BIT)
 
   friend inline long getLong(const Double80 &x) {
-    long tmp;
-    D80ToI32(tmp, x);
-    return tmp;
+    return D80ToI32(x);
   }
 
   friend inline ULONG getUlong(const Double80 &x) {
-    ULONG tmp;
-    D80ToUI32(tmp, x);
-    return tmp;
+    return D80ToUI32(x);
   }
 
   friend inline INT64 getInt64(const Double80 &x) {
-    INT64 tmp;
-    D80ToI64(tmp, x);
-    return tmp;
+    return D80ToI64(x);
   }
 
   friend inline UINT64 getUint64(const Double80 &x) {
-    UINT64 tmp;
-    D80ToUI64(tmp, x);
-    return tmp;
+    return D80ToUI64(x);
   }
 
   friend inline float getFloat(const Double80 &x) {
-    float tmp;
-    D80ToFloat(tmp, x);
-    return tmp;
+    return D80ToFloat(x);
   }
 
   friend inline double getDouble(const Double80 &x) {
-    double tmp;
-    D80ToDouble(tmp, x);
-    return tmp;
+    return D80ToDouble(x);
   }
 
   static inline int getExpo2(const Double80 &x) {

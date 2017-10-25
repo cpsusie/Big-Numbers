@@ -38,7 +38,7 @@ namespace TestDouble80 {
   static void testFunction(const String &name, Double80(*f80)(const Double80 &), double(*f64)(double), double low, double high) {
     double maxRelativeError = 0;
     const double step = (high - low) / 10;
-    for (double x64 = low; x64 <= high; x64 += step) {
+    for(double x64 = low; x64 <= high; x64 += step) {
       const double y64 = f64(x64);
 
       const Double80 x80 = x64;
@@ -46,7 +46,7 @@ namespace TestDouble80 {
 
       const double relativeError = getRelativeError(y64, y80);
 
-      if (x64 != getDouble(x80) || relativeError > EPS) {
+      if(x64 != getDouble(x80) || relativeError > EPS) {
         LOG log;
         log  << _T("Function ") << name << _T(" failed.") << endl
              << _T("(x64,y64):(") << dparam(16) << x64 << _T(",") << dparam(16) << y64 << _T(").") << endl
@@ -55,7 +55,7 @@ namespace TestDouble80 {
              << _T("RelativeError:") << dparam(16) << relativeError << endl;
         verify(false);
       }
-      if (relativeError > maxRelativeError) {
+      if(relativeError > maxRelativeError) {
         maxRelativeError = relativeError;
       }
     }
@@ -71,7 +71,7 @@ namespace TestDouble80 {
   }
 
   static double fraction(double x) {
-    if (x < 0) {
+    if(x < 0) {
       return -fraction(-x);
     } else {
       return x - floor(x);
@@ -88,14 +88,14 @@ namespace TestDouble80 {
 
   static void checkResult(double x64, Double80 x80, TCHAR *op, double tolerance = EPS) {
     const double relativeError = getRelativeError(x64, x80);
-    if (relativeError > tolerance) {
+    if(relativeError > tolerance) {
       OUTPUT(_T("operator %s failed. x64=%20.16le x80=%s. Relative error:%le"), op, x64, toString(x80).cstr(), relativeError);
       verify(false);
     }
   }
 
   static void checkResult(double x64, double y64, bool cmp64, Double80 x80, Double80 y80, bool cmp80, TCHAR *relation) {
-    if (cmp64 != cmp80) {
+    if(cmp64 != cmp80) {
       OUTPUT(_T("Relation %s failed. %20.16le %s %20.16le = %s. %s %s %s = %s")
               , relation
               , x64, relation, y64, boolToStr(cmp64)
@@ -289,12 +289,12 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
       s80 = toString(d80, 0, 0, ios::fixed);
       verify(substr(s64, 0, 17) == substr(s80, 0, 17));
 
-      for (int i = 1; i >= -1; i -= 2) {
-        for (double d64 = 1e-100*i; fabs(d64) < 1e100; d64 *= 1.1) {
+      for(int i = 1; i >= -1; i -= 2) {
+        for(double d64 = 1e-100*i; fabs(d64) < 1e100; d64 *= 1.1) {
           s64 = toString(d64, 13, 21, ios::scientific);
           d80 = d64;
           s80 = toString(d80, 13, 21, ios::scientific);
-          if (s64 != s80) {
+          if(s64 != s80) {
             OUTPUT(_T("d64:%23.15le -> \"%s\""), d64, s64.cstr());
             OUTPUT(_T("s80:\"%s\" toString(d80,18):\"%s\"\n"), s80.cstr(), toString(d80, 18, 0, ios::scientific).cstr());
           }
@@ -314,7 +314,7 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
 
       const double relativeError = getRelativeError(y64, y80);
 
-      if (x64 != getDouble(x80) || relativeError > EPS) {
+      if(x64 != getDouble(x80) || relativeError > EPS) {
         OUTPUT(_T("Function:%s failed"), _T("round"));
         OUTPUT(_T("x64 - getDouble(x80):%le"), x64 - getDouble(x80));
         OUTPUT(_T("y64 - getDouble(y80):%le"), y64 - getDouble(y80));
@@ -328,7 +328,7 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
       const double startTime = getProcessTime();
       const Double80 stepFactor = 1.0012345;
       int count = 0;
-      for (Double80 x = Double80::DBL80_MIN; !isNan(x); x *= stepFactor) {
+      for(Double80 x = Double80::DBL80_MIN; !isNan(x); x *= stepFactor) {
         const int d = Double80::getExpo10(x);
         count++;
       }
@@ -394,7 +394,7 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
       const double startTime = getProcessTime();
       const Double80 stepFactor = 1.012345;
       int count = 0;
-      for (Double80 x = Double80::DBL80_MIN; !isNan(x); x *= stepFactor) {
+      for(Double80 x = Double80::DBL80_MIN; !isNan(x); x *= stepFactor) {
         String s = x.toString();
         count++;
       }
@@ -413,13 +413,13 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
       };
 
       double maxRelativeError = 0;
-      for (int i = 0; i < ARRAYSIZE(testData); i++) {
+      for(int i = 0; i < ARRAYSIZE(testData); i++) {
         const double &x = testData[i];
-        for (int dec = -21; dec < 21; dec++) {
+        for(int dec = -21; dec < 21; dec++) {
           double t = x * pow(10, dec);
-          for (int j = 0; j < 10; j++, t *= 10) {
+          for(int j = 0; j < 10; j++, t *= 10) {
             const double error = testRound(t, dec);
-            if (error > maxRelativeError) {
+            if(error > maxRelativeError) {
               maxRelativeError = error;
             }
           }
@@ -432,7 +432,7 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
       BYTE b[10];
       (*(UINT64*)b) = significand;
       (*(USHORT*)(&b[8])) = (USHORT)(((exponent + 0x3fff) & 0x7fff));
-      if (!positive) {
+      if(!positive) {
         b[9] |= 0x80;
       }
       return Double80(b);
@@ -441,7 +441,7 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
 #define SIGNIFICAND(d) ((*((UINT64*)(&(d)))) & 0xffffffffffffffffui64)
 
     TEST_METHOD(Double80FindEpsilon) {
-      for (int i = 1; i < 1024; i *= 2) {
+      for(int i = 1; i < 1024; i *= 2) {
         Double80 a            = 10 * i;
         UINT64   aSignificand = SIGNIFICAND(a);
         int      aExponent    = Double80::getExpo2(a);
@@ -456,7 +456,7 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
       UINT64       epsP1Significand = SIGNIFICAND(epsP1);
       int          epsP1Exponent    = Double80::getExpo2(epsP1);
 
-      Double80     eps = epsP1 - Double80::one;
+      Double80     eps              = epsP1 - Double80::one;
       UINT64       testSignificand  = SIGNIFICAND(eps);
       int          testExponent     = Double80::getExpo2(eps);
       bool         epsPositive      = eps.isPositive();
@@ -488,7 +488,7 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
       StreamParameters param(-1);
       size_t i;
       Array<Double80> list;
-      for (i = 0; i < count; i++) {
+      for(i = 0; i < count; i++) {
         const Double80 x = randDouble80(-1, 1);
         out << param << x << endl;
         list.add(x);
@@ -497,16 +497,16 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
 
       tifstream in(fileName);
       const Double80 maxTolerance = 6e-17;
-      for (i = 0; i < list.size(); i++) {
+      for(i = 0; i < list.size(); i++) {
         const Double80  &expected = list[i];
         Double80 x;
         in >> x;
-        if (in.bad()) {
+        if(in.bad()) {
           OUTPUT(_T("Read Double80 line %d failed"), i);
           verify(false);
         }
         const Double80 relError = getRelativeError(x, expected);
-        if (relError > maxTolerance) {
+        if(relError > maxTolerance) {
           OUTPUT(_T("Read Double80 at line %d = %s != expected (= %s"), i, toString(x, 18).cstr(), toString(expected, 18).cstr());
           OUTPUT(_T("Relative error:%s"), toString(relError).cstr());
           verify(false);
@@ -520,7 +520,7 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
       //  USHORT cw = FPU::getControlWord();
       //  printf("FPU ctrlWord:%04x (%s)\n", cw, sprintbin(cw).cstr());
 
-      for (double x = 0; x < 10; x += 0.1) {
+      for(double x = 0; x < 10; x += 0.1) {
 
         const double d64c1 = cos(x);
         const double d64s1 = sin(x);
@@ -539,7 +539,7 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
         );
         */
 
-        const Double80 d80 = x;
+        const Double80 d80   = x;
         const Double80 d80c1 = cos(d80);
         const Double80 d80s1 = sin(d80);
 
@@ -567,9 +567,9 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
 
       USHORT cw1 = FPU::getStatusWord();
 
-      Double80 one = 1;
+      Double80 one        = 1;
       Double80 onePlusEps = one + Double80::DBL80_EPSILON;
-      Double80 diff = onePlusEps - one;
+      Double80 diff       = onePlusEps - one;
 
       USHORT cw2 = FPU::getStatusWord();
 
@@ -610,14 +610,14 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
       hashCodes.add(dul32.hashCode());
 
       INT64          i64max = _I64_MAX;
-      Double80         di64 = i64max;
-      INT64          ri64 = getInt64(di64);
+      Double80       di64   = i64max;
+      INT64          ri64   = getInt64(di64);
 
       verify(ri64 == i64max);
 
       hashCodes.add(di64.hashCode());
 
-      INT64          i64min = _I64_MIN;
+      INT64 i64min = _I64_MIN;
       di64 = i64min;
       ri64 = getUint64(di64);
 
@@ -625,9 +625,9 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
 
       hashCodes.add(di64.hashCode());
 
-      UINT64 ui64max = _UI64_MAX;
-      Double80         dui64 = ui64max;
-      UINT64 rui64 = getUint64(dui64);
+      UINT64   ui64max = _UI64_MAX;
+      Double80 dui64   = ui64max;
+      UINT64   rui64   = getUint64(dui64);
 
       verify(rui64 == ui64max);
 
@@ -642,32 +642,32 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
 
       hashCodes.add(dui64.hashCode());
 
-      for (size_t i = 0; i < hashCodes.size(); i++) {
-        for (size_t j = 0; j < i; j++) {
+      for(size_t i = 0; i < hashCodes.size(); i++) {
+        for(size_t j = 0; j < i; j++) {
           verify(hashCodes[i] != hashCodes[j]);
         }
       }
 
-      for (double x = 1e-100; x < 1e100; x *= 1.1) {
-        Double80 d80(x);
-        double y = getDouble(d80);
+      for(double x = 1e-100; x < 1e100; x *= 1.1) {
+        const Double80 d80(x);
+        const double   y = getDouble(d80);
         verify(y == x);
       }
 
-      for (double x = -1e-100; x > -1e100; x *= 1.1) {
-        Double80 d80(x);
-        double y = getDouble(d80);
+      for(double x = -1e-100; x > -1e100; x *= 1.1) {
+        const Double80 d80(x);
+        const double   y = getDouble(d80);
         verify(y == x);
       }
 
       Double80 d80;
-      for (d80 = -1000; d80 < 1000; ++d80);
+      for(d80 = -1000; d80 < 1000; ++d80);
       verify(d80 == 1000);
-      for (d80 = 1000; d80 > -1000; --d80);
+      for(d80 = 1000; d80 > -1000; --d80);
       verify(d80 == -1000);
-      for (d80 = -1000; d80 < 1000; d80++);
+      for(d80 = -1000; d80 < 1000; d80++);
       verify(d80 == 1000);
-      for (d80 = 1000; d80 > -1000; d80--);
+      for(d80 = 1000; d80 > -1000; d80--);
       verify(d80 == -1000);
       testFunction("fmod", fmod, fmod, -60, 60, 1.2, 10);
       testFunction("fmod", fmod, fmod, -2.3, 2.7, -1.2, 1);
@@ -757,14 +757,14 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
 
       verify(FPU::getStackHeight() == 0);
 #ifdef IS32BIT
-      for (int i = 1; i <= 8; i++) {
+      for(int i = 1; i <= 8; i++) {
         __asm {
           fld x
         }
         verify(FPU::getStackHeight() == i);
       }
 
-      for (int i = 7; i >= 0; i--) {
+      for(int i = 7; i >= 0; i--) {
         __asm {
           fstp x
         }
