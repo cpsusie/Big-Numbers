@@ -45,61 +45,61 @@ private:
   FPU() {} // Cannot be instatiated
 public:
 #ifdef IS32BIT
-  static inline void   init() {
+  static inline void      init() {
     __asm {
       fninit
     }
   }
-  static inline USHORT getStatusWord() {
+  static inline USHORT    getStatusWord() {
     USHORT sw;
     __asm {
       fstsw sw
     }
     return sw;
   }
-  static inline USHORT getControlWord() {
+  static inline USHORT    getControlWord() {
     USHORT cw;
     __asm {
       fnstcw cw
     }
     return cw;
   }
-  static inline void setControlWord(USHORT flags) {
+  static inline void      setControlWord(USHORT flags) {
     __asm {
       fldcw flags
     }
   }
-  static inline USHORT getTagsWord() {
+  static inline USHORT    getTagsWord() {
     USHORT buffer[14];
     __asm {
       fstenv buffer
     }
     return buffer[4];
   }
-  static inline void clearExceptions() {
+  static inline void      clearExceptions() {
     __asm {
       fclex
     }
   }
 
 #else
-  static inline void    init() {
+  static inline void      init() {
     FPUinit();
   }
-  static inline USHORT   getStatusWord() {
+  static inline USHORT    getStatusWord() {
     WORD tmp;
     FPUgetStatusWord(tmp);
     return tmp;
   }
-  static inline USHORT   getControlWord() {
+  static inline USHORT    getControlWord() {
     WORD tmp;
     FPUgetControlWord(tmp);
     return tmp;
   }
-  static inline void     setControlWord(USHORT flags) {
+  static inline void      setControlWord(USHORT flags) {
     FPUsetControlWord(flags);
   }
-  static inline USHORT   getTagsWord() {
+  static inline USHORT    getTagsWord() {
     WORD buffer[14];
     FPUgetTagsWord(buffer);
     return buffer[4];
@@ -127,13 +127,13 @@ public:
     const int TOP = ((getStatusWord() >> 11) & 7);
     return (TOP != 0) ? (8 - TOP) : (getTagsWord() == 0xffff) ? 0 : 8;
   }
-  static inline bool             stackOverflow() {
+  static inline bool      stackOverflow() {
     return (getStatusWord() & 0x240) == 0x240;
   }
-  static inline bool             stackUnderflow() {
+  static inline bool      stackUnderflow() {
     return (getStatusWord() & 0x240) == 0x040;
   }
-  static inline bool             stackFault() {
+  static inline bool      stackFault() {
     return (getStatusWord() & 0x40) == 0x40;
   }
   static void             enableExceptions(bool enable, USHORT flags);
@@ -143,19 +143,25 @@ class Double80;
 
 #ifdef IS64BIT
 extern "C" {
-void   D80consI32(        Double80 &s  , const long     &x  );
-void   D80consUI32(       Double80 &s  , const ULONG     x  );
+void   D80consI32(        Double80 &s  , const int      &x  );
+void   D80consUI32(       Double80 &s  , UINT            x  );
 void   D80consI64(        Double80 &s  , const INT64    &x  );
-void   D80consUI64(       Double80 &s  , const UINT64    x  );
-void   D80consFloat(      Double80 &s  , float          &x  );
+void   D80consUI64(       Double80 &s  , UINT64          x  );
+void   D80consFloat(      Double80 &s  , const float    &x  );
 void   D80consDouble(     Double80 &s  , const double   &x  );
-long   D80ToI32(          const Double80 &x);
-ULONG  D80ToUI32(         const Double80 &x);
+int    D80ToI32(          const Double80 &x);
+UINT   D80ToUI32(         const Double80 &x);
 INT64  D80ToI64(          const Double80 &x);
 UINT64 D80ToUI64(         const Double80 &x);
 float  D80ToFloat(        const Double80 &x);
 double D80ToDouble(       const Double80 &x);
 int    D80cmp(            const Double80 &x, const Double80 &y);
+int    D80cmpI32(         const Double80 &x, const int      &y);
+int    D80cmpUI32(        const Double80 &x, UINT            y);
+int    D80cmpI64(         const Double80 &x, const INT64    &y);
+int    D80cmpUI64(        const Double80 &x, UINT64          y);
+int    D80cmpFloat(       const Double80 &x, const float    &y);
+int    D80cmpDouble(      const Double80 &x, const double   &y);
 int    D80isZero(         const Double80 &x);
 void   D80add(            Double80 &dst, const Double80 &x);
 void   D80sub(            Double80 &dst, const Double80 &x);
@@ -163,30 +169,30 @@ void   D80mul(            Double80 &dst, const Double80 &x);
 void   D80div(            Double80 &dst, const Double80 &x);
 void   D80rem(            Double80 &dst, const Double80 &x);
 void   D80neg(            Double80 &x);
-void   D80addI32(         Double80 &dst, int    &x);
-void   D80subI32(         Double80 &dst, int    &x);
-void   D80mulI32(         Double80 &dst, int    &x);
-void   D80divI32(         Double80 &dst, int    &x);
-void   D80addUI32(        Double80 &dst, UINT    x);
-void   D80subUI32(        Double80 &dst, UINT    x);
-void   D80mulUI32(        Double80 &dst, UINT    x);
-void   D80divUI32(        Double80 &dst, UINT    x);
-void   D80addI64(         Double80 &dst, INT64  &x);
-void   D80subI64(         Double80 &dst, INT64  &x);
-void   D80mulI64(         Double80 &dst, INT64  &x);
-void   D80divI64(         Double80 &dst, INT64  &x);
-void   D80addUI64(        Double80 &dst, UINT64  x);
-void   D80subUI64(        Double80 &dst, UINT64  x);
-void   D80mulUI64(        Double80 &dst, UINT64  x);
-void   D80divUI64(        Double80 &dst, UINT64  x);
-void   D80addFloat(       Double80 &dst, float  &x);
-void   D80subFloat(       Double80 &dst, float  &x);
-void   D80mulFloat(       Double80 &dst, float  &x);
-void   D80divFloat(       Double80 &dst, float  &x);
-void   D80addDouble(      Double80 &dst, double &x);
-void   D80subDouble(      Double80 &dst, double &x);
-void   D80mulDouble(      Double80 &dst, double &x);
-void   D80divDouble(      Double80 &dst, double &x);
+void   D80addI32(         Double80 &dst, const int      &x);
+void   D80subI32(         Double80 &dst, const int      &x);
+void   D80mulI32(         Double80 &dst, const int      &x);
+void   D80divI32(         Double80 &dst, const int      &x);
+void   D80addUI32(        Double80 &dst, UINT            x);
+void   D80subUI32(        Double80 &dst, UINT            x);
+void   D80mulUI32(        Double80 &dst, UINT            x);
+void   D80divUI32(        Double80 &dst, UINT            x);
+void   D80addI64(         Double80 &dst, const INT64    &x);
+void   D80subI64(         Double80 &dst, const INT64    &x);
+void   D80mulI64(         Double80 &dst, const INT64    &x);
+void   D80divI64(         Double80 &dst, const INT64    &x);
+void   D80addUI64(        Double80 &dst, UINT64          x);
+void   D80subUI64(        Double80 &dst, UINT64          x);
+void   D80mulUI64(        Double80 &dst, UINT64          x);
+void   D80divUI64(        Double80 &dst, UINT64          x);
+void   D80addFloat(       Double80 &dst, const float    &x);
+void   D80subFloat(       Double80 &dst, const float    &x);
+void   D80mulFloat(       Double80 &dst, const float    &x);
+void   D80divFloat(       Double80 &dst, const float    &x);
+void   D80addDouble(      Double80 &dst, const double   &x);
+void   D80subDouble(      Double80 &dst, const double   &x);
+void   D80mulDouble(      Double80 &dst, const double   &x);
+void   D80divDouble(      Double80 &dst, const double   &x);
 void   D80inc(            Double80 &x);
 void   D80dec(            Double80 &x);
 void   D80getPi(          Double80 &dst);
@@ -253,23 +259,23 @@ public:
   inline Double80() {
   }
 
-  inline Double80(int x) {
-    *this = (Double80)(long)(x);
+  inline Double80(long x) {
+    *this = (Double80)(int)(x);
   }
 
-  inline Double80(UINT x) {
-    *this = (Double80)(ULONG)(x);
+  inline Double80(ULONG x) {
+    *this = (Double80)(UINT)(x);
   }
 
 #ifdef IS32BIT
-  inline Double80(long x) {
+  inline Double80(int x) {
     __asm {
       fild x
       mov eax, this
       fstp TBYTE PTR [eax]
     }
   }
-  Double80(ULONG x);
+  Double80(UINT x);
   inline Double80(INT64 x) {
     __asm {
       fild x
@@ -293,10 +299,10 @@ public:
     }
   }
 #else
-  inline Double80(long x) {
+  inline Double80(int x) {
     D80consI32(*this, x);
   }
-  inline Double80(ULONG x) {
+  inline Double80(UINT x) {
     D80consUI32(*this, x);
   }
   inline Double80(INT64 x) {
@@ -322,17 +328,17 @@ public:
     memcpy(&m_value,bytes,sizeof(m_value));
   }
 
-  inline friend int getInt(const Double80 &x) {
-    return getLong(x);
+  inline friend long getLong(const Double80 &x) {
+    return getInt(x);
   }
 
-  inline friend UINT getUint(const Double80 &x) {
-    return getUlong(x);
+  inline friend ULONG getUlong(const Double80 &x) {
+    return getUint(x);
   }
 
 #ifdef IS32BIT
-  friend long   getLong(  const Double80 &x);
-  friend ULONG  getUlong( const Double80 &x);
+  friend int    getInt(   const Double80 &x);
+  friend UINT   getUint(  const Double80 &x);
   friend INT64  getInt64( const Double80 &x);
   friend UINT64 getUint64(const Double80 &x);
   friend inline float getFloat(const Double80 &x) {
@@ -455,6 +461,10 @@ public:
     }
     return result;
   }
+  Double80 operator+(UINT x) const;
+  Double80 operator-(UINT x) const;
+  Double80 operator*(UINT x) const;
+  Double80 operator/(UINT x) const;
   inline Double80 operator+(long x) const {
     return *this + (int)x;
   }
@@ -466,6 +476,18 @@ public:
   }
   inline Double80 operator/(long x) const {
     return *this / (int)x;
+  }
+  inline Double80 operator+(ULONG x) const {
+    return *this + (UINT)x;
+  }
+  inline Double80 operator-(ULONG x) const {
+    return *this - (UINT)x;
+  }
+  inline Double80 operator*(ULONG x) const {
+    return *this * (UINT)x;
+  }
+  inline Double80 operator/(ULONG x) const {
+    return *this / (UINT)x;
   }
 
   inline Double80 operator+(INT64 x) const {
@@ -512,6 +534,11 @@ public:
     }
     return result;
   }
+
+  Double80 operator+(const UINT64 &) const;
+  Double80 operator-(const UINT64 &) const;
+  Double80 operator*(const UINT64 &) const;
+  Double80 operator/(const UINT64 &) const;
 
   inline Double80 operator+(float x) const {
     Double80 result;
@@ -595,27 +622,6 @@ public:
     return result;
   }
 
-  Double80 operator+(UINT   x) const;
-  Double80 operator-(UINT   x) const;
-  Double80 operator*(UINT   x) const;
-  Double80 operator/(UINT   x) const;
-  inline Double80 operator+(ULONG  x) const {
-    return *this + (UINT)x;
-  }
-  inline Double80 operator-(ULONG  x) const {
-    return *this - (UINT)x;
-  }
-  inline Double80 operator*(ULONG  x) const {
-    return *this * (UINT)x;
-  }
-  inline Double80 operator/(ULONG  x) const {
-    return *this / (UINT)x;
-  }
-  Double80 operator+(UINT64 x) const;
-  Double80 operator-(UINT64 x) const;
-  Double80 operator*(UINT64 x) const;
-  Double80 operator/(UINT64 x) const;
-
   inline Double80 &operator+=(const Double80 &x) {
     __asm {
       mov eax, this
@@ -696,17 +702,33 @@ public:
     }
     return *this;
   }
+  Double80 &operator+=(UINT x);
+  Double80 &operator-=(UINT x);
+  Double80 &operator*=(UINT x);
+  Double80 &operator/=(UINT x);
   inline Double80 &operator+=(long x) {
     return operator+=((int)x);
   }
-  inline Double80 &operator-=(long  x) {
+  inline Double80 &operator-=(long x) {
     return operator-=((int)x);
   }
-  inline Double80 &operator*=(long  x) {
+  inline Double80 &operator*=(long x) {
     return operator*=((int)x);
   }
-  inline Double80 &operator/=(long  x) {
+  inline Double80 &operator/=(long x) {
     return operator/=((int)x);
+  }
+  Double80 &operator+=(ULONG x) {
+    return operator+=((UINT)x);
+  }
+  Double80 &operator-=(ULONG x) {
+    return operator-=((UINT)x);
+  }
+  Double80 &operator*=(ULONG x) {
+    return operator*=((UINT)x);
+  }
+  Double80 &operator/=(ULONG x) {
+    return operator/=((UINT)x);
   }
   inline Double80 &operator+=(INT64 x) {
     __asm {
@@ -748,6 +770,10 @@ public:
     }
     return *this;
   }
+  Double80 &operator+=(const UINT64 &x);
+  Double80 &operator-=(const UINT64 &x);
+  Double80 &operator*=(const UINT64 &x);
+  Double80 &operator/=(const UINT64 &x);
   inline Double80 &operator+=(float x) {
     __asm {
       mov eax, this
@@ -820,26 +846,6 @@ public:
     }
     return *this;
   }
-  Double80 &operator+=(UINT   x);
-  Double80 &operator-=(UINT   x);
-  Double80 &operator*=(UINT   x);
-  Double80 &operator/=(UINT   x);
-  Double80 &operator+=(ULONG  x) {
-    return operator+=((UINT)x);
-  }
-  Double80 &operator-=(ULONG  x) {
-    return operator-=((UINT)x);
-  }
-  Double80 &operator*=(ULONG  x) {
-    return operator*=((UINT)x);
-  }
-  Double80 &operator/=(ULONG  x) {
-    return operator/=((UINT)x);
-  }
-  Double80 &operator+=(UINT64 x);
-  Double80 &operator-=(UINT64 x);
-  Double80 &operator*=(UINT64 x);
-  Double80 &operator/=(UINT64 x);
 
   inline Double80 &operator++() {   // prefix-form
     __asm {
@@ -886,13 +892,98 @@ public:
 
   bool isZero()     const;
 
+  bool operator==(const Double80 &x) const;
+  bool operator!=(const Double80 &x) const;
+  bool operator<=(const Double80 &x) const;
+  bool operator>=(const Double80 &x) const;
+  bool operator< (const Double80 &x) const;
+  bool operator> (const Double80 &x) const;
+
+  bool operator==(int             x) const;
+  bool operator!=(int             x) const;
+  bool operator<=(int             x) const;
+  bool operator>=(int             x) const;
+  bool operator< (int             x) const;
+  bool operator> (int             x) const;
+
+  bool operator==(UINT            x) const;
+  bool operator!=(UINT            x) const;
+  bool operator<=(UINT            x) const;
+  bool operator>=(UINT            x) const;
+  bool operator< (UINT            x) const;
+  bool operator> (UINT            x) const;
+
+  inline bool operator==(long     x) const {
+    return operator==((int)x);
+  }
+  inline bool operator!=(long     x) const {
+    return operator!=((int)x);
+  }
+  inline bool operator<=(long     x) const {
+    return operator<=((int)x);
+  }
+  inline bool operator>=(long     x) const {
+    return operator>=((int)x);
+  }
+  inline bool operator< (long     x) const {
+    return operator<((int)x);
+  }
+  inline bool operator> (long     x) const {
+    return operator>((int)x);
+  }
+  inline bool operator==(ULONG    x) const {
+    return operator==((UINT)x);
+  }
+  inline bool operator!=(ULONG    x) const {
+    return operator!=((UINT)x);
+  }
+  inline bool operator<=(ULONG    x) const {
+    return operator<=((UINT)x);
+  }
+  inline bool operator>=(ULONG    x) const {
+    return operator>=((UINT)x);
+  }
+  inline bool operator< (ULONG    x) const {
+    return operator<((UINT)x);
+  }
+  inline bool operator> (ULONG    x) const {
+    return operator>((UINT)x);
+  }
+  bool operator==(const INT64    &x) const;
+  bool operator!=(const INT64    &x) const;
+  bool operator<=(const INT64    &x) const;
+  bool operator>=(const INT64    &x) const;
+  bool operator< (const INT64    &x) const;
+  bool operator> (const INT64    &x) const;
+
+  bool operator==(const UINT64   &x) const;
+  bool operator!=(const UINT64   &x) const;
+  bool operator<=(const UINT64   &x) const;
+  bool operator>=(const UINT64   &x) const;
+  bool operator< (const UINT64   &x) const;
+  bool operator> (const UINT64   &x) const;
+
+  bool operator==(float           x) const;
+  bool operator!=(float           x) const;
+  bool operator<=(float           x) const;
+  bool operator>=(float           x) const;
+  bool operator< (float           x) const;
+  bool operator> (float           x) const;
+
+  bool operator==(const double   &x) const;
+  bool operator!=(const double   &x) const;
+  bool operator<=(const double   &x) const;
+  bool operator>=(const double   &x) const;
+  bool operator< (const double   &x) const;
+  bool operator> (const double   &x) const;
+
 #else // !IS32BIT (ie IS64BIT)
 
-  friend inline long getLong(const Double80 &x) {
+  friend inline int getInt(const Double80 &x) {
     return D80ToI32(x);
   }
 
-  friend inline ULONG getUlong(const Double80 &x) {
+  friend inline UINT getUint(const Double80 &x) {
     return D80ToUI32(x);
   }
 
@@ -966,26 +1057,7 @@ public:
     D80divI32(tmp, x);
     return tmp;
   }
-  inline Double80 operator+(long x) const {
-    Double80 tmp(*this);
-    D80addI32(tmp, (int&)x);
-    return tmp;
-  }
-  inline Double80 operator-(long x) const {
-    Double80 tmp(*this);
-    D80subI32(tmp, (int&)x);
-    return tmp;
-  }
-  inline Double80 operator*(long x) const {
-    Double80 tmp(*this);
-    D80mulI32(tmp, (int&)x);
-    return tmp;
-  }
-  inline Double80 operator/(long x) const {
-    Double80 tmp(*this);
-    D80divI32(tmp, (int&)x);
-    return tmp;
-  }
+
   inline Double80 operator+(UINT x) const {
     Double80 tmp(*this);
     D80addUI32(tmp, x);
@@ -1004,6 +1076,27 @@ public:
   inline Double80 operator/(UINT x) const {
     Double80 tmp(*this);
     D80divUI32(tmp, x);
+    return tmp;
+  }
+
+  inline Double80 operator+(long x) const {
+    Double80 tmp(*this);
+    D80addI32(tmp, (int&)x);
+    return tmp;
+  }
+  inline Double80 operator-(long x) const {
+    Double80 tmp(*this);
+    D80subI32(tmp, (int&)x);
+    return tmp;
+  }
+  inline Double80 operator*(long x) const {
+    Double80 tmp(*this);
+    D80mulI32(tmp, (int&)x);
+    return tmp;
+  }
+  inline Double80 operator/(long x) const {
+    Double80 tmp(*this);
+    D80divI32(tmp, (int&)x);
     return tmp;
   }
 
@@ -1145,22 +1238,6 @@ public:
     D80divI32(*this, x);
     return *this;
   }
-  inline Double80 &operator+=(long x) {
-    D80addI32(*this, (int&)x);
-    return *this;
-  }
-  inline Double80 &operator-=(long x) {
-    D80subI32(*this, (int&)x);
-    return *this;
-  }
-  inline Double80 &operator*=(long x) {
-    D80mulI32(*this, (int&)x);
-    return *this;
-  }
-  inline Double80 &operator/=(long x) {
-    D80divI32(*this, (int&)x);
-    return *this;
-  }
 
   inline Double80 &operator+=(UINT x) {
     D80addUI32(*this, x);
@@ -1176,6 +1253,23 @@ public:
   }
   inline Double80 &operator/=(UINT x) {
     D80divUI32(*this, x);
+    return *this;
+  }
+
+  inline Double80 &operator+=(long x) {
+    D80addI32(*this, (int&)x);
+    return *this;
+  }
+  inline Double80 &operator-=(long x) {
+    D80subI32(*this, (int&)x);
+    return *this;
+  }
+  inline Double80 &operator*=(long x) {
+    D80mulI32(*this, (int&)x);
+    return *this;
+  }
+  inline Double80 &operator/=(long x) {
+    D80divI32(*this, (int&)x);
     return *this;
   }
 
@@ -1287,6 +1381,177 @@ public:
     return D80isZero(*this) ? true : false;
   }
 
+  inline bool operator==(const Double80 &x) const {
+    return D80cmp(*this, x) == 0;
+  }
+  inline bool operator!=(const Double80 &x) const {
+    return D80cmp(*this, x) != 0;
+  }
+  inline bool operator<=(const Double80 &x) const {
+    return D80cmp(*this, x) <= 0;
+  }
+  inline bool operator>=(const Double80 &x) const {
+    return D80cmp(*this, x) >= 0;
+  }
+  inline bool operator< (const Double80 &x) const {
+    return D80cmp(*this, x) < 0;
+  }
+  inline bool operator> (const Double80 &x) const {
+    return D80cmp(*this, x) > 0;
+  }
+
+  inline bool operator==(const int &x) const {
+    return D80cmpI32(*this, x) == 0;
+  }
+  inline bool operator!=(const int &x) const {
+    return D80cmpI32(*this, x) != 0;
+  }
+  inline bool operator<=(const int &x) const {
+    return D80cmpI32(*this, x) <= 0;
+  }
+  inline bool operator>=(const int &x) const {
+    return D80cmpI32(*this, x) >= 0;
+  }
+  inline bool operator< (const int &x) const {
+    return D80cmpI32(*this, x) < 0;
+  }
+  inline bool operator> (const int &x) const {
+    return D80cmpI32(*this, x) > 0;
+  }
+
+  inline bool operator==(const UINT x) const {
+    return D80cmpUI32(*this, x) == 0;
+  }
+  inline bool operator!=(const UINT x) const {
+    return D80cmpUI32(*this, x) != 0;
+  }
+  inline bool operator<=(const UINT x) const {
+    return D80cmpUI32(*this, x) <= 0;
+  }
+  inline bool operator>=(const UINT x) const {
+    return D80cmpUI32(*this, x) >= 0;
+  }
+  inline bool operator< (const UINT x) const {
+    return D80cmpUI32(*this, x) < 0;
+  }
+  inline bool operator> (const UINT x) const {
+    return D80cmpUI32(*this, x) > 0;
+  }
+
+  inline bool operator==(const long &x) const {
+    return D80cmpI32(*this, (const int&)x) == 0;
+  }
+  inline bool operator!=(const long &x) const {
+    return D80cmpI32(*this, (const int&)x) != 0;
+  }
+  inline bool operator<=(const long &x) const {
+    return D80cmpI32(*this, (const int&)x) <= 0;
+  }
+  inline bool operator>=(const long &x) const {
+    return D80cmpI32(*this, (const int&)x) >= 0;
+  }
+  inline bool operator< (const long &x) const {
+    return D80cmpI32(*this, (const int&)x) < 0;
+  }
+  inline bool operator> (const long &x) const {
+    return D80cmpI32(*this, (const int&)x) > 0;
+  }
+
+  inline bool operator==(const ULONG x) const {
+    return D80cmpUI32(*this, x) == 0;
+  }
+  inline bool operator!=(const ULONG x) const {
+    return D80cmpUI32(*this, x) != 0;
+  }
+  inline bool operator<=(const ULONG x) const {
+    return D80cmpUI32(*this, x) <= 0;
+  }
+  inline bool operator>=(const ULONG x) const {
+    return D80cmpUI32(*this, x) >= 0;
+  }
+  inline bool operator< (const ULONG x) const {
+    return D80cmpUI32(*this, x) < 0;
+  }
+  inline bool operator> (const ULONG x) const {
+    return D80cmpUI32(*this, x) > 0;
+  }
+
+  inline bool operator==(const INT64 &x) const {
+    return D80cmpI64(*this, x) == 0;
+  }
+  inline bool operator!=(const INT64 &x) const {
+    return D80cmpI64(*this, x) != 0;
+  }
+  inline bool operator<=(const INT64 &x) const {
+    return D80cmpI64(*this, x) <= 0;
+  }
+  inline bool operator>=(const INT64 &x) const {
+    return D80cmpI64(*this, x) >= 0;
+  }
+  inline bool operator< (const INT64 &x) const {
+    return D80cmpI64(*this, x) < 0;
+  }
+  inline bool operator> (const INT64 &x) const {
+    return D80cmpI64(*this, x) > 0;
+  }
+
+  inline bool operator==(const UINT64 x) const {
+    return D80cmpUI64(*this, x) == 0;
+  }
+  inline bool operator!=(const UINT64 x) const {
+    return D80cmpUI64(*this, x) != 0;
+  }
+  inline bool operator<=(const UINT64 x) const {
+    return D80cmpUI64(*this, x) <= 0;
+  }
+  inline bool operator>=(const UINT64 x) const {
+    return D80cmpUI64(*this, x) >= 0;
+  }
+  inline bool operator< (const UINT64 x) const {
+    return D80cmpUI64(*this, x) < 0;
+  }
+  inline bool operator> (const UINT64 x) const {
+    return D80cmpUI64(*this, x) > 0;
+  }
+
+  inline bool operator==(const float &x) const {
+    return D80cmpFloat(*this, x) == 0;
+  }
+  inline bool operator!=(const float &x) const {
+    return D80cmpFloat(*this, x) != 0;
+  }
+  inline bool operator<=(const float &x) const {
+    return D80cmpFloat(*this, x) <= 0;
+  }
+  inline bool operator>=(const float &x) const {
+    return D80cmpFloat(*this, x) >= 0;
+  }
+  inline bool operator< (const float &x) const {
+    return D80cmpFloat(*this, x) < 0;
+  }
+  inline bool operator> (const float &x) const {
+    return D80cmpFloat(*this, x) > 0;
+  }
+
+  inline bool operator==(const double &x) const {
+    return D80cmpDouble(*this, x) == 0;
+  }
+  inline bool operator!=(const double &x) const {
+    return D80cmpDouble(*this, x) != 0;
+  }
+  inline bool operator<=(const double &x) const {
+    return D80cmpDouble(*this, x) <= 0;
+  }
+  inline bool operator>=(const double &x) const {
+    return D80cmpDouble(*this, x) >= 0;
+  }
+  inline bool operator< (const double &x) const {
+    return D80cmpDouble(*this, x) < 0;
+  }
+  inline bool operator> (const double &x) const {
+    return D80cmpDouble(*this, x) > 0;
+  }
+
 #endif // IS32BIT
 
   static TCHAR   *d80tot(TCHAR   *dst, const Double80 &x); // dst must point to memory with at least 26 free TCHAR
@@ -1331,13 +1596,6 @@ public:
 };
 
 #ifdef IS32BIT
-
-bool operator==(const Double80 &x, const Double80 &y);
-bool operator!=(const Double80 &x, const Double80 &y);
-bool operator<=(const Double80 &x, const Double80 &y);
-bool operator>=(const Double80 &x, const Double80 &y);
-bool operator< (const Double80 &x, const Double80 &y);
-bool operator> (const Double80 &x, const Double80 &y);
 
 inline Double80 fabs(const Double80 &x) {
   Double80 result;
@@ -1432,25 +1690,6 @@ inline Double80 ceil(const Double80 &x) {
 }
 
 #else // !IS32BIT (ie IS64BIT)
-
-inline bool operator==(const Double80 &x, const Double80 &y) {
-  return D80cmp(x, y) == 0;
-}
-inline bool operator!=(const Double80 &x, const Double80 &y) {
-  return D80cmp(x, y) != 0;
-}
-inline bool operator<=(const Double80 &x, const Double80 &y) {
-  return D80cmp(x, y) <= 0;
-}
-inline bool operator>=(const Double80 &x, const Double80 &y) {
-  return D80cmp(x, y) >= 0;
-}
-inline bool operator< (const Double80 &x, const Double80 &y) {
-  return D80cmp(x, y) < 0;
-}
-inline bool operator> (const Double80 &x, const Double80 &y) {
-  return D80cmp(x, y) > 0;
-}
 
 inline Double80 fabs(const Double80 &x) {
   Double80 tmp(x);

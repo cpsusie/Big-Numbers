@@ -116,6 +116,9 @@ namespace TestDouble80 {
     checkResult(s64,s80,_T(#op));               \
   }
 
+#define CHECKRELATION(r,y1,y2)                  \
+  checkResult(x64,(double)y1,x64 r (y1),x80,y2,x80 r (y2),_T(#r))
+
 #define testOperatorD80(   op,allowZero)    CHECKOPERATOR(op,allowZero,x64,            y64,x80,          y80)
 #define testOperatorI32(   op,allowZero)    CHECKOPERATOR(op,allowZero,x64,   (int    )y64,x80,  (int   )y64)
 #define testOperatorI64(   op,allowZero)    CHECKOPERATOR(op,allowZero,x64,   (INT64  )y64,x80,  (INT64 )y64)
@@ -149,6 +152,24 @@ namespace TestDouble80 {
 #define testAssignOpFloat( op,allowZero)    CHECKASSIGNOPERATOR(op,allowZero,            y32,          y32)
 #define testAssignOpDouble(op,allowZero)    CHECKASSIGNOPERATOR(op,allowZero,            y64,          y64)
 
+
+#define testRelationD80(   op)    CHECKRELATION(op,            y64,          y80)
+#define testRelationI32(   op)    CHECKRELATION(op,   (int    )y64,  (int   )y64)
+#define testRelationI64(   op)    CHECKRELATION(op,   (INT64  )y64,  (INT64 )y64)
+#define testRelationUI32(  op)  { CHECKRELATION(op,   (UINT32 )y64,  (UINT32)y64); \
+                                  const UINT32 _ui32 = (UINT32 )(y64+_I32_MAX);    \
+                                  CHECKRELATION(op,          _ui32,        _ui32); \
+                                }
+
+#define testRelationUI64(  op)  { CHECKRELATION(op,   (UINT64 )y64,  (UINT64)y64); \
+                                  const UINT64 _ui64 = (UINT64 )(y64+_I64_MAX);    \
+                                  CHECKRELATION(op,          _ui64,        _ui64); \
+                                }
+
+#define testRelationFloat( op)    CHECKRELATION(op,            y32,          y32)
+#define testRelationDouble(op)    CHECKRELATION(op,            y64,          y64)
+
+
 #define testOperator(op,allowZero)  \
   testOperatorD80(   op,allowZero); \
   testOperatorI32(   op,allowZero); \
@@ -167,7 +188,14 @@ namespace TestDouble80 {
   testAssignOpFloat( op,allowZero);      \
   testAssignOpDouble(op,allowZero);
 
-#define testRelation(      r )  checkResult(x64,y64,x64 r y64,x80,y80,x80 r y80,_T(#r))
+#define testRelation(r )  \
+  testRelationD80(   r ); \
+  testRelationI32(   r ); \
+  testRelationI64(   r ); \
+  testRelationUI32(  r ); \
+  testRelationUI64(  r ); \
+  testRelationFloat( r ); \
+  testRelationDouble(r );
 
 
 static void testFunction(const String &name, Double80(*f80)(const Double80 &, const Double80 &), double(*f64)(double, double), double low1, double high1, double low2, double high2) {
@@ -176,8 +204,7 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
     const double step2 = (high2 - low2) / 10;
     for(double x64 = low1; x64 <= high1; x64 += step1) {
       for(double y64 = low2; y64 <= high2; y64 += step2) {
-        double z64 = f64(x64, y64);
-
+        double         z64 = f64(x64, y64);
         const Double80 x80 = x64;
         const Double80 y80 = y64;
         const float    x32 = (float)x64;
@@ -214,8 +241,8 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
         testRelation(!= );
         testRelation(<= );
         testRelation(>= );
-        testRelation(<);
-        testRelation(>);
+        testRelation(<  );
+        testRelation(>  );
 
       }
     }

@@ -203,7 +203,7 @@ Double80::Double80(const char *s) {
 
 void Double80::init(const _TUCHAR *s) {
   bool isNegative = false;
-  Double80 result = zero;
+  Double80 result = 0;
   while(_istspace(*s)) {
     s++;
   }
@@ -214,14 +214,14 @@ void Double80::init(const _TUCHAR *s) {
     s++;
   }
   while(_istdigit(*s)) {
-    result *= ten;
-    result += digitLookupTable[*(s++) - _T('0')];
+    result *= 10;
+    result += (int)(*(s++) - _T('0'));
   }
   if(*s == _T('.') && _istdigit(s[1])) {
     s++;
-    Double80 decimals = zero;
-    for(Double80 p = oneTenth; isdigit(*s); p /= ten) {
-      decimals += p * digitLookupTable[*(s++) - _T('0')];
+    Double80 decimals = 0;
+    for(Double80 p = 0.1; _istdigit(*s); p /= 10) {
+      decimals += p * (int)(*(s++) - _T('0'));
     }
     result += decimals;
   }
@@ -252,7 +252,7 @@ void Double80::init(const _TUCHAR *s) {
 
 #ifdef IS32BIT
 
-Double80::Double80(ULONG x) {
+Double80::Double80(UINT x) {
   if(x > _I32_MAX) {
     loadBigUINT32(x);
     __asm {
@@ -329,9 +329,9 @@ Exit:
   return result;
 }
 
-long getLong(const Double80 &x) {
+int getInt(const Double80 &x) {
   const USHORT cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_TRUNCATE);
-  long result;
+  int result;
   __asm {
     mov eax, x
     fld TBYTE PTR [eax]
@@ -341,9 +341,9 @@ long getLong(const Double80 &x) {
   return result;
 }
 
-ULONG getUlong(const Double80 &x) {
+UINT getUint(const Double80 &x) {
   const USHORT cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_TRUNCATE);
-  ULONG result;
+  UINT result;
   if(x > maxi32) {
     __asm {
       mov eax, x
@@ -351,7 +351,7 @@ ULONG getUlong(const Double80 &x) {
       fsub _Dmaxi32P1
       fistp result
     }
-    result += (ULONG)_I32_MAX + 1;
+    result += (UINT)_I32_MAX + 1;
   } else if(x < -maxi32) {
     __asm {
       mov eax, x
@@ -360,7 +360,7 @@ ULONG getUlong(const Double80 &x) {
       fsub _Dmaxi32P1
       fistp result
     }
-    result = -(long)result;
+    result = -(int)result;
     result -= (UINT)_I32_MAX + 1;
   } else {
     __asm {
@@ -411,337 +411,897 @@ UINT64 getUint64(const Double80 &x) {
 }
 
 Double80 Double80::operator+(UINT x) const {
-  if(x > _I32_MAX) {
-    loadBigUINT32(x);
-    Double80 result;
-    __asm {
-      mov eax, this
-      fld TBYTE PTR [eax]
-      fadd
-      fstp result
-    }
-    return result;
-  } else {
+  if(x <= _I32_MAX) {
     return *this + (int)x;
   }
+  loadBigUINT32(x);
+  Double80 result;
+  __asm {
+    mov eax, this
+    fld TBYTE PTR [eax]
+    fadd
+    fstp result
+  }
+  return result;
 }
 Double80 Double80::operator-(UINT x) const {
-  if(x > _I32_MAX) {
-    loadBigUINT32(x);
-    Double80 result;
-    __asm {
-      mov eax, this
-      fld TBYTE PTR [eax]
-      fsubrp st(1),st
-      fstp result
-    }
-    return result;
-  } else {
+  if(x <= _I32_MAX) {
     return *this - (int)x;
   }
+  loadBigUINT32(x);
+  Double80 result;
+  __asm {
+    mov eax, this
+    fld TBYTE PTR [eax]
+    fsubrp st(1),st
+    fstp result
+  }
+  return result;
 }
 Double80 Double80::operator*(UINT x) const {
-  if(x > _I32_MAX) {
-    loadBigUINT32(x);
-    Double80 result;
-    __asm {
-      mov eax, this
-      fld TBYTE PTR [eax]
-      fmul
-      fstp result
-    }
-    return result;
-  } else {
+  if(x <= _I32_MAX) {
     return *this * (int)x;
   }
+  loadBigUINT32(x);
+  Double80 result;
+  __asm {
+    mov eax, this
+    fld TBYTE PTR [eax]
+    fmul
+    fstp result
+  }
+  return result;
 }
 Double80 Double80::operator/(UINT x) const {
-  if(x > _I32_MAX) {
-    loadBigUINT32(x);
-    Double80 result;
-    __asm {
-      mov eax, this
-      fld TBYTE PTR [eax]
-      fdivrp st(1),st
-      fstp result
-    }
-    return result;
-  } else {
+  if(x <= _I32_MAX) {
     return *this / (int)x;
   }
+  loadBigUINT32(x);
+  Double80 result;
+  __asm {
+    mov eax, this
+    fld TBYTE PTR [eax]
+    fdivrp st(1),st
+    fstp result
+  }
+  return result;
 }
-Double80 Double80::operator+(UINT64 x) const {
-  if(x > _I64_MAX) {
-    loadBigUINT64(x);
-    Double80 result;
-    __asm {
-      mov eax, this
-      fld TBYTE PTR [eax]
-      fadd
-      fstp result
-    }
-    return result;
-  } else {
+Double80 Double80::operator+(const UINT64 &x) const {
+  if(x <= _I64_MAX) {
     return *this + (INT64)x;
   }
+  loadBigUINT64(x);
+  Double80 result;
+  __asm {
+    mov eax, this
+    fld TBYTE PTR [eax]
+    fadd
+    fstp result
+  }
+  return result;
 }
-Double80 Double80::operator-(UINT64 x) const {
-  if(x > _I64_MAX) {
-    loadBigUINT64(x);
-    Double80 result;
-    __asm {
-      mov eax, this
-      fld TBYTE PTR [eax]
-      fsubrp st(1),st
-      fstp result
-    }
-    return result;
-  } else {
+Double80 Double80::operator-(const UINT64 &x) const {
+  if(x <= _I64_MAX) {
     return *this - (INT64)x;
   }
+  loadBigUINT64(x);
+  Double80 result;
+  __asm {
+    mov eax, this
+    fld TBYTE PTR [eax]
+    fsubrp st(1),st
+    fstp result
+  }
+  return result;
 }
-Double80 Double80::operator*(UINT64 x) const {
-  if(x > _I64_MAX) {
-    loadBigUINT64(x);
-    Double80 result;
-    __asm {
-      mov eax, this
-      fld TBYTE PTR [eax]
-      fmul
-      fstp result
-    }
-    return result;
-  } else {
+Double80 Double80::operator*(const UINT64 &x) const {
+  if(x <= _I64_MAX) {
     return *this * (INT64)x;
   }
+  loadBigUINT64(x);
+  Double80 result;
+  __asm {
+    mov eax, this
+    fld TBYTE PTR [eax]
+    fmul
+    fstp result
+  }
+  return result;
 }
-Double80 Double80::operator/(UINT64 x) const {
-  if(x > _I64_MAX) {
-    loadBigUINT64(x);
-    Double80 result;
-    __asm {
-      mov eax, this
-      fld TBYTE PTR [eax]
-      fdivrp st(1),st
-      fstp result
-    }
-    return result;
-  } else {
+Double80 Double80::operator/(const UINT64 &x) const {
+  if(x <= _I64_MAX) {
     return *this / (INT64)x;
   }
+  loadBigUINT64(x);
+  Double80 result;
+  __asm {
+    mov eax, this
+    fld TBYTE PTR [eax]
+    fdivrp st(1),st
+    fstp result
+  }
+  return result;
 }
 
 Double80 &Double80::operator+=(UINT x) {
-  if(x > _I32_MAX) {
-    loadBigUINT32(x);
-    __asm {
-      mov eax, this
-      fld TBYTE PTR [eax]
-      fadd
-      fstp TBYTE PTR [eax]
-    }
-  } else {
-    *this += (int)x;
+  if(x <= _I32_MAX) {
+    return *this += (int)x;
+  }
+  loadBigUINT32(x);
+  __asm {
+    mov eax, this
+    fld TBYTE PTR [eax]
+    fadd
+    fstp TBYTE PTR [eax]
   }
   return *this;
 }
 Double80 &Double80::operator-=(UINT x) {
-  if(x > _I32_MAX) {
-    loadBigUINT32(x);
-    __asm {
-      mov eax, this
-      fld TBYTE PTR [eax]
-      fsubrp st(1),st
-      fstp TBYTE PTR [eax]
-    }
-  } else {
-    *this -= (int)x;
+  if(x <= _I32_MAX) {
+    return *this -= (int)x;
+  }
+  loadBigUINT32(x);
+  __asm {
+    mov eax, this
+    fld TBYTE PTR [eax]
+    fsubrp st(1),st
+    fstp TBYTE PTR [eax]
   }
   return *this;
 }
 Double80 &Double80::operator*=(UINT x) {
-  if(x > _I32_MAX) {
-    loadBigUINT32(x);
-    __asm {
-      mov eax, this
-      fld TBYTE PTR [eax]
-      fmul
-      fstp TBYTE PTR [eax]
-    }
-  } else {
-    *this *= (int)x;
+  if(x <= _I32_MAX) {
+    return *this *= (int)x;
+  }
+  loadBigUINT32(x);
+  __asm {
+    mov eax, this
+    fld TBYTE PTR [eax]
+    fmul
+    fstp TBYTE PTR [eax]
   }
   return *this;
 }
 Double80 &Double80::operator/=(UINT x) {
-  if(x > _I32_MAX) {
-    loadBigUINT32(x);
-    __asm {
-      mov eax, this
-      fld TBYTE PTR [eax]
-      fdivrp st(1),st
-      fstp TBYTE PTR [eax]
-    }
-  } else {
-    *this /= (int)x;
+  if(x <= _I32_MAX) {
+    return *this /= (int)x;
+  }
+  loadBigUINT32(x);
+  __asm {
+    mov eax, this
+    fld TBYTE PTR [eax]
+    fdivrp st(1),st
+    fstp TBYTE PTR [eax]
   }
   return *this;
 }
-Double80 &Double80::operator+=(UINT64 x) {
-  if(x > _I64_MAX) {
-    loadBigUINT64(x);
-    __asm {
-      mov eax, this
-      fld TBYTE PTR [eax]
-      fadd
-      fstp TBYTE PTR [eax]
-    }
-  } else {
-    *this += (INT64)x;
+Double80 &Double80::operator+=(const UINT64 &x) {
+  if(x <= _I64_MAX) {
+    return *this += (INT64)x;
+  }
+  loadBigUINT64(x);
+  __asm {
+    mov eax, this
+    fld TBYTE PTR [eax]
+    fadd
+    fstp TBYTE PTR [eax]
   }
   return *this;
 }
-Double80 &Double80::operator-=(UINT64 x) {
-  if(x > _I64_MAX) {
-    loadBigUINT64(x);
-    __asm {
-      mov eax, this
-      fld TBYTE PTR [eax]
-      fsubrp st(1),st
-      fstp TBYTE PTR [eax]
-    }
-  } else {
-    *this -= (INT64)x;
+Double80 &Double80::operator-=(const UINT64 &x) {
+  if(x <= _I64_MAX) {
+    return *this -= (INT64)x;
+  }
+  loadBigUINT64(x);
+  __asm {
+    mov eax, this
+    fld TBYTE PTR [eax]
+    fsubrp st(1),st
+    fstp TBYTE PTR [eax]
   }
   return *this;
 }
-Double80 &Double80::operator*=(UINT64 x) {
-  if(x > _I64_MAX) {
-    loadBigUINT64(x);
-    __asm {
-      mov eax, this
-      fld TBYTE PTR [eax]
-      fmul
-      fstp TBYTE PTR [eax]
-    }
-  } else {
-    *this *= (INT64)x;
+Double80 &Double80::operator*=(const UINT64 &x) {
+  if(x <= _I64_MAX) {
+    return *this *= (INT64)x;
+  }
+  loadBigUINT64(x);
+  __asm {
+    mov eax, this
+    fld TBYTE PTR [eax]
+    fmul
+    fstp TBYTE PTR [eax]
   }
   return *this;
 }
-Double80 &Double80::operator/=(UINT64 x) {
-  if(x > _I64_MAX) {
-    loadBigUINT64(x);
-    __asm {
-      mov eax, this
-      fld TBYTE PTR [eax]
-      fdivrp st(1),st
-      fstp TBYTE PTR [eax]
-    }
-  } else {
-    *this /= (INT64)x;
+Double80 &Double80::operator/=(const UINT64 &x) {
+  if(x <= _I64_MAX) {
+    return *this /= (INT64)x;
+  }
+  loadBigUINT64(x);
+  __asm {
+    mov eax, this
+    fld TBYTE PTR [eax]
+    fdivrp st(1),st
+    fstp TBYTE PTR [eax]
   }
   return *this;
 }
 
-bool operator==(const Double80 &x, const Double80 &y) {
-  bool result = false;
+bool Double80::operator==(const Double80 &x) const {
+  bool result;
   __asm {
-    mov eax, DWORD PTR x
+    mov eax, DWORD PTR x        // load x
     fld TBYTE PTR [eax]
-    mov eax, DWORD PTR y
-    fld TBYTE PTR [eax]
-    fcomip st, st(1)            // compare and pop y
-    jne Exit                    // if st(0) != st(1) (x != y) goto end
-    mov result, 1
-Exit:
+    mov eax, this
+    fld TBYTE PTR [eax]         // st(0)=this, st(1)=x
+    fcomip st, st(1)            // compare and pop this
+    sete result                 // result = (st(0) == st(1)) ? 1 : 0
     fstp st(0)                  // pop x
   }
   return result;
 }
 
-bool operator!=(const Double80 &x, const Double80 &y) {
-  bool result = false;
+bool Double80::operator!=(const Double80 &x) const {
+  bool result;
   __asm {
     mov eax, DWORD PTR x
-    fld TBYTE PTR [eax]
-    mov eax, DWORD PTR y
-    fld TBYTE PTR [eax]
-    fcomip st, st(1)            // compare and pop y
-    je Exit                     // if st(0) == st(1) (x < y) goto end
-    mov result, 1
-Exit:
+    fld TBYTE PTR [eax]         // load x
+    mov eax, this
+    fld TBYTE PTR [eax]         // st(0)=this, st(1)=x
+    fcomip st, st(1)            // compare and pop this
+    setne result                // result = (st(0) != st(1)) ? 1 : 0
     fstp st(0)                  // pop x
   }
   return result;
 }
 
-bool operator>=(const Double80 &x, const Double80 &y) {
-  bool result = false;
+bool Double80::operator>=(const Double80 &x) const {
+  bool result;
   __asm {
-    mov eax, DWORD PTR y
-    fld TBYTE PTR [eax]
     mov eax, DWORD PTR x
-    fld TBYTE PTR [eax]
-    fcomip st, st(1)            // compare and pop x
-    jb Exit                     // if st(0) < st(1) (x < y) goto end
-    mov result, 1
-Exit:
-    fstp st(0)                  // pop y
+    fld TBYTE PTR [eax]         // load x
+    mov eax, this
+    fld TBYTE PTR [eax]         // st(0)=this, st(1)=x
+    fcomip st, st(1)            // compare and pop this
+    setae result                // result = (st(0) >= st(1)) ? 1 : 0
+    fstp st(0)                  // pop z
   }
   return result;
 }
 
-bool operator<=(const Double80 &x, const Double80 &y) {
-  bool result = false;
+bool Double80::operator<=(const Double80 &x) const {
+  bool result;
   __asm {
     mov eax, DWORD PTR x
-    fld TBYTE PTR [eax]
-    mov eax, DWORD PTR y
-    fld TBYTE PTR [eax]
-    fcomip st, st(1)            // compare and pop y
-    jb Exit                     // if st(0) < st(1) (y < x) goto end
-    mov result, 1
-Exit:
+    fld TBYTE PTR [eax]         // load x
+    mov eax, this
+    fld TBYTE PTR [eax]         // st(0)=this, st(1)=x
+    fcomip st, st(1)            // compare and pop this
+    setbe result                // result = (st(0) <= st(1)) ? 1 : 0
     fstp st(0)                  // pop x
   }
   return result;
 }
 
-bool operator>(const Double80 &x, const Double80 &y) {
-  bool result = true;
+bool Double80::operator>(const Double80 &x) const {
+  bool result;
   __asm {
-    mov eax, DWORD PTR y
-    fld TBYTE PTR [eax]
     mov eax, DWORD PTR x
-    fld TBYTE PTR [eax]
-    fcomip st, st(1)            // compare and pop x
-    ja Exit                     // if st(0) > st(1) (x > y) goto end
-    mov result, 0
-Exit:
-    fstp st(0)                  // pop y
+    fld TBYTE PTR [eax]         // load x
+    mov eax, this
+    fld TBYTE PTR [eax]         // st(0)=this, st(1)=x
+    fcomip st, st(1)            // compare and pop this
+    seta result                 // result = (st(0) > st(1)) ? 1 : 0
+    fstp st(0)                  // pop x
   }
   return result;
 }
 
-bool operator<(const Double80 &x,const Double80 &y) {
-  bool result = true;
+bool Double80::operator<(const Double80 &x) const {
+  bool result;
   __asm {
     mov eax, DWORD PTR x
-    fld TBYTE PTR [eax]
-    mov eax, DWORD PTR y
-    fld TBYTE PTR [eax]
-    fcomip st, st(1)            // compare and pop y
-    ja Exit                     // if st(0) > st(1) (y > x) goto end
-    mov result, 0
-Exit:
+    fld TBYTE PTR [eax]         // load x
+    mov eax, this
+    fld TBYTE PTR [eax]         // st(0)=this, st(1)=x
+    fcomip st, st(1)            // compare and pop this
+    setb result                 // result = (st(0) < st(1)) ? 1 : 0
     fstp st(0)                  // pop x
+  }
+  return result;
+}
+
+bool Double80::operator==(int x) const {
+  bool result;
+  __asm {
+    mov eax, this
+    fld TBYTE PTR [eax]         // load this
+    ficomp x                    // compare and pop this
+    fnstsw  ax
+    sahf
+    sete result                 // result = (st(0) == x) ? 1 : 0
+  }
+  return result;
+}
+bool Double80::operator!=(int x) const {
+  bool result;
+  __asm {
+    mov eax, this
+    fld TBYTE PTR [eax]         // load this
+    ficomp x                    // compare and pop this
+    fnstsw  ax
+    sahf
+    setne result                // result = (st(0) != x) ? 1 : 0
+  }
+  return result;
+}
+bool Double80::operator<=(int x) const {
+  bool result;
+  __asm {
+    mov eax, this
+    fld TBYTE PTR [eax]         // load this
+    ficomp x                    // compare and pop this
+    fnstsw  ax
+    sahf
+    setbe result                // result = (st(0) <= x) ? 1 : 0
+  }
+  return result;
+}
+bool Double80::operator>=(int x) const {
+  bool result;
+  __asm {
+    mov eax, this
+    fld TBYTE PTR [eax]         // load this
+    ficomp x                    // compare and pop this
+    fnstsw  ax
+    sahf
+    setae result                // result = (st(0) >= x) ? 1 : 0
+  }
+  return result;
+}
+bool Double80::operator<(int x) const {
+  bool result;
+  __asm {
+    mov eax, this
+    fld TBYTE PTR [eax]         // load this
+    ficomp x                    // compare and pop this
+    fnstsw  ax
+    sahf
+    setb result                 // result = (st(0) < x) ? 1 : 0
+  }
+  return result;
+}
+bool Double80::operator>(int x) const {
+  bool result;
+  __asm {
+    mov eax, this
+    fld TBYTE PTR [eax]         // load this
+    ficomp x                    // compare and pop this
+    fnstsw  ax
+    sahf
+    seta result                 // result = (st(0) > x) ? 1 : 0
+  }
+  return result;
+}
+
+bool Double80::operator==(UINT x) const {
+  bool result;
+  if(x <= _I32_MAX) {
+    __asm {
+      mov eax, this
+      fld TBYTE PTR [eax]
+      ficomp x                    // compare and pop this
+      fnstsw  ax
+      sahf
+      sete result                 // result = (st(0) == x) ? 1 : 0
+    }
+  } else {
+    loadBigUINT32(x);             // load x
+    __asm {
+      mov eax, this
+      fld TBYTE PTR [eax]         // st(0)=this, st(1)=x
+      fcomip st, st(1)            // compare and pop this
+      sete result                 // result = (st(0) == st(1)) ? 1 : 0
+      fstp st(0)                  // pop x
+    }
+  }
+  return result;
+}
+bool Double80::operator!=(UINT x) const {
+  bool result;
+  if(x <= _I32_MAX) {
+    __asm {
+      mov eax, this
+      fld TBYTE PTR [eax]
+      ficomp x                    // compare and pop this
+      fnstsw  ax
+      sahf
+      setne result                // result = (st(0) != x) ? 1 : 0
+    }
+  } else {
+    loadBigUINT32(x);             // load x
+    __asm {
+      mov eax, this
+      fld TBYTE PTR [eax]         // st(0)=this, st(1)=x
+      fcomip st, st(1)            // compare and pop this
+      setne result                // result = (st(0) != st(1)) ? 1 : 0
+      fstp st(0)                  // pop x
+    }
+  }
+  return result;
+}
+bool Double80::operator<=(UINT x) const {
+  bool result;
+  if(x <= _I32_MAX) {
+    __asm {
+      mov eax, this
+      fld TBYTE PTR [eax]
+      ficomp x                    // compare and pop this
+      fnstsw  ax
+      sahf
+      setbe result                // result = (st(0) <= x) ? 1 : 0
+    }
+  } else {
+    loadBigUINT32(x);             // load x
+    __asm {
+      mov eax, this
+      fld TBYTE PTR [eax]         // st(0)=this, st(1)=x
+      fcomip st, st(1)            // compare and pop this
+      setbe result                // result = (st(0) <= st(1)) ? 1 : 0
+      fstp st(0)                  // pop x
+    }
+  }
+  return result;
+}
+bool Double80::operator>=(UINT x) const {
+  bool result;
+  if(x <= _I32_MAX) {
+    __asm {
+      mov eax, this
+      fld TBYTE PTR [eax]
+      ficomp x                    // compare and pop this
+      fnstsw  ax
+      sahf
+      setae result                // result = (st(0) >= x) ? 1 : 0
+    }
+  } else {
+    loadBigUINT32(x);             // load x
+    __asm {
+      mov eax, this
+      fld TBYTE PTR [eax]         // st(0)=this, st(1)=x
+      fcomip st, st(1)            // compare and pop this
+      setae result                // result = (st(0) >= st(1)) ? 1 : 0
+      fstp st(0)                  // pop x
+    }
+  }
+  return result;
+}
+bool Double80::operator<(UINT x) const {
+  bool result;
+  if(x <= _I32_MAX) {
+    __asm {
+      mov eax, this
+      fld TBYTE PTR [eax]
+      ficomp x                    // compare and pop this
+      fnstsw  ax
+      sahf
+      setb result                 // result = (st(0) < x) ? 1 : 0
+    }
+  } else {
+    loadBigUINT32(x);             // load x
+    __asm {
+      mov eax, this
+      fld TBYTE PTR [eax]         // st(0)=this, st(1)=x
+      fcomip st, st(1)            // compare and pop this
+      setb result                 // result = (st(0) < st(1)) ? 1 : 0
+      fstp st(0)                  // pop x
+    }
+  }
+  return result;
+}
+bool Double80::operator>(UINT x) const {
+  bool result;
+  if(x <= _I32_MAX) {
+    __asm {
+      mov eax, this
+      fld TBYTE PTR [eax]
+      ficomp x                    // compare and pop this
+      fnstsw  ax
+      sahf
+      seta result                 // result = (st(0) > x) ? 1 : 0
+    }
+  } else {
+    loadBigUINT32(x);             // load x
+    __asm {
+      mov eax, this
+      fld TBYTE PTR [eax]         // st(0)=this, st(1)=x
+      fcomip st, st(1)            // compare and pop this
+      seta result                 // result = (st(0) > st(1)) ? 1 : 0
+      fstp st(0)                  // pop x
+    }
+  }
+  return result;
+}
+
+bool Double80::operator==(const INT64 &x) const {
+  bool result;
+  __asm {
+    mov eax, x
+    fild QWORD PTR [eax]        // load x
+    mov eax, this
+    fld TBYTE PTR [eax]         // st(0)=this, st(1)=x
+    fcomip st, st(1)            // compare and pop this
+    sete result                 // result = (st(0) == st(1)) ? 1 : 0
+    fstp st(0)                  // pop x
+  }
+  return result;
+}
+bool Double80::operator!=(const INT64 &x) const {
+  bool result;
+  __asm {
+    mov eax, x
+    fild QWORD PTR [eax]        // load x
+    mov eax, this
+    fld TBYTE PTR [eax]         // st(0)=this, st(1)=x
+    fcomip st, st(1)            // compare and pop this
+    setne result                // result = (st(0) != st(1)) ? 1 : 0
+    fstp st(0)                  // pop x
+  }
+  return result;
+}
+bool Double80::operator<=(const INT64 &x) const {
+  bool result;
+  __asm {
+    mov eax, x
+    fild QWORD PTR [eax]        // load x
+    mov eax, this
+    fld TBYTE PTR [eax]         // st(0)=this, st(1)=x
+    fcomip st, st(1)            // compare and pop this
+    setbe result                // result = (st(0) <= st(1)) ? 1 : 0
+    fstp st(0)                  // pop x
+  }
+  return result;
+}
+bool Double80::operator>=(const INT64 &x) const {
+  bool result;
+  __asm {
+    mov eax, x
+    fild QWORD PTR [eax]        // load x
+    mov eax, this
+    fld TBYTE PTR [eax]         // st(0)=this, st(1)=x
+    fcomip st, st(1)            // compare and pop this
+    setae result                // result = (st(0) >= st(1)) ? 1 : 0
+    fstp st(0)                  // pop x
+  }
+  return result;
+}
+bool Double80::operator<(const INT64 &x) const {
+  bool result;
+  __asm {
+    mov eax, x
+    fild QWORD PTR [eax]        // load x
+    mov eax, this
+    fld TBYTE PTR [eax]         // st(0)=this, st(1)=x
+    fcomip st, st(1)            // compare and pop this
+    setb result                 // result = (st(0) < st(1)) ? 1 : 0
+    fstp st(0)                  // pop x
+  }
+  return result;
+}
+bool Double80::operator>(const INT64 &x) const {
+  bool result;
+  __asm {
+    mov eax, x
+    fild QWORD PTR [eax]        // load x
+    mov eax, this
+    fld TBYTE PTR [eax]         // st(0)=this, st(1)=x
+    fcomip st, st(1)            // compare and pop this
+    seta result                 // result = (st(0) > st(1)) ? 1 : 0
+    fstp st(0)                  // pop x
+  }
+  return result;
+}
+
+bool Double80::operator==(const UINT64 &x) const {
+  bool result;
+  if(x <= _I64_MAX) {
+    __asm {
+      mov eax, x
+      fild QWORD PTR [eax]        // load x
+      mov eax, this
+      fld TBYTE PTR [eax]         // st(0)=this, st(1)=x
+      fcomip st, st(1)            // compare and pop this
+      sete result                 // result = (st(0) == st(1)) ? 1 : 0
+      fstp st(0)                  // pop x
+    }
+  } else {
+    loadBigUINT64(x);             // load x
+    __asm {
+      mov eax, this
+      fld TBYTE PTR [eax]         // st(0)=this, st(1)=x
+      fcomip st, st(1)            // compare and pop this
+      sete result                 // result = (st(0) == st(1)) ? 1 : 0
+      fstp st(0)                  // pop this
+    }
+  }
+  return result;
+}
+bool Double80::operator!=(const UINT64 &x) const {
+  bool result;
+  if(x <= _I64_MAX) {
+    __asm {
+      mov eax, x
+      fild QWORD PTR [eax]        // load x
+      mov eax, this
+      fld TBYTE PTR [eax]         // st(0)=this, st(1)=x
+      fcomip st, st(1)            // compare and pop this
+      setne result                // result = (st(0) != st(1)) ? 1 : 0
+      fstp st(0)                  // pop x
+    }
+  } else {
+    loadBigUINT64(x);             // load x
+    __asm {
+      mov eax, this
+      fld TBYTE PTR [eax]         // st(0)=this, st(1)=x
+      fcomip st, st(1)            // compare and pop this
+      setne result                // result = (st(0) != st(1)) ? 1 : 0
+      fstp st(0)                  // pop x
+    }
+  }
+  return result;
+}
+bool Double80::operator<=(const UINT64 &x) const {
+  bool result;
+  if(x <= _I64_MAX) {
+    __asm {
+      mov eax, x
+      fild QWORD PTR [eax]        // load x
+      mov eax, this
+      fld TBYTE PTR [eax]         // st(0)=this, st(1)=x
+      fcomip st, st(1)            // compare and pop this
+      setbe result                // result = (st(0) <= st(1)) ? 1 : 0
+      fstp st(0)                  // pop x
+    }
+  } else {
+    loadBigUINT64(x);             // load x
+    __asm {
+      mov eax, this
+      fld TBYTE PTR [eax]         // st(0)=this, st(1)=x
+      fcomip st, st(1)            // compare and pop this
+      setbe result                // result = (st(0) <= st(1)) ? 1 : 0
+      fstp st(0)                  // pop x
+    }
+  }
+  return result;
+}
+bool Double80::operator>=(const UINT64 &x) const {
+  bool result;
+  if(x <= _I64_MAX) {
+    __asm {
+      mov eax, x
+      fild QWORD PTR [eax]        // load x
+      mov eax, this
+      fld TBYTE PTR [eax]         // st(0)=this, st(1)=x
+      fcomip st, st(1)            // compare and pop this
+      setae result                // result = (st(0) >= st(1)) ? 1 : 0
+      fstp st(0)                  // pop x
+    }
+  } else {
+    loadBigUINT64(x);             // load x
+    __asm {
+      mov eax, this
+      fld TBYTE PTR [eax]         // st(0)=this, st(1)=x
+      fcomip st, st(1)            // compare and pop this
+      setae result                // result = (st(0) >= st(1)) ? 1 : 0
+      fstp st(0)                  // pop x
+    }
+  }
+  return result;
+}
+bool Double80::operator<(const UINT64 &x) const {
+  bool result;
+  if(x <= _I64_MAX) {
+    __asm {
+      mov eax, x
+      fild QWORD PTR [eax]        // load x
+      mov eax, this
+      fld TBYTE PTR [eax]         // st(0)=this, st(1)=x
+      fcomip st, st(1)            // compare and pop this
+      setb result                 // result = (st(0) < st(1)) ? 1 : 0
+      fstp st(0)                  // pop x
+    }
+  } else {
+    loadBigUINT64(x);             // load x
+    __asm {
+      mov eax, this
+      fld TBYTE PTR [eax]         // st(0)=this, st(1)=x
+      fcomip st, st(1)            // compare and pop this
+      setb result                 // result = (st(0) < st(1)) ? 1 : 0
+      fstp st(0)                  // pop x
+    }
+  }
+  return result;
+}
+bool Double80::operator>(const UINT64 &x) const {
+  bool result;
+  if(x <= _I64_MAX) {
+    __asm {
+      mov eax, x
+      fild QWORD PTR [eax]        // load x
+      mov eax, this
+      fld TBYTE PTR [eax]         // st(0)=this, st(1)=x
+      fcomip st, st(1)            // compare and pop this
+      seta result                 // result = (st(0) > st(1)) ? 1 : 0
+      fstp st(0)                  // pop x
+    }
+  } else {
+    loadBigUINT64(x);             // load x
+    __asm {
+      mov eax, this
+      fld TBYTE PTR [eax]         // st(0)=this, st(1)=x
+      fcomip st, st(1)            // compare and pop this
+      seta result                 // result = (st(0) > st(1)) ? 1 : 0
+      fstp st(0)                  // pop x
+    }
+  }
+  return result;
+}
+
+bool Double80::operator==(float x) const {
+  bool result;
+  __asm {
+    mov eax, this
+    fld TBYTE PTR [eax]
+    fcomp x                     // compare and pop this
+    fnstsw  ax
+    sahf
+    sete result                 // result = (st(0) == x) ? 1 : 0
+  }
+  return result;
+}
+bool Double80::operator!=(float x) const {
+  bool result;
+  __asm {
+    mov eax, this
+    fld TBYTE PTR [eax]
+    fcomp x                     // compare and pop this
+    fnstsw  ax
+    sahf
+    setne result                // result = (st(0) != x) ? 1 : 0
+  }
+  return result;
+}
+bool Double80::operator<=(float x) const {
+  bool result;
+  __asm {
+    mov eax, this
+    fld TBYTE PTR [eax]
+    fcomp x                     // compare and pop this
+    fnstsw  ax
+    sahf
+    setbe result                // result = (st(0) <= x) ? 1 : 0
+  }
+  return result;
+}
+bool Double80::operator>=(float x) const {
+  bool result;
+  __asm {
+    mov eax, this
+    fld TBYTE PTR [eax]
+    fcomp x                     // compare and pop this
+    fnstsw  ax
+    sahf
+    setae result                // result = (st(0) >= x) ? 1 : 0
+  }
+  return result;
+}
+bool Double80::operator<(float x) const {
+  bool result;
+  __asm {
+    mov eax, this
+    fld TBYTE PTR [eax]
+    fcomp x                     // compare and pop this
+    fnstsw  ax
+    sahf
+    setb result                 // result = (st(0) < x) ? 1 : 0
+  }
+  return result;
+}
+bool Double80::operator>(float x) const {
+  bool result;
+  __asm {
+    mov eax, this
+    fld TBYTE PTR [eax]
+    fcomp x                     // compare and pop this
+    fnstsw  ax
+    sahf
+    seta result                 // result = (st(0) > x) ? 1 : 0
+  }
+  return result;
+}
+
+bool Double80::operator==(const double &x) const {
+  bool result;
+  __asm {
+    mov eax, this
+    fld TBYTE PTR [eax]
+    mov eax, x
+    fcomp QWORD PTR[eax]        // compare and pop this
+    fnstsw  ax
+    sahf
+    sete result                 // result = (st(0) == x) ? 1 : 0
+  }
+  return result;
+}
+bool Double80::operator!=(const double &x) const {
+  bool result;
+  __asm {
+    mov eax, this
+    fld TBYTE PTR [eax]
+    mov eax, x
+    fcomp QWORD PTR[eax]        // compare and pop this
+    fnstsw  ax
+    sahf
+    setne result                // result = (st(0) != x) ? 1 : 0
+  }
+  return result;
+}
+bool Double80::operator<=(const double &x) const {
+  bool result;
+  __asm {
+    mov eax, this
+    fld TBYTE PTR [eax]
+    mov eax, x
+    fcomp QWORD PTR[eax]        // compare and pop this
+    fnstsw  ax
+    sahf
+    setbe result                // result = (st(0) <= x) ? 1 : 0
+  }
+  return result;
+}
+bool Double80::operator>=(const double &x) const {
+  bool result;
+  __asm {
+    mov eax, this
+    fld TBYTE PTR [eax]
+    mov eax, x
+    fcomp QWORD PTR[eax]        // compare and pop this
+    fnstsw  ax
+    sahf
+    setae result                // result = (st(0) >= x) ? 1 : 0
+  }
+  return result;
+}
+bool Double80::operator<(const double &x) const {
+  bool result;
+  __asm {
+    mov eax, this
+    fld TBYTE PTR [eax]
+    mov eax, x
+    fcomp QWORD PTR[eax]        // compare and pop this
+    fnstsw  ax
+    sahf
+    setb result                 // result = (st(0) < x) ? 1 : 0
+  }
+  return result;
+}
+bool Double80::operator>(const double &x) const {
+  bool result;
+  __asm {
+    mov eax, this
+    fld TBYTE PTR [eax]
+    mov eax, x
+    fcomp QWORD PTR[eax]        // compare and pop this
+    fnstsw  ax
+    sahf
+    seta result                 // result = (st(0) > x) ? 1 : 0
   }
   return result;
 }
 
 bool Double80::isZero() const {
-  bool result = false;
+  bool result;
   __asm {
     mov eax, this
     fld TBYTE PTR [eax]
@@ -749,9 +1309,7 @@ bool Double80::isZero() const {
     fstsw ax
     sahf
     fstp    st(0)
-    jne Exit                    // if st(0) != st(1) (this != zero) goto end
-    mov result, 1
-Exit:
+    sete result;                  // result = (*this == 0) ? 1 : 0
   }
   return result;
 }
