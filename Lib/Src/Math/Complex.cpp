@@ -118,21 +118,27 @@ bool operator!=(const Complex &lts, const Complex &rhs) {
 }
 
 Complex exp(const Complex &c) {
+  Complex result;
+  result.re = c.im;
+  sincos(result.re,result.im);
   const Real l = exp(c.re);
-  return Complex(l * cos(c.im), l * sin(c.im));
+  result.re *= l; result.im *= l;
+  return result;
 }
 
 Complex sqrt(const Complex &c) {
   Polar p(c);
-  p.theta /= 2;
+  Complex result;
+  result.re = p.theta / 2;
+  sincos(result.re,result.im);
   p.r = sqrt(p.r);
-  return Complex(p.r * cos(p.theta), p.r * sin(p.theta));
+  result.re *= p.r; result.im *= p.r;
+  return result;
 }
 
 Complex log(const Complex &c) {
-  Polar p(c);
-  Real re = log(p.r);
-  return Complex(re, p.theta);
+  const Polar p(c);
+  return Complex(log(p.r), p.theta);
 }
 
 Complex pow(const Complex &c, const Complex &p) {
