@@ -21,7 +21,7 @@ ParametricSurfacePoint::ParametricSurfacePoint(ParametricSurface &f, const Point
   ps.y = (fabs(p.y) < 2) ? (p.y+EPS) : p.y * (1+EPS);
   const Point3DP vt = (f(pt) - v) / (pt.x - p.x);
   const Point3DP vs = (f(ps) - v) / (ps.y - p.y);
-  m_n = Vertex(unitVector(crossProduct(vt, vs)));
+  m_n = Vertex(unitVector((Point3DP)crossProduct(vt, vs)));
 }
 
 class ExprParametricSurface : public ParametricSurface {

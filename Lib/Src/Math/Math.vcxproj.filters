@@ -235,9 +235,6 @@
     <ClCompile Include="Point2DTransformations.cpp">
       <Filter>Source Files\Geometri</Filter>
     </ClCompile>
-    <ClCompile Include="Point3D.cpp">
-      <Filter>Source Files\Geometri</Filter>
-    </ClCompile>
     <ClCompile Include="Polygon2D.cpp">
       <Filter>Source Files\Geometri</Filter>
     </ClCompile>

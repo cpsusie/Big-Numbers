@@ -46,7 +46,7 @@ public:
     return cx*cy;
   }
   inline Size2DTemplate &normalize() {
-    const double l = length();
+    const T l = length();
     if(l != 0) {
       *this /= l;
     }
@@ -191,7 +191,7 @@ public:
   inline Point2DTemplate &normalize() {
     const T l = length();
     if(l != 0) {
-      x /= l; y /= l;
+      *this /= l;
     }
     return *this;
   }

@@ -778,7 +778,6 @@
     </ClCompile>
     <ClCompile Include="Point2D.cpp" />
     <ClCompile Include="Point2DTransformations.cpp" />
-    <ClCompile Include="Point3D.cpp" />
     <ClCompile Include="Polar.cpp" />
     <ClCompile Include="Polygon2D.cpp" />
     <ClCompile Include="Polynomial.cpp" />

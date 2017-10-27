@@ -96,9 +96,9 @@ static MeshBuilder &createMeshBuilderFromNodefile(const String &nodeFileName, Me
       vertexArray[face.v1].m_faceArray.add(index);
       vertexArray[face.v2].m_faceArray.add(index);
       vertexArray[face.v3].m_faceArray.add(index);
-      const Point3DP    &v1 = vertexArray[face.v1];
-      const Point3DP    e12 = vertexArray[face.v2] - v1;
-      const Point3DP    e13 = vertexArray[face.v3] - v1;
+      const D3DXVECTOR3 v1  = vertexArray[face.v1];
+      const D3DXVECTOR3 e12 = (D3DXVECTOR3)vertexArray[face.v2] - v1;
+      const D3DXVECTOR3 e13 = (D3DXVECTOR3)vertexArray[face.v3] - v1;
       const D3DXVECTOR3 c   = crossProduct(e13, e12);
       face.m_normal = unitVector(c);
       face.m_area   = length(c)/2;
