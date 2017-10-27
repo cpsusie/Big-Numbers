@@ -115,27 +115,19 @@ public:
 
 DEFINECLASSNAME(Double80);
 
-const        Double80     Double80::zero;
-const        Double80     Double80::one;
-const        Double80     Double80::M_PI;
+const        Double80     Double80::zero(0);
+const        Double80     Double80::one( 1);
+const        Double80     Double80::M_PI         ((BYTE*)"\x35\xc2\x68\x21\xa2\xda\x0f\xc9\x00\x40"); // pi
 const        Double80     Double80::DBL80_EPSILON((BYTE*)"\x00\x00\x00\x00\x00\x00\x00\x80\xc0\x3f"); // 1.08420217248550443e-019;
 const        Double80     Double80::DBL80_MIN(    (BYTE*)"\x00\x00\x00\x00\x00\x00\x00\x80\x01\x00"); // 3.36210314311209209e-4932;
 const        Double80     Double80::DBL80_MAX(    (BYTE*)"\xff\xff\xff\xff\xff\xff\xff\xff\xfe\x7f"); // 1.18973149535723227e+4932
 const        int          Double80::DBL80_DIG = 19;
 
-static const Double80     M_PI_2;
-static const Double80     M_PI_05;
-static const Double80     M_PI_2_60;
-static const Double80     half;
-static const Double80     oneTenth;
-static const Double80     ten;
-static const Double80     minusOne;
-static const Double80     two;
-static const Double80     tenE18;
-static const Double80     tenE18M1;
-static const Double80     maxi32;
+static const Double80     M_PI_05(  (BYTE*)"\x35\xc2\x68\x21\xa2\xda\x0f\xc9\xff\x3f"); // pi/2
+static const Double80     M_PI_2_60((BYTE*)"\x35\xc2\x68\x21\xa2\xda\x0f\xc9\x3d\x40"); // 2*pi*pow2(60) (=7.244019458077122e+018)
+static const Double80     tenE18(  1e18    );
+static const Double80     tenE18M1(tenE18-1);
 static const Double80     log2_5;
-static const Double80     digitLookupTable[10];
 
 #ifdef IS32BIT
 const double   _Dmaxi32P1   = ((UINT)_I32_MAX + 1);
@@ -148,44 +140,8 @@ void Double80::initClass() {
     throwException(_T("%s::Size of Double80 must be 10. Size=%d."), s_className, sizeof(Double80));
   }
 
-  Double80 *p = (Double80*)(&M_PI);
   FPU::init();
-
-#ifdef IS32BIT
-  __asm {
-    fldpi
-    mov eax, p
-    fstp TBYTE PTR [eax]
-  }
-#else
-  D80getPi(*p);
-#endif // IS32BIT
-
-  (Double80&)zero            = 0;
-  (Double80&)one             = 1;
-  (Double80&)two             = 2;
-  (Double80&)ten             = 10;
-  (Double80&)minusOne        = -1;
-
-  (Double80&)DBL80_EPSILON   = Double80((BYTE*)"\x00\x00\x00\x00\x00\x00\x00\x80\xc0\x3f"); // 1.08420217248550443e-019;
-  (Double80&)DBL80_MIN       = Double80((BYTE*)"\x00\x00\x00\x00\x00\x00\x00\x80\x01\x00"); // 3.36210314311209209e-4932;
-  (Double80&)DBL80_MAX       = Double80((BYTE*)"\xff\xff\xff\xff\xff\xff\xff\xff\xfe\x7f"); // 1.18973149535723227e+4932
-
-  (Double80&)M_PI_2          = M_PI * 2;
-  (Double80&)M_PI_05         = M_PI / 2;
-  (Double80&)M_PI_2_60       = pow2(60) * M_PI_2;
-
-  (Double80&)half            = 0.5;
-  (Double80&)oneTenth        = 0.1;
   (Double80&)log2_5          = log2(5);
-  (Double80&)tenE18          = 1e18;
-  (Double80&)tenE18M1        = tenE18 - Double80::one;
-  (Double80&)maxi32          = _I32_MAX;
-
-  for(int i = 0; i < 10; i++) {
-    (Double80&)digitLookupTable[i] = i;
-  }
-
   FPU::clearExceptions();
 }
 
@@ -344,7 +300,7 @@ int getInt(const Double80 &x) {
 UINT getUint(const Double80 &x) {
   const USHORT cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_TRUNCATE);
   UINT result;
-  if(x > maxi32) {
+  if(x > _I32_MAX) {
     __asm {
       mov eax, x
       fld TBYTE PTR [eax]
@@ -352,7 +308,7 @@ UINT getUint(const Double80 &x) {
       fistp result
     }
     result += (UINT)_I32_MAX + 1;
-  } else if(x < -maxi32) {
+  } else if(x < -_I32_MAX) {
     __asm {
       mov eax, x
       fld TBYTE PTR [eax]
@@ -1552,12 +1508,12 @@ Double80 cot(const Double80 &x) {
 }
 
 Double80 asin(const Double80 &x) {
-  if(x == Double80::one) {
+  if(x == 1) {
     return M_PI_05;
-  } else if(x == minusOne) {
+  } else if(x == -1) {
     return -M_PI_05;
   } else {
-    return atan2(x,sqrt(Double80::one-x*x));
+    return atan2(x,sqrt(1.0-x*x));
   }
 }
 
@@ -1570,29 +1526,29 @@ Double80 acot(const Double80 &x) {
 }
 
 Double80 cosh(const Double80 &x) {
-  return (exp(x) + exp(-x))/two;
+  return (exp(x) + exp(-x))/2;
 }
 
 Double80 sinh(const Double80 &x) {
-  return (exp(x) - exp(-x))/two;
+  return (exp(x) - exp(-x))/2;
 }
 
 Double80 tanh(const Double80 &x) {
   const Double80 e1 = exp(x);
-  const Double80 e2 = Double80::one/e1;
+  const Double80 e2 = 1.0/e1;
   return (e1 - e2)/(e1+e2);
 }
 
 Double80 acosh(const Double80 &x) {
-  return log(x + sqrt(x*x-Double80::one));
+  return log(x + sqrt(x*x-1));
 }
 
 Double80 asinh(const Double80 &x) {
-  return log(x + sqrt(x*x+Double80::one));
+  return log(x + sqrt(x*x+1));
 }
 
 Double80 atanh(const Double80 &x) {
-  return log(sqrt((Double80::one+x)/(Double80::one-x)));
+  return log(sqrt((1.0+x)/(1.0-x)));
 }
 
 Double80 hypot(const Double80 &x, const Double80 &y) {
@@ -1600,7 +1556,7 @@ Double80 hypot(const Double80 &x, const Double80 &y) {
 }
 
 Double80 root(const Double80 &x, const Double80 &y) {
-  return pow(x,Double80::one/y);
+  return pow(x,1.0/y);
 }
 
 Double80 fraction(const Double80 &x) {
@@ -1632,11 +1588,11 @@ Double80 round(const Double80 &x, int dec) { // 5-rounding
   case -1:
     switch(sign(dec)) {
     case 0:
-      return sx == 1 ? floor(half+x) : -floor(half-x);
+      return sx == 1 ? floor(0.5+x) : -floor(0.5-x);
     case 1 :
       { Double80 p = pow10(dec);
         const USHORT cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_ROUND);
-        Double80 result = (sx == 1) ? floor(half+x*p) : -floor(half-x*p);
+        Double80 result = (sx == 1) ? floor(0.5+x*p) : -floor(0.5-x*p);
         result /= p;
         FPU::restoreControlWord(cwSave);
         return result;
@@ -1644,7 +1600,7 @@ Double80 round(const Double80 &x, int dec) { // 5-rounding
     case -1:
       { Double80 p = pow10(-dec);
         const USHORT cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_ROUND);
-        Double80 result = (sx == 1) ? floor(half+x/p) : -floor(half-x/p);
+        Double80 result = (sx == 1) ? floor(0.5+x/p) : -floor(0.5-x/p);
         result *= p;
         FPU::restoreControlWord(cwSave);
         return result;
@@ -1767,7 +1723,7 @@ TCHAR *Double80::d80tot(TCHAR *dst, const Double80 &x) {
   const USHORT          cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_ROUND);
   static const Double80 E18    = tenE18;
   static const Double80 E18M1  = tenE18M1;
-  static const Double80 TEN    = ten;
+  static const Double80 TEN    = 10;
   static const Double80 LOG2_5 = log2_5;
 
   USHORT cwSave1,ctrlFlags;

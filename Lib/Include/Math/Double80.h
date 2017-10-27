@@ -209,7 +209,8 @@ void   D80cos(            Double80 &x);
 void   D80tan(            Double80 &x);
 void   D80atan(           Double80 &x);
 void   D80atan2(          Double80 &y, const Double80 &x);
-void   D80sincos(         Double80 &c, Double80       &s); // inout is c, out s
+ // inout is c, out s
+void   D80sincos(         Double80 &c, Double80       &s);
 void   D80exp(            Double80 &x);
 void   D80log(            Double80 &x);
 void   D80log10(          Double80 &x);
@@ -1393,10 +1394,10 @@ public:
   inline bool operator>=(const Double80 &x) const {
     return D80cmp(*this, x) >= 0;
   }
-  inline bool operator< (const Double80 &x) const {
+  inline bool operator<(const Double80 &x) const {
     return D80cmp(*this, x) < 0;
   }
-  inline bool operator> (const Double80 &x) const {
+  inline bool operator>(const Double80 &x) const {
     return D80cmp(*this, x) > 0;
   }
 
@@ -1412,10 +1413,10 @@ public:
   inline bool operator>=(const int &x) const {
     return D80cmpI32(*this, x) >= 0;
   }
-  inline bool operator< (const int &x) const {
+  inline bool operator<(const int &x) const {
     return D80cmpI32(*this, x) < 0;
   }
-  inline bool operator> (const int &x) const {
+  inline bool operator>(const int &x) const {
     return D80cmpI32(*this, x) > 0;
   }
 
@@ -1431,10 +1432,10 @@ public:
   inline bool operator>=(const UINT x) const {
     return D80cmpUI32(*this, x) >= 0;
   }
-  inline bool operator< (const UINT x) const {
+  inline bool operator<(const UINT x) const {
     return D80cmpUI32(*this, x) < 0;
   }
-  inline bool operator> (const UINT x) const {
+  inline bool operator>(const UINT x) const {
     return D80cmpUI32(*this, x) > 0;
   }
 
@@ -1450,10 +1451,10 @@ public:
   inline bool operator>=(const long &x) const {
     return D80cmpI32(*this, (const int&)x) >= 0;
   }
-  inline bool operator< (const long &x) const {
+  inline bool operator<(const long &x) const {
     return D80cmpI32(*this, (const int&)x) < 0;
   }
-  inline bool operator> (const long &x) const {
+  inline bool operator>(const long &x) const {
     return D80cmpI32(*this, (const int&)x) > 0;
   }
 
@@ -1469,10 +1470,10 @@ public:
   inline bool operator>=(const ULONG x) const {
     return D80cmpUI32(*this, x) >= 0;
   }
-  inline bool operator< (const ULONG x) const {
+  inline bool operator<(const ULONG x) const {
     return D80cmpUI32(*this, x) < 0;
   }
-  inline bool operator> (const ULONG x) const {
+  inline bool operator>(const ULONG x) const {
     return D80cmpUI32(*this, x) > 0;
   }
 
@@ -1488,10 +1489,10 @@ public:
   inline bool operator>=(const INT64 &x) const {
     return D80cmpI64(*this, x) >= 0;
   }
-  inline bool operator< (const INT64 &x) const {
+  inline bool operator<(const INT64 &x) const {
     return D80cmpI64(*this, x) < 0;
   }
-  inline bool operator> (const INT64 &x) const {
+  inline bool operator>(const INT64 &x) const {
     return D80cmpI64(*this, x) > 0;
   }
 
@@ -1507,10 +1508,10 @@ public:
   inline bool operator>=(const UINT64 x) const {
     return D80cmpUI64(*this, x) >= 0;
   }
-  inline bool operator< (const UINT64 x) const {
+  inline bool operator<(const UINT64 x) const {
     return D80cmpUI64(*this, x) < 0;
   }
-  inline bool operator> (const UINT64 x) const {
+  inline bool operator>(const UINT64 x) const {
     return D80cmpUI64(*this, x) > 0;
   }
 
@@ -1526,10 +1527,10 @@ public:
   inline bool operator>=(const float &x) const {
     return D80cmpFloat(*this, x) >= 0;
   }
-  inline bool operator< (const float &x) const {
+  inline bool operator<(const float &x) const {
     return D80cmpFloat(*this, x) < 0;
   }
-  inline bool operator> (const float &x) const {
+  inline bool operator>(const float &x) const {
     return D80cmpFloat(*this, x) > 0;
   }
 
@@ -1545,10 +1546,10 @@ public:
   inline bool operator>=(const double &x) const {
     return D80cmpDouble(*this, x) >= 0;
   }
-  inline bool operator< (const double &x) const {
+  inline bool operator<(const double &x) const {
     return D80cmpDouble(*this, x) < 0;
   }
-  inline bool operator> (const double &x) const {
+  inline bool operator>(const double &x) const {
     return D80cmpDouble(*this, x) > 0;
   }
 
@@ -1656,7 +1657,9 @@ inline Double80 atan2(const Double80 &y, const Double80 &x) {
   }
   return result;
 }
-void     sincos(Double80 &c, Double80 &s); // calculate both cos and sin. c:inout c, s:out
+
+// calculate both cos and sin. c:inout c, s:out
+void     sincos(Double80 &c, Double80 &s);
 Double80 exp(  const Double80 &x);
 Double80 log(  const Double80 &x);
 Double80 log10(const Double80 &x);
@@ -1736,7 +1739,8 @@ inline Double80 atan2(const Double80 &y, const Double80 &x) {
   D80atan2(tmp, x);
   return tmp;
 }
-inline void sincos(Double80 &c, Double80 &s) { // calculate both cos and sin. c:inout c, s:out
+// calculate both cos and sin. c:inout c, s:out
+inline void sincos(Double80 &c, Double80 &s) {
   D80sincos(c, s);
 }
 inline Double80 exp(const Double80 &x) {
@@ -1786,6 +1790,164 @@ inline Double80 ceil(const Double80 &x) {
 }
 
 #endif // IS32BIT
+
+inline Double80 operator+(double x, const Double80 &y) {
+  return y + x;
+}
+inline Double80 operator-(double x, const Double80 &y) {
+  return Double80(x) - y;
+}
+inline Double80 operator*(double x, const Double80 &y) {
+  return y * x;
+}
+inline Double80 operator/(double x, const Double80 &y) {
+  return Double80(x) / y;
+}
+
+inline bool operator==(int x, const Double80 &y) {
+  return y == x;
+}
+inline bool operator==(UINT x, const Double80 &y) {
+  return y == x;
+}
+inline bool operator==(long x, const Double80 &y) {
+  return y == x;
+}
+inline bool operator==(ULONG x, const Double80 &y) {
+  return y == x;
+}
+inline bool operator==(const INT64 &x, const Double80 &y) {
+  return y == x;
+}
+inline bool operator==(const UINT64 &x, const Double80 &y) {
+  return y == x;
+}
+inline bool operator==(float x, const Double80 &y) {
+  return y == x;
+}
+inline bool operator==(const double &x, const Double80 &y) {
+  return y == x;
+}
+inline bool operator!=(int x, const Double80 &y) {
+  return y != x;
+}
+inline bool operator!=(UINT x, const Double80 &y) {
+  return y != x;
+}
+inline bool operator!=(long x, const Double80 &y) {
+  return y != x;
+}
+inline bool operator!=(ULONG x, const Double80 &y) {
+  return y != x;
+}
+inline bool operator!=(const INT64 &x, const Double80 &y) {
+  return y != x;
+}
+inline bool operator!=(const UINT64 &x, const Double80 &y) {
+  return y != x;
+}
+inline bool operator!=(float x, const Double80 &y) {
+  return y != x;
+}
+inline bool operator!=(const double &x, const Double80 &y) {
+  return y != x;
+}
+inline bool operator<=(int x, const Double80 &y) {
+  return y >= x;
+}
+inline bool operator<=(UINT x, const Double80 &y) {
+  return y >= x;
+}
+inline bool operator<=(long x, const Double80 &y) {
+  return y >= x;
+}
+inline bool operator<=(ULONG x, const Double80 &y) {
+  return y >= x;
+}
+inline bool operator<=(const INT64 &x, const Double80 &y) {
+  return y >= x;
+}
+inline bool operator<=(const UINT64 &x, const Double80 &y) {
+  return y >= x;
+}
+inline bool operator<=(float x, const Double80 &y) {
+  return y >= x;
+}
+inline bool operator<=(const double &x, const Double80 &y) {
+  return y >= x;
+}
+inline bool operator>=(int x, const Double80 &y) {
+  return y <= x;
+}
+inline bool operator>=(UINT x, const Double80 &y) {
+  return y <= x;
+}
+inline bool operator>=(long x, const Double80 &y) {
+  return y <= x;
+}
+inline bool operator>=(ULONG x, const Double80 &y) {
+  return y <= x;
+}
+inline bool operator>=(const INT64 &x, const Double80 &y) {
+  return y <= x;
+}
+inline bool operator>=(const UINT64 &x, const Double80 &y) {
+  return y <= x;
+}
+inline bool operator>=(float x, const Double80 &y) {
+  return y <= x;
+}
+inline bool operator>=(const double &x, const Double80 &y) {
+  return y <= x;
+}
+inline bool operator<(int x, const Double80 &y) {
+  return y > x;
+}
+inline bool operator<(UINT x, const Double80 &y) {
+  return y > x;
+}
+inline bool operator<(long x, const Double80 &y) {
+  return y > x;
+}
+inline bool operator<(ULONG x, const Double80 &y) {
+  return y > x;
+}
+inline bool operator<(const INT64 &x, const Double80 &y) {
+  return y > x;
+}
+inline bool operator<(const UINT64 &x, const Double80 &y) {
+  return y > x;
+}
+inline bool operator<(float x, const Double80 &y) {
+  return y > x;
+}
+inline bool operator<(const double &x, const Double80 &y) {
+  return y > x;
+}
+inline bool operator>(int x, const Double80 &y) {
+  return y < x;
+}
+inline bool operator>(UINT x, const Double80 &y) {
+  return y < x;
+}
+inline bool operator>(long x, const Double80 &y) {
+  return y < x;
+}
+inline bool operator>(ULONG x, const Double80 &y) {
+  return y < x;
+}
+inline bool operator>(const INT64 &x, const Double80 &y) {
+  return y < x;
+}
+inline bool operator>(const UINT64 &x, const Double80 &y) {
+  return y < x;
+}
+inline bool operator>(float x, const Double80 &y) {
+  return y < x;
+}
+inline bool operator>(const double &x, const Double80 &y) {
+  return y < x;
+}
 
 Double80 cot(  const Double80 &x);
 Double80 asin( const Double80 &x);
