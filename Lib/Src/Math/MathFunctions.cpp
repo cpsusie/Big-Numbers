@@ -15,7 +15,7 @@ Real ttor(const TCHAR *str) {
   return _tcstod(str, &endPtr);
 }
 
-#else
+#else // LONGDOUBLE
 
 Real ator(const char *str) {
   return Real(str);
@@ -25,7 +25,7 @@ Real ttor(const TCHAR *str) {
   return Real(str);
 }
 
-#endif
+#endif  // LONGDOUBLE
 
 int getExpo10(double x) {
   return (x == 0) ? 0 : (int)floor(log10(fabs(x)));
@@ -109,8 +109,16 @@ int dmin(int x1, int x2) {
   return (x1 < x2) ? x1 : x2;
 }
 
-Real random(const Real &lower, const Real &upper) {
-  return _standardRandomGenerator->nextDouble() * (upper-lower) + lower;
+Real randReal() {
+#ifndef LONGDOUBLE
+  return randDouble();
+#else
+  return randDouble80();
+#endif // LONGDOUBLE
+}
+
+Real randReal(const Real &lower, const Real &upper) {
+  return randReal() * (upper-lower) + lower;
 }
 
 Real randomGaussian(const Real &mean, const Real &s) {
@@ -118,7 +126,7 @@ Real randomGaussian(const Real &mean, const Real &s) {
 }
 
 void setToRandom(Real &r) {
-  r = _standardRandomGenerator->nextDouble();
+  r = randReal();
 }
 
 Real poly(const Real &x, int degree, const Real *coef) {
@@ -137,4 +145,3 @@ Real poly1(const Real &x, int degree, const Real *coef) {
   }
   return result;
 }
-

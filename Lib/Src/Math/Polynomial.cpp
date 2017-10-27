@@ -215,7 +215,7 @@ ComplexVector Polynomial::findRoots(bool verbose, const Real &rootCriterium) con
   ComplexVector roots(getDegree());
   Polynomial p(*this);
   for(int k = 0, d = getDegree(); d > 0; d--) {
-    Complex x = p.findRoot(Complex(random(-1, 1),random(-1, 1)), verbose, rootCriterium);
+    Complex x = p.findRoot(Complex(randReal(-1, 1),randReal(-1, 1)), verbose, rootCriterium);
     roots[k++] = x;
     p /= x;
   }

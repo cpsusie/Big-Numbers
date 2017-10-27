@@ -58,7 +58,7 @@ Real Expression::evaluateRealExpr(const ExpressionNode *n) const {
   case HYPOT    : return hypot(                  evaluateRealExpr(n->left()),  evaluateRealExpr(n->right()));
   case MAX      : return dmax(                   evaluateRealExpr(n->left()),  evaluateRealExpr(n->right()));
   case MIN      : return dmin(                   evaluateRealExpr(n->left()),  evaluateRealExpr(n->right()));
-  case RAND     : return random(                 evaluateRealExpr(n->left()),  evaluateRealExpr(n->right()));
+  case RAND     : return randReal(               evaluateRealExpr(n->left()),  evaluateRealExpr(n->right()));
   case NORMRAND : return randomGaussian(         evaluateRealExpr(n->left()),  evaluateRealExpr(n->right()));
   case ABS      : return fabs(                   evaluateRealExpr(n->left()));
   case ACOS     : return acos(                   evaluateRealExpr(n->left()),  getTrigonometricMode());

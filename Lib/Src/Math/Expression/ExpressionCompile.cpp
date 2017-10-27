@@ -665,7 +665,7 @@ void Expression::genExpression(const ExpressionNode *n, const ExpressionDestinat
   case SIGN          :    GENCALL(     n, dsign                 );
   case MAX           :    GENCALL(     n, dmax                  );
   case MIN           :    GENCALL(     n, dmin                  );
-  case RAND          :    GENCALL(     n, random                );
+  case RAND          :    GENCALL(     n, randReal              );
   case NORMRAND      :    GENCALL(     n, randomGaussian        );
   case POLY          :    GENPOLY(     n);
   case INDEXEDSUM    :

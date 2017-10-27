@@ -16,6 +16,7 @@ bool   isInfinity(        double x);
 double root(              double x, double y);
 double cot(               double x);
 double acot(              double x);
+// calculate both cos and sin. c:inout c, s:out
 extern "C" void   sincos(double &c, double &s);
 
 typedef enum {
@@ -98,7 +99,8 @@ int  dmax(                int         x1,     int         x2   );
 int  dmin(                int         x1,     int         x2   );
 
 // use _standardRandomGenerator declared in Random.h
-Real random(              const Real &lower,  const Real &upper);
+Real randReal();
+Real randReal(            const Real &lower,  const Real &upper);
 // mean and standardDeviation. use _standardRandomGenerator
 Real randomGaussian(      const Real &mean,   const Real &s    );
 
@@ -111,4 +113,3 @@ Real poly1(const Real &x, int degree, const Real *coef);
 
 Real ator(const char *str);
 Real ttor(const TCHAR *str);
-
