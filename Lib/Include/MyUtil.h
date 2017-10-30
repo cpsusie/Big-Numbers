@@ -162,6 +162,8 @@ HANDLE           GETHANDLE(FILE *f);
 
 String readTextFile(FILE *f);
 String readTextFile(const String &fileName);
+// Read a text-line, returning true if anything read, false if not.
+// Trailing \n and \r are removed
 bool   readLine(FILE *f, String &str);
 
 void pause();
