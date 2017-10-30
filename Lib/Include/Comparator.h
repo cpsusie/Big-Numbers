@@ -50,10 +50,10 @@ public:
   FunctionComparator(const FunctionComparator<T> &src) {
     m_usersuppliedcmp = src.m_usersuppliedcmp;
   }
-  inline int cmp(const void *e1, const void *e2) {
+  virtual int cmp(const void *e1, const void *e2) {
     return m_usersuppliedcmp(e1, e2);
   }
-  inline int compare(const T &e1, const T &e2) {
+  virtual int compare(const T &e1, const T &e2) {
     return m_usersuppliedcmp(&e1, &e2);
   }
   inline bool isSet() const {
