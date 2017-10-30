@@ -8,7 +8,7 @@
 
 void FunctionFitter::randomVarList() {
   for(size_t i = 0; i < m_parameterValue.size(); i++) {
-    *m_parameterValue[i] = random(0,1);
+    *m_parameterValue[i] = randDouble(0,1);
   }
 }
 
