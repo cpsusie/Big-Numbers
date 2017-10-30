@@ -209,15 +209,15 @@ void Double80::init(const _TUCHAR *s) {
 #ifdef IS32BIT
 
 Double80::Double80(UINT x) {
-  if(x > _I32_MAX) {
-    loadBigUINT32(x);
+  if(x <= _I32_MAX) {
     __asm {
+      fild x
       mov eax, this
       fstp TBYTE PTR [eax]
     }
   } else {
+    loadBigUINT32(x);
     __asm {
-      fild x
       mov eax, this
       fstp TBYTE PTR [eax]
     }
@@ -225,15 +225,15 @@ Double80::Double80(UINT x) {
 }
 
 Double80::Double80(UINT64 x) {
-  if(x > _I64_MAX) {
-    loadBigUINT64(x);
+  if(x <= _I64_MAX) {
     __asm {
+      fild x
       mov eax, this
       fstp TBYTE PTR [eax]
     }
   } else {
+    loadBigUINT64(x);
     __asm {
-      fild x
       mov eax, this
       fstp TBYTE PTR [eax]
     }
