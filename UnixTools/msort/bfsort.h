@@ -2,29 +2,45 @@
 
 #include "HelpFile.h"
 
+typedef Comparator<String> StringComparator;
+
 class BalancedFileSort {
 private:
 #define NO_FILES 4
 
-  HelpFile     m_helpFile[NO_FILES],*m_currentHelpFile;
-  int          m_currentOutput;
-  long         m_blockCount;
-  FILE        *m_finalOutput;
-  bool         m_verbose;
-  Comparator<String>  *m_stringComparator;
-  AbstractComparator  &m_comparator;
-  bool leq(const TCHAR *s1, const TCHAR *s2) { return m_comparator.cmp(s1,s2) <= 0; }
-
-  void shiftOutput();
+  HelpFile          m_helpFile[NO_FILES],*m_currentHelpFile;
+  int               m_currentOutput;
+  long              m_blockCount;
+  FILE             *m_finalOutput;
+  bool              m_verbose;
+  StringComparator &m_comparator;
+  inline void setCurrentOutput(int newValue) {
+    m_currentHelpFile = &m_helpFile[m_currentOutput=newValue];
+  }
+  inline void shiftOutput() {
+    setCurrentOutput(m_currentOutput^1);
+  }
+  inline bool leq(const String *s1, const String *s2) {
+    return m_comparator.compare(*s1,*s2) <= 0;
+  }
   void destroyHelpFiles();
-  void setCurrentOutput(int newValue);
   void sortAndFlush(StringArray &lines, FILE *output = NULL);
   void distributeLines(int i, FILE *f);
   void makeRuns(int input);
   void finalMerge(int input);
-  void verbose(const TCHAR *format,...);
 public:
+  BalancedFileSort(StringComparator &comparator, bool verbose = false)
+    : m_comparator(comparator)
+  {
+    m_verbose = verbose;
+  }
+  ~BalancedFileSort() {
+    destroyHelpFiles();
+  }
   void sort(FILE *inputFile, FILE *outputFile);
-  ~BalancedFileSort();
-  BalancedFileSort(AbstractComparator &comparator, bool verbose = false);
+  inline bool isVerbose() const {
+    return m_verbose;
+  }
 };
+
+void verbose(const TCHAR *format,...);

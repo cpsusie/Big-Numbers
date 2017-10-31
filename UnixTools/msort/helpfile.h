@@ -1,26 +1,45 @@
 #pragma once
 
 #define BUF_SIZE  0x40000
-#define LINE_SIZE 0x10000
 
-typedef TCHAR Line[LINE_SIZE];
+inline void writeLine(FILE *f, const String &s) {
+  _fputts(s.cstr(), f); _fputtc(_T('\n'), f);
+}
 
 class HelpFile {
 private:
-  typedef TCHAR FileName[256];
   static TCHAR  s_drive;
   FILE         *m_f;
-  FileName      m_name;
+  String        m_name;
+  UINT64        m_lineCount;
   void makeName();
 public:
-  void writeLine(Line s);
-  TCHAR *readLine(Line s);
-  HelpFile();
-  ~HelpFile();
+  inline String *readLine(String &s) {
+    return ::readLine(m_f, s) ? &s : NULL;
+  }
+  inline void writeLine(const String &s) {
+    ::writeLine(m_f, s); m_lineCount++;
+  }
+
+  inline HelpFile() : m_f(NULL), m_lineCount(0) {
+  }
+
+  inline ~HelpFile() {
+    close();
+  }
   void destroy();
   void open(FileMode mode);
   void close();
-  bool isOpen() const           { return m_f != NULL; }
-  TCHAR *getName()              { return m_name;      }
-  static void setDrive(TCHAR d) { s_drive = d;        }
+  inline bool isOpen() const {
+    return m_f != NULL;
+  }
+  inline const TCHAR *getName() const {
+    return m_name.cstr();
+  }
+  inline UINT64 getLineCount() const {
+    return m_lineCount;
+  }
+  static void setDrive(TCHAR d) { 
+    s_drive = d;
+  }
 };

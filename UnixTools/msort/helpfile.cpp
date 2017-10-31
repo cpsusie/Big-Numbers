@@ -5,18 +5,11 @@
 
 TCHAR HelpFile::s_drive = _T('c');
 
-HelpFile::HelpFile() {
-  _tcscpy(m_name, EMPTYSTRING);
-  m_f = NULL;
-}
-
-HelpFile::~HelpFile() {
-  close();
-}
-
 void HelpFile::makeName() {
-  _stprintf(m_name,_T("%c:\\cXXXXXX"),s_drive);
-  _tmktemp(m_name);
+  TCHAR tmp[_MAX_FNAME+1];
+  _stprintf(tmp, _T("%c:\\temp\\cXXXXXX"), s_drive);
+  _tmktemp(tmp);
+  m_name = tmp;
 }
 
 void HelpFile::destroy() {
@@ -26,13 +19,14 @@ void HelpFile::destroy() {
 
 void HelpFile::open(FileMode mode) {
   close();
-  if(_tcslen(m_name) == 0) {
+  if(m_name.length() == 0) {
     makeName();
   }
   m_f = FOPEN(m_name,(mode == READMODE) ? _T("r") : _T("w"));
   if(setvbuf(m_f,NULL,_IOFBF,BUF_SIZE) != 0) {
     throwException(_T("setvbuf"));
   }
+  m_lineCount = 0;
 }
 
 void HelpFile::close() {
@@ -40,12 +34,4 @@ void HelpFile::close() {
     fclose(m_f);
     m_f = NULL;
   }
-}
-
-void HelpFile::writeLine(Line s) {
-  _fputts(s, m_f);
-}
-
-TCHAR *HelpFile::readLine(Line s) {
-  return _fgetts(s, LINE_SIZE, m_f);
 }

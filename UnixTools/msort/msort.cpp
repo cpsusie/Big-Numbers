@@ -4,56 +4,59 @@
 #include <signal.h>
 #include "bfsort.h"
 
-typedef int (*CompareFunction)(const TCHAR *s1, const TCHAR *s2);
+typedef int (*CompareFunction)(const String &s1, const String &s2);
 
-class PartialComparator : public AbstractComparator {
+class PartialComparator : public FunctionComparator<String> {
 private:
-  CompareFunction m_cmp;
-  bool            m_desc;
+  bool m_desc;
 public:
-  int cmp(const void *e1, const void *e2);
-  PartialComparator(CompareFunction cmp, bool desc = false) { m_cmp = cmp, m_desc = desc; }
-  void setDescending() { m_desc = true; }
-  AbstractComparator *clone() const { return new PartialComparator(m_cmp,m_desc); }
+  int compare(const String &s1, const String &s2) {
+    return m_desc ? -m_usersuppliedcmp(&s1, &s2) : m_usersuppliedcmp(&s1, &s2);
+  }
+  PartialComparator(::CompareFunction cmp, bool desc = false)
+    : FunctionComparator<String>(cmp), m_desc(desc)
+  {
+  }
+  void setDescending() {
+    m_desc = true;
+  }
+  AbstractComparator *clone() const {
+    return new PartialComparator((::CompareFunction)m_usersuppliedcmp, m_desc);
+  }
 };
 
-int PartialComparator::cmp(const void *e1, const void *e2) {
-  const int res = m_cmp((const TCHAR*)e1,(const TCHAR*)e2);
-  return m_desc ? -res : res;
-}
-
-class CompoundComparator : public AbstractComparator {
+class CompoundComparator : public StringComparator {
 public:
   Array<PartialComparator> m_comparelist;
-  int cmp(const void *e1, const void *e2);
-  void setDescending() { m_comparelist.last().setDescending(); }
+  int compare(const String &e1, const String &e2);
+  void setDescending() {
+    m_comparelist.last().setDescending();
+  }
 };
 
-int CompoundComparator::cmp(const void *s1, const void *s2) {
+int CompoundComparator::compare(const String &s1, const String &s2) {
   for(size_t i = 0; i < m_comparelist.size(); i++) {
     int result;
-    if((result = m_comparelist[i].cmp(s1,s2)) != 0) {
+    if((result = m_comparelist[i].compare(s1,s2)) != 0) {
       return result;
     }
   }
   return 0;
 }
 
-static int numericCompare(const TCHAR *s1, const TCHAR *s2) {
-  double d1 = _ttof(s1);
-  double d2 = _ttof(s2);
+static int numericCompare(const String &s1, const String &s2) {
+  const double d1 = _ttof(s1.cstr());
+  const double d2 = _ttof(s2.cstr());
   return (d2 > d1) ? -1 : (d2 < d1) ? 1 : 0;
 }
 
 static BalancedFileSort *bfsp = NULL;
-static bool verbose = false;
 
 static void interruptHandler(int s) {
-  if(verbose) {
+  if(bfsp && bfsp->isVerbose()) {
     _ftprintf(stderr, _T("\ninterrupted by user\n"));
   }
-  delete bfsp;
-  bfsp = NULL;
+  SAFEDELETE(bfsp);
   exit(-1);
 }
 
@@ -65,9 +68,10 @@ static void usage() {
 int main(int argc, char **argv) {
   char *cp;
 //  CompoundComparator cc;
-  PartialComparator defaultComparator(_tcscmp);
+  bool              verbose = false;
+  PartialComparator defaultComparator(stringHashCmp);
   PartialComparator numericComparator(numericCompare);
-  PartialComparator ignoreCaseComparator(streicmp);
+  PartialComparator ignoreCaseComparator(stringiHashCmp);
   PartialComparator *currentComparator = &defaultComparator;
 
   for(argv++; *argv && ((*(cp = *argv) == '-')); argv++) {
@@ -96,17 +100,17 @@ int main(int argc, char **argv) {
     }
   }
   try {
-    double start = getProcessTime();
+    const double start = getProcessTime();
     FILE *inputFile = *argv ? FOPEN(*argv,_T("r")) : stdin;
     if(isatty(inputFile)) {
       usage();
     }
     setvbuf(inputFile,NULL,_IOFBF,BUF_SIZE);
     setvbuf(stdout,NULL,_IOFBF,BUF_SIZE);
-    bfsp = new BalancedFileSort(*currentComparator,verbose);
+    bfsp = new BalancedFileSort(*currentComparator,verbose); TRACE_NEW(bfsp);
     signal(SIGINT,interruptHandler);
     bfsp->sort(inputFile,stdout);
-    delete bfsp;
+    SAFEDELETE(bfsp);
 
     if(verbose) {
       _ftprintf(stderr, _T("processtime:%6.2lf sec.\n"), (getProcessTime()-start) / 1000000);
