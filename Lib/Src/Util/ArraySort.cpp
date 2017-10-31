@@ -3,7 +3,8 @@
 
 #pragma check_stack(off)
 
-class ArrayImplComparator1 : public AbstractComparator { // derefer 1
+// derefer 1
+class ArrayImplComparator1 : public AbstractComparator {
 private:
   int (*m_userSuppliedCmp)(const void *e1, const void *e2);
 public:
@@ -18,7 +19,8 @@ public:
   }
 };
 
-class ArrayImplComparator0 : public AbstractComparator { // derefer 0, ie call directly
+// derefer 0, ie call directly
+class ArrayImplComparator0 : public AbstractComparator {
 private:
   int (*m_userSuppliedCmp)(const void **e1, const void **e2);
 public:
@@ -33,7 +35,8 @@ public:
   }
 };
 
-class ArrayImplComparator : public AbstractComparator { // derefer 1
+// derefer 1
+class ArrayImplComparator : public AbstractComparator {
 private:
   AbstractComparator &m_userSuppliedComparator;
 public:
