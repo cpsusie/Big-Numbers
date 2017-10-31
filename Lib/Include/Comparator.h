@@ -32,9 +32,10 @@ public:
   virtual bool select(const T &element) = 0;
 };
 
+
 template <class T> class FunctionComparator : public Comparator<T> {
 private:
-  typedef int (*CompareFunction)(const void *, const void *);
+  typedef int (*CompareFunction)(const T*, const T*);
 protected:
   CompareFunction m_usersuppliedcmp;
 public:
@@ -50,10 +51,7 @@ public:
   FunctionComparator(const FunctionComparator<T> &src) {
     m_usersuppliedcmp = src.m_usersuppliedcmp;
   }
-  virtual int cmp(const void *e1, const void *e2) {
-    return m_usersuppliedcmp(e1, e2);
-  }
-  virtual int compare(const T &e1, const T &e2) {
+  int compare(const T &e1, const T &e2) {
     return m_usersuppliedcmp(&e1, &e2);
   }
   inline bool isSet() const {
