@@ -4,24 +4,26 @@
 #include <signal.h>
 #include "bfsort.h"
 
-typedef int (*CompareFunction)(const String &s1, const String &s2);
+typedef int (*CompareFunction)(const TCHAR *s1, const TCHAR *s2);
 
-class PartialComparator : public FunctionComparator<String> {
+class PartialComparator : public StringComparator {
 private:
-  bool m_desc;
+  bool            m_desc;
+  CompareFunction m_cmpFunc;
 public:
-  int compare(const String &s1, const String &s2) {
-    return m_desc ? -m_usersuppliedcmp(&s1, &s2) : m_usersuppliedcmp(&s1, &s2);
-  }
-  PartialComparator(::CompareFunction cmp, bool desc = false)
-    : FunctionComparator<String>(cmp), m_desc(desc)
+  PartialComparator(CompareFunction cmp, bool desc = false)
+    : m_cmpFunc(cmp), m_desc(desc)
   {
+  }
+  int compare(const String &s1, const String &s2) {
+    return m_desc ? -m_cmpFunc(s1.cstr(), s2.cstr())
+                   : m_cmpFunc(s1.cstr(), s2.cstr());
   }
   void setDescending() {
     m_desc = true;
   }
   AbstractComparator *clone() const {
-    return new PartialComparator((::CompareFunction)m_usersuppliedcmp, m_desc);
+    return new PartialComparator(m_cmpFunc, m_desc);
   }
 };
 
@@ -44,9 +46,9 @@ int CompoundComparator::compare(const String &s1, const String &s2) {
   return 0;
 }
 
-static int numericCompare(const String &s1, const String &s2) {
-  const double d1 = _ttof(s1.cstr());
-  const double d2 = _ttof(s2.cstr());
+static int numericCompare(const TCHAR *s1, const TCHAR *s2) {
+  const double d1 = _ttof(s1);
+  const double d2 = _ttof(s2);
   return (d2 > d1) ? -1 : (d2 < d1) ? 1 : 0;
 }
 
@@ -69,9 +71,9 @@ int main(int argc, char **argv) {
   char *cp;
 //  CompoundComparator cc;
   bool              verbose = false;
-  PartialComparator defaultComparator(stringHashCmp);
+  PartialComparator defaultComparator(_tcscmp);
   PartialComparator numericComparator(numericCompare);
-  PartialComparator ignoreCaseComparator(stringiHashCmp);
+  PartialComparator ignoreCaseComparator(_tcsicmp);
   PartialComparator *currentComparator = &defaultComparator;
 
   for(argv++; *argv && ((*(cp = *argv) == '-')); argv++) {
