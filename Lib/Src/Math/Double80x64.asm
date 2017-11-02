@@ -6,9 +6,11 @@ include fpu.inc
 
 .DATA
 
+WmaxI16P1       WORD                   8000h
 DWmaxI32P1      DWORD              80000000h
 QWmaxI64        QWORD      7fffffffffffffffh
 QWmaxI64P1      QWORD      8000000000000000h
+DmaxI16P1       QWORD      40e0000000000000h   ;  maxI16P1 as double
 DmaxI32P1       QWORD      41e0000000000000h   ;  maxI32P1 as double
 TBmaxI64P1      TBYTE  403e8000000000000000h   ;  maxI64P1 as Double80
 TBEpsilon       TBYTE  0000000000000080c03fh   ; 1.08420217248550443e-019
@@ -59,8 +61,20 @@ FPUclearExceptions PROC
     ret
 FPUclearExceptions ENDP
 
-;----------------------------------------------Double80 Constructors ------------------------------------------------
+; ----------------- Conversion functions from short,USHORT,int,UINT,INT64 UINT64,float,double -> Double80 
 
+;void D80FromI16(Double80 &s, const short &x);
+D80FromI16 PROC
+    fild    WORD PTR[rdx]
+    fstp    TBYTE PTR[rcx]
+    ret
+D80FromI16 ENDP
+;void D80FromUI16(Double80 &s, USHORT x);
+D80FromUI16 PROC
+    fildUI16 rdx
+    fstp     TBYTE PTR[rcx]
+    ret
+D80FromUI16 ENDP
 ;void D80FromI32(Double80 &dst, const int &x);
 D80FromI32 PROC
     fild    DWORD PTR[rdx]
@@ -98,7 +112,7 @@ D80FromDbl PROC
     ret
 D80FromDbl ENDP
 
-; ---------------------- Conversion functions from Double80 -> int,uint,INT64 UINT64,float,double
+; ---------------------- Conversion functions from Double80 -> int,UINT,INT64 UINT64,float,double
 
 ;int D80ToI32(const Double80 &x);
 D80ToI32 PROC
@@ -195,9 +209,99 @@ D80ToDbl PROC
     ret
 D80ToDbl ENDP
 
-; ---------------------- Binary operators +,-,*,- (and unary minus) and compare -----------------
-; ---------------------- assign operators +=,-=,*=,/=,++,-- -------------------------------------
+; ---------------------- Binary operators +,-,*,- (and unary minus) -----------------
+; ---------------------- assign operators ++,--,-------------------------------------
 
+;void D80addI16(Double80 &dst, const short &x);
+D80addI16 PROC
+    fld     TBYTE PTR[rcx]                     ; load dst
+    fiadd   WORD PTR[rdx]                      ; add  x
+    fstp    TBYTE PTR[rcx]                     ; pop to dst
+    ret
+D80addI16 ENDP
+;void D80subI16(Double80 &dst, const short &x);
+D80subI16 PROC
+    fld     TBYTE PTR[rcx]                     ; load dst
+    fisub   WORD PTR[rdx]                      ; sub  x
+    fstp    TBYTE PTR[rcx]                     ; pop to dst
+    ret
+D80subI16 ENDP
+;void D80subrI16(Double80 &dst, const short &x);
+D80subrI16 PROC
+    fld     TBYTE PTR[rcx]                     ; load dst
+    fisubr  WORD PTR[rdx]                      ; st0 = x - st0
+    fstp    TBYTE PTR[rcx]                     ; pop to dst
+    ret
+D80subrI16 ENDP
+;void D80mulI16(Double80 &dst, const short &x);
+D80mulI16 PROC
+    fld     TBYTE PTR[rcx]                     ; load dst
+    fimul   WORD PTR[rdx]                      ; mul  x
+    fstp    TBYTE PTR[rcx]                     ; pop to dst
+    ret
+D80mulI16 ENDP
+;void D80divI16(Double80 &dst, const short &x);
+D80divI16 PROC
+    fld     TBYTE PTR[rcx]                     ; load dst
+    fidiv   WORD PTR[rdx]                      ; div  x
+    fstp    TBYTE PTR[rcx]                     ; pop to dst
+    ret
+D80divI16 ENDP
+;void D80divrI16(Double80 &dst, const short &x);
+D80divrI16 PROC
+    fld     TBYTE PTR[rcx]                     ; load dst
+    fidivr  WORD PTR[rdx]                      ; st0 = x / st0
+    fstp    TBYTE PTR[rcx]                     ; pop to dst
+    ret
+D80divrI16 ENDP
+;void D80addUI16(Double80 &dst, USHORT x);
+D80addUI16 PROC
+    fld      TBYTE PTR[rcx]                    ; load dst
+    fildUI16 rdx                               ; load x
+    fadd
+    fstp     TBYTE PTR[rcx]                    ; pop to dst
+    ret
+D80addUI16 ENDP
+;void D80subUI16(Double80 &dst, USHORT x);
+D80subUI16 PROC
+    fld      TBYTE PTR[rcx]                    ; load dst
+    fildUI16 rdx                               ; load x
+    fsub
+    fstp     TBYTE PTR[rcx]                    ; pop to dst
+    ret
+D80subUI16 ENDP
+;void D80subrUI16(Double80 &dst, USHORT x);
+D80subrUI16 PROC
+    fildUI16 rdx                               ; load x
+    fld      TBYTE PTR[rcx]                    ; load dst
+    fsub
+    fstp     TBYTE PTR[rcx]                    ; pop to dst
+    ret
+D80subrUI16 ENDP
+;void D80mulUI16(Double80 &dst, USHORT x);
+D80mulUI16 PROC
+    fld      TBYTE PTR[rcx]                    ; load dst
+    fildUI16 rdx                               ; load x
+    fmul
+    fstp     TBYTE PTR[rcx]                    ; pop to dst
+    ret
+D80mulUI16 ENDP
+;void D80divUI16(Double80 &dst, USHORT x);
+D80divUI16 PROC
+    fld      TBYTE PTR[rcx]                    ; load dst
+    fildUI16 rdx                               ; load x
+    fdiv
+    fstp     TBYTE PTR[rcx]                    ; pop to dst
+    ret
+D80divUI16 ENDP
+;void D80divrUI16(Double80 &dst, USHORT x);
+D80divrUI16 PROC
+    fildUI16 rdx                               ; load x
+    fld      TBYTE PTR[rcx]                    ; load dst
+    fdiv
+    fstp     TBYTE PTR[rcx]                    ; pop to dst
+    ret
+D80divrUI16 ENDP
 ;void D80addI32(Double80 &dst, const int &x);
 D80addI32 PROC
     fld     TBYTE PTR[rcx]                     ; load dst
@@ -524,6 +628,9 @@ D80neg PROC
     fstp    TBYTE PTR[rcx]                     ; pop to x
     ret
 D80neg ENDP
+
+; -------------------------------- Compare functions -------------------------------------------
+
 ;int D80isZero(const Double80 &x);
 D80isZero PROC
     fld     TBYTE PTR[rcx]                     ; load x
@@ -538,7 +645,42 @@ IsZero:
     mov     rax, 1                             ; rax = 1 (true)
     ret
 D80isZero ENDP
-
+;int D80cmpI16(const Double80 &x, const short &y);
+D80cmpI16 PROC
+    fld     TBYTE PTR[rcx]                     ; load x
+    ficomp  WORD PTR[rdx]
+    fnstsw  ax
+    sahf
+    ja      XAboveY
+    jb      XBelowY
+    xor     rax,rax
+    ret
+XAboveY:
+    mov     rax, 1
+    ret
+XBelowY:
+    mov     rax, -1
+    ret
+D80cmpI16 ENDP
+;int D80cmpUI16(const Double80 &x, USHORT y);
+D80cmpUI16 PROC
+    fildUI16 rdx                               ; load y
+    fld     TBYTE PTR[rcx]                     ; load x
+    fcomip  st, st(1)                          ; st(0)=x, st(1)=y
+    ja      XAboveY
+    jb      XBelowY
+    xor     rax,rax
+    fstp    st(0)
+    ret
+XAboveY:
+    fstp    st(0)
+    mov     rax, 1
+    ret
+XBelowY:
+    fstp    st(0)
+    mov     rax, -1
+    ret
+D80cmpUI16 ENDP
 ;int D80cmpI32(const Double80 &x, const int &y);
 D80cmpI32 PROC
     fld     TBYTE PTR[rcx]                     ; load x
@@ -703,9 +845,8 @@ D80getExpo2 PROC
     fld     TBYTE PTR[rcx]
     fxtract
     fstp    st(0)
-    push    rax
-    fistp   QWORD PTR[rsp]
-    pop     rax
+    fistp   QWORD PTR[rsp-8]
+    mov     rax, QWORD PTR[rsp-8]
     ret
 D80getExpo2 ENDP
 
@@ -724,9 +865,8 @@ D80getExpo10 PROC
     pushRoundMode ROUNDDOWN
     frndint
     popRoundMode
-    push    rax
-    fistp   QWORD PTR[rsp]
-    pop     rax
+    fistp   QWORD PTR[rsp-8]
+    mov     rax, QWORD PTR[rsp-8]
     ret
 xIsZero:
     fstp    st(0)                              ; pop x

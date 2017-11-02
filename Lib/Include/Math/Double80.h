@@ -144,6 +144,8 @@ class Double80;
 
 #ifdef IS64BIT
 extern "C" {
+void   D80FromI16(        Double80 &s  , const short    &x  );
+void   D80FromUI16(       Double80 &s  , USHORT          x  );
 void   D80FromI32(        Double80 &s  , const int      &x  );
 void   D80FromUI32(       Double80 &s  , UINT            x  );
 void   D80FromI64(        Double80 &s  , const INT64    &x  );
@@ -156,6 +158,8 @@ INT64  D80ToI64(          const Double80 &x);
 UINT64 D80ToUI64(         const Double80 &x);
 float  D80ToFlt(          const Double80 &x);
 double D80ToDbl(          const Double80 &x);
+int    D80cmpI16(         const Double80 &x, const short    &y);
+int    D80cmpUI16(        const Double80 &x, USHORT          y);
 int    D80cmpI32(         const Double80 &x, const int      &y);
 int    D80cmpUI32(        const Double80 &x, UINT            y);
 int    D80cmpI64(         const Double80 &x, const INT64    &y);
@@ -164,6 +168,18 @@ int    D80cmpFlt(         const Double80 &x, const float    &y);
 int    D80cmpDbl(         const Double80 &x, const double   &y);
 int    D80cmpD80(         const Double80 &x, const Double80 &y);
 int    D80isZero(         const Double80 &x);
+void   D80addI16(         Double80 &dst, const short    &x);
+void   D80subI16(         Double80 &dst, const short    &x);
+void   D80subrI16(        Double80 &dst, const short    &x);
+void   D80mulI16(         Double80 &dst, const short    &x);
+void   D80divI16(         Double80 &dst, const short    &x);
+void   D80divrI16(        Double80 &dst, const short    &x);
+void   D80addUI16(        Double80 &dst, USHORT          x);
+void   D80subUI16(        Double80 &dst, USHORT          x);
+void   D80subrUI16(       Double80 &dst, USHORT          x);
+void   D80mulUI16(        Double80 &dst, USHORT          x);
+void   D80divUI16(        Double80 &dst, USHORT          x);
+void   D80divrUI16(       Double80 &dst, USHORT          x);
 void   D80addI32(         Double80 &dst, const int      &x);
 void   D80subI32(         Double80 &dst, const int      &x);
 void   D80subrI32(        Double80 &dst, const int      &x);
@@ -240,6 +256,7 @@ void   D80ToBCDAutoScale(BYTE bcd[10], const Double80 &x, int &expo10);
 #endif // IS64BIT
 
 #ifdef IS32BIT
+extern const double   _Dmaxi16P1;
 extern const double   _Dmaxi32P1;
 extern const Double80 _D80maxi64P1;
 #endif // IS32BIT
@@ -252,6 +269,14 @@ private:
 
 public:
 #ifdef IS32BIT
+  // Assume x > _I16_MAX
+  static inline void loadBigUINT16(USHORT x) {
+    x &= _I16_MAX;
+    __asm {
+      fild x
+      fadd _Dmaxi16P1
+    }
+  }
   // Assume x > _I32_MAX
   static inline void loadBigUINT32(UINT x) {
     x &= _I32_MAX;
@@ -267,6 +292,29 @@ public:
       fild x
       fld _D80maxi64P1
       fadd
+    }
+  }
+
+  inline Double80(short x) {
+    __asm {
+      fild x
+      mov eax, this
+      fstp TBYTE PTR [eax]
+    }
+  }
+  inline Double80(USHORT x) {
+    if(x <= _I16_MAX) {
+      __asm {
+        fild x
+        mov eax, this
+        fstp TBYTE PTR [eax]
+      }
+    } else {
+      loadBigUINT16(x);
+      __asm {
+        mov eax, this
+        fstp TBYTE PTR [eax]
+      }
     }
   }
   inline Double80(int x) {
@@ -328,12 +376,14 @@ public:
     }
   }
 #else
-  inline Double80(int    x) { D80FromI32(   *this, x); }
-  inline Double80(UINT   x) { D80FromUI32(  *this, x); }
-  inline Double80(INT64  x) { D80FromI64(   *this, x); }
-  inline Double80(UINT64 x) { D80FromUI64(  *this, x); }
-  inline Double80(float  x) { D80FromFlt(   *this, x); }
-  inline Double80(double x) { D80FromDbl(   *this, x); }
+  inline Double80(short  x) { D80FromI16(  *this, x); }
+  inline Double80(USHORT x) { D80FromUI16( *this, x); }
+  inline Double80(int    x) { D80FromI32(  *this, x); }
+  inline Double80(UINT   x) { D80FromUI32( *this, x); }
+  inline Double80(INT64  x) { D80FromI64(  *this, x); }
+  inline Double80(UINT64 x) { D80FromUI64( *this, x); }
+  inline Double80(float  x) { D80FromFlt(  *this, x); }
+  inline Double80(double x) { D80FromDbl(  *this, x); }
 #endif // IS32BIT
 
   inline Double80() {
@@ -517,12 +567,78 @@ inline double getDouble(const Double80 &x) {
 
 
 
-inline Double80 operator+(const Double80 &x, const Double80 &y) {
+inline Double80 operator+(const Double80 &x, short y) {
   Double80 result;
   __asm {
     mov eax, DWORD PTR x
     fld TBYTE PTR [eax]
-    mov eax, DWORD PTR y
+    fiadd y
+    fstp result
+  }
+  return result;
+}
+
+
+
+
+
+
+inline Double80 operator-(const Double80 &x, short y) {
+  Double80 result;
+  __asm {
+    mov eax, DWORD PTR x
+    fld TBYTE PTR [eax]
+    fisub y
+    fstp result
+  }
+  return result;
+}
+
+
+
+
+
+
+inline Double80 operator*(const Double80 &x, short y) {
+  Double80 result;
+  __asm {
+    mov eax, DWORD PTR x
+    fld TBYTE PTR [eax]
+    fimul y
+    fstp result
+  }
+  return result;
+}
+
+
+
+
+
+
+inline Double80 operator/(const Double80 &x, short y) {
+  Double80 result;
+  __asm {
+    mov eax, DWORD PTR x
+    fld TBYTE PTR [eax]
+    fidiv y
+    fstp result
+  }
+  return result;
+}
+
+
+
+
+
+
+inline Double80 operator+(const Double80 &x, USHORT y) {
+  if(y <= _I16_MAX) {
+    return x + (short)y;
+  }
+  Double80::loadBigUINT16(y);
+  Double80 result;
+  __asm {
+    mov eax, DWORD PTR x
     fld TBYTE PTR [eax]
     fadd
     fstp result
@@ -531,46 +647,30 @@ inline Double80 operator+(const Double80 &x, const Double80 &y) {
 }
 
 
-
-
-inline Double80 operator-(const Double80 &x, const Double80 &y) {
+inline Double80 operator-(const Double80 &x, USHORT y) {
+  if(y <= _I16_MAX) {
+    return x - (short)y;
+  }
+  Double80::loadBigUINT16(y);
   Double80 result;
   __asm {
     mov eax, DWORD PTR x
     fld TBYTE PTR [eax]
-    mov eax, DWORD PTR y
-    fld TBYTE PTR [eax]
-    fsub
+    fsubrp st(1),st
     fstp result
   }
   return result;
 }
 
 
-
-
-inline Double80 operator-(const Double80 &x) {
-  Double80 result;
-  __asm {
-    mov eax, DWORD PTR x
-    fld TBYTE PTR [eax]
-    fchs
-    fstp result
+inline Double80 operator*(const Double80 &x, USHORT y) {
+  if(y <= _I16_MAX) {
+    return x * (short)y;
   }
-  return result;
-}
-
-
-
-
-
-
-inline Double80 operator*(const Double80 &x, const Double80 &y) {
+  Double80::loadBigUINT16(y);
   Double80 result;
   __asm {
     mov eax, DWORD PTR x
-    fld TBYTE PTR [eax]
-    mov eax, DWORD PTR y
     fld TBYTE PTR [eax]
     fmul
     fstp result
@@ -579,22 +679,20 @@ inline Double80 operator*(const Double80 &x, const Double80 &y) {
 }
 
 
-
-
-inline Double80 operator/(const Double80 &x, const Double80 &y) {
+inline Double80 operator/(const Double80 &x, USHORT y) {
+  if(y <= _I16_MAX) {
+    return x / (short)y;
+  }
+  Double80::loadBigUINT16(y);
   Double80 result;
   __asm {
     mov eax, DWORD PTR x
     fld TBYTE PTR [eax]
-    mov eax, DWORD PTR y
-    fld TBYTE PTR [eax]
-    fdiv
+    fdivrp st(1),st
     fstp result
   }
   return result;
 }
-
-
 
 
 inline Double80 operator+(const Double80 &x, int y) {
@@ -997,8 +1095,88 @@ inline Double80 operator/(const Double80 &x, double        y) {
 
 
 
-inline Double80 operator+(const int       x, const Double80 &y) { return y + x; }
-inline Double80 operator-(const int       x, const Double80 &y) {
+inline Double80 operator+(const Double80 &x, const Double80 &y) {
+  Double80 result;
+  __asm {
+    mov eax, DWORD PTR x
+    fld TBYTE PTR [eax]
+    mov eax, DWORD PTR y
+    fld TBYTE PTR [eax]
+    fadd
+    fstp result
+  }
+  return result;
+}
+
+
+
+
+inline Double80 operator-(const Double80 &x, const Double80 &y) {
+  Double80 result;
+  __asm {
+    mov eax, DWORD PTR x
+    fld TBYTE PTR [eax]
+    mov eax, DWORD PTR y
+    fld TBYTE PTR [eax]
+    fsub
+    fstp result
+  }
+  return result;
+}
+
+
+
+
+inline Double80 operator-(const Double80 &x) {
+  Double80 result;
+  __asm {
+    mov eax, DWORD PTR x
+    fld TBYTE PTR [eax]
+    fchs
+    fstp result
+  }
+  return result;
+}
+
+
+
+
+
+
+inline Double80 operator*(const Double80 &x, const Double80 &y) {
+  Double80 result;
+  __asm {
+    mov eax, DWORD PTR x
+    fld TBYTE PTR [eax]
+    mov eax, DWORD PTR y
+    fld TBYTE PTR [eax]
+    fmul
+    fstp result
+  }
+  return result;
+}
+
+
+
+
+inline Double80 operator/(const Double80 &x, const Double80 &y) {
+  Double80 result;
+  __asm {
+    mov eax, DWORD PTR x
+    fld TBYTE PTR [eax]
+    mov eax, DWORD PTR y
+    fld TBYTE PTR [eax]
+    fdiv
+    fstp result
+  }
+  return result;
+}
+
+
+
+
+inline Double80 operator+(short           x, const Double80 &y) { return y + x; }
+inline Double80 operator-(short           x, const Double80 &y) {
   Double80 result;
   __asm {
     mov eax, DWORD PTR y
@@ -1013,8 +1191,72 @@ inline Double80 operator-(const int       x, const Double80 &y) {
 
 
 
-inline Double80 operator*(const int       x, const Double80 &y) { return y * x; }
-inline Double80 operator/(const int       x, const Double80 &y) {
+inline Double80 operator*(short           x, const Double80 &y) { return y * x; }
+inline Double80 operator/(short           x, const Double80 &y) {
+  Double80 result;
+  __asm {
+    mov eax, DWORD PTR y
+    fld TBYTE PTR [eax]
+    fidivr x
+    fstp result
+  }
+  return result;
+}
+
+
+
+
+
+inline Double80 operator+(USHORT          x, const Double80 &y) { return y + x; }
+inline Double80 operator-(USHORT          x, const Double80 &y) {
+  if(x <= _I16_MAX) {
+    return (short)x - y;
+  }
+  Double80::loadBigUINT16(x);
+  Double80 result;
+  __asm {
+    mov eax, DWORD PTR y
+    fld TBYTE PTR [eax]
+    fsubp st(1), st
+    fstp result
+  }
+  return result;
+}
+
+inline Double80 operator*(USHORT          x, const Double80 &y) { return y * x; }
+inline Double80 operator/(USHORT          x, const Double80 &y) {
+  if(x <= _I16_MAX) {
+    return (short)x / y;
+  }
+  Double80::loadBigUINT16(x);
+  Double80 result;
+  __asm {
+    mov eax, DWORD PTR y
+    fld TBYTE PTR [eax]
+    fdivp st(1), st
+    fstp result
+  }
+  return result;
+}
+
+inline Double80 operator+(int             x, const Double80 &y) { return y + x; }
+inline Double80 operator-(int             x, const Double80 &y) {
+  Double80 result;
+  __asm {
+    mov eax, DWORD PTR y
+    fld TBYTE PTR [eax]
+    fisubr x
+    fstp result
+  }
+  return result;
+}
+
+
+
+
+
+inline Double80 operator*(int             x, const Double80 &y) { return y * x; }
+inline Double80 operator/(int             x, const Double80 &y) {
   Double80 result;
   __asm {
     mov eax, DWORD PTR y
@@ -1061,10 +1303,10 @@ inline Double80 operator/(UINT            x, const Double80 &y) {
   return result;
 }
 
-inline Double80 operator+(const long      x, const Double80 &y) { return y + x; }
-inline Double80 operator-(const long      x, const Double80 &y) { return (int)x - y; }
-inline Double80 operator*(const long      x, const Double80 &y) { return y * x; }
-inline Double80 operator/(const long      x, const Double80 &y) { return (int)x / y; }
+inline Double80 operator+(long            x, const Double80 &y) { return y + x; }
+inline Double80 operator-(long            x, const Double80 &y) { return (int)x - y; }
+inline Double80 operator*(long            x, const Double80 &y) { return y * x; }
+inline Double80 operator/(long            x, const Double80 &y) { return (int)x / y; }
 inline Double80 operator+(ULONG           x, const Double80 &y) { return y + x; }
 inline Double80 operator-(ULONG           x, const Double80 &y) { return (UINT)x - y; }
 inline Double80 operator*(ULONG           x, const Double80 &y) { return y * x; }
@@ -1205,13 +1447,78 @@ inline Double80 operator/(const double    x, const Double80 &y) {
 
 
 
-
-inline Double80 &operator+=(Double80 &x, const Double80   &y) {
+inline Double80 &operator+=(Double80 &x, short             y) {
   __asm {
     mov eax, x
     fld TBYTE PTR [eax]
-    mov ebx, DWORD PTR y
-    fld TBYTE PTR [ebx]
+    fiadd y
+    fstp TBYTE PTR [eax]
+  }
+  return x;
+}
+
+
+
+
+
+
+
+inline Double80 &operator-=(Double80 &x, short             y) {
+  __asm {
+    mov eax, x
+    fld TBYTE PTR [eax]
+    fisub y
+    fstp TBYTE PTR [eax]
+  }
+  return x;
+}
+
+
+
+
+
+
+
+inline Double80 &operator*=(Double80 &x, short             y) {
+  __asm {
+    mov eax, x
+    fld TBYTE PTR [eax]
+    fimul y
+    fstp TBYTE PTR [eax]
+  }
+  return x;
+}
+
+
+
+
+
+
+
+inline Double80 &operator/=(Double80 &x, short             y) {
+  __asm {
+    mov eax, x
+    fld TBYTE PTR [eax]
+    fidiv y
+    fstp TBYTE PTR [eax]
+  }
+  return x;
+}
+
+
+
+
+
+
+
+inline Double80 &operator+=(Double80 &x, USHORT            y) {
+  if(y <= _I16_MAX) {
+    return x += (short)y;
+  }
+  Double80::loadBigUINT16(y);
+  __asm {
+    mov eax, x
+    fld TBYTE PTR [eax]
     fadd
     fstp TBYTE PTR [eax]
   }
@@ -1220,15 +1527,15 @@ inline Double80 &operator+=(Double80 &x, const Double80   &y) {
 
 
 
-
-
-inline Double80 &operator-=(Double80 &x, const Double80   &y) {
+inline Double80 &operator-=(Double80 &x, USHORT            y) {
+  if(y <= _I16_MAX) {
+    return x -= (short)y;
+  }
+  Double80::loadBigUINT16(y);
   __asm {
     mov eax, x
     fld TBYTE PTR [eax]
-    mov ebx, DWORD PTR y
-    fld TBYTE PTR [ebx]
-    fsub
+    fsubrp st(1), st
     fstp TBYTE PTR [eax]
   }
   return x;
@@ -1236,14 +1543,14 @@ inline Double80 &operator-=(Double80 &x, const Double80   &y) {
 
 
 
-
-
-inline Double80 &operator*=(Double80 &x, const Double80   &y) {
+inline Double80 &operator*=(Double80 &x, USHORT            y) {
+  if(y <= _I16_MAX) {
+    return x *= (short)y;
+  }
+  Double80::loadBigUINT16(y);
   __asm {
     mov eax, x
     fld TBYTE PTR [eax]
-    mov ebx, DWORD PTR y
-    fld TBYTE PTR [ebx]
     fmul
     fstp TBYTE PTR [eax]
   }
@@ -1252,21 +1559,19 @@ inline Double80 &operator*=(Double80 &x, const Double80   &y) {
 
 
 
-
-
-inline Double80 &operator/=(Double80 &x, const Double80   &y) {
+inline Double80 &operator/=(Double80 &x, USHORT            y) {
+  if(y <= _I16_MAX) {
+    return x /= (short)y;
+  }
+  Double80::loadBigUINT16(y);
   __asm {
     mov eax, x
     fld TBYTE PTR [eax]
-    mov ebx, DWORD PTR y
-    fld TBYTE PTR [ebx]
-    fdiv
+    fdivrp st(1),st
     fstp TBYTE PTR [eax]
   }
   return x;
 }
-
-
 
 
 
@@ -1670,13 +1975,175 @@ inline Double80 &operator/=(Double80 &x, double            y) {
 
 
 
-inline bool operator==(const Double80 &x, const Double80  &y) {
+inline Double80 &operator+=(Double80 &x, const Double80   &y) {
+  __asm {
+    mov eax, x
+    fld TBYTE PTR [eax]
+    mov ebx, DWORD PTR y
+    fld TBYTE PTR [ebx]
+    fadd
+    fstp TBYTE PTR [eax]
+  }
+  return x;
+}
+
+
+
+
+
+inline Double80 &operator-=(Double80 &x, const Double80   &y) {
+  __asm {
+    mov eax, x
+    fld TBYTE PTR [eax]
+    mov ebx, DWORD PTR y
+    fld TBYTE PTR [ebx]
+    fsub
+    fstp TBYTE PTR [eax]
+  }
+  return x;
+}
+
+
+
+
+
+inline Double80 &operator*=(Double80 &x, const Double80   &y) {
+  __asm {
+    mov eax, x
+    fld TBYTE PTR [eax]
+    mov ebx, DWORD PTR y
+    fld TBYTE PTR [ebx]
+    fmul
+    fstp TBYTE PTR [eax]
+  }
+  return x;
+}
+
+
+
+
+
+inline Double80 &operator/=(Double80 &x, const Double80   &y) {
+  __asm {
+    mov eax, x
+    fld TBYTE PTR [eax]
+    mov ebx, DWORD PTR y
+    fld TBYTE PTR [ebx]
+    fdiv
+    fstp TBYTE PTR [eax]
+  }
+  return x;
+}
+
+
+
+
+
+inline bool operator==(const Double80 &x, short            y) {
   bool result;
   __asm {
-    mov eax, DWORD PTR y        // load y
-    fld TBYTE PTR [eax]
     mov eax, DWORD PTR x        // load x
-    fld TBYTE PTR [eax]         // st(0)=x, st(1)=y
+    fld TBYTE PTR [eax]
+    ficomp y                    // compare and pop x
+    fnstsw ax
+    sahf
+    sete  result                // result = (st(0) == y) ? 1 : 0
+  }
+  return result;
+}
+
+
+
+
+inline bool operator!=(const Double80 &x, short            y) {
+  bool result;
+  __asm {
+    mov eax, DWORD PTR x        // load x
+    fld TBYTE PTR [eax]
+    ficomp y                    // compare and pop x
+    fnstsw ax
+    sahf
+    setne result                // result = (st(0) != y) ? 1 : 0
+  }
+  return result;
+}
+
+
+
+
+inline bool operator<=(const Double80 &x, short            y) {
+  bool result;
+  __asm {
+    mov eax, DWORD PTR x        // load x
+    fld TBYTE PTR [eax]
+    ficomp y                    // compare and pop x
+    fnstsw ax
+    sahf
+    setbe result                // result = (st(0) <= y) ? 1 : 0
+  }
+  return result;
+}
+
+
+
+
+inline bool operator>=(const Double80 &x, short            y) {
+  bool result;
+  __asm {
+    mov eax, DWORD PTR x        // load x
+    fld TBYTE PTR [eax]
+    ficomp y                    // compare and pop x
+    fnstsw ax
+    sahf
+    setae result                // result = (st(0) >= y) ? 1 : 0
+  }
+  return result;
+}
+
+
+
+
+inline bool operator< (const Double80 &x, short            y) {
+  bool result;
+  __asm {
+    mov eax, DWORD PTR x        // load x
+    fld TBYTE PTR [eax]
+    ficomp y                    // compare and pop x
+    fnstsw ax
+    sahf
+    setb  result                // result = (st(0) <  y) ? 1 : 0
+  }
+  return result;
+}
+
+
+
+
+inline bool operator> (const Double80 &x, short            y) {
+  bool result;
+  __asm {
+    mov eax, DWORD PTR x        // load x
+    fld TBYTE PTR [eax]
+    ficomp y                    // compare and pop x
+    fnstsw ax
+    sahf
+    seta  result                // result = (st(0) >  y) ? 1 : 0
+  }
+  return result;
+}
+
+
+
+
+inline bool operator==(const Double80 &x, USHORT           y) {
+  bool result;
+  if(y <= _I16_MAX) {
+    return x == (short)y;
+  }
+  Double80::loadBigUINT16(y);   // load y
+  __asm {
+    mov eax, DWORD PTR x        // load x
+    fld TBYTE PTR [eax]
     fcomip st, st(1)            // compare and pop x
     sete  result                // result = (st(0) == st(1)) ? 1 : 0
     fstp st(0)                  // pop y
@@ -1684,15 +2151,15 @@ inline bool operator==(const Double80 &x, const Double80  &y) {
   return result;
 }
 
-
-
-inline bool operator!=(const Double80 &x, const Double80  &y) {
+inline bool operator!=(const Double80 &x, USHORT           y) {
   bool result;
+  if(y <= _I16_MAX) {
+    return x != (short)y;
+  }
+  Double80::loadBigUINT16(y);   // load y
   __asm {
-    mov eax, DWORD PTR y        // load y
-    fld TBYTE PTR [eax]
     mov eax, DWORD PTR x        // load x
-    fld TBYTE PTR [eax]         // st(0)=x, st(1)=y
+    fld TBYTE PTR [eax]
     fcomip st, st(1)            // compare and pop x
     setne result                // result = (st(0) != st(1)) ? 1 : 0
     fstp st(0)                  // pop y
@@ -1700,31 +2167,15 @@ inline bool operator!=(const Double80 &x, const Double80  &y) {
   return result;
 }
 
-
-
-inline bool operator>=(const Double80 &x, const Double80  &y) {
+inline bool operator<=(const Double80 &x, USHORT           y) {
   bool result;
-  __asm {
-    mov eax, DWORD PTR y        // load y
-    fld TBYTE PTR [eax]
-    mov eax, DWORD PTR x        // load x
-    fld TBYTE PTR [eax]         // st(0)=x, st(1)=y
-    fcomip st, st(1)            // compare and pop x
-    setae result                // result = (st(0) >= st(1)) ? 1 : 0
-    fstp st(0)                  // pop y
+  if(y <= _I16_MAX) {
+    return x <= (short)y;
   }
-  return result;
-}
-
-
-
-inline bool operator<=(const Double80 &x, const Double80  &y) {
-  bool result;
+  Double80::loadBigUINT16(y);   // load y
   __asm {
-    mov eax, DWORD PTR y        // load y
-    fld TBYTE PTR [eax]
     mov eax, DWORD PTR x        // load x
-    fld TBYTE PTR [eax]         // st(0)=x, st(1)=y
+    fld TBYTE PTR [eax]
     fcomip st, st(1)            // compare and pop x
     setbe result                // result = (st(0) <= st(1)) ? 1 : 0
     fstp st(0)                  // pop y
@@ -1732,31 +2183,31 @@ inline bool operator<=(const Double80 &x, const Double80  &y) {
   return result;
 }
 
-
-
-inline bool operator> (const Double80 &x, const Double80  &y) {
+inline bool operator>=(const Double80 &x, USHORT           y) {
   bool result;
+  if(y <= _I16_MAX) {
+    return x >= (short)y;
+  }
+  Double80::loadBigUINT16(y);   // load y
   __asm {
-    mov eax, DWORD PTR y        // load y
-    fld TBYTE PTR [eax]
     mov eax, DWORD PTR x        // load x
-    fld TBYTE PTR [eax]         // st(0)=x, st(1)=y
+    fld TBYTE PTR [eax]
     fcomip st, st(1)            // compare and pop x
-    seta  result                // result = (st(0) >  st(1)) ? 1 : 0
+    setae result                // result = (st(0) >= st(1)) ? 1 : 0
     fstp st(0)                  // pop y
   }
   return result;
 }
 
-
-
-inline bool operator< (const Double80 &x, const Double80  &y) {
+inline bool operator< (const Double80 &x, USHORT           y) {
   bool result;
+  if(y <= _I16_MAX) {
+    return x <  (short)y;
+  }
+  Double80::loadBigUINT16(y);   // load y
   __asm {
-    mov eax, DWORD PTR y        // load y
-    fld TBYTE PTR [eax]
     mov eax, DWORD PTR x        // load x
-    fld TBYTE PTR [eax]         // st(0)=x, st(1)=y
+    fld TBYTE PTR [eax]
     fcomip st, st(1)            // compare and pop x
     setb  result                // result = (st(0) <  st(1)) ? 1 : 0
     fstp st(0)                  // pop y
@@ -1764,7 +2215,21 @@ inline bool operator< (const Double80 &x, const Double80  &y) {
   return result;
 }
 
-
+inline bool operator> (const Double80 &x, USHORT           y) {
+  bool result;
+  if(y <= _I16_MAX) {
+    return x >  (short)y;
+  }
+  Double80::loadBigUINT16(y);   // load y
+  __asm {
+    mov eax, DWORD PTR x        // load x
+    fld TBYTE PTR [eax]
+    fcomip st, st(1)            // compare and pop x
+    seta  result                // result = (st(0) >  st(1)) ? 1 : 0
+    fstp st(0)                  // pop y
+  }
+  return result;
+}
 
 inline bool operator==(const Double80 &x, int              y) {
   bool result;
@@ -2356,6 +2821,104 @@ inline bool operator> (const Double80 &x, const double    &y) {
   return result;
 }
 
+
+
+inline bool operator==(const Double80 &x, const Double80  &y) {
+  bool result;
+  __asm {
+    mov eax, DWORD PTR y        // load y
+    fld TBYTE PTR [eax]
+    mov eax, DWORD PTR x        // load x
+    fld TBYTE PTR [eax]         // st(0)=x, st(1)=y
+    fcomip st, st(1)            // compare and pop x
+    sete  result                // result = (st(0) == st(1)) ? 1 : 0
+    fstp st(0)                  // pop y
+  }
+  return result;
+}
+
+
+
+inline bool operator!=(const Double80 &x, const Double80  &y) {
+  bool result;
+  __asm {
+    mov eax, DWORD PTR y        // load y
+    fld TBYTE PTR [eax]
+    mov eax, DWORD PTR x        // load x
+    fld TBYTE PTR [eax]         // st(0)=x, st(1)=y
+    fcomip st, st(1)            // compare and pop x
+    setne result                // result = (st(0) != st(1)) ? 1 : 0
+    fstp st(0)                  // pop y
+  }
+  return result;
+}
+
+
+
+inline bool operator>=(const Double80 &x, const Double80  &y) {
+  bool result;
+  __asm {
+    mov eax, DWORD PTR y        // load y
+    fld TBYTE PTR [eax]
+    mov eax, DWORD PTR x        // load x
+    fld TBYTE PTR [eax]         // st(0)=x, st(1)=y
+    fcomip st, st(1)            // compare and pop x
+    setae result                // result = (st(0) >= st(1)) ? 1 : 0
+    fstp st(0)                  // pop y
+  }
+  return result;
+}
+
+
+
+inline bool operator<=(const Double80 &x, const Double80  &y) {
+  bool result;
+  __asm {
+    mov eax, DWORD PTR y        // load y
+    fld TBYTE PTR [eax]
+    mov eax, DWORD PTR x        // load x
+    fld TBYTE PTR [eax]         // st(0)=x, st(1)=y
+    fcomip st, st(1)            // compare and pop x
+    setbe result                // result = (st(0) <= st(1)) ? 1 : 0
+    fstp st(0)                  // pop y
+  }
+  return result;
+}
+
+
+
+inline bool operator> (const Double80 &x, const Double80  &y) {
+  bool result;
+  __asm {
+    mov eax, DWORD PTR y        // load y
+    fld TBYTE PTR [eax]
+    mov eax, DWORD PTR x        // load x
+    fld TBYTE PTR [eax]         // st(0)=x, st(1)=y
+    fcomip st, st(1)            // compare and pop x
+    seta  result                // result = (st(0) >  st(1)) ? 1 : 0
+    fstp st(0)                  // pop y
+  }
+  return result;
+}
+
+
+
+inline bool operator< (const Double80 &x, const Double80  &y) {
+  bool result;
+  __asm {
+    mov eax, DWORD PTR y        // load y
+    fld TBYTE PTR [eax]
+    mov eax, DWORD PTR x        // load x
+    fld TBYTE PTR [eax]         // st(0)=x, st(1)=y
+    fcomip st, st(1)            // compare and pop x
+    setb  result                // result = (st(0) <  st(1)) ? 1 : 0
+    fstp st(0)                  // pop y
+  }
+  return result;
+}
+
+
+
 inline Double80 fabs(const Double80 &x) {
   Double80 result;
   __asm {
@@ -2458,6 +3021,14 @@ inline UINT64 getUint64(const Double80 &x) { return D80ToUI64(  x); }
 inline float  getFloat( const Double80 &x) { return D80ToFlt(   x); }
 inline double getDouble(const Double80 &x) { return D80ToDbl(   x); }
 
+inline Double80 operator+(const Double80 &x, const short    &y) { Double80 t(x); D80addI16(    t, y); return t;}
+inline Double80 operator-(const Double80 &x, const short    &y) { Double80 t(x); D80subI16(    t, y); return t;}
+inline Double80 operator*(const Double80 &x, const short    &y) { Double80 t(x); D80mulI16(    t, y); return t;}
+inline Double80 operator/(const Double80 &x, const short    &y) { Double80 t(x); D80divI16(    t, y); return t;}
+inline Double80 operator+(const Double80 &x, USHORT          y) { Double80 t(x); D80addUI16(   t, y); return t;}
+inline Double80 operator-(const Double80 &x, USHORT          y) { Double80 t(x); D80subUI16(   t, y); return t;}
+inline Double80 operator*(const Double80 &x, USHORT          y) { Double80 t(x); D80mulUI16(   t, y); return t;}
+inline Double80 operator/(const Double80 &x, USHORT          y) { Double80 t(x); D80divUI16(   t, y); return t;}
 inline Double80 operator+(const Double80 &x, const int      &y) { Double80 t(x); D80addI32(    t, y); return t;}
 inline Double80 operator-(const Double80 &x, const int      &y) { Double80 t(x); D80subI32(    t, y); return t;}
 inline Double80 operator*(const Double80 &x, const int      &y) { Double80 t(x); D80mulI32(    t, y); return t;}
@@ -2495,6 +3066,14 @@ inline Double80 operator-(const Double80 &x, const Double80 &y) { Double80 t(x);
 inline Double80 operator-(const Double80 &x)                    { Double80 t(x); D80neg(       t   ); return t;}
 inline Double80 operator*(const Double80 &x, const Double80 &y) { Double80 t(x); D80mulD80(    t, y); return t;}
 inline Double80 operator/(const Double80 &x, const Double80 &y) { Double80 t(x); D80divD80(    t, y); return t;}
+inline Double80 operator+(const short    &x, const Double80 &y) { Double80 t(y); D80addI16(    t, x); return t;}
+inline Double80 operator-(const short    &x, const Double80 &y) { Double80 t(y); D80subrI16(   t, x); return t;}
+inline Double80 operator*(const short    &x, const Double80 &y) { Double80 t(y); D80mulI16(    t, x); return t;}
+inline Double80 operator/(const short    &x, const Double80 &y) { Double80 t(y); D80divrI16(   t, x); return t;}
+inline Double80 operator+(USHORT          x, const Double80 &y) { Double80 t(y); D80addUI16(   t, x); return t;}
+inline Double80 operator-(USHORT          x, const Double80 &y) { Double80 t(y); D80subrUI16(  t, x); return t;}
+inline Double80 operator*(USHORT          x, const Double80 &y) { Double80 t(y); D80mulUI16(   t, x); return t;}
+inline Double80 operator/(USHORT          x, const Double80 &y) { Double80 t(y); D80divrUI16(  t, x); return t;}
 inline Double80 operator+(const int      &x, const Double80 &y) { Double80 t(y); D80addI32(    t, x); return t;}
 inline Double80 operator-(const int      &x, const Double80 &y) { Double80 t(y); D80subrI32(   t, x); return t;}
 inline Double80 operator*(const int      &x, const Double80 &y) { Double80 t(y); D80mulI32(    t, x); return t;}
@@ -2528,6 +3107,14 @@ inline Double80 operator-(const double   &x, const Double80 &y) { Double80 t(y);
 inline Double80 operator*(const double   &x, const Double80 &y) { Double80 t(y); D80mulDbl(    t, x); return t;}
 inline Double80 operator/(const double   &x, const Double80 &y) { Double80 t(y); D80divrDbl(   t, x); return t;}
 
+inline Double80 &operator+=( Double80 &x, const short    &y) { D80addI16(   x, y); return x; }
+inline Double80 &operator-=( Double80 &x, const short    &y) { D80subI16(   x, y); return x; }
+inline Double80 &operator*=( Double80 &x, const short    &y) { D80mulI16(   x, y); return x; }
+inline Double80 &operator/=( Double80 &x, const short    &y) { D80divI16(   x, y); return x; }
+inline Double80 &operator+=( Double80 &x, USHORT          y) { D80addUI16(  x, y); return x; }
+inline Double80 &operator-=( Double80 &x, USHORT          y) { D80subUI16(  x, y); return x; }
+inline Double80 &operator*=( Double80 &x, USHORT          y) { D80mulUI16(  x, y); return x; }
+inline Double80 &operator/=( Double80 &x, USHORT          y) { D80divUI16(  x, y); return x; }
 inline Double80 &operator+=( Double80 &x, const int      &y) { D80addI32(   x, y); return x; }
 inline Double80 &operator-=( Double80 &x, const int      &y) { D80subI32(   x, y); return x; }
 inline Double80 &operator*=( Double80 &x, const int      &y) { D80mulI32(   x, y); return x; }
@@ -2565,6 +3152,18 @@ inline Double80 &operator-=( Double80 &x, const Double80 &y) { D80subD80(   x, y
 inline Double80 &operator*=( Double80 &x, const Double80 &y) { D80mulD80(   x, y); return x; }
 inline Double80 &operator/=( Double80 &x, const Double80 &y) { D80divD80(   x, y); return x; }
 
+inline bool operator==(const Double80 &x, const short    &y) { return D80cmpI16(   x, y) == 0; }
+inline bool operator!=(const Double80 &x, const short    &y) { return D80cmpI16(   x, y) != 0; }
+inline bool operator<=(const Double80 &x, const short    &y) { return D80cmpI16(   x, y) <= 0; }
+inline bool operator>=(const Double80 &x, const short    &y) { return D80cmpI16(   x, y) >= 0; }
+inline bool operator< (const Double80 &x, const short    &y) { return D80cmpI16(   x, y) <  0; }
+inline bool operator> (const Double80 &x, const short    &y) { return D80cmpI16(   x, y) >  0; }
+inline bool operator==(const Double80 &x, USHORT          y) { return D80cmpUI16(  x, y) == 0; }
+inline bool operator!=(const Double80 &x, USHORT          y) { return D80cmpUI16(  x, y) != 0; }
+inline bool operator<=(const Double80 &x, USHORT          y) { return D80cmpUI16(  x, y) <= 0; }
+inline bool operator>=(const Double80 &x, USHORT          y) { return D80cmpUI16(  x, y) >= 0; }
+inline bool operator< (const Double80 &x, USHORT          y) { return D80cmpUI16(  x, y) <  0; }
+inline bool operator> (const Double80 &x, USHORT          y) { return D80cmpUI16(  x, y) >  0; }
 inline bool operator==(const Double80 &x, const int      &y) { return D80cmpI32(   x, y) == 0; }
 inline bool operator!=(const Double80 &x, const int      &y) { return D80cmpI32(   x, y) != 0; }
 inline bool operator<=(const Double80 &x, const int      &y) { return D80cmpI32(   x, y) <= 0; }
@@ -2717,6 +3316,17 @@ inline Double80 ceil(const Double80 &x) {
 
 #endif // IS32BIT
 
+inline short  getShort(const Double80 &x) {
+  return (short)getInt(x);
+}
+inline USHORT getUshort(const Double80 &x) {
+#ifdef IS32BIT
+  return (USHORT)getInt(x);
+#else
+  return (USHORT)getUint(x);
+#endif
+}
+
 inline long getLong(const Double80 &x) {
   return getInt(x);
 }
@@ -2725,6 +3335,8 @@ inline ULONG getUlong(const Double80 &x) {
   return getUint(x);
 }
 
+inline bool operator==(short   x, const Double80 &y) {  return y == x; }
+inline bool operator==(USHORT  x, const Double80 &y) {  return y == x; }
 inline bool operator==(int     x, const Double80 &y) {  return y == x; }
 inline bool operator==(UINT    x, const Double80 &y) {  return y == x; }
 inline bool operator==(long    x, const Double80 &y) {  return y == x; }
@@ -2733,6 +3345,8 @@ inline bool operator==(INT64   x, const Double80 &y) {  return y == x; }
 inline bool operator==(UINT64  x, const Double80 &y) {  return y == x; }
 inline bool operator==(float   x, const Double80 &y) {  return y == x; }
 inline bool operator==(double  x, const Double80 &y) {  return y == x; }
+inline bool operator!=(short   x, const Double80 &y) {  return y != x; }
+inline bool operator!=(USHORT  x, const Double80 &y) {  return y != x; }
 inline bool operator!=(int     x, const Double80 &y) {  return y != x; }
 inline bool operator!=(UINT    x, const Double80 &y) {  return y != x; }
 inline bool operator!=(long    x, const Double80 &y) {  return y != x; }
@@ -2741,6 +3355,8 @@ inline bool operator!=(INT64   x, const Double80 &y) {  return y != x; }
 inline bool operator!=(UINT64  x, const Double80 &y) {  return y != x; }
 inline bool operator!=(float   x, const Double80 &y) {  return y != x; }
 inline bool operator!=(double  x, const Double80 &y) {  return y != x; }
+inline bool operator<=(short   x, const Double80 &y) {  return y >= x; }
+inline bool operator<=(USHORT  x, const Double80 &y) {  return y >= x; }
 inline bool operator<=(int     x, const Double80 &y) {  return y >= x; }
 inline bool operator<=(UINT    x, const Double80 &y) {  return y >= x; }
 inline bool operator<=(long    x, const Double80 &y) {  return y >= x; }
@@ -2749,6 +3365,8 @@ inline bool operator<=(INT64   x, const Double80 &y) {  return y >= x; }
 inline bool operator<=(UINT64  x, const Double80 &y) {  return y >= x; }
 inline bool operator<=(float   x, const Double80 &y) {  return y >= x; }
 inline bool operator<=(double  x, const Double80 &y) {  return y >= x; }
+inline bool operator>=(short   x, const Double80 &y) {  return y <= x; }
+inline bool operator>=(USHORT  x, const Double80 &y) {  return y <= x; }
 inline bool operator>=(int     x, const Double80 &y) {  return y <= x; }
 inline bool operator>=(UINT    x, const Double80 &y) {  return y <= x; }
 inline bool operator>=(long    x, const Double80 &y) {  return y <= x; }
@@ -2757,6 +3375,8 @@ inline bool operator>=(INT64   x, const Double80 &y) {  return y <= x; }
 inline bool operator>=(UINT64  x, const Double80 &y) {  return y <= x; }
 inline bool operator>=(float   x, const Double80 &y) {  return y <= x; }
 inline bool operator>=(double  x, const Double80 &y) {  return y <= x; }
+inline bool operator< (short   x, const Double80 &y) {  return y >  x; }
+inline bool operator< (USHORT  x, const Double80 &y) {  return y >  x; }
 inline bool operator< (int     x, const Double80 &y) {  return y >  x; }
 inline bool operator< (UINT    x, const Double80 &y) {  return y >  x; }
 inline bool operator< (long    x, const Double80 &y) {  return y >  x; }
@@ -2765,6 +3385,8 @@ inline bool operator< (INT64   x, const Double80 &y) {  return y >  x; }
 inline bool operator< (UINT64  x, const Double80 &y) {  return y >  x; }
 inline bool operator< (float   x, const Double80 &y) {  return y >  x; }
 inline bool operator< (double  x, const Double80 &y) {  return y >  x; }
+inline bool operator> (short   x, const Double80 &y) {  return y <  x; }
+inline bool operator> (USHORT  x, const Double80 &y) {  return y <  x; }
 inline bool operator> (int     x, const Double80 &y) {  return y <  x; }
 inline bool operator> (UINT    x, const Double80 &y) {  return y <  x; }
 inline bool operator> (long    x, const Double80 &y) {  return y <  x; }

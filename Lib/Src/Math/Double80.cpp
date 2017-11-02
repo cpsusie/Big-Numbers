@@ -130,6 +130,7 @@ static const Double80     tenE18M1(tenE18-1);
 static const Double80     log2_5;
 
 #ifdef IS32BIT
+const double   _Dmaxi16P1   = ((UINT)_I16_MAX + 1);
 const double   _Dmaxi32P1   = ((UINT)_I32_MAX + 1);
 const Double80 _D80maxi64   = Double80((BYTE*)"\xfe\xff\xff\xff\xff\xff\xff\xff\x3d\x40"); // _I64_MAX;
 const Double80 _D80maxi64P1 = Double80((BYTE*)"\x00\x00\x00\x00\x00\x00\x00\x80\x3e\x40"); // (UINT64)_I64_MAX + 1

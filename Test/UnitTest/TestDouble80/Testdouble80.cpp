@@ -117,17 +117,23 @@ namespace TestDouble80 {
     checkResult(s64,s80,_T(#op));               \
   }
 
-#define CHECKRELATION(r,y1,y2)                  \
-  checkResult(x64,(double)y1,x64 r (y1),x80,y2,x80 r (y2),_T(#r))
+#define CHECKRELATION(r,y1,y2)                                               \
+  checkResult(x64       ,(double)y1,x64  r (y1),x80,y2 , x80 r (y2),_T(#r)); \
+  checkResult((double)y1,x64       ,(y1) r x64 ,y2 ,x80,(y2) r  x80,_T(#r))
 
-#define testOperatorD80(   op,allowZero)    CHECKOPERATOR(op,allowZero,x64,            y64,x80,          y80)
+#define testOperatorI16(   op,allowZero)    CHECKOPERATOR(op,allowZero,x64,   (short  )y64,x80,  (short )y64)
+#define testOperatorUI16(  op,allowZero)  { CHECKOPERATOR(op,allowZero,x64,   (USHORT )y64,x80,  (USHORT)y64); \
+                                            const USHORT _ui16 = (USHORT )(y64+_I16_MAX);                      \
+                                            CHECKOPERATOR(op,allowZero,x64,          _ui16,x80,        _ui16); \
+                                          }
+
 #define testOperatorI32(   op,allowZero)    CHECKOPERATOR(op,allowZero,x64,   (int    )y64,x80,  (int   )y64)
-#define testOperatorI64(   op,allowZero)    CHECKOPERATOR(op,allowZero,x64,   (INT64  )y64,x80,  (INT64 )y64)
 #define testOperatorUI32(  op,allowZero)  { CHECKOPERATOR(op,allowZero,x64,   (UINT32 )y64,x80,  (UINT32)y64); \
                                             const UINT32 _ui32 = (UINT32 )(y64+_I32_MAX);                      \
                                             CHECKOPERATOR(op,allowZero,x64,          _ui32,x80,        _ui32); \
                                           }
 
+#define testOperatorI64(   op,allowZero)    CHECKOPERATOR(op,allowZero,x64,   (INT64  )y64,x80,  (INT64 )y64)
 #define testOperatorUI64(  op,allowZero)  { CHECKOPERATOR(op,allowZero,x64,   (UINT64 )y64,x80,  (UINT64)y64); \
                                             const UINT64 _ui64 = (UINT64 )(y64+_I64_MAX);                      \
                                             CHECKOPERATOR(op,allowZero,x64,          _ui64,x80,        _ui64); \
@@ -135,16 +141,22 @@ namespace TestDouble80 {
 
 #define testOperatorFloat( op,allowZero)    CHECKOPERATOR(op,allowZero,x32,            y32,x80,          y32, 1e-6)
 #define testOperatorDouble(op,allowZero)    CHECKOPERATOR(op,allowZero,x64,            y64,x80,          y64)
+#define testOperatorD80(   op,allowZero)    CHECKOPERATOR(op,allowZero,x64,            y64,x80,          y80)
 
 
-#define testAssignOpD80(   op,allowZero)    CHECKASSIGNOPERATOR(op,allowZero,            y64,          y80)
+#define testAssignOpI16(   op,allowZero)    CHECKASSIGNOPERATOR(op,allowZero,   (short  )y64,  (short )y64)
+#define testAssignOpUI16(  op,allowZero)  { CHECKASSIGNOPERATOR(op,allowZero,   (USHORT )y64,  (USHORT)y64); \
+                                            const USHORT _ui16 = (USHORT )(y64+_I16_MAX);                    \
+                                            CHECKASSIGNOPERATOR(op,allowZero,          _ui16,        _ui16); \
+                                          }
+
 #define testAssignOpI32(   op,allowZero)    CHECKASSIGNOPERATOR(op,allowZero,   (int    )y64,  (int   )y64)
-#define testAssignOpI64(   op,allowZero)    CHECKASSIGNOPERATOR(op,allowZero,   (INT64  )y64,  (INT64 )y64)
 #define testAssignOpUI32(  op,allowZero)  { CHECKASSIGNOPERATOR(op,allowZero,   (UINT32 )y64,  (UINT32)y64); \
                                             const UINT32 _ui32 = (UINT32 )(y64+_I32_MAX);                    \
                                             CHECKASSIGNOPERATOR(op,allowZero,          _ui32,        _ui32); \
                                           }
 
+#define testAssignOpI64(   op,allowZero)    CHECKASSIGNOPERATOR(op,allowZero,   (INT64  )y64,  (INT64 )y64)
 #define testAssignOpUI64(  op,allowZero)  { CHECKASSIGNOPERATOR(op,allowZero,   (UINT64 )y64,  (UINT64)y64); \
                                             const UINT64 _ui64 = (UINT64 )(y64+_I64_MAX);                    \
                                             CHECKASSIGNOPERATOR(op,allowZero,          _ui64,        _ui64); \
@@ -152,16 +164,22 @@ namespace TestDouble80 {
 
 #define testAssignOpFloat( op,allowZero)    CHECKASSIGNOPERATOR(op,allowZero,            y32,          y32)
 #define testAssignOpDouble(op,allowZero)    CHECKASSIGNOPERATOR(op,allowZero,            y64,          y64)
+#define testAssignOpD80(   op,allowZero)    CHECKASSIGNOPERATOR(op,allowZero,            y64,          y80)
 
 
-#define testRelationD80(   op)    CHECKRELATION(op,            y64,          y80)
+#define testRelationI16(   op)    CHECKRELATION(op,   (short  )y64,  (short )y64)
+#define testRelationUI16(  op)  { CHECKRELATION(op,   (USHORT )y64,  (USHORT)y64); \
+                                  const USHORT _ui16 = (USHORT )(y64+_I16_MAX);    \
+                                  CHECKRELATION(op,          _ui16,        _ui16); \
+                                }
+
 #define testRelationI32(   op)    CHECKRELATION(op,   (int    )y64,  (int   )y64)
-#define testRelationI64(   op)    CHECKRELATION(op,   (INT64  )y64,  (INT64 )y64)
 #define testRelationUI32(  op)  { CHECKRELATION(op,   (UINT32 )y64,  (UINT32)y64); \
                                   const UINT32 _ui32 = (UINT32 )(y64+_I32_MAX);    \
                                   CHECKRELATION(op,          _ui32,        _ui32); \
                                 }
 
+#define testRelationI64(   op)    CHECKRELATION(op,   (INT64  )y64,  (INT64 )y64)
 #define testRelationUI64(  op)  { CHECKRELATION(op,   (UINT64 )y64,  (UINT64)y64); \
                                   const UINT64 _ui64 = (UINT64 )(y64+_I64_MAX);    \
                                   CHECKRELATION(op,          _ui64,        _ui64); \
@@ -169,34 +187,40 @@ namespace TestDouble80 {
 
 #define testRelationFloat( op)    CHECKRELATION(op,            y32,          y32)
 #define testRelationDouble(op)    CHECKRELATION(op,            y64,          y64)
-
+#define testRelationD80(   op)    CHECKRELATION(op,            y64,          y80)
 
 #define testOperator(op,allowZero)  \
-  testOperatorD80(   op,allowZero); \
+  testOperatorI16(   op,allowZero); \
+  testOperatorUI16(  op,allowZero); \
   testOperatorI32(   op,allowZero); \
-  testOperatorI64(   op,allowZero); \
   testOperatorUI32(  op,allowZero); \
+  testOperatorI64(   op,allowZero); \
   testOperatorUI64(  op,allowZero); \
   testOperatorFloat( op,allowZero); \
-  testOperatorDouble(op,allowZero);
+  testOperatorDouble(op,allowZero); \
+  testOperatorD80(   op,allowZero)
 
 #define testAssignOperator(op,allowZero) \
-  testAssignOpD80(   op,allowZero);      \
+  testAssignOpI16(   op,allowZero);      \
+  testAssignOpUI16(  op,allowZero);      \
   testAssignOpI32(   op,allowZero);      \
-  testAssignOpI64(   op,allowZero);      \
   testAssignOpUI32(  op,allowZero);      \
+  testAssignOpI64(   op,allowZero);      \
   testAssignOpUI64(  op,allowZero);      \
   testAssignOpFloat( op,allowZero);      \
-  testAssignOpDouble(op,allowZero);
+  testAssignOpDouble(op,allowZero);      \
+  testAssignOpD80(   op,allowZero)
 
 #define testRelation(r )  \
-  testRelationD80(   r ); \
+  testRelationI16(   r ); \
+  testRelationUI16(  r ); \
   testRelationI32(   r ); \
-  testRelationI64(   r ); \
   testRelationUI32(  r ); \
+  testRelationI64(   r ); \
   testRelationUI64(  r ); \
   testRelationFloat( r ); \
-  testRelationDouble(r );
+  testRelationDouble(r ); \
+  testRelationD80(   r )
 
 
 static void testFunction(const String &name, Double80(*f80)(const Double80 &, const Double80 &), double(*f64)(double, double), double low1, double high1, double low2, double high2) {
@@ -264,31 +288,51 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
     public:
 
     TEST_METHOD(Double80Testio) {
-      long     l = 0;
+      long     i32 = 0;
       double   d64 = 0;
-      Double80 d80 = l;
-      String s64 = toString(d64);
-      String s80 = toString(d80);
+      Double80 d80 = i32;
+      String   s64 = toString(d64);
+      String   s80 = toString(d80);
       verify(s64 == s80);
 
-      l = _I32_MAX;
-      d64 = l;
-      d80 = l;
+      short i16 = _I16_MAX;
+      d64 = i16;
+      d80 = i16;
       s64 = toString(d64);
       s80 = toString(d80);
       verify(s64 == s80);
 
-      l = _I32_MIN;
-      d64 = l;
-      d80 = l;
+      i16 = _I16_MIN;
+      d64 = i16;
+      d80 = i16;
       s64 = toString(d64);
       s80 = toString(d80);
       verify(s64 == s80);
 
-      ULONG ul = _UI32_MAX;
-      d64 = ul;
-      d80 = ul;
+      USHORT ui16 = _UI16_MAX;
+      d64 = ui16;
+      d80 = ui16;
+      s64 = toString(d64);
+      s80 = toString(d80);
+      verify(s64 == s80);
 
+      i32 = _I32_MAX;
+      d64 = i32;
+      d80 = i32;
+      s64 = toString(d64);
+      s80 = toString(d80);
+      verify(s64 == s80);
+
+      i32 = _I32_MIN;
+      d64 = i32;
+      d80 = i32;
+      s64 = toString(d64);
+      s80 = toString(d80);
+      verify(s64 == s80);
+
+      ULONG ui32 = _UI32_MAX;
+      d64 = ui32;
+      d80 = ui32;
       s64 = toString(d64);
       s80 = toString(d80);
       verify(s64 == s80);
@@ -367,24 +411,43 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
 
     void testAllCast(double d64) {
       Double80 d80 = d64;
-      const long l1_32 = (long)d64;
-      const long l2_32 = getLong(d80);
-      verify(l2_32 == l1_32);
 
-      const ULONG ul1_32 = (ULONG)d64;
-      const ULONG ul2_32 = getUlong(d80);
+      const int    i1_32  = (int)d64;
+      const int    i2_32  = getInt(d80);
+      verify(i2_32  == i1_32 );
+
+      const UINT   ui1_32 = (UINT)d64;
+      const UINT   ui2_32 = getUint(d80);
+      verify(ui2_32 == ui1_32);
+
+      const short  s1_16 = (short)d64;
+      const short  s2_16 = getShort(d80);
+      verify(s2_16  == s1_16 );
+
+      const USHORT us1_16 = (USHORT)d64;
+      const USHORT us2_16 = getUshort(d80);
+      verify(us2_16 == us1_16);
+
+      const long   l1_32  = (long)d64;
+      const long   l2_32  = getLong(d80);
+      verify(l2_32  == l1_32 );
+
+      const ULONG  ul1_32 = (ULONG)d64;
+      const ULONG  ul2_32 = getUlong(d80);
       verify(ul2_32 == ul1_32);
 
-      const INT64 l1_64 = (INT64)d64;
-      const INT64 l2_64 = getInt64(d80);
-      verify(l2_64 == l1_64);
+      const INT64  i1_64  = (INT64)d64;
+      const INT64  i2_64  = getInt64(d80);
+      verify(i2_64 == i1_64);
 
-      const UINT64 ul1_64 = (UINT64)d64;
-      const UINT64 ul2_64 = getUint64(d80);
-      verify(ul2_64 == ul1_64);
+      const UINT64 ui1_64 = (UINT64)d64;
+      const UINT64 ui2_64 = getUint64(d80);
+      verify(ui2_64 == ui1_64);
     }
 
     TEST_METHOD(Double80TestCast) {
+      testAllCast( UINT_MAX  );
+      return;
       testAllCast( 0         );
       testAllCast( 1         );
       testAllCast(-1         );
@@ -392,6 +455,10 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
       testAllCast(-1.6       );
       testAllCast( 1.3       );
       testAllCast(-1.3       );
+      testAllCast( SHRT_MAX  );
+      testAllCast( SHRT_MIN  );
+      testAllCast(-SHRT_MAX  );
+      testAllCast( USHRT_MAX );
       testAllCast( INT_MAX   );
       testAllCast( INT_MIN   );
       testAllCast(-INT_MAX   );
@@ -418,7 +485,6 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
     }
 
     TEST_METHOD(Double80measureToString) {
-
       const double startTime = getProcessTime();
       const Double80 stepFactor = 1.012345;
       int count = 0;
@@ -434,10 +500,10 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
     TEST_METHOD(Double80TestRound) {
       static const double testData[] = {
         1
-        ,0.999999
-        ,1.499999
-        ,1.5
-        ,1.99999999999999
+       ,0.999999
+       ,1.499999
+       ,1.5
+       ,1.99999999999999
       };
 
       double maxRelativeError = 0;
@@ -549,7 +615,6 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
       //  printf("FPU ctrlWord:%04x (%s)\n", cw, sprintbin(cw).cstr());
 
       for(double x = 0; x < 10; x += 0.1) {
-
         const double d64c1 = cos(x);
         const double d64s1 = sin(x);
 

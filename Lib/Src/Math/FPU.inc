@@ -32,6 +32,20 @@ popRoundMode MACRO
     add		rsp, 8
 ENDM
 
+fildUI16 MACRO reg
+  cmp     reg, 07fffh
+  jbe     _LoadSmallUI16
+  and     reg, 07fffh
+  mov     QWORD ptr[rsp-8], reg
+  fild    WORD PTR[rsp-8]
+  fadd    Dmaxi16P1
+  jmp     _Done
+_LoadSmallUI16:
+  mov     QWORD ptr[rsp-8], reg
+  fild    WORD PTR[rsp-8]
+_Done:
+ENDM
+
 fildUI32 MACRO reg
   cmp     reg, 07fffffffh
   jbe     _LoadSmallUI32
