@@ -104,8 +104,9 @@ namespace TestDouble80 {
     }
   }
 
-#define CHECKOPERATOR(op,allowZero,x64,y1,x80,y2,...) \
-  if(allowZero || (((y1)!=0) && ((y2)!=0))) checkResult((x64 op y1),(x80 op y2),_T(#op),__VA_ARGS__)
+#define CHECKOPERATOR(op,allowZero,x64,y1,x80,y2,...)                                                   \
+  if(allowZero || (((y1 )!=0) && ((y2 )!=0))) checkResult((x64 op y1),(x80 op y2),_T(#op),__VA_ARGS__); \
+  if(allowZero || (((x64)!=0) && ((x80)!=0))) checkResult((y1 op x64),(y2 op x80),_T(#op),__VA_ARGS__)
 
 #define CHECKASSIGNOPERATOR(op,allowZero,y1,y2) \
   if(allowZero || (((y1)!=0) && ((y2)!=0))) {   \
