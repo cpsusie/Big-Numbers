@@ -446,8 +446,6 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
     }
 
     TEST_METHOD(Double80TestCast) {
-      testAllCast( UINT_MAX  );
-      return;
       testAllCast( 0         );
       testAllCast( 1         );
       testAllCast(-1         );

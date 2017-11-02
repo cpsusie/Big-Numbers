@@ -117,10 +117,8 @@ D80FromDbl ENDP
 ;int D80ToI32(const Double80 &x);
 D80ToI32 PROC
     fld     TBYTE PTR[rcx]                     ; load x
-    pushRoundMode TRUNCATE
-    fistp   DWORD PTR[rsp-4]
+    fisttp  DWORD PTR[rsp-4]
     mov     eax, DWORD PTR[rsp-4]
-    popRoundMode
     ret
 D80ToI32 ENDP
 ;UINT D80ToUI32(const Double80 &x);
@@ -135,37 +133,30 @@ D80ToUI32 PROC
     jae     BeloveNegMaxInt32
 
     fstp    st(0)
-    pushRoundMode TRUNCATE                     ; -maxInt32 <= x <= maxInt32
-    fistp   DWORD PTR[rsp-4]
+                                                ; -maxInt32 <= x <= maxInt32
+    fisttp  DWORD PTR[rsp-4]
     mov     eax, DWORD PTR[rsp-4]
-    popRoundMode
     ret
 
   AboveMaxInt32:                               ; x > maxInt32
     fsub
-    pushRoundMode TRUNCATE
-    fistp   DWORD PTR[rsp-4]
+    fisttp  DWORD PTR[rsp-4]
     mov     eax, DWORD PTR[rsp-4]
-    popRoundMode
     add     eax, DWmaxI32P1
     ret
 
   BeloveNegMaxInt32:                           ; x < -maxInt32
     fsub
-    pushRoundMode TRUNCATE
-    fistp   DWORD PTR[rsp-4]
+    fisttp  DWORD PTR[rsp-4]
     mov     eax, DWORD PTR[rsp-4]
-    popRoundMode
     sub     eax, DWmaxI32P1
     ret
 D80ToUI32 ENDP
 ;INT64 D80ToI64(const Double80 &x);
 D80ToI64 PROC
     fld     TBYTE PTR[rcx]
-    pushRoundMode TRUNCATE
-    fistp   QWORD PTR[rsp-8]
+    fisttp  QWORD PTR[rsp-8]
     mov     rax,  QWORD PTR[rsp-8]
-    popRoundMode
     ret
 D80ToI64 ENDP
 ;UINT64 D80ToUI64(const Double80 &x);
@@ -176,18 +167,15 @@ D80ToUI64 PROC
     jbe     AboveMaxInt64
 
     fstp    st(0)
-    pushRoundMode TRUNCATE                     ; -maxInt64 <= x <= maxInt64
-    fistp   QWORD PTR[rsp-8]
+                                               ; -maxInt64 <= x <= maxInt64
+    fisttp  QWORD PTR[rsp-8]
     mov     rax,  QWORD PTR[rsp-8]
-    popRoundMode
     ret
 
   AboveMaxInt64:                                ; x > maxInt64
     fsub
-    pushRoundMode TRUNCATE
-    fistp   QWORD PTR[rsp-8]
+    fisttp  QWORD PTR[rsp-8]
     mov     rax,  QWORD PTR[rsp-8]
-    popRoundMode
     cmp     rax, QWmaxI64P1
     jae     Return
     add     rax, QWmaxI64P1

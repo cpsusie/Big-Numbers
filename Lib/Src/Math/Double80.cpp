@@ -255,26 +255,23 @@ Exit:
 }
 
 int getInt(const Double80 &x) {
-  const USHORT cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_TRUNCATE);
   int result;
   __asm {
     mov eax, x
     fld TBYTE PTR [eax]
-    fistp result
+    fisttp result
   }
-  FPU::restoreControlWord(cwSave);
   return result;
 }
 
 UINT getUint(const Double80 &x) {
-  const USHORT cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_TRUNCATE);
   UINT result;
   if(x > _I32_MAX) {
     __asm {
       mov eax, x
       fld TBYTE PTR [eax]
       fsub _Dmaxi32P1
-      fistp result
+      fisttp result
     }
     result += (UINT)_I32_MAX + 1;
   } else if(x < -_I32_MAX) {
@@ -283,7 +280,7 @@ UINT getUint(const Double80 &x) {
       fld TBYTE PTR [eax]
       fchs
       fsub _Dmaxi32P1
-      fistp result
+      fisttp result
     }
     result = -(int)result;
     result -= (UINT)_I32_MAX + 1;
@@ -291,27 +288,23 @@ UINT getUint(const Double80 &x) {
     __asm {
       mov eax, x
       fld TBYTE PTR [eax]
-      fistp result
+      fisttp result
     }
   }
-  FPU::restoreControlWord(cwSave);
   return result;
 }
 
 INT64 getInt64(const Double80 &x) {
-  const USHORT cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_TRUNCATE);
   INT64 result;
   __asm {
     mov eax, x
     fld TBYTE PTR [eax]
-    fistp result
+    fisttp result
   }
-  FPU::restoreControlWord(cwSave);
   return result;
 }
 
 UINT64 getUint64(const Double80 &x) {
-  const USHORT cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_TRUNCATE);
   UINT64 result;
   if(x > _D80maxi64) {
     __asm {
@@ -319,7 +312,7 @@ UINT64 getUint64(const Double80 &x) {
       fld TBYTE PTR [eax]
       fld _D80maxi64P1
       fsub
-      fistp result;
+      fisttp result;
     }
     if(result <= (UINT64)_I64_MAX) {
       result += (UINT64)_I64_MAX + 1;
@@ -328,10 +321,9 @@ UINT64 getUint64(const Double80 &x) {
     __asm {
       mov eax, x
       fld TBYTE PTR [eax]
-      fistp result;
+      fisttp result;
     }
   }
-  FPU::restoreControlWord(cwSave);
   return result;
 }
 
