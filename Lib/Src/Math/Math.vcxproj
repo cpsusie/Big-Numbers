@@ -790,7 +790,6 @@
     <ClCompile Include="SigmoidIterator.cpp" />
     <ClCompile Include="Simplex.cpp" />
     <ClCompile Include="SolveTriDiag.cpp" />
-    <ClCompile Include="Spherical.cpp" />
     <ClCompile Include="Statistic.cpp" />
     <ClCompile Include="Triangle.cpp" />
     <ClCompile Include="TriangleInfo.cpp" />

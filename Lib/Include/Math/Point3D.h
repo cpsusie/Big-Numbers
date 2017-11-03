@@ -110,10 +110,10 @@ template<class T> Point3DTemplate<T> crossProduct(const Point3DTemplate<T> &a, c
                            );
 }
 
-typedef Point3DTemplate<float >   FloatPoint3D;
-typedef Point3DTemplate<double>   Point3D;
+typedef Point3DTemplate<float   > FloatPoint3D;
+typedef Point3DTemplate<double  > Point3D;
 typedef Point3DTemplate<Double80> D80Point3D;
-typedef Point3DTemplate<Real>     RealPoint3D;
+typedef Point3DTemplate<Real    > RealPoint3D;
 
 typedef FunctionTemplate<Point3D, Point3D> Point3DFunction;
 typedef FunctionTemplate<Point3D, Real>    Function3D;

@@ -73,7 +73,7 @@ public:
   friend INT64  getInt64(   const Rational &r);
   friend UINT64 getUint64(  const Rational &r);
 
-  friend float            getFloat(   const Rational &r) {
+  friend inline float     getFloat(   const Rational &r) {
     return (float)((double)r.m_numerator/r.m_denominator);
   }
 

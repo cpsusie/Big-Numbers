@@ -289,9 +289,6 @@
     <ClCompile Include="Int128x86.cpp">
       <Filter>Source Files\Number Types</Filter>
     </ClCompile>
-    <ClCompile Include="Spherical.cpp">
-      <Filter>Source Files\Geometri</Filter>
-    </ClCompile>
     <ClCompile Include="Triangle.cpp">
       <Filter>Source Files\Triangle</Filter>
     </ClCompile>
