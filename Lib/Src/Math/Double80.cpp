@@ -115,13 +115,17 @@ public:
 
 DEFINECLASSNAME(Double80);
 
-const        Double80     Double80::zero(0);
-const        Double80     Double80::one( 1);
-const        Double80     Double80::M_PI         ((BYTE*)"\x35\xc2\x68\x21\xa2\xda\x0f\xc9\x00\x40"); // pi
-const        Double80     Double80::DBL80_EPSILON((BYTE*)"\x00\x00\x00\x00\x00\x00\x00\x80\xc0\x3f"); // 1.08420217248550443e-019;
-const        Double80     Double80::DBL80_MIN(    (BYTE*)"\x00\x00\x00\x00\x00\x00\x00\x80\x01\x00"); // 3.36210314311209209e-4932;
-const        Double80     Double80::DBL80_MAX(    (BYTE*)"\xff\xff\xff\xff\xff\xff\xff\xff\xfe\x7f"); // 1.18973149535723227e+4932
-const        int          Double80::DBL80_DIG = 19;
+const Double80 Double80::zero(0);
+const Double80 Double80::one( 1);
+const Double80 Double80::M_PI         ((BYTE*)"\x35\xc2\x68\x21\xa2\xda\x0f\xc9\x00\x40"); // pi
+const Double80 Double80::DBL80_EPSILON((BYTE*)"\x00\x00\x00\x00\x00\x00\x00\x80\xc0\x3f"); // 1.08420217248550443e-019;
+const Double80 Double80::DBL80_MIN    ((BYTE*)"\x00\x00\x00\x00\x00\x00\x00\x80\x01\x00"); // 3.36210314311209209e-4932;
+const Double80 Double80::DBL80_MAX    ((BYTE*)"\xff\xff\xff\xff\xff\xff\xff\xff\xfe\x7f"); // 1.18973149535723227e+4932
+const Double80 Double80::DBL80_NAN    ((BYTE*)"\x00\x00\x00\x00\x00\x00\x00\x00\xff\x7f"); // nan (undefined)
+const Double80 Double80::DBL80_PINF   ((BYTE*)"\x00\x00\x00\x00\x00\x00\x00\x80\xff\x7f"); // +infinity;
+const Double80 Double80::DBL80_NINF   ((BYTE*)"\x00\x00\x00\x00\x00\x00\x00\x80\xff\xff"); // -infinity;
+
+const int      Double80::DBL80_DIG = 19;
 
 static const Double80     M_PI_05(  (BYTE*)"\x35\xc2\x68\x21\xa2\xda\x0f\xc9\xff\x3f"); // pi/2
 static const Double80     M_PI_2_60((BYTE*)"\x35\xc2\x68\x21\xa2\xda\x0f\xc9\x3d\x40"); // 2*pi*pow2(60) (=7.244019458077122e+018)

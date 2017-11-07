@@ -13,9 +13,6 @@ QWmaxI64P1      QWORD      8000000000000000h
 DmaxI16P1       QWORD      40e0000000000000h   ;  maxI16P1 as double
 DmaxI32P1       QWORD      41e0000000000000h   ;  maxI32P1 as double
 TBmaxI64P1      TBYTE  403e8000000000000000h   ;  maxI64P1 as Double80
-TBEpsilon       TBYTE  0000000000000080c03fh   ; 1.08420217248550443e-019
-TBMinimum       TBYTE  00000000000000800100h   ; 3.36210314311209209e-4932
-TBMaximum       TBYTE 0fffffffffffffffffe7fh   ; 1.18973149535723227e+4932
 TB2Pi2Pow60     TBYTE  403dc90fdaa22168c235h   ; 2*pi*pow2(60) (=7.244019458077122e+018)
 TB1e18          TBYTE  403ade0b6b3a76400000h   ; 1e18
 TB1e18M1        TBYTE  403ade0b6b3a763ffff0h   ; TB1e18 - 1
@@ -796,35 +793,6 @@ XBelowY:
     mov     rax, -1
     ret
 D80cmpD80 ENDP
-
-; ------------------------------------------Misc functions ---------------------------------------------------------
-;void D80getPi(Double80 &dst);
-D80getPi PROC
-    fldpi
-    fstp    TBYTE PTR[rcx]
-    ret
-D80getPi ENDP
-
-;void D80getEps(Double80 &dst);
-D80getEps PROC
-    fld     TBEpsilon
-    fstp    TBYTE PTR[rcx]
-    ret
-D80getEps ENDP
-
-;void D80getMin(Double80 &dst);
-D80getMin PROC
-    fld     TBMinimum
-    fstp    TBYTE PTR[rcx]
-    ret
-D80getMin ENDP
-
-;void D80getMax(Double80 &dst);
-D80getMax PROC
-    fld     TBMaximum
-    fstp    TBYTE PTR[rcx]
-    ret
-D80getMax ENDP
 
 ; -------------------------------------------------- Double80 Functions ----------------------------------------
 

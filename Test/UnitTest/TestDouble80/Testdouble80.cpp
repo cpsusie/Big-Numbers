@@ -61,7 +61,7 @@ namespace TestDouble80 {
     }
     OUTPUT(_T("%-10s:Max relative error:%.16le"), name.cstr(), maxRelativeError);
   }
-
+  
   static double Max(double x, double y) {
     return x > y ? x : y;
   }
@@ -790,23 +790,38 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
       testFunction("Min", ::Min, Min, -2.3, 2.7, -1.2, 1);
       testFunction("Max", ::Max, Max, -2.3, 2.7, -1.2, 1);
 
-      verify(sign(Double80(2)) == 1);
-      verify(sign(Double80(-2)) == -1);
-      verify(sign(Double80::zero) == 0);
+      verify(sign(Double80( 2)  ) ==  1);
+      verify(sign(Double80(-2)  ) == -1);
+      verify(sign(Double80::zero) ==  0);
 
       FPU::enableExceptions(false, FPU_DIVIDE_BY_ZERO_EXCEPTION);
 
       Double80 zzz = Double80::one / Double80::zero;
-      verify(isNan(zzz));
-      verify(isInfinity(zzz));
-      verify(isPInfinity(zzz));
+      verify(isNan(       zzz));
+      verify(isInfinity(  zzz));
+      verify(isPInfinity( zzz));
       verify(!isNInfinity(zzz));
 
       zzz = (-Double80::one) / Double80::zero;
-      verify(isNan(zzz));
-      verify(isInfinity(zzz));
+      verify(isNan(       zzz));
+      verify(isInfinity(  zzz));
       verify(!isPInfinity(zzz));
-      verify(isNInfinity(zzz));
+      verify(isNInfinity( zzz));
+
+      verify( isNan(      Double80::DBL80_NAN));
+      verify(!isInfinity( Double80::DBL80_NAN));
+      verify(!isPInfinity(Double80::DBL80_NAN));
+      verify(!isNInfinity(Double80::DBL80_NAN));
+
+      verify( isNan(      Double80::DBL80_PINF));
+      verify( isInfinity( Double80::DBL80_PINF));
+      verify( isPInfinity(Double80::DBL80_PINF));
+      verify(!isNInfinity(Double80::DBL80_PINF));
+
+      verify( isNan(      Double80::DBL80_NINF));
+      verify( isInfinity( Double80::DBL80_NINF));
+      verify(!isPInfinity(Double80::DBL80_NINF));
+      verify( isNInfinity(Double80::DBL80_NINF));
 
       FPU::clearStatusWord();
       FPU::enableExceptions(true, FPU_DIVIDE_BY_ZERO_EXCEPTION);

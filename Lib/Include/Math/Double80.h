@@ -224,10 +224,6 @@ void   D80rem(            Double80 &dst, const Double80 &x);
 void   D80neg(            Double80 &x);
 void   D80inc(            Double80 &x);
 void   D80dec(            Double80 &x);
-void   D80getPi(          Double80 &dst);
-void   D80getEps(         Double80 &dst);
-void   D80getMin(         Double80 &dst);
-void   D80getMax(         Double80 &dst);
 int    D80getExpo2(       const Double80 &x);
 int    D80getExpo10(      const Double80 &x);
 void   D80fabs(           Double80 &x);
@@ -524,6 +520,10 @@ public:
   static const Double80 DBL80_EPSILON; // Smallest such that 1.0+DBL80_EPSILON != 1.0 (=1.08420217248550443e-019)
   static const Double80 DBL80_MIN;     // Min positive value (=3.36210314311209209e-4932)
   static const Double80 DBL80_MAX;     // Max value          (=1.18973149535723227e+4932)
+  static const Double80 DBL80_NAN;     // nan (undefined)
+  static const Double80 DBL80_PINF;    // +infinity;
+  static const Double80 DBL80_NINF;    // -infinity;
+
   static const int      DBL80_DIG;     // # of decimal digits of precision
 
   static void initClass();
