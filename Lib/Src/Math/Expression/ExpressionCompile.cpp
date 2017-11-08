@@ -654,7 +654,7 @@ void Expression::genExpression(const ExpressionNode *n, const ExpressionDestinat
   case POW           :
     if(n->right()->isConstant()) {
       const Real p = evaluateRealExpr(n->right());
-      if((fabs(p) <= 13) && (p - floor(p) == 0)) {
+      if((fabs(p) <= 16) && (p - floor(p) == 0)) {
         int y = (int)p;
         if(y == 0) {
           genExpression(getOne(), dst);
@@ -666,12 +666,15 @@ void Expression::genExpression(const ExpressionNode *n, const ExpressionDestinat
           genExpression(n->left(), DST_FPU);
           int py = abs(y);
           switch(py) {
-          case 2:
-          case 4:
-          case 8:
-            for(;py > 1; py /= 2) {   // 10, 100, 1000
+          case 2 :
+          case 4 :
+          case 8 :
+          case 16:
+            for(;py > 1; py /= 2) {   // 10, 100, 1000, 10000
               m_code.emit(FMUL_0i(0));
             }
+            break;
+          case 1:                     // y must be -1. need st0 = 1/st0
             break;
           case 3:                     // 11
             m_code.emit(FLD(0));      // st0=x  , st1=x
@@ -734,8 +737,25 @@ void Expression::genExpression(const ExpressionNode *n, const ExpressionDestinat
             m_code.emit(FMUL_0i(0));  // st0=x^12, st1=x
             m_code.emit(FMUL);        // st0=x^13
             break;
+          case 14:                    // 1110
+            m_code.emit(FMUL_0i(0));  // st0=x^2
+            m_code.emit(FLD(0));      // st0=x^2 , st1=x^2
+            m_code.emit(FMUL_0i(1));  // st0=x^4
+            m_code.emit(FMUL_0i(0));  // st0=x^6 , st1=x^2
+            m_code.emit(FMUL_0i(0));  // st0=x^12, st1=x^2
+            m_code.emit(FMUL);        // st0=x^14
+            break;
+          case 15:                    // 1111
+            m_code.emit(FLD(0));      // st0=x   , st1=x
+            m_code.emit(FMUL_0i(1));  // st0=x^2 , st1=x
+            m_code.emit(FMUL_0i(1));  // st0=x^3
+            m_code.emit(FMUL_0i(0));  // st0=x^6 , st1=x
+            m_code.emit(FMUL_0i(1));  // st0=x^7 , st1=x
+            m_code.emit(FMUL_0i(0));  // st0=x^14, st1=x
+            m_code.emit(FMUL);        // st0=x^15
+            break;
           default:
-            throwException(_T("Power %d to high. -13 <= y <= 13"), y);
+            throwException(_T("Power %d to high. -16 <= y <= 16"), y);
           }
           if(y < 0) { // make st0 = 1/st0
             m_code.emit(FLD1);         // st0=1 , st1=x^|y|
