@@ -16,7 +16,7 @@ bool AllocateNumbers::handleNode(ExpressionNode *n, int level) {
   switch(n->getSymbol()) {
   case NUMBER:
     if(n->getValueIndex() < 0) {
-      m_tree.allocateNumber(n);
+      m_tree.allocateNumber(n,true);
     }
     break;
   case POLY  :
@@ -25,9 +25,9 @@ bool AllocateNumbers::handleNode(ExpressionNode *n, int level) {
       for(size_t i = 0; i < coefArray.size(); i++) {
         ExpressionNode *coef = coefArray[i];
         if(coef->isNumber()) {
-          m_tree.allocateNumber(coef);
+          m_tree.allocateNumber(coef,false);
         } else {
-          m_tree.insertValue(0);
+          m_tree.insertValue(getRealNaN());
         }
       }
     }
@@ -43,7 +43,7 @@ void ParserTree::buildSymbolTable() {
 
   clearSymbolTable();
   for(int i = 0; i < TMPVARCOUNT; i++) {
-    insertValue(0);
+    insertValue(getRealNaN());
   }
   allocateConstant(NULL, _T("pi"), M_PI);
   allocateConstant(NULL, _T("e") , M_E);
@@ -245,7 +245,14 @@ ExpressionVariable *ParserTree::allocateConstant(ExpressionNode *n, const String
 }
 
 // assume n->getSymbol() == NUMBER
-void ParserTree::allocateNumber(ExpressionNode *n) {
+void ParserTree::allocateNumber(ExpressionNode *n, bool reuseIfExist) {
+  if(reuseIfExist) {
+    const int index = findNumberIndexByValue(n->getReal());
+    if(index >= 0) {
+      n->setValueIndex(index);
+      return;
+    }
+  }
   n->setValueIndex(insertValue(n->getReal()));
 }
 
@@ -254,6 +261,25 @@ int ParserTree::insertValue(Real value) {
   const int index = (int)m_valueTable.size();
   m_valueTable.add(value);
   return index;
+}
+
+int ParserTree::findNumberIndexByValue(const Real &value) const {
+  const BitSet varIndexSet = getVariablesIndexSet();
+  for(size_t i = 0; i < m_valueTable.size(); i++) {
+    if(!varIndexSet.contains(i) && (m_valueTable[i] == value)) {
+      return (int)i;
+    }
+  }
+  return -1;
+}
+
+BitSet ParserTree::getVariablesIndexSet() const {
+  BitSet result(m_valueTable.size()+1);
+  for (size_t i = 0; i < m_variableTable.size(); i++) {
+    const ExpressionVariable &v = m_variableTable[i];
+    result.add(v.getValueIndex());
+  }
+  return result;
 }
 
 void ParserTree::setValue(const String &name, const Real &value) {

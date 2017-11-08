@@ -112,6 +112,8 @@ private:
   DECLARECLASSNAME;
   CompactArray<MemoryReference>   m_refenceArray;
   CompactArray<JumpFixup>         m_jumpFixups;
+  // Offset in bytes, of esi/rsi from m_valueTable[0], when code is executing. 0 <= m_esiOffset < 128
+  char                            m_esiOffset;
 #ifdef IS64BIT
   BYTE                            m_stackTop;
 #endif // IS64BIT
@@ -134,7 +136,7 @@ public:
   void emitFComparePop( const ExpressionNode *n) { emitTableOp(FCOMP_QWORD , n    ); }
 #endif
 #ifdef IS64BIT
-#ifndef LONGDOJUBLE
+#ifndef LONGDOUBLE
   void emitXMM0ToAddr(  int               index) { emitTableOp(MOVSD_MMWORD_XMM(XMM0), index); }
 #endif
   bool emitFLoad(       const ExpressionNode *n, const ExpressionDestination &dst);
@@ -147,10 +149,18 @@ public:
   void fixupShortJumps(const CompactIntArray &jumps, int jmpAddr);
   void fixupJumps();
   void fixupMemoryReference(const MemoryReference &ref);
+  void emitESPOp(const IntelOpcode &op, int offset);
   inline void emitTableOp(const IntelOpcode &op, const ExpressionNode *n) {
     emitTableOp(op, n->getValueIndex());
   }
   void emitTableOp(const IntelOpcode &op, int index);
+  void setValueCount(size_t valueCount);
+  inline char getESIOffset() const {
+    return m_esiOffset;
+  }
+  inline int getESIOffset(size_t valueIndex) const {
+    return (int)valueIndex * sizeof(Real) - m_esiOffset;
+  }
 #ifdef IS32BIT
   void emitAddESP(  int                   n);
   void emitSubESP(  int                   n);
@@ -207,6 +217,7 @@ private:
   DECLARECLASSNAME;
   bool                       m_machineCode;
   ExpressionEntryPoint       m_entryPoint;
+  void                      *m_esi;
   MachineCode                m_code;
   ExpressionReturnType       m_returnType;
   mutable ExpressionState    m_state;
@@ -255,6 +266,9 @@ private:
   void   print(                                            const ExpressionNode *n, FILE *f = stdout) const;
 
   // Evaluate by machinecode
+  inline void *getESI() const {
+    return (BYTE*)&getValueRef(0) + m_code.getESIOffset();
+  }
   Real   fastEvaluateReal();
   bool   fastEvaluateBool();
 

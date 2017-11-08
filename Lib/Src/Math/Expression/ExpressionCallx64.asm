@@ -1,6 +1,6 @@
 .CODE
 
-;void callRealResultExpression(ExpressionEntryPoint ep, Real *valueTable, Real &result);
+;void callRealResultExpression(ExpressionEntryPoint ep, const void *rsiValue, Real &result);
 callRealResultExpression PROC
     push        rsi
     push        rdi
@@ -14,7 +14,7 @@ callRealResultExpression PROC
     ret
 callRealResultExpression ENDP
 
-;int callIntResultExpression(ExpressionEntryPoint ep, Real *valueTable);
+;int callIntResultExpression(ExpressionEntryPoint ep, const void *rsiValue);
 callIntResultExpression PROC
     push        rsi
     mov         rsi, rdx

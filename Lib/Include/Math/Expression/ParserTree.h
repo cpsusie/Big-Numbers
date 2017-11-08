@@ -151,7 +151,7 @@ private:
   // map name -> index in m_variableTable
   StringTreeMap<int>            m_nameTable;
   Array<ExpressionVariable>     m_variableTable;
-  mutable CompactArray<Real>    m_valueTable;
+  mutable CompactRealArray      m_valueTable;
   CompactArray<ExpressionNode*> m_nodeTable;
   CompactArray<SumElement*>     m_addentTable;
   StringArray                   m_errors;
@@ -160,11 +160,15 @@ private:
   ExpressionNodeNumber         *m_minusOne, *m_zero, *m_one, *m_two, *m_half;
 
   ExpressionVariable   *allocateSymbol(     const String &name, const Real &value, bool isConstant, bool isLeftSide, bool isLoopVar);
-  ExpressionVariable   *allocateSymbol(     ExpressionNode *n        , bool isConstant, bool isLeftSide, bool isLoopVar);
+  ExpressionVariable   *allocateSymbol(     ExpressionNode *n                    , bool isConstant, bool isLeftSide, bool isLoopVar);
   ExpressionVariable   *allocateConstant(   ExpressionNode *n, const String &name, const Real &value);
-  void                  allocateNumber(     ExpressionNode *n);
-  // insert value into m_valueTable, return index of position
+  void                  allocateNumber(     ExpressionNode *n, bool reuseIfExist);
+  // Insert value into m_valueTable, return index of position
   int                   insertValue(Real value);
+  // Find i, so m_valueTable[i] == value, and m_valueTable[i] is not used by a vaiable. return -1, if not found
+  int                   findNumberIndexByValue(const Real &value) const;
+  // Return set with indices in m_valueTable, for all elements usedby variables
+  BitSet                getVariablesIndexSet() const;
   void buildSymbolTable(                    ExpressionNode *n);
   void buildSymbolTableIndexedExpression(   ExpressionNode *n);
   void buildSymbolTableAssign(              ExpressionNode *n, bool loopAssignment);
@@ -330,6 +334,9 @@ public:
   }
   inline Real &getValueRef(UINT valueIndex) const {
     return m_valueTable[valueIndex];
+  }
+  inline size_t getValueCount() const {
+    return m_valueTable.size();
   }
   ExpressionNodePoly     *fetchPolyNode(     const ExpressionNodeArray  &coefficientArray, ExpressionNode *argument);
   ExpressionFactor       *getFactor(         ExpressionNode *base, ExpressionNode *exponent = NULL);

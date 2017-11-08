@@ -4,15 +4,15 @@
 DEFINECLASSNAME(Expression);
 
 Expression::Expression(TrigonometricMode mode) {
-  m_machineCode       = false;
+  clear();
   m_returnType        = EXPR_NORETURNTYPE;
-  m_state             = EXPR_EMPTY;
-  m_reduceIteration   = 0;
   m_trigonometricMode = mode;
 }
 
 Expression::Expression(const Expression &src) : ParserTree(src) {
   m_machineCode       = src.m_machineCode;
+  m_entryPoint        = NULL;
+  m_esi               = NULL;
   m_returnType        = src.m_returnType;
   m_state             = src.m_state;
   m_reduceIteration   = src.m_reduceIteration;
@@ -55,6 +55,7 @@ void Expression::clear() {
   m_code.clear();
   m_machineCode  = false;
   m_entryPoint   = NULL;
+  m_esi          = NULL;
   setState(EXPR_EMPTY);
   setReduceIteration(0);
 }
