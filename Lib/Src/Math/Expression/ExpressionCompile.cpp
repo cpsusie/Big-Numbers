@@ -330,7 +330,8 @@ void MachineCode::emitCall(BuiltInFunction p, const ExpressionDestination &dst) 
 void MachineCode::emitCall(BuiltInFunction p, const ExpressionDestination &dst) {
   switch (dst.getType()) {
   case RESULT_IN_FPU       :
-    emit(REG_SRC(MOV_R64_QWORD(RCX), RSI));                            // RCX = RSI; will generate code after call, that pushed *rsi in FPU
+    emit(REG_SRC(MOV_R64_QWORD(RCX), RSI));                            // RCX = RSI + getESIOffset(0);
+    emitAddR64(RCX, getESIOffset(0));                                  // Will generate code after call, that pushed *rsi in FPU
     break;
   case RESULT_IN_ADDRRDI   :
     emit(REG_SRC(MOV_R64_QWORD(RCX), RDI));                            // RCX = RDI
@@ -341,8 +342,8 @@ void MachineCode::emitCall(BuiltInFunction p, const ExpressionDestination &dst) 
     }
     break;
   case RESULT_IN_VALUETABLE:
-    { emit(REG_SRC(MOV_R64_QWORD(RCX), RSI));                          // RCX = RSI + dst.tableIndex * sizeof(Real)
-      emitAddR64(RCX, sizeof(Real) * dst.getTableIndex());
+    { emit(REG_SRC(MOV_R64_QWORD(RCX), RSI));                          // RCX = RSI + getESIOffset(dst.tableIndex))
+      emitAddR64(RCX, getESIOffset(dst.getTableIndex()));
       break;
     }
   }
@@ -465,7 +466,7 @@ void Expression::genProlog() {
 #define RESERVESTACKSPACE 40
   m_hasCalls = getRoot()->containsFunctionCall();
   m_code.resetStack(RESERVESTACKSPACE);
-  if (m_hasCalls) {
+  if(m_hasCalls) {
     m_code.emitSubRSP(LOCALSTACKSPACE + RESERVESTACKSPACE); // to get 16-byte aligned RSP
   }
 #endif
@@ -473,7 +474,7 @@ void Expression::genProlog() {
 
 void Expression::genEpilog() {
 #ifdef IS64BIT
-  if (m_hasCalls) {
+  if(m_hasCalls) {
     m_code.emitAddRSP(LOCALSTACKSPACE + RESERVESTACKSPACE);
   }
 #endif
@@ -1264,8 +1265,7 @@ BYTE Expression::genSetRefParameter(const ExpressionNode *n, int index, bool &sa
   const int dstRegister = int64ParamRegister[index];
   if(n->isNameOrNumber()) {
     m_code.emit(REG_SRC(MOV_R64_QWORD(dstRegister), RSI));
-    const int offset = m_code.getESIOffset(n->getValueIndex());
-    if(offset) m_code.emitAddR64(dstRegister, offset);
+    m_code.emitAddR64(dstRegister, m_code.getESIOffset(n->getValueIndex()));
     savedOnStack = false;
     return 0;
   } else {
