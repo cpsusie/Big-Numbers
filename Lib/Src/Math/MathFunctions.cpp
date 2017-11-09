@@ -52,22 +52,22 @@ Real dsign(const Real &x) {
 }
 
 Real mypow(const Real &x, const Real &y) {
-  if(x > 0) {
-    return pow(x, y);
-  } else if(y == floor(y)) {
-    const int d = getInt(y);
-    return (d & 1) ? -pow(-x,y) : pow(-x,y);
+  if(x < 0) {
+    if(y == floor(y)) {
+      const int d = getInt(y);
+      return (d & 1) ? -pow(-x,y) : pow(-x,y);
+    }
   }
-  return pow(x, y); // nan
+  return pow(x, y);
 }
 
 double root(double x, double y) { // must be double. not real
-  if(x >= 0) {
-    return getDouble(mypow(x, 1.0/y));
-  } else if(y == floor(y)) {
-    const int d = getInt(y);
-    if((d & 1)) {
-      return -root(-x, y);
+  if(x < 0) {
+    if(y == floor(y)) {
+      const int d = getInt(y);
+      if((d & 1)) {
+        return -pow(-x, 1.0/y);
+      }
     }
   }
   return pow(x, 1.0/y);

@@ -617,7 +617,15 @@ Double80 hypot(const Double80 &x, const Double80 &y) {
 }
 
 Double80 root(const Double80 &x, const Double80 &y) {
-  return pow(x,1.0/y);
+  if(x.isNegative()) {
+    if(y == floor(y)) {
+      const int d = getInt(y);
+      if((d & 1)) {
+        return -pow(-x, 1.0/y);
+      }
+    }
+  }
+  return pow(x, 1.0/y);
 }
 
 Double80 fraction(const Double80 &x) {
