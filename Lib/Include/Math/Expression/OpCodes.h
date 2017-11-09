@@ -633,6 +633,7 @@ public:
 #define FLD(      i)                           FPUINS(0xD9C0     | (i))                 // Push st(i) into st(0)
 #define FXCH(     i)                           FPUINS(0xD9C8     | (i))                 // Swap st(0) and st(i)
 #define FCHS                                   FPUINS(0xD9E0)                           // st(0) = -st(0)
+#define FABS                                   FPUINS(0xD9E1)                           // st(0) = abs(st(0))
 #define FTST                                   FPUINS(0xD9E4)                           // Compare st(0) to 0.0
 #define FLD1                                   FPUINS(0xD9E8)                           // push 1.0
 #define FLDL2T                                 FPUINS(0xD9E9)                           // push log2(10)
@@ -641,6 +642,8 @@ public:
 #define FLDLG2                                 FPUINS(0xD9EC)                           // push log10(2)
 #define FLDLN2                                 FPUINS(0xD9ED)                           // push ln(2)
 #define FLDZ                                   FPUINS(0xD9EE)                           // push 0.0
+#define FPATAN                                 FPUINS(0xD9F3)                           // st(1) = atan(st(1)/st(0)), pop st(0)
+#define FSQRT                                  FPUINS(0xD9FA)                           // st(0) = sqrt(st(0))
 
 #define FNSTSW_AX                              FPUINS(0xDFE0)                           // Store status word into CPU register AX
 #define SAHF                                   B1INS( 0x9E	)

@@ -285,6 +285,8 @@ private:
   void genCall(                                            const ExpressionNode *n, BuiltInFunctionRef2 f, const ExpressionDestination &dst);
   void genPolynomial(                                      const ExpressionNode *n, const ExpressionDestination &dst);
   void genIf(                                              const ExpressionNode *n, const ExpressionDestination &dst);
+  void genPowMultSequence(UINT y);
+
 
 #ifdef IS32BIT
   int  genPush(                                            const ExpressionNode *n);

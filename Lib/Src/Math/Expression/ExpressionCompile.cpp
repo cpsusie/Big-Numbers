@@ -527,6 +527,32 @@ void Expression::genReturnBoolExpression(const ExpressionNode *n) {
   m_code.fixupShortJumps(jumps.falseJumps,falseLabel);
 }
 
+// Generate multiplication-sequence to calculate st(0) = st(0)^y
+// using st(0), and if neccessary st(1), by logarithmic powering
+// Assume st(0) = x contains value to raise to the power y
+void Expression::genPowMultSequence(UINT y) {
+  UINT p2 = 1;
+  for(UINT t = y; t && ((t&1)==0); t >>= 1) {
+    p2 <<= 1;
+    m_code.emit(FMUL_0i(0));
+  }
+  // st(0) = x^p2
+  if(p2 < y) {
+    m_code.emit(FLD(0)); // st(0) = x^p2, st(1) = x^p2
+    UINT reg = 0, count = 0;
+    // Calculate the sequence of multiplications of st(1), st(0) needed
+    // to make st(0) = x^(y-p2) and st(1) = x^p2
+    for(y -= p2; y > p2; count++) {
+      reg <<= 1;
+      if(y&p2) { y-=p2; reg |= 1; } else y >>= 1;
+    }
+    for(;count--; reg >>= 1) {
+      m_code.emit(FMUL_0i(reg&1));
+    }
+    m_code.emit(FMUL); // finally st(1) *= st(0), pop st(0)
+  }
+}
+
 #define GENEXPRESSION(n) genExpression(n, dst)
 #define GENCALL(n,f)     genCall(n,f,dst);      return
 #define GENPOLY(n)       genPolynomial(n, dst); return
@@ -535,7 +561,6 @@ void Expression::genReturnBoolExpression(const ExpressionNode *n) {
 void Expression::throwInvalidTrigonometricMode() {
   throwInvalidArgumentException(_T("genExpression"), _T("Invalid trigonometricMode:%d"), m_trigonometricMode);
 }
-
 
 #define GENTRIGOCALL(n,f)                         \
   switch(getTrigonometricMode()) {                \
@@ -654,8 +679,8 @@ void Expression::genExpression(const ExpressionNode *n, const ExpressionDestinat
   case POW           :
     if(n->right()->isConstant()) {
       const Real p = evaluateRealExpr(n->right());
-      if((fabs(p) <= 16) && (p - floor(p) == 0)) {
-        int y = (int)p;
+      if((fabs(p) <= 64) && (p - floor(p) == 0)) {
+        const int y = getInt(p);
         if(y == 0) {
           genExpression(getOne(), dst);
           return;
@@ -664,99 +689,7 @@ void Expression::genExpression(const ExpressionNode *n, const ExpressionDestinat
           return;
         } else {
           genExpression(n->left(), DST_FPU);
-          int py = abs(y);
-          switch(py) {
-          case 2 :
-          case 4 :
-          case 8 :
-          case 16:
-            for(;py > 1; py /= 2) {   // 10, 100, 1000, 10000
-              m_code.emit(FMUL_0i(0));
-            }
-            break;
-          case 1:                     // y must be -1. need st0 = 1/st0
-            break;
-          case 3:                     // 11
-            m_code.emit(FLD(0));      // st0=x  , st1=x
-            m_code.emit(FMUL_i0(1));  // st0=x^2, st1=x
-            m_code.emit(FMUL);        // st0=x^3
-            break;
-          case 5:                     // 101
-            m_code.emit(FLD(0));      // st0=x  , st1=x
-            m_code.emit(FMUL_0i(1));  // st0=x^2, st1=x
-            m_code.emit(FMUL_0i(0));  // st0=x^4, st1=x
-            m_code.emit(FMUL);        // st0=x^5
-            break;
-          case 6:                     // 110
-            m_code.emit(FMUL_0i(0));  // st0=x^2
-            m_code.emit(FLD(0));      // st0=x^2, st1=x^2
-            m_code.emit(FMUL_0i(1));  // st0=x^4, st1=x^2
-            m_code.emit(FMUL);        // st0=x^6
-            break;
-          case 7:                     // 111
-            m_code.emit(FLD(0));      // st0=x  , st1=x
-            m_code.emit(FMUL_0i(1));  // st0=x^2, st1=x
-            m_code.emit(FMUL_0i(1));  // st0=x^3, st2=x
-            m_code.emit(FMUL_0i(0));  // st0=x^6, st1=x
-            m_code.emit(FMUL);        // st0=x^7
-            break;
-          case 9:                     // 1001
-            m_code.emit(FLD(0));      // st0=x   , st1=x
-            m_code.emit(FMUL_0i(1));  // st0=x^2 , st1=x
-            m_code.emit(FMUL_0i(0));  // st0=x^4 , st2=x
-            m_code.emit(FMUL_0i(0));  // st0=x^8 , st1=x
-            m_code.emit(FMUL);        // st0=x^9
-            break;
-          case 10:                    // 1010
-            m_code.emit(FMUL_0i(0));  // st0=x^2
-            m_code.emit(FLD(0));      // st0=x^2 , st1=x^2
-            m_code.emit(FMUL_0i(1));  // st0=x^4 , st2=x^2
-            m_code.emit(FMUL_0i(0));  // st0=x^8 , st1=x^2
-            m_code.emit(FMUL);        // st0=x^10
-            break;
-          case 11:                    // 1011
-            m_code.emit(FLD(0));      // st0=x   , st1=x
-            m_code.emit(FMUL_0i(1));  // st0=x^2 , st1=x
-            m_code.emit(FMUL_0i(0));  // st0=x^4 , st1=x
-            m_code.emit(FMUL_0i(1));  // st0=x^5 , st1=x
-            m_code.emit(FMUL_0i(0));  // st0=x^10, st1=x
-            m_code.emit(FMUL);        // st0=x^11
-            break;
-          case 12:                    // 1100
-            m_code.emit(FMUL_0i(0));  // st0=x^2
-            m_code.emit(FMUL_0i(0));  // st0=x^4
-            m_code.emit(FLD(0));      // st0=x^4 , st1=x^4
-            m_code.emit(FMUL_0i(1));  // st0=x^8 , st1=x^4
-            m_code.emit(FMUL);        // st0=x^12
-            break;
-          case 13:                    // 1101
-            m_code.emit(FLD(0));      // st0=x   , st1=x
-            m_code.emit(FMUL_0i(1));  // st0=x^2 , st1=x
-            m_code.emit(FMUL_0i(1));  // st0=x^3
-            m_code.emit(FMUL_0i(0));  // st0=x^6 , st1=x
-            m_code.emit(FMUL_0i(0));  // st0=x^12, st1=x
-            m_code.emit(FMUL);        // st0=x^13
-            break;
-          case 14:                    // 1110
-            m_code.emit(FMUL_0i(0));  // st0=x^2
-            m_code.emit(FLD(0));      // st0=x^2 , st1=x^2
-            m_code.emit(FMUL_0i(1));  // st0=x^4
-            m_code.emit(FMUL_0i(0));  // st0=x^6 , st1=x^2
-            m_code.emit(FMUL_0i(0));  // st0=x^12, st1=x^2
-            m_code.emit(FMUL);        // st0=x^14
-            break;
-          case 15:                    // 1111
-            m_code.emit(FLD(0));      // st0=x   , st1=x
-            m_code.emit(FMUL_0i(1));  // st0=x^2 , st1=x
-            m_code.emit(FMUL_0i(1));  // st0=x^3
-            m_code.emit(FMUL_0i(0));  // st0=x^6 , st1=x
-            m_code.emit(FMUL_0i(1));  // st0=x^7 , st1=x
-            m_code.emit(FMUL_0i(0));  // st0=x^14, st1=x
-            m_code.emit(FMUL);        // st0=x^15
-            break;
-          default:
-            throwException(_T("Power %d to high. -16 <= y <= 16"), y);
-          }
+          genPowMultSequence(abs(y));
           if(y < 0) { // make st0 = 1/st0
             m_code.emit(FLD1);         // st0=1 , st1=x^|y|
             m_code.emit(FDIVRP_i0(1)); // st1=st0/st1; pop st0 => st0=x^y
@@ -766,6 +699,35 @@ void Expression::genExpression(const ExpressionNode *n, const ExpressionDestinat
       }
     }
     GENCALL(     n, mypow                 );
+  case SQR           :
+    genExpression(n->left(), DST_FPU);
+    m_code.emit(FMUL_0i(0));              // st0=x^2
+    break;
+  case SQRT          :
+    genExpression(n->left(), DST_FPU);
+    m_code.emit(FSQRT);                   // st0=sqrt(st0)
+    break;
+  case ABS           :
+    genExpression(n->left(), DST_FPU);
+    m_code.emit(FABS);                    // st0=|st0|
+    break;
+  case ATAN          :                    // atan(left)
+    if(getTrigonometricMode() == RADIANS) {
+      genExpression(n->left(), DST_FPU);
+      m_code.emit(FLD1);                  // st0=1, st1=left
+      m_code.emit(FPATAN);                // st1=atan(st1/st0); pop st0
+      break;
+    }
+    GENTRIGOCALL(n, atan                  );
+  case ATAN2         :                    // atan2(left,right)
+    if(getTrigonometricMode() == RADIANS) {
+      genExpression(n->left() , DST_FPU); // st0=left
+      genExpression(n->right(), DST_FPU); // st0=right, st1=left
+      m_code.emit(FPATAN);                // st1=atan(st1/st0); pop st0
+      break;
+    }
+    GENTRIGOCALL(n, atan2                 );
+
   case ROOT          :    GENCALL(     n, root                  );
   case SIN           :    GENTRIGOCALL(n, sin                   );
   case COS           :    GENTRIGOCALL(n, cos                   );
@@ -775,8 +737,6 @@ void Expression::genExpression(const ExpressionNode *n, const ExpressionDestinat
   case SEC           :    GENTRIGOCALL(n, sec                   );
   case ASIN          :    GENTRIGOCALL(n, asin                  );
   case ACOS          :    GENTRIGOCALL(n, acos                  );
-  case ATAN          :    GENTRIGOCALL(n, atan                  );
-  case ATAN2         :    GENTRIGOCALL(n, atan2                 );
   case ACOT          :    GENTRIGOCALL(n, acot                  );
   case ACSC          :    GENTRIGOCALL(n, acsc                  );
   case ASEC          :    GENTRIGOCALL(n, asec                  );
@@ -789,9 +749,6 @@ void Expression::genExpression(const ExpressionNode *n, const ExpressionDestinat
   case LN            :    GENCALL(     n, log                   );
   case LOG10         :    GENCALL(     n, log10                 );
   case EXP           :    GENCALL(     n, exp                   );
-  case SQR           :    GENCALL(     n, sqr                   );
-  case SQRT          :    GENCALL(     n, sqrt                  );
-  case ABS           :    GENCALL(     n, fabs                  );
   case FLOOR         :    GENCALL(     n, floor                 );
   case CEIL          :    GENCALL(     n, ceil                  );
   case HYPOT         :    GENCALL(     n, hypot                 );

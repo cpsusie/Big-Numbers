@@ -16,15 +16,14 @@ CD3FunctionPlotterApp::CD3FunctionPlotterApp() {
 CD3FunctionPlotterApp theApp;
 
 BOOL CD3FunctionPlotterApp::InitInstance() {
-
   AfxEnableControlContainer();
 
   try {
     CD3FunctionPlotterDlg dlg;
     m_pMainWnd = &dlg;
     intptr_t nResponse = dlg.DoModal();
-    if (nResponse == IDOK) {
-    } else if (nResponse == IDCANCEL) {
+    if(nResponse == IDOK) {
+    } else if(nResponse == IDCANCEL) {
     }
   } catch(Exception e) {
     showException(e);
