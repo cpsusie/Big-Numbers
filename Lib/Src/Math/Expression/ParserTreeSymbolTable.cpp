@@ -265,7 +265,7 @@ int ParserTree::insertValue(Real value) {
 
 int ParserTree::findNumberIndexByValue(const Real &value) const {
   const BitSet varIndexSet = getVariablesIndexSet();
-  for(size_t i = 0; i < m_valueTable.size(); i++) {
+  for(size_t i = TMPVARCOUNT; i < m_valueTable.size(); i++) { // never reuse temp-variables
     if(!varIndexSet.contains(i) && (m_valueTable[i] == value)) {
       return (int)i;
     }
