@@ -596,18 +596,17 @@ public:
 
 // FPU instructions
 
+#define FWAIT                                  B1INS(0x9B)                              // Wait while FPU is busy
+
 #define FADD_0i(  i)                           FPUINS(0xD8C0     | (i))                 // st(0) += st(i)
 #define FADD_i0(  i)                           FPUINS(0xDCC0     | (i))                 // st(i) += st(0)
 #define FADDP_i0( i)                           FPUINS(0xDEC0     | (i))                 // st(i) += st(0); pop st(0)
-#define FADD                                   FADDP_i0(1)
+#define FADD                                   FADDP_i0(1)                              // st(1) += st(0); pop st(0)
 
 #define FMUL_0i(  i)                           FPUINS(0xD8C8     | (i))                 // st(0) *= st(i)
 #define FMUL_i0(  i)                           FPUINS(0xDCC8     | (i))                 // st(i) *= st(0)
 #define FMULP_i0( i)                           FPUINS(0xDEC8     | (i))                 // st(i) *= st(0); pop st(0)
-#define FMUL                                   FMULP_i0(1)
-
-#define FCOMP(    i)                           FPUINS(0xD8D8     | (i))                 // Compare st(0) to st(1..7)
-#define FCOMPP                                 FPUINS(0xDED9)                           // Compare st(0) to st(1); pop both
+#define FMUL                                   FMULP_i0(1)                              // st(1) *= st(0); pop st(0)
 
 #define FSUB_0i(  i)                           FPUINS(0xD8E0     | (i))                 // st(0) -= st(i)
 #define FSUBR_0i( i)                           FPUINS(0xD8E8     | (i))                 // st(0) =  st(i) - st(0)
@@ -615,7 +614,7 @@ public:
 #define FSUB_i0(  i)                           FPUINS(0xDCE8     | (i))                 // st(i) -= st(0)
 #define FSUBRP_i0(i)                           FPUINS(0xDEE0     | (i))                 // st(i) =  st(0) - st(i); pop st(0)
 #define FSUBP_i0( i)                           FPUINS(0xDEE8     | (i))                 // st(i) -= st(0); pop st(0)
-#define FSUB                                   FSUBP_i0(1)
+#define FSUB                                   FSUBP_i0(1)                              // st(1) -= st(0); pop st(0)
 
 #define FDIV_0i(  i)                           FPUINS(0xD8F0     | (i))                 // st(0) /= st(i)
 #define FDIVR_0i( i)                           FPUINS(0xD8F8     | (i))                 // st(0) =  st(i) / st(0)
@@ -623,18 +622,23 @@ public:
 #define FDIV_i0(  i)                           FPUINS(0xDCF8     | (i))                 // st(i) /= st(0)
 #define FDIVRP_i0(i)                           FPUINS(0xDEF0     | (i))                 // st(i) =  st(0) / st(i); pop st(0)
 #define FDIVP_i0( i)                           FPUINS(0xDEF8     | (i))                 // st(i) /= st(0); pop st(0)
-#define FDIV                                   FDIVP_i0(1)
+#define FDIV                                   FDIVP_i0(1)                              // st(1) /= st(0); pop st(0)
 
+#define FCOMP(    i)                           FPUINS(0xD8D8     | (i))                 // Compare st(0) to st(1..7)
+#define FCOMPP                                 FPUINS(0xDED9)                           // Compare st(0) to st(1); pop both
 #define FCOMI(    i)                           FPUINS(0xDBF0     | (i))                 // Compare st(0) to st(i) and set CPU-flags
 #define FCOMIP(   i)                           FPUINS(0xDFF0     | (i))                 // Compare st(0) to st(i) and set CPU-flags; pop st(0)
+#define FFREE(    i)                           FPUINS(0xDDC0     | (i))                 // Free a data register
 #define FST(      i)                           FPUINS(0xDDD0     | (i))                 // Store st(0) into st(i)
-#define FSTP(     i)                           FPUINS(0xDDD8     | (i))                 // Store st(0) into st(i) and pop st(0)
+#define FSTP(     i)                           FPUINS(0xDDD8     | (i))                 // Store st(0) into st(i); pop st(0)
 
 #define FLD(      i)                           FPUINS(0xD9C0     | (i))                 // Push st(i) into st(0)
 #define FXCH(     i)                           FPUINS(0xD9C8     | (i))                 // Swap st(0) and st(i)
+#define FNOP                                   FPUINS(0xD9D0)                           // No operation
 #define FCHS                                   FPUINS(0xD9E0)                           // st(0) = -st(0)
 #define FABS                                   FPUINS(0xD9E1)                           // st(0) = abs(st(0))
 #define FTST                                   FPUINS(0xD9E4)                           // Compare st(0) to 0.0
+#define FXAM                                   FPUINS(0xD9E5)                           // Examine the content of st(0)
 #define FLD1                                   FPUINS(0xD9E8)                           // push 1.0
 #define FLDL2T                                 FPUINS(0xD9E9)                           // push log2(10)
 #define FLDL2E                                 FPUINS(0xD9EA)                           // push log2(e)
@@ -642,8 +646,22 @@ public:
 #define FLDLG2                                 FPUINS(0xD9EC)                           // push log10(2)
 #define FLDLN2                                 FPUINS(0xD9ED)                           // push ln(2)
 #define FLDZ                                   FPUINS(0xD9EE)                           // push 0.0
-#define FPATAN                                 FPUINS(0xD9F3)                           // st(1) = atan(st(1)/st(0)), pop st(0)
+#define F2XM1                                  FPUINS(0xD9F0)                           // st(0) = 2^st(0)-1, assume -1 <= st(0) <= 1
+#define FYL2X                                  FPUINS(0xD9F1)                           // st(1) = log2(st(0))*st(1); pop st(0)
+#define FPTAN                                  FPUINS(0xD9F2)                           // st(0) = tan(st(0)); push 1.0
+#define FPATAN                                 FPUINS(0xD9F3)                           // st(1) = atan(st(1)/st(0)); pop st(0)
+#define FXTRACT                                FPUINS(0xD9F4)                           // st(0) = unbiased exponent in floating point format of st(0). then push signinificant wiht exponent 0
+#define FPREM1                                 FPUINS(0xD9F5)                           // As FPREM. Magnitude of the remainder <= ST(1) / 2
+#define FDECSTP                                FPUINS(0xD9F6)                           // Decrement stack pointer. st0->st1, st7->st0, ..., st1->st2
+#define FINCSTP                                FPUINS(0xD9F7)                           // Increment stack pointer. st0->st7, st1->st0, ..., st7->st6
+#define FPREM                                  FPUINS(0xD9F8)                           // Partial remainder. st(0) %= st(1). Exponent of st(0) reduced with at most 63
+#define FYL2XP1                                FPUINS(0xD9F9)                           // st(1) = log2(st(0)+1)*st(1); pop st(0)
 #define FSQRT                                  FPUINS(0xD9FA)                           // st(0) = sqrt(st(0))
+#define FSINCOS                                FPUINS(0xD9FB)                           // Sine and cosine of the angle value in ST(0), st(0)=sin; push(cos)
+#define FRNDINT                                FPUINS(0xD9FC)                           // st(0) = nearest integral value according to the rounding mode
+#define FSCALE                                 FPUINS(0xD9FD)                           // st(0) *= 2^int(st(1))
+#define FSIN                                   FPUINS(0xD9FE)                           // st(0) = sin(ST(0))
+#define FCOS                                   FPUINS(0xD9FF)                           // st(0) = cos(ST(0))
 
 #define FNSTSW_AX                              FPUINS(0xDFE0)                           // Store status word into CPU register AX
 #define SAHF                                   B1INS( 0x9E	)
@@ -668,19 +686,22 @@ public:
 #define FLD_TBYTE                              FPUINSA(0xDB28)
 #define FSTP_TBYTE                             FPUINSA(0xDB38)
 
-// 16-bit integer (short)
+// 16-bit integer (signed short)
 #define FILD_WORD                              FPUINSA(0xDF00)
 #define FIST_WORD                              FPUINSA(0xDF10)
 #define FISTP_WORD                             FPUINSA(0xDF18)
+#define FISTTP_WORD                            FPUINSA(0xDF40)
 
-// 32-bit integer (int)
+// 32-bit integer (signed int)
 #define FILD_DWORD                             FPUINSA(0xDB00)
 #define FIST_DWORD                             FPUINSA(0xDB10)
 #define FISTP_DWORD                            FPUINSA(0xDB18)
+#define FISTTP_DWORD                           FPUINSA(0xDB40)
 
-// 64-bit integer (__int64)
+// 64-bit integer (signed __int64)
 #define FILD_QWORD                             FPUINSA(0xDF28)
 #define FISTP_QWORD                            FPUINSA(0xDF38)
+#define FISTTP_QWORD                           FPUINSA(0xDD40)
 
 // Real4 (float)
 #define FADD_DWORD                             FPUINSA(0xD800)
@@ -722,3 +743,5 @@ public:
 #define FIDIV_DWORD                            FPUINSA(0xDA30)
 #define FIDIVR_DWORD                           FPUINSA(0xDA38)
 
+#define FBLD                                   FPUINSA(0xDF20)                          // LoaD BCD data from memory
+#define FBSTP                                  FPUINSA(0xDF30)                          // STore BCD data to memory
