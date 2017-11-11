@@ -18,14 +18,14 @@ UINT MBCalculator::findITCountFast(const Real &X, const Real &Y, UINT maxIterati
   Double80 x = X;
   Double80 y = Y;
   Double80 a = x;
-  Double80 b = y;;
+  Double80 b = y;
   for(int count = 0; count < maxIteration; count++) {
-    Double80 a2 = a*a;
-    Double80 b2 = b*b;
+    const Double80 a2 = a*a;
+    const Double80 b2 = b*b;
     if(a2+b2 > 4) {
       return count;
     }
-    Double80 c = a2-b2+x;
+    const Double80 c = a2-b2+x;
     b = 2*a*b+y;
     a = c;
   }
@@ -39,7 +39,7 @@ UINT MBCalculator::findITCountFast(const Real &X, const Real &Y, UINT maxIterati
   Double80 x = X;
   Double80 y = Y;
 
-  static const float four = 4;
+  static const float _4 = 4;
   int count;
   unsigned short cw;
 
@@ -50,7 +50,7 @@ UINT MBCalculator::findITCountFast(const Real &X, const Real &Y, UINT maxIterati
 */
   __asm {                                                   // Registers after instruction has been executed
     mov    ecx  , maxIteration                              // st0        st1        st2        st3        st4        st5        st6        st7
-    fld    four         // Load 4                              4
+    fld    _4           // Load 4                              4
     fld    y            // Load y                              y          4
     fld    x            // Load x                              x          y          4
     fld    st(1)        // Load y                              b=y        x          y          4
@@ -58,22 +58,22 @@ UINT MBCalculator::findITCountFast(const Real &X, const Real &Y, UINT maxIterati
 
 forloop:                // Stacksize = 5                       a          b          x          y          4
     fld	   st(0)        // Load a.                             a          a          b          x          y           4
-    fmul   st(0), st(0) // st0*=st0                            a*a        a          b          x          y           4
-    fld    st(2)        // Load b                              b          a*a        a          b          x           y         4
-    fmul   st(0), st(0) // st0*=st0                            b*b        a*a        a          b          x           y         4
-    fld    st(1)        // Load b^2.                           b*b        b*b        a*a        a          b           x         y          4
-    fadd   st(0), st(1) // st(0) = a^2 + b^2.                  a*a+b*b    b*b        a*a        a          b           x         y          4
-    fcomip st(0), st(7) // Compare st0 and st7, pop st0        b*b        a*a        a          b          x           y         4
-    ja return           // if(a*a+b*b > 4) goto return
+    fmul   st(0), st(0) // st0*=st0                            a^2        a          b          x          y           4
+    fld    st(2)        // Load b                              b          a^2        a          b          x           y         4
+    fmul   st(0), st(0) // st0*=st0                            b^2        a^2        a          b          x           y         4
+    fld    st(1)        // Load a^2.                           a^2        b^2        a^2        a          b           x         y          4
+    fadd   st(0), st(1) // st0 += st1                          a^2+b^2    b^2        a^2        a          b           x         y          4
+    fcomip st(0), st(7) // Compare st0 and st7, pop st0        b^2        a^2        a          b          x           y         4
+    ja return           // if(a^2+b^2 > 4) goto return
 
-    fsub                // st0 = a*a-b*b, pop st1              a*a-b*b    a          b          x          y           4
-    fadd   st(0), st(3) // st0 += x                            a*a-b*b+x  a          b          x          y           4
-    fld    st(1)        // Load a                              a          a*a-b*b+x  a          b          x           y         4
-    fmul   st(0), st(3) // st0 *= b                            a*b        a*a-b*b+x  a          b          x           y         4
-    fadd   st(0), st(0) // st0 *= 2                            2*a*b      a*a-b*b+x  a          b          x           y         4
-    fadd   st(0), st(5) // st0 += y                            2*a*b+y    a*a-b*b+x  a          b          x           y         4
-    fstp   st(3)        // b = 2*a*b+y, pop st0                a*a-b*b+x  a          new b      x          y           4
-    fstp   st(1)        // a = a*a-b*b+x, pop st0              new a      new b      x          y          4
+    fsub                // st0 = a^2-b^2, pop st1              a^2-b^2    a          b          x          y           4
+    fadd   st(0), st(3) // st0 += x                            a^2-b^2+x  a          b          x          y           4
+    fld    st(1)        // Load a                              a          a^2-b^2+x  a          b          x           y         4
+    fmul   st(0), st(3) // st0 *= b                            ab         a^2-b^2+x  a          b          x           y         4
+    fadd   st(0), st(0) // st0 *= 2                            2ab        a^2-b^2+x  a          b          x           y         4
+    fadd   st(0), st(5) // st0 += y                            2ab+y      a^2-b^2+x  a          b          x           y         4
+    fstp   st(3)        // b = 2ab+y, pop st0                  a^2-b^2+x  a          new b      x          y           4
+    fstp   st(1)        // a = a^2-b^2+x, pop st0              new a      new b      x          y          4
     loop   forloop      // Stacksize = 5. if(--ecx) goto forloop
 
 /*
