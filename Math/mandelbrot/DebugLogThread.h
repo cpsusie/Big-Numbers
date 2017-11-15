@@ -38,7 +38,7 @@ public:
 };
 
 #define REDIRECTLOG() DebugLogThread::thread.redirect()
-#define DLOG(s)       DebugLogThread::thread.debugLog s
+#define DLOG(...)     DebugLogThread::thread.debugLog(__VA_ARGS__)
 
 #else
 

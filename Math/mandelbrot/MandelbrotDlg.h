@@ -50,11 +50,13 @@ class MBFrameGenerator : public FrameGenerator {
 private:
   CMandelbrotDlg            &m_dlg;
   const String               m_dirName;
-  const RealRectangle2D      m_finalRect; // in complex plane
+  // in complex plane
+  const RealRectangle2D      m_finalRect;
   RealRectangle2D            m_startRect;
   ExpTransformation         *m_expTransform;
   RealLinearTransformation  *m_linearTransform;
-  const CSize                m_imageSize; // in pixels
+  // in pixels
+  const CSize                m_imageSize;
   ImageListThread           *m_imageListThread;
   Semaphore                  m_frameReady;
   int                        m_totalFrameCount;
@@ -64,7 +66,8 @@ private:
 
   static int findTotalFrameCount(const RealRectangle2D &startRect, const RealRectangle2D &finalRect);
   void postMovieDone();
-  bool requestNextFrame(); // return false if done
+  // Return false if done
+  bool requestNextFrame();
   RealRectangle2D getInterpolatedRectangle() const;
 public:
   MBFrameGenerator(CMandelbrotDlg *dlg, const String &dirName);
@@ -76,7 +79,7 @@ public:
     return m_imageSize;
   }
   void notifyFrameReady() {
-    DLOG((_T("notify FrameReady\n")));
+    DLOG(_T("notify FrameReady\n"));
     m_frameReady.signal();
   }
   int getTotalFrameCount() const {
@@ -85,7 +88,8 @@ public:
   int getFrameIndex() const {
     return m_frameIndex;
   }
-  HBITMAP nextBitmap(); // should return NULL when no more frames.
+  // should return NULL when no more frames.
+  HBITMAP nextBitmap();
 };
 
 class CMandelbrotDlg;
@@ -341,4 +345,3 @@ public:
   afx_msg LRESULT OnMsgMovieDone(        WPARAM wp, LPARAM lp);
   DECLARE_MESSAGE_MAP()
 };
-

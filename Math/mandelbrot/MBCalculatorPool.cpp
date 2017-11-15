@@ -65,8 +65,8 @@ void CalculatorPool::killAllInternal() {
   waitUntilAllTerminatedInternal();
 
   if(m_calculatorsInState[CALC_TERMINATED] != m_existing) {
-    DLOG((_T("Cannot kill all calculators. Still running:%s. Delete them anyway.\n")
-          ,(m_calculatorsInState[CALC_RUNNING] | m_calculatorsInState[CALC_SUSPENDED]).toString().cstr()));
+    DLOG(_T("Cannot kill all calculators. Still running:%s. Delete them anyway.\n")
+          ,(m_calculatorsInState[CALC_RUNNING] | m_calculatorsInState[CALC_SUSPENDED]).toString().cstr());
   }
 
   for(size_t i = 0; i < size(); i++) {
@@ -182,15 +182,15 @@ CalculatorState CalculatorPool::getStateInternal(int id) const {
   } else if(m_calculatorsInState[CALC_TERMINATED].contains(id)) {
     return CALC_TERMINATED;
   } else if(m_existing.contains(id)) {
-    DLOG((_T("Undefined state for calculator %d. Existing:%s, Suspended:%s, Running:%s, Terminated:%s\n")
+    DLOG(_T("Undefined state for calculator %d. Existing:%s, Suspended:%s, Running:%s, Terminated:%s\n")
               ,id
               ,m_existing.toString().cstr()
               ,m_calculatorsInState[CALC_SUSPENDED ].toString().cstr()
               ,m_calculatorsInState[CALC_RUNNING   ].toString().cstr()
               ,m_calculatorsInState[CALC_TERMINATED].toString().cstr()
-              ));
+              );
   } else {
-    DLOG((_T("Trying to get state for non-existing calculator:%d\n"), id));
+    DLOG(_T("Trying to get state for non-existing calculator:%d\n"), id);
   }
   return CALC_TERMINATED;
 }
@@ -204,7 +204,7 @@ void CalculatorPool::setStateInternal(int id, CalculatorState state) {
   switch(state) {
   case CALC_SUSPENDED :
     if(m_calculatorsInState[CALC_TERMINATED].contains(id)) {
-      DLOG((_T("Trying to set terminated calulator %d to state SUSPENDED. Skipped\n"), id));
+      DLOG(_T("Trying to set terminated calulator %d to state SUSPENDED. Skipped\n"), id);
       break;
     }
     m_calculatorsInState[CALC_RUNNING   ].remove(id);
@@ -212,7 +212,7 @@ void CalculatorPool::setStateInternal(int id, CalculatorState state) {
     break;
   case CALC_RUNNING   :
     if(m_calculatorsInState[CALC_TERMINATED].contains(id)) {
-      DLOG((_T("Trying to set terminated calulator %d to state RUNNING. Skipped\n"), id));
+      DLOG(_T("Trying to set terminated calulator %d to state RUNNING. Skipped\n"), id);
       break;
     }
     m_calculatorsInState[CALC_SUSPENDED ].remove(id);

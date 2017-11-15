@@ -178,11 +178,11 @@ PixelAccessor *MBCalculator::handlePending() {
       throw true;
     }
     if(pendingFlags & CALC_SUSPEND_PENDING) {
-      DLOG((_T("calc(%d) suspending\n"), m_id));
+      DLOG(_T("calc(%d) suspending\n"), m_id);
       m_pool.setState(m_id, CALC_SUSPENDED);
       m_wakeup.wait();
       m_pool.setState(m_id, CALC_RUNNING  );
-      DLOG((_T("calc(%d) resuming\n"), m_id));
+      DLOG(_T("calc(%d) resuming\n"), m_id);
     }
   }
   return m_mbc.getPixelAccessor();
@@ -206,7 +206,7 @@ UINT MBCalculator::run() {
   try {
     while(m_mbc.getJobToDo(m_currentRect)) {
 
-//      DLOG((_T("calc(%d) got rect (%d,%d,%d,%d)\n"), m_id, m_currentRect.left,m_currentRect.top,m_currentRect.right,m_currentRect.bottom));
+//      DLOG(_T("calc(%d) got rect (%d,%d,%d,%d)\n"), m_id, m_currentRect.left,m_currentRect.top,m_currentRect.right,m_currentRect.bottom);
 
       m_edgeTracing = false;
       Real        xt, yt = ytr.backwardTransform(m_currentRect.top);
@@ -223,7 +223,7 @@ UINT MBCalculator::run() {
           pa.setPixel(p, colorMap[iterations]);
 
           if((iterations == maxIteration) && useEdgeDetection) {
-//            DLOG((_T("calc(%d) found black point (%d,%d)\n"), m_id, p.x,p.y));
+//            DLOG(_T("calc(%d) found black point (%d,%d)\n"), m_id, p.x,p.y);
             m_edgeTracing = true;
             followBlackEdge(p);
             SETPHASE(_T("RUN"));
@@ -232,17 +232,17 @@ UINT MBCalculator::run() {
         }
       }
     }
-    DLOG((_T("calc(%d) done\n"), m_id));
+    DLOG(_T("calc(%d) done\n"), m_id);
   } catch(bool) {
 #ifdef SAVE_CALCULATORINFO
-    DLOG((_T("calc(%d) killed in phase %s\n"), m_id, m_phase));
+    DLOG(_T("calc(%d) killed in phase %s\n"), m_id, m_phase);
 #else
-    DLOG((_T("calc(%d) killed\n"), m_id));
+    DLOG(_T("calc(%d) killed\n"), m_id);
 #endif
   } catch(Exception e) {
-    DLOG((_T("calc(%d) caught Exception:%s\n"), m_id, e.what()));
+    DLOG(_T("calc(%d) caught Exception:%s\n"), m_id, e.what());
   } catch(...) {
-    DLOG((_T("calc(%d) caught unknown Exception\n"), m_id));
+    DLOG(_T("calc(%d) caught unknown Exception\n"), m_id);
   }
   m_pool.setState(m_id, CALC_TERMINATED);
   return 0;
@@ -268,7 +268,7 @@ void MBCalculator::followBlackEdge(const CPoint &p) {
 #ifdef SAVE_CALCULATORINFO
   m_info = new CalculatorInfo(m_id, m_currentRect);
 #endif
-//  DLOG((_T("Follow black edge starting at (%d,%d)\n"), p.x,p.y));
+//  DLOG(_T("Follow black edge starting at (%d,%d)\n"), p.x,p.y);
 
   EdgeMatrix edgeMatrix;
   for(;;) {
@@ -310,7 +310,7 @@ void MBCalculator::followBlackEdge(const CPoint &p) {
     }
     if((dir = edgeMatrix.findStepDirection(dir)) == NODIR) {
       if(innerDetected) {
-        DLOG((_T("dir == NODIR and has innerpoints\n")));
+        DLOG(_T("dir == NODIR and has innerpoints\n"));
         innerSet -= edgeSet;
       }
 #ifdef SAVE_CALCULATORINFO

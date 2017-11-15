@@ -566,7 +566,7 @@ void CMandelbrotDlg::handlePropertyChanged(const PropertyContainer *source, int 
       if(oldActive && !newActive) {
         m_jobQueue.clear();
         stopTimer(1);
-        DLOG((_T("CalculationACtive=FALSE. Now POST WM_PAINT\n")));
+        DLOG(_T("CalculationACtive=FALSE. Now POST WM_PAINT\n"));
         PostMessage(WM_PAINT);
       } else if(newActive) {
         PostMessage(ID_MSG_UPDATEWINDOWSTATE);
@@ -740,7 +740,7 @@ void CMandelbrotDlg::showMousePoint(const CPoint &p) {
 }
 
 void CMandelbrotDlg::remoteStartCalculation() {
-  DLOG((_T("Post STARTCALCULATION\n")));
+  DLOG(_T("Post STARTCALCULATION\n"));
   PostMessage(ID_MSG_STARTCALCULATION);
 }
 
@@ -1072,7 +1072,7 @@ void CMandelbrotDlg::putPixRect(const PixRect *src) {
 PixelAccessor *CMandelbrotDlg::getPixelAccessor() {
   if(!hasPixelAccessor()) {
     m_pixelAccessor = m_pixRect->getPixelAccessor();
-    DLOG((_T("pixRect locked with pixelAccessor\n")));
+    DLOG(_T("pixRect locked with pixelAccessor\n"));
   }
   return (calculateWithOrbit() || animateCalculation()) ? m_mbContainer : m_pixelAccessor;
 }
@@ -1081,7 +1081,7 @@ void CMandelbrotDlg::clearPixelAccessor() {
   if(m_pixelAccessor) {
     m_pixRect->releasePixelAccessor();
     m_pixelAccessor = NULL;
-    DLOG((_T("pixRect unlocked\n")));
+    DLOG(_T("pixRect unlocked\n"));
   }
 }
 

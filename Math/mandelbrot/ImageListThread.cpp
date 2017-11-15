@@ -16,14 +16,14 @@ UINT ImageListThread::run() {
     while((bm = m_frameGenerator.nextBitmap()) != NULL) {
       frameIndex++;
       const String fileName = FileNameSplitter::getChildName(dirName, format(_T("frame%05d.jpg"), frameIndex));
-      DLOG((_T("got frame\n")));
+      DLOG(_T("got frame\n"));
       writeAsJPG(bm, ByteOutputFile(fileName));
     }
   } catch(Exception e) {
-    DLOG((_T("ImageListThread got Exception:%s\n"), e.what()));
+    DLOG(_T("ImageListThread got Exception:%s\n"), e.what());
     showException(e);
   } catch(...) {
-    DLOG((_T("ImageListThread got unknown Exception\n")));
+    DLOG(_T("ImageListThread got unknown Exception\n"));
     showError(_T("Unknown Exception"));
   }
   return 0;
