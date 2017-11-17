@@ -47,7 +47,7 @@ void MachineCode::setBytes(int addr, const void *bytes, int count) {
 
 int MachineCode::emit(const IntelInstruction &ins) {
   const int pos = (int)size();
-  append((BYTE*)&ins.m_bytes, ins.m_size);
+  append(ins.getBytes(), ins.size());
   return pos;
 }
 
