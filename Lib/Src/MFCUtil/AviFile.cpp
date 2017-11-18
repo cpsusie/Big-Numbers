@@ -117,6 +117,9 @@ void CAviFile::releaseBitmap() {
     m_bitmap = NULL;
   }
 }
+#define BI_COMPRESSION BI_RGB
+//#define BI_COMPRESSION BI_PNG
+//#define BI_COMPRESSION BI_JPEG
 
 void CAviFile::initMovieCreation(int nFrameWidth, int nFrameHeight, int bitsPerPixel) {
   int nMaxWidth = GetSystemMetrics(SM_CXSCREEN), nMaxHeight = GetSystemMetrics(SM_CYSCREEN);
@@ -137,7 +140,7 @@ void CAviFile::initMovieCreation(int nFrameWidth, int nFrameHeight, int bitsPerP
   m_aviStreamInfo.fccHandler            = m_codec;
   m_aviStreamInfo.dwScale               = 1;
   m_aviStreamInfo.dwRate                = m_frameRate;    // Frames Per Second;
-  m_aviStreamInfo.dwQuality             = -1;               // Default Quality
+  m_aviStreamInfo.dwQuality             = -1;             // Default Quality
   m_aviStreamInfo.dwSuggestedBufferSize = m_frameSize.cx * m_frameSize.cy*4;
   SetRect(&m_aviStreamInfo.rcFrame, 0, 0, m_frameSize.cx, m_frameSize.cy);
   _tcscpy(m_aviStreamInfo.szName, _T("Video Stream"));
@@ -162,7 +165,7 @@ void CAviFile::initMovieCreation(int nFrameWidth, int nFrameHeight, int bitsPerP
   bmpInfo.bmiHeader.biPlanes            = 1;
   bmpInfo.bmiHeader.biWidth             = m_frameSize.cx;
   bmpInfo.bmiHeader.biHeight            = m_frameSize.cy;
-  bmpInfo.bmiHeader.biCompression       = BI_RGB;
+  bmpInfo.bmiHeader.biCompression       = BI_COMPRESSION;
   bmpInfo.bmiHeader.biBitCount          = m_bitsPerPixel;
   bmpInfo.bmiHeader.biSize              = sizeof(BITMAPINFOHEADER);
   bmpInfo.bmiHeader.biSizeImage         = m_frameSize.cx*m_frameSize.cy*m_bitsPerPixel/8;
@@ -238,7 +241,7 @@ void CAviFile::appendFrameUsual(HBITMAP bm) {
   if(GetDIBits(m_dc, bm, 0,0,NULL, &bmpInfo, DIB_RGB_COLORS) == 0) {
     throwLastErrorOnSysCallException(_T("GetDIBits"));
   }
-  bmpInfo.bmiHeader.biCompression = BI_RGB;
+  bmpInfo.bmiHeader.biCompression = BI_COMPRESSION;
   if(GetDIBits(m_dc, bm, 0, bmpInfo.bmiHeader.biHeight, m_lpBits, &bmpInfo, DIB_RGB_COLORS) == 0) {
     throwLastErrorOnSysCallException(_T("GetDIBits"));
   }

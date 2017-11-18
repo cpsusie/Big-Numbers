@@ -229,8 +229,7 @@ void CMakeAviDlg::OnEditClearList() {
 }
 
 void CMakeAviDlg::OnHelpAbout() {
-  CAboutDlg dlg;
-  dlg.DoModal();
+  CAboutDlg().DoModal();
 }
 
 int CMakeAviDlg::getSelectedIndex() {
@@ -365,11 +364,12 @@ UINT AviConverter::run() {
     m_dc     = CreateCompatibleDC(screenDC);
     m_bitmap = CreateCompatibleBitmap(screenDC, imageSize.cx, imageSize.cy);
     DeleteDC(screenDC);
+    DWORD codec = 0; // mmioFOURCC('w','m','v',' ');
 
     if(ACCESS(m_outFileName, 0) == 0) {
       UNLINK(m_outFileName);
     }
-    CAviFile aviFile(m_outFileName, true, 0, m_framesPerSecond);
+    CAviFile aviFile(m_outFileName, true, codec, m_framesPerSecond);
 
     for(m_index = 0; m_index < (int)m_nameArray.size(); m_index += m_useEvery) {
       if(isInterrupted()) {
@@ -439,10 +439,10 @@ public:
     m_ok       = true;
   }
   ~AviReader();
-  unsigned short getMaxProgress() {
+  double getMaxProgress() const {
     return m_maxIndex;
   }
-  unsigned short getProgress() {
+  double getProgress() const {
     return m_index;
   };
   String getTitle() {
