@@ -7,7 +7,8 @@
     <LocalDebuggerEnvironment>DEBUGLOG=true</LocalDebuggerEnvironment>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='LDDebug|Win32'">
-    <LocalDebuggerCommandArguments>-t1</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>
+    </LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerEnvironment>DEBUGLOG=true</LocalDebuggerEnvironment>
   </PropertyGroup>
@@ -18,12 +19,14 @@
     <LocalDebuggerEnvironment>DEBUGLOG=true</LocalDebuggerEnvironment>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profiling|x64'">
-    <LocalDebuggerCommandArguments>-t1</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>
+    </LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerEnvironment>DEBUGLOG=true</LocalDebuggerEnvironment>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">
-    <LocalDebuggerCommandArguments>-t1</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>
+    </LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerEnvironment>DEBUGLOG=true</LocalDebuggerEnvironment>
   </PropertyGroup>
@@ -34,12 +37,14 @@
     <LocalDebuggerEnvironment>DEBUGLOG=true</LocalDebuggerEnvironment>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profiling|Win32'">
-    <LocalDebuggerCommandArguments>-t1</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>
+    </LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerEnvironment>DEBUGLOG=true</LocalDebuggerEnvironment>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='LDRelease|Win32'">
-    <LocalDebuggerCommandArguments>-t1</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>
+    </LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerEnvironment>DEBUGLOG=true</LocalDebuggerEnvironment>
   </PropertyGroup>
@@ -50,7 +55,8 @@
     <LocalDebuggerEnvironment>DEBUGLOG=true</LocalDebuggerEnvironment>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">
-    <LocalDebuggerCommandArguments>-t1</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>
+    </LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerEnvironment>DEBUGLOG=true</LocalDebuggerEnvironment>
   </PropertyGroup>
