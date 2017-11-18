@@ -428,6 +428,9 @@ public:
 
 #define JMPSHORT                               B1INS(0xEB)                              // Unconditional short jump. 1 byte PC relative offset
 #define JMPNEAR                                B1INS(0xE9)                              // Unconditional near jump. 4 byte PC relative offset
+#ifdef IS64BIT
+#define JMP_QWORDPTR                           B2INS(0xFF25)                            // Unconditional jump. 4 byte PC relative offset
+#endif
 #define JCXZSHORT                              B2INS(0x67E3)                            // Jump short if CX  register is 0. 1 byte PC relative offset
 #define JECXSHORT                              B1INS(0xE3)                              // Jump short if ECX register is 0  1 byte PC relative offset
 

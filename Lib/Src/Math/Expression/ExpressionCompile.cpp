@@ -4,7 +4,7 @@
 
 DEFINECLASSNAME(MachineCode);
 
-#define ISBYTE(i)  ((i) >= -128 && (i) < 128)
+#define ISBYTE(i)  ((i)==(char)(i))
 
 MachineCode::MachineCode() : m_esiOffset(0) {
 }
@@ -147,7 +147,7 @@ void MachineCode::emitAddRSP(int n) {
     const char byte = n;
     addBytes(&byte,1);
   } else {
-    throwInvalidArgumentException(method, _T("n must be in range [0..255]"));
+    throwInvalidArgumentException(method, _T("n=%d. Valid range is [-128..127]"), n);
   }
 }
 
@@ -159,7 +159,7 @@ void MachineCode::emitSubRSP(int n) {
     const char byte = n;
     addBytes(&byte,1);
   } else {
-    throwInvalidArgumentException(method, _T("n must be in range [0..255]"));
+    throwInvalidArgumentException(method, _T("n=%d. Valid range is [-128..127]"), n);
   }
 }
 
@@ -284,11 +284,11 @@ void MachineCode::fixupMemoryReference(const MemoryReference &ref) {
 
 #ifdef IS32BIT
 
-void MachineCode::emitCall(BuiltInFunction p, const ExpressionDestination &dummy) {
+void MachineCode::emitCall(BuiltInFunction f, const ExpressionDestination &dummy) {
   emit(CALL);
   BuiltInFunction ref = NULL;
   const int addr = addBytes(&ref, 4);
-  m_refenceArray.add(MemoryReference(addr, (BYTE*)p));
+  m_refenceArray.add(MemoryReference(addr, (BYTE*)f));
 #ifdef LONGDOUBLE
   emitESPOp(MOV_R32_DWORD(EAX),0);
   emit(MEM_ADDR_PTR(FLD_REAL, EAX));
@@ -299,9 +299,23 @@ void MachineCode::emitCall(BuiltInFunction p, const ExpressionDestination &dummy
 
 #ifndef LONGDOUBLE
 
-void MachineCode::emitCall(BuiltInFunction p, const ExpressionDestination &dst) {
+static void *getFuncAbsAddr(BuiltInFunction f) {
+  if(*(BYTE*)f == 0xE9) { // jmp-instruction
+    int tmp;
+    memcpy(&tmp, ((BYTE*)f)+1,4);    // tmp is relative to ip
+    return ((BYTE*)f) + tmp + 5;
+  } else if(*(USHORT*)f == 0x25FF) { // actually JMP QWORD PTR, which is 0xFF25, but we are little-endian here
+    int tmp;
+    memcpy(&tmp, ((BYTE*)f)+2,4);    // tmp is relative to ip
+    return ((BYTE*)f) + tmp + 6;
+  }
+  return f;
+}
+
+void MachineCode::emitCall(BuiltInFunction f, const ExpressionDestination &dst) {
   emit(MOV_R64_IMM_QWORD(RAX));
-  addBytes(&p,sizeof(p));
+//  void *addr = getFuncAbsAddr(f);
+  addBytes(&f,sizeof(f));
   emit(REG_SRC(CALLABSOLUTE, RAX));
   switch(dst.getType()) {
   case RESULT_IN_FPU       :
@@ -327,8 +341,8 @@ void MachineCode::emitCall(BuiltInFunction p, const ExpressionDestination &dst) 
 
 #else // LONGDOUBLE
 
-void MachineCode::emitCall(BuiltInFunction p, const ExpressionDestination &dst) {
-  switch (dst.getType()) {
+void MachineCode::emitCall(BuiltInFunction f, const ExpressionDestination &dst) {
+  switch(dst.getType()) {
   case RESULT_IN_FPU       :
     emit(REG_SRC(MOV_R64_QWORD(RCX), RSI));                            // RCX = RSI + getESIOffset(0);
     emitAddR64(RCX, getESIOffset(0));                                  // Will generate code after call, that pushed *rsi in FPU
@@ -349,7 +363,7 @@ void MachineCode::emitCall(BuiltInFunction p, const ExpressionDestination &dst) 
   }
 
   emit(MOV_R64_IMM_QWORD(RAX));
-  addBytes(&p,sizeof(p));
+  addBytes(&f,sizeof(f));
   emit(REG_SRC(CALLABSOLUTE, RAX));
 
   switch(dst.getType()) {
