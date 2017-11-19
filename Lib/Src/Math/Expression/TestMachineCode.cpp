@@ -343,17 +343,38 @@ void fisk() {
    ,name##_DWORD_R32(ESP), name##_DWORD_R32(EBP), name##_DWORD_R32(ESI), name##_DWORD_R32(EDI) \
     OP_2ARGX64(name)
 
+#ifdef IS32BIT
+#define EMIT_ALLR8X64( name)
+#define EMIT_ALLR16X64(name)
+#define EMIT_ALLR32X64(name)
+#else // IS64BIT
+#define EMIT_ALLR8X64(name)                                                                   \
+  emit(name##_R8( R8 )); emit(name##_R8( R9 )); emit(name##_R8( R10)); emit(name##_R8( R11)); \
+  emit(name##_R8( R12)); emit(name##_R8( R13)); emit(name##_R8( R14)); emit(name##_R8( R15))
+
+#define EMIT_ALLR16X64(name)                                                                  \
+  emit(name##_R16(R8 )); emit(name##_R16(R9 )); emit(name##_R16(R10)); emit(name##_R16(R11)); \
+  emit(name##_R16(R12)); emit(name##_R16(R13)); emit(name##_R16(R14)); emit(name##_R16(R15))
+
+#define EMIT_ALLR32X64(name)                                                                  \
+  emit(name##_R32(R8 )); emit(name##_R32(R9 )); emit(name##_R32(R10)); emit(name##_R32(R11)); \
+  emit(name##_R32(R12)); emit(name##_R32(R13)); emit(name##_R32(R14)); emit(name##_R32(R15))
+#endif // IS64BIT
+
 #define EMIT_ALLR8(name)                                                                      \
   emit(name##_R8( AL )); emit(name##_R8( CL )); emit(name##_R8( DL )); emit(name##_R8( BL )); \
-  emit(name##_R8( AH )); emit(name##_R8( CH )); emit(name##_R8( DH )); emit(name##_R8( BH ));
+  emit(name##_R8( AH )); emit(name##_R8( CH )); emit(name##_R8( DH )); emit(name##_R8( BH )); \
+  EMIT_ALLR8X64(name)
 
 #define EMIT_ALLR16(name)                                                                     \
   emit(name##_R16(AX )); emit(name##_R16(CX )); emit(name##_R16(DX )); emit(name##_R16(BX )); \
-  emit(name##_R16(SP )); emit(name##_R16(BP )); emit(name##_R16(SI )); emit(name##_R16(DI ));
+  emit(name##_R16(SP )); emit(name##_R16(BP )); emit(name##_R16(SI )); emit(name##_R16(DI )); \
+  EMIT_ALLR16X64(name)
 
 #define EMIT_ALLR32(name)                                                                     \
   emit(name##_R32(EAX)); emit(name##_R32(ECX)); emit(name##_R32(EDX)); emit(name##_R32(EBX)); \
-  emit(name##_R32(ESP)); emit(name##_R32(EBP)); emit(name##_R32(ESI)); emit(name##_R32(EDI));
+  emit(name##_R32(ESP)); emit(name##_R32(EBP)); emit(name##_R32(ESI)); emit(name##_R32(EDI)); \
+  EMIT_ALLR32X64(name)
 
 #define EMIT_ALLR64(name)                                                                     \
   emit(name##_R64(RAX)); emit(name##_R64(RCX)); emit(name##_R64(RDX)); emit(name##_R64(RBX)); \

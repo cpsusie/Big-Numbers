@@ -146,7 +146,10 @@ public:
     return *this;
   }
 
-#ifdef IS64BIT
+#ifdef IS32BIT
+#define SETREXBITONHIGHREG(r,bit)
+#define SETREXBITSONHIGHREG2(reg,addReg)
+#else // IS64BIT
   inline IntelOpcode &setRexBits(BYTE bits) {
     assert((bits&0xf0)==0);
     if(m_hasRexByte) {
@@ -156,7 +159,13 @@ public:
     m_hasRexByte = true;
     return insertByte(m_rexByteIndex, 0x40|bits);
   }
-#endif
+#define SETREXBITONHIGHREG(r,bit) { if((r) >= R8) setRexBits(bit); }
+#define SETREXBITSONHIGHREG2(reg,addReg) {                  \
+  const BYTE _rexBits = (((reg)>>3)&1) | (((addReg)>>2)&2); \
+  if(_rexBits) setRexBits(_rexBits);                        \
+}
+#endif // IS64BIT
+
   inline IntelOpcode &wordOp() {
     m_rexByteIndex++;
     return prefix(0x66);
@@ -211,9 +220,7 @@ public:
   inline IntelInstruction &memAddrPtr(BYTE reg) {
     assert(m_memAddrMode);
     assert((reg <= MAX_REFERENCE_REGISTER) && ((reg&7)!=ESP) && ((reg&7)!=EBP));
-#ifdef IS64BIT
-    if(reg >= R8) setRexBits(1);
-#endif // IS64BIT
+    SETREXBITONHIGHREG(reg,1);
     return or(reg&7);
   }
 
@@ -221,9 +228,7 @@ public:
   inline IntelInstruction &memAddrPtr1(BYTE reg, BYTE offset) {
     assert(m_memAddrMode);
     assert((reg <= MAX_REFERENCE_REGISTER) && ((reg&7)!=ESP));
-#ifdef IS64BIT
-    if(reg >= R8) setRexBits(1);
-#endif // IS64BIT
+    SETREXBITONHIGHREG(reg,1);
     return or(0x40 | (reg&7)).add(offset, 1);
   }
 
@@ -231,9 +236,7 @@ public:
   inline IntelInstruction &memAddrPtr4(BYTE reg, int offset) {
     assert(m_memAddrMode);
     assert((reg <= MAX_REFERENCE_REGISTER) && ((reg&7)!=ESP));
-#ifdef IS64BIT
-    if(reg >= R8) setRexBits(1);
-#endif // IS64BIT
+    SETREXBITONHIGHREG(reg,1);
     return or(0x80 | (reg&7)).add(offset, 4);
   }
 
@@ -241,9 +244,7 @@ public:
   inline IntelInstruction &memAddrMp2Ptr4(BYTE reg, BYTE p2, int offset) {
     assert(m_memAddrMode);
     assert((reg <= MAX_REFERENCE_REGISTER) && ((reg&7)!=ESP) && (p2<=3));
-#ifdef IS64BIT
-    if(reg >= R8) setRexBits(2);
-#endif // IS64BIT
+    SETREXBITONHIGHREG(reg,2);
     return or(0x04).add(0x05 | (p2 << 6) | ((reg&7) << 3), 1).add(offset, 4);
   }
 
@@ -251,10 +252,7 @@ public:
   inline IntelInstruction &memAddrMp2Reg(BYTE reg, BYTE p2, BYTE addReg) {
     assert(m_memAddrMode);
     assert((reg <= MAX_REFERENCE_REGISTER) && (addReg <= MAX_REFERENCE_REGISTER) && ((reg&7)!=EBP) && ((addReg&7)!=ESP) && (p2<=3));
-#ifdef IS64BIT
-    const BYTE rexBits = ((reg>>3)&1) | ((addReg>>2)&2);
-    if(rexBits) setRexBits(rexBits);
-#endif // IS64BIT
+    SETREXBITSONHIGHREG2(reg,addReg);
     return or(0x04).add((p2 << 6) | ((addReg&7) << 3) | (reg&7), 1);
   }
 
@@ -262,10 +260,7 @@ public:
   inline IntelInstruction &memAddrMp2Reg1(BYTE reg, BYTE p2, BYTE addReg, BYTE offset) {
     assert(m_memAddrMode);
     assert((reg <= MAX_REFERENCE_REGISTER) && (addReg <= MAX_REFERENCE_REGISTER) && ((addReg&7)!=ESP) && (p2<=3));
-#ifdef IS64BIT
-    const BYTE rexBits = ((reg>>3)&1) | ((addReg>>2)&2);
-    if(rexBits) setRexBits(rexBits);
-#endif // IS64BIT
+    SETREXBITSONHIGHREG2(reg,addReg);
     return or(0x44).add((p2 << 6) | ((addReg&7) << 3) | (reg&7), 1).add(offset, 1);
   }
 
@@ -273,10 +268,7 @@ public:
   inline IntelInstruction &memAddrMp2Reg4(BYTE reg, BYTE p2, BYTE addReg, int offset) {
     assert(m_memAddrMode);
     assert((reg <= MAX_REFERENCE_REGISTER) && (addReg <= MAX_REFERENCE_REGISTER) && ((addReg&7)!=ESP) && (p2<=3));
-#ifdef IS64BIT
-    const BYTE rexBits = ((reg>>3)&1) | ((addReg>>2)&2);
-    if(rexBits) setRexBits(rexBits);
-#endif // IS64BIT
+    SETREXBITSONHIGHREG2(reg,addReg);
     return or(0x84).add((p2 << 6) | ((addReg&7) << 3) | (reg&7), 1).add(offset, 4);
   }
 
@@ -303,12 +295,7 @@ public:
   inline IntelInstruction &regSrc(BYTE reg) {
     assert(m_regSrcMode);
     assert(reg <= MAX_REFERENCE_REGISTER);
-#ifdef IS64BIT
-    if(reg >= R8) {
-      assert(m_hasRexByte);
-      setRexBits(1);
-    }
-#endif
+    SETREXBITONHIGHREG(reg,1);
     return or(0xc0 | (reg&7));
   }
 };
