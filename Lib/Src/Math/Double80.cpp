@@ -180,11 +180,11 @@ void Double80::init(const _TUCHAR *s) {
   }
   if(*s == _T('.') && _istdigit(s[1])) {
     s++;
-    Double80 decimals = 0;
-    for(Double80 p = 0.1; _istdigit(*s); p /= 10) {
-      decimals += p * (int)(*(s++) - _T('0'));
+    Double80 decimals = 0, p = 10;
+    for(;_istdigit(*s); p *= 10, decimals *= 10) {
+      decimals += (int)(*(s++) - _T('0'));
     }
-    result += decimals;
+    result += decimals/p;
   }
   if(*s == _T('e') || *s == _T('E')) {
     s++;
