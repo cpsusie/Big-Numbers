@@ -41,6 +41,9 @@
     <ClInclude Include="NumberAddin.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="D80ToDbgString.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="NumberAddin.def">

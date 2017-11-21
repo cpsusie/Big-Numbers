@@ -6,7 +6,8 @@ DEFINECLASSNAME(MachineCode);
 
 #define ISBYTE(i)  ((i)==(char)(i))
 
-MachineCode::MachineCode() : m_esiOffset(0) {
+MachineCode::MachineCode() {
+  setValueCount(0);
 }
 
 MachineCode::~MachineCode() {
@@ -17,18 +18,19 @@ void MachineCode::clear() {
   ExecutableByteArray::clear();
   m_jumpFixups.clear();
   m_refenceArray.clear();
+  setValueCount(0);
 }
 
 MachineCode::MachineCode(const MachineCode &src) : ExecutableByteArray(src) {
   m_refenceArray = src.m_refenceArray;
-  m_esiOffset    = src.m_esiOffset;
+  setValueCount(src.getValueCount());
   linkReferences();
 }
 
 MachineCode &MachineCode::operator=(const MachineCode &src) {
   ExecutableByteArray::operator=(src);
   m_refenceArray = src.m_refenceArray;
-  m_esiOffset    = src.m_esiOffset;
+  setValueCount(src.getValueCount());
   linkReferences();
   return *this;
 }
@@ -77,9 +79,21 @@ void MachineCode::emitTableOp(const IntelOpcode &op, int index) {
 }
 
 void MachineCode::setValueCount(size_t valueCount) {
-  valueCount /= 2;
-  const int maxValue = 127-127%sizeof(Real);
-  m_esiOffset = (char)min(maxValue, valueCount * sizeof(Real));
+  m_valueCount = valueCount;
+  const int maxOffset = 127-127%sizeof(Real);
+  m_esiOffset = (char)min(maxOffset, (valueCount / 2) * sizeof(Real));
+}
+
+void MachineCode::emitFLoad(const ExpressionNode *n) {
+  if(n->isOne()) {
+    emit(FLD1);
+  } else if (n->isPi()) {
+    emit(FLDPI);
+  } else if(n->isZero()) {
+    emit(FLDZ);
+  } else {
+    emitTableOp(FLD_REAL, n);
+  }
 }
 
 #ifdef IS64BIT
@@ -92,25 +106,17 @@ bool MachineCode::emitFLoad(const ExpressionNode *n, const ExpressionDestination
     returnValue = false; // false  indicates that value needs to be moved from FPU to desired destination
     // NB continue case
   case RESULT_IN_FPU       :
-    if(n->isOne()) {
-      emit(FLD1);
-    } else if (n->isPi()) {
-      emit(FLDPI);
-    } else if(n->isZero()) {
-      emit(FLDZ);
-    } else {
-      emitFLoad(n);
-    }
+    emitFLoad(n);
     break;
 #ifndef LONGDOUBLE
   case RESULT_IN_XMM     :
     emitTableOp(MOVSD_XMM_MMWORD(dst.getXMMReg()), n);
     return true;
-#endif
+#endif // LONGDOUBLE
   }
   return returnValue;
 }
-#endif
+#endif // IS64BIT
 
 #ifdef IS32BIT
 void MachineCode::emitAddESP(int n) {
@@ -186,7 +192,7 @@ BYTE MachineCode::popTmp()  {
   return m_stackTop;
 }
 
-#endif // IS32BIT
+#endif // IS64BIT
 
 int MachineCode::emitShortJmp(const IntelInstruction &ins) {
   emit(ins);
@@ -692,6 +698,9 @@ void Expression::genExpression(const ExpressionNode *n, const ExpressionDestinat
 
   case MOD           :    GENCALL(     n, fmod                  );
   case POW           :
+    if(n->left()->isEulersConstant()) {
+      int fisk = 1;
+    }
     if(n->right()->isConstant()) {
       const Real p = evaluateRealExpr(n->right());
       if((fabs(p) <= 64) && (p - floor(p) == 0)) {

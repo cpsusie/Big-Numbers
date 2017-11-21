@@ -2,9 +2,6 @@
 #include <limits.h>
 #include <Math/Rational.h>
 
-const TCHAR *thisFile              = __TFILE__;
-DEFINECLASSNAME(Rational);
-
 #define SAFEPROD(a,b) Rational::safeProd(a,b,__LINE__)
 
 Rational::Rational() : m_numerator(0), m_denominator(1) {
@@ -35,6 +32,58 @@ Rational::Rational(int n) : m_numerator(n), m_denominator(1) {
 Rational::Rational(UINT n) : m_numerator(n), m_denominator(1) {
 }
 
+Rational::Rational(float d, UINT maxND) {
+  DEFINEMETHODNAME;
+  static const TCHAR *invalidFloatMsg = _T("Value %e cannot be contained in a Rational with maxND=%lu");
+
+  bool   positive;
+  float  da;
+  if(d > 0) {
+    positive = true;
+    da = d;
+  } else if(d < 0) {
+    positive = false;
+    da = -d;
+  } else {
+    m_numerator   = 0;
+    m_denominator = 1;
+    return;
+  }
+
+  INT64 p0 = 1, q0 = 0;
+  INT64 p1 = (INT64)floor(da);
+  INT64 q1 = 1;
+  INT64 p2, q2;
+
+  float frac = da - p1;
+  while(frac) {
+    frac = 1.0f / frac;
+    const float next = floor(frac);
+    p2 = (INT64)(next * p1 + p0);
+    q2 = (INT64)(next * q1 + q0);
+
+    // Limit the numerator and denominator to be maxND or less
+    if((p2 > maxND) || (q2 > maxND)) {
+      break;
+    }
+
+    // remember the last two fractions
+    p0 = p1; q0 = q1;
+    p1 = p2; q1 = q2;
+
+    frac -= next;
+  }
+
+  if((da > maxND) || (da < 1.0f / maxND)) { // hard upper and lower bounds for ratio
+    throwInvalidArgumentException(method, invalidFloatMsg, d, maxND);
+  }
+
+  assert(((float)p1 / q1 <= maxND) && ((float)q1 / p1 <= maxND));
+  assert(findGCD(p1,q1) == 1);
+
+  m_numerator   = positive ? p1 : -p1;
+  m_denominator = q1;
+}
 // This algorithm is borrowed from gimpzoommodel.c in LIBGIMP:
 // http://svn.gnome.org/viewcvs/gimp/trunk/libgimpwidgets/gimpzoommodel.c
 //
@@ -147,34 +196,36 @@ Rational::Rational(const Double80 &d80, UINT64 maxND) {
 }
 
 Rational::Rational(const String &s) {
-  init(s);
+  init(s.cstr());
 }
 
 Rational::Rational(const wchar_t *s) {
-  init(s);
+  USES_WCONVERSION;
+  init(WSTR2TSTR(s));
 }
 
 Rational::Rational(const char *s) {
-  init(s);
+  USES_ACONVERSION;
+  init(ASTR2TSTR(s));
 }
 
-void Rational::init(const String &s) {
+void Rational::init(const _TUCHAR *s) {
   DEFINEMETHODNAME;
   String tmp(s);
-  const int slash = (int)tmp.find(_T('/'));
-  if(slash == 0) {
-    throwInvalidArgumentException(method, _T("s=%s"), s.cstr());
+  const TCHAR *slash = _tcschr(s, _T('/'));
+  if(slash == s) { // string cannot begin with '/'. need nominator
+    throwInvalidArgumentException(method, _T("s=%s"), s);
   }
-  if(slash < 0) {
-    if(_stscanf(s.cstr(), _T("%I64d"), &m_numerator) != 1) {
-      throwInvalidArgumentException(method, _T("s=%s"), s.cstr());
+  if(slash == NULL) { // no denominator
+    if(_stscanf(s, _T("%I64d"), &m_numerator) != 1) {
+      throwInvalidArgumentException(method, _T("s=%s"), s);
     }
     m_denominator = 1;
   } else {
     INT64 n, d;
-    if((_stscanf(s.cstr()        , _T("%I64d"), &n) != 1)
-    || (_stscanf(s.cstr()+slash+1, _T("%I64d"), &d) != 1)) {
-      throwInvalidArgumentException(method, _T("s=%s"), s.cstr());
+    if((_stscanf(s      , _T("%I64d"), &n) != 1)
+    || (_stscanf(slash+1, _T("%I64d"), &d) != 1)) {
+      throwInvalidArgumentException(method, _T("s=%s"), s);
     }
     init(n, d);
   }
@@ -246,14 +297,14 @@ void Rational::throwDivisionbyZeroException(const TCHAR *method) { // static
 
 Rational operator/(const Rational &l, const Rational &r) {
   if(r.isZero()) {
-    Rational::throwDivisionbyZeroException(_T("operator/"));
+    Rational::throwDivisionbyZeroException(__TFUNCTION__);
   }
   return Rational(SAFEPROD(l.m_numerator,r.m_denominator), SAFEPROD(l.m_denominator,r.m_numerator));
 }
 
 Rational operator%(const Rational &l, const Rational &r) {
   if(r.isZero()) {
-    Rational::throwDivisionbyZeroException(_T("operator%"));
+    Rational::throwDivisionbyZeroException(__TFUNCTION__);
   }
   const Rational q = l / r;
   const INT64  n = getInt64(q);
@@ -266,14 +317,14 @@ Rational &Rational::operator*=(const Rational &r) {
 
 Rational &Rational::operator/=(const Rational &r) {
   if(r.isZero()) {
-    Rational::throwDivisionbyZeroException(_T("operator/="));
+    throwDivisionbyZeroException(__TFUNCTION__);
   }
   return *this = Rational(SAFEPROD(m_numerator,r.m_denominator), SAFEPROD(m_denominator, r.m_numerator));
 }
 
 Rational &Rational::operator%=(const Rational &r) {
   if(r.isZero()) {
-    Rational::throwDivisionbyZeroException(_T("operator%="));
+    throwDivisionbyZeroException(__TFUNCTION__);
   }
   return *this = *this % r;
 }
@@ -338,30 +389,6 @@ int rationalCmp(const Rational &r1, const Rational &r2) {
   }
 }
 
-bool Rational::operator<( const Rational &r) const {
-  return rationalCmp(*this, r) < 0;
-}
-
-bool Rational::operator>( const Rational &r) const {
-  return rationalCmp(*this, r) > 0;
-}
-
-bool Rational::operator<=(const Rational &r) const {
-  return rationalCmp(*this, r) <= 0;
-}
-
-bool Rational::operator>=(const Rational &r) const {
-  return rationalCmp(*this, r) >= 0;
-}
-
-bool Rational::operator==(const Rational &r) const {
-  return (m_numerator == r.m_numerator) && (m_denominator == r.m_denominator);
-}
-
-bool Rational::operator!=(const Rational &r) const {
-  return !(*this == r);
-}
-
 long getLong(const Rational &r) {
   const INT64 v = getInt64(r);
   if((v < _I32_MIN) || (v > _I32_MAX)) {
@@ -401,7 +428,7 @@ INT64 Rational::safeProd(const INT64 &a, const INT64 &b, int line) { // static
   INT64 result = a * b;
   const int sr = sign(result);
   if(sr != expectedSign) {
-    throwInvalidArgumentException(__TFUNCTION__,_T("%s line %d: Product overflow. a=%I64d, b=%I64d"), thisFile, line, a, b);
+    throwInvalidArgumentException(__TFUNCTION__,_T("%s line %d: Product overflow. a=%I64d, b=%I64d"), __TFILE__, line, a, b);
   }
   return result;
 }
@@ -435,7 +462,7 @@ UINT64 Rational::findGCD(const UINT64 &a, const UINT64 &b) { // static
   return g*v;
 }
 
-bool Rational::isRealRational(const Real &x, Rational *r) { // static
+bool Rational::isRational(const Double80 &x, Rational *r) { // static
   if(x == floor(x)) {
     if(fabs(x) > LLONG_MAX) {
       return false;
@@ -451,8 +478,49 @@ bool Rational::isRealRational(const Real &x, Rational *r) { // static
     } else {
       return false;
     }
+  } catch (Exception) {
+    return false;
   }
-  catch (Exception) {
+}
+
+bool Rational::isRational(double x, Rational *r) { // static
+  if(x == floor(x)) {
+    if(fabs(x) > LLONG_MAX) {
+      return false;
+    }
+    if(r) *r = getInt64(x);
+    return true;
+  }
+  try {
+    const Rational tmp(x);
+    if(tmp.getDenominator() <= 400) { // This is not good enough, but how should it be done ?
+      if(r) *r = tmp;
+      return true;
+    } else {
+      return false;
+    }
+  } catch (Exception) {
+    return false;
+  }
+}
+
+bool Rational::isRational(float x, Rational *r) { // static
+  if(x == floor(x)) {
+    if(fabs(x) > LLONG_MAX) {
+      return false;
+    }
+    if(r) *r = getInt64(x);
+    return true;
+  }
+  try {
+    const Rational tmp(x);
+    if(tmp.getDenominator() <= 400) { // This is not good enough, but how should it be done ?
+      if(r) *r = tmp;
+      return true;
+    } else {
+      return false;
+    }
+  } catch (Exception) {
     return false;
   }
 }

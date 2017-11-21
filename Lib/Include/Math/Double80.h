@@ -3396,6 +3396,19 @@ inline bool operator> (UINT64  x, const Double80 &y) {  return y <  x; }
 inline bool operator> (float   x, const Double80 &y) {  return y <  x; }
 inline bool operator> (double  x, const Double80 &y) {  return y <  x; }
 
+inline bool isDouble(const Double80 &x) {
+  return x == getDouble(x);
+}
+inline bool isFloat(const Double80 &x) {
+  return x == getFloat(x);
+}
+inline bool isInt64(const Double80 &x) {
+  return x == getInt64(x);
+}
+inline bool isInt(const Double80 &x) {
+  return x == getInt(x);
+}
+
 Double80 cot(  const Double80 &x);
 Double80 asin( const Double80 &x);
 Double80 acos( const Double80 &x);

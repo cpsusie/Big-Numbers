@@ -8,6 +8,10 @@
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
+static Real relativeDiff(const Real &x, const Real &x0) {
+  return (x0 == 0) ? fabs(x) : fabs((x-x0)/x0);
+}
+
 #define endl _T("\n")
 
 #define IF(e,e1,e2) ((e)?(e1):(e2))
@@ -1413,9 +1417,9 @@ namespace TestExpression {
                 }
                 break;
               case EXPR_RETURN_BOOL:
-                { const bool compiledResult = compiledExpr.evaluateBool();
+                { const bool compiledResult    = compiledExpr.evaluateBool();
                   const bool interpreterResult = interpreterExpr.evaluateBool();
-                  const bool cppResult = test.fb(x);
+                  const bool cppResult         = test.fb(x);
                   if((compiledResult != cppResult) || (interpreterResult != cppResult)) {
                     LOG log;
                     log << _T("TestCase[") << i << _T("]:<") << expr << _T(">(x=") << toString(x) << _T(") failed.") << endl
@@ -1432,6 +1436,38 @@ namespace TestExpression {
         } // for(i...
       } catch (Exception e) {
         OUTPUT(_T("Exception:%s"), e.what());
+        verify(false);
+      }
+    }
+
+    TEST_METHOD(ExpressionTestPow) {
+      FPU::init();
+      String str;
+      try {
+        for(Real p = -70; p <= 70; p += 0.5) {
+          if (p == 0) {
+            int fisk = 1;
+          }
+          str = format(_T("(1+x)^%s"),toString(p).cstr());
+          Expression compiledExpr, interpreterExpr;
+          compiledExpr.compile(   str, true );
+          interpreterExpr.compile(str, false);
+          verify(compiledExpr.isOk());
+          verify(interpreterExpr.isOk());
+          const Real startx = (p == getInt(p)) ? -1.9 : -0.9, step = 0.125;
+          for(Real x = startx; x <= 0.5; x += step) {
+            compiledExpr.setValue(   _T("x"),x);
+            interpreterExpr.setValue(_T("x"),x);
+            const Real y1 = mypow((1+x),p);
+            const Real y2 = interpreterExpr.evaluate();
+            const Real y3 = compiledExpr.evaluate();
+            verify(relativeDiff(y2,y1) < 1e-13);
+            verify(relativeDiff(y3,y1) < 1e-13);
+          }
+        }
+      } catch (Exception e) {
+        OUTPUT(_T("Exception:%s"), e.what());
+        OUTPUT(_T("str:[%s]"    ), str.cstr());
         verify(false);
       }
     }

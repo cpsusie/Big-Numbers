@@ -6,11 +6,10 @@
 
 class Rational {
 private:
-  DECLARECLASSNAME;
   INT64 m_numerator, m_denominator;
 
   void init(const INT64 &numerator, const INT64 &denominator);
-  void init(const String &s);
+  void init(const _TUCHAR *s);
   static void throwDivisionbyZeroException(const TCHAR *method);
   static INT64 pow(INT64 n, int y); // assume y >= 0
 public:
@@ -19,9 +18,10 @@ public:
   Rational(const INT64 &numerator, int          denominator);
   Rational(int          numerator, int          denominator);
   Rational(int          numerator, const INT64 &denominator);
-  Rational(const INT64           &n  );
+  Rational(const INT64             &n  );
   Rational(int                      n  );
   Rational(UINT                     n  );
+  explicit Rational(float           f  , UINT   maxND = _I16_MIN);
   explicit Rational(double          d  , UINT   maxND = _I32_MIN);
   explicit Rational(const Double80 &d80, UINT64 maxND = _I64_MAX);
   explicit Rational(const String   &s  );
@@ -51,12 +51,24 @@ public:
 
   friend int rationalCmp(const Rational &r1, const Rational &r2);
 
-  bool operator< (const Rational &r) const;
-  bool operator> (const Rational &r) const;
-  bool operator<=(const Rational &r) const;
-  bool operator>=(const Rational &r) const;
-  bool operator==(const Rational &r) const;
-  bool operator!=(const Rational &r) const;
+  inline bool operator< (const Rational &r) const {
+    return rationalCmp(*this, r) < 0;
+  }
+  inline bool operator> (const Rational &r) const {
+    return rationalCmp(*this, r) > 0;
+  }
+  inline bool operator<=(const Rational &r) const {
+    return rationalCmp(*this, r) <= 0;
+  }
+  inline bool operator>=(const Rational &r) const {
+    return rationalCmp(*this, r) >= 0;
+  }
+  inline bool operator==(const Rational &r) const {
+    return (m_numerator == r.m_numerator) && (m_denominator == r.m_denominator);
+  }
+  inline bool operator!=(const Rational &r) const {
+    return !(*this == r);
+  }
 
   friend Rational fabs(const Rational &r);
   friend Rational pow( const Rational &r, int e);
@@ -123,8 +135,11 @@ public:
   inline const INT64 &getDenominator() const {
     return m_denominator;
   }
-
-  static bool isRealRational(const Real &x, Rational *r);
+  // Return true if x is a rational with denominator<=400.
+  // if(r != NULL), *r will contain converted Rational
+  static bool isRational(float           x, Rational *r);
+  static bool isRational(double          x, Rational *r);
+  static bool isRational(const Double80 &x, Rational *r);
 
   inline ULONG hashCode() const {
     return int64Hash(m_numerator) + 100999 * int64Hash(m_denominator);
@@ -147,6 +162,27 @@ public:
   }
 };
 
+template<class T> bool isOdd(T x) {
+  return x & 1;
+}
+
+template<class T> bool isEven(T x) {
+  return (x & 1) == 0;
+}
+
+inline bool isSymmetricExponent(const Rational &r) {
+  return ::isEven(r.getNumerator()) || ::isEven(r.getDenominator());
+}
+
+inline bool isAsymmetricExponent(const Rational &r) {
+  return isOdd(r.getNumerator()) && isOdd(r.getDenominator());
+}
+
+// Return pointer to the character after parsing the string with the regular
+// expression: {s}*[\-+]?{d}+(/[\-+]?{d}+)?
+// where {d} = [0-9] and {s} = all characters c, where isspace(c) is true
+// Return NULL if string is not recognized by the regular expression.
+const _TUCHAR *parseRational(const _TUCHAR *s);
 String toString(const Rational &r, int precision=0, int width=0, int flags=0);
 
 tistream &operator>>(tistream &s,       Rational &r);

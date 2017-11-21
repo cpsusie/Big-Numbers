@@ -18,29 +18,36 @@ typedef NumberInterval<Real> RealInterval;
 inline double getDouble(double x) {
   return x;
 }
-
+inline float getFloat(double x) {
+  return (float)x;
+}
 inline int getInt(double x) {
   return (int)x;
 }
-
 inline UINT getUint(double x) {
   return (UINT)x;
 }
-
 inline long getLong(double x) {
   return getInt(x);
 }
-
 inline ULONG getUlong(double x) {
   return getUint(x);
 }
-
 inline INT64 getInt64(double x) {
   return (INT64)x;
 }
-
 inline UINT64 getUint64(double x) {
   return (UINT64)x;
+}
+
+inline bool isFloat(double x) {
+  return x == (float)x;
+}
+inline bool isInt64(double x) {
+  return x == getInt64(x);
+}
+inline bool isInt(double x) {
+  return x == getInt(x);
 }
 
 inline Real getRealNaN() {

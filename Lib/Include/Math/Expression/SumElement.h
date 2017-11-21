@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Number.h"
+#include <Math/Number.h>
 
 class ParserTree;
 class ExpressionNode;

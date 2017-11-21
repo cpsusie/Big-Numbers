@@ -3,8 +3,8 @@
 #include <MyUtil.h>
 #include <CompactHashMap.h>
 #include <Scanner.h>
+#include <Math/Number.h>
 #include "ExpressionSymbol.h"
-#include "Number.h"
 
 class ExpressionVariable {
 private:

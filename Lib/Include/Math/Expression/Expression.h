@@ -114,6 +114,8 @@ private:
   DECLARECLASSNAME;
   CompactArray<MemoryReference>   m_refenceArray;
   CompactArray<JumpFixup>         m_jumpFixups;
+  // Number of entries in ParserTree::m_valueTable
+  size_t                          m_valueCount;
   // Offset in bytes, of esi/rsi from m_valueTable[0], when code is executing. 0 <= m_esiOffset < 128
   char                            m_esiOffset;
 #ifdef IS64BIT
@@ -131,7 +133,7 @@ public:
   void setBytes(int addr, const void *bytes, int count);
   int  emit(const IntelInstruction &ins);
   void emitCall(BuiltInFunction f, const ExpressionDestination &dst);
-  void emitFLoad(       const ExpressionNode *n) { emitTableOp(FLD_REAL    , n    ); }
+  void emitFLoad(       const ExpressionNode *n);
   void emitFStorePop(   int               index) { emitTableOp(FSTP_REAL   , index); }
   void emitFStorePop(   const ExpressionNode *n) { emitTableOp(FSTP_REAL   , n    ); }
 #ifndef LONGDOUBLE
@@ -157,10 +159,16 @@ public:
   }
   void emitTableOp(const IntelOpcode &op, int index);
   void setValueCount(size_t valueCount);
+  inline size_t getValueCount() const {
+    return m_valueCount;
+  }
   inline char getESIOffset() const {
     return m_esiOffset;
   }
   inline int getESIOffset(size_t valueIndex) const {
+    if(valueIndex >= m_valueCount) {
+      throwInvalidArgumentException(__TFUNCTION__, _T("valueIndex=%zu. m_valueCount=%zu"), valueIndex, m_valueCount);
+    }
     return (int)valueIndex * sizeof(Real) - m_esiOffset;
   }
 #ifdef IS32BIT

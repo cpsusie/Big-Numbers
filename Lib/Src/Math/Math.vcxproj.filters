@@ -127,9 +127,6 @@
     <ClCompile Include="Expression\FactorArray.cpp">
       <Filter>Source Files\Expression</Filter>
     </ClCompile>
-    <ClCompile Include="Expression\Number.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
     <ClCompile Include="Expression\ParserTree.cpp">
       <Filter>Source Files\Expression</Filter>
     </ClCompile>
@@ -328,6 +325,12 @@
     <ClCompile Include="Int128ToString.cpp">
       <Filter>Source Files\Number Types</Filter>
     </ClCompile>
+    <ClCompile Include="Number.cpp">
+      <Filter>Source Files\Number Types</Filter>
+    </ClCompile>
+    <ClCompile Include="ParseRational.cpp">
+      <Filter>Source Files\Number Types</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="NatvisFile.natvis" />
@@ -377,9 +380,6 @@
       <Filter>Header Files\Expression</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\Math\Expression\ExpressionSymbol.h">
-      <Filter>Header Files\Expression</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Math\Expression\Number.h">
       <Filter>Header Files\Expression</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\Math\Expression\OpCodes.h">
@@ -498,6 +498,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\Math\Expression\ExpressionFunction.h">
       <Filter>Header Files\Expression</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Number.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -1,24 +1,19 @@
 #include "pch.h"
-#include <Math/Expression/Number.h>
+#include <Math/Number.h>
+#include "D80ToDbgString.h"
 
 class Numberx86 {
 public:
   DWORD        m_vfptr;               // pointer to vtable
   NumberType   m_type;
-  union {
-    DWORD     m_real;
-    DWORD     m_rational;
-  };
+  DWORD        m_datap;
 };
 
 class Numberx64 {
 public:
   QWORD        m_vfptr;               // pointer to vtable
   NumberType   m_type;
-  union {
-    QWORD     m_real;
-    QWORD     m_rational;
-  };
+  QWORD        m_datap;
 };
 
 template<class Number> class NumberAddIn {
@@ -33,15 +28,25 @@ public:
 template<class Number> String NumberAddIn<Number>::toString(Number &n, size_t maxResult) const {
   switch(n.m_type) {
   case NUMBERTYPE_UNDEFINED:
-    return _T("undefined");
-  case NUMBERTYPE_REAL     :
+    return _T("Undefined");
+  case NUMBERTYPE_FLOAT    :
+    { float v;
+      m_helper->getObjectx64(&v, n.m_datap, sizeof(v));
+      return format(_T("%g"), v);
+    }
+  case NUMBERTYPE_DOUBLE   :
     { double v;
-      m_helper->getObjectx64(&v, n.m_real, sizeof(v));
+      m_helper->getObjectx64(&v, n.m_datap, sizeof(v));
       return format(_T("%lg"), v);
+    }
+  case NUMBERTYPE_DOUBLE80 :
+    { Double80 v;
+      m_helper->getObjectx64(&v, n.m_datap, sizeof(v));
+      return D80ToDbgString(v);
     }
   case NUMBERTYPE_RATIONAL :
     { Rational r;
-      m_helper->getObjectx64(&r, n.m_rational, sizeof(r));
+      m_helper->getObjectx64(&r, n.m_datap, sizeof(r));
       return r.toString();
     }
   default: return _T("unknown type");
@@ -51,7 +56,7 @@ template<class Number> String NumberAddIn<Number>::toString(Number &n, size_t ma
 ADDIN_API HRESULT WINAPI AddIn_Number(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t maxResult, DWORD /*reserved*/) {
   String tmpStr;
   try {
-    switch (pHelper->getProcessorType()) {
+    switch(pHelper->getProcessorType()) {
     case PRTYPE_X86:
       { Numberx86 n;
         pHelper->getRealObject(&n, sizeof(n));
@@ -65,9 +70,8 @@ ADDIN_API HRESULT WINAPI AddIn_Number(DWORD dwAddress, DEBUGHELPER *pHelper, int
       }
       break;
     }
-  }
-  catch (...) {
-    tmpStr = _T("Invalid address");
+  } catch (...) {
+    tmpStr = EMPTYSTRING;
   }
 
   USES_CONVERSION;
@@ -75,3 +79,4 @@ ADDIN_API HRESULT WINAPI AddIn_Number(DWORD dwAddress, DEBUGHELPER *pHelper, int
   strncpy(pResult, cp, maxResult);
   return S_OK;
 }
+

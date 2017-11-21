@@ -65,6 +65,7 @@
     <None Include="NumberAddin.def" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="D80ToDbgString.h" />
     <ClInclude Include="NumberAddin.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="targetver.h" />
