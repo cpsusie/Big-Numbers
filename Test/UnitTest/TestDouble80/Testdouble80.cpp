@@ -78,14 +78,6 @@ namespace TestDouble80 {
     }
   }
 
-  static double pow10(double x) {
-    return pow(10, x);
-  }
-
-  static double pow2(double x) {
-    return pow(2, x);
-  }
-
   static void checkResult(double x64, Double80 x80, TCHAR *op, double tolerance = EPS) {
     const double relativeError = getRelativeError(x64, x80);
     if(relativeError > tolerance) {
@@ -773,14 +765,14 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
       testFunction("atan", atan, atan, -1, 1);
       testFunction("atan2", atan2, atan2, -2.3, 2.7, -1.2, 1);
       testFunction("exp", exp, exp, -1, 1);
+      testFunction("exp10", exp10, exp10, -2.4, 12.2);
+      testFunction("exp2", exp2, exp2, -2.4, 12.2);
       testFunction("log", log, log, 1e-3, 1e3);
       testFunction("log10", log10, log10, 1e-3, 1e3);
       testFunction("log2", log2, log2, 1e-3, 1e3);
       testFunction("pow", pow, pow, 0.1, 2.7e3, -2.1, 2);
       verify(pow(Double80::zero, Double80::one) == Double80::zero);
       verify(pow(Double80::zero, Double80::zero) == Double80::one);
-      testFunction("pow10", ::pow10, pow10, -2.4, 12.2);
-      testFunction("pow2", ::pow2, pow2, -2.4, 12.2);
       testFunction("root", root, root, 0.1, 2.7e3, -2.1, 2);
       testFunction("fraction", ::fraction, fraction, 1e-3, 1e3);
       testFunction("fraction", ::fraction, fraction, -1e3, -1e-3);
