@@ -13,7 +13,7 @@ QWmaxI64P1      QWORD      8000000000000000h
 DmaxI16P1       QWORD      40e0000000000000h   ;  maxI16P1 as double
 DmaxI32P1       QWORD      41e0000000000000h   ;  maxI32P1 as double
 TBmaxI64P1      TBYTE  403e8000000000000000h   ;  maxI64P1 as Double80
-TB2Pi2Pow60     TBYTE  403dc90fdaa22168c235h   ; 2*pi*pow2(60) (=7.244019458077122e+018)
+TB2PiExp260     TBYTE  403dc90fdaa22168c235h   ; 2pi*exp2(60) (=7.244019458077122e+018)
 TB1e18          TBYTE  403ade0b6b3a76400000h   ; 1e18
 TB1e18M1        TBYTE  403ade0b6b3a763ffff0h   ; TB1e18 - 1
 TB10            TBYTE  4002a000000000000000h   ; 10
@@ -897,7 +897,7 @@ D80rem ENDP
 ; ----------------------------------------- Double80 trigonometric functions ----------------------------------------
 ;void D80sin(Double80 &x);
 D80sin PROC
-    lea     rdx, TB2Pi2Pow60
+    lea     rdx, TB2PiExp260
     call    D80rem
     fld     TBYTE PTR[rcx]
     fsin
@@ -907,7 +907,7 @@ D80sin ENDP
 
 ;void D80cos(Double80 &x);
 D80cos PROC
-    lea     rdx, TB2Pi2Pow60
+    lea     rdx, TB2PiExp260
     call    D80rem
     fld     TBYTE PTR[rcx]
     fcos
@@ -917,7 +917,7 @@ D80cos ENDP
 
 ;void D80tan(Double80 &x);
 D80tan PROC
-    lea     rdx, TB2Pi2Pow60
+    lea     rdx, TB2PiExp260
     call    D80rem
     fld     TBYTE PTR[rcx]
     fptan
@@ -948,7 +948,7 @@ D80atan2 ENDP
 ;void D80sincos(Double80 &c, Double80 &s);
 D80sincos PROC
     mov     r8, rdx
-    lea     rdx, TB2Pi2Pow60
+    lea     rdx, TB2PiExp260
     call    D80rem
     fld     TBYTE PTR[rcx]
     fsincos
@@ -959,35 +959,29 @@ D80sincos ENDP
 
 ; --------------------------------------------------- Double80 Exponential and Logarithmic functions ------------------
 
-;void D80pow2(Double80 &x);
-D80pow2 PROC
+;void D80exp(Double80 &x);
+D80exp PROC
     fld     TBYTE PTR[rcx]                     ; st0 = x
-    fldz
-    fcomip  st, st(1)
-    je      ZeroExponent
 
-    pushRoundMode ROUNDDOWN                    ; st0 = x (!= 0)
-    fld     st(0)                              ; st0 = x                    , st1 = x
-    frndint                                    ; st0 = floor(  x         )  , st1 = x
-    fsub    st(1), st(0)                       ; st0 = floor(  x         )  , st1 = frac(x)
-    fxch    st(1)                              ; st0 = frac(   x         )  , st1 = floor(x)
-    f2xm1                                      ; st0 = 2^ frac(x         )-1, st1 = floor(x)
+    pushRoundMode ROUNDDOWN
+    fldl2e                                     ; st0 = log2(e)              , st1 = x
+    fmul                                       ; st0 = x/ln(2)
+    fld     st(0)                              ; st0 = x/ln(2)              , st1 = x/ln(2)
+    frndint                                    ; st0 = floor(  x/ln(2   ))  , st1 = x/ln(2)
+    fsub    st(1), st(0)                       ; st0 = floor(  x/ln(2   ))  , st1 = frac( x/ln(2))
+    fxch    st(1)                              ; st0 = frac(   x/ln(2   ))  , st1 = floor(x/ln(2))
+    f2xm1                                      ; st0 = 2^ frac(x/ln(2   ))-1, st1 = floor(x/ln(2))
     fld1
-    fadd                                       ; st0 = 2^ frac(x         )  , st1 = floor(x)
-    fscale                                     ; st0 = 2^(frac(x         )+floor(x         ))=2 ^x, st1 = floor(x)
-    fstp    st(1)                              ; pop st0
+    fadd                                       ; st0 = 2^ frac(x/ln(2   ))   , st1 = floor(x/ln(2))
+    fscale                                     ; st0 = 2^(frac(x/ln(2   ))+floor(x/ln(2   )))=e ^x, st1 = floor(x/ln(2))
+    fstp    st(1)                              ; pop st1
     fstp    TBYTE PTR[rcx]                     ; pop to x
     popRoundMode
     ret
-ZeroExponent:                                  ; st0 = x
-    fstp    st(0)                              ; pop st0
-    fld1                                       ; st0 = 1
-    fstp    TBYTE PTR[rcx]                     ; pop to x
-    ret
-D80pow2 ENDP
+D80exp ENDP
 
-;void D80pow10(Double80 &x);
-D80pow10 PROC
+;void D80exp10(Double80 &x);
+D80exp10 PROC
     fld     TBYTE PTR[rcx]                     ; st0 = x
     fldz
     fcomip  st, st(1)
@@ -1013,28 +1007,65 @@ ZeroExponent:                                  ; st0 = x
     fld1                                       ; st0 = 1
     fstp    TBYTE PTR[rcx]                     ; pop to x
     ret
-D80pow10 ENDP
+D80exp10 ENDP
 
-;void D80exp(Double80 &x);
-D80exp PROC
+;void D80exp2(Double80 &x);
+D80exp2 PROC
     fld     TBYTE PTR[rcx]                     ; st0 = x
+    fldz
+    fcomip  st, st(1)
+    je      ZeroExponent
 
-    pushRoundMode ROUNDDOWN
-    fldl2e                                     ; st0 = log2(e)              , st1 = x
-    fmul                                       ; st0 = x/ln(2)
-    fld     st(0)                              ; st0 = x/ln(2)              , st1 = x/ln(2)
-    frndint                                    ; st0 = floor(  x/ln(2   ))  , st1 = x/ln(2)
-    fsub    st(1), st(0)                       ; st0 = floor(  x/ln(2   ))  , st1 = frac( x/ln(2))
-    fxch    st(1)                              ; st0 = frac(   x/ln(2   ))  , st1 = floor(x/ln(2))
-    f2xm1                                      ; st0 = 2^ frac(x/ln(2   ))-1, st1 = floor(x/ln(2))
+    pushRoundMode ROUNDDOWN                    ; st0 = x (!= 0)
+    fld     st(0)                              ; st0 = x                    , st1 = x
+    frndint                                    ; st0 = floor(  x         )  , st1 = x
+    fsub    st(1), st(0)                       ; st0 = floor(  x         )  , st1 = frac(x)
+    fxch    st(1)                              ; st0 = frac(   x         )  , st1 = floor(x)
+    f2xm1                                      ; st0 = 2^ frac(x         )-1, st1 = floor(x)
     fld1
-    fadd                                       ; st0 = 2^ frac(x/ln(2   ))   , st1 = floor(x/ln(2))
-    fscale                                     ; st0 = 2^(frac(x/ln(2   ))+floor(x/ln(2   )))=e ^x, st1 = floor(x/ln(2))
-    fstp    st(1)                              ; pop st1
+    fadd                                       ; st0 = 2^ frac(x         )  , st1 = floor(x)
+    fscale                                     ; st0 = 2^(frac(x         )+floor(x         ))=2^x, st1 = floor(x)
+    fstp    st(1)                              ; pop st0
     fstp    TBYTE PTR[rcx]                     ; pop to x
     popRoundMode
     ret
-D80exp ENDP
+ZeroExponent:                                  ; st0 = x
+    fstp    st(0)                              ; pop st0
+    fld1                                       ; st0 = 1
+    fstp    TBYTE PTR[rcx]                     ; pop to x
+    ret
+D80exp2 ENDP
+
+;void D80log(Double80 &x);
+D80log PROC
+    fld1                                       ; st0 = 1
+    fld     TBYTE PTR[rcx]                     ; st0 = x     , st1 = 1
+    fyl2x                                      ; st0 = st1*log2(st0) = log2(x)
+    fldln2                                     ; st0 = ln(2) , st1 = log2(x)
+    fmul                                       ; st0 = ln(x)
+    fstp    TBYTE PTR[rcx]                     ; pop to x
+    ret
+D80log ENDP
+
+;void D80log10(Double80 &x);
+D80log10 PROC
+    fld1                                       ; st0 = 1
+    fld     TBYTE PTR[rcx]                     ; st0 = x       , st1 = 1
+    fyl2x                                      ; st0 = st1*log2(st0) = log2(x)
+    fldlg2                                     ; st0 = log10(2), st1 = log2(x)
+    fmul                                       ; st0 = log2(x)*log10(2) = log10(x)
+    fstp    TBYTE PTR[rcx]                     ; pop to x
+    ret
+D80log10 ENDP
+
+;void D80log2(Double80 &x);
+D80log2 PROC
+    fld1                                       ; st0 = 1
+    fld     TBYTE PTR[rcx]                     ; st0 = x     , st1 = 1
+    fyl2x                                      ; st0 = st1*log2(st0) = log2(x)
+    fstp    TBYTE PTR[rcx]                     ; pop to x
+    ret
+D80log2 ENDP
 
 ;void D80pow(Double80 &x, const Double80 &y);
 D80pow PROC
@@ -1082,37 +1113,6 @@ ZeroBaseNegativeExponent:                      ; st0 = y
     fstp    TBYTE PTR[rcx]                     ; pop to x - error
     ret
 D80pow ENDP
-
-;void D80log2(Double80 &x);
-D80log2 PROC
-    fld1                                       ; st0 = 1
-    fld     TBYTE PTR[rcx]                     ; st0 = x     , st1 = 1
-    fyl2x                                      ; st0 = st1*log2(st0) = log2(x)
-    fstp    TBYTE PTR[rcx]                     ; pop to x
-    ret
-D80log2 ENDP
-
-;void D80log10(Double80 &x);
-D80log10 PROC
-    fld1                                       ; st0 = 1
-    fld     TBYTE PTR[rcx]                     ; st0 = x       , st1 = 1
-    fyl2x                                      ; st0 = st1*log2(st0) = log2(x)
-    fldlg2                                     ; st0 = log10(2), st1 = log2(x)
-    fmul                                       ; st0 = log2(x)*log10(2) = log10(x)
-    fstp    TBYTE PTR[rcx]                     ; pop to x
-    ret
-D80log10 ENDP
-
-;void D80log(Double80 &x);
-D80log PROC
-    fld1                                       ; st0 = 1
-    fld     TBYTE PTR[rcx]                     ; st0 = x     , st1 = 1
-    fyl2x                                      ; st0 = st1*log2(st0) = log2(x)
-    fldln2                                     ; st0 = ln(2) , st1 = log2(x)
-    fmul                                       ; st0 = ln(x)
-    fstp    TBYTE PTR[rcx]                     ; pop to x
-    ret
-D80log ENDP
 
 ; ------------------------------------------------- Double80 floor,ceil --------------------------------
 

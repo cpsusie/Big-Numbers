@@ -19,6 +19,10 @@ double acot(              double x);
 // calculate both cos and sin. c:inout c, s:out
 extern "C" void   sincos(double &c, double &s);
 
+inline double exp10(double x) {
+  return pow(10, x);
+}
+
 typedef enum {
   RADIANS
  ,DEGREES

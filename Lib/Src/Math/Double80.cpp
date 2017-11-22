@@ -14,8 +14,6 @@
 
 //#define SMART_VERSION
 
-DEFINECLASSNAME(FPU);
-
 #define SETBIT(n,bit)   ((n) |  (1<<(bit)))
 #define CLEARBIT(n,bit) ((n) & ~(1<<(bit)))
 
@@ -80,8 +78,8 @@ FPURoundMode FPU::getRoundMode() { // static
   case 1 : return FPU_ROUNDCONTROL_ROUNDDOWN;
   case 2 : return FPU_ROUNDCONTROL_ROUNDUP;
   case 3 : return FPU_ROUNDCONTROL_TRUNCATE;
-  default: throwException(_T("%s::%s:Invalid roundMode. bit[10,11] = %x")
-                         ,s_className, __TFUNCTION__, roundingMode); // Should not come here
+  default: throwException(_T("%s:Invalid roundMode. bit[10,11] = %x")
+                         ,__TFUNCTION__, roundingMode); // Should not come here
            return FPU_ROUNDCONTROL_ROUND;
   }
 }
@@ -113,8 +111,6 @@ public:
   }
 };
 
-DEFINECLASSNAME(Double80);
-
 const Double80 Double80::zero(0);
 const Double80 Double80::one( 1);
 const Double80 Double80::M_PI         ((BYTE*)"\x35\xc2\x68\x21\xa2\xda\x0f\xc9\x00\x40"); // pi
@@ -127,8 +123,7 @@ const Double80 Double80::DBL80_NINF   ((BYTE*)"\x00\x00\x00\x00\x00\x00\x00\x80\
 
 const int      Double80::DBL80_DIG = 19;
 
-static const Double80     M_PI_05(  (BYTE*)"\x35\xc2\x68\x21\xa2\xda\x0f\xc9\xff\x3f"); // pi/2
-static const Double80     M_PI_2_60((BYTE*)"\x35\xc2\x68\x21\xa2\xda\x0f\xc9\x3d\x40"); // 2*pi*pow2(60) (=7.244019458077122e+018)
+static const Double80     M_PI_05     ((BYTE*)"\x35\xc2\x68\x21\xa2\xda\x0f\xc9\xff\x3f"); // pi/2
 static const Double80     tenE18(  1e18    );
 static const Double80     tenE18M1(tenE18-1);
 static const Double80     log2_5;
@@ -136,13 +131,14 @@ static const Double80     log2_5;
 #ifdef IS32BIT
 const double   _Dmaxi16P1   = ((UINT)_I16_MAX + 1);
 const double   _Dmaxi32P1   = ((UINT)_I32_MAX + 1);
-const Double80 _D80maxi64   = Double80((BYTE*)"\xfe\xff\xff\xff\xff\xff\xff\xff\x3d\x40"); // _I64_MAX;
-const Double80 _D80maxi64P1 = Double80((BYTE*)"\x00\x00\x00\x00\x00\x00\x00\x80\x3e\x40"); // (UINT64)_I64_MAX + 1
+const Double80 _D80maxi64(  (BYTE*)"\xfe\xff\xff\xff\xff\xff\xff\xff\x3d\x40"); // _I64_MAX;
+const Double80 _D80maxi64P1((BYTE*)"\x00\x00\x00\x00\x00\x00\x00\x80\x3e\x40"); // (UINT64)_I64_MAX + 1
+static const Double80     M_2PiExp260 ((BYTE*)"\x35\xc2\x68\x21\xa2\xda\x0f\xc9\x3d\x40"); // 2pi*exp2(60) (=7.244019458077122e+018)
 #endif  // IS32BIT
 
 void Double80::initClass() {
   if(sizeof(Double80) != 10) {
-    throwException(_T("%s::Size of Double80 must be 10. Size=%d."), s_className, sizeof(Double80));
+    throwException(_T("%s:Size of Double80 must be 10. Size=%d."), __TFUNCTION__, sizeof(Double80));
   }
 
   FPU::init();
@@ -201,11 +197,11 @@ void Double80::init(const _TUCHAR *s) {
     }
     exponent *= expoSign;
     if(exponent < -4900) {
-      result *= pow10(-4900);
+      result *= exp10(-4900);
       exponent += 4900;
-      result *= pow10(exponent);
+      result *= exp10(exponent);
     } else {
-      result *= pow10(exponent);
+      result *= exp10(exponent);
     }
   }
   *this = isNegative ? -result : result;
@@ -374,7 +370,7 @@ Exit:
 }
 
 Double80 sin(const Double80 &x) {
-  Double80 result = fmod(x,M_PI_2_60);
+  Double80 result = fmod(x,M_2PiExp260);
   __asm {
     fld result
     fsin
@@ -384,7 +380,7 @@ Double80 sin(const Double80 &x) {
 }
 
 Double80 cos(const Double80 &x) {
-  Double80 result = fmod(x,M_PI_2_60);
+  Double80 result = fmod(x,M_2PiExp260);
   __asm {
     fld result
     fcos
@@ -394,7 +390,7 @@ Double80 cos(const Double80 &x) {
 }
 
 Double80 tan(const Double80 &x) {
-  Double80 result = fmod(x,M_PI_2_60);
+  Double80 result = fmod(x,M_2PiExp260);
   __asm {
     fld result
     fptan
@@ -405,7 +401,7 @@ Double80 tan(const Double80 &x) {
 }
 
 void sincos(Double80 &c, Double80 &s) { // calculate both cos and sin. c:inout c, s:out
-  Double80 r = fmod(c,M_PI_2_60);
+  Double80 r = fmod(c,M_2PiExp260);
   __asm {
     fld r
     fsincos
@@ -424,6 +420,58 @@ Double80 exp(const Double80 &x) {
     fld TBYTE PTR [eax]
     fldl2e
     fmul
+    fld st(0)
+    frndint
+    fsub st(1),st(0)
+    fxch st(1)
+    f2xm1
+    fld1
+    fadd
+    fscale
+    fstp st(1)
+    fstp result
+  }
+  FPU::restoreControlWord(cwSave);
+  return result;
+}
+
+Double80 exp10(const Double80 &x) {
+  if(x.isZero()) {
+    return Double80::one;
+  }
+
+  const USHORT cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_ROUNDDOWN);
+  Double80 result;
+  __asm {
+    mov eax, DWORD PTR x
+    fld TBYTE PTR [eax]
+    fldl2t
+    fmul
+    fld st(0)
+    frndint
+    fsub st(1),st(0)
+    fxch st(1)
+    f2xm1
+    fld1
+    fadd
+    fscale
+    fstp st(1)
+    fstp result
+  }
+  FPU::restoreControlWord(cwSave);
+  return result;
+}
+
+Double80 exp2(const Double80 &x) {
+  if(x.isZero()) {
+    return Double80::one;
+  }
+
+  const USHORT cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_ROUNDDOWN);
+  Double80 result;
+  __asm {
+    mov eax, DWORD PTR x
+    fld TBYTE PTR [eax]
     fld st(0)
     frndint
     fsub st(1),st(0)
@@ -510,56 +558,135 @@ Double80 pow(const Double80 &x, const Double80 &y) {
   return result;
 }
 
-Double80 pow10(const Double80 &x) {
-  if(x.isZero()) {
-    return Double80::one;
-  }
+void D80ToBCDAutoScale(BYTE bcd[10], const Double80 &x, int &expo10) {
+  const USHORT          cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_ROUND);
+  static const Double80 E18    = tenE18;
+  static const Double80 E18M1  = tenE18M1;
+  static const Double80 TEN    = 10;
+  static const Double80 LOG2_5 = log2_5;
 
-  const USHORT cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_ROUNDDOWN);
-  Double80 result;
-  __asm {
-    mov eax, DWORD PTR x
-    fld TBYTE PTR [eax]
-    fldl2t
-    fmul
-    fld st(0)
-    frndint
-    fsub st(1),st(0)
-    fxch st(1)
-    f2xm1
-    fld1
-    fadd
-    fscale
-    fstp st(1)
-    fstp result
-  }
+  USHORT cwSave1, ctrlFlags;
+
+  #ifndef SMART_VERSION
+    _asm {
+      mov edx, DWORD PTR expo10   // edx = &expo10
+      mov eax, DWORD PTR[edx]
+      cmp eax, 0
+      jne ScaleX
+
+      mov eax, DWORD PTR x
+      fld TBYTE PTR [eax]
+      jmp Rescale
+
+  ScaleX:                         // Find m = x / 10^abs(expo10)
+      fild DWORD PTR[edx]         //                                       st0=expo10
+      fldl2t                      //                                       st0=log2(10)         , st1=expo10
+      fmul
+      fld st(0)
+      fnstcw cwSave1              // Save control word
+      mov ax, cwSave1
+      or  ax, 0x400               // Set   bit 10
+      and ax, 0xf7ff              // Clear bit 11
+      mov ctrlFlags, ax           // Round down mode
+      fldcw ctrlFlags
+      frndint                     // Round down
+      fldcw cwSave1               // Restore control word
+      fsub st(1),st(0)
+      fxch st(1)
+      f2xm1
+      fld1
+      fadd
+      fscale
+      fstp st(1)                  //                                       st0=10^expo10
+
+      mov eax, DWORD PTR x
+      fld TBYTE PTR [eax]         //                                       st0=x                , st1=10^expo10
+      fdivr                       //                                       st0=x/10^expo10
+
+  Rescale:                        //                                       st0=m
+      fld E18                     //                                       st0=1e18             , st1=m
+      fmul                        // m *= 1e18                             st0=m
+      mov eax, DWORD PTR[edx]     //                                       eax=expo10
+      fld E18M1                   //                                       st0=1e18-1           , st1=m
+  WhileLoop:                      // while(|m| >= 1e18-1) {                st0=1e18-1           , st1=m
+      fld st(1)                   //                                       st0=m                , st1=1e18-1          , st2=m
+      fabs                        //                                       st0=|m|              , st1=1e18-1          , st2=m
+      fcomip st, st(1)            //   compare |m| and 1e18-1 and pop |m|  st0=1e18-1           , st1=m
+      jb Exit                     //   if(|m| < 1e18-1) goto Exit          st0=1e18-1           , st1=m
+      fld TEN                     //                                       st0=10               , st1=1e18-1          , st2=m
+      fdivp st(2), st(0)          //   m /= 10 and pop st0                 st0=1e18-1           , st1=m
+      inc eax                     //   expo10++
+      jmp WhileLoop               // }
+  Exit:                           // eax = new expo10
+      mov DWORD PTR[edx], eax     // Restore expo10
+      fstp st(0)                  // Pop st(0)                             st0=m
+      mov eax, DWORD PTR bcd
+      fbstp TBYTE PTR[eax]        // Pop m into bcd                        Assertion: 1 <= |st0| < 1e18-1 and x = st0 * 10^(eax-18)
+    }
+
+  #else // SMART_VERSION
+
+    const int p18 = expo10 - 18;
+
+    _asm {
+      mov eax, p18
+      cmp eax, 0
+      jne ScaleX
+
+      mov eax, DWORD PTR x
+      fld TBYTE PTR [eax]
+      jmp Rescale
+
+  ScaleX:                         // Find m = x/10^p18. First find 5^p18
+      fild p18                    //                                       st0=p18
+      fld  LOG2_5                 //                                       st0=log2(5)          , st1=p18
+      fmul
+      fld st(0)
+      fnstcw cwSave1              // Save control word
+      mov ax, cwSave1
+      or  ax, 0x400               // Set   bit 10
+      and ax, 0xf7ff              // Clear bit 11
+      mov ctrlFlags, ax
+      fldcw ctrlFlags
+      frndint                     // Round down
+      fldcw cwSave1               // Restore control word
+      fsub st(1),st(0)
+      fxch st(1)
+      f2xm1
+      fld1
+      fadd
+      fscale
+      fstp st(1)                  //                                       st0=5^p18
+                                  // Calculate x/2^p18
+      mov eax, DWORD PTR x
+      fld TBYTE PTR [eax]         //                                       st0=x                , st1=5^p18
+      fxtract                     //                                       st0=significand(x)   , st1=expo2(x)        , st2=5^p18
+      fild p18                    //                                       st0=p18              , st1=significand(x)  , st2=expo2(x), st3=5^p18
+      fsubp st(2),st              //                                       st0=significand(x)   , st1=expo2(x)-p18    , st2=5^p18
+      fscale                      //                                       st0=x/2^p18          , st1=expo2(x)-p18    , st2=5^p18
+      fstp st(1)                  // pop st1                               st0=x/2^p18          , st1=5^p18
+      fdivr                       // st0 /= st1                            st0=m = x/2^p18/5^p18 = x/10^p18
+
+  Rescale:                        //                                       st0=m
+      mov eax, expo10             //                                       eax=expo10
+      fld E18M1                   //                                       st0=1e18-1           , st1=m
+  WhileLoop:                      // while(|m| >= 1e18-1) {                st0=1e18-1           , st1=m
+      fld st(1)                   //                                       st0=m                , st1=1e18-1          , st2=m
+      fabs                        //                                       st0=|m|              , st1=1e18-1          , st2=m
+      fcomip st, st(1)            //   compare |m| and 1e18-1 and pop |m|  st0=1e18-1           , st1=m
+      jb Exit                     //   if(|m| < 1e18-1) goto end           st0=1e18-1           , st1=m
+      fld TEN                     //                                       st0=10               , st1=1e18-1          , st2=m
+      fdivp st(2), st(0)          //   m /= 10 and pop st0                 st0=1e18-1           , st1=m
+      inc eax                     //   expo10++
+      jmp WhileLoop               // }
+    Exit:
+      fstp st(0)                  // Pop st(0)                             st0=m
+      fbstp TBYTE PTR bcd         // Pop m into bcd                        Assertion: 1 <= |st0| < 1e18-1 and x = st0 * 10^(eax-18)
+      mov expo10, eax             // Restore expo10
+    }
+  #endif // SMART_VERSION
+
   FPU::restoreControlWord(cwSave);
-  return result;
-}
-
-Double80 pow2(const Double80 &x) {
-  if(x.isZero()) {
-    return Double80::one;
-  }
-
-  const USHORT cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_ROUNDDOWN);
-  Double80 result;
-  __asm {
-    mov eax, DWORD PTR x
-    fld TBYTE PTR [eax]
-    fld st(0)
-    frndint
-    fsub st(1),st(0)
-    fxch st(1)
-    f2xm1
-    fld1
-    fadd
-    fscale
-    fstp st(1)
-    fstp result
-  }
-  FPU::restoreControlWord(cwSave);
-  return result;
 }
 
 #endif // IS32BIT
@@ -659,7 +786,7 @@ Double80 round(const Double80 &x, int dec) { // 5-rounding
     case 0:
       return sx == 1 ? floor(0.5+x) : -floor(0.5-x);
     case 1 :
-      { Double80 p = pow10(dec);
+      { Double80 p = exp10(dec);
         const USHORT cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_ROUND);
         Double80 result = (sx == 1) ? floor(0.5+x*p) : -floor(0.5-x*p);
         result /= p;
@@ -667,7 +794,7 @@ Double80 round(const Double80 &x, int dec) { // 5-rounding
         return result;
       }
     case -1:
-      { Double80 p = pow10(-dec);
+      { Double80 p = exp10(-dec);
         const USHORT cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_ROUND);
         Double80 result = (sx == 1) ? floor(0.5+x/p) : -floor(0.5-x/p);
         result *= p;
@@ -720,7 +847,7 @@ ULONG Double80::hashCode() const {
        ^ *(USHORT*)(m_value+8);
 }
 
-char *Double80::d80toa(char *dst, const Double80 &x) {
+char *Double80::d80toa(char *dst, const Double80 &x) { // static
 #ifndef UNICODE
   return d80tot(dst, x);
 #else
@@ -730,7 +857,7 @@ char *Double80::d80toa(char *dst, const Double80 &x) {
 #endif
 }
 
-wchar_t *Double80::d80tow(wchar_t *dst, const Double80 &x) {
+wchar_t *Double80::d80tow(wchar_t *dst, const Double80 &x) { // static
 #ifdef UNICODE
   return d80tot(dst, x);
 #else
@@ -745,9 +872,10 @@ wchar_t *Double80::d80tow(wchar_t *dst, const Double80 &x) {
 #define addChar(b,ch)                  b[b##_length++] = ch
 #define addDigit(b,d)                  addChar(b,(d)+'0')
 #define getLength(b)                   (b##_length)
+#define isEmpty(b)                     (getLength(b)==0)
 #define removeLast(b)                  b[--b##_length]
 
-TCHAR *Double80::d80tot(TCHAR *dst, const Double80 &x) {
+TCHAR *Double80::d80tot(TCHAR *dst, const Double80 &x) { // static
   if(isNan(x)) {
     if(!isInfinity(x)) {
       return _tcscpy(dst, _T("Nan"));
@@ -766,7 +894,7 @@ TCHAR *Double80::d80tot(TCHAR *dst, const Double80 &x) {
 #ifndef ASM_OPTIMIZED
 
   const USHORT cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_ROUND);
-  Double80 m = (expo10 == 0) ? x : (x / pow10(expo10));
+  Double80 m = (expo10 == 0) ? x : (x / exp10(expo10));
   m = m * tenE18;
   while(fabs(m) >= tenE18M1) {
     m = m / ten;
@@ -775,151 +903,13 @@ TCHAR *Double80::d80tot(TCHAR *dst, const Double80 &x) {
 
   // Assertion: 1 <= |m| < 1e18-1 and x = m * 10^(expo10-18)
 
-#ifdef IS32BIT
-  __asm {
-    fld m
-    fbstp TBYTE PTR bcd
-  }
-#else
   D80ToBCD(bcd, m);
-#endif // IS32BIT
 
   FPU::restoreControlWord(cwSave);
 
 #else // ASM_OPTIMIZED
 
-#ifdef IS32BIT
-  const USHORT          cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_ROUND);
-  static const Double80 E18    = tenE18;
-  static const Double80 E18M1  = tenE18M1;
-  static const Double80 TEN    = 10;
-  static const Double80 LOG2_5 = log2_5;
-
-  USHORT cwSave1,ctrlFlags;
-
-  #ifndef SMART_VERSION
-    _asm {
-      mov eax, expo10
-      cmp eax, 0
-      jne ScaleX
-
-      mov eax, DWORD PTR x
-      fld TBYTE PTR [eax]
-      jmp Rescale
-
-  ScaleX:                         // Find m = x / 10^abs(expo10)
-      fild expo10                 //                                       st0=expo10
-      fldl2t                      //                                       st0=log2(10)         , st1=expo10
-      fmul
-      fld st(0)
-      fnstcw cwSave1              // Save control word
-      mov ax, cwSave1
-      or  ax, 0x400               // Set   bit 10
-      and ax, 0xf7ff              // Clear bit 11
-      mov ctrlFlags, ax           // Round down mode
-      fldcw ctrlFlags
-      frndint                     // Round down
-      fldcw cwSave1               // Restore control word
-      fsub st(1),st(0)
-      fxch st(1)
-      f2xm1
-      fld1
-      fadd
-      fscale
-      fstp st(1)                  //                                       st0=10^expo10
-
-      mov eax, DWORD PTR x
-      fld TBYTE PTR [eax]         //                                       st0=x                , st1=10^expo10
-      fdivr                       //                                       st0=x/10^expo10
-
-  Rescale:                        //                                       st0=m
-      fld E18                     //                                       st0=1e18             , st1=m
-      fmul                        // m *= 1e18                             st0=m
-      mov eax, expo10             //                                       eax=expo10
-      fld E18M1                   //                                       st0=1e18-1           , st1=m
-  WhileLoop:                      // while(|m| >= 1e18-1) {                st0=1e18-1           , st1=m
-      fld st(1)                   //                                       st0=m                , st1=1e18-1          , st2=m
-      fabs                        //                                       st0=|m|              , st1=1e18-1          , st2=m
-      fcomip st, st(1)            //   compare |m| and 1e18-1 and pop |m|  st0=1e18-1           , st1=m
-      jb Exit                     //   if(|m| < 1e18-1) goto Exit          st0=1e18-1           , st1=m
-      fld TEN                     //                                       st0=10               , st1=1e18-1          , st2=m
-      fdivp st(2), st(0)          //   m /= 10 and pop st0                 st0=1e18-1           , st1=m
-      inc eax                     //   expo10++
-      jmp WhileLoop               // }
-  Exit:
-      fstp st(0)                  // Pop st(0)                             st0=m
-      fbstp TBYTE PTR bcd         // Pop m into bcd                        Assertion: 1 <= |st0| < 1e18-1 and x = st0 * 10^(eax-18)
-      mov expo10, eax             // Restore expo10
-    }
-
-  #else // SMART_VERSION
-
-    const int p18 = expo10 - 18;
-
-    _asm {
-      mov eax, p18
-      cmp eax, 0
-      jne ScaleX
-
-      mov eax, DWORD PTR x
-      fld TBYTE PTR [eax]
-      jmp Rescale
-
-  ScaleX:                         // Find m = x/10^p18. First find 5^p18
-      fild p18                    //                                       st0=p18
-      fld  LOG2_5                 //                                       st0=log2(5)          , st1=p18
-      fmul
-      fld st(0)
-      fnstcw cwSave1              // Save control word
-      mov ax, cwSave1
-      or  ax, 0x400               // Set   bit 10
-      and ax, 0xf7ff              // Clear bit 11
-      mov ctrlFlags, ax
-      fldcw ctrlFlags
-      frndint                     // Round down
-      fldcw cwSave1               // Restore control word
-      fsub st(1),st(0)
-      fxch st(1)
-      f2xm1
-      fld1
-      fadd
-      fscale
-      fstp st(1)                  //                                       st0=5^p18
-                                  // Calculate x/2^p18
-      mov eax, DWORD PTR x
-      fld TBYTE PTR [eax]         //                                       st0=x                , st1=5^p18
-      fxtract                     //                                       st0=significand(x)   , st1=expo2(x)        , st2=5^p18
-      fild p18                    //                                       st0=p18              , st1=significand(x)  , st2=expo2(x), st3=5^p18
-      fsubp st(2),st              //                                       st0=significand(x)   , st1=expo2(x)-p18    , st2=5^p18
-      fscale                      //                                       st0=x/2^p18          , st1=expo2(x)-p18    , st2=5^p18
-      fstp st(1)                  // pop st1                               st0=x/2^p18          , st1=5^p18
-      fdivr                       // st0 /= st1                            st0=m = x/2^p18/5^p18 = x/10^p18
-
-  Rescale:                        //                                       st0=m
-      mov eax, expo10             //                                       eax=expo10
-      fld E18M1                   //                                       st0=1e18-1           , st1=m
-  WhileLoop:                      // while(|m| >= 1e18-1) {                st0=1e18-1           , st1=m
-      fld st(1)                   //                                       st0=m                , st1=1e18-1          , st2=m
-      fabs                        //                                       st0=|m|              , st1=1e18-1          , st2=m
-      fcomip st, st(1)            //   compare |m| and 1e18-1 and pop |m|  st0=1e18-1           , st1=m
-      jb Exit                     //   if(|m| < 1e18-1) goto end           st0=1e18-1           , st1=m
-      fld TEN                     //                                       st0=10               , st1=1e18-1          , st2=m
-      fdivp st(2), st(0)          //   m /= 10 and pop st0                 st0=1e18-1           , st1=m
-      inc eax                     //   expo10++
-      jmp WhileLoop               // }
-    Exit:
-      fstp st(0)                  // Pop st(0)                             st0=m
-      fbstp TBYTE PTR bcd         // Pop m into bcd                        Assertion: 1 <= |st0| < 1e18-1 and x = st0 * 10^(eax-18)
-      mov expo10, eax             // Restore expo10
-    }
-  #endif // SMART_VERSION
-
-  FPU::restoreControlWord(cwSave);
-#else // ! IS32BIT (ie IS64BIT)
-
   D80ToBCDAutoScale(bcd, x, expo10);
-
-#endif // IS32BIT
 
 #endif // ASM_OPTIMIZED
 
@@ -977,7 +967,7 @@ TCHAR *Double80::d80tot(TCHAR *dst, const Double80 &x) {
   for(int i = getLength(exponentBuffer); i <= 2; i++) {
     addChar(result,_T('0'));
   }
-  while(getLength(exponentBuffer) > 0) {
+  while(!isEmpty(exponentBuffer)) {
     addChar(result,removeLast(exponentBuffer));
   }
   addChar(result,0);

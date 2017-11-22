@@ -69,15 +69,15 @@ Double80 BigReal::getDouble80NoLimitCheck() const {
   Double80 e2x = Double80::one;
   BigReal xi(pool);
   if(expo2 <= minExpo2) {
-    e2 = ::pow2(minExpo2);                                                  // Double80 pow2
+    e2 = ::exp2(Double80(minExpo2));                                        // Double80 exp2
     xi.shortProduct(::cut(*this,21), BigReal(e2, pool), BIGREAL_ZEROEXPO);  // BigReal multiplication
   } else if(expo2 >= maxExpo2) {
-    e2 = ::pow2(maxExpo2);                                                  // Double80 pow2
+    e2 = ::exp2(Double80(maxExpo2));                                        // Double80 exp2
     xi.shortProduct(::cut(*this,21), BigReal(e2, pool), BIGREAL_ZEROEXPO);  // BigReal multiplication
-    xi *= pow2((int)(expo2 - maxExpo2),CONVERSION_POW2DIGITCOUNT);                 // BigReal pow2
-    e2x = ::pow2(expo2 - maxExpo2);                                         // Double80 pow2
+    xi *= pow2((int)(expo2 - maxExpo2),CONVERSION_POW2DIGITCOUNT);          // BigReal pow2
+    e2x = ::exp2(Double80(expo2 - maxExpo2));                               // Double80 exp2
   } else {
-    e2 = ::pow2(expo2);                                                     // Double80 pow2
+    e2 = ::exp2(Double80(expo2));                                           // Double80 exp2
     xi = round(xi.shortProduct(::cut(*this,22), BigReal(e2, pool), -1));    // BigReal multiplication
   }
   Double80 result = 0;
@@ -91,7 +91,7 @@ Double80 BigReal::getDouble80NoLimitCheck() const {
   if(e == 0) {
     return (isNegative() ? -result : result) / e2 / e2x;                          // Double80 division
   } else {
-    return (::pow10(Double80(e)) * (isNegative() ? -result : result)) / e2 / e2x; // Double80 pow10 and division
+    return (::exp10(Double80(e)) * (isNegative() ? -result : result)) / e2 / e2x; // Double80 pow10 and division
   }
 }
 
@@ -123,10 +123,10 @@ BigReal::BigReal(const Double80 &x) {
     m_expo = ::logBASE(tmp);
     int expo10 = Double80::getExpo10(tmp);
     if(expo10 > 4000) {
-      tmp /= ::pow10(Double80(expo10));
+      tmp /= ::exp10(Double80(expo10));
       tmp /= c3;
     } else {
-      tmp /= ::pow10(Double80(expo10+1));
+      tmp /= ::exp10(Double80(expo10+1));
     }
 
     if(tmp < c1) {
@@ -192,13 +192,13 @@ Double80 getDouble80(const BigReal &x) {
     return x.m_negative ? -result : result;
   } else {
     if(scale10 > 4900) {         // Prevent overflow
-      result *= pow10(Double80(4900));
+      result *= exp10(Double80(4900));
       scale10 -= 4900;
     } else if(scale10 < -4900) { // Prevent underflow
-      result *= pow10(Double80(-4900));
+      result *= exp10(Double80(-4900));
       scale10 += 4900;
     }
-    return pow10(Double80(scale10)) * (x.m_negative ? -result : result);
+    return exp10(Double80(scale10)) * (x.m_negative ? -result : result);
   }
 }
 

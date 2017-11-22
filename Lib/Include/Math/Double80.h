@@ -42,7 +42,6 @@ void FPUclearExceptions();
 
 class FPU {
 private:
-  DECLARECLASSNAME;
   FPU() {} // Cannot be instatiated
 public:
 #ifdef IS32BIT
@@ -237,13 +236,13 @@ void   D80atan2(          Double80 &y, const Double80 &x);
 // inout is c, out s
 void   D80sincos(         Double80 &c, Double80       &s);
 void   D80exp(            Double80 &x);
+void   D80exp10(          Double80 &x);
+void   D80exp2(           Double80 &x);
 void   D80log(            Double80 &x);
 void   D80log10(          Double80 &x);
 void   D80log2(           Double80 &x);
 // x = pow(x,y)
 void   D80pow(            Double80 &x, const Double80 &y);
-void   D80pow10(          Double80 &x);
-void   D80pow2(           Double80 &x);
 void   D80floor(          Double80 &x);
 void   D80ceil(           Double80 &x);
 void   D80ToBCD(BYTE bcd[10], const Double80 &src);
@@ -259,7 +258,6 @@ extern const Double80 _D80maxi64P1;
 
 class Double80 {
 private:
-  DECLARECLASSNAME;
   BYTE m_value[10]; // Must be the first field in the class
   void init(const _TUCHAR *s);
 
@@ -371,7 +369,7 @@ public:
       fstp TBYTE PTR [eax]
     }
   }
-#else
+#else // IS64BIT
   inline Double80(short  x) { D80FromI16(  *this, x); }
   inline Double80(USHORT x) { D80FromUI16( *this, x); }
   inline Double80(int    x) { D80FromI32(  *this, x); }
@@ -380,7 +378,7 @@ public:
   inline Double80(UINT64 x) { D80FromUI64( *this, x); }
   inline Double80(float  x) { D80FromFlt(  *this, x); }
   inline Double80(double x) { D80FromDbl(  *this, x); }
-#endif // IS32BIT
+#endif // IS64BIT
 
   inline Double80() {
   }
@@ -468,7 +466,7 @@ public:
     return result;
   }
 
-#else // !IS32BIT (ie IS64BIT)
+#else // IS64BIT
 
   static inline int getExpo2( const Double80 &x) { return D80getExpo2(x);  }
   // x == 0 ? 0 : floor(log10(|x|))
@@ -482,7 +480,7 @@ public:
 
   inline bool isZero() const      {  return D80isZero(*this) ? true : false;  }
 
-#endif // IS32BIT
+#endif // IS64BIT
 
   static TCHAR   *d80tot(TCHAR   *dst, const Double80 &x); // dst must point to memory with at least 26 free TCHAR
   static char    *d80toa(char    *dst, const Double80 &x); // dst must point to memory with at least 26 free char
@@ -2982,12 +2980,12 @@ inline Double80 atan2(const Double80 &y, const Double80 &x) {
 // calculate both cos and sin. c:inout c, s:out
 void     sincos(Double80 &c, Double80 &s);
 Double80 exp(  const Double80 &x);
+Double80 exp10(const Double80 &x);
+Double80 exp2( const Double80 &x);
 Double80 log(  const Double80 &x);
 Double80 log10(const Double80 &x);
 Double80 log2( const Double80 &x);
 Double80 pow(  const Double80 &x, const Double80 &y);
-Double80 pow10(const Double80 &x);
-Double80 pow2( const Double80 &x);
 inline Double80 floor(const Double80 &x) {
   const USHORT cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_ROUNDDOWN);
   Double80 result;
@@ -3013,7 +3011,17 @@ inline Double80 ceil(const Double80 &x) {
   return result;
 }
 
-#else // !IS32BIT (ie IS64BIT)
+inline void D80ToBCD(BYTE bcd[10], const Double80 &x) {
+  __asm {
+    mov eax, DWORD PTR x
+    fld TBYTE PTR [eax]
+    mov eax, DWORD PTR bcd
+    fbstp TBYTE PTR [eax]
+  }
+}
+void D80ToBCDAutoScale(BYTE bcd[10], const Double80 &x, int &expo10);
+
+#else // IS64BIT
 inline int    getInt(   const Double80 &x) { return D80ToI32(   x); }
 inline UINT   getUint(  const Double80 &x) { return D80ToUI32(  x); }
 inline INT64  getInt64( const Double80 &x) { return D80ToI64(   x); }
@@ -3273,6 +3281,16 @@ inline Double80 exp(const Double80 &x) {
   D80exp(tmp);
   return tmp;
 }
+inline Double80 exp10(const Double80 &x) {
+  Double80 tmp(x);
+  D80exp10(tmp);
+  return tmp;
+}
+inline Double80 exp2(const Double80 &x) {
+  Double80 tmp(x);
+  D80exp2(tmp);
+  return tmp;
+}
 inline Double80 log(const Double80 &x) {
   Double80 tmp(x);
   D80log(tmp);
@@ -3293,16 +3311,6 @@ inline Double80 pow(const Double80 &x, const Double80 &y) {
   D80pow(tmp, y);
   return tmp;
 }
-inline Double80 pow10(const Double80 &x) {
-  Double80 tmp(x);
-  D80pow10(tmp);
-  return tmp;
-}
-inline Double80 pow2(const Double80 &x) {
-  Double80 tmp(x);
-  D80pow2(tmp);
-  return tmp;
-}
 inline Double80 floor(const Double80 &x) {
   Double80 tmp(x);
   D80floor(tmp);
@@ -3314,7 +3322,7 @@ inline Double80 ceil(const Double80 &x) {
   return tmp;
 }
 
-#endif // IS32BIT
+#endif // IS64BIT
 
 inline short  getShort(const Double80 &x) {
   return (short)getInt(x);
