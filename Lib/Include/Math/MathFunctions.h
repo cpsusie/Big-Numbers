@@ -17,11 +17,10 @@ double root(              double x, double y);
 double cot(               double x);
 double acot(              double x);
 // calculate both cos and sin. c:inout c, s:out
-extern "C" void   sincos(double &c, double &s);
-
-inline double exp10(double x) {
-  return pow(10, x);
-}
+extern "C" {
+  void   sincos(double &c, double &s);
+  double exp10(double x);
+};
 
 typedef enum {
   RADIANS

@@ -74,6 +74,36 @@ double root(double x, double y) { // must be double. not real
 }
 
 #ifdef IS32BIT
+double exp10(double x) {
+  if(x == 0) return 1;
+
+  USHORT cwSave, ctrlFlags;
+  double result;
+  __asm {
+    fld x
+    fldl2t
+    fmul
+    fld st(0)
+    fnstcw cwSave               // Save control word
+    mov ax, cwSave
+    or  ax, 0x400               // Set   bit 10
+    and ax, 0xf7ff              // Clear bit 11
+    mov ctrlFlags, ax
+    fldcw ctrlFlags             // FPU.ctrlWorld.bit[10;11] = 1,0 = ROUND DOWN
+    frndint
+    fldcw cwSave                // Restore control word
+    fsub st(1),st(0)
+    fxch st(1)
+    f2xm1
+    fld1
+    fadd
+    fscale
+    fstp st(1)
+    fstp result
+  }
+  return result;
+}
+
 #define M_PI_2_60 7.244019458077122842384326056985109887461e+018 // pow(2,60) * 2*pi
 void sincos(double &c, double &s) {
   double r = fmod(c, M_PI_2_60);

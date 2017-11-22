@@ -51,6 +51,28 @@ pop2:                           ;                                               
     ret
 d64rem ENDP
 
+;double exp10(double x)
+exp10 PROC
+    movsd QWORD PTR[rsp-8], xmm0
+    fld QWORD PTR[rsp-8]
+    fldl2t
+    fmul
+    fld st(0)
+    pushRoundMode ROUNDDOWN
+    frndint
+    popRoundMode
+    fsub st(1),st(0)
+    fxch st(1)
+    f2xm1
+    fld1
+    fadd
+    fscale
+    fstp st(1)
+    fstp QWORD PTR[rsp-8]
+    movsd xmm0, QWORD PTR[rsp-8]
+    ret
+exp10 ENDP
+
 ; ----------------------------------------- Double80 trigonometric functions ----------------------------------------
 
 ;void sincos(double &c, double &s);
