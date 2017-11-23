@@ -574,10 +574,11 @@ void Expression::genPowMultSequence(UINT y) {
   }
 }
 
-#define GENEXPRESSION(n) genExpression(n, dst)
-#define GENCALL(n,f)     genCall(n,f,dst);      return
-#define GENPOLY(n)       genPolynomial(n, dst); return
-#define GENIF(n)         genIf(n,dst);          return
+#define GENEXPRESSION(n) genExpression(n  ,dst)
+#define GENCALL(n,f)     genCall(      n,f,dst); return
+#define GENCALLARG(n,f)  genCall1Arg(  n,f,dst); return
+#define GENPOLY(n)       genPolynomial(n  ,dst); return
+#define GENIF(n)         genIf(n,dst);           return
 
 void Expression::throwInvalidTrigonometricMode() {
   throwInvalidArgumentException(_T("genExpression"), _T("Invalid trigonometricMode:%d"), m_trigonometricMode);
@@ -601,7 +602,7 @@ void Expression::genExpression(const ExpressionNode *n, const ExpressionDestinat
     if(m_code.emitFLoad(n, dst)) {
       return;
     }
-#endif // IS32BIT
+#endif // IS64BIT
     break;
   case SEMI:
     genStatementList(n);
@@ -699,7 +700,11 @@ void Expression::genExpression(const ExpressionNode *n, const ExpressionDestinat
   case MOD           :    GENCALL(     n, fmod                  );
   case POW           :
     if(n->left()->isEulersConstant()) {
-      int fisk = 1;
+      GENCALLARG(  n->right(), exp                   );
+    } else if(n->left()->isTwo()) {
+      GENCALLARG(  n->right(), exp2                  );
+    } else if (n->left()->isTen()) {
+      GENCALLARG(  n->right(), exp10                 );
     }
     if(n->right()->isConstant()) {
       const Real p = evaluateRealExpr(n->right());
@@ -981,35 +986,35 @@ static Real evaluatePolynomial(Real x, int n, const Real *coef) {
 
 #ifdef IS32BIT
 
-void Expression::genCall(const ExpressionNode *n, BuiltInFunction1 f, const ExpressionDestination &dummy) {
+void Expression::genCall1Arg(const ExpressionNode *arg, BuiltInFunction1 f, const ExpressionDestination &dummy) {
   int bytesPushed = 0;
-  bytesPushed += genPush(n->left());
+  bytesPushed += genPush(arg);
   bytesPushed += genPushReturnAddr();
   m_code.emitCall((BuiltInFunction)f, dummy);
   m_code.emitAddESP(bytesPushed);
 }
 
-void Expression::genCall(const ExpressionNode *n, BuiltInFunction2 f, const ExpressionDestination &dummy) {
+void Expression::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode *arg2, BuiltInFunction2 f, const ExpressionDestination &dummy) {
   int bytesPushed = 0;
-  bytesPushed += genPush(n->right());
-  bytesPushed += genPush(n->left());
+  bytesPushed += genPush(arg2);
+  bytesPushed += genPush(arg1);
   bytesPushed += genPushReturnAddr();
   m_code.emitCall((BuiltInFunction)f, dummy);
   m_code.emitAddESP(bytesPushed);
 }
 
-void Expression::genCall(const ExpressionNode *n, BuiltInFunctionRef1 f, const ExpressionDestination &dummy) {
+void Expression::genCall1Arg(const ExpressionNode *arg, BuiltInFunctionRef1 f, const ExpressionDestination &dummy) {
   int bytesPushed = 0;
-  bytesPushed += genPushRef(n->left(),0);
+  bytesPushed += genPushRef(arg,0);
   bytesPushed += genPushReturnAddr();
   m_code.emitCall((BuiltInFunction)f, dummy);
   m_code.emitAddESP(bytesPushed);
 }
 
-void Expression::genCall(const ExpressionNode *n, BuiltInFunctionRef2 f, const ExpressionDestination &dummy) {
+void Expression::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode *arg2, BuiltInFunctionRef2 f, const ExpressionDestination &dummy) {
   int bytesPushed = 0;
-  bytesPushed += genPushRef(n->right(),0);
-  bytesPushed += genPushRef(n->left() ,1);
+  bytesPushed += genPushRef(arg2,0);
+  bytesPushed += genPushRef(arg1,1);
   bytesPushed += genPushReturnAddr();
   m_code.emitCall((BuiltInFunction)f, dummy);
   m_code.emitAddESP(bytesPushed);
@@ -1068,7 +1073,8 @@ int Expression::genPushReal(const Real &x) {
   return genPush(&x,sizeof(Real));
 }
 
-int Expression::genPush(const void *p, UINT size) { // return size rounded up to nearest multiply of 4
+// return size rounded up to nearest multiply of 4
+int Expression::genPush(const void *p, UINT size) {
   switch(size) {
   case 2:
     m_code.emit(MOV_TO_AX_IMM_ADDR_WORD);
@@ -1144,46 +1150,46 @@ static const BYTE int64ParamRegister[4] = {
 
 #ifndef LONGDOUBLE
 
-void Expression::genCall(const ExpressionNode *n, BuiltInFunction1 f, const ExpressionDestination &dst) {
-  genSetParameter(n->left(), 0, false);
+void Expression::genCall1Arg(const ExpressionNode *arg, BuiltInFunction1 f, const ExpressionDestination &dst) {
+  genSetParameter(arg, 0, false);
   m_code.emitCall((BuiltInFunction)f, dst);
 }
 
-void Expression::genCall(const ExpressionNode *n, BuiltInFunction2 f, const ExpressionDestination &dst) {
-  const bool leftHasCalls  = n->left()->containsFunctionCall();
-  const bool rightHasCalls = n->right()->containsFunctionCall();
-  if (!rightHasCalls) {
-    genSetParameter(n->left() , 0, false);
-    genSetParameter(n->right(), 1, false);
-  } else if (!leftHasCalls) {
-    genSetParameter(n->right(), 1, false);
-    genSetParameter(n->left() , 0, false);
-  } else { // both left and right parmeter are expression using function calls
-    const BYTE offset = genSetParameter(n->left(), 0, true);
-    genSetParameter(n->right(), 1, false);
+void Expression::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode *arg2, BuiltInFunction2 f, const ExpressionDestination &dst) {
+  const bool arg1HasCalls = arg1->containsFunctionCall();
+  const bool arg2HasCalls = arg2->containsFunctionCall();
+  if (!arg2HasCalls) {
+    genSetParameter(arg1, 0, false);
+    genSetParameter(arg2, 1, false);
+  } else if (!arg1HasCalls) {
+    genSetParameter(arg2, 1, false);
+    genSetParameter(arg1, 0, false);
+  } else { // both parmeters are expressions using function calls
+    const BYTE offset = genSetParameter(arg1, 0, true);
+    genSetParameter(arg2, 1, false);
     m_code.emitESPOp(MOVSD_XMM_MMWORD(XMM0), offset);
     m_code.popTmp();
   }
   m_code.emitCall((BuiltInFunction)f, dst);
 }
 
-void Expression::genCall(const ExpressionNode *n, BuiltInFunctionRef1 f, const ExpressionDestination &dst) {
-  genSetRefParameter(n->left(), 0);
+void Expression::genCall1Arg(const ExpressionNode *arg, BuiltInFunctionRef1 f, const ExpressionDestination &dst) {
+  genSetRefParameter(arg, 0);
   m_code.emitCall((BuiltInFunction)f, dst);
 }
 
-void Expression::genCall(const ExpressionNode *n, BuiltInFunctionRef2 f, const ExpressionDestination &dst) {
-  const bool rightHasCalls = n->right()->containsFunctionCall();
+void Expression::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode *arg2, BuiltInFunctionRef2 f, const ExpressionDestination &dst) {
+  const bool arg2HasCalls = arg2->containsFunctionCall();
 
   bool stacked1, stacked2;
   BYTE offset1, offset2;
 
-  if(!rightHasCalls) {
-    offset1 = genSetRefParameter(n->left() , 0, stacked1);
-    offset2 = genSetRefParameter(n->right(), 1, stacked2);
+  if(!arg2HasCalls) {
+    offset1 = genSetRefParameter(arg1, 0, stacked1);
+    offset2 = genSetRefParameter(arg2, 1, stacked2);
   } else {
-    offset2 = genSetRefParameter(n->right(), 1, stacked2);
-    offset1 = genSetRefParameter(n->left() , 0, stacked1);
+    offset2 = genSetRefParameter(arg2, 1, stacked2);
+    offset1 = genSetRefParameter(arg1, 0, stacked1);
   }
   if(stacked1) {
     m_code.emit(REG_SRC(MOV_R64_QWORD(RCX), RSP));
@@ -1200,31 +1206,23 @@ void Expression::genCall(const ExpressionNode *n, BuiltInFunctionRef2 f, const E
 
 #else // LONGDOUBLE
 
-void Expression::genCall(const ExpressionNode *n, BuiltInFunction1 f, const ExpressionDestination &dst) {
-  genCall(n, (BuiltInFunctionRef1)f, dst);
-}
-
-void Expression::genCall(const ExpressionNode *n, BuiltInFunction2 f, const ExpressionDestination &dst) {
-  genCall(n, (BuiltInFunctionRef2)f, dst);
-}
-
-void Expression::genCall(const ExpressionNode *n, BuiltInFunctionRef1 f, const ExpressionDestination &dst) {
-  genSetRefParameter(n->left(), 0);
+void Expression::genCall1Arg(const ExpressionNode *arg, BuiltInFunctionRef1 f, const ExpressionDestination &dst) {
+  genSetRefParameter(arg, 0);
   m_code.emitCall((BuiltInFunction)f, dst);
 }
 
-void Expression::genCall(const ExpressionNode *n, BuiltInFunctionRef2 f, const ExpressionDestination &dst) {
-  const bool rightHasCalls = n->right()->containsFunctionCall();
+void Expression::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode *arg2, BuiltInFunctionRef2 f, const ExpressionDestination &dst) {
+  const bool arg2HasCalls = arg2->containsFunctionCall();
 
   bool stacked1, stacked2;
   BYTE offset1, offset2;
 
-  if(!rightHasCalls) {
-    offset1 = genSetRefParameter(n->left() , 0, stacked1);
-    offset2 = genSetRefParameter(n->right(), 1, stacked2);
+  if(!arg2HasCalls) {
+    offset1 = genSetRefParameter(arg1, 0, stacked1);
+    offset2 = genSetRefParameter(arg2, 1, stacked2);
   } else {
-    offset2 = genSetRefParameter(n->right(), 1, stacked2);
-    offset1 = genSetRefParameter(n->left() , 0, stacked1);
+    offset2 = genSetRefParameter(arg2, 1, stacked2);
+    offset1 = genSetRefParameter(arg1, 0, stacked1);
   }
   if(stacked1) {
     m_code.emit(REG_SRC(MOV_R64_QWORD(RDX), RSP));
@@ -1260,7 +1258,7 @@ void Expression::genPolynomial(const ExpressionNode *n, const ExpressionDestinat
   genSetParameter(n->getArgument(), 0, false);
 #else
   genSetRefParameter(n->getArgument(), 0);
-#endif
+#endif // LONGDOUBLE
 
   const BYTE    param2    = int64ParamRegister[1];
   const __int64 coefCount = coefArray.size();
@@ -1318,4 +1316,4 @@ BYTE Expression::genSetParameter(const ExpressionNode *n, int index, bool saveOn
 
 #endif // LONGDOUBLE
 
-#endif // IS32BIT
+#endif // IS64BIT

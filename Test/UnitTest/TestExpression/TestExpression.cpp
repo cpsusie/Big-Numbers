@@ -1398,20 +1398,22 @@ namespace TestExpression {
                   const bool interpreterDefined = !isNan(interpreterResult);
                   const bool compiledDefined    = !isNan(compiledResult);
 
-                  if((compiledDefined != interpreterDefined) || (compiledDefined && fabs(compiledResult - interpreterResult) > 3e-15)) {
+                  if((compiledDefined != cppDefined) || (compiledDefined && fabs(compiledResult - cppResult) > 3e-15)) {
                     LOG log;
                     log << _T("TestCase[") << i << _T("]:<") << expr << _T(">(x=") << toString(x) << _T(") failed.") << endl
-                        << _T("Result(Compiled   ):") << toString(compiledResult) << _T(".") << endl
-                        << _T("Result(Interpreter):") << toString(interpreterResult) << _T(".") << endl
-                        << _T("Difference         :") << toString(compiledResult - interpreterResult) << _T(".") << endl;
+                        << _T("Result(C++          ):") << toString(cppResult                   ) << _T(".") << endl
+                        << _T("Result(Compiled     ):") << toString(compiledResult              ) << _T(".") << endl
+                        << _T("Result(Interpreter  ):") << toString(interpreterResult           ) << _T(".") << endl
+                        << _T("Difference(comp-C++ ):") << toString(compiledResult - cppResult  ) << _T(".") << endl;
                     verify(false);
                   }
-                  if((cppDefined != interpreterDefined) || (cppDefined && fabs(cppResult - interpreterResult) > 3e-15)) {
+                  if((interpreterDefined != cppDefined) || (interpreterDefined && fabs(interpreterResult - cppResult) > 3e-15)) {
                     LOG log;
-                    log << _T("TestCase[") << i << _T("]:<") << expr << _T(">(x=") << toString(x) << _T(") failed.") << endl
-                        << _T("Result(C++        ):") << toString(cppResult) << _T(".") << endl
-                        << _T("Result(Interpreter):") << toString(interpreterResult) << _T(".") << endl
-                        << _T("Difference         :") << toString(cppResult - interpreterResult) << _T(".") << endl;
+                    log << _T("TestCase[") << i << _T("]:<") << expr << _T(">(x=") << toString(x)  << _T(") failed.") << endl
+                        << _T("Result(C++          ):") << toString(cppResult                    ) << _T(".") << endl
+                        << _T("Result(Interpreter  ):") << toString(interpreterResult            ) << _T(".") << endl
+                        << _T("Result(Compiled     ):") << toString(compiledResult               ) << _T(".") << endl
+                        << _T("Difference(intp-C++ ):") << toString(interpreterResult - cppResult) << _T(".") << endl;
                     verify(false);
                   }
                 }
@@ -1423,8 +1425,9 @@ namespace TestExpression {
                   if((compiledResult != cppResult) || (interpreterResult != cppResult)) {
                     LOG log;
                     log << _T("TestCase[") << i << _T("]:<") << expr << _T(">(x=") << toString(x) << _T(") failed.") << endl
-                        << _T("Result(Compiled   ):") << toString(compiledResult) << _T(".") << endl
-                        << _T("Result(Interpreter):") << toString(interpreterResult) << _T(".") << endl;
+                        << _T("Result(C++          ):") << toString(cppResult        ) << _T(".") << endl
+                        << _T("Result(Compiled     ):") << toString(compiledResult   ) << _T(".") << endl
+                        << _T("Result(Interpreter  ):") << toString(interpreterResult) << _T(".") << endl;
                     verify(false);
                   }
                 }

@@ -289,12 +289,41 @@ private:
   void genStatementList(                                   const ExpressionNode *n);
   void genReturnBoolExpression(                            const ExpressionNode *n);
   void genExpression(                                      const ExpressionNode *n, const ExpressionDestination &dst);
-  void genCall(                                            const ExpressionNode *n, BuiltInFunction1    f, const ExpressionDestination &dst);
-  void genCall(                                            const ExpressionNode *n, BuiltInFunction2    f, const ExpressionDestination &dst);
-  void genCall(                                            const ExpressionNode *n, BuiltInFunctionRef1 f, const ExpressionDestination &dst);
-  void genCall(                                            const ExpressionNode *n, BuiltInFunctionRef2 f, const ExpressionDestination &dst);
-  void genPolynomial(                                      const ExpressionNode *n, const ExpressionDestination &dst);
-  void genIf(                                              const ExpressionNode *n, const ExpressionDestination &dst);
+  void genCall1Arg(                                        const ExpressionNode *arg                             , BuiltInFunction1    f, const ExpressionDestination &dst);
+  void genCall1Arg(                                        const ExpressionNode *arg                             , BuiltInFunctionRef1 f, const ExpressionDestination &dst);
+  void genCall2Arg(                                        const ExpressionNode *arg1, const ExpressionNode *arg2, BuiltInFunction2    f, const ExpressionDestination &dst);
+  void genCall2Arg(                                        const ExpressionNode *arg1, const ExpressionNode *arg2, BuiltInFunctionRef2 f, const ExpressionDestination &dst);
+
+#ifdef IS64BIT
+#ifdef LONGDOUBLE
+#define ALLARGS_BYREF
+#endif
+#endif
+
+  void genCall(      const ExpressionNode *n                               , BuiltInFunctionRef1 f, const ExpressionDestination &dst) {
+    genCall1Arg(n->left(), f, dst);
+  }
+  void genCall(      const ExpressionNode *n                               , BuiltInFunctionRef2 f, const ExpressionDestination &dst) {
+    genCall2Arg(n->left(), n->right(), f, dst);
+  }
+#ifndef ALLARGS_BYREF
+  void genCall(      const ExpressionNode *n                               , BuiltInFunction1    f, const ExpressionDestination &dst) {
+    genCall1Arg(n->left(), f, dst);
+  }
+  void genCall(      const ExpressionNode *n                               , BuiltInFunction2    f, const ExpressionDestination &dst) {
+    genCall2Arg(n->left(), n->right(), f, dst);
+  }
+#else // ALLARGS_BYREF
+  void genCall(      const ExpressionNode *n                               , BuiltInFunction1    f, const ExpressionDestination &dst) {
+    genCall(n, (BuiltInFunctionRef1)f, dst);
+  }
+  void genCall(      const ExpressionNode *n                               , BuiltInFunction2    f, const ExpressionDestination &dst) {
+    genCall(n, (BuiltInFunctionRef2)f, dst);
+  }
+#endif // ALLARGS_BYREF
+
+  void genPolynomial(                                      const ExpressionNode *n  , const ExpressionDestination &dst);
+  void genIf(                                              const ExpressionNode *n  , const ExpressionDestination &dst);
   void genPowMultSequence(UINT y);
 
 
@@ -310,7 +339,7 @@ private:
   BYTE genSetParameter(                                    const ExpressionNode *n, int index, bool saveOnStack);
   void genSetRefParameter(                                 const ExpressionNode *n, int index);
   BYTE genSetRefParameter(                                 const ExpressionNode *n, int index, bool &savedOnStack);
-#endif // IS32BIT
+#endif // IS64BIT
 
   void genAssignment(                                      const ExpressionNode *n);
   void genIndexedExpression(                               const ExpressionNode *n);
