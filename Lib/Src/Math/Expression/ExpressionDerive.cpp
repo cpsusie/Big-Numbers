@@ -76,7 +76,7 @@ SNode Expression::D(SNode n, const String &name) {
   case ROOT      :
     { const SNode l = n.left(), r = n.right();
       if(r.isNumber()) {
-        if(r.isOne()) {  // take care of root(u(x),1) or we'ææ get division by zero
+        if(r.isOne()) {  // take care of root(u(x),1) or we'll get division by zero
           return D(l, name);
         } else {         // d/dx(rootS(l,c)) = l'*rootS(l,1/(1/c-1))/c
           return (D(l, name) * root(l, reciprocal(reciprocal(r) - _1()))) / r;
@@ -85,16 +85,27 @@ SNode Expression::D(SNode n, const String &name) {
         return n * (D(l, name) * r / l - ln(l) * D(r, name)) / sqr(r);
       }
     }
+  case EXP       :
+    return  D(n.left(), name) * n;
+  case EXP10     :
+    { const SNode ln10(ln(SNode(this, 10)));
+      return D(n.left(), name) * n * ln10;
+    }
+  case EXP2      :
+    { const SNode ln2(ln(SNode(this, 2)));
+      return D(n.left(), name) * n * ln2;
+    }
+
   case LN        :
     return D(n.left(), name) / n.left();
-
   case LOG10     :
     { const SNode ln10(ln(SNode(this, 10)));
       return D(n.left(), name) / (ln10 * n.left());
     }
-
-  case EXP       :
-    return  D(n.left(), name) * n;
+  case LOG2      :
+    { const SNode ln2(ln(SNode(this, 2)));
+      return D(n.left(), name) / (ln2 * n.left());
+    }
 
   case SIN       :
     return  D(n.left(), name) * cos(n.left());

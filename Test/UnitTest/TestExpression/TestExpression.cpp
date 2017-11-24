@@ -430,6 +430,16 @@ namespace TestExpression {
   class Test34 : public RealExpressionTest {
   public:
     String getExpr() const {
+      return _T("atan2(x+7,5)");
+    }
+    Real fr(const Real &x) const {
+      return atan2(x + 7, 5);
+    }
+  };
+
+  class Test35 : public RealExpressionTest {
+  public:
+    String getExpr() const {
       return _T("acot(x+1)");
     }
     Real fr(const Real &x) const {
@@ -437,7 +447,7 @@ namespace TestExpression {
     }
   };
 
-  class Test35 : public RealExpressionTest {
+  class Test36 : public RealExpressionTest {
   public:
     String getExpr() const {
       return _T("acsc(x+4)");
@@ -447,7 +457,7 @@ namespace TestExpression {
     }
   };
 
-  class Test36 : public RealExpressionTest {
+  class Test37 : public RealExpressionTest {
   public:
     String getExpr() const {
       return _T("asec(x+4)");
@@ -457,7 +467,7 @@ namespace TestExpression {
     }
   };
 
-  class Test37 : public RealExpressionTest {
+  class Test38 : public RealExpressionTest {
   public:
     String getExpr() const {
       return _T("exp(x+1)");
@@ -467,17 +477,27 @@ namespace TestExpression {
     }
   };
 
-  class Test38 : public RealExpressionTest {
+  class Test39 : public RealExpressionTest {
   public:
     String getExpr() const {
-      return _T("log10(x+1)");
+      return _T("exp2(x+1)");
     }
     Real fr(const Real &x) const {
-      return log10(x + 1);
+      return exp2(x + 1);
     }
   };
 
-  class Test39 : public RealExpressionTest {
+  class Test40 : public RealExpressionTest {
+  public:
+    String getExpr() const {
+      return _T("exp10(x+1)");
+    }
+    Real fr(const Real &x) const {
+      return exp10(x + 1);
+    }
+  };
+
+  class Test41 : public RealExpressionTest {
   public:
     String getExpr() const {
       return _T("ln(x+1)");
@@ -487,7 +507,27 @@ namespace TestExpression {
     }
   };
 
-  class Test40 : public RealExpressionTest {
+  class Test42 : public RealExpressionTest {
+  public:
+    String getExpr() const {
+      return _T("log10(x+1)");
+    }
+    Real fr(const Real &x) const {
+      return log10(x + 1);
+    }
+  };
+
+  class Test43 : public RealExpressionTest {
+  public:
+    String getExpr() const {
+      return _T("log2(x+1)");
+    }
+    Real fr(const Real &x) const {
+      return log2(x + 1);
+    }
+  };
+
+  class Test44 : public RealExpressionTest {
   public:
     String getExpr() const {
       return _T("fac(x+1)");
@@ -497,7 +537,7 @@ namespace TestExpression {
     }
   };
 
-  class Test41 : public RealExpressionTest {
+  class Test45 : public RealExpressionTest {
   public:
     String getExpr() const {
       return _T("sqrt(x+1)");
@@ -507,7 +547,7 @@ namespace TestExpression {
     }
   };
 
-  class Test42 : public RealExpressionTest {
+  class Test46 : public RealExpressionTest {
   public:
     String getExpr() const {
       return _T("sqr(x+1)");
@@ -517,7 +557,18 @@ namespace TestExpression {
     }
   };
 
-  class Test43 : public RealExpressionTest {
+  class Test47 : public RealExpressionTest {
+  public:
+    String getExpr() const {
+      return _T("hypot(x+7, x-5)");
+    }
+    Real fr(const Real &x) const {
+      return hypot(x+7, x-5);
+    }
+  };
+
+
+  class Test48 : public RealExpressionTest {
   public:
     String getExpr() const {
       return _T("sinh(x+1)");
@@ -527,7 +578,7 @@ namespace TestExpression {
     }
   };
 
-  class Test44 : public RealExpressionTest {
+  class Test49 : public RealExpressionTest {
   public:
     String getExpr() const {
       return _T("cosh(x+1)");
@@ -537,7 +588,7 @@ namespace TestExpression {
     }
   };
 
-  class Test45 : public RealExpressionTest {
+  class Test50 : public RealExpressionTest {
   public:
     String getExpr() const {
       return _T("tanh(x+1)");
@@ -547,7 +598,7 @@ namespace TestExpression {
     }
   };
 
-  class Test46 : public RealExpressionTest {
+  class Test51 : public RealExpressionTest {
   public:
     String getExpr() const {
       return _T("asinh(x+1)");
@@ -557,7 +608,7 @@ namespace TestExpression {
     }
   };
 
-  class Test47 : public RealExpressionTest {
+  class Test52 : public RealExpressionTest {
   public:
     String getExpr() const {
       return _T("acosh(x+2)");
@@ -567,7 +618,7 @@ namespace TestExpression {
     }
   };
 
-  class Test48 : public RealExpressionTest {
+  class Test53 : public RealExpressionTest {
   public:
     String getExpr() const {
       return _T("atanh((x-0.5)/2)");
@@ -577,397 +628,397 @@ namespace TestExpression {
     }
   };
 
-  class Test49 : public RealExpressionTest {
+  class Test54 : public RealExpressionTest {
   public:
     String getExpr() const {
       return _T("binomial(x+7,5)");
     }
     Real fr(const Real &x) const {
-      return  binomial(x + 7, 5);
-    }
-  };
-
-  class Test50 : public RealExpressionTest {
-  public:
-    String getExpr() const {
-      return _T("gauss(x*2)");
-    }
-    Real fr(const Real &x) const {
-      return  gauss(x * 2);
-    }
-  };
-
-  class Test51 : public RealExpressionTest {
-  public:
-    String getExpr() const {
-      return _T("gamma(x+2)");
-    }
-    Real fr(const Real &x) const {
-      return  gamma(x + 2);
-    }
-  };
-
-  class Test52 : public RealExpressionTest {
-  public:
-    String getExpr() const {
-      return _T("erf(x/2.4)");
-    }
-    Real fr(const Real &x) const {
-      return  errorFunction(x / 2.4);
-    }
-  };
-
-  class Test53 : public RealExpressionTest {
-  public:
-    String getExpr() const {
-      return _T("inverf(x/3)");
-    }
-    Real fr(const Real &x) const {
-      return  inverseErrorFunction(x / 3);
-    }
-  };
-
-  class Test54 : public RealExpressionTest {
-  public:
-    String getExpr() const {
-      return _T("norm(x/2.4)");
-    }
-    Real fr(const Real &x) const {
-      return  norm(x / 2.4);
+      return binomial(x + 7, 5);
     }
   };
 
   class Test55 : public RealExpressionTest {
   public:
     String getExpr() const {
-      return _T("probit((x+0.2)/5)");
+      return _T("gauss(x*2)");
     }
     Real fr(const Real &x) const {
-      return  probitFunction((x + 0.2) / 5);
+      return gauss(x * 2);
     }
   };
 
   class Test56 : public RealExpressionTest {
   public:
     String getExpr() const {
-      return _T("abs(x+1)");
+      return _T("gamma(x+2)");
     }
     Real fr(const Real &x) const {
-      return  fabs(x + 1);
+      return gamma(x + 2);
     }
   };
 
   class Test57 : public RealExpressionTest {
   public:
     String getExpr() const {
-      return _T("floor(x+1)");
+      return _T("erf(x/2.4)");
     }
     Real fr(const Real &x) const {
-      return  floor(x + 1);
+      return errorFunction(x / 2.4);
     }
   };
 
   class Test58 : public RealExpressionTest {
   public:
     String getExpr() const {
-      return _T("ceil(x+1)");
+      return _T("inverf(x/3)");
     }
     Real fr(const Real &x) const {
-      return  ceil(x + 1);
+      return inverseErrorFunction(x / 3);
     }
   };
 
   class Test59 : public RealExpressionTest {
   public:
     String getExpr() const {
-      return _T("sign(x+1)");
+      return _T("norm(x/2.4)");
     }
     Real fr(const Real &x) const {
-      return  dsign(x + 1);
+      return norm(x / 2.4);
     }
   };
 
   class Test60 : public RealExpressionTest {
   public:
     String getExpr() const {
-      return _T("cos(x)*-(x)");
+      return _T("probit((x+0.2)/5)");
     }
     Real fr(const Real &x) const {
-      return  cos(x)*-(x);
+      return probitFunction((x + 0.2) / 5);
     }
   };
 
   class Test61 : public RealExpressionTest {
   public:
     String getExpr() const {
-      return _T("max(x,x+1)");
+      return _T("abs(x+1)");
     }
     Real fr(const Real &x) const {
-      return  dmax(x, x + 1);
+      return fabs(x + 1);
     }
   };
 
   class Test62 : public RealExpressionTest {
   public:
     String getExpr() const {
-      return _T("max(x,x-1)");
+      return _T("floor(x+1)");
     }
     Real fr(const Real &x) const {
-      return  dmax(x, x - 1);
+      return floor(x + 1);
     }
   };
 
   class Test63 : public RealExpressionTest {
   public:
     String getExpr() const {
-      return _T("min(x,x+1)");
+      return _T("ceil(x+1)");
     }
     Real fr(const Real &x) const {
-      return  dmin(x, x + 1);
+      return ceil(x + 1);
     }
   };
 
   class Test64 : public RealExpressionTest {
   public:
     String getExpr() const {
-      return _T("min(x,x-1)");
+      return _T("sign(x+1)");
     }
     Real fr(const Real &x) const {
-      return  dmin(x, x - 1);
+      return dsign(x + 1);
     }
   };
 
   class Test65 : public RealExpressionTest {
   public:
     String getExpr() const {
-      return _T("if(x+1 == x*2,x+1,x-1)");
+      return _T("cos(x)*-(x)");
     }
     Real fr(const Real &x) const {
-      return  IF(x + 1 == x * 2, x + 1, x - 1);
+      return cos(x)*-(x);
     }
   };
 
   class Test66 : public RealExpressionTest {
   public:
     String getExpr() const {
-      return _T("if(x+1 <> x*2,x+1,x-1)");
+      return _T("max(x,x+1)");
     }
     Real fr(const Real &x) const {
-      return  IF(x + 1 != x * 2, x + 1, x - 1);
+      return dmax(x, x + 1);
     }
   };
 
   class Test67 : public RealExpressionTest {
   public:
     String getExpr() const {
-      return _T("if(x+1 <  x*2,x+1,x-1)");
+      return _T("max(x,x-1)");
     }
     Real fr(const Real &x) const {
-      return  IF(x + 1 <  x * 2, x + 1, x - 1);
+      return dmax(x, x - 1);
     }
   };
 
   class Test68 : public RealExpressionTest {
   public:
     String getExpr() const {
-      return _T("if(x+1 <= x*2,x+1,x-1)");
+      return _T("min(x,x+1)");
     }
     Real fr(const Real &x) const {
-      return  IF(x + 1 <= x * 2, x + 1, x - 1);
+      return dmin(x, x + 1);
     }
   };
 
   class Test69 : public RealExpressionTest {
   public:
     String getExpr() const {
-      return _T("if(x+1 >  x*2,x+1,x-1)");
+      return _T("min(x,x-1)");
     }
     Real fr(const Real &x) const {
-      return  IF(x + 1 >  x * 2, x + 1, x - 1);
+      return dmin(x, x - 1);
     }
   };
 
   class Test70 : public RealExpressionTest {
   public:
     String getExpr() const {
-      return _T("if(x+1 >= x*2,x+1,x-1)");
+      return _T("if(x+1 == x*2,x+1,x-1)");
     }
     Real fr(const Real &x) const {
-      return  IF(x + 1 >= x * 2, x + 1, x - 1);
+      return IF(x + 1 == x * 2, x + 1, x - 1);
     }
   };
 
   class Test71 : public RealExpressionTest {
   public:
     String getExpr() const {
-      return _T("if(not(x+1 >= x*2),x+1,x-1)");
+      return _T("if(x+1 <> x*2,x+1,x-1)");
     }
     Real fr(const Real &x) const {
-      return  IF(NOT(x + 1 >= x * 2), x + 1, x - 1);
+      return IF(x + 1 != x * 2, x + 1, x - 1);
     }
   };
 
   class Test72 : public RealExpressionTest {
   public:
     String getExpr() const {
-      return _T("if(x+1 >= x*2 and x > 0 ,x+1,x-1)");
+      return _T("if(x+1 <  x*2,x+1,x-1)");
     }
     Real fr(const Real &x) const {
-      return  IF(x + 1 >= x * 2 AND x > 0, x + 1, x - 1);
+      return IF(x + 1 <  x * 2, x + 1, x - 1);
     }
   };
 
   class Test73 : public RealExpressionTest {
   public:
     String getExpr() const {
-      return _T("if(x+1 >= x*2 and x < 0 ,x+1,x-1)");
+      return _T("if(x+1 <= x*2,x+1,x-1)");
     }
     Real fr(const Real &x) const {
-      return  IF(x + 1 >= x * 2 AND x < 0, x + 1, x - 1);
+      return IF(x + 1 <= x * 2, x + 1, x - 1);
     }
   };
 
   class Test74 : public RealExpressionTest {
   public:
     String getExpr() const {
-      return _T("if(x+1 >= x*2 or  x > 0 ,x+1,x-1)");
+      return _T("if(x+1 >  x*2,x+1,x-1)");
     }
     Real fr(const Real &x) const {
-      return  IF(x + 1 >= x * 2 OR  x > 0, x + 1, x - 1);
+      return IF(x + 1 >  x * 2, x + 1, x - 1);
     }
   };
 
   class Test75 : public RealExpressionTest {
   public:
     String getExpr() const {
-      return _T("if(x+1 >= x*2 or  x < 0 ,x+1,x-1)");
+      return _T("if(x+1 >= x*2,x+1,x-1)");
     }
     Real fr(const Real &x) const {
-      return  IF(x + 1 >= x * 2 OR  x < 0, x + 1, x - 1);
+      return IF(x + 1 >= x * 2, x + 1, x - 1);
     }
   };
 
   class Test76 : public RealExpressionTest {
   public:
     String getExpr() const {
-      return _T("if(not(x+1 >= x*2 and x > 0),x+1,x-1)");
+      return _T("if(not(x+1 >= x*2),x+1,x-1)");
     }
     Real fr(const Real &x) const {
-      return  IF(NOT(x + 1 >= x * 2 AND x > 0), x + 1, x - 1);
+      return IF(NOT(x + 1 >= x * 2), x + 1, x - 1);
     }
   };
 
   class Test77 : public RealExpressionTest {
   public:
     String getExpr() const {
-      return _T("if(not(x+1 >= x*2 and x < 0),x+1,x-1)");
+      return _T("if(x+1 >= x*2 and x > 0 ,x+1,x-1)");
     }
     Real fr(const Real &x) const {
-      return  IF(NOT(x + 1 >= x * 2 AND x < 0), x + 1, x - 1);
+      return IF(x + 1 >= x * 2 AND x > 0, x + 1, x - 1);
     }
   };
 
   class Test78 : public RealExpressionTest {
   public:
     String getExpr() const {
-      return _T("if(not(x+1 >= x*2 or  x > 0),x+1,x-1)");
+      return _T("if(x+1 >= x*2 and x < 0 ,x+1,x-1)");
     }
     Real fr(const Real &x) const {
-      return  IF(NOT(x + 1 >= x * 2 OR  x > 0), x + 1, x - 1);
+      return IF(x + 1 >= x * 2 AND x < 0, x + 1, x - 1);
     }
   };
 
   class Test79 : public RealExpressionTest {
   public:
     String getExpr() const {
-      return _T("if(not(x+1 >= x*2 or  x < 0),x+1,x-1)");
+      return _T("if(x+1 >= x*2 or  x > 0 ,x+1,x-1)");
     }
     Real fr(const Real &x) const {
-      return  IF(NOT(x + 1 >= x * 2 OR  x < 0), x + 1, x - 1);
+      return IF(x + 1 >= x * 2 OR  x > 0, x + 1, x - 1);
     }
   };
 
   class Test80 : public RealExpressionTest {
   public:
     String getExpr() const {
-      return _T("if(not(x+1 >= x*2 or  x < 0 or x == 0),x+1,x-1)");
+      return _T("if(x+1 >= x*2 or  x < 0 ,x+1,x-1)");
     }
     Real fr(const Real &x) const {
-      return  IF(NOT(x + 1 >= x * 2 OR  x < 0 OR x == 0), x + 1, x - 1);
+      return IF(x + 1 >= x * 2 OR  x < 0, x + 1, x - 1);
     }
   };
 
   class Test81 : public RealExpressionTest {
   public:
     String getExpr() const {
-      return _T("if(not(x+1 >= x*2 and x < 0 or x == 0),x+1,x-1)");
+      return _T("if(not(x+1 >= x*2 and x > 0),x+1,x-1)");
     }
     Real fr(const Real &x) const {
-      return  IF(NOT(x + 1 >= x * 2 AND x < 0 OR x == 0), x + 1, x - 1);
+      return IF(NOT(x + 1 >= x * 2 AND x > 0), x + 1, x - 1);
     }
   };
 
   class Test82 : public RealExpressionTest {
   public:
     String getExpr() const {
-      return _T("if(not((x < 0 or x == 0) and x+1 >= x*2),x+1,x-1)");
+      return _T("if(not(x+1 >= x*2 and x < 0),x+1,x-1)");
     }
     Real fr(const Real &x) const {
-      return  IF(NOT((x < 0 OR x == 0) AND x + 1 >= x * 2), x + 1, x - 1);
+      return IF(NOT(x + 1 >= x * 2 AND x < 0), x + 1, x - 1);
     }
   };
 
   class Test83 : public RealExpressionTest {
   public:
     String getExpr() const {
-      return _T("x+x");
+      return _T("if(not(x+1 >= x*2 or  x > 0),x+1,x-1)");
     }
     Real fr(const Real &x) const {
-      return  x + x;
+      return IF(NOT(x + 1 >= x * 2 OR  x > 0), x + 1, x - 1);
     }
   };
 
   class Test84 : public RealExpressionTest {
   public:
     String getExpr() const {
-      return _T("x+2*x");
+      return _T("if(not(x+1 >= x*2 or  x < 0),x+1,x-1)");
     }
     Real fr(const Real &x) const {
-      return  x + 2 * x;
+      return IF(NOT(x + 1 >= x * 2 OR  x < 0), x + 1, x - 1);
     }
   };
 
   class Test85 : public RealExpressionTest {
   public:
     String getExpr() const {
-      return _T("3*x-4*x");
+      return _T("if(not(x+1 >= x*2 or  x < 0 or x == 0),x+1,x-1)");
     }
     Real fr(const Real &x) const {
-      return  3 * x - 4 * x;
+      return IF(NOT(x + 1 >= x * 2 OR  x < 0 OR x == 0), x + 1, x - 1);
     }
   };
 
   class Test86 : public RealExpressionTest {
   public:
     String getExpr() const {
-      return _T("x/sqrt(x)");
+      return _T("if(not(x+1 >= x*2 and x < 0 or x == 0),x+1,x-1)");
     }
     Real fr(const Real &x) const {
-      return  x / sqrt(x);
+      return IF(NOT(x + 1 >= x * 2 AND x < 0 OR x == 0), x + 1, x - 1);
     }
   };
 
   class Test87 : public RealExpressionTest {
   public:
     String getExpr() const {
-      return _T("sqrt(sqrt(x)) / x / sqrt(x)");
+      return _T("if(not((x < 0 or x == 0) and x+1 >= x*2),x+1,x-1)");
     }
     Real fr(const Real &x) const {
-      return  sqrt(sqrt(x)) / x / sqrt(x);
+      return IF(NOT((x < 0 OR x == 0) AND x + 1 >= x * 2), x + 1, x - 1);
     }
   };
 
   class Test88 : public RealExpressionTest {
+  public:
+    String getExpr() const {
+      return _T("x+x");
+    }
+    Real fr(const Real &x) const {
+      return x + x;
+    }
+  };
+
+  class Test89 : public RealExpressionTest {
+  public:
+    String getExpr() const {
+      return _T("x+2*x");
+    }
+    Real fr(const Real &x) const {
+      return x + 2 * x;
+    }
+  };
+
+  class Test90 : public RealExpressionTest {
+  public:
+    String getExpr() const {
+      return _T("3*x-4*x");
+    }
+    Real fr(const Real &x) const {
+      return 3 * x - 4 * x;
+    }
+  };
+
+  class Test91 : public RealExpressionTest {
+  public:
+    String getExpr() const {
+      return _T("x/sqrt(x)");
+    }
+    Real fr(const Real &x) const {
+      return x / sqrt(x);
+    }
+  };
+
+  class Test92 : public RealExpressionTest {
+  public:
+    String getExpr() const {
+      return _T("sqrt(sqrt(x)) / x / sqrt(x)");
+    }
+    Real fr(const Real &x) const {
+      return sqrt(sqrt(x)) / x / sqrt(x);
+    }
+  };
+
+  class Test93 : public RealExpressionTest {
   public:
     String getExpr() const {
       return _T("poly[1,poly[2,-1,3](x),3,4](x)");
@@ -980,20 +1031,20 @@ namespace TestExpression {
     }
   };
 
-  class Test89 : public RealExpressionTest {
+  class Test94 : public RealExpressionTest {
   public:
     String getExpr() const {
       return _T("sum(i=0 to 10) x^i/fac(i)");
     }
     Real fr(const Real &x) const {
       Real sum = 0;
-      for (int i = 0; i <= 10; i++)
+      for(int i = 0; i <= 10; i++)
         sum += mypow(x, i) / fac(i);
       return sum;
     }
   };
 
-  class Test90 : public RealExpressionTest {
+  class Test95 : public RealExpressionTest {
   public:
     String getExpr() const {
       return _T("product(i=1 to 10) (x+i+0.25)/(x+i+1)");
@@ -1006,17 +1057,17 @@ namespace TestExpression {
     }
   };
 
-  class Test91 : public RealExpressionTest {
+  class Test96 : public RealExpressionTest {
   public:
     String getExpr() const {
       return _T("root(x+1,root(2,x))");
     }
     Real fr(const Real &x) const {
-      return  root(x + 1, root(2, x));
+      return root(x + 1, root(2, x));
     }
   };
 
-  class Test92 : public RealExpressionTest {
+  class Test97 : public RealExpressionTest {
   public:
     String getExpr() const {
       return _T("a = x^2; a^2");
@@ -1027,7 +1078,7 @@ namespace TestExpression {
     }
   };
 
-  class Test93 : public RealExpressionTest {
+  class Test98 : public RealExpressionTest {
   public:
     String getExpr() const {
       return _T("[x > 1]");
@@ -1037,7 +1088,7 @@ namespace TestExpression {
     }
   };
 
-  class Test94 : public BoolExpressionTest {
+  class Test99 : public BoolExpressionTest {
   public:
     String getExpr() const {
       return _T("x > 1");
@@ -1047,7 +1098,7 @@ namespace TestExpression {
     }
   };
 
-  class Test95 : public BoolExpressionTest {
+  class Test100 : public BoolExpressionTest {
   public:
     String getExpr() const {
       return _T("x < 1");
@@ -1057,7 +1108,7 @@ namespace TestExpression {
     }
   };
 
-  class Test96 : public BoolExpressionTest {
+  class Test101 : public BoolExpressionTest {
   public:
     String getExpr() const {
       return _T("x != 1");
@@ -1067,7 +1118,7 @@ namespace TestExpression {
     }
   };
 
-  class Test97 : public BoolExpressionTest {
+  class Test102 : public BoolExpressionTest {
   public:
     String getExpr() const {
       return _T("x*x < 1");
@@ -1077,7 +1128,7 @@ namespace TestExpression {
     }
   };
 
-  class Test98 : public BoolExpressionTest {
+  class Test103 : public BoolExpressionTest {
   public:
     String getExpr() const {
       return _T("y=1; x+y < 1");
@@ -1088,7 +1139,7 @@ namespace TestExpression {
     }
   };
 
-  class Test99 : public BoolExpressionTest {
+  class Test104 : public BoolExpressionTest {
   public:
     String getExpr() const {
       return _T("1 < x && x < 2");
@@ -1098,7 +1149,7 @@ namespace TestExpression {
     }
   };
 
-  class Test100 : public BoolExpressionTest {
+  class Test105 : public BoolExpressionTest {
   public:
     String getExpr() const {
       return _T("1 < x || x > 2");
@@ -1108,7 +1159,7 @@ namespace TestExpression {
     }
   };
 
-  class Test101 : public RealExpressionTest {
+  class Test106 : public RealExpressionTest {
   public:
     String getExpr() const {
       return _T("if(x==1,sum(i=1 to 10) sin(x)^2+cos(i*2+0.25)/e^(x+i+1)"
@@ -1126,26 +1177,6 @@ namespace TestExpression {
           sum += (x + i + 0.55) / (x + i + 1);
       }
       return sum;
-    }
-  };
-
-  class Test102 : public RealExpressionTest {
-  public:
-    String getExpr() const {
-      return _T("atan2(x+7,5)");
-    }
-    Real fr(const Real &x) const {
-      return atan2(x + 7, 5);
-    }
-  };
-
-  class Test103 : public RealExpressionTest {
-  public:
-    String getExpr() const {
-      return _T("hypot(x+7, x-5)");
-    }
-    Real fr(const Real &x) const {
-      return hypot(x+7, x-5);
     }
   };
 
@@ -1253,6 +1284,9 @@ namespace TestExpression {
   static Test101 test101;
   static Test102 test102;
   static Test103 test103;
+  static Test104 test104;
+  static Test105 test105;
+  static Test106 test106;
 
   static ExpressionTest *testCases[] = {
      (ExpressionTest*)&test00
@@ -1359,6 +1393,9 @@ namespace TestExpression {
     ,(ExpressionTest*)&test101
     ,(ExpressionTest*)&test102
     ,(ExpressionTest*)&test103
+    ,(ExpressionTest*)&test104
+    ,(ExpressionTest*)&test105
+    ,(ExpressionTest*)&test106
   };
 
 	TEST_CLASS(TestExpression) {
@@ -1448,9 +1485,6 @@ namespace TestExpression {
       String str;
       try {
         for(Real p = -70; p <= 70; p += 0.5) {
-          if (p == 0) {
-            int fisk = 1;
-          }
           str = format(_T("(1+x)^%s"),toString(p).cstr());
           Expression compiledExpr, interpreterExpr;
           compiledExpr.compile(   str, true );

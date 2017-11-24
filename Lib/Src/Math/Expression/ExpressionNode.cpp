@@ -134,9 +134,9 @@ static ExpressionNodeSelector *getBuiltInFunctionSelector() {
       MOD      , POW      , ROOT     , SIN      , COS      , TAN      , COT      , CSC
     , SEC      , ASIN     , ACOS     , ATAN     , ATAN2    , ACOT     , ACSC     , ASEC
     , COSH     , SINH     , TANH     , ACOSH    , ASINH    , ATANH    , LN       , LOG10
-    , EXP      , FLOOR    , CEIL     , BINOMIAL , GAMMA    , GAUSS    , FAC      , NORM
-    , PROBIT   , ERF      , INVERF   , SIGN     , MAX      , MIN      , HYPOT    , RAND
-    , NORMRAND , POLY     , CHI2DIST , CHI2DENS , LINCGAMMA
+    , LOG2     , EXP      , EXP10    , EXP2     , FLOOR    , CEIL     , BINOMIAL , GAMMA
+    , GAUSS    , FAC      , NORM     , PROBIT   , ERF      , INVERF   , SIGN     , MAX
+    , MIN      , HYPOT    , RAND     , NORMRAND , POLY     , CHI2DIST , CHI2DENS , LINCGAMMA
   };
   static bool                         initDone = false;
   static ExpressionSymbolSet          functionSet;

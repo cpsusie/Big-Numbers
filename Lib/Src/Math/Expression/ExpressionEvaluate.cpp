@@ -77,6 +77,8 @@ Real Expression::evaluateRealExpr(const ExpressionNode *n) const {
   case CSC      : return csc(                    evaluateRealExpr(n->left()),  getTrigonometricMode());
   case ERF      : return errorFunction(          evaluateRealExpr(n->left()));
   case EXP      : return exp(                    evaluateRealExpr(n->left()));
+  case EXP10    : return exp10(                  evaluateRealExpr(n->left()));
+  case EXP2     : return exp2(                   evaluateRealExpr(n->left()));
   case FAC      : return fac(                    evaluateRealExpr(n->left()));
   case FLOOR    : return floor(                  evaluateRealExpr(n->left()));
   case GAMMA    : return gamma(                  evaluateRealExpr(n->left()));
@@ -84,6 +86,7 @@ Real Expression::evaluateRealExpr(const ExpressionNode *n) const {
   case INVERF   : return inverseErrorFunction(   evaluateRealExpr(n->left()));
   case LN       : return log(                    evaluateRealExpr(n->left()));
   case LOG10    : return log10(                  evaluateRealExpr(n->left()));
+  case LOG2     : return log2(                   evaluateRealExpr(n->left()));
   case NORM     : return norm(                   evaluateRealExpr(n->left()));
   case POLY     : return evaluatePolynomial(n);
   case PRODUCT  : return evaluateProduct(n);

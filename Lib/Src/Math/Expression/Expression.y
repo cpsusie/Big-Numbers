@@ -33,7 +33,7 @@ private:
 %left PRODUCT PROD QUOT MOD      /*  * / %                        */
 %left POW                        /*  ^                            */
 %term ACOS ACOSH ACOT ACSC ASEC ASIN ASINH ATAN ATAN2 ATANH COS COSH COT CSC SEC SIN SINH TAN TANH
-%term ABS CEIL ERF EXP FAC FLOOR HYPOT GAMMA GAUSS INVERF LN LOG10 
+%term ABS CEIL ERF EXP EXP10 EXP2 FAC FLOOR HYPOT GAMMA GAUSS INVERF LN LOG10 LOG2
 %term NORM PROBIT CHI2DIST CHI2DENS LINCGAMMA
 %term ROOT SIGN SQR SQRT
 %term BINOMIAL MAX MIN NORMRAND POLY RAND 
@@ -137,6 +137,8 @@ function1           : ABS                                   { $$ = newNode( getP
                     | CSC                                   { $$ = newNode( getPos(1), CSC     , NULL);                 }
                     | ERF                                   { $$ = newNode( getPos(1), ERF     , NULL);                 }
                     | EXP                                   { $$ = newNode( getPos(1), EXP     , NULL);                 }
+                    | EXP10                                 { $$ = newNode( getPos(1), EXP10   , NULL);                 }
+                    | EXP2                                  { $$ = newNode( getPos(1), EXP2    , NULL);                 }
                     | FAC                                   { $$ = newNode( getPos(1), FAC     , NULL);                 }
                     | FLOOR                                 { $$ = newNode( getPos(1), FLOOR   , NULL);                 }
                     | GAMMA                                 { $$ = newNode( getPos(1), GAMMA   , NULL);                 }
@@ -144,6 +146,7 @@ function1           : ABS                                   { $$ = newNode( getP
                     | INVERF                                { $$ = newNode( getPos(1), INVERF  , NULL);                 }
                     | LN                                    { $$ = newNode( getPos(1), LN      , NULL);                 }
                     | LOG10                                 { $$ = newNode( getPos(1), LOG10   , NULL);                 }
+                    | LOG2                                  { $$ = newNode( getPos(1), LOG2    , NULL);                 }
                     | NORM                                  { $$ = newNode( getPos(1), NORM    , NULL);                 }
                     | PROBIT                                { $$ = newNode( getPos(1), PROBIT  , NULL);                 }
                     | SEC                                   { $$ = newNode( getPos(1), SEC     , NULL);                 }

@@ -777,7 +777,10 @@ void Expression::genExpression(const ExpressionNode *n, const ExpressionDestinat
   case ATANH         :    GENCALL(     n, atanh                 );
   case LN            :    GENCALL(     n, log                   );
   case LOG10         :    GENCALL(     n, log10                 );
+  case LOG2          :    GENCALL(     n, log2                  );
   case EXP           :    GENCALL(     n, exp                   );
+  case EXP10         :    GENCALL(     n, exp10                 );
+  case EXP2          :    GENCALL(     n, exp2                  );
   case FLOOR         :    GENCALL(     n, floor                 );
   case CEIL          :    GENCALL(     n, ceil                  );
   case HYPOT         :    GENCALL(     n, hypot                 );

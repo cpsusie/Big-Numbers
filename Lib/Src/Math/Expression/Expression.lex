@@ -130,6 +130,8 @@ static const KeyWord keywordtable[] = {
 ,_T("CSC")       ,CSC
 ,_T("ERF")       ,ERF
 ,_T("EXP")       ,EXP
+,_T("EXP10")     ,EXP10
+,_T("EXP2")      ,EXP2
 ,_T("FAC")       ,FAC
 ,_T("FLOOR")     ,FLOOR
 ,_T("GAMMA")     ,GAMMA
@@ -139,6 +141,7 @@ static const KeyWord keywordtable[] = {
 ,_T("INVERF")    ,INVERF
 ,_T("LN")        ,LN
 ,_T("LOG10")     ,LOG10
+,_T("LOG2")      ,LOG2
 ,_T("MAX")       ,MAX
 ,_T("MIN")       ,MIN
 ,_T("MOD")       ,MOD

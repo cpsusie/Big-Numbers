@@ -220,203 +220,218 @@ int ExpressionParser::reduceAction(unsigned int prod) {
     { m_dollardollar = newNode( getPos(1), EXP     , NULL);                 }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 51: /* function1 -> FAC */
+  case 51: /* function1 -> EXP10 */
 #line 140 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
+    { m_dollardollar = newNode( getPos(1), EXP10   , NULL);                 }
+#line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
+    break;
+  case 52: /* function1 -> EXP2 */
+#line 141 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
+    { m_dollardollar = newNode( getPos(1), EXP2    , NULL);                 }
+#line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
+    break;
+  case 53: /* function1 -> FAC */
+#line 142 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
     { m_dollardollar = newNode( getPos(1), FAC     , NULL);                 }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 52: /* function1 -> FLOOR */
-#line 141 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
+  case 54: /* function1 -> FLOOR */
+#line 143 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
     { m_dollardollar = newNode( getPos(1), FLOOR   , NULL);                 }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 53: /* function1 -> GAMMA */
-#line 142 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
+  case 55: /* function1 -> GAMMA */
+#line 144 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
     { m_dollardollar = newNode( getPos(1), GAMMA   , NULL);                 }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 54: /* function1 -> GAUSS */
-#line 143 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
+  case 56: /* function1 -> GAUSS */
+#line 145 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
     { m_dollardollar = newNode( getPos(1), GAUSS   , NULL);                 }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 55: /* function1 -> INVERF */
-#line 144 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
+  case 57: /* function1 -> INVERF */
+#line 146 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
     { m_dollardollar = newNode( getPos(1), INVERF  , NULL);                 }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 56: /* function1 -> LN */
-#line 145 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
+  case 58: /* function1 -> LN */
+#line 147 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
     { m_dollardollar = newNode( getPos(1), LN      , NULL);                 }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 57: /* function1 -> LOG10 */
-#line 146 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
+  case 59: /* function1 -> LOG10 */
+#line 148 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
     { m_dollardollar = newNode( getPos(1), LOG10   , NULL);                 }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 58: /* function1 -> NORM */
-#line 147 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
+  case 60: /* function1 -> LOG2 */
+#line 149 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
+    { m_dollardollar = newNode( getPos(1), LOG2    , NULL);                 }
+#line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
+    break;
+  case 61: /* function1 -> NORM */
+#line 150 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
     { m_dollardollar = newNode( getPos(1), NORM    , NULL);                 }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 59: /* function1 -> PROBIT */
-#line 148 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
+  case 62: /* function1 -> PROBIT */
+#line 151 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
     { m_dollardollar = newNode( getPos(1), PROBIT  , NULL);                 }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 60: /* function1 -> SEC */
-#line 149 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
+  case 63: /* function1 -> SEC */
+#line 152 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
     { m_dollardollar = newNode( getPos(1), SEC     , NULL);                 }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 61: /* function1 -> SIGN */
-#line 150 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
+  case 64: /* function1 -> SIGN */
+#line 153 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
     { m_dollardollar = newNode( getPos(1), SIGN    , NULL);                 }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 62: /* function1 -> SIN */
-#line 151 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
+  case 65: /* function1 -> SIN */
+#line 154 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
     { m_dollardollar = newNode( getPos(1), SIN     , NULL);                 }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 63: /* function1 -> SINH */
-#line 152 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
+  case 66: /* function1 -> SINH */
+#line 155 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
     { m_dollardollar = newNode( getPos(1), SINH    , NULL);                 }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 64: /* function1 -> SQR */
-#line 153 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
+  case 67: /* function1 -> SQR */
+#line 156 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
     { m_dollardollar = newNode( getPos(1), SQR     , NULL);                 }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 65: /* function1 -> SQRT */
-#line 154 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
+  case 68: /* function1 -> SQRT */
+#line 157 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
     { m_dollardollar = newNode( getPos(1), SQRT    , NULL);                 }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 66: /* function1 -> TAN */
-#line 155 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
+  case 69: /* function1 -> TAN */
+#line 158 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
     { m_dollardollar = newNode( getPos(1), TAN     , NULL);                 }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 67: /* function1 -> TANH */
-#line 156 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
+  case 70: /* function1 -> TANH */
+#line 159 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
     { m_dollardollar = newNode( getPos(1), TANH    , NULL);                 }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 68: /* boolExpr -> expr EQ expr */
-#line 159 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
+  case 71: /* boolExpr -> expr EQ expr */
+#line 162 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
     { m_dollardollar = newNode( getPos(2), EQ      , getStackTop(2), getStackTop(0), NULL);         }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 69: /* boolExpr -> expr NE expr */
-#line 160 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
+  case 72: /* boolExpr -> expr NE expr */
+#line 163 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
     { m_dollardollar = newNode( getPos(2), NE      , getStackTop(2), getStackTop(0), NULL);         }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 70: /* boolExpr -> expr LE expr */
-#line 161 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
+  case 73: /* boolExpr -> expr LE expr */
+#line 164 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
     { m_dollardollar = newNode( getPos(2), LE      , getStackTop(2), getStackTop(0), NULL);         }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 71: /* boolExpr -> expr LT expr */
-#line 162 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
+  case 74: /* boolExpr -> expr LT expr */
+#line 165 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
     { m_dollardollar = newNode( getPos(2), LT      , getStackTop(2), getStackTop(0), NULL);         }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 72: /* boolExpr -> expr GE expr */
-#line 163 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
+  case 75: /* boolExpr -> expr GE expr */
+#line 166 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
     { m_dollardollar = newNode( getPos(2), GE      , getStackTop(2), getStackTop(0), NULL);         }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 73: /* boolExpr -> expr GT expr */
-#line 164 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
+  case 76: /* boolExpr -> expr GT expr */
+#line 167 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
     { m_dollardollar = newNode( getPos(2), GT      , getStackTop(2), getStackTop(0), NULL);         }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 74: /* boolExpr -> boolExpr AND boolExpr */
-#line 165 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
+  case 77: /* boolExpr -> boolExpr AND boolExpr */
+#line 168 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
     { m_dollardollar = newNode( getPos(2), AND     , getStackTop(2), getStackTop(0), NULL);         }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 75: /* boolExpr -> boolExpr OR boolExpr */
-#line 166 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
+  case 78: /* boolExpr -> boolExpr OR boolExpr */
+#line 169 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
     { m_dollardollar = newNode( getPos(2), OR      , getStackTop(2), getStackTop(0), NULL);         }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 76: /* boolExpr -> NOT boolExpr */
-#line 167 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
+  case 79: /* boolExpr -> NOT boolExpr */
+#line 170 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
     { m_dollardollar = newNode( getPos(2), NOT     , getStackTop(0), NULL);         }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 77: /* boolExpr -> LPAR boolExpr RPAR */
-#line 168 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
+  case 80: /* boolExpr -> LPAR boolExpr RPAR */
+#line 171 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
     { m_dollardollar = getStackTop(1);                                                  }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 78: /* function2 -> MAX */
-#line 171 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
+  case 81: /* function2 -> MAX */
+#line 174 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
     { m_dollardollar = newNode( getPos(1), MAX      , NULL);                }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 79: /* function2 -> MIN */
-#line 172 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
+  case 82: /* function2 -> MIN */
+#line 175 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
     { m_dollardollar = newNode( getPos(1), MIN      , NULL);                }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 80: /* function2 -> NORMRAND */
-#line 173 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
+  case 83: /* function2 -> NORMRAND */
+#line 176 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
     { m_dollardollar = newNode( getPos(1), NORMRAND , NULL);                }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 81: /* function2 -> RAND */
-#line 174 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
+  case 84: /* function2 -> RAND */
+#line 177 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
     { m_dollardollar = newNode( getPos(1), RAND     , NULL);                }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 82: /* function2 -> ROOT */
-#line 175 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
+  case 85: /* function2 -> ROOT */
+#line 178 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
     { m_dollardollar = newNode( getPos(1), ROOT     , NULL);                }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 83: /* function2 -> BINOMIAL */
-#line 176 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
+  case 86: /* function2 -> BINOMIAL */
+#line 179 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
     { m_dollardollar = newNode( getPos(1), BINOMIAL , NULL);                }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 84: /* function2 -> CHI2DENS */
-#line 177 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
+  case 87: /* function2 -> CHI2DENS */
+#line 180 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
     { m_dollardollar = newNode( getPos(1), CHI2DENS , NULL);                }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 85: /* function2 -> CHI2DIST */
-#line 178 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
+  case 88: /* function2 -> CHI2DIST */
+#line 181 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
     { m_dollardollar = newNode( getPos(1), CHI2DIST , NULL);                }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 86: /* function2 -> LINCGAMMA */
-#line 179 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
+  case 89: /* function2 -> LINCGAMMA */
+#line 182 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
     { m_dollardollar = newNode( getPos(1), LINCGAMMA, NULL);                }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 87: /* function2 -> ATAN2 */
-#line 180 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
+  case 90: /* function2 -> ATAN2 */
+#line 183 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
     { m_dollardollar = newNode( getPos(1), ATAN2    , NULL);                }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 88: /* function2 -> HYPOT */
-#line 181 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
+  case 91: /* function2 -> HYPOT */
+#line 184 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
     { m_dollardollar = newNode( getPos(1), HYPOT    , NULL);                }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 89: /* name -> NAME */
-#line 184 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
+  case 92: /* name -> NAME */
+#line 187 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
     { m_dollardollar = newNode( getPos(1), NAME    , getText());            }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 90: /* number -> NUMBER */
-#line 187 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
+  case 93: /* number -> NUMBER */
+#line 190 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
     { m_dollardollar = newNode( getPos(1), NUMBER  , ttor(getText()));      }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
@@ -424,7 +439,7 @@ int ExpressionParser::reduceAction(unsigned int prod) {
   return 0;
 }
 
-#line 192 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
+#line 195 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
 ExpressionNode *ExpressionParser::newNode(const SourcePosition &pos, ExpressionInputSymbol symbol, ...) {
   va_list argptr;
   va_start(argptr, symbol);
