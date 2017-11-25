@@ -86,26 +86,18 @@ SNode Expression::D(SNode n, const String &name) {
       }
     }
   case EXP       :
-    return  D(n.left(), name) * n;
+    return D(n.left(), name) * n;
   case EXP10     :
-    { const SNode ln10(ln(SNode(this, 10)));
-      return D(n.left(), name) * n * ln10;
-    }
+    return D(n.left(), name) * n * ln(_10());
   case EXP2      :
-    { const SNode ln2(ln(SNode(this, 2)));
-      return D(n.left(), name) * n * ln2;
-    }
+    return D(n.left(), name) * n * ln(_2());
 
   case LN        :
     return D(n.left(), name) / n.left();
   case LOG10     :
-    { const SNode ln10(ln(SNode(this, 10)));
-      return D(n.left(), name) / (ln10 * n.left());
-    }
+    return D(n.left(), name) / (ln(_10()) * n.left());
   case LOG2      :
-    { const SNode ln2(ln(SNode(this, 2)));
-      return D(n.left(), name) / (ln2 * n.left());
-    }
+    return D(n.left(), name) / (ln(_2()) * n.left());
 
   case SIN       :
     return  D(n.left(), name) * cos(n.left());

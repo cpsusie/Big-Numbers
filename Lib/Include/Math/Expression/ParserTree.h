@@ -157,7 +157,7 @@ private:
   StringArray                   m_errors;
   bool                          m_ok;
   ParserTreeForm                m_treeForm;
-  ExpressionNodeNumber         *m_minusOne, *m_zero, *m_one, *m_two, *m_half;
+  ExpressionNodeNumber         *m_minusOne, *m_zero, *m_one, *m_two, *m_ten, *m_half;
 
   ExpressionVariable   *allocateSymbol(     const String &name, const Real &value, bool isConstant, bool isLeftSide, bool isLoopVar);
   ExpressionVariable   *allocateSymbol(     ExpressionNode *n                    , bool isConstant, bool isLeftSide, bool isLoopVar);
@@ -177,7 +177,7 @@ private:
   String getNewLoopName(const String &oldName) const;
 
   inline void resetSimpleConstants() {;
-    m_minusOne = m_zero = m_one = m_two = m_half = NULL;
+    m_minusOne = m_zero = m_one = m_two = m_ten = m_half = NULL;
   }
   void markSimpleConstants();
   friend class SNode;
@@ -254,6 +254,8 @@ protected:
   ExpressionNode *sqrS(                      ExpressionNode *n);
   ExpressionNode *sqrtS(                     ExpressionNode *n);
   ExpressionNode *expS(                      ExpressionNode *n);
+  ExpressionNode *exp10S(                    ExpressionNode *n);
+  ExpressionNode *exp2S(                     ExpressionNode *n);
   ExpressionNode *cotS(                      ExpressionNode *n);
   ExpressionNode *cscS(                      ExpressionNode *n);
   ExpressionNode *secS(                      ExpressionNode *n);
@@ -271,6 +273,8 @@ protected:
   ExpressionNode *sqrC(                      ExpressionNode *n);
   ExpressionNode *sqrtC(                     ExpressionNode *n);
   ExpressionNode *expC(                      ExpressionNode *n);
+  ExpressionNode *exp10C(                    ExpressionNode *n);
+  ExpressionNode *exp2C(                     ExpressionNode *n);
   ExpressionNode *cotC(                      ExpressionNode *n);
   ExpressionNode *cscC(                      ExpressionNode *n);
   ExpressionNode *secC(                      ExpressionNode *n);
@@ -319,6 +323,10 @@ public:
     if(!m_two     ) m_two      = numberExpression(2);
     return m_two;
   }
+  inline ExpressionNode *getTen() {
+    if(!m_ten     ) m_ten      = numberExpression(10);
+    return m_ten;
+  }
   inline ExpressionNode *getHalf() {
     if(!m_half    ) m_half     = numberExpression(Rational(1,2));
     return m_half;
@@ -327,6 +335,7 @@ public:
   inline SNode _0()    { return SNode(getZero()); }
   inline SNode _1()    { return SNode(getOne());  }
   inline SNode _2()    { return SNode(getTwo());  }
+  inline SNode _10()   { return SNode(getTen());  }
   inline SNode _half() { return SNode(getHalf()); }
 
   inline Real &getValueRef(const ExpressionVariable &var) const {
@@ -359,7 +368,7 @@ public:
 typedef ExpressionNode *(ParserTree::*UnaryOperator)( ExpressionNode *n);
 typedef ExpressionNode *(ParserTree::*BinaryOperator)(ExpressionNode *n1, ExpressionNode *n2);
 
-  UnaryOperator  pminus, preciprocal, psqr ,  psqrt, pexp,  pcot,   pcsc,   psec;
+  UnaryOperator  pminus, preciprocal, psqr ,  psqrt, pexp,  pexp10, pexp2, pcot,   pcsc,   psec;
   BinaryOperator psum  , pdiff      , pprod,  pquot, pmod,  ppower, proot;
 
   ExpressionNode *conditionalExpression(     ExpressionNode *condition

@@ -94,6 +94,8 @@ void ParserTree::initDynamicOperations(ParserTreeForm treeForm) {
     ppower      = &ParserTree::powerS;
     proot       = &ParserTree::rootS;
     pexp        = &ParserTree::expS;
+    pexp10      = &ParserTree::exp10S;
+    pexp2       = &ParserTree::exp2S;
     pcot        = &ParserTree::cotS;
     pcsc        = &ParserTree::cscS;
     psec        = &ParserTree::secS;
@@ -112,6 +114,8 @@ void ParserTree::initDynamicOperations(ParserTreeForm treeForm) {
     ppower      = &ParserTree::powerC;
     proot       = &ParserTree::rootC;
     pexp        = &ParserTree::expC;
+    pexp10      = &ParserTree::exp10C;
+    pexp2       = &ParserTree::exp2C;
     pcot        = &ParserTree::cotC;
     pcsc        = &ParserTree::cscC;
     psec        = &ParserTree::secC;

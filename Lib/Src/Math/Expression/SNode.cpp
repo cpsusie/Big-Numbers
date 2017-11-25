@@ -111,24 +111,36 @@ SNode exp(const SNode &x) {
   CALLUNARYOP(pexp, x.m_node);
 }
 
+SNode exp10(const SNode &x) {
+  CALLUNARYOP(pexp10, x.m_node);
+}
+
+SNode exp2(const SNode &x) {
+  CALLUNARYOP(pexp2, x.m_node);
+}
+
 SNode ln(const SNode &x) {
-  return x.m_node->getTree()->functionExpression(LN, x.m_node);
+  return unaryExp(LN, x);
 }
 
 SNode log10(const SNode &x) {
-  return x.m_node->getTree()->functionExpression(LOG10, x.m_node);
+  return unaryExp(LOG10, x);
+}
+
+SNode log2(const SNode &x) {
+  return unaryExp(LOG2, x);
 }
 
 SNode sin(const SNode &x) {
-  return x.m_node->getTree()->functionExpression(SIN, x.m_node);
+  return unaryExp(SIN, x);
 }
 
 SNode cos(const SNode &x) {
-  return x.m_node->getTree()->functionExpression(COS, x.m_node);
+  return unaryExp(COS, x);
 }
 
 SNode tan(const SNode &x) {
-  return x.m_node->getTree()->functionExpression(TAN, x.m_node);
+  return unaryExp(TAN, x);
 }
 
 SNode cot(const SNode &x) {
@@ -136,15 +148,19 @@ SNode cot(const SNode &x) {
 }
 
 SNode asin(const SNode &x) {
-  return x.m_node->getTree()->functionExpression(ASIN, x.m_node);
+  return unaryExp(ASIN, x);
 }
 
 SNode acos(const SNode &x) {
-  return x.m_node->getTree()->functionExpression(ACOS, x.m_node);
+  return unaryExp(ACOS, x);
 }
 
 SNode atan(const SNode &x) {
-  return x.m_node->getTree()->functionExpression(ATAN, x.m_node);
+  return unaryExp(ATAN, x);
+}
+
+SNode atan2(const SNode &y, const SNode &x) {
+  return binExp(ATAN2, y, x);
 }
 
 SNode csc(const SNode &x) {
@@ -156,19 +172,19 @@ SNode sec(const SNode &x) {
 }
 
 SNode sinh(const SNode &x) {
-  return x.m_node->getTree()->functionExpression(SINH, x.m_node);
+  return unaryExp(SINH, x);
 }
 
 SNode cosh(const SNode &x) {
-  return x.m_node->getTree()->functionExpression(COSH, x.m_node);
+  return unaryExp(COSH, x);
 }
 
 SNode tanh(const SNode &x) {
-  return x.m_node->getTree()->functionExpression(TANH, x.m_node);
+  return unaryExp(TANH, x);
 }
 
 SNode gauss(const SNode &x) {
-  return x.m_node->getTree()->functionExpression(GAUSS, x.m_node);
+  return unaryExp(GAUSS, x);
 }
 
 SNode unaryExp(ExpressionInputSymbol symbol, SNode n) {

@@ -858,8 +858,11 @@ public:
   friend SNode pow(       const SNode &x, const SNode &y);
   friend SNode root(      const SNode &x, const SNode &y);
   friend SNode exp(       const SNode &x);
+  friend SNode exp10(     const SNode &x);
+  friend SNode exp2(      const SNode &x);
   friend SNode ln(        const SNode &x);
   friend SNode log10(     const SNode &x);
+  friend SNode log2(      const SNode &x);
   friend SNode sin(       const SNode &x);
   friend SNode cos(       const SNode &x);
   friend SNode tan(       const SNode &x);
@@ -867,6 +870,7 @@ public:
   friend SNode asin(      const SNode &x);
   friend SNode acos(      const SNode &x);
   friend SNode atan(      const SNode &x);
+  friend SNode atan2(     const SNode &y, const SNode &x);
   friend SNode acot(      const SNode &x);
   friend SNode csc(       const SNode &x);
   friend SNode sec(       const SNode &x);
