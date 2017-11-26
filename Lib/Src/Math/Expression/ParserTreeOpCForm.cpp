@@ -186,6 +186,14 @@ ExpressionNode *ParserTree::expC(ExpressionNode *n) {
   return powerC(constExpression(_T("e")), n);
 }
 
+ExpressionNode *ParserTree::exp10C(ExpressionNode *n) {
+  return powerC(getTen(), n);
+}
+
+ExpressionNode *ParserTree::exp2C(ExpressionNode *n) {
+  return powerC(getTwo(), n);
+}
+
 ExpressionNode *ParserTree::cotC(ExpressionNode *n) {
   return reciprocalC(functionExpression(TAN, n));
 }
