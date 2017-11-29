@@ -521,6 +521,7 @@ AlignedImage *ExpressionPainter::getImage1(const ExpressionNode *n, int fontSize
   case ASIN              :
   case ASINH             :
   case ATAN              :
+  case ATAN2             :
   case ATANH             :
   case COS               :
   case COSH              :
@@ -528,11 +529,14 @@ AlignedImage *ExpressionPainter::getImage1(const ExpressionNode *n, int fontSize
   case CSC               :
   case ERF               :
   case EXP               :
+  case EXP10             :
+  case EXP2              :
   case GAMMA             :
   case GAUSS             :
   case INVERF            :
   case LN                :
   case LOG10             :
+  case LOG2              :
   case NORM              :
   case PROBIT            :
   case SEC               :

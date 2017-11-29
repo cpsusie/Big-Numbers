@@ -1,6 +1,8 @@
 #include "pch.h"
 #include <Math/Expression/Expression.h>
 
+#define ddx(n) D(n,name)
+
 Expression Expression::getDerived(const String &name, bool reduceResult /*=false*/) const {
   if(getReturnType() != EXPR_RETURN_REAL) {
     throwException(_T("Cannot get derived of an expression returning boolean"));
@@ -10,7 +12,7 @@ Expression Expression::getDerived(const String &name, bool reduceResult /*=false
   }
 
   Expression result = *this;
-  result.setRoot(result.D(result.getRoot(), name).node());
+  result.setRoot(result.ddx(result.getRoot()).node());
   result.pruneUnusedNodes();
   result.buildSymbolTable();
   result.setState(EXPR_DERIVED);
@@ -38,20 +40,20 @@ SNode Expression::D(SNode n, const String &name) {
     }
 
   case PLUS      :
-    return D(n.left(), name) + D(n.right(), name);
+    return ddx(n.left()) + ddx(n.right());
 
   case MINUS     :
     if(n.isUnaryMinus()) {
-      return -D(n.left(), name);
+      return -ddx(n.left());
     } else {
-      return D(n.left(), name) - D(n.right(), name);
+      return ddx(n.left()) - ddx(n.right());
     }
 
   case PROD      :
-    return D(n.left(), name) * n.right() + n.left() * D(n.right(), name);
+    return ddx(n.left()) * n.right() + n.left() * ddx(n.right());
 
   case QUOT      :
-    return (D(n.left(), name) * n.right() - n.left() * D(n.right(), name)) / sqr(n.right());
+    return (ddx(n.left()) * n.right() - n.left() * ddx(n.right())) / sqr(n.right());
 
   case POW       :
     { const SNode l = n.left();
@@ -59,141 +61,146 @@ SNode Expression::D(SNode n, const String &name) {
 
       if(r.isNumber()) { // d/dx(l^c) = c * l' * l^(c-1)
         if(r.isOne()) {
-          return D(l, name);
+          return ddx(l);
         } else {
-          return r * D(l, name) * pow(l, r - _1());
+          return r * ddx(l) * pow(l, r - _1());
         }
       } else {            // d/dx (l^r) -> (r/l*l' + r'*ln(l)) *(l^r)
-        return (r/l * D(l,name) + D(r, name) * ln(l)) * n;
+        return (r/l * ddx(l) + ddx(r) * ln(l)) * n;
       }
     }
   case SQR       :        // sqr(u(x)) = powerS(u(x),2)
-    return D(pow(n.left(), _2()), name);
+    return ddx(pow(n.left(), _2()));
 
   case SQRT      :        // sqrt(u(x)) = rootS(u(x),2)
-    return D(::root(n.left(), _2()), name);
+    return ddx(::root(n.left(), _2()));
 
   case ROOT      :
     { const SNode l = n.left(), r = n.right();
       if(r.isNumber()) {
         if(r.isOne()) {  // take care of root(u(x),1) or we'll get division by zero
-          return D(l, name);
+          return ddx(l);
         } else {         // d/dx(rootS(l,c)) = l'*rootS(l,1/(1/c-1))/c
-          return (D(l, name) * root(l, reciprocal(reciprocal(r) - _1()))) / r;
+          return (ddx(l) * root(l, reciprocal(reciprocal(r) - _1()))) / r;
         }
       } else {           // d(dx(rootS(l,r))) = rootS(l,r)*(l'*r/l - ln(l)*r')/(r^2)
-        return n * (D(l, name) * r / l - ln(l) * D(r, name)) / sqr(r);
+        return n * (ddx(l) * r / l - ln(l) * ddx(r)) / sqr(r);
       }
     }
   case EXP       :
-    return D(n.left(), name) * n;
+    return ddx(n.left()) * n;
   case EXP10     :
-    return D(n.left(), name) * n * ln(_10());
+    return ddx(n.left()) * n * ln(_10());
   case EXP2      :
-    return D(n.left(), name) * n * ln(_2());
+    return ddx(n.left()) * n * ln(_2());
 
   case LN        :
-    return D(n.left(), name) / n.left();
+    return ddx(n.left()) / n.left();
   case LOG10     :
-    return D(n.left(), name) / (ln(_10()) * n.left());
+    return ddx(n.left()) / (ln(_10()) * n.left());
   case LOG2      :
-    return D(n.left(), name) / (ln(_2()) * n.left());
+    return ddx(n.left()) / (ln(_2()) * n.left());
 
   case SIN       :
-    return  D(n.left(), name) * cos(n.left());
+    return  ddx(n.left()) * cos(n.left());
 
   case COS       :
-    return -D(n.left(), name) * sin(n.left());
+    return -ddx(n.left()) * sin(n.left());
 
-  case TAN       :  // d/dx(tan(u(x))) = u'(1+tan^2(x))
-    return  D(n.left(), name) * (_1() + sqr(n));
+  case TAN       :  // d/dx(tan(u(x))) = u'(1+tan^2(u(x)))
+    return  ddx(n.left()) * (_1() + sqr(n));
 
-  case COT       :  // d/dx(cot(u(x))) = -u'(1+cot^2(x))
-    return -D(n.left(), name) * (_1() + sqr(n));
+  case COT       :  // d/dx(cot(u(x))) = -u'(1+cot^2(u(x)))
+    return -ddx(n.left()) * (_1() + sqr(n));
 
   case CSC       : // d/dx(csc(u(x))) = -u' * csc(u(x)) * cot(u(x))
-    return -D(n.left(), name) * n * cot(n.left());
+    return -ddx(n.left()) * n * cot(n.left());
 
   case SEC       : // d/dxsec(u(x)) = u' * sec(u(x)) * tan(u(x))
-    return  D(n.left(), name) * n * tan(n.left());
+    return  ddx(n.left()) * n * tan(n.left());
 
   case ACOS      :  // d/dx(acos(u(x))) = -u'/sqrt(1-u(x)^2)
-    return -D(n.left(), name) / sqrt(_1() - sqr(n.left()));
+    return -ddx(n.left()) / sqrt(_1() - sqr(n.left()));
 
   case ACSC      :  // d/dx(acsc(u(x))) = u'/(u(x)^2*sqrt(1-u(x)^2))
-    return  D(n.left(), name) / ( sqr(n.left()) * sqrt(_1() - sqr(n.left())) );
+    return  ddx(n.left()) / ( sqr(n.left()) * sqrt(_1() - sqr(n.left())) );
 
   case ACOT      :  // d/dx(acot(u(x))) = -u'/(1+u(x)^2)
-    return -D(n.left(), name) / (_1() + sqr(n.left()));
+    return -ddx(n.left()) / (_1() + sqr(n.left()));
 
   case ASIN      :  // d/dx(asin(u(x))) = u'/sqrt(1-u(x)^2)
-    return  D(n.left(), name) / sqrt(_1() - sqr(n.left()));
+    return  ddx(n.left()) / sqrt(_1() - sqr(n.left()));
 
   case ATAN      :  // d/dx(atan(u(x))) = u'/(1+u(x)^2)
-    return  D(n.left(), name) / (_1() + sqr(n.left()));
+    return  ddx(n.left()) / (_1() + sqr(n.left()));
+
+  case ATAN2     :  // d/dx(atan2(u1(x),u2(x))) = d/dx(atan(u1(x)/u2(x))) = (u1'*u2-u1*u2')/(u1^2+u2^2)
+    { const SNode u1 = n.left(), u2 = n.right();
+      return (ddx(u1)*u2 - u1*ddx(u2)) / (sqr(u1) + sqr(u2));
+    }
 
   case ASEC      :  // d/dx(asec(u(x))) = -u'/(u(x)^2*sqrt(1-u(x)^2))
-    return -D(n.left(), name) / (sqr(n.left()) * sqrt(_1() - sqr(n.left())));
+    return -ddx(n.left()) / (sqr(n.left()) * sqrt(_1() - sqr(n.left())));
 
   case SINH      : // d/dx(sinh(u(x))) = u'*cosh(u(x))
-    return  D(n.left(), name) * cosh(n.left());
+    return  ddx(n.left()) * cosh(n.left());
 
   case COSH      : // d/dx(cosh(u(x))) = u'*sinh(u(x))
-    return  D(n.left(), name) * sinh(n.left());
+    return  ddx(n.left()) * sinh(n.left());
 
   case TANH      : // d/dx(tanh(u(x))) = u'*(1-tanh^2(u(x)))
-    return  D(n.left(), name) * (_1() - sqr(n));
+    return  ddx(n.left()) * (_1() - sqr(n));
 
   case ASINH     : // d/dx(asinh(u(x))) = u'/sqrt(u(x)^2+1)
-    return  D(n.left(), name) / sqrt(sqr(n.left()) + _1());
+    return  ddx(n.left()) / sqrt(sqr(n.left()) + _1());
 
   case ACOSH     : // d/dx(acosh(u(x))) = u'/sqrt(u(x)^2-1)
-    return  D(n.left(), name) / sqrt(sqr(n.left()) - _1());
+    return  ddx(n.left()) / sqrt(sqr(n.left()) - _1());
 
   case ATANH     : // d/dx(atanh(u(x))) = u'/(1-u(x)^2)
-    return  D(n.left(), name) / (_1() - sqr(n.left()));
+    return  ddx(n.left()) / (_1() - sqr(n.left()));
 
   case NORM      : // d/dx(norm(u(x))) = u'*gauss(u(x))
-    return  D(n.left(), name) * gauss(n.left());
+    return  ddx(n.left()) * gauss(n.left());
 
   case PROBIT    : // d/dx(probit(u(x))) = u'/gauss(probit(u(x)))
-    return  D(n.left(), name) / gauss(n);
+    return  ddx(n.left()) / gauss(n);
 
   case GAUSS     : // d/dx(gauss(u(x))) = -u'*u(x)*gauss(u(x))
-    return -D(n.left(), name) * n.left() * n;
+    return -ddx(n.left()) * n.left() * n;
 
   case ERF       : // d/dx(erf(u(x))) = 2^(3/2)*u'*gauss(sqrt(2)*u(x))
     { const SNode sqrt2(sqrt(_2()));
-      return _2() * sqrt2 * D(n.left(), name) * gauss(sqrt2 * n.left());
+      return _2() * sqrt2 * ddx(n.left()) * gauss(sqrt2 * n.left());
     }
 
   case INVERF    : // d/dx(inverf(u(x))) = u'/(erf'(inverf(u(x)))) = u'/ ((2^(3/2)*gauss(sqrt(2)*inverf(u(x)))))
     { const SNode sqrt2(sqrt(_2()));
-      return D(n.left(), name) / (_2() * sqrt2 * gauss(sqrt2 * n));
+      return ddx(n.left()) / (_2() * sqrt2 * gauss(sqrt2 * n));
     }
   case POLY      :
-   return DPolynomial(n, name);
+   return DPolynomial(n,name);
 
   case MAX       :
-    return condExp(binExp(GE, n.left(), n.right()),D(n.left(), name), D(n.right(), name));
+    return condExp(binExp(GE, n.left(), n.right()),ddx(n.left()), ddx(n.right()));
 
   case MIN       :
-    return condExp(binExp(LE, n.left(), n.right()),D(n.left(), name), D(n.right(), name));
+    return condExp(binExp(LE, n.left(), n.right()),ddx(n.left()), ddx(n.right()));
 
   case IIF        :
-    return condExp(n.child(0), D(n.child(1), name), D(n.child(2), name));
+    return condExp(n.child(0), ddx(n.child(1)), ddx(n.child(2)));
 
   case SEMI      :
-    return binExp(SEMI, DStatementList(n.child(0), name), D(n.child(1), name));
+    return binExp(SEMI, DStatementList(n.child(0),name), ddx(n.child(1)));
 
   case RETURNREAL:
-    return unaryExpression(RETURNREAL, D(n.left(), name));
+    return unaryExpression(RETURNREAL, ddx(n.left()));
 
   case RETURNBOOL:
     throwException(_T("Cannot get derived of boolean expression"));
 
   case INDEXEDSUM:
-    return indexSum(n.child(0), n.child(1), D(n.child(2), name));
+    return indexSum(n.child(0), n.child(1), ddx(n.child(2)));
 
   case INDEXEDPRODUCT:
     { const SNode startAssignment = n.child(0);
@@ -206,7 +213,7 @@ SNode Expression::D(SNode n, const String &name) {
                      ,endExpr
                      ,indexProd(startAssignment
                                ,endExpr
-                               ,condExp(binExp(EQ, productCounter, sumCounter), D(expr, name), expr)
+                               ,condExp(binExp(EQ, productCounter, sumCounter), ddx(expr), expr)
                                )
                      );
     }
@@ -235,13 +242,13 @@ SNode Expression::D(SNode n, const String &name) {
 SNode Expression::DPolynomial(SNode n, const String &name) {
   const SExprList coefficients(n.getCoefficientArray());
   SNode           u            = n.getArgument();   // u(x) is the parameter to the polynomial
-  const SNode     dudx         = D(u, name);        // dudx is u derived w.r.t. name
+  const SNode     dudx         = ddx(u);            // dudx is u derived w.r.t. name
 
   SExprList newCoefficients;
   const int degree = n.getDegree();
-  newCoefficients.add(D(coefficients[0], name));
+  newCoefficients.add(ddx(coefficients[0]));
   for(int i = 1; i < (int)coefficients.size(); i++) {
-    newCoefficients.add(SNode(this, degree-i+1) * coefficients[i-1] * dudx + D(coefficients[i], name));
+    newCoefficients.add(SNode(this, degree-i+1) * coefficients[i-1] * dudx + ddx(coefficients[i]));
   }
   if(newCoefficients.size() == 0) {
     return _0();
@@ -264,7 +271,7 @@ SNode Expression::DStatementList(SNode n, const String &name) {
           throwException(_T("Cannot find derived of statement \"%s\", because a value is assigned to %s"), stmt.toString().cstr(), name.cstr());
         }
         d.add(stmt);
-        d.add(assignStmt(fetchVariableNode(var.name()+_T("'")), D(expr, name)));
+        d.add(assignStmt(fetchVariableNode(var.name()+_T("'")), ddx(expr)));
       }
       break;
     default:
