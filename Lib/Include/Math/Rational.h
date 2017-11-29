@@ -9,7 +9,6 @@ private:
   INT64 m_numerator, m_denominator;
 
   void init(const INT64 &numerator, const INT64 &denominator);
-  void init(const _TUCHAR *s);
   static void throwDivisionbyZeroException(const TCHAR *method);
   static INT64 pow(INT64 n, int y); // assume y >= 0
 public:
@@ -24,9 +23,6 @@ public:
   explicit Rational(float           f  , UINT   maxND = _I16_MIN);
   explicit Rational(double          d  , UINT   maxND = _I32_MIN);
   explicit Rational(const Double80 &d80, UINT64 maxND = _I64_MAX);
-  explicit Rational(const String   &s  );
-  explicit Rational(const wchar_t  *s  );
-  explicit Rational(const char     *s  );
 
   static INT64 safeProd(const INT64 &a, const INT64 &b, int line);
 
@@ -94,7 +90,7 @@ public:
   }
 
   friend inline Double80  getDouble80(const Rational &r) {
-    return Double80(r.m_numerator)/Double80(r.m_denominator);
+    return Double80(r.m_numerator)/r.m_denominator;
   }
 
   friend inline Real      getReal(     const Rational &r) {
@@ -145,8 +141,6 @@ public:
     return int64Hash(m_numerator) + 100999 * int64Hash(m_denominator);
   }
 
-  String toString() const;
-
   inline void save(ByteOutputStream &s) const {
     s.putBytes((BYTE*)this, sizeof(Rational));
   }
@@ -178,14 +172,30 @@ inline bool isAsymmetricExponent(const Rational &r) {
   return isOdd(r.getNumerator()) && isOdd(r.getDenominator());
 }
 
-// Return pointer to the character after parsing the string with the regular
-// expression: {s}*[\-+]?{d}+(/[\-+]?{d}+)?
-// where {d} = [0-9] and {s} = all characters c, where isspace(c) is true
-// Return NULL if string is not recognized by the regular expression.
-const _TUCHAR *parseRational(const _TUCHAR *s);
+char    *rattoa(char    *dst, const Rational &r, int radix);
+wchar_t *rattow(wchar_t *dst, const Rational &r, int radix);
+
+#ifdef _UNICODE
+#define _rattot rattow
+#else
+#define _rattot rattoa
+#endif
+
 String toString(const Rational &r, int precision=0, int width=0, int flags=0);
 
-tistream &operator>>(tistream &s,       Rational &r);
-tostream &operator<<(tostream &s, const Rational &r);
+Rational strtorat(const char *s   , char    **end, int radix);
+Rational wcstorat(const wchar_t *s, wchar_t **end, int radix);
+
+#ifdef _UNICODE
+#define _tcstorat wcstorat
+#else
+#define _tcstorat strtorat
+#endif // _UNICODE
+
+istream &operator>>(istream &s,       Rational &r);
+ostream &operator<<(ostream &s, const Rational &r);
+
+std::wistream &operator>>(std::wistream &s,       Rational &r);
+std::wostream &operator<<(std::wostream &s, const Rational &r);
 
 StrStream &operator<<(StrStream &stream, const Rational &r);

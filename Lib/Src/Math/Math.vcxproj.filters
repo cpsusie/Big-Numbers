@@ -211,9 +211,6 @@
     <ClCompile Include="Polynomial.cpp">
       <Filter>Source Files\Curve Fitting</Filter>
     </ClCompile>
-    <ClCompile Include="ParseReal.cpp">
-      <Filter>Source Files\Number Types</Filter>
-    </ClCompile>
     <ClCompile Include="Rational.cpp">
       <Filter>Source Files\Number Types</Filter>
     </ClCompile>
@@ -328,7 +325,22 @@
     <ClCompile Include="Number.cpp">
       <Filter>Source Files\Number Types</Filter>
     </ClCompile>
-    <ClCompile Include="ParseRational.cpp">
+    <ClCompile Include="Double80Str.cpp">
+      <Filter>Source Files\Number Types</Filter>
+    </ClCompile>
+    <ClCompile Include="ComplexStr.cpp">
+      <Filter>Source Files\Number Types</Filter>
+    </ClCompile>
+    <ClCompile Include="NumberStr.cpp">
+      <Filter>Source Files\Number Types</Filter>
+    </ClCompile>
+    <ClCompile Include="RationalStr.cpp">
+      <Filter>Source Files\Number Types</Filter>
+    </ClCompile>
+    <ClCompile Include="ComplexIO.cpp">
+      <Filter>Source Files\Number Types</Filter>
+    </ClCompile>
+    <ClCompile Include="NumberIO.cpp">
       <Filter>Source Files\Number Types</Filter>
     </ClCompile>
   </ItemGroup>

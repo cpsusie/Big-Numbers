@@ -3,11 +3,18 @@
 
 using namespace std;
 
-StrStream &operator<<(StrStream &stream, const Rational &r) {
-  long flags = stream.getFlags();
+String toString(const Rational &r, int precision, int width, int flags) {
+  StrStream result(precision, width,flags);
+  result << r;
+  return result;
+}
 
-  String result = r.toString();
-  if((flags & ios::showpos) && r.isPositive()) {
+StrStream &operator<<(StrStream &stream, const Rational &r) {
+  const long flags = stream.getFlags();
+  const int  radix = StreamParameters::getRadix(flags);
+  TCHAR tmp[150];
+  String result = _rattot(tmp,r, radix);
+  if((radix==10) && (flags & ios::showpos) && !r.isNegative()) {
     result = _T("+") + result;
   }
 
@@ -22,56 +29,30 @@ StrStream &operator<<(StrStream &stream, const Rational &r) {
   return stream;
 }
 
-#define peekChar(in,ch)          { ch = in.peek(); if(ch == EOF) in >> ch; }
-#define appendCharGetNext(in,ch) { in >> ch; buf += ch; peekChar(in,ch);   }
-
-template <class IStreamType, class CharType> void eatWhite(IStreamType &in) {
-  CharType ch;
-  for(;;in >> ch) {
-    peekChar(in, ch);
-    if(!_istspace(ch)) {
-      return;
-    }
-  }
-}
-
 template <class IStreamType, class CharType> IStreamType &operator>>(IStreamType &in, Rational &r) {
   if(in.ipfx(0)) {
-    String   buf;
-    CharType ch;
-    bool     gotDigits = false;
-
-    eatWhite<IStreamType, CharType>(in);
-    peekChar(in, ch);
-    if((ch == _T('-')) || (ch == _T('+'))) {
-      appendCharGetNext(in, ch);
-    }
-    while(_istdigit(ch)) {
-      appendCharGetNext(in, ch);
-      gotDigits = true;
-    }
-    if(ch == _T('/')) {
-      appendCharGetNext(in, ch);
-      if((ch == _T('-')) || (ch == _T('+'))) {
-        appendCharGetNext(in, ch);
-      }
-      while(_istdigit(ch)) {
-        appendCharGetNext(in, ch);
-        gotDigits = true;
+    INT64 numerator, denominator;
+    int radix1 = StreamParameters::getRadix(in.flags());
+    in >> numerator;
+    if(!in.bad()) {
+      CharType ch = in.peek();
+      if(ch == EOF) in >> ch;
+      if(ch == '/') {
+        in >> ch;
+        int radix2 = StreamParameters::getRadix(in.flags());
+        in >> denominator;
+      } else {
+        denominator = 1;
       }
     }
-    if(!gotDigits) {
-      in.putback(ch);
-      in.clear(ios::failbit);
-      in.isfx();
-      return in;
-    }
-    try {
-      r = Rational(buf.cstr());
-    } catch(...) {
-      in.clear(ios::failbit);
-      in.isfx();
-      throw;
+    if(!in.bad()) {
+      try {
+        r = Rational(numerator, denominator);
+      } catch(...) {
+        in.clear(ios::failbit);
+        in.isfx();
+        throw;
+      }
     }
     in.isfx();
   }
@@ -82,7 +63,7 @@ template <class OStreamType> OStreamType &operator<<(OStreamType &out, const Rat
   if(out.opfx()) {
     StrStream stream(out);
     stream << r;
-    out << stream.cstr();
+    out << (String&)stream;
     if(out.flags() & ios::unitbuf) {
       out.flush();
     }
@@ -91,11 +72,18 @@ template <class OStreamType> OStreamType &operator<<(OStreamType &out, const Rat
   return out;
 }
 
-tistream &operator>>(tistream &in, Rational &r) {
-  return ::operator>> <tistream,TCHAR> (in, r);
+istream &operator>>(istream &in, Rational &r) {
+  return ::operator>> <istream,char>(in, r);
 }
 
-tostream &operator<<(tostream &out, const Rational &r) {
-  return operator<< <tostream>(out, r);
+ostream &operator<<(ostream &out, const Rational &r) {
+  return operator<< <ostream>(out, r);
 }
 
+std::wistream &operator>>(std::wistream &in, Rational &r) {
+  return ::operator>> <std::wistream,wchar_t>(in, r);
+}
+
+std::wostream &operator<<(std::wostream &out, const Rational &r) {
+  return operator<< <std::wostream>(out, r);
+}

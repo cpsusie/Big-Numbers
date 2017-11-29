@@ -205,239 +205,85 @@ wchar_t *_ui128tow(_uint128 value, wchar_t *str, int radix) {
   return int128toStr<_uint128, wchar_t>(value, str, radix);
 }
 
+static inline bool isRadixDigit(wchar_t ch, int radix, int &value) {
+  int v;
+  if(iswdigit(ch)) {
+    v = ch - '0';
+  } else if(iswalpha(ch)) {
+    v = ch - (iswupper(ch)?'A':'a') + 10;
+  } else {
+    return false;
+  }
+  if(v >= radix) return false;
+  value = v;
+  return true;
+}
 
-// Conversion from string to _int128/_uint128
-// decimal string to _int128. may begin with +,- og decimal digit
-template<class CharType> const CharType *parseDec(const CharType *str, _int128 &n) {
+template<class Int128Type, class Ctype> Int128Type strtoint128(const Ctype *s, Ctype **end, int radix) {
+  assert((radix == 0) || (radix >= 2) && (radix <= 36));
+
   bool negative = false;
-  switch(*str) {
-  case '+':
-    str++;
-    break;
-  case '-':
-    str++;
+  bool gotDigit = false;
+  while(iswspace(*s)) s++; // skip whitespace
+  if(*s == '-') { // read optional sign
+    s++;
     negative = true;
+  } else if (*s == '+') {
+    s++;
   }
-  bool gotDigit = false;
-  for(; iswdigit(*str); str++) {
-    if(!gotDigit) {
-      n = *str - '0';
+  if(radix == 0) { // first determine if radix is 8,16 or 10
+    if(*s == '0') {
       gotDigit = true;
-    } else {
-      const UINT d = *str - '0';
-      n *= _10;
-      n += d;
-    }
-  }
-  if(!gotDigit) {
-    return NULL;
-  }
-  if(negative) {
-    n = -n;
-  }
-  return str;
-}
-
-// decimal string to _uint128. may begin with + og decimal digit
-template<class CharType> const CharType *uparseDec(const CharType *str, _uint128 &n) {
-  bool gotDigit = false;
-  if(*str == '+') str++;
-  for(; iswdigit(*str); str++) {
-    if(!gotDigit) {
-      n = *str - '0';
-      gotDigit = true;
-    } else {
-      const UINT d = *str - '0';
-      n *= _10;
-      n += d;
-    }
-  }
-  return gotDigit ? str : NULL;
-}
-
-template<class CharType> const CharType *parseHex(const CharType *str, _uint128 *n) {
-  bool gotDigit = false;
-  for(; iswxdigit(*str); str++) {
-    if(!gotDigit) {
-      *n = convertNumberChar(*str);
-      gotDigit = true;
-    } else {
-      const UINT d = convertNumberChar(*str);
-      *n <<= 4;
-      *n |= d;
-    }
-  }
-  return gotDigit ? str : NULL;
-}
-
-template<class CharType> const CharType *parseOct(const CharType *str, _uint128 *n) {
-  bool gotDigit = false;
-  for(; iswodigit(*str); str++) {
-    if(!gotDigit) {
-      *n = convertNumberChar(*str);
-      gotDigit = true;
-    } else {
-      const UINT d = convertNumberChar(*str);
-      *n <<= 3;
-      *n |= d;
-    }
-  }
-  return gotDigit ? str : NULL;
-}
-
-const char *_int128::parseDec(const char *str) { // return pointer to char following the number
-  return ::parseDec<char>(str, *this);
-}
-
-const char *_int128::parseHex(const char *str) {
-  return ::parseHex<char>(str, (_uint128*)this);
-}
-
-const char *_int128::parseOct(const char *str) {
-  return ::parseOct<char>(str, (_uint128*)this);
-}
-
-const wchar_t *_int128::parseDec(const wchar_t *str) { // return pointer to char following the number
-  return ::parseDec<wchar_t>(str, *this);
-}
-
-const wchar_t *_int128::parseHex(const wchar_t *str) {
-  return ::parseHex<wchar_t>(str, (_uint128*)this);
-}
-
-const wchar_t *_int128::parseOct(const wchar_t *str) {
-  return ::parseOct<wchar_t>(str, (_uint128*)this);
-}
-
-
-const char *_uint128::parseDec(const char *str) {
-  return ::uparseDec<char>(str, *this);
-}
-
-const char *_uint128::parseHex(const char *str) {
-  return ::parseHex<char>(str, this);
-}
-
-const char *_uint128::parseOct(const char *str) {
-  return ::parseOct<char>(str, this);
-}
-
-const wchar_t *_uint128::parseDec(const wchar_t *str) {
-  return ::uparseDec<wchar_t>(str, *this);
-}
-
-const wchar_t *_uint128::parseHex(const wchar_t *str) {
-  return ::parseHex<wchar_t>(str, this);
-}
-
-const wchar_t *_uint128::parseOct(const wchar_t *str) {
-  return ::parseOct<wchar_t>(str, this);
-}
-
-
-_int128::_int128(const char *str) {
-  bool ok = false;
-  if(*str == '-') {
-    ok = parseDec(str) != NULL;
-  } else {
-    if(iswdigit(*str)) {
-      if(*str == '0') {
-        switch(str[1]) {
-        case 'X':
-        case 'x':
-          ok = parseHex(str + 2) != NULL;
-          break;
-        case 0:
-          *this = 0;
-          ok = true;
-          break;
-        default:
-          ok = parseOct(str + 1) != NULL;
-          break;
-        }
+      s++;
+      if(end) *end = (Ctype*)s;
+      if((*s == 'x') || (*s == 'X')) {
+        radix = 16; s++;
       } else {
-        ok = parseDec(str) != NULL;
+        radix = 8;
       }
+    } else if(iswdigit(*s)) {
+      radix = 10;
+    } else {
+      return 0; // nothing regognized
     }
   }
-  if(!ok) {
-    throwException(_T("_int128:string is not an integer"));
-  }
-}
-
-
-_int128::_int128(const wchar_t *str) {
-  bool ok = false;
-  if(*str == '-') {
-    ok = parseDec(str) != NULL;
-  } else {
-    if(isdigit(*(const char*)str)) {
-      if(*str == '0') {
-        switch (str[1]) {
-        case 'x':
-          ok = parseHex(str + 2) != NULL;
-          break;
-        case 0:
-          *this = 0;
-          ok = true;
-          break;
-        default:
-          ok = parseOct(str + 1) != NULL;
-          break;
-        }
-      } else {
-        ok = parseDec(str) != NULL;
+  Int128Type result = 0;
+  int        digit;
+  if(isRadixDigit(*(s++), radix, digit)) {
+    gotDigit = true;
+    result = digit;
+    switch(radix) {
+#define SHIFTLOOP(bitsPerDigit) while(isRadixDigit(*(s++), radix, digit)) { result <<= (bitsPerDigit); result |= digit; }
+    case 2 : SHIFTLOOP(1) break;
+    case 4 : SHIFTLOOP(2) break;
+    case 8 : SHIFTLOOP(3) break;
+    case 16: SHIFTLOOP(4) break;
+    case 32: SHIFTLOOP(5) break;
+    default:
+      while(isRadixDigit(*(s++), radix, digit)) {
+        result *= radix;
+        result += digit;
       }
+      break;
     }
   }
-  if (!ok) {
-    throwException(_T("_int128:string is not an integer"));
-  }
+  if(!gotDigit) return 0;
+  if(end) *end = (Ctype*)s;
+  return negative ? -result : result;
 }
 
-_uint128::_uint128(const char *str) {
-  bool ok = false;
-  if(*str == '0') {
-    switch (str[1]) {
-    case 'x':
-    case 'X':
-      ok = parseHex(str + 2) != NULL;
-      break;
-    case 0:
-      *this = 0;
-      ok = true;
-      break;
-    default:
-      ok = parseOct(str + 1) != NULL;
-      break;
-    }
-  } else {
-    ok = parseDec(str) != NULL;
-  }
-  if(!ok) {
-    throwException("_uint128:string is not an integer");
-  }
+_int128 _strtoi128(const char *str, char **end, int radix) {
+  return strtoint128<_int128, char>(str,end,radix);
 }
 
-_uint128::_uint128(const wchar_t *str) {
-  bool ok = false;
-  if(*str == '0') {
-    switch (str[1]) {
-    case 'x':
-      ok = parseHex(str + 2) != NULL;
-      break;
-    case 0:
-      *this = 0;
-      ok = true;
-      break;
-    default:
-      ok = parseOct(str + 1) != NULL;
-      break;
-    }
-  } else {
-    ok = parseDec(str) != NULL;
-  }
-  if(!ok) {
-    throwException(_T("_uint128:string is not an integer"));
-  }
+_uint128 _strtoui128(const char *str, char **end, int radix) {
+  return strtoint128<_uint128, char>(str,end,radix);
+}
+
+_int128 _wcstoi128(const wchar_t *str, wchar_t **end, int radix) {
+  return strtoint128<_int128, wchar_t>(str,end,radix);
+}
+
+_uint128 _wcstoui128(const wchar_t *str, wchar_t **end, int radix) {
+  return strtoint128<_uint128, wchar_t>(str,end,radix);
 }

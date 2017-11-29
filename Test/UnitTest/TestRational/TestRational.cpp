@@ -8,16 +8,15 @@
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 #define VERIFYOP(op, maxError) {                                                                     \
-  const Rational rBinResult = r1 op r2; const double dBinResult = d1 op d2;                          \
+  const Rational rBinResult = (r1) op (r2);                                                          \
+  const double   dBinResult = (d1) op (d2);                                                          \
   const double   dFromR     = getDouble(rBinResult);                                                 \
   const double   error      = fabs(dFromR - dBinResult);                                             \
   if(error > maxError) {                                                                             \
     throwException(_T("%s %s %s = %s = %23.16le. %23.16le %s %23.16le = %23.16le. Error:%le > %le")  \
-                  ,r1.toString().cstr()                                                              \
-                  ,#op                                                                               \
-                  ,r2.toString().cstr()                                                              \
-                  ,rBinResult.toString().cstr(), dFromR                                              \
-                  ,d1, #op, d2, dBinResult                                                           \
+                  ,toString(r1).cstr(), _T(#op), toString(r2).cstr()                                 \
+                  ,toString(rBinResult).cstr(), dFromR                                               \
+                  ,d1, _T(#op), d2, dBinResult                                                       \
                   ,error, maxError                                                                   \
                   );                                                                                 \
   }                                                                                                  \
@@ -27,14 +26,30 @@ namespace TestRational {
 
 #include <UnitTestTraits.h>
 
+  template<class OUTSTREAM> OUTSTREAM &setFormat(OUTSTREAM &os, ios::_Fmtflags baseFlag, unsigned int width, int showPos, int showBase, int uppercase, ios::_Fmtflags adjustFlag) {
+    os.setf(baseFlag  , ios::basefield);
+    os.setf(adjustFlag, ios::adjustfield);
+    os.width(width);
+    if(showBase) {
+      os.setf(ios::showbase);
+    }
+    if(showPos) {
+      os.setf(ios::showpos);
+    }
+    if(uppercase) {
+      os.setf(ios::uppercase);
+    }
+    return os;
+  }
+
 	TEST_CLASS(TestRational) {
     public:
 
-    TEST_METHOD(RationalTest) {
+    TEST_METHOD(BasicOperations) {
       randomize();
 
       //  double maxTotalError = 0;
-      for (int i = 0; i < 100000; i++) {
+      for(int i = 0; i < 100000; i++) {
         /*
         if(i % 100 == 99) {
         printf("i:%10d. maxTotalError:%le\r", i, maxTotalError);
@@ -80,12 +95,123 @@ namespace TestRational {
         if (d1Pe != 0) error /= d1Pe;
         verify(error < 1e-15);
 
-
         const Rational rfd(d1);
         const double   dfr = getDouble(rfd);
         error = fabs(dfr - d1);
         verify(error < 1e-13);
 
+      }
+    }
+
+    TEST_METHOD(RationalIO) {
+      try {
+        CompactArray<Rational> sa;
+
+        for(INT64 d = 1; d >= 0; d = (d + 1) * 31) {
+          for(INT64 n = 0; n >= 0; n = (n + 1) * 29) {
+            sa.add(Rational(n,d));
+            sa.add(-sa.last());
+          }
+        }
+
+        ios::_Fmtflags baseFlags[] = {
+          ios::dec
+         ,ios::hex
+         ,ios::oct
+        };
+        ios::_Fmtflags adjustFlags[] = {
+          ios::left
+         ,ios::right
+        };
+
+        // try all(almost) combinations of output format flags
+        for (int b = 0; b < ARRAYSIZE(baseFlags); b++) {
+          const ios::_Fmtflags baseFlag   = baseFlags[b];
+          int maxShowPos, maxShowBase, maxUpper;
+          switch(baseFlag) {
+          case ios::dec: maxShowPos = 1; maxShowBase = 0; maxUpper = 0; break;
+          case ios::hex: maxShowPos = 0; maxShowBase = 1; maxUpper = 1; break;
+          case ios::oct: maxShowPos = 0; maxShowBase = 1; maxUpper = 0; break;
+          }
+          for(int showPos = 1; showPos <= maxShowPos; showPos++) {
+            for(int showBase = 0; showBase <= maxShowBase; showBase++) {
+              for(int uppercase = 0; uppercase <= maxUpper; uppercase++) {
+                for(int a = 0; a < ARRAYSIZE(adjustFlags); a++) {
+                  for(UINT width = 0; width < 20; width += 3) {
+                    ostringstream  ostr;
+                    wostringstream wostr;
+                    const ios::_Fmtflags adjustFlag = adjustFlags[a];
+
+                    for(size_t i = 0; i < sa.size(); i++) { // write signed
+                      setFormat<ostream>(ostr, baseFlag, width, showPos, showBase, uppercase, adjustFlag);
+                      setFormat<wostream>(wostr, baseFlag, width, showPos, showBase, uppercase, adjustFlag);
+                      ostr << sa[i] << "\n";
+                      wostr << sa[i] << "\n";
+                    }
+
+                    string  str  = ostr.str();
+                    wstring wstr = wostr.str();
+
+                    for(Tokenizer tok(wstr.c_str(), _T("\n")); tok.hasNext();) {
+                      const String s = tok.next();
+                      verify(s.length() >= width);
+                      const TCHAR *np;
+
+                      if(adjustFlag == ios::right) {
+                        for(np = s.cstr(); *np == _T(' '); np++);
+                        verify(s.last() != _T(' '));
+                      } else {
+                        np = s.cstr();
+                        verify(s[0] != _T(' '));
+                      }
+                      if(baseFlag == ios::dec) {
+                        if(showPos) {
+                          verify((np[0] == _T('-')) || (np[0] == _T('+')));
+                        }
+                      } else if (showBase) {
+                        verify(np[0] == _T('0'));
+                        if(baseFlag == ios::hex) {
+                          verify(np[1] == _T('x'));
+                        }
+                      }
+                      if(uppercase) {
+                        for(const TCHAR *cp = np; *cp; cp++) {
+                          verify(!_istlower(*cp));
+                        }
+                      } else {
+                        for(const TCHAR *cp = np; *cp; cp++) {
+                          verify(!_istupper(*cp));
+                        }
+                      }
+                    }
+
+                    istringstream  istr;
+                    wistringstream wistr;
+
+                    istr.str(str);
+                    wistr.str(wstr);
+
+                    for(size_t i = 0; i < sa.size(); i++) { // read signed
+                      Rational x;
+                      istr.setf(baseFlag, ios::basefield);
+                      istr >> x;
+                      verify(x == sa[i]);
+
+                      Rational wx;
+                      wistr.setf(baseFlag, ios::basefield);
+                      wistr >> wx;
+                      verify(wx == sa[i]);
+                    }
+                  } // for width=[0..20]
+                } // for all AdjustFlags
+              } // for lower/uppercase
+            } // for all showBase
+          } // for all showPos
+        } // for all baseFlags
+      }
+      catch (Exception e) {
+        OUTPUT(_T("Exception:%s"), e.what());
+        verify(false);
       }
     }
   };

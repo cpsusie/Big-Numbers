@@ -58,10 +58,19 @@ inline Real getRealNaN() {
 #endif
 
 }
-// Return pointer to the character after parsing the string with the regular
-// expression: {s}*[\-+]?({d}+|{d}+\.{d}*|{d}*\.{d}+)([eE][\-+]?{d}+)?
-// where {d} = [0-9] and {s} = all characters c, where isspace(c) is true
-// Return NULL if string is not recognized by the regular expression.
-const _TUCHAR *parseReal(const _TUCHAR *s);
+
+#ifndef LONGDOUBLE
+#define strtor strtod
+#define wcstor wcstod
+#else // LONGDOUBLE
+#define strtor strtod80
+#define wcstor wcstod80
+#endif // LONGDOUBLE
+
+#ifdef _UNICODE
+#define _tcstor wcstor
+#else
+#define _tcstor strtor
+#endif // _UNICODE
 
 #include "PragmaLib.h"

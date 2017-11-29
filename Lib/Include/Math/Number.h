@@ -28,7 +28,6 @@ private:
     Rational  *m_rational;
   };
 
-  void init(const _TUCHAR *s);
   // Must be private
   void setType(NumberType type);
   void cleanup();
@@ -44,12 +43,6 @@ public:
   Number(const double   &v);
   Number(const Double80 &v);
   Number(const Rational &v);
-
-  explicit inline Number(const String &s) {
-    init(s.cstr());
-  }
-  explicit Number(const wchar_t *s);
-  explicit Number(const char    *s);
 
   virtual ~Number();
 
@@ -117,3 +110,12 @@ public:
 
   String toString() const;
 };
+
+Number strton(const char    *s, char    **end);
+Number wcston(const wchar_t *s, wchar_t **end);
+
+#ifdef _UNICODE
+#define _tcston wcston
+#else
+#define _tcston strton
+#endif // _UNICODE

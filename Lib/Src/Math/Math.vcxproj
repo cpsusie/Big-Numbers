@@ -698,13 +698,16 @@
     <ClCompile Include="ChiSquaredDistribution.cpp" />
     <ClCompile Include="CommonSpline.cpp" />
     <ClCompile Include="Complex.cpp" />
+    <ClCompile Include="ComplexIO.cpp" />
     <ClCompile Include="ComplexMatrix.cpp" />
     <ClCompile Include="ComplexMatrixSvd.cpp" />
+    <ClCompile Include="ComplexStr.cpp" />
     <ClCompile Include="CubicSpline.cpp" />
     <ClCompile Include="DataFit.cpp" />
     <ClCompile Include="Double80.cpp" />
     <ClCompile Include="Double80io.cpp" />
     <ClCompile Include="Double80Random.cpp" />
+    <ClCompile Include="Double80Str.cpp" />
     <ClCompile Include="Expression\AddentArray.cpp" />
     <ClCompile Include="Expression\Expression.cpp" />
     <ClCompile Include="Expression\ExpressionAction.cpp" />
@@ -761,8 +764,8 @@
     <ClCompile Include="MatrixSvd.cpp" />
     <ClCompile Include="Newton.cpp" />
     <ClCompile Include="Number.cpp" />
-    <ClCompile Include="ParseRational.cpp" />
-    <ClCompile Include="ParseReal.cpp" />
+    <ClCompile Include="NumberIO.cpp" />
+    <ClCompile Include="NumberStr.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|Win32'">Create</PrecompiledHeader>
@@ -786,6 +789,7 @@
     <ClCompile Include="QRMatrix.cpp" />
     <ClCompile Include="Rational.cpp" />
     <ClCompile Include="RationalIO.cpp" />
+    <ClCompile Include="RationalStr.cpp" />
     <ClCompile Include="Rungekutta.cpp" />
     <ClCompile Include="RungekuttaFehlberg.cpp" />
     <ClCompile Include="SigmoidIterator.cpp" />

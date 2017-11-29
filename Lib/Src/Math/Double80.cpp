@@ -10,10 +10,6 @@
 #pragma warning(disable : 4073)
 #pragma init_seg(lib)
 
-#define ASM_OPTIMIZED
-
-//#define SMART_VERSION
-
 #define SETBIT(n,bit)   ((n) |  (1<<(bit)))
 #define CLEARBIT(n,bit) ((n) & ~(1<<(bit)))
 
@@ -144,65 +140,6 @@ void Double80::initClass() {
 }
 
 static InitDouble80 initDouble80;
-
-Double80::Double80(const wchar_t *s) {
-  USES_WCONVERSION;
-  init(WSTR2TSTR(s));
-}
-
-Double80::Double80(const char *s) {
-  USES_ACONVERSION;
-  init(ASTR2TSTR(s));
-}
-
-void Double80::init(const _TUCHAR *s) {
-  bool isNegative = false;
-  Double80 result = 0;
-  while(_istspace(*s)) {
-    s++;
-  }
-  if(*s == _T('-')) {
-    isNegative = true;
-    s++;
-  } else if(*s == _T('+')) {
-    s++;
-  }
-  while(_istdigit(*s)) {
-    result *= 10;
-    result += (int)(*(s++) - _T('0'));
-  }
-  if(*s == _T('.') && _istdigit(s[1])) {
-    s++;
-    Double80 decimals = 0, p = 10;
-    for(;_istdigit(*s); p *= 10, decimals *= 10) {
-      decimals += (int)(*(s++) - _T('0'));
-    }
-    result += decimals/p;
-  }
-  if(*s == _T('e') || *s == _T('E')) {
-    s++;
-    int expoSign = 1;
-    if(*s == _T('-')) {
-      expoSign = -1;
-      s++;
-    } else if(*s == _T('+')) {
-      s++;
-    }
-    int exponent = 0;
-    while(_istdigit(*s)) {
-      exponent = exponent * 10 + (*(s++) - _T('0'));
-    }
-    exponent *= expoSign;
-    if(exponent < -4900) {
-      result *= exp10(-4900);
-      exponent += 4900;
-      result *= exp10(exponent);
-    } else {
-      result *= exp10(exponent);
-    }
-  }
-  *this = isNegative ? -result : result;
-}
 
 #ifdef IS32BIT
 
@@ -733,7 +670,7 @@ Double80 round(const Double80 &x, int dec) { // 5-rounding
       }
     }
   }
-  throwException(_T("round dropped to the end. x=%s. dec=%d"),x.toString().cstr(),dec);
+  throwException(_T("round dropped to the end. x=%s. dec=%d"),toString(x).cstr(),dec);
   return x; // Should never come here
 }
 
@@ -777,130 +714,3 @@ ULONG Double80::hashCode() const {
        ^ *(USHORT*)(m_value+8);
 }
 
-char *Double80::d80toa(char *dst, const Double80 &x) { // static
-#ifndef UNICODE
-  return d80tot(dst, x);
-#else
-  USES_ACONVERSION;
-  TCHAR tmp[30];
-  return strcpy(dst, TSTR2ASTR(d80tot(tmp, x)));
-#endif
-}
-
-wchar_t *Double80::d80tow(wchar_t *dst, const Double80 &x) { // static
-#ifdef UNICODE
-  return d80tot(dst, x);
-#else
-  USES_WCONVERSION;
-  TCHAR tmp[30];
-  return wtrcpy(dst, TSTR22WSTR(d80tot(tmp, x)));
-#endif
-}
-
-#define declareBuffer(b,size)          TCHAR b[size];  int b##_length = 0
-#define declareAssignedBuffer(b,dst)   TCHAR *b = dst; int b##_length = 0
-#define addChar(b,ch)                  b[b##_length++] = ch
-#define addDigit(b,d)                  addChar(b,(d)+'0')
-#define getLength(b)                   (b##_length)
-#define isEmpty(b)                     (getLength(b)==0)
-#define removeLast(b)                  b[--b##_length]
-
-TCHAR *Double80::d80tot(TCHAR *dst, const Double80 &x) { // static
-  if(isNan(x)) {
-    if(!isInfinity(x)) {
-      return _tcscpy(dst, _T("Nan"));
-    } else if(isPInfinity(x)) {
-      return _tcscpy(dst, _T("+Infinity"));
-    } else if(isNInfinity(x)) {
-      return _tcscpy(dst, _T("-Infinity"));
-    }
-  } else if(x.isZero()) {
-    return _tcscpy(dst, _T("0.00000000000000000e+000"));
-  }
-
-  int expo10 = getExpo10(x);
-  BYTE bcd[10];
-
-#ifndef ASM_OPTIMIZED
-
-  const USHORT cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_ROUND);
-  Double80 m = (expo10 == 0) ? x : (x / exp10(expo10));
-  m = m * tenE18;
-  while(fabs(m) >= tenE18M1) {
-    m = m / ten;
-    expo10++;
-  }
-
-  // Assertion: 1 <= |m| < 1e18-1 and x = m * 10^(expo10-18)
-
-  D80ToBCD(bcd, m);
-
-  FPU::restoreControlWord(cwSave);
-
-#else // ASM_OPTIMIZED
-
-  D80ToBCDAutoScale(bcd, x, expo10);
-
-#endif // ASM_OPTIMIZED
-
-  declareAssignedBuffer(result, dst);
-
-  if(bcd[9] & 0x80) {
-    addChar(result,_T('-'));
-  }
-  bool gotDigit = false;
-  int decimals;
-  for(int i = 8; i >= 0; i--) {
-    if(gotDigit) {
-      addDigit(result,bcd[i]>>4);
-      addDigit(result,bcd[i]&0xf);
-    } else if(bcd[i] == 0) {
-      continue;
-    } else {
-      gotDigit = true;
-      if(bcd[i] & 0xf0) {
-        addDigit(result,bcd[i]>>4);
-        addChar(result,_T('.'));
-        addDigit(result,bcd[i]&0x0f);
-        decimals = i * 2 - 1;
-      } else {
-        addDigit(result,bcd[i]&0xf);
-        addChar(result,_T('.'));
-        decimals = i * 2 - 2;
-      }
-    }
-  }
-
-  addChar(result,_T('e'));
-  expo10 += decimals - 16;
-  if(expo10 < 0) {
-    addChar(result,_T('-'));
-    expo10 = -expo10;
-  } else {
-    addChar(result,_T('+'));
-    if(expo10 == 0) {
-      addChar(result,_T('0'));
-      addChar(result,_T('0'));
-      addChar(result,_T('0'));
-      addChar(result,0);
-      return dst;
-    }
-  }
-
-  declareBuffer(exponentBuffer,10);
-
-  do {
-    const int ed = expo10 % 10;
-    expo10 /= 10;
-    addDigit(exponentBuffer,ed);
-  } while(expo10 != 0);
-  for(int i = getLength(exponentBuffer); i <= 2; i++) {
-    addChar(result,_T('0'));
-  }
-  while(!isEmpty(exponentBuffer)) {
-    addChar(result,removeLast(exponentBuffer));
-  }
-  addChar(result,0);
-
-  return dst;
-}

@@ -3,7 +3,8 @@
 #include "MyString.h"
 #include "StreamParameters.h"
 
-class StrStream : public StreamParameters, public String { // used instead of standardclass strstream, which is slow!!! (at least in windows)
+// Used instead of standardclass strstream, which is slow!!! (at least in windows)
+class StrStream : public StreamParameters, public String {
 public:
   inline StrStream(streamsize precision = 6, streamsize width = 0, int flags = 0) : StreamParameters(precision, width, flags) {
   }

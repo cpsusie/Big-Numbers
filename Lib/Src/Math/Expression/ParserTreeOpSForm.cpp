@@ -178,6 +178,14 @@ ExpressionNode *ParserTree::expS(ExpressionNode *n) {
   return functionExpression(EXP, n);
 }
 
+ExpressionNode *ParserTree::exp10S(ExpressionNode *n) {
+  return functionExpression(EXP10, n);
+}
+
+ExpressionNode *ParserTree::exp2S(ExpressionNode *n) {
+  return functionExpression(EXP2, n);
+}
+
 ExpressionNode *ParserTree::cotS(ExpressionNode *n)  {
   return functionExpression(COT, n);
 }

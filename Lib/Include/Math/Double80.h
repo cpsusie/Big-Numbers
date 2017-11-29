@@ -259,8 +259,6 @@ extern const Double80 _D80maxi64P1;
 class Double80 {
 private:
   BYTE m_value[10]; // Must be the first field in the class
-  void init(const _TUCHAR *s);
-
 public:
 #ifdef IS32BIT
   // Assume x > _I16_MAX
@@ -391,11 +389,6 @@ public:
     *this = (Double80)(UINT)(x);
   }
 
-  explicit inline Double80(const String &s) {
-    init(s.cstr());
-  }
-  explicit Double80(const wchar_t *s);
-  explicit Double80(const char    *s);
   explicit inline Double80(const BYTE *bytes) {
     memcpy(&m_value,bytes,sizeof(m_value));
   }
@@ -482,19 +475,10 @@ public:
 
 #endif // IS64BIT
 
-  static TCHAR   *d80tot(TCHAR   *dst, const Double80 &x); // dst must point to memory with at least 26 free TCHAR
-  static char    *d80toa(char    *dst, const Double80 &x); // dst must point to memory with at least 26 free char
-  static wchar_t *d80tow(wchar_t *dst, const Double80 &x); // dst must point to memory with at least 26 free wchar_t
-
   inline bool isPositive() const { return (m_value[9] & 0x80) == 0; }
   inline bool isNegative() const { return (m_value[9] & 0x80) != 0; }
 
   ULONG hashCode() const;
-
-  inline String toString() const {
-    TCHAR tmp[30];
-    return d80tot(tmp, *this);
-  }
 
   inline void save(ByteOutputStream &s) const {
     s.putBytes((BYTE*)m_value, sizeof(m_value));
@@ -3443,9 +3427,32 @@ bool     isInfinity( const Double80 &x);
 Double80 randDouble80(Random *rnd = NULL);
 Double80 randDouble80(const Double80 &low, const Double80 &high, Random *rnd = NULL);
 
+// dst must point to memory with at least 26 free char
+char    *d80toa(char    *dst, const Double80 &x);
+// dst must point to memory with at least 26 free wchar_t
+wchar_t *d80tow(wchar_t *dst, const Double80 &x);
+
+#ifdef _UNICODE
+#define d80tot d80tow
+#else
+#define d80tot d80toa
+#endif
+
 String toString(      const Double80 &x, int precision=6, int width=0, int flags=0);
 
-tistream &operator>>(tistream &s,       Double80 &x);
-tostream &operator<<(tostream &s, const Double80 &x);
+Double80 strtod80(const char    *s, char    **end);
+Double80 wcstod80(const wchar_t *s, wchar_t **end);
+
+#ifdef _UNICODE
+#define _tcstod80 wcstod80
+#else
+#define _tcstod80 strtod80
+#endif
+
+istream &operator>>(istream &s,       Double80 &x);
+ostream &operator<<(ostream &s, const Double80 &x);
+
+std::wistream &operator>>(std::wistream &s,       Double80 &x);
+std::wostream &operator<<(std::wostream &s, const Double80 &x);
 
 StrStream &operator<<(StrStream &stream, const Double80 &x);

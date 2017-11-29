@@ -135,27 +135,27 @@ template<class Ctype> Int128Stream<Ctype> &Int128Stream<Ctype>::operator<<(const
     { const bool negative = (n < 0);
       const _uint128 v = negative ? -n : n;
       _ui128toa(v, buf, 10);
-      if (negative) {
+      if(negative) {
         prefix = "-";
-      } else if (flags & ios::showpos) {
+      } else if(flags & ios::showpos) {
         prefix = "+";
       }
       break;
     }
   case ios::hex:
     { const _uint128 v = n;
-      if (flags & ios::showbase) prefix = "0x";
+      if(flags & ios::showbase) prefix = "0x";
       _ui128toa(v, buf, 16);
-      if (flags & ios::uppercase) {
-        for (char *cp = buf; *cp; cp++) {
-          if (iswlower(*cp)) *cp = _toupper(*cp);
+      if(flags & ios::uppercase) {
+        for(char *cp = buf; *cp; cp++) {
+          if(iswlower(*cp)) *cp = _toupper(*cp);
         }
       }
     }
     break;
   case ios::oct:
     { const _uint128 v = n;
-      if (flags & ios::showbase) {
+      if(flags & ios::showbase) {
         prefix = "0";
       }
       _ui128toa(v, buf, 8);
@@ -169,25 +169,25 @@ template<class Ctype> Int128Stream<Ctype> &Int128Stream<Ctype>::operator<<(const
   StringTemplate<Ctype> prefix;
   char                  buf[200];
   const int             flags = getFlags();
-  switch (flags & ios::basefield) {
+  switch(flags & ios::basefield) {
   case ios::dec:
     _ui128toa(n, buf, 10);
-    if (flags & ios::showpos) {
+    if(flags & ios::showpos) {
       prefix = "+";
     }
     break;
   case ios::hex:
-    { if (flags & ios::showbase) prefix = "0x";
+    { if(flags & ios::showbase) prefix = "0x";
       _ui128toa(n, buf, 16);
-      if (flags & ios::uppercase) {
-        for (char *cp = buf; *cp; cp++) {
-          if (iswlower(*cp)) *cp = _toupper(*cp);
+      if(flags & ios::uppercase) {
+        for(char *cp = buf; *cp; cp++) {
+          if(iswlower(*cp)) *cp = _toupper(*cp);
         }
       }
     }
     break;
   case ios::oct:
-    if (flags & ios::showbase) {
+    if(flags & ios::showbase) {
       prefix = "0";
     }
     _ui128toa(n, buf, 8);
@@ -210,57 +210,56 @@ template <class IStreamType, class Ctype> void eatWhite(IStreamType &in) {
   }
 }
 
-template <class IStreamType, class Ctype> IStreamType &operator>> (IStreamType &in, _int128 &n) {
+template <class IStreamType, class Ctype> IStreamType &operator>>(IStreamType &in, _int128 &n) {
   if(in.ipfx(0)) {
-    StringTemplate<Ctype> buf;
-    Ctype                 ch;
-    bool                  gotDigits = false;
-    const int             flags = in.flags();
-    if (flags & ios::skipws) {
+    StringTemplate<wchar_t> buf;
+    Ctype                   ch;
+    bool                    gotDigits = false;
+    const int               flags = in.flags();
+    if(flags & ios::skipws) {
       eatWhite<IStreamType, Ctype>(in);
     }
     peekChar(in, ch);
 
-    switch (flags & ios::basefield) {
+    switch(flags & ios::basefield) {
     case ios::dec:
-      if (ch == '+' || ch =='-') appendCharGetNext(in, ch);
+      if(ch == '+' || ch =='-') appendCharGetNext(in, ch);
       while(iswdigit(ch)) {
         appendCharGetNext(in, ch);
         gotDigits = true;
       }
-      if (gotDigits) {
-        n.parseDec(buf.c_str());
+      if(gotDigits) {
+        n = _wcstoi128(buf.c_str(), NULL, 10);
       }
       break;
     case ios::hex:
-      if (ch == '0') {
+      if(ch == '0') {
         skipChar(in, ch);
-        if ((ch == 'x') || (ch == 'X')) {
+        if((ch == 'x') || (ch == 'X')) {
           skipChar(in, ch);
-        }
-        else {
+        } else {
           buf += '0';
           gotDigits = true;
         }
       }
-      while (iswxdigit(ch)) {
+      while(iswxdigit(ch)) {
         appendCharGetNext(in, ch);
         gotDigits = true;
       }
-      if (gotDigits) {
-        n.parseHex(buf.c_str());
+      if(gotDigits) {
+        n = _wcstoi128(buf.c_str(), NULL, 16);
       }
       break;
     case ios::oct:
-      if (ch != '0') {
+      if(ch != '0') {
         buf += '0';
       }
       while(iswodigit(ch)) {
         appendCharGetNext(in, ch);
         gotDigits = true;
       }
-      if (gotDigits) {
-        n.parseOct(buf.c_str());
+      if(gotDigits) {
+        n = _wcstoi128(buf.c_str(), NULL, 8);
       }
       break;
     }
@@ -273,56 +272,56 @@ template <class IStreamType, class Ctype> IStreamType &operator>> (IStreamType &
   return in;
 }
 
-template <class IStreamType, class Ctype> IStreamType &operator>> (IStreamType &in, _uint128 &n) {
+template <class IStreamType, class Ctype> IStreamType &operator>>(IStreamType &in, _uint128 &n) {
   if(in.ipfx(0)) {
-    StringTemplate<Ctype> buf;
-    Ctype                 ch;
-    bool                  gotDigits = false;
-    const int             flags = in.flags();
-    if (flags & ios::skipws) {
+    StringTemplate<wchar_t> buf;
+    Ctype                   ch;
+    bool                    gotDigits = false;
+    const int               flags = in.flags();
+    if(flags & ios::skipws) {
       eatWhite<IStreamType, Ctype>(in);
     }
     peekChar(in, ch);
 
-    switch (flags & ios::basefield) {
+    switch(flags & ios::basefield) {
     case ios::dec:
-      if (ch == '+') appendCharGetNext(in, ch);
+      if(ch == '+') appendCharGetNext(in, ch);
       while(iswdigit(ch)) {
         appendCharGetNext(in, ch);
         gotDigits = true;
       }
-      if (gotDigits) {
-        n.parseDec(buf.c_str());
+      if(gotDigits) {
+        n = _wcstoui128(buf.c_str(), NULL, 10);
       }
       break;
     case ios::hex:
-      if (ch == '0') {
+      if(ch == '0') {
         skipChar(in, ch);
-        if (ch == 'x' || ch == 'X') {
+        if((ch == 'x') || (ch == 'X')) {
           skipChar(in, ch)
         } else {
           buf += '0';
           gotDigits = true;
         }
       }
-      while (iswxdigit(ch)) {
+      while(iswxdigit(ch)) {
         appendCharGetNext(in, ch);
         gotDigits = true;
       }
-      if (gotDigits) {
-        n.parseHex(buf.c_str());
+      if(gotDigits) {
+        _wcstoui128(buf.c_str(), NULL, 16);
       }
       break;
     case ios::oct:
-      if (ch != '0') {
+      if(ch != '0') {
         buf += '0';
       }
       while(iswodigit(ch)) {
         appendCharGetNext(in, ch);
         gotDigits = true;
       }
-      if (gotDigits) {
-        n.parseOct(buf.c_str());
+      if(gotDigits) {
+        _wcstoui128(buf.c_str(), NULL, 8);
       }
       break;
     }

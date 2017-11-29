@@ -23,15 +23,19 @@ public:
   friend ostream  &operator<<(ostream  &out, const StreamParameters &p);
   friend wostream &operator<<(wostream &out, const StreamParameters &p);
 
-  void setPrecision(streamsize precision) { m_precision = precision; }
-  void setWidth(    streamsize width    ) { m_width     = width;     }
-  void setFlags(    int      flags      ) { m_flags     = flags;     }
-  void setFiller(   TCHAR    filler     ) { m_filler    = filler;    }
+  inline void setPrecision(streamsize precision) { m_precision = precision; }
+  inline void setWidth(    streamsize width    ) { m_width     = width;     }
+  inline void setFlags(    int      flags      ) { m_flags     = flags;     }
+  inline void setFiller(   TCHAR    filler     ) { m_filler    = filler;    }
 
-  streamsize getPrecision() const         { return m_precision;      }
-  streamsize getWidth()     const         { return m_width;          }
-  int        getFlags()     const         { return m_flags;          }
-  TCHAR      getFiller()    const         { return m_filler;         }
+  inline streamsize getPrecision() const         { return m_precision;      }
+  inline streamsize getWidth()     const         { return m_width;          }
+  inline int        getFlags()     const         { return m_flags;          }
+  inline TCHAR      getFiller()    const         { return m_filler;         }
+  static int getRadix(int flags);
+  inline int        getRadix() const {
+    return getRadix(m_flags);
+  }
 
   String getStringFormat() const;
   String getCharFormat()   const;

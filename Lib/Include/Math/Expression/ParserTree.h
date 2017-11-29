@@ -83,13 +83,14 @@ class ParserTree : public PropertyContainer {
 protected:
   mutable ReductionStack m_reductionStack;
   void pushReductionMethod(const TCHAR *method, const String &s, const ExpressionNode *n = NULL) const;
-  void popReductionMethod(const TCHAR *method) const;
+  void popReductionMethod( const TCHAR *method) const;
   void resetReductionStack();
-#define STARTREDUCTION()    resetReductionStack()
-#define ENTERMETHOD()       pushReductionMethod(method, format(_T("n:<%s>"), n.toString().cstr()),n)
-#define ENTERMETHOD1(v)     pushReductionMethod(method, format(_T("%s:<%s>"), _T(#v), (v).toString().cstr()))
-#define ENTERMETHOD2(v1,v2) pushReductionMethod(method, format(_T("%s:<%s>, %s:<%s>"), _T(#v1), (v1).toString().cstr(), _T(#v2), (v2).toString().cstr()))
-#define LEAVEMETHOD()       popReductionMethod(method)
+#define STARTREDUCTION()       resetReductionStack()
+#define ENTERMETHOD()          pushReductionMethod(method, format(_T("n:<%s>"), n.toString().cstr()),n)
+#define ENTERMETHOD1(v)        pushReductionMethod(method, format(_T("%s:<%s>"), _T(#v), (v).toString().cstr()))
+#define ENTERMETHOD2(v1,v2)    pushReductionMethod(method, format(_T("%s:<%s>, %s:<%s>"), _T(#v1), (v1).toString().cstr(), _T(#v2), (v2).toString().cstr()))
+#define ENTERMETHOD2NUM(v1,v2) pushReductionMethod(method, format(_T("%s:<%s>, %s:<%s>"), _T(#v1), ::toString(v2).cstr(), _T(#v2), ::toString(v2).cstr()))
+#define LEAVEMETHOD()          popReductionMethod(method)
 
 #define RETURN(x) { LEAVEMETHOD(); return x; }
 
@@ -133,6 +134,7 @@ protected:
 #define ENTERMETHOD()
 #define ENTERMETHOD1(v)
 #define ENTERMETHOD2(v1,v2)
+#define ENTERMETHOD2NUM(v1,v2)
 #define LEAVEMETHOD()
 
 #define RETURN(x)         return x
@@ -142,7 +144,7 @@ protected:
 #define RETURNSHOWSTR(v)  return v
 #define RETURNPSHOWSTR(p) return p
 
-#endif
+#endif // TRACE_REDUCTION_CALLSTACK
 
 private:
   DECLARECLASSNAME;

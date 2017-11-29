@@ -156,7 +156,8 @@ void testGetExpo2(TestStatistic &stat) {
     convTest.test(getRelativeError80(x, pool));
 
     if(stat.isTimeToPrint()) {
-      stat.printLoopMessage(_T("x:%s %s"), x.toString().cstr(), intervalString.cstr());
+      TCHAR tmpStr[30];
+      stat.printLoopMessage(_T("x:%s %s"), d80tot(tmpStr, x), intervalString.cstr());
     }
   }
 }

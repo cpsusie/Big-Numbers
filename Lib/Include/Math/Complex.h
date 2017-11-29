@@ -7,9 +7,6 @@
 #include "Real.h"
 
 class Complex {
-private:
-  void init(const _TUCHAR *s);
-
 public:
   Real re, im;
 #ifdef LONGDOUBLE
@@ -25,11 +22,6 @@ public:
   }
   Complex(const Real &_re, const Real &_im = 0) : re(_re), im(_im) {
   }
-  explicit inline Complex(const String  &s) {
-    init((_TUCHAR*)(s.cstr()));
-  }
-  explicit Complex(const char    *s);
-  explicit Complex(const wchar_t *s);
 
   Complex &operator-=(const Complex &rhs);
   Complex &operator+=(const Complex &rhs);
@@ -98,8 +90,20 @@ void setToRandom(Complex &c);
 
 String toString(const Complex &c, int precision=6, int width=0, int flags=0);
 
-tistream &operator>>(tistream &in , Complex &c);
-tostream &operator<<(tostream &out, const Complex &c);
+Complex strtoc(const char    *s, char    **end);
+Complex wcstoc(const wchar_t *s, wchar_t **end);
+
+#ifdef _UNICODE
+#define _tcstoc wcstoc
+#else
+#define _tcstoc strtoc
+#endif // _UNICODE
+
+istream &operator>>(istream &in , Complex &c);
+ostream &operator<<(ostream &out, const Complex &c);
+
+std::wistream &operator>>(std::wistream &in , Complex &c);
+std::wostream &operator<<(std::wostream &out, const Complex &c);
 
 StrStream &operator<<(StrStream &stream, const Complex &c);
 

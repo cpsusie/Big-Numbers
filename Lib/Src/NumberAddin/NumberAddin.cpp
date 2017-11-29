@@ -47,7 +47,7 @@ template<class Number> String NumberAddIn<Number>::toString(Number &n, size_t ma
   case NUMBERTYPE_RATIONAL :
     { Rational r;
       m_helper->getObjectx64(&r, n.m_datap, sizeof(r));
-      return r.toString();
+      return ::toString(r);
     }
   default: return _T("unknown type");
   }

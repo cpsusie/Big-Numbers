@@ -192,9 +192,6 @@ public:
   // Return String with length length, filled with ch. return "" if length <= 0
   friend String spaceString(std::streamsize length, TCHAR ch = _T(' '));
 
-  friend tostream &operator<<(tostream &f, const String &str);
-  friend tistream &operator>>(tistream &f, String &str);
-
   // Same as vsprintf. Return *this
   String &vprintf(const TCHAR *format, va_list argptr);
 
@@ -307,6 +304,11 @@ String toString(INT64            n , int precision = 0, int width = 0, int flags
 String toString(UINT64           n , int precision = 0, int width = 0, int flags = 0);
 String toString(float            x , int precision = 6, int width = 0, int flags = 0);
 String toString(double           x , int precision = 6, int width = 0, int flags = 0);
+
+std::ostream  &operator<<(std::ostream  &out, const String &str);
+std::istream  &operator>>(std::istream  &in ,       String &str);
+std::wostream &operator<<(std::wostream &out, const String &str);
+std::wistream &operator>>(std::wistream &in ,       String &str);
 
 template<class T> class AbstractStringifier {
 public:

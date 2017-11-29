@@ -88,11 +88,12 @@ public:
       cp++;
       gotParentes = true;
     }
-    const _TUCHAR *cpx = cp;
-    cp = parseReal(cp);
-    if(cp == NULL) {
+    _TUCHAR *next = NULL;
+    const T _x = _tcstor(cp, &next);
+    if(next == NULL) {
       throwInvalidArgumentException(method, _T("s=%s"), s.cstr());
     }
+    cp = next;
     while(_istspace(*cp)) cp++;
     switch(*cp) {
     case _T(','):
@@ -100,9 +101,9 @@ public:
       cp++;
       break;
     }
-    const _TUCHAR *cpy = cp;
-    cp = parseReal(cp);
-    if(cp == NULL) {
+    next = NULL;
+    const T _y = _tcstor(cp, &next);
+    if(next == NULL) {
       throwInvalidArgumentException(method, _T("s=%s"), s.cstr());
     }
     if(gotParentes) {
@@ -111,8 +112,8 @@ public:
         throwInvalidArgumentException(method, _T("s=%s. missing ')'"), s.cstr());
       }
     }
-    x = _ttof(cpx);
-    y = _ttof(cpy);
+    x = _x;
+    y = _y;
   }
 
   inline Point2DTemplate(const Size2DTemplate<T> &s) : x(s.cx), y(s.cy) {

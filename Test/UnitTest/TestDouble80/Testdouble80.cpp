@@ -367,7 +367,7 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
 
       const Double80 pi = Double80::M_PI;
 
-      const Double80 diff = pi - Double80("3.14159265358979324");
+      const Double80 diff = pi - strtod80("3.14159265358979324", NULL);
       verify(fabs(diff) < 1e-17);
     }
 
@@ -479,7 +479,8 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
       const Double80 stepFactor = 1.012345;
       int count = 0;
       for(Double80 x = Double80::DBL80_MIN; !isNan(x); x *= stepFactor) {
-        String s = x.toString();
+        TCHAR tmp[30];
+        d80tot(tmp, x);
         count++;
       }
       const double timeUsage = (getProcessTime() - startTime) / 1e3 / count;
@@ -544,8 +545,8 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
       UINT64       testSignificand  = SIGNIFICAND(eps);
       int          testExponent     = Double80::getExpo2(eps);
       bool         epsPositive      = eps.isPositive();
-
-      OUTPUT(_T("Eps:%s"), eps.toString().cstr());
+      TCHAR        tmpStr[30];
+      OUTPUT(_T("Eps:%s"), d80tot(tmpStr, eps));
 
       Double80 sum = Double80::one + eps;
       verify(sum == epsP1);
@@ -558,7 +559,8 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
     }
 
     TEST_METHOD(Double80FindMax) {
-      OUTPUT(_T("DBL80_MAX:%s"), Double80::DBL80_MAX.toString().cstr());
+      TCHAR tmpStr[30];
+      OUTPUT(_T("DBL80_MAX:%s"), d80tot(tmpStr, Double80::DBL80_MAX));
       char buffer[10];
       memcpy(buffer, &Double80::DBL80_MAX, sizeof(buffer));
       hexdump(buffer, sizeof(buffer), stdout);
@@ -714,13 +716,13 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
 
       verify(rui64 == ui64max);
 
-      Double80 dstr(" 1.23456e123");
+      Double80 dstr = strtod80(" 1.23456e123", NULL);
       verify(fabs((dstr - 1.23456e123) / dstr) < 1e-15);
-      dstr = Double80("+1.23456e123");
+      dstr = strtod80("+1.23456e123", NULL);
       verify(fabs((dstr - 1.23456e123) / dstr) < 1e-15);
-      dstr = Double80(" -1.23456e123");
+      dstr = strtod80(" -1.23456e123", NULL);
       verify(fabs((dstr + 1.23456e123) / dstr) < 1e-15);
-      Double80 dstring(String("-1.23456e123"));
+      Double80 dstring = wcstod80(L"-1.23456e123", NULL);
       verify(dstr == dstring);
 
       hashCodes.add(dui64.hashCode());

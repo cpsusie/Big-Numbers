@@ -87,8 +87,6 @@ public:
     HI64(*this) = hi;
     LO64(*this) = lo;
   }
-  explicit _int128(const char    *s);
-  explicit _int128(const wchar_t *s);
 
   // type operators
   operator unsigned __int64() const {
@@ -140,14 +138,6 @@ public:
   inline bool isZero() const {
     return LO64(*this) == 0 && HI64(*this) == 0;
   }
-
-  const char *parseDec(const char *str); // return pointer to char following the number, or NULL on error
-  const char *parseHex(const char *str); // do
-  const char *parseOct(const char *str); // do
-
-  const wchar_t *parseDec(const wchar_t *str); // return pointer to char following the number
-  const wchar_t *parseHex(const wchar_t *str); // do
-  const wchar_t *parseOct(const wchar_t *str); // do
 };
 
 class _uint128 {
@@ -202,8 +192,6 @@ public:
     HI64(*this) = hi;
     LO64(*this) = lo;
   }
-  explicit _uint128(const char    *s);
-  explicit _uint128(const wchar_t *s);
 
   // type operators
   inline operator _int128() const {
@@ -257,14 +245,6 @@ public:
   inline bool isZero() const {
     return LO64(*this) == 0 && HI64(*this) == 0;
   }
-
-  const char *parseDec(const char *str); // return pointer to char following the number, or NULL on error
-  const char *parseHex(const char *str); // do
-  const char *parseOct(const char *str); // do
-
-  const wchar_t *parseDec(const wchar_t *str); // return pointer to char following the number
-  const wchar_t *parseHex(const wchar_t *str); // do
-  const wchar_t *parseOct(const wchar_t *str); // do
 };
 
 // 4 version of all 5 binary arithmetic operators,
@@ -1877,21 +1857,29 @@ inline _uint128 &operator^=(_uint128 &lft, unsigned short rhs) {
   return lft ^= (_uint128)rhs;
 }
 
+_int128   _strtoi128( const char    *str, char    **end, int radix);
+_uint128  _strtoui128(const char    *str, char    **end, int radix);
+_int128   _wcstoi128( const wchar_t *str, wchar_t **end, int radix);
+_uint128  _wcstoui128(const wchar_t *str, wchar_t **end, int radix);
 
-char    * _i128toa( _int128  value, char    *str, int radix);
-char    * _ui128toa(_uint128 value, char    *str, int radix);
-wchar_t * _i128tow( _int128  value, wchar_t *str, int radix);
-wchar_t * _ui128tow(_uint128 value, wchar_t *str, int radix);
+char     *_i128toa(   _int128   value, char    *str , int radix);
+char     *_ui128toa(  _uint128  value, char    *str , int radix);
+wchar_t  *_i128tow(   _int128   value, wchar_t *str , int radix);
+wchar_t  *_ui128tow(  _uint128  value, wchar_t *str , int radix);
 
 String toString(const _int128  &n , int precision = 0, int width = 0, int flags = 0);
 String toString(const _uint128 &n , int precision = 0, int width = 0, int flags = 0);
 
 #ifdef _UNICODE
-#define _i128tot   _i128tow
-#define _ui128tot  _ui128tow
+#define _tcstoi128  _wcstoi128
+#define _tcstoui128 _wcstoui128
+#define _i128tot    _i128tow
+#define _ui128tot   _ui128tow
 #else
-#define _i128tot   _i128toa
-#define _ui128tot  _ui128toa
+#define _tcstoi128  _strtoi128
+#define _tcstoui128 _strtoui128
+#define _i128tot    _i128toa
+#define _ui128tot   _ui128toa
 #endif // _UNICODE
 
 inline char radixLetter(unsigned int c) {

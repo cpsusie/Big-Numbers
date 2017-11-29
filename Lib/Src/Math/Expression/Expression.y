@@ -96,8 +96,8 @@ unary               : number
                     | polyExpr
                     | LB boolExpr RB                        { $$ = newNode( getPos(1), IIF
                                                                 , $2
-                                                                , newNode(getPos(1), NUMBER  , ator("1"))
-                                                                , newNode(getPos(1), NUMBER  , ator("0"))
+                                                                , newNode(getPos(1), NUMBER  , strtor("1",NULL))
+                                                                , newNode(getPos(1), NUMBER  , strtor("0",NULL))
                                                                 , NULL);                                      }
                     ;
 
@@ -187,7 +187,7 @@ function2           : MAX                                   { $$ = newNode( getP
 name                : NAME                                  { $$ = newNode( getPos(1), NAME    , getText());            }
                     ;
 
-number              : NUMBER                                { $$ = newNode( getPos(1), NUMBER  , ttor(getText()));      }
+number              : NUMBER                                { $$ = newNode( getPos(1), NUMBER  , _tcstor(getText(),NULL)); }
                     ;
 
 %%

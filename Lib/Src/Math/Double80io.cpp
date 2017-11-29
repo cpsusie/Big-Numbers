@@ -4,11 +4,15 @@
 
 using namespace std;
 
-static const TCHAR *findFirstDigit(const String &str) {
-  for(const TCHAR *cp = str.cstr(); *cp; cp++) {
-    if(_istdigit(*cp)) {
-      return cp;
-    }
+String toString(const Double80 &x, int precision, int width, int flags) {
+  StrStream stream(precision,width,flags);
+  stream << x;
+  return (String)stream;
+}
+
+static TCHAR *findFirstDigit(TCHAR *str) {
+  for(;*str; str++) {
+    if(_istdigit(*str)) return str;
   }
   return NULL;
 }
@@ -29,11 +33,12 @@ static void formatNan(String &result, const Double80 &x) {
 #define addExponentChar(s) { s += ((flags & ios::uppercase) ? _T("E") : _T("e")); }
 
 static void formatFixed(String &result, const Double80 &x, streamsize precision, long flags, bool removeTrailingZeroes) {
-  String        str       = round(x,(int)precision).toString();
-  const TCHAR  *mantissa  = findFirstDigit(str);
-  TCHAR        *comma     = _tcschr(str.cstr(),_T('.'));
+  TCHAR tmp[30];
+  d80tot(tmp, round(x,(int)precision));
+  const TCHAR  *mantissa  = findFirstDigit(tmp);
+  TCHAR        *comma     = _tcschr(tmp,_T('.'));
   TCHAR        *decimals  = NULL;
-  TCHAR        *estr      = _tcschr(str.cstr(),_T('e'));
+  TCHAR        *estr      = _tcschr(tmp,_T('e'));
   int           exponent  = 0;
 
   if(comma != NULL) {
@@ -95,14 +100,14 @@ static void formatFixed(String &result, const Double80 &x, streamsize precision,
 }
 
 static void formatScientific(String &result, const Double80 &x, streamsize precision, long flags, intptr_t expo10, bool removeTrailingZeroes) {
-  bool exponentCharAdded = false;
-
-  String  str = x.toString();
-  String  mantissa  = substr(findFirstDigit(str),0,1);
+  TCHAR tmp[30];
+  d80tot( tmp, x);
+  TCHAR  *mantissa  = findFirstDigit(tmp);
   String  decimals;
-  TCHAR   *comma    = _tcschr(str.cstr(),_T('.'));
-  TCHAR   *estr     = _tcschr(str.cstr(),_T('e'));
+  TCHAR  *comma     = _tcschr(tmp,_T('.'));
+  TCHAR  *estr      = _tcschr(tmp,_T('e'));
   int     exponent  = 0;
+  bool    exponentCharAdded = false;
 
   if(estr != NULL) {
     exponent = _ttoi(estr+1);
@@ -185,7 +190,7 @@ StrStream &operator<<(StrStream &stream, const Double80 &x) {
         if((flags & (ios::scientific|ios::fixed)) == ios::scientific) { // Use scientific format
           formatScientific(result, x, precision, flags, expo10, false);
         } else {
-          if(expo10 < -4 || expo10 > 14 || (expo10 > 0 && expo10 >= precision) || expo10 > precision) { // neither scientific nor fixed format is specified
+          if((expo10 < -4) || (expo10 > 14) || (expo10 > 0 && expo10 >= precision) || (expo10 > precision)) { // neither scientific nor fixed format is specified
             precision = max(0,precision-1);
             formatScientific(result, x, precision, flags, expo10, (flags & ios::showpoint) == 0);
           } else {
@@ -208,12 +213,6 @@ StrStream &operator<<(StrStream &stream, const Double80 &x) {
   return stream;
 }
 
-String toString(const Double80 &x, int precision, int width, int flags) {
-  StrStream stream(precision,width,flags);
-  stream << x;
-  return (String)stream;
-}
-
 #define peekChar(in,ch)          { ch = in.peek(); if(ch == EOF) in >> ch; }
 #define appendCharGetNext(in,ch) { in >> ch; buf += ch; peekChar(in,ch);   }
 
@@ -221,7 +220,7 @@ template <class IStreamType, class CharType> void eatWhite(IStreamType &in) {
   CharType ch;
   for(;;in >> ch) {
     peekChar(in, ch);
-    if(!_istspace(ch)) {
+    if(!iswspace(ch)) {
       return;
     }
   }
@@ -235,16 +234,16 @@ template <class IStreamType, class CharType> IStreamType &operator>>(IStreamType
 
     eatWhite<IStreamType, CharType>(in);
     peekChar(in, ch);
-    if((ch == _T('-')) || (ch == _T('+'))) {
+    if((ch == '-') || (ch == '+')) {
       appendCharGetNext(in, ch);
     }
-    while(_istdigit(ch)) {
+    while(iswdigit(ch)) {
       appendCharGetNext(in, ch);
       gotDigits = true;
     }
-    if(ch == _T('.')) {
+    if(ch == '.') {
       appendCharGetNext(in, ch);
-      while(_istdigit(ch)) {
+      while(iswdigit(ch)) {
         appendCharGetNext(in, ch);
         gotDigits = true;
       }
@@ -255,17 +254,17 @@ template <class IStreamType, class CharType> IStreamType &operator>>(IStreamType
       in.isfx();
       return in;
     }
-    if((ch == _T('e')) || (ch == _T('E'))) {
+    if((ch == 'e') || (ch == 'E')) {
       appendCharGetNext(in, ch);
-      if((ch == _T('-')) || (ch == _T('+'))) {
+      if((ch == '-') || (ch == '+')) {
         appendCharGetNext(in, ch);
       }
-      while(_istdigit(ch)) {
+      while(iswdigit(ch)) {
         appendCharGetNext(in, ch);
       }
     }
     try {
-      x = Double80(buf.cstr());
+      x = _tcstod80(buf.cstr(),NULL);
     } catch(...) {
       in.clear(ios::failbit);
       in.isfx();
@@ -289,10 +288,18 @@ template <class OStreamType> OStreamType &operator<<(OStreamType &out, const Dou
   return out;
 }
 
-tistream &operator>>(tistream &in, Double80 &x) {
-  return ::operator>> <tistream,TCHAR>(in, x);
+istream &operator>>(istream &in, Double80 &x) {
+  return ::operator>> <istream,char>(in, x);
 }
 
-tostream &operator<<(tostream &out, const Double80 &x) {
-  return ::operator<< <tostream> (out, x);
+ostream &operator<<(ostream &out, const Double80 &x) {
+  return ::operator<< <ostream>(out, x);
+}
+
+std::wistream &operator>>(std::wistream &in, Double80 &x) {
+  return ::operator>> <std::wistream,wchar_t>(in, x);
+}
+
+std::wostream &operator<<(std::wostream &out, const Double80 &x) {
+  return ::operator<< <std::wostream>(out, x);
 }

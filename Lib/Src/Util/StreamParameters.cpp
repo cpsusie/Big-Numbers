@@ -79,16 +79,30 @@ TCHAR *StreamParameters::addPrefix(TCHAR *dst, bool withPrecision) const {
 }
 
 TCHAR *StreamParameters::addIntSpecifier(TCHAR *dst, bool isSigned) const {
-  if(m_flags & ios::dec) {
+  switch(m_flags & ios::basefield) {
+  case ios::dec:
     *(dst++) = isSigned ? _T('d') : _T('u');
-  } else if(m_flags & ios::oct) {
+    break;
+  case ios::oct:
     *(dst++) = _T('o');
-  } else if(m_flags & ios::hex) {
+    break;
+  case ios::hex:
     *(dst++) = (m_flags & ios::uppercase) ? _T('X') : _T('x');
-  } else {
+    break;
+  default:
     *(dst++) = isSigned ? _T('d') : _T('u');
+    break;
   }
   return dst;
+}
+
+int StreamParameters::getRadix(int flags) { // static
+  switch(flags & ios::basefield) {
+  case ios::dec:return 10;
+  case ios::oct:return 8;
+  case ios::hex:return 16;
+  }
+  return 10;
 }
 
 TCHAR *StreamParameters::addFloatSpecifier(TCHAR *dst) const {

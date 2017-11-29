@@ -113,6 +113,3 @@ void setToRandom(Real &x);
 Real poly( const Real &x, int degree, const Real *coef);
 // poly1(x) = a[0]x^n + a[1]x^(n-1)+...+a[n-1]x + a[n]; n = degree
 Real poly1(const Real &x, int degree, const Real *coef);
-
-Real ator(const char *str);
-Real ttor(const TCHAR *str);

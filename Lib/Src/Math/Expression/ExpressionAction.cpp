@@ -105,8 +105,8 @@ int ExpressionParser::reduceAction(unsigned int prod) {
   case 27: /* unary -> LB boolExpr RB */
 #line 97 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
     { m_dollardollar = newNode( getPos(1), IIF
-                                                                    , getStackTop(1), newNode(getPos(1), NUMBER  , ator("1"))
-                                                                    , newNode(getPos(1), NUMBER  , ator("0"))
+                                                                    , getStackTop(1), newNode(getPos(1), NUMBER  , strtor("1",NULL))
+                                                                    , newNode(getPos(1), NUMBER  , strtor("0",NULL))
                                                                     , NULL);                                      }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
@@ -432,7 +432,7 @@ int ExpressionParser::reduceAction(unsigned int prod) {
     break;
   case 93: /* number -> NUMBER */
 #line 190 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
-    { m_dollardollar = newNode( getPos(1), NUMBER  , ttor(getText()));      }
+    { m_dollardollar = newNode( getPos(1), NUMBER  , _tcstor(getText(),NULL)); }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
   }

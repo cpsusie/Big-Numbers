@@ -3,30 +3,6 @@
 #include <Float.h>
 #include <Random.h>
 
-#ifndef LONGDOUBLE
-
-Real ator(const char *str) {
-  char *endPtr;
-  return strtod(str, &endPtr);
-}
-
-Real ttor(const TCHAR *str) {
-  TCHAR *endPtr;
-  return _tcstod(str, &endPtr);
-}
-
-#else // LONGDOUBLE
-
-Real ator(const char *str) {
-  return Real(str);
-}
-
-Real ttor(const TCHAR *str) {
-  return Real(str);
-}
-
-#endif  // LONGDOUBLE
-
 int getExpo10(double x) {
   return (x == 0) ? 0 : (int)floor(log10(fabs(x)));
 }

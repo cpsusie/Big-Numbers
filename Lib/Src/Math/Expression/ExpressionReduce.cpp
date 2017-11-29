@@ -827,7 +827,7 @@ FactorArray &Expression::getFactorsInPower(FactorArray &result, SNode n, SNode e
   case POW :
     multiplyExponents(tmp2, getFactors(tmp1, reduceRealExp(base.left()), reduceRealExp(base.right())), reduceRealExp(n.right()));
     break;
-  default                   :
+  default  :
     getFactors(tmp2, reduceRealExp(base), reduceRealExp(n.right()));
     break;
   }
@@ -1057,7 +1057,7 @@ SNode Expression::reduceConstantFactors(FactorArray &factorArray) {
 
 SNode Expression::reduceRationalPower(const Rational &base, const Rational &exponent) {
   DEFINEMETHODNAME;
-  ENTERMETHOD2(base, exponent);
+  ENTERMETHOD2NUM(base, exponent);
 
   if(exponent.isInteger()) {
     RETURNNODE( numberExpression(pow(base, getInt(exponent))) );
@@ -1095,7 +1095,7 @@ SNode Expression::reduceRationalPower(const Rational &base, const Rational &expo
       niceRootFactor = Rational(-bnR, bdR);
       bnPrimeFactors.setPositive();
     } else {
-      throwInvalidArgumentException(method, _T("Base:%s, exponent:%s"), base.toString().cstr(), exponent.toString().cstr());
+      throwInvalidArgumentException(method, _T("Base:%s, exponent:%s"), ::toString(base).cstr(), ::toString(exponent).cstr());
     }
 
     FactorArray fa;

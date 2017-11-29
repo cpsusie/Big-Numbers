@@ -185,7 +185,7 @@ Rational::Rational(const Double80 &d80, UINT64 maxND) {
   }
 
   if((da > maxND) || (da < Double80::one / maxND)) { // hard upper and lower bounds for ratio
-    throwInvalidArgumentException(method, invalidDoubleMsg, d80.toString().cstr(), maxND);
+    throwInvalidArgumentException(method, invalidDoubleMsg, toString(d80).cstr(), maxND);
   }
 
   assert(((Double80)p1 / q1 <= maxND) && ((Double80)q1 / p1 <= maxND));
@@ -193,42 +193,6 @@ Rational::Rational(const Double80 &d80, UINT64 maxND) {
 
   m_numerator   = positive ? p1 : -(INT64)p1;
   m_denominator = q1;
-}
-
-Rational::Rational(const String &s) {
-  init(s.cstr());
-}
-
-Rational::Rational(const wchar_t *s) {
-  USES_WCONVERSION;
-  init(WSTR2TSTR(s));
-}
-
-Rational::Rational(const char *s) {
-  USES_ACONVERSION;
-  init(ASTR2TSTR(s));
-}
-
-void Rational::init(const _TUCHAR *s) {
-  DEFINEMETHODNAME;
-  String tmp(s);
-  const TCHAR *slash = _tcschr(s, _T('/'));
-  if(slash == s) { // string cannot begin with '/'. need nominator
-    throwInvalidArgumentException(method, _T("s=%s"), s);
-  }
-  if(slash == NULL) { // no denominator
-    if(_stscanf(s, _T("%I64d"), &m_numerator) != 1) {
-      throwInvalidArgumentException(method, _T("s=%s"), s);
-    }
-    m_denominator = 1;
-  } else {
-    INT64 n, d;
-    if((_stscanf(s      , _T("%I64d"), &n) != 1)
-    || (_stscanf(slash+1, _T("%I64d"), &d) != 1)) {
-      throwInvalidArgumentException(method, _T("s=%s"), s);
-    }
-    init(n, d);
-  }
 }
 
 void Rational::init(const INT64 &numerator, const INT64 &denominator) {
@@ -400,7 +364,7 @@ long getLong(const Rational &r) {
 ULONG getUlong(const Rational &r) {
   DEFINEMETHODNAME;
   if(r.isNegative()) {
-    throwInvalidArgumentException(method, _T("Value is negative(=%s)"), r.toString().cstr());
+    throwInvalidArgumentException(method, _T("Value is negative(=%s)"), toString(r).cstr());
   }
   const UINT64 v = getUint64(r);
   if(v > _UI32_MAX) {
@@ -416,7 +380,7 @@ INT64 getInt64(const Rational &r) {
 UINT64 getUint64(const Rational &r) {
   DEFINEMETHODNAME;
   if(r.isNegative()) {
-    throwInvalidArgumentException(method, _T("Value is negative (=%s)"), r.toString().cstr());
+    throwInvalidArgumentException(method, _T("Value is negative (=%s)"), toString(r).cstr());
   }
   return r.m_numerator / r.m_denominator;
 }
@@ -522,13 +486,5 @@ bool Rational::isRational(float x, Rational *r) { // static
     }
   } catch (Exception) {
     return false;
-  }
-}
-
-String Rational::toString() const {
-  if(m_denominator == 1) {
-    return format(_T("%I64d"), m_numerator);
-  } else {
-    return format(_T("%I64d/%I64u"), m_numerator, m_denominator);
   }
 }

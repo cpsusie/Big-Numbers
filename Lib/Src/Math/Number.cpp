@@ -76,38 +76,6 @@ Number::Number(UINT v) {
   m_rational = new Rational(v);     TRACE_NEW(m_rational);
 }
 
-Number::Number(const wchar_t *s) {
-  USES_WCONVERSION;
-  init(WSTR2TSTR(s));
-}
-
-Number::Number(const char *s) {
-  USES_ACONVERSION;
-  init(ASTR2TSTR(s));
-}
-
-void Number::init(const _TUCHAR *s) {
-  m_type     = NUMBERTYPE_UNDEFINED;
-  m_rational = NULL;
-  const _TUCHAR *s1 = parseReal(    s);
-  const _TUCHAR *s2 = parseRational(s);
-  if(s1 == NULL) {
-    if(s2 == NULL) {
-      setType(NUMBERTYPE_UNDEFINED);
-    } else {
-      *this = Rational(s);
-    }
-  } else if(s2 == NULL) { // s1 != NULL
-    *this = Double80(s);
-  } else { // s1 != NULL && s2 != NULL
-    if(s2 > s1) { // must be rational
-      *this = Rational(s);
-    } else {
-      *this = Double80(s);
-    }
-  }
-}
-
 Number::~Number() {
   cleanup();
 }
@@ -309,10 +277,10 @@ Rational Number::getRationalValue() const {
 String Number::toString() const {
   switch(getType()) {
   case NUMBERTYPE_UNDEFINED: return _T("undefined");
-  case NUMBERTYPE_FLOAT    : return ::toString(*m_flt);
-  case NUMBERTYPE_DOUBLE   : return ::toString(*m_d64);
-  case NUMBERTYPE_DOUBLE80 : return ::toString(*m_d80);
-  case NUMBERTYPE_RATIONAL : return m_rational->toString();
+  case NUMBERTYPE_FLOAT    : return ::toString(*m_flt     );
+  case NUMBERTYPE_DOUBLE   : return ::toString(*m_d64     );
+  case NUMBERTYPE_DOUBLE80 : return ::toString(*m_d80     );
+  case NUMBERTYPE_RATIONAL : return ::toString(*m_rational);
   default                  : return format(_T("%s:Unknown type:%d"), __TFUNCTION__, getType());
   }
 }
