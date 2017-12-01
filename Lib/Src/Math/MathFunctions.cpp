@@ -8,7 +8,7 @@ int getExpo10(double x) {
 }
 
 bool isNan(double x) {
-  return _isnan(x) ? true : false;
+  return (_fpclass(x) & (_FPCLASS_SNAN | _FPCLASS_QNAN | _FPCLASS_NINF | _FPCLASS_PINF)) ? true : false;
 }
 
 bool isPInfinity(double x) {
@@ -20,7 +20,7 @@ bool isNInfinity(double x) {
 }
 
 bool isInfinity(double x) {
-  return !_finite(x) && !_isnan(x);
+  return (_fpclass(x) & (_FPCLASS_NINF | _FPCLASS_PINF)) ? true : false;
 }
 
 Real dsign(const Real &x) {
