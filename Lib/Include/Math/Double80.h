@@ -3405,6 +3405,7 @@ Double80 cot(  const Double80 &x);
 Double80 asin( const Double80 &x);
 Double80 acos( const Double80 &x);
 Double80 acot( const Double80 &x);
+Double80 mypow(const Double80 &x, const Double80 &y);
 Double80 root( const Double80 &x, const Double80 &y);
 Double80 cosh( const Double80 &x);
 Double80 sinh( const Double80 &x);
@@ -3414,15 +3415,26 @@ Double80 asinh(const Double80 &x);
 Double80 atanh(const Double80 &x);
 Double80 hypot(const Double80 &x, const Double80 &y);
 Double80 fraction(   const Double80 &x);
-int      sign(       const Double80 &x);
 Double80 round(      const Double80 &x, int prec = 0);
-Double80 Max(        const Double80 &x, const Double80 &y);
-Double80 Min(        const Double80 &x, const Double80 &y);
+
+inline int sign(const Double80 &x) {
+  return x.isZero() ? 0 : x.isNegative() ? -1 : 1;
+}
+inline Double80 dsign(const Double80 &x) {
+  return x.isZero() ? 0 : x.isNegative() ? -1 : 1;
+}
+inline Double80 dmax(const Double80 &x, const Double80 &y) {
+  return (x >= y) ? x : y;
+}
+inline Double80 dmin(const Double80 &x, const Double80 &y) {
+  return (x <= y) ? x : y;
+}
 Double80 minMax(     const Double80 &x, const Double80 &x1, const Double80 &x2);
 bool     isNan(      const Double80 &x);
 bool     isPInfinity(const Double80 &x);
 bool     isNInfinity(const Double80 &x);
 bool     isInfinity( const Double80 &x);
+
 
 Double80 randDouble80(Random *rnd = NULL);
 Double80 randDouble80(const Double80 &low, const Double80 &high, Random *rnd = NULL);

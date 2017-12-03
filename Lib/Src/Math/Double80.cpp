@@ -610,6 +610,16 @@ Double80 hypot(const Double80 &x, const Double80 &y) {
   return sqrt(x*x+y*y);
 }
 
+Double80 mypow(const Double80 &x, const Double80 &y) {
+  if(x < 0) {
+    if(y == floor(y)) {
+      const int d = getInt(y);
+      return (d & 1) ? -pow(-x,y) : pow(-x,y);
+    }
+  }
+  return pow(x, y);
+}
+
 Double80 root(const Double80 &x, const Double80 &y) {
   if(x.isNegative()) {
     if(y == floor(y)) {
@@ -629,16 +639,6 @@ Double80 fraction(const Double80 &x) {
     return -fraction(-x);
   } else {
     return x - floor(x);
-  }
-}
-
-int sign(const Double80 &x) {
-  if(x.isZero()) {
-    return 0;
-  } else if(x.isNegative()) {
-    return -1;
-  } else {
-    return 1;
   }
 }
 
@@ -672,14 +672,6 @@ Double80 round(const Double80 &x, int dec) { // 5-rounding
   }
   throwException(_T("round dropped to the end. x=%s. dec=%d"),toString(x).cstr(),dec);
   return x; // Should never come here
-}
-
-Double80 Max(const Double80 &x, const Double80 &y) {
-  return (x >= y) ? x : y;
-}
-
-Double80 Min(const Double80 &x, const Double80 &y) {
-  return (x <= y) ? x : y;
 }
 
 #define MINMAX1(x,MIN,MAX) (((x) < (MIN)) ? (MIN) : ((x) > (MAX)) ? (MAX) : (x))

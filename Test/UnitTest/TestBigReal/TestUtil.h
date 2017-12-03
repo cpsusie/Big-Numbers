@@ -2,7 +2,8 @@
 
 #include <Math.h>
 #include <Float.h>
-#include <Math/MathLib.h>
+#include <Math/Double64.h>
+#include <Math/Double80.h>
 #include <Math/BigReal.h>
 
 typedef double    (* DoubleFunction1      )(double x);

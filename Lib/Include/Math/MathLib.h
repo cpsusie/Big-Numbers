@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MathFunctions.h"
+#include "Real.h"
 
 template <class Domain, class Range> class FunctionTemplate {
 public:

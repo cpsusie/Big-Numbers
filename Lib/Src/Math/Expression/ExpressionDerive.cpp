@@ -7,11 +7,9 @@ Expression Expression::getDerived(const String &name, bool reduceResult /*=false
   if(getReturnType() != EXPR_RETURN_REAL) {
     throwException(_T("Cannot get derived of an expression returning boolean"));
   }
-  if(getTreeForm() != TREEFORM_STANDARD) {
-    throwException(_T("Cannot get derived of expression when treeform is %s. call toStandardForm()"), getTreeFormName().cstr());
-  }
-
   Expression result = *this;
+  result.toStandardForm();
+  result.setMachineCode(false);
   result.setRoot(result.ddx(result.getRoot()).node());
   result.pruneUnusedNodes();
   result.buildSymbolTable();
@@ -19,6 +17,10 @@ Expression Expression::getDerived(const String &name, bool reduceResult /*=false
 
   if(reduceResult) {
     result.reduce();
+  }
+  if(isMachineCode()) {
+    result.toStandardForm();
+    result.setMachineCode(true);
   }
   return result;
 }

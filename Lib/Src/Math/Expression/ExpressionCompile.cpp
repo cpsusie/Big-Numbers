@@ -1,6 +1,5 @@
 #include "pch.h"
 #include <Math/Expression/Expression.h>
-#include <Math/MathFunctions.h>
 
 DEFINECLASSNAME(MachineCode);
 
@@ -395,12 +394,8 @@ void Expression::compile(const String &expr, bool machineCode) {
   if(!isOk()) {
     return;
   }
-
   setReturnType(findReturnType());
-
-  if(machineCode) {
-    genCode();
-  }
+  setMachineCode(machineCode);
 }
 
 #ifdef IS64BIT
@@ -458,21 +453,25 @@ ExpressionReturnType Expression::findReturnType() const {
   }
 }
 
-void Expression::genCode() {
+void Expression::clearMachineCode() {
+  m_code.clear();
+  m_entryPoint   = NULL;
+  m_esi          = NULL;
+}
+
+void Expression::genMachineCode() {
   if(getTreeForm() != TREEFORM_STANDARD) {
     throwException(_T("Treeform must be STANDARD to generate machinecode. Form=%s"), getTreeFormName().cstr());
   }
-  m_code.clear();
+  clearMachineCode();
 #ifdef TEST_MACHINECODE
   m_code.genTestSequence();
-  m_machineCode = true;
 #else
   m_code.setValueCount(getValueCount());
   genProlog();
   genStatementList(getRoot());
   m_code.fixupJumps();
   m_code.linkReferences();
-  m_machineCode = true;
 #endif
 
   m_entryPoint = m_code.getEntryPoint();

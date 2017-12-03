@@ -2,8 +2,7 @@
 #include "CppUnitTest.h"
 #include <limits.h>
 #include <Random.h>
-#include <Math/MathFunctions.h>
-#include <Math/Double80.h>
+#include <Math/MathLib.h>
 #include <Math/Int128.h>
 #include <Math/PrimeFactors.h>
 

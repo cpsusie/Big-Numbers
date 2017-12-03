@@ -1,9 +1,5 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
-#include <Math.h>
-#include <Math/MathException.h>
-#include <Math/MathFunctions.h>
-#include <Math/Double80.h>
 #include <Math/Expression/Expression.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
@@ -19,6 +15,8 @@ static Real relativeDiff(const Real &x, const Real &x0) {
 #define AND &&
 #define OR  ||
 
+#define EPS 1e-8
+
 namespace TestExpression {
 
 #include <UnitTestTraits.h>
@@ -32,56 +30,116 @@ namespace TestExpression {
 
   class ExpressionTest {
   private:
-    bool m_executed;
-    static int    s_instanceCount;
-    static int    s_maxInstanceCount;
-    static int    s_testDoneCount;
+    static bool          s_evaluateTestStarted;
+    static bool          s_deriveTestStarted;
+    static int           s_instanceCount;
+    static int           s_maxInstanceCount;
+    static int           s_evaluatedCount;
+    static int           s_maxDerivableCount;
+    static int           s_derivableCount;
+    static int           s_derivedCount;
+    const bool           m_derivable : 1;
+    bool                 m_evaluated : 1;
+    bool                 m_derived   : 1;
   public:
-    ExpressionTest() {
-      m_executed = false;
-      if (++s_instanceCount > s_maxInstanceCount) {
-        s_maxInstanceCount = s_instanceCount;
+    ExpressionTest(bool derivable) : m_derivable(derivable) {
+      m_evaluated = m_derived = false;
+      if(++s_instanceCount > s_maxInstanceCount) s_maxInstanceCount = s_instanceCount;
+      if(derivable) {
+        if(++s_derivableCount > s_maxDerivableCount) s_maxDerivableCount = s_derivableCount;
       }
     }
     virtual ~ExpressionTest();
-    void setDone() {
-      m_executed = true;
-      s_testDoneCount++;
+    void setEvaluated() {
+      m_evaluated = true;
+      s_evaluatedCount++;
+    }
+    void setDerived() {
+      verify(getReturnType() == EXPR_RETURN_REAL);
+      verify(m_derivable);
+      m_derived = true;
+      s_derivedCount++;
+    }
+    bool isDerivable() const {
+      return m_derivable;
     }
     virtual String getExpr() const = 0;
+    virtual ExpressionReturnType getReturnType() const = 0;
     virtual Real fr(const Real &x) const = 0;
     virtual bool fb(const Real &x) const = 0;
+    static void startEvaluateTest() {
+      s_evaluateTestStarted =  true;
+    }
+    static void startDeriveTest() {
+      s_deriveTestStarted = true;
+    }
+    Real numDFDX(const Real &x) const {
+      verify(getReturnType() == EXPR_RETURN_REAL);
+      Real x1, x2;
+      if(x == 0) { x1 = EPS/2; x2 = -EPS/2; }
+      else { x1 = x*(1+EPS); x2 = x*(1-EPS); }
+      const Real y1 = fr(x1), y2=fr(x2);
+      return (y1-y2)/(x1-x2);
+    }
   };
 
-  int  ExpressionTest::s_instanceCount = 0;
-  int  ExpressionTest::s_maxInstanceCount = 0;
-  int  ExpressionTest::s_testDoneCount = 0;
+  bool ExpressionTest::s_evaluateTestStarted = false;
+  bool ExpressionTest::s_deriveTestStarted   = false;
+  int  ExpressionTest::s_instanceCount       = 0;
+  int  ExpressionTest::s_maxInstanceCount    = 0;
+  int  ExpressionTest::s_evaluatedCount      = 0;
+  int  ExpressionTest::s_maxDerivableCount   = 0;
+  int  ExpressionTest::s_derivableCount      = 0;
+  int  ExpressionTest::s_derivedCount        = 0;
 
   class RealExpressionTest : public ExpressionTest {
   public:
+    RealExpressionTest(bool derivable = true) : ExpressionTest(derivable) {
+    }
     bool fb(const Real &x) const {
       throwException(_T("RealExpressionTest(\"%s\"):fb should not be called"), getExpr());
       return 0;
+    }
+    ExpressionReturnType getReturnType() const {
+      return EXPR_RETURN_REAL;
     }
   };
 
   class BoolExpressionTest : public ExpressionTest {
   public:
+    BoolExpressionTest() : ExpressionTest(false) {
+    }
     Real fr(const Real &x) const {
       throwException(_T("BoolExpressionTest(\"%s\"):fr should not be called"), getExpr());
       return 0;
+    }
+    ExpressionReturnType getReturnType() const {
+      return EXPR_RETURN_BOOL;
     }
   };
 
   ExpressionTest::~ExpressionTest() {
     s_instanceCount--;
-    if((s_instanceCount == 0)) {
-      const int missingDone = s_maxInstanceCount - s_testDoneCount;
-      if (missingDone > 0) {
-        if (missingDone == 1) {
-          OUTPUT(_T("1 Expression test has not been executed"));
+    if((s_instanceCount == 0) && s_evaluateTestStarted) {
+      const int missingEvaluationCount = s_maxInstanceCount - s_evaluatedCount;
+      if(missingEvaluationCount > 0) {
+        if(missingEvaluationCount == 1) {
+          OUTPUT(_T("1 Expression test has not been evaluated"));
         } else {
-          OUTPUT(_T("%d Expression tests have not been executed"), missingDone);
+          OUTPUT(_T("%d Expression tests have not been evaluated"), missingEvaluationCount);
+        }
+      }
+    }
+    if(isDerivable()) {
+      s_derivableCount--;
+      if((s_derivableCount == 0) && s_deriveTestStarted) {
+        const int missingDerivableCount = s_maxDerivableCount - s_derivedCount;
+        if(missingDerivableCount > 0) {
+          if(missingDerivableCount == 1) {
+            OUTPUT(_T("1 Expression test has not been derived"));
+          } else {
+            OUTPUT(_T("%d Expression tests have not been derived"), missingDerivableCount);
+          }
         }
       }
     }
@@ -169,6 +227,8 @@ namespace TestExpression {
 
   class Test08 : public RealExpressionTest {
   public:
+    Test08() : RealExpressionTest(false) {
+    }
     String getExpr() const {
       return _T("(x+1)%2");
     }
@@ -1401,7 +1461,8 @@ namespace TestExpression {
 	TEST_CLASS(TestExpression) {
     public:
 
-    TEST_METHOD(ExpressionTestAll) {
+    TEST_METHOD(ExpressionTestEvaluate) {
+      ExpressionTest::startEvaluateTest();
       FPU::init();
 //      redirectDebugLog();
       try {
@@ -1423,17 +1484,19 @@ namespace TestExpression {
             }
             verify(false);
           } else {
+            verify(compiledExpr.getReturnType()    == test.getReturnType());
+            verify(interpreterExpr.getReturnType() == test.getReturnType());
             for(Real x = -2; x <= 2; x += 0.5) {
+              compiledExpr.setValue(   _T("x"), x);
               interpreterExpr.setValue(_T("x"), x);
-              compiledExpr.setValue(_T("x"), x);
               switch(compiledExpr.getReturnType()) {
               case EXPR_RETURN_REAL:
                 { const Real cppResult          = test.fr(x);
-                  const Real interpreterResult  = interpreterExpr.evaluate();
                   const Real compiledResult     = compiledExpr.evaluate();
+                  const Real interpreterResult  = interpreterExpr.evaluate();
                   const bool cppDefined         = !isNan(cppResult);
-                  const bool interpreterDefined = !isNan(interpreterResult);
                   const bool compiledDefined    = !isNan(compiledResult);
+                  const bool interpreterDefined = !isNan(interpreterResult);
 
                   if((compiledDefined != cppDefined) || (compiledDefined && fabs(compiledResult - cppResult) > 3e-15)) {
                     LOG log;
@@ -1471,7 +1534,7 @@ namespace TestExpression {
                 break;
               } // switch
             } // for(x..
-            test.setDone();
+            test.setEvaluated();
           } // else
         } // for(i...
       } catch (Exception e) {
@@ -1496,8 +1559,8 @@ namespace TestExpression {
             compiledExpr.setValue(   _T("x"),x);
             interpreterExpr.setValue(_T("x"),x);
             const Real y1 = mypow((1+x),p);
-            const Real y2 = interpreterExpr.evaluate();
-            const Real y3 = compiledExpr.evaluate();
+            const Real y2 = compiledExpr.evaluate();
+            const Real y3 = interpreterExpr.evaluate();
             verify(relativeDiff(y2,y1) < 1e-13);
             verify(relativeDiff(y3,y1) < 1e-13);
           }
@@ -1508,5 +1571,92 @@ namespace TestExpression {
         verify(false);
       }
     }
+
+#ifdef TEST_DERIVATIVES
+    TEST_METHOD(ExpressionTestDerive) {
+      ExpressionTest::startDeriveTest();
+      FPU::init();
+//      redirectDebugLog();
+      try {
+        for(int i = 0; i < ARRAYSIZE(testCases); i++) {
+          ExpressionTest &test = *testCases[i];
+          if(!test.isDerivable()) {
+            continue;
+          }
+          const String expr = test.getExpr();
+          Expression compiledExpr, interpreterExpr;
+          compiledExpr.compile(expr, true);
+
+//          OUTPUT(_T("Test %d %s\n%s\n"), i, expr.cstr(), compiledExpr.treeToString().cstr());
+
+          interpreterExpr.compile(expr, false);
+          if(!compiledExpr.isOk()) {
+            OUTPUT(_T("Error in testcase[%d]<%s>"), i, expr.cstr());
+            const StringArray &errors = compiledExpr.getErrors();
+            for(size_t i = 0; i < errors.size(); i++) {
+              OUTPUT(_T("%s"), errors[i].cstr());
+            }
+            verify(false);
+          }
+          verify(compiledExpr.getReturnType()    == EXPR_RETURN_REAL);
+          verify(interpreterExpr.getReturnType() == EXPR_RETURN_REAL);
+          Expression compiledDFDX    = compiledExpr.getDerived(   _T("x"),false);
+          Expression interpreterDFDX = interpreterExpr.getDerived(_T("x"),false);
+          verify(compiledDFDX.isOk());
+          verify(interpreterDFDX.isOk());
+          for(Real x = -2; x <= 2; x += 0.31) {
+            const Real y = test.fr(x);
+            if(isNan(y)) continue;
+
+            compiledDFDX.setValue(   _T("x"), x);
+            interpreterDFDX.setValue(_T("x"), x);
+            const Real cppResult          = test.numDFDX(x);
+            const Real compiledResult     = compiledDFDX.evaluate();
+            const Real interpreterResult  = interpreterDFDX.evaluate();
+            const bool cppDefined         = !isNan(cppResult);
+            const bool interpreterDefined = !isNan(interpreterResult);
+            const bool compiledDefined    = !isNan(compiledResult);
+            Real       relDiff            = 0;
+#define USE_ABSERROR
+#ifdef USE_ABSERROR
+#define CALCERROR(x,x0) fabs((x)-(x0))
+#else
+#define CALCERROR(x,x0) relativeDiff(x,x0)
+#endif
+
+            if((compiledDefined != cppDefined) || (compiledDefined && ((relDiff=CALCERROR(compiledResult,cppResult)) > 5e-6))) {
+              LOG log;
+              log << _T("TestCase[") << i << _T("]:<") << expr << _T("'>(x=") << toString(x) << _T(") failed.") << endl
+                  << _T("f'(x) = ")  << compiledDFDX.toString() << endl
+                  << _T("Defined(C++         ):") << boolToStr(cppDefined        ) << _T(".") << endl
+                  << _T("Defined(Compiled    ):") << boolToStr(compiledDefined   ) << _T(".") << endl
+                  << _T("Defined(Interpreter ):") << boolToStr(interpreterDefined) << _T(".") << endl
+                  << _T("Result(C++          ):") << toString(cppResult          ) << _T(".") << endl
+                  << _T("Result(Compiled     ):") << toString(compiledResult     ) << _T(".") << endl
+                  << _T("Result(Interpreter  ):") << toString(interpreterResult  ) << _T(".") << endl
+                  << _T("Difference(comp-C++ ):") << toString(relDiff            ) << _T(".") << endl;
+              verify(false);
+            }
+            if((interpreterDefined != cppDefined) || (interpreterDefined && ((relDiff=CALCERROR(interpreterResult,cppResult)) > 5e-6))) {
+              LOG log;
+              log << _T("TestCase[") << i << _T("]:<") << expr << _T("'>(x=") << toString(x)  << _T(") failed.") << endl
+                  << _T("Defined(C++         ):") << boolToStr(cppDefined        ) << _T(".") << endl
+                  << _T("Defined(Compiled    ):") << boolToStr(compiledDefined   ) << _T(".") << endl
+                  << _T("Defined(Interpreter ):") << boolToStr(interpreterDefined) << _T(".") << endl
+                  << _T("Result(C++          ):") << toString(cppResult          ) << _T(".") << endl
+                  << _T("Result(Interpreter  ):") << toString(interpreterResult  ) << _T(".") << endl
+                  << _T("Result(Compiled     ):") << toString(compiledResult     ) << _T(".") << endl
+                  << _T("Difference(intp-C++ ):") << toString(relDiff            ) << _T(".") << endl;
+              verify(false);
+            }
+          } // for(x..
+          test.setDerived();
+        } // for(i...
+      } catch (Exception e) {
+        OUTPUT(_T("Exception:%s"), e.what());
+        verify(false);
+      }
+    }
+#endif // TEST_DERIVATIVES
   };
 }

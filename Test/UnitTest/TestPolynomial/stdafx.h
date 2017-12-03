@@ -4,4 +4,4 @@
 
 #include "CppUnitTest.h"
 #include <MyUtil.h>
-#include <Math/MathFunctions.h>
+#include <Math/Polynomial.h>

@@ -1,7 +1,6 @@
 #include "pch.h"
 #include <Limits.h>
 #include <Float.h>
-#include <Random.h>
 
 int getExpo10(double x) {
   return (x == 0) ? 0 : (int)floor(log10(fabs(x)));
@@ -23,11 +22,7 @@ bool isInfinity(double x) {
   return (_fpclass(x) & (_FPCLASS_NINF | _FPCLASS_PINF)) ? true : false;
 }
 
-Real dsign(const Real &x) {
-  return (x < 0) ? -1 : (x > 0) ? 1 : 0;
-}
-
-Real mypow(const Real &x, const Real &y) {
+double mypow(double x, double y) {
   if(x < 0) {
     if(y == floor(y)) {
       const int d = getInt(y);
@@ -37,7 +32,7 @@ Real mypow(const Real &x, const Real &y) {
   return pow(x, y);
 }
 
-double root(double x, double y) { // must be double. not real
+double root(double x, double y) {
   if(x < 0) {
     if(y == floor(y)) {
       const int d = getInt(y);
@@ -94,60 +89,3 @@ void sincos(double &c, double &s) {
 
 }
 #endif
-
-Real binomial(const Real &n, const Real &k) {
-  return fac(n)/(fac(k)*fac(n-k));
-}
-
-Real dmax(const Real &x1, const Real &x2) {
-  return (x1 > x2) ? x1 : x2;
-}
-
-Real dmin(const Real &x1, const Real &x2) {
-  return (x1 < x2) ? x1 : x2;
-}
-
-int dmax(int x1, int x2) {
-  return (x1 > x2) ? x1 : x2;
-}
-
-int dmin(int x1, int x2) {
-  return (x1 < x2) ? x1 : x2;
-}
-
-Real randReal() {
-#ifndef LONGDOUBLE
-  return randDouble();
-#else
-  return randDouble80();
-#endif // LONGDOUBLE
-}
-
-Real randReal(const Real &lower, const Real &upper) {
-  return randReal() * (upper-lower) + lower;
-}
-
-Real randomGaussian(const Real &mean, const Real &s) {
-  return _standardRandomGenerator->nextGaussian(getDouble(mean),getDouble(s));
-}
-
-void setToRandom(Real &r) {
-  r = randReal();
-}
-
-Real poly(const Real &x, int degree, const Real *coef) {
-  const Real *cp = coef + degree;
-  Real result = *(cp--);
-  while(cp >= coef) {
-    result = result * x + *(cp--);
-  }
-  return result;
-}
-
-Real poly1(const Real &x, int degree, const Real *coef) {
-  Real result = *coef;
-  for(const Real *last = coef + degree; coef++ < last;) {
-    result = result * x + *coef;
-  }
-  return result;
-}

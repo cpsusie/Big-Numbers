@@ -1,5 +1,4 @@
 #include "pch.h"
-#include <Math/MathFunctions.h>
 #include <Math/Number.h>
 
 template<class CharType> Number _strton(const CharType *s, CharType **end, Real (*toReal)(const CharType *,CharType **), Rational (*toRational)(const CharType *,CharType **, int)) {

@@ -1,6 +1,5 @@
 #include "pch.h"
 #include <Math.h>
-#include <Math/MathFunctions.h>
 #include <Math/Expression/Expression.h>
 #include <Math/Expression/ExpressionWrapper.h>
 

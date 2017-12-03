@@ -708,6 +708,7 @@
     <ClCompile Include="Double80io.cpp" />
     <ClCompile Include="Double80Random.cpp" />
     <ClCompile Include="Double80Str.cpp" />
+    <ClCompile Include="DoubleFunctions.cpp" />
     <ClCompile Include="Expression\AddentArray.cpp" />
     <ClCompile Include="Expression\Expression.cpp" />
     <ClCompile Include="Expression\ExpressionAction.cpp" />
@@ -759,7 +760,7 @@
     <ClCompile Include="Jacobi.cpp" />
     <ClCompile Include="LssdPolynomial.cpp" />
     <ClCompile Include="MathException.cpp" />
-    <ClCompile Include="MathFunctions.cpp" />
+    <ClCompile Include="RealFunctions.cpp" />
     <ClCompile Include="Matrix.cpp" />
     <ClCompile Include="MatrixSvd.cpp" />
     <ClCompile Include="Newton.cpp" />
@@ -969,6 +970,7 @@
     <ClInclude Include="..\..\Include\Math\BigReal.h" />
     <ClInclude Include="..\..\Include\Math\BigRealMatrix.h" />
     <ClInclude Include="..\..\Include\Math\Complex.h" />
+    <ClInclude Include="..\..\Include\Math\Double64.h" />
     <ClInclude Include="..\..\Include\Math\Double80.h" />
     <ClInclude Include="..\..\Include\Math\Expression\Expression.h" />
     <ClInclude Include="..\..\Include\Math\Expression\ExpressionFactor.h" />
@@ -985,7 +987,6 @@
     <ClInclude Include="..\..\Include\Math\Int128.h" />
     <ClInclude Include="..\..\Include\Math\LUMatrixTemplate.h" />
     <ClInclude Include="..\..\Include\Math\MathException.h" />
-    <ClInclude Include="..\..\Include\Math\MathFunctions.h" />
     <ClInclude Include="..\..\Include\Math\MathLib.h" />
     <ClInclude Include="..\..\Include\Math\Matrix.h" />
     <ClInclude Include="..\..\Include\Math\MRisprime.h" />

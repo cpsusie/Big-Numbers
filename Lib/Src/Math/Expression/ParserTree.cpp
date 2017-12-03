@@ -44,19 +44,11 @@ ParserTree::~ParserTree() {
 }
 
 void ParserTree::setRoot(ExpressionNode *n) {
-  const ExpressionNode *oldRoot = m_root;
-  if(n != oldRoot) {
-    m_root = n;
-    notifyPropertyChanged(EXPR_ROOT, oldRoot, m_root);
-  }
+  setProperty(EXPR_ROOT, m_root, n);
 }
 
 void ParserTree::setOk(bool ok) {
-  const bool oldOk = m_ok;
-  if(ok != m_ok) {
-    m_ok = ok;
-    notifyPropertyChanged(EXPR_OK, &oldOk, &m_ok);
-  }
+  setProperty(EXPR_OK, m_ok, ok);
 }
 
 void ParserTree::setTreeForm(ParserTreeForm form) {

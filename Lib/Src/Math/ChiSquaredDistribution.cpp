@@ -1,6 +1,5 @@
 #include "pch.h"
-#include <Math.h>
-#include <Math/MathFunctions.h>
+#include <Math/Real.h>
 
 // Assume x >= 0
 Real chiSquaredDensity(const Real &df, const Real &x) {

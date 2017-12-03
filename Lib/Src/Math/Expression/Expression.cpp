@@ -10,9 +10,8 @@ Expression::Expression(TrigonometricMode mode) {
 }
 
 Expression::Expression(const Expression &src) : ParserTree(src) {
-  m_machineCode       = src.m_machineCode;
-  m_entryPoint        = NULL;
-  m_esi               = NULL;
+  m_machineCode       = false;
+  clearMachineCode();
   m_returnType        = src.m_returnType;
   m_state             = src.m_state;
   m_reduceIteration   = src.m_reduceIteration;
@@ -20,10 +19,7 @@ Expression::Expression(const Expression &src) : ParserTree(src) {
 
   buildSymbolTable();
   copyValues((ParserTree&)src);
-
-  if(m_machineCode) {
-    genCode();
-  }
+  setMachineCode(src.isMachineCode());
 }
 
 Expression &Expression::operator=(const Expression &src) {
@@ -33,16 +29,12 @@ Expression &Expression::operator=(const Expression &src) {
 
   clear();
   ParserTree::operator=(src);
-  m_machineCode       = src.m_machineCode;
   setTrigonometricMode(src.getTrigonometricMode());
 
   buildSymbolTable();
   copyValues((ParserTree&)src);
 
-  if(m_machineCode) {
-    genCode();
-  }
-
+  setMachineCode(src.isMachineCode());
   setReduceIteration(src.getReduceIteration());
   setReturnType(src.getReturnType());
   setState(src.getState());
@@ -52,10 +44,7 @@ Expression &Expression::operator=(const Expression &src) {
 
 void Expression::clear() {
   releaseAll();
-  m_code.clear();
-  m_machineCode  = false;
-  m_entryPoint   = NULL;
-  m_esi          = NULL;
+  setMachineCode(false);
   setState(EXPR_EMPTY);
   setReduceIteration(0);
 }
@@ -91,26 +80,25 @@ void Expression::throwInvalidSymbolForTreeMode(const TCHAR *method, const Expres
 }
 
 void Expression::setState(ExpressionState newState) {
-  const ExpressionState oldState = m_state;
-  if(newState != oldState) {
-    m_state = newState;
-    notifyPropertyChanged(EXPR_STATE, &oldState, &m_state);
-  }
+  setProperty(EXPR_STATE, m_state, newState);
 }
 
 void Expression::setReduceIteration(UINT iteration) {
-  const UINT oldIteration = m_reduceIteration;
-  if(iteration != oldIteration) {
-    m_reduceIteration = iteration;
-    notifyPropertyChanged(EXPR_REDUCEITERATION, &oldIteration, &m_reduceIteration);
-  }
+  setProperty(EXPR_REDUCEITERATION, m_reduceIteration, iteration);
 }
 
 void Expression::setReturnType(ExpressionReturnType returnType) {
-  const ExpressionReturnType oldReturnType = m_returnType;
-  if(returnType != oldReturnType) {
-    m_returnType = returnType;
-    notifyPropertyChanged(EXPR_RETURNTYPE, &oldReturnType, &m_returnType);
+  setProperty(EXPR_RETURNTYPE, m_returnType, returnType);
+}
+
+void Expression::setMachineCode(bool machinecode) {
+  if(machinecode != isMachineCode()) {
+    if(machinecode) {
+      genMachineCode();
+    } else {
+      clearMachineCode();
+    }
+    setProperty(EXPR_MACHINECODE, m_machineCode, machinecode);
   }
 }
 
@@ -118,8 +106,8 @@ void Expression::setTrigonometricMode(TrigonometricMode mode) {
   const TrigonometricMode oldMode = m_trigonometricMode;
   if(mode != oldMode) {
     m_trigonometricMode = mode;
-    if(m_machineCode) {
-      genCode();
+    if(isMachineCode()) {
+      genMachineCode();
     }
     notifyPropertyChanged(EXPR_TRIGONOMETRICMODE, &oldMode, &m_trigonometricMode);
   }
@@ -136,7 +124,6 @@ public:
   inline void putNodes(const ExpressionNode *from, ExpressionNode *to) {
     if(to != from) m_nodeMap.put(from, to);
   }
-
   Expression &transform();
 };
 

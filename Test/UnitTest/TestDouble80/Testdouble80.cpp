@@ -3,7 +3,7 @@
 #include <Math.h>
 #include <float.h>
 #include <limits.h>
-#include <Math/MathFunctions.h>
+#include <Math/Double64.h>
 #include <Math/Double80.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
@@ -62,22 +62,6 @@ namespace TestDouble80 {
     OUTPUT(_T("%-10s:Max relative error:%.16le"), name.cstr(), maxRelativeError);
   }
   
-  static double Max(double x, double y) {
-    return x > y ? x : y;
-  }
-
-  static double Min(double x, double y) {
-    return x < y ? x : y;
-  }
-
-  static double fraction(double x) {
-    if(x < 0) {
-      return -fraction(-x);
-    } else {
-      return x - floor(x);
-    }
-  }
-
   static void checkResult(double x64, Double80 x80, TCHAR *op, double tolerance = EPS) {
     const double relativeError = getRelativeError(x64, x80);
     if(relativeError > tolerance) {
@@ -754,35 +738,35 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
       verify(d80 == 1000);
       for(d80 = 1000; d80 > -1000; d80--);
       verify(d80 == -1000);
-      testFunction("fmod", fmod, fmod, -60, 60, 1.2, 10);
-      testFunction("fmod", fmod, fmod, -2.3, 2.7, -1.2, 1);
-      testFunction("fmod", fmod, fmod, -1.1e23, 1.1e23, 1.1e-10, 1.45e-6);
+      testFunction("fmod"    , fmod   , fmod     , -60 , 60, 1.2, 10);
+      testFunction("fmod"    , fmod   , fmod     , -2.3, 2.7, -1.2, 1);
+      testFunction("fmod"    , fmod   , fmod     , -1.1e23, 1.1e23, 1.1e-10, 1.45e-6);
 
-      testFunction("sqrt", sqrt, sqrt, 0, 10);
-      testFunction("sin", sin, sin, -1, 1);
-      testFunction("cos", cos, cos, -1, 1);
-      testFunction("tan", tan, tan, -1, 1);
-      testFunction("asin", asin, asin, -1, 1);
-      testFunction("acos", acos, acos, -1, 1);
-      testFunction("atan", atan, atan, -1, 1);
-      testFunction("atan2", atan2, atan2, -2.3, 2.7, -1.2, 1);
-      testFunction("exp", exp, exp, -1, 1);
-      testFunction("exp10", exp10, exp10, -2.4, 12.2);
-      testFunction("exp2", exp2, exp2, -2.4, 12.2);
-      testFunction("log", log, log, 1e-3, 1e3);
-      testFunction("log10", log10, log10, 1e-3, 1e3);
-      testFunction("log2", log2, log2, 1e-3, 1e3);
-      testFunction("pow", pow, pow, 0.1, 2.7e3, -2.1, 2);
-      verify(pow(Double80::zero, Double80::one) == Double80::zero);
-      verify(pow(Double80::zero, Double80::zero) == Double80::one);
-      testFunction("root", root, root, 0.1, 2.7e3, -2.1, 2);
-      testFunction("fraction", ::fraction, fraction, 1e-3, 1e3);
-      testFunction("fraction", ::fraction, fraction, -1e3, -1e-3);
-      testFunction("floor", floor, floor, -2.3, 2.7);
-      testFunction("ceil", ceil, ceil, -2.3, 2.7);
-      testFunction("fabs", fabs, fabs, -1, 1);
-      testFunction("Min", ::Min, Min, -2.3, 2.7, -1.2, 1);
-      testFunction("Max", ::Max, Max, -2.3, 2.7, -1.2, 1);
+      testFunction("sqrt"    , sqrt   , sqrt     ,  0  ,  10);
+      testFunction("sin"     , sin    , sin      , -1  ,   1);
+      testFunction("cos"     , cos    , cos      , -1  ,   1);
+      testFunction("tan"     , tan    , tan      , -1  ,   1);
+      testFunction("asin"    , asin   , asin     , -1  ,   1);
+      testFunction("acos"    , acos   , acos     , -1  ,   1);
+      testFunction("atan"    , atan   , atan     , -1  ,   1);
+      testFunction("atan2"   , atan2  , atan2    , -2.3, 2.7, -1.2, 1);
+      testFunction("exp"     , exp    , exp      , -1, 1);
+      testFunction("exp10"   , exp10  , exp10    , -2.4,  12.2);
+      testFunction("exp2"    , exp2   , exp2     , -2.4,  12.2);
+      testFunction("log"     , log    , log      , 1e-3,   1e3);
+      testFunction("log10"   , log10  , log10    , 1e-3,   1e3);
+      testFunction("log2"    , log2   , log2     , 1e-3,   1e3);
+      testFunction("pow"     , pow    , pow      , 0.1 , 2.7e3, -2.1, 2);
+      verify(pow(Double80::zero, Double80::one)  == Double80::zero);
+      verify(pow(Double80::zero, Double80::zero) == Double80::one );
+      testFunction("root"    , root    , root    , 0.1 , 2.7e3, -2.1, 2);
+      testFunction("fraction", fraction, fraction, 1e-3, 1e3  );
+      testFunction("fraction", fraction, fraction, -1e3, -1e-3);
+      testFunction("floor"   , floor   , floor   , -2.3, 2.7  );
+      testFunction("ceil"    , ceil    , ceil    , -2.3, 2.7  );
+      testFunction("fabs"    , fabs    , fabs    , -1  , 1    );
+      testFunction("dmin"    , dmin    , dmin    , -2.3, 2.7, -1.2, 1);
+      testFunction("dmax"    , dmax    , dmax    , -2.3, 2.7, -1.2, 1);
 
       verify(sign(Double80( 2)  ) ==  1);
       verify(sign(Double80(-2)  ) == -1);

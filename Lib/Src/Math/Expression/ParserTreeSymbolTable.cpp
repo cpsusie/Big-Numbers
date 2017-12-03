@@ -36,6 +36,18 @@ bool AllocateNumbers::handleNode(ExpressionNode *n, int level) {
   return true;
 }
 
+class ResetValueIndex : public ExpressionNodeHandler {
+private:
+  ParserTree &m_tree;
+public:
+  ResetValueIndex(ParserTree *tree) : m_tree(*tree) {
+  }
+  bool handleNode(ExpressionNode *n, int level) {
+    if(n->getSymbol() == NUMBER) n->setValueIndex(-1);
+    return true;
+  }
+};
+
 #define TMPVARCOUNT 5 // the first 5 elements are reserverd for temporary variables in machinecode
 
 void ParserTree::buildSymbolTable() {
@@ -64,6 +76,7 @@ void ParserTree::clearSymbolTable() {
   m_nameTable.clear();
   m_variableTable.clear();
   m_valueTable.clear();
+  traverseTree(ResetValueIndex(this));
   m_indexNameCounter = 0;
 }
 

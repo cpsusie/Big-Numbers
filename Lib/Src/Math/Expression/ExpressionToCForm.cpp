@@ -16,7 +16,7 @@ Expression &Expression::toCanonicalForm() {
 
 // ----------------------------------------- toCForm ------------------------------------------------------------------
 
-// Replace PLUS,(binary) MINUS,PROD,QUOT,ROOT,SQRT,SQR,EXP,SEC,CSC,COT and negative constanst,
+// Replace PLUS,(binary) MINUS,PROD,QUOT,ROOT,SQRT,SQR,EXP,EXP10,EXP2,SEC,CSC,COT and negative constanst,
 // with combinations of SUM, (unary MINUS), PRODUCT, POW, SIN,COS,TAN, and positive constants
 SNode Expression::toCForm(ExpressionNode *n) {
   switch(n->getSymbol()) {
@@ -36,7 +36,9 @@ SNode Expression::toCForm(ExpressionNode *n) {
   case SQR            :
   case ROOT           :
   case SQRT           :
-  case EXP            : return toCFormProduct(n);
+  case EXP            :
+  case EXP10          :
+  case EXP2           : return toCFormProduct(n);
 
   case SEC            : return sec(toCForm(n->left()));
   case CSC            : return csc(toCForm(n->left()));
@@ -110,6 +112,12 @@ FactorArray &Expression::toCFormProduct(FactorArray &result, ExpressionNode *n, 
     break;
   case EXP:
     toCFormProduct(result, exp(toCForm(n->left())), exponent);
+    break;
+  case EXP10:
+    toCFormProduct(result, exp10(toCForm(n->left())), exponent);
+    break;
+  case EXP2:
+    toCFormProduct(result, exp2(toCForm(n->left())), exponent);
     break;
   case ROOT:
     toCFormRoot(result, n, exponent);

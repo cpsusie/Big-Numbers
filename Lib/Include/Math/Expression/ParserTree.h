@@ -20,7 +20,8 @@ typedef enum {
  ,EXPR_RETURNTYPE            // ExpressionReturnType
  ,EXPR_ROOT                  // ExpressionNode
  ,EXPR_OK                    // bool
- ,EXPR_TREEFORM
+ ,EXPR_TREEFORM              // ParserTreeForm
+ ,EXPR_MACHINECODE           // bool
  ,REDUCTION_STACKHIGHT
 } ExpressionProperties;
 

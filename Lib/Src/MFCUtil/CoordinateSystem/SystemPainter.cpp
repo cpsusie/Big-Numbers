@@ -1,5 +1,5 @@
 #include "pch.h"
-#include <Math/MathFunctions.h>
+#include <Math/MathLib.h>
 #include <MFCUtil/Coordinatesystem/CoordinateSystem.h>
 #include <MFCUtil/Coordinatesystem/SystemPainter.h>
 #include <MFCUtil/Coordinatesystem/LinearAxisPainter.h>
@@ -31,7 +31,7 @@ SystemPainter::~SystemPainter() {
 
 void SystemPainter::paint() {
   CDC *dc = getViewport().getDC();
-  CRect r = Rectangle2DR::makePositiveRectangle(getToRectangle());
+  const CRect r = Rectangle2DR::makePositiveRectangle(getToRectangle());
   dc->FillSolidRect(r, m_system.m_backgroundColor);
 //  dc->Rectangle(&r);
 
@@ -66,23 +66,23 @@ CSize SystemPainter::getTextExtent(const String &s) {
 }
 
 void SystemPainter::makeSpaceForText() {
-  int leftMargin   = m_yAxisPainter->getMaxTextOffset() + 2;
-  int rightMargin  = AbstractAxisPainter::ARROW_SIZE / 2;
-  int topMargin    = AbstractAxisPainter::ARROW_SIZE / 2;
-  int bottomMargin = m_xAxisPainter->getMaxTextOffset() + getTextExtent(m_yAxisPainter->getMaxText()).cy + 1;
+  const int leftMargin   = m_yAxisPainter->getMaxTextOffset() + 2;
+  const int rightMargin  = AbstractAxisPainter::ARROW_SIZE / 2;
+  const int topMargin    = AbstractAxisPainter::ARROW_SIZE / 2;
+  const int bottomMargin = m_xAxisPainter->getMaxTextOffset() + getTextExtent(m_yAxisPainter->getMaxText()).cy + 1;
 
   Rectangle2D fr = getViewport().getFromRectangle();
   const IntervalTransformation &xtr = getViewport().getXTransformation();
   const IntervalTransformation &ytr = getViewport().getYTransformation();
   bool adjustRectangle = false;
   if(xtr.isLinear() && fr.getMinX() == 0) {
-    double dx = -xtr.backwardTransform(getToRectangle().left + leftMargin);
+    const double dx = -xtr.backwardTransform(getToRectangle().left + leftMargin);
     fr.m_x += dx;
     fr.m_w -= dx;
     adjustRectangle = true;
   }
   if(ytr.isLinear() && fr.getMinY() == 0) {
-    double dy = -ytr.backwardTransform(getToRectangle().top - bottomMargin);
+    const double dy = -ytr.backwardTransform(getToRectangle().top - bottomMargin);
     fr.m_y += dy;
     fr.m_h -= dy;
     adjustRectangle = true;
@@ -100,8 +100,8 @@ void SystemPainter::makeSpaceForText() {
 
   Point2D orig = innerRectangle.getProjection(Point2D(m_xAxisPainter->getAxisPoint(),m_yAxisPainter->getAxisPoint()));
 
-  double dx = min(orig.x - innerRectangle.m_x, leftMargin   - getTextExtent(m_xAxisPainter->getMinText()).cx/2 - 1);
-  double dy = min(innerRectangle.m_y - orig.y, bottomMargin - getTextExtent(m_yAxisPainter->getMinText()).cy/2 - 1);
+  const double dx = min(orig.x - innerRectangle.m_x, leftMargin   - getTextExtent(m_xAxisPainter->getMinText()).cx/2 - 1);
+  const double dy = min(innerRectangle.m_y - orig.y, bottomMargin - getTextExtent(m_yAxisPainter->getMinText()).cy/2 - 1);
 
   if(dx > 0) {
     innerRectangle.m_x -= dx;
@@ -125,7 +125,7 @@ AbstractAxisPainter *SystemPainter::createAxisPainter(bool xAxis, AxisType type)
   case AXIS_LOGARITHMIC        : result = new LogarithmicAxisPainter(       *this, xAxis); break;
   case AXIS_NORMAL_DISTRIBUTION: result = new NormalDistributionAxisPainter(*this, xAxis); break;
   case AXIS_DATE               : result = new DateAxisPainter(              *this, xAxis); break;
-  default                      : throwException(_T("Invalid AxisType (=%d)"),type);
+  default                      : throwInvalidArgumentException(__TFUNCTION__,_T("type (=%d)"),type);
                                  return NULL;
   }
   TRACE_NEW(result);

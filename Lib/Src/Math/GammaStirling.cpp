@@ -1,5 +1,4 @@
 #include "pch.h"
-#include <Math/MathFunctions.h>
 
 // see https://en.wikipedia.org/wiki/Stirling%27s_approximation
 

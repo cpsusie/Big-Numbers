@@ -1,6 +1,4 @@
 #include "pch.h"
-#include <Math/MathFunctions.h>
-#include <Math/Matrix.h>
 #include <Math/Polynomial.h>
 
 static int dpointcmp(const DataPoint &d1, const DataPoint &d2) {

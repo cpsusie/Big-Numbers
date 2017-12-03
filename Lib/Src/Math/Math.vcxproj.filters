@@ -259,9 +259,6 @@
     <ClCompile Include="TrigonometricFunctionsR.cpp">
       <Filter>Source Files\Functions</Filter>
     </ClCompile>
-    <ClCompile Include="MathFunctions.cpp">
-      <Filter>Source Files\Functions</Filter>
-    </ClCompile>
     <ClCompile Include="MathException.cpp">
       <Filter>Source Files\Misc</Filter>
     </ClCompile>
@@ -342,6 +339,12 @@
     </ClCompile>
     <ClCompile Include="NumberIO.cpp">
       <Filter>Source Files\Number Types</Filter>
+    </ClCompile>
+    <ClCompile Include="DoubleFunctions.cpp">
+      <Filter>Source Files\Functions</Filter>
+    </ClCompile>
+    <ClCompile Include="RealFunctions.cpp">
+      <Filter>Source Files\Functions</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -427,9 +430,6 @@
     <ClInclude Include="..\..\Include\Math\MathException.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\Math\MathFunctions.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\Math\MathLib.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -512,6 +512,9 @@
       <Filter>Header Files\Expression</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\Math\Number.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Double64.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

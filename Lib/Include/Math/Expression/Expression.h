@@ -1,7 +1,6 @@
 #pragma once
 
 #include <ByteArray.h>
-#include <Math/MathFunctions.h>
 #include "ExpressionParser.h"
 #include "OpCodes.h"
 
@@ -282,8 +281,9 @@ private:
   Real   fastEvaluateReal();
   bool   fastEvaluateBool();
 
+  void clearMachineCode();
   // Code generation (compile to machinecode)
-  void genCode();
+  void genMachineCode();
   void genProlog();
   void genEpilog();
   void genStatementList(                                   const ExpressionNode *n);
@@ -434,26 +434,29 @@ private:
 #endif
 
   // Properties
-  void setState(ExpressionState newState);
-  void setReduceIteration(UINT iteration);
-  void setReturnType(ExpressionReturnType returnType);
+  void setState(ExpressionState           newState   );
+  void setReduceIteration(UINT            iteration  );
+  void setReturnType(ExpressionReturnType returnType );
+  void setMachineCode(bool                machinecode);
 public:
   Expression(TrigonometricMode mode = RADIANS);
   Expression(const Expression &src);
   Expression &operator=(const Expression &src);
   Expression getDerived(const String &name, bool reduceResult = true) const;
   void   compile(const String &expr, bool machineCode);
+  inline ExpressionReturnType getReturnType() const {
+    return m_returnType;
+  }
+  inline bool isMachineCode() const {
+    return m_machineCode;
+  }
   inline Real evaluate() {
     CHECKRETURNTYPE(EXPR_RETURN_REAL);
-    return m_machineCode ? fastEvaluateReal() : evaluateStatementListReal(getRoot());
+    return isMachineCode() ? fastEvaluateReal() : evaluateStatementListReal(getRoot());
   }
   inline bool evaluateBool() {
     CHECKRETURNTYPE(EXPR_RETURN_BOOL);
-    return m_machineCode ? fastEvaluateBool() : evaluateStatementListBool(getRoot());
-  }
-
-  inline ExpressionReturnType getReturnType() const {
-    return m_returnType;
+    return isMachineCode() ? fastEvaluateBool() : evaluateStatementListBool(getRoot());
   }
 
   void checkIsStandardForm();

@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include <Random.h>
-#include <Math.h>
-#include <Math/MathFunctions.h>
+#include <Math/MathLib.h>
 #include <Math/Double80.h>
 #include <Math/BigReal.h>
 #include "TestToString.h"

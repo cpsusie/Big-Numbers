@@ -45,8 +45,8 @@ private:
 %{
 
 #include "pch.h"
+#include <Math/Real.h>
 #include <Math/Expression/ExpressionParser.h>
-#include <Math/MathFunctions.h>
 
 #pragma warning(disable:4312)
 

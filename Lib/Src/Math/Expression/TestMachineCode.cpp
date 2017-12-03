@@ -1,6 +1,5 @@
 #include "pch.h"
 #include <Math/Expression/Expression.h>
-#include <Math/MathFunctions.h>
 
 //#define GENERATE_ASSEMBLER_CODE
 
