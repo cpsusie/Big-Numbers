@@ -7,6 +7,6 @@
 #include "resource.h"
 #include <MFCUtil/PixRect.h>
 #include <MFCUtil/ColorSpace.h>
-#include <Math/Mathfunctions.h>
+#include <Math/MathLib.h>
 #include "DebugLogThread.h"
 

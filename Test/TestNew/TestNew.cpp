@@ -8,11 +8,11 @@ void *operator new(size_t size, const TCHAR *file, int line, const TCHAR *method
 }
 
 
-#undef TRACE_NEW
+//#undef TRACE_NEW
 
-#define TRACE_NEW    new(   __TFILE__,__LINE__, __TFUNCTION__)
+//#define TRACE_NEW    new(   __TFILE__,__LINE__, __TFUNCTION__)
 
-#define new    TRACE_NEW
+//#define new    TRACE_NEW
 
 class List {
 public:

@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include <Math/MathFunctions.h>
+#include <Math/MathLib.h>
 
 double norm1(double x) {
   double sum = 0;

@@ -16,9 +16,9 @@ int main(int argc, TCHAR **argv) {
 //    double y = inputDouble(_T("Enter y:"));
     Double80 x80 = x; // , y80 = y;
 //    Double80 z80 = pow(x80, y80);
-    Double80 z80 = pow2(x80);
+    Double80 z80 = exp2(x80);
     double z64 = getDouble(z80);
-    _tprintf(_T("pow10(%lg)=%le\n"), x, z64);
+    _tprintf(_T("exp2(%lg)=%le\n"), x, z64);
   }
   Double80 x;
   Double80 y;

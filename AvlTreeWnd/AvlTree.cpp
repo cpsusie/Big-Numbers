@@ -1,6 +1,5 @@
 #include "stdafx.h"
-#include <Math.h>
-#include <Math/Mathfunctions.h>
+#include <Math/MathLib.h>
 #include "AvlTree.h"
 
 void AvlGraphics::message( COLORREF color, const TCHAR *format, ...) {

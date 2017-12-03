@@ -20,8 +20,9 @@ void doInt128Math() {
 
 void doD80Math() {
   Double80 x = 1;
-  for (; x < 10; x += 0.1234) {
-    String s = x.toString();
+  for(; x < 10; x += 0.1234) {
+    TCHAR s[100];
+    d80tot(s,x);
   }
 }
 

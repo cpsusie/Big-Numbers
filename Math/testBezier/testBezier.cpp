@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include <Math/MathFunctions.h>
 #include <Math/Matrix.h>
 #include <Math/Rectangle2D.h>
 

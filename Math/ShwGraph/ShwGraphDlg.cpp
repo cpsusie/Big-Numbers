@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include <process.h>
-#include <Math/MathFunctions.h>
+#include <Math/MathLib.h>
 #include <Math/MathException.h>
 #include "ShwGraphDlg.h"
 #include "DegreeDlg.h"
