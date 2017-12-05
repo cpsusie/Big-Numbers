@@ -12,58 +12,77 @@ template<class CharType> Double80 _strtod80(const CharType *s, CharType **end) {
   } else if(*s == '+') {
     s++;
   }
-  if(iswdigit(*s)) {
-    gotDigit = true;
-    result = (int)(*(s++) - '0');
-    while(iswdigit(*s)) {
-      result *= 10;
-      result += (int)(*(s++) - '0');
-    }
-  }
-  if(*s == '.' && iswdigit(s[1])) {
-    s++;
-    Double80 decimals = 0, p = 10;
-    for(;iswdigit(*s); p *= 10, decimals *= 10) {
-      decimals += (int)(*(s++) - '0');
-    }
-    result += decimals/p;
-  }
-  if(*s == 'e' || *s == 'E') {
-    const CharType *epos = s;
-    s++;
-    int expoSign = 1;
-    if(*s == '-') {
-      expoSign = -1;
-      s++;
-    } else if(*s == '+') {
-      s++;
-    }
-    int exponent = 0;
-    bool gotExpoDigits = false;
-    while(iswdigit(*s)) {
-      exponent = exponent * 10 + (*(s++) - '0');
-      gotExpoDigits = true;
-    }
-    if(!gotExpoDigits) {
-      s = epos;
-    } else {
-      exponent *= expoSign;
-      if(exponent < -4900) {
-        result *= exp10((Double80)-4900);
-        exponent += 4900;
-        result *= exp10((Double80)exponent);
-      } else {
-        result *= exp10((Double80)exponent);
+
+  const USHORT oldcw = FPU::enableExceptions(true, FPU_OVERFLOW_EXCEPTION | FPU_UNDERFLOW_EXCEPTION);
+  try {
+    if(iswdigit(*s)) {
+      gotDigit = true;
+      result = (int)(*(s++) - '0');
+      while(iswdigit(*s)) {
+        result *= 10;
+        result += (int)(*(s++) - '0');
       }
     }
+    if(*s == '.' && iswdigit(s[1])) {
+      s++;
+      Double80 decimals = 0, p = 10;
+      for(;iswdigit(*s); p *= 10, decimals *= 10) {
+        decimals += (int)(*(s++) - '0');
+      }
+      result += decimals/p;
+    }
+    if(*s == 'e' || *s == 'E') {
+      const CharType *epos = s;
+      s++;
+      int expoSign = 1;
+      if(*s == '-') {
+        expoSign = -1;
+        s++;
+      } else if(*s == '+') {
+        s++;
+      }
+      int exponent = 0;
+      bool gotExpoDigits = false;
+      while(iswdigit(*s)) {
+        exponent = exponent * 10 + (*(s++) - '0');
+        gotExpoDigits = true;
+      }
+      if(!gotExpoDigits) {
+        s = epos;
+      } else {
+        exponent *= expoSign;
+        if(exponent < -4900) {
+          result *= exp10((Double80)-4900);
+          exponent += 4900;
+          result *= exp10((Double80)exponent);
+        } else {
+          result *= exp10((Double80)exponent);
+        }
+      }
+    }
+    FPU::restoreControlWord(oldcw);
+    if(!gotDigit) {
+      return 0;
+    }
+    if(end) {
+      *end = (CharType*)s;
+    }
+    return isNegative ? -result : result;
+  } catch(...) {
+    const USHORT statusWord = FPU::getStatusWord();
+    FPU::clearExceptions();
+    FPU::restoreControlWord(oldcw);
+    if(statusWord & FPU_OVERFLOW_EXCEPTION) {
+      result  = isNegative ? -Double80::DBL80_MAX : Double80::DBL80_MAX;
+      errno   = ERANGE;
+    } else if(statusWord & FPU_UNDERFLOW_EXCEPTION) {
+      result  = isNegative ? -Double80::DBL80_MIN : Double80::DBL80_MIN;
+      errno   = ERANGE;
+    } else {
+      result  = Double80::DBL80_NAN;
+    }
+    return result;
   }
-  if(!gotDigit) {
-    return 0;
-  }
-  if(end) {
-    *end = (CharType*)s;
-  }
-  return isNegative ? -result : result;
 }
 
 #define ASM_OPTIMIZED
@@ -128,24 +147,24 @@ template<class CharType> CharType *_d80tostr(CharType *dst, const Double80 &x) {
     addChar(result,'-');
   }
   bool gotDigit = false;
-  int decimals;
-  for(int i = 8; i >= 0; i--) {
+  int  decimals;
+  for(const BYTE *p = bcd+8; p >= bcd; p--) {
     if(gotDigit) {
-      addDigit(result,bcd[i]>>4);
-      addDigit(result,bcd[i]&0xf);
-    } else if(bcd[i] == 0) {
+      addDigit(result,(*p)>> 4);
+      addDigit(result,(*p)&0xf);
+    } else if(*p == 0) {
       continue;
     } else {
       gotDigit = true;
-      if(bcd[i] & 0xf0) {
-        addDigit(result,bcd[i]>>4);
-        addChar(result,'.');
-        addDigit(result,bcd[i]&0x0f);
-        decimals = i * 2 - 1;
+      if((*p) & 0xf0) {
+        addDigit(result, (*p)>>4);
+        addChar( result, '.');
+        addDigit(result, (*p)&0x0f);
+        decimals = (int)(p-bcd) * 2 - 1;
       } else {
-        addDigit(result,bcd[i]&0xf);
-        addChar(result,'.');
-        decimals = i * 2 - 2;
+        addDigit(result, (*p)&0xf);
+        addChar( result, '.');
+        decimals = (int)(p-bcd) * 2 - 2;
       }
     }
   }

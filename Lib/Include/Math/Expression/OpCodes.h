@@ -786,10 +786,16 @@ public:
 #define FDIVP_i0( i)                           FPUINS(0xDEF8     | (i))                   // st(i) /= st(0); pop st(0)
 #define FDIV                                   FDIVP_i0(1)                                // st(1) /= st(0); pop st(0)
 
-#define FCOMP(    i)                           FPUINS(0xD8D8     | (i))                   // Compare st(0) to st(1..7)
-#define FCOMPP                                 FPUINS(0xDED9)                             // Compare st(0) to st(1); pop both
+#define FCOM(     i)                           FPUINS(0xD8D0     | (i))                   // Compare st(0) to st(i)
+#define FCOMP(    i)                           FPUINS(0xD8D8     | (i))                   // Compare st(0) to st(i), pop st(0)
 #define FCOMI(    i)                           FPUINS(0xDBF0     | (i))                   // Compare st(0) to st(i) and set CPU-flags
+#define FUCOM(    i)                           FPUINS(0xDDE0     | (i))                   // Unordered compare st(0) to st(i)
+#define FUCOMI(   i)                           FPUINS(0xDBE8     | (i))                   // Unordered compare st(0) to st(i) and set CPU-flags
+#define FUCOMP(   i)                           FPUINS(0xDDE8     | (i))                   // Unordered compare st(0) to st(i); pop st(0)
 #define FCOMIP(   i)                           FPUINS(0xDFF0     | (i))                   // Compare st(0) to st(i) and set CPU-flags; pop st(0)
+#define FUCOMIP(  i)                           FPUINS(0xDFE8     | (i))                   // Unordered compare st(0) to st(i) and set CPU-flags; pop st(0)
+#define FCOMPP                                 FPUINS(0xDED9)                             // Compare st(0) to st(1); pop both
+#define FUCOMPP                                FPUINS(0xDAE9)                             // Unordered compare st(0) to st(1); pop both
 #define FFREE(    i)                           FPUINS(0xDDC0     | (i))                   // Free a data register
 #define FST(      i)                           FPUINS(0xDDD0     | (i))                   // Store st(0) into st(i)
 #define FSTP(     i)                           FPUINS(0xDDD8     | (i))                   // Store st(0) into st(i); pop st(0)
@@ -824,6 +830,16 @@ public:
 #define FSCALE                                 FPUINS(0xD9FD)                             // st(0) *= 2^int(st(1))
 #define FSIN                                   FPUINS(0xD9FE)                             // st(0) = sin(ST(0))
 #define FCOS                                   FPUINS(0xD9FF)                             // st(0) = cos(ST(0))
+
+// Move st(i) to st(0) if specified CPU condition is true
+#define FCMOVB( i)                             FPUINS(0xDAC0 | (i))                       // Move if below (CF=1)
+#define FCMOVEQ(i)                             FPUINS(0xDAC8 | (i))                       // Move if equal (ZF=1)
+#define FCMOVBE(i)                             FPUINS(0xDAD0 | (i))                       // Move if below or equal (CF=1 or ZF=1)
+#define FCMOVU( i)                             FPUINS(0xDAD8 | (i))                       // Move if unordered (PF=1)
+#define FCMOVAE(i)                             FPUINS(0xDBC0 | (i))                       // Move if above or equal (CF=0)
+#define FCMOVNE(i)                             FPUINS(0xDBC8 | (i))                       // Move if not equal (ZF=0)
+#define FCMOVA( i)                             FPUINS(0xDBD0 | (i))                       // Move if above (CF=0 and ZF=0)
+#define FCMOVNU(i)                             FPUINS(0xDBD8 | (i))                       // Move if not unordered (PF=0)
 
 #define FNSTSW_AX                              FPUINS(0xDFE0)                             // Store status word into CPU register AX
 #define SAHF                                   B1INS( 0x9E	)

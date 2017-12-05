@@ -187,9 +187,6 @@
     <ClCompile Include="Double80.cpp">
       <Filter>Source Files\Number Types</Filter>
     </ClCompile>
-    <ClCompile Include="Double80io.cpp">
-      <Filter>Source Files\Number Types</Filter>
-    </ClCompile>
     <ClCompile Include="AkimaSpline.cpp">
       <Filter>Source Files\Curve Fitting</Filter>
     </ClCompile>
@@ -345,6 +342,9 @@
     </ClCompile>
     <ClCompile Include="RealFunctions.cpp">
       <Filter>Source Files\Functions</Filter>
+    </ClCompile>
+    <ClCompile Include="Double80IO.cpp">
+      <Filter>Source Files\Number Types</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

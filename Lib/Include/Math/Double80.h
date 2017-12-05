@@ -119,6 +119,8 @@ public:
   static FPUPrecisionMode getPrecisionMode();
   // returns current FPU controlword
   static USHORT           setRoundMode(FPURoundMode mode);
+  // returns current FPU controlword
+  static USHORT           enableExceptions(bool enable, USHORT flags);
   static FPURoundMode     getRoundMode();
   static inline void      restoreControlWord(USHORT ctrlWord) {
     setControlWord(ctrlWord);
@@ -136,7 +138,6 @@ public:
   static inline bool      stackFault() {
     return (getStatusWord() & 0x40) == 0x40;
   }
-  static void             enableExceptions(bool enable, USHORT flags);
 };
 
 class Double80;

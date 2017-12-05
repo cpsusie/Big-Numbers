@@ -705,7 +705,7 @@
     <ClCompile Include="CubicSpline.cpp" />
     <ClCompile Include="DataFit.cpp" />
     <ClCompile Include="Double80.cpp" />
-    <ClCompile Include="Double80io.cpp" />
+    <ClCompile Include="Double80IO.cpp" />
     <ClCompile Include="Double80Random.cpp" />
     <ClCompile Include="Double80Str.cpp" />
     <ClCompile Include="DoubleFunctions.cpp" />

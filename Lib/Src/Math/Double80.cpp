@@ -1,10 +1,5 @@
 #include "pch.h"
-#include <comdef.h>
-#include <atlconv.h>
-#include <limits.h>
 #include <Math/Double80.h>
-#include <math.h>
-#include <float.h>
 
 #pragma check_stack(off)
 #pragma warning(disable : 4073)
@@ -80,13 +75,15 @@ FPURoundMode FPU::getRoundMode() { // static
   }
 }
 
-void FPU::enableExceptions(bool enable, USHORT flags) { // static
+USHORT FPU::enableExceptions(bool enable, USHORT flags) { // static
+  const USHORT cw = getControlWord();
   flags &= 0x3f;  // We are only interested in the first 6 bits
   if(enable) {
-    setControlWord(getControlWord() & ~flags); // 0-bit ENABLES the interrupt, a 1-bit DISABLES it
+    setControlWord(cw & ~flags); // 0-bit ENABLES the interrupt, a 1-bit DISABLES it
   } else {
-    setControlWord(getControlWord() | flags);
+    setControlWord(cw | flags);
   }
+  return cw;
 }
 
 class InitFPU {
@@ -705,4 +702,3 @@ ULONG Double80::hashCode() const {
        ^ *(ULONG*)(m_value+4)
        ^ *(USHORT*)(m_value+8);
 }
-
