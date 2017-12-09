@@ -3,8 +3,10 @@
 #include <Math.h>
 #include <float.h>
 #include <limits.h>
+#include <Date.h>
 #include <Math/Double64.h>
 #include <Math/Double80.h>
+#include <Math/FPU.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -263,7 +265,13 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
 	TEST_CLASS(TestDouble80) {
     public:
 
+    TestDouble80() {
+      redirectDebugLog(true);
+      debugLogSetTimePrefix(true,true);
+    }
+
     TEST_METHOD(Double80Testio) {
+
       long     i32 = 0;
       double   d64 = 0;
       Double80 d80 = i32;
@@ -553,6 +561,8 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
     TEST_METHOD(Double80TestReadWrite) {
       const char *fileName = "double80.dat";
 
+      debugLog(_T("%s\n%s\n"), __TFUNCTION__, FPU::getState().toString().cstr());
+
       const size_t count = 500;
       tofstream out(fileName);
       StreamParameters param(-1);
@@ -590,6 +600,8 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
       //  USHORT cw = FPU::getControlWord();
       //  printf("FPU ctrlWord:%04x (%s)\n", cw, sprintbin(cw).cstr());
 
+      debugLog(_T("%s\n%s\n"), __TFUNCTION__, FPU::getState().toString().cstr());
+
       for(double x = 0; x < 10; x += 0.1) {
         const double d64c1 = cos(x);
         const double d64s1 = sin(x);
@@ -622,25 +634,32 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
     }
 
     TEST_METHOD(Double80TestBasicOperations) {
+      int swSize   = sizeof(FPUStatusWord );
+      int cwSize   = sizeof(FPUControlWord);
+      int tgSize   = sizeof(FPUTagWord    );
+      verify(sizeof(FPUEnvironment) == 28 );
+      verify(sizeof(FPUState      ) == 108);
 
+      debugLog(_T("%s\n%s\n"), __TFUNCTION__, FPU::getState().toString().cstr());
       FPU::clearExceptions();
 
-      USHORT cwSave = FPU::getControlWord();
+      const FPUControlWord cwSave = FPU::getControlWord();
 
       FPU::setPrecisionMode(FPU_HIGH_PRECISION);
-      FPU::enableExceptions(true, FPU_INVALID_OPERATION_EXCEPTION
-                                | FPU_DENORMALIZED_EXCEPTION
-                                | FPU_DIVIDE_BY_ZERO_EXCEPTION
-                                | FPU_OVERFLOW_EXCEPTION
-                                | FPU_UNDERFLOW_EXCEPTION);
+      FPU::adjustExceptionMask(FPU_INVALID_OPERATION_EXCEPTION
+                             | FPU_DENORMALIZED_EXCEPTION
+                             | FPU_DIVIDE_BY_ZERO_EXCEPTION
+                             | FPU_OVERFLOW_EXCEPTION
+                             | FPU_UNDERFLOW_EXCEPTION
+                              ,0);
 
-      USHORT cw1 = FPU::getStatusWord();
+      const FPUStatusWord sw1 = FPU::getStatusWord();
 
       Double80 one        = 1;
       Double80 onePlusEps = one + Double80::DBL80_EPSILON;
       Double80 diff       = onePlusEps - one;
 
-      USHORT cw2 = FPU::getStatusWord();
+      const FPUStatusWord sw2 = FPU::getStatusWord();
 
       verify(diff != 0);
 
@@ -648,7 +667,7 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
       diff = onePlusEps2 - one;
       verify(diff == 0);
 
-      Array<ULONG> hashCodes;
+      CompactArray<ULONG> hashCodes;
 
       long             i32max = _I32_MAX;
       Double80         di32   = i32max;
@@ -668,25 +687,25 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
 
       hashCodes.add(di32.hashCode());
 
-      ULONG    ul32max = _UI32_MAX;
-      Double80 dul32   = ul32max;
-      ULONG    rul32   = getUlong(dul32);
-      UINT     rui32   = getUint(dul32);
+      ULONG          ul32max  = _UI32_MAX;
+      Double80       dul32    = ul32max;
+      ULONG          rul32    = getUlong(dul32);
+      UINT           rui32    = getUint(dul32);
 
       verify(rul32 == ul32max);
       verify(rui32 == ul32max);
 
       hashCodes.add(dul32.hashCode());
 
-      INT64          i64max = _I64_MAX;
-      Double80       di64   = i64max;
-      INT64          ri64   = getInt64(di64);
+      INT64          i64max   = _I64_MAX;
+      Double80       di64     = i64max;
+      INT64          ri64     = getInt64(di64);
 
       verify(ri64 == i64max);
 
       hashCodes.add(di64.hashCode());
 
-      INT64 i64min = _I64_MIN;
+      INT64           i64min  = _I64_MIN;
       di64 = i64min;
       ri64 = getUint64(di64);
 
@@ -694,9 +713,9 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
 
       hashCodes.add(di64.hashCode());
 
-      UINT64   ui64max = _UI64_MAX;
-      Double80 dui64   = ui64max;
-      UINT64   rui64   = getUint64(dui64);
+      UINT64          ui64max = _UI64_MAX;
+      Double80        dui64   = ui64max;
+      UINT64          rui64   = getUint64(dui64);
 
       verify(rui64 == ui64max);
 
@@ -772,7 +791,7 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
       verify(sign(Double80(-2)  ) == -1);
       verify(sign(Double80::zero) ==  0);
 
-      FPU::enableExceptions(false, FPU_DIVIDE_BY_ZERO_EXCEPTION);
+      FPU::adjustExceptionMask(0,FPU_DIVIDE_BY_ZERO_EXCEPTION);
 
       Double80 zzz = Double80::one / Double80::zero;
       verify(isNan(       zzz));
@@ -802,16 +821,14 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
       verify( isNInfinity(Double80::DBL80_NINF));
 
       FPU::clearStatusWord();
-      FPU::enableExceptions(true, FPU_DIVIDE_BY_ZERO_EXCEPTION);
-
-      FPU::enableExceptions(false, FPU_INVALID_OPERATION_EXCEPTION);
+      FPU::adjustExceptionMask(FPU_DIVIDE_BY_ZERO_EXCEPTION,FPU_INVALID_OPERATION_EXCEPTION);
 
       zzz = sqrt(Double80(-1));
       verify(isNan(zzz));
       verify(!isInfinity(zzz));
 
       FPU::clearStatusWord();
-      FPU::enableExceptions(true, FPU_INVALID_OPERATION_EXCEPTION);
+      FPU::adjustExceptionMask(FPU_INVALID_OPERATION_EXCEPTION,0);
 
       FPU::setPrecisionMode(FPU_LOW_PRECISION);
       float flt1 = 1 + FLT_EPSILON;
@@ -858,30 +875,30 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
       verify(!FPU::stackOverflow());
       verify(!FPU::stackUnderflow());
 #endif
-      USHORT exp = FPU_INVALID_OPERATION_EXCEPTION
-                 | FPU_DENORMALIZED_EXCEPTION
-                 | FPU_DIVIDE_BY_ZERO_EXCEPTION
-                 | FPU_OVERFLOW_EXCEPTION
-                 | FPU_UNDERFLOW_EXCEPTION;
+      const USHORT excep = FPU_INVALID_OPERATION_EXCEPTION
+                         | FPU_DENORMALIZED_EXCEPTION
+                         | FPU_DIVIDE_BY_ZERO_EXCEPTION
+                         | FPU_OVERFLOW_EXCEPTION
+                         | FPU_UNDERFLOW_EXCEPTION;
 
-      FPU::enableExceptions(true, exp);
-      cw1 = FPU::getControlWord();
-      FPU::enableExceptions(false, exp);
-      cw2 = FPU::getControlWord();
-      USHORT cwDiff = cw1 ^ cw2;
-      verify(cwDiff == exp);
+      const FPUControlWord cwa = FPU::adjustExceptionMask(excep,0);
+      const FPUControlWord cwb = FPU::getControlWord();
+      const FPUControlWord cwc = FPU::adjustExceptionMask(0, excep);
+      const FPUControlWord cwd = FPU::getControlWord();
+      const USHORT         cwDiff = cwb.m_data ^ cwd.m_data;
+      verify(cwDiff == excep);
 
       FPU::clearStatusWord();
-      verify(FPU::getStatusWord() == 0);
+      verify(FPU::getStatusWord().m_data == 0);
 
       d80 = sqrt(Double80(2));
       BYTE buffer[10];
       memcpy(buffer, &d80, sizeof(buffer));
 
-      Double80 e80(buffer);
+      const Double80 e80(buffer);
       verify(e80 == d80);
 
-      FPU::setControlWord(cwSave);
+      FPU::restoreControlWord(cwSave);
     }
   };
 }

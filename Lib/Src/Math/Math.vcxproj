@@ -748,6 +748,7 @@
     <ClCompile Include="Expression\TestMachineCode.cpp" />
     <ClCompile Include="fft.cpp" />
     <ClCompile Include="FindZeroes.cpp" />
+    <ClCompile Include="FPU.cpp" />
     <ClCompile Include="FritschCarlsonSpline.cpp" />
     <ClCompile Include="gammaR.cpp" />
     <ClCompile Include="GammaStirling.cpp" />
@@ -984,6 +985,7 @@
     <ClInclude Include="..\..\Include\Math\Expression\ParserTree.h" />
     <ClInclude Include="..\..\Include\Math\Expression\SumElement.h" />
     <ClInclude Include="..\..\Include\Math\fft.h" />
+    <ClInclude Include="..\..\Include\Math\FPU.h" />
     <ClInclude Include="..\..\Include\Math\Int128.h" />
     <ClInclude Include="..\..\Include\Math\LUMatrixTemplate.h" />
     <ClInclude Include="..\..\Include\Math\MathException.h" />

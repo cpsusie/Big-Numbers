@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
+#include <Math/FPU.h>
 #include <Math/Expression/Expression.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;

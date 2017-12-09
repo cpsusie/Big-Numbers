@@ -24,33 +24,43 @@ TB10            TBYTE  4002a000000000000000h   ; 10
 
 ;void FPUinit();
 FPUinit PROC
-    fninit
+    finit
     ret
 FPUinit ENDP
 
-;void FPUgetStatusWord(WORD &dst);
+;WORD FPUgetStatusWord();
 FPUgetStatusWord PROC
-    fnstsw WORD PTR[rcx]
+    fstsw WORD PTR[rsp-2]
+    mov ax, WORD PTR[rsp-2]
     ret
 FPUgetStatusWord ENDP
 
-;void FPUgetControlWord(WORD &dst);
+;WORD FPUgetControlWord();
 FPUgetControlWord PROC
-    fnstcw WORD PTR[rcx]
+    fstcw WORD PTR[rsp-2]
+    mov ax, WORD PTR[rsp-2]
     ret
 FPUgetControlWord ENDP
 
-;void FPUsetControlWord(WORD &flags);
+;void FPUsetControlWord(WORD flags);
 FPUsetControlWord PROC
-    fldcw WORD PTR[rcx]
+    mov DWORD PTR[rsp-4], ecx
+    fldcw WORD PTR[rsp-4]
     ret
 FPUsetControlWord ENDP
 
-;FPUgetTagsWord(WORD *dst);
-FPUgetTagsWord PROC
-    fstenv WORD PTR[rcx]
+;void FPUgetEnvironment(void *env);
+FPUgetEnvironment PROC
+    fstenv QWORD PTR[rcx]
     ret
-FPUgetTagsWord ENDP
+FPUgetEnvironment ENDP
+
+;void FPUgetState(void *state);
+FPUgetState PROC
+    fsave QWORD PTR[rcx]
+    frstor QWORD PTR[rcx]
+    ret
+FPUgetState ENDP
 
 ;void FPUclearExceptions();
 FPUclearExceptions PROC
@@ -812,12 +822,10 @@ D80getExpo10 PROC
     fldz
     fcomip  st, st(1)                          ; compare x and pop 0
     je      xIsZero                            ; if(x == 0) goto xIsZero
-    fld1                                       ; st0 = 1       , st1 = x
-    fxch    st(1)                              ; st0 = x       , st1 = 1
-    fabs                                       ; st0 = |x|     , st1 = 1
-    fyl2x                                      ; st0 = st1*log2(st0) = log2(|x|)
-    fldlg2                                     ; st0 = log10(2), st1 = log2(|x|)
-    fmul                                       ; st0 = log2(|x|)*log10(2) = log10(|x|)
+    fabs                                       ; st0 = |x|
+    fldlg2                                     ; st0 = log10(2), st1 = |x|
+    fxch    st(1)                              ; st0 = |x|     , st1 = log10(2)=ln(2)/ln(10)
+    fyl2x                                      ; st0 = st1*log2(st0) = ln(2)/ln(10)*ln(x)/ln(2) = log10(|x|)
     pushRoundMode ROUNDDOWN
     frndint
     popRoundMode
@@ -962,8 +970,6 @@ D80sincos ENDP
 ;void D80exp(Double80 &x);
 D80exp PROC
     fld     TBYTE PTR[rcx]                     ; st0 = x
-
-    pushRoundMode ROUNDDOWN
     fldl2e                                     ; st0 = log2(e)              , st1 = x
     fmul                                       ; st0 = x/ln(2)
     fld     st(0)                              ; st0 = x/ln(2)              , st1 = x/ln(2)
@@ -976,7 +982,6 @@ D80exp PROC
     fscale                                     ; st0 = 2^(frac(x/ln(2   ))+floor(x/ln(2   )))=e ^x, st1 = floor(x/ln(2))
     fstp    st(1)                              ; pop st1
     fstp    TBYTE PTR[rcx]                     ; pop to x
-    popRoundMode
     ret
 D80exp ENDP
 
@@ -987,7 +992,6 @@ D80exp10 PROC
     fcomip  st, st(1)
     je      ZeroExponent
 
-    pushRoundMode ROUNDDOWN                    ; st0 = x (!= 0)
     fldl2t                                     ; st0 = log2(10)             , st1 = x
     fmul                                       ; st0 = x*log2(10)
     fld     st(0)
@@ -1000,7 +1004,6 @@ D80exp10 PROC
     fscale                                     ; st0 = 2^(frac(x*log2(10))+floor(x*log2(10)))=10^x, st1 = floor(x*log2(10))
     fstp    st(1)                              ; pop st1
     fstp    TBYTE PTR[rcx]                     ; pop to x
-    popRoundMode
     ret
 ZeroExponent:                                  ; st0 = x
     fstp    st(0)                              ; pop st0
@@ -1038,22 +1041,18 @@ D80exp2 ENDP
 
 ;void D80log(Double80 &x);
 D80log PROC
-    fld1                                       ; st0 = 1
-    fld     TBYTE PTR[rcx]                     ; st0 = x     , st1 = 1
-    fyl2x                                      ; st0 = st1*log2(st0) = log2(x)
-    fldln2                                     ; st0 = ln(2) , st1 = log2(x)
-    fmul                                       ; st0 = ln(x)
+    fldln2                                     ; st0 = ln(2)
+    fld     TBYTE PTR[rcx]                     ; st0 = x     , st1 = ln(2)
+    fyl2x                                      ; st0 = st1*log2(st0) = ln(2)*ln(st0)/ln(2) = ln(x)
     fstp    TBYTE PTR[rcx]                     ; pop to x
     ret
 D80log ENDP
 
 ;void D80log10(Double80 &x);
 D80log10 PROC
-    fld1                                       ; st0 = 1
-    fld     TBYTE PTR[rcx]                     ; st0 = x       , st1 = 1
-    fyl2x                                      ; st0 = st1*log2(st0) = log2(x)
-    fldlg2                                     ; st0 = log10(2), st1 = log2(x)
-    fmul                                       ; st0 = log2(x)*log10(2) = log10(x)
+    fldlg2                                     ; st0 = log10(2)
+    fld     TBYTE PTR[rcx]                     ; st0 = x     , st1 = log10(2) = ln(2)/ln(10)
+    fyl2x                                      ; st0 = st1*log2(st0) = ln(2)/ln(10)*ln(st0)/ln(2) = log10(st0)
     fstp    TBYTE PTR[rcx]                     ; pop to x
     ret
 D80log10 ENDP
@@ -1079,7 +1078,7 @@ D80pow PROC
     fcomip  st, st(1)
     je      ZeroBase                           ; if(x == 0) goto ZeroExponent;
 
-    pushRoundMode ROUNDDOWN                    ; st0 = x (!= 0)             , st1 = y (!= 0)
+                                               ; st0 = x (!= 0)             , st1 = y (!= 0)
     fyl2x                                      ; st0 = st1*log2(st0) = y*log2(x)
     fld     st(0)                              ;
     frndint                                    ; st0 = floor(  y*log2(x ))  , st1 = y*log2(x )
@@ -1091,7 +1090,6 @@ D80pow PROC
     fscale                                     ; st0 = 2^(frac(y*log2(x ))+floor(y*log2(x )))=x ^y, st1 = floor(y*log2(x))
     fstp    st(1)                              ; pop st1
     fstp    TBYTE PTR[rcx]                     ; pop to x
-    popRoundMode
     ret
 ZeroExponent:                                  ; st0 = y
     fstp    st(0)                              ; pop st0
@@ -1160,9 +1158,7 @@ ScaleX:                                        ; Find m = x / 10^abs(expo10)
     fldl2t                                     ;                                       st0=log2(10)       , st1=expo10
     fmul                                       ;                                       st0=expo10*log2(10)
     fld     st(0)                              ;                                       st0=expo10*log2(10), st1=st0
-    pushRoundMode ROUNDDOWN                    ;
-    frndint                                    ; Round down
-    popRoundMode                               ; Restore control word
+    frndint                                    ;
     fsub    st(1), st(0)                       ;
     fxch    st(1)                              ;
     f2xm1                                      ;

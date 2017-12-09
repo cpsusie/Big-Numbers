@@ -346,6 +346,9 @@
     <ClCompile Include="Double80IO.cpp">
       <Filter>Source Files\Number Types</Filter>
     </ClCompile>
+    <ClCompile Include="FPU.cpp">
+      <Filter>Source Files\Misc</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="NatvisFile.natvis" />
@@ -515,6 +518,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\Math\Double64.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\FPU.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

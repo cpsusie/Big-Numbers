@@ -1,7 +1,9 @@
 #include "pch.h"
 #include <Math/Double80.h>
+#include <Math/FPU.h>
 
 template<class CharType> Double80 _strtod80(const CharType *s, CharType **end) {
+  errno=0;
   bool     isNegative = false;
   bool     gotDigit   = false;
   Double80 result     = 0;
@@ -13,7 +15,8 @@ template<class CharType> Double80 _strtod80(const CharType *s, CharType **end) {
     s++;
   }
 
-  const USHORT oldcw = FPU::enableExceptions(true, FPU_OVERFLOW_EXCEPTION | FPU_UNDERFLOW_EXCEPTION);
+  FPU::clearExceptions();
+  const FPUControlWord oldcw = FPU::adjustExceptionMask(FPU_OVERFLOW_EXCEPTION | FPU_UNDERFLOW_EXCEPTION,0);
   try {
     if(iswdigit(*s)) {
       gotDigit = true;
@@ -32,8 +35,7 @@ template<class CharType> Double80 _strtod80(const CharType *s, CharType **end) {
       result += decimals/p;
     }
     if(*s == 'e' || *s == 'E') {
-      const CharType *epos = s;
-      s++;
+      const CharType *epos = s++;
       int expoSign = 1;
       if(*s == '-') {
         expoSign = -1;
@@ -69,13 +71,13 @@ template<class CharType> Double80 _strtod80(const CharType *s, CharType **end) {
     }
     return isNegative ? -result : result;
   } catch(...) {
-    const USHORT statusWord = FPU::getStatusWord();
+    const FPUStatusWord sw = FPU::getStatusWord();
     FPU::clearExceptions();
     FPU::restoreControlWord(oldcw);
-    if(statusWord & FPU_OVERFLOW_EXCEPTION) {
+    if(sw.m_o) {
       result  = isNegative ? -Double80::DBL80_MAX : Double80::DBL80_MAX;
       errno   = ERANGE;
-    } else if(statusWord & FPU_UNDERFLOW_EXCEPTION) {
+    } else if(sw.m_u) {
       result  = isNegative ? -Double80::DBL80_MIN : Double80::DBL80_MIN;
       errno   = ERANGE;
     } else {
@@ -146,29 +148,23 @@ template<class CharType> CharType *_d80tostr(CharType *dst, const Double80 &x) {
   if(bcd[9] & 0x80) {
     addChar(result,'-');
   }
-  bool gotDigit = false;
   int  decimals;
-  for(const BYTE *p = bcd+8; p >= bcd; p--) {
-    if(gotDigit) {
-      addDigit(result,(*p)>> 4);
-      addDigit(result,(*p)&0xf);
-    } else if(*p == 0) {
-      continue;
-    } else {
-      gotDigit = true;
-      if((*p) & 0xf0) {
-        addDigit(result, (*p)>>4);
-        addChar( result, '.');
-        addDigit(result, (*p)&0x0f);
-        decimals = (int)(p-bcd) * 2 - 1;
-      } else {
-        addDigit(result, (*p)&0xf);
-        addChar( result, '.');
-        decimals = (int)(p-bcd) * 2 - 2;
-      }
-    }
+  const BYTE *p = bcd+8;
+  for(; (p >= bcd) && (*p==0); p--);
+  if((*p) & 0xf0) {
+    addDigit(result, (*p)>>4);
+    addChar( result, '.');
+    addDigit(result, (*p)&0x0f);
+    decimals = (int)(p-bcd) * 2 - 1;
+  } else {
+    addDigit(result, (*p)&0xf);
+    addChar( result, '.');
+    decimals = (int)(p-bcd) * 2 - 2;
   }
-
+  for(p--; p >= bcd; p--) {
+    addDigit(result,(*p)>> 4);
+    addDigit(result,(*p)&0xf);
+  }
   addChar(result,'e');
   expo10 += decimals - 16;
   if(expo10 < 0) {

@@ -1,4 +1,5 @@
 #include "pch.h"
+#include <Math/FPU.h>
 
 BigRealThread::BigRealThread(int id)
 : Thread(format(_T("NT%03d"), id))

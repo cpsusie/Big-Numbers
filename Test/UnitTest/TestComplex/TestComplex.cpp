@@ -2,6 +2,7 @@
 #include "CppUnitTest.h"
 #include <Math/MathLib.h>
 #include <Math/Double80.h>
+#include <Math/FPU.h>
 #include <Math/Complex.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;

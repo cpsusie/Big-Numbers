@@ -25,8 +25,8 @@ static BYTE      timeFormatCode   = 0;
 static const String timeFormats[] = {
   EMPTYSTRING
  ,_T("hh:mm:ss")
- ,_T("ddMMYY")
- ,_T("ddMMYY hh:mm:ss")
+ ,_T("ddMMyy")
+ ,_T("ddMMyy hh:mm:ss")
 };
 
 bool isDebugLogRedirected() {

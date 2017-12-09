@@ -125,12 +125,12 @@ void StringParametersIterator::init(const CompactDoubleArray &values) {
   m_values = values;
 
   for(size_t i = 0; i < values.size(); i++) {
-    double   d64  = values[i];
-    Double80 d80  = values[i];
-    BigReal  n    = values[i];
-    int d64expo10 = getExpo10(d64);
-    int d80expo10 = Double80::getExpo10(d80);
-    int nexpo10   = (int)BigReal::getExpo10(n);
+    const double   d64  = values[i];
+    const Double80 d80  = values[i];
+    const BigReal  n    = values[i];
+    const int d64expo10 = getExpo10(d64);
+    const int d80expo10 = Double80::getExpo10(d80);
+    const int nexpo10   = (int)BigReal::getExpo10(n);
     if(d80expo10 != d64expo10 || nexpo10 != d64expo10) {
       printf("expo10 mismatch:%20.14le d64expo10:%3d d80expo10:%3d numberExpo10:%3d\n",d64,d64expo10,d80expo10,nexpo10);
       abort();

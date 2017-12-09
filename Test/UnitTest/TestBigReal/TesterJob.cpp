@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <Console.h>
+#include <Math/FPU.h>
 #include "FunctionTest.h"
 
 Semaphore       TesterJob::s_gate;
