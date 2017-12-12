@@ -15,6 +15,7 @@ template<class CharType> Double80 _strtod80(const CharType *s, CharType **end) {
     s++;
   }
 
+  _se_translator_function prevTranslator = FPU::setExceptionTranslator(FPUexceptionTranslator);
   FPU::clearExceptions();
   const FPUControlWord oldcw = FPU::adjustExceptionMask(FPU_OVERFLOW_EXCEPTION | FPU_UNDERFLOW_EXCEPTION,0);
   try {
@@ -62,29 +63,41 @@ template<class CharType> Double80 _strtod80(const CharType *s, CharType **end) {
         }
       }
     }
-    FPU::restoreControlWord(oldcw);
     if(!gotDigit) {
       return 0;
     }
     if(end) {
       *end = (CharType*)s;
     }
-    return isNegative ? -result : result;
-  } catch(...) {
-    const FPUStatusWord sw = FPU::getStatusWord();
-    FPU::clearExceptions();
-    FPU::restoreControlWord(oldcw);
-    if(sw.m_o) {
-      result  = isNegative ? -Double80::DBL80_MAX : Double80::DBL80_MAX;
+  } catch(FPUException fpue) {
+    FPU::clearExceptionsNoWait();
+    if(fpue.m_code == EXCEPTION_FLT_OVERFLOW) {
+      result  = Double80::DBL80_MAX;
       errno   = ERANGE;
-    } else if(sw.m_u) {
-      result  = isNegative ? -Double80::DBL80_MIN : Double80::DBL80_MIN;
+    } else if(fpue.m_code == EXCEPTION_FLT_UNDERFLOW) {
+      result  = Double80::DBL80_MIN;
       errno   = ERANGE;
     } else {
       result  = Double80::DBL80_NAN;
     }
-    return result;
+  } catch(...) {
+    FPU::clearExceptionsNoWait();
+    FPU::restoreControlWord(oldcw);
+    FPU::setExceptionTranslator(prevTranslator);
+    throw;
   }
+  FPU::clearExceptionsNoWait();
+  FPU::restoreControlWord(oldcw);
+  FPU::setExceptionTranslator(prevTranslator);
+  return isNegative ? -result : result;
+}
+
+Double80 strtod80(const char *s, char **end) {
+  return _strtod80<UCHAR>((UCHAR*)s, (UCHAR**)end);
+}
+
+Double80 wcstod80(const wchar_t *s, wchar_t **end) {
+  return _strtod80<wchar_t>(s, end);
 }
 
 #define ASM_OPTIMIZED
@@ -197,14 +210,6 @@ template<class CharType> CharType *_d80tostr(CharType *dst, const Double80 &x) {
   addChar(result,0);
 
   return dst;
-}
-
-Double80 strtod80(const char *s, char **end) {
-  return _strtod80<UCHAR>((UCHAR*)s, (UCHAR**)end);
-}
-
-Double80 wcstod80(const wchar_t *s, wchar_t **end) {
-  return _strtod80<wchar_t>(s, end);
 }
 
 char *d80toa(char *dst, const Double80 &x) {

@@ -361,6 +361,18 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
 
       const Double80 diff = pi - strtod80("3.14159265358979324", NULL);
       verify(fabs(diff) < 1e-17);
+
+      Double80 tmp1 = strtod80("1.18973149535723237e+4932", NULL);
+      verify((tmp1 == Double80::DBL80_MAX) && (errno == ERANGE));
+
+      tmp1 = strtod80("-1.18973149535723237e+4932", NULL);
+      verify((tmp1 == -Double80::DBL80_MAX) && (errno == ERANGE));
+
+      tmp1 = strtod80("3.36210314311209109e-4932", NULL);
+      verify((tmp1 == Double80::DBL80_MIN) && (errno == ERANGE));
+
+      tmp1 = strtod80("-3.36210314311209109e-4932", NULL);
+      verify((tmp1 == -Double80::DBL80_MIN) && (errno == ERANGE));
     }
 
     static double testRound(double x64, int dec) {

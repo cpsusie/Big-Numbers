@@ -132,8 +132,8 @@ void StringParametersIterator::init(const CompactDoubleArray &values) {
     const int d80expo10 = Double80::getExpo10(d80);
     const int nexpo10   = (int)BigReal::getExpo10(n);
     if(d80expo10 != d64expo10 || nexpo10 != d64expo10) {
-      printf("expo10 mismatch:%20.14le d64expo10:%3d d80expo10:%3d numberExpo10:%3d\n",d64,d64expo10,d80expo10,nexpo10);
-      abort();
+      throwException(_T("getExpo10(%20.14le) mismatch. (double):%3d, (Double80):%3d, (BigReal):%3d")
+                    ,d64,d64expo10,d80expo10,nexpo10);
     }
   }
 
@@ -355,4 +355,5 @@ void testToString() {
   const double timeUsage = getProcessTime() - startTime;
 
   tcout << _T("Total time usage:") << ufparam(3) << ((getProcessTime() - startTime) / 1e6) << _T(" sec.") << endl;
+
 }

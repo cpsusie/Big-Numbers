@@ -218,18 +218,18 @@ public:
     FPUgetEnvironment(&env);
     return env.m_tagWord;
   }
-  static inline FPUState  getState() {
+  static inline FPUState         getState() {
     FPUState state;
     FPUgetState(&state);
     return state;
   }
-  static inline void      clearExceptions() {
+  static inline void             clearExceptions() {
     FPUclearExceptions();
   }
-  static inline void      clearExceptionsNoWait() {
+  static inline void             clearExceptionsNoWait() {
     FPUclearExceptionsNoWait();
   }
-  static inline void      clearStatusWord() {
+  static inline void             clearStatusWord() {
     const FPUControlWord cw = getControlWord();
     init();
     setControlWord(cw);
@@ -256,21 +256,30 @@ public:
     return (FPURoundMode)getControlWord().m_rc;
   }
   // returns current FPU controlword
-  static FPUControlWord   adjustExceptionMask(USHORT enable, USHORT disable);
-  static inline void      restoreControlWord(FPUControlWord cw) {
+  static FPUControlWord          adjustExceptionMask(USHORT enable, USHORT disable);
+  static inline void             restoreControlWord(FPUControlWord cw) {
     setControlWord(cw);
   }
-  static inline int       getStackHeight() {
+  static inline int              getStackHeight() {
     const int TOP = getStatusWord().m_top;
     return (TOP != 0) ? (8 - TOP) : (getTagWord().m_data == 0xffff) ? 0 : 8;
   }
-  static inline bool      stackOverflow() {
+  static inline bool             stackOverflow() {
     return (getStatusWord().m_data & 0x240) == 0x240;
   }
-  static inline bool      stackUnderflow() {
+  static inline bool             stackUnderflow() {
     return (getStatusWord().m_data & 0x240) == 0x040;
   }
-  static inline bool      stackFault() {
+  static inline bool             stackFault() {
     return getStatusWord().m_sf;
   }
+  static _se_translator_function setExceptionTranslator(_se_translator_function f);
 };
+
+class FPUException {
+public:
+  int m_code;
+  FPUException(int code) : m_code(code) {
+  }
+};
+void FPUexceptionTranslator(UINT u, EXCEPTION_POINTERS *pExp);
