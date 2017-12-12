@@ -67,6 +67,11 @@ FPUclearExceptions PROC
     fclex
     ret
 FPUclearExceptions ENDP
+;void FPUclearExceptionsNoWait();
+FPUclearExceptionsNoWait PROC
+    fnclex
+    ret
+FPUclearExceptionsNoWait ENDP
 
 ; ----------------- Conversion functions from short,USHORT,int,UINT,INT64 UINT64,float,double -> Double80 
 

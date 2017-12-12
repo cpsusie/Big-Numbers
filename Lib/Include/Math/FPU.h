@@ -133,6 +133,7 @@ void FPUsetControlWord(WORD cw);
 void FPUgetEnvironment(void *env);
 void FPUgetState(      void *state);
 void FPUclearExceptions();
+void FPUclearExceptionsNoWait();
 };
 #endif
 
@@ -182,6 +183,11 @@ private:
       fclex
     }
   }
+  void static inline      FPUclearExceptionsNoWait() {
+    __asm {
+      fnclex
+    }
+  }
 #endif // IS23BIT
 
 public:
@@ -219,6 +225,9 @@ public:
   }
   static inline void      clearExceptions() {
     FPUclearExceptions();
+  }
+  static inline void      clearExceptionsNoWait() {
+    FPUclearExceptionsNoWait();
   }
   static inline void      clearStatusWord() {
     const FPUControlWord cw = getControlWord();
