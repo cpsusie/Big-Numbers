@@ -109,7 +109,7 @@ String FPUTagWord::toString() const {
 }
 
 String FPUEnvironment::toString() const {
-  return format(_T("%s\n%s\n%s\nIP:%08x %Op:%08x")
+  return format(_T("%s\n%s\n%s\nIP:%08x Op:%08x")
                ,m_ctrlWord.toString().cstr()
                ,m_statusWord.toString().cstr()
                ,m_tagWord.toString().cstr()
