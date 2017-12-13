@@ -11,35 +11,6 @@ const _uint128 _UI128_MAX(0xffffffffffffffff, 0xffffffffffffffff);
 
 static const _uint128 _10(10);
 
-static UINT convertNumberChar(wchar_t digit) {
-  switch(digit) {
-  case '0': return 0;
-  case '1': return 1;
-  case '2': return 2;
-  case '3': return 3;
-  case '4': return 4;
-  case '5': return 5;
-  case '6': return 6;
-  case '7': return 7;
-  case '8': return 8;
-  case '9': return 9;
-  case 'a':
-  case 'A': return 10;
-  case 'b':
-  case 'B': return 11;
-  case 'c':
-  case 'C': return 12;
-  case 'd':
-  case 'D': return 13;
-  case 'e':
-  case 'E': return 14;
-  case 'f':
-  case 'F': return 15;
-  default :
-    return 0;
-  }
-}
-
 // Conversion from _int128/_uint128 to string
 
 // Number of digits that should be appended to the string for each loop
@@ -109,7 +80,11 @@ static const _uint128 powRadix[] = {
 #define STRREV(str)      ((sizeof(Ctype)==sizeof(char))?(Ctype*)_strrev((char*)str):(Ctype*)_wcsrev((wchar_t*)str))
 
 template<class Int128Type, class Ctype> Ctype *int128toStr(Int128Type value, Ctype *str, int radix) {
-  assert(radix >= 2 && radix <= 36);
+  if((radix < 2) || (radix > 36)) {
+    errno = EINVAL;
+    str[0] = 0;
+    return str;
+  }
 
   bool setSign = false;
   if(value.isZero()) {
@@ -220,7 +195,10 @@ static inline bool isRadixDigit(wchar_t ch, int radix, int &value) {
 }
 
 template<class Int128Type, class Ctype> Int128Type strtoint128(const Ctype *s, Ctype **end, int radix) {
-  assert((radix == 0) || (radix >= 2) && (radix <= 36));
+  if((radix != 0) && ((radix < 2) || (radix > 36))) {
+    errno = EINVAL;
+    return -1;
+  }
 
   bool negative = false;
   bool gotDigit = false;
