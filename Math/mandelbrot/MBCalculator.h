@@ -6,6 +6,7 @@
 #include <PropertyContainer.h>
 #include <Math/Transformation.h>
 #include <Math/Double80.h>
+#include <Math/FPU.h>
 
 //#define SAVE_CALCULATORINFO
 

@@ -265,10 +265,10 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
 	TEST_CLASS(TestDouble80) {
     public:
 
-    TestDouble80() {
-      redirectDebugLog(true);
-      debugLogSetTimePrefix(true,true);
-    }
+//    TestDouble80() {
+//      redirectDebugLog(true);
+//      debugLogSetTimePrefix(true,true);
+//    }
 
     TEST_METHOD(Double80Testio) {
 
@@ -356,6 +356,9 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
           }
         }
       }
+    }
+
+    TEST_METHOD(Double80TestStrToD80) {
 
       const Double80 pi = Double80::M_PI;
 
@@ -573,7 +576,7 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
     TEST_METHOD(Double80TestReadWrite) {
       const char *fileName = "double80.dat";
 
-      debugLog(_T("%s\n%s\n"), __TFUNCTION__, FPU::getState().toString().cstr());
+//      debugLog(_T("%s\n%s\n"), __TFUNCTION__, FPU::getState().toString().cstr());
 
       const size_t count = 500;
       tofstream out(fileName);
@@ -612,7 +615,7 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
       //  USHORT cw = FPU::getControlWord();
       //  printf("FPU ctrlWord:%04x (%s)\n", cw, sprintbin(cw).cstr());
 
-      debugLog(_T("%s\n%s\n"), __TFUNCTION__, FPU::getState().toString().cstr());
+//      debugLog(_T("%s\n%s\n"), __TFUNCTION__, FPU::getState().toString().cstr());
 
       for(double x = 0; x < 10; x += 0.1) {
         const double d64c1 = cos(x);
@@ -652,7 +655,7 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
       verify(sizeof(FPUEnvironment) == 28 );
       verify(sizeof(FPUState      ) == 108);
 
-      debugLog(_T("%s\n%s\n"), __TFUNCTION__, FPU::getState().toString().cstr());
+//      debugLog(_T("%s\n%s\n"), __TFUNCTION__, FPU::getState().toString().cstr());
       FPU::clearExceptions();
 
       const FPUControlWord cwSave = FPU::getControlWord();

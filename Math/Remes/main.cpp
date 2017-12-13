@@ -4,6 +4,7 @@
 #include <String>
 #include <math.h>
 #include <Math/Double80.h>
+#include <Math/FPU.h>
 
 /*
 #include "gamma.h"
