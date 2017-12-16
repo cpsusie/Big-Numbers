@@ -1,8 +1,9 @@
 #include "pch.h"
 #include <Math/Expression/ExpressionNode.h>
 
-ExpressionVariable::ExpressionVariable(const String &name, bool isConstant, bool isDefined, bool isLoopVar) {
-  m_name       = name;
+ExpressionVariable::ExpressionVariable(const String &name, bool isConstant, bool isDefined, bool isLoopVar)
+: m_name(name)
+{
   m_valueIndex = -1;
   m_constant   = isConstant;
   m_defined    = isDefined;

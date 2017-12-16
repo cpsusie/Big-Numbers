@@ -86,9 +86,12 @@ void ExpressionNodeSum::dumpNode(String &s, int level) const {
 }
 
 String ExpressionNodeSum::toString() const {
+  const int n = (int)m_elements.size();
+  if (n == 0) {
+    return _T("0");
+  }
   bool first = true;
   String result;
-  const int n = (int)m_elements.size();
   for(int i = 0; i < n; i++) {
     SumElement *e = m_elements[i];
     if(e->isPositive()) {

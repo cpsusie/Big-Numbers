@@ -8,7 +8,7 @@
 
 class ExpressionVariable {
 private:
-  String       m_name;
+  const String m_name;
   // Index into parserTree.m_valueTable
   int          m_valueIndex;
   UINT         m_constant : 1;

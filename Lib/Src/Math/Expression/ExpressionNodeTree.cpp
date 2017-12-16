@@ -248,6 +248,7 @@ String ExpressionNodeTree::toString() const {
   case ASIN          : return _T("asin("  ) + CHILDSTR(0) + RPSTR;
   case ASINH         : return _T("asinh(" ) + CHILDSTR(0) + RPSTR;
   case ATAN          : return _T("atan("  ) + CHILDSTR(0) + RPSTR;
+  case ATAN2         : return _T("atan2(" ) + CHILDSTR(0) + COMMASTR + CHILDSTR(1) + RPSTR;
   case ATANH         : return _T("atanh(" ) + CHILDSTR(0) + RPSTR;
   case CEIL          : return _T("ceil("  ) + CHILDSTR(0) + RPSTR;
   case COS           : return _T("cos("   ) + CHILDSTR(0) + RPSTR;
@@ -256,6 +257,8 @@ String ExpressionNodeTree::toString() const {
   case CSC           : return _T("csc("   ) + CHILDSTR(0) + RPSTR;
   case ERF           : return _T("erf("   ) + CHILDSTR(0) + RPSTR;
   case EXP           : return _T("exp("   ) + CHILDSTR(0) + RPSTR;
+  case EXP10         : return _T("exp10(" ) + CHILDSTR(0) + RPSTR;
+  case EXP2          : return _T("exp2("  ) + CHILDSTR(0) + RPSTR;
   case FAC           : return _T("fac("   ) + CHILDSTR(0) + RPSTR;
   case FLOOR         : return _T("floor(" ) + CHILDSTR(0) + RPSTR;
   case GAMMA         : return _T("gamma(" ) + CHILDSTR(0) + RPSTR;
@@ -263,6 +266,7 @@ String ExpressionNodeTree::toString() const {
   case INVERF        : return _T("inverf(") + CHILDSTR(0) + RPSTR;
   case LN            : return _T("ln("    ) + CHILDSTR(0) + RPSTR;
   case LOG10         : return _T("log10(" ) + CHILDSTR(0) + RPSTR;
+  case LOG2          : return _T("log2("  ) + CHILDSTR(0) + RPSTR;
   case NORM          : return _T("norm("  ) + CHILDSTR(0) + RPSTR;
   case PROBIT        : return _T("probit(") + CHILDSTR(0) + RPSTR;
   case SEC           : return _T("sec("   ) + CHILDSTR(0) + RPSTR;
