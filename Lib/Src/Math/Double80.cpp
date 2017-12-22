@@ -36,9 +36,24 @@ const Double80 Double80::DBL80_NINF   ((BYTE*)"\x00\x00\x00\x00\x00\x00\x00\x80\
 
 const int      Double80::DBL80_DIG = 19;
 
+#define MAXPOW10 4932
+class Pow10Cache {
+private:
+  Double80 m_pow10e16[309];
+public:
+  Pow10Cache();
+  Double80 pow10(int p) const;
+};
+
+static Pow10Cache         p10Cache;
+
 static const Double80     M_PI_05     ((BYTE*)"\x35\xc2\x68\x21\xa2\xda\x0f\xc9\xff\x3f"); // pi/2
 static const Double80     tenE18(  1e18    );
 static const Double80     tenE18M1(tenE18-1);
+
+Double80 Double80::pow10(int p) {
+  return p10Cache.pow10(p);
+}
 
 #ifdef IS32BIT
 static const float ten(10.0f);
@@ -86,9 +101,8 @@ x_not_zero:
     and ax, 0xf7ff              // clear bit 11
     mov ctrlFlags, ax           // FPU.ctrlWorld.bit[10;11] = 1,0 = ROUND DOWN
     fldcw ctrlFlags
-    frndint
-    fldcw cwSave
     fistp result
+    fldcw cwSave
 Exit:
   }
   return result;
@@ -616,4 +630,41 @@ ULONG Double80::hashCode() const {
   return *(ULONG*)m_value
        ^ *(ULONG*)(m_value+4)
        ^ *(USHORT*)(m_value+8);
+}
+
+
+Pow10Cache::Pow10Cache() {
+  Double80 p = 1;
+  for(int i = 0; i < ARRAYSIZE(m_pow10e16); i++, p *= 10000000000000000ui64) {
+    m_pow10e16[i] = p;
+  }
+}
+
+Double80 Pow10Cache::pow10(int p) const {
+  if(p < 0) {
+    return Double80::one / pow10(-p);
+  } else {
+    const int index = p>>4;
+    if(index >= ARRAYSIZE(m_pow10e16)) return Double80::DBL80_MAX;
+    switch(p & 0xf) {
+    case 0 : return m_pow10e16[index];
+    case 1 : return m_pow10e16[index] * 10;
+    case 2 : return m_pow10e16[index] * 100;
+    case 3 : return m_pow10e16[index] * 1000;
+    case 4 : return m_pow10e16[index] * 10000;
+    case 5 : return m_pow10e16[index] * 100000;
+    case 6 : return m_pow10e16[index] * 1000000;
+    case 7 : return m_pow10e16[index] * 10000000ui64;
+    case 8 : return m_pow10e16[index] * 100000000ui64;
+    case 9 : return m_pow10e16[index] * 1000000000ui64;
+    case 10: return m_pow10e16[index] * 10000000000ui64;
+    case 11: return m_pow10e16[index] * 100000000000ui64;
+    case 12: return m_pow10e16[index] * 1000000000000ui64;
+    case 13: return m_pow10e16[index] * 10000000000000ui64;
+    case 14: return m_pow10e16[index] * 100000000000000ui64;
+    case 15: return m_pow10e16[index] * 1000000000000000ui64;
+    }
+  }
+  throwInvalidArgumentException(__TFUNCTION__, _T("p=%d"), p);
+  return 0;
 }

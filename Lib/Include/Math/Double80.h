@@ -127,6 +127,7 @@ extern const Double80 _D80maxi64P1;
 class Double80 {
 private:
   BYTE m_value[10]; // Must be the first field in the class
+
 public:
 #ifdef IS32BIT
   // Assume x > _I16_MAX
@@ -376,15 +377,17 @@ public:
 
   static const int      DBL80_DIG;     // # of decimal digits of precision
 
+  static Double80       pow10(int p);
+
   static void initClass();
 };
 
 #ifdef IS32BIT
 
-int    getInt(   const Double80 &x);
-UINT   getUint(  const Double80 &x);
-INT64  getInt64( const Double80 &x);
-UINT64 getUint64(const Double80 &x);
+int    getInt(    const Double80 &x);
+UINT   getUint(   const Double80 &x);
+INT64  getInt64(  const Double80 &x);
+UINT64 getUint64( const Double80 &x);
 inline float getFloat(const Double80 &x) {
   float result;
   __asm {
@@ -2852,12 +2855,12 @@ inline void D80ToBCD(BYTE bcd[10], const Double80 &x) {
 void D80ToBCDAutoScale(BYTE bcd[10], const Double80 &x, int &expo10);
 
 #else // IS64BIT
-inline int    getInt(   const Double80 &x) { return D80ToI32(   x); }
-inline UINT   getUint(  const Double80 &x) { return D80ToUI32(  x); }
-inline INT64  getInt64( const Double80 &x) { return D80ToI64(   x); }
-inline UINT64 getUint64(const Double80 &x) { return D80ToUI64(  x); }
-inline float  getFloat( const Double80 &x) { return D80ToFlt(   x); }
-inline double getDouble(const Double80 &x) { return D80ToDbl(   x); }
+inline int    getInt(    const Double80 &x) { return D80ToI32(  x); }
+inline UINT   getUint(   const Double80 &x) { return D80ToUI32( x); }
+inline INT64  getInt64(  const Double80 &x) { return D80ToI64(  x); }
+inline UINT64 getUint64( const Double80 &x) { return D80ToUI64( x); }
+inline float  getFloat(  const Double80 &x) { return D80ToFlt(  x); }
+inline double getDouble( const Double80 &x) { return D80ToDbl(  x); }
 
 inline Double80 operator+(const Double80 &x, const short    &y) { Double80 t(x); D80addI16(    t, y); return t;}
 inline Double80 operator-(const Double80 &x, const short    &y) { Double80 t(x); D80subI16(    t, y); return t;}
@@ -3243,8 +3246,14 @@ inline bool isFloat(const Double80 &x) {
 inline bool isInt64(const Double80 &x) {
   return x == getInt64(x);
 }
+inline bool isUint64(const Double80 &x) {
+  return x == getUint64(x);
+}
 inline bool isInt(const Double80 &x) {
   return x == getInt(x);
+}
+inline bool isUint(const Double80 &x) {
+  return x == getUint(x);
 }
 
 Double80 cot(  const Double80 &x);
@@ -3280,7 +3289,6 @@ bool     isNan(      const Double80 &x);
 bool     isPInfinity(const Double80 &x);
 bool     isNInfinity(const Double80 &x);
 bool     isInfinity( const Double80 &x);
-
 
 Double80 randDouble80(Random *rnd = NULL);
 Double80 randDouble80(const Double80 &low, const Double80 &high, Random *rnd = NULL);

@@ -17,7 +17,7 @@ static TCHAR *findFirstDigit(TCHAR *str) {
   return NULL;
 }
 
-#define MAXPRECISION 18
+#define MAXPRECISION Double80::DBL80_DIG
 
 static void formatNan(String &result, const Double80 &x) {
   if(!isInfinity(x)) {
@@ -34,7 +34,7 @@ static void formatNan(String &result, const Double80 &x) {
 
 static void formatFixed(String &result, const Double80 &x, streamsize precision, long flags, bool removeTrailingZeroes) {
   TCHAR tmp[30];
-  d80tot(tmp, round(x,(int)precision));
+  d80tot(tmp, (precision >= Double80::DBL80_DIG) ? x : round(x,(int)precision));
   const TCHAR  *mantissa  = findFirstDigit(tmp);
   TCHAR        *comma     = _tcschr(tmp,_T('.'));
   TCHAR        *decimals  = NULL;
@@ -100,7 +100,7 @@ static void formatFixed(String &result, const Double80 &x, streamsize precision,
 }
 
 static void formatScientific(String &result, const Double80 &x, streamsize precision, long flags, intptr_t expo10, bool removeTrailingZeroes) {
-  TCHAR tmp[30];
+  TCHAR tmp[50];
   d80tot( tmp, x);
   TCHAR  *mantissa  = findFirstDigit(tmp);
   String  decimals;
@@ -183,11 +183,11 @@ StrStream &operator<<(StrStream &stream, const Double80 &x) {
     if(x.isZero()) {
       StrStream::formatZero(result,precision,flags,MAXPRECISION);
     } else { // x defined && x != 0
-      if((flags & (ios::scientific|ios::fixed)) == ios::fixed) { // Use fixed format
+      if((flags & ios::floatfield) == ios::fixed) { // Use fixed format
         formatFixed(result, x, precision, flags, false);
       } else {
-        int expo10 = Double80::getExpo10(x);
-        if((flags & (ios::scientific|ios::fixed)) == ios::scientific) { // Use scientific format
+        const int expo10 = Double80::getExpo10(x);
+        if((flags & ios::floatfield) == ios::scientific) { // Use scientific format
           formatScientific(result, x, precision, flags, expo10, false);
         } else {
           if((expo10 < -4) || (expo10 > 14) || (expo10 > 0 && expo10 >= precision) || (expo10 > precision)) { // neither scientific nor fixed format is specified

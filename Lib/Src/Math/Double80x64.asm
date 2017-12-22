@@ -832,10 +832,9 @@ D80getExpo10 PROC
     fxch    st(1)                              ; st0 = |x|     , st1 = log10(2)=ln(2)/ln(10)
     fyl2x                                      ; st0 = st1*log2(st0) = ln(2)/ln(10)*ln(x)/ln(2) = log10(|x|)
     pushRoundMode ROUNDDOWN
-    frndint
-    popRoundMode
     fistp   QWORD PTR[rsp-8]
     mov     rax, QWORD PTR[rsp-8]
+    popRoundMode
     ret
 xIsZero:
     fstp    st(0)                              ; pop x
