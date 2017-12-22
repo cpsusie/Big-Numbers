@@ -32,7 +32,7 @@ namespace TestDouble80 {
     return (x64 == 0) ? relativeError : relativeError / x64;
   }
 
-  static Double80 getRelativeError(const Double80 x, const Double80 &expected) {
+  static Double80 getRelativeError(const Double80 &x, const Double80 &expected) {
     const Double80 absError = fabs(x - expected);
     return expected.isZero() ? absError : absError / expected;
   }
@@ -359,7 +359,6 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
     }
 
     TEST_METHOD(Double80TestStrToD80) {
-
       const Double80 pi = Double80::M_PI;
 
       const Double80 diff = pi - strtod80("3.14159265358979324", NULL);
@@ -376,6 +375,28 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
 
       tmp1 = strtod80("-3.36210314311209109e-4932", NULL);
       verify((tmp1 == -Double80::DBL80_MIN) && (errno == ERANGE));
+
+      const Double80 step  = 1.0237432;
+      const Double80 start = Double80::pow10(-4927);
+      const Double80 end   = Double80::pow10( 4930);
+      Double80 maxRelError = 0;
+      for(Double80 p = start; p < end; p *= step) {
+        char str[40];
+        Double80 d80 = randDouble80(0,p);
+        d80toa(str,d80);
+        Double80 d80a = strtod80(str, NULL);
+        const Double80 err = getRelativeError(d80a, d80);
+        if(err > maxRelError) {
+          maxRelError = err;
+        }
+        if(err > 3e-19) {
+          TCHAR errstr[30], diffstr[40];
+          OUTPUT(_T("Fejl for d80=%s: Relative error:%s, diff=%s"), str, d80tot(errstr, err), d80tot(diffstr,d80a-d80));
+          verify(false);
+        }
+      }
+      TCHAR maxstr[30];
+      OUTPUT(_T("Max relative Error:%s"), d80tot(maxstr, maxRelError));
     }
 
     static double testRound(double x64, int dec) {

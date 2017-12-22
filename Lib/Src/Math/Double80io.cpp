@@ -32,7 +32,7 @@ static void formatNan(String &result, const Double80 &x) {
 #define addDecimalPoint(s) { s += _T("."); }
 #define addExponentChar(s) { s += ((flags & ios::uppercase) ? _T("E") : _T("e")); }
 
-static void formatFixed(String &result, const Double80 &x, streamsize precision, long flags, bool removeTrailingZeroes) {
+static void formatFixed(String &result, const Double80 &x, streamsize precision, long flags, int expo10, bool removeTrailingZeroes) {
   TCHAR tmp[30];
   d80tot(tmp, (precision >= Double80::DBL80_DIG) ? x : round(x,(int)precision));
   const TCHAR  *mantissa  = findFirstDigit(tmp);
@@ -99,7 +99,7 @@ static void formatFixed(String &result, const Double80 &x, streamsize precision,
   }
 }
 
-static void formatScientific(String &result, const Double80 &x, streamsize precision, long flags, intptr_t expo10, bool removeTrailingZeroes) {
+static void formatScientific(String &result, const Double80 &x, streamsize precision, long flags, bool removeTrailingZeroes) {
   TCHAR tmp[50];
   d80tot( tmp, x);
   TCHAR  *mantissa  = findFirstDigit(tmp);
@@ -151,7 +151,7 @@ static void formatScientific(String &result, const Double80 &x, streamsize preci
     }
   }
 
-  if((flags & ios::showpoint) || precision > 0) {
+  if((flags & ios::showpoint) || (precision > 0)) {
     addDecimalPoint(result);
     if(precision > 0) {
       result += substr(decimals,0,(intptr_t)precision);
@@ -164,7 +164,7 @@ static void formatScientific(String &result, const Double80 &x, streamsize preci
 
 StrStream &operator<<(StrStream &stream, const Double80 &x) {
   streamsize precision  = stream.getPrecision();
-  long flags            = stream.getFlags();
+  const long flags      = stream.getFlags();
 
   if(precision < 0) {
     precision = MAXPRECISION;
@@ -172,32 +172,27 @@ StrStream &operator<<(StrStream &stream, const Double80 &x) {
 
   String result;
   if(isNan(x)) {
-    formatNan(result,x);
+    formatNan(result, x);
   } else { // x defined
     if(x.isNegative()) {
       result = _T("-");
     } else if(flags & ios::showpos) {
       result = _T("+");
     }
-
     if(x.isZero()) {
-      StrStream::formatZero(result,precision,flags,MAXPRECISION);
+      StrStream::formatZero(result, precision, flags, MAXPRECISION);
     } else { // x defined && x != 0
-      if((flags & ios::floatfield) == ios::fixed) { // Use fixed format
-        formatFixed(result, x, precision, flags, false);
+      const int expo10 = Double80::getExpo10(x);
+      if((flags & ios::floatfield) == ios::fixed) {             // Use fixed format
+        formatFixed(result, x, precision, flags, expo10, false);
+      } else if((flags & ios::floatfield) == ios::scientific) { // Use scientific format
+        formatScientific(result, x, precision, flags, false);
+      } else if((expo10 < -4) || (expo10 > 14) || (expo10 > 0 && expo10 >= precision) || (expo10 > precision)) { // neither scientific nor fixed format is specified
+        precision = max(0,precision-1);
+        formatScientific(result, x, precision, flags, (flags & ios::showpoint) == 0);
       } else {
-        const int expo10 = Double80::getExpo10(x);
-        if((flags & ios::floatfield) == ios::scientific) { // Use scientific format
-          formatScientific(result, x, precision, flags, expo10, false);
-        } else {
-          if((expo10 < -4) || (expo10 > 14) || (expo10 > 0 && expo10 >= precision) || (expo10 > precision)) { // neither scientific nor fixed format is specified
-            precision = max(0,precision-1);
-            formatScientific(result, x, precision, flags, expo10, (flags & ios::showpoint) == 0);
-          } else {
-            const intptr_t prec = (precision == 0) ? abs(expo10) : max(0,(intptr_t)precision-expo10-1);
-            formatFixed(result, x, prec, flags, ((flags & ios::showpoint) == 0) || precision <= 1);
-          }
-        }
+        const intptr_t prec = (precision == 0) ? abs(expo10) : max(0,(intptr_t)precision-expo10-1);
+        formatFixed(result, x, prec, flags, expo10, ((flags & ios::showpoint) == 0) || precision <= 1);
       }
     } // x defined && x != 0
   } // end x defined
