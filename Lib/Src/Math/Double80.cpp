@@ -579,7 +579,7 @@ Double80 round(const Double80 &x, int dec) { // 5-rounding
     case 0:
       return (sx == 1) ? floor(0.5+x) : -floor(0.5-x);
     case 1 :
-      { Double80 p = exp10(dec);
+      { Double80 p = Double80::pow10(dec);
         const FPUControlWord cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_ROUND);
         Double80 result = (sx == 1) ? floor(0.5+x*p) : -floor(0.5-x*p);
         result /= p;
@@ -587,7 +587,7 @@ Double80 round(const Double80 &x, int dec) { // 5-rounding
         return result;
       }
     case -1:
-      { Double80 p = exp10(-dec);
+      { Double80 p = Double80::pow10(-dec);
         const FPUControlWord cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_ROUND);
         Double80 result = (sx == 1) ? floor(0.5+x/p) : -floor(0.5-x/p);
         result *= p;
