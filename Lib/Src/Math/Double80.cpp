@@ -45,13 +45,12 @@ public:
   Double80 pow10(int p) const;
 };
 
-static Pow10Cache         p10Cache;
-
 static const Double80     M_PI_05     ((BYTE*)"\x35\xc2\x68\x21\xa2\xda\x0f\xc9\xff\x3f"); // pi/2
 static const Double80     tenE18(  1e18    );
 static const Double80     tenE18M1(tenE18-1);
 
 Double80 Double80::pow10(int p) {
+  static Pow10Cache p10Cache;
   return p10Cache.pow10(p);
 }
 
@@ -646,23 +645,24 @@ Double80 Pow10Cache::pow10(int p) const {
   } else {
     const int index = p>>4;
     if(index >= ARRAYSIZE(m_pow10e16)) return Double80::DBL80_MAX;
+#define MULP10(f) (index?m_pow10e16[index]*(f):(f))
     switch(p & 0xf) {
     case 0 : return m_pow10e16[index];
-    case 1 : return m_pow10e16[index] * 10;
-    case 2 : return m_pow10e16[index] * 100;
-    case 3 : return m_pow10e16[index] * 1000;
-    case 4 : return m_pow10e16[index] * 10000;
-    case 5 : return m_pow10e16[index] * 100000;
-    case 6 : return m_pow10e16[index] * 1000000;
-    case 7 : return m_pow10e16[index] * 10000000ui64;
-    case 8 : return m_pow10e16[index] * 100000000ui64;
-    case 9 : return m_pow10e16[index] * 1000000000ui64;
-    case 10: return m_pow10e16[index] * 10000000000ui64;
-    case 11: return m_pow10e16[index] * 100000000000ui64;
-    case 12: return m_pow10e16[index] * 1000000000000ui64;
-    case 13: return m_pow10e16[index] * 10000000000000ui64;
-    case 14: return m_pow10e16[index] * 100000000000000ui64;
-    case 15: return m_pow10e16[index] * 1000000000000000ui64;
+    case 1 : return MULP10(10);
+    case 2 : return MULP10(100);
+    case 3 : return MULP10(1000);
+    case 4 : return MULP10(10000);
+    case 5 : return MULP10(100000);
+    case 6 : return MULP10(1000000);
+    case 7 : return MULP10(10000000);
+    case 8 : return MULP10(100000000);
+    case 9 : return MULP10(1000000000);
+    case 10: return MULP10(10000000000i64);
+    case 11: return MULP10(100000000000i64);
+    case 12: return MULP10(1000000000000i64);
+    case 13: return MULP10(10000000000000i64);
+    case 14: return MULP10(100000000000000i64);
+    case 15: return MULP10(1000000000000000i64);
     }
   }
   throwInvalidArgumentException(__TFUNCTION__, _T("p=%d"), p);
