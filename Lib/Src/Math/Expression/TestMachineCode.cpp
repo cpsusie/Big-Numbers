@@ -569,7 +569,11 @@ void MachineCode::genTestSequence() {
   emit(NOOP);
 
   const IntelOpcode opcodes[] = {
-    OP_1ARG(NOT )
+    SETO   ,SETNO   ,SETB   ,SETAE
+   ,SETE   ,SETNE   ,SETBE   ,SETA
+   ,SETS   ,SETNS   ,SETPE   ,SETPO
+   ,SETL   ,SETGE   ,SETLE   ,SETG
+   ,OP_1ARG(NOT )
    ,OP_1ARG(NEG )
    ,OP_1ARG(INC )
    ,OP_1ARG(DEC )
@@ -640,8 +644,8 @@ void MachineCode::genTestSequence() {
     int r;
 
     if(op.hasRegSrcMode()) {
-      const int maxReg = op.hasRex() ? 15 : 7;
-      for(r = 0; r < maxReg; r++) {
+      const int maxReg = op.hasRexMode() ? 15 : 7;
+      for(r = 0; r <= maxReg; r++) {
         const int reg = registers[r];
         emit(REG_SRC(op, reg));                                           // size=2 ex:add eax,ecx
       }
