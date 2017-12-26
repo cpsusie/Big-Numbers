@@ -39,7 +39,7 @@ const int      Double80::DBL80_DIG = 19;
 #define MAXPOW10 4932
 class Pow10Cache {
 private:
-  Double80 m_pow10e16[309];
+  Double80 m_pow10e16[309], m_pow10[16];
 public:
   Pow10Cache();
   Double80 pow10(int p) const;
@@ -634,8 +634,12 @@ ULONG Double80::hashCode() const {
 
 Pow10Cache::Pow10Cache() {
   Double80 p = 1;
-  for(int i = 0; i < ARRAYSIZE(m_pow10e16); i++, p *= 10000000000000000ui64) {
-    m_pow10e16[i] = p;
+  for(int i = 0; i < ARRAYSIZE(m_pow10); i++, p *= 10) {
+    m_pow10[i] = p;
+  }
+  Double80 p1 = 1;
+  for(int i = 0; i < ARRAYSIZE(m_pow10e16); i++, p1 *= p) {
+    m_pow10e16[i] = p1;
   }
 }
 
@@ -643,26 +647,13 @@ Double80 Pow10Cache::pow10(int p) const {
   if(p < 0) {
     return Double80::one / pow10(-p);
   } else {
-    const int index = p>>4;
-    if(index >= ARRAYSIZE(m_pow10e16)) return Double80::DBL80_MAX;
-#define MULP10(f) (index?m_pow10e16[index]*(f):(f))
-    switch(p & 0xf) {
-    case 0 : return m_pow10e16[index];
-    case 1 : return MULP10(10);
-    case 2 : return MULP10(100);
-    case 3 : return MULP10(1000);
-    case 4 : return MULP10(10000);
-    case 5 : return MULP10(100000);
-    case 6 : return MULP10(1000000);
-    case 7 : return MULP10(10000000);
-    case 8 : return MULP10(100000000);
-    case 9 : return MULP10(1000000000);
-    case 10: return MULP10(10000000000i64);
-    case 11: return MULP10(100000000000i64);
-    case 12: return MULP10(1000000000000i64);
-    case 13: return MULP10(10000000000000i64);
-    case 14: return MULP10(100000000000000i64);
-    case 15: return MULP10(1000000000000000i64);
+    const int index10E16 = p>>4;
+    const int index10    = p&0xf;
+    if(index10E16) {
+      if(index10E16 >= ARRAYSIZE(m_pow10e16)) return Double80::DBL80_MAX;
+      return index10 ? (m_pow10e16[index10E16] * m_pow10[index10]) : m_pow10e16[index10E16];
+    } else { // index10E16 == 0
+      return m_pow10[index10];
     }
   }
   throwInvalidArgumentException(__TFUNCTION__, _T("p=%d"), p);
