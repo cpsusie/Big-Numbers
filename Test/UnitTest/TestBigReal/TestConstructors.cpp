@@ -104,8 +104,6 @@ static void checkExact(int line, _uint128 x, DigitPool *pool) {
 
 void testConstructors(TestStatistic &stat) {
   DigitPool *pool = stat.getDigitPool();
-//  Double80::enableDebugString(true);
-//  BigReal::enableDebugString(  true);
 
   checkZero(pool);
 
@@ -149,13 +147,13 @@ void testConstructors(TestStatistic &stat) {
   maxError64 = getRelativeError64(-DBL_MAX,pool);
   verify(maxError64 == 0);
 
-  double maxError80 = getRelativeError80(Double80::DBL80_MIN,pool);
+  double maxError80 = getRelativeError80(DBL80_MIN,pool);
   verify(maxError80 < 1.09e-19 );
-  maxError80 = getRelativeError80(-Double80::DBL80_MIN,pool);
+  maxError80 = getRelativeError80(-DBL80_MIN,pool);
   verify(maxError80 < 1.09e-19 );
-  maxError80 = getRelativeError80(Double80::DBL80_MAX,pool);
+  maxError80 = getRelativeError80(DBL80_MAX,pool);
   verify(maxError80 == 0);
-  maxError80 = getRelativeError80(-Double80::DBL80_MAX,pool);
+  maxError80 = getRelativeError80(-DBL80_MAX,pool);
   verify(maxError80 == 0);
 
   for(int i = 0; i < 100000; i++) {

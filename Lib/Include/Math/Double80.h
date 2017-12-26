@@ -344,6 +344,13 @@ public:
 
 #endif // IS64BIT
 
+  inline UINT64 getSignificand() const {
+    return *((UINT64*)m_value);
+  }
+  inline UINT   getExponent() const {
+    return (*(UINT*)(m_value+8)) & 0x7fff;
+  }
+
   inline bool isPositive() const { return (m_value[9] & 0x80) == 0; }
   inline bool isNegative() const { return (m_value[9] & 0x80) != 0; }
 
@@ -367,26 +374,44 @@ public:
 
   static const Double80 zero;          // = 0
   static const Double80 one;           // = 1
-  static const Double80 M_PI;          // = 3.1415926535897932384626433
-  static const Double80 DBL80_EPSILON; // Smallest such that 1.0+DBL80_EPSILON != 1.0 (=1.08420217248550443e-019)
-  static const Double80 DBL80_MIN;     // Min positive value (=3.36210314311209209e-4932)
-  static const Double80 DBL80_MAX;     // Max value          (=1.18973149535723227e+4932)
-  static const Double80 DBL80_NAN;     // nan (undefined)
-  static const Double80 DBL80_PINF;    // +infinity;
-  static const Double80 DBL80_NINF;    // -infinity;
-
-  static const int      DBL80_DIG;     // # of decimal digits of precision
-
   static Double80       pow10(int p);
 
   static void initClass();
 };
 
+extern const Double80 DBL80_PI;      // = 3.1415926535897932384626433
+extern const Double80 DBL80_PI_05;   // pi/2
+extern const Double80 DBL80_EPSILON; // Smallest such that 1.0+DBL80_EPSILON != 1.0 (=1.08420217248550443e-019)
+extern const Double80 DBL80_MIN;     // Min positive value (=3.36210314311209209e-4932)
+extern const Double80 DBL80_MAX;     // Max value          (=1.18973149535723227e+4932)
+extern const Double80 DBL80_NAN;     // nan (undefined)
+extern const Double80 DBL80_PINF;    // +infinity;
+extern const Double80 DBL80_NINF;    // -infinity;
+
+#define               DBL80_DIG 19   // # of decimal digits of precision
+
 #ifdef IS32BIT
 
-int    getInt(    const Double80 &x);
+inline int getInt(const Double80 &x) {
+  int result;
+  __asm {
+    mov eax, x
+    fld TBYTE PTR [eax]
+    fisttp result
+  }
+  return result;
+}
 UINT   getUint(   const Double80 &x);
-INT64  getInt64(  const Double80 &x);
+inline INT64 getInt64(const Double80 &x) {
+  INT64 result;
+  __asm {
+    mov eax, x
+    fld TBYTE PTR [eax]
+    fisttp result
+  }
+  return result;
+}
+
 UINT64 getUint64( const Double80 &x);
 inline float getFloat(const Double80 &x) {
   float result;
@@ -2789,8 +2814,7 @@ inline Double80 sqr(const Double80 &x) {
   __asm {
     mov eax, DWORD PTR x
     fld TBYTE PTR [eax]
-    fld TBYTE PTR [eax]
-    fmul
+    fmul st(0), st(0)
     fstp result
   }
   return result;
@@ -2837,9 +2861,40 @@ void     sincos(Double80 &c, Double80 &s);
 Double80 exp(  const Double80 &x);
 Double80 exp10(const Double80 &x);
 Double80 exp2( const Double80 &x);
-Double80 log(  const Double80 &x);
-Double80 log10(const Double80 &x);
-Double80 log2( const Double80 &x);
+inline Double80 log(const Double80 &x) {
+  Double80 result;
+  __asm {
+    fldln2
+    mov eax, DWORD PTR x
+    fld TBYTE PTR [eax]
+    fyl2x
+    fstp result
+  }
+  return result;
+}
+inline Double80 log10(const Double80 &x) {
+  Double80 result;
+  __asm {
+    fldlg2
+    mov eax, DWORD PTR x
+    fld TBYTE PTR [eax]
+    fyl2x
+    fstp result
+  }
+  return result;
+}
+inline Double80 log2(const Double80 &x) {
+  Double80 result;
+  __asm {
+    fld1
+    mov eax, DWORD PTR x
+    fld TBYTE PTR [eax]
+    fyl2x
+    fstp result
+  }
+  return result;
+}
+
 Double80 pow(  const Double80 &x, const Double80 &y);
 Double80 floor(const Double80 &x);
 Double80 ceil( const Double80 &x);
@@ -3256,19 +3311,42 @@ inline bool isUint(const Double80 &x) {
   return x == getUint(x);
 }
 
-Double80 cot(  const Double80 &x);
+inline Double80 cot(const Double80 &x) {
+  return 1.0/tan(x);
+}
 Double80 asin( const Double80 &x);
-Double80 acos( const Double80 &x);
-Double80 acot( const Double80 &x);
+inline Double80 acos(const Double80 &x) {
+  return DBL80_PI_05 - asin(x);
+}
+inline Double80 acot(const Double80 &x) {
+  return DBL80_PI_05 - atan(x);
+}
 Double80 mypow(const Double80 &x, const Double80 &y);
 Double80 root( const Double80 &x, const Double80 &y);
-Double80 cosh( const Double80 &x);
-Double80 sinh( const Double80 &x);
-Double80 tanh( const Double80 &x);
-Double80 acosh(const Double80 &x);
-Double80 asinh(const Double80 &x);
-Double80 atanh(const Double80 &x);
-Double80 hypot(const Double80 &x, const Double80 &y);
+inline Double80 cosh(const Double80 &x) {
+  const Double80 e1 = exp(x);
+  return (e1 + 1.0/e1)/2;
+}
+inline Double80 sinh(const Double80 &x) {
+  const Double80 e1 = exp(x);
+  return (e1 - 1.0/e1)/2;
+}
+inline Double80 tanh(const Double80 &x) {
+  const Double80 e1 = exp(x), e2 = 1.0/e1;
+  return (e1 - e2)/(e1+e2);
+}
+inline Double80 acosh(const Double80 &x) {
+  return log(x + sqrt(x*x-1));
+}
+inline Double80 asinh(const Double80 &x) {
+  return log(x + sqrt(x*x+1));
+}
+inline Double80 atanh(const Double80 &x) {
+  return log(sqrt((1.0+x)/(1.0-x)));
+}
+inline Double80 hypot(const Double80 &x, const Double80 &y) {
+  return sqrt(x*x+y*y);
+}
 Double80 fraction(   const Double80 &x);
 Double80 round(      const Double80 &x, int prec = 0);
 
@@ -3285,10 +3363,18 @@ inline Double80 dmin(const Double80 &x, const Double80 &y) {
   return (x <= y) ? x : y;
 }
 Double80 minMax(     const Double80 &x, const Double80 &x1, const Double80 &x2);
-bool     isNan(      const Double80 &x);
-bool     isPInfinity(const Double80 &x);
-bool     isNInfinity(const Double80 &x);
-bool     isInfinity( const Double80 &x);
+inline bool isNan(const Double80 &x) {
+  return x.getExponent() == 0x7fff;
+}
+inline bool isInfinity(const Double80 &x) {
+  return isNan(x) && (x.getSignificand() == 0x8000000000000000ui64);
+}
+inline bool isPInfinity(const Double80 &x) {
+  return isInfinity(x) && x.isPositive();
+}
+inline bool isNInfinity(const Double80 &x) {
+  return isInfinity(x) && x.isNegative();
+}
 
 Double80 randDouble80(Random *rnd = NULL);
 Double80 randDouble80(const Double80 &low, const Double80 &high, Random *rnd = NULL);

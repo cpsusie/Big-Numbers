@@ -853,8 +853,7 @@ D80fabs ENDP
 ;void D80sqr(Double80 &x);
 D80sqr PROC
     fld     TBYTE PTR[rcx]
-    fld     st(0)
-    fmul
+    fmul    st(0), st(0)
     fstp    TBYTE PTR[rcx]
     ret
 D80sqr ENDP

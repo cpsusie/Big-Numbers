@@ -73,13 +73,13 @@ template<class CharType> Double80 _strtod80(const CharType *s, CharType **end) {
   } catch(FPUException fpue) {
     FPU::clearExceptionsNoWait();
     if(fpue.m_code == EXCEPTION_FLT_OVERFLOW) {
-      result  = Double80::DBL80_MAX;
+      result  = DBL80_MAX;
       errno   = ERANGE;
     } else if(fpue.m_code == EXCEPTION_FLT_UNDERFLOW) {
-      result  = Double80::DBL80_MIN;
+      result  = DBL80_MIN;
       errno   = ERANGE;
     } else {
-      result  = Double80::DBL80_NAN;
+      result  = DBL80_NAN;
     }
   } catch(...) {
     FPU::clearExceptionsNoWait();
@@ -267,8 +267,8 @@ template<class CharType> CharType *_d80tostr(CharType *dst, const Double80 &x) {
   const UINT64 ui64    = getUint64(m);
   if(m == ui64) {
     _ui64toa(ui64, digits, 10);
-    if(Double80::DBL80_DIG > (expo10 = (int)strlen(digits) - 1)) {
-      char *p = digits + Double80::DBL80_DIG + 1;
+    if(DBL80_DIG > (expo10 = (int)strlen(digits) - 1)) {
+      char *p = digits + DBL80_DIG + 1;
       *p = 0;
       for(const char *z = digits+expo10; --p > z;) {
         *p = '0';
@@ -276,7 +276,7 @@ template<class CharType> CharType *_d80tostr(CharType *dst, const Double80 &x) {
     }
   } else {
     const FPUControlWord cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_ROUND);
-    expo10 = Double80::getExpo10(x) - Double80::DBL80_DIG + 1;
+    expo10 = Double80::getExpo10(x) - DBL80_DIG + 1;
     if(expo10 < 0) {
       if(expo10 >= -4900) { // take care of extreme small numbers
         m *= Double80::pow10(-expo10);

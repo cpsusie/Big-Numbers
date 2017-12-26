@@ -96,8 +96,8 @@ static void testDoubleConversion(TestStatistic &stat, int sign) {
 
 static void testDouble80Conversion(TestStatistic &stat, int sign) {
   DigitPool     *pool       = stat.getDigitPool();
-  const Double80 loopStart  = Double80::DBL80_MIN * sign;
-  const Double80 loopEnd    = Double80::DBL80_MAX / 2 * sign;
+  const Double80 loopStart  = DBL80_MIN * sign;
+  const Double80 loopEnd    = DBL80_MAX / 2 * sign;
   const Double80 stepFactor = 1 + 0.012345/4;
   size_t         length;
   ConversionTest convTest(stat);
@@ -144,12 +144,12 @@ void testNegativeDouble80Conversion(TestStatistic &stat) {
 
 void testGetExpo2(TestStatistic &stat) {
   DigitPool     *pool       = stat.getDigitPool();
-  const Double80 startValue = Double80::DBL80_MIN;
+  const Double80 startValue = DBL80_MIN;
   const Double80 stepFactor = 1.00012345;
 
   ConversionTest convTest(stat);
 
-  const String intervalString = format(_T("[%s..%s]"), toString(startValue).cstr(), toString(Double80::DBL80_MAX).cstr());
+  const String intervalString = format(_T("[%s..%s]"), toString(startValue).cstr(), toString(DBL80_MAX).cstr());
   const Double80 loopStart  = startValue;
   stat.out() << _T("Start:") << loopStart << _T(", Step:") << stepFactor << NEWLINE;
   for(Double80 x = loopStart; !isNan(x); x *= stepFactor) {

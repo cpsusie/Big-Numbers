@@ -39,8 +39,8 @@ const ConstBigReal ConstBigReal::_flt_min(FLT_MIN     );
 const ConstBigReal ConstBigReal::_flt_max(FLT_MAX     );
 const ConstBigReal ConstBigReal::_dbl_min(DBL_MIN     );
 const ConstBigReal ConstBigReal::_dbl_max(DBL_MAX     );
-const ConstBigReal ConstBigReal::_dbl80_min(Double80::DBL80_MIN);
-const ConstBigReal ConstBigReal::_dbl80_max(Double80::DBL80_MAX);
+const ConstBigReal ConstBigReal::_dbl80_min(DBL80_MIN);
+const ConstBigReal ConstBigReal::_dbl80_max(DBL80_MAX);
 
 DEFINECLASSNAME(DigitPool);
 

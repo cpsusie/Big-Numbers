@@ -26,15 +26,14 @@ static InitDouble80 initDouble80;
 
 const Double80 Double80::zero(0);
 const Double80 Double80::one( 1);
-const Double80 Double80::M_PI         ((BYTE*)"\x35\xc2\x68\x21\xa2\xda\x0f\xc9\x00\x40"); // pi
-const Double80 Double80::DBL80_EPSILON((BYTE*)"\x00\x00\x00\x00\x00\x00\x00\x80\xc0\x3f"); // 1.08420217248550443e-019;
-const Double80 Double80::DBL80_MIN    ((BYTE*)"\x00\x00\x00\x00\x00\x00\x00\x80\x01\x00"); // 3.36210314311209209e-4932;
-const Double80 Double80::DBL80_MAX    ((BYTE*)"\xff\xff\xff\xff\xff\xff\xff\xff\xfe\x7f"); // 1.18973149535723227e+4932
-const Double80 Double80::DBL80_NAN    ((BYTE*)"\x00\x00\x00\x00\x00\x00\x00\x00\xff\x7f"); // nan (undefined)
-const Double80 Double80::DBL80_PINF   ((BYTE*)"\x00\x00\x00\x00\x00\x00\x00\x80\xff\x7f"); // +infinity;
-const Double80 Double80::DBL80_NINF   ((BYTE*)"\x00\x00\x00\x00\x00\x00\x00\x80\xff\xff"); // -infinity;
-
-const int      Double80::DBL80_DIG = 19;
+const Double80 DBL80_PI     ((BYTE*)"\x35\xc2\x68\x21\xa2\xda\x0f\xc9\x00\x40"); // pi
+const Double80 DBL80_PI_05  ((BYTE*)"\x35\xc2\x68\x21\xa2\xda\x0f\xc9\xff\x3f"); // pi/2
+const Double80 DBL80_EPSILON((BYTE*)"\x00\x00\x00\x00\x00\x00\x00\x80\xc0\x3f"); // 1.08420217248550443e-019;
+const Double80 DBL80_MIN    ((BYTE*)"\x00\x00\x00\x00\x00\x00\x00\x80\x01\x00"); // 3.36210314311209209e-4932;
+const Double80 DBL80_MAX    ((BYTE*)"\xff\xff\xff\xff\xff\xff\xff\xff\xfe\x7f"); // 1.18973149535723227e+4932
+const Double80 DBL80_NAN    ((BYTE*)"\x00\x00\x00\x00\x00\x00\x00\x00\xff\x7f"); // nan (undefined)
+const Double80 DBL80_PINF   ((BYTE*)"\x00\x00\x00\x00\x00\x00\x00\x80\xff\x7f"); // +infinity;
+const Double80 DBL80_NINF   ((BYTE*)"\x00\x00\x00\x00\x00\x00\x00\x80\xff\xff"); // -infinity;
 
 #define MAXPOW10 4932
 class Pow10Cache {
@@ -45,7 +44,6 @@ public:
   Double80 pow10(int p) const;
 };
 
-static const Double80     M_PI_05     ((BYTE*)"\x35\xc2\x68\x21\xa2\xda\x0f\xc9\xff\x3f"); // pi/2
 static const Double80     tenE18(  1e18    );
 static const Double80     tenE18M1(tenE18-1);
 
@@ -107,16 +105,6 @@ Exit:
   return result;
 }
 
-int getInt(const Double80 &x) {
-  int result;
-  __asm {
-    mov eax, x
-    fld TBYTE PTR [eax]
-    fisttp result
-  }
-  return result;
-}
-
 UINT getUint(const Double80 &x) {
   UINT result;
   if(x > _I32_MAX) {
@@ -143,16 +131,6 @@ UINT getUint(const Double80 &x) {
       fld TBYTE PTR [eax]
       fisttp result
     }
-  }
-  return result;
-}
-
-INT64 getInt64(const Double80 &x) {
-  INT64 result;
-  __asm {
-    mov eax, x
-    fld TBYTE PTR [eax]
-    fisttp result
   }
   return result;
 }
@@ -335,42 +313,6 @@ Double80 exp2(const Double80 &x) {
   return result;
 }
 
-Double80 log(const Double80 &x) {
-  Double80 result;
-  __asm {
-    fldln2
-    mov eax, DWORD PTR x
-    fld TBYTE PTR [eax]
-    fyl2x
-    fstp result
-  }
-  return result;
-}
-
-Double80 log10(const Double80 &x) {
-  Double80 result;
-  __asm {
-    fldlg2
-    mov eax, DWORD PTR x
-    fld TBYTE PTR [eax]
-    fyl2x
-    fstp result
-  }
-  return result;
-}
-
-Double80 log2(const Double80 &x) {
-  Double80 result;
-  __asm {
-    fld1
-    mov eax, DWORD PTR x
-    fld TBYTE PTR [eax]
-    fyl2x
-    fstp result
-  }
-  return result;
-}
-
 Double80 pow(const Double80 &x, const Double80 &y) {
   if(y.isZero()) {
     return Double80::one;
@@ -481,58 +423,14 @@ void D80ToBCDAutoScale(BYTE bcd[10], const Double80 &x, int &expo10) {
 }
 #endif // IS32BIT
 
-Double80 cot(const Double80 &x) {
-  return 1.0/tan(x);
-}
-
 Double80 asin(const Double80 &x) {
   if(x == 1) {
-    return M_PI_05;
+    return DBL80_PI_05;
   } else if(x == -1) {
-    return -M_PI_05;
+    return -DBL80_PI_05;
   } else {
     return atan2(x,sqrt(1.0-x*x));
   }
-}
-
-Double80 acos(const Double80 &x) {
-  return M_PI_05 - asin(x);
-}
-
-Double80 acot(const Double80 &x) {
-  return M_PI_05 - atan(x);
-}
-
-Double80 cosh(const Double80 &x) {
-  const Double80 e1 = exp(x);
-  return (e1 + 1.0/e1)/2;
-}
-
-Double80 sinh(const Double80 &x) {
-  const Double80 e1 = exp(x);
-  return (e1 - 1.0/e1)/2;
-}
-
-Double80 tanh(const Double80 &x) {
-  const Double80 e1 = exp(x);
-  const Double80 e2 = 1.0/e1;
-  return (e1 - e2)/(e1+e2);
-}
-
-Double80 acosh(const Double80 &x) {
-  return log(x + sqrt(x*x-1));
-}
-
-Double80 asinh(const Double80 &x) {
-  return log(x + sqrt(x*x+1));
-}
-
-Double80 atanh(const Double80 &x) {
-  return log(sqrt((1.0+x)/(1.0-x)));
-}
-
-Double80 hypot(const Double80 &x, const Double80 &y) {
-  return sqrt(x*x+y*y);
 }
 
 Double80 mypow(const Double80 &x, const Double80 &y) {
@@ -606,25 +504,6 @@ Double80 minMax(const Double80 &x, const Double80 &x1, const Double80 &x2) {
   return MINMAX(x, x1, x2);
 }
 
-#define SIGNIFICAND(d) ((*((UINT64*)(&(d)))) & 0xffffffffffffffffui64)
-#define EXPONENT(d)    ((*(USHORT*)(((char*)&(d)) + 8)) & 0x7fff)
-
-bool isPInfinity(const Double80 &x) {
-  return isInfinity(x) && x.isPositive();
-}
-
-bool isNInfinity(const Double80 &x) {
-  return isInfinity(x) && x.isNegative();
-}
-
-bool isInfinity(const Double80 &x) {
-  return isNan(x) && (SIGNIFICAND(x) == 0x8000000000000000ui64);
-}
-
-bool isNan(const Double80 &x) {
-  return EXPONENT(x) == 0x7fff;
-}
-
 ULONG Double80::hashCode() const {
   return *(ULONG*)m_value
        ^ *(ULONG*)(m_value+4)
@@ -634,6 +513,7 @@ ULONG Double80::hashCode() const {
 
 Pow10Cache::Pow10Cache() {
   Double80 p = 1;
+  FPUControlWord cw = FPU::adjustExceptionMask(0,-1);
   for(int i = 0; i < ARRAYSIZE(m_pow10); i++, p *= 10) {
     m_pow10[i] = p;
   }
@@ -641,6 +521,8 @@ Pow10Cache::Pow10Cache() {
   for(int i = 0; i < ARRAYSIZE(m_pow10e16); i++, p1 *= p) {
     m_pow10e16[i] = p1;
   }
+  FPU::clearExceptionsNoWait();
+  FPU::restoreControlWord(cw);
 }
 
 Double80 Pow10Cache::pow10(int p) const {
@@ -650,7 +532,7 @@ Double80 Pow10Cache::pow10(int p) const {
     const int index10E16 = p>>4;
     const int index10    = p&0xf;
     if(index10E16) {
-      if(index10E16 >= ARRAYSIZE(m_pow10e16)) return Double80::DBL80_MAX;
+      if(index10E16 >= ARRAYSIZE(m_pow10e16)) return DBL80_MAX;
       return index10 ? (m_pow10e16[index10E16] * m_pow10[index10]) : m_pow10e16[index10E16];
     } else { // index10E16 == 0
       return m_pow10[index10];

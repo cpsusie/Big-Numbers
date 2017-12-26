@@ -359,22 +359,22 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
     }
 
     TEST_METHOD(Double80TestStrToD80) {
-      const Double80 pi = Double80::M_PI;
+      const Double80 pi = DBL80_PI;
 
       const Double80 diff = pi - strtod80("3.14159265358979324", NULL);
       verify(fabs(diff) < 1e-17);
 
       Double80 tmp1 = strtod80("1.18973149535723237e+4932", NULL);
-      verify((tmp1 == Double80::DBL80_MAX) && (errno == ERANGE));
+      verify((tmp1 == DBL80_MAX) && (errno == ERANGE));
 
       tmp1 = strtod80("-1.18973149535723237e+4932", NULL);
-      verify((tmp1 == -Double80::DBL80_MAX) && (errno == ERANGE));
+      verify((tmp1 == -DBL80_MAX) && (errno == ERANGE));
 
       tmp1 = strtod80("3.36210314311209109e-4932", NULL);
-      verify((tmp1 == Double80::DBL80_MIN) && (errno == ERANGE));
+      verify((tmp1 == DBL80_MIN) && (errno == ERANGE));
 
       tmp1 = strtod80("-3.36210314311209109e-4932", NULL);
-      verify((tmp1 == -Double80::DBL80_MIN) && (errno == ERANGE));
+      verify((tmp1 == -DBL80_MIN) && (errno == ERANGE));
 
       const Double80 step  = 1.0237432;
       const Double80 start = Double80::pow10(-4927);
@@ -420,7 +420,7 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
       const double startTime = getProcessTime();
       const Double80 stepFactor = 1.0012345;
       int count = 0;
-      for(Double80 x = Double80::DBL80_MIN; !isNan(x); x *= stepFactor) {
+      for(Double80 x = DBL80_MIN; !isNan(x); x *= stepFactor) {
         const int d = Double80::getExpo10(x);
         count++;
       }
@@ -506,7 +506,7 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
       const double startTime = getProcessTime();
       const Double80 stepFactor = 1.012345;
       int count = 0;
-      for(Double80 x = Double80::DBL80_MIN; !isNan(x); x *= stepFactor) {
+      for(Double80 x = DBL80_MIN; !isNan(x); x *= stepFactor) {
         TCHAR tmp[30];
         d80tot(tmp, x);
         count++;
@@ -551,17 +551,21 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
       return Double80(b);
     }
 
-#define SIGNIFICAND(d) ((*((UINT64*)(&(d)))) & 0xffffffffffffffffui64)
+#define SIGNIFICAND(d) (*((UINT64*)(&(d))))
 
     TEST_METHOD(Double80FindEpsilon) {
-      for(int i = 1; i < 1024; i *= 2) {
-        Double80 a            = 10 * i;
-        UINT64   aSignificand = SIGNIFICAND(a);
-        int      aExponent    = Double80::getExpo2(a);
+      Double80 p = 1e-100;
+      const Double80 f = 2.123456;
+      for(int i = 1; i < 1024; i++, p *= f) {
+        const Double80 a            = p;
+        const UINT64   aSignificand = SIGNIFICAND(a);
+        const int      aExponent    = Double80::getExpo2(a);
 
-        Double80 b            = makeDouble80(aSignificand, aExponent, true);
-        UINT64   bSignificand = SIGNIFICAND(b);
-        short    bExponent    = Double80::getExpo2(b);
+        const Double80 b            = makeDouble80(aSignificand, aExponent, true);
+        const UINT64   bSignificand = b.getSignificand();
+        const int      bExponent    = b.getExponent();
+        verify(bSignificand == aSignificand);
+        verify(aExponent    == bExponent - 0x3fff);
       }
 
       const UINT64 epsSignificand   = 0x8000000000000001ui64;
@@ -576,9 +580,9 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
       TCHAR        tmpStr[30];
       OUTPUT(_T("Eps:%s"), d80tot(tmpStr, eps));
 
-      Double80 sum = Double80::one + eps;
+      const Double80 sum = Double80::one + eps;
       verify(sum == epsP1);
-      Double80 diff = sum - Double80::one;
+      const Double80 diff = sum - Double80::one;
       verify(diff == eps);
 
       char buffer[10];
@@ -588,9 +592,9 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
 
     TEST_METHOD(Double80FindMax) {
       TCHAR tmpStr[30];
-      OUTPUT(_T("DBL80_MAX:%s"), d80tot(tmpStr, Double80::DBL80_MAX));
+      OUTPUT(_T("DBL80_MAX:%s"), d80tot(tmpStr, DBL80_MAX));
       char buffer[10];
-      memcpy(buffer, &Double80::DBL80_MAX, sizeof(buffer));
+      memcpy(buffer, &DBL80_MAX, sizeof(buffer));
       hexdump(buffer, sizeof(buffer), stdout);
     }
 
@@ -692,14 +696,14 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
       const FPUStatusWord sw1 = FPU::getStatusWord();
 
       Double80 one        = 1;
-      Double80 onePlusEps = one + Double80::DBL80_EPSILON;
+      Double80 onePlusEps = one + DBL80_EPSILON;
       Double80 diff       = onePlusEps - one;
 
       const FPUStatusWord sw2 = FPU::getStatusWord();
 
       verify(diff != 0);
 
-      Double80 onePlusEps2 = one + Double80::DBL80_EPSILON / 2;
+      Double80 onePlusEps2 = one + DBL80_EPSILON / 2;
       diff = onePlusEps2 - one;
       verify(diff == 0);
 
@@ -841,20 +845,20 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
       verify(!isPInfinity(zzz));
       verify(isNInfinity( zzz));
 
-      verify( isNan(      Double80::DBL80_NAN));
-      verify(!isInfinity( Double80::DBL80_NAN));
-      verify(!isPInfinity(Double80::DBL80_NAN));
-      verify(!isNInfinity(Double80::DBL80_NAN));
+      verify( isNan(      DBL80_NAN));
+      verify(!isInfinity( DBL80_NAN));
+      verify(!isPInfinity(DBL80_NAN));
+      verify(!isNInfinity(DBL80_NAN));
 
-      verify( isNan(      Double80::DBL80_PINF));
-      verify( isInfinity( Double80::DBL80_PINF));
-      verify( isPInfinity(Double80::DBL80_PINF));
-      verify(!isNInfinity(Double80::DBL80_PINF));
+      verify( isNan(      DBL80_PINF));
+      verify( isInfinity( DBL80_PINF));
+      verify( isPInfinity(DBL80_PINF));
+      verify(!isNInfinity(DBL80_PINF));
 
-      verify( isNan(      Double80::DBL80_NINF));
-      verify( isInfinity( Double80::DBL80_NINF));
-      verify(!isPInfinity(Double80::DBL80_NINF));
-      verify( isNInfinity(Double80::DBL80_NINF));
+      verify( isNan(      DBL80_NINF));
+      verify( isInfinity( DBL80_NINF));
+      verify(!isPInfinity(DBL80_NINF));
+      verify( isNInfinity(DBL80_NINF));
 
       FPU::clearStatusWord();
       FPU::adjustExceptionMask(FPU_DIVIDE_BY_ZERO_EXCEPTION,FPU_INVALID_OPERATION_EXCEPTION);
@@ -887,9 +891,9 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
       verify(y == x);
 
       FPU::setPrecisionMode(FPU_HIGH_PRECISION);
-      d80 = Double80(1) + Double80::DBL80_EPSILON;
+      d80 = Double80(1) + DBL80_EPSILON;
       verify(d80 != 1);
-      d80 = Double80(1) + Double80::DBL80_EPSILON / 4;
+      d80 = Double80(1) + DBL80_EPSILON / 4;
       verify(d80 == 1);
 
       verify(FPU::getStackHeight() == 0);

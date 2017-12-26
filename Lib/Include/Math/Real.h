@@ -107,7 +107,7 @@ Real poly1(const Real &x, int degree, const Real *coef);
 
 inline Real getRealNaN() {
 #ifdef LONGDOUBLE
-  return Double80::DBL80_NAN;
+  return DBL80_NAN;
 #else
   return std::numeric_limits<double>::quiet_NaN();
 #endif

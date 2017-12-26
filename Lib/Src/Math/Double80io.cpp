@@ -17,7 +17,7 @@ static TCHAR *findFirstDigit(TCHAR *str) {
   return NULL;
 }
 
-#define MAXPRECISION Double80::DBL80_DIG
+#define MAXPRECISION DBL80_DIG
 
 static void formatNan(String &result, const Double80 &x) {
   if(!isInfinity(x)) {
@@ -34,7 +34,7 @@ static void formatNan(String &result, const Double80 &x) {
 
 static void formatFixed(String &result, const Double80 &x, streamsize precision, long flags, int expo10, bool removeTrailingZeroes) {
   TCHAR tmp[30];
-  d80tot(tmp, (precision >= Double80::DBL80_DIG) ? x : round(x,(int)precision));
+  d80tot(tmp, (precision >= DBL80_DIG) ? x : round(x,(int)precision));
   const TCHAR  *mantissa  = findFirstDigit(tmp);
   TCHAR        *comma     = _tcschr(tmp,_T('.'));
   TCHAR        *decimals  = NULL;
