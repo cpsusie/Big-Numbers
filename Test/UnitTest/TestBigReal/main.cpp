@@ -58,8 +58,6 @@ static void testShortProd() {
   DigitPool pool(-5);
   Random rnd;
 
-  BigReal::enableDebugString(false);
-
   for(int i = 0; i < 500000;) {
     if((i++)%10000 == 9999) _tprintf(_T("i:%d\r"), i);
     int lengthX = randInt(4,500);

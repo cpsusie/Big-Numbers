@@ -45,17 +45,6 @@ void testAPCSum(TestStatistic &stat) {
               throwException(_T("Invalid bias: =%c"), bias);
             }
             if(!ok) {
-/*
-BigReal::enableDebugString(  true);
-SETNUMBERDEBUGSTRING(x          );
-SETNUMBERDEBUGSTRING(y          );
-SETNUMBERDEBUGSTRING(exactResult);
-SETNUMBERDEBUGSTRING(APCResult  );
-SETNUMBERDEBUGSTRING(error      );
-SETNUMBERDEBUGSTRING(tolerance  );
-
-const BigReal APCResult1   = BigReal::apcSum(bias, x, y,pool);
-*/
               ERRLOG << _T("Error in APCsum")                                                           << NEWLINE
                      << _T("x:")                                      << FullFormatBigReal(x)           << NEWLINE
                      << _T("y:")                                      << FullFormatBigReal(y)           << NEWLINE
@@ -133,19 +122,6 @@ void testAPCProd(TestStatistic &stat) {
             BigReal       quotient(pool);
 
             if(!checkBiasedExpr(APCResult, exactResult, bias, quotient)) {
-/*
-Double80::enableDebugString(true);
-BigReal::enableDebugString(  true);
-SETNUMBERDEBUGSTRING(x          );
-SETNUMBERDEBUGSTRING(y          );
-SETNUMBERDEBUGSTRING(exactResult);
-SETNUMBERDEBUGSTRING(APCResult  );
-SETNUMBERDEBUGSTRING(quotient   );
-BigReal quotient1(pool);
-checkBiasedExpr(APCResult, exactResult, bias, quotient1);
-
-const BigReal APCResult1   = BigReal::apcProd(bias, x, y,pool);
-*/
               ERRLOG << _T("Error in APCprod")                                                 << NEWLINE
                      << _T("x:")                             << FullFormatBigReal(x)           << NEWLINE
                      << _T("y:")                             << FullFormatBigReal(y)           << NEWLINE
@@ -195,19 +171,6 @@ void testAPCQuot(TestStatistic &stat) {
             BigReal       quotient(pool);
 
             if(!checkBiasedExpr(APCResult, exactResult, bias, quotient)) {
-
-/*
-BigReal::enableDebugString(  true);
-SETNUMBERDEBUGSTRING(x          );
-SETNUMBERDEBUGSTRING(y          );
-SETNUMBERDEBUGSTRING(exactResult);
-SETNUMBERDEBUGSTRING(APCResult  );
-SETNUMBERDEBUGSTRING(quotient   );
-BigReal quotient1(pool);
-checkBiasedExpr(APCResult, exactResult, bias, quotient1);
-
-const BigReal APCResult1   = BigReal::apcQuot(bias, x, y,pool);
-*/
               ERRLOG << _T("Error in APCquot")                                                 << NEWLINE
                      << _T("x:")                             << FullFormatBigReal(x)           << NEWLINE
                      << _T("y:")                             << FullFormatBigReal(y)           << NEWLINE
@@ -257,17 +220,6 @@ void testAPCPow(TestStatistic &stat) {
           if(len > maxLength) maxLength = len;
           BigReal       quotient(pool);
           if(!checkBiasedExpr(APCResult, exactResult, bias, quotient)) {
-
-/*
-              BigReal::enableDebugString(  true);
-              SETNUMBERDEBUGSTRING(x);
-              SETNUMBERDEBUGSTRING(y);
-              SETNUMBERDEBUGSTRING(APCResult);
-              SETNUMBERDEBUGSTRING(exactResult);
-              SETNUMBERDEBUGSTRING(quotient);
-
-              BigReal apcpow1 = BigReal::apcPow(bias, x, y, pool);
-*/
             ERRLOG << _T("Error in APCpow")                                                 << NEWLINE
                    << _T("x:")                            << FullFormatBigReal(x)           << NEWLINE
                    << _T("y:")                            << FullFormatBigReal(y)           << NEWLINE
