@@ -13,14 +13,14 @@ int BigReal::logBASE(double x) { // static
   return (int)(log10(x) / LOG10_BIGREALBASE);
 }
 
-BRExpoType BigReal::getExpo2(const BigReal &x) { // static
+BRExpoType getExpo2(const BigReal &x) {
   static const double log2_10 = 3.321928094887362; // = ln(10)/ln(2).
                                                    // so expo10(x) * log2_10 is approximately ln(x)/ln(10) * ln(10)/ln(2)
                                                    // = ln(x)/ln(2) = ln2(x) approximately  expo2(x)
   if(x.isZero()) {
     return 0;
   }
-  const BRExpoType expo10 = getExpo10(x);
+  const BRExpoType expo10 = BigReal::getExpo10(x);
   return (expo10 > -4890) ? ((BRExpoType)(log2_10 * expo10)) : ((BRExpoType)(log2(x.getFirst32(9))) + (BRExpoType)(log2_10 * (expo10-9)));
 }
 

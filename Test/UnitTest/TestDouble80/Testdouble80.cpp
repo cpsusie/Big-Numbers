@@ -429,6 +429,22 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
       OUTPUT(_T("TimeMeasure on Double80::getExpo10(): count = %d, Time = %.3le msec"), count, timeUsage);
     }
 
+    TEST_METHOD(Double80TestPow2) {
+      const int minExpo2 = getExpo2(DBL80_MIN);
+      const int maxExpo2 = getExpo2(DBL80_MAX);
+      const double startTime = getProcessTime();
+      int count = 0;
+      for(int p = minExpo2; p <= maxExpo2; p++) {
+        count++;
+        const Double80 d1 = Double80::pow2(p);
+        const Double80 d2 = exp2(Double80(p));
+        verify(d1 == d2);
+      }
+      const double timeUsage = (getProcessTime() - startTime) / 1e3 / count;
+
+      OUTPUT(_T("TimeMeasure on Double80::pow2(): count = %d, Time = %.3le msec"), count, timeUsage);
+    }
+
     void testAllCast(double d64) {
       Double80 d80 = d64;
 
@@ -559,11 +575,11 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
       for(int i = 1; i < 1024; i++, p *= f) {
         const Double80 a            = p;
         const UINT64   aSignificand = SIGNIFICAND(a);
-        const int      aExponent    = Double80::getExpo2(a);
+        const int      aExponent    = getExpo2(a);
 
         const Double80 b            = makeDouble80(aSignificand, aExponent, true);
-        const UINT64   bSignificand = b.getSignificand();
-        const int      bExponent    = b.getExponent();
+        const UINT64   bSignificand = getSignificand(b);
+        const int      bExponent    = getExponent(b);
         verify(bSignificand == aSignificand);
         verify(aExponent    == bExponent - 0x3fff);
       }
@@ -571,11 +587,11 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
       const UINT64 epsSignificand   = 0x8000000000000001ui64;
       Double80     epsP1            = makeDouble80(epsSignificand, 0, true);
       UINT64       epsP1Significand = SIGNIFICAND(epsP1);
-      int          epsP1Exponent    = Double80::getExpo2(epsP1);
+      int          epsP1Exponent    = getExpo2(epsP1);
 
       Double80     eps              = epsP1 - Double80::one;
       UINT64       testSignificand  = SIGNIFICAND(eps);
-      int          testExponent     = Double80::getExpo2(eps);
+      int          testExponent     = getExpo2(eps);
       bool         epsPositive      = eps.isPositive();
       TCHAR        tmpStr[30];
       OUTPUT(_T("Eps:%s"), d80tot(tmpStr, eps));

@@ -148,9 +148,9 @@ void testConstructors(TestStatistic &stat) {
   verify(maxError64 == 0);
 
   double maxError80 = getRelativeError80(DBL80_MIN,pool);
-  verify(maxError80 < 1.09e-19 );
+  verify(maxError80 == 0 );
   maxError80 = getRelativeError80(-DBL80_MIN,pool);
-  verify(maxError80 < 1.09e-19 );
+  verify(maxError80 == 0 );
   maxError80 = getRelativeError80(DBL80_MAX,pool);
   verify(maxError80 == 0);
   maxError80 = getRelativeError80(-DBL80_MAX,pool);

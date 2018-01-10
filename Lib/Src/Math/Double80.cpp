@@ -63,18 +63,6 @@ static const Double80     M_2PiExp260 ((BYTE*)"\x35\xc2\x68\x21\xa2\xda\x0f\xc9\
 
 #ifdef IS32BIT
 
-int Double80::getExpo2(const Double80 &x) { // static
-  int result;
-  __asm {
-    mov eax, x
-    fld TBYTE PTR [eax]
-    fxtract
-    fstp st(0)
-    fistp result
-  }
-  return result;
-}
-
 int Double80::getExpo10(const Double80 &x) { // static
   USHORT cwSave,ctrlFlags;
   int result;

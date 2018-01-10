@@ -3,22 +3,18 @@
 
 #ifndef FAST_BIGREAL_CONVERSION
 
-#define getSignificandDouble(x) (((*((unsigned __int64*)(&(x)))) & 0xfffffffffffffui64) | 0x10000000000000ui64)
-#define getExpo2Double(x)       ((int)((((*((unsigned __int64*)(&(x)))) >> 52) & 0x7ff) - 0x3ff))
-
 #define SIGNIFICANT_EXPO10 15
-
 
 void BigReal::init(double x) {
   init();
 
   if(x != 0) {
-    const int expo2 = getExpo2Double(x) - 52;
+    const int expo2 = getExpo2(x) - 52;
     if(expo2 == 0) {
-      init(getSignificandDouble(x));
+      init(getSignificand(x));
     } else {
       DigitPool *pool = getDigitPool();
-      const BigReal significand(getSignificandDouble(x), pool);
+      const BigReal significand(getSignificand(x), pool);
       const bool isConstPool = pool->getId() == CONST_DIGITPOOL_ID;
       if (isConstPool) ConstDigitPool::releaseInstance(); // unlock it or we will get a deadlock
       const BigReal &p2 = pow2(expo2,CONVERSION_POW2DIGITCOUNT);
@@ -28,7 +24,7 @@ void BigReal::init(double x) {
 
       shortProductNoZeroCheck(significand, p2, 4).rRound(17);
 /*
-      const BigReal significand(getSignificandDouble(x), getDigitPool());
+      const BigReal significand(getSignificand(x), getDigitPool());
       const BigReal &p2 = pow2(expo2,CONVERSION_POW2DIGITCOUNT);
       const int     fexpo = (getExpo10(p2) + SIGNIFICANT_EXPO10 - CONVERSION_POW2DIGITCOUNT) / LOG10_BIGREALBASE;
 

@@ -114,6 +114,23 @@ inline Real getRealNaN() {
 
 }
 
+inline UINT getSignificand(float x) {
+  return (UINT)(((*((ULONG*)(&(x)))) & 0x7fffff) | 0x800000);
+}
+
+inline int getExpo2(float x) {
+  return (int)((((*((ULONG*)(&(x)))) >> 23) & 0xff) - 0x7f);
+}
+
+inline UINT64 getSignificand(double x) {
+  return (((*((UINT64*)(&(x)))) & 0xfffffffffffffui64) | 0x10000000000000ui64);
+}
+
+inline int getExpo2(double x) {
+  return ((int)((((*((UINT64*)(&(x)))) >> 52) & 0x7ff) - 0x3ff));
+}
+
+
 #ifndef LONGDOUBLE
 #define strtor strtod
 #define wcstor wcstod

@@ -811,16 +811,6 @@ D80cmpD80 ENDP
 
 ; -------------------------------------------------- Double80 Functions ----------------------------------------
 
-;int D80getExpo2(const Double80 &x);
-D80getExpo2 PROC
-    fld     TBYTE PTR[rcx]
-    fxtract
-    fstp    st(0)
-    fistp   QWORD PTR[rsp-8]
-    mov     rax, QWORD PTR[rsp-8]
-    ret
-D80getExpo2 ENDP
-
 ;int D80getExpo10(const Double80 &x);
 D80getExpo10 PROC
     fld     TBYTE PTR[rcx]                     ; st0 = x
@@ -1115,6 +1105,15 @@ ZeroBaseNegativeExponent:                      ; st0 = y
     ret
 D80pow ENDP
 
+;void   D80pow2(Double80 &dst, const int &p);
+D80pow2 PROC
+    fild DWORD PTR[rdx]
+    fld1
+    fscale
+    fstp TBYTE PTR[rcx]
+    fstp st(0)
+    ret
+D80pow2 ENDP
 ; ------------------------------------------------- Double80 floor,ceil --------------------------------
 
 ;void D80floor(Double80 &x);

@@ -3,19 +3,16 @@
 
 #ifndef FAST_BIGREAL_CONVERSION
 
-#define getSignificandFloat(x) ((UINT)(((*((unsigned long*)(&(x)))) & 0x7fffff) | 0x800000))
-#define getExpo2Float(x)       ((int)((((*((unsigned long*)(&(x)))) >> 23) & 0xff) - 0x7f))
-
 void BigReal::init(float x) {
   init();
 
   if(x != 0) {
-    const int expo2 = getExpo2Float(x) - 23;
+    const int expo2 = getExpo2(x) - 23;
     if(expo2 == 0) {
-      init(getSignificandFloat(x));
+      init(getSignificand(x));
     } else {
       DigitPool *pool = getDigitPool();
-      const BigReal significand(getSignificandFloat(x), pool);
+      const BigReal significand(getSignificand(x), pool);
       const bool isConstPool = pool->getId() == CONST_DIGITPOOL_ID;
       if (isConstPool) ConstDigitPool::releaseInstance(); // unlock it or we will get a deadlock
       const BigReal &p2 = pow2(expo2, CONVERSION_POW2DIGITCOUNT);

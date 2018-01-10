@@ -3,8 +3,6 @@
 
 #ifndef FAST_BIGREAL_CONVERSION
 
-#define getSignificandDouble80(x) ((*((unsigned __int64*)(&(x)))) & 0xffffffffffffffffui64)
-
 void BigReal::init(const Double80 &x) {
   DEFINEMETHODNAME;
 
@@ -14,19 +12,19 @@ void BigReal::init(const Double80 &x) {
     throwBigRealInvalidArgumentException(method, _T("Double80 is Nan"));
   }
   if(!x.isZero()) {
-    const int expo2 = Double80::getExpo2(x) - 63;
+    const int expo2 = getExpo2(x) - 63;
     if(expo2 == 0) {
-      init(getSignificandDouble80(x));
+      init(getSignificand(x));
     } else {
       DigitPool *pool = getDigitPool();
-      const BigReal significand(getSignificandDouble80(x), pool);
+      const BigReal significand(getSignificand(x), pool);
       const bool isConstPool = pool->getId() == CONST_DIGITPOOL_ID;
-      if (isConstPool) ConstDigitPool::releaseInstance(); // unlock it or we will get a deadlock
+      if(isConstPool) ConstDigitPool::releaseInstance(); // unlock it or we will get a deadlock
       const BigReal &p2 = pow2(expo2, CONVERSION_POW2DIGITCOUNT);
-      if (isConstPool) ConstDigitPool::requestInstance();
+      if(isConstPool) ConstDigitPool::requestInstance();
       shortProductNoZeroCheck(significand, p2, 5).rRound(22);
 /*
-      const BigReal significand(getSignificandDouble80(x), getDigitPool());
+      const BigReal significand(getSignificand(x), getDigitPool());
       BigReal p2(getDigitPool());
       copy(p2, pow2(expo2, CONVERSION_POW2DIGITCOUNT), 32 / LOG10_BIGREALBASE); // somewhere between 25 and 32 decimal digits
 //      const BigReal p2 = cut(pow2(expo2, CONVERSION_POW2DIGITCOUNT), 21, getDigitPool());
@@ -47,52 +45,60 @@ Double80 getDouble80(const BigReal &x) {
   if(x.isZero()) {
     return Double80::zero;
   }
-
   if(compareAbs(x,ConstBigReal::_dbl80_max) > 0) {
     throwBigRealGetIntegralTypeOverflowException(method, x, toString(ConstBigReal::_dbl80_max));
   }
   if(compareAbs(x,ConstBigReal::_dbl80_min) < 0) {
     throwBigRealGetIntegralTypeUnderflowException(method, x, toString(ConstBigReal::_dbl80_min));
   }
-
   return x.getDouble80NoLimitCheck();
 }
 
 Double80 BigReal::getDouble80NoLimitCheck() const {
   static const int minExpo2 = 64-16382;
-  static const int maxExpo2 = 16384;
+  static const int maxExpo2 = 0x3fff;
 
   DigitPool       *pool  = getDigitPool();
   const BRExpoType ee2   = getExpo2(*this);
   const BRExpoType expo2 = 64 - ee2;
-  Double80 e2;
-  Double80 e2x = Double80::one;
-  BigReal xi(pool);
+  bool             e2Overflow;
+  Double80         e2, e2x;
+  BigReal          xi(pool);
   if(expo2 <= minExpo2) {
-    e2 = ::exp2(Double80(minExpo2));                                        // Double80 exp2
-    xi.shortProduct(::cut(*this,21), BigReal(e2, pool), BIGREAL_ZEROEXPO);  // BigReal multiplication
+    e2 = Double80::pow2(minExpo2);
+    e2Overflow = false;
+    xi.shortProduct(::cut(*this,21), pow2(minExpo2, CONVERSION_POW2DIGITCOUNT), BIGREAL_ZEROEXPO);  // BigReal multiplication
   } else if(expo2 >= maxExpo2) {
-    e2 = ::exp2(Double80(maxExpo2));                                        // Double80 exp2
-    xi.shortProduct(::cut(*this,21), BigReal(e2, pool), BIGREAL_ZEROEXPO);  // BigReal multiplication
-    xi *= pow2((int)(expo2 - maxExpo2),CONVERSION_POW2DIGITCOUNT);          // BigReal pow2
-    e2x = ::exp2(Double80(expo2 - maxExpo2));                               // Double80 exp2
+    e2  = Double80::pow2(maxExpo2);
+    e2x = Double80::pow2((int)expo2 - maxExpo2);
+    e2Overflow = true;
+    xi.shortProduct(::cut(*this,21), pow2((int)expo2, CONVERSION_POW2DIGITCOUNT), BIGREAL_ZEROEXPO);  // BigReal multiplication
   } else {
-    e2 = ::exp2(Double80(expo2));                                           // Double80 exp2
-    xi = round(xi.shortProduct(::cut(*this,22), BigReal(e2, pool), -1));    // BigReal multiplication
+    e2 = Double80::pow2((int)expo2);
+    e2Overflow = false;
+    xi = round(xi.shortProduct(::cut(*this,22), pow2((int)expo2, CONVERSION_POW2DIGITCOUNT), -1));  // BigReal multiplication
   }
-  Double80 result = 0;
-  int digitCount = 0;
-  for(const Digit *p = xi.m_first; p && (digitCount < 24); p = p->next, digitCount += LOG10_BIGREALBASE) {
+  const Digit *p = xi.m_first;
+  if(p == NULL) {
+    return Double80::zero;
+  }
+  Double80 result     = (INT64)p->n;
+  int      digitCount = LOG10_BIGREALBASE;
+  for(p = p->next; p && (digitCount < 24); p = p->next, digitCount += LOG10_BIGREALBASE) {
     result *= BIGREALBASE;
-    result += p->n;
+    result += (INT64)p->n;
   }
-
   const BRExpoType e = xi.m_expo * LOG10_BIGREALBASE - digitCount + LOG10_BIGREALBASE;
-  if(e == 0) {
-    return (isNegative() ? -result : result) / e2 / e2x;                          // Double80 division
-  } else {
-    return (::exp10(Double80(e)) * (isNegative() ? -result : result)) / e2 / e2x; // Double80 pow10 and division
+  if(e > 0) {
+    result *= Double80::pow10((int)e);
+  } else if(e < 0) {
+    result /= Double80::pow10(-(int)e);
   }
+  result /= e2;
+  if(e2Overflow) {
+    result /= e2x;
+  }
+  return isNegative() ? -result : result;
 }
 
 #else
@@ -123,10 +129,10 @@ BigReal::BigReal(const Double80 &x) {
     m_expo = ::logBASE(tmp);
     int expo10 = Double80::getExpo10(tmp);
     if(expo10 > 4000) {
-      tmp /= ::exp10(Double80(expo10));
+      tmp /= Double80::pow10(expo10);
       tmp /= c3;
     } else {
-      tmp /= ::exp10(Double80(expo10+1));
+      tmp /= Double80::pow10(expo10+1);
     }
 
     if(tmp < c1) {
@@ -141,9 +147,9 @@ BigReal::BigReal(const Double80 &x) {
 
     // assume 0.1 <= tmp < 1
     m_low = m_expo + 1;
-    for(int i = 0; i < Double80::DBL80_DIG && tmp != Double80::zero; i += LOG10_BIGREALBASE) {
+    for(int i = 0; i < DBL80_DIG && tmp != Double80::zero; i += LOG10_BIGREALBASE) {
       tmp *= base;
-      int missingDecimals = Double80::DBL80_DIG - i;
+      int missingDecimals = DBL80_DIG - i;
       if(missingDecimals < LOG10_BIGREALBASE) {
         appendDigit(getUlong(round(tmp,missingDecimals-LOG10_BIGREALBASE+1)) % BIGREALBASE);
       } else {
@@ -175,8 +181,8 @@ Double80 getDouble80(const BigReal &x) {
   const int firstDigitCount = BigReal::getDecimalDigitCount(p->n);
   int digitCount      = firstDigitCount;
   Double80 result = p->n;
-  for(p = p->next; p && digitCount < Double80::DBL80_DIG; p = p->next) {
-    int needed = Double80::DBL80_DIG - digitCount + 1;
+  for(p = p->next; p && digitCount < DBL80_DIG; p = p->next) {
+    int needed = DBL80_DIG - digitCount + 1;
     if(needed >= LOG10_BIGREALBASE) {
       result = result * BIGREALBASE + p->n;
       digitCount += LOG10_BIGREALBASE;
@@ -192,13 +198,13 @@ Double80 getDouble80(const BigReal &x) {
     return x.m_negative ? -result : result;
   } else {
     if(scale10 > 4900) {         // Prevent overflow
-      result *= exp10(Double80(4900));
+      result *= Double80::pow10(4900);
       scale10 -= 4900;
     } else if(scale10 < -4900) { // Prevent underflow
-      result *= exp10(Double80(-4900));
+      result /= Double80::pow10(4900);
       scale10 += 4900;
     }
-    return exp10(Double80(scale10)) * (x.m_negative ? -result : result);
+    return Double80::pow10(scale10) * (x.m_negative ? -result : result);
   }
 }
 

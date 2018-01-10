@@ -809,7 +809,7 @@ public:
 #endif
   }
   // x == 0 ? 0 : approximately floor(log2(|x|))
-  static BRExpoType getExpo2(   const BigReal  &x);
+  friend BRExpoType getExpo2(   const BigReal  &x);
   static inline int getDecimalDigitCount(BRDigitType n) {
 #ifdef IS32BIT
     return getDecimalDigitCount32(n);

@@ -91,7 +91,6 @@ void   D80rem(            Double80 &dst, const Double80 &x);
 void   D80neg(            Double80 &x);
 void   D80inc(            Double80 &x);
 void   D80dec(            Double80 &x);
-int    D80getExpo2(       const Double80 &x);
 int    D80getExpo10(      const Double80 &x);
 void   D80fabs(           Double80 &x);
 void   D80sqr(            Double80 &x);
@@ -111,6 +110,8 @@ void   D80log10(          Double80 &x);
 void   D80log2(           Double80 &x);
 // x = pow(x,y)
 void   D80pow(            Double80 &x, const Double80 &y);
+// dst = 2^p
+void   D80pow2(           Double80 &dst, const int &p);
 void   D80floor(          Double80 &x);
 void   D80ceil(           Double80 &x);
 void   D80ToBCD(BYTE bcd[10], const Double80 &src);
@@ -263,7 +264,6 @@ public:
   }
 
 #ifdef IS32BIT
-  static int    getExpo2( const Double80 &x);
   // x == 0 ? 0 : floor(log10(|x|))
   static int    getExpo10(const Double80 &x);
 
@@ -327,10 +327,20 @@ public:
     }
     return result;
   }
+  static inline Double80 pow2(int p) {
+    Double80 result;
+    __asm {
+      fild p
+      fld1
+      fscale
+      fstp result
+      fstp st(0)
+    }
+    return result;
+  }
 
 #else // IS64BIT
 
-  static inline int getExpo2( const Double80 &x) { return D80getExpo2(x);  }
   // x == 0 ? 0 : floor(log10(|x|))
   static inline int getExpo10(const Double80 &x) { return D80getExpo10(x); }
   // prefix-form
@@ -341,14 +351,15 @@ public:
   inline Double80 operator--(int) {  Double80 result(*this);  D80dec(*this);  return result;  }
 
   inline bool isZero() const      {  return D80isZero(*this) ? true : false;  }
+  static inline Double80 pow2(int p) { Double80 result; D80pow2(result,p); return result; }
 
 #endif // IS64BIT
 
-  inline UINT64 getSignificand() const {
-    return *((UINT64*)m_value);
+  friend inline UINT64 getSignificand(const Double80 &x) {
+    return *((UINT64*)x.m_value);
   }
-  inline UINT   getExponent() const {
-    return (*(UINT*)(m_value+8)) & 0x7fff;
+  friend inline UINT   getExponent(const Double80 &x) {
+    return (*(UINT*)(x.m_value+8)) & 0x7fff;
   }
 
   inline bool isPositive() const { return (m_value[9] & 0x80) == 0; }
@@ -3363,11 +3374,15 @@ inline Double80 dmin(const Double80 &x, const Double80 &y) {
   return (x <= y) ? x : y;
 }
 Double80 minMax(     const Double80 &x, const Double80 &x1, const Double80 &x2);
+
+inline int getExpo2(const Double80 &x) {
+  return getExponent(x) - 0x3fff;
+}
 inline bool isNan(const Double80 &x) {
-  return x.getExponent() == 0x7fff;
+  return getExponent(x) == 0x7fff;
 }
 inline bool isInfinity(const Double80 &x) {
-  return isNan(x) && (x.getSignificand() == 0x8000000000000000ui64);
+  return isNan(x) && (getSignificand(x) == 0x8000000000000000ui64);
 }
 inline bool isPInfinity(const Double80 &x) {
   return isInfinity(x) && x.isPositive();
