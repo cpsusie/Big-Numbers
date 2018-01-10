@@ -81,9 +81,6 @@ typedef INT64          BRDigitDiffType;
 
 #endif
 
-// Define the following, to get faster, but unprecise conversion from/to float/double/Double80
-//#define FAST_BIGREAL_CONVERSION
-
 #if(SP_OPT_METHOD == SP_OPT_NONE)
 
 #if   LOG10_BIGREALBASE == 2
