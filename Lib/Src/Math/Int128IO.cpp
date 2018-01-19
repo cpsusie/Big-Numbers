@@ -23,7 +23,7 @@ public:
 };
 
 template<class Ctype> StringTemplate<Ctype>::StringTemplate(const char *str) {
-  if (sizeof(Ctype) == sizeof(char)) {
+  if(sizeof(Ctype) == sizeof(char)) {
     BASICSTRING::operator=((const Ctype*)str);
   } else {
     USES_CONVERSION;
@@ -32,7 +32,7 @@ template<class Ctype> StringTemplate<Ctype>::StringTemplate(const char *str) {
 }
 
 template<class Ctype> StringTemplate<Ctype>::StringTemplate(const wchar_t *str) {
-  if (sizeof(Ctype) == sizeof(wchar_t)) {
+  if(sizeof(Ctype) == sizeof(wchar_t)) {
     BASICSTRING::operator=((const Ctype*)str);
   } else {
     USES_CONVERSION;
@@ -62,12 +62,11 @@ template<class Ctype> StringTemplate<Ctype> &StringTemplate<Ctype>::operator+=(w
 #define MAXTMPSIZE 1000
 template<class Ctype> StringTemplate<Ctype> getFillerString(streamsize l, Ctype ch = ' ') {
   StringTemplate<Ctype> result;
-  if (l <= MAXTMPSIZE) {
+  if(l <= MAXTMPSIZE) {
     Ctype tmp[MAXTMPSIZE+1], *cp = tmp + l;
     for(*cp = 0; cp-- > tmp;) *cp = ch;
     result = tmp;
-  }
-  else {
+  } else {
     Ctype *tmp = new Ctype[(int)l + 1], *cp = tmp + l;
     for(*cp = 0; cp-- > tmp;) *cp = ch;
     result = tmp;
@@ -85,18 +84,17 @@ public:
   Int128Stream(wostream &out) : StreamParameters(out) {
   }
 
-  Int128Stream &operator<<(const _int128 &n);
+  Int128Stream &operator<<(const _int128  &n);
   Int128Stream &operator<<(const _uint128 &n);
 };
-
 
 template<class Ctype> Int128Stream<Ctype> &Int128Stream<Ctype>::addResult(const StringTemplate<Ctype> &prefix, const char *buf) {
   const streamsize wantedWidth = getWidth();
   const streamsize resultWidth = strlen(buf) + prefix.length();
   StringTemplate<Ctype> result;
-  if (wantedWidth > resultWidth) {
+  if(wantedWidth > resultWidth) {
     const streamsize fillerLength = wantedWidth - resultWidth;
-    switch (getFlags() & ios::adjustfield) {
+    switch(getFlags() & ios::adjustfield) {
     case ios::left:
       result =  prefix;
       result += buf;
@@ -109,7 +107,7 @@ template<class Ctype> Int128Stream<Ctype> &Int128Stream<Ctype>::addResult(const 
       break;
     case ios::internal:
       result = prefix;
-      result += getFillerString<Ctype>(fillerLength, prefix.length()?'0':(Ctype)getFiller());
+      result += getFillerString<Ctype>(fillerLength);
       result += buf;
       break;
     default: // do as ios::left
@@ -130,7 +128,7 @@ template<class Ctype> Int128Stream<Ctype> &Int128Stream<Ctype>::operator<<(const
   StringTemplate<Ctype> prefix;
   char                  buf[200];
   const int             flags = getFlags();
-  switch (flags & ios::basefield) {
+  switch(flags & ios::basefield) {
   case ios::dec:
     { const bool negative = (n < 0);
       const _uint128 v = negative ? -n : n;
@@ -144,7 +142,7 @@ template<class Ctype> Int128Stream<Ctype> &Int128Stream<Ctype>::operator<<(const
     }
   case ios::hex:
     { const _uint128 v = n;
-      if(flags & ios::showbase) prefix = "0x";
+      if((flags & ios::showbase) && v) prefix = (flags & ios::uppercase) ? "0X" : "0x";
       _ui128toa(v, buf, 16);
       if(flags & ios::uppercase) {
         for(char *cp = buf; *cp; cp++) {
@@ -155,9 +153,7 @@ template<class Ctype> Int128Stream<Ctype> &Int128Stream<Ctype>::operator<<(const
     break;
   case ios::oct:
     { const _uint128 v = n;
-      if(flags & ios::showbase) {
-        prefix = "0";
-      }
+      if((flags & ios::showbase) && v) prefix = "0";
       _ui128toa(v, buf, 8);
       break;
     }
@@ -172,12 +168,9 @@ template<class Ctype> Int128Stream<Ctype> &Int128Stream<Ctype>::operator<<(const
   switch(flags & ios::basefield) {
   case ios::dec:
     _ui128toa(n, buf, 10);
-    if(flags & ios::showpos) {
-      prefix = "+";
-    }
     break;
   case ios::hex:
-    { if(flags & ios::showbase) prefix = "0x";
+    { if((flags & ios::showbase) && n) prefix = (flags & ios::uppercase) ? "0X" : "0x";
       _ui128toa(n, buf, 16);
       if(flags & ios::uppercase) {
         for(char *cp = buf; *cp; cp++) {
@@ -187,28 +180,60 @@ template<class Ctype> Int128Stream<Ctype> &Int128Stream<Ctype>::operator<<(const
     }
     break;
   case ios::oct:
-    if(flags & ios::showbase) {
-      prefix = "0";
-    }
+    if((flags & ios::showbase) && n) prefix = "0";
     _ui128toa(n, buf, 8);
     break;
   }
   return addResult(prefix, buf);
 }
 
-#define peekChar(in,ch)           { ch = in.peek(); if(ch == EOF) in >> ch; }
-#define appendCharGetNext(in, ch) { in >> ch; buf += ch; peekChar(in,ch);   }
-#define skipChar(in, ch)          { in >> ch; peekChar(in, ch);             }
-
-template <class IStreamType, class Ctype> void eatWhite(IStreamType &in) {
-  Ctype ch;
-  for(;;in >> ch) {
-	  peekChar(in, ch);
-	  if(!iswspace(ch)) {
-	    return;
-	  }
+template<class IStreamType, class Ctype> void fetchChar(IStreamType &in, Ctype &ch) {
+  in >> ch;
+}
+template<class IStreamType, class Ctype> void  peekChar(IStreamType &in, Ctype &ch) {
+  ch = in.peek();
+  if(ch == EOF) {
+    fetchChar(in,ch);
   }
 }
+template<class IStreamType, class Ctype> void appendCharGetNext(IStreamType &in, Ctype &ch, StringTemplate<wchar_t> &buf) {
+  fetchChar(in,ch);
+  buf += ch;
+  peekChar(in,ch);
+}
+template<class IStreamType, class Ctype> void  skipChar(IStreamType &in, Ctype &ch) {
+  fetchChar(in,ch);
+  peekChar(in,ch);
+}
+template<class IStreamType, class Ctype> void  eatWhite(IStreamType &in, Ctype &ch) {
+  peekChar(in,ch);
+  while(iswspace(ch)) {
+    skipChar(in,ch);
+  }
+}
+template<class IStreamType, class Ctype> void  eatFiller(IStreamType &in, Ctype &ch) {
+  const Ctype fc = in.fill();
+  if(ch == fc) {
+    if(in.flags() & ios::skipws) {
+      in.setf(0,ios::skipws);
+      do {
+        skipChar(in,ch);
+      } while(ch == fc);
+      in.setf(1,ios::skipws);
+    } else {
+      do {
+        skipChar(in,ch);
+      } while(ch == fc);
+    }
+  }
+}
+
+//#define fetchChar(in, ch)         { in >> ch; addToFetched(ch);                           }
+//#define peekChar( in, ch)         { ch = in.peek(); if(ch == EOF) fetchChar(in,ch)        }
+//#define appendCharGetNext(in, ch) { fetchChar(in,ch); buf += ch; peekChar(in,ch);         }
+//#define skipChar( in, ch)         { fetchChar(in,ch); peekChar(in,ch);                    }
+//#define eatWhite( in, ch)         { peekChar(in,ch); while(iswspace(ch)) skipChar(in,ch); }
+//#define eatFiller(in, ch)         { const Ctype fc = in.fill(); while(ch == fc) skipChar(in,ch); }
 
 template <class IStreamType, class Ctype> IStreamType &operator>>(IStreamType &in, _int128 &n) {
   if(in.ipfx(0)) {
@@ -217,15 +242,15 @@ template <class IStreamType, class Ctype> IStreamType &operator>>(IStreamType &i
     bool                    gotDigits = false;
     const int               flags = in.flags();
     if(flags & ios::skipws) {
-      eatWhite<IStreamType, Ctype>(in);
+      eatWhite(in, ch);
+    } else {
+      peekChar(in, ch);
     }
-    peekChar(in, ch);
-
     switch(flags & ios::basefield) {
     case ios::dec:
-      if(ch == '+' || ch =='-') appendCharGetNext(in, ch);
+      if((ch == '+') || (ch =='-')) appendCharGetNext(in, ch, buf);
       while(iswdigit(ch)) {
-        appendCharGetNext(in, ch);
+        appendCharGetNext(in, ch, buf);
         gotDigits = true;
       }
       if(gotDigits) {
@@ -242,8 +267,11 @@ template <class IStreamType, class Ctype> IStreamType &operator>>(IStreamType &i
           gotDigits = true;
         }
       }
+      if((flags & ios::adjustfield) == ios::internal) {
+        eatFiller(in, ch);
+      }
       while(iswxdigit(ch)) {
-        appendCharGetNext(in, ch);
+        appendCharGetNext(in, ch, buf);
         gotDigits = true;
       }
       if(gotDigits) {
@@ -251,11 +279,18 @@ template <class IStreamType, class Ctype> IStreamType &operator>>(IStreamType &i
       }
       break;
     case ios::oct:
-      if(ch != '0') {
-        buf += '0';
+      if(ch == '0') {
+        skipChar(in, ch);
+        if(!iswodigit(ch)) {
+          buf += '0';
+          gotDigits = true;
+        }
+      }
+      if((flags & ios::adjustfield) == ios::internal) {
+        eatFiller(in, ch);
       }
       while(iswodigit(ch)) {
-        appendCharGetNext(in, ch);
+        appendCharGetNext(in, ch, buf);
         gotDigits = true;
       }
       if(gotDigits) {
@@ -264,8 +299,7 @@ template <class IStreamType, class Ctype> IStreamType &operator>>(IStreamType &i
       break;
     }
     if(!gotDigits) {
-      in.putback(ch);
-      in.setf(ios::failbit);
+      in.setstate(ios::failbit);
     }
     in.isfx();
   }
@@ -279,15 +313,16 @@ template <class IStreamType, class Ctype> IStreamType &operator>>(IStreamType &i
     bool                    gotDigits = false;
     const int               flags = in.flags();
     if(flags & ios::skipws) {
-      eatWhite<IStreamType, Ctype>(in);
+      eatWhite(in, ch);
+    } else {
+      peekChar(in, ch);
     }
-    peekChar(in, ch);
 
     switch(flags & ios::basefield) {
     case ios::dec:
-      if(ch == '+') appendCharGetNext(in, ch);
+      if(ch == '+') appendCharGetNext(in, ch, buf);
       while(iswdigit(ch)) {
-        appendCharGetNext(in, ch);
+        appendCharGetNext(in, ch, buf);
         gotDigits = true;
       }
       if(gotDigits) {
@@ -298,36 +333,45 @@ template <class IStreamType, class Ctype> IStreamType &operator>>(IStreamType &i
       if(ch == '0') {
         skipChar(in, ch);
         if((ch == 'x') || (ch == 'X')) {
-          skipChar(in, ch)
+          skipChar(in, ch);
         } else {
           buf += '0';
           gotDigits = true;
         }
       }
+      if((flags & ios::adjustfield) == ios::internal) {
+        eatFiller(in, ch);
+      }
       while(iswxdigit(ch)) {
-        appendCharGetNext(in, ch);
+        appendCharGetNext(in, ch, buf);
         gotDigits = true;
       }
       if(gotDigits) {
-        _wcstoui128(buf.c_str(), NULL, 16);
+        n = _wcstoui128(buf.c_str(), NULL, 16);
       }
       break;
     case ios::oct:
-      if(ch != '0') {
-        buf += '0';
+      if(ch == '0') {
+        skipChar(in, ch);
+        if(!iswodigit(ch)) {
+          buf += '0';
+          gotDigits = true;
+        }
+      }
+      if((flags & ios::adjustfield) == ios::internal) {
+        eatFiller(in, ch);
       }
       while(iswodigit(ch)) {
-        appendCharGetNext(in, ch);
+        appendCharGetNext(in, ch, buf);
         gotDigits = true;
       }
       if(gotDigits) {
-        _wcstoui128(buf.c_str(), NULL, 8);
+        n = _wcstoui128(buf.c_str(), NULL, 8);
       }
       break;
     }
     if(!gotDigits) {
-      in.putback(ch);
-      in.setf(ios::failbit);
+      in.setstate(ios::failbit);
     }
     in.isfx();
   }

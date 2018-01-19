@@ -5,29 +5,28 @@
 #pragma warning(disable : 4073)
 #pragma init_seg(lib)
 
-const _int128  _I128_MIN(0x8000000000000000, 0x0000000000000000);
-const _int128  _I128_MAX(0x7fffffffffffffff, 0xffffffffffffffff);
+const _int128  _I128_MIN( 0x8000000000000000, 0x0000000000000000);
+const _int128  _I128_MAX( 0x7fffffffffffffff, 0xffffffffffffffff);
 const _uint128 _UI128_MAX(0xffffffffffffffff, 0xffffffffffffffff);
-
-static const _uint128 _10(10);
 
 // Conversion from _int128/_uint128 to string
 
-// Number of digits that should be appended to the string for each loop
+// Number of digits that should be appended to the string for each loop.
+// Also used as maximal number of digits to scan, that fits in 32 bit UINT
+// digitCount[R] = floor(logR(_UI32_MAX+1))
 // (index = radix = [2..36])
-// For radix 8 and 32 the value is the bitshift for each digit
-static const char digitCount[37] = {
+static const BYTE digitCount[37] = {
    0, 0,32,20,16,13,12,11
- , 3,10, 9, 9, 8, 8, 8, 8
+ ,10,10, 9, 9, 8, 8, 8, 8
  , 8, 7, 7, 7, 7, 7, 7, 7
  , 6, 6, 6, 6, 6, 6, 6, 6
- , 5, 6, 6, 6, 6
+ , 6, 6, 6, 6, 6
 };
 
 // Highest power of radix that fits in 32 bit (index = radix)
 // For radix 2,4,8,16,32 special code is used which doesn't use this table.
-// For all other radices the element is used to get as many digits as possible
-// by modulus and division
+// For all other values the element is used to get as many digits as possible
+// by modulus and division. (powRadix[r] == pow(r,digitCount[r])
 static const _uint128 powRadix[] = {
   0          //  not used
  ,0          //  not used
@@ -79,13 +78,13 @@ static const _uint128 powRadix[] = {
 #define STRCPY(dst, src) ((sizeof(Ctype)==sizeof(char))?(Ctype*)strcpy((char*)dst, (char*)src):(Ctype*)wcscpy((wchar_t*)dst, (wchar_t*)src))
 #define STRREV(str)      ((sizeof(Ctype)==sizeof(char))?(Ctype*)_strrev((char*)str):(Ctype*)_wcsrev((wchar_t*)str))
 
-template<class Int128Type, class Ctype> Ctype *int128toStr(Int128Type value, Ctype *str, int radix) {
+template<class Int128Type, class Ctype> Ctype *int128toStr(Int128Type value, Ctype *str, UINT radix) {
   if((radix < 2) || (radix > 36)) {
     errno = EINVAL;
     str[0] = 0;
     return str;
   }
-
+  errno = 0;
   bool setSign = false;
   if(value.isZero()) {
     str[0] = '0';
@@ -93,14 +92,13 @@ template<class Int128Type, class Ctype> Ctype *int128toStr(Int128Type value, Cty
     return str;
   }
 
-  const UINT dc = digitCount[radix];
-
   Ctype *s = str;
   switch(radix) {
   case 2 :
   case 4 :
   case 16:
-    { for(int i = 3; i >= 0; i--) {
+    { const UINT dc = digitCount[radix];
+      for(int i = 3; i >= 0; i--) {
         if(value.s4.i[i]) {
           Ctype tmpStr[40];
           ULTOSTR(value.s4.i[i], tmpStr, radix);
@@ -119,22 +117,22 @@ template<class Int128Type, class Ctype> Ctype *int128toStr(Int128Type value, Cty
     return str;
   case 8 : // Get 3 bits/digit giving 30 bits/loop, ie 10 digits/loop
   case 32: // Get 5 bits/digit giving 30 bits/loop too! which is 6 digits/loop
-    { const UINT mask = (1 << dc) - 1;
-      const UINT dpl  = 30 / dc;
-      _uint128 v = value;
+    { const UINT shft = (radix==32)?5:3;
+      const UINT mask = (1 << shft) - 1;
+      const UINT dpl  = 30 / shft;
+      _uint128   v    = value;
       for(;;) {
         UINT v30 = v.s4.i[0] & ((1<<30) - 1);
         v >>= 30;
         UINT count;
-        for(count = 0; v30; count++, v30 >>= dc) {
+        for(count = 0; v30; count++, v30 >>= shft) {
           *(s++) = radixLetter(v30 & mask);
         }
         if(v.isZero()) break;
         while(count++ < dpl) *(s++) = '0';
       }
-      *s = 0;
-      return STRREV(str);
     }
+    break;
   case 10:
     if(value.isNegative()) {
       value = -value;
@@ -142,8 +140,9 @@ template<class Int128Type, class Ctype> Ctype *int128toStr(Int128Type value, Cty
     }
     // NB continue case
   default:
-    _uint128 v = value;
+    const UINT      dc      = digitCount[radix];
     const _uint128 &divisor = powRadix[radix];
+    _uint128        v       = value;
     for(;;) {
       const UINT c = v % divisor;
       Ctype tmpStr[40];
@@ -159,9 +158,10 @@ template<class Int128Type, class Ctype> Ctype *int128toStr(Int128Type value, Cty
       }
     }
     if(setSign) *(s++) = '-';
-    *s = 0;
-    return STRREV(str);
+    break;
   }
+  *s = 0;
+  return STRREV(str);
 }
 
 char *_i128toa(_int128 value, char *str, int radix) {
@@ -180,8 +180,8 @@ wchar_t *_ui128tow(_uint128 value, wchar_t *str, int radix) {
   return int128toStr<_uint128, wchar_t>(value, str, radix);
 }
 
-static inline bool isRadixDigit(wchar_t ch, int radix, int &value) {
-  int v;
+static inline bool isRadixDigit(wchar_t ch, UINT radix, UINT &value) {
+  UINT v;
   if(iswdigit(ch)) {
     v = ch - '0';
   } else if(iswalpha(ch)) {
@@ -194,12 +194,12 @@ static inline bool isRadixDigit(wchar_t ch, int radix, int &value) {
   return true;
 }
 
-template<class Int128Type, class Ctype> Int128Type strtoint128(const Ctype *s, Ctype **end, int radix) {
+template<class Int128Type, class Ctype> Int128Type strtoint128(const Ctype *s, Ctype **end, UINT radix) {
   if((radix != 0) && ((radix < 2) || (radix > 36))) {
     errno = EINVAL;
     return -1;
   }
-
+  errno = 0;
   bool negative = false;
   bool gotDigit = false;
   while(iswspace(*s)) s++; // skip whitespace
@@ -209,7 +209,7 @@ template<class Int128Type, class Ctype> Int128Type strtoint128(const Ctype *s, C
   } else if (*s == '+') {
     s++;
   }
-  if(radix == 0) { // first determine if radix is 8,16 or 10
+  if(radix == 0) { // first determine if radix is 8,10 or 16
     if(*s == '0') {
       gotDigit = true;
       s++;
@@ -219,35 +219,80 @@ template<class Int128Type, class Ctype> Int128Type strtoint128(const Ctype *s, C
       } else {
         radix = 8;
       }
+      UINT digit;
+      if(!isRadixDigit(*s, radix, digit)) { // we've scanned "0[x]",
+        return 0;                           // if no more digits, then 0
+      }
     } else if(iswdigit(*s)) {
       radix = 10;
     } else {
-      return 0; // nothing regognized
+      return 0; // nothing recognized
     }
   }
-  Int128Type result = 0;
-  int        digit;
+  Int128Type result128;
+  bool       firstChunk = true;
+  const UINT maxCount32 = digitCount[radix];
+  UINT       result32, digitCount32, digit;
   if(isRadixDigit(*(s++), radix, digit)) {
-    gotDigit = true;
-    result = digit;
+    gotDigit      = true;
+    result32      = digit;
+    digitCount32  = 1;
+
+#define SHIFTLOOP(bitsPerDigit)                    \
+{ for(;;result32 = digitCount32 = 0) {             \
+    while(isRadixDigit(*(s++), radix, digit)) {    \
+      result32 <<= bitsPerDigit;                   \
+      result32 |= digit;                           \
+      if(++digitCount32 == maxCount32) break;      \
+    }                                              \
+    if(firstChunk) {                               \
+      result128  = result32;                       \
+      firstChunk = false;                          \
+    } else if(digitCount32) {                      \
+      result128 <<= digitCount32 * (bitsPerDigit); \
+      if(result32) {                               \
+        result128 |= result32;                     \
+      }                                            \
+    } else {                                       \
+      break;                                       \
+    }                                              \
+    if(digitCount32 < maxCount32) break;           \
+  }                                                \
+}
+
     switch(radix) {
-#define SHIFTLOOP(bitsPerDigit) while(isRadixDigit(*(s++), radix, digit)) { result <<= (bitsPerDigit); result |= digit; }
     case 2 : SHIFTLOOP(1) break;
     case 4 : SHIFTLOOP(2) break;
     case 8 : SHIFTLOOP(3) break;
     case 16: SHIFTLOOP(4) break;
     case 32: SHIFTLOOP(5) break;
     default:
-      while(isRadixDigit(*(s++), radix, digit)) {
-        result *= radix;
-        result += digit;
+      for(UINT p32 = radix;;p32 = 1, result32 = digitCount32 = 0) {
+        while(isRadixDigit(*(s++), radix, digit)) {
+          result32 *= radix;
+          result32 += digit;
+          p32      *= radix;
+          if(++digitCount32 == maxCount32) break;
+        }
+        if(firstChunk) {
+          result128  = result32;
+          firstChunk = false;
+        } else if(digitCount32) {
+          result128 *= p32;
+          if(result32) {
+            result128 += result32;
+          }
+        } else {
+          break;
+        }
+        if(digitCount32 < maxCount32) break;
       }
       break;
     }
   }
   if(!gotDigit) return 0;
-  if(end) *end = (Ctype*)s;
-  return negative ? -result : result;
+  if(end) *end = (Ctype*)s-1;
+  return negative ? -result128 : result128;
 }
 
 _int128 _strtoi128(const char *str, char **end, int radix) {

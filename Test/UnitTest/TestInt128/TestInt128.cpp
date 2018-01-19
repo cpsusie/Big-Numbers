@@ -11,20 +11,20 @@ namespace TestInt128 {
 
 #include <UnitTestTraits.h>
 
-  template<class OUTSTREAM> OUTSTREAM &setFormat(OUTSTREAM &os, ios::_Fmtflags baseFlag, unsigned int width, int showPos, int showBase, int uppercase, ios::_Fmtflags adjustFlag) {
-    os.setf(baseFlag  , ios::basefield  );
-    os.setf(adjustFlag, ios::adjustfield);
-    os.width(width);
+  template<class STREAM> STREAM &setFormat(STREAM &s, ios::_Fmtflags baseFlag, UINT width, int showPos, int showBase, int uppercase, ios::_Fmtflags adjustFlag) {
+    s.setf(baseFlag  , ios::basefield  );
+    s.setf(adjustFlag, ios::adjustfield);
+    s.width(width);
     if(showBase) {
-      os.setf(ios::showbase);
+      s.setf(ios::showbase);
     }
     if(showPos) {
-      os.setf(ios::showpos);
+      s.setf(ios::showpos);
     }
     if(uppercase) {
-      os.setf(ios::uppercase);
+      s.setf(ios::uppercase);
     }
-    return os;
+    return s;
   }
 
   TEST_CLASS(TesInt128) {
@@ -490,17 +490,17 @@ namespace TestInt128 {
     verify(R == expectedR);
   }
 
-static inline wchar_t RadixLetter(unsigned int c) {
+static inline wchar_t RadixLetter(UINT c) {
   return (c < 10) ? ('0' + c) : ('a' + (c-10));
 }
 
 static String int128ToString(_uint128 v, int radix) {
-  if (v.isZero()) {
+  if(v.isZero()) {
     return _T("0");
   }
   String result;
   do {
-    unsigned int c = v % radix;
+    const UINT c = v % radix;
     result += RadixLetter(c);
     v /= radix;
   } while (!v.isZero());
@@ -508,16 +508,16 @@ static String int128ToString(_uint128 v, int radix) {
 }
 
 static String int128ToString(_int128 v, int radix) {
-  if (v.isZero()) {
+  if(v.isZero()) {
     return _T("0");
   }
-  if (radix != 10 || !v.isNegative()) {
+  if(radix != 10 || !v.isNegative()) {
     return int128ToString((_uint128)v, radix);
   }
   String result;
   _uint128 v1 = -v;
   do {
-    unsigned int c = v1 % radix;
+    const UINT c = v1 % radix;
     result += RadixLetter(c);
     v1 /= radix;
   } while (!v1.isZero());
@@ -525,46 +525,101 @@ static String int128ToString(_int128 v, int radix) {
   return rev(result);
 }
 
-  static inline unsigned __int64 getRandInt64(unsigned int bits) {
-    return randInt64() & ((unsigned __int64(1) << bits) - 1);
+  static inline UINT64 getRandInt64(UINT bits) {
+    return randInt64() & ((UINT64(1) << bits) - 1);
   }
 
   static _uint128 randInt128(int bits) {
-    if (bits < 64) {
+    if(bits < 64) {
       return _uint128(getRandInt64(bits));
     } else {
       return _uint128(getRandInt64(bits - 64), randInt64());
     }
   }
 
+#pragma warning(disable : 4996)
+
   TEST_METHOD(Int128Test_ui128toa) {
-    for (int i = 0; i < 1000; i++) {
-      int bits = randInt(1, 128);
-      _uint128 x = randInt128(bits);
-      for (int radix = 2; radix <= 36; radix++) {
+    for(int i = 0; i < 1000; i++) {
+      const int      bits = randInt(1, 128);
+      const _uint128 x    = randInt128(bits);
+      for(int radix = 2; radix <= 36; radix++) {
         const String wanted = int128ToString(x, radix);
-        TCHAR str[200];
+        TCHAR str[200], *endp;
         _ui128tot(x, str, radix);
         verify(str == wanted);
+        _tcscat(str,_T("!"));
+        const _uint128 x1 = _tcstoui128(str, &endp, radix);
+        verify(errno == 0);
+        verify(x1 == x);
+        verify(*endp == '!');
+
+        String prefix;
+        bool tryRadix0 = false;
+        switch(radix) {
+        case  8: tryRadix0 = true; prefix = _T("0");  break;
+        case 10: tryRadix0 = true;                    break;
+        case 16: tryRadix0 = true; prefix = _T("0x"); break;
+        }
+        if(tryRadix0) {
+          String s = prefix + str;
+          const  _uint128 x2 = _tcstoui128( s.cstr(), &endp, 0);
+          verify(errno == 0);
+          verify(x2 == x);
+          verify(*endp == '!');
+        }
       }
     }
+    {
+      const _uint128  x3 = randInt128(89);
+      TCHAR str[200];
+      _tcscpy(str, EMPTYSTRING);
+      _ui128tot( x3, str, 37);
+      verify((_tcslen(str) == 0) && (errno == EINVAL));
+    }
+
   }
 
   TEST_METHOD(Int128Test_i128toa) {
-    for (int i = 0; i < 1000; i++) {
-      int bits = randInt(1, 128);
-      _int128 x = randInt128(bits);
-      for (int radix = 2; radix <= 36; radix++) {
+    for(int i = 0; i < 1000; i++) {
+      const int      bits = randInt(1, 128);
+      const _int128  x    = randInt128(bits);
+      for(int radix = 2; radix <= 36; radix++) {
         const String wanted = int128ToString(x, radix);
-        TCHAR str[200];
-        _i128tot(x, str, radix);
+        TCHAR str[200], *endp;
+        _i128tot( x, str, radix);
         verify(str == wanted);
+        _tcscat(str,_T("!"));
+        const  _int128 x1 = _tcstoi128( str, &endp, radix);
+        verify(errno == 0);
+        verify(x1 == x);
+        verify(*endp == '!');
+        String prefix;
+        bool tryRadix0 = false;
+        switch(radix) {
+        case  8: tryRadix0 = true; prefix = _T("0");  break;
+        case 10: tryRadix0 = true;                    break;
+        case 16: tryRadix0 = true; prefix = _T("0x"); break;
+        }
+        if(tryRadix0) {
+          String s = prefix + str;
+          const  _int128 x2 = _tcstoi128( s.cstr(), &endp, 0);
+          verify(errno == 0);
+          verify(x2 == x);
+          verify(*endp == '!');
+        }
       }
+    }
+    {
+      const _int128  x3 = randInt128(89);
+      TCHAR str[200];
+      _tcscpy(str, EMPTYSTRING);
+      _i128tot( x3, str, 37);
+      verify((_tcslen(str) == 0) && (errno == EINVAL));
     }
   }
 
     TEST_METHOD(Int128ArithmethicOperators) {
-
       _uint128 x1 = _strtoui128("0xffffffffffffffffffffffffffffffff",NULL,0);
       _uint128 res1 = x1 + 1;
       verify(res1 == 0);
@@ -638,8 +693,6 @@ static String int128ToString(_int128 v, int radix) {
 
       d5pp += y5p;
       verify((d5pp == x5pcopy) && (y5p == y5pcopy));
-
-// ---------------------------------------------------------------
 
 // ---------------------------------------------------------------
 
@@ -756,7 +809,6 @@ static String int128ToString(_int128 v, int radix) {
 */
       verify(x6 == _I128_MIN);
       _int128 y6 = _strtoi128("-54678423345639783523445",NULL,0);
-
     } // Int128ArithmethicOperators
 
     TEST_METHOD(Int128BitOperators) {
@@ -797,85 +849,153 @@ static String int128ToString(_int128 v, int radix) {
 
     TEST_METHOD(Int128StreamOperators) {
       try {
-        CompactArray<_int128>  sa;
-        CompactArray<_uint128> ua;
+//#define USEINT64STREAM
+#ifdef USEINT64STREAM
+        typedef INT64  itype;
+        typedef UINT64 uitype;
+#define MINIVALUE  _I64_MIN
+#define MAXIVALUE  _I64_MAX
+#define MAXUIVALUE _UI64_MAX
+#else // USEINT64STREAM
+        typedef _int128  itype;
+        typedef _uint128 uitype;
+#define MINIVALUE  _I128_MIN
+#define MAXIVALUE  _I128_MAX
+#define MAXUIVALUE _UI128_MAX
+#endif // USEINT64STREAM
 
-        for(_int128 x = 0; x >= 0; x = (x + 1) * 3) { // add some positive test-numbers
-          sa.add(x);
-        }
-        for (_int128 x = 0; x <= 0; x = (x - 1) * 3) { // add some negative test-numbers
-          sa.add(x);
-        }
-        for(_uint128 x = 0;; x = (x + 1) * 5) {       // add unsigned test-numbers
-          if ((ua.size() > 1) && (x < ua.last())) break;
-          ua.add(x);
-        }
+#define MINI_LOOPVALUE  (MINIVALUE / 4)
+#define MAXI_LOOPVALUE  (MAXIVALUE >>2)
+#define MAXUI_LOOPVALUE (MAXUIVALUE>>4)
 
-        ios::_Fmtflags baseFlags[] = {
+        CompactArray<itype>  sa;
+        CompactArray<uitype> ua;
+        size_t signedValueCount;
+
+        for(_int128  x = 0; x <= MAXI_LOOPVALUE ; x = (x + 1) * 3 ) { // add some positive test-numbers
+          sa.add((itype)x);
+        }
+        sa.add(MAXIVALUE);
+        for(_int128  x = 0; x >= MINI_LOOPVALUE ; x = (x - 1) * 3 ) { // add some negative test-numbers
+          sa.add((itype)x);
+        }
+        sa.add(MINIVALUE);
+        signedValueCount = sa.size();
+        for(_uint128 x = 0; x <= MAXUI_LOOPVALUE; x = (x + 1) * 11) { // add unsigned test-numbers
+          ua.add((uitype)x);
+        }
+        ua.add(MAXUIVALUE);
+
+        const ios::_Fmtflags baseFlags[] = {
           ios::dec
          ,ios::hex
          ,ios::oct
         };
-        ios::_Fmtflags adjustFlags[] = {
+        const ios::_Fmtflags adjustFlags[] = {
           ios::left
          ,ios::right
          ,ios::internal
         };
-
+#ifdef _DEBUG
+        const TCHAR *baseName[] = {
+          _T("dec")
+         ,_T("hex")
+         ,_T("oct")
+        };
+        const TCHAR *adjustName[] = {
+          _T("left  ")
+         ,_T("right ")
+         ,_T("intern")
+        };
+#endif
         // try all(almost) combinations of output format flags
-        for(int b = 0; b < ARRAYSIZE(baseFlags); b++) {
+        for(UINT b = 0, formatCounter=0; b < ARRAYSIZE(baseFlags); b++) {
           const ios::_Fmtflags baseFlag = baseFlags[b];
-          int maxShowPos, maxShowBase, maxUpper;
+          int minShowPos, maxShowPos, minShowBase, maxShowBase, maxUpper;
           switch(baseFlag) {
-          case ios::dec: maxShowPos = 1; maxShowBase = 0; maxUpper = 0; break;
-          case ios::hex: maxShowPos = 0; maxShowBase = 1; maxUpper = 1; break;
-          case ios::oct: maxShowPos = 0; maxShowBase = 1; maxUpper = 0; break;
+          case ios::dec: minShowPos = 0; maxShowPos = 1; minShowBase  = 0; maxShowBase = 1; maxUpper = 1; break;
+          case ios::hex: minShowPos = 0; maxShowPos = 1; minShowBase  = 0; maxShowBase = 1; maxUpper = 1; break;
+          case ios::oct: minShowPos = 0; maxShowPos = 1; minShowBase  = 0; maxShowBase = 1; maxUpper = 1; break;
           }
-          for(int showPos = 1; showPos <= maxShowPos; showPos++) {
-            for(int showBase = 0; showBase <= maxShowBase; showBase++) {
+          for(int showPos = minShowPos; showPos <= maxShowPos; showPos++) {
+            for(int showBase = minShowBase; showBase <= maxShowBase; showBase++) {
               for(int uppercase = 0; uppercase <= maxUpper; uppercase++) {
-                for(int a = 0; a < ARRAYSIZE(adjustFlags); a++) {
-                  for(unsigned int width = 0; width < 20; width += 3) {
+                for(UINT a = 0; a < ARRAYSIZE(adjustFlags); a++) {
+                  for(UINT width = 0; width <= 30; width += 5) {
+#ifdef _DEBUG
+                    formatCounter++;
+                    String aaFormats = format(_T("%4d:Base:%s, ShowPos:%d, ShowBase:%d, Upper:%d, Adjust:%s, Width:%2d")
+                                             ,formatCounter
+                                             ,baseName[b]
+                                             ,showPos
+                                             ,showBase
+                                             ,uppercase
+                                             ,adjustName[a]
+                                             ,width
+                                             );
+                    debugLog(_T("%s\n"), aaFormats.cstr());
+#endif
                     ostringstream  ostr;
                     wostringstream wostr;
                     const ios::_Fmtflags adjustFlag = adjustFlags[a];
-
                     for(size_t i = 0; i < sa.size(); i++) { // write signed
-                      setFormat<ostream>(ostr, baseFlag, width, showPos, showBase, uppercase, adjustFlag);
+                      setFormat<ostream>( ostr , baseFlag, width, showPos, showBase, uppercase, adjustFlag);
                       setFormat<wostream>(wostr, baseFlag, width, showPos, showBase, uppercase, adjustFlag);
-                      ostr << sa[i] << "\n";
-                      wostr << sa[i] << "\n";
+                      ostr  << sa[i] << "\n";
+                      wostr << sa[i] << L"\n";
                     }
                     for(size_t i = 0; i < ua.size(); i++) { // write unsigned
-                      setFormat<ostream>(ostr, baseFlag, width, showPos, showBase, uppercase, adjustFlag);
+                      setFormat<ostream>( ostr , baseFlag, width, showPos, showBase, uppercase, adjustFlag);
                       setFormat<wostream>(wostr, baseFlag, width, showPos, showBase, uppercase, adjustFlag);
-                      ostr << ua[i] << "\n";
-                      wostr << ua[i] << "\n";
+                      ostr  << ua[i] << "\n";
+                      wostr << ua[i] << L"\n";
                     }
 
                     string  str  = ostr.str();
                     wstring wstr = wostr.str();
 
+                    String  tmp(str.c_str());
+                    verify(wcscmp(wstr.c_str(),tmp.cstr()) == 0);
+#ifdef _DEBUG
+                    debugLog(_T("%s"), wstr.c_str());
+                    CompactArray<const TCHAR*> strArray;
+#endif
+                    size_t counter = 0;
                     for(Tokenizer tok(wstr.c_str(), _T("\n")); tok.hasNext();) {
+                      counter++;
+#ifdef _DEBUG
+                      const StringIndex inx = tok.nextIndex();
+                      const String s = wstr.substr(inx.getStart(), inx.getLength()).c_str();
+                      strArray.add(wstr.c_str() + inx.getStart());
+#else
                       const String s = tok.next();
+#endif
                       verify(s.length() >= width);
                       const TCHAR *np;
-
                       if(adjustFlag == ios::right) {
-                        for(np = s.cstr(); *np == _T(' '); np++);
-                        verify(s.last() != _T(' '));
-                      } else {
+                        for(np = s.cstr(); *np == ' '; np++);
+                        verify(s.last() != ' ');
+                      } else if(adjustFlag == ios::left) {
                         np = s.cstr();
-                        verify(s[0] != _T(' '));
+                        verify(s[0] != ' ');
+                      } else {
+                        verify(adjustFlag == ios::internal);
+                        for(np = s.cstr(); *np == ' '; np++);
                       }
                       if(baseFlag == ios::dec) {
                         if(showPos) {
-                          verify((np[0] == _T('-')) || (np[0] == _T('+')));
+                          if(counter <= signedValueCount) {
+                            verify((np[0] == _T('-')) || (np[0] == _T('+')));
+                          } else {
+                            verify(iswdigit(np[0]) != 0);
+                          }
                         }
                       } else if(showBase) {
                         verify(np[0] == _T('0'));
                         if(baseFlag == ios::hex) {
-                          verify(np[1] == _T('x'));
+                          if(np[1] != 0) {
+                            verify((np[1] == (uppercase?'X':'x')) || (np[1] == ' '));
+                          }
                         }
                       }
                       if(uppercase) {
@@ -892,42 +1012,85 @@ static String int128ToString(_int128 v, int radix) {
                     istringstream  istr;
                     wistringstream wistr;
 
-                    istr.str(str);
+                    istr.str( str );
                     wistr.str(wstr);
 
-                    for (size_t i = 0; i < sa.size(); i++) { // read signed
-                      _int128 x;
-                      istr.setf(baseFlag, ios::basefield);
-                      istr >> x;
-                      verify(x == sa[i]);
-
-                      _int128 wx;
-                      wistr.setf(baseFlag, ios::basefield);
-                      wistr >> wx;
-                      verify(wx == sa[i]);
+                    for(size_t i = 0; i < sa.size(); i++) { // read signed
+                      setFormat<istringstream>( istr , baseFlag, width, showPos, showBase, uppercase, adjustFlag);
+                      setFormat<wistringstream>(wistr, baseFlag, width, showPos, showBase, uppercase, adjustFlag);
+                      if(adjustFlag != ios::left) {
+                        istr.setf( 1,ios::skipws);
+                        wistr.setf(1,ios::skipws);
+                      }
+                      itype x, wx;
+                      if((baseFlag != ios::dec) && (sa[i] < 0)) {
+                        uitype ux, wux;
+                        istr  >> ux ; x  = ux;
+                        wistr >> wux; wx = wux;
+                      } else {
+                        istr  >> x;
+                        wistr >> wx;
+                      }
+                      if(istr.fail()) {
+                        verify(wistr.fail());
+                        verify(adjustFlag == ios::internal);
+                        istr.clear() ; istr.setf( 1,ios::skipws);
+                        wistr.clear(); wistr.setf( 1,ios::skipws);
+                        if(sa[i] < 0) {
+                          uitype ux, wux;
+                          istr  >> ux;  x  = ux;
+                          wistr >> wux; wx = wux;
+                        } else {
+                          istr  >> x;
+                          wistr >> wx;
+                        }
+                        verify(!istr.fail());
+                        verify(!wistr.fail());
+                        verify((x  == sa[i]) || (x == -sa[i]));
+                        verify((wx == sa[i]) || (wx == -sa[i]));
+                      } else {
+                        verify(!wistr.fail());
+                        verify(x  == sa[i]);
+                        verify(wx == sa[i]);
+                      }
                     }
-                    for (size_t i = 0; i < ua.size(); i++) { // read unsigned
-                      _uint128 x;
-                      istr.setf(baseFlag, ios::basefield);
-                      istr >> x;
-                      verify(x == ua[i]);
-                      _uint128 wx;
-                      wistr.setf(baseFlag, ios::basefield);
+                    for(size_t i = 0; i < ua.size(); i++) { // read unsigned
+                      setFormat<istringstream>( istr , baseFlag, width, showPos, showBase, uppercase, adjustFlag);
+                      setFormat<wistringstream>(wistr, baseFlag, width, showPos, showBase, uppercase, adjustFlag);
+                      if(adjustFlag == ios::right) {
+                        istr.setf( 1,ios::skipws);
+                        wistr.setf(1,ios::skipws);
+                      }
+                      uitype x, wx;
+                      istr  >> x;
                       wistr >> wx;
-                      verify(wx == ua[i]);
+                      if(istr.fail()) {
+                        verify(wistr.fail());
+                        verify(adjustFlag == ios::internal);
+                        istr.clear() ; istr.setf( 1,ios::skipws);
+                        wistr.clear(); wistr.setf( 1,ios::skipws);
+                        istr  >> x;
+                        wistr >> wx;
+                        verify(!istr.fail());
+                        verify(!wistr.fail());
+                        verify(x  == ua[i]);
+                        verify(wx == ua[i]);
+                      } else {
+                        verify(!wistr.fail());
+                        verify(x  == ua[i]);
+                        verify(wx == ua[i]);
+                      }
                     }
-                  } // for width=[0..20]
+                  } // for width=[0,5,10,15,20,25,30]
                 } // for all AdjustFlags
               } // for lower/uppercase
             } // for all showBase
           } // for all showPos
         } // for all baseFlags
-      }
-      catch (Exception e) {
+      } catch (Exception e) {
         OUTPUT(_T("Exception:%s"), e.what());
         verify(false);
       }
     }
-
   };
 }

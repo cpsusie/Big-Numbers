@@ -7,9 +7,14 @@ ADDIN_API HRESULT WINAPI AddIn__int128(DWORD dwAddress, DEBUGHELPER *pHelper, in
     pHelper->getRealObject(&x, sizeof(x));
     char tmp[150];
     _i128toa(x, tmp, 10);
+/*
+    char baseStr[20];
+    sprintf(baseStr," base:%d", nBase);
+    strcat(strncpy(pResult, tmp, maxResult),baseStr);
+*/
     strncpy(pResult, tmp, maxResult);
-  } catch (...) {
-    strcpy(pResult, "Invalid address");
+  } catch(...) {
+    strcpy(pResult, "");
   }
   return S_OK;
 }
@@ -20,10 +25,15 @@ ADDIN_API HRESULT WINAPI AddIn__uint128(DWORD dwAddress, DEBUGHELPER *pHelper, i
     pHelper->getRealObject(&x, sizeof(x));
     char tmp[150];
     _ui128toa(x, tmp, 10);
+/*
+    char baseStr[20];
+    sprintf(baseStr," base:%d", nBase);
+    strcat(strncpy(pResult, tmp, maxResult),baseStr);
+*/
     strncpy(pResult, tmp, maxResult);
     return S_OK;
-  } catch (...) {
-    strcpy(pResult, "Invalid address");
+  } catch(...) {
+    strcpy(pResult, "");
   }
   return S_OK;
 }
