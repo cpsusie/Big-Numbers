@@ -506,40 +506,38 @@ public:
 };
 
 void unsignedQuotRemainder(const _uint128 &a, const _uint128 &y, _uint128 *quot, _uint128 *rem) {
-  _uint128 dummyRest;
-
+  _uint128FastMul p128;
+  int             lastShift = 0;
+  _uint128        dummyRest, &rest128 = rem  ? *rem  : dummyRest;
+  rest128 = a;
+  if(quot) *quot = 0;
   if(y < 0x8000) {
     int                yExpo2 = getExpo2((UINT)y);
     const int          yScale = 15 - yExpo2;
     const UINT         y16    = (UINT)y << yScale;
-    _uint128          &rest   = rem  ? *rem  : dummyRest;
-    rest = a;
-    if(quot) *quot = 0;
-    _uint128FastMul p;
-    int lastShift = 0;
-    for(int count = 0; rest >= y16; count++) {
+    for(int count = 0; rest128 >= y16; count++) {
       int restExpo2;
-      const UINT         rest32      = getFirst32(rest, restExpo2);
+      const UINT         rest32      = getFirst32(rest128, restExpo2);
       const int          rest32Expo2 = getExpo2(rest32);
-      UINT               q;
+      UINT               q32;
       int                shift;
-      p = y;
+      p128 = y;
       if((shift = restExpo2 - rest32Expo2 + yScale) < 0) { // >= -31
-        q  = (rest32 / (y16+1)) >> -shift;
+        q32  = (rest32 / (y16+1)) >> -shift;
         shift = 0;
-        switch (q) {
-        case 0 : q = 1; break;
+        switch(q32) {
+        case 0 : q32 = 1; break;
         case 1 : break;
-        default: p *= q; break;
+        default: p128 *= q32; break;
         }
       } else {
-        q = rest32 / (y16 + 1);
-        switch(q) {
-        case 0 : q = 1; break;
+        q32 = rest32 / (y16 + 1);
+        switch(q32) {
+        case 0 : q32 = 1; break;
         case 1 : break;
-        default: p *= q; break;
+        default: p128 *= q32; break;
         }
-        if(shift) int128shl(&p,shift);
+        if(shift) int128shl(&p128,shift);
       }
       if(quot) { // do we want the quot. If its NULL there's no need to do this
         if(count) {
@@ -547,7 +545,7 @@ void unsignedQuotRemainder(const _uint128 &a, const _uint128 &y, _uint128 *quot,
             int128shl(quot, lastShift - shift);
           }
           __asm {
-            mov eax, q
+            mov eax, q32
             mov esi, quot
             add dword ptr[esi], eax
             jnc AddDone1
@@ -556,56 +554,51 @@ void unsignedQuotRemainder(const _uint128 &a, const _uint128 &y, _uint128 *quot,
             adc dword ptr[esi+12],0
           }
         } else {
-          *quot = q;
+          *quot = q32;
         }
 AddDone1:
         lastShift = shift;
       }
-      rest -= p;
+      rest128 -= p128;
     }
 
-    // rest < 0xffff
+    // rest128 < 0xffff
     if(quot) {
       if(lastShift) {
         int128shl(quot, lastShift);
       }
-      *quot += (UINT)rest / (UINT)y;
+      *quot += (UINT)rest128 / (UINT)y;
     }
     if(rem) {
-      *rem = (UINT)rest % (UINT)y;
+      *rem = (UINT)rest128 % (UINT)y;
     }
   } else {
     int                yExpo2;
     const UINT         y16    = getFirst16(y, yExpo2);
     const int          yScale = yExpo2 - getExpo2(y16);
-    _uint128          &rest   = rem  ? *rem  : dummyRest;
-    rest = a;
-    if(quot) *quot = 0;
-    _uint128FastMul p;
-    int lastShift = 0;
-    for(int count = 0; rest >= y; count++) {
+    for(int count = 0; rest128 >= y; count++) {
       int restExpo2;
-      const UINT         rest32      = getFirst32(rest, restExpo2);
+      const UINT         rest32      = getFirst32(rest128, restExpo2);
       const int          rest32Expo2 = getExpo2(rest32);
-      UINT               q;
+      UINT               q32;
       int                shift;
-      p = y;
+      p128 = y;
       if((shift = restExpo2 - rest32Expo2 - yScale) < 0) { // >= -31
-        q  = (rest32 / (y16+1)) >> -shift;
+        q32  = (rest32 / (y16+1)) >> -shift;
         shift = 0;
-        switch (q) {
-        case 0 : q = 1; break;
+        switch(q32) {
+        case 0 : q32 = 1; break;
         case 1 : break;
-        default: p *= q; break;
+        default: p128 *= q32; break;
         }
       } else {
-        q = rest32 / (y16 + 1);
-        switch(q) {
-        case 0 : q = 1; break;
+        q32 = rest32 / (y16 + 1);
+        switch(q32) {
+        case 0 : q32 = 1; break;
         case 1 : break;
-        default: p *= q; break;
+        default: p128 *= q32; break;
         }
-        if(shift) int128shl(&p,shift);
+        if(shift) int128shl(&p128,shift);
       }
       if(quot) { // do we want the quot. If its NULL there's no need to do this
         if(count) {
@@ -613,7 +606,7 @@ AddDone1:
             int128shl(quot, lastShift - shift);
           }
           __asm {
-            mov eax, q
+            mov eax, q32
             mov esi, quot
             add dword ptr[esi], eax
             jnc AddDone2
@@ -622,12 +615,12 @@ AddDone1:
             adc dword ptr[esi+12],0
           }
         } else {
-          *quot = q;
+          *quot = q32;
         }
 AddDone2:
         lastShift = shift;
       }
-      rest -= p;
+      rest128 -= p128;
     }
     if(lastShift && quot) {
       int128shl(quot, lastShift);
@@ -677,7 +670,7 @@ void uint128rem(void *dst, const void *x) {
 
 void int128neg(void *x) {
   __asm {
-    mov         esi, x
+    mov esi, x
     not dword ptr[esi   ]
     not dword ptr[esi+ 4]
     not dword ptr[esi+ 8]

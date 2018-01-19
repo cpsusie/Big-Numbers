@@ -320,7 +320,7 @@ int128cmp PROC
     cmp         rax, qword ptr[rdx]            ; x2.lo
     jb          lessthan                       ; unsigned compare of x1.lo and x2.lo
     ja          greaterthan
-    mov         rax, 0                         ; they are equal
+    xor         rax, rax                       ; they are equal
     ret
 greaterthan:
     mov         rax, 1
@@ -480,7 +480,7 @@ uint128cmp PROC
      cmp        rax, qword ptr[rdx]            ; x2.lo
      jb         lessthan                       ; unsigned compare of x1.lo and x2.lo
      ja         greaterthan
-     mov        rax, 0                         ; they are equal
+     xor        rax, rax                       ; they are equal
      ret
 greaterthan:
      mov        rax, 1
