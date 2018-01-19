@@ -8,6 +8,11 @@ bool   isPInfinity(       double x);
 bool   isNInfinity(       double x);
 bool   isInfinity(        double x);
 
+#define FLT_NAN  std::numeric_limits<float>::quiet_NaN()
+#define FLT_PINF std::numeric_limits<float>::infinity()
+#define DBL_NAN  std::numeric_limits<double>::quiet_NaN()
+#define DBL_PINF std::numeric_limits<double>::infinity()
+
 inline double dsign(double x) {
   return (x < 0) ? -1 : (x > 0) ? 1 : 0;
 }
@@ -67,4 +72,20 @@ inline bool isInt64(double x) {
 }
 inline bool isInt(double x) {
   return x == getInt(x);
+}
+
+inline UINT getSignificand(float x) {
+  return (UINT)(((*((ULONG*)(&(x)))) & 0x7fffff) | 0x800000);
+}
+
+inline int getExpo2(float x) {
+  return (int)((((*((ULONG*)(&(x)))) >> 23) & 0xff) - 0x7f);
+}
+
+inline UINT64 getSignificand(double x) {
+  return (((*((UINT64*)(&(x)))) & 0xfffffffffffffui64) | 0x10000000000000ui64);
+}
+
+inline int getExpo2(double x) {
+  return ((int)((((*((UINT64*)(&(x)))) >> 52) & 0x7ff) - 0x3ff));
 }

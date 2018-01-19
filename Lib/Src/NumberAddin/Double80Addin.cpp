@@ -10,7 +10,7 @@ ADDIN_API HRESULT WINAPI AddIn_Double80(DWORD dwAddress, DEBUGHELPER *pHelper, i
     char str[150];
     strcpy(str,T2A(s.cstr()));
     strncpy(pResult, str, maxResult);
-  } catch (...) {
+  } catch(...) {
     strncpy(pResult, "", maxResult);
   }
   return S_OK;
@@ -22,6 +22,6 @@ String D80ToDbgString(const Double80 &d80) {
     TCHAR str[50];
     return d80tot(str, d80);
   } else {
-    return toString(d80, 19-expo10,21,ios::fixed);
+    return toString(d80, 19-expo10,21,ios::fixed|ios::left);
   }
 }

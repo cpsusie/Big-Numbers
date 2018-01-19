@@ -21,11 +21,11 @@ static TCHAR *findFirstDigit(TCHAR *str) {
 
 static void formatNan(String &result, const Double80 &x) {
   if(!isInfinity(x)) {
-    result = _T("Nan");
+    result = _T("-nan(ind)");
   } else if(isPInfinity(x)) {
-    result = _T("+Infinity");
+    result = _T("inf");
   } else if(isNInfinity(x)) {
-    result = _T("-Infinity");
+    result = _T("-inf");
   }
 }
 

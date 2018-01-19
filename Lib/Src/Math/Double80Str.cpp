@@ -242,11 +242,11 @@ static const Double80 d80Maxui64q10(0x1999999999999999ui64); //  1.844.674.407.3
 template<class CharType> CharType *_d80tostr(CharType *dst, const Double80 &x) {
   if(isNan(x)) {
     if(!isInfinity(x)) {
-      return copy(dst, "Nan");
+      return copy(dst, "-nan(ind)");
     } else if(isPInfinity(x)) {
-      return copy(dst, "+Infinity");
+      return copy(dst, "inf");
     } else if(isNInfinity(x)) {
-      return copy(dst, "-Infinity");
+      return copy(dst, "-inf");
     }
   } else if(x.isZero()) {
     return copy(dst, "0.0000000000000000000e+000");
