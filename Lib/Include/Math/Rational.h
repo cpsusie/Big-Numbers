@@ -9,17 +9,29 @@ private:
   INT64 m_numerator, m_denominator;
 
   void init(const INT64 &numerator, const INT64 &denominator);
-  static void throwDivisionbyZeroException(const TCHAR *method);
-  static INT64 pow(INT64 n, int y); // assume y >= 0
+  static void throwDivisionByZeroException(const TCHAR *method);
+  static INT64 pow(INT64 n, UINT y);
 public:
-  Rational();
-  Rational(const INT64 &numerator, const INT64 &denominator);
-  Rational(const INT64 &numerator, int          denominator);
-  Rational(int          numerator, int          denominator);
-  Rational(int          numerator, const INT64 &denominator);
-  Rational(const INT64             &n  );
-  Rational(int                      n  );
-  Rational(UINT                     n  );
+  inline Rational() : m_numerator(0), m_denominator(1) {
+  }
+  inline Rational(const INT64 &numerator, const INT64 &denominator) {
+    init(numerator, denominator);
+  }
+  inline Rational(const INT64 &numerator, int denominator) {
+    init(numerator, denominator);
+  }
+  inline Rational(int numerator, int denominator) {
+    init(numerator, denominator);
+  }
+  inline Rational(int numerator, const INT64 &denominator) {
+    init(numerator, denominator);
+  }
+  inline Rational(const INT64 &n) : m_numerator(n), m_denominator(1) {
+  }
+  inline Rational(int n) : m_numerator(n), m_denominator(1) {
+  }
+  inline Rational(UINT n) : m_numerator(n), m_denominator(1) {
+  }
   explicit Rational(float           f  , UINT   maxND = _I16_MIN);
   explicit Rational(double          d  , UINT   maxND = _I32_MIN);
   explicit Rational(const Double80 &d80, UINT64 maxND = _I64_MAX);
@@ -69,37 +81,6 @@ public:
   friend Rational fabs(const Rational &r);
   friend Rational pow( const Rational &r, int e);
   friend Rational reciprocal(const Rational &r);
-
-  inline friend   int     getInt(     const Rational &r) {
-    return getLong(r);
-  }
-  inline friend UINT getUint( const Rational &r) {
-    return getUlong(r);
-  }
-  friend long   getLong(    const Rational &r);
-  friend ULONG  getUlong(   const Rational &r);
-  friend INT64  getInt64(   const Rational &r);
-  friend UINT64 getUint64(  const Rational &r);
-
-  friend inline float     getFloat(   const Rational &r) {
-    return (float)((double)r.m_numerator/r.m_denominator);
-  }
-
-  friend inline double    getDouble(  const Rational &r) {
-    return (double)r.m_numerator/r.m_denominator;
-  }
-
-  friend inline Double80  getDouble80(const Rational &r) {
-    return Double80(r.m_numerator)/r.m_denominator;
-  }
-
-  friend inline Real      getReal(     const Rational &r) {
-#ifdef LONGDOUBLE
-    return getDouble80(r);
-#else
-    return getDouble(r);
-#endif
-  }
 
   inline bool isZero() const {
     return m_numerator == 0;
@@ -156,6 +137,48 @@ public:
   }
 };
 
+extern const Rational RAT_MIN;     // Min positive value (=1/_I64_MAX)
+extern const Rational RAT_MAX;     // Max value          (=_I64_MAX)
+extern const Rational RAT_NAN;     // nan (undefined)    ( 0/0)
+extern const Rational RAT_PINF;    // +infinity;         ( 1/0)
+extern const Rational RAT_NINF;    // -infinity;         (-1/0)
+
+inline INT64    getInt64(   const Rational &r) {
+  return r.getNumerator() / r.getDenominator();
+}
+inline UINT64   getUint64(  const Rational &r) {
+  return (UINT64)r.getNumerator() / r.getDenominator();
+}
+inline int      getInt(     const Rational &r) {
+  return (int)getInt64(r);
+}
+inline UINT     getUint(    const Rational &r) {
+  return (UINT)getUint64(r);
+}
+inline long     getLong(    const Rational &r) {
+  return getInt(r);
+}
+inline ULONG    getUlong(   const Rational &r) {
+  return getUint(r);
+}
+inline float    getFloat(   const Rational &r) {
+  return (float)((double)r.getNumerator()/r.getDenominator());
+}
+inline double   getDouble(  const Rational &r) {
+  return (double)r.getNumerator()/r.getDenominator();
+}
+inline Double80 getDouble80(const Rational &r) {
+  return Double80(r.getNumerator())/r.getDenominator();
+}
+
+inline Real     getReal(    const Rational &r) {
+#ifdef LONGDOUBLE
+  return getDouble80(r);
+#else
+  return getDouble(r);
+#endif
+}
+
 template<class T> bool isOdd(T x) {
   return x & 1;
 }
@@ -170,6 +193,19 @@ inline bool isSymmetricExponent(const Rational &r) {
 
 inline bool isAsymmetricExponent(const Rational &r) {
   return isOdd(r.getNumerator()) && isOdd(r.getDenominator());
+}
+
+inline bool isNan(const Rational &r) {
+  return r.getDenominator() == 0;
+}
+inline bool isInfinity(const Rational &r) {
+  return isNan(r) && (r.getNumerator() != 0);
+}
+inline bool isPInfinity(const Rational &r) {
+  return isInfinity(r) && r.isPositive();
+}
+inline bool isNInfinity(const Rational &r) {
+  return isInfinity(r) && r.isNegative();
 }
 
 char    *rattoa(char    *dst, const Rational &r, int radix);

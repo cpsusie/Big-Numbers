@@ -99,7 +99,6 @@ namespace TestRational {
         const double   dfr = getDouble(rfd);
         error = fabs(dfr - d1);
         verify(error < 1e-13);
-
       }
     }
 
@@ -114,18 +113,18 @@ namespace TestRational {
           }
         }
 
-        ios::_Fmtflags baseFlags[] = {
+        const ios::_Fmtflags baseFlags[] = {
           ios::dec
          ,ios::hex
          ,ios::oct
         };
-        ios::_Fmtflags adjustFlags[] = {
+        const ios::_Fmtflags adjustFlags[] = {
           ios::left
          ,ios::right
         };
 
         // try all(almost) combinations of output format flags
-        for (int b = 0; b < ARRAYSIZE(baseFlags); b++) {
+        for(int b = 0; b < ARRAYSIZE(baseFlags); b++) {
           const ios::_Fmtflags baseFlag   = baseFlags[b];
           int maxShowPos, maxShowBase, maxUpper;
           switch(baseFlag) {
@@ -208,8 +207,77 @@ namespace TestRational {
             } // for all showBase
           } // for all showPos
         } // for all baseFlags
+      } catch(Exception e) {
+        OUTPUT(_T("Exception:%s"), e.what());
+        verify(false);
       }
-      catch (Exception e) {
+    }
+
+    template<class T> void verifyRationalNanTypes(const T &f) {
+      const bool fisNan  = isNan(      f);
+      const bool fisInf  = isInfinity( f);
+      const bool fisPInf = isPInfinity(f);
+      const bool fisNInf = isNInfinity(f);
+      const Rational r(f);
+      verify(isNan(      r)  == fisNan );
+      verify(isInfinity( r)  == fisInf );
+      verify(isPInfinity(r)  == fisPInf);
+      verify(isNInfinity(r)  == fisNInf);
+
+      const float    f1  = getFloat(   r);
+      const double   d1  = getDouble(  r);
+      const Double80 d80 = getDouble80(r);
+
+      verify(isNan(      f1 ) == fisNan );
+      verify(isInfinity( f1 ) == fisInf );
+      verify(isPInfinity(f1 ) == fisPInf);
+      verify(isNInfinity(f1 ) == fisNInf);
+
+      verify(isNan(      d1 ) == fisNan );
+      verify(isInfinity( d1 ) == fisInf );
+      verify(isPInfinity(d1 ) == fisPInf);
+      verify(isNInfinity(d1 ) == fisNInf);
+
+      verify(isNan(      d80) == fisNan );
+      verify(isInfinity( d80) == fisInf );
+      verify(isPInfinity(d80) == fisPInf);
+      verify(isNInfinity(d80) == fisNInf);
+    }
+
+#pragma warning(disable : 4723) // Potential divide by 0
+
+    template<class T> void rationalNanTest(const T m) {
+      T f = (T)sqrt(-1);
+      verifyRationalNanTypes(f);
+
+      f = m;
+      f *= 2;
+      verifyRationalNanTypes(f);
+
+      f = m;
+      f *= -2;
+      verifyRationalNanTypes(f);
+
+      f = 1;
+      T g = 0;
+      f /= g;
+      verifyRationalNanTypes(f);
+
+      f = -1;
+      f /= g;
+      verifyRationalNanTypes(f);
+
+      f =  0;
+      f /= g;
+      verifyRationalNanTypes(f);
+    }
+
+    TEST_METHOD(RationalNaN) {
+      try {
+        rationalNanTest(FLT_MAX  );
+        rationalNanTest(DBL_MAX  );
+        rationalNanTest(DBL80_MAX);
+      } catch (Exception e) {
         OUTPUT(_T("Exception:%s"), e.what());
         verify(false);
       }

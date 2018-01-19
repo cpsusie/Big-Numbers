@@ -60,6 +60,7 @@
     <ClCompile Include="Int128Addin.cpp" />
     <ClCompile Include="NumberAddin.cpp" />
     <ClCompile Include="pch.cpp" />
+    <ClCompile Include="RationalAddin.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="NumberAddin.def" />
