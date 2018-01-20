@@ -3227,11 +3227,7 @@ inline short  getShort(const Double80 &x) {
   return (short)getInt(x);
 }
 inline USHORT getUshort(const Double80 &x) {
-#ifdef IS32BIT
   return (USHORT)getInt(x);
-#else
-  return (USHORT)getUint(x);
-#endif
 }
 
 inline long getLong(const Double80 &x) {

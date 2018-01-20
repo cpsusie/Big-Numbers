@@ -1,5 +1,6 @@
 #pragma once
 
+#include <intrin.h>
 #include "CompactArray.h"
 #include "Iterator.h"
 #include "MatrixDimension.h"
