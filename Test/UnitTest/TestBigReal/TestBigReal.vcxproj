@@ -46,7 +46,7 @@
     <ProjectGuid>{26E7F2D6-3654-4FC2-8CFE-FFC81D123A18}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>TestBigReal</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.10586.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

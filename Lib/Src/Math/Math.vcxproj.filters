@@ -229,9 +229,6 @@
     <ClCompile Include="Polygon2D.cpp">
       <Filter>Source Files\Geometri</Filter>
     </ClCompile>
-    <ClCompile Include="Polar.cpp">
-      <Filter>Source Files\Geometri</Filter>
-    </ClCompile>
     <ClCompile Include="Point2D.cpp">
       <Filter>Source Files\Geometri</Filter>
     </ClCompile>

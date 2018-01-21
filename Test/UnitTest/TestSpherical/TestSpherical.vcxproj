@@ -38,7 +38,7 @@
     <ProjectGuid>{62B27398-D924-44EB-8FEF-17F80B44E5B9}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>TestSpherical</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.10586.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

@@ -23,7 +23,7 @@
     <SccLocalPath />
     <ProjectGuid>{4C7E9873-8A75-4995-8E87-9FEC5E496EAC}</ProjectGuid>
     <ProjectName>TcpListen</ProjectName>
-    <WindowsTargetPlatformVersion>10.0.10586.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

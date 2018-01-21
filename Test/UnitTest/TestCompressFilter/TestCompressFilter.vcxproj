@@ -22,7 +22,7 @@
     <ProjectGuid>{187D2ADA-8E3F-4AD0-9879-F895F5F16585}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>TestCompressFilter</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.10586.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

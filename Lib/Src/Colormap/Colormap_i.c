@@ -5,11 +5,11 @@
 /* link this file in with the server and any clients */
 
 
- /* File created by MIDL compiler version 8.00.0613 */
+ /* File created by MIDL compiler version 8.01.0622 */
 /* at Tue Jan 19 04:14:07 2038
  */
 /* Compiler settings for Colormap.idl:
-    Oicf, W1, Zp8, env=Win64 (32b run), target_arch=AMD64 8.00.0613 
+    Oicf, W1, Zp8, env=Win64 (32b run), target_arch=AMD64 8.01.0622 
     protocol : all , ms_ext, c_ext, robust
     error checks: allocation ref bounds_check enum stub_data 
     VC __declspec() decoration level: 
@@ -62,9 +62,9 @@ typedef IID CLSID;
 #endif // CLSID_DEFINED
 
 #define MIDL_DEFINE_GUID(type,name,l,w1,w2,b1,b2,b3,b4,b5,b6,b7,b8) \
-        const type name = {l,w1,w2,{b1,b2,b3,b4,b5,b6,b7,b8}}
+        EXTERN_C __declspec(selectany) const type name = {l,w1,w2,{b1,b2,b3,b4,b5,b6,b7,b8}}
 
-#endif !_MIDL_USE_GUIDDEF_
+#endif // !_MIDL_USE_GUIDDEF_
 
 MIDL_DEFINE_GUID(IID, LIBID_ColormapLib,0x60305F72,0xC994,0x4F73,0xB8,0xC3,0xD3,0x6A,0x9D,0x54,0x3C,0x67);
 

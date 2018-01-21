@@ -10,7 +10,7 @@
     <ProjectGuid>{3795D6FD-BA02-4881-9C9A-233B936E282B}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>UtilAddin</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.10586.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
