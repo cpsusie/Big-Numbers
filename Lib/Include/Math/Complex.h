@@ -9,23 +9,18 @@ class Complex {
 public:
   Real re, im;
 #ifdef LONGDOUBLE
-  Complex(double _re, double _im = 0) : re(_re), im(_im) {
+  inline Complex(double _re, double _im = 0) : re(_re), im(_im) {
   }
 #endif
 
-  Complex() : re(0), im(0) {
+  inline Complex() : re(0), im(0) {
   }
-  Complex(int _re) : re(_re), im(0) {
+  inline Complex(int _re) : re(_re), im(0) {
   }
-  Complex(UINT _re) : re(_re), im(0) {
+  inline Complex(UINT _re) : re(_re), im(0) {
   }
-  Complex(const Real &_re, const Real &_im = 0) : re(_re), im(_im) {
+  inline Complex(const Real &_re, const Real &_im = 0) : re(_re), im(_im) {
   }
-
-  Complex &operator-=(const Complex &rhs);
-  Complex &operator+=(const Complex &rhs);
-  Complex &operator*=(const Complex &rhs);
-  Complex &operator/=(const Complex &rhs);
 
   inline void save(ByteOutputStream &s) const {
     s.putBytes((BYTE*)this, sizeof(Complex));
@@ -48,36 +43,99 @@ public:
 
 class Polar {
 private:
-  void init(Real x, Real y);
+  inline void init(Real x, Real y) {
+    r = sqrt(x*x + y*y);
+    theta = atan2(y, x);
+  }
 public:
   Real r, theta;
-  Polar();
-  Polar(const Complex &c);
-  Polar(const Point2D &p);
-  operator Complex() const;
-  operator Point2D() const;
-  String toString(int dec = 1, bool rad = false) const;
+  inline Polar() {
+    r = theta = 0;
+  }
+  inline Polar(const Complex &c) {
+    init(c.re, c.im);
+  }
+  Polar(const Point2D &p) {
+    init(p.x, p.y);
+  }
+  inline operator Complex() const {
+    return Complex(r*cos(theta), r*sin(theta));
+  }
+  operator Point2D() const {
+    return Point2D(getDouble(r*cos(theta)), getDouble(r*sin(theta)));
+  }
+  inline String toString(int dec = 1, bool rad = false) const {
+    return format(_T("(%s, %s)"), ::toString(r, dec).cstr(), ::toString(rad ? theta : RAD2GRAD(theta), dec).cstr());
+  }
 };
 
-Complex  operator+( const Complex &lts, const Complex &rhs);
-Complex  operator-( const Complex &lts, const Complex &rhs);
-Complex  operator*( const Complex &lts, const Complex &rhs);
-Complex  operator/( const Complex &lts, const Complex &rhs);
-Complex  operator-( const Complex &c);
-
-bool    operator==(const Complex &lts, const Complex &rhs);
-bool    operator!=(const Complex &lts, const Complex &rhs);
-
-Real    arg( const Complex &c);
-Real    arg2(const Complex &c); // = arg(x)^2
-Real    fabs(const Complex &c); // = arg(c)
+inline Complex  operator+(const Complex &lts, const Complex &rhs) {
+  return Complex(lts.re + rhs.re,lts.im + rhs.im);
+}
+inline Complex  operator-( const Complex &lts, const Complex &rhs) {
+  return Complex(lts.re - rhs.re,lts.im - rhs.im);
+}
+inline Complex  operator*(const Complex &lts, const Complex &rhs) {
+  return Complex(lts.re * rhs.re - lts.im * rhs.im
+                ,lts.re * rhs.im + lts.im * rhs.re
+                );
+}
+inline Complex  operator/( const Complex &lts, const Complex &rhs) {
+  const Real d = rhs.re * rhs.re + rhs.im * rhs.im;
+  return Complex((lts.re * rhs.re + lts.im * rhs.im)/d
+                ,(lts.im * rhs.re - lts.re * rhs.im)/d
+                );
+}
+inline Complex &operator+=(Complex &lts, const Complex &rhs) {
+  lts.re += rhs.re; lts.im += rhs.im;
+  return lts;
+}
+inline Complex &operator-=(Complex &lts, const Complex &rhs) {
+  lts.re -= rhs.re; lts.im -= rhs.im;
+  return lts;
+}
+inline Complex &operator*=(Complex &lts, const Complex &rhs) {
+  return lts = lts * rhs;
+}
+inline Complex &operator/=(Complex &lts, const Complex &rhs) {
+  return lts = lts / rhs;
+}
+inline Complex  operator-(const Complex &c) {
+  return Complex(-c.re,-c.im);
+}
+inline bool    operator==(const Complex &lts, const Complex &rhs) {
+  return (lts.re == rhs.re) && (lts.im == rhs.im);
+}
+inline bool    operator!=(const Complex &lts, const Complex &rhs) {
+  return (lts.re != rhs.re) || (lts.im != rhs.im);
+}
+inline Real  arg2(const Complex &c) { // = arg(x)^2
+  return c.re * c.re + c.im * c.im;
+}
+inline Real  arg( const Complex &c) {
+  return sqrt(arg2(c));
+}
+inline Real  fabs(const Complex &c) { // = arg(c)
+  return arg(c);
+}
 Complex sqrt(const Complex &c);
-Complex sqr( const Complex &c);
-Complex conjugate(const Complex &c);
+inline Complex sqr(const Complex &c) {
+  return c*c;
+}
+inline Complex conjugate(const Complex &c) {
+  return Complex(c.re,-c.im);
+}
 Complex exp( const Complex &c);
-Complex log( const Complex &c);
-Complex pow( const Complex &c, const Complex &p);
-Complex root(const Complex &c, const Complex &r);
+inline Complex log(const Complex &c) {
+  const Polar p(c);
+  return Complex(log(p.r), p.theta);
+}
+inline Complex pow(const Complex &c, const Complex &p) {
+  return exp(log(c) * p);
+}
+inline Complex root(const Complex &c, const Complex &r) {
+  return exp(log(c) / r);
+}
 Complex sin( const Complex &c);
 Complex cos( const Complex &c);
 Complex tan( const Complex &c);

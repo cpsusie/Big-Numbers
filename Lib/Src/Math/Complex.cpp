@@ -10,81 +10,6 @@ const Complex Complex::one  = Complex(1,0);
 
 #define EATWHITE() while(_istspace(*s)) s++
 
-Complex operator+(const Complex &lts, const Complex &rhs) {
-  return Complex(lts.re + rhs.re,lts.im + rhs.im);
-}
-
-Complex operator-(const Complex &lts, const Complex &rhs) {
-  return Complex(lts.re - rhs.re,lts.im - rhs.im);
-}
-
-Complex operator*(const Complex &lts, const Complex &rhs) {
-  return Complex(lts.re * rhs.re - lts.im * rhs.im
-                ,lts.re * rhs.im + lts.im * rhs.re
-                );
-}
-
-Complex operator/(const Complex &lts, const Complex &rhs) {
-  const Real d = rhs.re * rhs.re + rhs.im * rhs.im;
-  return Complex((lts.re * rhs.re + lts.im * rhs.im)/d
-                ,(lts.im * rhs.re - lts.re * rhs.im)/d
-                );
-}
-
-Complex &Complex::operator+=(const Complex &rhs) {
-  re += rhs.re;
-  im += rhs.im;
-  return *this;
-}
-
-Complex &Complex::operator-=(const Complex &rhs) {
-  re -= rhs.re;
-  im -= rhs.im;
-  return *this;
-}
-
-Complex &Complex::operator*=(const Complex &rhs) {
-  *this = *this * rhs;
-  return *this;
-}
-
-Complex &Complex::operator/=(const Complex &rhs) {
-  *this = *this / rhs;
-  return *this;
-}
-
-Complex  operator-(const Complex &c) {
-  return Complex(-c.re,-c.im);
-}
-
-Complex conjugate(const Complex &c) {
-  return Complex(c.re,-c.im);
-}
-
-Complex sqr(const Complex &c) {
-  return c*c;
-}
-
-Real arg2(const Complex &c) {
-  return c.re * c.re + c.im * c.im;
-}
-
-Real arg(const Complex &c) {
-  return sqrt(arg2(c));
-}
-
-Real fabs(const Complex &c) {
-  return arg(c);
-}
-
-bool operator==(const Complex &lts, const Complex &rhs) {
-  return lts.re == rhs.re && lts.im == rhs.im;
-}
-
-bool operator!=(const Complex &lts, const Complex &rhs) {
-  return lts.re != rhs.re || lts.im != rhs.im;
-}
-
 Complex exp(const Complex &c) {
   Complex result;
   result.re = c.im;
@@ -104,20 +29,7 @@ Complex sqrt(const Complex &c) {
   return result;
 }
 
-Complex log(const Complex &c) {
-  const Polar p(c);
-  return Complex(log(p.r), p.theta);
-}
-
-Complex pow(const Complex &c, const Complex &p) {
-  return exp(log(c) * p);
-}
-
-Complex root(const Complex &c, const Complex &r) {
-  return exp(log(c) / r);
-}
-
-Complex reciprocal(const Complex &c) {
+inline Complex reciprocal(const Complex &c) {
   const Real d = sqr(c.re) + sqr(c.im);
   return Complex(c.re / d, -c.im / d);
 }
@@ -153,10 +65,9 @@ public:
 };
 
 PolarAB::PolarAB(const Complex &c) {
-  const Real &a = c.re;
   const Real b  = sqr(c.im);
-  const Real t1 = sqrt(sqr(a+1) + b) / 2;
-  const Real t2 = sqrt(sqr(a-1) + b) / 2;
+  const Real t1 = sqrt(sqr(c.re+1) + b) / 2;
+  const Real t2 = sqrt(sqr(c.re-1) + b) / 2;
   A = t1 + t2;
   B = t1 - t2;
 
@@ -197,4 +108,3 @@ void setToRandom(Complex &c) {
   setToRandom(c.re);
   setToRandom(c.im);
 }
-

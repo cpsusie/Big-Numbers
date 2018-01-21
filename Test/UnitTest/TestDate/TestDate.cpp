@@ -538,59 +538,63 @@ namespace TestDate {
     }
 
     TEST_METHOD(DateTimestamp) {
-      int day, month, year, hour, minute, second, millisecond;
-      Timestamp ts(_T("28.2.2008 23:59:59:999"));
-      ts.getDMY(day, month, year);
-      ts.getHMS(hour, minute, second, millisecond);
-      verify(year == 2008 && month == 2 && day == 28 && hour == 23 && minute == 59 && second == 59 && millisecond == 999);
-//        _tprintf(_T("Timestamp mismatch\n"));
-      /*
-      TCHAR tmp[100];
-      Date d(_T("2.6.2457"));
-      _tprintf(_T("%s\n"),d.tostr(tmp));
-      d.add(MONTH,42);
-      _tprintf(_T("%s\n"),d.tostr(tmp));
-      return;
-      */
-      Timestamp t;
-      Date d;
-      verify(t.getDate() == d);
-//        _tprintf(_T("Timestamp != Date"));
-      for (int i = 0;i < 2000;i++) {
-        const TimeComponentMinMax &comp = components[randInt(ARRAYSIZE(components))];
-        const int count = randInt(-150, 150);
-        Timestamp n = t;
-        try {
-          n.add(comp.c, count);
-        }  catch (Exception e) {
-          //      _tprintf(_T("caught Exception:%s\n"),e.what());
-          t = Timestamp();
-          continue;
+      try {
+        int day, month, year, hour, minute, second, millisecond;
+        Timestamp ts(_T("28.2.2008 23:59:59:999"));
+        ts.getDMY(day, month, year);
+        ts.getHMS(hour, minute, second, millisecond);
+        verify(year == 2008 && month == 2 && day == 28 && hour == 23 && minute == 59 && second == 59 && millisecond == 999);
+  //        _tprintf(_T("Timestamp mismatch\n"));
+        /*
+        TCHAR tmp[100];
+        Date d(_T("2.6.2457"));
+        _tprintf(_T("%s\n"),d.tostr(tmp));
+        d.add(MONTH,42);
+        _tprintf(_T("%s\n"),d.tostr(tmp));
+        return;
+        */
+        Timestamp t;
+        Date d;
+        verify(t.getDate() == d);
+  //        _tprintf(_T("Timestamp != Date"));
+        for (int i = 0;i < 2000;i++) {
+          const TimeComponentMinMax &comp = components[randInt(ARRAYSIZE(components))];
+          const int count = randInt(-150, 150);
+          Timestamp n = t;
+          try {
+            n.add(comp.c, count);
+          }  catch (Exception e) {
+            //      _tprintf(_T("caught Exception:%s\n"),e.what());
+            t = Timestamp();
+            continue;
+          }
+          double difference = n - t;
+          double expected;
+          switch (comp.c) {
+          case TMILLISECOND : expected = (double)count / 86400000;    break;
+          case TSECOND      : expected = (double)count / 86400;       break;
+          case TMINUTE      : expected = (double)count / (24 * 60);   break;
+          case THOUR        : expected = (double)count / 24;          break;
+          case TDAYOFMONTH  :
+          case TDAYOFYEAR   : expected = count;                       break;
+          case TWEEK        : expected = count * 7;                   break;
+          case TMONTH       :
+            difference = count;
+            expected = (n.getYear() - t.getYear()) * 12 + (n.getMonth() - t.getMonth());
+            break;
+          case TYEAR:
+            difference = count;
+            expected = n.getYear() - t.getYear();
+            break;
+          }
+          verify(fabs(difference - expected) <= 1e-3);
+  /*          _tprintf(_T("%d comp=%s count:%d difference:%lf expected:%lf delta:%lf,t:%s n:%s\n")
+              , i, comp.name, count, difference, expected, difference - expected, t.toString().cstr(), n.toString().cstr());
+  */
+          t = n;
         }
-        double difference = n - t;
-        double expected;
-        switch (comp.c) {
-        case TMILLISECOND : expected = (double)count / 86400000;    break;
-        case TSECOND      : expected = (double)count / 86400;       break;
-        case TMINUTE      : expected = (double)count / (24 * 60);   break;
-        case THOUR        : expected = (double)count / 24;          break;
-        case TDAYOFMONTH  :
-        case TDAYOFYEAR   : expected = count;                       break;
-        case TWEEK        : expected = count * 7;                   break;
-        case TMONTH       :
-          difference = count;
-          expected = (n.getYear() - t.getYear()) * 12 + (n.getMonth() - t.getMonth());
-          break;
-        case TYEAR:
-          difference = count;
-          expected = n.getYear() - t.getYear();
-          break;
-        }
-        verify(fabs(difference - expected) <= 1e-3);
-/*          _tprintf(_T("%d comp=%s count:%d difference:%lf expected:%lf delta:%lf,t:%s n:%s\n")
-            , i, comp.name, count, difference, expected, difference - expected, t.toString().cstr(), n.toString().cstr());
-*/
-        t = n;
+      } catch (Exception e) {
+        OUTPUT(_T("Exception:%s"), e.what());
       }
     } // method
 

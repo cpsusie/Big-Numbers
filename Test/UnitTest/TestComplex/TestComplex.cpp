@@ -16,7 +16,7 @@ namespace TestComplex {
     public:
 
     TEST_METHOD(ComplexTest) {
-//      FPU::init();
+      FPU::init();
 #ifdef LONGDOUBLE
       FPU::setPrecisionMode(FPU_HIGH_PRECISION);
 #else
@@ -86,23 +86,28 @@ namespace TestComplex {
 
       verify(minus.re == -c1.re && minus.im == -c1.im);
 
+#ifdef LONGDOUBLE
+      const Real tolerance = 4e-17;
+#else
+      const Real tolerance = 4e-14;
+#endif
       for (int i = 0; i < 100; i++) {
         setToRandom(c1);
         setToRandom(c2);
 
-        Complex root2 = sqrt(c1);
+        const Complex root2 = sqrt(c1);
 
-        verifyAlmostEquals(c1, root2 * root2, 1e-13);
-        verifyAlmostEquals(exp(c1 + c2), exp(c1)*exp(c2), 1e-13);
-        verifyAlmostEquals(log(c1*c2), log(c1) + log(c2), 1e-13);
-        verifyAlmostEquals(log(exp(c1)), c1, 1e-13);
-        verifyAlmostEquals(pow(c1, c2), exp(log(c1) * c2), 1e-13);
-        verifyAlmostEquals(root(c1, c2), exp(log(c1) / c2), 1e-13);
-        verifyAlmostEquals(Complex::one, sqr(sin(c1)) + sqr(cos(c1)), 1e-13);
-        verifyAlmostEquals(c1, sin(asin(c1)), 1e-13);
-        verifyAlmostEquals(c1, cos(acos(c1)), 1e-13);
-        verifyAlmostEquals(tan(c1), sin(c1) / cos(c1), 1e-13);
-        verifyAlmostEquals(c1, atan(tan(c1)), 1e-13);
+        verifyAlmostEquals(c1, root2 * root2              , tolerance);
+        verifyAlmostEquals(exp(c1 + c2), exp(c1)*exp(c2)  , tolerance);
+        verifyAlmostEquals(log(c1*c2), log(c1) + log(c2)  , tolerance);
+        verifyAlmostEquals(log(exp(c1)), c1               , tolerance);
+        verifyAlmostEquals(pow(c1, c2), exp(log(c1) * c2) , tolerance);
+        verifyAlmostEquals(root(c1, c2), exp(log(c1) / c2), tolerance);
+        verifyAlmostEquals(Complex::one, sqr(sin(c1)) + sqr(cos(c1)), tolerance);
+        verifyAlmostEquals(c1, sin(asin(c1))              , tolerance);
+        verifyAlmostEquals(c1, cos(acos(c1))              , tolerance);
+        verifyAlmostEquals(tan(c1), sin(c1) / cos(c1)     , tolerance);
+        verifyAlmostEquals(c1, atan(tan(c1))              , tolerance);
       }
 
       Complex czero;
