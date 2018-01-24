@@ -289,7 +289,7 @@
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>false</MinimalRebuild>
@@ -306,7 +306,8 @@
       <PreserveSbr>false</PreserveSbr>
     </Bscmake>
     <Lib>
-      <Verbose>false</Verbose>
+      <Verbose>
+      </Verbose>
       <TargetMachine>MachineX86</TargetMachine>
       <LinkTimeCodeGeneration>false</LinkTimeCodeGeneration>
     </Lib>
@@ -322,7 +323,7 @@
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>false</MinimalRebuild>
@@ -339,7 +340,8 @@
       <PreserveSbr>false</PreserveSbr>
     </Bscmake>
     <Lib>
-      <Verbose>false</Verbose>
+      <Verbose>
+      </Verbose>
       <TargetMachine>MachineX86</TargetMachine>
       <LinkTimeCodeGeneration>false</LinkTimeCodeGeneration>
     </Lib>
@@ -355,9 +357,11 @@
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ExceptionHandling>Async</ExceptionHandling>
+      <StringPooling>true</StringPooling>
+      <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -370,7 +374,8 @@
       <PreserveSbr>false</PreserveSbr>
     </Bscmake>
     <Lib>
-      <Verbose>false</Verbose>
+      <Verbose>
+      </Verbose>
       <TargetMachine>MachineX86</TargetMachine>
       <LinkTimeCodeGeneration>false</LinkTimeCodeGeneration>
     </Lib>
@@ -386,7 +391,7 @@
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>false</MinimalRebuild>
@@ -403,7 +408,8 @@
       <PreserveSbr>false</PreserveSbr>
     </Bscmake>
     <Lib>
-      <Verbose>false</Verbose>
+      <Verbose>
+      </Verbose>
       <AdditionalDependencies>$(IntDir)Int128x64.obj;$(IntDir)Double80x64.obj;$(Intdir)Doublex64.obj;$(IntDir)ExpressionCallx64.obj;%(AdditionalDependencies)</AdditionalDependencies>
       <LinkTimeCodeGeneration>false</LinkTimeCodeGeneration>
     </Lib>
@@ -423,7 +429,7 @@
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>false</MinimalRebuild>
@@ -440,7 +446,8 @@
       <PreserveSbr>false</PreserveSbr>
     </Bscmake>
     <Lib>
-      <Verbose>false</Verbose>
+      <Verbose>
+      </Verbose>
       <AdditionalDependencies>$(IntDir)Int128x64.obj;$(IntDir)Double80x64.obj;$(Intdir)Doublex64.obj;$(IntDir)ExpressionCallx64.obj;%(AdditionalDependencies)</AdditionalDependencies>
       <LinkTimeCodeGeneration>false</LinkTimeCodeGeneration>
     </Lib>
@@ -460,9 +467,11 @@
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ExceptionHandling>Async</ExceptionHandling>
+      <StringPooling>true</StringPooling>
+      <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -475,7 +484,8 @@
       <PreserveSbr>false</PreserveSbr>
     </Bscmake>
     <Lib>
-      <Verbose>false</Verbose>
+      <Verbose>
+      </Verbose>
       <AdditionalDependencies>$(IntDir)Int128x64.obj;$(IntDir)Double80x64.obj;$(Intdir)Doublex64.obj;$(IntDir)ExpressionCallx64.obj;%(AdditionalDependencies)</AdditionalDependencies>
       <LinkTimeCodeGeneration>false</LinkTimeCodeGeneration>
     </Lib>
@@ -500,7 +510,7 @@
       <DebugInformationFormat>None</DebugInformationFormat>
       <AdditionalIncludeDirectories />
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>Async</ExceptionHandling>
     </ClCompile>
@@ -517,7 +527,8 @@
       <PreserveSbr>false</PreserveSbr>
     </Bscmake>
     <Lib>
-      <Verbose>false</Verbose>
+      <Verbose>
+      </Verbose>
       <TargetMachine>MachineX86</TargetMachine>
     </Lib>
   </ItemDefinitionGroup>
@@ -538,7 +549,7 @@
       <AdditionalIncludeDirectories>
       </AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>Async</ExceptionHandling>
     </ClCompile>
@@ -555,7 +566,8 @@
       <PreserveSbr>false</PreserveSbr>
     </Bscmake>
     <Lib>
-      <Verbose>false</Verbose>
+      <Verbose>
+      </Verbose>
       <TargetMachine>MachineX86</TargetMachine>
     </Lib>
   </ItemDefinitionGroup>
@@ -576,8 +588,9 @@
       <AdditionalIncludeDirectories>
       </AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <ExceptionHandling>Async</ExceptionHandling>
+      <StringPooling>true</StringPooling>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -592,7 +605,8 @@
       <PreserveSbr>false</PreserveSbr>
     </Bscmake>
     <Lib>
-      <Verbose>false</Verbose>
+      <Verbose>
+      </Verbose>
       <TargetMachine>MachineX86</TargetMachine>
     </Lib>
   </ItemDefinitionGroup>
@@ -611,7 +625,7 @@
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
       <AdditionalIncludeDirectories />
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>Async</ExceptionHandling>
     </ClCompile>
@@ -621,7 +635,8 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <Verbose>false</Verbose>
+      <Verbose>
+      </Verbose>
       <AdditionalDependencies>$(IntDir)Int128x64.obj;$(IntDir)Double80x64.obj;$(Intdir)Doublex64.obj;$(IntDir)ExpressionCallx64.obj;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
     <Xdcmake>
@@ -648,7 +663,7 @@
       <AdditionalIncludeDirectories>
       </AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>Async</ExceptionHandling>
     </ClCompile>
@@ -658,7 +673,8 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <Verbose>false</Verbose>
+      <Verbose>
+      </Verbose>
       <AdditionalDependencies>$(IntDir)Int128x64.obj;$(IntDir)Double80x64.obj;$(Intdir)Doublex64.obj;$(IntDir)ExpressionCallx64.obj;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
     <Xdcmake>
@@ -685,8 +701,9 @@
       <AdditionalIncludeDirectories>
       </AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <ExceptionHandling>Async</ExceptionHandling>
+      <StringPooling>true</StringPooling>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -694,7 +711,8 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <Verbose>false</Verbose>
+      <Verbose>
+      </Verbose>
       <AdditionalDependencies>$(IntDir)Int128x64.obj;$(IntDir)Double80x64.obj;$(Intdir)Doublex64.obj;$(IntDir)ExpressionCallx64.obj;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
     <Xdcmake>

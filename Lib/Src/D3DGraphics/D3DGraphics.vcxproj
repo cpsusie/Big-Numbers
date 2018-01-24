@@ -225,7 +225,7 @@
       <SDLCheck>true</SDLCheck>
       <BrowseInformation>true</BrowseInformation>
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
-      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <StringPooling>true</StringPooling>
@@ -266,7 +266,7 @@
       <SDLCheck>true</SDLCheck>
       <BrowseInformation>true</BrowseInformation>
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
-      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <StringPooling>true</StringPooling>
@@ -307,7 +307,7 @@
       <SDLCheck>true</SDLCheck>
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
       <BrowseInformation>true</BrowseInformation>
-      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <StringPooling>true</StringPooling>
@@ -347,7 +347,7 @@
       <SDLCheck>true</SDLCheck>
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
       <BrowseInformation>true</BrowseInformation>
-      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <StringPooling>true</StringPooling>
@@ -390,7 +390,7 @@
       <DebugInformationFormat>None</DebugInformationFormat>
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
       <BrowseInformation>true</BrowseInformation>
-      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <StringPooling>true</StringPooling>
     </ClCompile>
@@ -432,7 +432,7 @@
       <DebugInformationFormat>None</DebugInformationFormat>
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
       <BrowseInformation>true</BrowseInformation>
-      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <StringPooling>true</StringPooling>
     </ClCompile>
@@ -474,7 +474,7 @@
       <DebugInformationFormat>None</DebugInformationFormat>
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
       <BrowseInformation>true</BrowseInformation>
-      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <StringPooling>true</StringPooling>
     </ClCompile>
@@ -516,7 +516,7 @@
       <DebugInformationFormat>None</DebugInformationFormat>
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
       <BrowseInformation>true</BrowseInformation>
-      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <StringPooling>true</StringPooling>
     </ClCompile>
@@ -555,7 +555,7 @@
       <DebugInformationFormat>None</DebugInformationFormat>
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
       <BrowseInformation>true</BrowseInformation>
-      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <StringPooling>true</StringPooling>
     </ClCompile>
@@ -594,7 +594,7 @@
       <DebugInformationFormat>None</DebugInformationFormat>
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
       <BrowseInformation>true</BrowseInformation>
-      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <StringPooling>true</StringPooling>
     </ClCompile>

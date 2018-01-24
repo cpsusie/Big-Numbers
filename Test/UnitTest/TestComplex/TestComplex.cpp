@@ -16,7 +16,7 @@ namespace TestComplex {
     public:
 
     TEST_METHOD(ComplexTest) {
-      FPU::init();
+//      FPU::init();
 #ifdef LONGDOUBLE
       FPU::setPrecisionMode(FPU_HIGH_PRECISION);
 #else

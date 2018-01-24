@@ -229,12 +229,13 @@
       <UseFullPaths>true</UseFullPaths>
       <AdditionalIncludeDirectories />
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
-      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <BrowseInformation>true</BrowseInformation>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <StringPooling>true</StringPooling>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -263,13 +264,14 @@
       <AdditionalIncludeDirectories>
       </AdditionalIncludeDirectories>
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
-      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <BrowseInformation>true</BrowseInformation>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <StringPooling>true</StringPooling>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <PreprocessorDefinitions>TRACE_MEMORY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -298,10 +300,11 @@
       <DebugInformationFormat>None</DebugInformationFormat>
       <AdditionalIncludeDirectories />
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
-      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <BrowseInformation>true</BrowseInformation>
       <StringPooling>true</StringPooling>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -330,11 +333,12 @@
       <AdditionalIncludeDirectories>
       </AdditionalIncludeDirectories>
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
-      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <BrowseInformation>true</BrowseInformation>
       <StringPooling>true</StringPooling>
       <PreprocessorDefinitions>TRACE_MEMORY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -363,10 +367,11 @@
       <AdditionalIncludeDirectories>
       </AdditionalIncludeDirectories>
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
-      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <BrowseInformation>true</BrowseInformation>
       <StringPooling>true</StringPooling>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -488,12 +493,13 @@
       <UseFullPaths>true</UseFullPaths>
       <AdditionalIncludeDirectories />
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
-      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <BrowseInformation>true</BrowseInformation>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <StringPooling>true</StringPooling>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -521,13 +527,14 @@
       <AdditionalIncludeDirectories>
       </AdditionalIncludeDirectories>
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
-      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <BrowseInformation>true</BrowseInformation>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <StringPooling>true</StringPooling>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <PreprocessorDefinitions>TRACE_MEMORY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -559,10 +566,11 @@
       <DebugInformationFormat>None</DebugInformationFormat>
       <AdditionalIncludeDirectories />
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
-      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <BrowseInformation>true</BrowseInformation>
       <StringPooling>true</StringPooling>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -595,11 +603,12 @@
       <AdditionalIncludeDirectories>
       </AdditionalIncludeDirectories>
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
-      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <BrowseInformation>true</BrowseInformation>
       <StringPooling>true</StringPooling>
       <PreprocessorDefinitions>TRACE_MEMORY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -632,10 +641,11 @@
       <AdditionalIncludeDirectories>
       </AdditionalIncludeDirectories>
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
-      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <BrowseInformation>true</BrowseInformation>
       <StringPooling>true</StringPooling>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

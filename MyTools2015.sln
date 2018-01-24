@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2024
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "D3FunctionPlotter", "D3FunctionPlotter\D3FunctionPlotter.vcxproj", "{37363999-F725-4257-BCF6-B13C5152A2FF}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -187,6 +187,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PearlImage", "PearlImage\Pe
 		{FEE75CD8-49B4-410F-8488-1108EBE5B4FE} = {FEE75CD8-49B4-410F-8488-1108EBE5B4FE}
 		{0D1324F1-16AC-4245-9A51-8BF3B09A6C5F} = {0D1324F1-16AC-4245-9A51-8BF3B09A6C5F}
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BigText", "BigText\BigText.vcxproj", "{01BEF2C9-4038-44AB-A739-9C60C7AFC9D5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -974,8 +976,35 @@ Global
 		{F1CFEEA4-CAAC-4756-A665-6418E92DDC3C}.TraceMemDebug|x64.Build.0 = TraceMemDebug|x64
 		{F1CFEEA4-CAAC-4756-A665-6418E92DDC3C}.TraceMemDebug|x86.ActiveCfg = Debug|Win32
 		{F1CFEEA4-CAAC-4756-A665-6418E92DDC3C}.TraceMemDebug|x86.Build.0 = Debug|Win32
+		{01BEF2C9-4038-44AB-A739-9C60C7AFC9D5}.Debug|x64.ActiveCfg = Debug|x64
+		{01BEF2C9-4038-44AB-A739-9C60C7AFC9D5}.Debug|x64.Build.0 = Debug|x64
+		{01BEF2C9-4038-44AB-A739-9C60C7AFC9D5}.Debug|x86.ActiveCfg = Debug|Win32
+		{01BEF2C9-4038-44AB-A739-9C60C7AFC9D5}.Debug|x86.Build.0 = Debug|Win32
+		{01BEF2C9-4038-44AB-A739-9C60C7AFC9D5}.LDDebug|x64.ActiveCfg = Debug|x64
+		{01BEF2C9-4038-44AB-A739-9C60C7AFC9D5}.LDDebug|x64.Build.0 = Debug|x64
+		{01BEF2C9-4038-44AB-A739-9C60C7AFC9D5}.LDDebug|x86.ActiveCfg = Debug|Win32
+		{01BEF2C9-4038-44AB-A739-9C60C7AFC9D5}.LDDebug|x86.Build.0 = Debug|Win32
+		{01BEF2C9-4038-44AB-A739-9C60C7AFC9D5}.LDRelease|x64.ActiveCfg = Release|x64
+		{01BEF2C9-4038-44AB-A739-9C60C7AFC9D5}.LDRelease|x64.Build.0 = Release|x64
+		{01BEF2C9-4038-44AB-A739-9C60C7AFC9D5}.LDRelease|x86.ActiveCfg = Release|Win32
+		{01BEF2C9-4038-44AB-A739-9C60C7AFC9D5}.LDRelease|x86.Build.0 = Release|Win32
+		{01BEF2C9-4038-44AB-A739-9C60C7AFC9D5}.Profilling|x64.ActiveCfg = Release|x64
+		{01BEF2C9-4038-44AB-A739-9C60C7AFC9D5}.Profilling|x64.Build.0 = Release|x64
+		{01BEF2C9-4038-44AB-A739-9C60C7AFC9D5}.Profilling|x86.ActiveCfg = Release|Win32
+		{01BEF2C9-4038-44AB-A739-9C60C7AFC9D5}.Profilling|x86.Build.0 = Release|Win32
+		{01BEF2C9-4038-44AB-A739-9C60C7AFC9D5}.Release|x64.ActiveCfg = Release|x64
+		{01BEF2C9-4038-44AB-A739-9C60C7AFC9D5}.Release|x64.Build.0 = Release|x64
+		{01BEF2C9-4038-44AB-A739-9C60C7AFC9D5}.Release|x86.ActiveCfg = Release|Win32
+		{01BEF2C9-4038-44AB-A739-9C60C7AFC9D5}.Release|x86.Build.0 = Release|Win32
+		{01BEF2C9-4038-44AB-A739-9C60C7AFC9D5}.TraceMemDebug|x64.ActiveCfg = Debug|x64
+		{01BEF2C9-4038-44AB-A739-9C60C7AFC9D5}.TraceMemDebug|x64.Build.0 = Debug|x64
+		{01BEF2C9-4038-44AB-A739-9C60C7AFC9D5}.TraceMemDebug|x86.ActiveCfg = Debug|Win32
+		{01BEF2C9-4038-44AB-A739-9C60C7AFC9D5}.TraceMemDebug|x86.Build.0 = Debug|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BA5CF844-702D-4202-90EA-99353F353892}
 	EndGlobalSection
 EndGlobal

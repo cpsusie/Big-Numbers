@@ -6,7 +6,7 @@
 #include <Math/BigReal.h>
 #include "Gamma.h"
 
-static double gamma1_2(double x) {
+static double Lgamma1_2(double x) {
   BigReal currentSum;
   BigReal lastSum;
   BigReal fac(1);
@@ -31,19 +31,19 @@ static double gamma1_2(double x) {
   return getDouble(currentSum * pow(TR,X,c1));
 }
 
-double gamma(double x) {
+double Lgamma(double x) {
   if(x > 2)
-    return (x-1)*gamma(x-1);
+    return (x-1)*Lgamma(x-1);
   else if(x < 1)
-    return gamma(x+1)/x;
+    return Lgamma(x+1)/x;
   else if(x == 1 || x == 2)
     return 1;
   else
-    return gamma1_2(x);
+    return Lgamma1_2(x);
 }
 
-double fac(double x) {
-  return gamma(x+1);
+double Lfac(double x) {
+  return Lgamma(x+1);
 }
 
 int findlimit(double k) {

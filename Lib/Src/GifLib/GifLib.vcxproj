@@ -110,11 +110,12 @@
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <BrowseInformation>true</BrowseInformation>
       <AdditionalIncludeDirectories />
-      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
       <StringPooling>true</StringPooling>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -145,10 +146,11 @@
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <DebugInformationFormat>None</DebugInformationFormat>
       <AdditionalIncludeDirectories />
-      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <BrowseInformation>true</BrowseInformation>
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
       <StringPooling>true</StringPooling>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -246,12 +248,13 @@
       <DisableLanguageExtensions>true</DisableLanguageExtensions>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <AdditionalIncludeDirectories />
-      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <BrowseInformation>true</BrowseInformation>
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
       <StringPooling>true</StringPooling>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -279,10 +282,11 @@
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <DebugInformationFormat>None</DebugInformationFormat>
       <AdditionalIncludeDirectories />
-      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <BrowseInformation>true</BrowseInformation>
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
       <StringPooling>true</StringPooling>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <Math/FPU.h>
 #include "gamma.h"
 
 int main(int argc, char **argv) {
@@ -44,13 +45,13 @@ int main(int argc, char **argv) {
     tcout.precision(17);
     tcout.flags(ios::fixed);
     tcout.width(23);
-    tcout << gamma(x);
+    tcout << Lgamma(x);
     tcout.flush();
 
     tcout.precision(19);
     tcout.flags(ios::fixed);
     tcout.width(23);
-    tcout << gamma80(x);
+    tcout << Lgamma80(x);
     tcout << _T("\n");
 
     tcout.flush();

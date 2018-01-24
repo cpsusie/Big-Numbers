@@ -226,7 +226,7 @@
       <AdditionalIncludeDirectories>C:\mytools2015\Lib\Src\paintlib\otherlib\libtiff;C:\mytools2015\Lib\Src\paintlib\otherlib\libpng;C:\mytools2015\Lib\Src\paintlib\otherlib\libjpeg;C:\mytools2015\Lib\Src\paintlib\common</AdditionalIncludeDirectories>
       <BrowseInformation>true</BrowseInformation>
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
-      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <StringPooling>true</StringPooling>
@@ -268,7 +268,7 @@
       <AdditionalIncludeDirectories>C:\mytools2015\Lib\Src\paintlib\otherlib\libtiff;C:\mytools2015\Lib\Src\paintlib\otherlib\libpng;C:\mytools2015\Lib\Src\paintlib\otherlib\libjpeg;C:\mytools2015\Lib\Src\paintlib\common</AdditionalIncludeDirectories>
       <BrowseInformation>true</BrowseInformation>
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
-      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <StringPooling>true</StringPooling>
@@ -310,7 +310,7 @@
       <AdditionalIncludeDirectories>C:\mytools2015\Lib\Src\paintlib\otherlib\libtiff;C:\mytools2015\Lib\Src\paintlib\otherlib\libpng;C:\mytools2015\Lib\Src\paintlib\otherlib\libjpeg;C:\mytools2015\Lib\Src\paintlib\common</AdditionalIncludeDirectories>
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
       <BrowseInformation>true</BrowseInformation>
-      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <StringPooling>true</StringPooling>
@@ -351,7 +351,7 @@
       <AdditionalIncludeDirectories>C:\mytools2015\Lib\Src\paintlib\otherlib\libtiff;C:\mytools2015\Lib\Src\paintlib\otherlib\libpng;C:\mytools2015\Lib\Src\paintlib\otherlib\libjpeg;C:\mytools2015\Lib\Src\paintlib\common</AdditionalIncludeDirectories>
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
       <BrowseInformation>true</BrowseInformation>
-      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <StringPooling>true</StringPooling>
@@ -395,7 +395,7 @@
       <DebugInformationFormat>None</DebugInformationFormat>
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
       <BrowseInformation>true</BrowseInformation>
-      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <StringPooling>true</StringPooling>
     </ClCompile>
@@ -438,7 +438,7 @@
       <DebugInformationFormat>None</DebugInformationFormat>
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
       <BrowseInformation>true</BrowseInformation>
-      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <StringPooling>true</StringPooling>
     </ClCompile>
@@ -481,7 +481,7 @@
       <DebugInformationFormat>None</DebugInformationFormat>
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
       <BrowseInformation>true</BrowseInformation>
-      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <StringPooling>true</StringPooling>
     </ClCompile>
@@ -524,7 +524,7 @@
       <DebugInformationFormat>None</DebugInformationFormat>
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
       <BrowseInformation>true</BrowseInformation>
-      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <StringPooling>true</StringPooling>
     </ClCompile>
@@ -564,7 +564,7 @@
       <DebugInformationFormat>None</DebugInformationFormat>
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
       <BrowseInformation>true</BrowseInformation>
-      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <StringPooling>true</StringPooling>
     </ClCompile>
@@ -604,7 +604,7 @@
       <DebugInformationFormat>None</DebugInformationFormat>
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
       <BrowseInformation>true</BrowseInformation>
-      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <StringPooling>true</StringPooling>
     </ClCompile>

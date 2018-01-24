@@ -6,7 +6,7 @@
 #include <Math/BigReal.h>
 #include "Gamma.h"
 
-static Double80 gamma1_2(const Double80 &x) {
+static Double80 Lgamma1_2(const Double80 &x) {
   BigReal currentSum;
   BigReal lastSum;
   BigReal fac = BIGREAL_1;
@@ -32,17 +32,17 @@ static Double80 gamma1_2(const Double80 &x) {
   return getDouble80(currentSum * pow(TR,X,c1));
 }
 
-Double80 gamma80(const Double80 &x) {
+Double80 Lgamma80(const Double80 &x) {
   if(x > 2)
-    return (x-1)*gamma80(x-1);
+    return (x-1)*Lgamma80(x-1);
   else if(x < 1)
-    return gamma80(x+1)/x;
+    return Lgamma80(x+1)/x;
   else if(x == 1 || x == 2)
     return 1;
   else
-    return gamma1_2(x);
+    return Lgamma1_2(x);
 }
 
-Double80 fac80(const Double80 &x) {
-  return gamma80(x+1);
+Double80 Lfac80(const Double80 &x) {
+  return Lgamma80(x+1);
 }

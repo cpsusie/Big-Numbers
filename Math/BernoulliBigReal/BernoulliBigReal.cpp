@@ -51,7 +51,7 @@ static int binomialKeyCmp(const BinomialKey &key1, const BinomialKey &key2) {
   return key1 == key2 ? 0 : 1;
 }
 
-const BigInt &fac(int n) {
+const BigInt &fac(UINT n) {
   static IntHashMap<BigInt> map;
   const BigInt *result = map.get(n);
   if(result == NULL) {
