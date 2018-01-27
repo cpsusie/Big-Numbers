@@ -1,11 +1,8 @@
 #pragma once
 
-#define LOGDEBUGINFO
+//#define LOGDEBUGINFO
 
 #ifdef LOGDEBUGINFO
-
-#include <Thread.h>
-#include <SynchronizedQueue.h>
 
 typedef enum {
   RESETFILE
@@ -43,6 +40,6 @@ public:
 #else
 
 #define REDIRECTLOG()
-#define DLOG(s)
+#define DLOG(...)
 
 #endif

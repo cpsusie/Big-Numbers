@@ -799,7 +799,7 @@ bool CMandelbrotDlg::setColorMapData(const ColorMapData &colorMapData) {
 }
 
 static int newRandomStep(int old) {
-  const int result = randInt(2, 20);
+  const int result = randInt(2, 16);
   if(old > 0) {
     return -result;
   }

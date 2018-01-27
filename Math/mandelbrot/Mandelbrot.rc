@@ -212,7 +212,7 @@ BEGIN
         MENUITEM "Use only &1 CPU\tAlt+1",      ID_OPTIONS_USEONLY1CPU
         MENUITEM SEPARATOR
         MENUITEM "&Retain aspect ratio\tAlt+R", ID_OPTIONS_RETAIN_ASPECTRATIO, CHECKED
-        MENUITEM "Show &zoom facto\tAlt+Z",     ID_OPTIONS_SHOWZOOMFACTOR
+        MENUITEM "Show &zoom factor\tAlt+Z",    ID_OPTIONS_SHOWZOOMFACTOR
     END
     POPUP "&Help"
     BEGIN
