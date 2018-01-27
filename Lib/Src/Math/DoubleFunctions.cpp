@@ -74,10 +74,11 @@ double exp10(double x) {
   }
   return result;
 }
-#include <Math/FPU.h>
 #define M_PI_2_60 7.244019458077122842384326056985109887461e+018 // pow(2,60) * 2*pi
 void sincos(double &c, double &s) {
-  debugLog(_T("FPU:\n%s\n"), FPU::getState().toString().cstr());
+  s = sin(c);
+  c = cos(c);
+/* This code doesn't pass unittests with new SDK
   double r = fmod(c, M_PI_2_60);
   __asm {
     fld r
@@ -87,5 +88,6 @@ void sincos(double &c, double &s) {
     mov eax, DWORD PTR s
     fstp QWORD PTR [eax]
   }
+*/
 }
 #endif
