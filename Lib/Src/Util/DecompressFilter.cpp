@@ -15,7 +15,7 @@ DecompressFilter::DecompressFilter(ByteInputStream &src) : m_src(src) {
   zStream->zfree    = NULL;
   zStream->opaque   = (voidpf)0;
   zStream->avail_in = 0;
-  int err = inflateInit(zStream);
+  const int err = inflateInit(zStream);
   if(err != Z_OK) {
     delete zStream;
     throwException(_T("%s:inflateInit:returncode=%d"), __TFUNCTION__, err);

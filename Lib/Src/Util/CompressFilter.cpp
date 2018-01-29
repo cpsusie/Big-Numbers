@@ -15,8 +15,8 @@ CompressFilter::CompressFilter(ByteOutputStream &dst, CompressionLevel level) : 
   zStream->zfree    = NULL;
   zStream->opaque   = (voidpf)0;
 
-  int err = deflateInit(zStream, (int)level);
-  if (err != Z_OK) {
+  const int err = deflateInit(zStream, (int)level);
+  if(err != Z_OK) {
     delete zStream;
     throwException(_T("%s:deflateInit:returncode=%d"), __TFUNCTION__, err);
   }
@@ -50,7 +50,7 @@ void CompressFilter::putBytes(const BYTE *src, size_t n) {
 
 void CompressFilter::flush() {
   flushInput();
-  int err = deflate((z_streamp)m_zStreamp, Z_PARTIAL_FLUSH);
+  const int err = deflate((z_streamp)m_zStreamp, Z_PARTIAL_FLUSH);
   switch(err) {
   case Z_OK        :
     getCompressedData();
@@ -67,7 +67,7 @@ void CompressFilter::flushInput() {
   zStreamp->avail_in = (UINT)m_inputBuffer.size();
 
   while(zStreamp->avail_in > 0) {
-    int err = deflate(zStreamp, Z_NO_FLUSH);
+    const int err = deflate(zStreamp, Z_NO_FLUSH);
     if(err != Z_OK) {
       throwException(_T("%s:deflate:returncode:%d"), __TFUNCTION__, err);
     }
@@ -84,7 +84,7 @@ void CompressFilter::flushInput() {
 void CompressFilter::finalFlush() {
   flushInput();
   for(;;) {
-    int err = deflate((z_streamp)m_zStreamp, Z_FINISH);
+    const int err = deflate((z_streamp)m_zStreamp, Z_FINISH);
     switch(err) {
     case Z_OK        :
       getCompressedData();
