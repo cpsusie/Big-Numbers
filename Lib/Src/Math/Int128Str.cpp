@@ -180,6 +180,8 @@ wchar_t *_ui128tow(_uint128 value, wchar_t *str, int radix) {
   return int128toStr<_uint128, wchar_t>(value, str, radix);
 }
 
+// Conversion from string to _int128/_uint128
+
 static inline bool isRadixDigit(wchar_t ch, UINT radix, UINT &value) {
   if(!iswalnum(ch)) return false;
   const UINT v = iswdigit(ch) ? (ch - '0') : (ch - (iswupper(ch)?'A':'a') + 10);
@@ -188,90 +190,6 @@ static inline bool isRadixDigit(wchar_t ch, UINT radix, UINT &value) {
   return true;
 }
 
-#define SETOVERFLOWANDBREAK()                                              \
-{ overflow = true;                                                         \
-  if(digitCount32 == maxDigitCount32) {                                    \
-    while(isRadixDigit(*(s++), radix, digit));                             \
-  }                                                                        \
-  digitCount32 = 0;  /* to break outer loop */                             \
-  break;                                                                   \
-}
-
-#define SHIFTLOOP(bitsPerDigit)                                            \
-{ const UINT maxBitCount = withSign ? 127 : 128;                           \
-  for(UINT totalBitCount = 0;;result32 = digitCount32 = 0) {               \
-    while(isRadixDigit(*(s++), radix, digit)) {                            \
-      result32 <<= bitsPerDigit;                                           \
-      result32 |= digit;                                                   \
-      if(++digitCount32 == maxDigitCount32) break;                         \
-    }                                                                      \
-    if(firstChunk) {                                                       \
-      result128     = result32;                                            \
-      firstChunk    = false;                                               \
-      totalBitCount = digitCount32 * (bitsPerDigit);                       \
-    } else if(digitCount32) {                                              \
-      const UINT shift = digitCount32 * (bitsPerDigit);                    \
-      if((totalBitCount += shift) > maxBitCount) {                         \
-        const BYTE mask = ~(((withSign&&!negative)?0x7f:0xff)>>(shift&7)); \
-        if(result128.s16.b[15-(shift>>3)] & mask) {                        \
-          SETOVERFLOWANDBREAK();                                           \
-        }                                                                  \
-      }                                                                    \
-      result128 <<= shift;                                                 \
-      if(result32) result128 |= result32;                                  \
-    } else {                                                               \
-      break;                                                               \
-    }                                                                      \
-    if(digitCount32 < maxDigitCount32) break;                              \
-  }                                                                        \
-}
-
-/*
-template<class Int128Type, class Ctype> void shiftLoop(bool          withSign
-                                                      ,UINT          radix
-                                                      ,bool          negative
-                                                      ,UINT          bitsPerDigit
-                                                      ,UINT          maxDigitCount32
-                                                      ,const Ctype *&s
-                                                      ,bool         &firstChunk
-                                                      ,UINT         &result32
-                                                      ,UINT         &digitCount32
-                                                      ,Int128Type   &result128
-                                                      ,bool         &overflow
-                                                      )
-{ const UINT maxBitCount = withSign ? 127 : 128;
-  for(UINT totalBitCount = 0;; result32 = digitCount32 = 0) {
-    UINT digit;
-    while(isRadixDigit(*(s++), radix, digit)) {
-      result32 <<= bitsPerDigit;
-      result32 |= digit;
-      if(++digitCount32 == maxDigitCount32) break;
-    }
-    if(firstChunk) {
-      result128     = result32;
-      firstChunk    = false;
-      totalBitCount = digitCount32 * bitsPerDigit;
-    } else if(digitCount32) {
-      const UINT shift = digitCount32 * bitsPerDigit;
-      if((totalBitCount += shift) > maxBitCount) {
-        const BYTE mask = ~(((withSign&&!negative)?0x7f:0xff)>>(shift&7));
-        if(result128.s16.b[15-(shift>>3)] & mask) {
-          SETOVERFLOWANDBREAK();
-        }
-      }
-      result128 <<= shift;
-      if(result32) result128 |= result32;
-    } else {
-      break;
-    }
-    if(digitCount32 < maxDigitCount32) break;
-  }
-}
-
-#undef SHIFTLOOP
-
-#define SHIFTLOOP(bitsPerDigit) shiftLoop(withSign,radix,negative,bitsPerDigit,maxDigitCount32,s,firstChunk,result32,digitCount32,result128,overflow);
-*/
 template<class Int128Type, class Ctype, bool withSign> Int128Type strtoint128(const Ctype *s, Ctype **end, UINT radix) {
   if((s == NULL) || ((radix != 0) && ((radix < 2) || (radix > 36)))) {
     errno = EINVAL;
@@ -315,16 +233,42 @@ template<class Int128Type, class Ctype, bool withSign> Int128Type strtoint128(co
     while((digit == 0) && isRadixDigit(*s, radix, digit)) s++; // skip leading zeroes
     bool firstChunk    = true;
     UINT result32      = digit;
-    UINT digitCount32  = 1;
 
-    switch(radix) {
-    case 2 : SHIFTLOOP(1) break;
-    case 4 : SHIFTLOOP(2) break;
-    case 8 : SHIFTLOOP(3) break;
-    case 16: SHIFTLOOP(4) break;
-    case 32: SHIFTLOOP(5) break;
-    default:
-      for(UINT p32 = radix;; p32 = 1, result32 = digitCount32 = 0) {
+    if((radix & -(int)radix) == radix) { // is radix 2,4,8,16 or 32
+      const UINT maxBitCount   = withSign ? 127 : 128;
+      UINT       totalBitCount;
+      const UINT bitsPerDigit  = 32 / maxDigitCount32;
+      const UINT maxBitCount32 = bitsPerDigit * maxDigitCount32;
+      for(UINT bitCount32=bitsPerDigit;;result32=bitCount32=0) {
+        while(isRadixDigit(*(s++), radix, digit)) {
+          result32 <<= bitsPerDigit;
+          result32 |= digit;
+          if((bitCount32 += bitsPerDigit) == maxBitCount32) break;
+        }
+        if(firstChunk) {
+          result128     = result32;
+          firstChunk    = false;
+          totalBitCount = bitCount32;
+        } else if(bitCount32) {
+          if((totalBitCount += bitCount32) > maxBitCount) {
+            const BYTE mask = ~(((withSign&&!negative)?0x7f:0xff)>>(bitCount32&7));
+            if(result128.s16.b[15-(bitCount32>>3)] & mask) {
+              overflow = true;
+              if(bitCount32 == maxBitCount32) {
+                while(isRadixDigit(*(s++), radix, digit));
+              }
+              break;
+            }
+          }
+          result128 <<= bitCount32;
+          if(result32) result128 |= result32;
+        } else {
+          break;
+        }
+        if(bitCount32 < maxBitCount32) break;
+      }
+    } else {
+      for(UINT digitCount32=1, p32=radix;; p32=1, result32=digitCount32=0) {
         while(isRadixDigit(*(s++), radix, digit)) {
           result32 *= radix;
           result32 += digit;
@@ -337,18 +281,19 @@ template<class Int128Type, class Ctype, bool withSign> Int128Type strtoint128(co
         } else if(digitCount32) {
           const UINT lastH = result128.s4.i[3];
           result128 *= p32;
-          if(result32) {
-            result128 += result32;
-          }
+          if(result32) result128 += result32;
           if(lastH && ((result128.s4.i[3]==0) || (withSign&&!negative&&result128.isNegative()))) {
-            SETOVERFLOWANDBREAK();
+            overflow = true;
+            if(digitCount32 == maxDigitCount32) {
+              while(isRadixDigit(*(s++), radix, digit));
+            }
+            break;
           }
         } else {
           break;
         }
         if(digitCount32 < maxDigitCount32) break;
       }
-      break;
     }
   }
   if(!gotDigit) return 0;
