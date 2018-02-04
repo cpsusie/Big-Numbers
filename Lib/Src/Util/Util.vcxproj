@@ -263,6 +263,10 @@
       <TargetMachine>MachineX86</TargetMachine>
       <LinkTimeCodeGeneration>false</LinkTimeCodeGeneration>
     </Lib>
+    <CustomBuild>
+      <AdditionalInputs>
+      </AdditionalInputs>
+    </CustomBuild>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|Win32'">
     <ClCompile>
@@ -300,6 +304,10 @@
       <TargetMachine>MachineX86</TargetMachine>
       <LinkTimeCodeGeneration>false</LinkTimeCodeGeneration>
     </Lib>
+    <CustomBuild>
+      <AdditionalInputs>
+      </AdditionalInputs>
+    </CustomBuild>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -338,6 +346,10 @@
       <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
       <TargetMachine>MachineX86</TargetMachine>
     </Lib>
+    <CustomBuild>
+      <AdditionalInputs>
+      </AdditionalInputs>
+    </CustomBuild>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|Win32'">
     <ClCompile>
@@ -377,6 +389,10 @@
       <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
       <TargetMachine>MachineX86</TargetMachine>
     </Lib>
+    <CustomBuild>
+      <AdditionalInputs>
+      </AdditionalInputs>
+    </CustomBuild>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profiling|Win32'">
     <ClCompile>
@@ -416,6 +432,10 @@
       <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
       <TargetMachine>MachineX86</TargetMachine>
     </Lib>
+    <CustomBuild>
+      <AdditionalInputs>
+      </AdditionalInputs>
+    </CustomBuild>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|arm'">
     <ClCompile>
@@ -548,6 +568,9 @@
     <CustomBuildStep>
       <Inputs>$(IntDir)BitSetx64.obj;$(IntDir)CPUInfox64.obj;%(Inputs)</Inputs>
     </CustomBuildStep>
+    <CustomBuild>
+      <AdditionalInputs>$(IntDir)BitSetx64.obj; $(IntDir)CPUInfox64.obj</AdditionalInputs>
+    </CustomBuild>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">
     <ClCompile>
@@ -590,6 +613,9 @@
     <CustomBuildStep>
       <Inputs>$(IntDir)BitSetx64.obj;$(IntDir)CPUInfox64.obj;%(Inputs)</Inputs>
     </CustomBuildStep>
+    <CustomBuild>
+      <AdditionalInputs>$(IntDir)BitSetx64.obj; $(IntDir)CPUInfox64.obj</AdditionalInputs>
+    </CustomBuild>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -631,6 +657,9 @@
     <CustomBuildStep>
       <Inputs>$(IntDir)BitSetx64.obj;$(IntDir)CPUInfox64.obj;%(Inputs)</Inputs>
     </CustomBuildStep>
+    <CustomBuild>
+      <AdditionalInputs>$(IntDir)BitSetx64.obj; $(IntDir)CPUInfox64.obj</AdditionalInputs>
+    </CustomBuild>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">
     <ClCompile>
@@ -674,6 +703,9 @@
     <CustomBuildStep>
       <Inputs>$(IntDir)BitSetx64.obj;$(IntDir)CPUInfox64.obj;%(Inputs)</Inputs>
     </CustomBuildStep>
+    <CustomBuild>
+      <AdditionalInputs>$(IntDir)BitSetx64.obj; $(IntDir)CPUInfox64.obj</AdditionalInputs>
+    </CustomBuild>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profiling|x64'">
     <ClCompile>
@@ -716,6 +748,9 @@
     <CustomBuildStep>
       <Inputs>$(IntDir)BitSetx64.obj;$(IntDir)CPUInfox64.obj;%(Inputs)</Inputs>
     </CustomBuildStep>
+    <CustomBuild>
+      <AdditionalInputs>$(IntDir)BitSetx64.obj; $(IntDir)CPUInfox64.obj</AdditionalInputs>
+    </CustomBuild>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\Array.h" />
@@ -1083,19 +1118,19 @@
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">false</DeploymentContent>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Profiling|x64'">false</DeploymentContent>
       <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">masm64 /nologo /c /Zf /Fo$(IntDir)BitSetx64.obj BitSetx64.asm</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">masm64 /nologo /c /Zf /Fo$(IntDir)BitSetx64.obj BitSetx64.asm</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">call masm64 /nologo /c /Zf /Fo$(IntDir)BitSetx64.obj BitSetx64.asm</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">call masm64 /nologo /c /Zf /Fo$(IntDir)BitSetx64.obj BitSetx64.asm</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Profiling|x64'">masm64 /nologo /c /Zf /Fo$(IntDir)BitSetx64.obj BitSetx64.asm</Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Assembler code for BitSet x64</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">Assembler code for BitSet x64</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Profiling|x64'">Assembler code for BitSet x64</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Assembler code for BitSetx64</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">Assembler code for BitSetx64</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Profiling|x64'">Assembler code for BitSetx64</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)BitSetx64.obj</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">$(IntDir)BitSetx64.obj</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Profiling|x64'">$(IntDir)BitSetx64.obj</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">masm64 /nologo /Zi /c /Zf /Fo$(IntDir)BitSetx64.obj BitSetx64.asm</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">masm64 /nologo /Zi /c /Zf /Fo$(IntDir)BitSetx64.obj BitSetx64.asm</Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Assembler code for BitSet x64</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">Assembler code for BitSet x64</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">call masm64 /nologo /Zi /c /Zf /Fo$(IntDir)BitSetx64.obj BitSetx64.asm</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">call masm64 /nologo /Zi /c /Zf /Fo$(IntDir)BitSetx64.obj BitSetx64.asm</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Assembler code for BitSetx64</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">Assembler code for BitSetx64</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)BitSetx64.obj</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">$(IntDir)BitSetx64.obj</Outputs>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
@@ -1112,6 +1147,26 @@
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</DeploymentContent>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|Win32'">false</DeploymentContent>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Profiling|Win32'">false</DeploymentContent>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|Win32'">
+      </AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Profiling|Win32'">
+      </AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|Win32'">
+      </AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">
+      </AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Profiling|x64'">
+      </AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">
+      </AdditionalInputs>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
@@ -1127,17 +1182,17 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">false</ExcludedFromBuild>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DeploymentContent>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">false</DeploymentContent>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">masm64 /nologo /Zi /c /Zf /Fo$(IntDir)CPUInfox64.obj CPUInfox64.asm</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">masm64 /nologo /Zi /c /Zf /Fo$(IntDir)CPUInfox64.obj CPUInfox64.asm</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Profiling|x64'">masm64 /nologo /Zi /c /Zf /Fo$(IntDir)CPUInfox64.obj CPUInfox64.asm</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">call masm64 /nologo /Zi /c /Zf /Fo$(IntDir)CPUInfox64.obj CPUInfox64.asm</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">call masm64 /nologo /Zi /c /Zf /Fo$(IntDir)CPUInfox64.obj CPUInfox64.asm</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profiling|x64'">call masm64 /nologo /Zi /c /Zf /Fo$(IntDir)CPUInfox64.obj CPUInfox64.asm</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Assembler code for CPUInfox64</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">Assembler code for CPUInfox64</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='Profiling|x64'">Assembler code for CPUInfox64</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)CPUInfox64.obj</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">$(IntDir)CPUInfox64.obj</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Profiling|x64'">$(IntDir)CPUInfox64.obj</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">masm64 /nologo /Zi /c /Zf /Fo$(IntDir)CPUInfox64.obj CPUInfox64.asm</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">masm64 /nologo /Zi /c /Zf /Fo$(IntDir)CPUInfox64.obj CPUInfox64.asm</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">call masm64 /nologo /Zi /c /Zf /Fo$(IntDir)CPUInfox64.obj CPUInfox64.asm</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">call masm64 /nologo /Zi /c /Zf /Fo$(IntDir)CPUInfox64.obj CPUInfox64.asm</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Assembler code for CPUInfox64</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">Assembler code for CPUInfox64</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)CPUInfox64.obj</Outputs>
@@ -1147,6 +1202,31 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profiling|Win32'">true</ExcludedFromBuild>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|Win32'">
+      </AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Profiling|Win32'">
+      </AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|Win32'">
+      </AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">
+      </AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Profiling|x64'">
+      </AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">
+      </AdditionalInputs>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|Win32'">false</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Profiling|Win32'">false</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|Win32'">false</DeploymentContent>
     </CustomBuild>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

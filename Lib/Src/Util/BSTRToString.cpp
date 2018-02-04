@@ -6,7 +6,7 @@ String BSTRToString(const BSTR &s) {
   char *tmp = new char[size];
   ::WideCharToMultiByte(CP_ACP,0,s,-1,tmp,size,NULL,NULL);
   String result = tmp;
-  delete tmp;
+  delete[] tmp;
   return result;
 }
 /*

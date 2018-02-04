@@ -353,7 +353,8 @@ void RegistryKey::getValue(const String &valueName, UINT64 &value) const {
   switch(type) {
   case REG_QWORD:
     if(bufSize != sizeof(INT64)) {
-      throwException(_T("%s:Value has illegal size (=%d) Must be %d"), method, bufSize, sizeof(INT64));
+      throwException(_T("%s:Value has illegal size (=%d) Must be %zu")
+                    ,method, bufSize, sizeof(INT64));
     }
     result = RegQueryValueEx(m_key->getObject(), valueName.cstr(), 0, &type, (LPBYTE)&value, &bufSize);
     checkResult(result, method, _T("RegQueryValueEx"), valueName);
@@ -377,7 +378,7 @@ void RegistryKey::getValue(const String &valueName, INT64 &value) const {
   switch(type) {
   case REG_QWORD:
     if(bufSize != sizeof(INT64)) {
-      throwException(_T("%s:Value has illegal size (=%d) Must be %d")
+      throwException(_T("%s:Value has illegal size (=%u) Must be %zu")
                     ,method
                     ,bufSize, sizeof(INT64));
     }
@@ -405,7 +406,7 @@ void RegistryKey::getValue(const String &valueName, ULONG &value) const {
   case REG_DWORD:
   case REG_DWORD_BIG_ENDIAN:
     if(bufSize != sizeof(ULONG)) {
-      throwException(_T("%s:Value has illegal size (=%d) Must be %d")
+      throwException(_T("%s:Value has illegal size (=%u) Must be %zu")
                     ,method
                     ,bufSize, sizeof(long));
     }
@@ -432,7 +433,7 @@ void RegistryKey::getValue(const String &valueName, long &value) const {
   case REG_DWORD:
   case REG_DWORD_BIG_ENDIAN:
     if(bufSize != sizeof(ULONG)) {
-      throwException(_T("%s:Value has illegal size (=%d) Must be %d")
+      throwException(_T("%s:Value has illegal size (=%u) Must be %zu")
                     ,method
                     ,bufSize, sizeof(long));
     }
@@ -725,7 +726,7 @@ RegistryValue::RegistryValue(const String &name, ULONG value,  ULONG type) {
 
 RegistryValue::RegistryValue(const String &name, INT64 value,  ULONG type) {
   if(type != REG_QWORD) {
-    throwException(_T("%s:Illegal type=%d for value <%s>. Must be {REG_QWORD}. Value=%lu")
+    throwException(_T("%s:Illegal type=%d for value <%s>. Must be {REG_QWORD}. Value=%lld")
                   ,__TFUNCTION__
                   ,type, name.cstr(), value);
   }
@@ -735,7 +736,7 @@ RegistryValue::RegistryValue(const String &name, INT64 value,  ULONG type) {
 
 RegistryValue::RegistryValue(const String &name, UINT64 value,  ULONG type) {
   if(type != REG_QWORD) {
-    throwException(_T("%s:Illegal type=%d for value <%s>. Must be {REG_QWORD}. Value=%lu")
+    throwException(_T("%s:Illegal type=%d for value <%s>. Must be {REG_QWORD}. Value=%llu")
                   ,__TFUNCTION__
                   ,type, name.cstr(), value);
   }

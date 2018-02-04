@@ -507,16 +507,16 @@ void String::indexError(size_t index) const {
                                , format1000(m_len).cstr());
 }
 
-String format(const TCHAR *format, ...) {
+String format(_In_z_ _Printf_format_string_ TCHAR const * const Format, ...) {
   va_list argptr;
-  va_start(argptr, format);
+  va_start(argptr, Format);
   String result;
-  result.vprintf(format, argptr);
+  result.vprintf(Format, argptr);
   va_end(argptr);
   return result;
 }
 
-String &String::printf(const TCHAR *format, ...) {
+String &String::printf(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
   va_list argptr;
   va_start(argptr, format);
   vprintf(format, argptr);
@@ -524,7 +524,7 @@ String &String::printf(const TCHAR *format, ...) {
   return *this;
 }
 
-String &String::vprintf(const TCHAR *format, va_list argptr) {
+String &String::vprintf(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
   TCHAR buffer[16384];
   int bufSize = ARRAYSIZE(buffer);
   TCHAR *tmp = buffer;

@@ -102,6 +102,7 @@ void TreeSetIterator::remove() {
   if(m_current == NULL) {
     noCurrentElementError(s_className);
   }
+  __assume(m_current);
   checkUpdateCount();
   m_set.remove(m_current->key());
   m_current = NULL;

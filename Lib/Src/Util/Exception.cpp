@@ -72,7 +72,7 @@ InitExceptionClass::~InitExceptionClass() {
 
 static InitExceptionClass exceptionClassInitializer;
 
-void throwInvalidArgumentException(const TCHAR *function, const TCHAR *format,...) {
+void throwInvalidArgumentException(const TCHAR *function, _In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
   va_list argptr;
   va_start(argptr, format);
   const String msg = vformat(format, argptr);
@@ -80,7 +80,7 @@ void throwInvalidArgumentException(const TCHAR *function, const TCHAR *format,..
   throwException(_T("%s:Invalid argument. %s"), function, msg.cstr());
 }
 
-void throwException(const TCHAR *format,...) {
+void throwException(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
   va_list argptr;
   va_start(argptr, format);
   const String tmp = vformat(format, argptr);
@@ -92,7 +92,7 @@ void throwException(const String &s) {
   throw Exception(s);
 }
 
-void throwTimeoutException(const TCHAR *format, ...) {
+void throwTimeoutException(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
   va_list argptr;
   va_start(argptr, format);
   const String tmp = vformat(format, argptr);
@@ -100,7 +100,7 @@ void throwTimeoutException(const TCHAR *format, ...) {
   throw TimeoutException(tmp.cstr());
 }
 
-void throwMethodException(const TCHAR *className, const TCHAR *method, const TCHAR *format, ...) {
+void throwMethodException(const TCHAR *className, const TCHAR *method, _In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
   va_list argptr;
   va_start(argptr, format);
   const String msg = vformat(format, argptr);
@@ -108,7 +108,7 @@ void throwMethodException(const TCHAR *className, const TCHAR *method, const TCH
   throwException(_T("%s::%s:%s"), className, method, msg.cstr());
 }
 
-void throwMethodInvalidArgumentException(const TCHAR *className, const TCHAR *method, const TCHAR *form, ...) {
+void throwMethodInvalidArgumentException(const TCHAR *className, const TCHAR *method, _In_z_ _Printf_format_string_ TCHAR const * const form, ...) {
   va_list argptr;
   va_start(argptr, form);
   const String msg = vformat(form, argptr);

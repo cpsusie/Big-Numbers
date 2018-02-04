@@ -345,7 +345,7 @@ intptr_t Scanner::fillBuf(_TUCHAR *start) { // private
 
   if(need < 0) {
     throwException(_T("%s:INTERNAL ERROR: Bad starting address. need=%d, start=%p, end=%p")
-                  ,__TFUNCTION__, need, start, end());
+                  ,__TFUNCTION__, (int)need, start, end());
   }
 
   intptr_t got; // Number of bytes actually read.

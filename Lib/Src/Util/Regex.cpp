@@ -1394,12 +1394,12 @@ BitSet Regex::first(intptr_t pcStart,intptr_t pcEnd, bool *matchEmpty) const {  
       }
     }
     if(!found) {
-      break;;
+      break;
     }
   } // end for
 
   if(iter == maxIteration) {
-    throwException(_T("Regex::first(%d,%d):Max iteration reached"), pcStart,pcEnd);
+    throwException(_T("Regex::first(%zd,%zd):Max iteration reached"), pcStart,pcEnd);
   }
 
 Return:
@@ -2019,7 +2019,7 @@ String RegexRegisters::toString(const String &text) const {
     const intptr_t textend   = end[i];
     const intptr_t len       = textend - textstart;
     if((0 <= textstart) && (len > 0) && (textend <= length)) {
-      result += format(_T("%d:\"%-*.*s\"\n"), i, len,len, text.cstr()+textstart);
+      result += format(_T("%d:\"%-*.*s\"\n"), i, (int)len,(int)len, text.cstr()+textstart);
     }
   }
   return result;

@@ -31,7 +31,7 @@ static String typeNameToString(const TCHAR *typeName) {
     try {
       return typeName;
     } catch(...) {
-      return format(_T("%d"), typeName);
+      return format(_T("%p"), typeName);
     }
   }
 }
@@ -47,7 +47,7 @@ ByteArray &ByteArray::loadFromResource(int resId, const TCHAR *typeName) {
 
   HGLOBAL hGlobal = LoadResource(NULL, hSource);
   if(hGlobal == NULL) {
-    throwException(_T("%s(%d,%s) failed:s"), method, resId, typeNameToString(typeName).cstr(), getLastErrorText().cstr());
+    throwException(_T("%s(%d,%s) failed:%s"), method, resId, typeNameToString(typeName).cstr(), getLastErrorText().cstr());
   }
 
   try {

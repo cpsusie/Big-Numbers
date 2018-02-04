@@ -21,6 +21,7 @@ HashSetNode *HashSetIterator::nextNode() {
   if(m_next == NULL) {
     noNextElementError(s_className);
   }
+  __assume(m_next);
   checkUpdateCount();
 
   m_current = m_next;
@@ -32,6 +33,7 @@ void HashSetIterator::remove() {
   if(m_current == NULL) {
     noCurrentElementError(s_className);
   }
+  __assume(m_current);
   checkUpdateCount();
   m_set->remove(m_current->key());
   m_current = NULL;

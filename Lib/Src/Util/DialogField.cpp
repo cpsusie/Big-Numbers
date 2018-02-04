@@ -135,12 +135,21 @@ void DialogField::copyToClipboard() {
     String s = getSelText();
 
     if(!OpenClipboard(NULL)) return;
-    if(EmptyClipboard()) {
-      HLOCAL buf = LocalAlloc(0,s.length() + 1);
-      memcpy(buf,s.cstr(),s.length());
-      HANDLE v = SetClipboardData(CF_TEXT,buf);
+    try {
+      if(EmptyClipboard()) {
+        HLOCAL buf = LocalAlloc(0,s.length() + 1);
+        if(buf == NULL) {
+          throwLastErrorOnSysCallException(_T("LocalAlloc"));
+        }
+        __assume(buf);
+        memcpy(buf,s.cstr(),s.length());
+        HANDLE v = SetClipboardData(CF_TEXT,buf);
+      }
+      CloseClipboard();
+    } catch (...) {
+      CloseClipboard();
+      throw;
     }
-    CloseClipboard();
   }
 }
 

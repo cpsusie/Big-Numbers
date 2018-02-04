@@ -29,7 +29,10 @@ HANDLE Console::getHandle(int fileNo) { // static
   case STD_ERROR_HANDLE : return s_hStdErr;
   default               : throwInvalidArgumentException(__TFUNCTION__
                                                        ,_T("fileNo (=%d) must be STD_INPUT_HANDLE (=%d), STD_OUTPUT_HANDLE (=%d) or STD_ERROR_HANDLE (=%d)")
-                                                       ,STD_INPUT_HANDLE, STD_OUTPUT_HANDLE, STD_ERROR_HANDLE);
+                                                       ,fileNo
+                                                       ,STD_INPUT_HANDLE
+                                                       ,STD_OUTPUT_HANDLE
+                                                       ,STD_ERROR_HANDLE);
                           return s_hStdOut;
   }
 }

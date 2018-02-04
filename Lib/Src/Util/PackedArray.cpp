@@ -590,7 +590,7 @@ String PackedArray::toString() const {
       result += _T(":");
       bitCount %= 32;
     }
-    result += format(_T("%*d"), l, i%10);
+    result += format(_T("%*d"), l, (int)(i%10));
   }
   result += _T("\n");
 
@@ -629,7 +629,7 @@ String PackedArray::toString() const {
       result += _T(":");
       bitCount %= 32;
     }
-    result += format(_T("%*d"), l, i%10);
+    result += format(_T("%*d"), l, (int)(i%10));
   }
   return result;
 }

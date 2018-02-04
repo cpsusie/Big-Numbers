@@ -123,14 +123,14 @@ static inline bool mustRedirect() {
   return !stdoutAtty() || isEnvironRedirection();
 }
 
-void debugLog(const TCHAR *format, ...) {
+void debugLog(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
   va_list argptr;
   va_start(argptr, format);
   vdebugLog(format, argptr);
   va_end(argptr);
 }
 
-void vdebugLog(const TCHAR *format, va_list argptr) {
+void vdebugLog(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
   if(traceFile == NULL) {
     traceFile = stdout;
   }

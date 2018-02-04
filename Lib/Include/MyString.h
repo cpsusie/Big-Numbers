@@ -193,10 +193,10 @@ public:
   friend String spaceString(std::streamsize length, TCHAR ch = _T(' '));
 
   // Same as vsprintf. Return *this
-  String &vprintf(const TCHAR *format, va_list argptr);
+  String &vprintf(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
 
   // Same as sprintf. Return *this
-  String &printf( _In_z_ _Printf_format_string_ const TCHAR *format, ...);
+  String &printf( _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
 
   inline const String &toString() const {
     return *this;
@@ -284,14 +284,14 @@ ULONG         stringiHash(   const String &s);                        // Very co
 int           stringiHashCmp(const String &s1, const String &s2);
 
 // Same arguments as vprintf,vsprintf
-inline String vformat(const TCHAR *format, va_list argptr) {
+inline String vformat(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
   String result;
   result.vprintf(format, argptr);
   return result;
 }
 
 // Same arguments as printf,sprintf
-String format( _In_z_ _Printf_format_string_ const TCHAR *format, ...);
+String format(_In_z_ _Printf_format_string_ TCHAR const * const Format, ...);
 
 String toString(char             ch, int width = 0, int flags = 0  );
 String toString(SHORT            n , int precision = 0, int width = 0, int flags = 0);

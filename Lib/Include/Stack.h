@@ -22,7 +22,7 @@ public:
   T &top(UINT index = 0) {
     int i = (int)size() - 1 - index;
     if(i < 0) {
-      throwException(_T("Cannot get element %d of stack with height %d"), index, size());
+      throwException(_T("Cannot get element %u of stack with height %d"), index, (int)size());
     }
     return (*this)[i];
   }
@@ -30,7 +30,7 @@ public:
   const T &top(UINT index = 0) const {
     int i = (int)size() - 1 - index;
     if(i < 0) {
-      throwException(_T("Cannot get element %d of stack with height %d"), index, size());
+      throwException(_T("Cannot get element %u of stack with height %d"), index, (int)size());
     }
     return (*this)[i];
   }

@@ -3,7 +3,7 @@
 
 String VarFileInfoTranslation::getLanguage() const {
   TCHAR langstr[100];
-  if(VerLanguageName(languageID,langstr,sizeof(langstr)) == 0) {
+  if(VerLanguageName(languageID,langstr,ARRAYSIZE(langstr)) == 0) {
     return _T("?");
   } else {
     return langstr;
@@ -62,6 +62,7 @@ FileVersion::FileVersion(const String &filename) {
   if(fvsize == 0) {
     throwLastErrorOnSysCallException(_T("GetFileVersionInfoSize"));
   }
+  __assume(dummyhandle);
   BYTE *data = new BYTE[fvsize]; TRACE_NEW(data);
   try {
     if(GetFileVersionInfo(filename1,dummyhandle,fvsize,data) == 0) {

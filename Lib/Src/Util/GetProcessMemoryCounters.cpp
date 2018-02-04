@@ -7,7 +7,7 @@ PROCESS_MEMORY_COUNTERS getProcessMemoryUsage(DWORD processID) {
   if(GetProcessMemoryInfo(hProcess, &mc, sizeof(mc)) == 0) {
     const DWORD error = GetLastError();
     CloseHandle(hProcess);
-    throwException(_T("GetProcessMemoryInfo(%d) failed. %s"), getErrorText(error).cstr());
+    throwException(_T("GetProcessMemoryInfo(%d) failed. %s"), processID, getErrorText(error).cstr());
   }
 
   CloseHandle(hProcess);

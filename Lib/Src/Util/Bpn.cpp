@@ -101,7 +101,8 @@ void Bpn::computeOutputError(const CompactDoubleArray &target) {
   const int n     = m_outunits->m_noutputs;
 
   if(target.size() != n) {
-    throwException(_T("%s:Wrong number of target values=%d. No. of output units=%d"), __TFUNCTION__, target. size(), n);
+    throwException(_T("%s:Wrong number of target values=%zu. No. of output units=%d")
+                  ,__TFUNCTION__, target.size(), n);
   }
   for(int i = 0; i < n; i++ ) {
     errors[i] = ((float)(target[i]) - outputs[i]) * outputs[i] * (1.0F - outputs[i]);
@@ -300,7 +301,8 @@ void BpnLayer::save(FILE *f) const {
 void Bpn::setInput(const CompactDoubleArray &in) {
   const int n   = m_inunits->m_noutputs;
   if(in.size() != n) {
-    throwException(_T("%s:Wrong number of input-values=%d. No. of input units=%d"),__TFUNCTION__, in.size(),n);
+    throwException(_T("%s:Wrong number of input-values=%zu. No. of input units=%d")
+                  ,__TFUNCTION__, in.size(),n);
   }
   float *inputs = m_inunits->m_outputs;
   for(int i = 0; i < n; i++ ) {
@@ -342,7 +344,8 @@ double Bpn::getPatternError(const CompactDoubleArray &target) const {
   double       sum     = 0.0;
 
   if(target.size() != n) {
-    throwException(_T("%s:Wrong number of target values=%d. No. of output units=%d"), __TFUNCTION__, target.size(), n);
+    throwException(_T("%s:Wrong number of target values=%zu. No. of output units=%d")
+                  ,__TFUNCTION__, target.size(), n);
   }
 
   for(int  i = 0; i < n; i++ ) {

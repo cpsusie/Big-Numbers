@@ -288,6 +288,7 @@ void *ListIterator::next() {
   if(m_next == NULL) {
     noNextElementError(s_className);
   }
+  __assume(m_next);
   if(m_updateCount != m_list.m_updateCount) {
     concurrentModificationError(s_className);
   }
