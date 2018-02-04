@@ -478,7 +478,7 @@ public:
     UINT kSize;
     s.getBytesForced((BYTE*)&kSize, sizeof(kSize));
     if(kSize != sizeof(K)) {
-      throwException(_T("sizeof(Key):%u. Size from stream=%u"), sizeof(K), kSize);
+      throwException(_T("sizeof(Key):%zu. Size from stream=%u"), sizeof(K), kSize);
     }
     UINT64 size64;
     s.getBytesForced((BYTE*)&size64,sizeof(size64));

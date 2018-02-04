@@ -1,6 +1,6 @@
 #include "pch.h"
 
-String inputString(const TCHAR *format,...) {
+String inputString(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
   va_list argptr;
   va_start(argptr,format);
   _vtprintf(format, argptr);

@@ -403,17 +403,21 @@ UINT AudioPlayerThread::run() {
 
     WAVEHDR &waveHeader = e.m_waveHeader;
     HGLOBAL hGlobal     = GlobalAlloc(GMEM_FIXED,waveHeader.dwBufferLength);
-    void   *dataBuffer  = GlobalLock(hGlobal);
-    try {
-      memcpy(dataBuffer, waveHeader.lpData, waveHeader.dwBufferLength);
-      waveHeader.lpData  = (char*)dataBuffer;
-      waveOutWrite(m_capture.m_hWaveOut, &waveHeader, sizeof(WAVEHDR));
-      m_capture.m_soundDone.wait();
-    } catch(...) {
-      // ignore
+    if(hGlobal) {
+      void   *dataBuffer  = GlobalLock(hGlobal);
+      if(dataBuffer) {
+        try {
+          memcpy(dataBuffer, waveHeader.lpData, waveHeader.dwBufferLength);
+          waveHeader.lpData  = (char*)dataBuffer;
+          waveOutWrite(m_capture.m_hWaveOut, &waveHeader, sizeof(WAVEHDR));
+          m_capture.m_soundDone.wait();
+        } catch(...) {
+          // ignore
+        }
+        GlobalUnlock(hGlobal);
+      }
+      GlobalFree(hGlobal);
     }
-    GlobalUnlock(hGlobal);
-    GlobalFree(hGlobal);
   }
 }
 

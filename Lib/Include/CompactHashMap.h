@@ -328,6 +328,7 @@ public:
       if(m_next == NULL) {
         noNextElementError(_T("CompactMapEntryIterator"));
       }
+      __assume(m_next);
       checkUpdateCount();
       m_current = m_next;
       if((m_next = m_next->m_next) == NULL) {
@@ -348,6 +349,7 @@ public:
         noCurrentElementError(_T("CompactMapEntryIterator"));
       }
       checkUpdateCount();
+      __assume(m_current);
       m_map.remove(m_current->m_e.m_key);
       m_current = NULL;
       m_updateCount = m_map.m_updateCount;
@@ -431,10 +433,10 @@ public:
     s.getBytesForced((BYTE*)&kSize, sizeof(kSize));
     s.getBytesForced((BYTE*)&vSize, sizeof(vSize));
     if(kSize != sizeof(K)) {
-      throwException(_T("sizeof(Key):%u. Size from stream=%u"), sizeof(K), kSize);
+      throwException(_T("sizeof(Key):%zu. Size from stream=%u"), sizeof(K), kSize);
     }
     if(vSize != sizeof(V)) {
-      throwException(_T("sizeof(Value):%u. Size from stream=%u"), sizeof(V), vSize);
+      throwException(_T("sizeof(Value):%zu. Size from stream=%u"), sizeof(V), vSize);
     }
     UINT64 size64;
     s.getBytesForced((BYTE*)&size64,sizeof(size64));

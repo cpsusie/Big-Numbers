@@ -41,17 +41,21 @@ static SmallPrimeSet smallPrimeSet;
 class Sieve {
 private:
   const BigInt m_base;
-  int           m_remainder[SIEVESIZE];
+  int         *m_remainder;
 public:
   Sieve(const BigInt &n);
+  ~Sieve() {
+    SAFEDELETEARRAY(m_remainder);
+  }
   bool hasSmallFactor(const BigInt &n, int &factor) const;
 };
 
 Sieve::Sieve(const BigInt &n) : m_base(n) {
   DigitPool *pool = n.getDigitPool();
-  memset(m_remainder,0,sizeof(m_remainder));
+  m_remainder = new int[SIEVESIZE]; TRACE_NEW(m_remainder);
+  memset(m_remainder,0,sizeof(m_remainder[0])*SIEVESIZE);
   for(Iterator<size_t> it = SmallPrimeSet::getPrimeSet().getIterator(); it.hasNext(); ) {
-    size_t p = it.next();
+    const size_t p = it.next();
     BigInt r = BigInt(m_base % BigInt(p, pool));
     m_remainder[p] = getUlong(r);
   }

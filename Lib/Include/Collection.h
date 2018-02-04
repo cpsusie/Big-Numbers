@@ -219,7 +219,7 @@ public:
     }
     header >> esize >> n;
     if(esize != sizeof(T)) {
-      throwException(_T("%s:Invalid element size:%d bytes. Expected %d bytes")
+      throwException(_T("%s:Invalid element size:%d bytes. Expected %zu bytes")
                     ,method, esize, sizeof(T));
     }
     CHECKUINT64ISVALIDSIZET(n);

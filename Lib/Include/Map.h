@@ -232,11 +232,11 @@ public:
     }
     header >> keySize >> valueSize >> size;
     if(keySize != sizeof(K)) {
-      throwException(_T("%s:Invalid keysize:%d bytes. Expected keysize = %d bytes")
+      throwException(_T("%s:Invalid keysize:%d bytes. Expected keysize = %zu bytes")
                     ,method, keySize, sizeof(K));
     }
     if(valueSize != sizeof(V)) {
-      throwException(_T("%s:Invalid valuesize:%d bytes. Expected valuesize = %d bytes")
+      throwException(_T("%s:Invalid valuesize:%d bytes. Expected valuesize = %zu bytes")
                     ,method, valueSize, sizeof(V));
     }
     clear();

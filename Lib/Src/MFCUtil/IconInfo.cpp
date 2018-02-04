@@ -3,7 +3,7 @@
 ICONINFO getIconInfo(HICON icon) {
   ICONINFO info;
   if(GetIconInfo(icon, &info) == 0) {
-    throwException(_T("GetIconSize failed:%s. icon=%d"), getLastErrorText().cstr(), icon);
+    throwException(_T("GetIconSize failed:%s. icon=%p"), getLastErrorText().cstr(), icon);
   }
   return info;
 }

@@ -542,7 +542,7 @@ void BigReal ::assertIsValidBigReal() const {
   size_t digitCount = 0;
   for(const Digit *p = m_first; p; p = p->next) {
     if(p->n >= BIGREALBASE) {
-      throwAssertionException(_T("Digit(%s) (=%s) >= BIGREALBASE (=%lu)")
+      throwAssertionException(_T("Digit(%s) (=%s) >= BIGREALBASE (=%s)")
                              ,format1000(digitCount).cstr()
                              ,format1000(p->n).cstr()
                              ,format1000(BIGREALBASE).cstr());

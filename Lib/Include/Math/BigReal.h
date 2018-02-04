@@ -350,10 +350,10 @@ void insertDigitAndIncrExpo(BigReal &v, BRDigitType n);
 #endif
 
 void throwInvalidToleranceException(               TCHAR const* const function);
-void throwBigRealInvalidArgumentException(         TCHAR const* const function, _In_z_ _Printf_format_string_ TCHAR const * const format,...);
-void throwBigRealGetIntegralTypeOverflowException( TCHAR const* const function, const BigReal &x, const String &maxStr);
-void throwBigRealGetIntegralTypeUnderflowException(TCHAR const* const function, const BigReal &x, const String &minStr);
-void throwBigRealException(_In_z_ _Printf_format_string_ TCHAR const* const format,...);
+void throwBigRealInvalidArgumentException(         TCHAR const * const function, _In_z_ _Printf_format_string_ TCHAR const * const format,...);
+void throwBigRealGetIntegralTypeOverflowException( TCHAR const * const function, const BigReal &x, const String &maxStr);
+void throwBigRealGetIntegralTypeUnderflowException(TCHAR const * const function, const BigReal &x, const String &minStr);
+void throwBigRealException(_In_z_ _Printf_format_string_ TCHAR const * const format,...);
 
 class BigReal {
 private:
@@ -1297,9 +1297,9 @@ BigRealStream &operator<<(BigRealStream &out, const FullFormatBigReal &n);
 BigRealStream &operator<<(BigRealStream &out, const BigInt &n);
 
 String      toString(const BigReal &n, streamsize precision=20, streamsize width=0, int flags=0);
-BigReal     inputBigReal( DigitPool &digitPool, _In_z_ _Printf_format_string_ const TCHAR *format, ...);
-BigInt      inputBigInt(  DigitPool &digitPool, _In_z_ _Printf_format_string_ const TCHAR *format, ...);
-BigRational inputRational(DigitPool &digitPool, _In_z_ _Printf_format_string_ const TCHAR *format, ...);
+BigReal     inputBigReal( DigitPool &digitPool, _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
+BigInt      inputBigInt(  DigitPool &digitPool, _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
+BigRational inputRational(DigitPool &digitPool, _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
 
 class BigRealException : public Exception {
 public:

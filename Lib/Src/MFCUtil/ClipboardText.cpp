@@ -57,6 +57,9 @@ void putClipboard(HWND hwnd, const String &s) {
     const int characterCount = (int)tmp.length() + 1;
     const int nbytes = sizeof(TCHAR) * characterCount;
     HLOCAL buf = LocalAlloc(0,nbytes);
+    if(buf == NULL) {
+      throwLastErrorOnSysCallException(_T("LocalAlloc"));
+    }
     memcpy(buf, tmp.cstr(), nbytes);
 
     if(SetClipboardData(CF_TEXTFORMAT, buf) == NULL) {

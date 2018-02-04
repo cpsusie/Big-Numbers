@@ -8,11 +8,11 @@ void throwBigRealGetIntegralTypeOverflowException(TCHAR const* const function, c
   throwBigRealException(_T("%s(%s):Overflow. Max=%s"), function, toString(x).cstr(), maxStr.cstr());
 }
 
-void throwBigRealGetIntegralTypeUnderflowException(TCHAR const* const function, const BigReal &x, const String &minStr) {
+void throwBigRealGetIntegralTypeUnderflowException(TCHAR const * const function, const BigReal &x, const String &minStr) {
   throwBigRealException(_T("%s(%s):Underflow. Min=%s"), function, toString(x).cstr(), minStr.cstr());
 }
 
-void throwBigRealInvalidArgumentException(_In_z_ _Printf_format_string_ const TCHAR *function, const TCHAR *Format,...) {
+void throwBigRealInvalidArgumentException(const TCHAR *function, _In_z_ _Printf_format_string_ TCHAR const * const Format,...) {
   va_list argptr;
   va_start(argptr, Format);
   const String msg = vformat(Format, argptr);
@@ -21,7 +21,7 @@ void throwBigRealInvalidArgumentException(_In_z_ _Printf_format_string_ const TC
   throwBigRealException(_T("%s: Invalid argument:%s"), function, msg.cstr());
 }
 
-void throwBigRealException(const TCHAR *Format,...) {
+void throwBigRealException(_In_z_ _Printf_format_string_ TCHAR const * const Format,...) {
   va_list argptr;
   va_start(argptr, Format);
   const String tmp = vformat(Format, argptr);

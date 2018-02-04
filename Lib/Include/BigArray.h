@@ -129,7 +129,8 @@ private:
 #pragma warning( pop )
 
   void indexError(size_t index) const {
-    throwException(_T("BigArray::Index %s out of range. size=%s, elementSize=%d"), format1000(index).cstr(), format1000(m_size).cstr(), sizeof(T));
+    throwException(_T("BigArray::Index %s out of range. size=%s, elementSize=%zu")
+                  ,format1000(index).cstr(), format1000(m_size).cstr(), sizeof(T));
   }
 
   String getPageFileName() const {
@@ -348,7 +349,7 @@ private:
 public:
   BigArray() : m_freeFilePages(256) {
     if (_ELEMENTS_PER_PAGE == 0) {
-      throwInvalidArgumentException(__TFUNCTION__, _T("Elements/page = 0. sizeof(T)=%d"), sizeof(T));
+      throwInvalidArgumentException(__TFUNCTION__, _T("Elements/page = 0. sizeof(T)=%zu"), sizeof(T));
     }
     init();
     CHECK_BIGARRAY_INVARIANT();
@@ -433,7 +434,7 @@ public:
     }
     size_t j = i+count;
     if(j > m_size) {
-      throwException(_T("BigArray::remove(%s,%%s):Index %s out of range. size=%s, elementSize=%d")
+      throwException(_T("BigArray::remove(%s,%s):Index %s out of range. size=%s, elementSize=%zu")
                     ,format1000(i).cstr(), format1000(count).cstr()
                     ,format1000(j).cstr(), format1000(m_size).cstr()
                     ,sizeof(T));

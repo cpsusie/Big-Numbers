@@ -570,7 +570,7 @@ namespace TestDate {
           }
           double difference = n - t;
           double expected;
-          switch (comp.c) {
+          switch(comp.c) {
           case TMILLISECOND : expected = (double)count / 86400000;    break;
           case TSECOND      : expected = (double)count / 86400;       break;
           case TMINUTE      : expected = (double)count / (24 * 60);   break;
@@ -586,6 +586,8 @@ namespace TestDate {
             difference = count;
             expected = n.getYear() - t.getYear();
             break;
+          default   :
+            NODEFAULT;
           }
           verify(fabs(difference - expected) <= 1e-3);
   /*          _tprintf(_T("%d comp=%s count:%d difference:%lf expected:%lf delta:%lf,t:%s n:%s\n")

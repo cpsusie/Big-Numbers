@@ -3,7 +3,7 @@
 BITMAP getBitmapInfo(HBITMAP bm) {
   BITMAP info;
   if(GetObject(bm, sizeof(info), &info) == 0) {
-    throwException(_T("GetObject(HBITMAP) failed:%s. bm=%d"), getLastErrorText().cstr(), bm);
+    throwException(_T("GetObject(HBITMAP) failed:%s. bm=%p"), getLastErrorText().cstr(), bm);
   }
   return info;
 }

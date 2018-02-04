@@ -8,7 +8,7 @@ void notifyIconAdd(HWND hwnd, UINT uID, HICON hicon, const String &toolTip, int 
   tnid.uFlags           = NIF_MESSAGE | NIF_ICON | NIF_TIP;
   tnid.uCallbackMessage = callbackMessage;
   tnid.hIcon            = hicon;
-  lstrcpyn(tnid.szTip, toolTip.cstr(), min((int)toolTip.length()+1, sizeof(tnid.szTip)));
+  lstrcpyn(tnid.szTip, toolTip.cstr(), min((int)toolTip.length()+1, ARRAYSIZE(tnid.szTip)));
 
   if(!Shell_NotifyIcon(NIM_ADD, &tnid)) {
     throwException(_T("%s:Shell_NotifyIcon NIM_ADD failed"), __TFUNCTION__);
@@ -33,7 +33,7 @@ void notifyIconSetToolTip(HWND hwnd, UINT uID, const String &toolTip) {
   tnid.hWnd             = hwnd;
   tnid.uID              = uID;
   tnid.uFlags           = NIF_TIP;
-  lstrcpyn(tnid.szTip, toolTip.cstr(), min((int)toolTip.length()+1, sizeof(tnid.szTip)));
+  lstrcpyn(tnid.szTip, toolTip.cstr(), min((int)toolTip.length()+1, ARRAYSIZE(tnid.szTip)));
   if(!Shell_NotifyIcon(NIM_MODIFY, &tnid)) {
     throwException(_T("%s:Shell_NotifyIcon NIM_MODIFY failed"), __TFUNCTION__);
   }

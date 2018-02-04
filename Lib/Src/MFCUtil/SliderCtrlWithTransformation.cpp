@@ -88,7 +88,7 @@ void CSliderCtrlWithTransformation::setSteps(UINT steps) {
 DoubleInterval CSliderCtrlWithTransformation::stepsToToInterval(UINT steps) {
   DEFINEMETHODNAME;
   if (steps < 2 || steps > 10000) {
-    throwInvalidArgumentException(method, _T("steps=%u, must be in range [2..10000]"));
+    throwInvalidArgumentException(method, _T("steps=%u, must be in range [2..10000]"), steps);
   }
   const int minRange = 0;
   const int maxRange = steps-1;

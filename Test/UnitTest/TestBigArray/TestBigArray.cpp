@@ -117,7 +117,7 @@ namespace TestBigArray {
       throwException(_T("%s:BigArray.size=%s != refArray.size=%s")
                     ,function
                     ,format1000(m_bigArray.size()).cstr()
-                    ,format1000(m_refArray.size()));
+                    ,format1000(m_refArray.size()).cstr());
     }
     for (size_t i = 0; i < m_bigArray.size(); i++) {
       BigElement e(m_refArray[i]);

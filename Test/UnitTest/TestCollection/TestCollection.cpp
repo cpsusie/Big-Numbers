@@ -384,7 +384,7 @@ namespace TestBitSet {
       CompactIntArray a = ((HashSet<Key>&)set).getLength();
       String line;
       for (size_t i = 0; i < a.size(); i++) {
-        line += format(_T("Count(%d):%d "), i, a[i]);
+        line += format(_T("Count(%zu):%d "), i, a[i]);
       }
       OUTPUT(_T("%s"), line.cstr());
       try {

@@ -464,8 +464,13 @@ void CPicture::loadPictureData(const BYTE *pBuffer, int size) {
   if(hGlobal == NULL) {
     throwException(_T("GlobalAlloc failed"));
   }
-
+  __assume(hGlobal);
   void *pData = GlobalLock(hGlobal);
+  if(pData == NULL) {
+    FreeResource(hGlobal);
+    throwLastErrorOnSysCallException(_T("GlobalLock"));
+  }
+  __assume(pData);
   memcpy(pData, pBuffer, size);
   GlobalUnlock(hGlobal);
 

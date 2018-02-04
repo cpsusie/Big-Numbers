@@ -23,11 +23,14 @@ void clipboardDropFiles(HWND hwnd, StringArray &fnames) {
     df.fWide  = 0;
 #endif
 
-    const String str = fnames.getAsDoubleNullTerminatedString();
-    const int strLength = (int)str.length() + 1;
-    const int nbytes = sizeof(df) + strLength*sizeof(TCHAR);
+    const String str       = fnames.getAsDoubleNullTerminatedString();
+    const int    strLength = (int)str.length() + 1;
+    const int    nbytes    = sizeof(df) + strLength*sizeof(TCHAR);
 
     HLOCAL buf = LocalAlloc(0, nbytes);
+    if(buf == NULL) {
+      throwLastErrorOnSysCallException(_T("LocalAlloc"));
+    }
     memcpy(buf, &df, sizeof(df));
     memcpy(((char*)buf)+sizeof(df), str.cstr(), strLength*sizeof(TCHAR));
     if(SetClipboardData(CF_HDROP, buf) == NULL) {

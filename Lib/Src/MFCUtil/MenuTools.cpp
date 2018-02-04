@@ -3,7 +3,7 @@
 
 static String getMenuString(HMENU menu, UINT pos) {
   TCHAR ms[2048];
-  GetMenuString(menu, pos, ms, sizeof(ms)-1, MF_BYPOSITION);
+  GetMenuString(menu, pos, ms, ARRAYSIZE(ms)-1, MF_BYPOSITION);
   return ms;
 }
 
@@ -217,7 +217,7 @@ bool menuItemExists(HMENU menu,  UINT id) {
 
 String getMenuItemText(HMENU menu, int pos) {
   TCHAR str[4096];
-  GetMenuString(menu, pos, str, sizeof(str), MF_BYPOSITION);
+  GetMenuString(menu, pos, str, ARRAYSIZE(str), MF_BYPOSITION);
   LASTVALUE(str) = 0;
   return str;
 }

@@ -844,8 +844,7 @@ int *AvlIterator::next() {
       break;
 
     default:
-      _tprintf(_T("Illegal status in AvlIterator:%d\n"), sp->m_status);
-      exit(-1);
+      NODEFAULT;
     }
   }
   return NULL;
@@ -892,8 +891,7 @@ int *AvlIterator::prev() {
       break;
 
     default:
-      _tprintf( _T("Illegal status in AvlIterator:%d\n"), sp->m_status );
-      exit(-1);
+      NODEFAULT;
     }
   }
   return NULL;

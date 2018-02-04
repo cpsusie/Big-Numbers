@@ -133,7 +133,7 @@ void Pow2Cache::load(ByteInputStream &s) {
   UINT n;
   const BYTE signaturByte = s.getByte();
   if(signaturByte != BITPERBRDIGIT) {
-    throwException(_T("Wrong bits/Digit in cache-file. Expected %d, got %d bits"), BITPERBRDIGIT, signaturByte);
+    throwException(_T("Wrong bits/Digit in cache-file. Expected %zu, got %d bits"), BITPERBRDIGIT, signaturByte);
   }
   s.getBytesForced((BYTE*)&capacity, sizeof(capacity));
   s.getBytesForced((BYTE*)&n       , sizeof(n));

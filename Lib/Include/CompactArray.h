@@ -85,6 +85,11 @@ public:
     if(capacity == m_capacity) return;
     T *newArray = capacity ? new T[capacity] : NULL; TRACE_NEW(newArray);
     if(m_size) {
+      __assume(m_size  );
+      if(newArray == NULL) {
+        throwException(_T("new failed"));
+      }
+      __assume(newArray);
       memcpy(newArray, m_array, m_size * sizeof(T));
     }
     SAFEDELETEARRAY(m_array);
@@ -587,7 +592,7 @@ template<class S, class T> S &operator>>(S &in, CompactArray<T> &a) {
   UINT elemSize;
   in >> elemSize;
   if(elemSize != sizeof(T)) {
-    throwException(_T("Invalid element size:%d bytes. Expected %d bytes"), elemSize, sizeof(T));
+    throwException(_T("Invalid element size:%u bytes. Expected %zu bytes"), elemSize, sizeof(T));
   }
   a.clear();
   UINT64 size64;
@@ -623,7 +628,7 @@ private:
   size_t                 m_size;
 
   void indexError(size_t index, const TCHAR *method) const {
-    throwException(_T("%s:Index %s out of range. Size=%s, elementSize:%d")
+    throwException(_T("%s:Index %s out of range. Size=%s, elementSize:%zu")
                   ,method
                   ,format1000(index).cstr()
                   ,format1000(m_size).cstr()

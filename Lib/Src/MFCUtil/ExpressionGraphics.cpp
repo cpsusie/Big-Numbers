@@ -1064,7 +1064,7 @@ AlignedImage *ExpressionPainter::stackImages(ExpressionRectangle &rect, bool cen
 AlignedImage *ExpressionPainter::concatImages(const ImageArray &imageList, ExpressionRectangle &rect) {
   DEFINEMETHODNAME;
   if(imageList.size() != rect.getChildCount()) {
-    throwInvalidArgumentException(method, _T("imageLIst.size()=%d != rect.children.size()=%d")
+    throwInvalidArgumentException(method, _T("imageLIst.size()=%zu != rect.children.size()=%d")
                                        ,imageList.size(), rect.getChildCount());
   }
 
@@ -1118,7 +1118,7 @@ AlignedImage *ExpressionPainter::concatImages(const ImageArray &imageList, Expre
 AlignedImage *ExpressionPainter::stackImages(bool center, const ImageArray &imageList, ExpressionRectangle &rect) {
   DEFINEMETHODNAME;
   if(imageList.size() != rect.getChildCount()) {
-    throwInvalidArgumentException(method, _T("imageLIst.size()=%d != rect.children.size()=%d")
+    throwInvalidArgumentException(method, _T("imageLIst.size()=%zu != rect.children.size()=%d")
                                        ,imageList.size(), rect.getChildCount());
   }
   CSize size(0,0);

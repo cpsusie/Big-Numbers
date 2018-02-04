@@ -109,6 +109,12 @@ void  xfree(void *p);
 #define STRDUP(p)           xstrdup(p)
 #define FREE(p)             xfree(p)
 
+#ifdef DEBUG
+# define NODEFAULT   ASSERT(0)
+#else
+# define NODEFAULT   __assume(0)
+#endif
+
 FILE            *mkfopen(const TCHAR  *name, const TCHAR     *mode);
 FILE            *mkfopen(const String &name, const String    &mode);
 FILE            *fopen(  const String &name, const String    &mode);
@@ -175,19 +181,19 @@ bool shiftKeyPressed();
 bool ctrlKeyPressed();
 unsigned char toAscii(UINT virtualCode);
 // read String     from stdin, terminate with enter. result string NOT containing '\n\r'
-String  inputString(  const TCHAR *format, ...);
+String  inputString(  _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
 // read password   from console
-String  inputPassword(const TCHAR *format, ...);
+String  inputPassword(_In_z_ _Printf_format_string_ TCHAR const * const format, ...);
 // read integer from stdin
-int     inputInt(     const TCHAR *format, ...);
+int     inputInt(     _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
 // read UINT    from stdin
-UINT    inputUint(    const TCHAR *format, ...);
+UINT    inputUint(    _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
 // read INT64   from stdin
-INT64   inputInt64(   const TCHAR *format, ...);
+INT64   inputInt64(   _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
 // read UINT64  from stdin
-UINT64  inputUint64(  const TCHAR *format, ...);
+UINT64  inputUint64(  _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
 // read double  from stdin
-double  inputDouble(  const TCHAR *format, ...);
+double  inputDouble(  _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
 
 TCHAR   *searchenv(  TCHAR *dst, const TCHAR *fileName, const TCHAR *envName);
 String   searchenv(  const String &fileName, const String &envName);

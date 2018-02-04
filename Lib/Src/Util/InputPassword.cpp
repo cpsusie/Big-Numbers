@@ -1,7 +1,7 @@
 #include "pch.h"
 #include <conio.h>
 
-String inputPassword(const TCHAR *format,...) {
+String inputPassword(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
   TCHAR buffer[256];
   va_list argptr;
   va_start(argptr,format);
