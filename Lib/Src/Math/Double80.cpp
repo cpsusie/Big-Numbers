@@ -15,7 +15,7 @@ public:
 
 void Double80::initClass() {
   if(sizeof(Double80) != 10) {
-    throwException(_T("%s:Size of Double80 must be 10. Size=%d."), __TFUNCTION__, sizeof(Double80));
+    throwException(_T("%s:Size of Double80 must be 10. Size=%zu."), __TFUNCTION__, sizeof(Double80));
   }
   FPU::init();
   FPU::clearExceptions();

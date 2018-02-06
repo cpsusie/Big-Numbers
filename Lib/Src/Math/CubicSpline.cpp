@@ -215,7 +215,7 @@ String CubicSpline::generateCFunction() const {
   result += declareData("_a",a);
   result += declareData("_M",M);
   result += declareData("_y",y);
-  result += format(_T("CubicSpline spline(%d,_h,_a,_M,_y);\n"),h.getDimension());
+  result += format(_T("CubicSpline spline(%zu,_h,_a,_M,_y);\n"),h.getDimension());
   return result;
 }
 

@@ -410,7 +410,8 @@
     <Lib>
       <Verbose>
       </Verbose>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
       <LinkTimeCodeGeneration>false</LinkTimeCodeGeneration>
     </Lib>
     <PreBuildEvent>
@@ -418,7 +419,7 @@
       </Command>
     </PreBuildEvent>
     <CustomBuild>
-      <AdditionalInputs>$(IntDir)Double64.obj; $(IntDir)Double80x64.obj; $(IntDir)Int128x64.obj; $(IntDir)ExpressionCallx64.obj</AdditionalInputs>
+      <AdditionalInputs>$(IntDir)Int128x64.obj;$(IntDir)Doublex64.obj;$(IntDir)Double80x64.obj;$(IntDir)ExpressionCallx64.obj</AdditionalInputs>
     </CustomBuild>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">
@@ -451,7 +452,8 @@
     <Lib>
       <Verbose>
       </Verbose>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
       <LinkTimeCodeGeneration>false</LinkTimeCodeGeneration>
     </Lib>
     <PreBuildEvent>
@@ -459,7 +461,7 @@
       </Command>
     </PreBuildEvent>
     <CustomBuild>
-      <AdditionalInputs>$(IntDir)Double64.obj; $(IntDir)Double80x64.obj; $(IntDir)Int128x64.obj; $(IntDir)ExpressionCallx64.obj</AdditionalInputs>
+      <AdditionalInputs>$(IntDir)Int128x64.obj;$(IntDir)Doublex64.obj;$(IntDir)Double80x64.obj;$(IntDir)ExpressionCallx64.obj</AdditionalInputs>
     </CustomBuild>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">
@@ -492,7 +494,8 @@
     <Lib>
       <Verbose>
       </Verbose>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
       <LinkTimeCodeGeneration>false</LinkTimeCodeGeneration>
     </Lib>
     <PreBuildEvent>
@@ -500,7 +503,7 @@
       </Command>
     </PreBuildEvent>
     <CustomBuild>
-      <AdditionalInputs>$(IntDir)Double64.obj; $(IntDir)Double80x64.obj; $(IntDir)Int128x64.obj; $(IntDir)ExpressionCallx64.obj</AdditionalInputs>
+      <AdditionalInputs>$(IntDir)Int128x64.obj;$(IntDir)Doublex64.obj;$(IntDir)Double80x64.obj;$(IntDir)ExpressionCallx64.obj</AdditionalInputs>
     </CustomBuild>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -646,7 +649,8 @@
     <Lib>
       <Verbose>
       </Verbose>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
     </Lib>
     <Xdcmake>
       <OutputFile>$(IntDir)$(TargetName).xml</OutputFile>
@@ -656,7 +660,7 @@
       <PreserveSbr>false</PreserveSbr>
     </Bscmake>
     <CustomBuild>
-      <AdditionalInputs>$(IntDir)Double64.obj; $(IntDir)Double80x64.obj; $(IntDir)Int128x64.obj; $(IntDir)ExpressionCallx64.obj</AdditionalInputs>
+      <AdditionalInputs>$(IntDir)Int128x64.obj;$(IntDir)Doublex64.obj;$(IntDir)Double80x64.obj;$(IntDir)ExpressionCallx64.obj</AdditionalInputs>
     </CustomBuild>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">
@@ -687,7 +691,8 @@
     <Lib>
       <Verbose>
       </Verbose>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
     </Lib>
     <Xdcmake>
       <OutputFile>$(IntDir)$(TargetName).xml</OutputFile>
@@ -697,7 +702,7 @@
       <PreserveSbr>false</PreserveSbr>
     </Bscmake>
     <CustomBuild>
-      <AdditionalInputs>$(IntDir)Double64.obj; $(IntDir)Double80x64.obj; $(IntDir)Int128x64.obj; $(IntDir)ExpressionCallx64.obj</AdditionalInputs>
+      <AdditionalInputs>$(IntDir)Int128x64.obj;$(IntDir)Doublex64.obj;$(IntDir)Double80x64.obj;$(IntDir)ExpressionCallx64.obj</AdditionalInputs>
     </CustomBuild>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">
@@ -728,7 +733,8 @@
     <Lib>
       <Verbose>
       </Verbose>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
     </Lib>
     <Xdcmake>
       <OutputFile>$(IntDir)$(TargetName).xml</OutputFile>
@@ -738,7 +744,7 @@
       <PreserveSbr>false</PreserveSbr>
     </Bscmake>
     <CustomBuild>
-      <AdditionalInputs>$(IntDir)Double64.obj; $(IntDir)Double80x64.obj; $(IntDir)Int128x64.obj; $(IntDir)ExpressionCallx64.obj</AdditionalInputs>
+      <AdditionalInputs>$(IntDir)Int128x64.obj;$(IntDir)Doublex64.obj;$(IntDir)Double80x64.obj;$(IntDir)ExpressionCallx64.obj</AdditionalInputs>
     </CustomBuild>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -1071,18 +1077,18 @@
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">false</DeploymentContent>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">false</DeploymentContent>
       <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">masm64 /nologo /c /Zf /Fo$(IntDir)Double80x64.obj Double80x64.asm</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">masm64 /nologo /c /Zf /Fo$(IntDir)Double80x64.obj Double80x64.asm</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">masm64 /nologo /c /Zf /Fo$(IntDir)Double80x64.obj Double80x64.asm</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">call masm64 /nologo /c /Zf /Fo$(IntDir)Double80x64.obj Double80x64.asm</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">call masm64 /nologo /c /Zf /Fo$(IntDir)Double80x64.obj Double80x64.asm</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">call masm64 /nologo /c /Zf /Fo$(IntDir)Double80x64.obj Double80x64.asm</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Assembler code for Double80 functions</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">Assembler code for Double80 functions</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">Assembler code for Double80 functions</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)Double80x64.obj</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">$(IntDir)Double80x64.obj</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">$(IntDir)Double80x64.obj</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">masm64 /nologo /Zi /c /Zf /Fo$(IntDir)Double80x64.obj Double80x64.asm</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">masm64 /nologo /Zi /c /Zf /Fo$(IntDir)Double80x64.obj Double80x64.asm</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">masm64 /nologo /Zi /c /Zf /Fo$(IntDir)Double80x64.obj Double80x64.asm</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">call masm64 /nologo /Zi /c /Zf /Fo$(IntDir)Double80x64.obj Double80x64.asm</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">call masm64 /nologo /Zi /c /Zf /Fo$(IntDir)Double80x64.obj Double80x64.asm</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">call masm64 /nologo /Zi /c /Zf /Fo$(IntDir)Double80x64.obj Double80x64.asm</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Assembler code for Double80 functions</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">Assembler code for Double80 functions</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">Assembler code for Double80 functions</Message>
@@ -1136,18 +1142,18 @@
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">false</DeploymentContent>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">false</DeploymentContent>
       <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">masm64 /nologo /c /Zf /Fo$(IntDir)Doublex64.obj Doublex64.asm</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">masm64 /nologo /c /Zf /Fo$(IntDir)Doublex64.obj Doublex64.asm</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">masm64 /nologo /c /Zf /Fo$(IntDir)Doublex64.obj Doublex64.asm</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">call masm64 /nologo /c /Zf /Fo$(IntDir)Doublex64.obj Doublex64.asm</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">call masm64 /nologo /c /Zf /Fo$(IntDir)Doublex64.obj Doublex64.asm</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">call masm64 /nologo /c /Zf /Fo$(IntDir)Doublex64.obj Doublex64.asm</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)Doublex64.obj</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">$(IntDir)Doublex64.obj</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">$(IntDir)Doublex64.obj</Outputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Special functions for double (MathFunctions.cpp)</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">Special functions for double (MathFunctions.cpp)</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">Special functions for double (MathFunctions.cpp)</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">masm64 /nologo /Zi /c /Zf /Fo$(IntDir)Doublex64.obj Doublex64.asm</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">masm64 /nologo /Zi /c /Zf /Fo$(IntDir)Doublex64.obj Doublex64.asm</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">masm64 /nologo /Zi /c /Zf /Fo$(IntDir)Doublex64.obj Doublex64.asm</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">call masm64 /nologo /Zi /c /Zf /Fo$(IntDir)Doublex64.obj Doublex64.asm</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">call masm64 /nologo /Zi /c /Zf /Fo$(IntDir)Doublex64.obj Doublex64.asm</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">call masm64 /nologo /Zi /c /Zf /Fo$(IntDir)Doublex64.obj Doublex64.asm</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)Doublex64.obj</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">$(IntDir)Doublex64.obj</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">$(IntDir)Doublex64.obj</Outputs>
@@ -1196,9 +1202,9 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">false</ExcludedFromBuild>
       <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">masm64 /nologo /c /Zf /Fo$(IntDir)ExpressionCallx64.obj Expression/ExpressionCallx64.asm</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">masm64 /nologo /c /Zf /Fo$(IntDir)ExpressionCallx64.obj Expression/ExpressionCallx64.asm</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">masm64 /nologo /c /Zf /Fo$(IntDir)ExpressionCallx64.obj Expression/ExpressionCallx64.asm</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">call masm64 /nologo /c /Zf /Fo$(IntDir)ExpressionCallx64.obj Expression/ExpressionCallx64.asm</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">call masm64 /nologo /c /Zf /Fo$(IntDir)ExpressionCallx64.obj Expression/ExpressionCallx64.asm</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">call masm64 /nologo /c /Zf /Fo$(IntDir)ExpressionCallx64.obj Expression/ExpressionCallx64.asm</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)ExpressionCallx64.obj</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">$(IntDir)ExpressionCallx64.obj</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">$(IntDir)ExpressionCallx64.obj</Outputs>
@@ -1208,9 +1214,9 @@
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Assembler code to call generated machinecode for fast evaluation of Expressions</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">Assembler code to call generated machinecode for fast evaluation of Expressions</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">Assembler code to call generated machinecode for fast evaluation of Expressions</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">masm64 /nologo /Zi /c /Zf /Fo$(IntDir)ExpressionCallx64.obj Expression/ExpressionCallx64.asm</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">masm64 /nologo /Zi /c /Zf /Fo$(IntDir)ExpressionCallx64.obj Expression/ExpressionCallx64.asm</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">masm64 /nologo /Zi /c /Zf /Fo$(IntDir)ExpressionCallx64.obj Expression/ExpressionCallx64.asm</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">call masm64 /nologo /Zi /c /Zf /Fo$(IntDir)ExpressionCallx64.obj Expression/ExpressionCallx64.asm</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">call masm64 /nologo /Zi /c /Zf /Fo$(IntDir)ExpressionCallx64.obj Expression/ExpressionCallx64.asm</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">call masm64 /nologo /Zi /c /Zf /Fo$(IntDir)ExpressionCallx64.obj Expression/ExpressionCallx64.asm</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)ExpressionCallx64.obj</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">$(IntDir)ExpressionCallx64.obj</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">$(IntDir)ExpressionCallx64.obj</Outputs>
@@ -1242,18 +1248,18 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">false</ExcludedFromBuild>
       <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">masm64 /nologo /c /Zf /Fo$(IntDir)Int128x64.obj Int128x64.asm</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">masm64 /nologo /c /Zf /Fo$(IntDir)Int128x64.obj Int128x64.asm</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">masm64 /nologo /c /Zf /Fo$(IntDir)Int128x64.obj Int128x64.asm</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">call masm64 /nologo /c /Zf /Fo$(IntDir)Int128x64.obj Int128x64.asm</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">call masm64 /nologo /c /Zf /Fo$(IntDir)Int128x64.obj Int128x64.asm</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">call masm64 /nologo /c /Zf /Fo$(IntDir)Int128x64.obj Int128x64.asm</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)Int128x64.obj</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">$(IntDir)Int128x64.obj</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">$(IntDir)Int128x64.obj</Outputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Assembler code for int128 basic arithmetic operators</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">Assembler code for int128 basic arithmetic operators</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">Assembler code for int128 basic arithmetic operators</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">masm64 /nologo /Zi /c /Zf /Fo$(IntDir)Int128x64.obj Int128x64.asm</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">masm64 /nologo /Zi /c /Zf /Fo$(IntDir)Int128x64.obj Int128x64.asm</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">masm64 /nologo /Zi /c /Zf /Fo$(IntDir)Int128x64.obj Int128x64.asm</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">call masm64 /nologo /Zi /c /Zf /Fo$(IntDir)Int128x64.obj Int128x64.asm</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">call masm64 /nologo /Zi /c /Zf /Fo$(IntDir)Int128x64.obj Int128x64.asm</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">call masm64 /nologo /Zi /c /Zf /Fo$(IntDir)Int128x64.obj Int128x64.asm</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Assembler code for int128 basic arithmetic operators</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">Assembler code for int128 basic arithmetic operators</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">Assembler code for int128 basic arithmetic operators</Message>
@@ -1293,6 +1299,18 @@
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='LDRelease|Win32'">false</LinkObjects>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|Win32'">false</LinkObjects>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">
+      </AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">
+      </AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">
+      </AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">
+      </AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </AdditionalInputs>
     </CustomBuild>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -14,49 +14,39 @@ template<class Ctype> class StringTemplate : public BASICSTRING {
 public:
   StringTemplate() {
   }
-  StringTemplate(const char    *str);
-  StringTemplate(const wchar_t *str);
+  StringTemplate(const char    *str) {
+    if(sizeof(Ctype) == sizeof(char)) {
+      __super::operator=((const Ctype*)str);
+    } else {
+      USES_CONVERSION;
+      __super::operator=((const Ctype*)A2W(str));
+    }
+  }
+  StringTemplate(const wchar_t *str) {
+    if(sizeof(Ctype) == sizeof(wchar_t)) {
+      __super::operator=((const Ctype*)str);
+    } else {
+      USES_CONVERSION;
+      __super::operator=((const Ctype*)W2A(str));
+    }
+  }
 
-  StringTemplate &operator+=(const StringTemplate &str);
-  StringTemplate &operator+=(char    ch);
-  StringTemplate &operator+=(wchar_t ch);
+  StringTemplate &operator+=(const StringTemplate &str) {
+    __super::operator+=(str.c_str());
+    return *this;
+  }
+  StringTemplate &operator+=(char    ch) {
+    __super::operator+=((Ctype)ch);
+    return *this;
+  }
+  StringTemplate &operator+=(wchar_t ch) {
+    __super::operator+=((Ctype)ch);
+    return *this;
+  }
 };
-
-template<class Ctype> StringTemplate<Ctype>::StringTemplate(const char *str) {
-  if(sizeof(Ctype) == sizeof(char)) {
-    BASICSTRING::operator=((const Ctype*)str);
-  } else {
-    USES_CONVERSION;
-    BASICSTRING::operator=((const Ctype*)A2W(str));
-  }
-}
-
-template<class Ctype> StringTemplate<Ctype>::StringTemplate(const wchar_t *str) {
-  if(sizeof(Ctype) == sizeof(wchar_t)) {
-    BASICSTRING::operator=((const Ctype*)str);
-  } else {
-    USES_CONVERSION;
-    BASICSTRING::operator=((const Ctype*)W2A(str));
-  }
-}
 
 template<class Ctype> StringTemplate<Ctype> operator+(const StringTemplate<Ctype> &s1, const StringTemplate<Ctype> &s2) {
   return StringTemplate<Ctype>((BASICSTRING)s1 + (BASICSTRING)s2)
-}
-
-template<class Ctype> StringTemplate<Ctype> &StringTemplate<Ctype>::operator+=(const StringTemplate &str) {
-  BASICSTRING::operator+=(str.c_str());
-  return *this;
-}
-
-template<class Ctype> StringTemplate<Ctype> &StringTemplate<Ctype>::operator+=(char    ch) {
-  BASICSTRING::operator+=((Ctype)ch);
-  return *this;
-}
-
-template<class Ctype> StringTemplate<Ctype> &StringTemplate<Ctype>::operator+=(wchar_t ch) {
-  BASICSTRING::operator+=((Ctype)ch);
-  return *this;
 }
 
 #define MAXTMPSIZE 1000
@@ -246,6 +236,7 @@ template <class IStreamType, class Ctype> IStreamType &operator>>(IStreamType &i
     } else {
       peekChar(in, ch);
     }
+    _int128 result;
     switch(flags & ios::basefield) {
     case ios::dec:
       if((ch == '+') || (ch =='-')) appendCharGetNext(in, ch, buf);
@@ -254,7 +245,8 @@ template <class IStreamType, class Ctype> IStreamType &operator>>(IStreamType &i
         gotDigits = true;
       }
       if(gotDigits) {
-        n = _wcstoi128(buf.c_str(), NULL, 10);
+        errno = 0;
+        result = _wcstoi128(buf.c_str(), NULL, 10);
       }
       break;
     case ios::hex:
@@ -275,7 +267,8 @@ template <class IStreamType, class Ctype> IStreamType &operator>>(IStreamType &i
         gotDigits = true;
       }
       if(gotDigits) {
-        n = _wcstoi128(buf.c_str(), NULL, 16);
+        errno = 0;
+        result = _wcstoi128(buf.c_str(), NULL, 16);
       }
       break;
     case ios::oct:
@@ -294,12 +287,15 @@ template <class IStreamType, class Ctype> IStreamType &operator>>(IStreamType &i
         gotDigits = true;
       }
       if(gotDigits) {
-        n = _wcstoi128(buf.c_str(), NULL, 8);
+        errno = 0;
+        result = _wcstoi128(buf.c_str(), NULL, 8);
       }
       break;
     }
-    if(!gotDigits) {
+    if(!gotDigits || (errno == ERANGE)) {
       in.setstate(ios::failbit);
+    } else {
+      n = result;
     }
     in.isfx();
   }
@@ -318,6 +314,7 @@ template <class IStreamType, class Ctype> IStreamType &operator>>(IStreamType &i
       peekChar(in, ch);
     }
 
+    _uint128 result;
     switch(flags & ios::basefield) {
     case ios::dec:
       if(ch == '+') appendCharGetNext(in, ch, buf);
@@ -326,7 +323,8 @@ template <class IStreamType, class Ctype> IStreamType &operator>>(IStreamType &i
         gotDigits = true;
       }
       if(gotDigits) {
-        n = _wcstoui128(buf.c_str(), NULL, 10);
+        errno = 0;
+        result = _wcstoui128(buf.c_str(), NULL, 10);
       }
       break;
     case ios::hex:
@@ -347,7 +345,8 @@ template <class IStreamType, class Ctype> IStreamType &operator>>(IStreamType &i
         gotDigits = true;
       }
       if(gotDigits) {
-        n = _wcstoui128(buf.c_str(), NULL, 16);
+        errno = 0;
+        result = _wcstoui128(buf.c_str(), NULL, 16);
       }
       break;
     case ios::oct:
@@ -366,12 +365,15 @@ template <class IStreamType, class Ctype> IStreamType &operator>>(IStreamType &i
         gotDigits = true;
       }
       if(gotDigits) {
-        n = _wcstoui128(buf.c_str(), NULL, 8);
+        errno = 0;
+        result = _wcstoui128(buf.c_str(), NULL, 8);
       }
       break;
     }
-    if(!gotDigits) {
+    if(!gotDigits || (errno == ERANGE)) {
       in.setstate(ios::failbit);
+    } else {
+      n = result;
     }
     in.isfx();
   }

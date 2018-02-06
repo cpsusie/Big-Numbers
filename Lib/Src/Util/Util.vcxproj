@@ -658,7 +658,7 @@
       <Inputs>$(IntDir)BitSetx64.obj;$(IntDir)CPUInfox64.obj;%(Inputs)</Inputs>
     </CustomBuildStep>
     <CustomBuild>
-      <AdditionalInputs>$(IntDir)BitSetx64.obj; $(IntDir)CPUInfox64.obj</AdditionalInputs>
+      <AdditionalInputs>$(IntDir)BitSetx64.obj;$(IntDir)CPUInfox64.obj</AdditionalInputs>
     </CustomBuild>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">

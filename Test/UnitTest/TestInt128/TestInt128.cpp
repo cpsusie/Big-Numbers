@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "CppUnitTest.h"
 #include <limits.h>
 #include <Math/Int128.h>
 
@@ -25,6 +24,15 @@ namespace TestInt128 {
       s.setf(ios::uppercase);
     }
     return s;
+  }
+
+  static char *getastr(char *dst, const String &str) {
+    USES_ACONVERSION;
+    return strcpy(dst, TSTR2ASTR(str.cstr()));
+  }
+  static wchar_t *getwstr(wchar_t *dst, const String &str) {
+    USES_WCONVERSION;
+    return wcscpy(dst, TSTR2WSTR(str.cstr()));
   }
 
   TEST_CLASS(TesInt128) {
@@ -737,12 +745,15 @@ typedef UINT64          _uinttype;
 #define MAXIVALUE       _I64_MAX
 #define MAXUIVALUE      _UI64_MAX
 #define BITCOUNT        64
-#define _itypetot       _i64tot
-#define _uitypetot      _ui64tot
-#define _tcstoitype     _tcstoi64
-#define _tcstouitype    _tcstoui64
+#define _itypetoa       _i64toa
+#define _uitypetoa      _ui64toa
+#define _itypetow       _i64tow
+#define _uitypetow      _ui64tow
+#define _atoitype       _atoi64
+#define _atouitype      _atoui64
+#define _wcstoitype     _wcstoi64
+#define _wcstouitype    _wcstoui64
 #define randuitype      getRandInt64
-
 #else // USE_INT64_AS_INTTYPE
 
 typedef _int128         _inttype;
@@ -751,13 +762,29 @@ typedef _uint128        _uinttype;
 #define MAXIVALUE       _I128_MAX
 #define MAXUIVALUE      _UI128_MAX
 #define BITCOUNT        128
-#define _itypetot       _i128tot
-#define _uitypetot      _ui128tot
-#define _tcstoitype     _tcstoi128
-#define _tcstouitype    _tcstoui128
+#define _itypetoa       _i128toa
+#define _uitypetoa      _ui128toa
+#define _itypetow       _i128tow
+#define _uitypetow      _ui128tow
+#define _atoitype       _atoi128
+#define _atouitype      _atoui128
+#define _wcstoitype     _wcstoi128
+#define _wcstouitype    _wcstoui128
 #define randuitype      getRandInt128
 
 #endif // USE_INT64_AS_INTTYPE
+
+#ifdef _UNICODE
+#define _itypetot       _itypetow
+#define _uitypetot      _uitypetow
+#define _tcstoitype     _wcstoitype
+#define _tcstouitype    _wcstouitype
+#else
+#define _itypetot       _itypetoa
+#define _uitypetot      _uitypetoa
+#define _tcstoitype     _atoitype
+#define _tcstouitype    _atouitype
+#endif // _UNICODE
 
 #define MINRADIX 2
 #define MAXRADIX 36
@@ -962,6 +989,10 @@ typedef _uint128        _uinttype;
       }
     }
 
+#ifdef USE_INT64_AS_INTTYPE
+#pragma warning(disable : 4307) // integral constant overflow on __int64
+#endif
+
     TEST_METHOD(Int128TestOverflowSigned) {
       const _inttype x  = MAXIVALUE;
       const _inttype nx =  x + 1;
@@ -1007,7 +1038,6 @@ typedef _uint128        _uinttype;
         CompactArray<_inttype>  sa;
         CompactArray<_uinttype> ua;
         size_t signedValueCount;
-
         for(_int128  x = 0; x <= MAXI_LOOPVALUE ; x = (x + 1) * 3 ) { // add some positive test-numbers
           sa.add((_inttype)x);
         }
@@ -1047,12 +1077,26 @@ typedef _uint128        _uinttype;
         // try all(almost) combinations of output format flags
         for(UINT b = 0, formatCounter=0; b < ARRAYSIZE(baseFlags); b++) {
           const ios::_Fmtflags baseFlag = baseFlags[b];
-          int minShowPos, maxShowPos, minShowBase, maxShowBase, maxUpper;
+          int minShowPos = 0, maxShowPos = 1, minShowBase = 0, maxShowBase = 1, maxUpper = 1;
+          UINT radix;
           switch(baseFlag) {
-          case ios::dec: minShowPos = 0; maxShowPos = 1; minShowBase  = 0; maxShowBase = 1; maxUpper = 1; break;
-          case ios::hex: minShowPos = 0; maxShowPos = 1; minShowBase  = 0; maxShowBase = 1; maxUpper = 1; break;
-          case ios::oct: minShowPos = 0; maxShowPos = 1; minShowBase  = 0; maxShowBase = 1; maxUpper = 1; break;
+          case ios::dec: radix = 10; break;
+          case ios::hex: radix = 16; break;
+          case ios::oct: radix =  8; break;
+          default      : NODEFAULT;
           }
+          TCHAR tmptStr[200];
+          const String uiOverflowString = incr(_uitypetot(MAXUIVALUE, tmptStr, radix), radix);
+          const String iOverflowString  = incr(_itypetot( MAXIVALUE , tmptStr, radix), radix);
+
+          char    uioverflowastr[200], ioverflowastr[200];
+          getastr(uioverflowastr, uiOverflowString);
+          getastr( ioverflowastr,  iOverflowString);
+
+          wchar_t uioverflowwstr[200], ioverflowwstr[200];
+          getwstr(uioverflowwstr, uiOverflowString);
+          getwstr( ioverflowwstr,  iOverflowString);
+
           for(int showPos = minShowPos; showPos <= maxShowPos; showPos++) {
             for(int showBase = minShowBase; showBase <= maxShowBase; showBase++) {
               for(int uppercase = 0; uppercase <= maxUpper; uppercase++) {
@@ -1086,6 +1130,10 @@ typedef _uint128        _uinttype;
                       ostr  << ua[i] << "\n";
                       wostr << ua[i] << L"\n";
                     }
+                    const size_t totalValidCounter =  sa.size() + ua.size();
+
+                    ostr  << uioverflowastr << "\n"  << ioverflowastr << "\n0\n";
+                    wostr << uioverflowwstr << L"\n" << ioverflowwstr << L"\n0\n";
 
                     string  str  = ostr.str();
                     wstring wstr = wostr.str();
@@ -1098,7 +1146,6 @@ typedef _uint128        _uinttype;
 #endif
                     size_t counter = 0;
                     for(Tokenizer tok(wstr.c_str(), _T("\n")); tok.hasNext();) {
-                      counter++;
 #ifdef _DEBUG
                       const StringIndex inx = tok.nextIndex();
                       const String s = wstr.substr(inx.getStart(), inx.getLength()).c_str();
@@ -1106,6 +1153,8 @@ typedef _uint128        _uinttype;
 #else
                       const String s = tok.next();
 #endif
+                      counter++;
+                      if(counter > totalValidCounter) continue;
                       verify(s.length() >= width);
                       const TCHAR *np;
                       if(adjustFlag == ios::right) {
@@ -1217,6 +1266,34 @@ typedef _uint128        _uinttype;
                         verify(wx == ua[i]);
                       }
                     }
+
+                    _uinttype ux, wux;
+                    _inttype  x , wx;
+                    istr.clear() ; istr.setf( 1,ios::skipws);
+                    wistr.clear(); wistr.setf(1,ios::skipws);
+                    ux = wux = 7;
+                    istr  >> ux;
+                    wistr >> wux;
+                    verify(istr.fail());
+                    verify(wistr.fail());
+                    verify(ux == 7 && wux == 7);
+                    istr.clear() ; istr.setf( 1,ios::skipws);
+                    wistr.clear(); wistr.setf(1,ios::skipws);
+                    x = wx = 7;
+                    istr  >> x;
+                    wistr >> wx;
+                    verify(istr.fail());
+                    verify(wistr.fail());
+                    verify(x == 7 && wx == 7);
+
+                    istr.clear() ; istr.setf( 1,ios::skipws);
+                    wistr.clear(); wistr.setf(1,ios::skipws);
+                    istr  >> x;
+                    wistr >> wx;
+                    verify(!istr.fail());
+                    verify(!wistr.fail());
+                    verify(x  == 0);
+                    verify(wx == 0);
                   } // for width=[0,5,10,15,20,25,30]
                 } // for all AdjustFlags
               } // for lower/uppercase

@@ -393,7 +393,7 @@ bool Tableau::rowIsZero(size_t row) {
 
 int Tableau::getSlackColumn(size_t index) const {
   if(index < 1 || index > m_slackCount) {
-    throwException(_T("getSlackColumn:Illegal argument:index=%s. Valid interval=[1..%d]"), FSZ(index), m_slackCount);
+    throwException(_T("getSlackColumn:Illegal argument:index=%s. Valid interval=[1..%zu]"), FSZ(index), m_slackCount);
   }
   return (int)(m_xCount + index);
 }

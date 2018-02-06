@@ -110,9 +110,9 @@ void  xfree(void *p);
 #define FREE(p)             xfree(p)
 
 #ifdef DEBUG
-# define NODEFAULT   ASSERT(0)
+#define NODEFAULT   assert(0)
 #else
-# define NODEFAULT   __assume(0)
+#define NODEFAULT   __assume(0)
 #endif
 
 FILE            *mkfopen(const TCHAR  *name, const TCHAR     *mode);

@@ -51,6 +51,7 @@ char *rattoa(char *dst, const Rational &r, int radix) {
   }
   _i64toa(r.getNumerator(), dst, radix);
   if(r.getDenominator() != 1) {
+    __assume(radix);
     strcat(dst, "/");
     char tmp[100];
     strcat(dst, _i64toa(r.getDenominator(), tmp, radix));
@@ -70,6 +71,7 @@ wchar_t *rattow(wchar_t *dst, const Rational &r, int radix) {
   }
   _i64tow(r.getNumerator(), dst, radix);
   if(r.getDenominator() != 1) {
+    __assume(radix);
     wcscat(dst, L"/");
     wchar_t tmp[100];
     wcscat(dst, _i64tow(r.getDenominator(), tmp, radix));

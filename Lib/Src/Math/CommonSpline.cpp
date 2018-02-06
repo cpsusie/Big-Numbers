@@ -133,6 +133,6 @@ String CommonSpline::generateCFunction() const {
   }
   result += "static const double *_yd[] = { _yd0,_yd1,_yd2,_yd3 };\n";
   result += declareData("_a",a);
-  result += format(_T("Spline spline(%d,_yd,_a);\n"),a.getDimension());
+  result += format(_T("Spline spline(%zu,_yd,_a);\n"),a.getDimension());
   return result;
 }
