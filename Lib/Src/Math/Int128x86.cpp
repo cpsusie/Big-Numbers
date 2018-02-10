@@ -74,7 +74,7 @@ void int128mul(void *dst, const void *x) {
     LO64(*dp) = __int64(dp->s4.i[0]) * b->s4.i[0]; // simple _int64 multiplication. int32 * int32
   }
   else {
-    _int128       a(*dp);
+    const _int128       a(*dp);
     __asm {
       push        ebp
       lea         ebx, a                       // ebx = &a
@@ -90,46 +90,44 @@ void int128mul(void *dst, const void *x) {
 
       mov         eax, dword ptr[ebx]          // 2. round
       mul         dword ptr[ecx+4]             // [edx:eax] = x[0]*y[1]
-      mov         edi, eax                     //
-      mov         esi, edx                     // [esi:esd] = [edx:eax]
+      mov         esi, eax                     //
+      mov         edi, edx                     // [edi:esi] = [edx:eax]
       mov         eax, dword ptr[ebx+4]
       mul         dword ptr[ecx]               // [edx:eax] = x[1]*y[0]
-      add         edi, eax                     //
-      adc         esi, edx                     // [esi:edi] += [edx:eax]
-      pushfd                                   // may be extra carry for result[3]
-      add         dword ptr[ebp+4], edi
-      adc         dword ptr[ebp+8], esi        // dst[1:2] += [esi:edi]
+      add         esi, eax                     //
+      adc         edi, edx                     // [edi:esi] += [edx:eax]
+      adc         dword ptr[ebp+12],0          // may be extra carry for dst[3]
+      add         dword ptr[ebp+4], esi
+      adc         dword ptr[ebp+8], edi        // dst[1:2] += [edi:esi]
 
       mov         eax, dword ptr[ebx]          // 3. round. Extra carries are overflow
       mul         dword ptr[ecx+8]             // [edx:eax] = x[0]*y[2]
-      mov         edi, eax                     //
-      mov         esi, edx                     // [esi:esd] = [edx:eax]
+      mov         esi, eax                     //
+      mov         edi, edx                     // [edi:esi] = [edx:eax]
       mov         eax, dword ptr[ebx+4]
       mul         dword ptr[ecx+4]             // [edx:eax] = x[1]*y[1]
-      add         edi, eax                     //
-      adc         esi, edx                     // [esi:edi] += [edx:eax]
+      add         esi, eax                     //
+      adc         edi, edx                     // [edi:esi] += [edx:eax]
       mov         eax, dword ptr[ebx+8]
       mul         dword ptr[ecx]               // [edx:eax] = x[2]*y[0]
-      add         edi, eax                     //
-      adc         esi, edx                     // [esi:edi] += [edx:eax]
-      add         dword ptr[ebp+8 ], edi
-      adc         dword ptr[ebp+12], esi       // dst[2:3] += [esi:edi]
+      add         esi, eax                     //
+      adc         edi, edx                     // [edi:esi] += [edx:eax]
+      add         dword ptr[ebp+8 ], esi
+      adc         dword ptr[ebp+12], edi       // dst[2:3] += [edi:esi]
 
       mov         eax, dword ptr[ebx]          // 4. round. High end and carries are overflow
       mul         dword ptr[ecx+12]            // [edx:eax] = x[0]*y[3]
-      mov         edi, eax                     // edi = eax
+      mov         esi, eax                     // esi = eax
       mov         eax, dword ptr[ebx+4]        //
       mul         dword ptr[ecx+8]             // [edx:eax] = x[1]*y[2]
-      add         edi, eax                     // edi += eax
+      add         esi, eax                     // esi += eax
       mov         eax, dword ptr[ebx+8]
       mul         dword ptr[ecx+4]             // [edx:eax] = x[2]*y[1]
-      add         edi, eax                     // edi += eax
+      add         esi, eax                     // esi += eax
       mov         eax, dword ptr[ebx+12]
       mul         dword ptr[ecx]               // [edx:eax] = x[3]*y[0]
-      add         edi, eax                     // edi += eax
-      add         dword ptr[ebp+12], edi       // dst[3] += edi
-      popfd
-      adc         dword ptr[ebp+12], 0         // add the saved carry to dst[3]
+      add         esi, eax                     // esi += eax
+      add         dword ptr[ebp+12], esi       // dst[3] += esi
 
       pop         ebp
     }
@@ -267,9 +265,9 @@ More96:                                        ; 96 <= cl < 128
     sar         eax, cl
     mov         dword ptr[esi], eax            ; s4[0] = s4[3] >> cl (shift in signbit of s4[3])
     sar         eax, 1fh
-    mov         dword ptr[esi+4 ], eax         ; s4[1] = sign og s4[3]
-    mov         dword ptr[esi+8 ], eax         ; s4[2] = sign og s4[3]
-    mov         dword ptr[esi+12], eax         ; s4[3] = sign og s4[3]
+    mov         dword ptr[esi+4 ], eax         ; s4[1] = sign of s4[3]
+    mov         dword ptr[esi+8 ], eax         ; s4[2] = sign of s4[3]
+    mov         dword ptr[esi+12], eax         ; s4[3] = sign of s4[3]
     jmp         End
 
 RetSign:
@@ -505,36 +503,35 @@ public:
   }
 };
 
-void unsignedQuotRemainder(const _uint128 &a, const _uint128 &y, _uint128 *quot, _uint128 *rem) {
+static void unsignedQuotRemainder(const _uint128 &a, const _uint128 &y, _uint128 *quot, _uint128 &rem) {
   _uint128FastMul p128;
   int             lastShift = 0;
-  _uint128        dummyRest, &rest128 = rem  ? *rem  : dummyRest;
-  rest128 = a;
+  rem = a;
   if(quot) *quot = 0;
   if(y < 0x8000) {
     int                yExpo2 = getExpo2((UINT)y);
     const int          yScale = 15 - yExpo2;
     const UINT         y16    = (UINT)y << yScale;
-    for(int count = 0; rest128 >= y16; count++) {
-      int restExpo2;
-      const UINT         rest32      = getFirst32(rest128, restExpo2);
-      const int          rest32Expo2 = getExpo2(rest32);
+    for(int count = 0; rem >= y16; count++) {
+      int remExpo2;
+      const UINT         rem32      = getFirst32(rem, remExpo2);
+      const int          rem32Expo2 = getExpo2(rem32);
       UINT               q32;
       int                shift;
       p128 = y;
-      if((shift = restExpo2 - rest32Expo2 + yScale) < 0) { // >= -31
-        q32  = (rest32 / (y16+1)) >> -shift;
+      if((shift = remExpo2 - rem32Expo2 + yScale) < 0) { // >= -31
+        q32  = (rem32 / (y16+1)) >> -shift;
         shift = 0;
         switch(q32) {
-        case 0 : q32 = 1; break;
-        case 1 : break;
+        case 0 : q32 = 1    ; break;
+        case 1 :              break;
         default: p128 *= q32; break;
         }
       } else {
-        q32 = rest32 / (y16 + 1);
+        q32 = rem32 / (y16 + 1);
         switch(q32) {
-        case 0 : q32 = 1; break;
-        case 1 : break;
+        case 0 : q32 = 1    ; break;
+        case 1 :              break;
         default: p128 *= q32; break;
         }
         if(shift) int128shl(&p128,shift);
@@ -559,43 +556,41 @@ void unsignedQuotRemainder(const _uint128 &a, const _uint128 &y, _uint128 *quot,
 AddDone1:
         lastShift = shift;
       }
-      rest128 -= p128;
+      rem -= p128;
     }
 
-    // rest128 < 0xffff
+    // rem < 0xffff
     if(quot) {
       if(lastShift) {
         int128shl(quot, lastShift);
       }
-      *quot += (UINT)rest128 / (UINT)y;
+      *quot += (UINT)rem / (UINT)y;
     }
-    if(rem) {
-      *rem = (UINT)rest128 % (UINT)y;
-    }
+    rem = (UINT)rem % (UINT)y;
   } else {
     int                yExpo2;
     const UINT         y16    = getFirst16(y, yExpo2);
     const int          yScale = yExpo2 - getExpo2(y16);
-    for(int count = 0; rest128 >= y; count++) {
-      int restExpo2;
-      const UINT         rest32      = getFirst32(rest128, restExpo2);
-      const int          rest32Expo2 = getExpo2(rest32);
+    for(int count = 0; rem >= y; count++) {
+      int remExpo2;
+      const UINT         rem32      = getFirst32(rem, remExpo2);
+      const int          rem32Expo2 = getExpo2(rem32);
       UINT               q32;
       int                shift;
       p128 = y;
-      if((shift = restExpo2 - rest32Expo2 - yScale) < 0) { // >= -31
-        q32  = (rest32 / (y16+1)) >> -shift;
+      if((shift = remExpo2 - rem32Expo2 - yScale) < 0) { // >= -31
+        q32  = (rem32 / (y16+1)) >> -shift;
         shift = 0;
         switch(q32) {
-        case 0 : q32 = 1; break;
-        case 1 : break;
+        case 0 : q32 = 1    ; break;
+        case 1 :              break;
         default: p128 *= q32; break;
         }
       } else {
-        q32 = rest32 / (y16 + 1);
+        q32 = rem32 / (y16 + 1);
         switch(q32) {
-        case 0 : q32 = 1; break;
-        case 1 : break;
+        case 0 : q32 = 1    ; break;
+        case 1 :              break;
         default: p128 *= q32; break;
         }
         if(shift) int128shl(&p128,shift);
@@ -620,7 +615,7 @@ AddDone1:
 AddDone2:
         lastShift = shift;
       }
-      rest128 -= p128;
+      rem -= p128;
     }
     if(lastShift && quot) {
       int128shl(quot, lastShift);
@@ -628,44 +623,38 @@ AddDone2:
   }
 }
 
-static void signedQuotRemainder(const _int128 &a, const _int128 &b, _int128 *quot, _int128 *rem) {
+static void signedQuotRemainder(const _int128 &a, const _int128 &b, _int128 *quot, _int128 &rem) {
   const bool aNegative = a.isNegative();
   const bool bNegative = b.isNegative();
   if(!aNegative && !bNegative) {
-    unsignedQuotRemainder(*(const _uint128*)&a, *(const _uint128*)&b, (_uint128*)quot, (_uint128*)rem);
+    unsignedQuotRemainder(*(const _uint128*)&a, *(const _uint128*)&b, (_uint128*)quot, (_uint128&)rem);
   } else {
-    const _uint128 x = aNegative ? -a : a;
-    const _uint128 y = bNegative ? -b : b;
-    _uint128 q, r;
-    unsignedQuotRemainder(x, y, quot ? &q : NULL, rem ? &r : NULL);
-
-    if(quot) {
-      *quot = (aNegative == bNegative) ? q : -q;
-    }
-    if(rem) {
-      *rem = aNegative ? -r : r;
-    }
+    unsignedQuotRemainder((_uint128)(aNegative?-a:a), (_uint128)(bNegative?-b:b), (_uint128*)quot, (_uint128&)rem);
+    if(quot && (aNegative != bNegative)) int128neg(quot);
+    if(aNegative) int128neg(&rem);
   }
 }
 
 void int128div(void *dst, void *x) {
   const _int128  a(*(_int128*)dst);
-  signedQuotRemainder(a, *(const _int128*)x, (_int128*)dst, NULL);
+  _int128 rem;
+  signedQuotRemainder(a, *(const _int128*)x, (_int128*)dst, rem);
 }
 
 void int128rem(void *dst, void *x) {
   const _int128  a(*(_int128*)dst);
-  signedQuotRemainder(a, *(const _int128*)x, NULL, (_int128*)dst);
+  signedQuotRemainder(a, *(const _int128*)x, NULL, *(_int128*)dst);
 }
 
 void uint128div(void *dst, const void *x) {
   const _uint128  a(*(_uint128*)dst);
-  unsignedQuotRemainder(a, *(const _uint128*)x, (_uint128*)dst, NULL);
+  _uint128 rem;
+  unsignedQuotRemainder(a, *(const _uint128*)x, (_uint128*)dst, rem);
 }
 
 void uint128rem(void *dst, const void *x) {
   const _uint128  a(*(_uint128*)dst);
-  unsignedQuotRemainder(a, *(const _uint128*)x, NULL, (_uint128*)dst);
+  unsignedQuotRemainder(a, *(const _uint128*)x, NULL, *(_uint128*)dst);
 }
 
 void int128neg(void *x) {
