@@ -1082,16 +1082,16 @@ public:
 };
 
 /*
-#define APCsum(  bias, x, y)       BigReal::apcSum( #bias[0], x, y)
-#define APCprod( bias, x, y)       BigReal::apcProd(#bias[0], x, y)
-#define APCquot( bias, x, y)       BigReal::apcQuot(#bias[0], x, y)
-#define APCpow(  bias, x, y)       BigReal::apcPow( #bias[0], x, y)
+#define APCsum(  bias, x, y)       BigReal::apcSum( #@bias, x, y)
+#define APCprod( bias, x, y)       BigReal::apcProd(#@bias, x, y)
+#define APCquot( bias, x, y)       BigReal::apcQuot(#@bias, x, y)
+#define APCpow(  bias, x, y)       BigReal::apcPow( #@bias, x, y)
 */
 
-#define PAPCsum( bias, x, y, pool) BigReal::apcSum( #bias[0], x, y, pool)
-#define PAPCprod(bias, x, y, pool) BigReal::apcProd(#bias[0], x, y, pool)
-#define PAPCquot(bias, x, y, pool) BigReal::apcQuot(#bias[0], x, y, pool)
-#define PAPCpow( bias, x, y, pool) BigReal::apcPow( #bias[0], x, y, pool)
+#define PAPCsum( bias, x, y, pool) BigReal::apcSum( #@bias, x, y, pool)
+#define PAPCprod(bias, x, y, pool) BigReal::apcProd(#@bias, x, y, pool)
+#define PAPCquot(bias, x, y, pool) BigReal::apcQuot(#@bias, x, y, pool)
+#define PAPCpow( bias, x, y, pool) BigReal::apcPow( #@bias, x, y, pool)
 
 bool operator==(const BigReal &x, const BigReal &y);
 bool operator!=(const BigReal &x, const BigReal &y);
