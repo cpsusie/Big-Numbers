@@ -2,13 +2,13 @@
 #include <Math/Int128.h>
 #include <Timer.h>
 
-String toString(const _uint128 &n, int radix=10) {
+String ToString(const _uint128 &n, int radix=10) {
   char tmp[200];
   _ui128toa(n, tmp, radix);
   return tmp;
 }
 
-String toString(const _int128 &n, int radix=10) {
+String ToString(const _int128 &n, int radix=10) {
   char tmp[200];
   _i128toa(n, tmp, radix);
   return tmp;
@@ -17,52 +17,68 @@ String toString(const _int128 &n, int radix=10) {
 #define RADIX 10
 //#define RADIX 16
 
-static _int128 inputInt128(TCHAR *format, ...) {
-  va_list argptr;
-  va_start(argptr, format);
-  String msg = vformat(format, argptr);
+template<class _itype> _itype vinputItype(_itype (*strToItype)(const char *,char **,int), const TCHAR *format, va_list argptr) {
+  const String msg = vformat(format, argptr);
   for (;;) {
     _tprintf(_T("%s"), msg.cstr());
     char line[1000];
     fgets(line, ARRAYSIZE(line), stdin);
     try {
-      _int128 x(line);
+      errno = 0;
+      const _itype x = strToItype(line, NULL, 10);
+      if(errno == ERANGE) {
+        throwException(_T("out of range"));
+      }
       return x;
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       _tprintf(_T("%s\n"), e.what());
     }
   }
 }
 
+static _int128 inputInt128(const TCHAR *format, ...) {
+  va_list argptr;
+  va_start(argptr, format);
+  const _int128 result = vinputItype<_int128>(_strtoi128, format, argptr);
+  va_end(argptr);
+  return result;
+}
 
-void loopSigned() {
-  for (;;) {
-    const _int128 x = inputInt128(_T("Enter x:"));
-    const _int128 y = inputInt128(_T("Enter y:"));
+static _uint128 inputUint128(const TCHAR *format, ...) {
+  va_list argptr;
+  va_start(argptr, format);
+  const _uint128 result = vinputItype<_uint128>(_strtoui128, format, argptr);
+  va_end(argptr);
+  return result;
+}
 
-    _int128 s = x + y;
-    _int128 d = x - y;
-    _int128 p = x * y;
-    _int128 q = x / y;
-    _int128 r = x % y;
+template<class _itype> void loopItype(_itype (*inputItype)(const TCHAR *,...)) {
+  for(;;) {
+    const _itype x = inputItype(_T("Enter x:"));
+    const _itype y = inputItype(_T("Enter y:"));
 
-    _tprintf(_T("x=%s\n"), toString(x).cstr());
-    _tprintf(_T("y=%s\n"), toString(y).cstr());
+    _itype s = x + y;
+    _itype d = x - y;
+    _itype p = x * y;
+    _itype q = x / y;
+    _itype r = x % y;
 
-    _tprintf(_T("x+y=s=%s\n"), toString(s).cstr());
-    _tprintf(_T("x-y=d=%s\n"), toString(d).cstr());
-    _tprintf(_T("x*y=p=%s\n"), toString(p).cstr());
-    _tprintf(_T("x/y=q=%s\n"), toString(q).cstr());
-    _tprintf(_T("x%%y=r=%s\n"), toString(r).cstr());
+    _tprintf(_T("x=%s\n"), ToString(x).cstr());
+    _tprintf(_T("y=%s\n"), ToString(y).cstr());
 
-    _int128 c1 = (s + d) / _int128(2);
-    _int128 c2 = (s - d) / _int128(2);
-    _int128 c3 = q * y + r;
+    _tprintf(_T("x+y=s=%s\n"), ToString(s).cstr());
+    _tprintf(_T("x-y=d=%s\n"), ToString(d).cstr());
+    _tprintf(_T("x*y=p=%s\n"), ToString(p).cstr());
+    _tprintf(_T("x/y=q=%s\n"), ToString(q).cstr());
+    _tprintf(_T("x%%y=r=%s\n"), ToString(r).cstr());
 
-    _tprintf(_T("(s+d)/2=%s\n"), toString(c1).cstr());
-    _tprintf(_T("(s-d)/2=%s\n"), toString(c2).cstr());
-    _tprintf(_T("(q*y+r =%s\n"), toString(c3).cstr());
+    _itype c1 = (s + d) / _int128(2);
+    _itype c2 = (s - d) / _int128(2);
+    _itype c3 = q * y + r;
+
+    _tprintf(_T("(s+d)/2=%s\n"), ToString(c1).cstr());
+    _tprintf(_T("(s-d)/2=%s\n"), ToString(c2).cstr());
+    _tprintf(_T("(q*y+r =%s\n"), ToString(c3).cstr());
     _tprintf(_T("______________________________________________\n"));
 
     const bool lt = x < y;
@@ -75,32 +91,12 @@ void loopSigned() {
   }
 }
 
-static _uint128 tryr8r9(const _uint128 &x, const _uint128 &y, const TCHAR *msgr8, const TCHAR *msgr9) {
-  _tprintf(_T("msgr8:<%s>, msgr9:<%s>\n"), msgr8, msgr9);
-
-  const _uint128 q = x / y;
-
-  _tprintf(_T("msgr8:<%s>, msgr9:<%s>\n"), msgr8, msgr9);
-
-  return q;
-}
+#define loopSigned()   loopItype<_int128 >(inputInt128 )
+#define loopUnsigned() loopItype<_uint128>(inputUint128)
 
 int main(int argc, TCHAR **argv) {
 
-  const TCHAR *msgr8 = _T("register8 points to this");
-  const TCHAR *msgr9 = _T("register9 points to this");
-  const _uint128 x = 123456789;
-  const _uint128 y = 1234;
-
-  _uint128 q = tryr8r9(x, y, msgr8, msgr9);
-  TCHAR buf[100];
-  _i128tow(q, buf, 10);
-
-  _tprintf(_T("q:%s\n"), buf);
-  return 0;
-
-
-
+  loopUnsigned();
   loopSigned();
   _uint128  x1(0xaaaaaaaabbbbbbbb, 0xfabcdef12345678);
   _uint128  x2 = 0xccccdddddddd;
@@ -109,30 +105,30 @@ int main(int argc, TCHAR **argv) {
   _uint128 x4 = x1 % x2;
   _uint128 x5 = x3 * x2 + x4;
 
-  _tprintf(_T("x3.%016I64x:%016I64x (%016I64x%016I64x)\n"), x3.hi, x3.lo, x3.hi, x3.lo);
-  _tprintf(_T("x4.%016I64x:%016I64x (%016I64x%016I64x)\n"), x4.hi, x4.lo, x4.hi, x4.lo);
-  _tprintf(_T("x5.%016I64x:%016I64x (%016I64x%016I64x)\n"), x5.hi, x5.lo, x5.hi, x5.lo);
+  _tprintf(_T("x3.%016I64x:%016I64x (%016I64x%016I64x)\n"), HI64(x3), LO64(x3), HI64(x3), LO64(x3));
+  _tprintf(_T("x4.%016I64x:%016I64x (%016I64x%016I64x)\n"), HI64(x4), LO64(x4), HI64(x4), LO64(x4));
+  _tprintf(_T("x5.%016I64x:%016I64x (%016I64x%016I64x)\n"), HI64(x5), LO64(x5), HI64(x5), LO64(x5));
 
 /*
   _int128 x("12345678901234567890123456");
   _int128 y("43215456543");
 
-  _tprintf(_T("maxInt:%s (=0x%s)\n"), toString(x1, 10).cstr(), toString(x1, 16).cstr());
-  _tprintf(_T("minInt:%s\n"), toString(x2, 10).cstr());
-  _tprintf(_T("maxUInt:%s (=0x%s)\n"), toString(x3, 10).cstr(), toString(x3, 16).cstr());
+  _tprintf(_T("maxInt:%s (=0x%s)\n"), ToString(x1, 10).cstr(), ToString(x1, 16).cstr());
+  _tprintf(_T("minInt:%s\n"), ToString(x2, 10).cstr());
+  _tprintf(_T("maxUInt:%s (=0x%s)\n"), ToString(x3, 10).cstr(), ToString(x3, 16).cstr());
   return 0;
 
   for (int i = 0; i < 129; i++) {
     _uint128 z = x >> i;
-    _tprintf(_T("i:%3d, x>>%3d:%128s\n"), i, i, toString(z, 2).cstr());
+    _tprintf(_T("i:%3d, x>>%3d:%128s\n"), i, i, ToString(z, 2).cstr());
   }
   for (int i = 0; i < 129; i++) {
     _uint128 z = x << i;
-    _tprintf(_T("i:%3d, x<<%3d:%128s\n"), i, i, toString(z, 2).cstr());
+    _tprintf(_T("i:%3d, x<<%3d:%128s\n"), i, i, ToString(z, 2).cstr());
   }
   return 0;
 
-  String str = toString(x);
+  String str = ToString(x);
 
   _int128 s = x + y;
   _int128 d = x - y;
@@ -140,11 +136,11 @@ int main(int argc, TCHAR **argv) {
   _int128 q = x / y;
   _int128 r = x % y;
 
-  _tprintf(_T("%-30s + %-30s = %30s\n"), toString(x,RADIX).cstr(), toString(y,RADIX).cstr(), toString(s).cstr());
-  _tprintf(_T("%-30s - %-30s = %30s\n"), toString(x,RADIX).cstr(), toString(y,RADIX).cstr(), toString(d).cstr());
-  _tprintf(_T("%-30s * %-30s = %30s\n"), toString(x,RADIX).cstr(), toString(y,RADIX).cstr(), toString(p).cstr());
-  _tprintf(_T("%-30s / %-30s = %30s\n"), toString(x,RADIX).cstr(), toString(y,RADIX).cstr(), toString(q).cstr());
-  _tprintf(_T("%-30s %% %-30s = %30s\n"), toString(x,RADIX).cstr(), toString(y,RADIX).cstr(), toString(r).cstr());
+  _tprintf(_T("%-30s + %-30s = %30s\n"), ToString(x,RADIX).cstr(), ToString(y,RADIX).cstr(), ToString(s).cstr());
+  _tprintf(_T("%-30s - %-30s = %30s\n"), ToString(x,RADIX).cstr(), ToString(y,RADIX).cstr(), ToString(d).cstr());
+  _tprintf(_T("%-30s * %-30s = %30s\n"), ToString(x,RADIX).cstr(), ToString(y,RADIX).cstr(), ToString(p).cstr());
+  _tprintf(_T("%-30s / %-30s = %30s\n"), ToString(x,RADIX).cstr(), ToString(y,RADIX).cstr(), ToString(q).cstr());
+  _tprintf(_T("%-30s %% %-30s = %30s\n"), ToString(x,RADIX).cstr(), ToString(y,RADIX).cstr(), ToString(r).cstr());
   return 0;
 */
 }
