@@ -41,8 +41,8 @@ private:
   bool windowToParam();
   void initPlayerComboItems();
   void initPlayerComboItems(CComboBox *cb);
-  void gotoSeconds(int indexl);
-  void gotoMinutes(int index);
+  void gotoSeconds(UINT indexl);
+  void gotoMinutes(UINT index);
   void showLevelsTab();
   void showTimedGameTab();
   void showSpeedChessTab();

@@ -145,7 +145,7 @@ UINT MBCalculator::findITCountPaintOrbit(const Real &X, const Real &Y, UINT maxI
 }
 
 MBCalculator::MBCalculator(CalculatorPool *pool, int id)
-: Thread(format(_T("MBCalc(%d)")))
+: Thread(format(_T("MBCalc(%d)"),id))
 , m_pool(*pool)
 , m_id(id)
 , m_mbc(pool->getMBContainer())

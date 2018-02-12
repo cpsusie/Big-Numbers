@@ -164,7 +164,7 @@ int InfoComparator::compare1(const EndGameInfo &i1, const EndGameInfo &i2) {
   case COMPRESSEDSIZE                            : c = sign(i1.m_compressedSize                    - i2.m_compressedSize);                      break;
   case COMPRESSRATIO                             : c = sign(i1.m_compressRatio                     - i2.m_compressRatio);                       break;
   case BUILDTIME                                 : c = sign((INT64)i1.m_buildTime                  - (INT64)i2.m_buildTime);                    break;
-  default                                        : throwException(_T("InfoComparator:sortField=%d"), m_sf);
+  default                                        : throwException(_T("InfoComparator:sortField=%u"), m_sf);
   }
   if(c) return c;
   c = sign((intptr_t)i1.m_name.length() - (intptr_t)i2.m_name.length());

@@ -31,7 +31,7 @@ void redirectDebugLog(bool append = false, const TCHAR *fileName = NULL);
 void unredirectDebugLog();
 bool isDebugLogRedirected();
 void vdebugLog(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
-void debugLog(_In_z_ _Printf_format_string_ TCHAR const * const format, ...);
+void debugLog( _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
 void debugLogLine(const TCHAR *fileName, int line);
 void debugLogSetTimePrefix(bool prefixWithDate, bool prefixWithTime);
 String getMessageName(int msg);
@@ -47,7 +47,7 @@ inline int _getrc(IUnknown *p) {
   p->AddRef(); return p->Release();
 }
 
-#define TRACE_NEW(     p)    { if(p) debugLog(_T("NEW:%p:%s(%d):%s\n")                       ,(void*)p          ,__TFUNCTION__,__LINE__,_T(#p)); }
+#define TRACE_NEW(     p)    { if(p) debugLog(_T("NEW:%p:%s(%d):%s\n")               ,(void*)p          ,__TFUNCTION__,__LINE__,_T(#p)); }
 #define TRACE_DELETE(  p)    debugLog(_T("DELETE:%p:%s(%d):%s\n")                    ,(void*)p          ,__TFUNCTION__,__LINE__,_T(#p))
 #define TRACE_CREATE(  p)    debugLog(_T("REFCNT:create:%p:refCount=%d:%s(%d):%s\n" ),(void*)p,_getrc(p),__TFUNCTION__,__LINE__,_T(#p))
 #define TRACE_ADDREF(  p, n) debugLog(_T("REFCNT:addref:%p:refCount=%d:%s(%d):%s\n" ),(void*)p,n        ,__TFUNCTION__,__LINE__,_T(#p))

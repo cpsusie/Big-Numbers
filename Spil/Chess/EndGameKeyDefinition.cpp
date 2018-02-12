@@ -608,7 +608,7 @@ void EndGameKeyDefinition::pawnSymSwitchError(int line) { // static
 }
 
 void EndGameKeyDefinition::invalidPieceCountError(const TCHAR *method) const {
-  throwException(_T("%s:Invalid number of pieces (=%d) must be [3..%d]"), method, m_totalPieceCount, MAX_ENDGAME_PIECECOUNT);
+  throwException(_T("%s:Invalid number of pieces (=%u) must be [3..%d]"), method, m_totalPieceCount, MAX_ENDGAME_PIECECOUNT);
 }
 
 #define SYM8DECISIONSWITCH(decideStatement)                                                                   \

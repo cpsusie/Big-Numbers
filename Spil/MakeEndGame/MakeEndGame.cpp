@@ -713,7 +713,6 @@ int _tmain(int argc, TCHAR **argv) {
 
     if(commands & CMD_CHECKKEYDEF) {
       UInt64HashMap<bool> keyIndexDone;
-      Iterator<int> it = workSet.getIterator();
       for(Iterator<int> it = workSet.getIterator(); it.hasNext();) {
         EndGameTablebase &tb = *tablebaseList[it.next()];
         keyIndexDone.put(tb.getKeyDefinition().getIndexSize(), false);

@@ -128,7 +128,7 @@ void BigReal::trimHead() {
     (m_first = p)->prev = NULL;
 
     if(m_last->n == 0) {
-      for(m_low++, p = m_last->prev; p && (p->n == 0); p = p->prev, m_low++);
+      for(m_low++, p = m_last->prev; p->n == 0; p = p->prev, m_low++);
       deleteDigits(p->next, m_last);
       (m_last = p)->next = NULL;
     }
@@ -138,7 +138,7 @@ void BigReal::trimHead() {
 void BigReal::trimTail() {
   m_low++;
   Digit *p;
-  for(p = m_last->prev; p && (p->n == 0); p = p->prev, m_low++);
+  for(p = m_last->prev; p->n == 0; p = p->prev, m_low++);
   deleteDigits(p->next, m_last); // we know that there is at least one digit != 0 => p != NULL
   (m_last = p)->next = NULL;
 }

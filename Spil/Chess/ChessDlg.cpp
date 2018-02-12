@@ -585,7 +585,7 @@ void CChessDlg::enableRemoteGameItems() {
 }
 
 void CChessDlg::enableUndoRedo() {
-  bool undo,redo;
+  bool undo = false,redo = false;
   switch(getDialogMode()) {
   case PLAYMODE    : if(isRemoteGame()) { undo = redo = false; break; } // continue case
   case DEBUGMODE   : undo = getPlyCount() > m_startPlyIndex;    redo = false;                   break;

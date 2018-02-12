@@ -21,7 +21,7 @@ const DirectionArray *Piece::getMoveTable(PieceKey key) { // static
   case Bishop : return MoveTable::bishopMoves;
   case Knight : return MoveTable::knightMoves;
   case Pawn   : return (GET_PLAYER_FROMKEY(key) == WHITEPLAYER) ? MoveTable::whitePawnMoves : MoveTable::blackPawnMoves;
-  default     : throwInvalidArgumentException(method, _T("key=%d"), key);
+  default     : throwInvalidArgumentException(method, _T("key=%u"), key);
                 return NULL;
   }
 }
@@ -35,7 +35,7 @@ AttackAttribute Piece::getAttackAttribute(PieceKey key) { // static
   case Bishop : return                    ATTACKS_DIAGONAL | ATTACKS_LONGDISTANCE;
   case Knight : return 0;
   case Pawn   : return (GET_PLAYER_FROMKEY(key) == WHITEPLAYER) ? ATTACKS_UPPERDIAGONAL : ATTACKS_LOWERDIAGONAL;
-  default     : throwInvalidArgumentException(method, _T("key=%d"), key);
+  default     : throwInvalidArgumentException(method, _T("key=%u"), key);
                 return 0;
   }
 }

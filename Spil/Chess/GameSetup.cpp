@@ -517,7 +517,7 @@ int Game::getPawnAttack(Player player, int pos, int diagonal) const { // diagona
         }
         break;
       default:
-        throwInvalidArgumentException(method, _T("diagonal=%d"), diagonal);
+        NODEFAULT;
       }
     }
     break;
@@ -540,12 +540,12 @@ int Game::getPawnAttack(Player player, int pos, int diagonal) const { // diagona
         }
         break;
       default:
-        throwInvalidArgumentException(method, _T("diagonal=%d"), diagonal);
+        NODEFAULT;
       }
     }
     break;
   default:
-    invalidPlayerError(method, player);
+    NODEFAULT;
   }
   const Piece *p = m_board[pp];
   return ((p != NULL) && (p->getType() == Pawn) && (p->getPlayer() == player)) ? 1 : 0;

@@ -539,7 +539,7 @@ void PlayerState::validateAddPieceAtPosition(PieceType pieceType, int pos, bool 
 String PlayerStateToPush::pawnCountToString() const {
   String tmp;
   for(int i = 0; i < ARRAYSIZE(m_pawnCount); i++) {
-    tmp += format(_T("%d"), m_pawnCount[i]);
+    tmp += format(_T("%u"), m_pawnCount[i]);
   }
   return format(_T("[%s],%s,%s:PawnScore:%+3d"), tmp.cstr(), rev(sprintbin(m_pawnMask)).cstr(), rev(sprintbin(m_doublePawnMask)).cstr(), MoveTable::pawnColumnScore[m_pawnMask]);
 }

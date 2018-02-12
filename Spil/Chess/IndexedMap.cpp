@@ -1060,7 +1060,7 @@ EndGameResult IndexedMap::get(EndGameKey key) const {
     return EndGameResult((winner == WHITEPLAYER) ? EG_WHITEWIN : EG_BLACKWIN, (2*movesToEnd) + ((playerInTurn != winner ) ? 1 : 0));
   } else {
     const UINT         info         = m_infoArray->get(index);
-    const Player       winner       = (m_canWinFlags|WHITECANWIN)?WHITEPLAYER:BLACKPLAYER;;
+    const Player       winner       = (m_canWinFlags&WHITECANWIN)?WHITEPLAYER:BLACKPLAYER;
     const Player       playerInTurn = key.getPlayerInTurn();
     const int          movesToEnd   = info;
     return EndGameResult((winner == WHITEPLAYER) ? EG_WHITEWIN : EG_BLACKWIN, (2*movesToEnd) + ((playerInTurn != winner ) ? 1 : 0));

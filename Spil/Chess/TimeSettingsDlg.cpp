@@ -302,7 +302,7 @@ void CTimeSettingsDlg::OnOK() {
   __super::OnOK();
 }
 
-void CTimeSettingsDlg::gotoSeconds(int index) {
+void CTimeSettingsDlg::gotoSeconds(UINT index) {
   const int editBoxId[] = {
     IDC_EDIT_TIMEOUTSECONDS1
    ,IDC_EDIT_TIMEOUTSECONDS2
@@ -311,12 +311,12 @@ void CTimeSettingsDlg::gotoSeconds(int index) {
    ,IDC_EDIT_TIMEOUTSECONDS5
    ,IDC_EDIT_TIMEOUTSECONDS6
   };
-  if(0 <= index || index < ARRAYSIZE(editBoxId)) {
+  if(index < ARRAYSIZE(editBoxId)) {
     gotoEditBox(this, editBoxId[index]);
   }
 }
 
-void CTimeSettingsDlg::gotoMinutes(int index) {
+void CTimeSettingsDlg::gotoMinutes(UINT index) {
   const int editBoxId[] = {
    IDC_EDIT_TIMEOUTMINUTES1
   ,IDC_EDIT_TIMEOUTMINUTES2
@@ -325,7 +325,7 @@ void CTimeSettingsDlg::gotoMinutes(int index) {
   ,IDC_EDIT_TIMEOUTMINUTES5
   ,IDC_EDIT_TIMEOUTMINUTES6
   };
-  if(0 <= index || index < ARRAYSIZE(editBoxId)) {
+  if(index < ARRAYSIZE(editBoxId)) {
     gotoEditBox(this, editBoxId[index]);
   }
 }
@@ -376,7 +376,7 @@ void CTimeSettingsDlg::paramToWindow(const TimeParametersWithComboSelection &tm,
 */
 
 bool CTimeSettingsDlg::windowToParam(TimeParametersWithComboSelection &tm, bool speedChess) {
-  bool ok;
+  bool ok = false;
   switch(tm.m_selectedComboItem) {
   case SELECTED_BOTH :
     ok = windowToParam(tm.m_tm[WHITEPLAYER], speedChess);

@@ -204,11 +204,11 @@ void ChessGraphics::paintFieldAttacks(HDC dc, const CPoint &p, UINT count1, UINT
   switch(f) {
   case FROM_SHORTDISTANCE:
     offset    = getSDAOffset(player);
-    attackStr = isError     ? format(_T("%d(%d)"),count1,count2) : format(_T("%d"),count1);
+    attackStr = isError     ? format(_T("%u(%u)"),count1,count2) : format(_T("%u"),count1);
     break;
   default                :
     offset    = getLDAOffset(f);
-    attackStr = isError     ? format(_T("%d(%d)"),count1,count2) : (count1?format(_T("%d"),count1):EMPTYSTRING);
+    attackStr = isError     ? format(_T("%u(%u)"),count1,count2) : (count1?format(_T("%u"),count1):EMPTYSTRING);
     kingStr   = isKingError ? format(_T("%c(%c)"),(hasKing1?'K':' '),(hasKing2?'K':' ')) : (hasKing1?_T("K"):EMPTYSTRING);
     break;
   }

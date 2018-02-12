@@ -326,6 +326,7 @@ public:
       if(m_next == NULL) {
         noNextElementError(_T("CompactSetIterator"));
       }
+      __assume(m_next);
       checkUpdateCount();
       m_current = m_next;
       if((m_next = m_next->m_next) == NULL) {
@@ -344,6 +345,7 @@ public:
       if(m_current == NULL) {
         noCurrentElementError(_T("CompactSetIterator"));
       }
+      __assume(m_current);
       checkUpdateCount();
       m_set.remove(m_current->m_e.m_key);
       m_current     = NULL;

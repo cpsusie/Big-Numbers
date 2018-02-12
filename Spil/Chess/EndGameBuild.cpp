@@ -372,7 +372,7 @@ void EndGameTablebase::checkInitialSetupFlags() {
           const bool b = m_bishopInitialField[pIndex][BLACKFIELD];
           if(!w || !b ) {
             throwException(_T("%s:Piece[%d] is a bishop but is not present on both fieldcolors i initial position (w=%s, b=%s)")
-                          ,getName().cstr(), boolToStr(w), boolToStr(b));
+                          ,getName().cstr(), pIndex, boolToStr(w), boolToStr(b));
           }
         }
         break;

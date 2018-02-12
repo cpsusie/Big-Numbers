@@ -134,6 +134,7 @@ TCHAR *GameKey::getFENBoardString(TCHAR *dst) const {
       case BLACKBISHOP : ch = 'b'; break;
       case BLACKKNIGHT : ch = 'n'; break;
       case BLACKPAWN   : ch = 'p'; break;
+      default          : NODEFAULT;
       }
       FLUSHEMPTY();
       *(cp++) = ch;
@@ -199,7 +200,7 @@ bool operator!=(const GameKey &key1, const GameKey &key2) {
 void GameKey::validateSize() {
   const int sz = sizeof(GameKey);
   if((sizeof(GameKey) % sizeof(long)) != 0) {
-    throwException(_T("sizeof(GameKey) is not n * sizeof(long). sizeof(GameKey) = %d"), sizeof(GameKey));
+    throwException(_T("sizeof(GameKey) is not n * sizeof(long). sizeof(GameKey) = %zu"), sizeof(GameKey));
   }
 }
 
@@ -292,7 +293,7 @@ GameKey GameKey::transform(SymmetricTransformation st) const {
   case TRANSFORM_MIRRORCOL  : return mirrorColumns();
   case TRANSFORM_MIRRORDIAG1: return mirrorDiag1();
   case TRANSFORM_MIRRORDIAG2: return mirrorDiag2();
-  default                   : throwException(_T("Unknown symmetric transformation:%d"), st);
+  default                   : throwException(_T("Unknown symmetric transformation:%u"), st);
                               return *this;
   }
 }
@@ -308,7 +309,7 @@ int GameKey::transform(int pos, SymmetricTransformation st) { // static
   case TRANSFORM_MIRRORCOL  : return MIRRORCOLUMN(pos);
   case TRANSFORM_MIRRORDIAG1: return MIRRORDIAG1( pos);
   case TRANSFORM_MIRRORDIAG2: return MIRRORDIAG2( pos);
-  default                   : throwException(_T("Unknown symmetric transformation:%d"), st);
+  default                   : throwException(_T("Unknown symmetric transformation:%u"), st);
                               return pos;
   }
 }

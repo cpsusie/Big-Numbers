@@ -141,50 +141,50 @@ void _set3OffDiagPosFlipij(EndGameKey &key, EndGamePosIndex &addr, EndGamePosInd
 #define ADD3EQUALALLOWEQUALHM(addr, maxAddr, lp, mp, hp) (ADD2EQUAL(            addr, maxAddr, lp, mp) + GET_RANGESTART3EQUAL((maxAddr)/2,(hp)-1))
 
 #define SET2POS2EQUAL(key, addr, maxAddr, lpIndex, hpIndex)                           \
-{ int r = findRange2Equal((maxAddr)/2, addr);                                         \
-  addr -= GET_RANGESTART2EQUAL((maxAddr)/2, r); r++;                                  \
-  key.setPosition(hpIndex,r);                                                         \
-  key.setPosition(lpIndex,(addr) % r);                                                \
-  addr /= r;                                                                          \
+{ int r2 = findRange2Equal((maxAddr)/2, addr);                                        \
+  addr -= GET_RANGESTART2EQUAL((maxAddr)/2, r2); r2++;                                \
+  key.setPosition(hpIndex,r2);                                                        \
+  key.setPosition(lpIndex,(addr) % r2);                                               \
+  addr /= r2;                                                                         \
 }
 
 #define SET2OFFDIAGPOSNOFLIP(key, addr, maxAddr, lpIndex, hpIndex)                    \
-{ int r = findRange2Equal((maxAddr)/2, addr);                                         \
-  addr -= GET_RANGESTART2EQUAL((maxAddr)/2, r); r++;                                  \
-  key.setPosition(hpIndex,EndGameKeyDefinition::s_offDiagIndexToPos[r]);              \
-  key.setPosition(lpIndex,EndGameKeyDefinition::s_offDiagIndexToPos[(addr) % r]);     \
-  addr /= r;                                                                          \
+{ int r2 = findRange2Equal((maxAddr)/2, addr);                                        \
+  addr -= GET_RANGESTART2EQUAL((maxAddr)/2, r2); r2++;                                \
+  key.setPosition(hpIndex,EndGameKeyDefinition::s_offDiagIndexToPos[r2]);             \
+  key.setPosition(lpIndex,EndGameKeyDefinition::s_offDiagIndexToPos[(addr) % r2]);    \
+  addr /= r2;                                                                         \
 }
 
 #define SET2OFFDIAGPOSFLIPi(key, addr, maxAddr, lpIndex, hpIndex)                     \
-{ int r = findRange2Equal((maxAddr)/2, addr);                                         \
-  addr -= GET_RANGESTART2EQUAL((maxAddr)/2, r);                                       \
-  key.setPosition(hpIndex,EndGameKeyDefinition::s_offDiagIndexToPos[r]); r++;         \
-  key.setPosition(lpIndex,EndGameKeyDefinition::s_offDiagIndexToPos[(addr) % r + 28]);\
-  addr /= r;                                                                          \
+{ int r2 = findRange2Equal((maxAddr)/2, addr);                                        \
+  addr -= GET_RANGESTART2EQUAL((maxAddr)/2, r2);                                      \
+  key.setPosition(hpIndex,EndGameKeyDefinition::s_offDiagIndexToPos[r2]); r2++;       \
+  key.setPosition(lpIndex,EndGameKeyDefinition::s_offDiagIndexToPos[(addr)%r2 + 28]); \
+  addr /= r2;                                                                         \
 }
 
 #define SET2OFFDIAGPOSFLIPj(key, addr, maxAddr, lpIndex, hpIndex)                     \
-{ int r = findRange2Equal((maxAddr)/2, addr);                                         \
-  addr -= GET_RANGESTART2EQUAL((maxAddr)/2, r);                                       \
-  key.setPosition(hpIndex,EndGameKeyDefinition::s_offDiagIndexToPos[r+28]); r++;      \
-  key.setPosition(lpIndex,EndGameKeyDefinition::s_offDiagIndexToPos[(addr) % r]);     \
-  addr /= r;                                                                          \
+{ int r2 = findRange2Equal((maxAddr)/2, addr);                                        \
+  addr -= GET_RANGESTART2EQUAL((maxAddr)/2, r2);                                      \
+  key.setPosition(hpIndex,EndGameKeyDefinition::s_offDiagIndexToPos[r2+28]); r2++;    \
+  key.setPosition(lpIndex,EndGameKeyDefinition::s_offDiagIndexToPos[(addr)%r2]);      \
+  addr /= r2;                                                                         \
 }
 
 #define SET2OFFDIAGPOSFLIPij(key, addr, maxAddr, lpIndex, hpIndex)                    \
-{ int r = findRange2Equal((maxAddr)/2, addr);                                         \
-  addr -= GET_RANGESTART2EQUAL((maxAddr)/2, r); r++;                                  \
-  key.setPosition(hpIndex,EndGameKeyDefinition::s_offDiagIndexToPos[r+28]);           \
-  key.setPosition(lpIndex,EndGameKeyDefinition::s_offDiagIndexToPos[(addr) % r + 28]);\
-  addr /= r;                                                                          \
+{ int r2 = findRange2Equal((maxAddr)/2, addr);                                        \
+  addr -= GET_RANGESTART2EQUAL((maxAddr)/2, r2); r2++;                                \
+  key.setPosition(hpIndex,EndGameKeyDefinition::s_offDiagIndexToPos[r2+28]);          \
+  key.setPosition(lpIndex,EndGameKeyDefinition::s_offDiagIndexToPos[(addr)%r2 + 28]); \
+  addr /= r2;                                                                         \
 }
 
 // Can specify tablesize if only part of the rangetable should be searched. Use SET3POS3EQUAL, which use ARRAYSIZE(table) for paramete size!
 #define SET3POS3EQUALa(key, addr, table, size, maxAddr, lpIndex, mpIndex, hpIndex)    \
-{ int r = findTableRange(table, size, addr);                                          \
-  key.setPosition(hpIndex,r+2);                                                       \
-  addr -= GET_RANGESTART3EQUAL((maxAddr)/2, r);                                       \
+{ int r3 = findTableRange(table, size, addr);                                         \
+  key.setPosition(hpIndex,r3+2);                                                      \
+  addr -= GET_RANGESTART3EQUAL((maxAddr)/2, r3);                                      \
   SET2POS2EQUAL(key, addr, maxAddr, lpIndex, mpIndex);                                \
 }
 
@@ -192,35 +192,35 @@ void _set3OffDiagPosFlipij(EndGameKey &key, EndGamePosIndex &addr, EndGamePosInd
   SET3POS3EQUALa(key, addr, table, ARRAYSIZE(table), maxAddr, lpIndex, mpIndex, hpIndex)
 
 #define SET3OFFDIAGPOSNOFLIP(key, addr, table, maxAddr, lpIndex, mpIndex, hpIndex)    \
-{ int r = findTableRange(table, ARRAYSIZE(table), addr);                              \
-  key.setPosition(hpIndex,s_offDiagIndexToPos[r+2]);                                  \
-  addr -= GET_RANGESTART3EQUAL((maxAddr)/2, r);                                       \
+{ int r3 = findTableRange(table, ARRAYSIZE(table), addr);                             \
+  key.setPosition(hpIndex,s_offDiagIndexToPos[r3+2]);                                 \
+  addr -= GET_RANGESTART3EQUAL((maxAddr)/2, r3);                                      \
   SET2OFFDIAGPOSNOFLIP(key, addr, maxAddr, lpIndex, mpIndex);                         \
 }
 
 #define SET3OFFDIAGPOSFLIPi(key, addr, table, maxAddr, lpIndex, mpIndex, hpIndex)     \
-{ int r = findTableRange(table, ARRAYSIZE(table), addr);                              \
-  key.setPosition(hpIndex,s_offDiagIndexToPos[r+1]);                                  \
-  addr -= GET_RANGESTART3EQUAL((maxAddr)/2, r);                                       \
+{ int r3 = findTableRange(table, ARRAYSIZE(table), addr);                             \
+  key.setPosition(hpIndex,s_offDiagIndexToPos[r3+1]);                                 \
+  addr -= GET_RANGESTART3EQUAL((maxAddr)/2, r3);                                      \
   SET2OFFDIAGPOSFLIPi(key, addr, maxAddr, lpIndex, mpIndex);                          \
 }
 
 #define SET3OFFDIAGPOSFLIPj(key, addr, table, maxAddr, lpIndex, mpIndex, hpIndex)     \
-{ int r = findTableRange(table, ARRAYSIZE(table), addr);                              \
-  key.setPosition(hpIndex,s_offDiagIndexToPos[r+1]);                                  \
-  addr -= GET_RANGESTART3EQUAL((maxAddr)/2, r);                                       \
-  r = findRange2Equal((maxAddr)/2, addr);                                             \
-  addr -= GET_RANGESTART2EQUAL((maxAddr)/2, r);                                       \
-  r++;                                                                                \
-  key.setPosition(mpIndex,s_offDiagIndexToPos[r+28]);                                 \
-  key.setPosition(lpIndex,s_offDiagIndexToPos[addr % r]);                             \
-  addr /= r;                                                                          \
+{ int r3 = findTableRange(table, ARRAYSIZE(table), addr);                             \
+  key.setPosition(hpIndex,s_offDiagIndexToPos[r3+1]);                                 \
+  addr -= GET_RANGESTART3EQUAL((maxAddr)/2, r3);                                      \
+  r3 = findRange2Equal((maxAddr)/2, addr);                                            \
+  addr -= GET_RANGESTART2EQUAL((maxAddr)/2, r3);                                      \
+  r3++;                                                                               \
+  key.setPosition(mpIndex,s_offDiagIndexToPos[r3+28]);                                \
+  key.setPosition(lpIndex,s_offDiagIndexToPos[addr % r3]);                            \
+  addr /= r3;                                                                         \
 }
 
 #define SET3OFFDIAGPOSFLIPij(key, addr, table, maxAddr, lpIndex, mpIndex, hpIndex)    \
-{ int r = findTableRange(table, ARRAYSIZE(table), addr);                              \
-  key.setPosition(hpIndex,s_offDiagIndexToPos[r+2]);                                  \
-  addr -= GET_RANGESTART3EQUAL((maxAddr)/2, r);                                       \
+{ int r3 = findTableRange(table, ARRAYSIZE(table), addr);                             \
+  key.setPosition(hpIndex,s_offDiagIndexToPos[r3+2]);                                 \
+  addr -= GET_RANGESTART3EQUAL((maxAddr)/2, r3);                                      \
   SET2OFFDIAGPOSFLIPij(key, addr, maxAddr, lpIndex, mpIndex);                         \
 }
 
@@ -560,74 +560,74 @@ void _set3EqualPawnsFlipij(EndGameKey &key, EndGamePosIndex &addr, EndGamePosInd
 #else
 
 #define SET2EQUALPAWNSNOFLIP(key, addr, maxAddr, lpIndex, hpIndex)                        \
-{ int r = findRange2Equal((maxAddr)/2, addr);                                             \
-  addr -= GET_RANGESTART2EQUAL((maxAddr)/2, r); r++;                                      \
-  key.setPosition(hpIndex,EndGameKeyDefinition::s_pawnIndexToPos[r]);                     \
-  key.setPosition(lpIndex,EndGameKeyDefinition::s_pawnIndexToPos[(addr) % r]);            \
-  addr /= r;                                                                              \
+{ int r2 = findRange2Equal((maxAddr)/2, addr);                                            \
+  addr -= GET_RANGESTART2EQUAL((maxAddr)/2, r2); r2++;                                    \
+  key.setPosition(hpIndex,EndGameKeyDefinition::s_pawnIndexToPos[r2]);                    \
+  key.setPosition(lpIndex,EndGameKeyDefinition::s_pawnIndexToPos[(addr) % r2]);           \
+  addr /= r2;                                                                             \
 }
 
 #define SET2EQUALPAWNSFLIPi(key, addr, maxAddr, lpIndex, hpIndex)                         \
-{ int r = findRange2Equal((maxAddr)/2, addr);                                             \
-  addr -= GET_RANGESTART2EQUAL((maxAddr)/2, r);                                           \
-  key.setPosition(hpIndex,EndGameKeyDefinition::s_pawnIndexToPos[r]);                     \
-  r++;                                                                                    \
-  const int lpPos = EndGameKeyDefinition::s_pawnIndexToPos[(addr) % r];                   \
+{ int r2 = findRange2Equal((maxAddr)/2, addr);                                            \
+  addr -= GET_RANGESTART2EQUAL((maxAddr)/2, r2);                                          \
+  key.setPosition(hpIndex,EndGameKeyDefinition::s_pawnIndexToPos[r2]);                    \
+  r2++;                                                                                   \
+  const int lpPos = EndGameKeyDefinition::s_pawnIndexToPos[(addr) % r2];                  \
   key.setPosition(lpIndex,MIRRORCOLUMN(lpPos));                                           \
-  addr /= r;                                                                              \
+  addr /= r2;                                                                             \
 }
 
 #define SET2EQUALPAWNSFLIPj(key, addr, maxAddr, lpIndex, hpIndex)                         \
-{ int r = findRange2Equal((maxAddr)/2, addr);                                             \
-  addr -= GET_RANGESTART2EQUAL((maxAddr)/2, r);                                           \
-  r++;                                                                                    \
-  key.setPosition(hpIndex,MIRRORCOLUMN(EndGameKeyDefinition::s_pawnIndexToPos[r]));       \
-  key.setPosition(lpIndex,EndGameKeyDefinition::s_pawnIndexToPos[(addr) % r]);            \
-  addr /= r;                                                                              \
+{ int r2 = findRange2Equal((maxAddr)/2, addr);                                            \
+  addr -= GET_RANGESTART2EQUAL((maxAddr)/2, r2);                                          \
+  r2++;                                                                                   \
+  key.setPosition(hpIndex,MIRRORCOLUMN(EndGameKeyDefinition::s_pawnIndexToPos[r2]));      \
+  key.setPosition(lpIndex,EndGameKeyDefinition::s_pawnIndexToPos[(addr) % r2]);           \
+  addr /= r2;                                                                             \
 }
 
 #define SET2EQUALPAWNSFLIPij(key, addr, maxAddr, lpIndex, hpIndex)                        \
-{ int r = findRange2Equal((maxAddr)/2, addr);                                             \
-  addr -= GET_RANGESTART2EQUAL((maxAddr)/2, r);                                           \
-  r++;                                                                                    \
-  int pos = EndGameKeyDefinition::s_pawnIndexToPos[r];                                    \
+{ int r2 = findRange2Equal((maxAddr)/2, addr);                                            \
+  addr -= GET_RANGESTART2EQUAL((maxAddr)/2, r2);                                          \
+  r2++;                                                                                   \
+  int pos = EndGameKeyDefinition::s_pawnIndexToPos[r2];                                   \
   key.setPosition(hpIndex,MIRRORCOLUMN(pos));                                             \
-  pos = EndGameKeyDefinition::s_pawnIndexToPos[(addr) % r];                               \
+  pos = EndGameKeyDefinition::s_pawnIndexToPos[(addr) % r2];                              \
   key.setPosition(lpIndex,MIRRORCOLUMN(pos));                                             \
-  addr /= r;                                                                              \
+  addr /= r2;                                                                             \
 }
 
 #define SET3EQUALPAWNSNOFLIP(key, addr, table, maxAddr, lpIndex, mpIndex, hpIndex)        \
-{ int r = findTableRange(table, ARRAYSIZE(table), addr);                                  \
-  key.setPosition(hpIndex,s_pawnIndexToPos[r+2]);                                         \
-  addr -= GET_RANGESTART3EQUAL((maxAddr)/2, r);                                           \
+{ int r3 = findTableRange(table, ARRAYSIZE(table), addr);                                 \
+  key.setPosition(hpIndex,s_pawnIndexToPos[r3+2]);                                        \
+  addr -= GET_RANGESTART3EQUAL((maxAddr)/2, r3);                                          \
   SET2EQUALPAWNSNOFLIP(key, addr, maxAddr, lpIndex, mpIndex);                             \
 }
 
 #define SET3EQUALPAWNSFLIPi(key, addr, table, maxAddr, lpIndex, mpIndex, hpIndex)         \
-{ int r = findTableRange(table, ARRAYSIZE(table), addr);                                  \
-  key.setPosition(hpIndex,s_pawnIndexToPos[r+1]);                                         \
-  addr -= GET_RANGESTART3EQUAL((maxAddr)/2, r);                                           \
+{ int r3 = findTableRange(table, ARRAYSIZE(table), addr);                                 \
+  key.setPosition(hpIndex,s_pawnIndexToPos[r3+1]);                                        \
+  addr -= GET_RANGESTART3EQUAL((maxAddr)/2, r3);                                          \
   SET2EQUALPAWNSFLIPi(key, addr, maxAddr, lpIndex, mpIndex);                              \
 }
 
 #define SET3EQUALPAWNSFLIPj(key, addr, table, maxAddr, lpIndex, mpIndex, hpIndex)         \
-{ int r = findTableRange(table, ARRAYSIZE(table), addr);                                  \
-  key.setPosition(hpIndex,s_pawnIndexToPos[r+1]);                                         \
-  addr -= GET_RANGESTART3EQUAL((maxAddr)/2, r);                                           \
-  r = findRange2Equal((maxAddr)/2, addr);                                                 \
-  addr -= GET_RANGESTART2EQUAL((maxAddr)/2, r);                                           \
-  r++;                                                                                    \
-  int pos = s_pawnIndexToPos[r];                                                          \
+{ int r3 = findTableRange(table, ARRAYSIZE(table), addr);                                 \
+  key.setPosition(hpIndex,s_pawnIndexToPos[r3+1]);                                        \
+  addr -= GET_RANGESTART3EQUAL((maxAddr)/2, r3);                                          \
+  r3 = findRange2Equal((maxAddr)/2, addr);                                                \
+  addr -= GET_RANGESTART2EQUAL((maxAddr)/2, r3);                                          \
+  r3++;                                                                                   \
+  int pos = s_pawnIndexToPos[r3];                                                         \
   key.setPosition(mpIndex,MIRRORCOLUMN(pos));                                             \
-  key.setPosition(lpIndex,s_pawnIndexToPos[addr % r]);                                    \
-  addr /= r;                                                                              \
+  key.setPosition(lpIndex,s_pawnIndexToPos[addr % r3]);                                   \
+  addr /= r3;                                                                             \
 }
 
 #define SET3EQUALPAWNSFLIPij(key, addr, table, maxAddr, lpIndex, mpIndex, hpIndex)        \
-{ int r = findTableRange(table, ARRAYSIZE(table), addr);                                  \
-  key.setPosition(hpIndex,s_pawnIndexToPos[r+2]);                                         \
-  addr -= GET_RANGESTART3EQUAL((maxAddr)/2, r);                                           \
+{ int r3 = findTableRange(table, ARRAYSIZE(table), addr);                                 \
+  key.setPosition(hpIndex,s_pawnIndexToPos[r3+2]);                                        \
+  addr -= GET_RANGESTART3EQUAL((maxAddr)/2, r3);                                          \
   SET2EQUALPAWNSFLIPij(key, addr, maxAddr, lpIndex, mpIndex);                             \
 }
 

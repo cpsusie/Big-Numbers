@@ -445,7 +445,7 @@ bool BackMoveGenerator::isNonCapturingPromotion(int promotedPos, const FieldSet 
 
 #ifdef _DEBUG
 
-#define PRINTF(args) verbose args
+#define PRINTF(...) verbose(__VA_ARGS__)
 #define CLEARTRACE() clearVerbose()
 
 #define CHECK_NOT_CORNER(r, c)                                                                                           \
@@ -457,7 +457,7 @@ bool BackMoveGenerator::isNonCapturingPromotion(int promotedPos, const FieldSet 
 
 #else
 
-#define PRINTF(args)
+#define PRINTF(...)
 #define CLEARTRACE()
 #define CHECK_NOT_CORNER(r, c)
 #endif
@@ -532,7 +532,7 @@ bool BackMoveGenerator::isPromotePosition(int pos) const {
   if(IS_INNERFIELD(pos)) {
     return false;
   }
-  PRINTF((_T("Check if %s is promoteField\n"), getFieldName(pos)));
+  PRINTF(_T("Check if %s is promoteField\n"), getFieldName(pos));
   bool result;
   if(m_game.m_keydef == NULL) { // No symmetric transformation or swapping of players
     result = GETROW(pos) == LASTROW;
@@ -540,9 +540,10 @@ bool BackMoveGenerator::isPromotePosition(int pos) const {
     if(s_hfs.m_promoteFieldSet == NULL) { // lazy evaluering
       findPromoteFieldSet();
     }
+    __assume(s_hfs.m_promoteFieldSet);
     result = s_hfs.m_promoteFieldSet->contains(pos);
   }
-  PRINTF((_T("result=%s\n"), boolToStr(result)));
+  PRINTF(_T("result=%s\n"), boolToStr(result));
   return result;
 }
 
@@ -571,12 +572,12 @@ void BackMoveGenerator::findPromoteFieldSet() const {
   }
   const SymmetricTransformation transformation = keydef.getSymTransformation(egk);
   s_hfs.setPromoteFieldSet(kingOwner, transformation);
-  PRINTF((_T("Trans:%s\nKingowner:%s\nKing sourcefield:%s\nKey.tr:%s\nPromoteFields:%s\n")
+  PRINTF(_T("Trans:%s\nKingowner:%s\nKing sourcefield:%s\nKey.tr:%s\nPromoteFields:%s\n")
         , getSymmetricTransformationToString(transformation).cstr()
         , getPlayerNameEnglish(kingOwner)
         , getFieldName(s_hfs.m_kingSourceField)
         , keydef.getTransformedKey(egk, transformation).toString(keydef).cstr()
-        , s_hfs.m_promoteFieldSet->toString().cstr()));
+        , s_hfs.m_promoteFieldSet->toString().cstr());
 }
 
 void BackMoveGenerator::invalidPawnPosition(bool firstMove, const Piece *piece) { // static

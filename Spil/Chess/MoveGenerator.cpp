@@ -45,7 +45,7 @@ bool Game::uncoversKingEP(const Piece *pawn, const int to) const {
     return GETDIAG2(to) != GETDIAG2(pawn->m_position);
 
   default:
-    throwException(_T("%s:Invalid pinnedState:%d"), method, pawn->m_pinnedState);
+    throwException(_T("%s:Invalid pinnedState:%u"), method, pawn->m_pinnedState);
     return true;
   }
 }
@@ -184,10 +184,10 @@ bool Game::isLongCastleAllowed() const {
     break; /* Only positive if last move was a 2-step pawn-move. */                                                       \
   }                                                                                                                       \
   const int epSquare = to^8;                                                                                              \
-  Piece *cp;                                                                                                              \
-  if((epSquare == m_game.m_gameKey.getEPSquare()) && isCheckingPiece(cp = m_game.m_board[epSquare])                       \
+  Piece *_cp;                                                                                                             \
+  if((epSquare == m_game.m_gameKey.getEPSquare()) && isCheckingPiece(_cp = m_game.m_board[epSquare])                      \
   && !m_game.uncoversKingEP(piece, to)) {                                                                                 \
-    _SETMOVE(move, ENPASSANT, piece, cp, dirIndex, moveIndex, to, direction);                                             \
+    _SETMOVE(move, ENPASSANT, piece, _cp, dirIndex, moveIndex, to, direction);                                            \
     return true;                                                                                                          \
   }                                                                                                                       \
 }

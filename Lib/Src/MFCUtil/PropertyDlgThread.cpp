@@ -73,6 +73,7 @@ void CPropertyDlgThread::noDialogException(const TCHAR *method) const {
 void CPropertyDlgThread::setCurrentDialogProperty(const void *v) {
   DEFINEMETHODNAME;
   if(m_dlg == NULL) noDialogException(method);
+  __assume(m_dlg);
   m_dlg->setStartProperty(v);
   if(m_dlg->isVisible()) {
     m_dlg->PostMessage(_ID_MSG_RESETCONTROLS);
@@ -82,6 +83,7 @@ void CPropertyDlgThread::setCurrentDialogProperty(const void *v) {
 const void *CPropertyDlgThread::getCurrentDialogProperty() const {
   DEFINEMETHODNAME;
   if(m_dlg == NULL) noDialogException(method);
+  __assume(m_dlg);
   return m_dlg->getCurrentProperty();
 }
 

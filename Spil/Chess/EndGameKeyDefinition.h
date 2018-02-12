@@ -317,7 +317,7 @@ inline BYTE getBitCount(UINT n, BYTE maxBits=8) {
   BYTE count = 0;
   for(UINT m = 0; (count <= 32) && (m < n); count++, m = (m << 1) | 1);
   if(count > maxBits) {
-    throwException(_T("%s:n=%lu. Needs %d bits to encode. Max=%d"), __TFUNCTION__, n, count, maxBits);
+    throwException(_T("%s:n=%lu. Needs %u bits to encode. Max=%u"), __TFUNCTION__, n, count, maxBits);
   }
   return count;
 }

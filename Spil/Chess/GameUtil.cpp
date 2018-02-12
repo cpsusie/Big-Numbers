@@ -463,7 +463,7 @@ String getSymmetricTransformationToString(SymmetricTransformation st) {
   caseTransformation(MIRRORDIAG1);
   caseTransformation(MIRRORDIAG2);
   default:
-    return format(_T("getSymmetricTransformationToString:Unknown symmetric transformation:%d"), st);
+    return format(_T("getSymmetricTransformationToString:Unknown symmetric transformation:%u"), st);
   }
 }
 
@@ -600,7 +600,7 @@ String getPinnedStateToString(PinnedState ps) {
   case PINNED_TO_COL      : return _T("|");
   case PINNED_TO_DIAG1    : return _T("/");
   case PINNED_TO_DIAG2    : return _T("\\");
-  default                 : throwInvalidArgumentException(__TFUNCTION__, _T("ps=%d"), ps);
+  default                 : throwInvalidArgumentException(__TFUNCTION__, _T("ps=%u"), ps);
                             return _T("?");
   }
 }
