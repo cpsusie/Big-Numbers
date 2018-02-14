@@ -15,7 +15,7 @@
 #include "Int128.h"
 
 // Define this to have 2 different version of getDecimalDigitCount64(UINT64 n).
-// Measures of time show that getDecimalDigitCount64 is 5 times faster that getDecimalDigitCount64Loop
+// Measures of time show that getDecimalDigitCount64 is 5 times faster than getDecimalDigitCount64Loop
 //#define HAS_LOOP_DIGITCOUNT
 
 // use, if you want to have backup-check for correct multiplication, running in separate
@@ -349,7 +349,7 @@ void insertDigitAndIncrExpo(BigReal &v, BRDigitType n);
 }
 #endif
 
-void throwInvalidToleranceException(               TCHAR const* const function);
+void throwInvalidToleranceException(               TCHAR const * const function);
 void throwBigRealInvalidArgumentException(         TCHAR const * const function, _In_z_ _Printf_format_string_ TCHAR const * const format,...);
 void throwBigRealGetIntegralTypeOverflowException( TCHAR const * const function, const BigReal &x, const String &maxStr);
 void throwBigRealGetIntegralTypeUnderflowException(TCHAR const * const function, const BigReal &x, const String &minStr);
@@ -364,7 +364,7 @@ private:
   static const BRDigitType  s_power10Table[POWER10TABLESIZE];
   // Defined in shortProduct.cpp. Split factors when length > s_splitLength
   static size_t             s_splitLength;
-  // Terminate all calculation with and Exception ("Operation was cancelled")
+  // Terminate all calculation with an Exception ("Operation was cancelled")
   // if they enter shortProduct, or simply return whichever comes first
   static bool               s_continueCalculation; 
 
@@ -531,7 +531,7 @@ private:
   // Approximately 1/x. Result.digitPool = x.digitPool
   static BigReal  reciprocal(const BigReal &x, DigitPool *digitPool = NULL);
   // approximately x/y. Result.digitPool = x.digitPool
-  BigReal &approxQuot32(     const BigReal &x, const BigReal           &y           );
+  BigReal &approxQuot32(     const BigReal &x, const BigReal           &y);
   // approximately x/y. Result.digitPool = x.digitPool
   BigReal &approxQuot64(     const BigReal &x, const BigReal           &y);
   // approximately x/e(y,scale). Result.digitPool = x.digitPool
@@ -1093,12 +1093,24 @@ public:
 #define PAPCquot(bias, x, y, pool) BigReal::apcQuot(#@bias, x, y, pool)
 #define PAPCpow( bias, x, y, pool) BigReal::apcPow( #@bias, x, y, pool)
 
-bool operator==(const BigReal &x, const BigReal &y);
-bool operator!=(const BigReal &x, const BigReal &y);
-bool operator>=(const BigReal &x, const BigReal &y);
-bool operator<=(const BigReal &x, const BigReal &y);
-bool operator> (const BigReal &x, const BigReal &y);
-bool operator< (const BigReal &x, const BigReal &y);
+inline bool operator==(const BigReal &x, const BigReal &y) {
+  return compare(x,y) == 0;
+}
+inline bool operator!=(const BigReal &x, const BigReal &y) {
+  return compare(x,y) != 0;
+}
+inline bool operator>=(const BigReal &x, const BigReal &y) {
+  return compare(x,y) >= 0;
+}
+inline bool operator<=(const BigReal &x, const BigReal &y) {
+  return compare(x,y) <= 0;
+}
+inline bool operator> (const BigReal &x, const BigReal &y) {
+  return compare(x,y) >  0;
+}
+inline bool operator< (const BigReal &x, const BigReal &y) {
+  return compare(x,y) <  0;
+}
 
 class BigRealStream : public StrStream { // Don't derive from standardclass strstream. Its slow!!! (at least in windows)
 private:

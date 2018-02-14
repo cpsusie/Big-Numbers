@@ -206,7 +206,7 @@ BigReal &BigReal::multPow10(BRExpoType exp) {
     const BRDigitType t = BIGREALBASE / s;
     if(exp > 0) { // shift left
       Digit *p = m_first;
-      Digit *q = p->next; // *this != 0, =>. p != NULL
+      Digit *q = p->next; // *this != 0 => p != NULL
       if(p->n >= t) {
         insertDigit(p->n / t);
         m_expo++;
@@ -219,7 +219,7 @@ BigReal &BigReal::multPow10(BRExpoType exp) {
       p->n = (p->n%t) * s;
     } else { // exp < 0. shift right
       Digit *p = m_last;
-      Digit *q = p->prev; // *this != 0, =>. p != NULL
+      Digit *q = p->prev; // *this != 0 => p != NULL
       appendDigit((p->n % s) * t);
       m_low--;
       while(q) {
@@ -337,30 +337,6 @@ int compareAbs(const BigReal &x, const BigReal &y) {
     }
   }
   return xp ? 1 : yp ? -1 : 0;
-}
-
-bool operator==(const BigReal &x,  const BigReal &y) {
-  return compare(x,y) == 0;
-}
-
-bool operator!=(const BigReal &x,  const BigReal &y) {
-  return compare(x,y) != 0;
-}
-
-bool operator>=(const BigReal &x,  const BigReal &y) {
-  return compare(x,y) >= 0;
-}
-
-bool operator<=(const BigReal &x,  const BigReal &y) {
-  return compare(x,y) <= 0;
-}
-
-bool operator>(const BigReal &x,  const BigReal &y) {
-  return compare(x,y) >  0;
-}
-
-bool operator<(const BigReal &x,  const BigReal &y) {
-  return compare(x,y) <  0;
 }
 
 int getInt(const BigReal &x) {
