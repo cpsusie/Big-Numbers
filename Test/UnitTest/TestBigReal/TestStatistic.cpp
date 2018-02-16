@@ -151,7 +151,7 @@ void TestStatistic::printNameAndSignatur() {
   Console::printf(20,m_ypos, _T("Testing %-*s%-55s"), NAMELENGTH, m_name.cstr(), getSignaturString().cstr());
 }
 
-void TestStatistic::printLoopMessage(const _TCHAR *format,...) {
+void TestStatistic::printLoopMessage(_In_z_ _Printf_format_string_ TCHAR const * const format,...) {
   va_list argptr;
   va_start(argptr,format);
   const String str = vformat(format, argptr);
@@ -166,11 +166,11 @@ String TestStatistic::toString(const BigReal &n, int digits) { // static
   return s;
 }
 
-void TestStatistic::vsetEndMessage(const TCHAR *format, va_list argptr) {
+void TestStatistic::vsetEndMessage(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
   m_endMessage = vformat(format, argptr);
 }
 
-void TestStatistic::setEndMessage(const TCHAR *format,...) {
+void TestStatistic::setEndMessage(_In_z_ _Printf_format_string_ TCHAR const * const format,...) {
   va_list argptr;
   va_start(argptr,format);
   vsetEndMessage(format, argptr);
@@ -178,7 +178,7 @@ void TestStatistic::setEndMessage(const TCHAR *format,...) {
   m_endMessageAdded = false;
 }
 
-void TestStatistic::addEndMessage(const TCHAR *format,...) {
+void TestStatistic::addEndMessage(_In_z_ _Printf_format_string_ TCHAR const * const format,...) {
   va_list argptr;
   va_start(argptr,format);
   vsetEndMessage(format, argptr);
@@ -286,7 +286,7 @@ static int getScreenHeight() {
   return h;
 }
 
-void TestStatistic::screenlog(const TCHAR *format,...) {
+void TestStatistic::screenlog(_In_z_ _Printf_format_string_ TCHAR const * const format,...) {
   va_list argptr;
   va_start(argptr,format);
   const String str = vformat(format, argptr);

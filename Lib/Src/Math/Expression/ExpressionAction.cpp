@@ -448,7 +448,7 @@ ExpressionNode *ExpressionParser::newNode(const SourcePosition &pos, ExpressionI
   return p;
 }
 
-void ExpressionParser::verror(const SourcePosition &pos, const TCHAR *format, va_list argptr) {
+void ExpressionParser::verror(const SourcePosition &pos, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
   m_tree.vAddError(&pos, format, argptr);
 }
 

@@ -31,7 +31,7 @@ InitLogFile::~InitLogFile() {
 
 static InitLogFile dummy;
 
-void registryLog(const TCHAR *format,...) {
+void registryLog(_In_z_ _Printf_format_string_ TCHAR const * const format,...) {
   if(logFile != NULL) {
     va_list argptr;
     va_start(argptr,format);

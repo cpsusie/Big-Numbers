@@ -277,7 +277,7 @@ void ExternProcess::cleanup() {
   LEAVEFUNC
 }
 
-void ExternProcess::send(const TCHAR *format,...) const {
+void ExternProcess::send(_In_z_ _Printf_format_string_ TCHAR const * const format,...) const {
   ENTERFUNC
   va_list argptr;
   va_start(argptr, format);

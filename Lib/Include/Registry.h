@@ -5,7 +5,7 @@
 
 #ifdef DEBUG_REGISTRY
 
-void registryLog(const TCHAR *format, ...);
+void registryLog(_In_z_ _Printf_format_string_ TCHAR const * const format, ...);
 
 #define REGISTRYLOG(s, p) registryLog(_T("%s %lu\n"), _T(s), p)
 #else

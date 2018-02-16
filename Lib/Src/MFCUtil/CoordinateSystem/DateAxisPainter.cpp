@@ -11,7 +11,7 @@ static const int possibleMonthStep[] = {  1, 2, 3,  4,  6, 12, 24, 36, 48 };
 /*
 static const char *logName = "c:\\temp\\axisStep.log";
 
-static void logStep(const char *format,...) {
+static void logStep(_In_z_ _Printf_format_string_ TCHAR const * const format,...) {
   va_list argptr;
   va_start(argptr,format);
   FILE *f = FOPEN(logName,"a");

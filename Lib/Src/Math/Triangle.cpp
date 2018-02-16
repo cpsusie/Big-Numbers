@@ -1489,7 +1489,7 @@ int triunsuitable(Vertex triorg, Vertex tridest, Vertex triapex, REAL area) {
 
 //******** User interaction routines begin here
 
-void triError(const TCHAR *format, ...) {
+void triError(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
   va_list argptr;
   va_start(argptr, format);
   const String msg = vformat(format, argptr);
@@ -1498,7 +1498,7 @@ void triError(const TCHAR *format, ...) {
 }
 
 // internalerror()   Ask the user to send me the defective product. throw Exception
-void internalerror(const TCHAR *method, const TCHAR *form, ...) {
+void internalerror(const TCHAR *method, _In_z_ _Printf_format_string_ TCHAR const * const form, ...) {
   String msg = format(_T("Internal error in %s:"), method);
   va_list argptr;
   va_start(argptr, form);

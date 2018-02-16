@@ -15,8 +15,8 @@ private:
   Semaphore    m_killed;
 protected:
   // default implementation sends exceptions to debugLog, if m_verbose is true
-  virtual void vverbose(const TCHAR *format, va_list argptr);
-  void          verbose(const TCHAR *format, ...);
+  virtual void vverbose(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
+  void          verbose(_In_z_ _Printf_format_string_ TCHAR const * const format, ...);
 public:
   InputThread(FILE *input = stdin, bool verbose = false);
   virtual ~InputThread();

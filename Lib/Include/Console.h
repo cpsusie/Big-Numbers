@@ -55,14 +55,14 @@ public:
   static void clearLine(int line,                                   WORD attr = NORMALVIDEO, int fileNo = STD_OUTPUT_HANDLE);
   static void clearRect(int left,   int top, int right, int bottom, WORD attr = NORMALVIDEO, int fileNo = STD_OUTPUT_HANDLE);
   static void rectangle(int left,   int top, int right, int bottom, FrameType type = SINGLE_FRAME, WORD color = NORMALVIDEO);
-  static void printf(   int x   ,   int y,             const TCHAR *format, ...);
-  static void printf(   int x   ,   int y, WORD color, const TCHAR *format, ...);
-  static void cprintf(  int x   ,   int y,             const TCHAR *format, ...);            // caret not moved
-  static void cprintf(  int x   ,   int y, WORD color, const TCHAR *format, ...);            // caret not moved
-  static void vprintf(  int x   ,   int y,             const TCHAR *format, va_list argptr);
-  static void vprintf(  int x   ,   int y, WORD color, const TCHAR *format, va_list argptr);
-  static void vcprintf( int x   ,   int y,             const TCHAR *format, va_list argptr); // caret not moved
-  static void vcprintf( int x   ,   int y, WORD color, const TCHAR *format, va_list argptr); // caret not moved
+  static void printf(   int x   ,   int y,             _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
+  static void printf(   int x   ,   int y, WORD color, _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
+  static void cprintf(  int x   ,   int y,             _In_z_ _Printf_format_string_ TCHAR const * const format, ...);            // caret not moved
+  static void cprintf(  int x   ,   int y, WORD color, _In_z_ _Printf_format_string_ TCHAR const * const format, ...);            // caret not moved
+  static void vprintf(  int x   ,   int y,             _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
+  static void vprintf(  int x   ,   int y, WORD color, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
+  static void vcprintf( int x   ,   int y,             _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr); // caret not moved
+  static void vcprintf( int x   ,   int y, WORD color, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr); // caret not moved
   static void setColor( WORD color,                                             int fileNo = STD_OUTPUT_HANDLE);
   static void setColor( int x   ,   int y, WORD color,                          int fileNo = STD_OUTPUT_HANDLE);
   static void setColor( int left,   int top, int right, int bottom, WORD color, int fileNo = STD_OUTPUT_HANDLE);
@@ -821,7 +821,7 @@ public:
   void getVar(  int id, double &n);
   void getVar(  int id, String &s);
   void getVar(  int id, bool   &b);
-  void printf(  int left, int top, const TCHAR *format, ...);
+  void printf(  int left, int top, _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
   void setTitle(const String &title);
 
   const String &getTitle() const {

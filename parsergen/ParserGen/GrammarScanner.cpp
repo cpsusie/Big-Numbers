@@ -322,22 +322,22 @@ void GrammarScanner::getCollected(SourceText &sourceText) {
   sourceText = m_collector.getSourceText(m_length);
 }
 
-static void verrorwarning(const TCHAR *prefix, const SourcePositionWithName &pos, TCHAR *format, va_list argptr) {
+static void verrorwarning(const TCHAR *prefix, const SourcePositionWithName &pos, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
   _tprintf(_T("%s(%d,%d) : %s %s\n")
           ,pos.getName().cstr(), pos.getLineNumber(), pos.getColumn()+1
           ,prefix
           ,vformat(format, argptr).replace('\n', ' ').cstr());
 }
 
-static void verror(const SourcePositionWithName &pos, TCHAR *format, va_list argptr) {
+static void verror(const SourcePositionWithName &pos, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
   verrorwarning(_T("error"), pos, format, argptr);
 }
 
-static void vwarning(const SourcePositionWithName &pos, TCHAR *format, va_list argptr) {
+static void vwarning(const SourcePositionWithName &pos, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
   verrorwarning(_T("warning"), pos, format, argptr);
 }
 
-void GrammarScanner::error(TCHAR *format, ...) {
+void GrammarScanner::error(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
   va_list argptr;
   va_start(argptr, format);
   ::verror(SourcePositionWithName(m_absoluteFileName, m_sourcePos), format, argptr);
@@ -345,7 +345,7 @@ void GrammarScanner::error(TCHAR *format, ...) {
   m_ok = false;
 }
 
-void GrammarScanner::error(const SourcePosition &pos, TCHAR *format, ...) {
+void GrammarScanner::error(const SourcePosition &pos, _In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
   va_list argptr;
   va_start(argptr, format);
   ::verror(SourcePositionWithName(m_absoluteFileName, pos), format, argptr);
@@ -353,14 +353,14 @@ void GrammarScanner::error(const SourcePosition &pos, TCHAR *format, ...) {
   m_ok = false;
 }
 
-void GrammarScanner::warning(TCHAR *format, ...) {
+void GrammarScanner::warning(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
   va_list argptr;
   va_start(argptr, format);
   ::vwarning(SourcePositionWithName(m_absoluteFileName, m_sourcePos), format, argptr);
   va_end(argptr);
 }
 
-void GrammarScanner::warning(const SourcePosition &pos, TCHAR *format, ...) {
+void GrammarScanner::warning(const SourcePosition &pos, _In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
   va_list argptr;
   va_start(argptr, format);
   ::vwarning(SourcePositionWithName(m_absoluteFileName, pos), format, argptr);

@@ -645,7 +645,7 @@ void Tableau::traceDegeneracy(int pivotRow, int pivotColumn, const Real &minRati
   }
 }
 
-void Tableau::trace(int flag, const TCHAR *format, ...) const {
+void Tableau::trace(int flag, _In_z_ _Printf_format_string_ TCHAR const * const format, ...) const {
   if(isTracing(flag)) {
     va_list argptr;
     va_start(argptr,format);
@@ -654,14 +654,14 @@ void Tableau::trace(int flag, const TCHAR *format, ...) const {
   }
 }
 
-void Tableau::trace(const TCHAR *format,...) const {
+void Tableau::trace(_In_z_ _Printf_format_string_ TCHAR const * const format,...) const {
   va_list argptr;
   va_start(argptr,format);
   vtrace(format,argptr);
   va_end(argptr);
 }
 
-void Tableau::vtrace(const TCHAR *format, va_list argptr) const {
+void Tableau::vtrace(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) const {
   if(m_tracer != NULL) {
     m_tracer->handleData(SimplexTraceElement(*this,vformat(format, argptr)));
   }

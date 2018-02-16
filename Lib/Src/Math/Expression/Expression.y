@@ -7,7 +7,7 @@
 class ExpressionParser : public LRparser {
 public:
   ExpressionParser(ParserTree &tree, ExpressionLex *lex = NULL) : m_tree(tree), LRparser(*ExpressionTables,lex) {}
-  void verror(const SourcePosition &pos, const TCHAR *format, va_list argptr);
+  void verror(const SourcePosition &pos, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
 private:
   ParserTree &m_tree;
   ExpressionNode *m_dollardollar, **m_stacktop, *m_userstack[256];
@@ -200,6 +200,6 @@ ExpressionNode *ExpressionParser::newNode(const SourcePosition &pos, ExpressionI
   return p;
 }
 
-void ExpressionParser::verror(const SourcePosition &pos, const TCHAR *format, va_list argptr) {
+void ExpressionParser::verror(const SourcePosition &pos, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
   m_tree.vAddError(&pos, format, argptr);
 }

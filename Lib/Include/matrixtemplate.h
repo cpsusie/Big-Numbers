@@ -11,18 +11,18 @@ private:
   T              *m_a;
   MatrixDimension m_dim;
 
-  static void vthrowMatrixException(const TCHAR *format, va_list argptr) {
+  static void vthrowMatrixException(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
     throwException(_T("MatrixTemplate:%s."), vformat(format, argptr).cstr());
   }
 
-  static void throwMatrixException(const TCHAR *format, ...) {
+  static void throwMatrixException(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
     va_list argptr;
     va_start(argptr, format);
     vthrowMatrixException(format, argptr);
     va_end(argptr);
   }
 
-  void throwIndexException(const TCHAR *format, ...) const {
+  void throwIndexException(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) const {
     va_list argptr;
     va_start(argptr, format);
     const String msg = vformat(format, argptr);

@@ -340,11 +340,11 @@ void MMCapture::saveAudioFrame(const WAVEHDR *audioHeader) {
 }
 
 // ******************************************** class CaptureReceiver ********************************************
-void CaptureReceiver::vlog(const TCHAR *format, va_list argptr) {
+void CaptureReceiver::vlog(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
   _vtprintf(format,argptr);
 }
 
-void CaptureReceiver::log(const TCHAR *format, ...) {
+void CaptureReceiver::log(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
   va_list argptr;
   va_start(argptr, format);
   vlog(format, argptr);

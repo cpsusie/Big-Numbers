@@ -9,7 +9,7 @@ private:
   T     *m_e;
   size_t m_dim;
 
-  static void throwVectorException(const TCHAR *format, ...) {
+  static void throwVectorException(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
     va_list argptr;
     va_start(argptr, format);
     throwException(_T("VectorTemplate:%s."), vformat(format, argptr).cstr());

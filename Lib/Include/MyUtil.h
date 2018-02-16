@@ -173,7 +173,7 @@ String readTextFile(const String &fileName);
 bool   readLine(FILE *f, String &str);
 
 void pause();
-void pause(const TCHAR *format, ...);
+void pause(_In_z_ _Printf_format_string_ TCHAR const * const format, ...);
 #define PAUSE() pause(_T("%s line %d"), __TFILE__, __LINE__)
 
 bool keyPressed(int vk);

@@ -378,7 +378,7 @@ void LexScanner::getCollected(SourceText &src) {
   src = m_collector.getSourceText(m_length);
 }
 
-static void error(const TCHAR *fname, int lineno, const TCHAR *format, ...) {
+static void error(const TCHAR *fname, int lineno, _In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
   va_list argptr;
   va_start(argptr, format);
   String tmp = vformat(format, argptr);
@@ -388,7 +388,7 @@ static void error(const TCHAR *fname, int lineno, const TCHAR *format, ...) {
   exit(-1);
 }
 
-static void warning(const TCHAR *fname, int lineno, const TCHAR *format, ...) {
+static void warning(const TCHAR *fname, int lineno, _In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
   va_list argptr;
   va_start(argptr, format);
   String tmp = vformat(format, argptr);
@@ -397,20 +397,20 @@ static void warning(const TCHAR *fname, int lineno, const TCHAR *format, ...) {
   _tprintf(_T("%s(%d) : warning %s\n"), fname, lineno, tmp.cstr());
 }
 
-void LexScanner::verror(const TCHAR *format, va_list argptr) {
+void LexScanner::verror(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
   String tmp = vformat(format, argptr);
   tmp.replace('\n', ' ');
   ::error(m_absoluteFileName.cstr(), m_ruleSection ? m_ruleLineNo : m_lineNo, _T("%s"), tmp.cstr());
 }
 
-void LexScanner::error(const TCHAR *format, ...) {
+void LexScanner::error(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
   va_list argptr;
   va_start(argptr, format);
   verror(format, argptr);
   va_end(argptr);
 }
 
-void LexScanner::warning(const TCHAR *format, ...) {
+void LexScanner::warning(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
   va_list argptr;
   va_start(argptr, format);
   String tmp = vformat(format, argptr);

@@ -355,7 +355,7 @@ char *findfield(char *string);
 String getTriangleSyntax(); // get a string with command line switches
 String getTriangleInfo();   // get the whole story
 
-void triError(const TCHAR *format, ...);
+void triError(_In_z_ _Printf_format_string_ TCHAR const * const format, ...);
 
 // Maximum number of characters in a line read from a file (including the 0
 #define INPUTLINESIZE 1024

@@ -86,13 +86,13 @@ String InputThread::getLine(int timeout) {
   return s;
 }
 
-void InputThread::vverbose(const TCHAR *format, va_list argptr) {
+void InputThread::vverbose(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
   if(m_verbose) {
     vdebugLog(format, argptr);
   }
 }
 
-void InputThread::verbose(const TCHAR *format, ...) {
+void InputThread::verbose(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
   va_list argptr;
   va_start(argptr, format);
   vverbose(format, argptr);

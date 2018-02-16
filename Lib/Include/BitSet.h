@@ -45,7 +45,7 @@ protected:
     return _BS_ATOMCOUNT(capacity);
   }
   String indexOutOfRangeString(size_t index) const;
-  void throwIndexOutOfRange(const TCHAR *method, size_t index, const TCHAR *format,...) const;
+  void throwIndexOutOfRange(const TCHAR *method, size_t index, _In_z_ _Printf_format_string_ TCHAR const * const format,...) const;
 
 public:
   // can store integers from [0..capacity-1]

@@ -17,7 +17,7 @@ public:
   }
 
   int    getNextLexeme();
-  void   verror(const SourcePosition &pos, const TCHAR *format, va_list argptr);
+  void   verror(const SourcePosition &pos, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
   static ExpressionInputSymbol nameOrKeyWord(const _TUCHAR *lexeme);
 };
 
@@ -188,7 +188,7 @@ ExpressionInputSymbol ExpressionLex::nameOrKeyWord(const _TUCHAR *lexeme) { // s
   return p ? *p : NAME;
 }
 
-void ExpressionLex::verror(const SourcePosition &pos, const TCHAR *format, va_list argptr) {
+void ExpressionLex::verror(const SourcePosition &pos, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
   if(m_parser) {
     m_parser->verror(pos, format, argptr);
   } else {

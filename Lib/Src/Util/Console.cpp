@@ -246,7 +246,7 @@ void Console::clearRect(int left, int top, int right, int bottom, WORD attr, int
   s_gate.signal();
 }
 
-void Console::vprintf(int x, int y, const TCHAR *format, va_list argptr) {
+void Console::vprintf(int x, int y, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
   const String tmp = vformat(format, argptr);
 
   COORD coord;
@@ -261,7 +261,7 @@ void Console::vprintf(int x, int y, const TCHAR *format, va_list argptr) {
   s_gate.signal();
 }
 
-void Console::vprintf(int x, int y, WORD color, const TCHAR *format, va_list argptr) {
+void Console::vprintf(int x, int y, WORD color, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
   const String tmp = vformat(format, argptr);
 
   const int length = (int)tmp.length();
@@ -286,40 +286,40 @@ void Console::vprintf(int x, int y, WORD color, const TCHAR *format, va_list arg
   delete[] attr;
 }
 
-void Console::vcprintf(int x, int y, const TCHAR *format, va_list argptr) {
+void Console::vcprintf(int x, int y, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
   const COORD oldPos = getCursorPos();
   vprintf(x, y, format, argptr);
   setCursorPos(oldPos);
 }
 
-void Console::vcprintf(int x, int y, WORD color, const TCHAR *format, va_list argptr) {
+void Console::vcprintf(int x, int y, WORD color, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
   const COORD oldPos = getCursorPos();
   vprintf(x, y, color, format, argptr);
   setCursorPos(oldPos);
 }
 
-void Console::printf(int x, int y, const TCHAR *format, ...) {
+void Console::printf(int x, int y, _In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
   va_list argptr;
   va_start(argptr, format);
   vprintf(x, y, format, argptr);
   va_end(argptr);
 }
 
-void Console::printf(int x, int y, WORD color, const TCHAR *format, ...) {
+void Console::printf(int x, int y, WORD color, _In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
   va_list argptr;
   va_start(argptr,format);
   vprintf(x, y, color, format, argptr);
   va_end(argptr);
 }
 
-void Console::cprintf(int x, int y, const TCHAR *format,...) {
+void Console::cprintf(int x, int y, _In_z_ _Printf_format_string_ TCHAR const * const format,...) {
   va_list argptr;
   va_start(argptr, format);
   vcprintf(x, y, format, argptr);
   va_end(argptr);
 }
 
-void Console::cprintf(int x, int y, WORD color, const TCHAR *format,...) {
+void Console::cprintf(int x, int y, WORD color, _In_z_ _Printf_format_string_ TCHAR const * const format,...) {
   va_list argptr;
   va_start(argptr, format);
   vcprintf(x, y, color, format, argptr);

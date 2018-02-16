@@ -1,6 +1,6 @@
 #include "pch.h"
 /*
-void Message(const TCHAR *format,... ) {
+void Message(_In_z_ _Printf_format_string_ TCHAR const * const format,... ) {
   va_list argptr;
   va_start(argptr,format);
   const String msg = vformat(format, argptr);
@@ -14,7 +14,7 @@ void Message(const TCHAR *format,... ) {
 }
 */
 
-int vshowMessageBox(int flags, const TCHAR *format, va_list argptr) {
+int vshowMessageBox(int flags, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
   String msg = vformat(format, argptr)
               .replace(_T('\r'),_T(""))
               .replace(_T('\n'), _T("\n\r"));

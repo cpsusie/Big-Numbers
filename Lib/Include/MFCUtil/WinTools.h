@@ -169,11 +169,11 @@ void textOutTransparentBackground(HDC hdc, const CPoint &p, const String &s, CFo
 void textOut(                     HDC hdc, const CPoint &p, const String &s);
 void textOut(                     HDC hdc, int x, int y, const String &s);
 
-// void Message(const TCHAR *format, ... );
+// void Message(_In_z_ _Printf_format_string_ TCHAR const * const format, ... );
 
-int vshowMessageBox(int flags, const TCHAR *format, va_list argptr);
+int vshowMessageBox(int flags, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
 
-inline int showMessageBox(int flags, const TCHAR *format, ...) {
+inline int showMessageBox(int flags, _In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
   va_list argptr;
   va_start(argptr, format);
   const int result = vshowMessageBox(flags, format, argptr);
@@ -181,7 +181,7 @@ inline int showMessageBox(int flags, const TCHAR *format, ...) {
   return result;
 }
 
-inline void showInformation(const TCHAR *format, ...) {
+inline void showInformation(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
   va_list argptr;
   va_start(argptr, format);
   vshowMessageBox(MB_ICONINFORMATION, format, argptr);
@@ -192,7 +192,7 @@ inline void showInformation(const String &msg) {
   showInformation(_T("%s"), msg.cstr());
 }
 
-inline void showWarning(const TCHAR *format, ...) {
+inline void showWarning(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
   va_list argptr;
   va_start(argptr, format);
   vshowMessageBox(MB_ICONWARNING, format, argptr);
@@ -203,7 +203,7 @@ inline void showWarning(const String &msg) {
   showWarning(_T("%s"), msg.cstr());
 }
 
-inline void showError(const TCHAR *format, ...) {
+inline void showError(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
   va_list argptr;
   va_start(argptr, format);
   vshowMessageBox(MB_ICONERROR, format, argptr);

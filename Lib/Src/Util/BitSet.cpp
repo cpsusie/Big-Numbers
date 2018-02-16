@@ -15,7 +15,7 @@ String BitSet::indexOutOfRangeString(size_t index) const {
   return format(_T("Index %s out of range. Capacity=%s"), format1000(index).cstr(), format1000(m_capacity).cstr());
 }
 
-void BitSet::throwIndexOutOfRange(const TCHAR *method, size_t index, const TCHAR *format, ...) const {
+void BitSet::throwIndexOutOfRange(const TCHAR *method, size_t index, _In_z_ _Printf_format_string_ TCHAR const * const format, ...) const {
   va_list argptr;
   va_start(argptr, format);
   const String msg = vformat(format, argptr);

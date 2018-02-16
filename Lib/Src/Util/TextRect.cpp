@@ -418,11 +418,11 @@ int TextRect::wtext(int x, int y, WORD color, const wchar_t *text) {
   return length;
 }
 
-void TextRect::vprintf(int x, int y, WORD color, const TCHAR *format, va_list argptr) {
+void TextRect::vprintf(int x, int y, WORD color, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
   text(x,y,color,vformat(format,argptr).cstr());
 }
 
-void TextRect::printf(int x, int y, WORD color, const TCHAR *format,...) {
+void TextRect::printf(int x, int y, WORD color, _In_z_ _Printf_format_string_ TCHAR const * const format,...) {
   va_list argptr;
   va_start(argptr,format);
   vprintf(x,y,color,format,argptr);

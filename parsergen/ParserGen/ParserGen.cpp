@@ -6,7 +6,7 @@
 #include "Wizard.h"
 
 static int verboseLevel = 1;
-static void verbose(int level, TCHAR *format, ...) {
+static void verbose(int level, _In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
   if(level <= verboseLevel) {
     va_list argptr;
     va_start(argptr, format);

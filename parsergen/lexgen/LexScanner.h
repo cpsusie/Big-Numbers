@@ -125,9 +125,9 @@ public:
   inline SourcePositionWithName getRulePosition() const {
     return SourcePositionWithName(m_absoluteFileName, m_ruleLineNo, 0);
   }
-  void verror( const TCHAR *format, va_list argptr);
-  void error(  const TCHAR *format, ...);
-  void warning(const TCHAR *format, ...);
+  void verror( _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
+  void error(  _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
+  void warning(_In_z_ _Printf_format_string_ TCHAR const * const format, ...);
 };
 
 // scan escape sequences, return equivalent ASCII character. f.ex. "\n" = 10

@@ -24,7 +24,7 @@ private:
   TCHAR m_alias[32];
   double m_speedFactor;
 
-  String sendString(const TCHAR *format, ...);
+  String sendString(_In_z_ _Printf_format_string_ TCHAR const * const format, ...);
   void checkResult(MCIERROR ret);
 
 public:

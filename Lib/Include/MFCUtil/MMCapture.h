@@ -34,8 +34,8 @@ public:
   virtual LRESULT captureStatusCallback(     MMCapture &capture, int id, const TCHAR *description) { return S_OK; }
   virtual LRESULT captureControlCallback(    MMCapture &capture, int state)                        { return S_OK; }
   virtual LRESULT captureErrorCallback(      MMCapture &capture, int id, const TCHAR *message)     { return S_OK; }
-  virtual void vlog(const TCHAR *format, va_list argptr);
-  void log(const TCHAR *format, ...);
+  virtual void vlog(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
+  void log(         _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
 };
 
 class AudioPlayerThread : public Thread {

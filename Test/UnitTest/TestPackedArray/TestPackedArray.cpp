@@ -30,7 +30,7 @@ namespace TestPackedArray {
     void clear();
 
 #ifdef _DEBUG
-    void dump(const TCHAR *format, ...) const;
+    void dump(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) const;
 #endif
 
   };
@@ -183,7 +183,7 @@ namespace TestPackedArray {
   }
 
 #ifdef _DEBUG
-  void TestClass::dump(const TCHAR *formatStr, ...) const {
+  void TestClass::dump(_In_z_ _Printf_format_string_ TCHAR const * const formatStr, ...) const {
     va_list argptr;
     va_start(argptr, formatStr);
     const String label = vformat(formatStr, argptr);

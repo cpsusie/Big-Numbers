@@ -156,7 +156,7 @@ private:
   CPoint getCheckBoxPosition(const ListCell &cell) const;
 
   bool   isChildWindow(CWnd *wnd);
-  void   trace(const TCHAR *format,...);
+  void   trace(_In_z_ _Printf_format_string_ TCHAR const * const format,...);
   String infoToString() const;
   String controlFlagsToString() const;
 public:

@@ -286,7 +286,7 @@ int MediaComparator::compare(const MediaFile &mf1, const MediaFile &mf2) {
   return m_sortCrit.m_asc ? a : -a;
 }
 
-void logError(const TCHAR *format,...) {
+void logError(_In_z_ _Printf_format_string_ TCHAR const * const format,...) {
   FILE *f = fopen(makeErrorFileName(), _T("a"));
   if(f == NULL) {
     return;

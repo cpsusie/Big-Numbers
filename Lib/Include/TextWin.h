@@ -54,8 +54,8 @@ public:
   void set(      int l, int t, int w, int h, int op, ...);
   void rectangle(int l, int t, int r, int b, FrameType type, WORD color);
   void text(   int x, int y, WORD color, const TCHAR *text);
-  void vprintf(int x, int y, WORD color, const TCHAR *format, va_list argptr);
-  void printf( int x, int y, WORD color, const TCHAR *format, ...);
+  void vprintf(int x, int y, WORD color, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
+  void printf( int x, int y, WORD color, _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
   int  getLeft()   const { return m_l; }
   int  getTop()    const { return m_t; }
   int  getWidth()  const { return m_trect->getWidth();  }

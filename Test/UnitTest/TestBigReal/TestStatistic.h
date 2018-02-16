@@ -105,14 +105,14 @@ public:
   double getPercentDone() const {
     return PERCENT(m_testCounter, m_maxTestCount);
   }
-  static void screenlog(       const TCHAR *format,...);
+  static void screenlog(       _In_z_ _Printf_format_string_ TCHAR const * const format,...);
   static void screenlogGotoTop() {
     s_logypos = 0;
   }
-  void        vsetEndMessage(  const TCHAR *format, va_list argptr);
-  void        setEndMessage(   const TCHAR *format,...);
-  void        addEndMessage(   const TCHAR *format,...);
-  void        printLoopMessage(const TCHAR *format,...);
+  void        vsetEndMessage(  _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
+  void        setEndMessage(   _In_z_ _Printf_format_string_ TCHAR const * const format,...);
+  void        addEndMessage(   _In_z_ _Printf_format_string_ TCHAR const * const format,...);
+  void        printLoopMessage(_In_z_ _Printf_format_string_ TCHAR const * const format,...);
   void        setEndMessageToOk() {
     setEndMessage(_T("Ok"));
   }

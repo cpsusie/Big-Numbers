@@ -30,8 +30,8 @@ public:
   }
   void putch(   TCHAR c);
   void puts(    const TCHAR *s);
-  void vprintf( const TCHAR *format, va_list argptr);
-  void printf(  const TCHAR *format, ...);
+  void vprintf( _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
+  void printf(  _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
 
   void setLeftMargin(int m)  {
     m_leftFiller = spaceString(m);
@@ -60,10 +60,10 @@ public:
   }
 };
 
-inline void vfprintf(MarginFile *f, const TCHAR *format, va_list argptr) {
+inline void vfprintf(MarginFile *f, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
   f->vprintf(format, argptr);
 }
-void fprintf( MarginFile *f, const TCHAR *format, ...);
+void fprintf( MarginFile *f, _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
 
 inline void fputc(int ch, MarginFile *f) {
   f->putch((TCHAR)ch);

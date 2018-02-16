@@ -1026,7 +1026,7 @@ void CEditListCtrl::OnColumnclick(NMHDR *pNMHDR, LRESULT *pResult) {
   *pResult = 0;
 }
 
-void CEditListCtrl::trace(const TCHAR  *format, ...) {
+void CEditListCtrl::trace(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
   va_list argptr;
   va_start(argptr, format);
   String msg = vformat(format,argptr);

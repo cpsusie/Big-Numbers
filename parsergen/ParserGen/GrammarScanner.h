@@ -79,10 +79,10 @@ public:
   const String &getAbsoluteFileName() const {
     return m_absoluteFileName;
   }
-  void error(TCHAR *format, ...);
-  void error(const SourcePosition &pos, TCHAR *format, ...);
-  void warning(TCHAR *format, ...);
-  void warning(const SourcePosition &pos, TCHAR *format, ...);
+  void error(_In_z_ _Printf_format_string_ TCHAR const * const format, ...);
+  void error(const SourcePosition &pos, _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
+  void warning(_In_z_ _Printf_format_string_ TCHAR const * const format, ...);
+  void warning(const SourcePosition &pos, _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
   bool ok() {
     return m_ok;
   }

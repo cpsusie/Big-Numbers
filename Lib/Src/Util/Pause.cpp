@@ -4,7 +4,7 @@ void pause() {
   pause(_T("Tryk enter..."));
 }
 
-void pause(const TCHAR *format,...) {
+void pause(_In_z_ _Printf_format_string_ TCHAR const * const format,...) {
   TCHAR line[100];
   va_list argptr;
   va_start(argptr,format);

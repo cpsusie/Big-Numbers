@@ -297,27 +297,27 @@ Scanner *LRparser::setScanner(Scanner *scanner) {
   return old;
 }
 
-void LRparser::error(const SourcePosition &pos, const TCHAR *format,...) {
+void LRparser::error(const SourcePosition &pos, _In_z_ _Printf_format_string_ TCHAR const * const format,...) {
   va_list argptr;
   va_start(argptr,format);
   verror(pos,format,argptr);
   va_end(argptr);
 }
 
-void LRparser::debug(const TCHAR *format,...) {
+void LRparser::debug(_In_z_ _Printf_format_string_ TCHAR const * const format,...) {
   va_list argptr;
   va_start(argptr,format);
   vdebug(format,argptr);
   va_end(argptr);
 }
 
-void LRparser::verror(const SourcePosition &pos, const TCHAR *format, va_list argptr) {
+void LRparser::verror(const SourcePosition &pos, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
   _tprintf(_T("error in line %d:"), pos. getLineNumber());
   _vtprintf(format, argptr);
   _tprintf(_T("\n")); // we default append a newline.
 }
 
-void LRparser::vdebug(const TCHAR *format, va_list argptr) {
+void LRparser::vdebug(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
   _vtprintf(format, argptr);
   _tprintf(_T("\n"));
 }

@@ -32,7 +32,7 @@ void Semaphore::signal() {
   }
 }
 
-static void addDebugLine(const TCHAR *format, ...) {
+static void addDebugLine(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
   static Semaphore gate;
   static TCHAR *mode = _T("w");
   gate.wait();
@@ -47,13 +47,13 @@ static void addDebugLine(const TCHAR *format, ...) {
 }
 
 void Semaphore::wait(const TCHAR *name, const TCHAR *file, int line) {
-  addDebugLine(_T("Thread %08d %s(%d).wait()   in %s line %d\n")
+  addDebugLine(_T("Thread %08d %s(%p).wait()   in %s line %d\n")
                ,GetCurrentThreadId(), name, m_sem, file, line);
   wait();
 }
 
 void Semaphore::signal(const TCHAR *name, const TCHAR *file, int line) {
-  addDebugLine(_T("Thread %08d %s(%d).signal() in %s line %d\n")
+  addDebugLine(_T("Thread %08d %s(%p).signal() in %s line %d\n")
                ,GetCurrentThreadId(), name, m_sem, file, line);
   signal();
 }

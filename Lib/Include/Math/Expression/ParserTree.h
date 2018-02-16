@@ -404,10 +404,10 @@ typedef ExpressionNode *(ParserTree::*BinaryOperator)(ExpressionNode *n1, Expres
                                             ,ExpressionNode *endExpr
                                             ,ExpressionNode *expr);
 
-  void addError( ExpressionNode *n              , const TCHAR *format,...);
-  void addError( const SourcePosition       &pos, const TCHAR *format,...);
-  void addError(                                  const TCHAR *format,...);
-  void vAddError(const SourcePosition       *pos, const TCHAR *format, va_list argptr);
+  void addError( ExpressionNode *n              , _In_z_ _Printf_format_string_ TCHAR const * const format,...);
+  void addError( const SourcePosition       &pos, _In_z_ _Printf_format_string_ TCHAR const * const format,...);
+  void addError(                                  _In_z_ _Printf_format_string_ TCHAR const * const format,...);
+  void vAddError(const SourcePosition       *pos, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
 
   const StringArray &getErrors() const {
     return m_errors;

@@ -49,7 +49,7 @@ BigReal &MultiplyServer::mult(BigReal &dst, const BigReal &x, const BigReal &y, 
 #endif // USE_X32SERVERCHECK
 
 #ifdef _DEBUG
-void traceRecursion(int level, const TCHAR *format,...) {
+void traceRecursion(int level, _In_z_ _Printf_format_string_ TCHAR const * const format,...) {
   const String spaces = spaceString(level);
   va_list argptr;
   va_start(argptr,format);

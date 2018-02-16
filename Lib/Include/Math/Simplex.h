@@ -211,8 +211,8 @@ private:
   void traceTableau() const;
   void traceBasis(const TCHAR *label) const;
   void traceDegeneracy(int pivotRow, int pivotColumn, const Real &minRatio) const;
-  void trace(int flag, const TCHAR *format, ...) const;
-  void vtrace(const TCHAR *format, va_list argptr) const;
+  void trace(int flag, _In_z_ _Printf_format_string_ TCHAR const * const format, ...) const;
+  void vtrace(         _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) const;
 public:
   Tableau(size_t xCount, size_t constraintCount, SimplexTracer *tracer = NULL, int traceFlags = TRACE_MAINSTEP);
   Tableau(const Tableau &src);
@@ -229,7 +229,7 @@ public:
     return m_tracer;
   }
 
-  void trace(const TCHAR *format, ...) const;
+  void trace(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) const;
 
   bool isTracing(int flag) const {
     return m_tracer != NULL && ((m_traceFlags & flag) != 0);

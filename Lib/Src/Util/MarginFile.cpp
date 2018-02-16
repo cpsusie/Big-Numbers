@@ -101,7 +101,7 @@ void MarginFile::puts(const TCHAR *s) {
   }
 }
 
-void MarginFile::vprintf(const TCHAR *format, va_list argptr) {
+void MarginFile::vprintf(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
   for(;;) {
     if(_vsntprintf(m_formatBuffer, m_formatBufferSize, format, argptr) >= 0) {
       break;
@@ -113,14 +113,14 @@ void MarginFile::vprintf(const TCHAR *format, va_list argptr) {
   puts(m_formatBuffer);
 }
 
-void MarginFile::printf(const TCHAR *format,...) {
+void MarginFile::printf(_In_z_ _Printf_format_string_ TCHAR const * const format,...) {
   va_list argptr;
   va_start(argptr,format);
   vprintf(format, argptr);
   va_end(argptr);
 }
 
-void fprintf(MarginFile *file, const TCHAR *format,...) {
+void fprintf(MarginFile *file, _In_z_ _Printf_format_string_ TCHAR const * const format,...) {
   va_list argptr;
   va_start(argptr,format);
   file->vprintf(format,argptr);

@@ -130,15 +130,15 @@ const String getSignatureSubDir() {
 
 static FILE  *logFile = NULL;
 
-void log(const TCHAR *form,...) {
+void log(_In_z_ _Printf_format_string_ TCHAR const * const format,...) {
   if (logFile == NULL) {
     const String logFileName = FileNameSplitter(getModuleFileName()).setDir(getSourceDir()).setExtension(_T("log")).getFullPath();
     logFile = MKFOPEN(logFileName, _T("a"));
   }
 
   va_list argptr;
-  va_start(argptr,form);
-  String s = vformat(form, argptr);
+  va_start(argptr,format);
+  String s = vformat(format, argptr);
   va_end(argptr);
 
   s.replace(_T('\n'),_T(' '));

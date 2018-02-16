@@ -72,7 +72,7 @@ public:
   // Works only together with vstart, start.
   void stop();
   // Works only together with vstart, start. Send strings can be read on stdin by child-process
-  void send(const TCHAR *format, ...) const;
+  void send(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) const;
   // Works only together with vstart, start. Can receive text written to stdout by child-process
   String receive();
   inline bool isStarted() const {

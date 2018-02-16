@@ -277,10 +277,10 @@ public:
   inline void setDebug(bool newvalue) {
     m_debug = newvalue;
   }
-  void error(const SourcePosition &pos, const TCHAR *format, ...);
-  void debug(const TCHAR *format, ...);
-  virtual void verror(const SourcePosition &pos, const TCHAR *format, va_list argptr);
-  virtual void vdebug(const TCHAR *format, va_list argptr);
+  void error(const SourcePosition &pos         , _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
+  void debug(                                    _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
+  virtual void verror(const SourcePosition &pos, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
+  virtual void vdebug(                           _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
   // virtual. default inputfunction. Will be generated in derived class by lexgen
   virtual int getNextLexeme() {
     return 0;

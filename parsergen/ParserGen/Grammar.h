@@ -164,7 +164,7 @@ private:
   }
   void   checkStateIsConsistent(const LR1State &state, StateResult &result);
   ConflictSolution resolveShiftReduceConflict(const GrammarSymbol &terminal, const LR1Item &item) const;
-  void   verbose(int level, const TCHAR *format, ...) const;
+  void   verbose(int level, _In_z_ _Printf_format_string_ TCHAR const * const format, ...) const;
 
   Language               m_language;
   String                 m_name;

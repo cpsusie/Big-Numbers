@@ -234,7 +234,7 @@ void Dialog::getVar(int id, double &n)     { n = ((DoubleField*)getDlgItem(id))-
 void Dialog::getVar(int id, String &s)     { s = ((StringField*)getDlgItem(id))->getString(); }
 void Dialog::getVar(int id, bool   &n)     { n = ((BoolField*)getDlgItem(id))->getBool();     }
 
-void Dialog::printf(int x, int y, const TCHAR *format,...) {
+void Dialog::printf(int x, int y, _In_z_ _Printf_format_string_ TCHAR const * const format,...) {
   va_list argptr;
   va_start(argptr,format);
   const String tmp = vformat(format,argptr);

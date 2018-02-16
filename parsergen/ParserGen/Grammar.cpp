@@ -913,7 +913,7 @@ void Grammar::dumpFirst1Sets(FILE *f) const {
   }
 }
 
-void Grammar::verbose(int level, const TCHAR *format, ...) const {
+void Grammar::verbose(int level, _In_z_ _Printf_format_string_ TCHAR const * const format, ...) const {
   if(level <= m_verboseLevel) {
     va_list argptr;
     va_start(argptr, format);

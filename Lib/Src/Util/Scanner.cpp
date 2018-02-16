@@ -372,27 +372,27 @@ intptr_t Scanner::fillBuf(_TUCHAR *start) { // private
   return got;
 }
 
-void Scanner::error(const SourcePosition &pos, const TCHAR *format, ...) {
+void Scanner::error(const SourcePosition &pos, _In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
   va_list argptr;
   va_start(argptr, format);
   verror(pos,format, argptr);
   va_end(argptr);
 }
 
-void Scanner::verror(const SourcePosition &pos, const TCHAR *format, va_list argptr) {
+void Scanner::verror(const SourcePosition &pos, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
   _tprintf(_T("error in line %d:"),pos.getLineNumber());
   _vtprintf(format, argptr);
   _tprintf(_T("\n")); // we default append a newline.
 }
 
-void Scanner::debug(const TCHAR *format,...) {
+void Scanner::debug(_In_z_ _Printf_format_string_ TCHAR const * const format,...) {
   va_list argptr;
   va_start(argptr, format);
   vdebug(format, argptr);
   va_end(argptr);
 }
 
-void Scanner::vdebug(const TCHAR *format, va_list argptr) {
+void Scanner::vdebug(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
   _vtprintf(format, argptr);
   _tprintf(_T("\n"));
 }
@@ -400,10 +400,10 @@ void Scanner::vdebug(const TCHAR *format, va_list argptr) {
 void Scanner::debugState(const TCHAR *label, int state, int lookahead) {
   if(isprint(lookahead)) {
     debug(_T("%sstate:%3d. lookahead:'%c' text:[%*.*s]")
-         ,label,state,lookahead,getLength(),getLength(),getText());
+         ,label,state,lookahead,(int)getLength(),(int)getLength(),getText());
   } else {
     debug(_T("%sstate:%3d. lookahead:%#x text:[%*.*s]")
-         ,label,state,lookahead,getLength(),getLength(),getText());
+         ,label,state,lookahead,(int)getLength(),(int)getLength(),getText());
   }
 }
 

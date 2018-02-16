@@ -30,7 +30,7 @@ BigReal  getRelativeError(  const BigReal  &x, const BigReal &x0);
 
 #define NEWLINE _T("\n")
 
-void log(const TCHAR *form,...);
+void log(_In_z_ _Printf_format_string_ TCHAR const * const format,...);
 void clearLine();
 
 const String &getSourceDir();

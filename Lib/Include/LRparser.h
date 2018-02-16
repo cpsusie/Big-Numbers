@@ -465,10 +465,10 @@ public:
   SourcePosition getPos() const;
   // Return sourceposition of symbol number i in current production. i = [1..prodlen]
   const SourcePosition &getPos(int i) const;
-  void error(const SourcePosition &pos, const TCHAR *format, ...);
+  void error(const SourcePosition &pos, _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
   // Called on every step of the parse if m_debug is true
-  void debug(const TCHAR *format, ...);
+  void debug(_In_z_ _Printf_format_string_ TCHAR const * const format, ...);
   // Errors can be caught by usersupplied error-handler
-  virtual void verror(const SourcePosition &pos, const TCHAR *format, va_list argptr);
-  virtual void vdebug(const TCHAR *format, va_list argptr);
+  virtual void verror(const SourcePosition &pos, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
+  virtual void vdebug(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
 };

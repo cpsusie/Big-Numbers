@@ -137,7 +137,7 @@ void ParserTree::releaseAll() {
   clearSymbolTable();
 }
 
-void ParserTree::addError(ExpressionNode *n, const TCHAR *format,...) {
+void ParserTree::addError(ExpressionNode *n, _In_z_ _Printf_format_string_ TCHAR const * const format,...) {
   va_list argptr;
   va_start(argptr, format);
   if((n == NULL) || !n->hasPos()) {
@@ -147,21 +147,21 @@ void ParserTree::addError(ExpressionNode *n, const TCHAR *format,...) {
   }
 }
 
-void ParserTree::addError(const SourcePosition &pos, const TCHAR *format,...) {
+void ParserTree::addError(const SourcePosition &pos, _In_z_ _Printf_format_string_ TCHAR const * const format,...) {
   va_list argptr;
   va_start(argptr, format);
   vAddError(&pos, format, argptr);
   va_end(argptr);
 }
 
-void ParserTree::addError(const TCHAR *format,...) {
+void ParserTree::addError(_In_z_ _Printf_format_string_ TCHAR const * const format,...) {
   va_list argptr;
   va_start(argptr, format);
   vAddError(NULL, format, argptr);
   va_end(argptr);
 }
 
-void ParserTree::vAddError(const SourcePosition *pos, const TCHAR *format, va_list argptr) {
+void ParserTree::vAddError(const SourcePosition *pos, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
   String tmp2;
   String tmp = vformat(format, argptr);
   if(pos != NULL) {

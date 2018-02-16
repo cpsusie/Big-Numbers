@@ -486,9 +486,9 @@ public:
   inline bool    eos() const { return m_current == m_end; }
   inline int     getIndex() const { return (int)(m_current - m_source); }
   unsigned short fetchShort();
-  void           error(const TCHAR *format,...);
-  static void    error(int index, const TCHAR *format,...);
-  static void    verror(int index, const TCHAR *format, va_list argptr);
+  void           error(_In_z_ _Printf_format_string_ TCHAR const * const format,...);
+  static void    error(int index, _In_z_ _Printf_format_string_ TCHAR const * const format,...);
+  static void    verror(int index, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
 };
 
 RegexScanner::RegexScanner(const TCHAR *source, const TCHAR *translateTable) {
@@ -539,21 +539,21 @@ unsigned short RegexScanner::fetchShort() {
   return (unsigned short)result;
 }
 
-void RegexScanner::error(const TCHAR *format,...) {
+void RegexScanner::error(_In_z_ _Printf_format_string_ TCHAR const * const format,...) {
   va_list argptr;
   va_start(argptr,format);
   verror(getIndex(), format, argptr);
   va_end(argptr);
 }
 
-void RegexScanner::error(int index, const TCHAR *format,...) {
+void RegexScanner::error(int index, _In_z_ _Printf_format_string_ TCHAR const * const format,...) {
   va_list argptr;
   va_start(argptr,format);
   verror(index, format, argptr);
   va_end(argptr);
 }
 
-void RegexScanner::verror(int index, const TCHAR *format, va_list argptr) {
+void RegexScanner::verror(int index, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
   const String errMsg = vformat(format, argptr);
   throwException(_T("(%d):%s"), index, errMsg.cstr());
 }
