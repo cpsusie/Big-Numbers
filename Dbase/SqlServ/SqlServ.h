@@ -490,8 +490,8 @@ public:
   Array<SelectSetOperator*>  m_selectOperators;
   SqlCompiler(const Database &db, const SqlApiBindProgramId &programid, const SqlApiBindStmt &bndstmt);
   ~SqlCompiler();
-  void   syntaxError( const SyntaxNode *n  , long sqlcode, const TCHAR *format, ...);
-  void   vSyntaxError(const SyntaxNode *n  , long sqlcode, const TCHAR *format, va_list argptr);
+  void   syntaxError( const SyntaxNode *n  , long sqlcode, _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
+  void   vSyntaxError(const SyntaxNode *n  , long sqlcode, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
   void   findHostVarIndex( SyntaxNode *expr, int &hostvarcounter, int flags = HOSTVARSCANNERFLAG_ALL);
   void   getCode(VirtualCode &vc);
   SyntaxNode *reduceExpression(SyntaxNode *n, bool &isconst);

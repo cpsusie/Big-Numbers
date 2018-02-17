@@ -95,7 +95,7 @@ Vector FunctionFitter::getParam() const {
 void FunctionFitter::setParam(const Vector &values) {
   const int n = getParamCount();
   if(values.getDimension() != n) {
-    throwMathException(_T("Invalid dimension on Vector. (=%d) number of parameters:%d"), values.getDimension(), m_parameterValue.size());
+    throwMathException(_T("Invalid dimension on Vector. (=%zu) number of parameters:%zu"), values.getDimension(), m_parameterValue.size());
   }
   for(int i = 0; i < n; i++) {
     setParamValue(i,values[i]);

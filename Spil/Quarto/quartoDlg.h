@@ -64,7 +64,7 @@ private:
   inline Field getSelectedField() const {
     return m_boardObject->getCurrentField();
   }
-  void        showInfo(const TCHAR *format,...);
+  void        showInfo(_In_z_ _Printf_format_string_ TCHAR const * const format,...);
   void        turnBoard(int degree);
 public:
   CQuartoDlg(CWnd *pParent = NULL);

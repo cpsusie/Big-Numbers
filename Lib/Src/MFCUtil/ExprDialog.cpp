@@ -47,8 +47,16 @@ bool CExprDialog::validateInterval(int fromId, int toId) {
   const String fromStr = getWindowText(this,fromId);
   const String toStr   = getWindowText(this,toId  );
   double from,to;
-  _stscanf(fromStr.cstr(),_T("%le"), &from);
-  _stscanf(toStr.cstr()  ,_T("%le"), &to  );
+  if(_stscanf(fromStr.cstr(),_T("%le"), &from) != 1) {
+    gotoEditBox(this, fromId);
+    showWarning(_T("Expected number"));
+    return false;
+  }
+  if(_stscanf(toStr.cstr()  ,_T("%le"), &to  ) != 1) {
+    gotoEditBox(this, toId);
+    showWarning(_T("Expected number"));
+    return false;
+  }
   if(from >= to) {
     gotoEditBox(this, fromId);
     showWarning(_T("Invalid interval"));
@@ -60,7 +68,11 @@ bool CExprDialog::validateInterval(int fromId, int toId) {
 bool CExprDialog::validateMinMax(int id, double min, double max) {
   const String str = getWindowText(this,id);
   double value;
-  _stscanf(str.cstr(),_T("%le"), &value);
+  if(_stscanf(str.cstr(),_T("%le"), &value) != 1) {
+    gotoEditBox(this, id);
+    showWarning(_T("Expected number"));
+    return false;
+  }
   if((value < min) || (value > max)) {
     gotoEditBox(this, id);
     showWarning(_T("Value must be in range [%lg..%lg]"), min, max);

@@ -120,7 +120,7 @@ void CTestWebCamDlg::initLog() {
   textBox->ResetContent();
 }
 
-void CTestWebCamDlg::vlog(const TCHAR *format, va_list argptr) {
+void CTestWebCamDlg::vlog(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
   if(!IsDlgButtonChecked(IDC_CHECKLOG)) {
     return;
   }

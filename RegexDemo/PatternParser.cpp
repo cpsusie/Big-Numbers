@@ -543,21 +543,21 @@ void PatternParser::expected(const TCHAR *input) {
   error(_T("Expected %s"), input);
 }
 
-void PatternParser::error(const TCHAR *format,...) {
+void PatternParser::error(_In_z_ _Printf_format_string_ TCHAR const * const format,...) {
   va_list argptr;
   va_start(argptr,format);
   verror(m_scanner.getIndex(), format, argptr);
   va_end(argptr);
 }
 
-void PatternParser::error(intptr_t index, const TCHAR *format,...) {
+void PatternParser::error(intptr_t index, _In_z_ _Printf_format_string_ TCHAR const * const format,...) {
   va_list argptr;
   va_start(argptr,format);
   verror(index, format, argptr);
   va_end(argptr);
 }
 
-void PatternParser::verror(intptr_t index, const TCHAR *format, va_list argptr) {
+void PatternParser::verror(intptr_t index, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
   const String errMsg = vformat(format, argptr);
   throwException(_T("(%d):%s"), (int)index, errMsg.cstr());
 }

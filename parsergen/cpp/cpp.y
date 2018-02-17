@@ -12,8 +12,8 @@ class CppParser : public LRparser, public ParserTree {
 public:
   CppParser(CppLex *lex = NULL) : LRparser(*CppTables,lex) {}
   SyntaxNode *newNode( int token, ... );
-  void  appendError(const TCHAR *format, ...);
-  void	verror(const SourcePosition &pos, const TCHAR *format, va_list argptr);
+  void  appendError(_In_z_ _Printf_format_string_ TCHAR const * const format, ...);
+  void	verror(const SourcePosition &pos, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
 private:
   stype m_dollardollar,*m_stacktop,m_userstack[256];
   int	reduceAction(unsigned int prod);
@@ -398,7 +398,7 @@ void CppParser::verror(const SourcePosition &pos, const TCHAR *form, va_list arg
   appendError(_T("%s"),tmp2.cstr());
 }
 
-void CppParser::appendError(const TCHAR *format,...) {
+void CppParser::appendError(_In_z_ _Printf_format_string_ TCHAR const * const format,...) {
   va_list argptr;
   va_start(argptr,format);
   _vtprintf(format,argptr);

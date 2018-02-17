@@ -11,7 +11,7 @@ ParserTree::ParserTree(const String &fileName) {
   m_absolutFileName = FileNameSplitter(fileName).getAbsolutePath();
 }
 
-void ParserTree::vAddError(const SourcePosition *pos, const TCHAR *format, va_list argptr) {
+void ParserTree::vAddError(const SourcePosition *pos, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
   String tmp2;
   String tmp = vformat(format, argptr);
   if(pos != NULL) {
@@ -27,14 +27,14 @@ void ParserTree::vAddError(const SourcePosition *pos, const TCHAR *format, va_li
   m_ok = false;
 }
 
-void ParserTree::addError(const SourcePosition &pos, const TCHAR *format,...) {
+void ParserTree::addError(const SourcePosition &pos, _In_z_ _Printf_format_string_ TCHAR const * const format,...) {
   va_list argptr;
   va_start(argptr, format);
   vAddError(&pos, format, argptr);
   va_end(argptr);
 }
 
-void ParserTree::addError(const TCHAR *format,...) {
+void ParserTree::addError(_In_z_ _Printf_format_string_ TCHAR const * const format,...) {
   va_list argptr;
   va_start(argptr, format);
   vAddError(NULL, format, argptr);

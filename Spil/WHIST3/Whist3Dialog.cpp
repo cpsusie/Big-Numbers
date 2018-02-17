@@ -76,7 +76,7 @@ HCURSOR CWhist3Dialog::OnQueryDragIcon() {
   return (HCURSOR)m_hIcon;
 }
 
-void CWhist3Dialog::fatalError(const TCHAR *format, ... ) {
+void CWhist3Dialog::fatalError(_In_z_ _Printf_format_string_ TCHAR const * const format, ... ) {
   va_list argptr;
   va_start(argptr, format);
   vshowMessageBox(MB_ICONERROR, format, argptr);
@@ -183,7 +183,7 @@ void CWhist3Dialog::paintCenteredText(CDC &dc, int y, const String &s) {
   }
 }
 
-void CWhist3Dialog::myMessage(const TCHAR *format, ...) {
+void CWhist3Dialog::myMessage(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
   va_list argptr;
   va_start(argptr, format);
   m_message = vformat(format,argptr);

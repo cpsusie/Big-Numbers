@@ -4,7 +4,7 @@
 
 DebugLogThread DebugLogThread::thread;
 
-void DebugLogThread::debugLog(const TCHAR *format, ...) {
+void DebugLogThread::debugLog(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
   va_list argptr;
   va_start(argptr, format);
   m_cmdQueue.put(vformat(format,argptr));

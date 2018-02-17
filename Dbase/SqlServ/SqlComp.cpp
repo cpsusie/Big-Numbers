@@ -10,12 +10,12 @@ void xstopcomp(const SyntaxNode *n, TCHAR *file, int line) {
 
 /* ---------------------------------------------------- */
 
-void SqlCompiler::vSyntaxError(const SyntaxNode *n, long sqlcode, const TCHAR *format, va_list argptr) {
+void SqlCompiler::vSyntaxError(const SyntaxNode *n, long sqlcode, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
   SourcePosition pos = (n->token() == DOT) ? n->child(1)->pos() : n->pos();
   vAppendError(pos,sqlcode,format,argptr);
 }
 
-void SqlCompiler::syntaxError(const SyntaxNode *n, long sqlcode, const TCHAR *format, ...) {
+void SqlCompiler::syntaxError(const SyntaxNode *n, long sqlcode, _In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
   va_list argptr;
   va_start(argptr,format);
   vSyntaxError(n,sqlcode,format,argptr);

@@ -167,21 +167,21 @@ void PatternScanner::unexpectedInput() {
   error(_T("Unexpected input:%c"), *m_current);
 }
 
-void PatternScanner::error(const TCHAR *format,...) {
+void PatternScanner::error(_In_z_ _Printf_format_string_ TCHAR const * const format,...) {
   va_list argptr;
   va_start(argptr,format);
   verror(getIndex(), format, argptr);
   va_end(argptr);
 }
 
-void PatternScanner::error(intptr_t index, const TCHAR *format,...) {
+void PatternScanner::error(intptr_t index, _In_z_ _Printf_format_string_ TCHAR const * const format,...) {
   va_list argptr;
   va_start(argptr,format);
   verror(index, format, argptr);
   va_end(argptr);
 }
 
-void PatternScanner::verror(intptr_t index, const TCHAR *format, va_list argptr) {
+void PatternScanner::verror(intptr_t index, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
   const String errMsg = vformat(format, argptr);
   throwException(_T("(%d):%s"), index, errMsg.cstr());
 }

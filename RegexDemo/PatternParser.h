@@ -53,9 +53,9 @@ private:
   PatternToken setNormalChar(_TUCHAR ch = 0);
   void unexpectedEndOfPattern();
   void unexpectedInput();
-  void error(intptr_t index, const TCHAR *format,...);
-  void error(const TCHAR *format,...);
-  void verror(intptr_t index, const TCHAR *format, va_list argptr);
+  void error(intptr_t index, _In_z_ _Printf_format_string_ TCHAR const * const format,...);
+  void error(_In_z_ _Printf_format_string_ TCHAR const * const format,...);
+  void verror(intptr_t index, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
 
 public:
   PatternScanner(const TCHAR *source, size_t length, const TCHAR *translateTable);
@@ -145,9 +145,9 @@ private:
   void unexpectedEndOfPattern();
   void unexpectedInput();
   void expected(const TCHAR *input);
-  void error(                 const TCHAR *format,...);
-  void error( intptr_t index, const TCHAR *format,...);
-  void verror(intptr_t index, const TCHAR *format, va_list argptr);
+  void error(                 _In_z_ _Printf_format_string_ TCHAR const * const format,...);
+  void error( intptr_t index, _In_z_ _Printf_format_string_ TCHAR const * const format,...);
+  void verror(intptr_t index, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
 public:
   PatternParser(const String &pattern, NFA &nfa, const TCHAR *translateTable = NULL);
   PatternParser(PatternParser &src);                  // not defined

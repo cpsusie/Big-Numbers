@@ -1562,7 +1562,7 @@ void EndGameTablebase::logUndefinedPosition(const EndGameKey &key) const {
   m_allKeysFound = false;
 }
 
-void EndGameTablebase::verbose(const TCHAR *format, ...) const {
+void EndGameTablebase::verbose(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) const {
   va_list argptr;
   va_start(argptr, format);
   vverbose(format, argptr);

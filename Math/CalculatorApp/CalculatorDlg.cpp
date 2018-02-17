@@ -768,7 +768,7 @@ void CCalculatorDlg::scrollLine(int count) {
   d->SetScrollPos(SB_VERT, i+count);
 }
 
-void CCalculatorDlg::info(const TCHAR *format,...) {
+void CCalculatorDlg::info(_In_z_ _Printf_format_string_ TCHAR const * const format,...) {
   va_list argptr;
   va_start(argptr, format);
   const String str = vformat(format, argptr);

@@ -43,4 +43,4 @@ public:
   }
 };
 
-void verbose(const TCHAR *format,...);
+void verbose(_In_z_ _Printf_format_string_ TCHAR const * const format,...);

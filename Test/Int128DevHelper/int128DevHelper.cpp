@@ -17,7 +17,7 @@ String ToString(const _int128 &n, int radix=10) {
 #define RADIX 10
 //#define RADIX 16
 
-template<class _itype> _itype vinputItype(_itype (*strToItype)(const char *,char **,int), const TCHAR *format, va_list argptr) {
+template<class _itype> _itype vinputItype(_itype (*strToItype)(const char *,char **,int), _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
   const String msg = vformat(format, argptr);
   for (;;) {
     _tprintf(_T("%s"), msg.cstr());
@@ -36,7 +36,7 @@ template<class _itype> _itype vinputItype(_itype (*strToItype)(const char *,char
   }
 }
 
-static _int128 inputInt128(const TCHAR *format, ...) {
+static _int128 inputInt128(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
   va_list argptr;
   va_start(argptr, format);
   const _int128 result = vinputItype<_int128>(_strtoi128, format, argptr);
@@ -44,7 +44,7 @@ static _int128 inputInt128(const TCHAR *format, ...) {
   return result;
 }
 
-static _uint128 inputUint128(const TCHAR *format, ...) {
+static _uint128 inputUint128(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
   va_list argptr;
   va_start(argptr, format);
   const _uint128 result = vinputItype<_uint128>(_strtoui128, format, argptr);

@@ -182,7 +182,7 @@ CPoint CPolygondistDlg::dlgToPanel(CPoint p) const {
   return p;
 }
 
-void CPolygondistDlg::showInfo(const TCHAR *format, ...) {
+void CPolygondistDlg::showInfo(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
   va_list argptr;
   va_start(argptr, format);
   const String msg = vformat(format, argptr);

@@ -147,9 +147,9 @@ public:
   void init(long error = SQL_OK);
   sqlca(long error = SQL_OK) { init(error); }
   void seterror( long error) { init(error); }
-  void vseterror(long error, const TCHAR *format, va_list argptr);
-  void seterror( long error, const TCHAR *format,...);
-  sqlca(         long error, const TCHAR *format,...);
+  void vseterror(long error, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
+  void seterror( long error, _In_z_ _Printf_format_string_ TCHAR const * const format,...);
+  sqlca(         long error, _In_z_ _Printf_format_string_ TCHAR const * const format,...);
   void dump(FILE *f = stdout);
   String toString() const;
 };
@@ -423,7 +423,7 @@ void sqlapi_createdb( const SqlApiCreateDb        &crdb     ,
 void sqlapi_dropdb(   const TCHAR                 *dbname   ,
                       sqlca                       &cca);
 
-void throwSqlError(long error, const TCHAR *format, ...);
+void throwSqlError(long error, _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
 
 DbFieldType sqlapi_getFieldType(const TCHAR *typestring);
 

@@ -116,7 +116,7 @@ public:
 
 static autoregister dummy;
 
-static void vlog(int wtype, const TCHAR *format, va_list argptr) {
+static void vlog(int wtype, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
   HANDLE  hEventSource;
   LPTSTR  lpszStrings[2];
 
@@ -140,28 +140,28 @@ static void vlog(int wtype, const TCHAR *format, va_list argptr) {
   }
 }
 
-void eventLogError(const TCHAR *format,...) {
+void eventLogError(_In_z_ _Printf_format_string_ TCHAR const * const format,...) {
   va_list argptr;
   va_start(argptr, format);
   vlog(EVENTLOG_ERROR_TYPE, format, argptr);
   va_end(argptr);
 }
 
-void eventLogWarning(const TCHAR *format,...) {
+void eventLogWarning(_In_z_ _Printf_format_string_ TCHAR const * const format,...) {
   va_list argptr;
   va_start(argptr, format);
   vlog(EVENTLOG_WARNING_TYPE, format, argptr);
   va_end(argptr);
 }
 
-void eventLogInfo(const TCHAR *format,...) {
+void eventLogInfo(_In_z_ _Printf_format_string_ TCHAR const * const format,...) {
   va_list argptr;
   va_start(argptr, format);
   vlog(EVENTLOG_INFORMATION_TYPE, format, argptr);
   va_end(argptr);
 }
 
-void eventLogSuccess(const TCHAR *format,...) {
+void eventLogSuccess(_In_z_ _Printf_format_string_ TCHAR const * const format,...) {
   va_list argptr;
   va_start(argptr, format);
   vlog(EVENTLOG_SUCCESS, format, argptr);

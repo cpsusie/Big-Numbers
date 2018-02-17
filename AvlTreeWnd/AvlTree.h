@@ -9,8 +9,8 @@
 
 class AvlGraphics {
 public:
-  virtual void vmessage(COLORREF color, const TCHAR *format, va_list argptr) = 0;
-  void    message( COLORREF color, const TCHAR *format, ...);
+  virtual void vmessage(COLORREF color, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) = 0;
+  void    message( COLORREF color, _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
   virtual CRect getTreeRect() = 0;
   virtual CWnd *getWindow()   = 0;
   virtual CSize getCharSize() = 0;
@@ -60,8 +60,8 @@ private:
   bool nodeDelete(  AvlNode **pp, int key);
   AvlNode *makeFibonacciNodeType1(int height);
   AvlNode *makeFibonacciNodeType2(int height, int balance);
-  void vmessage(COLORREF color, const TCHAR *format, va_list argptr);
-  void message( COLORREF color, const TCHAR *format, ...);
+  void vmessage(COLORREF color, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
+  void message( COLORREF color, _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
   void traceTree(AvlNode *p, int markColor, const TCHAR *msg);
 public:
   AvlTree();

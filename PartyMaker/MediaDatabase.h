@@ -139,7 +139,7 @@ public:
 
 bool operator==(const MediaFile &f1,const MediaFile &f2);
 
-void logError(const TCHAR *format,...);
+void logError(_In_z_ _Printf_format_string_ TCHAR const * const format,...);
 String makeFileName(const String &ext);
 String makeErrorFileName();
 String makeLogFileName();

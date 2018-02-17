@@ -17,9 +17,10 @@ char *readline(char *string, FILE *infile, char *infilename) {
   /* Search for something that looks like a number. */
   do {
     result = fgets(string, INPUTLINESIZE, infile);
-    if (result == NULL) {
-      triError(_T("Unexpected end of file in %s"), infilename);
+    if(result == NULL) {
+      triError(_T("Unexpected end of file in %s"), String(infilename).cstr());
     }
+    __assume(result);
     /* Skip anything that doesn't look like a number, a comment, */
     /*   or the end of a line.                                   */
     while ((*result != '\0') && (*result != '#')

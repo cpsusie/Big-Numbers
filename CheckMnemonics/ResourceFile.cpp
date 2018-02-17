@@ -304,14 +304,14 @@ String ResourceFile::toString() const {
   return result;
 }
 
-void ResourceFile::error(const TCHAR *format, ...) const {
+void ResourceFile::error(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) const {
   va_list argptr;
   va_start(argptr, format);
   verror(format, argptr);
   va_end(argptr);
 }
 
-void ResourceFile::verror(const TCHAR *format, va_list argptr) const {
+void ResourceFile::verror(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) const {
   m_errors.add(_T(":")+vformat(format, argptr));
   m_ok = false;
 }

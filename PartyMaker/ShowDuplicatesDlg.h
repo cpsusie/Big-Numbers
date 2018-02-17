@@ -9,7 +9,7 @@ class FindDuplicatesThread : public Thread {
 private:
   CShowDuplicatesDlg &m_dlg;
   bool                m_stop;
-  void showMessage(const TCHAR *format,...);
+  void showMessage(_In_z_ _Printf_format_string_ TCHAR const * const format,...);
 public:
   FindDuplicatesThread(CShowDuplicatesDlg &dlg);
   UINT run();

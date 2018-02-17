@@ -62,7 +62,7 @@ public:
     void updateButtons();
     void startWorker(int loopCounter=0);
     CStatic *infofield(int i);
-    void printf(int field, const TCHAR *format, ...);
+    void printf(int field, _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
     void showInfo();
     void startTimer();
     void stopTimer();

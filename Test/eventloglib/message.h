@@ -2,10 +2,10 @@
 
 #include <MyUtil.h>
 
-void eventLogError(  const TCHAR *format,...);
-void eventLogWarning(const TCHAR *format,...);
-void eventLogInfo(   const TCHAR *format,...);
-void eventLogSuccess(const TCHAR *format,...);
+void eventLogError(  _In_z_ _Printf_format_string_ TCHAR const * const format,...);
+void eventLogWarning(_In_z_ _Printf_format_string_ TCHAR const * const format,...);
+void eventLogInfo(   _In_z_ _Printf_format_string_ TCHAR const * const format,...);
+void eventLogSuccess(_In_z_ _Printf_format_string_ TCHAR const * const format,...);
 
 #define EVENTLOGLIBROOT "c:/mytools2015/test/eventlogLib/"
 

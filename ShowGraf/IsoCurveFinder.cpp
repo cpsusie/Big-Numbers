@@ -303,7 +303,7 @@ static String intArrayToString(const CompactIntArray &a) {
   } else {
     String result = format(_T("%d:%s"), 0, format1000(a[0]).cstr());
     for(size_t i = 1; i < a.size(); i++) {
-      result += format(_T(", %d:%s"), i, format1000(a[i]).cstr());
+      result += format(_T(", %zu:%s"), i, format1000(a[i]).cstr());
     }
     return result;
   }

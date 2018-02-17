@@ -350,7 +350,7 @@ UINT TrainigThread::run() {
   return 0;
 }
 
-void TrainigThread::updateMessage(const TCHAR *format, ...) {
+void TrainigThread::updateMessage(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
   va_list argptr;
   va_start(argptr,format);
   const String tmp = vformat(format, argptr);
@@ -416,7 +416,7 @@ void CWordsepgraphDlg::OnFileStopTraining() {
   stopTraining();
 }
 
-void CWordsepgraphDlg::showMessage(const TCHAR *format,...) {
+void CWordsepgraphDlg::showMessage(_In_z_ _Printf_format_string_ TCHAR const * const format,...) {
   va_list argptr;
   va_start(argptr,format);
   setWindowText(this, IDC_MESSAGE, vformat(format,argptr));

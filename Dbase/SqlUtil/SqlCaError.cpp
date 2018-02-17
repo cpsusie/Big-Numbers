@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-sqlca::sqlca(long error, const TCHAR *format, ...) {
+sqlca::sqlca(long error, _In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
   va_list argptr;
   va_start(argptr, format);
   vseterror(error, format, argptr);
@@ -12,14 +12,14 @@ void sqlca::init(long error) {
   sqlcode = error;
 }
 
-void sqlca::vseterror(long error, const TCHAR *format, va_list argptr) {
+void sqlca::vseterror(long error, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
   init(error);
   String errmsg = vformat(format, argptr);
   _tcsncpy(sqlerrmc, errmsg.cstr(),ARRAYSIZE(sqlerrmc)-1);
   sqlerrmc[ARRAYSIZE(sqlerrmc)-1] = '\0';
 }
 
-void sqlca::seterror(long error, const TCHAR *format,...) {
+void sqlca::seterror(long error, _In_z_ _Printf_format_string_ TCHAR const * const format,...) {
   va_list argptr;
   va_start(argptr, format);
   vseterror(error, format, argptr);
@@ -36,7 +36,7 @@ String sqlca::toString() const {
                ,sqlcode, sqlerrmc);
 }
 
-void throwSqlError(long error, const TCHAR *format,...) {
+void throwSqlError(long error, _In_z_ _Printf_format_string_ TCHAR const * const format,...) {
   sqlca ca;
   va_list argptr;
   va_start(argptr, format);

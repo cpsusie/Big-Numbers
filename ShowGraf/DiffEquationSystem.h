@@ -54,8 +54,8 @@ public:
 
 class CompilerErrorList : public StringArray {
 public:
-  void vaddError(UINT eqIndex, ErrorLocation expr, const TCHAR *format, va_list argptr);
-  void addError( UINT eqIndex, ErrorLocation expr, const TCHAR *format, ...);
+  void vaddError(UINT eqIndex, ErrorLocation expr, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
+  void addError( UINT eqIndex, ErrorLocation expr, _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
   // add errors from Expression.compile(). return true if any errors from common text
   bool addErrors(UINT eqIndex, const StringArray &errors, const String &expr, int prefixLen);
   bool isOk() const {

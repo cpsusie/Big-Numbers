@@ -1054,14 +1054,14 @@ bool confirmCancel(CWnd *parent) {
   return parent->MessageBox(loadString(IDS_CANCELQUESTION).cstr(), loadString(IDS_CANCELLABEL).cstr(), MB_ICONQUESTION|MB_YESNO) == IDYES;
 }
 
-void showMessage(CWnd *parent, int milliSeconds, const String &caption, const TCHAR *format,...) {
+void showMessage(CWnd *parent, int milliSeconds, const String &caption, _In_z_ _Printf_format_string_ TCHAR const * const format,...) {
   va_list argptr;
   va_start(argptr, format);
   vshowMessage(parent, milliSeconds, caption, format, argptr);
   va_end(argptr);
 }
 
-void vshowMessage(CWnd *parent, int milliSeconds, const String &caption, const TCHAR *format, va_list argptr) {
+void vshowMessage(CWnd *parent, int milliSeconds, const String &caption, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
   const String message = vformat(format,argptr);
   CMessageDlg dlg(milliSeconds, caption, message);
   dlg.DoModal();

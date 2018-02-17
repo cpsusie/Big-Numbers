@@ -13,8 +13,8 @@ public:
 
   virtual void setTitle(const String &title)               = 0;
   virtual void clear()                                     = 0;
-  virtual void vprintf(const TCHAR *format, va_list argptr) = 0;
+  virtual void vprintf(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) = 0;
   virtual void terminate();
-  void printf(const TCHAR *format,...);
+  void printf(_In_z_ _Printf_format_string_ TCHAR const * const format,...);
   static LinePrinter *getNullPrinter();
 };

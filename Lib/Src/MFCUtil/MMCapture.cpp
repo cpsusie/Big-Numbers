@@ -19,6 +19,7 @@
 
 static LRESULT CALLBACK captureVideoStreamCallback(HWND captureWindow, VIDEOHDR *videoHeader) {
   MMCapture *capture = (MMCapture*)capGetUserData(captureWindow);
+  __assume(capture);
   if(capture->saveVideoFrame(videoHeader)) {
     return capture->getReceiver().captureVideoStreamCallback(*capture,capture->m_imagePr);
   } else {
@@ -28,6 +29,7 @@ static LRESULT CALLBACK captureVideoStreamCallback(HWND captureWindow, VIDEOHDR 
 
 static LRESULT CALLBACK captureWaveStreamCallback(HWND captureWindow, WAVEHDR *audioHeader) {
   MMCapture *capture = (MMCapture*)capGetUserData(captureWindow);
+  __assume(capture);
   if(capture->m_captureBlocked) {
     return S_OK;
   }
@@ -40,6 +42,7 @@ static LRESULT CALLBACK captureWaveStreamCallback(HWND captureWindow, WAVEHDR *a
 
 static LRESULT CALLBACK captureFrameCallback(HWND captureWindow, VIDEOHDR *videoHeader) {
   MMCapture *capture = (MMCapture*)capGetUserData(captureWindow);
+  __assume(capture);
   if(capture->saveVideoFrame(videoHeader)) {
     return capture->getReceiver().captureFrameCallback(*capture,capture->m_imagePr);
   } else {
@@ -49,6 +52,7 @@ static LRESULT CALLBACK captureFrameCallback(HWND captureWindow, VIDEOHDR *video
 
 static LRESULT CALLBACK captureStatusCallback(HWND captureWindow, int id, TCHAR *description) {
   MMCapture *capture = (MMCapture*)capGetUserData(captureWindow);
+  __assume(capture);
   switch(id) {
   case IDS_CAP_BEGIN:
     capture->m_audioQueue.clear();
@@ -67,6 +71,7 @@ static LRESULT CALLBACK captureStatusCallback(HWND captureWindow, int id, TCHAR 
 
 static LRESULT CALLBACK captureControlCallback(HWND captureWindow, int state) {
   MMCapture *capture = (MMCapture*)capGetUserData(captureWindow);
+  __assume(capture);
   capture->getReceiver().captureControlCallback(*capture,state);
   switch(state) {
   case CONTROLCALLBACK_PREROLL:
@@ -88,6 +93,7 @@ static LRESULT CALLBACK captureControlCallback(HWND captureWindow, int state) {
 
 static LRESULT CALLBACK captureErrorCallback(HWND captureWindow, int id, TCHAR *message) {
   MMCapture *capture = (MMCapture*)capGetUserData(captureWindow);
+  __assume(capture);
   return capture->getReceiver().captureErrorCallback(*capture,id,message);
 }
 

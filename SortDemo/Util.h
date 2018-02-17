@@ -102,6 +102,6 @@ public:
 
 void analyzeSortMethod(const SortMethodId *sortMethod, const InitializeParameters &parameters);
 
-void errorMessage(const TCHAR *format,...);
+void errorMessage(_In_z_ _Printf_format_string_ TCHAR const * const format,...);
 
 void makeMinSizeTimePlot();

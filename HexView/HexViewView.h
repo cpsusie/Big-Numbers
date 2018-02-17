@@ -68,7 +68,7 @@ private:
   BYTE makeNewByte(BYTE oldByte, unsigned char ch) const;
   CHexViewView &setDigitIndex(char index);
 
-  void debug(const TCHAR *format,...);
+  void debug(_In_z_ _Printf_format_string_ TCHAR const * const format,...);
   void repaint();
 
   void scrollVert(int count) {

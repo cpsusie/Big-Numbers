@@ -239,7 +239,7 @@ QRMatrix::QRMatrix(const Matrix &src, QRTracer *tracer)
   , m_eigenVectors(src.getRowCount(),src.getColumnCount())
  {
   if(!src.isSquare()) {
-    throwMathException(_T("QRMatrix::QRMatrix:Matrix not square. Dimension = (%d,%d)."), src.getRowCount(), src.getColumnCount());
+    throwMathException(_T("QRMatrix::QRMatrix:Matrix not square. Dimension = (%zu,%zu)."), src.getRowCount(), src.getColumnCount());
   }
 
   m_tracer       = tracer;
@@ -253,7 +253,7 @@ QRMatrix &QRMatrix::operator=(const Matrix &src) {
   }
 
   if(!src.isSquare()) {
-    throwMathException(_T("QRMatrix::operator=:Matrix not square. Dimension = (%d,%d)."), src.getRowCount(), src.getColumnCount());
+    throwMathException(_T("QRMatrix::operator=:Matrix not square. Dimension = (%zu,%zu)."), src.getRowCount(), src.getColumnCount());
   }
 
   ((Matrix&)(*this)) = src;

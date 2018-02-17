@@ -488,6 +488,6 @@ public:
   static void setFontSize(CWnd *wnd, int percent);
 };
 
-void showMessage(  CWnd *parent, int milliSeconds, const String &caption, const TCHAR *format,... );
-void vshowMessage( CWnd *parent, int milliSeconds, const String &caption, const TCHAR *format, va_list argptr);
+void showMessage(  CWnd *parent, int milliSeconds, const String &caption, _In_z_ _Printf_format_string_ TCHAR const * const format,... );
+void vshowMessage( CWnd *parent, int milliSeconds, const String &caption, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
 bool confirmCancel(CWnd *parent);

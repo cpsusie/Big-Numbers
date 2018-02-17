@@ -44,7 +44,7 @@ private:
   void setDecButtons();
   void setByteButtons();
   void scrollLine(int count);
-  void info(const TCHAR *format, ...);
+  void info(_In_z_ _Printf_format_string_ TCHAR const * const format, ...);
 
 public:
     HINSTANCE m_hInstance;

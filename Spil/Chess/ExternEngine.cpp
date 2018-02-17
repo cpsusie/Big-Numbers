@@ -70,7 +70,7 @@ ExternEngine::~ExternEngine() {
 class RedirectingInputThread : public InputThread {
 protected:
   // the only purpose with this is to redirect verbose-messages to ::verbose
-  void vverbose(const TCHAR *format, va_list argptr) {
+  void vverbose(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
     ::verbose(_T("%s.\n"), vformat(format, argptr).cstr());
   }
 public:
@@ -549,7 +549,7 @@ String ExternEngine::toString() const {
 }
 
 // private
-void ExternEngine::debugMsg(const TCHAR *format, ...) const {
+void ExternEngine::debugMsg(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) const {
   va_list argptr;
   va_start(argptr, format);
   const String msg = vformat(format,argptr);

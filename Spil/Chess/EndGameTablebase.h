@@ -256,7 +256,7 @@ private:
   inline bool isVerboseTriggerStarted() const {
     return m_verboseTimer.isRunning();
   }
-  void verbose(const TCHAR *format, ...) const;
+  void verbose(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) const;
   void handleTimeout(Timer &timer);
   void logPositionCount() const;
   void logUndefinedPosition(const EndGameKey &key) const;

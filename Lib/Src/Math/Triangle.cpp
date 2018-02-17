@@ -7918,27 +7918,27 @@ long Mesh::reconstruct(char     *elefilename
 #ifdef TRILIBRARY
   inelements = elements;
   incorners = corners;
-  if (incorners < 3) {
+  if(incorners < 3) {
     triError(_T("Triangles must have at least 3 vertices"));
   }
   eextras = attribs;
 #else // not TRILIBRARY
   // Read the triangles from an .ele file.
-  if (!m_b.quiet) {
+  if(!m_b.quiet) {
     printf("Opening %s.\n", elefilename);
   }
   elefile = FOPEN(elefilename, "r");
   // Read number of triangles, number of vertices per Triangle, and
   // number of Triangle attributes from .ele file.
   stringptr = readline(inputline, elefile, elefilename);
-  inelements = (int) strtol(stringptr, &stringptr, 0);
+  inelements = (int)strtol(stringptr, &stringptr, 0);
   stringptr = findfield(stringptr);
-  if (*stringptr == '\0') {
+  if(*stringptr == '\0') {
     incorners = 3;
   } else {
-    incorners = (int) strtol(stringptr, &stringptr, 0);
-    if (incorners < 3) {
-      triError(_T("Triangles in %s must have at least 3 vertices"), elefilename);
+    incorners = (int)strtol(stringptr, &stringptr, 0);
+    if(incorners < 3) {
+      triError(_T("Triangles in %s must have at least 3 vertices"), String(elefilename).cstr());
     }
   }
   stringptr = findfield(stringptr);
@@ -7994,7 +7994,7 @@ long Mesh::reconstruct(char     *elefilename
     stringptr = readline(inputline, areafile, areafilename);
     areaelements = (int) strtol(stringptr, &stringptr, 0);
     if (areaelements != inelements) {
-      triError(_T("%s and %s disagree on number of triangles"), elefilename, areafilename);
+      triError(_T("%s and %s disagree on number of triangles"), String(elefilename).cstr(), String(areafilename).cstr());
     }
   }
 #endif // not TRILIBRARY
@@ -8034,10 +8034,10 @@ long Mesh::reconstruct(char     *elefilename
     for (j = 0; j < 3; j++) {
       stringptr = findfield(stringptr);
       if (*stringptr == '\0') {
-        triError(_T("Triangle %ld is missing Vertex %d in %s"), elementnumber, j + 1, elefilename);
+        triError(_T("Triangle %ld is missing Vertex %d in %s"), elementnumber, j + 1, String(elefilename).cstr());
       } else {
         corner[j] = (int) strtol(stringptr, &stringptr, 0);
-        if ((corner[j] < m_b.firstnumber) || (corner[j] >= m_b.firstnumber + invertices)) {
+        if((corner[j] < m_b.firstnumber) || (corner[j] >= m_b.firstnumber + invertices)) {
           triError(_T("Triangle %ld has an invalid Vertex index"), elementnumber);
         }
       }
@@ -8170,14 +8170,14 @@ long Mesh::reconstruct(char     *elefilename
       stringptr = readline(inputline, polyfile, m_b.inpolyfilename);
       // Skip the first (segment number) field.
       stringptr = findfield(stringptr);
-      if (*stringptr == '\0') {
-        triError(_T("Segment %ld has no endpoints in %s"), segmentnumber, polyfilename);
+      if(*stringptr == '\0') {
+        triError(_T("Segment %ld has no endpoints in %s"), segmentnumber, String(polyfilename).cstr());
       } else {
-        end[0] = (int) strtol(stringptr, &stringptr, 0);
+        end[0] = (int)strtol(stringptr, &stringptr, 0);
       }
       stringptr = findfield(stringptr);
-      if (*stringptr == '\0') {
-        triError(_T("Segment %ld is missing its second endpoint in %s"), segmentnumber, polyfilename);
+      if(*stringptr == '\0') {
+        triError(_T("Segment %ld is missing its second endpoint in %s"), segmentnumber, String(polyfilename).cstr());
       } else {
         end[1] = (int) strtol(stringptr, &stringptr, 0);
       }
@@ -9035,43 +9035,43 @@ void Mesh::formskeleton(FILE *polyfile, char *polyfilename)
 #else // not TRILIBRARY
       stringptr = readline(inputline, polyfile, m_b.inpolyfilename);
       stringptr = findfield(stringptr);
-      if (*stringptr == '\0') {
-        triError(_T("Segment %d has no endpoints in %s"), m_b.firstnumber + i, polyfilename);
+      if(*stringptr == '\0') {
+        triError(_T("Segment %d has no endpoints in %s"), m_b.firstnumber + i, String(polyfilename).cstr());
       } else {
         end1 = (int) strtol(stringptr, &stringptr, 0);
       }
       stringptr = findfield(stringptr);
-      if (*stringptr == '\0') {
-        triError(_T("Segment %d is missing its second endpoint in %s"), m_b.firstnumber + i, polyfilename);
+      if(*stringptr == '\0') {
+        triError(_T("Segment %d is missing its second endpoint in %s"), m_b.firstnumber + i, String(polyfilename).cstr());
       } else {
-        end2 = (int) strtol(stringptr, &stringptr, 0);
+        end2 = (int)strtol(stringptr, &stringptr, 0);
       }
-      if (segmentmarkers) {
+      if(segmentmarkers) {
         stringptr = findfield(stringptr);
-        if (*stringptr == '\0') {
+        if(*stringptr == '\0') {
           boundmarker = 0;
         } else {
-          boundmarker = (int) strtol(stringptr, &stringptr, 0);
+          boundmarker = (int)strtol(stringptr, &stringptr, 0);
         }
       }
 #endif // not TRILIBRARY
-      if ((end1 < m_b.firstnumber) || (end1 >= m_b.firstnumber + invertices)) {
-        if (!m_b.quiet) {
+      if((end1 < m_b.firstnumber) || (end1 >= m_b.firstnumber + invertices)) {
+        if(!m_b.quiet) {
           printf("Warning:  Invalid first endpoint of segment %d in %s.\n", m_b.firstnumber + i, polyfilename);
         }
       } else if ((end2 < m_b.firstnumber) || (end2 >= m_b.firstnumber + invertices)) {
         if (!m_b.quiet) {
-          printf("Warning:  Invalid second endpoint of segment %d in %s.\n",
-                 m_b.firstnumber + i, polyfilename);
+          printf("Warning:  Invalid second endpoint of segment %d in %s.\n"
+                ,m_b.firstnumber + i, polyfilename);
         }
       } else {
         // Find the vertices numbered `end1' and `end2'.
         endpoint1 = getvertex(end1);
         endpoint2 = getvertex(end2);
-        if ((endpoint1[0] == endpoint2[0]) && (endpoint1[1] == endpoint2[1])) {
-          if (!m_b.quiet) {
-            printf("Warning:  Endpoints of segment %d are coincident in %s.\n",
-                   m_b.firstnumber + i, polyfilename);
+        if((endpoint1[0] == endpoint2[0]) && (endpoint1[1] == endpoint2[1])) {
+          if(!m_b.quiet) {
+            printf("Warning:  Endpoints of segment %d are coincident in %s.\n"
+                  ,m_b.firstnumber + i, polyfilename);
           }
         } else {
           insertsegment(endpoint1, endpoint2, boundmarker);
@@ -9081,9 +9081,9 @@ void Mesh::formskeleton(FILE *polyfile, char *polyfilename)
   } else {
     insegments = 0;
   }
-  if (m_b.convex || !m_b.poly) {
+  if(m_b.convex || !m_b.poly) {
     // Enclose the convex hull with subsegments.
-    if (m_b.verbose) {
+    if(m_b.verbose) {
       printf("  Enclosing convex hull with segments.\n");
     }
     markhull();

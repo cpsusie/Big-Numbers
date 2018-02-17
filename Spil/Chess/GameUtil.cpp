@@ -976,21 +976,21 @@ void setVerboseLogging(bool on) {
   }
 }
 
-void verbose(const TCHAR *format,...) {
+void verbose(_In_z_ _Printf_format_string_ TCHAR const * const format,...) {
   va_list argptr;
   va_start(argptr, format);
   vverbose(format, argptr);
   va_end(argptr);
 }
 
-void updateMessageField(const TCHAR *format, ...) {
+void updateMessageField(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
   va_list argptr;
   va_start(argptr, format);
   vupdateMessageField(format, argptr);
   va_end(argptr);
 }
 
-void VerboseReceiver::vprintf(const TCHAR *format, va_list argptr) {
+void VerboseReceiver::vprintf(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
   String msg = vformat(format, argptr);
   const intptr_t bsIndex = msg.find('\b');
   if(bsIndex >= 0) {
@@ -1033,7 +1033,7 @@ void ConsoleTitleUpdater::setTitle(const String &s) {
   Console::setTitle(m_origTitle + s);
 }
 
-void VerboseReceiver::vupdateMessageField(const TCHAR *format, va_list argptr) {
+void VerboseReceiver::vupdateMessageField(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
   static ConsoleTitleUpdater ctu;
   ctu.setTitle(vformat(format, argptr));
 }
@@ -1046,9 +1046,9 @@ static VerboseReceiver defaultVerboseReceiver, *currentVerboseReceiver = &defaul
 
 class VerboseSilent : public VerboseReceiver {
 public:
-  void vprintf(            const TCHAR *format, va_list argptr) {
+  void vprintf(            _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
   }
-  void vupdateMessageField(const TCHAR *format, va_list argptr) {
+  void vupdateMessageField(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
   }
   void clear() {
   }
@@ -1057,11 +1057,11 @@ public:
 static VerboseSilent verboseNullDevice;
 VerboseReceiver *VERBOSENULL = &verboseNullDevice;
 
-void vverbose(const TCHAR *format, va_list argptr) {
+void vverbose(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
   currentVerboseReceiver->vprintf(format, argptr);
 }
 
-void vupdateMessageField(const TCHAR *format, va_list argptr) {
+void vupdateMessageField(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
   currentVerboseReceiver->vupdateMessageField(format, argptr);
 }
 
@@ -1073,14 +1073,14 @@ void redirectVerbose(VerboseReceiver *receiver) {
   currentVerboseReceiver = receiver ? receiver : &defaultVerboseReceiver;
 }
 
-void log(const TCHAR *format, ...) {
+void log(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
   va_list argptr;
   va_start(argptr, format);
   vlog(format, argptr);
   va_end(argptr);
 }
 
-void vlog(const TCHAR *format, va_list argptr) {
+void vlog(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
   if(verboseLog == NULL) {
     return;
   }

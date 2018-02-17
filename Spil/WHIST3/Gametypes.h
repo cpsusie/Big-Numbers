@@ -410,4 +410,4 @@ public:
   void save();
 };
 
-void log(const TCHAR *format, ...);
+void log(_In_z_ _Printf_format_string_ TCHAR const * const format, ...);

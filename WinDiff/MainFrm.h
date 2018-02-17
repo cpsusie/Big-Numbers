@@ -71,7 +71,7 @@ public:
   void activateOptions();
 
 #ifdef _DEBUG
-  void showDebugMsg(const TCHAR *format,...);
+  void showDebugMsg(_In_z_ _Printf_format_string_ TCHAR const * const format,...);
   void dumpFlags();
   String flagsToString();
 #endif

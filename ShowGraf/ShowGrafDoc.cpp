@@ -136,6 +136,7 @@ void CShowGrafDoc::init() {
           if(bc == NULL) {
             usage();
           }
+          __assume(bc);
           m_options.m_backgroundColor = bc->m_color;
         }
         if(!(*(++argv))) {
@@ -145,6 +146,7 @@ void CShowGrafDoc::init() {
           if(ac == NULL) {
             usage();
           }
+          __assume(ac);
           m_options.m_axisColor = ac->m_color;
         }
         break;

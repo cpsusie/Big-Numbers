@@ -441,7 +441,7 @@ void CChessDlg::invalidModeError(const TCHAR *method) const {
   throwException(_T("%s:Invalid mode:%d"), method, getDialogMode());
 }
 
-void CChessDlg::errorMessage(const TCHAR *format, ...) const {
+void CChessDlg::errorMessage(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) const {
   va_list argptr;
   va_start(argptr,format);
   String msg = vformat(format, argptr);

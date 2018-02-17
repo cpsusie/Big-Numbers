@@ -8,7 +8,7 @@ public:
     CPoint m_mouseDown;
     CPoint m_lastMouse;
     void line(CPoint from, CPoint to, COLORREF color);
-    void setMessage(const TCHAR *format,...);
+    void setMessage(_In_z_ _Printf_format_string_ TCHAR const * const format,...);
 
     enum { IDD = IDD_TESTDIRECTION_DIALOG };
 

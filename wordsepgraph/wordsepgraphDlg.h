@@ -11,7 +11,7 @@ class TrainigThread : public Thread {
   bool              m_terminate;
   WordBpn           m_trainingNetwork;
   bool              m_done;
-  void updateMessage(const TCHAR *format, ...);
+  void updateMessage(_In_z_ _Printf_format_string_ TCHAR const * const format, ...);
 public:
   TrainigThread(const WordBpn &n);
   UINT run();
@@ -35,7 +35,7 @@ private:
 
     void enableButtons(bool enabled);
     void showResultDetail(const String &word);
-    void showMessage(const TCHAR *format,...);
+    void showMessage(_In_z_ _Printf_format_string_ TCHAR const * const format,...);
     void stopTraining();
     void startTimer();
     void stopTimer();

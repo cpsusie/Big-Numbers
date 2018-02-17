@@ -173,7 +173,7 @@ private:
   void   editUndo(UndoMode mode);
   Game  &validateBeforeSave();
   void   invalidModeError(const TCHAR *method) const;
-  void   errorMessage(const TCHAR *format,...) const;
+  void   errorMessage(_In_z_ _Printf_format_string_ TCHAR const * const format,...) const;
   void   errorMessage(const Exception &e) const;
   void   OnLButtonDownPlayMode( UINT nFlags, CPoint point);
   void   OnMouseMovePlayMode(   UINT nFlags, CPoint point);

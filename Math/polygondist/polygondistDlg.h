@@ -16,7 +16,7 @@ private:
   int        m_maxIndex1, m_maxIndex2;
   CompactArray<Point2DP> m_point4;
   CPoint     dlgToPanel(CPoint p) const;
-  void       showInfo(const TCHAR *format,...);
+  void       showInfo(_In_z_ _Printf_format_string_ TCHAR const * const format,...);
   void       clearMax();
   void       clearPoly();
   void       clearLines();

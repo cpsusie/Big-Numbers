@@ -31,7 +31,7 @@ private:
     }
 
     void setInfoVisible(bool visible);
-    void showInfo(const TCHAR *format, ...);
+    void showInfo(_In_z_ _Printf_format_string_ TCHAR const * const format, ...);
     void show3DInfo();
     void createInitialObject();
     CPoint get3DPanelPoint(CPoint point, bool screenRelative) const;

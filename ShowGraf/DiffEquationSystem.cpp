@@ -144,12 +144,12 @@ Vector DiffEquationSystem::operator()(const Vector &x) {
   return dx;
 }
 
-void CompilerErrorList::vaddError(UINT eqIndex, ErrorLocation loc, const TCHAR *form, va_list argptr) {
+void CompilerErrorList::vaddError(UINT eqIndex, ErrorLocation loc, _In_z_ _Printf_format_string_ TCHAR const * const form, va_list argptr) {
   const String msg = vformat(form, argptr);
   add(format(_T("(%d,%c):%s"), eqIndex, loc, msg.cstr()));
 }
 
-void CompilerErrorList::addError(UINT eqIndex, ErrorLocation loc, const TCHAR *format, ...) {
+void CompilerErrorList::addError(UINT eqIndex, ErrorLocation loc, _In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
   va_list argptr;
   va_start(argptr, format);
   vaddError(eqIndex, loc, format, argptr);

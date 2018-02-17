@@ -87,9 +87,9 @@ public:
   virtual ~ParserTree();
   SyntaxNode *vFetchTokenNode(int token,va_list argptr);
   void         releaseAll();
-  void         vAppendError( const TCHAR *format, va_list argptr);
-  void         appendError(  const TCHAR *format,...);
-  void         vAppendError( const SourcePosition &pos, long sqlcode, const TCHAR *format, va_list argptr);
+  void         vAppendError( _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
+  void         appendError(  _In_z_ _Printf_format_string_ TCHAR const * const format,...);
+  void         vAppendError( const SourcePosition &pos, long sqlcode, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
   SyntaxNode  *fetchStringNode(   const TCHAR *str, int token = STRING);
   SyntaxNode  *fetchNumberNode(   double number       );
   SyntaxNode  *fetchDateNode(     const Date &d       );

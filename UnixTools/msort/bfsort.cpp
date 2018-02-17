@@ -3,7 +3,7 @@
 
 #define VERBOSE(...) if(m_verbose) verbose(__VA_ARGS__)
 
-void verbose(const TCHAR *format,...) {
+void verbose(_In_z_ _Printf_format_string_ TCHAR const * const format,...) {
   va_list argptr;
   va_start(argptr, format);
   _vftprintf(stderr, format, argptr);

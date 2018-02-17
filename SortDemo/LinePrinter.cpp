@@ -4,7 +4,7 @@
 LinePrinter::LinePrinter() {
 }
 
-void LinePrinter::printf(const TCHAR *format, ...) {
+void LinePrinter::printf(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
   va_list argptr;
   va_start(argptr, format);
   vprintf(format,argptr);
@@ -18,7 +18,7 @@ class NullPrinter : public LinePrinter {
 public:
   void setTitle(const String &title) {}
   void clear() {};
-  void vprintf(const TCHAR *format, va_list argptr) {}
+  void vprintf(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {}
 };
 
 LinePrinter *LinePrinter::getNullPrinter() { // static

@@ -14,7 +14,7 @@ public:
   }
 };
 
-static void throwNoConvergenceException(const TCHAR *method, const TCHAR *format, ...) {
+static void throwNoConvergenceException(const TCHAR *method, _In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
   va_list argptr;
   va_start(argptr, format);
   const String msg = vformat(format, argptr);

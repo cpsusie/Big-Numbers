@@ -52,7 +52,7 @@ public:
     USES_ACONVERSION;
     return append(format(getStringFormat().cstr(), ASTR2TSTR((char*)str)));
   }
-  inline StrStream &operator<<(const char   *str) {
+  inline StrStream &operator<<(const char *str) {
     USES_ACONVERSION;
     return append(format(getStringFormat().cstr(), ASTR2TSTR(str)));
   }

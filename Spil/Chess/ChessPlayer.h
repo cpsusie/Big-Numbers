@@ -71,7 +71,7 @@ private:
   void handleException(   const Exception    &e);
   void handleUnknownException(const TCHAR *method);
   void checkState(const TCHAR *method, int line, ChessPlayerState s1,...) const;
-  void debugMsg(const TCHAR *format,...) const;
+  void debugMsg(_In_z_ _Printf_format_string_ TCHAR const * const format,...) const;
 public:
   ChessPlayer(Player player);
   ~ChessPlayer();

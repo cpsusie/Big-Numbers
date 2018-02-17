@@ -490,11 +490,7 @@ ULONG BigReal::hashCode() const {
   for(const Digit *p = m_first; p; p = p->next) {
     s = s * 17 + p->n;
   }
-#ifdef IS32BIT
-  return s;
-#else // IS64BIT
-  return uint64Hash(s);
-#endif
+  return sizetHash(s);
 }
 
 static void throwAssertionException(_In_z_ _Printf_format_string_ const TCHAR *format, ...) {

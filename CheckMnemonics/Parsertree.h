@@ -45,9 +45,9 @@ public:
 
   SyntaxNode *vFetchNode(const SourcePosition &pos, int symbol, va_list argptr);
   SyntaxNode *fetchNode( const SourcePosition &pos, int symbol, ...);
-  void vAddError(const SourcePosition *pos, const TCHAR *format, va_list argptr);
-  void addError(const SourcePosition &pos, const TCHAR *format,...);
-  void addError(const TCHAR *format,...);
+  void vAddError(const SourcePosition *pos, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
+  void addError(const SourcePosition &pos, _In_z_ _Printf_format_string_ TCHAR const * const format,...);
+  void addError(_In_z_ _Printf_format_string_ TCHAR const * const format,...);
   const StringArray &getErrors() const { return m_errors; }
   void listErrors(FILE *f = stdout) const;
   void listErrors(tostream &out) const;

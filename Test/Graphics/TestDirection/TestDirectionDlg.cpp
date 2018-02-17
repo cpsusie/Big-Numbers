@@ -108,7 +108,7 @@ HCURSOR CTestDirectionDlg::OnQueryDragIcon() {
 #define WHITE RGB(255,255,255)
 #define BLACK RGB(0,0,0)
 
-void CTestDirectionDlg::setMessage(const TCHAR *format,...) {
+void CTestDirectionDlg::setMessage(_In_z_ _Printf_format_string_ TCHAR const * const format,...) {
   va_list argptr;
   va_start(argptr,format);
   const String msg = vformat(format,argptr);

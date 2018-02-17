@@ -117,19 +117,19 @@ SyntaxNode *ParserTree::fetchTokenNode(int token,...) {
   return p;
 }
 
-void ParserTree::vAppendError(const TCHAR *format, va_list argptr) {
+void ParserTree::vAppendError(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
   m_errmsg.add(vformat(format, argptr));
   m_ok = false;
 }
 
-void ParserTree::appendError(const TCHAR *format,...) {
+void ParserTree::appendError(_In_z_ _Printf_format_string_ TCHAR const * const format,...) {
   va_list argptr;
   va_start(argptr, format);
   vAppendError(format, argptr);
   va_end(argptr);
 }
 
-void ParserTree::vAppendError(const SourcePosition &pos, long sqlcode, const TCHAR *format, va_list argptr) {
+void ParserTree::vAppendError(const SourcePosition &pos, long sqlcode, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
   String tmp = vformat(format, argptr);
   if(m_filename.length() == 0) {
     appendError(_T("Error %ld in line %d:%s"), sqlcode, pos.getLineNumber(), tmp.cstr());

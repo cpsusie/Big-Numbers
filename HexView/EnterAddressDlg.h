@@ -10,7 +10,7 @@ private:
   bool                   m_changeEditAddressActive;
 
   bool validateAddress();
-  void errorMessage(const TCHAR *format, ...);
+  void errorMessage(_In_z_ _Printf_format_string_ TCHAR const * const format, ...);
   CEdit *getAddressField();
 public:
     CEnterAddressDlg(unsigned __int64 docSize, CWnd *pParent = NULL);

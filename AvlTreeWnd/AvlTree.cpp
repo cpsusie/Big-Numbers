@@ -2,18 +2,18 @@
 #include <Math/MathLib.h>
 #include "AvlTree.h"
 
-void AvlGraphics::message( COLORREF color, const TCHAR *format, ...) {
+void AvlGraphics::message( COLORREF color, _In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
   va_list argptr;
   va_start(argptr,format);
   vmessage(color,format,argptr);
   va_end(argptr);
 }
 
-void AvlTree::vmessage(COLORREF color, const TCHAR *format, va_list argptr) {
+void AvlTree::vmessage(COLORREF color, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
   m_avlGraphics->vmessage(color,format,argptr);
 }
 
-void AvlTree::message( COLORREF color, const TCHAR *format, ...) {
+void AvlTree::message( COLORREF color, _In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
   va_list argptr;
   va_start(argptr,format);
   m_avlGraphics->vmessage(color,format,argptr);

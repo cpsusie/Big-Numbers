@@ -192,7 +192,7 @@ private:
     return m_top == 0;
   }
   static void newLine();
-  static void _tprintf(const TCHAR *format, ...);
+  static void _tprintf(_In_z_ _Printf_format_string_ TCHAR const * const format, ...);
   void        printDoneMark();
          void indent();
   void        printTree();
@@ -357,7 +357,7 @@ void GameTree::indent() {
   }
 }
 
-void GameTree::_tprintf(const TCHAR *format, ...) { // static
+void GameTree::_tprintf(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) { // static
   va_list argptr;
   va_start(argptr, format);
   _vtprintf(format, argptr);

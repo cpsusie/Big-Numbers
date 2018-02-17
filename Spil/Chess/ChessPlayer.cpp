@@ -773,7 +773,7 @@ const TCHAR *ChessPlayer::getStateName(ChessPlayerState state) { // static
 }
 
 // private
-void ChessPlayer::debugMsg(const TCHAR *format, ...) const {
+void ChessPlayer::debugMsg(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) const {
   va_list argptr;
   va_start(argptr, format);
   const String msg = vformat(format,argptr);

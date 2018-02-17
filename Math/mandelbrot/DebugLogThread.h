@@ -29,7 +29,7 @@ public:
   void redirect() {
     m_cmdQueue.put(DebugThreadQueueElement());
   }
-  void debugLog(const TCHAR *format, ...);
+  void debugLog(_In_z_ _Printf_format_string_ TCHAR const * const format, ...);
   UINT run();
   static DebugLogThread thread;
 };

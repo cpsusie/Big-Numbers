@@ -158,12 +158,12 @@ private:
   // timeout in milliseconds. If INFINTE, thread is blocked until input arrives
   String getLine(int timeout = INFINITE); // throw TimeoutException on timeout
 #ifdef _DEBUG
-  void send(const TCHAR *format,...) const;
+  void send(_In_z_ _Printf_format_string_ TCHAR const * const format,...) const;
 #endif
   void   setDebug(bool on);
   String getBeautifiedVariant(const String &pv) const;
   void   setParameterValue(const EngineOptionValue &v);
-  void   debugMsg(const TCHAR *format, ...) const;
+  void   debugMsg(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) const;
   bool   hasInput() const {
     return m_inputThread != NULL;
   }

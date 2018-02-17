@@ -70,7 +70,7 @@ private:
   void clearResultValue();
   void clearDerivedValue1();
   void clearDerivedValue2();
-  void showDebugInfo(const TCHAR *format,...);
+  void showDebugInfo(_In_z_ _Printf_format_string_ TCHAR const * const format,...);
   void clearDebugInfo();
   void saveExprVariables();
   void clearSavedVariables();

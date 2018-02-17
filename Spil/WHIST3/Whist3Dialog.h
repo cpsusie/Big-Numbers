@@ -31,8 +31,8 @@ public:
 
     void postStateChange(GameState oldState, GameState newState);
     void postCommand(int command);
-    void fatalError(const TCHAR *format,...);
-    void myMessage( const TCHAR *format,...);
+    void fatalError(_In_z_ _Printf_format_string_ TCHAR const * const format,...);
+    void myMessage( _In_z_ _Printf_format_string_ TCHAR const * const format,...);
     void createWorkBitmap(const CSize &size);
     void repaint();
     void paintAll(  CDC &dc);

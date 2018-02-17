@@ -19,7 +19,7 @@ public:
     void startTimer();
     void stopTimer();
     void pauseTimer(bool paused);
-    void showMessage(const TCHAR *format,...);
+    void showMessage(_In_z_ _Printf_format_string_ TCHAR const * const format,...);
     void showTime(   UINT64 sec      );
     void setName(    const CString &name   );
     CString getName();

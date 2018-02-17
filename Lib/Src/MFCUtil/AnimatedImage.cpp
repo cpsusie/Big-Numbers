@@ -21,9 +21,9 @@ String gifErrorCodeToString(int errorCode) {
 
 void throwGifErrorCode(int errorCode, const TCHAR *fileName, int line) {
   throwException(_T("Gif error in %s line %d: error=%s")
-                 ,fileName, line
-                 ,gifErrorCodeToString(errorCode).cstr()
-               );
+                ,fileName, line
+                ,gifErrorCodeToString(errorCode).cstr()
+                );
 }
 
 AnimatedImage::AnimatedImage() {

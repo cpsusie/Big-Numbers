@@ -322,8 +322,8 @@ String         createTempFileName();
 
 class VerboseReceiver {
 public:
-  virtual void vprintf(            const TCHAR *format, va_list argptr);
-  virtual void vupdateMessageField(const TCHAR *format, va_list argptr);
+  virtual void vprintf(            _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
+  virtual void vupdateMessageField(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
   virtual void clear();
 };
 
@@ -331,18 +331,18 @@ extern VerboseReceiver *VERBOSENULL;
 
 void throwUserException(int id, ...);
 // log to stderr and logfile if opened with setVerboseLogging
-void verbose(            const TCHAR *format, ...);
-void updateMessageField( const TCHAR *format, ...);
+void verbose(            _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
+void updateMessageField( _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
 // same as verbose, Takes a va_list as argument.            Default writes to stderr
-void vverbose(           const TCHAR *format, va_list argptr);
+void vverbose(           _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
 // same as updateMessageField. Takes a va_list as argument. Default writes to stderr
-void vupdateMessageField(const TCHAR *format, va_list argptr);
+void vupdateMessageField(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
 void clearVerbose();
 
 void redirectVerbose(VerboseReceiver *receiver);
 // log only to logfile if open
-void log(const TCHAR *format, ...);
-void vlog(const TCHAR *format, va_list argptr);
+void log(_In_z_ _Printf_format_string_ TCHAR const * const format, ...);
+void vlog(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
 // If on is true, everything logged by verbose or log will go to logfile
 // which has an automatic generated, unique name
 // (template "c:\temp\chess<timestamp>.log")

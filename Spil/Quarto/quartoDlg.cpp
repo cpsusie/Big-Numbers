@@ -460,7 +460,7 @@ Move CQuartoDlg::findMove() {
   return m;
 }
 
-void CQuartoDlg::showInfo(const TCHAR *format,...) {
+void CQuartoDlg::showInfo(_In_z_ _Printf_format_string_ TCHAR const * const format,...) {
   va_list argptr;
   va_start(argptr, format);
   const String s = vformat(format, argptr);
