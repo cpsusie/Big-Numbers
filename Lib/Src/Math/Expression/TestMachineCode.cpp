@@ -499,6 +499,7 @@ void MachineCode::genTestSequence() {
   emit(XOR_R64_IMM_DWORD(RSI)); addBytes(&j, 4);
 #endif
 
+  emit(REP); emit(SCAS_QWORD);
 #ifdef TEST_MUL
 
   emit(MEM_ADDR_PTR( MUL_DWORD,EDI));

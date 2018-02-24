@@ -855,6 +855,32 @@ public:
 #define NEG_R16(r16)                           REG_SRC(NEG_WORD, r16)
 #define NEG_R32(r32)                           REG_SRC(NEG_DWORD,r32)
 
+#define INS_BYTE                               B1INS(0x6C)
+#define INS_DWORD                              B1INS(0x6D)
+#define INS_WORD                               WORDOP(INS_DWORD)
+#define OUTS_BYTE                              B1INS(0x6E)
+#define OUTS_DWORD                             B1INS(0x6F)
+#define OUTS_WORD                              WORDOP(OUTS_DWORD)
+#define MOVS_BYTE                              B1INS(0xA4)
+#define MOVS_DWORD                             B1INS(0xA5)
+#define MOVS_WORD                              WORDOP(MOVS_DWORD)
+#define CMPS_BYTE                              B1INS(0xA6)
+#define CMPS_DWORD                             B1INS(0xA7)
+#define CMPS_WORD                              WORDOP(CMPS_DWORD)
+#define STOS_BYTE                              B1INS(0xAA)
+#define STOS_DWORD                             B1INS(0xAB)
+#define STOS_WORD                              WORDOP(STOS_DWORD)
+#define LODS_BYTE                              B1INS(0xAC)
+#define LODS_DWORD                             B1INS(0xAD)
+#define LODS_WORD                              WORDOP(LODS_DWORD)
+#define SCAS_BYTE                              B1INS(0xAE)
+#define SCAS_DWORD                             B1INS(0xAF)
+#define SCAS_WORD                              WORDOP(SCAS_DWORD)
+
+#define REP                                    B1INS(0xF3) // Apply to INS, OUTS, MOVS, LODS, and STOS
+#define REPE                                   B1INS(0xF3) // Apply to CMPS and SCAS instructions
+#define REPNE                                  B2INS(0xF2) // Apply to CMPS and SCAS instructions
+
 #define INC_BYTE                               B2OP(0xFE00          )
 #define INC_DWORD                              B2OP(0xFF00          )
 #define INC_R8( r8 )                           REG_SRC(INC_BYTE, r8 )
@@ -1003,6 +1029,11 @@ public:
 #define NEG_QWORD                              REX3(   NEG_DWORD             )
 #define NEG_R64(r64)                           REG_SRC(NEG_QWORD         ,r64)
 
+#define CMPS_QWORD                             REX3(   CMPS_DWORD            )
+#define STOS_QWORD                             REX3(   STOS_DWORD            )
+#define LODS_QWORD	                           REX3(   LODS_DWORD            )
+#define SCAS_QWORD                             REX3(   SCAS_DWORD            )
+
 #define MOVSD_XMM_MMWORD(xmm)                  B4OPNOREG(0xF20F1000 | ((xmm) << 3))       // Build src with MEM_ADDR-*
 #define MOVSD_MMWORD_XMM(xmm)                  B4OPNOREG(0xF20F1100 | ((xmm) << 3))       // Build dst with MEM_ADDR-*
 
@@ -1039,10 +1070,6 @@ public:
 #define POP_R64( r64)                          REX0(_POP_R32 , r64)                       // No operand
 
 #endif // IS64BIT
-
-#define REP_MOVS_BYTE                          B2INS(0xF3A4  )
-#define REP_MOVS_DWORD                         B2INS(0xF3A5  )
-#define REP_MOVS_WORD                          B3INS(0xF366A5)
 
 // FPU instructions
 
