@@ -7,16 +7,15 @@
 
 void fisk() {
   __asm {
-
     imul ecx, dword ptr[esi+8*edi+0xabcddbca],0x12345678
-    imul cx, word ptr[esi+8*edi+0xabcddbca],0x1234
+    imul cx ,  word ptr[esi+8*edi+0xabcddbca],0x1234
 
     cbw
     cwde
     cwd
     cdq
 
-    add ax, word ptr[esp+0x12345678] // 8 bytes instruction
+    add  ax, word ptr[esp+0x12345678] // 8 bytes instruction
 
     idiv al
     idiv cl
@@ -296,8 +295,6 @@ void fisk() {
     mov bp,1
     mov si,1
     mov di,1
-
-
   }
 }
 
@@ -315,6 +312,7 @@ void fisk() {
 
 #ifdef IS32BIT
 #define OP_2ARGX64(name)
+#define OP_2ARGX64_1WAY(name)
 #else // IS64BIT
 #define OP_2ARGX64(name)                                                                       \
    ,name##_R64_QWORD(RAX), name##_R64_QWORD(RCX), name##_R64_QWORD(RDX), name##_R64_QWORD(RBX) \
@@ -325,6 +323,13 @@ void fisk() {
    ,name##_QWORD_R64(RSP), name##_QWORD_R64(RBP), name##_QWORD_R64(RSI), name##_QWORD_R64(RDI) \
    ,name##_QWORD_R64( R8), name##_QWORD_R64( R9), name##_QWORD_R64(R10), name##_QWORD_R64(R11) \
    ,name##_QWORD_R64(R12), name##_QWORD_R64(R13), name##_QWORD_R64(R14), name##_QWORD_R64(R15)
+
+#define OP_2ARGX64_1WAY(name)                                                  \
+   ,name##_QWORD(RAX), name##_QWORD(RCX), name##_QWORD(RDX), name##_QWORD(RBX) \
+   ,name##_QWORD(RSP), name##_QWORD(RBP), name##_QWORD(RSI), name##_QWORD(RDI) \
+   ,name##_QWORD( R8), name##_QWORD( R9), name##_QWORD(R10), name##_QWORD(R11) \
+   ,name##_QWORD(R12), name##_QWORD(R13), name##_QWORD(R14), name##_QWORD(R15)
+
 #endif // IS32BIT
 
 #define OP_2ARG(name)                                                                          \
@@ -341,6 +346,13 @@ void fisk() {
    ,name##_DWORD_R32(EAX), name##_DWORD_R32(ECX), name##_DWORD_R32(EDX), name##_DWORD_R32(EBX) \
    ,name##_DWORD_R32(ESP), name##_DWORD_R32(EBP), name##_DWORD_R32(ESI), name##_DWORD_R32(EDI) \
     OP_2ARGX64(name)
+
+#define OP_2ARGNOBYTE(name)                                                    \
+    name##_WORD(  AX), name##_WORD(  CX), name##_WORD(  DX), name##_WORD(  BX) \
+   ,name##_WORD(  SP), name##_WORD(  BP), name##_WORD(  SI), name##_WORD(  DI) \
+   ,name##_DWORD(EAX), name##_DWORD(ECX), name##_DWORD(EDX), name##_DWORD(EBX) \
+   ,name##_DWORD(ESP), name##_DWORD(EBP), name##_DWORD(ESI), name##_DWORD(EDI) \
+    OP_2ARGX64_1WAY(name)
 
 #ifdef IS32BIT
 #define EMIT_ALLR8X64( name)
@@ -395,11 +407,16 @@ static UINT64 staticInt64 = 0x123456789abcdef1;
 #endif // IS64BIT
 
 void MachineCode::genTestSequence() {
+#ifdef GENERATE_ASSEMBLER_CODE
+  fisk();
+#endif
 #ifdef IS32BIT
   void *addr = (void*)&staticInt32;
 #else // IS64BIT
   void *addr = (void*)&staticInt64;
 #endif // IS64BIT
+
+#ifdef TEST_INCDEC_PUSHPOP
 
   EMIT_ALLR8(INC);
   EMIT_ALLR8(DEC);
@@ -422,6 +439,10 @@ void MachineCode::genTestSequence() {
   EMIT_ALLR64(PUSH);
   EMIT_ALLR64(POP );
 #endif // IS64BIT
+
+#endif // TEST_INCDEC_PUSHPOP
+
+#ifdef TEST_MOV
 
   emit(REG_SRC(MOV_BYTE_R8(  BL ), BH ));
   emit(REG_SRC(MOV_BYTE_R8(  BH ), DH ));
@@ -453,6 +474,8 @@ void MachineCode::genTestSequence() {
   emit(MOV_FROM_RAX_IMM_ADDR_QWORD); addBytes(addr,sizeof(addr));
 #endif
 
+#endif // TEST_MOV
+
   static int j = 0x12345678;
   emit(MEM_ADDR_PTR(ADD_R32_DWORD(EDI), ESI));
 #ifdef IS64BIT
@@ -475,6 +498,8 @@ void MachineCode::genTestSequence() {
   emit(REG_SRC(XOR_QWORD_R64(RDI)     , RSI));
   emit(XOR_R64_IMM_DWORD(RSI)); addBytes(&j, 4);
 #endif
+
+#ifdef TEST_MUL
 
   emit(MEM_ADDR_PTR( MUL_DWORD,EDI));
   emit(MEM_ADDR_PTR(IMUL_DWORD,EDI));
@@ -531,7 +556,6 @@ void MachineCode::genTestSequence() {
   emit(REG_SRC(IMUL3_DWORD_IMM_BYTE(EBX),ECX));       addBytes(&staticInt32,1);
   emit(REG_SRC(IMUL3_DWORD_IMM_BYTE(ESP),ECX));       addBytes(&staticInt32,1);
 
-
   emit(MEM_ADDR_PTR(IMUL3_WORD_IMM_WORD(AX),CX));     addBytes(&staticInt32,2);
   emit(MEM_ADDR_PTR(IMUL3_WORD_IMM_WORD(CX),CX));     addBytes(&staticInt32,2);
   emit(MEM_ADDR_PTR(IMUL3_WORD_IMM_WORD(DX),CX));     addBytes(&staticInt32,2);
@@ -567,9 +591,10 @@ void MachineCode::genTestSequence() {
   emit(REG_SRC(IMUL3_WORD_IMM_BYTE(SP),CX));          addBytes(&staticInt32,1);
 
   emit(NOOP);
+#endif // TEST_MUL
 
   const IntelOpcode opcodes[] = {
-    SETO   ,SETNO   ,SETB   ,SETAE
+    SETO   ,SETNO   ,SETB    ,SETAE
    ,SETE   ,SETNE   ,SETBE   ,SETA
    ,SETS   ,SETNS   ,SETPE   ,SETPO
    ,SETL   ,SETGE   ,SETLE   ,SETG
@@ -581,14 +606,25 @@ void MachineCode::genTestSequence() {
    ,OP_1ARG(IMUL)
    ,OP_1ARG(DIV )
    ,OP_1ARG(IDIV)
+   ,OP_1ARG(ROL )
+   ,OP_1ARG(ROR )
+   ,OP_1ARG(RCL )
+   ,OP_1ARG(RCR )
+   ,OP_1ARG(SHL )
+   ,OP_1ARG(SHR )
+   ,OP_1ARG(SAR )
+   ,OP_2ARGNOBYTE(SHLD)
+   ,OP_2ARGNOBYTE(SHRD)
 
    ,IMUL2_R32_DWORD(EAX),IMUL2_R32_DWORD(ECX),IMUL2_R32_DWORD(EDX),IMUL2_R32_DWORD(EBX)
    ,IMUL2_R32_DWORD(ESP),IMUL2_R32_DWORD(EBP),IMUL2_R32_DWORD(ESI),IMUL2_R32_DWORD(EDI)
 
    ,OP_2ARG(ADD)
+   ,OP_2ARG(ADC)
    ,OP_2ARG(OR )
    ,OP_2ARG(AND)
    ,OP_2ARG(SUB)
+   ,OP_2ARG(SBB)
    ,OP_2ARG(XOR)
    ,OP_2ARG(CMP)
    ,OP_2ARG(MOV)
