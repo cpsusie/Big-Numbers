@@ -1057,9 +1057,9 @@ public:
 #define POP_R16( r16)                          WORDOP(POP_R32( r16))                      // No operand
 
 
-#define PUSH_BYTE                              B1INS(0x6A    )                            // 1 byte value
-#define PUSH_DWORD                             B1INS(0x68    )                            // 4 byte value
-#define PUSH_WORD                              WORDOP(PUSH_DWORD)                         // 2 byte value
+#define PUSH_IMM_BYTE                          B1INS(0x6A    )                            // 1 byte value
+#define PUSH_IMM_DWORD                         B1INS(0x68    )                            // 4 byte value
+#define PUSH_IMM_WORD                          WORDOP(PUSH_IMM_DWORD)                     // 2 byte value
 
 #else // IS64BIT
 

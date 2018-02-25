@@ -1109,24 +1109,24 @@ int Expression::genPush(const void *p, UINT size) {
     m_code.emit(MOV_R32_IMM_DWORD(ESI));
     m_code.addBytes(&p,4);
     m_code.emit(REG_SRC(MOV_R32_DWORD(EDI),ESP));
-    m_code.emit(REP_MOVS_DWORD);
+    m_code.emit(REP); m_code.emit(MOVS_DWORD);
     return size;
   }
 }
 
 int Expression::genPushRef(const void *p) {
-  m_code.emit(PUSH_DWORD);
+  m_code.emit(PUSH_IMM_DWORD);
   m_code.addBytes(&p,sizeof(p));
   return sizeof(void*);
 }
 
 int Expression::genPushInt(int n) {
   if(ISBYTE(n)) {
-    m_code.emit(PUSH_BYTE);
+    m_code.emit(PUSH_IMM_BYTE);
     char byte = (char)n;
     m_code.addBytes(&byte,1);
   } else {
-    m_code.emit(PUSH_DWORD);
+    m_code.emit(PUSH_IMM_DWORD);
     m_code.addBytes(&n,4);
   }
   return sizeof(int);
