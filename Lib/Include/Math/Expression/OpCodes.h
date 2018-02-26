@@ -839,6 +839,11 @@ public:
 #define SHRD_WORD(          r16)               WORDOP(SHRD_DWORD(r16))
 #define SHRD_WORD_IMM_BYTE( r16)               WORDOP(SHRD_DWORD_IMM_BYTE(r16))           // 1 byte operand as shift amount
 
+#define BSF_DWORD(          r32)               B3OP(0x0FBC00 | ((r32)<<3))                // Bitscan forward
+#define BSR_DWORD(          r32)               B3OP(0x0FBD00 | ((r32)<<3))                // Bitscan reversed
+#define BSF_WORD(           r16)               WORDOP(BSF_DWORD(r16))
+#define BSR_WORD(           r16)               WORDOP(BSR_DWORD(r16))
+
 #define NOT_BYTE                               B2OP(0xF610          )
 #define NOT_DWORD                              B2OP(0xF710          )
 #define NOT_WORD                               WORDOP(NOT_DWORD     )
@@ -1023,6 +1028,9 @@ public:
 #define SHRD_QWORD(         r64)               REX2(SHRD_DWORD           ,r64)
 #define SHRD_QWORD_IMM_BYTE(r64)               REX2(SHRD_DWORD_IMM_BYTE  ,r64)            // 1 byte operand as shift amount
 
+#define BSF_QWORD(          r64)               REX2(BSF_DWORD            ,r64)
+#define BSR_QWORD(          r64)               REX2(BSR_DWORD            ,r64)
+
 #define NOT_QWORD                              REX3(   NOT_DWORD             )
 #define NOT_R64(r64)                           REG_SRC(NOT_QWORD         ,r64)
 
@@ -1031,7 +1039,7 @@ public:
 
 #define CMPS_QWORD                             REX3(   CMPS_DWORD            )
 #define STOS_QWORD                             REX3(   STOS_DWORD            )
-#define LODS_QWORD	                           REX3(   LODS_DWORD            )
+#define LODS_QWORD                             REX3(   LODS_DWORD            )
 #define SCAS_QWORD                             REX3(   SCAS_DWORD            )
 
 #define MOVSD_XMM_MMWORD(xmm)                  B4OPNOREG(0xF20F1000 | ((xmm) << 3))       // Build src with MEM_ADDR-*

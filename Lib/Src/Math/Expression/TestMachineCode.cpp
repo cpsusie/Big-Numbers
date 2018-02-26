@@ -7,6 +7,7 @@
 
 void fisk() {
   __asm {
+
     imul ecx, dword ptr[esi+8*edi+0xabcddbca],0x12345678
     imul cx ,  word ptr[esi+8*edi+0xabcddbca],0x1234
 
@@ -15,286 +16,6 @@ void fisk() {
     cwd
     cdq
 
-    add  ax, word ptr[esp+0x12345678] // 8 bytes instruction
-
-    idiv al
-    idiv cl
-    idiv dl
-    idiv bl
-    idiv ah
-    idiv ch
-    idiv dh
-    idiv bh
-
-    idiv byte ptr[eax]
-    idiv byte ptr[ecx]
-    idiv byte ptr[edx]
-    idiv byte ptr[ebx]
-    idiv byte ptr[esp]
-    idiv byte ptr[ebp]
-    idiv byte ptr[esi]
-    idiv byte ptr[edi]
-
-    idiv eax
-    idiv ecx
-    idiv edx
-    idiv ebx
-    idiv esp
-    idiv ebp
-    idiv esi
-    idiv edi
-
-    idiv dword ptr[eax]
-    idiv dword ptr[ecx]
-    idiv dword ptr[edx]
-    idiv dword ptr[ebx]
-    idiv dword ptr[esp]
-    idiv dword ptr[ebp]
-    idiv dword ptr[esi]
-    idiv dword ptr[edi]
-
-    idiv ax
-    idiv cx
-    idiv dx
-    idiv bx
-    idiv sp
-    idiv bp
-    idiv si
-    idiv di
-
-    idiv word ptr[eax]
-    idiv word ptr[ecx]
-    idiv word ptr[edx]
-    idiv word ptr[ebx]
-    idiv word ptr[esp]
-    idiv word ptr[ebp]
-    idiv word ptr[esi]
-    idiv word ptr[edi]
-
-    imul cl
-    imul dl
-    imul bl
-    imul byte ptr[ecx]
-
-    imul ecx
-    imul edx
-    imul ebx
-    imul dword ptr[eax]
-    imul dword ptr[ecx]
-    imul dword ptr[edx]
-    imul dword ptr[ebx]
-    imul dword ptr[esp]
-    imul dword ptr[ebp]
-    imul dword ptr[esi]
-    imul dword ptr[edi]
-    imul eax, eax
-    imul eax, ecx
-    imul eax, edx
-    imul eax, ebx
-    imul eax, esp
-    imul eax, ebp
-    imul eax, esi
-    imul eax, edi
-    imul ecx, eax
-    imul ecx, ecx
-    imul ecx, edx
-    imul ecx, ebx
-    imul ecx, esp
-    imul ecx, ebp
-    imul ecx, esi
-    imul ecx, edi
-    imul eax, dword ptr[eax], 2
-    imul eax, ecx, 2
-    imul eax, edx, 2
-    imul eax, ebx, 2
-    imul eax, esp, 2
-    imul eax, ebp, 2
-    imul eax, esi, 2
-    imul eax, edi, 2
-    imul ecx, eax, 2
-    imul ecx, ecx, 2
-    imul ecx, edx, 2
-    imul ecx, ebx, 2
-    imul ecx, esp, 2
-    imul ecx, ebp, 2
-    imul ecx, esi, 2
-    imul ecx, edi, 2
-    imul edx, eax, 2
-    imul edx, ecx, 2
-    imul edx, edx, 2
-    imul edx, ebx, 2
-    imul edx, esp, 2
-    imul edx, ebp, 2
-    imul edx, esi, 2
-    imul edx, edi, 2
-    imul ebx, eax, 2
-    imul ebx, ecx, 2
-    imul ebx, edx, 2
-    imul ebx, ebx, 2
-    imul ebx, esp, 2
-    imul ebx, ebp, 2
-    imul ebx, esi, 2
-    imul ebx, edi, 2
-    imul eax, dword ptr[esp+0xaaaaaaaa], 0x12345678
-    imul eax, ecx, 0x12345678
-    imul eax, edx, 0x12345678
-    imul eax, ebx, 0x12345678
-    imul eax, esp, 0x12345678
-    imul eax, ebp, 0x12345678
-    imul eax, esi, 0x12345678
-    imul eax, edi, 0x12345678
-    imul ecx, eax, 0x12345678
-    imul ecx, ecx, 0x12345678
-    imul ecx, edx, 0x12345678
-    imul ecx, ebx, 0x12345678
-    imul ecx, esp, 0x12345678
-    imul ecx, ebp, 0x12345678
-    imul ecx, esi, 0x12345678
-    imul ecx, edi, 0x12345678
-    imul edx, eax, 0x12345678
-    imul edx, ecx, 0x12345678
-    imul edx, edx, 0x12345678
-    imul edx, ebx, 0x12345678
-    imul edx, esp, 0x12345678
-    imul edx, ebp, 0x12345678
-    imul edx, esi, 0x12345678
-    imul edx, edi, 0x12345678
-    imul ebx, eax, 0x12345678
-    imul ebx, ecx, 0x12345678
-    imul ebx, edx, 0x12345678
-    imul ebx, ebx, 0x12345678
-    imul ebx, esp, 0x12345678
-    imul ebx, ebp, 0x12345678
-    imul ebx, esi, 0x12345678
-    imul ebx, edi, 0x12345678
-
-    imul cx
-    imul dx
-    imul bx
-    imul word ptr[ecx]
-    imul ax, ax
-    imul ax, cx
-    imul ax, dx
-    imul ax, bx
-    imul ax, sp
-    imul ax, bp
-    imul ax, si
-    imul ax, di
-    imul cx, ax
-    imul cx, cx
-    imul cx, dx
-    imul cx, bx
-    imul cx, sp
-    imul cx, bp
-    imul cx, si
-    imul cx, di
-    imul ax, 2
-    imul cx, 2
-    imul dx, 2
-    imul bx, 2
-    imul ax, 0x1234
-    imul cx, 0x1234
-    imul dx, 0x1234
-    imul bx, 0x1234
-
-    mov byte ptr[eax], al
-    mov byte ptr[eax], cl
-    mov byte ptr[eax], dl
-    mov byte ptr[eax], bl
-    mov byte ptr[eax], ah
-    mov byte ptr[eax], ch
-    mov byte ptr[eax], dh
-    mov byte ptr[eax], bh
-
-    mov dword ptr[eax], eax
-    mov dword ptr[eax], ecx
-    mov dword ptr[eax], edx
-    mov dword ptr[eax], ebx
-    mov dword ptr[eax], esp
-    mov dword ptr[eax], ebp
-    mov dword ptr[eax], esi
-    mov dword ptr[eax], edi
-
-    mov al, byte ptr[eax]
-    mov cl, byte ptr[eax]
-    mov dl, byte ptr[eax]
-    mov bl, byte ptr[eax]
-    mov ah, byte ptr[eax]
-    mov ch, byte ptr[eax]
-    mov dh, byte ptr[eax]
-    mov bh, byte ptr[eax]
-
-    mov eax, dword ptr[eax]
-    mov ecx, dword ptr[eax]
-    mov edx, dword ptr[eax]
-    mov ebx, dword ptr[eax]
-    mov esp, dword ptr[eax]
-    mov ebp, dword ptr[eax]
-    mov esi, dword ptr[eax]
-    mov edi, dword ptr[eax]
-
-    mov al,1
-    mov cl,1
-    mov dl,1
-    mov bl,1
-    mov ah,1
-    mov ch,1
-    mov dh,1
-    mov bh,1
-
-    mov eax,0x12345678
-    mov ecx,0x12345678
-    mov edx,0x12345678
-    mov ebx,0x12345678
-    mov esp,0x12345678
-    mov ebp,0x12345678
-    mov esi,0x12345678
-    mov edi,0x12345678
-
-    mov eax,1
-    mov ecx,1
-    mov edx,1
-    mov ebx,1
-    mov esp,1
-    mov ebp,1
-    mov esi,1
-    mov edi,1
-
-    mov ax,word ptr[eax]
-    mov cx,word ptr[eax]
-    mov dx,word ptr[eax]
-    mov bx,word ptr[eax]
-    mov sp,word ptr[eax]
-    mov bp,word ptr[eax]
-    mov si,word ptr[eax]
-    mov di,word ptr[eax]
-
-    mov word ptr[eax],ax
-    mov word ptr[eax],cx
-    mov word ptr[eax],dx
-    mov word ptr[eax],bx
-    mov word ptr[eax],sp
-    mov word ptr[eax],bp
-    mov word ptr[eax],si
-    mov word ptr[eax],di
-
-    mov ax,0x1234
-    mov cx,0x1234
-    mov dx,0x1234
-    mov bx,0x1234
-    mov sp,0x1234
-    mov bp,0x1234
-    mov si,0x1234
-    mov di,0x1234
-
-    mov ax,1
-    mov cx,1
-    mov dx,1
-    mov bx,1
-    mov sp,1
-    mov bp,1
-    mov si,1
-    mov di,1
   }
 }
 
@@ -303,95 +24,54 @@ void fisk() {
 #ifdef TEST_MACHINECODE
 
 #ifdef IS32BIT
-#define OP_1ARGX64_QWORD(name)
+#define ALLHIGHREG(op)
 #else
+#define ALLHIGHREG(op) ,op(8),op(9),op(10),op(11),op(12),op(13),op(14),op(15)
+#endif
+
+#define ALLREG(op) op(0),op(1),op(2),op(3),op(4),op(5),op(6),op(7) ALLHIGHREG(op)
+
+#ifdef IS32BIT
+#define OP_1ARGX64_QWORD(name)
+#define FOR_ALL_REG64(op)
+#else // IS64BIT
 #define OP_1ARGX64_QWORD(name) ,name##_QWORD
 #endif // IS32BIT
 
-#define OP_1ARG(name) name##_BYTE ,name##_DWORD ,name##_WORD  OP_1ARGX64_QWORD(name)
+#define OP_2ARG_BYTE_1WAY(    name)  ALLREG(name##_BYTE     )
+#define OP_2ARG_BYTE_2WAY(    name)  ALLREG(name##_R8_BYTE  ), ALLREG(name##_BYTE_R8  )
+#define OP_2ARG_WORD_1WAY(    name)  ALLREG(name##_WORD     )
+#define OP_2ARG_WORD_2WAY(    name)  ALLREG(name##_R16_WORD ), ALLREG(name##_WORD_R16 )
+#define OP_2ARG_DWORD_1WAY(   name)  ALLREG(name##_DWORD    )
+#define OP_2ARG_DWORD_2WAY(   name)  ALLREG(name##_R32_DWORD), ALLREG(name##_DWORD_R32)
+#define OP_2ARGX64_QWORD_1WAY(name) ,ALLREG(name##_QWORD    )
+#define OP_2ARGX64_QWORD_2WAY(name) ,ALLREG(name##_R64_QWORD), ALLREG(name##_R64_QWORD)
 
+#define OP_1ARG(              name) name##_BYTE ,name##_DWORD ,name##_WORD  OP_1ARGX64_QWORD(name)
+
+#define OP_2ARG_1WAY_NOBYTE(name) \
+  OP_2ARG_WORD_1WAY(    name)     \
+ ,OP_2ARG_DWORD_1WAY(   name)     \
+  OP_2ARGX64_QWORD_1WAY(name)
+
+#define OP_2ARG_2WAY(name)        \
+  OP_2ARG_BYTE_2WAY(    name)     \
+ ,OP_2ARG_WORD_2WAY(    name)     \
+ ,OP_2ARG_DWORD_2WAY(   name)     \
+  OP_2ARGX64_QWORD_2WAY(name)
+
+#define DEFINE_INSTRUCTIONLIST(a, list) const IntelInstruction a[] = { list }
+#define EMIT_INSTRUCTIONLIST(a) for(int i = 0; i < ARRAYSIZE(a); i++) { emit(a[i]); }
+#define EMITALL(name) { DEFINE_INSTRUCTIONLIST(l, ALLREG(name)); EMIT_INSTRUCTIONLIST(l); }
+
+#define EMIT_ALLR8( name) EMITALL(name##_R8 )
+#define EMIT_ALLR16(name) EMITALL(name##_R16)
+#define EMIT_ALLR32(name) EMITALL(name##_R32)
 #ifdef IS32BIT
-#define OP_2ARGX64(name)
-#define OP_2ARGX64_1WAY(name)
+#define EMIT_ALLR64(name)
 #else // IS64BIT
-#define OP_2ARGX64(name)                                                                       \
-   ,name##_R64_QWORD(RAX), name##_R64_QWORD(RCX), name##_R64_QWORD(RDX), name##_R64_QWORD(RBX) \
-   ,name##_R64_QWORD(RSP), name##_R64_QWORD(RBP), name##_R64_QWORD(RSI), name##_R64_QWORD(RDI) \
-   ,name##_R64_QWORD( R8), name##_R64_QWORD( R9), name##_R64_QWORD(R10), name##_R64_QWORD(R11) \
-   ,name##_R64_QWORD(R12), name##_R64_QWORD(R13), name##_R64_QWORD(R14), name##_R64_QWORD(R15) \
-   ,name##_QWORD_R64(RAX), name##_QWORD_R64(RCX), name##_QWORD_R64(RDX), name##_QWORD_R64(RBX) \
-   ,name##_QWORD_R64(RSP), name##_QWORD_R64(RBP), name##_QWORD_R64(RSI), name##_QWORD_R64(RDI) \
-   ,name##_QWORD_R64( R8), name##_QWORD_R64( R9), name##_QWORD_R64(R10), name##_QWORD_R64(R11) \
-   ,name##_QWORD_R64(R12), name##_QWORD_R64(R13), name##_QWORD_R64(R14), name##_QWORD_R64(R15)
-
-#define OP_2ARGX64_1WAY(name)                                                  \
-   ,name##_QWORD(RAX), name##_QWORD(RCX), name##_QWORD(RDX), name##_QWORD(RBX) \
-   ,name##_QWORD(RSP), name##_QWORD(RBP), name##_QWORD(RSI), name##_QWORD(RDI) \
-   ,name##_QWORD( R8), name##_QWORD( R9), name##_QWORD(R10), name##_QWORD(R11) \
-   ,name##_QWORD(R12), name##_QWORD(R13), name##_QWORD(R14), name##_QWORD(R15)
-
-#endif // IS32BIT
-
-#define OP_2ARG(name)                                                                          \
-    name##_R8_BYTE(   AL), name##_R8_BYTE(   CL), name##_R8_BYTE(   DL), name##_R8_BYTE(   BL) \
-   ,name##_R8_BYTE(   AH), name##_R8_BYTE(   CH), name##_R8_BYTE(   DH), name##_R8_BYTE(   BH) \
-   ,name##_BYTE_R8(   AL), name##_BYTE_R8(   CL), name##_BYTE_R8(   DL), name##_BYTE_R8(   BL) \
-   ,name##_BYTE_R8(   AH), name##_BYTE_R8(   CH), name##_BYTE_R8(   DH), name##_BYTE_R8(   BH) \
-   ,name##_R16_WORD(  AX), name##_R16_WORD(  CX), name##_R16_WORD(  DX), name##_R16_WORD(  BX) \
-   ,name##_R16_WORD(  SP), name##_R16_WORD(  BP), name##_R16_WORD(  SI), name##_R16_WORD(  DI) \
-   ,name##_WORD_R16(  AX), name##_WORD_R16(  CX), name##_WORD_R16(  DX), name##_WORD_R16(  BX) \
-   ,name##_WORD_R16(  SP), name##_WORD_R16(  BP), name##_WORD_R16(  SI), name##_WORD_R16(  DI) \
-   ,name##_R32_DWORD(EAX), name##_R32_DWORD(ECX), name##_R32_DWORD(EDX), name##_R32_DWORD(EBX) \
-   ,name##_R32_DWORD(ESP), name##_R32_DWORD(EBP), name##_R32_DWORD(ESI), name##_R32_DWORD(EDI) \
-   ,name##_DWORD_R32(EAX), name##_DWORD_R32(ECX), name##_DWORD_R32(EDX), name##_DWORD_R32(EBX) \
-   ,name##_DWORD_R32(ESP), name##_DWORD_R32(EBP), name##_DWORD_R32(ESI), name##_DWORD_R32(EDI) \
-    OP_2ARGX64(name)
-
-#define OP_2ARGNOBYTE(name)                                                    \
-    name##_WORD(  AX), name##_WORD(  CX), name##_WORD(  DX), name##_WORD(  BX) \
-   ,name##_WORD(  SP), name##_WORD(  BP), name##_WORD(  SI), name##_WORD(  DI) \
-   ,name##_DWORD(EAX), name##_DWORD(ECX), name##_DWORD(EDX), name##_DWORD(EBX) \
-   ,name##_DWORD(ESP), name##_DWORD(EBP), name##_DWORD(ESI), name##_DWORD(EDI) \
-    OP_2ARGX64_1WAY(name)
-
-#ifdef IS32BIT
-#define EMIT_ALLR8X64( name)
-#define EMIT_ALLR16X64(name)
-#define EMIT_ALLR32X64(name)
-#else // IS64BIT
-#define EMIT_ALLR8X64(name)                                                                   \
-  emit(name##_R8( R8 )); emit(name##_R8( R9 )); emit(name##_R8( R10)); emit(name##_R8( R11)); \
-  emit(name##_R8( R12)); emit(name##_R8( R13)); emit(name##_R8( R14)); emit(name##_R8( R15))
-
-#define EMIT_ALLR16X64(name)                                                                  \
-  emit(name##_R16(R8 )); emit(name##_R16(R9 )); emit(name##_R16(R10)); emit(name##_R16(R11)); \
-  emit(name##_R16(R12)); emit(name##_R16(R13)); emit(name##_R16(R14)); emit(name##_R16(R15))
-
-#define EMIT_ALLR32X64(name)                                                                  \
-  emit(name##_R32(R8 )); emit(name##_R32(R9 )); emit(name##_R32(R10)); emit(name##_R32(R11)); \
-  emit(name##_R32(R12)); emit(name##_R32(R13)); emit(name##_R32(R14)); emit(name##_R32(R15))
-#endif // IS64BIT
-
-#define EMIT_ALLR8(name)                                                                      \
-  emit(name##_R8( AL )); emit(name##_R8( CL )); emit(name##_R8( DL )); emit(name##_R8( BL )); \
-  emit(name##_R8( AH )); emit(name##_R8( CH )); emit(name##_R8( DH )); emit(name##_R8( BH )); \
-  EMIT_ALLR8X64(name)
-
-#define EMIT_ALLR16(name)                                                                     \
-  emit(name##_R16(AX )); emit(name##_R16(CX )); emit(name##_R16(DX )); emit(name##_R16(BX )); \
-  emit(name##_R16(SP )); emit(name##_R16(BP )); emit(name##_R16(SI )); emit(name##_R16(DI )); \
-  EMIT_ALLR16X64(name)
-
-#define EMIT_ALLR32(name)                                                                     \
-  emit(name##_R32(EAX)); emit(name##_R32(ECX)); emit(name##_R32(EDX)); emit(name##_R32(EBX)); \
-  emit(name##_R32(ESP)); emit(name##_R32(EBP)); emit(name##_R32(ESI)); emit(name##_R32(EDI)); \
-  EMIT_ALLR32X64(name)
-
-#define EMIT_ALLR64(name)                                                                     \
-  emit(name##_R64(RAX)); emit(name##_R64(RCX)); emit(name##_R64(RDX)); emit(name##_R64(RBX)); \
-  emit(name##_R64(RSP)); emit(name##_R64(RBP)); emit(name##_R64(RSI)); emit(name##_R64(RDI)); \
-  emit(name##_R64( R8)); emit(name##_R64( R9)); emit(name##_R64(R10)); emit(name##_R64(R11)); \
-  emit(name##_R64(R12)); emit(name##_R64(R13)); emit(name##_R64(R14)); emit(name##_R64(R15));
+#define EMIT_ALLR64(name) EMITALL(name##_R64)
+#endif
 
 #define UNKNOWN_OPCODE(  dst)               B2INSA(0x8700 + ((dst)<<3))                     // Build src with MEM_ADDR-macros, REG_SRC
 //Real FMOD(Real x, Real y) {
@@ -596,6 +276,9 @@ void MachineCode::genTestSequence() {
 #endif // TEST_MUL
 
   const IntelOpcode opcodes[] = {
+    OP_2ARG_1WAY_NOBYTE(BSF)
+   ,OP_2ARG_1WAY_NOBYTE(BSR)
+   ,
     SETO   ,SETNO   ,SETB    ,SETAE
    ,SETE   ,SETNE   ,SETBE   ,SETA
    ,SETS   ,SETNS   ,SETPE   ,SETPO
@@ -615,21 +298,21 @@ void MachineCode::genTestSequence() {
    ,OP_1ARG(SHL )
    ,OP_1ARG(SHR )
    ,OP_1ARG(SAR )
-   ,OP_2ARGNOBYTE(SHLD)
-   ,OP_2ARGNOBYTE(SHRD)
+   ,OP_2ARG_1WAY_NOBYTE(SHLD)
+   ,OP_2ARG_1WAY_NOBYTE(SHRD)
 
    ,IMUL2_R32_DWORD(EAX),IMUL2_R32_DWORD(ECX),IMUL2_R32_DWORD(EDX),IMUL2_R32_DWORD(EBX)
    ,IMUL2_R32_DWORD(ESP),IMUL2_R32_DWORD(EBP),IMUL2_R32_DWORD(ESI),IMUL2_R32_DWORD(EDI)
 
-   ,OP_2ARG(ADD)
-   ,OP_2ARG(ADC)
-   ,OP_2ARG(OR )
-   ,OP_2ARG(AND)
-   ,OP_2ARG(SUB)
-   ,OP_2ARG(SBB)
-   ,OP_2ARG(XOR)
-   ,OP_2ARG(CMP)
-   ,OP_2ARG(MOV)
+   ,OP_2ARG_2WAY(ADD)
+   ,OP_2ARG_2WAY(ADC)
+   ,OP_2ARG_2WAY(OR )
+   ,OP_2ARG_2WAY(AND)
+   ,OP_2ARG_2WAY(SUB)
+   ,OP_2ARG_2WAY(SBB)
+   ,OP_2ARG_2WAY(XOR)
+   ,OP_2ARG_2WAY(CMP)
+   ,OP_2ARG_2WAY(MOV)
 
 #ifdef IS64BIT
    ,MOVSD_XMM_MMWORD(XMM0)
