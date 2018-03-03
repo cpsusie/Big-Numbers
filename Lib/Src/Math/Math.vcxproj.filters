@@ -346,6 +346,9 @@
     <ClCompile Include="FPU.cpp">
       <Filter>Source Files\Misc</Filter>
     </ClCompile>
+    <ClCompile Include="Expression\Opcode.cpp">
+      <Filter>Source Files\Expression</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="NatvisFile.natvis" />
@@ -395,9 +398,6 @@
       <Filter>Header Files\Expression</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\Math\Expression\ExpressionSymbol.h">
-      <Filter>Header Files\Expression</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Math\Expression\OpCodes.h">
       <Filter>Header Files\Expression</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\Math\Expression\ParserTree.h">
@@ -519,6 +519,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\Math\FPU.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Expression\OpCode.h">
+      <Filter>Header Files\Expression</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

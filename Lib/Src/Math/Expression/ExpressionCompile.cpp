@@ -3,7 +3,7 @@
 
 DEFINECLASSNAME(MachineCode);
 
-#define ISBYTE(i)  ((i)==(char)(i))
+#define ISBYTE(i)  IntelOpcode::isByte(i)
 
 MachineCode::MachineCode() {
   setValueCount(0);
@@ -64,16 +64,22 @@ void MachineCode::emitESPOp(const IntelOpcode &op, int offset) {
   }
 }
 
+#ifdef IS32BIT
+#define TABLEREF_REGISTER ESI
+#else
+#define TABLEREF_REGISTER RSI
+#endif // IS32BIT
+
 void MachineCode::emitTableOp(const IntelOpcode &op, int index) {
   const int offset = getESIOffset(index);
   if(ISBYTE(offset)) {
     if(offset == 0) {
-      emit(MEM_ADDR_PTR(op, ESI));
+      emit(MEM_ADDR_PTR(op, TABLEREF_REGISTER));
     } else {
-      emit(MEM_ADDR_PTR1(op, ESI, offset)); // ie RSI for x64, but its the same value
+      emit(MEM_ADDR_PTR1(op, TABLEREF_REGISTER, offset));
     }
   } else {
-    emit(MEM_ADDR_PTR4(op, ESI, offset));
+    emit(MEM_ADDR_PTR4(op, TABLEREF_REGISTER, offset));
   }
 }
 
@@ -120,64 +126,29 @@ bool MachineCode::emitFLoad(const ExpressionNode *n, const ExpressionDestination
 #ifdef IS32BIT
 void MachineCode::emitAddESP(int n) {
   if(n == 0) return;
-  if(ISBYTE(n)) {
-    emit(ADD_R32_IMM_BYTE(ESP));
-    const char byte = n;
-    addBytes(&byte,1);
-  } else {
-    emit(ADD_R32_IMM_DWORD(ESP));
-    addBytes(&n,4);
-  }
+  emit(ADD_REG_IMM(ESP,n));
 }
 
 void MachineCode::emitSubESP(int n) {
   if(n == 0) return;
-  if(ISBYTE(n)) {
-    emit(SUB_R32_IMM_BYTE(ESP));
-    const char byte = n;
-    addBytes(&byte,1);
-  } else {
-    emit(SUB_R32_IMM_DWORD(ESP));
-    addBytes(&n,4);
-  }
+  emit(SUB_REG_IMM(ESP,n));
 }
 
 #else // IS64BIT
 
 void MachineCode::emitAddRSP(int n) {
-  DEFINEMETHODNAME;
   if(n == 0) return;
-  if(ISBYTE(n)) {
-    emit(ADD_R64_IMM_BYTE(RSP));
-    const char byte = n;
-    addBytes(&byte,1);
-  } else {
-    throwInvalidArgumentException(method, _T("n=%d. Valid range is [-128..127]"), n);
-  }
+  emit(ADD_REG_IMM(RSP,n));
 }
 
 void MachineCode::emitSubRSP(int n) {
-  DEFINEMETHODNAME;
   if(n == 0) return;
-  if(ISBYTE(n)) {
-    emit(SUB_R64_IMM_BYTE(RSP));
-    const char byte = n;
-    addBytes(&byte,1);
-  } else {
-    throwInvalidArgumentException(method, _T("n=%d. Valid range is [-128..127]"), n);
-  }
+  emit(SUB_REG_IMM(RSP,n));
 }
 
 void MachineCode::emitAddR64(int r64, int value) {
   if(value == 0) return;
-  if(ISBYTE(value)) {
-    emit(ADD_R64_IMM_BYTE(r64));
-    const char byte = (char)value;
-    addBytes(&byte,1);
-  } else {
-    emit(ADD_R64_IMM_DWORD(r64));
-    addBytes(&value,4);
-  }
+  emit(ADD_REG_IMM(r64,value));
 }
 
 BYTE MachineCode::pushTmp() {
@@ -295,7 +266,7 @@ void MachineCode::emitCall(BuiltInFunction f, const ExpressionDestination &dummy
   const int addr = addBytes(&ref, 4);
   m_refenceArray.add(MemoryReference(addr, (BYTE*)f));
 #ifdef LONGDOUBLE
-  emitESPOp(MOV_R32_DWORD(EAX),0);
+  emitESPOp(MOV_REG_MEM(EAX),0);
   emit(MEM_ADDR_PTR(FLD_REAL, EAX));
 #endif
 }
@@ -321,7 +292,7 @@ void MachineCode::emitCall(BuiltInFunction f, const ExpressionDestination &dst) 
   emit(MOV_R64_IMM_QWORD(RAX));
 //  void *addr = getFuncAbsAddr(f);
   addBytes(&f,sizeof(f));
-  emit(REG_SRC(CALLABSOLUTE, RAX));
+  emit(REGREG(CALLABSOLUTE, RAX));
   switch(dst.getType()) {
   case RESULT_IN_FPU       :
     emitESPOp(MOVSD_MMWORD_XMM(XMM0),0);                                 // XMM0 -> FPU-top
@@ -349,19 +320,19 @@ void MachineCode::emitCall(BuiltInFunction f, const ExpressionDestination &dst) 
 void MachineCode::emitCall(BuiltInFunction f, const ExpressionDestination &dst) {
   switch(dst.getType()) {
   case RESULT_IN_FPU       :
-    emit(REG_SRC(MOV_R64_QWORD(RCX), RSI));                            // RCX = RSI + getESIOffset(0);
+    emit(REGREG(MOV_REG_MEM(RCX), RSI));                            // RCX = RSI + getESIOffset(0);
     emitAddR64(RCX, getESIOffset(0));                                  // Will generate code after call, that pushed *rsi in FPU
     break;
   case RESULT_IN_ADDRRDI   :
-    emit(REG_SRC(MOV_R64_QWORD(RCX), RDI));                            // RCX = RDI
+    emit(REGREG(MOV_REG_MEM(RCX), RDI));                            // RCX = RDI
     break;
   case RESULT_ON_STACK:
-    { emit(REG_SRC(MOV_R64_QWORD(RCX), RSP));                          // RCX = RSP + dst.stackOffset
+    { emit(REGREG(MOV_REG_MEM(RCX), RSP));                          // RCX = RSP + dst.stackOffset
       emitAddR64(RCX, dst.getStackOffset());
     }
     break;
   case RESULT_IN_VALUETABLE:
-    { emit(REG_SRC(MOV_R64_QWORD(RCX), RSI));                          // RCX = RSI + getESIOffset(dst.tableIndex))
+    { emit(REGREG(MOV_REG_MEM(RCX), RSI));                          // RCX = RSI + getESIOffset(dst.tableIndex))
       emitAddR64(RCX, getESIOffset(dst.getTableIndex()));
       break;
     }
@@ -369,7 +340,7 @@ void MachineCode::emitCall(BuiltInFunction f, const ExpressionDestination &dst) 
 
   emit(MOV_R64_IMM_QWORD(RAX));
   addBytes(&f,sizeof(f));
-  emit(REG_SRC(CALLABSOLUTE, RAX));
+  emit(REGREG(CALLABSOLUTE, RAX));
 
   switch(dst.getType()) {
   case RESULT_IN_FPU       :
@@ -540,7 +511,7 @@ void Expression::genReturnBoolExpression(const ExpressionNode *n) {
   m_code.addBytes(&trueValue,4);
   genEpilog();
 
-  const int falseLabel = m_code.emit(REG_SRC(XOR_R32_DWORD(EAX),EAX));
+  const int falseLabel = m_code.emit(REGREG(XOR_REG_MEM(EAX),EAX));
   genEpilog();
 
   m_code.fixupShortJumps(jumps.trueJumps ,trueLabel );
@@ -1108,7 +1079,7 @@ int Expression::genPush(const void *p, UINT size) {
     m_code.addBytes(&count,4);
     m_code.emit(MOV_R32_IMM_DWORD(ESI));
     m_code.addBytes(&p,4);
-    m_code.emit(REG_SRC(MOV_R32_DWORD(EDI),ESP));
+    m_code.emit(REGREG(MOV_REG_MEM(EDI),ESP));
     m_code.emit(REP); m_code.emit(MOVS_DWORD);
     return size;
   }
@@ -1194,13 +1165,13 @@ void Expression::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode *a
     offset1 = genSetRefParameter(arg1, 0, stacked1);
   }
   if(stacked1) {
-    m_code.emit(REG_SRC(MOV_R64_QWORD(RCX), RSP));
-    m_code.emit(ADD_R64_IMM_BYTE(RCX)); m_code.addBytes(&offset1, 1);
+    m_code.emit(REGREG(MOV_REG_MEM(RCX), RSP));
+    m_code.emit(ADD_REG_IMM(RCX,offset1));
     m_code.popTmp();
   }
   if(stacked2) {
-    m_code.emit(REG_SRC(MOV_R64_QWORD(RDX), RSP));
-    m_code.emit(ADD_R64_IMM_BYTE(RDX)); m_code.addBytes(&offset2, 1);
+    m_code.emit(REGREG(MOV_REG_MEM(RDX), RSP));
+    m_code.emit(ADD_REG_IMM(RDX,offset2));
     m_code.popTmp();
   }
   m_code.emitCall((BuiltInFunction)f, dst);
@@ -1227,16 +1198,16 @@ void Expression::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode *a
     offset1 = genSetRefParameter(arg1, 0, stacked1);
   }
   if(stacked1) {
-    m_code.emit(REG_SRC(MOV_R64_QWORD(RDX), RSP));
+    m_code.emit(REGREG(MOV_REG_MEM(RDX), RSP));
     if(offset1) {
-      m_code.emit(ADD_R64_IMM_BYTE(RDX)); m_code.addBytes(&offset1, 1);
+      m_code.emit(ADD_REG_IMM(RDX, offset1));
       m_code.popTmp();
     }
   }
   if(stacked2) {
-    m_code.emit(REG_SRC(MOV_R64_QWORD(R8), RSP));
+    m_code.emit(REGREG(MOV_REG_MEM(R8), RSP));
     if(offset2) {
-      m_code.emit(ADD_R64_IMM_BYTE(R8)); m_code.addBytes(&offset2, 1);
+      m_code.emit(ADD_REG_IMM(R8,offset2));
       m_code.popTmp();
     }
   }
@@ -1278,7 +1249,7 @@ void Expression::genSetRefParameter(const ExpressionNode *n, int index) {
   const BYTE offset = genSetRefParameter(n, index, stacked);
   if(stacked) {
     const int r64 = int64ParamRegister[index];
-    m_code.emit(REG_SRC(MOV_R64_QWORD(r64), RSP));
+    m_code.emit(REGREG(MOV_REG_MEM(r64), RSP));
     m_code.emitAddR64(r64, offset);
     m_code.popTmp();
   }
@@ -1287,7 +1258,7 @@ void Expression::genSetRefParameter(const ExpressionNode *n, int index) {
 BYTE Expression::genSetRefParameter(const ExpressionNode *n, int index, bool &savedOnStack) {
   const int dstRegister = int64ParamRegister[index];
   if(n->isNameOrNumber()) {
-    m_code.emit(REG_SRC(MOV_R64_QWORD(dstRegister), RSI));
+    m_code.emit(REGREG(MOV_REG_MEM(dstRegister), RSI));
     m_code.emitAddR64(dstRegister, m_code.getESIOffset(n->getValueIndex()));
     savedOnStack = false;
     return 0;

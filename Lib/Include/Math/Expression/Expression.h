@@ -2,7 +2,7 @@
 
 #include <ByteArray.h>
 #include "ExpressionParser.h"
-#include "OpCodes.h"
+#include "OpCode.h"
 
 typedef void (*BuiltInFunction)();
 typedef BuiltInFunction ExpressionEntryPoint;
