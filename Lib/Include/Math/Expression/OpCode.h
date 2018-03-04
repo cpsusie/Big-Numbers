@@ -286,16 +286,29 @@ class IntelInstruction : public IntelOpcode {
 private:
   // Append count bytes to sequence of m_byte
   IntelInstruction &add(INT64 bytesToAdd, BYTE count);
-public:
-  inline IntelInstruction(BYTE size, UINT64 bytes, bool regMode, bool immMode) : IntelOpcode(size, bytes, regMode, false, false, immMode) {
-  }
-  inline IntelInstruction(const IntelOpcode &op) : IntelOpcode(op) {
+  inline IntelInstruction &add(char b) {
+    addByte(b);
+    return *this;
   }
 
-  IntelInstruction &setReg(BYTE reg);
+  inline IntelInstruction &memAddrEsp0() {
+    or(0x04);
+    return add(0x24);
+  }
+
+  inline IntelInstruction &memAddrEsp1(char offset) {
+    or(0x44);
+    return add(0x24).add(offset);
+  }
+
+  inline IntelInstruction &memAddrEsp4(int offset) {
+    or(0x84);
+    return add(0x24).add(offset, 4);
+  }
+  IntelInstruction &memAddrEsp(int offset);
 
   // ptr[reg]. (reg&7) != ESP,EBP
-  inline IntelInstruction &memAddrPtr(BYTE reg) {
+  inline IntelInstruction &memAddrPtr0(BYTE reg) {
     assert(m_memAddrMode && (REGSIZE(reg) == ADDRESSING_REGSIZE) && (REGINDEX(reg) <= MAX_REFERENCE_REGISTER));
     assert(((reg&7)!=4) && ((reg&7)!=5));
     SETREXBITONHIGHREG(reg,0);
@@ -304,12 +317,12 @@ public:
   }
 
   // ptr[reg+offset], (reg&7) != ESP, offset=[-128;127]
-  inline IntelInstruction &memAddrPtr1(BYTE reg, BYTE offset) {
+  inline IntelInstruction &memAddrPtr1(BYTE reg, char offset) {
     assert(m_memAddrMode && (REGSIZE(reg) == ADDRESSING_REGSIZE) && (REGINDEX(reg) <= MAX_REFERENCE_REGISTER));
     assert((reg&7)!=4);
     SETREXBITONHIGHREG(reg,0);
     or(0x40 | (reg&7));
-    return add(offset, 1);
+    return add(offset);
   }
 
   // ptr[reg+offset], (reg&7) != ESP, offset=[INT_MIN;INT_MAX]
@@ -321,67 +334,61 @@ public:
     return add(offset, 4);
   }
 
+  // ptr[reg+(addReg<<p2)], (reg&7) != EBP, (addReg&7) != ESP, p2<=3
+  inline IntelInstruction &memAddrMp2AddReg0(BYTE reg, BYTE p2, BYTE addReg) {
+    assert(m_memAddrMode && (REGSIZE(reg   ) == ADDRESSING_REGSIZE) && (REGINDEX(reg   ) <= MAX_REFERENCE_REGISTER));
+    assert(                 (REGSIZE(addReg) == ADDRESSING_REGSIZE) && (REGINDEX(addReg) <= MAX_REFERENCE_REGISTER));
+    assert(((reg&7)!=5) && ((addReg&7)!=4) && (p2<=3));
+    SETREXBITSONHIGHREG2(reg,addReg);
+    or(0x04);
+    return add((p2 << 6) | ((addReg&7) << 3) | (reg&7));
+  }
+
+  // ptr[reg+(addReg<<p2)+offset], (addReg&7) != ESP, p2<=3, offset=[-128;127]
+  inline IntelInstruction &memAddrMp2AddReg1(BYTE reg, BYTE p2, BYTE addReg, char offset) {
+    assert(m_memAddrMode && (REGSIZE(reg   ) == ADDRESSING_REGSIZE) && (REGINDEX(reg   ) <= MAX_REFERENCE_REGISTER));
+    assert(                 (REGSIZE(addReg) == ADDRESSING_REGSIZE) && (REGINDEX(addReg) <= MAX_REFERENCE_REGISTER));
+    assert(((addReg&7)!=4) && (p2<=3));
+    SETREXBITSONHIGHREG2(reg,addReg);
+    or(0x44);
+    return add((p2 << 6) | ((addReg&7) << 3) | (reg&7)).add(offset);
+  }
+
+  // ptr[reg+(addReg<<p2)+offset], (addReg&7) != ESP, p2<=3, offset=[INT_MIN;INT_MAX]
+  inline IntelInstruction &memAddrMp2AddReg4(BYTE reg, BYTE p2, BYTE addReg, int offset) {
+    assert(m_memAddrMode && (REGSIZE(reg   ) == ADDRESSING_REGSIZE) && (REGINDEX(reg   ) <= MAX_REFERENCE_REGISTER));
+    assert(                 (REGSIZE(addReg) == ADDRESSING_REGSIZE) && (REGINDEX(addReg) <= MAX_REFERENCE_REGISTER));
+    assert(((addReg&7)!=4) && (p2<=3));
+    SETREXBITSONHIGHREG2(reg,addReg);
+    or(0x84);
+    return add((p2 << 6) | ((addReg&7) << 3) | (reg&7)).add(offset, 4);
+  }
+
+public:
+  inline IntelInstruction(BYTE size, UINT64 bytes, bool regMode, bool immMode) : IntelOpcode(size, bytes, regMode, false, false, immMode) {
+  }
+  inline IntelInstruction(const IntelOpcode &op) : IntelOpcode(op) {
+  }
+
+  IntelInstruction &setReg(BYTE reg);
+
+
    // ptr[(reg<<p2)+offset], (reg&7) != ESP, p2<=3, offset=[INT_MIN;INT_MAX]
   inline IntelInstruction &memAddrMp2Ptr4(BYTE reg, BYTE p2, int offset) {
     assert(m_memAddrMode && (REGSIZE(reg) == ADDRESSING_REGSIZE) && (REGINDEX(reg) <= MAX_REFERENCE_REGISTER));
     assert(((reg&7)!=4) && (p2<=3));
     SETREXBITONHIGHREG(reg,1);
     or(0x04);
-    return add(0x05 | (p2 << 6) | ((reg&7) << 3), 1).add(offset, 4);
+    return add(0x05 | (p2 << 6) | ((reg&7) << 3)).add(offset, 4);
   }
 
-  // ptr[reg+(addReg<<p2)], (reg&7) != EBP, (addReg&7) != ESP, p2<=3
-  inline IntelInstruction &memAddrMp2Reg(BYTE reg, BYTE p2, BYTE addReg) {
-    assert(m_memAddrMode && (REGSIZE(reg   ) == ADDRESSING_REGSIZE) && (REGINDEX(reg   ) <= MAX_REFERENCE_REGISTER));
-    assert(                 (REGSIZE(addReg) == ADDRESSING_REGSIZE) && (REGINDEX(addReg) <= MAX_REFERENCE_REGISTER));
-    assert(((reg&7)!=5) && ((addReg&7)!=4) && (p2<=3));
-    SETREXBITSONHIGHREG2(reg,addReg);
-    or(0x04);
-    return add((p2 << 6) | ((addReg&7) << 3) | (reg&7), 1);
-  }
+  IntelInstruction &memAddrPtr(      BYTE reg, int offset);
+  IntelInstruction &memAddrMp2AddReg(BYTE reg, BYTE addReg, BYTE p2, int offset);
 
-  // ptr[reg+(addReg<<p2)+offset], (addReg&7) != ESP, p2<=3, offset=[-128;127]
-  inline IntelInstruction &memAddrMp2Reg1(BYTE reg, BYTE p2, BYTE addReg, BYTE offset) {
-    assert(m_memAddrMode && (REGSIZE(reg   ) == ADDRESSING_REGSIZE) && (REGINDEX(reg   ) <= MAX_REFERENCE_REGISTER));
-    assert(                 (REGSIZE(addReg) == ADDRESSING_REGSIZE) && (REGINDEX(addReg) <= MAX_REFERENCE_REGISTER));
-    assert(((addReg&7)!=4) && (p2<=3));
-    SETREXBITSONHIGHREG2(reg,addReg);
-    or(0x44);
-    return add((p2 << 6) | ((addReg&7) << 3) | (reg&7), 1).add(offset, 1);
-  }
-
-  // ptr[reg+(addReg<<p2)+offset], (addReg&7) != ESP, p2<=3, offset=[INT_MIN;INT_MAX]
-  inline IntelInstruction &memAddrMp2Reg4(BYTE reg, BYTE p2, BYTE addReg, int offset) {
-    assert(m_memAddrMode && (REGSIZE(reg   ) == ADDRESSING_REGSIZE) && (REGINDEX(reg   ) <= MAX_REFERENCE_REGISTER));
-    assert(                 (REGSIZE(addReg) == ADDRESSING_REGSIZE) && (REGINDEX(addReg) <= MAX_REFERENCE_REGISTER));
-    assert(((addReg&7)!=4) && (p2<=3));
-    SETREXBITSONHIGHREG2(reg,addReg);
-    or(0x84);
-    return add((p2 << 6) | ((addReg&7) << 3) | (reg&7), 1).add(offset, 4);
-  }
-
-  inline IntelInstruction &memAddrEsp() {
-    assert(m_memAddrMode);
-    or(0x04);
-    return add(0x24, 1);
-  }
-
-  inline IntelInstruction &memAddrEsp1(BYTE offset) {
-    assert(m_memAddrMode);
-    or(0x44);
-    return add(0x24, 1).add(offset, 1);
-  }
-
-  inline IntelInstruction &memAddrEsp4(int offset) {
-    assert(m_memAddrMode);
-    or(0x84);
-    return add(0x24, 1).add(offset, 4);
-  }
-
-  inline IntelInstruction &memImmDword() { // add 4 bytes address
+  inline IntelInstruction &memAddrImmDword(int addr) {
     assert(m_memAddrMode);
     or(0x05);
-    return *this;
+    return add(addr, 4);
   }
 
   inline IntelInstruction &regReg(BYTE reg) {
@@ -397,34 +404,18 @@ public:
 
 #define WORDOP(  op32) ((op32).wordOp())
 
-// reg!=ESP,EBP.                                                          Ex:fild word ptr[reg]
-#define MEM_ADDR_PTR(       op,reg                 ) IntelInstruction(op).memAddrPtr(    reg                 )
-// reg!=ESP             offset=1 byte signed  [-128;127].                 Ex:fild word ptr[reg + offset]
-#define MEM_ADDR_PTR1(      op,reg          ,offset) IntelInstruction(op).memAddrPtr1(   reg,          offset)
-// reg!=ESP             offset=4 bytes signed [INT_MIN;INT_MAX].          Ex:fild word ptr[reg + offset]
-#define MEM_ADDR_PTR4(      op,reg          ,offset) IntelInstruction(op).memAddrPtr4(   reg,          offset)
-// reg!=ESP             offset=4 bytes signed [INT_MIN;INT_MAX] p2=[0;3]. Ex:fild word ptr[(reg<<p2) + offset]
-#define MEM_ADDR_MP2PTR4(   op,reg       ,p2,offset) IntelInstruction(op).memAddrMp2Ptr4(reg,p2,       offset)
-// reg!=EBP addReg!=ESP                                         p2=[0;3]. Ex:fild word ptr[reg + (addReg<<p2)]
-#define MEM_ADDR_PTRMP2REG( op,reg,addReg,p2       ) IntelInstruction(op).memAddrMp2Reg( reg,p2,addReg       )
-// addReg!=ESP          offset=1 byte signed  [-128;127]        p2=[0;3]. Ex:fild word ptr[reg + (addReg<<p2) + offset]
-#define MEM_ADDR_PTRMP2REG1(op,reg,addReg,p2,offset) IntelInstruction(op).memAddrMp2Reg1(reg,p2,addReg,offset)
-// addReg!=ESP          offset=4 bytes signed [INT_MIN;INT_MAX] p2=[0;3]. Ex:fild word ptr[reg + (addReg<<p2) + offset]
-#define MEM_ADDR_PTRMP2REG4(op,reg,addReg,p2,offset) IntelInstruction(op).memAddrMp2Reg4(reg,p2,addReg,offset)
-//                                                                        Ex:fild word ptr[esp]
-#define MEM_ADDR_ESP(       op                     ) IntelInstruction(op).memAddrEsp()
-//                      offset=1 byte signed  [-128;127].                 Ex:fild word ptr[esp + offset]
-#define MEM_ADDR_ESP1(      op              ,offset) IntelInstruction(op).memAddrEsp1(                 offset)
-//                      offset=4 bytes signed [INT_MIN;INT_MAX].          Ex:fild word ptr[esp + offset]
-#define MEM_ADDR_ESP4(      op              ,offset) IntelInstruction(op).memAddrEsp4(                 offset)
-//  + 4 byte address. In x64 mode PC-relative offset
-#define MEM_ADDR_DS(        op                     ) IntelInstruction(op).memImmDword()
+#define MEM_ADDR_PTR(       op,reg,          offset) IntelInstruction(op).memAddrPtr(      reg          ,offset)
+// reg   !=ESP          offset=4 bytes signed [INT_MIN;INT_MAX] p2=[0;3]. Ex:fild word ptr[(reg<<p2) + offset]
+#define MEM_ADDR_MP2PTR4(   op,reg       ,p2,offset) IntelInstruction(op).memAddrMp2Ptr4(  reg,p2       ,offset)
+// addReg!=ESP          offset=[INT_MIN;INT_MAX] p2=[0;3].                Ex:fild word ptr[reg + (addReg<<p2) + offset]
+#define MEM_ADDR_PTRMP2REG( op,reg,addReg,p2,offset) IntelInstruction(op).memAddrMp2AddReg(reg,addReg,p2,offset)
+// 4 byte address. In x64 mode PC-relative offset
+#define MEM_ADDR_DS_IMM(    op,addr                ) IntelInstruction(op).memAddrImmDword(addr)
 //                                                                        Ex:add dst, reg
 #define REGREG(             op,reg                 ) IntelInstruction(op).regReg(      reg                )
 
-#define MEM_ADDR_PTRREG(    op,reg,addReg         ) MEM_ADDR_PTRMP2REG( op,reg,addReg,0      )               // reg!=EBP addReg!=ESP                              ex:fild word ptr[esp + ecx]
-#define MEM_ADDR_PTRREG1(   op,reg,addReg   ,offs1) MEM_ADDR_PTRMP2REG1(op,reg,addReg,0,offs1)               //          addReg!=ESP         offs1=1 byte  signed ex:fild word ptr[ebp + ecx + 127]
-#define MEM_ADDR_PTRREG4(   op,reg,addReg   ,offs4) MEM_ADDR_PTRMP2REG4(op,reg,addReg,0,offs4)               //          addReg!=ESP         offs1=4 bytes signed ex:fild word ptr[esp + eax + 0x12345678]
+// addReg!=ESP          offset=[INT_MIN;INT_MAX]                          Ex:fild word ptr[esp + eax + 0x12345678]
+#define MEM_ADDR_PTRREG(    op,reg,addReg   ,offset) MEM_ADDR_PTRMP2REG(op,reg,addReg,0,offset)
 
 // Instructions defined with these macroes, cannot be combined with the various addressing-nmodes
 #define B1INS(op)        IntelInstruction(1, op,false,false)

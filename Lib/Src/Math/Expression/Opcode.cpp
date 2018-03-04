@@ -182,6 +182,40 @@ IntelInstruction &IntelInstruction::setReg(BYTE reg) {
   return *this;
 }
 
+IntelInstruction &IntelInstruction::memAddrEsp(int offset) {
+  assert(m_memAddrMode);
+  if(offset == 0   ) return memAddrEsp0();
+  if(isByte(offset)) return memAddrEsp1((char)offset);
+  return memAddrEsp4(offset);
+}
+
+IntelInstruction &IntelInstruction::memAddrPtr(BYTE reg, int offset) {
+  assert(m_memAddrMode && (REGSIZE(reg) == ADDRESSING_REGSIZE) && (REGINDEX(reg) <= MAX_REFERENCE_REGISTER));
+  switch(reg&7) {
+  case 4 :
+    return memAddrEsp(offset);
+  default:
+    if(offset == 0 && ((reg&7)!=5)) return memAddrPtr0(reg);
+    if(isByte(offset)) return memAddrPtr1(reg,(char)offset);
+    return memAddrPtr4(reg,offset);
+  }
+}
+
+IntelInstruction &IntelInstruction::memAddrMp2AddReg(BYTE reg, BYTE addReg, BYTE p2, int offset) {
+  DEFINEMETHODNAME;
+  assert(m_memAddrMode && (REGSIZE(reg   ) == ADDRESSING_REGSIZE) && (REGINDEX(reg   ) <= MAX_REFERENCE_REGISTER));
+  assert(                 (REGSIZE(addReg) == ADDRESSING_REGSIZE) && (REGINDEX(addReg) <= MAX_REFERENCE_REGISTER));
+  if((addReg&7)==4) {
+    throwInvalidArgumentException(method, _T("Invalid index register:%s"), getRegisterName(reg).cstr());
+  }
+  if(p2 > 3) {
+    throwInvalidArgumentException(method, _T("p2=%d. Valid range=[0;3]"),p2);
+  }
+  if((offset == 0) && ((reg&7) != 5)) return memAddrMp2AddReg0(reg,p2,addReg);
+  if(isByte(offset))                  return memAddrMp2AddReg1(reg,p2,addReg,(char)offset);
+  return memAddrMp2AddReg4(reg,p2,addReg,offset);
+}
+
 IntelInstruction &IntelInstruction::setRegImm(BYTE reg, int immv) {
   DEFINEMETHODNAME;
   const BYTE regIndex = REGINDEX(reg), regSize  = REGSIZE(reg);
@@ -196,7 +230,7 @@ IntelInstruction &IntelInstruction::setRegImm(BYTE reg, int immv) {
     if(regIndex != 0) {
       or(regIndex&7).prefix(0x80);
     }
-    add(immv,1);
+    add((char)immv);
     break;
   case REGSIZE_WORD :
     if(!isWord(immv)) {

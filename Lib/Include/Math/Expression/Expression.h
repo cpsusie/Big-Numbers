@@ -23,7 +23,7 @@ typedef Real (*BuiltInFunction2)(Real x, Real y);
 #define FSTP_REAL          FSTP_TBYTE
 #endif // LONGDOUBLE
 
-#define FSTP_REAL_PTR_ESP  MEM_ADDR_ESP(FSTP_REAL)
+#define FSTP_REAL_PTR_ESP  MEM_ADDR_PTR(FSTP_REAL,ESP,0)
 
 #ifdef IS64BIT
 typedef enum {

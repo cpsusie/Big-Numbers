@@ -8,6 +8,11 @@
 void fisk() {
   __asm {
 
+    add         byte ptr es:[78563412h],al
+    add         byte ptr cs:[78563412h],al
+    add         byte ptr ss:[78563412h],al
+    add         byte ptr ds:[78563412h],al
+    add         byte ptr [78563412h],al
     imul ecx, dword ptr[esi+8*edi+0xabcddbca],0x12345678
     imul cx ,  word ptr[esi+8*edi+0xabcddbca],0x1234
 
@@ -23,7 +28,7 @@ void fisk() {
 
 #ifdef TEST_MACHINECODE
 
-// #define TEST_ALLREGISTERS
+//#define TEST_ALLREGISTERS
 
 static const BYTE r8List[] = {
     AL
@@ -100,15 +105,30 @@ static const BYTE r8List[] = {
 #define REF_REGLISTSIZE ARRAYSIZE(r32List)
 
 #ifdef IS32BIT
-#define ALLHIGHREG(op)
-#define ALLREG64(  op)
-#else
+#define ALLHIGHREG8(    op   )
+#define ALLHIGHREG16(   op   )
+#define ALLHIGHREG32(   op   )
+#define ALLHIGHREG64(   op   )
+#define ALLHIGHREG(     op   )
+#define ALLREG64(       op   )
+#define ALLHIGHREG8IMM( ins,v)
+#define ALLHIGHREG16IMM(ins,v)
+#define ALLHIGHREG32IMM(ins,v)
+#define ALLREG64IMM(    ins,v)
+#else // IS64BIT
+
 #ifdef TEST_ALLREGISTERS
-#define ALLHIGHREG8( op) ,op(R8B),op(R9B),op(R10B),op(R11B),op(R12B),op(R13B),op(R14B),op(R15B)
-#define ALLHIGHREG16(op) ,op(R8W),op(R9W),op(R10W),op(R11W),op(R12W),op(R13W),op(R14W),op(R15W)
-#define ALLHIGHREG32(op) ,op(R8D),op(R9D),op(R10D),op(R11D),op(R12D),op(R13D),op(R14D),op(R15D)
-#define ALLHIGHREG64(op) ,op(R8 ),op(R9 ),op(R10 ),op(R11 ),op(R12 ),op(R13 ),op(R14 ),op(R15 )
-#else
+#define ALLHIGHREG8(    op)    ,op(R8B),op(R9B),op(R10B),op(R11B),op(R12B),op(R13B),op(R14B),op(R15B)
+#define ALLHIGHREG16(   op)    ,op(R8W),op(R9W),op(R10W),op(R11W),op(R12W),op(R13W),op(R14W),op(R15W)
+#define ALLHIGHREG32(   op)    ,op(R8D),op(R9D),op(R10D),op(R11D),op(R12D),op(R13D),op(R14D),op(R15D)
+#define ALLHIGHREG64(   op)    ,op(R8 ),op(R9 ),op(R10 ),op(R11 ),op(R12 ),op(R13 ),op(R14 ),op(R15 )
+
+#define ALLHIGHREG8IMM( ins,v) ,ins(R8B,v),ins(R9B,v),ins(R10B,v),ins(R11B,v),ins(R12B,v),ins(R13B,v),ins(R14B,v),ins(R15B,v)
+#define ALLHIGHREG16IMM(ins,v) ,ins(R8W,v),ins(R9W,v),ins(R10W,v),ins(R11W,v),ins(R12W,v),ins(R13W,v),ins(R14W,v),ins(R15W,v)
+#define ALLHIGHREG32IMM(ins,v) ,ins(R8D,v),ins(R9D,v),ins(R10D,v),ins(R11D,v),ins(R12D,v),ins(R13D,v),ins(R14D,v),ins(R15D,v)
+#define ALLHIGHREG64IMM(ins,v) ,ins(R8 ,v),ins(R9 ,v),ins(R10 ,v),ins(R11 ,v),ins(R12 ,v),ins(R13 ,v),ins(R14 ,v),ins(R15 ,v)
+
+#else // only subset of all registers
 #define ALLHIGHREG8(    op   ) ,op( R8B  ),op( R15B  )
 #define ALLHIGHREG16(   op   ) ,op( R8W  ),op( R15W  )
 #define ALLHIGHREG32(   op   ) ,op( R8D  ),op( R15D  )
@@ -118,25 +138,32 @@ static const BYTE r8List[] = {
 #define ALLHIGHREG16IMM(ins,v) ,ins(R8W,v),ins(R15W,v)
 #define ALLHIGHREG32IMM(ins,v) ,ins(R8D,v),ins(R15D,v)
 #define ALLHIGHREG64IMM(ins,v) ,ins(R8 ,v),ins(R15 ,v)
-
 #endif // TEST_ALLREGISTERS
-#endif // IS32BIT
+#endif // IS64BIT
 
 #ifdef TEST_ALLREGISTERS
-#define ALLREG8( op)  op(AL ),op(CL ),op(DL ),op(BL ),op(AH ),op(CH ),op(DH ),op(BH ) ALLHIGHREG8( op)
-#define ALLREG16(op)  op(AX ),op(CX ),op(DX ),op(BX ),op(SP ),op(BP ),op(SI ),op(DI ) ALLHIGHREG16(op)
-#define ALLREG32(op)  op(EAX),op(ECX),op(EDX),op(EBX),op(ESP),op(EBP),op(ESI),op(EDI) ALLHIGHREG32(op)
-#define ALLREG64(op) ,op(RAX),op(RCX),op(RDX),op(RBX),op(RSP),op(RBP),op(RSI),op(RDI) ALLHIGHREG64(op)
+#define ALLREG8( op)        op( AL   ),op( CL   ),op( DL   ),op( BL   ),op( AH   ),op( CH   ),op( DH   ),op( BH   ) ALLHIGHREG8(    op   )
+#define ALLREG16(op)        op( AX   ),op( CX   ),op( DX   ),op( BX   ),op( SP   ),op( BP   ),op( SI   ),op( DI   ) ALLHIGHREG16(   op   )
+#define ALLREG32(op)        op( EAX  ),op( ECX  ),op( EDX  ),op( EBX  ),op( ESP  ),op( EBP  ),op( ESI  ),op( EDI  ) ALLHIGHREG32(   op   )
+#define ALLREG8IMM( ins,v)  ins(AL ,v),ins(CL ,v),ins(DL ,v),ins(BL ,v),ins(AH ,v),ins(CH ,v),ins(DH ,v),ins(BH ,v) ALLHIGHREG8IMM( ins,v)
+#define ALLREG16IMM(ins,v)  ins(AX ,v),ins(CX ,v),ins(DX ,v),ins(BX ,v),ins(SP ,v),ins(BP ,v),ins(SI ,v),ins(DI ,v) ALLHIGHREG16IMM(ins,v)
+#define ALLREG32IMM(ins,v)  ins(EAX,v),ins(ECX,v),ins(EDX,v),ins(EBX,v),ins(ESP,v),ins(EBP,v),ins(ESI,v),ins(EDI,v) ALLHIGHREG32IMM(ins,v)
+#ifdef IS64BIT
+#define ALLREG64(   op   ) ,op( RAX  ),op( RCX  ),op( RDX)  ,op( RBX  ),op( RSP  ),op( RBP  ),op( RSI  ),op( RDI  ) ALLHIGHREG64(op      )
+#define ALLREG64IMM(ins,v) ,ins(RAX,v),ins(RCX,v),ins(RDX,v),ins(RBX,v),ins(RSP,v),ins(RBP,v),ins(RSI,v),ins(RDI,v) ALLHIGHREG64IMM(ins,v)
+#endif // IS64BIT
 #else
 #define ALLREG8(    op   )  op( AL   ),op( BH   ) ALLHIGHREG8(    op   )
 #define ALLREG16(   op   )  op( AX   ),op( DI   ) ALLHIGHREG16(   op   )
 #define ALLREG32(   op   )  op( EAX  ),op( EDI  ) ALLHIGHREG32(   op   )
-#define ALLREG64(   op   ) ,op( RAX  ),op( RDI  ) ALLHIGHREG64(   op   )
 #define ALLREG8IMM( ins,v)  ins(AL ,v),ins(BH ,v) ALLHIGHREG8IMM( ins,v)
 #define ALLREG16IMM(ins,v)  ins(AX ,v),ins(DI ,v) ALLHIGHREG16IMM(ins,v)
 #define ALLREG32IMM(ins,v)  ins(EAX,v),ins(EDI,v) ALLHIGHREG32IMM(ins,v)
-#define ALLREG64IMM(ins,v) ,ins(RAX,v),ins(RDI,v) ALLHIGHREG64IMM(ins,v)
 
+#ifdef IS64BIT
+#define ALLREG64(   op   ) ,op( RAX  ),op( RDI  ) ALLHIGHREG64(   op   )
+#define ALLREG64IMM(ins,v) ,ins(RAX,v),ins(RDI,v) ALLHIGHREG64IMM(ins,v)
+#endif
 #endif // TEST_ALLREGISTERS
 
 #ifdef IS32BIT
@@ -147,14 +174,18 @@ static const BYTE r8List[] = {
 #endif // IS32BIT
 
 #define ALLREG(op)     ALLREG8(   op      ),ALLREG16(   op      ),ALLREG32(   op)                                                           ALLREG64(   op )
-#define ALLREGIMM(ins) ALLREG8IMM(ins,0xff),ALLREG16IMM(ins,0xff),ALLREG16IMM(ins,0xffff),ALLREG32IMM(ins,0xff),ALLREG32IMM(ins,0xffffffff) ALLREG64IMM(ins,0xff) ALLREG64IMM(ins,0xffffffff)
+#define ALLREGIMM(ins) ALLREG8IMM(ins,0x7f),ALLREG16IMM(ins,0x7f),ALLREG16IMM(ins,0x7fff),ALLREG32IMM(ins,0x7f),ALLREG32IMM(ins,0xffffffff) ALLREG64IMM(ins,0x7f) ALLREG64IMM(ins,0xffffffff)
 
 #define OP_2ARG_BYTE(    name)  ALLREG(name##_BYTE     )
 #define OP_2ARG_WORD(    name)  ALLREG(name##_WORD     )
 #define OP_2ARG_DWORD(   name)  ALLREG(name##_DWORD    )
-#define OP_2ARGX64_QWORD(name) ,ALLREG(name##_QWORD    )
 
-#define OP_1ARG(              name) name##_BYTE ,name##_DWORD ,name##_WORD  OP_1ARGX64_QWORD(name)
+#ifdef IS32BIT
+#define OP_2ARGX64_QWORD(name)
+#else
+#define OP_2ARGX64_QWORD(name) ,ALLREG(name##_QWORD    )
+#endif
+#define OP_1ARG(          name) name##_BYTE ,name##_DWORD ,name##_WORD  OP_1ARGX64_QWORD(name)
 
 #define OP_2ARG_NOBYTE(name) \
   OP_2ARG_WORD(    name)     \
@@ -180,15 +211,15 @@ static const BYTE r8List[] = {
 //  return fmod(x,y);
 //}
 
-static BYTE   staticInt8  = 0x12;
-static USHORT staticInt16 = 0x1234;
-static UINT   staticInt32 = 0x12345678;
+static char  staticInt8  = 0x12;
+static short staticInt16 = 0x3412;
+static int   staticInt32 = 0x78563412;
 
 #ifdef IS64BIT
-static UINT64 staticInt64 = 0x123456789abcdef1;
+static INT64 staticInt64 = 0xf0debc9a78563412;
 #endif // IS64BIT
 
-#define TEST_INCDEC_PUSHPOP
+//#define TEST_INCDEC_PUSHPOP
 #define TEST_MOV
 #define TEST_MUL
 
@@ -270,103 +301,171 @@ void MachineCode::genTestSequence() {
 
 #ifdef IS32BIT
 #define ADDR_REGISTER EDI
+#define SP_REGISTER   ESP
+#define BP_REGISTER   EBP
 #else
 #define ADDR_REGISTER RDI
+#define SP_REGISTER   RSP
+#define BP_REGISTER   RBP
 #endif // IS32BIT
 
 #ifdef TEST_MUL
-  emit(MEM_ADDR_PTR( MUL_DWORD,ADDR_REGISTER));
-  emit(MEM_ADDR_PTR(IMUL_DWORD,ADDR_REGISTER));
+  emit(MEM_ADDR_PTR( MUL_DWORD,ADDR_REGISTER,0          ));
+  emit(MEM_ADDR_PTR(IMUL_DWORD,ADDR_REGISTER,0          ));
+  emit(MEM_ADDR_PTR( MUL_DWORD,ADDR_REGISTER,staticInt8 ));
+  emit(MEM_ADDR_PTR(IMUL_DWORD,ADDR_REGISTER,staticInt8 ));
+  emit(MEM_ADDR_PTR( MUL_DWORD,ADDR_REGISTER,staticInt32));
+  emit(MEM_ADDR_PTR(IMUL_DWORD,ADDR_REGISTER,staticInt32));
+  emit(MEM_ADDR_PTR( MUL_DWORD,SP_REGISTER  ,0          ));
+  emit(MEM_ADDR_PTR(IMUL_DWORD,SP_REGISTER  ,0          ));
+  emit(MEM_ADDR_PTR( MUL_DWORD,SP_REGISTER  ,staticInt8 ));
+  emit(MEM_ADDR_PTR(IMUL_DWORD,SP_REGISTER  ,staticInt8 ));
+  emit(MEM_ADDR_PTR( MUL_DWORD,SP_REGISTER  ,staticInt32));
+  emit(MEM_ADDR_PTR(IMUL_DWORD,SP_REGISTER  ,staticInt32));
+  emit(MEM_ADDR_PTR( MUL_DWORD,BP_REGISTER  ,0          ));
+  emit(MEM_ADDR_PTR(IMUL_DWORD,BP_REGISTER  ,0          ));
+  emit(MEM_ADDR_PTR( MUL_DWORD,BP_REGISTER  ,staticInt8 ));
+  emit(MEM_ADDR_PTR(IMUL_DWORD,BP_REGISTER  ,staticInt8 ));
+  emit(MEM_ADDR_PTR( MUL_DWORD,BP_REGISTER  ,staticInt32));
+  emit(MEM_ADDR_PTR(IMUL_DWORD,BP_REGISTER  ,staticInt32));
+  emit(NOOP);
+
 #ifdef IS64BIT
-  emit(MEM_ADDR_PTR(MUL_QWORD ,ADDR_REGISTER));
-  emit(MEM_ADDR_PTR(IMUL_QWORD,ADDR_REGISTER));
+  emit(MEM_ADDR_PTR( MUL_QWORD,ADDR_REGISTER,0          ));
+  emit(MEM_ADDR_PTR(IMUL_QWORD,ADDR_REGISTER,0          ));
+  emit(MEM_ADDR_PTR( MUL_QWORD,ADDR_REGISTER,staticInt8 ));
+  emit(MEM_ADDR_PTR(IMUL_QWORD,ADDR_REGISTER,staticInt8 ));
+  emit(MEM_ADDR_PTR( MUL_QWORD,ADDR_REGISTER,staticInt32));
+  emit(MEM_ADDR_PTR(IMUL_QWORD,ADDR_REGISTER,staticInt32));
+  emit(MEM_ADDR_PTR( MUL_QWORD,SP_REGISTER,0            ));
+  emit(MEM_ADDR_PTR(IMUL_QWORD,SP_REGISTER,0            ));
+  emit(MEM_ADDR_PTR( MUL_QWORD,SP_REGISTER,staticInt8   ));
+  emit(MEM_ADDR_PTR(IMUL_QWORD,SP_REGISTER,staticInt8   ));
+  emit(MEM_ADDR_PTR( MUL_QWORD,SP_REGISTER,staticInt32  ));
+  emit(MEM_ADDR_PTR(IMUL_QWORD,SP_REGISTER,staticInt32  ));
+  emit(MEM_ADDR_PTR( MUL_QWORD,BP_REGISTER,0            ));
+  emit(MEM_ADDR_PTR(IMUL_QWORD,BP_REGISTER,0            ));
+  emit(MEM_ADDR_PTR( MUL_QWORD,BP_REGISTER,staticInt8   ));
+  emit(MEM_ADDR_PTR(IMUL_QWORD,BP_REGISTER,staticInt8   ));
+  emit(MEM_ADDR_PTR( MUL_QWORD,BP_REGISTER,staticInt32  ));
+  emit(MEM_ADDR_PTR(IMUL_QWORD,BP_REGISTER,staticInt32  ));
+  emit(NOOP);
 #endif
 
-  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_DWORD(EAX),ADDR_REGISTER)); addBytes(&staticInt32,4);
-  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_DWORD(ECX),ADDR_REGISTER)); addBytes(&staticInt32,4);
-  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_DWORD(EDX),ADDR_REGISTER)); addBytes(&staticInt32,4);
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_DWORD(EAX),ADDR_REGISTER,0)); addBytes(&staticInt32,4);
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_DWORD(ECX),ADDR_REGISTER,0)); addBytes(&staticInt32,4);
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_DWORD(EDX),ADDR_REGISTER,0)); addBytes(&staticInt32,4);
 
 #ifdef IS64BIT
-  emit(MEM_ADDR_PTR(IMUL3_QWORD_IMM_DWORD(RAX),ADDR_REGISTER)); addBytes(&staticInt32,4);
-  emit(MEM_ADDR_PTR(IMUL3_QWORD_IMM_DWORD(RCX),ADDR_REGISTER)); addBytes(&staticInt32,4);
-  emit(MEM_ADDR_PTR(IMUL3_QWORD_IMM_DWORD(RDX),ADDR_REGISTER)); addBytes(&staticInt32,4);
+  emit(MEM_ADDR_PTR(IMUL3_QWORD_IMM_DWORD(RAX),ADDR_REGISTER,0)); addBytes(&staticInt32,4);
+  emit(MEM_ADDR_PTR(IMUL3_QWORD_IMM_DWORD(RCX),ADDR_REGISTER,0)); addBytes(&staticInt32,4);
+  emit(MEM_ADDR_PTR(IMUL3_QWORD_IMM_DWORD(RDX),ADDR_REGISTER,0)); addBytes(&staticInt32,4);
 #endif // IS64BIT
+  emit(NOOP);
 
   emit(MOV_R32_IMM_DWORD(EDI)); addBytes(addr,4);
-  emit(MEM_ADDR_PTR(MUL_DWORD,ADDR_REGISTER));
+  emit(MEM_ADDR_PTR(MUL_DWORD,ADDR_REGISTER,0));
 
-  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_DWORD(EAX),ADDR_REGISTER)); addBytes(&staticInt32,4);
-  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_DWORD(ECX),ADDR_REGISTER)); addBytes(&staticInt32,4);
-  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_DWORD(EDX),ADDR_REGISTER)); addBytes(&staticInt32,4);
-  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_DWORD(EBX),ADDR_REGISTER)); addBytes(&staticInt32,4);
-  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_DWORD(ESP),ADDR_REGISTER)); addBytes(&staticInt32,4);
-  emit(MEM_ADDR_ESP(IMUL3_DWORD_IMM_DWORD(EAX)));     addBytes(&staticInt32,4);
-  emit(MEM_ADDR_ESP(IMUL3_DWORD_IMM_DWORD(ECX)));     addBytes(&staticInt32,4);
-  emit(MEM_ADDR_ESP(IMUL3_DWORD_IMM_DWORD(EDX)));     addBytes(&staticInt32,4);
-  emit(MEM_ADDR_ESP(IMUL3_DWORD_IMM_DWORD(EBX)));     addBytes(&staticInt32,4);
-  emit(MEM_ADDR_ESP(IMUL3_DWORD_IMM_DWORD(ESP)));     addBytes(&staticInt32,4);
+  emit(NOOP);
 
-  emit(REGREG(IMUL3_DWORD_IMM_DWORD(EAX),ECX));       addBytes(&staticInt32,4);
-  emit(REGREG(IMUL3_DWORD_IMM_DWORD(ECX),ECX));       addBytes(&staticInt32,4);
-  emit(REGREG(IMUL3_DWORD_IMM_DWORD(EDX),ECX));       addBytes(&staticInt32,4);
-  emit(REGREG(IMUL3_DWORD_IMM_DWORD(EBX),ECX));       addBytes(&staticInt32,4);
-  emit(REGREG(IMUL3_DWORD_IMM_DWORD(ESP),ECX));       addBytes(&staticInt32,4);
- 
-  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_BYTE(EAX),ADDR_REGISTER));   addBytes(&staticInt32,1);
-  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_BYTE(ECX),ADDR_REGISTER));   addBytes(&staticInt32,1);
-  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_BYTE(EDX),ADDR_REGISTER));   addBytes(&staticInt32,1);
-  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_BYTE(EBX),ADDR_REGISTER));   addBytes(&staticInt32,1);
-  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_BYTE(ESP),ADDR_REGISTER));   addBytes(&staticInt32,1);
-  emit(MEM_ADDR_ESP(IMUL3_DWORD_IMM_BYTE(EAX)));                 addBytes(&staticInt32,1);
-  emit(MEM_ADDR_ESP(IMUL3_DWORD_IMM_BYTE(ECX)));                 addBytes(&staticInt32,1);
-  emit(MEM_ADDR_ESP(IMUL3_DWORD_IMM_BYTE(EDX)));                 addBytes(&staticInt32,1);
-  emit(MEM_ADDR_ESP(IMUL3_DWORD_IMM_BYTE(EBX)));                 addBytes(&staticInt32,1);
-  emit(MEM_ADDR_ESP(IMUL3_DWORD_IMM_BYTE(ESP)));                 addBytes(&staticInt32,1);
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_DWORD(EAX),ADDR_REGISTER,staticInt8)); addBytes(&staticInt32,4);
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_DWORD(ECX),ADDR_REGISTER,staticInt8)); addBytes(&staticInt32,4);
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_DWORD(EDX),ADDR_REGISTER,staticInt8)); addBytes(&staticInt32,4);
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_DWORD(EBX),ADDR_REGISTER,staticInt8)); addBytes(&staticInt32,4);
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_DWORD(ESP),ADDR_REGISTER,staticInt8)); addBytes(&staticInt32,4);
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_DWORD(EAX),ADDR_REGISTER,staticInt8)); addBytes(&staticInt32,4);
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_DWORD(ECX),ADDR_REGISTER,staticInt8)); addBytes(&staticInt32,4);
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_DWORD(EDX),ADDR_REGISTER,staticInt8)); addBytes(&staticInt32,4);
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_DWORD(EBX),ADDR_REGISTER,staticInt8)); addBytes(&staticInt32,4);
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_DWORD(ESP),ADDR_REGISTER,staticInt8)); addBytes(&staticInt32,4);
 
-  emit(REGREG(IMUL3_DWORD_IMM_BYTE(EAX),ECX));                   addBytes(&staticInt32,1);
-  emit(REGREG(IMUL3_DWORD_IMM_BYTE(ECX),ECX));                   addBytes(&staticInt32,1);
-  emit(REGREG(IMUL3_DWORD_IMM_BYTE(EDX),ECX));                   addBytes(&staticInt32,1);
-  emit(REGREG(IMUL3_DWORD_IMM_BYTE(EBX),ECX));                   addBytes(&staticInt32,1);
-  emit(REGREG(IMUL3_DWORD_IMM_BYTE(ESP),ECX));                   addBytes(&staticInt32,1);
+  emit(NOOP);
 
-  emit(MEM_ADDR_PTR(IMUL3_WORD_IMM_WORD(AX),ADDR_REGISTER));     addBytes(&staticInt32,2);
-  emit(MEM_ADDR_PTR(IMUL3_WORD_IMM_WORD(CX),ADDR_REGISTER));     addBytes(&staticInt32,2);
-  emit(MEM_ADDR_PTR(IMUL3_WORD_IMM_WORD(DX),ADDR_REGISTER));     addBytes(&staticInt32,2);
-  emit(MEM_ADDR_PTR(IMUL3_WORD_IMM_WORD(BX),ADDR_REGISTER));     addBytes(&staticInt32,2);
-  emit(MEM_ADDR_PTR(IMUL3_WORD_IMM_WORD(SP),ADDR_REGISTER));     addBytes(&staticInt32,2);
-  emit(MEM_ADDR_ESP(IMUL3_WORD_IMM_WORD(AX)));                   addBytes(&staticInt32,2);
-  emit(MEM_ADDR_ESP(IMUL3_WORD_IMM_WORD(CX)));                   addBytes(&staticInt32,2);
-  emit(MEM_ADDR_ESP(IMUL3_WORD_IMM_WORD(DX)));                   addBytes(&staticInt32,2);
-  emit(MEM_ADDR_ESP(IMUL3_WORD_IMM_WORD(BX)));                   addBytes(&staticInt32,2);
-  emit(MEM_ADDR_ESP(IMUL3_WORD_IMM_WORD(SP)));                   addBytes(&staticInt32,2);
+  emit(REGREG(IMUL3_DWORD_IMM_DWORD(EAX),ECX));                 addBytes(&staticInt32,4);
+  emit(REGREG(IMUL3_DWORD_IMM_DWORD(ECX),ECX));                 addBytes(&staticInt32,4);
+  emit(REGREG(IMUL3_DWORD_IMM_DWORD(EDX),ECX));                 addBytes(&staticInt32,4);
+  emit(REGREG(IMUL3_DWORD_IMM_DWORD(EBX),ECX));                 addBytes(&staticInt32,4);
+  emit(REGREG(IMUL3_DWORD_IMM_DWORD(ESP),ECX));                 addBytes(&staticInt32,4);
 
-  emit(REGREG(IMUL3_WORD_IMM_WORD(AX),CX));                      addBytes(&staticInt32,2);
-  emit(REGREG(IMUL3_WORD_IMM_WORD(CX),CX));                      addBytes(&staticInt32,2);
-  emit(REGREG(IMUL3_WORD_IMM_WORD(DX),CX));                      addBytes(&staticInt32,2);
-  emit(REGREG(IMUL3_WORD_IMM_WORD(BX),CX));                      addBytes(&staticInt32,2);
-  emit(REGREG(IMUL3_WORD_IMM_WORD(SP),CX));                      addBytes(&staticInt32,2);
+  emit(NOOP);
 
-  emit(MEM_ADDR_PTR(IMUL3_WORD_IMM_BYTE(AX),ADDR_REGISTER));     addBytes(&staticInt32,1);
-  emit(MEM_ADDR_PTR(IMUL3_WORD_IMM_BYTE(CX),ADDR_REGISTER));     addBytes(&staticInt32,1);
-  emit(MEM_ADDR_PTR(IMUL3_WORD_IMM_BYTE(DX),ADDR_REGISTER));     addBytes(&staticInt32,1);
-  emit(MEM_ADDR_PTR(IMUL3_WORD_IMM_BYTE(BX),ADDR_REGISTER));     addBytes(&staticInt32,1);
-  emit(MEM_ADDR_PTR(IMUL3_WORD_IMM_BYTE(SP),ADDR_REGISTER));     addBytes(&staticInt32,1);
-  emit(MEM_ADDR_ESP(IMUL3_WORD_IMM_BYTE(AX)));                   addBytes(&staticInt32,1);
-  emit(MEM_ADDR_ESP(IMUL3_WORD_IMM_BYTE(CX)));                   addBytes(&staticInt32,1);
-  emit(MEM_ADDR_ESP(IMUL3_WORD_IMM_BYTE(DX)));                   addBytes(&staticInt32,1);
-  emit(MEM_ADDR_ESP(IMUL3_WORD_IMM_BYTE(BX)));                   addBytes(&staticInt32,1);
-  emit(MEM_ADDR_ESP(IMUL3_WORD_IMM_BYTE(SP)));                   addBytes(&staticInt32,1);
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_BYTE(EAX),ADDR_REGISTER,0            ));  addBytes(&staticInt32,1);
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_BYTE(ECX),ADDR_REGISTER,0            ));  addBytes(&staticInt32,1);
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_BYTE(EDX),ADDR_REGISTER,0            ));  addBytes(&staticInt32,1);
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_BYTE(EBX),ADDR_REGISTER,0            ));  addBytes(&staticInt32,1);
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_BYTE(ESP),ADDR_REGISTER,0            ));  addBytes(&staticInt32,1);
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_BYTE(EAX),ADDR_REGISTER,staticInt8   ));  addBytes(&staticInt32,1);
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_BYTE(ECX),ADDR_REGISTER,staticInt8   ));  addBytes(&staticInt32,1);
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_BYTE(EDX),ADDR_REGISTER,staticInt8   ));  addBytes(&staticInt32,1);
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_BYTE(EBX),ADDR_REGISTER,staticInt8   ));  addBytes(&staticInt32,1);
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_BYTE(ESP),ADDR_REGISTER,staticInt8   ));  addBytes(&staticInt32,1);
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_BYTE(EAX),ADDR_REGISTER,staticInt32  ));  addBytes(&staticInt32,1);
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_BYTE(ECX),ADDR_REGISTER,staticInt32  ));  addBytes(&staticInt32,1);
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_BYTE(EDX),ADDR_REGISTER,staticInt32  ));  addBytes(&staticInt32,1);
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_BYTE(EBX),ADDR_REGISTER,staticInt32  ));  addBytes(&staticInt32,1);
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_BYTE(ESP),ADDR_REGISTER,staticInt32  ));  addBytes(&staticInt32,1);
 
-  emit(REGREG(IMUL3_WORD_IMM_BYTE(AX),CX));                      addBytes(&staticInt32,1);
-  emit(REGREG(IMUL3_WORD_IMM_BYTE(CX),CX));                      addBytes(&staticInt32,1);
-  emit(REGREG(IMUL3_WORD_IMM_BYTE(DX),CX));                      addBytes(&staticInt32,1);
-  emit(REGREG(IMUL3_WORD_IMM_BYTE(BX),CX));                      addBytes(&staticInt32,1);
-  emit(REGREG(IMUL3_WORD_IMM_BYTE(SP),CX));                      addBytes(&staticInt32,1);
+  emit(NOOP);
+
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_BYTE(EAX),SP_REGISTER  ,0            ));  addBytes(&staticInt32,1);
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_BYTE(ECX),SP_REGISTER  ,0            ));  addBytes(&staticInt32,1);
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_BYTE(EDX),SP_REGISTER  ,0            ));  addBytes(&staticInt32,1);
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_BYTE(EBX),SP_REGISTER  ,0            ));  addBytes(&staticInt32,1);
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_BYTE(ESP),SP_REGISTER  ,0            ));  addBytes(&staticInt32,1);
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_BYTE(EAX),SP_REGISTER  ,staticInt8   ));  addBytes(&staticInt32,1);
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_BYTE(ECX),SP_REGISTER  ,staticInt8   ));  addBytes(&staticInt32,1);
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_BYTE(EDX),SP_REGISTER  ,staticInt8   ));  addBytes(&staticInt32,1);
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_BYTE(EBX),SP_REGISTER  ,staticInt8   ));  addBytes(&staticInt32,1);
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_BYTE(ESP),SP_REGISTER  ,staticInt8   ));  addBytes(&staticInt32,1);
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_BYTE(EAX),SP_REGISTER  ,staticInt32  ));  addBytes(&staticInt32,1);
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_BYTE(ECX),SP_REGISTER  ,staticInt32  ));  addBytes(&staticInt32,1);
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_BYTE(EDX),SP_REGISTER  ,staticInt32  ));  addBytes(&staticInt32,1);
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_BYTE(EBX),SP_REGISTER  ,staticInt32  ));  addBytes(&staticInt32,1);
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_BYTE(ESP),SP_REGISTER  ,staticInt32  ));  addBytes(&staticInt32,1);
+
+  emit(NOOP);
+
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_BYTE(EAX),BP_REGISTER  ,0            ));  addBytes(&staticInt32,1);
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_BYTE(ECX),BP_REGISTER  ,0            ));  addBytes(&staticInt32,1);
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_BYTE(EDX),BP_REGISTER  ,0            ));  addBytes(&staticInt32,1);
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_BYTE(EBX),BP_REGISTER  ,0            ));  addBytes(&staticInt32,1);
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_BYTE(ESP),BP_REGISTER  ,0            ));  addBytes(&staticInt32,1);
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_BYTE(EAX),BP_REGISTER  ,staticInt8   ));  addBytes(&staticInt32,1);
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_BYTE(ECX),BP_REGISTER  ,staticInt8   ));  addBytes(&staticInt32,1);
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_BYTE(EDX),BP_REGISTER  ,staticInt8   ));  addBytes(&staticInt32,1);
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_BYTE(EBX),BP_REGISTER  ,staticInt8   ));  addBytes(&staticInt32,1);
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_BYTE(ESP),BP_REGISTER  ,staticInt8   ));  addBytes(&staticInt32,1);
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_BYTE(EAX),BP_REGISTER  ,staticInt32  ));  addBytes(&staticInt32,1);
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_BYTE(ECX),BP_REGISTER  ,staticInt32  ));  addBytes(&staticInt32,1);
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_BYTE(EDX),BP_REGISTER  ,staticInt32  ));  addBytes(&staticInt32,1);
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_BYTE(EBX),BP_REGISTER  ,staticInt32  ));  addBytes(&staticInt32,1);
+  emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_BYTE(ESP),BP_REGISTER  ,staticInt32  ));  addBytes(&staticInt32,1);
+
+  emit(NOOP);
+
+  emit(REGREG(IMUL3_DWORD_IMM_BYTE(EAX),ECX));                  addBytes(&staticInt32,1);
+  emit(REGREG(IMUL3_DWORD_IMM_BYTE(ECX),ECX));                  addBytes(&staticInt32,1);
+  emit(REGREG(IMUL3_DWORD_IMM_BYTE(EDX),ECX));                  addBytes(&staticInt32,1);
+  emit(REGREG(IMUL3_DWORD_IMM_BYTE(EBX),ECX));                  addBytes(&staticInt32,1);
+  emit(REGREG(IMUL3_DWORD_IMM_BYTE(ESP),ECX));                  addBytes(&staticInt32,1);
+
+  emit(REGREG(IMUL3_WORD_IMM_WORD(AX),CX));                     addBytes(&staticInt32,2);
+  emit(REGREG(IMUL3_WORD_IMM_WORD(CX),CX));                     addBytes(&staticInt32,2);
+  emit(REGREG(IMUL3_WORD_IMM_WORD(DX),CX));                     addBytes(&staticInt32,2);
+  emit(REGREG(IMUL3_WORD_IMM_WORD(BX),CX));                     addBytes(&staticInt32,2);
+  emit(REGREG(IMUL3_WORD_IMM_WORD(SP),CX));                     addBytes(&staticInt32,2);
+
+  emit(REGREG(IMUL3_WORD_IMM_BYTE(AX),CX));                     addBytes(&staticInt32,1);
+  emit(REGREG(IMUL3_WORD_IMM_BYTE(CX),CX));                     addBytes(&staticInt32,1);
+  emit(REGREG(IMUL3_WORD_IMM_BYTE(DX),CX));                     addBytes(&staticInt32,1);
+  emit(REGREG(IMUL3_WORD_IMM_BYTE(BX),CX));                     addBytes(&staticInt32,1);
+  emit(REGREG(IMUL3_WORD_IMM_BYTE(SP),CX));                     addBytes(&staticInt32,1);
 
   emit(NOOP);
 #endif // TEST_MUL
 
   EMITALLIMM(ADD_REG_IMM)
+/*
   EMITALLIMM(OR_REG_IMM )
   EMITALLIMM(ADC_REG_IMM)
   EMITALLIMM(SBB_REG_IMM)
@@ -374,6 +473,7 @@ void MachineCode::genTestSequence() {
   EMITALLIMM(SUB_REG_IMM)
   EMITALLIMM(XOR_REG_IMM)
   EMITALLIMM(CMP_REG_IMM)
+*/
 
   const IntelOpcode opcodes[] = {
     ALLREG(    ADD_MEM_REG)
@@ -430,109 +530,55 @@ void MachineCode::genTestSequence() {
   };
 
   for(int i = 0; i < ARRAYSIZE(opcodes); i++) {
-
     const IntelOpcode &op = opcodes[i];
-
-    int r;
     if(op.hasRegRegMode()) {
       const BYTE *regList = regListArray[op.getOpSize()];
       const int maxReg = REF_REGLISTSIZE;
-      for(r = 0; r < maxReg; r++) {
+      for(int r = 0; r < maxReg; r++) {
         const BYTE reg = regList[r];
         emit(REGREG(op, reg));                                           // size=2 ex:add eax,ecx
       }
     }
     emit(NOOP);
 
-    // ptr[eax]
-    for(r = 0; r < ARRAYSIZE(refRegisters); r++) {
-      const BYTE reg = refRegisters[r];
-      if(((reg&7) == 4) || ((reg&7) == 5)) continue;
-      emit(MEM_ADDR_PTR(op, reg));                                        // size=2 reg!=ESP,EBP                         ex:fld DWORD PTR[eax]
+    const int addrOffsets[] = {
+      0,127,-128,0x7fffffff,-1
+    };
+    // ptr[reg+offset]
+    for(int j = 0; j < ARRAYSIZE(addrOffsets); j++) {
+      for(int r = 0; r < ARRAYSIZE(refRegisters); r++) {
+        const BYTE reg = refRegisters[r];
+        emit(MEM_ADDR_PTR(op, reg, addrOffsets[j]));
+      }
+      emit(NOOP);
     }
 
-    emit(NOOP);
-    // ptr[eax+127]
-    for(r = 0; r < ARRAYSIZE(refRegisters); r++) {
-      const BYTE reg = refRegisters[r];
-      if((reg&7) == 4) continue;
-      emit(MEM_ADDR_PTR1(op, reg, -1));                                   // size=3 reg!=ESP        offs1=1 byte signed  ex.fld DWORD PTR[eax+127]
-      emit(MEM_ADDR_PTR1(op, reg,  1));
-    }
-
-    emit(NOOP);
-    // ptr[eax+0x12345678]
-    for(r = 0; r < ARRAYSIZE(refRegisters); r++) {
-      const BYTE reg = refRegisters[r];
-      if((reg&7) == 4) continue;
-      emit(MEM_ADDR_PTR4(op, reg,-0x12345678));                           // size=6 reg!=ESP        offs4=4 bytes signed ex fld DWORD PTR[  eax+0x12345678]
-      emit(MEM_ADDR_PTR4(op, reg, 0x12345678));
-    }
-
-    emit(NOOP);
     // ptr[(eax<<p2)+0x12345678]
-    for(int p2 = 0; p2 < 4; p2++) {
+    for(int j = 0; j < ARRAYSIZE(addrOffsets); j++) {
       for(int r = 0; r < ARRAYSIZE(refRegisters); r++) {
         const BYTE reg = refRegisters[r];
         if((reg&7) == 4) continue;
-        emit(MEM_ADDR_MP2PTR4(op, reg, p2,-0x12345678));
-        emit(MEM_ADDR_MP2PTR4(op, reg, p2, 0x12345678));                  // size=7 reg!=ESP p2=0-3 offs4=4 bytes signed ex fld DWORD PTR[2*eax+0x12345678]
-      }
-    }
-
-    emit(NOOP);
-    // ptr[eax+(ecx<<p2)]
-    for(int r1 = 0; r1 < ARRAYSIZE(refRegisters); r1++) {
-      const BYTE addReg = refRegisters[r1];
-      if((addReg&7) == 4) continue;
-      for(int p2 = 0; p2 < 4; p2++) {
-        for(int r = 0; r < ARRAYSIZE(refRegisters); r++) {
-          const BYTE reg = refRegisters[r];
-          if((reg&7) == 5) continue;
-          emit(MEM_ADDR_PTRMP2REG(op, reg, addReg, p2));                  // size=3 reg!=EBP addReg!=ESP p2=0-3          ex fld DWORD PTR[esp+2*ecx]
+        for(int p2 = 0; p2 < 4; p2++) {
+          emit(MEM_ADDR_MP2PTR4(op, reg, p2,addrOffsets[j]));
         }
       }
     }
-
     emit(NOOP);
-
-    // ptr[eax+(ecx<<p2)+127]
-    for(int r1 = 0; r1 < ARRAYSIZE(refRegisters); r1++) {
-      const BYTE addReg = refRegisters[r1];
-      if((addReg&7) == 4) continue;
-      for(int p2 = 0; p2 < 4; p2++) {
-        for(int r = 0; r < ARRAYSIZE(refRegisters); r++) {
-          const BYTE reg = refRegisters[r];
-          emit(MEM_ADDR_PTRMP2REG1(op, reg, addReg, p2, 1));              // size=4 addReg!=ESP p2=0-3                   ex fld DWORD PTR[ebp+2*ecx+127]
-          emit(MEM_ADDR_PTRMP2REG1(op, reg, addReg, p2,-1));
+    // ptr[eax+(ecx<<p2)+offset]
+    for(int j = 0; j < ARRAYSIZE(addrOffsets); j++) {
+      for(int r = 0; r < ARRAYSIZE(refRegisters); r++) {
+        const BYTE reg = refRegisters[r];
+        for(int r1 = 0; r1 < ARRAYSIZE(refRegisters); r1++) {
+          const BYTE addReg = refRegisters[r1];
+          if((addReg&7) == 4) continue;
+          for(int p2 = 0; p2 < 4; p2++) {
+            emit(MEM_ADDR_PTRMP2REG(op, reg, addReg, p2, addrOffsets[j]));                  // size=3 reg!=EBP addReg!=ESP p2=0-3          ex fld DWORD PTR[esp+2*ecx]
+          }
         }
       }
+      emit(NOOP);
     }
-
-    emit(NOOP);
-    // ptr[eax+(ecx<<p2)+0x12345678]
-    for(int r1 = 0; r1 < ARRAYSIZE(refRegisters); r1++) {
-      const BYTE addReg = refRegisters[r1];
-      if((addReg&7) == 4) continue;
-      for(int p2 = 0; p2 < 4; p2++) {
-        for(int r = 0; r < ARRAYSIZE(refRegisters); r++) {
-          const BYTE reg = refRegisters[r];
-          emit(MEM_ADDR_PTRMP2REG4(op, reg, addReg, p2, 0x12345678));     // size=7 addR32!=ESP p2=0-3 offs4=4 bytes signed ex fld DWORD PTR[esp+2*eax+0x12345678]
-          emit(MEM_ADDR_PTRMP2REG4(op, reg, addReg, p2,-0x12345678));
-        }
-      }
-    }
-
-    emit(NOOP);
-    emit(MEM_ADDR_ESP( op            ));                                  // size=3                      ex fld DWORD PTR[esp}
-
-    emit(MEM_ADDR_ESP1(op,          1));                                  // size=4 offst=1 byte signed  ex fld DWORD PTR[esp+128}
-    emit(MEM_ADDR_ESP1(op,         -1));
-
-    emit(MEM_ADDR_ESP4(op, 0x12345678));                                  // size=7 offst=4 bytes signed ex fld DWORD PTR[esp+0x12345678]
-    emit(MEM_ADDR_ESP4(op,-0x12345678));
-
-    emit(MEM_ADDR_DS(  op   ));  addBytes(addr,4);                        // size=2 + 4 byte address
+    emit(MEM_ADDR_DS_IMM(  op,staticInt32   ));
     emit(NOOP);
   }
 /*

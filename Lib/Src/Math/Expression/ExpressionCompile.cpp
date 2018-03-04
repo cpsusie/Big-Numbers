@@ -53,15 +53,7 @@ int MachineCode::emit(const IntelInstruction &ins) {
 }
 
 void MachineCode::emitESPOp(const IntelOpcode &op, int offset) {
-  if(ISBYTE(offset)) {
-    if(offset == 0) {
-      emit(MEM_ADDR_ESP(op));          // addr = ESP. or RSP, but its the same value
-    } else {
-      emit(MEM_ADDR_ESP1(op, offset)); // addr = ESP + offset
-    }
-  } else {
-    emit(MEM_ADDR_ESP4(op, offset));   // addr = ESP + offset
-  }
+  emit(MEM_ADDR_PTR(op,ESP,offset));
 }
 
 #ifdef IS32BIT
@@ -72,15 +64,7 @@ void MachineCode::emitESPOp(const IntelOpcode &op, int offset) {
 
 void MachineCode::emitTableOp(const IntelOpcode &op, int index) {
   const int offset = getESIOffset(index);
-  if(ISBYTE(offset)) {
-    if(offset == 0) {
-      emit(MEM_ADDR_PTR(op, TABLEREF_REGISTER));
-    } else {
-      emit(MEM_ADDR_PTR1(op, TABLEREF_REGISTER, offset));
-    }
-  } else {
-    emit(MEM_ADDR_PTR4(op, TABLEREF_REGISTER, offset));
-  }
+  emit(MEM_ADDR_PTR(op, TABLEREF_REGISTER, offset));
 }
 
 void MachineCode::setValueCount(size_t valueCount) {
@@ -267,7 +251,7 @@ void MachineCode::emitCall(BuiltInFunction f, const ExpressionDestination &dummy
   m_refenceArray.add(MemoryReference(addr, (BYTE*)f));
 #ifdef LONGDOUBLE
   emitESPOp(MOV_REG_MEM(EAX),0);
-  emit(MEM_ADDR_PTR(FLD_REAL, EAX));
+  emit(MEM_ADDR_PTR(FLD_REAL, EAX,0));
 #endif
 }
 
@@ -304,7 +288,7 @@ void MachineCode::emitCall(BuiltInFunction f, const ExpressionDestination &dst) 
     } // else do nothing
     break;
   case RESULT_IN_ADDRRDI   :
-    emit(MEM_ADDR_PTR(MOVSD_MMWORD_XMM(XMM0), RDI));                     // XMM0 -> *RDI
+    emit(MEM_ADDR_PTR(MOVSD_MMWORD_XMM(XMM0), RDI,0));                   // XMM0 -> *RDI
     break;
   case RESULT_ON_STACK:
     emitESPOp(MOVSD_MMWORD_XMM(XMM0), dst.getStackOffset());             // XMM0 -> RSP[dst.stackOffset]
@@ -344,7 +328,7 @@ void MachineCode::emitCall(BuiltInFunction f, const ExpressionDestination &dst) 
 
   switch(dst.getType()) {
   case RESULT_IN_FPU       :
-    emit(MEM_ADDR_PTR(FLD_REAL, RAX)); // push *rax intop FPU
+    emit(MEM_ADDR_PTR(FLD_REAL, RAX,0)); // push *rax into FPU
     break;
   }
 }
@@ -786,7 +770,7 @@ void Expression::genExpression(const ExpressionNode *n, const ExpressionDestinat
   case RESULT_IN_FPU       : // do nothing
     break;
   case RESULT_IN_ADDRRDI   :
-    m_code.emit(MEM_ADDR_PTR(FSTP_REAL, RDI));                          // FPU -> *RDI
+    m_code.emit(MEM_ADDR_PTR(FSTP_REAL, RDI,0));                        // FPU -> *RDI
     break;
   case RESULT_ON_STACK     :
     m_code.emitESPOp(FSTP_REAL, dst.getStackOffset());                  // FPU -> RSP[offset]
