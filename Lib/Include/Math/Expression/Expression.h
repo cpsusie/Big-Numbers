@@ -129,7 +129,6 @@ public:
   ~MachineCode();
   void clear();
   int  addBytes(const void *bytes, int count);
-  void setBytes(int addr, const void *bytes, int count);
   int  emit(const IntelInstruction &ins);
   void emitCall(BuiltInFunction f, const ExpressionDestination &dst);
   void emitFLoad(       const ExpressionNode *n);

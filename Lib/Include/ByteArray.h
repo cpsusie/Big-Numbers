@@ -56,7 +56,8 @@ public:
   ByteArray &insertConstant(size_t index, BYTE c, size_t count);
   // return this
   ByteArray &setData(const BYTE *data, size_t size);
-
+  // return this. Assume index + count <= size
+  ByteArray &setBytes(size_t index, const BYTE *data, size_t count);
   // return this
   ByteArray &remove(size_t index, size_t count);
 

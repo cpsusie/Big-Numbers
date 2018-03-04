@@ -7,7 +7,7 @@ ByteArray::ByteArray() {
 
 ByteArray::ByteArray(const BYTE *data, size_t size) {
   init();
-  if (size > 0) {
+  if(size > 0) {
     setData(data, size);
   }
 }
@@ -135,15 +135,29 @@ ByteArray &ByteArray::setData(const BYTE *data, size_t size) {
   return *this;
 }
 
+// return this. Assume index + count <= size
+ByteArray &ByteArray::setBytes(size_t index, const BYTE *data, size_t count) {
+  if(count == 0) {
+    return *this;
+  }
+  if(index + count > m_size) {
+    throwException(_T("%s(%s,%s): Invalid index. size=%s")
+                  ,__TFUNCTION__
+                  ,format1000(index).cstr(), format1000(count).cstr()
+                  ,format1000(m_size).cstr());
+  }
+  memcpy(m_data+index, data, count);
+  return *this;
+}
+
 ByteArray &ByteArray::remove(size_t index, size_t count) {
-  DEFINEMETHODNAME;
   if(count == 0) {
     return *this;
   }
   const size_t j = index+count;
   if(j > m_size) {
     throwException(_T("%s(%s,%s): Invalid index. size=%s")
-                  ,method
+                  ,__TFUNCTION__
                   ,format1000(index).cstr(), format1000(count).cstr()
                   ,format1000(m_size).cstr());
   }

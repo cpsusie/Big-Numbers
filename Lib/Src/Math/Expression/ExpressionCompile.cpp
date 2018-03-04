@@ -40,12 +40,6 @@ int MachineCode::addBytes(const void *bytes, int count) {
   return ret;
 }
 
-void MachineCode::setBytes(int addr, const void *bytes, int count) {
-  for(BYTE *p = (BYTE*)bytes; count--;) {
-    (*this)[addr++] = *(p++);
-  }
-}
-
 int MachineCode::emit(const IntelInstruction &ins) {
   const int pos = (int)size();
   append(ins.getBytes(), ins.size());
@@ -183,10 +177,10 @@ void MachineCode::fixupJumps() {
       const int v = jf.m_jmpAddr - jf.m_addr - 1;
       assert(ISBYTE(v));
       const BYTE pcRelativAddr = (BYTE)v;
-      setBytes(jf.m_addr,&pcRelativAddr,1);
+      (*this)[jf.m_addr] = pcRelativAddr;
     } else {
       const int pcRelativAddr = jf.m_jmpAddr - jf.m_addr - 4;
-      setBytes(jf.m_addr,&pcRelativAddr,4);
+      setBytes(jf.m_addr,(BYTE*)&pcRelativAddr,4);
     }
   }
 }
@@ -198,7 +192,7 @@ void MachineCode::changeShortJumpToNearJump(int addr) {
   switch(opcode) {
   case 0xEB: // JMPSHORT
     { const BYTE JmpNear = 0xE9;
-      setBytes(opcodeAddr, &JmpNear, 1);
+      (*this)[opcodeAddr] = JmpNear;
       bytesAdded = 3;
       insertZeroes(addr, bytesAdded);
       for(size_t i = 0; i < m_jumpFixups.size(); i++) {
@@ -211,7 +205,7 @@ void MachineCode::changeShortJumpToNearJump(int addr) {
   default:
     { assert((opcode >= 0x70) && (opcode <= 0x7F));
       const IntelInstruction newOpcode = B2INS(0x0F80 | (opcode&0xf));
-      setBytes(opcodeAddr, &newOpcode, 2);
+      setBytes(opcodeAddr, (BYTE*)&newOpcode, 2);
       bytesAdded = 4;
       insertZeroes(addr+1,bytesAdded);
       for(size_t i = 0; i < m_jumpFixups.size(); i++) {
@@ -238,7 +232,7 @@ void MachineCode::adjustReferenceArray(int addr, int n) {
 void MachineCode::fixupMemoryReference(const MemoryReference &ref) {
   const BYTE    *instructionAddr  = getData() + ref.m_byteIndex;
   const intptr_t PCrelativeOffset = ref.m_memAddr - instructionAddr - sizeof(instructionAddr);
-  setBytes(ref.m_byteIndex,&PCrelativeOffset,sizeof(PCrelativeOffset));
+  setBytes(ref.m_byteIndex,(BYTE*)&PCrelativeOffset,sizeof(PCrelativeOffset));
 }
 
 

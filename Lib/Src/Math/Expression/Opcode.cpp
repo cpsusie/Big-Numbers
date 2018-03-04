@@ -30,7 +30,7 @@ IntelOpcode &IntelOpcode::addReg(BYTE reg) {
   case REGSIZE_BYTE : break;
   case REGSIZE_WORD : wordOp();
     // continue case
-  default           : or(1);
+  default           : orLast(1);
   }
   return addByte((regIndex&7)<<3);
 }
@@ -178,8 +178,7 @@ IntelInstruction &IntelInstruction::setReg(BYTE reg) {
     // continue case
   default           : or(8);
   }
-  or(regIndex&7);
-  return *this;
+  return or(regIndex&7);
 }
 
 IntelInstruction &IntelInstruction::memAddrEsp(int offset) {
@@ -240,8 +239,7 @@ IntelInstruction &IntelInstruction::setRegImm(BYTE reg, int immv) {
       or(regIndex&7).prefix(isByte(immv)?0x83:0x81);
       add(immv,isByte(immv)?1:2);
     } else {
-      or(1);
-      add(immv,2);
+      or(1).add(immv,2);
     }
     wordOp();
     break;
@@ -250,8 +248,7 @@ IntelInstruction &IntelInstruction::setRegImm(BYTE reg, int immv) {
       or(regIndex&7).prefix(isByte(immv)?0x83:0x81);
       add(immv,isByte(immv)?1:4);
     } else {
-      or(1);
-      add(immv,4);
+      or(1).add(immv,4);
     }
     break;
   }

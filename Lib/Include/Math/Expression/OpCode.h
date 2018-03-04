@@ -168,8 +168,8 @@ protected:
   UINT     m_rexByteIndex : 2;
 #endif
 
-  // Always |= the last byte in instruction
-  inline IntelOpcode &or(BYTE b) {
+  // Always |= the last byte in array
+  inline IntelOpcode &orLast(BYTE b) {
     m_byte[m_size - 1] |= b;
     return *this;
   }
@@ -286,24 +286,24 @@ class IntelInstruction : public IntelOpcode {
 private:
   // Append count bytes to sequence of m_byte
   IntelInstruction &add(INT64 bytesToAdd, BYTE count);
-  inline IntelInstruction &add(char b) {
+  inline IntelInstruction &add(BYTE b) {
     addByte(b);
     return *this;
   }
-
+  inline IntelInstruction &or(BYTE b) {
+    orLast(b);
+    return *this;
+  }
   inline IntelInstruction &memAddrEsp0() {
-    or(0x04);
-    return add(0x24);
+    return or(0x04).add(0x24);
   }
 
   inline IntelInstruction &memAddrEsp1(char offset) {
-    or(0x44);
-    return add(0x24).add(offset);
+    return or(0x44).add(0x24).add(offset);
   }
 
   inline IntelInstruction &memAddrEsp4(int offset) {
-    or(0x84);
-    return add(0x24).add(offset, 4);
+    return or(0x84).add(0x24).add(offset, 4);
   }
   IntelInstruction &memAddrEsp(int offset);
 
@@ -312,8 +312,7 @@ private:
     assert(m_memAddrMode && (REGSIZE(reg) == ADDRESSING_REGSIZE) && (REGINDEX(reg) <= MAX_REFERENCE_REGISTER));
     assert(((reg&7)!=4) && ((reg&7)!=5));
     SETREXBITONHIGHREG(reg,0);
-    or(reg&7);
-    return *this;
+    return or(reg&7);
   }
 
   // ptr[reg+offset], (reg&7) != ESP, offset=[-128;127]
@@ -321,8 +320,7 @@ private:
     assert(m_memAddrMode && (REGSIZE(reg) == ADDRESSING_REGSIZE) && (REGINDEX(reg) <= MAX_REFERENCE_REGISTER));
     assert((reg&7)!=4);
     SETREXBITONHIGHREG(reg,0);
-    or(0x40 | (reg&7));
-    return add(offset);
+    return or(0x40 | (reg&7)).add(offset);
   }
 
   // ptr[reg+offset], (reg&7) != ESP, offset=[INT_MIN;INT_MAX]
@@ -330,8 +328,7 @@ private:
     assert(m_memAddrMode && (REGSIZE(reg) == ADDRESSING_REGSIZE) && (REGINDEX(reg) <= MAX_REFERENCE_REGISTER));
     assert((reg&7)!=4);
     SETREXBITONHIGHREG(reg,0);
-    or(0x80 | (reg&7));
-    return add(offset, 4);
+    return or(0x80 | (reg&7)).add(offset, 4);
   }
 
   // ptr[reg+(addReg<<p2)], (reg&7) != EBP, (addReg&7) != ESP, p2<=3
@@ -340,8 +337,7 @@ private:
     assert(                 (REGSIZE(addReg) == ADDRESSING_REGSIZE) && (REGINDEX(addReg) <= MAX_REFERENCE_REGISTER));
     assert(((reg&7)!=5) && ((addReg&7)!=4) && (p2<=3));
     SETREXBITSONHIGHREG2(reg,addReg);
-    or(0x04);
-    return add((p2 << 6) | ((addReg&7) << 3) | (reg&7));
+    return or(0x04).add((p2 << 6) | ((addReg&7) << 3) | (reg&7));
   }
 
   // ptr[reg+(addReg<<p2)+offset], (addReg&7) != ESP, p2<=3, offset=[-128;127]
@@ -350,8 +346,7 @@ private:
     assert(                 (REGSIZE(addReg) == ADDRESSING_REGSIZE) && (REGINDEX(addReg) <= MAX_REFERENCE_REGISTER));
     assert(((addReg&7)!=4) && (p2<=3));
     SETREXBITSONHIGHREG2(reg,addReg);
-    or(0x44);
-    return add((p2 << 6) | ((addReg&7) << 3) | (reg&7)).add(offset);
+    return or(0x44).add((p2 << 6) | ((addReg&7) << 3) | (reg&7)).add(offset);
   }
 
   // ptr[reg+(addReg<<p2)+offset], (addReg&7) != ESP, p2<=3, offset=[INT_MIN;INT_MAX]
@@ -360,8 +355,7 @@ private:
     assert(                 (REGSIZE(addReg) == ADDRESSING_REGSIZE) && (REGINDEX(addReg) <= MAX_REFERENCE_REGISTER));
     assert(((addReg&7)!=4) && (p2<=3));
     SETREXBITSONHIGHREG2(reg,addReg);
-    or(0x84);
-    return add((p2 << 6) | ((addReg&7) << 3) | (reg&7)).add(offset, 4);
+    return or(0x84).add((p2 << 6) | ((addReg&7) << 3) | (reg&7)).add(offset, 4);
   }
 
 public:
@@ -378,8 +372,7 @@ public:
     assert(m_memAddrMode && (REGSIZE(reg) == ADDRESSING_REGSIZE) && (REGINDEX(reg) <= MAX_REFERENCE_REGISTER));
     assert(((reg&7)!=4) && (p2<=3));
     SETREXBITONHIGHREG(reg,1);
-    or(0x04);
-    return add(0x05 | (p2 << 6) | ((reg&7) << 3)).add(offset, 4);
+    return or(0x04).add(0x05 | (p2 << 6) | ((reg&7) << 3)).add(offset, 4);
   }
 
   IntelInstruction &memAddrPtr(      BYTE reg, int offset);
@@ -387,8 +380,7 @@ public:
 
   inline IntelInstruction &memAddrImmDword(int addr) {
     assert(m_memAddrMode);
-    or(0x05);
-    return add(addr, 4);
+    return or(0x05).add(addr, 4);
   }
 
   inline IntelInstruction &regReg(BYTE reg) {
@@ -396,8 +388,7 @@ public:
     assert(REGINDEX(reg) <= MAX_REFERENCE_REGISTER);
     setOpSize(reg);
     SETREXBITONHIGHREG(reg,0);
-    or(0xc0 | (reg&7));
-    return *this;
+    return or(0xc0 | (reg&7));
   }
   IntelInstruction &setRegImm(BYTE reg, int immv);
 };
