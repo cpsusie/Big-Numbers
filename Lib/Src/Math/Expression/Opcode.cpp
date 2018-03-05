@@ -258,3 +258,45 @@ IntelInstruction &IntelInstruction::setRegImm(BYTE reg, int immv) {
 #endif
   return *this;
 }
+
+IntelInstruction &IntelInstruction::setMovRegImm(BYTE reg, MovMaxImmType immv) {
+  DEFINEMETHODNAME;
+  const BYTE regIndex = REGINDEX(reg), regSize  = REGSIZE(reg);
+  assert(m_regMode && isImmMode());
+  assert(regIndex <= MAX_REFERENCE_REGISTER);
+  setOpSize(reg);
+  switch(regSize) {
+  case REGSIZE_BYTE :
+    if(!isByte(immv)) {
+      throwInvalidArgumentException(method,_T("immediate value %08I64x doesn't fit in %s"),immv, getRegisterName(reg).cstr());
+    }
+    or(regIndex&7).add((char)immv);
+    break;
+  case REGSIZE_WORD :
+    if(!isWord(immv)) {
+      throwInvalidArgumentException(method,_T("immediate value %08I64x doesn't fit in %s"),immv, getRegisterName(reg).cstr());
+    }
+    wordOp();
+    or(8 | (regIndex&7)).add(immv,2);
+    break;
+  case REGSIZE_DWORD :
+    if(!isDword(immv)) {
+      throwInvalidArgumentException(method,_T("immediate value %08I64x doesn't fit in %s"),immv, getRegisterName(reg).cstr());
+    }
+    or(8 | (regIndex&7)).add(immv,4);
+    break;
+#ifdef IS64BIT
+  case REGSIZE_QWORD :
+    or(8 | (regIndex&7)).add(immv,8);
+    break;
+#endif
+  default           :
+    throwInvalidArgumentException(method,_T("Unknown registersize:%d. reg=%x"), regSize, reg);
+    break;
+  }
+#ifdef IS64BIT
+  const BYTE rexbyte = ((regSize==REGSIZE_QWORD)?8:0)|((regIndex>>3)&1);
+  SETREXBITS(rexbyte);
+#endif
+  return *this;
+}

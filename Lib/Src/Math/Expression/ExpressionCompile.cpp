@@ -267,9 +267,8 @@ static void *getFuncAbsAddr(BuiltInFunction f) {
 }
 
 void MachineCode::emitCall(BuiltInFunction f, const ExpressionDestination &dst) {
-  emit(MOV_R64_IMM_QWORD(RAX));
+  emit(MOV_REG_IMM(RAX,f));
 //  void *addr = getFuncAbsAddr(f);
-  addBytes(&f,sizeof(f));
   emit(REGREG(CALLABSOLUTE, RAX));
   switch(dst.getType()) {
   case RESULT_IN_FPU       :
@@ -316,8 +315,7 @@ void MachineCode::emitCall(BuiltInFunction f, const ExpressionDestination &dst) 
     }
   }
 
-  emit(MOV_R64_IMM_QWORD(RAX));
-  addBytes(&f,sizeof(f));
+  emit(MOV_REG_IMM(RAX,f));
   emit(REGREG(CALLABSOLUTE, RAX));
 
   switch(dst.getType()) {
@@ -484,9 +482,7 @@ void Expression::genAssignment(const ExpressionNode *n) {
 
 void Expression::genReturnBoolExpression(const ExpressionNode *n) {
   const JumpList jumps     = genBoolExpression(n->left());
-  const int      trueValue = 1;
-  const int      trueLabel = m_code.emit(MOV_R32_IMM_DWORD(EAX));
-  m_code.addBytes(&trueValue,4);
+  const int      trueLabel = m_code.emit(MOV_REG_IMM(EAX,1));
   genEpilog();
 
   const int falseLabel = m_code.emit(REGREG(XOR_REG_MEM(EAX),EAX));
@@ -1053,10 +1049,8 @@ int Expression::genPush(const void *p, UINT size) {
     size = getAlignedSize(size);
     UINT count = size / 4;
     m_code.emitSubESP(size);
-    m_code.emit(MOV_R32_IMM_DWORD(ECX));
-    m_code.addBytes(&count,4);
-    m_code.emit(MOV_R32_IMM_DWORD(ESI));
-    m_code.addBytes(&p,4);
+    m_code.emit(MOV_REG_IMM(ECX,count));
+    m_code.emit(MOV_REG_IMM(ESI,p));
     m_code.emit(REGREG(MOV_REG_MEM(EDI),ESP));
     m_code.emit(REP); m_code.emit(MOVS_DWORD);
     return size;
@@ -1212,12 +1206,12 @@ void Expression::genPolynomial(const ExpressionNode *n, const ExpressionDestinat
 #endif // LONGDOUBLE
 
   const BYTE    param2    = int64ParamRegister[1];
-  const __int64 coefCount = coefArray.size();
-  m_code.emit(MOV_R64_IMM_QWORD(param2)); m_code.addBytes(&coefCount, 8);
+  const size_t  coefCount = coefArray.size();
+  m_code.emit(MOV_REG_IMM(param2,coefCount));
 
   const BYTE    param3    = int64ParamRegister[2];
   const Real   *coef0     = &getValueRef(firstCoefIndex);
-  m_code.emit(MOV_R64_IMM_QWORD(param3)); m_code.addBytes(&coef0, sizeof(coef0));
+  m_code.emit(MOV_REG_IMM(param3,coef0));
 
   m_code.emitCall((BuiltInFunction)::evaluatePolynomial, dst);
 }

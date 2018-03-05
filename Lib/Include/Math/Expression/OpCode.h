@@ -13,87 +13,87 @@
 #define ADDRESSING_REGSIZE REGSIZE_QWORD
 #endif
 
-#define REGISTER(index, sz) (((sz)<<4) | (index))
+#define REGISTER(sz,index) (((sz)<<4) | (index))
 #define REGINDEX(reg)       ((reg)&0xf)
 #define REGSIZE( reg)       ((reg)>>4)
 
 // General purpose registers
 // 8 bit registers
-#define AL   REGISTER( 0,REGSIZE_BYTE )
-#define CL   REGISTER( 1,REGSIZE_BYTE )
-#define DL   REGISTER( 2,REGSIZE_BYTE )
-#define BL   REGISTER( 3,REGSIZE_BYTE )
-#define AH   REGISTER( 4,REGSIZE_BYTE )
-#define CH   REGISTER( 5,REGSIZE_BYTE )
-#define DH   REGISTER( 6,REGSIZE_BYTE )
-#define BH   REGISTER( 7,REGSIZE_BYTE )
+#define AL   REGISTER(REGSIZE_BYTE,  0)
+#define CL   REGISTER(REGSIZE_BYTE,  1)
+#define DL   REGISTER(REGSIZE_BYTE,  2)
+#define BL   REGISTER(REGSIZE_BYTE,  3)
+#define AH   REGISTER(REGSIZE_BYTE,  4)
+#define CH   REGISTER(REGSIZE_BYTE,  5)
+#define DH   REGISTER(REGSIZE_BYTE,  6)
+#define BH   REGISTER(REGSIZE_BYTE,  7)
 
 // 16 bit registers
-#define AX   REGISTER( 0,REGSIZE_WORD )
-#define CX   REGISTER( 1,REGSIZE_WORD )
-#define DX   REGISTER( 2,REGSIZE_WORD )
-#define BX   REGISTER( 3,REGSIZE_WORD )
-#define SP   REGISTER( 4,REGSIZE_WORD )
-#define BP   REGISTER( 5,REGSIZE_WORD )
-#define SI   REGISTER( 6,REGSIZE_WORD )
-#define DI   REGISTER( 7,REGSIZE_WORD )
+#define AX   REGISTER(REGSIZE_WORD,  0)
+#define CX   REGISTER(REGSIZE_WORD,  1)
+#define DX   REGISTER(REGSIZE_WORD,  2)
+#define BX   REGISTER(REGSIZE_WORD,  3)
+#define SP   REGISTER(REGSIZE_WORD,  4)
+#define BP   REGISTER(REGSIZE_WORD,  5)
+#define SI   REGISTER(REGSIZE_WORD,  6)
+#define DI   REGISTER(REGSIZE_WORD,  7)
 
 // 32 bit registers
-#define EAX  REGISTER( 0,REGSIZE_DWORD)
-#define ECX  REGISTER( 1,REGSIZE_DWORD)
-#define EDX  REGISTER( 2,REGSIZE_DWORD)
-#define EBX  REGISTER( 3,REGSIZE_DWORD)
-#define ESP  REGISTER( 4,REGSIZE_DWORD)
-#define EBP  REGISTER( 5,REGSIZE_DWORD)
-#define ESI  REGISTER( 6,REGSIZE_DWORD)
-#define EDI  REGISTER( 7,REGSIZE_DWORD)
+#define EAX  REGISTER(REGSIZE_DWORD, 0)
+#define ECX  REGISTER(REGSIZE_DWORD, 1)
+#define EDX  REGISTER(REGSIZE_DWORD, 2)
+#define EBX  REGISTER(REGSIZE_DWORD, 3)
+#define ESP  REGISTER(REGSIZE_DWORD, 4)
+#define EBP  REGISTER(REGSIZE_DWORD, 5)
+#define ESI  REGISTER(REGSIZE_DWORD, 6)
+#define EDI  REGISTER(REGSIZE_DWORD, 7)
 
 #ifdef IS64BIT
 
-#define R8B  REGISTER( 8,REGSIZE_BYTE )
-#define R9B  REGISTER( 9,REGSIZE_BYTE )
-#define R10B REGISTER(10,REGSIZE_BYTE )
-#define R11B REGISTER(11,REGSIZE_BYTE )
-#define R12B REGISTER(12,REGSIZE_BYTE )
-#define R13B REGISTER(13,REGSIZE_BYTE )
-#define R14B REGISTER(14,REGSIZE_BYTE )
-#define R15B REGISTER(15,REGSIZE_BYTE )
+#define R8B  REGISTER(REGSIZE_BYTE , 8)
+#define R9B  REGISTER(REGSIZE_BYTE , 9)
+#define R10B REGISTER(REGSIZE_BYTE ,10)
+#define R11B REGISTER(REGSIZE_BYTE ,11)
+#define R12B REGISTER(REGSIZE_BYTE ,12)
+#define R13B REGISTER(REGSIZE_BYTE ,13)
+#define R14B REGISTER(REGSIZE_BYTE ,14)
+#define R15B REGISTER(REGSIZE_BYTE ,15)
 
-#define R8W  REGISTER( 8,REGSIZE_WORD )
-#define R9W  REGISTER( 9,REGSIZE_WORD )
-#define R10W REGISTER(10,REGSIZE_WORD )
-#define R11W REGISTER(11,REGSIZE_WORD )
-#define R12W REGISTER(12,REGSIZE_WORD )
-#define R13W REGISTER(13,REGSIZE_WORD )
-#define R14W REGISTER(14,REGSIZE_WORD )
-#define R15W REGISTER(15,REGSIZE_WORD )
+#define R8W  REGISTER(REGSIZE_WORD , 8)
+#define R9W  REGISTER(REGSIZE_WORD , 9)
+#define R10W REGISTER(REGSIZE_WORD ,10)
+#define R11W REGISTER(REGSIZE_WORD ,11)
+#define R12W REGISTER(REGSIZE_WORD ,12)
+#define R13W REGISTER(REGSIZE_WORD ,13)
+#define R14W REGISTER(REGSIZE_WORD ,14)
+#define R15W REGISTER(REGSIZE_WORD ,15)
 
-#define R8D  REGISTER( 8,REGSIZE_DWORD)
-#define R9D  REGISTER( 9,REGSIZE_DWORD)
-#define R10D REGISTER(10,REGSIZE_DWORD)
-#define R11D REGISTER(11,REGSIZE_DWORD)
-#define R12D REGISTER(12,REGSIZE_DWORD)
-#define R13D REGISTER(13,REGSIZE_DWORD)
-#define R14D REGISTER(14,REGSIZE_DWORD)
-#define R15D REGISTER(15,REGSIZE_DWORD)
+#define R8D  REGISTER(REGSIZE_DWORD, 8)
+#define R9D  REGISTER(REGSIZE_DWORD, 9)
+#define R10D REGISTER(REGSIZE_DWORD,10)
+#define R11D REGISTER(REGSIZE_DWORD,11)
+#define R12D REGISTER(REGSIZE_DWORD,12)
+#define R13D REGISTER(REGSIZE_DWORD,13)
+#define R14D REGISTER(REGSIZE_DWORD,14)
+#define R15D REGISTER(REGSIZE_DWORD,15)
 
 // 64 bit registers
-#define RAX  REGISTER( 0,REGSIZE_QWORD)
-#define RCX  REGISTER( 1,REGSIZE_QWORD)
-#define RDX  REGISTER( 2,REGSIZE_QWORD)
-#define RBX  REGISTER( 3,REGSIZE_QWORD)
-#define RSP  REGISTER( 4,REGSIZE_QWORD)
-#define RBP  REGISTER( 5,REGSIZE_QWORD)
-#define RSI  REGISTER( 6,REGSIZE_QWORD)
-#define RDI  REGISTER( 7,REGSIZE_QWORD)
-#define R8   REGISTER( 8,REGSIZE_QWORD)
-#define R9   REGISTER( 9,REGSIZE_QWORD)
-#define R10  REGISTER(10,REGSIZE_QWORD)
-#define R11  REGISTER(11,REGSIZE_QWORD)
-#define R12  REGISTER(12,REGSIZE_QWORD)
-#define R13  REGISTER(13,REGSIZE_QWORD)
-#define R14  REGISTER(14,REGSIZE_QWORD)
-#define R15  REGISTER(15,REGSIZE_QWORD)
+#define RAX  REGISTER(REGSIZE_QWORD, 0)
+#define RCX  REGISTER(REGSIZE_QWORD, 1)
+#define RDX  REGISTER(REGSIZE_QWORD, 2)
+#define RBX  REGISTER(REGSIZE_QWORD, 3)
+#define RSP  REGISTER(REGSIZE_QWORD, 4)
+#define RBP  REGISTER(REGSIZE_QWORD, 5)
+#define RSI  REGISTER(REGSIZE_QWORD, 6)
+#define RDI  REGISTER(REGSIZE_QWORD, 7)
+#define R8   REGISTER(REGSIZE_QWORD, 8)
+#define R9   REGISTER(REGSIZE_QWORD, 9)
+#define R10  REGISTER(REGSIZE_QWORD,10)
+#define R11  REGISTER(REGSIZE_QWORD,11)
+#define R12  REGISTER(REGSIZE_QWORD,12)
+#define R13  REGISTER(REGSIZE_QWORD,13)
+#define R14  REGISTER(REGSIZE_QWORD,14)
+#define R15  REGISTER(REGSIZE_QWORD,15)
 
 #define XMM0   0
 #define XMM1   1
@@ -131,8 +131,10 @@
 
 #ifdef IS32BIT
 #define MAX_REFERENCE_REGISTER 7
+typedef int MovMaxImmType;
 #else
 #define MAX_REFERENCE_REGISTER 15
+typedef INT64 MovMaxImmType;
 #endif
 #define MAX_INSTRUCTIONSIZE 15
 
@@ -280,6 +282,15 @@ public:
   static inline bool isWord(int v) {
     return v == (short)v;
   }
+  static inline bool isByte(INT64 v) {
+    return v == (char)v;
+  }
+  static inline bool isWord(INT64 v) {
+    return v == (short)v;
+  }
+  static inline bool isDword(INT64 v) {
+    return v == (int)v;
+  }
 };
 
 class IntelInstruction : public IntelOpcode {
@@ -390,7 +401,8 @@ public:
     SETREXBITONHIGHREG(reg,0);
     return or(0xc0 | (reg&7));
   }
-  IntelInstruction &setRegImm(BYTE reg, int immv);
+  IntelInstruction &setRegImm(   BYTE reg, int   immv);
+  IntelInstruction &setMovRegImm(BYTE reg, MovMaxImmType immv);
 };
 
 #define WORDOP(  op32) ((op32).wordOp())
@@ -415,7 +427,8 @@ public:
 #define B2INS(op)        IntelInstruction(2, op,false,false)
 #define B3INS(op)        IntelInstruction(3, op,false,false)
 #define B4INS(op)        IntelInstruction(4, op,false,false)
-#define INS_STDIMM(opa,opr,reg,immv) B1INSIMM(REGINDEX(reg)?opr:opa).setRegImm(reg,immv)
+#define INS_STDIMM(opa,opr,reg,immv) B1INSIMM(REGINDEX(reg)?opr:opa).setRegImm( reg,immv)
+#define INS_MOVIMM(op     ,reg,immv) B1INSIMM(                  op ).setMovRegImm(reg,(MovMaxImmType)(immv))
 
 // Instruction defined with these macroes, must be combined with macroes MEM_ADDR_* (and evt. REGREG)
 #define B1OP(op)         IntelOpcode(1,op,false, true , true, false)
@@ -586,64 +599,60 @@ public:
 
 #define NOOP                                   B1INS(0x90)
 
-#define XCHG_EAX_R32(        r32)              B1INS(0x90     |  (r32))                 // r32=eax-edi
-#define XCHG_AX_R16(         r16)              WORDOP(XCHG_EAX_R32(r16))                // r16=ax-di
-#define XCHG_REG_MEM(        reg)              B1OPREG(0x86,reg)                        // Build op2 with MEM_ADDR-*,REGREG-macroes
+#define XCHG_EAX_R32(        r32)              B1INS(0x90     |  (r32))                   // r32=eax-edi
+#define XCHG_AX_R16(         r16)              WORDOP(XCHG_EAX_R32(r16))                  // r16=ax-di
+#define XCHG_REG_MEM(        reg)              B1OPREG(0x86,reg)                          // Build op2 with MEM_ADDR-*,REGREG-macroes
 
 
-#define MOV_FROM_SEGREG_WORD(seg)              B2OP(0x8C00    | ((seg)<<3))             // Build dst with MEM_ADDR-*,REGREG-macroes
-#define LEA_R32_DWORD(       dst)              B2OPNOREGREG(0x8D00 | ((dst)<<3))        // Build src with MEM_ADDR-macroes
-#define MOV_TO_SEGREG_WORD(  seg)              B2OP(0x8E00    | ((seg)<<3))             // Build src with MEM_ADDR-*,REGREG-macroes
-#define POP_DWORD                              B2OP(0x8F00)                             // Build dst with MEM_ADDR-*,REGREG-macroes
+#define MOV_FROM_SEGREG_WORD(seg)              B2OP(0x8C00    | ((seg)<<3))               // Build dst with MEM_ADDR-*,REGREG-macroes
+#define LEA_R32_DWORD(       dst)              B2OPNOREGREG(0x8D00 | ((dst)<<3))          // Build src with MEM_ADDR-macroes
+#define MOV_TO_SEGREG_WORD(  seg)              B2OP(0x8E00    | ((seg)<<3))               // Build src with MEM_ADDR-*,REGREG-macroes
+#define POP_DWORD                              B2OP(0x8F00)                               // Build dst with MEM_ADDR-*,REGREG-macroes
 
-#define MOV_MEM_REG(         reg)              B1OPREG(0x88,reg)                        // Build dst with MEM_ADDR-*,REGREG-macroes
-#define MOV_REG_MEM(         reg)              B1OPREG(0x8A,reg)                        // Build src with MEM_ADDR-*,REGREG-macroes
+#define MOV_MEM_REG(         reg)              B1OPREG(   0x88,reg)                       // Build dst with MEM_ADDR-*,REGREG-macroes
+#define MOV_REG_MEM(         reg)              B1OPREG(   0x8A,reg)                       // Build src with MEM_ADDR-*,REGREG-macroes
+#define MOV_REG_IMM(         reg,immv)         INS_MOVIMM(0xB0,reg,immv)
 
-#define MOV_TO_AL_IMM_ADDR_BYTE                B1INS(  0xA0  )                          // 4/8 byte address. move byte  pointed to by 2. operand to AL
-#define MOV_TO_EAX_IMM_ADDR_DWORD              B1INS(  0xA1  )                          // 4/8 byte address. move dword pointed to by 2. operand to EAX
-#define MOV_TO_AX_IMM_ADDR_WORD                WORDOP( MOV_TO_EAX_IMM_ADDR_DWORD)        // 4/8 byte address. move word  pointed to by 2. operand to AX
-#define MOV_TO_RAX_IMM_ADDR_QWORD              REX3(   MOV_TO_EAX_IMM_ADDR_DWORD)          // 8 byte address
+#define MOV_TO_AL_IMM_ADDR_BYTE                B1INS(  0xA0  )                            // 4/8 byte address. move byte  pointed to by 2. operand to AL
+#define MOV_TO_EAX_IMM_ADDR_DWORD              B1INS(  0xA1  )                            // 4/8 byte address. move dword pointed to by 2. operand to EAX
+#define MOV_TO_AX_IMM_ADDR_WORD                WORDOP( MOV_TO_EAX_IMM_ADDR_DWORD)         // 4/8 byte address. move word  pointed to by 2. operand to AX
+#define MOV_TO_RAX_IMM_ADDR_QWORD              REX3(   MOV_TO_EAX_IMM_ADDR_DWORD)         // 8 byte address
 
-#define MOV_FROM_AL_IMM_ADDR_BYTE              B1INS(  0xA2  )                          // 4/8 byte address. move AL  to byte  pointed to by 2. operand
-#define MOV_FROM_EAX_IMM_ADDR_DWORD            B1INS(  0xA3  )                          // 4/8 byte address. move EAX to dword pointed to by 2. operand
-#define MOV_FROM_AX_IMM_ADDR_WORD              WORDOP( MOV_FROM_EAX_IMM_ADDR_DWORD)      // 4/8 byte address. move AX  to word  pointed to by 2. operand
-#define MOV_FROM_RAX_IMM_ADDR_QWORD            REX3(   MOV_FROM_EAX_IMM_ADDR_DWORD)        // 8 byte address
+#define MOV_FROM_AL_IMM_ADDR_BYTE              B1INS(  0xA2  )                            // 4/8 byte address. move AL  to byte  pointed to by 2. operand
+#define MOV_FROM_EAX_IMM_ADDR_DWORD            B1INS(  0xA3  )                            // 4/8 byte address. move EAX to dword pointed to by 2. operand
+#define MOV_FROM_AX_IMM_ADDR_WORD              WORDOP( MOV_FROM_EAX_IMM_ADDR_DWORD)       // 4/8 byte address. move AX  to word  pointed to by 2. operand
+#define MOV_FROM_RAX_IMM_ADDR_QWORD            REX3(   MOV_FROM_EAX_IMM_ADDR_DWORD)       // 8 byte address
 
-#define MOV_R8_IMM_BYTE(     r8 )              B1INS(  0xB0     |  (r8 ))               // 1 byte operand
-#define MOV_R32_IMM_DWORD(   r32)              B1INS(  0xB8     |  (r32))               // 4 byte operand
-#define MOV_R16_IMM_WORD(    r16)              WORDOP( MOV_R32_IMM_DWORD(r16))           // 2 byte operand
-#define MOV_R64_IMM_QWORD(   r64)              REX1(   MOV_R32_IMM_DWORD,r64)              // 8 byte operand
-
-#define ADD_MEM_REG(         reg)              B1OPREG(0x00,reg)                          // Build dst with MEM_ADDR-*,REGREG-macroes
-#define ADD_REG_MEM(         reg)              B1OPREG(0x02,reg)                          // Build src with MEM_ADDR-*,REGREG-macroes
+#define ADD_MEM_REG(         reg)              B1OPREG(   0x00,reg)                       // Build dst with MEM_ADDR-*,REGREG-macroes
+#define ADD_REG_MEM(         reg)              B1OPREG(   0x02,reg)                       // Build src with MEM_ADDR-*,REGREG-macroes
 #define ADD_REG_IMM(         reg,immv)         INS_STDIMM(0x04,0xC0,reg,immv)
 
-#define OR_MEM_REG(          reg)              B1OPREG(0x08,reg)                          // Build dst with MEM_ADDR-*,REGREG-macroes
-#define OR_REG_MEM(          reg)              B1OPREG(0x0A,reg)                          // Build src with MEM_ADDR-*,REGREG-macroes
+#define OR_MEM_REG(          reg)              B1OPREG(   0x08,reg)                       // Build dst with MEM_ADDR-*,REGREG-macroes
+#define OR_REG_MEM(          reg)              B1OPREG(   0x0A,reg)                       // Build src with MEM_ADDR-*,REGREG-macroes
 #define OR_REG_IMM(          reg,immv)         INS_STDIMM(0x0C,0xC8,reg,immv)
 
-#define ADC_MEM_REG(         reg)              B1OPREG(0x10,reg)                          // Build dst with MEM_ADDR-*,REGREG-macroes
-#define ADC_REG_MEM(         reg)              B1OPREG(0x12,reg)                          // Build src with MEM_ADDR-*,REGREG-macroes
+#define ADC_MEM_REG(         reg)              B1OPREG(   0x10,reg)                       // Build dst with MEM_ADDR-*,REGREG-macroes
+#define ADC_REG_MEM(         reg)              B1OPREG(   0x12,reg)                       // Build src with MEM_ADDR-*,REGREG-macroes
 #define ADC_REG_IMM(         reg,immv)         INS_STDIMM(0x14,0xD0,reg,immv)
 
-#define SBB_MEM_REG(         reg)              B1OPREG(0x18,reg)                          // Build dst with MEM_ADDR-*,REGREG-macroes
-#define SBB_REG_MEM(         reg)              B1OPREG(0x1A,reg)                          // Build src with MEM_ADDR-*,REGREG-macroes
+#define SBB_MEM_REG(         reg)              B1OPREG(   0x18,reg)                       // Build dst with MEM_ADDR-*,REGREG-macroes
+#define SBB_REG_MEM(         reg)              B1OPREG(   0x1A,reg)                       // Build src with MEM_ADDR-*,REGREG-macroes
 #define SBB_REG_IMM(         reg,immv)         INS_STDIMM(0x1C,0xD8,reg,immv)
 
-#define AND_MEM_REG(         reg)              B1OPREG(0x20,reg)                          // Build dst with MEM_ADDR-*,REGREG-macroes
-#define AND_REG_MEM(         reg)              B1OPREG(0x22,reg)                          // Build src with MEM_ADDR-*,REGREG-macroes
+#define AND_MEM_REG(         reg)              B1OPREG(   0x20,reg)                       // Build dst with MEM_ADDR-*,REGREG-macroes
+#define AND_REG_MEM(         reg)              B1OPREG(   0x22,reg)                       // Build src with MEM_ADDR-*,REGREG-macroes
 #define AND_REG_IMM(         reg,immv)         INS_STDIMM(0x24,0xE0,reg,immv)
 
-#define SUB_MEM_REG(         reg)              B1OPREG(0x28,reg)                          // Build dst with MEM_ADDR-*,REGREG-macroes
-#define SUB_REG_MEM(         reg)              B1OPREG(0x2A,reg)                          // Build src with MEM_ADDR-*,REGREG-macroes
+#define SUB_MEM_REG(         reg)              B1OPREG(   0x28,reg)                       // Build dst with MEM_ADDR-*,REGREG-macroes
+#define SUB_REG_MEM(         reg)              B1OPREG(   0x2A,reg)                       // Build src with MEM_ADDR-*,REGREG-macroes
 #define SUB_REG_IMM(         reg,immv)         INS_STDIMM(0x2C,0xE8,reg,immv)
 
-#define XOR_MEM_REG(         reg)              B1OPREG(0x30,reg)                          // Build dst with MEM_ADDR-*,REGREG-macroes
-#define XOR_REG_MEM(         reg)              B1OPREG(0x32,reg)                          // Build src with MEM_ADDR-*,REGREG-macroes
+#define XOR_MEM_REG(         reg)              B1OPREG(   0x30,reg)                       // Build dst with MEM_ADDR-*,REGREG-macroes
+#define XOR_REG_MEM(         reg)              B1OPREG(   0x32,reg)                       // Build src with MEM_ADDR-*,REGREG-macroes
 #define XOR_REG_IMM(         reg,immv)         INS_STDIMM(0x34,0xF0,reg,immv)
 
-#define CMP_MEM_REG(         reg)              B1OPREG(0x38,reg)                          // Build op1 with MEM_ADDR-*,REGREG-macroes
-#define CMP_REG_MEM(         reg)              B1OPREG(0x3A,reg)                          // Build op2 with MEM_ADDR-*,REGREG-macroes
+#define CMP_MEM_REG(         reg)              B1OPREG(   0x38,reg)                       // Build op1 with MEM_ADDR-*,REGREG-macroes
+#define CMP_REG_MEM(         reg)              B1OPREG(   0x3A,reg)                       // Build op2 with MEM_ADDR-*,REGREG-macroes
 #define CMP_REG_IMM(         reg,immv)         INS_STDIMM(0x3C,0xF8,reg,immv)
 
 #define MUL_BYTE                               B2OP(0xF620)                               // Unsigned multiply (ax      = al  * src  )

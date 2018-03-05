@@ -4,10 +4,11 @@
 //#define GENERATE_ASSEMBLER_CODE
 
 #ifdef GENERATE_ASSEMBLER_CODE
-
+#ifdef IS64BIT
+extern "C" void fisk();
+#else
 void fisk() {
   __asm {
-
     add         byte ptr es:[78563412h],al
     add         byte ptr cs:[78563412h],al
     add         byte ptr ss:[78563412h],al
@@ -23,70 +24,72 @@ void fisk() {
 
   }
 }
-
+#endif // IS64BIT
 #endif // GENERATE_ASSEMBLER_CODE
 
 #ifdef TEST_MACHINECODE
 
-//#define TEST_ALLREGISTERS
+#define TEST_ALLREGISTERS
 
 static const BYTE r8List[] = {
     AL
-#ifdef TEST_ALLREGISTERS
-   ,CL   ,DL   ,BL   ,AH   ,CH   ,DH
+#ifndef TEST_ALLREGISTERS
+   ,AH  ,CH
+#else
+   ,CL  ,DL  ,BL  ,AH  ,CH  ,DH  ,BH
 #endif // TEST_ALLREGISTERS
-   ,BH
 #ifdef IS64BIT
    ,R8B
 #ifdef TEST_ALLREGISTERS
-   ,R9B  ,R10B ,R11B ,R12B ,R13B ,R14B
+   ,R9B  ,R10B ,R11B ,R12B ,R13B ,R14B ,R15B
 #endif // TEST_ALLREGISTERS
-   ,R15B
 #endif // IS64BIT
   };
 
   const BYTE r16List[] = {
     AX
-#ifdef TEST_ALLREGISTERS
-   ,CX   ,DX   ,BX   ,SP   ,BP   ,SI
+#ifndef TEST_ALLREGISTERS
+   ,SP   ,BP
+#else
+   ,CX   ,DX   ,BX   ,SP   ,BP   ,SI  ,DI
 #endif // TEST_ALLREGISTERS
-   ,DI
+
 #ifdef IS64BIT
    ,R8W
 #ifdef TEST_ALLREGISTERS
-   ,R9W  ,R10W ,R11W ,R12W ,R13W ,R14W
+   ,R9W  ,R10W ,R11W ,R12W ,R13W ,R14W ,R15W
 #endif // TEST_ALLREGISTERS
-   ,R15W
 #endif // IS64BIT
   };
 
   const BYTE r32List[] = {
     EAX
-#ifdef TEST_ALLREGISTERS
-   ,ECX  ,EDX  ,EBX  ,ESP  ,EBP  ,ESI
+#ifndef TEST_ALLREGISTERS
+   ,ESP  ,EBP
+#else
+   ,ECX  ,EDX  ,EBX  ,ESP  ,EBP  ,ESI  ,EDI
 #endif // TEST_ALLREGISTERS
-   ,EDI
+
 #ifdef IS64BIT
    ,R8D
 #ifdef TEST_ALLREGISTERS
-   ,R9D  ,R10D ,R11D ,R12D ,R13D ,R14D
+   ,R9D  ,R10D ,R11D ,R12D ,R13D ,R14D ,R15D
 #endif // TEST_ALLREGISTERS
-   ,R15D
 #endif // IS64BIT
   };
 
 #ifdef IS64BIT
   const BYTE r64List[] = {
     RAX
-#ifdef TEST_ALLREGISTERS
-   ,RCX  ,RDX  ,RBX  ,RSP  ,RBP  ,RSI
+#ifndef TEST_ALLREGISTERS
+   ,RSP  ,RBP
+#else
+   ,RCX  ,RDX  ,RBX  ,RSP  ,RBP  ,RSI  ,RDI
 #endif // TEST_ALLREGISTERS
-   ,RDI
    ,R8
 #ifdef TEST_ALLREGISTERS
-   ,R9   ,R10  ,R11  ,R12  ,R13  ,R14
+   ,R9   ,R10  ,R11  ,R12  ,R13  ,R14  ,R15
 #endif // TEST_ALLREGISTERS
-   ,R15
   };
 #endif // IS64BIT
 
@@ -153,49 +156,51 @@ static const BYTE r8List[] = {
 #define ALLREG64IMM(ins,v) ,ins(RAX,v),ins(RCX,v),ins(RDX,v),ins(RBX,v),ins(RSP,v),ins(RBP,v),ins(RSI,v),ins(RDI,v) ALLHIGHREG64IMM(ins,v)
 #endif // IS64BIT
 #else
-#define ALLREG8(    op   )  op( AL   ),op( BH   ) ALLHIGHREG8(    op   )
-#define ALLREG16(   op   )  op( AX   ),op( DI   ) ALLHIGHREG16(   op   )
-#define ALLREG32(   op   )  op( EAX  ),op( EDI  ) ALLHIGHREG32(   op   )
-#define ALLREG8IMM( ins,v)  ins(AL ,v),ins(BH ,v) ALLHIGHREG8IMM( ins,v)
-#define ALLREG16IMM(ins,v)  ins(AX ,v),ins(DI ,v) ALLHIGHREG16IMM(ins,v)
-#define ALLREG32IMM(ins,v)  ins(EAX,v),ins(EDI,v) ALLHIGHREG32IMM(ins,v)
+#define ALLREG8(    op   )  op( AL   ),op( AH   ),op( CH   ),op( BH   ) ALLHIGHREG8(    op   )
+#define ALLREG16(   op   )  op( AX   ),op( SP   ),op( BP   ),op( DI   ) ALLHIGHREG16(   op   )
+#define ALLREG32(   op   )  op( EAX  ),op( ESP  ),op( EBP  ),op( EDI  ) ALLHIGHREG32(   op   )
+#define ALLREG8IMM( ins,v)  ins(AL ,v),ins(AH ,v),ins(CH ,v),ins(BH ,v) ALLHIGHREG8IMM( ins,v)
+#define ALLREG16IMM(ins,v)  ins(AX ,v),ins(SP ,v),ins(BP ,v),ins(DI ,v) ALLHIGHREG16IMM(ins,v)
+#define ALLREG32IMM(ins,v)  ins(EAX,v),ins(ESP,v),ins(EBP,v),ins(EDI,v) ALLHIGHREG32IMM(ins,v)
 
 #ifdef IS64BIT
-#define ALLREG64(   op   ) ,op( RAX  ),op( RDI  ) ALLHIGHREG64(   op   )
-#define ALLREG64IMM(ins,v) ,ins(RAX,v),ins(RDI,v) ALLHIGHREG64IMM(ins,v)
+#define ALLREG64(   op   ) ,op( RAX  ),op( RSP  ),op( RBP  ),op( RDI  ) ALLHIGHREG64(   op   )
+#define ALLREG64IMM(ins,v) ,ins(RAX,v),ins(RSP,v),ins(RBP,v),ins(RDI,v) ALLHIGHREG64IMM(ins,v)
 #endif
 #endif // TEST_ALLREGISTERS
 
 #ifdef IS32BIT
-#define OP_1ARGX64_QWORD(name)
+#define OP_1ARG_QWORD(name)
 #define FOR_ALL_REG64(op)
 #else // IS64BIT
-#define OP_1ARGX64_QWORD(name) ,name##_QWORD
+#define OP_1ARG_QWORD(name) ,name##_QWORD
 #endif // IS32BIT
 
-#define ALLREG(op)     ALLREG8(   op      ),ALLREG16(   op      ),ALLREG32(   op)                                                           ALLREG64(   op )
-#define ALLREGIMM(ins) ALLREG8IMM(ins,0x7f),ALLREG16IMM(ins,0x7f),ALLREG16IMM(ins,0x7fff),ALLREG32IMM(ins,0x7f),ALLREG32IMM(ins,0xffffffff) ALLREG64IMM(ins,0x7f) ALLREG64IMM(ins,0xffffffff)
+#define ALLREG(op)      ALLREG8(   op      ),ALLREG16(   op      ),ALLREG32(   op)                                                           ALLREG64(   op )
+#define ALLREGIMM( ins) ALLREG8IMM(ins,0x7f),ALLREG16IMM(ins,0x7f),ALLREG16IMM(ins,0x7fff),ALLREG32IMM(ins,0x7f),ALLREG32IMM(ins,0xffffffff) ALLREG64IMM(ins,0x7f) ALLREG64IMM(ins,0xffffffff)
+#define ALLREGIMM1(ins) ALLREG8IMM(ins,0x7f),ALLREG16IMM(ins,0x7f),ALLREG16IMM(ins,0x7fff),ALLREG32IMM(ins,0x7f),ALLREG32IMM(ins,0x7fffffff) ALLREG64IMM(ins,0x7f) ALLREG64IMM(ins,0xffffffff) ALLREG64IMM(ins,0x7fffffffffffffffi64)
 
 #define OP_2ARG_BYTE(    name)  ALLREG(name##_BYTE     )
 #define OP_2ARG_WORD(    name)  ALLREG(name##_WORD     )
 #define OP_2ARG_DWORD(   name)  ALLREG(name##_DWORD    )
 
 #ifdef IS32BIT
-#define OP_2ARGX64_QWORD(name)
+#define OP_2ARG_QWORD(name)
 #else
-#define OP_2ARGX64_QWORD(name) ,ALLREG(name##_QWORD    )
+#define OP_2ARG_QWORD(name) ,ALLREG(name##_QWORD    )
 #endif
-#define OP_1ARG(          name) name##_BYTE ,name##_DWORD ,name##_WORD  OP_1ARGX64_QWORD(name)
+#define OP_1ARG(          name) name##_BYTE ,name##_DWORD ,name##_WORD  OP_1ARG_QWORD(name)
 
 #define OP_2ARG_NOBYTE(name) \
   OP_2ARG_WORD(    name)     \
  ,OP_2ARG_DWORD(   name)     \
-  OP_2ARGX64_QWORD(name)
+  OP_2ARG_QWORD(   name)
 
 #define DEFINE_INSTRUCTIONLIST(a, list) const IntelInstruction a[] = { list }
 #define EMIT_INSTRUCTIONLIST(a) for(int i = 0; i < ARRAYSIZE(a); i++) { emit(a[i]); }
-#define EMITALL(name)   { DEFINE_INSTRUCTIONLIST(l, ALLREG(   name)); EMIT_INSTRUCTIONLIST(l); }
-#define EMITALLIMM(ins) { DEFINE_INSTRUCTIONLIST(l, ALLREGIMM(ins )); EMIT_INSTRUCTIONLIST(l); }
+#define EMITALL(name)    { DEFINE_INSTRUCTIONLIST(l, ALLREG(     name)); EMIT_INSTRUCTIONLIST(l); }
+#define EMITALLIMM( ins) { DEFINE_INSTRUCTIONLIST(l, ALLREGIMM(  ins )); EMIT_INSTRUCTIONLIST(l); }
+#define EMITALLIMM1(ins) { DEFINE_INSTRUCTIONLIST(l, ALLREGIMM1( ins )); EMIT_INSTRUCTIONLIST(l); }
 
 #define EMIT_ALLR8( name) EMITALL(name##_R8 )
 #define EMIT_ALLR16(name) EMITALL(name##_R16)
@@ -220,8 +225,11 @@ static INT64 staticInt64 = 0xf0debc9a78563412;
 #endif // IS64BIT
 
 //#define TEST_INCDEC_PUSHPOP
-#define TEST_MOV
-#define TEST_MUL
+//#define TEST_MOV_IMM
+//#define TEST_REP_SCAS
+//#define TEST_MUL
+#define TEST_REG_IMM
+//#define TEST_MEM_ADDR
 
 void MachineCode::genTestSequence() {
 #ifdef GENERATE_ASSEMBLER_CODE
@@ -259,45 +267,43 @@ void MachineCode::genTestSequence() {
 
 #endif // TEST_INCDEC_PUSHPOP
 
-#ifdef TEST_MOV
-
-  emit(REGREG(MOV_MEM_REG(  BL), BH ));
-  emit(REGREG(MOV_MEM_REG(  BH), DH ));
-  emit(REGREG(MOV_MEM_REG(  DI), SI ));
-  emit(REGREG(MOV_MEM_REG( EDI), ESI));
-
-  emit(REGREG(MOV_MEM_REG(  BL), BH ));
-  emit(REGREG(MOV_MEM_REG(  BH), DH ));
-  emit(REGREG(MOV_MEM_REG(  DI), SI ));
-  emit(REGREG(MOV_MEM_REG( EDI), ESI));
+#ifdef TEST_MOV_IMM
 
   emit(MOV_R8_IMM_BYTE(  BL ));      addBytes(addr,1);
   emit(MOV_R8_IMM_BYTE(  BH ));      addBytes((char*)addr+1,1);
   emit(MOV_R16_IMM_WORD( DI ));      addBytes(addr,2);
   emit(MOV_R32_IMM_DWORD(EDI));      addBytes(addr,4);
+#ifdef IS64BIT
+  emit(MOV_R8_IMM_BYTE(  R8B));      addBytes(addr,1);
+  emit(MOV_R8_IMM_BYTE(  R9B));      addBytes((char*)addr+1,1);
+  emit(MOV_R16_IMM_WORD( R8W));      addBytes(addr,2);
+  emit(MOV_R32_IMM_DWORD(R8D));      addBytes(addr,4);
+  emit(MOV_R64_IMM_QWORD(RDI));      addBytes(addr,8);
+  emit(MOV_R64_IMM_QWORD(R8 ));      addBytes(addr,8);
+#endif
 
   emit(MOV_TO_AL_IMM_ADDR_BYTE    ); addBytes(addr,sizeof(addr));
-  emit(MOV_TO_AX_IMM_ADDR_WORD    ); addBytes(addr,sizeof(addr));
-  emit(MOV_TO_EAX_IMM_ADDR_DWORD  ); addBytes(addr,sizeof(addr));
   emit(MOV_FROM_AL_IMM_ADDR_BYTE  ); addBytes(addr,sizeof(addr));
+  emit(MOV_TO_AX_IMM_ADDR_WORD    ); addBytes(addr,sizeof(addr));
   emit(MOV_FROM_AX_IMM_ADDR_WORD  ); addBytes(addr,sizeof(addr));
+  emit(MOV_TO_EAX_IMM_ADDR_DWORD  ); addBytes(addr,sizeof(addr));
   emit(MOV_FROM_EAX_IMM_ADDR_DWORD); addBytes(addr,sizeof(addr));
-
 #ifdef IS64BIT
-  emit(REGREG(MOV_MEM_REG(RDI), RSI));
-  emit(REGREG(MOV_MEM_REG(RDI), RSI));
-  emit(MOV_R64_IMM_QWORD(RDI));      addBytes(addr,8);
   emit(MOV_TO_RAX_IMM_ADDR_QWORD  ); addBytes(addr,sizeof(addr));
   emit(MOV_FROM_RAX_IMM_ADDR_QWORD); addBytes(addr,sizeof(addr));
 #endif
 
-#endif // TEST_MOV
+#endif // TEST_MOV_IMM
 
-  static int j = 0x12345678;
+#ifdef TEST_REP_SCAS
+  emit(REP); emit(SCAS_BYTE );
+  emit(REP); emit(SCAS_WORD );
+  emit(REP); emit(SCAS_DWORD);
 #ifdef IS64BIT
   emit(REP); emit(SCAS_QWORD);
 #endif
-  emit(REP); emit(SCAS_DWORD);
+#endif // TEST_REP_SCAS
+
 
 #ifdef IS32BIT
 #define ADDR_REGISTER EDI
@@ -464,19 +470,23 @@ void MachineCode::genTestSequence() {
   emit(NOOP);
 #endif // TEST_MUL
 
-  EMITALLIMM(ADD_REG_IMM)
-/*
-  EMITALLIMM(OR_REG_IMM )
-  EMITALLIMM(ADC_REG_IMM)
-  EMITALLIMM(SBB_REG_IMM)
-  EMITALLIMM(AND_REG_IMM)
-  EMITALLIMM(SUB_REG_IMM)
-  EMITALLIMM(XOR_REG_IMM)
-  EMITALLIMM(CMP_REG_IMM)
-*/
+#ifdef TEST_REG_IMM
+  EMITALLIMM1(MOV_REG_IMM)
+  EMITALLIMM( ADD_REG_IMM)
+  EMITALLIMM( OR_REG_IMM )
+  EMITALLIMM( ADC_REG_IMM)
+  EMITALLIMM( SBB_REG_IMM)
+  EMITALLIMM( AND_REG_IMM)
+  EMITALLIMM( SUB_REG_IMM)
+  EMITALLIMM( XOR_REG_IMM)
+  EMITALLIMM( CMP_REG_IMM)
+#endif
 
+#ifdef TEST_MEM_ADDR
   const IntelOpcode opcodes[] = {
-    ALLREG(    ADD_MEM_REG)
+    ALLREG(    MOV_MEM_REG)
+   ,ALLREG(    MOV_REG_MEM)
+   ,ALLREG(    ADD_MEM_REG)
    ,ALLREG(    ADD_REG_MEM)
 
    ,SETO   ,SETNO   ,SETB    ,SETAE
@@ -581,6 +591,8 @@ void MachineCode::genTestSequence() {
     emit(MEM_ADDR_DS_IMM(  op,staticInt32   ));
     emit(NOOP);
   }
+#endif TEST_MEM_ADDR
+
 /*
   emit(MOV_TO_AL_IMM_ADDR_BYTE     ); addBytes(&addr,sizeof(addr));
   emit(MOV_TO_AX_IMM_ADDR_WORD     ); addBytes(&addr,sizeof(addr));
