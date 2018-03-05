@@ -1659,5 +1659,13 @@ namespace TestExpression {
       }
     }
 #endif // TEST_DERIVATIVES
+
+    TEST_METHOD(TestMachineCode) {
+      generateTestSequence();
+    }
+    TEST_METHOD(CallAssemblerCode) {
+      callAssemblerCode();
+    }
+
   };
 }

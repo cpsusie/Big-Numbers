@@ -411,15 +411,11 @@ void Expression::genMachineCode() {
     throwException(_T("Treeform must be STANDARD to generate machinecode. Form=%s"), getTreeFormName().cstr());
   }
   clearMachineCode();
-#ifdef TEST_MACHINECODE
-  m_code.genTestSequence();
-#else
   m_code.setValueCount(getValueCount());
   genProlog();
   genStatementList(getRoot());
   m_code.fixupJumps();
   m_code.linkReferences();
-#endif
 
   m_entryPoint = m_code.getEntryPoint();
   m_esi        = getESI();

@@ -154,9 +154,6 @@
     <ClCompile Include="Expression\SumElement.cpp">
       <Filter>Source Files\Expression</Filter>
     </ClCompile>
-    <ClCompile Include="Expression\TestMachineCode.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
     <ClCompile Include="ComplexMatrix.cpp">
       <Filter>Source Files\Matrix</Filter>
     </ClCompile>

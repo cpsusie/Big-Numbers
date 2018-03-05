@@ -11,10 +11,6 @@ typedef Real (*BuiltInFunctionRef2)(const Real &x, const Real &y);
 typedef Real (*BuiltInFunction1)(Real x);
 typedef Real (*BuiltInFunction2)(Real x, Real y);
 
-// Define this, to get Expression::compile() to generate a long sequence of
-// instructions, which can be viewed and checked in disassembler
-// #define TEST_MACHINECODE
-
 #ifndef LONGDOUBLE
 #define FLD_REAL           FLD_QWORD
 #define FSTP_REAL          FSTP_QWORD
@@ -182,10 +178,6 @@ public:
 #endif // IS32BIT
   void linkReferences();
   ExpressionEntryPoint getEntryPoint() const { return (ExpressionEntryPoint)getData(); }
-
-#ifdef TEST_MACHINECODE
-  void genTestSequence();
-#endif
 };
 
 class JumpList {

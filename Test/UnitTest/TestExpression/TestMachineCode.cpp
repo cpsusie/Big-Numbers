@@ -1,31 +1,7 @@
-#include "pch.h"
+#include "stdafx.h"
 #include <Math/Expression/Expression.h>
 
-//#define GENERATE_ASSEMBLER_CODE
-
-#ifdef GENERATE_ASSEMBLER_CODE
-#ifdef IS64BIT
-extern "C" void fisk();
-#else
-void fisk() {
-  __asm {
-    add         byte ptr es:[78563412h],al
-    add         byte ptr cs:[78563412h],al
-    add         byte ptr ss:[78563412h],al
-    add         byte ptr ds:[78563412h],al
-    add         byte ptr [78563412h],al
-    imul ecx, dword ptr[esi+8*edi+0xabcddbca],0x12345678
-    imul cx ,  word ptr[esi+8*edi+0xabcddbca],0x1234
-
-    cbw
-    cwde
-    cwd
-    cdq
-
-  }
-}
-#endif // IS64BIT
-#endif // GENERATE_ASSEMBLER_CODE
+#define TEST_MACHINECODE
 
 #ifdef TEST_MACHINECODE
 
@@ -231,10 +207,12 @@ static INT64 staticInt64 = 0xf0debc9a78563412;
 #define TEST_REG_IMM
 //#define TEST_MEM_ADDR
 
-void MachineCode::genTestSequence() {
-#ifdef GENERATE_ASSEMBLER_CODE
-  fisk();
-#endif
+class TestMachineCode : public MachineCode {
+public:
+  TestMachineCode();
+};
+
+TestMachineCode::TestMachineCode() {
 #ifdef IS32BIT
   void *addr = (void*)&staticInt32;
 #else // IS64BIT
@@ -605,3 +583,44 @@ void MachineCode::genTestSequence() {
 }
 
 #endif // TEST_MACHINECODE
+
+void generateTestSequence() {
+#ifdef TEST_MACHINECODE
+  TestMachineCode test;
+#endif // TEST_MACHINECODE
+}
+
+#ifdef _DEBUG
+#ifdef TEST_MACHINECODE
+
+#ifdef IS64BIT
+extern "C" void assemblerCode();
+#else
+void assemblerCode() {
+  __asm {
+    jmp         End
+    add         byte ptr es:[78563412h],al
+    add         byte ptr cs:[78563412h],al
+    add         byte ptr ss:[78563412h],al
+    add         byte ptr ds:[78563412h],al
+    imul ecx, dword ptr[esi+8*edi+0xabcddbca],0x12345678
+    imul cx ,  word ptr[esi+8*edi+0xabcddbca],0x1234
+
+    cbw
+    cwde
+    cwd
+    cdq
+  }
+End:;
+}
+#endif // IS64BIT
+#endif // TEST_MACHINECODE
+#endif // _DEBUG
+
+void callAssemblerCode() {
+#ifdef _DEBUG
+#ifdef TEST_MACHINECODE
+  assemblerCode();
+#endif // TEST_MACHINECODE
+#endif // _DEBUG
+}

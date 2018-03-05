@@ -925,7 +925,6 @@
     <ClCompile Include="Expression\ParserTreeSymbolTable.cpp" />
     <ClCompile Include="Expression\SNode.cpp" />
     <ClCompile Include="Expression\SumElement.cpp" />
-    <ClCompile Include="Expression\TestMachineCode.cpp" />
     <ClCompile Include="fft.cpp" />
     <ClCompile Include="FindZeroes.cpp" />
     <ClCompile Include="FPU.cpp" />
