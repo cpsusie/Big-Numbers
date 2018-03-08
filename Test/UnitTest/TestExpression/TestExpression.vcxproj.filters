@@ -34,8 +34,8 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="assemblerx64.asm">
+    <CustomBuild Include="assemblerx64.asm">
       <Filter>Source Files</Filter>
-    </None>
+    </CustomBuild>
   </ItemGroup>
 </Project>

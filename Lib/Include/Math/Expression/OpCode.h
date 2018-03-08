@@ -2,141 +2,133 @@
 
 #include <MyAssert.h>
 
-#define REGSIZE_BYTE  0
-#define REGSIZE_WORD  1
-#define REGSIZE_DWORD 2
+typedef enum {
+  REGTYPE_NONE
+ ,REGTYPE_GP
+ ,REGTYPE_SEG
+ ,REGTYPE_FPU
+ ,REGTYPE_XMM
+} RegType;
+
+typedef enum {
+  REGSIZE_BYTE     /* 8-bit  */
+ ,REGSIZE_WORD     /* 16-bit */
+ ,REGSIZE_DWORD    /* 32-bit */
+ ,REGSIZE_QWORD    /* 64-bit */
+ ,REGSIZE_TBYTE    /* 80-bit */
+ ,REGSIZE_OWORD    /* 128-bit */
+} RegSize;
 
 #ifdef IS32BIT
-#define ADDRESSING_REGSIZE REGSIZE_DWORD
+#define INDEX_REGSIZE          REGSIZE_DWORD
+#define MAX_GPREGISTER_INDEX   7
+#define MAX_XMMREGISTER_INDEX  7
+typedef int                    MovMaxImmType;
 #else
-#define REGSIZE_QWORD 3
-#define ADDRESSING_REGSIZE REGSIZE_QWORD
+#define INDEX_REGSIZE         REGSIZE_QWORD
+#define MAX_GPREGISTER_INDEX  15
+#define MAX_XMMREGISTER_INDEX 15
+typedef INT64                 MovMaxImmType;
 #endif
 
-#define REGISTER(sz,index) (((sz)<<4) | (index))
-#define REGINDEX(reg)       ((reg)&0xf)
-#define REGSIZE( reg)       ((reg)>>4)
+class Register {
+private:
+  const RegType  m_type  : 4; // = REGTYPE_NONE, _GP, _SEG, _FPU, _XMM
+  const RegSize  m_size  : 4; // = REGSIZE_BYTE, _WORD, _DWORD, _QWORD, _TBYTE, _OWORD
+  const UINT     m_index : 4; // = [0..15]
+#ifdef _DEBUG
+  String m_name;
+#endif
+  Register &operator=(const Register &); // not implemented, and not accessible. 
+                                          // All register are singletons
+public:
+  Register(RegType type, RegSize size, BYTE index)
+    : m_type(type)
+    , m_size(size)
+    , m_index(index)
+  {
+#ifdef _DEBUG
+    m_name = getName();
+#endif
+  }
+  RegType getType()  const { return m_type ; }
+  RegSize getSize()  const { return m_size ; }
+  UINT    getIndex() const { return m_index; }
+  String  getName() const;
+  inline bool isGPRegister() const {
+#ifdef _DEBUG
+    if(getType() != REGTYPE_GP) {
+      throwInvalidArgumentException(__TFUNCTION__, _T("%s is not general purpose register"), getName().cstr());
+    }
+#endif // _DEBUG
+    return ((getType() == REGTYPE_GP) && (getIndex() <= MAX_GPREGISTER_INDEX));
+  }
+  inline bool isIndexRegister() const {
+#ifdef _DEBUG
+    if(getSize() != INDEX_REGSIZE) {
+      throwInvalidArgumentException(__TFUNCTION__, _T("%s is not index register"), getName().cstr());
+    }
+#endif // _DEBUG
+    return isGPRegister() && (getSize() == INDEX_REGSIZE);
+  }
+  inline bool isSegmentRegister() const {
+    return (getType() == REGTYPE_SEG) && (getIndex() < 6);
+  }
+  inline bool isXMMRegister() const {
+#ifdef _DEBUG
+    if(getType() != REGTYPE_XMM) {
+      throwInvalidArgumentException(__TFUNCTION__, _T("%s is not XMM register"), getName().cstr());
+    }
+#endif // _DEBUG
+    return ((getType() == REGTYPE_XMM) && (getIndex() <= MAX_XMMREGISTER_INDEX));
+  }
+  inline bool operator==(const Register &r) const {
+    return getType() == r.getType() && getSize() == r.getSize() && getIndex() == r.getIndex();
+  }
+  inline bool operator!=(const Register &r) const {
+    return !(*this == r);
+  }
+};
 
-// General purpose registers
 // 8 bit registers
-#define AL   REGISTER(REGSIZE_BYTE,  0)
-#define CL   REGISTER(REGSIZE_BYTE,  1)
-#define DL   REGISTER(REGSIZE_BYTE,  2)
-#define BL   REGISTER(REGSIZE_BYTE,  3)
-#define AH   REGISTER(REGSIZE_BYTE,  4)
-#define CH   REGISTER(REGSIZE_BYTE,  5)
-#define DH   REGISTER(REGSIZE_BYTE,  6)
-#define BH   REGISTER(REGSIZE_BYTE,  7)
-
+extern const Register AL,CL,DL,BL,AH,CH,DH,BH;
 // 16 bit registers
-#define AX   REGISTER(REGSIZE_WORD,  0)
-#define CX   REGISTER(REGSIZE_WORD,  1)
-#define DX   REGISTER(REGSIZE_WORD,  2)
-#define BX   REGISTER(REGSIZE_WORD,  3)
-#define SP   REGISTER(REGSIZE_WORD,  4)
-#define BP   REGISTER(REGSIZE_WORD,  5)
-#define SI   REGISTER(REGSIZE_WORD,  6)
-#define DI   REGISTER(REGSIZE_WORD,  7)
-
+extern const Register AX,CX,DX,BX,SP,BP,SI,DI;
 // 32 bit registers
-#define EAX  REGISTER(REGSIZE_DWORD, 0)
-#define ECX  REGISTER(REGSIZE_DWORD, 1)
-#define EDX  REGISTER(REGSIZE_DWORD, 2)
-#define EBX  REGISTER(REGSIZE_DWORD, 3)
-#define ESP  REGISTER(REGSIZE_DWORD, 4)
-#define EBP  REGISTER(REGSIZE_DWORD, 5)
-#define ESI  REGISTER(REGSIZE_DWORD, 6)
-#define EDI  REGISTER(REGSIZE_DWORD, 7)
+extern const Register EAX,ECX,EDX,EBX,ESP,EBP,ESI,EDI;
 
 #ifdef IS64BIT
+// 8 bit registers (only x64)
+extern const Register R8B ,R9B ,R10B,R11B,R12B,R13B,R14B,R15B;
+// 16 bit registers (only x64)
+extern const Register R8W ,R9W ,R10W,R11W,R12W,R13W,R14W,R15W;
+// 32 bit registers (only x64)
+extern const Register R8D ,R9D ,R10D,R11D,R12D,R13D,R14D,R15D;
+// 64 bit registers (only x64)
+extern const Register RAX ,RCX ,RDX ,RBX ,RSP ,RBP ,RSI ,RDI;
+extern const Register R8  ,R9  ,R10 ,R11 ,R12 ,R13 ,R14 ,R15;
 
-#define R8B  REGISTER(REGSIZE_BYTE , 8)
-#define R9B  REGISTER(REGSIZE_BYTE , 9)
-#define R10B REGISTER(REGSIZE_BYTE ,10)
-#define R11B REGISTER(REGSIZE_BYTE ,11)
-#define R12B REGISTER(REGSIZE_BYTE ,12)
-#define R13B REGISTER(REGSIZE_BYTE ,13)
-#define R14B REGISTER(REGSIZE_BYTE ,14)
-#define R15B REGISTER(REGSIZE_BYTE ,15)
-
-#define R8W  REGISTER(REGSIZE_WORD , 8)
-#define R9W  REGISTER(REGSIZE_WORD , 9)
-#define R10W REGISTER(REGSIZE_WORD ,10)
-#define R11W REGISTER(REGSIZE_WORD ,11)
-#define R12W REGISTER(REGSIZE_WORD ,12)
-#define R13W REGISTER(REGSIZE_WORD ,13)
-#define R14W REGISTER(REGSIZE_WORD ,14)
-#define R15W REGISTER(REGSIZE_WORD ,15)
-
-#define R8D  REGISTER(REGSIZE_DWORD, 8)
-#define R9D  REGISTER(REGSIZE_DWORD, 9)
-#define R10D REGISTER(REGSIZE_DWORD,10)
-#define R11D REGISTER(REGSIZE_DWORD,11)
-#define R12D REGISTER(REGSIZE_DWORD,12)
-#define R13D REGISTER(REGSIZE_DWORD,13)
-#define R14D REGISTER(REGSIZE_DWORD,14)
-#define R15D REGISTER(REGSIZE_DWORD,15)
-
-// 64 bit registers
-#define RAX  REGISTER(REGSIZE_QWORD, 0)
-#define RCX  REGISTER(REGSIZE_QWORD, 1)
-#define RDX  REGISTER(REGSIZE_QWORD, 2)
-#define RBX  REGISTER(REGSIZE_QWORD, 3)
-#define RSP  REGISTER(REGSIZE_QWORD, 4)
-#define RBP  REGISTER(REGSIZE_QWORD, 5)
-#define RSI  REGISTER(REGSIZE_QWORD, 6)
-#define RDI  REGISTER(REGSIZE_QWORD, 7)
-#define R8   REGISTER(REGSIZE_QWORD, 8)
-#define R9   REGISTER(REGSIZE_QWORD, 9)
-#define R10  REGISTER(REGSIZE_QWORD,10)
-#define R11  REGISTER(REGSIZE_QWORD,11)
-#define R12  REGISTER(REGSIZE_QWORD,12)
-#define R13  REGISTER(REGSIZE_QWORD,13)
-#define R14  REGISTER(REGSIZE_QWORD,14)
-#define R15  REGISTER(REGSIZE_QWORD,15)
-
-#define XMM0   0
-#define XMM1   1
-#define XMM2   2
-#define XMM3   3
-#define XMM4   4
-#define XMM5   5
-#define XMM6   6
-#define XMM7   7
-#define XMM8   8
-#define XMM9   9
-#define XMM10 10
-#define XMM11 11
-#define XMM12 12
-#define XMM13 13
-#define XMM14 14
-#define XMM15 15
 #endif // IS64BIT
 
-// 16 bit segment registers
-#define ES 0
-#define CS 1
-#define SS 2
-#define DS 3
-#define FS 4
-#define GS 5
+extern const Register ST0 ,ST1 ,ST2  ,ST3  ,ST4  ,ST5  ,ST6  ,ST7 ;
+extern const Register XMM0,XMM1,XMM2 ,XMM3 ,XMM4 ,XMM5 ,XMM6 ,XMM7;
 
-#define _SWAP2(op)     ((((op)&0xff)<< 8) | (((op)>> 8)&0xff))
-#define _SWAP3(op)     ((_SWAP2(op) << 8) | (((op)>>16)&0xff))
-#define _SWAP4(op)     ((_SWAP2(op) <<16) | (_SWAP2((op)>>16)))
-#define _SWAP5(op)     ((_SWAP4(op) << 8) | (((op)>>32)&0xff))
-#define _SWAP6(op)     ((_SWAP4(op) <<16) | (_SWAP2((op)>>32)))
+#ifdef IS64BIT
+extern const Register XMM8,XMM9,XMM10,XMM11,XMM12,XMM13,XMM14,XMM15;
+#endif // IS64BIT
+
+// Segment registers (16-bit)
+extern const Register ES,CS,SS,DS,FS,GS;
+
+#define _SWAP2(op) ((((op)&0xff)<< 8) | (((op)>> 8)&0xff ))
+#define _SWAP3(op) ((_SWAP2(op) << 8) | (((op)>>16)&0xff ))
+#define _SWAP4(op) ((_SWAP2(op) <<16) | (_SWAP2((op)>>16)))
+#define _SWAP5(op) ((_SWAP4(op) << 8) | (((op)>>32)&0xff ))
+#define _SWAP6(op) ((_SWAP4(op) <<16) | (_SWAP2((op)>>32)))
 
 #define I64(n)        ((UINT64)(n))
 
-#ifdef IS32BIT
-#define MAX_REFERENCE_REGISTER 7
-typedef int MovMaxImmType;
-#else
-#define MAX_REFERENCE_REGISTER 15
-typedef INT64 MovMaxImmType;
-#endif
-#define MAX_INSTRUCTIONSIZE 15
+#define MAX_INSTRUCTIONSIZE   15
 
 class IntelOpcode {
 private:
@@ -157,17 +149,17 @@ protected:
     UINT64 m_bytes[2];
     BYTE   m_byte[16];
   };
-  UINT     m_size         : 4; // = [0..15]
-  UINT     m_regMode      : 1;
-  UINT     m_memAddrMode  : 1;
-  UINT     m_regRegMode   : 1;
-  UINT     m_immMode      : 1;
-  UINT     m_opSize       : 2; // = REGSIZE_BYTE, REGSIZE_WORD, REGSIZE_DWORD, REGSIZE_QWORD
-  UINT     m_opSizeDefined: 1; // init to 0
+  UINT     m_size            : 4; // = [0..15]
+  RegType  m_regType         : 4; // = REGTYPE_NONE, _GP, _SEG, _FPU, _XMM
+  RegSize  m_regSize         : 4; // = REGSIZE_BYTE, _WORD, _DWORD, _QWORD, _TBYTE, _OWORD
+  UINT     m_regSizeDefined  : 1; // init to 0
+  UINT     m_hasMemAddrMode  : 1; 
+  UINT     m_hasRegRegMode   : 1;
+  UINT     m_immMode         : 1;
 #ifdef IS64BIT
-  UINT     m_hasRexMode   : 1;
-  UINT     m_hasRexByte   : 1;
-  UINT     m_rexByteIndex : 2;
+  UINT     m_hasRexMode      : 1;
+  UINT     m_hasRexByte      : 1;
+  UINT     m_rexByteIndex    : 2;
 #endif
 
   // Always |= the last byte in array
@@ -181,31 +173,32 @@ protected:
     return *this;
   }
 
-  void throwRegSizeMismatch(BYTE reg);
-  void inline setOpSize(BYTE reg) {
-    if(m_opSizeDefined) {
-      if(REGSIZE(reg) != m_opSize) throwRegSizeMismatch(reg);
+  void throwRegSizeMismatch(const Register &reg);
+  void inline setRegSize(const Register &reg) {
+    if(m_regSizeDefined) {
+      if(reg.getSize() != m_regSize) throwRegSizeMismatch(reg);
     } else {
-      m_opSize = REGSIZE(reg);
-      m_opSizeDefined = 1;
+      m_regSize = reg.getSize();
+      m_regSizeDefined = 1;
     }
   }
+  
 public:
-  inline IntelOpcode(BYTE size, UINT64 bytes, bool regMode, bool memAddrMode, bool regRegMode, bool immMode)
-    : m_size(         size       )
-    , m_regMode(      regMode    )
-    , m_memAddrMode(  memAddrMode)
-    , m_regRegMode(   regRegMode )
-    , m_immMode(      immMode    )
-    , m_opSize(       0          )
-    , m_opSizeDefined(0          )
+  inline IntelOpcode(BYTE size, UINT64 op, RegType regType, bool memAddrMode, bool regRegMode, bool immMode)
+    : m_size(          size       )
+    , m_regType(       regType    )
+    , m_regSize(       RegSize(0) )
+    , m_regSizeDefined(0          )
+    , m_hasMemAddrMode(memAddrMode)
+    , m_hasRegRegMode( regRegMode )
+    , m_immMode(       immMode    )
 #ifdef IS64BIT
-    , m_hasRexMode(  1)
-    , m_hasRexByte(  0)
-    , m_rexByteIndex(0)
+    , m_hasRexMode(    1          )
+    , m_hasRexByte(    0          )
+    , m_rexByteIndex(  0          )
 #endif
   {
-    m_bytes[0] = swapBytes(bytes,size);
+    m_bytes[0] = swapBytes(op,size);
     m_bytes[1] = 0;
   }
   IntelOpcode &insertByte(BYTE index, BYTE b);
@@ -213,20 +206,8 @@ public:
     return insertByte(0,b);
   }
 
-#ifdef IS32BIT
-#define SETREXBITS(bits)
-#define SETREXBITONHIGHREG(  reg,bit)
-#define SETREXBITSONHIGHREG2(reg,addReg)
-#else // IS64BIT
+#ifdef IS64BIT
   IntelOpcode &setRexBits(BYTE bits);
-#define SETREXBITS(bits) { if(bits) setRexBits(bits); }
-#define SETREXBITONHIGHREG(  reg,bit)                       \
-{ if((REGINDEX(reg)) > 7) setRexBits(1<<(bit));             \
-}
-#define SETREXBITSONHIGHREG2(reg,addReg)                    \
-{ const BYTE _rexBits = (((reg)>>3)&1) | (((addReg)>>2)&2); \
-  SETREXBITS(_rexBits)                                      \
-}
 #endif // IS64BIT
 
   inline IntelOpcode &wordOp() {
@@ -235,8 +216,8 @@ public:
 #endif
     return prefix(0x66);
   }
-  IntelOpcode &addReg(BYTE reg);
-
+  IntelOpcode &addGPReg( const Register &reg);
+  IntelOpcode &addXMMReg(const Register &reg);
   // in bytes
   inline UINT size() const {
     return m_size;
@@ -244,13 +225,23 @@ public:
   const BYTE *getBytes() const {
     return m_byte;
   }
+
+  inline RegType getRegType() const {
+    return m_regType;
+  }
+  inline bool hasGPRegMode() const {
+    return getRegType() == REGTYPE_GP;
+  }
+  inline bool hasXMMRegMode() const {
+    return getRegType() == REGTYPE_XMM;
+  }
   // are MEM_ADDR_* macroes allowed for this opcode
   inline bool hasMemAddrMode() const {
-    return m_memAddrMode ? true : false;
+    return m_hasMemAddrMode ? true : false;
   }
   // is REGREG-macro allowed for this opcode
   inline bool hasRegRegMode() const {
-    return m_regRegMode ? true : false;
+    return m_hasRegRegMode ? true : false;
   }
   inline bool isImmMode() const {
     return m_immMode ? true : false;
@@ -269,23 +260,22 @@ public:
     return m_hasRexByte ? true : false;
 #endif
   }
-  inline int getOpSize() const {
-    return m_opSizeDefined ? m_opSize : -1;
+  inline RegSize getOpSize() const {
+    return (RegSize)(m_regSizeDefined ? m_regSize : -1);
   }
-  static const TCHAR *getOpSizeName(int regSize);
+  static const TCHAR *getOpSizeName(RegSize regSize);
          const TCHAR *getOpSizeName() const;
-  static String       getRegisterName(BYTE reg);
 
-  static inline bool isByte(int v) {
+  static inline bool isByte( int   v) {
     return v == (char)v;
   }
-  static inline bool isWord(int v) {
+  static inline bool isWord( int   v) {
     return v == (short)v;
   }
-  static inline bool isByte(INT64 v) {
+  static inline bool isByte( INT64 v) {
     return v == (char)v;
   }
-  static inline bool isWord(INT64 v) {
+  static inline bool isWord( INT64 v) {
     return v == (short)v;
   }
   static inline bool isDword(INT64 v) {
@@ -308,101 +298,51 @@ private:
   inline IntelInstruction &memAddrEsp0() {
     return or(0x04).add(0x24);
   }
-
   inline IntelInstruction &memAddrEsp1(char offset) {
     return or(0x44).add(0x24).add(offset);
   }
-
   inline IntelInstruction &memAddrEsp4(int offset) {
     return or(0x84).add(0x24).add(offset, 4);
   }
   IntelInstruction &memAddrEsp(int offset);
-
-  // ptr[reg]. (reg&7) != ESP,EBP
-  inline IntelInstruction &memAddrPtr0(BYTE reg) {
-    assert(m_memAddrMode && (REGSIZE(reg) == ADDRESSING_REGSIZE) && (REGINDEX(reg) <= MAX_REFERENCE_REGISTER));
-    assert(((reg&7)!=4) && ((reg&7)!=5));
-    SETREXBITONHIGHREG(reg,0);
-    return or(reg&7);
-  }
-
-  // ptr[reg+offset], (reg&7) != ESP, offset=[-128;127]
-  inline IntelInstruction &memAddrPtr1(BYTE reg, char offset) {
-    assert(m_memAddrMode && (REGSIZE(reg) == ADDRESSING_REGSIZE) && (REGINDEX(reg) <= MAX_REFERENCE_REGISTER));
-    assert((reg&7)!=4);
-    SETREXBITONHIGHREG(reg,0);
-    return or(0x40 | (reg&7)).add(offset);
-  }
-
-  // ptr[reg+offset], (reg&7) != ESP, offset=[INT_MIN;INT_MAX]
-  inline IntelInstruction &memAddrPtr4(BYTE reg, int offset) {
-    assert(m_memAddrMode && (REGSIZE(reg) == ADDRESSING_REGSIZE) && (REGINDEX(reg) <= MAX_REFERENCE_REGISTER));
-    assert((reg&7)!=4);
-    SETREXBITONHIGHREG(reg,0);
-    return or(0x80 | (reg&7)).add(offset, 4);
-  }
-
-  // ptr[reg+(addReg<<p2)], (reg&7) != EBP, (addReg&7) != ESP, p2<=3
-  inline IntelInstruction &memAddrMp2AddReg0(BYTE reg, BYTE p2, BYTE addReg) {
-    assert(m_memAddrMode && (REGSIZE(reg   ) == ADDRESSING_REGSIZE) && (REGINDEX(reg   ) <= MAX_REFERENCE_REGISTER));
-    assert(                 (REGSIZE(addReg) == ADDRESSING_REGSIZE) && (REGINDEX(addReg) <= MAX_REFERENCE_REGISTER));
-    assert(((reg&7)!=5) && ((addReg&7)!=4) && (p2<=3));
-    SETREXBITSONHIGHREG2(reg,addReg);
-    return or(0x04).add((p2 << 6) | ((addReg&7) << 3) | (reg&7));
-  }
-
-  // ptr[reg+(addReg<<p2)+offset], (addReg&7) != ESP, p2<=3, offset=[-128;127]
-  inline IntelInstruction &memAddrMp2AddReg1(BYTE reg, BYTE p2, BYTE addReg, char offset) {
-    assert(m_memAddrMode && (REGSIZE(reg   ) == ADDRESSING_REGSIZE) && (REGINDEX(reg   ) <= MAX_REFERENCE_REGISTER));
-    assert(                 (REGSIZE(addReg) == ADDRESSING_REGSIZE) && (REGINDEX(addReg) <= MAX_REFERENCE_REGISTER));
-    assert(((addReg&7)!=4) && (p2<=3));
-    SETREXBITSONHIGHREG2(reg,addReg);
-    return or(0x44).add((p2 << 6) | ((addReg&7) << 3) | (reg&7)).add(offset);
-  }
-
-  // ptr[reg+(addReg<<p2)+offset], (addReg&7) != ESP, p2<=3, offset=[INT_MIN;INT_MAX]
-  inline IntelInstruction &memAddrMp2AddReg4(BYTE reg, BYTE p2, BYTE addReg, int offset) {
-    assert(m_memAddrMode && (REGSIZE(reg   ) == ADDRESSING_REGSIZE) && (REGINDEX(reg   ) <= MAX_REFERENCE_REGISTER));
-    assert(                 (REGSIZE(addReg) == ADDRESSING_REGSIZE) && (REGINDEX(addReg) <= MAX_REFERENCE_REGISTER));
-    assert(((addReg&7)!=4) && (p2<=3));
-    SETREXBITSONHIGHREG2(reg,addReg);
-    return or(0x84).add((p2 << 6) | ((addReg&7) << 3) | (reg&7)).add(offset, 4);
-  }
+  // ptr[reg]. (reg&7) != {4,5}
+  IntelInstruction &memAddrPtr0(const Register &reg);
+  // ptr[reg+offset], (reg&7) != 4, offset=[-128;127]
+  IntelInstruction &memAddrPtr1(const Register &reg, char offset);
+  // ptr[reg+offset], (reg&7) != 4, offset=[INT_MIN;INT_MAX]
+  IntelInstruction &memAddrPtr4(const Register &reg, int offset);
+  // ptr[reg+(addReg<<p2)], (reg&7) != 5, (addReg&7) != 4, p2<=3
+  IntelInstruction &memAddrMp2AddReg0(const Register &reg, BYTE p2, const Register &addReg);
+  // ptr[reg+(addReg<<p2)+offset], (addReg&7) != 4, p2<=3, offset=[-128;127]
+  IntelInstruction &memAddrMp2AddReg1(const Register &reg, BYTE p2, const Register &addReg, char offset);
+  // ptr[reg+(addReg<<p2)+offset], (addReg&7) != 4, p2<=3, offset=[INT_MIN;INT_MAX]
+  IntelInstruction &memAddrMp2AddReg4(const Register &reg, BYTE p2, const Register &addReg, int offset);
+  // Use with Imm-addressing. reg = { ES,CS,SS,DS,FS,GS }
+  IntelInstruction &prefixSegReg(const Register &reg);
 
 public:
-  inline IntelInstruction(BYTE size, UINT64 bytes, bool regMode, bool immMode) : IntelOpcode(size, bytes, regMode, false, false, immMode) {
+  inline IntelInstruction(BYTE size, UINT64 op, RegType regType, bool immMode) 
+    : IntelOpcode(size, op, regType, false, false, immMode) {
   }
   inline IntelInstruction(const IntelOpcode &op) : IntelOpcode(op) {
   }
 
-  IntelInstruction &setReg(BYTE reg);
+  IntelInstruction &setGPReg(const Register &reg);
 
-
-   // ptr[(reg<<p2)+offset], (reg&7) != ESP, p2<=3, offset=[INT_MIN;INT_MAX]
-  inline IntelInstruction &memAddrMp2Ptr4(BYTE reg, BYTE p2, int offset) {
-    assert(m_memAddrMode && (REGSIZE(reg) == ADDRESSING_REGSIZE) && (REGINDEX(reg) <= MAX_REFERENCE_REGISTER));
-    assert(((reg&7)!=4) && (p2<=3));
-    SETREXBITONHIGHREG(reg,1);
-    return or(0x04).add(0x05 | (p2 << 6) | ((reg&7) << 3)).add(offset, 4);
-  }
-
-  IntelInstruction &memAddrPtr(      BYTE reg, int offset);
-  IntelInstruction &memAddrMp2AddReg(BYTE reg, BYTE addReg, BYTE p2, int offset);
+   // ptr[(reg<<p2)+offset], (reg&7) != 4, p2<=3, offset=[INT_MIN;INT_MAX]
+  IntelInstruction &memAddrMp2Ptr4(  const Register &reg, BYTE p2, int offset);
+  IntelInstruction &memAddrPtr(      const Register &reg, int offset);
+  IntelInstruction &memAddrMp2AddReg(const Register &reg, const Register &addReg, BYTE p2, int offset);
 
   inline IntelInstruction &memAddrImmDword(int addr) {
-    assert(m_memAddrMode);
+    assert(hasMemAddrMode());
     return or(0x05).add(addr, 4);
   }
 
-  inline IntelInstruction &regReg(BYTE reg) {
-    assert(m_regRegMode);
-    assert(REGINDEX(reg) <= MAX_REFERENCE_REGISTER);
-    setOpSize(reg);
-    SETREXBITONHIGHREG(reg,0);
-    return or(0xc0 | (reg&7));
-  }
-  IntelInstruction &setRegImm(   BYTE reg, int   immv);
-  IntelInstruction &setMovRegImm(BYTE reg, MovMaxImmType immv);
+  IntelInstruction &regReg(        const Register &reg);
+  IntelInstruction &setGPRegImm(   const Register &reg, int           immv);
+  IntelInstruction &setMovGPRegImm(const Register &reg, MovMaxImmType immv);
+  IntelInstruction &addXMMRegs(    const Register &reg1,const Register &reg2);
 };
 
 #define WORDOP(  op32) ((op32).wordOp())
@@ -420,24 +360,30 @@ public:
 // addReg!=ESP          offset=[INT_MIN;INT_MAX]                          Ex:fild word ptr[esp + eax + 0x12345678]
 #define MEM_ADDR_PTRREG(    op,reg,addReg   ,offset) MEM_ADDR_PTRMP2REG(op,reg,addReg,0,offset)
 
-// Instructions defined with these macroes, cannot be combined with the various addressing-nmodes
-#define B1INS(op)        IntelInstruction(1, op,false,false)
-#define B1INSREG(op,reg) IntelInstruction(1, op,true ,false).setReg(reg)
-#define B1INSIMM(op)     IntelInstruction(1, op,true ,true )
-#define B2INS(op)        IntelInstruction(2, op,false,false)
-#define B3INS(op)        IntelInstruction(3, op,false,false)
-#define B4INS(op)        IntelInstruction(4, op,false,false)
-#define INS_STDIMM(opa,opr,reg,immv) B1INSIMM(REGINDEX(reg)?opr:opa).setRegImm( reg,immv)
-#define INS_MOVIMM(op     ,reg,immv) B1INSIMM(                  op ).setMovRegImm(reg,(MovMaxImmType)(immv))
-
 // Instruction defined with these macroes, must be combined with macroes MEM_ADDR_* (and evt. REGREG)
-#define B1OP(op)         IntelOpcode(1,op,false, true , true, false)
-#define B1OPREG(op,reg)  IntelOpcode(1,op,true , true , true, false).addReg(reg)
-#define B2OP(op)         IntelOpcode(2,op,false, true , true, false)
-#define B3OP(op)         IntelOpcode(3,op,false, true , true, false)
-#define B4OP(op)         IntelOpcode(4,op,false, true , true, false)
-#define B2OPNOREGREG(op) IntelOpcode(2,op,false, true ,false, false)
-#define B4OPNOREGREG(op) IntelOpcode(4,op,false, true ,false, false)
+//                                 IntelOpcode(     size,op,regType     ,memAddrMode, regRegMode,immMode)
+#define B1OP(        op          ) IntelOpcode(     1   ,op,REGTYPE_NONE,true       , true      ,false)
+#define B1OPREG(     op,reg      ) IntelOpcode(     1   ,op,REGTYPE_GP  ,true       , true      ,false).addGPReg(reg)
+#define B2OP(        op          ) IntelOpcode(     2   ,op,REGTYPE_NONE,true       , true      ,false)
+#define B3OP(        op          ) IntelOpcode(     3   ,op,REGTYPE_NONE,true       , true      ,false)
+#define B4OP(        op          ) IntelOpcode(     4   ,op,REGTYPE_NONE,true       , true      ,false)
+#define B2OPNOREGREG(op          ) IntelOpcode(     2   ,op,REGTYPE_NONE,true       ,false      ,false)
+#define B4OPNOREGREG(op          ) IntelOpcode(     4   ,op,REGTYPE_NONE,true       ,false      ,false)
+
+#define B2OPXMM(     op,reg      ) IntelOpcode(     2   ,op,REGTYPE_XMM ,true       , true      ,false).addXMMReg(reg)
+#define B3OP1XMM(    op,reg      ) IntelOpcode(     3   ,op,REGTYPE_XMM ,true       ,false      ,false).addXMMReg(reg)
+// Instructions defined with these macroes, cannot be combined with the various addressing-nmodes
+//                                 IntelInstruction(size,op,regType     ,immMode) - memAddrMode=regRegMode=false
+
+#define B1INS(       op          ) IntelInstruction(1   ,op,REGTYPE_NONE,false)
+#define B1INSREG(    op,reg      ) IntelInstruction(1   ,op,REGTYPE_GP  ,false).setReg(reg)
+#define B1INSIMM(    op          ) IntelInstruction(1   ,op,REGTYPE_GP  ,true )
+#define B2INS(       op          ) IntelInstruction(2   ,op,REGTYPE_NONE,false)
+#define B3INS(       op          ) IntelInstruction(3   ,op,REGTYPE_NONE,false)
+#define B4INS(       op          ) IntelInstruction(4   ,op,REGTYPE_NONE,false)
+
+#define INS_STDIMM(  opa,opr,reg,immv) B1INSIMM(reg.getIndex()?opr:opa).setGPRegImm(   reg,immv)
+#define INS_MOVGPIMM(op     ,reg,immv) B1INSIMM(                    op ).setMovGPRegImm(reg,(MovMaxImmType)(immv))
 
 #define FPUINS(op)       B2INS(       op)
 #define FPUINSA(op)      B2OPNOREGREG(op)
@@ -445,13 +391,13 @@ public:
 #ifdef IS64BIT
 // 0 arguments instructions (push,pop...)
 // For r8-15, add rexbyte, and set bit 0
-#define REX0(op32,r64) (((REGINDEX(r64))<=7)?op32(r64):op32((r64)&7).setRexBits(1))
+#define REX0(op32,r64) (((r64.getIndex())<=7)?op32(r64):op32((r64.getIndex()&7).setRexBits(1))
 // Use for IMM operations, and other instructions where only 1 general purpose register is used.
 // Set rex bit 3 (and bit 0 for r8-15)
-#define REX1(op32,r64) (op32((r64)&7).setRexBits(8|(((r64)>>3)&1)))
+#define REX1(op32,r64) (op32(r64.getIndex()&7).setRexBits(8|((r64.getIndex()>>3)&1)))
 // Use for all instructions, where 2 general purpose registers are involved.
 // Set rex bit 3 (and bit 2 for r8-15)
-#define REX2(op32,r64) (op32((r64)&7).setRexBits(8|(((r64)>>1)&4)))
+#define REX2(op32,r64) (op32(r64.getIndex()&7).setRexBits(8|((r64.getIndex()>>1)&4)))
 // Set rex bit 3
 #define REX3(op32)     (op32).setRexBits(8)
 #endif // IS64BIT
@@ -609,9 +555,9 @@ public:
 #define MOV_TO_SEGREG_WORD(  seg)              B2OP(0x8E00    | ((seg)<<3))               // Build src with MEM_ADDR-*,REGREG-macroes
 #define POP_DWORD                              B2OP(0x8F00)                               // Build dst with MEM_ADDR-*,REGREG-macroes
 
-#define MOV_MEM_REG(         reg)              B1OPREG(   0x88,reg)                       // Build dst with MEM_ADDR-*,REGREG-macroes
-#define MOV_REG_MEM(         reg)              B1OPREG(   0x8A,reg)                       // Build src with MEM_ADDR-*,REGREG-macroes
-#define MOV_REG_IMM(         reg,immv)         INS_MOVIMM(0xB0,reg,immv)
+#define MOV_MEM_REG(         reg)              B1OPREG(     0x88,reg)                     // Build dst with MEM_ADDR-*,REGREG-macroes
+#define MOV_REG_MEM(         reg)              B1OPREG(     0x8A,reg)                     // Build src with MEM_ADDR-*,REGREG-macroes
+#define MOV_REG_IMM(         reg,immv)         INS_MOVGPIMM(0xB0,reg,immv)
 
 #define MOV_TO_AL_IMM_ADDR_BYTE                B1INS(  0xA0  )                            // 4/8 byte address. move byte  pointed to by 2. operand to AL
 #define MOV_TO_EAX_IMM_ADDR_DWORD              B1INS(  0xA1  )                            // 4/8 byte address. move dword pointed to by 2. operand to EAX
@@ -867,8 +813,8 @@ public:
 
 #ifdef IS32BIT
 
-#define INC_R32(r32)                           B1INS(0x40    | REGINDEX(r32))
-#define DEC_R32(r32)                           B1INS(0x48    | REGINDEX(r32))
+#define INC_R32(r32)                           B1INS(0x40    | r32.getIndex())
+#define DEC_R32(r32)                           B1INS(0x48    | r32.getIndex())
 
 #else // IS64BIT
 
@@ -968,24 +914,25 @@ public:
 #define LODS_QWORD                             REX3(  LODS_DWORD            )
 #define SCAS_QWORD                             REX3(  SCAS_DWORD            )
 
-#define MOVSD_XMM_MMWORD(xmm)                  B4OPNOREGREG(0xF20F1000 | ((xmm) << 3))       // Build src with MEM_ADDR-*
-#define MOVSD_MMWORD_XMM(xmm)                  B4OPNOREGREG(0xF20F1100 | ((xmm) << 3))       // Build dst with MEM_ADDR-*
+#endif // IS64BIT
 
-#define MOVEAPS(xmmDst, xmmSrc)                B3INS(0x0F28C0  | ((xmmDst)<<3) | (xmmSrc))
+#define MOVSD_XMM_MMWORD(xmm)                  B3OP1XMM(0xF20F10,xmm)       // Build src with MEM_ADDR-*
+#define MOVSD_MMWORD_XMM(xmm)                  B3OP1XMM(0xF20F11,xmm)       // Build dst with MEM_ADDR-*
+
+#define MOVAPS_REG_MEM(   xmm)                 B2OPXMM( 0x0F28,xmm)         // Build op2 with MEM_ADDR-*,REGREG-macroes
+#define MOVAPS_MEM_REG(   xmm)                 B2OPXMM( 0x0F29,xmm)         // Build op2 with MEM_ADDR-*,REGREG-macroes
 
 #define ADDSD(xmm)                             B4OP(0xF20F5800 | ((xmm) << 3))               // Build src with MEM_ADDR-*,REGREG-macroes
 #define MULSD(xmm)                             B4OP(0xF20F5900 | ((xmm) << 3))
 #define SUBSD(xmm)                             B4OP(0xF20F5C00 | ((xmm) << 3))
 #define DIVSD(xmm)                             B4OP(0xF20F5E00 | ((xmm) << 3))
 
-#endif // IS64BIT
-
 // PUSH/POP _R8 not available
 
 #ifdef IS32BIT
 
-#define PUSH_R32(r32)                          B1INS(0x50       | REGINDEX(r32))          // No operand
-#define POP_R32( r32)                          B1INS(0x58       | REGINDEX(r32))          // No operand
+#define PUSH_R32(r32)                          B1INS(0x50       | r32.getIndex())         // No operand
+#define POP_R32( r32)                          B1INS(0x58       | r32.getIndex())         // No operand
 
 #define PUSH_R16(r16)                          WORDOP(PUSH_R32(r16))                      // No operand
 #define POP_R16( r16)                          WORDOP(POP_R32( r16))                      // No operand
@@ -997,8 +944,8 @@ public:
 
 #else // IS64BIT
 
-#define _PUSH_R32(r32)                         B1INS(0x50       | REGINDEX(r32))          // No operand
-#define _POP_R32( r32)                         B1INS(0x58       | REGINDEX(r32))          // No operand
+#define _PUSH_R32(r32)                         B1INS(0x50       | r32.getIndex())         // No operand
+#define _POP_R32( r32)                         B1INS(0x58       | r32.getIndex())         // No operand
 
 #define PUSH_R64(r64)                          REX0(_PUSH_R32, r64)                       // No operand
 #define POP_R64( r64)                          REX0(_POP_R32 , r64)                       // No operand

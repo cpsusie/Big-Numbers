@@ -7,7 +7,7 @@
 
 #define TEST_ALLREGISTERS
 
-static const BYTE r8List[] = {
+static const Register r8List[] = {
     AL
 #ifndef TEST_ALLREGISTERS
    ,AH  ,CH
@@ -22,7 +22,7 @@ static const BYTE r8List[] = {
 #endif // IS64BIT
   };
 
-  const BYTE r16List[] = {
+  const Register r16List[] = {
     AX
 #ifndef TEST_ALLREGISTERS
    ,SP   ,BP
@@ -38,7 +38,7 @@ static const BYTE r8List[] = {
 #endif // IS64BIT
   };
 
-  const BYTE r32List[] = {
+  const Register r32List[] = {
     EAX
 #ifndef TEST_ALLREGISTERS
    ,ESP  ,EBP
@@ -55,7 +55,7 @@ static const BYTE r8List[] = {
   };
 
 #ifdef IS64BIT
-  const BYTE r64List[] = {
+  const Register r64List[] = {
     RAX
 #ifndef TEST_ALLREGISTERS
    ,RSP  ,RBP
@@ -69,7 +69,7 @@ static const BYTE r8List[] = {
   };
 #endif // IS64BIT
 
-  const BYTE *regListArray[] = {
+  const Register *regListArray[] = {
     r8List, r16List, r32List
 #ifdef IS64BIT
    ,r64List
@@ -204,8 +204,9 @@ static INT64 staticInt64 = 0xf0debc9a78563412;
 //#define TEST_MOV_IMM
 //#define TEST_REP_SCAS
 //#define TEST_MUL
-#define TEST_REG_IMM
+//#define TEST_REG_IMM
 //#define TEST_MEM_ADDR
+#define TEST_XMM
 
 class TestMachineCode : public MachineCode {
 public:
@@ -246,18 +247,19 @@ TestMachineCode::TestMachineCode() {
 #endif // TEST_INCDEC_PUSHPOP
 
 #ifdef TEST_MOV_IMM
-
-  emit(MOV_R8_IMM_BYTE(  BL ));      addBytes(addr,1);
-  emit(MOV_R8_IMM_BYTE(  BH ));      addBytes((char*)addr+1,1);
-  emit(MOV_R16_IMM_WORD( DI ));      addBytes(addr,2);
-  emit(MOV_R32_IMM_DWORD(EDI));      addBytes(addr,4);
+  emit(MOV_REG_IMM( BL,1));
+  emit(MOV_REG_IMM( BH,2));
+  emit(MOV_REG_IMM( DI,0x1234 ));
+  emit(MOV_REG_IMM(EDI,0x12));
+  emit(MOV_REG_IMM(EDI,0x1234));
+  emit(MOV_REG_IMM(EDI,0x12345678));
 #ifdef IS64BIT
-  emit(MOV_R8_IMM_BYTE(  R8B));      addBytes(addr,1);
-  emit(MOV_R8_IMM_BYTE(  R9B));      addBytes((char*)addr+1,1);
-  emit(MOV_R16_IMM_WORD( R8W));      addBytes(addr,2);
-  emit(MOV_R32_IMM_DWORD(R8D));      addBytes(addr,4);
-  emit(MOV_R64_IMM_QWORD(RDI));      addBytes(addr,8);
-  emit(MOV_R64_IMM_QWORD(R8 ));      addBytes(addr,8);
+  emit(MOV_REG_IMM(R8B,1));
+  emit(MOV_REG_IMM(R9B,1));
+  emit(MOV_REG_IMM(R8W,0x1234));
+  emit(MOV_REG_IMM(R8D,0x12345678));
+  emit(MOV_REG_IMM(RDI,0x1234567890abcdef));
+  emit(MOV_REG_IMM(R8 ,0x1234567890abcdef));
 #endif
 
   emit(MOV_TO_AL_IMM_ADDR_BYTE    ); addBytes(addr,sizeof(addr));
@@ -347,7 +349,7 @@ TestMachineCode::TestMachineCode() {
 #endif // IS64BIT
   emit(NOOP);
 
-  emit(MOV_R32_IMM_DWORD(EDI)); addBytes(addr,4);
+  emit(MOV_REG_IMM(EDI,staticInt32));
   emit(MEM_ADDR_PTR(MUL_DWORD,ADDR_REGISTER,0));
 
   emit(NOOP);
@@ -520,7 +522,7 @@ TestMachineCode::TestMachineCode() {
   for(int i = 0; i < ARRAYSIZE(opcodes); i++) {
     const IntelOpcode &op = opcodes[i];
     if(op.hasRegRegMode()) {
-      const BYTE *regList = regListArray[op.getOpSize()];
+      const Register *regList = regListArray[op.getOpSize()];
       const int maxReg = REF_REGLISTSIZE;
       for(int r = 0; r < maxReg; r++) {
         const BYTE reg = regList[r];
@@ -580,6 +582,23 @@ TestMachineCode::TestMachineCode() {
   emit(MOV_FROM_AX_IMM_ADDR_WORD   ); addBytes(&addr,sizeof(addr));
   emit(MOV_FROM_EAX_IMM_ADDR_DWORD ); addBytes(&addr,sizeof(addr));
 */
+#ifdef TEST_XMM
+  int opsize = sizeof(IntelOpcode);
+
+  emit(REGREG(MOVAPS_REG_MEM(XMM0), XMM7 ));
+#ifdef IS64BIT
+  emit(REGREG(MOVAPS_REG_MEM(XMM8), XMM7 ));
+  emit(REGREG(MOVAPS_REG_MEM(XMM0), XMM8 ));
+  emit(REGREG(MOVAPS_REG_MEM(XMM8), XMM15));
+#endif // IS64BIT
+  emit(MEM_ADDR_PTR(MOVAPS_REG_MEM(XMM0 ), EAX,0));
+#ifdef IS64BIT
+  emit(MEM_ADDR_PTR(MOVAPS_REG_MEM(XMM0 ), RAX,0));
+  emit(MEM_ADDR_PTR(MOVAPS_REG_MEM(XMM0 ), R8 ,0));
+  emit(MEM_ADDR_PTR(MOVAPS_REG_MEM(XMM15), RAX,0));
+  emit(MEM_ADDR_PTR(MOVAPS_REG_MEM(XMM15), R8 ,0));
+#endif // IS64BIT
+#endif // TEST_XMM
 }
 
 #endif // TEST_MACHINECODE
@@ -599,10 +618,295 @@ extern "C" void assemblerCode();
 void assemblerCode() {
   __asm {
     jmp         End
-    add         byte ptr es:[78563412h],al
-    add         byte ptr cs:[78563412h],al
-    add         byte ptr ss:[78563412h],al
-    add         byte ptr ds:[78563412h],al
+
+    mov al                      , byte  ptr es:[12345678h]
+    mov eax                     , dword ptr es:[12345678h]
+    mov byte  ptr es:[12345678h], al
+    mov dword ptr es:[12345678h], eax
+    mov ax                      , word  ptr es:[12345678h]
+    mov word  ptr es:[12345678h], ax
+
+    mov byte  ptr es:[12345678h], cl
+    mov byte  ptr es:[12345678h], dl
+    mov byte  ptr es:[12345678h], bl
+    mov byte  ptr es:[12345678h], ah
+    mov byte  ptr es:[12345678h], ch
+
+    mov dword ptr es:[12345678h], ecx
+    mov dword ptr es:[12345678h], edx
+    mov dword ptr es:[12345678h], ebx
+    mov dword ptr es:[12345678h], esp
+    mov dword ptr es:[12345678h], ebp
+
+    mov cl                      , byte  ptr es:[12345678h]
+    mov dl                      , byte  ptr es:[12345678h]
+    mov bl                      , byte  ptr es:[12345678h]
+    mov ah                      , byte  ptr es:[12345678h]
+    mov ch                      , byte  ptr es:[12345678h]
+
+    mov ecx                     , dword ptr es:[12345678h]
+    mov edx                     , dword ptr es:[12345678h]
+    mov ebx                     , dword ptr es:[12345678h]
+    mov esp                     , dword ptr es:[12345678h]
+    mov ebp                     , dword ptr es:[12345678h]
+
+    mov word  ptr es:[12345678h], cx
+    mov word  ptr es:[12345678h], dx
+    mov word  ptr es:[12345678h], bx
+    mov word  ptr es:[12345678h], sp
+    mov word  ptr es:[12345678h], bp
+
+    mov cx                      , word  ptr es:[12345678h]
+    mov dx                      , word  ptr es:[12345678h]
+    mov bx                      , word  ptr es:[12345678h]
+    mov sp                      , word  ptr es:[12345678h]
+    mov bp                      , word  ptr es:[12345678h]
+
+
+
+
+    mov al                      , byte  ptr cs:[12345678h]
+    mov eax                     , dword ptr cs:[12345678h]
+    mov byte  ptr cs:[12345678h], al
+    mov dword ptr cs:[12345678h], eax
+    mov ax                      , word  ptr cs:[12345678h]
+    mov word  ptr cs:[12345678h], ax
+
+    mov byte  ptr cs:[12345678h], cl
+    mov byte  ptr cs:[12345678h], dl
+    mov byte  ptr cs:[12345678h], bl
+    mov byte  ptr cs:[12345678h], ah
+    mov byte  ptr cs:[12345678h], ch
+
+    mov dword ptr cs:[12345678h], ecx
+    mov dword ptr cs:[12345678h], edx
+    mov dword ptr cs:[12345678h], ebx
+    mov dword ptr cs:[12345678h], esp
+    mov dword ptr cs:[12345678h], ebp
+
+    mov cl                      , byte  ptr cs:[12345678h]
+    mov dl                      , byte  ptr cs:[12345678h]
+    mov bl                      , byte  ptr cs:[12345678h]
+    mov ah                      , byte  ptr cs:[12345678h]
+    mov ch                      , byte  ptr cs:[12345678h]
+
+    mov ecx                     , dword ptr cs:[12345678h]
+    mov edx                     , dword ptr cs:[12345678h]
+    mov ebx                     , dword ptr cs:[12345678h]
+    mov esp                     , dword ptr cs:[12345678h]
+    mov ebp                     , dword ptr cs:[12345678h]
+
+    mov word  ptr cs:[12345678h], cx
+    mov word  ptr cs:[12345678h], dx
+    mov word  ptr cs:[12345678h], bx
+    mov word  ptr cs:[12345678h], sp
+    mov word  ptr cs:[12345678h], bp
+
+    mov cx                      , word  ptr cs:[12345678h]
+    mov dx                      , word  ptr cs:[12345678h]
+    mov bx                      , word  ptr cs:[12345678h]
+    mov sp                      , word  ptr cs:[12345678h]
+    mov bp                      , word  ptr cs:[12345678h]
+
+
+
+
+    mov al                      , byte  ptr ss:[12345678h]
+    mov eax                     , dword ptr ss:[12345678h]
+    mov byte  ptr ss:[12345678h], al
+    mov dword ptr ss:[12345678h], eax
+    mov ax                      , word  ptr ss:[12345678h]
+    mov word  ptr ss:[12345678h], ax
+
+    mov byte  ptr ss:[12345678h], cl
+    mov byte  ptr ss:[12345678h], dl
+    mov byte  ptr ss:[12345678h], bl
+    mov byte  ptr ss:[12345678h], ah
+    mov byte  ptr ss:[12345678h], ch
+
+    mov dword ptr ss:[12345678h], ecx
+    mov dword ptr ss:[12345678h], edx
+    mov dword ptr ss:[12345678h], ebx
+    mov dword ptr ss:[12345678h], esp
+    mov dword ptr ss:[12345678h], ebp
+
+    mov cl                      , byte  ptr ss:[12345678h]
+    mov dl                      , byte  ptr ss:[12345678h]
+    mov bl                      , byte  ptr ss:[12345678h]
+    mov ah                      , byte  ptr ss:[12345678h]
+    mov ch                      , byte  ptr ss:[12345678h]
+
+    mov ecx                     , dword ptr ss:[12345678h]
+    mov edx                     , dword ptr ss:[12345678h]
+    mov ebx                     , dword ptr ss:[12345678h]
+    mov esp                     , dword ptr ss:[12345678h]
+    mov ebp                     , dword ptr ss:[12345678h]
+
+    mov word  ptr ss:[12345678h], cx
+    mov word  ptr ss:[12345678h], dx
+    mov word  ptr ss:[12345678h], bx
+    mov word  ptr ss:[12345678h], sp
+    mov word  ptr ss:[12345678h], bp
+
+    mov cx                      , word  ptr ss:[12345678h]
+    mov dx                      , word  ptr ss:[12345678h]
+    mov bx                      , word  ptr ss:[12345678h]
+    mov sp                      , word  ptr ss:[12345678h]
+    mov bp                      , word  ptr ss:[12345678h]
+
+
+
+
+    mov al                      , byte  ptr ds:[12345678h]
+    mov eax                     , dword ptr ds:[12345678h]
+    mov byte  ptr ds:[12345678h], al
+    mov dword ptr ds:[12345678h], eax
+    mov ax                      , word  ptr ds:[12345678h]
+    mov word  ptr ds:[12345678h], ax
+
+    mov byte  ptr ds:[12345678h], cl
+    mov byte  ptr ds:[12345678h], dl
+    mov byte  ptr ds:[12345678h], bl
+    mov byte  ptr ds:[12345678h], ah
+    mov byte  ptr ds:[12345678h], ch
+
+    mov dword ptr ds:[12345678h], ecx
+    mov dword ptr ds:[12345678h], edx
+    mov dword ptr ds:[12345678h], ebx
+    mov dword ptr ds:[12345678h], esp
+    mov dword ptr ds:[12345678h], ebp
+
+    mov cl                      , byte  ptr ds:[12345678h]
+    mov dl                      , byte  ptr ds:[12345678h]
+    mov bl                      , byte  ptr ds:[12345678h]
+    mov ah                      , byte  ptr ds:[12345678h]
+    mov ch                      , byte  ptr ds:[12345678h]
+
+    mov ecx                     , dword ptr ds:[12345678h]
+    mov edx                     , dword ptr ds:[12345678h]
+    mov ebx                     , dword ptr ds:[12345678h]
+    mov esp                     , dword ptr ds:[12345678h]
+    mov ebp                     , dword ptr ds:[12345678h]
+
+    mov word  ptr ds:[12345678h], cx
+    mov word  ptr ds:[12345678h], dx
+    mov word  ptr ds:[12345678h], bx
+    mov word  ptr ds:[12345678h], sp
+    mov word  ptr ds:[12345678h], bp
+
+    mov cx                      , word  ptr ds:[12345678h]
+    mov dx                      , word  ptr ds:[12345678h]
+    mov bx                      , word  ptr ds:[12345678h]
+    mov sp                      , word  ptr ds:[12345678h]
+    mov bp                      , word  ptr ds:[12345678h]
+
+
+
+
+    mov al                      , byte  ptr fs:[12345678h]
+    mov eax                     , dword ptr fs:[12345678h]
+    mov byte  ptr fs:[12345678h], al
+    mov dword ptr fs:[12345678h], eax
+    mov ax                      , word  ptr fs:[12345678h]
+    mov word  ptr fs:[12345678h], ax
+
+    mov byte  ptr fs:[12345678h], cl
+    mov byte  ptr fs:[12345678h], dl
+    mov byte  ptr fs:[12345678h], bl
+    mov byte  ptr fs:[12345678h], ah
+    mov byte  ptr fs:[12345678h], ch
+
+    mov dword ptr fs:[12345678h], ecx
+    mov dword ptr fs:[12345678h], edx
+    mov dword ptr fs:[12345678h], ebx
+    mov dword ptr fs:[12345678h], esp
+    mov dword ptr fs:[12345678h], ebp
+
+    mov cl                      , byte  ptr fs:[12345678h]
+    mov dl                      , byte  ptr fs:[12345678h]
+    mov bl                      , byte  ptr fs:[12345678h]
+    mov ah                      , byte  ptr fs:[12345678h]
+    mov ch                      , byte  ptr fs:[12345678h]
+
+    mov ecx                     , dword ptr fs:[12345678h]
+    mov edx                     , dword ptr fs:[12345678h]
+    mov ebx                     , dword ptr fs:[12345678h]
+    mov esp                     , dword ptr fs:[12345678h]
+    mov ebp                     , dword ptr fs:[12345678h]
+
+    mov word  ptr fs:[12345678h], cx
+    mov word  ptr fs:[12345678h], dx
+    mov word  ptr fs:[12345678h], bx
+    mov word  ptr fs:[12345678h], sp
+    mov word  ptr fs:[12345678h], bp
+
+    mov cx                      , word  ptr fs:[12345678h]
+    mov dx                      , word  ptr fs:[12345678h]
+    mov bx                      , word  ptr fs:[12345678h]
+    mov sp                      , word  ptr fs:[12345678h]
+    mov bp                      , word  ptr fs:[12345678h]
+
+
+
+    mov al                      , byte  ptr gs:[12345678h]
+    mov eax                     , dword ptr gs:[12345678h]
+    mov byte  ptr gs:[12345678h], al
+    mov dword ptr gs:[12345678h], eax
+    mov ax                      , word  ptr gs:[12345678h]
+    mov word  ptr gs:[12345678h], ax
+
+    mov byte  ptr gs:[12345678h], cl
+    mov byte  ptr gs:[12345678h], dl
+    mov byte  ptr gs:[12345678h], bl
+    mov byte  ptr gs:[12345678h], ah
+    mov byte  ptr gs:[12345678h], ch
+
+    mov dword ptr gs:[12345678h], ecx
+    mov dword ptr gs:[12345678h], edx
+    mov dword ptr gs:[12345678h], ebx
+    mov dword ptr gs:[12345678h], esp
+    mov dword ptr gs:[12345678h], ebp
+
+    mov cl                      , byte  ptr gs:[12345678h]
+    mov dl                      , byte  ptr gs:[12345678h]
+    mov bl                      , byte  ptr gs:[12345678h]
+    mov ah                      , byte  ptr gs:[12345678h]
+    mov ch                      , byte  ptr gs:[12345678h]
+
+    mov ecx                     , dword ptr gs:[12345678h]
+    mov edx                     , dword ptr gs:[12345678h]
+    mov ebx                     , dword ptr gs:[12345678h]
+    mov esp                     , dword ptr gs:[12345678h]
+    mov ebp                     , dword ptr gs:[12345678h]
+
+    mov word  ptr gs:[12345678h], cx
+    mov word  ptr gs:[12345678h], dx
+    mov word  ptr gs:[12345678h], bx
+    mov word  ptr gs:[12345678h], sp
+    mov word  ptr gs:[12345678h], bp
+
+    mov cx                      , word  ptr gs:[12345678h]
+    mov dx                      , word  ptr gs:[12345678h]
+    mov bx                      , word  ptr gs:[12345678h]
+    mov sp                      , word  ptr gs:[12345678h]
+    mov bp                      , word  ptr gs:[12345678h]
+
+
+
+    add         byte ptr es:[12345678h],al
+    add         byte ptr cs:[12345678h],al
+    add         byte ptr ss:[12345678h],al
+    add         byte ptr ds:[12345678h],al
+    add         byte ptr gs:[12345678h],al
+    add         byte ptr fs:[12345678h],al
+
+    add         byte ptr es:[12345678h],cl
+    add         byte ptr cs:[12345678h],cl
+    add         byte ptr ss:[12345678h],cl
+    add         byte ptr ds:[12345678h],cl
+    add         byte ptr gs:[12345678h],cl
+    add         byte ptr fs:[12345678h],cl
+
     imul ecx, dword ptr[esi+8*edi+0xabcddbca],0x12345678
     imul cx ,  word ptr[esi+8*edi+0xabcddbca],0x1234
 

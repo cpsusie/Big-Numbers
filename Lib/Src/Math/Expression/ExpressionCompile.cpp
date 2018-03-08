@@ -46,15 +46,18 @@ int MachineCode::emit(const IntelInstruction &ins) {
   return pos;
 }
 
-void MachineCode::emitESPOp(const IntelOpcode &op, int offset) {
-  emit(MEM_ADDR_PTR(op,ESP,offset));
-}
-
 #ifdef IS32BIT
 #define TABLEREF_REGISTER ESI
+#define STACK_REGISTER    ESP
 #else
 #define TABLEREF_REGISTER RSI
+#define STACK_REGISTER    RSP
 #endif // IS32BIT
+
+void MachineCode::emitStackOp(const IntelOpcode &op, int offset) {
+  emit(MEM_ADDR_PTR(op,STACK_REGISTER,offset));
+}
+
 
 void MachineCode::emitTableOp(const IntelOpcode &op, int index) {
   const int offset = getESIOffset(index);
@@ -124,7 +127,7 @@ void MachineCode::emitSubRSP(int n) {
   emit(SUB_REG_IMM(RSP,n));
 }
 
-void MachineCode::emitAddR64(int r64, int value) {
+void MachineCode::emitAddR64(const Register &r64, int value) {
   if(value == 0) return;
   emit(ADD_REG_IMM(r64,value));
 }
@@ -244,7 +247,7 @@ void MachineCode::emitCall(BuiltInFunction f, const ExpressionDestination &dummy
   const int addr = addBytes(&ref, 4);
   m_refenceArray.add(MemoryReference(addr, (BYTE*)f));
 #ifdef LONGDOUBLE
-  emitESPOp(MOV_REG_MEM(EAX),0);
+  emitStackOp(MOV_REG_MEM(EAX),0);
   emit(MEM_ADDR_PTR(FLD_REAL, EAX,0));
 #endif
 }
@@ -272,22 +275,22 @@ void MachineCode::emitCall(BuiltInFunction f, const ExpressionDestination &dst) 
   emit(REGREG(CALLABSOLUTE, RAX));
   switch(dst.getType()) {
   case RESULT_IN_FPU       :
-    emitESPOp(MOVSD_MMWORD_XMM(XMM0),0);                                 // XMM0 -> FPU-top
-    emitESPOp(FLD_REAL              ,0);
+    emitStackOp(MOVSD_MMWORD_XMM(XMM0),0);                                 // XMM0 -> FPU-top
+    emitStackOp(FLD_REAL              ,0);
     break;
   case RESULT_IN_XMM       :
     if(dst.getXMMReg() == XMM1) {
-      emit(MOVEAPS(XMM1, XMM0));                                         // XMM0 -> XMM1
+      emit(REGREG(MOVAPS_REG_MEM(XMM1), XMM0));                            // XMM0 -> XMM1
     } // else do nothing
     break;
   case RESULT_IN_ADDRRDI   :
-    emit(MEM_ADDR_PTR(MOVSD_MMWORD_XMM(XMM0), RDI,0));                   // XMM0 -> *RDI
+    emit(MEM_ADDR_PTR(MOVSD_MMWORD_XMM(XMM0), RDI,0));                     // XMM0 -> *RDI
     break;
   case RESULT_ON_STACK:
-    emitESPOp(MOVSD_MMWORD_XMM(XMM0), dst.getStackOffset());             // XMM0 -> RSP[dst.stackOffset]
+    emitStackOp(MOVSD_MMWORD_XMM(XMM0), dst.getStackOffset());             // XMM0 -> RSP[dst.stackOffset]
     break;
   case RESULT_IN_VALUETABLE:
-    emitXMM0ToAddr(dst.getTableIndex());                                 // XMM0 -> QWORD PTR[RDI+tableOffset]
+    emitXMM0ToAddr(dst.getTableIndex());                                   // XMM0 -> QWORD PTR[RDI+tableOffset]
     break;
   }
 }
@@ -759,15 +762,15 @@ void Expression::genExpression(const ExpressionNode *n, const ExpressionDestinat
     m_code.emit(MEM_ADDR_PTR(FSTP_REAL, RDI,0));                        // FPU -> *RDI
     break;
   case RESULT_ON_STACK     :
-    m_code.emitESPOp(FSTP_REAL, dst.getStackOffset());                  // FPU -> RSP[offset]
+    m_code.emitStackOp(FSTP_REAL, dst.getStackOffset());                  // FPU -> RSP[offset]
     break;
   case RESULT_IN_VALUETABLE:
     m_code.emitFStorePop(dst.getTableIndex());                          // FPU -> m_valuetable[tableIndex]
     break;
 #ifndef LONGDOUBLE
   case RESULT_IN_XMM       :
-    m_code.emitESPOp(FSTP_REAL,0);                                      // FPU  -> *RSP
-    m_code.emitESPOp(MOVSD_XMM_MMWORD(dst.getXMMReg()),0);              // *RSP -> XMM0 or XMM1
+    m_code.emitStackOp(FSTP_REAL,0);                                      // FPU  -> *RSP
+    m_code.emitStackOp(MOVSD_XMM_MMWORD(dst.getXMMReg()),0);              // *RSP -> XMM0 or XMM1
     break;
 #endif // LONGDOUBLE
   }
@@ -1081,7 +1084,7 @@ int Expression::genPushReturnAddr() {
 
 #else // IS64BIT
 
-static const BYTE int64ParamRegister[4] = {
+static const Register int64ParamRegister[] = {
 #ifndef LONGDOUBLE
   RCX ,RDX ,R8 ,R9
 #else
@@ -1108,7 +1111,7 @@ void Expression::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode *a
   } else { // both parmeters are expressions using function calls
     const BYTE offset = genSetParameter(arg1, 0, true);
     genSetParameter(arg2, 1, false);
-    m_code.emitESPOp(MOVSD_XMM_MMWORD(XMM0), offset);
+    m_code.emitStackOp(MOVSD_XMM_MMWORD(XMM0), offset);
     m_code.popTmp();
   }
   m_code.emitCall((BuiltInFunction)f, dst);
@@ -1201,12 +1204,12 @@ void Expression::genPolynomial(const ExpressionNode *n, const ExpressionDestinat
   genSetRefParameter(n->getArgument(), 0);
 #endif // LONGDOUBLE
 
-  const BYTE    param2    = int64ParamRegister[1];
-  const size_t  coefCount = coefArray.size();
+  const Register &param2    = int64ParamRegister[1];
+  const size_t    coefCount = coefArray.size();
   m_code.emit(MOV_REG_IMM(param2,coefCount));
 
-  const BYTE    param3    = int64ParamRegister[2];
-  const Real   *coef0     = &getValueRef(firstCoefIndex);
+  const Register &param3    = int64ParamRegister[2];
+  const Real     *coef0     = &getValueRef(firstCoefIndex);
   m_code.emit(MOV_REG_IMM(param3,coef0));
 
   m_code.emitCall((BuiltInFunction)::evaluatePolynomial, dst);
@@ -1216,7 +1219,7 @@ void Expression::genSetRefParameter(const ExpressionNode *n, int index) {
   bool stacked;
   const BYTE offset = genSetRefParameter(n, index, stacked);
   if(stacked) {
-    const int r64 = int64ParamRegister[index];
+    const Register &r64 = int64ParamRegister[index];
     m_code.emit(REGREG(MOV_REG_MEM(r64), RSP));
     m_code.emitAddR64(r64, offset);
     m_code.popTmp();
@@ -1224,7 +1227,7 @@ void Expression::genSetRefParameter(const ExpressionNode *n, int index) {
 }
 
 BYTE Expression::genSetRefParameter(const ExpressionNode *n, int index, bool &savedOnStack) {
-  const int dstRegister = int64ParamRegister[index];
+  const Register &dstRegister = int64ParamRegister[index];
   if(n->isNameOrNumber()) {
     m_code.emit(REGREG(MOV_REG_MEM(dstRegister), RSI));
     m_code.emitAddR64(dstRegister, m_code.getESIOffset(n->getValueIndex()));
@@ -1240,12 +1243,12 @@ BYTE Expression::genSetRefParameter(const ExpressionNode *n, int index, bool &sa
 
 #ifndef LONGDOUBLE
 BYTE Expression::genSetParameter(const ExpressionNode *n, int index, bool saveOnStack) {
-  const int dstRegister = (index == 0) ? XMM0 : XMM1;
+  const Register &dstRegister = (index == 0) ? XMM0 : XMM1;
   if(n->isNameOrNumber()) {
     assert(saveOnStack == false);
     const int index = n->getValueIndex();
     m_code.emitTableOp(MOVSD_XMM_MMWORD(dstRegister),index);
-  } else if (saveOnStack) {
+  } else if(saveOnStack) {
     const BYTE offset = m_code.pushTmp();
     genExpression(n, DST_ONSTACK(offset));
     return offset;

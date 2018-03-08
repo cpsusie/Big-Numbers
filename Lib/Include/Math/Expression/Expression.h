@@ -35,12 +35,22 @@ typedef enum {
 class ExpressionDestination {
 private:
   const ExpressionDestinationType m_type;
-  const int                       m_offset;
+  union {
+    const int                       m_offset;
+    const Register                 *m_register;
+  };
 public:
   ExpressionDestination(ExpressionDestinationType type, int offset)
     : m_type(type), m_offset(offset)
   {
   }
+#ifndef LONGDOUBLE
+  ExpressionDestination(const Register &xmmReg)
+    : m_type(RESULT_IN_XMM)
+    , m_register(&xmmReg)
+  {
+  }
+#endif
   inline ExpressionDestinationType getType() const {
     return m_type;
   }
@@ -53,9 +63,9 @@ public:
     return m_offset;
   }
 #ifndef LONGDOUBLE
-  inline BYTE getXMMReg() const {
+  inline const Register &getXMMReg() const {
     assert(m_type == RESULT_IN_XMM);
-    return (BYTE)m_offset;
+    return *m_register;
   }
 #endif
 };
@@ -65,7 +75,7 @@ public:
 #define DST_ONSTACK(offs1)      ExpressionDestination(RESULT_ON_STACK     , offs1  )
 #define DST_INVALUETABLE(index) ExpressionDestination(RESULT_IN_VALUETABLE, index  )
 #ifndef LONGDOUBLE
-#define DST_XMM(xmmReg)         ExpressionDestination(RESULT_IN_XMM       , xmmReg )
+#define DST_XMM(xmmReg)         ExpressionDestination(xmmReg )
 #endif
 #else
 
@@ -147,7 +157,7 @@ public:
   void fixupShortJumps(const CompactIntArray &jumps, int jmpAddr);
   void fixupJumps();
   void fixupMemoryReference(const MemoryReference &ref);
-  void emitESPOp(const IntelOpcode &op, int offset);
+  void emitStackOp(const IntelOpcode &op, int offset);
   inline void emitTableOp(const IntelOpcode &op, const ExpressionNode *n) {
     emitTableOp(op, n->getValueIndex());
   }
@@ -166,15 +176,15 @@ public:
     return (int)valueIndex * sizeof(Real) - m_esiOffset;
   }
 #ifdef IS32BIT
-  void emitAddESP(  int                   n);
-  void emitSubESP(  int                   n);
+  void emitAddESP(  int             n);
+  void emitSubESP(  int             n);
 #else // IS64BIT
   void resetStack(BYTE startOffset) { m_stackTop = startOffset; }
   BYTE pushTmp();
   BYTE popTmp();
-  void emitAddRSP(  int                   n);
-  void emitSubRSP(  int                   n);
-  void emitAddR64(  int r64,     int  value);
+  void emitAddRSP(  int             n);
+  void emitSubRSP(  int             n);
+  void emitAddR64(  const Register &r64, int  value);
 #endif // IS32BIT
   void linkReferences();
   ExpressionEntryPoint getEntryPoint() const { return (ExpressionEntryPoint)getData(); }

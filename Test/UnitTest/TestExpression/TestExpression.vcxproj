@@ -295,6 +295,9 @@
     <Bscmake>
       <OutputFile>$(IntDir)$(TargetName).bsc</OutputFile>
     </Bscmake>
+    <CustomBuild>
+      <AdditionalInputs>$(IntDir)assemblerx64.obj</AdditionalInputs>
+    </CustomBuild>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -447,6 +450,11 @@
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">call masm64 /nologo /Zi /c /Zf /Fo$(IntDir)assemblerx64.obj assemblerx64.asm</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)assemblerx64.obj</Outputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Assembler code to show x64 encoding</Message>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">call masm64 /nologo /Zi /c /Zf /Fo$(IntDir)assemblerx64.obj assemblerx64.asm</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">Assembler code to show x64 encoding</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">$(IntDir)assemblerx64.obj</Outputs>
     </CustomBuild>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
