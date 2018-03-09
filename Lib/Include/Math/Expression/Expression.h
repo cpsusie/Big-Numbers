@@ -37,7 +37,7 @@ private:
   const ExpressionDestinationType m_type;
   union {
     const int                       m_offset;
-    const Register                 *m_register;
+    const XMMRegister              *m_register;
   };
 public:
   ExpressionDestination(ExpressionDestinationType type, int offset)
@@ -45,7 +45,7 @@ public:
   {
   }
 #ifndef LONGDOUBLE
-  ExpressionDestination(const Register &xmmReg)
+  ExpressionDestination(const XMMRegister &xmmReg)
     : m_type(RESULT_IN_XMM)
     , m_register(&xmmReg)
   {
@@ -63,7 +63,7 @@ public:
     return m_offset;
   }
 #ifndef LONGDOUBLE
-  inline const Register &getXMMReg() const {
+  inline const XMMRegister &getXMMReg() const {
     assert(m_type == RESULT_IN_XMM);
     return *m_register;
   }
@@ -182,9 +182,9 @@ public:
   void resetStack(BYTE startOffset) { m_stackTop = startOffset; }
   BYTE pushTmp();
   BYTE popTmp();
-  void emitAddRSP(  int             n);
-  void emitSubRSP(  int             n);
-  void emitAddR64(  const Register &r64, int  value);
+  void emitAddRSP(  int               n);
+  void emitSubRSP(  int               n);
+  void emitAddR64(  const GPRegister &r64, int  value);
 #endif // IS32BIT
   void linkReferences();
   ExpressionEntryPoint getEntryPoint() const { return (ExpressionEntryPoint)getData(); }

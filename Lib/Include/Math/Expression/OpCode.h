@@ -33,47 +33,25 @@ typedef INT64                 MovMaxImmType;
 
 class Register {
 private:
-  const RegType  m_type  : 4; // = REGTYPE_NONE, _GP, _SEG, _FPU, _XMM
-  const RegSize  m_size  : 4; // = REGSIZE_BYTE, _WORD, _DWORD, _QWORD, _TBYTE, _OWORD
-  const UINT     m_index : 4; // = [0..15]
+  const BYTE m_index; // = [0..15]
 #ifdef _DEBUG
+protected:
   String m_name;
-#endif
+#define SETNAME() m_name = getName()
+#else
+#define SETNAME()
+#endif // _DEBUG
   Register &operator=(const Register &); // not implemented, and not accessible. 
                                           // All register are singletons
 public:
-  Register(RegType type, RegSize size, BYTE index)
-    : m_type(type)
-    , m_size(size)
-    , m_index(index)
-  {
-#ifdef _DEBUG
-    m_name = getName();
-#endif
+  Register(BYTE index) : m_index(index) {
   }
-  RegType getType()  const { return m_type ; }
-  RegSize getSize()  const { return m_size ; }
+  virtual RegType getType()  const = 0;
+  virtual RegSize getSize()  const = 0;
+  virtual String  getName()  const {
+    return format(_T("Unknown register:(type,sz,index):(%d,%d,%u"), getType(),getSize(),getIndex());
+  }
   UINT    getIndex() const { return m_index; }
-  String  getName() const;
-  inline bool isGPRegister() const {
-#ifdef _DEBUG
-    if(getType() != REGTYPE_GP) {
-      throwInvalidArgumentException(__TFUNCTION__, _T("%s is not general purpose register"), getName().cstr());
-    }
-#endif // _DEBUG
-    return ((getType() == REGTYPE_GP) && (getIndex() <= MAX_GPREGISTER_INDEX));
-  }
-  inline bool isIndexRegister() const {
-#ifdef _DEBUG
-    if(getSize() != INDEX_REGSIZE) {
-      throwInvalidArgumentException(__TFUNCTION__, _T("%s is not index register"), getName().cstr());
-    }
-#endif // _DEBUG
-    return isGPRegister() && (getSize() == INDEX_REGSIZE);
-  }
-  inline bool isSegmentRegister() const {
-    return (getType() == REGTYPE_SEG) && (getIndex() < 6);
-  }
   inline bool isXMMRegister() const {
 #ifdef _DEBUG
     if(getType() != REGTYPE_XMM) {
@@ -90,35 +68,106 @@ public:
   }
 };
 
+class GPRegister : public Register {
+private:
+  const RegSize  m_size; // = REGSIZE_BYTE, _WORD, _DWORD, _QWORD
+public:
+  GPRegister(RegSize size, BYTE index) : Register(index), m_size(size) {
+    SETNAME();
+  }
+  RegType getType()  const {
+    return REGTYPE_GP;
+  }
+  RegSize getSize()  const {
+    return m_size;
+  }
+  String getName() const;
+};
+
+class IndexRegister : public GPRegister {
+public:
+  IndexRegister(BYTE index) : GPRegister(INDEX_REGSIZE, index) {
+  }
+};
 // 8 bit registers
-extern const Register AL,CL,DL,BL,AH,CH,DH,BH;
+extern const GPRegister AL,CL,DL,BL,AH,CH,DH,BH;
 // 16 bit registers
-extern const Register AX,CX,DX,BX,SP,BP,SI,DI;
+extern const GPRegister AX,CX,DX,BX,SP,BP,SI,DI;
+
+#ifdef IS32BIT
 // 32 bit registers
-extern const Register EAX,ECX,EDX,EBX,ESP,EBP,ESI,EDI;
-
-#ifdef IS64BIT
+extern const IndexRegister EAX,ECX,EDX,EBX,ESP,EBP,ESI,EDI;
+#else
 // 8 bit registers (only x64)
-extern const Register R8B ,R9B ,R10B,R11B,R12B,R13B,R14B,R15B;
+extern const GPRegister    R8B ,R9B ,R10B,R11B,R12B,R13B,R14B,R15B;
 // 16 bit registers (only x64)
-extern const Register R8W ,R9W ,R10W,R11W,R12W,R13W,R14W,R15W;
+extern const GPRegister    R8W ,R9W ,R10W,R11W,R12W,R13W,R14W,R15W;
+// 32 bit registers (EAX-EDI are not IndexRegisters, only GPRegisters
+extern const GPRegister    EAX,ECX,EDX,EBX,ESP,EBP,ESI,EDI;
 // 32 bit registers (only x64)
-extern const Register R8D ,R9D ,R10D,R11D,R12D,R13D,R14D,R15D;
+extern const GPRegister    R8D ,R9D ,R10D,R11D,R12D,R13D,R14D,R15D;
 // 64 bit registers (only x64)
-extern const Register RAX ,RCX ,RDX ,RBX ,RSP ,RBP ,RSI ,RDI;
-extern const Register R8  ,R9  ,R10 ,R11 ,R12 ,R13 ,R14 ,R15;
+extern const IndexRegister RAX ,RCX ,RDX ,RBX ,RSP ,RBP ,RSI ,RDI;
+extern const IndexRegister R8  ,R9  ,R10 ,R11 ,R12 ,R13 ,R14 ,R15;
 
 #endif // IS64BIT
 
-extern const Register ST0 ,ST1 ,ST2  ,ST3  ,ST4  ,ST5  ,ST6  ,ST7 ;
-extern const Register XMM0,XMM1,XMM2 ,XMM3 ,XMM4 ,XMM5 ,XMM6 ,XMM7;
+class FPURegister : public Register {
+public:
+  FPURegister(BYTE index) : Register(index) {
+    SETNAME();
+  }
+  RegType getType()  const {
+    return REGTYPE_FPU;
+  }
+  RegSize getSize()  const {
+    return REGSIZE_TBYTE;
+  }
+  String getName() const {
+    return (getIndex() <= 7) ? format(_T("ST%d"), getIndex()) : __super::getName();
+  }
+};
+
+extern const FPURegister ST0 ,ST1 ,ST2  ,ST3  ,ST4  ,ST5  ,ST6  ,ST7;
+
+class XMMRegister : public Register {
+public:
+  XMMRegister(BYTE index) : Register(index) {
+    SETNAME();
+  }
+  RegType getType()  const {
+    return REGTYPE_XMM;
+  }
+  RegSize getSize()  const {
+    return REGSIZE_OWORD;
+  }
+  String getName() const {
+    return (getIndex() <= MAX_XMMREGISTER_INDEX) ? format(_T("XMM%d"), getIndex())
+                                                 : __super::getName();
+  }
+};
+
+extern const XMMRegister XMM0,XMM1,XMM2 ,XMM3 ,XMM4 ,XMM5 ,XMM6 ,XMM7;
 
 #ifdef IS64BIT
-extern const Register XMM8,XMM9,XMM10,XMM11,XMM12,XMM13,XMM14,XMM15;
+extern const XMMRegister XMM8,XMM9,XMM10,XMM11,XMM12,XMM13,XMM14,XMM15;
 #endif // IS64BIT
 
+class SegmentRegister : public Register {
+public:
+  SegmentRegister(BYTE index) : Register(index) {
+    SETNAME();
+  }
+  RegType getType()  const {
+    return REGTYPE_SEG;
+  }
+  RegSize getSize()  const {
+    return REGSIZE_WORD;
+  }
+  String getName() const;
+};
 // Segment registers (16-bit)
-extern const Register ES,CS,SS,DS,FS,GS;
+extern const SegmentRegister ES,CS,SS,DS,FS,GS;
 
 #define _SWAP2(op) ((((op)&0xff)<< 8) | (((op)>> 8)&0xff ))
 #define _SWAP3(op) ((_SWAP2(op) << 8) | (((op)>>16)&0xff ))
@@ -216,8 +265,8 @@ public:
 #endif
     return prefix(0x66);
   }
-  IntelOpcode &addGPReg( const Register &reg);
-  IntelOpcode &addXMMReg(const Register &reg);
+  IntelOpcode &addGPReg( const GPRegister &reg);
+  IntelOpcode &addXMMReg(const XMMRegister &reg);
   // in bytes
   inline UINT size() const {
     return m_size;
@@ -306,19 +355,19 @@ private:
   }
   IntelInstruction &memAddrEsp(int offset);
   // ptr[reg]. (reg&7) != {4,5}
-  IntelInstruction &memAddrPtr0(const Register &reg);
+  IntelInstruction &memAddrPtr0(const IndexRegister &reg);
   // ptr[reg+offset], (reg&7) != 4, offset=[-128;127]
-  IntelInstruction &memAddrPtr1(const Register &reg, char offset);
+  IntelInstruction &memAddrPtr1(const IndexRegister &reg, char offset);
   // ptr[reg+offset], (reg&7) != 4, offset=[INT_MIN;INT_MAX]
-  IntelInstruction &memAddrPtr4(const Register &reg, int offset);
+  IntelInstruction &memAddrPtr4(const IndexRegister &reg, int offset);
   // ptr[reg+(addReg<<p2)], (reg&7) != 5, (addReg&7) != 4, p2<=3
-  IntelInstruction &memAddrMp2AddReg0(const Register &reg, BYTE p2, const Register &addReg);
+  IntelInstruction &memAddrMp2AddReg0(const IndexRegister &reg, BYTE p2, const IndexRegister &addReg);
   // ptr[reg+(addReg<<p2)+offset], (addReg&7) != 4, p2<=3, offset=[-128;127]
-  IntelInstruction &memAddrMp2AddReg1(const Register &reg, BYTE p2, const Register &addReg, char offset);
+  IntelInstruction &memAddrMp2AddReg1(const IndexRegister &reg, BYTE p2, const IndexRegister &addReg, char offset);
   // ptr[reg+(addReg<<p2)+offset], (addReg&7) != 4, p2<=3, offset=[INT_MIN;INT_MAX]
-  IntelInstruction &memAddrMp2AddReg4(const Register &reg, BYTE p2, const Register &addReg, int offset);
+  IntelInstruction &memAddrMp2AddReg4(const IndexRegister &reg, BYTE p2, const IndexRegister &addReg, int offset);
   // Use with Imm-addressing. reg = { ES,CS,SS,DS,FS,GS }
-  IntelInstruction &prefixSegReg(const Register &reg);
+  IntelInstruction &prefixSegReg(const SegmentRegister &reg);
 
 public:
   inline IntelInstruction(BYTE size, UINT64 op, RegType regType, bool immMode) 
@@ -327,12 +376,12 @@ public:
   inline IntelInstruction(const IntelOpcode &op) : IntelOpcode(op) {
   }
 
-  IntelInstruction &setGPReg(const Register &reg);
+  IntelInstruction &setGPReg(const GPRegister &reg);
 
    // ptr[(reg<<p2)+offset], (reg&7) != 4, p2<=3, offset=[INT_MIN;INT_MAX]
-  IntelInstruction &memAddrMp2Ptr4(  const Register &reg, BYTE p2, int offset);
-  IntelInstruction &memAddrPtr(      const Register &reg, int offset);
-  IntelInstruction &memAddrMp2AddReg(const Register &reg, const Register &addReg, BYTE p2, int offset);
+  IntelInstruction &memAddrMp2Ptr4(  const IndexRegister &reg, BYTE p2, int offset);
+  IntelInstruction &memAddrPtr(      const IndexRegister &reg, int offset);
+  IntelInstruction &memAddrMp2AddReg(const IndexRegister &reg, const IndexRegister &addReg, BYTE p2, int offset);
 
   inline IntelInstruction &memAddrImmDword(int addr) {
     assert(hasMemAddrMode());
@@ -340,9 +389,8 @@ public:
   }
 
   IntelInstruction &regReg(        const Register &reg);
-  IntelInstruction &setGPRegImm(   const Register &reg, int           immv);
-  IntelInstruction &setMovGPRegImm(const Register &reg, MovMaxImmType immv);
-  IntelInstruction &addXMMRegs(    const Register &reg1,const Register &reg2);
+  IntelInstruction &setGPRegImm(   const GPRegister &reg, int           immv);
+  IntelInstruction &setMovGPRegImm(const GPRegister &reg, MovMaxImmType immv);
 };
 
 #define WORDOP(  op32) ((op32).wordOp())

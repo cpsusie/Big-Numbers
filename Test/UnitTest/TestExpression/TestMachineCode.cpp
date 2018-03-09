@@ -7,7 +7,7 @@
 
 #define TEST_ALLREGISTERS
 
-static const Register r8List[] = {
+static const GPRegister r8List[] = {
     AL
 #ifndef TEST_ALLREGISTERS
    ,AH  ,CH
@@ -22,7 +22,7 @@ static const Register r8List[] = {
 #endif // IS64BIT
   };
 
-  const Register r16List[] = {
+  const GPRegister r16List[] = {
     AX
 #ifndef TEST_ALLREGISTERS
    ,SP   ,BP
@@ -38,7 +38,7 @@ static const Register r8List[] = {
 #endif // IS64BIT
   };
 
-  const Register r32List[] = {
+  const GPRegister r32List[] = {
     EAX
 #ifndef TEST_ALLREGISTERS
    ,ESP  ,EBP
@@ -55,7 +55,7 @@ static const Register r8List[] = {
   };
 
 #ifdef IS64BIT
-  const Register r64List[] = {
+  const GPRegister r64List[] = {
     RAX
 #ifndef TEST_ALLREGISTERS
    ,RSP  ,RBP
@@ -583,16 +583,15 @@ TestMachineCode::TestMachineCode() {
   emit(MOV_FROM_EAX_IMM_ADDR_DWORD ); addBytes(&addr,sizeof(addr));
 */
 #ifdef TEST_XMM
-  int opsize = sizeof(IntelOpcode);
-
   emit(REGREG(MOVAPS_REG_MEM(XMM0), XMM7 ));
 #ifdef IS64BIT
   emit(REGREG(MOVAPS_REG_MEM(XMM8), XMM7 ));
   emit(REGREG(MOVAPS_REG_MEM(XMM0), XMM8 ));
   emit(REGREG(MOVAPS_REG_MEM(XMM8), XMM15));
 #endif // IS64BIT
+#ifdef IS32BIT
   emit(MEM_ADDR_PTR(MOVAPS_REG_MEM(XMM0 ), EAX,0));
-#ifdef IS64BIT
+#else
   emit(MEM_ADDR_PTR(MOVAPS_REG_MEM(XMM0 ), RAX,0));
   emit(MEM_ADDR_PTR(MOVAPS_REG_MEM(XMM0 ), R8 ,0));
   emit(MEM_ADDR_PTR(MOVAPS_REG_MEM(XMM15), RAX,0));

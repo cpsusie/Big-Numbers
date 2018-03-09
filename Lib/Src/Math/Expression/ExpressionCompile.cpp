@@ -127,7 +127,7 @@ void MachineCode::emitSubRSP(int n) {
   emit(SUB_REG_IMM(RSP,n));
 }
 
-void MachineCode::emitAddR64(const Register &r64, int value) {
+void MachineCode::emitAddR64(const GPRegister &r64, int value) {
   if(value == 0) return;
   emit(ADD_REG_IMM(r64,value));
 }
@@ -1084,7 +1084,7 @@ int Expression::genPushReturnAddr() {
 
 #else // IS64BIT
 
-static const Register int64ParamRegister[] = {
+static const IndexRegister int64ParamRegister[] = {
 #ifndef LONGDOUBLE
   RCX ,RDX ,R8 ,R9
 #else
@@ -1204,12 +1204,12 @@ void Expression::genPolynomial(const ExpressionNode *n, const ExpressionDestinat
   genSetRefParameter(n->getArgument(), 0);
 #endif // LONGDOUBLE
 
-  const Register &param2    = int64ParamRegister[1];
-  const size_t    coefCount = coefArray.size();
+  const IndexRegister &param2    = int64ParamRegister[1];
+  const size_t         coefCount = coefArray.size();
   m_code.emit(MOV_REG_IMM(param2,coefCount));
 
-  const Register &param3    = int64ParamRegister[2];
-  const Real     *coef0     = &getValueRef(firstCoefIndex);
+  const IndexRegister &param3    = int64ParamRegister[2];
+  const Real          *coef0     = &getValueRef(firstCoefIndex);
   m_code.emit(MOV_REG_IMM(param3,coef0));
 
   m_code.emitCall((BuiltInFunction)::evaluatePolynomial, dst);
@@ -1219,7 +1219,7 @@ void Expression::genSetRefParameter(const ExpressionNode *n, int index) {
   bool stacked;
   const BYTE offset = genSetRefParameter(n, index, stacked);
   if(stacked) {
-    const Register &r64 = int64ParamRegister[index];
+    const GPRegister &r64 = int64ParamRegister[index];
     m_code.emit(REGREG(MOV_REG_MEM(r64), RSP));
     m_code.emitAddR64(r64, offset);
     m_code.popTmp();
@@ -1227,7 +1227,7 @@ void Expression::genSetRefParameter(const ExpressionNode *n, int index) {
 }
 
 BYTE Expression::genSetRefParameter(const ExpressionNode *n, int index, bool &savedOnStack) {
-  const Register &dstRegister = int64ParamRegister[index];
+  const GPRegister &dstRegister = int64ParamRegister[index];
   if(n->isNameOrNumber()) {
     m_code.emit(REGREG(MOV_REG_MEM(dstRegister), RSI));
     m_code.emitAddR64(dstRegister, m_code.getESIOffset(n->getValueIndex()));
@@ -1243,7 +1243,7 @@ BYTE Expression::genSetRefParameter(const ExpressionNode *n, int index, bool &sa
 
 #ifndef LONGDOUBLE
 BYTE Expression::genSetParameter(const ExpressionNode *n, int index, bool saveOnStack) {
-  const Register &dstRegister = (index == 0) ? XMM0 : XMM1;
+  const XMMRegister &dstRegister = (index == 0) ? XMM0 : XMM1;
   if(n->isNameOrNumber()) {
     assert(saveOnStack == false);
     const int index = n->getValueIndex();
