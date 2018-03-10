@@ -916,6 +916,8 @@
     <ClCompile Include="Expression\ExpressionWrapper.cpp" />
     <ClCompile Include="Expression\FactorArray.cpp" />
     <ClCompile Include="Expression\Opcode.cpp" />
+    <ClCompile Include="Expression\NewOpcode.cpp" />
+    <ClCompile Include="Expression\Opcodes.cpp" />
     <ClCompile Include="Expression\ParserTree.cpp" />
     <ClCompile Include="Expression\ParserTreeComplexity.cpp" />
     <ClCompile Include="Expression\ParserTreeGarbageCollect.cpp" />
@@ -923,6 +925,7 @@
     <ClCompile Include="Expression\ParserTreeOpCommon.cpp" />
     <ClCompile Include="Expression\ParserTreeOpSForm.cpp" />
     <ClCompile Include="Expression\ParserTreeSymbolTable.cpp" />
+    <ClCompile Include="Expression\Registers.cpp" />
     <ClCompile Include="Expression\SNode.cpp" />
     <ClCompile Include="Expression\SumElement.cpp" />
     <ClCompile Include="fft.cpp" />
@@ -1185,8 +1188,10 @@
     <ClInclude Include="..\..\Include\Math\Expression\ExpressionParser.h" />
     <ClInclude Include="..\..\Include\Math\Expression\ExpressionSymbol.h" />
     <ClInclude Include="..\..\Include\Math\Expression\ExpressionWrapper.h" />
-    <ClInclude Include="..\..\Include\Math\Expression\OpCode.h" />
+    <ClInclude Include="..\..\Include\Math\Expression\Opcode.h" />
+    <ClInclude Include="..\..\Include\Math\Expression\NewOpCode.h" />
     <ClInclude Include="..\..\Include\Math\Expression\ParserTree.h" />
+    <ClInclude Include="..\..\Include\Math\Expression\Registers.h" />
     <ClInclude Include="..\..\Include\Math\Expression\SumElement.h" />
     <ClInclude Include="..\..\Include\Math\fft.h" />
     <ClInclude Include="..\..\Include\Math\FPU.h" />

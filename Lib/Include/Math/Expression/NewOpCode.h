@@ -1,7 +1,221 @@
 #pragma once
 
+#include <MyUtil.h>
+#include <TinyBitSet.h>
 #include <MyAssert.h>
 #include "Registers.h"
+
+typedef enum {
+  REGISTER
+ ,MEMREFERENCE
+ ,IMMEDIATEVALUE
+} OperandType;
+
+typedef RegSize OperandSize;
+
+class IndexRegisterCombination;
+
+class InstructionOperand {
+private:
+  const OperandType m_type;
+  const OperandSize m_size;
+  const Register   *m_reg;
+
+public:
+  inline InstructionOperand(OperandType type, OperandSize size)
+    : m_type(type)
+    , m_size(size)
+    , m_reg( NULL)
+  {
+  }
+  inline InstructionOperand(const Register &reg)
+    : m_type(REGISTER)
+    , m_size(reg.getSize())
+    , m_reg(&reg)
+  {
+  }
+  const Register &getRegister() const {
+    if(m_reg == NULL) throwUnsupportedOperationException(__TFUNCTION__);
+    return *m_reg;
+  }
+  inline OperandType getType() const {
+    return m_type;
+  }
+  inline OperandSize getSize() const {
+    return m_size;
+  }
+  virtual String toString() const {
+    return m_reg ? m_reg->getName() : _T("Unknown operand");
+  }
+  virtual const IndexRegisterCombination *getMemoryReference() const {
+    throwUnsupportedOperationException(__TFUNCTION__);
+    return NULL;
+  }
+  virtual BYTE   getImmByte()  const {
+    throwUnsupportedOperationException(__TFUNCTION__);
+    return 0;
+  }
+  virtual USHORT getImmWord()  const {
+    throwUnsupportedOperationException(__TFUNCTION__);
+    return 0;
+  }
+  virtual UINT   getImmDword() const {
+    throwUnsupportedOperationException(__TFUNCTION__);
+    return 0;
+  }
+  virtual UINT64 getImmQword() const {
+    throwUnsupportedOperationException(__TFUNCTION__);
+    return 0;
+  }
+};
+
+class IndexRegisterCombination {
+private:
+  const IndexRegister *m_reg,*m_addreg;
+  const char           m_shift;
+  const int            m_offset;
+public:
+  inline IndexRegisterCombination(const IndexRegister *reg, const IndexRegister *addreg, char shift=-1, int offset=0)
+    : m_reg(   reg   )
+    , m_addreg(addreg)
+    , m_shift( shift )
+    , m_offset(offset)
+  {
+  }
+  inline IndexRegisterCombination(const IndexRegister &reg)
+    : m_reg(  &reg )
+    , m_addreg(NULL)
+    , m_shift( -1  )
+    , m_offset( 0  )
+  {
+  }
+  inline const IndexRegister *getReg()    const { return m_reg;    }
+  inline const IndexRegister *getAddreg() const { return m_addreg; }
+  inline BYTE                 getShift()  const { return m_shift;  }
+  inline int                  getOffset() const { return m_offset; }
+  inline bool                 hasShift()  const { return m_shift >= 1; }
+  String                      toString() const;
+};
+
+IndexRegisterCombination operator+(const IndexRegister &reg, int offset);
+IndexRegisterCombination operator-(const IndexRegister &reg, int offset);
+IndexRegisterCombination operator+(const IndexRegisterCombination &irc, int offset);
+IndexRegisterCombination operator-(const IndexRegisterCombination &irc, int offset);
+IndexRegisterCombination operator+(const IndexRegister &reg, const IndexRegisterCombination &irc);
+IndexRegisterCombination operator+(const IndexRegister &reg, const IndexRegister &addreg);
+IndexRegisterCombination operator*(BYTE a, const IndexRegister &reg);
+
+class MemoryOperand : public InstructionOperand {
+private:
+  const IndexRegisterCombination m_irc;
+public:
+  inline MemoryOperand(OperandSize size, const IndexRegisterCombination &irc)
+    : InstructionOperand(MEMREFERENCE, size), m_irc(irc)
+  {
+  }
+  const IndexRegisterCombination *getMemoryReference() const {
+    return &m_irc;
+  }
+  String toString() const {
+    return format(_T("%s ptr[%s]"), getOpSizeName(getSize()), m_irc.toString().cstr());
+  }
+};
+
+template<OperandSize size> class MemoryPtr : public MemoryOperand {
+public:
+  MemoryPtr(const IndexRegisterCombination &irc) : MemoryOperand(size, irc) {
+  }
+};
+
+typedef MemoryPtr<REGSIZE_BYTE > BYTEPtr;
+typedef MemoryPtr<REGSIZE_WORD > WORDPtr;
+typedef MemoryPtr<REGSIZE_DWORD> DWORDPtr;
+typedef MemoryPtr<REGSIZE_QWORD> QWORDPtr;
+typedef MemoryPtr<REGSIZE_OWORD> XMMWORDPtr;
+typedef MemoryPtr<REGSIZE_TBYTE> TBYTEPtr;
+
+class ImmediateOperand : public InstructionOperand {
+private:
+  union {
+    BYTE   m_v8;
+    WORD   m_v16;
+    DWORD  m_v32;
+    UINT64 m_v64;
+  };
+  void setValue(int    v);
+  void setValue(UINT   v);
+  void setValue(INT64  v);
+  void setValue(UINT64 v);
+  void throwInvalidSize(const TCHAR *method) const;
+public:
+  ImmediateOperand(int    v) : InstructionOperand(IMMEDIATEVALUE, findMinSize(v)) {
+    setValue(v);
+  }
+  ImmediateOperand(UINT   v) : InstructionOperand(IMMEDIATEVALUE, findMinSize(v)) {
+    setValue(v);
+  }
+  ImmediateOperand(INT64  v) : InstructionOperand(IMMEDIATEVALUE, findMinSize(v)) {
+    setValue(v);
+  }
+  ImmediateOperand(UINT64 v) : InstructionOperand(IMMEDIATEVALUE, findMinSize(v)) {
+    setValue(v);
+  }
+  inline BYTE   getImmByte()  const {
+    return m_v8;
+  }
+  inline USHORT getImmWord()  const {
+    return m_v16;
+  }
+  inline UINT   getImmDword() const {
+    return m_v32;
+  }
+  inline UINT64 getImmQword() const {
+    return m_v64;
+  }
+
+  static inline bool isByte( int    v) {
+    return v == (char)v;
+  }
+  static inline bool isWord( int    v) {
+    return v == (short)v;
+  }
+  static inline bool isDword(int    v) {
+    return true;
+  }
+  static inline bool isByte( UINT   v) {
+    return v == (BYTE)v;
+  }
+  static inline bool isWord( UINT   v) {
+    return v == (USHORT)v;
+  }
+  static inline bool isDword(UINT   v) {
+    return true;
+  }
+  static inline bool isByte( INT64  v) {
+    return v == (char)v;
+  }
+  static inline bool isWord( INT64  v) {
+    return v == (short)v;
+  }
+  static inline bool isDword(INT64  v) {
+    return v == (int)v;
+  }
+  static inline bool isByte( UINT64 v) {
+    return v == (BYTE)v;
+  }
+  static inline bool isWord( UINT64 v) {
+    return v == (USHORT)v;
+  }
+  static inline bool isDword(UINT64 v) {
+    return v == (UINT)v;
+  }
+  static OperandSize findMinSize(int    v);
+  static OperandSize findMinSize(UINT   v);
+  static OperandSize findMinSize(INT64  v);
+  static OperandSize findMinSize(UINT64 v);
+
+  String toString() const;
+};
 
 #define _SWAP2(op) ((((op)&0xff)<< 8) | (((op)>> 8)&0xff ))
 #define _SWAP3(op) ((_SWAP2(op) << 8) | (((op)>>16)&0xff ))
@@ -11,8 +225,128 @@
 
 #define MAX_INSTRUCTIONSIZE   15
 
-class IntelOpcode {
+class InstructionBase {
 private:
+  BYTE   m_bytes[15];
+  UINT   m_size            : 4; // = [0..15]
+#ifdef IS64BIT
+  UINT   m_hasRexByte      : 1;
+  UINT   m_rexByteIndex    : 2;
+#endif
+
+  inline InstructionBase &memAddrEsp0() {
+    return add(0x04).add(0x24);
+  }
+  inline InstructionBase &memAddrEsp1(char offset) {
+    return add(0x44).add(0x24).add(offset);
+  }
+  inline InstructionBase &memAddrEsp4(int offset) {
+    return add(0x84).add(0x24).add(offset, 4);
+  }
+  InstructionBase &memAddrEsp(int offset);
+  // ptr[reg]. (reg&7) != {4,5}
+  InstructionBase &memAddrPtr0(const IndexRegister &reg);
+  // ptr[reg+offset], (reg&7) != 4, offset=[-128;127]
+  InstructionBase &memAddrPtr1(const IndexRegister &reg, char offset);
+  // ptr[reg+offset], (reg&7) != 4, offset=[INT_MIN;INT_MAX]
+  InstructionBase &memAddrPtr4(const IndexRegister &reg, int offset);
+  // ptr[reg+(addReg<<p2)], (reg&7) != 5, (addReg&7) != 4, p2<=3
+  InstructionBase &memAddrMp2AddReg0(const IndexRegister &reg, BYTE p2, const IndexRegister &addReg);
+  // ptr[reg+(addReg<<p2)+offset], (addReg&7) != 4, p2<=3, offset=[-128;127]
+  InstructionBase &memAddrMp2AddReg1(const IndexRegister &reg, BYTE p2, const IndexRegister &addReg, char offset);
+  // ptr[reg+(addReg<<p2)+offset], (addReg&7) != 4, p2<=3, offset=[INT_MIN;INT_MAX]
+  InstructionBase &memAddrMp2AddReg4(const IndexRegister &reg, BYTE p2, const IndexRegister &addReg, int offset);
+  // Use with Imm-addressing. reg = { ES,CS,SS,DS,FS,GS }
+   // ptr[(reg<<p2)+offset], (reg&7) != 4, p2<=3, offset=[INT_MIN;INT_MAX]
+  InstructionBase &memAddrMp2Ptr4(  const IndexRegister &reg, BYTE p2, int offset);
+  InstructionBase &memAddrPtr(      const IndexRegister &reg, int offset);
+  InstructionBase &memAddrMp2AddReg(const IndexRegister &reg, const IndexRegister &addReg, BYTE p2, int offset);
+
+  InstructionBase &prefixSegReg(const SegmentRegister &reg);
+  inline InstructionBase &memAddrImmDword(int addr) {
+    return or(0x05).add(addr, 4);
+  }
+
+protected:
+  inline bool hasRexByte() const {
+#ifdef IS32BIT
+    return false;
+#else
+    return m_hasRexByte ? true : false;
+#endif
+  }
+#ifdef IS64BIT
+  InstructionBase &setRexBits(BYTE bits);
+#endif // IS64BIT
+
+  inline InstructionBase &wordIns() {
+#ifdef IS64BIT
+    m_rexByteIndex++;
+#endif
+    return prefix(0x66);
+  }
+
+public:
+  inline InstructionBase(const BYTE *op, BYTE size)
+    : m_size(          size       )
+#ifdef IS64BIT
+    , m_hasRexByte(    0          )
+    , m_rexByteIndex(  0          )
+#endif
+  {
+    memcpy(m_bytes,op,size);
+  }
+  InstructionBase &insertByte(BYTE index, BYTE b);
+  inline InstructionBase &prefix(BYTE b) {
+    return insertByte(0,b);
+  }
+  // Always |= the last byte in array
+  inline InstructionBase &or(BYTE b) {
+    m_bytes[m_size - 1] |= b;
+    return *this;
+  }
+  inline InstructionBase &add(BYTE b) {
+    assert(m_size < MAX_INSTRUCTIONSIZE);
+    m_bytes[m_size++] = b;
+    return *this;
+  }
+  InstructionBase &add(INT64 bytesToAdd, BYTE count);
+
+  // In bytes
+  inline UINT size() const {
+    return m_size;
+  }
+  inline const BYTE *getBytes() const {
+    return m_bytes;
+  }
+
+  InstructionBase &setRegister(       const Register &reg);
+  InstructionBase &setMemoryReference(const IndexRegisterCombination &irc);
+};
+
+// ----------------------------------------------------------------------
+#define REGTYPE_NONE_ALLOWED   0x00000001
+#define REGTYPE_GP_ALLOWED     0x00000002
+#define REGTYPE_SEG_ALLOWED    0x00000004
+#define REGTYPE_FPU_ALLOWED    0x00000008
+#define REGTYPE_XMM_ALLOWED    0x00000010
+#define REGSIZE_BYTE_ALLOWED   0x00000020
+#define REGSIZE_WORD_ALLOWED   0x00000040
+#define REGSIZE_DWORD_ALLOWED  0x00000080
+#define REGSIZE_QWORD_ALLOWED  0x00000100
+#define REGSIZE_TBYTE_ALLOWED  0x00000200
+#define REGSIZE_OWORD_ALLOWED  0x00000400
+#define REGISTER_ALLOWED       0x00000800
+#define MEMREFERENCE_ALLOWED   0x00001000
+#define IMMEDIATEVALUE_ALLOWED 0x00002000
+#ifdef IS32BIT
+#define REXBYTE_ALLOWED        0x00000000
+#else
+#define REXBYTE_ALLOWED        0x00008000
+#endif
+
+class OpcodeBase {
+protected:
   static inline UINT64 swapBytes(UINT64 bytes, int sz) {
     switch(sz) {
     case 1 : return bytes;
@@ -27,34 +361,75 @@ private:
   }
 protected:
   union {
-    UINT64 m_bytes[2];
-    BYTE   m_byte[16];
+    UINT64 m_bytes;
+    BYTE   m_byte[8];
   };
-  UINT     m_size            : 4; // = [0..15]
+  const UINT m_size    : 3; // = [0..7]
+  const UINT m_opCount : 3;
+  const UINT m_flags;
+
+  void validateOpCount(               int                             count) const;
+  void validateRegisterAllowed(       const Register                 &reg  ) const;
+  void validateMemoryReferenceAllowed() const;
+  void validateOperandSize(           RegSize                         size ) const;
+
+public:
+  inline OpcodeBase(BYTE size, UINT64 op, UINT opCount, UINT flags)
+    : m_size(   size   )
+    , m_opCount(opCount)
+    , m_flags(  flags  )
+  {
+    m_bytes = swapBytes(op,size);
+  }
+
+  // Size of Opcode in bytes
+  inline UINT size() const {
+    return m_size;
+  }
+  // Number of operands
+  inline UINT getOpCount() const {
+    return m_opCount;
+  }
+  // Raw opcode bytes
+  inline const BYTE *getBytes() const {
+    return m_byte;
+  }
+  // various attributes
+  inline UINT getFlags() const {
+    return m_flags;
+  }
+  bool isRegisterTypeAllowed(RegType type) const;
+  bool isOperandSizeAllowed( RegSize size) const;
+  inline bool isMemoryReferenceAllowed() const {
+    return (getFlags() & MEMREFERENCE_ALLOWED) != 0;
+  }
+  // is ins.setRegister allowed for this opcode
+  inline bool hasRegisterMode() const {
+    return (getFlags() & REGISTER_ALLOWED) != 0;
+  }
+  inline bool hasRexMode() const {
+#ifdef IS32BIT
+    return false;
+#else
+    return (getFlags() & REXBYTE_ALLOWED) != 0;
+#endif
+  }
+  virtual InstructionBase operator()(const InstructionOperand &op) const;
+};
+
+
+/*
+  void throwRegSizeMismatch(const Register &reg);
   RegType  m_regType         : 4; // = REGTYPE_NONE, _GP, _SEG, _FPU, _XMM
   RegSize  m_regSize         : 4; // = REGSIZE_BYTE, _WORD, _DWORD, _QWORD, _TBYTE, _OWORD
   UINT     m_regSizeDefined  : 1; // init to 0
-  UINT     m_hasMemAddrMode  : 1; 
-  UINT     m_hasRegRegMode   : 1;
-  UINT     m_immMode         : 1;
-#ifdef IS64BIT
-  UINT     m_hasRexMode      : 1;
-  UINT     m_hasRexByte      : 1;
-  UINT     m_rexByteIndex    : 2;
-#endif
-
-  // Always |= the last byte in array
-  inline IntelOpcode &orLast(BYTE b) {
-    m_byte[m_size - 1] |= b;
-    return *this;
+  inline RegType getRegType() const {
+    return m_regType;
   }
-  inline IntelOpcode &addByte(BYTE b) {
-    assert(m_size < MAX_INSTRUCTIONSIZE);
-    m_byte[m_size++] = b;
-    return *this;
+  inline RegSize getOpSize() const {
+    return (RegSize)(m_regSizeDefined ? m_regSize : -1);
   }
-
-  void throwRegSizeMismatch(const Register &reg);
+  const TCHAR *getOpSizeName() const;
   void inline setRegSize(const Register &reg) {
     if(m_regSizeDefined) {
       if(reg.getSize() != m_regSize) throwRegSizeMismatch(reg);
@@ -63,305 +438,31 @@ protected:
       m_regSizeDefined = 1;
     }
   }
-  
+*/
+
+class SetxxOp : public OpcodeBase {
 public:
-  inline IntelOpcode(BYTE size, UINT64 op, RegType regType, bool memAddrMode, bool regRegMode, bool immMode)
-    : m_size(          size       )
-    , m_regType(       regType    )
-    , m_regSize(       RegSize(0) )
-    , m_regSizeDefined(0          )
-    , m_hasMemAddrMode(memAddrMode)
-    , m_hasRegRegMode( regRegMode )
-    , m_immMode(       immMode    )
-#ifdef IS64BIT
-    , m_hasRexMode(    1          )
-    , m_hasRexByte(    0          )
-    , m_rexByteIndex(  0          )
-#endif
-  {
-    m_bytes[0] = swapBytes(op,size);
-    m_bytes[1] = 0;
-  }
-  IntelOpcode &insertByte(BYTE index, BYTE b);
-  inline IntelOpcode &prefix(BYTE b) {
-    return insertByte(0,b);
-  }
-
-#ifdef IS64BIT
-  IntelOpcode &setRexBits(BYTE bits);
-#endif // IS64BIT
-
-  inline IntelOpcode &wordOp() {
-#ifdef IS64BIT
-    m_rexByteIndex++;
-#endif
-    return prefix(0x66);
-  }
-  IntelOpcode &addGPReg( const GPRegister &reg);
-  IntelOpcode &addXMMReg(const XMMRegister &reg);
-  // in bytes
-  inline UINT size() const {
-    return m_size;
-  }
-  const BYTE *getBytes() const {
-    return m_byte;
-  }
-
-  inline RegType getRegType() const {
-    return m_regType;
-  }
-  inline bool hasGPRegMode() const {
-    return getRegType() == REGTYPE_GP;
-  }
-  inline bool hasXMMRegMode() const {
-    return getRegType() == REGTYPE_XMM;
-  }
-  // are MEM_ADDR_* macroes allowed for this opcode
-  inline bool hasMemAddrMode() const {
-    return m_hasMemAddrMode ? true : false;
-  }
-  // is REGREG-macro allowed for this opcode
-  inline bool hasRegRegMode() const {
-    return m_hasRegRegMode ? true : false;
-  }
-  inline bool isImmMode() const {
-    return m_immMode ? true : false;
-  }
-  inline bool hasRexMode() const {
-#ifdef IS32BIT
-    return false;
-#else
-    return m_hasRexMode ? true : false;
-#endif
-  }
-  inline bool hasRexByte() const {
-#ifdef IS32BIT
-    return false;
-#else
-    return m_hasRexByte ? true : false;
-#endif
-  }
-  inline RegSize getOpSize() const {
-    return (RegSize)(m_regSizeDefined ? m_regSize : -1);
-  }
-  static const TCHAR *getOpSizeName(RegSize regSize);
-         const TCHAR *getOpSizeName() const;
-
-  static inline bool isByte( int   v) {
-    return v == (char)v;
-  }
-  static inline bool isWord( int   v) {
-    return v == (short)v;
-  }
-  static inline bool isByte( INT64 v) {
-    return v == (char)v;
-  }
-  static inline bool isWord( INT64 v) {
-    return v == (short)v;
-  }
-  static inline bool isDword(INT64 v) {
-    return v == (int)v;
+  SetxxOp(UINT op) : OpcodeBase(2, op, 1, REGTYPE_GP_ALLOWED | REGSIZE_BYTE_ALLOWED | REGISTER_ALLOWED | MEMREFERENCE_ALLOWED | REXBYTE_ALLOWED ) {
   }
 };
 
-class IntelInstruction : public IntelOpcode {
-private:
-  // Append count bytes to sequence of m_byte
-  IntelInstruction &add(INT64 bytesToAdd, BYTE count);
-  inline IntelInstruction &add(BYTE b) {
-    addByte(b);
-    return *this;
-  }
-  inline IntelInstruction &or(BYTE b) {
-    orLast(b);
-    return *this;
-  }
-  inline IntelInstruction &memAddrEsp0() {
-    return or(0x04).add(0x24);
-  }
-  inline IntelInstruction &memAddrEsp1(char offset) {
-    return or(0x44).add(0x24).add(offset);
-  }
-  inline IntelInstruction &memAddrEsp4(int offset) {
-    return or(0x84).add(0x24).add(offset, 4);
-  }
-  IntelInstruction &memAddrEsp(int offset);
-  // ptr[reg]. (reg&7) != {4,5}
-  IntelInstruction &memAddrPtr0(const IndexRegister &reg);
-  // ptr[reg+offset], (reg&7) != 4, offset=[-128;127]
-  IntelInstruction &memAddrPtr1(const IndexRegister &reg, char offset);
-  // ptr[reg+offset], (reg&7) != 4, offset=[INT_MIN;INT_MAX]
-  IntelInstruction &memAddrPtr4(const IndexRegister &reg, int offset);
-  // ptr[reg+(addReg<<p2)], (reg&7) != 5, (addReg&7) != 4, p2<=3
-  IntelInstruction &memAddrMp2AddReg0(const IndexRegister &reg, BYTE p2, const IndexRegister &addReg);
-  // ptr[reg+(addReg<<p2)+offset], (addReg&7) != 4, p2<=3, offset=[-128;127]
-  IntelInstruction &memAddrMp2AddReg1(const IndexRegister &reg, BYTE p2, const IndexRegister &addReg, char offset);
-  // ptr[reg+(addReg<<p2)+offset], (addReg&7) != 4, p2<=3, offset=[INT_MIN;INT_MAX]
-  IntelInstruction &memAddrMp2AddReg4(const IndexRegister &reg, BYTE p2, const IndexRegister &addReg, int offset);
-  // Use with Imm-addressing. reg = { ES,CS,SS,DS,FS,GS }
-  IntelInstruction &prefixSegReg(const SegmentRegister &reg);
-
-public:
-  inline IntelInstruction(BYTE size, UINT64 op, RegType regType, bool immMode) 
-    : IntelOpcode(size, op, regType, false, false, immMode) {
-  }
-  inline IntelInstruction(const IntelOpcode &op) : IntelOpcode(op) {
-  }
-
-  IntelInstruction &setGPReg(const GPRegister &reg);
-
-   // ptr[(reg<<p2)+offset], (reg&7) != 4, p2<=3, offset=[INT_MIN;INT_MAX]
-  IntelInstruction &memAddrMp2Ptr4(  const IndexRegister &reg, BYTE p2, int offset);
-  IntelInstruction &memAddrPtr(      const IndexRegister &reg, int offset);
-  IntelInstruction &memAddrMp2AddReg(const IndexRegister &reg, const IndexRegister &addReg, BYTE p2, int offset);
-
-  inline IntelInstruction &memAddrImmDword(int addr) {
-    assert(hasMemAddrMode());
-    return or(0x05).add(addr, 4);
-  }
-
-  IntelInstruction &regReg(        const Register &reg);
-  IntelInstruction &setGPRegImm(   const GPRegister &reg, int           immv);
-  IntelInstruction &setMovGPRegImm(const GPRegister &reg, MovMaxImmType immv);
-};
-
-#define WORDOP(  op32) ((op32).wordOp())
-
-#define MEM_ADDR_PTR(       op,reg,          offset) IntelInstruction(op).memAddrPtr(      reg          ,offset)
-// reg   !=ESP          offset=4 bytes signed [INT_MIN;INT_MAX] p2=[0;3]. Ex:fild word ptr[(reg<<p2) + offset]
-#define MEM_ADDR_MP2PTR4(   op,reg       ,p2,offset) IntelInstruction(op).memAddrMp2Ptr4(  reg,p2       ,offset)
-// addReg!=ESP          offset=[INT_MIN;INT_MAX] p2=[0;3].                Ex:fild word ptr[reg + (addReg<<p2) + offset]
-#define MEM_ADDR_PTRMP2REG( op,reg,addReg,p2,offset) IntelInstruction(op).memAddrMp2AddReg(reg,addReg,p2,offset)
-// 4 byte address. In x64 mode PC-relative offset
-#define MEM_ADDR_DS_IMM(    op,addr                ) IntelInstruction(op).memAddrImmDword(addr)
-//                                                                        Ex:add dst, reg
-#define REGREG(             op,reg                 ) IntelInstruction(op).regReg(      reg                )
-
-// addReg!=ESP          offset=[INT_MIN;INT_MAX]                          Ex:fild word ptr[esp + eax + 0x12345678]
-#define MEM_ADDR_PTRREG(    op,reg,addReg   ,offset) MEM_ADDR_PTRMP2REG(op,reg,addReg,0,offset)
-
-// Instruction defined with these macroes, must be combined with macroes MEM_ADDR_* (and evt. REGREG)
-//                                 IntelOpcode(     size,op,regType     ,memAddrMode, regRegMode,immMode)
-#define B1OP(        op          ) IntelOpcode(     1   ,op,REGTYPE_NONE,true       , true      ,false)
-#define B1OPREG(     op,reg      ) IntelOpcode(     1   ,op,REGTYPE_GP  ,true       , true      ,false).addGPReg(reg)
-#define B2OP(        op          ) IntelOpcode(     2   ,op,REGTYPE_NONE,true       , true      ,false)
-#define B3OP(        op          ) IntelOpcode(     3   ,op,REGTYPE_NONE,true       , true      ,false)
-#define B4OP(        op          ) IntelOpcode(     4   ,op,REGTYPE_NONE,true       , true      ,false)
-#define B2OPNOREGREG(op          ) IntelOpcode(     2   ,op,REGTYPE_NONE,true       ,false      ,false)
-#define B4OPNOREGREG(op          ) IntelOpcode(     4   ,op,REGTYPE_NONE,true       ,false      ,false)
-
-#define B2OPXMM(     op,reg      ) IntelOpcode(     2   ,op,REGTYPE_XMM ,true       , true      ,false).addXMMReg(reg)
-#define B3OP1XMM(    op,reg      ) IntelOpcode(     3   ,op,REGTYPE_XMM ,true       ,false      ,false).addXMMReg(reg)
-// Instructions defined with these macroes, cannot be combined with the various addressing-nmodes
-//                                 IntelInstruction(size,op,regType     ,immMode) - memAddrMode=regRegMode=false
-
-#define B1INS(       op          ) IntelInstruction(1   ,op,REGTYPE_NONE,false)
-#define B1INSREG(    op,reg      ) IntelInstruction(1   ,op,REGTYPE_GP  ,false).setReg(reg)
-#define B1INSIMM(    op          ) IntelInstruction(1   ,op,REGTYPE_GP  ,true )
-#define B2INS(       op          ) IntelInstruction(2   ,op,REGTYPE_NONE,false)
-#define B3INS(       op          ) IntelInstruction(3   ,op,REGTYPE_NONE,false)
-#define B4INS(       op          ) IntelInstruction(4   ,op,REGTYPE_NONE,false)
-
-#define INS_STDIMM(  opa,opr,reg,immv) B1INSIMM(reg.getIndex()?opr:opa).setGPRegImm(   reg,immv)
-#define INS_MOVGPIMM(op     ,reg,immv) B1INSIMM(                    op).setMovGPRegImm(reg,(MovMaxImmType)(immv))
-
-#define FPUINS(op)       B2INS(       op)
-#define FPUINSA(op)      B2OPNOREGREG(op)
-
-#ifdef IS64BIT
-// 0 arguments instructions (push,pop...)
-// For r8-15, add rexbyte, and set bit 0
-#define REX0(op32,r64) (((r64.getIndex())<=7)?op32(r64):op32((r64.getIndex()&7).setRexBits(1))
-// Use for IMM operations, and other instructions where only 1 general purpose register is used.
-// Set rex bit 3 (and bit 0 for r8-15)
-#define REX1(op32,r64) (op32(r64.getIndex()&7).setRexBits(8|((r64.getIndex()>>3)&1)))
-// Use for all instructions, where 2 general purpose registers are involved.
-// Set rex bit 3 (and bit 2 for r8-15)
-#define REX2(op32,r64) (op32(r64.getIndex()&7).setRexBits(8|((r64.getIndex()>>1)&4)))
-// Set rex bit 3
-#define REX3(op32)     (op32).setRexBits(8)
-#endif // IS64BIT
-
-// Use less/greater opcode for signed comparison. below/above for unsigned.
-
-// 1 byte PC relative offset
-#define JOSHORT                                B1INS(0x70)                              // Jump short if overflow                                 (OF==1 )
-#define JNOSHORT                               B1INS(0x71)                              // Jump short if not overflow                             (OF==0 )
-#define JBSHORT                                B1INS(0x72)                              // Jump short if below                (unsigned)          (CF==1 )
-#define JAESHORT                               B1INS(0x73)                              // Jump short if above or equal       (unsigned)          (CF==0 )
-#define JESHORT                                B1INS(0x74)                              // Jump short if equal                (signed/unsigned)   (ZF==1 )
-#define JNESHORT                               B1INS(0x75)                              // Jump short if not equal            (signed/unsigned)   (ZF==0 )
-#define JBESHORT                               B1INS(0x76)                              // Jump short if below or equal       (unsigned)          (CF==1 || ZF==1)
-#define JASHORT                                B1INS(0x77)                              // Jump short if above                (unsigned)          (CF==0 && ZF==0)
-#define JSSHORT                                B1INS(0x78)                              // Jump short if sign                                     (SF==1 )
-#define JNSSHORT                               B1INS(0x79)                              // Jump short if not sign                                 (SF==0 )
-#define JPESHORT                               B1INS(0x7A)                              // Jump short if parity even                              (PF==1 )
-#define JPOSHORT                               B1INS(0x7B)                              // Jump short if parity odd                               (PF==0 )
-#define JLSHORT                                B1INS(0x7C)                              // Jump short if less                 (signed  )          (SF!=OF)
-#define JGESHORT                               B1INS(0x7D)                              // Jump short if greater or equal     (signed  )          (SF==OF)
-#define JLESHORT                               B1INS(0x7E)                              // Jump short if less or equal        (signed  )          (ZF==1 || SF!=OF)
-#define JGSHORT                                B1INS(0x7F)                              // Jump short if greater              (signed  )          (ZF==0 && SF==OF)
-
-#define JNAESHORT                              JBSHORT                                  // Jump short if not above or equal   (unsigned)
-#define JCSHORT                                JBSHORT                                  // Jump short if carry                (unsigned)
-#define JNCSHORT                               JAESHORT                                 // Jump short if not carry            (unsigned)
-#define JNBSHORT                               JAESHORT                                 // Jump short if not below            (unsigned)
-#define JZSHORT                                JESHORT                                  // Jump short if zero                 (signed/unsigned)
-#define JNZSHORT                               JNESHORT                                 // Jump short if not zero             (signed/unsigned)
-#define JNASHORT                               JBESHORT                                 // Jump short if not above            (unsigned)
-#define JNBESHORT                              JASHORT                                  // Jump short if not below or equal   (unsigned)
-#define JNGESHORT                              JLSHORT                                  // Jump short if not greater or equal (signed  )
-#define JNLSHORT                               JGESHORT                                 // Jump short if not less             (signed  )
-#define JNGSHORT                               JLESHORT                                 // Jump short if not greater          (signed  )
-#define JNLESHORT                              JGSHORT                                  // Jump short if not less or equal    (signed  )
-
-// 4 byte PC relative offset
-#define JONEAR                                 B2INS(0x0F80)                            // Jump near  if overflow
-#define JNONEAR                                B2INS(0x0F81)                            // Jump near  if not overflow
-#define JBNEAR                                 B2INS(0x0F82)                            // Jump near  if below                 (unsigned)
-#define JAENEAR                                B2INS(0x0F83)                            // Jump near  if above or equal        (unsigned)
-#define JENEAR                                 B2INS(0x0F84)                            // Jump near  if equal                 (signed/unsigned)
-#define JNENEAR                                B2INS(0x0F85)                            // Jump near  if not equal             (signed/unsigned)
-#define JBENEAR                                B2INS(0x0F86)                            // Jump near  if below or equal        (unsigned)
-#define JANEAR                                 B2INS(0x0F87)                            // Jump near  if above                 (unsigned)
-#define JSNEAR                                 B2INS(0x0F88)                            // Jump near  if sign
-#define JNSNEAR                                B2INS(0x0F89)                            // Jump near  if not sign
-#define JPENEAR                                B2INS(0x0F8A)                            // Jump near  if parity even
-#define JPONEAR                                B2INS(0x0F8B)                            // Jump near  if parity odd
-#define JLNEAR                                 B2INS(0x0F8C)                            // Jump near  if less                  (signed  )
-#define JGENEAR                                B2INS(0x0F8D)                            // Jump near  if greater or equal      (signed  )
-#define JLENEAR                                B2INS(0x0F8E)                            // Jump near  if less or equal         (signed  )
-#define JGNEAR                                 B2INS(0x0F8F)                            // Jump near  if greater               (signed  )
-
-#define JNAENEAR                               JBNEAR                                   // Jump near  if not above or equal    (unsigned)
-#define JCNEAR                                 JBNEAR                                   // Jump near  if carry                 (unsigned)
-#define JNCNEAR                                JAENEAR                                  // Jump near  if not carry             (unsigned)
-#define JNBNEAR                                JAENEAR                                  // Jump near  if not below             (unsigned)
-#define JZNEAR                                 JENEAR                                   // Jump near  if 0                     (signed/unsigned)
-#define JNZNEAR                                JNENEAR                                  // Jump near  if not zero              (signed/unsigned)
-#define JNANEAR                                JBENEAR                                  // Jump near  if not above             (unsigned)
-#define JNBENEAR                               JANEAR                                   // Jump near  if not below or equal    (unsigned)
-#define JNGENEAR                               JLNEAR                                   // Jump near  if not greater or equal  (signed  )
-#define JNLNEAR                                JGENEAR                                  // Jump near  if not less              (signed  )
-#define JNGNEAR                                JLENEAR                                  // Jump near  if not greater           (signed  )
-#define JNLENEAR                               JGNEAR                                   // Jump near  if not less or equal     (signed  )
-
-#define SETO                                   B3OP(0x0F9000)                           // Set byte   if overflow
-#define SETNO                                  B3OP(0x0F9100)                           // Set byte   if not overflow
-#define SETB                                   B3OP(0x0F9200)                           // Set byte   if below                 (unsigned)
-#define SETAE                                  B3OP(0x0F9300)                           // Set byte   if above or equal        (unsigned)
-#define SETE                                   B3OP(0x0F9400)                           // Set byte   if equal                 (signed/unsigned)
-#define SETNE                                  B3OP(0x0F9500)                           // Set byte   if not equal             (signed/unsigned)
-#define SETBE                                  B3OP(0x0F9600)                           // Set byte   if below or equal        (unsigned)
-#define SETA                                   B3OP(0x0F9700)                           // Set byte   if above                 (unsigned)
-#define SETS                                   B3OP(0x0F9800)                           // Set byte   if sign
-#define SETNS                                  B3OP(0x0F9900)                           // Set byte   if not sign
-#define SETPE                                  B3OP(0x0F9A00)                           // Set byte   if parity even
-#define SETPO                                  B3OP(0x0F9B00)                           // Set byte   if parity odd
-#define SETL                                   B3OP(0x0F9C00)                           // Set byte   if less                  (signed  )
-#define SETGE                                  B3OP(0x0F9D00)                           // Set byte   if greater or equal      (signed  )
-#define SETLE                                  B3OP(0x0F9E00)                           // Set byte   if less or equal         (signed  )
-#define SETG                                   B3OP(0x0F9F00)                           // Set byte   if greater               (signed  )
+// Set Byte on Condition
+extern SetxxOp SETO;                                                                    // Set byte   if overflow
+extern SetxxOp SETNO;                                                                   // Set byte   if not overflow
+extern SetxxOp SETB;                                                                    // Set byte   if below                 (unsigned)
+extern SetxxOp SETAE;                                                                   // Set byte   if above or equal        (unsigned)
+extern SetxxOp SETE;                                                                    // Set byte   if equal                 (signed/unsigned)
+extern SetxxOp SETNE;                                                                   // Set byte   if not equal             (signed/unsigned)
+extern SetxxOp SETBE;                                                                   // Set byte   if below or equal        (unsigned)
+extern SetxxOp SETA;                                                                    // Set byte   if above                 (unsigned)
+extern SetxxOp SETS;                                                                    // Set byte   if sign
+extern SetxxOp SETNS;                                                                   // Set byte   if not sign
+extern SetxxOp SETPE;                                                                   // Set byte   if parity even
+extern SetxxOp SETPO;                                                                   // Set byte   if parity odd
+extern SetxxOp SETL;                                                                    // Set byte   if less                  (signed  )
+extern SetxxOp SETGE;                                                                   // Set byte   if greater or equal      (signed  )
+extern SetxxOp SETLE;                                                                   // Set byte   if less or equal         (signed  )
+extern SetxxOp SETG;                                                                    // Set byte   if greater               (signed  )
 
 #define SETNAE                                 SETB                                     // Set byte   if not above or equal    (unsigned)
 #define SETC                                   SETB                                     // Set byte   if carry                 (unsigned)
@@ -376,52 +477,7 @@ public:
 #define SETNG                                  SETLE                                    // Set byte   if not greater           (signed  )
 #define SETNLE                                 SETG                                     // Set byte   if not less or equal     (signed  )
 
-#define JMPSHORT                               B1INS(0xEB)                              // Unconditional short jump. 1 byte PC relative offset
-#define JMPNEAR                                B1INS(0xE9)                              // Unconditional near jump. 4 byte PC relative offset
-#ifdef IS64BIT
-#define JMP_QWORDPTR                           B2INS(0xFF25)                            // Unconditional jump. 4 byte PC relative offset
-#endif
-#ifdef IS32BIT
-#define JCXZSHORT                              B2INS(0x67E3)                            // Jump short if CX  register is 0. 1 byte PC relative offset
-#define JECXSHORT                              B1INS(0xE3)                              // Jump short if ECX register is 0  1 byte PC relative offset
-#else
-#define JEXZSHORT                              B2INS(0x67E3)                            // Jump short if ECX register is 0. 1 byte PC relative offset
-#define JRCXSHORT                              B1INS(0xE3)                              // Jump short if RCX register is 0  1 byte PC relative offset
-#endif // IS64BIT
-
-#define CALL                                   B1INS(0xE8)                              // Call near, 4 byte PC relative, displacement
-#define CALLABSOLUTE                           B2OP(0xFFD0)                             // Call far, absolute address given by operand
-#define RET                                    B1INS(0xC3)                              // Near return to calling procedure
-
-#define CMC                                    B1INS(0xF5)                              // Complement carry flag
-#define CLC                                    B1INS(0xF8)                              // Clear carry flag     CF = 0	
-#define STC                                    B1INS(0xF9)                              // Set   carry flag     CF = 1
-#define CLI                                    B1INS(0xFA)                              // Clear interrupt flag IF = 0
-#define STI                                    B1INS(0xFB)                              // Set   interrupt flag IF = 1
-#define CLD                                    B1INS(0xFC)                              // Clear direction flag DF = 0
-#define STD                                    B1INS(0xFD)                              // Set   direction flag DF = 1
-
-#define PUSHF                                  B1INS(0x9C)                              // Push FLAGS onto stack *--SP = FLAGS;	
-#define POPF                                   B1INS(0x9D)                              // Pop  FLAGS register from stack FLAGS = *SP++
-#define SAHF                                   B1INS(0x9E)                              // Store AH into FLAGS
-#define LAHF                                   B1INS(0x9F)                              // Load FLAGS into AH register
-#define PUSHFD                                 PUSHF                                    // Push EFLAGS register onto stack
-#define POPFD                                  POPF                                     // Pop data into EFLAGS register
-#define PUSHAD                                 B1INS(0x60)                              // Push all double-word (32-bit) registers onto stack
-#define POPAD                                  B1INS(0x61)                              // Pop  all double-word (32-bit) registers from stack
-#define PUSHA                                  WORDOP(PUSHAD)                           // Push all word        (16-bit) registers onto stack
-#define POPA                                   WORDOP(POPAD )                           // Pop  all word        (16-bit) registers from stack
-
-#define TEST_REG_MEM(        reg)              B1OPREG(0x84,reg)                        // Build op2 with MEM_ADDR-*,REGREG-macroes
-#define TEST_AL_IMM_BYTE                       B1INS(  0xA8)                            // 1 byte operand
-#define TEST_EAX_IMM_DWORD                     B1INS(  0xA9)                            // 4 byte operand
-#define TEST_IMM_BYTE                          B2OP(   0xF600)                          // Build src with MEM_ADDR-*,REGREG-macroes. 1 byte operand
-#define TEST_IMM_DWORD                         B2OP(   0xF700)                          // Build src with MEM_ADDR-*,REGREG-macroes. 4 byte operand
-
-#define TEST_AX_IMM_WORD                       WORDOP(TEST_EAX_IMM_DWORD)               // 2 byte operand
-#define TEST_IMM_WORD                          WORDOP(TEST_IMM_DWORD)                   // Build src with MEM_ADDR-*,REGREG-macroes. 2 byte operand
-
-
+#ifdef __NEVER__
 #define NOOP                                   B1INS(0x90)
 
 #define XCHG_EAX_R32(        r32)              B1INS(0x90     |  (r32))                   // r32=eax-edi
@@ -597,7 +653,7 @@ public:
 #define SHR_R32_IMM_BYTE(r32)                  REGREG(SHR_DWORD_IMM_BYTE,r32)            // 1 byte operand as shift amount
 #define SHR_R16_IMM_BYTE(r16)                  REGREG(SHR_WORD_IMM_BYTE ,r16)            // 1 byte operand as shift amount
 
-#define SAL_BYTE                               SHL_BYTE                                   // Shift Arithmetically left by cl       (signed shift left ) 
+#define SAL_BYTE                               SHL_BYTE                                   // Shift Arithmetically left by cl       (signed shift left )
 #define SAL_DWORD                              SHL_DWORD
 #define SAL_WORD                               SHL_WORD
 #define SAL_BYTE_IMM_BYTE                      SHL_BYTE_IMM_BYTE                          // 1 byte operand as shift amount
@@ -611,7 +667,7 @@ public:
 #define SAL_R32_IMM_BYTE(r32)                  SHL_R32_IMM_BYTE(          r32)            // 1 byte operand as shift amount
 #define SAL_R16_IMM_BYTE(r16)                  SHL_R16_IMM_BYTE(          r16)            // 1 byte operand as shift amount
 
-#define SAR_BYTE                               B2OP(   0xD238                )            // Shift Arithmetically right by cl       (signed shift right) 
+#define SAR_BYTE                               B2OP(   0xD238                )            // Shift Arithmetically right by cl       (signed shift right)
 #define SAR_DWORD                              B2OP(   0xD338                )
 #define SAR_WORD                               WORDOP( SAR_DWORD             )
 #define SAR_BYTE_IMM_BYTE                      B2OP(   0xC038                )            // 1 byte operand as shift amount
@@ -996,3 +1052,5 @@ public:
 
 #define FBLD                                   FPUINSA(0xDF20)                            // LoaD BCD data from memory
 #define FBSTP                                  FPUINSA(0xDF30)                            // STore BCD data to memory
+
+#endif

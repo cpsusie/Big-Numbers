@@ -343,7 +343,16 @@
     <ClCompile Include="FPU.cpp">
       <Filter>Source Files\Misc</Filter>
     </ClCompile>
+    <ClCompile Include="Expression\Opcodes.cpp">
+      <Filter>Source Files\Expression</Filter>
+    </ClCompile>
+    <ClCompile Include="Expression\NewOpcode.cpp">
+      <Filter>Source Files\Expression</Filter>
+    </ClCompile>
     <ClCompile Include="Expression\Opcode.cpp">
+      <Filter>Source Files\Expression</Filter>
+    </ClCompile>
+    <ClCompile Include="Expression\Registers.cpp">
       <Filter>Source Files\Expression</Filter>
     </ClCompile>
   </ItemGroup>
@@ -517,7 +526,13 @@
     <ClInclude Include="..\..\Include\Math\FPU.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\Math\Expression\OpCode.h">
+    <ClInclude Include="..\..\Include\Math\Expression\NewOpCode.h">
+      <Filter>Header Files\Expression</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Expression\Opcode.h">
+      <Filter>Header Files\Expression</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Expression\Registers.h">
       <Filter>Header Files\Expression</Filter>
     </ClInclude>
   </ItemGroup>
