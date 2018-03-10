@@ -26,58 +26,71 @@ static char findShift(BYTE a) {
   return shift[a];
 }
 
-String IndexRegisterCombination::toString() const {
+String MemoryRef::toString() const {
   String result;
   if(m_reg   ) result = m_reg->getName();
   if(m_addreg) {
-    if(m_reg) result += _T("+");
+    if(result.length() > 0) result += _T("+");
     if(hasShift()) result += format(_T("%d*"),1<<getShift());
     result += m_addreg->getName();
   }
   if(m_offset) {
-    result += format(_T("%+d"), m_offset);
+    if(result.length() > 0) {
+      result += format(_T("%+d"), m_offset);
+    } else {
+      result = format(_T("%08xh"), m_offset);
+      if(!iswdigit(result[0])) {
+        result.insert(0,'0');
+      }
+    }
   }
   return result;
 }
 
-IndexRegisterCombination operator+(const IndexRegister &reg, int offset) {
-  return IndexRegisterCombination(&reg,NULL,-1,offset);
+MemoryRef operator+(const IndexRegister &reg, int offset) {
+  return MemoryRef(&reg,NULL,0,offset);
 }
 
-IndexRegisterCombination operator-(const IndexRegister &reg, int offset) {
-  return IndexRegisterCombination(&reg,NULL,-1,-offset);
+MemoryRef operator-(const IndexRegister &reg, int offset) {
+  return MemoryRef(&reg,NULL,0,-offset);
 }
 
-IndexRegisterCombination operator+(const IndexRegisterCombination &irc, int offset) {
-  if(irc.getOffset() != 0) {
-    throwInvalidArgumentException(__TFUNCTION__,_T("Illegal index:%s+%d"),irc.toString().cstr(),offset);
+MemoryRef operator+(const MemoryRef &mr, int offset) {
+  if(mr.getOffset() != 0) {
+    throwInvalidArgumentException(__TFUNCTION__,_T("Illegal index:%s+%d"),mr.toString().cstr(),offset);
   }
-  return IndexRegisterCombination(irc.getReg(),irc.getAddreg(),irc.getShift(),offset);
+  return MemoryRef(mr.getReg(),mr.getAddreg(),mr.getShift(),offset);
 }
 
-IndexRegisterCombination operator-(const IndexRegisterCombination &irc, int offset) {
-  if(irc.getOffset() != 0) {
-    throwInvalidArgumentException(__TFUNCTION__,_T("Illegal index:%s-%d"),irc.toString().cstr(),offset);
+MemoryRef operator-(const MemoryRef &mr, int offset) {
+  if(mr.getOffset() != 0) {
+    throwInvalidArgumentException(__TFUNCTION__,_T("Illegal index:%s-%d"),mr.toString().cstr(),offset);
   }
-  return IndexRegisterCombination(irc.getReg(),irc.getAddreg(),irc.getShift(),-offset);
+  return MemoryRef(mr.getReg(),mr.getAddreg(),mr.getShift(),-offset);
 }
 
-IndexRegisterCombination operator+(const IndexRegister &reg, const IndexRegisterCombination &irc) {
-  if((irc.getReg() != NULL) || (irc.getAddreg() == NULL) || (irc.getOffset() != 0)) {
-    throwInvalidArgumentException(__TFUNCTION__,_T("Illegal index:%s+%s"),reg.getName().cstr(),irc.toString().cstr());
+MemoryRef operator+(const IndexRegister &reg, const MemoryRef &mr) {
+  if((mr.getReg() != NULL) || (mr.getAddreg() == NULL) || (mr.getOffset() != 0)) {
+    throwInvalidArgumentException(__TFUNCTION__,_T("Illegal index:%s+%s"),reg.getName().cstr(),mr.toString().cstr());
   }
-  return IndexRegisterCombination(&reg,irc.getAddreg(),irc.getShift());
+  return MemoryRef(&reg,mr.getAddreg(),mr.getShift());
 }
 
-IndexRegisterCombination operator+(const IndexRegister &reg, const IndexRegister &addreg) {
-  return IndexRegisterCombination(&reg,&addreg,0);
+MemoryRef operator+(const IndexRegister &reg, const IndexRegister &addreg) {
+  return MemoryRef(&reg,&addreg,0);
 }
 
-IndexRegisterCombination operator*(BYTE a, const IndexRegister &reg) {
+MemoryRef operator*(BYTE a, const IndexRegister &reg) {
   if((reg.getIndex()&7) == 4) {
     throwInvalidArgumentException(__TFUNCTION__,_T("Invalid indexregister:%s"), reg.getName().cstr());
   }
-  return IndexRegisterCombination(NULL,&reg,findShift(a));
+  return MemoryRef(NULL,&reg,findShift(a));
+}
+
+String MemoryOperand::toString() const {
+  return (m_segReg)
+        ? format(_T("%s ptr %s:[%s]"), getOpSizeName(getSize()), m_segReg->getName().cstr(), m_mr.toString().cstr())
+        : format(_T("%s ptr[%s]"), getOpSizeName(getSize()), m_mr.toString().cstr());
 }
 
 OperandSize ImmediateOperand::findMinSize(int    v) {
@@ -185,7 +198,7 @@ void OpcodeBase::validateOpCount(int count) const {
 
 void OpcodeBase::validateRegisterAllowed(const Register &reg) const {
   DEFINEMETHODNAME;
-  if(!hasRegisterMode()) {
+  if(!isRegisterAllowed()) {
     throwInvalidArgumentException(method, _T("Opcode doesn't use registers"));
   }
   if(!isRegisterTypeAllowed(reg.getType()) || !isOperandSizeAllowed(reg.getSize())) {
@@ -196,6 +209,12 @@ void OpcodeBase::validateRegisterAllowed(const Register &reg) const {
 void OpcodeBase::validateMemoryReferenceAllowed() const {
   if(!isMemoryReferenceAllowed()) {
     throwInvalidArgumentException(__TFUNCTION__, _T("Cannot reference memory for this opcode"));
+  }
+}
+
+void OpcodeBase::validateImmediateValueAllowed() const {
+  if(!isImmediateValueAllowed()) {
+    throwInvalidArgumentException(__TFUNCTION__, _T("Immediate value not allowed this opcode"));
   }
 }
 
@@ -216,9 +235,10 @@ InstructionBase OpcodeBase::operator()(const InstructionOperand &op) const {
   case MEMREFERENCE   :
     validateMemoryReferenceAllowed();
     validateOperandSize(op.getSize());
-    return result.setMemoryReference(*op.getMemoryReference());
+    return result.setMemoryReference((MemoryOperand&)op);
   case IMMEDIATEVALUE :
-;
+    validateImmediateValueAllowed();
+    break;
   }
   return result;
 }
@@ -235,7 +255,7 @@ InstructionBase &InstructionBase::insertByte(BYTE index, BYTE b) {
 
 #ifdef IS64BIT
 InstructionBase &InstructionBase::setRexBits(BYTE bits) {
-  assert(((bits&0xf0)==0) && hasRexMode());
+  assert((bits&0xf0)==0);
   if(m_hasRexByte) {
     m_bytes[m_rexByteIndex] |= bits; // just add new bits to rex-byte
     return *this;
@@ -258,13 +278,13 @@ InstructionBase &InstructionBase::add(INT64 bytesToAdd, BYTE count) {
   return *this;
 }
 
-InstructionBase &InstructionBase::memAddrEsp(int offset) {
-  if(offset == 0) return memAddrEsp0();
-  if(ImmediateOperand::isByte(offset)) return memAddrEsp1((char)offset);
-  return memAddrEsp4(offset);
+InstructionBase &InstructionBase::addrStack(int offset) {
+  if(offset == 0) return addrStack0();
+  if(ImmediateOperand::isByte(offset)) return addrStack1((char)offset);
+  return addrStack4(offset);
 }
 
-InstructionBase &InstructionBase::memAddrPtr0(const IndexRegister &reg) {
+InstructionBase &InstructionBase::addrPtr0(const IndexRegister &reg) {
   const BYTE regIndex = reg.getIndex();
   assert(((regIndex&7)!=4) && ((regIndex&7)!=5));
   SETREXBITONHIGHREG(reg,0);
@@ -272,7 +292,7 @@ InstructionBase &InstructionBase::memAddrPtr0(const IndexRegister &reg) {
 }
 
 // ptr[reg+offset], (reg&7) != 4, offset=[-128;127]
-InstructionBase &InstructionBase::memAddrPtr1(const IndexRegister &reg, char offset) {
+InstructionBase &InstructionBase::addrPtr1(const IndexRegister &reg, char offset) {
   const BYTE regIndex = reg.getIndex();
   assert((regIndex&7)!=4);
   SETREXBITONHIGHREG(reg,0);
@@ -280,70 +300,77 @@ InstructionBase &InstructionBase::memAddrPtr1(const IndexRegister &reg, char off
 }
 
 // ptr[reg+offset], (reg&7) != 4, offset=[INT_MIN;INT_MAX]
-InstructionBase &InstructionBase::memAddrPtr4(const IndexRegister &reg, int offset) {
+InstructionBase &InstructionBase::addrPtr4(const IndexRegister &reg, int offset) {
   const BYTE regIndex = reg.getIndex();
   assert((regIndex&7)!=4);
   SETREXBITONHIGHREG(reg,0);
   return add(0x80 | (regIndex&7)).add(offset, 4);
 }
 
-// ptr[reg+(addReg<<p2)], (reg&7) != 5, (addReg&7) != 4, p2<=3
-InstructionBase &InstructionBase::memAddrMp2AddReg0(const IndexRegister &reg, BYTE p2, const IndexRegister &addReg) {
+// ptr[reg+(addReg<<shift)], (reg&7) != 5, (addReg&7) != 4, shift<=3
+InstructionBase &InstructionBase::addrShiftAddReg0(const IndexRegister &reg, BYTE shift, const IndexRegister &addReg) {
   const BYTE regIndex = reg.getIndex(), addRegIndex = addReg.getIndex();
-  assert(((regIndex&7)!=5) && ((addRegIndex&7)!=4) && (p2<=3));
+  assert(((regIndex&7)!=5) && ((addRegIndex&7)!=4) && (shift<=3));
   SETREXBITSONHIGHREG2(reg,addReg);
-  return add(0x04).add((p2 << 6) | ((addRegIndex&7) << 3) | (regIndex&7));
+  return add(0x04).add((shift << 6) | ((addRegIndex&7) << 3) | (regIndex&7));
 }
 
-// ptr[reg+(addReg<<p2)+offset], (addReg&7) != 4, p2<=3, offset=[-128;127]
-InstructionBase &InstructionBase::memAddrMp2AddReg1(const IndexRegister &reg, BYTE p2, const IndexRegister &addReg, char offset) {
+// ptr[reg+(addReg<<shift)+offset], (addReg&7) != 4, shift<=3, offset=[-128;127]
+InstructionBase &InstructionBase::addrShiftAddReg1(const IndexRegister &reg, BYTE shift, const IndexRegister &addReg, char offset) {
   const BYTE regIndex = reg.getIndex(), addRegIndex = addReg.getIndex();
-  assert(((addRegIndex&7)!=4) && (p2<=3));
+  assert(((addRegIndex&7)!=4) && (shift<=3));
   SETREXBITSONHIGHREG2(reg,addReg);
-  return add(0x44).add((p2 << 6) | ((addRegIndex&7) << 3) | (regIndex&7)).add(offset);
+  return add(0x44).add((shift << 6) | ((addRegIndex&7) << 3) | (regIndex&7)).add(offset);
 }
 
-// ptr[reg+(addReg<<p2)+offset], (addReg&7) != 4, p2<=3, offset=[INT_MIN;INT_MAX]
-InstructionBase &InstructionBase::memAddrMp2AddReg4(const IndexRegister &reg, BYTE p2, const IndexRegister &addReg, int offset) {
+// ptr[reg+(addReg<<shift)+offset], (addReg&7) != 4, shift<=3, offset=[INT_MIN;INT_MAX]
+InstructionBase &InstructionBase::addrShiftAddReg4(const IndexRegister &reg, BYTE shift, const IndexRegister &addReg, int offset) {
   const BYTE regIndex = reg.getIndex(), addRegIndex = addReg.getIndex();
-  assert(((addRegIndex&7)!=4) && (p2<=3));
+  assert(((addRegIndex&7)!=4) && (shift<=3));
   SETREXBITSONHIGHREG2(reg,addReg);
-  return add(0x84).add((p2 << 6) | ((addRegIndex&7) << 3) | (regIndex&7)).add(offset, 4);
+  return add(0x84).add((shift << 6) | ((addRegIndex&7) << 3) | (regIndex&7)).add(offset, 4);
 }
 
-  // ptr[(reg<<p2)+offset], (reg&7) != 4, p2<=3, offset=[INT_MIN;INT_MAX]
-InstructionBase &InstructionBase::memAddrMp2Ptr4(const IndexRegister &reg, BYTE p2, int offset) {
+  // ptr[(reg<<shift)+offset], (reg&7) != 4, shift<=3, offset=[INT_MIN;INT_MAX]
+InstructionBase &InstructionBase::addrShiftPtr4(const IndexRegister &reg, BYTE shift, int offset) {
   const BYTE regIndex = reg.getIndex();
-  assert(((regIndex&7)!=4) && (p2<=3));
+  assert(((regIndex&7)!=4) && (shift<=3));
   SETREXBITONHIGHREG(reg,1);
-  return add(0x04).add(0x05 | (p2 << 6) | ((regIndex&7) << 3)).add(offset, 4);
+  return add(0x04).add(0x05 | (shift << 6) | ((regIndex&7) << 3)).add(offset, 4);
 }
 
 // ------------------------------------------------------------------------------------------
-InstructionBase &InstructionBase::memAddrPtr(const IndexRegister &reg, int offset) {
+InstructionBase &InstructionBase::addrPtr(const IndexRegister &reg, int offset) {
   const BYTE regIndex = reg.getIndex();
   switch(regIndex&7) {
   case 4 :
-    return memAddrEsp(offset);
+    return addrStack(offset);
   default:
-    if(offset == 0 && ((regIndex&7)!=5)) return memAddrPtr0(reg);
-    if(ImmediateOperand::isByte(offset)) return memAddrPtr1(reg,(char)offset);
-    return memAddrPtr4(reg,offset);
+    if((offset == 0) && ((regIndex&7)!=5)) return addrPtr0(reg);
+    if(ImmediateOperand::isByte(offset)) return addrPtr1(reg,(char)offset);
+    return addrPtr4(reg,offset);
   }
 }
 
-InstructionBase &InstructionBase::memAddrMp2AddReg(const IndexRegister &reg, const IndexRegister &addReg, BYTE p2, int offset) {
+InstructionBase &InstructionBase::addrShiftAddReg(const IndexRegister &reg, const IndexRegister &addReg, BYTE shift, int offset) {
   DEFINEMETHODNAME;
   const BYTE regIndex = reg.getIndex(), addRegIndex = addReg.getIndex();
   if((addRegIndex&7)==4) {
     throwInvalidArgumentException(method, _T("Invalid index register:%s"), reg.getName().cstr());
   }
-  if(p2 > 3) {
-    throwInvalidArgumentException(method, _T("p2=%d. Valid range=[0;3]"),p2);
+  if(shift > 3) {
+    throwInvalidArgumentException(method, _T("shift=%d. Valid range=[0;3]"),shift);
   }
-  if((offset == 0) && ((regIndex&7) != 5)) return memAddrMp2AddReg0(reg,p2,addReg);
-  if(ImmediateOperand::isByte(offset))     return memAddrMp2AddReg1(reg,p2,addReg,(char)offset);
-  return memAddrMp2AddReg4(reg,p2,addReg,offset);
+  if((offset == 0) && ((regIndex&7) != 5)) return addrShiftAddReg0(reg,shift,addReg);
+  if(ImmediateOperand::isByte(offset))     return addrShiftAddReg1(reg,shift,addReg,(char)offset);
+  return addrShiftAddReg4(reg,shift,addReg,offset);
+}
+
+InstructionBase &InstructionBase::prefixSegReg(const SegmentRegister &reg) {
+  static const BYTE segRegPrefix[] = { 0x26,0x2e,0x36,0x3e,0x64,0x65 }; // es,cs,ss,ds,fs,gs
+  assert(reg.getIndex() < ARRAYSIZE(segRegPrefix));
+  prefix(segRegPrefix[reg.getIndex()]);
+  return *this;
 }
 
 InstructionBase &InstructionBase::setRegister(const Register &reg) {
@@ -351,13 +378,19 @@ InstructionBase &InstructionBase::setRegister(const Register &reg) {
   return add(0xc0 | (reg.getIndex()&7));
 }
 
-InstructionBase &InstructionBase::setMemoryReference(const IndexRegisterCombination &irc) {
-  if(irc.getAddreg()) {
-    memAddrMp2AddReg(*irc.getReg(), *irc.getAddreg(), irc.getShift(), irc.getOffset());
-  } else if(irc.hasShift()) {
-    memAddrMp2Ptr4(*irc.getAddreg(), irc.getShift(), irc.getOffset());
+InstructionBase &InstructionBase::setMemoryReference(const MemoryOperand &mop) {
+  const MemoryRef &mr = *mop.getMemoryReference();
+  if(mop.hasSegmentRegister()) {
+    prefixSegReg(mop.getSegmentRegister());
+  }
+  if(mr.isImmediateAddr()) {
+    addrImmDword(mr.getOffset());
+  } else if(mr.getAddreg()) {
+    addrShiftAddReg(*mr.getReg(), *mr.getAddreg(), mr.getShift(), mr.getOffset());
+  } else if(mr.hasShift()) {
+    addrShiftPtr4(*mr.getAddreg(), mr.getShift(), mr.getOffset());
   } else {
-    memAddrPtr(*irc.getReg(), irc.getOffset());
+    addrPtr(*mr.getReg(), mr.getOffset());
   }
   return *this;
 }

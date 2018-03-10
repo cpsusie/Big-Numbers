@@ -632,197 +632,75 @@ TestMachineCode::TestMachineCode() {
 #endif  // IS64BIT
 
   String s;
-  s = BYTEPtr(REG1              ).toString();
-  s = BYTEPtr(REG1         +0xff).toString();
-  s = BYTEPtr(REG1         -0xff).toString();
-  s = BYTEPtr(REG1  +  REGA     ).toString();
-  s = BYTEPtr(REG1  +2*REGA     ).toString();
-  s = BYTEPtr(REG1  +4*REGA     ).toString();
-  s = BYTEPtr(REG1  +8*REGA     ).toString();
-  s = BYTEPtr(REG1  +  REGA+0xff).toString();
-  s = BYTEPtr(REG1  +  REGA-0xff).toString();
-  s = BYTEPtr(REG1  +2*REGA+0xff).toString();
-  s = BYTEPtr(REG1  +4*REGA+0xff).toString();
-  s = BYTEPtr(REG1  +8*REGA+0xff).toString();
-  s = BYTEPtr(REG1  +8*REGA-0xff).toString();
+  s = BYTEPtr( REG1               ).toString();
+  s = BYTEPtr( REG1          +0xff).toString();
+  s = BYTEPtr( REG1          -0xff).toString();
+  s = BYTEPtr( REG1  +   REGA     ).toString();
+  s = BYTEPtr( REG1  + 2*REGA     ).toString();
+  s = BYTEPtr( REG1  + 4*REGA     ).toString();
+  s = BYTEPtr( REG1  + 8*REGA     ).toString();
+  s = BYTEPtr( REG1  +   REGA+0xff).toString();
+  s = BYTEPtr( REG1  +   REGA-0xff).toString();
+  s = BYTEPtr( REG1  + 2*REGA+0xff).toString();
+  s = BYTEPtr( REG1  + 4*REGA+0xff).toString();
+  s = BYTEPtr( REG1  + 8*REGA+0xff).toString();
+  s = BYTEPtr( REG1  + 8*REGA-0xff).toString();
 
-  s = WORDPtr(REG1              ).toString();
-  s = WORDPtr(REG1         +0xff).toString();
-  s = WORDPtr(REG1         -0xff).toString();
-  s = WORDPtr(REG1  +  REGA     ).toString();
-  s = WORDPtr(REG1  +2*REGA     ).toString();
-  s = WORDPtr(REG1  +4*REGA     ).toString();
-  s = WORDPtr(REG1  +8*REGA     ).toString();
-  s = WORDPtr(REG1  +  REGA+0xff).toString();
-  s = WORDPtr(REG1  +  REGA-0xff).toString();
-  s = WORDPtr(REG1  +2*REGA+0xff).toString();
-  s = WORDPtr(REG1  +4*REGA+0xff).toString();
-  s = WORDPtr(REG1  +8*REGA+0xff).toString();
-  s = WORDPtr(REG1  +8*REGA-0xff).toString();
+  s = WORDPtr( REG1               ).toString();
+  s = WORDPtr( REG1          +0xff).toString();
+  s = WORDPtr( REG1          -0xff).toString();
+  s = WORDPtr( REG1  +   REGA     ).toString();
+  s = WORDPtr( REG1  + 2*REGA     ).toString();
+  s = WORDPtr( REG1  + 4*REGA     ).toString();
+  s = WORDPtr( REG1  + 8*REGA     ).toString();
+  s = WORDPtr( REG1  +   REGA+0xff).toString();
+  s = WORDPtr( REG1  +   REGA-0xff).toString();
+  s = WORDPtr( REG1  + 2*REGA+0xff).toString();
+  s = WORDPtr( REG1  + 4*REGA+0xff).toString();
+  s = WORDPtr( REG1  + 8*REGA+0xff).toString();
+  s = WORDPtr( REG1  + 8*REGA-0xff).toString();
 
-  s = DWORDPtr(REG1              ).toString();
-  s = DWORDPtr(REG1         +0xff).toString();
-  s = DWORDPtr(REG1         -0xff).toString();
-  s = DWORDPtr(REG1  +  REGA     ).toString();
-  s = DWORDPtr(REG1  +2*REGA     ).toString();
-  s = DWORDPtr(REG1  +4*REGA     ).toString();
-  s = DWORDPtr(REG1  +8*REGA     ).toString();
-  s = DWORDPtr(REG1  +  REGA+0xff).toString();
-  s = DWORDPtr(REG1  +  REGA-0xff).toString();
-  s = DWORDPtr(REG1  +2*REGA+0xff).toString();
-  s = DWORDPtr(REG1  +4*REGA+0xff).toString();
-  s = DWORDPtr(REG1  +8*REGA+0xff).toString();
-  s = DWORDPtr(REG1  +8*REGA-0xff).toString();
+  s = DWORDPtr(REG1               ).toString();
+  s = DWORDPtr(REG1          +0xff).toString();
+  s = DWORDPtr(REG1          -0xff).toString();
+  s = DWORDPtr(REG1  +   REGA     ).toString();
+  s = DWORDPtr(REG1  + 2*REGA     ).toString();
+  s = DWORDPtr(REG1  + 4*REGA     ).toString();
+  s = DWORDPtr(REG1  + 8*REGA     ).toString();
+  s = DWORDPtr(REG1  +   REGA+0xff).toString();
+  s = DWORDPtr(REG1  +   REGA-0xff).toString();
+  s = DWORDPtr(REG1  + 2*REGA+0xff).toString();
+  s = DWORDPtr(REG1  + 4*REGA+0xff).toString();
+  s = DWORDPtr(REG1  + 8*REGA+0xff).toString();
+  s = DWORDPtr(REG1  + 8*REGA-0xff).toString();
 
-  s = QWORDPtr(REG1              ).toString();
-  s = QWORDPtr(REG1         +0xff).toString();
-  s = QWORDPtr(REG1         -0xff).toString();
-  s = QWORDPtr(REG1  +  REGA     ).toString();
-  s = QWORDPtr(REG1  +2*REGA     ).toString();
-  s = QWORDPtr(REG1  +4*REGA     ).toString();
-  s = QWORDPtr(REG1  +8*REGA     ).toString();
-  s = QWORDPtr(REG1  +  REGA+0xff).toString();
-  s = QWORDPtr(REG1  +  REGA-0xff).toString();
-  s = QWORDPtr(REG1  +2*REGA+0xff).toString();
-  s = QWORDPtr(REG1  +4*REGA+0xff).toString();
-  s = QWORDPtr(REG1  +8*REGA+0xff).toString();
-  s = QWORDPtr(REG1  +8*REGA-0xff).toString();
+  s = QWORDPtr(REG1               ).toString();
+  s = QWORDPtr(REG1          +0xff).toString();
+  s = QWORDPtr(REG1          -0xff).toString();
+  s = QWORDPtr(REG1  +   REGA     ).toString();
+  s = QWORDPtr(REG1  + 2*REGA     ).toString();
+  s = QWORDPtr(REG1  + 4*REGA     ).toString();
+  s = QWORDPtr(REG1  + 8*REGA     ).toString();
+  s = QWORDPtr(REG1  +   REGA+0xff).toString();
+  s = QWORDPtr(REG1  +   REGA-0xff).toString();
+  s = QWORDPtr(REG1  + 2*REGA+0xff).toString();
+  s = QWORDPtr(REG1  + 4*REGA+0xff).toString();
+  s = QWORDPtr(REG1  + 8*REGA+0xff).toString();
+  s = QWORDPtr(REG1  + 8*REGA-0xff).toString();
 
-  s = TBYTEPtr(REG1              ).toString();
-  s = TBYTEPtr(REG1         +0xff).toString();
-  s = TBYTEPtr(REG1         -0xff).toString();
-  s = TBYTEPtr(REG1  +  REGA     ).toString();
-  s = TBYTEPtr(REG1  +2*REGA     ).toString();
-  s = TBYTEPtr(REG1  +4*REGA     ).toString();
-  s = TBYTEPtr(REG1  +8*REGA     ).toString();
-  s = TBYTEPtr(REG1  +  REGA+0xff).toString();
-  s = TBYTEPtr(REG1  +  REGA-0xff).toString();
-  s = TBYTEPtr(REG1  +2*REGA+0xff).toString();
-  s = TBYTEPtr(REG1  +4*REGA+0xff).toString();
-  s = TBYTEPtr(REG1  +8*REGA+0xff).toString();
-  s = TBYTEPtr(REG1  +8*REGA-0xff).toString();
-
-  emit(SETE(AL));
-  emit(SETE(CL));
-  emit(SETE(DL));
-  emit(SETE(BL));
-#ifdef IS64BIT
-  emit(SETE(R8B));
-  emit(SETE(R9B));
-  emit(SETE(R10B));
-  emit(SETE(R11B));
-#endif
-  emit(SETE(BYTEPtr(REG1                    )));
-  emit(SETE(BYTEPtr(REG1         +0x7f      )));
-  emit(SETE(BYTEPtr(REG1         -0x80      )));
-  emit(SETE(BYTEPtr(REG1         +0x7fffffff)));
-  emit(SETE(BYTEPtr(REG1         -0x7fffffff)));
-  emit(SETE(BYTEPtr(REG1  +  REGA           )));
-  emit(SETE(BYTEPtr(REG1  +2*REGA           )));
-  emit(SETE(BYTEPtr(REG1  +4*REGA           )));
-  emit(SETE(BYTEPtr(REG1  +8*REGA           )));
-  emit(SETE(BYTEPtr(REG1  +  REGA+0x7f      )));
-  emit(SETE(BYTEPtr(REG1  +  REGA-0x7f      )));
-  emit(SETE(BYTEPtr(REG1  +2*REGA+0x7f      )));
-  emit(SETE(BYTEPtr(REG1  +4*REGA+0x7f      )));
-  emit(SETE(BYTEPtr(REG1  +8*REGA+0x7f      )));
-  emit(SETE(BYTEPtr(REG1  +8*REGA-0x7f      )));
-  emit(SETE(BYTEPtr(REG1  +  REGA+0x7fffffff)));
-  emit(SETE(BYTEPtr(REG1  +  REGA-0x7fffffff)));
-  emit(SETE(BYTEPtr(REG1  +2*REGA+0x7fffffff)));
-  emit(SETE(BYTEPtr(REG1  +4*REGA+0x7fffffff)));
-  emit(SETE(BYTEPtr(REG1  +8*REGA+0x7fffffff)));
-  emit(SETE(BYTEPtr(REG1  +8*REGA-0x7fffffff)));
-
-  emit(SETE(BYTEPtr(STACKREG                    )));
-  emit(SETE(BYTEPtr(STACKREG         +0x7f      )));
-  emit(SETE(BYTEPtr(STACKREG         -0x80      )));
-  emit(SETE(BYTEPtr(STACKREG         +0x7fffffff)));
-  emit(SETE(BYTEPtr(STACKREG         -0x7fffffff)));
-  emit(SETE(BYTEPtr(STACKREG  +  REGA           )));
-  emit(SETE(BYTEPtr(STACKREG  +2*REGA           )));
-  emit(SETE(BYTEPtr(STACKREG  +4*REGA           )));
-  emit(SETE(BYTEPtr(STACKREG  +8*REGA           )));
-  emit(SETE(BYTEPtr(STACKREG  +  REGA+0x7f      )));
-  emit(SETE(BYTEPtr(STACKREG  +  REGA-0x7f      )));
-  emit(SETE(BYTEPtr(STACKREG  +2*REGA+0x7f      )));
-  emit(SETE(BYTEPtr(STACKREG  +4*REGA+0x7f      )));
-  emit(SETE(BYTEPtr(STACKREG  +8*REGA+0x7f      )));
-  emit(SETE(BYTEPtr(STACKREG  +8*REGA-0x7f      )));
-  emit(SETE(BYTEPtr(STACKREG  +  REGA+0x7fffffff)));
-  emit(SETE(BYTEPtr(STACKREG  +  REGA-0x7fffffff)));
-  emit(SETE(BYTEPtr(STACKREG  +2*REGA+0x7fffffff)));
-  emit(SETE(BYTEPtr(STACKREG  +4*REGA+0x7fffffff)));
-  emit(SETE(BYTEPtr(STACKREG  +8*REGA+0x7fffffff)));
-  emit(SETE(BYTEPtr(STACKREG  +8*REGA-0x7fffffff)));
-
-#ifdef IS64BIT
-  emit(SETE(BYTEPtr(R8                      )));
-  emit(SETE(BYTEPtr(R8           +0x7f      )));
-  emit(SETE(BYTEPtr(R8           -0x80      )));
-  emit(SETE(BYTEPtr(R8           +0x7fffffff)));
-  emit(SETE(BYTEPtr(R8           -0x7fffffff)));
-  emit(SETE(BYTEPtr(R8    +  REGA           )));
-  emit(SETE(BYTEPtr(R8    +2*REGA           )));
-  emit(SETE(BYTEPtr(R8    +4*REGA           )));
-  emit(SETE(BYTEPtr(R8    +8*REGA           )));
-  emit(SETE(BYTEPtr(R8    +  REGA+0x7f      )));
-  emit(SETE(BYTEPtr(R8    +  REGA-0x7f      )));
-  emit(SETE(BYTEPtr(R8    +2*REGA+0x7f      )));
-  emit(SETE(BYTEPtr(R8    +4*REGA+0x7f      )));
-  emit(SETE(BYTEPtr(R8    +8*REGA+0x7f      )));
-  emit(SETE(BYTEPtr(R8    +8*REGA-0x7f      )));
-  emit(SETE(BYTEPtr(R8    +  REGA+0x7fffffff)));
-  emit(SETE(BYTEPtr(R8    +  REGA-0x7fffffff)));
-  emit(SETE(BYTEPtr(R8    +2*REGA+0x7fffffff)));
-  emit(SETE(BYTEPtr(R8    +4*REGA+0x7fffffff)));
-  emit(SETE(BYTEPtr(R8    +8*REGA+0x7fffffff)));
-  emit(SETE(BYTEPtr(R8    +8*REGA-0x7fffffff)));
-
-  emit(SETE(BYTEPtr(R8                      )));
-  emit(SETE(BYTEPtr(R8           +0x7f      )));
-  emit(SETE(BYTEPtr(R8           -0x80      )));
-  emit(SETE(BYTEPtr(R8           +0x7fffffff)));
-  emit(SETE(BYTEPtr(R8           -0x7fffffff)));
-  emit(SETE(BYTEPtr(R8    +  R9             )));
-  emit(SETE(BYTEPtr(R8    +2*R9             )));
-  emit(SETE(BYTEPtr(R8    +4*R9             )));
-  emit(SETE(BYTEPtr(R8    +8*R9             )));
-  emit(SETE(BYTEPtr(R8    +  R9  +0x7f      )));
-  emit(SETE(BYTEPtr(R8    +  R9  -0x7f      )));
-  emit(SETE(BYTEPtr(R8    +2*R9  +0x7f      )));
-  emit(SETE(BYTEPtr(R8    +4*R9  +0x7f      )));
-  emit(SETE(BYTEPtr(R8    +8*R9  +0x7f      )));
-  emit(SETE(BYTEPtr(R8    +8*R9  -0x7f      )));
-  emit(SETE(BYTEPtr(R8    +  R9  +0x7fffffff)));
-  emit(SETE(BYTEPtr(R8    +  R9  -0x7fffffff)));
-  emit(SETE(BYTEPtr(R8    +2*R9  +0x7fffffff)));
-  emit(SETE(BYTEPtr(R8    +4*R9  +0x7fffffff)));
-  emit(SETE(BYTEPtr(R8    +8*R9  +0x7fffffff)));
-  emit(SETE(BYTEPtr(R8    +8*R9  -0x7fffffff)));
-
-  emit(SETE(BYTEPtr(STACKREG                    )));
-  emit(SETE(BYTEPtr(STACKREG         +0x7f      )));
-  emit(SETE(BYTEPtr(STACKREG         -0x80      )));
-  emit(SETE(BYTEPtr(STACKREG         +0x7fffffff)));
-  emit(SETE(BYTEPtr(STACKREG         -0x7fffffff)));
-  emit(SETE(BYTEPtr(STACKREG  +  R9             )));
-  emit(SETE(BYTEPtr(STACKREG  +2*R9             )));
-  emit(SETE(BYTEPtr(STACKREG  +4*R9             )));
-  emit(SETE(BYTEPtr(STACKREG  +8*R9             )));
-  emit(SETE(BYTEPtr(STACKREG  +  R9  +0x7f      )));
-  emit(SETE(BYTEPtr(STACKREG  +  R9  -0x7f      )));
-  emit(SETE(BYTEPtr(STACKREG  +2*R9  +0x7f      )));
-  emit(SETE(BYTEPtr(STACKREG  +4*R9  +0x7f      )));
-  emit(SETE(BYTEPtr(STACKREG  +8*R9  +0x7f      )));
-  emit(SETE(BYTEPtr(STACKREG  +8*R9  -0x7f      )));
-  emit(SETE(BYTEPtr(STACKREG  +  R9  +0x7fffffff)));
-  emit(SETE(BYTEPtr(STACKREG  +  R9  -0x7fffffff)));
-  emit(SETE(BYTEPtr(STACKREG  +2*R9  +0x7fffffff)));
-  emit(SETE(BYTEPtr(STACKREG  +4*R9  +0x7fffffff)));
-  emit(SETE(BYTEPtr(STACKREG  +8*R9  +0x7fffffff)));
-  emit(SETE(BYTEPtr(STACKREG  +8*R9  -0x7fffffff)));
-#endif
+  s = TBYTEPtr(REG1               ).toString();
+  s = TBYTEPtr(REG1          +0xff).toString();
+  s = TBYTEPtr(REG1          -0xff).toString();
+  s = TBYTEPtr(REG1  +   REGA     ).toString();
+  s = TBYTEPtr(REG1  + 2*REGA     ).toString();
+  s = TBYTEPtr(REG1  + 4*REGA     ).toString();
+  s = TBYTEPtr(REG1  + 8*REGA     ).toString();
+  s = TBYTEPtr(REG1  +   REGA+0xff).toString();
+  s = TBYTEPtr(REG1  +   REGA-0xff).toString();
+  s = TBYTEPtr(REG1  + 2*REGA+0xff).toString();
+  s = TBYTEPtr(REG1  + 4*REGA+0xff).toString();
+  s = TBYTEPtr(REG1  + 8*REGA+0xff).toString();
+  s = TBYTEPtr(REG1  + 8*REGA-0xff).toString();
 
   s = ImmediateOperand(0xff      ).toString();
   s = ImmediateOperand(0x80      ).toString();
@@ -835,7 +713,141 @@ TestMachineCode::TestMachineCode() {
   s = ImmediateOperand(0x7fffffff).toString();
   s = ImmediateOperand(0x80000000).toString();
   s = ImmediateOperand(0xffffffffffffffffui64).toString();
+
+  emit(SETE(AL));
+  emit(SETE(CL));
+  emit(SETE(DL));
+  emit(SETE(BL));
+#ifdef IS64BIT
+  emit(SETE(R8B));
+  emit(SETE(R9B));
+  emit(SETE(R10B));
+  emit(SETE(R11B));
 #endif
+#ifdef IS32BIT
+  emit(SETE(BYTEPtr(CS,REG1                        )));
+  emit(SETE(BYTEPtr(DS,REG1                        )));
+  emit(SETE(BYTEPtr(CS,0x12345678                  )));
+  emit(SETE(BYTEPtr(DS,0x12345678                  )));
+#else // IS64BIT
+  emit(SETE(BYTEPtr(REG1                           )));
+  emit(SETE(BYTEPtr(REG1                           )));
+  emit(SETE(BYTEPtr(0x12345678                     )));
+  emit(SETE(BYTEPtr(0x12345678                     )));
+#endif // IS64BIT
+  emit(SETE(BYTEPtr(REG1                           )));
+  emit(SETE(BYTEPtr(REG1               + 0x7f      )));
+  emit(SETE(BYTEPtr(REG1               - 0x80      )));
+  emit(SETE(BYTEPtr(REG1               + 0x7fffffff)));
+  emit(SETE(BYTEPtr(REG1               - 0x7fffffff)));
+  emit(SETE(BYTEPtr(REG1      +   REGA             )));
+  emit(SETE(BYTEPtr(REG1      + 2*REGA             )));
+  emit(SETE(BYTEPtr(REG1      + 4*REGA             )));
+  emit(SETE(BYTEPtr(REG1      + 8*REGA             )));
+  emit(SETE(BYTEPtr(REG1      +   REGA + 0x7f      )));
+  emit(SETE(BYTEPtr(REG1      +   REGA - 0x7f      )));
+  emit(SETE(BYTEPtr(REG1      + 2*REGA + 0x7f      )));
+  emit(SETE(BYTEPtr(REG1      + 4*REGA + 0x7f      )));
+  emit(SETE(BYTEPtr(REG1      + 8*REGA + 0x7f      )));
+  emit(SETE(BYTEPtr(REG1      + 8*REGA - 0x7f      )));
+  emit(SETE(BYTEPtr(REG1      +   REGA + 0x7fffffff)));
+  emit(SETE(BYTEPtr(REG1      +   REGA - 0x7fffffff)));
+  emit(SETE(BYTEPtr(REG1      + 2*REGA + 0x7fffffff)));
+  emit(SETE(BYTEPtr(REG1      + 4*REGA + 0x7fffffff)));
+  emit(SETE(BYTEPtr(REG1      + 8*REGA + 0x7fffffff)));
+  emit(SETE(BYTEPtr(REG1      + 8*REGA - 0x7fffffff)));
+
+  emit(SETE(BYTEPtr(STACKREG                       )));
+  emit(SETE(BYTEPtr(STACKREG           + 0x7f      )));
+  emit(SETE(BYTEPtr(STACKREG           - 0x80      )));
+  emit(SETE(BYTEPtr(STACKREG           + 0x7fffffff)));
+  emit(SETE(BYTEPtr(STACKREG           - 0x7fffffff)));
+  emit(SETE(BYTEPtr(STACKREG  +   REGA             )));
+  emit(SETE(BYTEPtr(STACKREG  + 2*REGA             )));
+  emit(SETE(BYTEPtr(STACKREG  + 4*REGA             )));
+  emit(SETE(BYTEPtr(STACKREG  + 8*REGA             )));
+  emit(SETE(BYTEPtr(STACKREG  +   REGA + 0x7f      )));
+  emit(SETE(BYTEPtr(STACKREG  +   REGA - 0x7f      )));
+  emit(SETE(BYTEPtr(STACKREG  + 2*REGA + 0x7f      )));
+  emit(SETE(BYTEPtr(STACKREG  + 4*REGA + 0x7f      )));
+  emit(SETE(BYTEPtr(STACKREG  + 8*REGA + 0x7f      )));
+  emit(SETE(BYTEPtr(STACKREG  + 8*REGA - 0x7f      )));
+  emit(SETE(BYTEPtr(STACKREG  +   REGA + 0x7fffffff)));
+  emit(SETE(BYTEPtr(STACKREG  +   REGA - 0x7fffffff)));
+  emit(SETE(BYTEPtr(STACKREG  + 2*REGA + 0x7fffffff)));
+  emit(SETE(BYTEPtr(STACKREG  + 4*REGA + 0x7fffffff)));
+  emit(SETE(BYTEPtr(STACKREG  + 8*REGA + 0x7fffffff)));
+  emit(SETE(BYTEPtr(STACKREG  + 8*REGA - 0x7fffffff)));
+
+#ifdef IS64BIT
+  emit(SETE(BYTEPtr(R8                             )));
+  emit(SETE(BYTEPtr(R8                 + 0x7f      )));
+  emit(SETE(BYTEPtr(R8                 - 0x80      )));
+  emit(SETE(BYTEPtr(R8                 + 0x7fffffff)));
+  emit(SETE(BYTEPtr(R8                 - 0x7fffffff)));
+  emit(SETE(BYTEPtr(R8        +   REGA             )));
+  emit(SETE(BYTEPtr(R8        + 2*REGA             )));
+  emit(SETE(BYTEPtr(R8        + 4*REGA             )));
+  emit(SETE(BYTEPtr(R8        + 8*REGA             )));
+  emit(SETE(BYTEPtr(R8        +   REGA + 0x7f      )));
+  emit(SETE(BYTEPtr(R8        +   REGA - 0x7f      )));
+  emit(SETE(BYTEPtr(R8        + 2*REGA + 0x7f      )));
+  emit(SETE(BYTEPtr(R8        + 4*REGA + 0x7f      )));
+  emit(SETE(BYTEPtr(R8        + 8*REGA + 0x7f      )));
+  emit(SETE(BYTEPtr(R8        + 8*REGA - 0x7f      )));
+  emit(SETE(BYTEPtr(R8        +   REGA + 0x7fffffff)));
+  emit(SETE(BYTEPtr(R8        +   REGA - 0x7fffffff)));
+  emit(SETE(BYTEPtr(R8        + 2*REGA + 0x7fffffff)));
+  emit(SETE(BYTEPtr(R8        + 4*REGA + 0x7fffffff)));
+  emit(SETE(BYTEPtr(R8        + 8*REGA + 0x7fffffff)));
+  emit(SETE(BYTEPtr(R8        + 8*REGA - 0x7fffffff)));
+
+  emit(SETE(BYTEPtr(R8                             )));
+  emit(SETE(BYTEPtr(R8                 + 0x7f      )));
+  emit(SETE(BYTEPtr(R8                 - 0x80      )));
+  emit(SETE(BYTEPtr(R8                 + 0x7fffffff)));
+  emit(SETE(BYTEPtr(R8                 - 0x7fffffff)));
+  emit(SETE(BYTEPtr(R8        +   R9               )));
+  emit(SETE(BYTEPtr(R8        + 2*R9               )));
+  emit(SETE(BYTEPtr(R8        + 4*R9               )));
+  emit(SETE(BYTEPtr(R8        + 8*R9               )));
+  emit(SETE(BYTEPtr(R8        +   R9   + 0x7f      )));
+  emit(SETE(BYTEPtr(R8        +   R9   - 0x7f      )));
+  emit(SETE(BYTEPtr(R8        + 2*R9   + 0x7f      )));
+  emit(SETE(BYTEPtr(R8        + 4*R9   + 0x7f      )));
+  emit(SETE(BYTEPtr(R8        + 8*R9   + 0x7f      )));
+  emit(SETE(BYTEPtr(R8        + 8*R9   - 0x7f      )));
+  emit(SETE(BYTEPtr(R8        +   R9   + 0x7fffffff)));
+  emit(SETE(BYTEPtr(R8        +   R9   - 0x7fffffff)));
+  emit(SETE(BYTEPtr(R8        + 2*R9   + 0x7fffffff)));
+  emit(SETE(BYTEPtr(R8        + 4*R9   + 0x7fffffff)));
+  emit(SETE(BYTEPtr(R8        + 8*R9   + 0x7fffffff)));
+  emit(SETE(BYTEPtr(R8        + 8*R9   - 0x7fffffff)));
+
+  emit(SETE(BYTEPtr(STACKREG                       )));
+  emit(SETE(BYTEPtr(STACKREG           + 0x7f      )));
+  emit(SETE(BYTEPtr(STACKREG           - 0x80      )));
+  emit(SETE(BYTEPtr(STACKREG           + 0x7fffffff)));
+  emit(SETE(BYTEPtr(STACKREG           - 0x7fffffff)));
+  emit(SETE(BYTEPtr(STACKREG  +   R9               )));
+  emit(SETE(BYTEPtr(STACKREG  + 2*R9               )));
+  emit(SETE(BYTEPtr(STACKREG  + 4*R9               )));
+  emit(SETE(BYTEPtr(STACKREG  + 8*R9               )));
+  emit(SETE(BYTEPtr(STACKREG  +   R9   + 0x7f      )));
+  emit(SETE(BYTEPtr(STACKREG  +   R9   - 0x7f      )));
+  emit(SETE(BYTEPtr(STACKREG  + 2*R9   + 0x7f      )));
+  emit(SETE(BYTEPtr(STACKREG  + 4*R9   + 0x7f      )));
+  emit(SETE(BYTEPtr(STACKREG  + 8*R9   + 0x7f      )));
+  emit(SETE(BYTEPtr(STACKREG  + 8*R9   - 0x7f      )));
+  emit(SETE(BYTEPtr(STACKREG  +   R9   + 0x7fffffff)));
+  emit(SETE(BYTEPtr(STACKREG  +   R9   - 0x7fffffff)));
+  emit(SETE(BYTEPtr(STACKREG  + 2*R9   + 0x7fffffff)));
+  emit(SETE(BYTEPtr(STACKREG  + 4*R9   + 0x7fffffff)));
+  emit(SETE(BYTEPtr(STACKREG  + 8*R9   + 0x7fffffff)));
+  emit(SETE(BYTEPtr(STACKREG  + 8*R9   - 0x7fffffff)));
+#endif // IS64BIT
+#endif TEST_MEMPTR
+
 }
 
 #endif // TEST_MACHINECODE
@@ -859,7 +871,12 @@ void assemblerCode() {
     sete al
     sete cl
     sete dl
-    sete byte ptr[eax]
+    sete es:byte ptr[eax]
+    sete ss:byte ptr[eax]
+    sete cs:byte ptr[eax]
+    sete ds:byte ptr[eax]
+    sete fs:byte ptr[eax]
+    sete gs:byte ptr[eax]
     sete byte ptr[eax]
     sete byte ptr[eax + 127]
     sete byte ptr[eax - 128]
@@ -878,7 +895,19 @@ void assemblerCode() {
     sete byte ptr[esi+8*edi+0xffff]
     sete byte ptr[esi+8*edi-0xffff]
     sete byte ptr[esi+0xff]
+    sete byte ptr es:[12345678h]
+    sete byte ptr cs:[12345678h]
+    sete byte ptr ss:[12345678h]
+    _emit 0x0F
+    _emit 0x94;
+    _emit 0x05;
+    _emit 0x78;
+    _emit 0x56;
+    _emit 0x34;
+    _emit 0x12;
     sete byte ptr ds:[12345678h]
+    sete byte ptr fs:[12345678h]
+    sete byte ptr gs:[12345678h]
 
     mov al                      , byte  ptr es:[12345678h]
     mov eax                     , dword ptr es:[12345678h]

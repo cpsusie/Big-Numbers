@@ -37,8 +37,12 @@
     <DisplayString>{Value={m_value}}</DisplayString>
   </Type>
   <Type Name="Register">
-    <DisplayString>{m_name.m_buf,su}</DisplayString>
+    <DisplayString>{m_debugStr.m_buf,su}</DisplayString>
   </Type>
+  <Type Name="InstructionOperand">
+    <DisplayString>{m_debugStr.m_buf,su}</DisplayString>
+  </Type>
+  
   <Type Name="SNode">
     <DisplayString Condition="m_node == 0">null</DisplayString>
     <DisplayString>{Node={*m_node}}</DisplayString>

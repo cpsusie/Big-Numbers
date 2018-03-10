@@ -1,7 +1,6 @@
 #pragma once
 
 #include <MyUtil.h>
-#include <TinyBitSet.h>
 #include <MyAssert.h>
 #include "Registers.h"
 
@@ -13,7 +12,7 @@ typedef enum {
 
 typedef RegSize OperandSize;
 
-class IndexRegisterCombination;
+class MemoryRef;
 
 class InstructionOperand {
 private:
@@ -21,6 +20,13 @@ private:
   const OperandSize m_size;
   const Register   *m_reg;
 
+#ifdef _DEBUG
+protected:
+  String            m_debugStr;
+#define SETSTR() m_debugStr = toString()
+#else
+#define SETSTR()
+#endif // _DEBUG
 public:
   inline InstructionOperand(OperandType type, OperandSize size)
     : m_type(type)
@@ -33,6 +39,7 @@ public:
     , m_size(reg.getSize())
     , m_reg(&reg)
   {
+    SETSTR();
   }
   const Register &getRegister() const {
     if(m_reg == NULL) throwUnsupportedOperationException(__TFUNCTION__);
@@ -47,7 +54,11 @@ public:
   virtual String toString() const {
     return m_reg ? m_reg->getName() : _T("Unknown operand");
   }
-  virtual const IndexRegisterCombination *getMemoryReference() const {
+  virtual const SegmentRegister &getSegmentRegister() const {
+    throwUnsupportedOperationException(__TFUNCTION__);
+    return ES;
+  }
+  virtual const MemoryRef       *getMemoryReference() const {
     throwUnsupportedOperationException(__TFUNCTION__);
     return NULL;
   }
@@ -69,62 +80,96 @@ public:
   }
 };
 
-class IndexRegisterCombination {
+class MemoryRef {
 private:
   const IndexRegister *m_reg,*m_addreg;
-  const char           m_shift;
+  const BYTE           m_shift;
   const int            m_offset;
 public:
-  inline IndexRegisterCombination(const IndexRegister *reg, const IndexRegister *addreg, char shift=-1, int offset=0)
+  inline MemoryRef(const IndexRegister *reg, const IndexRegister *addreg, BYTE shift=0, int offset=0)
     : m_reg(   reg   )
     , m_addreg(addreg)
     , m_shift( shift )
     , m_offset(offset)
   {
   }
-  inline IndexRegisterCombination(const IndexRegister &reg)
-    : m_reg(  &reg )
-    , m_addreg(NULL)
-    , m_shift( -1  )
-    , m_offset( 0  )
+  inline MemoryRef(const IndexRegister &reg)
+    : m_reg(  &reg   )
+    , m_addreg(NULL  )
+    , m_shift( 0     )
+    , m_offset(0     )
   {
   }
-  inline const IndexRegister *getReg()    const { return m_reg;    }
-  inline const IndexRegister *getAddreg() const { return m_addreg; }
-  inline BYTE                 getShift()  const { return m_shift;  }
-  inline int                  getOffset() const { return m_offset; }
+  inline MemoryRef(DWORD addr)
+    : m_reg(   NULL  )
+    , m_addreg(NULL  )
+    , m_shift( 0     )
+    , m_offset(addr  )
+  {
+  }
+  inline bool isImmediateAddr() const {
+    return (m_reg == NULL) && (m_addreg == NULL);
+  }
+  inline const IndexRegister *getReg()    const { return m_reg;        }
+  inline const IndexRegister *getAddreg() const { return m_addreg;     }
+  inline BYTE                 getShift()  const { return m_shift;      }
+  inline int                  getOffset() const { return m_offset;     }
   inline bool                 hasShift()  const { return m_shift >= 1; }
   String                      toString() const;
 };
 
-IndexRegisterCombination operator+(const IndexRegister &reg, int offset);
-IndexRegisterCombination operator-(const IndexRegister &reg, int offset);
-IndexRegisterCombination operator+(const IndexRegisterCombination &irc, int offset);
-IndexRegisterCombination operator-(const IndexRegisterCombination &irc, int offset);
-IndexRegisterCombination operator+(const IndexRegister &reg, const IndexRegisterCombination &irc);
-IndexRegisterCombination operator+(const IndexRegister &reg, const IndexRegister &addreg);
-IndexRegisterCombination operator*(BYTE a, const IndexRegister &reg);
+MemoryRef operator+(const IndexRegister &reg, int offset);
+MemoryRef operator-(const IndexRegister &reg, int offset);
+MemoryRef operator+(const MemoryRef &mr, int offset);
+MemoryRef operator-(const MemoryRef &mr, int offset);
+MemoryRef operator+(const IndexRegister &reg, const MemoryRef &mr);
+MemoryRef operator+(const IndexRegister &reg, const IndexRegister &addreg);
+MemoryRef operator*(BYTE a, const IndexRegister &reg);
 
 class MemoryOperand : public InstructionOperand {
 private:
-  const IndexRegisterCombination m_irc;
+  const SegmentRegister *m_segReg;
+  const MemoryRef        m_mr;
 public:
-  inline MemoryOperand(OperandSize size, const IndexRegisterCombination &irc)
-    : InstructionOperand(MEMREFERENCE, size), m_irc(irc)
+  inline MemoryOperand(OperandSize size, const MemoryRef &mr, const SegmentRegister *segReg=NULL)
+    : InstructionOperand(MEMREFERENCE, size)
+    , m_segReg(segReg)
+    , m_mr(mr)
   {
+    SETSTR();
   }
-  const IndexRegisterCombination *getMemoryReference() const {
-    return &m_irc;
+  inline MemoryOperand(OperandSize size, DWORD addr, const SegmentRegister *segReg=NULL)
+    : InstructionOperand(MEMREFERENCE, size)
+    , m_segReg(segReg)
+    , m_mr(addr)
+  {
+    SETSTR();
   }
-  String toString() const {
-    return format(_T("%s ptr[%s]"), getOpSizeName(getSize()), m_irc.toString().cstr());
+  const SegmentRegister &getSegmentRegister() const {
+    return *m_segReg;
   }
+  inline bool            hasSegmentRegister() const {
+    return m_segReg != NULL;
+  }
+  const MemoryRef       *getMemoryReference() const {
+    return &m_mr;
+  }
+  String toString() const;
 };
 
 template<OperandSize size> class MemoryPtr : public MemoryOperand {
 public:
-  MemoryPtr(const IndexRegisterCombination &irc) : MemoryOperand(size, irc) {
+  MemoryPtr(const MemoryRef &mr) : MemoryOperand(size, mr) {
   }
+#ifdef IS32BIT
+  MemoryPtr(const SegmentRegister &segReg, const MemoryRef &mr) : MemoryOperand(size, mr, &segReg) {
+  }
+  MemoryPtr(const SegmentRegister &segReg, DWORD addr) : MemoryOperand(size, addr, segReg) {
+  }
+#else // IS64BIT
+  MemoryPtr(DWORD addr) : MemoryOperand(size, addr) {
+  }
+#endif // IS64BIT
 };
 
 typedef MemoryPtr<REGSIZE_BYTE > BYTEPtr;
@@ -133,6 +178,7 @@ typedef MemoryPtr<REGSIZE_DWORD> DWORDPtr;
 typedef MemoryPtr<REGSIZE_QWORD> QWORDPtr;
 typedef MemoryPtr<REGSIZE_OWORD> XMMWORDPtr;
 typedef MemoryPtr<REGSIZE_TBYTE> TBYTEPtr;
+
 
 class ImmediateOperand : public InstructionOperand {
 private:
@@ -150,15 +196,19 @@ private:
 public:
   ImmediateOperand(int    v) : InstructionOperand(IMMEDIATEVALUE, findMinSize(v)) {
     setValue(v);
+    SETSTR();
   }
   ImmediateOperand(UINT   v) : InstructionOperand(IMMEDIATEVALUE, findMinSize(v)) {
     setValue(v);
+    SETSTR();
   }
   ImmediateOperand(INT64  v) : InstructionOperand(IMMEDIATEVALUE, findMinSize(v)) {
     setValue(v);
+    SETSTR();
   }
   ImmediateOperand(UINT64 v) : InstructionOperand(IMMEDIATEVALUE, findMinSize(v)) {
     setValue(v);
+    SETSTR();
   }
   inline BYTE   getImmByte()  const {
     return m_v8;
@@ -234,37 +284,37 @@ private:
   UINT   m_rexByteIndex    : 2;
 #endif
 
-  inline InstructionBase &memAddrEsp0() {
+  inline InstructionBase &addrStack0() {
     return add(0x04).add(0x24);
   }
-  inline InstructionBase &memAddrEsp1(char offset) {
+  inline InstructionBase &addrStack1(char offset) {
     return add(0x44).add(0x24).add(offset);
   }
-  inline InstructionBase &memAddrEsp4(int offset) {
+  inline InstructionBase &addrStack4(int  offset) {
     return add(0x84).add(0x24).add(offset, 4);
   }
-  InstructionBase &memAddrEsp(int offset);
+  InstructionBase &addrStack(        int  offset);
   // ptr[reg]. (reg&7) != {4,5}
-  InstructionBase &memAddrPtr0(const IndexRegister &reg);
+  InstructionBase &addrPtr0(        const IndexRegister &reg);
   // ptr[reg+offset], (reg&7) != 4, offset=[-128;127]
-  InstructionBase &memAddrPtr1(const IndexRegister &reg, char offset);
+  InstructionBase &addrPtr1(        const IndexRegister &reg, char offset);
   // ptr[reg+offset], (reg&7) != 4, offset=[INT_MIN;INT_MAX]
-  InstructionBase &memAddrPtr4(const IndexRegister &reg, int offset);
-  // ptr[reg+(addReg<<p2)], (reg&7) != 5, (addReg&7) != 4, p2<=3
-  InstructionBase &memAddrMp2AddReg0(const IndexRegister &reg, BYTE p2, const IndexRegister &addReg);
-  // ptr[reg+(addReg<<p2)+offset], (addReg&7) != 4, p2<=3, offset=[-128;127]
-  InstructionBase &memAddrMp2AddReg1(const IndexRegister &reg, BYTE p2, const IndexRegister &addReg, char offset);
-  // ptr[reg+(addReg<<p2)+offset], (addReg&7) != 4, p2<=3, offset=[INT_MIN;INT_MAX]
-  InstructionBase &memAddrMp2AddReg4(const IndexRegister &reg, BYTE p2, const IndexRegister &addReg, int offset);
+  InstructionBase &addrPtr4(        const IndexRegister &reg, int offset);
+  // ptr[reg+(addReg<<shift)], (reg&7) != 5, (addReg&7) != 4, shift<=3
+  InstructionBase &addrShiftAddReg0(const IndexRegister &reg, BYTE shift, const IndexRegister &addReg);
+  // ptr[reg+(addReg<<shift)+offset], (addReg&7) != 4, shift<=3, offset=[-128;127]
+  InstructionBase &addrShiftAddReg1(const IndexRegister &reg, BYTE shift, const IndexRegister &addReg, char offset);
+  // ptr[reg+(addReg<<shift)+offset], (addReg&7) != 4, shift<=3, offset=[INT_MIN;INT_MAX]
+  InstructionBase &addrShiftAddReg4(const IndexRegister &reg, BYTE shift, const IndexRegister &addReg, int offset);
   // Use with Imm-addressing. reg = { ES,CS,SS,DS,FS,GS }
-   // ptr[(reg<<p2)+offset], (reg&7) != 4, p2<=3, offset=[INT_MIN;INT_MAX]
-  InstructionBase &memAddrMp2Ptr4(  const IndexRegister &reg, BYTE p2, int offset);
-  InstructionBase &memAddrPtr(      const IndexRegister &reg, int offset);
-  InstructionBase &memAddrMp2AddReg(const IndexRegister &reg, const IndexRegister &addReg, BYTE p2, int offset);
+   // ptr[(reg<<shift)+offset], (reg&7) != 4, shift<=3, offset=[INT_MIN;INT_MAX]
+  InstructionBase &addrShiftPtr4(   const IndexRegister &reg, BYTE shift, int offset);
+  InstructionBase &addrPtr(         const IndexRegister &reg, int offset);
+  InstructionBase &addrShiftAddReg( const IndexRegister &reg, const IndexRegister &addReg, BYTE shift, int offset);
 
-  InstructionBase &prefixSegReg(const SegmentRegister &reg);
-  inline InstructionBase &memAddrImmDword(int addr) {
-    return or(0x05).add(addr, 4);
+  InstructionBase &prefixSegReg(    const SegmentRegister &reg);
+  inline InstructionBase &addrImmDword(int addr) {
+    return add(0x05).add(addr, 4);
   }
 
 protected:
@@ -320,8 +370,8 @@ public:
     return m_bytes;
   }
 
-  InstructionBase &setRegister(       const Register &reg);
-  InstructionBase &setMemoryReference(const IndexRegisterCombination &irc);
+  InstructionBase &setRegister(       const Register      &reg);
+  InstructionBase &setMemoryReference(const MemoryOperand &mop);
 };
 
 // ----------------------------------------------------------------------
@@ -370,7 +420,8 @@ protected:
 
   void validateOpCount(               int                             count) const;
   void validateRegisterAllowed(       const Register                 &reg  ) const;
-  void validateMemoryReferenceAllowed() const;
+  void validateMemoryReferenceAllowed()                                      const;
+  void validateImmediateValueAllowed()                                       const;
   void validateOperandSize(           RegSize                         size ) const;
 
 public:
@@ -398,14 +449,17 @@ public:
   inline UINT getFlags() const {
     return m_flags;
   }
-  bool isRegisterTypeAllowed(RegType type) const;
-  bool isOperandSizeAllowed( RegSize size) const;
+  bool        isRegisterTypeAllowed(RegType type) const;
+  bool        isOperandSizeAllowed( RegSize size) const;
   inline bool isMemoryReferenceAllowed() const {
-    return (getFlags() & MEMREFERENCE_ALLOWED) != 0;
+    return (getFlags() & MEMREFERENCE_ALLOWED  ) != 0;
+  }
+  inline bool isImmediateValueAllowed() const {
+    return (getFlags() & IMMEDIATEVALUE_ALLOWED) != 0;
   }
   // is ins.setRegister allowed for this opcode
-  inline bool hasRegisterMode() const {
-    return (getFlags() & REGISTER_ALLOWED) != 0;
+  inline bool isRegisterAllowed() const {
+    return (getFlags() & REGISTER_ALLOWED      ) != 0;
   }
   inline bool hasRexMode() const {
 #ifdef IS32BIT

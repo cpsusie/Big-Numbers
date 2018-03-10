@@ -36,10 +36,10 @@ private:
   const BYTE m_index; // = [0..15]
 #ifdef _DEBUG
 protected:
-  String m_name;
-#define SETNAME() m_name = getName()
+  String m_debugStr;
+#define SETDEBUGSTR() m_debugStr = getName()
 #else
-#define SETNAME()
+#define SETDEBUGSTR()
 #endif // _DEBUG
   Register &operator=(const Register &); // not implemented, and not accessible.
                                           // All register are singletons
@@ -67,7 +67,7 @@ private:
   const RegSize m_size; // = REGSIZE_BYTE, _WORD, _DWORD, _QWORD
 public:
   inline GPRegister(RegSize size, BYTE index) : Register(index), m_size(size) {
-    SETNAME();
+    SETDEBUGSTR();
   }
   RegType getType()  const {
     return REGTYPE_GP;
@@ -87,7 +87,7 @@ public:
 class FPURegister : public Register {
 public:
   inline FPURegister(BYTE index) : Register(index) {
-    SETNAME();
+    SETDEBUGSTR();
   }
   RegType getType()  const {
     return REGTYPE_FPU;
@@ -101,7 +101,7 @@ public:
 class XMMRegister : public Register {
 public:
   inline XMMRegister(BYTE index) : Register(index) {
-    SETNAME();
+    SETDEBUGSTR();
   }
   RegType getType()  const {
     return REGTYPE_XMM;
@@ -115,7 +115,7 @@ public:
 class SegmentRegister : public Register {
 public:
   inline SegmentRegister(BYTE index) : Register(index) {
-    SETNAME();
+    SETDEBUGSTR();
   }
   RegType getType()  const {
     return REGTYPE_SEG;

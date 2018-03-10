@@ -1661,7 +1661,11 @@ namespace TestExpression {
 #endif // TEST_DERIVATIVES
 
     TEST_METHOD(TestMachineCode) {
-      generateTestSequence();
+      try {
+        generateTestSequence();
+      } catch (Exception e) {
+        OUTPUT(_T("Exception:%s"), e.what());
+      }
     }
     TEST_METHOD(CallAssemblerCode) {
       callAssemblerCode();
