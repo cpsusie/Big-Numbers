@@ -1,5 +1,6 @@
 #include "pch.h"
 #include <Math/Expression/NewOpCode.h>
+#include "RexByte.h"
 
 class InstructionStd2Arg : public InstructionBuilder {
 public:
@@ -9,24 +10,30 @@ public:
   InstructionBase &setMemoryReference(const MemoryOperand &mop) {
     return __super::setMemoryReference(mop);
   }
-  InstructionBase &addGPRegister(     const GPRegister    &reg);
-  InstructionBase &setGPRegImm(       const GPRegister    &reg, int immv);
+  // assume sáme size
+  InstructionBase &set2GPReg(  const GPRegister &dst, const GPRegister &src);
+  InstructionBase &setGPRegImm(const GPRegister &dst, int immv);
 };
 
-InstructionBase &InstructionStd2Arg::addGPRegister(const GPRegister &reg) {
-  const BYTE    regIndex = reg.getIndex();
-  const RegSize regSize  = reg.getSize();
-#ifdef IS64BIT
-  const BYTE rexbyte = ((regSize==REGSIZE_QWORD)?8:0)|((regIndex>>1)&4);
-  SETREXBITS(rexbyte);
-#endif
-  switch(regSize) {
-  case REGSIZE_BYTE : break;
+InstructionBase &InstructionStd2Arg::set2GPReg(const GPRegister &dst, const GPRegister &src) {
+  const BYTE    srcIndex = src.getIndex();
+  const BYTE    dstIndex = dst.getIndex();
+  const RegSize size     = src.getSize();
+  switch(size) {
+  case REGSIZE_BYTE :
+    or(2).add(0xC0 | ((dstIndex&7)<<3) | (srcIndex&7));
+    break;
   case REGSIZE_WORD : wordIns();
     // continue case
-  default           : or(1);
+  default           :
+    or(3).add(0xC0 | ((dstIndex&7)<<3) | (srcIndex&7));
+    break;
   }
-  return add((regIndex&7)<<3);
+#ifdef IS64BIT
+  const BYTE rexbyte = ((size==REGSIZE_QWORD)?8:0)|((dstIndex>>1)&4)|((srcIndex>>3)&1);
+  SETREXBITS(rexbyte);
+#endif
+  return *this;
 }
 
 InstructionBase &InstructionStd2Arg::setGPRegImm(const GPRegister &reg, int immv) {
@@ -79,8 +86,9 @@ InstructionBase OpcodeStd2Arg::operator()(const InstructionOperand &op1, const I
     validateRegisterAllowed(op1.getRegister());
     switch(op2.getType()) {
     case REGISTER       :
+      validateRegisterAllowed(op2.getRegister());
       validateSameSize(op1,op2);
-
+      return result.set2GPReg((GPRegister&)op1.getRegister(),(GPRegister&)op2.getRegister());
     case MEMREFERENCE   : // reg <- mem
       validateSameSize(op1,op2);
 //      result.or(2)

@@ -262,7 +262,94 @@ TestMachineCode::TestMachineCode() {
   emit(ADD(CX  , 0x7f       ));
   emit(ADD(CX  , 0x7fff     ));
 
+  emit(ADD(AL  , CL         ));
+  emit(ADD(AL  , DL         ));
+  emit(ADD(CL  , CL         ));
+  emit(ADD(CL  , DL         ));
+  emit(ADD(DL  , CL         ));
+  emit(ADD(DL  , DL         ));
+  emit(ADD(EAX , EAX        ));
+  emit(ADD(EAX , ECX        ));
+  emit(ADD(EAX , EDX        ));
+  emit(ADD(EAX , EBX        ));
+  emit(ADD(EAX , ESP        ));
+  emit(ADD(EAX , EBP        ));
+  emit(ADD(EAX , ESI        ));
+  emit(ADD(EAX , EDI        ));
+  emit(ADD(ECX , EAX        ));
+  emit(ADD(ECX , ECX        ));
+  emit(ADD(ECX , EDX        ));
+  emit(ADD(ECX , EBX        ));
+  emit(ADD(ECX , ESP        ));
+  emit(ADD(ECX , EBP        ));
+  emit(ADD(ECX , ESI        ));
+  emit(ADD(ECX , EDI        ));
+  emit(ADD(ESP , EAX        ));
+  emit(ADD(ESP , ECX        ));
+  emit(ADD(ESP , EDX        ));
+  emit(ADD(ESP , EBX        ));
+  emit(ADD(ESP , ESP        ));
+  emit(ADD(ESP , EBP        ));
+  emit(ADD(ESP , ESI        ));
+  emit(ADD(ESP , EDI        ));
+  emit(ADD(AX  , CX         ));
+  emit(ADD(AX  , DX         ));
+  emit(ADD(CX  , SI         ));
+  emit(ADD(CX  , SI         ));
+
 #ifdef IS64BIT
+  emit(ADD(AL  , R8B        ));
+  emit(ADD(AL  , R9B        ));
+  emit(ADD(AL  , R10B       ));
+
+  emit(ADD(R8B , AL         ));
+  emit(ADD(R8B , CL         ));
+  emit(ADD(R8B , DL         ));
+
+  emit(ADD(R8B , R8B        ));
+  emit(ADD(R8B , R9B        ));
+  emit(ADD(R8B , R10B       ));
+
+  emit(ADD(EAX , R8D        ));
+  emit(ADD(EAX , R9D        ));
+  emit(ADD(EAX , R10D       ));
+
+  emit(ADD(R8D , EAX        ));
+  emit(ADD(R8D , ECX        ));
+  emit(ADD(R8D , EDX        ));
+
+  emit(ADD(R8D , R8D        ));
+  emit(ADD(R8D , R9D        ));
+  emit(ADD(R8D , R10D       ));
+
+  emit(ADD(AX  , R8W        ));
+  emit(ADD(AX  , R9W        ));
+  emit(ADD(AX  , R10W       ));
+
+  emit(ADD(R8W , AX         ));
+  emit(ADD(R8W , CX         ));
+  emit(ADD(R8W , DX         ));
+
+  emit(ADD(R8W , R8W        ));
+  emit(ADD(R8W , R9W        ));
+  emit(ADD(R8W , R10W       ));
+
+  emit(ADD(RAX , RAX        ));
+  emit(ADD(RAX , RCX        ));
+  emit(ADD(RAX , RDX        ));
+
+  emit(ADD(RAX , R8         ));
+  emit(ADD(RAX , R9         ));
+  emit(ADD(RAX , R10        ));
+
+  emit(ADD(R8  , RAX        ));
+  emit(ADD(R8  , RCX        ));
+  emit(ADD(R8  , RDX        ));
+
+  emit(ADD(R8  , R8         ));
+  emit(ADD(R8  , R9         ));
+  emit(ADD(R8  , R10        ));
+
   emit(ADD(RAX , 0x7f       ));
   emit(ADD(RAX , 0x7fffffff ));
   emit(ADD(R8B , 0x7f       ));
@@ -654,89 +741,6 @@ TestMachineCode::TestMachineCode() {
 #endif // TEST_XMM
 
 #ifdef TEST_MEMPTR
-
-  String s;
-  s = BYTEPtr( REG1               ).toString();
-  s = BYTEPtr( REG1          +0xff).toString();
-  s = BYTEPtr( REG1          -0xff).toString();
-  s = BYTEPtr( REG1  +   REGA     ).toString();
-  s = BYTEPtr( REG1  + 2*REGA     ).toString();
-  s = BYTEPtr( REG1  + 4*REGA     ).toString();
-  s = BYTEPtr( REG1  + 8*REGA     ).toString();
-  s = BYTEPtr( REG1  +   REGA+0xff).toString();
-  s = BYTEPtr( REG1  +   REGA-0xff).toString();
-  s = BYTEPtr( REG1  + 2*REGA+0xff).toString();
-  s = BYTEPtr( REG1  + 4*REGA+0xff).toString();
-  s = BYTEPtr( REG1  + 8*REGA+0xff).toString();
-  s = BYTEPtr( REG1  + 8*REGA-0xff).toString();
-
-  s = WORDPtr( REG1               ).toString();
-  s = WORDPtr( REG1          +0xff).toString();
-  s = WORDPtr( REG1          -0xff).toString();
-  s = WORDPtr( REG1  +   REGA     ).toString();
-  s = WORDPtr( REG1  + 2*REGA     ).toString();
-  s = WORDPtr( REG1  + 4*REGA     ).toString();
-  s = WORDPtr( REG1  + 8*REGA     ).toString();
-  s = WORDPtr( REG1  +   REGA+0xff).toString();
-  s = WORDPtr( REG1  +   REGA-0xff).toString();
-  s = WORDPtr( REG1  + 2*REGA+0xff).toString();
-  s = WORDPtr( REG1  + 4*REGA+0xff).toString();
-  s = WORDPtr( REG1  + 8*REGA+0xff).toString();
-  s = WORDPtr( REG1  + 8*REGA-0xff).toString();
-
-  s = DWORDPtr(REG1               ).toString();
-  s = DWORDPtr(REG1          +0xff).toString();
-  s = DWORDPtr(REG1          -0xff).toString();
-  s = DWORDPtr(REG1  +   REGA     ).toString();
-  s = DWORDPtr(REG1  + 2*REGA     ).toString();
-  s = DWORDPtr(REG1  + 4*REGA     ).toString();
-  s = DWORDPtr(REG1  + 8*REGA     ).toString();
-  s = DWORDPtr(REG1  +   REGA+0xff).toString();
-  s = DWORDPtr(REG1  +   REGA-0xff).toString();
-  s = DWORDPtr(REG1  + 2*REGA+0xff).toString();
-  s = DWORDPtr(REG1  + 4*REGA+0xff).toString();
-  s = DWORDPtr(REG1  + 8*REGA+0xff).toString();
-  s = DWORDPtr(REG1  + 8*REGA-0xff).toString();
-
-  s = QWORDPtr(REG1               ).toString();
-  s = QWORDPtr(REG1          +0xff).toString();
-  s = QWORDPtr(REG1          -0xff).toString();
-  s = QWORDPtr(REG1  +   REGA     ).toString();
-  s = QWORDPtr(REG1  + 2*REGA     ).toString();
-  s = QWORDPtr(REG1  + 4*REGA     ).toString();
-  s = QWORDPtr(REG1  + 8*REGA     ).toString();
-  s = QWORDPtr(REG1  +   REGA+0xff).toString();
-  s = QWORDPtr(REG1  +   REGA-0xff).toString();
-  s = QWORDPtr(REG1  + 2*REGA+0xff).toString();
-  s = QWORDPtr(REG1  + 4*REGA+0xff).toString();
-  s = QWORDPtr(REG1  + 8*REGA+0xff).toString();
-  s = QWORDPtr(REG1  + 8*REGA-0xff).toString();
-
-  s = TBYTEPtr(REG1               ).toString();
-  s = TBYTEPtr(REG1          +0xff).toString();
-  s = TBYTEPtr(REG1          -0xff).toString();
-  s = TBYTEPtr(REG1  +   REGA     ).toString();
-  s = TBYTEPtr(REG1  + 2*REGA     ).toString();
-  s = TBYTEPtr(REG1  + 4*REGA     ).toString();
-  s = TBYTEPtr(REG1  + 8*REGA     ).toString();
-  s = TBYTEPtr(REG1  +   REGA+0xff).toString();
-  s = TBYTEPtr(REG1  +   REGA-0xff).toString();
-  s = TBYTEPtr(REG1  + 2*REGA+0xff).toString();
-  s = TBYTEPtr(REG1  + 4*REGA+0xff).toString();
-  s = TBYTEPtr(REG1  + 8*REGA+0xff).toString();
-  s = TBYTEPtr(REG1  + 8*REGA-0xff).toString();
-
-  s = InstructionOperand(0xff      ).toString();
-  s = InstructionOperand(0x80      ).toString();
-  s = InstructionOperand(0x7f      ).toString();
-  s = InstructionOperand(-1        ).toString();
-  s = InstructionOperand(0x7fff    ).toString();
-  s = InstructionOperand(0x8000    ).toString();
-  s = InstructionOperand(0xffff    ).toString();
-  s = InstructionOperand(0xffffffff).toString();
-  s = InstructionOperand(0x7fffffff).toString();
-  s = InstructionOperand(0x80000000).toString();
-  s = InstructionOperand(0xffffffffffffffffui64).toString();
 
   emit(SETE(AL));
   emit(SETE(CL));
