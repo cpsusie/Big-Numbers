@@ -17,6 +17,7 @@ typedef enum {
  ,REGSIZE_OWORD    /* 128-bit */
 } RegSize;
 
+String toString(RegType regType);
 String toString(RegSize regSize);
 
 #ifdef IS32BIT

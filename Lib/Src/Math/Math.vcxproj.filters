@@ -346,13 +346,25 @@
     <ClCompile Include="Expression\Opcodes.cpp">
       <Filter>Source Files\Expression</Filter>
     </ClCompile>
-    <ClCompile Include="Expression\NewOpcode.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
     <ClCompile Include="Expression\Opcode.cpp">
       <Filter>Source Files\Expression</Filter>
     </ClCompile>
     <ClCompile Include="Expression\Registers.cpp">
+      <Filter>Source Files\Expression</Filter>
+    </ClCompile>
+    <ClCompile Include="Expression\OpcodeBase.cpp">
+      <Filter>Source Files\Expression</Filter>
+    </ClCompile>
+    <ClCompile Include="Expression\InstructionOperand.cpp">
+      <Filter>Source Files\Expression</Filter>
+    </ClCompile>
+    <ClCompile Include="Expression\OpcodeStd1Arg.cpp">
+      <Filter>Source Files\Expression</Filter>
+    </ClCompile>
+    <ClCompile Include="Expression\OpcodeStd2Arg.cpp">
+      <Filter>Source Files\Expression</Filter>
+    </ClCompile>
+    <ClCompile Include="Expression\InstructionBuilder.cpp">
       <Filter>Source Files\Expression</Filter>
     </ClCompile>
   </ItemGroup>
@@ -534,6 +546,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\Math\Expression\Registers.h">
       <Filter>Header Files\Expression</Filter>
+    </ClInclude>
+    <ClInclude Include="Expression\RexByte.h">
+      <Filter>Source Files\Expression</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

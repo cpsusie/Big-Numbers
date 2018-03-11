@@ -207,7 +207,7 @@ static INT64 staticInt64 = 0xf0debc9a78563412;
 //#define TEST_REG_IMM
 //#define TEST_MEM_ADDR
 //#define TEST_XMM
-//#define TEST_MEMPTR
+#define TEST_MEMPTR
 
 #ifdef IS32BIT
 #define STACKREG ESP
@@ -726,17 +726,17 @@ TestMachineCode::TestMachineCode() {
   s = TBYTEPtr(REG1  + 8*REGA+0xff).toString();
   s = TBYTEPtr(REG1  + 8*REGA-0xff).toString();
 
-  s = ImmediateOperand(0xff      ).toString();
-  s = ImmediateOperand(0x80      ).toString();
-  s = ImmediateOperand(0x7f      ).toString();
-  s = ImmediateOperand(-1        ).toString();
-  s = ImmediateOperand(0x7fff    ).toString();
-  s = ImmediateOperand(0x8000    ).toString();
-  s = ImmediateOperand(0xffff    ).toString();
-  s = ImmediateOperand(0xffffffff).toString();
-  s = ImmediateOperand(0x7fffffff).toString();
-  s = ImmediateOperand(0x80000000).toString();
-  s = ImmediateOperand(0xffffffffffffffffui64).toString();
+  s = InstructionOperand(0xff      ).toString();
+  s = InstructionOperand(0x80      ).toString();
+  s = InstructionOperand(0x7f      ).toString();
+  s = InstructionOperand(-1        ).toString();
+  s = InstructionOperand(0x7fff    ).toString();
+  s = InstructionOperand(0x8000    ).toString();
+  s = InstructionOperand(0xffff    ).toString();
+  s = InstructionOperand(0xffffffff).toString();
+  s = InstructionOperand(0x7fffffff).toString();
+  s = InstructionOperand(0x80000000).toString();
+  s = InstructionOperand(0xffffffffffffffffui64).toString();
 
   emit(SETE(AL));
   emit(SETE(CL));

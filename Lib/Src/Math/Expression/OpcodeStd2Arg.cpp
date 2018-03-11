@@ -1,0 +1,103 @@
+#include "pch.h"
+#include <Math/Expression/NewOpCode.h>
+
+class InstructionStd2Arg : public InstructionBuilder {
+public:
+  InstructionStd2Arg(const OpcodeBase &opcode) : InstructionBuilder(opcode)
+  {
+  }
+  InstructionBase &setMemoryReference(const MemoryOperand &mop) {
+    return __super::setMemoryReference(mop);
+  }
+  InstructionBase &addGPRegister(     const GPRegister    &reg);
+  InstructionBase &setGPRegImm(       const GPRegister    &reg, int immv);
+};
+
+InstructionBase &InstructionStd2Arg::addGPRegister(const GPRegister &reg) {
+  const BYTE    regIndex = reg.getIndex();
+  const RegSize regSize  = reg.getSize();
+#ifdef IS64BIT
+  const BYTE rexbyte = ((regSize==REGSIZE_QWORD)?8:0)|((regIndex>>1)&4);
+  SETREXBITS(rexbyte);
+#endif
+  switch(regSize) {
+  case REGSIZE_BYTE : break;
+  case REGSIZE_WORD : wordIns();
+    // continue case
+  default           : or(1);
+  }
+  return add((regIndex&7)<<3);
+}
+
+InstructionBase &InstructionStd2Arg::setGPRegImm(const GPRegister &reg, int immv) {
+  DEFINEMETHODNAME;
+  const BYTE    regIndex = reg.getIndex();
+  const RegSize regSize  = reg.getSize();
+  switch(regSize) {
+  case REGSIZE_BYTE :
+    if(!isByte(immv)) {
+      throwInvalidArgumentException(method,_T("Immediate value %08x doesn't fit in %s"),immv, reg.getName().cstr());
+    }
+    if(regIndex != 0) {
+      prefix(0x80).or(0xC0 | (regIndex&7)).add((char)immv);
+    } else {
+      or(0x04).add((char)immv);
+    }
+    break;
+  case REGSIZE_WORD :
+    if(!isWord(immv)) {
+      throwInvalidArgumentException(method,_T("Immediate value %08x doesn't fit in %s"),immv, reg.getName().cstr());
+    }
+    if(regIndex != 0) {
+      prefix(isByte(immv)?0x83:0x81).or(0xC0 | (regIndex&7))
+     .add(immv,isByte(immv)?1:2);
+    } else {
+      or(0x05).add(immv,2);
+    }
+    wordIns();
+    break;
+  default           :
+    if(regIndex != 0) {
+      prefix(isByte(immv)?0x83:0x81).or(0xC0 | (regIndex&7))
+     .add(immv,isByte(immv)?1:4);
+    } else {
+      or(0x05).add(immv,4);
+    }
+    break;
+  }
+#ifdef IS64BIT
+  const BYTE rexbyte = ((regSize==REGSIZE_QWORD)?8:0)|((regIndex>>3)&1);
+  SETREXBITS(rexbyte);
+#endif
+  return *this;
+}
+
+InstructionBase OpcodeStd2Arg::operator()(const InstructionOperand &op1, const InstructionOperand &op2) const {
+  InstructionStd2Arg result(*this);
+  switch(op1.getType()) {
+  case REGISTER       :
+    validateRegisterAllowed(op1.getRegister());
+    switch(op2.getType()) {
+    case REGISTER       :
+      validateSameSize(op1,op2);
+
+    case MEMREFERENCE   : // reg <- mem
+      validateSameSize(op1,op2);
+//      result.or(2)
+    case IMMEDIATEVALUE :
+      return result.setGPRegImm((GPRegister&)op1.getRegister(), op2.getImmInt32());
+    }
+    break;
+  case MEMREFERENCE   :
+    switch(op2.getType()) {
+    case REGISTER       : // mem <- reg
+      validateRegisterAllowed(op2.getRegister());
+      validateSameSize(op1,op2);
+    }
+  }
+  throwInvalidArgumentException(__TFUNCTION__,_T("Invalid combination of operands:%s,%s")
+                               ,op1.toString().cstr()
+                               ,op2.toString().cstr()
+                               );
+  return result;
+}

@@ -238,7 +238,7 @@ public:
 #ifdef IS32BIT
   MemoryPtr(const SegmentRegister &segReg, const MemoryRef &mr) : MemoryOperand(size, mr, &segReg) {
   }
-  MemoryPtr(const SegmentRegister &segReg, DWORD addr) : MemoryOperand(size, addr, segReg) {
+  MemoryPtr(const SegmentRegister &segReg, DWORD addr) : MemoryOperand(size, addr, &segReg) {
   }
 #else // IS64BIT
   MemoryPtr(DWORD addr) : MemoryOperand(size, addr) {
@@ -253,57 +253,88 @@ typedef MemoryPtr<REGSIZE_QWORD> QWORDPtr;
 typedef MemoryPtr<REGSIZE_OWORD> XMMWORDPtr;
 typedef MemoryPtr<REGSIZE_TBYTE> TBYTEPtr;
 
-#define _SWAP2(op) ((((op)&0xff)<< 8) | (((op)>> 8)&0xff ))
-#define _SWAP3(op) ((_SWAP2(op) << 8) | (((op)>>16)&0xff ))
-#define _SWAP4(op) ((_SWAP2(op) <<16) | (_SWAP2((op)>>16)))
-#define _SWAP5(op) ((_SWAP4(op) << 8) | (((op)>>32)&0xff ))
-#define _SWAP6(op) ((_SWAP4(op) <<16) | (_SWAP2((op)>>32)))
-
 #define MAX_INSTRUCTIONSIZE   15
 
+class OpcodeBase;
+
 class InstructionBase {
-private:
+protected:
   BYTE   m_bytes[15];
   UINT   m_size            : 4; // = [0..15]
+  InstructionBase(const OpcodeBase &opcode);
+public:
+  // In bytes
+  inline UINT size() const {
+    return m_size;
+  }
+  inline const BYTE *getBytes() const {
+    return m_bytes;
+  }
+};
+
+class InstructionBuilder : public InstructionBase {
+private:
 #ifdef IS64BIT
   UINT   m_hasRexByte      : 1;
   UINT   m_rexByteIndex    : 2;
 #endif
-
-  inline InstructionBase &addrStack0() {
+  inline InstructionBuilder &addrStack0() {
     return add(0x04).add(0x24);
   }
-  inline InstructionBase &addrStack1(char offset) {
+  inline InstructionBuilder &addrStack1(char offset) {
     return add(0x44).add(0x24).add(offset);
   }
-  inline InstructionBase &addrStack4(int  offset) {
+  inline InstructionBuilder &addrStack4(int  offset) {
     return add(0x84).add(0x24).add(offset, 4);
   }
-  InstructionBase &addrStack(        int  offset);
+  InstructionBuilder &addrStack(        int  offset);
   // ptr[reg]. (reg&7) != {4,5}
-  InstructionBase &addrPtr0(        const IndexRegister &reg);
+  InstructionBuilder &addrPtr0(        const IndexRegister &reg);
   // ptr[reg+offset], (reg&7) != 4, offset=[-128;127]
-  InstructionBase &addrPtr1(        const IndexRegister &reg, char offset);
+  InstructionBuilder &addrPtr1(        const IndexRegister &reg, char offset);
   // ptr[reg+offset], (reg&7) != 4, offset=[INT_MIN;INT_MAX]
-  InstructionBase &addrPtr4(        const IndexRegister &reg, int offset);
+  InstructionBuilder &addrPtr4(        const IndexRegister &reg, int offset);
   // ptr[reg+(addReg<<shift)], (reg&7) != 5, (addReg&7) != 4, shift<=3
-  InstructionBase &addrShiftAddReg0(const IndexRegister &reg, BYTE shift, const IndexRegister &addReg);
+  InstructionBuilder &addrShiftAddReg0(const IndexRegister &reg, BYTE shift, const IndexRegister &addReg);
   // ptr[reg+(addReg<<shift)+offset], (addReg&7) != 4, shift<=3, offset=[-128;127]
-  InstructionBase &addrShiftAddReg1(const IndexRegister &reg, BYTE shift, const IndexRegister &addReg, char offset);
+  InstructionBuilder &addrShiftAddReg1(const IndexRegister &reg, BYTE shift, const IndexRegister &addReg, char offset);
   // ptr[reg+(addReg<<shift)+offset], (addReg&7) != 4, shift<=3, offset=[INT_MIN;INT_MAX]
-  InstructionBase &addrShiftAddReg4(const IndexRegister &reg, BYTE shift, const IndexRegister &addReg, int offset);
+  InstructionBuilder &addrShiftAddReg4(const IndexRegister &reg, BYTE shift, const IndexRegister &addReg, int offset);
   // Use with Imm-addressing. reg = { ES,CS,SS,DS,FS,GS }
    // ptr[(reg<<shift)+offset], (reg&7) != 4, shift<=3, offset=[INT_MIN;INT_MAX]
-  InstructionBase &addrShiftPtr4(   const IndexRegister &reg, BYTE shift, int offset);
-  InstructionBase &addrPtr(         const IndexRegister &reg, int offset);
-  InstructionBase &addrShiftAddReg( const IndexRegister &reg, const IndexRegister &addReg, BYTE shift, int offset);
+  InstructionBuilder &addrShiftPtr4(   const IndexRegister &reg, BYTE shift, int offset);
+  InstructionBuilder &addrPtr(         const IndexRegister &reg, int offset);
+  InstructionBuilder &addrShiftAddReg( const IndexRegister &reg, const IndexRegister &addReg, BYTE shift, int offset);
 
-  InstructionBase &prefixSegReg(    const SegmentRegister &reg);
-  inline InstructionBase &addrImmDword(int addr) {
+  InstructionBuilder &prefixSegReg(    const SegmentRegister &reg);
+  inline InstructionBuilder &addrImmDword(int addr) {
     return add(0x05).add(addr, 4);
   }
+public:
+  InstructionBuilder(const OpcodeBase &opcode) 
+    : InstructionBase(opcode)
+#ifdef IS64BIT
+    , m_hasRexByte(   0     )
+    , m_rexByteIndex( 0     )
+#endif
+  {
+  }
+  InstructionBuilder &insertByte(BYTE index, BYTE b);
+  inline InstructionBuilder &prefix(BYTE b) {
+    return insertByte(0,b);
+  }
+  // Always |= the last byte in array
+  inline InstructionBuilder &or(BYTE b) {
+    m_bytes[m_size - 1] |= b;
+    return *this;
+  }
+  inline InstructionBuilder &add(BYTE b) {
+    assert(m_size < MAX_INSTRUCTIONSIZE);
+    m_bytes[m_size++] = b;
+    return *this;
+  }
+  InstructionBuilder &add(INT64 bytesToAdd, BYTE count);
 
-protected:
   inline bool hasRexByte() const {
 #ifdef IS32BIT
     return false;
@@ -312,55 +343,17 @@ protected:
 #endif
   }
 #ifdef IS64BIT
-  InstructionBase &setRexBits(BYTE bits);
+  InstructionBuilder &setRexBits(BYTE bits);
 #endif // IS64BIT
 
-  inline InstructionBase &wordIns() {
+  inline InstructionBuilder &wordIns() {
 #ifdef IS64BIT
     m_rexByteIndex++;
 #endif
     return prefix(0x66);
   }
 
-public:
-  inline InstructionBase(const BYTE *op, BYTE size)
-    : m_size(          size       )
-#ifdef IS64BIT
-    , m_hasRexByte(    0          )
-    , m_rexByteIndex(  0          )
-#endif
-  {
-    memcpy(m_bytes,op,size);
-  }
-  InstructionBase &insertByte(BYTE index, BYTE b);
-  inline InstructionBase &prefix(BYTE b) {
-    return insertByte(0,b);
-  }
-  // Always |= the last byte in array
-  inline InstructionBase &or(BYTE b) {
-    m_bytes[m_size - 1] |= b;
-    return *this;
-  }
-  inline InstructionBase &add(BYTE b) {
-    assert(m_size < MAX_INSTRUCTIONSIZE);
-    m_bytes[m_size++] = b;
-    return *this;
-  }
-  InstructionBase &add(INT64 bytesToAdd, BYTE count);
-
-  // In bytes
-  inline UINT size() const {
-    return m_size;
-  }
-  inline const BYTE *getBytes() const {
-    return m_bytes;
-  }
-
-  InstructionBase &setRegister(       const Register      &reg);
-  InstructionBase &setMemoryReference(const MemoryOperand &mop);
-  InstructionBase &setGPRegImm(       const GPRegister    &reg, int immv);
-  InstructionBase &addGPRegister(     const GPRegister    &reg);
-
+  InstructionBuilder &setMemoryReference(const MemoryOperand &mop);
 };
 
 // ----------------------------------------------------------------------
@@ -384,9 +377,13 @@ public:
 #define ALL_GPSIZE_ALLOWED     (REGSIZE_BYTE_ALLOWED | REGSIZE_WORD_ALLOWED | REGSIZE_DWORD_ALLOWED | REGSIZE_QWORD_ALLOWED)
 #endif
 
-
 #define ALL_GP_ALLOWED         (REGISTER_ALLOWED | REGTYPE_GP_ALLOWED | ALL_GPSIZE_ALLOWED)
 
+#define _SWAP2(op) ((((op)&0xff)<< 8) | (((op)>> 8)&0xff ))
+#define _SWAP3(op) ((_SWAP2(op) << 8) | (((op)>>16)&0xff ))
+#define _SWAP4(op) ((_SWAP2(op) <<16) | (_SWAP2((op)>>16)))
+#define _SWAP5(op) ((_SWAP4(op) << 8) | (((op)>>32)&0xff ))
+#define _SWAP6(op) ((_SWAP4(op) <<16) | (_SWAP2((op)>>32)))
 
 class OpcodeBase {
 protected:
@@ -427,18 +424,18 @@ public:
   }
 
   // Size of Opcode in bytes
-  inline UINT size() const {
+  inline BYTE size() const {
     return m_size;
   }
   // Number of operands
-  inline UINT getOpCount() const {
+  inline BYTE getOpCount() const {
     return m_opCount;
   }
   // Raw opcode bytes
   inline const BYTE *getBytes() const {
     return m_byte;
   }
-  // various attributes
+  // Various attributes
   inline UINT getFlags() const {
     return m_flags;
   }
@@ -450,13 +447,25 @@ public:
   inline bool isImmediateValueAllowed() const {
     return (getFlags() & IMMEDIATEVALUE_ALLOWED) != 0;
   }
-  // is ins.setRegister allowed for this opcode
   inline bool isRegisterAllowed() const {
     return (getFlags() & REGISTER_ALLOWED      ) != 0;
   }
-  virtual InstructionBase operator()(const InstructionOperand &op) const;
 };
 
+class OpcodeStd1Arg : public OpcodeBase {
+public:
+  inline OpcodeStd1Arg(UINT64 op, BYTE size, UINT flags)
+    : OpcodeBase(op, size, 1, flags)
+  {
+  }
+  InstructionBase operator()(const InstructionOperand &op) const;
+};
+class OpcodeStd2Arg : public OpcodeBase {
+public :
+  OpcodeStd2Arg(BYTE op) : OpcodeBase(op, 1, 2, ALL_GP_ALLOWED | MEMREFERENCE_ALLOWED | IMMEDIATEVALUE_ALLOWED) {
+  }
+  InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
+};
 
 /*
   void throwRegSizeMismatch(const Register &reg);
@@ -480,21 +489,15 @@ public:
   }
 */
 
-class SetxxOp : public OpcodeBase {
+class SetxxOp : public OpcodeStd1Arg {
 public:
-  SetxxOp(UINT op) : OpcodeBase(op, 2, 1, REGTYPE_GP_ALLOWED | REGSIZE_BYTE_ALLOWED | REGISTER_ALLOWED | MEMREFERENCE_ALLOWED) {
+  SetxxOp(UINT op) : OpcodeStd1Arg(op, 2, REGTYPE_GP_ALLOWED | REGSIZE_BYTE_ALLOWED | REGISTER_ALLOWED | MEMREFERENCE_ALLOWED) {
   }
-};
-class StdOpcode2Arg : public OpcodeBase {
-public :
-  StdOpcode2Arg(BYTE op) : OpcodeBase(op, 1, 2, ALL_GP_ALLOWED | MEMREFERENCE_ALLOWED | IMMEDIATEVALUE_ALLOWED) {
-  }
-  InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
 };
 
 class Instruction0Arg : public InstructionBase {
 public:
-  Instruction0Arg(UINT op, BYTE size) : InstructionBase(OpcodeBase(op,size,0,0).getBytes(),size) {
+  Instruction0Arg(UINT op, BYTE size) : InstructionBase(OpcodeBase(op,size,0,0)) {
   }
 };
 
@@ -549,7 +552,7 @@ extern Instruction0Arg  PUSHAD;                            // Push all double-wo
 extern Instruction0Arg  POPAD;                             // Pop  all double-word (32-bit) registers from stack
 
 extern Instruction0Arg  NOOP;
-extern StdOpcode2Arg    ADD,ADC,OR,AND,SUB,SBB,XOR,CMP;
+extern OpcodeStd2Arg    ADD,ADC,OR,AND,SUB,SBB,XOR,CMP;
 
 #ifdef __NEVER__
 

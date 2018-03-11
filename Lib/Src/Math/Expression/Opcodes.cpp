@@ -1,6 +1,9 @@
 #include "pch.h"
 #include <Math/Expression/NewOpCode.h>
 
+#pragma warning(disable : 4073)
+#pragma init_seg(lib)
+
 // Set Byte on Condition
 SetxxOp                 SETO  (0x0F90);                    // Set byte   if overflow
 SetxxOp                 SETNO (0x0F91);                    // Set byte   if not overflow
@@ -37,4 +40,4 @@ Instruction0Arg         PUSHAD(0x60,1);                    // Push all double-wo
 Instruction0Arg         POPAD (0x61,1);                    // Pop  all double-word (32-bit) registers from stack
 
 Instruction0Arg         NOOP  (0x90,1);
-StdOpcode2Arg           ADD(0x00),OR(0x08),ADC(0x10),SBB(0x18),AND(0x20),SUB(0x28),XOR(0x30),CMP(0x38);
+OpcodeStd2Arg           ADD(0x00),OR(0x08),ADC(0x10),SBB(0x18),AND(0x20),SUB(0x28),XOR(0x30),CMP(0x38);

@@ -915,8 +915,12 @@
     <ClCompile Include="Expression\ExpressionVariable.cpp" />
     <ClCompile Include="Expression\ExpressionWrapper.cpp" />
     <ClCompile Include="Expression\FactorArray.cpp" />
+    <ClCompile Include="Expression\InstructionBuilder.cpp" />
+    <ClCompile Include="Expression\InstructionOperand.cpp" />
     <ClCompile Include="Expression\Opcode.cpp" />
-    <ClCompile Include="Expression\NewOpcode.cpp" />
+    <ClCompile Include="Expression\OpcodeStd1Arg.cpp" />
+    <ClCompile Include="Expression\OpcodeStd2Arg.cpp" />
+    <ClCompile Include="Expression\OpcodeBase.cpp" />
     <ClCompile Include="Expression\Opcodes.cpp" />
     <ClCompile Include="Expression\ParserTree.cpp" />
     <ClCompile Include="Expression\ParserTreeComplexity.cpp" />
@@ -1220,6 +1224,7 @@
     <ClInclude Include="..\..\Include\Math\Transformation.h" />
     <ClInclude Include="..\..\Include\Math\Triangle\Triangle.h" />
     <ClInclude Include="Expression\pch.h" />
+    <ClInclude Include="Expression\RexByte.h" />
     <ClInclude Include="MemoryPool.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="targetver.h" />

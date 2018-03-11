@@ -1,6 +1,17 @@
 #include "pch.h"
 #include <Math/Expression/Registers.h>
 
+String toString(RegType regType) {
+  switch(regType) {
+  case REGTYPE_NONE: return _T("NONE");
+  case REGTYPE_GP  : return _T("GP"  );
+  case REGTYPE_SEG : return _T("SEG" );
+  case REGTYPE_FPU : return _T("FPU" );
+  case REGTYPE_XMM : return _T("XMM" );
+  default          : return format(_T("Unknown register type:%d"), regType);
+  }
+}
+
 String toString(RegSize regSize) {
   switch(regSize) {
   case REGSIZE_BYTE  : return _T("BYTE");
