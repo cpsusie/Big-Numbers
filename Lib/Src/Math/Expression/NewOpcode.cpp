@@ -18,6 +18,213 @@
 }
 #endif // IS64BIT
 
+String toString(OperandType type) {
+  switch(type) {
+  case REGISTER      : return _T("REGISTER"      );
+  case IMMEDIATEVALUE: return _T("IMMEDIATEVALUE");
+  case MEMREFERENCE  : return _T("MEMREFERENCE"  );
+  default            : return format(_T("Unknown operandType:%d"), type);
+  }
+}
+
+OperandSize InstructionOperand::findMinSize(int    v) {
+  if(isByte(v)) return REGSIZE_BYTE;
+  if(isWord(v)) return REGSIZE_WORD;
+  return REGSIZE_DWORD;
+}
+OperandSize InstructionOperand::findMinSize(UINT   v) {
+  if(isByte(v)) return REGSIZE_BYTE;
+  if(isWord(v)) return REGSIZE_WORD;
+  return REGSIZE_DWORD;
+}
+OperandSize InstructionOperand::findMinSize(INT64  v) {
+  if(isByte( v)) return REGSIZE_BYTE;
+  if(isWord( v)) return REGSIZE_WORD;
+  if(isDword(v)) return REGSIZE_DWORD;
+  return REGSIZE_QWORD;
+}
+OperandSize InstructionOperand::findMinSize(UINT64 v) {
+  if(isByte( v)) return REGSIZE_BYTE;
+  if(isWord( v)) return REGSIZE_WORD;
+  if(isDword(v)) return REGSIZE_DWORD;
+  return REGSIZE_QWORD;
+}
+void InstructionOperand::setValue(int    v) {
+  switch(getSize()) {
+  case REGSIZE_BYTE : m_v8  = (BYTE )v; break;
+  case REGSIZE_WORD : m_v16 = (WORD )v; break;
+  case REGSIZE_DWORD: m_v32 = (DWORD)v; break;
+  default           : throwUnknownSize(__TFUNCTION__);
+  }
+}
+void InstructionOperand::setValue(UINT   v) {
+  switch(getSize()) {
+  case REGSIZE_BYTE : m_v8  = (BYTE )v; break;
+  case REGSIZE_WORD : m_v16 = (WORD )v; break;
+  case REGSIZE_DWORD: m_v32 = (DWORD)v; break;
+  default           : throwUnknownSize(__TFUNCTION__);
+  }
+}
+void InstructionOperand::setValue(INT64  v) {
+  switch(getSize()) {
+  case REGSIZE_BYTE : m_v8  = (BYTE )v; break;
+  case REGSIZE_WORD : m_v16 = (WORD )v; break;
+  case REGSIZE_DWORD: m_v32 = (DWORD)v; break;
+  case REGSIZE_QWORD: m_v64 = v       ; break;
+  default           : throwUnknownSize(__TFUNCTION__);
+  }
+}
+void InstructionOperand::setValue(UINT64 v) {
+  switch(getSize()) {
+  case REGSIZE_BYTE : m_v8  = (BYTE )v; break;
+  case REGSIZE_WORD : m_v16 = (WORD )v; break;
+  case REGSIZE_DWORD: m_v32 = (DWORD)v; break;
+  case REGSIZE_QWORD: m_v64 = v       ; break;
+  default           : throwUnknownSize(__TFUNCTION__);
+  }
+}
+
+void InstructionOperand::throwUnknownSize(const TCHAR *method) const {
+  throwException(_T("%s:Unknown size for immediate value:%d"), method, getSize());
+}
+
+void InstructionOperand::validateType(const TCHAR *method, OperandType expectedType) const {
+  if(getType() != expectedType) {
+    throwException(_T("%s:Invalid type (=%s). Expected %s")
+                  ,method
+                  ,::toString(getType()).cstr()
+                  ,::toString(expectedType).cstr()
+                  );
+  }
+}
+
+void InstructionOperand::validateSize(const TCHAR *method, OperandSize expectedSize) const {
+  const OperandSize size = getSize();
+  switch(expectedSize) {
+  case REGSIZE_BYTE :
+    if(size == REGSIZE_BYTE) return;
+    break;
+  case REGSIZE_WORD :
+    if((size == REGSIZE_BYTE) || (size == REGSIZE_WORD)) return;
+    break;
+  case REGSIZE_DWORD:
+    if((size == REGSIZE_BYTE) || (size == REGSIZE_WORD) || (size == REGSIZE_DWORD)) return;
+    break;
+  case REGSIZE_QWORD:
+    return;
+  default           :
+    throwInvalidArgumentException(method, _T("ExpectedSize=%s"), ::toString(expectedSize).cstr());
+  }
+  throwException(_T("%s:Operandsize=%s. Cannot convert to %s")
+                ,method
+                ,::toString(size        ).cstr()
+                ,::toString(expectedSize).cstr());
+}
+
+#define VALIDATEISIMMVALUE() validateType(method,IMMEDIATEVALUE)
+#define VALIDATESIZE(size)   validateSize(method,size)
+
+char   InstructionOperand::getImmInt8()   const {
+  DEFINEMETHODNAME;
+  VALIDATEISIMMVALUE();
+  VALIDATESIZE(REGSIZE_BYTE);
+  return m_v8;
+}
+BYTE   InstructionOperand::getImmUint8()  const {
+  DEFINEMETHODNAME;
+  VALIDATEISIMMVALUE();
+  VALIDATESIZE(REGSIZE_BYTE);
+  return m_v8;
+}
+short  InstructionOperand::getImmInt16()  const {
+  DEFINEMETHODNAME;
+  VALIDATEISIMMVALUE();
+  VALIDATESIZE(REGSIZE_WORD);
+  switch(getSize()) {
+  case REGSIZE_BYTE: return (USHORT)m_v8;
+  case REGSIZE_WORD: return (USHORT)m_v16;
+  default          : NODEFAULT;
+  }
+  return 0;
+}
+USHORT InstructionOperand::getImmUint16() const {
+  DEFINEMETHODNAME;
+  VALIDATEISIMMVALUE();
+  VALIDATESIZE(REGSIZE_WORD);
+  switch(getSize()) {
+  case REGSIZE_BYTE: return (USHORT)m_v8;
+  case REGSIZE_WORD: return (USHORT)m_v16;
+  default          : NODEFAULT;
+  }
+  return 0;
+}
+int    InstructionOperand::getImmInt32()  const {
+  DEFINEMETHODNAME;
+  VALIDATEISIMMVALUE();
+  VALIDATESIZE(REGSIZE_DWORD);
+  switch(getSize()) {
+  case REGSIZE_BYTE : return (UINT)m_v8;
+  case REGSIZE_WORD : return (UINT)m_v16;
+  case REGSIZE_DWORD: return (UINT)m_v32;
+  default           : NODEFAULT;
+  }
+  return 0;
+}
+UINT   InstructionOperand::getImmUint32() const {
+  DEFINEMETHODNAME;
+  VALIDATEISIMMVALUE();
+  VALIDATESIZE(REGSIZE_DWORD);
+  switch(getSize()) {
+  case REGSIZE_BYTE : return (UINT)m_v8;
+  case REGSIZE_WORD : return (UINT)m_v16;
+  case REGSIZE_DWORD: return (UINT)m_v32;
+  default           : NODEFAULT;
+  }
+  return 0;
+}
+INT64  InstructionOperand::getImmInt64()  const {
+  DEFINEMETHODNAME;
+  VALIDATEISIMMVALUE();
+  switch(getSize()) {
+  case REGSIZE_BYTE : return (UINT64)m_v8;
+  case REGSIZE_WORD : return (UINT64)m_v16;
+  case REGSIZE_DWORD: return (UINT64)m_v32;
+  case REGSIZE_QWORD: return (UINT64)m_v64;
+  default           : NODEFAULT;
+  }
+  return 0;
+}
+UINT64 InstructionOperand::getImmUInt64() const {
+  DEFINEMETHODNAME;
+  VALIDATEISIMMVALUE();
+  switch(getSize()) {
+  case REGSIZE_BYTE : return (UINT64)m_v8;
+  case REGSIZE_WORD : return (UINT64)m_v16;
+  case REGSIZE_DWORD: return (UINT64)m_v32;
+  case REGSIZE_QWORD: return (UINT64)m_v64;
+  default           : NODEFAULT;
+  }
+  return 0;
+}
+
+String InstructionOperand::toString() const {
+  switch(getType()) {
+  case REGISTER:
+    return m_reg ? m_reg->getName() : _T("Unknown operand");
+  case IMMEDIATEVALUE:
+    switch(getSize()) {
+    case REGSIZE_BYTE : return format(_T("%#04x"   ),m_v8 );
+    case REGSIZE_WORD : return format(_T("%#06x"   ),m_v16);
+    case REGSIZE_DWORD: return format(_T("%#010x"  ),m_v32);
+    case REGSIZE_QWORD: return format(_T("%#18I64x"),m_v64);
+    default           : throwUnknownSize(__TFUNCTION__);
+    }
+  default:
+    throwUnsupportedOperationException(__TFUNCTION__);
+  }
+  return EMPTYSTRING;
+}
+
 static char findShift(BYTE a) {
   static const char shift[] = { -1, 0, 1, -1, 2, -1, -1, -1, 3 };
   if((a >= ARRAYSIZE(shift)) || (shift[a] < 0)) {
@@ -89,159 +296,11 @@ MemoryRef operator*(BYTE a, const IndexRegister &reg) {
 
 String MemoryOperand::toString() const {
   return (m_segReg)
-        ? format(_T("%s ptr %s:[%s]"), getOpSizeName(getSize()), m_segReg->getName().cstr(), m_mr.toString().cstr())
-        : format(_T("%s ptr[%s]"), getOpSizeName(getSize()), m_mr.toString().cstr());
+        ? format(_T("%s ptr %s:[%s]"), ::toString(getSize()).cstr(), m_segReg->getName().cstr(), m_mr.toString().cstr())
+        : format(_T("%s ptr[%s]")    , ::toString(getSize()).cstr(), m_mr.toString().cstr());
 }
 
-OperandSize ImmediateOperand::findMinSize(int    v) {
-  if(isByte(v)) return REGSIZE_BYTE;
-  if(isWord(v)) return REGSIZE_WORD;
-  return REGSIZE_DWORD;
-}
-OperandSize ImmediateOperand::findMinSize(UINT   v) {
-  if(isByte(v)) return REGSIZE_BYTE;
-  if(isWord(v)) return REGSIZE_WORD;
-  return REGSIZE_DWORD;
-}
-OperandSize ImmediateOperand::findMinSize(INT64  v) {
-  if(isByte( v)) return REGSIZE_BYTE;
-  if(isWord( v)) return REGSIZE_WORD;
-  if(isDword(v)) return REGSIZE_DWORD;
-  return REGSIZE_QWORD;
-}
-OperandSize ImmediateOperand::findMinSize(UINT64 v) {
-  if(isByte( v)) return REGSIZE_BYTE;
-  if(isWord( v)) return REGSIZE_WORD;
-  if(isDword(v)) return REGSIZE_DWORD;
-  return REGSIZE_QWORD;
-}
-
-void ImmediateOperand::setValue(int    v) {
-  switch(getSize()) {
-  case REGSIZE_BYTE : m_v8  = (BYTE )v; break;
-  case REGSIZE_WORD : m_v16 = (WORD )v; break;
-  case REGSIZE_DWORD: m_v32 = (DWORD)v; break;
-  default           : throwInvalidSize(__TFUNCTION__);
-  }
-}
-
-void ImmediateOperand::setValue(UINT   v) {
-  switch(getSize()) {
-  case REGSIZE_BYTE : m_v8  = (BYTE )v; break;
-  case REGSIZE_WORD : m_v16 = (WORD )v; break;
-  case REGSIZE_DWORD: m_v32 = (DWORD)v; break;
-  default           : throwInvalidSize(__TFUNCTION__);
-  }
-}
-
-void ImmediateOperand::setValue(INT64  v) {
-  switch(getSize()) {
-  case REGSIZE_BYTE : m_v8  = (BYTE )v; break;
-  case REGSIZE_WORD : m_v16 = (WORD )v; break;
-  case REGSIZE_DWORD: m_v32 = (DWORD)v; break;
-  case REGSIZE_QWORD: m_v64 = v       ; break;
-  default           : throwInvalidSize(__TFUNCTION__);
-  }
-}
-
-void ImmediateOperand::setValue(UINT64 v) {
-  switch(getSize()) {
-  case REGSIZE_BYTE : m_v8  = (BYTE )v; break;
-  case REGSIZE_WORD : m_v16 = (WORD )v; break;
-  case REGSIZE_DWORD: m_v32 = (DWORD)v; break;
-  case REGSIZE_QWORD: m_v64 = v       ; break;
-  default           : throwInvalidSize(__TFUNCTION__);
-  }
-}
-
-String ImmediateOperand::toString() const {
-  switch(getSize()) {
-  case REGSIZE_BYTE : return format(_T("%#04x"   ),m_v8 );
-  case REGSIZE_WORD : return format(_T("%#06x"   ),m_v16);
-  case REGSIZE_DWORD: return format(_T("%#010x"  ),m_v32);
-  case REGSIZE_QWORD: return format(_T("%#18I64x"),m_v64);
-  default           : throwInvalidSize(__TFUNCTION__);
-  }
-  return EMPTYSTRING;
-}
-
-void ImmediateOperand::throwInvalidSize(const TCHAR *method) const {
-  throwException(_T("%s:Invalid size for immediate value:%d"), method, getSize());
-}
-
-bool OpcodeBase::isRegisterTypeAllowed(RegType type) const {
-  switch(type) {
-  case REGTYPE_GP  : return (getFlags() & REGTYPE_GP_ALLOWED ) != 0;
-  case REGTYPE_FPU : return (getFlags() & REGTYPE_FPU_ALLOWED) != 0;
-  case REGTYPE_XMM : return (getFlags() & REGTYPE_XMM_ALLOWED) != 0;
-  }
-  return false;
-}
-
-bool OpcodeBase::isOperandSizeAllowed(RegSize size) const {
-  switch(size) {
-  case REGSIZE_BYTE  : return (getFlags() & REGSIZE_BYTE_ALLOWED ) != 0;
-  case REGSIZE_WORD  : return (getFlags() & REGSIZE_WORD_ALLOWED ) != 0;
-  case REGSIZE_DWORD : return (getFlags() & REGSIZE_DWORD_ALLOWED) != 0;
-  case REGSIZE_QWORD : return (getFlags() & REGSIZE_QWORD_ALLOWED) != 0;
-  case REGSIZE_TBYTE : return (getFlags() & REGSIZE_TBYTE_ALLOWED) != 0;
-  case REGSIZE_OWORD : return (getFlags() & REGSIZE_OWORD_ALLOWED) != 0;
-  }
-  return false;
-}
-
-void OpcodeBase::validateOpCount(int count) const {
-  if(getOpCount() != count) {
-    throwInvalidArgumentException(__TFUNCTION__, _T("%d operand(s) specified. Expected %d"), count, getOpCount());
-  }
-}
-
-void OpcodeBase::validateRegisterAllowed(const Register &reg) const {
-  DEFINEMETHODNAME;
-  if(!isRegisterAllowed()) {
-    throwInvalidArgumentException(method, _T("Opcode doesn't use registers"));
-  }
-  if(!isRegisterTypeAllowed(reg.getType()) || !isOperandSizeAllowed(reg.getSize())) {
-    throwInvalidArgumentException(method, _T("%s not allowed for this opcode"), reg.getName().cstr());
-  }
-}
-
-void OpcodeBase::validateMemoryReferenceAllowed() const {
-  if(!isMemoryReferenceAllowed()) {
-    throwInvalidArgumentException(__TFUNCTION__, _T("Cannot reference memory for this opcode"));
-  }
-}
-
-void OpcodeBase::validateImmediateValueAllowed() const {
-  if(!isImmediateValueAllowed()) {
-    throwInvalidArgumentException(__TFUNCTION__, _T("Immediate value not allowed this opcode"));
-  }
-}
-
-void OpcodeBase::validateOperandSize(RegSize size) const {
-  if(!isOperandSizeAllowed(size)) {
-    throwInvalidArgumentException(__TFUNCTION__, _T("Size %s not allowed for this opcode"), getOpSizeName(size));
-  }
-}
-
-InstructionBase OpcodeBase::operator()(const InstructionOperand &op) const {
-  DEFINEMETHODNAME;
-  validateOpCount(1);
-  InstructionBase result(getBytes(),size());
-  switch(op.getType()) {
-  case REGISTER       :
-    validateRegisterAllowed(op.getRegister());
-    return result.setRegister(op.getRegister());
-  case MEMREFERENCE   :
-    validateMemoryReferenceAllowed();
-    validateOperandSize(op.getSize());
-    return result.setMemoryReference((MemoryOperand&)op);
-  case IMMEDIATEVALUE :
-    validateImmediateValueAllowed();
-    break;
-  }
-  return result;
-}
+// --------------------------------- InstructionBase -----------------------------------
 
 InstructionBase &InstructionBase::insertByte(BYTE index, BYTE b) {
   assert((m_size < MAX_INSTRUCTIONSIZE) && (index<m_size));
@@ -280,7 +339,7 @@ InstructionBase &InstructionBase::add(INT64 bytesToAdd, BYTE count) {
 
 InstructionBase &InstructionBase::addrStack(int offset) {
   if(offset == 0) return addrStack0();
-  if(ImmediateOperand::isByte(offset)) return addrStack1((char)offset);
+  if(isByte(offset)) return addrStack1((char)offset);
   return addrStack4(offset);
 }
 
@@ -347,7 +406,7 @@ InstructionBase &InstructionBase::addrPtr(const IndexRegister &reg, int offset) 
     return addrStack(offset);
   default:
     if((offset == 0) && ((regIndex&7)!=5)) return addrPtr0(reg);
-    if(ImmediateOperand::isByte(offset)) return addrPtr1(reg,(char)offset);
+    if(isByte(offset)) return addrPtr1(reg,(char)offset);
     return addrPtr4(reg,offset);
   }
 }
@@ -362,7 +421,7 @@ InstructionBase &InstructionBase::addrShiftAddReg(const IndexRegister &reg, cons
     throwInvalidArgumentException(method, _T("shift=%d. Valid range=[0;3]"),shift);
   }
   if((offset == 0) && ((regIndex&7) != 5)) return addrShiftAddReg0(reg,shift,addReg);
-  if(ImmediateOperand::isByte(offset))     return addrShiftAddReg1(reg,shift,addReg,(char)offset);
+  if(isByte(offset))     return addrShiftAddReg1(reg,shift,addReg,(char)offset);
   return addrShiftAddReg4(reg,shift,addReg,offset);
 }
 
@@ -392,5 +451,177 @@ InstructionBase &InstructionBase::setMemoryReference(const MemoryOperand &mop) {
   } else {
     addrPtr(*mr.getReg(), mr.getOffset());
   }
+  return *this;
+}
+
+// --------------------------------- OpcodeBase -----------------------------------
+
+bool OpcodeBase::isRegisterTypeAllowed(RegType type) const {
+  switch(type) {
+  case REGTYPE_GP  : return (getFlags() & REGTYPE_GP_ALLOWED ) != 0;
+  case REGTYPE_FPU : return (getFlags() & REGTYPE_FPU_ALLOWED) != 0;
+  case REGTYPE_XMM : return (getFlags() & REGTYPE_XMM_ALLOWED) != 0;
+  }
+  return false;
+}
+
+bool OpcodeBase::isOperandSizeAllowed(RegSize size) const {
+  switch(size) {
+  case REGSIZE_BYTE  : return (getFlags() & REGSIZE_BYTE_ALLOWED ) != 0;
+  case REGSIZE_WORD  : return (getFlags() & REGSIZE_WORD_ALLOWED ) != 0;
+  case REGSIZE_DWORD : return (getFlags() & REGSIZE_DWORD_ALLOWED) != 0;
+  case REGSIZE_QWORD : return (getFlags() & REGSIZE_QWORD_ALLOWED) != 0;
+  case REGSIZE_TBYTE : return (getFlags() & REGSIZE_TBYTE_ALLOWED) != 0;
+  case REGSIZE_OWORD : return (getFlags() & REGSIZE_OWORD_ALLOWED) != 0;
+  }
+  return false;
+}
+
+void OpcodeBase::validateOpCount(int count) const {
+  if(getOpCount() != count) {
+    throwInvalidArgumentException(__TFUNCTION__, _T("%d operand(s) specified. Expected %d"), count, getOpCount());
+  }
+}
+
+void OpcodeBase::validateRegisterAllowed(const Register &reg) const {
+  DEFINEMETHODNAME;
+  if(!isRegisterAllowed()) {
+    throwInvalidArgumentException(method, _T("Opcode doesn't use registers"));
+  }
+  if(!isRegisterTypeAllowed(reg.getType()) || !isOperandSizeAllowed(reg.getSize())) {
+    throwInvalidArgumentException(method, _T("%s not allowed for this opcode"), reg.getName().cstr());
+  }
+}
+
+void OpcodeBase::validateMemoryReferenceAllowed() const {
+  if(!isMemoryReferenceAllowed()) {
+    throwInvalidArgumentException(__TFUNCTION__, _T("Cannot reference memory for this opcode"));
+  }
+}
+
+void OpcodeBase::validateImmediateValueAllowed() const {
+  if(!isImmediateValueAllowed()) {
+    throwInvalidArgumentException(__TFUNCTION__, _T("Immediate value not allowed this opcode"));
+  }
+}
+
+void OpcodeBase::validateOperandSize(RegSize size) const {
+  if(!isOperandSizeAllowed(size)) {
+    throwInvalidArgumentException(__TFUNCTION__, _T("Size %s not allowed for this opcode"), toString(size).cstr());
+  }
+}
+
+void OpcodeBase::validateSameSize(const InstructionOperand &op1, const InstructionOperand &op2) const {
+  if(op1.getSize() != op2.getSize()) {
+    throwInvalidArgumentException(__TFUNCTION__, _T("Different size:%s,%s"), op1.toString().cstr(), op2.toString().cstr());
+  }
+}
+
+InstructionBase OpcodeBase::operator()(const InstructionOperand &op) const {
+  validateOpCount(1);
+  InstructionBase result(getBytes(),size());
+  switch(op.getType()) {
+  case REGISTER       :
+    validateRegisterAllowed(op.getRegister());
+    return result.setRegister(op.getRegister());
+  case MEMREFERENCE   :
+    validateMemoryReferenceAllowed();
+    validateOperandSize(op.getSize());
+    return result.setMemoryReference((MemoryOperand&)op);
+  case IMMEDIATEVALUE :
+    validateImmediateValueAllowed();
+    break;
+  }
+  return result;
+}
+
+// --------------------------------- StdOpcode2Arg -----------------------------------
+
+InstructionBase StdOpcode2Arg::operator()(const InstructionOperand &op1, const InstructionOperand &op2) const {
+  InstructionBase result(getBytes(),size());
+  switch(op1.getType()) {
+  case REGISTER       :
+    validateRegisterAllowed(op1.getRegister());
+    switch(op2.getType()) {
+    case REGISTER       :
+      validateSameSize(op1,op2);
+
+    case MEMREFERENCE   : // reg <- mem
+      validateSameSize(op1,op2);
+//      result.or(2)
+    case IMMEDIATEVALUE :
+      return result.setGPRegImm((GPRegister&)op1.getRegister(), op2.getImmInt32());
+    }
+    break;
+  case MEMREFERENCE   :
+    switch(op2.getType()) {
+    case REGISTER       : // mem <- reg
+      validateRegisterAllowed(op2.getRegister());
+      validateSameSize(op1,op2);
+    }
+  }
+  throwInvalidArgumentException(__TFUNCTION__,_T("Invalid combination of operands:%s,%s")
+                               ,op1.toString().cstr()
+                               ,op2.toString().cstr()
+                               );
+  return result;
+}
+
+InstructionBase &InstructionBase::addGPRegister(const GPRegister &reg) {
+  const BYTE    regIndex = reg.getIndex();
+  const RegSize regSize  = reg.getSize();
+#ifdef IS64BIT
+  const BYTE rexbyte = ((regSize==REGSIZE_QWORD)?8:0)|((regIndex>>1)&4);
+  SETREXBITS(rexbyte);
+#endif
+  switch(regSize) {
+  case REGSIZE_BYTE : break;
+  case REGSIZE_WORD : wordIns();
+    // continue case
+  default           : or(1);
+  }
+  return add((regIndex&7)<<3);
+}
+
+InstructionBase &InstructionBase::setGPRegImm(const GPRegister &reg, int immv) {
+  DEFINEMETHODNAME;
+  const BYTE    regIndex = reg.getIndex();
+  const RegSize regSize  = reg.getSize();
+  switch(regSize) {
+  case REGSIZE_BYTE :
+    if(!isByte(immv)) {
+      throwInvalidArgumentException(method,_T("Immediate value %08x doesn't fit in %s"),immv, reg.getName().cstr());
+    }
+    if(regIndex != 0) {
+      prefix(0x80).or(0xC0 | (regIndex&7)).add((char)immv);
+    } else {
+      or(0x04).add((char)immv);
+    }
+    break;
+  case REGSIZE_WORD :
+    if(!isWord(immv)) {
+      throwInvalidArgumentException(method,_T("Immediate value %08x doesn't fit in %s"),immv, reg.getName().cstr());
+    }
+    if(regIndex != 0) {
+      prefix(isByte(immv)?0x83:0x81).or(0xC0 | (regIndex&7))
+     .add(immv,isByte(immv)?1:2);
+    } else {
+      or(0x05).add(immv,2);
+    }
+    wordIns();
+    break;
+  default           :
+    if(regIndex != 0) {
+      prefix(isByte(immv)?0x83:0x81).or(0xC0 | (regIndex&7))
+     .add(immv,isByte(immv)?1:4);
+    } else {
+      or(0x05).add(immv,4);
+    }
+    break;
+  }
+#ifdef IS64BIT
+  const BYTE rexbyte = ((regSize==REGSIZE_QWORD)?8:0)|((regIndex>>3)&1);
+  SETREXBITS(rexbyte);
+#endif
   return *this;
 }

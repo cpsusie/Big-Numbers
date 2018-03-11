@@ -144,8 +144,7 @@ public:
   inline RegSize getOpSize() const {
     return (RegSize)(m_regSizeDefined ? m_regSize : -1);
   }
-  static const TCHAR *getOpSizeName(RegSize regSize);
-         const TCHAR *getOpSizeName() const;
+  String getOpSizeName() const;
 
   static inline bool isByte( int   v) {
     return v == (char)v;

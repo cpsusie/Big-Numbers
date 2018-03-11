@@ -207,7 +207,7 @@ static INT64 staticInt64 = 0xf0debc9a78563412;
 //#define TEST_REG_IMM
 //#define TEST_MEM_ADDR
 //#define TEST_XMM
-#define TEST_MEMPTR
+//#define TEST_MEMPTR
 
 #ifdef IS32BIT
 #define STACKREG ESP
@@ -219,7 +219,7 @@ class CodeArray : public ExecutableByteArray {
 private:
   DECLARECLASSNAME;
 public:
-  int  addBytes(const void *bytes, int count);
+  int        addBytes(const void *bytes, int count);
   inline int emit(const InstructionBase &ins) {
     return addBytes(ins.getBytes(), ins.size());
   }
@@ -231,6 +231,14 @@ int CodeArray::addBytes(const void *bytes, int count) {
   return ret;
 }
 
+#ifdef IS32BIT
+#define REG1 EAX
+#define REGA ECX
+#else // IS64BIT
+#define REG1 RAX
+#define REGA RCX
+#endif  // IS64BIT
+
 class TestMachineCode : public CodeArray {
 public:
   TestMachineCode();
@@ -241,6 +249,29 @@ TestMachineCode::TestMachineCode() {
   void *addr = (void*)&staticInt32;
 #else // IS64BIT
   void *addr = (void*)&staticInt64;
+#endif // IS64BIT
+
+  emit(ADD(AL  , 0x7f       ));
+  emit(ADD(EAX , 0x7f       ));
+  emit(ADD(EAX , 0x7fffffff ));
+  emit(ADD(AX  , 0x7f       ));
+  emit(ADD(AX  , 0x7fff     ));
+  emit(ADD(CL  , 0x7f       ));
+  emit(ADD(ECX , 0x7f       ));
+  emit(ADD(ECX , 0x7fffffff ));
+  emit(ADD(CX  , 0x7f       ));
+  emit(ADD(CX  , 0x7fff     ));
+
+#ifdef IS64BIT
+  emit(ADD(RAX , 0x7f       ));
+  emit(ADD(RAX , 0x7fffffff ));
+  emit(ADD(R8B , 0x7f       ));
+  emit(ADD(R8D , 0x7f       ));
+  emit(ADD(R8D , 0x7fffffff ));
+  emit(ADD(R8  , 0x7f       ));
+  emit(ADD(R8  , 0x7fffffff ));
+  emit(ADD(R8W , 0x7f       ));
+  emit(ADD(R8W , 0x7fff     ));
 #endif // IS64BIT
 
 #ifdef TEST_INCDEC_PUSHPOP
@@ -623,13 +654,6 @@ TestMachineCode::TestMachineCode() {
 #endif // TEST_XMM
 
 #ifdef TEST_MEMPTR
-#ifdef IS32BIT
-#define REG1 EAX
-#define REGA ECX
-#else // IS64BIT
-#define REG1 RAX
-#define REGA RCX
-#endif  // IS64BIT
 
   String s;
   s = BYTEPtr( REG1               ).toString();
@@ -867,6 +891,87 @@ extern "C" void assemblerCode();
 void assemblerCode() {
   __asm {
     jmp         End
+
+    add al              , 0x7f
+    add eax             , 0x7f
+    add eax             , 0x7fffffff
+    add ax              , 0x7f
+    add ax              , 0x7fff
+    add cl              , 0x7f
+    add ecx             , 0x7f
+    add ecx             , 0x7fffffff
+    add cx              , 0x7f
+    add cx              , 0x7fff
+    add al              , cl
+    add al              , dl
+    add al              , bl
+    add al              , ah
+    add al              , ch
+    add al              , dh
+    add al              , bh
+    add al              , byte  ptr [REG1]
+    add eax             , ecx
+    add eax             , edx
+    add eax             , ebx
+    add eax             , esi
+    add eax             , edi
+    add eax             , dword ptr [REG1]
+    add cl              , al
+    add dl              , al
+    add bl              , al
+    add ah              , al
+    add ch              , al
+    add dh              , al
+    add bh              , al
+    add byte  ptr [REG1], al
+    add ecx             , eax
+    add edx             , eax
+    add ebx             , eax
+    add esi             , eax
+    add edi             , eax
+    add dword ptr [REG1], eax
+    add word  ptr [REG1], ax
+    add ax              , word  ptr [REG1]
+
+    add ah              , cl
+    add ch              , cl
+    add dh              , cl
+    add bh              , cl
+    add byte  ptr [REG1], cl
+    add byte  ptr [REG1], dl
+    add byte  ptr [REG1], bl
+    add byte  ptr [REG1], ah
+    add byte  ptr [REG1], ch
+
+    add dword ptr [REG1], ecx
+    add dword ptr [REG1], edx
+    add dword ptr [REG1], ebx
+    add dword ptr [REG1], esp
+    add dword ptr [REG1], ebp
+
+    add cl                      , byte  ptr [REG1]
+    add dl                      , byte  ptr [REG1]
+    add bl                      , byte  ptr [REG1]
+    add ah                      , byte  ptr [REG1]
+    add ch                      , byte  ptr [REG1]
+
+    add ecx                     , dword ptr [REG1]
+    add edx                     , dword ptr [REG1]
+    add ebx                     , dword ptr [REG1]
+    add esp                     , dword ptr [REG1]
+    add ebp                     , dword ptr [REG1]
+
+    add word  ptr [REG1], cx
+    add word  ptr [REG1], dx
+    add word  ptr [REG1], bx
+    add word  ptr [REG1], sp
+    add word  ptr [REG1], bp
+
+    add cx                      , word  ptr [REG1]
+    add dx                      , word  ptr [REG1]
+    add bx                      , word  ptr [REG1]
+    add sp                      , word  ptr [REG1]
+    add bp                      , word  ptr [REG1]
 
     sete al
     sete cl

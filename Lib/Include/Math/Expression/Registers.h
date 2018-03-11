@@ -17,7 +17,7 @@ typedef enum {
  ,REGSIZE_OWORD    /* 128-bit */
 } RegSize;
 
-const TCHAR *getOpSizeName(RegSize regSize);
+String toString(RegSize regSize);
 
 #ifdef IS32BIT
 #define INDEX_REGSIZE          REGSIZE_DWORD

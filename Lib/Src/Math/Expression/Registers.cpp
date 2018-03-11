@@ -1,9 +1,16 @@
 #include "pch.h"
 #include <Math/Expression/Registers.h>
 
-const TCHAR *getOpSizeName(RegSize regSize) {
-  static const TCHAR *name[] = { _T("BYTE"), _T("WORD"), _T("DWORD"), _T("QWORD"), _T("TBYTE"), _T("OWORD") };
-  return name[regSize];
+String toString(RegSize regSize) {
+  switch(regSize) {
+  case REGSIZE_BYTE  : return _T("BYTE");
+  case REGSIZE_WORD  : return _T("WORD");
+  case REGSIZE_DWORD : return _T("DWORD");
+  case REGSIZE_QWORD : return _T("QWORD");
+  case REGSIZE_TBYTE : return _T("TBYTE");
+  case REGSIZE_OWORD : return _T("OWORD");
+  default            : return format(_T("Unknown register size:%d"), regSize);
+  }
 }
 
 // ---------------------------------- Register ----------------------------

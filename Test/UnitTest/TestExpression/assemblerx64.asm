@@ -4,6 +4,26 @@
 assemblerCode PROC
     ret
 
+  ADD AL  , 07fh
+  ADD EAX , 07fh
+  ADD EAX , 07fffffffh
+  ADD AX  , 07fh
+  ADD AX  , 07fffh
+  ADD CL  , 07fh
+  ADD ECX , 07fh
+  ADD ECX , 07fffffffh
+  ADD CX  , 07fh
+  ADD CX  , 07fffh
+  ADD RAX , 07fh
+  ADD RAX , 07fffffffh
+  ADD R8B , 07fh
+  ADD R8D , 07fh
+  ADD R8D , 07fffffffh
+  ADD R8  , 07fh
+  ADD R8  , 07fffffffh
+  ADD R8W , 07fh
+  ADD R8W , 07fffh
+
     movaps xmm0,xmm0
     movaps xmm0,xmm1
     movaps xmm0,xmm2

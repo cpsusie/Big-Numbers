@@ -4,22 +4,78 @@
 #include <MyAssert.h>
 #include "Registers.h"
 
-typedef enum {
-  REGISTER
- ,MEMREFERENCE
- ,IMMEDIATEVALUE
-} OperandType;
+inline bool isByte( int    v) {
+  return v == (char)v;
+}
+inline bool isWord( int    v) {
+  return v == (short)v;
+}
+inline bool isDword(int    v) {
+  return true;
+}
+inline bool isByte( UINT   v) {
+  return v == (BYTE)v;
+}
+inline bool isWord( UINT   v) {
+  return v == (USHORT)v;
+}
+inline bool isDword(UINT   v) {
+  return true;
+}
+inline bool isByte( INT64  v) {
+  return v == (char)v;
+}
+inline bool isWord( INT64  v) {
+  return v == (short)v;
+}
+inline bool isDword(INT64  v) {
+  return v == (int)v;
+}
+inline bool isByte( UINT64 v) {
+  return v == (BYTE)v;
+}
+inline bool isWord( UINT64 v) {
+  return v == (USHORT)v;
+}
+inline bool isDword(UINT64 v) {
+  return v == (UINT)v;
+}
 
 typedef RegSize OperandSize;
 
 class MemoryRef;
 
+typedef enum {
+  REGISTER
+ ,IMMEDIATEVALUE
+ ,MEMREFERENCE
+} OperandType;
+
+String toString(OperandType type);
+
 class InstructionOperand {
 private:
   const OperandType m_type;
   const OperandSize m_size;
-  const Register   *m_reg;
+  union {
+    const Register *m_reg;
+    BYTE            m_v8;
+    WORD            m_v16;
+    DWORD           m_v32;
+    UINT64          m_v64;
+  };
 
+  static OperandSize findMinSize(int    v);
+  static OperandSize findMinSize(UINT   v);
+  static OperandSize findMinSize(INT64  v);
+  static OperandSize findMinSize(UINT64 v);
+  void setValue(int    v);
+  void setValue(UINT   v);
+  void setValue(INT64  v);
+  void setValue(UINT64 v);
+  void throwUnknownSize(const TCHAR *method) const;
+  void validateSize(    const TCHAR *method, OperandSize expectedSize) const;
+  void validateType(    const TCHAR *method, OperandType expectedType) const;
 #ifdef _DEBUG
 protected:
   String            m_debugStr;
@@ -41,9 +97,33 @@ public:
   {
     SETSTR();
   }
-  const Register &getRegister() const {
-    if(m_reg == NULL) throwUnsupportedOperationException(__TFUNCTION__);
-    return *m_reg;
+  inline InstructionOperand(int    v)
+    : m_type(IMMEDIATEVALUE)
+    , m_size(findMinSize(v))
+  {
+    setValue(v);
+    SETSTR();
+  }
+  inline InstructionOperand(UINT   v)
+    : m_type(IMMEDIATEVALUE)
+    , m_size(findMinSize(v))
+  {
+    setValue(v);
+    SETSTR();
+  }
+  inline InstructionOperand(INT64  v)
+    : m_type(IMMEDIATEVALUE)
+    , m_size(findMinSize(v))
+  {
+    setValue(v);
+    SETSTR();
+  }
+  inline InstructionOperand(UINT64 v)
+    : m_type(IMMEDIATEVALUE)
+    , m_size(findMinSize(v))
+  {
+    setValue(v);
+    SETSTR();
   }
   inline OperandType getType() const {
     return m_type;
@@ -51,9 +131,18 @@ public:
   inline OperandSize getSize() const {
     return m_size;
   }
-  virtual String toString() const {
-    return m_reg ? m_reg->getName() : _T("Unknown operand");
+  const Register &getRegister() const {
+    validateType(__TFUNCTION__,REGISTER);
+    return *m_reg;
   }
+  char   getImmInt8()   const;
+  BYTE   getImmUint8()  const;
+  short  getImmInt16()  const;
+  USHORT getImmUint16() const;
+  int    getImmInt32()  const;
+  UINT   getImmUint32() const;
+  INT64  getImmInt64()  const;
+  UINT64 getImmUInt64() const;
   virtual const SegmentRegister &getSegmentRegister() const {
     throwUnsupportedOperationException(__TFUNCTION__);
     return ES;
@@ -62,22 +151,7 @@ public:
     throwUnsupportedOperationException(__TFUNCTION__);
     return NULL;
   }
-  virtual BYTE   getImmByte()  const {
-    throwUnsupportedOperationException(__TFUNCTION__);
-    return 0;
-  }
-  virtual USHORT getImmWord()  const {
-    throwUnsupportedOperationException(__TFUNCTION__);
-    return 0;
-  }
-  virtual UINT   getImmDword() const {
-    throwUnsupportedOperationException(__TFUNCTION__);
-    return 0;
-  }
-  virtual UINT64 getImmQword() const {
-    throwUnsupportedOperationException(__TFUNCTION__);
-    return 0;
-  }
+  virtual String toString() const;
 };
 
 class MemoryRef {
@@ -178,94 +252,6 @@ typedef MemoryPtr<REGSIZE_DWORD> DWORDPtr;
 typedef MemoryPtr<REGSIZE_QWORD> QWORDPtr;
 typedef MemoryPtr<REGSIZE_OWORD> XMMWORDPtr;
 typedef MemoryPtr<REGSIZE_TBYTE> TBYTEPtr;
-
-
-class ImmediateOperand : public InstructionOperand {
-private:
-  union {
-    BYTE   m_v8;
-    WORD   m_v16;
-    DWORD  m_v32;
-    UINT64 m_v64;
-  };
-  void setValue(int    v);
-  void setValue(UINT   v);
-  void setValue(INT64  v);
-  void setValue(UINT64 v);
-  void throwInvalidSize(const TCHAR *method) const;
-public:
-  ImmediateOperand(int    v) : InstructionOperand(IMMEDIATEVALUE, findMinSize(v)) {
-    setValue(v);
-    SETSTR();
-  }
-  ImmediateOperand(UINT   v) : InstructionOperand(IMMEDIATEVALUE, findMinSize(v)) {
-    setValue(v);
-    SETSTR();
-  }
-  ImmediateOperand(INT64  v) : InstructionOperand(IMMEDIATEVALUE, findMinSize(v)) {
-    setValue(v);
-    SETSTR();
-  }
-  ImmediateOperand(UINT64 v) : InstructionOperand(IMMEDIATEVALUE, findMinSize(v)) {
-    setValue(v);
-    SETSTR();
-  }
-  inline BYTE   getImmByte()  const {
-    return m_v8;
-  }
-  inline USHORT getImmWord()  const {
-    return m_v16;
-  }
-  inline UINT   getImmDword() const {
-    return m_v32;
-  }
-  inline UINT64 getImmQword() const {
-    return m_v64;
-  }
-
-  static inline bool isByte( int    v) {
-    return v == (char)v;
-  }
-  static inline bool isWord( int    v) {
-    return v == (short)v;
-  }
-  static inline bool isDword(int    v) {
-    return true;
-  }
-  static inline bool isByte( UINT   v) {
-    return v == (BYTE)v;
-  }
-  static inline bool isWord( UINT   v) {
-    return v == (USHORT)v;
-  }
-  static inline bool isDword(UINT   v) {
-    return true;
-  }
-  static inline bool isByte( INT64  v) {
-    return v == (char)v;
-  }
-  static inline bool isWord( INT64  v) {
-    return v == (short)v;
-  }
-  static inline bool isDword(INT64  v) {
-    return v == (int)v;
-  }
-  static inline bool isByte( UINT64 v) {
-    return v == (BYTE)v;
-  }
-  static inline bool isWord( UINT64 v) {
-    return v == (USHORT)v;
-  }
-  static inline bool isDword(UINT64 v) {
-    return v == (UINT)v;
-  }
-  static OperandSize findMinSize(int    v);
-  static OperandSize findMinSize(UINT   v);
-  static OperandSize findMinSize(INT64  v);
-  static OperandSize findMinSize(UINT64 v);
-
-  String toString() const;
-};
 
 #define _SWAP2(op) ((((op)&0xff)<< 8) | (((op)>> 8)&0xff ))
 #define _SWAP3(op) ((_SWAP2(op) << 8) | (((op)>>16)&0xff ))
@@ -372,6 +358,9 @@ public:
 
   InstructionBase &setRegister(       const Register      &reg);
   InstructionBase &setMemoryReference(const MemoryOperand &mop);
+  InstructionBase &setGPRegImm(       const GPRegister    &reg, int immv);
+  InstructionBase &addGPRegister(     const GPRegister    &reg);
+
 };
 
 // ----------------------------------------------------------------------
@@ -390,10 +379,14 @@ public:
 #define MEMREFERENCE_ALLOWED   0x00001000
 #define IMMEDIATEVALUE_ALLOWED 0x00002000
 #ifdef IS32BIT
-#define REXBYTE_ALLOWED        0x00000000
+#define ALL_GPSIZE_ALLOWED     (REGSIZE_BYTE_ALLOWED | REGSIZE_WORD_ALLOWED | REGSIZE_DWORD_ALLOWED)
 #else
-#define REXBYTE_ALLOWED        0x00008000
+#define ALL_GPSIZE_ALLOWED     (REGSIZE_BYTE_ALLOWED | REGSIZE_WORD_ALLOWED | REGSIZE_DWORD_ALLOWED | REGSIZE_QWORD_ALLOWED)
 #endif
+
+
+#define ALL_GP_ALLOWED         (REGISTER_ALLOWED | REGTYPE_GP_ALLOWED | ALL_GPSIZE_ALLOWED)
+
 
 class OpcodeBase {
 protected:
@@ -423,9 +416,9 @@ protected:
   void validateMemoryReferenceAllowed()                                      const;
   void validateImmediateValueAllowed()                                       const;
   void validateOperandSize(           RegSize                         size ) const;
-
+  void validateSameSize(              const InstructionOperand &op1, const InstructionOperand &op2) const;
 public:
-  inline OpcodeBase(BYTE size, UINT64 op, UINT opCount, UINT flags)
+  inline OpcodeBase(UINT64 op, BYTE size, UINT opCount, UINT flags)
     : m_size(   size   )
     , m_opCount(opCount)
     , m_flags(  flags  )
@@ -461,13 +454,6 @@ public:
   inline bool isRegisterAllowed() const {
     return (getFlags() & REGISTER_ALLOWED      ) != 0;
   }
-  inline bool hasRexMode() const {
-#ifdef IS32BIT
-    return false;
-#else
-    return (getFlags() & REXBYTE_ALLOWED) != 0;
-#endif
-  }
   virtual InstructionBase operator()(const InstructionOperand &op) const;
 };
 
@@ -496,43 +482,76 @@ public:
 
 class SetxxOp : public OpcodeBase {
 public:
-  SetxxOp(UINT op) : OpcodeBase(2, op, 1, REGTYPE_GP_ALLOWED | REGSIZE_BYTE_ALLOWED | REGISTER_ALLOWED | MEMREFERENCE_ALLOWED | REXBYTE_ALLOWED ) {
+  SetxxOp(UINT op) : OpcodeBase(op, 2, 1, REGTYPE_GP_ALLOWED | REGSIZE_BYTE_ALLOWED | REGISTER_ALLOWED | MEMREFERENCE_ALLOWED) {
+  }
+};
+class StdOpcode2Arg : public OpcodeBase {
+public :
+  StdOpcode2Arg(BYTE op) : OpcodeBase(op, 1, 2, ALL_GP_ALLOWED | MEMREFERENCE_ALLOWED | IMMEDIATEVALUE_ALLOWED) {
+  }
+  InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
+};
+
+class Instruction0Arg : public InstructionBase {
+public:
+  Instruction0Arg(UINT op, BYTE size) : InstructionBase(OpcodeBase(op,size,0,0).getBytes(),size) {
   }
 };
 
 // Set Byte on Condition
-extern SetxxOp SETO;                                                                    // Set byte   if overflow
-extern SetxxOp SETNO;                                                                   // Set byte   if not overflow
-extern SetxxOp SETB;                                                                    // Set byte   if below                 (unsigned)
-extern SetxxOp SETAE;                                                                   // Set byte   if above or equal        (unsigned)
-extern SetxxOp SETE;                                                                    // Set byte   if equal                 (signed/unsigned)
-extern SetxxOp SETNE;                                                                   // Set byte   if not equal             (signed/unsigned)
-extern SetxxOp SETBE;                                                                   // Set byte   if below or equal        (unsigned)
-extern SetxxOp SETA;                                                                    // Set byte   if above                 (unsigned)
-extern SetxxOp SETS;                                                                    // Set byte   if sign
-extern SetxxOp SETNS;                                                                   // Set byte   if not sign
-extern SetxxOp SETPE;                                                                   // Set byte   if parity even
-extern SetxxOp SETPO;                                                                   // Set byte   if parity odd
-extern SetxxOp SETL;                                                                    // Set byte   if less                  (signed  )
-extern SetxxOp SETGE;                                                                   // Set byte   if greater or equal      (signed  )
-extern SetxxOp SETLE;                                                                   // Set byte   if less or equal         (signed  )
-extern SetxxOp SETG;                                                                    // Set byte   if greater               (signed  )
+extern SetxxOp          SETO;                              // Set byte   if overflow
+extern SetxxOp          SETNO;                             // Set byte   if not overflow
+extern SetxxOp          SETB;                              // Set byte   if below                 (unsigned)
+extern SetxxOp          SETAE;                             // Set byte   if above or equal        (unsigned)
+extern SetxxOp          SETE;                              // Set byte   if equal                 (signed/unsigned)
+extern SetxxOp          SETNE;                             // Set byte   if not equal             (signed/unsigned)
+extern SetxxOp          SETBE;                             // Set byte   if below or equal        (unsigned)
+extern SetxxOp          SETA;                              // Set byte   if above                 (unsigned)
+extern SetxxOp          SETS;                              // Set byte   if sign
+extern SetxxOp          SETNS;                             // Set byte   if not sign
+extern SetxxOp          SETPE;                             // Set byte   if parity even
+extern SetxxOp          SETPO;                             // Set byte   if parity odd
+extern SetxxOp          SETL;                              // Set byte   if less                  (signed  )
+extern SetxxOp          SETGE;                             // Set byte   if greater or equal      (signed  )
+extern SetxxOp          SETLE;                             // Set byte   if less or equal         (signed  )
+extern SetxxOp          SETG;                              // Set byte   if greater               (signed  )
 
-#define SETNAE                                 SETB                                     // Set byte   if not above or equal    (unsigned)
-#define SETC                                   SETB                                     // Set byte   if carry                 (unsigned)
-#define SETNC                                  SETAE                                    // Set byte   if not carry             (unsigned)
-#define SETNB                                  SETAE                                    // Set byte   if not below             (unsigned)
-#define SETZ                                   SETE                                     // Set byte   if 0                     (signed/unsigned)
-#define SETNZ                                  SETNE                                    // Set byte   if not zero              (signed/unsigned)
-#define SETNA                                  SETBE                                    // Set byte   if not above             (unsigned)
-#define SETNBE                                 SETA                                     // Set byte   if not below or equal    (unsigned)
-#define SETNGE                                 SETL                                     // Set byte   if not greater or equal  (signed  )
-#define SETNL                                  SETGE                                    // Set byte   if not less              (signed  )
-#define SETNG                                  SETLE                                    // Set byte   if not greater           (signed  )
-#define SETNLE                                 SETG                                     // Set byte   if not less or equal     (signed  )
+#define                 SETNAE         SETB                // Set byte   if not above or equal    (unsigned)
+#define                 SETC           SETB                // Set byte   if carry                 (unsigned)
+#define                 SETNC          SETAE               // Set byte   if not carry             (unsigned)
+#define                 SETNB          SETAE               // Set byte   if not below             (unsigned)
+#define                 SETZ           SETE                // Set byte   if 0                     (signed/unsigned)
+#define                 SETNZ          SETNE               // Set byte   if not zero              (signed/unsigned)
+#define                 SETNA          SETBE               // Set byte   if not above             (unsigned)
+#define                 SETNBE         SETA                // Set byte   if not below or equal    (unsigned)
+#define                 SETNGE         SETL                // Set byte   if not greater or equal  (signed  )
+#define                 SETNL          SETGE               // Set byte   if not less              (signed  )
+#define                 SETNG          SETLE               // Set byte   if not greater           (signed  )
+#define                 SETNLE         SETG                // Set byte   if not less or equal     (signed  )
+
+extern Instruction0Arg  RET;                               // Near return to calling procedure
+
+extern Instruction0Arg  CMC;                               // Complement carry flag
+extern Instruction0Arg  CLC;                               // Clear carry flag     CF = 0
+extern Instruction0Arg  STC;                               // Set   carry flag     CF = 1
+extern Instruction0Arg  CLI;                               // Clear interrupt flag IF = 0
+extern Instruction0Arg  STI;                               // Set   interrupt flag IF = 1
+extern Instruction0Arg  CLD;                               // Clear direction flag DF = 0
+extern Instruction0Arg  STD;                               // Set   direction flag DF = 1
+
+extern Instruction0Arg  PUSHF;                             // Push FLAGS onto stack *--SP = FLAGS;
+extern Instruction0Arg  POPF;                              // Pop  FLAGS register from stack FLAGS = *SP++
+extern Instruction0Arg  SAHF;                              // Store AH into FLAGS
+extern Instruction0Arg  LAHF;                              // Load FLAGS into AH register
+#define                 PUSHFD         PUSHF               // Push EFLAGS register onto stack
+#define                 POPFD          POPF                // Pop data into EFLAGS register
+extern Instruction0Arg  PUSHAD;                            // Push all double-word (32-bit) registers onto stack
+extern Instruction0Arg  POPAD;                             // Pop  all double-word (32-bit) registers from stack
+
+extern Instruction0Arg  NOOP;
+extern StdOpcode2Arg    ADD,ADC,OR,AND,SUB,SBB,XOR,CMP;
 
 #ifdef __NEVER__
-#define NOOP                                   B1INS(0x90)
 
 #define XCHG_EAX_R32(        r32)              B1INS(0x90     |  (r32))                   // r32=eax-edi
 #define XCHG_AX_R16(         r16)              WORDOP(XCHG_EAX_R32(r16))                  // r16=ax-di

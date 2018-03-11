@@ -21,7 +21,7 @@
 void IntelOpcode::throwRegSizeMismatch(const Register &reg) {
   throwInvalidArgumentException(__TFUNCTION__
                                ,_T("register %s doesn't match other operand %s")
-                               ,reg.getName().cstr(), getOpSizeName());
+                               ,reg.getName().cstr(), getOpSizeName().cstr());
 }
 
 IntelOpcode &IntelOpcode::insertByte(BYTE index, BYTE b) {
@@ -72,8 +72,8 @@ IntelOpcode &IntelOpcode::setRexBits(BYTE bits) {
 }
 #endif
 
-const TCHAR *IntelOpcode::getOpSizeName() const {
-  return m_regSizeDefined ? ::getOpSizeName(getOpSize()) : _T("Undefined");
+String IntelOpcode::getOpSizeName() const {
+  return m_regSizeDefined ? ::toString(getOpSize()) : _T("Undefined");
 }
 
 // ---------------------------------- IntelInstruction ----------------------------
