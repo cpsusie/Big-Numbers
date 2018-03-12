@@ -7,8 +7,8 @@ public:
   InstructionStd1Arg(const OpcodeBase &opcode) : InstructionBuilder(opcode)
   {
   }
-  InstructionBase &setMemoryReference(const MemoryOperand &mop) {
-    return __super::setMemoryReference(mop);
+  InstructionBase &addMemoryReference(const MemoryOperand &mop) {
+    return __super::addMemoryReference(mop);
   }
   InstructionBase &setRegister(       const Register      &reg);
 };
@@ -28,7 +28,7 @@ InstructionBase OpcodeStd1Arg::operator()(const InstructionOperand &op) const {
   case MEMREFERENCE   :
     validateMemoryReferenceAllowed();
     validateOperandSize(op.getSize());
-    return result.setMemoryReference((MemoryOperand&)op);
+    return result.addMemoryReference((MemoryOperand&)op);
   case IMMEDIATEVALUE :
     validateImmediateValueAllowed();
     throwException(_T("%s:Immediate value not yet implemented. (op=%s)"), __TFUNCTION__,op.toString().cstr());

@@ -9,13 +9,14 @@ InstructionBase::InstructionBase(const OpcodeBase &opcode)
   memcpy(m_bytes, opcode.getBytes(),m_size);
 }
 
-InstructionBuilder &InstructionBuilder::insertByte(BYTE index, BYTE b) {
+InstructionBuilder &InstructionBuilder::insert(BYTE index, BYTE b) {
   assert((m_size < MAX_INSTRUCTIONSIZE) && (index<m_size));
   BYTE *bp = m_bytes + index;
   for(BYTE *dst = m_bytes + m_size++, *src = dst-1; dst > bp;) {
     *(dst--) = *(src--);
   }
   *bp = b;
+  if(index <= m_opcodePos) m_opcodePos++;
   return *this;
 }
 
@@ -27,7 +28,7 @@ InstructionBuilder &InstructionBuilder::setRexBits(BYTE bits) {
     return *this;
   }
   m_hasRexByte = true;
-  return insertByte(m_rexByteIndex, 0x40|bits);
+  return insert(m_rexByteIndex, 0x40|bits);
 }
 #endif
 
@@ -139,7 +140,7 @@ InstructionBuilder &InstructionBuilder::prefixSegReg(const SegmentRegister &reg)
   return *this;
 }
 
-InstructionBuilder &InstructionBuilder::setMemoryReference(const MemoryOperand &mop) {
+InstructionBuilder &InstructionBuilder::addMemoryReference(const MemoryOperand &mop) {
   const MemoryRef &mr = *mop.getMemoryReference();
   if(mop.hasSegmentRegister()) {
     prefixSegReg(mop.getSegmentRegister());

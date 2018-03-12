@@ -7,12 +7,11 @@ public:
   InstructionStd2Arg(const OpcodeBase &opcode) : InstructionBuilder(opcode)
   {
   }
-  InstructionBase &setMemoryReference(const MemoryOperand &mop) {
-    return __super::setMemoryReference(mop);
-  }
-  // assume sáme size
-  InstructionBase &set2GPReg(  const GPRegister &dst, const GPRegister &src);
-  InstructionBase &setGPRegImm(const GPRegister &dst, int immv);
+  // Assume sáme size of dst and src
+  InstructionBase &set2GPReg(  const GPRegister    &dst, const GPRegister    &src);
+  InstructionBase &setMemGPReg(const MemoryOperand &dst, const GPRegister    &src);
+  InstructionBase &setGPRegMem(const GPRegister    &dst, const MemoryOperand &src);
+  InstructionBase &setGPRegImm(const GPRegister    &dst, int   immv);
 };
 
 InstructionBase &InstructionStd2Arg::set2GPReg(const GPRegister &dst, const GPRegister &src) {
@@ -33,6 +32,29 @@ InstructionBase &InstructionStd2Arg::set2GPReg(const GPRegister &dst, const GPRe
   const BYTE rexbyte = ((size==REGSIZE_QWORD)?8:0)|((dstIndex>>1)&4)|((srcIndex>>3)&1);
   SETREXBITS(rexbyte);
 #endif
+  return *this;
+}
+
+InstructionBase &InstructionStd2Arg::setMemGPReg(const MemoryOperand &dst, const GPRegister    &src) {
+  const BYTE    srcIndex = src.getIndex();
+  const RegSize size     = src.getSize();
+  switch(size) {
+  case REGSIZE_BYTE :
+    addMemoryReference(dst).or(getArgIndex(), (srcIndex&7)<<3);
+    break;
+  case REGSIZE_WORD : wordIns();
+    // continue case
+  default           :
+    or(1).addMemoryReference(dst).or(getArgIndex(), (srcIndex&7)<<3);
+    break;
+  }
+#ifdef IS64BIT
+  const BYTE rexbyte = ((size==REGSIZE_QWORD)?8:0)|((srcIndex>>1)&4);
+  SETREXBITS(rexbyte);
+#endif
+  return *this;
+}
+InstructionBase &InstructionStd2Arg::setGPRegMem(const GPRegister    &dst, const MemoryOperand &src) {
   return *this;
 }
 
@@ -90,17 +112,21 @@ InstructionBase OpcodeStd2Arg::operator()(const InstructionOperand &op1, const I
       validateSameSize(op1,op2);
       return result.set2GPReg((GPRegister&)op1.getRegister(),(GPRegister&)op2.getRegister());
     case MEMREFERENCE   : // reg <- mem
+      validateMemoryReferenceAllowed();
       validateSameSize(op1,op2);
-//      result.or(2)
+      return result.setGPRegMem((GPRegister&)op1.getRegister(), (MemoryOperand&)op2);
     case IMMEDIATEVALUE :
+      validateImmediateValueAllowed();
       return result.setGPRegImm((GPRegister&)op1.getRegister(), op2.getImmInt32());
     }
     break;
   case MEMREFERENCE   :
+    validateMemoryReferenceAllowed();
     switch(op2.getType()) {
     case REGISTER       : // mem <- reg
       validateRegisterAllowed(op2.getRegister());
       validateSameSize(op1,op2);
+      return result.setMemGPReg((MemoryOperand&)op1, (GPRegister&)op2.getRegister());
     }
   }
   throwInvalidArgumentException(__TFUNCTION__,_T("Invalid combination of operands:%s,%s")

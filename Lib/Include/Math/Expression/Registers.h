@@ -83,6 +83,9 @@ class IndexRegister : public GPRegister {
 public:
   inline IndexRegister(BYTE index) : GPRegister(INDEX_REGSIZE, index) {
   }
+  inline bool isValidAddRegister() const {
+    return (getIndex()&7)!=4;
+  }
 };
 
 class FPURegister : public Register {

@@ -274,6 +274,7 @@ public:
 
 class InstructionBuilder : public InstructionBase {
 private:
+  BYTE   m_opcodePos,m_opcodeSize;
 #ifdef IS64BIT
   UINT   m_hasRexByte      : 1;
   UINT   m_rexByteIndex    : 2;
@@ -313,19 +314,37 @@ private:
 public:
   InstructionBuilder(const OpcodeBase &opcode) 
     : InstructionBase(opcode)
+    , m_opcodePos(    0            )
 #ifdef IS64BIT
-    , m_hasRexByte(   0     )
-    , m_rexByteIndex( 0     )
+    , m_hasRexByte(   0            )
+    , m_rexByteIndex( 0            )
 #endif
   {
+    m_opcodeSize = size();
   }
-  InstructionBuilder &insertByte(BYTE index, BYTE b);
+  inline BYTE getOpcodePos() const {
+    return m_opcodePos;
+  }
+  inline BYTE getOpcodeSize() const {
+    return m_opcodeSize;
+  }
+  // Return index of first byte following opcode
+  inline BYTE getArgIndex() const {
+    return getOpcodePos() + getOpcodeSize();
+  }
+  InstructionBuilder &insert(BYTE index, BYTE b);
   inline InstructionBuilder &prefix(BYTE b) {
-    return insertByte(0,b);
+    return insert(0,b);
   }
-  // Always |= the last byte in array
+  // m_bytes[m_size-1] |= b
   inline InstructionBuilder &or(BYTE b) {
     m_bytes[m_size - 1] |= b;
+    return *this;
+  }
+  // m_bytes[index] |= b
+  inline InstructionBuilder &or(BYTE index, BYTE b) {
+    assert(m_size < MAX_INSTRUCTIONSIZE);
+    m_bytes[index] |= b;
     return *this;
   }
   inline InstructionBuilder &add(BYTE b) {
@@ -353,7 +372,7 @@ public:
     return prefix(0x66);
   }
 
-  InstructionBuilder &setMemoryReference(const MemoryOperand &mop);
+  InstructionBuilder &addMemoryReference(const MemoryOperand &mop);
 };
 
 // ----------------------------------------------------------------------
@@ -384,6 +403,12 @@ public:
 #define _SWAP4(op) ((_SWAP2(op) <<16) | (_SWAP2((op)>>16)))
 #define _SWAP5(op) ((_SWAP4(op) << 8) | (((op)>>32)&0xff ))
 #define _SWAP6(op) ((_SWAP4(op) <<16) | (_SWAP2((op)>>32)))
+
+typedef enum {
+  OPCODENOARG
+ ,OPCODESTD1ARG
+ ,OPCODESTD2ARG
+} OpcodeType;
 
 class OpcodeBase {
 protected:
@@ -439,6 +464,9 @@ public:
   inline UINT getFlags() const {
     return m_flags;
   }
+  virtual OpcodeType getType() const {
+    return OPCODENOARG;
+  }
   bool        isRegisterTypeAllowed(RegType type) const;
   bool        isOperandSizeAllowed( RegSize size) const;
   inline bool isMemoryReferenceAllowed() const {
@@ -459,12 +487,18 @@ public:
   {
   }
   InstructionBase operator()(const InstructionOperand &op) const;
+  OpcodeType getType() const {
+    return OPCODESTD1ARG;
+  }
 };
 class OpcodeStd2Arg : public OpcodeBase {
 public :
   OpcodeStd2Arg(BYTE op) : OpcodeBase(op, 1, 2, ALL_GP_ALLOWED | MEMREFERENCE_ALLOWED | IMMEDIATEVALUE_ALLOWED) {
   }
   InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
+  OpcodeType getType() const {
+    return OPCODESTD2ARG;
+  }
 };
 
 /*
