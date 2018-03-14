@@ -253,6 +253,7 @@ void TestMachineCode::testOpcodeStd1Arg(const OpcodeStd1Arg &opcode) {
       }
     }
   }
+  clear();
   if(opcode.isMemoryReferenceAllowed()) {
     for(Iterator<const InstructionOperand*> memIt = m_allMemOperands.getIterator(); memIt.hasNext();) {
       const InstructionOperand &operand = *memIt.next();
@@ -278,22 +279,8 @@ void TestMachineCode::testOpcodeStd2Arg(const OpcodeStd2Arg &opcode) {
         emit(opcode(regDst,regSrc));
       }
     }
-    if(opcode.isImmediateValueAllowed()) {
-      for(Iterator<const InstructionOperand*> immIt = m_allImmOperands.getIterator(); immIt.hasNext();) {
-        const InstructionOperand &immOp = *immIt.next();
-        for(Iterator<const GPRegister*> regDstIt = m_allGPReg.getIterator(); regDstIt.hasNext();) {
-          const GPRegister &regDst = *regDstIt.next();
-          if(!opcode.isOperandSizeAllowed(regDst.getSize())) {
-            continue;
-          }
-          if(!opcode.isValidOperandCombination(regDst, immOp)) {
-            continue;
-          }
-          emit(opcode(regDst,immOp));
-        }
-      }
-    }
   }
+  clear();
   if(opcode.isMemoryReferenceAllowed()) {
     for(int i = 0; i < 2; i++) { // i=0:mem<-reg, 1:reg<-mem
       for(Iterator<const InstructionOperand*> memIt = m_allMemOperands.getIterator(); memIt.hasNext();) {
@@ -310,6 +297,31 @@ void TestMachineCode::testOpcodeStd2Arg(const OpcodeStd2Arg &opcode) {
               emit(opcode(regOp,memOp));
             }
           }
+        }
+      }
+    }
+  }
+  clear();
+  if(opcode.isImmediateValueAllowed()) {
+    for(Iterator<const InstructionOperand*> immIt = m_allImmOperands.getIterator(); immIt.hasNext();) {
+      const InstructionOperand &immOp = *immIt.next();
+      for(Iterator<const GPRegister*> regDstIt = m_allGPReg.getIterator(); regDstIt.hasNext();) {
+        const GPRegister &regOp = *regDstIt.next();
+        if(!opcode.isOperandSizeAllowed(regOp.getSize())) {
+          continue;
+        }
+        if(!opcode.isValidOperandCombination(regOp, immOp)) {
+          continue;
+        }
+        emit(opcode(regOp,immOp));
+      }
+      if(opcode.isMemoryReferenceAllowed()) {
+        for(Iterator<const InstructionOperand*> memIt = m_allMemOperands.getIterator(); memIt.hasNext();) {
+          const InstructionOperand &memOp = *memIt.next();
+          if(!opcode.isValidOperandCombination(memOp, immOp)) {
+            continue;
+          }
+          emit(opcode(memOp,immOp));
         }
       }
     }

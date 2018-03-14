@@ -24,6 +24,79 @@ assemblerCode PROC
   ADD R8W , 07fh
   ADD R8W , 07fffh
 
+  add byte  ptr [rax          ], 7fh
+  add word  ptr [rax          ], 7fh
+  add word  ptr [rax          ], 7fffh
+  add dword ptr [rax          ], 7fh
+  add dword ptr [rax          ], 7fffh
+  add dword ptr [rax          ], 7fffffffh
+  add qword ptr [rax          ], 7fh
+  add qword ptr [rax          ], 7fffh
+  add qword ptr [rax          ], 7fffffffh
+
+  add byte  ptr [rcx          ], 7fh
+  add word  ptr [rcx          ], 7fh
+  add word  ptr [rcx          ], 7fffh
+  add dword ptr [rcx          ], 7fh
+  add dword ptr [rcx          ], 7fffh
+  add dword ptr [rcx          ], 7fffffffh
+  add qword ptr [rcx          ], 7fh
+  add qword ptr [rcx          ], 7fffh
+  add qword ptr [rcx          ], 7fffffffh
+
+  add byte  ptr [r8           ], 7fh
+  add word  ptr [r8           ], 7fh
+  add word  ptr [r8           ], 7fffh
+  add dword ptr [r8           ], 7fh
+  add dword ptr [r8           ], 7fffh
+  add dword ptr [r8           ], 7fffffffh
+  add qword ptr [r8           ], 7fh
+  add qword ptr [r8           ], 7fffh
+  add qword ptr [r8           ], 7fffffffh
+
+  add byte  ptr [12345678h    ], 7fh
+  add word  ptr [12345678h    ], 7fh
+  add word  ptr [12345678h    ], 7fffh
+  add dword ptr [12345678h    ], 7fh
+  add dword ptr [12345678h    ], 7fffh
+  add dword ptr [12345678h    ], 7fffffffh
+  add qword ptr [12345678h    ], 7fh
+  add qword ptr [12345678h    ], 7fffh
+  add qword ptr [12345678h    ], 7fffffffh
+
+  add byte  ptr [rax+12h      ], 7fh
+  add word  ptr [rax+12h      ], 7fh
+  add word  ptr [rax+12h      ], 7fffh
+  add dword ptr [rax+12h      ], 7fh
+  add dword ptr [rax+12h      ], 7fffh
+  add dword ptr [rax+12h      ], 7fffffffh
+  add qword ptr [rax+12h      ], 7fh
+  add qword ptr [rax+12h      ], 7fffh
+  add qword ptr [rax+12h      ], 7fffffffh
+
+  add byte  ptr [rcx+12h      ], 7fh
+  add word  ptr [rcx+12h      ], 7fh
+  add word  ptr [rcx+12h      ], 7fffh
+  add dword ptr [rcx+12h      ], 7fh
+  add dword ptr [rcx+12h      ], 7fffh
+  add dword ptr [rcx+12h      ], 7fffffffh
+  add qword ptr [rcx+12h      ], 7fh
+  add qword ptr [rcx+12h      ], 7fffh
+  add qword ptr [rcx+12h      ], 7fffffffh
+
+  add byte  ptr [r8 +12h      ], 7fh
+  add word  ptr [r8 +12h      ], 7fh
+  add word  ptr [r8 +12h      ], 7fffh
+  add dword ptr [r8 +12h      ], 7fh
+  add dword ptr [r8 +12h      ], 7fffh
+  add dword ptr [r8 +12h      ], 7fffffffh
+  add qword ptr [r8 +12h      ], 7fh
+  add qword ptr [r8 +12h      ], 7fffh
+  add qword ptr [r8 +12h      ], 7fffffffh
+
+  mov RAX , 01234567812345678h
+  mov RCX , 01234567812345678h
+
     movaps xmm0,xmm0
     movaps xmm0,xmm1
     movaps xmm0,xmm2

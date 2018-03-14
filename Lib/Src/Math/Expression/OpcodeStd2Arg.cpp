@@ -9,9 +9,10 @@ public:
   }
   // Assume sáme size of dst and src
   InstructionStd2Arg &set2GPReg(  const GPRegister    &dst, const GPRegister    &src);
-  InstructionStd2Arg &setMemGPReg(const MemoryOperand &dst, const GPRegister    &src);
   InstructionStd2Arg &setGPRegMem(const GPRegister    &dst, const MemoryOperand &src);
-  InstructionStd2Arg &setGPRegImm(const GPRegister    &dst, int   immv);
+  InstructionStd2Arg &setGPRegImm(const GPRegister    &dst, int   immv              );
+  InstructionStd2Arg &setMemGPReg(const MemoryOperand &dst, const GPRegister    &src);
+  InstructionStd2Arg &setMemImm(  const MemoryOperand &dst, int   immv              );
 };
 
 InstructionStd2Arg &InstructionStd2Arg::set2GPReg(const GPRegister &dst, const GPRegister &src) {
@@ -30,28 +31,6 @@ InstructionStd2Arg &InstructionStd2Arg::set2GPReg(const GPRegister &dst, const G
   }
 #ifdef IS64BIT
   const BYTE rexbyte = ((size==REGSIZE_QWORD)?8:0)|((dstIndex>>1)&4)|((srcIndex>>3)&1);
-  SETREXBITS(rexbyte);
-#endif
-  return *this;
-}
-
-InstructionStd2Arg &InstructionStd2Arg::setMemGPReg(const MemoryOperand &dst, const GPRegister    &src) {
-  const BYTE    srcIndex = src.getIndex();
-  const RegSize size     = src.getSize();
-  switch(size) {
-  case REGSIZE_BYTE :
-    addMemoryReference(dst);
-    or(getArgIndex(), (srcIndex&7)<<3);
-    break;
-  case REGSIZE_WORD : wordIns();
-    // continue case
-  default           :
-    or(1).addMemoryReference(dst);
-    or(getArgIndex(), (srcIndex&7)<<3);
-    break;
-  }
-#ifdef IS64BIT
-  const BYTE rexbyte = ((size==REGSIZE_QWORD)?8:0)|((srcIndex>>1)&4);
   SETREXBITS(rexbyte);
 #endif
   return *this;
@@ -105,23 +84,72 @@ InstructionStd2Arg &InstructionStd2Arg::setGPRegImm(const GPRegister &reg, int i
   return *this;
 }
 
-static bool registerSizeContainsImmValue(const Register &reg, const InstructionOperand &op2) {
-  const RegSize size2 = op2.getSize();
-  switch(reg.getSize()) {
+InstructionStd2Arg &InstructionStd2Arg::setMemGPReg(const MemoryOperand &dst, const GPRegister    &src) {
+  const BYTE    srcIndex = src.getIndex();
+  const RegSize size     = src.getSize();
+  switch(size) {
   case REGSIZE_BYTE :
-    return size2 == REGSIZE_BYTE;
+    addMemoryReference(dst);
+    or(getArgIndex(), (srcIndex&7)<<3);
+    break;
+  case REGSIZE_WORD : wordIns();
+    // continue case
+  default           :
+    or(1).addMemoryReference(dst);
+    or(getArgIndex(), (srcIndex&7)<<3);
+    break;
+  }
+#ifdef IS64BIT
+  const BYTE rexbyte = ((size==REGSIZE_QWORD)?8:0)|((srcIndex>>1)&4);
+  SETREXBITS(rexbyte);
+#endif
+  return *this;
+}
+
+InstructionStd2Arg &InstructionStd2Arg::setMemImm(const MemoryOperand &dst, int immv) {
+  DEFINEMETHODNAME;
+  const OperandSize size = dst.getSize();
+  switch(size) {
+  case REGSIZE_BYTE :
+    if(!isByte(immv)) {
+      throwInvalidArgumentException(method,_T("Immediate value %08x doesn't fit in %s"),immv, dst.toString().cstr());
+    }
+    prefix(0x80).setMemoryReference(dst).add((char)immv);
+    break;
   case REGSIZE_WORD :
-    return (size2 == REGSIZE_BYTE)
-        || (size2 == REGSIZE_WORD);
+    if(!isWord(immv)) {
+      throwInvalidArgumentException(method,_T("Immediate value %08x doesn't fit in %s"),immv, dst.toString().cstr());
+    }
+    prefix(isByte(immv)?0x83:0x81).setMemoryReference(dst).add(immv,isByte(immv)?1:2);
+    wordIns();
+    break;
+  default           :
+    prefix(isByte(immv)?0x83:0x81).setMemoryReference(dst).add(immv,isByte(immv)?1:4);
+    break;
+  }
+#ifdef IS64BIT
+  const BYTE rexbyte = (size==REGSIZE_QWORD)?8:0;
+  SETREXBITS(rexbyte);
+#endif
+  return *this;
+}
+
+static bool sizeContainsSrcSize(OperandSize dstSize, OperandSize srcSize) {
+  switch(dstSize) {
+  case REGSIZE_BYTE :
+    return  srcSize == REGSIZE_BYTE;
+  case REGSIZE_WORD :
+    return (srcSize == REGSIZE_BYTE )
+        || (srcSize == REGSIZE_WORD );
   case REGSIZE_DWORD :
-    return (size2 == REGSIZE_BYTE )
-        || (size2 == REGSIZE_WORD )
-        || (size2 == REGSIZE_DWORD);
+    return (srcSize == REGSIZE_BYTE )
+        || (srcSize == REGSIZE_WORD )
+        || (srcSize == REGSIZE_DWORD);
   case REGSIZE_QWORD :
-    return (size2 == REGSIZE_BYTE )
-        || (size2 == REGSIZE_WORD )
-        || (size2 == REGSIZE_DWORD)
-        || (size2 == REGSIZE_QWORD);
+    return (srcSize == REGSIZE_BYTE )
+        || (srcSize == REGSIZE_WORD )
+        || (srcSize == REGSIZE_DWORD)
+        || (srcSize == REGSIZE_QWORD);
   default            :
     return false;
   }
@@ -143,7 +171,7 @@ bool OpcodeStd2Arg::isValidOperandCombination(const Register &reg, const Instruc
     return reg.getSize() == op2.getSize();
   case IMMEDIATEVALUE :
     if(!isImmediateValueAllowed()) return false;
-    return registerSizeContainsImmValue(reg, op2);
+    return sizeContainsSrcSize(reg.getSize(), op2.getSize());
   }
   return false;
 }
@@ -161,6 +189,9 @@ bool OpcodeStd2Arg::isValidOperandCombination(const InstructionOperand &op1, con
         return op1.getSize() == regSrc.getSize();
       }
       break;
+    case IMMEDIATEVALUE : // mem <- imm
+      if(!isImmediateValueAllowed()) return false;
+      return sizeContainsSrcSize(op1.getSize(), op2.getSize());
     }
     break;
   }
@@ -193,6 +224,9 @@ InstructionBase OpcodeStd2Arg::operator()(const InstructionOperand &op1, const I
       validateRegisterAllowed(op2.getRegister());
       validateSameSize(op1,op2);
       return result.setMemGPReg((MemoryOperand&)op1, (GPRegister&)op2.getRegister());
+    case IMMEDIATEVALUE : // mem <- imm
+      validateImmediateValueAllowed();
+      return result.setMemImm((MemoryOperand&)op1, op2.getImmInt32());
     }
   }
   throwInvalidArgumentException(__TFUNCTION__,_T("Invalid combination of operands:%s,%s")

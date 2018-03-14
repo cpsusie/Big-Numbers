@@ -279,37 +279,15 @@ private:
   UINT   m_hasRexByte      : 1;
   UINT   m_rexByteIndex    : 2;
 #endif
-  inline InstructionBuilder &addrStack0() {
-    return add(0x04).add(0x24);
-  }
-  inline InstructionBuilder &addrStack1(char offset) {
-    return add(0x44).add(0x24).add(offset);
-  }
-  inline InstructionBuilder &addrStack4(int  offset) {
-    return add(0x84).add(0x24).add(offset, 4);
-  }
-  InstructionBuilder &addrStack(        int  offset);
-  // ptr[reg]. (reg&7) != {4,5}
-  InstructionBuilder &addrPtr0(        const IndexRegister &reg);
-  // ptr[reg+offset], (reg&7) != 4, offset=[-128;127]
-  InstructionBuilder &addrPtr1(        const IndexRegister &reg, char offset);
-  // ptr[reg+offset], (reg&7) != 4, offset=[INT_MIN;INT_MAX]
-  InstructionBuilder &addrPtr4(        const IndexRegister &reg, int offset);
-  // ptr[reg+(addReg<<shift)], (reg&7) != 5, (addReg&7) != 4, shift<=3
-  InstructionBuilder &addrShiftAddReg0(const IndexRegister &reg, BYTE shift, const IndexRegister &addReg);
-  // ptr[reg+(addReg<<shift)+offset], (addReg&7) != 4, shift<=3, offset=[-128;127]
-  InstructionBuilder &addrShiftAddReg1(const IndexRegister &reg, BYTE shift, const IndexRegister &addReg, char offset);
-  // ptr[reg+(addReg<<shift)+offset], (addReg&7) != 4, shift<=3, offset=[INT_MIN;INT_MAX]
-  InstructionBuilder &addrShiftAddReg4(const IndexRegister &reg, BYTE shift, const IndexRegister &addReg, int offset);
   // Use with Imm-addressing. reg = { ES,CS,SS,DS,FS,GS }
-   // ptr[(reg<<shift)+offset], (reg&7) != 4, shift<=3, offset=[INT_MIN;INT_MAX]
+  // ptr[(reg<<shift)+offset], (reg&7) != 4, shift<=3, offset=[INT_MIN;INT_MAX]
   InstructionBuilder &addrShiftPtr4(   const IndexRegister &reg, BYTE shift, int offset);
   InstructionBuilder &addrPtr(         const IndexRegister &reg, int offset);
-  InstructionBuilder &addrShiftAddReg( const IndexRegister &reg, const IndexRegister &addReg, BYTE shift, int offset);
+  InstructionBuilder &addrShiftAddReg( const IndexRegister &base, BYTE shift, const IndexRegister &inxReg, int offset);
 
   InstructionBuilder &prefixSegReg(    const SegmentRegister &reg);
   inline InstructionBuilder &addrImmDword(int addr) {
-    return add(0x05).add(addr, 4);
+    return or(0x05).add(addr, 4);
   }
 public:
   InstructionBuilder(const OpcodeBase &opcode) 
@@ -375,6 +353,7 @@ public:
     return prefix(0x66);
   }
 
+  InstructionBuilder &setMemoryReference(const MemoryOperand &mop);
   InstructionBuilder &addMemoryReference(const MemoryOperand &mop);
 };
 
