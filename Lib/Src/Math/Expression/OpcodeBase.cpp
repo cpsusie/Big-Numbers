@@ -4,6 +4,33 @@
 
 // --------------------------------- OpcodeBase -----------------------------------
 
+#define _SWAP2(op) ((((op)&0xff)<< 8) | (((op)>> 8)&0xff ))
+#define _SWAP3(op) ((_SWAP2(op) << 8) | (((op)>>16)&0xff ))
+#define _SWAP4(op) ((_SWAP2(op) <<16) | (_SWAP2((op)>>16)))
+#define _SWAP5(op) ((_SWAP4(op) << 8) | (((op)>>32)&0xff ))
+#define _SWAP6(op) ((_SWAP4(op) <<16) | (_SWAP2((op)>>32)))
+
+static inline UINT64 swapBytes(UINT64 bytes, int sz) {
+  switch(sz) {
+  case 1 : return bytes;
+  case 2 : return _SWAP2(bytes);
+  case 3 : return _SWAP3(bytes);
+  case 4 : return _SWAP4(bytes);
+  case 5 : return _SWAP5(bytes);
+  case 6 : return _SWAP6(bytes);
+  default: throwInvalidArgumentException(__TFUNCTION__, _T("sz=%d"), sz);
+            return bytes;
+  }
+}
+
+OpcodeBase::OpcodeBase(UINT64 op, BYTE size, UINT opCount, UINT flags)
+  : m_size(   size   )
+  , m_opCount(opCount)
+  , m_flags(  flags  )
+{
+  m_bytes = swapBytes(op,size);
+}
+
 bool OpcodeBase::isRegisterTypeAllowed(RegType type) const {
   switch(type) {
   case REGTYPE_GP  : return (getFlags() & REGTYPE_GP_ALLOWED ) != 0;

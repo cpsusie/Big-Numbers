@@ -216,6 +216,14 @@ static char findShift(BYTE a) {
   return shift[a];
 }
 
+static String formatHexAddr(int addr) {
+  String result = format(_T("%08xh"), addr);
+  if(!iswdigit(result[0])) {
+    result.insert(0,'0');
+  }
+  return result;
+}
+
 String MemoryRef::toString() const {
   String result;
   if(m_reg   ) result = m_reg->getName();
@@ -224,14 +232,11 @@ String MemoryRef::toString() const {
     if(hasShift()) result += format(_T("%d*"),1<<getShift());
     result += m_addreg->getName();
   }
-  if(m_offset) {
+  if(m_offset || (result.length() == 0)) {
     if(result.length() > 0) {
       result += format(_T("%+d"), m_offset);
     } else {
-      result = format(_T("%08xh"), m_offset);
-      if(!iswdigit(result[0])) {
-        result.insert(0,'0');
-      }
+      result = formatHexAddr(m_offset);
     }
   }
   return result;

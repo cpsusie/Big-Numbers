@@ -328,6 +328,9 @@ public:
   inline BYTE getOpcodeSize() const {
     return m_opcodeSize;
   }
+  inline BYTE getLastOpcodeByteIndex() const {
+    return getOpcodePos() + getOpcodeSize() - 1;
+  }
   // Return index of first byte following opcode
   inline BYTE getArgIndex() const {
     return getOpcodePos() + getOpcodeSize();
@@ -398,12 +401,6 @@ public:
 
 #define ALL_GP_ALLOWED         (REGISTER_ALLOWED | REGTYPE_GP_ALLOWED | ALL_GPSIZE_ALLOWED)
 
-#define _SWAP2(op) ((((op)&0xff)<< 8) | (((op)>> 8)&0xff ))
-#define _SWAP3(op) ((_SWAP2(op) << 8) | (((op)>>16)&0xff ))
-#define _SWAP4(op) ((_SWAP2(op) <<16) | (_SWAP2((op)>>16)))
-#define _SWAP5(op) ((_SWAP4(op) << 8) | (((op)>>32)&0xff ))
-#define _SWAP6(op) ((_SWAP4(op) <<16) | (_SWAP2((op)>>32)))
-
 typedef enum {
   OPCODENOARG
  ,OPCODESTD1ARG
@@ -411,19 +408,6 @@ typedef enum {
 } OpcodeType;
 
 class OpcodeBase {
-protected:
-  static inline UINT64 swapBytes(UINT64 bytes, int sz) {
-    switch(sz) {
-    case 1 : return bytes;
-    case 2 : return _SWAP2(bytes);
-    case 3 : return _SWAP3(bytes);
-    case 4 : return _SWAP4(bytes);
-    case 5 : return _SWAP5(bytes);
-    case 6 : return _SWAP6(bytes);
-    default: throwInvalidArgumentException(__TFUNCTION__, _T("sz=%d"), sz);
-             return bytes;
-    }
-  }
 protected:
   union {
     UINT64 m_bytes;
@@ -440,13 +424,7 @@ protected:
   void validateOperandSize(           RegSize                         size ) const;
   void validateSameSize(              const InstructionOperand &op1, const InstructionOperand &op2) const;
 public:
-  inline OpcodeBase(UINT64 op, BYTE size, UINT opCount, UINT flags)
-    : m_size(   size   )
-    , m_opCount(opCount)
-    , m_flags(  flags  )
-  {
-    m_bytes = swapBytes(op,size);
-  }
+  OpcodeBase(UINT64 op, BYTE size, UINT opCount, UINT flags);
 
   // Size of Opcode in bytes
   inline BYTE size() const {
@@ -499,6 +477,8 @@ public :
   OpcodeType getType() const {
     return OPCODESTD2ARG;
   }
+  bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2) const;
+  bool isValidOperandCombination(const Register           &reg, const InstructionOperand &op2) const;
 };
 
 /*

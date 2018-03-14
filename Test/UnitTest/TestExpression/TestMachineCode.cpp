@@ -139,9 +139,32 @@ AllGPRegisters::AllGPRegisters() {
   }
 }
 
-static const int   allOffset[] = { 0, 0x7f, 0x7fff, 0x7fffffff, -1 };
+static const int allImmValues[] = {    0x7f, 0x7fff, 0x7fffffff     };
 
-class AllMemoryOperands : public CompactArray<const InstructionOperand*> {
+class InstructionOperandArray : public CompactArray<const InstructionOperand*> {
+public:
+  virtual ~InstructionOperandArray();
+};
+
+InstructionOperandArray::~InstructionOperandArray() {
+  for(size_t i = size(); i--;) delete (*this)[i];
+  clear();
+}
+
+class AllImmOperands : public InstructionOperandArray {
+public:
+  AllImmOperands();
+};
+
+AllImmOperands::AllImmOperands() {
+  for(int i = 0; i < ARRAYSIZE(allImmValues); i++) {
+    add(new InstructionOperand(allImmValues[i]));
+  }
+}
+
+static const int   allOffset[]    = { 0, 0x7f, 0x7fff, 0x7fffffff, -1 };
+
+class AllMemoryOperands : public InstructionOperandArray {
 public:
   AllMemoryOperands();
 };
@@ -198,6 +221,7 @@ class TestMachineCode : public CodeArray {
 private:
   AllMemoryOperands m_allMemOperands;
   AllGPRegisters    m_allGPReg;
+  AllImmOperands    m_allImmOperands;
   void testOpcodeNoArg(  const OpcodeBase    &opcode);
   void testOpcodeStd1Arg(const OpcodeStd1Arg &opcode);
   void testOpcodeStd2Arg(const OpcodeStd2Arg &opcode);
@@ -208,7 +232,7 @@ public:
 
 void TestMachineCode::testOpcode(const OpcodeBase &opcode) {
   clear();
-  OpcodeType type = opcode.getType();
+  const OpcodeType type = opcode.getType();
   switch(type) {
   case OPCODENOARG  : testOpcodeNoArg(                  opcode); break;
   case OPCODESTD1ARG: testOpcodeStd1Arg((OpcodeStd1Arg&)opcode); break;
@@ -219,29 +243,84 @@ void TestMachineCode::testOpcode(const OpcodeBase &opcode) {
 
 void TestMachineCode::testOpcodeNoArg(  const OpcodeBase    &opcode) {
 }
+
 void TestMachineCode::testOpcodeStd1Arg(const OpcodeStd1Arg &opcode) {
   if(opcode.isRegisterAllowed()) {
     for(Iterator<const GPRegister*> regIt = m_allGPReg.getIterator(); regIt.hasNext();) {
-      const GPRegister *reg = regIt.next();
-      if(opcode.isOperandSizeAllowed(reg->getSize())) {
-        emit(opcode(*reg));
+      const GPRegister &reg = *regIt.next();
+      if(opcode.isOperandSizeAllowed(reg.getSize())) {
+        emit(opcode(reg));
       }
     }
   }
-  if (opcode.isMemoryReferenceAllowed()) {
+  if(opcode.isMemoryReferenceAllowed()) {
     for(Iterator<const InstructionOperand*> memIt = m_allMemOperands.getIterator(); memIt.hasNext();) {
-      const InstructionOperand *operand = memIt.next();
-      if(opcode.isOperandSizeAllowed(operand->getSize())) {
-        emit(opcode(*operand));
+      const InstructionOperand &operand = *memIt.next();
+      if(opcode.isOperandSizeAllowed(operand.getSize())) {
+        emit(opcode(operand));
       }
     }
   }
 }
+
 void TestMachineCode::testOpcodeStd2Arg(const OpcodeStd2Arg &opcode) {
+  if(opcode.isRegisterAllowed()) {
+    for(Iterator<const GPRegister*> regDstIt = m_allGPReg.getIterator(); regDstIt.hasNext();) {
+      const GPRegister &regDst = *regDstIt.next();
+      if(!opcode.isOperandSizeAllowed(regDst.getSize())) {
+        continue;
+      }
+      for(Iterator<const GPRegister*> regSrcIt = m_allGPReg.getIterator(); regSrcIt.hasNext();) {
+        const GPRegister &regSrc = *regSrcIt.next();
+        if(regSrc.getSize() != regDst.getSize()) {
+          continue;
+        }
+        emit(opcode(regDst,regSrc));
+      }
+    }
+    if(opcode.isImmediateValueAllowed()) {
+      for(Iterator<const InstructionOperand*> immIt = m_allImmOperands.getIterator(); immIt.hasNext();) {
+        const InstructionOperand &immOp = *immIt.next();
+        for(Iterator<const GPRegister*> regDstIt = m_allGPReg.getIterator(); regDstIt.hasNext();) {
+          const GPRegister &regDst = *regDstIt.next();
+          if(!opcode.isOperandSizeAllowed(regDst.getSize())) {
+            continue;
+          }
+          if(!opcode.isValidOperandCombination(regDst, immOp)) {
+            continue;
+          }
+          emit(opcode(regDst,immOp));
+        }
+      }
+    }
+  }
+  if(opcode.isMemoryReferenceAllowed()) {
+    for(int i = 0; i < 2; i++) { // i=0:mem<-reg, 1:reg<-mem
+      for(Iterator<const InstructionOperand*> memIt = m_allMemOperands.getIterator(); memIt.hasNext();) {
+        const InstructionOperand &memOp = *memIt.next();
+        if(opcode.isOperandSizeAllowed(memOp.getSize())) {
+          for(Iterator<const GPRegister*> regIt = m_allGPReg.getIterator(); regIt.hasNext();) {
+            const GPRegister &regOp = *regIt.next();
+            if(regOp.getSize() != memOp.getSize()) {
+              continue;
+            }
+            if(i==0) {
+              emit(opcode(memOp,regOp));
+            } else {
+              emit(opcode(regOp,memOp));
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
 TestMachineCode::TestMachineCode() {
   testOpcode(SETE);
+  testOpcode(ADD);
+  testOpcode(ADC);
+  testOpcode(XOR);
 }
 
 #endif // TEST_MACHINECODE
