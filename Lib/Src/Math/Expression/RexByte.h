@@ -1,16 +1,20 @@
 #pragma once
 
 #ifdef IS32BIT
-#define SETREXBITS(          bits      )
-#define SETREXBITONHIGHREG(  reg,bit   )
-#define SETREXBITSONHIGHREG2(reg,addReg)
+#define SETREXBITS(          bits     )
+#define SETREXBITONHIGHINX(  inx ,bit )
+#define SETREXBITSONHIGHINX2(binx,iInx)
+#define QWORDTOREX(          size     )
 #else // IS64BIT
-#define SETREXBITS(          bits      ) { if(bits) setRexBits(bits); }
-#define SETREXBITONHIGHREG(  reg,bit   )                                          \
-{ if((reg.getIndex()) > 7) setRexBits(1<<(bit));                                  \
+
+#define SETREXBITS(          bits     )                                          \
+{ const BYTE tmpBits = bits;                                                     \
+  if(tmpBits) setRexBits(tmpBits);                                               \
 }
-#define SETREXBITSONHIGHREG2(reg,addReg)                                          \
-{ const BYTE _rexBits = (((reg.getIndex())>>3)&1) | (((addReg.getIndex())>>2)&2); \
-  SETREXBITS(_rexBits)                                                            \
-}
+
+#define HIGHINDEXTOREX(      inx ,bit ) (((inx)>>(3-(bit)))&(1<<(bit)))
+#define SETREXBITONHIGHINX(  inx ,bit ) SETREXBITS(HIGHINDEXTOREX(inx,bit))
+#define SETREXBITSONHIGHINX2(bInx,iInx) SETREXBITS(HIGHINDEXTOREX(bInx,0) | HIGHINDEXTOREX(iInx,1))
+#define QWORDTOREX(          size      ) (((size)==REGSIZE_QWORD)?8:0)
+
 #endif // IS64BIT

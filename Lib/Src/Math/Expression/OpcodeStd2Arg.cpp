@@ -29,10 +29,7 @@ InstructionStd2Arg &InstructionStd2Arg::set2GPReg(const GPRegister &dst, const G
     or(3).add(0xC0 | ((dstIndex&7)<<3) | (srcIndex&7));
     break;
   }
-#ifdef IS64BIT
-  const BYTE rexbyte = ((size==REGSIZE_QWORD)?8:0)|((dstIndex>>1)&4)|((srcIndex>>3)&1);
-  SETREXBITS(rexbyte);
-#endif
+  SETREXBITS(QWORDTOREX(size)|HIGHINDEXTOREX(dstIndex,2)|HIGHINDEXTOREX(srcIndex,0))
   return *this;
 }
 
@@ -77,32 +74,27 @@ InstructionStd2Arg &InstructionStd2Arg::setGPRegImm(const GPRegister &reg, int i
     }
     break;
   }
-#ifdef IS64BIT
-  const BYTE rexbyte = ((regSize==REGSIZE_QWORD)?8:0)|((regIndex>>3)&1);
-  SETREXBITS(rexbyte);
-#endif
+  SETREXBITS(QWORDTOREX(regSize)|HIGHINDEXTOREX(regIndex,0));
   return *this;
 }
 
-InstructionStd2Arg &InstructionStd2Arg::setMemGPReg(const MemoryOperand &dst, const GPRegister    &src) {
-  const BYTE    srcIndex = src.getIndex();
-  const RegSize size     = src.getSize();
-  switch(size) {
+InstructionStd2Arg &InstructionStd2Arg::setMemGPReg(const MemoryOperand &dst, const GPRegister &src) {
+  const BYTE    regIndex = src.getIndex();
+  const RegSize regSize  = src.getSize();
+  switch(regSize) {
   case REGSIZE_BYTE :
     addMemoryReference(dst);
-    or(getArgIndex(), (srcIndex&7)<<3);
+    or(getArgIndex(), (regIndex&7)<<3);
     break;
-  case REGSIZE_WORD : wordIns();
+  case REGSIZE_WORD :
+    wordIns();
     // continue case
   default           :
     or(1).addMemoryReference(dst);
-    or(getArgIndex(), (srcIndex&7)<<3);
+    or(getArgIndex(), (regIndex&7)<<3);
     break;
   }
-#ifdef IS64BIT
-  const BYTE rexbyte = ((size==REGSIZE_QWORD)?8:0)|((srcIndex>>1)&4);
-  SETREXBITS(rexbyte);
-#endif
+  SETREXBITS(QWORDTOREX(regSize)|HIGHINDEXTOREX(regIndex,2));
   return *this;
 }
 
@@ -127,10 +119,7 @@ InstructionStd2Arg &InstructionStd2Arg::setMemImm(const MemoryOperand &dst, int 
     prefix(isByte(immv)?0x83:0x81).setMemoryReference(dst).add(immv,isByte(immv)?1:4);
     break;
   }
-#ifdef IS64BIT
-  const BYTE rexbyte = (size==REGSIZE_QWORD)?8:0;
-  SETREXBITS(rexbyte);
-#endif
+  SETREXBITS(QWORDTOREX(size));
   return *this;
 }
 

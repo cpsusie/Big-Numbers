@@ -14,8 +14,9 @@ public:
 };
 
 InstructionBase &InstructionStd1Arg::setRegister(const Register &reg) {
-  SETREXBITONHIGHREG(reg,0);
-  return add(0xc0 | (reg.getIndex()&7));
+  const BYTE regIndex = reg.getIndex();
+  SETREXBITONHIGHINX(regIndex,0);
+  return add(0xc0 | (regIndex&7));
 }
 
 InstructionBase OpcodeStd1Arg::operator()(const InstructionOperand &op) const {
