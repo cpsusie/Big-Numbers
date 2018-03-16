@@ -4,10 +4,52 @@
 String toString(OperandType type) {
   switch(type) {
   case REGISTER      : return _T("REGISTER"      );
+  case MEMORYOPERAND : return _T("MEMORYOPERAND" );
   case IMMEDIATEVALUE: return _T("IMMEDIATEVALUE");
-  case MEMREFERENCE  : return _T("MEMREFERENCE"  );
   default            : return format(_T("Unknown operandType:%d"), type);
   }
+}
+
+// Convert int32-value to disassembler format
+static String formatHexValue(int v, bool showSign) {
+  bool neg;
+  if(v >= 0) {
+    neg = false;
+  } else {
+    v        = -v;
+    neg      = true;
+    showSign = true;
+  }
+  String result = format(_T("%X"), v);
+  if(!iswdigit(result[0])) {
+    result.insert(0,'0');
+  }
+  if(v >= 10) result += _T('h');
+  if(showSign) {
+    result.insert(0, neg ? '-' : '+');
+  }
+  return result;
+}
+
+// Convert int64-value to disassembler format
+static String formatHexValue(INT64 v, bool showSign) {
+  bool neg;
+  if(v >= 0) {
+    neg = false;
+  } else {
+    v        = -v;
+    neg      = true;
+    showSign = true;
+  }
+  String result = format(_T("%I64X"), v);
+  if(!iswdigit(result[0])) {
+    result.insert(0,'0');
+  }
+  if(v >= 10) result += _T('h');
+  if(showSign) {
+    result.insert(0, neg ? '-' : '+');
+  }
+  return result;
 }
 
 OperandSize InstructionOperand::findMinSize(int    v) {
@@ -196,10 +238,10 @@ String InstructionOperand::toString() const {
     return m_reg ? m_reg->getName() : _T("Unknown operand");
   case IMMEDIATEVALUE:
     switch(getSize()) {
-    case REGSIZE_BYTE : return format(_T("%#04x"   ),m_v8 );
-    case REGSIZE_WORD : return format(_T("%#06x"   ),m_v16);
-    case REGSIZE_DWORD: return format(_T("%#010x"  ),m_v32);
-    case REGSIZE_QWORD: return format(_T("%#18I64x"),m_v64);
+    case REGSIZE_BYTE : 
+    case REGSIZE_WORD : 
+    case REGSIZE_DWORD: return formatHexValue(getImmInt32(),false);
+    case REGSIZE_QWORD: return formatHexValue(getImmInt64(),false);
     default           : throwUnknownSize(__TFUNCTION__);
     }
   default:
@@ -216,70 +258,67 @@ static char findShift(BYTE a) {
   return shift[a];
 }
 
-static String formatHexAddr(int addr) {
-  String result = format(_T("%08xh"), addr);
-  if(!iswdigit(result[0])) {
-    result.insert(0,'0');
-  }
-  return result;
-}
-
 String MemoryRef::toString() const {
   String result;
-  if(m_reg   ) result = m_reg->getName();
-  if(m_addreg) {
-    if(result.length() > 0) result += _T("+");
-    if(hasShift()) result += format(_T("%d*"),1<<getShift());
-    result += m_addreg->getName();
+  if(hasBase()) {
+    result += m_base->getName();
   }
-  if(m_offset || (result.length() == 0)) {
-    if(result.length() > 0) {
-      result += format(_T("%+d"), m_offset);
-    } else {
-      result = formatHexAddr(m_offset);
-    }
+  if(hasInx()) {
+    if(result.length() > 0) result += _T("+");
+    result += m_inx->getName();
+    if(hasShift()) result += format(_T("*%d"),1<<getShift());
+  }
+  if(hasOffset() || result.isEmpty()) {
+    result += formatHexValue(m_offset, !result.isEmpty());
   }
   return result;
 }
 
-MemoryRef operator+(const IndexRegister &reg, int offset) {
-  return MemoryRef(&reg,NULL,0,offset);
+MemoryRef operator+(const IndexRegister &base, int offset) {
+  return MemoryRef(&base,NULL,0,offset);
 }
 
-MemoryRef operator-(const IndexRegister &reg, int offset) {
-  return MemoryRef(&reg,NULL,0,-offset);
+MemoryRef operator-(const IndexRegister &base, int offset) {
+  return MemoryRef(&base,NULL,0,-offset);
 }
 
 MemoryRef operator+(const MemoryRef &mr, int offset) {
-  if(mr.getOffset() != 0) {
+  if(mr.hasOffset()) {
     throwInvalidArgumentException(__TFUNCTION__,_T("Illegal index:%s+%d"),mr.toString().cstr(),offset);
   }
-  return MemoryRef(mr.getReg(),mr.getAddreg(),mr.getShift(),offset);
+  return MemoryRef(mr.getBase(),mr.getInx(),mr.getShift(),offset);
 }
 
 MemoryRef operator-(const MemoryRef &mr, int offset) {
-  if(mr.getOffset() != 0) {
+  if(mr.hasOffset()) {
     throwInvalidArgumentException(__TFUNCTION__,_T("Illegal index:%s-%d"),mr.toString().cstr(),offset);
   }
-  return MemoryRef(mr.getReg(),mr.getAddreg(),mr.getShift(),-offset);
+  return MemoryRef(mr.getBase(),mr.getInx(),mr.getShift(),-offset);
 }
 
-MemoryRef operator+(const IndexRegister &reg, const MemoryRef &mr) {
-  if((mr.getReg() != NULL) || (mr.getAddreg() == NULL) || (mr.getOffset() != 0)) {
-    throwInvalidArgumentException(__TFUNCTION__,_T("Illegal index:%s+%s"),reg.getName().cstr(),mr.toString().cstr());
+MemoryRef operator+(const IndexRegister &base, const MemoryRef &mr) {
+  if(mr.hasBase() || (!mr.hasInx() || mr.hasOffset())) {
+    throwInvalidArgumentException(__TFUNCTION__,_T("Illegal index:%s+%s"),base.getName().cstr(),mr.toString().cstr());
   }
-  return MemoryRef(&reg,mr.getAddreg(),mr.getShift());
+  return MemoryRef(&base,mr.getInx(),mr.getShift());
 }
 
-MemoryRef operator+(const IndexRegister &reg, const IndexRegister &addreg) {
-  return MemoryRef(&reg,&addreg,0);
+MemoryRef operator+(const IndexRegister &base, const IndexRegister &inx) {
+  return MemoryRef(&base,&inx,0);
 }
 
-MemoryRef operator*(BYTE a, const IndexRegister &reg) {
-  if((reg.getIndex()&7) == 4) {
-    throwInvalidArgumentException(__TFUNCTION__,_T("Invalid indexregister:%s"), reg.getName().cstr());
+MemoryRef operator*(BYTE a, const IndexRegister &inx) {
+  if(!inx.isValidIndexRegister()) {
+    throwInvalidArgumentException(__TFUNCTION__,_T("Invalid indexregister:%s"), inx.getName().cstr());
   }
-  return MemoryRef(NULL,&reg,findShift(a));
+  return MemoryRef(NULL,&inx,findShift(a));
+}
+
+MemoryRef operator*(const IndexRegister &inx, BYTE a) {
+  if(!inx.isValidIndexRegister()) {
+    throwInvalidArgumentException(__TFUNCTION__,_T("Invalid indexregister:%s"), inx.getName().cstr());
+  }
+  return MemoryRef(NULL,&inx,findShift(a));
 }
 
 String MemoryOperand::toString() const {

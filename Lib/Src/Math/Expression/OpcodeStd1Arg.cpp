@@ -26,9 +26,8 @@ InstructionBase OpcodeStd1Arg::operator()(const InstructionOperand &op) const {
   case REGISTER       :
     validateRegisterAllowed(op.getRegister());
     return result.setRegister(op.getRegister());
-  case MEMREFERENCE   :
-    validateMemoryReferenceAllowed();
-    validateOperandSize(op.getSize());
+  case MEMORYOPERAND  :
+    validateMemoryOperandAllowed((MemoryOperand&)op);
     return result.addMemoryReference((MemoryOperand&)op);
   case IMMEDIATEVALUE :
     validateImmediateValueAllowed();

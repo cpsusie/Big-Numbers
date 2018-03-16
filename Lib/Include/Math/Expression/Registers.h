@@ -2,7 +2,7 @@
 
 typedef enum {
   REGTYPE_NONE
- ,REGTYPE_GP
+ ,REGTYPE_GPR
  ,REGTYPE_SEG
  ,REGTYPE_FPU
  ,REGTYPE_XMM
@@ -71,7 +71,7 @@ public:
     SETDEBUGSTR();
   }
   RegType getType()  const {
-    return REGTYPE_GP;
+    return REGTYPE_GPR;
   }
   RegSize getSize()  const {
     return m_size;
@@ -83,7 +83,7 @@ class IndexRegister : public GPRegister {
 public:
   inline IndexRegister(BYTE index) : GPRegister(INDEX_REGSIZE, index) {
   }
-  inline bool isValidAddRegister() const {
+  inline bool isValidIndexRegister() const {
     return (getIndex()&7)!=4;
   }
 };

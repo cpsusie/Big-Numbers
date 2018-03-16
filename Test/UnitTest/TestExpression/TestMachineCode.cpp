@@ -162,43 +162,93 @@ AllImmOperands::AllImmOperands() {
   }
 }
 
-static const int   allOffset[]    = { 0, 0x7f, 0x7fff, 0x7fffffff, -1 };
+static const int   allImmAddr[]   = { 0, 0x7fffffff };
+static const int   allOffset[]    = { 0, 0x7f, 0x7fffffff, -1 };
 
 class AllMemoryOperands : public InstructionOperandArray {
 public:
   AllMemoryOperands();
 };
 
-AllMemoryOperands::AllMemoryOperands() {
-  for(int i = 0; i < ARRAYSIZE(allOffset); i++) {
-    add(new BYTEPtr( allOffset[i]));
-    add(new WORDPtr( allOffset[i]));
-    add(new DWORDPtr(allOffset[i]));
-    add(new QWORDPtr(allOffset[i]));
-  }
-  for(int i = 0; i < ARRAYSIZE(allOffset); i++) {
-    for(int j = 0; j < INDEXREGISTER_COUNT; j++) {
-      add(new BYTEPtr( indexRegList[j] + allOffset[i]));
-      add(new WORDPtr( indexRegList[j] + allOffset[i]));
-      add(new DWORDPtr(indexRegList[j] + allOffset[i]));
-      add(new QWORDPtr(indexRegList[j] + allOffset[i]));
+static inline int boolCmp(bool b1, bool b2) {
+  return (char)b1 - (char)b2;
+}
+
+static inline int registerCmp(const Register &reg1, const Register &reg2) {
+  return (int)reg1.getIndex() - (int)reg2.getIndex();
+}
+
+static int offsetCmp(const MemoryRef &mr1, const MemoryRef &mr2) {
+  int c;
+  if(c = boolCmp(mr1.hasOffset(), mr2.hasOffset())) return c;
+  if(!mr1.hasOffset()) return 0;
+  if(c = boolCmp(isByte(mr2.getOffset()), isByte(mr1.getOffset()))) return c;
+  return sign((INT64)mr1.getOffset() - (INT64)mr2.getOffset());
+}
+
+static int memRefCmp(const MemoryRef &mr1, const MemoryRef &mr2) {
+  int c;
+  if(c = boolCmp(mr2.isImmediateAddr(),mr1.isImmediateAddr())) return c;
+  if(!mr1.isImmediateAddr()) {
+    if(c = boolCmp(mr1.hasInx(),mr2.hasInx())) return c;
+    if(!mr1.hasInx()) {
+      if(c = offsetCmp(mr1,mr2)) return c;
     }
+    if(c = boolCmp(mr1.hasBase(), mr2.hasBase())) return c;
+    if(mr1.hasBase()) { // && mr2.hasBase()
+      if(c = registerCmp(*mr1.getBase(), *mr2.getBase())) return c;
+    }
+    if(mr1.hasInx()) { // && mr2.hasInx()
+      if(c = offsetCmp(mr1,mr2)) return c;
+      if(c = (int)mr1.getShift() - (int)mr2.getShift()) return c;
+      if(c = registerCmp(*mr1.getInx(),*mr2.getInx())) return c;
+    }
+  }
+  return offsetCmp(mr1,mr2);
+}
+
+static int memOpCmp(const InstructionOperand * const &o1, const InstructionOperand * const &o2) {
+  int c = (int)(o1->getSize()) - (int)(o2->getSize());
+  if(c) return c;
+  if(c = memRefCmp(*o1->getMemoryReference(), *o2->getMemoryReference())) return c;
+  if(c = boolCmp(o1->hasSegmentRegister(),o2->hasSegmentRegister())) return c;
+  if(!o1->hasSegmentRegister()) return 0; // && !o2->hasSegmentRegister()
+  return registerCmp(o1->getSegmentRegister(), o2->getSegmentRegister());
+}
+
+AllMemoryOperands::AllMemoryOperands() {
+  for(int i = 0; i < ARRAYSIZE(allImmAddr); i++) {
+    add(new BYTEPtr( allImmAddr[i]));
+    add(new WORDPtr( allImmAddr[i]));
+    add(new DWORDPtr(allImmAddr[i]));
+    add(new QWORDPtr(allImmAddr[i]));
   }
   for(int i = 0; i < ARRAYSIZE(allOffset); i++) {
     for(int j = 0; j < INDEXREGISTER_COUNT; j++) {
       const IndexRegister &baseReg = indexRegList[j];
+      add(new BYTEPtr( baseReg + allOffset[i]));
+      add(new WORDPtr( baseReg + allOffset[i]));
+      add(new DWORDPtr(baseReg + allOffset[i]));
+      add(new QWORDPtr(baseReg + allOffset[i]));
       for(int k = 0; k < INDEXREGISTER_COUNT; k++) {
-        const IndexRegister &addReg = indexRegList[k];
-        if(!addReg.isValidAddRegister()) continue;
+        const IndexRegister &inxReg = indexRegList[k];
+        if(!inxReg.isValidIndexRegister()) continue;
         for(int factor = 1; factor <= 8; factor *= 2) {
-          add(new BYTEPtr( baseReg + factor*addReg + allOffset[i]));
-          add(new WORDPtr( baseReg + factor*addReg + allOffset[i]));
-          add(new DWORDPtr(baseReg + factor*addReg + allOffset[i]));
-          add(new QWORDPtr(baseReg + factor*addReg + allOffset[i]));
+          add(new BYTEPtr( baseReg + factor*inxReg + allOffset[i]));
+          add(new WORDPtr( baseReg + factor*inxReg + allOffset[i]));
+          add(new DWORDPtr(baseReg + factor*inxReg + allOffset[i]));
+          add(new QWORDPtr(baseReg + factor*inxReg + allOffset[i]));
         }
       }
     }
   }
+  sort(memOpCmp);
+/*
+  redirectDebugLog();
+  for(size_t i = 0; i < size(); i++) {
+    debugLog(_T("%s\n"),(*this)[i]->toString().cstr());
+  }
+*/
 }
 
 class CodeArray : public ExecutableByteArray {
@@ -222,16 +272,36 @@ private:
   AllMemoryOperands m_allMemOperands;
   AllGPRegisters    m_allGPReg;
   AllImmOperands    m_allImmOperands;
+  String            m_currentOpcodeName;
+  void clear();
+  int emit(              const OpcodeStd1Arg &opcode, const InstructionOperand &arg);
+  int emit(              const OpcodeStd2Arg &opcode, const InstructionOperand &arg1, const InstructionOperand &arg2);
   void testOpcodeNoArg(  const OpcodeBase    &opcode);
   void testOpcodeStd1Arg(const OpcodeStd1Arg &opcode);
   void testOpcodeStd2Arg(const OpcodeStd2Arg &opcode);
 public:
-  void testOpcode(const OpcodeBase &opcode);
+  void testOpcode(const OpcodeBase &opcode, const String &name);
   TestMachineCode();
 };
 
-void TestMachineCode::testOpcode(const OpcodeBase &opcode) {
+void TestMachineCode::clear() {
+  __super::clear();
+  redirectDebugLog();
+}
+
+int TestMachineCode::emit(const OpcodeStd1Arg &opcode, const InstructionOperand &arg) {
+  debugLog(_T("%s %s\n"), m_currentOpcodeName.cstr(), arg.toString().cstr());
+  return __super::emit(opcode(arg));
+}
+int TestMachineCode::emit(const OpcodeStd2Arg &opcode, const InstructionOperand &arg1, const InstructionOperand &arg2) {
+  debugLog(_T("%s %s, %s\n"), m_currentOpcodeName.cstr(), arg1.toString().cstr(), arg2.toString().cstr());
+  return __super::emit(opcode(arg1,arg2));
+}
+
+#define TESTOPCODE(opcode) testOpcode(opcode, _T(#opcode))
+void TestMachineCode::testOpcode(const OpcodeBase &opcode, const String &name) {
   clear();
+  m_currentOpcodeName = toLowerCase(name);
   const OpcodeType type = opcode.getType();
   switch(type) {
   case OPCODENOARG  : testOpcodeNoArg(                  opcode); break;
@@ -248,17 +318,17 @@ void TestMachineCode::testOpcodeStd1Arg(const OpcodeStd1Arg &opcode) {
   if(opcode.isRegisterAllowed()) {
     for(Iterator<const GPRegister*> regIt = m_allGPReg.getIterator(); regIt.hasNext();) {
       const GPRegister &reg = *regIt.next();
-      if(opcode.isOperandSizeAllowed(reg.getSize())) {
-        emit(opcode(reg));
+      if(opcode.isRegisterAllowed(reg)) {
+        emit(opcode,reg);
       }
     }
   }
-  clear();
-  if(opcode.isMemoryReferenceAllowed()) {
+//  clear();
+  if(opcode.isMemoryOperandAllowed()) {
     for(Iterator<const InstructionOperand*> memIt = m_allMemOperands.getIterator(); memIt.hasNext();) {
       const InstructionOperand &operand = *memIt.next();
-      if(opcode.isOperandSizeAllowed(operand.getSize())) {
-        emit(opcode(operand));
+      if(opcode.isMemoryOperandAllowed((MemoryOperand&)operand)) {
+        emit(opcode,operand);
       }
     }
   }
@@ -268,7 +338,7 @@ void TestMachineCode::testOpcodeStd2Arg(const OpcodeStd2Arg &opcode) {
   if(opcode.isRegisterAllowed()) {
     for(Iterator<const GPRegister*> regDstIt = m_allGPReg.getIterator(); regDstIt.hasNext();) {
       const GPRegister &regDst = *regDstIt.next();
-      if(!opcode.isOperandSizeAllowed(regDst.getSize())) {
+      if(!opcode.isRegisterAllowed(regDst)) {
         continue;
       }
       for(Iterator<const GPRegister*> regSrcIt = m_allGPReg.getIterator(); regSrcIt.hasNext();) {
@@ -276,52 +346,49 @@ void TestMachineCode::testOpcodeStd2Arg(const OpcodeStd2Arg &opcode) {
         if(regSrc.getSize() != regDst.getSize()) {
           continue;
         }
-        emit(opcode(regDst,regSrc));
+        emit(opcode,regDst,regSrc);
       }
     }
   }
-  clear();
-  if(opcode.isMemoryReferenceAllowed()) {
+//  clear();
+  if(opcode.isMemoryOperandAllowed()) {
     for(int i = 0; i < 2; i++) { // i=0:mem<-reg, 1:reg<-mem
       for(Iterator<const InstructionOperand*> memIt = m_allMemOperands.getIterator(); memIt.hasNext();) {
         const InstructionOperand &memOp = *memIt.next();
-        if(opcode.isOperandSizeAllowed(memOp.getSize())) {
+        if(opcode.isMemoryOperandAllowed((MemoryOperand&)memOp)) {
           for(Iterator<const GPRegister*> regIt = m_allGPReg.getIterator(); regIt.hasNext();) {
             const GPRegister &regOp = *regIt.next();
             if(regOp.getSize() != memOp.getSize()) {
               continue;
             }
             if(i==0) {
-              emit(opcode(memOp,regOp));
+              emit(opcode,memOp,regOp);
             } else {
-              emit(opcode(regOp,memOp));
+              emit(opcode,regOp,memOp);
             }
           }
         }
       }
     }
   }
-  clear();
+//  clear();
   if(opcode.isImmediateValueAllowed()) {
     for(Iterator<const InstructionOperand*> immIt = m_allImmOperands.getIterator(); immIt.hasNext();) {
       const InstructionOperand &immOp = *immIt.next();
       for(Iterator<const GPRegister*> regDstIt = m_allGPReg.getIterator(); regDstIt.hasNext();) {
         const GPRegister &regOp = *regDstIt.next();
-        if(!opcode.isOperandSizeAllowed(regOp.getSize())) {
-          continue;
-        }
         if(!opcode.isValidOperandCombination(regOp, immOp)) {
           continue;
         }
-        emit(opcode(regOp,immOp));
+        emit(opcode,regOp,immOp);
       }
-      if(opcode.isMemoryReferenceAllowed()) {
+      if(opcode.isMemoryOperandAllowed()) {
         for(Iterator<const InstructionOperand*> memIt = m_allMemOperands.getIterator(); memIt.hasNext();) {
           const InstructionOperand &memOp = *memIt.next();
           if(!opcode.isValidOperandCombination(memOp, immOp)) {
             continue;
           }
-          emit(opcode(memOp,immOp));
+          emit(opcode,memOp,immOp);
         }
       }
     }
@@ -329,10 +396,11 @@ void TestMachineCode::testOpcodeStd2Arg(const OpcodeStd2Arg &opcode) {
 }
 
 TestMachineCode::TestMachineCode() {
-  testOpcode(SETE);
-  testOpcode(ADD);
-  testOpcode(ADC);
-  testOpcode(XOR);
+  TESTOPCODE(SETE);
+  TESTOPCODE(MOV);
+  TESTOPCODE(ADD);
+  TESTOPCODE(ADC);
+  TESTOPCODE(XOR);
 }
 
 #endif // TEST_MACHINECODE

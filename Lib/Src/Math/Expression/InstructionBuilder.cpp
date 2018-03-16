@@ -45,19 +45,19 @@ InstructionBuilder &InstructionBuilder::add(INT64 bytesToAdd, BYTE count) {
   return *this;
 }
 
-// ptr[(reg<<shift)+offset], (reg&7) != 4, shift<=3, offset=[INT_MIN;INT_MAX]
-InstructionBuilder &InstructionBuilder::addrShiftPtr4(const IndexRegister &reg, BYTE shift, int offset) {
-  const BYTE regIndex = reg.getIndex();
-  assert(((regIndex&7)!=4) && (shift<=3));
-  SETREXBITONHIGHINX(regIndex,1);
-  return or(0x04).add(0x05 | (shift << 6) | ((regIndex&7) << 3)).add(offset, 4);
+// ptr[(inx<<shift)+offset], (inx&7) != 4, shift<=3, offset=[INT_MIN;INT_MAX]
+InstructionBuilder &InstructionBuilder::addrShiftInx(const IndexRegister &inx, BYTE shift, int offset) {
+  const BYTE inxIndex = inx.getIndex();
+  assert(((inxIndex&7)!=4) && (shift<=3));
+  SETREXBITONHIGHINX(inxIndex,1);
+  return or(0x04).add(0x05 | (shift << 6) | ((inxIndex&7) << 3)).add(offset, 4);
 }
 
 // ------------------------------------------------------------------------------------------
 
-InstructionBuilder &InstructionBuilder::addrPtr(const IndexRegister &reg, int offset) {
-  const BYTE regIndex = reg.getIndex();
-  switch(regIndex&7) {
+InstructionBuilder &InstructionBuilder::addrBase(const IndexRegister &base, int offset) {
+  const BYTE baseIndex = base.getIndex();
+  switch(baseIndex&7) {
   case 4 :
     if(offset == 0) {
       or(0x04).add(0x24);                        // ptr[esp]
@@ -68,35 +68,35 @@ InstructionBuilder &InstructionBuilder::addrPtr(const IndexRegister &reg, int of
     }
     break;
   default:
-    if((offset == 0) && ((regIndex&7)!=5)) {
-      or(regIndex&7);                            // ptr[reg]. (reg&7) != {4,5}
+    if((offset == 0) && ((baseIndex&7)!=5)) {
+      or(baseIndex&7);                            // ptr[base],               (base&7) != {4,5}
     } else if(isByte(offset)) {
-      or(0x40 | (regIndex&7)).add((char)offset); // ptr[reg+1 byte offset], (reg&7) != 4
+      or(0x40 | (baseIndex&7)).add((char)offset); // ptr[base+1 byte offset], (base&7) != 4
     } else {
-      or(0x80 | (regIndex&7)).add(offset, 4);    // ptr[reg+4 byte offset], (reg&7) != 4
+      or(0x80 | (baseIndex&7)).add(offset, 4);    // ptr[base+4 byte offset], (base&7) != 4
     }
   }
-  SETREXBITONHIGHINX(regIndex,0);
+  SETREXBITONHIGHINX(baseIndex,0);
   return *this;
 }
 
-InstructionBuilder &InstructionBuilder::addrShiftAddReg(const IndexRegister &base, BYTE shift, const IndexRegister &inxReg, int offset) {
+InstructionBuilder &InstructionBuilder::addrBaseShiftInx(const IndexRegister &base, const IndexRegister &inx, BYTE shift, int offset) {
   DEFINEMETHODNAME;
-  const BYTE baseIndex = base.getIndex(), inxRegIndex = inxReg.getIndex();
-  if((inxRegIndex&7)==4) {
-    throwInvalidArgumentException(method, _T("Invalid index register:%s"), inxReg.getName().cstr());
+  const BYTE baseIndex = base.getIndex(), inxIndex = inx.getIndex();
+  if((inxIndex&7)==4) {
+    throwInvalidArgumentException(method, _T("Invalid index register:%s"), inx.getName().cstr());
   }
   if(shift > 3) {
     throwInvalidArgumentException(method, _T("shift=%d. Valid range=[0;3]"),shift);
   }
   if((offset == 0) && ((baseIndex&7) != 5)) {
-    or(0x04).add((shift << 6) | ((inxRegIndex&7) << 3) | (baseIndex&7));
+    or(0x04).add((shift << 6) | ((inxIndex&7) << 3) | (baseIndex&7));
   } else if(isByte(offset)) {
-    or(0x44).add((shift << 6) | ((inxRegIndex&7) << 3) | (baseIndex&7)).add((char)offset);
+    or(0x44).add((shift << 6) | ((inxIndex&7) << 3) | (baseIndex&7)).add((char)offset);
   } else {
-    or(0x84).add((shift << 6) | ((inxRegIndex&7) << 3) | (baseIndex&7)).add(offset, 4);
+    or(0x84).add((shift << 6) | ((inxIndex&7) << 3) | (baseIndex&7)).add(offset, 4);
   }
-  SETREXBITSONHIGHINX2(baseIndex,inxRegIndex);
+  SETREXBITSONHIGHINX2(baseIndex,inxIndex);
   return *this;
 }
 
@@ -114,12 +114,12 @@ InstructionBuilder &InstructionBuilder::setMemoryReference(const MemoryOperand &
   }
   if(mr.isImmediateAddr()) {
     addrImmDword(mr.getOffset());
-  } else if(mr.getAddreg()) {
-    addrShiftAddReg(*mr.getReg(), mr.getShift(), *mr.getAddreg(), mr.getOffset());
+  } else if(mr.hasInx()) {
+    addrBaseShiftInx(*mr.getBase(), *mr.getInx(), mr.getShift(), mr.getOffset());
   } else if(mr.hasShift()) {
-    addrShiftPtr4(*mr.getAddreg(), mr.getShift(), mr.getOffset());
+    addrShiftInx(*mr.getInx(), mr.getShift(), mr.getOffset());
   } else {
-    addrPtr(*mr.getReg(), mr.getOffset());
+    addrBase(*mr.getBase(), mr.getOffset());
   }
   return *this;
 }

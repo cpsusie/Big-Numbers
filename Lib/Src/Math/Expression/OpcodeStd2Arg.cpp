@@ -145,18 +145,15 @@ static bool sizeContainsSrcSize(OperandSize dstSize, OperandSize srcSize) {
 }
 
 bool OpcodeStd2Arg::isValidOperandCombination(const Register &reg, const InstructionOperand &op2) const {
-  if(!isRegisterAllowed()) return false;
-  if(!isRegisterTypeAllowed(reg.getType()) || !isOperandSizeAllowed(reg.getSize())) {
-    return false;
-  }
+  if(!isRegisterAllowed(reg)) return false;
   switch(op2.getType()) {
   case REGISTER       :
     { const Register &regSrc = op2.getRegister();
       if(!isRegisterTypeAllowed(regSrc.getType())) return false;
       return reg.getSize() == regSrc.getSize();
     }
-  case MEMREFERENCE   : // reg <- mem
-    if(!isMemoryReferenceAllowed()) return false;
+  case MEMORYOPERAND  : // reg <- mem
+    if(!isMemoryOperandAllowed((MemoryOperand&)op2)) return false;
     return reg.getSize() == op2.getSize();
   case IMMEDIATEVALUE :
     if(!isImmediateValueAllowed()) return false;
@@ -169,12 +166,12 @@ bool OpcodeStd2Arg::isValidOperandCombination(const InstructionOperand &op1, con
   switch(op1.getType()) {
   case REGISTER       :
     return isValidOperandCombination(op1.getRegister(), op2);
-  case MEMREFERENCE   :
-    if(!isMemoryReferenceAllowed()) return false;
+  case MEMORYOPERAND  :
+    if(!isMemoryOperandAllowed((MemoryOperand&)op1)) return false;
     switch(op2.getType()) {
     case REGISTER       : // mem <- reg
       { const Register &regSrc = op2.getRegister();
-        if(!isRegisterTypeAllowed(regSrc.getType())) return false;
+        if(!isRegisterAllowed(regSrc)) return false;
         return op1.getSize() == regSrc.getSize();
       }
       break;
@@ -197,8 +194,8 @@ InstructionBase OpcodeStd2Arg::operator()(const InstructionOperand &op1, const I
       validateRegisterAllowed(op2.getRegister());
       validateSameSize(op1,op2);
       return result.set2GPReg((GPRegister&)op1.getRegister(),(GPRegister&)op2.getRegister());
-    case MEMREFERENCE   : // reg <- mem
-      validateMemoryReferenceAllowed();
+    case MEMORYOPERAND  : // reg <- mem
+      validateMemoryOperandAllowed((MemoryOperand&)op2);
       validateSameSize(op1,op2);
       return result.setGPRegMem((GPRegister&)op1.getRegister(), (MemoryOperand&)op2);
     case IMMEDIATEVALUE :
@@ -206,8 +203,8 @@ InstructionBase OpcodeStd2Arg::operator()(const InstructionOperand &op1, const I
       return result.setGPRegImm((GPRegister&)op1.getRegister(), op2.getImmInt32());
     }
     break;
-  case MEMREFERENCE   :
-    validateMemoryReferenceAllowed();
+  case MEMORYOPERAND    :
+    validateMemoryOperandAllowed((MemoryOperand&)op1);
     switch(op2.getType()) {
     case REGISTER       : // mem <- reg
       validateRegisterAllowed(op2.getRegister());

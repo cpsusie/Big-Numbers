@@ -4,7 +4,7 @@
 String toString(RegType regType) {
   switch(regType) {
   case REGTYPE_NONE: return _T("NONE");
-  case REGTYPE_GP  : return _T("GP"  );
+  case REGTYPE_GPR : return _T("GPR" );
   case REGTYPE_SEG : return _T("SEG" );
   case REGTYPE_FPU : return _T("FPU" );
   case REGTYPE_XMM : return _T("XMM" );
@@ -14,12 +14,12 @@ String toString(RegType regType) {
 
 String toString(RegSize regSize) {
   switch(regSize) {
-  case REGSIZE_BYTE  : return _T("BYTE");
-  case REGSIZE_WORD  : return _T("WORD");
-  case REGSIZE_DWORD : return _T("DWORD");
-  case REGSIZE_QWORD : return _T("QWORD");
-  case REGSIZE_TBYTE : return _T("TBYTE");
-  case REGSIZE_OWORD : return _T("OWORD");
+  case REGSIZE_BYTE  : return _T("byte" );
+  case REGSIZE_WORD  : return _T("word" );
+  case REGSIZE_DWORD : return _T("dword");
+  case REGSIZE_QWORD : return _T("qword");
+  case REGSIZE_TBYTE : return _T("tbyte");
+  case REGSIZE_OWORD : return _T("oword");
   default            : return format(_T("Unknown register size:%d"), regSize);
   }
 }
@@ -30,14 +30,14 @@ String GPRegister::getName() const {
   switch(getSize()) {
   case REGSIZE_BYTE :
     switch(getIndex()) {
-    case  0: return _T("AL"  );
-    case  1: return _T("CL"  );
-    case  2: return _T("DL"  );
-    case  3: return _T("BL"  );
-    case  4: return _T("AH"  );
-    case  5: return _T("CH"  );
-    case  6: return _T("DH"  );
-    case  7: return _T("BH"  );
+    case  0: return _T("al"  );
+    case  1: return _T("cl"  );
+    case  2: return _T("dl"  );
+    case  3: return _T("bl"  );
+    case  4: return _T("ah"  );
+    case  5: return _T("ch"  );
+    case  6: return _T("dh"  );
+    case  7: return _T("bh"  );
 #ifdef IS64BIT
     case  8:
     case  9:
@@ -47,20 +47,20 @@ String GPRegister::getName() const {
     case 13:
     case 14:
     case 15:
-      return format(_T("R%dB"),getIndex());
+      return format(_T("r%db"),getIndex());
 #endif // IS64BIT
     }
     break;
   case REGSIZE_WORD :
     switch(getIndex()) {
-    case  0: return _T("AX"  );
-    case  1: return _T("CX"  );
-    case  2: return _T("DX"  );
-    case  3: return _T("BX"  );
-    case  4: return _T("SP"  );
-    case  5: return _T("BP"  );
-    case  6: return _T("SI"  );
-    case  7: return _T("DI"  );
+    case  0: return _T("ax"  );
+    case  1: return _T("cx"  );
+    case  2: return _T("dx"  );
+    case  3: return _T("bx"  );
+    case  4: return _T("sp"  );
+    case  5: return _T("bp"  );
+    case  6: return _T("si"  );
+    case  7: return _T("di"  );
 #ifdef IS64BIT
     case  8:
     case  9:
@@ -70,20 +70,20 @@ String GPRegister::getName() const {
     case 13:
     case 14:
     case 15:
-      return format(_T("R%dW"),getIndex());
+      return format(_T("r%dw"),getIndex());
 #endif // IS64BIT
     }
     break;
   case REGSIZE_DWORD:
     switch(getIndex()) {
-    case  0: return _T("EAX" );
-    case  1: return _T("ECX" );
-    case  2: return _T("EDX" );
-    case  3: return _T("EBX" );
-    case  4: return _T("ESP" );
-    case  5: return _T("EBP" );
-    case  6: return _T("ESI" );
-    case  7: return _T("EDI" );
+    case  0: return _T("eax" );
+    case  1: return _T("ecx" );
+    case  2: return _T("edx" );
+    case  3: return _T("ebx" );
+    case  4: return _T("esp" );
+    case  5: return _T("ebp" );
+    case  6: return _T("esi" );
+    case  7: return _T("edi" );
 #ifdef IS64BIT
     case  8:
     case  9:
@@ -93,21 +93,21 @@ String GPRegister::getName() const {
     case 13:
     case 14:
     case 15:
-      return format(_T("R%dD"), getIndex());
+      return format(_T("r%dd"), getIndex());
 #endif // IS64BIT
     }
     break;
 #ifdef IS64BIT
   case REGSIZE_QWORD:
     switch(getIndex()) {
-    case  0: return _T("RAX" );
-    case  1: return _T("RCX" );
-    case  2: return _T("RDX" );
-    case  3: return _T("RBX" );
-    case  4: return _T("RSP" );
-    case  5: return _T("RBP" );
-    case  6: return _T("RSI" );
-    case  7: return _T("RDI" );
+    case  0: return _T("rax" );
+    case  1: return _T("rcx" );
+    case  2: return _T("rdx" );
+    case  3: return _T("rbx" );
+    case  4: return _T("rsp" );
+    case  5: return _T("rbp" );
+    case  6: return _T("rsi" );
+    case  7: return _T("rdi" );
     case  8:
     case  9:
     case 10:
@@ -116,7 +116,7 @@ String GPRegister::getName() const {
     case 13:
     case 14:
     case 15:
-      return format(_T("R%d"),getIndex());
+      return format(_T("r%d"),getIndex());
     }
     break;
 #endif // IS64BIT
@@ -125,22 +125,22 @@ String GPRegister::getName() const {
 }
 
 String FPURegister::getName() const {
-  return (getIndex() <= 7) ? format(_T("ST%d"), getIndex()) : __super::getName();
+  return (getIndex() <= 7) ? format(_T("st%d"), getIndex()) : __super::getName();
 }
 
 String XMMRegister::getName() const {
-  return (getIndex() <= MAX_XMMREGISTER_INDEX) ? format(_T("XMM%d"), getIndex())
+  return (getIndex() <= MAX_XMMREGISTER_INDEX) ? format(_T("xmm%d"), getIndex())
                                                 : __super::getName();
 }
 
 String SegmentRegister::getName() const {
   switch(getIndex()) {
-  case 0 : return _T("ES");
-  case 1 : return _T("CS");
-  case 2 : return _T("SS");
-  case 3 : return _T("DS");
-  case 4 : return _T("FS");
-  case 5 : return _T("GS");
+  case 0 : return _T("es");
+  case 1 : return _T("cs");
+  case 2 : return _T("ss");
+  case 3 : return _T("ds");
+  case 4 : return _T("fs");
+  case 5 : return _T("gs");
   }
   return __super::getName();
 }

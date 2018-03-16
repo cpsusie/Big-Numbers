@@ -111,7 +111,7 @@ public:
     return m_regType;
   }
   inline bool hasGPRegMode() const {
-    return getRegType() == REGTYPE_GP;
+    return getRegType() == REGTYPE_GPR;
   }
   inline bool hasXMMRegMode() const {
     return getRegType() == REGTYPE_XMM;
@@ -242,7 +242,7 @@ public:
 // Instruction defined with these macroes, must be combined with macroes MEM_ADDR_* (and evt. REGREG)
 //                                 IntelOpcode(     size,op,regType     ,memAddrMode, regRegMode,immMode)
 #define B1OP(        op          ) IntelOpcode(     1   ,op,REGTYPE_NONE,true       , true      ,false)
-#define B1OPREG(     op,reg      ) IntelOpcode(     1   ,op,REGTYPE_GP  ,true       , true      ,false).addGPReg(reg)
+#define B1OPREG(     op,reg      ) IntelOpcode(     1   ,op,REGTYPE_GPR ,true       , true      ,false).addGPReg(reg)
 #define B2OP(        op          ) IntelOpcode(     2   ,op,REGTYPE_NONE,true       , true      ,false)
 #define B3OP(        op          ) IntelOpcode(     3   ,op,REGTYPE_NONE,true       , true      ,false)
 #define B4OP(        op          ) IntelOpcode(     4   ,op,REGTYPE_NONE,true       , true      ,false)
@@ -255,8 +255,8 @@ public:
 //                                 IntelInstruction(size,op,regType     ,immMode) - memAddrMode=regRegMode=false
 
 #define B1INS(       op          ) IntelInstruction(1   ,op,REGTYPE_NONE,false)
-#define B1INSREG(    op,reg      ) IntelInstruction(1   ,op,REGTYPE_GP  ,false).setReg(reg)
-#define B1INSIMM(    op          ) IntelInstruction(1   ,op,REGTYPE_GP  ,true )
+#define B1INSREG(    op,reg      ) IntelInstruction(1   ,op,REGTYPE_GPR ,false).setReg(reg)
+#define B1INSIMM(    op          ) IntelInstruction(1   ,op,REGTYPE_GPR ,true )
 #define B2INS(       op          ) IntelInstruction(2   ,op,REGTYPE_NONE,false)
 #define B3INS(       op          ) IntelInstruction(3   ,op,REGTYPE_NONE,false)
 #define B4INS(       op          ) IntelInstruction(4   ,op,REGTYPE_NONE,false)

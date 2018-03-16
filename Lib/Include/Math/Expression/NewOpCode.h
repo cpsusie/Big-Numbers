@@ -47,8 +47,8 @@ class MemoryRef;
 
 typedef enum {
   REGISTER
+ ,MEMORYOPERAND
  ,IMMEDIATEVALUE
- ,MEMREFERENCE
 } OperandType;
 
 String toString(OperandType type);
@@ -147,6 +147,9 @@ public:
     throwUnsupportedOperationException(__TFUNCTION__);
     return ES;
   }
+  virtual bool                   hasSegmentRegister() const {
+    return false;
+  }
   virtual const MemoryRef       *getMemoryReference() const {
     throwUnsupportedOperationException(__TFUNCTION__);
     return NULL;
@@ -156,49 +159,60 @@ public:
 
 class MemoryRef {
 private:
-  const IndexRegister *m_reg,*m_addreg;
+  const IndexRegister *m_base,*m_inx;
   const BYTE           m_shift;
   const int            m_offset;
+#ifdef _DEBUG
+protected:
+  String            m_debugStr;
+#endif // _DEBUG
 public:
-  inline MemoryRef(const IndexRegister *reg, const IndexRegister *addreg, BYTE shift=0, int offset=0)
-    : m_reg(   reg   )
-    , m_addreg(addreg)
+  inline MemoryRef(const IndexRegister *base, const IndexRegister *inx, BYTE shift=0, int offset=0)
+    : m_base(  base  )
+    , m_inx(   inx   )
     , m_shift( shift )
     , m_offset(offset)
   {
+    SETSTR();
   }
-  inline MemoryRef(const IndexRegister &reg)
-    : m_reg(  &reg   )
-    , m_addreg(NULL  )
+  inline MemoryRef(const IndexRegister &base)
+    : m_base( &base  )
+    , m_inx(   NULL  )
     , m_shift( 0     )
     , m_offset(0     )
   {
+    SETSTR();
   }
   inline MemoryRef(DWORD addr)
-    : m_reg(   NULL  )
-    , m_addreg(NULL  )
+    : m_base(  NULL  )
+    , m_inx(   NULL  )
     , m_shift( 0     )
     , m_offset(addr  )
   {
+    SETSTR();
   }
   inline bool isImmediateAddr() const {
-    return (m_reg == NULL) && (m_addreg == NULL);
+    return (m_base == NULL) && (m_inx == NULL);
   }
-  inline const IndexRegister *getReg()    const { return m_reg;        }
-  inline const IndexRegister *getAddreg() const { return m_addreg;     }
-  inline BYTE                 getShift()  const { return m_shift;      }
-  inline int                  getOffset() const { return m_offset;     }
-  inline bool                 hasShift()  const { return m_shift >= 1; }
-  String                      toString() const;
+  inline const IndexRegister *getBase()   const { return m_base;         }
+  inline const IndexRegister *getInx()    const { return m_inx;          }
+  inline BYTE                 getShift()  const { return m_shift;        }
+  inline int                  getOffset() const { return m_offset;       }
+  inline bool                 hasBase()   const { return m_base != NULL; }
+  inline bool                 hasInx()    const { return m_inx  != NULL; }
+  inline bool                 hasShift()  const { return m_shift >= 1;   }
+  inline bool                 hasOffset() const { return m_offset != 0;  }
+  String                      toString()  const;
 };
 
-MemoryRef operator+(const IndexRegister &reg, int offset);
-MemoryRef operator-(const IndexRegister &reg, int offset);
-MemoryRef operator+(const MemoryRef &mr, int offset);
-MemoryRef operator-(const MemoryRef &mr, int offset);
-MemoryRef operator+(const IndexRegister &reg, const MemoryRef &mr);
-MemoryRef operator+(const IndexRegister &reg, const IndexRegister &addreg);
-MemoryRef operator*(BYTE a, const IndexRegister &reg);
+MemoryRef operator+(const IndexRegister &base, int offset);
+MemoryRef operator-(const IndexRegister &base, int offset);
+MemoryRef operator+(const MemoryRef     &mr  , int offset);
+MemoryRef operator-(const MemoryRef     &mr  , int offset);
+MemoryRef operator+(const IndexRegister &base, const MemoryRef     &mr );
+MemoryRef operator+(const IndexRegister &base, const IndexRegister &inx);
+MemoryRef operator*(BYTE a, const IndexRegister &inx);
+MemoryRef operator*(const IndexRegister &inx, BYTE a);
 
 class MemoryOperand : public InstructionOperand {
 private:
@@ -206,14 +220,14 @@ private:
   const MemoryRef        m_mr;
 public:
   inline MemoryOperand(OperandSize size, const MemoryRef &mr, const SegmentRegister *segReg=NULL)
-    : InstructionOperand(MEMREFERENCE, size)
+    : InstructionOperand(MEMORYOPERAND, size)
     , m_segReg(segReg)
     , m_mr(mr)
   {
     SETSTR();
   }
   inline MemoryOperand(OperandSize size, DWORD addr, const SegmentRegister *segReg=NULL)
-    : InstructionOperand(MEMREFERENCE, size)
+    : InstructionOperand(MEMORYOPERAND, size)
     , m_segReg(segReg)
     , m_mr(addr)
   {
@@ -222,7 +236,7 @@ public:
   const SegmentRegister &getSegmentRegister() const {
     return *m_segReg;
   }
-  inline bool            hasSegmentRegister() const {
+  bool                   hasSegmentRegister() const {
     return m_segReg != NULL;
   }
   const MemoryRef       *getMemoryReference() const {
@@ -281,9 +295,9 @@ private:
 #endif
   // Use with Imm-addressing. reg = { ES,CS,SS,DS,FS,GS }
   // ptr[(reg<<shift)+offset], (reg&7) != 4, shift<=3, offset=[INT_MIN;INT_MAX]
-  InstructionBuilder &addrShiftPtr4(   const IndexRegister &reg, BYTE shift, int offset);
-  InstructionBuilder &addrPtr(         const IndexRegister &reg, int offset);
-  InstructionBuilder &addrShiftAddReg( const IndexRegister &base, BYTE shift, const IndexRegister &inxReg, int offset);
+  InstructionBuilder &addrShiftInx(    const IndexRegister &inx, BYTE shift, int offset);
+  InstructionBuilder &addrBase(        const IndexRegister &base, int offset);
+  InstructionBuilder &addrBaseShiftInx(const IndexRegister &base, const IndexRegister &inx, BYTE shift, int offset);
 
   InstructionBuilder &prefixSegReg(    const SegmentRegister &reg);
   inline InstructionBuilder &addrImmDword(int addr) {
@@ -359,7 +373,7 @@ public:
 
 // ----------------------------------------------------------------------
 #define REGTYPE_NONE_ALLOWED   0x00000001
-#define REGTYPE_GP_ALLOWED     0x00000002
+#define REGTYPE_GPR_ALLOWED    0x00000002
 #define REGTYPE_SEG_ALLOWED    0x00000004
 #define REGTYPE_FPU_ALLOWED    0x00000008
 #define REGTYPE_XMM_ALLOWED    0x00000010
@@ -369,16 +383,26 @@ public:
 #define REGSIZE_QWORD_ALLOWED  0x00000100
 #define REGSIZE_TBYTE_ALLOWED  0x00000200
 #define REGSIZE_OWORD_ALLOWED  0x00000400
-#define REGISTER_ALLOWED       0x00000800
-#define MEMREFERENCE_ALLOWED   0x00001000
-#define IMMEDIATEVALUE_ALLOWED 0x00002000
+#define BYTEPTR_ALLOWED        0x00000800
+#define WORDPTR_ALLOWED        0x00001000
+#define DWORDPTR_ALLOWED       0x00002000
+#define QWORDPTR_ALLOWED       0x00004000
+#define TBYTEPTR_ALLOWED       0x00008000
+#define OWORDPTR_ALLOWED       0x00010000
+#define IMMEDIATEVALUE_ALLOWED 0x00020000
 #ifdef IS32BIT
-#define ALL_GPSIZE_ALLOWED     (REGSIZE_BYTE_ALLOWED | REGSIZE_WORD_ALLOWED | REGSIZE_DWORD_ALLOWED)
+#define ALL_GPRSIZE_ALLOWED     (REGSIZE_BYTE_ALLOWED | REGSIZE_WORD_ALLOWED | REGSIZE_DWORD_ALLOWED)
+#define ALL_GPRSIZEPTR_ALLOWED  (BYTEPTR_ALLOWED      | WORDPTR_ALLOWED      | DWORDPTR_ALLOWED     )
 #else
-#define ALL_GPSIZE_ALLOWED     (REGSIZE_BYTE_ALLOWED | REGSIZE_WORD_ALLOWED | REGSIZE_DWORD_ALLOWED | REGSIZE_QWORD_ALLOWED)
+#define ALL_GPRSIZE_ALLOWED     (REGSIZE_BYTE_ALLOWED | REGSIZE_WORD_ALLOWED | REGSIZE_DWORD_ALLOWED | REGSIZE_QWORD_ALLOWED)
+#define ALL_GPRSIZEPTR_ALLOWED  (BYTEPTR_ALLOWED      | WORDPTR_ALLOWED      | DWORDPTR_ALLOWED      | QWORDPTR_ALLOWED     )
 #endif
 
-#define ALL_GP_ALLOWED         (REGISTER_ALLOWED | REGTYPE_GP_ALLOWED | ALL_GPSIZE_ALLOWED)
+#define ALL_REGISTER_TYPES     (REGTYPE_GPR_ALLOWED  | REGTYPE_SEG_ALLOWED  | REGTYPE_FPU_ALLOWED | REGTYPE_XMM_ALLOWED)
+#define ALL_GPR_ALLOWED        (REGTYPE_GPR_ALLOWED  | ALL_GPRSIZE_ALLOWED)
+#define ALL_GPRPTR_ALLOWED     (ALL_GPRSIZEPTR_ALLOWED)
+
+#define ALL_MEMOPSIZES         (BYTEPTR_ALLOWED | WORDPTR_ALLOWED | DWORDPTR_ALLOWED | QWORDPTR_ALLOWED | TBYTEPTR_ALLOWED | OWORDPTR_ALLOWED )
 
 typedef enum {
   OPCODENOARG
@@ -396,12 +420,11 @@ protected:
   const UINT m_opCount : 3;
   const UINT m_flags;
 
-  void validateOpCount(               int                             count) const;
-  void validateRegisterAllowed(       const Register                 &reg  ) const;
-  void validateMemoryReferenceAllowed()                                      const;
-  void validateImmediateValueAllowed()                                       const;
-  void validateOperandSize(           RegSize                         size ) const;
-  void validateSameSize(              const InstructionOperand &op1, const InstructionOperand &op2) const;
+  void validateOpCount(             int                             count) const;
+  void validateRegisterAllowed(     const Register                 &reg  ) const;
+  void validateMemoryOperandAllowed(const MemoryOperand            &memop) const;
+  void validateImmediateValueAllowed()                                     const;
+  void validateSameSize(            const InstructionOperand &op1, const InstructionOperand &op2) const;
 public:
   OpcodeBase(UINT64 op, BYTE size, UINT opCount, UINT flags);
 
@@ -424,16 +447,24 @@ public:
   virtual OpcodeType getType() const {
     return OPCODENOARG;
   }
-  bool        isRegisterTypeAllowed(RegType type) const;
-  bool        isOperandSizeAllowed( RegSize size) const;
-  inline bool isMemoryReferenceAllowed() const {
-    return (getFlags() & MEMREFERENCE_ALLOWED  ) != 0;
+  bool        isRegisterTypeAllowed(     RegType     type) const;
+  bool        isRegisterSizeAllowed(     RegSize     size) const;
+  bool        isMemoryOperandSizeAllowed(OperandSize size) const;
+
+  inline bool isRegisterAllowed() const {
+    return (getFlags() & ALL_REGISTER_TYPES) != 0;
+  }
+  inline bool isMemoryOperandAllowed() const {
+    return (getFlags() & ALL_MEMOPSIZES) != 0;
   }
   inline bool isImmediateValueAllowed() const {
     return (getFlags() & IMMEDIATEVALUE_ALLOWED) != 0;
   }
-  inline bool isRegisterAllowed() const {
-    return (getFlags() & REGISTER_ALLOWED      ) != 0;
+  inline bool isRegisterAllowed(const Register &reg) const {
+    return isRegisterTypeAllowed(reg.getType()) && isRegisterSizeAllowed(reg.getSize());
+  }
+  inline bool isMemoryOperandAllowed(const MemoryOperand &memop) const {
+    return isMemoryOperandSizeAllowed(memop.getSize());
   }
 };
 
@@ -450,7 +481,7 @@ public:
 };
 class OpcodeStd2Arg : public OpcodeBase {
 public :
-  OpcodeStd2Arg(BYTE op) : OpcodeBase(op, 1, 2, ALL_GP_ALLOWED | MEMREFERENCE_ALLOWED | IMMEDIATEVALUE_ALLOWED) {
+  OpcodeStd2Arg(BYTE op) : OpcodeBase(op, 1, 2, ALL_GPR_ALLOWED | ALL_GPRPTR_ALLOWED | IMMEDIATEVALUE_ALLOWED) {
   }
   InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
   OpcodeType getType() const {
@@ -484,7 +515,7 @@ public :
 
 class SetxxOp : public OpcodeStd1Arg {
 public:
-  SetxxOp(UINT op) : OpcodeStd1Arg(op, 2, REGTYPE_GP_ALLOWED | REGSIZE_BYTE_ALLOWED | REGISTER_ALLOWED | MEMREFERENCE_ALLOWED) {
+  SetxxOp(UINT op) : OpcodeStd1Arg(op, 2, REGTYPE_GPR_ALLOWED | REGSIZE_BYTE_ALLOWED | BYTEPTR_ALLOWED) {
   }
 };
 
@@ -546,6 +577,7 @@ extern Instruction0Arg  POPAD;                             // Pop  all double-wo
 
 extern Instruction0Arg  NOOP;
 extern OpcodeStd2Arg    ADD,ADC,OR,AND,SUB,SBB,XOR,CMP;
+extern OpcodeStd2Arg    MOV;
 
 #ifdef __NEVER__
 
@@ -572,38 +604,6 @@ extern OpcodeStd2Arg    ADD,ADC,OR,AND,SUB,SBB,XOR,CMP;
 #define MOV_FROM_EAX_IMM_ADDR_DWORD            B1INS(  0xA3  )                            // 4/8 byte address. move EAX to dword pointed to by 2. operand
 #define MOV_FROM_AX_IMM_ADDR_WORD              WORDOP( MOV_FROM_EAX_IMM_ADDR_DWORD)       // 4/8 byte address. move AX  to word  pointed to by 2. operand
 #define MOV_FROM_RAX_IMM_ADDR_QWORD            REX3(   MOV_FROM_EAX_IMM_ADDR_DWORD)       // 8 byte address
-
-#define ADD_MEM_REG(         reg)              B1OPREG(   0x00,reg)                       // Build dst with MEM_ADDR-*,REGREG-macroes
-#define ADD_REG_MEM(         reg)              B1OPREG(   0x02,reg)                       // Build src with MEM_ADDR-*,REGREG-macroes
-#define ADD_REG_IMM(         reg,immv)         INS_STDIMM(0x04,0xC0,reg,immv)
-
-#define OR_MEM_REG(          reg)              B1OPREG(   0x08,reg)                       // Build dst with MEM_ADDR-*,REGREG-macroes
-#define OR_REG_MEM(          reg)              B1OPREG(   0x0A,reg)                       // Build src with MEM_ADDR-*,REGREG-macroes
-#define OR_REG_IMM(          reg,immv)         INS_STDIMM(0x0C,0xC8,reg,immv)
-
-#define ADC_MEM_REG(         reg)              B1OPREG(   0x10,reg)                       // Build dst with MEM_ADDR-*,REGREG-macroes
-#define ADC_REG_MEM(         reg)              B1OPREG(   0x12,reg)                       // Build src with MEM_ADDR-*,REGREG-macroes
-#define ADC_REG_IMM(         reg,immv)         INS_STDIMM(0x14,0xD0,reg,immv)
-
-#define SBB_MEM_REG(         reg)              B1OPREG(   0x18,reg)                       // Build dst with MEM_ADDR-*,REGREG-macroes
-#define SBB_REG_MEM(         reg)              B1OPREG(   0x1A,reg)                       // Build src with MEM_ADDR-*,REGREG-macroes
-#define SBB_REG_IMM(         reg,immv)         INS_STDIMM(0x1C,0xD8,reg,immv)
-
-#define AND_MEM_REG(         reg)              B1OPREG(   0x20,reg)                       // Build dst with MEM_ADDR-*,REGREG-macroes
-#define AND_REG_MEM(         reg)              B1OPREG(   0x22,reg)                       // Build src with MEM_ADDR-*,REGREG-macroes
-#define AND_REG_IMM(         reg,immv)         INS_STDIMM(0x24,0xE0,reg,immv)
-
-#define SUB_MEM_REG(         reg)              B1OPREG(   0x28,reg)                       // Build dst with MEM_ADDR-*,REGREG-macroes
-#define SUB_REG_MEM(         reg)              B1OPREG(   0x2A,reg)                       // Build src with MEM_ADDR-*,REGREG-macroes
-#define SUB_REG_IMM(         reg,immv)         INS_STDIMM(0x2C,0xE8,reg,immv)
-
-#define XOR_MEM_REG(         reg)              B1OPREG(   0x30,reg)                       // Build dst with MEM_ADDR-*,REGREG-macroes
-#define XOR_REG_MEM(         reg)              B1OPREG(   0x32,reg)                       // Build src with MEM_ADDR-*,REGREG-macroes
-#define XOR_REG_IMM(         reg,immv)         INS_STDIMM(0x34,0xF0,reg,immv)
-
-#define CMP_MEM_REG(         reg)              B1OPREG(   0x38,reg)                       // Build op1 with MEM_ADDR-*,REGREG-macroes
-#define CMP_REG_MEM(         reg)              B1OPREG(   0x3A,reg)                       // Build op2 with MEM_ADDR-*,REGREG-macroes
-#define CMP_REG_IMM(         reg,immv)         INS_STDIMM(0x3C,0xF8,reg,immv)
 
 #define MUL_BYTE                               B2OP(0xF620)                               // Unsigned multiply (ax      = al  * src  )
 #define MUL_DWORD                              B2OP(0xF720)                               //                   (edx:eax = eax * src  )
