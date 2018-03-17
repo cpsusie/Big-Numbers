@@ -422,8 +422,19 @@ extern "C" void assemblerCode();
 
 #define NOP __asm { _emit 0x90 }
 
-void assemblerCode() {
+// Returns address of instruction following call to this fnuction (return-address)
+static BYTE *getIP() {
+  BYTE *ip;
   __asm {
+    mov eax, dword ptr[esp+8]
+    mov ip, eax
+  }
+  return ip;
+}
+void assemblerCode() {
+  const BYTE *startIP = getIP();
+  __asm {
+//    mov startIP, es
     jmp         End
 
     mov byte  ptr [eax], al
@@ -837,7 +848,11 @@ void assemblerCode() {
     cwd
     cdq
   }
-End:;
+End:
+  const BYTE *endIP = getIP();
+  const size_t codeSize = endIP - startIP;
+  ExecutableByteArray code;
+  code.append(startIP, codeSize);
 }
 #endif // IS64BIT
 #endif // TEST_MACHINECODE
