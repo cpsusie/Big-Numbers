@@ -223,6 +223,18 @@ AllMemoryOperands::AllMemoryOperands() {
     add(new DWORDPtr(allImmAddr[i]));
     add(new QWORDPtr(allImmAddr[i]));
   }
+  for(int k = 0; k < INDEXREGISTER_COUNT; k++) {
+    const IndexRegister &inxReg = indexRegList[k];
+    if(!inxReg.isValidIndexRegister()) continue;
+    for(int factor = 1; factor <= 8; factor *= 2) {
+      for(int i = 0; i < ARRAYSIZE(allOffset); i++) {
+        add(new BYTEPtr( factor*inxReg + allOffset[i]));
+        add(new WORDPtr( factor*inxReg + allOffset[i]));
+        add(new DWORDPtr(factor*inxReg + allOffset[i]));
+        add(new QWORDPtr(factor*inxReg + allOffset[i]));
+      }
+    }
+  }
   for(int i = 0; i < ARRAYSIZE(allOffset); i++) {
     for(int j = 0; j < INDEXREGISTER_COUNT; j++) {
       const IndexRegister &baseReg = indexRegList[j];
@@ -243,12 +255,12 @@ AllMemoryOperands::AllMemoryOperands() {
     }
   }
   sort(memOpCmp);
-/*
+
   redirectDebugLog();
   for(size_t i = 0; i < size(); i++) {
     debugLog(_T("%s\n"),(*this)[i]->toString().cstr());
   }
-*/
+
 }
 
 class CodeArray : public ExecutableByteArray {

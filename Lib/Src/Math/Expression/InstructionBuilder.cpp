@@ -128,10 +128,15 @@ InstructionBuilder &InstructionBuilder::setMemoryReference(const MemoryOperand &
   if(mr.isImmediateAddr()) {
     addrImmDword(mr.getOffset());
   } else if(mr.hasInx()) {
-    addrBaseShiftInx(*mr.getBase(), *mr.getInx(), mr.getShift(), mr.getOffset());
-  } else if(mr.hasShift()) {
-    addrShiftInx(*mr.getInx(), mr.getShift(), mr.getOffset());
+    if(mr.hasBase()) {
+      addrBaseShiftInx(*mr.getBase(), *mr.getInx(), mr.getShift(), mr.getOffset());
+    } else if(mr.hasShift()) {
+      addrShiftInx(*mr.getInx(), mr.getShift(), mr.getOffset());
+    } else { // no base, no shift
+      addrBase(*mr.getInx(), mr.getOffset());
+    }
   } else {
+    assert(!mr.hasShift());
     addrBase(*mr.getBase(), mr.getOffset());
   }
   return *this;
