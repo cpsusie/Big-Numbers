@@ -47,30 +47,32 @@ InstructionStd2Arg &InstructionStd2Arg::setGPRegImm(const GPRegister &reg, int i
     if(!isByte(immv)) {
       throwInvalidArgumentException(method,_T("Immediate value %08x doesn't fit in %s"),immv, reg.getName().cstr());
     }
-    if(regIndex != 0) {
-      prefix(0x80).or(0xC0 | (regIndex&7)).add((char)immv);
-    } else {
+    if(regIndex == 0) {
       or(0x04).add((char)immv);
+    } else {
+      prefix(0x80).or(0xC0 | (regIndex&7)).add((char)immv);
     }
     break;
   case REGSIZE_WORD :
     if(!isWord(immv)) {
       throwInvalidArgumentException(method,_T("Immediate value %08x doesn't fit in %s"),immv, reg.getName().cstr());
     }
-    if(regIndex != 0) {
-      prefix(isByte(immv)?0x83:0x81).or(0xC0 | (regIndex&7))
-     .add(immv,isByte(immv)?1:2);
-    } else {
+    if(isByte(immv)) {
+      prefix(0x83).or(0xC0 | (regIndex&7)).add((char)immv);
+    } else if(regIndex == 0) {
       or(0x05).add(immv,2);
+    } else {
+      prefix(0x81).or(0xC0 | (regIndex&7)).add(immv,2);
     }
     wordIns();
     break;
   default           :
-    if(regIndex != 0) {
-      prefix(isByte(immv)?0x83:0x81).or(0xC0 | (regIndex&7))
-     .add(immv,isByte(immv)?1:4);
-    } else {
+    if(isByte(immv)) {
+      prefix(0x83).or(0xC0 | (regIndex&7)).add((char)immv);
+    } else if(regIndex == 0) {
       or(0x05).add(immv,4);
+    } else {
+      prefix(0x81).or(0xC0 | (regIndex&7)).add(immv,4);
     }
     break;
   }

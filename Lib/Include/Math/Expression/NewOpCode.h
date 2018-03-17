@@ -284,6 +284,7 @@ public:
   inline const BYTE *getBytes() const {
     return m_bytes;
   }
+  String toString() const;
 };
 
 class InstructionBuilder : public InstructionBase {

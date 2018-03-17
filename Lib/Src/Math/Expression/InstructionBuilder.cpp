@@ -9,6 +9,19 @@ InstructionBase::InstructionBase(const OpcodeBase &opcode)
   memcpy(m_bytes, opcode.getBytes(),m_size);
 }
 
+String InstructionBase::toString() const {
+  String result;
+  for(const BYTE *p = m_bytes, *end = m_bytes + m_size;;) {
+    result += format(_T("%02X"), *(p++));
+    if(p < end) {
+      result += _T(" ");
+    } else {
+      break;
+    }
+  }
+  return result;
+}
+
 InstructionBuilder &InstructionBuilder::insert(BYTE index, BYTE b) {
   assert((m_size < MAX_INSTRUCTIONSIZE) && (index<m_size));
   BYTE *bp = m_bytes + index;

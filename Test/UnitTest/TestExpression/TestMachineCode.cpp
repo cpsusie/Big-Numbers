@@ -290,12 +290,14 @@ void TestMachineCode::clear() {
 }
 
 int TestMachineCode::emit(const OpcodeStd1Arg &opcode, const InstructionOperand &arg) {
-  debugLog(_T("%s %s\n"), m_currentOpcodeName.cstr(), arg.toString().cstr());
-  return __super::emit(opcode(arg));
+  const InstructionBase ins = opcode(arg);
+  debugLog(_T("%-26s %s %s\n"), ins.toString().cstr(), m_currentOpcodeName.cstr(), arg.toString().cstr());
+  return __super::emit(ins);
 }
 int TestMachineCode::emit(const OpcodeStd2Arg &opcode, const InstructionOperand &arg1, const InstructionOperand &arg2) {
-  debugLog(_T("%s %s, %s\n"), m_currentOpcodeName.cstr(), arg1.toString().cstr(), arg2.toString().cstr());
-  return __super::emit(opcode(arg1,arg2));
+  const InstructionBase ins = opcode(arg1,arg2);
+  debugLog(_T("%-26s %s %s, %s\n"), ins.toString().cstr(), m_currentOpcodeName.cstr(), arg1.toString().cstr(), arg2.toString().cstr());
+  return __super::emit(ins);
 }
 
 #define TESTOPCODE(opcode) testOpcode(opcode, _T(#opcode))
@@ -417,131 +419,68 @@ void generateTestSequence() {
 #ifdef IS64BIT
 extern "C" void assemblerCode();
 #else
+
+#define NOP __asm { _emit 0x90 }
+
 void assemblerCode() {
   __asm {
     jmp         End
 
-    add al              , 0x7f
-    add eax             , 0x7f
-    add eax             , 0x7fffffff
-    add ax              , 0x7f
-    add ax              , 0x7fff
-    add cl              , 0x7f
-    add ecx             , 0x7f
-    add ecx             , 0x7fffffff
-    add cx              , 0x7f
-    add cx              , 0x7fff
-    add al              , cl
-    add al              , dl
-    add al              , bl
-    add al              , ah
-    add al              , ch
-    add al              , dh
-    add al              , bh
-    add al              , byte  ptr [eax]
-    add eax             , ecx
-    add eax             , edx
-    add eax             , ebx
-    add eax             , esi
-    add eax             , edi
-    add eax             , dword ptr [eax]
-    add cl              , al
-    add dl              , al
-    add bl              , al
-    add ah              , al
-    add ch              , al
-    add dh              , al
-    add bh              , al
-    add byte  ptr [eax], al
-    add ecx             , eax
-    add edx             , eax
-    add ebx             , eax
-    add esi             , eax
-    add edi             , eax
-    add dword ptr [eax], eax
-    add word  ptr [eax], ax
-    add ax              , word  ptr [eax]
+    mov byte  ptr [eax], al
+    mov byte  ptr [ecx], al
+    mov byte  ptr [edx], al
+    mov byte  ptr [ebx], al
+    mov byte  ptr [esi], al
+    mov byte  ptr [edi], al
 
-    add ah              , cl
-    add ch              , cl
-    add dh              , cl
-    add bh              , cl
-    add byte  ptr [eax], cl
-    add byte  ptr [eax], dl
-    add byte  ptr [eax], bl
-    add byte  ptr [eax], ah
-    add byte  ptr [eax], ch
+    mov byte  ptr [eax], cl
+    mov byte  ptr [ecx], cl
+    mov byte  ptr [edx], cl
+    mov byte  ptr [ebx], cl
+    mov byte  ptr [esi], cl
+    mov byte  ptr [edi], cl
 
-    add dword ptr [eax], ecx
-    add dword ptr [eax], edx
-    add dword ptr [eax], ebx
-    add dword ptr [eax], esp
-    add dword ptr [eax], ebp
+    mov byte  ptr [eax], dl
+    mov byte  ptr [ecx], dl
+    mov byte  ptr [edx], dl
+    mov byte  ptr [ebx], dl
+    mov byte  ptr [esi], dl
+    mov byte  ptr [edi], dl
 
-    add cl                      , byte  ptr [eax]
-    add dl                      , byte  ptr [eax]
-    add bl                      , byte  ptr [eax]
-    add ah                      , byte  ptr [eax]
-    add ch                      , byte  ptr [eax]
+    mov byte  ptr [eax], bl
+    mov byte  ptr [ecx], bl
+    mov byte  ptr [edx], bl
+    mov byte  ptr [ebx], bl
+    mov byte  ptr [esi], bl
+    mov byte  ptr [edi], bl
 
-    add ecx                     , dword ptr [eax]
-    add edx                     , dword ptr [eax]
-    add ebx                     , dword ptr [eax]
-    add esp                     , dword ptr [eax]
-    add ebp                     , dword ptr [eax]
+    mov byte  ptr [eax], ah
+    mov byte  ptr [ecx], ah
+    mov byte  ptr [edx], ah
+    mov byte  ptr [ebx], ah
+    mov byte  ptr [esi], ah
+    mov byte  ptr [edi], ah
 
-    add word  ptr [eax], cx
-    add word  ptr [eax], dx
-    add word  ptr [eax], bx
-    add word  ptr [eax], sp
-    add word  ptr [eax], bp
+    mov byte  ptr [eax], ch
+    mov byte  ptr [ecx], ch
+    mov byte  ptr [edx], ch
+    mov byte  ptr [ebx], ch
+    mov byte  ptr [esi], ch
+    mov byte  ptr [edi], ch
 
-    add cx                      , word  ptr [eax]
-    add dx                      , word  ptr [eax]
-    add bx                      , word  ptr [eax]
-    add sp                      , word  ptr [eax]
-    add bp                      , word  ptr [eax]
+    mov byte  ptr [eax], dh
+    mov byte  ptr [ecx], dh
+    mov byte  ptr [edx], dh
+    mov byte  ptr [ebx], dh
+    mov byte  ptr [esi], dh
+    mov byte  ptr [edi], dh
 
-    sete al
-    sete cl
-    sete dl
-    sete es:byte ptr[eax]
-    sete ss:byte ptr[eax]
-    sete cs:byte ptr[eax]
-    sete ds:byte ptr[eax]
-    sete fs:byte ptr[eax]
-    sete gs:byte ptr[eax]
-    sete byte ptr[eax]
-    sete byte ptr[eax + 127]
-    sete byte ptr[eax - 128]
-    sete byte ptr[eax + 0xffff]
-    sete byte ptr[eax - 0xffff]
-    sete byte ptr[eax + esi]
-    sete byte ptr[eax + esi]
-    sete byte ptr[eax + esi + 127]
-    sete byte ptr[eax + esi - 128]
-    sete byte ptr[eax + esi + 0xffff]
-    sete byte ptr[eax + esi - 0xffff]
-    sete byte ptr[esi+8*edi]
-    sete byte ptr[esi+8*edi]
-    sete byte ptr[esi+8*edi+127]
-    sete byte ptr[esi+8*edi-128]
-    sete byte ptr[esi+8*edi+0xffff]
-    sete byte ptr[esi+8*edi-0xffff]
-    sete byte ptr[esi+0xff]
-    sete byte ptr es:[12345678h]
-    sete byte ptr cs:[12345678h]
-    sete byte ptr ss:[12345678h]
-    _emit 0x0F
-    _emit 0x94;
-    _emit 0x05;
-    _emit 0x78;
-    _emit 0x56;
-    _emit 0x34;
-    _emit 0x12;
-    sete byte ptr ds:[12345678h]
-    sete byte ptr fs:[12345678h]
-    sete byte ptr gs:[12345678h]
+    mov byte  ptr [eax], bh
+    mov byte  ptr [ecx], bh
+    mov byte  ptr [edx], bh
+    mov byte  ptr [ebx], bh
+    mov byte  ptr [esi], bh
+    mov byte  ptr [edi], bh
 
     mov al                      , byte  ptr es:[12345678h]
     mov eax                     , dword ptr es:[12345678h]
@@ -724,7 +663,7 @@ void assemblerCode() {
     mov sp                      , word  ptr ds:[12345678h]
     mov bp                      , word  ptr ds:[12345678h]
 
-
+    NOP
 
 
     mov al                      , byte  ptr fs:[12345678h]
@@ -815,24 +754,83 @@ void assemblerCode() {
     mov sp                      , word  ptr gs:[12345678h]
     mov bp                      , word  ptr gs:[12345678h]
 
+    NOP
 
+    mov al, 7Fh
+    mov cl, 7Fh
+    mov dl, 7Fh
+    mov bl, 7Fh
+    mov ah, 7Fh
+    mov ch, 7Fh
+    mov dh, 7Fh
+    mov bh, 7Fh
 
-    add         byte ptr es:[12345678h],al
-    add         byte ptr cs:[12345678h],al
-    add         byte ptr ss:[12345678h],al
-    add         byte ptr ds:[12345678h],al
-    add         byte ptr gs:[12345678h],al
-    add         byte ptr fs:[12345678h],al
+    mov byte ptr ds:[0], 7Fh
+    mov byte ptr ds:[7FFFFFFFh], 7Fh
+    mov byte ptr[eax], 7Fh
+    mov byte ptr[ecx], 7Fh
+    mov byte ptr[edx], 7Fh
 
-    add         byte ptr es:[12345678h],cl
-    add         byte ptr cs:[12345678h],cl
-    add         byte ptr ss:[12345678h],cl
-    add         byte ptr ds:[12345678h],cl
-    add         byte ptr gs:[12345678h],cl
-    add         byte ptr fs:[12345678h],cl
+    mov ax, 7Fh
+    mov cx, 7Fh
+    mov dx, 7Fh
+    mov bx, 7Fh
+    mov sp, 7Fh
+    mov bp, 7Fh
+    mov si, 7Fh
+    mov di, 7Fh
 
-    imul ecx, dword ptr[esi+8*edi+0xabcddbca],0x12345678
-    imul cx ,  word ptr[esi+8*edi+0xabcddbca],0x1234
+    mov word ptr ds:[0], 7Fh
+    mov word ptr ds:[7FFFFFFFh], 7Fh
+    mov word ptr[eax], 7Fh
+    mov word ptr[ecx], 7Fh
+    mov word ptr[edx], 7Fh
+
+    mov ax, 7FFFh
+    mov cx, 7FFFh
+    mov dx, 7FFFh
+    mov bx, 7FFFh
+    mov sp, 7FFFh
+    mov bp, 7FFFh
+    mov si, 7FFFh
+    mov di, 7FFFh
+
+    mov word ptr ds:[0], 7FFFh
+    mov word ptr ds:[7FFFFFFFh], 7FFFh
+    mov word ptr[eax], 7FFFh
+    mov word ptr[ecx], 7FFFh
+    mov word ptr[edx], 7FFFh
+
+    mov eax, 7Fh
+    mov ecx, 7Fh
+    mov edx, 7Fh
+    mov ebx, 7Fh
+    mov esp, 7Fh
+    mov ebp, 7Fh
+    mov esi, 7Fh
+    mov edi, 7Fh
+
+    mov dword ptr ds:[0], 7Fh
+    mov dword ptr ds:[7FFFFFFFh], 7Fh
+    mov dword ptr[eax], 7Fh
+    mov dword ptr[ecx], 7Fh
+    mov dword ptr[edx], 7Fh
+
+    mov eax, 7FFFFFFFh
+    mov ecx, 7FFFFFFFh
+    mov edx, 7FFFFFFFh
+    mov ebx, 7FFFFFFFh
+    mov esp, 7FFFFFFFh
+    mov ebp, 7FFFFFFFh
+    mov esi, 7FFFFFFFh
+    mov edi, 7FFFFFFFh
+
+    mov dword ptr ds:[0], 7FFFFFFFh
+    mov dword ptr ds:[7FFFFFFFh], 7FFFFFFFh
+    mov dword ptr[eax], 7FFFFFFFh
+    mov dword ptr[ecx], 7FFFFFFFh
+    mov dword ptr[edx], 7FFFFFFFh
+
 
     cbw
     cwde
