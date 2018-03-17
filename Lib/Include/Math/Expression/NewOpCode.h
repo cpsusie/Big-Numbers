@@ -343,6 +343,17 @@ public:
     m_bytes[index] |= b;
     return *this;
   }
+  // m_bytes[m_size-1] ^= b
+  inline InstructionBuilder &xor(BYTE b) {
+    m_bytes[m_size - 1] ^= b;
+    return *this;
+  }
+  // m_bytes[index] ^= b
+  inline InstructionBuilder &xor(BYTE index, BYTE b) {
+    assert(m_size < MAX_INSTRUCTIONSIZE);
+    m_bytes[index] ^= b;
+    return *this;
+  }
   inline InstructionBuilder &add(BYTE b) {
     assert(m_size < MAX_INSTRUCTIONSIZE);
     m_bytes[m_size++] = b;
@@ -407,8 +418,10 @@ public:
 
 typedef enum {
   OPCODENOARG
- ,OPCODESTD1ARG
- ,OPCODESTD2ARG
+ ,OPCODE1ARG
+ ,OPCODE2ARG
+ ,OPCODEMOV
+ ,OPCODEMOVIMM
 } OpcodeType;
 
 class OpcodeBase {
@@ -469,54 +482,55 @@ public:
   }
 };
 
-class OpcodeStd1Arg : public OpcodeBase {
+class Opcode1Arg : public OpcodeBase {
 public:
-  inline OpcodeStd1Arg(UINT64 op, BYTE size, UINT flags)
+  inline Opcode1Arg(UINT64 op, BYTE size, UINT flags)
     : OpcodeBase(op, size, 1, flags)
   {
   }
-  InstructionBase operator()(const InstructionOperand &op) const;
+  virtual InstructionBase operator()(const InstructionOperand &op) const;
   OpcodeType getType() const {
-    return OPCODESTD1ARG;
+    return OPCODE1ARG;
   }
 };
-class OpcodeStd2Arg : public OpcodeBase {
+class Opcode2Arg : public OpcodeBase {
 public :
-  OpcodeStd2Arg(BYTE op) : OpcodeBase(op, 1, 2, ALL_GPR_ALLOWED | ALL_GPRPTR_ALLOWED | IMMEDIATEVALUE_ALLOWED) {
+  Opcode2Arg(UINT64 op, BYTE size=1, UINT flags=ALL_GPR_ALLOWED | ALL_GPRPTR_ALLOWED | IMMEDIATEVALUE_ALLOWED)
+    : OpcodeBase(op, size, 2, flags) {
   }
-  InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
+  virtual InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
   OpcodeType getType() const {
-    return OPCODESTD2ARG;
+    return OPCODE2ARG;
   }
   bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2) const;
   bool isValidOperandCombination(const Register           &reg, const InstructionOperand &op2) const;
 };
 
-/*
-  void throwRegSizeMismatch(const Register &reg);
-  RegType  m_regType         : 4; // = REGTYPE_NONE, _GP, _SEG, _FPU, _XMM
-  RegSize  m_regSize         : 4; // = REGSIZE_BYTE, _WORD, _DWORD, _QWORD, _TBYTE, _OWORD
-  UINT     m_regSizeDefined  : 1; // init to 0
-  inline RegType getRegType() const {
-    return m_regType;
-  }
-  inline RegSize getOpSize() const {
-    return (RegSize)(m_regSizeDefined ? m_regSize : -1);
-  }
-  const TCHAR *getOpSizeName() const;
-  void inline setRegSize(const Register &reg) {
-    if(m_regSizeDefined) {
-      if(reg.getSize() != m_regSize) throwRegSizeMismatch(reg);
-    } else {
-      m_regSize = reg.getSize();
-      m_regSizeDefined = 1;
-    }
-  }
-*/
-
-class SetxxOp : public OpcodeStd1Arg {
+class OpcodeMovImm : public Opcode2Arg {
 public:
-  SetxxOp(UINT op) : OpcodeStd1Arg(op, 2, REGTYPE_GPR_ALLOWED | REGSIZE_BYTE_ALLOWED | BYTEPTR_ALLOWED) {
+  OpcodeMovImm(BYTE op) : Opcode2Arg(op) {
+  }
+  InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
+  OpcodeType getType() const {
+    return OPCODEMOVIMM;
+  }
+};
+
+class OpcodeMov : public Opcode2Arg {
+private:
+  const OpcodeMovImm m_immCode;
+public :
+  OpcodeMov(BYTE op, BYTE immop) : Opcode2Arg(op), m_immCode(immop) {
+  }
+  InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
+  OpcodeType getType() const {
+    return OPCODEMOV;
+  }
+};
+
+class SetxxOp : public Opcode1Arg {
+public:
+  SetxxOp(UINT op) : Opcode1Arg(op, 2, REGTYPE_GPR_ALLOWED | REGSIZE_BYTE_ALLOWED | BYTEPTR_ALLOWED) {
   }
 };
 
@@ -577,8 +591,8 @@ extern Instruction0Arg  PUSHAD;                            // Push all double-wo
 extern Instruction0Arg  POPAD;                             // Pop  all double-word (32-bit) registers from stack
 
 extern Instruction0Arg  NOOP;
-extern OpcodeStd2Arg    ADD,ADC,OR,AND,SUB,SBB,XOR,CMP;
-extern OpcodeStd2Arg    MOV;
+extern Opcode2Arg       ADD,ADC,OR,AND,SUB,SBB,XOR,CMP;
+extern OpcodeMov        MOV;
 
 #ifdef __NEVER__
 

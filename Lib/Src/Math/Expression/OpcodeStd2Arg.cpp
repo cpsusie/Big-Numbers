@@ -146,7 +146,7 @@ static bool sizeContainsSrcSize(OperandSize dstSize, OperandSize srcSize) {
   }
 }
 
-bool OpcodeStd2Arg::isValidOperandCombination(const Register &reg, const InstructionOperand &op2) const {
+bool Opcode2Arg::isValidOperandCombination(const Register &reg, const InstructionOperand &op2) const {
   if(!isRegisterAllowed(reg)) return false;
   switch(op2.getType()) {
   case REGISTER       :
@@ -164,7 +164,7 @@ bool OpcodeStd2Arg::isValidOperandCombination(const Register &reg, const Instruc
   return false;
 }
 
-bool OpcodeStd2Arg::isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2) const {
+bool Opcode2Arg::isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2) const {
   switch(op1.getType()) {
   case REGISTER       :
     return isValidOperandCombination(op1.getRegister(), op2);
@@ -186,7 +186,7 @@ bool OpcodeStd2Arg::isValidOperandCombination(const InstructionOperand &op1, con
   return false;
 }
 
-InstructionBase OpcodeStd2Arg::operator()(const InstructionOperand &op1, const InstructionOperand &op2) const {
+InstructionBase Opcode2Arg::operator()(const InstructionOperand &op1, const InstructionOperand &op2) const {
   InstructionStd2Arg result(*this);
   switch(op1.getType()) {
   case REGISTER       :
@@ -222,4 +222,89 @@ InstructionBase OpcodeStd2Arg::operator()(const InstructionOperand &op1, const I
                                ,op2.toString().cstr()
                                );
   return result;
+}
+
+class InstructionMovImm : public InstructionBuilder {
+public:
+  InstructionMovImm(const OpcodeBase &opcode) : InstructionBuilder(opcode)
+  {
+  }
+  InstructionMovImm &setGPRegImm(const GPRegister    &dst, int   immv);
+  InstructionMovImm &setMemImm(  const MemoryOperand &dst, int   immv);
+};
+
+InstructionMovImm &InstructionMovImm::setGPRegImm(const GPRegister &reg, int immv) {
+  DEFINEMETHODNAME;
+  const BYTE    regIndex = reg.getIndex();
+  const RegSize regSize  = reg.getSize();
+  switch(regSize) {
+  case REGSIZE_BYTE :
+    if(!isByte(immv)) {
+      throwInvalidArgumentException(method,_T("Immediate value %08x doesn't fit in %s"),immv, reg.getName().cstr());
+    }
+    or(regIndex&7).add((char)immv);
+    break;
+  case REGSIZE_WORD :
+    if(!isWord(immv)) {
+      throwInvalidArgumentException(method,_T("Immediate value %08x doesn't fit in %s"),immv, reg.getName().cstr());
+    }
+    or(0x08 | (regIndex&7)).add(immv,2).wordIns();
+    break;
+  default           :
+    or(0x08 | (regIndex&7)).add(immv,4);
+    break;
+  }
+  SETREXBITS(QWORDTOREX(regSize)|HIGHINDEXTOREX(regIndex,0));
+  return *this;
+}
+
+InstructionMovImm &InstructionMovImm::setMemImm(const MemoryOperand &dst, int immv) {
+  DEFINEMETHODNAME;
+  const OperandSize size = dst.getSize();
+  switch(size) {
+  case REGSIZE_BYTE :
+    if(!isByte(immv)) {
+      throwInvalidArgumentException(method,_T("Immediate value %08x doesn't fit in %s"),immv, dst.toString().cstr());
+    }
+    xor(0x76).addMemoryReference(dst).add((char)immv);
+    break;
+  case REGSIZE_WORD :
+    if(!isWord(immv)) {
+      throwInvalidArgumentException(method,_T("Immediate value %08x doesn't fit in %s"),immv, dst.toString().cstr());
+    }
+    xor(0x77).addMemoryReference(dst).add(immv,2).wordIns();
+    break;
+  default           :
+    xor(0x77).addMemoryReference(dst).add(immv,4);
+    break;
+  }
+  SETREXBITS(QWORDTOREX(size));
+  return *this;
+}
+
+InstructionBase OpcodeMovImm::operator()(const InstructionOperand &op1, const InstructionOperand &op2) const {
+  assert(op2.getType() == IMMEDIATEVALUE);
+  InstructionMovImm result(*this);
+  switch(op1.getType()) {
+  case REGISTER       :
+    validateRegisterAllowed(op1.getRegister());
+    return result.setGPRegImm((GPRegister&)op1.getRegister(), op2.getImmInt32());
+  case MEMORYOPERAND    :
+    validateMemoryOperandAllowed((MemoryOperand&)op1);
+    return result.setMemImm((MemoryOperand&)op1, op2.getImmInt32());
+  default:
+    throwInvalidArgumentException(__TFUNCTION__,_T("Invalid combination of operands:%s,%s")
+                                  ,op1.toString().cstr()
+                                  ,op2.toString().cstr()
+                                  );
+    return result;
+  }
+}
+
+InstructionBase OpcodeMov::operator()(const InstructionOperand &op1, const InstructionOperand &op2) const {
+  if(op2.getType() != IMMEDIATEVALUE) {
+    return __super::operator()(op1,op2);
+  } else {
+    return m_immCode(op1, op2);
+  }
 }

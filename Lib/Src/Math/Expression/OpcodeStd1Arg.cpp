@@ -19,7 +19,7 @@ InstructionBase &InstructionStd1Arg::setRegister(const Register &reg) {
   return add(0xc0 | (regIndex&7));
 }
 
-InstructionBase OpcodeStd1Arg::operator()(const InstructionOperand &op) const {
+InstructionBase Opcode1Arg::operator()(const InstructionOperand &op) const {
   validateOpCount(1);
   InstructionStd1Arg result(*this);
   switch(op.getType()) {
