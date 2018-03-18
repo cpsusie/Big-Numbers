@@ -1,5 +1,7 @@
 #pragma once
 
+#include <TinyBitSet.h>
+
 typedef enum {
   REGTYPE_NONE
  ,REGTYPE_GPR
@@ -15,22 +17,47 @@ typedef enum {
  ,REGSIZE_QWORD    /* 64-bit  */
  ,REGSIZE_TBYTE    /* 80-bit  */
  ,REGSIZE_OWORD    /* 128-bit */
+ ,REGSIZE_END   = -1
 } RegSize;
+
+#ifdef _DEBUG
+#define SETDEBUGSTR() m_debugStr = toString()
+#else
+#define SETDEBUGSTR()
+#endif // _DEBUG
+
+class RegSizeSet : public BitSet8 {
+protected:
+#ifdef _DEBUG
+  String m_debugStr;
+#endif
+public:
+  // Terminate with REGSIZE_END
+  RegSizeSet(RegSize s1,...);
+  String toString() const;
+};
 
 String toString(RegType regType);
 String toString(RegSize regSize);
+BYTE regSizeToByteCount(RegSize regSize);
 
 #ifdef IS32BIT
 #define INDEX_REGSIZE          REGSIZE_DWORD
 #define MAX_GPREGISTER_INDEX   7
 #define MAX_XMMREGISTER_INDEX  7
 typedef int                    MovMaxImmType;
-#else
+#else // IS64BIT
 #define INDEX_REGSIZE         REGSIZE_QWORD
 #define MAX_GPREGISTER_INDEX  15
 #define MAX_XMMREGISTER_INDEX 15
 typedef INT64                 MovMaxImmType;
-#endif
+
+typedef enum {
+  REX_DONTCARE
+ ,REX_REQUIRED
+ ,REX_NOTALLOWED
+} RexByteUsage;
+#endif // IS64BIT
 
 class Register {
 private:
@@ -38,9 +65,6 @@ private:
 #ifdef _DEBUG
 protected:
   String m_debugStr;
-#define SETDEBUGSTR() m_debugStr = getName()
-#else
-#define SETDEBUGSTR()
 #endif // _DEBUG
   Register &operator=(const Register &); // not implemented, and not accessible.
                                           // All register are singletons
@@ -52,6 +76,19 @@ public:
   }
   virtual RegType getType()  const = 0;
   virtual RegSize getSize()  const = 0;
+#ifdef IS64BIT
+  virtual bool    isREXCompatible(bool rexBytePresent) const {
+    return true;
+  }
+  virtual RexByteUsage getRexByteUsage() const {
+    return REX_DONTCARE;
+  }
+  inline bool     indexNeedREXByte() const {
+    return getIndex() >= 8;
+  }
+  // for error messages
+  static const TCHAR *getREXCompatibleRegisterNames(bool rexBytePresent);
+#endif // IS64BIT
   virtual String  getName()  const {
     return format(_T("Unknown register:(type,sz,index):(%d,%d,%u"), getType(),getSize(),getIndex());
   }
@@ -61,13 +98,30 @@ public:
   inline bool operator!=(const Register &r) const {
     return !(*this == r);
   }
+  String toString() const {
+    return getName();
+  }
 };
 
 class GPRegister : public Register {
 private:
-  const RegSize m_size; // = REGSIZE_BYTE, _WORD, _DWORD, _QWORD
+  const RegSize      m_size; // = REGSIZE_BYTE, _WORD, _DWORD, _QWORD
+#ifdef IS64BIT
+  const RexByteUsage m_rexByteUsage;
+#endif // IS64BIT
 public:
-  inline GPRegister(RegSize size, BYTE index) : Register(index), m_size(size) {
+  inline GPRegister(RegSize size
+                   ,BYTE index
+#ifdef IS64BIT
+                   ,RexByteUsage rexByteUsage=REX_DONTCARE
+#endif // IS64BIT
+                   )
+    : Register(index)
+    , m_size(size)
+#ifdef IS64BIT
+    , m_rexByteUsage(rexByteUsage)
+#endif // IS64BIT
+  {
     SETDEBUGSTR();
   }
   RegType getType()  const {
@@ -76,6 +130,12 @@ public:
   RegSize getSize()  const {
     return m_size;
   }
+#ifdef IS64BIT
+  bool    isREXCompatible(bool rexBytePresent) const;
+  RexByteUsage getRexByteUsage() const {
+    return m_rexByteUsage;
+  }
+#endif // IS64BIT
   String getName() const;
 };
 
@@ -132,6 +192,9 @@ public:
 
 // 8 bit registers
 extern const GPRegister    AL,CL,DL,BL,AH,CH,DH,BH;
+#ifdef IS64BIT
+extern const GPRegister    SPL,BPL,SIL,DIL;
+#endif
 
 // 16 bit registers
 extern const GPRegister    AX,CX,DX,BX,SP,BP,SI,DI;

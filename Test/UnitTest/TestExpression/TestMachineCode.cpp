@@ -5,110 +5,85 @@
 
 #ifdef TEST_MACHINECODE
 
-#define TEST_ALLGPREGISTERS
+//#define TEST_ALLGPREGISTERS
 
 static const GPRegister r8List[] = {
-    AL
 #ifndef TEST_ALLGPREGISTERS
-   ,AH  ,CH
+    AL                                       ,BH
 #else
-   ,CL  ,DL  ,BL  ,AH  ,CH  ,DH  ,BH
+    AL   ,CL   ,DL   ,BL   ,AH   ,CH   ,DH   ,BH
 #endif // TEST_ALLGPREGISTERS
 #ifdef IS64BIT
-   ,R8B
-#ifdef TEST_ALLGPREGISTERS
-   ,R9B  ,R10B ,R11B ,R12B ,R13B ,R14B ,R15B
+#ifndef TEST_ALLGPREGISTERS
+                           ,SPL              ,DIL
+   ,R8B                                      ,R15B
+#else
+                           ,SPL  ,BPL  ,SIL  ,DIL
+   ,R8B  ,R9B  ,R10B ,R11B ,R12B ,R13B ,R14B ,R15B
 #endif // TEST_ALLGPREGISTERS
 #endif // IS64BIT
   };
 
   const GPRegister r16List[] = {
-    AX
 #ifndef TEST_ALLGPREGISTERS
-   ,SP   ,BP
+    AX                                       ,DI
 #else
-   ,CX   ,DX   ,BX   ,SP   ,BP   ,SI  ,DI
+    AX   ,CX   ,DX   ,BX   ,SP   ,BP   ,SI   ,DI
 #endif // TEST_ALLGPREGISTERS
-
 #ifdef IS64BIT
-   ,R8W
-#ifdef TEST_ALLGPREGISTERS
-   ,R9W  ,R10W ,R11W ,R12W ,R13W ,R14W ,R15W
+#ifndef TEST_ALLGPREGISTERS
+   ,R8W                                      ,R15W
+#else
+   ,R8W  ,R9W  ,R10W ,R11W ,R12W ,R13W ,R14W ,R15W
 #endif // TEST_ALLGPREGISTERS
 #endif // IS64BIT
   };
 
   const GPRegister r32List[] = {
-    EAX
 #ifndef TEST_ALLGPREGISTERS
-   ,ESP  ,EBP
+    EAX                                      ,EDI
 #else
-   ,ECX  ,EDX  ,EBX  ,ESP  ,EBP  ,ESI  ,EDI
+    EAX  ,ECX  ,EDX  ,EBX  ,ESP  ,EBP  ,ESI  ,EDI
 #endif // TEST_ALLGPREGISTERS
-
 #ifdef IS64BIT
-   ,R8D
-#ifdef TEST_ALLGPREGISTERS
-   ,R9D  ,R10D ,R11D ,R12D ,R13D ,R14D ,R15D
+#ifndef TEST_ALLGPREGISTERS
+   ,R8D                                      ,R15D
+#else
+   ,R8D  ,R9D  ,R10D ,R11D ,R12D ,R13D ,R14D ,R15D
 #endif // TEST_ALLGPREGISTERS
 #endif // IS64BIT
   };
 
+  const IndexRegister indexRegList[] = {
 #ifdef IS32BIT
-  const IndexRegister indexRegList[] = {
-    EAX
 #ifndef TEST_ALLGPREGISTERS
-   ,ESP  ,EBP
+    EAX                    ,ESP  ,EBP        ,EDI
 #else
-   ,ECX  ,EDX  ,EBX  ,ESP  ,EBP  ,ESI  ,EDI
+    EAX  ,ECX  ,EDX  ,EBX  ,ESP  ,EBP  ,ESI  ,EDI
 #endif // TEST_ALLGPREGISTERS
-
-#ifdef IS64BIT
-   ,R8D
-#ifdef TEST_ALLGPREGISTERS
-   ,R9D  ,R10D ,R11D ,R12D ,R13D ,R14D ,R15D
-#endif // TEST_ALLGPREGISTERS
-#endif // IS64BIT
-  };
-
 #else // IS64BIT
+#ifndef TEST_ALLGPREGISTERS
+    RAX                    ,RSP  ,RBP        ,RDI
+   ,R8                     ,R12  ,R13        ,R15
+#else
+    RAX  ,RCX  ,RDX  ,RBX  ,RSP  ,RBP  ,RSI  ,RDI
+   ,R8   ,R9   ,R10  ,R11  ,R12  ,R13  ,R14  ,R15
+#endif // TEST_ALLGPREGISTERS
+#endif // IS64BIT
+  };
 
+#ifdef IS64BIT
   const GPRegister r64List[] = {
-    RAX
 #ifndef TEST_ALLGPREGISTERS
-   ,RSP  ,RBP
+    RAX                                      ,RDI
+   ,R8                                       ,R15
 #else
-   ,RCX  ,RDX  ,RBX  ,RSP  ,RBP  ,RSI  ,RDI
-#endif // TEST_ALLGPREGISTERS
-   ,R8
-#ifdef TEST_ALLGPREGISTERS
-   ,R9   ,R10  ,R11  ,R12  ,R13  ,R14  ,R15
-#endif // TEST_ALLGPREGISTERS
+    RAX  ,RCX  ,RDX  ,RBX  ,RSP  ,RBP  ,RSI  ,RDI
+   ,R8   ,R9   ,R10  ,R11  ,R12  ,R13  ,R14  ,R15
+#endif //  TEST_ALLGPREGISTERS
   };
-
-  const IndexRegister indexRegList[] = {
-    RAX
-#ifndef TEST_ALLGPREGISTERS
-   ,RSP  ,RBP
-#else
-   ,RCX  ,RDX  ,RBX  ,RSP  ,RBP  ,RSI  ,RDI
-#endif // TEST_ALLGPREGISTERS
-   ,R8
-#ifdef TEST_ALLGPREGISTERS
-   ,R9   ,R10  ,R11  ,R12  ,R13  ,R14  ,R15
-#endif // TEST_ALLGPREGISTERS
-  };
-
 #endif // IS64BIT
 
-  const GPRegister *GPRegListArray[] = {
-    r8List, r16List, r32List
-#ifdef IS64BIT
-   ,r64List
-#endif
-  };
-
-#define GPREGISTER_COUNT    ARRAYSIZE(r32List)
 #define INDEXREGISTER_COUNT ARRAYSIZE(indexRegList)
 
 #define UNKNOWN_OPCODE(  dst)               B2INSA(0x8700 + ((dst)<<3))                     // Build src with MEM_ADDR-macros, REGREG
@@ -126,20 +101,30 @@ static const RegSize allRegSize[] = {
 };
 
 class AllGPRegisters : public CompactArray<const GPRegister*> {
+private:
+  void addRegArray(const GPRegister *list, size_t n) {
+    for(int i = 0; i < n; i++) {
+      add(list+i);
+    }
+  }
 public:
   AllGPRegisters();
 };
 
 AllGPRegisters::AllGPRegisters() {
-  for(int i = 0; i < ARRAYSIZE(GPRegListArray); i++) {
-    const GPRegister *gpreg = GPRegListArray[i];
-    for(int j = 0; j < GPREGISTER_COUNT; j++) {
-      add(&gpreg[j]);
-    }
-  }
+  addRegArray(r8List , ARRAYSIZE(r8List ));
+  addRegArray(r16List, ARRAYSIZE(r16List));
+  addRegArray(r32List, ARRAYSIZE(r32List));
+#ifdef IS64BIT
+  addRegArray(r64List, ARRAYSIZE(r64List));
+#endif
 }
 
-static const int allImmValues[] = {    0x7f, 0x7fff, 0x7fffffff     };
+#ifdef IS32BIT
+static const int   allImmValues[] = {    0x7f, 0x7fff, 0x7fffffff     };
+#else // IS64BIT
+static const INT64 allImmValues[] = {    0x7f, 0x7fff, 0x7fffffff, 0x7fffffffffffffffi64 };
+#endif // IS64BIT
 
 class InstructionOperandArray : public CompactArray<const InstructionOperand*> {
 public:
@@ -366,12 +351,12 @@ void TestMachineCode::testOpcode2Arg(const Opcode2Arg &opcode) {
       if(!opcode.isRegisterAllowed(regDst)) {
         continue;
       }
+      const InstructionOperand op1(regDst);
       for(Iterator<const GPRegister*> regSrcIt = m_allGPReg.getIterator(); regSrcIt.hasNext();) {
-        const GPRegister &regSrc = *regSrcIt.next();
-        if(regSrc.getSize() != regDst.getSize()) {
-          continue;
+        const InstructionOperand op2(*regSrcIt.next());
+        if(opcode.isValidOperandCombination(op1,op2)) {
+          emit(opcode,op1,op2);
         }
-        emit(opcode,regDst,regSrc);
       }
     }
   }
@@ -382,37 +367,37 @@ void TestMachineCode::testOpcode2Arg(const Opcode2Arg &opcode) {
         const InstructionOperand &memOp = *memIt.next();
         if(opcode.isMemoryOperandAllowed((MemoryOperand&)memOp)) {
           for(Iterator<const GPRegister*> regIt = m_allGPReg.getIterator(); regIt.hasNext();) {
-            const GPRegister &regOp = *regIt.next();
-            if(regOp.getSize() != memOp.getSize()) {
-              continue;
-            }
+            const InstructionOperand regOp(*regIt.next());
             if(i==0) {
-              emit(opcode,memOp,regOp);
+              if(opcode.isValidOperandCombination(memOp,regOp)) {
+                emit(opcode,memOp,regOp);
+              }
             } else {
-              emit(opcode,regOp,memOp);
+              if(opcode.isValidOperandCombination(regOp,memOp)) {
+                emit(opcode,regOp,memOp);
+              }
             }
           }
         }
       }
     }
   }
+//  clear();
   if(opcode.isImmediateValueAllowed()) {
     for(Iterator<const InstructionOperand*> immIt = m_allImmOperands.getIterator(); immIt.hasNext();) {
       const InstructionOperand &immOp = *immIt.next();
       for(Iterator<const GPRegister*> regDstIt = m_allGPReg.getIterator(); regDstIt.hasNext();) {
         const GPRegister &regOp = *regDstIt.next();
-        if(!opcode.isValidOperandCombination(regOp, immOp)) {
-          continue;
+        if(opcode.isValidOperandCombination(regOp, immOp)) {
+          emit(opcode,regOp,immOp);
         }
-        emit(opcode,regOp,immOp);
       }
       if(opcode.isMemoryOperandAllowed()) {
         for(Iterator<const InstructionOperand*> memIt = m_allMemOperands.getIterator(); memIt.hasNext();) {
           const InstructionOperand &memOp = *memIt.next();
-          if(!opcode.isValidOperandCombination(memOp, immOp)) {
-            continue;
+          if(opcode.isValidOperandCombination(memOp, immOp)) {
+            emit(opcode,memOp,immOp);
           }
-          emit(opcode,memOp,immOp);
         }
       }
     }

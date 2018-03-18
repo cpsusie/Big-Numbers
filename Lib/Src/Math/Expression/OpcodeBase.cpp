@@ -92,4 +92,27 @@ void OpcodeBase::validateSameSize(const InstructionOperand &op1, const Instructi
   if(op1.getSize() != op2.getSize()) {
     throwInvalidArgumentException(__TFUNCTION__, _T("Different size:%s,%s"), op1.toString().cstr(), op2.toString().cstr());
   }
+
+#ifdef IS64BIT
+  if(op1.getType() == REGISTER) {
+    validateIsRexCompatible(op1.getRegister(),op2);
+  }
+  if(op2.getType() == REGISTER) {
+    validateIsRexCompatible(op2.getRegister(),op1);
+  }
+#endif // IS64BIT
 }
+
+#ifdef IS64BIT
+void OpcodeBase::validateIsRexCompatible(const Register &reg, const InstructionOperand &op) const {
+  if(!reg.isREXCompatible(op.needREXByte())) {
+    throwInvalidArgumentException(__TFUNCTION__
+                                 ,_T("%s not allowed together with %s (Use %s)")
+                                 ,reg.toString().cstr()
+                                 ,op.toString().cstr()
+                                 ,Register::getREXCompatibleRegisterNames(op.needREXByte())
+                                 );
+  }
+}
+#endif // IS64BIT
+

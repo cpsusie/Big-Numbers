@@ -24,7 +24,56 @@ String toString(RegSize regSize) {
   }
 }
 
+class RegSizeStringifier : public AbstractStringifier<UINT> {
+public:
+  String toString(const UINT &e) {
+    return ::toString((RegSize)e);
+  }
+};
+
+BYTE regSizeToByteCount(RegSize regSize) {
+  switch(regSize) {
+  case REGSIZE_BYTE  : 1;
+  case REGSIZE_WORD  : 2;
+  case REGSIZE_DWORD : 4;
+  case REGSIZE_QWORD : 8;
+  case REGSIZE_TBYTE : 10;
+  case REGSIZE_OWORD : 16;
+  default            : throwInvalidArgumentException(__TFUNCTION__,_T("Unknown register size:%d"), regSize);
+  }
+  return 0;
+}
+
+RegSizeSet::RegSizeSet(RegSize s1, ...) {
+  va_list argptr;
+  va_start(argptr,s1);
+  add(s1);
+  for(RegSize s = va_arg(argptr, RegSize); s != REGSIZE_END; s = va_arg(argptr, RegSize)) {
+    add(s);
+  }
+  SETDEBUGSTR();
+}
+
+String RegSizeSet::toString() const {
+  RegSizeStringifier sf;
+  return __super::toString(&sf);
+}
+
 // ---------------------------------- Register ----------------------------
+
+#ifdef IS64BIT
+bool GPRegister::isREXCompatible(bool rexBytePresent) const {
+  switch(m_rexByteUsage) {
+  case REX_DONTCARE  : return true;
+  case REX_REQUIRED  : return rexBytePresent;
+  case REX_NOTALLOWED: return !rexBytePresent;
+  default            : throwException(_T("%s:Unknown rexByteUsage:%d")
+                                     ,getName().cstr()
+                                     ,m_rexByteUsage);
+  }
+  return false;
+}
+#endif // IS64BIT
 
 String GPRegister::getName() const {
   switch(getSize()) {
@@ -34,11 +83,16 @@ String GPRegister::getName() const {
     case  1: return _T("cl"  );
     case  2: return _T("dl"  );
     case  3: return _T("bl"  );
+#ifdef IS32BIT
     case  4: return _T("ah"  );
     case  5: return _T("ch"  );
     case  6: return _T("dh"  );
     case  7: return _T("bh"  );
-#ifdef IS64BIT
+#else // IS64BIT
+    case  4: return isREXCompatible(true) ? _T("spl") : _T("ah"  );
+    case  5: return isREXCompatible(true) ? _T("bpl") : _T("ch"  );
+    case  6: return isREXCompatible(true) ? _T("sil") : _T("dh"  );
+    case  7: return isREXCompatible(true) ? _T("dil") : _T("bh"  );
     case  8:
     case  9:
     case 10:
@@ -152,10 +206,33 @@ const GPRegister    AL(REGSIZE_BYTE,  0);
 const GPRegister    CL(REGSIZE_BYTE,  1);
 const GPRegister    DL(REGSIZE_BYTE,  2);
 const GPRegister    BL(REGSIZE_BYTE,  3);
+
+#ifdef IS32BIT
 const GPRegister    AH(REGSIZE_BYTE,  4);
 const GPRegister    CH(REGSIZE_BYTE,  5);
 const GPRegister    DH(REGSIZE_BYTE,  6);
 const GPRegister    BH(REGSIZE_BYTE,  7);
+#else  // IS64BIT
+const GPRegister    AH(REGSIZE_BYTE,  4, REX_NOTALLOWED);
+const GPRegister    CH(REGSIZE_BYTE,  5, REX_NOTALLOWED);
+const GPRegister    DH(REGSIZE_BYTE,  6, REX_NOTALLOWED);
+const GPRegister    BH(REGSIZE_BYTE,  7, REX_NOTALLOWED);
+
+const GPRegister    SPL(REGSIZE_BYTE, 4, REX_REQUIRED   );
+const GPRegister    BPL(REGSIZE_BYTE, 5, REX_REQUIRED   );
+const GPRegister    SIL(REGSIZE_BYTE, 6, REX_REQUIRED   );
+const GPRegister    DIL(REGSIZE_BYTE, 7, REX_REQUIRED   );
+
+static const TCHAR *s_rexDependentRegisterNames[] = {
+   _T("AH,CH,DH or BH")
+  ,_T("SPL,BPL,SIL or DIL")
+};
+
+const TCHAR *Register::getREXCompatibleRegisterNames(bool rexBytePresent) { // static
+  return s_rexDependentRegisterNames[rexBytePresent?1:0];
+}
+
+#endif // IS64BIT
 
 const GPRegister    AX(REGSIZE_WORD,  0);
 const GPRegister    CX(REGSIZE_WORD,  1);

@@ -52,6 +52,10 @@ typedef enum {
 } OperandType;
 
 String toString(OperandType type);
+// Convert int32-value to disassembler format
+String formatHexValue(int v, bool showSign);
+// Convert int64-value to disassembler format
+String formatHexValue(INT64 v, bool showSign);
 
 class InstructionOperand {
 private:
@@ -79,9 +83,6 @@ private:
 #ifdef _DEBUG
 protected:
   String            m_debugStr;
-#define SETSTR() m_debugStr = toString()
-#else
-#define SETSTR()
 #endif // _DEBUG
 public:
   inline InstructionOperand(OperandType type, OperandSize size)
@@ -95,35 +96,35 @@ public:
     , m_size(reg.getSize())
     , m_reg(&reg)
   {
-    SETSTR();
+    SETDEBUGSTR();
   }
   inline InstructionOperand(int    v)
     : m_type(IMMEDIATEVALUE)
     , m_size(findMinSize(v))
   {
     setValue(v);
-    SETSTR();
+    SETDEBUGSTR();
   }
   inline InstructionOperand(UINT   v)
     : m_type(IMMEDIATEVALUE)
     , m_size(findMinSize(v))
   {
     setValue(v);
-    SETSTR();
+    SETDEBUGSTR();
   }
   inline InstructionOperand(INT64  v)
     : m_type(IMMEDIATEVALUE)
     , m_size(findMinSize(v))
   {
     setValue(v);
-    SETSTR();
+    SETDEBUGSTR();
   }
   inline InstructionOperand(UINT64 v)
     : m_type(IMMEDIATEVALUE)
     , m_size(findMinSize(v))
   {
     setValue(v);
-    SETSTR();
+    SETDEBUGSTR();
   }
   inline OperandType getType() const {
     return m_type;
@@ -154,6 +155,11 @@ public:
     throwUnsupportedOperationException(__TFUNCTION__);
     return NULL;
   }
+#ifdef IS64BIT
+  virtual bool  needREXByte() const {
+    return (getType() == REGISTER) ? ((m_size==REGSIZE_QWORD) || m_reg->indexNeedREXByte()) : false;
+  }
+#endif // IS64BIT
   virtual String toString() const;
 };
 
@@ -162,7 +168,23 @@ private:
   const IndexRegister *m_base,*m_inx;
   const BYTE           m_shift;
   const int            m_offset;
+#ifdef IS64BIT
+  bool                 m_needREXByte;
+#endif // IS64BIT
+
 #ifdef _DEBUG
+  friend class MemoryOperand;
+  inline MemoryRef(DWORD addr)
+    : m_base(  NULL  )
+    , m_inx(   NULL  )
+    , m_shift( 0     )
+    , m_offset(addr  )
+#ifdef IS64BIT
+    , m_needREXByte(false)
+#endif
+  {
+    SETDEBUGSTR();
+  }
 protected:
   String            m_debugStr;
 #endif // _DEBUG
@@ -173,7 +195,7 @@ public:
     , m_shift( shift )
     , m_offset(offset)
   {
-    SETSTR();
+    SETDEBUGSTR();
   }
   inline MemoryRef(const IndexRegister &base)
     : m_base( &base  )
@@ -181,19 +203,13 @@ public:
     , m_shift( 0     )
     , m_offset(0     )
   {
-    SETSTR();
-  }
-  inline MemoryRef(DWORD addr)
-    : m_base(  NULL  )
-    , m_inx(   NULL  )
-    , m_shift( 0     )
-    , m_offset(addr  )
-  {
-    SETSTR();
+    SETDEBUGSTR();
   }
   inline bool isImmediateAddr() const {
     return (m_base == NULL) && (m_inx == NULL);
   }
+  // set m_needREXByte in x64
+  void sortBaseInx();
   inline const IndexRegister *getBase()   const { return m_base;         }
   inline const IndexRegister *getInx()    const { return m_inx;          }
   inline BYTE                 getShift()  const { return m_shift;        }
@@ -202,6 +218,12 @@ public:
   inline bool                 hasInx()    const { return m_inx  != NULL; }
   inline bool                 hasShift()  const { return m_shift >= 1;   }
   inline bool                 hasOffset() const { return m_offset != 0;  }
+
+#ifdef IS64BIT
+  inline bool                 needREXByte() const {
+    return m_needREXByte;
+  }
+#endif // IS64BIT
   String                      toString()  const;
 };
 
@@ -217,21 +239,22 @@ MemoryRef operator*(const IndexRegister &inx, BYTE a);
 class MemoryOperand : public InstructionOperand {
 private:
   const SegmentRegister *m_segReg;
-  const MemoryRef        m_mr;
+  MemoryRef              m_mr;
 public:
   inline MemoryOperand(OperandSize size, const MemoryRef &mr, const SegmentRegister *segReg=NULL)
     : InstructionOperand(MEMORYOPERAND, size)
     , m_segReg(segReg)
     , m_mr(mr)
   {
-    SETSTR();
+    m_mr.sortBaseInx();
+    SETDEBUGSTR();
   }
   inline MemoryOperand(OperandSize size, DWORD addr, const SegmentRegister *segReg=NULL)
     : InstructionOperand(MEMORYOPERAND, size)
     , m_segReg(segReg)
     , m_mr(addr)
   {
-    SETSTR();
+    SETDEBUGSTR();
   }
   const SegmentRegister &getSegmentRegister() const {
     return *m_segReg;
@@ -242,6 +265,11 @@ public:
   const MemoryRef       *getMemoryReference() const {
     return &m_mr;
   }
+#ifdef IS64BIT
+  bool  needREXByte() const {
+    return __super::needREXByte() || m_mr.needREXByte();
+  }
+#endif // IS64BIT
   String toString() const;
 };
 
@@ -405,10 +433,10 @@ public:
 #ifdef IS32BIT
 #define ALL_GPRSIZE_ALLOWED     (REGSIZE_BYTE_ALLOWED | REGSIZE_WORD_ALLOWED | REGSIZE_DWORD_ALLOWED)
 #define ALL_GPRSIZEPTR_ALLOWED  (BYTEPTR_ALLOWED      | WORDPTR_ALLOWED      | DWORDPTR_ALLOWED     )
-#else
+#else  // IS64BIT
 #define ALL_GPRSIZE_ALLOWED     (REGSIZE_BYTE_ALLOWED | REGSIZE_WORD_ALLOWED | REGSIZE_DWORD_ALLOWED | REGSIZE_QWORD_ALLOWED)
 #define ALL_GPRSIZEPTR_ALLOWED  (BYTEPTR_ALLOWED      | WORDPTR_ALLOWED      | DWORDPTR_ALLOWED      | QWORDPTR_ALLOWED     )
-#endif
+#endif // IS64BIT
 
 #define ALL_REGISTER_TYPES     (REGTYPE_GPR_ALLOWED  | REGTYPE_SEG_ALLOWED  | REGTYPE_FPU_ALLOWED | REGTYPE_XMM_ALLOWED)
 #define ALL_GPR_ALLOWED        (REGTYPE_GPR_ALLOWED  | ALL_GPRSIZE_ALLOWED)
@@ -439,6 +467,9 @@ protected:
   void validateMemoryOperandAllowed(const MemoryOperand            &memop) const;
   void validateImmediateValueAllowed()                                     const;
   void validateSameSize(            const InstructionOperand &op1, const InstructionOperand &op2) const;
+#ifdef IS64BIT
+  void validateIsRexCompatible(     const Register           &reg, const InstructionOperand &op) const;
+#endif // IS64BIT
 public:
   OpcodeBase(UINT64 op, BYTE size, UINT opCount, UINT flags);
 
@@ -502,8 +533,8 @@ public :
   OpcodeType getType() const {
     return OPCODE2ARG;
   }
-  bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2) const;
-  bool isValidOperandCombination(const Register           &reg, const InstructionOperand &op2) const;
+  virtual bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2) const;
+  virtual bool isValidOperandCombination(const Register           &reg, const InstructionOperand &op2) const;
 };
 
 class OpcodeMovImm : public Opcode2Arg {
@@ -514,6 +545,7 @@ public:
   OpcodeType getType() const {
     return OPCODEMOVIMM;
   }
+  bool isValidOperandCombination(const Register &reg, const InstructionOperand &op2) const;
 };
 
 class OpcodeMov : public Opcode2Arg {
@@ -526,6 +558,7 @@ public :
   OpcodeType getType() const {
     return OPCODEMOV;
   }
+  bool isValidOperandCombination(const Register &reg, const InstructionOperand &op2) const;
 };
 
 class SetxxOp : public Opcode1Arg {

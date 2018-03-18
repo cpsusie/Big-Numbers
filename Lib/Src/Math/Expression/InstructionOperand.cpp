@@ -11,7 +11,7 @@ String toString(OperandType type) {
 }
 
 // Convert int32-value to disassembler format
-static String formatHexValue(int v, bool showSign) {
+String formatHexValue(int v, bool showSign) {
   bool neg;
   if(v >= 0) {
     neg = false;
@@ -32,7 +32,7 @@ static String formatHexValue(int v, bool showSign) {
 }
 
 // Convert int64-value to disassembler format
-static String formatHexValue(INT64 v, bool showSign) {
+String formatHexValue(INT64 v, bool showSign) {
   bool neg;
   if(v >= 0) {
     neg = false;
@@ -155,12 +155,14 @@ char   InstructionOperand::getImmInt8()   const {
   VALIDATESIZE(REGSIZE_BYTE);
   return m_v8;
 }
+
 BYTE   InstructionOperand::getImmUint8()  const {
   DEFINEMETHODNAME;
   VALIDATEISIMMVALUE();
   VALIDATESIZE(REGSIZE_BYTE);
   return m_v8;
 }
+
 short  InstructionOperand::getImmInt16()  const {
   DEFINEMETHODNAME;
   VALIDATEISIMMVALUE();
@@ -172,6 +174,7 @@ short  InstructionOperand::getImmInt16()  const {
   }
   return 0;
 }
+
 USHORT InstructionOperand::getImmUint16() const {
   DEFINEMETHODNAME;
   VALIDATEISIMMVALUE();
@@ -183,6 +186,7 @@ USHORT InstructionOperand::getImmUint16() const {
   }
   return 0;
 }
+
 int    InstructionOperand::getImmInt32()  const {
   DEFINEMETHODNAME;
   VALIDATEISIMMVALUE();
@@ -195,6 +199,7 @@ int    InstructionOperand::getImmInt32()  const {
   }
   return 0;
 }
+
 UINT   InstructionOperand::getImmUint32() const {
   DEFINEMETHODNAME;
   VALIDATEISIMMVALUE();
@@ -207,6 +212,7 @@ UINT   InstructionOperand::getImmUint32() const {
   }
   return 0;
 }
+
 INT64  InstructionOperand::getImmInt64()  const {
   DEFINEMETHODNAME;
   VALIDATEISIMMVALUE();
@@ -219,6 +225,7 @@ INT64  InstructionOperand::getImmInt64()  const {
   }
   return 0;
 }
+
 UINT64 InstructionOperand::getImmUInt64() const {
   DEFINEMETHODNAME;
   VALIDATEISIMMVALUE();
@@ -256,6 +263,23 @@ static char findShift(BYTE a) {
     throwInvalidArgumentException(__TFUNCTION__, _T("a=%d. must be 1,2,4,8"));
   }
   return shift[a];
+}
+
+void MemoryRef::sortBaseInx() {
+  if(!hasShift() && hasInx()) {
+    if(hasBase()) {
+      if((!hasOffset() && ((m_base->getIndex()&7)==5))
+      || (m_base->isValidIndexRegister() && (m_base->getIndex() > m_inx->getIndex()))) {
+        const IndexRegister *tmp = m_inx; m_inx = m_base; m_base = tmp;
+      }
+    } else { // set base = inx; inx = NULL
+      m_base = m_inx; m_inx = NULL;
+    }
+  }
+#ifdef IS64BIT
+  m_needREXByte =   (hasBase() && getBase()->indexNeedREXByte())
+                 || (hasInx()  && getInx()->indexNeedREXByte());
+#endif // IS64BIT
 }
 
 String MemoryRef::toString() const {
