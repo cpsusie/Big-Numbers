@@ -269,17 +269,18 @@ void MemoryRef::sortBaseInx() {
   if(!hasShift() && hasInx()) {
     if(hasBase()) {
       if((!hasOffset() && ((m_base->getIndex()&7)==5))
-      || (m_base->isValidIndexRegister() && (m_base->getIndex() > m_inx->getIndex()))) {
+      || (m_base->isValidIndexRegister() && (m_base->getIndex() > m_inx->getIndex())
+          && (hasOffset() || ((m_inx->getIndex()&7)!=5))
+         )
+        ) {
         const IndexRegister *tmp = m_inx; m_inx = m_base; m_base = tmp;
+        SETDEBUGSTR();
       }
     } else { // set base = inx; inx = NULL
       m_base = m_inx; m_inx = NULL;
+      SETDEBUGSTR();
     }
   }
-#ifdef IS64BIT
-  m_needREXByte =   (hasBase() && getBase()->indexNeedREXByte())
-                 || (hasInx()  && getInx()->indexNeedREXByte());
-#endif // IS64BIT
 }
 
 String MemoryRef::toString() const {
@@ -310,14 +311,14 @@ MemoryRef operator+(const MemoryRef &mr, int offset) {
   if(mr.hasOffset()) {
     throwInvalidArgumentException(__TFUNCTION__,_T("Illegal index:%s+%d"),mr.toString().cstr(),offset);
   }
-  return MemoryRef(mr.getBase(),mr.getInx(),mr.getShift(),offset);
+  return offset ? MemoryRef(mr.getBase(),mr.getInx(),mr.getShift(),offset) : mr;
 }
 
 MemoryRef operator-(const MemoryRef &mr, int offset) {
   if(mr.hasOffset()) {
     throwInvalidArgumentException(__TFUNCTION__,_T("Illegal index:%s-%d"),mr.toString().cstr(),offset);
   }
-  return MemoryRef(mr.getBase(),mr.getInx(),mr.getShift(),-offset);
+  return offset ? MemoryRef(mr.getBase(),mr.getInx(),mr.getShift(),-offset) : mr;
 }
 
 MemoryRef operator+(const IndexRegister &base, const MemoryRef &mr) {

@@ -80,10 +80,9 @@ private:
   void throwUnknownSize(const TCHAR *method) const;
   void validateSize(    const TCHAR *method, OperandSize expectedSize) const;
   void validateType(    const TCHAR *method, OperandType expectedType) const;
-#ifdef _DEBUG
-protected:
-  String            m_debugStr;
-#endif // _DEBUG
+
+  DECLAREDEBUGSTR;
+
 public:
   inline InstructionOperand(OperandType type, OperandSize size)
     : m_type(type)
@@ -157,7 +156,7 @@ public:
   }
 #ifdef IS64BIT
   virtual bool  needREXByte() const {
-    return (getType() == REGISTER) ? ((m_size==REGSIZE_QWORD) || m_reg->indexNeedREXByte()) : false;
+    return (getType() == REGISTER) ? m_reg->indexNeedREXByte() : false;
   }
 #endif // IS64BIT
   virtual String toString() const;
@@ -169,31 +168,24 @@ private:
   const BYTE           m_shift;
   const int            m_offset;
 #ifdef IS64BIT
-  bool                 m_needREXByte;
+  const bool           m_needREXByte;
+  static inline bool findRexByteNeeded(const IndexRegister *base, const IndexRegister *inx) {
+    return (base && base->indexNeedREXByte()) || (inx && inx->indexNeedREXByte());
+  }
+#define SETNEEDREXBYTE(base,inx) ,m_needREXByte(findRexByteNeeded(base,inx))
+#else
+#define SETNEEDREXBYTE(base,inx)
 #endif // IS64BIT
 
-#ifdef _DEBUG
-  friend class MemoryOperand;
-  inline MemoryRef(DWORD addr)
-    : m_base(  NULL  )
-    , m_inx(   NULL  )
-    , m_shift( 0     )
-    , m_offset(addr  )
-#ifdef IS64BIT
-    , m_needREXByte(false)
-#endif
-  {
-    SETDEBUGSTR();
-  }
-protected:
-  String            m_debugStr;
-#endif // _DEBUG
+  DECLAREDEBUGSTR;
+
 public:
   inline MemoryRef(const IndexRegister *base, const IndexRegister *inx, BYTE shift=0, int offset=0)
     : m_base(  base  )
     , m_inx(   inx   )
     , m_shift( shift )
     , m_offset(offset)
+    SETNEEDREXBYTE(base,inx)
   {
     SETDEBUGSTR();
   }
@@ -202,6 +194,16 @@ public:
     , m_inx(   NULL  )
     , m_shift( 0     )
     , m_offset(0     )
+    SETNEEDREXBYTE(&base,NULL)
+  {
+    SETDEBUGSTR();
+  }
+  inline MemoryRef(DWORD addr)
+    : m_base(  NULL  )
+    , m_inx(   NULL  )
+    , m_shift( 0     )
+    , m_offset(addr  )
+    SETNEEDREXBYTE(NULL,NULL)
   {
     SETDEBUGSTR();
   }
@@ -266,8 +268,8 @@ public:
     return &m_mr;
   }
 #ifdef IS64BIT
-  bool  needREXByte() const {
-    return __super::needREXByte() || m_mr.needREXByte();
+  bool needREXByte() const {
+    return m_mr.needREXByte();
   }
 #endif // IS64BIT
   String toString() const;
@@ -639,9 +641,6 @@ extern OpcodeMov        MOV;
 #define MOV_TO_SEGREG_WORD(  seg)              B2OP(0x8E00    | ((seg)<<3))               // Build src with MEM_ADDR-*,REGREG-macroes
 #define POP_DWORD                              B2OP(0x8F00)                               // Build dst with MEM_ADDR-*,REGREG-macroes
 
-#define MOV_MEM_REG(         reg)              B1OPREG(     0x88,reg)                     // Build dst with MEM_ADDR-*,REGREG-macroes
-#define MOV_REG_MEM(         reg)              B1OPREG(     0x8A,reg)                     // Build src with MEM_ADDR-*,REGREG-macroes
-#define MOV_REG_IMM(         reg,immv)         INS_MOVGPIMM(0xB0,reg,immv)
 
 #define MOV_TO_AL_IMM_ADDR_BYTE                B1INS(  0xA0  )                            // 4/8 byte address. move byte  pointed to by 2. operand to AL
 #define MOV_TO_EAX_IMM_ADDR_DWORD              B1INS(  0xA1  )                            // 4/8 byte address. move dword pointed to by 2. operand to EAX

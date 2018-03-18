@@ -22,15 +22,14 @@ typedef enum {
 
 #ifdef _DEBUG
 #define SETDEBUGSTR() m_debugStr = toString()
+#define DECLAREDEBUGSTR  protected: String m_debugStr
 #else
 #define SETDEBUGSTR()
+#define DECLAREDEBUGSTR
 #endif // _DEBUG
 
 class RegSizeSet : public BitSet8 {
-protected:
-#ifdef _DEBUG
-  String m_debugStr;
-#endif
+  DECLAREDEBUGSTR;
 public:
   // Terminate with REGSIZE_END
   RegSizeSet(RegSize s1,...);
@@ -62,12 +61,9 @@ typedef enum {
 class Register {
 private:
   const BYTE m_index; // = [0..15]
-#ifdef _DEBUG
-protected:
-  String m_debugStr;
-#endif // _DEBUG
   Register &operator=(const Register &); // not implemented, and not accessible.
                                           // All register are singletons
+  DECLAREDEBUGSTR;
 public:
   inline Register(BYTE index) : m_index(index) {
   }

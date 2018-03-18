@@ -1,11 +1,12 @@
 #include "stdafx.h"
+#include <HashSet.h>
 #include <Math/Expression/NewOpcode.h>
 
 #define TEST_MACHINECODE
 
 #ifdef TEST_MACHINECODE
 
-//#define TEST_ALLGPREGISTERS
+#define TEST_ALLGPREGISTERS
 
 static const GPRegister r8List[] = {
 #ifndef TEST_ALLGPREGISTERS
@@ -103,7 +104,7 @@ static const RegSize allRegSize[] = {
 class AllGPRegisters : public CompactArray<const GPRegister*> {
 private:
   void addRegArray(const GPRegister *list, size_t n) {
-    for(int i = 0; i < n; i++) {
+    for(size_t i = 0; i < n; i++) {
       add(list+i);
     }
   }
@@ -213,32 +214,50 @@ AllMemoryOperands::AllMemoryOperands() {
     if(!inxReg.isValidIndexRegister()) continue;
     for(int factor = 1; factor <= 8; factor *= 2) {
       for(int i = 0; i < ARRAYSIZE(allOffset); i++) {
-        add(new BYTEPtr( factor*inxReg + allOffset[i]));
-        add(new WORDPtr( factor*inxReg + allOffset[i]));
-        add(new DWORDPtr(factor*inxReg + allOffset[i]));
-        add(new QWORDPtr(factor*inxReg + allOffset[i]));
+        const int offset = allOffset[i];
+        add(new BYTEPtr( factor*inxReg + offset));
+        add(new WORDPtr( factor*inxReg + offset));
+        add(new DWORDPtr(factor*inxReg + offset));
+        add(new QWORDPtr(factor*inxReg + offset));
       }
     }
   }
   for(int i = 0; i < ARRAYSIZE(allOffset); i++) {
+    const int offset = allOffset[i];
     for(int j = 0; j < INDEXREGISTER_COUNT; j++) {
       const IndexRegister &baseReg = indexRegList[j];
-      add(new BYTEPtr( baseReg + allOffset[i]));
-      add(new WORDPtr( baseReg + allOffset[i]));
-      add(new DWORDPtr(baseReg + allOffset[i]));
-      add(new QWORDPtr(baseReg + allOffset[i]));
+      add(new BYTEPtr( baseReg + offset));
+      add(new WORDPtr( baseReg + offset));
+      add(new DWORDPtr(baseReg + offset));
+      add(new QWORDPtr(baseReg + offset));
       for(int k = 0; k < INDEXREGISTER_COUNT; k++) {
         const IndexRegister &inxReg = indexRegList[k];
         if(!inxReg.isValidIndexRegister()) continue;
         for(int factor = 1; factor <= 8; factor *= 2) {
-          add(new BYTEPtr( baseReg + factor*inxReg + allOffset[i]));
-          add(new WORDPtr( baseReg + factor*inxReg + allOffset[i]));
-          add(new DWORDPtr(baseReg + factor*inxReg + allOffset[i]));
-          add(new QWORDPtr(baseReg + factor*inxReg + allOffset[i]));
+          add(new BYTEPtr( baseReg + factor*inxReg + offset));
+          add(new WORDPtr( baseReg + factor*inxReg + offset));
+          add(new DWORDPtr(baseReg + factor*inxReg + offset));
+          add(new QWORDPtr(baseReg + factor*inxReg + offset));
         }
       }
     }
   }
+
+  AllMemoryOperands copy(*this);
+  clear();
+  StringHashSet strSet;
+  for(size_t i = 0; i < copy.size(); i++) {
+    const InstructionOperand *ins = copy[i];
+    const String s = ins->toString();
+    if(!strSet.contains(s)) {
+      strSet.add(s);
+      add(ins);
+    } else {
+      delete ins;
+    }
+  }
+  copy.clear();
+
   sort(memOpCmp);
 
   redirectDebugLog();
