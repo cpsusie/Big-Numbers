@@ -2,27 +2,20 @@
 #include <Math/Expression/NewOpCode.h>
 #include "RexByte.h"
 
-static void sizeError(const TCHAR *method, const GPRegister    &reg, INT64 immv) {
-  throwInvalidArgumentException(method,_T("Immediate value %s doesn't fit in %s"),formatHexValue(immv,false).cstr(), reg.getName().cstr());
-}
-static void sizeError(const TCHAR *method, const MemoryOperand &memop, INT64 immv) {
-  throwInvalidArgumentException(method,_T("Immediate value %s doesn't fit in %s"),formatHexValue(immv,false).cstr(), memop.toString().cstr());
-}
-
-class InstructionStd2Arg : public InstructionBuilder {
+class Instruction2Arg : public InstructionBuilder {
 public:
-  InstructionStd2Arg(const OpcodeBase &opcode) : InstructionBuilder(opcode)
+  Instruction2Arg(const OpcodeBase &opcode) : InstructionBuilder(opcode)
   {
   }
   // Assume sáme size of dst and src
-  InstructionStd2Arg &set2GPReg(  const GPRegister    &dst, const GPRegister    &src);
-  InstructionStd2Arg &setGPRegMem(const GPRegister    &dst, const MemoryOperand &src);
-  InstructionStd2Arg &setGPRegImm(const GPRegister    &dst, int   immv              );
-  InstructionStd2Arg &setMemGPReg(const MemoryOperand &dst, const GPRegister    &src);
-  InstructionStd2Arg &setMemImm(  const MemoryOperand &dst, int   immv              );
+  Instruction2Arg &set2GPReg(  const GPRegister    &dst, const GPRegister    &src);
+  Instruction2Arg &setGPRegMem(const GPRegister    &dst, const MemoryOperand &src);
+  Instruction2Arg &setGPRegImm(const GPRegister    &dst, int   immv              );
+  Instruction2Arg &setMemGPReg(const MemoryOperand &dst, const GPRegister    &src);
+  Instruction2Arg &setMemImm(  const MemoryOperand &dst, int   immv              );
 };
 
-InstructionStd2Arg &InstructionStd2Arg::set2GPReg(const GPRegister &dst, const GPRegister &src) {
+Instruction2Arg &Instruction2Arg::set2GPReg(const GPRegister &dst, const GPRegister &src) {
   const BYTE    srcIndex = src.getIndex();
   const BYTE    dstIndex = dst.getIndex();
   const RegSize size     = src.getSize();
@@ -36,16 +29,16 @@ InstructionStd2Arg &InstructionStd2Arg::set2GPReg(const GPRegister &dst, const G
     or(3).add(0xC0 | ((dstIndex&7)<<3) | (srcIndex&7));
     break;
   }
-  SETREXBITS(QWORDTOREX(size)|HIGHINDEXTOREX(dstIndex,2)|HIGHINDEXTOREX(srcIndex,0))
+  SETREXBITS(QWORDTOREX(size) | HIGHINDEXTOREX(dstIndex,2) | HIGHINDEXTOREX(srcIndex,0))
   return *this;
 }
 
-InstructionStd2Arg &InstructionStd2Arg::setGPRegMem(const GPRegister    &dst, const MemoryOperand &src) {
+Instruction2Arg &Instruction2Arg::setGPRegMem(const GPRegister &dst, const MemoryOperand &src) {
   or(2);
   return setMemGPReg(src, dst);
 }
 
-InstructionStd2Arg &InstructionStd2Arg::setGPRegImm(const GPRegister &reg, int immv) {
+Instruction2Arg &Instruction2Arg::setGPRegImm(const GPRegister &reg, int immv) {
   DEFINEMETHODNAME;
   const BYTE    regIndex = reg.getIndex();
   const RegSize regSize  = reg.getSize();
@@ -79,11 +72,11 @@ InstructionStd2Arg &InstructionStd2Arg::setGPRegImm(const GPRegister &reg, int i
     }
     break;
   }
-  SETREXBITS(QWORDTOREX(regSize)|HIGHINDEXTOREX(regIndex,0));
+  SETREXBITS(QWORDTOREX(regSize) | HIGHINDEXTOREX(regIndex,0));
   return *this;
 }
 
-InstructionStd2Arg &InstructionStd2Arg::setMemGPReg(const MemoryOperand &dst, const GPRegister &src) {
+Instruction2Arg &Instruction2Arg::setMemGPReg(const MemoryOperand &dst, const GPRegister &src) {
   const BYTE    regIndex = src.getIndex();
   const RegSize regSize  = src.getSize();
   switch(regSize) {
@@ -99,11 +92,11 @@ InstructionStd2Arg &InstructionStd2Arg::setMemGPReg(const MemoryOperand &dst, co
     or(getArgIndex(), (regIndex&7)<<3);
     break;
   }
-  SETREXBITS(QWORDTOREX(regSize)|HIGHINDEXTOREX(regIndex,2));
+  SETREXBITS(QWORDTOREX(regSize) | HIGHINDEXTOREX(regIndex,2));
   return *this;
 }
 
-InstructionStd2Arg &InstructionStd2Arg::setMemImm(const MemoryOperand &dst, int immv) {
+Instruction2Arg &Instruction2Arg::setMemImm(const MemoryOperand &dst, int immv) {
   DEFINEMETHODNAME;
   const OperandSize size = dst.getSize();
   switch(size) {
@@ -124,11 +117,11 @@ InstructionStd2Arg &InstructionStd2Arg::setMemImm(const MemoryOperand &dst, int 
   return *this;
 }
 
-static const RegSizeSet s_wordRegCapacity( REGSIZE_BYTE, REGSIZE_WORD, REGSIZE_END);
-static const RegSizeSet s_dwordRegCapacity(REGSIZE_BYTE, REGSIZE_WORD, REGSIZE_DWORD, REGSIZE_END);
-static const RegSizeSet s_qwordRegCapacity(REGSIZE_BYTE, REGSIZE_WORD, REGSIZE_DWORD, REGSIZE_QWORD, REGSIZE_END);
+const RegSizeSet Opcode2Arg::s_wordRegCapacity( REGSIZE_BYTE, REGSIZE_WORD, REGSIZE_END);
+const RegSizeSet Opcode2Arg::s_dwordRegCapacity(REGSIZE_BYTE, REGSIZE_WORD, REGSIZE_DWORD, REGSIZE_END);
+const RegSizeSet Opcode2Arg::s_qwordRegCapacity(REGSIZE_BYTE, REGSIZE_WORD, REGSIZE_DWORD, REGSIZE_QWORD, REGSIZE_END);
 
-static bool sizeContainsSrcSize(OperandSize dstSize, OperandSize srcSize) {
+bool Opcode2Arg::sizeContainsSrcSize(OperandSize dstSize, OperandSize srcSize) { // static
   switch(dstSize) {
   case REGSIZE_BYTE  : return srcSize == REGSIZE_BYTE;
   case REGSIZE_WORD  : return s_wordRegCapacity.contains( srcSize);
@@ -138,27 +131,17 @@ static bool sizeContainsSrcSize(OperandSize dstSize, OperandSize srcSize) {
   }
 }
 
-static const RegSizeSet s_validImmSizeToMem(   REGSIZE_BYTE, REGSIZE_WORD, REGSIZE_DWORD, REGSIZE_END);
-static const RegSizeSet s_validImmSizeToReg(   REGSIZE_BYTE, REGSIZE_WORD, REGSIZE_DWORD, REGSIZE_END);
-#ifdef IS32BIT
-#define s_validImmSizeToRegMov s_validImmSizeToReg
-#else // IS64BIT
-static const RegSizeSet s_validImmSizeToRegMov(REGSIZE_BYTE, REGSIZE_WORD, REGSIZE_DWORD, REGSIZE_QWORD, REGSIZE_END);
-#endif // IS64BIT
+const RegSizeSet Opcode2Arg::s_validImmSizeToMem(   REGSIZE_BYTE, REGSIZE_WORD, REGSIZE_DWORD, REGSIZE_END);
+const RegSizeSet Opcode2Arg::s_validImmSizeToReg(   REGSIZE_BYTE, REGSIZE_WORD, REGSIZE_DWORD, REGSIZE_END);
 
 bool Opcode2Arg::isValidOperandCombination(const Register &reg, const InstructionOperand &op2) const {
   if(!isRegisterAllowed(reg)) return false;
-#ifdef IS64BIT
-    if(!reg.isREXCompatible(op2.needREXByte())) return false;
-#endif // IS64BIT
-
+  IF_NOT_REXCOMPATIBLE_RETURN_FALSE(reg,op2.needREXByte());
   switch(op2.getType()) {
   case REGISTER       :
     { const Register &regSrc = op2.getRegister();
       if(!isRegisterTypeAllowed(regSrc.getType())) return false;
-#ifdef IS64BIT
-      if(!regSrc.isREXCompatible(reg.indexNeedREXByte())) return false;
-#endif // IS64BIT
+      IF_NOT_REXCOMPATIBLE_RETURN_FALSE(regSrc,reg.indexNeedREXByte());
       return reg.getSize() == regSrc.getSize();
     }
   case MEMORYOPERAND  : // reg <- mem
@@ -181,9 +164,7 @@ bool Opcode2Arg::isValidOperandCombination(const InstructionOperand &op1, const 
     case REGISTER       : // mem <- reg
       { const Register &regSrc = op2.getRegister();
         if(!isRegisterAllowed(regSrc)) return false;
-#ifdef IS64BIT
-        if(!regSrc.isREXCompatible(op1.needREXByte())) return false;
-#endif // IS64BIT
+        IF_NOT_REXCOMPATIBLE_RETURN_FALSE(regSrc,op1.needREXByte());
         return op1.getSize() == regSrc.getSize();
       }
       break;
@@ -197,7 +178,7 @@ bool Opcode2Arg::isValidOperandCombination(const InstructionOperand &op1, const 
 }
 
 InstructionBase Opcode2Arg::operator()(const InstructionOperand &op1, const InstructionOperand &op2) const {
-  InstructionStd2Arg result(*this);
+  Instruction2Arg result(*this);
   switch(op1.getType()) {
   case REGISTER       :
     { const Register &reg1 = (GPRegister&)op1.getRegister();
@@ -213,9 +194,7 @@ InstructionBase Opcode2Arg::operator()(const InstructionOperand &op1, const Inst
         return result.setGPRegMem((GPRegister&)reg1, (MemoryOperand&)op2);
       case IMMEDIATEVALUE :
         validateImmediateValueAllowed();
-#ifdef IS64BIT
-        validateIsRexCompatible(reg1, op2);
-#endif // IS64BIT
+        VALIDATEISREXCOMPATIBLE(reg1, op2);
         return result.setGPRegImm((GPRegister&)reg1, op2.getImmInt32());
       }
     }
@@ -232,116 +211,14 @@ InstructionBase Opcode2Arg::operator()(const InstructionOperand &op1, const Inst
       return result.setMemImm((MemoryOperand&)op1, op2.getImmInt32());
     }
   }
-  throwInvalidArgumentException(__TFUNCTION__,_T("Invalid combination of operands:%s,%s")
-                               ,op1.toString().cstr()
-                               ,op2.toString().cstr()
-                               );
+  throwInvalidOperandCombination(__TFUNCTION__,op1,op2);
   return result;
 }
 
-class InstructionMovImm : public InstructionBuilder {
-public:
-  InstructionMovImm(const OpcodeBase &opcode) : InstructionBuilder(opcode)
-  {
-  }
-  InstructionMovImm &setGPRegImm(const GPRegister    &dst, INT64 immv);
-  InstructionMovImm &setMemImm(  const MemoryOperand &dst, int   immv);
-};
-
-InstructionMovImm &InstructionMovImm::setGPRegImm(const GPRegister &reg, INT64 immv) {
-  DEFINEMETHODNAME;
-  const BYTE    regIndex = reg.getIndex();
-  const RegSize regSize  = reg.getSize();
-  switch(regSize) {
-  case REGSIZE_BYTE :
-    if(!isByte(immv)) sizeError(method,reg,immv);
-    or(regIndex&7).add((char)immv);
-    break;
-  case REGSIZE_WORD :
-    if(!isWord(immv)) sizeError(method,reg,immv);
-    or(0x08 | (regIndex&7)).add(immv,2).wordIns();
-    break;
-  case REGSIZE_DWORD :
-    if(!isDword(immv)) sizeError(method,reg,immv);
-    or(0x08 | (regIndex&7)).add(immv,4);
-    break;
-  case REGSIZE_QWORD :
-    if(isDword(immv)) {
-      xor(0x77).add(0xC0 | (regIndex&7)).add(immv,4);
-    } else {
-      or(0x08 | (regIndex&7)).add(immv,8);
-    }
-    break;
-  }
-  SETREXBITS(QWORDTOREX(regSize)|HIGHINDEXTOREX(regIndex,0));
-  return *this;
-}
-
-InstructionMovImm &InstructionMovImm::setMemImm(const MemoryOperand &dst, int immv) {
-  DEFINEMETHODNAME;
-  const OperandSize size = dst.getSize();
-  switch(size) {
-  case REGSIZE_BYTE :
-    if(!isByte(immv)) sizeError(method,dst,immv);
-    xor(0x76).addMemoryReference(dst).add((char)immv);
-    break;
-  case REGSIZE_WORD :
-    if(!isWord(immv)) sizeError(method,dst,immv);
-    xor(0x77).addMemoryReference(dst).add(immv,2).wordIns();
-    break;
-  default:
-    xor(0x77).addMemoryReference(dst).add(immv,4);
-    break;
-  }
-  SETREXBITS(QWORDTOREX(size));
-  return *this;
-}
-
-InstructionBase OpcodeMovImm::operator()(const InstructionOperand &op1, const InstructionOperand &op2) const {
-  assert(op2.getType() == IMMEDIATEVALUE);
-  InstructionMovImm result(*this);
-  switch(op1.getType()) {
-  case REGISTER       :
-    { const Register &reg = op1.getRegister();
-      validateRegisterAllowed(reg);
-#ifdef IS64BIT
-      validateIsRexCompatible(reg,op2);
-#endif // IS64BIT
-      return result.setGPRegImm((GPRegister&)reg, op2.getImmInt64());
-    }
-  case MEMORYOPERAND    :
-    validateMemoryOperandAllowed((MemoryOperand&)op1);
-    return result.setMemImm((MemoryOperand&)op1, op2.getImmInt32());
-  default:
-    throwInvalidArgumentException(__TFUNCTION__,_T("Invalid combination of operands:%s,%s")
-                                  ,op1.toString().cstr()
-                                  ,op2.toString().cstr()
-                                  );
-    return result;
-  }
-}
-
-bool OpcodeMovImm::isValidOperandCombination(const Register &reg, const InstructionOperand &op2) const {
-  if(op2.getType() != IMMEDIATEVALUE) {
-    return __super::isValidOperandCombination(reg, op2);
-  } else {
-    if(!isRegisterAllowed(reg)) return false;
-    if(!isImmediateValueAllowed()) return false;
-#ifdef IS64BIT
-    if(!reg.isREXCompatible(false)) return false;
-#endif // IS64BIT
-    return sizeContainsSrcSize(reg.getSize(), op2.getSize()) && s_validImmSizeToRegMov.contains(op2.getSize());
-  }
-}
-
-InstructionBase OpcodeMov::operator()(const InstructionOperand &op1, const InstructionOperand &op2) const {
-  if(op2.getType() != IMMEDIATEVALUE) {
-    return __super::operator()(op1,op2);
-  } else {
-    return m_immCode(op1, op2);
-  }
-}
-
-bool OpcodeMov::isValidOperandCombination(const Register &reg, const InstructionOperand &op2) const {
-  return m_immCode.isValidOperandCombination(reg,op2);
+void Opcode2Arg::throwInvalidOperandCombination(const TCHAR *method, const InstructionOperand &op1, const InstructionOperand &op2) { // static
+  throwInvalidArgumentException(method
+                               ,_T("Invalid combination of operands:%s,%s")
+                               ,op1.toString().cstr()
+                               ,op2.toString().cstr()
+                               );
 }

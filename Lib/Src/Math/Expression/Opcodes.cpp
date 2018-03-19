@@ -41,4 +41,4 @@ Instruction0Arg         POPAD (0x61,1);                    // Pop  all double-wo
 
 Instruction0Arg         NOOP  (0x90,1);
 Opcode2Arg              ADD(0x00),OR(0x08),ADC(0x10),SBB(0x18),AND(0x20),SUB(0x28),XOR(0x30),CMP(0x38);
-OpcodeMov               MOV(0x88, 0xB0);
+OpcodeMov               MOV(0x88, 0xB0, 0xC6);

@@ -145,3 +145,11 @@ InstructionBuilder &InstructionBuilder::setMemoryReference(const MemoryOperand &
 InstructionBuilder &InstructionBuilder::addMemoryReference(const MemoryOperand &mop) {
   return add(0).setMemoryReference(mop);
 }
+
+void InstructionBuilder::sizeError(const TCHAR *method, const GPRegister    &reg, INT64 immv) { // static
+  throwInvalidArgumentException(method,_T("Immediate value %s doesn't fit in %s"),formatHexValue(immv,false).cstr(), reg.getName().cstr());
+}
+
+void InstructionBuilder::sizeError(const TCHAR *method, const MemoryOperand &memop, INT64 immv) { // static
+  throwInvalidArgumentException(method,_T("Immediate value %s doesn't fit in %s"),formatHexValue(immv,false).cstr(), memop.toString().cstr());
+}

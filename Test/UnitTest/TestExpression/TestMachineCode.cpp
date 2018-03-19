@@ -6,7 +6,7 @@
 
 #ifdef TEST_MACHINECODE
 
-#define TEST_ALLGPREGISTERS
+//#define TEST_ALLGPREGISTERS
 
 static const GPRegister r8List[] = {
 #ifndef TEST_ALLGPREGISTERS

@@ -131,7 +131,7 @@ public:
   inline OperandSize getSize() const {
     return m_size;
   }
-  const Register &getRegister() const {
+  inline const Register &getRegister() const {
     validateType(__TFUNCTION__,REGISTER);
     return *m_reg;
   }
@@ -334,6 +334,10 @@ private:
   inline InstructionBuilder &addrImmDword(int addr) {
     return or(0x05).add(addr, 4);
   }
+protected:
+  static void sizeError(const TCHAR *method, const GPRegister    &reg  , INT64 immv);
+  static void sizeError(const TCHAR *method, const MemoryOperand &memop, INT64 immv);
+
 public:
   InstructionBuilder(const OpcodeBase &opcode) 
     : InstructionBase(opcode)
@@ -451,7 +455,8 @@ typedef enum {
  ,OPCODE1ARG
  ,OPCODE2ARG
  ,OPCODEMOV
- ,OPCODEMOVIMM
+ ,OPCODEMOVREGIMM
+ ,OPCODEMOVMEMIMM
 } OpcodeType;
 
 class OpcodeBase {
@@ -469,9 +474,14 @@ protected:
   void validateMemoryOperandAllowed(const MemoryOperand            &memop) const;
   void validateImmediateValueAllowed()                                     const;
   void validateSameSize(            const InstructionOperand &op1, const InstructionOperand &op2) const;
-#ifdef IS64BIT
+
+#ifdef IS32BIT
+#define VALIDATEISREXCOMPATIBLE(reg, op)
+#else  // IS64BIT
   void validateIsRexCompatible(     const Register           &reg, const InstructionOperand &op) const;
+#define VALIDATEISREXCOMPATIBLE(reg, op) validateIsRexCompatible(reg, op)
 #endif // IS64BIT
+
 public:
   OpcodeBase(UINT64 op, BYTE size, UINT opCount, UINT flags);
 
@@ -527,6 +537,13 @@ public:
   }
 };
 class Opcode2Arg : public OpcodeBase {
+protected:
+  static const RegSizeSet s_wordRegCapacity  , s_dwordRegCapacity, s_qwordRegCapacity;
+  static const RegSizeSet s_validImmSizeToMem, s_validImmSizeToReg;
+
+  static bool sizeContainsSrcSize(OperandSize dstSize, OperandSize srcSize);
+  static void throwInvalidOperandCombination(const TCHAR *method, const InstructionOperand &op1, const InstructionOperand &op2);
+
 public :
   Opcode2Arg(UINT64 op, BYTE size=1, UINT flags=ALL_GPR_ALLOWED | ALL_GPRPTR_ALLOWED | IMMEDIATEVALUE_ALLOWED)
     : OpcodeBase(op, size, 2, flags) {
@@ -535,26 +552,41 @@ public :
   OpcodeType getType() const {
     return OPCODE2ARG;
   }
-  virtual bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2) const;
-  virtual bool isValidOperandCombination(const Register           &reg, const InstructionOperand &op2) const;
+  bool isValidOperandCombination(        const InstructionOperand &op1, const InstructionOperand &op2) const;
+  virtual bool isValidOperandCombination(const Register           &reg, const InstructionOperand &op) const;
 };
 
-class OpcodeMovImm : public Opcode2Arg {
+class OpcodeMovRegImm : public Opcode2Arg {
 public:
-  OpcodeMovImm(BYTE op) : Opcode2Arg(op) {
+  OpcodeMovRegImm(BYTE op) : Opcode2Arg(op) {
   }
-  InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
+  InstructionBase operator()(const Register &reg, const InstructionOperand &op) const;
   OpcodeType getType() const {
-    return OPCODEMOVIMM;
+    return OPCODEMOVREGIMM;
   }
-  bool isValidOperandCombination(const Register &reg, const InstructionOperand &op2) const;
+  bool isValidOperandCombination(const Register &reg, const InstructionOperand &op) const;
+};
+
+class OpcodeMovMemImm : public Opcode2Arg {
+public:
+  OpcodeMovMemImm(BYTE op) : Opcode2Arg(op) {
+  }
+  InstructionBase operator()(const MemoryOperand &memop, const InstructionOperand &op) const;
+  OpcodeType getType() const {
+    return OPCODEMOVMEMIMM;
+  }
 };
 
 class OpcodeMov : public Opcode2Arg {
 private:
-  const OpcodeMovImm m_immCode;
+  const OpcodeMovRegImm m_regImmCode;
+  const OpcodeMovMemImm m_memImmCode;
 public :
-  OpcodeMov(BYTE op, BYTE immop) : Opcode2Arg(op), m_immCode(immop) {
+  OpcodeMov(BYTE op, BYTE regImmOp, BYTE memImmOp)
+    : Opcode2Arg(op)
+    , m_regImmCode(regImmOp)
+    , m_memImmCode(memImmOp)
+  {
   }
   InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
   OpcodeType getType() const {

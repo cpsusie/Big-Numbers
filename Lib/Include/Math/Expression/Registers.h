@@ -62,7 +62,7 @@ class Register {
 private:
   const BYTE m_index; // = [0..15]
   Register &operator=(const Register &); // not implemented, and not accessible.
-                                          // All register are singletons
+                                         // All register are singletons
   DECLAREDEBUGSTR;
 public:
   inline Register(BYTE index) : m_index(index) {
@@ -72,10 +72,18 @@ public:
   }
   virtual RegType getType()  const = 0;
   virtual RegSize getSize()  const = 0;
-#ifdef IS64BIT
+#ifdef IS32BIT
+
+#define IF_NOT_REXCOMPATIBLE_RETURN_FALSE(reg,rexBytePresent)
+
+#else  // IS64BIT
   virtual bool    isREXCompatible(bool rexBytePresent) const {
     return true;
   }
+
+#define IF_NOT_REXCOMPATIBLE_RETURN_FALSE(reg,rexBytePresent) \
+ if(!reg.isREXCompatible(rexBytePresent)) return false
+
   virtual RexByteUsage getRexByteUsage() const {
     return REX_DONTCARE;
   }
@@ -85,6 +93,7 @@ public:
   // for error messages
   static const TCHAR *getREXCompatibleRegisterNames(bool rexBytePresent);
 #endif // IS64BIT
+
   virtual String  getName()  const {
     return format(_T("Unknown register:(type,sz,index):(%d,%d,%u"), getType(),getSize(),getIndex());
   }

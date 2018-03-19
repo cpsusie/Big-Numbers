@@ -918,6 +918,7 @@
     <ClCompile Include="Expression\InstructionBuilder.cpp" />
     <ClCompile Include="Expression\InstructionOperand.cpp" />
     <ClCompile Include="Expression\Opcode.cpp" />
+    <ClCompile Include="Expression\OpcodeMov.cpp" />
     <ClCompile Include="Expression\OpcodeStd1Arg.cpp" />
     <ClCompile Include="Expression\OpcodeStd2Arg.cpp" />
     <ClCompile Include="Expression\OpcodeBase.cpp" />
