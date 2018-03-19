@@ -920,8 +920,8 @@
     <ClCompile Include="Expression\InstructionOperand.cpp" />
     <ClCompile Include="Expression\Opcode.cpp" />
     <ClCompile Include="Expression\OpcodeMov.cpp" />
-    <ClCompile Include="Expression\OpcodeStd1Arg.cpp" />
-    <ClCompile Include="Expression\OpcodeStd2Arg.cpp" />
+    <ClCompile Include="Expression\Opcode1Arg.cpp" />
+    <ClCompile Include="Expression\Opcode2Arg.cpp" />
     <ClCompile Include="Expression\OpcodeBase.cpp" />
     <ClCompile Include="Expression\Opcodes.cpp" />
     <ClCompile Include="Expression\ParserTree.cpp" />

@@ -358,12 +358,6 @@
     <ClCompile Include="Expression\InstructionOperand.cpp">
       <Filter>Source Files\Expression</Filter>
     </ClCompile>
-    <ClCompile Include="Expression\OpcodeStd1Arg.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\OpcodeStd2Arg.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
     <ClCompile Include="Expression\InstructionBuilder.cpp">
       <Filter>Source Files\Expression</Filter>
     </ClCompile>
@@ -371,6 +365,12 @@
       <Filter>Source Files\Expression</Filter>
     </ClCompile>
     <ClCompile Include="Expression\InstructionBase.cpp">
+      <Filter>Source Files\Expression</Filter>
+    </ClCompile>
+    <ClCompile Include="Expression\Opcode1Arg.cpp">
+      <Filter>Source Files\Expression</Filter>
+    </ClCompile>
+    <ClCompile Include="Expression\Opcode2Arg.cpp">
       <Filter>Source Files\Expression</Filter>
     </ClCompile>
   </ItemGroup>
