@@ -370,6 +370,9 @@
     <ClCompile Include="Expression\OpcodeMov.cpp">
       <Filter>Source Files\Expression</Filter>
     </ClCompile>
+    <ClCompile Include="Expression\InstructionBase.cpp">
+      <Filter>Source Files\Expression</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="NatvisFile.natvis" />
@@ -551,6 +554,9 @@
       <Filter>Header Files\Expression</Filter>
     </ClInclude>
     <ClInclude Include="Expression\RexByte.h">
+      <Filter>Source Files\Expression</Filter>
+    </ClInclude>
+    <ClInclude Include="Expression\InstructionBuilder.h">
       <Filter>Source Files\Expression</Filter>
     </ClInclude>
   </ItemGroup>

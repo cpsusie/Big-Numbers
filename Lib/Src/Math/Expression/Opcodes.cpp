@@ -60,6 +60,9 @@ Instruction0Arg         NOOP  (0x90,1);
 Opcode2Arg              ADD(0x00),OR(0x08),ADC(0x10),SBB(0x18),AND(0x20),SUB(0x28),XOR(0x30),CMP(0x38);
 OpcodeMov               MOV(0x88, 0xB0, 0xC6);
 
+Opcode1Arg              NOT   (0xF610,2);
+Opcode1Arg              NEG   (0xF618,2);
+
 Instruction0Arg         CWDE  (0x98,1);                    // Convert word to dword   Copy sign (bit 15) of AX  into higher 16 bits of EAX
 Instruction0Arg         CBW   (CWDE,REGSIZE_WORD);         // Convert byte to word    Copy sign (bit 7)  of AL  into every bit of AH
 Instruction0Arg         CDQ   (0x99,1);                    // Convert dword to qword  Copy sign (bit 31) of EAX into every bit of EDX

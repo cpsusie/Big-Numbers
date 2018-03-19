@@ -1,27 +1,28 @@
 #include "pch.h"
-#include <Math/Expression/NewOpCode.h>
-#include "RexByte.h"
+#include "InstructionBuilder.h"
 
-class InstructionStd1Arg : public InstructionBuilder {
+class Instruction1Arg : public InstructionBuilder {
 public:
-  InstructionStd1Arg(const OpcodeBase &opcode) : InstructionBuilder(opcode)
+  Instruction1Arg(const OpcodeBase &opcode) : InstructionBuilder(opcode)
   {
   }
-  InstructionBase &addMemoryReference(const MemoryOperand &mop) {
-    return __super::addMemoryReference(mop);
+  InstructionBuilder &addMemoryReference(const MemoryOperand &mop) {
+    if(needSizeBit(mop.getSize())) setSizeBit();
+    return __super::addMemoryOperand(mop);
   }
-  InstructionBase &setRegister(       const Register      &reg);
+  InstructionBuilder &setRegister(       const Register      &reg);
 };
 
-InstructionBase &InstructionStd1Arg::setRegister(const Register &reg) {
+InstructionBuilder &Instruction1Arg::setRegister(const Register &reg) {
   const BYTE regIndex = reg.getIndex();
   SETREXBITONHIGHINX(regIndex,0);
+  if(needSizeBit(reg.getSize())) setSizeBit();
   return add(0xc0 | (regIndex&7));
 }
 
 InstructionBase Opcode1Arg::operator()(const InstructionOperand &op) const {
   validateOpCount(1);
-  InstructionStd1Arg result(*this);
+  Instruction1Arg result(*this);
   switch(op.getType()) {
   case REGISTER       :
     validateRegisterAllowed(op.getRegister());

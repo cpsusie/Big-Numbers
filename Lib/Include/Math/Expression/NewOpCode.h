@@ -207,7 +207,7 @@ public:
   {
     SETDEBUGSTR();
   }
-  inline bool isImmediateAddr() const {
+  inline bool isDisplaceOnly() const {
     return (m_base == NULL) && (m_inx == NULL);
   }
   // set m_needREXByte in x64
@@ -300,6 +300,7 @@ typedef MemoryPtr<REGSIZE_TBYTE> TBYTEPtr;
 #define MAX_INSTRUCTIONSIZE   15
 
 class OpcodeBase;
+class Instruction0Arg;
 
 class InstructionBase {
 protected:
@@ -315,116 +316,6 @@ public:
     return m_bytes;
   }
   String toString() const;
-};
-
-class InstructionBuilder : public InstructionBase {
-private:
-  BYTE   m_opcodePos,m_opcodeSize;
-#ifdef IS64BIT
-  UINT   m_hasRexByte      : 1;
-  UINT   m_rexByteIndex    : 2;
-#endif
-  // Use with Imm-addressing. reg = { ES,CS,SS,DS,FS,GS }
-  // ptr[(reg<<shift)+offset], (reg&7) != 4, shift<=3, offset=[INT_MIN;INT_MAX]
-  InstructionBuilder &addrShiftInx(    const IndexRegister &inx, BYTE shift, int offset);
-  InstructionBuilder &addrBase(        const IndexRegister &base, int offset);
-  InstructionBuilder &addrBaseShiftInx(const IndexRegister &base, const IndexRegister &inx, BYTE shift, int offset);
-
-  InstructionBuilder &prefixSegReg(    const SegmentRegister &reg);
-  inline InstructionBuilder &addrImmDword(int addr) {
-    return or(0x05).add(addr, 4);
-  }
-protected:
-  static void sizeError(const TCHAR *method, const GPRegister    &reg  , INT64 immv);
-  static void sizeError(const TCHAR *method, const MemoryOperand &memop, INT64 immv);
-
-public:
-  InstructionBuilder(const OpcodeBase &opcode)
-    : InstructionBase(opcode)
-    , m_opcodePos(    0            )
-#ifdef IS64BIT
-    , m_hasRexByte(   0            )
-    , m_rexByteIndex( 0            )
-#endif
-  {
-    m_opcodeSize = size();
-  }
-  InstructionBuilder(const InstructionBase &ins)
-    : InstructionBase(ins)
-    , m_opcodePos(    0            )
-#ifdef IS64BIT
-    , m_hasRexByte(   0            )
-    , m_rexByteIndex( 0            )
-#endif
-  {
-    m_opcodeSize = size();
-  }
-  inline BYTE getOpcodePos() const {
-    return m_opcodePos;
-  }
-  inline BYTE getOpcodeSize() const {
-    return m_opcodeSize;
-  }
-  inline BYTE getLastOpcodeByteIndex() const {
-    return getOpcodePos() + getOpcodeSize() - 1;
-  }
-  // Return index of first byte following opcode
-  inline BYTE getArgIndex() const {
-    return getOpcodePos() + getOpcodeSize();
-  }
-  InstructionBuilder &insert(BYTE index, BYTE b);
-  inline InstructionBuilder &prefix(BYTE b) {
-    return insert(0,b);
-  }
-  // m_bytes[m_size-1] |= b
-  inline InstructionBuilder &or(BYTE b) {
-    m_bytes[m_size - 1] |= b;
-    return *this;
-  }
-  // m_bytes[index] |= b
-  inline InstructionBuilder &or(BYTE index, BYTE b) {
-    assert(m_size < MAX_INSTRUCTIONSIZE);
-    m_bytes[index] |= b;
-    return *this;
-  }
-  // m_bytes[m_size-1] ^= b
-  inline InstructionBuilder &xor(BYTE b) {
-    m_bytes[m_size - 1] ^= b;
-    return *this;
-  }
-  // m_bytes[index] ^= b
-  inline InstructionBuilder &xor(BYTE index, BYTE b) {
-    assert(m_size < MAX_INSTRUCTIONSIZE);
-    m_bytes[index] ^= b;
-    return *this;
-  }
-  inline InstructionBuilder &add(BYTE b) {
-    assert(m_size < MAX_INSTRUCTIONSIZE);
-    m_bytes[m_size++] = b;
-    return *this;
-  }
-  InstructionBuilder &add(INT64 bytesToAdd, BYTE count);
-
-  inline bool hasRexByte() const {
-#ifdef IS32BIT
-    return false;
-#else
-    return m_hasRexByte ? true : false;
-#endif
-  }
-#ifdef IS64BIT
-  InstructionBuilder &setRexBits(BYTE bits);
-#endif // IS64BIT
-
-  inline InstructionBuilder &wordIns() {
-#ifdef IS64BIT
-    m_rexByteIndex++;
-#endif
-    return prefix(0x66);
-  }
-
-  InstructionBuilder &setMemoryReference(const MemoryOperand &mop);
-  InstructionBuilder &addMemoryReference(const MemoryOperand &mop);
 };
 
 // ----------------------------------------------------------------------
@@ -471,12 +362,11 @@ typedef enum {
 
 class OpcodeBase {
 protected:
-  union {
-    UINT64 m_bytes;
-    BYTE   m_byte[8];
-  };
-  const UINT m_size    : 3; // = [0..7]
-  const UINT m_opCount : 3;
+  UINT m_bytes;
+  // In bytes 0..3
+  const UINT m_size    : 2;
+  // Number of operands
+  const UINT m_opCount : 3; 
   const UINT m_flags;
 
   void validateOpCount(             int                             count) const;
@@ -493,7 +383,7 @@ protected:
 #endif // IS64BIT
 
 public:
-  OpcodeBase(UINT64 op, BYTE size, UINT opCount, UINT flags);
+  OpcodeBase(UINT op, BYTE size, UINT opCount, UINT flags);
 
   // Size of Opcode in bytes
   inline BYTE size() const {
@@ -505,7 +395,7 @@ public:
   }
   // Raw opcode bytes
   inline const BYTE *getBytes() const {
-    return m_byte;
+    return (BYTE*)&m_bytes;
   }
   // Various attributes
   inline UINT getFlags() const {
@@ -537,7 +427,7 @@ public:
 
 class Opcode1Arg : public OpcodeBase {
 public:
-  inline Opcode1Arg(UINT64 op, BYTE size, UINT flags)
+  inline Opcode1Arg(UINT op, BYTE size, UINT flags=ALL_GPR_ALLOWED | ALL_GPRPTR_ALLOWED)
     : OpcodeBase(op, size, 1, flags)
   {
   }
@@ -555,7 +445,7 @@ protected:
   static void throwInvalidOperandCombination(const TCHAR *method, const InstructionOperand &op1, const InstructionOperand &op2);
 
 public :
-  Opcode2Arg(UINT64 op, BYTE size=1, UINT flags=ALL_GPR_ALLOWED | ALL_GPRPTR_ALLOWED | IMMEDIATEVALUE_ALLOWED)
+  Opcode2Arg(UINT op, BYTE size=1, UINT flags=ALL_GPR_ALLOWED | ALL_GPRPTR_ALLOWED | IMMEDIATEVALUE_ALLOWED)
     : OpcodeBase(op, size, 2, flags) {
   }
   virtual InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
@@ -683,6 +573,9 @@ extern Instruction0Arg  NOOP;
 extern Opcode2Arg       ADD,ADC,OR,AND,SUB,SBB,XOR,CMP;
 extern OpcodeMov        MOV;
 
+extern Opcode1Arg       NOT;                               // Negate the operand, logical NOT
+extern Opcode1Arg       NEG;                               // Two's complement negation
+
 extern Instruction0Arg CWDE;                               // Convert word to dword   Copy sign (bit 15) of AX  into higher 16 bits of EAX
 extern Instruction0Arg CBW;                                // Convert byte to word    Copy sign (bit 7)  of AL  into every bit of AH
 extern Instruction0Arg CDQ;                                // Convert dword to qword  Copy sign (bit 31) of EAX into every bit of EDX
@@ -741,11 +634,6 @@ extern Instruction0Arg CQO;                                // Sign extend RAX in
 #define IDIV_BYTE                              B2OP(0xF638          )                     // Signed divide   ax      /= src, ah  must contain sign extension of al . Result:al = quot. ah = rem
 #define IDIV_DWORD                             B2OP(0xF738          )                     //                 edx:eax /= src. edx must contain sign extension of eax. Result:eax= quot. edx= rem
 #define IDIV_WORD                              WORDOP(IDIV_DWORD    )                     //                 dk:ax   /= src. dx  must contain sign extension of ax . Result:ax = quot. dx = rem
-
-#define CWDE                                   B1INS( 0x98 )                              // Convert word to dword   Copy sign (bit 15) of AX  into higher 16 bits of EAX
-#define CBW                                    WORDOP(CWDE )                              // Convert byte to word    Copy sign (bit 7)  of AL  into every bit of AH
-#define CDQ                                    B1INS( 0x99 )                              // Convert dword to qword  Copy sign (bit 31) of EAX into every bit of EDX
-#define CWD                                    WORDOP(CDQ  )                              // Convert word to dword   Copy sign (bit 15) of AX  into every bit of DX
 
 // Rotate and shifting
 
@@ -952,9 +840,6 @@ extern Instruction0Arg CQO;                                // Sign extend RAX in
 
 #ifdef IS64BIT
 
-#define PUSHFQ                                 PUSHFD                                     // Push RFLAGS register
-#define POPFQ                                  POPFD                                      // Pop  RFLAGS register
-
 #define MUL_QWORD                              REX3(MUL_DWORD)                            // (rdx:rax = rax * src  )
 #define IMUL_QWORD                             REX3(IMUL_DWORD)                           // (rdx:rax = rax * src  )
 
@@ -965,9 +850,6 @@ extern Instruction0Arg CQO;                                // Sign extend RAX in
 
 #define DIV_QWORD                              REX3(DIV_DWORD )                          //                 rdx:rax /= src. Result:rax= quot. rdx= rem
 #define IDIV_QWORD                             REX3(IDIV_DWORD)                          //                 rdx:rax /= src. rdx must contain sign extension of rax. Result:rax= quot. rdx= rem
-
-#define CDQE                                   REX3(CWDE)                                // Sign extend EAX into RAX
-#define CQO                                    REX3(CDQ )                                // Sign extend RAX into RDX:RAX
 
 #define ROL_QWORD                              REX3(  ROL_DWORD             )
 #define ROL_QWORD_IMM_BYTE                     REX3(  ROL_DWORD_IMM_BYTE    )            // 1 byte operand as shift amount

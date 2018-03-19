@@ -174,8 +174,8 @@ static int offsetCmp(const MemoryRef &mr1, const MemoryRef &mr2) {
 
 static int memRefCmp(const MemoryRef &mr1, const MemoryRef &mr2) {
   int c;
-  if(c = boolCmp(mr2.isImmediateAddr(),mr1.isImmediateAddr())) return c;
-  if(!mr1.isImmediateAddr()) {
+  if(c = boolCmp(mr2.isDisplaceOnly(),mr1.isDisplaceOnly())) return c;
+  if(!mr1.isDisplaceOnly()) {
     if(c = boolCmp(mr1.hasInx(),mr2.hasInx())) return c;
     if(!mr1.hasInx()) {
       if(c = offsetCmp(mr1,mr2)) return c;
@@ -401,7 +401,7 @@ void TestMachineCode::testOpcode2Arg(const Opcode2Arg &opcode) {
       }
     }
   }
-//  clear();
+  clear();
   if(opcode.isImmediateValueAllowed()) {
     for(Iterator<const InstructionOperand*> immIt = m_allImmOperands.getIterator(); immIt.hasNext();) {
       const InstructionOperand &immOp = *immIt.next();
@@ -459,7 +459,9 @@ TestMachineCode::TestMachineCode() {
 #endif // IS64BIT
 
   TESTOPCODE(SETE   );
-  TESTOPCODE(MOV    );
+//  TESTOPCODE(NOT    );
+//  TESTOPCODE(NEG    );
+//  TESTOPCODE(MOV    );
   TESTOPCODE(ADD    );
   TESTOPCODE(ADC    );
   TESTOPCODE(XOR    );

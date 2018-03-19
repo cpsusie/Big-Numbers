@@ -1,17 +1,16 @@
 #include "pch.h"
-#include <Math/Expression/NewOpCode.h>
-#include "RexByte.h"
+#include "InstructionBuilder.h"
 
 class InstructionMovImm : public InstructionBuilder {
 public:
   InstructionMovImm(const OpcodeBase &opcode) : InstructionBuilder(opcode)
   {
   }
-  InstructionMovImm &setGPRegImm(const GPRegister    &dst, INT64 immv);
-  InstructionMovImm &setMemImm(  const MemoryOperand &dst, int   immv);
+  InstructionBuilder &setGPRegImm(const GPRegister    &dst, INT64 immv);
+  InstructionBuilder &setMemImm(  const MemoryOperand &dst, int   immv);
 };
 
-InstructionMovImm &InstructionMovImm::setGPRegImm(const GPRegister &reg, INT64 immv) {
+InstructionBuilder &InstructionMovImm::setGPRegImm(const GPRegister &reg, INT64 immv) {
   DEFINEMETHODNAME;
   const BYTE    regIndex = reg.getIndex();
   const RegSize regSize  = reg.getSize();
@@ -40,20 +39,20 @@ InstructionMovImm &InstructionMovImm::setGPRegImm(const GPRegister &reg, INT64 i
   return *this;
 }
 
-InstructionMovImm &InstructionMovImm::setMemImm(const MemoryOperand &dst, int immv) {
+InstructionBuilder &InstructionMovImm::setMemImm(const MemoryOperand &dst, int immv) {
   DEFINEMETHODNAME;
   const OperandSize size = dst.getSize();
   switch(size) {
   case REGSIZE_BYTE :
     if(!isByte(immv)) sizeError(method,dst,immv);
-    addMemoryReference(dst).add((char)immv);
+    addMemoryOperand(dst).add((char)immv);
     break;
   case REGSIZE_WORD :
     if(!isWord(immv)) sizeError(method,dst,immv);
-    or(1).addMemoryReference(dst).add(immv,2).wordIns();
+    setSizeBit().addMemoryOperand(dst).add(immv,2).wordIns();
     break;
   default:
-    or(1).addMemoryReference(dst).add(immv,4);
+    setSizeBit().addMemoryOperand(dst).add(immv,4);
     break;
   }
   SETREXBITS(QWORDTOREX(size));

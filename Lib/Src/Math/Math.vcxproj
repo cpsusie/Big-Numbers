@@ -915,6 +915,7 @@
     <ClCompile Include="Expression\ExpressionVariable.cpp" />
     <ClCompile Include="Expression\ExpressionWrapper.cpp" />
     <ClCompile Include="Expression\FactorArray.cpp" />
+    <ClCompile Include="Expression\InstructionBase.cpp" />
     <ClCompile Include="Expression\InstructionBuilder.cpp" />
     <ClCompile Include="Expression\InstructionOperand.cpp" />
     <ClCompile Include="Expression\Opcode.cpp" />
@@ -1224,6 +1225,7 @@
     <ClInclude Include="..\..\Include\Math\Statistic.h" />
     <ClInclude Include="..\..\Include\Math\Transformation.h" />
     <ClInclude Include="..\..\Include\Math\Triangle\Triangle.h" />
+    <ClInclude Include="Expression\InstructionBuilder.h" />
     <ClInclude Include="Expression\pch.h" />
     <ClInclude Include="Expression\RexByte.h" />
     <ClInclude Include="MemoryPool.h" />

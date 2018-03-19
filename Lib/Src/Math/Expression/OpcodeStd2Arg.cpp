@@ -1,6 +1,5 @@
 #include "pch.h"
-#include <Math/Expression/NewOpCode.h>
-#include "RexByte.h"
+#include "InstructionBuilder.h"
 
 class Instruction2Arg : public InstructionBuilder {
 public:
@@ -8,37 +7,37 @@ public:
   {
   }
   // Assume sáme size of dst and src
-  Instruction2Arg &set2GPReg(  const GPRegister    &dst, const GPRegister    &src);
-  Instruction2Arg &setGPRegMem(const GPRegister    &dst, const MemoryOperand &src);
-  Instruction2Arg &setGPRegImm(const GPRegister    &dst, int   immv              );
-  Instruction2Arg &setMemGPReg(const MemoryOperand &dst, const GPRegister    &src);
-  Instruction2Arg &setMemImm(  const MemoryOperand &dst, int   immv              );
+  InstructionBuilder &set2GPReg(  const GPRegister    &dst, const GPRegister    &src);
+  InstructionBuilder &setGPRegMem(const GPRegister    &dst, const MemoryOperand &src);
+  InstructionBuilder &setGPRegImm(const GPRegister    &dst, int   immv              );
+  InstructionBuilder &setMemGPReg(const MemoryOperand &dst, const GPRegister    &src);
+  InstructionBuilder &setMemImm(  const MemoryOperand &dst, int   immv              );
 };
 
-Instruction2Arg &Instruction2Arg::set2GPReg(const GPRegister &dst, const GPRegister &src) {
+InstructionBuilder &Instruction2Arg::set2GPReg(const GPRegister &dst, const GPRegister &src) {
   const BYTE    srcIndex = src.getIndex();
   const BYTE    dstIndex = dst.getIndex();
   const RegSize size     = src.getSize();
   switch(size) {
   case REGSIZE_BYTE :
-    or(2).add(0xC0 | ((dstIndex&7)<<3) | (srcIndex&7));
+    or(2).add(MR_REGREG(dstIndex,srcIndex)); // set direction it
     break;
-  case REGSIZE_WORD : wordIns();
+  case REGSIZE_WORD :
+    wordIns();
     // continue case
   default           :
-    or(3).add(0xC0 | ((dstIndex&7)<<3) | (srcIndex&7));
+    or(3).add(MR_REGREG(dstIndex,srcIndex)); // set direction- and size bit
     break;
   }
   SETREXBITS(QWORDTOREX(size) | HIGHINDEXTOREX(dstIndex,2) | HIGHINDEXTOREX(srcIndex,0))
   return *this;
 }
 
-Instruction2Arg &Instruction2Arg::setGPRegMem(const GPRegister &dst, const MemoryOperand &src) {
-  or(2);
-  return setMemGPReg(src, dst);
+InstructionBuilder &Instruction2Arg::setGPRegMem(const GPRegister &dst, const MemoryOperand &src) {
+  return setMemGPReg(src, dst).setDirectionBit();
 }
 
-Instruction2Arg &Instruction2Arg::setGPRegImm(const GPRegister &reg, int immv) {
+InstructionBuilder &Instruction2Arg::setGPRegImm(const GPRegister &reg, int immv) {
   DEFINEMETHODNAME;
   const BYTE    regIndex = reg.getIndex();
   const RegSize regSize  = reg.getSize();
@@ -76,19 +75,19 @@ Instruction2Arg &Instruction2Arg::setGPRegImm(const GPRegister &reg, int immv) {
   return *this;
 }
 
-Instruction2Arg &Instruction2Arg::setMemGPReg(const MemoryOperand &dst, const GPRegister &src) {
+InstructionBuilder &Instruction2Arg::setMemGPReg(const MemoryOperand &dst, const GPRegister &src) {
   const BYTE    regIndex = src.getIndex();
   const RegSize regSize  = src.getSize();
   switch(regSize) {
   case REGSIZE_BYTE :
-    addMemoryReference(dst);
+    addMemoryOperand(dst);
     or(getArgIndex(), (regIndex&7)<<3);
     break;
   case REGSIZE_WORD :
     wordIns();
     // continue case
   default           :
-    or(1).addMemoryReference(dst);
+    setSizeBit().addMemoryOperand(dst);
     or(getArgIndex(), (regIndex&7)<<3);
     break;
   }
@@ -96,21 +95,21 @@ Instruction2Arg &Instruction2Arg::setMemGPReg(const MemoryOperand &dst, const GP
   return *this;
 }
 
-Instruction2Arg &Instruction2Arg::setMemImm(const MemoryOperand &dst, int immv) {
+InstructionBuilder &Instruction2Arg::setMemImm(const MemoryOperand &dst, int immv) {
   DEFINEMETHODNAME;
   const OperandSize size = dst.getSize();
   switch(size) {
   case REGSIZE_BYTE :
     if(!isByte(immv)) sizeError(method,dst,immv);
-    prefix(0x80).setMemoryReference(dst).add((char)immv);
+    prefix(0x80).setMemoryOperand(dst).add((char)immv);
     break;
   case REGSIZE_WORD :
     if(!isWord(immv)) sizeError(method,dst,immv);
-    prefix(isByte(immv)?0x83:0x81).setMemoryReference(dst).add(immv,isByte(immv)?1:2);
+    prefix(isByte(immv)?0x83:0x81).setMemoryOperand(dst).add(immv,isByte(immv)?1:2);
     wordIns();
     break;
   default           :
-    prefix(isByte(immv)?0x83:0x81).setMemoryReference(dst).add(immv,isByte(immv)?1:4);
+    prefix(isByte(immv)?0x83:0x81).setMemoryOperand(dst).add(immv,isByte(immv)?1:4);
     break;
   }
   SETREXBITS(QWORDTOREX(size));

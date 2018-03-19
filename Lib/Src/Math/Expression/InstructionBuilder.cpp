@@ -1,25 +1,23 @@
 #include "pch.h"
-#include <Math/Expression/NewOpCode.h>
-#include "RexByte.h"
+#include "InstructionBuilder.h"
 // --------------------------------- InstructionBase -----------------------------------
 
-InstructionBase::InstructionBase(const OpcodeBase &opcode)
-  : m_size(opcode.size())
+const RegSizeSet InstructionBuilder::s_sizeBitSet(REGSIZE_WORD ,REGSIZE_DWORD ,REGSIZE_QWORD, REGSIZE_END);
+
+InstructionBuilder::InstructionBuilder(const OpcodeBase &opcode)
+  : InstructionBase(opcode             )
+  , m_opcodeSize(   opcode.size()      )
+  , m_opCount(      opcode.getOpCount())
 {
-  memcpy(m_bytes, opcode.getBytes(),m_size);
+  init();
 }
 
-String InstructionBase::toString() const {
-  String result;
-  for(const BYTE *p = m_bytes, *end = m_bytes + m_size;;) {
-    result += format(_T("%02X"), *(p++));
-    if(p < end) {
-      result += _T(" ");
-    } else {
-      break;
-    }
-  }
-  return result;
+InstructionBuilder::InstructionBuilder(const Instruction0Arg &ins0)
+  : InstructionBase(ins0       )
+  , m_opcodeSize(   ins0.size())
+  , m_opCount(      0          )
+{
+  init();
 }
 
 InstructionBuilder &InstructionBuilder::insert(BYTE index, BYTE b) {
@@ -63,7 +61,7 @@ InstructionBuilder &InstructionBuilder::addrShiftInx(const IndexRegister &inx, B
   const BYTE inxIndex = inx.getIndex();
   assert(((inxIndex&7)!=4) && (shift<=3));
   SETREXBITONHIGHINX(inxIndex,1);
-  return or(0x04).add(0x05 | (shift << 6) | ((inxIndex&7) << 3)).add(offset, 4);
+  return or(MR_SIB(0)).add(SIB_BYTE(5,inxIndex,shift)).add(offset, 4);
 }
 
 // ------------------------------------------------------------------------------------------
@@ -73,20 +71,20 @@ InstructionBuilder &InstructionBuilder::addrBase(const IndexRegister &base, int 
   switch(baseIndex&7) {
   case 4 :
     if(offset == 0) {
-      or(0x04).add(0x24);                        // ptr[esp]
+      or(MR_SIB(DP_0BYTE)).add(0x24);                        // ptr[esp]
     } else if(isByte(offset)) {
-      or(0x44).add(0x24).add((char)offset);      // ptr[esp+1 byte offset] 
+      or(MR_SIB(DP_1BYTE)).add(0x24).add((char)offset);      // ptr[esp+1 byte offset] 
     } else {
-      or(0x84).add(0x24).add(offset, 4);         // ptr[esp+4 byte offset]
+      or(MR_SIB(DP_4BYTE)).add(0x24).add(offset, 4);         // ptr[esp+4 byte offset]
     }
     break;
   default:
     if((offset == 0) && ((baseIndex&7)!=5)) {
-      or(baseIndex&7);                            // ptr[base],               (base&7) != {4,5}
+      or(baseIndex&7);                                       // ptr[base],               (base&7) != {4,5}
     } else if(isByte(offset)) {
-      or(0x40 | (baseIndex&7)).add((char)offset); // ptr[base+1 byte offset], (base&7) != 4
+      or(MR_DP1BYTE(baseIndex)).add((char)offset);           // ptr[base+1 byte offset], (base&7) != 4
     } else {
-      or(0x80 | (baseIndex&7)).add(offset, 4);    // ptr[base+4 byte offset], (base&7) != 4
+      or(MR_DP4BYTE(baseIndex)).add(offset, 4);              // ptr[base+4 byte offset], (base&7) != 4
     }
   }
   SETREXBITONHIGHINX(baseIndex,0);
@@ -103,11 +101,11 @@ InstructionBuilder &InstructionBuilder::addrBaseShiftInx(const IndexRegister &ba
     throwInvalidArgumentException(method, _T("shift=%d. Valid range=[0;3]"),shift);
   }
   if((offset == 0) && ((baseIndex&7) != 5)) {
-    or(0x04).add((shift << 6) | ((inxIndex&7) << 3) | (baseIndex&7));
+    or(MR_SIB(DP_0BYTE)).add(SIB_BYTE(baseIndex,inxIndex,shift));
   } else if(isByte(offset)) {
-    or(0x44).add((shift << 6) | ((inxIndex&7) << 3) | (baseIndex&7)).add((char)offset);
+    or(MR_SIB(DP_1BYTE)).add(SIB_BYTE(baseIndex,inxIndex,shift)).add((char)offset);
   } else {
-    or(0x84).add((shift << 6) | ((inxIndex&7) << 3) | (baseIndex&7)).add(offset, 4);
+    or(MR_SIB(DP_4BYTE)).add(SIB_BYTE(baseIndex,inxIndex,shift)).add(offset, 4);
   }
   SETREXBITSONHIGHINX2(baseIndex,inxIndex);
   return *this;
@@ -120,13 +118,13 @@ InstructionBuilder &InstructionBuilder::prefixSegReg(const SegmentRegister &reg)
   return *this;
 }
 
-InstructionBuilder &InstructionBuilder::setMemoryReference(const MemoryOperand &mop) {
+InstructionBuilder &InstructionBuilder::setMemoryOperand(const MemoryOperand &mop) {
   const MemoryRef &mr = *mop.getMemoryReference();
   if(mop.hasSegmentRegister()) {
     prefixSegReg(mop.getSegmentRegister());
   }
-  if(mr.isImmediateAddr()) {
-    addrImmDword(mr.getOffset());
+  if(mr.isDisplaceOnly()) {
+    addrDisplaceOnly(mr.getOffset());
   } else if(mr.hasInx()) {
     if(mr.hasBase()) {
       addrBaseShiftInx(*mr.getBase(), *mr.getInx(), mr.getShift(), mr.getOffset());
@@ -142,8 +140,8 @@ InstructionBuilder &InstructionBuilder::setMemoryReference(const MemoryOperand &
   return *this;
 }
 
-InstructionBuilder &InstructionBuilder::addMemoryReference(const MemoryOperand &mop) {
-  return add(0).setMemoryReference(mop);
+InstructionBuilder &InstructionBuilder::addMemoryOperand(const MemoryOperand &mop) {
+  return add(0).setMemoryOperand(mop);
 }
 
 void InstructionBuilder::sizeError(const TCHAR *method, const GPRegister    &reg, INT64 immv) { // static
@@ -152,21 +150,4 @@ void InstructionBuilder::sizeError(const TCHAR *method, const GPRegister    &reg
 
 void InstructionBuilder::sizeError(const TCHAR *method, const MemoryOperand &memop, INT64 immv) { // static
   throwInvalidArgumentException(method,_T("Immediate value %s doesn't fit in %s"),formatHexValue(immv,false).cstr(), memop.toString().cstr());
-}
-
-Instruction0Arg::Instruction0Arg(const Instruction0Arg &ins, RegSize size) : InstructionBase(ins) {
-  InstructionBuilder ib(*this);
-  switch (size) {
-  case REGSIZE_WORD :
-    ib.wordIns();
-    break;
-#ifdef IS64BIT
-  case REGSIZE_QWORD:
-    ib.setRexBits(8);
-    break;
-#endif // IS64BIT
-  default           :
-    throwInvalidArgumentException(__TFUNCTION__,_T("size=%s"), ::toString(size).cstr());
-  }
-  *this = (Instruction0Arg&)ib;
 }
