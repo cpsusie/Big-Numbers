@@ -339,8 +339,18 @@ protected:
   static void sizeError(const TCHAR *method, const MemoryOperand &memop, INT64 immv);
 
 public:
-  InstructionBuilder(const OpcodeBase &opcode) 
+  InstructionBuilder(const OpcodeBase &opcode)
     : InstructionBase(opcode)
+    , m_opcodePos(    0            )
+#ifdef IS64BIT
+    , m_hasRexByte(   0            )
+    , m_rexByteIndex( 0            )
+#endif
+  {
+    m_opcodeSize = size();
+  }
+  InstructionBuilder(const InstructionBase &ins)
+    : InstructionBase(ins)
     , m_opcodePos(    0            )
 #ifdef IS64BIT
     , m_hasRexByte(   0            )
@@ -605,6 +615,7 @@ class Instruction0Arg : public InstructionBase {
 public:
   Instruction0Arg(UINT op, BYTE size) : InstructionBase(OpcodeBase(op,size,0,0)) {
   }
+  Instruction0Arg(const Instruction0Arg &ins, RegSize size);
 };
 
 // Set Byte on Condition
@@ -648,18 +659,39 @@ extern Instruction0Arg  STI;                               // Set   interrupt fl
 extern Instruction0Arg  CLD;                               // Clear direction flag DF = 0
 extern Instruction0Arg  STD;                               // Set   direction flag DF = 1
 
-extern Instruction0Arg  PUSHF;                             // Push FLAGS onto stack *--SP = FLAGS;
-extern Instruction0Arg  POPF;                              // Pop  FLAGS register from stack FLAGS = *SP++
+#ifdef IS64BIT
+extern Instruction0Arg  CLGI;                              // Clear Global Interrupt Flag
+extern Instruction0Arg  STGI;                              // Set Global Interrupt Flag
+#endif // IS64BIT
+
+extern Instruction0Arg  PUSHF;                             // Push FLAGS  onto stack         { sp-=2, *sp = FLAGS; }
+extern Instruction0Arg  POPF;                              // Pop  FLAGS register from stack { FLAGS = *SP; sp+=2; }
 extern Instruction0Arg  SAHF;                              // Store AH into FLAGS
 extern Instruction0Arg  LAHF;                              // Load FLAGS into AH register
-#define                 PUSHFD         PUSHF               // Push EFLAGS register onto stack
-#define                 POPFD          POPF                // Pop data into EFLAGS register
+
+#ifdef IS32BIT
 extern Instruction0Arg  PUSHAD;                            // Push all double-word (32-bit) registers onto stack
 extern Instruction0Arg  POPAD;                             // Pop  all double-word (32-bit) registers from stack
+extern Instruction0Arg  PUSHFD;                            // Push EFLAGS register onto stack { sp-=4, *sp = EFLAGS; }
+extern Instruction0Arg  POPFD;                             // Pop data into EFLAGS register   { EFLAGS = *SP; sp+=4; }
+#else // IS64BIT
+extern Instruction0Arg  PUSHFQ;                            // Push RFLAGS register onto stack
+extern Instruction0Arg  POPFQ;                             // Pop data into RFLAGS register
+#endif // IS64BIT
 
 extern Instruction0Arg  NOOP;
 extern Opcode2Arg       ADD,ADC,OR,AND,SUB,SBB,XOR,CMP;
 extern OpcodeMov        MOV;
+
+extern Instruction0Arg CWDE;                               // Convert word to dword   Copy sign (bit 15) of AX  into higher 16 bits of EAX
+extern Instruction0Arg CBW;                                // Convert byte to word    Copy sign (bit 7)  of AL  into every bit of AH
+extern Instruction0Arg CDQ;                                // Convert dword to qword  Copy sign (bit 31) of EAX into every bit of EDX
+extern Instruction0Arg CWD;                                // Convert word to dword   Copy sign (bit 15) of AX  into every bit of DX
+
+#ifdef IS64BIT
+extern Instruction0Arg CDQE;                               // Sign extend EAX into RAX
+extern Instruction0Arg CQO;                                // Sign extend RAX into RDX:RAX
+#endif // IS64BIT
 
 #ifdef __NEVER__
 

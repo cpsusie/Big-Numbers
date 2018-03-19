@@ -153,3 +153,20 @@ void InstructionBuilder::sizeError(const TCHAR *method, const GPRegister    &reg
 void InstructionBuilder::sizeError(const TCHAR *method, const MemoryOperand &memop, INT64 immv) { // static
   throwInvalidArgumentException(method,_T("Immediate value %s doesn't fit in %s"),formatHexValue(immv,false).cstr(), memop.toString().cstr());
 }
+
+Instruction0Arg::Instruction0Arg(const Instruction0Arg &ins, RegSize size) : InstructionBase(ins) {
+  InstructionBuilder ib(*this);
+  switch (size) {
+  case REGSIZE_WORD :
+    ib.wordIns();
+    break;
+#ifdef IS64BIT
+  case REGSIZE_QWORD:
+    ib.setRexBits(8);
+    break;
+#endif // IS64BIT
+  default           :
+    throwInvalidArgumentException(__TFUNCTION__,_T("size=%s"), ::toString(size).cstr());
+  }
+  *this = (Instruction0Arg&)ib;
+}

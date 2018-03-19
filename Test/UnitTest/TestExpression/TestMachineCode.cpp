@@ -432,13 +432,31 @@ TestMachineCode::TestMachineCode() {
   TESTOPCODE(STI    );
   TESTOPCODE(CLD    );
   TESTOPCODE(STD    );
-  TESTOPCODE(PUSHF  );
-  TESTOPCODE(POPF   );
   TESTOPCODE(SAHF   );
   TESTOPCODE(LAHF   );
+  TESTOPCODE(PUSHF  );
+  TESTOPCODE(POPF   );
+#ifdef IS32BIT
+  TESTOPCODE(PUSHFD );
+  TESTOPCODE(POPFD  );
   TESTOPCODE(PUSHAD );
   TESTOPCODE(POPAD  );
+#else // IS64BIT
+  TESTOPCODE(PUSHFQ );
+  TESTOPCODE(POPFQ  );
+#endif // IS64BIT
   TESTOPCODE(NOOP   );
+  TESTOPCODE(CBW    );
+  TESTOPCODE(CWDE   );
+  TESTOPCODE(CWD    );
+  TESTOPCODE(CDQ    );
+
+#ifdef IS64BIT
+  TESTOPCODE(CDQE   );
+  TESTOPCODE(CQO    );
+  TESTOPCODE(CLGI   );
+  TESTOPCODE(STGI   );
+#endif // IS64BIT
 
   TESTOPCODE(SETE   );
   TESTOPCODE(MOV    );
@@ -479,6 +497,14 @@ void assemblerCode() {
 //    mov startIP, es
     jmp         End
 
+    pushf
+    popf
+    pushfd
+    popfd
+    pusha
+    popa
+    pushad
+    popad
 
     cbw
     cwde
