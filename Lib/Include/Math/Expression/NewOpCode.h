@@ -361,14 +361,17 @@ typedef enum {
 } OpcodeType;
 
 class OpcodeBase {
-protected:
+private:
   UINT m_bytes;
+  // Opcode extension 0..7
+  const UINT m_extension : 3;
   // In bytes 0..3
-  const UINT m_size    : 2;
+  const UINT m_size      : 2;
   // Number of operands
-  const UINT m_opCount : 3; 
+  const UINT m_opCount   : 3;
   const UINT m_flags;
 
+protected:
   void validateOpCount(             int                             count) const;
   void validateRegisterAllowed(     const Register                 &reg  ) const;
   void validateMemoryOperandAllowed(const MemoryOperand            &memop) const;
@@ -383,11 +386,15 @@ protected:
 #endif // IS64BIT
 
 public:
-  OpcodeBase(UINT op, BYTE size, UINT opCount, UINT flags);
+  OpcodeBase(UINT op, BYTE extension, BYTE opCount, UINT flags);
 
   // Size of Opcode in bytes
   inline BYTE size() const {
     return m_size;
+  }
+  // Opcode extension. value [0..7]
+  inline BYTE getExtension() const {
+    return m_extension;
   }
   // Number of operands
   inline BYTE getOpCount() const {
@@ -427,8 +434,8 @@ public:
 
 class Opcode1Arg : public OpcodeBase {
 public:
-  inline Opcode1Arg(UINT op, BYTE size, UINT flags=ALL_GPR_ALLOWED | ALL_GPRPTR_ALLOWED)
-    : OpcodeBase(op, size, 1, flags)
+  inline Opcode1Arg(UINT op, BYTE extension, UINT flags=ALL_GPR_ALLOWED | ALL_GPRPTR_ALLOWED)
+    : OpcodeBase(op, extension, 1, flags)
   {
   }
   virtual InstructionBase operator()(const InstructionOperand &op) const;
@@ -445,8 +452,8 @@ protected:
   static void throwInvalidOperandCombination(const TCHAR *method, const InstructionOperand &op1, const InstructionOperand &op2);
 
 public :
-  Opcode2Arg(UINT op, BYTE size=1, UINT flags=ALL_GPR_ALLOWED | ALL_GPRPTR_ALLOWED | IMMEDIATEVALUE_ALLOWED)
-    : OpcodeBase(op, size, 2, flags) {
+  Opcode2Arg(UINT op, UINT flags=ALL_GPR_ALLOWED | ALL_GPRPTR_ALLOWED | IMMEDIATEVALUE_ALLOWED)
+    : OpcodeBase(op, 0, 2, flags) {
   }
   virtual InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
   OpcodeType getType() const {
@@ -497,13 +504,13 @@ public :
 
 class SetxxOp : public Opcode1Arg {
 public:
-  SetxxOp(UINT op) : Opcode1Arg(op, 2, REGTYPE_GPR_ALLOWED | REGSIZE_BYTE_ALLOWED | BYTEPTR_ALLOWED) {
+  SetxxOp(UINT op) : Opcode1Arg(op, 0, REGTYPE_GPR_ALLOWED | REGSIZE_BYTE_ALLOWED | BYTEPTR_ALLOWED) {
   }
 };
 
 class Instruction0Arg : public InstructionBase {
 public:
-  Instruction0Arg(UINT op, BYTE size) : InstructionBase(OpcodeBase(op,size,0,0)) {
+  Instruction0Arg(UINT op) : InstructionBase(OpcodeBase(op,0,0,0)) {
   }
   Instruction0Arg(const Instruction0Arg &ins, RegSize size);
 };

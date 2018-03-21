@@ -6,18 +6,25 @@ public:
   Instruction1Arg(const OpcodeBase &opcode) : InstructionBuilder(opcode)
   {
   }
-  InstructionBuilder &addMemoryReference(const MemoryOperand &mop) {
-    if(needSizeBit(mop.getSize())) setSizeBit();
-    return __super::addMemoryOperand(mop);
-  }
-  InstructionBuilder &setRegister(       const Register      &reg);
+  InstructionBuilder &setRegister(const Register &reg);
 };
 
 InstructionBuilder &Instruction1Arg::setRegister(const Register &reg) {
-  const BYTE regIndex = reg.getIndex();
-  SETREXBITONHIGHINX(regIndex,0);
-  if(needSizeBit(reg.getSize())) setSizeBit();
-  return add(0xc0 | (regIndex&7));
+  const BYTE    regIndex = reg.getIndex();
+  const RegSize regSize  = reg.getSize();
+  switch(regSize) {
+  case REGSIZE_BYTE :
+    setModeBits(MR_REGREG(0,regIndex&7));
+    break;
+  case REGSIZE_WORD :
+    wordIns();
+    // continue case
+  default           :
+    setSizeBit().setModeBits(MR_REGREG(0,regIndex&7));
+    break;
+  }
+  SETREXBITS(QWORDTOREX(regSize) | HIGHINDEXTOREX(regIndex,0));
+  return *this;
 }
 
 InstructionBase Opcode1Arg::operator()(const InstructionOperand &op) const {
@@ -29,7 +36,7 @@ InstructionBase Opcode1Arg::operator()(const InstructionOperand &op) const {
     return result.setRegister(op.getRegister());
   case MEMORYOPERAND  :
     validateMemoryOperandAllowed((MemoryOperand&)op);
-    return result.addMemoryReference((MemoryOperand&)op);
+    return result.setMemoryOperand((MemoryOperand&)op);
   case IMMEDIATEVALUE :
     validateImmediateValueAllowed();
     throwException(_T("%s:Immediate value not yet implemented. (op=%s)"), __TFUNCTION__,op.toString().cstr());

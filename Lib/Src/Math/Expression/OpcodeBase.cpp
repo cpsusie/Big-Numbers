@@ -7,8 +7,6 @@
 #define _SWAP2(op) ((((op)&0xff)<< 8) | (((op)>> 8)&0xff ))
 #define _SWAP3(op) ((_SWAP2(op) << 8) | (((op)>>16)&0xff ))
 #define _SWAP4(op) ((_SWAP2(op) <<16) | (_SWAP2((op)>>16)))
-#define _SWAP5(op) ((_SWAP4(op) << 8) | (((op)>>32)&0xff ))
-#define _SWAP6(op) ((_SWAP4(op) <<16) | (_SWAP2((op)>>32)))
 
 static inline UINT swapBytes(UINT bytes, int sz) {
   switch(sz) {
@@ -21,12 +19,21 @@ static inline UINT swapBytes(UINT bytes, int sz) {
   }
 }
 
-OpcodeBase::OpcodeBase(UINT op, BYTE size, UINT opCount, UINT flags)
-  : m_size(   size   )
-  , m_opCount(opCount)
-  , m_flags(  flags  )
+static inline BYTE findSize(UINT op) {
+  if( op == (BYTE)op     ) return 1;
+  if((op&0xffff0000) == 0) return 2;
+  if((op&0xff000000) == 0) return 3;
+  return 4;
+}
+
+OpcodeBase::OpcodeBase(UINT op, BYTE extension, BYTE opCount, UINT flags)
+  : m_size(     findSize(op))
+  , m_extension(extension   )
+  , m_opCount(  opCount     )
+  , m_flags(    flags       )
 {
-  m_bytes = swapBytes(op,size);
+  assert(extension <= 7);
+  m_bytes = swapBytes(op,m_size);
 }
 
 bool OpcodeBase::isRegisterTypeAllowed(RegType type) const {

@@ -401,7 +401,6 @@ void TestMachineCode::testOpcode2Arg(const Opcode2Arg &opcode) {
       }
     }
   }
-  clear();
   if(opcode.isImmediateValueAllowed()) {
     for(Iterator<const InstructionOperand*> immIt = m_allImmOperands.getIterator(); immIt.hasNext();) {
       const InstructionOperand &immOp = *immIt.next();
@@ -459,12 +458,12 @@ TestMachineCode::TestMachineCode() {
 #endif // IS64BIT
 
   TESTOPCODE(SETE   );
-//  TESTOPCODE(NOT    );
-//  TESTOPCODE(NEG    );
-//  TESTOPCODE(MOV    );
+  TESTOPCODE(NOT    );
+  TESTOPCODE(NEG    );
   TESTOPCODE(ADD    );
   TESTOPCODE(ADC    );
   TESTOPCODE(XOR    );
+  TESTOPCODE(MOV    );
 }
 
 #endif // TEST_MACHINECODE

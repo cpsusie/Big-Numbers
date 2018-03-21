@@ -7,6 +7,12 @@
 #define QWORDTOREX(          size     )
 #else // IS64BIT
 
+// REX-byte format
+// 0  1  0  0  b3 b2 b1 b0
+// b0: When SIB-encoding, then = bit3 of index-register
+// b1:
+// b2:
+// b3: 1 for QWORD-operands, 0 for DWORD operands
 #define SETREXBITS(          bits     )                                          \
 { const BYTE tmpBits = bits;                                                     \
   if(tmpBits) setRexBits(tmpBits);                                               \

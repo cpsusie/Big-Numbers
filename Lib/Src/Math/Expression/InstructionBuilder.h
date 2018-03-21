@@ -3,13 +3,33 @@
 #include <Math/Expression/NewOpcode.h>
 #include "RexByte.h"
 
-// MOD-REG-R/M Byte encoding
+// Encoding of various addressing modes is described here:
+// http://www.c-jump.com/CIS77/CPU/x86/index.html
+//
+//                                     7 6 5 4 3 2 1 0
+// MOD-REG-R/M Byte encoding. Layout: [m m r r r / / /]  (m:MOD field, r:REG, /:R/M
 // MOD field values {0..3]
-#define DP_0BYTE 0 // 
-#define DP_1BYTE 1 // memory-operand is followed by 1 byte  signed displacement
-#define DP_4BYTE 2 // memory-operand is followed by 4 bytes signed displacement
-#define REG_MODE 3 // rm-field ofthis byte, is 3-bit register index
+#define DP_0BYTE 0 // R/M is memory-operand (no displacement) or if R/M=5, then displacement only
+#define DP_1BYTE 1 // R/M is memory-operand is followed by 1 byte  signed displacement
+#define DP_4BYTE 2 // R/M is memory-operand is followed by 4 bytes signed displacement
+#define REG_MODE 3 // R/M-field is index of a GP-register (8-,16-,32-bit (or 64 in 64-mode)
 
+// For MOD = [0..2] && (R/M == 4) => SIB-byte added. See below
+// For MOD = [0..2] && (R/M != 4), then R/M is 3-bit index of 32-bit register
+//
+//  General Purpose Registers: 0   1   2   3   4   5   6   7
+//  8-bit registers          : al  cl  dl  bl  ah  ch  dh  bh
+// 16-bit registers          : ax  cx  dx  bx  sp  bp  si  di
+// 32-bit registers          :eax ecx edx ebx esp ebp esi edi
+//
+//
+// REG field indicates source (or destination) field, in 2 operand instructions
+// For 1 operand instructions, REG-field contains opcode-extension.
+// If d-bit=0, (direction-bit,bit 1 in opcode), then REG is source and R/M is destination
+// If d-bit=1, then REG is destination, R/M is source
+// s-bit=0, (size-bit, bit 0 in opcode) indicates 8-bit operands
+// s-bit=1, indicates 32-bit operands (or 16, if prefix 0x66 is used)
+// In x64-mode, REX-byte prefix will extend this further. See RexByte.h
 #define ENC_MODREG_BYTE(mod,reg,rm)    (((mod)<<6) | (((reg)&7)<<3) | ((rm)&7))
 
 #define MR_DP1BYTE(index  ) ENC_MODREG_BYTE(DP_1BYTE,0,index)
@@ -17,26 +37,34 @@
 #define MR_REGREG( dst,src) ENC_MODREG_BYTE(REG_MODE,dst,src)
 #define MR_SIB(    disp   ) ENC_MODREG_BYTE(disp,0,4)
 #define MR_DISPONLY         ENC_MODREG_BYTE(0   ,0,5)
-
-// SIB (Scaled Index Byte) Layout. index != 4, shift=[0..3]
-// Displacement only if MOD = 0, (inx&7)==5 only if MOD = {1,2}
+#define MR_REGIMM( dst    ) MR_REGREG(0,dst)
+//                                  7 6 5 4 3 2 1 0
+// SIB (Scaled Index Byte) Layout: [s s i i i b b b]  (s:shift, i:inx, b:base)
+// inx != 4, shift=[0..3]. Address calculated as reg[base]+(reg[inx]<<shift) (+ displacement if any)
+// Where reg is 1 of 32-bit registers (or 64-bit in x64-mode)
+// Displacement only if(MOD==0 && R/M==5), inx==5 only if MOD = {1,2}
 #define SIB_BYTE(base,inx,shift)   (((shift)<<6)|(((inx)&7)<<3)|((base)&7))
 
 class InstructionBuilder : public InstructionBase {
 private:
   static const RegSizeSet s_sizeBitSet;
+  const BYTE    m_extension;
   BYTE          m_opcodePos;
-  const UINT    m_opcodeSize      : 2;
+  const BYTE    m_opcodeSize;
   // Number of operands
-  const UINT    m_opCount         : 3;
+  const BYTE    m_opCount;
+  // is MOD-REG-R/M byte added
+  bool          m_hasModeByte;
 #ifdef IS64BIT
-  UINT          m_hasRexByte      : 1;
-  UINT          m_rexByteIndex    : 2;
+  // See RexByte.h
+  bool          m_hasRexByte;
+  BYTE          m_rexByteIndex;
 #endif
   inline void init() {
     m_opcodePos    = 0;
+    m_hasModeByte  = false;
 #ifdef IS64BIT
-    m_hasRexByte   = 0;
+    m_hasRexByte   = false;
     m_rexByteIndex = 0;
 #endif
   }
@@ -46,14 +74,16 @@ private:
   InstructionBuilder &addrBase(        const IndexRegister &base, int offset);
   InstructionBuilder &addrBaseShiftInx(const IndexRegister &base, const IndexRegister &inx, BYTE shift, int offset);
   inline InstructionBuilder &addrDisplaceOnly(int addr) {
-    return or(MR_DISPONLY).add(addr, 4);
+    return setModeBits(MR_DISPONLY).add(addr, 4);
   }
-
+  inline void addExtension() {
+    setModeBits(m_extension << 3);
+  }
   InstructionBuilder &prefixSegReg(    const SegmentRegister &reg);
 protected:
   static void sizeError(const TCHAR *method, const GPRegister    &reg  , INT64 immv);
   static void sizeError(const TCHAR *method, const MemoryOperand &memop, INT64 immv);
-
+  InstructionBuilder &prefixImm(BYTE b, OperandSize size, bool immIsByte);
 public:
   InstructionBuilder(const OpcodeBase      &opcode);
   InstructionBuilder(const Instruction0Arg &ins0  );
@@ -67,8 +97,8 @@ public:
   inline BYTE getLastOpcodeByteIndex() const {
     return getOpcodePos() + getOpcodeSize() - 1;
   }
-  // Return index of first byte following opcode
-  inline BYTE getArgIndex() const {
+  // Return index of MOD-REG-R/M byte. Assume it exist
+  inline BYTE getModeByteIndex() const {
     return getOpcodePos() + getOpcodeSize();
   }
   InstructionBuilder &insert(BYTE index, BYTE b);
@@ -112,11 +142,7 @@ public:
 #endif
   }
 #ifdef IS64BIT
-  // Bits can be 0. may use bit 0..3 only.
-  // bit 0: (srcreg.index()>7)?1:0
-  // bit 1:
-  // bit 2: (dstreg.index()>7)?1:0
-  // bit 3: (operandSize is QWORD)?1:0
+  // See RexByte.h
   InstructionBuilder &setRexBits(BYTE bits);
 #endif // IS64BIT
 
@@ -127,17 +153,19 @@ public:
     return prefix(0x66);
   }
 
+  static inline bool needSizeBit(OperandSize size) {
+    return s_sizeBitSet.contains(size);
+  }
   // Set bit 0 in opcode to 1 for for 16-, 32- (and 64- bit operands)
   inline InstructionBuilder &setSizeBit() {
     return or(m_opcodePos,1);
   }
+  InstructionBuilder &setOperandSize(OperandSize size);
   // Set bit 1 in opcode to 1 if destination is a register
   inline InstructionBuilder &setDirectionBit() {
     return or(m_opcodePos,2);
   }
-  static inline bool needSizeBit(OperandSize size) {
-    return s_sizeBitSet.contains(size);
-  }
+  // add MOD-REG-R/M byte if not there yet, else modeByte |= bits
+  InstructionBuilder &setModeBits(BYTE bits);
   InstructionBuilder &setMemoryOperand(const MemoryOperand &mop);
-  InstructionBuilder &addMemoryOperand(const MemoryOperand &mop);
 };

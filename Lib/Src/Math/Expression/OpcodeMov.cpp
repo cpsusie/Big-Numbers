@@ -45,17 +45,16 @@ InstructionBuilder &InstructionMovImm::setMemImm(const MemoryOperand &dst, int i
   switch(size) {
   case REGSIZE_BYTE :
     if(!isByte(immv)) sizeError(method,dst,immv);
-    addMemoryOperand(dst).add((char)immv);
+    setMemoryOperand(dst).add((char)immv);
     break;
   case REGSIZE_WORD :
     if(!isWord(immv)) sizeError(method,dst,immv);
-    setSizeBit().addMemoryOperand(dst).add(immv,2).wordIns();
+    setMemoryOperand(dst).add(immv,2);
     break;
   default:
-    setSizeBit().addMemoryOperand(dst).add(immv,4);
+    setMemoryOperand(dst).add(immv,4);
     break;
   }
-  SETREXBITS(QWORDTOREX(size));
   return *this;
 }
 
