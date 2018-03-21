@@ -60,8 +60,16 @@ Instruction0Arg         NOOP  (0x90);
 Opcode2Arg              ADD(0x00),OR(0x08),ADC(0x10),SBB(0x18),AND(0x20),SUB(0x28),XOR(0x30),CMP(0x38);
 OpcodeMov               MOV(0x88, 0xB0, 0xC6);
 
-Opcode1Arg              NOT   (0xF6,2);
-Opcode1Arg              NEG   (0xF6,3);
+//        Non existing opcode (0xF6,1);
+Opcode1Arg              NOT   (0xF6,2);                    // Negate the operand, logical NOT
+Opcode1Arg              NEG   (0xF6,3);                    // Two's complement negation
+Opcode1Arg              MUL   (0xF6,4);                    // Unsigned multiply (ax = al*src, dx:ax=ax*src, edx:eax=eax*src, rdx:rax=rax*src)
+Opcode1Arg              IMUL  (0xF6,5);                    // Signed multiply   (ax = al*src, dx:ax=ax*src, edx:eax=eax*src, rdx:rax=rax*src)
+Opcode1Arg              DIV   (0xF6,6);                    // Unsigned divide   (ax/=src,al=quot,ah=rem,    edx:eax/=src,eax=quot,edx=rem,  rdx:rax/=src,rax=quit,rdx=rem
+Opcode1Arg              IDIV  (0xF6,7);                    // // Signed divide   ax      /= src, ah  must contain sign extension of al . al =quot, ah =rem
+                                                           //                    dk:ax   /= src. dx  must contain sign extension of ax . ax =quot, dx =rem
+                                                           //                    edx:eax /= src. edx must contain sign extension of eax. eax=quot, edx=rem
+                                                           //                    rdx:rax /= src. rdx must contain sign extension of rax. rax=quot, rdx=rem
 
 Instruction0Arg         CWDE  (0x98);                      // Convert word to dword   Copy sign (bit 15) of AX  into higher 16 bits of EAX
 Instruction0Arg         CBW   (CWDE,REGSIZE_WORD);         // Convert byte to word    Copy sign (bit 7)  of AL  into every bit of AH

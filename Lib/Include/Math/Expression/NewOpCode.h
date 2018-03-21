@@ -582,6 +582,14 @@ extern OpcodeMov        MOV;
 
 extern Opcode1Arg       NOT;                               // Negate the operand, logical NOT
 extern Opcode1Arg       NEG;                               // Two's complement negation
+extern Opcode1Arg       MUL;                               // Unsigned multiply (ax = al*src,dx:ax=ax*src, edx:eax=eax*src,rdx:rax=rax*src)
+extern Opcode1Arg       IMUL;                              // Signed multiply   (ax = al*src,dx:ax=ax*src, edx:eax=eax*src,rdx:rax=rax*src)
+
+extern Opcode1Arg       DIV;                               // Unsigned divide   (ax/=src,al=quot,ah=rem,   edx:eax/=src,eax=quot,edx=rem,  rdx:rax/=src,rax=quit,rdx=rem
+extern Opcode1Arg       IDIV;                              // Signed divide   ax      /= src, ah  must contain sign extension of al . al =quot, ah =rem
+                                                           //                 dk:ax   /= src. dx  must contain sign extension of ax . ax =quot, dx =rem
+                                                           //                 edx:eax /= src. edx must contain sign extension of eax. eax=quot, edx=rem
+                                                           //                 rdx:rax /= src. rdx must contain sign extension of rax. rax=quot, rdx=rem
 
 extern Instruction0Arg CWDE;                               // Convert word to dword   Copy sign (bit 15) of AX  into higher 16 bits of EAX
 extern Instruction0Arg CBW;                                // Convert byte to word    Copy sign (bit 7)  of AL  into every bit of AH
@@ -616,14 +624,6 @@ extern Instruction0Arg CQO;                                // Sign extend RAX in
 #define MOV_FROM_AX_IMM_ADDR_WORD              WORDOP( MOV_FROM_EAX_IMM_ADDR_DWORD)       // 4/8 byte address. move AX  to word  pointed to by 2. operand
 #define MOV_FROM_RAX_IMM_ADDR_QWORD            REX3(   MOV_FROM_EAX_IMM_ADDR_DWORD)       // 8 byte address
 
-#define MUL_BYTE                               B2OP(0xF620)                               // Unsigned multiply (ax      = al  * src  )
-#define MUL_DWORD                              B2OP(0xF720)                               //                   (edx:eax = eax * src  )
-#define MUL_WORD                               WORDOP(MUL_DWORD)                          //                   (dx:ax   = ax  * src  )
-
-#define IMUL_BYTE                              B2OP(0xF628)                               // Signed multiply   (ax      = al  * src  )
-#define IMUL_DWORD                             B2OP(0xF728)                               //                   (edx:eax = eax * src  )
-#define IMUL_WORD                              WORDOP(IMUL_DWORD)                         //                   (dx:ax   = ax  * src  )
-
 // Additional forms of IMUL
 #define IMUL2_R32_DWORD(      r32)             B3OP(0x0FAF00    | ((r32)<<3))             // 2 arguments       (r32 *= src           )
 #define IMUL2_R16_WORD(       r16)             WORDOP(IMUL2_R32_DWORD(r16  ))             //                   (r16 *= src           )
@@ -633,14 +633,6 @@ extern Instruction0Arg CQO;                                // Sign extend RAX in
 
 #define IMUL3_WORD_IMM_WORD(  r16)             WORDOP(IMUL3_DWORD_IMM_DWORD(r16))         // 2 byte operand    (r16 = src * imm word )
 #define IMUL3_WORD_IMM_BYTE(  r16)             WORDOP(IMUL3_DWORD_IMM_BYTE( r16))         // 1 byte operand    (r16 = src * imm byte )
-
-#define DIV_BYTE                               B2OP(0xF630          )                     // Unsigned divide ax      /= src, Result:al = quot. ah = rem
-#define DIV_DWORD                              B2OP(0xF730          )                     //                 edx:eax /= src. Result:eax= quot. edx= rem
-#define DIV_WORD                               WORDOP(DIV_DWORD     )                     //                 dk:ax   /= src. Result:ax = quot. dx = rem
-
-#define IDIV_BYTE                              B2OP(0xF638          )                     // Signed divide   ax      /= src, ah  must contain sign extension of al . Result:al = quot. ah = rem
-#define IDIV_DWORD                             B2OP(0xF738          )                     //                 edx:eax /= src. edx must contain sign extension of eax. Result:eax= quot. edx= rem
-#define IDIV_WORD                              WORDOP(IDIV_DWORD    )                     //                 dk:ax   /= src. dx  must contain sign extension of ax . Result:ax = quot. dx = rem
 
 // Rotate and shifting
 
@@ -771,22 +763,6 @@ extern Instruction0Arg CQO;                                // Sign extend RAX in
 #define BSF_WORD(           r16)               WORDOP(BSF_DWORD(r16))
 #define BSR_WORD(           r16)               WORDOP(BSR_DWORD(r16))
 
-#define NOT_BYTE                               B2OP(0xF610          )
-#define NOT_DWORD                              B2OP(0xF710          )
-#define NOT_WORD                               WORDOP(NOT_DWORD     )
-
-#define NOT_R8( r8 )                           REGREG(NOT_BYTE, r8  )
-#define NOT_R32(r32)                           REGREG(NOT_DWORD,r32 )
-#define NOT_R16(r16)                           REGREG(NOT_WORD, r16 )
-
-#define NEG_BYTE                               B2OP(0xF618          )
-#define NEG_DWORD                              B2OP(0xF718          )
-#define NEG_WORD                               WORDOP(NEG_DWORD     )
-
-#define NEG_R8( r8 )                           REGREG(NEG_BYTE, r8  )
-#define NEG_R16(r16)                           REGREG(NEG_WORD, r16 )
-#define NEG_R32(r32)                           REGREG(NEG_DWORD,r32 )
-
 #define INS_BYTE                               B1INS(0x6C)
 #define INS_DWORD                              B1INS(0x6D)
 #define INS_WORD                               WORDOP(INS_DWORD)
@@ -847,16 +823,10 @@ extern Instruction0Arg CQO;                                // Sign extend RAX in
 
 #ifdef IS64BIT
 
-#define MUL_QWORD                              REX3(MUL_DWORD)                            // (rdx:rax = rax * src  )
-#define IMUL_QWORD                             REX3(IMUL_DWORD)                           // (rdx:rax = rax * src  )
-
 #define IMUL2_R64_DWORD(      r64)             REX2(IMUL2_R32_DWORD      ,r64)            // 2 arguments       (r64 *= src           )
 
 #define IMUL3_QWORD_IMM_DWORD(r64)             REX1(IMUL3_DWORD_IMM_DWORD,r64)            // 3 args, r64,src,4 byte operand (r64 = src * imm.dword)
 #define IMUL3_QWORD_IMM_BYTE( r64)             REX1(IMUL3_DWORD_IMM_BYTE ,r64)            // 3 args. r64.src.1 byte operand (r64 = src * imm.byte )
-
-#define DIV_QWORD                              REX3(DIV_DWORD )                          //                 rdx:rax /= src. Result:rax= quot. rdx= rem
-#define IDIV_QWORD                             REX3(IDIV_DWORD)                          //                 rdx:rax /= src. rdx must contain sign extension of rax. Result:rax= quot. rdx= rem
 
 #define ROL_QWORD                              REX3(  ROL_DWORD             )
 #define ROL_QWORD_IMM_BYTE                     REX3(  ROL_DWORD_IMM_BYTE    )            // 1 byte operand as shift amount
@@ -906,12 +876,6 @@ extern Instruction0Arg CQO;                                // Sign extend RAX in
 
 #define BSF_QWORD(          r64)               REX2(BSF_DWORD           ,r64)
 #define BSR_QWORD(          r64)               REX2(BSR_DWORD           ,r64)
-
-#define NOT_QWORD                              REX3(  NOT_DWORD             )
-#define NOT_R64(r64)                           REGREG(NOT_QWORD         ,r64)
-
-#define NEG_QWORD                              REX3(  NEG_DWORD             )
-#define NEG_R64(r64)                           REGREG(NEG_QWORD         ,r64)
 
 #define CMPS_QWORD                             REX3(  CMPS_DWORD            )
 #define STOS_QWORD                             REX3(  STOS_DWORD            )

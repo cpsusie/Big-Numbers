@@ -460,6 +460,10 @@ TestMachineCode::TestMachineCode() {
   TESTOPCODE(SETE   );
   TESTOPCODE(NOT    );
   TESTOPCODE(NEG    );
+  TESTOPCODE(MUL    );
+  TESTOPCODE(IMUL   );
+  TESTOPCODE(DIV    );
+  TESTOPCODE(IDIV   );
   TESTOPCODE(ADD    );
   TESTOPCODE(ADC    );
   TESTOPCODE(XOR    );
