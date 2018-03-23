@@ -66,7 +66,7 @@ InstructionBase OpcodeMovRegImm::operator()(const Register &reg, const Instructi
 }
 
 #ifdef IS32BIT
-#define s_validImmSizeToRegMov s_validImmSizeToReg
+static const RegSizeSet s_validImmSizeToRegMov(REGSIZE_BYTE, REGSIZE_WORD, REGSIZE_DWORD, REGSIZE_END);
 #else // IS64BIT
 static const RegSizeSet s_validImmSizeToRegMov(REGSIZE_BYTE, REGSIZE_WORD, REGSIZE_DWORD, REGSIZE_QWORD, REGSIZE_END);
 #endif // IS64BIT
