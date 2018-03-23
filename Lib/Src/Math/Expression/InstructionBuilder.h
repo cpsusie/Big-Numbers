@@ -81,8 +81,18 @@ private:
   }
   InstructionBuilder &prefixSegReg(    const SegmentRegister &reg);
 protected:
-  static void sizeError(const TCHAR *method, const GPRegister    &reg  , INT64 immv);
-  static void sizeError(const TCHAR *method, const MemoryOperand &memop, INT64 immv);
+  static void throwImmSizeException(const TCHAR *method, const String        &dst, INT64 immv) {
+    throwInvalidArgumentException(method,_T("%s"),getImmSizeErrorString(dst,immv).cstr());
+  }
+  static inline void sizeError(     const TCHAR *method, const GPRegister    &reg, INT64 immv) {
+    throwImmSizeException(method,reg.getName(),immv);
+  }
+  static inline void sizeError(     const TCHAR *method, const MemoryOperand &mem, INT64 immv) {
+    throwImmSizeException(method,mem.toString(),immv);
+  }
+  static inline void sizeError(     const TCHAR *method, OperandSize         size, INT64 immv) {
+    throwImmSizeException(method,::toString(size),immv);
+  }
   InstructionBuilder &prefixImm(BYTE b, OperandSize size, bool immIsByte);
 public:
   InstructionBuilder(const OpcodeBase      &opcode);

@@ -52,6 +52,10 @@ String formatHexValue(INT64 v, bool showSign) {
   return result;
 }
 
+String getImmSizeErrorString(const String &dst, INT64 immv) {
+  return format(_T("Immediate value %s doesn't fit in %s"),formatHexValue(immv,false).cstr(), dst.cstr());
+}
+
 OperandSize InstructionOperand::findMinSize(int    v) {
   if(isByte(v)) return REGSIZE_BYTE;
   if(isWord(v)) return REGSIZE_WORD;

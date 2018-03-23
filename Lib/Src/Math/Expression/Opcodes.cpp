@@ -71,6 +71,16 @@ Opcode1Arg              IDIV  (0xF6,7);                    // // Signed divide  
                                                            //                    edx:eax /= src. edx must contain sign extension of eax. eax=quot, edx=rem
                                                            //                    rdx:rax /= src. rdx must contain sign extension of rax. rax=quot, rdx=rem
 
+
+OpcodeShiftRot          ROL   (0    );                     // Rotate left  by cl/imm
+OpcodeShiftRot          ROR   (1    );                     // Rotate right by cl/imm
+OpcodeShiftRot          RCL   (2    );                     // Rotate left  by cl/imm (with carry)
+OpcodeShiftRot          RCR   (3    );                     // Rotate right by cl/imm (with carry)
+OpcodeShiftRot          SHL   (4    );                     // Shift left   by cl/imm                 (unsigned shift left )
+OpcodeShiftRot          SHR   (5    );                     // Shift right  by cl/imm                 (unsigned shift right)
+// OpcodeShiftRot          SH??   (6    );                 // DO WHAT?
+OpcodeShiftRot          SAR   (7    );                     // Shift Arithmetically right by cl/imm   (signed shift   right)
+
 Instruction0Arg         CWDE  (0x98);                      // Convert word to dword   Copy sign (bit 15) of AX  into higher 16 bits of EAX
 Instruction0Arg         CBW   (CWDE,REGSIZE_WORD);         // Convert byte to word    Copy sign (bit 7)  of AL  into every bit of AH
 Instruction0Arg         CDQ   (0x99);                      // Convert dword to qword  Copy sign (bit 31) of EAX into every bit of EDX

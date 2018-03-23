@@ -74,15 +74,14 @@ public:
   virtual RegSize getSize()  const = 0;
 #ifdef IS32BIT
 
-#define IF_NOT_REXCOMPATIBLE_RETURN_FALSE(reg,rexBytePresent)
+#define IS_REXCOMPATIBLE(reg,rexBytePresent) true
 
 #else  // IS64BIT
   virtual bool    isREXCompatible(bool rexBytePresent) const {
     return true;
   }
 
-#define IF_NOT_REXCOMPATIBLE_RETURN_FALSE(reg,rexBytePresent) \
- if(!reg.isREXCompatible(rexBytePresent)) return false
+#define IS_REXCOMPATIBLE(reg,rexBytePresent) ((reg).isREXCompatible(rexBytePresent))
 
   virtual RexByteUsage getRexByteUsage() const {
     return REX_DONTCARE;

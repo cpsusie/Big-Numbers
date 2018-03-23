@@ -101,11 +101,21 @@ static const RegSize allRegSize[] = {
  ,REGSIZE_OWORD    /* 128-bit */
 };
 
-class AllGPRegisters : public CompactArray<const GPRegister*> {
+class InstructionOperandArray : public CompactArray<const InstructionOperand*> {
+public:
+  virtual ~InstructionOperandArray();
+};
+
+InstructionOperandArray::~InstructionOperandArray() {
+  for(size_t i = size(); i--;) delete (*this)[i];
+  clear();
+}
+
+class AllGPRegisters : public InstructionOperandArray {
 private:
   void addRegArray(const GPRegister *list, size_t n) {
     for(size_t i = 0; i < n; i++) {
-      add(list+i);
+      add(new InstructionOperand(list[i]));
     }
   }
 public:
@@ -126,16 +136,6 @@ static const int   allImmValues[] = {    0x7f, 0x7fff, 0x7fffffff     };
 #else // IS64BIT
 static const INT64 allImmValues[] = {    0x7f, 0x7fff, 0x7fffffff, 0x7fffffffffffffffi64 };
 #endif // IS64BIT
-
-class InstructionOperandArray : public CompactArray<const InstructionOperand*> {
-public:
-  virtual ~InstructionOperandArray();
-};
-
-InstructionOperandArray::~InstructionOperandArray() {
-  for(size_t i = size(); i--;) delete (*this)[i];
-  clear();
-}
 
 class AllImmOperands : public InstructionOperandArray {
 public:
@@ -285,22 +285,30 @@ int CodeArray::addBytes(const void *bytes, int count) {
 
 class TestMachineCode : public CodeArray {
 private:
-  AllMemoryOperands m_allMemOperands;
-  AllGPRegisters    m_allGPReg;
-  AllImmOperands    m_allImmOperands;
-  String            m_currentName;
+  InstructionOperandArray m_allOperands;
+  String                  m_currentName;
+  void initAllOperands();
   void clear();
-  int emit(                const Instruction0Arg &ins   );
-  int emit(                const Opcode1Arg      &opcode, const InstructionOperand &arg);
-  int emit(                const Opcode2Arg      &opcode, const InstructionOperand &arg1, const InstructionOperand &arg2);
+  int  emit(               const Instruction0Arg &ins   );
+  int  emit(               const OpcodeBase      &opcode, const InstructionOperand &op);
+  int  emit(               const OpcodeBase      &opcode, const InstructionOperand &op1, const InstructionOperand &op2);
   void testInstruction0Arg(const Instruction0Arg &ins   );
-  void testOpcode1Arg(     const Opcode1Arg      &opcode);
-  void testOpcode2Arg(     const Opcode2Arg      &opcode);
+  void testOpcode1Arg(     const OpcodeBase      &opcode);
+  void testOpcode2Arg(     const OpcodeBase      &opcode);
 public:
-  void testOpcode(const OpcodeBase      &opcode, const String &name);
-  void testOpcode(const Instruction0Arg &ins   , const String &name);
+  void testOpcode(         const OpcodeBase      &opcode, const String &name);
+  void testOpcode(         const Instruction0Arg &ins   , const String &name);
   TestMachineCode();
 };
+
+void TestMachineCode::initAllOperands() {
+  AllGPRegisters    m_allGPReg;
+  AllMemoryOperands m_allMemOperands;
+  AllImmOperands    m_allImmOperands;
+  m_allOperands.addAll(m_allGPReg      ); m_allGPReg.clear();
+  m_allOperands.addAll(m_allMemOperands); m_allMemOperands.clear();
+  m_allOperands.addAll(m_allImmOperands); m_allImmOperands.clear();
+}
 
 void TestMachineCode::clear() {
   __super::clear();
@@ -312,14 +320,15 @@ int TestMachineCode::emit(const Instruction0Arg &ins) {
   return __super::emit(ins);
 }
 
-int TestMachineCode::emit(const Opcode1Arg &opcode, const InstructionOperand &arg) {
-  const InstructionBase ins = opcode(arg);
-  debugLog(_T("%-26s %s %s\n"), ins.toString().cstr(), m_currentName.cstr(), arg.toString().cstr());
+int TestMachineCode::emit(const OpcodeBase &opcode, const InstructionOperand &op) {
+  const InstructionBase ins = opcode(op);
+  debugLog(_T("%-26s %s %s\n"), ins.toString().cstr(), m_currentName.cstr(), op.toString().cstr());
   return __super::emit(ins);
 }
-int TestMachineCode::emit(const Opcode2Arg &opcode, const InstructionOperand &arg1, const InstructionOperand &arg2) {
-  const InstructionBase ins = opcode(arg1,arg2);
-  debugLog(_T("%-26s %s %s, %s\n"), ins.toString().cstr(), m_currentName.cstr(), arg1.toString().cstr(), arg2.toString().cstr());
+
+int TestMachineCode::emit(const OpcodeBase &opcode, const InstructionOperand &op1, const InstructionOperand &op2) {
+  const InstructionBase ins = opcode(op1,op2);
+  debugLog(_T("%-26s %s %s, %s\n"), ins.toString().cstr(), m_currentName.cstr(), op1.toString().cstr(), op2.toString().cstr());
   return __super::emit(ins);
 }
 
@@ -331,98 +340,40 @@ void TestMachineCode::testOpcode(const Instruction0Arg &ins, const String &name)
 void TestMachineCode::testOpcode(const OpcodeBase &opcode, const String &name) {
   clear();
   m_currentName = toLowerCase(name);
-  const OpcodeType type = opcode.getType();
-  switch(type) {
-  case OPCODE1ARG: testOpcode1Arg((Opcode1Arg&)opcode); break;
-  case OPCODE2ARG:
-  case OPCODEMOV : testOpcode2Arg((Opcode2Arg&)opcode); break;
-  default        : throwInvalidArgumentException(__TFUNCTION__,_T("type=%d, name=%s"), type, name.cstr());
+  switch(opcode.getOpCount()) {
+  case 1 : testOpcode1Arg(opcode); break;
+  case 2 : testOpcode2Arg(opcode); break;
+  default: throwInvalidArgumentException(__TFUNCTION__,_T("getOpCount()=%d, name=%s"), opcode.getOpCount(), name.cstr());
   }
 }
 
 void TestMachineCode::testInstruction0Arg(  const Instruction0Arg &ins) {
 }
 
-void TestMachineCode::testOpcode1Arg(const Opcode1Arg &opcode) {
-  if(opcode.isRegisterAllowed()) {
-    for(Iterator<const GPRegister*> regIt = m_allGPReg.getIterator(); regIt.hasNext();) {
-      const GPRegister &reg = *regIt.next();
-      if(opcode.isRegisterAllowed(reg)) {
-        emit(opcode,reg);
-      }
-    }
-  }
-//  clear();
-  if(opcode.isMemoryOperandAllowed()) {
-    for(Iterator<const InstructionOperand*> memIt = m_allMemOperands.getIterator(); memIt.hasNext();) {
-      const InstructionOperand &operand = *memIt.next();
-      if(opcode.isMemoryOperandAllowed((MemoryOperand&)operand)) {
-        emit(opcode,operand);
-      }
+void TestMachineCode::testOpcode1Arg(const OpcodeBase &opcode) {
+  for(Iterator<const InstructionOperand*> opIt = m_allOperands.getIterator(); opIt.hasNext();) {
+    const InstructionOperand &op = *opIt.next();
+    if(opcode.isValidOperand(op)) {
+      emit(opcode,op);
     }
   }
 }
 
-void TestMachineCode::testOpcode2Arg(const Opcode2Arg &opcode) {
-  if(opcode.isRegisterAllowed()) {
-    for(Iterator<const GPRegister*> regDstIt = m_allGPReg.getIterator(); regDstIt.hasNext();) {
-      const GPRegister &regDst = *regDstIt.next();
-      if(!opcode.isRegisterAllowed(regDst)) {
-        continue;
-      }
-      const InstructionOperand op1(regDst);
-      for(Iterator<const GPRegister*> regSrcIt = m_allGPReg.getIterator(); regSrcIt.hasNext();) {
-        const InstructionOperand op2(*regSrcIt.next());
-        if(opcode.isValidOperandCombination(op1,op2)) {
-          emit(opcode,op1,op2);
-        }
-      }
-    }
-  }
-//  clear();
-  if(opcode.isMemoryOperandAllowed()) {
-    for(int i = 0; i < 2; i++) { // i=0:mem<-reg, 1:reg<-mem
-      for(Iterator<const InstructionOperand*> memIt = m_allMemOperands.getIterator(); memIt.hasNext();) {
-        const InstructionOperand &memOp = *memIt.next();
-        if(opcode.isMemoryOperandAllowed((MemoryOperand&)memOp)) {
-          for(Iterator<const GPRegister*> regIt = m_allGPReg.getIterator(); regIt.hasNext();) {
-            const InstructionOperand regOp(*regIt.next());
-            if(i==0) {
-              if(opcode.isValidOperandCombination(memOp,regOp)) {
-                emit(opcode,memOp,regOp);
-              }
-            } else {
-              if(opcode.isValidOperandCombination(regOp,memOp)) {
-                emit(opcode,regOp,memOp);
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-  if(opcode.isImmediateValueAllowed()) {
-    for(Iterator<const InstructionOperand*> immIt = m_allImmOperands.getIterator(); immIt.hasNext();) {
-      const InstructionOperand &immOp = *immIt.next();
-      for(Iterator<const GPRegister*> regDstIt = m_allGPReg.getIterator(); regDstIt.hasNext();) {
-        const GPRegister &regOp = *regDstIt.next();
-        if(opcode.isValidOperandCombination(regOp, immOp)) {
-          emit(opcode,regOp,immOp);
-        }
-      }
-      if(opcode.isMemoryOperandAllowed()) {
-        for(Iterator<const InstructionOperand*> memIt = m_allMemOperands.getIterator(); memIt.hasNext();) {
-          const InstructionOperand &memOp = *memIt.next();
-          if(opcode.isValidOperandCombination(memOp, immOp)) {
-            emit(opcode,memOp,immOp);
-          }
-        }
+void TestMachineCode::testOpcode2Arg(const OpcodeBase &opcode) {
+  for(Iterator<const InstructionOperand*> opIt1 = m_allOperands.getIterator(); opIt1.hasNext();) {
+    const InstructionOperand &op1 = *opIt1.next();
+    for(Iterator<const InstructionOperand*> opIt2 = m_allOperands.getIterator(); opIt2.hasNext();) {
+      const InstructionOperand &op2 = *opIt2.next();
+      if(opcode.isValidOperandCombination(op1,op2)) {
+        emit(opcode,op1,op2);
       }
     }
   }
 }
 
 TestMachineCode::TestMachineCode() {
+  initAllOperands();
+
   TESTOPCODE(RET    );
   TESTOPCODE(CMC    );
   TESTOPCODE(CLC    );

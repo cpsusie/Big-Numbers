@@ -56,6 +56,7 @@ String toString(OperandType type);
 String formatHexValue(int v, bool showSign);
 // Convert int64-value to disassembler format
 String formatHexValue(INT64 v, bool showSign);
+String getImmSizeErrorString(const String &dst, INT64 immv);
 
 class InstructionOperand {
 private:
@@ -351,17 +352,11 @@ public:
 
 #define ALL_MEMOPSIZES         (BYTEPTR_ALLOWED | WORDPTR_ALLOWED | DWORDPTR_ALLOWED | QWORDPTR_ALLOWED | TBYTEPTR_ALLOWED | OWORDPTR_ALLOWED )
 
-typedef enum {
-  OPCODENOARG
- ,OPCODE1ARG
- ,OPCODE2ARG
- ,OPCODEMOV
- ,OPCODEMOVREGIMM
- ,OPCODEMOVMEMIMM
-} OpcodeType;
-
 class OpcodeBase {
 private:
+  static const RegSizeSet s_wordRegCapacity  , s_dwordRegCapacity, s_qwordRegCapacity;
+  static const RegSizeSet s_validImmSizeToMem, s_validImmSizeToReg;
+
   UINT m_bytes;
   // Opcode extension 0..7
   const UINT m_extension : 3;
@@ -372,19 +367,49 @@ private:
   const UINT m_flags;
 
 protected:
-  void validateOpCount(             int                             count) const;
-  void validateRegisterAllowed(     const Register                 &reg  ) const;
-  void validateMemoryOperandAllowed(const MemoryOperand            &memop) const;
-  void validateImmediateValueAllowed()                                     const;
-  void validateSameSize(            const InstructionOperand &op1, const InstructionOperand &op2) const;
+  static void throwInvalidOperandCombination(const TCHAR *method, const InstructionOperand &op1, const InstructionOperand &op2);
+  static void throwUnknownOperandType(const TCHAR *method, OperandType type);
+  bool isRegisterTypeAllowed(     RegType     type) const;
+  bool isRegisterSizeAllowed(     RegSize     size) const;
+  bool isMemoryOperandSizeAllowed(OperandSize size) const;
 
+  inline bool isRegisterAllowed() const {
+    return (getFlags() & ALL_REGISTER_TYPES) != 0;
+  }
+  inline bool isMemoryOperandAllowed() const {
+    return (getFlags() & ALL_MEMOPSIZES) != 0;
+  }
+  inline bool isImmediateValueAllowed() const {
+    return (getFlags() & IMMEDIATEVALUE_ALLOWED) != 0;
+  }
+  inline bool isRegisterAllowed(const Register &reg) const {
+    return isRegisterTypeAllowed(reg.getType()) && isRegisterSizeAllowed(reg.getSize());
+  }
+  inline bool isMemoryOperandAllowed(const MemoryOperand &memop) const {
+    return isMemoryOperandSizeAllowed(memop.getSize());
+  }
+  static bool sizeContainsSrcSize(OperandSize dstSize, OperandSize srcSize);
+
+  bool validateOpCount(                  int                       count                               , bool throwOnError) const;
+  bool validateRegisterAllowed(          const Register           &reg                                 , bool throwOnError) const;
+  bool validateMemoryOperandAllowed(     const MemoryOperand      &mem                                 , bool throwOnError) const;
+  bool validateImmediateValueAllowed(                                                                    bool throwOnError) const;
+  bool validateImmediateValue(           OperandSize dstSize           , const InstructionOperand &imm , const RegSizeSet *regSizeSet, bool throwOnError) const;
+  bool validateSameSize(                 const Register           &reg1, const Register           &reg2, bool throwOnError) const;
+  bool validateSameSize(                 const Register           &reg , const InstructionOperand &op  , bool throwOnError) const;
+  bool validateSameSize(                 const InstructionOperand &op1 , const InstructionOperand &op2 , bool throwOnError) const;
 #ifdef IS32BIT
-#define VALIDATEISREXCOMPATIBLE(reg, op)
-#else  // IS64BIT
-  void validateIsRexCompatible(     const Register           &reg, const InstructionOperand &op) const;
-#define VALIDATEISREXCOMPATIBLE(reg, op) validateIsRexCompatible(reg, op)
+  inline bool validateIsRexCompatible(   const Register           &reg , const InstructionOperand &op  , bool throwOnError) const {
+    return true;
+  }
+  inline bool validateIsRexCompatible(   const Register           &reg1, const Register           &reg2, bool throwOnError) const {
+    return true;
+  }
+#else // IS64BIT
+          bool validateIsRexCompatible(  const Register           &reg , const InstructionOperand &op  , bool throwOnError) const;
+          bool validateIsRexCompatible(  const Register           &reg1, const Register           &reg2, bool throwOnError) const;
 #endif // IS64BIT
-
+  virtual bool isValidOperandCombination(const Register           &reg , const InstructionOperand &op  , bool throwOnError) const;
 public:
   OpcodeBase(UINT op, BYTE extension, BYTE opCount, UINT flags);
 
@@ -408,28 +433,10 @@ public:
   inline UINT getFlags() const {
     return m_flags;
   }
-  virtual OpcodeType getType() const {
-    return OPCODENOARG;
-  }
-  bool        isRegisterTypeAllowed(     RegType     type) const;
-  bool        isRegisterSizeAllowed(     RegSize     size) const;
-  bool        isMemoryOperandSizeAllowed(OperandSize size) const;
-
-  inline bool isRegisterAllowed() const {
-    return (getFlags() & ALL_REGISTER_TYPES) != 0;
-  }
-  inline bool isMemoryOperandAllowed() const {
-    return (getFlags() & ALL_MEMOPSIZES) != 0;
-  }
-  inline bool isImmediateValueAllowed() const {
-    return (getFlags() & IMMEDIATEVALUE_ALLOWED) != 0;
-  }
-  inline bool isRegisterAllowed(const Register &reg) const {
-    return isRegisterTypeAllowed(reg.getType()) && isRegisterSizeAllowed(reg.getSize());
-  }
-  inline bool isMemoryOperandAllowed(const MemoryOperand &memop) const {
-    return isMemoryOperandSizeAllowed(memop.getSize());
-  }
+  virtual bool isValidOperand(           const InstructionOperand &op                                , bool throwOnError=false) const;
+  virtual bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError=false) const;
+  virtual InstructionBase operator()(    const InstructionOperand &op) const;
+  virtual InstructionBase operator()(    const InstructionOperand &op1, const InstructionOperand &op2) const;
 };
 
 class Opcode1Arg : public OpcodeBase {
@@ -438,56 +445,38 @@ public:
     : OpcodeBase(op, extension, 1, flags)
   {
   }
-  virtual InstructionBase operator()(const InstructionOperand &op) const;
-  OpcodeType getType() const {
-    return OPCODE1ARG;
-  }
+  InstructionBase operator()(const InstructionOperand &op) const;
 };
+
 class Opcode2Arg : public OpcodeBase {
-protected:
-  static const RegSizeSet s_wordRegCapacity  , s_dwordRegCapacity, s_qwordRegCapacity;
-  static const RegSizeSet s_validImmSizeToMem, s_validImmSizeToReg;
-
-  static bool sizeContainsSrcSize(OperandSize dstSize, OperandSize srcSize);
-  static void throwInvalidOperandCombination(const TCHAR *method, const InstructionOperand &op1, const InstructionOperand &op2);
-
 public :
   Opcode2Arg(UINT op, UINT flags=ALL_GPR_ALLOWED | ALL_GPRPTR_ALLOWED | IMMEDIATEVALUE_ALLOWED)
     : OpcodeBase(op, 0, 2, flags) {
   }
-  virtual InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
-  OpcodeType getType() const {
-    return OPCODE2ARG;
-  }
-  bool isValidOperandCombination(        const InstructionOperand &op1, const InstructionOperand &op2) const;
-  virtual bool isValidOperandCombination(const Register           &reg, const InstructionOperand &op) const;
+  InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
 };
 
 class OpcodeMovRegImm : public Opcode2Arg {
 public:
   OpcodeMovRegImm(BYTE op) : Opcode2Arg(op) {
   }
-  InstructionBase operator()(const Register &reg, const InstructionOperand &op) const;
-  OpcodeType getType() const {
-    return OPCODEMOVREGIMM;
-  }
-  bool isValidOperandCombination(const Register &reg, const InstructionOperand &op) const;
+  InstructionBase operator()(const Register &reg, const InstructionOperand &imm) const;
+  bool isValidOperandCombination(const Register &reg, const InstructionOperand &imm, bool throwOnError) const;
 };
 
 class OpcodeMovMemImm : public Opcode2Arg {
 public:
   OpcodeMovMemImm(BYTE op) : Opcode2Arg(op) {
   }
-  InstructionBase operator()(const MemoryOperand &memop, const InstructionOperand &op) const;
-  OpcodeType getType() const {
-    return OPCODEMOVMEMIMM;
-  }
+  InstructionBase operator()(const InstructionOperand &mem, const InstructionOperand &imm) const;
 };
 
 class OpcodeMov : public Opcode2Arg {
 private:
   const OpcodeMovRegImm m_regImmCode;
   const OpcodeMovMemImm m_memImmCode;
+protected:
+  bool isValidOperandCombination(const Register &reg, const InstructionOperand &op2, bool throwOnError) const;
 public :
   OpcodeMov(BYTE op, BYTE regImmOp, BYTE memImmOp)
     : Opcode2Arg(op)
@@ -496,16 +485,20 @@ public :
   {
   }
   InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
-  OpcodeType getType() const {
-    return OPCODEMOV;
-  }
-  bool isValidOperandCombination(const Register &reg, const InstructionOperand &op2) const;
 };
 
 class SetxxOp : public Opcode1Arg {
 public:
   SetxxOp(UINT op) : Opcode1Arg(op, 0, REGTYPE_GPR_ALLOWED | REGSIZE_BYTE_ALLOWED | BYTEPTR_ALLOWED) {
   }
+};
+
+class OpcodeShiftRot : public OpcodeBase {
+public:
+  OpcodeShiftRot(BYTE extension) : OpcodeBase(0xD2, extension, 2, ALL_GPR_ALLOWED | ALL_GPRSIZEPTR_ALLOWED | IMMEDIATEVALUE_ALLOWED) {
+  }
+  InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
+  bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError=false) const;
 };
 
 class Instruction0Arg : public InstructionBase {
@@ -582,23 +575,34 @@ extern OpcodeMov        MOV;
 
 extern Opcode1Arg       NOT;                               // Negate the operand, logical NOT
 extern Opcode1Arg       NEG;                               // Two's complement negation
-extern Opcode1Arg       MUL;                               // Unsigned multiply (ax = al*src,dx:ax=ax*src, edx:eax=eax*src,rdx:rax=rax*src)
-extern Opcode1Arg       IMUL;                              // Signed multiply   (ax = al*src,dx:ax=ax*src, edx:eax=eax*src,rdx:rax=rax*src)
+extern Opcode1Arg       MUL;                               // Unsigned multiply ah:al=al*src, dx:ax=ax*src, edx:eax=eax*src, rdx:rax=rax*src
+extern Opcode1Arg       IMUL;                              // Signed multiply   ah:ax=al*src, dx:ax=ax*src, edx:eax=eax*src, rdx:rax=rax*src
 
-extern Opcode1Arg       DIV;                               // Unsigned divide   (ax/=src,al=quot,ah=rem,   edx:eax/=src,eax=quot,edx=rem,  rdx:rax/=src,rax=quit,rdx=rem
-extern Opcode1Arg       IDIV;                              // Signed divide   ax      /= src, ah  must contain sign extension of al . al =quot, ah =rem
-                                                           //                 dk:ax   /= src. dx  must contain sign extension of ax . ax =quot, dx =rem
-                                                           //                 edx:eax /= src. edx must contain sign extension of eax. eax=quot, edx=rem
-                                                           //                 rdx:rax /= src. rdx must contain sign extension of rax. rax=quot, rdx=rem
+extern Opcode1Arg       DIV;                               // Unsigned divide   ah:al   /= src, al  = quot, ah  = rem
+                                                           //                   dx:ax   /= src, ax  = quot, dx  = rem  
+                                                           //                   edx:eax /= src, eax = quot, edx = rem  
+                                                           //                   rdx:rax /= src, rax = quot, rdx = rem
+extern Opcode1Arg       IDIV;                              // Signed divide     ah:al   /= src, al  = quot, ah  = rem. ah  must contain sign extension of al.
+                                                           //                   dx:ax   /= src. ax  = quot, dx  = rem. dx  must contain sign extension of ax.
+                                                           //                   edx:eax /= src. eax = quot, edx = rem. edx must contain sign extension of eax.
+                                                           //                   rdx:rax /= src. rax = quot, rdx = rem. rdx must contain sign extension of rax.
 
-extern Instruction0Arg CWDE;                               // Convert word to dword   Copy sign (bit 15) of AX  into higher 16 bits of EAX
-extern Instruction0Arg CBW;                                // Convert byte to word    Copy sign (bit 7)  of AL  into every bit of AH
-extern Instruction0Arg CDQ;                                // Convert dword to qword  Copy sign (bit 31) of EAX into every bit of EDX
-extern Instruction0Arg CWD;                                // Convert word to dword   Copy sign (bit 15) of AX  into every bit of DX
+extern OpcodeShiftRot   ROL;                               // Rotate left  by cl/imm
+extern OpcodeShiftRot   ROR;                               // Rotate right by cl/imm
+extern OpcodeShiftRot   RCL;                               // Rotate left  by cl/imm (with carry)
+extern OpcodeShiftRot   RCR;                               // Rotate right by cl/imm (with carry)
+extern OpcodeShiftRot   SHL;                               // Shift  left  by cl/imm                 (unsigned shift left )
+extern OpcodeShiftRot   SHR;                               // Shift  right by cl/imm                 (unsigned shift right)
+extern OpcodeShiftRot   SAR;                               // Shift  Arithmetically right by cl/imm  (signed shift   right)
+
+extern Instruction0Arg  CBW;                               // Convert byte  to word.  Sign extend AL  into AX.      Copy sign (bit  7) of AL  into higher  8 bits of AX
+extern Instruction0Arg  CWDE;                              // Convert word  to dword. Sign extend AX  into EAX.     Copy sign (bit 15) of AX  into higher 16 bits of EAX
+extern Instruction0Arg  CWD;                               // Convert word  to dword. Sign extend AX  into DX:AX.   Copy sign (bit 15) of AX  into every     bit  of DX
+extern Instruction0Arg  CDQ;                               // Convert dword to qword. Sign extend EAX into EDX:EAX. Copy sign (bit 31) of EAX into every     bit  of EDX
 
 #ifdef IS64BIT
-extern Instruction0Arg CDQE;                               // Sign extend EAX into RAX
-extern Instruction0Arg CQO;                                // Sign extend RAX into RDX:RAX
+extern Instruction0Arg  CDQE;                              // Convert dword to qword. Sign extend EAX into RAX.     Copy sign (bit 31) of EAX into higher 32 bits of RAX
+extern Instruction0Arg  CQO;                               // Convert qword to oword. Sign extend RAX into RDX:RAX. Copy sign (bit 63) of RAX into every     bit  of RDX
 #endif // IS64BIT
 
 #ifdef __NEVER__

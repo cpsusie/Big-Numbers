@@ -3,8 +3,7 @@
 
 class Instruction1Arg : public InstructionBuilder {
 public:
-  Instruction1Arg(const OpcodeBase &opcode) : InstructionBuilder(opcode)
-  {
+  Instruction1Arg(const OpcodeBase &opcode) : InstructionBuilder(opcode) {
   }
   InstructionBuilder &setRegister(const Register &reg);
 };
@@ -28,19 +27,11 @@ InstructionBuilder &Instruction1Arg::setRegister(const Register &reg) {
 }
 
 InstructionBase Opcode1Arg::operator()(const InstructionOperand &op) const {
-  validateOpCount(1);
+  isValidOperand(op, true);
   Instruction1Arg result(*this);
   switch(op.getType()) {
-  case REGISTER       :
-    validateRegisterAllowed(op.getRegister());
-    return result.setRegister(op.getRegister());
-  case MEMORYOPERAND  :
-    validateMemoryOperandAllowed((MemoryOperand&)op);
-    return result.setMemoryOperand((MemoryOperand&)op);
-  case IMMEDIATEVALUE :
-    validateImmediateValueAllowed();
-    throwException(_T("%s:Immediate value not yet implemented. (op=%s)"), __TFUNCTION__,op.toString().cstr());
-    break;
+  case REGISTER       : return result.setRegister(op.getRegister());
+  case MEMORYOPERAND  : return result.setMemoryOperand((MemoryOperand&)op);
   }
-  return result;
+  return __super::operator()(op);
 }
