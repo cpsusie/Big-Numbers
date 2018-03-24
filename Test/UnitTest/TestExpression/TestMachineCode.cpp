@@ -6,11 +6,11 @@
 
 #ifdef TEST_MACHINECODE
 
-//#define TEST_ALLGPREGISTERS
+// #define TEST_ALLGPREGISTERS
 
 static const GPRegister r8List[] = {
 #ifndef TEST_ALLGPREGISTERS
-    AL                                       ,BH
+    AL   ,CL                                 ,BH
 #else
     AL   ,CL   ,DL   ,BL   ,AH   ,CH   ,DH   ,BH
 #endif // TEST_ALLGPREGISTERS
@@ -292,7 +292,6 @@ private:
   int  emit(               const Instruction0Arg &ins   );
   int  emit(               const OpcodeBase      &opcode, const InstructionOperand &op);
   int  emit(               const OpcodeBase      &opcode, const InstructionOperand &op1, const InstructionOperand &op2);
-  void testInstruction0Arg(const Instruction0Arg &ins   );
   void testOpcode1Arg(     const OpcodeBase      &opcode);
   void testOpcode2Arg(     const OpcodeBase      &opcode);
 public:
@@ -347,9 +346,6 @@ void TestMachineCode::testOpcode(const OpcodeBase &opcode, const String &name) {
   }
 }
 
-void TestMachineCode::testInstruction0Arg(  const Instruction0Arg &ins) {
-}
-
 void TestMachineCode::testOpcode1Arg(const OpcodeBase &opcode) {
   for(Iterator<const InstructionOperand*> opIt = m_allOperands.getIterator(); opIt.hasNext();) {
     const InstructionOperand &op = *opIt.next();
@@ -360,10 +356,10 @@ void TestMachineCode::testOpcode1Arg(const OpcodeBase &opcode) {
 }
 
 void TestMachineCode::testOpcode2Arg(const OpcodeBase &opcode) {
-  for(Iterator<const InstructionOperand*> opIt1 = m_allOperands.getIterator(); opIt1.hasNext();) {
-    const InstructionOperand &op1 = *opIt1.next();
-    for(Iterator<const InstructionOperand*> opIt2 = m_allOperands.getIterator(); opIt2.hasNext();) {
-      const InstructionOperand &op2 = *opIt2.next();
+  for(Iterator<const InstructionOperand*> opIt2 = m_allOperands.getIterator(); opIt2.hasNext();) {
+    const InstructionOperand &op2 = *opIt2.next();
+    for(Iterator<const InstructionOperand*> opIt1 = m_allOperands.getIterator(); opIt1.hasNext();) {
+      const InstructionOperand &op1 = *opIt1.next();
       if(opcode.isValidOperandCombination(op1,op2)) {
         emit(opcode,op1,op2);
       }
@@ -373,6 +369,13 @@ void TestMachineCode::testOpcode2Arg(const OpcodeBase &opcode) {
 
 TestMachineCode::TestMachineCode() {
   initAllOperands();
+  TESTOPCODE(ROL    );
+  TESTOPCODE(ROR    );
+  TESTOPCODE(RCL    );
+  TESTOPCODE(RCR    );
+  TESTOPCODE(SHL    );
+  TESTOPCODE(SHR    );
+  TESTOPCODE(SAR    );
 
   TESTOPCODE(RET    );
   TESTOPCODE(CMC    );

@@ -368,6 +368,7 @@ private:
 
 protected:
   static void throwInvalidOperandCombination(const TCHAR *method, const InstructionOperand &op1, const InstructionOperand &op2);
+  static void throwInvalidOperandType(       const TCHAR *method, const InstructionOperand &op, BYTE index);
   static void throwUnknownOperandType(const TCHAR *method, OperandType type);
   bool isRegisterTypeAllowed(     RegType     type) const;
   bool isRegisterSizeAllowed(     RegSize     size) const;
@@ -494,8 +495,13 @@ public:
 };
 
 class OpcodeShiftRot : public OpcodeBase {
+private:
+  OpcodeBase m_immCode;
 public:
-  OpcodeShiftRot(BYTE extension) : OpcodeBase(0xD2, extension, 2, ALL_GPR_ALLOWED | ALL_GPRSIZEPTR_ALLOWED | IMMEDIATEVALUE_ALLOWED) {
+  OpcodeShiftRot(BYTE extension)
+    : OpcodeBase(0xD2, extension, 2, ALL_GPR_ALLOWED | ALL_GPRSIZEPTR_ALLOWED | IMMEDIATEVALUE_ALLOWED)
+    , m_immCode( 0xC0, extension, 2, ALL_GPR_ALLOWED | ALL_GPRSIZEPTR_ALLOWED | IMMEDIATEVALUE_ALLOWED)
+  {
   }
   InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
   bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError=false) const;

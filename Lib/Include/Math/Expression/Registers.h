@@ -75,13 +75,14 @@ public:
 #ifdef IS32BIT
 
 #define IS_REXCOMPATIBLE(reg,rexBytePresent) true
-
+#define REXBYTEUSAGECMP(reg1,reg2) 0
 #else  // IS64BIT
   virtual bool    isREXCompatible(bool rexBytePresent) const {
     return true;
   }
 
 #define IS_REXCOMPATIBLE(reg,rexBytePresent) ((reg).isREXCompatible(rexBytePresent))
+#define REXBYTEUSAGECMP(reg1,reg2)           ((int)(reg1).getRexByteUsage() - (int)(reg2).getRexByteUsage())
 
   virtual RexByteUsage getRexByteUsage() const {
     return REX_DONTCARE;
@@ -97,7 +98,10 @@ public:
     return format(_T("Unknown register:(type,sz,index):(%d,%d,%u"), getType(),getSize(),getIndex());
   }
   inline bool operator==(const Register &r) const {
-    return getType() == r.getType() && getSize() == r.getSize() && getIndex() == r.getIndex();
+    return (getType()                == r.getType() )
+        && (getSize()                == r.getSize() )
+        && (getIndex()               == r.getIndex())
+        && (REXBYTEUSAGECMP(*this,r) == 0           );
   }
   inline bool operator!=(const Register &r) const {
     return !(*this == r);

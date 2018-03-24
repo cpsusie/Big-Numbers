@@ -93,6 +93,14 @@ void OpcodeBase::throwInvalidOperandCombination(const TCHAR *method, const Instr
                                );
 }
 
+void OpcodeBase::throwInvalidOperandType(const TCHAR *method, const InstructionOperand &op, BYTE index) { // static
+  throwInvalidArgumentException(method
+                               ,_T("%s not a valid %d. operand")
+                               ,op.toString().cstr()
+                               ,index
+                               );
+}
+
 void OpcodeBase::throwUnknownOperandType(const TCHAR *method, OperandType type) { // static
   throwInvalidArgumentException(method, _T("OperandTye=%s"), ::toString(type).cstr());
 }

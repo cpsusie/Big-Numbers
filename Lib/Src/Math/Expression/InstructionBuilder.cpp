@@ -9,6 +9,7 @@ InstructionBuilder::InstructionBuilder(const OpcodeBase &opcode)
   , m_opcodeSize(   opcode.size()        )
   , m_opCount(      opcode.getOpCount()  )
 {
+/*
 #ifdef _DEBUG
   if(m_extension) {
     if(m_opCount > 1) {
@@ -16,6 +17,7 @@ InstructionBuilder::InstructionBuilder(const OpcodeBase &opcode)
     }
   }
 #endif // _DEBUG
+*/
   init();
   if(m_extension) {
     addExtension();
@@ -169,10 +171,18 @@ InstructionBuilder &InstructionBuilder::prefixSegReg(const SegmentRegister &reg)
   return prefix(segRegPrefix[reg.getIndex()]);
 }
 
-InstructionBuilder &InstructionBuilder::setMemoryOperand(const MemoryOperand &mop) {
-  const MemoryRef &mr = *mop.getMemoryReference();
-  if(mop.hasSegmentRegister()) {
-    prefixSegReg(mop.getSegmentRegister());
+InstructionBuilder &InstructionBuilder::setRegisterOperand(const GPRegister &reg) {
+  const BYTE    index = reg.getIndex();
+  const RegSize size  = reg.getSize();
+  setOperandSize(size).setModeBits(MR_REG(index));
+  SETREXBITS(HIGHINDEXTOREX(index,0))
+  return *this;
+}
+
+InstructionBuilder &InstructionBuilder::setMemoryOperand(const MemoryOperand &mem) {
+  const MemoryRef &mr = *mem.getMemoryReference();
+  if(mem.hasSegmentRegister()) {
+    prefixSegReg(mem.getSegmentRegister());
   }
   if(mr.isDisplaceOnly()) {
     addrDisplaceOnly(mr.getOffset());
@@ -188,5 +198,5 @@ InstructionBuilder &InstructionBuilder::setMemoryOperand(const MemoryOperand &mo
     assert(!mr.hasShift());
     addrBase(*mr.getBase(), mr.getOffset());
   }
-  return setOperandSize(mop.getSize());
+  return setOperandSize(mem.getSize());
 }

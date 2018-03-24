@@ -37,7 +37,7 @@
 #define MR_REGREG( dst,src) ENC_MODREG_BYTE(REG_MODE,dst,src)
 #define MR_SIB(    disp   ) ENC_MODREG_BYTE(disp,0,4)
 #define MR_DISPONLY         ENC_MODREG_BYTE(0   ,0,5)
-#define MR_REGIMM( dst    ) MR_REGREG(0,dst)
+#define MR_REG(    reg    ) MR_REGREG(0,reg)
 //                                  7 6 5 4 3 2 1 0
 // SIB (Scaled Index Byte) Layout: [s s i i i b b b]  (s:shift, i:inx, b:base)
 // inx != 4, shift=[0..3]. Address calculated as reg[base]+(reg[inx]<<shift) (+ displacement if any)
@@ -177,5 +177,6 @@ public:
   }
   // add MOD-REG-R/M byte if not there yet, else modeByte |= bits
   InstructionBuilder &setModeBits(BYTE bits);
-  InstructionBuilder &setMemoryOperand(const MemoryOperand &mop);
+  InstructionBuilder &setRegisterOperand(const GPRegister    &reg);
+  InstructionBuilder &setMemoryOperand(  const MemoryOperand &mem);
 };
