@@ -599,6 +599,7 @@ extern OpcodeShiftRot   RCL;                               // Rotate left  by cl
 extern OpcodeShiftRot   RCR;                               // Rotate right by cl/imm (with carry)
 extern OpcodeShiftRot   SHL;                               // Shift  left  by cl/imm                 (unsigned shift left )
 extern OpcodeShiftRot   SHR;                               // Shift  right by cl/imm                 (unsigned shift right)
+#define                 SAL SHL                            // Shift  Arithmetically left  by cl/imm  (signed shift   left - same as shl)
 extern OpcodeShiftRot   SAR;                               // Shift  Arithmetically right by cl/imm  (signed shift   right)
 
 extern Instruction0Arg  CBW;                               // Convert byte  to word.  Sign extend AL  into AX.      Copy sign (bit  7) of AL  into higher  8 bits of AX
@@ -643,120 +644,6 @@ extern Instruction0Arg  CQO;                               // Convert qword to o
 
 #define IMUL3_WORD_IMM_WORD(  r16)             WORDOP(IMUL3_DWORD_IMM_DWORD(r16))         // 2 byte operand    (r16 = src * imm word )
 #define IMUL3_WORD_IMM_BYTE(  r16)             WORDOP(IMUL3_DWORD_IMM_BYTE( r16))         // 1 byte operand    (r16 = src * imm byte )
-
-// Rotate and shifting
-
-#define ROL_BYTE                               B2OP(   0xD200                )            // Rotate left by cl
-#define ROL_DWORD                              B2OP(   0xD300                )
-#define ROL_WORD                               WORDOP( ROL_DWORD             )
-#define ROL_BYTE_IMM_BYTE                      B2OP(   0xC000                )            // 1 byte operand as shift amount
-#define ROL_DWORD_IMM_BYTE                     B2OP(   0xC100                )            // 1 byte operand as shift amount
-#define ROL_WORD_IMM_BYTE                      WORDOP( ROL_DWORD_IMM_BYTE    )            // 1 byte operand as shift amount
-
-#define ROL_R8(          r8 )                  REGREG(ROL_BYTE          ,r8 )
-#define ROL_R32(         r32)                  REGREG(ROL_DWORD         ,r32)
-#define ROL_R16(         r16)                  REGREG(ROL_WORD          ,r16)
-#define ROL_R8_IMM_BYTE( r8 )                  REGREG(ROL_BYTE_IMM_BYTE ,r8 )            // 1 byte operand as shift amount
-#define ROL_R32_IMM_BYTE(r32)                  REGREG(ROL_DWORD_IMM_BYTE,r32)            // 1 byte operand as shift amount
-#define ROL_R16_IMM_BYTE(r16)                  REGREG(ROL_WORD_IMM_BYTE ,r16)            // 1 byte operand as shift amount
-
-#define ROR_BYTE                               B2OP(   0xD208                )            // Rotate right by cl
-#define ROR_DWORD                              B2OP(   0xD308                )
-#define ROR_WORD                               WORDOP( ROR_DWORD             )
-#define ROR_BYTE_IMM_BYTE                      B2OP(   0xC008                )            // 1 byte operand as shift amount
-#define ROR_DWORD_IMM_BYTE                     B2OP(   0xC108                )            // 1 byte operand as shift amount
-#define ROR_WORD_IMM_BYTE                      WORDOP( ROR_DWORD_IMM_BYTE    )            // 1 byte operand as shift amount
-
-#define ROR_R8(          r8 )                  REGREG(ROR_BYTE          ,r8 )
-#define ROR_R32(         r32)                  REGREG(ROR_DWORD         ,r32)
-#define ROR_R16(         r16)                  REGREG(ROR_WORD          ,r16)
-#define ROR_R8_IMM_BYTE( r8 )                  REGREG(ROR_BYTE_IMM_BYTE ,r8 )            // 1 byte operand as shift amount
-#define ROR_R32_IMM_BYTE(r32)                  REGREG(ROR_DWORD_IMM_BYTE,r32)            // 1 byte operand as shift amount
-#define ROR_R16_IMM_BYTE(r16)                  REGREG(ROR_WORD_IMM_BYTE ,r16)            // 1 byte operand as shift amount
-
-#define RCL_BYTE                               B2OP(   0xD210                )            // Rotate left by cl       (with carry)
-#define RCL_DWORD                              B2OP(   0xD310                )
-#define RCL_WORD                               WORDOP( RCL_DWORD             )
-#define RCL_BYTE_IMM_BYTE                      B2OP(   0xC010                )            // 1 byte operand as shift amount
-#define RCL_DWORD_IMM_BYTE                     B2OP(   0xC110                )            // 1 byte operand as shift amount
-#define RCL_WORD_IMM_BYTE                      WORDOP( RCL_DWORD_IMM_BYTE    )            // 1 byte operand as shift amount
-
-#define RCL_R8(          r8 )                  REGREG(RCL_BYTE          ,r8 )
-#define RCL_R32(         r32)                  REGREG(RCL_DWORD         ,r32)
-#define RCL_R16(         r16)                  REGREG(RCL_WORD          ,r16)
-#define RCL_R8_IMM_BYTE( r8 )                  REGREG(RCL_BYTE_IMM_BYTE ,r8 )            // 1 byte operand as shift amount
-#define RCL_R32_IMM_BYTE(r32)                  REGREG(RCL_DWORD_IMM_BYTE,r32)            // 1 byte operand as shift amount
-#define RCL_R16_IMM_BYTE(r16)                  REGREG(RCL_WORD_IMM_BYTE ,r16)            // 1 byte operand as shift amount
-
-#define RCR_BYTE                               B2OP(   0xD218                )            // Rotate right by cl (with carry)
-#define RCR_DWORD                              B2OP(   0xD318                )
-#define RCR_WORD                               WORDOP( RCR_DWORD             )
-#define RCR_BYTE_IMM_BYTE                      B2OP(   0xC018                )            // 1 byte operand as shift amount
-#define RCR_DWORD_IMM_BYTE                     B2OP(   0xC118                )            // 1 byte operand as shift amount
-#define RCR_WORD_IMM_BYTE                      WORDOP( RCR_DWORD_IMM_BYTE    )            // 1 byte operand as shift amount
-
-#define RCR_R8(          r8 )                  REGREG(RCR_BYTE          ,r8 )
-#define RCR_R32(         r32)                  REGREG(RCR_DWORD         ,r32)
-#define RCR_R16(         r16)                  REGREG(RCR_WORD          ,r16)
-#define RCR_R8_IMM_BYTE( r8 )                  REGREG(RCR_BYTE_IMM_BYTE ,r8 )            // 1 byte operand as shift amount
-#define RCR_R32_IMM_BYTE(r32)                  REGREG(RCR_DWORD_IMM_BYTE,r32)            // 1 byte operand as shift amount
-#define RCR_R16_IMM_BYTE(r16)                  REGREG(RCR_WORD_IMM_BYTE ,r16)            // 1 byte operand as shift amount
-
-#define SHL_BYTE                               B2OP(   0xD220                )            // Shift left by cl                      (unsigned shift left )
-#define SHL_DWORD                              B2OP(   0xD320                )
-#define SHL_WORD                               WORDOP( SHL_DWORD             )
-#define SHL_BYTE_IMM_BYTE                      B2OP(   0xC020                )            // 1 byte operand as shift amount
-#define SHL_DWORD_IMM_BYTE                     B2OP(   0xC120                )            // 1 byte operand as shift amount
-#define SHL_WORD_IMM_BYTE                      WORDOP( SHL_DWORD_IMM_BYTE    )            // 1 byte operand as shift amount
-
-#define SHL_R8(          r8 )                  REGREG(SHL_BYTE          ,r8 )
-#define SHL_R32(         r32)                  REGREG(SHL_DWORD         ,r32)
-#define SHL_R16(         r16)                  REGREG(SHL_WORD          ,r16)
-#define SHL_R8_IMM_BYTE( r8 )                  REGREG(SHL_BYTE_IMM_BYTE ,r8 )            // 1 byte operand as shift amount
-#define SHL_R32_IMM_BYTE(r32)                  REGREG(SHL_DWORD_IMM_BYTE,r32)            // 1 byte operand as shift amount
-#define SHL_R16_IMM_BYTE(r16)                  REGREG(SHL_WORD_IMM_BYTE ,r16)            // 1 byte operand as shift amount
-
-#define SHR_BYTE                               B2OP(   0xD228                )            // Shift right by cl                     (unsigned shift right)
-#define SHR_DWORD                              B2OP(   0xD328                )
-#define SHR_WORD                               WORDOP( SHR_DWORD             )
-#define SHR_BYTE_IMM_BYTE                      B2OP(   0xC028                )            // 1 byte operand as shift amount
-#define SHR_DWORD_IMM_BYTE                     B2OP(   0xC128                )            // 1 byte operand as shift amount
-#define SHR_WORD_IMM_BYTE                      WORDOP( SHR_DWORD_IMM_BYTE    )            // 1 byte operand as shift amount
-
-#define SHR_R8(          r8 )                  REGREG(SHR_BYTE          ,r8 )
-#define SHR_R32(         r32)                  REGREG(SHR_DWORD         ,r32)
-#define SHR_R16(         r16)                  REGREG(SHR_WORD          ,r16)
-#define SHR_R8_IMM_BYTE( r8 )                  REGREG(SHR_BYTE_IMM_BYTE ,r8 )            // 1 byte operand as shift amount
-#define SHR_R32_IMM_BYTE(r32)                  REGREG(SHR_DWORD_IMM_BYTE,r32)            // 1 byte operand as shift amount
-#define SHR_R16_IMM_BYTE(r16)                  REGREG(SHR_WORD_IMM_BYTE ,r16)            // 1 byte operand as shift amount
-
-#define SAL_BYTE                               SHL_BYTE                                   // Shift Arithmetically left by cl       (signed shift left )
-#define SAL_DWORD                              SHL_DWORD
-#define SAL_WORD                               SHL_WORD
-#define SAL_BYTE_IMM_BYTE                      SHL_BYTE_IMM_BYTE                          // 1 byte operand as shift amount
-#define SAL_DWORD_IMM_BYTE                     SHL_DWORD_IMM_BYTE                         // 1 byte operand as shift amount
-#define SAL_WORD_IMM_BYTE                      SHL_WORD_IMM_BYTE                          // 1 byte operand as shift amount
-
-#define SAL_R8(          r8 )                  SHL_R8(                    r8 )
-#define SAL_R32(         r32)                  SHL_R32(                   r32)
-#define SAL_R16(         r16)                  SHL_R16(                   r16)
-#define SAL_R8_IMM_BYTE( r8 )                  SHL_R8_IMM_BYTE(           r8 )            // 1 byte operand as shift amount
-#define SAL_R32_IMM_BYTE(r32)                  SHL_R32_IMM_BYTE(          r32)            // 1 byte operand as shift amount
-#define SAL_R16_IMM_BYTE(r16)                  SHL_R16_IMM_BYTE(          r16)            // 1 byte operand as shift amount
-
-#define SAR_BYTE                               B2OP(   0xD238                )            // Shift Arithmetically right by cl       (signed shift right)
-#define SAR_DWORD                              B2OP(   0xD338                )
-#define SAR_WORD                               WORDOP( SAR_DWORD             )
-#define SAR_BYTE_IMM_BYTE                      B2OP(   0xC038                )            // 1 byte operand as shift amount
-#define SAR_DWORD_IMM_BYTE                     B2OP(   0xC138                )            // 1 byte operand as shift amount
-#define SAR_WORD_IMM_BYTE                      WORDOP( SAR_DWORD_IMM_BYTE    )            // 1 byte operand as shift amount
-
-#define SAR_R8(          r8 )                  REGREG(SAR_BYTE          ,r8 )
-#define SAR_R32(         r32)                  REGREG(SAR_DWORD         ,r32)
-#define SAR_R16(         r16)                  REGREG(SAR_WORD          ,r16)
-#define SAR_R8_IMM_BYTE( r8 )                  REGREG(SAR_BYTE_IMM_BYTE ,r8 )            // 1 byte operand as shift amount
-#define SAR_R32_IMM_BYTE(r32)                  REGREG(SAR_DWORD_IMM_BYTE,r32)            // 1 byte operand as shift amount
-#define SAR_R16_IMM_BYTE(r16)                  REGREG(SAR_WORD_IMM_BYTE ,r16)            // 1 byte operand as shift amount
 
 #define SHLD_DWORD(         r32)               B3OP(0x0FA500 | ((r32)<<3))                // Shift left by cl, filling opened bitpositions, by most significant bits of r32
 #define SHLD_DWORD_IMM_BYTE(r32)               B3OP(0x0FA400 | ((r32)<<3))                // 1 byte operand as shift amount
@@ -837,46 +724,6 @@ extern Instruction0Arg  CQO;                               // Convert qword to o
 
 #define IMUL3_QWORD_IMM_DWORD(r64)             REX1(IMUL3_DWORD_IMM_DWORD,r64)            // 3 args, r64,src,4 byte operand (r64 = src * imm.dword)
 #define IMUL3_QWORD_IMM_BYTE( r64)             REX1(IMUL3_DWORD_IMM_BYTE ,r64)            // 3 args. r64.src.1 byte operand (r64 = src * imm.byte )
-
-#define ROL_QWORD                              REX3(  ROL_DWORD             )
-#define ROL_QWORD_IMM_BYTE                     REX3(  ROL_DWORD_IMM_BYTE    )            // 1 byte operand as shift amount
-#define ROL_R64(            r64)               REGREG(ROL_QWORD         ,r64)
-#define ROL_R64_IMM_BYTE(   r64)               REGREG(ROL_QWORD_IMM_BYTE,r64)            // 1 byte operand as shift amount
-
-#define ROR_QWORD                              REX3(  ROR_DWORD             )
-#define ROR_QWORD_IMM_BYTE                     REX3(  ROR_DWORD_IMM_BYTE    )            // 1 byte operand as shift amount
-#define ROR_R64(            r64)               REGREG(ROR_QWORD         ,r64)
-#define ROR_R64_IMM_BYTE(   r64)               REGREG(ROR_QWORD_IMM_BYTE,r64)            // 1 byte operand as shift amount
-
-#define RCL_QWORD                              REX3(  RCL_DWORD             )
-#define RCL_QWORD_IMM_BYTE                     REX3(  RCL_DWORD_IMM_BYTE    )            // 1 byte operand as shift amount
-#define RCL_R64(            r64)               REGREG(RCL_QWORD         ,r64)
-#define RCL_R64_IMM_BYTE(   r64)               REGREG(RCL_QWORD_IMM_BYTE,r64)            // 1 byte operand as shift amount
-
-#define RCR_QWORD                              REX3(  RCR_DWORD             )
-#define RCR_QWORD_IMM_BYTE                     REX3(  RCR_DWORD_IMM_BYTE    )            // 1 byte operand as shift amount
-#define RCR_R64(            r64)               REGREG(RCR_QWORD         ,r64)
-#define RCR_R64_IMM_BYTE(   r64)               REGREG(RCR_QWORD_IMM_BYTE,r64)            // 1 byte operand as shift amount
-
-#define SHL_QWORD                              REX3(  SHL_DWORD             )
-#define SHL_QWORD_IMM_BYTE                     REX3(  SHL_DWORD_IMM_BYTE    )            // 1 byte operand as shift amount
-#define SHL_R64(            r64)               REGREG(SHL_QWORD         ,r64)
-#define SHL_R64_IMM_BYTE(   r64)               REGREG(SHL_QWORD_IMM_BYTE,r64)            // 1 byte operand as shift amount
-
-#define SHR_QWORD                              REX3(  SHR_DWORD             )
-#define SHR_QWORD_IMM_BYTE                     REX3(  SHR_DWORD_IMM_BYTE    )            // 1 byte operand as shift amount
-#define SHR_R64(            r64)               REGREG(SHR_QWORD         ,r64)
-#define SHR_R64_IMM_BYTE(   r64)               REGREG(SHR_QWORD_IMM_BYTE,r64)            // 1 byte operand as shift amount
-
-#define SAL_QWORD                              SHL_QWORD
-#define SAL_QWORD_IMM_BYTE                     SHL_QWORD_IMM_BYTE                         // 1 byte operand as shift amount
-#define SAL_R64(            r64)               SHL_R64(                  r64)
-#define SAL_R64_IMM_BYTE(   r64)               SHL_R64_IMM_BYTE(         r64)            // 1 byte operand as shift amount
-
-#define SAR_QWORD                              REX3(  SAR_DWORD             )
-#define SAR_QWORD_IMM_BYTE                     REX3(  SAR_DWORD_IMM_BYTE    )            // 1 byte operand as shift amount
-#define SAR_R64(            r64)               REGREG(SAR_QWORD         ,r64)
-#define SAR_R64_IMM_BYTE(   r64)               REGREG(SAR_QWORD_IMM_BYTE,r64)            // 1 byte operand as shift amount
 
 #define SHLD_QWORD(         r64)               REX2(SHLD_DWORD          ,r64)
 #define SHLD_QWORD_IMM_BYTE(r64)               REX2(SHLD_DWORD_IMM_BYTE ,r64)            // 1 byte operand as shift amount
