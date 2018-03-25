@@ -6,10 +6,10 @@ public:
   InstructionBitScan(const OpcodeBase &opcode) : InstructionBuilder(opcode) {
   }
   inline InstructionBuilder &setGPRegReg(const GPRegister &dst, const GPRegister &src) {
-    return *this;
+    return setRegRegOperands(dst, src);
   }
   inline InstructionBuilder &setGPRegMem(const GPRegister &dst, const MemoryOperand &src) {
-    return *this;
+    return setMemoryRegOperands(src,dst);
   }
 };
 

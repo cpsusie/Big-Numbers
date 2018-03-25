@@ -193,3 +193,18 @@ InstructionBuilder &InstructionBuilder::setMemoryOperand(const MemoryOperand &me
   }
   return setOperandSize(mem.getSize());
 }
+
+InstructionBuilder &InstructionBuilder::setMemoryRegOperands(const MemoryOperand &mem, const Register &reg) {
+  const BYTE regIndex = reg.getIndex();
+  setMemoryOperand(mem).setModeBits((regIndex&7)<<3);
+  SETREXBITS(HIGHINDEXTOREX(regIndex,2));
+  return *this;
+}
+
+InstructionBuilder &InstructionBuilder::setRegRegOperands(const Register &reg1, const Register &reg2) {
+  const BYTE    reg2Index = reg2.getIndex();
+  const BYTE    reg1Index = reg1.getIndex();
+  setDirectionBit().setOperandSize(reg2.getSize()).setModeBits(MR_REGREG(reg1Index,reg2Index)); // set direction bit
+  SETREXBITS(HIGHINDEXTOREX(reg1Index,2) | HIGHINDEXTOREX(reg2Index,0))
+  return *this;
+}
