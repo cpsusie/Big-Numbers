@@ -81,12 +81,42 @@ OpcodeShiftRot          SHR   (5    );                     // Shift right  by cl
 // OpcodeShiftRot          SH??   (6    );                 // DO WHAT?
 OpcodeShiftRot          SAR   (7    );                     // Shift Arithmetically right by cl/imm   (signed shift   right)
 
-Instruction0Arg         CWDE  (0x98);                      // Convert word to dword   Copy sign (bit 15) of AX  into higher 16 bits of EAX
-Instruction0Arg         CBW   (CWDE,REGSIZE_WORD);         // Convert byte to word    Copy sign (bit 7)  of AL  into every bit of AH
+Instruction0Arg         CWDE  (0x98);                      // Convert word  to dword  Copy sign (bit 15) of AX  into higher 16 bits of EAX
+Instruction0Arg         CBW   (CWDE,REGSIZE_WORD);         // Convert byte  to word   Copy sign (bit 7)  of AL  into higher  8 bits of AX (AH)
 Instruction0Arg         CDQ   (0x99);                      // Convert dword to qword  Copy sign (bit 31) of EAX into every bit of EDX
-Instruction0Arg         CWD   (CDQ ,REGSIZE_WORD);         // Convert word to dword   Copy sign (bit 15) of AX  into every bit of DX
+Instruction0Arg         CWD   (CDQ ,REGSIZE_WORD);         // Convert word  to dword  Copy sign (bit 15) of AX  into every bit of DX
 
 #ifdef IS64BIT
 Instruction0Arg         CDQE  (CWDE,REGSIZE_QWORD);        // Sign extend EAX into RAX
 Instruction0Arg         CQO   (CDQ ,REGSIZE_QWORD);        // Sign extend RAX into RDX:RAX
 #endif // IS64BIT
+
+StringInstruction       MOVSB (0xA4);
+StringInstruction       CMPSB (0xA6);
+StringInstruction       STOSB (0xAA);
+StringInstruction       LODSB (0xAC);
+StringInstruction       SCASB (0xAE);
+
+StringInstruction       MOVSW (MOVSB,REGSIZE_WORD);
+StringInstruction       CMPSW (CMPSB,REGSIZE_WORD);
+StringInstruction       STOSW (STOSB,REGSIZE_WORD);
+StringInstruction       LODSW (LODSB,REGSIZE_WORD);
+StringInstruction       SCASW (SCASB,REGSIZE_WORD);
+
+StringInstruction       MOVSD (MOVSB,REGSIZE_DWORD);
+StringInstruction       CMPSD (CMPSB,REGSIZE_DWORD);
+StringInstruction       STOSD (STOSB,REGSIZE_DWORD);
+StringInstruction       LODSD (LODSB,REGSIZE_DWORD);
+StringInstruction       SCASD (SCASB,REGSIZE_DWORD);
+
+#ifdef IS64BIT
+StringInstruction       MOVSQ (MOVSB,REGSIZE_QWORD);
+StringInstruction       CMPSQ (CMPSB,REGSIZE_QWORD);
+StringInstruction       STOSQ (STOSB,REGSIZE_QWORD);
+StringInstruction       LODSQ (LODSB,REGSIZE_QWORD);
+StringInstruction       SCASQ (SCASB,REGSIZE_QWORD);
+#endif // IS64BIT
+
+StringPrefix            REP   (0xF3); // Apply to INS, OUTS, MOVS, LODS, and STOS
+StringPrefix            REPE  (0xF3); // Apply to CMPS and SCAS instructions
+StringPrefix            REPNE (0xF2); // Apply to CMPS and SCAS instructions

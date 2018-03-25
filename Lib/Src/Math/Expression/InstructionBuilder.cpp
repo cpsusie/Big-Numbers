@@ -24,11 +24,11 @@ InstructionBuilder::InstructionBuilder(const OpcodeBase &opcode)
   }
 }
 
-InstructionBuilder::InstructionBuilder(const Instruction0Arg &ins0)
-  : InstructionBase(ins0       )
-  , m_extension(    0          )
-  , m_opcodeSize(   ins0.size())
-  , m_opCount(      0          )
+InstructionBuilder::InstructionBuilder(const InstructionBase &ins)
+  : InstructionBase(ins       )
+  , m_extension(    0         )
+  , m_opcodeSize(   ins.size())
+  , m_opCount(      0         )
 {
   init();
 }
@@ -56,12 +56,12 @@ InstructionBuilder &InstructionBuilder::setRexBits(BYTE bits) {
 }
 #endif // IS64BIT
 
-InstructionBuilder &InstructionBuilder::add(INT64 bytesToAdd, BYTE count) {
+InstructionBuilder &InstructionBuilder::add(const BYTE *src, BYTE count) {
   assert(m_size+count <= MAX_INSTRUCTIONSIZE);
   if(count == 1) {
-    m_bytes[m_size++] = (BYTE)bytesToAdd;
+    m_bytes[m_size++] = *src;
   } else {
-    for(BYTE *dst = m_bytes+m_size, *src = (BYTE*)&bytesToAdd, *end = src+count; src<end;) {
+    for(BYTE *dst = m_bytes+m_size, *end = dst+count; dst<end;) {
       *(dst++) = *(src++);
     }
     m_size += count;
@@ -115,7 +115,7 @@ InstructionBuilder &InstructionBuilder::addrShiftInx(const IndexRegister &inx, B
   const BYTE inxIndex = inx.getIndex();
   assert(((inxIndex&7)!=4) && (shift<=3));
   SETREXBITONHIGHINX(inxIndex,1);
-  return setModeBits(MR_SIB(0)).add(SIB_BYTE(5,inxIndex,shift)).add(offset, 4);
+  return setModeBits(MR_SIB(0)).add(SIB_BYTE(5,inxIndex,shift)).add((BYTE*)&offset, 4);
 }
 
 // ------------------------------------------------------------------------------------------
@@ -129,7 +129,7 @@ InstructionBuilder &InstructionBuilder::addrBase(const IndexRegister &base, int 
     } else if(isByte(offset)) {
       setModeBits(MR_SIB(DP_1BYTE)).add(0x24).add((char)offset);      // ptr[esp+1 byte offset] 
     } else {
-      setModeBits(MR_SIB(DP_4BYTE)).add(0x24).add(offset, 4);         // ptr[esp+4 byte offset]
+      setModeBits(MR_SIB(DP_4BYTE)).add(0x24).add((BYTE*)&offset, 4); // ptr[esp+4 byte offset]
     }
     break;
   default:
@@ -138,7 +138,7 @@ InstructionBuilder &InstructionBuilder::addrBase(const IndexRegister &base, int 
     } else if(isByte(offset)) {
       setModeBits(MR_DP1BYTE(baseIndex)).add((char)offset);           // ptr[base+1 byte offset], (base&7) != 4
     } else {
-      setModeBits(MR_DP4BYTE(baseIndex)).add(offset, 4);              // ptr[base+4 byte offset], (base&7) != 4
+      setModeBits(MR_DP4BYTE(baseIndex)).add((BYTE*)&offset, 4);      // ptr[base+4 byte offset], (base&7) != 4
     }
   }
   SETREXBITONHIGHINX(baseIndex,0);
@@ -159,7 +159,7 @@ InstructionBuilder &InstructionBuilder::addrBaseShiftInx(const IndexRegister &ba
   } else if(isByte(offset)) {
     setModeBits(MR_SIB(DP_1BYTE)).add(SIB_BYTE(baseIndex,inxIndex,shift)).add((char)offset);
   } else {
-    setModeBits(MR_SIB(DP_4BYTE)).add(SIB_BYTE(baseIndex,inxIndex,shift)).add(offset, 4);
+    setModeBits(MR_SIB(DP_4BYTE)).add(SIB_BYTE(baseIndex,inxIndex,shift)).add((BYTE*)&offset, 4);
   }
   SETREXBITSONHIGHINX2(baseIndex,inxIndex);
   return *this;

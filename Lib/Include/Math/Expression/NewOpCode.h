@@ -386,8 +386,8 @@ protected:
   inline bool isRegisterAllowed(const Register &reg) const {
     return isRegisterTypeAllowed(reg.getType()) && isRegisterSizeAllowed(reg.getSize());
   }
-  inline bool isMemoryOperandAllowed(const MemoryOperand &memop) const {
-    return isMemoryOperandSizeAllowed(memop.getSize());
+  inline bool isMemoryOperandAllowed(const MemoryOperand &mem) const {
+    return isMemoryOperandSizeAllowed(mem.getSize());
   }
   static bool sizeContainsSrcSize(OperandSize dstSize, OperandSize srcSize);
 
@@ -511,106 +511,169 @@ class Instruction0Arg : public InstructionBase {
 public:
   Instruction0Arg(UINT op) : InstructionBase(OpcodeBase(op,0,0,0)) {
   }
-  Instruction0Arg(const Instruction0Arg &ins, RegSize size);
+  Instruction0Arg(const Instruction0Arg &ins, OperandSize size);
+};
+
+class Instruction0ArgB : public Instruction0Arg {
+protected:
+  static const RegSizeSet s_validOperandSizeSet;
+public:
+  Instruction0ArgB(UINT op) : Instruction0Arg(op) {
+  }
+  Instruction0ArgB(const Instruction0Arg &ins, OperandSize size);
+  virtual bool isValidOperandSize(OperandSize size) const;
+};
+
+class StringInstruction : public Instruction0ArgB {
+public:
+  StringInstruction(UINT op) : Instruction0ArgB(op) {
+  }
+  StringInstruction(const Instruction0Arg &ins, OperandSize size) : Instruction0ArgB(ins, size) {
+  }
+};
+
+class StringPrefix : public OpcodeBase {
+public:
+  StringPrefix(BYTE op) : OpcodeBase(op,0,0,0) {
+  }
+  InstructionBase operator()(const StringInstruction &ins) const;
 };
 
 // Set Byte on Condition
-extern OpcodeSetxx      SETO;                              // Set byte   if overflow
-extern OpcodeSetxx      SETNO;                             // Set byte   if not overflow
-extern OpcodeSetxx      SETB;                              // Set byte   if below                 (unsigned)
-extern OpcodeSetxx      SETAE;                             // Set byte   if above or equal        (unsigned)
-extern OpcodeSetxx      SETE;                              // Set byte   if equal                 (signed/unsigned)
-extern OpcodeSetxx      SETNE;                             // Set byte   if not equal             (signed/unsigned)
-extern OpcodeSetxx      SETBE;                             // Set byte   if below or equal        (unsigned)
-extern OpcodeSetxx      SETA;                              // Set byte   if above                 (unsigned)
-extern OpcodeSetxx      SETS;                              // Set byte   if sign
-extern OpcodeSetxx      SETNS;                             // Set byte   if not sign
-extern OpcodeSetxx      SETPE;                             // Set byte   if parity even
-extern OpcodeSetxx      SETPO;                             // Set byte   if parity odd
-extern OpcodeSetxx      SETL;                              // Set byte   if less                  (signed  )
-extern OpcodeSetxx      SETGE;                             // Set byte   if greater or equal      (signed  )
-extern OpcodeSetxx      SETLE;                             // Set byte   if less or equal         (signed  )
-extern OpcodeSetxx      SETG;                              // Set byte   if greater               (signed  )
+extern OpcodeSetxx       SETO;                             // Set byte   if overflow
+extern OpcodeSetxx       SETNO;                            // Set byte   if not overflow
+extern OpcodeSetxx       SETB;                             // Set byte   if below                 (unsigned)
+extern OpcodeSetxx       SETAE;                            // Set byte   if above or equal        (unsigned)
+extern OpcodeSetxx       SETE;                             // Set byte   if equal                 (signed/unsigned)
+extern OpcodeSetxx       SETNE;                            // Set byte   if not equal             (signed/unsigned)
+extern OpcodeSetxx       SETBE;                            // Set byte   if below or equal        (unsigned)
+extern OpcodeSetxx       SETA;                             // Set byte   if above                 (unsigned)
+extern OpcodeSetxx       SETS;                             // Set byte   if sign
+extern OpcodeSetxx       SETNS;                            // Set byte   if not sign
+extern OpcodeSetxx       SETPE;                            // Set byte   if parity even
+extern OpcodeSetxx       SETPO;                            // Set byte   if parity odd
+extern OpcodeSetxx       SETL;                             // Set byte   if less                  (signed  )
+extern OpcodeSetxx       SETGE;                            // Set byte   if greater or equal      (signed  )
+extern OpcodeSetxx       SETLE;                            // Set byte   if less or equal         (signed  )
+extern OpcodeSetxx       SETG;                             // Set byte   if greater               (signed  )
 
-#define                 SETNAE         SETB                // Set byte   if not above or equal    (unsigned)
-#define                 SETC           SETB                // Set byte   if carry                 (unsigned)
-#define                 SETNC          SETAE               // Set byte   if not carry             (unsigned)
-#define                 SETNB          SETAE               // Set byte   if not below             (unsigned)
-#define                 SETZ           SETE                // Set byte   if 0                     (signed/unsigned)
-#define                 SETNZ          SETNE               // Set byte   if not zero              (signed/unsigned)
-#define                 SETNA          SETBE               // Set byte   if not above             (unsigned)
-#define                 SETNBE         SETA                // Set byte   if not below or equal    (unsigned)
-#define                 SETNGE         SETL                // Set byte   if not greater or equal  (signed  )
-#define                 SETNL          SETGE               // Set byte   if not less              (signed  )
-#define                 SETNG          SETLE               // Set byte   if not greater           (signed  )
-#define                 SETNLE         SETG                // Set byte   if not less or equal     (signed  )
+#define                  SETNAE         SETB               // Set byte   if not above or equal    (unsigned)
+#define                  SETC           SETB               // Set byte   if carry                 (unsigned)
+#define                  SETNC          SETAE              // Set byte   if not carry             (unsigned)
+#define                  SETNB          SETAE              // Set byte   if not below             (unsigned)
+#define                  SETZ           SETE               // Set byte   if 0                     (signed/unsigned)
+#define                  SETNZ          SETNE              // Set byte   if not zero              (signed/unsigned)
+#define                  SETNA          SETBE              // Set byte   if not above             (unsigned)
+#define                  SETNBE         SETA               // Set byte   if not below or equal    (unsigned)
+#define                  SETNGE         SETL               // Set byte   if not greater or equal  (signed  )
+#define                  SETNL          SETGE              // Set byte   if not less              (signed  )
+#define                  SETNG          SETLE              // Set byte   if not greater           (signed  )
+#define                  SETNLE         SETG               // Set byte   if not less or equal     (signed  )
 
-extern Instruction0Arg  RET;                               // Near return to calling procedure
+extern Instruction0Arg   RET;                              // Near return to calling procedure
 
-extern Instruction0Arg  CMC;                               // Complement carry flag
-extern Instruction0Arg  CLC;                               // Clear carry flag     CF = 0
-extern Instruction0Arg  STC;                               // Set   carry flag     CF = 1
-extern Instruction0Arg  CLI;                               // Clear interrupt flag IF = 0
-extern Instruction0Arg  STI;                               // Set   interrupt flag IF = 1
-extern Instruction0Arg  CLD;                               // Clear direction flag DF = 0
-extern Instruction0Arg  STD;                               // Set   direction flag DF = 1
+extern Instruction0Arg   CMC;                              // Complement carry flag
+extern Instruction0Arg   CLC;                              // Clear carry flag     CF = 0
+extern Instruction0Arg   STC;                              // Set   carry flag     CF = 1
+extern Instruction0Arg   CLI;                              // Clear interrupt flag IF = 0
+extern Instruction0Arg   STI;                              // Set   interrupt flag IF = 1
+extern Instruction0Arg   CLD;                              // Clear direction flag DF = 0
+extern Instruction0Arg   STD;                              // Set   direction flag DF = 1
 
 #ifdef IS64BIT
-extern Instruction0Arg  CLGI;                              // Clear Global Interrupt Flag
-extern Instruction0Arg  STGI;                              // Set Global Interrupt Flag
+extern Instruction0Arg   CLGI;                             // Clear Global Interrupt Flag
+extern Instruction0Arg   STGI;                             // Set Global Interrupt Flag
 #endif // IS64BIT
 
-extern Instruction0Arg  PUSHF;                             // Push FLAGS  onto stack         { sp-=2, *sp = FLAGS; }
-extern Instruction0Arg  POPF;                              // Pop  FLAGS register from stack { FLAGS = *SP; sp+=2; }
-extern Instruction0Arg  SAHF;                              // Store AH into FLAGS
-extern Instruction0Arg  LAHF;                              // Load FLAGS into AH register
+extern Instruction0Arg   PUSHF;                            // Push FLAGS  onto stack         { sp-=2, *sp = FLAGS; }
+extern Instruction0Arg   POPF;                             // Pop  FLAGS register from stack { FLAGS = *SP; sp+=2; }
+extern Instruction0Arg   SAHF;                             // Store AH into FLAGS
+extern Instruction0Arg   LAHF;                             // Load FLAGS into AH register
 
 #ifdef IS32BIT
-extern Instruction0Arg  PUSHAD;                            // Push all double-word (32-bit) registers onto stack
-extern Instruction0Arg  POPAD;                             // Pop  all double-word (32-bit) registers from stack
-extern Instruction0Arg  PUSHFD;                            // Push EFLAGS register onto stack { sp-=4, *sp = EFLAGS; }
-extern Instruction0Arg  POPFD;                             // Pop data into EFLAGS register   { EFLAGS = *SP; sp+=4; }
+extern Instruction0Arg   PUSHAD;                           // Push all double-word (32-bit) registers onto stack
+extern Instruction0Arg   POPAD;                            // Pop  all double-word (32-bit) registers from stack
+extern Instruction0Arg   PUSHFD;                           // Push EFLAGS register onto stack { sp-=4, *sp = EFLAGS; }
+extern Instruction0Arg   POPFD;                            // Pop data into EFLAGS register   { EFLAGS = *SP; sp+=4; }
 #else // IS64BIT
-extern Instruction0Arg  PUSHFQ;                            // Push RFLAGS register onto stack
-extern Instruction0Arg  POPFQ;                             // Pop data into RFLAGS register
+extern Instruction0Arg   PUSHFQ;                           // Push RFLAGS register onto stack
+extern Instruction0Arg   POPFQ;                            // Pop data into RFLAGS register
 #endif // IS64BIT
 
-extern Instruction0Arg  NOOP;
-extern Opcode2Arg       ADD,ADC,OR,AND,SUB,SBB,XOR,CMP;
-extern OpcodeMov        MOV;
+extern Instruction0Arg   NOOP;
+extern Opcode2Arg        ADD,ADC,OR,AND,SUB,SBB,XOR,CMP;
+extern OpcodeMov         MOV;
 
-extern Opcode1Arg       NOT;                               // Negate the operand, logical NOT
-extern Opcode1Arg       NEG;                               // Two's complement negation
-extern Opcode1Arg       MUL;                               // Unsigned multiply ah:al=al*src, dx:ax=ax*src, edx:eax=eax*src, rdx:rax=rax*src
-extern Opcode1Arg       IMUL;                              // Signed multiply   ah:ax=al*src, dx:ax=ax*src, edx:eax=eax*src, rdx:rax=rax*src
+extern Opcode1Arg        NOT;                              // Negate the operand, logical NOT
+extern Opcode1Arg        NEG;                              // Two's complement negation
+extern Opcode1Arg        MUL;                              // Unsigned multiply ah:al=al*src, dx:ax=ax*src, edx:eax=eax*src, rdx:rax=rax*src
+extern Opcode1Arg        IMUL;                             // Signed multiply   ah:ax=al*src, dx:ax=ax*src, edx:eax=eax*src, rdx:rax=rax*src
 
-extern Opcode1Arg       DIV;                               // Unsigned divide   ah:al   /= src, al  = quot, ah  = rem
+extern Opcode1Arg        DIV;                              // Unsigned divide   ah:al   /= src, al  = quot, ah  = rem
                                                            //                   dx:ax   /= src, ax  = quot, dx  = rem  
                                                            //                   edx:eax /= src, eax = quot, edx = rem  
                                                            //                   rdx:rax /= src, rax = quot, rdx = rem
-extern Opcode1Arg       IDIV;                              // Signed divide     ah:al   /= src, al  = quot, ah  = rem. ah  must contain sign extension of al.
+extern Opcode1Arg        IDIV;                             // Signed divide     ah:al   /= src, al  = quot, ah  = rem. ah  must contain sign extension of al.
                                                            //                   dx:ax   /= src. ax  = quot, dx  = rem. dx  must contain sign extension of ax.
                                                            //                   edx:eax /= src. eax = quot, edx = rem. edx must contain sign extension of eax.
                                                            //                   rdx:rax /= src. rax = quot, rdx = rem. rdx must contain sign extension of rax.
 
-extern OpcodeShiftRot   ROL;                               // Rotate left  by cl/imm
-extern OpcodeShiftRot   ROR;                               // Rotate right by cl/imm
-extern OpcodeShiftRot   RCL;                               // Rotate left  by cl/imm (with carry)
-extern OpcodeShiftRot   RCR;                               // Rotate right by cl/imm (with carry)
-extern OpcodeShiftRot   SHL;                               // Shift  left  by cl/imm                 (unsigned shift left )
-extern OpcodeShiftRot   SHR;                               // Shift  right by cl/imm                 (unsigned shift right)
-#define                 SAL SHL                            // Shift  Arithmetically left  by cl/imm  (signed shift   left - same as shl)
-extern OpcodeShiftRot   SAR;                               // Shift  Arithmetically right by cl/imm  (signed shift   right)
+extern OpcodeShiftRot    ROL;                              // Rotate left  by cl/imm
+extern OpcodeShiftRot    ROR;                              // Rotate right by cl/imm
+extern OpcodeShiftRot    RCL;                              // Rotate left  by cl/imm (with carry)
+extern OpcodeShiftRot    RCR;                              // Rotate right by cl/imm (with carry)
+extern OpcodeShiftRot    SHL;                              // Shift  left  by cl/imm                 (unsigned shift left )
+extern OpcodeShiftRot    SHR;                              // Shift  right by cl/imm                 (unsigned shift right)
+#define                  SAL SHL                           // Shift  Arithmetically left  by cl/imm  (signed shift   left - same as shl)
+extern OpcodeShiftRot    SAR;                              // Shift  Arithmetically right by cl/imm  (signed shift   right)
 
-extern Instruction0Arg  CBW;                               // Convert byte  to word.  Sign extend AL  into AX.      Copy sign (bit  7) of AL  into higher  8 bits of AX
-extern Instruction0Arg  CWDE;                              // Convert word  to dword. Sign extend AX  into EAX.     Copy sign (bit 15) of AX  into higher 16 bits of EAX
-extern Instruction0Arg  CWD;                               // Convert word  to dword. Sign extend AX  into DX:AX.   Copy sign (bit 15) of AX  into every     bit  of DX
-extern Instruction0Arg  CDQ;                               // Convert dword to qword. Sign extend EAX into EDX:EAX. Copy sign (bit 31) of EAX into every     bit  of EDX
+extern Instruction0Arg   CBW;                              // Convert byte  to word.  Sign extend AL  into AX.      Copy sign (bit  7) of AL  into higher  8 bits of AX
+extern Instruction0Arg   CWDE;                             // Convert word  to dword. Sign extend AX  into EAX.     Copy sign (bit 15) of AX  into higher 16 bits of EAX
+extern Instruction0Arg   CWD;                              // Convert word  to dword. Sign extend AX  into DX:AX.   Copy sign (bit 15) of AX  into every     bit  of DX
+extern Instruction0Arg   CDQ;                              // Convert dword to qword. Sign extend EAX into EDX:EAX. Copy sign (bit 31) of EAX into every     bit  of EDX
 
 #ifdef IS64BIT
-extern Instruction0Arg  CDQE;                              // Convert dword to qword. Sign extend EAX into RAX.     Copy sign (bit 31) of EAX into higher 32 bits of RAX
-extern Instruction0Arg  CQO;                               // Convert qword to oword. Sign extend RAX into RDX:RAX. Copy sign (bit 63) of RAX into every     bit  of RDX
+extern Instruction0Arg   CDQE;                             // Convert dword to qword. Sign extend EAX into RAX.     Copy sign (bit 31) of EAX into higher 32 bits of RAX
+extern Instruction0Arg   CQO;                              // Convert qword to oword. Sign extend RAX into RDX:RAX. Copy sign (bit 63) of RAX into every     bit  of RDX
 #endif // IS64BIT
+
+//#define INS_BYTE                               B1INS(0x6C)
+//#define OUTS_BYTE                              B1INS(0x6E)
+
+extern StringInstruction MOVSB;                            // Move byte from string to string; if(DF==0) *(byte*)DI++ = *(byte*)SI++;      else *(byte*)DI-- = *(byte*)SI--;
+extern StringInstruction CMPSB;                            // Compare bytes in memory        ; if(DF==0) Compares ES:[DI++] with DS:[SI++] else Compares ES:[DI--] with DS:[SI--] 
+extern StringInstruction STOSB;                            // Store byte in string           ; if(DF==0) *ES:DI++     = AL;                else *ES:DI--     = AL;
+extern StringInstruction LODSB;                            // Load string byte               ; if(DF==0)     AL       = *SI++;             else     AL       = *SI--;
+extern StringInstruction SCASB;                            // Compare byte string            ; if(DF==0) Compares ES:[DI++] with AL        else Compares ES:[DI--] with AL
+
+// Same as MOVSB...,but with WORD, and AL -> AX
+extern StringInstruction MOVSW;
+extern StringInstruction CMPSW;
+extern StringInstruction STOSW;
+extern StringInstruction LODSW;
+extern StringInstruction SCASW;
+
+// Same as MOVSB...,but with DWORD, and AL->EAX, SI->ESI,DI->EDI
+extern StringInstruction MOVSD;
+extern StringInstruction CMPSD;
+extern StringInstruction STOSD;
+extern StringInstruction LODSD;
+extern StringInstruction SCASD;
+
+#ifdef IS64BIT
+// Same as MOVSB...,but with QWORD, and AL -> RAX, SI->RSI,DI->RDI
+extern StringInstruction MOVSQ;
+extern StringInstruction CMPSQ;
+extern StringInstruction STOSQ;
+extern StringInstruction LODSQ;
+extern StringInstruction SCASQ;
+#endif // IS64BIT
+
+extern StringPrefix      REP;                              // Apply to INS, OUTS, MOVS, LODS, and STOS
+extern StringPrefix      REPE;                             // Apply to CMPS and SCAS instructions
+extern StringPrefix      REPNE;                            // Apply to CMPS and SCAS instructions
+
+
 
 #ifdef __NEVER__
 
@@ -660,32 +723,6 @@ extern Instruction0Arg  CQO;                               // Convert qword to o
 #define BSF_WORD(           r16)               WORDOP(BSF_DWORD(r16))
 #define BSR_WORD(           r16)               WORDOP(BSR_DWORD(r16))
 
-#define INS_BYTE                               B1INS(0x6C)
-#define INS_DWORD                              B1INS(0x6D)
-#define INS_WORD                               WORDOP(INS_DWORD)
-#define OUTS_BYTE                              B1INS(0x6E)
-#define OUTS_DWORD                             B1INS(0x6F)
-#define OUTS_WORD                              WORDOP(OUTS_DWORD)
-#define MOVS_BYTE                              B1INS(0xA4)
-#define MOVS_DWORD                             B1INS(0xA5)
-#define MOVS_WORD                              WORDOP(MOVS_DWORD)
-#define CMPS_BYTE                              B1INS(0xA6)
-#define CMPS_DWORD                             B1INS(0xA7)
-#define CMPS_WORD                              WORDOP(CMPS_DWORD)
-#define STOS_BYTE                              B1INS(0xAA)
-#define STOS_DWORD                             B1INS(0xAB)
-#define STOS_WORD                              WORDOP(STOS_DWORD)
-#define LODS_BYTE                              B1INS(0xAC)
-#define LODS_DWORD                             B1INS(0xAD)
-#define LODS_WORD                              WORDOP(LODS_DWORD)
-#define SCAS_BYTE                              B1INS(0xAE)
-#define SCAS_DWORD                             B1INS(0xAF)
-#define SCAS_WORD                              WORDOP(SCAS_DWORD)
-
-#define REP                                    B1INS(0xF3) // Apply to INS, OUTS, MOVS, LODS, and STOS
-#define REPE                                   B1INS(0xF3) // Apply to CMPS and SCAS instructions
-#define REPNE                                  B2INS(0xF2) // Apply to CMPS and SCAS instructions
-
 #define INC_BYTE                               B2OP(0xFE00          )
 #define INC_DWORD                              B2OP(0xFF00          )
 #define INC_R8( r8 )                           REGREG(INC_BYTE, r8  )
@@ -733,11 +770,6 @@ extern Instruction0Arg  CQO;                               // Convert qword to o
 
 #define BSF_QWORD(          r64)               REX2(BSF_DWORD           ,r64)
 #define BSR_QWORD(          r64)               REX2(BSR_DWORD           ,r64)
-
-#define CMPS_QWORD                             REX3(  CMPS_DWORD            )
-#define STOS_QWORD                             REX3(  STOS_DWORD            )
-#define LODS_QWORD                             REX3(  LODS_DWORD            )
-#define SCAS_QWORD                             REX3(  SCAS_DWORD            )
 
 #endif // IS64BIT
 

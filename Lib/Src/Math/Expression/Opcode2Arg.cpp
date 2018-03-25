@@ -46,18 +46,18 @@ InstructionBuilder &Instruction2Arg::setGPRegImm(const GPRegister &reg, int immv
     if(isByte(immv)) {
       prefixImm(IMMOP,regSize,true ).setModeBits(MR_REG(regIndex)).add((char)immv);
     } else if(regIndex == 0) {
-      or(0x04).add(immv,2).setOperandSize(regSize);
+      or(0x04).add((BYTE*)&immv,2).setOperandSize(regSize);
     } else {
-      prefixImm(IMMOP,regSize,false).setModeBits(MR_REG(regIndex)).add(immv,2);
+      prefixImm(IMMOP,regSize,false).setModeBits(MR_REG(regIndex)).add((BYTE*)&immv,2);
     }
     break;
   default           :
     if(isByte(immv)) {
       prefixImm(IMMOP,regSize,true ).setModeBits(MR_REG(regIndex)).add((char)immv);
     } else if(regIndex == 0) {
-      or(0x04).add(immv,4).setOperandSize(regSize);
+      or(0x04).add((BYTE*)&immv,4).setOperandSize(regSize);
     } else {
-      prefixImm(IMMOP,regSize,false).setModeBits(MR_REG(regIndex)).add(immv,4);
+      prefixImm(IMMOP,regSize,false).setModeBits(MR_REG(regIndex)).add((BYTE*)&immv,4);
     }
     break;
   }
@@ -83,10 +83,10 @@ InstructionBuilder &Instruction2Arg::setMemImm(const MemoryOperand &dst, int imm
     break;
   case REGSIZE_WORD :
     if(!isWord(immv)) sizeError(method,dst,immv);
-    prefixImm(IMMOP,size,isByte(immv)).setMemoryOperand(dst).add(immv,isByte(immv)?1:2);
+    prefixImm(IMMOP,size,isByte(immv)).setMemoryOperand(dst).add((BYTE*)&immv,isByte(immv)?1:2);
     break;
   default           :
-    prefixImm(IMMOP,size,isByte(immv)).setMemoryOperand(dst).add(immv,isByte(immv)?1:4);
+    prefixImm(IMMOP,size,isByte(immv)).setMemoryOperand(dst).add((BYTE*)&immv,isByte(immv)?1:4);
     break;
   }
   return *this;

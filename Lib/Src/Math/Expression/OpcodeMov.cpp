@@ -21,17 +21,17 @@ InstructionBuilder &InstructionMovImm::setGPRegImm(const GPRegister &reg, INT64 
     break;
   case REGSIZE_WORD :
     if(!isWord(immv)) sizeError(method,reg,immv);
-    or(8 | (regIndex&7)).add(immv,2).wordIns();
+    or(8 | (regIndex&7)).add((BYTE*)&immv,2).wordIns();
     break;
   case REGSIZE_DWORD :
     if(!isDword(immv)) sizeError(method,reg,immv);
-    or(8 | (regIndex&7)).add(immv,4);
+    or(8 | (regIndex&7)).add((BYTE*)&immv,4);
     break;
   case REGSIZE_QWORD :
     if(isDword(immv)) {
-      xor(0x77).add(0xC0 | (regIndex&7)).add(immv,4);
+      xor(0x77).add(0xC0 | (regIndex&7)).add((BYTE*)&immv,4);
     } else {
-      or(8 | (regIndex&7)).add(immv,8);
+      or(8 | (regIndex&7)).add((BYTE*)&immv,8);
     }
     break;
   }
@@ -49,10 +49,10 @@ InstructionBuilder &InstructionMovImm::setMemImm(const MemoryOperand &dst, int i
     break;
   case REGSIZE_WORD :
     if(!isWord(immv)) sizeError(method,dst,immv);
-    setMemoryOperand(dst).add(immv,2);
+    setMemoryOperand(dst).add((BYTE*)&immv,2);
     break;
   default:
-    setMemoryOperand(dst).add(immv,4);
+    setMemoryOperand(dst).add((BYTE*)&immv,4);
     break;
   }
   return *this;

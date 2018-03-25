@@ -267,6 +267,39 @@ AllMemoryOperands::AllMemoryOperands() {
 
 }
 
+class AllStringInstructions : public CompactArray<const StringInstruction*> {
+public:
+  AllStringInstructions();
+};
+
+AllStringInstructions::AllStringInstructions() {
+  add(&MOVSB);
+  add(&CMPSB);
+  add(&STOSB);
+  add(&LODSB);
+  add(&SCASB);
+
+  add(&MOVSW);
+  add(&CMPSW);
+  add(&STOSW);
+  add(&LODSW);
+  add(&SCASW);
+
+  add(&MOVSD);
+  add(&CMPSD);
+  add(&STOSD);
+  add(&LODSD);
+  add(&SCASD);
+
+#ifdef IS64BIT
+  add(&MOVSQ);
+  add(&CMPSQ);
+  add(&STOSQ);
+  add(&LODSQ);
+  add(&SCASQ);
+#endif // IS64BIT
+}
+
 class CodeArray : public ExecutableByteArray {
 private:
   DECLARECLASSNAME;
@@ -286,10 +319,11 @@ int CodeArray::addBytes(const void *bytes, int count) {
 class TestMachineCode : public CodeArray {
 private:
   InstructionOperandArray m_allOperands;
+  AllStringInstructions   m_allStringInstructions;
   String                  m_currentName;
   void initAllOperands();
   void clear();
-  int  emit(               const Instruction0Arg &ins   );
+  int  emit(               const InstructionBase &ins   );
   int  emit(               const OpcodeBase      &opcode, const InstructionOperand &op);
   int  emit(               const OpcodeBase      &opcode, const InstructionOperand &op1, const InstructionOperand &op2);
   void testOpcode1Arg(     const OpcodeBase      &opcode);
@@ -297,6 +331,7 @@ private:
 public:
   void testOpcode(         const OpcodeBase      &opcode, const String &name);
   void testOpcode(         const Instruction0Arg &ins   , const String &name);
+  void testOpcode(         const StringPrefix    &prefix, const String &name);
   TestMachineCode();
 };
 
@@ -314,7 +349,7 @@ void TestMachineCode::clear() {
   redirectDebugLog();
 }
 
-int TestMachineCode::emit(const Instruction0Arg &ins) {
+int TestMachineCode::emit(const InstructionBase &ins) {
   debugLog(_T("%-26s %s\n"), ins.toString().cstr(), m_currentName.cstr());
   return __super::emit(ins);
 }
@@ -367,15 +402,45 @@ void TestMachineCode::testOpcode2Arg(const OpcodeBase &opcode) {
   }
 }
 
+void TestMachineCode::testOpcode(const StringPrefix &prefix, const String &name) {
+  for(Iterator<const StringInstruction*> it = m_allStringInstructions.getIterator(); it.hasNext();) {
+    const StringInstruction &ins = *it.next();
+    emit(prefix(ins));
+  }
+}
+
 TestMachineCode::TestMachineCode() {
   initAllOperands();
-  TESTOPCODE(ROL    );
-  TESTOPCODE(ROR    );
-  TESTOPCODE(RCL    );
-  TESTOPCODE(RCR    );
-  TESTOPCODE(SHL    );
-  TESTOPCODE(SHR    );
-  TESTOPCODE(SAR    );
+
+  TESTOPCODE(MOVSB  );
+  TESTOPCODE(CMPSB  );
+  TESTOPCODE(STOSB  );
+  TESTOPCODE(LODSB  );
+  TESTOPCODE(SCASB  );
+
+  TESTOPCODE(MOVSW  );
+  TESTOPCODE(CMPSW  );
+  TESTOPCODE(STOSW  );
+  TESTOPCODE(LODSW  );
+  TESTOPCODE(SCASW  );
+
+  TESTOPCODE(MOVSD  );
+  TESTOPCODE(CMPSD  );
+  TESTOPCODE(STOSD  );
+  TESTOPCODE(LODSD  );
+  TESTOPCODE(SCASD  );
+
+#ifdef IS64BIT
+  TESTOPCODE(MOVSQ  );
+  TESTOPCODE(CMPSQ  );
+  TESTOPCODE(STOSQ  );
+  TESTOPCODE(LODSQ  );
+  TESTOPCODE(SCASQ  );
+#endif // IS64BIT
+
+  TESTOPCODE(REP    );
+  TESTOPCODE(REPE   );
+  TESTOPCODE(REPNE  );
 
   TESTOPCODE(RET    );
   TESTOPCODE(CMC    );
@@ -410,6 +475,14 @@ TestMachineCode::TestMachineCode() {
   TESTOPCODE(CLGI   );
   TESTOPCODE(STGI   );
 #endif // IS64BIT
+
+  TESTOPCODE(ROL    );
+  TESTOPCODE(ROR    );
+  TESTOPCODE(RCL    );
+  TESTOPCODE(RCR    );
+  TESTOPCODE(SHL    );
+  TESTOPCODE(SHR    );
+  TESTOPCODE(SAR    );
 
   TESTOPCODE(SETE   );
   TESTOPCODE(NOT    );

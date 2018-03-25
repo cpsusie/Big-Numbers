@@ -74,7 +74,7 @@ private:
   InstructionBuilder &addrBase(        const IndexRegister &base, int offset);
   InstructionBuilder &addrBaseShiftInx(const IndexRegister &base, const IndexRegister &inx, BYTE shift, int offset);
   inline InstructionBuilder &addrDisplaceOnly(int addr) {
-    return setModeBits(MR_DISPONLY).add(addr, 4);
+    return setModeBits(MR_DISPONLY).add((BYTE*)&addr, 4);
   }
   inline void addExtension() {
     setModeBits(m_extension << 3);
@@ -96,7 +96,7 @@ protected:
   InstructionBuilder &prefixImm(BYTE b, OperandSize size, bool immIsByte);
 public:
   InstructionBuilder(const OpcodeBase      &opcode);
-  InstructionBuilder(const Instruction0Arg &ins0  );
+  InstructionBuilder(const InstructionBase &ins   );
 
   inline BYTE getOpcodePos() const {
     return m_opcodePos;
@@ -142,7 +142,7 @@ public:
     m_bytes[m_size++] = b;
     return *this;
   }
-  InstructionBuilder &add(INT64 bytesToAdd, BYTE count);
+  InstructionBuilder &add(const BYTE *src, BYTE count);
 
   inline bool hasRexByte() const {
 #ifdef IS32BIT
