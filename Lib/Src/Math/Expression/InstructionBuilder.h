@@ -48,17 +48,18 @@
 class InstructionBuilder : public InstructionBase {
 private:
   static const RegSizeSet s_sizeBitSet;
-  const BYTE    m_extension;
-  BYTE          m_opcodePos;
-  const BYTE    m_opcodeSize;
+  const UINT   m_flags;
+  const BYTE   m_extension;
+  BYTE         m_opcodePos;
+  const BYTE   m_opcodeSize;
   // Number of operands
-  const BYTE    m_opCount;
+  const BYTE   m_opCount;
   // is MOD-REG-R/M byte added
-  bool          m_hasModeByte;
+  bool         m_hasModeByte;
 #ifdef IS64BIT
   // See RexByte.h
-  bool          m_hasRexByte;
-  BYTE          m_rexByteIndex;
+  bool         m_hasRexByte;
+  BYTE         m_rexByteIndex;
 #endif
   inline void init() {
     m_opcodePos    = 0;
@@ -96,7 +97,7 @@ protected:
   InstructionBuilder &prefixImm(BYTE b, OperandSize size, bool immIsByte);
 public:
   InstructionBuilder(const OpcodeBase      &opcode);
-  InstructionBuilder(const InstructionBase &ins   );
+  InstructionBuilder(const InstructionBase &ins   , UINT flags = 0);
 
   inline BYTE getOpcodePos() const {
     return m_opcodePos;
@@ -110,6 +111,12 @@ public:
   // Return index of MOD-REG-R/M byte. Assume it exist
   inline BYTE getModeByteIndex() const {
     return getOpcodePos() + getOpcodeSize();
+  }
+  inline bool hasSizeBit() const {
+    return (m_flags & HAS_SIZEBIT) != 0;
+  }
+  inline bool hasDirectionBit() const {
+    return (m_flags & HAS_DIRECTIONBIT) != 0;
   }
   InstructionBuilder &insert(BYTE index, BYTE b);
   inline InstructionBuilder &prefix(BYTE b) {
@@ -168,12 +175,12 @@ public:
   }
   // Set bit 0 in opcode to 1 for for 16-, 32- (and 64- bit operands)
   inline InstructionBuilder &setSizeBit() {
-    return or(m_opcodePos,1);
+    return hasSizeBit() ? or(m_opcodePos,1) : *this;
   }
   InstructionBuilder &setOperandSize(OperandSize size);
   // Set bit 1 in opcode to 1 if destination is a register
   inline InstructionBuilder &setDirectionBit() {
-    return or(m_opcodePos,2);
+    return hasDirectionBit() ? or(m_opcodePos,2) : *this;
   }
   // add MOD-REG-R/M byte if not there yet, else modeByte |= bits
   InstructionBuilder &setModeBits(BYTE bits);

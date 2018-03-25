@@ -338,6 +338,9 @@ public:
 #define TBYTEPTR_ALLOWED       0x00008000
 #define OWORDPTR_ALLOWED       0x00010000
 #define IMMEDIATEVALUE_ALLOWED 0x00020000
+#define HAS_SIZEBIT            0x00040000
+#define HAS_DIRECTIONBIT       0x00080000
+
 #ifdef IS32BIT
 #define ALL_GPRSIZE_ALLOWED     (REGSIZE_BYTE_ALLOWED | REGSIZE_WORD_ALLOWED | REGSIZE_DWORD_ALLOWED)
 #define ALL_GPRSIZEPTR_ALLOWED  (BYTEPTR_ALLOWED      | WORDPTR_ALLOWED      | DWORDPTR_ALLOWED     )
@@ -357,18 +360,19 @@ private:
   static const RegSizeSet s_wordRegCapacity  , s_dwordRegCapacity, s_qwordRegCapacity;
   static const RegSizeSet s_validImmSizeToMem, s_validImmSizeToReg;
 
-  UINT m_bytes;
+  UINT         m_bytes;
+  const UINT   m_flags;
+  const String m_mnemonic;
   // Opcode extension 0..7
-  const UINT m_extension : 3;
+  const UINT   m_extension : 3;
   // In bytes 0..3
-  const UINT m_size      : 2;
+  const UINT   m_size      : 2;
   // Number of operands
-  const UINT m_opCount   : 3;
-  const UINT m_flags;
+  const UINT   m_opCount   : 3;
 
 protected:
-  static void throwInvalidOperandCombination(const TCHAR *method, const InstructionOperand &op1, const InstructionOperand &op2);
-  static void throwInvalidOperandType(       const TCHAR *method, const InstructionOperand &op, BYTE index);
+  void throwInvalidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2) const;
+  void throwInvalidOperandType(       const InstructionOperand &op, BYTE index) const;
   static void throwUnknownOperandType(const TCHAR *method, OperandType type);
   bool isRegisterTypeAllowed(     RegType     type) const;
   bool isRegisterSizeAllowed(     RegSize     size) const;
@@ -412,8 +416,11 @@ protected:
 #endif // IS64BIT
   virtual bool isValidOperandCombination(const Register           &reg , const InstructionOperand &op  , bool throwOnError) const;
 public:
-  OpcodeBase(UINT op, BYTE extension, BYTE opCount, UINT flags);
+  OpcodeBase(const String &mnemonic, UINT op, BYTE extension, BYTE opCount, UINT flags);
 
+  const String &getMnemonic() const {
+    return m_mnemonic;
+  }
   // Size of Opcode in bytes
   inline BYTE size() const {
     return m_size;
@@ -442,8 +449,8 @@ public:
 
 class Opcode1Arg : public OpcodeBase {
 public:
-  inline Opcode1Arg(UINT op, BYTE extension, UINT flags=ALL_GPR_ALLOWED | ALL_GPRPTR_ALLOWED)
-    : OpcodeBase(op, extension, 1, flags)
+  inline Opcode1Arg(const String &mnemonic, UINT op, BYTE extension, UINT flags=ALL_GPR_ALLOWED | ALL_GPRPTR_ALLOWED | HAS_SIZEBIT)
+    : OpcodeBase(mnemonic, op, extension, 1, flags)
   {
   }
   InstructionBase operator()(const InstructionOperand &op) const;
@@ -451,15 +458,15 @@ public:
 
 class Opcode2Arg : public OpcodeBase {
 public :
-  Opcode2Arg(UINT op, UINT flags=ALL_GPR_ALLOWED | ALL_GPRPTR_ALLOWED | IMMEDIATEVALUE_ALLOWED)
-    : OpcodeBase(op, 0, 2, flags) {
+  Opcode2Arg(const String &mnemonic, UINT op, UINT flags=ALL_GPR_ALLOWED | ALL_GPRPTR_ALLOWED | IMMEDIATEVALUE_ALLOWED | HAS_SIZEBIT | HAS_DIRECTIONBIT)
+    : OpcodeBase(mnemonic, op, 0, 2, flags) {
   }
   InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
 };
 
 class OpcodeMovRegImm : public Opcode2Arg {
 public:
-  OpcodeMovRegImm(BYTE op) : Opcode2Arg(op) {
+  OpcodeMovRegImm(const String &mnemonic, BYTE op) : Opcode2Arg(mnemonic, op) {
   }
   InstructionBase operator()(const Register &reg, const InstructionOperand &imm) const;
   bool isValidOperandCombination(const Register &reg, const InstructionOperand &imm, bool throwOnError) const;
@@ -467,7 +474,7 @@ public:
 
 class OpcodeMovMemImm : public Opcode2Arg {
 public:
-  OpcodeMovMemImm(BYTE op) : Opcode2Arg(op) {
+  OpcodeMovMemImm(const String &mnemonic, BYTE op) : Opcode2Arg(mnemonic, op) {
   }
   InstructionBase operator()(const InstructionOperand &mem, const InstructionOperand &imm) const;
 };
@@ -479,10 +486,10 @@ private:
 protected:
   bool isValidOperandCombination(const Register &reg, const InstructionOperand &op2, bool throwOnError) const;
 public :
-  OpcodeMov(BYTE op, BYTE regImmOp, BYTE memImmOp)
-    : Opcode2Arg(op)
-    , m_regImmCode(regImmOp)
-    , m_memImmCode(memImmOp)
+  OpcodeMov(const String &mnemonic, BYTE op, BYTE regImmOp, BYTE memImmOp)
+    : Opcode2Arg(  mnemonic, op)
+    , m_regImmCode(mnemonic, regImmOp)
+    , m_memImmCode(mnemonic, memImmOp)
   {
   }
   InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
@@ -490,7 +497,7 @@ public :
 
 class OpcodeSetxx : public Opcode1Arg {
 public:
-  OpcodeSetxx(UINT op) : Opcode1Arg(op, 0, REGTYPE_GPR_ALLOWED | REGSIZE_BYTE_ALLOWED | BYTEPTR_ALLOWED) {
+  OpcodeSetxx(const String &mnemonic, UINT op) : Opcode1Arg(mnemonic, op, 0, REGTYPE_GPR_ALLOWED | REGSIZE_BYTE_ALLOWED | BYTEPTR_ALLOWED) {
   }
 };
 
@@ -498,43 +505,74 @@ class OpcodeShiftRot : public OpcodeBase {
 private:
   OpcodeBase m_immCode;
 public:
-  OpcodeShiftRot(BYTE extension)
-    : OpcodeBase(0xD2, extension, 2, ALL_GPR_ALLOWED | ALL_GPRSIZEPTR_ALLOWED | IMMEDIATEVALUE_ALLOWED)
-    , m_immCode( 0xC0, extension, 2, ALL_GPR_ALLOWED | ALL_GPRSIZEPTR_ALLOWED | IMMEDIATEVALUE_ALLOWED)
+  OpcodeShiftRot(const String &mnemonic, BYTE extension)
+    : OpcodeBase(mnemonic, 0xD2, extension, 2, ALL_GPR_ALLOWED | ALL_GPRSIZEPTR_ALLOWED | IMMEDIATEVALUE_ALLOWED | HAS_SIZEBIT)
+    , m_immCode( mnemonic, 0xC0, extension, 2, ALL_GPR_ALLOWED | ALL_GPRSIZEPTR_ALLOWED | IMMEDIATEVALUE_ALLOWED | HAS_SIZEBIT)
   {
   }
   InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
   bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError=false) const;
 };
 
-class Instruction0Arg : public InstructionBase {
+class OpcodeBitScan : public Opcode2Arg {
 public:
-  Instruction0Arg(UINT op) : InstructionBase(OpcodeBase(op,0,0,0)) {
+#ifdef IS32BIT
+#define BITSCAN_FLAGS (REGTYPE_GPR_ALLOWED | REGSIZE_WORD_ALLOWED | REGSIZE_DWORD_ALLOWED | WORDPTR_ALLOWED | DWORDPTR_ALLOWED)
+#else // IS64BIT
+#define BITSCAN_FLAGS (REGTYPE_GPR_ALLOWED | REGSIZE_WORD_ALLOWED | REGSIZE_DWORD_ALLOWED | REGSIZE_QWORD_ALLOWED | WORDPTR_ALLOWED | DWORDPTR_ALLOWED | QWORDPTR_ALLOWED)
+#endif // IS64BIT
+
+  OpcodeBitScan(const String &mnemonic, UINT op) : Opcode2Arg(mnemonic, op, BITSCAN_FLAGS) {
   }
-  Instruction0Arg(const Instruction0Arg &ins, OperandSize size);
+  InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
+  bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError=false) const;
+};
+
+class Instruction0Arg : public InstructionBase {
+private:
+  static const RegSizeSet s_validOperandSizeSet;
+  const String m_mnemonic;
+protected:
+  Instruction0Arg(const String &mnemonic, const InstructionBase &ins)
+    : InstructionBase(ins)
+    , m_mnemonic(toLowerCase(mnemonic))
+  {
+  }
+  void validateOperandSize(OperandSize size) const;
+public:
+  Instruction0Arg(const String &mnemonic, UINT op) 
+    : InstructionBase(OpcodeBase(mnemonic, op,0,0,0))
+    , m_mnemonic(toLowerCase(mnemonic))
+  {
+  }
+  Instruction0Arg(const String &mnemonic, const Instruction0Arg &ins, OperandSize size);
+  const String &getMnemonic() const {
+    return m_mnemonic;
+  }
+  virtual bool isValidOperandSize(OperandSize size) const;
 };
 
 class Instruction0ArgB : public Instruction0Arg {
-protected:
+private:
   static const RegSizeSet s_validOperandSizeSet;
 public:
-  Instruction0ArgB(UINT op) : Instruction0Arg(op) {
+  Instruction0ArgB(const String &mnemonic, UINT op) : Instruction0Arg(mnemonic, op) {
   }
-  Instruction0ArgB(const Instruction0Arg &ins, OperandSize size);
-  virtual bool isValidOperandSize(OperandSize size) const;
+  Instruction0ArgB(const String &mnemonic, const Instruction0Arg &ins, OperandSize size);
+  bool isValidOperandSize(OperandSize size) const;
 };
 
 class StringInstruction : public Instruction0ArgB {
 public:
-  StringInstruction(UINT op) : Instruction0ArgB(op) {
+  StringInstruction(const String &mnemonic, UINT op) : Instruction0ArgB(mnemonic, op) {
   }
-  StringInstruction(const Instruction0Arg &ins, OperandSize size) : Instruction0ArgB(ins, size) {
+  StringInstruction(const String &mnemonic, const Instruction0Arg &ins, OperandSize size) : Instruction0ArgB(mnemonic, ins, size) {
   }
 };
 
 class StringPrefix : public OpcodeBase {
 public:
-  StringPrefix(BYTE op) : OpcodeBase(op,0,0,0) {
+  StringPrefix(const String &mnemonic, BYTE op) : OpcodeBase(mnemonic,op,0,0,0) {
   }
   InstructionBase operator()(const StringInstruction &ins) const;
 };
@@ -600,9 +638,16 @@ extern Instruction0Arg   PUSHFQ;                           // Push RFLAGS regist
 extern Instruction0Arg   POPFQ;                            // Pop data into RFLAGS register
 #endif // IS64BIT
 
-extern Instruction0Arg   NOOP;
-extern Opcode2Arg        ADD,ADC,OR,AND,SUB,SBB,XOR,CMP;
-extern OpcodeMov         MOV;
+extern Instruction0Arg   NOOP;                             // No operation
+extern Opcode2Arg        ADD;                              // Integer Addition
+extern Opcode2Arg        ADC;                              // Integer Addition with Carry
+extern Opcode2Arg        OR;                               // Logical Inclusive OR
+extern Opcode2Arg        AND;                              // Logical AND
+extern Opcode2Arg        SUB;                              // Integer Subtraction
+extern Opcode2Arg        SBB;                              // Integer Subtraction with Borrow
+extern Opcode2Arg        XOR;                              // Logical Exclusive OR
+extern Opcode2Arg        CMP;                              // Compare Two Operands
+extern OpcodeMov         MOV;                              // Move data (copying)
 
 extern Opcode1Arg        NOT;                              // Negate the operand, logical NOT
 extern Opcode1Arg        NEG;                              // Two's complement negation
@@ -626,6 +671,9 @@ extern OpcodeShiftRot    SHL;                              // Shift  left  by cl
 extern OpcodeShiftRot    SHR;                              // Shift  right by cl/imm                 (unsigned shift right)
 #define                  SAL SHL                           // Shift  Arithmetically left  by cl/imm  (signed shift   left - same as shl)
 extern OpcodeShiftRot    SAR;                              // Shift  Arithmetically right by cl/imm  (signed shift   right)
+
+extern OpcodeBitScan     BSF;                              // Bitscan forward
+extern OpcodeBitScan     BSR;                              // Bitscan reversed
 
 extern Instruction0Arg   CBW;                              // Convert byte  to word.  Sign extend AL  into AX.      Copy sign (bit  7) of AL  into higher  8 bits of AX
 extern Instruction0Arg   CWDE;                             // Convert word  to dword. Sign extend AX  into EAX.     Copy sign (bit 15) of AX  into higher 16 bits of EAX

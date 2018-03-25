@@ -35,7 +35,7 @@ bool OpcodeShiftRot::isValidOperandCombination(const InstructionOperand &op1, co
     break;
   case IMMEDIATEVALUE:
     if(!throwOnError) return false;
-    throwInvalidOperandType(method,op1,1);
+    throwInvalidOperandType(op1,1);
   default:
     throwUnknownOperandType(method,op1.getType());
   }
@@ -48,7 +48,7 @@ bool OpcodeShiftRot::isValidOperandCombination(const InstructionOperand &op1, co
     break;
   case MEMORYOPERAND :
     if(!throwOnError) return false;
-    throwInvalidOperandType(method,op2,2);
+    throwInvalidOperandType(op2,2);
   case IMMEDIATEVALUE:
     if(op2.getSize() != REGSIZE_BYTE) {
       if(!throwOnError) return false;
@@ -77,6 +77,6 @@ InstructionBase OpcodeShiftRot::operator()(const InstructionOperand &op1, const 
     }
     break;
   }
-  throwInvalidOperandCombination(__TFUNCTION__,op1,op2);
-  return InstructionShiftRot(*this);
+  throwInvalidOperandCombination(op1,op2);
+  return __super::operator()(op1,op2);
 }

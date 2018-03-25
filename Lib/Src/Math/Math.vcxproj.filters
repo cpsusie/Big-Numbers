@@ -376,6 +376,9 @@
     <ClCompile Include="Expression\OpcodeShiftRot.cpp">
       <Filter>Source Files\Expression</Filter>
     </ClCompile>
+    <ClCompile Include="Expression\OpcodeBitScan.cpp">
+      <Filter>Source Files\Expression</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="NatvisFile.natvis" />

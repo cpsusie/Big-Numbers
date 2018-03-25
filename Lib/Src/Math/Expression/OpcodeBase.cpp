@@ -25,8 +25,9 @@ static inline BYTE findSize(UINT op) {
   return 4;
 }
 
-OpcodeBase::OpcodeBase(UINT op, BYTE extension, BYTE opCount, UINT flags)
-  : m_size(     findSize(op))
+OpcodeBase::OpcodeBase(const String &mnemonic, UINT op, BYTE extension, BYTE opCount, UINT flags)
+  : m_mnemonic( toLowerCase(mnemonic))
+  , m_size(     findSize(op))
   , m_extension(extension   )
   , m_opCount(  opCount     )
   , m_flags(    flags       )
@@ -37,33 +38,33 @@ OpcodeBase::OpcodeBase(UINT op, BYTE extension, BYTE opCount, UINT flags)
 
 bool OpcodeBase::isRegisterTypeAllowed(RegType type) const {
   switch(type) {
-  case REGTYPE_GPR : return (getFlags() & REGTYPE_GPR_ALLOWED) != 0;
-  case REGTYPE_FPU : return (getFlags() & REGTYPE_FPU_ALLOWED) != 0;
-  case REGTYPE_XMM : return (getFlags() & REGTYPE_XMM_ALLOWED) != 0;
+  case REGTYPE_GPR: return (getFlags() & REGTYPE_GPR_ALLOWED) != 0;
+  case REGTYPE_FPU: return (getFlags() & REGTYPE_FPU_ALLOWED) != 0;
+  case REGTYPE_XMM: return (getFlags() & REGTYPE_XMM_ALLOWED) != 0;
   }
   return false;
 }
 
 bool OpcodeBase::isRegisterSizeAllowed(RegSize size) const {
   switch(size) {
-  case REGSIZE_BYTE  : return (getFlags() & REGSIZE_BYTE_ALLOWED ) != 0;
-  case REGSIZE_WORD  : return (getFlags() & REGSIZE_WORD_ALLOWED ) != 0;
-  case REGSIZE_DWORD : return (getFlags() & REGSIZE_DWORD_ALLOWED) != 0;
-  case REGSIZE_QWORD : return (getFlags() & REGSIZE_QWORD_ALLOWED) != 0;
-  case REGSIZE_TBYTE : return (getFlags() & REGSIZE_TBYTE_ALLOWED) != 0;
-  case REGSIZE_OWORD : return (getFlags() & REGSIZE_OWORD_ALLOWED) != 0;
+  case REGSIZE_BYTE : return (getFlags() & REGSIZE_BYTE_ALLOWED ) != 0;
+  case REGSIZE_WORD : return (getFlags() & REGSIZE_WORD_ALLOWED ) != 0;
+  case REGSIZE_DWORD: return (getFlags() & REGSIZE_DWORD_ALLOWED) != 0;
+  case REGSIZE_QWORD: return (getFlags() & REGSIZE_QWORD_ALLOWED) != 0;
+  case REGSIZE_TBYTE: return (getFlags() & REGSIZE_TBYTE_ALLOWED) != 0;
+  case REGSIZE_OWORD: return (getFlags() & REGSIZE_OWORD_ALLOWED) != 0;
   }
   return false;
 }
 
 bool OpcodeBase::isMemoryOperandSizeAllowed(OperandSize size) const {
   switch(size) {
-  case REGSIZE_BYTE  : return (getFlags() & BYTEPTR_ALLOWED ) != 0;
-  case REGSIZE_WORD  : return (getFlags() & WORDPTR_ALLOWED ) != 0;
-  case REGSIZE_DWORD : return (getFlags() & DWORDPTR_ALLOWED) != 0;
-  case REGSIZE_QWORD : return (getFlags() & QWORDPTR_ALLOWED) != 0;
-  case REGSIZE_TBYTE : return (getFlags() & TBYTEPTR_ALLOWED) != 0;
-  case REGSIZE_OWORD : return (getFlags() & OWORDPTR_ALLOWED) != 0;
+  case REGSIZE_BYTE : return (getFlags() & BYTEPTR_ALLOWED ) != 0;
+  case REGSIZE_WORD : return (getFlags() & WORDPTR_ALLOWED ) != 0;
+  case REGSIZE_DWORD: return (getFlags() & DWORDPTR_ALLOWED) != 0;
+  case REGSIZE_QWORD: return (getFlags() & QWORDPTR_ALLOWED) != 0;
+  case REGSIZE_TBYTE: return (getFlags() & TBYTEPTR_ALLOWED) != 0;
+  case REGSIZE_OWORD: return (getFlags() & OWORDPTR_ALLOWED) != 0;
   }
   return false;
 }
@@ -74,31 +75,31 @@ const RegSizeSet OpcodeBase::s_qwordRegCapacity(REGSIZE_BYTE, REGSIZE_WORD, REGS
 
 bool OpcodeBase::sizeContainsSrcSize(OperandSize dstSize, OperandSize srcSize) { // static
   switch(dstSize) {
-  case REGSIZE_BYTE  : return srcSize == REGSIZE_BYTE;
-  case REGSIZE_WORD  : return s_wordRegCapacity.contains( srcSize);
-  case REGSIZE_DWORD : return s_dwordRegCapacity.contains(srcSize);
-  case REGSIZE_QWORD : return s_qwordRegCapacity.contains(srcSize);
-  default            : return false;
+  case REGSIZE_BYTE : return srcSize == REGSIZE_BYTE;
+  case REGSIZE_WORD : return s_wordRegCapacity.contains( srcSize);
+  case REGSIZE_DWORD: return s_dwordRegCapacity.contains(srcSize);
+  case REGSIZE_QWORD: return s_qwordRegCapacity.contains(srcSize);
+  default           : return false;
   }
 }
 
 const RegSizeSet OpcodeBase::s_validImmSizeToMem(   REGSIZE_BYTE, REGSIZE_WORD, REGSIZE_DWORD, REGSIZE_END);
 const RegSizeSet OpcodeBase::s_validImmSizeToReg(   REGSIZE_BYTE, REGSIZE_WORD, REGSIZE_DWORD, REGSIZE_END);
 
-void OpcodeBase::throwInvalidOperandCombination(const TCHAR *method, const InstructionOperand &op1, const InstructionOperand &op2) { // static
-  throwInvalidArgumentException(method
-                               ,_T("Invalid combination of operands:%s,%s")
-                               ,op1.toString().cstr()
-                               ,op2.toString().cstr()
-                               );
+void OpcodeBase::throwInvalidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2) const {
+  throwException(_T("%s:Invalid combination of operands:%s,%s")
+                ,getMnemonic().cstr()
+                ,op1.toString().cstr()
+                ,op2.toString().cstr()
+                );
 }
 
-void OpcodeBase::throwInvalidOperandType(const TCHAR *method, const InstructionOperand &op, BYTE index) { // static
-  throwInvalidArgumentException(method
-                               ,_T("%s not a valid %d. operand")
-                               ,op.toString().cstr()
-                               ,index
-                               );
+void OpcodeBase::throwInvalidOperandType(const InstructionOperand &op, BYTE index) const {
+  throwException(_T("%s:%s not a valid %d. operand")
+                ,getMnemonic().cstr()
+                ,op.toString().cstr()
+                ,index
+                );
 }
 
 void OpcodeBase::throwUnknownOperandType(const TCHAR *method, OperandType type) { // static
@@ -112,28 +113,28 @@ void OpcodeBase::throwUnknownOperandType(const TCHAR *method, OperandType type) 
 
 bool OpcodeBase::validateOpCount(int count, bool throwOnError) const {
   if(getOpCount() != count) {
-    RAISEERROR(_T("%d operand(s) specified. Expected %d"), count, getOpCount());
+    RAISEERROR(_T("%s:%d operand(s) specified. Expected %d"), getMnemonic().cstr(), count, getOpCount());
   }
   return true;
 }
 
 bool OpcodeBase::validateRegisterAllowed(const Register &reg, bool throwOnError) const {
   if(!isRegisterAllowed(reg)) {
-    RAISEERROR(_T("%s not allowed for this opcode"), reg.getName().cstr());
+    RAISEERROR(_T("%s:%s not allowed"), getMnemonic().cstr(), reg.getName().cstr());
   }
   return true;
 }
 
-bool OpcodeBase::validateMemoryOperandAllowed(const MemoryOperand &memop, bool throwOnError) const {
-  if(!isMemoryOperandAllowed(memop)) {
-    RAISEERROR(_T("%s not allowed for this opcode"), memop.toString().cstr());
+bool OpcodeBase::validateMemoryOperandAllowed(const MemoryOperand &mem, bool throwOnError) const {
+  if(!isMemoryOperandAllowed(mem)) {
+    RAISEERROR(_T("%s:%s not allowed"), getMnemonic().cstr(), mem.toString().cstr());
   }
   return true;
 }
 
 bool OpcodeBase::validateImmediateValueAllowed(bool throwOnError) const {
   if(!isImmediateValueAllowed()) {
-    RAISEERROR(_T("Immediate value not allowed for this opcode"));
+    RAISEERROR(_T("%s:Immediate value not allowed"), getMnemonic().cstr());
   }
   return true;
 }
@@ -185,7 +186,7 @@ bool OpcodeBase::validateSameSize(const InstructionOperand &op1, const Instructi
     if(!throwOnError) {
       return false;
     }
-    throwInvalidOperandCombination(__TFUNCTION__,op1,op2);
+    throwInvalidOperandCombination(op1,op2);
   }
   return true;
 }
@@ -299,7 +300,7 @@ bool OpcodeBase::isValidOperandCombination(const InstructionOperand &op1, const 
       }
       break;
     case MEMORYOPERAND  : // mem <- mem:ERROR
-      RAISEERROR(_T("Invalid combination of operands:%s,%s"), op1.toString().cstr(), op2.toString().cstr());
+      RAISEERROR(_T("%s:Invalid combination of operands:%s,%s"), getMnemonic().cstr(), op1.toString().cstr(), op2.toString().cstr());
       break;
     case IMMEDIATEVALUE : // mem <- imm
       if(!validateImmediateValue(op1.getSize(), op2, &s_validImmSizeToMem, throwOnError)) {
@@ -311,7 +312,7 @@ bool OpcodeBase::isValidOperandCombination(const InstructionOperand &op1, const 
     }
     break;
   case IMMEDIATEVALUE : // imm <- reg/mem:ERROR
-    RAISEERROR(_T("Invalid combination of operands:%s,%s"), op1.toString().cstr(), op2.toString().cstr());
+    RAISEERROR(_T("%s:Invalid combination of operands:%s,%s"), getMnemonic().cstr(), op1.toString().cstr(), op2.toString().cstr());
     break;
   default              :
     throwUnknownOperandType(__TFUNCTION__,op1.getType());

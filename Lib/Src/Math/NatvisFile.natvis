@@ -49,4 +49,10 @@
   <Type Name="MemoryRef">
     <DisplayString>{m_debugStr.m_buf,su}</DisplayString>
   </Type>
+  <Type Name="OpcodeBase">
+    <DisplayString>{m_mnemonic.m_buf,su}</DisplayString>
+  </Type>
+  <Type Name="Instruction0Arg">
+    <DisplayString>{m_mnemonic.m_buf,su}</DisplayString>
+  </Type>
 </AutoVisualizer>

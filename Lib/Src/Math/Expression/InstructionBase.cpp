@@ -1,6 +1,9 @@
 #include "pch.h"
 #include "InstructionBuilder.h"
 
+#pragma warning(disable : 4073)
+#pragma init_seg(lib)
+
 InstructionBase::InstructionBase(const OpcodeBase &opcode)
   : m_size(opcode.size())
 {
@@ -20,7 +23,23 @@ String InstructionBase::toString() const {
   return result;
 }
 
-Instruction0Arg::Instruction0Arg(const Instruction0Arg &ins, OperandSize size) : InstructionBase(ins) {
+#ifdef IS32BIT
+const RegSizeSet Instruction0Arg::s_validOperandSizeSet(REGSIZE_WORD, REGSIZE_END);
+#else // IS64BIT
+const RegSizeSet Instruction0Arg::s_validOperandSizeSet(REGSIZE_WORD, REGSIZE_QWORD, REGSIZE_END);
+#endif // IS64BIT
+
+bool Instruction0Arg::isValidOperandSize(OperandSize size) const {
+  return s_validOperandSizeSet.contains(size);
+}
+
+Instruction0Arg::Instruction0Arg(const String &mnemonic, const Instruction0Arg &ins, OperandSize size) 
+  : InstructionBase(ins)
+  , m_mnemonic(toLowerCase(mnemonic))
+{
+  validateOperandSize(size);
+  (*(InstructionBase*)this) = InstructionBuilder(*this).setOperandSize(size);
+#ifdef __NEVER__
   InstructionBuilder ib(*this);
   switch(size) {
   case REGSIZE_WORD :
@@ -32,23 +51,28 @@ Instruction0Arg::Instruction0Arg(const Instruction0Arg &ins, OperandSize size) :
     break;
 #endif // IS64BIT
   default           :
-    throwInvalidArgumentException(__TFUNCTION__,_T("size=%s"), ::toString(size).cstr());
+    throwInvalidArgumentException(__TFUNCTION__,_T("%s:size=%s"), getMnemonic().cstr(), ::toString(size).cstr());
   }
-  *this = (Instruction0Arg&)ib;
+  (*(InstructionBase*)this) = ib;
+#endif
 }
 
-Instruction0ArgB::Instruction0ArgB(const Instruction0Arg &ins, OperandSize size) : Instruction0Arg(ins) {
+void Instruction0Arg::validateOperandSize(OperandSize size) const {
   if(!isValidOperandSize(size)) {
     throwInvalidArgumentException(__TFUNCTION__
-                                 ,_T("%s not a valid size")
+                                 ,_T("%s:%s not a valid size")
+                                 ,getMnemonic().cstr()
                                  ,::toString(size).cstr()
                                  );
   }
-  *this = (Instruction0ArgB&)(InstructionBase&)InstructionBuilder(*this).setOperandSize(size);
 }
 
-#pragma warning(disable : 4073)
-#pragma init_seg(lib)
+Instruction0ArgB::Instruction0ArgB(const String &mnemonic, const Instruction0Arg &ins, OperandSize size)
+: Instruction0Arg(mnemonic, ins)
+{
+  validateOperandSize(size);
+  (*(InstructionBase*)this) = InstructionBuilder(*this, HAS_SIZEBIT).setOperandSize(size);
+}
 
 #ifdef IS32BIT
 const RegSizeSet Instruction0ArgB::s_validOperandSizeSet(REGSIZE_BYTE, REGSIZE_WORD, REGSIZE_DWORD, REGSIZE_END);

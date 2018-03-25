@@ -5,27 +5,20 @@ const RegSizeSet InstructionBuilder::s_sizeBitSet(REGSIZE_WORD ,REGSIZE_DWORD ,R
 
 InstructionBuilder::InstructionBuilder(const OpcodeBase &opcode)
   : InstructionBase(opcode               )
+  , m_flags(        opcode.getFlags()    )
   , m_extension(    opcode.getExtension())
   , m_opcodeSize(   opcode.size()        )
   , m_opCount(      opcode.getOpCount()  )
 {
-/*
-#ifdef _DEBUG
-  if(m_extension) {
-    if(m_opCount > 1) {
-      throwInvalidArgumentException(__TFUNCTION__,_T("extension=%d, opCount=%d"), m_extension, m_opCount);
-    }
-  }
-#endif // _DEBUG
-*/
   init();
   if(m_extension) {
     addExtension();
   }
 }
 
-InstructionBuilder::InstructionBuilder(const InstructionBase &ins)
+InstructionBuilder::InstructionBuilder(const InstructionBase &ins, UINT flags)
   : InstructionBase(ins       )
+  , m_flags(        flags     )
   , m_extension(    0         )
   , m_opcodeSize(   ins.size())
   , m_opCount(      0         )

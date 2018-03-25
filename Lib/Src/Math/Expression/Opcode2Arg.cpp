@@ -116,6 +116,6 @@ InstructionBase Opcode2Arg::operator()(const InstructionOperand &op1, const Inst
       return result.setMemImm((MemoryOperand&)op1, op2.getImmInt32());
     }
   }
-  throwInvalidOperandCombination(__TFUNCTION__,op1,op2);
+  throwInvalidOperandCombination(op1,op2);
   return result;
 }

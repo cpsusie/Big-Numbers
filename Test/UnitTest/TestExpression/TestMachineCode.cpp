@@ -329,9 +329,9 @@ private:
   void testOpcode1Arg(     const OpcodeBase      &opcode);
   void testOpcode2Arg(     const OpcodeBase      &opcode);
 public:
-  void testOpcode(         const OpcodeBase      &opcode, const String &name);
-  void testOpcode(         const Instruction0Arg &ins   , const String &name);
-  void testOpcode(         const StringPrefix    &prefix, const String &name);
+  void testOpcode(         const OpcodeBase      &opcode);
+  void testOpcode(         const Instruction0Arg &ins   );
+  void testOpcode(         const StringPrefix    &prefix);
   TestMachineCode();
 };
 
@@ -366,18 +366,17 @@ int TestMachineCode::emit(const OpcodeBase &opcode, const InstructionOperand &op
   return __super::emit(ins);
 }
 
-#define TESTOPCODE(opcode) testOpcode(opcode, _T(#opcode))
-void TestMachineCode::testOpcode(const Instruction0Arg &ins, const String &name) {
-  m_currentName = toLowerCase(name);
+void TestMachineCode::testOpcode(const Instruction0Arg &ins) {
+  m_currentName = ins.getMnemonic();
   emit(ins);
 }
-void TestMachineCode::testOpcode(const OpcodeBase &opcode, const String &name) {
+void TestMachineCode::testOpcode(const OpcodeBase &opcode) {
   clear();
-  m_currentName = toLowerCase(name);
+  m_currentName = opcode.getMnemonic();
   switch(opcode.getOpCount()) {
   case 1 : testOpcode1Arg(opcode); break;
   case 2 : testOpcode2Arg(opcode); break;
-  default: throwInvalidArgumentException(__TFUNCTION__,_T("getOpCount()=%d, name=%s"), opcode.getOpCount(), name.cstr());
+  default: throwInvalidArgumentException(__TFUNCTION__,_T("%s.getOpCount()=%d"), opcode.getMnemonic().cstr(), opcode.getOpCount());
   }
 }
 
@@ -402,7 +401,8 @@ void TestMachineCode::testOpcode2Arg(const OpcodeBase &opcode) {
   }
 }
 
-void TestMachineCode::testOpcode(const StringPrefix &prefix, const String &name) {
+void TestMachineCode::testOpcode(const StringPrefix &prefix) {
+  m_currentName = prefix.getMnemonic();
   for(Iterator<const StringInstruction*> it = m_allStringInstructions.getIterator(); it.hasNext();) {
     const StringInstruction &ins = *it.next();
     emit(prefix(ins));
@@ -412,89 +412,92 @@ void TestMachineCode::testOpcode(const StringPrefix &prefix, const String &name)
 TestMachineCode::TestMachineCode() {
   initAllOperands();
 
-  TESTOPCODE(MOVSB  );
-  TESTOPCODE(CMPSB  );
-  TESTOPCODE(STOSB  );
-  TESTOPCODE(LODSB  );
-  TESTOPCODE(SCASB  );
+  testOpcode(MOVSB  );
+  testOpcode(CMPSB  );
+  testOpcode(STOSB  );
+  testOpcode(LODSB  );
+  testOpcode(SCASB  );
 
-  TESTOPCODE(MOVSW  );
-  TESTOPCODE(CMPSW  );
-  TESTOPCODE(STOSW  );
-  TESTOPCODE(LODSW  );
-  TESTOPCODE(SCASW  );
+  testOpcode(MOVSW  );
+  testOpcode(CMPSW  );
+  testOpcode(STOSW  );
+  testOpcode(LODSW  );
+  testOpcode(SCASW  );
 
-  TESTOPCODE(MOVSD  );
-  TESTOPCODE(CMPSD  );
-  TESTOPCODE(STOSD  );
-  TESTOPCODE(LODSD  );
-  TESTOPCODE(SCASD  );
+  testOpcode(MOVSD  );
+  testOpcode(CMPSD  );
+  testOpcode(STOSD  );
+  testOpcode(LODSD  );
+  testOpcode(SCASD  );
 
 #ifdef IS64BIT
-  TESTOPCODE(MOVSQ  );
-  TESTOPCODE(CMPSQ  );
-  TESTOPCODE(STOSQ  );
-  TESTOPCODE(LODSQ  );
-  TESTOPCODE(SCASQ  );
+  testOpcode(MOVSQ  );
+  testOpcode(CMPSQ  );
+  testOpcode(STOSQ  );
+  testOpcode(LODSQ  );
+  testOpcode(SCASQ  );
 #endif // IS64BIT
 
-  TESTOPCODE(REP    );
-  TESTOPCODE(REPE   );
-  TESTOPCODE(REPNE  );
+  testOpcode(REP    );
+  testOpcode(REPE   );
+  testOpcode(REPNE  );
 
-  TESTOPCODE(RET    );
-  TESTOPCODE(CMC    );
-  TESTOPCODE(CLC    );
-  TESTOPCODE(STC    );
-  TESTOPCODE(CLI    );
-  TESTOPCODE(STI    );
-  TESTOPCODE(CLD    );
-  TESTOPCODE(STD    );
-  TESTOPCODE(SAHF   );
-  TESTOPCODE(LAHF   );
-  TESTOPCODE(PUSHF  );
-  TESTOPCODE(POPF   );
+  testOpcode(RET    );
+  testOpcode(CMC    );
+  testOpcode(CLC    );
+  testOpcode(STC    );
+  testOpcode(CLI    );
+  testOpcode(STI    );
+  testOpcode(CLD    );
+  testOpcode(STD    );
+  testOpcode(SAHF   );
+  testOpcode(LAHF   );
+  testOpcode(PUSHF  );
+  testOpcode(POPF   );
 #ifdef IS32BIT
-  TESTOPCODE(PUSHFD );
-  TESTOPCODE(POPFD  );
-  TESTOPCODE(PUSHAD );
-  TESTOPCODE(POPAD  );
+  testOpcode(PUSHFD );
+  testOpcode(POPFD  );
+  testOpcode(PUSHAD );
+  testOpcode(POPAD  );
 #else // IS64BIT
-  TESTOPCODE(PUSHFQ );
-  TESTOPCODE(POPFQ  );
+  testOpcode(PUSHFQ );
+  testOpcode(POPFQ  );
 #endif // IS64BIT
-  TESTOPCODE(NOOP   );
-  TESTOPCODE(CBW    );
-  TESTOPCODE(CWDE   );
-  TESTOPCODE(CWD    );
-  TESTOPCODE(CDQ    );
+  testOpcode(NOOP   );
+  testOpcode(CBW    );
+  testOpcode(CWDE   );
+  testOpcode(CWD    );
+  testOpcode(CDQ    );
 
 #ifdef IS64BIT
-  TESTOPCODE(CDQE   );
-  TESTOPCODE(CQO    );
-  TESTOPCODE(CLGI   );
-  TESTOPCODE(STGI   );
+  testOpcode(CDQE   );
+  testOpcode(CQO    );
+  testOpcode(CLGI   );
+  testOpcode(STGI   );
 #endif // IS64BIT
 
-  TESTOPCODE(ROL    );
-  TESTOPCODE(ROR    );
-  TESTOPCODE(RCL    );
-  TESTOPCODE(RCR    );
-  TESTOPCODE(SHL    );
-  TESTOPCODE(SHR    );
-  TESTOPCODE(SAR    );
+  testOpcode(BSF    );
+  testOpcode(BSR    );
 
-  TESTOPCODE(SETE   );
-  TESTOPCODE(NOT    );
-  TESTOPCODE(NEG    );
-  TESTOPCODE(MUL    );
-  TESTOPCODE(IMUL   );
-  TESTOPCODE(DIV    );
-  TESTOPCODE(IDIV   );
-  TESTOPCODE(ADD    );
-  TESTOPCODE(ADC    );
-  TESTOPCODE(XOR    );
-  TESTOPCODE(MOV    );
+  testOpcode(ROL    );
+  testOpcode(ROR    );
+  testOpcode(RCL    );
+  testOpcode(RCR    );
+  testOpcode(SHL    );
+  testOpcode(SHR    );
+  testOpcode(SAR    );
+
+  testOpcode(SETE   );
+  testOpcode(NOT    );
+  testOpcode(NEG    );
+  testOpcode(MUL    );
+  testOpcode(IMUL   );
+  testOpcode(DIV    );
+  testOpcode(IDIV   );
+  testOpcode(ADD    );
+  testOpcode(ADC    );
+  testOpcode(XOR    );
+  testOpcode(MOV    );
 }
 
 #endif // TEST_MACHINECODE
@@ -528,6 +531,7 @@ void assemblerCode() {
   __asm {
 //    mov startIP, es
     jmp         End
+
 
     pushf
     popf

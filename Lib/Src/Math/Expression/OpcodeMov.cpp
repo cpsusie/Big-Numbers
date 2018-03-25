@@ -96,7 +96,7 @@ InstructionBase OpcodeMov::operator()(const InstructionOperand &op1, const Instr
     switch(op1.getType()) {
     case REGISTER     : return m_regImmCode(op1.getRegister()  , op2);
     case MEMORYOPERAND: return m_memImmCode(op1, op2);
-    default           : throwInvalidOperandCombination(__TFUNCTION__,op1,op2);
+    default           : throwInvalidOperandCombination(op1,op2);
                         return __super::operator()(op1,op2); // should never come here
     }
   }
