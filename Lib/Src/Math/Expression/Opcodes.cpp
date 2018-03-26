@@ -90,6 +90,9 @@ DEFNAME(OpcodeShiftRot   ,  SHR   ,5     );                // Shift right  by cl
 // OpcodeShiftRot          SH??   (6     );                // DO WHAT?
 DEFNAME(OpcodeShiftRot   ,  SAR   ,7     );                // Shift Arithmetically right by cl/imm   (signed shift   right)
 
+DEFNAME(OpcodeDoubleShift,  SHLD  ,0x0FA5,0x0FA4);         // Shift left  by cl/imm, filling opened bitpositions, by most significant bits of reg
+DEFNAME(OpcodeDoubleShift,  SHRD  ,0x0FAD,0x0FAC);         // Shift right by cl/imm, filling opened bitpositions, by least significant bits of reg
+
 DEFNAME(OpcodeBitScan    ,  BSF   ,0x0FBC);                // Bitscan forward
 DEFNAME(OpcodeBitScan    ,  BSR   ,0x0FBD);                // Bitscan reversed
 

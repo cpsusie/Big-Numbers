@@ -326,8 +326,10 @@ private:
   int  emit(               const InstructionBase &ins   );
   int  emit(               const OpcodeBase      &opcode, const InstructionOperand &op);
   int  emit(               const OpcodeBase      &opcode, const InstructionOperand &op1, const InstructionOperand &op2);
+  int  emit(               const OpcodeBase      &opcode, const InstructionOperand &op1, const InstructionOperand &op2, const InstructionOperand &op3);
   void testOpcode1Arg(     const OpcodeBase      &opcode);
   void testOpcode2Arg(     const OpcodeBase      &opcode);
+  void testOpcode3Arg(     const OpcodeBase      &opcode);
 public:
   void testOpcode(         const OpcodeBase      &opcode);
   void testOpcode(         const Instruction0Arg &ins   );
@@ -366,6 +368,12 @@ int TestMachineCode::emit(const OpcodeBase &opcode, const InstructionOperand &op
   return __super::emit(ins);
 }
 
+int TestMachineCode::emit(const OpcodeBase &opcode, const InstructionOperand &op1, const InstructionOperand &op2, const InstructionOperand &op3) {
+  const InstructionBase ins = opcode(op1,op2,op3);
+  debugLog(_T("%-26s %s %s,%s,%s\n"), ins.toString().cstr(), m_currentName.cstr(), op1.toString().cstr(), op2.toString().cstr(),op3.toString().cstr());
+  return __super::emit(ins);
+}
+
 void TestMachineCode::testOpcode(const Instruction0Arg &ins) {
   m_currentName = ins.getMnemonic();
   emit(ins);
@@ -376,6 +384,7 @@ void TestMachineCode::testOpcode(const OpcodeBase &opcode) {
   switch(opcode.getOpCount()) {
   case 1 : testOpcode1Arg(opcode); break;
   case 2 : testOpcode2Arg(opcode); break;
+  case 3 : testOpcode3Arg(opcode); break;
   default: throwInvalidArgumentException(__TFUNCTION__,_T("%s.getOpCount()=%d"), opcode.getMnemonic().cstr(), opcode.getOpCount());
   }
 }
@@ -396,6 +405,22 @@ void TestMachineCode::testOpcode2Arg(const OpcodeBase &opcode) {
       const InstructionOperand &op1 = *opIt1.next();
       if(opcode.isValidOperandCombination(op1,op2)) {
         emit(opcode,op1,op2);
+      }
+    }
+  }
+}
+
+void TestMachineCode::testOpcode3Arg(const OpcodeBase &opcode) {
+  for(Iterator<const InstructionOperand*> opIt3 = m_allOperands.getIterator(); opIt3.hasNext();) {
+    const InstructionOperand &op3 = *opIt3.next();
+    if(!op3.isShiftAmountOperand()) continue;
+    for(Iterator<const InstructionOperand*> opIt2 = m_allOperands.getIterator(); opIt2.hasNext();) {
+      const InstructionOperand &op2 = *opIt2.next();
+      for(Iterator<const InstructionOperand*> opIt1 = m_allOperands.getIterator(); opIt1.hasNext();) {
+        const InstructionOperand &op1 = *opIt1.next();
+        if(opcode.isValidOperandCombination(op1,op2,op3)) {
+          emit(opcode,op1,op2,op3);
+        }
       }
     }
   }
@@ -476,8 +501,9 @@ TestMachineCode::TestMachineCode() {
   testOpcode(STGI   );
 #endif // IS64BIT
 
-  testOpcode(BSF    );
-  testOpcode(BSR    );
+  testOpcode(SHLD   );
+  testOpcode(SHRD   );
+
 
   testOpcode(ROL    );
   testOpcode(ROR    );
@@ -486,6 +512,9 @@ TestMachineCode::TestMachineCode() {
   testOpcode(SHL    );
   testOpcode(SHR    );
   testOpcode(SAR    );
+
+  testOpcode(BSF    );
+  testOpcode(BSR    );
 
   testOpcode(SETE   );
   testOpcode(NOT    );

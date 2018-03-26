@@ -144,6 +144,11 @@ public:
   UINT   getImmUint32() const;
   INT64  getImmInt64()  const;
   UINT64 getImmUInt64() const;
+  inline bool isShiftAmountOperand() const {
+    return (getSize() == REGSIZE_BYTE)
+        &&  ((getType()==IMMEDIATEVALUE)
+          || ((getType()==REGISTER) && (getRegister() == CL)));
+  }
   virtual const SegmentRegister &getSegmentRegister() const {
     throwUnsupportedOperationException(__TFUNCTION__);
     return ES;
@@ -372,6 +377,7 @@ private:
 
 protected:
   void throwInvalidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2) const;
+  void throwInvalidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, const InstructionOperand &op3) const;
   void throwInvalidOperandType(       const InstructionOperand &op, BYTE index) const;
   static void throwUnknownOperandType(const TCHAR *method, OperandType type);
   bool isRegisterTypeAllowed(     RegType     type) const;
@@ -403,6 +409,10 @@ protected:
   bool validateSameSize(                 const Register           &reg1, const Register           &reg2, bool throwOnError) const;
   bool validateSameSize(                 const Register           &reg , const InstructionOperand &op  , bool throwOnError) const;
   bool validateSameSize(                 const InstructionOperand &op1 , const InstructionOperand &op2 , bool throwOnError) const;
+  bool validateRegisterOperand(          const InstructionOperand &op  , int   index                   , bool throwOnError) const;
+  bool validateRegisterOrMemoryOperand(  const InstructionOperand &op  , int   index                   , bool throwOnError) const;
+  bool validateShiftAmountOperand(       const InstructionOperand &op  , int   index                   , bool throwOnError) const;
+
 #ifdef IS32BIT
   inline bool validateIsRexCompatible(   const Register           &reg , const InstructionOperand &op  , bool throwOnError) const {
     return true;
@@ -443,8 +453,10 @@ public:
   }
   virtual bool isValidOperand(           const InstructionOperand &op                                , bool throwOnError=false) const;
   virtual bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError=false) const;
+  virtual bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, const InstructionOperand &op3, bool throwOnError=false) const;
   virtual InstructionBase operator()(    const InstructionOperand &op) const;
   virtual InstructionBase operator()(    const InstructionOperand &op1, const InstructionOperand &op2) const;
+  virtual InstructionBase operator()(    const InstructionOperand &op1, const InstructionOperand &op2, const InstructionOperand &op3) const;
 };
 
 class Opcode1Arg : public OpcodeBase {
@@ -505,25 +517,24 @@ class OpcodeShiftRot : public OpcodeBase {
 private:
   OpcodeBase m_immCode;
 public:
-  OpcodeShiftRot(const String &mnemonic, BYTE extension)
-    : OpcodeBase(mnemonic, 0xD2, extension, 2, ALL_GPR_ALLOWED | ALL_GPRSIZEPTR_ALLOWED | IMMEDIATEVALUE_ALLOWED | HAS_SIZEBIT)
-    , m_immCode( mnemonic, 0xC0, extension, 2, ALL_GPR_ALLOWED | ALL_GPRSIZEPTR_ALLOWED | IMMEDIATEVALUE_ALLOWED | HAS_SIZEBIT)
-  {
-  }
+  OpcodeShiftRot(const String &mnemonic, BYTE extension);
   InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
   bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError=false) const;
 };
 
+class OpcodeDoubleShift : public OpcodeBase {
+private:
+  OpcodeBase m_immCode;
+public:
+  OpcodeDoubleShift(const String &mnemonic, UINT opCL, UINT opImm);
+  InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2, const InstructionOperand &op3) const;
+  bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, const InstructionOperand &op3, bool throwOnError=false) const;
+};
+
+
 class OpcodeBitScan : public Opcode2Arg {
 public:
-#ifdef IS32BIT
-#define BITSCAN_FLAGS (REGTYPE_GPR_ALLOWED | REGSIZE_WORD_ALLOWED | REGSIZE_DWORD_ALLOWED | WORDPTR_ALLOWED | DWORDPTR_ALLOWED)
-#else // IS64BIT
-#define BITSCAN_FLAGS (REGTYPE_GPR_ALLOWED | REGSIZE_WORD_ALLOWED | REGSIZE_DWORD_ALLOWED | REGSIZE_QWORD_ALLOWED | WORDPTR_ALLOWED | DWORDPTR_ALLOWED | QWORDPTR_ALLOWED)
-#endif // IS64BIT
-
-  OpcodeBitScan(const String &mnemonic, UINT op) : Opcode2Arg(mnemonic, op, BITSCAN_FLAGS) {
-  }
+  OpcodeBitScan(const String &mnemonic, UINT op);
   InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
   bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError=false) const;
 };
@@ -672,6 +683,9 @@ extern OpcodeShiftRot    SHR;                              // Shift  right by cl
 #define                  SAL SHL                           // Shift  Arithmetically left  by cl/imm  (signed shift   left - same as shl)
 extern OpcodeShiftRot    SAR;                              // Shift  Arithmetically right by cl/imm  (signed shift   right)
 
+extern OpcodeDoubleShift SHLD;                             // Shift left  by cl/imm, filling opened bitpositions, by most significant bits of reg
+extern OpcodeDoubleShift SHRD;                             // Shift right by cl/imm, filling opened bitpositions, by least significant bits of reg
+
 extern OpcodeBitScan     BSF;                              // Bitscan forward
 extern OpcodeBitScan     BSR;                              // Bitscan reversed
 
@@ -721,8 +735,6 @@ extern StringPrefix      REP;                              // Apply to INS, OUTS
 extern StringPrefix      REPE;                             // Apply to CMPS and SCAS instructions
 extern StringPrefix      REPNE;                            // Apply to CMPS and SCAS instructions
 
-
-
 #ifdef __NEVER__
 
 #define XCHG_EAX_R32(        r32)              B1INS(0x90     |  (r32))                   // r32=eax-edi
@@ -755,21 +767,6 @@ extern StringPrefix      REPNE;                            // Apply to CMPS and 
 
 #define IMUL3_WORD_IMM_WORD(  r16)             WORDOP(IMUL3_DWORD_IMM_DWORD(r16))         // 2 byte operand    (r16 = src * imm word )
 #define IMUL3_WORD_IMM_BYTE(  r16)             WORDOP(IMUL3_DWORD_IMM_BYTE( r16))         // 1 byte operand    (r16 = src * imm byte )
-
-#define SHLD_DWORD(         r32)               B3OP(0x0FA500 | ((r32)<<3))                // Shift left by cl, filling opened bitpositions, by most significant bits of r32
-#define SHLD_DWORD_IMM_BYTE(r32)               B3OP(0x0FA400 | ((r32)<<3))                // 1 byte operand as shift amount
-#define SHLD_WORD(          r16)               WORDOP(SHLD_DWORD(r16))
-#define SHLD_WORD_IMM_BYTE( r16)               WORDOP(SHLD_DWORD_IMM_BYTE(r16))           // 1 byte operand as shift amount
-
-#define SHRD_DWORD(         r32)               B3OP(0x0FAD00 | ((r32)<<3))                // Shift right by cl, filling opened bitpositions, by least significant bits of r32
-#define SHRD_DWORD_IMM_BYTE(r32)               B3OP(0x0FAC00 | ((r32)<<3))                // 1 byte operand as shift amount
-#define SHRD_WORD(          r16)               WORDOP(SHRD_DWORD(r16))
-#define SHRD_WORD_IMM_BYTE( r16)               WORDOP(SHRD_DWORD_IMM_BYTE(r16))           // 1 byte operand as shift amount
-
-#define BSF_DWORD(          r32)               B3OP(0x0FBC00 | ((r32)<<3))                // Bitscan forward
-#define BSR_DWORD(          r32)               B3OP(0x0FBD00 | ((r32)<<3))                // Bitscan reversed
-#define BSF_WORD(           r16)               WORDOP(BSF_DWORD(r16))
-#define BSR_WORD(           r16)               WORDOP(BSR_DWORD(r16))
 
 #define INC_BYTE                               B2OP(0xFE00          )
 #define INC_DWORD                              B2OP(0xFF00          )
@@ -809,15 +806,6 @@ extern StringPrefix      REPNE;                            // Apply to CMPS and 
 
 #define IMUL3_QWORD_IMM_DWORD(r64)             REX1(IMUL3_DWORD_IMM_DWORD,r64)            // 3 args, r64,src,4 byte operand (r64 = src * imm.dword)
 #define IMUL3_QWORD_IMM_BYTE( r64)             REX1(IMUL3_DWORD_IMM_BYTE ,r64)            // 3 args. r64.src.1 byte operand (r64 = src * imm.byte )
-
-#define SHLD_QWORD(         r64)               REX2(SHLD_DWORD          ,r64)
-#define SHLD_QWORD_IMM_BYTE(r64)               REX2(SHLD_DWORD_IMM_BYTE ,r64)            // 1 byte operand as shift amount
-
-#define SHRD_QWORD(         r64)               REX2(SHRD_DWORD          ,r64)
-#define SHRD_QWORD_IMM_BYTE(r64)               REX2(SHRD_DWORD_IMM_BYTE ,r64)            // 1 byte operand as shift amount
-
-#define BSF_QWORD(          r64)               REX2(BSF_DWORD           ,r64)
-#define BSR_QWORD(          r64)               REX2(BSR_DWORD           ,r64)
 
 #endif // IS64BIT
 
