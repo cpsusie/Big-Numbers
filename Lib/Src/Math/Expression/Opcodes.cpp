@@ -24,41 +24,41 @@ DEFNAME(OpcodeSetxx      ,  SETGE ,0x0F9D  );              // Set byte if greate
 DEFNAME(OpcodeSetxx      ,  SETLE ,0x0F9E  );              // Set byte if less or equal         (signed  )
 DEFNAME(OpcodeSetxx      ,  SETG  ,0x0F9F  );              // Set byte if greater               (signed  );
 
-DEFNAME(Instruction0Arg  ,  RET   ,0xC3    );              // Near return to calling procedure
+DEFNAME(Opcode0Arg       ,  RET   ,0xC3    );              // Near return to calling procedure
 
-DEFNAME(Instruction0Arg  ,  CMC   ,0xF5    );              // Complement carry flag
-DEFNAME(Instruction0Arg  ,  CLC   ,0xF8    );              // Clear carry flag     CF = 0
-DEFNAME(Instruction0Arg  ,  STC   ,0xF9    );              // Set   carry flag     CF = 1
-DEFNAME(Instruction0Arg  ,  CLI   ,0xFA    );              // Clear interrupt flag IF = 0
-DEFNAME(Instruction0Arg  ,  STI   ,0xFB    );              // Set   interrupt flag IF = 1
-DEFNAME(Instruction0Arg  ,  CLD   ,0xFC    );              // Clear direction flag DF = 0
-DEFNAME(Instruction0Arg  ,  STD   ,0xFD    );              // Set   direction flag DF = 1
+DEFNAME(Opcode0Arg       ,  CMC   ,0xF5    );              // Complement carry flag
+DEFNAME(Opcode0Arg       ,  CLC   ,0xF8    );              // Clear carry flag     CF = 0
+DEFNAME(Opcode0Arg       ,  STC   ,0xF9    );              // Set   carry flag     CF = 1
+DEFNAME(Opcode0Arg       ,  CLI   ,0xFA    );              // Clear interrupt flag IF = 0
+DEFNAME(Opcode0Arg       ,  STI   ,0xFB    );              // Set   interrupt flag IF = 1
+DEFNAME(Opcode0Arg       ,  CLD   ,0xFC    );              // Clear direction flag DF = 0
+DEFNAME(Opcode0Arg       ,  STD   ,0xFD    );              // Set   direction flag DF = 1
 
 #ifdef IS64BIT
-DEFNAME(Instruction0Arg  ,  CLGI  ,0x0F01DD);              // Clear Global Interrupt Flag
-DEFNAME(Instruction0Arg  ,  STGI  ,0x0F01DC);              // Set Global Interrupt Flag
+DEFNAME(Opcode0Arg       ,  CLGI  ,0x0F01DD);              // Clear Global Interrupt Flag
+DEFNAME(Opcode0Arg       ,  STGI  ,0x0F01DC);              // Set Global Interrupt Flag
 #endif // IS64BIT
 
 #ifdef IS32BIT
-DEFNAME(Instruction0Arg  ,  PUSHFD,0x9C);                  // Push EFLAGS onto stack *--SP = FLAGS;
-DEFNAME(Instruction0Arg  ,  POPFD ,0x9D);                  // Pop  EFLAGS register from stack FLAGS = *SP++
-DEFNAME(Instruction0Arg  ,  PUSHF ,PUSHFD,REGSIZE_WORD);   // Push FLAGS  onto stack *--SP = FLAGS;
-DEFNAME(Instruction0Arg  ,  POPF  ,PUSHFD,REGSIZE_WORD);   // Pop  FLAGS  register from stack FLAGS = *SP++
+DEFNAME(Opcode0Arg       ,  PUSHFD,0x9C);                  // Push EFLAGS onto stack *--SP = FLAGS;
+DEFNAME(Opcode0Arg       ,  POPFD ,0x9D);                  // Pop  EFLAGS register from stack FLAGS = *SP++
+DEFNAME(Opcode0Arg       ,  PUSHF ,PUSHFD,REGSIZE_WORD);   // Push FLAGS  onto stack *--SP = FLAGS;
+DEFNAME(Opcode0Arg       ,  POPF  ,PUSHFD,REGSIZE_WORD);   // Pop  FLAGS  register from stack FLAGS = *SP++
 #else
-DEFNAME(Instruction0Arg  ,  PUSHFQ,0x9C);                  // Push RFLAGS onto stack *--SP = FLAGS;
-DEFNAME(Instruction0Arg  ,  POPFQ ,0x9D);                  // Pop  RFLAGS register from stack FLAGS = *SP++
-DEFNAME(Instruction0Arg  ,  PUSHF ,PUSHFQ,REGSIZE_WORD);   // Push FLAGS  onto stack *--SP = FLAGS;
-DEFNAME(Instruction0Arg  ,  POPF  ,PUSHFQ,REGSIZE_WORD);   // Pop  FLAGS  register from stack FLAGS = *SP++
+DEFNAME(Opcode0Arg       ,  PUSHFQ,0x9C);                  // Push RFLAGS onto stack *--SP = FLAGS;
+DEFNAME(Opcode0Arg       ,  POPFQ ,0x9D);                  // Pop  RFLAGS register from stack FLAGS = *SP++
+DEFNAME(Opcode0Arg       ,  PUSHF ,PUSHFQ,REGSIZE_WORD);   // Push FLAGS  onto stack *--SP = FLAGS;
+DEFNAME(Opcode0Arg       ,  POPF  ,PUSHFQ,REGSIZE_WORD);   // Pop  FLAGS  register from stack FLAGS = *SP++
 #endif // IS46BIT
 
-DEFNAME(Instruction0Arg  ,  SAHF  ,0x9E);                  // Store AH into FLAGS
-DEFNAME(Instruction0Arg  ,  LAHF  ,0x9F);                  // Load FLAGS into AH register
+DEFNAME(Opcode0Arg       ,  SAHF  ,0x9E);                  // Store AH into FLAGS
+DEFNAME(Opcode0Arg       ,  LAHF  ,0x9F);                  // Load FLAGS into AH register
 #ifdef IS32BIT
-DEFNAME(Instruction0Arg  ,  PUSHAD,0x60);                  // Push all double-word (32-bit) registers onto stack
-DEFNAME(Instruction0Arg  ,  POPAD ,0x61);                  // Pop  all double-word (32-bit) registers from stack
+DEFNAME(Opcode0Arg       ,  PUSHAD,0x60);                  // Push all double-word (32-bit) registers onto stack
+DEFNAME(Opcode0Arg       ,  POPAD ,0x61);                  // Pop  all double-word (32-bit) registers from stack
 #endif // IS32BIT
 
-DEFNAME(Instruction0Arg  ,  NOOP  ,0x90);
+DEFNAME(Opcode0Arg       ,  NOOP  ,0x90);
 DEFNAME(Opcode2Arg       ,  ADD   ,0x00);
 DEFNAME(Opcode2Arg       ,  OR    ,0x08);
 DEFNAME(Opcode2Arg       ,  ADC   ,0x10);
@@ -96,14 +96,14 @@ DEFNAME(OpcodeDoubleShift,  SHRD  ,0x0FAD,0x0FAC);         // Shift right by cl/
 DEFNAME(OpcodeBitScan    ,  BSF   ,0x0FBC);                // Bitscan forward
 DEFNAME(OpcodeBitScan    ,  BSR   ,0x0FBD);                // Bitscan reversed
 
-DEFNAME(Instruction0Arg  ,  CWDE  ,0x98);                  // Convert word  to dword  Copy sign (bit 15) of AX  into higher 16 bits of EAX
-DEFNAME(Instruction0Arg  ,  CBW   ,CWDE,REGSIZE_WORD);     // Convert byte  to word   Copy sign (bit 7)  of AL  into higher  8 bits of AX (AH)
-DEFNAME(Instruction0Arg  ,  CDQ   ,0x99);                  // Convert dword to qword  Copy sign (bit 31) of EAX into every bit of EDX
-DEFNAME(Instruction0Arg  ,  CWD   ,CDQ ,REGSIZE_WORD);     // Convert word  to dword  Copy sign (bit 15) of AX  into every bit of DX
+DEFNAME(Opcode0Arg       ,  CWDE  ,0x98);                  // Convert word  to dword  Copy sign (bit 15) of AX  into higher 16 bits of EAX
+DEFNAME(Opcode0Arg       ,  CBW   ,CWDE,REGSIZE_WORD);     // Convert byte  to word   Copy sign (bit 7)  of AL  into higher  8 bits of AX (AH)
+DEFNAME(Opcode0Arg       ,  CDQ   ,0x99);                  // Convert dword to qword  Copy sign (bit 31) of EAX into every bit of EDX
+DEFNAME(Opcode0Arg       ,  CWD   ,CDQ ,REGSIZE_WORD);     // Convert word  to dword  Copy sign (bit 15) of AX  into every bit of DX
 
 #ifdef IS64BIT
-DEFNAME(Instruction0Arg  ,  CDQE  ,CWDE,REGSIZE_QWORD);    // Sign extend EAX into RAX
-DEFNAME(Instruction0Arg  ,  CQO   ,CDQ ,REGSIZE_QWORD);    // Sign extend RAX into RDX:RAX
+DEFNAME(Opcode0Arg       ,  CDQE  ,CWDE,REGSIZE_QWORD);    // Sign extend EAX into RAX
+DEFNAME(Opcode0Arg       ,  CQO   ,CDQ ,REGSIZE_QWORD);    // Sign extend RAX into RDX:RAX
 #endif // IS64BIT
 
 DEFNAME(StringInstruction,  MOVSB ,0xA4);

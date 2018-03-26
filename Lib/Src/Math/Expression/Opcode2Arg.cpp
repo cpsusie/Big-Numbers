@@ -1,27 +1,16 @@
 #include "pch.h"
 #include "InstructionBuilder.h"
 
-class Instruction2Arg : public InstructionBuilder {
+class Instruction2ArgImm : public InstructionBuilder {
 public:
-  Instruction2Arg(const OpcodeBase &opcode) : InstructionBuilder(opcode)
-  {
+  Instruction2ArgImm(const OpcodeBase &opcode) : InstructionBuilder(opcode) {
   }
-  // Assume same size of dst and src
-  InstructionBuilder &set2GPReg(  const GPRegister    &dst, const GPRegister    &src) {
-    return setRegRegOperands(dst, src);
-  }
-  InstructionBuilder &setGPRegMem(const GPRegister    &dst, const MemoryOperand &src) {
-    return setMemGPReg(src, dst).setDirectionBit();
-  }
-  InstructionBuilder &setGPRegImm(const GPRegister    &dst, int   immv              );
-  InstructionBuilder &setMemGPReg(const MemoryOperand &dst, const GPRegister    &src) {
-    return setMemoryRegOperands(dst, src);
-  }
-  InstructionBuilder &setMemImm(  const MemoryOperand &dst, int   immv              );
+  InstructionBuilder &setRegImm(const Register      &dst, int   immv);
+  InstructionBuilder &setMemImm(const MemoryOperand &dst, int   immv);
 };
 
 #define IMMOP 0x80
-InstructionBuilder &Instruction2Arg::setGPRegImm(const GPRegister &reg, int immv) {
+InstructionBuilder &Instruction2ArgImm::setRegImm(const Register &reg, int immv) {
   DEFINEMETHODNAME;
   const BYTE    regIndex  = reg.getIndex();
   const RegSize regSize   = reg.getSize();
@@ -59,7 +48,7 @@ InstructionBuilder &Instruction2Arg::setGPRegImm(const GPRegister &reg, int immv
   return *this;
 }
 
-InstructionBuilder &Instruction2Arg::setMemImm(const MemoryOperand &dst, int immv) {
+InstructionBuilder &Instruction2ArgImm::setMemImm(const MemoryOperand &dst, int immv) {
   DEFINEMETHODNAME;
   const OperandSize size      = dst.getSize();
   const bool        immIsByte = isByte(immv);
@@ -81,28 +70,25 @@ InstructionBuilder &Instruction2Arg::setMemImm(const MemoryOperand &dst, int imm
 
 InstructionBase Opcode2Arg::operator()(const InstructionOperand &op1, const InstructionOperand &op2) const {
   isValidOperandCombination(op1,op2,true);
-  Instruction2Arg result(*this);
   switch(op1.getType()) {
   case REGISTER       :
-    { const GPRegister &reg1 = (GPRegister&)op1.getRegister();
-      switch(op2.getType()) {
-      case REGISTER       :
-        return result.set2GPReg(reg1,(GPRegister&)op2.getRegister());
-      case MEMORYOPERAND  : // reg <- mem
-        return result.setGPRegMem(reg1, (MemoryOperand&)op2);
-      case IMMEDIATEVALUE :
-        return result.setGPRegImm(reg1, op2.getImmInt32());
-      }
+    switch(op2.getType()) {
+    case REGISTER       : // reg <- reg
+      return InstructionBuilder(*this).setRegRegOperands(op1.getRegister(),op2.getRegister());
+    case MEMORYOPERAND  : // reg <- mem
+      return InstructionBuilder(*this).setMemoryRegOperands((MemoryOperand&)op2, op1.getRegister()).setDirectionBit();
+    case IMMEDIATEVALUE : // reg <- imm
+      return Instruction2ArgImm(*this).setRegImm(op1.getRegister(), op2.getImmInt32());
     }
     break;
   case MEMORYOPERAND    :
     switch(op2.getType()) {
     case REGISTER       : // mem <- reg
-      return result.setMemGPReg((MemoryOperand&)op1, (GPRegister&)op2.getRegister());
+      return InstructionBuilder(*this).setMemoryRegOperands((MemoryOperand&)op1, op2.getRegister());
     case IMMEDIATEVALUE : // mem <- imm
-      return result.setMemImm((MemoryOperand&)op1, op2.getImmInt32());
+      return Instruction2ArgImm(*this).setMemImm((MemoryOperand&)op1, op2.getImmInt32());
     }
   }
   throwInvalidOperandCombination(op1,op2);
-  return result;
+  return __super::operator()(op1,op2);
 }

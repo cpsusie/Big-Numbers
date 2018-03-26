@@ -85,7 +85,7 @@ protected:
   static void throwImmSizeException(const TCHAR *method, const String        &dst, INT64 immv) {
     throwInvalidArgumentException(method,_T("%s"),getImmSizeErrorString(dst,immv).cstr());
   }
-  static inline void sizeError(     const TCHAR *method, const GPRegister    &reg, INT64 immv) {
+  static inline void sizeError(     const TCHAR *method, const Register      &reg, INT64 immv) {
     throwImmSizeException(method,reg.getName(),immv);
   }
   static inline void sizeError(     const TCHAR *method, const MemoryOperand &mem, INT64 immv) {
@@ -150,7 +150,9 @@ public:
     return *this;
   }
   InstructionBuilder &add(const BYTE *src, BYTE count);
-
+  inline InstructionBuilder &add(const InstructionBase &ins) {
+    return add(ins.getBytes(),ins.size());
+  }
   inline bool hasRexByte() const {
 #ifdef IS32BIT
     return false;

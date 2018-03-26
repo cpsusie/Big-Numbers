@@ -332,7 +332,6 @@ private:
   void testOpcode3Arg(     const OpcodeBase      &opcode);
 public:
   void testOpcode(         const OpcodeBase      &opcode);
-  void testOpcode(         const Instruction0Arg &ins   );
   void testOpcode(         const StringPrefix    &prefix);
   TestMachineCode();
 };
@@ -374,14 +373,13 @@ int TestMachineCode::emit(const OpcodeBase &opcode, const InstructionOperand &op
   return __super::emit(ins);
 }
 
-void TestMachineCode::testOpcode(const Instruction0Arg &ins) {
-  m_currentName = ins.getMnemonic();
-  emit(ins);
-}
 void TestMachineCode::testOpcode(const OpcodeBase &opcode) {
-  clear();
+  if(opcode.getOpCount() != 0) {
+    clear();
+  }
   m_currentName = opcode.getMnemonic();
   switch(opcode.getOpCount()) {
+  case 0 : emit((Opcode0Arg&)opcode); break;
   case 1 : testOpcode1Arg(opcode); break;
   case 2 : testOpcode2Arg(opcode); break;
   case 3 : testOpcode3Arg(opcode); break;

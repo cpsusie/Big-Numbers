@@ -36,6 +36,19 @@ OpcodeBase::OpcodeBase(const String &mnemonic, UINT op, BYTE extension, BYTE opC
   m_bytes = swapBytes(op,m_size);
 }
 
+OpcodeBase::OpcodeBase(const String &mnemonic, const InstructionBase &src, BYTE extension, UINT flags)
+  : m_mnemonic( toLowerCase(mnemonic))
+  , m_size(     src.size()           )
+  , m_extension(extension            )
+  , m_opCount(  0                    )
+  , m_flags(    flags                )
+{
+  assert(extension  <= 7);
+  assert(src.size() <= 4);
+  m_bytes = 0;
+  memcpy(&m_bytes, src.getBytes(), src.size()); // no byte swap
+}
+
 bool OpcodeBase::isRegisterTypeAllowed(RegType type) const {
   switch(type) {
   case REGTYPE_GPR: return (getFlags() & REGTYPE_GPR_ALLOWED) != 0;

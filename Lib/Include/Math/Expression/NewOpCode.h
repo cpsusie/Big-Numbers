@@ -306,7 +306,7 @@ typedef MemoryPtr<REGSIZE_TBYTE> TBYTEPtr;
 #define MAX_INSTRUCTIONSIZE   15
 
 class OpcodeBase;
-class Instruction0Arg;
+class Opcode0Arg;
 
 class InstructionBase {
 protected:
@@ -314,6 +314,7 @@ protected:
   UINT   m_size            : 4; // = [0..15]
   InstructionBase(const OpcodeBase &opcode);
 public:
+  InstructionBase(const Opcode0Arg &opcode);
   // In bytes
   inline UINT size() const {
     return m_size;
@@ -376,6 +377,7 @@ private:
   const UINT   m_opCount   : 3;
 
 protected:
+  OpcodeBase(const String &mnemonic, const InstructionBase &src, BYTE extension=0, UINT flags=0);
   void throwInvalidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2) const;
   void throwInvalidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, const InstructionOperand &op3) const;
   void throwInvalidOperandType(       const InstructionOperand &op, BYTE index) const;
@@ -459,6 +461,15 @@ public:
   virtual InstructionBase operator()(    const InstructionOperand &op1, const InstructionOperand &op2, const InstructionOperand &op3) const;
 };
 
+class Opcode0Arg : public OpcodeBase {
+public:
+  inline Opcode0Arg(const String &mnemonic, UINT op, UINT flags=0)
+    : OpcodeBase(mnemonic, op, 0, 0, flags)
+  {
+  }
+  Opcode0Arg(const String &mnemonic, const Opcode0Arg &op, OperandSize size);
+};
+
 class Opcode1Arg : public OpcodeBase {
 public:
   inline Opcode1Arg(const String &mnemonic, UINT op, BYTE extension, UINT flags=ALL_GPR_ALLOWED | ALL_GPRPTR_ALLOWED | HAS_SIZEBIT)
@@ -531,7 +542,6 @@ public:
   bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, const InstructionOperand &op3, bool throwOnError=false) const;
 };
 
-
 class OpcodeBitScan : public Opcode2Arg {
 public:
   OpcodeBitScan(const String &mnemonic, UINT op);
@@ -539,45 +549,11 @@ public:
   bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError=false) const;
 };
 
-class Instruction0Arg : public InstructionBase {
-private:
-  static const RegSizeSet s_validOperandSizeSet;
-  const String m_mnemonic;
-protected:
-  Instruction0Arg(const String &mnemonic, const InstructionBase &ins)
-    : InstructionBase(ins)
-    , m_mnemonic(toLowerCase(mnemonic))
-  {
-  }
-  void validateOperandSize(OperandSize size) const;
+class StringInstruction : public Opcode0Arg {
 public:
-  Instruction0Arg(const String &mnemonic, UINT op) 
-    : InstructionBase(OpcodeBase(mnemonic, op,0,0,0))
-    , m_mnemonic(toLowerCase(mnemonic))
-  {
+  StringInstruction(const String &mnemonic, UINT op) : Opcode0Arg(mnemonic, op, HAS_SIZEBIT) {
   }
-  Instruction0Arg(const String &mnemonic, const Instruction0Arg &ins, OperandSize size);
-  const String &getMnemonic() const {
-    return m_mnemonic;
-  }
-  virtual bool isValidOperandSize(OperandSize size) const;
-};
-
-class Instruction0ArgB : public Instruction0Arg {
-private:
-  static const RegSizeSet s_validOperandSizeSet;
-public:
-  Instruction0ArgB(const String &mnemonic, UINT op) : Instruction0Arg(mnemonic, op) {
-  }
-  Instruction0ArgB(const String &mnemonic, const Instruction0Arg &ins, OperandSize size);
-  bool isValidOperandSize(OperandSize size) const;
-};
-
-class StringInstruction : public Instruction0ArgB {
-public:
-  StringInstruction(const String &mnemonic, UINT op) : Instruction0ArgB(mnemonic, op) {
-  }
-  StringInstruction(const String &mnemonic, const Instruction0Arg &ins, OperandSize size) : Instruction0ArgB(mnemonic, ins, size) {
+  StringInstruction(const String &mnemonic, const StringInstruction &ins, OperandSize size) : Opcode0Arg(mnemonic, ins, size) {
   }
 };
 
@@ -619,37 +595,37 @@ extern OpcodeSetxx       SETG;                             // Set byte   if grea
 #define                  SETNG          SETLE              // Set byte   if not greater           (signed  )
 #define                  SETNLE         SETG               // Set byte   if not less or equal     (signed  )
 
-extern Instruction0Arg   RET;                              // Near return to calling procedure
+extern Opcode0Arg        RET;                              // Near return to calling procedure
 
-extern Instruction0Arg   CMC;                              // Complement carry flag
-extern Instruction0Arg   CLC;                              // Clear carry flag     CF = 0
-extern Instruction0Arg   STC;                              // Set   carry flag     CF = 1
-extern Instruction0Arg   CLI;                              // Clear interrupt flag IF = 0
-extern Instruction0Arg   STI;                              // Set   interrupt flag IF = 1
-extern Instruction0Arg   CLD;                              // Clear direction flag DF = 0
-extern Instruction0Arg   STD;                              // Set   direction flag DF = 1
+extern Opcode0Arg        CMC;                              // Complement carry flag
+extern Opcode0Arg        CLC;                              // Clear carry flag     CF = 0
+extern Opcode0Arg        STC;                              // Set   carry flag     CF = 1
+extern Opcode0Arg        CLI;                              // Clear interrupt flag IF = 0
+extern Opcode0Arg        STI;                              // Set   interrupt flag IF = 1
+extern Opcode0Arg        CLD;                              // Clear direction flag DF = 0
+extern Opcode0Arg        STD;                              // Set   direction flag DF = 1
 
 #ifdef IS64BIT
-extern Instruction0Arg   CLGI;                             // Clear Global Interrupt Flag
-extern Instruction0Arg   STGI;                             // Set Global Interrupt Flag
+extern Opcode0Arg        CLGI;                             // Clear Global Interrupt Flag
+extern Opcode0Arg        STGI;                             // Set Global Interrupt Flag
 #endif // IS64BIT
 
-extern Instruction0Arg   PUSHF;                            // Push FLAGS  onto stack         { sp-=2, *sp = FLAGS; }
-extern Instruction0Arg   POPF;                             // Pop  FLAGS register from stack { FLAGS = *SP; sp+=2; }
-extern Instruction0Arg   SAHF;                             // Store AH into FLAGS
-extern Instruction0Arg   LAHF;                             // Load FLAGS into AH register
+extern Opcode0Arg        PUSHF;                            // Push FLAGS  onto stack         { sp-=2, *sp = FLAGS; }
+extern Opcode0Arg        POPF;                             // Pop  FLAGS register from stack { FLAGS = *SP; sp+=2; }
+extern Opcode0Arg        SAHF;                             // Store AH into FLAGS
+extern Opcode0Arg        LAHF;                             // Load FLAGS into AH register
 
 #ifdef IS32BIT
-extern Instruction0Arg   PUSHAD;                           // Push all double-word (32-bit) registers onto stack
-extern Instruction0Arg   POPAD;                            // Pop  all double-word (32-bit) registers from stack
-extern Instruction0Arg   PUSHFD;                           // Push EFLAGS register onto stack { sp-=4, *sp = EFLAGS; }
-extern Instruction0Arg   POPFD;                            // Pop data into EFLAGS register   { EFLAGS = *SP; sp+=4; }
+extern Opcode0Arg        PUSHAD;                           // Push all double-word (32-bit) registers onto stack
+extern Opcode0Arg        POPAD;                            // Pop  all double-word (32-bit) registers from stack
+extern Opcode0Arg        PUSHFD;                           // Push EFLAGS register onto stack { sp-=4, *sp = EFLAGS; }
+extern Opcode0Arg        POPFD;                            // Pop data into EFLAGS register   { EFLAGS = *SP; sp+=4; }
 #else // IS64BIT
-extern Instruction0Arg   PUSHFQ;                           // Push RFLAGS register onto stack
-extern Instruction0Arg   POPFQ;                            // Pop data into RFLAGS register
+extern Opcode0Arg        PUSHFQ;                           // Push RFLAGS register onto stack
+extern Opcode0Arg        POPFQ;                            // Pop data into RFLAGS register
 #endif // IS64BIT
 
-extern Instruction0Arg   NOOP;                             // No operation
+extern Opcode0Arg        NOOP;                             // No operation
 extern Opcode2Arg        ADD;                              // Integer Addition
 extern Opcode2Arg        ADC;                              // Integer Addition with Carry
 extern Opcode2Arg        OR;                               // Logical Inclusive OR
@@ -689,14 +665,14 @@ extern OpcodeDoubleShift SHRD;                             // Shift right by cl/
 extern OpcodeBitScan     BSF;                              // Bitscan forward
 extern OpcodeBitScan     BSR;                              // Bitscan reversed
 
-extern Instruction0Arg   CBW;                              // Convert byte  to word.  Sign extend AL  into AX.      Copy sign (bit  7) of AL  into higher  8 bits of AX
-extern Instruction0Arg   CWDE;                             // Convert word  to dword. Sign extend AX  into EAX.     Copy sign (bit 15) of AX  into higher 16 bits of EAX
-extern Instruction0Arg   CWD;                              // Convert word  to dword. Sign extend AX  into DX:AX.   Copy sign (bit 15) of AX  into every     bit  of DX
-extern Instruction0Arg   CDQ;                              // Convert dword to qword. Sign extend EAX into EDX:EAX. Copy sign (bit 31) of EAX into every     bit  of EDX
+extern Opcode0Arg        CBW;                              // Convert byte  to word.  Sign extend AL  into AX.      Copy sign (bit  7) of AL  into higher  8 bits of AX
+extern Opcode0Arg        CWDE;                             // Convert word  to dword. Sign extend AX  into EAX.     Copy sign (bit 15) of AX  into higher 16 bits of EAX
+extern Opcode0Arg        CWD;                              // Convert word  to dword. Sign extend AX  into DX:AX.   Copy sign (bit 15) of AX  into every     bit  of DX
+extern Opcode0Arg        CDQ;                              // Convert dword to qword. Sign extend EAX into EDX:EAX. Copy sign (bit 31) of EAX into every     bit  of EDX
 
 #ifdef IS64BIT
-extern Instruction0Arg   CDQE;                             // Convert dword to qword. Sign extend EAX into RAX.     Copy sign (bit 31) of EAX into higher 32 bits of RAX
-extern Instruction0Arg   CQO;                              // Convert qword to oword. Sign extend RAX into RDX:RAX. Copy sign (bit 63) of RAX into every     bit  of RDX
+extern Opcode0Arg        CDQE;                             // Convert dword to qword. Sign extend EAX into RAX.     Copy sign (bit 31) of EAX into higher 32 bits of RAX
+extern Opcode0Arg        CQO;                              // Convert qword to oword. Sign extend RAX into RDX:RAX. Copy sign (bit 63) of RAX into every     bit  of RDX
 #endif // IS64BIT
 
 //#define INS_BYTE                               B1INS(0x6C)
