@@ -536,6 +536,22 @@ public :
   InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
 };
 
+#ifdef IS32BIT
+class OpcodeIncDec : public Opcode1Arg {
+private:
+  const OpcodeBase m_opReg32;
+public :
+  OpcodeIncDec(const String &mnemonic, BYTE op, BYTE extension)
+    : Opcode1Arg(mnemonic,op,extension)
+    , m_opReg32(mnemonic,0x40|(extension<<3),0,1,0)
+  {
+  }
+  InstructionBase operator()(const InstructionOperand &op) const;
+};
+#else  // IS64BIT
+typedef Opcode1Arg OpcodeIncDec;
+#endif // IS64BIT
+
 class OpcodeLea : public Opcode2Arg {
 public :
   OpcodeLea(const String &mnemonic, BYTE op);
@@ -663,6 +679,9 @@ extern OpcodeMov         MOV;                              // Move data (copying
 
 extern OpcodeLea         LEA;                              // Load effective address
 
+extern OpcodeIncDec      INC;
+extern OpcodeIncDec      DEC;
+
 extern Opcode1Arg        NOT;                              // Negate the operand, logical NOT
 extern Opcode1Arg        NEG;                              // Two's complement negation
 extern Opcode1Arg        MUL;                              // Unsigned multiply ah:al=al*src, dx:ax=ax*src, edx:eax=eax*src, rdx:rax=rax*src
@@ -769,38 +788,6 @@ extern StringPrefix      REPNE;                            // Apply to CMPS and 
 
 #define IMUL3_WORD_IMM_WORD(  r16)             WORDOP(IMUL3_DWORD_IMM_DWORD(r16))         // 2 byte operand    (r16 = src * imm word )
 #define IMUL3_WORD_IMM_BYTE(  r16)             WORDOP(IMUL3_DWORD_IMM_BYTE( r16))         // 1 byte operand    (r16 = src * imm byte )
-
-#define INC_BYTE                               B2OP(0xFE00          )
-#define INC_DWORD                              B2OP(0xFF00          )
-#define INC_R8( r8 )                           REGREG(INC_BYTE, r8  )
-
-#define DEC_BYTE                               B2OP(0xFE08          )
-#define DEC_DWORD                              B2OP(0xFF08          )
-#define DEC_R8( r8 )                           REGREG(DEC_BYTE, r8  )
-
-#ifdef IS32BIT
-
-#define INC_R32(r32)                           B1INS(0x40    | r32.getIndex())
-#define DEC_R32(r32)                           B1INS(0x48    | r32.getIndex())
-
-#else // IS64BIT
-
-#define INC_R32(r32)                           REGREG( INC_DWORD, r32)
-#define INC_QWORD                              REX3(INC_DWORD         )
-#define INC_R64(r64)                           REX1(    INC_R32  , r64)
-
-#define DEC_R32(r32)                           REGREG( DEC_DWORD, r32)
-#define DEC_QWORD                              REX3(DEC_DWORD         )
-#define DEC_R64(r64)                           REX1(    DEC_R32  , r64)
-
-#endif // IS64BIT
-
-#define INC_WORD                               WORDOP(INC_DWORD)
-#define INC_R16(r16)                           WORDOP(INC_R32(  r16))
-
-#define DEC_WORD                               WORDOP(DEC_DWORD)
-#define DEC_R16(r16)                           WORDOP(DEC_R32(  r16))
-
 
 #ifdef IS64BIT
 

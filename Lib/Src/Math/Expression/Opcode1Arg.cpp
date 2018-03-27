@@ -3,10 +3,19 @@
 
 InstructionBase Opcode1Arg::operator()(const InstructionOperand &op) const {
   isValidOperand(op, true);
-  InstructionBuilder result(*this);
   switch(op.getType()) {
-  case REGISTER       : return result.setRegisterOperand((GPRegister&   )op.getRegister());
-  case MEMORYOPERAND  : return result.setMemoryOperand(  (MemoryOperand&)op);
+  case REGISTER       : return InstructionBuilder(*this).setRegisterOperand((GPRegister&   )op.getRegister());
+  case MEMORYOPERAND  : return InstructionBuilder(*this).setMemoryOperand(  (MemoryOperand&)op);
   }
   return __super::operator()(op);
 }
+
+#ifdef IS32BIT
+InstructionBase OpcodeIncDec::operator()(const InstructionOperand &op) const {
+  isValidOperand(op, true);
+  if((op.getType() == REGISTER) && (op.getSize() == REGSIZE_DWORD)) {
+    return InstructionBuilder(m_opReg32).or(op.getRegister().getIndex()&7);
+  }
+  return __super::operator()(op);
+}
+#endif // IS32BIT

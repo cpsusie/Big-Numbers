@@ -535,6 +535,8 @@ void TestMachineCode::testArg0Opcodes() {
 }
 
 void TestMachineCode::testArg1Opcodes() {
+  testOpcode(INC  );
+  testOpcode(DEC  );
   testOpcode(NOT  );
   testOpcode(NEG  );
   testOpcode(MUL  );
