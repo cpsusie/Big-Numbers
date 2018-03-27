@@ -20,6 +20,7 @@ String toString(RegSize regSize) {
   case REGSIZE_QWORD : return _T("qword");
   case REGSIZE_TBYTE : return _T("tbyte");
   case REGSIZE_OWORD : return _T("oword");
+  case REGSIZE_VOID  : return _T("void" );
   default            : return format(_T("Unknown register size:%d"), regSize);
   }
 }

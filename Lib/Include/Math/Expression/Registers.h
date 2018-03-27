@@ -17,6 +17,7 @@ typedef enum {
  ,REGSIZE_QWORD    /* 64-bit  */
  ,REGSIZE_TBYTE    /* 80-bit  */
  ,REGSIZE_OWORD    /* 128-bit */
+ ,REGSIZE_VOID     /* for LEA */
  ,REGSIZE_END   = -1
 } RegSize;
 

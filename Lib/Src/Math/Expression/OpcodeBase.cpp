@@ -78,6 +78,7 @@ bool OpcodeBase::isMemoryOperandSizeAllowed(OperandSize size) const {
   case REGSIZE_QWORD: return (getFlags() & QWORDPTR_ALLOWED) != 0;
   case REGSIZE_TBYTE: return (getFlags() & TBYTEPTR_ALLOWED) != 0;
   case REGSIZE_OWORD: return (getFlags() & OWORDPTR_ALLOWED) != 0;
+  case REGSIZE_VOID : return (getFlags() & VOIDPTR_ALLOWED ) != 0;
   }
   return false;
 }
@@ -252,7 +253,23 @@ bool OpcodeBase::validateRegisterOperand(const InstructionOperand &op, int index
     throwUnknownOperandType(__TFUNCTION__,op.getType());
   }
   return true;
+}
 
+bool OpcodeBase::validateMemoryOperand(const InstructionOperand &op, int index, bool throwOnError) const {
+  switch(op.getType()) {
+  case MEMORYOPERAND :
+    if(!validateMemoryOperandAllowed((MemoryOperand&)op, throwOnError)) {
+      return false;
+    }
+    break;
+  case REGISTER      :
+  case IMMEDIATEVALUE:
+    if(!throwOnError) return false;
+    throwInvalidOperandType(op,index);
+  default            :
+    throwUnknownOperandType(__TFUNCTION__,op.getType());
+  }
+  return true;
 }
 
 bool OpcodeBase::validateRegisterOrMemoryOperand(const InstructionOperand &op, int index, bool throwOnError) const {
@@ -263,7 +280,7 @@ bool OpcodeBase::validateRegisterOrMemoryOperand(const InstructionOperand &op, i
     }
     break;
   case MEMORYOPERAND :
-    if(!validateMemoryOperandAllowed((MemoryOperand&)op, throwOnError)) {
+    if(!validateMemoryOperand(op, index, throwOnError)) {
       return false;
     }
     break;

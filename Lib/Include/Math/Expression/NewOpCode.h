@@ -58,6 +58,82 @@ String formatHexValue(int v, bool showSign);
 String formatHexValue(INT64 v, bool showSign);
 String getImmSizeErrorString(const String &dst, INT64 immv);
 
+class MemoryRef {
+private:
+  const IndexRegister *m_base,*m_inx;
+  const BYTE           m_shift;
+  const int            m_offset;
+#ifdef IS64BIT
+  const bool           m_needREXByte;
+  static inline bool findRexByteNeeded(const IndexRegister *base, const IndexRegister *inx) {
+    return (base && base->indexNeedREXByte()) || (inx && inx->indexNeedREXByte());
+  }
+#define SETNEEDREXBYTE(base,inx) ,m_needREXByte(findRexByteNeeded(base,inx))
+#else
+#define SETNEEDREXBYTE(base,inx)
+#endif // IS64BIT
+
+  DECLAREDEBUGSTR;
+
+public:
+  inline MemoryRef(const IndexRegister *base, const IndexRegister *inx, BYTE shift=0, int offset=0)
+    : m_base(  base  )
+    , m_inx(   inx   )
+    , m_shift( shift )
+    , m_offset(offset)
+    SETNEEDREXBYTE(base,inx)
+  {
+    SETDEBUGSTR();
+  }
+  inline MemoryRef(const IndexRegister &base)
+    : m_base( &base  )
+    , m_inx(   NULL  )
+    , m_shift( 0     )
+    , m_offset(0     )
+    SETNEEDREXBYTE(&base,NULL)
+  {
+    SETDEBUGSTR();
+  }
+  inline MemoryRef(DWORD addr)
+    : m_base(  NULL  )
+    , m_inx(   NULL  )
+    , m_shift( 0     )
+    , m_offset(addr  )
+    SETNEEDREXBYTE(NULL,NULL)
+  {
+    SETDEBUGSTR();
+  }
+  inline bool isDisplaceOnly() const {
+    return (m_base == NULL) && (m_inx == NULL);
+  }
+  // set m_needREXByte in x64
+  void sortBaseInx();
+  inline const IndexRegister *getBase()   const { return m_base;         }
+  inline const IndexRegister *getInx()    const { return m_inx;          }
+  inline BYTE                 getShift()  const { return m_shift;        }
+  inline int                  getOffset() const { return m_offset;       }
+  inline bool                 hasBase()   const { return m_base != NULL; }
+  inline bool                 hasInx()    const { return m_inx  != NULL; }
+  inline bool                 hasShift()  const { return m_shift >= 1;   }
+  inline bool                 hasOffset() const { return m_offset != 0;  }
+
+#ifdef IS64BIT
+  inline bool                 needREXByte() const {
+    return m_needREXByte;
+  }
+#endif // IS64BIT
+  String                      toString()  const;
+};
+
+MemoryRef operator+(const IndexRegister &base, int offset);
+MemoryRef operator-(const IndexRegister &base, int offset);
+MemoryRef operator+(const MemoryRef     &mr  , int offset);
+MemoryRef operator-(const MemoryRef     &mr  , int offset);
+MemoryRef operator+(const IndexRegister &base, const MemoryRef     &mr );
+MemoryRef operator+(const IndexRegister &base, const IndexRegister &inx);
+MemoryRef operator*(BYTE a, const IndexRegister &inx);
+MemoryRef operator*(const IndexRegister &inx, BYTE a);
+
 class InstructionOperand {
 private:
   const OperandType m_type;
@@ -149,16 +225,17 @@ public:
         &&  ((getType()==IMMEDIATEVALUE)
           || ((getType()==REGISTER) && (getRegister() == CL)));
   }
-  virtual const SegmentRegister &getSegmentRegister() const {
+  virtual const SegmentRegister *getSegmentRegister() const {
     throwUnsupportedOperationException(__TFUNCTION__);
-    return ES;
+    return NULL;
   }
   virtual bool                   hasSegmentRegister() const {
     return false;
   }
-  virtual const MemoryRef       *getMemoryReference() const {
+  virtual const MemoryRef       &getMemoryReference() const {
     throwUnsupportedOperationException(__TFUNCTION__);
-    return NULL;
+    static const MemoryRef dummy(0);
+    return dummy;
   }
 #ifdef IS64BIT
   virtual bool  needREXByte() const {
@@ -167,82 +244,6 @@ public:
 #endif // IS64BIT
   virtual String toString() const;
 };
-
-class MemoryRef {
-private:
-  const IndexRegister *m_base,*m_inx;
-  const BYTE           m_shift;
-  const int            m_offset;
-#ifdef IS64BIT
-  const bool           m_needREXByte;
-  static inline bool findRexByteNeeded(const IndexRegister *base, const IndexRegister *inx) {
-    return (base && base->indexNeedREXByte()) || (inx && inx->indexNeedREXByte());
-  }
-#define SETNEEDREXBYTE(base,inx) ,m_needREXByte(findRexByteNeeded(base,inx))
-#else
-#define SETNEEDREXBYTE(base,inx)
-#endif // IS64BIT
-
-  DECLAREDEBUGSTR;
-
-public:
-  inline MemoryRef(const IndexRegister *base, const IndexRegister *inx, BYTE shift=0, int offset=0)
-    : m_base(  base  )
-    , m_inx(   inx   )
-    , m_shift( shift )
-    , m_offset(offset)
-    SETNEEDREXBYTE(base,inx)
-  {
-    SETDEBUGSTR();
-  }
-  inline MemoryRef(const IndexRegister &base)
-    : m_base( &base  )
-    , m_inx(   NULL  )
-    , m_shift( 0     )
-    , m_offset(0     )
-    SETNEEDREXBYTE(&base,NULL)
-  {
-    SETDEBUGSTR();
-  }
-  inline MemoryRef(DWORD addr)
-    : m_base(  NULL  )
-    , m_inx(   NULL  )
-    , m_shift( 0     )
-    , m_offset(addr  )
-    SETNEEDREXBYTE(NULL,NULL)
-  {
-    SETDEBUGSTR();
-  }
-  inline bool isDisplaceOnly() const {
-    return (m_base == NULL) && (m_inx == NULL);
-  }
-  // set m_needREXByte in x64
-  void sortBaseInx();
-  inline const IndexRegister *getBase()   const { return m_base;         }
-  inline const IndexRegister *getInx()    const { return m_inx;          }
-  inline BYTE                 getShift()  const { return m_shift;        }
-  inline int                  getOffset() const { return m_offset;       }
-  inline bool                 hasBase()   const { return m_base != NULL; }
-  inline bool                 hasInx()    const { return m_inx  != NULL; }
-  inline bool                 hasShift()  const { return m_shift >= 1;   }
-  inline bool                 hasOffset() const { return m_offset != 0;  }
-
-#ifdef IS64BIT
-  inline bool                 needREXByte() const {
-    return m_needREXByte;
-  }
-#endif // IS64BIT
-  String                      toString()  const;
-};
-
-MemoryRef operator+(const IndexRegister &base, int offset);
-MemoryRef operator-(const IndexRegister &base, int offset);
-MemoryRef operator+(const MemoryRef     &mr  , int offset);
-MemoryRef operator-(const MemoryRef     &mr  , int offset);
-MemoryRef operator+(const IndexRegister &base, const MemoryRef     &mr );
-MemoryRef operator+(const IndexRegister &base, const IndexRegister &inx);
-MemoryRef operator*(BYTE a, const IndexRegister &inx);
-MemoryRef operator*(const IndexRegister &inx, BYTE a);
 
 class MemoryOperand : public InstructionOperand {
 private:
@@ -264,14 +265,14 @@ public:
   {
     SETDEBUGSTR();
   }
-  const SegmentRegister &getSegmentRegister() const {
-    return *m_segReg;
+  const SegmentRegister *getSegmentRegister() const {
+    return m_segReg;
   }
   bool                   hasSegmentRegister() const {
     return m_segReg != NULL;
   }
-  const MemoryRef       *getMemoryReference() const {
-    return &m_mr;
+  const MemoryRef       &getMemoryReference() const {
+    return m_mr;
   }
 #ifdef IS64BIT
   bool needREXByte() const {
@@ -282,6 +283,11 @@ public:
 };
 
 template<OperandSize size> class MemoryPtr : public MemoryOperand {
+protected:
+  MemoryPtr(const MemoryOperand &mem)
+    : MemoryOperand(size, mem.getMemoryReference(), mem.getSegmentRegister())
+  {
+  }
 public:
   MemoryPtr(const MemoryRef &mr) : MemoryOperand(size, mr) {
   }
@@ -302,6 +308,11 @@ typedef MemoryPtr<REGSIZE_DWORD> DWORDPtr;
 typedef MemoryPtr<REGSIZE_QWORD> QWORDPtr;
 typedef MemoryPtr<REGSIZE_OWORD> XMMWORDPtr;
 typedef MemoryPtr<REGSIZE_TBYTE> TBYTEPtr;
+class VOIDPtr : public MemoryPtr<REGSIZE_VOID > {
+public:
+  VOIDPtr(const MemoryOperand &op) : MemoryPtr(op) {
+  }
+};
 
 #define MAX_INSTRUCTIONSIZE   15
 
@@ -334,7 +345,11 @@ public:
 #define REGSIZE_BYTE_ALLOWED   0x00000020
 #define REGSIZE_WORD_ALLOWED   0x00000040
 #define REGSIZE_DWORD_ALLOWED  0x00000080
+#ifdef IS32BIT
+#define REGSIZE_QWORD_ALLOWED  0
+#else // IS64BIT
 #define REGSIZE_QWORD_ALLOWED  0x00000100
+#endif // IS64BIT
 #define REGSIZE_TBYTE_ALLOWED  0x00000200
 #define REGSIZE_OWORD_ALLOWED  0x00000400
 #define BYTEPTR_ALLOWED        0x00000800
@@ -343,23 +358,25 @@ public:
 #define QWORDPTR_ALLOWED       0x00004000
 #define TBYTEPTR_ALLOWED       0x00008000
 #define OWORDPTR_ALLOWED       0x00010000
-#define IMMEDIATEVALUE_ALLOWED 0x00020000
-#define HAS_SIZEBIT            0x00040000
-#define HAS_DIRECTIONBIT       0x00080000
+#define VOIDPTR_ALLOWED        0x00020000
+#define IMMEDIATEVALUE_ALLOWED 0x00040000
+#define HAS_SIZEBIT            0x00080000
+#define HAS_DIRECTIONBIT       0x00100000
 
 #ifdef IS32BIT
-#define ALL_GPRSIZE_ALLOWED     (REGSIZE_BYTE_ALLOWED | REGSIZE_WORD_ALLOWED | REGSIZE_DWORD_ALLOWED)
 #define ALL_GPRSIZEPTR_ALLOWED  (BYTEPTR_ALLOWED      | WORDPTR_ALLOWED      | DWORDPTR_ALLOWED     )
 #else  // IS64BIT
-#define ALL_GPRSIZE_ALLOWED     (REGSIZE_BYTE_ALLOWED | REGSIZE_WORD_ALLOWED | REGSIZE_DWORD_ALLOWED | REGSIZE_QWORD_ALLOWED)
-#define ALL_GPRSIZEPTR_ALLOWED  (BYTEPTR_ALLOWED      | WORDPTR_ALLOWED      | DWORDPTR_ALLOWED      | QWORDPTR_ALLOWED     )
+#define ALL_GPRSIZEPTR_ALLOWED  (BYTEPTR_ALLOWED      | WORDPTR_ALLOWED      | DWORDPTR_ALLOWED     | QWORDPTR_ALLOWED     )
 #endif // IS64BIT
 
-#define ALL_REGISTER_TYPES     (REGTYPE_GPR_ALLOWED  | REGTYPE_SEG_ALLOWED  | REGTYPE_FPU_ALLOWED | REGTYPE_XMM_ALLOWED)
-#define ALL_GPR_ALLOWED        (REGTYPE_GPR_ALLOWED  | ALL_GPRSIZE_ALLOWED)
-#define ALL_GPRPTR_ALLOWED     (ALL_GPRSIZEPTR_ALLOWED)
+#define ALL_GPRSIZE_BUTBYTE_ALLOWED (REGSIZE_WORD_ALLOWED | REGSIZE_DWORD_ALLOWED | REGSIZE_QWORD_ALLOWED)
+#define ALL_GPRSIZE_ALLOWED         (REGSIZE_BYTE_ALLOWED | ALL_GPRSIZE_BUTBYTE_ALLOWED)
+#define ALL_REGISTER_TYPES          (REGTYPE_GPR_ALLOWED  | REGTYPE_SEG_ALLOWED  | REGTYPE_FPU_ALLOWED   | REGTYPE_XMM_ALLOWED)
+#define ALL_GPR_BUTBYTE_ALLOWED     (REGTYPE_GPR_ALLOWED  | ALL_GPRSIZE_BUTBYTE_ALLOWED)
+#define ALL_GPR_ALLOWED             (REGTYPE_GPR_ALLOWED  | ALL_GPRSIZE_ALLOWED        )
+#define ALL_GPRPTR_ALLOWED          (ALL_GPRSIZEPTR_ALLOWED)
 
-#define ALL_MEMOPSIZES         (BYTEPTR_ALLOWED | WORDPTR_ALLOWED | DWORDPTR_ALLOWED | QWORDPTR_ALLOWED | TBYTEPTR_ALLOWED | OWORDPTR_ALLOWED )
+#define ALL_MEMOPSIZES              (BYTEPTR_ALLOWED | WORDPTR_ALLOWED | DWORDPTR_ALLOWED | QWORDPTR_ALLOWED | TBYTEPTR_ALLOWED | OWORDPTR_ALLOWED)
 
 class OpcodeBase {
 private:
@@ -412,6 +429,7 @@ protected:
   bool validateSameSize(                 const Register           &reg , const InstructionOperand &op  , bool throwOnError) const;
   bool validateSameSize(                 const InstructionOperand &op1 , const InstructionOperand &op2 , bool throwOnError) const;
   bool validateRegisterOperand(          const InstructionOperand &op  , int   index                   , bool throwOnError) const;
+  bool validateMemoryOperand(            const InstructionOperand &op  , int   index                   , bool throwOnError) const;
   bool validateRegisterOrMemoryOperand(  const InstructionOperand &op  , int   index                   , bool throwOnError) const;
   bool validateShiftAmountOperand(       const InstructionOperand &op  , int   index                   , bool throwOnError) const;
 
@@ -491,8 +509,8 @@ class OpcodeMovRegImm : public Opcode2Arg {
 public:
   OpcodeMovRegImm(const String &mnemonic, BYTE op) : Opcode2Arg(mnemonic, op) {
   }
-  InstructionBase operator()(const Register &reg, const InstructionOperand &imm) const;
   bool isValidOperandCombination(const Register &reg, const InstructionOperand &imm, bool throwOnError) const;
+  InstructionBase operator()(const Register &reg, const InstructionOperand &imm) const;
 };
 
 class OpcodeMovMemImm : public Opcode2Arg {
@@ -518,6 +536,13 @@ public :
   InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
 };
 
+class OpcodeLea : public Opcode2Arg {
+public :
+  OpcodeLea(const String &mnemonic, BYTE op);
+  bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError=false) const;
+  InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
+};
+
 class OpcodeSetcc : public Opcode1Arg {
 public:
   OpcodeSetcc(const String &mnemonic, UINT op) : Opcode1Arg(mnemonic, op, 0, REGTYPE_GPR_ALLOWED | REGSIZE_BYTE_ALLOWED | BYTEPTR_ALLOWED) {
@@ -529,8 +554,8 @@ private:
   OpcodeBase m_immCode;
 public:
   OpcodeShiftRot(const String &mnemonic, BYTE extension);
-  InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
   bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError=false) const;
+  InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
 };
 
 class OpcodeDoubleShift : public OpcodeBase {
@@ -538,15 +563,15 @@ private:
   OpcodeBase m_immCode;
 public:
   OpcodeDoubleShift(const String &mnemonic, UINT opCL, UINT opImm);
-  InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2, const InstructionOperand &op3) const;
   bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, const InstructionOperand &op3, bool throwOnError=false) const;
+  InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2, const InstructionOperand &op3) const;
 };
 
 class OpcodeBitScan : public Opcode2Arg {
 public:
   OpcodeBitScan(const String &mnemonic, UINT op);
-  InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
   bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError=false) const;
+  InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
 };
 
 class StringInstruction : public Opcode0Arg {
@@ -636,6 +661,8 @@ extern Opcode2Arg        XOR;                              // Logical Exclusive 
 extern Opcode2Arg        CMP;                              // Compare Two Operands
 extern OpcodeMov         MOV;                              // Move data (copying)
 
+extern OpcodeLea         LEA;                              // Load effective address
+
 extern Opcode1Arg        NOT;                              // Negate the operand, logical NOT
 extern Opcode1Arg        NEG;                              // Two's complement negation
 extern Opcode1Arg        MUL;                              // Unsigned multiply ah:al=al*src, dx:ax=ax*src, edx:eax=eax*src, rdx:rax=rax*src
@@ -719,7 +746,6 @@ extern StringPrefix      REPNE;                            // Apply to CMPS and 
 
 
 #define MOV_FROM_SEGREG_WORD(seg)              B2OP(0x8C00    | ((seg)<<3))               // Build dst with MEM_ADDR-*,REGREG-macroes
-#define LEA_R32_DWORD(       dst)              B2OPNOREGREG(0x8D00 | ((dst)<<3))          // Build src with MEM_ADDR-macroes
 #define MOV_TO_SEGREG_WORD(  seg)              B2OP(0x8E00    | ((seg)<<3))               // Build src with MEM_ADDR-*,REGREG-macroes
 #define POP_DWORD                              B2OP(0x8F00)                               // Build dst with MEM_ADDR-*,REGREG-macroes
 

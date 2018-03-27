@@ -69,6 +69,8 @@ DEFNAME(Opcode2Arg       ,  XOR   ,0x30);
 DEFNAME(Opcode2Arg       ,  CMP   ,0x38);
 DEFNAME(OpcodeMov        ,  MOV   ,0x88, 0xB0, 0xC6);
 
+DEFNAME(OpcodeLea        ,  LEA   ,0x8D);                  // Load effective address
+
 //        Non existing opcode (0xF6,1);
 DEFNAME(Opcode1Arg       ,  NOT   ,0xF6,2);                // Negate the operand, logical NOT
 DEFNAME(Opcode1Arg       ,  NEG   ,0xF6,3);                // Two's complement negation

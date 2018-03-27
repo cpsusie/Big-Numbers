@@ -196,10 +196,10 @@ static int memRefCmp(const MemoryRef &mr1, const MemoryRef &mr2) {
 static int memOpCmp(const InstructionOperand * const &o1, const InstructionOperand * const &o2) {
   int c = (int)(o1->getSize()) - (int)(o2->getSize());
   if(c) return c;
-  if(c = memRefCmp(*o1->getMemoryReference(), *o2->getMemoryReference())) return c;
+  if(c = memRefCmp(o1->getMemoryReference(), o2->getMemoryReference())) return c;
   if(c = boolCmp(o1->hasSegmentRegister(),o2->hasSegmentRegister())) return c;
   if(!o1->hasSegmentRegister()) return 0; // && !o2->hasSegmentRegister()
-  return registerCmp(o1->getSegmentRegister(), o2->getSegmentRegister());
+  return registerCmp(*o1->getSegmentRegister(), *o2->getSegmentRegister());
 }
 
 AllMemoryOperands::AllMemoryOperands() {
@@ -264,7 +264,21 @@ AllMemoryOperands::AllMemoryOperands() {
   for(size_t i = 0; i < size(); i++) {
     debugLog(_T("%s\n"),(*this)[i]->toString().cstr());
   }
+}
 
+class AllVOIDPtrOperands : public InstructionOperandArray {
+public:
+  AllVOIDPtrOperands &operator=(const AllMemoryOperands &src);
+};
+
+AllVOIDPtrOperands &AllVOIDPtrOperands::operator=(const AllMemoryOperands &src) {
+  for(Iterator<const InstructionOperand*> it = ((AllMemoryOperands&)src).getIterator(); it.hasNext();) {
+    const MemoryOperand &op = (MemoryOperand&)*it.next();
+    if(op.getSize() == REGSIZE_BYTE) {
+      add(new VOIDPtr(op));
+    }
+  }
+  return *this;
 }
 
 class AllStringInstructions : public CompactArray<const StringInstruction*> {
@@ -300,15 +314,36 @@ AllStringInstructions::AllStringInstructions() {
 #endif // IS64BIT
 }
 
+typedef enum {
+  BREAK_GROUP
+ ,BREAK_OPCODE
+} InterruptType;
+
+class UserInterrupt : public Exception {
+private:
+  const InterruptType m_type;
+public:
+  inline UserInterrupt(InterruptType type) : Exception(_T("User interrupt")), m_type(type) {
+  }
+  inline InterruptType getType() const {
+    return m_type;
+  }
+};
+
 class CodeArray : public ExecutableByteArray {
 private:
   DECLARECLASSNAME;
+  static UINT             s_emitCount;
+  static void checkKeyboard();
+  int         addBytes(const void *bytes, int count);
 public:
-  int        addBytes(const void *bytes, int count);
   inline int emit(const InstructionBase &ins) {
+    if((++s_emitCount & 0xfff) == 0) checkKeyboard();
     return addBytes(ins.getBytes(), ins.size());
   }
 };
+
+UINT CodeArray::s_emitCount = 0;
 
 int CodeArray::addBytes(const void *bytes, int count) {
   const int ret = (int)size();
@@ -316,9 +351,19 @@ int CodeArray::addBytes(const void *bytes, int count) {
   return ret;
 }
 
+void CodeArray::checkKeyboard() { // static
+  if(shiftKeyPressed()) {
+    throw UserInterrupt(BREAK_GROUP);
+  }
+  if(ctrlKeyPressed()) {
+    throw UserInterrupt(BREAK_OPCODE);
+  }
+}
+
 class TestMachineCode : public CodeArray {
 private:
   InstructionOperandArray m_allOperands;
+  AllVOIDPtrOperands      m_allVOIDPtrOperands;
   AllStringInstructions   m_allStringInstructions;
   String                  m_currentName;
   void initAllOperands();
@@ -328,11 +373,19 @@ private:
   int  emit(               const OpcodeBase      &opcode, const InstructionOperand &op1, const InstructionOperand &op2);
   int  emit(               const OpcodeBase      &opcode, const InstructionOperand &op1, const InstructionOperand &op2, const InstructionOperand &op3);
   void testOpcode1Arg(     const OpcodeBase      &opcode);
-  void testOpcode2Arg(     const OpcodeBase      &opcode);
+  void testOpcode2Arg(     const OpcodeBase      &opcode, bool selectVOIDPtr);
   void testOpcode3Arg(     const OpcodeBase      &opcode);
 public:
-  void testOpcode(         const OpcodeBase      &opcode);
+  void testOpcode(         const OpcodeBase      &opcode, bool selectVOIDPtr = false);
+  void testOpcode(         const OpcodeLea       &opcode);
   void testOpcode(         const StringPrefix    &prefix);
+  void testArg0Opcodes();
+  void testArg1Opcodes();
+  void testArg2Opcodes();
+  void testArg3Opcodes();
+  void testSetccOpcodes();
+  void testBitOperations();
+  void testStringInstructions();
   TestMachineCode();
 };
 
@@ -340,6 +393,7 @@ void TestMachineCode::initAllOperands() {
   AllGPRegisters    m_allGPReg;
   AllMemoryOperands m_allMemOperands;
   AllImmOperands    m_allImmOperands;
+  m_allVOIDPtrOperands = m_allMemOperands;
   m_allOperands.addAll(m_allGPReg      ); m_allGPReg.clear();
   m_allOperands.addAll(m_allMemOperands); m_allMemOperands.clear();
   m_allOperands.addAll(m_allImmOperands); m_allImmOperands.clear();
@@ -351,40 +405,50 @@ void TestMachineCode::clear() {
 }
 
 int TestMachineCode::emit(const InstructionBase &ins) {
-  debugLog(_T("%-26s %s\n"), ins.toString().cstr(), m_currentName.cstr());
+  debugLog(_T("%-36s %s\n"), ins.toString().cstr(), m_currentName.cstr());
   return __super::emit(ins);
 }
 
 int TestMachineCode::emit(const OpcodeBase &opcode, const InstructionOperand &op) {
   const InstructionBase ins = opcode(op);
-  debugLog(_T("%-26s %s %s\n"), ins.toString().cstr(), m_currentName.cstr(), op.toString().cstr());
+  debugLog(_T("%-36s %s %s\n"), ins.toString().cstr(), m_currentName.cstr(), op.toString().cstr());
   return __super::emit(ins);
 }
 
 int TestMachineCode::emit(const OpcodeBase &opcode, const InstructionOperand &op1, const InstructionOperand &op2) {
   const InstructionBase ins = opcode(op1,op2);
-  debugLog(_T("%-26s %s %s, %s\n"), ins.toString().cstr(), m_currentName.cstr(), op1.toString().cstr(), op2.toString().cstr());
+  debugLog(_T("%-36s %s %s, %s\n"), ins.toString().cstr(), m_currentName.cstr(), op1.toString().cstr(), op2.toString().cstr());
   return __super::emit(ins);
 }
 
 int TestMachineCode::emit(const OpcodeBase &opcode, const InstructionOperand &op1, const InstructionOperand &op2, const InstructionOperand &op3) {
   const InstructionBase ins = opcode(op1,op2,op3);
-  debugLog(_T("%-26s %s %s,%s,%s\n"), ins.toString().cstr(), m_currentName.cstr(), op1.toString().cstr(), op2.toString().cstr(),op3.toString().cstr());
+  debugLog(_T("%-36s %s %s,%s,%s\n"), ins.toString().cstr(), m_currentName.cstr(), op1.toString().cstr(), op2.toString().cstr(),op3.toString().cstr());
   return __super::emit(ins);
 }
 
-void TestMachineCode::testOpcode(const OpcodeBase &opcode) {
-  if(opcode.getOpCount() != 0) {
-    clear();
+void TestMachineCode::testOpcode(const OpcodeBase &opcode, bool selectVOIDPtr) {
+  try {
+    if(opcode.getOpCount() != 0) {
+      clear();
+    }
+    m_currentName = opcode.getMnemonic();
+    switch(opcode.getOpCount()) {
+    case 0 : emit((Opcode0Arg&)opcode            ); break;
+    case 1 : testOpcode1Arg(opcode               ); break;
+    case 2 : testOpcode2Arg(opcode, selectVOIDPtr); break;
+    case 3 : testOpcode3Arg(opcode               ); break;
+    default: throwInvalidArgumentException(__TFUNCTION__,_T("%s.getOpCount()=%d"), opcode.getMnemonic().cstr(), opcode.getOpCount());
+    }
+  } catch(UserInterrupt u) {
+    if(u.getType() != BREAK_OPCODE) {
+      throw;
+    }
   }
-  m_currentName = opcode.getMnemonic();
-  switch(opcode.getOpCount()) {
-  case 0 : emit((Opcode0Arg&)opcode); break;
-  case 1 : testOpcode1Arg(opcode); break;
-  case 2 : testOpcode2Arg(opcode); break;
-  case 3 : testOpcode3Arg(opcode); break;
-  default: throwInvalidArgumentException(__TFUNCTION__,_T("%s.getOpCount()=%d"), opcode.getMnemonic().cstr(), opcode.getOpCount());
-  }
+}
+
+void TestMachineCode::testOpcode(const OpcodeLea &opcode) {
+  testOpcode(opcode,true);
 }
 
 void TestMachineCode::testOpcode1Arg(const OpcodeBase &opcode) {
@@ -396,8 +460,9 @@ void TestMachineCode::testOpcode1Arg(const OpcodeBase &opcode) {
   }
 }
 
-void TestMachineCode::testOpcode2Arg(const OpcodeBase &opcode) {
-  for(Iterator<const InstructionOperand*> opIt2 = m_allOperands.getIterator(); opIt2.hasNext();) {
+void TestMachineCode::testOpcode2Arg(const OpcodeBase &opcode, bool selectVOIDPtr) {
+  Iterator<const InstructionOperand*> opIt2 = selectVOIDPtr?m_allVOIDPtrOperands.getIterator() : m_allOperands.getIterator();
+  while(opIt2.hasNext()) {
     const InstructionOperand &op2 = *opIt2.next();
     for(Iterator<const InstructionOperand*> opIt1 = m_allOperands.getIterator(); opIt1.hasNext();) {
       const InstructionOperand &op1 = *opIt1.next();
@@ -432,39 +497,8 @@ void TestMachineCode::testOpcode(const StringPrefix &prefix) {
   }
 }
 
-TestMachineCode::TestMachineCode() {
-  initAllOperands();
-
-  testOpcode(MOVSB  );
-  testOpcode(CMPSB  );
-  testOpcode(STOSB  );
-  testOpcode(LODSB  );
-  testOpcode(SCASB  );
-
-  testOpcode(MOVSW  );
-  testOpcode(CMPSW  );
-  testOpcode(STOSW  );
-  testOpcode(LODSW  );
-  testOpcode(SCASW  );
-
-  testOpcode(MOVSD  );
-  testOpcode(CMPSD  );
-  testOpcode(STOSD  );
-  testOpcode(LODSD  );
-  testOpcode(SCASD  );
-
-#ifdef IS64BIT
-  testOpcode(MOVSQ  );
-  testOpcode(CMPSQ  );
-  testOpcode(STOSQ  );
-  testOpcode(LODSQ  );
-  testOpcode(SCASQ  );
-#endif // IS64BIT
-
-  testOpcode(REP    );
-  testOpcode(REPE   );
-  testOpcode(REPNE  );
-
+void TestMachineCode::testArg0Opcodes() {
+  clear();
   testOpcode(RET    );
   testOpcode(CMC    );
   testOpcode(CLC    );
@@ -498,11 +532,56 @@ TestMachineCode::TestMachineCode() {
   testOpcode(CLGI   );
   testOpcode(STGI   );
 #endif // IS64BIT
+}
 
+void TestMachineCode::testArg1Opcodes() {
+  testOpcode(NOT  );
+  testOpcode(NEG  );
+  testOpcode(MUL  );
+  testOpcode(IMUL );
+  testOpcode(DIV  );
+  testOpcode(IDIV );
+}
+
+void TestMachineCode::testArg2Opcodes() {
+  testOpcode(LEA    );
+
+  testOpcode(ADD    );
+  testOpcode(ADC    );
+  testOpcode(OR     );
+  testOpcode(AND    );
+  testOpcode(SUB    );
+  testOpcode(SBB    );
+  testOpcode(XOR    );
+  testOpcode(CMP    );
+  testOpcode(MOV    );
+}
+
+void TestMachineCode::testArg3Opcodes() {
   testOpcode(SHLD   );
   testOpcode(SHRD   );
+}
 
+void TestMachineCode::testSetccOpcodes() {
+  testOpcode(SETO );
+  testOpcode(SETNO);
+  testOpcode(SETB );
+  testOpcode(SETAE);
+  testOpcode(SETE );
+  testOpcode(SETNE);
+  testOpcode(SETBE);
+  testOpcode(SETA );
+  testOpcode(SETS );
+  testOpcode(SETNS);
+  testOpcode(SETPE);
+  testOpcode(SETPO);
+  testOpcode(SETL );
+  testOpcode(SETGE);
+  testOpcode(SETLE);
+  testOpcode(SETG );
+}
 
+void TestMachineCode::testBitOperations() {
   testOpcode(ROL    );
   testOpcode(ROR    );
   testOpcode(RCL    );
@@ -510,21 +589,63 @@ TestMachineCode::TestMachineCode() {
   testOpcode(SHL    );
   testOpcode(SHR    );
   testOpcode(SAR    );
-
   testOpcode(BSF    );
   testOpcode(BSR    );
+}
 
-  testOpcode(SETE   );
-  testOpcode(NOT    );
-  testOpcode(NEG    );
-  testOpcode(MUL    );
-  testOpcode(IMUL   );
-  testOpcode(DIV    );
-  testOpcode(IDIV   );
-  testOpcode(ADD    );
-  testOpcode(ADC    );
-  testOpcode(XOR    );
-  testOpcode(MOV    );
+void TestMachineCode::testStringInstructions() {
+  clear();
+  testOpcode(MOVSB  );
+  testOpcode(CMPSB  );
+  testOpcode(STOSB  );
+  testOpcode(LODSB  );
+  testOpcode(SCASB  );
+
+  testOpcode(MOVSW  );
+  testOpcode(CMPSW  );
+  testOpcode(STOSW  );
+  testOpcode(LODSW  );
+  testOpcode(SCASW  );
+
+  testOpcode(MOVSD  );
+  testOpcode(CMPSD  );
+  testOpcode(STOSD  );
+  testOpcode(LODSD  );
+  testOpcode(SCASD  );
+
+#ifdef IS64BIT
+  testOpcode(MOVSQ  );
+  testOpcode(CMPSQ  );
+  testOpcode(STOSQ  );
+  testOpcode(LODSQ  );
+  testOpcode(SCASQ  );
+#endif // IS64BIT
+
+  testOpcode(REP    );
+  testOpcode(REPE   );
+  testOpcode(REPNE  );
+}
+
+TestMachineCode::TestMachineCode() {
+  initAllOperands();
+  for(int i = 0; i >= 0;i++) {
+    try {
+      switch(i) {
+      case 0 : testArg0Opcodes();         break;
+      case 1 : testArg1Opcodes();         break;
+      case 2 : testArg2Opcodes();         break;
+      case 3 : testArg3Opcodes();         break;
+      case 4 : testSetccOpcodes();        break;
+      case 5 : testBitOperations();       break;
+      case 6 : testStringInstructions();  break;
+      default: i = -1000; break;
+      }
+    } catch(UserInterrupt u) {
+      if(u.getType() != BREAK_GROUP) {
+        throw;
+      }
+    }
+  }
 }
 
 #endif // TEST_MACHINECODE

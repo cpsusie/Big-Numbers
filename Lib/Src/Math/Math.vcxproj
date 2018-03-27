@@ -921,6 +921,7 @@
     <ClCompile Include="Expression\Opcode.cpp" />
     <ClCompile Include="Expression\Opcode0Arg.cpp" />
     <ClCompile Include="Expression\OpcodeBitScan.cpp" />
+    <ClCompile Include="Expression\OpcodeLea.cpp" />
     <ClCompile Include="Expression\OpcodeMov.cpp" />
     <ClCompile Include="Expression\Opcode1Arg.cpp" />
     <ClCompile Include="Expression\Opcode2Arg.cpp" />

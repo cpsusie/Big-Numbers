@@ -351,7 +351,14 @@ MemoryRef operator*(const IndexRegister &inx, BYTE a) {
 }
 
 String MemoryOperand::toString() const {
-  return (m_segReg)
-        ? format(_T("%s ptr %s:[%s]"), ::toString(getSize()).cstr(), m_segReg->getName().cstr(), m_mr.toString().cstr())
-        : format(_T("%s ptr[%s]")    , ::toString(getSize()).cstr(), m_mr.toString().cstr());
+  switch (getSize()) {
+  case REGSIZE_VOID:
+    return (m_segReg)
+          ? format(_T("%s:[%s]"), m_segReg->getName().cstr(), m_mr.toString().cstr())
+          : format(_T("[%s]")   , m_mr.toString().cstr());
+  default          :
+    return (m_segReg)
+          ? format(_T("%s ptr %s:[%s]"), ::toString(getSize()).cstr(), m_segReg->getName().cstr(), m_mr.toString().cstr())
+          : format(_T("%s ptr[%s]")    , ::toString(getSize()).cstr(), m_mr.toString().cstr());
+  }
 }
