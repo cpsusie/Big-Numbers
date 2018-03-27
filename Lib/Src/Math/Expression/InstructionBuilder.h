@@ -129,7 +129,7 @@ public:
   }
   // m_bytes[index] |= b
   inline InstructionBuilder &or(BYTE index, BYTE b) {
-    assert(m_size < MAX_INSTRUCTIONSIZE);
+    assert(index < m_size);
     m_bytes[index] |= b;
     return *this;
   }
@@ -140,7 +140,7 @@ public:
   }
   // m_bytes[index] ^= b
   inline InstructionBuilder &xor(BYTE index, BYTE b) {
-    assert(m_size < MAX_INSTRUCTIONSIZE);
+    assert(index < m_size);
     m_bytes[index] ^= b;
     return *this;
   }

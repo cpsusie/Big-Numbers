@@ -6,11 +6,11 @@ public:
   InstructionMovImm(const OpcodeBase &opcode) : InstructionBuilder(opcode)
   {
   }
-  InstructionBuilder &setGPRegImm(const GPRegister    &dst, INT64 immv);
-  InstructionBuilder &setMemImm(  const MemoryOperand &dst, int   immv);
+  InstructionBuilder &setRegImm(const Register      &dst, INT64 immv);
+  InstructionBuilder &setMemImm(const MemoryOperand &dst, int   immv);
 };
 
-InstructionBuilder &InstructionMovImm::setGPRegImm(const GPRegister &reg, INT64 immv) {
+InstructionBuilder &InstructionMovImm::setRegImm(const Register &reg, INT64 immv) {
   DEFINEMETHODNAME;
   const BYTE    regIndex = reg.getIndex();
   const RegSize regSize  = reg.getSize();
@@ -61,8 +61,7 @@ InstructionBuilder &InstructionMovImm::setMemImm(const MemoryOperand &dst, int i
 InstructionBase OpcodeMovRegImm::operator()(const Register &reg, const InstructionOperand &imm) const {
   assert(imm.getType() == IMMEDIATEVALUE);
   isValidOperandCombination(reg, imm, true);
-  InstructionMovImm result(*this);
-  return result.setGPRegImm((GPRegister&)reg, imm.getImmInt64());
+  return InstructionMovImm(*this).setRegImm(reg, imm.getImmInt64());
 }
 
 #ifdef IS32BIT
@@ -85,8 +84,7 @@ bool OpcodeMovRegImm::isValidOperandCombination(const Register &reg, const Instr
 InstructionBase OpcodeMovMemImm::operator()(const InstructionOperand &mem, const InstructionOperand &imm) const {
   assert((mem.getType() == MEMORYOPERAND) && (imm.getType() == IMMEDIATEVALUE));
   isValidOperandCombination(mem, imm, true);
-  InstructionMovImm result(*this);
-  return result.setMemImm((MemoryOperand&)mem, imm.getImmInt32());
+  return InstructionMovImm(*this).setMemImm((MemoryOperand&)mem, imm.getImmInt32());
 }
 
 InstructionBase OpcodeMov::operator()(const InstructionOperand &op1, const InstructionOperand &op2) const {
@@ -94,12 +92,12 @@ InstructionBase OpcodeMov::operator()(const InstructionOperand &op1, const Instr
     return __super::operator()(op1,op2);
   } else {
     switch(op1.getType()) {
-    case REGISTER     : return m_regImmCode(op1.getRegister()  , op2);
+    case REGISTER     : return m_regImmCode(op1.getRegister(), op2);
     case MEMORYOPERAND: return m_memImmCode(op1, op2);
-    default           : throwInvalidOperandCombination(op1,op2);
-                        return __super::operator()(op1,op2); // should never come here
     }
   }
+  throwInvalidOperandCombination(op1,op2);
+  return __super::operator()(op1,op2); // should never come here
 }
 
 bool OpcodeMov::isValidOperandCombination(const Register &reg, const InstructionOperand &op, bool throwOnError) const {
