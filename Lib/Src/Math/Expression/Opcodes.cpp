@@ -7,22 +7,22 @@
 #define DEFNAME(type,id,...) type id(_T(#id),__VA_ARGS__)
 
 // Set Byte on Condition
-DEFNAME(OpcodeSetxx      ,  SETO  ,0x0F90  );              // Set byte if overflow
-DEFNAME(OpcodeSetxx      ,  SETNO ,0x0F91  );              // Set byte if not overflow
-DEFNAME(OpcodeSetxx      ,  SETB  ,0x0F92  );              // Set byte if below                 (unsigned)
-DEFNAME(OpcodeSetxx      ,  SETAE ,0x0F93  );              // Set byte if above or equal        (unsigned)
-DEFNAME(OpcodeSetxx      ,  SETE  ,0x0F94  );              // Set byte if equal                 (signed/unsigned)
-DEFNAME(OpcodeSetxx      ,  SETNE ,0x0F95  );              // Set byte if not equal             (signed/unsigned)
-DEFNAME(OpcodeSetxx      ,  SETBE ,0x0F96  );              // Set byte if below or equal        (unsigned)
-DEFNAME(OpcodeSetxx      ,  SETA  ,0x0F97  );              // Set byte if above                 (unsigned)
-DEFNAME(OpcodeSetxx      ,  SETS  ,0x0F98  );              // Set byte if sign
-DEFNAME(OpcodeSetxx      ,  SETNS ,0x0F99  );              // Set byte if not sign
-DEFNAME(OpcodeSetxx      ,  SETPE ,0x0F9A  );              // Set byte if parity even
-DEFNAME(OpcodeSetxx      ,  SETPO ,0x0F9B  );              // Set byte if parity odd
-DEFNAME(OpcodeSetxx      ,  SETL  ,0x0F9C  );              // Set byte if less                  (signed  )
-DEFNAME(OpcodeSetxx      ,  SETGE ,0x0F9D  );              // Set byte if greater or equal      (signed  )
-DEFNAME(OpcodeSetxx      ,  SETLE ,0x0F9E  );              // Set byte if less or equal         (signed  )
-DEFNAME(OpcodeSetxx      ,  SETG  ,0x0F9F  );              // Set byte if greater               (signed  );
+DEFNAME(OpcodeSetcc      ,  SETO  ,0x0F90  );              // Set byte if overflow
+DEFNAME(OpcodeSetcc      ,  SETNO ,0x0F91  );              // Set byte if not overflow
+DEFNAME(OpcodeSetcc      ,  SETB  ,0x0F92  );              // Set byte if below                 (unsigned)
+DEFNAME(OpcodeSetcc      ,  SETAE ,0x0F93  );              // Set byte if above or equal        (unsigned)
+DEFNAME(OpcodeSetcc      ,  SETE  ,0x0F94  );              // Set byte if equal                 (signed/unsigned)
+DEFNAME(OpcodeSetcc      ,  SETNE ,0x0F95  );              // Set byte if not equal             (signed/unsigned)
+DEFNAME(OpcodeSetcc      ,  SETBE ,0x0F96  );              // Set byte if below or equal        (unsigned)
+DEFNAME(OpcodeSetcc      ,  SETA  ,0x0F97  );              // Set byte if above                 (unsigned)
+DEFNAME(OpcodeSetcc      ,  SETS  ,0x0F98  );              // Set byte if sign
+DEFNAME(OpcodeSetcc      ,  SETNS ,0x0F99  );              // Set byte if not sign
+DEFNAME(OpcodeSetcc      ,  SETPE ,0x0F9A  );              // Set byte if parity even
+DEFNAME(OpcodeSetcc      ,  SETPO ,0x0F9B  );              // Set byte if parity odd
+DEFNAME(OpcodeSetcc      ,  SETL  ,0x0F9C  );              // Set byte if less                  (signed  )
+DEFNAME(OpcodeSetcc      ,  SETGE ,0x0F9D  );              // Set byte if greater or equal      (signed  )
+DEFNAME(OpcodeSetcc      ,  SETLE ,0x0F9E  );              // Set byte if less or equal         (signed  )
+DEFNAME(OpcodeSetcc      ,  SETG  ,0x0F9F  );              // Set byte if greater               (signed  );
 
 DEFNAME(Opcode0Arg       ,  RET   ,0xC3    );              // Near return to calling procedure
 
@@ -76,9 +76,9 @@ DEFNAME(Opcode1Arg       ,  MUL   ,0xF6,4);                // Unsigned multiply 
 DEFNAME(Opcode1Arg       ,  IMUL  ,0xF6,5);                // Signed multiply   (ax = al*src, dx:ax=ax*src, edx:eax=eax*src, rdx:rax=rax*src)
 DEFNAME(Opcode1Arg       ,  DIV   ,0xF6,6);                // Unsigned divide   (ax/=src,al=quot,ah=rem,    edx:eax/=src,eax=quot,edx=rem,  rdx:rax/=src,rax=quit,rdx=rem
 DEFNAME(Opcode1Arg       ,  IDIV  ,0xF6,7);                // Signed divide   ax      /= src, ah  must contain sign extension of al . al =quot, ah =rem
-                                                           //                    dk:ax   /= src. dx  must contain sign extension of ax . ax =quot, dx =rem
-                                                           //                    edx:eax /= src. edx must contain sign extension of eax. eax=quot, edx=rem
-                                                           //                    rdx:rax /= src. rdx must contain sign extension of rax. rax=quot, rdx=rem
+                                                           //                 dk:ax   /= src. dx  must contain sign extension of ax . ax =quot, dx =rem
+                                                           //                 edx:eax /= src. edx must contain sign extension of eax. eax=quot, edx=rem
+                                                           //                 rdx:rax /= src. rdx must contain sign extension of rax. rax=quot, rdx=rem
 
 
 DEFNAME(OpcodeShiftRot   ,  ROL   ,0     );                // Rotate left  by cl/imm

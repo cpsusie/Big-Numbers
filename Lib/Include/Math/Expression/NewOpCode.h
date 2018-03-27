@@ -518,9 +518,9 @@ public :
   InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
 };
 
-class OpcodeSetxx : public Opcode1Arg {
+class OpcodeSetcc : public Opcode1Arg {
 public:
-  OpcodeSetxx(const String &mnemonic, UINT op) : Opcode1Arg(mnemonic, op, 0, REGTYPE_GPR_ALLOWED | REGSIZE_BYTE_ALLOWED | BYTEPTR_ALLOWED) {
+  OpcodeSetcc(const String &mnemonic, UINT op) : Opcode1Arg(mnemonic, op, 0, REGTYPE_GPR_ALLOWED | REGSIZE_BYTE_ALLOWED | BYTEPTR_ALLOWED) {
   }
 };
 
@@ -565,22 +565,22 @@ public:
 };
 
 // Set Byte on Condition
-extern OpcodeSetxx       SETO;                             // Set byte   if overflow
-extern OpcodeSetxx       SETNO;                            // Set byte   if not overflow
-extern OpcodeSetxx       SETB;                             // Set byte   if below                 (unsigned)
-extern OpcodeSetxx       SETAE;                            // Set byte   if above or equal        (unsigned)
-extern OpcodeSetxx       SETE;                             // Set byte   if equal                 (signed/unsigned)
-extern OpcodeSetxx       SETNE;                            // Set byte   if not equal             (signed/unsigned)
-extern OpcodeSetxx       SETBE;                            // Set byte   if below or equal        (unsigned)
-extern OpcodeSetxx       SETA;                             // Set byte   if above                 (unsigned)
-extern OpcodeSetxx       SETS;                             // Set byte   if sign
-extern OpcodeSetxx       SETNS;                            // Set byte   if not sign
-extern OpcodeSetxx       SETPE;                            // Set byte   if parity even
-extern OpcodeSetxx       SETPO;                            // Set byte   if parity odd
-extern OpcodeSetxx       SETL;                             // Set byte   if less                  (signed  )
-extern OpcodeSetxx       SETGE;                            // Set byte   if greater or equal      (signed  )
-extern OpcodeSetxx       SETLE;                            // Set byte   if less or equal         (signed  )
-extern OpcodeSetxx       SETG;                             // Set byte   if greater               (signed  )
+extern OpcodeSetcc       SETO;                             // Set byte   if overflow
+extern OpcodeSetcc       SETNO;                            // Set byte   if not overflow
+extern OpcodeSetcc       SETB;                             // Set byte   if below                 (unsigned)
+extern OpcodeSetcc       SETAE;                            // Set byte   if above or equal        (unsigned)
+extern OpcodeSetcc       SETE;                             // Set byte   if equal                 (signed/unsigned)
+extern OpcodeSetcc       SETNE;                            // Set byte   if not equal             (signed/unsigned)
+extern OpcodeSetcc       SETBE;                            // Set byte   if below or equal        (unsigned)
+extern OpcodeSetcc       SETA;                             // Set byte   if above                 (unsigned)
+extern OpcodeSetcc       SETS;                             // Set byte   if sign
+extern OpcodeSetcc       SETNS;                            // Set byte   if not sign
+extern OpcodeSetcc       SETPE;                            // Set byte   if parity even
+extern OpcodeSetcc       SETPO;                            // Set byte   if parity odd
+extern OpcodeSetcc       SETL;                             // Set byte   if less                  (signed  )
+extern OpcodeSetcc       SETGE;                            // Set byte   if greater or equal      (signed  )
+extern OpcodeSetcc       SETLE;                            // Set byte   if less or equal         (signed  )
+extern OpcodeSetcc       SETG;                             // Set byte   if greater               (signed  )
 
 #define                  SETNAE         SETB               // Set byte   if not above or equal    (unsigned)
 #define                  SETC           SETB               // Set byte   if carry                 (unsigned)
