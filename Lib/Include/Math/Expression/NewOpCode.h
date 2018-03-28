@@ -666,16 +666,16 @@ extern OpcodeIncDec      DEC;
 extern Opcode1Arg        NOT;                              // Negate the operand, logical NOT
 extern Opcode1Arg        NEG;                              // Two's complement negation
 extern Opcode1Arg        MUL;                              // Unsigned multiply ah:al=al*src, dx:ax=ax*src, edx:eax=eax*src, rdx:rax=rax*src
-extern Opcode1Arg        IMUL;                             // Signed multiply   ah:ax=al*src, dx:ax=ax*src, edx:eax=eax*src, rdx:rax=rax*src
+extern Opcode1Arg        IMUL;                             // Signed multiply   ah:al=al*src, dx:ax=ax*src, edx:eax=eax*src, rdx:rax=rax*src
 
-extern Opcode1Arg        DIV;                              // Unsigned divide   ah:al   /= src, al  = quot, ah  = rem
-                                                           //                   dx:ax   /= src, ax  = quot, dx  = rem  
-                                                           //                   edx:eax /= src, eax = quot, edx = rem  
+extern Opcode1Arg        DIV;                              // Unsigned divide   ah :al  /= src, al  = quot, ah  = rem
+                                                           //                   dx :ax  /= src, ax  = quot, dx  = rem
+                                                           //                   edx:eax /= src, eax = quot, edx = rem
                                                            //                   rdx:rax /= src, rax = quot, rdx = rem
-extern Opcode1Arg        IDIV;                             // Signed divide     ah:al   /= src, al  = quot, ah  = rem. ah  must contain sign extension of al.
-                                                           //                   dx:ax   /= src. ax  = quot, dx  = rem. dx  must contain sign extension of ax.
-                                                           //                   edx:eax /= src. eax = quot, edx = rem. edx must contain sign extension of eax.
-                                                           //                   rdx:rax /= src. rax = quot, rdx = rem. rdx must contain sign extension of rax.
+extern Opcode1Arg        IDIV;                             // Signed divide     ah :al  /= src, al  = quot, ah  = rem. ah  must contain sign extension of al.
+                                                           //                   dx :ax  /= src, ax  = quot, dx  = rem. dx  must contain sign extension of ax.
+                                                           //                   edx:eax /= src, eax = quot, edx = rem. edx must contain sign extension of eax.
+                                                           //                   rdx:rax /= src, rax = quot, rdx = rem. rdx must contain sign extension of rax.
 
 extern OpcodeShiftRot    ROL;                              // Rotate left  by cl/imm
 extern OpcodeShiftRot    ROR;                              // Rotate right by cl/imm
