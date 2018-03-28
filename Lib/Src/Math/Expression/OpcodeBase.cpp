@@ -162,11 +162,11 @@ bool OpcodeBase::validateImmediateValueAllowed(bool throwOnError) const {
   return true;
 }
 
-bool OpcodeBase::validateImmediateValue(OperandSize dstSize, const InstructionOperand &imm, const RegSizeSet *regSizeSet, bool throwOnError) const {
+bool OpcodeBase::validateImmediateValue(OperandSize dstSize, const InstructionOperand &imm, const RegSizeSet &immSizeSet, bool throwOnError) const {
   if(!validateImmediateValueAllowed(throwOnError)) {
     return false;
   }
-  if(!sizeContainsSrcSize(dstSize, imm.getSize()) || (regSizeSet && !regSizeSet->contains(imm.getSize()))) {
+  if(!sizeContainsSrcSize(dstSize, imm.getSize()) || !immSizeSet.contains(imm.getSize())) {
     RAISEERROR(_T("%s"), getImmSizeErrorString(::toString(dstSize), imm.getImmInt64()).cstr());
   }
   return true;
@@ -366,7 +366,7 @@ bool OpcodeBase::isValidOperandCombination(const Register &reg, const Instructio
     }
     break;
   case IMMEDIATEVALUE : // reg <- imm
-    if(!validateImmediateValue(reg.getSize(), op, &s_validImmSizeToReg, throwOnError)) {
+    if(!validateImmediateValue(reg.getSize(), op, s_validImmSizeToReg, throwOnError)) {
       return false;
     }
     break;
@@ -403,7 +403,7 @@ bool OpcodeBase::isValidOperandCombination(const InstructionOperand &op1, const 
       RAISEERROR(_T("%s:Invalid combination of operands:%s,%s"), getMnemonic().cstr(), op1.toString().cstr(), op2.toString().cstr());
       break;
     case IMMEDIATEVALUE : // mem <- imm
-      if(!validateImmediateValue(op1.getSize(), op2, &s_validImmSizeToMem, throwOnError)) {
+      if(!validateImmediateValue(op1.getSize(), op2, s_validImmSizeToMem, throwOnError)) {
         return false;
       }
       break;

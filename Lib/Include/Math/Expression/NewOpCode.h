@@ -424,7 +424,7 @@ protected:
   bool validateRegisterAllowed(          const Register           &reg                                 , bool throwOnError) const;
   bool validateMemoryOperandAllowed(     const MemoryOperand      &mem                                 , bool throwOnError) const;
   bool validateImmediateValueAllowed(                                                                    bool throwOnError) const;
-  bool validateImmediateValue(           OperandSize dstSize           , const InstructionOperand &imm , const RegSizeSet *regSizeSet, bool throwOnError) const;
+  bool validateImmediateValue(           OperandSize dstSize           , const InstructionOperand &imm , const RegSizeSet &immSizeSet, bool throwOnError) const;
   bool validateSameSize(                 const Register           &reg1, const Register           &reg2, bool throwOnError) const;
   bool validateSameSize(                 const Register           &reg , const InstructionOperand &op  , bool throwOnError) const;
   bool validateSameSize(                 const InstructionOperand &op1 , const InstructionOperand &op2 , bool throwOnError) const;
@@ -517,34 +517,18 @@ public:
   InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
 };
 
-class OpcodeMovRegImm : public Opcode2Arg {
-public:
-  OpcodeMovRegImm(const String &mnemonic, BYTE op) : Opcode2Arg(mnemonic, op) {
-  }
-  bool isValidOperandCombination(const Register &reg, const InstructionOperand &imm, bool throwOnError) const;
-  InstructionBase operator()(const Register &reg, const InstructionOperand &imm) const;
-};
-
-class OpcodeMovMemImm : public Opcode2Arg {
-public:
-  OpcodeMovMemImm(const String &mnemonic, BYTE op) : Opcode2Arg(mnemonic, op) {
-  }
-  InstructionBase operator()(const InstructionOperand &mem, const InstructionOperand &imm) const;
-};
-
 class OpcodeMov : public Opcode2Arg {
 private:
-  const OpcodeMovRegImm m_regImmCode;
-  const OpcodeMovMemImm m_memImmCode;
-protected:
-  bool isValidOperandCombination(const Register &reg, const InstructionOperand &op2, bool throwOnError) const;
+  const Opcode2Arg m_regImmCode;
+  const Opcode2Arg m_memImmCode;
 public :
   OpcodeMov(const String &mnemonic, BYTE op, BYTE regImmOp, BYTE memImmOp)
     : Opcode2Arg(  mnemonic, op)
-    , m_regImmCode(mnemonic, regImmOp)
-    , m_memImmCode(mnemonic, memImmOp)
+    , m_regImmCode(mnemonic, regImmOp, ALL_GPR_ALLOWED    | IMMEDIATEVALUE_ALLOWED | HAS_SIZEBIT)
+    , m_memImmCode(mnemonic, memImmOp, ALL_GPRPTR_ALLOWED | IMMEDIATEVALUE_ALLOWED | HAS_SIZEBIT)
   {
   }
+  bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError=false) const;
   InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
 };
 
