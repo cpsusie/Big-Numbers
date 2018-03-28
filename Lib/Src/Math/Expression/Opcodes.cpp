@@ -6,26 +6,7 @@
 
 #define DEFNAME(type,id,...) type id(_T(#id),__VA_ARGS__)
 
-// Set Byte on Condition
-DEFNAME(OpcodeSetcc      ,  SETO  ,0x0F90  );              // Set byte if overflow
-DEFNAME(OpcodeSetcc      ,  SETNO ,0x0F91  );              // Set byte if not overflow
-DEFNAME(OpcodeSetcc      ,  SETB  ,0x0F92  );              // Set byte if below                 (unsigned)
-DEFNAME(OpcodeSetcc      ,  SETAE ,0x0F93  );              // Set byte if above or equal        (unsigned)
-DEFNAME(OpcodeSetcc      ,  SETE  ,0x0F94  );              // Set byte if equal                 (signed/unsigned)
-DEFNAME(OpcodeSetcc      ,  SETNE ,0x0F95  );              // Set byte if not equal             (signed/unsigned)
-DEFNAME(OpcodeSetcc      ,  SETBE ,0x0F96  );              // Set byte if below or equal        (unsigned)
-DEFNAME(OpcodeSetcc      ,  SETA  ,0x0F97  );              // Set byte if above                 (unsigned)
-DEFNAME(OpcodeSetcc      ,  SETS  ,0x0F98  );              // Set byte if sign
-DEFNAME(OpcodeSetcc      ,  SETNS ,0x0F99  );              // Set byte if not sign
-DEFNAME(OpcodeSetcc      ,  SETPE ,0x0F9A  );              // Set byte if parity even
-DEFNAME(OpcodeSetcc      ,  SETPO ,0x0F9B  );              // Set byte if parity odd
-DEFNAME(OpcodeSetcc      ,  SETL  ,0x0F9C  );              // Set byte if less                  (signed  )
-DEFNAME(OpcodeSetcc      ,  SETGE ,0x0F9D  );              // Set byte if greater or equal      (signed  )
-DEFNAME(OpcodeSetcc      ,  SETLE ,0x0F9E  );              // Set byte if less or equal         (signed  )
-DEFNAME(OpcodeSetcc      ,  SETG  ,0x0F9F  );              // Set byte if greater               (signed  );
-
 DEFNAME(Opcode0Arg       ,  RET   ,0xC3    );              // Near return to calling procedure
-
 DEFNAME(Opcode0Arg       ,  CMC   ,0xF5    );              // Complement carry flag
 DEFNAME(Opcode0Arg       ,  CLC   ,0xF8    );              // Clear carry flag     CF = 0
 DEFNAME(Opcode0Arg       ,  STC   ,0xF9    );              // Set   carry flag     CF = 1
@@ -67,8 +48,8 @@ DEFNAME(Opcode2Arg       ,  AND   ,0x20);
 DEFNAME(Opcode2Arg       ,  SUB   ,0x28);
 DEFNAME(Opcode2Arg       ,  XOR   ,0x30);
 DEFNAME(Opcode2Arg       ,  CMP   ,0x38);
+DEFNAME(OpcodeXchg       ,  XCHG  ,0x86);                  // Exchange Two operands
 DEFNAME(OpcodeMov        ,  MOV   ,0x88, 0xB0, 0xC6);
-
 DEFNAME(OpcodeLea        ,  LEA   ,0x8D);                  // Load effective address
 
 DEFNAME(OpcodeIncDec     ,  INC   ,0xFE,0);
@@ -85,7 +66,6 @@ DEFNAME(Opcode1Arg       ,  IDIV  ,0xF6,7);                // Signed divide   ax
                                                            //                 edx:eax /= src. edx must contain sign extension of eax. eax=quot, edx=rem
                                                            //                 rdx:rax /= src. rdx must contain sign extension of rax. rax=quot, rdx=rem
 
-
 DEFNAME(OpcodeShiftRot   ,  ROL   ,0     );                // Rotate left  by cl/imm
 DEFNAME(OpcodeShiftRot   ,  ROR   ,1     );                // Rotate right by cl/imm
 DEFNAME(OpcodeShiftRot   ,  RCL   ,2     );                // Rotate left  by cl/imm (with carry)
@@ -100,6 +80,24 @@ DEFNAME(OpcodeDoubleShift,  SHRD  ,0x0FAD,0x0FAC);         // Shift right by cl/
 
 DEFNAME(OpcodeBitScan    ,  BSF   ,0x0FBC);                // Bitscan forward
 DEFNAME(OpcodeBitScan    ,  BSR   ,0x0FBD);                // Bitscan reversed
+
+// Set Byte on Condition
+DEFNAME(OpcodeSetcc      ,  SETO  ,0x0F90  );              // Set byte if overflow
+DEFNAME(OpcodeSetcc      ,  SETNO ,0x0F91  );              // Set byte if not overflow
+DEFNAME(OpcodeSetcc      ,  SETB  ,0x0F92  );              // Set byte if below                 (unsigned)
+DEFNAME(OpcodeSetcc      ,  SETAE ,0x0F93  );              // Set byte if above or equal        (unsigned)
+DEFNAME(OpcodeSetcc      ,  SETE  ,0x0F94  );              // Set byte if equal                 (signed/unsigned)
+DEFNAME(OpcodeSetcc      ,  SETNE ,0x0F95  );              // Set byte if not equal             (signed/unsigned)
+DEFNAME(OpcodeSetcc      ,  SETBE ,0x0F96  );              // Set byte if below or equal        (unsigned)
+DEFNAME(OpcodeSetcc      ,  SETA  ,0x0F97  );              // Set byte if above                 (unsigned)
+DEFNAME(OpcodeSetcc      ,  SETS  ,0x0F98  );              // Set byte if sign
+DEFNAME(OpcodeSetcc      ,  SETNS ,0x0F99  );              // Set byte if not sign
+DEFNAME(OpcodeSetcc      ,  SETPE ,0x0F9A  );              // Set byte if parity even
+DEFNAME(OpcodeSetcc      ,  SETPO ,0x0F9B  );              // Set byte if parity odd
+DEFNAME(OpcodeSetcc      ,  SETL  ,0x0F9C  );              // Set byte if less                  (signed  )
+DEFNAME(OpcodeSetcc      ,  SETGE ,0x0F9D  );              // Set byte if greater or equal      (signed  )
+DEFNAME(OpcodeSetcc      ,  SETLE ,0x0F9E  );              // Set byte if less or equal         (signed  )
+DEFNAME(OpcodeSetcc      ,  SETG  ,0x0F9F  );              // Set byte if greater               (signed  );
 
 DEFNAME(Opcode0Arg       ,  CWDE  ,0x98);                  // Convert word  to dword  Copy sign (bit 15) of AX  into higher 16 bits of EAX
 DEFNAME(Opcode0Arg       ,  CBW   ,CWDE,REGSIZE_WORD);     // Convert byte  to word   Copy sign (bit 7)  of AL  into higher  8 bits of AX (AH)

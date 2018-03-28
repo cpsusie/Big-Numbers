@@ -546,8 +546,6 @@ void TestMachineCode::testArg1Opcodes() {
 }
 
 void TestMachineCode::testArg2Opcodes() {
-  testOpcode(LEA    );
-
   testOpcode(ADD    );
   testOpcode(ADC    );
   testOpcode(OR     );
@@ -556,7 +554,9 @@ void TestMachineCode::testArg2Opcodes() {
   testOpcode(SBB    );
   testOpcode(XOR    );
   testOpcode(CMP    );
+  testOpcode(XCHG   );
   testOpcode(MOV    );
+  testOpcode(LEA    );
 }
 
 void TestMachineCode::testArg3Opcodes() {
@@ -681,7 +681,6 @@ void assemblerCode() {
   __asm {
 //    mov startIP, es
     jmp         End
-
 
     pushf
     popf

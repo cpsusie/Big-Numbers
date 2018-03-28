@@ -505,6 +505,18 @@ public :
   InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
 };
 
+class OpcodeXchg : public Opcode2Arg {
+private:
+  const OpcodeBase m_eaxRegCode;
+public:
+  OpcodeXchg(const String &mnemonic, BYTE op)
+    : Opcode2Arg(  mnemonic, op, ALL_GPR_ALLOWED | ALL_GPRPTR_ALLOWED | HAS_SIZEBIT)
+    , m_eaxRegCode(mnemonic, 0x90,0,1,0)
+  {
+  }
+  InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
+};
+
 class OpcodeMovRegImm : public Opcode2Arg {
 public:
   OpcodeMovRegImm(const String &mnemonic, BYTE op) : Opcode2Arg(mnemonic, op) {
@@ -536,7 +548,15 @@ public :
   InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
 };
 
+class OpcodeLea : public Opcode2Arg {
+public :
+  OpcodeLea(const String &mnemonic, BYTE op);
+  bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError=false) const;
+  InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
+};
+
 #ifdef IS32BIT
+class OpcodeIncDec : public Opcode1Arg {
 class OpcodeIncDec : public Opcode1Arg {
 private:
   const OpcodeBase m_opReg32;
@@ -551,19 +571,6 @@ public :
 #else  // IS64BIT
 typedef Opcode1Arg OpcodeIncDec;
 #endif // IS64BIT
-
-class OpcodeLea : public Opcode2Arg {
-public :
-  OpcodeLea(const String &mnemonic, BYTE op);
-  bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError=false) const;
-  InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
-};
-
-class OpcodeSetcc : public Opcode1Arg {
-public:
-  OpcodeSetcc(const String &mnemonic, UINT op) : Opcode1Arg(mnemonic, op, 0, REGTYPE_GPR_ALLOWED | REGSIZE_BYTE_ALLOWED | BYTEPTR_ALLOWED) {
-  }
-};
 
 class OpcodeShiftRot : public OpcodeBase {
 private:
@@ -590,6 +597,12 @@ public:
   InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
 };
 
+class OpcodeSetcc : public Opcode1Arg {
+public:
+  OpcodeSetcc(const String &mnemonic, UINT op) : Opcode1Arg(mnemonic, op, 0, REGTYPE_GPR_ALLOWED | REGSIZE_BYTE_ALLOWED | BYTEPTR_ALLOWED) {
+  }
+};
+
 class StringInstruction : public Opcode0Arg {
 public:
   StringInstruction(const String &mnemonic, UINT op) : Opcode0Arg(mnemonic, op, HAS_SIZEBIT) {
@@ -605,39 +618,7 @@ public:
   InstructionBase operator()(const StringInstruction &ins) const;
 };
 
-// Set Byte on Condition
-extern OpcodeSetcc       SETO;                             // Set byte   if overflow
-extern OpcodeSetcc       SETNO;                            // Set byte   if not overflow
-extern OpcodeSetcc       SETB;                             // Set byte   if below                 (unsigned)
-extern OpcodeSetcc       SETAE;                            // Set byte   if above or equal        (unsigned)
-extern OpcodeSetcc       SETE;                             // Set byte   if equal                 (signed/unsigned)
-extern OpcodeSetcc       SETNE;                            // Set byte   if not equal             (signed/unsigned)
-extern OpcodeSetcc       SETBE;                            // Set byte   if below or equal        (unsigned)
-extern OpcodeSetcc       SETA;                             // Set byte   if above                 (unsigned)
-extern OpcodeSetcc       SETS;                             // Set byte   if sign
-extern OpcodeSetcc       SETNS;                            // Set byte   if not sign
-extern OpcodeSetcc       SETPE;                            // Set byte   if parity even
-extern OpcodeSetcc       SETPO;                            // Set byte   if parity odd
-extern OpcodeSetcc       SETL;                             // Set byte   if less                  (signed  )
-extern OpcodeSetcc       SETGE;                            // Set byte   if greater or equal      (signed  )
-extern OpcodeSetcc       SETLE;                            // Set byte   if less or equal         (signed  )
-extern OpcodeSetcc       SETG;                             // Set byte   if greater               (signed  )
-
-#define                  SETNAE         SETB               // Set byte   if not above or equal    (unsigned)
-#define                  SETC           SETB               // Set byte   if carry                 (unsigned)
-#define                  SETNC          SETAE              // Set byte   if not carry             (unsigned)
-#define                  SETNB          SETAE              // Set byte   if not below             (unsigned)
-#define                  SETZ           SETE               // Set byte   if 0                     (signed/unsigned)
-#define                  SETNZ          SETNE              // Set byte   if not zero              (signed/unsigned)
-#define                  SETNA          SETBE              // Set byte   if not above             (unsigned)
-#define                  SETNBE         SETA               // Set byte   if not below or equal    (unsigned)
-#define                  SETNGE         SETL               // Set byte   if not greater or equal  (signed  )
-#define                  SETNL          SETGE              // Set byte   if not less              (signed  )
-#define                  SETNG          SETLE              // Set byte   if not greater           (signed  )
-#define                  SETNLE         SETG               // Set byte   if not less or equal     (signed  )
-
 extern Opcode0Arg        RET;                              // Near return to calling procedure
-
 extern Opcode0Arg        CMC;                              // Complement carry flag
 extern Opcode0Arg        CLC;                              // Clear carry flag     CF = 0
 extern Opcode0Arg        STC;                              // Set   carry flag     CF = 1
@@ -675,8 +656,8 @@ extern Opcode2Arg        SUB;                              // Integer Subtractio
 extern Opcode2Arg        SBB;                              // Integer Subtraction with Borrow
 extern Opcode2Arg        XOR;                              // Logical Exclusive OR
 extern Opcode2Arg        CMP;                              // Compare Two Operands
+extern OpcodeXchg        XCHG;                             // Exchange Two operands
 extern OpcodeMov         MOV;                              // Move data (copying)
-
 extern OpcodeLea         LEA;                              // Load effective address
 
 extern OpcodeIncDec      INC;
@@ -710,6 +691,37 @@ extern OpcodeDoubleShift SHRD;                             // Shift right by cl/
 
 extern OpcodeBitScan     BSF;                              // Bitscan forward
 extern OpcodeBitScan     BSR;                              // Bitscan reversed
+
+// Set Byte on Condition
+extern OpcodeSetcc       SETO;                             // Set byte   if overflow
+extern OpcodeSetcc       SETNO;                            // Set byte   if not overflow
+extern OpcodeSetcc       SETB;                             // Set byte   if below                 (unsigned)
+extern OpcodeSetcc       SETAE;                            // Set byte   if above or equal        (unsigned)
+extern OpcodeSetcc       SETE;                             // Set byte   if equal                 (signed/unsigned)
+extern OpcodeSetcc       SETNE;                            // Set byte   if not equal             (signed/unsigned)
+extern OpcodeSetcc       SETBE;                            // Set byte   if below or equal        (unsigned)
+extern OpcodeSetcc       SETA;                             // Set byte   if above                 (unsigned)
+extern OpcodeSetcc       SETS;                             // Set byte   if sign
+extern OpcodeSetcc       SETNS;                            // Set byte   if not sign
+extern OpcodeSetcc       SETPE;                            // Set byte   if parity even
+extern OpcodeSetcc       SETPO;                            // Set byte   if parity odd
+extern OpcodeSetcc       SETL;                             // Set byte   if less                  (signed  )
+extern OpcodeSetcc       SETGE;                            // Set byte   if greater or equal      (signed  )
+extern OpcodeSetcc       SETLE;                            // Set byte   if less or equal         (signed  )
+extern OpcodeSetcc       SETG;                             // Set byte   if greater               (signed  )
+
+#define                  SETNAE         SETB               // Set byte   if not above or equal    (unsigned)
+#define                  SETC           SETB               // Set byte   if carry                 (unsigned)
+#define                  SETNC          SETAE              // Set byte   if not carry             (unsigned)
+#define                  SETNB          SETAE              // Set byte   if not below             (unsigned)
+#define                  SETZ           SETE               // Set byte   if 0                     (signed/unsigned)
+#define                  SETNZ          SETNE              // Set byte   if not zero              (signed/unsigned)
+#define                  SETNA          SETBE              // Set byte   if not above             (unsigned)
+#define                  SETNBE         SETA               // Set byte   if not below or equal    (unsigned)
+#define                  SETNGE         SETL               // Set byte   if not greater or equal  (signed  )
+#define                  SETNL          SETGE              // Set byte   if not less              (signed  )
+#define                  SETNG          SETLE              // Set byte   if not greater           (signed  )
+#define                  SETNLE         SETG               // Set byte   if not less or equal     (signed  )
 
 extern Opcode0Arg        CBW;                              // Convert byte  to word.  Sign extend AL  into AX.      Copy sign (bit  7) of AL  into higher  8 bits of AX
 extern Opcode0Arg        CWDE;                             // Convert word  to dword. Sign extend AX  into EAX.     Copy sign (bit 15) of AX  into higher 16 bits of EAX
@@ -759,15 +771,9 @@ extern StringPrefix      REPNE;                            // Apply to CMPS and 
 
 #ifdef __NEVER__
 
-#define XCHG_EAX_R32(        r32)              B1INS(0x90     |  (r32))                   // r32=eax-edi
-#define XCHG_AX_R16(         r16)              WORDOP(XCHG_EAX_R32(r16))                  // r16=ax-di
-#define XCHG_REG_MEM(        reg)              B1OPREG(0x86,reg)                          // Build op2 with MEM_ADDR-*,REGREG-macroes
-
-
 #define MOV_FROM_SEGREG_WORD(seg)              B2OP(0x8C00    | ((seg)<<3))               // Build dst with MEM_ADDR-*,REGREG-macroes
 #define MOV_TO_SEGREG_WORD(  seg)              B2OP(0x8E00    | ((seg)<<3))               // Build src with MEM_ADDR-*,REGREG-macroes
 #define POP_DWORD                              B2OP(0x8F00)                               // Build dst with MEM_ADDR-*,REGREG-macroes
-
 
 #define MOV_TO_AL_IMM_ADDR_BYTE                B1INS(  0xA0  )                            // 4/8 byte address. move byte  pointed to by 2. operand to AL
 #define MOV_TO_EAX_IMM_ADDR_DWORD              B1INS(  0xA1  )                            // 4/8 byte address. move dword pointed to by 2. operand to EAX
@@ -818,7 +824,6 @@ extern StringPrefix      REPNE;                            // Apply to CMPS and 
 
 #define PUSH_R16(r16)                          WORDOP(PUSH_R32(r16))                      // No operand
 #define POP_R16( r16)                          WORDOP(POP_R32( r16))                      // No operand
-
 
 #define PUSH_IMM_BYTE                          B1INS(0x6A    )                            // 1 byte value
 #define PUSH_IMM_DWORD                         B1INS(0x68    )                            // 4 byte value
