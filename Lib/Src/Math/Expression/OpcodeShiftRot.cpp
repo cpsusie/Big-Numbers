@@ -2,8 +2,8 @@
 #include "InstructionBuilder.h"
 
 OpcodeShiftRot::OpcodeShiftRot(const String &mnemonic, BYTE extension)
-  : OpcodeBase(mnemonic, 0xD2, extension, 2, ALL_GPR_ALLOWED | ALL_GPRSIZEPTR_ALLOWED | IMMEDIATEVALUE_ALLOWED | HAS_SIZEBIT)
-  , m_immCode( mnemonic, 0xC0, extension, 2, ALL_GPR_ALLOWED | ALL_GPRSIZEPTR_ALLOWED | IMMEDIATEVALUE_ALLOWED | HAS_SIZEBIT)
+  : OpcodeBase(mnemonic, 0xD2, extension, 2, ALL_GPR_ALLOWED | ALL_GPRSIZEPTR_ALLOWED | IMM8_ALLOWED | HAS_SIZEBIT)
+  , m_immCode( mnemonic, 0xC0, extension, 2, ALL_GPR_ALLOWED | ALL_GPRSIZEPTR_ALLOWED | IMM8_ALLOWED | HAS_SIZEBIT)
 {
 }
 
@@ -11,7 +11,7 @@ bool OpcodeShiftRot::isValidOperandCombination(const InstructionOperand &op1, co
   if(!validateRegisterOrMemoryOperand(op1, 1, throwOnError)) {
     return false;
   }
-  return validateShiftAmountOperand(op2,2,throwOnError);
+  return validateShiftAmountOperand(op2, 2, throwOnError);
 }
 
 InstructionBase OpcodeShiftRot::operator()(const InstructionOperand &op1, const InstructionOperand &op2) const {
@@ -34,10 +34,10 @@ InstructionBase OpcodeShiftRot::operator()(const InstructionOperand &op1, const 
   return __super::operator()(op1,op2);
 }
 
-#ifdef IS32BIT
-#define _DSHIFT_FLAGS (ALL_GPR_BUTBYTE_ALLOWED | WORDPTR_ALLOWED | DWORDPTR_ALLOWED)
-#else // IS64BIT
-#define _DSHIFT_FLAGS (ALL_GPR_BUTBYTE_ALLOWED | WORDPTR_ALLOWED | DWORDPTR_ALLOWED | QWORDPTR_ALLOWED)
+#ifdef    IS32BIT
+#define _DSHIFT_FLAGS (ALL_GPR_BUTBYTE_ALLOWED | WORDPTR_ALLOWED | DWORDPTR_ALLOWED | IMM8_ALLOWED)
+#else  // IS64BIT
+#define _DSHIFT_FLAGS (ALL_GPR_BUTBYTE_ALLOWED | WORDPTR_ALLOWED | DWORDPTR_ALLOWED | QWORDPTR_ALLOWED | IMM8_ALLOWED)
 #endif // IS64BIT
 
 OpcodeDoubleShift::OpcodeDoubleShift(const String &mnemonic, UINT opCL, UINT opImm)

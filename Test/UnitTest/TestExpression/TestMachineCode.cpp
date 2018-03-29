@@ -148,8 +148,13 @@ AllImmOperands::AllImmOperands() {
   }
 }
 
-static const int   allImmAddr[]   = { 0, 0x7fffffff };
-static const int   allOffset[]    = { 0, 0x7f, 0x7fffffff, -1 };
+#ifdef IS32BIT
+static const size_t allImmAddr[]   = { 0, 0x7fffffff };
+#else  // IS64BIT
+static const size_t allImmAddr[]   = { 0, 0x7fffffff, 0x7fffffffffffffff };
+#endif // IS64BIT
+
+static const int    allOffset[]    = { 0, 0x7f, 0x7fffffff, -1 };
 
 class AllMemoryOperands : public InstructionOperandArray {
 public:
@@ -172,10 +177,21 @@ static int offsetCmp(const MemoryRef &mr1, const MemoryRef &mr2) {
   return sign((INT64)mr1.getOffset() - (INT64)mr2.getOffset());
 }
 
+static int addrCmp(const MemoryRef &mr1, const MemoryRef &mr2) {
+  int c;
+  if(c = boolCmp(mr1.hasOffset(), mr2.hasOffset())) return c;
+  if(!mr1.hasOffset()) return 0;
+  if(c = boolCmp(isByte(mr2.getAddr()), isByte(mr1.getAddr()))) return c;
+  if(c = boolCmp(isDword(mr2.getAddr()), isDword(mr1.getAddr()))) return c;
+  return sign((INT64)mr1.getAddr() - (INT64)mr2.getAddr());
+}
+
 static int memRefCmp(const MemoryRef &mr1, const MemoryRef &mr2) {
   int c;
   if(c = boolCmp(mr2.isDisplaceOnly(),mr1.isDisplaceOnly())) return c;
-  if(!mr1.isDisplaceOnly()) {
+  if(mr1.isDisplaceOnly()) {
+    return addrCmp(mr1,mr2);
+  } else {
     if(c = boolCmp(mr1.hasInx(),mr2.hasInx())) return c;
     if(!mr1.hasInx()) {
       if(c = offsetCmp(mr1,mr2)) return c;
@@ -681,6 +697,30 @@ void assemblerCode() {
   __asm {
 //    mov startIP, es
     jmp         End
+
+    mov al , byte  ptr[12345678h]
+    mov ax , word  ptr[12345678h]
+    mov eax, dword ptr[12345678h]
+
+    mov al , byte  ptr es:[12345678h]
+    mov ax , word  ptr es:[12345678h]
+    mov eax, dword ptr es:[12345678h]
+
+    mov cl , byte  ptr[12345678h]
+    mov cx , word  ptr[12345678h]
+    mov ecx, dword ptr[12345678h]
+
+    mov cl , byte  ptr es:[12345678h]
+    mov cx , word  ptr es:[12345678h]
+    mov ecx, dword ptr es:[12345678h]
+
+    mov cl , byte  ptr ss:[12345678h]
+    mov cx , word  ptr ss:[12345678h]
+    mov ecx, dword ptr ss:[12345678h]
+
+    mov byte  ptr[12345678h], al
+    mov word  ptr[12345678h], ax
+    mov dword ptr[12345678h], eax
 
     pushf
     popf

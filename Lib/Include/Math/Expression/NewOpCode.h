@@ -40,10 +40,11 @@ inline bool isWord( UINT64 v) {
 inline bool isDword(UINT64 v) {
   return v == (UINT)v;
 }
+inline bool isInt(size_t v) {
+  return (intptr_t)v == (int)v;
+}
 
 typedef RegSize OperandSize;
-
-class MemoryRef;
 
 typedef enum {
   REGISTER
@@ -56,21 +57,22 @@ String toString(OperandType type);
 String formatHexValue(int v, bool showSign);
 // Convert int64-value to disassembler format
 String formatHexValue(INT64 v, bool showSign);
+String formatHexValue(size_t v);
 String getImmSizeErrorString(const String &dst, INT64 immv);
 
 class MemoryRef {
 private:
   const IndexRegister *m_base,*m_inx;
   const BYTE           m_shift;
-  const int            m_offset;
-#ifdef IS64BIT
-  const bool           m_needREXByte;
+  const size_t         m_offset;
+#ifdef IS32BIT
+#define SETNEEDREXBYTE(base,inx)
+#else // IS64BIT
+  const bool m_needREXByte;
   static inline bool findRexByteNeeded(const IndexRegister *base, const IndexRegister *inx) {
     return (base && base->indexNeedREXByte()) || (inx && inx->indexNeedREXByte());
   }
 #define SETNEEDREXBYTE(base,inx) ,m_needREXByte(findRexByteNeeded(base,inx))
-#else
-#define SETNEEDREXBYTE(base,inx)
 #endif // IS64BIT
 
   DECLAREDEBUGSTR;
@@ -94,7 +96,7 @@ public:
   {
     SETDEBUGSTR();
   }
-  inline MemoryRef(DWORD addr)
+  inline MemoryRef(size_t addr)
     : m_base(  NULL  )
     , m_inx(   NULL  )
     , m_shift( 0     )
@@ -111,7 +113,8 @@ public:
   inline const IndexRegister *getBase()   const { return m_base;         }
   inline const IndexRegister *getInx()    const { return m_inx;          }
   inline BYTE                 getShift()  const { return m_shift;        }
-  inline int                  getOffset() const { return m_offset;       }
+  inline int                  getOffset() const { assert(isInt(m_offset)); return (int)m_offset;  }
+  inline size_t               getAddr()   const { return m_offset;       }
   inline bool                 hasBase()   const { return m_base != NULL; }
   inline bool                 hasInx()    const { return m_inx  != NULL; }
   inline bool                 hasShift()  const { return m_shift >= 1;   }
@@ -220,6 +223,7 @@ public:
   UINT   getImmUint32() const;
   INT64  getImmInt64()  const;
   UINT64 getImmUInt64() const;
+
   inline bool isShiftAmountOperand() const {
     return (getSize() == REGSIZE_BYTE)
         &&  ((getType()==IMMEDIATEVALUE)
@@ -258,7 +262,7 @@ public:
     m_mr.sortBaseInx();
     SETDEBUGSTR();
   }
-  inline MemoryOperand(OperandSize size, DWORD addr, const SegmentRegister *segReg=NULL)
+  inline MemoryOperand(OperandSize size, size_t addr, const SegmentRegister *segReg=NULL)
     : InstructionOperand(MEMORYOPERAND, size)
     , m_segReg(segReg)
     , m_mr(addr)
@@ -291,13 +295,12 @@ protected:
 public:
   MemoryPtr(const MemoryRef &mr) : MemoryOperand(size, mr) {
   }
-#ifdef IS32BIT
   MemoryPtr(const SegmentRegister &segReg, const MemoryRef &mr) : MemoryOperand(size, mr, &segReg) {
   }
-  MemoryPtr(const SegmentRegister &segReg, DWORD addr) : MemoryOperand(size, addr, &segReg) {
+  MemoryPtr(const SegmentRegister &segReg, size_t addr) : MemoryOperand(size, addr, &segReg) {
   }
-#else // IS64BIT
-  MemoryPtr(DWORD addr) : MemoryOperand(size, addr) {
+#ifdef IS64BIT
+  MemoryPtr(size_t addr) : MemoryOperand(size, addr) {
   }
 #endif // IS64BIT
 };
@@ -337,7 +340,7 @@ public:
 };
 
 // ----------------------------------------------------------------------
-#define REGTYPE_NONE_ALLOWED   0x00000001
+#define REGTYPE_GPR0_ALLOWED   0x00000001
 #define REGTYPE_GPR_ALLOWED    0x00000002
 #define REGTYPE_SEG_ALLOWED    0x00000004
 #define REGTYPE_FPU_ALLOWED    0x00000008
@@ -359,9 +362,19 @@ public:
 #define TBYTEPTR_ALLOWED       0x00008000
 #define OWORDPTR_ALLOWED       0x00010000
 #define VOIDPTR_ALLOWED        0x00020000
-#define IMMEDIATEVALUE_ALLOWED 0x00040000
-#define HAS_SIZEBIT            0x00080000
-#define HAS_DIRECTIONBIT       0x00100000
+#define IMM8_ALLOWED           0x00040000
+#define IMM32_ALLOWED          0x00080000
+#ifdef IS32BIT
+#define IMM64_ALLOWED          0
+#else  // IS64BIT
+#define IMM64_ALLOWED          0x00100000
+#endif // IS64BIT
+
+#define IMMMADDR_ALLOWED       0x00200000
+#define HAS_SIZEBIT            0x00400000
+#define HAS_DIRECTIONBIT       0x00800000
+
+#define IMMEDIATEVALUE_ALLOWED (IMM8_ALLOWED | IMM32_ALLOWED)
 
 #ifdef IS32BIT
 #define ALL_GPRSIZEPTR_ALLOWED  (BYTEPTR_ALLOWED      | WORDPTR_ALLOWED      | DWORDPTR_ALLOWED     )
@@ -371,9 +384,9 @@ public:
 
 #define ALL_GPRSIZE_BUTBYTE_ALLOWED (REGSIZE_WORD_ALLOWED | REGSIZE_DWORD_ALLOWED | REGSIZE_QWORD_ALLOWED)
 #define ALL_GPRSIZE_ALLOWED         (REGSIZE_BYTE_ALLOWED | ALL_GPRSIZE_BUTBYTE_ALLOWED)
-#define ALL_REGISTER_TYPES          (REGTYPE_GPR_ALLOWED  | REGTYPE_SEG_ALLOWED  | REGTYPE_FPU_ALLOWED   | REGTYPE_XMM_ALLOWED)
 #define ALL_GPR_BUTBYTE_ALLOWED     (REGTYPE_GPR_ALLOWED  | ALL_GPRSIZE_BUTBYTE_ALLOWED)
 #define ALL_GPR_ALLOWED             (REGTYPE_GPR_ALLOWED  | ALL_GPRSIZE_ALLOWED        )
+#define ALL_GPR0_ALLOWED            (REGTYPE_GPR0_ALLOWED | ALL_GPRSIZE_ALLOWED        )
 #define ALL_GPRPTR_ALLOWED          (ALL_GPRSIZEPTR_ALLOWED)
 
 #define ALL_MEMOPSIZES              (BYTEPTR_ALLOWED | WORDPTR_ALLOWED | DWORDPTR_ALLOWED | QWORDPTR_ALLOWED | TBYTEPTR_ALLOWED | OWORDPTR_ALLOWED)
@@ -381,7 +394,6 @@ public:
 class OpcodeBase {
 private:
   static const RegSizeSet s_wordRegCapacity  , s_dwordRegCapacity, s_qwordRegCapacity;
-  static const RegSizeSet s_validImmSizeToMem, s_validImmSizeToReg;
 
   UINT         m_bytes;
   const UINT   m_flags;
@@ -394,37 +406,33 @@ private:
   const UINT   m_opCount   : 3;
 
 protected:
-  OpcodeBase(const String &mnemonic, const InstructionBase &src, BYTE extension=0, UINT flags=0);
-  void throwInvalidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2) const;
-  void throwInvalidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, const InstructionOperand &op3) const;
-  void throwInvalidOperandType(       const InstructionOperand &op, BYTE index) const;
-  static void throwUnknownOperandType(const TCHAR *method, OperandType type);
-  bool isRegisterTypeAllowed(     RegType     type) const;
+  OpcodeBase(const String &mnemonic,   const InstructionBase &src, BYTE extension=0, UINT flags=0);
+  void throwInvalidOperandCombination( const InstructionOperand &op1, const InstructionOperand &op2) const;
+  void throwInvalidOperandCombination( const InstructionOperand &op1, const InstructionOperand &op2, const InstructionOperand &op3) const;
+  void throwInvalidOperandType(        const InstructionOperand &op, BYTE index) const;
+  static void throwUnknownOperandType( const TCHAR *method, OperandType  type);
+  static void throwUnknownRegisterType(const TCHAR *method, RegType      type);
   bool isRegisterSizeAllowed(     RegSize     size) const;
   bool isMemoryOperandSizeAllowed(OperandSize size) const;
 
-  inline bool isRegisterAllowed() const {
-    return (getFlags() & ALL_REGISTER_TYPES) != 0;
-  }
   inline bool isMemoryOperandAllowed() const {
     return (getFlags() & ALL_MEMOPSIZES) != 0;
   }
-  inline bool isImmediateValueAllowed() const {
-    return (getFlags() & IMMEDIATEVALUE_ALLOWED) != 0;
+  inline bool isImmAddrAllowed() const {
+    return (getFlags() & IMMMADDR_ALLOWED) != 0;
   }
-  inline bool isRegisterAllowed(const Register &reg) const {
-    return isRegisterTypeAllowed(reg.getType()) && isRegisterSizeAllowed(reg.getSize());
-  }
+  bool isRegisterAllowed(const Register &reg) const;
   inline bool isMemoryOperandAllowed(const MemoryOperand &mem) const {
-    return isMemoryOperandSizeAllowed(mem.getSize());
+    return isMemoryOperandSizeAllowed(mem.getSize())
+        && (isImmAddrAllowed() || isDword(mem.getMemoryReference().getAddr()));
   }
   static bool sizeContainsSrcSize(OperandSize dstSize, OperandSize srcSize);
 
   bool validateOpCount(                  int                       count                               , bool throwOnError) const;
   bool validateRegisterAllowed(          const Register           &reg                                 , bool throwOnError) const;
   bool validateMemoryOperandAllowed(     const MemoryOperand      &mem                                 , bool throwOnError) const;
-  bool validateImmediateValueAllowed(                                                                    bool throwOnError) const;
-  bool validateImmediateValue(           OperandSize dstSize           , const InstructionOperand &imm , const RegSizeSet &immSizeSet, bool throwOnError) const;
+  bool validateImmediateSizeAllowed(     OperandSize immSize                                           , bool throwOnError) const;
+  bool validateImmediateValue(           OperandSize dstSize           , const InstructionOperand &imm , bool throwOnError) const;
   bool validateSameSize(                 const Register           &reg1, const Register           &reg2, bool throwOnError) const;
   bool validateSameSize(                 const Register           &reg , const InstructionOperand &op  , bool throwOnError) const;
   bool validateSameSize(                 const InstructionOperand &op1 , const InstructionOperand &op2 , bool throwOnError) const;
@@ -509,8 +517,8 @@ class OpcodeXchg : public Opcode2Arg {
 private:
   const OpcodeBase m_eaxRegCode;
 public:
-  OpcodeXchg(const String &mnemonic, BYTE op)
-    : Opcode2Arg(  mnemonic, op, ALL_GPR_ALLOWED | ALL_GPRPTR_ALLOWED | HAS_SIZEBIT)
+  OpcodeXchg(const String &mnemonic)
+    : Opcode2Arg(  mnemonic, 0x86, ALL_GPR_ALLOWED | ALL_GPRPTR_ALLOWED | HAS_SIZEBIT)
     , m_eaxRegCode(mnemonic, 0x90,0,1,0)
   {
   }
@@ -521,11 +529,13 @@ class OpcodeMov : public Opcode2Arg {
 private:
   const Opcode2Arg m_regImmCode;
   const Opcode2Arg m_memImmCode;
+  const Opcode2Arg m_GPR0AddrCode;
 public :
-  OpcodeMov(const String &mnemonic, BYTE op, BYTE regImmOp, BYTE memImmOp)
-    : Opcode2Arg(  mnemonic, op)
-    , m_regImmCode(mnemonic, regImmOp, ALL_GPR_ALLOWED    | IMMEDIATEVALUE_ALLOWED | HAS_SIZEBIT)
-    , m_memImmCode(mnemonic, memImmOp, ALL_GPRPTR_ALLOWED | IMMEDIATEVALUE_ALLOWED | HAS_SIZEBIT)
+  OpcodeMov(const String &mnemonic)
+    : Opcode2Arg(    mnemonic, 0x88)
+    , m_regImmCode(  mnemonic, 0xB0, ALL_GPR_ALLOWED     | IMMEDIATEVALUE_ALLOWED | IMM64_ALLOWED      | HAS_SIZEBIT)
+    , m_memImmCode(  mnemonic, 0xC6, ALL_GPRPTR_ALLOWED  | IMMEDIATEVALUE_ALLOWED                      | HAS_SIZEBIT)
+    , m_GPR0AddrCode(mnemonic, 0xA0, ALL_GPR0_ALLOWED    | IMMMADDR_ALLOWED       | ALL_GPRPTR_ALLOWED | HAS_SIZEBIT | HAS_DIRECTIONBIT)
   {
   }
   bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError=false) const;
@@ -758,16 +768,6 @@ extern StringPrefix      REPNE;                            // Apply to CMPS and 
 #define MOV_FROM_SEGREG_WORD(seg)              B2OP(0x8C00    | ((seg)<<3))               // Build dst with MEM_ADDR-*,REGREG-macroes
 #define MOV_TO_SEGREG_WORD(  seg)              B2OP(0x8E00    | ((seg)<<3))               // Build src with MEM_ADDR-*,REGREG-macroes
 #define POP_DWORD                              B2OP(0x8F00)                               // Build dst with MEM_ADDR-*,REGREG-macroes
-
-#define MOV_TO_AL_IMM_ADDR_BYTE                B1INS(  0xA0  )                            // 4/8 byte address. move byte  pointed to by 2. operand to AL
-#define MOV_TO_EAX_IMM_ADDR_DWORD              B1INS(  0xA1  )                            // 4/8 byte address. move dword pointed to by 2. operand to EAX
-#define MOV_TO_AX_IMM_ADDR_WORD                WORDOP( MOV_TO_EAX_IMM_ADDR_DWORD)         // 4/8 byte address. move word  pointed to by 2. operand to AX
-#define MOV_TO_RAX_IMM_ADDR_QWORD              REX3(   MOV_TO_EAX_IMM_ADDR_DWORD)         // 8 byte address
-
-#define MOV_FROM_AL_IMM_ADDR_BYTE              B1INS(  0xA2  )                            // 4/8 byte address. move AL  to byte  pointed to by 2. operand
-#define MOV_FROM_EAX_IMM_ADDR_DWORD            B1INS(  0xA3  )                            // 4/8 byte address. move EAX to dword pointed to by 2. operand
-#define MOV_FROM_AX_IMM_ADDR_WORD              WORDOP( MOV_FROM_EAX_IMM_ADDR_DWORD)       // 4/8 byte address. move AX  to word  pointed to by 2. operand
-#define MOV_FROM_RAX_IMM_ADDR_QWORD            REX3(   MOV_FROM_EAX_IMM_ADDR_DWORD)       // 8 byte address
 
 // Additional forms of IMUL
 #define IMUL2_R32_DWORD(      r32)             B3OP(0x0FAF00    | ((r32)<<3))             // 2 arguments       (r32 *= src           )

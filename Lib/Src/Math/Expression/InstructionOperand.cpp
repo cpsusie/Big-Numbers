@@ -52,6 +52,15 @@ String formatHexValue(INT64 v, bool showSign) {
   return result;
 }
 
+String formatHexValue(size_t v) {
+  String result = format(_T("%zX"), v);
+  if(!iswdigit(result[0])) {
+    result.insert(0,'0');
+  }
+  if(v >= 10) result += _T('h');
+  return result;
+}
+
 String getImmSizeErrorString(const String &dst, INT64 immv) {
   return format(_T("Immediate value %s doesn't fit in %s"),formatHexValue(immv,false).cstr(), dst.cstr());
 }
@@ -288,6 +297,9 @@ void MemoryRef::sortBaseInx() {
 }
 
 String MemoryRef::toString() const {
+  if(isDisplaceOnly()) {
+    return formatHexValue(getAddr());
+  }
   String result;
   if(hasBase()) {
     result += m_base->getName();
@@ -297,8 +309,8 @@ String MemoryRef::toString() const {
     result += m_inx->getName();
     if(hasShift()) result += format(_T("*%d"),1<<getShift());
   }
-  if(hasOffset() || result.isEmpty()) {
-    result += formatHexValue(m_offset, !result.isEmpty());
+  if(hasOffset()) {
+    result += formatHexValue(getOffset(),true);
   }
   return result;
 }

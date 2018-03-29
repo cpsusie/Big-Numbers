@@ -74,8 +74,11 @@ private:
   InstructionBuilder &addrShiftInx(    const IndexRegister &inx, BYTE shift, int offset);
   InstructionBuilder &addrBase(        const IndexRegister &base, int offset);
   InstructionBuilder &addrBaseShiftInx(const IndexRegister &base, const IndexRegister &inx, BYTE shift, int offset);
-  inline InstructionBuilder &addrDisplaceOnly(int addr) {
-    return setModeBits(MR_DISPONLY).add((BYTE*)&addr, 4);
+  inline InstructionBuilder &addrDisplaceOnly(int displacement) {
+    return setModeBits(MR_DISPONLY).add((BYTE*)&displacement, 4);
+  }
+  inline InstructionBuilder &addImmAddr(size_t addr) {
+    return add((BYTE*)&addr, sizeof(addr));
   }
   inline void addExtension() {
     setModeBits(m_extension << 3);
@@ -117,6 +120,9 @@ public:
   }
   inline bool hasDirectionBit() const {
     return (m_flags & HAS_DIRECTIONBIT) != 0;
+  }
+  inline bool hasModeByte() const {
+    return m_hasModeByte;
   }
   InstructionBuilder &insert(BYTE index, BYTE b);
   inline InstructionBuilder &prefix(BYTE b) {

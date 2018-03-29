@@ -79,11 +79,14 @@ InstructionBuilder &InstructionBuilder::setOperandSize(OperandSize size) {
 
 InstructionBuilder &InstructionBuilder::setModeBits(BYTE bits) {
   if(m_hasModeByte) {
-    return or(getModeByteIndex(), bits);
+    if(bits) {
+      or(getModeByteIndex(), bits);
+    }
   } else {
     m_hasModeByte = true;
-    return add(bits);
+    add(bits);
   }
+  return *this;
 }
 
 InstructionBuilder &InstructionBuilder::prefixImm(BYTE b, OperandSize size, bool immIsByte) {
@@ -178,7 +181,11 @@ InstructionBuilder &InstructionBuilder::setMemoryOperand(const MemoryOperand &me
     prefixSegReg(*mem.getSegmentRegister());
   }
   if(mr.isDisplaceOnly()) {
-    addrDisplaceOnly(mr.getOffset());
+    if(m_flags & IMMMADDR_ALLOWED) {
+      addImmAddr(mr.getAddr());
+    } else {
+      addrDisplaceOnly(mr.getOffset());
+    }
   } else if(mr.hasInx()) {
     if(mr.hasBase()) {
       addrBaseShiftInx(*mr.getBase(), *mr.getInx(), mr.getShift(), mr.getOffset());
@@ -195,10 +202,17 @@ InstructionBuilder &InstructionBuilder::setMemoryOperand(const MemoryOperand &me
 }
 
 InstructionBuilder &InstructionBuilder::setMemoryRegOperands(const MemoryOperand &mem, const Register &reg) {
-  const BYTE regIndex = reg.getIndex();
-  setMemoryOperand(mem).setModeBits((regIndex&7)<<3);
-  if(mem.getSize() == REGSIZE_VOID) setOperandSize(reg.getSize());
-  SETREXBITS(HIGHINDEXTOREX(regIndex,2));
+  setMemoryOperand(mem);
+  if(mem.getSize() == REGSIZE_VOID) {
+    setOperandSize(reg.getSize());
+  }
+  if(hasModeByte()) {
+    const BYTE regIndex = reg.getIndex();
+    setModeBits((regIndex&7)<<3);
+    SETREXBITS(HIGHINDEXTOREX(regIndex,2));
+  } else {
+    assert(reg.getIndex() == 0);
+  }
   return *this;
 }
 

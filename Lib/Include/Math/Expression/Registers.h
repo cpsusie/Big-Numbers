@@ -73,6 +73,10 @@ public:
   }
   virtual RegType getType()  const = 0;
   virtual RegSize getSize()  const = 0;
+  // is this AL,AX,EAX or RAX
+  inline bool isGPR0() const {
+    return (getType() == REGTYPE_GPR) && (getIndex() == 0);
+  }
 #ifdef IS32BIT
 
 #define IS_REXCOMPATIBLE(reg,rexBytePresent) true
@@ -238,4 +242,8 @@ extern const XMMRegister XMM8,XMM9,XMM10,XMM11,XMM12,XMM13,XMM14,XMM15;
 #endif // IS64BIT
 
 // Segment registers (16-bit)
+#ifdef IS23BIT
 extern const SegmentRegister ES,CS,SS,DS,FS,GS;
+#else // IS64BIT
+extern const SegmentRegister FS,GS;
+#endif

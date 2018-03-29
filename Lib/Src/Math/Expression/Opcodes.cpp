@@ -48,8 +48,8 @@ DEFNAME(Opcode2Arg       ,  AND   ,0x20);
 DEFNAME(Opcode2Arg       ,  SUB   ,0x28);
 DEFNAME(Opcode2Arg       ,  XOR   ,0x30);
 DEFNAME(Opcode2Arg       ,  CMP   ,0x38);
-DEFNAME(OpcodeXchg       ,  XCHG  ,0x86);                  // Exchange Two operands
-DEFNAME(OpcodeMov        ,  MOV   ,0x88, 0xB0, 0xC6);
+DEFNAME(OpcodeXchg       ,  XCHG       );                  // Exchange Two operands
+DEFNAME(OpcodeMov        ,  MOV        );
 DEFNAME(OpcodeLea        ,  LEA   ,0x8D);                  // Load effective address
 
 DEFNAME(OpcodeIncDec     ,  INC   ,0xFE,0);

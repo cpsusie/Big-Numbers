@@ -27,13 +27,29 @@ static inline BYTE findSize(UINT op) {
 
 OpcodeBase::OpcodeBase(const String &mnemonic, UINT op, BYTE extension, BYTE opCount, UINT flags)
   : m_mnemonic( toLowerCase(mnemonic))
-  , m_size(     findSize(op))
-  , m_extension(extension   )
-  , m_opCount(  opCount     )
-  , m_flags(    flags       )
+  , m_size(     findSize(op)         )
+  , m_extension(extension            )
+  , m_opCount(  opCount              )
+  , m_flags(    flags                )
 {
   assert(extension <= 7);
   m_bytes = swapBytes(op,m_size);
+  if(getFlags() & HAS_SIZEBIT) {
+    if(op & 1) {
+      throwInvalidArgumentException(_T("%s:HAS_SIZEBIT set for opcode %X (bit 0 already set)")
+                                   ,getMnemonic().cstr()
+                                   ,op
+                                   );
+    }
+  }
+  if(getFlags() & HAS_DIRECTIONBIT) {
+    if(op & 2) {
+      throwInvalidArgumentException(_T("%s:HAS_DIRECTIONBIT set for opcode %X (bit 1 already set)")
+                                   ,getMnemonic().cstr()
+                                   ,op
+                                   );
+    }
+  }
 }
 
 OpcodeBase::OpcodeBase(const String &mnemonic, const InstructionBase &src, BYTE extension, UINT flags)
@@ -49,12 +65,20 @@ OpcodeBase::OpcodeBase(const String &mnemonic, const InstructionBase &src, BYTE 
   memcpy(&m_bytes, src.getBytes(), src.size()); // no byte swap
 }
 
-bool OpcodeBase::isRegisterTypeAllowed(RegType type) const {
-  switch(type) {
-  case REGTYPE_GPR: return (getFlags() & REGTYPE_GPR_ALLOWED) != 0;
+bool OpcodeBase::isRegisterAllowed(const Register &reg) const {
+  switch(reg.getType()) {
+  case REGTYPE_GPR:
+    if(!isRegisterSizeAllowed(reg.getSize())) {
+      return false;
+    }
+    return  ((getFlags() & REGTYPE_GPR_ALLOWED ) != 0)
+        || (((getFlags() & REGTYPE_GPR0_ALLOWED) != 0) && (reg.getIndex() == 0));
+  case REGTYPE_SEG: return (getFlags() & REGTYPE_SEG_ALLOWED) != 0;
   case REGTYPE_FPU: return (getFlags() & REGTYPE_FPU_ALLOWED) != 0;
   case REGTYPE_XMM: return (getFlags() & REGTYPE_XMM_ALLOWED) != 0;
+  default         : NODEFAULT;
   }
+  throwUnknownRegisterType(__TFUNCTION__,reg.getType());
   return false;
 }
 
@@ -97,9 +121,6 @@ bool OpcodeBase::sizeContainsSrcSize(OperandSize dstSize, OperandSize srcSize) {
   }
 }
 
-const RegSizeSet OpcodeBase::s_validImmSizeToMem(   REGSIZE_BYTE, REGSIZE_WORD, REGSIZE_DWORD, REGSIZE_END);
-const RegSizeSet OpcodeBase::s_validImmSizeToReg(   REGSIZE_BYTE, REGSIZE_WORD, REGSIZE_DWORD, REGSIZE_END);
-
 void OpcodeBase::throwInvalidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2) const {
   throwException(_T("%s:Invalid combination of operands:%s,%s")
                 ,getMnemonic().cstr()
@@ -126,7 +147,11 @@ void OpcodeBase::throwInvalidOperandType(const InstructionOperand &op, BYTE inde
 }
 
 void OpcodeBase::throwUnknownOperandType(const TCHAR *method, OperandType type) { // static
-  throwInvalidArgumentException(method, _T("OperandTye=%s"), ::toString(type).cstr());
+  throwInvalidArgumentException(method, _T("OperandType=%s"), ::toString(type).cstr());
+}
+
+void OpcodeBase::throwUnknownRegisterType(const TCHAR *method, RegType type) { // static
+  throwInvalidArgumentException(method, _T("RegisterType=%s"), ::toString(type).cstr());
 }
 
 #define RAISEERROR(...)                                                       \
@@ -155,18 +180,27 @@ bool OpcodeBase::validateMemoryOperandAllowed(const MemoryOperand &mem, bool thr
   return true;
 }
 
-bool OpcodeBase::validateImmediateValueAllowed(bool throwOnError) const {
-  if(!isImmediateValueAllowed()) {
-    RAISEERROR(_T("%s:Immediate value not allowed"), getMnemonic().cstr());
+bool OpcodeBase::validateImmediateSizeAllowed(OperandSize immSize, bool throwOnError) const {
+  switch(immSize) {
+  case REGSIZE_BYTE :
+    if(getFlags() & (IMM8_ALLOWED|IMM32_ALLOWED|IMM64_ALLOWED)) return true;
+    break;
+  case REGSIZE_WORD :
+  case REGSIZE_DWORD:
+    if(getFlags() & (IMM32_ALLOWED|IMM64_ALLOWED)) return true;
+    break;
+  case REGSIZE_QWORD:
+    if(getFlags() & IMM64_ALLOWED) return true;
+    break;
   }
-  return true;
+  RAISEERROR(_T("%s:Immediate value of size %s not allowed"), getMnemonic().cstr(), ::toString(immSize).cstr());
 }
 
-bool OpcodeBase::validateImmediateValue(OperandSize dstSize, const InstructionOperand &imm, const RegSizeSet &immSizeSet, bool throwOnError) const {
-  if(!validateImmediateValueAllowed(throwOnError)) {
+bool OpcodeBase::validateImmediateValue(OperandSize dstSize, const InstructionOperand &imm, bool throwOnError) const {
+  if(!validateImmediateSizeAllowed(imm.getSize(), throwOnError)) {
     return false;
   }
-  if(!sizeContainsSrcSize(dstSize, imm.getSize()) || !immSizeSet.contains(imm.getSize())) {
+  if(!sizeContainsSrcSize(dstSize, imm.getSize())) {
     RAISEERROR(_T("%s"), getImmSizeErrorString(::toString(dstSize), imm.getImmInt64()).cstr());
   }
   return true;
@@ -330,7 +364,7 @@ bool OpcodeBase::isValidOperand(const InstructionOperand &op, bool throwOnError)
     }
     break;
   case IMMEDIATEVALUE :
-    if(!validateImmediateValueAllowed(throwOnError)) {
+    if(!validateImmediateSizeAllowed(op.getSize(), throwOnError)) {
       return false;
     }
     break;
@@ -366,7 +400,7 @@ bool OpcodeBase::isValidOperandCombination(const Register &reg, const Instructio
     }
     break;
   case IMMEDIATEVALUE : // reg <- imm
-    if(!validateImmediateValue(reg.getSize(), op, s_validImmSizeToReg, throwOnError)) {
+    if(!validateImmediateValue(reg.getSize(), op, throwOnError)) {
       return false;
     }
     break;
@@ -403,7 +437,7 @@ bool OpcodeBase::isValidOperandCombination(const InstructionOperand &op1, const 
       RAISEERROR(_T("%s:Invalid combination of operands:%s,%s"), getMnemonic().cstr(), op1.toString().cstr(), op2.toString().cstr());
       break;
     case IMMEDIATEVALUE : // mem <- imm
-      if(!validateImmediateValue(op1.getSize(), op2, s_validImmSizeToMem, throwOnError)) {
+      if(!validateImmediateValue(op1.getSize(), op2, throwOnError)) {
         return false;
       }
       break;

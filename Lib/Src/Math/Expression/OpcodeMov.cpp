@@ -57,20 +57,31 @@ InstructionBuilder &InstructionMovImm::setMemImm(const MemoryOperand &dst, int i
   return *this;
 }
 
-#ifdef IS32BIT
-static const RegSizeSet s_validImmSizeToRegMov(REGSIZE_BYTE, REGSIZE_WORD, REGSIZE_DWORD, REGSIZE_END);
-#else // IS64BIT
-static const RegSizeSet s_validImmSizeToRegMov(REGSIZE_BYTE, REGSIZE_WORD, REGSIZE_DWORD, REGSIZE_QWORD, REGSIZE_END);
-#endif // IS64BIT
+static inline bool isGPR0AndImmAddr(const InstructionOperand &op1, const InstructionOperand &op2) {
+  return (op1.getType() == REGISTER)
+      &&  op1.getRegister().isGPR0()
+      && (op2.getType() == MEMORYOPERAND)
+      &&  op2.getMemoryReference().isDisplaceOnly();
+}
+
+static inline bool isGPR0ImmAddrPair(const InstructionOperand &op1, const InstructionOperand &op2) {
+  return isGPR0AndImmAddr(op1,op2) || isGPR0AndImmAddr(op2,op1);
+}
 
 InstructionBase OpcodeMov::operator()(const InstructionOperand &op1, const InstructionOperand &op2) const {
   if(op2.getType() != IMMEDIATEVALUE) {
+    if(isGPR0ImmAddrPair(op1, op2)) {
+      return m_GPR0AddrCode(op2,op1);
+    }
     return __super::operator()(op1,op2);
   } else {
-    isValidOperandCombination(op1,op2,true);
     switch(op1.getType()) {
-    case REGISTER     : return InstructionMovImm(m_regImmCode).setRegImm(op1.getRegister()  , op2.getImmInt64());
-    case MEMORYOPERAND: return InstructionMovImm(m_memImmCode).setMemImm((MemoryOperand&)op1, op2.getImmInt32());
+    case REGISTER     :
+      m_regImmCode.isValidOperandCombination(op1,op2,true);
+      return InstructionMovImm(m_regImmCode).setRegImm(op1.getRegister()  , op2.getImmInt64());
+    case MEMORYOPERAND:
+      m_memImmCode.isValidOperandCombination(op1,op2,true);
+      return InstructionMovImm(m_memImmCode).setMemImm((MemoryOperand&)op1, op2.getImmInt32());
     }
   }
   throwInvalidOperandCombination(op1,op2);
@@ -78,11 +89,15 @@ InstructionBase OpcodeMov::operator()(const InstructionOperand &op1, const Instr
 }
 
 bool OpcodeMov::isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError) const {
-  if((op1.getType() == REGISTER) && (op2.getType() == IMMEDIATEVALUE)) {
-    if(!validateRegisterOperand(op1, 1, throwOnError)) {
-      return false;
+  if(op2.getType() != IMMEDIATEVALUE) {
+    if(isGPR0ImmAddrPair(op1, op2)) {
+      return m_GPR0AddrCode.isValidOperandCombination(op1, op2, throwOnError);
     }
-    return validateImmediateValue(op1.getSize(), op2, s_validImmSizeToRegMov, throwOnError);
+  } else { // op2.type == IMMEDIATEVALUE
+    switch(op1.getType()) {
+    case REGISTER     : return m_regImmCode.isValidOperandCombination(op1,op2,throwOnError);
+    case MEMORYOPERAND: return m_memImmCode.isValidOperandCombination(op1,op2,throwOnError);
+    }
   }
   return __super::isValidOperandCombination(op1,op2, throwOnError);
 }
