@@ -215,6 +215,21 @@ public:
     validateType(__TFUNCTION__,REGISTER);
     return *m_reg;
   }
+  inline bool isRegister() const {
+    return getType() == REGISTER;
+  }
+  inline bool isRegister(RegType type) const {
+    return isRegister() && (getRegister().getType() == type);
+  }
+  inline bool isGPR0() const {
+    return isRegister() && getRegister().isGPR0();
+  }
+  inline bool isMemoryRef() const {
+    return getType() == MEMORYOPERAND;
+  }
+  inline bool isDisplaceOnly() const {
+    return isMemoryRef() && getMemoryReference().isDisplaceOnly();
+  }
   char   getImmInt8()   const;
   BYTE   getImmUint8()  const;
   short  getImmInt16()  const;
@@ -377,17 +392,20 @@ public:
 #define IMMEDIATEVALUE_ALLOWED (IMM8_ALLOWED | IMM32_ALLOWED)
 
 #ifdef IS32BIT
-#define ALL_GPRSIZEPTR_ALLOWED  (BYTEPTR_ALLOWED      | WORDPTR_ALLOWED      | DWORDPTR_ALLOWED     )
+#define NONBYTE_GPRPTR_ALLOWED      (WORDPTR_ALLOWED      | DWORDPTR_ALLOWED)
 #else  // IS64BIT
-#define ALL_GPRSIZEPTR_ALLOWED  (BYTEPTR_ALLOWED      | WORDPTR_ALLOWED      | DWORDPTR_ALLOWED     | QWORDPTR_ALLOWED     )
+#define NONBYTE_GPRPTR_ALLOWED      (WORDPTR_ALLOWED      | DWORDPTR_ALLOWED      | QWORDPTR_ALLOWED)
 #endif // IS64BIT
 
-#define ALL_GPRSIZE_BUTBYTE_ALLOWED (REGSIZE_WORD_ALLOWED | REGSIZE_DWORD_ALLOWED | REGSIZE_QWORD_ALLOWED)
-#define ALL_GPRSIZE_ALLOWED         (REGSIZE_BYTE_ALLOWED | ALL_GPRSIZE_BUTBYTE_ALLOWED)
-#define ALL_GPR_BUTBYTE_ALLOWED     (REGTYPE_GPR_ALLOWED  | ALL_GPRSIZE_BUTBYTE_ALLOWED)
-#define ALL_GPR_ALLOWED             (REGTYPE_GPR_ALLOWED  | ALL_GPRSIZE_ALLOWED        )
-#define ALL_GPR0_ALLOWED            (REGTYPE_GPR0_ALLOWED | ALL_GPRSIZE_ALLOWED        )
-#define ALL_GPRPTR_ALLOWED          (ALL_GPRSIZEPTR_ALLOWED)
+#define NONBYTE_GPRSIZE_ALLOWED     (REGSIZE_WORD_ALLOWED | REGSIZE_DWORD_ALLOWED | REGSIZE_QWORD_ALLOWED)
+#define ALL_GPRSIZE_ALLOWED         (REGSIZE_BYTE_ALLOWED | NONBYTE_GPRSIZE_ALLOWED)
+#define NONBYTE_GPR_ALLOWED         (REGTYPE_GPR_ALLOWED  | NONBYTE_GPRSIZE_ALLOWED)
+#define ALL_GPR_ALLOWED             (REGTYPE_GPR_ALLOWED  | ALL_GPRSIZE_ALLOWED    )
+#define ALL_GPR0_ALLOWED            (REGTYPE_GPR0_ALLOWED | ALL_GPRSIZE_ALLOWED    )
+#define ALL_GPRPTR_ALLOWED          (BYTEPTR_ALLOWED      | NONBYTE_GPRPTR_ALLOWED )
+
+#define ISWORDGPR_ONLY(flags)       (((flags) & ALL_GPRSIZE_ALLOWED) == REGSIZE_WORD_ALLOWED)
+#define ISWORDPTR_ONLY(flags)       (((flags) & ALL_GPRPTR_ALLOWED ) == WORDPTR_ALLOWED     )
 
 #define ALL_MEMOPSIZES              (BYTEPTR_ALLOWED | WORDPTR_ALLOWED | DWORDPTR_ALLOWED | QWORDPTR_ALLOWED | TBYTEPTR_ALLOWED | OWORDPTR_ALLOWED)
 
@@ -530,12 +548,14 @@ private:
   const Opcode2Arg m_regImmCode;
   const Opcode2Arg m_memImmCode;
   const Opcode2Arg m_GPR0AddrCode;
+  const Opcode2Arg m_movSegCode;
 public :
   OpcodeMov(const String &mnemonic)
     : Opcode2Arg(    mnemonic, 0x88)
-    , m_regImmCode(  mnemonic, 0xB0, ALL_GPR_ALLOWED     | IMMEDIATEVALUE_ALLOWED | IMM64_ALLOWED      | HAS_SIZEBIT)
-    , m_memImmCode(  mnemonic, 0xC6, ALL_GPRPTR_ALLOWED  | IMMEDIATEVALUE_ALLOWED                      | HAS_SIZEBIT)
-    , m_GPR0AddrCode(mnemonic, 0xA0, ALL_GPR0_ALLOWED    | IMMMADDR_ALLOWED       | ALL_GPRPTR_ALLOWED | HAS_SIZEBIT | HAS_DIRECTIONBIT)
+    , m_regImmCode(  mnemonic, 0xB0, ALL_GPR_ALLOWED     | IMMEDIATEVALUE_ALLOWED | IMM64_ALLOWED        | HAS_SIZEBIT)
+    , m_memImmCode(  mnemonic, 0xC6, ALL_GPRPTR_ALLOWED  | IMMEDIATEVALUE_ALLOWED                        | HAS_SIZEBIT)
+    , m_GPR0AddrCode(mnemonic, 0xA0, ALL_GPR0_ALLOWED    | IMMMADDR_ALLOWED       | ALL_GPRPTR_ALLOWED   | HAS_SIZEBIT | HAS_DIRECTIONBIT)
+    , m_movSegCode(  mnemonic, 0x8C, NONBYTE_GPR_ALLOWED | REGTYPE_SEG_ALLOWED    | WORDPTR_ALLOWED      | HAS_DIRECTIONBIT              )
   {
   }
   bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError=false) const;

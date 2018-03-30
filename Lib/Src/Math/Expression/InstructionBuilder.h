@@ -84,6 +84,16 @@ private:
     setModeBits(m_extension << 3);
   }
   InstructionBuilder &prefixSegReg(    const SegmentRegister &reg);
+  inline bool isWordPtrOnly() const {
+    return ISWORDPTR_ONLY(m_flags);
+  }
+  inline bool isWordGPROnly() const {
+    return ISWORDGPR_ONLY(m_flags);
+  }
+  inline bool isWordSizeOnly(bool isRegister) const {
+    return isRegister ? isWordGPROnly() : isWordPtrOnly();
+  }
+  InstructionBuilder &prefixImm(BYTE op, OperandSize size, bool isRegister, bool immIsByte);
 protected:
   static void throwImmSizeException(const TCHAR *method, const String        &dst, INT64 immv) {
     throwInvalidArgumentException(method,_T("%s"),getImmSizeErrorString(dst,immv).cstr());
@@ -97,7 +107,12 @@ protected:
   static inline void sizeError(     const TCHAR *method, OperandSize         size, INT64 immv) {
     throwImmSizeException(method,::toString(size),immv);
   }
-  InstructionBuilder &prefixImm(BYTE b, OperandSize size, bool immIsByte);
+  inline InstructionBuilder &prefixImm(BYTE op, const Register      &reg, bool immIsByte) {
+    return prefixImm(op,reg.getSize(),true, immIsByte);
+  }
+  inline InstructionBuilder &prefixImm(BYTE op, const MemoryOperand &mem, bool immIsByte) {
+    return prefixImm(op,mem.getSize(),false, immIsByte);
+  }
 public:
   InstructionBuilder(const OpcodeBase      &opcode);
   InstructionBuilder(const InstructionBase &ins   , UINT flags = 0);
@@ -171,7 +186,8 @@ public:
   InstructionBuilder &setRexBits(BYTE bits);
 #endif // IS64BIT
 
-  inline InstructionBuilder &wordIns() {
+  inline InstructionBuilder &wordIns(bool isRegister) {
+    if(isWordSizeOnly(isRegister)) return *this;
 #ifdef IS64BIT
     m_rexByteIndex++;
 #endif
@@ -185,7 +201,7 @@ public:
   inline InstructionBuilder &setSizeBit() {
     return hasSizeBit() ? or(m_opcodePos,1) : *this;
   }
-  InstructionBuilder &setOperandSize(OperandSize size);
+  InstructionBuilder &setOperandSize(OperandSize size, bool isRegister);
   // Set bit 1 in opcode to 1 if destination is a register
   inline InstructionBuilder &setDirectionBit() {
     return hasDirectionBit() ? or(m_opcodePos,2) : *this;

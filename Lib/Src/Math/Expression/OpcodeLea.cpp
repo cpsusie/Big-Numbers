@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "InstructionBuilder.h"
 
-#define LEA_FLAGS (ALL_GPR_BUTBYTE_ALLOWED | ALL_MEMOPSIZES | VOIDPTR_ALLOWED)
+#define LEA_FLAGS (NONBYTE_GPR_ALLOWED | ALL_MEMOPSIZES | VOIDPTR_ALLOWED)
 
 OpcodeLea::OpcodeLea(const String &mnemonic, BYTE op) : Opcode2Arg(mnemonic, op, LEA_FLAGS) {
 }

@@ -23,9 +23,9 @@ static const GPRegister r8List[] = {
    ,R8B  ,R9B  ,R10B ,R11B ,R12B ,R13B ,R14B ,R15B
 #endif // TEST_ALLGPREGISTERS
 #endif // IS64BIT
-  };
+};
 
-  const GPRegister r16List[] = {
+const GPRegister r16List[] = {
 #ifndef TEST_ALLGPREGISTERS
     AX                                       ,DI
 #else
@@ -38,9 +38,9 @@ static const GPRegister r8List[] = {
    ,R8W  ,R9W  ,R10W ,R11W ,R12W ,R13W ,R14W ,R15W
 #endif // TEST_ALLGPREGISTERS
 #endif // IS64BIT
-  };
+};
 
-  const GPRegister r32List[] = {
+const GPRegister r32List[] = {
 #ifndef TEST_ALLGPREGISTERS
     EAX                                      ,EDI
 #else
@@ -53,9 +53,9 @@ static const GPRegister r8List[] = {
    ,R8D  ,R9D  ,R10D ,R11D ,R12D ,R13D ,R14D ,R15D
 #endif // TEST_ALLGPREGISTERS
 #endif // IS64BIT
-  };
+};
 
-  const IndexRegister indexRegList[] = {
+const IndexRegister indexRegList[] = {
 #ifdef IS32BIT
 #ifndef TEST_ALLGPREGISTERS
     EAX                    ,ESP  ,EBP        ,EDI
@@ -71,10 +71,10 @@ static const GPRegister r8List[] = {
    ,R8   ,R9   ,R10  ,R11  ,R12  ,R13  ,R14  ,R15
 #endif // TEST_ALLGPREGISTERS
 #endif // IS64BIT
-  };
+};
 
 #ifdef IS64BIT
-  const GPRegister r64List[] = {
+const GPRegister r64List[] = {
 #ifndef TEST_ALLGPREGISTERS
     RAX                                      ,RDI
    ,R8                                       ,R15
@@ -82,8 +82,16 @@ static const GPRegister r8List[] = {
     RAX  ,RCX  ,RDX  ,RBX  ,RSP  ,RBP  ,RSI  ,RDI
    ,R8   ,R9   ,R10  ,R11  ,R12  ,R13  ,R14  ,R15
 #endif //  TEST_ALLGPREGISTERS
-  };
+};
 #endif // IS64BIT
+
+const SegmentRegister segregList[] = {
+#ifdef IS32BIT
+  ES,CS,SS,DS,FS,GS
+#else  // IS64BIT
+  FS,GS
+#endif // IS64BIT
+};
 
 #define INDEXREGISTER_COUNT ARRAYSIZE(indexRegList)
 
@@ -118,16 +126,22 @@ private:
       add(new InstructionOperand(list[i]));
     }
   }
+  void addRegArray(const SegmentRegister *list, size_t n) {
+    for(size_t i = 0; i < n; i++) {
+      add(new InstructionOperand(list[i]));
+    }
+  }
 public:
   AllGPRegisters();
 };
 
 AllGPRegisters::AllGPRegisters() {
-  addRegArray(r8List , ARRAYSIZE(r8List ));
-  addRegArray(r16List, ARRAYSIZE(r16List));
-  addRegArray(r32List, ARRAYSIZE(r32List));
+  addRegArray(segregList, ARRAYSIZE(segregList));
+  addRegArray(r8List    , ARRAYSIZE(r8List    ));
+  addRegArray(r16List   , ARRAYSIZE(r16List   ));
+  addRegArray(r32List   , ARRAYSIZE(r32List   ));
 #ifdef IS64BIT
-  addRegArray(r64List, ARRAYSIZE(r64List));
+  addRegArray(r64List   , ARRAYSIZE(r64List   ));
 #endif
 }
 
@@ -354,8 +368,12 @@ private:
   int         addBytes(const void *bytes, int count);
 public:
   inline int emit(const InstructionBase &ins) {
-    if((++s_emitCount & 0xfff) == 0) checkKeyboard();
+    if((s_emitCount++ & 0x3ff) == 0) checkKeyboard();
     return addBytes(ins.getBytes(), ins.size());
+  }
+  void clear() {
+    s_emitCount = 0;
+    __super::clear();
   }
 };
 

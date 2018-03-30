@@ -41,6 +41,12 @@ OpcodeBase::OpcodeBase(const String &mnemonic, UINT op, BYTE extension, BYTE opC
                                    ,op
                                    );
     }
+    if(ISWORDPTR_ONLY(getFlags())) {
+      throwInvalidArgumentException(_T("%s:HAS_SIZEBIT set for opcode %X, and only Word size allowed")
+                                   ,getMnemonic().cstr()
+                                   ,op
+                                   );
+    }
   }
   if(getFlags() & HAS_DIRECTIONBIT) {
     if(op & 2) {
