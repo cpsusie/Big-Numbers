@@ -786,8 +786,6 @@ extern StringPrefix      REPNE;                            // Apply to CMPS and 
 
 #ifdef __NEVER__
 
-#define MOV_FROM_SEGREG_WORD(seg)              B2OP(0x8C00    | ((seg)<<3))               // Build dst with MEM_ADDR-*,REGREG-macroes
-#define MOV_TO_SEGREG_WORD(  seg)              B2OP(0x8E00    | ((seg)<<3))               // Build src with MEM_ADDR-*,REGREG-macroes
 #define POP_DWORD                              B2OP(0x8F00)                               // Build dst with MEM_ADDR-*,REGREG-macroes
 
 // Additional forms of IMUL
