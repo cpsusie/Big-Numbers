@@ -113,20 +113,6 @@ bool OpcodeBase::isMemoryOperandSizeAllowed(OperandSize size) const {
   return false;
 }
 
-const RegSizeSet OpcodeBase::s_wordRegCapacity( REGSIZE_BYTE, REGSIZE_WORD, REGSIZE_END);
-const RegSizeSet OpcodeBase::s_dwordRegCapacity(REGSIZE_BYTE, REGSIZE_WORD, REGSIZE_DWORD, REGSIZE_END);
-const RegSizeSet OpcodeBase::s_qwordRegCapacity(REGSIZE_BYTE, REGSIZE_WORD, REGSIZE_DWORD, REGSIZE_QWORD, REGSIZE_END);
-
-bool OpcodeBase::sizeContainsSrcSize(OperandSize dstSize, OperandSize srcSize) { // static
-  switch(dstSize) {
-  case REGSIZE_BYTE : return srcSize == REGSIZE_BYTE;
-  case REGSIZE_WORD : return s_wordRegCapacity.contains( srcSize);
-  case REGSIZE_DWORD: return s_dwordRegCapacity.contains(srcSize);
-  case REGSIZE_QWORD: return s_qwordRegCapacity.contains(srcSize);
-  default           : return false;
-  }
-}
-
 void OpcodeBase::throwInvalidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2) const {
   throwException(_T("%s:Invalid combination of operands:%s,%s")
                 ,getMnemonic().cstr()
@@ -160,38 +146,40 @@ void OpcodeBase::throwUnknownRegisterType(const TCHAR *method, RegType type) { /
   throwInvalidArgumentException(method, _T("RegisterType=%s"), ::toString(type).cstr());
 }
 
-#define RAISEERROR(...)                                                       \
-{ if(throwOnError) throwInvalidArgumentException(__TFUNCTION__,__VA_ARGS__); \
-  return false;                                                              \
+#define RAISEERROR(...)                                                                         \
+{ if(throwOnError) throwException(_T("%s:%s"),getMnemonic().cstr(),format(__VA_ARGS__).cstr()); \
+  return false;                                                                                 \
 }
 
 bool OpcodeBase::validateOpCount(int count, bool throwOnError) const {
   if(getOpCount() != count) {
-    RAISEERROR(_T("%s:%d operand(s) specified. Expected %d"), getMnemonic().cstr(), count, getOpCount());
+    RAISEERROR(_T("%d operand(s) specified. Expected %d"), count, getOpCount());
   }
   return true;
 }
 
 bool OpcodeBase::validateRegisterAllowed(const Register &reg, bool throwOnError) const {
   if(!isRegisterAllowed(reg)) {
-    RAISEERROR(_T("%s:%s not allowed"), getMnemonic().cstr(), reg.getName().cstr());
+    RAISEERROR(_T("%s not allowed"), reg.getName().cstr());
   }
   return true;
 }
 
 bool OpcodeBase::validateMemoryOperandAllowed(const MemoryOperand &mem, bool throwOnError) const {
   if(!isMemoryOperandAllowed(mem)) {
-    RAISEERROR(_T("%s:%s not allowed"), getMnemonic().cstr(), mem.toString().cstr());
+    RAISEERROR(_T("%s not allowed"), mem.toString().cstr());
   }
   return true;
 }
 
-bool OpcodeBase::validateImmediateSizeAllowed(OperandSize immSize, bool throwOnError) const {
-  switch(immSize) {
+bool OpcodeBase::validateImmediateOperandAllowed(const InstructionOperand &imm, bool throwOnError) const {
+  switch(imm.getSize()) {
   case REGSIZE_BYTE :
-    if(getFlags() & (IMM8_ALLOWED|IMM32_ALLOWED|IMM64_ALLOWED)) return true;
+    if(getFlags() & (IMM8_ALLOWED|IMM16_ALLOWED|IMM32_ALLOWED|IMM64_ALLOWED)) return true;
     break;
   case REGSIZE_WORD :
+    if(getFlags() & (IMM16_ALLOWED|IMM32_ALLOWED|IMM64_ALLOWED)) return true;
+    break;
   case REGSIZE_DWORD:
     if(getFlags() & (IMM32_ALLOWED|IMM64_ALLOWED)) return true;
     break;
@@ -199,17 +187,28 @@ bool OpcodeBase::validateImmediateSizeAllowed(OperandSize immSize, bool throwOnE
     if(getFlags() & IMM64_ALLOWED) return true;
     break;
   }
-  RAISEERROR(_T("%s:Immediate value of size %s not allowed"), getMnemonic().cstr(), ::toString(immSize).cstr());
+  RAISEERROR(_T("Immediate value %s not allowed"), imm.toString().cstr());
 }
 
-bool OpcodeBase::validateImmediateValue(OperandSize dstSize, const InstructionOperand &imm, bool throwOnError) const {
-  if(!validateImmediateSizeAllowed(imm.getSize(), throwOnError)) {
+bool OpcodeBase::validateImmediateValue(const Register &reg, const InstructionOperand &imm, bool throwOnError) const {
+  if(!validateImmediateOperandAllowed(imm, throwOnError)) {
     return false;
   }
-  if(!sizeContainsSrcSize(dstSize, imm.getSize())) {
-    RAISEERROR(_T("%s"), getImmSizeErrorString(::toString(dstSize), imm.getImmInt64()).cstr());
+  if(!reg.containsSize(imm.getSize())) {
+    RAISEERROR(_T("%s"), getImmSizeErrorString(reg.toString(), imm.getImmInt64()).cstr());
   }
   return true;
+}
+
+bool OpcodeBase::validateImmediateValue(const MemoryOperand &mem, const InstructionOperand &imm, bool throwOnError) const {
+  if(!validateImmediateOperandAllowed(imm, throwOnError)) {
+    return false;
+  }
+  if(!mem.containsSize(imm.getSize())) {
+    RAISEERROR(_T("%s"), getImmSizeErrorString(mem.toString(), imm.getImmInt64()).cstr());
+  }
+  return true;
+
 }
 
 bool OpcodeBase::validateSameSize(const Register &reg1, const Register &reg2, bool throwOnError) const {
@@ -258,9 +257,9 @@ bool OpcodeBase::validateSameSize(const InstructionOperand &op1, const Instructi
 bool OpcodeBase::validateIsRexCompatible(const Register &reg, const InstructionOperand &op, bool throwOnError) const {
   if(!reg.isREXCompatible(op.needREXByte())) {
     RAISEERROR(_T("%s not allowed together with %s (Use %s)")
-             ,reg.toString().cstr()
-             ,op.toString().cstr()
-             ,Register::getREXCompatibleRegisterNames(op.needREXByte())
+              ,reg.toString().cstr()
+              ,op.toString().cstr()
+              ,Register::getREXCompatibleRegisterNames(op.needREXByte())
              );
   }
   return true;
@@ -269,10 +268,10 @@ bool OpcodeBase::validateIsRexCompatible(const Register &reg, const InstructionO
 bool OpcodeBase::validateIsRexCompatible(const Register &reg1, const Register &reg2, bool throwOnError) const {
   if(!reg1.isREXCompatible(reg2.indexNeedREXByte())) {
     RAISEERROR(_T("%s not allowed together with %s (Use %s)")
-             ,reg1.toString().cstr()
-             ,reg2.toString().cstr()
-             ,Register::getREXCompatibleRegisterNames(reg2.indexNeedREXByte())
-             );
+              ,reg1.toString().cstr()
+              ,reg2.toString().cstr()
+              ,Register::getREXCompatibleRegisterNames(reg2.indexNeedREXByte())
+              );
   }
   return true;
 }
@@ -370,12 +369,12 @@ bool OpcodeBase::isValidOperand(const InstructionOperand &op, bool throwOnError)
     }
     break;
   case IMMEDIATEVALUE :
-    if(!validateImmediateSizeAllowed(op.getSize(), throwOnError)) {
+    if(!validateImmediateOperandAllowed(op, throwOnError)) {
       return false;
     }
     break;
   default             :
-    throwUnknownOperandType(__TFUNCTION__,op.getType());
+    throwUnknownOperandType(__TFUNCTION__, op.getType());
   }
   return true;
 }
@@ -392,7 +391,7 @@ bool OpcodeBase::isValidOperandCombination(const Register &reg, const Instructio
     { if(!validateRegisterAllowed(op.getRegister(), throwOnError)) {
         return false;
       }
-      if(!validateSameSize(reg,op, throwOnError)) {
+      if(!validateSameSize(reg, op, throwOnError)) {
         return false;
       }
     }
@@ -401,12 +400,12 @@ bool OpcodeBase::isValidOperandCombination(const Register &reg, const Instructio
     if(!validateMemoryOperandAllowed((MemoryOperand&)op, throwOnError)) {
       return false;
     }
-    if(!validateSameSize(reg,op, throwOnError)) {
+    if(!validateSameSize(reg, op, throwOnError)) {
       return false;
     }
     break;
   case IMMEDIATEVALUE : // reg <- imm
-    if(!validateImmediateValue(reg.getSize(), op, throwOnError)) {
+    if(!validateImmediateValue(reg, op, throwOnError)) {
       return false;
     }
     break;
@@ -443,7 +442,7 @@ bool OpcodeBase::isValidOperandCombination(const InstructionOperand &op1, const 
       RAISEERROR(_T("%s:Invalid combination of operands:%s,%s"), getMnemonic().cstr(), op1.toString().cstr(), op2.toString().cstr());
       break;
     case IMMEDIATEVALUE : // mem <- imm
-      if(!validateImmediateValue(op1.getSize(), op2, throwOnError)) {
+      if(!validateImmediateValue((MemoryOperand&)op1, op2, throwOnError)) {
         return false;
       }
       break;

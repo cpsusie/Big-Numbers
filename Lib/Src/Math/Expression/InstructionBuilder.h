@@ -47,6 +47,7 @@
 
 class InstructionBuilder : public InstructionBase {
 private:
+  // Contains operand-sizes, that requires sizeBit=1 (if it exist)
   static const RegSizeSet s_sizeBitSet;
   const UINT   m_flags;
   const BYTE   m_extension;

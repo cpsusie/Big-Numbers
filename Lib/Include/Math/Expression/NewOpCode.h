@@ -293,6 +293,9 @@ public:
   const MemoryRef       &getMemoryReference() const {
     return m_mr;
   }
+  inline bool containsSize(OperandSize immSize) const {
+    return Register::sizeContainsSrcSize(getSize(), immSize);
+  }
 #ifdef IS64BIT
   bool needREXByte() const {
     return m_mr.needREXByte();
@@ -378,18 +381,19 @@ public:
 #define OWORDPTR_ALLOWED       0x00010000
 #define VOIDPTR_ALLOWED        0x00020000
 #define IMM8_ALLOWED           0x00040000
-#define IMM32_ALLOWED          0x00080000
+#define IMM16_ALLOWED          0x00080000
+#define IMM32_ALLOWED          0x00100000
 #ifdef IS32BIT
 #define IMM64_ALLOWED          0
 #else  // IS64BIT
-#define IMM64_ALLOWED          0x00100000
+#define IMM64_ALLOWED          0x00200000
 #endif // IS64BIT
 
-#define IMMMADDR_ALLOWED       0x00200000
-#define HAS_SIZEBIT            0x00400000
-#define HAS_DIRECTIONBIT       0x00800000
+#define IMMMADDR_ALLOWED       0x00400000
+#define HAS_SIZEBIT            0x00800000
+#define HAS_DIRECTIONBIT       0x01000000
 
-#define IMMEDIATEVALUE_ALLOWED (IMM8_ALLOWED | IMM32_ALLOWED)
+#define IMMEDIATEVALUE_ALLOWED (IMM8_ALLOWED | IMM16_ALLOWED | IMM32_ALLOWED)
 
 #ifdef IS32BIT
 #define NONBYTE_GPRPTR_ALLOWED      (WORDPTR_ALLOWED      | DWORDPTR_ALLOWED)
@@ -411,7 +415,6 @@ public:
 
 class OpcodeBase {
 private:
-  static const RegSizeSet s_wordRegCapacity  , s_dwordRegCapacity, s_qwordRegCapacity;
 
   UINT         m_bytes;
   const UINT   m_flags;
@@ -444,13 +447,12 @@ protected:
     return isMemoryOperandSizeAllowed(mem.getSize())
         && (isImmAddrAllowed() || isDword(mem.getMemoryReference().getAddr()));
   }
-  static bool sizeContainsSrcSize(OperandSize dstSize, OperandSize srcSize);
-
   bool validateOpCount(                  int                       count                               , bool throwOnError) const;
   bool validateRegisterAllowed(          const Register           &reg                                 , bool throwOnError) const;
   bool validateMemoryOperandAllowed(     const MemoryOperand      &mem                                 , bool throwOnError) const;
-  bool validateImmediateSizeAllowed(     OperandSize immSize                                           , bool throwOnError) const;
-  bool validateImmediateValue(           OperandSize dstSize           , const InstructionOperand &imm , bool throwOnError) const;
+  bool validateImmediateOperandAllowed(  const InstructionOperand &imm                                 , bool throwOnError) const;
+  bool validateImmediateValue(           const Register           &reg , const InstructionOperand &imm , bool throwOnError) const;
+  bool validateImmediateValue(           const MemoryOperand      &mem , const InstructionOperand &imm , bool throwOnError) const;
   bool validateSameSize(                 const Register           &reg1, const Register           &reg2, bool throwOnError) const;
   bool validateSameSize(                 const Register           &reg , const InstructionOperand &op  , bool throwOnError) const;
   bool validateSameSize(                 const InstructionOperand &op1 , const InstructionOperand &op2 , bool throwOnError) const;
@@ -570,7 +572,6 @@ public :
 };
 
 #ifdef IS32BIT
-class OpcodeIncDec : public Opcode1Arg {
 class OpcodeIncDec : public Opcode1Arg {
 private:
   const OpcodeBase m_opReg32;

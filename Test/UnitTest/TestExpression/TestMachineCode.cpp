@@ -716,29 +716,27 @@ void assemblerCode() {
 //    mov startIP, es
     jmp         End
 
-    mov al , byte  ptr[12345678h]
-    mov ax , word  ptr[12345678h]
-    mov eax, dword ptr[12345678h]
+    mov ax , es
+    mov cx , es
+    mov dx , es
+    mov bx , es
+    mov ax , cs
+    mov cx , cs
+    mov dx , cs
+    mov bx , cs
 
-    mov al , byte  ptr es:[12345678h]
-    mov ax , word  ptr es:[12345678h]
-    mov eax, dword ptr es:[12345678h]
+    mov eax , es
+    mov ecx , es
+    mov edx , es
+    mov ebx , es
+    mov eax , cs
+    mov ecx , cs
+    mov edx , cs
+    mov ebx , cs
 
-    mov cl , byte  ptr[12345678h]
-    mov cx , word  ptr[12345678h]
-    mov ecx, dword ptr[12345678h]
-
-    mov cl , byte  ptr es:[12345678h]
-    mov cx , word  ptr es:[12345678h]
-    mov ecx, dword ptr es:[12345678h]
-
-    mov cl , byte  ptr ss:[12345678h]
-    mov cx , word  ptr ss:[12345678h]
-    mov ecx, dword ptr ss:[12345678h]
-
-    mov byte  ptr[12345678h], al
-    mov word  ptr[12345678h], ax
-    mov dword ptr[12345678h], eax
+    mov byte  ptr ds:[12345678h], al
+    mov word  ptr ds:[12345678h], ax
+    mov dword ptr ds:[12345678h], eax
 
     pushf
     popf

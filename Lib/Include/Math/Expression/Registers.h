@@ -66,6 +66,9 @@ private:
                                          // All register are singletons
   DECLAREDEBUGSTR;
 public:
+
+  static const RegSizeSet s_wordRegCapacity, s_dwordRegCapacity, s_qwordRegCapacity;
+
   inline Register(BYTE index) : m_index(index) {
   }
   inline UINT getIndex() const {
@@ -110,6 +113,12 @@ public:
   }
   inline bool operator!=(const Register &r) const {
     return !(*this == r);
+  }
+
+  static bool sizeContainsSrcSize(RegSize dstSize, RegSize immSize);
+
+  inline bool containsSize(RegSize immSize) const {
+    return sizeContainsSrcSize(getSize(), immSize);
   }
   String toString() const {
     return getName();
@@ -242,7 +251,7 @@ extern const XMMRegister XMM8,XMM9,XMM10,XMM11,XMM12,XMM13,XMM14,XMM15;
 #endif // IS64BIT
 
 // Segment registers (16-bit)
-#ifdef IS23BIT
+#ifdef IS32BIT
 extern const SegmentRegister ES,CS,SS,DS,FS,GS;
 #else // IS64BIT
 extern const SegmentRegister FS,GS;
