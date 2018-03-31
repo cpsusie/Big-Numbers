@@ -72,7 +72,9 @@ InstructionBuilder &InstructionBuilder::setOperandSize(OperandSize size, bool is
     break;
   case REGSIZE_QWORD:
     setSizeBit();
-    SETREXBITS(QWORDTOREX(REGSIZE_QWORD));
+    if(isDwordSizeAllowed(isRegister)) {
+      SETREXBITS(QWORDTOREX(REGSIZE_QWORD));
+    }
   }
   return *this;
 }
@@ -175,6 +177,14 @@ InstructionBuilder &InstructionBuilder::setRegisterOperand(const GPRegister &reg
   return *this;
 }
 
+InstructionBuilder &InstructionBuilder::setRegisterOperandNoModeByte(const GPRegister &reg) {
+  const BYTE    index = reg.getIndex();
+  const RegSize size  = reg.getSize();
+  setOperandSize(size,true).or(index&7);
+  SETREXBITS(HIGHINDEXTOREX(index,0));
+  return *this;
+}
+
 InstructionBuilder &InstructionBuilder::setMemoryOperand(const MemoryOperand &mem) {
   const MemoryRef &mr = mem.getMemoryReference();
   if(mem.hasSegmentRegister()) {
@@ -225,6 +235,22 @@ InstructionBuilder &InstructionBuilder::setRegRegOperands(const Register &reg1, 
   } else {
     setDirectionBit().setOperandSize(reg2.getSize(),true).setModeBits(MR_REGREG(reg1Index,reg2Index)); // set direction bit
     SETREXBITS(HIGHINDEXTOREX(reg1Index,2) | HIGHINDEXTOREX(reg2Index,0))
+  }
+  return *this;
+}
+
+InstructionBuilder &InstructionBuilder::setImmediateOperand(const InstructionOperand &imm) {
+  assert(m_opCount == 1);
+  switch(imm.getSize()) {
+  case REGSIZE_BYTE :
+    return add(imm.getImmInt8()).setImmByteBit();
+  case REGSIZE_WORD :
+  case REGSIZE_DWORD:
+    { const int immv = imm.getImmInt32();
+      return add((BYTE*)&immv, 4);
+    }
+  default           :
+    sizeError(__TFUNCTION__,imm.getImmInt64());
   }
   return *this;
 }

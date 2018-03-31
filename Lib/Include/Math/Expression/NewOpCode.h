@@ -397,8 +397,12 @@ public:
 
 #ifdef IS32BIT
 #define NONBYTE_GPRPTR_ALLOWED      (WORDPTR_ALLOWED      | DWORDPTR_ALLOWED)
+#define REGSIZE_INDEX_ALLOWED        REGSIZE_DWORD_ALLOWED
+#define INDEXPTR_ALLOWED             DWORDPTR_ALLOWED
 #else  // IS64BIT
 #define NONBYTE_GPRPTR_ALLOWED      (WORDPTR_ALLOWED      | DWORDPTR_ALLOWED      | QWORDPTR_ALLOWED)
+#define REGSIZE_INDEX_ALLOWED        REGSIZE_QWORD_ALLOWED
+#define INDEXPTR_ALLOWED             QWORDPTR_ALLOWED
 #endif // IS64BIT
 
 #define NONBYTE_GPRSIZE_ALLOWED     (REGSIZE_WORD_ALLOWED | REGSIZE_DWORD_ALLOWED | REGSIZE_QWORD_ALLOWED)
@@ -410,6 +414,8 @@ public:
 
 #define ISWORDGPR_ONLY(flags)       (((flags) & ALL_GPRSIZE_ALLOWED) == REGSIZE_WORD_ALLOWED)
 #define ISWORDPTR_ONLY(flags)       (((flags) & ALL_GPRPTR_ALLOWED ) == WORDPTR_ALLOWED     )
+#define ISDWORDGPR_ALLOWED(flags)   (((flags) & REGSIZE_DWORD_ALLOWED) != 0)
+#define ISDWORDPTR_ALLOWED(flags)   (((flags) & DWORDPTR_ALLOWED     ) != 0)
 
 #define ALL_MEMOPSIZES              (BYTEPTR_ALLOWED | WORDPTR_ALLOWED | DWORDPTR_ALLOWED | QWORDPTR_ALLOWED | TBYTEPTR_ALLOWED | OWORDPTR_ALLOWED)
 
@@ -431,7 +437,7 @@ protected:
   void throwInvalidOperandCombination( const InstructionOperand &op1, const InstructionOperand &op2) const;
   void throwInvalidOperandCombination( const InstructionOperand &op1, const InstructionOperand &op2, const InstructionOperand &op3) const;
   void throwInvalidOperandType(        const InstructionOperand &op, BYTE index) const;
-  static void throwUnknownOperandType( const TCHAR *method, OperandType  type);
+  void throwUnknownOperandType(        const InstructionOperand &op, BYTE index) const;
   static void throwUnknownRegisterType(const TCHAR *method, RegType      type);
   bool isRegisterSizeAllowed(     RegSize     size) const;
   bool isMemoryOperandSizeAllowed(OperandSize size) const;
@@ -571,6 +577,21 @@ public :
   InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
 };
 
+class OpcodePushPop : public Opcode1Arg {
+private:
+  Opcode1Arg m_memCode;
+  Opcode1Arg m_immCode;
+public:
+  inline OpcodePushPop(const String &mnemonic, BYTE opreg, BYTE opmem, BYTE opImm, BYTE extension)
+    : Opcode1Arg(mnemonic, opreg, 0        , REGTYPE_GPR_ALLOWED | REGSIZE_INDEX_ALLOWED | REGSIZE_WORD_ALLOWED)
+    , m_memCode( mnemonic, opmem, extension, INDEXPTR_ALLOWED    | WORDPTR_ALLOWED)
+    , m_immCode( mnemonic, opImm, 0        , opImm?IMMEDIATEVALUE_ALLOWED:0)
+  {
+  }
+  bool isValidOperand(const InstructionOperand &op, bool throwOnError=false) const;
+  InstructionBase operator()(const InstructionOperand &op) const;
+};
+
 #ifdef IS32BIT
 class OpcodeIncDec : public Opcode1Arg {
 private:
@@ -620,7 +641,7 @@ public:
 
 class StringInstruction : public Opcode0Arg {
 public:
-  StringInstruction(const String &mnemonic, UINT op) : Opcode0Arg(mnemonic, op, HAS_SIZEBIT) {
+  StringInstruction(const String &mnemonic, UINT op) : Opcode0Arg(mnemonic, op, HAS_SIZEBIT | DWORDPTR_ALLOWED ) {
   }
   StringInstruction(const String &mnemonic, const StringInstruction &ins, OperandSize size) : Opcode0Arg(mnemonic, ins, size) {
   }
@@ -674,6 +695,9 @@ extern Opcode2Arg        CMP;                              // Compare Two Operan
 extern OpcodeXchg        XCHG;                             // Exchange Two operands
 extern OpcodeMov         MOV;                              // Move data (copying)
 extern OpcodeLea         LEA;                              // Load effective address
+
+extern OpcodePushPop     PUSH;
+extern OpcodePushPop     POP;
 
 extern OpcodeIncDec      INC;
 extern OpcodeIncDec      DEC;
@@ -817,30 +841,6 @@ extern StringPrefix      REPNE;                            // Apply to CMPS and 
 #define MULSD(xmm)                             B4OP(0xF20F5900 | ((xmm) << 3))
 #define SUBSD(xmm)                             B4OP(0xF20F5C00 | ((xmm) << 3))
 #define DIVSD(xmm)                             B4OP(0xF20F5E00 | ((xmm) << 3))
-
-// PUSH/POP _R8 not available
-
-#ifdef IS32BIT
-
-#define PUSH_R32(r32)                          B1INS(0x50       | r32.getIndex())         // No operand
-#define POP_R32( r32)                          B1INS(0x58       | r32.getIndex())         // No operand
-
-#define PUSH_R16(r16)                          WORDOP(PUSH_R32(r16))                      // No operand
-#define POP_R16( r16)                          WORDOP(POP_R32( r16))                      // No operand
-
-#define PUSH_IMM_BYTE                          B1INS(0x6A    )                            // 1 byte value
-#define PUSH_IMM_DWORD                         B1INS(0x68    )                            // 4 byte value
-#define PUSH_IMM_WORD                          WORDOP(PUSH_IMM_DWORD)                     // 2 byte value
-
-#else // IS64BIT
-
-#define _PUSH_R32(r32)                         B1INS(0x50       | r32.getIndex())         // No operand
-#define _POP_R32( r32)                         B1INS(0x58       | r32.getIndex())         // No operand
-
-#define PUSH_R64(r64)                          REX0(_PUSH_R32, r64)                       // No operand
-#define POP_R64( r64)                          REX0(_POP_R32 , r64)                       // No operand
-
-#endif // IS64BIT
 
 // FPU instructions
 

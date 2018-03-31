@@ -569,6 +569,8 @@ void TestMachineCode::testArg0Opcodes() {
 }
 
 void TestMachineCode::testArg1Opcodes() {
+  testOpcode(PUSH );
+  testOpcode(POP  );
   testOpcode(INC  );
   testOpcode(DEC  );
   testOpcode(NOT  );
@@ -713,7 +715,6 @@ static BYTE *getIP() {
 void assemblerCode() {
   const BYTE *startIP = getIP();
   __asm {
-//    mov startIP, es
     jmp         End
 
     mov ax , es
@@ -725,14 +726,15 @@ void assemblerCode() {
     mov dx , cs
     mov bx , cs
 
-    mov eax , es
-    mov ecx , es
-    mov edx , es
-    mov ebx , es
-    mov eax , cs
-    mov ecx , cs
-    mov edx , cs
-    mov ebx , cs
+// not allowed in x86
+;   mov eax , es
+;   mov ecx , es
+;   mov edx , es
+;   mov ebx , es
+;   mov eax , cs
+;   mov ecx , cs
+;   mov edx , cs
+;   mov ebx , cs
 
     mov byte  ptr ds:[12345678h], al
     mov word  ptr ds:[12345678h], ax

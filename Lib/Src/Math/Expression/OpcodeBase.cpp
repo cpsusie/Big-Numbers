@@ -138,8 +138,11 @@ void OpcodeBase::throwInvalidOperandType(const InstructionOperand &op, BYTE inde
                 );
 }
 
-void OpcodeBase::throwUnknownOperandType(const TCHAR *method, OperandType type) { // static
-  throwInvalidArgumentException(method, _T("OperandType=%s"), ::toString(type).cstr());
+void OpcodeBase::throwUnknownOperandType(const InstructionOperand &op, BYTE index) const {
+  throwException(_T("%s:Operand %d has unknown type=%s")
+                ,getMnemonic().cstr()
+                ,index
+                ,::toString(op.getType()).cstr());
 }
 
 void OpcodeBase::throwUnknownRegisterType(const TCHAR *method, RegType type) { // static
@@ -289,7 +292,7 @@ bool OpcodeBase::validateRegisterOperand(const InstructionOperand &op, int index
     if(!throwOnError) return false;
     throwInvalidOperandType(op,index);
   default            :
-    throwUnknownOperandType(__TFUNCTION__,op.getType());
+    throwUnknownOperandType(op,index);
   }
   return true;
 }
@@ -306,7 +309,7 @@ bool OpcodeBase::validateMemoryOperand(const InstructionOperand &op, int index, 
     if(!throwOnError) return false;
     throwInvalidOperandType(op,index);
   default            :
-    throwUnknownOperandType(__TFUNCTION__,op.getType());
+    throwUnknownOperandType(op,index);
   }
   return true;
 }
@@ -327,7 +330,7 @@ bool OpcodeBase::validateRegisterOrMemoryOperand(const InstructionOperand &op, i
     if(!throwOnError) return false;
     throwInvalidOperandType(op,index);
   default            :
-    throwUnknownOperandType(__TFUNCTION__,op.getType());
+    throwUnknownOperandType(op,index);
   }
   return true;
 }
@@ -348,7 +351,7 @@ bool OpcodeBase::validateShiftAmountOperand(const InstructionOperand &op, int in
     }
     break;
   default:
-    throwUnknownOperandType(__TFUNCTION__,op.getType());
+    throwUnknownOperandType(op,index);
   }
   return true;
 }
@@ -374,7 +377,7 @@ bool OpcodeBase::isValidOperand(const InstructionOperand &op, bool throwOnError)
     }
     break;
   default             :
-    throwUnknownOperandType(__TFUNCTION__, op.getType());
+    throwUnknownOperandType(op,1);
   }
   return true;
 }
@@ -410,7 +413,7 @@ bool OpcodeBase::isValidOperandCombination(const Register &reg, const Instructio
     }
     break;
   default             :
-    throwUnknownOperandType(__TFUNCTION__,op.getType());
+    throwUnknownOperandType(op,2);
   }
   return true;
 }
@@ -447,14 +450,14 @@ bool OpcodeBase::isValidOperandCombination(const InstructionOperand &op1, const 
       }
       break;
     default              :
-      throwUnknownOperandType(__TFUNCTION__,op2.getType());
+      throwUnknownOperandType(op2,2);
     }
     break;
   case IMMEDIATEVALUE : // imm <- reg/mem:ERROR
     RAISEERROR(_T("%s:Invalid combination of operands:%s,%s"), getMnemonic().cstr(), op1.toString().cstr(), op2.toString().cstr());
     break;
   default              :
-    throwUnknownOperandType(__TFUNCTION__,op1.getType());
+    throwUnknownOperandType(op1,1);
   }
   return true;
 }

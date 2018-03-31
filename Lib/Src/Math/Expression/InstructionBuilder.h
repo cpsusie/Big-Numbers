@@ -91,11 +91,23 @@ private:
   inline bool isWordGPROnly() const {
     return ISWORDGPR_ONLY(m_flags);
   }
+  inline bool isDwordPtrAllowed() const {
+    return ISDWORDPTR_ALLOWED(m_flags);
+  }
+  inline bool isDwordGPRAllowed() const {
+    return ISDWORDGPR_ALLOWED(m_flags);
+  }
   inline bool isWordSizeOnly(bool isRegister) const {
     return isRegister ? isWordGPROnly() : isWordPtrOnly();
   }
+  inline bool isDwordSizeAllowed(bool isRegister) const {
+    return isRegister ? isDwordGPRAllowed() : isDwordPtrAllowed();
+  }
   InstructionBuilder &prefixImm(BYTE op, OperandSize size, bool isRegister, bool immIsByte);
 protected:
+  static void throwImmSizeException(const TCHAR *method, INT64 immv) {
+    throwInvalidArgumentException(method,_T("Immediate value %s not allowed"),formatHexValue(immv,false).cstr());
+  }
   static void throwImmSizeException(const TCHAR *method, const String        &dst, INT64 immv) {
     throwInvalidArgumentException(method,_T("%s"),getImmSizeErrorString(dst,immv).cstr());
   }
@@ -107,6 +119,9 @@ protected:
   }
   static inline void sizeError(     const TCHAR *method, OperandSize         size, INT64 immv) {
     throwImmSizeException(method,::toString(size),immv);
+  }
+  static inline void sizeError(     const TCHAR *method, INT64 immv) {
+    throwImmSizeException(method,immv);
   }
   inline InstructionBuilder &prefixImm(BYTE op, const Register      &reg, bool immIsByte) {
     return prefixImm(op,reg.getSize(),true, immIsByte);
@@ -207,10 +222,15 @@ public:
   inline InstructionBuilder &setDirectionBit() {
     return hasDirectionBit() ? or(m_opcodePos,2) : *this;
   }
+  inline InstructionBuilder &setImmByteBit() {
+    return or(m_opcodePos,2);
+  }
   // add MOD-REG-R/M byte if not there yet, else modeByte |= bits
   InstructionBuilder &setModeBits(BYTE bits);
-  InstructionBuilder &setRegisterOperand(  const GPRegister    &reg);
+  InstructionBuilder &setRegisterOperand(          const GPRegister &reg);
+  InstructionBuilder &setRegisterOperandNoModeByte(const GPRegister &reg);
   InstructionBuilder &setMemoryOperand(    const MemoryOperand &mem);
   InstructionBuilder &setMemoryRegOperands(const MemoryOperand &mem, const  Register &reg);
   InstructionBuilder &setRegRegOperands(   const Register      &reg1, const Register &reg2);
+  InstructionBuilder &setImmediateOperand( const InstructionOperand &imm);
 };

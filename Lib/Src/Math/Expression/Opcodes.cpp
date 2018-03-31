@@ -52,6 +52,9 @@ DEFNAME(OpcodeXchg       ,  XCHG       );                  // Exchange Two opera
 DEFNAME(OpcodeMov        ,  MOV        );
 DEFNAME(OpcodeLea        ,  LEA   ,0x8D);                  // Load effective address
 
+DEFNAME(OpcodePushPop    ,  PUSH  ,0x50, 0xFF, 0x68, 6);
+DEFNAME(OpcodePushPop    ,  POP   ,0x58, 0x8F, 0   , 0);
+
 DEFNAME(OpcodeIncDec     ,  INC   ,0xFE,0);
 DEFNAME(OpcodeIncDec     ,  DEC   ,0xFE,1);
 

@@ -69,6 +69,22 @@ static inline bool isOneSegmentRegister(const InstructionOperand &op1, const Ins
   return op1.isRegister(REGTYPE_SEG) != op2.isRegister(REGTYPE_SEG);
 }
 
+bool OpcodeMov::isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError) const {
+  if(op2.getType() != IMMEDIATEVALUE) {
+    if(isGPR0ImmAddrPair(op1, op2)) {
+      return m_GPR0AddrCode.isValidOperandCombination(op1, op2, throwOnError);
+    } else if(isOneSegmentRegister(op1, op2)) {
+      return m_movSegCode.isValidOperandCombination(op1, op2, throwOnError);
+    }
+  } else { // op2.type == IMMEDIATEVALUE
+    switch(op1.getType()) {
+    case REGISTER     : return m_regImmCode.isValidOperandCombination(op1, op2, throwOnError);
+    case MEMORYOPERAND: return m_memImmCode.isValidOperandCombination(op1, op2, throwOnError);
+    }
+  }
+  return __super::isValidOperandCombination(op1, op2, throwOnError);
+}
+
 InstructionBase OpcodeMov::operator()(const InstructionOperand &op1, const InstructionOperand &op2) const {
   if(op2.getType() != IMMEDIATEVALUE) {
     if(isGPR0ImmAddrPair(op1, op2)) {
@@ -90,20 +106,4 @@ InstructionBase OpcodeMov::operator()(const InstructionOperand &op1, const Instr
   }
   throwInvalidOperandCombination(op1, op2);
   return __super::operator()(op1, op2); // should never come here
-}
-
-bool OpcodeMov::isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError) const {
-  if(op2.getType() != IMMEDIATEVALUE) {
-    if(isGPR0ImmAddrPair(op1, op2)) {
-      return m_GPR0AddrCode.isValidOperandCombination(op1, op2, throwOnError);
-    } else if(isOneSegmentRegister(op1, op2)) {
-      return m_movSegCode.isValidOperandCombination(op1, op2, throwOnError);
-    }
-  } else { // op2.type == IMMEDIATEVALUE
-    switch(op1.getType()) {
-    case REGISTER     : return m_regImmCode.isValidOperandCombination(op1, op2, throwOnError);
-    case MEMORYOPERAND: return m_memImmCode.isValidOperandCombination(op1, op2, throwOnError);
-    }
-  }
-  return __super::isValidOperandCombination(op1, op2, throwOnError);
 }
