@@ -29,9 +29,9 @@ InstructionBuilder &Instruction2ArgImm::setRegImm(const Register &reg, int immv)
     if(immIsByte) {
       prefixImm(IMMOP,reg,true ).setModeBits(MR_REG(regIndex)).add((char)immv);
     } else if(regIndex == 0) {
-      or(0x04).add((BYTE*)&immv,2).setOperandSize(regSize,true);
+      or(0x04).add(&immv,2).setOperandSize(regSize,true);
     } else {
-      prefixImm(IMMOP,reg,false).setModeBits(MR_REG(regIndex)).add((BYTE*)&immv,2);
+      prefixImm(IMMOP,reg,false).setModeBits(MR_REG(regIndex)).add(&immv,2);
     }
     break;
   default           :
@@ -40,7 +40,7 @@ InstructionBuilder &Instruction2ArgImm::setRegImm(const Register &reg, int immv)
     } else if(regIndex == 0) {
       or(0x04).add((BYTE*)&immv,4).setOperandSize(regSize,true);
     } else {
-      prefixImm(IMMOP,reg,false).setModeBits(MR_REG(regIndex)).add((BYTE*)&immv,4);
+      prefixImm(IMMOP,reg,false).setModeBits(MR_REG(regIndex)).add(&immv,4);
     }
     break;
   }
@@ -59,10 +59,10 @@ InstructionBuilder &Instruction2ArgImm::setMemImm(const MemoryOperand &mem, int 
     break;
   case REGSIZE_WORD :
     if(!isWord(immv)) sizeError(method,mem,immv);
-    prefixImm(IMMOP,mem,immIsByte).setMemoryOperand(mem).add((BYTE*)&immv,immIsByte?1:2);
+    prefixImm(IMMOP,mem,immIsByte).setMemoryOperand(mem).add(&immv,immIsByte?1:2);
     break;
   default           :
-    prefixImm(IMMOP,mem,immIsByte).setMemoryOperand(mem).add((BYTE*)&immv,immIsByte?1:4);
+    prefixImm(IMMOP,mem,immIsByte).setMemoryOperand(mem).add(&immv,immIsByte?1:4);
     break;
   }
   return *this;

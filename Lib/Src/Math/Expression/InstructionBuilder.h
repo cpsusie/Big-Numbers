@@ -76,10 +76,10 @@ private:
   InstructionBuilder &addrBase(        const IndexRegister &base, int offset);
   InstructionBuilder &addrBaseShiftInx(const IndexRegister &base, const IndexRegister &inx, BYTE shift, int offset);
   inline InstructionBuilder &addrDisplaceOnly(int displacement) {
-    return setModeBits(MR_DISPONLY).add((BYTE*)&displacement, 4);
+    return setModeBits(MR_DISPONLY).add(&displacement, 4);
   }
   inline InstructionBuilder &addImmAddr(size_t addr) {
-    return add((BYTE*)&addr, sizeof(addr));
+    return add(&addr, sizeof(addr));
   }
   inline void addExtension() {
     setModeBits(m_extension << 3);
@@ -186,7 +186,7 @@ public:
     m_bytes[m_size++] = b;
     return *this;
   }
-  InstructionBuilder &add(const BYTE *src, BYTE count);
+  InstructionBuilder &add(const void *src, BYTE count);
   inline InstructionBuilder &add(const InstructionBase &ins) {
     return add(ins.getBytes(),ins.size());
   }
