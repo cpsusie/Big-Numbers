@@ -40,24 +40,33 @@ assemblerCode PROC
     mov es, edx
     mov es, ebx
 
-;    pushf
-;    popf
-;    pushfd // not allowed in 64 mode
-;    popfd
-;    pushfq
-;    popfq
+  RET
+  CMC
+  CLC
+  STC
+  CLI
+  STI
+  CLD
+  STD
+  SAHF
+  LAHF
+  PUSHF
+  POPF
 
-    cbw
-    cwde
-    cwd
-    cdq
-    cdqe
-    cqo
+  PUSHFQ
+  POPFQ
 
-    clgi
-    stgi
+  CBW
+  CWDE
+  CWD
+  CDQ
 
-    ret
+  CDQE
+  CQO
+  CLGI
+  STGI
+
+  ret
 assemblerCode ENDP
 
 END

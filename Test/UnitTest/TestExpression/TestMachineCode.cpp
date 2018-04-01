@@ -740,19 +740,39 @@ void assemblerCode() {
     mov word  ptr ds:[12345678h], ax
     mov dword ptr ds:[12345678h], eax
 
-    pushf
-    popf
-    pushfd
-    popfd
-    pusha
-    popa
-    pushad
-    popad
+  RET
+  CMC
+  CLC
+  STC
+  CLI
+  STI
+  CLD
+  STD
+  SAHF
+  LAHF
+  PUSHF
+  POPF
+#ifdef IS32BIT
+  PUSHFD
+  POPFD
+  PUSHAD
+  POPAD
+#else // IS64BIT
+  PUSHFQ
+  POPFQ
+#endif // IS64BIT
+  NOP
+  CBW
+  CWDE
+  CWD
+  CDQ
 
-    cbw
-    cwde
-    cwd
-    cdq
+#ifdef IS64BIT
+  CDQE
+  CQO
+  CLGI
+  STGI
+#endif // IS64BIT
   }
 End:
   const BYTE *endIP = getIP();
