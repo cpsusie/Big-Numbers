@@ -421,7 +421,6 @@ public:
 
 class OpcodeBase {
 private:
-
   UINT         m_bytes;
   const UINT   m_flags;
   const String m_mnemonic;
@@ -539,6 +538,23 @@ public :
   InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
 };
 
+class OpcodeIMul : public Opcode2Arg {
+private:
+  const Opcode1Arg m_GPR0Code;
+  const OpcodeBase m_immCode;
+public :
+  OpcodeIMul(const String &mnemonic)
+    : Opcode2Arg(mnemonic, 0x0FAF,    NONBYTE_GPR_ALLOWED | NONBYTE_GPRPTR_ALLOWED )
+    , m_GPR0Code(mnemonic, 0xF6,5,    ALL_GPR0_ALLOWED    | ALL_GPRPTR_ALLOWED     | HAS_SIZEBIT)
+    , m_immCode( mnemonic, 0x69,0, 3, NONBYTE_GPR_ALLOWED | NONBYTE_GPRPTR_ALLOWED | IMMEDIATEVALUE_ALLOWED)
+  {
+  }
+  bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError=false) const;
+  bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, const InstructionOperand &op3, bool throwOnError=false) const;
+  InstructionBase operator()(    const InstructionOperand &op1, const InstructionOperand &op2) const;
+  InstructionBase operator()(    const InstructionOperand &op1, const InstructionOperand &op2, const InstructionOperand &op3) const;
+};
+
 class OpcodeXchg : public Opcode2Arg {
 private:
   const OpcodeBase m_eaxRegCode;
@@ -567,14 +583,17 @@ public :
   {
   }
   bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError=false) const;
-  InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
+  InstructionBase operator()(    const InstructionOperand &op1, const InstructionOperand &op2) const;
 };
 
 class OpcodeLea : public Opcode2Arg {
 public :
-  OpcodeLea(const String &mnemonic, BYTE op);
+  OpcodeLea(const String &mnemonic, BYTE op)
+    : Opcode2Arg(mnemonic, op, NONBYTE_GPR_ALLOWED | ALL_MEMOPSIZES | VOIDPTR_ALLOWED)
+  {
+  }
   bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError=false) const;
-  InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
+  InstructionBase operator()(    const InstructionOperand &op1, const InstructionOperand &op2) const;
 };
 
 class OpcodePushPop : public Opcode1Arg {
@@ -588,7 +607,7 @@ public:
     , m_immCode( mnemonic, opImm, 0        , opImm?IMMEDIATEVALUE_ALLOWED:0)
   {
   }
-  bool isValidOperand(const InstructionOperand &op, bool throwOnError=false) const;
+  bool isValidOperand(       const InstructionOperand &op, bool throwOnError=false) const;
   InstructionBase operator()(const InstructionOperand &op) const;
 };
 
