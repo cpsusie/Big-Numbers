@@ -920,6 +920,7 @@
     <ClCompile Include="Expression\InstructionOperand.cpp" />
     <ClCompile Include="Expression\Opcode.cpp" />
     <ClCompile Include="Expression\Opcode0Arg.cpp" />
+    <ClCompile Include="Expression\Opcode3Arg.cpp" />
     <ClCompile Include="Expression\OpcodeBitScan.cpp" />
     <ClCompile Include="Expression\OpcodeImul.cpp" />
     <ClCompile Include="Expression\OpcodeLea.cpp" />

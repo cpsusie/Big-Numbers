@@ -26,11 +26,11 @@ static inline BYTE findSize(UINT op) {
 }
 
 OpcodeBase::OpcodeBase(const String &mnemonic, UINT op, BYTE extension, BYTE opCount, UINT flags)
-  : m_mnemonic( toLowerCase(mnemonic))
-  , m_size(     findSize(op)         )
-  , m_extension(extension            )
-  , m_opCount(  opCount              )
-  , m_flags(    flags                )
+  : m_mnemonic(  toLowerCase(mnemonic))
+  , m_size(      findSize(op)         )
+  , m_extension( extension            )
+  , m_opCount(   opCount              )
+  , m_flags(     flags                )
 {
   assert(extension <= 7);
   m_bytes = swapBytes(op,m_size);
@@ -55,6 +55,24 @@ OpcodeBase::OpcodeBase(const String &mnemonic, UINT op, BYTE extension, BYTE opC
                                    ,op
                                    );
     }
+    if(getFlags() & FIRSTOP_REGONLY) {
+      throwInvalidArgumentException(_T("%s:HAS_DIRECTIONBIT and FIRSTOP_REGONLY cannot both be set")
+                                   ,getMnemonic().cstr()
+                                   );
+    }
+  }
+
+#define ALL_REGTYPES (REGTYPE_GPR0_ALLOWED|REGTYPE_GPR_ALLOWED|REGTYPE_SEG_ALLOWED|REGTYPE_FPU_ALLOWED|REGTYPE_XMM_ALLOWED)
+
+  if((getFlags() & FIRSTOP_REGONLY) && ((getFlags() & ALL_REGTYPES) == 0)) {
+    throwInvalidArgumentException(_T("%s:FIRSTOP_REGONLY is set, but no registertypes allowed")
+                                 ,getMnemonic().cstr()
+                                 );
+  }
+  if((getFlags() & LASTOP_IMMONLY) && ((getFlags() & (IMMEDIATEVALUE_ALLOWED | IMM64_ALLOWED)) == 0)) {
+      throwInvalidArgumentException(_T("%s:LASTOP_IMMONLY is set, but no immediate operands allowed")
+                                   ,getMnemonic().cstr()
+                                   );
   }
 }
 
@@ -113,6 +131,20 @@ bool OpcodeBase::isMemoryOperandSizeAllowed(OperandSize size) const {
   return false;
 }
 
+bool OpcodeBase::isImmediateSizeAllowed(OperandSize size) const {
+  switch(size) {
+  case REGSIZE_BYTE :
+    return (getFlags() & (IMM64_ALLOWED|IMM32_ALLOWED|IMM16_ALLOWED|IMM8_ALLOWED)) != 0;
+  case REGSIZE_WORD :
+    return (getFlags() & (IMM64_ALLOWED|IMM32_ALLOWED|IMM16_ALLOWED)) != 0;
+  case REGSIZE_DWORD:
+    return (getFlags() & (IMM64_ALLOWED|IMM32_ALLOWED)) != 0;
+  case REGSIZE_QWORD:
+    return (getFlags() & (IMM64_ALLOWED)) != 0;
+  }
+  return false;
+}
+
 void OpcodeBase::throwInvalidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2) const {
   throwException(_T("%s:Invalid combination of operands:%s,%s")
                 ,getMnemonic().cstr()
@@ -154,9 +186,26 @@ void OpcodeBase::throwUnknownRegisterType(const TCHAR *method, RegType type) { /
   return false;                                                                                 \
 }
 
+#define CHECKFIRSTOP_REGONLY(op)                                                                \
+{ if((getFlags() & FIRSTOP_REGONLY) && (op.getType() != REGISTER)) {                            \
+    RAISEERROR(_T("Operand 1 must be register. Type=%s"), ::toString(op.getType()).cstr());     \
+  }                                                                                             \
+}
+
+#define CHECKLASTOP_IMMONLY(op)                                                                 \
+{ if((getFlags() & LASTOP_IMMONLY) && (op.getType() != IMMEDIATEVALUE)) {                       \
+    RAISEERROR(_T("Last operand must be immediate value. Type=%s")                              \
+              ,::toString(op.getType()).cstr());                                                \
+  }                                                                                             \
+}
+
 bool OpcodeBase::validateOpCount(int count, bool throwOnError) const {
-  if(getOpCount() != count) {
-    RAISEERROR(_T("%d operand(s) specified. Expected %d"), count, getOpCount());
+  if((count < getOpCount()) || (count > getMaxOpCount())) {
+    if(getOpCount() == getMaxOpCount()) {
+      RAISEERROR(_T("%d operand(s) specified. Expected %d"), count, getOpCount());
+    } else {
+      RAISEERROR(_T("%d operand(s) specified. Expected %d-%d"), count, getOpCount(), getMaxOpCount());
+    }
   }
   return true;
 }
@@ -176,21 +225,10 @@ bool OpcodeBase::validateMemoryOperandAllowed(const MemoryOperand &mem, bool thr
 }
 
 bool OpcodeBase::validateImmediateOperandAllowed(const InstructionOperand &imm, bool throwOnError) const {
-  switch(imm.getSize()) {
-  case REGSIZE_BYTE :
-    if(getFlags() & (IMM8_ALLOWED|IMM16_ALLOWED|IMM32_ALLOWED|IMM64_ALLOWED)) return true;
-    break;
-  case REGSIZE_WORD :
-    if(getFlags() & (IMM16_ALLOWED|IMM32_ALLOWED|IMM64_ALLOWED)) return true;
-    break;
-  case REGSIZE_DWORD:
-    if(getFlags() & (IMM32_ALLOWED|IMM64_ALLOWED)) return true;
-    break;
-  case REGSIZE_QWORD:
-    if(getFlags() & IMM64_ALLOWED) return true;
-    break;
+  if(!isImmediateSizeAllowed(imm.getSize())) {
+    RAISEERROR(_T("Immediate value %s not allowed"), imm.toString().cstr());
   }
-  RAISEERROR(_T("Immediate value %s not allowed"), imm.toString().cstr());
+  return true;
 }
 
 bool OpcodeBase::validateImmediateValue(const Register &reg, const InstructionOperand &imm, bool throwOnError) const {
@@ -211,7 +249,6 @@ bool OpcodeBase::validateImmediateValue(const MemoryOperand &mem, const Instruct
     RAISEERROR(_T("%s"), getImmSizeErrorString(mem.toString(), imm.getImmInt64()).cstr());
   }
   return true;
-
 }
 
 bool OpcodeBase::validateSameSize(const Register &reg1, const Register &reg2, bool throwOnError) const {
@@ -280,7 +317,7 @@ bool OpcodeBase::validateIsRexCompatible(const Register &reg1, const Register &r
 }
 #endif // IS64BIT
 
-bool OpcodeBase::validateRegisterOperand(const InstructionOperand &op, int index, bool throwOnError) const {
+bool OpcodeBase::validateIsRegisterOperand(const InstructionOperand &op, BYTE index, bool throwOnError) const {
   switch(op.getType()) {
   case REGISTER      :
     if(!validateRegisterAllowed(op.getRegister(), throwOnError)) {
@@ -297,7 +334,7 @@ bool OpcodeBase::validateRegisterOperand(const InstructionOperand &op, int index
   return true;
 }
 
-bool OpcodeBase::validateMemoryOperand(const InstructionOperand &op, int index, bool throwOnError) const {
+bool OpcodeBase::validateIsMemoryOperand(const InstructionOperand &op, BYTE index, bool throwOnError) const {
   switch(op.getType()) {
   case MEMORYOPERAND :
     if(!validateMemoryOperandAllowed((MemoryOperand&)op, throwOnError)) {
@@ -314,15 +351,15 @@ bool OpcodeBase::validateMemoryOperand(const InstructionOperand &op, int index, 
   return true;
 }
 
-bool OpcodeBase::validateRegisterOrMemoryOperand(const InstructionOperand &op, int index, bool throwOnError) const {
+bool OpcodeBase::validateIsRegisterOrMemoryOperand(const InstructionOperand &op, BYTE index, bool throwOnError) const {
   switch(op.getType()) {
   case REGISTER      :
-    if(!validateRegisterOperand(op, index, throwOnError)) {
+    if(!validateIsRegisterOperand(op, index, throwOnError)) {
       return false;
     }
     break;
   case MEMORYOPERAND :
-    if(!validateMemoryOperand(op, index, throwOnError)) {
+    if(!validateIsMemoryOperand(op, index, throwOnError)) {
       return false;
     }
     break;
@@ -335,7 +372,25 @@ bool OpcodeBase::validateRegisterOrMemoryOperand(const InstructionOperand &op, i
   return true;
 }
 
-bool OpcodeBase::validateShiftAmountOperand(const InstructionOperand &op, int index, bool throwOnError) const {
+bool OpcodeBase::validateIsImmediateOperand(const InstructionOperand &op, BYTE index, bool throwOnError) const {
+  switch(op.getType()) {
+  case REGISTER      :
+  case MEMORYOPERAND :
+    if(!throwOnError) return false;
+    throwInvalidOperandType(op,index);
+    break;
+  case IMMEDIATEVALUE:
+    if(!validateImmediateOperandAllowed(op, throwOnError)) {
+      return false;
+    }
+    break;
+  default            :
+    throwUnknownOperandType(op,index);
+  }
+  return true;
+}
+
+bool OpcodeBase::validateIsShiftAmountOperand(const InstructionOperand &op, BYTE index, bool throwOnError) const {
   switch(op.getType()) {
   case REGISTER      :
     if(op.getRegister() != CL) {
@@ -356,10 +411,41 @@ bool OpcodeBase::validateShiftAmountOperand(const InstructionOperand &op, int in
   return true;
 }
 
+const OperandTypeSet &OpcodeBase::getValidOperandTypes(BYTE index) const {
+  validateOperandIndex(index);
+  switch(index) {
+  case 1: return InstructionOperand::RM;
+  case 2: return InstructionOperand::RM;
+  case 3: return InstructionOperand::S;
+  default:return InstructionOperand::EMPTY;
+  }
+}
+
+bool OpcodeBase::isValidOperandType(const InstructionOperand &op, BYTE index) const {
+  if(!getValidOperandTypes(index).contains(op.getType())) {
+    return false;
+  }
+  const bool throwOnError = false;
+  if(index == 1) {
+    CHECKFIRSTOP_REGONLY(op);
+  }
+  if(index == getMaxOpCount()) {
+    CHECKLASTOP_IMMONLY(op);
+  }
+  switch(op.getType()) {
+  case REGISTER      : return isRegisterAllowed(op.getRegister());
+  case MEMORYOPERAND : return isMemoryOperandAllowed((MemoryOperand&)op);
+  case IMMEDIATEVALUE: return isImmediateSizeAllowed(op.getSize());
+  }
+  throwInvalidOperandType(op,index);
+  return false;
+}
+
 bool OpcodeBase::isValidOperand(const InstructionOperand &op, bool throwOnError) const {
   if(!validateOpCount(1, throwOnError)) {
     return false;
   }
+  CHECKFIRSTOP_REGONLY(op);
   switch(op.getType()) {
   case REGISTER       :
     if(!validateRegisterAllowed(op.getRegister(), throwOnError)) {
@@ -386,6 +472,7 @@ bool OpcodeBase::isValidOperandCombination(const Register &reg, const Instructio
   if(!validateOpCount(2, throwOnError)) {
     return false;
   }
+  CHECKLASTOP_IMMONLY(    op);
   if(!validateRegisterAllowed(reg, throwOnError)) {
     return false;
   }
@@ -425,6 +512,8 @@ bool OpcodeBase::isValidOperandCombination(const InstructionOperand &op1, const 
   if(!validateOpCount(2, throwOnError)) {
     return false;
   }
+  CHECKFIRSTOP_REGONLY(   op1);
+  CHECKLASTOP_IMMONLY(    op2);
   switch(op1.getType()) {
   case MEMORYOPERAND  :
     if(!validateMemoryOperandAllowed((MemoryOperand&)op1, throwOnError)) {
@@ -463,8 +552,33 @@ bool OpcodeBase::isValidOperandCombination(const InstructionOperand &op1, const 
 }
 
 bool OpcodeBase::isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, const InstructionOperand &op3, bool throwOnError) const {
-  throwUnsupportedOperationException(__TFUNCTION__);
-  return false;
+  if(!validateOpCount(3, throwOnError)) {
+    return false;
+  }
+  CHECKFIRSTOP_REGONLY(   op1);
+  CHECKLASTOP_IMMONLY(    op3);
+  switch(op1.getType()) {
+  case REGISTER       :
+    if(!validateRegisterAllowed(op1.getRegister(), throwOnError)) {
+      return false;
+    }
+    if(!validateIsRegisterOrMemoryOperand(op2, 2, throwOnError)) {
+      return false;
+    }
+    if(!validateSameSize(op1,op2, throwOnError)) {
+      return false;
+    }
+    if(op3.getType() == IMMEDIATEVALUE) {
+      if(!validateImmediateValue(op1.getRegister(), op3, throwOnError)) {
+        return false;
+      }
+    }
+    break;
+  default:
+    RAISEERROR(_T("%s:Invalid combination of operands:%s,%s,%s")
+              ,getMnemonic().cstr(), op1.toString().cstr(), op2.toString().cstr(), op3.toString().cstr());
+  }
+  return true;
 }
 
 InstructionBase OpcodeBase::operator()(const InstructionOperand &op) const {

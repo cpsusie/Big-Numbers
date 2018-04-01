@@ -137,26 +137,12 @@ void InstructionOperand::validateType(const TCHAR *method, OperandType expectedT
 }
 
 void InstructionOperand::validateSize(const TCHAR *method, OperandSize expectedSize) const {
-  const OperandSize size = getSize();
-  switch(expectedSize) {
-  case REGSIZE_BYTE :
-    if(size == REGSIZE_BYTE) return;
-    break;
-  case REGSIZE_WORD :
-    if((size == REGSIZE_BYTE) || (size == REGSIZE_WORD)) return;
-    break;
-  case REGSIZE_DWORD:
-    if((size == REGSIZE_BYTE) || (size == REGSIZE_WORD) || (size == REGSIZE_DWORD)) return;
-    break;
-  case REGSIZE_QWORD:
-    return;
-  default           :
-    throwInvalidArgumentException(method, _T("ExpectedSize=%s"), ::toString(expectedSize).cstr());
+  if(!Register::sizeContainsSrcSize(expectedSize, getSize())) {
+    throwException(_T("%s:Operandsize=%s. Cannot convert to %s")
+                  ,method
+                  ,::toString(getSize()).cstr()
+                  ,::toString(expectedSize).cstr());
   }
-  throwException(_T("%s:Operandsize=%s. Cannot convert to %s")
-                ,method
-                ,::toString(size        ).cstr()
-                ,::toString(expectedSize).cstr());
 }
 
 #define VALIDATEISIMMVALUE() validateType(method,IMMEDIATEVALUE)
@@ -269,6 +255,14 @@ String InstructionOperand::toString() const {
   }
   return EMPTYSTRING;
 }
+
+const OperandTypeSet InstructionOperand::R(    REGISTER,                             -1);
+const OperandTypeSet InstructionOperand::M(             MEMORYOPERAND,               -1);
+const OperandTypeSet InstructionOperand::IMM(                         IMMEDIATEVALUE,-1);
+const OperandTypeSet InstructionOperand::RM(   REGISTER,MEMORYOPERAND,               -1);
+const OperandTypeSet InstructionOperand::S(    REGISTER,              IMMEDIATEVALUE,-1);
+const OperandTypeSet InstructionOperand::ALL(  REGISTER,MEMORYOPERAND,IMMEDIATEVALUE,-1);
+const OperandTypeSet InstructionOperand::EMPTY(                                      -1);
 
 static char findShift(BYTE a) {
   static const char shift[] = { -1, 0, 1, -1, 2, -1, -1, -1, 3 };

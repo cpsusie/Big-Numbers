@@ -2,10 +2,10 @@
 #include "InstructionBuilder.h"
 
 bool OpcodeLea::isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError) const {
-  if(!validateRegisterOperand(op1, 1, throwOnError)) {
+  if(!validateIsRegisterOperand(op1, 1, throwOnError)) {
     return false;
   }
-  if(!validateMemoryOperand(op2, 2, throwOnError)) {
+  if(!validateIsMemoryOperand(op2, 2, throwOnError)) {
     return false;
   }
   return true;

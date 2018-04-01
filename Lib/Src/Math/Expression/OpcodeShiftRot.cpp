@@ -8,10 +8,10 @@ OpcodeShiftRot::OpcodeShiftRot(const String &mnemonic, BYTE extension)
 }
 
 bool OpcodeShiftRot::isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError) const {
-  if(!validateRegisterOrMemoryOperand(op1, 1, throwOnError)) {
+  if(!validateIsRegisterOrMemoryOperand(op1, 1, throwOnError)) {
     return false;
   }
-  return validateShiftAmountOperand(op2, 2, throwOnError);
+  return validateIsShiftAmountOperand(op2, 2, throwOnError);
 }
 
 InstructionBase OpcodeShiftRot::operator()(const InstructionOperand &op1, const InstructionOperand &op2) const {
@@ -43,16 +43,16 @@ OpcodeDoubleShift::OpcodeDoubleShift(const String &mnemonic, UINT opCL, UINT opI
 }
 
 bool OpcodeDoubleShift::isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, const InstructionOperand &op3, bool throwOnError) const {
-  if(!validateRegisterOrMemoryOperand(op1, 1, throwOnError)) {
+  if(!validateIsRegisterOrMemoryOperand(op1, 1, throwOnError)) {
     return false;
   }
-  if(!validateRegisterOperand(op2, 2, throwOnError)) {
+  if(!validateIsRegisterOperand(op2, 2, throwOnError)) {
     return false;
   }
   if(!validateSameSize(op1, op2, throwOnError)) {
     return false;
   }
-  return validateShiftAmountOperand(op3,3,throwOnError);
+  return validateIsShiftAmountOperand(op3,3,throwOnError);
 }
 
 InstructionBase OpcodeDoubleShift::operator()(const InstructionOperand &op1, const InstructionOperand &op2, const InstructionOperand &op3) const {

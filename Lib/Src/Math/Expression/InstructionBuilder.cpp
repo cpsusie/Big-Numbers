@@ -1,14 +1,13 @@
 #include "pch.h"
 #include "InstructionBuilder.h"
 
-const RegSizeSet InstructionBuilder::s_sizeBitSet(REGSIZE_WORD ,REGSIZE_DWORD ,REGSIZE_QWORD, REGSIZE_END);
+const RegSizeSet InstructionBuilder::s_sizeBitSet(REGSIZE_WORD ,REGSIZE_DWORD ,REGSIZE_QWORD, -1);
 
 InstructionBuilder::InstructionBuilder(const OpcodeBase &opcode)
   : InstructionBase(opcode               )
   , m_flags(        opcode.getFlags()    )
   , m_extension(    opcode.getExtension())
   , m_opcodeSize(   opcode.size()        )
-  , m_opCount(      opcode.getOpCount()  )
 {
   init();
   if(m_extension) {
@@ -21,7 +20,6 @@ InstructionBuilder::InstructionBuilder(const InstructionBase &ins, UINT flags)
   , m_flags(        flags     )
   , m_extension(    0         )
   , m_opcodeSize(   ins.size())
-  , m_opCount(      0         )
 {
   init();
 }
@@ -239,12 +237,16 @@ InstructionBuilder &InstructionBuilder::setRegRegOperands(const Register &reg1, 
   return *this;
 }
 
-InstructionBuilder &InstructionBuilder::setImmediateOperand(const InstructionOperand &imm) {
-  assert(m_opCount == 1);
+InstructionBuilder &InstructionBuilder::setImmediateOperand(const InstructionOperand &imm, const InstructionOperand *dst) {
   switch(imm.getSize()) {
   case REGSIZE_BYTE :
     return add(imm.getImmInt8()).setImmByteBit();
   case REGSIZE_WORD :
+    if(dst && (dst->getSize() == REGSIZE_WORD)) {
+      const short immv = imm.getImmInt16();
+      return add(&immv, 2);
+    }
+    // else continue case
   case REGSIZE_DWORD:
     { const int immv = imm.getImmInt32();
       return add(&immv, 4);

@@ -463,16 +463,19 @@ int TestMachineCode::emit(const OpcodeBase &opcode, const InstructionOperand &op
 
 void TestMachineCode::testOpcode(const OpcodeBase &opcode, bool selectVOIDPtr) {
   try {
-    if(opcode.getOpCount() != 0) {
-      clear();
-    }
     m_currentName = opcode.getMnemonic();
-    switch(opcode.getOpCount()) {
-    case 0 : emit((Opcode0Arg&)opcode            ); break;
-    case 1 : testOpcode1Arg(opcode               ); break;
-    case 2 : testOpcode2Arg(opcode, selectVOIDPtr); break;
-    case 3 : testOpcode3Arg(opcode               ); break;
-    default: throwInvalidArgumentException(__TFUNCTION__,_T("%s.getOpCount()=%d"), opcode.getMnemonic().cstr(), opcode.getOpCount());
+    if(opcode.getMaxOpCount() == 0) {
+      emit((Opcode0Arg&)opcode            );
+    } else {
+      clear();
+      for(int args = opcode.getOpCount(); args <= opcode.getMaxOpCount(); args++) {
+        switch(args) {
+        case 1 : testOpcode1Arg(opcode               ); break;
+        case 2 : testOpcode2Arg(opcode, selectVOIDPtr); break;
+        case 3 : testOpcode3Arg(opcode               ); break;
+        default: throwInvalidArgumentException(__TFUNCTION__,_T("%s.getMaxOpCount()=%d"), opcode.getMnemonic().cstr(), opcode.getMaxOpCount());
+        }
+      }
     }
   } catch(UserInterrupt u) {
     if(u.getType() != BREAK_OPCODE) {
@@ -510,7 +513,7 @@ void TestMachineCode::testOpcode2Arg(const OpcodeBase &opcode, bool selectVOIDPt
 void TestMachineCode::testOpcode3Arg(const OpcodeBase &opcode) {
   for(Iterator<const InstructionOperand*> opIt3 = m_allOperands.getIterator(); opIt3.hasNext();) {
     const InstructionOperand &op3 = *opIt3.next();
-    if(!op3.isShiftAmountOperand()) continue;
+    if(!opcode.isValidOperandType(op3,3)) continue;
     for(Iterator<const InstructionOperand*> opIt2 = m_allOperands.getIterator(); opIt2.hasNext();) {
       const InstructionOperand &op2 = *opIt2.next();
       for(Iterator<const InstructionOperand*> opIt1 = m_allOperands.getIterator(); opIt1.hasNext();) {
@@ -716,7 +719,230 @@ void assemblerCode() {
   const BYTE *startIP = getIP();
   __asm {
     jmp         End
-
+    nop
+    imul al
+    imul cl
+    imul dl
+    imul bl
+    imul ax
+    imul cx
+    imul dx
+    imul bx
+    imul eax
+    imul ecx
+    imul edx
+    imul ebx
+    nop
+    imul  ax ,  ax
+    imul  ax ,  cx
+    imul  ax ,  dx
+    imul  ax ,  bx
+    imul  cx ,  ax
+    imul  cx ,  cx
+    imul  cx ,  dx
+    imul  cx ,  bx
+    imul  dx ,  ax
+    imul  dx ,  cx
+    imul  dx ,  dx
+    imul  dx ,  bx
+    imul  bx ,  ax
+    imul  bx ,  cx
+    imul  bx ,  dx
+    imul  bx ,  bx
+    imul  ax , word ptr[eax]
+    imul  ax , word ptr[ecx]
+    imul  ax , word ptr[edx]
+    imul  ax , word ptr[ebx]
+    imul  cx , word ptr[eax]
+    imul  cx , word ptr[ecx]
+    imul  cx , word ptr[edx]
+    imul  cx , word ptr[ebx]
+    imul  dx , word ptr[eax]
+    imul  dx , word ptr[ecx]
+    imul  dx , word ptr[edx]
+    imul  dx , word ptr[ebx]
+    imul  bx , word ptr[eax]
+    imul  bx , word ptr[ecx]
+    imul  bx , word ptr[edx]
+    imul  ax , word ptr[ebx]
+    nop
+    imul eax , eax
+    imul eax , ecx
+    imul eax , edx
+    imul eax , ebx
+    imul ecx , eax
+    imul ecx , ecx
+    imul ecx , edx
+    imul ecx , ebx
+    imul edx , eax
+    imul edx , ecx
+    imul edx , edx
+    imul ebx , ebx
+    imul ebx , eax
+    imul ebx , ecx
+    imul ebx , edx
+    imul ebx , ebx
+    imul eax ,dword ptr[eax]
+    imul eax ,dword ptr[ecx]
+    imul eax ,dword ptr[edx]
+    imul eax ,dword ptr[ebx]
+    imul ecx ,dword ptr[eax]
+    imul ecx ,dword ptr[ecx]
+    imul ecx ,dword ptr[edx]
+    imul ecx ,dword ptr[ebx]
+    imul edx ,dword ptr[eax]
+    imul edx ,dword ptr[ecx]
+    imul edx ,dword ptr[edx]
+    imul edx ,dword ptr[ebx]
+    imul ebx ,dword ptr[eax]
+    imul ebx ,dword ptr[ecx]
+    imul ebx ,dword ptr[edx]
+    imul ebx ,dword ptr[ebx]
+    nop
+    imul  ax , 7fh
+    imul  cx , 7fh
+    imul  dx , 7fh
+    imul  bx , 7fh
+    imul eax , 7fh
+    imul ecx , 7fh
+    imul edx , 7fh
+    imul ebx , 7fh
+    imul eax , 7fffffffh
+    imul ecx , 7fffffffh
+    imul edx , 7fffffffh
+    imul ebx , 7fffffffh
+    nop
+    imul  ax ,  ax          ,7fh
+    imul  ax ,  cx          ,7fh
+    imul  ax ,  dx          ,7fh
+    imul  ax ,  bx          ,7fh
+    imul  cx ,  ax          ,7fh
+    imul  cx ,  cx          ,7fh
+    imul  cx ,  dx          ,7fh
+    imul  cx ,  bx          ,7fh
+    imul  dx ,  ax          ,7fh
+    imul  dx ,  cx          ,7fh
+    imul  dx ,  dx          ,7fh
+    imul  dx ,  bx          ,7fh
+    imul  bx ,  ax          ,7fh
+    imul  bx ,  cx          ,7fh
+    imul  bx ,  dx          ,7fh
+    imul  bx ,  bx          ,7fh
+    imul  ax ,  ax          ,7fffh
+    imul  ax ,  cx          ,7fffh
+    imul  ax ,  dx          ,7fffh
+    imul  ax ,  bx          ,7fffh
+    imul  cx ,  ax          ,7fffh
+    imul  cx ,  cx          ,7fffh
+    imul  cx ,  dx          ,7fffh
+    imul  cx ,  bx          ,7fffh
+    imul  dx ,  ax          ,7fffh
+    imul  dx ,  cx          ,7fffh
+    imul  dx ,  dx          ,7fffh
+    imul  dx ,  bx          ,7fffh
+    imul  bx ,  ax          ,7fffh
+    imul  bx ,  cx          ,7fffh
+    imul  bx ,  dx          ,7fffh
+    imul  bx ,  bx          ,7fffh
+    imul  ax , word ptr[eax],7fh
+    imul  ax , word ptr[ecx],7fh
+    imul  ax , word ptr[edx],7fh
+    imul  ax , word ptr[ebx],7fh
+    imul  cx , word ptr[eax],7fh
+    imul  cx , word ptr[ecx],7fh
+    imul  cx , word ptr[edx],7fh
+    imul  cx , word ptr[ebx],7fh
+    imul  dx , word ptr[eax],7fh
+    imul  dx , word ptr[ecx],7fh
+    imul  dx , word ptr[edx],7fh
+    imul  dx , word ptr[ebx],7fh
+    imul  bx , word ptr[eax],7fh
+    imul  bx , word ptr[ecx],7fh
+    imul  bx , word ptr[edx],7fh
+    imul  bx , word ptr[ebx],7fh
+    imul  ax , word ptr[eax],7fffh
+    imul  ax , word ptr[ecx],7fffh
+    imul  ax , word ptr[edx],7fffh
+    imul  ax , word ptr[ebx],7fffh
+    imul  cx , word ptr[eax],7fffh
+    imul  cx , word ptr[ecx],7fffh
+    imul  cx , word ptr[edx],7fffh
+    imul  cx , word ptr[ebx],7fffh
+    imul  dx , word ptr[eax],7fffh
+    imul  dx , word ptr[ecx],7fffh
+    imul  dx , word ptr[edx],7fffh
+    imul  dx , word ptr[ebx],7fffh
+    imul  bx , word ptr[eax],7fffh
+    imul  bx , word ptr[ecx],7fffh
+    imul  bx , word ptr[edx],7fffh
+    imul  bx , word ptr[ebx],7fffh
+    nop
+    imul eax , eax          ,7fh
+    imul eax , ecx          ,7fh
+    imul eax , edx          ,7fh
+    imul eax , ebx          ,7fh
+    imul ecx , eax          ,7fh
+    imul ecx , ecx          ,7fh
+    imul ecx , edx          ,7fh
+    imul ecx , ebx          ,7fh
+    imul edx , eax          ,7fh
+    imul edx , ecx          ,7fh
+    imul edx , edx          ,7fh
+    imul edx , ebx          ,7fh
+    imul ebx , eax          ,7fh
+    imul ebx , ecx          ,7fh
+    imul ebx , edx          ,7fh
+    imul ebx , ebx          ,7fh
+    imul eax ,dword ptr[eax],7fh
+    imul eax ,dword ptr[ecx],7fh
+    imul eax ,dword ptr[edx],7fh
+    imul eax ,dword ptr[ebx],7fh
+    imul ecx ,dword ptr[eax],7fh
+    imul ecx ,dword ptr[ecx],7fh
+    imul ecx ,dword ptr[edx],7fh
+    imul ecx ,dword ptr[ebx],7fh
+    imul edx ,dword ptr[eax],7fh
+    imul edx ,dword ptr[ecx],7fh
+    imul edx ,dword ptr[edx],7fh
+    imul edx ,dword ptr[ebx],7fh
+    imul ebx ,dword ptr[eax],7fh
+    imul ebx ,dword ptr[ecx],7fh
+    imul ebx ,dword ptr[edx],7fh
+    imul ebx ,dword ptr[ebx],7fh
+    nop
+    imul eax , eax          ,7fffffffh
+    imul eax , ecx          ,7fffffffh
+    imul eax , edx          ,7fffffffh
+    imul eax , ebx          ,7fffffffh
+    imul ecx , eax          ,7fffffffh
+    imul ecx , ecx          ,7fffffffh
+    imul ecx , edx          ,7fffffffh
+    imul ecx , ebx          ,7fffffffh
+    imul edx , eax          ,7fffffffh
+    imul edx , ecx          ,7fffffffh
+    imul edx , edx          ,7fffffffh
+    imul edx , ebx          ,7fffffffh
+    imul ebx , eax          ,7fffffffh
+    imul ebx , ecx          ,7fffffffh
+    imul ebx , edx          ,7fffffffh
+    imul ebx , ebx          ,7fffffffh
+    imul eax ,dword ptr[eax],7fffffffh
+    imul eax ,dword ptr[ecx],7fffffffh
+    imul eax ,dword ptr[edx],7fffffffh
+    imul eax ,dword ptr[ebx],7fffffffh
+    imul ecx ,dword ptr[eax],7fffffffh
+    imul ecx ,dword ptr[ecx],7fffffffh
+    imul ecx ,dword ptr[edx],7fffffffh
+    imul ecx ,dword ptr[ebx],7fffffffh
+    imul edx ,dword ptr[eax],7fffffffh
+    imul edx ,dword ptr[ecx],7fffffffh
+    imul edx ,dword ptr[edx],7fffffffh
+    imul edx ,dword ptr[ebx],7fffffffh
+    imul ebx ,dword ptr[eax],7fffffffh
+    imul ebx ,dword ptr[ecx],7fffffffh
+    imul ebx ,dword ptr[edx],7fffffffh
+    imul ebx ,dword ptr[ebx],7fffffffh
+    nop
     mov ax , es
     mov cx , es
     mov dx , es

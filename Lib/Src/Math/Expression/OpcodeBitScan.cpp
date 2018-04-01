@@ -13,10 +13,10 @@ OpcodeBitScan::OpcodeBitScan(const String &mnemonic, UINT op)
 }
 
 bool OpcodeBitScan::isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError) const {
-  if(!validateRegisterOperand(op1, 1, throwOnError)) {
+  if(!validateIsRegisterOperand(op1, 1, throwOnError)) {
     return false;
   }
-  if(!validateRegisterOrMemoryOperand(op2,2,throwOnError)) {
+  if(!validateIsRegisterOrMemoryOperand(op2,2,throwOnError)) {
     return false;
   }
   if(!validateSameSize(op1, op2, throwOnError)) {

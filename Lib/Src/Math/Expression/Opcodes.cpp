@@ -62,7 +62,7 @@ DEFNAME(OpcodeIncDec     ,  DEC   ,0xFE,1);
 DEFNAME(Opcode1Arg       ,  NOT   ,0xF6,2);                // Negate the operand, logical NOT
 DEFNAME(Opcode1Arg       ,  NEG   ,0xF6,3);                // Two's complement negation
 DEFNAME(Opcode1Arg       ,  MUL   ,0xF6,4);                // Unsigned multiply (ax = al*src, dx:ax=ax*src, edx:eax=eax*src, rdx:rax=rax*src)
-DEFNAME(Opcode1Arg       ,  IMUL  ,0xF6,5);                // Signed multiply   (ax = al*src, dx:ax=ax*src, edx:eax=eax*src, rdx:rax=rax*src)
+DEFNAME(OpcodeIMul       ,  IMUL         );                // Signed multiply   (ax = al*src, dx:ax=ax*src, edx:eax=eax*src, rdx:rax=rax*src)
 DEFNAME(Opcode1Arg       ,  DIV   ,0xF6,6);                // Unsigned divide   (ax/=src,al=quot,ah=rem,    edx:eax/=src,eax=quot,edx=rem,  rdx:rax/=src,rax=quit,rdx=rem
 DEFNAME(Opcode1Arg       ,  IDIV  ,0xF6,7);                // Signed divide   ax      /= src, ah  must contain sign extension of al . al =quot, ah =rem
                                                            //                 dk:ax   /= src. dx  must contain sign extension of ax . ax =quot, dx =rem

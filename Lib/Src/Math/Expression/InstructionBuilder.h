@@ -53,8 +53,6 @@ private:
   const BYTE   m_extension;
   BYTE         m_opcodePos;
   const BYTE   m_opcodeSize;
-  // Number of operands
-  const BYTE   m_opCount;
   // is MOD-REG-R/M byte added
   bool         m_hasModeByte;
 #ifdef IS64BIT
@@ -232,5 +230,5 @@ public:
   InstructionBuilder &setMemoryOperand(    const MemoryOperand &mem);
   InstructionBuilder &setMemoryRegOperands(const MemoryOperand &mem, const  Register &reg);
   InstructionBuilder &setRegRegOperands(   const Register      &reg1, const Register &reg2);
-  InstructionBuilder &setImmediateOperand( const InstructionOperand &imm);
+  InstructionBuilder &setImmediateOperand( const InstructionOperand &imm, const InstructionOperand *dst=NULL);
 };

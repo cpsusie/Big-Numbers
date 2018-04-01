@@ -18,7 +18,6 @@ typedef enum {
  ,REGSIZE_TBYTE    /* 80-bit  */
  ,REGSIZE_OWORD    /* 128-bit */
  ,REGSIZE_VOID     /* for LEA */
- ,REGSIZE_END   = -1
 } RegSize;
 
 #ifdef _DEBUG
@@ -29,13 +28,22 @@ typedef enum {
 #define DECLAREDEBUGSTR
 #endif // _DEBUG
 
-class RegSizeSet : public BitSet8 {
-  DECLAREDEBUGSTR;
+template<class E> class vBitSet8 : public BitSet8 {
 public:
-  // Terminate with REGSIZE_END
-  RegSizeSet(RegSize s1,...);
-  String toString() const;
+  // Terminate with -1
+  vBitSet8(int e1, ...) {
+    if(e1 < 0) return;
+    va_list argptr;
+    va_start(argptr,e1);
+    add(e1);
+    for(int s = va_arg(argptr, E); s >= 0; s = va_arg(argptr, E)) {
+      add(s);
+    }
+    va_end(argptr);
+  }
 };
+
+typedef vBitSet8<RegSize> RegSizeSet;
 
 String toString(RegType regType);
 String toString(RegSize regSize);

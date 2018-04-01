@@ -25,13 +25,6 @@ String toString(RegSize regSize) {
   }
 }
 
-class RegSizeStringifier : public AbstractStringifier<UINT> {
-public:
-  String toString(const UINT &e) {
-    return ::toString((RegSize)e);
-  }
-};
-
 BYTE regSizeToByteCount(RegSize regSize) {
   switch(regSize) {
   case REGSIZE_BYTE  : 1;
@@ -45,26 +38,11 @@ BYTE regSizeToByteCount(RegSize regSize) {
   return 0;
 }
 
-RegSizeSet::RegSizeSet(RegSize s1, ...) {
-  va_list argptr;
-  va_start(argptr,s1);
-  add(s1);
-  for(RegSize s = va_arg(argptr, RegSize); s != REGSIZE_END; s = va_arg(argptr, RegSize)) {
-    add(s);
-  }
-  SETDEBUGSTR();
-}
-
-String RegSizeSet::toString() const {
-  RegSizeStringifier sf;
-  return __super::toString(&sf);
-}
-
 // ---------------------------------- Register ----------------------------
 
-const RegSizeSet Register::s_wordRegCapacity( REGSIZE_BYTE, REGSIZE_WORD, REGSIZE_END);
-const RegSizeSet Register::s_dwordRegCapacity(REGSIZE_BYTE, REGSIZE_WORD, REGSIZE_DWORD, REGSIZE_END);
-const RegSizeSet Register::s_qwordRegCapacity(REGSIZE_BYTE, REGSIZE_WORD, REGSIZE_DWORD, REGSIZE_QWORD, REGSIZE_END);
+const RegSizeSet Register::s_wordRegCapacity( REGSIZE_BYTE, REGSIZE_WORD, -1);
+const RegSizeSet Register::s_dwordRegCapacity(REGSIZE_BYTE, REGSIZE_WORD, REGSIZE_DWORD, -1);
+const RegSizeSet Register::s_qwordRegCapacity(REGSIZE_BYTE, REGSIZE_WORD, REGSIZE_DWORD, REGSIZE_QWORD, -1);
 
 bool Register::sizeContainsSrcSize(RegSize dstSize, RegSize srcSize) { // static
   switch(dstSize) {

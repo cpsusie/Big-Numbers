@@ -60,6 +60,8 @@ String formatHexValue(INT64 v, bool showSign);
 String formatHexValue(size_t v);
 String getImmSizeErrorString(const String &dst, INT64 immv);
 
+typedef vBitSet8<OperandType> OperandTypeSet;
+
 class MemoryRef {
 private:
   const IndexRegister *m_base,*m_inx;
@@ -262,6 +264,9 @@ public:
   }
 #endif // IS64BIT
   virtual String toString() const;
+
+  static const OperandTypeSet R,M,IMM,RM,S,ALL,EMPTY;
+
 };
 
 class MemoryOperand : public InstructionOperand {
@@ -392,6 +397,8 @@ public:
 #define IMMMADDR_ALLOWED       0x00400000
 #define HAS_SIZEBIT            0x00800000
 #define HAS_DIRECTIONBIT       0x01000000
+#define FIRSTOP_REGONLY        0x02000000
+#define LASTOP_IMMONLY         0x04000000
 
 #define IMMEDIATEVALUE_ALLOWED (IMM8_ALLOWED | IMM16_ALLOWED | IMM32_ALLOWED)
 
@@ -440,10 +447,8 @@ protected:
   static void throwUnknownRegisterType(const TCHAR *method, RegType      type);
   bool isRegisterSizeAllowed(     RegSize     size) const;
   bool isMemoryOperandSizeAllowed(OperandSize size) const;
+  bool isImmediateSizeAllowed(    OperandSize size) const;
 
-  inline bool isMemoryOperandAllowed() const {
-    return (getFlags() & ALL_MEMOPSIZES) != 0;
-  }
   inline bool isImmAddrAllowed() const {
     return (getFlags() & IMMMADDR_ALLOWED) != 0;
   }
@@ -461,11 +466,16 @@ protected:
   bool validateSameSize(                 const Register           &reg1, const Register           &reg2, bool throwOnError) const;
   bool validateSameSize(                 const Register           &reg , const InstructionOperand &op  , bool throwOnError) const;
   bool validateSameSize(                 const InstructionOperand &op1 , const InstructionOperand &op2 , bool throwOnError) const;
-  bool validateRegisterOperand(          const InstructionOperand &op  , int   index                   , bool throwOnError) const;
-  bool validateMemoryOperand(            const InstructionOperand &op  , int   index                   , bool throwOnError) const;
-  bool validateRegisterOrMemoryOperand(  const InstructionOperand &op  , int   index                   , bool throwOnError) const;
-  bool validateShiftAmountOperand(       const InstructionOperand &op  , int   index                   , bool throwOnError) const;
-
+  bool validateIsRegisterOperand(        const InstructionOperand &op  , BYTE  index                   , bool throwOnError) const;
+  bool validateIsMemoryOperand(          const InstructionOperand &op  , BYTE  index                   , bool throwOnError) const;
+  bool validateIsRegisterOrMemoryOperand(const InstructionOperand &op  , BYTE  index                   , bool throwOnError) const;
+  bool validateIsImmediateOperand(       const InstructionOperand &op  , BYTE  index                   , bool throwOnError) const;
+  bool validateIsShiftAmountOperand(     const InstructionOperand &op  , BYTE  index                   , bool throwOnError) const;
+  void validateOperandIndex(                                             BYTE  index) const {
+    if((index < 1) || (index > getMaxOpCount())) {
+      throwInvalidArgumentException(__TFUNCTION__,_T("index=%u. Valid range=[1..%u]"),index,getMaxOpCount());
+    }
+  }
 #ifdef IS32BIT
   inline bool validateIsRexCompatible(   const Register           &reg , const InstructionOperand &op  , bool throwOnError) const {
     return true;
@@ -496,6 +506,9 @@ public:
   inline BYTE getOpCount() const {
     return m_opCount;
   }
+  virtual BYTE getMaxOpCount() const {
+    return getOpCount();
+  }
   // Raw opcode bytes
   inline const BYTE *getBytes() const {
     return (BYTE*)&m_bytes;
@@ -504,9 +517,14 @@ public:
   inline UINT getFlags() const {
     return m_flags;
   }
-  virtual bool isValidOperand(           const InstructionOperand &op                                , bool throwOnError=false) const;
-  virtual bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError=false) const;
+  // Returns by default RM for index 1,2; S for 3, or else EMPTY
+  virtual const OperandTypeSet &getValidOperandTypes(BYTE index) const;
+  // Operands are indexed from 1
+  virtual bool isValidOperandType(       const InstructionOperand &op, BYTE index) const;
+  virtual bool isValidOperand(           const InstructionOperand &op                                                               , bool throwOnError=false) const;
+  virtual bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2                               , bool throwOnError=false) const;
   virtual bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, const InstructionOperand &op3, bool throwOnError=false) const;
+
   virtual InstructionBase operator()(    const InstructionOperand &op) const;
   virtual InstructionBase operator()(    const InstructionOperand &op1, const InstructionOperand &op2) const;
   virtual InstructionBase operator()(    const InstructionOperand &op1, const InstructionOperand &op2, const InstructionOperand &op3) const;
@@ -538,18 +556,30 @@ public :
   InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
 };
 
-class OpcodeIMul : public Opcode2Arg {
+class Opcode3Arg : public OpcodeBase {
+public :
+  Opcode3Arg(const String &mnemonic, UINT op, UINT flags=NONBYTE_GPR_ALLOWED | NONBYTE_GPRPTR_ALLOWED | FIRSTOP_REGONLY | LASTOP_IMMONLY | IMMEDIATEVALUE_ALLOWED)
+    : OpcodeBase(mnemonic, op, 0, 3, flags) {
+  }
+  InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2, const InstructionOperand &op3) const;
+};
+
+class OpcodeIMul : public Opcode1Arg {
 private:
-  const Opcode1Arg m_GPR0Code;
-  const OpcodeBase m_immCode;
+  const Opcode2Arg m_imul2ArgCode;
+  const Opcode3Arg m_imul3ArgCode;
 public :
   OpcodeIMul(const String &mnemonic)
-    : Opcode2Arg(mnemonic, 0x0FAF,    NONBYTE_GPR_ALLOWED | NONBYTE_GPRPTR_ALLOWED )
-    , m_GPR0Code(mnemonic, 0xF6,5,    ALL_GPR0_ALLOWED    | ALL_GPRPTR_ALLOWED     | HAS_SIZEBIT)
-    , m_immCode( mnemonic, 0x69,0, 3, NONBYTE_GPR_ALLOWED | NONBYTE_GPRPTR_ALLOWED | IMMEDIATEVALUE_ALLOWED)
+    : Opcode1Arg(mnemonic, 0xF6,5)
+    , m_imul2ArgCode(mnemonic, 0x0FAF,    NONBYTE_GPR_ALLOWED | NONBYTE_GPRPTR_ALLOWED | FIRSTOP_REGONLY )
+    , m_imul3ArgCode(mnemonic, 0x69)
   {
   }
-  bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError=false) const;
+  BYTE getMaxOpCount() const {
+    return 3;
+  }
+  bool isValidOperandType(       const InstructionOperand &op, BYTE index) const;
+  bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2,                                bool throwOnError=false) const;
   bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, const InstructionOperand &op3, bool throwOnError=false) const;
   InstructionBase operator()(    const InstructionOperand &op1, const InstructionOperand &op2) const;
   InstructionBase operator()(    const InstructionOperand &op1, const InstructionOperand &op2, const InstructionOperand &op3) const;
@@ -641,6 +671,9 @@ private:
   OpcodeBase m_immCode;
 public:
   OpcodeDoubleShift(const String &mnemonic, UINT opCL, UINT opImm);
+  bool isValidArgument(BYTE index, const InstructionOperand &op3) const {
+    return op3.isShiftAmountOperand();
+  }
   bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, const InstructionOperand &op3, bool throwOnError=false) const;
   InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2, const InstructionOperand &op3) const;
 };
@@ -724,7 +757,7 @@ extern OpcodeIncDec      DEC;
 extern Opcode1Arg        NOT;                              // Negate the operand, logical NOT
 extern Opcode1Arg        NEG;                              // Two's complement negation
 extern Opcode1Arg        MUL;                              // Unsigned multiply ah:al=al*src, dx:ax=ax*src, edx:eax=eax*src, rdx:rax=rax*src
-extern Opcode1Arg        IMUL;                             // Signed multiply   ah:al=al*src, dx:ax=ax*src, edx:eax=eax*src, rdx:rax=rax*src
+extern OpcodeIMul        IMUL;                             // Signed multiply   ah:al=al*src, dx:ax=ax*src, edx:eax=eax*src, rdx:rax=rax*src
 
 extern Opcode1Arg        DIV;                              // Unsigned divide   ah :al  /= src, al  = quot, ah  = rem
                                                            //                   dx :ax  /= src, ax  = quot, dx  = rem
@@ -830,23 +863,6 @@ extern StringPrefix      REPNE;                            // Apply to CMPS and 
 #ifdef __NEVER__
 
 // Additional forms of IMUL
-#define IMUL2_R32_DWORD(      r32)             B3OP(0x0FAF00    | ((r32)<<3))             // 2 arguments       (r32 *= src           )
-#define IMUL2_R16_WORD(       r16)             WORDOP(IMUL2_R32_DWORD(r16  ))             //                   (r16 *= src           )
-
-#define IMUL3_DWORD_IMM_DWORD(r32)             B2OP(0x6900      | ((r32)<<3))             // 3 args, r32,src,4 byte operand (r32 = src * imm.dword)
-#define IMUL3_DWORD_IMM_BYTE( r32)             B2OP(0x6B00      | ((r32)<<3))             // 3 args. r32.src.1 byte operand (r32 = src * imm.byte )
-
-#define IMUL3_WORD_IMM_WORD(  r16)             WORDOP(IMUL3_DWORD_IMM_DWORD(r16))         // 2 byte operand    (r16 = src * imm word )
-#define IMUL3_WORD_IMM_BYTE(  r16)             WORDOP(IMUL3_DWORD_IMM_BYTE( r16))         // 1 byte operand    (r16 = src * imm byte )
-
-#ifdef IS64BIT
-
-#define IMUL2_R64_DWORD(      r64)             REX2(IMUL2_R32_DWORD      ,r64)            // 2 arguments       (r64 *= src           )
-
-#define IMUL3_QWORD_IMM_DWORD(r64)             REX1(IMUL3_DWORD_IMM_DWORD,r64)            // 3 args, r64,src,4 byte operand (r64 = src * imm.dword)
-#define IMUL3_QWORD_IMM_BYTE( r64)             REX1(IMUL3_DWORD_IMM_BYTE ,r64)            // 3 args. r64.src.1 byte operand (r64 = src * imm.byte )
-
-#endif // IS64BIT
 
 #define MOVSD_XMM_MMWORD(xmm)                  B3OP1XMM(0xF20F10,xmm)       // Build src with MEM_ADDR-*
 #define MOVSD_MMWORD_XMM(xmm)                  B3OP1XMM(0xF20F11,xmm)       // Build dst with MEM_ADDR-*
