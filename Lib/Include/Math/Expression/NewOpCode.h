@@ -810,8 +810,6 @@ extern StringPrefix      REPNE;                            // Apply to CMPS and 
 
 #ifdef __NEVER__
 
-#define POP_DWORD                              B2OP(0x8F00)                               // Build dst with MEM_ADDR-*,REGREG-macroes
-
 // Additional forms of IMUL
 #define IMUL2_R32_DWORD(      r32)             B3OP(0x0FAF00    | ((r32)<<3))             // 2 arguments       (r32 *= src           )
 #define IMUL2_R16_WORD(       r16)             WORDOP(IMUL2_R32_DWORD(r16  ))             //                   (r16 *= src           )
