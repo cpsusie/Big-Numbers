@@ -291,9 +291,10 @@ AllMemoryOperands::AllMemoryOperands() {
   sort(memOpCmp);
 
   redirectDebugLog();
-  for(size_t i = 0; i < size(); i++) {
-    debugLog(_T("%s\n"),(*this)[i]->toString().cstr());
-  }
+
+//  for(size_t i = 0; i < size(); i++) {
+//    debugLog(_T("%s\n"),(*this)[i]->toString().cstr());
+//  }
 }
 
 class AllVOIDPtrOperands : public InstructionOperandArray {

@@ -214,7 +214,7 @@ public:
     return m_size;
   }
   inline const Register &getRegister() const {
-    validateType(__TFUNCTION__,REGISTER);
+    assert(isRegister());
     return *m_reg;
   }
   inline bool isRegister() const {
@@ -662,6 +662,9 @@ private:
   OpcodeBase m_immCode;
 public:
   OpcodeShiftRot(const String &mnemonic, BYTE extension);
+  bool isValidOperandType(const InstructionOperand &op, BYTE index) const {
+    return (index == 2) ? op.isShiftAmountOperand() : __super::isValidOperandType(op,index);
+  }
   bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError=false) const;
   InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
 };
@@ -671,8 +674,8 @@ private:
   OpcodeBase m_immCode;
 public:
   OpcodeDoubleShift(const String &mnemonic, UINT opCL, UINT opImm);
-  bool isValidArgument(BYTE index, const InstructionOperand &op3) const {
-    return op3.isShiftAmountOperand();
+  bool isValidOperandType(const InstructionOperand &op, BYTE index) const {
+    return (index == 3) ? op.isShiftAmountOperand() : __super::isValidOperandType(op,index);
   }
   bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, const InstructionOperand &op3, bool throwOnError=false) const;
   InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2, const InstructionOperand &op3) const;
@@ -860,6 +863,175 @@ extern StringPrefix      REP;                              // Apply to INS, OUTS
 extern StringPrefix      REPE;                             // Apply to CMPS and SCAS instructions
 extern StringPrefix      REPNE;                            // Apply to CMPS and SCAS instructions
 
+// ------------------------------ FPU opcodes ----------------------------------
+
+// ----------------------------- FPU trasnfer opcodes ----------------------------
+
+#define FLD(      i)                           FPUINS( 0xD9C0     | (i))                   // Push st(i) into st(0)
+#define FLD_DWORD                              FPUINSA(0xD900)
+#define FLD_QWORD                              FPUINSA(0xDD00)
+#define FLD_TBYTE                              FPUINSA(0xDB28)
+
+#define FSTP(     i)                           FPUINS( 0xDDD8     | (i))                   // Store st(0) into st(i); pop st(0)
+#define FSTP_DWORD                             FPUINSA(0xD918)
+#define FSTP_QWORD                             FPUINSA(0xDD18)
+#define FSTP_TBYTE                             FPUINSA(0xDB38)
+
+#define FST(      i)                           FPUINS( 0xDDD0     | (i))                   // Store st(0) into st(i)
+#define FST_DWORD                              FPUINSA(0xD910)
+#define FST_QWORD                              FPUINSA(0xDD10)
+
+#define FBLD                                   FPUINSA(0xDF20)                             // LoaD BCD data from memory
+#define FBSTP                                  FPUINSA(0xDF30)                             // STore BCD data to memory
+
+// ----------------------------- FPU aritmetic opcodes ----------------------------
+
+#define FADD_0i(  i)                           FPUINS( 0xD8C0     | (i))                   // st(0) += st(i)
+#define FADD_i0(  i)                           FPUINS( 0xDCC0     | (i))                   // st(i) += st(0)
+#define FADD_DWORD                             FPUINSA(0xD800)
+#define FADD_QWORD                             FPUINSA(0xDC00)
+#define FADDP_i0( i)                           FPUINS( 0xDEC0     | (i))                   // st(i) += st(0); pop st(0)
+#define FADD                                   FADDP_i0(1)                                 // st(1) += st(0); pop st(0)
+
+#define FMUL_0i(  i)                           FPUINS( 0xD8C8     | (i))                   // st(0) *= st(i)
+#define FMUL_i0(  i)                           FPUINS( 0xDCC8     | (i))                   // st(i) *= st(0)
+#define FMUL_DWORD                             FPUINSA(0xD808)
+#define FMUL_QWORD                             FPUINSA(0xDC08)
+#define FMULP_i0( i)                           FPUINS( 0xDEC8     | (i))                   // st(i) *= st(0); pop st(0)
+#define FMUL                                   FMULP_i0(1)                                 // st(1) *= st(0); pop st(0)
+
+#define FSUB_0i(  i)                           FPUINS( 0xD8E0     | (i))                   // st(0) -= st(i)
+#define FSUB_i0(  i)                           FPUINS( 0xDCE8     | (i))                   // st(i) -= st(0)
+#define FSUB_DWORD                             FPUINSA(0xD820)
+#define FSUB_QWORD                             FPUINSA(0xDC20)
+#define FSUBP_i0( i)                           FPUINS( 0xDEE8     | (i))                   // st(i) -= st(0); pop st(0)
+#define FSUB                                   FSUBP_i0(1)                                 // st(1) -= st(0); pop st(0)
+
+#define FSUBR_0i( i)                           FPUINS( 0xD8E8     | (i))                   // st(0) =  st(i) - st(0)
+#define FSUBR_i0( i)                           FPUINS( 0xDCE0     | (i))                   // st(i) =  st(0) - st(i)
+#define FSUBR_DWORD                            FPUINSA(0xD828)
+#define FSUBR_QWORD                            FPUINSA(0xDC28)
+#define FSUBRP_i0(i)                           FPUINS( 0xDEE0     | (i))                   // st(i) =  st(0) - st(i); pop st(0)
+
+#define FDIV_0i(  i)                           FPUINS( 0xD8F0     | (i))                   // st(0) /= st(i)
+#define FDIV_i0(  i)                           FPUINS( 0xDCF8     | (i))                   // st(i) /= st(0)
+#define FDIV_DWORD                             FPUINSA(0xD830)
+#define FDIV_QWORD                             FPUINSA(0xDC30)
+#define FDIVP_i0( i)                           FPUINS( 0xDEF8     | (i))                   // st(i) /= st(0); pop st(0)
+#define FDIV                                   FDIVP_i0(1)                                 // st(1) /= st(0); pop st(0)
+
+#define FDIVR_0i( i)                           FPUINS( 0xD8F8     | (i))                   // st(0) =  st(i) / st(0)
+#define FDIVR_i0( i)                           FPUINS( 0xDCF0     | (i))                   // st(i) =  st(0) / st(i)
+#define FDIVR_DWORD                            FPUINSA(0xD838)
+#define FDIVR_QWORD                            FPUINSA(0xDC38)
+#define FDIVRP_i0(i)                           FPUINS( 0xDEF0     | (i))                   // st(i) =  st(0) / st(i); pop st(0)
+
+// ----------------------------- FPU compare opcodes ----------------------------
+#define FCOM(     i)                           FPUINS( 0xD8D0     | (i))                   // Compare st(0) to st(i)
+#define FCOM_DWORD                             FPUINSA(0xD810)
+#define FCOM_QWORD                             FPUINSA(0xDC10)
+
+#define FCOMP(    i)                           FPUINS( 0xD8D8     | (i))                   // Compare st(0) to st(i), pop st(0)
+#define FCOMP_DWORD                            FPUINSA(0xD818)
+#define FCOMP_QWORD                            FPUINSA(0xDC18)
+
+#define FCOMPP                                 FPUINS( 0xDED9)                             // Compare st(0) to st(1); pop both
+#define FUCOMPP                                FPUINS( 0xDAE9)                             // Unordered compare st(0) to st(1); pop both
+
+#define FCOMI(    i)                           FPUINS( 0xDBF0     | (i))                   // Compare st(0) to st(i) and set CPU-flags
+#define FCOMIP(   i)                           FPUINS( 0xDFF0     | (i))                   // Compare st(0) to st(i) and set CPU-flags; pop st(0)
+
+#define FUCOM(    i)                           FPUINS( 0xDDE0     | (i))                   // Unordered compare st(0) to st(i)
+#define FUCOMP(   i)                           FPUINS( 0xDDE8     | (i))                   // Unordered compare st(0) to st(i); pop st(0)
+
+#define FUCOMI(   i)                           FPUINS( 0xDBE8     | (i))                   // Unordered compare st(0) to st(i) and set CPU-flags
+#define FUCOMIP(  i)                           FPUINS( 0xDFE8     | (i))                   // Unordered compare st(0) to st(i) and set CPU-flags; pop st(0)
+
+// ------------------------ FPU integer opcodes ---------------------------------
+#define FILD_WORD                              FPUINSA(0xDF00)
+#define FILD_DWORD                             FPUINSA(0xDB00)
+#define FILD_QWORD                             FPUINSA(0xDF28)
+
+#define FISTP_WORD                             FPUINSA(0xDF18)
+#define FISTP_DWORD                            FPUINSA(0xDB18)
+#define FISTP_QWORD                            FPUINSA(0xDF38)
+
+#define FISTTP_WORD                            FPUINSA(0xDF40)
+#define FISTTP_DWORD                           FPUINSA(0xDB40)
+#define FISTTP_QWORD                           FPUINSA(0xDD40)
+
+
+#define FIST_WORD                              FPUINSA(0xDF10)
+#define FIST_DWORD                             FPUINSA(0xDB10)
+
+#define FIADD_WORD                             FPUINSA(0xDE00)
+#define FIADD_DWORD                            FPUINSA(0xDA00)
+
+#define FISUB_WORD                             FPUINSA(0xDE20)
+#define FISUB_DWORD                            FPUINSA(0xDA20)
+
+#define FISUBR_WORD                            FPUINSA(0xDE28)
+#define FISUBR_DWORD                           FPUINSA(0xDA28)
+
+#define FIMUL_WORD                             FPUINSA(0xDE08)
+#define FIMUL_DWORD                            FPUINSA(0xDA08)
+
+#define FIDIV_WORD                             FPUINSA(0xDE30)
+#define FIDIV_DWORD                            FPUINSA(0xDA30)
+
+#define FIDIVR_WORD                            FPUINSA(0xDE38)
+#define FIDIVR_DWORD                           FPUINSA(0xDA38)
+
+#define FICOM_WORD                             FPUINSA(0xDE10)
+#define FICOM_DWORD                            FPUINSA(0xDA10)
+
+#define FICOMP_WORD                            FPUINSA(0xDE18)
+#define FICOMP_DWORD                           FPUINSA(0xDA18)
+
+// Move st(i) to st(0) if specified CPU condition is true
+#define FCMOVB( i)                             FPUINS(0xDAC0 | (i))                       // Move if below (CF=1)
+#define FCMOVEQ(i)                             FPUINS(0xDAC8 | (i))                       // Move if equal (ZF=1)
+#define FCMOVBE(i)                             FPUINS(0xDAD0 | (i))                       // Move if below or equal (CF=1 or ZF=1)
+#define FCMOVU( i)                             FPUINS(0xDAD8 | (i))                       // Move if unordered (PF=1)
+#define FCMOVAE(i)                             FPUINS(0xDBC0 | (i))                       // Move if above or equal (CF=0)
+#define FCMOVNE(i)                             FPUINS(0xDBC8 | (i))                       // Move if not equal (ZF=0)
+#define FCMOVA( i)                             FPUINS(0xDBD0 | (i))                       // Move if above (CF=0 and ZF=0)
+#define FCMOVNU(i)                             FPUINS(0xDBD8 | (i))                       // Move if not unordered (PF=0)
+
+#define FFREE(    i)                           FPUINS(0xDDC0 | (i))                       // Free a data register
+#define FXCH(     i)                           FPUINS(0xD9C8 | (i))                       // Swap st(0) and st(i)
+
+extern Opcode0Arg        FNSTSWAX;                         // Store status word into CPU register AX
+extern Opcode0Arg        FWAIT;                            // Wait while FPU is busy
+extern Opcode0Arg        FNOP;                             // No operation
+extern Opcode0Arg        FCHS;                             // st(0) = -st(0)
+extern Opcode0Arg        FABS;                             // st(0) = abs(st(0))
+extern Opcode0Arg        FTST;                             // Compare st(0) to 0.0
+extern Opcode0Arg        FXAM;                             // Examine the content of st(0)
+extern Opcode0Arg        FLD1;                             // push 1.0
+extern Opcode0Arg        FLDL2T;                           // push log2(10)
+extern Opcode0Arg        FLDL2E;                           // push log2(e)
+extern Opcode0Arg        FLDPI;                            // push pi
+extern Opcode0Arg        FLDLG2;                           // push log10(2)
+extern Opcode0Arg        FLDLN2;                           // push ln(2)
+extern Opcode0Arg        FLDZ;                             // push 0.0
+extern Opcode0Arg        F2XM1;                            // st(0) = 2^st(0)-1, assume -1 <= st(0) <= 1
+extern Opcode0Arg        FYL2X;                            // st(1) = log2(st(0))*st(1); pop st(0)
+extern Opcode0Arg        FPTAN;                            // st(0) = tan(st(0)); push 1.0
+extern Opcode0Arg        FPATAN;                           // st(1) = atan(st(1)/st(0)); pop st(0)
+extern Opcode0Arg        FXTRACT;                          // st(0) = unbiased exponent in floating point format of st(0). then push signinificant wiht exponent 0
+extern Opcode0Arg        FPREM1;                           // As FPREM. Magnitude of the remainder <= ST(1) / 2
+extern Opcode0Arg        FDECSTP;                          // Decrement stack pointer. st0->st1, st7->st0, ..., st1->st2
+extern Opcode0Arg        FINCSTP;                          // Increment stack pointer. st0->st7, st1->st0, ..., st7->st6
+extern Opcode0Arg        FPREM;                            // Partial remainder. st(0) %= st(1). Exponent of st(0) reduced with at most 63
+extern Opcode0Arg        FYL2XP1;                          // st(1) = log2(st(0)+1)*st(1); pop st(0)
+extern Opcode0Arg        FSQRT;                            // st(0) = sqrt(st(0))
+extern Opcode0Arg        FSINCOS;                          // Sine and cosine of the angle value in ST(0), st(0)=sin; push(cos)
+extern Opcode0Arg        FRNDINT;                          // st(0) = nearest integral value according to the rounding mode
+extern Opcode0Arg        FSCALE;                           // st(0) *= 2^int(st(1))
+extern Opcode0Arg        FSIN;                             // st(0) = sin(ST(0))
+extern Opcode0Arg        FCOS;                             // st(0) = cos(ST(0))
+
 #ifdef __NEVER__
 
 // Additional forms of IMUL
@@ -875,170 +1047,11 @@ extern StringPrefix      REPNE;                            // Apply to CMPS and 
 #define SUBSD(xmm)                             B4OP(0xF20F5C00 | ((xmm) << 3))
 #define DIVSD(xmm)                             B4OP(0xF20F5E00 | ((xmm) << 3))
 
-// FPU instructions
-
-#define FWAIT                                  B1INS(0x9B)                                // Wait while FPU is busy
-
-#define FADD_0i(  i)                           FPUINS(0xD8C0     | (i))                   // st(0) += st(i)
-#define FADD_i0(  i)                           FPUINS(0xDCC0     | (i))                   // st(i) += st(0)
-#define FADDP_i0( i)                           FPUINS(0xDEC0     | (i))                   // st(i) += st(0); pop st(0)
-#define FADD                                   FADDP_i0(1)                                // st(1) += st(0); pop st(0)
-
-#define FMUL_0i(  i)                           FPUINS(0xD8C8     | (i))                   // st(0) *= st(i)
-#define FMUL_i0(  i)                           FPUINS(0xDCC8     | (i))                   // st(i) *= st(0)
-#define FMULP_i0( i)                           FPUINS(0xDEC8     | (i))                   // st(i) *= st(0); pop st(0)
-#define FMUL                                   FMULP_i0(1)                                // st(1) *= st(0); pop st(0)
-
-#define FSUB_0i(  i)                           FPUINS(0xD8E0     | (i))                   // st(0) -= st(i)
-#define FSUBR_0i( i)                           FPUINS(0xD8E8     | (i))                   // st(0) =  st(i) - st(0)
-#define FSUBR_i0( i)                           FPUINS(0xDCE0     | (i))                   // st(i) =  st(0) - st(i)
-#define FSUB_i0(  i)                           FPUINS(0xDCE8     | (i))                   // st(i) -= st(0)
-#define FSUBRP_i0(i)                           FPUINS(0xDEE0     | (i))                   // st(i) =  st(0) - st(i); pop st(0)
-#define FSUBP_i0( i)                           FPUINS(0xDEE8     | (i))                   // st(i) -= st(0); pop st(0)
-#define FSUB                                   FSUBP_i0(1)                                // st(1) -= st(0); pop st(0)
-
-#define FDIV_0i(  i)                           FPUINS(0xD8F0     | (i))                   // st(0) /= st(i)
-#define FDIVR_0i( i)                           FPUINS(0xD8F8     | (i))                   // st(0) =  st(i) / st(0)
-#define FDIVR_i0( i)                           FPUINS(0xDCF0     | (i))                   // st(i) =  st(0) / st(i)
-#define FDIV_i0(  i)                           FPUINS(0xDCF8     | (i))                   // st(i) /= st(0)
-#define FDIVRP_i0(i)                           FPUINS(0xDEF0     | (i))                   // st(i) =  st(0) / st(i); pop st(0)
-#define FDIVP_i0( i)                           FPUINS(0xDEF8     | (i))                   // st(i) /= st(0); pop st(0)
-#define FDIV                                   FDIVP_i0(1)                                // st(1) /= st(0); pop st(0)
-
-#define FCOM(     i)                           FPUINS(0xD8D0     | (i))                   // Compare st(0) to st(i)
-#define FCOMP(    i)                           FPUINS(0xD8D8     | (i))                   // Compare st(0) to st(i), pop st(0)
-#define FCOMI(    i)                           FPUINS(0xDBF0     | (i))                   // Compare st(0) to st(i) and set CPU-flags
-#define FUCOM(    i)                           FPUINS(0xDDE0     | (i))                   // Unordered compare st(0) to st(i)
-#define FUCOMI(   i)                           FPUINS(0xDBE8     | (i))                   // Unordered compare st(0) to st(i) and set CPU-flags
-#define FUCOMP(   i)                           FPUINS(0xDDE8     | (i))                   // Unordered compare st(0) to st(i); pop st(0)
-#define FCOMIP(   i)                           FPUINS(0xDFF0     | (i))                   // Compare st(0) to st(i) and set CPU-flags; pop st(0)
-#define FUCOMIP(  i)                           FPUINS(0xDFE8     | (i))                   // Unordered compare st(0) to st(i) and set CPU-flags; pop st(0)
-#define FCOMPP                                 FPUINS(0xDED9)                             // Compare st(0) to st(1); pop both
-#define FUCOMPP                                FPUINS(0xDAE9)                             // Unordered compare st(0) to st(1); pop both
-#define FFREE(    i)                           FPUINS(0xDDC0     | (i))                   // Free a data register
-#define FST(      i)                           FPUINS(0xDDD0     | (i))                   // Store st(0) into st(i)
-#define FSTP(     i)                           FPUINS(0xDDD8     | (i))                   // Store st(0) into st(i); pop st(0)
-
-#define FLD(      i)                           FPUINS(0xD9C0     | (i))                   // Push st(i) into st(0)
-#define FXCH(     i)                           FPUINS(0xD9C8     | (i))                   // Swap st(0) and st(i)
-#define FNOP                                   FPUINS(0xD9D0)                             // No operation
-#define FCHS                                   FPUINS(0xD9E0)                             // st(0) = -st(0)
-#define FABS                                   FPUINS(0xD9E1)                             // st(0) = abs(st(0))
-#define FTST                                   FPUINS(0xD9E4)                             // Compare st(0) to 0.0
-#define FXAM                                   FPUINS(0xD9E5)                             // Examine the content of st(0)
-#define FLD1                                   FPUINS(0xD9E8)                             // push 1.0
-#define FLDL2T                                 FPUINS(0xD9E9)                             // push log2(10)
-#define FLDL2E                                 FPUINS(0xD9EA)                             // push log2(e)
-#define FLDPI                                  FPUINS(0xD9EB)                             // push pi
-#define FLDLG2                                 FPUINS(0xD9EC)                             // push log10(2)
-#define FLDLN2                                 FPUINS(0xD9ED)                             // push ln(2)
-#define FLDZ                                   FPUINS(0xD9EE)                             // push 0.0
-#define F2XM1                                  FPUINS(0xD9F0)                             // st(0) = 2^st(0)-1, assume -1 <= st(0) <= 1
-#define FYL2X                                  FPUINS(0xD9F1)                             // st(1) = log2(st(0))*st(1); pop st(0)
-#define FPTAN                                  FPUINS(0xD9F2)                             // st(0) = tan(st(0)); push 1.0
-#define FPATAN                                 FPUINS(0xD9F3)                             // st(1) = atan(st(1)/st(0)); pop st(0)
-#define FXTRACT                                FPUINS(0xD9F4)                             // st(0) = unbiased exponent in floating point format of st(0). then push signinificant wiht exponent 0
-#define FPREM1                                 FPUINS(0xD9F5)                             // As FPREM. Magnitude of the remainder <= ST(1) / 2
-#define FDECSTP                                FPUINS(0xD9F6)                             // Decrement stack pointer. st0->st1, st7->st0, ..., st1->st2
-#define FINCSTP                                FPUINS(0xD9F7)                             // Increment stack pointer. st0->st7, st1->st0, ..., st7->st6
-#define FPREM                                  FPUINS(0xD9F8)                             // Partial remainder. st(0) %= st(1). Exponent of st(0) reduced with at most 63
-#define FYL2XP1                                FPUINS(0xD9F9)                             // st(1) = log2(st(0)+1)*st(1); pop st(0)
-#define FSQRT                                  FPUINS(0xD9FA)                             // st(0) = sqrt(st(0))
-#define FSINCOS                                FPUINS(0xD9FB)                             // Sine and cosine of the angle value in ST(0), st(0)=sin; push(cos)
-#define FRNDINT                                FPUINS(0xD9FC)                             // st(0) = nearest integral value according to the rounding mode
-#define FSCALE                                 FPUINS(0xD9FD)                             // st(0) *= 2^int(st(1))
-#define FSIN                                   FPUINS(0xD9FE)                             // st(0) = sin(ST(0))
-#define FCOS                                   FPUINS(0xD9FF)                             // st(0) = cos(ST(0))
-
-// Move st(i) to st(0) if specified CPU condition is true
-#define FCMOVB( i)                             FPUINS(0xDAC0 | (i))                       // Move if below (CF=1)
-#define FCMOVEQ(i)                             FPUINS(0xDAC8 | (i))                       // Move if equal (ZF=1)
-#define FCMOVBE(i)                             FPUINS(0xDAD0 | (i))                       // Move if below or equal (CF=1 or ZF=1)
-#define FCMOVU( i)                             FPUINS(0xDAD8 | (i))                       // Move if unordered (PF=1)
-#define FCMOVAE(i)                             FPUINS(0xDBC0 | (i))                       // Move if above or equal (CF=0)
-#define FCMOVNE(i)                             FPUINS(0xDBC8 | (i))                       // Move if not equal (ZF=0)
-#define FCMOVA( i)                             FPUINS(0xDBD0 | (i))                       // Move if above (CF=0 and ZF=0)
-#define FCMOVNU(i)                             FPUINS(0xDBD8 | (i))                       // Move if not unordered (PF=0)
-
-#define FNSTSW_AX                              FPUINS(0xDFE0)                             // Store status word into CPU register AX
 // These opcodes should all be used with MEM_ADDR_* to get the various addressing-modes
 
 #define FLDCW_WORD                             FPUINSA(0xD928)                            // load control word
 #define FNSTCW_WORD                            FPUINSA(0xD938)                            // store control word
 #define FNSTSW_WORD                            FPUINSA(0xDD38)                            // store status word
 
-// Real4 (float)
-#define FLD_DWORD                              FPUINSA(0xD900)
-#define FST_DWORD                              FPUINSA(0xD910)
-#define FSTP_DWORD                             FPUINSA(0xD918)
-
-// Real8 (double)
-#define FLD_QWORD                              FPUINSA(0xDD00)
-#define FST_QWORD                              FPUINSA(0xDD10)
-#define FSTP_QWORD                             FPUINSA(0xDD18)
-
-// Real10 (Double80)
-#define FLD_TBYTE                              FPUINSA(0xDB28)
-#define FSTP_TBYTE                             FPUINSA(0xDB38)
-
-// 16-bit integer (signed short)
-#define FILD_WORD                              FPUINSA(0xDF00)
-#define FIST_WORD                              FPUINSA(0xDF10)
-#define FISTP_WORD                             FPUINSA(0xDF18)
-#define FISTTP_WORD                            FPUINSA(0xDF40)
-
-// 32-bit integer (signed int)
-#define FILD_DWORD                             FPUINSA(0xDB00)
-#define FIST_DWORD                             FPUINSA(0xDB10)
-#define FISTP_DWORD                            FPUINSA(0xDB18)
-#define FISTTP_DWORD                           FPUINSA(0xDB40)
-
-// 64-bit integer (signed __int64)
-#define FILD_QWORD                             FPUINSA(0xDF28)
-#define FISTP_QWORD                            FPUINSA(0xDF38)
-#define FISTTP_QWORD                           FPUINSA(0xDD40)
-
-// Real4 (float)
-#define FADD_DWORD                             FPUINSA(0xD800)
-#define FMUL_DWORD                             FPUINSA(0xD808)
-#define FCOM_DWORD                             FPUINSA(0xD810)
-#define FCOMP_DWORD                            FPUINSA(0xD818)
-#define FSUB_DWORD                             FPUINSA(0xD820)
-#define FSUBR_DWORD                            FPUINSA(0xD828)
-#define FDIV_DWORD                             FPUINSA(0xD830)
-#define FDIVR_DWORD                            FPUINSA(0xD838)
-
-// Real8 (double)
-#define FADD_QWORD                             FPUINSA(0xDC00)
-#define FMUL_QWORD                             FPUINSA(0xDC08)
-#define FCOM_QWORD                             FPUINSA(0xDC10)
-#define FCOMP_QWORD                            FPUINSA(0xDC18)
-#define FSUB_QWORD                             FPUINSA(0xDC20)
-#define FSUBR_QWORD                            FPUINSA(0xDC28)
-#define FDIV_QWORD                             FPUINSA(0xDC30)
-#define FDIVR_QWORD                            FPUINSA(0xDC38)
-
-// 16-bit integer (short)
-#define FIADD_WORD                             FPUINSA(0xDE00)
-#define FIMUL_WORD                             FPUINSA(0xDE08)
-#define FICOM_WORD                             FPUINSA(0xDE10)
-#define FICOMP_WORD                            FPUINSA(0xDE18)
-#define FISUB_WORD                             FPUINSA(0xDE20)
-#define FISUBR_WORD                            FPUINSA(0xDE28)
-#define FIDIV_WORD                             FPUINSA(0xDE30)
-#define FIDIVR_WORD                            FPUINSA(0xDE38)
-
-// 32-bit integer (int)
-#define FIADD_DWORD                            FPUINSA(0xDA00)
-#define FIMUL_DWORD                            FPUINSA(0xDA08)
-#define FICOM_DWORD                            FPUINSA(0xDA10)
-#define FICOMP_DWORD                           FPUINSA(0xDA18)
-#define FISUB_DWORD                            FPUINSA(0xDA20)
-#define FISUBR_DWORD                           FPUINSA(0xDA28)
-#define FIDIV_DWORD                            FPUINSA(0xDA30)
-#define FIDIVR_DWORD                           FPUINSA(0xDA38)
-
-#define FBLD                                   FPUINSA(0xDF20)                            // LoaD BCD data from memory
-#define FBSTP                                  FPUINSA(0xDF30)                            // STore BCD data to memory
 
 #endif

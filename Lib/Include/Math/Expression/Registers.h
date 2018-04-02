@@ -20,7 +20,8 @@ typedef enum {
  ,REGSIZE_VOID     /* for LEA */
 } RegSize;
 
-#ifdef _DEBUG
+
+#ifdef USE_DEBUGSTR
 #define SETDEBUGSTR() m_debugStr = toString()
 #define DECLAREDEBUGSTR  protected: String m_debugStr
 #else
