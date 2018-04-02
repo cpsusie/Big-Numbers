@@ -64,12 +64,16 @@ typedef vBitSet8<OperandType> OperandTypeSet;
 
 class MemoryRef {
 private:
+  static const char s_shift[9];
   const IndexRegister *m_base,*m_inx;
   const BYTE           m_shift;
   const size_t         m_offset;
 #ifdef IS32BIT
 #define SETNEEDREXBYTE(base,inx)
 #else // IS64BIT
+
+  static void throwInvalidIndexScale(const TCHAR *method, BYTE a);
+
   const bool m_needREXByte;
   static inline bool findRexByteNeeded(const IndexRegister *base, const IndexRegister *inx) {
     return (base && base->indexNeedREXByte()) || (inx && inx->indexNeedREXByte());
@@ -110,6 +114,13 @@ public:
   inline bool isDisplaceOnly() const {
     return (m_base == NULL) && (m_inx == NULL);
   }
+  static inline char findShift(BYTE a) {
+    if((a >= ARRAYSIZE(s_shift)) || (s_shift[a] < 0)) throwInvalidIndexScale(__TFUNCTION__,a);
+    return s_shift[a];
+  }
+  static void throwInvalidIndexRegister(const TCHAR *method, const Register &reg);
+  void throwInvalidIndex(const TCHAR *method, char op, const String &str) const;
+
   // set m_needREXByte in x64
   void sortBaseInx();
   inline const IndexRegister *getBase()   const { return m_base;         }
@@ -130,14 +141,44 @@ public:
   String                      toString()  const;
 };
 
-MemoryRef operator+(const IndexRegister &base, int offset);
-MemoryRef operator-(const IndexRegister &base, int offset);
-MemoryRef operator+(const MemoryRef     &mr  , int offset);
-MemoryRef operator-(const MemoryRef     &mr  , int offset);
-MemoryRef operator+(const IndexRegister &base, const MemoryRef     &mr );
-MemoryRef operator+(const IndexRegister &base, const IndexRegister &inx);
-MemoryRef operator*(BYTE a, const IndexRegister &inx);
-MemoryRef operator*(const IndexRegister &inx, BYTE a);
+inline MemoryRef operator+(const IndexRegister &base, int offset) {
+  return MemoryRef(&base,NULL,0,offset);
+}
+
+inline MemoryRef operator-(const IndexRegister &base, int offset) {
+  return MemoryRef(&base,NULL,0,-offset);
+}
+
+inline MemoryRef operator+(const MemoryRef &mr, int offset) {
+  if(mr.hasOffset()) mr.throwInvalidIndex(__TFUNCTION__,'+',formatHexValue(offset,false));
+  return offset ? MemoryRef(mr.getBase(),mr.getInx(),mr.getShift(),offset) : mr;
+}
+
+inline MemoryRef operator-(const MemoryRef &mr, int offset) {
+  if(mr.hasOffset()) mr.throwInvalidIndex(__TFUNCTION__,'-',formatHexValue(offset,false));
+  return offset ? MemoryRef(mr.getBase(),mr.getInx(),mr.getShift(),-offset) : mr;
+}
+
+inline MemoryRef operator+(const IndexRegister &base, const MemoryRef &mr) {
+  if(mr.hasBase() || (!mr.hasInx() || mr.hasOffset())) {
+    mr.throwInvalidIndex(__TFUNCTION__,'+',base.getName());
+  }
+  return MemoryRef(&base,mr.getInx(),mr.getShift());
+}
+
+inline MemoryRef operator+(const IndexRegister &base, const IndexRegister &inx) {
+  return MemoryRef(&base,&inx,0);
+}
+
+inline MemoryRef operator*(BYTE a, const IndexRegister &inx) {
+  if(!inx.isValidIndexRegister()) MemoryRef::throwInvalidIndexRegister(__TFUNCTION__,inx);
+  return MemoryRef(NULL,&inx,MemoryRef::findShift(a));
+}
+
+inline MemoryRef operator*(const IndexRegister &inx, BYTE a) {
+  if(!inx.isValidIndexRegister()) MemoryRef::throwInvalidIndexRegister(__TFUNCTION__,inx);
+  return MemoryRef(NULL,&inx,MemoryRef::findShift(a));
+}
 
 class InstructionOperand {
 private:
@@ -160,8 +201,8 @@ private:
   void setValue(INT64  v);
   void setValue(UINT64 v);
   void throwUnknownSize(const TCHAR *method) const;
-  void validateSize(    const TCHAR *method, OperandSize expectedSize) const;
-  void validateType(    const TCHAR *method, OperandType expectedType) const;
+  void throwSizeError(  const TCHAR *method, OperandSize expectedSize) const;
+  void throwTypeError(  const TCHAR *method, OperandType expectedType) const;
 
   DECLAREDEBUGSTR;
 
@@ -214,7 +255,7 @@ public:
     return m_size;
   }
   inline const Register &getRegister() const {
-    assert(isRegister());
+//    assert(isRegister());
     return *m_reg;
   }
   inline bool isRegister() const {

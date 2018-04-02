@@ -44,16 +44,6 @@ const RegSizeSet Register::s_wordRegCapacity( REGSIZE_BYTE, REGSIZE_WORD, -1);
 const RegSizeSet Register::s_dwordRegCapacity(REGSIZE_BYTE, REGSIZE_WORD, REGSIZE_DWORD, -1);
 const RegSizeSet Register::s_qwordRegCapacity(REGSIZE_BYTE, REGSIZE_WORD, REGSIZE_DWORD, REGSIZE_QWORD, -1);
 
-bool Register::sizeContainsSrcSize(RegSize dstSize, RegSize srcSize) { // static
-  switch(dstSize) {
-  case REGSIZE_BYTE : return srcSize == REGSIZE_BYTE;
-  case REGSIZE_WORD : return s_wordRegCapacity.contains( srcSize);
-  case REGSIZE_DWORD: return s_dwordRegCapacity.contains(srcSize);
-  case REGSIZE_QWORD: return s_qwordRegCapacity.contains(srcSize);
-  default           : return false;
-  }
-}
-
 #ifdef IS64BIT
 bool GPRegister::isREXCompatible(bool rexBytePresent) const {
   switch(m_rexByteUsage) {

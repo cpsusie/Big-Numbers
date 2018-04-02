@@ -126,44 +126,37 @@ void InstructionOperand::throwUnknownSize(const TCHAR *method) const {
   throwException(_T("%s:Unknown size for immediate value:%d"), method, getSize());
 }
 
-void InstructionOperand::validateType(const TCHAR *method, OperandType expectedType) const {
-  if(getType() != expectedType) {
-    throwException(_T("%s:Invalid type (=%s). Expected %s")
-                  ,method
-                  ,::toString(getType()).cstr()
-                  ,::toString(expectedType).cstr()
-                  );
-  }
+void InstructionOperand::throwTypeError(const TCHAR *method, OperandType expectedType) const {
+  throwException(_T("%s:Invalid type (=%s). Expected %s")
+                ,method
+                ,::toString(getType()).cstr()
+                ,::toString(expectedType).cstr()
+                );
 }
 
-void InstructionOperand::validateSize(const TCHAR *method, OperandSize expectedSize) const {
-  if(!Register::sizeContainsSrcSize(expectedSize, getSize())) {
-    throwException(_T("%s:Operandsize=%s. Cannot convert to %s")
-                  ,method
-                  ,::toString(getSize()).cstr()
-                  ,::toString(expectedSize).cstr());
-  }
+void InstructionOperand::throwSizeError(const TCHAR *method, OperandSize expectedSize) const {
+  throwException(_T("%s:Operandsize=%s. Cannot convert to %s")
+                ,method
+                ,::toString(getSize()).cstr()
+                ,::toString(expectedSize).cstr());
 }
 
-#define VALIDATEISIMMVALUE() validateType(method,IMMEDIATEVALUE)
-#define VALIDATESIZE(size)   validateSize(method,size)
+#define VALIDATEISIMMVALUE() if(getType() != IMMEDIATEVALUE) throwTypeError(__TFUNCTION__,IMMEDIATEVALUE)
+#define VALIDATESIZE(size)   if(!Register::sizeContainsSrcSize(size, getSize())) throwSizeError(__TFUNCTION__,size)
 
 char   InstructionOperand::getImmInt8()   const {
-  DEFINEMETHODNAME;
   VALIDATEISIMMVALUE();
   VALIDATESIZE(REGSIZE_BYTE);
   return m_v8;
 }
 
 BYTE   InstructionOperand::getImmUint8()  const {
-  DEFINEMETHODNAME;
   VALIDATEISIMMVALUE();
   VALIDATESIZE(REGSIZE_BYTE);
   return m_v8;
 }
 
 short  InstructionOperand::getImmInt16()  const {
-  DEFINEMETHODNAME;
   VALIDATEISIMMVALUE();
   VALIDATESIZE(REGSIZE_WORD);
   switch(getSize()) {
@@ -175,7 +168,6 @@ short  InstructionOperand::getImmInt16()  const {
 }
 
 USHORT InstructionOperand::getImmUint16() const {
-  DEFINEMETHODNAME;
   VALIDATEISIMMVALUE();
   VALIDATESIZE(REGSIZE_WORD);
   switch(getSize()) {
@@ -187,7 +179,6 @@ USHORT InstructionOperand::getImmUint16() const {
 }
 
 int    InstructionOperand::getImmInt32()  const {
-  DEFINEMETHODNAME;
   VALIDATEISIMMVALUE();
   VALIDATESIZE(REGSIZE_DWORD);
   switch(getSize()) {
@@ -200,7 +191,6 @@ int    InstructionOperand::getImmInt32()  const {
 }
 
 UINT   InstructionOperand::getImmUint32() const {
-  DEFINEMETHODNAME;
   VALIDATEISIMMVALUE();
   VALIDATESIZE(REGSIZE_DWORD);
   switch(getSize()) {
@@ -213,7 +203,6 @@ UINT   InstructionOperand::getImmUint32() const {
 }
 
 INT64  InstructionOperand::getImmInt64()  const {
-  DEFINEMETHODNAME;
   VALIDATEISIMMVALUE();
   switch(getSize()) {
   case REGSIZE_BYTE : return (UINT64)m_v8;
@@ -226,7 +215,6 @@ INT64  InstructionOperand::getImmInt64()  const {
 }
 
 UINT64 InstructionOperand::getImmUInt64() const {
-  DEFINEMETHODNAME;
   VALIDATEISIMMVALUE();
   switch(getSize()) {
   case REGSIZE_BYTE : return (UINT64)m_v8;
@@ -264,13 +252,7 @@ const OperandTypeSet InstructionOperand::S(    REGISTER,              IMMEDIATEV
 const OperandTypeSet InstructionOperand::ALL(  REGISTER,MEMORYOPERAND,IMMEDIATEVALUE,-1);
 const OperandTypeSet InstructionOperand::EMPTY(                                      -1);
 
-static char findShift(BYTE a) {
-  static const char shift[] = { -1, 0, 1, -1, 2, -1, -1, -1, 3 };
-  if((a >= ARRAYSIZE(shift)) || (shift[a] < 0)) {
-    throwInvalidArgumentException(__TFUNCTION__, _T("a=%d. must be 1,2,4,8"));
-  }
-  return shift[a];
-}
+const char MemoryRef::s_shift[9] = { -1, 0, 1, -1, 2, -1, -1, -1, 3 };
 
 void MemoryRef::sortBaseInx() {
   if(!hasShift() && hasInx()) {
@@ -309,51 +291,16 @@ String MemoryRef::toString() const {
   return result;
 }
 
-MemoryRef operator+(const IndexRegister &base, int offset) {
-  return MemoryRef(&base,NULL,0,offset);
+void MemoryRef::throwInvalidIndexScale(const TCHAR *method, BYTE a) { // static
+  throwInvalidArgumentException(method, _T("a=%d. Must be 1,2,4,8"));
 }
 
-MemoryRef operator-(const IndexRegister &base, int offset) {
-  return MemoryRef(&base,NULL,0,-offset);
+void MemoryRef::throwInvalidIndexRegister(const TCHAR *method, const Register &reg) { // static
+  throwInvalidArgumentException(method,_T("Invalid indexregister:%s"), reg.getName().cstr());
 }
 
-MemoryRef operator+(const MemoryRef &mr, int offset) {
-  if(mr.hasOffset()) {
-    throwInvalidArgumentException(__TFUNCTION__,_T("Illegal index:%s+%d"),mr.toString().cstr(),offset);
-  }
-  return offset ? MemoryRef(mr.getBase(),mr.getInx(),mr.getShift(),offset) : mr;
-}
-
-MemoryRef operator-(const MemoryRef &mr, int offset) {
-  if(mr.hasOffset()) {
-    throwInvalidArgumentException(__TFUNCTION__,_T("Illegal index:%s-%d"),mr.toString().cstr(),offset);
-  }
-  return offset ? MemoryRef(mr.getBase(),mr.getInx(),mr.getShift(),-offset) : mr;
-}
-
-MemoryRef operator+(const IndexRegister &base, const MemoryRef &mr) {
-  if(mr.hasBase() || (!mr.hasInx() || mr.hasOffset())) {
-    throwInvalidArgumentException(__TFUNCTION__,_T("Illegal index:%s+%s"),base.getName().cstr(),mr.toString().cstr());
-  }
-  return MemoryRef(&base,mr.getInx(),mr.getShift());
-}
-
-MemoryRef operator+(const IndexRegister &base, const IndexRegister &inx) {
-  return MemoryRef(&base,&inx,0);
-}
-
-MemoryRef operator*(BYTE a, const IndexRegister &inx) {
-  if(!inx.isValidIndexRegister()) {
-    throwInvalidArgumentException(__TFUNCTION__,_T("Invalid indexregister:%s"), inx.getName().cstr());
-  }
-  return MemoryRef(NULL,&inx,findShift(a));
-}
-
-MemoryRef operator*(const IndexRegister &inx, BYTE a) {
-  if(!inx.isValidIndexRegister()) {
-    throwInvalidArgumentException(__TFUNCTION__,_T("Invalid indexregister:%s"), inx.getName().cstr());
-  }
-  return MemoryRef(NULL,&inx,findShift(a));
+void MemoryRef::throwInvalidIndex(const TCHAR *method, char op, const String &str) const {
+  throwInvalidArgumentException(method,_T("Illegal index:%s%c%s"),toString().cstr(),op,str.cstr());
 }
 
 String MemoryOperand::toString() const {

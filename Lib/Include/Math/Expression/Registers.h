@@ -124,7 +124,15 @@ public:
     return !(*this == r);
   }
 
-  static bool sizeContainsSrcSize(RegSize dstSize, RegSize immSize);
+  static inline bool sizeContainsSrcSize(RegSize dstSize, RegSize srcSize) {
+    switch(dstSize) {
+    case REGSIZE_BYTE : return srcSize == REGSIZE_BYTE;
+    case REGSIZE_WORD : return s_wordRegCapacity.contains( srcSize);
+    case REGSIZE_DWORD: return s_dwordRegCapacity.contains(srcSize);
+    case REGSIZE_QWORD: return s_qwordRegCapacity.contains(srcSize);
+    default           : return false;
+    }
+  }
 
   inline bool containsSize(RegSize immSize) const {
     return sizeContainsSrcSize(getSize(), immSize);
