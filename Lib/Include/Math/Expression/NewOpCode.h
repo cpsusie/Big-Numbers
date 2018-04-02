@@ -72,14 +72,14 @@ private:
 #define SETNEEDREXBYTE(base,inx)
 #else // IS64BIT
 
-  static void throwInvalidIndexScale(const TCHAR *method, BYTE a);
-
   const bool m_needREXByte;
   static inline bool findRexByteNeeded(const IndexRegister *base, const IndexRegister *inx) {
     return (base && base->indexNeedREXByte()) || (inx && inx->indexNeedREXByte());
   }
 #define SETNEEDREXBYTE(base,inx) ,m_needREXByte(findRexByteNeeded(base,inx))
 #endif // IS64BIT
+
+  static void throwInvalidIndexScale(const TCHAR *method, BYTE a);
 
   DECLAREDEBUGSTR;
 
