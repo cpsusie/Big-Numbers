@@ -93,6 +93,10 @@ const SegmentRegister segregList[] = {
 #endif // IS64BIT
 };
 
+const FPURegister fpuregList[] = {
+  ST0, ST1, ST2, ST3, ST4, ST5, ST6, ST7
+};
+
 #define INDEXREGISTER_COUNT ARRAYSIZE(indexRegList)
 
 #define UNKNOWN_OPCODE(  dst)               B2INSA(0x8700 + ((dst)<<3))                     // Build src with MEM_ADDR-macros, REGREG
@@ -121,12 +125,7 @@ InstructionOperandArray::~InstructionOperandArray() {
 
 class AllGPRegisters : public InstructionOperandArray {
 private:
-  void addRegArray(const GPRegister *list, size_t n) {
-    for(size_t i = 0; i < n; i++) {
-      add(new InstructionOperand(list[i]));
-    }
-  }
-  void addRegArray(const SegmentRegister *list, size_t n) {
+  template<class REG> void addRegArray(const REG *list, size_t n) {
     for(size_t i = 0; i < n; i++) {
       add(new InstructionOperand(list[i]));
     }
@@ -143,6 +142,7 @@ AllGPRegisters::AllGPRegisters() {
 #ifdef IS64BIT
   addRegArray(r64List   , ARRAYSIZE(r64List   ));
 #endif
+  addRegArray(fpuregList, ARRAYSIZE(fpuregList));
 }
 
 #ifdef IS32BIT
@@ -238,6 +238,7 @@ AllMemoryOperands::AllMemoryOperands() {
     add(new WORDPtr( allImmAddr[i]));
     add(new DWORDPtr(allImmAddr[i]));
     add(new QWORDPtr(allImmAddr[i]));
+    add(new TBYTEPtr(allImmAddr[i]));
   }
   for(int k = 0; k < INDEXREGISTER_COUNT; k++) {
     const IndexRegister &inxReg = indexRegList[k];
@@ -249,6 +250,7 @@ AllMemoryOperands::AllMemoryOperands() {
         add(new WORDPtr( factor*inxReg + offset));
         add(new DWORDPtr(factor*inxReg + offset));
         add(new QWORDPtr(factor*inxReg + offset));
+        add(new TBYTEPtr(factor*inxReg + offset));
       }
     }
   }
@@ -260,6 +262,7 @@ AllMemoryOperands::AllMemoryOperands() {
       add(new WORDPtr( baseReg + offset));
       add(new DWORDPtr(baseReg + offset));
       add(new QWORDPtr(baseReg + offset));
+      add(new TBYTEPtr(baseReg + offset));
       for(int k = 0; k < INDEXREGISTER_COUNT; k++) {
         const IndexRegister &inxReg = indexRegList[k];
         if(!inxReg.isValidIndexRegister()) continue;
@@ -268,6 +271,7 @@ AllMemoryOperands::AllMemoryOperands() {
           add(new WORDPtr( baseReg + factor*inxReg + offset));
           add(new DWORDPtr(baseReg + factor*inxReg + offset));
           add(new QWORDPtr(baseReg + factor*inxReg + offset));
+          add(new TBYTEPtr(baseReg + factor*inxReg + offset));
         }
       }
     }
@@ -421,6 +425,7 @@ public:
   void testSetccOpcodes();
   void testBitOperations();
   void testStringInstructions();
+  void testFPUOpcodes();
   TestMachineCode();
 };
 
@@ -668,6 +673,44 @@ void TestMachineCode::testStringInstructions() {
   testOpcode(REPNE  );
 }
 
+void TestMachineCode::testFPUOpcodes() {
+  clear();
+  testOpcode(FNSTSWAX);
+  testOpcode(FWAIT   );
+  testOpcode(FNOP    );
+  testOpcode(FCHS    );
+  testOpcode(FABS    );
+  testOpcode(FTST    );
+  testOpcode(FXAM    );
+  testOpcode(FLD1    );
+  testOpcode(FLDL2T  );
+  testOpcode(FLDL2E  );
+  testOpcode(FLDPI   );
+  testOpcode(FLDLG2  );
+  testOpcode(FLDLN2  );
+  testOpcode(FLDZ    );
+  testOpcode(F2XM1   );
+  testOpcode(FYL2X   );
+  testOpcode(FPTAN   );
+  testOpcode(FPATAN  );
+  testOpcode(FXTRACT );
+  testOpcode(FPREM1  );
+  testOpcode(FDECSTP );
+  testOpcode(FINCSTP );
+  testOpcode(FPREM   );
+  testOpcode(FYL2XP1 );
+  testOpcode(FSQRT   );
+  testOpcode(FSINCOS );
+  testOpcode(FRNDINT );
+  testOpcode(FSCALE  );
+  testOpcode(FSIN    );
+  testOpcode(FCOS    );
+
+  testOpcode(FLD     );
+  testOpcode(FSTP    );
+  testOpcode(FST     );
+}
+
 TestMachineCode::TestMachineCode() {
   initAllOperands();
   for(int i = 0; i >= 0;i++) {
@@ -680,6 +723,7 @@ TestMachineCode::TestMachineCode() {
       case 4 : testSetccOpcodes();        break;
       case 5 : testBitOperations();       break;
       case 6 : testStringInstructions();  break;
+      case 7 : testFPUOpcodes();          break;
       default: i = -1000; break;
       }
     } catch(UserInterrupt u) {

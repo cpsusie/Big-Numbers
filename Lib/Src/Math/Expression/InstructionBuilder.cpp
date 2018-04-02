@@ -181,6 +181,10 @@ InstructionBuilder &InstructionBuilder::setRegisterOperandNoModeByte(const GPReg
   return *this;
 }
 
+InstructionBuilder &InstructionBuilder::setRegisterOperand(const FPURegister &reg) {
+  return or(reg.getIndex());
+}
+
 InstructionBuilder &InstructionBuilder::setMemoryOperand(const MemoryOperand &mem) {
   const MemoryRef &mr = mem.getMemoryReference();
   if(mem.hasSegmentRegister()) {

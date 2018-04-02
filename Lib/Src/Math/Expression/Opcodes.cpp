@@ -176,3 +176,7 @@ DEFNAME(Opcode0Arg       ,FRNDINT ,0xD9FC);                // st(0) = nearest in
 DEFNAME(Opcode0Arg       ,FSCALE  ,0xD9FD);                // st(0) *= 2^int(st(1))
 DEFNAME(Opcode0Arg       ,FSIN    ,0xD9FE);                // st(0) = sin(ST(0))
 DEFNAME(Opcode0Arg       ,FCOS    ,0xD9FF);                // st(0) = cos(ST(0))
+
+DEFNAME(OpcodeFPUTransfer,FLD     ,0xD9C0,0xD9,0,0xDD,0,0xDB,5);
+DEFNAME(OpcodeFPUTransfer,FSTP    ,0xDDD8,0xD9,3,0xDD,3,0xDB,7);
+DEFNAME(OpcodeFPUTransfer,FST     ,0xDDD0,0xD9,2,0xDD,2,0   ,0);

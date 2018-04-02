@@ -397,6 +397,9 @@
     <ClCompile Include="Expression\Opcode3Arg.cpp">
       <Filter>Source Files\Expression</Filter>
     </ClCompile>
+    <ClCompile Include="Expression\OpcodeFPU.cpp">
+      <Filter>Source Files\Expression</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="NatvisFile.natvis" />

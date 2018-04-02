@@ -162,12 +162,13 @@ String GPRegister::getName() const {
 }
 
 String FPURegister::getName() const {
-  return (getIndex() <= 7) ? format(_T("st%d"), getIndex()) : __super::getName();
+  return (getIndex() <= 7) ? format(_T("st(%d)"), getIndex())
+                           : __super::getName();
 }
 
 String XMMRegister::getName() const {
   return (getIndex() <= MAX_XMMREGISTER_INDEX) ? format(_T("xmm%d"), getIndex())
-                                                : __super::getName();
+                                               : __super::getName();
 }
 
 String SegmentRegister::getName() const {

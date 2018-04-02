@@ -911,6 +911,30 @@ extern StringPrefix      REPNE;                            // Apply to CMPS and 
 
 // ----------------------------- FPU trasnfer opcodes ----------------------------
 
+class OpcodeFPUTransfer : public Opcode1Arg {
+public:
+  Opcode1Arg m_dwordCode;
+  Opcode1Arg m_qwordCode;
+  Opcode1Arg m_tbyteCode;
+public:
+  OpcodeFPUTransfer(const String mnemonic
+    , UINT op, BYTE opdw, BYTE extdw, BYTE opqw, BYTE extqw, BYTE optb, BYTE exttb
+    , UINT flags = REGTYPE_FPU_ALLOWED | DWORDPTR_ALLOWED | QWORDPTR_ALLOWED | TBYTEPTR_ALLOWED)
+    : Opcode1Arg( mnemonic, op  , 0    , flags&REGTYPE_FPU_ALLOWED)
+    , m_dwordCode(mnemonic, opdw, extdw, flags&DWORDPTR_ALLOWED   )
+    , m_qwordCode(mnemonic, opqw, extqw, flags&QWORDPTR_ALLOWED   )
+    , m_tbyteCode(mnemonic, optb, exttb, optb?(flags&TBYTEPTR_ALLOWED):0)
+  {
+  }
+  bool isValidOperand(const InstructionOperand &op, bool throwOnError=false) const;
+  InstructionBase operator()(const InstructionOperand &op) const;
+};
+
+extern OpcodeFPUTransfer FLD;
+extern OpcodeFPUTransfer FSTP;
+extern OpcodeFPUTransfer FST;
+
+/*
 #define FLD(      i)                           FPUINS( 0xD9C0     | (i))                   // Push st(i) into st(0)
 #define FLD_DWORD                              FPUINSA(0xD900)
 #define FLD_QWORD                              FPUINSA(0xDD00)
@@ -924,6 +948,7 @@ extern StringPrefix      REPNE;                            // Apply to CMPS and 
 #define FST(      i)                           FPUINS( 0xDDD0     | (i))                   // Store st(0) into st(i)
 #define FST_DWORD                              FPUINSA(0xD910)
 #define FST_QWORD                              FPUINSA(0xDD10)
+*/
 
 #define FBLD                                   FPUINSA(0xDF20)                             // LoaD BCD data from memory
 #define FBSTP                                  FPUINSA(0xDF30)                             // STore BCD data to memory

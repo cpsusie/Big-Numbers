@@ -225,8 +225,9 @@ public:
   }
   // add MOD-REG-R/M byte if not there yet, else modeByte |= bits
   InstructionBuilder &setModeBits(BYTE bits);
-  InstructionBuilder &setRegisterOperand(          const GPRegister &reg);
-  InstructionBuilder &setRegisterOperandNoModeByte(const GPRegister &reg);
+  InstructionBuilder &setRegisterOperand(          const GPRegister  &reg);
+  InstructionBuilder &setRegisterOperandNoModeByte(const GPRegister  &reg);
+  InstructionBuilder &setRegisterOperand(          const FPURegister &reg);
   InstructionBuilder &setMemoryOperand(    const MemoryOperand &mem);
   InstructionBuilder &setMemoryRegOperands(const MemoryOperand &mem, const  Register &reg);
   InstructionBuilder &setRegRegOperands(   const Register      &reg1, const Register &reg2);
