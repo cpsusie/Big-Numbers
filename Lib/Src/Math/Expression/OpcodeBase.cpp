@@ -41,13 +41,25 @@ OpcodeBase::OpcodeBase(const String &mnemonic, UINT op, BYTE extension, BYTE opC
                                    ,op
                                    );
     }
-    if(ISWORDPTR_ONLY(getFlags())) {
-      throwInvalidArgumentException(_T("%s:HAS_SIZEBIT set for opcode %X, and only Word size allowed")
+  }
+  if(getFlags() & HAS_WORDPREFIX) {
+    if(!(getFlags() & (WORDPTR_ALLOWED | REGSIZE_WORD_ALLOWED))) {
+      throwInvalidArgumentException(_T("%s:HAS_WORDPREFIX set for opcode %X, but word size operands not allowed")
                                    ,getMnemonic().cstr()
                                    ,op
                                    );
     }
   }
+#ifdef IS64BIT
+  if(getFlags() & HAS_REXQSIZEBIT) {
+    if(!(getFlags() & (QWORDPTR_ALLOWED | REGSIZE_QWORD_ALLOWED))) {
+      throwInvalidArgumentException(_T("%s:HAS_REXQSIZEBIT set for opcode %X, but qword size operands not allowed")
+                                   ,getMnemonic().cstr()
+                                   ,op
+                                   );
+    }
+  }
+#endif // IS64BIT
   if(getFlags() & HAS_DIRECTIONBIT) {
     if(op & 2) {
       throwInvalidArgumentException(_T("%s:HAS_DIRECTIONBIT set for opcode %X (bit 1 already set)")

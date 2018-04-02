@@ -83,25 +83,7 @@ private:
     setModeBits(m_extension << 3);
   }
   InstructionBuilder &prefixSegReg(    const SegmentRegister &reg);
-  inline bool isWordPtrOnly() const {
-    return ISWORDPTR_ONLY(m_flags);
-  }
-  inline bool isWordGPROnly() const {
-    return ISWORDGPR_ONLY(m_flags);
-  }
-  inline bool isDwordPtrAllowed() const {
-    return ISDWORDPTR_ALLOWED(m_flags);
-  }
-  inline bool isDwordGPRAllowed() const {
-    return ISDWORDGPR_ALLOWED(m_flags);
-  }
-  inline bool isWordSizeOnly(bool isRegister) const {
-    return isRegister ? isWordGPROnly() : isWordPtrOnly();
-  }
-  inline bool isDwordSizeAllowed(bool isRegister) const {
-    return isRegister ? isDwordGPRAllowed() : isDwordPtrAllowed();
-  }
-  InstructionBuilder &prefixImm(BYTE op, OperandSize size, bool isRegister, bool immIsByte);
+  InstructionBuilder &prefixImm(BYTE op, OperandSize size, bool immIsByte);
 protected:
   static void throwImmSizeException(const TCHAR *method, INT64 immv) {
     throwInvalidArgumentException(method,_T("Immediate value %s not allowed"),formatHexValue(immv,false).cstr());
@@ -122,10 +104,13 @@ protected:
     throwImmSizeException(method,immv);
   }
   inline InstructionBuilder &prefixImm(BYTE op, const Register      &reg, bool immIsByte) {
-    return prefixImm(op,reg.getSize(),true, immIsByte);
+    return prefixImm(op,reg.getSize(), immIsByte);
   }
   inline InstructionBuilder &prefixImm(BYTE op, const MemoryOperand &mem, bool immIsByte) {
-    return prefixImm(op,mem.getSize(),false, immIsByte);
+    return prefixImm(op,mem.getSize(), immIsByte);
+  }
+  inline UINT getFlags() const {
+    return m_flags;
   }
 public:
   InstructionBuilder(const OpcodeBase      &opcode);
@@ -145,10 +130,16 @@ public:
     return getOpcodePos() + getOpcodeSize();
   }
   inline bool hasSizeBit() const {
-    return (m_flags & HAS_SIZEBIT) != 0;
+    return (getFlags() & HAS_SIZEBIT) != 0;
   }
   inline bool hasDirectionBit() const {
-    return (m_flags & HAS_DIRECTIONBIT) != 0;
+    return (getFlags() & HAS_DIRECTIONBIT) != 0;
+  }
+  inline bool hasWordSizePrefix() const {
+    return (getFlags() & HAS_WORDPREFIX) != 0;
+  }
+  inline bool hasQwordSizeBit() const {
+    return (getFlags() & HAS_REXQSIZEBIT) != 0;
   }
   inline bool hasModeByte() const {
     return m_hasModeByte;
@@ -200,12 +191,21 @@ public:
   InstructionBuilder &setRexBits(BYTE bits);
 #endif // IS64BIT
 
-  inline InstructionBuilder &wordIns(bool isRegister) {
-    if(isWordSizeOnly(isRegister)) return *this;
+  inline InstructionBuilder &wordIns() {
+    if(!hasWordSizePrefix()) {
+      return *this;
+    }
 #ifdef IS64BIT
     m_rexByteIndex++;
 #endif
     return prefix(0x66);
+  }
+
+  inline InstructionBuilder &qwordIns() {
+    if(hasQwordSizeBit()) {
+      SETREXBITS(QWORDTOREX(REGSIZE_QWORD));
+    }
+    return *this;
   }
 
   static inline bool needSizeBit(OperandSize size) {
@@ -215,7 +215,7 @@ public:
   inline InstructionBuilder &setSizeBit() {
     return hasSizeBit() ? or(m_opcodePos,1) : *this;
   }
-  InstructionBuilder &setOperandSize(OperandSize size, bool isRegister);
+  InstructionBuilder &setOperandSize(OperandSize size);
   // Set bit 1 in opcode to 1 if destination is a register
   inline InstructionBuilder &setDirectionBit() {
     return hasDirectionBit() ? or(m_opcodePos,2) : *this;

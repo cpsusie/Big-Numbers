@@ -20,14 +20,16 @@ DEFNAME(Opcode0Arg       ,  CLGI  ,0x0F01DD);              // Clear Global Inter
 DEFNAME(Opcode0Arg       ,  STGI  ,0x0F01DC);              // Set Global Interrupt Flag
 #endif // IS64BIT
 
+#define ARG0_SIZEABLE (WORDPTR_ALLOWED|QWORDPTR_ALLOWED|HAS_NONBYTE_SIZEBITS)
+
 #ifdef IS32BIT
-DEFNAME(Opcode0Arg       ,  PUSHFD,0x9C);                  // Push EFLAGS onto stack *--SP = FLAGS;
-DEFNAME(Opcode0Arg       ,  POPFD ,0x9D);                  // Pop  EFLAGS register from stack FLAGS = *SP++
+DEFNAME(Opcode0Arg       ,  PUSHFD,0x9C  ,ARG0_SIZEABLE);  // Push EFLAGS onto stack *--SP = FLAGS;
+DEFNAME(Opcode0Arg       ,  POPFD ,0x9D  ,ARG0_SIZEABLE);  // Pop  EFLAGS register from stack FLAGS = *SP++
 DEFNAME(Opcode0Arg       ,  PUSHF ,PUSHFD,REGSIZE_WORD);   // Push FLAGS  onto stack *--SP = FLAGS;
 DEFNAME(Opcode0Arg       ,  POPF  ,POPFD ,REGSIZE_WORD);   // Pop  FLAGS  register from stack FLAGS = *SP++
 #else
-DEFNAME(Opcode0Arg       ,  PUSHFQ,0x9C);                  // Push RFLAGS onto stack *--SP = FLAGS;
-DEFNAME(Opcode0Arg       ,  POPFQ ,0x9D);                  // Pop  RFLAGS register from stack FLAGS = *SP++
+DEFNAME(Opcode0Arg       ,  PUSHFQ,0x9C  ,ARG0_SIZEABLE);  // Push RFLAGS onto stack *--SP = FLAGS;
+DEFNAME(Opcode0Arg       ,  POPFQ ,0x9D  ,ARG0_SIZEABLE);  // Pop  RFLAGS register from stack FLAGS = *SP++
 DEFNAME(Opcode0Arg       ,  PUSHF ,PUSHFQ,REGSIZE_WORD);   // Push FLAGS  onto stack *--SP = FLAGS;
 DEFNAME(Opcode0Arg       ,  POPF  ,POPFQ ,REGSIZE_WORD);   // Pop  FLAGS  register from stack FLAGS = *SP++
 #endif // IS46BIT
@@ -102,14 +104,14 @@ DEFNAME(OpcodeSetcc      ,  SETGE ,0x0F9D  );              // Set byte if greate
 DEFNAME(OpcodeSetcc      ,  SETLE ,0x0F9E  );              // Set byte if less or equal         (signed  )
 DEFNAME(OpcodeSetcc      ,  SETG  ,0x0F9F  );              // Set byte if greater               (signed  );
 
-DEFNAME(Opcode0Arg       ,  CWDE  ,0x98,DWORDPTR_ALLOWED); // Convert word  to dword  Copy sign (bit 15) of AX  into higher 16 bits of EAX
-DEFNAME(Opcode0Arg       ,  CBW   ,CWDE,REGSIZE_WORD    ); // Convert byte  to word   Copy sign (bit 7)  of AL  into higher  8 bits of AX (AH)
-DEFNAME(Opcode0Arg       ,  CDQ   ,0x99,DWORDPTR_ALLOWED); // Convert dword to qword  Copy sign (bit 31) of EAX into every bit of EDX
-DEFNAME(Opcode0Arg       ,  CWD   ,CDQ ,REGSIZE_WORD    ); // Convert word  to dword  Copy sign (bit 15) of AX  into every bit of DX
+DEFNAME(Opcode0Arg       ,  CWDE  ,0x98,ARG0_SIZEABLE);    // Convert word  to dword  Copy sign (bit 15) of AX  into higher 16 bits of EAX
+DEFNAME(Opcode0Arg       ,  CDQ   ,0x99,ARG0_SIZEABLE);    // Convert dword to qword  Copy sign (bit 31) of EAX into every bit of EDX
+DEFNAME(Opcode0Arg       ,  CBW   ,CWDE,REGSIZE_WORD );    // Convert byte  to word   Copy sign (bit 7)  of AL  into higher  8 bits of AX (AH)
+DEFNAME(Opcode0Arg       ,  CWD   ,CDQ ,REGSIZE_WORD );    // Convert word  to dword  Copy sign (bit 15) of AX  into every bit of DX
 
 #ifdef IS64BIT
-DEFNAME(Opcode0Arg       ,  CDQE  ,CWDE,REGSIZE_QWORD);    // Sign extend EAX into RAX
-DEFNAME(Opcode0Arg       ,  CQO   ,CDQ ,REGSIZE_QWORD);    // Sign extend RAX into RDX:RAX
+DEFNAME(Opcode0Arg       ,  CDQE  ,CWDE,REGSIZE_QWORD );   // Sign extend EAX into RAX
+DEFNAME(Opcode0Arg       ,  CQO   ,CDQ ,REGSIZE_QWORD );   // Sign extend RAX into RDX:RAX
 #endif // IS64BIT
 
 DEFNAME(StringInstruction,  MOVSB ,0xA4);

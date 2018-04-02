@@ -19,7 +19,7 @@ InstructionBuilder &Instruction2ArgImm::setRegImm(const Register &reg, int immv)
   case REGSIZE_BYTE :
     if(!immIsByte) sizeError(method,reg,immv);
     if(regIndex == 0) {
-      or(0x04).add((char)immv).setOperandSize(regSize,true);
+      or(0x04).add((char)immv).setOperandSize(regSize);
     } else {
       prefixImm(IMMOP,reg,true ).setModeBits(MR_REG(regIndex)).add((char)immv);
     }
@@ -29,7 +29,7 @@ InstructionBuilder &Instruction2ArgImm::setRegImm(const Register &reg, int immv)
     if(immIsByte) {
       prefixImm(IMMOP,reg,true ).setModeBits(MR_REG(regIndex)).add((char)immv);
     } else if(regIndex == 0) {
-      or(0x04).add(&immv,2).setOperandSize(regSize,true);
+      or(0x04).add(&immv,2).setOperandSize(regSize);
     } else {
       prefixImm(IMMOP,reg,false).setModeBits(MR_REG(regIndex)).add(&immv,2);
     }
@@ -38,7 +38,7 @@ InstructionBuilder &Instruction2ArgImm::setRegImm(const Register &reg, int immv)
     if(immIsByte) {
       prefixImm(IMMOP,reg,true ).setModeBits(MR_REG(regIndex)).add((char)immv);
     } else if(regIndex == 0) {
-      or(0x04).add((BYTE*)&immv,4).setOperandSize(regSize,true);
+      or(0x04).add((BYTE*)&immv,4).setOperandSize(regSize);
     } else {
       prefixImm(IMMOP,reg,false).setModeBits(MR_REG(regIndex)).add(&immv,4);
     }

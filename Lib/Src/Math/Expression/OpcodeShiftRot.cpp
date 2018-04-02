@@ -2,8 +2,8 @@
 #include "InstructionBuilder.h"
 
 OpcodeShiftRot::OpcodeShiftRot(const String &mnemonic, BYTE extension)
-  : OpcodeBase(mnemonic, 0xD2, extension, 2, ALL_GPR_ALLOWED | ALL_GPRPTR_ALLOWED | IMM8_ALLOWED | HAS_SIZEBIT)
-  , m_immCode( mnemonic, 0xC0, extension, 2, ALL_GPR_ALLOWED | ALL_GPRPTR_ALLOWED | IMM8_ALLOWED | HAS_SIZEBIT)
+  : OpcodeBase(mnemonic, 0xD2, extension, 2, ALL_GPR_ALLOWED | ALL_GPRPTR_ALLOWED | IMM8_ALLOWED | HAS_ALL_SIZEBITS)
+  , m_immCode( mnemonic, 0xC0, extension, 2, ALL_GPR_ALLOWED | ALL_GPRPTR_ALLOWED | IMM8_ALLOWED | HAS_ALL_SIZEBITS)
 {
 }
 
@@ -34,7 +34,7 @@ InstructionBase OpcodeShiftRot::operator()(const InstructionOperand &op1, const 
   return __super::operator()(op1,op2);
 }
 
-#define _DSHIFT_FLAGS (NONBYTE_GPR_ALLOWED | NONBYTE_GPRPTR_ALLOWED | IMM8_ALLOWED)
+#define _DSHIFT_FLAGS (NONBYTE_GPR_ALLOWED | NONBYTE_GPRPTR_ALLOWED | IMM8_ALLOWED | HAS_NONBYTE_SIZEBITS)
 
 OpcodeDoubleShift::OpcodeDoubleShift(const String &mnemonic, UINT opCL, UINT opImm)
   : OpcodeBase(mnemonic, opCL , 0, 3, _DSHIFT_FLAGS)

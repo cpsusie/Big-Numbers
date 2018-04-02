@@ -20,7 +20,7 @@ InstructionBuilder &InstructionMovImm::setRegImm(const Register &reg, INT64 immv
     break;
   case REGSIZE_WORD :
     if(!isWord(immv)) sizeError(method,reg,immv);
-    or(8 | (regIndex&7)).add(&immv,2).wordIns(true);
+    or(8 | (regIndex&7)).add(&immv,2).wordIns();
     break;
   case REGSIZE_DWORD :
     if(!isDword(immv)) sizeError(method,reg,immv);
@@ -32,9 +32,10 @@ InstructionBuilder &InstructionMovImm::setRegImm(const Register &reg, INT64 immv
     } else {
       or(8 | (regIndex&7)).add(&immv,8);
     }
+    qwordIns();
     break;
   }
-  SETREXBITS(QWORDTOREX(regSize) | HIGHINDEXTOREX(regIndex,0));
+  SETREXBITS(HIGHINDEXTOREX(regIndex,0));
   return *this;
 }
 

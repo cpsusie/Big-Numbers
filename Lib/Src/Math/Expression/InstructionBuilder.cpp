@@ -60,19 +60,17 @@ InstructionBuilder &InstructionBuilder::add(const void *src, BYTE count) {
   return *this;
 }
 
-InstructionBuilder &InstructionBuilder::setOperandSize(OperandSize size, bool isRegister) {
+InstructionBuilder &InstructionBuilder::setOperandSize(OperandSize size) {
   switch(size) {
   case REGSIZE_WORD :
-    setSizeBit().wordIns(isRegister);
+    setSizeBit().wordIns();
     break;
   case REGSIZE_DWORD:
     setSizeBit();
     break;
   case REGSIZE_QWORD:
-    setSizeBit();
-    if(isDwordSizeAllowed(isRegister)) {
-      SETREXBITS(QWORDTOREX(REGSIZE_QWORD));
-    }
+    setSizeBit().qwordIns();
+    break;
   }
   return *this;
 }
@@ -89,7 +87,7 @@ InstructionBuilder &InstructionBuilder::setModeBits(BYTE bits) {
   return *this;
 }
 
-InstructionBuilder &InstructionBuilder::prefixImm(BYTE b, OperandSize size, bool isRegister, bool immIsByte) {
+InstructionBuilder &InstructionBuilder::prefixImm(BYTE b, OperandSize size, bool immIsByte) {
   if(needSizeBit(size)) b |= 1;
   if((size != REGSIZE_BYTE) && immIsByte) b |= 2;
   prefix(b);
@@ -97,10 +95,10 @@ InstructionBuilder &InstructionBuilder::prefixImm(BYTE b, OperandSize size, bool
   m_opcodePos--;
   switch(size) {
   case REGSIZE_WORD:
-    wordIns(isRegister);
+    wordIns();
     break;
   case REGSIZE_QWORD:
-    SETREXBITS(QWORDTOREX(REGSIZE_QWORD));
+    qwordIns();
     break;
   }
   return *this;
@@ -170,7 +168,7 @@ InstructionBuilder &InstructionBuilder::prefixSegReg(const SegmentRegister &reg)
 InstructionBuilder &InstructionBuilder::setRegisterOperand(const GPRegister &reg) {
   const BYTE    index = reg.getIndex();
   const RegSize size  = reg.getSize();
-  setOperandSize(size,true).setModeBits(MR_REG(index));
+  setOperandSize(size).setModeBits(MR_REG(index));
   SETREXBITS(HIGHINDEXTOREX(index,0))
   return *this;
 }
@@ -178,7 +176,7 @@ InstructionBuilder &InstructionBuilder::setRegisterOperand(const GPRegister &reg
 InstructionBuilder &InstructionBuilder::setRegisterOperandNoModeByte(const GPRegister &reg) {
   const BYTE    index = reg.getIndex();
   const RegSize size  = reg.getSize();
-  setOperandSize(size,true).or(index&7);
+  setOperandSize(size).or(index&7);
   SETREXBITS(HIGHINDEXTOREX(index,0));
   return *this;
 }
@@ -189,7 +187,7 @@ InstructionBuilder &InstructionBuilder::setMemoryOperand(const MemoryOperand &me
     prefixSegReg(*mem.getSegmentRegister());
   }
   if(mr.isDisplaceOnly()) {
-    if(m_flags & IMMMADDR_ALLOWED) {
+    if(getFlags() & IMMMADDR_ALLOWED) {
       addImmAddr(mr.getAddr());
     } else {
       addrDisplaceOnly(mr.getOffset());
@@ -206,13 +204,13 @@ InstructionBuilder &InstructionBuilder::setMemoryOperand(const MemoryOperand &me
     assert(!mr.hasShift());
     addrBase(*mr.getBase(), mr.getOffset());
   }
-  return setOperandSize(mem.getSize(),false);
+  return setOperandSize(mem.getSize());
 }
 
 InstructionBuilder &InstructionBuilder::setMemoryRegOperands(const MemoryOperand &mem, const Register &reg) {
   setMemoryOperand(mem);
   if(mem.getSize() == REGSIZE_VOID) {
-    setOperandSize(reg.getSize(),true);
+    setOperandSize(reg.getSize());
   }
   if(hasModeByte()) {
     const BYTE regIndex = reg.getIndex();
@@ -228,10 +226,10 @@ InstructionBuilder &InstructionBuilder::setRegRegOperands(const Register &reg1, 
   const BYTE    reg1Index = reg1.getIndex();
   const BYTE    reg2Index = reg2.getIndex();
   if(reg2.getType() != REGTYPE_GPR) {
-    setOperandSize(reg2.getSize(),true).setModeBits(MR_REGREG(reg2Index,reg1Index));
+    setOperandSize(reg2.getSize()).setModeBits(MR_REGREG(reg2Index,reg1Index));
     SETREXBITS(HIGHINDEXTOREX(reg2Index,2) | HIGHINDEXTOREX(reg1Index,0))
   } else {
-    setDirectionBit().setOperandSize(reg2.getSize(),true).setModeBits(MR_REGREG(reg1Index,reg2Index)); // set direction bit
+    setDirectionBit().setOperandSize(reg2.getSize()).setModeBits(MR_REGREG(reg1Index,reg2Index)); // set direction bit
     SETREXBITS(HIGHINDEXTOREX(reg1Index,2) | HIGHINDEXTOREX(reg2Index,0))
   }
   return *this;

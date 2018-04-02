@@ -437,9 +437,15 @@ public:
 
 #define IMMMADDR_ALLOWED       0x00400000
 #define HAS_SIZEBIT            0x00800000
-#define HAS_DIRECTIONBIT       0x01000000
-#define FIRSTOP_REGONLY        0x02000000
-#define LASTOP_IMMONLY         0x04000000
+#define HAS_WORDPREFIX         0x01000000
+#ifdef IS32BIT
+#define HAS_REXQSIZEBIT        0x00000000
+#else  // IS64BIT
+#define HAS_REXQSIZEBIT        0x02000000
+#endif // IS64BIT
+#define HAS_DIRECTIONBIT       0x04000000
+#define FIRSTOP_REGONLY        0x08000000
+#define LASTOP_IMMONLY         0x10000000
 
 #define IMMEDIATEVALUE_ALLOWED (IMM8_ALLOWED | IMM16_ALLOWED | IMM32_ALLOWED)
 
@@ -460,11 +466,8 @@ public:
 #define ALL_GPR0_ALLOWED            (REGTYPE_GPR0_ALLOWED | ALL_GPRSIZE_ALLOWED    )
 #define ALL_GPRPTR_ALLOWED          (BYTEPTR_ALLOWED      | NONBYTE_GPRPTR_ALLOWED )
 
-#define ISWORDGPR_ONLY(flags)       (((flags) & ALL_GPRSIZE_ALLOWED) == REGSIZE_WORD_ALLOWED)
-#define ISWORDPTR_ONLY(flags)       (((flags) & ALL_GPRPTR_ALLOWED ) == WORDPTR_ALLOWED     )
-#define ISDWORDGPR_ALLOWED(flags)   (((flags) & REGSIZE_DWORD_ALLOWED) != 0)
-#define ISDWORDPTR_ALLOWED(flags)   (((flags) & DWORDPTR_ALLOWED     ) != 0)
-
+#define HAS_NONBYTE_SIZEBITS        (HAS_WORDPREFIX | HAS_REXQSIZEBIT     )
+#define HAS_ALL_SIZEBITS            (HAS_SIZEBIT    | HAS_NONBYTE_SIZEBITS)
 #define ALL_MEMOPSIZES              (BYTEPTR_ALLOWED | WORDPTR_ALLOWED | DWORDPTR_ALLOWED | QWORDPTR_ALLOWED | TBYTEPTR_ALLOWED | OWORDPTR_ALLOWED)
 
 class OpcodeBase {
@@ -582,7 +585,7 @@ public:
 
 class Opcode1Arg : public OpcodeBase {
 public:
-  inline Opcode1Arg(const String &mnemonic, UINT op, BYTE extension, UINT flags=ALL_GPR_ALLOWED | ALL_GPRPTR_ALLOWED | HAS_SIZEBIT)
+  inline Opcode1Arg(const String &mnemonic, UINT op, BYTE extension, UINT flags=ALL_GPR_ALLOWED | ALL_GPRPTR_ALLOWED | HAS_ALL_SIZEBITS)
     : OpcodeBase(mnemonic, op, extension, 1, flags)
   {
   }
@@ -591,7 +594,7 @@ public:
 
 class Opcode2Arg : public OpcodeBase {
 public :
-  Opcode2Arg(const String &mnemonic, UINT op, UINT flags=ALL_GPR_ALLOWED | ALL_GPRPTR_ALLOWED | IMMEDIATEVALUE_ALLOWED | HAS_SIZEBIT | HAS_DIRECTIONBIT)
+  Opcode2Arg(const String &mnemonic, UINT op, UINT flags=ALL_GPR_ALLOWED | ALL_GPRPTR_ALLOWED | IMMEDIATEVALUE_ALLOWED | HAS_ALL_SIZEBITS | HAS_DIRECTIONBIT)
     : OpcodeBase(mnemonic, op, 0, 2, flags) {
   }
   InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
@@ -599,7 +602,7 @@ public :
 
 class Opcode3Arg : public OpcodeBase {
 public :
-  Opcode3Arg(const String &mnemonic, UINT op, UINT flags=NONBYTE_GPR_ALLOWED | NONBYTE_GPRPTR_ALLOWED | FIRSTOP_REGONLY | LASTOP_IMMONLY | IMMEDIATEVALUE_ALLOWED)
+  Opcode3Arg(const String &mnemonic, UINT op, UINT flags=NONBYTE_GPR_ALLOWED | NONBYTE_GPRPTR_ALLOWED | FIRSTOP_REGONLY | LASTOP_IMMONLY | IMMEDIATEVALUE_ALLOWED | HAS_NONBYTE_SIZEBITS)
     : OpcodeBase(mnemonic, op, 0, 3, flags) {
   }
   InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2, const InstructionOperand &op3) const;
@@ -612,7 +615,7 @@ private:
 public :
   OpcodeIMul(const String &mnemonic)
     : Opcode1Arg(mnemonic, 0xF6,5)
-    , m_imul2ArgCode(mnemonic, 0x0FAF,    NONBYTE_GPR_ALLOWED | NONBYTE_GPRPTR_ALLOWED | FIRSTOP_REGONLY )
+    , m_imul2ArgCode(mnemonic, 0x0FAF,    NONBYTE_GPR_ALLOWED | NONBYTE_GPRPTR_ALLOWED | FIRSTOP_REGONLY | HAS_NONBYTE_SIZEBITS)
     , m_imul3ArgCode(mnemonic, 0x69)
   {
   }
@@ -631,7 +634,7 @@ private:
   const OpcodeBase m_eaxRegCode;
 public:
   OpcodeXchg(const String &mnemonic)
-    : Opcode2Arg(  mnemonic, 0x86, ALL_GPR_ALLOWED | ALL_GPRPTR_ALLOWED | HAS_SIZEBIT)
+    : Opcode2Arg(  mnemonic, 0x86, ALL_GPR_ALLOWED | ALL_GPRPTR_ALLOWED | HAS_ALL_SIZEBITS )
     , m_eaxRegCode(mnemonic, 0x90,0,1,0)
   {
   }
@@ -647,10 +650,10 @@ private:
 public :
   OpcodeMov(const String &mnemonic)
     : Opcode2Arg(    mnemonic, 0x88)
-    , m_regImmCode(  mnemonic, 0xB0, ALL_GPR_ALLOWED     | IMMEDIATEVALUE_ALLOWED | IMM64_ALLOWED        | HAS_SIZEBIT)
-    , m_memImmCode(  mnemonic, 0xC6, ALL_GPRPTR_ALLOWED  | IMMEDIATEVALUE_ALLOWED                        | HAS_SIZEBIT)
-    , m_GPR0AddrCode(mnemonic, 0xA0, ALL_GPR0_ALLOWED    | IMMMADDR_ALLOWED       | ALL_GPRPTR_ALLOWED   | HAS_SIZEBIT | HAS_DIRECTIONBIT)
-    , m_movSegCode(  mnemonic, 0x8C, NONBYTE_GPR_ALLOWED | REGTYPE_SEG_ALLOWED    | WORDPTR_ALLOWED      | HAS_DIRECTIONBIT              )
+    , m_regImmCode(  mnemonic, 0xB0, ALL_GPR_ALLOWED     | IMMEDIATEVALUE_ALLOWED | IMM64_ALLOWED        | HAS_ALL_SIZEBITS )
+    , m_memImmCode(  mnemonic, 0xC6, ALL_GPRPTR_ALLOWED  | IMMEDIATEVALUE_ALLOWED                        | HAS_ALL_SIZEBITS )
+    , m_GPR0AddrCode(mnemonic, 0xA0, ALL_GPR0_ALLOWED    | IMMMADDR_ALLOWED       | ALL_GPRPTR_ALLOWED   | HAS_ALL_SIZEBITS | HAS_DIRECTIONBIT)
+    , m_movSegCode(  mnemonic, 0x8C, NONBYTE_GPR_ALLOWED | REGTYPE_SEG_ALLOWED    | WORDPTR_ALLOWED      | HAS_DIRECTIONBIT)
   {
   }
   bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError=false) const;
@@ -660,7 +663,7 @@ public :
 class OpcodeLea : public Opcode2Arg {
 public :
   OpcodeLea(const String &mnemonic, BYTE op)
-    : Opcode2Arg(mnemonic, op, NONBYTE_GPR_ALLOWED | ALL_MEMOPSIZES | VOIDPTR_ALLOWED)
+    : Opcode2Arg(mnemonic, op, NONBYTE_GPR_ALLOWED | ALL_MEMOPSIZES | VOIDPTR_ALLOWED | HAS_NONBYTE_SIZEBITS)
   {
   }
   bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError=false) const;
@@ -673,8 +676,8 @@ private:
   Opcode1Arg m_immCode;
 public:
   inline OpcodePushPop(const String &mnemonic, BYTE opreg, BYTE opmem, BYTE opImm, BYTE extension)
-    : Opcode1Arg(mnemonic, opreg, 0        , REGTYPE_GPR_ALLOWED | REGSIZE_INDEX_ALLOWED | REGSIZE_WORD_ALLOWED)
-    , m_memCode( mnemonic, opmem, extension, INDEXPTR_ALLOWED    | WORDPTR_ALLOWED)
+    : Opcode1Arg(mnemonic, opreg, 0        , REGTYPE_GPR_ALLOWED | REGSIZE_INDEX_ALLOWED | REGSIZE_WORD_ALLOWED | HAS_WORDPREFIX)
+    , m_memCode( mnemonic, opmem, extension,                       INDEXPTR_ALLOWED      | WORDPTR_ALLOWED      | HAS_WORDPREFIX)
     , m_immCode( mnemonic, opImm, 0        , opImm?IMMEDIATEVALUE_ALLOWED:0)
   {
   }
@@ -737,7 +740,7 @@ public:
 
 class StringInstruction : public Opcode0Arg {
 public:
-  StringInstruction(const String &mnemonic, UINT op) : Opcode0Arg(mnemonic, op, HAS_SIZEBIT | DWORDPTR_ALLOWED ) {
+  StringInstruction(const String &mnemonic, UINT op) : Opcode0Arg(mnemonic, op, ALL_GPRPTR_ALLOWED | HAS_ALL_SIZEBITS) {
   }
   StringInstruction(const String &mnemonic, const StringInstruction &ins, OperandSize size) : Opcode0Arg(mnemonic, ins, size) {
   }
@@ -858,10 +861,10 @@ extern OpcodeSetcc       SETG;                             // Set byte   if grea
 #define                  SETNG          SETLE              // Set byte   if not greater           (signed  )
 #define                  SETNLE         SETG               // Set byte   if not less or equal     (signed  )
 
-extern Opcode0Arg        CBW;                              // Convert byte  to word.  Sign extend AL  into AX.      Copy sign (bit  7) of AL  into higher  8 bits of AX
 extern Opcode0Arg        CWDE;                             // Convert word  to dword. Sign extend AX  into EAX.     Copy sign (bit 15) of AX  into higher 16 bits of EAX
-extern Opcode0Arg        CWD;                              // Convert word  to dword. Sign extend AX  into DX:AX.   Copy sign (bit 15) of AX  into every     bit  of DX
 extern Opcode0Arg        CDQ;                              // Convert dword to qword. Sign extend EAX into EDX:EAX. Copy sign (bit 31) of EAX into every     bit  of EDX
+extern Opcode0Arg        CBW;                              // Convert byte  to word.  Sign extend AL  into AX.      Copy sign (bit  7) of AL  into higher  8 bits of AX
+extern Opcode0Arg        CWD;                              // Convert word  to dword. Sign extend AX  into DX:AX.   Copy sign (bit 15) of AX  into every     bit  of DX
 
 #ifdef IS64BIT
 extern Opcode0Arg        CDQE;                             // Convert dword to qword. Sign extend EAX into RAX.     Copy sign (bit 31) of EAX into higher 32 bits of RAX
