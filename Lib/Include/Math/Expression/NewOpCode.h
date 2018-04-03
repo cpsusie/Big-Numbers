@@ -930,6 +930,10 @@ public:
   InstructionBase operator()(const InstructionOperand &op) const;
 };
 
+extern Opcode1Arg        FLDCW;                            // load control word
+extern Opcode1Arg        FNSTCW;                           // store control word
+extern Opcode1Arg        FNSTSW;                           // store status word
+
 extern OpcodeFPUTransfer FLD;
 extern OpcodeFPUTransfer FSTP;
 extern OpcodeFPUTransfer FST;
@@ -1100,10 +1104,5 @@ extern Opcode0Arg        FCOS;                             // st(0) = cos(ST(0))
 #define DIVSD(xmm)                             B4OP(0xF20F5E00 | ((xmm) << 3))
 
 // These opcodes should all be used with MEM_ADDR_* to get the various addressing-modes
-
-#define FLDCW_WORD                             FPUINSA(0xD928)                            // load control word
-#define FNSTCW_WORD                            FPUINSA(0xD938)                            // store control word
-#define FNSTSW_WORD                            FPUINSA(0xDD38)                            // store status word
-
 
 #endif
