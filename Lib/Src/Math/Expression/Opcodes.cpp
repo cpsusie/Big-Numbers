@@ -157,6 +157,18 @@ DEFNAME(OpcodeFPUTransfer,FST     ,0xDDD0,0xD9,2,0xDD,2,0   ,0);
 DEFNAME(Opcode1Arg       ,FBLD    ,0xDF,4,TBYTEPTR_ALLOWED);  // LoaD BCD data from memory
 DEFNAME(Opcode1Arg       ,FBSTP   ,0xDF,6,TBYTEPTR_ALLOWED);  // STore BCD data to memory
 
+DEFNAME(OpcodeFPUArithm  ,FADD    ,0xDEC1,0xDCC0,0xD8C0,0xD8,0,0xDC,0);
+DEFNAME(OpcodeFPUArithm  ,FMUL    ,0xDEC9,0xDCC8,0xD8C8,0xD8,1,0xDC,1);
+DEFNAME(OpcodeFPUArithm  ,FSUB    ,0xDEE9,0xDCE8,0xD8E0,0xD8,4,0xDC,4);
+DEFNAME(OpcodeFPUArithm  ,FDIV    ,0xDEF9,0xDCF8,0xD8F0,0xD8,6,0xDC,6);
+
+DEFNAME(Opcode1Arg       ,FADDP   ,0xDEC0,0,REGTYPE_FPU_ALLOWED);
+DEFNAME(Opcode1Arg       ,FMULP   ,0xDEC8,0,REGTYPE_FPU_ALLOWED);
+DEFNAME(Opcode1Arg       ,FSUBP   ,0xDEE8,0,REGTYPE_FPU_ALLOWED);
+DEFNAME(Opcode1Arg       ,FDIVP   ,0xDEF8,0,REGTYPE_FPU_ALLOWED);
+DEFNAME(Opcode1Arg       ,FSUBRP  ,0xDEE0,0,REGTYPE_FPU_ALLOWED);
+DEFNAME(Opcode1Arg       ,FDIVRP  ,0xDEF0,0,REGTYPE_FPU_ALLOWED);
+
 DEFNAME(Opcode0Arg       ,FNSTSWAX,0xDFE0);                   // Store status word into CPU register AX
 DEFNAME(Opcode0Arg       ,FWAIT   ,0x9B  );                   // Wait while FPU is busy
 DEFNAME(Opcode0Arg       ,FNOP    ,0xD9D0);                   // No operation

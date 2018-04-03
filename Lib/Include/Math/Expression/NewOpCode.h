@@ -267,6 +267,9 @@ public:
   inline bool isGPR0() const {
     return isRegister() && getRegister().isGPR0();
   }
+  inline bool isST0() const {
+    return isRegister() && getRegister().isST0();
+  }
   inline bool isMemoryRef() const {
     return getType() == MEMORYOPERAND;
   }
@@ -931,6 +934,41 @@ public:
   InstructionBase operator()(const InstructionOperand &op) const;
 };
 
+class OpcodeFPU2Reg : public Opcode2Arg {
+private:
+  const OpcodeBase m_st0iCode;
+public:
+  OpcodeFPU2Reg(const String mnemonic, UINT opi0, UINT op0i) 
+    : Opcode2Arg(mnemonic,opi0    ,REGTYPE_FPU_ALLOWED)
+    , m_st0iCode(mnemonic,op0i,0,1,REGTYPE_FPU_ALLOWED)
+  {
+  }
+  InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
+};
+
+class OpcodeFPUArithm : public Opcode0Arg {
+public:
+  OpcodeFPU2Reg m_2regCode;
+  Opcode1Arg    m_dwordCode;
+  Opcode1Arg    m_qwordCode;
+public:
+  OpcodeFPUArithm(const String mnemonic
+    , UINT opp, UINT opi0, UINT op0i, BYTE opdw, BYTE extdw, BYTE opqw, BYTE extqw)
+    : Opcode0Arg( mnemonic, opp                                   )
+    , m_2regCode( mnemonic, opi0,op0i                             )
+    , m_dwordCode(mnemonic, opdw, extdw, DWORDPTR_ALLOWED         )
+    , m_qwordCode(mnemonic, opqw, extqw, QWORDPTR_ALLOWED         )
+  {
+  }
+  BYTE getMaxOpCount() const {
+    return 2;
+  }
+  bool isValidOperand(           const InstructionOperand &op                                , bool throwOnError=false) const;
+  bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError=false) const;
+  InstructionBase operator()(    const InstructionOperand &op                                                         ) const;
+  InstructionBase operator()(    const InstructionOperand &op1, const InstructionOperand &op2                         ) const;
+};
+
 extern Opcode1Arg        FLDCW;                            // load control word
 extern Opcode1Arg        FNSTCW;                           // store control word
 extern Opcode1Arg        FNSTSW;                           // store status word
@@ -942,47 +980,65 @@ extern OpcodeFPUTransfer FST;
 extern Opcode1Arg        FBLD;                             // LoaD BCD data from memory
 extern Opcode1Arg        FBSTP;                            // STore BCD data to memory
 
-// ----------------------------- FPU aritmetic opcodes ----------------------------
+extern OpcodeFPUArithm   FADD;
+extern OpcodeFPUArithm   FMUL;
+extern OpcodeFPUArithm   FSUB;
+extern OpcodeFPUArithm   FDIV;
 
+extern Opcode1Arg        FADDP;
+extern Opcode1Arg        FMULP;
+extern Opcode1Arg        FSUBP;
+extern Opcode1Arg        FDIVP;
+extern Opcode1Arg        FSUBRP;
+extern Opcode1Arg        FDIVRP;
+
+// ----------------------------- FPU aritmetic opcodes ----------------------------
+/*
 #define FADD_0i(  i)                           FPUINS( 0xD8C0     | (i))                   // st(0) += st(i)
 #define FADD_i0(  i)                           FPUINS( 0xDCC0     | (i))                   // st(i) += st(0)
 #define FADD_DWORD                             FPUINSA(0xD800)
 #define FADD_QWORD                             FPUINSA(0xDC00)
-#define FADDP_i0( i)                           FPUINS( 0xDEC0     | (i))                   // st(i) += st(0); pop st(0)
 #define FADD                                   FADDP_i0(1)                                 // st(1) += st(0); pop st(0)
 
 #define FMUL_0i(  i)                           FPUINS( 0xD8C8     | (i))                   // st(0) *= st(i)
 #define FMUL_i0(  i)                           FPUINS( 0xDCC8     | (i))                   // st(i) *= st(0)
 #define FMUL_DWORD                             FPUINSA(0xD808)
 #define FMUL_QWORD                             FPUINSA(0xDC08)
-#define FMULP_i0( i)                           FPUINS( 0xDEC8     | (i))                   // st(i) *= st(0); pop st(0)
 #define FMUL                                   FMULP_i0(1)                                 // st(1) *= st(0); pop st(0)
 
 #define FSUB_0i(  i)                           FPUINS( 0xD8E0     | (i))                   // st(0) -= st(i)
 #define FSUB_i0(  i)                           FPUINS( 0xDCE8     | (i))                   // st(i) -= st(0)
 #define FSUB_DWORD                             FPUINSA(0xD820)
 #define FSUB_QWORD                             FPUINSA(0xDC20)
-#define FSUBP_i0( i)                           FPUINS( 0xDEE8     | (i))                   // st(i) -= st(0); pop st(0)
 #define FSUB                                   FSUBP_i0(1)                                 // st(1) -= st(0); pop st(0)
-
-#define FSUBR_0i( i)                           FPUINS( 0xD8E8     | (i))                   // st(0) =  st(i) - st(0)
-#define FSUBR_i0( i)                           FPUINS( 0xDCE0     | (i))                   // st(i) =  st(0) - st(i)
-#define FSUBR_DWORD                            FPUINSA(0xD828)
-#define FSUBR_QWORD                            FPUINSA(0xDC28)
-#define FSUBRP_i0(i)                           FPUINS( 0xDEE0     | (i))                   // st(i) =  st(0) - st(i); pop st(0)
 
 #define FDIV_0i(  i)                           FPUINS( 0xD8F0     | (i))                   // st(0) /= st(i)
 #define FDIV_i0(  i)                           FPUINS( 0xDCF8     | (i))                   // st(i) /= st(0)
 #define FDIV_DWORD                             FPUINSA(0xD830)
 #define FDIV_QWORD                             FPUINSA(0xDC30)
-#define FDIVP_i0( i)                           FPUINS( 0xDEF8     | (i))                   // st(i) /= st(0); pop st(0)
 #define FDIV                                   FDIVP_i0(1)                                 // st(1) /= st(0); pop st(0)
+
+#define FADDP_i0( i)                           FPUINS( 0xDEC0     | (i))                   // st(i) += st(0); pop st(0)
+#define FMULP_i0( i)                           FPUINS( 0xDEC8     | (i))                   // st(i) *= st(0); pop st(0)
+#define FSUBP_i0( i)                           FPUINS( 0xDEE8     | (i))                   // st(i) -= st(0); pop st(0)
+#define FDIVP_i0( i)                           FPUINS( 0xDEF8     | (i))                   // st(i) /= st(0); pop st(0)
+#define FSUBRP_i0(i)                           FPUINS( 0xDEE0     | (i))                   // st(i) =  st(0) - st(i); pop st(0)
+#define FDIVRP_i0(i)                           FPUINS( 0xDEF0     | (i))                   // st(i) =  st(0) / st(i); pop st(0)
+*/
+
+
+#define FSUBR_0i( i)                           FPUINS( 0xD8E8     | (i))                   // st(0) =  st(i) - st(0)
+#define FSUBR_i0( i)                           FPUINS( 0xDCE0     | (i))                   // st(i) =  st(0) - st(i)
+#define FSUBR_DWORD                            FPUINSA(0xD828)
+#define FSUBR_QWORD                            FPUINSA(0xDC28)
+
+
 
 #define FDIVR_0i( i)                           FPUINS( 0xD8F8     | (i))                   // st(0) =  st(i) / st(0)
 #define FDIVR_i0( i)                           FPUINS( 0xDCF0     | (i))                   // st(i) =  st(0) / st(i)
 #define FDIVR_DWORD                            FPUINSA(0xD838)
 #define FDIVR_QWORD                            FPUINSA(0xDC38)
-#define FDIVRP_i0(i)                           FPUINS( 0xDEF0     | (i))                   // st(i) =  st(0) / st(i); pop st(0)
+
 
 // ----------------------------- FPU compare opcodes ----------------------------
 #define FCOM(     i)                           FPUINS( 0xD8D0     | (i))                   // Compare st(0) to st(i)

@@ -496,6 +496,11 @@ bool OpcodeBase::isValidOperandCombination(const Register &reg, const Instructio
       if(!validateSameSize(reg, op, throwOnError)) {
         return false;
       }
+      if(reg.getType() == REGTYPE_FPU) {
+        if(!reg.isST0() && !op.isST0()) {
+          RAISEERROR(_T("st(0) must be one of the registers. (%s,%s)"),reg.toString().cstr(),op.toString().cstr());
+        }
+      }
     }
     break;
   case MEMORYOPERAND  : // reg <- mem

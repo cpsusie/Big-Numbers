@@ -470,17 +470,16 @@ int TestMachineCode::emit(const OpcodeBase &opcode, const InstructionOperand &op
 void TestMachineCode::testOpcode(const OpcodeBase &opcode, bool selectVOIDPtr) {
   try {
     m_currentName = opcode.getMnemonic();
-    if(opcode.getMaxOpCount() == 0) {
-      emit((Opcode0Arg&)opcode            );
-    } else {
+    if(opcode.getMaxOpCount() > 0) {
       clear();
-      for(int args = opcode.getOpCount(); args <= opcode.getMaxOpCount(); args++) {
-        switch(args) {
-        case 1 : testOpcode1Arg(opcode               ); break;
-        case 2 : testOpcode2Arg(opcode, selectVOIDPtr); break;
-        case 3 : testOpcode3Arg(opcode               ); break;
-        default: throwInvalidArgumentException(__TFUNCTION__,_T("%s.getMaxOpCount()=%d"), opcode.getMnemonic().cstr(), opcode.getMaxOpCount());
-        }
+    }
+    for(int args = opcode.getOpCount(); args <= opcode.getMaxOpCount(); args++) {
+      switch(args) {
+      case 0 : emit((Opcode0Arg&)opcode            ); break;
+      case 1 : testOpcode1Arg(opcode               ); break;
+      case 2 : testOpcode2Arg(opcode, selectVOIDPtr); break;
+      case 3 : testOpcode3Arg(opcode               ); break;
+      default: throwInvalidArgumentException(__TFUNCTION__,_T("%s.getMaxOpCount()=%d"), opcode.getMnemonic().cstr(), opcode.getMaxOpCount());
       }
     }
   } catch(UserInterrupt u) {
@@ -716,6 +715,17 @@ void TestMachineCode::testFPUOpcodes() {
   testOpcode(FBLD    );
   testOpcode(FBSTP   );
 
+  testOpcode(FADD    );
+  testOpcode(FMUL    );
+  testOpcode(FSUB    );
+  testOpcode(FDIV    );
+
+  testOpcode(FADDP   );
+  testOpcode(FMULP   );
+  testOpcode(FSUBP   );
+  testOpcode(FDIVP   );
+  testOpcode(FSUBRP  );
+  testOpcode(FDIVRP  );
 }
 
 TestMachineCode::TestMachineCode() {

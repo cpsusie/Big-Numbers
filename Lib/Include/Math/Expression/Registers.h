@@ -90,6 +90,9 @@ public:
   inline bool isGPR0() const {
     return (getType() == REGTYPE_GPR) && (getIndex() == 0);
   }
+  inline bool isST0() const {
+    return (getType() == REGTYPE_FPU) && (getIndex() == 0);
+  }
 #ifdef IS32BIT
 
 #define IS_REXCOMPATIBLE(reg,rexBytePresent) true
