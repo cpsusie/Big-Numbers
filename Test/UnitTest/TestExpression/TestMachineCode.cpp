@@ -726,6 +726,8 @@ void TestMachineCode::testFPUOpcodes() {
   testOpcode(FDIVP   );
   testOpcode(FSUBRP  );
   testOpcode(FDIVRP  );
+  testOpcode(FSUBR   );
+  testOpcode(FDIVR   );
 }
 
 TestMachineCode::TestMachineCode() {

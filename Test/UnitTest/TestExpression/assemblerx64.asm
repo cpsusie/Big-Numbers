@@ -4,6 +4,10 @@
 assemblerCode PROC
     ret
 
+    fdiv
+    fdivr
+    fdivrp
+    fdivp
     nop
     RET
     CMC
