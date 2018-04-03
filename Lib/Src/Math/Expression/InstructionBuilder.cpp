@@ -165,24 +165,25 @@ InstructionBuilder &InstructionBuilder::prefixSegReg(const SegmentRegister &reg)
   return prefix(segRegPrefix[reg.getIndex()]);
 }
 
-InstructionBuilder &InstructionBuilder::setRegisterOperand(const GPRegister &reg) {
-  const BYTE    index = reg.getIndex();
-  const RegSize size  = reg.getSize();
-  setOperandSize(size).setModeBits(MR_REG(index));
-  SETREXBITS(HIGHINDEXTOREX(index,0))
+InstructionBuilder &InstructionBuilder::setRegisterOperand(const Register &reg) {
+  const BYTE index = reg.getIndex();
+  switch(reg.getType()) {
+  case REGTYPE_GPR:
+    setOperandSize(reg.getSize());
+    if(getFlags() & REGINDEX_NOMODE) {
+      or(index&7);
+    } else {
+      setModeBits(MR_REG(index));
+    }
+    SETREXBITS(HIGHINDEXTOREX(index,0))
+    break;
+  case REGTYPE_FPU:
+    or(index);
+    break;
+  default:
+    throwInvalidArgumentException(__TFUNCTION__,_T("reg=%s"), reg.getName().cstr());
+  }
   return *this;
-}
-
-InstructionBuilder &InstructionBuilder::setRegisterOperandNoModeByte(const GPRegister &reg) {
-  const BYTE    index = reg.getIndex();
-  const RegSize size  = reg.getSize();
-  setOperandSize(size).or(index&7);
-  SETREXBITS(HIGHINDEXTOREX(index,0));
-  return *this;
-}
-
-InstructionBuilder &InstructionBuilder::setRegisterOperand(const FPURegister &reg) {
-  return or(reg.getIndex());
 }
 
 InstructionBuilder &InstructionBuilder::setMemoryOperand(const MemoryOperand &mem) {

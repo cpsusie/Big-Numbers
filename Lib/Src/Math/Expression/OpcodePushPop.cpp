@@ -15,7 +15,7 @@ InstructionBase OpcodePushPop::operator()(const InstructionOperand &op) const {
   switch(op.getType()) {
   case REGISTER      :
     isValidOperand(op,true);
-    return InstructionBuilder(*this).setRegisterOperandNoModeByte((GPRegister&)op.getRegister());
+    return InstructionBuilder(*this).setRegisterOperand(op.getRegister());
   case MEMORYOPERAND :
     return m_memCode(op);
   case IMMEDIATEVALUE:

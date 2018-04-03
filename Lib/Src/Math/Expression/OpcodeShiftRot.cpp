@@ -19,14 +19,14 @@ InstructionBase OpcodeShiftRot::operator()(const InstructionOperand &op1, const 
   switch(op2.getType()) {
   case REGISTER      :
     switch(op1.getType()) {
-    case REGISTER     : return InstructionBuilder(*this    ).setRegisterOperand((GPRegister   &)op1.getRegister());
-    case MEMORYOPERAND: return InstructionBuilder(*this    ).setMemoryOperand(  (MemoryOperand&)op1              );
+    case REGISTER     : return InstructionBuilder(*this    ).setRegisterOperand(op1.getRegister());
+    case MEMORYOPERAND: return InstructionBuilder(*this    ).setMemoryOperand((MemoryOperand&)op1);
     }
     break;
   case IMMEDIATEVALUE:
     switch(op1.getType()) {
-    case REGISTER     : return InstructionBuilder(m_immCode).setRegisterOperand((GPRegister   &)op1.getRegister()).add(op2.getImmInt8());
-    case MEMORYOPERAND: return InstructionBuilder(m_immCode).setMemoryOperand(  (MemoryOperand&)op1              ).add(op2.getImmInt8());
+    case REGISTER     : return InstructionBuilder(m_immCode).setRegisterOperand(op1.getRegister()).add(op2.getImmInt8());
+    case MEMORYOPERAND: return InstructionBuilder(m_immCode).setMemoryOperand((MemoryOperand&)op1).add(op2.getImmInt8());
     }
     break;
   }

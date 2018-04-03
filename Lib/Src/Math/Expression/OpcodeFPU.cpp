@@ -17,7 +17,7 @@ bool OpcodeFPUTransfer::isValidOperand(const InstructionOperand &op, bool throwO
 InstructionBase OpcodeFPUTransfer::operator()(const InstructionOperand &op) const {
   isValidOperand(op, true);
   switch(op.getType()) {
-  case REGISTER       : return InstructionBuilder(*this).setRegisterOperand((FPURegister&)op.getRegister());
+  case REGISTER       : return InstructionBuilder(*this).setRegisterOperand(op.getRegister());
   case MEMORYOPERAND  :
     switch(op.getSize()) {
     case REGSIZE_DWORD: return InstructionBuilder(m_dwordCode).setMemoryOperand((MemoryOperand&)op);

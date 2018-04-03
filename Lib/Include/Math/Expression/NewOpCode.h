@@ -436,16 +436,17 @@ public:
 #endif // IS64BIT
 
 #define IMMMADDR_ALLOWED       0x00400000
-#define HAS_SIZEBIT            0x00800000
-#define HAS_WORDPREFIX         0x01000000
+#define REGINDEX_NOMODE        0x00800000
+#define HAS_SIZEBIT            0x01000000
+#define HAS_WORDPREFIX         0x02000000
 #ifdef IS32BIT
 #define HAS_REXQSIZEBIT        0x00000000
 #else  // IS64BIT
-#define HAS_REXQSIZEBIT        0x02000000
+#define HAS_REXQSIZEBIT        0x04000000
 #endif // IS64BIT
-#define HAS_DIRECTIONBIT       0x04000000
-#define FIRSTOP_REGONLY        0x08000000
-#define LASTOP_IMMONLY         0x10000000
+#define HAS_DIRECTIONBIT       0x08000000
+#define FIRSTOP_REGONLY        0x10000000
+#define LASTOP_IMMONLY         0x20000000
 
 #define IMMEDIATEVALUE_ALLOWED (IMM8_ALLOWED | IMM16_ALLOWED | IMM32_ALLOWED)
 
@@ -635,7 +636,7 @@ private:
 public:
   OpcodeXchg(const String &mnemonic)
     : Opcode2Arg(  mnemonic, 0x86, ALL_GPR_ALLOWED | ALL_GPRPTR_ALLOWED | HAS_ALL_SIZEBITS )
-    , m_eaxRegCode(mnemonic, 0x90,0,1,0)
+    , m_eaxRegCode(mnemonic, 0x90,0,1,REGINDEX_NOMODE)
   {
   }
   InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
@@ -676,7 +677,7 @@ private:
   Opcode1Arg m_immCode;
 public:
   inline OpcodePushPop(const String &mnemonic, BYTE opreg, BYTE opmem, BYTE opImm, BYTE extension)
-    : Opcode1Arg(mnemonic, opreg, 0        , REGTYPE_GPR_ALLOWED | REGSIZE_INDEX_ALLOWED | REGSIZE_WORD_ALLOWED | HAS_WORDPREFIX)
+    : Opcode1Arg(mnemonic, opreg, 0        , REGTYPE_GPR_ALLOWED | REGSIZE_INDEX_ALLOWED | REGSIZE_WORD_ALLOWED | HAS_WORDPREFIX | REGINDEX_NOMODE)
     , m_memCode( mnemonic, opmem, extension,                       INDEXPTR_ALLOWED      | WORDPTR_ALLOWED      | HAS_WORDPREFIX)
     , m_immCode( mnemonic, opImm, 0        , opImm?IMMEDIATEVALUE_ALLOWED:0)
   {

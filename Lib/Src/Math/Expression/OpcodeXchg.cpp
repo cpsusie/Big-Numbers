@@ -14,11 +14,11 @@ InstructionBase OpcodeXchg::operator()(const InstructionOperand &op1, const Inst
     if(isEaxOrRAX(reg1)) {
       validateIsRegisterOperand(op2,2,true);
       validateSameSize(reg1,reg2,true);
-      return InstructionBuilder(m_eaxRegCode).setRegisterOperandNoModeByte((GPRegister&)reg2);
+      return InstructionBuilder(m_eaxRegCode).setRegisterOperand(reg2);
     } else if(isEaxOrRAX(reg2)) {
       validateIsRegisterOperand(op1,1,true);
       validateSameSize(reg1,reg2,true);
-      return InstructionBuilder(m_eaxRegCode).setRegisterOperandNoModeByte((GPRegister&)reg1);
+      return InstructionBuilder(m_eaxRegCode).setRegisterOperand(reg1);
     }
   }
   return __super::operator()(op1,op2);
