@@ -709,6 +709,8 @@ void TestMachineCode::testFPUOpcodes() {
   testOpcode(FLD     );
   testOpcode(FSTP    );
   testOpcode(FST     );
+  testOpcode(FBLD    );
+  testOpcode(FBSTP   );
 }
 
 TestMachineCode::TestMachineCode() {
@@ -764,6 +766,7 @@ void assemblerCode() {
   const BYTE *startIP = getIP();
   __asm {
     jmp         End
+
     nop
     imul al
     imul cl

@@ -180,3 +180,6 @@ DEFNAME(Opcode0Arg       ,FCOS    ,0xD9FF);                // st(0) = cos(ST(0))
 DEFNAME(OpcodeFPUTransfer,FLD     ,0xD9C0,0xD9,0,0xDD,0,0xDB,5);
 DEFNAME(OpcodeFPUTransfer,FSTP    ,0xDDD8,0xD9,3,0xDD,3,0xDB,7);
 DEFNAME(OpcodeFPUTransfer,FST     ,0xDDD0,0xD9,2,0xDD,2,0   ,0);
+
+DEFNAME(Opcode1Arg       ,FBLD    ,0xDF,4,TBYTEPTR_ALLOWED); // LoaD BCD data from memory
+DEFNAME(Opcode1Arg       ,FBSTP   ,0xDF,6,TBYTEPTR_ALLOWED); // STore BCD data to memory

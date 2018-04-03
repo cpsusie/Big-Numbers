@@ -934,24 +934,8 @@ extern OpcodeFPUTransfer FLD;
 extern OpcodeFPUTransfer FSTP;
 extern OpcodeFPUTransfer FST;
 
-/*
-#define FLD(      i)                           FPUINS( 0xD9C0     | (i))                   // Push st(i) into st(0)
-#define FLD_DWORD                              FPUINSA(0xD900)
-#define FLD_QWORD                              FPUINSA(0xDD00)
-#define FLD_TBYTE                              FPUINSA(0xDB28)
-
-#define FSTP(     i)                           FPUINS( 0xDDD8     | (i))                   // Store st(0) into st(i); pop st(0)
-#define FSTP_DWORD                             FPUINSA(0xD918)
-#define FSTP_QWORD                             FPUINSA(0xDD18)
-#define FSTP_TBYTE                             FPUINSA(0xDB38)
-
-#define FST(      i)                           FPUINS( 0xDDD0     | (i))                   // Store st(0) into st(i)
-#define FST_DWORD                              FPUINSA(0xD910)
-#define FST_QWORD                              FPUINSA(0xDD10)
-*/
-
-#define FBLD                                   FPUINSA(0xDF20)                             // LoaD BCD data from memory
-#define FBSTP                                  FPUINSA(0xDF30)                             // STore BCD data to memory
+extern Opcode1Arg        FBLD;                             // LoaD BCD data from memory
+extern Opcode1Arg        FBSTP;                            // STore BCD data to memory
 
 // ----------------------------- FPU aritmetic opcodes ----------------------------
 
@@ -1028,7 +1012,6 @@ extern OpcodeFPUTransfer FST;
 #define FISTTP_WORD                            FPUINSA(0xDF40)
 #define FISTTP_DWORD                           FPUINSA(0xDB40)
 #define FISTTP_QWORD                           FPUINSA(0xDD40)
-
 
 #define FIST_WORD                              FPUINSA(0xDF10)
 #define FIST_DWORD                             FPUINSA(0xDB10)
