@@ -757,6 +757,93 @@ public:
   InstructionBase operator()(const StringInstruction &ins) const;
 };
 
+class OpcodeFPUTransfer : public Opcode1Arg {
+private:
+  const Opcode1Arg m_dwordCode;
+  const Opcode1Arg m_qwordCode;
+  const Opcode1Arg m_tbyteCode;
+public:
+  OpcodeFPUTransfer(const String mnemonic
+    , UINT opreg, BYTE opdw, BYTE extdw, BYTE opqw, BYTE extqw, BYTE optb, BYTE exttb)
+    : Opcode1Arg( mnemonic, opreg, 0    , REGTYPE_FPU_ALLOWED)
+    , m_dwordCode(mnemonic, opdw , extdw, DWORDPTR_ALLOWED   )
+    , m_qwordCode(mnemonic, opqw , extqw, QWORDPTR_ALLOWED   )
+    , m_tbyteCode(mnemonic, optb , exttb, optb?TBYTEPTR_ALLOWED:0)
+  {
+  }
+  bool isValidOperand(const InstructionOperand &op, bool throwOnError=false) const;
+  InstructionBase operator()(const InstructionOperand &op) const;
+};
+
+class OpcodeFPU2Reg : public Opcode2Arg {
+private:
+  const OpcodeBase m_st0iCode;
+public:
+  OpcodeFPU2Reg(const String mnemonic, UINT opi0, UINT op0i)
+    : Opcode2Arg(mnemonic,opi0    ,REGTYPE_FPU_ALLOWED)
+    , m_st0iCode(mnemonic,op0i,0,1,REGTYPE_FPU_ALLOWED)
+  {
+  }
+  InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
+};
+
+class OpcodeFPUArithm : public Opcode0Arg {
+private:
+  const Opcode1Arg    m_dwordCode;
+  const Opcode1Arg    m_qwordCode;
+  const OpcodeFPU2Reg m_2regCode;
+public:
+  OpcodeFPUArithm(const String mnemonic
+    , UINT opp, UINT opi0, UINT op0i, BYTE opdw, BYTE extdw, BYTE opqw, BYTE extqw)
+    : Opcode0Arg( mnemonic, opp                                   )
+    , m_2regCode( mnemonic, opi0,op0i                             )
+    , m_dwordCode(mnemonic, opdw, extdw, DWORDPTR_ALLOWED         )
+    , m_qwordCode(mnemonic, opqw, extqw, QWORDPTR_ALLOWED         )
+  {
+  }
+  BYTE getMaxOpCount() const {
+    return 2;
+  }
+  bool isValidOperand(           const InstructionOperand &op                                , bool throwOnError=false) const;
+  bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError=false) const;
+  InstructionBase operator()(    const InstructionOperand &op                                                         ) const;
+  InstructionBase operator()(    const InstructionOperand &op1, const InstructionOperand &op2                         ) const;
+};
+
+class OpcodeFPUCompare : public Opcode1Arg {
+private:
+  const Opcode1Arg m_dwordCode;
+  const Opcode1Arg m_qwordCode;
+public:
+  OpcodeFPUCompare(const String mnemonic
+    , UINT opreg, BYTE opdw, BYTE extdw, BYTE opqw, BYTE extqw)
+    : Opcode1Arg( mnemonic, opreg, 0    , REGTYPE_FPU_ALLOWED)
+    , m_dwordCode(mnemonic, opdw , extdw, DWORDPTR_ALLOWED   )
+    , m_qwordCode(mnemonic, opqw , extqw, QWORDPTR_ALLOWED   )
+  {
+  }
+  bool isValidOperand(const InstructionOperand &op, bool throwOnError=false) const;
+  InstructionBase operator()(const InstructionOperand &op) const;
+};
+
+class OpcodeFPUIArithm : public Opcode1Arg {
+private:
+  const Opcode1Arg m_dwordCode;
+  const Opcode1Arg m_qwordCode;
+public:
+  OpcodeFPUIArithm(const String mnemonic
+    , UINT opw, BYTE extw, BYTE opdw, BYTE extdw, BYTE opqw, BYTE extqw)
+    : Opcode1Arg( mnemonic, opw , extw ,      WORDPTR_ALLOWED   )
+    , m_dwordCode(mnemonic, opdw, extdw,      DWORDPTR_ALLOWED  )
+    , m_qwordCode(mnemonic, opqw, extqw, opqw?QWORDPTR_ALLOWED:0)
+  {
+  }
+  bool isValidOperand(const InstructionOperand &op, bool throwOnError=false) const;
+  InstructionBase operator()(const InstructionOperand &op) const;
+};
+
+// --------------------------------- Opcode mnemonics ------------------------------
+
 extern Opcode0Arg        RET;                              // Near return to calling procedure
 extern Opcode0Arg        CMC;                              // Complement carry flag
 extern Opcode0Arg        CLC;                              // Clear carry flag     CF = 0
@@ -835,35 +922,35 @@ extern OpcodeBitScan     BSF;                              // Bitscan forward
 extern OpcodeBitScan     BSR;                              // Bitscan reversed
 
 // Set Byte on Condition
-extern OpcodeSetcc       SETO;                             // Set byte   if overflow
-extern OpcodeSetcc       SETNO;                            // Set byte   if not overflow
-extern OpcodeSetcc       SETB;                             // Set byte   if below                 (unsigned)
-extern OpcodeSetcc       SETAE;                            // Set byte   if above or equal        (unsigned)
-extern OpcodeSetcc       SETE;                             // Set byte   if equal                 (signed/unsigned)
-extern OpcodeSetcc       SETNE;                            // Set byte   if not equal             (signed/unsigned)
-extern OpcodeSetcc       SETBE;                            // Set byte   if below or equal        (unsigned)
-extern OpcodeSetcc       SETA;                             // Set byte   if above                 (unsigned)
-extern OpcodeSetcc       SETS;                             // Set byte   if sign
-extern OpcodeSetcc       SETNS;                            // Set byte   if not sign
-extern OpcodeSetcc       SETPE;                            // Set byte   if parity even
-extern OpcodeSetcc       SETPO;                            // Set byte   if parity odd
-extern OpcodeSetcc       SETL;                             // Set byte   if less                  (signed  )
-extern OpcodeSetcc       SETGE;                            // Set byte   if greater or equal      (signed  )
-extern OpcodeSetcc       SETLE;                            // Set byte   if less or equal         (signed  )
-extern OpcodeSetcc       SETG;                             // Set byte   if greater               (signed  )
+extern OpcodeSetcc       SETO;                             // Set byte   if overflow         (OF==1 )
+extern OpcodeSetcc       SETNO;                            // Set byte   if not overflow     (OF==0 )
+extern OpcodeSetcc       SETB;                             // Set byte   if below            (CF==1 )          (unsigned)
+extern OpcodeSetcc       SETAE;                            // Set byte   if above or equal   (CF==0 )          (unsigned)
+extern OpcodeSetcc       SETE;                             // Set byte   if equal            (ZF==1 )          (signed/unsigned)
+extern OpcodeSetcc       SETNE;                            // Set byte   if not equal        (ZF==0 )          (signed/unsigned)
+extern OpcodeSetcc       SETBE;                            // Set byte   if below or equal   (CF==1 || ZF=1)   (unsigned)
+extern OpcodeSetcc       SETA;                             // Set byte   if above            (CF==0 && ZF=0)   (unsigned)
+extern OpcodeSetcc       SETS;                             // Set byte   if sign             (SF==1 )
+extern OpcodeSetcc       SETNS;                            // Set byte   if not sign         (SF==0 )
+extern OpcodeSetcc       SETPE;                            // Set byte   if parity even      (PF==1 )
+extern OpcodeSetcc       SETPO;                            // Set byte   if parity odd       (PF==0 )
+extern OpcodeSetcc       SETL;                             // Set byte   if less             (SF!=OF)          (signed  )
+extern OpcodeSetcc       SETGE;                            // Set byte   if greater or equal (SF==OF)          (signed  )
+extern OpcodeSetcc       SETLE;                            // Set byte   if less or equal    (ZF==1 || SF!=OF) (signed  )
+extern OpcodeSetcc       SETG;                             // Set byte   if greater          (ZF==0 && SF==OF) (signed  )
 
-#define                  SETNAE         SETB               // Set byte   if not above or equal    (unsigned)
-#define                  SETC           SETB               // Set byte   if carry                 (unsigned)
-#define                  SETNC          SETAE              // Set byte   if not carry             (unsigned)
-#define                  SETNB          SETAE              // Set byte   if not below             (unsigned)
-#define                  SETZ           SETE               // Set byte   if 0                     (signed/unsigned)
-#define                  SETNZ          SETNE              // Set byte   if not zero              (signed/unsigned)
-#define                  SETNA          SETBE              // Set byte   if not above             (unsigned)
-#define                  SETNBE         SETA               // Set byte   if not below or equal    (unsigned)
-#define                  SETNGE         SETL               // Set byte   if not greater or equal  (signed  )
-#define                  SETNL          SETGE              // Set byte   if not less              (signed  )
-#define                  SETNG          SETLE              // Set byte   if not greater           (signed  )
-#define                  SETNLE         SETG               // Set byte   if not less or equal     (signed  )
+#define                  SETNAE         SETB               // Set byte   if not above or equal                 (unsigned)
+#define                  SETC           SETB               // Set byte   if carry                              (unsigned)
+#define                  SETNC          SETAE              // Set byte   if not carry                          (unsigned)
+#define                  SETNB          SETAE              // Set byte   if not below                          (unsigned)
+#define                  SETZ           SETE               // Set byte   if 0                                  (signed/unsigned)
+#define                  SETNZ          SETNE              // Set byte   if not zero                           (signed/unsigned)
+#define                  SETNA          SETBE              // Set byte   if not above                          (unsigned)
+#define                  SETNBE         SETA               // Set byte   if not below or equal                 (unsigned)
+#define                  SETNGE         SETL               // Set byte   if not greater or equal               (signed  )
+#define                  SETNL          SETGE              // Set byte   if not less                           (signed  )
+#define                  SETNG          SETLE              // Set byte   if not greater                        (signed  )
+#define                  SETNLE         SETG               // Set byte   if not less or equal                  (signed  )
 
 extern Opcode0Arg        CWDE;                             // Convert word  to dword. Sign extend AX  into EAX.     Copy sign (bit 15) of AX  into higher 16 bits of EAX
 extern Opcode0Arg        CDQ;                              // Convert dword to qword. Sign extend EAX into EDX:EAX. Copy sign (bit 31) of EAX into every     bit  of EDX
@@ -913,151 +1000,75 @@ extern StringPrefix      REPNE;                            // Apply to CMPS and 
 
 // ------------------------------ FPU opcodes ----------------------------------
 
-// ----------------------------- FPU trasnfer opcodes ----------------------------
+// ---------------- See http://www.ray.masmcode.com/tutorial/ for documentation ---------
 
-class OpcodeFPUTransfer : public Opcode1Arg {
-private:
-  const Opcode1Arg m_dwordCode;
-  const Opcode1Arg m_qwordCode;
-  const Opcode1Arg m_tbyteCode;
-public:
-  OpcodeFPUTransfer(const String mnemonic
-    , UINT op, BYTE opdw, BYTE extdw, BYTE opqw, BYTE extqw, BYTE optb, BYTE exttb
-    , UINT flags = REGTYPE_FPU_ALLOWED | DWORDPTR_ALLOWED | QWORDPTR_ALLOWED | TBYTEPTR_ALLOWED)
-    : Opcode1Arg( mnemonic, op  , 0    , flags&REGTYPE_FPU_ALLOWED)
-    , m_dwordCode(mnemonic, opdw, extdw, flags&DWORDPTR_ALLOWED   )
-    , m_qwordCode(mnemonic, opqw, extqw, flags&QWORDPTR_ALLOWED   )
-    , m_tbyteCode(mnemonic, optb, exttb, optb?(flags&TBYTEPTR_ALLOWED):0)
-  {
-  }
-  bool isValidOperand(const InstructionOperand &op, bool throwOnError=false) const;
-  InstructionBase operator()(const InstructionOperand &op) const;
-};
+// ----------------------------- FPU transfer opcodes ----------------------------
+extern OpcodeFPUTransfer FLD;                              // fld  (src). Push src into st(0).  src={st0-st7,dword ptr,qword ptr,tbyte ptr}
+extern OpcodeFPUTransfer FSTP;                             // fstp (dst). Pop st(0) into dst.   dst={st0-st7,dword ptr,qword ptr,tbyte ptr}
+extern OpcodeFPUTransfer FST;                              // fst  (dst). Store st(0) into dst. dst={st0-st7,dword ptr,qword ptr}
 
-class OpcodeFPU2Reg : public Opcode2Arg {
-private:
-  const OpcodeBase m_st0iCode;
-public:
-  OpcodeFPU2Reg(const String mnemonic, UINT opi0, UINT op0i) 
-    : Opcode2Arg(mnemonic,opi0    ,REGTYPE_FPU_ALLOWED)
-    , m_st0iCode(mnemonic,op0i,0,1,REGTYPE_FPU_ALLOWED)
-  {
-  }
-  InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
-};
+extern Opcode1Arg        FBLD;                             // fbld (src). Push BCD data from src into st(0).   src=tbyte ptr
+extern Opcode1Arg        FBSTP;                            // fbstp(dst). Pop st(0) as BCD data into dst.      dst=tbyte ptr
 
-class OpcodeFPUArithm : public Opcode0Arg {
-private:
-  const Opcode1Arg    m_dwordCode;
-  const Opcode1Arg    m_qwordCode;
-  const OpcodeFPU2Reg m_2regCode;
-public:
-  OpcodeFPUArithm(const String mnemonic
-    , UINT opp, UINT opi0, UINT op0i, BYTE opdw, BYTE extdw, BYTE opqw, BYTE extqw)
-    : Opcode0Arg( mnemonic, opp                                   )
-    , m_2regCode( mnemonic, opi0,op0i                             )
-    , m_dwordCode(mnemonic, opdw, extdw, DWORDPTR_ALLOWED         )
-    , m_qwordCode(mnemonic, opqw, extqw, QWORDPTR_ALLOWED         )
-  {
-  }
-  BYTE getMaxOpCount() const {
-    return 2;
-  }
-  bool isValidOperand(           const InstructionOperand &op                                , bool throwOnError=false) const;
-  bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError=false) const;
-  InstructionBase operator()(    const InstructionOperand &op                                                         ) const;
-  InstructionBase operator()(    const InstructionOperand &op1, const InstructionOperand &op2                         ) const;
-};
+// ----------------------------- FPU arithmetic opcodes ----------------------------
+// For opcode={FADD,FMUL,FSUB,FDIV,FSUBR,FDIVR}, the following rules apply:
+// No operand means opcodeP(st(1)).
+// If dst not specified, then dst=st(0) and src must be Real4/Real8 in memory.
+// If both src and dst are specified, then both must be st(i), and at least 1 must be st(0).
+extern OpcodeFPUArithm   FADD;                             // fadd |fadd (src)|fadd (dst,src). dst += src
+extern OpcodeFPUArithm   FMUL;                             // fmul |fmul (src)|fmul (dst,src). dst *= src
+extern OpcodeFPUArithm   FSUB;                             // fsub |fsub (src)|fsub (dst,src). dst -= src
+extern OpcodeFPUArithm   FDIV;                             // fdiv |fdiv (src)|fdiv (dst,src). dst /= src
+extern OpcodeFPUArithm   FSUBR;                            // fsubr|fsubr(src)|fsubr(dst,src). dst = src-dst
+extern OpcodeFPUArithm   FDIVR;                            // fdivr|fdivr(src)|fdivr(dst,src). dst = src/dst
 
-class OpcodeFPUIArithm : public Opcode1Arg {
-private:
-  const Opcode1Arg m_dwordCode;
-  const Opcode1Arg m_qwordCode;
-public:
-  OpcodeFPUIArithm(const String mnemonic
-    , UINT opw, BYTE extw, BYTE opdw, BYTE extdw, BYTE opqw, BYTE extqw)
-    : Opcode1Arg( mnemonic, opw , extw ,      WORDPTR_ALLOWED   )
-    , m_dwordCode(mnemonic, opdw, extdw,      DWORDPTR_ALLOWED  )
-    , m_qwordCode(mnemonic, opqw, extqw, opqw?QWORDPTR_ALLOWED:0)
-  {
-  }
-  bool isValidOperand(const InstructionOperand &op, bool throwOnError=false) const;
-  InstructionBase operator()(const InstructionOperand &op) const;
-};
+extern Opcode1Arg        FADDP;                            // faddp (st(i)). st(i) += st(0); pop st(0);
+extern Opcode1Arg        FMULP;                            // fmulp (st(i)). st(i) *= st(0); pop st(0);
+extern Opcode1Arg        FSUBP;                            // fsubp (st(i)). st(i) -= st(0); pop st(0);
+extern Opcode1Arg        FDIVP;                            // fdivp (st(i)). st(i) /= st(0); pop st(0);
+extern Opcode1Arg        FSUBRP;                           // fsubrp(st(i)). st(i) =  st(0)-st(i); pop st(0);
+extern Opcode1Arg        FDIVRP;                           // fdivrp(st(i)). st(i) =  st(0)/st(i); pop st(0);
 
-extern Opcode1Arg        FLDCW;                            // load control word
-extern Opcode1Arg        FNSTCW;                           // store control word
-extern Opcode1Arg        FNSTSW;                           // store status word
+// ----------------------------- FPU compare opcodes ----------------------------
+extern OpcodeFPUCompare  FCOM;                             // fcom  (src  ). Compare st(0) to src, src={st0..st7,Real4/Real8 in memory}
+extern Opcode1Arg        FCOMI;                            // fcomi (st(i)). Compare st(0) to st(i) and set CPU-flags
+extern Opcode1Arg        FUCOM;                            // fucom (st(i)). Unordered compare st(0) to st(i)
+extern Opcode1Arg        FUCOMI;                           // fucomi(st(i)). Unordered compare st(0) to st(i) and set CPU-flags
 
-extern OpcodeFPUTransfer FLD;
-extern OpcodeFPUTransfer FSTP;
-extern OpcodeFPUTransfer FST;
-
-extern Opcode1Arg        FBLD;                             // LoaD BCD data from memory
-extern Opcode1Arg        FBSTP;                            // STore BCD data to memory
-
-extern OpcodeFPUArithm   FADD;
-extern OpcodeFPUArithm   FMUL;
-extern OpcodeFPUArithm   FSUB;
-extern OpcodeFPUArithm   FDIV;
-extern OpcodeFPUArithm   FSUBR;
-extern OpcodeFPUArithm   FDIVR;
-extern Opcode1Arg        FADDP;
-extern Opcode1Arg        FMULP;
-extern Opcode1Arg        FSUBP;
-extern Opcode1Arg        FDIVP;
-extern Opcode1Arg        FSUBRP;
-extern Opcode1Arg        FDIVRP;
-
-extern Opcode1Arg        FCOMI;                            // Compare st(0) to st(i) and set CPU-flags
-extern Opcode1Arg        FCOMIP;                           // Compare st(0) to st(i) and set CPU-flags; pop st(0)
-extern Opcode1Arg        FUCOM;                            // Unordered compare st(0) to st(i)
-extern Opcode1Arg        FUCOMP;                           // Unordered compare st(0) to st(i); pop st(0)
-extern Opcode1Arg        FUCOMI;                           // Unordered compare st(0) to st(i) and set CPU-flags
-extern Opcode1Arg        FUCOMIP;                          // Unordered compare st(0) to st(i) and set CPU-flags; pop st(0)
+extern OpcodeFPUCompare  FCOMP;                            // Same as fcom,   but pop st(0) after compare
+extern Opcode1Arg        FCOMIP;                           // Same as fcomi,  but pop st(0) after compare
+extern Opcode1Arg        FUCOMP;                           // Same as fucom,  but pop st(0) after compare
+extern Opcode1Arg        FUCOMIP;                          // Same as fucomi, but pop st(0) after compare
 
 extern Opcode0Arg        FCOMPP;                           // Compare st(0) to st(1); pop both
 extern Opcode0Arg        FUCOMPP;                          // Unordered compare st(0) to st(1); pop both
 
-// ----------------------------- FPU aritmetic opcodes ----------------------------
-
-// ----------------------------- FPU compare opcodes ----------------------------
-#define FCOM(     i)                           FPUINS( 0xD8D0     | (i))                   // Compare st(0) to st(i)
-#define FCOM_DWORD                             FPUINSA(0xD810)
-#define FCOM_QWORD                             FPUINSA(0xDC10)
-
-#define FCOMP(    i)                           FPUINS( 0xD8D8     | (i))                   // Compare st(0) to st(i), pop st(0)
-#define FCOMP_DWORD                            FPUINSA(0xD818)
-#define FCOMP_QWORD                            FPUINSA(0xDC18)
-
 // ------------------------ FPU integer opcodes ---------------------------------
+extern OpcodeFPUIArithm  FILD;                             // fild  (src). Push src into st(0).  src=(signed short/int/__int64 in memory)
+extern OpcodeFPUIArithm  FISTP;                            // fistp (dst). Pop   st(0) into dst, rounding according to RC-field FPU control word. dst=(signed short/int/__int64 in memory)
+extern OpcodeFPUIArithm  FISTTP;                           // fisttp(dst). Same as fistp, but truncates to nearest integer, regardless of RC-field in FPU control word
+extern OpcodeFPUIArithm  FIST;                             // fist  (dst). Store st(0) into dst, rounding according to RC-field FPU control word. dst=(signed short/int in memory)
+extern OpcodeFPUIArithm  FIADD;                            // fiadd (src). st(0) += src.         src=(signed short/int in memory)
+extern OpcodeFPUIArithm  FIMUL;                            // fimul (src). st(0) *= src.         src=(signed short/int in memory)
+extern OpcodeFPUIArithm  FISUB;                            // fisub (src). st(0) -= src.         src=(signed short/int in memory)
+extern OpcodeFPUIArithm  FIDIV;                            // fidiv (src). st(0) /= src.         src=(signed short/int in memory)
+extern OpcodeFPUIArithm  FISUBR;                           // fisubr(src). st(0) = src-st(0).    src=(signed short/int in memory)
+extern OpcodeFPUIArithm  FIDIVR;                           // fidivr(src). st(0) = src/st(0).    src=(signed short/int in memory)
+extern OpcodeFPUIArithm  FICOM;                            // ficom (src). Compare st(0) to an integer in memory (signed short/int)
+extern OpcodeFPUIArithm  FICOMP;                           // Same as ficom, but pop st(0) after compare
 
-extern OpcodeFPUIArithm  FILD  ;
-extern OpcodeFPUIArithm  FISTP ;
-extern OpcodeFPUIArithm  FISTTP;
-extern OpcodeFPUIArithm  FIST  ;
-extern OpcodeFPUIArithm  FIADD ;
-extern OpcodeFPUIArithm  FIMUL ;
-extern OpcodeFPUIArithm  FICOM ;
-extern OpcodeFPUIArithm  FICOMP;
-extern OpcodeFPUIArithm  FISUB ;
-extern OpcodeFPUIArithm  FISUBR;
-extern OpcodeFPUIArithm  FIDIV ;
-extern OpcodeFPUIArithm  FIDIVR;
+// ------------------- Conditional Copy st(i) to st(0) --------------------------
+extern Opcode1Arg        FCMOVB;                           // Copy       if below            (CF==1 )
+extern Opcode1Arg        FCMOVAE;                          // Copy       if above or equal   (CF==0 )
+extern Opcode1Arg        FCMOVE;                           // Copy       if equal            (ZF==1 )
+extern Opcode1Arg        FCMOVNE;                          // Copy       if not equal        (ZF==0 )
+extern Opcode1Arg        FCMOVBE;                          // Copy       if below or equal   (CF==1 || ZF==1)
+extern Opcode1Arg        FCMOVA;                           // Copy       if above            (CF==0 && ZF==0)
+extern Opcode1Arg        FCMOVU;                           // Copy       if unordered        (PF==1 )
+extern Opcode1Arg        FCMOVNU;                          // Copy       if not unordered    (PF==0 )
 
-// Move st(i) to st(0) if specified CPU condition is true
-extern Opcode1Arg        FCMOVB;                           // Move if below (CF=1)
-extern Opcode1Arg        FCMOVEQ;                          // Move if equal (ZF=1)
-extern Opcode1Arg        FCMOVBE;                          // Move if below or equal (CF=1 or ZF=1)
-extern Opcode1Arg        FCMOVU;                           // Move if unordered (PF=1)
-extern Opcode1Arg        FCMOVAE;                          // Move if above or equal (CF=0)
-extern Opcode1Arg        FCMOVNE;                          // Move if not equal (ZF=0)
-extern Opcode1Arg        FCMOVA;                           // Move if above (CF=0 and ZF=0)
-extern Opcode1Arg        FCMOVNU;                          // Move if not unordered (PF=0)
-
-extern Opcode1Arg        FFREE;                            // Free a data register
-extern Opcode1Arg        FXCH;                             // Swap st(0) and st(i)
-
+extern Opcode1Arg        FFREE;                            // ffree(st(i)). Free a data register
+extern Opcode1Arg        FXCH;                             // fxch(st(i).   Swap st(0) and st(i)
 extern Opcode0Arg        FNSTSWAX;                         // Store status word into CPU register AX
 extern Opcode0Arg        FWAIT;                            // Wait while FPU is busy
 extern Opcode0Arg        FNOP;                             // No operation
@@ -1088,6 +1099,10 @@ extern Opcode0Arg        FRNDINT;                          // st(0) = nearest in
 extern Opcode0Arg        FSCALE;                           // st(0) *= 2^int(st(1))
 extern Opcode0Arg        FSIN;                             // st(0) = sin(ST(0))
 extern Opcode0Arg        FCOS;                             // st(0) = cos(ST(0))
+
+extern Opcode1Arg        FLDCW;                            // load control word.  op=word ptr
+extern Opcode1Arg        FNSTCW;                           // store control word. op=word ptr
+extern Opcode1Arg        FNSTSW;                           // store status word.  op=word ptr
 
 #ifdef __NEVER__
 

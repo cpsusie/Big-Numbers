@@ -725,6 +725,8 @@ void TestMachineCode::testFPUOpcodes() {
   testOpcode(FMUL    );
   testOpcode(FSUB    );
   testOpcode(FDIV    );
+  testOpcode(FSUBR   );
+  testOpcode(FDIVR   );
 
   testOpcode(FADDP   );
   testOpcode(FMULP   );
@@ -732,21 +734,18 @@ void TestMachineCode::testFPUOpcodes() {
   testOpcode(FDIVP   );
   testOpcode(FSUBRP  );
   testOpcode(FDIVRP  );
-  testOpcode(FSUBR   );
-  testOpcode(FDIVR   );
 
-  setClearOn(false);
-  testOpcode(FCOMI   );                            // Compare st(0) to st(i) and set CPU-flags
-  testOpcode(FCOMIP  );                            // Compare st(0) to st(i) and set CPU-flags; pop st(0)
-  testOpcode(FUCOM   );                            // Unordered compare st(0) to st(i)
-  testOpcode(FUCOMP  );                            // Unordered compare st(0) to st(i); pop st(0)
-  testOpcode(FUCOMI  );                            // Unordered compare st(0) to st(i) and set CPU-flags
-  testOpcode(FUCOMIP );                            // Unordered compare st(0) to st(i) and set CPU-flags; pop st(0)
+  testOpcode(FCOM    );
+  testOpcode(FCOMP   );
+  testOpcode(FCOMI   );
+  testOpcode(FCOMIP  );
+  testOpcode(FUCOM   );
+  testOpcode(FUCOMP  );
+  testOpcode(FUCOMI  );
+  testOpcode(FUCOMIP );
 
-  setClearOn(true);
-
-  testOpcode(FCOMPP  );                            // Compare st(0) to st(1); pop both
-  testOpcode(FUCOMPP );                            // Unordered compare st(0) to st(1); pop both
+  testOpcode(FCOMPP  );
+  testOpcode(FUCOMPP );
 
   testOpcode(FILD    );
   testOpcode(FISTTP  );
@@ -762,7 +761,7 @@ void TestMachineCode::testFPUOpcodes() {
   testOpcode(FIDIVR  );
 
   testOpcode(FCMOVB  );                            // Move if below (CF=1)
-  testOpcode(FCMOVEQ );                            // Move if equal (ZF=1)
+  testOpcode(FCMOVE );                             // Move if equal (ZF=1)
   testOpcode(FCMOVBE );                            // Move if below or equal (CF=1 or ZF=1)
   testOpcode(FCMOVU  );                            // Move if unordered (PF=1)
   testOpcode(FCMOVAE );                            // Move if above or equal (CF=0)

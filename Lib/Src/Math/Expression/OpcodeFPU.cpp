@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "InstructionBuilder.h"
 
+// ---------------------------------- OpcodeFPUTransfer --------------------------------
+
 bool OpcodeFPUTransfer::isValidOperand(const InstructionOperand &op, bool throwOnError) const {
   switch(op.getType()) {
   case REGISTER     : return __super::isValidOperand(op,throwOnError);
@@ -15,7 +17,6 @@ bool OpcodeFPUTransfer::isValidOperand(const InstructionOperand &op, bool throwO
 }
 
 InstructionBase OpcodeFPUTransfer::operator()(const InstructionOperand &op) const {
-  isValidOperand(op, true);
   if(op.getType() == MEMORYOPERAND) {
     switch(op.getSize()) {
     case REGSIZE_DWORD: return m_dwordCode(op);
@@ -26,6 +27,7 @@ InstructionBase OpcodeFPUTransfer::operator()(const InstructionOperand &op) cons
   return __super::operator()(op);
 }
 
+// ---------------------------------- OpcodeFPU2Reg --------------------------------
 InstructionBase OpcodeFPU2Reg::operator()(const InstructionOperand &op1, const InstructionOperand &op2) const {
   isValidOperandCombination(op1,op2,true);
   if(op2.isST0()) {
@@ -37,6 +39,7 @@ InstructionBase OpcodeFPU2Reg::operator()(const InstructionOperand &op1, const I
   return InstructionBuilder(*this);
 }
 
+// ---------------------------------- OpcodeFPUArithm --------------------------------
 bool OpcodeFPUArithm::isValidOperand(const InstructionOperand &op, bool throwOnError) const {
   if(op.getType() == MEMORYOPERAND) {
     switch(op.getSize()) {
@@ -52,7 +55,6 @@ bool OpcodeFPUArithm::isValidOperandCombination(const InstructionOperand &op1, c
 }
 
 InstructionBase OpcodeFPUArithm::operator()(const InstructionOperand &op) const {
-  isValidOperand(op,true);
   if(op.getType() == MEMORYOPERAND) {
     switch(op.getSize()) {
     case REGSIZE_DWORD: return m_dwordCode(op);
@@ -66,6 +68,28 @@ InstructionBase OpcodeFPUArithm::operator()(const InstructionOperand &op1, const
   return m_2regCode(op1,op2);
 }
 
+// ---------------------------------- OpcodeFPUCompare --------------------------------
+bool OpcodeFPUCompare::isValidOperand(const InstructionOperand &op, bool throwOnError) const {
+  if(op.getType() == MEMORYOPERAND) {
+    switch(op.getSize()) {
+    case REGSIZE_DWORD: return m_dwordCode.isValidOperand(op,throwOnError);
+    case REGSIZE_QWORD: return m_qwordCode.isValidOperand(op,throwOnError);
+    }
+  }
+  return __super::isValidOperand(op,throwOnError);
+}
+
+InstructionBase OpcodeFPUCompare::operator()(const InstructionOperand &op) const {
+  if(op.getType() == MEMORYOPERAND) {
+    switch(op.getSize()) {
+    case REGSIZE_DWORD: return m_dwordCode(op);
+    case REGSIZE_QWORD: return m_qwordCode(op);
+    }
+  }
+  return __super::operator()(op);
+}
+
+// ---------------------------------- OpcodeFPUIArithm --------------------------------
 bool OpcodeFPUIArithm::isValidOperand(const InstructionOperand &op, bool throwOnError) const {
   if(op.getType() == MEMORYOPERAND) {
     switch(op.getSize()) {

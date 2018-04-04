@@ -140,15 +140,11 @@ DEFNAME(StringInstruction,  LODSQ ,LODSB,REGSIZE_QWORD);
 DEFNAME(StringInstruction,  SCASQ ,SCASB,REGSIZE_QWORD);
 #endif // IS64BIT
 
-DEFNAME(StringPrefix     ,  REP   ,0xF3);                  // Apply to INS, OUTS, MOVS, LODS, and STOS
-DEFNAME(StringPrefix     ,  REPE  ,0xF3);                  // Apply to CMPS and SCAS instructions
-DEFNAME(StringPrefix     ,  REPNE ,0xF2);                  // Apply to CMPS and SCAS instructions
+DEFNAME(StringPrefix     ,  REP   ,0xF3);                         // Apply to INS, OUTS, MOVS, LODS, and STOS
+DEFNAME(StringPrefix     ,  REPE  ,0xF3);                         // Apply to CMPS and SCAS instructions
+DEFNAME(StringPrefix     ,  REPNE ,0xF2);                         // Apply to CMPS and SCAS instructions
 
 // ----------------------------- FPU opcodes -------------------------------------
-
-DEFNAME(Opcode1Arg       ,FLDCW   ,0xD9  ,5,WORDPTR_ALLOWED); // load control word
-DEFNAME(Opcode1Arg       ,FNSTCW  ,0xD9  ,7,WORDPTR_ALLOWED); // store control word
-DEFNAME(Opcode1Arg       ,FNSTSW  ,0xDD  ,7,WORDPTR_ALLOWED); // store status word
 
 DEFNAME(OpcodeFPUTransfer,FLD     ,0xD9C0,0xD9,0,0xDD,0,0xDB,5);
 DEFNAME(OpcodeFPUTransfer,FST     ,0xDDD0,0xD9,2,0xDD,2,0   ,0);
@@ -171,6 +167,8 @@ DEFNAME(Opcode1Arg       ,FDIVP   ,0xDEF8,0,REGTYPE_FPU_ALLOWED);
 DEFNAME(Opcode1Arg       ,FSUBRP  ,0xDEE0,0,REGTYPE_FPU_ALLOWED);
 DEFNAME(Opcode1Arg       ,FDIVRP  ,0xDEF0,0,REGTYPE_FPU_ALLOWED);
 
+DEFNAME(OpcodeFPUCompare ,FCOM    ,0xD8D0,0xD8,2,0xDC,2);
+DEFNAME(OpcodeFPUCompare ,FCOMP   ,0xD8D8,0xD8,3,0xDC,3);
 DEFNAME(Opcode1Arg       ,FCOMI   ,0xDBF0,0,REGTYPE_FPU_ALLOWED); // Compare st(0) to st(i) and set CPU-flags
 DEFNAME(Opcode1Arg       ,FCOMIP  ,0xDFF0,0,REGTYPE_FPU_ALLOWED); // Compare st(0) to st(i) and set CPU-flags; pop st(0)
 DEFNAME(Opcode1Arg       ,FUCOM   ,0xDDE0,0,REGTYPE_FPU_ALLOWED); // Unordered compare st(0) to st(i)
@@ -195,7 +193,7 @@ DEFNAME(OpcodeFPUIArithm ,FIDIV   ,0xDE,6,0xDA,6,0,   0);
 DEFNAME(OpcodeFPUIArithm ,FIDIVR  ,0xDE,7,0xDA,7,0,   0);
 
 DEFNAME(Opcode1Arg       ,FCMOVB  ,0xDAC0,0,REGTYPE_FPU_ALLOWED); // Move if below (CF=1)
-DEFNAME(Opcode1Arg       ,FCMOVEQ ,0xDAC8,0,REGTYPE_FPU_ALLOWED); // Move if equal (ZF=1)
+DEFNAME(Opcode1Arg       ,FCMOVE  ,0xDAC8,0,REGTYPE_FPU_ALLOWED); // Move if equal (ZF=1)
 DEFNAME(Opcode1Arg       ,FCMOVBE ,0xDAD0,0,REGTYPE_FPU_ALLOWED); // Move if below or equal (CF=1 or ZF=1)
 DEFNAME(Opcode1Arg       ,FCMOVU  ,0xDAD8,0,REGTYPE_FPU_ALLOWED); // Move if unordered (PF=1)
 DEFNAME(Opcode1Arg       ,FCMOVAE ,0xDBC0,0,REGTYPE_FPU_ALLOWED); // Move if above or equal (CF=0)
@@ -236,3 +234,7 @@ DEFNAME(Opcode0Arg       ,FRNDINT ,0xD9FC);                       // st(0) = nea
 DEFNAME(Opcode0Arg       ,FSCALE  ,0xD9FD);                       // st(0) *= 2^int(st(1))
 DEFNAME(Opcode0Arg       ,FSIN    ,0xD9FE);                       // st(0) = sin(ST(0))
 DEFNAME(Opcode0Arg       ,FCOS    ,0xD9FF);                       // st(0) = cos(ST(0))
+
+DEFNAME(Opcode1Arg       ,FLDCW   ,0xD9  ,5,WORDPTR_ALLOWED);     // load control word
+DEFNAME(Opcode1Arg       ,FNSTCW  ,0xD9  ,7,WORDPTR_ALLOWED);     // store control word
+DEFNAME(Opcode1Arg       ,FNSTSW  ,0xDD  ,7,WORDPTR_ALLOWED);     // store status word
