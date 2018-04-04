@@ -65,3 +65,26 @@ InstructionBase OpcodeFPUArithm::operator()(const InstructionOperand &op) const 
 InstructionBase OpcodeFPUArithm::operator()(const InstructionOperand &op1, const InstructionOperand &op2) const {
   return m_2regCode(op1,op2);
 }
+
+bool OpcodeFPUIArithm::isValidOperand(const InstructionOperand &op, bool throwOnError) const {
+  if(op.getType() == MEMORYOPERAND) {
+    switch(op.getSize()) {
+    case REGSIZE_WORD : return __super::isValidOperand(   op,throwOnError);
+    case REGSIZE_DWORD: return m_dwordCode.isValidOperand(op,throwOnError);
+    case REGSIZE_QWORD: return m_qwordCode.isValidOperand(op,throwOnError);
+    }
+  }
+  return __super::isValidOperand(op,throwOnError);
+}
+
+InstructionBase OpcodeFPUIArithm::operator()(const InstructionOperand &op) const {
+  if(op.getType() == MEMORYOPERAND) {
+    switch(op.getSize()) {
+    case REGSIZE_WORD : return __super::operator()(op);
+    case REGSIZE_DWORD: return m_dwordCode(op);
+    case REGSIZE_QWORD: return m_qwordCode(op);
+    }
+  }
+  throwInvalidOperandType(op,1);
+  return InstructionBuilder(*this);
+}

@@ -743,8 +743,23 @@ void TestMachineCode::testFPUOpcodes() {
   testOpcode(FUCOMI  );                            // Unordered compare st(0) to st(i) and set CPU-flags
   testOpcode(FUCOMIP );                            // Unordered compare st(0) to st(i) and set CPU-flags; pop st(0)
 
+  setClearOn(true);
+
   testOpcode(FCOMPP  );                            // Compare st(0) to st(1); pop both
   testOpcode(FUCOMPP );                            // Unordered compare st(0) to st(1); pop both
+
+  testOpcode(FILD    );
+  testOpcode(FISTTP  );
+  testOpcode(FIST    );
+  testOpcode(FISTP   );
+  testOpcode(FIADD   );
+  testOpcode(FIMUL   );
+  testOpcode(FICOM   );
+  testOpcode(FICOMP  );
+  testOpcode(FISUB   );
+  testOpcode(FISUBR  );
+  testOpcode(FIDIV   );
+  testOpcode(FIDIVR  );
 
   testOpcode(FCMOVB  );                            // Move if below (CF=1)
   testOpcode(FCMOVEQ );                            // Move if equal (ZF=1)

@@ -181,6 +181,19 @@ DEFNAME(Opcode1Arg       ,FUCOMIP ,0xDFE8,0,REGTYPE_FPU_ALLOWED); // Unordered c
 DEFNAME(Opcode0Arg       ,FCOMPP  ,0xDED9);                       // Compare st(0) to st(1); pop both
 DEFNAME(Opcode0Arg       ,FUCOMPP ,0xDAE9);                       // Unordered compare st(0) to st(1); pop both
 
+DEFNAME(OpcodeFPUIArithm ,FILD    ,0xDF,0,0xDB,0,0xDF,5);
+DEFNAME(OpcodeFPUIArithm ,FISTTP  ,0xDF,1,0xDB,1,0xDD,1);
+DEFNAME(OpcodeFPUIArithm ,FIST    ,0xDF,2,0xDB,2,0,   0);
+DEFNAME(OpcodeFPUIArithm ,FISTP   ,0xDF,3,0xDB,3,0xDF,7);
+DEFNAME(OpcodeFPUIArithm ,FIADD   ,0xDE,0,0xDA,0,0,   0);
+DEFNAME(OpcodeFPUIArithm ,FIMUL   ,0xDE,1,0xDA,1,0,   0);
+DEFNAME(OpcodeFPUIArithm ,FICOM   ,0xDE,2,0xDA,2,0,   0);
+DEFNAME(OpcodeFPUIArithm ,FICOMP  ,0xDE,3,0xDA,3,0,   0);
+DEFNAME(OpcodeFPUIArithm ,FISUB   ,0xDE,4,0xDA,4,0,   0);
+DEFNAME(OpcodeFPUIArithm ,FISUBR  ,0xDE,5,0xDA,5,0,   0);
+DEFNAME(OpcodeFPUIArithm ,FIDIV   ,0xDE,6,0xDA,6,0,   0);
+DEFNAME(OpcodeFPUIArithm ,FIDIVR  ,0xDE,7,0xDA,7,0,   0);
+
 DEFNAME(Opcode1Arg       ,FCMOVB  ,0xDAC0,0,REGTYPE_FPU_ALLOWED); // Move if below (CF=1)
 DEFNAME(Opcode1Arg       ,FCMOVEQ ,0xDAC8,0,REGTYPE_FPU_ALLOWED); // Move if equal (ZF=1)
 DEFNAME(Opcode1Arg       ,FCMOVBE ,0xDAD0,0,REGTYPE_FPU_ALLOWED); // Move if below or equal (CF=1 or ZF=1)

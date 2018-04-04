@@ -969,6 +969,22 @@ public:
   InstructionBase operator()(    const InstructionOperand &op1, const InstructionOperand &op2                         ) const;
 };
 
+class OpcodeFPUIArithm : public Opcode1Arg {
+private:
+  const Opcode1Arg m_dwordCode;
+  const Opcode1Arg m_qwordCode;
+public:
+  OpcodeFPUIArithm(const String mnemonic
+    , UINT opw, BYTE extw, BYTE opdw, BYTE extdw, BYTE opqw, BYTE extqw)
+    : Opcode1Arg( mnemonic, opw , extw ,      WORDPTR_ALLOWED   )
+    , m_dwordCode(mnemonic, opdw, extdw,      DWORDPTR_ALLOWED  )
+    , m_qwordCode(mnemonic, opqw, extqw, opqw?QWORDPTR_ALLOWED:0)
+  {
+  }
+  bool isValidOperand(const InstructionOperand &op, bool throwOnError=false) const;
+  InstructionBase operator()(const InstructionOperand &op) const;
+};
+
 extern Opcode1Arg        FLDCW;                            // load control word
 extern Opcode1Arg        FNSTCW;                           // store control word
 extern Opcode1Arg        FNSTSW;                           // store status word
@@ -1014,46 +1030,20 @@ extern Opcode0Arg        FUCOMPP;                          // Unordered compare 
 #define FCOMP_DWORD                            FPUINSA(0xD818)
 #define FCOMP_QWORD                            FPUINSA(0xDC18)
 
-
 // ------------------------ FPU integer opcodes ---------------------------------
-#define FILD_WORD                              FPUINSA(0xDF00)
-#define FILD_DWORD                             FPUINSA(0xDB00)
-#define FILD_QWORD                             FPUINSA(0xDF28)
 
-#define FISTP_WORD                             FPUINSA(0xDF18)
-#define FISTP_DWORD                            FPUINSA(0xDB18)
-#define FISTP_QWORD                            FPUINSA(0xDF38)
-
-#define FISTTP_WORD                            FPUINSA(0xDF40)
-#define FISTTP_DWORD                           FPUINSA(0xDB40)
-#define FISTTP_QWORD                           FPUINSA(0xDD40)
-
-#define FIST_WORD                              FPUINSA(0xDF10)
-#define FIST_DWORD                             FPUINSA(0xDB10)
-
-#define FIADD_WORD                             FPUINSA(0xDE00)
-#define FIADD_DWORD                            FPUINSA(0xDA00)
-
-#define FISUB_WORD                             FPUINSA(0xDE20)
-#define FISUB_DWORD                            FPUINSA(0xDA20)
-
-#define FISUBR_WORD                            FPUINSA(0xDE28)
-#define FISUBR_DWORD                           FPUINSA(0xDA28)
-
-#define FIMUL_WORD                             FPUINSA(0xDE08)
-#define FIMUL_DWORD                            FPUINSA(0xDA08)
-
-#define FIDIV_WORD                             FPUINSA(0xDE30)
-#define FIDIV_DWORD                            FPUINSA(0xDA30)
-
-#define FIDIVR_WORD                            FPUINSA(0xDE38)
-#define FIDIVR_DWORD                           FPUINSA(0xDA38)
-
-#define FICOM_WORD                             FPUINSA(0xDE10)
-#define FICOM_DWORD                            FPUINSA(0xDA10)
-
-#define FICOMP_WORD                            FPUINSA(0xDE18)
-#define FICOMP_DWORD                           FPUINSA(0xDA18)
+extern OpcodeFPUIArithm  FILD  ;
+extern OpcodeFPUIArithm  FISTP ;
+extern OpcodeFPUIArithm  FISTTP;
+extern OpcodeFPUIArithm  FIST  ;
+extern OpcodeFPUIArithm  FIADD ;
+extern OpcodeFPUIArithm  FIMUL ;
+extern OpcodeFPUIArithm  FICOM ;
+extern OpcodeFPUIArithm  FICOMP;
+extern OpcodeFPUIArithm  FISUB ;
+extern OpcodeFPUIArithm  FISUBR;
+extern OpcodeFPUIArithm  FIDIV ;
+extern OpcodeFPUIArithm  FIDIVR;
 
 // Move st(i) to st(0) if specified CPU condition is true
 extern Opcode1Arg        FCMOVB;                           // Move if below (CF=1)
