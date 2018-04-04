@@ -151,11 +151,11 @@ DEFNAME(Opcode1Arg       ,FNSTCW  ,0xD9  ,7,WORDPTR_ALLOWED); // store control w
 DEFNAME(Opcode1Arg       ,FNSTSW  ,0xDD  ,7,WORDPTR_ALLOWED); // store status word
 
 DEFNAME(OpcodeFPUTransfer,FLD     ,0xD9C0,0xD9,0,0xDD,0,0xDB,5);
-DEFNAME(OpcodeFPUTransfer,FSTP    ,0xDDD8,0xD9,3,0xDD,3,0xDB,7);
 DEFNAME(OpcodeFPUTransfer,FST     ,0xDDD0,0xD9,2,0xDD,2,0   ,0);
+DEFNAME(OpcodeFPUTransfer,FSTP    ,0xDDD8,0xD9,3,0xDD,3,0xDB,7);
 
-DEFNAME(Opcode1Arg       ,FBLD    ,0xDF,4,TBYTEPTR_ALLOWED);  // LoaD BCD data from memory
-DEFNAME(Opcode1Arg       ,FBSTP   ,0xDF,6,TBYTEPTR_ALLOWED);  // STore BCD data to memory
+DEFNAME(Opcode1Arg       ,FBLD    ,0xDF,4,TBYTEPTR_ALLOWED);      // LoaD BCD data from memory
+DEFNAME(Opcode1Arg       ,FBSTP   ,0xDF,6,TBYTEPTR_ALLOWED);      // STore BCD data to memory
 
 DEFNAME(OpcodeFPUArithm  ,FADD    ,0xDEC1,0xDCC0,0xD8C0,0xD8,0,0xDC,0);
 DEFNAME(OpcodeFPUArithm  ,FMUL    ,0xDEC9,0xDCC8,0xD8C8,0xD8,1,0xDC,1);
@@ -171,34 +171,55 @@ DEFNAME(Opcode1Arg       ,FDIVP   ,0xDEF8,0,REGTYPE_FPU_ALLOWED);
 DEFNAME(Opcode1Arg       ,FSUBRP  ,0xDEE0,0,REGTYPE_FPU_ALLOWED);
 DEFNAME(Opcode1Arg       ,FDIVRP  ,0xDEF0,0,REGTYPE_FPU_ALLOWED);
 
+DEFNAME(Opcode1Arg       ,FCOMI   ,0xDBF0,0,REGTYPE_FPU_ALLOWED); // Compare st(0) to st(i) and set CPU-flags
+DEFNAME(Opcode1Arg       ,FCOMIP  ,0xDFF0,0,REGTYPE_FPU_ALLOWED); // Compare st(0) to st(i) and set CPU-flags; pop st(0)
+DEFNAME(Opcode1Arg       ,FUCOM   ,0xDDE0,0,REGTYPE_FPU_ALLOWED); // Unordered compare st(0) to st(i)
+DEFNAME(Opcode1Arg       ,FUCOMP  ,0xDDE8,0,REGTYPE_FPU_ALLOWED); // Unordered compare st(0) to st(i); pop st(0)
+DEFNAME(Opcode1Arg       ,FUCOMI  ,0xDBE8,0,REGTYPE_FPU_ALLOWED); // Unordered compare st(0) to st(i) and set CPU-flags
+DEFNAME(Opcode1Arg       ,FUCOMIP ,0xDFE8,0,REGTYPE_FPU_ALLOWED); // Unordered compare st(0) to st(i) and set CPU-flags; pop st(0)
 
-DEFNAME(Opcode0Arg       ,FNSTSWAX,0xDFE0);                   // Store status word into CPU register AX
-DEFNAME(Opcode0Arg       ,FWAIT   ,0x9B  );                   // Wait while FPU is busy
-DEFNAME(Opcode0Arg       ,FNOP    ,0xD9D0);                   // No operation
-DEFNAME(Opcode0Arg       ,FCHS    ,0xD9E0);                   // st(0); = -st(0)
-DEFNAME(Opcode0Arg       ,FABS    ,0xD9E1);                   // st(0) = abs(st(0))
-DEFNAME(Opcode0Arg       ,FTST    ,0xD9E4);                   // Compare st(0) to 0.0
-DEFNAME(Opcode0Arg       ,FXAM    ,0xD9E5);                   // Examine the content of st(0)
-DEFNAME(Opcode0Arg       ,FLD1    ,0xD9E8);                   // push 1.0
-DEFNAME(Opcode0Arg       ,FLDL2T  ,0xD9E9);                   // push log2(10)
-DEFNAME(Opcode0Arg       ,FLDL2E  ,0xD9EA);                   // push log2(e)
-DEFNAME(Opcode0Arg       ,FLDPI   ,0xD9EB);                   // push pi
-DEFNAME(Opcode0Arg       ,FLDLG2  ,0xD9EC);                   // push log10(2)
-DEFNAME(Opcode0Arg       ,FLDLN2  ,0xD9ED);                   // push ln(2)
-DEFNAME(Opcode0Arg       ,FLDZ    ,0xD9EE);                   // push 0.0
-DEFNAME(Opcode0Arg       ,F2XM1   ,0xD9F0);                   // st(0) = 2^st(0)-1, assume -1 <= st(0) <= 1
-DEFNAME(Opcode0Arg       ,FYL2X   ,0xD9F1);                   // st(1) = log2(st(0))*st(1); pop st(0)
-DEFNAME(Opcode0Arg       ,FPTAN   ,0xD9F2);                   // st(0) = tan(st(0)); push 1.0
-DEFNAME(Opcode0Arg       ,FPATAN  ,0xD9F3);                   // st(1) = atan(st(1)/st(0)); pop st(0)
-DEFNAME(Opcode0Arg       ,FXTRACT ,0xD9F4);                   // st(0) = unbiased exponent in floating point format of st(0). then push signinificant wiht exponent 0
-DEFNAME(Opcode0Arg       ,FPREM1  ,0xD9F5);                   // As FPREM. Magnitude of the remainder <= ST(1) / 2
-DEFNAME(Opcode0Arg       ,FDECSTP ,0xD9F6);                   // Decrement stack pointer. st0->st1, st7->st0, ..., st1->st2
-DEFNAME(Opcode0Arg       ,FINCSTP ,0xD9F7);                   // Increment stack pointer. st0->st7, st1->st0, ..., st7->st6
-DEFNAME(Opcode0Arg       ,FPREM   ,0xD9F8);                   // Partial remainder. st(0) %= st(1). Exponent of st(0) reduced with at most 63
-DEFNAME(Opcode0Arg       ,FYL2XP1 ,0xD9F9);                   // st(1) = log2(st(0)+1)*st(1); pop st(0)
-DEFNAME(Opcode0Arg       ,FSQRT   ,0xD9FA);                   // st(0) = sqrt(st(0))
-DEFNAME(Opcode0Arg       ,FSINCOS ,0xD9FB);                   // Sine and cosine of the angle value in ST(0), st(0)=sin; push(cos)
-DEFNAME(Opcode0Arg       ,FRNDINT ,0xD9FC);                   // st(0) = nearest integral value according to the rounding mode
-DEFNAME(Opcode0Arg       ,FSCALE  ,0xD9FD);                   // st(0) *= 2^int(st(1))
-DEFNAME(Opcode0Arg       ,FSIN    ,0xD9FE);                   // st(0) = sin(ST(0))
-DEFNAME(Opcode0Arg       ,FCOS    ,0xD9FF);                   // st(0) = cos(ST(0))
+DEFNAME(Opcode0Arg       ,FCOMPP  ,0xDED9);                       // Compare st(0) to st(1); pop both
+DEFNAME(Opcode0Arg       ,FUCOMPP ,0xDAE9);                       // Unordered compare st(0) to st(1); pop both
+
+DEFNAME(Opcode1Arg       ,FCMOVB  ,0xDAC0,0,REGTYPE_FPU_ALLOWED); // Move if below (CF=1)
+DEFNAME(Opcode1Arg       ,FCMOVEQ ,0xDAC8,0,REGTYPE_FPU_ALLOWED); // Move if equal (ZF=1)
+DEFNAME(Opcode1Arg       ,FCMOVBE ,0xDAD0,0,REGTYPE_FPU_ALLOWED); // Move if below or equal (CF=1 or ZF=1)
+DEFNAME(Opcode1Arg       ,FCMOVU  ,0xDAD8,0,REGTYPE_FPU_ALLOWED); // Move if unordered (PF=1)
+DEFNAME(Opcode1Arg       ,FCMOVAE ,0xDBC0,0,REGTYPE_FPU_ALLOWED); // Move if above or equal (CF=0)
+DEFNAME(Opcode1Arg       ,FCMOVNE ,0xDBC8,0,REGTYPE_FPU_ALLOWED); // Move if not equal (ZF=0)
+DEFNAME(Opcode1Arg       ,FCMOVA  ,0xDBD0,0,REGTYPE_FPU_ALLOWED); // Move if above (CF=0 and ZF=0)
+DEFNAME(Opcode1Arg       ,FCMOVNU ,0xDBD8,0,REGTYPE_FPU_ALLOWED); // Move if not unordered (PF=0)
+
+DEFNAME(Opcode1Arg       ,FFREE   ,0xDDC0,0,REGTYPE_FPU_ALLOWED); // Free a data register
+DEFNAME(Opcode1Arg       ,FXCH    ,0xD9C8,0,REGTYPE_FPU_ALLOWED); // Swap st(0) and st(i)
+
+DEFNAME(Opcode0Arg       ,FNSTSWAX,0xDFE0);                       // Store status word into CPU register AX
+DEFNAME(Opcode0Arg       ,FWAIT   ,0x9B  );                       // Wait while FPU is busy
+DEFNAME(Opcode0Arg       ,FNOP    ,0xD9D0);                       // No operation
+DEFNAME(Opcode0Arg       ,FCHS    ,0xD9E0);                       // st(0); = -st(0)
+DEFNAME(Opcode0Arg       ,FABS    ,0xD9E1);                       // st(0) = abs(st(0))
+DEFNAME(Opcode0Arg       ,FTST    ,0xD9E4);                       // Compare st(0) to 0.0
+DEFNAME(Opcode0Arg       ,FXAM    ,0xD9E5);                       // Examine the content of st(0)
+DEFNAME(Opcode0Arg       ,FLD1    ,0xD9E8);                       // push 1.0
+DEFNAME(Opcode0Arg       ,FLDL2T  ,0xD9E9);                       // push log2(10)
+DEFNAME(Opcode0Arg       ,FLDL2E  ,0xD9EA);                       // push log2(e)
+DEFNAME(Opcode0Arg       ,FLDPI   ,0xD9EB);                       // push pi
+DEFNAME(Opcode0Arg       ,FLDLG2  ,0xD9EC);                       // push log10(2)
+DEFNAME(Opcode0Arg       ,FLDLN2  ,0xD9ED);                       // push ln(2)
+DEFNAME(Opcode0Arg       ,FLDZ    ,0xD9EE);                       // push 0.0
+DEFNAME(Opcode0Arg       ,F2XM1   ,0xD9F0);                       // st(0) = 2^st(0)-1, assume -1 <= st(0) <= 1
+DEFNAME(Opcode0Arg       ,FYL2X   ,0xD9F1);                       // st(1) = log2(st(0))*st(1); pop st(0)
+DEFNAME(Opcode0Arg       ,FPTAN   ,0xD9F2);                       // st(0) = tan(st(0)); push 1.0
+DEFNAME(Opcode0Arg       ,FPATAN  ,0xD9F3);                       // st(1) = atan(st(1)/st(0)); pop st(0)
+DEFNAME(Opcode0Arg       ,FXTRACT ,0xD9F4);                       // st(0) = unbiased exponent in floating point format of st(0). then push signinificant wiht exponent 0
+DEFNAME(Opcode0Arg       ,FPREM1  ,0xD9F5);                       // As FPREM. Magnitude of the remainder <= ST(1) / 2
+DEFNAME(Opcode0Arg       ,FDECSTP ,0xD9F6);                       // Decrement stack pointer. st0->st1, st7->st0, ..., st1->st2
+DEFNAME(Opcode0Arg       ,FINCSTP ,0xD9F7);                       // Increment stack pointer. st0->st7, st1->st0, ..., st7->st6
+DEFNAME(Opcode0Arg       ,FPREM   ,0xD9F8);                       // Partial remainder. st(0) %= st(1). Exponent of st(0) reduced with at most 63
+DEFNAME(Opcode0Arg       ,FYL2XP1 ,0xD9F9);                       // st(1) = log2(st(0)+1)*st(1); pop st(0)
+DEFNAME(Opcode0Arg       ,FSQRT   ,0xD9FA);                       // st(0) = sqrt(st(0))
+DEFNAME(Opcode0Arg       ,FSINCOS ,0xD9FB);                       // Sine and cosine of the angle value in ST(0), st(0)=sin; push(cos)
+DEFNAME(Opcode0Arg       ,FRNDINT ,0xD9FC);                       // st(0) = nearest integral value according to the rounding mode
+DEFNAME(Opcode0Arg       ,FSCALE  ,0xD9FD);                       // st(0) *= 2^int(st(1))
+DEFNAME(Opcode0Arg       ,FSIN    ,0xD9FE);                       // st(0) = sin(ST(0))
+DEFNAME(Opcode0Arg       ,FCOS    ,0xD9FF);                       // st(0) = cos(ST(0))

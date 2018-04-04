@@ -405,6 +405,7 @@ private:
   AllVOIDPtrOperands      m_allVOIDPtrOperands;
   AllStringInstructions   m_allStringInstructions;
   String                  m_currentName;
+  bool                    m_clearOn;
   void initAllOperands();
   void clear();
   int  emit(               const InstructionBase &ins   );
@@ -414,6 +415,9 @@ private:
   void testOpcode1Arg(     const OpcodeBase      &opcode);
   void testOpcode2Arg(     const OpcodeBase      &opcode, bool selectVOIDPtr);
   void testOpcode3Arg(     const OpcodeBase      &opcode);
+  inline void setClearOn(bool on) {
+    m_clearOn = on;
+  }
 public:
   void testOpcode(         const OpcodeBase      &opcode, bool selectVOIDPtr = false);
   void testOpcode(         const OpcodeLea       &opcode);
@@ -440,8 +444,10 @@ void TestMachineCode::initAllOperands() {
 }
 
 void TestMachineCode::clear() {
-  __super::clear();
-  redirectDebugLog();
+  if(m_clearOn) {
+    __super::clear();
+    redirectDebugLog();
+  }
 }
 
 int TestMachineCode::emit(const InstructionBase &ins) {
@@ -728,9 +734,34 @@ void TestMachineCode::testFPUOpcodes() {
   testOpcode(FDIVRP  );
   testOpcode(FSUBR   );
   testOpcode(FDIVR   );
+
+  setClearOn(false);
+  testOpcode(FCOMI   );                            // Compare st(0) to st(i) and set CPU-flags
+  testOpcode(FCOMIP  );                            // Compare st(0) to st(i) and set CPU-flags; pop st(0)
+  testOpcode(FUCOM   );                            // Unordered compare st(0) to st(i)
+  testOpcode(FUCOMP  );                            // Unordered compare st(0) to st(i); pop st(0)
+  testOpcode(FUCOMI  );                            // Unordered compare st(0) to st(i) and set CPU-flags
+  testOpcode(FUCOMIP );                            // Unordered compare st(0) to st(i) and set CPU-flags; pop st(0)
+
+  testOpcode(FCOMPP  );                            // Compare st(0) to st(1); pop both
+  testOpcode(FUCOMPP );                            // Unordered compare st(0) to st(1); pop both
+
+  testOpcode(FCMOVB  );                            // Move if below (CF=1)
+  testOpcode(FCMOVEQ );                            // Move if equal (ZF=1)
+  testOpcode(FCMOVBE );                            // Move if below or equal (CF=1 or ZF=1)
+  testOpcode(FCMOVU  );                            // Move if unordered (PF=1)
+  testOpcode(FCMOVAE );                            // Move if above or equal (CF=0)
+  testOpcode(FCMOVNE );                            // Move if not equal (ZF=0)
+  testOpcode(FCMOVA  );                            // Move if above (CF=0 and ZF=0)
+  testOpcode(FCMOVNU );                            // Move if not unordered (PF=0)
+
+  testOpcode(FFREE   );                            // Free a data register
+  testOpcode(FXCH    );                            // Swap st(0) and st(i)
+
 }
 
 TestMachineCode::TestMachineCode() {
+  setClearOn(true);
   initAllOperands();
   for(int i = 0; i >= 0;i++) {
     try {

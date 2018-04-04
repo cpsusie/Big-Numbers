@@ -993,6 +993,16 @@ extern Opcode1Arg        FDIVP;
 extern Opcode1Arg        FSUBRP;
 extern Opcode1Arg        FDIVRP;
 
+extern Opcode1Arg        FCOMI;                            // Compare st(0) to st(i) and set CPU-flags
+extern Opcode1Arg        FCOMIP;                           // Compare st(0) to st(i) and set CPU-flags; pop st(0)
+extern Opcode1Arg        FUCOM;                            // Unordered compare st(0) to st(i)
+extern Opcode1Arg        FUCOMP;                           // Unordered compare st(0) to st(i); pop st(0)
+extern Opcode1Arg        FUCOMI;                           // Unordered compare st(0) to st(i) and set CPU-flags
+extern Opcode1Arg        FUCOMIP;                          // Unordered compare st(0) to st(i) and set CPU-flags; pop st(0)
+
+extern Opcode0Arg        FCOMPP;                           // Compare st(0) to st(1); pop both
+extern Opcode0Arg        FUCOMPP;                          // Unordered compare st(0) to st(1); pop both
+
 // ----------------------------- FPU aritmetic opcodes ----------------------------
 
 // ----------------------------- FPU compare opcodes ----------------------------
@@ -1004,17 +1014,6 @@ extern Opcode1Arg        FDIVRP;
 #define FCOMP_DWORD                            FPUINSA(0xD818)
 #define FCOMP_QWORD                            FPUINSA(0xDC18)
 
-#define FCOMPP                                 FPUINS( 0xDED9)                             // Compare st(0) to st(1); pop both
-#define FUCOMPP                                FPUINS( 0xDAE9)                             // Unordered compare st(0) to st(1); pop both
-
-#define FCOMI(    i)                           FPUINS( 0xDBF0     | (i))                   // Compare st(0) to st(i) and set CPU-flags
-#define FCOMIP(   i)                           FPUINS( 0xDFF0     | (i))                   // Compare st(0) to st(i) and set CPU-flags; pop st(0)
-
-#define FUCOM(    i)                           FPUINS( 0xDDE0     | (i))                   // Unordered compare st(0) to st(i)
-#define FUCOMP(   i)                           FPUINS( 0xDDE8     | (i))                   // Unordered compare st(0) to st(i); pop st(0)
-
-#define FUCOMI(   i)                           FPUINS( 0xDBE8     | (i))                   // Unordered compare st(0) to st(i) and set CPU-flags
-#define FUCOMIP(  i)                           FPUINS( 0xDFE8     | (i))                   // Unordered compare st(0) to st(i) and set CPU-flags; pop st(0)
 
 // ------------------------ FPU integer opcodes ---------------------------------
 #define FILD_WORD                              FPUINSA(0xDF00)
@@ -1057,17 +1056,17 @@ extern Opcode1Arg        FDIVRP;
 #define FICOMP_DWORD                           FPUINSA(0xDA18)
 
 // Move st(i) to st(0) if specified CPU condition is true
-#define FCMOVB( i)                             FPUINS(0xDAC0 | (i))                       // Move if below (CF=1)
-#define FCMOVEQ(i)                             FPUINS(0xDAC8 | (i))                       // Move if equal (ZF=1)
-#define FCMOVBE(i)                             FPUINS(0xDAD0 | (i))                       // Move if below or equal (CF=1 or ZF=1)
-#define FCMOVU( i)                             FPUINS(0xDAD8 | (i))                       // Move if unordered (PF=1)
-#define FCMOVAE(i)                             FPUINS(0xDBC0 | (i))                       // Move if above or equal (CF=0)
-#define FCMOVNE(i)                             FPUINS(0xDBC8 | (i))                       // Move if not equal (ZF=0)
-#define FCMOVA( i)                             FPUINS(0xDBD0 | (i))                       // Move if above (CF=0 and ZF=0)
-#define FCMOVNU(i)                             FPUINS(0xDBD8 | (i))                       // Move if not unordered (PF=0)
+extern Opcode1Arg        FCMOVB;                           // Move if below (CF=1)
+extern Opcode1Arg        FCMOVEQ;                          // Move if equal (ZF=1)
+extern Opcode1Arg        FCMOVBE;                          // Move if below or equal (CF=1 or ZF=1)
+extern Opcode1Arg        FCMOVU;                           // Move if unordered (PF=1)
+extern Opcode1Arg        FCMOVAE;                          // Move if above or equal (CF=0)
+extern Opcode1Arg        FCMOVNE;                          // Move if not equal (ZF=0)
+extern Opcode1Arg        FCMOVA;                           // Move if above (CF=0 and ZF=0)
+extern Opcode1Arg        FCMOVNU;                          // Move if not unordered (PF=0)
 
-#define FFREE(    i)                           FPUINS(0xDDC0 | (i))                       // Free a data register
-#define FXCH(     i)                           FPUINS(0xD9C8 | (i))                       // Swap st(0) and st(i)
+extern Opcode1Arg        FFREE;                            // Free a data register
+extern Opcode1Arg        FXCH;                             // Swap st(0) and st(i)
 
 extern Opcode0Arg        FNSTSWAX;                         // Store status word into CPU register AX
 extern Opcode0Arg        FWAIT;                            // Wait while FPU is busy
