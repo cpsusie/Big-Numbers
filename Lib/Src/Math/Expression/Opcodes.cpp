@@ -97,8 +97,8 @@ DEFNAME(OpcodeSetcc      ,  SETBE ,0x0F96  );              // Set byte if below 
 DEFNAME(OpcodeSetcc      ,  SETA  ,0x0F97  );              // Set byte if above                 (unsigned)
 DEFNAME(OpcodeSetcc      ,  SETS  ,0x0F98  );              // Set byte if sign
 DEFNAME(OpcodeSetcc      ,  SETNS ,0x0F99  );              // Set byte if not sign
-DEFNAME(OpcodeSetcc      ,  SETPE ,0x0F9A  );              // Set byte if parity even
-DEFNAME(OpcodeSetcc      ,  SETPO ,0x0F9B  );              // Set byte if parity odd
+DEFNAME(OpcodeSetcc      ,  SETP  ,0x0F9A  );              // Set byte if parity even
+DEFNAME(OpcodeSetcc      ,  SETNP ,0x0F9B  );              // Set byte if parity odd
 DEFNAME(OpcodeSetcc      ,  SETL  ,0x0F9C  );              // Set byte if less                  (signed  )
 DEFNAME(OpcodeSetcc      ,  SETGE ,0x0F9D  );              // Set byte if greater or equal      (signed  )
 DEFNAME(OpcodeSetcc      ,  SETLE ,0x0F9E  );              // Set byte if less or equal         (signed  )
@@ -238,3 +238,13 @@ DEFNAME(Opcode0Arg       ,FCOS    ,0xD9FF);                       // st(0) = cos
 DEFNAME(Opcode1Arg       ,FLDCW   ,0xD9  ,5,WORDPTR_ALLOWED);     // load control word
 DEFNAME(Opcode1Arg       ,FNSTCW  ,0xD9  ,7,WORDPTR_ALLOWED);     // store control word
 DEFNAME(Opcode1Arg       ,FNSTSW  ,0xDD  ,7,WORDPTR_ALLOWED);     // store status word
+
+
+// --------------------------- XMM opcodes --------------------------------
+
+DEFNAME(Opcode2Arg        ,MOVAPS ,0x0F28 , REGTYPE_XMM_ALLOWED | HAS_DIRECTIONBIT0 | XMMWORDPTR_ALLOWED);
+Opcode2ArgPfxF2SD          MOVSD1(_T("movsd") ,0x0F10 , HAS_DIRECTIONBIT0 );
+DEFNAME(Opcode2ArgPfxF2SD ,ADDSD  ,0x0F58 , FIRSTOP_REGONLY   );
+DEFNAME(Opcode2ArgPfxF2SD ,MULSD  ,0x0F59 , FIRSTOP_REGONLY   );
+DEFNAME(Opcode2ArgPfxF2SD ,SUBSD  ,0x0F5C , FIRSTOP_REGONLY   );
+DEFNAME(Opcode2ArgPfxF2SD ,DIVSD  ,0x0F5E , FIRSTOP_REGONLY   );

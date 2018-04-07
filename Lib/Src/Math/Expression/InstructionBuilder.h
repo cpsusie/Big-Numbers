@@ -53,6 +53,7 @@ private:
   const BYTE   m_extension;
   BYTE         m_opcodePos;
   const BYTE   m_opcodeSize;
+  const BYTE   m_directionMask;
   // is MOD-REG-R/M byte added
   bool         m_hasModeByte;
 #ifdef IS64BIT
@@ -132,8 +133,8 @@ public:
   inline bool hasSizeBit() const {
     return (getFlags() & HAS_SIZEBIT) != 0;
   }
-  inline bool hasDirectionBit() const {
-    return (getFlags() & HAS_DIRECTIONBIT) != 0;
+  inline bool hasDirectionBit1() const {
+    return (getFlags() & HAS_DIRECTIONBIT1) != 0;
   }
   inline bool hasWordSizePrefix() const {
     return (getFlags() & HAS_WORDPREFIX) != 0;
@@ -217,8 +218,16 @@ public:
   }
   InstructionBuilder &setOperandSize(OperandSize size);
   // Set bit 1 in opcode to 1 if destination is a register
-  inline InstructionBuilder &setDirectionBit() {
-    return hasDirectionBit() ? or(m_opcodePos,2) : *this;
+  inline InstructionBuilder &setDirectionBit1() {
+    return hasDirectionBit1() ? or(getLastOpcodeByteIndex(),m_directionMask) : *this;
+  }
+  inline bool needDirectionBitOn(OperandType dst, OperandType src) const {
+    return (m_flags&HAS_DIRECTIONBIT1)? ((dst==REGISTER)&&(src==MEMORYOPERAND))
+         : (m_flags&HAS_DIRECTIONBIT0)? ((src==REGISTER)&&(dst==MEMORYOPERAND))
+         : false;
+  }
+  inline InstructionBuilder &setDirectionBit(OperandType dst, OperandType src) {
+    return needDirectionBitOn(dst,src) ? or(getLastOpcodeByteIndex(),m_directionMask) : *this;
   }
   inline InstructionBuilder &setImmByteBit() {
     return or(m_opcodePos,2);

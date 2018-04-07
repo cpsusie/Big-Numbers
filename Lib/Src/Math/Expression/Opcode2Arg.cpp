@@ -76,7 +76,7 @@ InstructionBase Opcode2Arg::operator()(const InstructionOperand &op1, const Inst
     case REGISTER       : // reg <- reg
       return InstructionBuilder(*this).setRegRegOperands(op1.getRegister(),op2.getRegister());
     case MEMORYOPERAND  : // reg <- mem
-      return InstructionBuilder(*this).setMemoryRegOperands((MemoryOperand&)op2, op1.getRegister()).setDirectionBit();
+      return InstructionBuilder(*this).setMemoryRegOperands((MemoryOperand&)op2, op1.getRegister()).setDirectionBit(REGISTER,MEMORYOPERAND);
     case IMMEDIATEVALUE : // reg <- imm
       return Instruction2ArgImm(*this).setRegImm(op1.getRegister(), op2.getImmInt32());
     }
@@ -84,11 +84,24 @@ InstructionBase Opcode2Arg::operator()(const InstructionOperand &op1, const Inst
   case MEMORYOPERAND    :
     switch(op2.getType()) {
     case REGISTER       : // mem <- reg
-      return InstructionBuilder(*this).setMemoryRegOperands((MemoryOperand&)op1, op2.getRegister());
+      return InstructionBuilder(*this).setMemoryRegOperands((MemoryOperand&)op1, op2.getRegister()).setDirectionBit(MEMORYOPERAND,REGISTER);
     case IMMEDIATEVALUE : // mem <- imm
       return Instruction2ArgImm(*this).setMemImm((MemoryOperand&)op1, op2.getImmInt32());
     }
   }
   throwInvalidOperandCombination(op1,op2);
   return __super::operator()(op1,op2);
+}
+
+InstructionBase Opcode2ArgPfxF2::operator()(const InstructionOperand &op1, const InstructionOperand &op2) const {
+  return InstructionBuilder(__super::operator()(op1,op2)).prefix(0xF2);
+}
+
+bool Opcode2ArgPfxF2SD::validateSameSize(const Register &reg, const InstructionOperand &op, bool throwOnError) const {
+  if((reg.getType() == REGTYPE_XMM) && (op.getType() == MEMORYOPERAND)) {
+    if(op.getSize() == REGSIZE_MMWORD) {
+      return true;
+    }
+  }
+  return __super::validateSameSize(reg,op,throwOnError);
 }

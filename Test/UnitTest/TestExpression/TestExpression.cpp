@@ -29,6 +29,10 @@ namespace TestExpression {
     }
   };
 
+  static void vprint(const TCHAR *format, va_list argptr) {
+    OUTPUT(_T("%s"),vformat(format,argptr).cstr());
+  }
+
   class ExpressionTest {
   private:
     static bool          s_evaluateTestStarted;
@@ -1662,7 +1666,7 @@ namespace TestExpression {
 
     TEST_METHOD(TestMachineCode) {
       try {
-        generateTestSequence();
+        generateTestSequence(vprint);
       } catch (Exception e) {
         OUTPUT(_T("Exception:%s"), e.what());
       }

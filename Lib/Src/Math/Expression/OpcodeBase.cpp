@@ -25,6 +25,12 @@ static inline BYTE findSize(UINT op) {
   return 4;
 }
 
+#define THROWINVALIDFLAGS(form,...)                                             \
+  throwInvalidArgumentException(method                                          \
+                               ,format(_T("%s:%s")                              \
+                                      ,getMnemonic().cstr()                     \
+                                      ,format(form,__VA_ARGS__).cstr()).cstr())
+
 OpcodeBase::OpcodeBase(const String &mnemonic, UINT op, BYTE extension, BYTE opCount, UINT flags)
   : m_mnemonic(  toLowerCase(mnemonic))
   , m_size(      findSize(op)         )
@@ -32,59 +38,61 @@ OpcodeBase::OpcodeBase(const String &mnemonic, UINT op, BYTE extension, BYTE opC
   , m_opCount(   opCount              )
   , m_flags(     flags                )
 {
-  assert(extension <= 7);
+  DEFINEMETHODNAME;
+  if(extension > 7) {
+    THROWINVALIDFLAGS(_T("Extension=%d. Max is 7"), extension);
+  }
   m_bytes = swapBytes(op,m_size);
   if(getFlags() & HAS_SIZEBIT) {
     if(op & 1) {
-      throwInvalidArgumentException(_T("%s:HAS_SIZEBIT set for opcode %X (bit 0 already set)")
-                                   ,getMnemonic().cstr()
-                                   ,op
-                                   );
+      THROWINVALIDFLAGS(_T("HAS_SIZEBIT set for opcode %X (bit 0 already set)"),op);
     }
   }
   if(getFlags() & HAS_WORDPREFIX) {
-    if(!(getFlags() & (WORDPTR_ALLOWED | REGSIZE_WORD_ALLOWED))) {
-      throwInvalidArgumentException(_T("%s:HAS_WORDPREFIX set for opcode %X, but word size operands not allowed")
-                                   ,getMnemonic().cstr()
-                                   ,op
-                                   );
+    if(!(getFlags() & (WORDPTR_ALLOWED | WORDGPR_ALLOWED))) {
+      THROWINVALIDFLAGS(_T("HAS_WORDPREFIX set for opcode %X, but word size operands not allowed"),op);
     }
   }
+
 #ifdef IS64BIT
   if(getFlags() & HAS_REXQSIZEBIT) {
-    if(!(getFlags() & (QWORDPTR_ALLOWED | REGSIZE_QWORD_ALLOWED))) {
-      throwInvalidArgumentException(_T("%s:HAS_REXQSIZEBIT set for opcode %X, but qword size operands not allowed")
-                                   ,getMnemonic().cstr()
-                                   ,op
-                                   );
+    if(!(getFlags() & (QWORDPTR_ALLOWED | QWORDGPR_ALLOWED))) {
+      THROWINVALIDFLAGS(_T("HAS_REXQSIZEBIT set for opcode %X, but qword size operands not allowed"),op);
     }
   }
 #endif // IS64BIT
-  if(getFlags() & HAS_DIRECTIONBIT) {
+
+  if(getFlags() & HAS_DIRECTIONBIT1) {
     if(op & 2) {
-      throwInvalidArgumentException(_T("%s:HAS_DIRECTIONBIT set for opcode %X (bit 1 already set)")
-                                   ,getMnemonic().cstr()
-                                   ,op
-                                   );
+      THROWINVALIDFLAGS(_T("HAS_DIRECTIONBIT1 set for opcode %X (bit 1 already set)"),op);
     }
     if(getFlags() & FIRSTOP_REGONLY) {
-      throwInvalidArgumentException(_T("%s:HAS_DIRECTIONBIT and FIRSTOP_REGONLY cannot both be set")
-                                   ,getMnemonic().cstr()
-                                   );
+      THROWINVALIDFLAGS(_T("HAS_DIRECTIONBIT1 and FIRSTOP_REGONLY cannot both be set"));
+    }
+  }
+
+  if(getFlags() & HAS_DIRECTIONBIT0) {
+    if(op & 1) {
+      THROWINVALIDFLAGS(_T("HAS_DIRECTIONBIT0 set for opcode %X (bit 0 already set)"),op);
+    }
+    if(getFlags() & HAS_DIRECTIONBIT1) {
+      THROWINVALIDFLAGS(_T("Cannot have both HAS_DIRECTIONBIT0 and HAS_DIRECTIONBIT1 set for opcode %X"),op);
+    }
+    if(getFlags() & FIRSTOP_REGONLY) {
+      THROWINVALIDFLAGS(_T("HAS_DIRECTIONBIT0 and FIRSTOP_REGONLY cannot both be set"));
+    }
+    if(getFlags() & HAS_SIZEBIT) {
+      THROWINVALIDFLAGS(_T("Cannot have both HAS_DIRECTIONBIT0 and HAS_SIZEBIT set for opcode %X"),op);
     }
   }
 
 #define ALL_REGTYPES (REGTYPE_GPR0_ALLOWED|REGTYPE_GPR_ALLOWED|REGTYPE_SEG_ALLOWED|REGTYPE_FPU_ALLOWED|REGTYPE_XMM_ALLOWED)
 
   if((getFlags() & FIRSTOP_REGONLY) && ((getFlags() & ALL_REGTYPES) == 0)) {
-    throwInvalidArgumentException(_T("%s:FIRSTOP_REGONLY is set, but no registertypes allowed")
-                                 ,getMnemonic().cstr()
-                                 );
+    THROWINVALIDFLAGS(_T("FIRSTOP_REGONLY is set, but no registertypes allowed"));
   }
   if((getFlags() & LASTOP_IMMONLY) && ((getFlags() & (IMMEDIATEVALUE_ALLOWED | IMM64_ALLOWED)) == 0)) {
-      throwInvalidArgumentException(_T("%s:LASTOP_IMMONLY is set, but no immediate operands allowed")
-                                   ,getMnemonic().cstr()
-                                   );
+    THROWINVALIDFLAGS(_T("LASTOP_IMMONLY is set, but no immediate operands allowed"));
   }
 }
 
@@ -104,7 +112,7 @@ OpcodeBase::OpcodeBase(const String &mnemonic, const InstructionBase &src, BYTE 
 bool OpcodeBase::isRegisterAllowed(const Register &reg) const {
   switch(reg.getType()) {
   case REGTYPE_GPR:
-    if(!isRegisterSizeAllowed(reg.getSize())) {
+    if(!isGPRegisterSizeAllowed(reg.getSize())) {
       return false;
     }
     return  ((getFlags() & REGTYPE_GPR_ALLOWED ) != 0)
@@ -118,27 +126,31 @@ bool OpcodeBase::isRegisterAllowed(const Register &reg) const {
   return false;
 }
 
-bool OpcodeBase::isRegisterSizeAllowed(RegSize size) const {
+bool OpcodeBase::isGPRegisterSizeAllowed(RegSize size) const {
   switch(size) {
-  case REGSIZE_BYTE : return (getFlags() & REGSIZE_BYTE_ALLOWED ) != 0;
-  case REGSIZE_WORD : return (getFlags() & REGSIZE_WORD_ALLOWED ) != 0;
-  case REGSIZE_DWORD: return (getFlags() & REGSIZE_DWORD_ALLOWED) != 0;
-  case REGSIZE_QWORD: return (getFlags() & REGSIZE_QWORD_ALLOWED) != 0;
-  case REGSIZE_TBYTE: return (getFlags() & REGSIZE_TBYTE_ALLOWED) != 0;
-  case REGSIZE_OWORD: return (getFlags() & REGSIZE_OWORD_ALLOWED) != 0;
+  case REGSIZE_BYTE : return (getFlags() & BYTEGPR_ALLOWED   ) != 0;
+  case REGSIZE_WORD : return (getFlags() & WORDGPR_ALLOWED   ) != 0;
+  case REGSIZE_DWORD: return (getFlags() & DWORDGPR_ALLOWED  ) != 0;
+  case REGSIZE_QWORD: return (getFlags() & QWORDGPR_ALLOWED  ) != 0;
+  default           : throwInvalidArgumentException(__TFUNCTION__
+                                                   ,_T("size=%s. (not GP-register size)")
+                                                   ,::toString(size).cstr()
+                                                   );
   }
   return false;
 }
 
 bool OpcodeBase::isMemoryOperandSizeAllowed(OperandSize size) const {
   switch(size) {
-  case REGSIZE_BYTE : return (getFlags() & BYTEPTR_ALLOWED ) != 0;
-  case REGSIZE_WORD : return (getFlags() & WORDPTR_ALLOWED ) != 0;
-  case REGSIZE_DWORD: return (getFlags() & DWORDPTR_ALLOWED) != 0;
-  case REGSIZE_QWORD: return (getFlags() & QWORDPTR_ALLOWED) != 0;
-  case REGSIZE_TBYTE: return (getFlags() & TBYTEPTR_ALLOWED) != 0;
-  case REGSIZE_OWORD: return (getFlags() & OWORDPTR_ALLOWED) != 0;
-  case REGSIZE_VOID : return (getFlags() & VOIDPTR_ALLOWED ) != 0;
+  case REGSIZE_BYTE   : return (getFlags() & BYTEPTR_ALLOWED   ) != 0;
+  case REGSIZE_WORD   : return (getFlags() & WORDPTR_ALLOWED   ) != 0;
+  case REGSIZE_DWORD  : return (getFlags() & DWORDPTR_ALLOWED  ) != 0;
+  case REGSIZE_QWORD  : return (getFlags() & QWORDPTR_ALLOWED  ) != 0;
+  case REGSIZE_TBYTE  : return (getFlags() & TBYTEPTR_ALLOWED  ) != 0;
+  case REGSIZE_MMWORD : return (getFlags() & MMWORDPTR_ALLOWED ) != 0;
+  case REGSIZE_XMMWORD: return (getFlags() & XMMWORDPTR_ALLOWED) != 0;
+  case REGSIZE_VOID   : return (getFlags() & VOIDPTR_ALLOWED   ) != 0;
+  default             : throwInvalidArgumentException(__TFUNCTION__,_T("size=%d"), size);
   }
   return false;
 }

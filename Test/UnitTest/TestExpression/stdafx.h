@@ -7,5 +7,6 @@
 
 #include <MyUtil.h>
 
-void generateTestSequence();
+typedef void (*vprintFunction)(const TCHAR *format, va_list argptr);
+void generateTestSequence(vprintFunction vpf);
 void callAssemblerCode();

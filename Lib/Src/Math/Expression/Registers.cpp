@@ -14,26 +14,28 @@ String toString(RegType regType) {
 
 String toString(RegSize regSize) {
   switch(regSize) {
-  case REGSIZE_BYTE  : return _T("byte" );
-  case REGSIZE_WORD  : return _T("word" );
-  case REGSIZE_DWORD : return _T("dword");
-  case REGSIZE_QWORD : return _T("qword");
-  case REGSIZE_TBYTE : return _T("tbyte");
-  case REGSIZE_OWORD : return _T("oword");
-  case REGSIZE_VOID  : return _T("void" );
-  default            : return format(_T("Unknown register size:%d"), regSize);
+  case REGSIZE_BYTE    : return _T("byte" );
+  case REGSIZE_WORD    : return _T("word" );
+  case REGSIZE_DWORD   : return _T("dword");
+  case REGSIZE_QWORD   : return _T("qword");
+  case REGSIZE_TBYTE   : return _T("tbyte");
+  case REGSIZE_MMWORD  : return _T("mmword");
+  case REGSIZE_XMMWORD : return _T("xmmword");
+  case REGSIZE_VOID    : return _T("void" );
+  default              : return format(_T("Unknown register size:%d"), regSize);
   }
 }
 
 BYTE regSizeToByteCount(RegSize regSize) {
   switch(regSize) {
-  case REGSIZE_BYTE  : 1;
-  case REGSIZE_WORD  : 2;
-  case REGSIZE_DWORD : 4;
-  case REGSIZE_QWORD : 8;
-  case REGSIZE_TBYTE : 10;
-  case REGSIZE_OWORD : 16;
-  default            : throwInvalidArgumentException(__TFUNCTION__,_T("Unknown register size:%d"), regSize);
+  case REGSIZE_BYTE    : 1;
+  case REGSIZE_WORD    : 2;
+  case REGSIZE_DWORD   : 4;
+  case REGSIZE_QWORD   : 8;
+  case REGSIZE_TBYTE   : 10;
+  case REGSIZE_MMWORD  : 8;
+  case REGSIZE_XMMWORD : 16;
+  default              : throwInvalidArgumentException(__TFUNCTION__,_T("Unknown register size:%d"), regSize);
   }
   return 0;
 }

@@ -372,13 +372,15 @@ public:
 #endif // IS64BIT
 };
 
-typedef MemoryPtr<REGSIZE_BYTE > BYTEPtr;
-typedef MemoryPtr<REGSIZE_WORD > WORDPtr;
-typedef MemoryPtr<REGSIZE_DWORD> DWORDPtr;
-typedef MemoryPtr<REGSIZE_QWORD> QWORDPtr;
-typedef MemoryPtr<REGSIZE_OWORD> XMMWORDPtr;
-typedef MemoryPtr<REGSIZE_TBYTE> TBYTEPtr;
-class VOIDPtr : public MemoryPtr<REGSIZE_VOID > {
+typedef MemoryPtr<REGSIZE_BYTE >   BYTEPtr;
+typedef MemoryPtr<REGSIZE_WORD >   WORDPtr;
+typedef MemoryPtr<REGSIZE_DWORD>   DWORDPtr;
+typedef MemoryPtr<REGSIZE_QWORD>   QWORDPtr;
+typedef MemoryPtr<REGSIZE_MMWORD>  MMWORDPtr;
+typedef MemoryPtr<REGSIZE_XMMWORD> XMMWORDPtr;
+typedef MemoryPtr<REGSIZE_TBYTE>   TBYTEPtr;
+
+class VOIDPtr : public MemoryPtr<REGSIZE_VOID> {
 public:
   VOIDPtr(const MemoryOperand &op) : MemoryPtr(op) {
   }
@@ -412,42 +414,42 @@ public:
 #define REGTYPE_SEG_ALLOWED    0x00000004
 #define REGTYPE_FPU_ALLOWED    0x00000008
 #define REGTYPE_XMM_ALLOWED    0x00000010
-#define REGSIZE_BYTE_ALLOWED   0x00000020
-#define REGSIZE_WORD_ALLOWED   0x00000040
-#define REGSIZE_DWORD_ALLOWED  0x00000080
+#define BYTEGPR_ALLOWED        0x00000020
+#define WORDGPR_ALLOWED        0x00000040
+#define DWORDGPR_ALLOWED       0x00000080
 #ifdef IS32BIT
-#define REGSIZE_QWORD_ALLOWED  0
+#define QWORDGPR_ALLOWED       0
 #else // IS64BIT
-#define REGSIZE_QWORD_ALLOWED  0x00000100
+#define QWORDGPR_ALLOWED       0x00000100
 #endif // IS64BIT
-#define REGSIZE_TBYTE_ALLOWED  0x00000200
-#define REGSIZE_OWORD_ALLOWED  0x00000400
-#define BYTEPTR_ALLOWED        0x00000800
-#define WORDPTR_ALLOWED        0x00001000
-#define DWORDPTR_ALLOWED       0x00002000
-#define QWORDPTR_ALLOWED       0x00004000
-#define TBYTEPTR_ALLOWED       0x00008000
-#define OWORDPTR_ALLOWED       0x00010000
-#define VOIDPTR_ALLOWED        0x00020000
-#define IMM8_ALLOWED           0x00040000
-#define IMM16_ALLOWED          0x00080000
-#define IMM32_ALLOWED          0x00100000
+#define BYTEPTR_ALLOWED        0x00000200
+#define WORDPTR_ALLOWED        0x00000400
+#define DWORDPTR_ALLOWED       0x00000800
+#define QWORDPTR_ALLOWED       0x00001000
+#define TBYTEPTR_ALLOWED       0x00002000
+#define MMWORDPTR_ALLOWED      0x00004000
+#define XMMWORDPTR_ALLOWED     0x00008000
+#define VOIDPTR_ALLOWED        0x00010000
+#define IMM8_ALLOWED           0x00020000
+#define IMM16_ALLOWED          0x00040000
+#define IMM32_ALLOWED          0x00080000
 #ifdef IS32BIT
 #define IMM64_ALLOWED          0
 #else  // IS64BIT
-#define IMM64_ALLOWED          0x00200000
+#define IMM64_ALLOWED          0x00100000
 #endif // IS64BIT
 
-#define IMMMADDR_ALLOWED       0x00400000
-#define REGINDEX_NOMODE        0x00800000
-#define HAS_SIZEBIT            0x01000000
-#define HAS_WORDPREFIX         0x02000000
+#define IMMMADDR_ALLOWED       0x00200000
+#define REGINDEX_NOMODE        0x00400000
+#define HAS_SIZEBIT            0x00800000
+#define HAS_WORDPREFIX         0x01000000
 #ifdef IS32BIT
 #define HAS_REXQSIZEBIT        0x00000000
 #else  // IS64BIT
-#define HAS_REXQSIZEBIT        0x04000000
+#define HAS_REXQSIZEBIT        0x02000000
 #endif // IS64BIT
-#define HAS_DIRECTIONBIT       0x08000000
+#define HAS_DIRECTIONBIT1      0x04000000
+#define HAS_DIRECTIONBIT0      0x08000000
 #define FIRSTOP_REGONLY        0x10000000
 #define LASTOP_IMMONLY         0x20000000
 
@@ -455,16 +457,16 @@ public:
 
 #ifdef IS32BIT
 #define NONBYTE_GPRPTR_ALLOWED      (WORDPTR_ALLOWED      | DWORDPTR_ALLOWED)
-#define REGSIZE_INDEX_ALLOWED        REGSIZE_DWORD_ALLOWED
+#define INDEXGPR_ALLOWED             DWORDGPR_ALLOWED
 #define INDEXPTR_ALLOWED             DWORDPTR_ALLOWED
 #else  // IS64BIT
-#define NONBYTE_GPRPTR_ALLOWED      (WORDPTR_ALLOWED      | DWORDPTR_ALLOWED      | QWORDPTR_ALLOWED)
-#define REGSIZE_INDEX_ALLOWED        REGSIZE_QWORD_ALLOWED
+#define NONBYTE_GPRPTR_ALLOWED      (WORDPTR_ALLOWED      | DWORDPTR_ALLOWED | QWORDPTR_ALLOWED)
+#define INDEXGPR_ALLOWED             QWORDGPR_ALLOWED
 #define INDEXPTR_ALLOWED             QWORDPTR_ALLOWED
 #endif // IS64BIT
 
-#define NONBYTE_GPRSIZE_ALLOWED     (REGSIZE_WORD_ALLOWED | REGSIZE_DWORD_ALLOWED | REGSIZE_QWORD_ALLOWED)
-#define ALL_GPRSIZE_ALLOWED         (REGSIZE_BYTE_ALLOWED | NONBYTE_GPRSIZE_ALLOWED)
+#define NONBYTE_GPRSIZE_ALLOWED     (WORDGPR_ALLOWED      | DWORDGPR_ALLOWED | QWORDGPR_ALLOWED)
+#define ALL_GPRSIZE_ALLOWED         (BYTEGPR_ALLOWED      | NONBYTE_GPRSIZE_ALLOWED)
 #define NONBYTE_GPR_ALLOWED         (REGTYPE_GPR_ALLOWED  | NONBYTE_GPRSIZE_ALLOWED)
 #define ALL_GPR_ALLOWED             (REGTYPE_GPR_ALLOWED  | ALL_GPRSIZE_ALLOWED    )
 #define ALL_GPR0_ALLOWED            (REGTYPE_GPR0_ALLOWED | ALL_GPRSIZE_ALLOWED    )
@@ -472,7 +474,7 @@ public:
 
 #define HAS_NONBYTE_SIZEBITS        (HAS_WORDPREFIX | HAS_REXQSIZEBIT     )
 #define HAS_ALL_SIZEBITS            (HAS_SIZEBIT    | HAS_NONBYTE_SIZEBITS)
-#define ALL_MEMOPSIZES              (BYTEPTR_ALLOWED | WORDPTR_ALLOWED | DWORDPTR_ALLOWED | QWORDPTR_ALLOWED | TBYTEPTR_ALLOWED | OWORDPTR_ALLOWED)
+#define ALL_MEMOPSIZES              (BYTEPTR_ALLOWED | WORDPTR_ALLOWED | DWORDPTR_ALLOWED | QWORDPTR_ALLOWED | TBYTEPTR_ALLOWED | XMMWORDPTR_ALLOWED)
 
 class OpcodeBase {
 private:
@@ -493,7 +495,8 @@ protected:
   void throwInvalidOperandType(        const InstructionOperand &op, BYTE index) const;
   void throwUnknownOperandType(        const InstructionOperand &op, BYTE index) const;
   static void throwUnknownRegisterType(const TCHAR *method, RegType      type);
-  bool isRegisterSizeAllowed(     RegSize     size) const;
+  // Should only be used for GPR-registers
+  bool isGPRegisterSizeAllowed(   RegSize     size) const;
   bool isMemoryOperandSizeAllowed(OperandSize size) const;
   bool isImmediateSizeAllowed(    OperandSize size) const;
 
@@ -512,7 +515,7 @@ protected:
   bool validateImmediateValue(           const Register           &reg , const InstructionOperand &imm , bool throwOnError) const;
   bool validateImmediateValue(           const MemoryOperand      &mem , const InstructionOperand &imm , bool throwOnError) const;
   bool validateSameSize(                 const Register           &reg1, const Register           &reg2, bool throwOnError) const;
-  bool validateSameSize(                 const Register           &reg , const InstructionOperand &op  , bool throwOnError) const;
+  virtual bool validateSameSize(         const Register           &reg , const InstructionOperand &op  , bool throwOnError) const;
   bool validateSameSize(                 const InstructionOperand &op1 , const InstructionOperand &op2 , bool throwOnError) const;
   bool validateIsRegisterOperand(        const InstructionOperand &op  , BYTE  index                   , bool throwOnError) const;
   bool validateIsMemoryOperand(          const InstructionOperand &op  , BYTE  index                   , bool throwOnError) const;
@@ -598,7 +601,7 @@ public:
 
 class Opcode2Arg : public OpcodeBase {
 public :
-  Opcode2Arg(const String &mnemonic, UINT op, UINT flags=ALL_GPR_ALLOWED | ALL_GPRPTR_ALLOWED | IMMEDIATEVALUE_ALLOWED | HAS_ALL_SIZEBITS | HAS_DIRECTIONBIT)
+  Opcode2Arg(const String &mnemonic, UINT op, UINT flags=ALL_GPR_ALLOWED | ALL_GPRPTR_ALLOWED | IMMEDIATEVALUE_ALLOWED | HAS_ALL_SIZEBITS | HAS_DIRECTIONBIT1)
     : OpcodeBase(mnemonic, op, 0, 2, flags) {
   }
   InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
@@ -619,7 +622,7 @@ private:
 public :
   OpcodeIMul(const String &mnemonic)
     : Opcode1Arg(mnemonic, 0xF6,5)
-    , m_imul2ArgCode(mnemonic, 0x0FAF,    NONBYTE_GPR_ALLOWED | NONBYTE_GPRPTR_ALLOWED | FIRSTOP_REGONLY | HAS_NONBYTE_SIZEBITS)
+    , m_imul2ArgCode(mnemonic, 0x0FAF, NONBYTE_GPR_ALLOWED | NONBYTE_GPRPTR_ALLOWED | FIRSTOP_REGONLY | HAS_NONBYTE_SIZEBITS)
     , m_imul3ArgCode(mnemonic, 0x69)
   {
   }
@@ -638,7 +641,7 @@ private:
   const OpcodeBase m_eaxRegCode;
 public:
   OpcodeXchg(const String &mnemonic)
-    : Opcode2Arg(  mnemonic, 0x86, ALL_GPR_ALLOWED | ALL_GPRPTR_ALLOWED | HAS_ALL_SIZEBITS )
+    : Opcode2Arg(  mnemonic, 0x86, ALL_GPR_ALLOWED | ALL_GPRPTR_ALLOWED | HAS_ALL_SIZEBITS)
     , m_eaxRegCode(mnemonic, 0x90,0,1,REGINDEX_NOMODE)
   {
   }
@@ -656,8 +659,8 @@ public :
     : Opcode2Arg(    mnemonic, 0x88)
     , m_regImmCode(  mnemonic, 0xB0, ALL_GPR_ALLOWED     | IMMEDIATEVALUE_ALLOWED | IMM64_ALLOWED        | HAS_ALL_SIZEBITS )
     , m_memImmCode(  mnemonic, 0xC6, ALL_GPRPTR_ALLOWED  | IMMEDIATEVALUE_ALLOWED                        | HAS_ALL_SIZEBITS )
-    , m_GPR0AddrCode(mnemonic, 0xA0, ALL_GPR0_ALLOWED    | IMMMADDR_ALLOWED       | ALL_GPRPTR_ALLOWED   | HAS_ALL_SIZEBITS | HAS_DIRECTIONBIT)
-    , m_movSegCode(  mnemonic, 0x8C, NONBYTE_GPR_ALLOWED | REGTYPE_SEG_ALLOWED    | WORDPTR_ALLOWED      | HAS_DIRECTIONBIT)
+    , m_GPR0AddrCode(mnemonic, 0xA0, ALL_GPR0_ALLOWED    | IMMMADDR_ALLOWED       | ALL_GPRPTR_ALLOWED   | HAS_ALL_SIZEBITS | HAS_DIRECTIONBIT1)
+    , m_movSegCode(  mnemonic, 0x8C, NONBYTE_GPR_ALLOWED | REGTYPE_SEG_ALLOWED    | WORDPTR_ALLOWED      | HAS_DIRECTIONBIT1)
   {
   }
   bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError=false) const;
@@ -680,8 +683,8 @@ private:
   Opcode1Arg m_immCode;
 public:
   inline OpcodePushPop(const String &mnemonic, BYTE opreg, BYTE opmem, BYTE opImm, BYTE extension)
-    : Opcode1Arg(mnemonic, opreg, 0        , REGTYPE_GPR_ALLOWED | REGSIZE_INDEX_ALLOWED | REGSIZE_WORD_ALLOWED | HAS_WORDPREFIX | REGINDEX_NOMODE)
-    , m_memCode( mnemonic, opmem, extension,                       INDEXPTR_ALLOWED      | WORDPTR_ALLOWED      | HAS_WORDPREFIX)
+    : Opcode1Arg(mnemonic, opreg, 0        , REGTYPE_GPR_ALLOWED | INDEXGPR_ALLOWED | WORDGPR_ALLOWED | HAS_WORDPREFIX | REGINDEX_NOMODE)
+    , m_memCode( mnemonic, opmem, extension,                       INDEXPTR_ALLOWED | WORDPTR_ALLOWED | HAS_WORDPREFIX)
     , m_immCode( mnemonic, opImm, 0        , opImm?IMMEDIATEVALUE_ALLOWED:0)
   {
   }
@@ -719,7 +722,7 @@ public:
 
 class OpcodeDoubleShift : public OpcodeBase {
 private:
-  OpcodeBase m_immCode;
+  Opcode2Arg m_clCode;
 public:
   OpcodeDoubleShift(const String &mnemonic, UINT opCL, UINT opImm);
   bool isValidOperandType(const InstructionOperand &op, BYTE index) const {
@@ -732,13 +735,11 @@ public:
 class OpcodeBitScan : public Opcode2Arg {
 public:
   OpcodeBitScan(const String &mnemonic, UINT op);
-  bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError=false) const;
-  InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
 };
 
 class OpcodeSetcc : public Opcode1Arg {
 public:
-  OpcodeSetcc(const String &mnemonic, UINT op) : Opcode1Arg(mnemonic, op, 0, REGTYPE_GPR_ALLOWED | REGSIZE_BYTE_ALLOWED | BYTEPTR_ALLOWED) {
+  OpcodeSetcc(const String &mnemonic, UINT op) : Opcode1Arg(mnemonic, op, 0, REGTYPE_GPR_ALLOWED | BYTEGPR_ALLOWED | BYTEPTR_ALLOWED) {
   }
 };
 
@@ -763,7 +764,7 @@ private:
   const Opcode1Arg m_qwordCode;
   const Opcode1Arg m_tbyteCode;
 public:
-  OpcodeFPUTransfer(const String mnemonic
+  OpcodeFPUTransfer(const String &mnemonic
     , UINT opreg, BYTE opdw, BYTE extdw, BYTE opqw, BYTE extqw, BYTE optb, BYTE exttb)
     : Opcode1Arg( mnemonic, opreg, 0    , REGTYPE_FPU_ALLOWED)
     , m_dwordCode(mnemonic, opdw , extdw, DWORDPTR_ALLOWED   )
@@ -779,7 +780,7 @@ class OpcodeFPU2Reg : public Opcode2Arg {
 private:
   const OpcodeBase m_st0iCode;
 public:
-  OpcodeFPU2Reg(const String mnemonic, UINT opi0, UINT op0i)
+  OpcodeFPU2Reg(const String &mnemonic, UINT opi0, UINT op0i)
     : Opcode2Arg(mnemonic,opi0    ,REGTYPE_FPU_ALLOWED)
     , m_st0iCode(mnemonic,op0i,0,1,REGTYPE_FPU_ALLOWED)
   {
@@ -793,7 +794,7 @@ private:
   const Opcode1Arg    m_qwordCode;
   const OpcodeFPU2Reg m_2regCode;
 public:
-  OpcodeFPUArithm(const String mnemonic
+  OpcodeFPUArithm(const String &mnemonic
     , UINT opp, UINT opi0, UINT op0i, BYTE opdw, BYTE extdw, BYTE opqw, BYTE extqw)
     : Opcode0Arg( mnemonic, opp                                   )
     , m_2regCode( mnemonic, opi0,op0i                             )
@@ -815,7 +816,7 @@ private:
   const Opcode1Arg m_dwordCode;
   const Opcode1Arg m_qwordCode;
 public:
-  OpcodeFPUCompare(const String mnemonic
+  OpcodeFPUCompare(const String &mnemonic
     , UINT opreg, BYTE opdw, BYTE extdw, BYTE opqw, BYTE extqw)
     : Opcode1Arg( mnemonic, opreg, 0    , REGTYPE_FPU_ALLOWED)
     , m_dwordCode(mnemonic, opdw , extdw, DWORDPTR_ALLOWED   )
@@ -831,7 +832,7 @@ private:
   const Opcode1Arg m_dwordCode;
   const Opcode1Arg m_qwordCode;
 public:
-  OpcodeFPUIArithm(const String mnemonic
+  OpcodeFPUIArithm(const String &mnemonic
     , UINT opw, BYTE extw, BYTE opdw, BYTE extdw, BYTE opqw, BYTE extqw)
     : Opcode1Arg( mnemonic, opw , extw ,      WORDPTR_ALLOWED   )
     , m_dwordCode(mnemonic, opdw, extdw,      DWORDPTR_ALLOWED  )
@@ -840,6 +841,25 @@ public:
   }
   bool isValidOperand(const InstructionOperand &op, bool throwOnError=false) const;
   InstructionBase operator()(const InstructionOperand &op) const;
+};
+
+class Opcode2ArgPfxF2 : public Opcode2Arg {
+public:
+  Opcode2ArgPfxF2(const String &mnemonic, UINT op, UINT flags)
+    : Opcode2Arg(mnemonic, op, flags | REGTYPE_XMM_ALLOWED)
+  {
+  }
+  InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
+};
+
+class Opcode2ArgPfxF2SD : public Opcode2ArgPfxF2 {
+protected:
+  bool validateSameSize(const Register &reg , const InstructionOperand &op, bool throwOnError) const;
+public:
+  Opcode2ArgPfxF2SD(const String &mnemonic, UINT op, UINT flags = 0)
+    : Opcode2ArgPfxF2(mnemonic, op, flags | MMWORDPTR_ALLOWED)
+  {
+  }
 };
 
 // --------------------------------- Opcode mnemonics ------------------------------
@@ -932,8 +952,8 @@ extern OpcodeSetcc       SETBE;                            // Set byte   if belo
 extern OpcodeSetcc       SETA;                             // Set byte   if above            (CF==0 && ZF=0)   (unsigned)
 extern OpcodeSetcc       SETS;                             // Set byte   if sign             (SF==1 )
 extern OpcodeSetcc       SETNS;                            // Set byte   if not sign         (SF==0 )
-extern OpcodeSetcc       SETPE;                            // Set byte   if parity even      (PF==1 )
-extern OpcodeSetcc       SETPO;                            // Set byte   if parity odd       (PF==0 )
+extern OpcodeSetcc       SETP;                             // Set byte   if parity even      (PF==1 )
+extern OpcodeSetcc       SETNP;                            // Set byte   if parity odd       (PF==0 )
 extern OpcodeSetcc       SETL;                             // Set byte   if less             (SF!=OF)          (signed  )
 extern OpcodeSetcc       SETGE;                            // Set byte   if greater or equal (SF==OF)          (signed  )
 extern OpcodeSetcc       SETLE;                            // Set byte   if less or equal    (ZF==1 || SF!=OF) (signed  )
@@ -1104,21 +1124,11 @@ extern Opcode1Arg        FLDCW;                            // load control word.
 extern Opcode1Arg        FNSTCW;                           // store control word. op=word ptr
 extern Opcode1Arg        FNSTSW;                           // store status word.  op=word ptr
 
-#ifdef __NEVER__
+// ---------------------------- XMM opcodes -----------------------------------------
 
-// Additional forms of IMUL
-
-#define MOVSD_XMM_MMWORD(xmm)                  B3OP1XMM(0xF20F10,xmm)       // Build src with MEM_ADDR-*
-#define MOVSD_MMWORD_XMM(xmm)                  B3OP1XMM(0xF20F11,xmm)       // Build dst with MEM_ADDR-*
-
-#define MOVAPS_REG_MEM(   xmm)                 B2OPXMM( 0x0F28,xmm)         // Build op2 with MEM_ADDR-*,REGREG-macroes
-#define MOVAPS_MEM_REG(   xmm)                 B2OPXMM( 0x0F29,xmm)         // Build op2 with MEM_ADDR-*,REGREG-macroes
-
-#define ADDSD(xmm)                             B4OP(0xF20F5800 | ((xmm) << 3))               // Build src with MEM_ADDR-*,REGREG-macroes
-#define MULSD(xmm)                             B4OP(0xF20F5900 | ((xmm) << 3))
-#define SUBSD(xmm)                             B4OP(0xF20F5C00 | ((xmm) << 3))
-#define DIVSD(xmm)                             B4OP(0xF20F5E00 | ((xmm) << 3))
-
-// These opcodes should all be used with MEM_ADDR_* to get the various addressing-modes
-
-#endif
+extern Opcode2Arg        MOVAPS;
+extern Opcode2ArgPfxF2SD MOVSD1;
+extern Opcode2ArgPfxF2SD ADDSD;
+extern Opcode2ArgPfxF2SD MULSD;
+extern Opcode2ArgPfxF2SD SUBSD;
+extern Opcode2ArgPfxF2SD DIVSD;

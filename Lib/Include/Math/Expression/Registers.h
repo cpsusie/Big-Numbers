@@ -11,13 +11,14 @@ typedef enum {
 } RegType;
 
 typedef enum {
-  REGSIZE_BYTE     /* 8-bit   */
- ,REGSIZE_WORD     /* 16-bit  */
- ,REGSIZE_DWORD    /* 32-bit  */
- ,REGSIZE_QWORD    /* 64-bit  */
- ,REGSIZE_TBYTE    /* 80-bit  */
- ,REGSIZE_OWORD    /* 128-bit */
- ,REGSIZE_VOID     /* for LEA */
+  REGSIZE_BYTE     // 8-bit
+ ,REGSIZE_WORD     // 16-bit
+ ,REGSIZE_DWORD    // 32-bit
+ ,REGSIZE_QWORD    // 64-bit
+ ,REGSIZE_TBYTE    // 80-bit
+ ,REGSIZE_MMWORD   // 64-bit
+ ,REGSIZE_XMMWORD  // 128-bit
+ ,REGSIZE_VOID     // for LEA
 } RegSize;
 
 #define USE_DEBUGSTR
@@ -214,7 +215,7 @@ public:
     return REGTYPE_XMM;
   }
   RegSize getSize()  const {
-    return REGSIZE_OWORD;
+    return REGSIZE_XMMWORD;
   }
   String getName() const;
 };

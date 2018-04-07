@@ -7,6 +7,8 @@
 #ifdef TEST_MACHINECODE
 
 // #define TEST_ALLGPREGISTERS
+// #define TEST_ALLFPUREGISTERS
+// #define TEST_ALLXMMREGISTERS
 
 static const GPRegister r8List[] = {
 #ifndef TEST_ALLGPREGISTERS
@@ -49,7 +51,7 @@ const GPRegister r32List[] = {
 #ifdef IS64BIT
 #ifndef TEST_ALLGPREGISTERS
    ,R8D                                      ,R15D
-#else
+#else  // TEST_ALLGPREGISTERS
    ,R8D  ,R9D  ,R10D ,R11D ,R12D ,R13D ,R14D ,R15D
 #endif // TEST_ALLGPREGISTERS
 #endif // IS64BIT
@@ -59,14 +61,14 @@ const IndexRegister indexRegList[] = {
 #ifdef IS32BIT
 #ifndef TEST_ALLGPREGISTERS
     EAX                    ,ESP  ,EBP        ,EDI
-#else
+#else // TEST_ALLGPREGISTERS
     EAX  ,ECX  ,EDX  ,EBX  ,ESP  ,EBP  ,ESI  ,EDI
 #endif // TEST_ALLGPREGISTERS
 #else // IS64BIT
 #ifndef TEST_ALLGPREGISTERS
     RAX                    ,RSP  ,RBP        ,RDI
    ,R8                     ,R12  ,R13        ,R15
-#else
+#else // TEST_ALLGPREGISTERS
     RAX  ,RCX  ,RDX  ,RBX  ,RSP  ,RBP  ,RSI  ,RDI
    ,R8   ,R9   ,R10  ,R11  ,R12  ,R13  ,R14  ,R15
 #endif // TEST_ALLGPREGISTERS
@@ -81,7 +83,7 @@ const GPRegister r64List[] = {
 #else
     RAX  ,RCX  ,RDX  ,RBX  ,RSP  ,RBP  ,RSI  ,RDI
    ,R8   ,R9   ,R10  ,R11  ,R12  ,R13  ,R14  ,R15
-#endif //  TEST_ALLGPREGISTERS
+#endif // TEST_ALLGPREGISTERS
 };
 #endif // IS64BIT
 
@@ -94,7 +96,25 @@ const SegmentRegister segregList[] = {
 };
 
 const FPURegister fpuregList[] = {
+#ifndef TEST_ALLFPUREGISTERS
+  ST0,                               ST7
+#else  // TEST_ALLFPUREGISTERS
   ST0, ST1, ST2, ST3, ST4, ST5, ST6, ST7
+#endif // TEST_ALLFPUREGISTERS
+};
+
+const XMMRegister XMMregList[] = {
+#ifndef TEST_ALLXMMREGISTERS
+  XMM0,                                   XMM7
+#ifdef IS64BIT
+ ,XMM8,                                   XMM15
+#endif  // IS64BIT
+#else   // TEST_ALLXMMREGISTERS
+  XMM0,XMM1,XMM2 ,XMM3 ,XMM4 ,XMM5 ,XMM6 ,XMM7
+#ifdef IS64BIT
+ ,XMM8,XMM9,XMM10,XMM11,XMM12,XMM13,XMM14,XMM15
+#endif  // IS64BIT
+#endif  // TEST_ALLXMMREGISTERS
 };
 
 #define INDEXREGISTER_COUNT ARRAYSIZE(indexRegList)
@@ -110,20 +130,32 @@ static const RegSize allRegSize[] = {
  ,REGSIZE_DWORD    /* 32-bit  */
  ,REGSIZE_QWORD    /* 64-bit  */
  ,REGSIZE_TBYTE    /* 80-bit  */
- ,REGSIZE_OWORD    /* 128-bit */
+ ,REGSIZE_XMMWORD  /* 128-bit */
 };
 
 class InstructionOperandArray : public CompactArray<const InstructionOperand*> {
 public:
   virtual ~InstructionOperandArray();
+  String toString() const;
 };
 
 InstructionOperandArray::~InstructionOperandArray() {
-  for(size_t i = size(); i--;) delete (*this)[i];
+  for(size_t i = size(); i--;) {
+    delete (*this)[i];
+  }
   clear();
 }
 
-class AllGPRegisters : public InstructionOperandArray {
+String InstructionOperandArray::toString() const {
+  String result;
+  for(size_t i = 0; i < size(); i++) {
+    result += (*this)[i]->toString().cstr();
+    result += _T("\n");
+  }
+  return result;
+}
+
+class AllRegisters : public InstructionOperandArray {
 private:
   template<class REG> void addRegArray(const REG *list, size_t n) {
     for(size_t i = 0; i < n; i++) {
@@ -131,10 +163,10 @@ private:
     }
   }
 public:
-  AllGPRegisters();
+  AllRegisters();
 };
 
-AllGPRegisters::AllGPRegisters() {
+AllRegisters::AllRegisters() {
   addRegArray(segregList, ARRAYSIZE(segregList));
   addRegArray(r8List    , ARRAYSIZE(r8List    ));
   addRegArray(r16List   , ARRAYSIZE(r16List   ));
@@ -143,6 +175,7 @@ AllGPRegisters::AllGPRegisters() {
   addRegArray(r64List   , ARRAYSIZE(r64List   ));
 #endif
   addRegArray(fpuregList, ARRAYSIZE(fpuregList));
+  addRegArray(XMMregList, ARRAYSIZE(XMMregList));
 }
 
 #ifdef IS32BIT
@@ -171,9 +204,21 @@ static const size_t allImmAddr[]   = { 0, 0x7fffffff, 0x7fffffffffffffff };
 static const int    allOffset[]    = { 0, 0x7f, 0x7fffffff, -1 };
 
 class AllMemoryOperands : public InstructionOperandArray {
+private:
+  void addAllMemPtrTypes(const MemoryRef &mr);
 public:
   AllMemoryOperands();
 };
+
+void AllMemoryOperands::addAllMemPtrTypes(const MemoryRef &mr) {
+  add(new BYTEPtr(   mr));
+  add(new WORDPtr(   mr));
+  add(new DWORDPtr(  mr));
+  add(new QWORDPtr(  mr));
+  add(new TBYTEPtr(  mr));
+  add(new MMWORDPtr( mr));
+  add(new XMMWORDPtr(mr));
+}
 
 static inline int boolCmp(bool b1, bool b2) {
   return (char)b1 - (char)b2;
@@ -234,11 +279,7 @@ static int memOpCmp(const InstructionOperand * const &o1, const InstructionOpera
 
 AllMemoryOperands::AllMemoryOperands() {
   for(int i = 0; i < ARRAYSIZE(allImmAddr); i++) {
-    add(new BYTEPtr( allImmAddr[i]));
-    add(new WORDPtr( allImmAddr[i]));
-    add(new DWORDPtr(allImmAddr[i]));
-    add(new QWORDPtr(allImmAddr[i]));
-    add(new TBYTEPtr(allImmAddr[i]));
+    addAllMemPtrTypes(allImmAddr[i]);
   }
   for(int k = 0; k < INDEXREGISTER_COUNT; k++) {
     const IndexRegister &inxReg = indexRegList[k];
@@ -246,11 +287,7 @@ AllMemoryOperands::AllMemoryOperands() {
     for(int factor = 1; factor <= 8; factor *= 2) {
       for(int i = 0; i < ARRAYSIZE(allOffset); i++) {
         const int offset = allOffset[i];
-        add(new BYTEPtr( factor*inxReg + offset));
-        add(new WORDPtr( factor*inxReg + offset));
-        add(new DWORDPtr(factor*inxReg + offset));
-        add(new QWORDPtr(factor*inxReg + offset));
-        add(new TBYTEPtr(factor*inxReg + offset));
+        addAllMemPtrTypes(   factor*inxReg + offset);
       }
     }
   }
@@ -258,20 +295,12 @@ AllMemoryOperands::AllMemoryOperands() {
     const int offset = allOffset[i];
     for(int j = 0; j < INDEXREGISTER_COUNT; j++) {
       const IndexRegister &baseReg = indexRegList[j];
-      add(new BYTEPtr( baseReg + offset));
-      add(new WORDPtr( baseReg + offset));
-      add(new DWORDPtr(baseReg + offset));
-      add(new QWORDPtr(baseReg + offset));
-      add(new TBYTEPtr(baseReg + offset));
+      addAllMemPtrTypes(baseReg + offset);
       for(int k = 0; k < INDEXREGISTER_COUNT; k++) {
         const IndexRegister &inxReg = indexRegList[k];
         if(!inxReg.isValidIndexRegister()) continue;
         for(int factor = 1; factor <= 8; factor *= 2) {
-          add(new BYTEPtr( baseReg + factor*inxReg + offset));
-          add(new WORDPtr( baseReg + factor*inxReg + offset));
-          add(new DWORDPtr(baseReg + factor*inxReg + offset));
-          add(new QWORDPtr(baseReg + factor*inxReg + offset));
-          add(new TBYTEPtr(baseReg + factor*inxReg + offset));
+          addAllMemPtrTypes(baseReg + factor*inxReg + offset);
         }
       }
     }
@@ -291,14 +320,7 @@ AllMemoryOperands::AllMemoryOperands() {
     }
   }
   copy.clear();
-
   sort(memOpCmp);
-
-  redirectDebugLog();
-
-//  for(size_t i = 0; i < size(); i++) {
-//    debugLog(_T("%s\n"),(*this)[i]->toString().cstr());
-//  }
 }
 
 class AllVOIDPtrOperands : public InstructionOperandArray {
@@ -401,6 +423,7 @@ void CodeArray::checkKeyboard() { // static
 
 class TestMachineCode : public CodeArray {
 private:
+  const vprintFunction    m_vpf;
   InstructionOperandArray m_allOperands;
   AllVOIDPtrOperands      m_allVOIDPtrOperands;
   AllStringInstructions   m_allStringInstructions;
@@ -415,9 +438,12 @@ private:
   void testOpcode1Arg(     const OpcodeBase      &opcode);
   void testOpcode2Arg(     const OpcodeBase      &opcode, bool selectVOIDPtr);
   void testOpcode3Arg(     const OpcodeBase      &opcode);
-  inline void setClearOn(bool on) {
+  inline bool setClearOn(bool on) {
+    const bool old = m_clearOn;
     m_clearOn = on;
+    return old;
   }
+  void printf(const TCHAR *format,...) const;
 public:
   void testOpcode(         const OpcodeBase      &opcode, bool selectVOIDPtr = false);
   void testOpcode(         const OpcodeLea       &opcode);
@@ -430,17 +456,35 @@ public:
   void testBitOperations();
   void testStringInstructions();
   void testFPUOpcodes();
-  TestMachineCode();
+  void testXMMOpcodes();
+  TestMachineCode(vprintFunction vpf);
 };
 
 void TestMachineCode::initAllOperands() {
-  AllGPRegisters    m_allGPReg;
+  AllRegisters      m_allRegisters;
   AllMemoryOperands m_allMemOperands;
   AllImmOperands    m_allImmOperands;
   m_allVOIDPtrOperands = m_allMemOperands;
-  m_allOperands.addAll(m_allGPReg      ); m_allGPReg.clear();
+
+  redirectDebugLog();
+  debugLog(_T("Registers:\n%s"         ),m_allRegisters.toString().cstr());
+  debugLog(_T("Memory operands:\n%s"   ),m_allMemOperands.toString().cstr());
+  debugLog(_T("Immediate operands:\n%s"),m_allImmOperands.toString().cstr());
+
+  m_allOperands.addAll(m_allRegisters  ); m_allRegisters.clear();
   m_allOperands.addAll(m_allMemOperands); m_allMemOperands.clear();
   m_allOperands.addAll(m_allImmOperands); m_allImmOperands.clear();
+
+  debugLog(_T("All operands:\n%s"),m_allOperands.toString().cstr());
+
+  redirectDebugLog();
+}
+
+void TestMachineCode::printf(const TCHAR *format, ...) const {
+  va_list argptr;
+  va_start(argptr,format);
+  m_vpf(format,argptr);
+  va_end(argptr);
 }
 
 void TestMachineCode::clear() {
@@ -476,9 +520,8 @@ int TestMachineCode::emit(const OpcodeBase &opcode, const InstructionOperand &op
 void TestMachineCode::testOpcode(const OpcodeBase &opcode, bool selectVOIDPtr) {
   try {
     m_currentName = opcode.getMnemonic();
-    if(opcode.getMaxOpCount() > 0) {
-      clear();
-    }
+    printf(_T("Testing opcode %s"), m_currentName.cstr());
+    clear();
     for(int args = opcode.getOpCount(); args <= opcode.getMaxOpCount(); args++) {
       switch(args) {
       case 0 : emit((Opcode0Arg&)opcode            ); break;
@@ -547,6 +590,8 @@ void TestMachineCode::testOpcode(const StringPrefix &prefix) {
 
 void TestMachineCode::testArg0Opcodes() {
   clear();
+  const bool old = setClearOn(false);
+
   testOpcode(RET    );
   testOpcode(CMC    );
   testOpcode(CLC    );
@@ -580,9 +625,12 @@ void TestMachineCode::testArg0Opcodes() {
   testOpcode(CLGI   );
   testOpcode(STGI   );
 #endif // IS64BIT
+  setClearOn(old);
 }
 
 void TestMachineCode::testArg1Opcodes() {
+  clear();
+  const bool old = setClearOn(false);
   testOpcode(PUSH );
   testOpcode(POP  );
   testOpcode(INC  );
@@ -593,6 +641,7 @@ void TestMachineCode::testArg1Opcodes() {
   testOpcode(IMUL );
   testOpcode(DIV  );
   testOpcode(IDIV );
+  setClearOn(old);
 }
 
 void TestMachineCode::testArg2Opcodes() {
@@ -610,11 +659,16 @@ void TestMachineCode::testArg2Opcodes() {
 }
 
 void TestMachineCode::testArg3Opcodes() {
+  clear();
+  const bool old = setClearOn(false);
   testOpcode(SHLD   );
   testOpcode(SHRD   );
+  setClearOn(old);
 }
 
 void TestMachineCode::testSetccOpcodes() {
+  clear();
+  const bool old = setClearOn(false);
   testOpcode(SETO );
   testOpcode(SETNO);
   testOpcode(SETB );
@@ -625,12 +679,13 @@ void TestMachineCode::testSetccOpcodes() {
   testOpcode(SETA );
   testOpcode(SETS );
   testOpcode(SETNS);
-  testOpcode(SETPE);
-  testOpcode(SETPO);
+  testOpcode(SETP);
+  testOpcode(SETNP);
   testOpcode(SETL );
   testOpcode(SETGE);
   testOpcode(SETLE);
   testOpcode(SETG );
+  setClearOn(old);
 }
 
 void TestMachineCode::testBitOperations() {
@@ -641,12 +696,16 @@ void TestMachineCode::testBitOperations() {
   testOpcode(SHL    );
   testOpcode(SHR    );
   testOpcode(SAR    );
+  clear();
+  const bool old = setClearOn(false);
   testOpcode(BSF    );
   testOpcode(BSR    );
+  setClearOn(old);
 }
 
 void TestMachineCode::testStringInstructions() {
   clear();
+  const bool old = setClearOn(false);
   testOpcode(MOVSB  );
   testOpcode(CMPSB  );
   testOpcode(STOSB  );
@@ -676,10 +735,13 @@ void TestMachineCode::testStringInstructions() {
   testOpcode(REP    );
   testOpcode(REPE   );
   testOpcode(REPNE  );
+  setClearOn(old);
 }
 
 void TestMachineCode::testFPUOpcodes() {
   clear();
+  bool old = setClearOn(false);
+
   testOpcode(FNSTSWAX);
   testOpcode(FWAIT   );
   testOpcode(FNOP    );
@@ -715,11 +777,19 @@ void TestMachineCode::testFPUOpcodes() {
   testOpcode(FNSTCW  );
   testOpcode(FNSTSW  );
 
+  setClearOn(old);
+  clear();
+  old = setClearOn(false);
+
   testOpcode(FLD     );
   testOpcode(FSTP    );
   testOpcode(FST     );
   testOpcode(FBLD    );
   testOpcode(FBSTP   );
+
+  setClearOn(old);
+  clear();
+  old = setClearOn(false);
 
   testOpcode(FADD    );
   testOpcode(FMUL    );
@@ -728,12 +798,20 @@ void TestMachineCode::testFPUOpcodes() {
   testOpcode(FSUBR   );
   testOpcode(FDIVR   );
 
+  setClearOn(old);
+  clear();
+  old = setClearOn(false);
+
   testOpcode(FADDP   );
   testOpcode(FMULP   );
   testOpcode(FSUBP   );
   testOpcode(FDIVP   );
   testOpcode(FSUBRP  );
   testOpcode(FDIVRP  );
+
+  setClearOn(old);
+  clear();
+  old = setClearOn(false);
 
   testOpcode(FCOM    );
   testOpcode(FCOMP   );
@@ -746,6 +824,10 @@ void TestMachineCode::testFPUOpcodes() {
 
   testOpcode(FCOMPP  );
   testOpcode(FUCOMPP );
+
+  setClearOn(old);
+  clear();
+  old = setClearOn(false);
 
   testOpcode(FILD    );
   testOpcode(FISTTP  );
@@ -760,6 +842,10 @@ void TestMachineCode::testFPUOpcodes() {
   testOpcode(FIDIV   );
   testOpcode(FIDIVR  );
 
+  setClearOn(old);
+  clear();
+  old = setClearOn(false);
+
   testOpcode(FCMOVB  );                            // Move if below (CF=1)
   testOpcode(FCMOVE );                             // Move if equal (ZF=1)
   testOpcode(FCMOVBE );                            // Move if below or equal (CF=1 or ZF=1)
@@ -772,9 +858,21 @@ void TestMachineCode::testFPUOpcodes() {
   testOpcode(FFREE   );                            // Free a data register
   testOpcode(FXCH    );                            // Swap st(0) and st(i)
 
+  setClearOn(old);
 }
 
-TestMachineCode::TestMachineCode() {
+void TestMachineCode::testXMMOpcodes() {
+  setClearOn(true);
+  clear();
+  testOpcode(MOVAPS);
+  testOpcode(MOVSD1);
+  testOpcode(ADDSD );
+  testOpcode(MULSD );
+  testOpcode(SUBSD );
+  testOpcode(DIVSD );
+}
+
+TestMachineCode::TestMachineCode(vprintFunction vpf) : m_vpf(vpf) {
   setClearOn(true);
   initAllOperands();
   for(int i = 0; i >= 0;i++) {
@@ -788,6 +886,7 @@ TestMachineCode::TestMachineCode() {
       case 5 : testBitOperations();       break;
       case 6 : testStringInstructions();  break;
       case 7 : testFPUOpcodes();          break;
+      case 8 : testXMMOpcodes();          break;
       default: i = -1000; break;
       }
     } catch(UserInterrupt u) {
@@ -800,9 +899,9 @@ TestMachineCode::TestMachineCode() {
 
 #endif // TEST_MACHINECODE
 
-void generateTestSequence() {
+void generateTestSequence(vprintFunction vpf) {
 #ifdef TEST_MACHINECODE
-  TestMachineCode test;
+  TestMachineCode test(vpf);
 #endif // TEST_MACHINECODE
 }
 

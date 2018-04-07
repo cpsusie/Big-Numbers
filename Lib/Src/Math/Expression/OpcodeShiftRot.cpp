@@ -34,11 +34,11 @@ InstructionBase OpcodeShiftRot::operator()(const InstructionOperand &op1, const 
   return __super::operator()(op1,op2);
 }
 
-#define _DSHIFT_FLAGS (NONBYTE_GPR_ALLOWED | NONBYTE_GPRPTR_ALLOWED | IMM8_ALLOWED | HAS_NONBYTE_SIZEBITS)
+#define _DSHIFT_FLAGS (NONBYTE_GPR_ALLOWED | NONBYTE_GPRPTR_ALLOWED | HAS_NONBYTE_SIZEBITS)
 
 OpcodeDoubleShift::OpcodeDoubleShift(const String &mnemonic, UINT opCL, UINT opImm)
-  : OpcodeBase(mnemonic, opCL , 0, 3, _DSHIFT_FLAGS)
-  , m_immCode( mnemonic, opImm, 0, 3, _DSHIFT_FLAGS)
+  : OpcodeBase(mnemonic, opImm, 0, 3, _DSHIFT_FLAGS | IMM8_ALLOWED)
+  , m_clCode(  mnemonic, opCL, _DSHIFT_FLAGS)
 {
 }
 
@@ -56,18 +56,18 @@ bool OpcodeDoubleShift::isValidOperandCombination(const InstructionOperand &op1,
 }
 
 InstructionBase OpcodeDoubleShift::operator()(const InstructionOperand &op1, const InstructionOperand &op2, const InstructionOperand &op3) const {
-  isValidOperandCombination(op1, op2, op3, true);
+  isValidOperandCombination(op1,op2,op3,true);
   switch(op3.getType()) {
   case REGISTER      :
     switch(op1.getType()) {
-    case REGISTER     : return InstructionBuilder(*this    ).setRegRegOperands(    op2.getRegister() , op1.getRegister());
-    case MEMORYOPERAND: return InstructionBuilder(*this    ).setMemoryRegOperands((MemoryOperand&)op1, op2.getRegister());
+    case REGISTER     : return InstructionBuilder(m_clCode).setRegRegOperands(   op1.getRegister()  , op2.getRegister());
+    case MEMORYOPERAND: return InstructionBuilder(m_clCode).setMemoryRegOperands((MemoryOperand&)op1, op2.getRegister());
     }
     break;
   case IMMEDIATEVALUE:
     switch(op1.getType()) {
-    case REGISTER     : return InstructionBuilder(m_immCode).setRegRegOperands(   op2.getRegister()  , op1.getRegister()).add(op3.getImmInt8());
-    case MEMORYOPERAND: return InstructionBuilder(m_immCode).setMemoryRegOperands((MemoryOperand&)op1, op2.getRegister()).add(op3.getImmInt8());
+    case REGISTER     : return InstructionBuilder(*this).setRegRegOperands(   op1.getRegister()  , op2.getRegister()).add(op3.getImmInt8());
+    case MEMORYOPERAND: return InstructionBuilder(*this).setMemoryRegOperands((MemoryOperand&)op1, op2.getRegister()).add(op3.getImmInt8());
     }
     break;
   }

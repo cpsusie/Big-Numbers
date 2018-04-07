@@ -1,13 +1,21 @@
 #include "pch.h"
 #include "InstructionBuilder.h"
 
-const RegSizeSet InstructionBuilder::s_sizeBitSet(REGSIZE_WORD ,REGSIZE_DWORD ,REGSIZE_QWORD, -1);
+const RegSizeSet InstructionBuilder::s_sizeBitSet(REGSIZE_WORD, REGSIZE_DWORD, REGSIZE_QWORD, -1);
+
+static inline BYTE findDirectionMask(const OpcodeBase &opcode) {
+  const UINT flags = opcode.getFlags();
+  if(flags & HAS_DIRECTIONBIT1) return 2;
+  if(flags & HAS_DIRECTIONBIT0) return 1;
+  return 0;
+}
 
 InstructionBuilder::InstructionBuilder(const OpcodeBase &opcode)
   : InstructionBase(opcode               )
   , m_flags(        opcode.getFlags()    )
   , m_extension(    opcode.getExtension())
   , m_opcodeSize(   opcode.size()        )
+  , m_directionMask(findDirectionMask(opcode))
 {
   init();
   if(m_extension) {
@@ -20,6 +28,7 @@ InstructionBuilder::InstructionBuilder(const InstructionBase &ins, UINT flags)
   , m_flags(        flags     )
   , m_extension(    0         )
   , m_opcodeSize(   ins.size())
+  , m_directionMask(0         )
 {
   init();
 }
@@ -230,12 +239,15 @@ InstructionBuilder &InstructionBuilder::setMemoryRegOperands(const MemoryOperand
 InstructionBuilder &InstructionBuilder::setRegRegOperands(const Register &reg1, const Register &reg2) {
   const BYTE    reg1Index = reg1.getIndex();
   const BYTE    reg2Index = reg2.getIndex();
-  if(reg2.getType() != REGTYPE_GPR) {
+  if(reg1.getType() != REGTYPE_GPR) {
+    setDirectionBit1().setOperandSize(reg2.getSize()).setModeBits(MR_REGREG(reg1Index,reg2Index));
+    SETREXBITS(HIGHINDEXTOREX(reg1Index,2) | HIGHINDEXTOREX(reg2Index,0))
+  } else if(getFlags() & FIRSTOP_REGONLY) {
+    setOperandSize(reg2.getSize()).setModeBits(MR_REGREG(reg1Index,reg2Index));
+    SETREXBITS(HIGHINDEXTOREX(reg1Index,2) | HIGHINDEXTOREX(reg2Index,0))
+  } else {
     setOperandSize(reg2.getSize()).setModeBits(MR_REGREG(reg2Index,reg1Index));
     SETREXBITS(HIGHINDEXTOREX(reg2Index,2) | HIGHINDEXTOREX(reg1Index,0))
-  } else {
-    setDirectionBit().setOperandSize(reg2.getSize()).setModeBits(MR_REGREG(reg1Index,reg2Index)); // set direction bit
-    SETREXBITS(HIGHINDEXTOREX(reg1Index,2) | HIGHINDEXTOREX(reg2Index,0))
   }
   return *this;
 }
