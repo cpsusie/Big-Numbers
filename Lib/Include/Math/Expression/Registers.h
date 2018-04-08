@@ -138,10 +138,16 @@ public:
     default           : return false;
     }
   }
-
+  static inline RegSize getLimitedSize(RegSize size, RegSize limit) {
+    return sizeContainsSrcSize(limit,size) ? size : limit;
+  }
   inline bool containsSize(RegSize immSize) const {
     return sizeContainsSrcSize(getSize(), immSize);
   }
+  inline RegSize getLimitedSize(RegSize limit) const {
+    return getLimitedSize(getSize(),limit);
+  }
+
   String toString() const {
     return getName();
   }

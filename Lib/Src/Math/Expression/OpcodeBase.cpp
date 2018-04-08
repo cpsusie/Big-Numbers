@@ -275,6 +275,18 @@ bool OpcodeBase::validateImmediateValue(const MemoryOperand &mem, const Instruct
   return true;
 }
 
+bool OpcodeBase::validateImmediateValue(const InstructionOperand &dst, const InstructionOperand &imm, bool throwOnError) const {
+  switch(dst.getType()) {
+  case REGISTER     : return validateImmediateValue(dst.getRegister()  , imm, throwOnError);
+  case MEMORYOPERAND: return validateImmediateValue((MemoryOperand&)dst, imm, throwOnError);
+  default           : RAISEERROR(_T("%s is not a valid destination for immediate value %s")
+                                ,dst.toString().cstr()
+                                ,imm.toString().cstr()
+                                )
+  }
+  return false;
+}
+
 bool OpcodeBase::validateSameSize(const Register &reg1, const Register &reg2, bool throwOnError) const {
   if(reg1.getSize() != reg2.getSize()) {
     RAISEERROR(_T("Different size:%s,%s"), reg1.toString().cstr(), reg2.toString().cstr());

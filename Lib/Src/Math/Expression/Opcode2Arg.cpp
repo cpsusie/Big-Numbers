@@ -5,42 +5,39 @@ class Instruction2ArgImm : public InstructionBuilder {
 public:
   Instruction2ArgImm(const OpcodeBase &opcode) : InstructionBuilder(opcode) {
   }
-  InstructionBuilder &setRegImm(const Register      &reg, int immv);
-  InstructionBuilder &setMemImm(const MemoryOperand &mem, int immv);
+  InstructionBuilder &setRegImm(const Register      &reg, const InstructionOperand &imm);
+  InstructionBuilder &setMemImm(const MemoryOperand &mem, const InstructionOperand &imm);
 };
 
 #define IMMOP 0x80
-InstructionBuilder &Instruction2ArgImm::setRegImm(const Register &reg, int immv) {
-  DEFINEMETHODNAME;
+InstructionBuilder &Instruction2ArgImm::setRegImm(const Register &reg, const InstructionOperand &imm) {
   const BYTE    regIndex  = reg.getIndex();
   const RegSize regSize   = reg.getSize();
-  const bool    immIsByte = isByte(immv);
+  const bool    immIsByte = Register::sizeContainsSrcSize(REGSIZE_BYTE,imm.getSize());
   switch(regSize) {
   case REGSIZE_BYTE :
-    if(!immIsByte) sizeError(method,reg,immv);
     if(regIndex == 0) {
-      or(0x04).add((char)immv).setOperandSize(regSize);
+      or(0x04).setOperandSize(regSize).addImmediateOperand(imm,regSize);
     } else {
-      prefixImm(IMMOP,reg,true ).setModeBits(MR_REG(regIndex)).add((char)immv);
+      prefixImm(IMMOP,reg,true ).setModeBits(MR_REG(regIndex)).addImmediateOperand(imm,regSize);
     }
     break;
   case REGSIZE_WORD :
-    if(!isWord(immv)) sizeError(method,reg,immv);
     if(immIsByte) {
-      prefixImm(IMMOP,reg,true ).setModeBits(MR_REG(regIndex)).add((char)immv);
+      prefixImm(IMMOP,reg,true ).setModeBits(MR_REG(regIndex)).addImmediateOperand(imm,REGSIZE_BYTE);
     } else if(regIndex == 0) {
-      or(0x04).add(&immv,2).setOperandSize(regSize);
+      or(0x04).setOperandSize(regSize).addImmediateOperand(imm,regSize);
     } else {
-      prefixImm(IMMOP,reg,false).setModeBits(MR_REG(regIndex)).add(&immv,2);
+      prefixImm(IMMOP,reg,false).setModeBits(MR_REG(regIndex)).addImmediateOperand(imm,regSize);
     }
     break;
   default           :
     if(immIsByte) {
-      prefixImm(IMMOP,reg,true ).setModeBits(MR_REG(regIndex)).add((char)immv);
+      prefixImm(IMMOP,reg,true ).setModeBits(MR_REG(regIndex)).addImmediateOperand(imm,REGSIZE_BYTE);
     } else if(regIndex == 0) {
-      or(0x04).add((BYTE*)&immv,4).setOperandSize(regSize);
+      or(0x04).setOperandSize(regSize).addImmediateOperand(imm,REGSIZE_DWORD);
     } else {
-      prefixImm(IMMOP,reg,false).setModeBits(MR_REG(regIndex)).add(&immv,4);
+      prefixImm(IMMOP,reg,false).setModeBits(MR_REG(regIndex)).addImmediateOperand(imm,REGSIZE_DWORD);
     }
     break;
   }
@@ -48,21 +45,18 @@ InstructionBuilder &Instruction2ArgImm::setRegImm(const Register &reg, int immv)
   return *this;
 }
 
-InstructionBuilder &Instruction2ArgImm::setMemImm(const MemoryOperand &mem, int immv) {
-  DEFINEMETHODNAME;
+InstructionBuilder &Instruction2ArgImm::setMemImm(const MemoryOperand &mem, const InstructionOperand &imm) {
   const OperandSize size      = mem.getSize();
-  const bool        immIsByte = isByte(immv);
+  const bool        immIsByte = Register::sizeContainsSrcSize(REGSIZE_BYTE,imm.getSize());
   switch(size) {
   case REGSIZE_BYTE :
-    if(!immIsByte) sizeError(method,mem,immv);
-    prefixImm(IMMOP,mem,true).setMemoryOperand(mem).add((char)immv);
+    prefixImm(IMMOP,mem,true).setMemoryOperand(mem).addImmediateOperand(imm,size);
     break;
   case REGSIZE_WORD :
-    if(!isWord(immv)) sizeError(method,mem,immv);
-    prefixImm(IMMOP,mem,immIsByte).setMemoryOperand(mem).add(&immv,immIsByte?1:2);
+    prefixImm(IMMOP,mem,immIsByte).setMemoryOperand(mem).addImmediateOperand(imm,immIsByte?REGSIZE_BYTE:size);
     break;
   default           :
-    prefixImm(IMMOP,mem,immIsByte).setMemoryOperand(mem).add(&immv,immIsByte?1:4);
+    prefixImm(IMMOP,mem,immIsByte).setMemoryOperand(mem).addImmediateOperand(imm,immIsByte?REGSIZE_BYTE:REGSIZE_DWORD);
     break;
   }
   return *this;
@@ -78,7 +72,7 @@ InstructionBase Opcode2Arg::operator()(const InstructionOperand &op1, const Inst
     case MEMORYOPERAND  : // reg <- mem
       return InstructionBuilder(*this).setMemoryRegOperands((MemoryOperand&)op2, op1.getRegister()).setDirectionBit(REGISTER,MEMORYOPERAND);
     case IMMEDIATEVALUE : // reg <- imm
-      return Instruction2ArgImm(*this).setRegImm(op1.getRegister(), op2.getImmInt32());
+      return Instruction2ArgImm(*this).setRegImm(op1.getRegister(), op2);
     }
     break;
   case MEMORYOPERAND    :
@@ -86,7 +80,7 @@ InstructionBase Opcode2Arg::operator()(const InstructionOperand &op1, const Inst
     case REGISTER       : // mem <- reg
       return InstructionBuilder(*this).setMemoryRegOperands((MemoryOperand&)op1, op2.getRegister()).setDirectionBit(MEMORYOPERAND,REGISTER);
     case IMMEDIATEVALUE : // mem <- imm
-      return Instruction2ArgImm(*this).setMemImm((MemoryOperand&)op1, op2.getImmInt32());
+      return Instruction2ArgImm(*this).setMemImm((MemoryOperand&)op1, op2);
     }
   }
   throwInvalidOperandCombination(op1,op2);

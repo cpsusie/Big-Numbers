@@ -147,7 +147,7 @@ void InstructionOperand::throwSizeError(const TCHAR *method, OperandSize expecte
 char   InstructionOperand::getImmInt8()   const {
   VALIDATEISIMMVALUE();
   VALIDATESIZE(REGSIZE_BYTE);
-  return m_v8;
+  return (char)m_v8;
 }
 
 BYTE   InstructionOperand::getImmUint8()  const {
@@ -160,8 +160,8 @@ short  InstructionOperand::getImmInt16()  const {
   VALIDATEISIMMVALUE();
   VALIDATESIZE(REGSIZE_WORD);
   switch(getSize()) {
-  case REGSIZE_BYTE: return (USHORT)m_v8;
-  case REGSIZE_WORD: return (USHORT)m_v16;
+  case REGSIZE_BYTE: return (short)(char)m_v8;
+  case REGSIZE_WORD: return (short)m_v16;
   default          : NODEFAULT;
   }
   return 0;
@@ -182,9 +182,9 @@ int    InstructionOperand::getImmInt32()  const {
   VALIDATEISIMMVALUE();
   VALIDATESIZE(REGSIZE_DWORD);
   switch(getSize()) {
-  case REGSIZE_BYTE : return (UINT)m_v8;
-  case REGSIZE_WORD : return (UINT)m_v16;
-  case REGSIZE_DWORD: return (UINT)m_v32;
+  case REGSIZE_BYTE : return (int)(char)m_v8;
+  case REGSIZE_WORD : return (int)(short)m_v16;
+  case REGSIZE_DWORD: return (int)m_v32;
   default           : NODEFAULT;
   }
   return 0;
@@ -205,10 +205,10 @@ UINT   InstructionOperand::getImmUint32() const {
 INT64  InstructionOperand::getImmInt64()  const {
   VALIDATEISIMMVALUE();
   switch(getSize()) {
-  case REGSIZE_BYTE : return (UINT64)m_v8;
-  case REGSIZE_WORD : return (UINT64)m_v16;
-  case REGSIZE_DWORD: return (UINT64)m_v32;
-  case REGSIZE_QWORD: return (UINT64)m_v64;
+  case REGSIZE_BYTE : return (INT64)(char)m_v8;
+  case REGSIZE_WORD : return (INT64)(short)m_v16;
+  case REGSIZE_DWORD: return (INT64)(int)m_v32;
+  case REGSIZE_QWORD: return (INT64)m_v64;
   default           : NODEFAULT;
   }
   return 0;

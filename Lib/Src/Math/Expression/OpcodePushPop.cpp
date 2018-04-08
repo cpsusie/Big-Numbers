@@ -13,14 +13,9 @@ bool OpcodePushPop::isValidOperand(const InstructionOperand &op, bool throwOnErr
 
 InstructionBase OpcodePushPop::operator()(const InstructionOperand &op) const {
   switch(op.getType()) {
-  case REGISTER      :
-    isValidOperand(op,true);
-    return InstructionBuilder(*this).setRegisterOperand(op.getRegister());
-  case MEMORYOPERAND :
-    return m_memCode(op);
-  case IMMEDIATEVALUE:
-    isValidOperand(op,true);
-    return InstructionBuilder(m_immCode).setImmediateOperand(op);
+  case REGISTER      : return __super::operator()(op);
+  case MEMORYOPERAND : return m_memCode(op);
+  case IMMEDIATEVALUE: return m_immCode(op);
   }
   throwUnknownOperandType(op,1);
   return InstructionBuilder(*this);

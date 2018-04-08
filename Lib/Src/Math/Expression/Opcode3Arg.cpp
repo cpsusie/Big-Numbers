@@ -8,7 +8,7 @@ InstructionBase Opcode3Arg::operator()(const InstructionOperand &op1, const Inst
     case REGISTER       :
       switch(op2.getType()) {
       case REGISTER       : // reg,reg,imm
-        return InstructionBuilder(*this).setRegRegOperands(op1.getRegister(),op2.getRegister()).setImmediateOperand(op3,&op1);
+        return InstructionBuilder(*this).setRegRegOperands(op1.getRegister(),op2.getRegister()).setImmediateOperand(op3, &op1);
       case MEMORYOPERAND  : // reg,mem,imm
         return InstructionBuilder(*this).setMemoryRegOperands((MemoryOperand&)op2, op1.getRegister()).setImmediateOperand(op3, &op1);
       case IMMEDIATEVALUE : // reg,imm,imm : ERROR

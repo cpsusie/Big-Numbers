@@ -221,6 +221,15 @@ InstructionBuilder &InstructionBuilder::setMemoryOperand(const MemoryOperand &me
   return setOperandSize(mem.getSize());
 }
 
+InstructionBuilder &InstructionBuilder::setMemOrRegOperand(const InstructionOperand &op) {
+  switch(op.getType()) {
+  case REGISTER     : return setRegisterOperand(op.getRegister());
+  case MEMORYOPERAND: return setMemoryOperand((MemoryOperand&)op);
+  default           : throwInvalidArgumentException(__TFUNCTION__,_T("op=%s"),op.toString().cstr());
+  }
+  return *this;
+}
+
 InstructionBuilder &InstructionBuilder::setMemoryRegOperands(const MemoryOperand &mem, const Register &reg) {
   setMemoryOperand(mem);
   if(mem.getSize() == REGSIZE_VOID) {
@@ -268,6 +277,36 @@ InstructionBuilder &InstructionBuilder::setImmediateOperand(const InstructionOpe
     }
   default           :
     sizeError(__TFUNCTION__,imm.getImmInt64());
+  }
+  return *this;
+}
+
+InstructionBuilder &InstructionBuilder::addImmediateOperand(const InstructionOperand &imm, OperandSize size) {
+  switch(size) {
+  case REGSIZE_BYTE :
+    assert(getFlags() & IMM8_ALLOWED);
+    add(imm.getImmInt8());
+    break;
+  case REGSIZE_WORD :
+    { assert(getFlags() & IMM16_ALLOWED);
+      const short v = imm.getImmInt16();
+      add(&v,2);
+    }
+    break;
+  case REGSIZE_DWORD:
+    { assert(getFlags() & IMM32_ALLOWED);
+      const int v = imm.getImmInt32();
+      add(&v,4);
+    }
+    break;
+  case REGSIZE_QWORD:
+    { assert(getFlags() & IMM64_ALLOWED);
+      const INT64 v = imm.getImmInt64();
+      add(&v,8);
+    }
+    break;
+  default:
+    throwInvalidArgumentException(__TFUNCTION__, _T("size=%s"), ::toString(size).cstr());
   }
   return *this;
 }

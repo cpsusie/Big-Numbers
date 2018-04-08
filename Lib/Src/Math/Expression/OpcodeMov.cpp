@@ -5,56 +5,36 @@ class InstructionMovImm : public InstructionBuilder {
 public:
   InstructionMovImm(const OpcodeBase &opcode) : InstructionBuilder(opcode) {
   }
-  InstructionBuilder &setRegImm(const Register      &dst, INT64 immv);
-  InstructionBuilder &setMemImm(const MemoryOperand &dst, int   immv);
+  InstructionBuilder &setRegImm(const Register      &dst, const InstructionOperand &imm);
+  inline InstructionBuilder &setMemImm(const MemoryOperand &dst, const InstructionOperand &imm) {
+    return setMemoryOperand(dst).addImmediateOperand(imm,dst.getLimitedSize(REGSIZE_DWORD));
+  }
 };
 
-InstructionBuilder &InstructionMovImm::setRegImm(const Register &reg, INT64 immv) {
+InstructionBuilder &InstructionMovImm::setRegImm(const Register &reg, const InstructionOperand &imm) {
   DEFINEMETHODNAME;
   const BYTE    regIndex = reg.getIndex();
   const RegSize regSize  = reg.getSize();
   switch(regSize) {
   case REGSIZE_BYTE :
-    if(!isByte(immv)) sizeError(method,reg,immv);
-    or(regIndex&7).add((char)immv);
+    or(regIndex&7).addImmediateOperand(imm,regSize);
     break;
   case REGSIZE_WORD :
-    if(!isWord(immv)) sizeError(method,reg,immv);
-    or(8 | (regIndex&7)).add(&immv,2).wordIns();
+    or(8 | (regIndex&7)).wordIns().addImmediateOperand(imm,regSize);
     break;
   case REGSIZE_DWORD :
-    if(!isDword(immv)) sizeError(method,reg,immv);
-    or(8 | (regIndex&7)).add(&immv,4);
+    or(8 | (regIndex&7)).addImmediateOperand(imm,regSize);
     break;
   case REGSIZE_QWORD :
-    if(isDword(immv)) {
-      xor(0x77).add(0xC0 | (regIndex&7)).add(&immv,4);
+    if(Register::sizeContainsSrcSize(REGSIZE_DWORD,imm.getSize())) {
+      xor(0x77).add(0xC0 | (regIndex&7)).addImmediateOperand(imm,REGSIZE_DWORD);
     } else {
-      or(8 | (regIndex&7)).add(&immv,8);
+      or(8 | (regIndex&7)).addImmediateOperand(imm,regSize);
     }
     qwordIns();
     break;
   }
   SETREXBITS(HIGHINDEXTOREX(regIndex,0));
-  return *this;
-}
-
-InstructionBuilder &InstructionMovImm::setMemImm(const MemoryOperand &dst, int immv) {
-  DEFINEMETHODNAME;
-  const OperandSize size = dst.getSize();
-  switch(size) {
-  case REGSIZE_BYTE :
-    if(!isByte(immv)) sizeError(method,dst,immv);
-    setMemoryOperand(dst).add((char)immv);
-    break;
-  case REGSIZE_WORD :
-    if(!isWord(immv)) sizeError(method,dst,immv);
-    setMemoryOperand(dst).add(&immv,2);
-    break;
-  default:
-    setMemoryOperand(dst).add(&immv,4);
-    break;
-  }
   return *this;
 }
 
@@ -99,10 +79,10 @@ InstructionBase OpcodeMov::operator()(const InstructionOperand &op1, const Instr
     switch(op1.getType()) {
     case REGISTER     :
       m_regImmCode.isValidOperandCombination(op1, op2, true);
-      return InstructionMovImm(m_regImmCode).setRegImm(op1.getRegister()  , op2.getImmInt64());
+      return InstructionMovImm(m_regImmCode).setRegImm(op1.getRegister()  , op2);
     case MEMORYOPERAND:
       m_memImmCode.isValidOperandCombination(op1, op2, true);
-      return InstructionMovImm(m_memImmCode).setMemImm((MemoryOperand&)op1, op2.getImmInt32());
+      return InstructionMovImm(m_memImmCode).setMemImm((MemoryOperand&)op1, op2);
     }
   }
   throwInvalidOperandCombination(op1, op2);

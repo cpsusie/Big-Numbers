@@ -4,8 +4,9 @@
 InstructionBase Opcode1Arg::operator()(const InstructionOperand &op) const {
   isValidOperand(op, true);
   switch(op.getType()) {
-  case REGISTER       : return InstructionBuilder(*this).setRegisterOperand(op.getRegister());
-  case MEMORYOPERAND  : return InstructionBuilder(*this).setMemoryOperand((MemoryOperand&)op);
+  case REGISTER       :
+  case MEMORYOPERAND  : return InstructionBuilder(*this).setMemOrRegOperand(op);
+  case IMMEDIATEVALUE : return InstructionBuilder(*this).setImmediateOperand(op);
   }
   return __super::operator()(op);
 }

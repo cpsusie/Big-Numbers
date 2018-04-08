@@ -216,6 +216,7 @@ public:
   inline InstructionBuilder &setSizeBit() {
     return hasSizeBit() ? or(m_opcodePos,1) : *this;
   }
+
   InstructionBuilder &setOperandSize(OperandSize size);
   // Set bit 1 in opcode to 1 if destination is a register
   inline InstructionBuilder &setDirectionBit1() {
@@ -235,9 +236,14 @@ public:
   // add MOD-REG-R/M byte if not there yet, else modeByte |= bits
   InstructionBuilder &setModeBits(BYTE bits);
    // Registertype = GPR or FPU
-  InstructionBuilder &setRegisterOperand(  const Register      &reg);
-  InstructionBuilder &setMemoryOperand(    const MemoryOperand &mem);
+  InstructionBuilder &setRegisterOperand(  const Register           &reg);
+  InstructionBuilder &setMemoryOperand(    const MemoryOperand      &mem);
+  InstructionBuilder &setMemOrRegOperand(  const InstructionOperand &op );
+
   InstructionBuilder &setMemoryRegOperands(const MemoryOperand &mem, const  Register &reg);
   InstructionBuilder &setRegRegOperands(   const Register      &reg1, const Register &reg2);
   InstructionBuilder &setImmediateOperand( const InstructionOperand &imm, const InstructionOperand *dst=NULL);
+  // force 1,2 or 4 bytes immediate value. that is, no byte-encoding for word/dword dst
+  InstructionBuilder &addImmediateOperand( const InstructionOperand &imm, OperandSize size);
+
 };

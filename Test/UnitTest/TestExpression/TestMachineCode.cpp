@@ -149,8 +149,8 @@ InstructionOperandArray::~InstructionOperandArray() {
 String InstructionOperandArray::toString() const {
   String result;
   for(size_t i = 0; i < size(); i++) {
-    result += (*this)[i]->toString().cstr();
-    result += _T("\n");
+    const InstructionOperand &e = *(*this)[i];
+    result += format(_T("%-30s %s\n"), e.toString().cstr(), ::toString(e.getSize()).cstr());
   }
   return result;
 }
@@ -179,9 +179,9 @@ AllRegisters::AllRegisters() {
 }
 
 #ifdef IS32BIT
-static const int   allImmValues[] = {    0x7f, 0x7fff, 0x7fffffff     };
+static const int   allImmValues[] = {    0x7f, 0x7fff, 0x7fffffff, -1 };
 #else // IS64BIT
-static const INT64 allImmValues[] = {    0x7f, 0x7fff, 0x7fffffff, 0x7fffffffffffffffi64 };
+static const INT64 allImmValues[] = {    0x7f, 0x7fff, 0x7fffffff, 0x7fffffffffffffffi64, -1 };
 #endif // IS64BIT
 
 class AllImmOperands : public InstructionOperandArray {
@@ -287,7 +287,7 @@ AllMemoryOperands::AllMemoryOperands() {
     for(int factor = 1; factor <= 8; factor *= 2) {
       for(int i = 0; i < ARRAYSIZE(allOffset); i++) {
         const int offset = allOffset[i];
-        addAllMemPtrTypes(   factor*inxReg + offset);
+        addAllMemPtrTypes(factor*inxReg + offset);
       }
     }
   }
@@ -654,6 +654,7 @@ void TestMachineCode::testArg2Opcodes() {
   testOpcode(XOR    );
   testOpcode(CMP    );
   testOpcode(XCHG   );
+  testOpcode(TEST   );
   testOpcode(MOV    );
   testOpcode(LEA    );
 }
@@ -777,10 +778,6 @@ void TestMachineCode::testFPUOpcodes() {
   testOpcode(FNSTCW  );
   testOpcode(FNSTSW  );
 
-  setClearOn(old);
-  clear();
-  old = setClearOn(false);
-
   testOpcode(FLD     );
   testOpcode(FSTP    );
   testOpcode(FST     );
@@ -808,10 +805,6 @@ void TestMachineCode::testFPUOpcodes() {
   testOpcode(FDIVP   );
   testOpcode(FSUBRP  );
   testOpcode(FDIVRP  );
-
-  setClearOn(old);
-  clear();
-  old = setClearOn(false);
 
   testOpcode(FCOM    );
   testOpcode(FCOMP   );
@@ -841,10 +834,6 @@ void TestMachineCode::testFPUOpcodes() {
   testOpcode(FISUBR  );
   testOpcode(FIDIV   );
   testOpcode(FIDIVR  );
-
-  setClearOn(old);
-  clear();
-  old = setClearOn(false);
 
   testOpcode(FCMOVB  );                            // Move if below (CF=1)
   testOpcode(FCMOVE );                             // Move if equal (ZF=1)

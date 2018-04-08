@@ -932,6 +932,7 @@
     <ClCompile Include="Expression\OpcodePushPop.cpp" />
     <ClCompile Include="Expression\Opcodes.cpp" />
     <ClCompile Include="Expression\OpcodeShiftRot.cpp" />
+    <ClCompile Include="Expression\OpcodeTest.cpp" />
     <ClCompile Include="Expression\OpcodeXchg.cpp" />
     <ClCompile Include="Expression\ParserTree.cpp" />
     <ClCompile Include="Expression\ParserTreeComplexity.cpp" />

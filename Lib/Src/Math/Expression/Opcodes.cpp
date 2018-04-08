@@ -51,6 +51,7 @@ DEFNAME(Opcode2Arg       ,  SUB   ,0x28);
 DEFNAME(Opcode2Arg       ,  XOR   ,0x30);
 DEFNAME(Opcode2Arg       ,  CMP   ,0x38);
 DEFNAME(OpcodeXchg       ,  XCHG       );                  // Exchange Two operands
+DEFNAME(OpcodeTest       ,  TEST       );                  // Logical Compare. same as AND but doesn't change dst. set SF,ZF,PF according to result
 DEFNAME(OpcodeMov        ,  MOV        );
 DEFNAME(OpcodeLea        ,  LEA   ,0x8D);                  // Load effective address
 

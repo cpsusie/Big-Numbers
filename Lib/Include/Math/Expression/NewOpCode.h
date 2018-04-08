@@ -254,6 +254,9 @@ public:
   inline OperandSize getSize() const {
     return m_size;
   }
+  inline OperandSize getLimitedSize(OperandSize limit) const {
+    return Register::getLimitedSize(getSize(),limit);
+  }
   inline const Register &getRegister() const {
 //    assert(isRegister());
     return *m_reg;
@@ -345,6 +348,7 @@ public:
   inline bool containsSize(OperandSize immSize) const {
     return Register::sizeContainsSrcSize(getSize(), immSize);
   }
+
 #ifdef IS64BIT
   bool needREXByte() const {
     return m_mr.needREXByte();
@@ -514,6 +518,7 @@ protected:
   bool validateImmediateOperandAllowed(  const InstructionOperand &imm                                 , bool throwOnError) const;
   bool validateImmediateValue(           const Register           &reg , const InstructionOperand &imm , bool throwOnError) const;
   bool validateImmediateValue(           const MemoryOperand      &mem , const InstructionOperand &imm , bool throwOnError) const;
+  bool validateImmediateValue(           const InstructionOperand &dst , const InstructionOperand &imm , bool throwOnError) const;
   bool validateSameSize(                 const Register           &reg1, const Register           &reg2, bool throwOnError) const;
   virtual bool validateSameSize(         const Register           &reg , const InstructionOperand &op  , bool throwOnError) const;
   bool validateSameSize(                 const InstructionOperand &op1 , const InstructionOperand &op2 , bool throwOnError) const;
@@ -646,6 +651,21 @@ public:
   {
   }
   InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
+};
+
+class OpcodeTest : public Opcode2Arg {
+private:
+  const Opcode2Arg m_immCode;
+  const Opcode2Arg m_GPR0ImmCode;
+public :
+  OpcodeTest(const String &mnemonic)
+    : Opcode2Arg(    mnemonic, 0x84, ALL_GPR_ALLOWED  | ALL_GPRPTR_ALLOWED | HAS_ALL_SIZEBITS)
+    , m_immCode(     mnemonic, 0xF6, ALL_GPR_ALLOWED  | ALL_GPRPTR_ALLOWED | HAS_ALL_SIZEBITS | IMMEDIATEVALUE_ALLOWED | LASTOP_IMMONLY)
+    , m_GPR0ImmCode( mnemonic, 0xA8, ALL_GPR0_ALLOWED                      | HAS_ALL_SIZEBITS | IMMEDIATEVALUE_ALLOWED | LASTOP_IMMONLY)
+  {
+  }
+  bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError=false) const;
+  InstructionBase operator()(    const InstructionOperand &op1, const InstructionOperand &op2) const;
 };
 
 class OpcodeMov : public Opcode2Arg {
@@ -903,6 +923,7 @@ extern Opcode2Arg        SBB;                              // Integer Subtractio
 extern Opcode2Arg        XOR;                              // Logical Exclusive OR
 extern Opcode2Arg        CMP;                              // Compare Two Operands
 extern OpcodeXchg        XCHG;                             // Exchange Two operands
+extern OpcodeTest        TEST;                             // Logical Compare. same as AND but doesn't change dst. set SF,ZF,PF according to result
 extern OpcodeMov         MOV;                              // Move data (copying)
 extern OpcodeLea         LEA;                              // Load effective address
 
