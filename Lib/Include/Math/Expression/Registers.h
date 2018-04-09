@@ -116,8 +116,11 @@ public:
   inline bool     indexNeedREXByte() const {
     return getIndex() >= 8;
   }
+  inline bool     needREXByte() const {
+    return indexNeedREXByte() || (getRexByteUsage() == REX_REQUIRED);
+  }
   // for error messages
-  static const TCHAR *getREXCompatibleRegisterNames(bool rexBytePresent);
+  static const TCHAR *getREXCompatibleRegisterNames();
 #endif // IS64BIT
 
   virtual String  getName()  const {

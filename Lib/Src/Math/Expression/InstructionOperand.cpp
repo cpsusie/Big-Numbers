@@ -12,19 +12,16 @@ String toString(OperandType type) {
 
 // Convert int32-value to disassembler format
 String formatHexValue(int v, bool showSign) {
-  bool neg;
+  bool   neg;
+  String result;
   if(v >= 0) {
-    neg = false;
+    neg      = false;
+    result   = formatHexValue((UINT)v);
   } else {
-    v        = -v;
     neg      = true;
     showSign = true;
+    result = formatHexValue((UINT)(-v));
   }
-  String result = format(_T("%X"), v);
-  if(!iswdigit(result[0])) {
-    result.insert(0,'0');
-  }
-  if(v >= 10) result += _T('h');
   if(showSign) {
     result.insert(0, neg ? '-' : '+');
   }
@@ -33,27 +30,33 @@ String formatHexValue(int v, bool showSign) {
 
 // Convert int64-value to disassembler format
 String formatHexValue(INT64 v, bool showSign) {
-  bool neg;
+  bool   neg;
+  String result;
   if(v >= 0) {
-    neg = false;
+    neg      = false;
+    result   = formatHexValue((UINT64)v);
   } else {
-    v        = -v;
     neg      = true;
     showSign = true;
+    result   = formatHexValue((UINT64)(-v));
   }
-  String result = format(_T("%I64X"), v);
-  if(!iswdigit(result[0])) {
-    result.insert(0,'0');
-  }
-  if(v >= 10) result += _T('h');
   if(showSign) {
     result.insert(0, neg ? '-' : '+');
   }
   return result;
 }
 
-String formatHexValue(size_t v) {
-  String result = format(_T("%zX"), v);
+String formatHexValue(UINT v) {
+  String result = format(_T("%X"), v);
+  if(!iswdigit(result[0])) {
+    result.insert(0,'0');
+  }
+  if(v >= 10) result += _T('h');
+  return result;
+}
+
+String formatHexValue(UINT64 v) {
+  String result = format(_T("%I64X"), v);
   if(!iswdigit(result[0])) {
     result.insert(0,'0');
   }
@@ -214,7 +217,7 @@ INT64  InstructionOperand::getImmInt64()  const {
   return 0;
 }
 
-UINT64 InstructionOperand::getImmUInt64() const {
+UINT64 InstructionOperand::getImmUint64() const {
   VALIDATEISIMMVALUE();
   switch(getSize()) {
   case REGSIZE_BYTE : return (UINT64)m_v8;
@@ -234,8 +237,8 @@ String InstructionOperand::toString() const {
     switch(getSize()) {
     case REGSIZE_BYTE : 
     case REGSIZE_WORD : 
-    case REGSIZE_DWORD: return formatHexValue(getImmInt32(),false);
-    case REGSIZE_QWORD: return formatHexValue(getImmInt64(),false);
+    case REGSIZE_DWORD: return formatHexValue(getImmUint32());
+    case REGSIZE_QWORD: return formatHexValue(getImmUint64());
     default           : throwUnknownSize(__TFUNCTION__);
     }
   default:

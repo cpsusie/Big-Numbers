@@ -20,6 +20,7 @@ InstructionBuilder &Instruction2ArgImm::setRegImm(const Register &reg, const Ins
       or(0x04).setOperandSize(regSize).addImmediateOperand(imm,regSize);
     } else {
       prefixImm(IMMOP,reg,true ).setModeBits(MR_REG(regIndex)).addImmediateOperand(imm,regSize);
+      SETREXUNIFORMREGISTER(reg);
     }
     break;
   case REGSIZE_WORD :

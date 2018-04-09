@@ -54,10 +54,11 @@ typedef enum {
 
 String toString(OperandType type);
 // Convert int32-value to disassembler format
-String formatHexValue(int v, bool showSign);
+String formatHexValue(int    v, bool showSign);
 // Convert int64-value to disassembler format
-String formatHexValue(INT64 v, bool showSign);
-String formatHexValue(size_t v);
+String formatHexValue(INT64  v, bool showSign);
+String formatHexValue(UINT   v);
+String formatHexValue(UINT64 v);
 String getImmSizeErrorString(const String &dst, INT64 immv);
 
 typedef vBitSet8<OperandType> OperandTypeSet;
@@ -289,7 +290,7 @@ public:
   int    getImmInt32()  const;
   UINT   getImmUint32() const;
   INT64  getImmInt64()  const;
-  UINT64 getImmUInt64() const;
+  UINT64 getImmUint64() const;
 
   inline bool isShiftAmountOperand() const {
     return (getSize() == REGSIZE_BYTE)
@@ -304,7 +305,7 @@ public:
 
 #ifdef IS64BIT
   virtual bool  needREXByte() const {
-    return (getType() == REGISTER) ? m_reg->indexNeedREXByte() : false;
+    return (getType() == REGISTER) ? m_reg->needREXByte() : false;
   }
 #endif // IS64BIT
   virtual String toString() const;

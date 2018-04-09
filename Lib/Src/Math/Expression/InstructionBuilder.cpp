@@ -185,6 +185,7 @@ InstructionBuilder &InstructionBuilder::setRegisterOperand(const Register &reg) 
       setModeBits(MR_REG(index));
     }
     SETREXBITS(HIGHINDEXTOREX(index,0))
+    SETREXUNIFORMREGISTER(reg);
     break;
   case REGTYPE_FPU:
     or(index);
@@ -239,6 +240,7 @@ InstructionBuilder &InstructionBuilder::setMemoryRegOperands(const MemoryOperand
     const BYTE regIndex = reg.getIndex();
     setModeBits((regIndex&7)<<3);
     SETREXBITS(HIGHINDEXTOREX(regIndex,2));
+    SETREXUNIFORMREGISTER(reg);
   } else {
     assert(reg.getIndex() == 0);
   }
@@ -258,6 +260,8 @@ InstructionBuilder &InstructionBuilder::setRegRegOperands(const Register &reg1, 
     setOperandSize(reg2.getSize()).setModeBits(MR_REGREG(reg2Index,reg1Index));
     SETREXBITS(HIGHINDEXTOREX(reg2Index,2) | HIGHINDEXTOREX(reg1Index,0))
   }
+  SETREXUNIFORMREGISTER(reg1);
+  SETREXUNIFORMREGISTER(reg2);
   return *this;
 }
 

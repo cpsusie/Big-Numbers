@@ -335,18 +335,18 @@ bool OpcodeBase::validateIsRexCompatible(const Register &reg, const InstructionO
     RAISEERROR(_T("%s not allowed together with %s (Use %s)")
               ,reg.toString().cstr()
               ,op.toString().cstr()
-              ,Register::getREXCompatibleRegisterNames(op.needREXByte())
+              ,Register::getREXCompatibleRegisterNames()
              );
   }
   return true;
 }
 
 bool OpcodeBase::validateIsRexCompatible(const Register &reg1, const Register &reg2, bool throwOnError) const {
-  if(!reg1.isREXCompatible(reg2.indexNeedREXByte())) {
+  if(!reg1.isREXCompatible(reg2.needREXByte())) {
     RAISEERROR(_T("%s not allowed together with %s (Use %s)")
               ,reg1.toString().cstr()
               ,reg2.toString().cstr()
-              ,Register::getREXCompatibleRegisterNames(reg2.indexNeedREXByte())
+              ,Register::getREXCompatibleRegisterNames()
               );
   }
   return true;

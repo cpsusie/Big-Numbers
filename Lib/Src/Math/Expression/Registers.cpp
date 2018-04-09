@@ -64,15 +64,7 @@ const RegSizeSet Register::s_qwordRegCapacity(REGSIZE_BYTE, REGSIZE_WORD, REGSIZ
 
 #ifdef IS64BIT
 bool GPRegister::isREXCompatible(bool rexBytePresent) const {
-  switch(m_rexByteUsage) {
-  case REX_DONTCARE  : return true;
-  case REX_REQUIRED  : return rexBytePresent;
-  case REX_NOTALLOWED: return !rexBytePresent;
-  default            : throwException(_T("%s:Unknown rexByteUsage:%d")
-                                     ,getName().cstr()
-                                     ,m_rexByteUsage);
-  }
-  return false;
+  return !rexBytePresent || (m_rexByteUsage != REX_NOTALLOWED);
 }
 #endif // IS64BIT
 
@@ -225,13 +217,8 @@ const GPRegister    BPL(REGSIZE_BYTE, 5, REX_REQUIRED   );
 const GPRegister    SIL(REGSIZE_BYTE, 6, REX_REQUIRED   );
 const GPRegister    DIL(REGSIZE_BYTE, 7, REX_REQUIRED   );
 
-static const TCHAR *s_rexDependentRegisterNames[] = {
-   _T("AH,CH,DH or BH")
-  ,_T("SPL,BPL,SIL or DIL")
-};
-
-const TCHAR *Register::getREXCompatibleRegisterNames(bool rexBytePresent) { // static
-  return s_rexDependentRegisterNames[rexBytePresent?1:0];
+const TCHAR *Register::getREXCompatibleRegisterNames() { // static
+  return _T("SPL,BPL,SIL or DIL");
 }
 
 #endif // IS64BIT

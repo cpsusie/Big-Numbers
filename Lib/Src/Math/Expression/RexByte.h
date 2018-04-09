@@ -4,6 +4,7 @@
 #define SETREXBITS(          bits     )
 #define SETREXBITONHIGHINX(  inx ,bit )
 #define SETREXBITSONHIGHINX2(binx,iInx)
+#define SETREXUNIFORMREGISTER(reg     )
 #define QWORDTOREX(          size     )
 #else // IS64BIT
 
@@ -21,6 +22,12 @@
 #define HIGHINDEXTOREX(      inx ,bit ) (((inx)>>(3-(bit)))&(1<<(bit)))
 #define SETREXBITONHIGHINX(  inx ,bit ) SETREXBITS(HIGHINDEXTOREX(inx,bit))
 #define SETREXBITSONHIGHINX2(bInx,iInx) SETREXBITS(HIGHINDEXTOREX(bInx,0) | HIGHINDEXTOREX(iInx,1))
+#define SETREXUNIFORMREGISTER(reg     ) {                                        \
+  if(((reg).getRexByteUsage()==REX_REQUIRED) && !hasRexByte()) {                 \
+    setRexBits(0);                                                               \
+  }                                                                              \
+}
+
 #define QWORDTOREX(          size      ) (((size)==REGSIZE_QWORD)?8:0)
 
 #endif // IS64BIT

@@ -5,19 +5,19 @@ class InstructionMovImm : public InstructionBuilder {
 public:
   InstructionMovImm(const OpcodeBase &opcode) : InstructionBuilder(opcode) {
   }
-  InstructionBuilder &setRegImm(const Register      &dst, const InstructionOperand &imm);
+  InstructionBuilder        &setRegImm(const Register      &dst, const InstructionOperand &imm);
   inline InstructionBuilder &setMemImm(const MemoryOperand &dst, const InstructionOperand &imm) {
     return setMemoryOperand(dst).addImmediateOperand(imm,dst.getLimitedSize(REGSIZE_DWORD));
   }
 };
 
 InstructionBuilder &InstructionMovImm::setRegImm(const Register &reg, const InstructionOperand &imm) {
-  DEFINEMETHODNAME;
   const BYTE    regIndex = reg.getIndex();
   const RegSize regSize  = reg.getSize();
   switch(regSize) {
   case REGSIZE_BYTE :
     or(regIndex&7).addImmediateOperand(imm,regSize);
+    SETREXUNIFORMREGISTER(reg);
     break;
   case REGSIZE_WORD :
     or(8 | (regIndex&7)).wordIns().addImmediateOperand(imm,regSize);
