@@ -259,6 +259,14 @@ inline const TCHAR *boolToStr(BOOL b) {
 
 bool strToBool(const TCHAR *s);
 
+inline int ordinal(bool b) {
+  return b ? 1 : 0;
+}
+
+inline int boolCmp(bool b1, bool b2) {
+  return ordinal(b1) - ordinal(b2);
+}
+
 // 5-rounding
 double round(   double x, int dec);
 double trunc(   double x, int dec=0);
