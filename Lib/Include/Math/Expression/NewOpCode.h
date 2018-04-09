@@ -139,6 +139,9 @@ public:
   }
 #endif // IS64BIT
   String                      toString()  const;
+  static int offsetCmp(const MemoryRef &mr1, const MemoryRef &mr2);
+  static int addrCmp(  const MemoryRef &mr1, const MemoryRef &mr2);
+  static int memRefCmp(const MemoryRef &mr1, const MemoryRef &mr2);
 };
 
 inline MemoryRef operator+(const IndexRegister &base, int offset) {
@@ -293,18 +296,12 @@ public:
         &&  ((getType()==IMMEDIATEVALUE)
           || ((getType()==REGISTER) && (getRegister() == CL)));
   }
-  virtual const SegmentRegister *getSegmentRegister() const {
-    throwUnsupportedOperationException(__TFUNCTION__);
-    return NULL;
-  }
-  virtual bool                   hasSegmentRegister() const {
-    return false;
-  }
   virtual const MemoryRef       &getMemoryReference() const {
     throwUnsupportedOperationException(__TFUNCTION__);
     static const MemoryRef dummy(0);
     return dummy;
   }
+
 #ifdef IS64BIT
   virtual bool  needREXByte() const {
     return (getType() == REGISTER) ? m_reg->indexNeedREXByte() : false;
@@ -314,6 +311,7 @@ public:
 
   static const OperandTypeSet R,M,IMM,RM,S,ALL,EMPTY;
 
+  static int insOpCmp(const InstructionOperand &op1, const InstructionOperand &op2);
 };
 
 class MemoryOperand : public InstructionOperand {
@@ -336,13 +334,13 @@ public:
   {
     SETDEBUGSTR();
   }
-  const SegmentRegister *getSegmentRegister() const {
+  inline const SegmentRegister *getSegmentRegister() const {
     return m_segReg;
   }
-  bool                   hasSegmentRegister() const {
+  inline bool                   hasSegmentRegister() const {
     return m_segReg != NULL;
   }
-  const MemoryRef       &getMemoryReference() const {
+  const MemoryRef              &getMemoryReference() const {
     return m_mr;
   }
   inline bool containsSize(OperandSize immSize) const {
@@ -355,6 +353,8 @@ public:
   }
 #endif // IS64BIT
   String toString() const;
+
+  static int memOpCmp(const MemoryOperand &mem1, const MemoryOperand &mem2);
 };
 
 template<OperandSize size> class MemoryPtr : public MemoryOperand {

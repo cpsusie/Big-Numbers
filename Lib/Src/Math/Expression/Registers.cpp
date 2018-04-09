@@ -12,16 +12,32 @@ String toString(RegType regType) {
   }
 }
 
+int registerCmp(const Register &reg1, const Register &reg2) {
+  int c = (int)reg1.getType() - (int)reg2.getType();
+  if(c) return c;
+  if(reg1.getType() == REGTYPE_GPR) {
+    return registerCmp((GPRegister&)reg1,(GPRegister&)reg2);
+  }
+  return (int)reg1.getIndex() - (int)reg2.getIndex();
+}
+
+int registerCmp(const GPRegister &reg1, const GPRegister &reg2) {
+  int c = regSizeCmp(reg1.getSize(),reg2.getSize());
+  if(c) return c;
+  if(c = (int)reg1.getIndex() - (int)reg2.getIndex()) return c;
+  return REXBYTEUSAGECMP(reg1,reg2);
+}
+
 String toString(RegSize regSize) {
   switch(regSize) {
-  case REGSIZE_BYTE    : return _T("byte" );
-  case REGSIZE_WORD    : return _T("word" );
-  case REGSIZE_DWORD   : return _T("dword");
-  case REGSIZE_QWORD   : return _T("qword");
-  case REGSIZE_TBYTE   : return _T("tbyte");
-  case REGSIZE_MMWORD  : return _T("mmword");
+  case REGSIZE_BYTE    : return _T("byte"   );
+  case REGSIZE_WORD    : return _T("word"   );
+  case REGSIZE_DWORD   : return _T("dword"  );
+  case REGSIZE_QWORD   : return _T("qword"  );
+  case REGSIZE_TBYTE   : return _T("tbyte"  );
+  case REGSIZE_MMWORD  : return _T("mmword" );
   case REGSIZE_XMMWORD : return _T("xmmword");
-  case REGSIZE_VOID    : return _T("void" );
+  case REGSIZE_VOID    : return _T("void"   );
   default              : return format(_T("Unknown register size:%d"), regSize);
   }
 }

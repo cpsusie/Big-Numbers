@@ -21,6 +21,10 @@ typedef enum {
  ,REGSIZE_VOID     // for LEA
 } RegSize;
 
+inline int regSizeCmp(RegSize s1, RegSize s2) {
+  return (int)s1 - (int)s2;
+}
+
 #define USE_DEBUGSTR
 
 #ifdef USE_DEBUGSTR
@@ -153,6 +157,8 @@ public:
   }
 };
 
+int registerCmp(const Register &reg1, const Register &reg2);
+
 class GPRegister : public Register {
 private:
   const RegSize      m_size; // = REGSIZE_BYTE, _WORD, _DWORD, _QWORD
@@ -188,6 +194,8 @@ public:
 #endif // IS64BIT
   String getName() const;
 };
+
+int registerCmp(const GPRegister &reg1, const GPRegister &reg2);
 
 class IndexRegister : public GPRegister {
 public:
@@ -239,6 +247,10 @@ public:
   }
   String getName() const;
 };
+
+inline int registerCmp(const SegmentRegister &reg1, const SegmentRegister &reg2) {
+  return (int)reg1.getIndex() - (int)reg2.getIndex();
+}
 
 // 8 bit registers
 extern const GPRegister    AL,CL,DL,BL,AH,CH,DH,BH;

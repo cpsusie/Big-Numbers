@@ -150,7 +150,7 @@ String InstructionOperandArray::toString() const {
   String result;
   for(size_t i = 0; i < size(); i++) {
     const InstructionOperand &e = *(*this)[i];
-    result += format(_T("%-30s %s\n"), e.toString().cstr(), ::toString(e.getSize()).cstr());
+    result += format(_T("%-40s %s\n"), e.toString().cstr(), ::toString(e.getSize()).cstr());
   }
   return result;
 }
@@ -220,61 +220,8 @@ void AllMemoryOperands::addAllMemPtrTypes(const MemoryRef &mr) {
   add(new XMMWORDPtr(mr));
 }
 
-static inline int boolCmp(bool b1, bool b2) {
-  return (char)b1 - (char)b2;
-}
-
-static inline int registerCmp(const Register &reg1, const Register &reg2) {
-  return (int)reg1.getIndex() - (int)reg2.getIndex();
-}
-
-static int offsetCmp(const MemoryRef &mr1, const MemoryRef &mr2) {
-  int c;
-  if(c = boolCmp(mr1.hasOffset(), mr2.hasOffset())) return c;
-  if(!mr1.hasOffset()) return 0;
-  if(c = boolCmp(isByte(mr2.getOffset()), isByte(mr1.getOffset()))) return c;
-  return sign((INT64)mr1.getOffset() - (INT64)mr2.getOffset());
-}
-
-static int addrCmp(const MemoryRef &mr1, const MemoryRef &mr2) {
-  int c;
-  if(c = boolCmp(mr1.hasOffset(), mr2.hasOffset())) return c;
-  if(!mr1.hasOffset()) return 0;
-  if(c = boolCmp(isByte(mr2.getAddr()), isByte(mr1.getAddr()))) return c;
-  if(c = boolCmp(isDword(mr2.getAddr()), isDword(mr1.getAddr()))) return c;
-  return sign((INT64)mr1.getAddr() - (INT64)mr2.getAddr());
-}
-
-static int memRefCmp(const MemoryRef &mr1, const MemoryRef &mr2) {
-  int c;
-  if(c = boolCmp(mr2.isDisplaceOnly(),mr1.isDisplaceOnly())) return c;
-  if(mr1.isDisplaceOnly()) {
-    return addrCmp(mr1,mr2);
-  } else {
-    if(c = boolCmp(mr1.hasInx(),mr2.hasInx())) return c;
-    if(!mr1.hasInx()) {
-      if(c = offsetCmp(mr1,mr2)) return c;
-    }
-    if(c = boolCmp(mr1.hasBase(), mr2.hasBase())) return c;
-    if(mr1.hasBase()) { // && mr2.hasBase()
-      if(c = registerCmp(*mr1.getBase(), *mr2.getBase())) return c;
-    }
-    if(mr1.hasInx()) { // && mr2.hasInx()
-      if(c = offsetCmp(mr1,mr2)) return c;
-      if(c = (int)mr1.getShift() - (int)mr2.getShift()) return c;
-      if(c = registerCmp(*mr1.getInx(),*mr2.getInx())) return c;
-    }
-  }
-  return offsetCmp(mr1,mr2);
-}
-
-static int memOpCmp(const InstructionOperand * const &o1, const InstructionOperand * const &o2) {
-  int c = (int)(o1->getSize()) - (int)(o2->getSize());
-  if(c) return c;
-  if(c = memRefCmp(o1->getMemoryReference(), o2->getMemoryReference())) return c;
-  if(c = boolCmp(o1->hasSegmentRegister(),o2->hasSegmentRegister())) return c;
-  if(!o1->hasSegmentRegister()) return 0; // && !o2->hasSegmentRegister()
-  return registerCmp(*o1->getSegmentRegister(), *o2->getSegmentRegister());
+static inline int insOpCmp(const InstructionOperand * const &op1, const InstructionOperand * const &op2) {
+  return InstructionOperand::insOpCmp(*op1,*op2);
 }
 
 AllMemoryOperands::AllMemoryOperands() {
@@ -320,7 +267,6 @@ AllMemoryOperands::AllMemoryOperands() {
     }
   }
   copy.clear();
-  sort(memOpCmp);
 }
 
 class AllVOIDPtrOperands : public InstructionOperandArray {
@@ -335,6 +281,7 @@ AllVOIDPtrOperands &AllVOIDPtrOperands::operator=(const AllMemoryOperands &src) 
       add(new VOIDPtr(op));
     }
   }
+  sort(insOpCmp);
   return *this;
 }
 
@@ -394,13 +341,16 @@ private:
   static void checkKeyboard();
   int         addBytes(const void *bytes, int count);
 public:
+  CodeArray() {
+    setCapacity(0x1000000);
+  }
   inline int emit(const InstructionBase &ins) {
     if((s_emitCount++ & 0x3ff) == 0) checkKeyboard();
     return addBytes(ins.getBytes(), ins.size());
   }
   void clear() {
     s_emitCount = 0;
-    __super::clear();
+    __super::clear(-1);
   }
 };
 
@@ -430,7 +380,7 @@ private:
   String                  m_currentName;
   bool                    m_clearOn;
   void initAllOperands();
-  void clear();
+  void clear(bool force = false);
   int  emit(               const InstructionBase &ins   );
   int  emit(               const OpcodeBase      &opcode, const InstructionOperand &op);
   int  emit(               const OpcodeBase      &opcode, const InstructionOperand &op1, const InstructionOperand &op2);
@@ -466,17 +416,14 @@ void TestMachineCode::initAllOperands() {
   AllImmOperands    m_allImmOperands;
   m_allVOIDPtrOperands = m_allMemOperands;
 
-  redirectDebugLog();
-  debugLog(_T("Registers:\n%s"         ),m_allRegisters.toString().cstr());
-  debugLog(_T("Memory operands:\n%s"   ),m_allMemOperands.toString().cstr());
-  debugLog(_T("Immediate operands:\n%s"),m_allImmOperands.toString().cstr());
-
   m_allOperands.addAll(m_allRegisters  ); m_allRegisters.clear();
   m_allOperands.addAll(m_allMemOperands); m_allMemOperands.clear();
   m_allOperands.addAll(m_allImmOperands); m_allImmOperands.clear();
+  m_allOperands.sort(insOpCmp);
 
+  redirectDebugLog();
   debugLog(_T("All operands:\n%s"),m_allOperands.toString().cstr());
-
+  debugLog(_T("All VOIDPtr:\n%s") ,m_allVOIDPtrOperands.toString().cstr());
   redirectDebugLog();
 }
 
@@ -487,8 +434,11 @@ void TestMachineCode::printf(const TCHAR *format, ...) const {
   va_end(argptr);
 }
 
-void TestMachineCode::clear() {
-  if(m_clearOn) {
+void TestMachineCode::clear(bool force) {
+  if(force) {
+    int breakPointHere = 1;
+  }
+  if(force || m_clearOn) {
     __super::clear();
     redirectDebugLog();
   }
@@ -590,7 +540,7 @@ void TestMachineCode::testOpcode(const StringPrefix &prefix) {
 
 void TestMachineCode::testArg0Opcodes() {
   clear();
-  const bool old = setClearOn(false);
+  setClearOn(false);
 
   testOpcode(RET    );
   testOpcode(CMC    );
@@ -625,12 +575,9 @@ void TestMachineCode::testArg0Opcodes() {
   testOpcode(CLGI   );
   testOpcode(STGI   );
 #endif // IS64BIT
-  setClearOn(old);
 }
 
 void TestMachineCode::testArg1Opcodes() {
-  clear();
-  const bool old = setClearOn(false);
   testOpcode(PUSH );
   testOpcode(POP  );
   testOpcode(INC  );
@@ -641,10 +588,10 @@ void TestMachineCode::testArg1Opcodes() {
   testOpcode(IMUL );
   testOpcode(DIV  );
   testOpcode(IDIV );
-  setClearOn(old);
 }
 
 void TestMachineCode::testArg2Opcodes() {
+  clear(true);
   testOpcode(ADD    );
   testOpcode(ADC    );
   testOpcode(OR     );
@@ -652,6 +599,7 @@ void TestMachineCode::testArg2Opcodes() {
   testOpcode(SUB    );
   testOpcode(SBB    );
   testOpcode(XOR    );
+  clear(true);
   testOpcode(CMP    );
   testOpcode(XCHG   );
   testOpcode(TEST   );
@@ -660,16 +608,13 @@ void TestMachineCode::testArg2Opcodes() {
 }
 
 void TestMachineCode::testArg3Opcodes() {
-  clear();
-  const bool old = setClearOn(false);
+  clear(true);
   testOpcode(SHLD   );
   testOpcode(SHRD   );
-  setClearOn(old);
 }
 
 void TestMachineCode::testSetccOpcodes() {
-  clear();
-  const bool old = setClearOn(false);
+  clear(true);
   testOpcode(SETO );
   testOpcode(SETNO);
   testOpcode(SETB );
@@ -686,10 +631,10 @@ void TestMachineCode::testSetccOpcodes() {
   testOpcode(SETGE);
   testOpcode(SETLE);
   testOpcode(SETG );
-  setClearOn(old);
 }
 
 void TestMachineCode::testBitOperations() {
+  clear(true);
   testOpcode(ROL    );
   testOpcode(ROR    );
   testOpcode(RCL    );
@@ -697,16 +642,13 @@ void TestMachineCode::testBitOperations() {
   testOpcode(SHL    );
   testOpcode(SHR    );
   testOpcode(SAR    );
-  clear();
-  const bool old = setClearOn(false);
+  clear(true);
   testOpcode(BSF    );
   testOpcode(BSR    );
-  setClearOn(old);
 }
 
 void TestMachineCode::testStringInstructions() {
-  clear();
-  const bool old = setClearOn(false);
+  clear(true);
   testOpcode(MOVSB  );
   testOpcode(CMPSB  );
   testOpcode(STOSB  );
@@ -736,12 +678,10 @@ void TestMachineCode::testStringInstructions() {
   testOpcode(REP    );
   testOpcode(REPE   );
   testOpcode(REPNE  );
-  setClearOn(old);
 }
 
 void TestMachineCode::testFPUOpcodes() {
-  clear();
-  bool old = setClearOn(false);
+  clear(true);
 
   testOpcode(FNSTSWAX);
   testOpcode(FWAIT   );
@@ -784,9 +724,7 @@ void TestMachineCode::testFPUOpcodes() {
   testOpcode(FBLD    );
   testOpcode(FBSTP   );
 
-  setClearOn(old);
-  clear();
-  old = setClearOn(false);
+  clear(true);
 
   testOpcode(FADD    );
   testOpcode(FMUL    );
@@ -795,9 +733,7 @@ void TestMachineCode::testFPUOpcodes() {
   testOpcode(FSUBR   );
   testOpcode(FDIVR   );
 
-  setClearOn(old);
-  clear();
-  old = setClearOn(false);
+  clear(true);
 
   testOpcode(FADDP   );
   testOpcode(FMULP   );
@@ -817,10 +753,6 @@ void TestMachineCode::testFPUOpcodes() {
 
   testOpcode(FCOMPP  );
   testOpcode(FUCOMPP );
-
-  setClearOn(old);
-  clear();
-  old = setClearOn(false);
 
   testOpcode(FILD    );
   testOpcode(FISTTP  );
@@ -846,15 +778,13 @@ void TestMachineCode::testFPUOpcodes() {
 
   testOpcode(FFREE   );                            // Free a data register
   testOpcode(FXCH    );                            // Swap st(0) and st(i)
-
-  setClearOn(old);
 }
 
 void TestMachineCode::testXMMOpcodes() {
-  setClearOn(true);
-  clear();
+  clear(true);
   testOpcode(MOVAPS);
   testOpcode(MOVSD1);
+  clear(true);
   testOpcode(ADDSD );
   testOpcode(MULSD );
   testOpcode(SUBSD );

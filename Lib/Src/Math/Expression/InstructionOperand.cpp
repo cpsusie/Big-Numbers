@@ -315,3 +315,66 @@ String MemoryOperand::toString() const {
           : format(_T("%s ptr[%s]")    , ::toString(getSize()).cstr(), m_mr.toString().cstr());
   }
 }
+
+int MemoryRef::offsetCmp(const MemoryRef &mr1, const MemoryRef &mr2) { // static
+  int c;
+  if(c = boolCmp(mr1.hasOffset(), mr2.hasOffset())) return c;
+  if(!mr1.hasOffset()) return 0;
+  if(c = boolCmp(isByte(mr2.getOffset()), isByte(mr1.getOffset()))) return c;
+  return sign((INT64)mr1.getOffset() - (INT64)mr2.getOffset());
+}
+
+int MemoryRef::addrCmp(const MemoryRef &mr1, const MemoryRef &mr2) { // static
+  int c;
+  if(c = boolCmp(mr1.hasOffset(), mr2.hasOffset())) return c;
+  if(!mr1.hasOffset()) return 0;
+  if(c = boolCmp(isByte(mr2.getAddr()), isByte(mr1.getAddr()))) return c;
+  if(c = boolCmp(isDword(mr2.getAddr()), isDword(mr1.getAddr()))) return c;
+  return sign((INT64)mr1.getAddr() - (INT64)mr2.getAddr());
+}
+
+int MemoryRef::memRefCmp(const MemoryRef &mr1, const MemoryRef &mr2) { // static
+  int c;
+  if(c = boolCmp(mr2.isDisplaceOnly(),mr1.isDisplaceOnly())) return c;
+  if(mr1.isDisplaceOnly()) {
+    return addrCmp(mr1,mr2);
+  } else {
+    if(c = boolCmp(mr1.hasInx(),mr2.hasInx())) return c;
+    if(!mr1.hasInx()) {
+      if(c = offsetCmp(mr1,mr2)) return c;
+    }
+    if(c = boolCmp(mr1.hasBase(), mr2.hasBase())) return c;
+    if(mr1.hasBase()) { // && mr2.hasBase()
+      if(c = registerCmp(*mr1.getBase(), *mr2.getBase())) return c;
+    }
+    if(mr1.hasInx()) { // && mr2.hasInx()
+      if(c = offsetCmp(mr1,mr2)) return c;
+      if(c = (int)mr1.getShift() - (int)mr2.getShift()) return c;
+      if(c = registerCmp(*mr1.getInx(),*mr2.getInx())) return c;
+    }
+  }
+  return offsetCmp(mr1,mr2);
+}
+
+int MemoryOperand::memOpCmp(const MemoryOperand &mem1, const MemoryOperand &mem2) { // static
+  int c = regSizeCmp(mem1.getSize(),mem2.getSize());
+  if(c) return c;
+  if(c = MemoryRef::memRefCmp(mem1.getMemoryReference(), mem2.getMemoryReference())) return c;
+  if(c = boolCmp(mem1.hasSegmentRegister(),mem2.hasSegmentRegister())) return c;
+  if(!mem1.hasSegmentRegister()) return 0; // && !mem2.hasSegmentRegister()
+  return registerCmp(*mem1.getSegmentRegister(), *mem2.getSegmentRegister());
+}
+
+int InstructionOperand::insOpCmp(const InstructionOperand &op1, const InstructionOperand &op2) { // static
+  int c = (int)op1.getType() - (int)op2.getType();
+  if(c) return c;
+  switch(op1.getType()) { // op1 and op2 has same type
+  case REGISTER      : return registerCmp(op1.getRegister(), op2.getRegister());
+  case MEMORYOPERAND : return MemoryOperand::memOpCmp((MemoryOperand&)op1, (MemoryOperand&)op2);
+  case IMMEDIATEVALUE:
+    if(c = regSizeCmp(op1.getSize(), op2.getSize())) return c;
+    return sign(op1.getImmInt64() - op2.getImmInt64());
+  }
+  throwInvalidArgumentException(__TFUNCTION__,_T("op1.getType()=%s"), ::toString(op1.getType()).cstr());
+  return 0;
+}
