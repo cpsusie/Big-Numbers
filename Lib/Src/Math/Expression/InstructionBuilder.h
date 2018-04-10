@@ -55,18 +55,18 @@ private:
   const BYTE   m_opcodeSize;
   const BYTE   m_directionMask;
   // is MOD-REG-R/M byte added
-  bool         m_hasModeByte;
+  bool         m_modeByteCreated;
 #ifdef IS64BIT
   // See RexByte.h
   bool         m_hasRexByte;
   BYTE         m_rexByteIndex;
 #endif
   inline void init() {
-    m_opcodePos    = 0;
-    m_hasModeByte  = false;
+    m_opcodePos       = 0;
+    m_modeByteCreated = false;
 #ifdef IS64BIT
-    m_hasRexByte   = false;
-    m_rexByteIndex = 0;
+    m_hasRexByte      = false;
+    m_rexByteIndex    = 0;
 #endif
   }
   // Use with Imm-addressing. reg = { ES,CS,SS,DS,FS,GS }
@@ -83,8 +83,13 @@ private:
   inline void addExtension() {
     setModeBits(m_extension << 3);
   }
+  inline bool modeByteCreated() const {
+    return m_modeByteCreated;
+  }
+  inline bool modeByteAllowed() const {
+    return (getFlags() & NO_MODEBYTE) == 0;
+  }
   InstructionBuilder &prefixSegReg(    const SegmentRegister &reg);
-  InstructionBuilder &prefixImm(BYTE op, OperandSize size, bool immIsByte);
 protected:
   static void throwImmSizeException(const TCHAR *method, INT64 immv) {
     throwInvalidArgumentException(method,_T("Immediate value %s not allowed"),formatHexValue(immv,false).cstr());
@@ -104,15 +109,10 @@ protected:
   static inline void sizeError(     const TCHAR *method, INT64 immv) {
     throwImmSizeException(method,immv);
   }
-  inline InstructionBuilder &prefixImm(BYTE op, const Register      &reg, bool immIsByte) {
-    return prefixImm(op,reg.getSize(), immIsByte);
-  }
-  inline InstructionBuilder &prefixImm(BYTE op, const MemoryOperand &mem, bool immIsByte) {
-    return prefixImm(op,mem.getSize(), immIsByte);
-  }
   inline UINT getFlags() const {
     return m_flags;
   }
+  InstructionBuilder &prefixImm(BYTE op, OperandSize size, bool immIsByte);
 public:
   InstructionBuilder(const OpcodeBase      &opcode);
   InstructionBuilder(const InstructionBase &ins   , UINT flags = 0);
@@ -130,8 +130,8 @@ public:
   inline BYTE getModeByteIndex() const {
     return getOpcodePos() + getOpcodeSize();
   }
-  inline bool hasSizeBit() const {
-    return (getFlags() & HAS_SIZEBIT) != 0;
+  inline bool hasByteSizeBit() const {
+    return (getFlags() & HAS_BYTE_SIZEBIT) != 0;
   }
   inline bool hasDirectionBit1() const {
     return (getFlags() & HAS_DIRECTIONBIT1) != 0;
@@ -141,9 +141,6 @@ public:
   }
   inline bool hasQwordSizeBit() const {
     return (getFlags() & HAS_REXQSIZEBIT) != 0;
-  }
-  inline bool hasModeByte() const {
-    return m_hasModeByte;
   }
   InstructionBuilder &insert(BYTE index, BYTE b);
   inline InstructionBuilder &prefix(BYTE b) {
@@ -214,7 +211,7 @@ public:
   }
   // Set bit 0 in opcode to 1 for for 16-, 32- (and 64- bit operands)
   inline InstructionBuilder &setSizeBit() {
-    return hasSizeBit() ? or(m_opcodePos,1) : *this;
+    return hasByteSizeBit() ? or(m_opcodePos,1) : *this;
   }
 
   InstructionBuilder &setOperandSize(OperandSize size);

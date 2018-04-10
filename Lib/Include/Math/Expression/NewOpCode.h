@@ -445,8 +445,8 @@ public:
 #endif // IS64BIT
 
 #define IMMMADDR_ALLOWED       0x00200000
-#define REGINDEX_NOMODE        0x00400000
-#define HAS_SIZEBIT            0x00800000
+#define NO_MODEBYTE            0x00400000
+#define HAS_BYTE_SIZEBIT       0x00800000
 #define HAS_WORDPREFIX         0x01000000
 #ifdef IS32BIT
 #define HAS_REXQSIZEBIT        0x00000000
@@ -458,7 +458,7 @@ public:
 #define FIRSTOP_REGONLY        0x10000000
 #define LASTOP_IMMONLY         0x20000000
 
-#define IMMEDIATEVALUE_ALLOWED (IMM8_ALLOWED | IMM16_ALLOWED | IMM32_ALLOWED)
+#define IMMEDIATEVALUE_ALLOWED      (IMM8_ALLOWED         | IMM16_ALLOWED | IMM32_ALLOWED)
 
 #ifdef IS32BIT
 #define NONBYTE_GPRPTR_ALLOWED      (WORDPTR_ALLOWED      | DWORDPTR_ALLOWED)
@@ -477,9 +477,13 @@ public:
 #define ALL_GPR0_ALLOWED            (REGTYPE_GPR0_ALLOWED | ALL_GPRSIZE_ALLOWED    )
 #define ALL_GPRPTR_ALLOWED          (BYTEPTR_ALLOWED      | NONBYTE_GPRPTR_ALLOWED )
 
-#define HAS_NONBYTE_SIZEBITS        (HAS_WORDPREFIX | HAS_REXQSIZEBIT     )
-#define HAS_ALL_SIZEBITS            (HAS_SIZEBIT    | HAS_NONBYTE_SIZEBITS)
-#define ALL_MEMOPSIZES              (BYTEPTR_ALLOWED | WORDPTR_ALLOWED | DWORDPTR_ALLOWED | QWORDPTR_ALLOWED | TBYTEPTR_ALLOWED | XMMWORDPTR_ALLOWED)
+#define HAS_NONBYTE_SIZEBITS        (HAS_WORDPREFIX       | HAS_REXQSIZEBIT     )
+#define HAS_ALL_SIZEBITS            (HAS_BYTE_SIZEBIT     | HAS_NONBYTE_SIZEBITS)
+#define ALLPTR_ALLOWED              (BYTEPTR_ALLOWED      | WORDPTR_ALLOWED    \
+                                   | DWORDPTR_ALLOWED     | QWORDPTR_ALLOWED   \
+                                   | TBYTEPTR_ALLOWED                          \
+                                   | MMWORDPTR_ALLOWED    | XMMWORDPTR_ALLOWED \
+                                   | VOIDPTR_ALLOWED)
 
 class OpcodeBase {
 private:
@@ -648,7 +652,7 @@ private:
 public:
   OpcodeXchg(const String &mnemonic)
     : Opcode2Arg(  mnemonic, 0x86, ALL_GPR_ALLOWED | ALL_GPRPTR_ALLOWED | HAS_ALL_SIZEBITS)
-    , m_eaxRegCode(mnemonic, 0x90,0,1,REGINDEX_NOMODE)
+    , m_eaxRegCode(mnemonic, 0x90,0,1,NO_MODEBYTE)
   {
   }
   InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
@@ -691,7 +695,7 @@ public :
 class OpcodeLea : public Opcode2Arg {
 public :
   OpcodeLea(const String &mnemonic, BYTE op)
-    : Opcode2Arg(mnemonic, op, NONBYTE_GPR_ALLOWED | ALL_MEMOPSIZES | VOIDPTR_ALLOWED | HAS_NONBYTE_SIZEBITS)
+    : Opcode2Arg(mnemonic, op, NONBYTE_GPR_ALLOWED | ALLPTR_ALLOWED | HAS_NONBYTE_SIZEBITS)
   {
   }
   bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError=false) const;
@@ -704,7 +708,7 @@ private:
   Opcode1Arg m_immCode;
 public:
   inline OpcodePushPop(const String &mnemonic, BYTE opreg, BYTE opmem, BYTE opImm, BYTE extension)
-    : Opcode1Arg(mnemonic, opreg, 0        , REGTYPE_GPR_ALLOWED | INDEXGPR_ALLOWED | WORDGPR_ALLOWED | HAS_WORDPREFIX | REGINDEX_NOMODE)
+    : Opcode1Arg(mnemonic, opreg, 0        , REGTYPE_GPR_ALLOWED | INDEXGPR_ALLOWED | WORDGPR_ALLOWED | HAS_WORDPREFIX | NO_MODEBYTE)
     , m_memCode( mnemonic, opmem, extension,                       INDEXPTR_ALLOWED | WORDPTR_ALLOWED | HAS_WORDPREFIX)
     , m_immCode( mnemonic, opImm, 0        , opImm?IMMEDIATEVALUE_ALLOWED:0)
   {

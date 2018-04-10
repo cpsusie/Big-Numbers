@@ -19,26 +19,26 @@ InstructionBuilder &Instruction2ArgImm::setRegImm(const Register &reg, const Ins
     if(regIndex == 0) {
       or(0x04).setOperandSize(regSize).addImmediateOperand(imm,regSize);
     } else {
-      prefixImm(IMMOP,reg,true ).setModeBits(MR_REG(regIndex)).addImmediateOperand(imm,regSize);
+      prefixImm(IMMOP,regSize,true ).setModeBits(MR_REG(regIndex)).addImmediateOperand(imm,regSize);
       SETREXUNIFORMREGISTER(reg);
     }
     break;
   case REGSIZE_WORD :
     if(immIsByte) {
-      prefixImm(IMMOP,reg,true ).setModeBits(MR_REG(regIndex)).addImmediateOperand(imm,REGSIZE_BYTE);
+      prefixImm(IMMOP,regSize,true ).setModeBits(MR_REG(regIndex)).addImmediateOperand(imm,REGSIZE_BYTE);
     } else if(regIndex == 0) {
       or(0x04).setOperandSize(regSize).addImmediateOperand(imm,regSize);
     } else {
-      prefixImm(IMMOP,reg,false).setModeBits(MR_REG(regIndex)).addImmediateOperand(imm,regSize);
+      prefixImm(IMMOP,regSize,false).setModeBits(MR_REG(regIndex)).addImmediateOperand(imm,regSize);
     }
     break;
   default           :
     if(immIsByte) {
-      prefixImm(IMMOP,reg,true ).setModeBits(MR_REG(regIndex)).addImmediateOperand(imm,REGSIZE_BYTE);
+      prefixImm(IMMOP,regSize,true ).setModeBits(MR_REG(regIndex)).addImmediateOperand(imm,REGSIZE_BYTE);
     } else if(regIndex == 0) {
       or(0x04).setOperandSize(regSize).addImmediateOperand(imm,REGSIZE_DWORD);
     } else {
-      prefixImm(IMMOP,reg,false).setModeBits(MR_REG(regIndex)).addImmediateOperand(imm,REGSIZE_DWORD);
+      prefixImm(IMMOP,regSize,false).setModeBits(MR_REG(regIndex)).addImmediateOperand(imm,REGSIZE_DWORD);
     }
     break;
   }
@@ -47,17 +47,17 @@ InstructionBuilder &Instruction2ArgImm::setRegImm(const Register &reg, const Ins
 }
 
 InstructionBuilder &Instruction2ArgImm::setMemImm(const MemoryOperand &mem, const InstructionOperand &imm) {
-  const OperandSize size      = mem.getSize();
+  const OperandSize dstSize   = mem.getSize();
   const bool        immIsByte = Register::sizeContainsSrcSize(REGSIZE_BYTE,imm.getSize());
-  switch(size) {
+  switch(dstSize) {
   case REGSIZE_BYTE :
-    prefixImm(IMMOP,mem,true).setMemoryOperand(mem).addImmediateOperand(imm,size);
+    prefixImm(IMMOP,dstSize,true).setMemoryOperand(mem).addImmediateOperand(imm,dstSize);
     break;
   case REGSIZE_WORD :
-    prefixImm(IMMOP,mem,immIsByte).setMemoryOperand(mem).addImmediateOperand(imm,immIsByte?REGSIZE_BYTE:size);
+    prefixImm(IMMOP,dstSize,immIsByte).setMemoryOperand(mem).addImmediateOperand(imm,immIsByte?REGSIZE_BYTE:dstSize);
     break;
   default           :
-    prefixImm(IMMOP,mem,immIsByte).setMemoryOperand(mem).addImmediateOperand(imm,immIsByte?REGSIZE_BYTE:REGSIZE_DWORD);
+    prefixImm(IMMOP,dstSize,immIsByte).setMemoryOperand(mem).addImmediateOperand(imm,immIsByte?REGSIZE_BYTE:REGSIZE_DWORD);
     break;
   }
   return *this;

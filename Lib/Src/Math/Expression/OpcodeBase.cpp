@@ -43,9 +43,9 @@ OpcodeBase::OpcodeBase(const String &mnemonic, UINT op, BYTE extension, BYTE opC
     THROWINVALIDFLAGS(_T("Extension=%d. Max is 7"), extension);
   }
   m_bytes = swapBytes(op,m_size);
-  if(getFlags() & HAS_SIZEBIT) {
+  if(getFlags() & HAS_BYTE_SIZEBIT) {
     if(op & 1) {
-      THROWINVALIDFLAGS(_T("HAS_SIZEBIT set for opcode %X (bit 0 already set)"),op);
+      THROWINVALIDFLAGS(_T("HAS_BYTE_SIZEBIT set for opcode %X (bit 0 already set)"),op);
     }
   }
   if(getFlags() & HAS_WORDPREFIX) {
@@ -81,8 +81,8 @@ OpcodeBase::OpcodeBase(const String &mnemonic, UINT op, BYTE extension, BYTE opC
     if(getFlags() & FIRSTOP_REGONLY) {
       THROWINVALIDFLAGS(_T("HAS_DIRECTIONBIT0 and FIRSTOP_REGONLY cannot both be set"));
     }
-    if(getFlags() & HAS_SIZEBIT) {
-      THROWINVALIDFLAGS(_T("Cannot have both HAS_DIRECTIONBIT0 and HAS_SIZEBIT set for opcode %X"),op);
+    if(getFlags() & HAS_BYTE_SIZEBIT) {
+      THROWINVALIDFLAGS(_T("Cannot have both HAS_DIRECTIONBIT0 and HAS_BYTE_SIZEBIT set for opcode %X"),op);
     }
   }
 
