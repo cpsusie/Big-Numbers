@@ -268,6 +268,12 @@ public:
   inline bool isRegister() const {
     return getType() == REGISTER;
   }
+  inline bool isMemoryRef() const {
+    return getType() == MEMORYOPERAND;
+  }
+  inline bool isImmediateValue() const {
+    return getType() == IMMEDIATEVALUE;
+  }
   inline bool isRegister(RegType type) const {
     return isRegister() && (getRegister().getType() == type);
   }
@@ -277,11 +283,11 @@ public:
   inline bool isST0() const {
     return isRegister() && getRegister().isST0();
   }
-  inline bool isMemoryRef() const {
-    return getType() == MEMORYOPERAND;
-  }
   inline bool isDisplaceOnly() const {
     return isMemoryRef() && getMemoryReference().isDisplaceOnly();
+  }
+  inline bool isImmByte() const {
+    return isImmediateValue() && (getSize() == REGSIZE_BYTE);
   }
   char   getImmInt8()   const;
   BYTE   getImmUint8()  const;
@@ -293,9 +299,7 @@ public:
   UINT64 getImmUint64() const;
 
   inline bool isShiftAmountOperand() const {
-    return (getSize() == REGSIZE_BYTE)
-        &&  ((getType()==IMMEDIATEVALUE)
-          || ((getType()==REGISTER) && (getRegister() == CL)));
+    return isImmByte() || (isRegister() && (getRegister() == CL));
   }
   virtual const MemoryRef       &getMemoryReference() const {
     throwUnsupportedOperationException(__TFUNCTION__);
@@ -447,18 +451,21 @@ public:
 #define IMMMADDR_ALLOWED       0x00200000
 #define NO_MODEBYTE            0x00400000
 #define HAS_BYTE_SIZEBIT       0x00800000
-#define HAS_WORDPREFIX         0x01000000
+#define HAS_IMM_XBIT           0x01000000
+#define HAS_WORDPREFIX         0x02000000
 #ifdef IS32BIT
 #define HAS_REXQSIZEBIT        0x00000000
 #else  // IS64BIT
-#define HAS_REXQSIZEBIT        0x02000000
+#define HAS_REXQSIZEBIT        0x04000000
 #endif // IS64BIT
-#define HAS_DIRECTIONBIT1      0x04000000
-#define HAS_DIRECTIONBIT0      0x08000000
-#define FIRSTOP_REGONLY        0x10000000
-#define LASTOP_IMMONLY         0x20000000
+#define HAS_DIRECTIONBIT1      0x08000000
+#define HAS_DIRECTIONBIT0      0x10000000
+#define FIRSTOP_REGONLY        0x20000000
+#define FIRSTOP_GPR0ONLY       0x40000000
+#define LASTOP_IMMONLY         0x80000000
 
 #define IMMEDIATEVALUE_ALLOWED      (IMM8_ALLOWED         | IMM16_ALLOWED | IMM32_ALLOWED)
+
 
 #ifdef IS32BIT
 #define NONBYTE_GPRPTR_ALLOWED      (WORDPTR_ALLOWED      | DWORDPTR_ALLOWED)
@@ -479,11 +486,19 @@ public:
 
 #define HAS_NONBYTE_SIZEBITS        (HAS_WORDPREFIX       | HAS_REXQSIZEBIT     )
 #define HAS_ALL_SIZEBITS            (HAS_BYTE_SIZEBIT     | HAS_NONBYTE_SIZEBITS)
-#define ALLPTR_ALLOWED              (BYTEPTR_ALLOWED      | WORDPTR_ALLOWED    \
-                                   | DWORDPTR_ALLOWED     | QWORDPTR_ALLOWED   \
-                                   | TBYTEPTR_ALLOWED                          \
-                                   | MMWORDPTR_ALLOWED    | XMMWORDPTR_ALLOWED \
+#define ALLPTR_ALLOWED              (BYTEPTR_ALLOWED      | WORDPTR_ALLOWED     \
+                                   | DWORDPTR_ALLOWED     | QWORDPTR_ALLOWED    \
+                                   | TBYTEPTR_ALLOWED                           \
+                                   | MMWORDPTR_ALLOWED    | XMMWORDPTR_ALLOWED  \
                                    | VOIDPTR_ALLOWED)
+
+#define ALLIMM_MASK                 (IMMEDIATEVALUE_ALLOWED                     \
+                                   | IMM64_ALLOWED                              \
+                                   | IMMMADDR_ALLOWED                           \
+                                   | HAS_IMM_XBIT                               \
+                                   | LASTOP_IMMONLY)
+
+#define ALLNONIMM_MASK             (~ALLIMM_MASK)
 
 class OpcodeBase {
 private:
@@ -617,9 +632,39 @@ public :
   InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
 };
 
+// encoding I. op1=AL/AX/EAX/RAX. op2=imm
+class Opcode2ArgI : public OpcodeBase {
+public:
+  Opcode2ArgI(const String &mnemonic, BYTE op)
+    : OpcodeBase(mnemonic, op, 0, 2, ALL_GPR0_ALLOWED | HAS_ALL_SIZEBITS | IMMEDIATEVALUE_ALLOWED | FIRSTOP_REGONLY | LASTOP_IMMONLY)
+  {
+  }
+  InstructionBase operator()(const InstructionOperand &dst, const InstructionOperand &imm) const;
+};
+
+// encoding MI. op1=mem/reg, op2=imm
+class Opcode2ArgMI : public OpcodeBase {
+public:
+  Opcode2ArgMI(const String &mnemonic, UINT op, BYTE extension, UINT flags=0)
+    : OpcodeBase(mnemonic, op, extension, 2, flags | (ALL_GPR_ALLOWED  | ALL_GPRPTR_ALLOWED | HAS_ALL_SIZEBITS | IMMEDIATEVALUE_ALLOWED | LASTOP_IMMONLY))
+  {
+  }
+  InstructionBase operator()(const InstructionOperand &dst, const InstructionOperand &imm) const;
+};
+
+// encoding M. op1=AL/AX/EAX/RAX. op2=RM
+class Opcode2ArgM : public OpcodeBase {
+public:
+  Opcode2ArgM(const String &mnemonic, UINT op, BYTE extension)
+    : OpcodeBase(mnemonic, op, extension, 2, ALL_GPR_ALLOWED|ALL_GPRPTR_ALLOWED|HAS_ALL_SIZEBITS|FIRSTOP_GPR0ONLY)
+  {
+  }
+  InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
+};
+
 class Opcode3Arg : public OpcodeBase {
 public :
-  Opcode3Arg(const String &mnemonic, UINT op, UINT flags=NONBYTE_GPR_ALLOWED | NONBYTE_GPRPTR_ALLOWED | FIRSTOP_REGONLY | LASTOP_IMMONLY | IMMEDIATEVALUE_ALLOWED | HAS_NONBYTE_SIZEBITS)
+  Opcode3Arg(const String &mnemonic, UINT op, UINT flags=NONBYTE_GPR_ALLOWED | NONBYTE_GPRPTR_ALLOWED | FIRSTOP_REGONLY | LASTOP_IMMONLY | IMMEDIATEVALUE_ALLOWED | HAS_NONBYTE_SIZEBITS | HAS_IMM_XBIT)
     : OpcodeBase(mnemonic, op, 0, 3, flags) {
   }
   InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2, const InstructionOperand &op3) const;
@@ -631,7 +676,7 @@ private:
   const Opcode3Arg m_imul3ArgCode;
 public :
   OpcodeIMul(const String &mnemonic)
-    : Opcode1Arg(mnemonic, 0xF6,5)
+    : Opcode1Arg(    mnemonic, 0xF6,5)
     , m_imul2ArgCode(mnemonic, 0x0FAF, NONBYTE_GPR_ALLOWED | NONBYTE_GPRPTR_ALLOWED | FIRSTOP_REGONLY | HAS_NONBYTE_SIZEBITS)
     , m_imul3ArgCode(mnemonic, 0x69)
   {
@@ -658,15 +703,16 @@ public:
   InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
 };
 
-class OpcodeTest : public Opcode2Arg {
+class OpcodeStd2Arg : public Opcode2Arg {
 private:
-  const Opcode2Arg m_immCode;
-  const Opcode2Arg m_GPR0ImmCode;
+  const Opcode2ArgI  m_codeI;
+  const Opcode2ArgMI m_codeMI;
 public :
-  OpcodeTest(const String &mnemonic)
-    : Opcode2Arg(    mnemonic, 0x84, ALL_GPR_ALLOWED  | ALL_GPRPTR_ALLOWED | HAS_ALL_SIZEBITS)
-    , m_immCode(     mnemonic, 0xF6, ALL_GPR_ALLOWED  | ALL_GPRPTR_ALLOWED | HAS_ALL_SIZEBITS | IMMEDIATEVALUE_ALLOWED | LASTOP_IMMONLY)
-    , m_GPR0ImmCode( mnemonic, 0xA8, ALL_GPR0_ALLOWED                      | HAS_ALL_SIZEBITS | IMMEDIATEVALUE_ALLOWED | LASTOP_IMMONLY)
+  OpcodeStd2Arg(const String &mnemonic, UINT opStd, BYTE opI, UINT opMI, BYTE extMI
+               ,UINT flags=0)
+    : Opcode2Arg(mnemonic, opStd     , (flags&ALLNONIMM_MASK) | (ALL_GPR_ALLOWED  | ALL_GPRPTR_ALLOWED | HAS_ALL_SIZEBITS))
+    , m_codeI(   mnemonic, opI)
+    , m_codeMI(  mnemonic, opMI,extMI, (flags&ALLIMM_MASK))
   {
   }
   bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError=false) const;
@@ -682,8 +728,8 @@ private:
 public :
   OpcodeMov(const String &mnemonic)
     : Opcode2Arg(    mnemonic, 0x88)
-    , m_regImmCode(  mnemonic, 0xB0, ALL_GPR_ALLOWED     | IMMEDIATEVALUE_ALLOWED | IMM64_ALLOWED        | HAS_ALL_SIZEBITS )
-    , m_memImmCode(  mnemonic, 0xC6, ALL_GPRPTR_ALLOWED  | IMMEDIATEVALUE_ALLOWED                        | HAS_ALL_SIZEBITS )
+    , m_regImmCode(  mnemonic, 0xB0, ALL_GPR_ALLOWED     | IMMEDIATEVALUE_ALLOWED | IMM64_ALLOWED        | HAS_ALL_SIZEBITS | LASTOP_IMMONLY | FIRSTOP_REGONLY)
+    , m_memImmCode(  mnemonic, 0xC6, ALL_GPRPTR_ALLOWED  | IMMEDIATEVALUE_ALLOWED                        | HAS_ALL_SIZEBITS | LASTOP_IMMONLY                  )
     , m_GPR0AddrCode(mnemonic, 0xA0, ALL_GPR0_ALLOWED    | IMMMADDR_ALLOWED       | ALL_GPRPTR_ALLOWED   | HAS_ALL_SIZEBITS | HAS_DIRECTIONBIT1)
     , m_movSegCode(  mnemonic, 0x8C, NONBYTE_GPR_ALLOWED | REGTYPE_SEG_ALLOWED    | WORDPTR_ALLOWED      | HAS_DIRECTIONBIT1)
   {
@@ -707,10 +753,10 @@ private:
   Opcode1Arg m_memCode;
   Opcode1Arg m_immCode;
 public:
-  inline OpcodePushPop(const String &mnemonic, BYTE opreg, BYTE opmem, BYTE opImm, BYTE extension)
+  inline OpcodePushPop(const String &mnemonic, BYTE opreg, BYTE opmem, BYTE extmem, BYTE opImm)
     : Opcode1Arg(mnemonic, opreg, 0        , REGTYPE_GPR_ALLOWED | INDEXGPR_ALLOWED | WORDGPR_ALLOWED | HAS_WORDPREFIX | NO_MODEBYTE)
-    , m_memCode( mnemonic, opmem, extension,                       INDEXPTR_ALLOWED | WORDPTR_ALLOWED | HAS_WORDPREFIX)
-    , m_immCode( mnemonic, opImm, 0        , opImm?IMMEDIATEVALUE_ALLOWED:0)
+    , m_memCode( mnemonic, opmem, extmem,                          INDEXPTR_ALLOWED | WORDPTR_ALLOWED | HAS_WORDPREFIX)
+    , m_immCode( mnemonic, opImm, 0        , opImm?(IMMEDIATEVALUE_ALLOWED|HAS_IMM_XBIT):0)
   {
   }
   bool isValidOperand(       const InstructionOperand &op, bool throwOnError=false) const;
@@ -919,6 +965,7 @@ extern Opcode0Arg        POPFQ;                            // Pop data into RFLA
 #endif // IS64BIT
 
 extern Opcode0Arg        NOOP;                             // No operation
+/*
 extern Opcode2Arg        ADD;                              // Integer Addition
 extern Opcode2Arg        ADC;                              // Integer Addition with Carry
 extern Opcode2Arg        OR;                               // Logical Inclusive OR
@@ -927,8 +974,19 @@ extern Opcode2Arg        SUB;                              // Integer Subtractio
 extern Opcode2Arg        SBB;                              // Integer Subtraction with Borrow
 extern Opcode2Arg        XOR;                              // Logical Exclusive OR
 extern Opcode2Arg        CMP;                              // Compare Two Operands
+*/
+
+extern OpcodeStd2Arg     ADD;                              // Integer Addition
+extern OpcodeStd2Arg     ADC;                              // Integer Addition with Carry
+extern OpcodeStd2Arg     OR;                               // Logical Inclusive OR
+extern OpcodeStd2Arg     AND;                              // Logical AND
+extern OpcodeStd2Arg     SUB;                              // Integer Subtraction
+extern OpcodeStd2Arg     SBB;                              // Integer Subtraction with Borrow
+extern OpcodeStd2Arg     XOR;                              // Logical Exclusive OR
+extern OpcodeStd2Arg     CMP;                              // Compare Two Operands
+
 extern OpcodeXchg        XCHG;                             // Exchange Two operands
-extern OpcodeTest        TEST;                             // Logical Compare. same as AND but doesn't change dst. set SF,ZF,PF according to result
+extern OpcodeStd2Arg     TEST;                             // Logical Compare. same as AND but doesn't change dst. set SF,ZF,PF according to result
 extern OpcodeMov         MOV;                              // Move data (copying)
 extern OpcodeLea         LEA;                              // Load effective address
 
@@ -940,18 +998,18 @@ extern OpcodeIncDec      DEC;
 
 extern Opcode1Arg        NOT;                              // Negate the operand, logical NOT
 extern Opcode1Arg        NEG;                              // Two's complement negation
-extern Opcode1Arg        MUL;                              // Unsigned multiply ah:al=al*src, dx:ax=ax*src, edx:eax=eax*src, rdx:rax=rax*src
 extern OpcodeIMul        IMUL;                             // Signed multiply   ah:al=al*src, dx:ax=ax*src, edx:eax=eax*src, rdx:rax=rax*src
 
-extern Opcode1Arg        DIV;                              // Unsigned divide   ah :al  /= src, al  = quot, ah  = rem
-                                                           //                   dx :ax  /= src, ax  = quot, dx  = rem
-                                                           //                   edx:eax /= src, eax = quot, edx = rem
-                                                           //                   rdx:rax /= src, rax = quot, rdx = rem
 extern Opcode1Arg        IDIV;                             // Signed divide     ah :al  /= src, al  = quot, ah  = rem. ah  must contain sign extension of al.
                                                            //                   dx :ax  /= src, ax  = quot, dx  = rem. dx  must contain sign extension of ax.
                                                            //                   edx:eax /= src, eax = quot, edx = rem. edx must contain sign extension of eax.
                                                            //                   rdx:rax /= src, rax = quot, rdx = rem. rdx must contain sign extension of rax.
 
+extern Opcode2ArgM       MUL;                              // Unsigned multiply ah:al=al*src, dx:ax=ax*src, edx:eax=eax*src, rdx:rax=rax*src
+extern Opcode2ArgM       DIV;                              // Unsigned divide   ah :al  /= src, al  = quot, ah  = rem
+                                                           //                   dx :ax  /= src, ax  = quot, dx  = rem
+                                                           //                   edx:eax /= src, eax = quot, edx = rem
+                                                           //                   rdx:rax /= src, rax = quot, rdx = rem
 extern OpcodeShiftRot    ROL;                              // Rotate left  by cl/imm
 extern OpcodeShiftRot    ROR;                              // Rotate right by cl/imm
 extern OpcodeShiftRot    RCL;                              // Rotate left  by cl/imm (with carry)

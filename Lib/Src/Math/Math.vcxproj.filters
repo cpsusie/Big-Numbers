@@ -400,9 +400,6 @@
     <ClCompile Include="Expression\OpcodeFPU.cpp">
       <Filter>Source Files\Expression</Filter>
     </ClCompile>
-    <ClCompile Include="Expression\OpcodeTest.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="NatvisFile.natvis" />

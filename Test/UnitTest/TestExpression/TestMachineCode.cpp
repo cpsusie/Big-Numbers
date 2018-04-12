@@ -350,6 +350,9 @@ public:
   }
   void clear() {
     s_emitCount = 0;
+    if(size() > 0) {
+      memset((BYTE*)getData(),0,size());
+    }
     __super::clear(-1);
   }
 };
@@ -578,20 +581,22 @@ void TestMachineCode::testArg0Opcodes() {
 }
 
 void TestMachineCode::testArg1Opcodes() {
+  setClearOn(false);
   testOpcode(PUSH );
   testOpcode(POP  );
   testOpcode(INC  );
   testOpcode(DEC  );
   testOpcode(NOT  );
   testOpcode(NEG  );
-  testOpcode(MUL  );
+  clear(true);
   testOpcode(IMUL );
-  testOpcode(DIV  );
   testOpcode(IDIV );
 }
 
 void TestMachineCode::testArg2Opcodes() {
-  clear(true);
+  setClearOn(true);
+  testOpcode(MUL    );
+  testOpcode(DIV    );
   testOpcode(ADD    );
   testOpcode(ADC    );
   testOpcode(OR     );
@@ -599,12 +604,12 @@ void TestMachineCode::testArg2Opcodes() {
   testOpcode(SUB    );
   testOpcode(SBB    );
   testOpcode(XOR    );
-  clear(true);
   testOpcode(CMP    );
   testOpcode(XCHG   );
   testOpcode(TEST   );
   testOpcode(MOV    );
   testOpcode(LEA    );
+  setClearOn(false);
 }
 
 void TestMachineCode::testArg3Opcodes() {
@@ -785,6 +790,7 @@ void TestMachineCode::testXMMOpcodes() {
   testOpcode(MOVAPS);
   testOpcode(MOVSD1);
   clear(true);
+  setClearOn(false);
   testOpcode(ADDSD );
   testOpcode(MULSD );
   testOpcode(SUBSD );

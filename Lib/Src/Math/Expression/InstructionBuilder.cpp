@@ -96,23 +96,6 @@ InstructionBuilder &InstructionBuilder::setModeBits(BYTE bits) {
   return *this;
 }
 
-InstructionBuilder &InstructionBuilder::prefixImm(BYTE b, OperandSize size, bool immIsByte) {
-  if(needSizeBit(size)) b |= 1;
-  if((size != REGSIZE_BYTE) && immIsByte) b |= 2;
-  prefix(b);
-  m_modeByteCreated = true;
-  m_opcodePos--;
-  switch(size) {
-  case REGSIZE_WORD:
-    wordIns();
-    break;
-  case REGSIZE_QWORD:
-    qwordIns();
-    break;
-  }
-  return *this;
-}
-
 // ptr[(inx<<shift)+offset], (inx&7) != 4, shift<=3, offset=[INT_MIN;INT_MAX]
 InstructionBuilder &InstructionBuilder::addrShiftInx(const IndexRegister &inx, BYTE shift, int offset) {
   const BYTE inxIndex = inx.getIndex();
@@ -268,15 +251,21 @@ InstructionBuilder &InstructionBuilder::setRegRegOperands(const Register &reg1, 
 InstructionBuilder &InstructionBuilder::setImmediateOperand(const InstructionOperand &imm, const InstructionOperand *dst) {
   switch(imm.getSize()) {
   case REGSIZE_BYTE :
-    return add(imm.getImmInt8()).setImmByteBit();
+    assert(getFlags() & IMM8_ALLOWED);
+    if((dst == NULL) || (dst->getSize() != REGSIZE_BYTE)) {
+      setImmXBit();
+    }
+    return add(imm.getImmInt8());
   case REGSIZE_WORD :
     if(dst && (dst->getSize() == REGSIZE_WORD)) {
+      assert(getFlags() & IMM16_ALLOWED);
       const short immv = imm.getImmInt16();
       return add(&immv, 2);
     }
     // else continue case
   case REGSIZE_DWORD:
-    { const int immv = imm.getImmInt32();
+    { assert(getFlags() & IMM32_ALLOWED);
+      const int immv = imm.getImmInt32();
       return add(&immv, 4);
     }
   default           :

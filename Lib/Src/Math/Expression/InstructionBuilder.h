@@ -112,7 +112,6 @@ protected:
   inline UINT getFlags() const {
     return m_flags;
   }
-  InstructionBuilder &prefixImm(BYTE op, OperandSize size, bool immIsByte);
 public:
   InstructionBuilder(const OpcodeBase      &opcode);
   InstructionBuilder(const InstructionBase &ins   , UINT flags = 0);
@@ -227,7 +226,8 @@ public:
   inline InstructionBuilder &setDirectionBit(OperandType dst, OperandType src) {
     return needDirectionBitOn(dst,src) ? or(getLastOpcodeByteIndex(),m_directionMask) : *this;
   }
-  inline InstructionBuilder &setImmByteBit() {
+  inline InstructionBuilder &setImmXBit() {
+    assert(getFlags() & HAS_IMM_XBIT);
     return or(m_opcodePos,2);
   }
   // add MOD-REG-R/M byte if not there yet, else modeByte |= bits
@@ -239,6 +239,7 @@ public:
 
   InstructionBuilder &setMemoryRegOperands(const MemoryOperand &mem, const  Register &reg);
   InstructionBuilder &setRegRegOperands(   const Register      &reg1, const Register &reg2);
+  // if imm.size==BYTE, then only add 1 byte + set X-bit of opcode (bit 1)
   InstructionBuilder &setImmediateOperand( const InstructionOperand &imm, const InstructionOperand *dst=NULL);
   // force 1,2 or 4 bytes immediate value. that is, no byte-encoding for word/dword dst
   InstructionBuilder &addImmediateOperand( const InstructionOperand &imm, OperandSize size);

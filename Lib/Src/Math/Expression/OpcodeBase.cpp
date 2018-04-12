@@ -48,6 +48,14 @@ OpcodeBase::OpcodeBase(const String &mnemonic, UINT op, BYTE extension, BYTE opC
       THROWINVALIDFLAGS(_T("HAS_BYTE_SIZEBIT set for opcode %X (bit 0 already set)"),op);
     }
   }
+  if(getFlags() & HAS_IMM_XBIT) {
+    if(op & 2) {
+      THROWINVALIDFLAGS(_T("HAS_IMM_XBIT set for opcode %X (bit 1 already set)"),op);
+    }
+    if(getFlags() & (HAS_DIRECTIONBIT0|HAS_DIRECTIONBIT1)) {
+      THROWINVALIDFLAGS(_T("Cannot have both HAS_IMM_XBIT and DIRECTIONBIT set for opcode %X"),op);
+    }
+  }
   if(getFlags() & HAS_WORDPREFIX) {
     if(!(getFlags() & (WORDPTR_ALLOWED | WORDGPR_ALLOWED))) {
       THROWINVALIDFLAGS(_T("HAS_WORDPREFIX set for opcode %X, but word size operands not allowed"),op);
@@ -210,9 +218,18 @@ void OpcodeBase::throwUnknownRegisterType(const TCHAR *method, RegType type) { /
   return false;                                                                                 \
 }
 
+#define CHECKFIRSTOP_GPR0ONLY(op)                                                               \
+{ if((getFlags() & FIRSTOP_GPR0ONLY) && !op.isGPR0()) {                                         \
+    RAISEERROR(_T("Operand 1 must be AL/AX/EAX/RAX. op1=%s"), op.toString().cstr());            \
+  }                                                                                             \
+}
+
 #define CHECKFIRSTOP_REGONLY(op)                                                                \
-{ if((getFlags() & FIRSTOP_REGONLY) && (op.getType() != REGISTER)) {                            \
-    RAISEERROR(_T("Operand 1 must be register. Type=%s"), ::toString(op.getType()).cstr());     \
+{ if(getFlags() & (FIRSTOP_GPR0ONLY|FIRSTOP_REGONLY)) {                                         \
+    CHECKFIRSTOP_GPR0ONLY(op);                                                                  \
+    if((getFlags() & FIRSTOP_REGONLY) && !op.isRegister()) {                                    \
+      RAISEERROR(_T("Operand 1 must be register. op1=%s"), op.toString().cstr());               \
+    }                                                                                           \
   }                                                                                             \
 }
 
@@ -508,7 +525,8 @@ bool OpcodeBase::isValidOperandCombination(const Register &reg, const Instructio
   if(!validateOpCount(2, throwOnError)) {
     return false;
   }
-  CHECKLASTOP_IMMONLY(    op);
+  CHECKFIRSTOP_GPR0ONLY(  reg);
+  CHECKLASTOP_IMMONLY(    op );
   if(!validateRegisterAllowed(reg, throwOnError)) {
     return false;
   }

@@ -42,6 +42,15 @@ DEFNAME(Opcode0Arg       ,  POPAD ,0x61);                  // Pop  all double-wo
 #endif // IS32BIT
 
 DEFNAME(Opcode0Arg       ,  NOOP  ,0x90);
+DEFNAME(OpcodeStd2Arg    ,  ADD   ,0x00,0x04,0x80,0,HAS_IMM_XBIT|HAS_DIRECTIONBIT1);
+DEFNAME(OpcodeStd2Arg    ,  OR    ,0x08,0x0C,0x80,1,HAS_IMM_XBIT|HAS_DIRECTIONBIT1);
+DEFNAME(OpcodeStd2Arg    ,  ADC   ,0x10,0x14,0x80,2,HAS_IMM_XBIT|HAS_DIRECTIONBIT1);
+DEFNAME(OpcodeStd2Arg    ,  SBB   ,0x18,0x1C,0x80,3,HAS_IMM_XBIT|HAS_DIRECTIONBIT1);
+DEFNAME(OpcodeStd2Arg    ,  AND   ,0x20,0x24,0x80,4,HAS_IMM_XBIT|HAS_DIRECTIONBIT1);
+DEFNAME(OpcodeStd2Arg    ,  SUB   ,0x28,0x2C,0x80,5,HAS_IMM_XBIT|HAS_DIRECTIONBIT1);
+DEFNAME(OpcodeStd2Arg    ,  XOR   ,0x30,0x34,0x80,6,HAS_IMM_XBIT|HAS_DIRECTIONBIT1);
+DEFNAME(OpcodeStd2Arg    ,  CMP   ,0x38,0x3C,0x80,7,HAS_IMM_XBIT|HAS_DIRECTIONBIT1);
+/*
 DEFNAME(Opcode2Arg       ,  ADD   ,0x00);
 DEFNAME(Opcode2Arg       ,  OR    ,0x08);
 DEFNAME(Opcode2Arg       ,  ADC   ,0x10);
@@ -50,13 +59,15 @@ DEFNAME(Opcode2Arg       ,  AND   ,0x20);
 DEFNAME(Opcode2Arg       ,  SUB   ,0x28);
 DEFNAME(Opcode2Arg       ,  XOR   ,0x30);
 DEFNAME(Opcode2Arg       ,  CMP   ,0x38);
+*/
 DEFNAME(OpcodeXchg       ,  XCHG       );                  // Exchange Two operands
-DEFNAME(OpcodeTest       ,  TEST       );                  // Logical Compare. same as AND but doesn't change dst. set SF,ZF,PF according to result
+DEFNAME(OpcodeStd2Arg    ,  TEST  ,0x84,0xA8,0xF6,0);      // Logical Compare. same as AND but doesn't change dst. set SF,ZF,PF according to result
+
 DEFNAME(OpcodeMov        ,  MOV        );
 DEFNAME(OpcodeLea        ,  LEA   ,0x8D);                  // Load effective address
 
-DEFNAME(OpcodePushPop    ,  PUSH  ,0x50, 0xFF, 0x68, 6);
-DEFNAME(OpcodePushPop    ,  POP   ,0x58, 0x8F, 0   , 0);
+DEFNAME(OpcodePushPop    ,  PUSH  ,0x50, 0xFF,6, 0x68);
+DEFNAME(OpcodePushPop    ,  POP   ,0x58, 0x8F,0, 0   );
 
 DEFNAME(OpcodeIncDec     ,  INC   ,0xFE,0);
 DEFNAME(OpcodeIncDec     ,  DEC   ,0xFE,1);
@@ -64,13 +75,14 @@ DEFNAME(OpcodeIncDec     ,  DEC   ,0xFE,1);
 //        Non existing opcode (0xF6,1);
 DEFNAME(Opcode1Arg       ,  NOT   ,0xF6,2);                // Negate the operand, logical NOT
 DEFNAME(Opcode1Arg       ,  NEG   ,0xF6,3);                // Two's complement negation
-DEFNAME(Opcode1Arg       ,  MUL   ,0xF6,4);                // Unsigned multiply (ax = al*src, dx:ax=ax*src, edx:eax=eax*src, rdx:rax=rax*src)
 DEFNAME(OpcodeIMul       ,  IMUL         );                // Signed multiply   (ax = al*src, dx:ax=ax*src, edx:eax=eax*src, rdx:rax=rax*src)
-DEFNAME(Opcode1Arg       ,  DIV   ,0xF6,6);                // Unsigned divide   (ax/=src,al=quot,ah=rem,    edx:eax/=src,eax=quot,edx=rem,  rdx:rax/=src,rax=quit,rdx=rem
 DEFNAME(Opcode1Arg       ,  IDIV  ,0xF6,7);                // Signed divide   ax      /= src, ah  must contain sign extension of al . al =quot, ah =rem
                                                            //                 dk:ax   /= src. dx  must contain sign extension of ax . ax =quot, dx =rem
                                                            //                 edx:eax /= src. edx must contain sign extension of eax. eax=quot, edx=rem
                                                            //                 rdx:rax /= src. rdx must contain sign extension of rax. rax=quot, rdx=rem
+
+DEFNAME(Opcode2ArgM      ,  MUL   ,0xF6,4);                // Unsigned multiply (ax = al*src, dx:ax=ax*src, edx:eax=eax*src, rdx:rax=rax*src)
+DEFNAME(Opcode2ArgM      ,  DIV   ,0xF6,6);                // Unsigned divide   (ax/=src,al=quot,ah=rem,    edx:eax/=src,eax=quot,edx=rem,  rdx:rax/=src,rax=quit,rdx=rem
 
 DEFNAME(OpcodeShiftRot   ,  ROL   ,0     );                // Rotate left  by cl/imm
 DEFNAME(OpcodeShiftRot   ,  ROR   ,1     );                // Rotate right by cl/imm

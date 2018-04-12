@@ -1,68 +1,6 @@
 #include "pch.h"
 #include "InstructionBuilder.h"
 
-class Instruction2ArgImm : public InstructionBuilder {
-public:
-  Instruction2ArgImm(const OpcodeBase &opcode) : InstructionBuilder(opcode) {
-  }
-  InstructionBuilder &setRegImm(const Register      &reg, const InstructionOperand &imm);
-  InstructionBuilder &setMemImm(const MemoryOperand &mem, const InstructionOperand &imm);
-};
-
-#define IMMOP 0x80
-InstructionBuilder &Instruction2ArgImm::setRegImm(const Register &reg, const InstructionOperand &imm) {
-  const BYTE    regIndex  = reg.getIndex();
-  const RegSize regSize   = reg.getSize();
-  const bool    immIsByte = Register::sizeContainsSrcSize(REGSIZE_BYTE,imm.getSize());
-  switch(regSize) {
-  case REGSIZE_BYTE :
-    if(regIndex == 0) {
-      or(0x04).setOperandSize(regSize).addImmediateOperand(imm,regSize);
-    } else {
-      prefixImm(IMMOP,regSize,true ).setModeBits(MR_REG(regIndex)).addImmediateOperand(imm,regSize);
-      SETREXUNIFORMREGISTER(reg);
-    }
-    break;
-  case REGSIZE_WORD :
-    if(immIsByte) {
-      prefixImm(IMMOP,regSize,true ).setModeBits(MR_REG(regIndex)).addImmediateOperand(imm,REGSIZE_BYTE);
-    } else if(regIndex == 0) {
-      or(0x04).setOperandSize(regSize).addImmediateOperand(imm,regSize);
-    } else {
-      prefixImm(IMMOP,regSize,false).setModeBits(MR_REG(regIndex)).addImmediateOperand(imm,regSize);
-    }
-    break;
-  default           :
-    if(immIsByte) {
-      prefixImm(IMMOP,regSize,true ).setModeBits(MR_REG(regIndex)).addImmediateOperand(imm,REGSIZE_BYTE);
-    } else if(regIndex == 0) {
-      or(0x04).setOperandSize(regSize).addImmediateOperand(imm,REGSIZE_DWORD);
-    } else {
-      prefixImm(IMMOP,regSize,false).setModeBits(MR_REG(regIndex)).addImmediateOperand(imm,REGSIZE_DWORD);
-    }
-    break;
-  }
-  SETREXBITS(HIGHINDEXTOREX(regIndex,0));
-  return *this;
-}
-
-InstructionBuilder &Instruction2ArgImm::setMemImm(const MemoryOperand &mem, const InstructionOperand &imm) {
-  const OperandSize dstSize   = mem.getSize();
-  const bool        immIsByte = Register::sizeContainsSrcSize(REGSIZE_BYTE,imm.getSize());
-  switch(dstSize) {
-  case REGSIZE_BYTE :
-    prefixImm(IMMOP,dstSize,true).setMemoryOperand(mem).addImmediateOperand(imm,dstSize);
-    break;
-  case REGSIZE_WORD :
-    prefixImm(IMMOP,dstSize,immIsByte).setMemoryOperand(mem).addImmediateOperand(imm,immIsByte?REGSIZE_BYTE:dstSize);
-    break;
-  default           :
-    prefixImm(IMMOP,dstSize,immIsByte).setMemoryOperand(mem).addImmediateOperand(imm,immIsByte?REGSIZE_BYTE:REGSIZE_DWORD);
-    break;
-  }
-  return *this;
-}
-
 InstructionBase Opcode2Arg::operator()(const InstructionOperand &op1, const InstructionOperand &op2) const {
   isValidOperandCombination(op1,op2,true);
   switch(op1.getType()) {
@@ -72,20 +10,67 @@ InstructionBase Opcode2Arg::operator()(const InstructionOperand &op1, const Inst
       return InstructionBuilder(*this).setRegRegOperands(op1.getRegister(),op2.getRegister());
     case MEMORYOPERAND  : // reg <- mem
       return InstructionBuilder(*this).setMemoryRegOperands((MemoryOperand&)op2, op1.getRegister()).setDirectionBit(REGISTER,MEMORYOPERAND);
-    case IMMEDIATEVALUE : // reg <- imm
-      return Instruction2ArgImm(*this).setRegImm(op1.getRegister(), op2);
     }
     break;
   case MEMORYOPERAND    :
     switch(op2.getType()) {
     case REGISTER       : // mem <- reg
       return InstructionBuilder(*this).setMemoryRegOperands((MemoryOperand&)op1, op2.getRegister()).setDirectionBit(MEMORYOPERAND,REGISTER);
-    case IMMEDIATEVALUE : // mem <- imm
-      return Instruction2ArgImm(*this).setMemImm((MemoryOperand&)op1, op2);
     }
   }
   throwInvalidOperandCombination(op1,op2);
   return __super::operator()(op1,op2);
+}
+
+InstructionBase Opcode2ArgI::operator()(const InstructionOperand &dst, const InstructionOperand &imm) const {
+  isValidOperandCombination(dst,imm,true);
+  return InstructionBuilder(*this).setOperandSize(dst.getSize()).addImmediateOperand(imm,dst.getLimitedSize(REGSIZE_DWORD));
+}
+
+InstructionBase Opcode2ArgMI::operator()(const InstructionOperand &dst, const InstructionOperand &imm) const {
+  isValidOperandCombination(dst,imm,true);
+  if((getFlags() & HAS_IMM_XBIT) && imm.isImmByte()) {
+    return InstructionBuilder(*this).setMemOrRegOperand(dst).setImmediateOperand(imm,&dst);
+  } else {
+    return InstructionBuilder(*this).setMemOrRegOperand(dst).addImmediateOperand(imm,dst.getLimitedSize(REGSIZE_DWORD));
+  }
+}
+
+InstructionBase Opcode2ArgM::operator()(const InstructionOperand &op1, const InstructionOperand &op2) const {
+  isValidOperandCombination(op1,op2,true);
+  return InstructionBuilder(*this).setMemOrRegOperand(op2);
+}
+
+bool OpcodeStd2Arg::isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError) const {
+  if(op2.getType() != IMMEDIATEVALUE) {
+    return __super::isValidOperandCombination(op1,op2,throwOnError);
+  } else if(op1.isGPR0()) {
+    return m_codeI.isValidOperandCombination(op1,op2,throwOnError);
+  } else {
+    return m_codeMI.isValidOperandCombination(op1,op2,throwOnError);
+  }
+}
+
+InstructionBase OpcodeStd2Arg::operator()(const InstructionOperand &op1, const InstructionOperand &op2) const {
+  if(op2.getType() != IMMEDIATEVALUE) {
+    return __super::operator()(op1, op2);
+  } else {
+    if(!(m_codeMI.getFlags() & HAS_IMM_XBIT)) {
+      if(op1.isGPR0()) {
+        return m_codeI(op1,op2);
+      } else {
+        return m_codeMI(op1,op2);
+      }
+    } else { // imm-value can be short if Byte-size
+      if(op2.isImmByte() && (op1.getSize() != REGSIZE_BYTE)) {
+        return m_codeMI(op1,op2);
+      } else if(op1.isGPR0()) {
+        return m_codeI(op1,op2);
+      } else {
+        return m_codeMI(op1,op2);
+      }
+    }
+  }
 }
 
 InstructionBase Opcode2ArgPfxF2::operator()(const InstructionOperand &op1, const InstructionOperand &op2) const {
