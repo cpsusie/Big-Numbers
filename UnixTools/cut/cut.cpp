@@ -131,11 +131,15 @@ int _tmain(int argc, TCHAR **argv) {
           if(interval.l >= n) {
             continue;
           }
-          TCHAR &ch = line[interval.r];
-          TCHAR save = ch;
-          ch = _T('\0');
-          _tprintf(format, line.cstr() + interval.l);
-          ch = save;
+          if(interval.r>=n) {
+            _tprintf(format, line.cstr() + interval.l);
+          } else {
+            TCHAR *cp = line.cstr() + interval.r;
+            const TCHAR save = *cp;
+            *cp = _T('\0');
+            _tprintf(format, line.cstr() + interval.l);
+            *cp = save;
+          }
         }
       }
       if(!linefeed) {
