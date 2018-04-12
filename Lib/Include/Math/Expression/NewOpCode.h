@@ -624,6 +624,7 @@ public:
   InstructionBase operator()(const InstructionOperand &op) const;
 };
 
+// encoding MR/RM. op1=reg/mem, op2/reg/mem. at least 1 operand must be reg
 class Opcode2Arg : public OpcodeBase {
 public :
   Opcode2Arg(const String &mnemonic, UINT op, UINT flags=ALL_GPR_ALLOWED | ALL_GPRPTR_ALLOWED | IMMEDIATEVALUE_ALLOWED | HAS_ALL_SIZEBITS | HAS_DIRECTIONBIT1)
@@ -632,11 +633,29 @@ public :
   InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
 };
 
+// encoding FD/TD. op1=al/ax,eax,rax, op2=b/w/dw/qw ptr[memory offset], or vice versa
+class Opcode2ArgTF : public Opcode2Arg {
+public:
+  Opcode2ArgTF(const String &mnemonic, BYTE op, UINT flags=0)
+    : Opcode2Arg(mnemonic,op,flags | ALL_GPR0_ALLOWED | IMMMADDR_ALLOWED | ALL_GPRPTR_ALLOWED | HAS_ALL_SIZEBITS | HAS_DIRECTIONBIT1)
+  {
+  }
+};
 // encoding I. op1=AL/AX/EAX/RAX. op2=imm
 class Opcode2ArgI : public OpcodeBase {
 public:
   Opcode2ArgI(const String &mnemonic, BYTE op)
     : OpcodeBase(mnemonic, op, 0, 2, ALL_GPR0_ALLOWED | HAS_ALL_SIZEBITS | IMMEDIATEVALUE_ALLOWED | FIRSTOP_REGONLY | LASTOP_IMMONLY)
+  {
+  }
+  InstructionBase operator()(const InstructionOperand &dst, const InstructionOperand &imm) const;
+};
+
+// encoding OI. op1=r8/r16/r32/r64. op2=imm8/imm16/imm32
+class Opcode2ArgOI : public OpcodeBase {
+public:
+  Opcode2ArgOI(const String &mnemonic, BYTE op, UINT flags=0)
+    : OpcodeBase(mnemonic, op, 0, 2, flags | (ALL_GPR_ALLOWED | HAS_NONBYTE_SIZEBITS | IMMEDIATEVALUE_ALLOWED | FIRSTOP_REGONLY | LASTOP_IMMONLY))
   {
   }
   InstructionBase operator()(const InstructionOperand &dst, const InstructionOperand &imm) const;
@@ -721,17 +740,17 @@ public :
 
 class OpcodeMov : public Opcode2Arg {
 private:
-  const Opcode2Arg m_regImmCode;
-  const Opcode2Arg m_memImmCode;
-  const Opcode2Arg m_GPR0AddrCode;
-  const Opcode2Arg m_movSegCode;
+  const Opcode2ArgTF m_GPR0tf;
+  const Opcode2Arg   m_movSegCode;
+  const Opcode2ArgOI m_regImmCode;
+  const Opcode2ArgMI m_memImmCode;
 public :
   OpcodeMov(const String &mnemonic)
     : Opcode2Arg(    mnemonic, 0x88)
-    , m_regImmCode(  mnemonic, 0xB0, ALL_GPR_ALLOWED     | IMMEDIATEVALUE_ALLOWED | IMM64_ALLOWED        | HAS_ALL_SIZEBITS | LASTOP_IMMONLY | FIRSTOP_REGONLY)
-    , m_memImmCode(  mnemonic, 0xC6, ALL_GPRPTR_ALLOWED  | IMMEDIATEVALUE_ALLOWED                        | HAS_ALL_SIZEBITS | LASTOP_IMMONLY                  )
-    , m_GPR0AddrCode(mnemonic, 0xA0, ALL_GPR0_ALLOWED    | IMMMADDR_ALLOWED       | ALL_GPRPTR_ALLOWED   | HAS_ALL_SIZEBITS | HAS_DIRECTIONBIT1)
+    , m_GPR0tf(      mnemonic, 0xA0)
     , m_movSegCode(  mnemonic, 0x8C, NONBYTE_GPR_ALLOWED | REGTYPE_SEG_ALLOWED    | WORDPTR_ALLOWED      | HAS_DIRECTIONBIT1)
+    , m_regImmCode(  mnemonic, 0xB0, IMM64_ALLOWED)
+    , m_memImmCode(  mnemonic, 0xC6, 0)
   {
   }
   bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError=false) const;

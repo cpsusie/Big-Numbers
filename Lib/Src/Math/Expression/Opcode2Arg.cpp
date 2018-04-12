@@ -36,6 +36,40 @@ InstructionBase Opcode2ArgMI::operator()(const InstructionOperand &dst, const In
   }
 }
 
+class InstructionBuilderO : public InstructionBuilder {
+public:
+  InstructionBuilderO(const OpcodeBase &opcode) : InstructionBuilder(opcode) {
+  }
+  InstructionBuilder &setRegisterOperand(const Register &dst);
+};
+
+InstructionBuilder &InstructionBuilderO::setRegisterOperand(const Register &reg) {
+  const BYTE    regIndex = reg.getIndex();
+  const RegSize regSize  = reg.getSize();
+  switch(regSize) {
+  case REGSIZE_BYTE :
+    or(regIndex&7);
+    SETREXUNIFORMREGISTER(reg);
+    break;
+  case REGSIZE_WORD :
+    or(8 | (regIndex&7)).wordIns();
+    break;
+  case REGSIZE_DWORD :
+    or(8 | (regIndex&7));
+    break;
+  case REGSIZE_QWORD :
+    or(8 | (regIndex&7)).qwordIns();
+    break;
+  }
+  SETREXBITS(HIGHINDEXTOREX(regIndex,0));
+  return *this;
+}
+
+InstructionBase Opcode2ArgOI::operator()(const InstructionOperand &dst, const InstructionOperand &imm) const {
+  isValidOperandCombination(dst,imm,true);
+  return InstructionBuilderO(*this).setRegisterOperand(dst.getRegister()).addImmediateOperand(imm,dst.getSize());
+}
+
 InstructionBase Opcode2ArgM::operator()(const InstructionOperand &op1, const InstructionOperand &op2) const {
   isValidOperandCombination(op1,op2,true);
   return InstructionBuilder(*this).setMemOrRegOperand(op2);
@@ -54,21 +88,19 @@ bool OpcodeStd2Arg::isValidOperandCombination(const InstructionOperand &op1, con
 InstructionBase OpcodeStd2Arg::operator()(const InstructionOperand &op1, const InstructionOperand &op2) const {
   if(op2.getType() != IMMEDIATEVALUE) {
     return __super::operator()(op1, op2);
-  } else {
-    if(!(m_codeMI.getFlags() & HAS_IMM_XBIT)) {
-      if(op1.isGPR0()) {
-        return m_codeI(op1,op2);
-      } else {
-        return m_codeMI(op1,op2);
-      }
-    } else { // imm-value can be short if Byte-size
-      if(op2.isImmByte() && (op1.getSize() != REGSIZE_BYTE)) {
-        return m_codeMI(op1,op2);
-      } else if(op1.isGPR0()) {
-        return m_codeI(op1,op2);
-      } else {
-        return m_codeMI(op1,op2);
-      }
+  } else if(!(m_codeMI.getFlags() & HAS_IMM_XBIT)) {
+    if(op1.isGPR0()) {
+      return m_codeI(op1,op2);
+    } else {
+      return m_codeMI(op1,op2);
+    }
+  } else { // imm-value can be short if Byte-size
+    if(op2.isImmByte() && (op1.getSize() != REGSIZE_BYTE)) {
+      return m_codeMI(op1,op2);
+    } else if(op1.isGPR0()) {
+      return m_codeI(op1,op2);
+    } else {
+      return m_codeMI(op1,op2);
     }
   }
 }

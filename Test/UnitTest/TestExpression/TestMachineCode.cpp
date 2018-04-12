@@ -597,6 +597,7 @@ void TestMachineCode::testArg2Opcodes() {
   setClearOn(true);
   testOpcode(MUL    );
   testOpcode(DIV    );
+
   testOpcode(ADD    );
   testOpcode(ADC    );
   testOpcode(OR     );
