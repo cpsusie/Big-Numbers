@@ -40,19 +40,4 @@
     <DisplayString Condition="m_node == 0">null</DisplayString>
     <DisplayString>{Node={*m_node}}</DisplayString>
   </Type>
-  <Type Name="Register">
-    <DisplayString>{m_debugStr.m_buf,su}</DisplayString>
-  </Type>
-  <Type Name="InstructionOperand">
-    <DisplayString>{m_debugStr.m_buf,su}</DisplayString>
-  </Type>
-  <Type Name="MemoryRef">
-    <DisplayString>{m_debugStr.m_buf,su}</DisplayString>
-  </Type>
-  <Type Name="OpcodeBase">
-    <DisplayString>{m_mnemonic.m_buf,su}</DisplayString>
-  </Type>
-  <Type Name="Instruction0Arg">
-    <DisplayString>{m_mnemonic.m_buf,su}</DisplayString>
-  </Type>
 </AutoVisualizer>

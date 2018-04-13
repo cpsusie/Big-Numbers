@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "InstructionBuilder.h"
+#include <NewOpCode.h>
 
 bool OpcodeIMul::isValidOperandType(const InstructionOperand &op, BYTE index) const {
   validateOperandIndex(index);

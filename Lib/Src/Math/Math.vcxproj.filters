@@ -343,61 +343,7 @@
     <ClCompile Include="FPU.cpp">
       <Filter>Source Files\Misc</Filter>
     </ClCompile>
-    <ClCompile Include="Expression\Opcodes.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
     <ClCompile Include="Expression\Opcode.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\Registers.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\OpcodeBase.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\InstructionOperand.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\InstructionBuilder.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\OpcodeMov.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\InstructionBase.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\Opcode1Arg.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\Opcode2Arg.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\OpcodeShiftRot.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\OpcodeBitScan.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\Opcode0Arg.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\OpcodeLea.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\OpcodeXchg.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\OpcodePushPop.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\OpcodeImul.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\Opcode3Arg.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\OpcodeFPU.cpp">
       <Filter>Source Files\Expression</Filter>
     </ClCompile>
   </ItemGroup>
@@ -571,20 +517,8 @@
     <ClInclude Include="..\..\Include\Math\FPU.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\Math\Expression\NewOpCode.h">
-      <Filter>Header Files\Expression</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\Math\Expression\Opcode.h">
       <Filter>Header Files\Expression</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Math\Expression\Registers.h">
-      <Filter>Header Files\Expression</Filter>
-    </ClInclude>
-    <ClInclude Include="Expression\RexByte.h">
-      <Filter>Source Files\Expression</Filter>
-    </ClInclude>
-    <ClInclude Include="Expression\InstructionBuilder.h">
-      <Filter>Source Files\Expression</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

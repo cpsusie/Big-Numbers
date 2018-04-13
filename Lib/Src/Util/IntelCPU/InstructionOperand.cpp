@@ -1,5 +1,5 @@
 #include "pch.h"
-#include <Math/Expression/NewOpCode.h>
+#include <NewOpCode.h>
 
 String toString(OperandType type) {
   switch(type) {

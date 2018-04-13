@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include <HashSet.h>
-#include <Math/Expression/NewOpcode.h>
+#include <NewOpcode.h>
 
 #define TEST_MACHINECODE
 

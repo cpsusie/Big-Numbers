@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "InstructionBuilder.h"
+#include <NewOpCode.h>
 
 #define BITSCAN_FLAGS (NONBYTE_GPR_ALLOWED | NONBYTE_GPRPTR_ALLOWED | HAS_NONBYTE_SIZEBITS | FIRSTOP_REGONLY)
 

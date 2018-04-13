@@ -805,6 +805,7 @@
     <ClInclude Include="..\..\Include\MyString.h" />
     <ClInclude Include="..\..\Include\MyUtil.h" />
     <ClInclude Include="..\..\Include\NatvisAddInHelper.h" />
+    <ClInclude Include="..\..\Include\NewOpCode.h" />
     <ClInclude Include="..\..\Include\NullOutputStream.h" />
     <ClInclude Include="..\..\Include\NumberInterval.h" />
     <ClInclude Include="..\..\Include\ObjectManager.h" />
@@ -819,6 +820,7 @@
     <ClInclude Include="..\..\Include\Random.h" />
     <ClInclude Include="..\..\Include\RefCountedObject.h" />
     <ClInclude Include="..\..\Include\Regex.h" />
+    <ClInclude Include="..\..\Include\Registers.h" />
     <ClInclude Include="..\..\Include\Registry.h" />
     <ClInclude Include="..\..\Include\Runnable.h" />
     <ClInclude Include="..\..\Include\Scandir.h" />
@@ -853,6 +855,9 @@
     <ClInclude Include="..\..\Include\WildCardRegex.h" />
     <ClInclude Include="..\..\Include\XmlDoc.h" />
     <ClInclude Include="..\..\Include\XMLUtil.h" />
+    <ClInclude Include="IntelCPU\InstructionBuilder.h" />
+    <ClInclude Include="IntelCPU\pch.h" />
+    <ClInclude Include="IntelCPU\RexByte.h" />
     <ClInclude Include="pch.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">false</ExcludedFromBuild>
@@ -962,6 +967,24 @@
     <ClCompile Include="InputThread.cpp" />
     <ClCompile Include="InputUint.cpp" />
     <ClCompile Include="InputUint64.cpp" />
+    <ClCompile Include="IntelCPU\InstructionBase.cpp" />
+    <ClCompile Include="IntelCPU\InstructionBuilder.cpp" />
+    <ClCompile Include="IntelCPU\InstructionOperand.cpp" />
+    <ClCompile Include="IntelCPU\Opcode0Arg.cpp" />
+    <ClCompile Include="IntelCPU\Opcode1Arg.cpp" />
+    <ClCompile Include="IntelCPU\Opcode2Arg.cpp" />
+    <ClCompile Include="IntelCPU\Opcode3Arg.cpp" />
+    <ClCompile Include="IntelCPU\OpcodeBase.cpp" />
+    <ClCompile Include="IntelCPU\OpcodeBitScan.cpp" />
+    <ClCompile Include="IntelCPU\OpcodeFPU.cpp" />
+    <ClCompile Include="IntelCPU\OpcodeImul.cpp" />
+    <ClCompile Include="IntelCPU\OpcodeLea.cpp" />
+    <ClCompile Include="IntelCPU\OpcodeMov.cpp" />
+    <ClCompile Include="IntelCPU\OpcodePushPop.cpp" />
+    <ClCompile Include="IntelCPU\Opcodes.cpp" />
+    <ClCompile Include="IntelCPU\OpcodeShiftRot.cpp" />
+    <ClCompile Include="IntelCPU\OpcodeXchg.cpp" />
+    <ClCompile Include="IntelCPU\Registers.cpp" />
     <ClCompile Include="InterruptableRunnable.cpp" />
     <ClCompile Include="isatty.cpp" />
     <ClCompile Include="JavaRandom.cpp" />

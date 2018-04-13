@@ -1,4 +1,5 @@
 #include "pch.h"
+#include <NewOpCode.h>
 #include "InstructionBuilder.h"
 
 InstructionBase Opcode2Arg::operator()(const InstructionOperand &op1, const InstructionOperand &op2) const {

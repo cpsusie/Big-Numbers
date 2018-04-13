@@ -47,6 +47,9 @@
     <Filter Include="Source Files\System">
       <UniqueIdentifier>{55a6a7a8-bc3e-43cd-a337-44d1b5306212}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\IntelCPU">
+      <UniqueIdentifier>{296026c7-dc19-46c5-a753-4a1cc57b7dad}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="access.cpp">
@@ -737,6 +740,60 @@
     <ClCompile Include="MedianCut.cpp">
       <Filter>Source Files\Math</Filter>
     </ClCompile>
+    <ClCompile Include="IntelCPU\InstructionBase.cpp">
+      <Filter>Source Files\IntelCPU</Filter>
+    </ClCompile>
+    <ClCompile Include="IntelCPU\InstructionBuilder.cpp">
+      <Filter>Source Files\IntelCPU</Filter>
+    </ClCompile>
+    <ClCompile Include="IntelCPU\InstructionOperand.cpp">
+      <Filter>Source Files\IntelCPU</Filter>
+    </ClCompile>
+    <ClCompile Include="IntelCPU\Opcode0Arg.cpp">
+      <Filter>Source Files\IntelCPU</Filter>
+    </ClCompile>
+    <ClCompile Include="IntelCPU\Opcode1Arg.cpp">
+      <Filter>Source Files\IntelCPU</Filter>
+    </ClCompile>
+    <ClCompile Include="IntelCPU\Opcode2Arg.cpp">
+      <Filter>Source Files\IntelCPU</Filter>
+    </ClCompile>
+    <ClCompile Include="IntelCPU\Opcode3Arg.cpp">
+      <Filter>Source Files\IntelCPU</Filter>
+    </ClCompile>
+    <ClCompile Include="IntelCPU\OpcodeBase.cpp">
+      <Filter>Source Files\IntelCPU</Filter>
+    </ClCompile>
+    <ClCompile Include="IntelCPU\OpcodeBitScan.cpp">
+      <Filter>Source Files\IntelCPU</Filter>
+    </ClCompile>
+    <ClCompile Include="IntelCPU\OpcodeFPU.cpp">
+      <Filter>Source Files\IntelCPU</Filter>
+    </ClCompile>
+    <ClCompile Include="IntelCPU\OpcodeImul.cpp">
+      <Filter>Source Files\IntelCPU</Filter>
+    </ClCompile>
+    <ClCompile Include="IntelCPU\OpcodeLea.cpp">
+      <Filter>Source Files\IntelCPU</Filter>
+    </ClCompile>
+    <ClCompile Include="IntelCPU\OpcodeMov.cpp">
+      <Filter>Source Files\IntelCPU</Filter>
+    </ClCompile>
+    <ClCompile Include="IntelCPU\OpcodePushPop.cpp">
+      <Filter>Source Files\IntelCPU</Filter>
+    </ClCompile>
+    <ClCompile Include="IntelCPU\Opcodes.cpp">
+      <Filter>Source Files\IntelCPU</Filter>
+    </ClCompile>
+    <ClCompile Include="IntelCPU\OpcodeShiftRot.cpp">
+      <Filter>Source Files\IntelCPU</Filter>
+    </ClCompile>
+    <ClCompile Include="IntelCPU\OpcodeXchg.cpp">
+      <Filter>Source Files\IntelCPU</Filter>
+    </ClCompile>
+    <ClCompile Include="IntelCPU\Registers.cpp">
+      <Filter>Source Files\IntelCPU</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\Array.h">
@@ -1040,6 +1097,21 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\HeapObjectPool.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\NewOpCode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Registers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IntelCPU\InstructionBuilder.h">
+      <Filter>Source Files\IntelCPU</Filter>
+    </ClInclude>
+    <ClInclude Include="IntelCPU\RexByte.h">
+      <Filter>Source Files\IntelCPU</Filter>
+    </ClInclude>
+    <ClInclude Include="IntelCPU\pch.h">
+      <Filter>Source Files\IntelCPU</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

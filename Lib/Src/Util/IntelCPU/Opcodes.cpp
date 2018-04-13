@@ -1,5 +1,5 @@
 #include "pch.h"
-#include <Math/Expression/NewOpCode.h>
+#include <NewOpCode.h>
 
 #pragma warning(disable : 4073)
 #pragma init_seg(lib)

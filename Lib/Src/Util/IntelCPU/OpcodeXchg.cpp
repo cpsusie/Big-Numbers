@@ -1,4 +1,5 @@
 #include "pch.h"
+#include <NewOpCode.h>
 #include "InstructionBuilder.h"
 
 static const RegSizeSet eaxRaxRegisterSizeSet(REGSIZE_DWORD ,REGSIZE_QWORD, -1);

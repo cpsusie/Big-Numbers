@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Math/Expression/NewOpcode.h>
+#include <NewOpcode.h>
 #include "RexByte.h"
 
 // Encoding of various addressing modes is described here:

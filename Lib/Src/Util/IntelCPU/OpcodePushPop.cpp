@@ -1,4 +1,5 @@
 #include "pch.h"
+#include <NewOpCode.h>
 #include "InstructionBuilder.h"
 
 bool OpcodePushPop::isValidOperand(const InstructionOperand &op, bool throwOnError) const {
