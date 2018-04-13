@@ -6,9 +6,23 @@
 
 #ifdef TEST_MACHINECODE
 
-// #define TEST_ALLGPREGISTERS
-// #define TEST_ALLFPUREGISTERS
-// #define TEST_ALLXMMREGISTERS
+// #define TEST_ALLGPREGISTERS  // If defined, all 24 (16*3+4=52 in x64) GPR registers will be used
+                                // If not defined, only the following GPR-register will be used
+                                // when doing register-addressing, or in combination with RM/MR-opcodes
+                                //   AL ,CL ,BH ,SPL ,DIL,R8B,R15B
+                                //   AX              ,DI ,R8W,R15W
+                                //   EAX             ,EDI,R8D,R15D
+                                //   RAX             ,RDI,R8 ,R15
+// #define TEST_ALLFPUREGISTERS // If defined, all 8 FPU-registers will be used.
+                                // If not defined, only st(0),st(7) will be used
+// #define TEST_ALLXMMREGISTERS // If defined, all 8(16) XMM-registers will be used
+                                // If not defined, only XMM0,XMM7(+XMM8,XMM15 in x64) will be used
+// #define TEST_ALLBASEREGISTER // If defined, all GPR-registers will be used as base-register
+                                // in SIB-byte. If not defined, only RAX,R15 will be used
+// #define TEST_ALLINXREGISTERS // If defined, all GPR-registers will be used as index-register
+                                // in SIB-byte. If not defined, only RAX,RBP,R15 will be used
+// #define TEST_ALLSCALEFACTORS // Is defined, all four values, 1,2,4,8 of factor in SIB-byte will be used
+                                // If not defined, only 1 and 8 will be used
 
 static const GPRegister r8List[] = {
 #ifndef TEST_ALLGPREGISTERS
@@ -75,6 +89,40 @@ const IndexRegister indexRegList[] = {
 #endif // IS64BIT
 };
 
+const IndexRegister baseRegList[] = {
+#ifdef IS32BIT
+#ifndef TEST_ALLBASEREGISTERS
+    EAX                    ,ESP
+#else // TEST_ALLBASEREGISTERS
+    EAX  ,ECX  ,EDX  ,EBX  ,ESP  ,EBP  ,ESI  ,EDI
+#endif // TEST_ALLGPREGISTERS
+#else // IS64BIT
+#ifndef TEST_ALLBASREGISTERS
+    RAX                                      ,R15
+#else // TEST_ALLBASREGISTERS
+    RAX  ,RCX  ,RDX  ,RBX  ,RSP  ,RBP  ,RSI  ,RDI
+   ,R8   ,R9   ,R10  ,R11  ,R12  ,R13  ,R14  ,R15
+#endif // TEST_ALLBASEREGISTERS
+#endif // IS64BIT
+};
+
+const IndexRegister inxRegList[] = {
+#ifdef IS32BIT
+#ifndef TEST_ALLINXREGISTERS
+    EAX                          ,EBP        ,EDI
+#else // TEST_ALLINXREGISTERS
+    EAX  ,ECX  ,EDX  ,EBX  ,ESP  ,EBP  ,ESI  ,EDI
+#endif // TEST_ALLINXREGISTERS
+#else // IS64BIT
+#ifndef TEST_ALLINXREGISTERS
+    RAX                          ,RBP        ,R15
+#else // TEST_ALLINXREGISTERS
+    RAX  ,RCX  ,RDX  ,RBX  ,RSP  ,RBP  ,RSI  ,RDI
+   ,R8   ,R9   ,R10  ,R11  ,R12  ,R13  ,R14  ,R15
+#endif // TEST_ALLINXREGISTERS
+#endif // IS64BIT
+};
+
 #ifdef IS64BIT
 const GPRegister r64List[] = {
 #ifndef TEST_ALLGPREGISTERS
@@ -118,20 +166,13 @@ const XMMRegister XMMregList[] = {
 };
 
 #define INDEXREGISTER_COUNT ARRAYSIZE(indexRegList)
+#define BASEREGISTER_COUNT  ARRAYSIZE(baseRegList )
+#define INXREGISTER_COUNT   ARRAYSIZE(inxRegList  )
 
 #define UNKNOWN_OPCODE(  dst)               B2INSA(0x8700 + ((dst)<<3))                     // Build src with MEM_ADDR-macros, REGREG
 //Real FMOD(Real x, Real y) {
 //  return fmod(x,y);
 //}
-
-static const RegSize allRegSize[] = {
-  REGSIZE_BYTE     /* 8-bit   */
- ,REGSIZE_WORD     /* 16-bit  */
- ,REGSIZE_DWORD    /* 32-bit  */
- ,REGSIZE_QWORD    /* 64-bit  */
- ,REGSIZE_TBYTE    /* 80-bit  */
- ,REGSIZE_XMMWORD  /* 128-bit */
-};
 
 class InstructionOperandArray : public CompactArray<const InstructionOperand*> {
 public:
@@ -201,7 +242,7 @@ static const size_t allImmAddr[]   = { 0, 0x7fffffff };
 static const size_t allImmAddr[]   = { 0, 0x7fffffff, 0x7fffffffffffffff };
 #endif // IS64BIT
 
-static const int    allOffset[]    = { 0, 0x7f, 0x7fffffff, -1 };
+static const int    allOffset[]    = { 0, 0x7fffffff, -1 };
 
 class AllMemoryOperands : public InstructionOperandArray {
 private:
@@ -224,29 +265,35 @@ static inline int insOpCmp(const InstructionOperand * const &op1, const Instruct
   return InstructionOperand::insOpCmp(*op1,*op2);
 }
 
+#ifdef TEST_ALLSCALEFACTORS
+#define SCALE_FACTORSTEP 2
+#else  // TEST_ALLSCALEFACTORS
+#define SCALE_FACTORSTEP 8
+#endif // TEST_ALLSCALEFACTORS
+
 AllMemoryOperands::AllMemoryOperands() {
   for(int i = 0; i < ARRAYSIZE(allImmAddr); i++) {
     addAllMemPtrTypes(allImmAddr[i]);
   }
-  for(int k = 0; k < INDEXREGISTER_COUNT; k++) {
-    const IndexRegister &inxReg = indexRegList[k];
+  for(int i = 0; i < INXREGISTER_COUNT; i++) {
+    const IndexRegister &inxReg = inxRegList[i];
     if(!inxReg.isValidIndexRegister()) continue;
-    for(int factor = 1; factor <= 8; factor *= 2) {
+    for(int factor = 1; factor <= 8; factor *= SCALE_FACTORSTEP) {
       for(int i = 0; i < ARRAYSIZE(allOffset); i++) {
         const int offset = allOffset[i];
         addAllMemPtrTypes(factor*inxReg + offset);
       }
     }
   }
-  for(int i = 0; i < ARRAYSIZE(allOffset); i++) {
-    const int offset = allOffset[i];
-    for(int j = 0; j < INDEXREGISTER_COUNT; j++) {
-      const IndexRegister &baseReg = indexRegList[j];
+  for(int f = 0; f < ARRAYSIZE(allOffset); f++) {
+    const int offset = allOffset[f];
+    for(int b = 0; b < BASEREGISTER_COUNT; b++) {
+      const IndexRegister &baseReg = baseRegList[b];
       addAllMemPtrTypes(baseReg + offset);
-      for(int k = 0; k < INDEXREGISTER_COUNT; k++) {
-        const IndexRegister &inxReg = indexRegList[k];
+      for(int i = 0; i < INXREGISTER_COUNT; i++) {
+        const IndexRegister &inxReg = inxRegList[i];
         if(!inxReg.isValidIndexRegister()) continue;
-        for(int factor = 1; factor <= 8; factor *= 2) {
+        for(int factor = 1; factor <= 8; factor *= SCALE_FACTORSTEP) {
           addAllMemPtrTypes(baseReg + factor*inxReg + offset);
         }
       }
@@ -291,30 +338,11 @@ public:
 };
 
 AllStringInstructions::AllStringInstructions() {
-  add(&MOVSB);
-  add(&CMPSB);
-  add(&STOSB);
-  add(&LODSB);
-  add(&SCASB);
-
-  add(&MOVSW);
-  add(&CMPSW);
-  add(&STOSW);
-  add(&LODSW);
-  add(&SCASW);
-
-  add(&MOVSD);
-  add(&CMPSD);
-  add(&STOSD);
-  add(&LODSD);
-  add(&SCASD);
-
+  add(&MOVSB);  add(&CMPSB);  add(&STOSB);  add(&LODSB);  add(&SCASB);
+  add(&MOVSW);  add(&CMPSW);  add(&STOSW);  add(&LODSW);  add(&SCASW);
+  add(&MOVSD);  add(&CMPSD);  add(&STOSD);  add(&LODSD);  add(&SCASD);
 #ifdef IS64BIT
-  add(&MOVSQ);
-  add(&CMPSQ);
-  add(&STOSQ);
-  add(&LODSQ);
-  add(&SCASQ);
+  add(&MOVSQ);  add(&CMPSQ);  add(&STOSQ);  add(&LODSQ);  add(&SCASQ);
 #endif // IS64BIT
 }
 
@@ -588,13 +616,13 @@ void TestMachineCode::testArg1Opcodes() {
   testOpcode(DEC  );
   testOpcode(NOT  );
   testOpcode(NEG  );
-  clear(true);
   testOpcode(IMUL );
   testOpcode(IDIV );
+  clear(true);
 }
 
 void TestMachineCode::testArg2Opcodes() {
-  setClearOn(true);
+  clear(true);
   testOpcode(MUL    );
   testOpcode(DIV    );
 
@@ -648,7 +676,7 @@ void TestMachineCode::testBitOperations() {
   testOpcode(SHL    );
   testOpcode(SHR    );
   testOpcode(SAR    );
-  clear(true);
+
   testOpcode(BSF    );
   testOpcode(BSR    );
 }
@@ -730,16 +758,12 @@ void TestMachineCode::testFPUOpcodes() {
   testOpcode(FBLD    );
   testOpcode(FBSTP   );
 
-  clear(true);
-
   testOpcode(FADD    );
   testOpcode(FMUL    );
   testOpcode(FSUB    );
   testOpcode(FDIV    );
   testOpcode(FSUBR   );
   testOpcode(FDIVR   );
-
-  clear(true);
 
   testOpcode(FADDP   );
   testOpcode(FMULP   );
