@@ -105,6 +105,11 @@ class Link {
 public:
   int   m_i,m_j;
   Link *m_next;
+#ifdef _DEBUG
+  inline String toString() const {
+    return format(_T("(%d,%d)"), m_i,m_j);
+  }
+#endif // _DEBUG
 };
 
 class ElementPair {
@@ -116,9 +121,11 @@ public:
   }
   inline ElementPair() {
   }
-  String toString() const {
+#ifdef _DEBUG
+  inline String toString() const {
     return format(_T("(%d,%d)"), m_aIndex, m_bIndex);
   }
+#endif // _DEBUG
 };
 
 typedef CompactArray<ElementPair> ElementPairArray;
@@ -185,9 +192,12 @@ protected:
     return l;
   }
 
+  void            allocateTreshAndLinkArrays(size_t size);
   void            clear();
-  void            dumpThresh();
   void            stopAndThrow();
+#ifdef _DEBUG
+  void            dumpThreshLinks() const;
+#endif // _DEBUG
 public:
   Lcs(LcsComparator &cmp, CompareJob *job);
   Lcs(const Lcs &src);            // not defined

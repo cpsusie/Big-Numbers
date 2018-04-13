@@ -828,15 +828,22 @@ private:
   DiffFilter &m_f;
 public:
   OrigDiffFilter(DiffFilter &f) : m_f(f) {};
-  String lineFilter(const TCHAR *s) const { return s;                } // no filter
+  // no line filter
+  String lineFilter(const TCHAR *s) const {
+    return s;
+  }
+  // inherit original document-filtering
   String docFilter( const TCHAR *s) const {
     return m_f.docFilter(s);
-  } // inherit original document-filtering
+  }
   bool   hasLineFilter() const {
     return false;
   }
   bool   hasDocFilter()  const {
     return m_f.hasDocFilter();
+  }
+  DiffFilter *clone() const {
+    return new OrigDiffFilter(*this);
   }
 };
 

@@ -62,6 +62,7 @@ public:
   virtual String docFilter( const TCHAR *s) const = 0;
   virtual bool   hasLineFilter()            const = 0;
   virtual bool   hasDocFilter()             const = 0;
+  virtual DiffFilter *clone()               const = 0;
 };
 
 extern DiffFilter *stdDiffFilter;

@@ -28,6 +28,11 @@ LcsSimple::~LcsSimple() {
   clear();
 }
 
+void LcsSimple::allocateMatchList(size_t size) {
+  m_matchList = new MatchArray*[size]; TRACE_NEW(m_matchList);
+  memset(m_matchList,0,size*sizeof(m_matchList[0]));
+}
+
 void LcsSimple::clear() {
   SAFEDELETEARRAY(m_matchList);
 }
@@ -58,27 +63,19 @@ void LcsSimple::init(const LineArray &a, const LineArray &b) {
     }
     m_n = bs;
   }
-  m_matchList = new MatchArray*[m_n+1]; TRACE_NEW(m_matchList);
-  for(size_t i = 0; i <= m_n; i++) {
-    m_matchList[i] = NULL;
-  }
-
-  m_tresh = new UINT[m_n+1];  TRACE_NEW(m_tresh);
-  m_link  = new Link*[m_n+1]; TRACE_NEW(m_link );
+  allocateMatchList(m_n+1);
+  allocateTreshAndLinkArrays(m_n+1);
 }
 
 void LcsSimple::findLcs(ElementPairArray &result) {
   // step 1: build linked list
-  const size_t matchListTotal = findMatchlist();
+  const size_t matchListTotal = findMatchList();
 
   // step 2 initialize the m_tresh Array
-  m_tresh[0] = 0;
   const UINT mnp1 = (UINT)m_n+1;
-
   for(size_t i = 1; i <= m_n; i++) {
     m_tresh[i] = mnp1;
   }
-  m_link[0] = NULL;
 
   if(m_job) m_job->incrProgress();
 
@@ -102,6 +99,9 @@ BEGIN_TIMEMEASURE(5, _T("Comparing"));
     }
   }
 
+#ifdef _DEBUG
+//  dumpThreshLinks();
+#endif // _DEBUG
   intptr_t k;
   for(k = m_n; k >= 0; k--) {
     if(m_tresh[k] < mnp1) {
@@ -135,6 +135,10 @@ BEGIN_TIMEMEASURE(6, _T("Building pairs"));
       result.add(ElementPair(pairs[k]->m_i-1,pairs[k]->m_j-1));
     }
   }
+#ifdef _DEBUG
+  redirectDebugLog();
+  debugLog(_T("ElementPairArray:\n%s"), result.toString(_T("\n")).cstr());
+#endif // _DEBUG
 
 END_TIMEMEASURE(  6, m_docSize[0]);
 }
@@ -195,7 +199,7 @@ public:
   }
 };
 
-size_t LcsSimple::findMatchlist() {
+size_t LcsSimple::findMatchList() {
 
 BEGIN_TIMEMEASURE(3, _T("Sorting files"));
 
@@ -214,29 +218,44 @@ BEGIN_TIMEMEASURE(4, _T("Finding matching lines"));
   size_t matchArrayCount   = 0;
   size_t matchArraySizeSum = 0;
   for(size_t ai = 1; ai <= m_n; ai++) {
-
+    const LcsElement &AiElement = m_A[ai];
     if(((ai & CHECK_INTERVAL) == 0) && m_job) { m_job->setSubProgressPercent(SPERCENT(ai,m_n)); }
 
-    while((bi < bs) && (m_cmp.compare(m_B[bi].m_s, m_A[ai].m_s) < 0)) {
+    while((bi < bs) && (m_cmp.compare(m_B[bi].m_s, AiElement.m_s) < 0)) {
       bi++;
     }
-    if((ai > 1) && (m_cmp.compare(m_A[ai].m_s, m_A[ai-1].m_s) == 0)) {
-      result += (m_matchList[m_A[ai].m_index] = m_matchList[m_A[ai-1].m_index])->size();
+    if((ai > 1) && (m_cmp.compare(AiElement.m_s, m_A[ai-1].m_s) == 0)) {
+      result += (m_matchList[AiElement.m_index] = m_matchList[m_A[ai-1].m_index])->size();
     } else {
       MatchArray m;
       matchArrayCount++;
-      while((bi < bs) && (m_cmp.compare(m_B[bi].m_s, m_A[ai].m_s) == 0)) {
+      while((bi < bs) && (m_cmp.compare(m_B[bi].m_s, AiElement.m_s) == 0)) {
         m.add(m_B[bi++].m_index);
       }
       m.setCapacity(m.size());
       m_tmpM.add(m);
       result += m.size();
       matchArraySizeSum += m.size();
-      m_matchList[m_A[ai].m_index] = &m_tmpM.last();
+      m_matchList[AiElement.m_index] = &m_tmpM.last();
     }
   }
 
 END_TIMEMEASURE(  4, m_docSize[0] + m_docSize[1]);
 
+#ifdef _DEBUG
+dumpMatchList();
+#endif // _DEBUG
   return result;
 }
+
+#ifdef _DEBUG
+void LcsSimple::dumpMatchList() const {
+  redirectDebugLog();
+  debugLog(_T("MathList:\n"));
+  for(size_t i = 1; i <= m_n; i++) {
+    MatchArray &m = *m_matchList[i];
+    const size_t ms = m.size();
+    debugLog(_T("%6zu:%s\n"), i, m.toStringBasicType().cstr());
+  }
+}
+#endif // _DEBUG

@@ -53,6 +53,9 @@ public:
   bool   hasDocFilter()  const {
     return (m_flags & FLAG_STRIP_COMMENTS) != 0;
   }
+  DiffFilter *clone() const {
+    return new WinDiffFilter(*this);
+  }
 
   bool setIgnoreWhiteSpace(bool newValue);                  // return true if changed
   bool setIgnoreComments(  bool newValue);                  // return true if changed

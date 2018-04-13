@@ -412,17 +412,20 @@ class LineFilterJob : public CompareSubJob {
 private:
   const LineArray &m_a;
   LineArray       &m_fa;
-  DiffFilter      &m_filter;
+  DiffFilter      *m_filter;
   const size_t     m_n;
   size_t           m_count;
 public:
   LineFilterJob(const LineArray &a, LineArray &fa, DiffFilter &filter)
     :m_a(a)
     ,m_fa(fa)
-    ,m_filter(filter)
+    ,m_filter(filter.clone())
     ,m_n(a.size())
   {
     m_count = 0;
+  }
+  ~LineFilterJob() {
+    delete m_filter;
   }
   UINT run();
   size_t getWeight() const {
@@ -437,7 +440,7 @@ UINT LineFilterJob::run() {
   m_fa.setLineCapacity(m_a.size());
   for(m_count = 0; m_count < m_n; m_count++) {
     checkInterruptAndSuspendFlags();
-    m_fa.add(m_filter.lineFilter(m_a[m_count]).cstr());
+    m_fa.add(m_filter->lineFilter(m_a[m_count]).cstr());
   }
   m_fa.updateCapacity();
   return 0;
@@ -497,16 +500,19 @@ void Diff::setDoc(int id, const DiffDoc &doc) {
 class GetLinesJob : public CompareSubJob {
 private:
   const DiffDoc &m_doc;
-  DiffFilter    &m_filter;
+  DiffFilter    *m_filter;
   LineArray     &m_lines;
 public:
   GetLinesJob(const DiffDoc &doc, DiffFilter &filter, LineArray &lines)
     : m_doc(doc)
-    , m_filter(filter)
+    , m_filter(filter.clone())
     , m_lines(lines)
   {}
+  ~GetLinesJob() {
+    delete m_filter;
+  }
   UINT run() {
-    m_doc.getLines(m_filter, m_lines, this);
+    m_doc.getLines(*m_filter, m_lines, this);
     return 0;
   }
   USHORT getProgressPercent() const {
@@ -652,6 +658,9 @@ class StdDiffFilter : public DiffFilter {
   };
   bool hasDocFilter() const {
     return false;
+  }
+  DiffFilter *clone() const {
+    return new StdDiffFilter(*this);
   }
 };
 

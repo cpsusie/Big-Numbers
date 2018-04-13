@@ -100,9 +100,7 @@ void LcsBitSet::init1(const LineArray &a, const LineArray &b) { // assume b.size
       }
     }
   }
-
-  m_tresh = new UINT[m_m+1];  TRACE_NEW(m_tresh);
-  m_link  = new Link*[m_m+1]; TRACE_NEW(m_link);
+  allocateTreshAndLinkArrays(m_m+1);
 }
 
 class BitSetWithPlus : public BitSet {
@@ -201,12 +199,9 @@ void LcsBitSet::findLcs(ElementPairArray &result) {
   test();
 #endif
   // step 2 initialize the TRESH Array
-  m_tresh[0] = 0;
-  m_link[0] = NULL;
   const UINT mmp1 = (UINT)m_m+1;
   for(size_t i = 1; i <= m_m; i++) {
     m_tresh[i] = mmp1;
-    m_link[i] = NULL;
   }
 
   Array<BitSetWithPlus> M,Mm;

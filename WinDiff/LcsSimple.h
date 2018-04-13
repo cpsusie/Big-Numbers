@@ -10,9 +10,12 @@ private:
   Array<MatchArray>        m_tmpM;
   MatchArray             **m_matchList;
   UINT                     m_docSize[2];
-
-  size_t findMatchlist();
+#ifdef _DEBUG
+  void dumpMatchList() const;
+#endif // _DEBUG
+  size_t findMatchList();
   UINT findK(UINT j) const; // find k:m_thresh[k-1] < j <= m_thresh[k]. ie min(k:m_thresh[k] <= j
+  void allocateMatchList(size_t size);
   void clear();
   void init(const LineArray &a, const LineArray &b);
 public:

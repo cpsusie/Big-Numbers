@@ -58,19 +58,24 @@ Lcs::Lcs(LcsComparator &cmp, CompareJob *job)
 : m_cmp(cmp)
 , m_job(job)
 {
-  m_tresh         = NULL;
-  m_link          = NULL;
+  m_tresh = NULL;
+  m_link  = NULL;
 }
 
 Lcs::~Lcs() {
   clear();
 }
 
+void Lcs::allocateTreshAndLinkArrays(size_t size) {
+  m_tresh = new UINT[size];  TRACE_NEW(m_tresh);
+  m_link  = new Link*[size]; TRACE_NEW(m_link);
+  memset(m_tresh, 0, size*sizeof(m_tresh[0]));
+  memset(m_link , 0, size*sizeof(m_link[ 0]));
+}
+
 void Lcs::clear() {
   SAFEDELETEARRAY(m_tresh);
   SAFEDELETEARRAY(m_link );
-  m_tresh     = NULL;
-  m_link      = NULL;
   m_linkPool.releaseAll();
 }
 
@@ -78,12 +83,18 @@ void Lcs::stopAndThrow() {
   throwException(_T("Lcs interrupted"));
 }
 
-void Lcs::dumpThresh() {
+#ifdef _DEBUG
+void Lcs::dumpThreshLinks() const {
+  debugLog(_T("Tresh and Links\n"));
   for(size_t i = 0; i < m_n; i++) {
-    _tprintf(_T("%u "), m_tresh[i]);
+    debugLog(_T("%5zu:%5u:"), i,m_tresh[i]);
+    for(const Link *l = m_link[i]; l; l = l->m_next) {
+      debugLog(_T("%s"), l->toString().cstr());
+    }
+    debugLog(_T("\n"));
   }
-  _tprintf(_T("\n"));
 }
+#endif // _DEBUG
 
 // -------------------------------------------------------------------------------------
 

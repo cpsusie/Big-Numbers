@@ -37,7 +37,7 @@ String RegexFilter::filter(const String &s) const {
   String result;
   intptr_t pos = 0;
   for(const TCHAR *cp = s.cstr(); *cp; ) {
-    intptr_t index = m_reg.search(cp,true,pos);
+    const intptr_t index = m_reg.search(cp,true,pos);
     if(index < 0 || m_reg.getResultLength() == 0) {
       break;
     }
@@ -46,7 +46,9 @@ String RegexFilter::filter(const String &s) const {
     }
     pos = index + m_reg.getResultLength();
   }
-  result += substr(s,pos,s.length());
+  if((intptr_t)s.length() > pos) {
+    result += substr(s,pos,s.length());
+  }
   return result;
 }
 
