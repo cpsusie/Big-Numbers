@@ -95,7 +95,7 @@ String::~String() {
 
 String &String::operator=(const String &rhs) {
   if(this != &rhs) {
-    if(rhs.m_len < m_capacity && rhs.m_len + 100 < m_capacity) {
+    if(!needReallocate(rhs.m_len)) {
       MEMCPY(m_buf, rhs.m_buf, (m_len=rhs.m_len)+1);
     } else {
       delete[] m_buf;
@@ -111,7 +111,7 @@ String &String::operator=(const wchar_t *s) {
   const TCHAR *ms     = W2TNULL(s);
   const size_t length = _tcsclen(ms);
 
-  if(length < m_capacity && length + 100 > m_capacity) {
+  if(!needReallocate(length)) {
     _tcscpy(m_buf, ms);
     m_len = length;
   } else {

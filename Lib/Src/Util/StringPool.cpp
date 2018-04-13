@@ -225,3 +225,12 @@ void StringPool::load(ByteInputStream &s) {
   m_size = size;
   m_textData.load(s);
 }
+
+#ifdef _DEBUG
+void StringPool::dump() const {
+  debugLog(_T("Stringpool\n"));
+  for (Iterator<const TCHAR*> it = getIterator(); it.hasNext();) {
+    debugLog(_T("<%s>\n"),it.next());
+  }
+}
+#endif

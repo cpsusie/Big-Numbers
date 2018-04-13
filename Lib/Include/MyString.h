@@ -56,6 +56,9 @@ private:
   TCHAR *m_buf;
   static TCHAR *newCharBuffer(const TCHAR *s, size_t &length, size_t &capacity);
   void indexError(size_t index) const;
+  inline bool needReallocate(size_t newSize) const {
+    return (newSize >= m_capacity) || (newSize + 100 < m_capacity);
+  }
 public:
   String();
   String(const String  &s);

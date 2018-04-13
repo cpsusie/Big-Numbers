@@ -10,7 +10,7 @@ String &String::operator=(const char *s) {
   const TCHAR *ms     = A2TNULL(s);
   __assume(ms);
   const size_t length = _tcsclen(ms);
-  if(length < m_capacity && length + 100 > m_capacity) {
+  if(!needReallocate(length)) {
     _tcscpy(m_buf, ms);
     m_len = length;
   } else {
