@@ -58,7 +58,7 @@ OpcodeBase::OpcodeBase(const String &mnemonic, UINT op, BYTE extension, BYTE opC
     }
   }
   if(getFlags() & HAS_WORDPREFIX) {
-    if(!(getFlags() & (WORDPTR_ALLOWED | WORDGPR_ALLOWED))) {
+    if(!(getFlags() & (WORDPTR_ALLOWED | WORDGPR_ALLOWED | IMM16_ALLOWED))) {
       THROWINVALIDFLAGS(_T("HAS_WORDPREFIX set for opcode %X, but word size operands not allowed"),op);
     }
   }

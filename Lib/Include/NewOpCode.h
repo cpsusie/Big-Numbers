@@ -838,6 +838,15 @@ public:
   }
 };
 
+class OpcodeJmp : public Opcode1Arg {
+private:
+  const Opcode1Arg m_jmpRelImm;
+public:
+  OpcodeJmp(const String &mnemonic);
+  bool isValidOperand(const InstructionOperand &op, bool throwOnError=false) const;
+  InstructionBase operator()(const InstructionOperand &op) const;
+};
+
 class OpcodeCall : public Opcode1Arg {
 private:
   const Opcode1Arg m_callNearRelImm;
@@ -1162,6 +1171,7 @@ extern OpcodeSetcc       SETG;                             // Set byte   if grea
 #define                  SETNG          SETLE              // Set byte   if not greater                        (signed  )
 #define                  SETNLE         SETG               // Set byte   if not less or equal                  (signed  )
 
+extern OpcodeJmp         JMP;
 extern OpcodeCall        CALL;
 
 extern Opcode0Arg        CWDE;                             // Convert word  to dword. Sign extend AX  into EAX.     Copy sign (bit 15) of AX  into higher 16 bits of EAX

@@ -108,6 +108,7 @@ DEFNAME(OpcodeSetcc      ,  SETGE ,0x0F9D  );              // Set byte if greate
 DEFNAME(OpcodeSetcc      ,  SETLE ,0x0F9E  );              // Set byte if less or equal         (signed  )
 DEFNAME(OpcodeSetcc      ,  SETG  ,0x0F9F  );              // Set byte if greater               (signed  );
 
+DEFNAME(OpcodeJmp        ,  JMP );
 DEFNAME(OpcodeCall       ,  CALL);
 
 DEFNAME(Opcode0Arg       ,  CWDE  ,0x98,ARG0_SIZEABLE);    // Convert word  to dword  Copy sign (bit 15) of AX  into higher 16 bits of EAX

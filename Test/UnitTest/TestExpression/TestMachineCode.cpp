@@ -618,6 +618,7 @@ void TestMachineCode::testArg1Opcodes() {
   testOpcode(NOT  );
   testOpcode(NEG  );
   clear(true);
+  testOpcode(JMP  );
   testOpcode(CALL );
   testOpcode(IMUL );
   testOpcode(IDIV );
