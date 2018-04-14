@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <HashSet.h>
+#include <ExecutableByteArray.h>
 #include <NewOpcode.h>
 
 #define TEST_MACHINECODE
@@ -21,7 +22,7 @@
                                 // in SIB-byte. If not defined, only RAX,R15 will be used
 // #define TEST_ALLINXREGISTERS // If defined, all GPR-registers will be used as index-register
                                 // in SIB-byte. If not defined, only RAX,RBP,R15 will be used
-// #define TEST_ALLSCALEFACTORS // Is defined, all four values, 1,2,4,8 of factor in SIB-byte will be used
+// #define TEST_ALLSCALEFACTORS // If defined, all four values, 1,2,4,8 of factor in SIB-byte will be used
                                 // If not defined, only 1 and 8 will be used
 
 static const GPRegister r8List[] = {

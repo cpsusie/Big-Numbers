@@ -1,5 +1,5 @@
 #include "pch.h"
-#include <ByteArray.h>
+#include <ExecutableByteArray.h>
 
 ExecutableByteArray::ExecutableByteArray(const BYTE *data, UINT size) {
   init();

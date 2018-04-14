@@ -767,6 +767,7 @@
     <ClInclude Include="..\..\Include\CallCounter.h" />
     <ClInclude Include="..\..\Include\Collection.h" />
     <ClInclude Include="..\..\Include\CompactArray.h" />
+    <ClInclude Include="..\..\Include\ExecutableByteArray.h" />
     <ClInclude Include="..\..\Include\HeapObjectPool.h" />
     <ClInclude Include="..\..\Include\CompactHashMap.h" />
     <ClInclude Include="..\..\Include\CompactHashSet.h" />

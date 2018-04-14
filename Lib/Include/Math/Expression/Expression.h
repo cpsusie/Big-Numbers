@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ByteArray.h>
+#include <ExecutableByteArray.h>
 #include "ExpressionParser.h"
 #include "OpCode.h"
 
