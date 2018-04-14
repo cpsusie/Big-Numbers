@@ -977,6 +977,7 @@
     <ClCompile Include="IntelCPU\Opcode3Arg.cpp" />
     <ClCompile Include="IntelCPU\OpcodeBase.cpp" />
     <ClCompile Include="IntelCPU\OpcodeBitScan.cpp" />
+    <ClCompile Include="IntelCPU\OpcodeCall.cpp" />
     <ClCompile Include="IntelCPU\OpcodeFPU.cpp" />
     <ClCompile Include="IntelCPU\OpcodeImul.cpp" />
     <ClCompile Include="IntelCPU\OpcodeLea.cpp" />

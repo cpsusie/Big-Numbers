@@ -50,16 +50,7 @@ DEFNAME(OpcodeStd2Arg    ,  AND   ,0x20,0x24,0x80,4,HAS_IMM_XBIT|HAS_DIRECTIONBI
 DEFNAME(OpcodeStd2Arg    ,  SUB   ,0x28,0x2C,0x80,5,HAS_IMM_XBIT|HAS_DIRECTIONBIT1);
 DEFNAME(OpcodeStd2Arg    ,  XOR   ,0x30,0x34,0x80,6,HAS_IMM_XBIT|HAS_DIRECTIONBIT1);
 DEFNAME(OpcodeStd2Arg    ,  CMP   ,0x38,0x3C,0x80,7,HAS_IMM_XBIT|HAS_DIRECTIONBIT1);
-/*
-DEFNAME(Opcode2Arg       ,  ADD   ,0x00);
-DEFNAME(Opcode2Arg       ,  OR    ,0x08);
-DEFNAME(Opcode2Arg       ,  ADC   ,0x10);
-DEFNAME(Opcode2Arg       ,  SBB   ,0x18);
-DEFNAME(Opcode2Arg       ,  AND   ,0x20);
-DEFNAME(Opcode2Arg       ,  SUB   ,0x28);
-DEFNAME(Opcode2Arg       ,  XOR   ,0x30);
-DEFNAME(Opcode2Arg       ,  CMP   ,0x38);
-*/
+
 DEFNAME(OpcodeXchg       ,  XCHG       );                  // Exchange Two operands
 DEFNAME(OpcodeStd2Arg    ,  TEST  ,0x84,0xA8,0xF6,0);      // Logical Compare. same as AND but doesn't change dst. set SF,ZF,PF according to result
 
@@ -116,6 +107,8 @@ DEFNAME(OpcodeSetcc      ,  SETL  ,0x0F9C  );              // Set byte if less  
 DEFNAME(OpcodeSetcc      ,  SETGE ,0x0F9D  );              // Set byte if greater or equal      (signed  )
 DEFNAME(OpcodeSetcc      ,  SETLE ,0x0F9E  );              // Set byte if less or equal         (signed  )
 DEFNAME(OpcodeSetcc      ,  SETG  ,0x0F9F  );              // Set byte if greater               (signed  );
+
+DEFNAME(OpcodeCall       ,  CALL);
 
 DEFNAME(Opcode0Arg       ,  CWDE  ,0x98,ARG0_SIZEABLE);    // Convert word  to dword  Copy sign (bit 15) of AX  into higher 16 bits of EAX
 DEFNAME(Opcode0Arg       ,  CDQ   ,0x99,ARG0_SIZEABLE);    // Convert dword to qword  Copy sign (bit 31) of EAX into every bit of EDX

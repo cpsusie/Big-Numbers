@@ -156,17 +156,6 @@ public:
     m_bytes[index] |= b;
     return *this;
   }
-  // m_bytes[m_size-1] ^= b
-  inline InstructionBuilder &xor(BYTE b) {
-    m_bytes[m_size - 1] ^= b;
-    return *this;
-  }
-  // m_bytes[index] ^= b
-  inline InstructionBuilder &xor(BYTE index, BYTE b) {
-    assert(index < m_size);
-    m_bytes[index] ^= b;
-    return *this;
-  }
   inline InstructionBuilder &add(BYTE b) {
     assert(m_size < MAX_INSTRUCTIONSIZE);
     m_bytes[m_size++] = b;
