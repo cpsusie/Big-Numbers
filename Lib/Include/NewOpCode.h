@@ -838,22 +838,37 @@ public:
   }
 };
 
+class OpcodeJmpImm : public Opcode1Arg {
+public:
+  OpcodeJmpImm(const String &mnemonic);
+  InstructionBase operator()(const InstructionOperand &op) const;
+};
+
 class OpcodeJmp : public Opcode1Arg {
 private:
-  const Opcode1Arg m_jmpRelImm;
+  const OpcodeJmpImm m_jmpRelImm;
 public:
   OpcodeJmp(const String &mnemonic);
   bool isValidOperand(const InstructionOperand &op, bool throwOnError=false) const;
   InstructionBase operator()(const InstructionOperand &op) const;
 };
 
+class OpcodeCallImm : public Opcode1Arg {
+public:
+  OpcodeCallImm(const String &mnemonic)
+    : Opcode1Arg(mnemonic, 0xE8, 0, IMMEDIATEVALUE_ALLOWED) // near relative displacement (imm16/imm32)
+  {
+  }
+  InstructionBase operator()(const InstructionOperand &op) const;
+};
+
 class OpcodeCall : public Opcode1Arg {
 private:
-  const Opcode1Arg m_callNearRelImm;
+  const OpcodeCallImm m_callNearRelImm;
 public:
   OpcodeCall(const String &mnemonic)
     : Opcode1Arg(      mnemonic, 0xFF, 2, WORDINDEX_GPR_ALLOWED  | WORDINDEXPTR_ALLOWED | HAS_WORDPREFIX) // near absolute indirect addr given by reg/m16/m32/m64
-    , m_callNearRelImm(mnemonic, 0xE8, 0, IMMEDIATEVALUE_ALLOWED                                        ) // near relative displacement (imm16/imm32)
+    , m_callNearRelImm(mnemonic)
   {
   }
   bool isValidOperand(const InstructionOperand &op, bool throwOnError=false) const;
