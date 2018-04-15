@@ -633,7 +633,12 @@ public:
 class Opcode2Arg : public OpcodeBase {
 public :
   Opcode2Arg(const String &mnemonic, UINT op, UINT flags=ALL_GPR_ALLOWED | ALL_GPRPTR_ALLOWED | IMMEDIATEVALUE_ALLOWED | HAS_ALL_SIZEBITS | HAS_DIRECTIONBIT1)
-    : OpcodeBase(mnemonic, op, 0, 2, flags) {
+    : OpcodeBase(mnemonic, op, 0, 2, flags)
+  {
+  }
+  Opcode2Arg(const String &mnemonic, UINT op, BYTE extension, UINT flags)
+    : OpcodeBase(mnemonic, op, extension, 2, flags)
+  {
   }
   InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
 };
@@ -660,7 +665,7 @@ public:
 class Opcode2ArgOI : public OpcodeBase {
 public:
   Opcode2ArgOI(const String &mnemonic, BYTE op, UINT flags=0)
-    : OpcodeBase(mnemonic, op, 0, 2, flags | (ALL_GPR_ALLOWED | HAS_NONBYTE_SIZEBITS | IMMEDIATEVALUE_ALLOWED | FIRSTOP_REGONLY | LASTOP_IMMONLY))
+    : OpcodeBase(mnemonic, op, 0, 2, flags | (ALL_GPR_ALLOWED|HAS_NONBYTE_SIZEBITS|IMMEDIATEVALUE_ALLOWED|FIRSTOP_REGONLY|LASTOP_IMMONLY))
   {
   }
   InstructionBase operator()(const InstructionOperand &dst, const InstructionOperand &imm) const;
@@ -669,11 +674,22 @@ public:
 // encoding MI. op1=mem/reg, op2=imm
 class Opcode2ArgMI : public OpcodeBase {
 public:
-  Opcode2ArgMI(const String &mnemonic, UINT op, BYTE extension, UINT flags=0)
-    : OpcodeBase(mnemonic, op, extension, 2, flags | (ALL_GPR_ALLOWED  | ALL_GPRPTR_ALLOWED | HAS_ALL_SIZEBITS | IMMEDIATEVALUE_ALLOWED | LASTOP_IMMONLY))
+  Opcode2ArgMI(const String &mnemonic, UINT op, BYTE extension, UINT flags=IMMEDIATEVALUE_ALLOWED)
+    : OpcodeBase(mnemonic, op, extension, 2, flags | (ALL_GPR_ALLOWED|ALL_GPRPTR_ALLOWED|HAS_ALL_SIZEBITS|LASTOP_IMMONLY))
   {
   }
   InstructionBase operator()(const InstructionOperand &dst, const InstructionOperand &imm) const;
+};
+
+// encoding MI. op1=mem/reg, op2=imm8
+class Opcode2ArgMI8 : public Opcode2ArgMI {
+public:
+  Opcode2ArgMI8(const String &mnemonic, UINT op, BYTE extension)
+    : Opcode2ArgMI(mnemonic, op, extension, IMM8_ALLOWED)
+  {
+  }
+  bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError=false) const;
+  InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
 };
 
 // encoding M. op1=AL/AX/EAX/RAX. op2=RM
@@ -734,9 +750,9 @@ private:
 public :
   OpcodeStd2Arg(const String &mnemonic, UINT opStd, BYTE opI, UINT opMI, BYTE extMI
                ,UINT flags=0)
-    : Opcode2Arg(mnemonic, opStd     , (flags&ALLNONIMM_MASK) | (ALL_GPR_ALLOWED  | ALL_GPRPTR_ALLOWED | HAS_ALL_SIZEBITS))
+    : Opcode2Arg(mnemonic, opStd     , (flags&ALLNONIMM_MASK)|(ALL_GPR_ALLOWED|ALL_GPRPTR_ALLOWED|HAS_ALL_SIZEBITS))
     , m_codeI(   mnemonic, opI)
-    , m_codeMI(  mnemonic, opMI,extMI, (flags&ALLIMM_MASK))
+    , m_codeMI(  mnemonic, opMI,extMI, (flags&ALLIMM_MASK)|IMMEDIATEVALUE_ALLOWED)
   {
   }
   bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError=false) const;
@@ -803,9 +819,9 @@ public :
 typedef Opcode1Arg OpcodeIncDec;
 #endif // IS64BIT
 
-class OpcodeShiftRot : public OpcodeBase {
+class OpcodeShiftRot : public Opcode2Arg {
 private:
-  OpcodeBase m_immCode;
+  Opcode2ArgMI8 m_immCode;
 public:
   OpcodeShiftRot(const String &mnemonic, BYTE extension);
   bool isValidOperandType(const InstructionOperand &op, BYTE index) const {

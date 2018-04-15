@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <HashSet.h>
+#include <Date.h>
 #include <ExecutableByteArray.h>
 #include <NewOpcode.h>
 
@@ -409,7 +410,9 @@ private:
   InstructionOperandArray m_allOperands;
   AllVOIDPtrOperands      m_allVOIDPtrOperands;
   AllStringInstructions   m_allStringInstructions;
-  String                  m_currentName;
+  String                  m_currentMnemonic;
+  int                     m_emitCount;
+  FILE                   *m_emitCountLog;
   bool                    m_clearOn;
   void initAllOperands();
   void clear(bool force = false);
@@ -425,8 +428,16 @@ private:
     m_clearOn = on;
     return old;
   }
+  inline void newMnemonic(const String &mnemonic) {
+    m_currentMnemonic = mnemonic;
+    m_emitCount = 0;
+  }
+  void logEmitCount();
   void printf(const TCHAR *format,...) const;
 public:
+  TestMachineCode(vprintFunction vpf);
+  ~TestMachineCode();
+  void testAll();
   void testOpcode(         const OpcodeBase      &opcode, bool selectVOIDPtr = false);
   void testOpcode(         const OpcodeLea       &opcode);
   void testOpcode(         const StringPrefix    &prefix);
@@ -439,8 +450,16 @@ public:
   void testStringInstructions();
   void testFPUOpcodes();
   void testXMMOpcodes();
-  TestMachineCode(vprintFunction vpf);
 };
+
+TestMachineCode::TestMachineCode(vprintFunction vpf) : m_vpf(vpf) {
+  setClearOn(true);
+  initAllOperands();
+}
+
+TestMachineCode::~TestMachineCode() {
+ fclose(m_emitCountLog);
+}
 
 void TestMachineCode::initAllOperands() {
   AllRegisters      m_allRegisters;
@@ -457,6 +476,39 @@ void TestMachineCode::initAllOperands() {
   debugLog(_T("All operands:\n%s"),m_allOperands.toString().cstr());
   debugLog(_T("All VOIDPtr:\n%s") ,m_allVOIDPtrOperands.toString().cstr());
   redirectDebugLog();
+  const String logName = format(_T("c:\\temp\\emitLogs\\%s.log"), Timestamp().toString(_T("yyyyMMddhhmmss")).cstr());
+  m_emitCountLog = MKFOPEN(logName,_T("w"));
+  _ftprintf(m_emitCountLog, _T("Operands:%3zu. void Operands:%3zu\n")
+           ,m_allOperands.size()
+           ,m_allVOIDPtrOperands.size());
+}
+
+void TestMachineCode::testAll() {
+  for(int i = 0; i >= 0;i++) {
+    try {
+      switch(i) {
+      case 0 : testArg0Opcodes();         break;
+      case 1 : testArg1Opcodes();         break;
+      case 2 : testArg2Opcodes();         break;
+      case 3 : testArg3Opcodes();         break;
+      case 4 : testSetccOpcodes();        break;
+      case 5 : testBitOperations();       break;
+      case 6 : testStringInstructions();  break;
+      case 7 : testFPUOpcodes();          break;
+      case 8 : testXMMOpcodes();          break;
+      default: i = -1000; break;
+      }
+    } catch(UserInterrupt u) {
+      if(u.getType() != BREAK_GROUP) {
+        throw;
+      }
+    }
+  }
+}
+
+void TestMachineCode::logEmitCount() {
+  _ftprintf(m_emitCountLog, _T("%-20s:%4d\n"), m_currentMnemonic.cstr(), m_emitCount);
+  fflush(m_emitCountLog);
 }
 
 void TestMachineCode::printf(const TCHAR *format, ...) const {
@@ -477,32 +529,36 @@ void TestMachineCode::clear(bool force) {
 }
 
 int TestMachineCode::emit(const InstructionBase &ins) {
-  debugLog(_T("%-36s %s\n"), ins.toString().cstr(), m_currentName.cstr());
+  debugLog(_T("%-36s %s\n"), ins.toString().cstr(), m_currentMnemonic.cstr());
+  m_emitCount++;
   return __super::emit(ins);
 }
 
 int TestMachineCode::emit(const OpcodeBase &opcode, const InstructionOperand &op) {
   const InstructionBase ins = opcode(op);
-  debugLog(_T("%-36s %s %s\n"), ins.toString().cstr(), m_currentName.cstr(), op.toString().cstr());
+  debugLog(_T("%-36s %s %s\n"), ins.toString().cstr(), m_currentMnemonic.cstr(), op.toString().cstr());
+  m_emitCount++;
   return __super::emit(ins);
 }
 
 int TestMachineCode::emit(const OpcodeBase &opcode, const InstructionOperand &op1, const InstructionOperand &op2) {
   const InstructionBase ins = opcode(op1,op2);
-  debugLog(_T("%-36s %s %s, %s\n"), ins.toString().cstr(), m_currentName.cstr(), op1.toString().cstr(), op2.toString().cstr());
+  debugLog(_T("%-36s %s %s, %s\n"), ins.toString().cstr(), m_currentMnemonic.cstr(), op1.toString().cstr(), op2.toString().cstr());
+  m_emitCount++;
   return __super::emit(ins);
 }
 
 int TestMachineCode::emit(const OpcodeBase &opcode, const InstructionOperand &op1, const InstructionOperand &op2, const InstructionOperand &op3) {
   const InstructionBase ins = opcode(op1,op2,op3);
-  debugLog(_T("%-36s %s %s,%s,%s\n"), ins.toString().cstr(), m_currentName.cstr(), op1.toString().cstr(), op2.toString().cstr(),op3.toString().cstr());
+  debugLog(_T("%-36s %s %s,%s,%s\n"), ins.toString().cstr(), m_currentMnemonic.cstr(), op1.toString().cstr(), op2.toString().cstr(),op3.toString().cstr());
+  m_emitCount++;
   return __super::emit(ins);
 }
 
 void TestMachineCode::testOpcode(const OpcodeBase &opcode, bool selectVOIDPtr) {
   try {
-    m_currentName = opcode.getMnemonic();
-    printf(_T("Testing opcode %s"), m_currentName.cstr());
+    newMnemonic(opcode.getMnemonic());
+    printf(_T("Testing opcode %s"), m_currentMnemonic.cstr());
     clear();
     for(int args = opcode.getOpCount(); args <= opcode.getMaxOpCount(); args++) {
       switch(args) {
@@ -513,6 +569,7 @@ void TestMachineCode::testOpcode(const OpcodeBase &opcode, bool selectVOIDPtr) {
       default: throwInvalidArgumentException(__TFUNCTION__,_T("%s.getMaxOpCount()=%d"), opcode.getMnemonic().cstr(), opcode.getMaxOpCount());
       }
     }
+    logEmitCount();
   } catch(UserInterrupt u) {
     if(u.getType() != BREAK_OPCODE) {
       throw;
@@ -563,11 +620,12 @@ void TestMachineCode::testOpcode3Arg(const OpcodeBase &opcode) {
 }
 
 void TestMachineCode::testOpcode(const StringPrefix &prefix) {
-  m_currentName = prefix.getMnemonic();
+  newMnemonic(prefix.getMnemonic());
   for(Iterator<const StringInstruction*> it = m_allStringInstructions.getIterator(); it.hasNext();) {
     const StringInstruction &ins = *it.next();
     emit(prefix(ins));
   }
+  logEmitCount();
 }
 
 void TestMachineCode::testArg0Opcodes() {
@@ -617,12 +675,10 @@ void TestMachineCode::testArg1Opcodes() {
   testOpcode(DEC  );
   testOpcode(NOT  );
   testOpcode(NEG  );
-  clear(true);
   testOpcode(JMP  );
   testOpcode(CALL );
   testOpcode(IMUL );
   testOpcode(IDIV );
-  clear(true);
 }
 
 void TestMachineCode::testArg2Opcodes() {
@@ -826,36 +882,12 @@ void TestMachineCode::testXMMOpcodes() {
   testOpcode(DIVSD );
 }
 
-TestMachineCode::TestMachineCode(vprintFunction vpf) : m_vpf(vpf) {
-  setClearOn(true);
-  initAllOperands();
-  for(int i = 0; i >= 0;i++) {
-    try {
-      switch(i) {
-      case 0 : testArg0Opcodes();         break;
-      case 1 : testArg1Opcodes();         break;
-      case 2 : testArg2Opcodes();         break;
-      case 3 : testArg3Opcodes();         break;
-      case 4 : testSetccOpcodes();        break;
-      case 5 : testBitOperations();       break;
-      case 6 : testStringInstructions();  break;
-      case 7 : testFPUOpcodes();          break;
-      case 8 : testXMMOpcodes();          break;
-      default: i = -1000; break;
-      }
-    } catch(UserInterrupt u) {
-      if(u.getType() != BREAK_GROUP) {
-        throw;
-      }
-    }
-  }
-}
-
 #endif // TEST_MACHINECODE
 
 void generateTestSequence(vprintFunction vpf) {
 #ifdef TEST_MACHINECODE
   TestMachineCode test(vpf);
+  test.testAll();
 #endif // TEST_MACHINECODE
 }
 

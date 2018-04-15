@@ -37,6 +37,18 @@ InstructionBase Opcode2ArgMI::operator()(const InstructionOperand &dst, const In
   }
 }
 
+bool Opcode2ArgMI8::isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError) const {
+  if(!validateIsRegisterOrMemoryOperand(op1, 1, throwOnError)) {
+    return false;
+  }
+  return validateIsImmediateOperand(op2,2,throwOnError);
+}
+
+InstructionBase Opcode2ArgMI8::operator()(const InstructionOperand &op1, const InstructionOperand &op2) const {
+  isValidOperandCombination(op1,op2,true);
+  return InstructionBuilder(*this).setMemOrRegOperand(op1).addImmediateOperand(op2,REGSIZE_BYTE);
+}
+
 class InstructionBuilderO : public InstructionBuilder {
 public:
   InstructionBuilderO(const OpcodeBase &opcode) : InstructionBuilder(opcode) {

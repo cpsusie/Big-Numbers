@@ -3,8 +3,8 @@
 #include "InstructionBuilder.h"
 
 OpcodeShiftRot::OpcodeShiftRot(const String &mnemonic, BYTE extension)
-  : OpcodeBase(mnemonic, 0xD2, extension, 2, ALL_GPR_ALLOWED | ALL_GPRPTR_ALLOWED | IMM8_ALLOWED | HAS_ALL_SIZEBITS)
-  , m_immCode( mnemonic, 0xC0, extension, 2, ALL_GPR_ALLOWED | ALL_GPRPTR_ALLOWED | IMM8_ALLOWED | HAS_ALL_SIZEBITS)
+  : Opcode2Arg(mnemonic, 0xD2, extension, ALL_GPR_ALLOWED | ALL_GPRPTR_ALLOWED | HAS_ALL_SIZEBITS)
+  , m_immCode( mnemonic, 0xC0, extension)
 {
 }
 
@@ -16,20 +16,12 @@ bool OpcodeShiftRot::isValidOperandCombination(const InstructionOperand &op1, co
 }
 
 InstructionBase OpcodeShiftRot::operator()(const InstructionOperand &op1, const InstructionOperand &op2) const {
-  isValidOperandCombination(op1, op2, true);
   switch(op2.getType()) {
   case REGISTER      :
-    switch(op1.getType()) {
-    case REGISTER     : return InstructionBuilder(*this    ).setRegisterOperand(op1.getRegister());
-    case MEMORYOPERAND: return InstructionBuilder(*this    ).setMemoryOperand((MemoryOperand&)op1);
-    }
-    break;
+    isValidOperandCombination(op1, op2, true);
+    return InstructionBuilder(*this).setMemOrRegOperand(op1);
   case IMMEDIATEVALUE:
-    switch(op1.getType()) {
-    case REGISTER     : return InstructionBuilder(m_immCode).setRegisterOperand(op1.getRegister()).add(op2.getImmInt8());
-    case MEMORYOPERAND: return InstructionBuilder(m_immCode).setMemoryOperand((MemoryOperand&)op1).add(op2.getImmInt8());
-    }
-    break;
+    return m_immCode(op1,op2);
   }
   throwInvalidOperandCombination(op1,op2);
   return __super::operator()(op1,op2);
