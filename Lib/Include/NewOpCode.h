@@ -829,7 +829,7 @@ public:
   InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
 };
 
-class OpcodeDoubleShift : public OpcodeBase {
+class OpcodeDoubleShift : public Opcode3Arg {
 private:
   Opcode2Arg m_clCode;
 public:

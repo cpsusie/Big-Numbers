@@ -30,8 +30,8 @@ InstructionBase OpcodeShiftRot::operator()(const InstructionOperand &op1, const 
 #define _DSHIFT_FLAGS (NONBYTE_GPR_ALLOWED | NONBYTE_GPRPTR_ALLOWED | HAS_NONBYTE_SIZEBITS)
 
 OpcodeDoubleShift::OpcodeDoubleShift(const String &mnemonic, UINT opCL, UINT opImm)
-  : OpcodeBase(mnemonic, opImm, 0, 3, _DSHIFT_FLAGS | IMM8_ALLOWED)
-  , m_clCode(  mnemonic, opCL, _DSHIFT_FLAGS)
+  : Opcode3Arg(mnemonic, opImm, _DSHIFT_FLAGS | IMM8_ALLOWED)
+  , m_clCode(  mnemonic, opCL , _DSHIFT_FLAGS)
 {
 }
 
@@ -52,15 +52,11 @@ InstructionBase OpcodeDoubleShift::operator()(const InstructionOperand &op1, con
   isValidOperandCombination(op1,op2,op3,true);
   switch(op3.getType()) {
   case REGISTER      :
-    switch(op1.getType()) {
-    case REGISTER     : return InstructionBuilder(m_clCode).setRegRegOperands(   op1.getRegister()  , op2.getRegister());
-    case MEMORYOPERAND: return InstructionBuilder(m_clCode).setMemoryRegOperands((MemoryOperand&)op1, op2.getRegister());
-    }
-    break;
+    return m_clCode(op1,op2);
   case IMMEDIATEVALUE:
     switch(op1.getType()) {
-    case REGISTER     : return InstructionBuilder(*this).setRegRegOperands(   op1.getRegister()  , op2.getRegister()).add(op3.getImmInt8());
-    case MEMORYOPERAND: return InstructionBuilder(*this).setMemoryRegOperands((MemoryOperand&)op1, op2.getRegister()).add(op3.getImmInt8());
+    case REGISTER     : return InstructionBuilder(*this).setRegRegOperands(   op1.getRegister()  , op2.getRegister()).setImmediateOperand(op3,REGSIZE_BYTE);
+    case MEMORYOPERAND: return InstructionBuilder(*this).setMemoryRegOperands((MemoryOperand&)op1, op2.getRegister()).setImmediateOperand(op3,REGSIZE_BYTE);
     }
     break;
   }
