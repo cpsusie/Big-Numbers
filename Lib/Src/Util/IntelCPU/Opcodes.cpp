@@ -93,22 +93,33 @@ DEFNAME(OpcodeDoubleShift,  SHRD  ,0x0FAD,0x0FAC);         // Shift right by cl/
 DEFNAME(Opcode2Arg       ,  BSF   ,0x0FBC, BITSCAN_FLAGS); // Bitscan forward
 DEFNAME(Opcode2Arg       ,  BSR   ,0x0FBD, BITSCAN_FLAGS); // Bitscan reversed
 
-DEFNAME(OpcodeJcc        , JO     ,0x70);                  // Jump if overflow                                 (OF==1 )
-DEFNAME(OpcodeJcc        , JNO    ,0x71);                  // Jump if not overflow                             (OF==0 )
-DEFNAME(OpcodeJcc        , JB     ,0x72);                  // Jump if below                (unsigned)          (CF==1 )
-DEFNAME(OpcodeJcc        , JAE    ,0x73);                  // Jump if above or equal       (unsigned)          (CF==0 )
-DEFNAME(OpcodeJcc        , JE     ,0x74);                  // Jump if equal                (signed/unsigned)   (ZF==1 )
-DEFNAME(OpcodeJcc        , JNE    ,0x75);                  // Jump if not equal            (signed/unsigned)   (ZF==0 )
-DEFNAME(OpcodeJcc        , JBE    ,0x76);                  // Jump if below or equal       (unsigned)          (CF==1 || ZF==1)
-DEFNAME(OpcodeJcc        , JA     ,0x77);                  // Jump if above                (unsigned)          (CF==0 && ZF==0)
-DEFNAME(OpcodeJcc        , JS     ,0x78);                  // Jump if sign                                     (SF==1 )
-DEFNAME(OpcodeJcc        , JNS    ,0x79);                  // Jump if not sign                                 (SF==0 )
-DEFNAME(OpcodeJcc        , JP     ,0x7A);                  // Jump if parity even                              (PF==1 )
-DEFNAME(OpcodeJcc        , JNP    ,0x7B);                  // Jump if parity odd                               (PF==0 )
-DEFNAME(OpcodeJcc        , JL     ,0x7C);                  // Jump if less                 (signed  )          (SF!=OF)
-DEFNAME(OpcodeJcc        , JGE    ,0x7D);                  // Jump if greater or equal     (signed  )          (SF==OF)
-DEFNAME(OpcodeJcc        , JLE    ,0x7E);                  // Jump if less or equal        (signed  )          (ZF==1 || SF!=OF)
-DEFNAME(OpcodeJcc        , JG     ,0x7F);                  // Jump if greater              (signed  )          (ZF==0 && SF==OF)
+DEFNAME(OpcodeJmp        ,  JMP );
+DEFNAME(OpcodeCall       ,  CALL);
+
+DEFNAME(OpcodeJcc        ,  JO    ,0x70);                  // Jump     if overflow                                  (OF==1 )
+DEFNAME(OpcodeJcc        ,  JNO   ,0x71);                  // Jump     if not overflow                              (OF==0 )
+DEFNAME(OpcodeJcc        ,  JB    ,0x72);                  // Jump     if below                 (unsigned)          (CF==1 )
+DEFNAME(OpcodeJcc        ,  JAE   ,0x73);                  // Jump     if above or equal        (unsigned)          (CF==0 )
+DEFNAME(OpcodeJcc        ,  JE    ,0x74);                  // Jump     if equal                 (signed/unsigned)   (ZF==1 )
+DEFNAME(OpcodeJcc        ,  JNE   ,0x75);                  // Jump     if not equal             (signed/unsigned)   (ZF==0 )
+DEFNAME(OpcodeJcc        ,  JBE   ,0x76);                  // Jump     if below or equal        (unsigned)          (CF==1 || ZF==1)
+DEFNAME(OpcodeJcc        ,  JA    ,0x77);                  // Jump     if above                 (unsigned)          (CF==0 && ZF==0)
+DEFNAME(OpcodeJcc        ,  JS    ,0x78);                  // Jump     if sign                                      (SF==1 )
+DEFNAME(OpcodeJcc        ,  JNS   ,0x79);                  // Jump     if not sign                                  (SF==0 )
+DEFNAME(OpcodeJcc        ,  JP    ,0x7A);                  // Jump     if parity even                               (PF==1 )
+DEFNAME(OpcodeJcc        ,  JNP   ,0x7B);                  // Jump     if parity odd                                (PF==0 )
+DEFNAME(OpcodeJcc        ,  JL    ,0x7C);                  // Jump     if less                  (signed  )          (SF!=OF)
+DEFNAME(OpcodeJcc        ,  JGE   ,0x7D);                  // Jump     if greater or equal      (signed  )          (SF==OF)
+DEFNAME(OpcodeJcc        ,  JLE   ,0x7E);                  // Jump     if less or equal         (signed  )          (ZF==1 || SF!=OF)
+DEFNAME(OpcodeJcc        ,  JG    ,0x7F);                  // Jump     if greater               (signed  )          (ZF==0 && SF==OF)
+
+#ifdef IS32BIT
+DEFNAME(Opcode1Arg       , JCXZ   ,0x67E3,0,IMM8_ALLOWED); // Jump if CX  register is 0. 1 byte PC relative offset
+DEFNAME(Opcode1Arg       , JECXZ  ,0xE3  ,0,IMM8_ALLOWED); // Jump if ECX register is 0. 1 byte PC relative offset
+#else
+DEFNAME(Opcode1Arg       , JECXZ  ,0x67E3,0,IMM8_ALLOWED); // Jump if ECX register is 0. 1 byte PC relative offset
+DEFNAME(Opcode1Arg       , JRCXZ  ,0xE3  ,0,IMM8_ALLOWED); // Jump if RCX register is 0. 1 byte PC relative offset
+#endif // IS64BIT
 
 #define SETCC_FLAGS   (REGTYPE_GPR_ALLOWED | BYTEGPR_ALLOWED | BYTEPTR_ALLOWED)
 // Set Byte on Condition
@@ -127,10 +138,7 @@ DEFNAME(Opcode1Arg       ,  SETNP ,0x0F9B ,0,SETCC_FLAGS); // Set byte if parity
 DEFNAME(Opcode1Arg       ,  SETL  ,0x0F9C ,0,SETCC_FLAGS); // Set byte if less                  (signed  )
 DEFNAME(Opcode1Arg       ,  SETGE ,0x0F9D ,0,SETCC_FLAGS); // Set byte if greater or equal      (signed  )
 DEFNAME(Opcode1Arg       ,  SETLE ,0x0F9E ,0,SETCC_FLAGS); // Set byte if less or equal         (signed  )
-DEFNAME(Opcode1Arg       ,  SETG  ,0x0F9F ,0,SETCC_FLAGS); // Set byte if greater               (signed  );
-
-DEFNAME(OpcodeJmp        ,  JMP );
-DEFNAME(OpcodeCall       ,  CALL);
+DEFNAME(Opcode1Arg       ,  SETG  ,0x0F9F ,0,SETCC_FLAGS); // Set byte if greater               (signed  )
 
 DEFNAME(Opcode0Arg       ,  CWDE  ,0x98,ARG0_SIZEABLE);    // Convert word  to dword  Copy sign (bit 15) of AX  into higher 16 bits of EAX
 DEFNAME(Opcode0Arg       ,  CDQ   ,0x99,ARG0_SIZEABLE);    // Convert dword to qword  Copy sign (bit 31) of EAX into every bit of EDX

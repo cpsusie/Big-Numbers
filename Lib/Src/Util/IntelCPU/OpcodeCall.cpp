@@ -23,9 +23,9 @@ InstructionBase OpcodeJmpImm::operator()(const InstructionOperand &op) const {
     return InstructionBuilder(*this).setImmediateOperand(op);
   case REGSIZE_WORD :
 // NEVER USE THIS. it will clear high 16 bits of EIP
-//    return InstructionBuilder(*this).addImmediateOperand(op,REGSIZE_WORD).wordIns();
+//    return InstructionBuilder(*this).setImmediateOperand(op,REGSIZE_WORD).wordIns();
   case REGSIZE_DWORD:
-    return InstructionBuilder(*this).addImmediateOperand(op,REGSIZE_DWORD);
+    return InstructionBuilder(*this).setImmediateOperand(op,REGSIZE_DWORD);
   }
 #else  // IS64BIT
   switch(op.getSize()) {
@@ -33,7 +33,7 @@ InstructionBase OpcodeJmpImm::operator()(const InstructionOperand &op) const {
     return InstructionBuilder(*this).setImmediateOperand(op);
   case REGSIZE_WORD :
   case REGSIZE_DWORD:
-    return InstructionBuilder(*this).addImmediateOperand(op,REGSIZE_DWORD);
+    return InstructionBuilder(*this).setImmediateOperand(op,REGSIZE_DWORD);
   }
 #endif // IS64BIT
   throwUnknownOperandType(op,1);
@@ -75,18 +75,18 @@ OpcodeJcc::OpcodeJcc(const String &mnemonic, UINT op)
 InstructionBase OpcodeJcc::operator()(const InstructionOperand &op) const {
   isValidOperand(op, true);
   if(op.isImmByte()) {
-    return InstructionBuilder(m_shortCode).addImmediateOperand(op, REGSIZE_BYTE);
+    return InstructionBuilder(m_shortCode).setImmediateOperand(op, REGSIZE_BYTE);
   } else {
 #ifdef IS32BIT
     switch (op.getSize()) {
     case REGSIZE_WORD :
 // NEVER USE THIS. it will clear high 16 bits of EIP !!
-//    return InstructionBuilder(*this).addImmediateOperand(op, REGSIZE_WORD).wordIns();
+//    return InstructionBuilder(*this).setImmediateOperand(op, REGSIZE_WORD).wordIns();
     case REGSIZE_DWORD:
-      return InstructionBuilder(*this).addImmediateOperand(op, REGSIZE_DWORD);
+      return InstructionBuilder(*this).setImmediateOperand(op, REGSIZE_DWORD);
     }
 #else // IS64BIT
-    return InstructionBuilder(*this).addImmediateOperand(op, REGSIZE_DWORD);
+    return InstructionBuilder(*this).setImmediateOperand(op, REGSIZE_DWORD);
 #endif // IS64BIT
   }
   throwUnknownOperandType(op,1);
@@ -99,7 +99,7 @@ InstructionBase OpcodeCallImm::operator()(const InstructionOperand &op) const {
   case REGSIZE_BYTE :
   case REGSIZE_WORD :
   case REGSIZE_DWORD:
-    return InstructionBuilder(*this).addImmediateOperand(op,REGSIZE_DWORD);
+    return InstructionBuilder(*this).setImmediateOperand(op,REGSIZE_DWORD);
   }
   throwUnknownOperandType(op,1);
   return __super::operator()(op);

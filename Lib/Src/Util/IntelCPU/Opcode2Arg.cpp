@@ -11,12 +11,16 @@ InstructionBase Opcode2Arg::operator()(const InstructionOperand &op1, const Inst
       return InstructionBuilder(*this).setRegRegOperands(op1.getRegister(),op2.getRegister());
     case MEMORYOPERAND  : // reg <- mem
       return InstructionBuilder(*this).setMemoryRegOperands((MemoryOperand&)op2, op1.getRegister()).setDirectionBit(REGISTER,MEMORYOPERAND);
+    case IMMEDIATEVALUE : // reg <- imm
+      return InstructionBuilder(*this).setRegisterOperand(op1.getRegister()).setImmediateOperand(op2,op1.getLimitedSize(REGSIZE_DWORD));
     }
     break;
   case MEMORYOPERAND    :
     switch(op2.getType()) {
     case REGISTER       : // mem <- reg
       return InstructionBuilder(*this).setMemoryRegOperands((MemoryOperand&)op1, op2.getRegister()).setDirectionBit(MEMORYOPERAND,REGISTER);
+    case IMMEDIATEVALUE : // mem <- imm
+      return InstructionBuilder(*this).setMemoryOperand((MemoryOperand&)op1).setImmediateOperand(op2,op1.getLimitedSize(REGSIZE_DWORD));
     }
   }
   throwInvalidOperandCombination(op1,op2);
@@ -25,28 +29,12 @@ InstructionBase Opcode2Arg::operator()(const InstructionOperand &op1, const Inst
 
 InstructionBase Opcode2ArgI::operator()(const InstructionOperand &dst, const InstructionOperand &imm) const {
   isValidOperandCombination(dst,imm,true);
-  return InstructionBuilder(*this).setOperandSize(dst.getSize()).addImmediateOperand(imm,dst.getLimitedSize(REGSIZE_DWORD));
-}
-
-InstructionBase Opcode2ArgMI::operator()(const InstructionOperand &dst, const InstructionOperand &imm) const {
-  isValidOperandCombination(dst,imm,true);
-  if((getFlags() & HAS_IMM_XBIT) && imm.isImmByte()) {
-    return InstructionBuilder(*this).setMemOrRegOperand(dst).setImmediateOperand(imm,&dst);
-  } else {
-    return InstructionBuilder(*this).setMemOrRegOperand(dst).addImmediateOperand(imm,dst.getLimitedSize(REGSIZE_DWORD));
-  }
-}
-
-bool Opcode2ArgMI8::isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError) const {
-  if(!validateIsRegisterOrMemoryOperand(op1, 1, throwOnError)) {
-    return false;
-  }
-  return validateIsImmediateOperand(op2,2,throwOnError);
+  return InstructionBuilder(*this).setOperandSize(dst.getSize()).setImmediateOperand(imm,dst.getLimitedSize(REGSIZE_DWORD));
 }
 
 InstructionBase Opcode2ArgMI8::operator()(const InstructionOperand &op1, const InstructionOperand &op2) const {
   isValidOperandCombination(op1,op2,true);
-  return InstructionBuilder(*this).setMemOrRegOperand(op1).addImmediateOperand(op2,REGSIZE_BYTE);
+  return InstructionBuilder(*this).setMemOrRegOperand(op1).setImmediateOperand(op2,REGSIZE_BYTE);
 }
 
 class InstructionBuilderO : public InstructionBuilder {
@@ -80,7 +68,7 @@ InstructionBuilder &InstructionBuilderO::setRegisterOperand(const Register &reg)
 
 InstructionBase Opcode2ArgOI::operator()(const InstructionOperand &dst, const InstructionOperand &imm) const {
   isValidOperandCombination(dst,imm,true);
-  return InstructionBuilderO(*this).setRegisterOperand(dst.getRegister()).addImmediateOperand(imm,dst.getSize());
+  return InstructionBuilderO(*this).setRegisterOperand(dst.getRegister()).setImmediateOperand(imm,dst.getSize());
 }
 
 InstructionBase Opcode2ArgM::operator()(const InstructionOperand &op1, const InstructionOperand &op2) const {

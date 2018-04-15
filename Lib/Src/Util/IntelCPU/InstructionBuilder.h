@@ -61,6 +61,9 @@ private:
   bool         m_hasRexByte;
   BYTE         m_rexByteIndex;
 #endif
+#ifdef _DEBUG
+  const String m_debugStr;
+#endif // _DEBUG
   inline void init() {
     m_opcodePos       = 0;
     m_modeByteCreated = false;
@@ -90,6 +93,8 @@ private:
     return (getFlags() & NO_MODEBYTE) == 0;
   }
   InstructionBuilder &prefixSegReg(    const SegmentRegister &reg);
+  // force 1,2,4 (or 8 in x64) bytes immediate value. that is, no byte-encoding for size=word/dword/qword
+  InstructionBuilder &addImmediateOperand( const InstructionOperand &imm, OperandSize size);
 protected:
   static void throwImmSizeException(const TCHAR *method, INT64 immv) {
     throwInvalidArgumentException(method,_T("Immediate value %s not allowed"),formatHexValue(immv,false).cstr());
@@ -140,6 +145,9 @@ public:
   }
   inline bool hasQwordSizeBit() const {
     return (getFlags() & HAS_REXQSIZEBIT) != 0;
+  }
+  inline bool hasImmXBit() const {
+    return (getFlags() & HAS_IMM_XBIT) != 0;
   }
   InstructionBuilder &insert(BYTE index, BYTE b);
   inline InstructionBuilder &prefix(BYTE b) {
@@ -216,7 +224,7 @@ public:
     return needDirectionBitOn(dst,src) ? or(getLastOpcodeByteIndex(),m_directionMask) : *this;
   }
   inline InstructionBuilder &setImmXBit() {
-    assert(getFlags() & HAS_IMM_XBIT);
+    assert(hasImmXBit());
     return or(m_opcodePos,2);
   }
   // add MOD-REG-R/M byte if not there yet, else modeByte |= bits
@@ -225,12 +233,18 @@ public:
   InstructionBuilder &setRegisterOperand(  const Register           &reg);
   InstructionBuilder &setMemoryOperand(    const MemoryOperand      &mem);
   InstructionBuilder &setMemOrRegOperand(  const InstructionOperand &op );
-
-  InstructionBuilder &setMemoryRegOperands(const MemoryOperand &mem, const  Register &reg);
-  InstructionBuilder &setRegRegOperands(   const Register      &reg1, const Register &reg2);
-  // if imm.size==BYTE, then only add 1 byte + set X-bit of opcode (bit 1)
-  InstructionBuilder &setImmediateOperand( const InstructionOperand &imm, const InstructionOperand *dst=NULL);
-  // force 1,2 or 4 bytes immediate value. that is, no byte-encoding for word/dword dst
-  InstructionBuilder &addImmediateOperand( const InstructionOperand &imm, OperandSize size);
-
+  InstructionBuilder &setMemoryRegOperands(const MemoryOperand      &mem , const Register &reg );
+  InstructionBuilder &setRegRegOperands(   const Register           &reg1, const Register &reg2);
+  // if(!(opcode.flags & HAS_IMM_XBIT)) {
+  //   call addImmediateOperand(imm,dstSize); force imm-value to be as specified by dstSize
+  // } else if(imm.size==BYTE) {
+  //   if(dstSize!=BYTE) set X-bit of opcode;
+  //   add 1 byte imm-value;
+  // } else if((imm.size==WORD) && (dstSize==WORD)) {
+  //   add 2 byte imm-value;
+  // } else {
+  //   if(imm.size > DWORD) => error;
+  //   add 4 byte imm-value;
+  // }
+  InstructionBuilder &setImmediateOperand( const InstructionOperand &imm, OperandSize dstSize=REGSIZE_VOID);
 };

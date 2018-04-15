@@ -90,4 +90,7 @@
   <Type Name="OpcodeBase">
     <DisplayString>{m_mnemonic.m_buf,su}</DisplayString>
   </Type>
+  <Type Name="InstructionBuilder">
+    <DisplayString>{m_debugStr.m_buf,su}</DisplayString>
+  </Type>
 </AutoVisualizer>

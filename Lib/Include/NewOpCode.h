@@ -672,13 +672,12 @@ public:
 };
 
 // encoding MI. op1=mem/reg, op2=imm
-class Opcode2ArgMI : public OpcodeBase {
+class Opcode2ArgMI : public Opcode2Arg {
 public:
   Opcode2ArgMI(const String &mnemonic, UINT op, BYTE extension, UINT flags=IMMEDIATEVALUE_ALLOWED)
-    : OpcodeBase(mnemonic, op, extension, 2, flags | (ALL_GPR_ALLOWED|ALL_GPRPTR_ALLOWED|HAS_ALL_SIZEBITS|LASTOP_IMMONLY))
+    : Opcode2Arg(mnemonic, op, extension, flags | (ALL_GPR_ALLOWED|ALL_GPRPTR_ALLOWED|HAS_ALL_SIZEBITS|LASTOP_IMMONLY))
   {
   }
-  InstructionBase operator()(const InstructionOperand &dst, const InstructionOperand &imm) const;
 };
 
 // encoding MI. op1=mem/reg, op2=imm8
@@ -688,7 +687,6 @@ public:
     : Opcode2ArgMI(mnemonic, op, extension, IMM8_ALLOWED)
   {
   }
-  bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError=false) const;
   InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
 };
 
@@ -1090,13 +1088,8 @@ extern OpcodeDoubleShift SHRD;                             // Shift right by cl/
 extern Opcode2Arg        BSF;                              // Bitscan forward
 extern Opcode2Arg        BSR;                              // Bitscan reversed
 
-#ifdef IS32BIT
-#define JCXZSHORT                              B2INS(0x67E3)                            // Jump short if CX  register is 0. 1 byte PC relative offset
-#define JECXSHORT                              B1INS(0xE3)                              // Jump short if ECX register is 0  1 byte PC relative offset
-#else
-#define JEXZSHORT                              B2INS(0x67E3)                            // Jump short if ECX register is 0. 1 byte PC relative offset
-#define JRCXSHORT                              B1INS(0xE3)                              // Jump short if RCX register is 0  1 byte PC relative offset
-#endif // IS64BIT
+extern OpcodeJmp         JMP;
+extern OpcodeCall        CALL;
 
 // Use less/greater opcode for signed comparison. below/above for unsigned.
 // Jmp PC relative offset on condition
@@ -1130,39 +1123,45 @@ extern OpcodeJcc         JG;                               // Jump       if grea
 #define                  JNG            JLE                // Jump       if not greater          (signed  )
 #define                  JNLE           JG                 // Jump       if not less or equal    (signed  )
 
+#ifdef IS32BIT
+extern Opcode1Arg        JCXZ;                             // Jump if CX  register is 0. 1 byte PC relative offset
+extern Opcode1Arg        JECXZ;                            // Jump if ECX register is 0. 1 byte PC relative offset
+#else // IS64BIT
+extern Opcode1Arg        JECXZ;                            // Jump if ECX register is 0. 1 byte PC relative offset
+extern Opcode1Arg        JRCXZ;                            // Jump if RCX register is 0. 1 byte PC relative offset
+#endif // IS64BIT
+
+
 // Set Byte on Condition
-extern Opcode1Arg        SETO;                             // Set byte   if overflow         (OF==1 )
-extern Opcode1Arg        SETNO;                            // Set byte   if not overflow     (OF==0 )
-extern Opcode1Arg        SETB;                             // Set byte   if below            (CF==1 )          (unsigned)
-extern Opcode1Arg        SETAE;                            // Set byte   if above or equal   (CF==0 )          (unsigned)
-extern Opcode1Arg        SETE;                             // Set byte   if equal            (ZF==1 )          (signed/unsigned)
-extern Opcode1Arg        SETNE;                            // Set byte   if not equal        (ZF==0 )          (signed/unsigned)
-extern Opcode1Arg        SETBE;                            // Set byte   if below or equal   (CF==1 || ZF=1)   (unsigned)
-extern Opcode1Arg        SETA;                             // Set byte   if above            (CF==0 && ZF=0)   (unsigned)
-extern Opcode1Arg        SETS;                             // Set byte   if sign             (SF==1 )
-extern Opcode1Arg        SETNS;                            // Set byte   if not sign         (SF==0 )
-extern Opcode1Arg        SETP;                             // Set byte   if parity even      (PF==1 )
-extern Opcode1Arg        SETNP;                            // Set byte   if parity odd       (PF==0 )
-extern Opcode1Arg        SETL;                             // Set byte   if less             (SF!=OF)          (signed  )
-extern Opcode1Arg        SETGE;                            // Set byte   if greater or equal (SF==OF)          (signed  )
-extern Opcode1Arg        SETLE;                            // Set byte   if less or equal    (ZF==1 || SF!=OF) (signed  )
-extern Opcode1Arg        SETG;                             // Set byte   if greater          (ZF==0 && SF==OF) (signed  )
+extern Opcode1Arg        SETO;                             // Set byte   if overflow                                 (OF==1 )
+extern Opcode1Arg        SETNO;                            // Set byte   if not overflow                             (OF==0 )
+extern Opcode1Arg        SETB;                             // Set byte   if below                (unsigned)          (CF==1 )
+extern Opcode1Arg        SETAE;                            // Set byte   if above or equal       (unsigned)          (CF==0 )
+extern Opcode1Arg        SETE;                             // Set byte   if equal                (signed/unsigned)   (ZF==1 )
+extern Opcode1Arg        SETNE;                            // Set byte   if not equal            (signed/unsigned)   (ZF==0 )
+extern Opcode1Arg        SETBE;                            // Set byte   if below or equal       (unsigned)          (CF==1 || ZF==1)
+extern Opcode1Arg        SETA;                             // Set byte   if above                (unsigned)          (CF==0 && ZF==0)
+extern Opcode1Arg        SETS;                             // Set byte   if sign                                     (SF==1 )
+extern Opcode1Arg        SETNS;                            // Set byte   if not sign                                 (SF==0 )
+extern Opcode1Arg        SETP;                             // Set byte   if parity even                              (PF==1 )
+extern Opcode1Arg        SETNP;                            // Set byte   if parity odd                               (PF==0 )
+extern Opcode1Arg        SETL;                             // Set byte   if less                 (signed  )          (SF!=OF)          
+extern Opcode1Arg        SETGE;                            // Set byte   if greater or equal     (signed  )          (SF==OF)          
+extern Opcode1Arg        SETLE;                            // Set byte   if less or equal        (signed  )          (ZF==1 || SF!=OF) 
+extern Opcode1Arg        SETG;                             // Set byte   if greater              (signed  )          (ZF==0 && SF==OF) 
 
-#define                  SETNAE         SETB               // Set byte   if not above or equal                 (unsigned)
-#define                  SETC           SETB               // Set byte   if carry                              (unsigned)
-#define                  SETNC          SETAE              // Set byte   if not carry                          (unsigned)
-#define                  SETNB          SETAE              // Set byte   if not below                          (unsigned)
-#define                  SETZ           SETE               // Set byte   if 0                                  (signed/unsigned)
-#define                  SETNZ          SETNE              // Set byte   if not zero                           (signed/unsigned)
-#define                  SETNA          SETBE              // Set byte   if not above                          (unsigned)
-#define                  SETNBE         SETA               // Set byte   if not below or equal                 (unsigned)
-#define                  SETNGE         SETL               // Set byte   if not greater or equal               (signed  )
-#define                  SETNL          SETGE              // Set byte   if not less                           (signed  )
-#define                  SETNG          SETLE              // Set byte   if not greater                        (signed  )
-#define                  SETNLE         SETG               // Set byte   if not less or equal                  (signed  )
-
-extern OpcodeJmp         JMP;
-extern OpcodeCall        CALL;
+#define                  SETNAE         SETB               // Set byte   if not above or equal   (unsigned)
+#define                  SETC           SETB               // Set byte   if carry                (unsigned)
+#define                  SETNC          SETAE              // Set byte   if not carry            (unsigned)
+#define                  SETNB          SETAE              // Set byte   if not below            (unsigned)
+#define                  SETZ           SETE               // Set byte   if 0                    (signed/unsigned)
+#define                  SETNZ          SETNE              // Set byte   if not zero             (signed/unsigned)
+#define                  SETNA          SETBE              // Set byte   if not above            (unsigned)
+#define                  SETNBE         SETA               // Set byte   if not below or equal   (unsigned)
+#define                  SETNGE         SETL               // Set byte   if not greater or equal (signed  )
+#define                  SETNL          SETGE              // Set byte   if not less             (signed  )
+#define                  SETNG          SETLE              // Set byte   if not greater          (signed  )
+#define                  SETNLE         SETG               // Set byte   if not less or equal    (signed  )
 
 extern Opcode0Arg        CWDE;                             // Convert word  to dword. Sign extend AX  into EAX.     Copy sign (bit 15) of AX  into higher 16 bits of EAX
 extern Opcode0Arg        CDQ;                              // Convert dword to qword. Sign extend EAX into EDX:EAX. Copy sign (bit 31) of EAX into every     bit  of EDX

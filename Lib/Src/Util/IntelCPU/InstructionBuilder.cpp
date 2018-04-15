@@ -16,6 +16,9 @@ InstructionBuilder::InstructionBuilder(const OpcodeBase &opcode)
   , m_extension(    opcode.getExtension())
   , m_opcodeSize(   opcode.size()        )
   , m_directionMask(findDirectionMask(opcode))
+#ifdef _DEBUG
+  , m_debugStr(opcode.getMnemonic())
+#endif
 {
   init();
   if(m_extension) {
@@ -29,6 +32,9 @@ InstructionBuilder::InstructionBuilder(const InstructionBase &ins, UINT flags)
   , m_extension(    0         )
   , m_opcodeSize(   ins.size())
   , m_directionMask(0         )
+#ifdef _DEBUG
+  , m_debugStr(ins.toString())
+#endif
 {
   init();
 }
@@ -115,7 +121,7 @@ InstructionBuilder &InstructionBuilder::addrBase(const IndexRegister &base, int 
     } else if(isByte(offset)) {
       setModeBits(MR_SIB(DP_1BYTE)).add(0x24).add((char)offset);      // ptr[esp+1 byte offset] 
     } else {
-      setModeBits(MR_SIB(DP_4BYTE)).add(0x24).add(&offset, 4); // ptr[esp+4 byte offset]
+      setModeBits(MR_SIB(DP_4BYTE)).add(0x24).add(&offset, 4);        // ptr[esp+4 byte offset]
     }
     break;
   default:
@@ -124,7 +130,7 @@ InstructionBuilder &InstructionBuilder::addrBase(const IndexRegister &base, int 
     } else if(isByte(offset)) {
       setModeBits(MR_DP1BYTE(baseIndex)).add((char)offset);           // ptr[base+1 byte offset], (base&7) != 4
     } else {
-      setModeBits(MR_DP4BYTE(baseIndex)).add(&offset, 4);      // ptr[base+4 byte offset], (base&7) != 4
+      setModeBits(MR_DP4BYTE(baseIndex)).add(&offset, 4);             // ptr[base+4 byte offset], (base&7) != 4
     }
   }
   SETREXBITONHIGHINX(baseIndex,0);
@@ -248,25 +254,31 @@ InstructionBuilder &InstructionBuilder::setRegRegOperands(const Register &reg1, 
   return *this;
 }
 
-InstructionBuilder &InstructionBuilder::setImmediateOperand(const InstructionOperand &imm, const InstructionOperand *dst) {
+InstructionBuilder &InstructionBuilder::setImmediateOperand(const InstructionOperand &imm, OperandSize dstSize) {
+  if(!hasImmXBit()) {
+    return addImmediateOperand(imm,dstSize);
+  }
   switch(imm.getSize()) {
   case REGSIZE_BYTE :
     assert(getFlags() & IMM8_ALLOWED);
-    if((dst == NULL) || (dst->getSize() != REGSIZE_BYTE)) {
+    if(dstSize != REGSIZE_BYTE) {
       setImmXBit();
     }
-    return add(imm.getImmInt8());
+    add(imm.getImmInt8());
+    break;
   case REGSIZE_WORD :
-    if(dst && (dst->getSize() == REGSIZE_WORD)) {
+    if(dstSize == REGSIZE_WORD) {
       assert(getFlags() & IMM16_ALLOWED);
       const short immv = imm.getImmInt16();
-      return add(&immv, 2);
+      add(&immv, 2);
+      break;
     }
     // else continue case
   case REGSIZE_DWORD:
     { assert(getFlags() & IMM32_ALLOWED);
       const int immv = imm.getImmInt32();
-      return add(&immv, 4);
+      add(&immv, 4);
+      break;
     }
   default           :
     sizeError(__TFUNCTION__,imm.getImmInt64());
@@ -292,12 +304,14 @@ InstructionBuilder &InstructionBuilder::addImmediateOperand(const InstructionOpe
       add(&v,4);
     }
     break;
+#ifdef IS64BIT
   case REGSIZE_QWORD:
     { assert(getFlags() & IMM64_ALLOWED);
       const INT64 v = imm.getImmInt64();
       add(&v,8);
     }
     break;
+#endif // IS64BIT
   default:
     throwInvalidArgumentException(__TFUNCTION__, _T("size=%s"), ::toString(size).cstr());
   }
