@@ -287,6 +287,17 @@ InstructionBuilder &InstructionBuilder::setImmediateOperand(const InstructionOpe
 }
 
 InstructionBuilder &InstructionBuilder::addImmediateOperand(const InstructionOperand &imm, OperandSize size) {
+  if(size == REGSIZE_VOID) {
+    switch(getFlags() & IMMEDIATEVALUE_ALLOWED) {
+    case IMM8_ALLOWED : size = REGSIZE_BYTE ; break;
+    case IMM16_ALLOWED: size = REGSIZE_WORD ; break;
+    case IMM32_ALLOWED: size = REGSIZE_DWORD; break;
+    default           :
+      throwInvalidArgumentException(__TFUNCTION__
+                                   ,_T("size=%s. Unable to determine size of immediate operand")
+                                   ,::toString(size).cstr());
+    }
+  }
   switch(size) {
   case REGSIZE_BYTE :
     assert(getFlags() & IMM8_ALLOWED);
