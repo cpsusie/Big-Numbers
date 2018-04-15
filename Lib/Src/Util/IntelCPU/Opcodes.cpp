@@ -87,26 +87,30 @@ DEFNAME(OpcodeShiftRot   ,  SAR   ,7     );                // Shift Arithmetical
 DEFNAME(OpcodeDoubleShift,  SHLD  ,0x0FA5,0x0FA4);         // Shift left  by cl/imm, filling opened bitpositions, by most significant bits of reg
 DEFNAME(OpcodeDoubleShift,  SHRD  ,0x0FAD,0x0FAC);         // Shift right by cl/imm, filling opened bitpositions, by least significant bits of reg
 
-DEFNAME(OpcodeBitScan    ,  BSF   ,0x0FBC);                // Bitscan forward
-DEFNAME(OpcodeBitScan    ,  BSR   ,0x0FBD);                // Bitscan reversed
 
+#define BITSCAN_FLAGS (NONBYTE_GPR_ALLOWED | NONBYTE_GPRPTR_ALLOWED | HAS_NONBYTE_SIZEBITS | FIRSTOP_REGONLY)
+
+DEFNAME(Opcode2Arg       ,  BSF   ,0x0FBC, BITSCAN_FLAGS); // Bitscan forward
+DEFNAME(Opcode2Arg       ,  BSR   ,0x0FBD, BITSCAN_FLAGS); // Bitscan reversed
+
+#define SETCC_FLAGS   (REGTYPE_GPR_ALLOWED | BYTEGPR_ALLOWED | BYTEPTR_ALLOWED)
 // Set Byte on Condition
-DEFNAME(OpcodeSetcc      ,  SETO  ,0x0F90  );              // Set byte if overflow
-DEFNAME(OpcodeSetcc      ,  SETNO ,0x0F91  );              // Set byte if not overflow
-DEFNAME(OpcodeSetcc      ,  SETB  ,0x0F92  );              // Set byte if below                 (unsigned)
-DEFNAME(OpcodeSetcc      ,  SETAE ,0x0F93  );              // Set byte if above or equal        (unsigned)
-DEFNAME(OpcodeSetcc      ,  SETE  ,0x0F94  );              // Set byte if equal                 (signed/unsigned)
-DEFNAME(OpcodeSetcc      ,  SETNE ,0x0F95  );              // Set byte if not equal             (signed/unsigned)
-DEFNAME(OpcodeSetcc      ,  SETBE ,0x0F96  );              // Set byte if below or equal        (unsigned)
-DEFNAME(OpcodeSetcc      ,  SETA  ,0x0F97  );              // Set byte if above                 (unsigned)
-DEFNAME(OpcodeSetcc      ,  SETS  ,0x0F98  );              // Set byte if sign
-DEFNAME(OpcodeSetcc      ,  SETNS ,0x0F99  );              // Set byte if not sign
-DEFNAME(OpcodeSetcc      ,  SETP  ,0x0F9A  );              // Set byte if parity even
-DEFNAME(OpcodeSetcc      ,  SETNP ,0x0F9B  );              // Set byte if parity odd
-DEFNAME(OpcodeSetcc      ,  SETL  ,0x0F9C  );              // Set byte if less                  (signed  )
-DEFNAME(OpcodeSetcc      ,  SETGE ,0x0F9D  );              // Set byte if greater or equal      (signed  )
-DEFNAME(OpcodeSetcc      ,  SETLE ,0x0F9E  );              // Set byte if less or equal         (signed  )
-DEFNAME(OpcodeSetcc      ,  SETG  ,0x0F9F  );              // Set byte if greater               (signed  );
+DEFNAME(Opcode1Arg       ,  SETO  ,0x0F90 ,0,SETCC_FLAGS); // Set byte if overflow
+DEFNAME(Opcode1Arg       ,  SETNO ,0x0F91 ,0,SETCC_FLAGS); // Set byte if not overflow
+DEFNAME(Opcode1Arg       ,  SETB  ,0x0F92 ,0,SETCC_FLAGS); // Set byte if below                 (unsigned)
+DEFNAME(Opcode1Arg       ,  SETAE ,0x0F93 ,0,SETCC_FLAGS); // Set byte if above or equal        (unsigned)
+DEFNAME(Opcode1Arg       ,  SETE  ,0x0F94 ,0,SETCC_FLAGS); // Set byte if equal                 (signed/unsigned)
+DEFNAME(Opcode1Arg       ,  SETNE ,0x0F95 ,0,SETCC_FLAGS); // Set byte if not equal             (signed/unsigned)
+DEFNAME(Opcode1Arg       ,  SETBE ,0x0F96 ,0,SETCC_FLAGS); // Set byte if below or equal        (unsigned)
+DEFNAME(Opcode1Arg       ,  SETA  ,0x0F97 ,0,SETCC_FLAGS); // Set byte if above                 (unsigned)
+DEFNAME(Opcode1Arg       ,  SETS  ,0x0F98 ,0,SETCC_FLAGS); // Set byte if sign
+DEFNAME(Opcode1Arg       ,  SETNS ,0x0F99 ,0,SETCC_FLAGS); // Set byte if not sign
+DEFNAME(Opcode1Arg       ,  SETP  ,0x0F9A ,0,SETCC_FLAGS); // Set byte if parity even
+DEFNAME(Opcode1Arg       ,  SETNP ,0x0F9B ,0,SETCC_FLAGS); // Set byte if parity odd
+DEFNAME(Opcode1Arg       ,  SETL  ,0x0F9C ,0,SETCC_FLAGS); // Set byte if less                  (signed  )
+DEFNAME(Opcode1Arg       ,  SETGE ,0x0F9D ,0,SETCC_FLAGS); // Set byte if greater or equal      (signed  )
+DEFNAME(Opcode1Arg       ,  SETLE ,0x0F9E ,0,SETCC_FLAGS); // Set byte if less or equal         (signed  )
+DEFNAME(Opcode1Arg       ,  SETG  ,0x0F9F ,0,SETCC_FLAGS); // Set byte if greater               (signed  );
 
 DEFNAME(OpcodeJmp        ,  JMP );
 DEFNAME(OpcodeCall       ,  CALL);

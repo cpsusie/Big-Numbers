@@ -476,7 +476,14 @@ void TestMachineCode::initAllOperands() {
   debugLog(_T("All operands:\n%s"),m_allOperands.toString().cstr());
   debugLog(_T("All VOIDPtr:\n%s") ,m_allVOIDPtrOperands.toString().cstr());
   redirectDebugLog();
-  const String logName = format(_T("c:\\temp\\emitLogs\\%s.log"), Timestamp().toString(_T("yyyyMMddhhmmss")).cstr());
+#ifdef IS32BIT
+#define NAMEPREFIX _T("x32")
+#else // IS64BIT
+#define NAMEPREFIX _T("x64")
+#endif // IS64BIT
+  const String logName = format(_T("c:\\temp\\emitLogs\\%s%s.log")
+                               ,NAMEPREFIX
+                               ,Timestamp().toString(_T("yyyyMMddhhmmss")).cstr());
   m_emitCountLog = MKFOPEN(logName,_T("w"));
   _ftprintf(m_emitCountLog, _T("Operands:%3zu. void Operands:%3zu\n")
            ,m_allOperands.size()

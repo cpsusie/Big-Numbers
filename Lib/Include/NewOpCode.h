@@ -843,17 +843,6 @@ public:
   InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2, const InstructionOperand &op3) const;
 };
 
-class OpcodeBitScan : public Opcode2Arg {
-public:
-  OpcodeBitScan(const String &mnemonic, UINT op);
-};
-
-class OpcodeSetcc : public Opcode1Arg {
-public:
-  OpcodeSetcc(const String &mnemonic, UINT op) : Opcode1Arg(mnemonic, op, 0, REGTYPE_GPR_ALLOWED | BYTEGPR_ALLOWED | BYTEPTR_ALLOWED) {
-  }
-};
-
 class OpcodeJmpImm : public Opcode1Arg {
 public:
   OpcodeJmpImm(const String &mnemonic);
@@ -1089,14 +1078,10 @@ extern OpcodeShiftRot    SAR;                              // Shift  Arithmetica
 extern OpcodeDoubleShift SHLD;                             // Shift left  by cl/imm, filling opened bitpositions, by most significant bits of reg
 extern OpcodeDoubleShift SHRD;                             // Shift right by cl/imm, filling opened bitpositions, by least significant bits of reg
 
-extern OpcodeBitScan     BSF;                              // Bitscan forward
-extern OpcodeBitScan     BSR;                              // Bitscan reversed
 
-#define JMPSHORT                               B1INS(0xEB)                              // Unconditional short jump. 1 byte PC relative offset
-#define JMPNEAR                                B1INS(0xE9)                              // Unconditional near jump. 4 byte PC relative offset
-#ifdef IS64BIT
-#define JMP_QWORDPTR                           B2INS(0xFF25)                            // Unconditional jump. 4 byte PC relative offset
-#endif
+extern Opcode2Arg        BSF;                              // Bitscan forward
+extern Opcode2Arg        BSR;                              // Bitscan reversed
+
 #ifdef IS32BIT
 #define JCXZSHORT                              B2INS(0x67E3)                            // Jump short if CX  register is 0. 1 byte PC relative offset
 #define JECXSHORT                              B1INS(0xE3)                              // Jump short if ECX register is 0  1 byte PC relative offset
@@ -1172,22 +1157,22 @@ extern OpcodeBitScan     BSR;                              // Bitscan reversed
 
 
 // Set Byte on Condition
-extern OpcodeSetcc       SETO;                             // Set byte   if overflow         (OF==1 )
-extern OpcodeSetcc       SETNO;                            // Set byte   if not overflow     (OF==0 )
-extern OpcodeSetcc       SETB;                             // Set byte   if below            (CF==1 )          (unsigned)
-extern OpcodeSetcc       SETAE;                            // Set byte   if above or equal   (CF==0 )          (unsigned)
-extern OpcodeSetcc       SETE;                             // Set byte   if equal            (ZF==1 )          (signed/unsigned)
-extern OpcodeSetcc       SETNE;                            // Set byte   if not equal        (ZF==0 )          (signed/unsigned)
-extern OpcodeSetcc       SETBE;                            // Set byte   if below or equal   (CF==1 || ZF=1)   (unsigned)
-extern OpcodeSetcc       SETA;                             // Set byte   if above            (CF==0 && ZF=0)   (unsigned)
-extern OpcodeSetcc       SETS;                             // Set byte   if sign             (SF==1 )
-extern OpcodeSetcc       SETNS;                            // Set byte   if not sign         (SF==0 )
-extern OpcodeSetcc       SETP;                             // Set byte   if parity even      (PF==1 )
-extern OpcodeSetcc       SETNP;                            // Set byte   if parity odd       (PF==0 )
-extern OpcodeSetcc       SETL;                             // Set byte   if less             (SF!=OF)          (signed  )
-extern OpcodeSetcc       SETGE;                            // Set byte   if greater or equal (SF==OF)          (signed  )
-extern OpcodeSetcc       SETLE;                            // Set byte   if less or equal    (ZF==1 || SF!=OF) (signed  )
-extern OpcodeSetcc       SETG;                             // Set byte   if greater          (ZF==0 && SF==OF) (signed  )
+extern Opcode1Arg        SETO;                             // Set byte   if overflow         (OF==1 )
+extern Opcode1Arg        SETNO;                            // Set byte   if not overflow     (OF==0 )
+extern Opcode1Arg        SETB;                             // Set byte   if below            (CF==1 )          (unsigned)
+extern Opcode1Arg        SETAE;                            // Set byte   if above or equal   (CF==0 )          (unsigned)
+extern Opcode1Arg        SETE;                             // Set byte   if equal            (ZF==1 )          (signed/unsigned)
+extern Opcode1Arg        SETNE;                            // Set byte   if not equal        (ZF==0 )          (signed/unsigned)
+extern Opcode1Arg        SETBE;                            // Set byte   if below or equal   (CF==1 || ZF=1)   (unsigned)
+extern Opcode1Arg        SETA;                             // Set byte   if above            (CF==0 && ZF=0)   (unsigned)
+extern Opcode1Arg        SETS;                             // Set byte   if sign             (SF==1 )
+extern Opcode1Arg        SETNS;                            // Set byte   if not sign         (SF==0 )
+extern Opcode1Arg        SETP;                             // Set byte   if parity even      (PF==1 )
+extern Opcode1Arg        SETNP;                            // Set byte   if parity odd       (PF==0 )
+extern Opcode1Arg        SETL;                             // Set byte   if less             (SF!=OF)          (signed  )
+extern Opcode1Arg        SETGE;                            // Set byte   if greater or equal (SF==OF)          (signed  )
+extern Opcode1Arg        SETLE;                            // Set byte   if less or equal    (ZF==1 || SF!=OF) (signed  )
+extern Opcode1Arg        SETG;                             // Set byte   if greater          (ZF==0 && SF==OF) (signed  )
 
 #define                  SETNAE         SETB               // Set byte   if not above or equal                 (unsigned)
 #define                  SETC           SETB               // Set byte   if carry                              (unsigned)

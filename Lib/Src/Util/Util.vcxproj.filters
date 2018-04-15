@@ -764,9 +764,6 @@
     <ClCompile Include="IntelCPU\OpcodeBase.cpp">
       <Filter>Source Files\IntelCPU</Filter>
     </ClCompile>
-    <ClCompile Include="IntelCPU\OpcodeBitScan.cpp">
-      <Filter>Source Files\IntelCPU</Filter>
-    </ClCompile>
     <ClCompile Include="IntelCPU\OpcodeFPU.cpp">
       <Filter>Source Files\IntelCPU</Filter>
     </ClCompile>
