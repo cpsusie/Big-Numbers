@@ -3,8 +3,8 @@
 #include "InstructionBuilder.h"
 
 OpcodeShiftRot::OpcodeShiftRot(const String &mnemonic, BYTE extension)
-  : Opcode2Arg(mnemonic, 0xD2, extension, ALL_GPR_ALLOWED | ALL_GPRPTR_ALLOWED | HAS_ALL_SIZEBITS)
-  , m_immCode( mnemonic, 0xC0, extension)
+  : Opcode2ArgMI8(mnemonic, 0xC0, extension)
+  , m_clCode(     mnemonic, 0xD2, extension, ALL_GPR_ALLOWED | ALL_GPRPTR_ALLOWED | HAS_ALL_SIZEBITS)
 {
 }
 
@@ -19,9 +19,9 @@ InstructionBase OpcodeShiftRot::operator()(const InstructionOperand &op1, const 
   switch(op2.getType()) {
   case REGISTER      :
     isValidOperandCombination(op1, op2, true);
-    return InstructionBuilder(*this).setMemOrRegOperand(op1);
+    return m_clCode(op1);
   case IMMEDIATEVALUE:
-    return m_immCode(op1,op2);
+    return __super::operator()(op1,op2);
   }
   throwInvalidOperandCombination(op1,op2);
   return __super::operator()(op1,op2);

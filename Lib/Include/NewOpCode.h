@@ -817,9 +817,9 @@ public :
 typedef Opcode1Arg OpcodeIncDec;
 #endif // IS64BIT
 
-class OpcodeShiftRot : public Opcode2Arg {
+class OpcodeShiftRot : public Opcode2ArgMI8 {
 private:
-  Opcode2ArgMI8 m_immCode;
+  Opcode1Arg m_clCode;
 public:
   OpcodeShiftRot(const String &mnemonic, BYTE extension);
   bool isValidOperandType(const InstructionOperand &op, BYTE index) const {
