@@ -691,10 +691,10 @@ public:
 };
 
 // encoding M. op1=AL/AX/EAX/RAX. op2=RM
-class Opcode2ArgM : public OpcodeBase {
+class Opcode2ArgM : public Opcode2Arg {
 public:
   Opcode2ArgM(const String &mnemonic, UINT op, BYTE extension)
-    : OpcodeBase(mnemonic, op, extension, 2, ALL_GPR_ALLOWED|ALL_GPRPTR_ALLOWED|HAS_ALL_SIZEBITS|FIRSTOP_GPR0ONLY)
+    : Opcode2Arg(mnemonic, op, extension, ALL_GPR_ALLOWED|ALL_GPRPTR_ALLOWED|HAS_ALL_SIZEBITS|FIRSTOP_GPR0ONLY)
   {
   }
   InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
@@ -788,8 +788,8 @@ public :
 
 class OpcodePushPop : public Opcode1Arg {
 private:
-  Opcode1Arg m_memCode;
-  Opcode1Arg m_immCode;
+  const Opcode1Arg m_memCode;
+  const Opcode1Arg m_immCode;
 public:
   inline OpcodePushPop(const String &mnemonic, BYTE opreg, BYTE opmem, BYTE extmem, BYTE opImm)
     : Opcode1Arg(mnemonic, opreg, 0        , REGTYPE_GPR_ALLOWED | INDEXGPR_ALLOWED | WORDGPR_ALLOWED | HAS_WORDPREFIX | NO_MODEBYTE)
@@ -819,7 +819,7 @@ typedef Opcode1Arg OpcodeIncDec;
 
 class OpcodeShiftRot : public Opcode2ArgMI8 {
 private:
-  Opcode1Arg m_clCode;
+  const Opcode1Arg m_clCode;
 public:
   OpcodeShiftRot(const String &mnemonic, BYTE extension);
   bool isValidOperandType(const InstructionOperand &op, BYTE index) const {
@@ -831,7 +831,7 @@ public:
 
 class OpcodeDoubleShift : public Opcode3Arg {
 private:
-  Opcode2Arg m_clCode;
+  const Opcode2Arg m_clCode;
 public:
   OpcodeDoubleShift(const String &mnemonic, UINT opCL, UINT opImm);
   bool isValidOperandType(const InstructionOperand &op, BYTE index) const {
