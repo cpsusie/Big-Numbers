@@ -858,6 +858,14 @@ public:
   InstructionBase operator()(const InstructionOperand &op) const;
 };
 
+class OpcodeJcc : public Opcode1Arg { // rel16/rel32
+private:
+  const Opcode1Arg m_shortCode; // rel8
+public:
+  OpcodeJcc(const String &mnemonic, UINT op);
+  InstructionBase operator()(const InstructionOperand &op) const;
+};
+
 class OpcodeCallImm : public Opcode1Arg {
 public:
   OpcodeCallImm(const String &mnemonic)
@@ -1091,70 +1099,36 @@ extern Opcode2Arg        BSR;                              // Bitscan reversed
 #endif // IS64BIT
 
 // Use less/greater opcode for signed comparison. below/above for unsigned.
+// Jmp PC relative offset on condition
+extern OpcodeJcc         JO;                               // Jump       if overflow                                 (OF==1 )
+extern OpcodeJcc         JNO;                              // Jump       if not overflow                             (OF==0 )
+extern OpcodeJcc         JB;                               // Jump       if below                (unsigned)          (CF==1 )
+extern OpcodeJcc         JAE;                              // Jump       if above or equal       (unsigned)          (CF==0 )
+extern OpcodeJcc         JE;                               // Jump       if equal                (signed/unsigned)   (ZF==1 )
+extern OpcodeJcc         JNE;                              // Jump       if not equal            (signed/unsigned)   (ZF==0 )
+extern OpcodeJcc         JBE;                              // Jump       if below or equal       (unsigned)          (CF==1 || ZF==1)
+extern OpcodeJcc         JA;                               // Jump       if above                (unsigned)          (CF==0 && ZF==0)
+extern OpcodeJcc         JS;                               // Jump       if sign                                     (SF==1 )
+extern OpcodeJcc         JNS;                              // Jump       if not sign                                 (SF==0 )
+extern OpcodeJcc         JP;                               // Jump       if parity even                              (PF==1 )
+extern OpcodeJcc         JNP;                              // Jump       if parity odd                               (PF==0 )
+extern OpcodeJcc         JL;                               // Jump       if less                 (signed  )          (SF!=OF)
+extern OpcodeJcc         JGE;                              // Jump       if greater or equal     (signed  )          (SF==OF)
+extern OpcodeJcc         JLE;                              // Jump       if less or equal        (signed  )          (ZF==1 || SF!=OF)
+extern OpcodeJcc         JG;                               // Jump       if greater              (signed  )          (ZF==0 && SF==OF)
 
-// 1 byte PC relative offset
-#define JOSHORT                                B1INS(0x70)                              // Jump short if overflow                                 (OF==1 )
-#define JNOSHORT                               B1INS(0x71)                              // Jump short if not overflow                             (OF==0 )
-#define JBSHORT                                B1INS(0x72)                              // Jump short if below                (unsigned)          (CF==1 )
-#define JAESHORT                               B1INS(0x73)                              // Jump short if above or equal       (unsigned)          (CF==0 )
-#define JESHORT                                B1INS(0x74)                              // Jump short if equal                (signed/unsigned)   (ZF==1 )
-#define JNESHORT                               B1INS(0x75)                              // Jump short if not equal            (signed/unsigned)   (ZF==0 )
-#define JBESHORT                               B1INS(0x76)                              // Jump short if below or equal       (unsigned)          (CF==1 || ZF==1)
-#define JASHORT                                B1INS(0x77)                              // Jump short if above                (unsigned)          (CF==0 && ZF==0)
-#define JSSHORT                                B1INS(0x78)                              // Jump short if sign                                     (SF==1 )
-#define JNSSHORT                               B1INS(0x79)                              // Jump short if not sign                                 (SF==0 )
-#define JPESHORT                               B1INS(0x7A)                              // Jump short if parity even                              (PF==1 )
-#define JPOSHORT                               B1INS(0x7B)                              // Jump short if parity odd                               (PF==0 )
-#define JLSHORT                                B1INS(0x7C)                              // Jump short if less                 (signed  )          (SF!=OF)
-#define JGESHORT                               B1INS(0x7D)                              // Jump short if greater or equal     (signed  )          (SF==OF)
-#define JLESHORT                               B1INS(0x7E)                              // Jump short if less or equal        (signed  )          (ZF==1 || SF!=OF)
-#define JGSHORT                                B1INS(0x7F)                              // Jump short if greater              (signed  )          (ZF==0 && SF==OF)
-
-#define JNAESHORT                              JBSHORT                                  // Jump short if not above or equal   (unsigned)
-#define JCSHORT                                JBSHORT                                  // Jump short if carry                (unsigned)
-#define JNCSHORT                               JAESHORT                                 // Jump short if not carry            (unsigned)
-#define JNBSHORT                               JAESHORT                                 // Jump short if not below            (unsigned)
-#define JZSHORT                                JESHORT                                  // Jump short if zero                 (signed/unsigned)
-#define JNZSHORT                               JNESHORT                                 // Jump short if not zero             (signed/unsigned)
-#define JNASHORT                               JBESHORT                                 // Jump short if not above            (unsigned)
-#define JNBESHORT                              JASHORT                                  // Jump short if not below or equal   (unsigned)
-#define JNGESHORT                              JLSHORT                                  // Jump short if not greater or equal (signed  )
-#define JNLSHORT                               JGESHORT                                 // Jump short if not less             (signed  )
-#define JNGSHORT                               JLESHORT                                 // Jump short if not greater          (signed  )
-#define JNLESHORT                              JGSHORT                                  // Jump short if not less or equal    (signed  )
-
-// 4 byte PC relative offset
-#define JONEAR                                 B2INS(0x0F80)                            // Jump near  if overflow
-#define JNONEAR                                B2INS(0x0F81)                            // Jump near  if not overflow
-#define JBNEAR                                 B2INS(0x0F82)                            // Jump near  if below                 (unsigned)
-#define JAENEAR                                B2INS(0x0F83)                            // Jump near  if above or equal        (unsigned)
-#define JENEAR                                 B2INS(0x0F84)                            // Jump near  if equal                 (signed/unsigned)
-#define JNENEAR                                B2INS(0x0F85)                            // Jump near  if not equal             (signed/unsigned)
-#define JBENEAR                                B2INS(0x0F86)                            // Jump near  if below or equal        (unsigned)
-#define JANEAR                                 B2INS(0x0F87)                            // Jump near  if above                 (unsigned)
-#define JSNEAR                                 B2INS(0x0F88)                            // Jump near  if sign
-#define JNSNEAR                                B2INS(0x0F89)                            // Jump near  if not sign
-#define JPENEAR                                B2INS(0x0F8A)                            // Jump near  if parity even
-#define JPONEAR                                B2INS(0x0F8B)                            // Jump near  if parity odd
-#define JLNEAR                                 B2INS(0x0F8C)                            // Jump near  if less                  (signed  )
-#define JGENEAR                                B2INS(0x0F8D)                            // Jump near  if greater or equal      (signed  )
-#define JLENEAR                                B2INS(0x0F8E)                            // Jump near  if less or equal         (signed  )
-#define JGNEAR                                 B2INS(0x0F8F)                            // Jump near  if greater               (signed  )
-
-#define JNAENEAR                               JBNEAR                                   // Jump near  if not above or equal    (unsigned)
-#define JCNEAR                                 JBNEAR                                   // Jump near  if carry                 (unsigned)
-#define JNCNEAR                                JAENEAR                                  // Jump near  if not carry             (unsigned)
-#define JNBNEAR                                JAENEAR                                  // Jump near  if not below             (unsigned)
-#define JZNEAR                                 JENEAR                                   // Jump near  if 0                     (signed/unsigned)
-#define JNZNEAR                                JNENEAR                                  // Jump near  if not zero              (signed/unsigned)
-#define JNANEAR                                JBENEAR                                  // Jump near  if not above             (unsigned)
-#define JNBENEAR                               JANEAR                                   // Jump near  if not below or equal    (unsigned)
-#define JNGENEAR                               JLNEAR                                   // Jump near  if not greater or equal  (signed  )
-#define JNLNEAR                                JGENEAR                                  // Jump near  if not less              (signed  )
-#define JNGNEAR                                JLENEAR                                  // Jump near  if not greater           (signed  )
-#define JNLENEAR                               JGNEAR                                   // Jump near  if not less or equal     (signed  )
-
-
+#define                  JNAE           JB                 // Jump       if not above or equal   (unsigned)
+#define                  JC             JB                 // Jump       if carry                (unsigned)
+#define                  JNC            JAE                // Jump       if not carry            (unsigned)
+#define                  JNB            JAE                // Jump       if not below            (unsigned)
+#define                  JZ             JE                 // Jump       if zero                 (signed/unsigned)
+#define                  JNZ            JNE                // Jump       if not zero             (signed/unsigned)
+#define                  JNA            JBE                // Jump       if not above            (unsigned)
+#define                  JNBE           JA                 // Jump       if not below or equal   (unsigned)
+#define                  JNGE           JL                 // Jump       if not greater or equal (signed  )
+#define                  JNL            JGE                // Jump       if not less             (signed  )
+#define                  JNG            JLE                // Jump       if not greater          (signed  )
+#define                  JNLE           JG                 // Jump       if not less or equal    (signed  )
 
 // Set Byte on Condition
 extern Opcode1Arg        SETO;                             // Set byte   if overflow         (OF==1 )

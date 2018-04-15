@@ -22,7 +22,8 @@ InstructionBase OpcodeJmpImm::operator()(const InstructionOperand &op) const {
   case REGSIZE_BYTE :
     return InstructionBuilder(*this).setImmediateOperand(op);
   case REGSIZE_WORD :
-    return InstructionBuilder(*this).addImmediateOperand(op,REGSIZE_WORD).wordIns();
+// NEVER USE THIS. it will clear high 16 bits of EIP
+//    return InstructionBuilder(*this).addImmediateOperand(op,REGSIZE_WORD).wordIns();
   case REGSIZE_DWORD:
     return InstructionBuilder(*this).addImmediateOperand(op,REGSIZE_DWORD);
   }
@@ -64,6 +65,33 @@ InstructionBase OpcodeJmp::operator()(const InstructionOperand &op) const {
   throwUnknownOperandType(op,1);
   return __super::operator()(op);
 };
+
+OpcodeJcc::OpcodeJcc(const String &mnemonic, UINT op)
+  : Opcode1Arg( mnemonic, 0x0F00 | ((op)+0x10), 0, IMMEDIATEVALUE_ALLOWED | HAS_WORDPREFIX)
+  , m_shortCode(mnemonic, op                  , 0, IMM8_ALLOWED)
+{
+}
+
+InstructionBase OpcodeJcc::operator()(const InstructionOperand &op) const {
+  isValidOperand(op, true);
+  if(op.isImmByte()) {
+    return InstructionBuilder(m_shortCode).addImmediateOperand(op, REGSIZE_BYTE);
+  } else {
+#ifdef IS32BIT
+    switch (op.getSize()) {
+    case REGSIZE_WORD :
+// NEVER USE THIS. it will clear high 16 bits of EIP !!
+//    return InstructionBuilder(*this).addImmediateOperand(op, REGSIZE_WORD).wordIns();
+    case REGSIZE_DWORD:
+      return InstructionBuilder(*this).addImmediateOperand(op, REGSIZE_DWORD);
+    }
+#else // IS64BIT
+    return InstructionBuilder(*this).addImmediateOperand(op, REGSIZE_DWORD);
+#endif // IS64BIT
+  }
+  throwUnknownOperandType(op,1);
+  return __super::operator()(op);
+}
 
 InstructionBase OpcodeCallImm::operator()(const InstructionOperand &op) const {
   isValidOperand(op,true);

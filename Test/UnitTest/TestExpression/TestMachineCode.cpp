@@ -726,12 +726,31 @@ void TestMachineCode::testSetccOpcodes() {
   testOpcode(SETA );
   testOpcode(SETS );
   testOpcode(SETNS);
-  testOpcode(SETP);
+  testOpcode(SETP );
   testOpcode(SETNP);
   testOpcode(SETL );
   testOpcode(SETGE);
   testOpcode(SETLE);
   testOpcode(SETG );
+
+  clear(true);
+  testOpcode(JO   );
+  testOpcode(JNO  );
+  testOpcode(JB   );
+  testOpcode(JAE  );
+  testOpcode(JE   );
+  testOpcode(JNE  );
+  testOpcode(JBE  );
+  testOpcode(JA   );
+  testOpcode(JS   );
+  testOpcode(JNS  );
+  testOpcode(JP   );
+  testOpcode(JNP  );
+  testOpcode(JL   );
+  testOpcode(JGE  );
+  testOpcode(JLE  );
+  testOpcode(JG   );
+
 }
 
 void TestMachineCode::testBitOperations() {
