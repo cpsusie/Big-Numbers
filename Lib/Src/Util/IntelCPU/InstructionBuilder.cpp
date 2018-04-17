@@ -106,7 +106,7 @@ InstructionBuilder &InstructionBuilder::setModeBits(BYTE bits) {
 InstructionBuilder &InstructionBuilder::addrShiftInx(const IndexRegister &inx, BYTE shift, int offset) {
   const BYTE inxIndex = inx.getIndex();
   assert(((inxIndex&7)!=4) && (shift<=3));
-  SETREXBITONHIGHINX(inxIndex,1);
+  SETREXBITONHIGHINX(inxIndex,REX_X);
   return setModeBits(MR_SIB(0)).add(SIB_BYTE(5,inxIndex,shift)).add(&offset, 4);
 }
 
@@ -133,7 +133,7 @@ InstructionBuilder &InstructionBuilder::addrBase(const IndexRegister &base, int 
       setModeBits(MR_DP4BYTE(baseIndex)).add(&offset, 4);             // ptr[base+4 byte offset], (base&7) != 4
     }
   }
-  SETREXBITONHIGHINX(baseIndex,0);
+  SETREXBITONHIGHINX(baseIndex,REX_B);
   return *this;
 }
 
@@ -164,20 +164,20 @@ InstructionBuilder &InstructionBuilder::prefixSegReg(const SegmentRegister &reg)
 }
 
 InstructionBuilder &InstructionBuilder::setRegisterOperand(const Register &reg) {
-  const BYTE index = reg.getIndex();
+  const BYTE regIndex = reg.getIndex();
   switch(reg.getType()) {
   case REGTYPE_GPR:
     setOperandSize(reg.getSize());
     if(modeByteAllowed()) {
-      setModeBits(MR_REG(index));
+      setModeBits(MR_REG(regIndex));
     } else {
-      or(index&7);
+      or(regIndex&7);
     }
-    SETREXBITS(HIGHINDEXTOREX(index,0))
+    SETREXBITS(HIGHINDEXTOREX(regIndex,REX_B))
     SETREXUNIFORMREGISTER(reg);
     break;
   case REGTYPE_FPU:
-    or(index);
+    or(regIndex);
     break;
   default:
     throwInvalidArgumentException(__TFUNCTION__,_T("reg=%s"), reg.getName().cstr());
@@ -208,7 +208,10 @@ InstructionBuilder &InstructionBuilder::setMemoryOperand(const MemoryOperand &me
     assert(!mr.hasShift());
     addrBase(*mr.getBase(), mr.getOffset());
   }
-  return setOperandSize(mem.getSize());
+  if(!firstOpRegOnly()) {
+    setOperandSize(mem.getSize());
+  }
+  return *this;
 }
 
 InstructionBuilder &InstructionBuilder::setMemOrRegOperand(const InstructionOperand &op) {
@@ -222,13 +225,13 @@ InstructionBuilder &InstructionBuilder::setMemOrRegOperand(const InstructionOper
 
 InstructionBuilder &InstructionBuilder::setMemoryRegOperands(const MemoryOperand &mem, const Register &reg) {
   setMemoryOperand(mem);
-  if(mem.getSize() == REGSIZE_VOID) {
+  if(firstOpRegOnly() || (mem.getSize() == REGSIZE_VOID)) {
     setOperandSize(reg.getSize());
   }
   if(modeByteCreated()) {
     const BYTE regIndex = reg.getIndex();
     setModeBits((regIndex&7)<<3);
-    SETREXBITS(HIGHINDEXTOREX(regIndex,2));
+    SETREXBITS(HIGHINDEXTOREX(regIndex,REX_R));
     SETREXUNIFORMREGISTER(reg);
   } else {
     assert(reg.getIndex() == 0);
@@ -237,17 +240,17 @@ InstructionBuilder &InstructionBuilder::setMemoryRegOperands(const MemoryOperand
 }
 
 InstructionBuilder &InstructionBuilder::setRegRegOperands(const Register &reg1, const Register &reg2) {
-  const BYTE    reg1Index = reg1.getIndex();
-  const BYTE    reg2Index = reg2.getIndex();
+  const BYTE reg1Index = reg1.getIndex();
+  const BYTE reg2Index = reg2.getIndex();
   if(reg1.getType() != REGTYPE_GPR) {
     setDirectionBit1().setOperandSize(reg2.getSize()).setModeBits(MR_REGREG(reg1Index,reg2Index));
-    SETREXBITS(HIGHINDEXTOREX(reg1Index,2) | HIGHINDEXTOREX(reg2Index,0))
-  } else if(getFlags() & FIRSTOP_REGONLY) {
-    setOperandSize(reg2.getSize()).setModeBits(MR_REGREG(reg1Index,reg2Index));
-    SETREXBITS(HIGHINDEXTOREX(reg1Index,2) | HIGHINDEXTOREX(reg2Index,0))
+    SETREXBITS(HIGHINDEXTOREX(reg1Index,REX_R) | HIGHINDEXTOREX(reg2Index,REX_B))
+  } else if(firstOpRegOnly()) {
+    setOperandSize(reg1.getSize()).setModeBits(MR_REGREG(reg1Index,reg2Index));
+    SETREXBITS(HIGHINDEXTOREX(reg1Index,REX_R) | HIGHINDEXTOREX(reg2Index,REX_B))
   } else {
-    setOperandSize(reg2.getSize()).setModeBits(MR_REGREG(reg2Index,reg1Index));
-    SETREXBITS(HIGHINDEXTOREX(reg2Index,2) | HIGHINDEXTOREX(reg1Index,0))
+    setOperandSize(reg1.getSize()).setModeBits(MR_REGREG(reg2Index,reg1Index));
+    SETREXBITS(HIGHINDEXTOREX(reg2Index,REX_R) | HIGHINDEXTOREX(reg1Index,REX_B))
   }
   SETREXUNIFORMREGISTER(reg1);
   SETREXUNIFORMREGISTER(reg2);

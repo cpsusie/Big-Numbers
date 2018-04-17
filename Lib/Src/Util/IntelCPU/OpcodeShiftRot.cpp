@@ -42,7 +42,7 @@ bool OpcodeDoubleShift::isValidOperandCombination(const InstructionOperand &op1,
   if(!validateIsRegisterOperand(op2, 2, throwOnError)) {
     return false;
   }
-  if(!validateSameSize(op1, op2, throwOnError)) {
+  if(!validateCompatibleSize(op1, op2, throwOnError)) {
     return false;
   }
   return validateIsShiftAmountOperand(op3,3,throwOnError);

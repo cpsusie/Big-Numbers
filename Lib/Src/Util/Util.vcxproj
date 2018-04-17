@@ -981,6 +981,7 @@
     <ClCompile Include="IntelCPU\OpcodeImul.cpp" />
     <ClCompile Include="IntelCPU\OpcodeLea.cpp" />
     <ClCompile Include="IntelCPU\OpcodeMov.cpp" />
+    <ClCompile Include="IntelCPU\OpcodeMovSX.cpp" />
     <ClCompile Include="IntelCPU\OpcodePushPop.cpp" />
     <ClCompile Include="IntelCPU\Opcodes.cpp" />
     <ClCompile Include="IntelCPU\OpcodeShiftRot.cpp" />

@@ -82,10 +82,10 @@ String GPRegister::getName() const {
     case  6: return _T("dh"  );
     case  7: return _T("bh"  );
 #else // IS64BIT
-    case  4: return isREXCompatible(true) ? _T("spl") : _T("ah"  );
-    case  5: return isREXCompatible(true) ? _T("bpl") : _T("ch"  );
-    case  6: return isREXCompatible(true) ? _T("sil") : _T("dh"  );
-    case  7: return isREXCompatible(true) ? _T("dil") : _T("bh"  );
+    case  4: return isUniformByteRegister() ? _T("spl") : _T("ah"  );
+    case  5: return isUniformByteRegister() ? _T("bpl") : _T("ch"  );
+    case  6: return isUniformByteRegister() ? _T("sil") : _T("dh"  );
+    case  7: return isUniformByteRegister() ? _T("dil") : _T("bh"  );
     case  8:
     case  9:
     case 10:
@@ -212,10 +212,10 @@ const GPRegister    CH(REGSIZE_BYTE,  5, REX_NOTALLOWED);
 const GPRegister    DH(REGSIZE_BYTE,  6, REX_NOTALLOWED);
 const GPRegister    BH(REGSIZE_BYTE,  7, REX_NOTALLOWED);
 
-const GPRegister    SPL(REGSIZE_BYTE, 4, REX_REQUIRED   );
-const GPRegister    BPL(REGSIZE_BYTE, 5, REX_REQUIRED   );
-const GPRegister    SIL(REGSIZE_BYTE, 6, REX_REQUIRED   );
-const GPRegister    DIL(REGSIZE_BYTE, 7, REX_REQUIRED   );
+const GPRegister    SPL(REGSIZE_BYTE, 4, REX_REQUIRED  );
+const GPRegister    BPL(REGSIZE_BYTE, 5, REX_REQUIRED  );
+const GPRegister    SIL(REGSIZE_BYTE, 6, REX_REQUIRED  );
+const GPRegister    DIL(REGSIZE_BYTE, 7, REX_REQUIRED  );
 
 const TCHAR *Register::getREXCompatibleRegisterNames() { // static
   return _T("SPL,BPL,SIL or DIL");

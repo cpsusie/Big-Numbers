@@ -91,22 +91,32 @@ public:
   }
   virtual RegType getType()  const = 0;
   virtual RegSize getSize()  const = 0;
+  inline bool isGPR() const {
+    return getType() == REGTYPE_GPR;
+  }
   // is this AL,AX,EAX or RAX
   inline bool isGPR0() const {
-    return (getType() == REGTYPE_GPR) && (getIndex() == 0);
+    return isGPR() && (getIndex() == 0);
   }
   inline bool isST0() const {
     return (getType() == REGTYPE_FPU) && (getIndex() == 0);
+  }
+  inline bool isByte() const {
+    return getSize() == REGSIZE_BYTE;
   }
 #ifdef IS32BIT
 
 #define IS_REXCOMPATIBLE(reg,rexBytePresent) true
 #define REXBYTEUSAGECMP(reg1,reg2) 0
+
+  // true for BPL,SPL,SIL,DIL
+  inline bool     isUniformByteRegister() const {
+    return false;
+  }
 #else  // IS64BIT
   virtual bool    isREXCompatible(bool rexBytePresent) const {
     return true;
   }
-
 #define IS_REXCOMPATIBLE(reg,rexBytePresent) ((reg).isREXCompatible(rexBytePresent))
 #define REXBYTEUSAGECMP(reg1,reg2)           ((int)(reg1).getRexByteUsage() - (int)(reg2).getRexByteUsage())
 
@@ -118,6 +128,10 @@ public:
   }
   inline bool     needREXByte() const {
     return indexNeedREXByte() || (getRexByteUsage() == REX_REQUIRED);
+  }
+  // true for BPL,SPL,SIL,DIL
+  bool            isUniformByteRegister() const {
+    return (getRexByteUsage() == REX_REQUIRED) && isGPR() && isByte();
   }
   // for error messages
   static const TCHAR *getREXCompatibleRegisterNames();
@@ -144,6 +158,9 @@ public:
     case REGSIZE_QWORD: return s_qwordRegCapacity.contains(srcSize);
     default           : return false;
     }
+  }
+  static inline bool sizeBiggerThanSrcSize(RegSize dstSize, RegSize srcSize) {
+    return (dstSize != srcSize) && sizeContainsSrcSize(dstSize,srcSize);
   }
   static inline RegSize getLimitedSize(RegSize size, RegSize limit) {
     return sizeContainsSrcSize(limit,size) ? size : limit;
@@ -202,7 +219,13 @@ int registerCmp(const GPRegister &reg1, const GPRegister &reg2);
 
 class IndexRegister : public GPRegister {
 public:
-  inline IndexRegister(BYTE index) : GPRegister(INDEX_REGSIZE, index) {
+  inline IndexRegister(BYTE index)
+    : GPRegister(INDEX_REGSIZE,index
+#ifdef IS64BIT
+                ,(INDEX_REGSIZE==REGSIZE_QWORD)?REX_REQUIRED:REX_DONTCARE
+#endif
+                )
+  {
   }
   inline bool isValidIndexRegister() const {
     return (getIndex()&7)!=4;

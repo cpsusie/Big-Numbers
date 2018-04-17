@@ -477,7 +477,6 @@ public:
 #define INDEXPTR_ALLOWED             QWORDPTR_ALLOWED
 #endif // IS64BIT
 
-
 #define NONBYTE_GPRSIZE_ALLOWED     (WORDGPR_ALLOWED      | DWORDGPR_ALLOWED | QWORDGPR_ALLOWED)
 #define WORDINDEX_GPRSIZE_ALLOWED   (WORDGPR_ALLOWED      | INDEXGPR_ALLOWED         )
 #define ALL_GPRSIZE_ALLOWED         (BYTEGPR_ALLOWED      | NONBYTE_GPRSIZE_ALLOWED  )
@@ -517,11 +516,15 @@ private:
   // Number of operands
   const UINT   m_opCount   : 3;
 
+#ifdef IS64BIT
+  bool validateIsRexCompatible1(const Register &reg1, const Register &reg2, bool throwOnError) const;
+#endif // IS64BIT
 protected:
   OpcodeBase(const String &mnemonic,   const InstructionBase &src, BYTE extension=0, UINT flags=0);
-  void throwInvalidOperandCombination( const InstructionOperand &op1, const InstructionOperand &op2) const;
-  void throwInvalidOperandCombination( const InstructionOperand &op1, const InstructionOperand &op2, const InstructionOperand &op3) const;
-  void throwInvalidOperandType(        const InstructionOperand &op, BYTE index) const;
+  bool throwInvalidOperandCombination( const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError=true) const;
+  bool throwInvalidOperandCombination( const InstructionOperand &op1, const InstructionOperand &op2, const InstructionOperand &op3, bool throwOnError=true) const;
+  bool throwInvalidOperandCombination( const Register           &reg, const InstructionOperand &op2, bool throwOnError) const;
+  bool throwInvalidOperandType(        const InstructionOperand &op, BYTE index, bool throwOnError=true) const;
   void throwUnknownOperandType(        const InstructionOperand &op, BYTE index) const;
   static void throwUnknownRegisterType(const TCHAR *method, RegType      type);
   // Should only be used for GPR-registers
@@ -544,9 +547,10 @@ protected:
   bool validateImmediateValue(           const Register           &reg , const InstructionOperand &imm , bool throwOnError) const;
   bool validateImmediateValue(           const MemoryOperand      &mem , const InstructionOperand &imm , bool throwOnError) const;
   bool validateImmediateValue(           const InstructionOperand &dst , const InstructionOperand &imm , bool throwOnError) const;
-  bool validateSameSize(                 const Register           &reg1, const Register           &reg2, bool throwOnError) const;
-  virtual bool validateSameSize(         const Register           &reg , const InstructionOperand &op  , bool throwOnError) const;
-  bool validateSameSize(                 const InstructionOperand &op1 , const InstructionOperand &op2 , bool throwOnError) const;
+  virtual bool isCompatibleSize(         OperandSize size1, OperandSize size2) const;
+  bool validateCompatibleSize(           const Register           &reg1, const Register           &reg2, bool throwOnError) const;
+  virtual bool validateCompatibleSize(   const Register           &reg , const InstructionOperand &op  , bool throwOnError) const;
+  bool validateCompatibleSize(           const InstructionOperand &op1 , const InstructionOperand &op2 , bool throwOnError) const;
   bool validateIsRegisterOperand(        const InstructionOperand &op  , BYTE  index                   , bool throwOnError) const;
   bool validateIsMemoryOperand(          const InstructionOperand &op  , BYTE  index                   , bool throwOnError) const;
   bool validateIsRegisterOrMemoryOperand(const InstructionOperand &op  , BYTE  index                   , bool throwOnError) const;
@@ -776,6 +780,30 @@ public :
   InstructionBase operator()(    const InstructionOperand &op1, const InstructionOperand &op2) const;
 };
 
+class Opcode2ArgDstGtSrc : public Opcode2Arg {
+protected:
+  bool isCompatibleSize(OperandSize dstSize, OperandSize srcSize) const;
+public:
+  Opcode2ArgDstGtSrc(const String &mnemonic, UINT op, UINT flags)
+    : Opcode2Arg(mnemonic, op, flags)
+  {
+  }
+};
+
+class OpcodeMovSX : public Opcode2ArgDstGtSrc {
+private:
+  const Opcode2ArgDstGtSrc m_sxwCode;
+  const Opcode2ArgDstGtSrc m_sxdCode;
+public :
+  OpcodeMovSX(const String &mnemonic)
+    : Opcode2ArgDstGtSrc( mnemonic, 0x0FBE, ALL_GPR_ALLOWED     | BYTEPTR_ALLOWED  | WORDPTR_ALLOWED  | DWORDPTR_ALLOWED | FIRSTOP_REGONLY | HAS_WORDPREFIX | HAS_REXQSIZEBIT)
+    , m_sxwCode(          mnemonic, 0x0FBF, ALL_GPR_ALLOWED                        | WORDPTR_ALLOWED  | DWORDPTR_ALLOWED | FIRSTOP_REGONLY | HAS_REXQSIZEBIT)
+    , m_sxdCode(      _T("movsxd"), 0x63  , REGTYPE_GPR_ALLOWED | DWORDGPR_ALLOWED | QWORDGPR_ALLOWED | DWORDPTR_ALLOWED | FIRSTOP_REGONLY | HAS_REXQSIZEBIT)
+  {
+  }
+  InstructionBase operator()(    const InstructionOperand &op1, const InstructionOperand &op2) const;
+};
+
 class OpcodeLea : public Opcode2Arg {
 public :
   OpcodeLea(const String &mnemonic, BYTE op)
@@ -997,7 +1025,7 @@ public:
 
 class Opcode2ArgPfxF2SD : public Opcode2ArgPfxF2 {
 protected:
-  bool validateSameSize(const Register &reg , const InstructionOperand &op, bool throwOnError) const;
+  bool validateCompatibleSize(const Register &reg , const InstructionOperand &op, bool throwOnError) const;
 public:
   Opcode2ArgPfxF2SD(const String &mnemonic, UINT op, UINT flags = 0)
     : Opcode2ArgPfxF2(mnemonic, op, flags | MMWORDPTR_ALLOWED)
@@ -1050,6 +1078,7 @@ extern OpcodeStd2Arg     CMP;                              // Compare Two Operan
 extern OpcodeXchg        XCHG;                             // Exchange Two operands
 extern OpcodeStd2Arg     TEST;                             // Logical Compare. same as AND but doesn't change dst. set SF,ZF,PF according to result
 extern OpcodeMov         MOV;                              // Move data (copying)
+extern OpcodeMovSX       MOVSX;                            // Move with sign-extend
 extern OpcodeLea         LEA;                              // Load effective address
 
 extern OpcodePushPop     PUSH;

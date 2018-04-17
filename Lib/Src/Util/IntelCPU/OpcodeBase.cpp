@@ -85,13 +85,13 @@ OpcodeBase::OpcodeBase(const String &mnemonic, UINT op, BYTE extension, BYTE opC
       THROWINVALIDFLAGS(_T("HAS_DIRECTIONBIT0 set for opcode %X (bit 0 already set)"),op);
     }
     if(getFlags() & HAS_DIRECTIONBIT1) {
-      THROWINVALIDFLAGS(_T("Cannot have both HAS_DIRECTIONBIT0 and HAS_DIRECTIONBIT1 set for opcode %X"),op);
+      THROWINVALIDFLAGS(_T("HAS_DIRECTIONBIT0 and HAS_DIRECTIONBIT1 cannot both be set set for opcode %X"),op);
     }
     if(getFlags() & FIRSTOP_REGONLY) {
       THROWINVALIDFLAGS(_T("HAS_DIRECTIONBIT0 and FIRSTOP_REGONLY cannot both be set"));
     }
     if(getFlags() & HAS_BYTE_SIZEBIT) {
-      THROWINVALIDFLAGS(_T("Cannot have both HAS_DIRECTIONBIT0 and HAS_BYTE_SIZEBIT set for opcode %X"),op);
+      THROWINVALIDFLAGS(_T("HAS_DIRECTIONBIT0 and HAS_BYTE_SIZEBIT cannot both be set for opcode %X"),op);
     }
   }
 
@@ -178,29 +178,26 @@ bool OpcodeBase::isImmediateSizeAllowed(OperandSize size) const {
   return false;
 }
 
-void OpcodeBase::throwInvalidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2) const {
-  throwException(_T("%s:Invalid combination of operands:%s,%s")
-                ,getMnemonic().cstr()
+bool OpcodeBase::throwInvalidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError) const {
+  RAISEERROR(_T("Invalid combination of operands:%s,%s")
                 ,op1.toString().cstr()
                 ,op2.toString().cstr()
                 );
 }
 
-void OpcodeBase::throwInvalidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, const InstructionOperand &op3) const {
-  throwException(_T("%s:Invalid combination of operands:%s,%s,%s")
-                ,getMnemonic().cstr()
+bool OpcodeBase::throwInvalidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, const InstructionOperand &op3, bool throwOnError) const {
+  RAISEERROR(_T("Invalid combination of operands:%s,%s,%s")
                 ,op1.toString().cstr()
                 ,op2.toString().cstr()
                 ,op3.toString().cstr()
                 );
 }
 
-void OpcodeBase::throwInvalidOperandType(const InstructionOperand &op, BYTE index) const {
-  throwException(_T("%s:%s not a valid %d. operand")
-                ,getMnemonic().cstr()
-                ,op.toString().cstr()
-                ,index
-                );
+bool OpcodeBase::throwInvalidOperandType(const InstructionOperand &op, BYTE index, bool throwOnError) const {
+  RAISEERROR(_T("%s not a valid %d. operand")
+            ,op.toString().cstr()
+            ,index
+            );
 }
 
 void OpcodeBase::throwUnknownOperandType(const InstructionOperand &op, BYTE index) const {
@@ -214,14 +211,15 @@ void OpcodeBase::throwUnknownRegisterType(const TCHAR *method, RegType type) { /
   throwInvalidArgumentException(method, _T("RegisterType=%s"), ::toString(type).cstr());
 }
 
-#define RAISEERROR(...)                                                                         \
-{ if(throwOnError) throwException(_T("%s:%s"),getMnemonic().cstr(),format(__VA_ARGS__).cstr()); \
-  return false;                                                                                 \
-}
+#ifdef IS32BIT
+#define ERRORSTRING_1OPGPR0 _T("Operand 1 must be AL/AX/EAX. op1=%s")
+#else // IS64BIT
+#define ERRORSTRING_1OPGPR0 _T("Operand 1 must be AL/AX/EAX/RAX. op1=%s")
+#endif // IS64BIT
 
 #define CHECKFIRSTOP_GPR0ONLY(op)                                                               \
 { if((getFlags() & FIRSTOP_GPR0ONLY) && !op.isGPR0()) {                                         \
-    RAISEERROR(_T("Operand 1 must be AL/AX/EAX/RAX. op1=%s"), op.toString().cstr());            \
+    RAISEERROR(ERRORSTRING_1OPGPR0,op.toString().cstr());                                       \
   }                                                                                             \
 }
 
@@ -229,7 +227,8 @@ void OpcodeBase::throwUnknownRegisterType(const TCHAR *method, RegType type) { /
 { if(getFlags() & (FIRSTOP_GPR0ONLY|FIRSTOP_REGONLY)) {                                         \
     CHECKFIRSTOP_GPR0ONLY(op);                                                                  \
     if((getFlags() & FIRSTOP_REGONLY) && !op.isRegister()) {                                    \
-      RAISEERROR(_T("Operand 1 must be register. op1=%s"), op.toString().cstr());               \
+      RAISEERROR(_T("Operand 1 must be register. op1=%s")                                       \
+                ,op.toString().cstr());                                                         \
     }                                                                                           \
   }                                                                                             \
 }
@@ -305,22 +304,23 @@ bool OpcodeBase::validateImmediateValue(const InstructionOperand &dst, const Ins
   return false;
 }
 
-bool OpcodeBase::validateSameSize(const Register &reg1, const Register &reg2, bool throwOnError) const {
-  if(reg1.getSize() != reg2.getSize()) {
-    RAISEERROR(_T("Different size:%s,%s"), reg1.toString().cstr(), reg2.toString().cstr());
-  }
-  if(!validateIsRexCompatible(reg1,reg2,throwOnError) || !validateIsRexCompatible(reg2,reg1,throwOnError)) {
-    return false;
-  }
-  return true;
+bool OpcodeBase::isCompatibleSize(OperandSize size1, OperandSize size2) const {
+  return size1 == size2;
 }
 
-bool OpcodeBase::validateSameSize(const Register &reg, const InstructionOperand &op, bool throwOnError) const {
+bool OpcodeBase::validateCompatibleSize(const Register &reg1, const Register &reg2, bool throwOnError) const {
+  if(!isCompatibleSize(reg1.getSize(),reg2.getSize())) {
+    RAISEERROR(_T("Sizes not compatible:%s,%s"), reg1.toString().cstr(), reg2.toString().cstr());
+  }
+  return validateIsRexCompatible(reg1,reg2,throwOnError);
+}
+
+bool OpcodeBase::validateCompatibleSize(const Register &reg, const InstructionOperand &op, bool throwOnError) const {
   if(op.getType() == REGISTER) {
-    return validateSameSize(reg, op.getRegister(), throwOnError);
+    return validateCompatibleSize(reg, op.getRegister(), throwOnError);
   } else {
-    if(reg.getSize() != op.getSize()) {
-      RAISEERROR(_T("Different size:%s,%s"), reg.toString().cstr(), op.toString().cstr());
+    if(!isCompatibleSize(reg.getSize(),op.getSize())) {
+      RAISEERROR(_T("Sizes not compatible:%s,%s"), reg.toString().cstr(), op.toString().cstr());
     }
     if(!validateIsRexCompatible(reg,op, throwOnError)) {
       return false;
@@ -329,20 +329,17 @@ bool OpcodeBase::validateSameSize(const Register &reg, const InstructionOperand 
   return true;
 }
 
-bool OpcodeBase::validateSameSize(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError) const {
+bool OpcodeBase::validateCompatibleSize(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError) const {
   if(op1.getType() == REGISTER) {
-    if(!validateSameSize(op1.getRegister(),op2, throwOnError)) {
+    if(!validateCompatibleSize(op1.getRegister(),op2, throwOnError)) {
       return false;
     }
   } else if(op2.getType() == REGISTER) {
-    if(!validateSameSize(op2.getRegister(),op1, throwOnError)) {
+    if(!validateCompatibleSize(op2.getRegister(),op1, throwOnError)) {
       return false;
     }
   } else {
-    if(!throwOnError) {
-      return false;
-    }
-    throwInvalidOperandCombination(op1,op2);
+    return throwInvalidOperandCombination(op1,op2,throwOnError);
   }
   return true;
 }
@@ -359,7 +356,7 @@ bool OpcodeBase::validateIsRexCompatible(const Register &reg, const InstructionO
   return true;
 }
 
-bool OpcodeBase::validateIsRexCompatible(const Register &reg1, const Register &reg2, bool throwOnError) const {
+bool OpcodeBase::validateIsRexCompatible1(const Register &reg1, const Register &reg2, bool throwOnError) const {
   if(!reg1.isREXCompatible(reg2.needREXByte())) {
     RAISEERROR(_T("%s not allowed together with %s (Use %s)")
               ,reg1.toString().cstr()
@@ -369,6 +366,11 @@ bool OpcodeBase::validateIsRexCompatible(const Register &reg1, const Register &r
   }
   return true;
 }
+
+bool OpcodeBase::validateIsRexCompatible(const Register &reg1, const Register &reg2, bool throwOnError) const {
+  return validateIsRexCompatible1(reg1,reg2,throwOnError) && validateIsRexCompatible1(reg2,reg1,throwOnError);
+}
+
 #endif // IS64BIT
 
 bool OpcodeBase::validateIsRegisterOperand(const InstructionOperand &op, BYTE index, bool throwOnError) const {
@@ -380,8 +382,7 @@ bool OpcodeBase::validateIsRegisterOperand(const InstructionOperand &op, BYTE in
     break;
   case MEMORYOPERAND :
   case IMMEDIATEVALUE:
-    if(!throwOnError) return false;
-    throwInvalidOperandType(op,index);
+    return throwInvalidOperandType(op,index,throwOnError);
   default            :
     throwUnknownOperandType(op,index);
   }
@@ -397,8 +398,7 @@ bool OpcodeBase::validateIsMemoryOperand(const InstructionOperand &op, BYTE inde
     break;
   case REGISTER      :
   case IMMEDIATEVALUE:
-    if(!throwOnError) return false;
-    throwInvalidOperandType(op,index);
+    return throwInvalidOperandType(op,index,throwOnError);
   default            :
     throwUnknownOperandType(op,index);
   }
@@ -418,8 +418,7 @@ bool OpcodeBase::validateIsRegisterOrMemoryOperand(const InstructionOperand &op,
     }
     break;
   case IMMEDIATEVALUE:
-    if(!throwOnError) return false;
-    throwInvalidOperandType(op,index);
+    return throwInvalidOperandType(op,index,throwOnError);
   default            :
     throwUnknownOperandType(op,index);
   }
@@ -430,9 +429,7 @@ bool OpcodeBase::validateIsImmediateOperand(const InstructionOperand &op, BYTE i
   switch(op.getType()) {
   case REGISTER      :
   case MEMORYOPERAND :
-    if(!throwOnError) return false;
-    throwInvalidOperandType(op,index);
-    break;
+    return throwInvalidOperandType(op,index,throwOnError);
   case IMMEDIATEVALUE:
     if(!validateImmediateOperandAllowed(op, throwOnError)) {
       return false;
@@ -452,8 +449,7 @@ bool OpcodeBase::validateIsShiftAmountOperand(const InstructionOperand &op, BYTE
     }
     break;
   case MEMORYOPERAND :
-    if(!throwOnError) return false;
-    throwInvalidOperandType(op,index);
+    return throwInvalidOperandType(op,index,throwOnError);
   case IMMEDIATEVALUE:
     if(op.getSize() != REGSIZE_BYTE) {
       RAISEERROR(_T("Immediate value must be BYTE"));
@@ -491,8 +487,7 @@ bool OpcodeBase::isValidOperandType(const InstructionOperand &op, BYTE index) co
   case MEMORYOPERAND : return isMemoryOperandAllowed((MemoryOperand&)op);
   case IMMEDIATEVALUE: return isImmediateSizeAllowed(op.getSize());
   }
-  throwInvalidOperandType(op,index);
-  return false;
+  return throwInvalidOperandType(op,index);
 }
 
 bool OpcodeBase::isValidOperand(const InstructionOperand &op, bool throwOnError) const {
@@ -536,7 +531,7 @@ bool OpcodeBase::isValidOperandCombination(const Register &reg, const Instructio
     { if(!validateRegisterAllowed(op.getRegister(), throwOnError)) {
         return false;
       }
-      if(!validateSameSize(reg, op, throwOnError)) {
+      if(!validateCompatibleSize(reg, op, throwOnError)) {
         return false;
       }
       if(reg.getType() == REGTYPE_FPU) {
@@ -550,7 +545,7 @@ bool OpcodeBase::isValidOperandCombination(const Register &reg, const Instructio
     if(!validateMemoryOperandAllowed((MemoryOperand&)op, throwOnError)) {
       return false;
     }
-    if(!validateSameSize(reg, op, throwOnError)) {
+    if(!validateCompatibleSize(reg, op, throwOnError)) {
       return false;
     }
     break;
@@ -585,7 +580,7 @@ bool OpcodeBase::isValidOperandCombination(const InstructionOperand &op1, const 
         if(!validateRegisterAllowed(regSrc, throwOnError)) {
           return false;
         }
-        if(!validateSameSize(op1,op2, throwOnError)) {
+        if(!validateCompatibleSize(op1,op2, throwOnError)) {
           return false;
         }
       }
@@ -625,7 +620,7 @@ bool OpcodeBase::isValidOperandCombination(const InstructionOperand &op1, const 
     if(!validateIsRegisterOrMemoryOperand(op2, 2, throwOnError)) {
       return false;
     }
-    if(!validateSameSize(op1,op2, throwOnError)) {
+    if(!validateCompatibleSize(op1,op2, throwOnError)) {
       return false;
     }
     if(op3.getType() == IMMEDIATEVALUE) {

@@ -149,6 +149,9 @@ public:
   inline bool hasImmXBit() const {
     return (getFlags() & HAS_IMM_XBIT) != 0;
   }
+  inline bool firstOpRegOnly() const {
+    return (getFlags() & FIRSTOP_REGONLY) != 0;
+  }
   InstructionBuilder &insert(BYTE index, BYTE b);
   inline InstructionBuilder &prefix(BYTE b) {
     return insert(0,b);
@@ -177,7 +180,7 @@ public:
 #ifdef IS32BIT
     return false;
 #else
-    return m_hasRexByte ? true : false;
+    return m_hasRexByte;
 #endif
   }
 #ifdef IS64BIT
@@ -248,3 +251,9 @@ public:
   // }
   InstructionBuilder &setImmediateOperand( const InstructionOperand &imm, OperandSize dstSize=REGSIZE_VOID);
 };
+
+// Used by Opcodebase + derived classes, to throw error-text or just return false
+#define RAISEERROR(...)                                                                         \
+{ if(throwOnError) throwException(_T("%s:%s"),getMnemonic().cstr(),format(__VA_ARGS__).cstr()); \
+  return false;                                                                                 \
+}

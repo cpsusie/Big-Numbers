@@ -62,7 +62,7 @@ InstructionBuilder &InstructionBuilderO::setRegisterOperand(const Register &reg)
     or(8 | (regIndex&7)).qwordIns();
     break;
   }
-  SETREXBITS(HIGHINDEXTOREX(regIndex,0));
+  SETREXBITS(HIGHINDEXTOREX(regIndex,REX_B));
   return *this;
 }
 
@@ -106,15 +106,19 @@ InstructionBase OpcodeStd2Arg::operator()(const InstructionOperand &op1, const I
   }
 }
 
+bool Opcode2ArgDstGtSrc::isCompatibleSize(OperandSize dstSize, OperandSize srcSize) const {
+  return Register::sizeBiggerThanSrcSize(dstSize, srcSize);
+}
+
 InstructionBase Opcode2ArgPfxF2::operator()(const InstructionOperand &op1, const InstructionOperand &op2) const {
   return InstructionBuilder(__super::operator()(op1,op2)).prefix(0xF2);
 }
 
-bool Opcode2ArgPfxF2SD::validateSameSize(const Register &reg, const InstructionOperand &op, bool throwOnError) const {
+bool Opcode2ArgPfxF2SD::validateCompatibleSize(const Register &reg, const InstructionOperand &op, bool throwOnError) const {
   if((reg.getType() == REGTYPE_XMM) && (op.getType() == MEMORYOPERAND)) {
     if(op.getSize() == REGSIZE_MMWORD) {
       return true;
     }
   }
-  return __super::validateSameSize(reg,op,throwOnError);
+  return __super::validateCompatibleSize(reg,op,throwOnError);
 }

@@ -794,6 +794,9 @@
     <ClCompile Include="IntelCPU\OpcodeCall.cpp">
       <Filter>Source Files\IntelCPU</Filter>
     </ClCompile>
+    <ClCompile Include="IntelCPU\OpcodeMovSX.cpp">
+      <Filter>Source Files\IntelCPU</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\Array.h">
