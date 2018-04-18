@@ -2,14 +2,12 @@
 #include <NewOpCode.h>
 #include "InstructionBuilder.h"
 
-static const RegSizeSet eaxRaxRegisterSizeSet(REGSIZE_DWORD ,REGSIZE_QWORD, -1);
-
 static inline bool isEaxOrRAX(const Register &reg) {
-  return reg.isGPR0() && eaxRaxRegisterSizeSet.contains(reg.getSize());
+  return reg.isGPR0() && Register::sizeContainsSrcSize(reg.getSize(),REGSIZE_DWORD);
 }
 
 InstructionBase OpcodeXchg::operator()(const InstructionOperand &op1, const InstructionOperand &op2) const {
-  if((op1.getType() == REGISTER) && (op2.getType() == REGISTER)) {
+  if(op1.isRegister() && op2.isRegister()) {
     const Register &reg1 = op1.getRegister();
     const Register &reg2 = op2.getRegister();
     if(isEaxOrRAX(reg1)) {
