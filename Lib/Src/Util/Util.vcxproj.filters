@@ -794,7 +794,7 @@
     <ClCompile Include="IntelCPU\OpcodeCall.cpp">
       <Filter>Source Files\IntelCPU</Filter>
     </ClCompile>
-    <ClCompile Include="IntelCPU\OpcodeMovSX.cpp">
+    <ClCompile Include="IntelCPU\OpcodeMovExtend.cpp">
       <Filter>Source Files\IntelCPU</Filter>
     </ClCompile>
   </ItemGroup>

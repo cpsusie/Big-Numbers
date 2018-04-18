@@ -790,17 +790,18 @@ public:
   }
 };
 
-class OpcodeMovSX : public Opcode2ArgDstGtSrc {
+class OpcodeMovExtend : public Opcode2ArgDstGtSrc {
 private:
-  const Opcode2ArgDstGtSrc m_sxwCode;
-  const Opcode2ArgDstGtSrc m_sxdCode;
+  const Opcode2ArgDstGtSrc m_wCode;
+  const Opcode2ArgDstGtSrc m_dwCode;
 public :
-  OpcodeMovSX(const String &mnemonic)
-    : Opcode2ArgDstGtSrc( mnemonic, 0x0FBE, ALL_GPR_ALLOWED     | BYTEPTR_ALLOWED  | WORDPTR_ALLOWED  | DWORDPTR_ALLOWED | FIRSTOP_REGONLY | HAS_WORDPREFIX | HAS_REXQSIZEBIT)
-    , m_sxwCode(          mnemonic, 0x0FBF, ALL_GPR_ALLOWED                        | WORDPTR_ALLOWED  | DWORDPTR_ALLOWED | FIRSTOP_REGONLY | HAS_REXQSIZEBIT)
-    , m_sxdCode(      _T("movsxd"), 0x63  , REGTYPE_GPR_ALLOWED | DWORDGPR_ALLOWED | QWORDGPR_ALLOWED | DWORDPTR_ALLOWED | FIRSTOP_REGONLY | HAS_REXQSIZEBIT)
+  OpcodeMovExtend(const String &mnemonic, UINT opb, UINT opw, UINT opdw)
+    : Opcode2ArgDstGtSrc(mnemonic, opb ,                             ALL_GPR_ALLOWED  | BYTEPTR_ALLOWED                     | FIRSTOP_REGONLY | HAS_WORDPREFIX | HAS_REXQSIZEBIT)
+    , m_wCode(           mnemonic, opw ,                             ALL_GPR_ALLOWED  | WORDPTR_ALLOWED                     | FIRSTOP_REGONLY                  | HAS_REXQSIZEBIT)
+    , m_dwCode(          mnemonic, opdw, opdw?(REGTYPE_GPR_ALLOWED | DWORDGPR_ALLOWED | QWORDGPR_ALLOWED | DWORDPTR_ALLOWED | FIRSTOP_REGONLY                  | HAS_REXQSIZEBIT):0)
   {
   }
+  bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError=false) const;
   InstructionBase operator()(    const InstructionOperand &op1, const InstructionOperand &op2) const;
 };
 
@@ -1078,7 +1079,8 @@ extern OpcodeStd2Arg     CMP;                              // Compare Two Operan
 extern OpcodeXchg        XCHG;                             // Exchange Two operands
 extern OpcodeStd2Arg     TEST;                             // Logical Compare. same as AND but doesn't change dst. set SF,ZF,PF according to result
 extern OpcodeMov         MOV;                              // Move data (copying)
-extern OpcodeMovSX       MOVSX;                            // Move with sign-extend
+extern OpcodeMovExtend   MOVZX;                            // Move with zero-extend
+extern OpcodeMovExtend   MOVSX;                            // Move with sign-extend
 extern OpcodeLea         LEA;                              // Load effective address
 
 extern OpcodePushPop     PUSH;

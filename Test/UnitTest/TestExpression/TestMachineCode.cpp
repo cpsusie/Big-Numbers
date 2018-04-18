@@ -413,9 +413,15 @@ private:
   String                  m_currentMnemonic;
   int                     m_emitCount;
   FILE                   *m_emitCountLog;
+  bool                    m_debugLogOn;
   bool                    m_clearOn;
   void initAllOperands();
   void clear(bool force = false);
+  inline void redirectDebugLog() {
+    if(!m_debugLogOn) return;
+    ::redirectDebugLog();
+  }
+  void debugLog(const TCHAR *format,...);
   int  emit(               const InstructionBase &ins   );
   int  emit(               const OpcodeBase      &opcode, const InstructionOperand &op);
   int  emit(               const OpcodeBase      &opcode, const InstructionOperand &op1, const InstructionOperand &op2);
@@ -423,6 +429,11 @@ private:
   void testOpcode1Arg(     const OpcodeBase      &opcode);
   void testOpcode2Arg(     const OpcodeBase      &opcode, bool selectVOIDPtr);
   void testOpcode3Arg(     const OpcodeBase      &opcode);
+  inline bool setDebugLogOn(bool on) {
+    const bool old = m_debugLogOn;
+    m_debugLogOn = on;
+    return old;
+  }
   inline bool setClearOn(bool on) {
     const bool old = m_clearOn;
     m_clearOn = on;
@@ -454,11 +465,12 @@ public:
 
 TestMachineCode::TestMachineCode(vprintFunction vpf) : m_vpf(vpf) {
   setClearOn(true);
+  m_debugLogOn = true;
   initAllOperands();
 }
 
 TestMachineCode::~TestMachineCode() {
- fclose(m_emitCountLog);
+  fclose(m_emitCountLog);
 }
 
 void TestMachineCode::initAllOperands() {
@@ -473,6 +485,8 @@ void TestMachineCode::initAllOperands() {
   m_allOperands.sort(insOpCmp);
 
   redirectDebugLog();
+//  setDebugLogOn(false);
+
   debugLog(_T("All operands:\n%s"),m_allOperands.toString().cstr());
   debugLog(_T("All VOIDPtr:\n%s") ,m_allVOIDPtrOperands.toString().cstr());
   redirectDebugLog();
@@ -513,6 +527,14 @@ void TestMachineCode::testAll() {
   }
 }
 
+void TestMachineCode::debugLog(const TCHAR *format, ...) {
+  if(!m_debugLogOn) return;
+  va_list argptr;
+  va_start(argptr,format);
+  vdebugLog(format, argptr);
+  va_end(argptr);
+}
+
 void TestMachineCode::logEmitCount() {
   _ftprintf(m_emitCountLog, _T("%-20s:%4d\n"), m_currentMnemonic.cstr(), m_emitCount);
   fflush(m_emitCountLog);
@@ -531,7 +553,7 @@ void TestMachineCode::clear(bool force) {
   }
   if(force || m_clearOn) {
     __super::clear();
-    redirectDebugLog();
+//    redirectDebugLog();
   }
 }
 
@@ -566,7 +588,7 @@ void TestMachineCode::testOpcode(const OpcodeBase &opcode, bool selectVOIDPtr) {
   try {
     newMnemonic(opcode.getMnemonic());
     printf(_T("Testing opcode %s"), m_currentMnemonic.cstr());
-    clear();
+//    clear();
     for(int args = opcode.getOpCount(); args <= opcode.getMaxOpCount(); args++) {
       switch(args) {
       case 0 : emit((Opcode0Arg&)opcode            ); break;
@@ -675,7 +697,6 @@ void TestMachineCode::testArg0Opcodes() {
 }
 
 void TestMachineCode::testArg1Opcodes() {
-  setClearOn(false);
   testOpcode(PUSH );
   testOpcode(POP  );
   testOpcode(INC  );
@@ -683,6 +704,13 @@ void TestMachineCode::testArg1Opcodes() {
   testOpcode(NOT  );
   testOpcode(NEG  );
   testOpcode(JMP  );
+#ifdef IS32BIT
+//  testOpcode(JCXZ );
+//  testOpcode(JECXZ);
+#else // IS64BIT
+  testOpcode(JECXZ);
+  testOpcode(JRCXZ);
+#endif // IS64BIT
   testOpcode(CALL );
   testOpcode(IMUL );
   testOpcode(IDIV );
@@ -704,12 +732,13 @@ void TestMachineCode::testArg2Opcodes() {
   testOpcode(XCHG   );
   testOpcode(TEST   );
   testOpcode(MOV    );
+  clear(true);
+  testOpcode(MOVSX  );
+  testOpcode(MOVZX  );
   testOpcode(LEA    );
-  setClearOn(false);
 }
 
 void TestMachineCode::testArg3Opcodes() {
-  clear(true);
   testOpcode(SHLD   );
   testOpcode(SHRD   );
 }
@@ -733,7 +762,7 @@ void TestMachineCode::testSetccOpcodes() {
   testOpcode(SETLE);
   testOpcode(SETG );
 
-  clear(true);
+//  clear(true);
   testOpcode(JO   );
   testOpcode(JNO  );
   testOpcode(JB   );
@@ -750,7 +779,6 @@ void TestMachineCode::testSetccOpcodes() {
   testOpcode(JGE  );
   testOpcode(JLE  );
   testOpcode(JG   );
-
 }
 
 void TestMachineCode::testBitOperations() {
@@ -884,14 +912,13 @@ void TestMachineCode::testFPUOpcodes() {
   testOpcode(FIDIVR  );
 
   testOpcode(FCMOVB  );                            // Move if below (CF=1)
-  testOpcode(FCMOVE );                             // Move if equal (ZF=1)
+  testOpcode(FCMOVE  );                            // Move if equal (ZF=1)
   testOpcode(FCMOVBE );                            // Move if below or equal (CF=1 or ZF=1)
   testOpcode(FCMOVU  );                            // Move if unordered (PF=1)
   testOpcode(FCMOVAE );                            // Move if above or equal (CF=0)
   testOpcode(FCMOVNE );                            // Move if not equal (ZF=0)
   testOpcode(FCMOVA  );                            // Move if above (CF=0 and ZF=0)
   testOpcode(FCMOVNU );                            // Move if not unordered (PF=0)
-
   testOpcode(FFREE   );                            // Free a data register
   testOpcode(FXCH    );                            // Swap st(0) and st(i)
 }
@@ -900,8 +927,6 @@ void TestMachineCode::testXMMOpcodes() {
   clear(true);
   testOpcode(MOVAPS);
   testOpcode(MOVSD1);
-  clear(true);
-  setClearOn(false);
   testOpcode(ADDSD );
   testOpcode(MULSD );
   testOpcode(SUBSD );

@@ -55,7 +55,8 @@ DEFNAME(OpcodeXchg       ,  XCHG       );                  // Exchange Two opera
 DEFNAME(OpcodeStd2Arg    ,  TEST  ,0x84,0xA8,0xF6,0);      // Logical Compare. same as AND but doesn't change dst. set SF,ZF,PF according to result
 
 DEFNAME(OpcodeMov        ,  MOV        );
-DEFNAME(OpcodeMovSX      ,  MOVSX      );                  // Move with sign-extend
+DEFNAME(OpcodeMovExtend  ,  MOVZX ,0x0FB6, 0x0FB7, 0   );  // Move with zero-extend
+DEFNAME(OpcodeMovExtend  ,  MOVSX ,0x0FBE, 0x0FBF, 0x63);  // Move with sign-extend
 
 DEFNAME(OpcodeLea        ,  LEA   ,0x8D);                  // Load effective address
 
