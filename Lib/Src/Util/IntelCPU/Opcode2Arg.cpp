@@ -10,7 +10,7 @@ InstructionBase Opcode2Arg::operator()(const InstructionOperand &op1, const Inst
     case REGISTER       : // reg <- reg
       return InstructionBuilder(*this).setRegRegOperands(op1.getRegister(),op2.getRegister());
     case MEMORYOPERAND  : // reg <- mem
-      return InstructionBuilder(*this).setMemoryRegOperands((MemoryOperand&)op2, op1.getRegister()).setDirectionBit(REGISTER,MEMORYOPERAND);
+      return InstructionBuilder(*this).setMemoryRegOperands((MemoryOperand&)op2, op1.getRegister()).setDirBit(REGISTER,MEMORYOPERAND);
     case IMMEDIATEVALUE : // reg <- imm
       return InstructionBuilder(*this).setRegisterOperand(op1.getRegister()).setImmediateOperand(op2,op1.getLimitedSize(REGSIZE_DWORD));
     }
@@ -18,7 +18,7 @@ InstructionBase Opcode2Arg::operator()(const InstructionOperand &op1, const Inst
   case MEMORYOPERAND    :
     switch(op2.getType()) {
     case REGISTER       : // mem <- reg
-      return InstructionBuilder(*this).setMemoryRegOperands((MemoryOperand&)op1, op2.getRegister()).setDirectionBit(MEMORYOPERAND,REGISTER);
+      return InstructionBuilder(*this).setMemoryRegOperands((MemoryOperand&)op1, op2.getRegister()).setDirBit(MEMORYOPERAND,REGISTER);
     case IMMEDIATEVALUE : // mem <- imm
       return InstructionBuilder(*this).setMemoryOperand((MemoryOperand&)op1).setImmediateOperand(op2,op1.getLimitedSize(REGSIZE_DWORD));
     }
@@ -33,6 +33,11 @@ InstructionBase Opcode2ArgI::operator()(const InstructionOperand &dst, const Ins
 }
 
 InstructionBase Opcode2ArgMI8::operator()(const InstructionOperand &op1, const InstructionOperand &op2) const {
+  isValidOperandCombination(op1,op2,true);
+  return InstructionBuilder(*this).setMemOrRegOperand(op1).setImmediateOperand(op2,REGSIZE_BYTE);
+}
+
+InstructionBase Opcode2ArgMINB8::operator()(const InstructionOperand &op1, const InstructionOperand &op2) const {
   isValidOperandCombination(op1,op2,true);
   return InstructionBuilder(*this).setMemOrRegOperand(op1).setImmediateOperand(op2,REGSIZE_BYTE);
 }

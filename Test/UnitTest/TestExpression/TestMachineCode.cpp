@@ -798,6 +798,13 @@ void TestMachineCode::testBitOperations() {
 
   testOpcode(BSF    );
   testOpcode(BSR    );
+
+  clear(true);
+  testOpcode(BT     );
+  testOpcode(BTS    );
+  testOpcode(BTR    );
+  testOpcode(BTC    );
+
 }
 
 void TestMachineCode::testStringInstructions() {

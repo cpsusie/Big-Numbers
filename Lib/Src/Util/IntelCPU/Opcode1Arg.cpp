@@ -12,6 +12,17 @@ InstructionBase Opcode1Arg::operator()(const InstructionOperand &op) const {
   return __super::operator()(op);
 }
 
+InstructionBase Opcode1ArgNoMode::operator()(const InstructionOperand &op) const {
+  isValidOperand(true);
+  switch(op.getType()) {
+  case REGISTER       : return InstructionBuilderNoMode(*this).setRegisterOperand(op.getRegister());
+  case MEMORYOPERAND  : break;
+  case IMMEDIATEVALUE : return InstructionBuilder(*this).setImmediateOperand(op);
+  }
+  throwInvalidOperandType(op,1,true);
+  return __super::operator()(op);
+}
+
 #ifdef IS32BIT
 InstructionBase OpcodeIncDec::operator()(const InstructionOperand &op) const {
   isValidOperand(op, true);

@@ -42,14 +42,14 @@ DEFNAME(Opcode0Arg       ,  POPAD ,0x61);                  // Pop  all double-wo
 #endif // IS32BIT
 
 DEFNAME(Opcode0Arg       ,  NOOP  ,0x90);
-DEFNAME(OpcodeStd2Arg    ,  ADD   ,0x00,0x04,0x80,0,HAS_IMM_XBIT|HAS_DIRECTIONBIT1);
-DEFNAME(OpcodeStd2Arg    ,  OR    ,0x08,0x0C,0x80,1,HAS_IMM_XBIT|HAS_DIRECTIONBIT1);
-DEFNAME(OpcodeStd2Arg    ,  ADC   ,0x10,0x14,0x80,2,HAS_IMM_XBIT|HAS_DIRECTIONBIT1);
-DEFNAME(OpcodeStd2Arg    ,  SBB   ,0x18,0x1C,0x80,3,HAS_IMM_XBIT|HAS_DIRECTIONBIT1);
-DEFNAME(OpcodeStd2Arg    ,  AND   ,0x20,0x24,0x80,4,HAS_IMM_XBIT|HAS_DIRECTIONBIT1);
-DEFNAME(OpcodeStd2Arg    ,  SUB   ,0x28,0x2C,0x80,5,HAS_IMM_XBIT|HAS_DIRECTIONBIT1);
-DEFNAME(OpcodeStd2Arg    ,  XOR   ,0x30,0x34,0x80,6,HAS_IMM_XBIT|HAS_DIRECTIONBIT1);
-DEFNAME(OpcodeStd2Arg    ,  CMP   ,0x38,0x3C,0x80,7,HAS_IMM_XBIT|HAS_DIRECTIONBIT1);
+DEFNAME(OpcodeStd2Arg    ,  ADD   ,0x00,0x04,0x80,0,HAS_IMM_XBIT|HAS_DIRBIT1);
+DEFNAME(OpcodeStd2Arg    ,  OR    ,0x08,0x0C,0x80,1,HAS_IMM_XBIT|HAS_DIRBIT1);
+DEFNAME(OpcodeStd2Arg    ,  ADC   ,0x10,0x14,0x80,2,HAS_IMM_XBIT|HAS_DIRBIT1);
+DEFNAME(OpcodeStd2Arg    ,  SBB   ,0x18,0x1C,0x80,3,HAS_IMM_XBIT|HAS_DIRBIT1);
+DEFNAME(OpcodeStd2Arg    ,  AND   ,0x20,0x24,0x80,4,HAS_IMM_XBIT|HAS_DIRBIT1);
+DEFNAME(OpcodeStd2Arg    ,  SUB   ,0x28,0x2C,0x80,5,HAS_IMM_XBIT|HAS_DIRBIT1);
+DEFNAME(OpcodeStd2Arg    ,  XOR   ,0x30,0x34,0x80,6,HAS_IMM_XBIT|HAS_DIRBIT1);
+DEFNAME(OpcodeStd2Arg    ,  CMP   ,0x38,0x3C,0x80,7,HAS_IMM_XBIT|HAS_DIRBIT1);
 
 DEFNAME(OpcodeXchg       ,  XCHG       );                  // Exchange Two operands
 DEFNAME(OpcodeStd2Arg    ,  TEST  ,0x84,0xA8,0xF6,0);      // Logical Compare. same as AND but doesn't change dst. set SF,ZF,PF according to result
@@ -91,10 +91,15 @@ DEFNAME(OpcodeDoubleShift,  SHLD  ,0x0FA5,0x0FA4);         // Shift left  by cl/
 DEFNAME(OpcodeDoubleShift,  SHRD  ,0x0FAD,0x0FAC);         // Shift right by cl/imm, filling opened bitpositions, by least significant bits of reg
 
 
-#define BITSCAN_FLAGS (NONBYTE_GPR_ALLOWED | NONBYTE_GPRPTR_ALLOWED | HAS_NONBYTE_SIZEBITS | FIRSTOP_REGONLY)
+#define BITSCAN_FLAGS (NONBYTE_GPR_ALLOWED | NONBYTE_GPRPTR_ALLOWED | HAS_NONBYTE_SIZEBITS | OP1_REGONLY)
 
 DEFNAME(Opcode2Arg       ,  BSF   ,0x0FBC, BITSCAN_FLAGS); // Bitscan forward
 DEFNAME(Opcode2Arg       ,  BSR   ,0x0FBD, BITSCAN_FLAGS); // Bitscan reversed
+
+DEFNAME(OpcodeBitTest    ,  BT    ,0x0FA3, 4);
+DEFNAME(OpcodeBitTest    ,  BTS   ,0x0FAB, 5);
+DEFNAME(OpcodeBitTest    ,  BTR   ,0x0FB3, 6);
+DEFNAME(OpcodeBitTest    ,  BTC   ,0x0FBB, 7);
 
 DEFNAME(OpcodeJmp        ,  JMP );
 DEFNAME(OpcodeCall       ,  CALL);
@@ -285,9 +290,9 @@ DEFNAME(Opcode1Arg       ,FNSTSW  ,0xDD  ,7,WORDPTR_ALLOWED);     // store statu
 
 // --------------------------- XMM opcodes --------------------------------
 
-DEFNAME(Opcode2Arg        ,MOVAPS ,0x0F28 , REGTYPE_XMM_ALLOWED | HAS_DIRECTIONBIT0 | XMMWORDPTR_ALLOWED);
-Opcode2ArgPfxF2SD          MOVSD1(_T("movsd") ,0x0F10 , HAS_DIRECTIONBIT0 );
-DEFNAME(Opcode2ArgPfxF2SD ,ADDSD  ,0x0F58 , FIRSTOP_REGONLY   );
-DEFNAME(Opcode2ArgPfxF2SD ,MULSD  ,0x0F59 , FIRSTOP_REGONLY   );
-DEFNAME(Opcode2ArgPfxF2SD ,SUBSD  ,0x0F5C , FIRSTOP_REGONLY   );
-DEFNAME(Opcode2ArgPfxF2SD ,DIVSD  ,0x0F5E , FIRSTOP_REGONLY   );
+DEFNAME(Opcode2Arg        ,MOVAPS ,0x0F28 , REGTYPE_XMM_ALLOWED | HAS_DIRBIT0 | XMMWORDPTR_ALLOWED);
+Opcode2ArgPfxF2SD          MOVSD1(_T("movsd") ,0x0F10 , HAS_DIRBIT0 );
+DEFNAME(Opcode2ArgPfxF2SD ,ADDSD  ,0x0F58 , OP1_REGONLY   );
+DEFNAME(Opcode2ArgPfxF2SD ,MULSD  ,0x0F59 , OP1_REGONLY   );
+DEFNAME(Opcode2ArgPfxF2SD ,SUBSD  ,0x0F5C , OP1_REGONLY   );
+DEFNAME(Opcode2ArgPfxF2SD ,DIVSD  ,0x0F5E , OP1_REGONLY   );

@@ -53,8 +53,8 @@ OpcodeBase::OpcodeBase(const String &mnemonic, UINT op, BYTE extension, BYTE opC
     if(op & 2) {
       THROWINVALIDFLAGS(_T("HAS_IMM_XBIT set for opcode %X (bit 1 already set)"),op);
     }
-    if(getFlags() & (HAS_DIRECTIONBIT0|HAS_DIRECTIONBIT1)) {
-      THROWINVALIDFLAGS(_T("Cannot have both HAS_IMM_XBIT and DIRECTIONBIT set for opcode %X"),op);
+    if(getFlags() & (HAS_DIRBIT0|HAS_DIRBIT1)) {
+      THROWINVALIDFLAGS(_T("Cannot have both HAS_IMM_XBIT and DIRBIT0/1 set for opcode %X"),op);
     }
   }
   if(getFlags() & HAS_WORDPREFIX) {
@@ -63,42 +63,50 @@ OpcodeBase::OpcodeBase(const String &mnemonic, UINT op, BYTE extension, BYTE opC
     }
   }
 
+  if (getFlags() & LASTOP_IMMONLY) {
+    if((opCount == 2) && (getFlags() & OP2_REGONLY)) {
+      THROWINVALIDFLAGS(_T("Cannot have both LASTOP_IMMONLY and OP2_REGONLY for 2-argument opcode %X"),op);
+    }
+  }
 #ifdef IS64BIT
-  if(getFlags() & HAS_REXQSIZEBIT) {
+  if(getFlags() & HAS_REXWBIT) {
     if(!(getFlags() & (QWORDPTR_ALLOWED | QWORDGPR_ALLOWED))) {
-      THROWINVALIDFLAGS(_T("HAS_REXQSIZEBIT set for opcode %X, but qword size operands not allowed"),op);
+      THROWINVALIDFLAGS(_T("HAS_REXWBIT set for opcode %X, but qword size operands not allowed"),op);
     }
   }
 #endif // IS64BIT
 
-  if(getFlags() & HAS_DIRECTIONBIT1) {
+  if(getFlags() & HAS_DIRBIT1) {
     if(op & 2) {
-      THROWINVALIDFLAGS(_T("HAS_DIRECTIONBIT1 set for opcode %X (bit 1 already set)"),op);
+      THROWINVALIDFLAGS(_T("HAS_DIRBIT1 set for opcode %X (bit 1 already set)"),op);
     }
-    if(getFlags() & FIRSTOP_REGONLY) {
-      THROWINVALIDFLAGS(_T("HAS_DIRECTIONBIT1 and FIRSTOP_REGONLY cannot both be set"));
+    if(getFlags() & OP1_REGONLY) {
+      THROWINVALIDFLAGS(_T("HAS_DIRBIT1 and OP1_REGONLY cannot both be set"));
+    }
+    if(getFlags() & OP2_REGONLY) {
+      THROWINVALIDFLAGS(_T("HAS_DIRBIT1 and OP2_REGONLY cannot both be set"));
     }
   }
 
-  if(getFlags() & HAS_DIRECTIONBIT0) {
+  if(getFlags() & HAS_DIRBIT0) {
     if(op & 1) {
-      THROWINVALIDFLAGS(_T("HAS_DIRECTIONBIT0 set for opcode %X (bit 0 already set)"),op);
+      THROWINVALIDFLAGS(_T("HAS_DIRBIT0 set for opcode %X (bit 0 already set)"),op);
     }
-    if(getFlags() & HAS_DIRECTIONBIT1) {
-      THROWINVALIDFLAGS(_T("HAS_DIRECTIONBIT0 and HAS_DIRECTIONBIT1 cannot both be set set for opcode %X"),op);
+    if(getFlags() & HAS_DIRBIT1) {
+      THROWINVALIDFLAGS(_T("Cannot have both HAS_DIRBIT0 and HAS_DIRBIT1 set for opcode %X"),op);
     }
-    if(getFlags() & FIRSTOP_REGONLY) {
-      THROWINVALIDFLAGS(_T("HAS_DIRECTIONBIT0 and FIRSTOP_REGONLY cannot both be set"));
+    if(getFlags() & OP1_REGONLY) {
+      THROWINVALIDFLAGS(_T("Cannot have both HAS_DIRBIT0 and OP1_REGONLY set"));
     }
     if(getFlags() & HAS_BYTE_SIZEBIT) {
-      THROWINVALIDFLAGS(_T("HAS_DIRECTIONBIT0 and HAS_BYTE_SIZEBIT cannot both be set for opcode %X"),op);
+      THROWINVALIDFLAGS(_T("HAS_DIRBIT0 and HAS_BYTE_SIZEBIT cannot both be set for opcode %X"),op);
     }
   }
 
 #define ALL_REGTYPES (REGTYPE_GPR0_ALLOWED|REGTYPE_GPR_ALLOWED|REGTYPE_SEG_ALLOWED|REGTYPE_FPU_ALLOWED|REGTYPE_XMM_ALLOWED)
 
-  if((getFlags() & FIRSTOP_REGONLY) && ((getFlags() & ALL_REGTYPES) == 0)) {
-    THROWINVALIDFLAGS(_T("FIRSTOP_REGONLY is set, but no registertypes allowed"));
+  if((getFlags() & OP1_REGONLY) && ((getFlags() & ALL_REGTYPES) == 0)) {
+    THROWINVALIDFLAGS(_T("OP1_REGONLY is set, but no registertypes allowed"));
   }
   if((getFlags() & LASTOP_IMMONLY) && ((getFlags() & (IMMEDIATEVALUE_ALLOWED | IMM64_ALLOWED)) == 0)) {
     THROWINVALIDFLAGS(_T("LASTOP_IMMONLY is set, but no immediate operands allowed"));
@@ -217,19 +225,26 @@ void OpcodeBase::throwUnknownRegisterType(const TCHAR *method, RegType type) { /
 #define ERRORSTRING_1OPGPR0 _T("Operand 1 must be AL/AX/EAX/RAX. op1=%s")
 #endif // IS64BIT
 
-#define CHECKFIRSTOP_GPR0ONLY(op)                                                               \
-{ if((getFlags() & FIRSTOP_GPR0ONLY) && !op.isGPR0()) {                                         \
+#define CHECKOP1_GPR0ONLY(op)                                                                   \
+{ if((getFlags() & OP1_GPR0ONLY) && !op.isGPR0()) {                                             \
     RAISEERROR(ERRORSTRING_1OPGPR0,op.toString().cstr());                                       \
   }                                                                                             \
 }
 
-#define CHECKFIRSTOP_REGONLY(op)                                                                \
-{ if(getFlags() & (FIRSTOP_GPR0ONLY|FIRSTOP_REGONLY)) {                                         \
-    CHECKFIRSTOP_GPR0ONLY(op);                                                                  \
-    if((getFlags() & FIRSTOP_REGONLY) && !op.isRegister()) {                                    \
+#define CHECKOP1_REGONLY(op)                                                                    \
+{ if(getFlags() & (OP1_GPR0ONLY|OP1_REGONLY)) {                                                 \
+    CHECKOP1_GPR0ONLY(op);                                                                      \
+    if((getFlags() & OP1_REGONLY) && !op.isRegister()) {                                        \
       RAISEERROR(_T("Operand 1 must be register. op1=%s")                                       \
                 ,op.toString().cstr());                                                         \
     }                                                                                           \
+  }                                                                                             \
+}
+
+#define CHECKOP2_REGONLY(op)                                                                    \
+{ if((getFlags() & OP2_REGONLY) && !op.isRegister()) {                                          \
+    RAISEERROR(_T("Operand 2 must be register. op2=%s")                                         \
+                ,op.toString().cstr());                                                         \
   }                                                                                             \
 }
 
@@ -477,8 +492,11 @@ bool OpcodeBase::isValidOperandType(const InstructionOperand &op, BYTE index) co
   }
   const bool throwOnError = false;
   if(index == 1) {
-    CHECKFIRSTOP_REGONLY(op);
+    CHECKOP1_REGONLY(op);
+  } else if(index == 2) {
+    CHECKOP2_REGONLY(op);
   }
+
   if(index == getMaxOpCount()) {
     CHECKLASTOP_IMMONLY(op);
   }
@@ -494,7 +512,7 @@ bool OpcodeBase::isValidOperand(const InstructionOperand &op, bool throwOnError)
   if(!validateOpCount(1, throwOnError)) {
     return false;
   }
-  CHECKFIRSTOP_REGONLY(op);
+  CHECKOP1_REGONLY(op);
   switch(op.getType()) {
   case REGISTER       :
     if(!validateRegisterAllowed(op.getRegister(), throwOnError)) {
@@ -521,7 +539,8 @@ bool OpcodeBase::isValidOperandCombination(const Register &reg, const Instructio
   if(!validateOpCount(2, throwOnError)) {
     return false;
   }
-  CHECKFIRSTOP_GPR0ONLY(  reg);
+  CHECKOP1_GPR0ONLY(      reg);
+  CHECKOP2_REGONLY(       op );
   CHECKLASTOP_IMMONLY(    op );
   if(!validateRegisterAllowed(reg, throwOnError)) {
     return false;
@@ -567,7 +586,8 @@ bool OpcodeBase::isValidOperandCombination(const InstructionOperand &op1, const 
   if(!validateOpCount(2, throwOnError)) {
     return false;
   }
-  CHECKFIRSTOP_REGONLY(   op1);
+  CHECKOP1_REGONLY(       op1);
+  CHECKOP2_REGONLY(       op2);
   CHECKLASTOP_IMMONLY(    op2);
   switch(op1.getType()) {
   case MEMORYOPERAND  :
@@ -610,7 +630,8 @@ bool OpcodeBase::isValidOperandCombination(const InstructionOperand &op1, const 
   if(!validateOpCount(3, throwOnError)) {
     return false;
   }
-  CHECKFIRSTOP_REGONLY(   op1);
+  CHECKOP1_REGONLY(       op1);
+  CHECKOP2_REGONLY(       op2);
   CHECKLASTOP_IMMONLY(    op3);
   switch(op1.getType()) {
   case REGISTER       :

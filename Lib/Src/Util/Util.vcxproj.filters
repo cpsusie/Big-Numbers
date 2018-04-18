@@ -797,6 +797,9 @@
     <ClCompile Include="IntelCPU\OpcodeMovExtend.cpp">
       <Filter>Source Files\IntelCPU</Filter>
     </ClCompile>
+    <ClCompile Include="IntelCPU\OpcodeBitTest.cpp">
+      <Filter>Source Files\IntelCPU</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\Array.h">

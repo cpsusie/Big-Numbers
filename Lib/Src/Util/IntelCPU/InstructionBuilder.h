@@ -89,9 +89,6 @@ private:
   inline bool modeByteCreated() const {
     return m_modeByteCreated;
   }
-  inline bool modeByteAllowed() const {
-    return (getFlags() & NO_MODEBYTE) == 0;
-  }
   InstructionBuilder &prefixSegReg(    const SegmentRegister &reg);
   // force 1,2,4 (or 8 in x64) bytes immediate value. that is, no byte-encoding for size=word/dword/qword
   InstructionBuilder &addImmediateOperand( const InstructionOperand &imm, OperandSize size);
@@ -137,20 +134,23 @@ public:
   inline bool hasByteSizeBit() const {
     return (getFlags() & HAS_BYTE_SIZEBIT) != 0;
   }
-  inline bool hasDirectionBit1() const {
-    return (getFlags() & HAS_DIRECTIONBIT1) != 0;
+  inline bool hasDirBit1() const {
+    return (getFlags() & HAS_DIRBIT1) != 0;
+  }
+  inline bool hasDirBit0() const {
+    return (getFlags() & HAS_DIRBIT0) != 0;
   }
   inline bool hasWordSizePrefix() const {
     return (getFlags() & HAS_WORDPREFIX) != 0;
   }
   inline bool hasQwordSizeBit() const {
-    return (getFlags() & HAS_REXQSIZEBIT) != 0;
+    return (getFlags() & HAS_REXWBIT) != 0;
   }
   inline bool hasImmXBit() const {
     return (getFlags() & HAS_IMM_XBIT) != 0;
   }
-  inline bool firstOpRegOnly() const {
-    return (getFlags() & FIRSTOP_REGONLY) != 0;
+  inline bool hasOp1RegOnly() const {
+    return (getFlags() & OP1_REGONLY) != 0;
   }
   InstructionBuilder &insert(BYTE index, BYTE b);
   inline InstructionBuilder &prefix(BYTE b) {
@@ -215,15 +215,15 @@ public:
 
   InstructionBuilder &setOperandSize(OperandSize size);
   // Set bit 1 in opcode to 1 if destination is a register
-  inline InstructionBuilder &setDirectionBit1() {
-    return hasDirectionBit1() ? or(getLastOpcodeByteIndex(),m_directionMask) : *this;
+  inline InstructionBuilder &setDirBit1() {
+    return hasDirBit1() ? or(getLastOpcodeByteIndex(),m_directionMask) : *this;
   }
   inline bool needDirectionBitOn(OperandType dst, OperandType src) const {
-    return (m_flags&HAS_DIRECTIONBIT1)? ((dst==REGISTER)&&(src==MEMORYOPERAND))
-         : (m_flags&HAS_DIRECTIONBIT0)? ((src==REGISTER)&&(dst==MEMORYOPERAND))
+    return hasDirBit1() ? ((dst==REGISTER)&&(src==MEMORYOPERAND))
+         : hasDirBit0() ? ((src==REGISTER)&&(dst==MEMORYOPERAND))
          : false;
   }
-  inline InstructionBuilder &setDirectionBit(OperandType dst, OperandType src) {
+  inline InstructionBuilder &setDirBit(OperandType dst, OperandType src) {
     return needDirectionBitOn(dst,src) ? or(getLastOpcodeByteIndex(),m_directionMask) : *this;
   }
   inline InstructionBuilder &setImmXBit() {
@@ -233,7 +233,7 @@ public:
   // add MOD-REG-R/M byte if not there yet, else modeByte |= bits
   InstructionBuilder &setModeBits(BYTE bits);
    // Registertype = GPR or FPU
-  InstructionBuilder &setRegisterOperand(  const Register           &reg);
+  virtual InstructionBuilder &setRegisterOperand(  const Register   &reg);
   InstructionBuilder &setMemoryOperand(    const MemoryOperand      &mem);
   InstructionBuilder &setMemOrRegOperand(  const InstructionOperand &op );
   InstructionBuilder &setMemoryRegOperands(const MemoryOperand      &mem , const Register &reg );
@@ -250,6 +250,13 @@ public:
   //   add 4 byte imm-value;
   // }
   InstructionBuilder &setImmediateOperand( const InstructionOperand &imm, OperandSize dstSize=REGSIZE_VOID);
+};
+
+class InstructionBuilderNoMode : private InstructionBuilder {
+public:
+  InstructionBuilderNoMode(const OpcodeBase &opcode) : InstructionBuilder(opcode) {
+  }
+  InstructionBuilder &setRegisterOperand(const Register &reg);
 };
 
 // Used by Opcodebase + derived classes, to throw error-text or just return false
