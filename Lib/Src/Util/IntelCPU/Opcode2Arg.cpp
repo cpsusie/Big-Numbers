@@ -77,7 +77,7 @@ InstructionBase Opcode2ArgM::operator()(const InstructionOperand &op1, const Ins
 }
 
 bool OpcodeStd2Arg::isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError) const {
-  if(op2.getType() != IMMEDIATEVALUE) {
+  if(!op2.isImmediateValue()) {
     return __super::isValidOperandCombination(op1,op2,throwOnError);
   } else if(op1.isGPR0()) {
     return m_codeI.isValidOperandCombination(op1,op2,throwOnError);
@@ -87,7 +87,7 @@ bool OpcodeStd2Arg::isValidOperandCombination(const InstructionOperand &op1, con
 }
 
 InstructionBase OpcodeStd2Arg::operator()(const InstructionOperand &op1, const InstructionOperand &op2) const {
-  if(op2.getType() != IMMEDIATEVALUE) {
+  if(!op2.isImmediateValue()) {
     return __super::operator()(op1, op2);
   } else if(!(m_codeMI.getFlags() & HAS_IMM_XBIT)) {
     if(op1.isGPR0()) {
@@ -96,7 +96,7 @@ InstructionBase OpcodeStd2Arg::operator()(const InstructionOperand &op1, const I
       return m_codeMI(op1,op2);
     }
   } else { // imm-value can be short if Byte-size
-    if(op2.isImmByte() && (op1.getSize() != REGSIZE_BYTE)) {
+    if(op2.isImmByte() && !op1.isByte()) {
       return m_codeMI(op1,op2);
     } else if(op1.isGPR0()) {
       return m_codeI(op1,op2);
@@ -115,7 +115,7 @@ InstructionBase Opcode2ArgPfxF2::operator()(const InstructionOperand &op1, const
 }
 
 bool Opcode2ArgPfxF2SD::validateCompatibleSize(const Register &reg, const InstructionOperand &op, bool throwOnError) const {
-  if((reg.getType() == REGTYPE_XMM) && (op.getType() == MEMORYOPERAND)) {
+  if(reg.isXMM() && op.isMemoryRef()) {
     if(op.getSize() == REGSIZE_MMWORD) {
       return true;
     }

@@ -94,6 +94,9 @@ public:
   inline bool isGPR() const {
     return getType() == REGTYPE_GPR;
   }
+  inline bool isXMM() const {
+    return getType() == REGTYPE_XMM;
+  }
   // is this AL,AX,EAX or RAX
   inline bool isGPR0() const {
     return isGPR() && (getIndex() == 0);

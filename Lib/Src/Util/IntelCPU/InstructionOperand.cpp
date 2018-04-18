@@ -69,23 +69,23 @@ String getImmSizeErrorString(const String &dst, INT64 immv) {
 }
 
 OperandSize InstructionOperand::findMinSize(int    v) {
-  if(isByte(v)) return REGSIZE_BYTE;
+  if(::isByte(v)) return REGSIZE_BYTE;
   if(isWord(v)) return REGSIZE_WORD;
   return REGSIZE_DWORD;
 }
 OperandSize InstructionOperand::findMinSize(UINT   v) {
-  if(isByte(v)) return REGSIZE_BYTE;
+  if(::isByte(v)) return REGSIZE_BYTE;
   if(isWord(v)) return REGSIZE_WORD;
   return REGSIZE_DWORD;
 }
 OperandSize InstructionOperand::findMinSize(INT64  v) {
-  if(isByte( v)) return REGSIZE_BYTE;
+  if(::isByte( v)) return REGSIZE_BYTE;
   if(isWord( v)) return REGSIZE_WORD;
   if(isDword(v)) return REGSIZE_DWORD;
   return REGSIZE_QWORD;
 }
 OperandSize InstructionOperand::findMinSize(UINT64 v) {
-  if(isByte( v)) return REGSIZE_BYTE;
+  if(::isByte( v)) return REGSIZE_BYTE;
   if(isWord( v)) return REGSIZE_WORD;
   if(isDword(v)) return REGSIZE_DWORD;
   return REGSIZE_QWORD;

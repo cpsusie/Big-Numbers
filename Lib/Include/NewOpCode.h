@@ -286,8 +286,11 @@ public:
   inline bool isDisplaceOnly() const {
     return isMemoryRef() && getMemoryReference().isDisplaceOnly();
   }
+  inline bool isByte() const {
+    return getSize() == REGSIZE_BYTE;
+  }
   inline bool isImmByte() const {
-    return isImmediateValue() && (getSize() == REGSIZE_BYTE);
+    return isImmediateValue() && isByte();
   }
   char   getImmInt8()   const;
   BYTE   getImmUint8()  const;

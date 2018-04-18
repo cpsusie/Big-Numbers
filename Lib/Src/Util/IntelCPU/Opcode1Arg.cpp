@@ -15,7 +15,7 @@ InstructionBase Opcode1Arg::operator()(const InstructionOperand &op) const {
 #ifdef IS32BIT
 InstructionBase OpcodeIncDec::operator()(const InstructionOperand &op) const {
   isValidOperand(op, true);
-  if((op.getType() == REGISTER) && (op.getSize() == REGSIZE_DWORD)) {
+  if(op.isRegister() && (op.getSize() == REGSIZE_DWORD)) {
     return InstructionBuilder(m_opReg32).or(op.getRegister().getIndex()&7);
   }
   return __super::operator()(op);
