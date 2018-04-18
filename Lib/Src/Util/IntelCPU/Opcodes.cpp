@@ -124,6 +124,10 @@ DEFNAME(Opcode1Arg       , JECXZ  ,0x67E3,0,IMM8_ALLOWED); // Jump if ECX regist
 DEFNAME(Opcode1Arg       , JRCXZ  ,0xE3  ,0,IMM8_ALLOWED); // Jump if RCX register is 0. 1 byte PC relative offset
 #endif // IS64BIT
 
+DEFNAME(Opcode1Arg       , LOOP   ,0xE2  ,0,IMM8_ALLOWED); // Decrement count jump if count != 0
+DEFNAME(Opcode1Arg       , LOOPE  ,0xE1  ,0,IMM8_ALLOWED); // Decrement count jump if count != 0 and ZF = 1
+DEFNAME(Opcode1Arg       , LOOPNE ,0xE0  ,0,IMM8_ALLOWED); // Decrement count jump if count != 0 and ZF = 0
+
 #define SETCC_FLAGS   (REGTYPE_GPR_ALLOWED | BYTEGPR_ALLOWED | BYTEPTR_ALLOWED)
 // Set Byte on Condition
 DEFNAME(Opcode1Arg       ,  SETO  ,0x0F90 ,0,SETCC_FLAGS); // Set byte if overflow

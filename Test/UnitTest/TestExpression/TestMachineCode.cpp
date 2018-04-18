@@ -697,23 +697,29 @@ void TestMachineCode::testArg0Opcodes() {
 }
 
 void TestMachineCode::testArg1Opcodes() {
-  testOpcode(PUSH );
-  testOpcode(POP  );
-  testOpcode(INC  );
-  testOpcode(DEC  );
-  testOpcode(NOT  );
-  testOpcode(NEG  );
-  testOpcode(JMP  );
+  testOpcode(PUSH  );
+  testOpcode(POP   );
+  testOpcode(INC   );
+  testOpcode(DEC   );
+  testOpcode(NOT   );
+  testOpcode(NEG   );
+  testOpcode(JMP   );
+  clear(true);
 #ifdef IS32BIT
-//  testOpcode(JCXZ );
-//  testOpcode(JECXZ);
+  testOpcode(JCXZ  );
+  testOpcode(JECXZ );
 #else // IS64BIT
-  testOpcode(JECXZ);
-  testOpcode(JRCXZ);
+  testOpcode(JECXZ );
+  testOpcode(JRCXZ );
 #endif // IS64BIT
-  testOpcode(CALL );
-  testOpcode(IMUL );
-  testOpcode(IDIV );
+
+  testOpcode(LOOP  );
+  testOpcode(LOOPE );
+  testOpcode(LOOPNE);
+
+  testOpcode(CALL  );
+  testOpcode(IMUL  );
+  testOpcode(IDIV  );
 }
 
 void TestMachineCode::testArg2Opcodes() {
@@ -732,7 +738,6 @@ void TestMachineCode::testArg2Opcodes() {
   testOpcode(XCHG   );
   testOpcode(TEST   );
   testOpcode(MOV    );
-  clear(true);
   testOpcode(MOVSX  );
   testOpcode(MOVZX  );
   testOpcode(LEA    );

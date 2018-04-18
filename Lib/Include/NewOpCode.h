@@ -1162,6 +1162,9 @@ extern Opcode1Arg        JECXZ;                            // Jump if ECX regist
 extern Opcode1Arg        JRCXZ;                            // Jump if RCX register is 0. 1 byte PC relative offset
 #endif // IS64BIT
 
+extern Opcode1Arg        LOOP;                             // Decrement count jump if count != 0
+extern Opcode1Arg        LOOPE;                            // Decrement count jump if count != 0 and ZF = 1
+extern Opcode1Arg        LOOPNE;                           // Decrement count jump if count != 0 and ZF = 0
 
 // Set Byte on Condition
 extern Opcode1Arg        SETO;                             // Set byte   if overflow                                 (OF==1 )
