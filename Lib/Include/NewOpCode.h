@@ -895,11 +895,11 @@ public:
 #ifdef IS32BIT
 class OpcodeIncDec : public Opcode1Arg {
 private:
-  const OpcodeBase m_opReg32;
+  const Opcode1ArgNoMode m_reg32Code;
 public :
   OpcodeIncDec(const String &mnemonic, BYTE op, BYTE extension)
-    : Opcode1Arg(mnemonic,op,extension)
-    , m_opReg32(mnemonic,0x40|(extension<<3),0,1,0)
+    : Opcode1Arg( mnemonic,op                 ,extension)
+    , m_reg32Code(mnemonic,0x40|(extension<<3),0,REGTYPE_GPR_ALLOWED | DWORDGPR_ALLOWED)
   {
   }
   InstructionBase operator()(const InstructionOperand &op) const;
