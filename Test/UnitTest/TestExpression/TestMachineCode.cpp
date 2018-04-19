@@ -661,199 +661,199 @@ void TestMachineCode::testArg0Opcodes() {
   clear();
   setClearOn(false);
 
-  testOpcode(RET    );
-  testOpcode(CMC    );
-  testOpcode(CLC    );
-  testOpcode(STC    );
-  testOpcode(CLI    );
-  testOpcode(STI    );
-  testOpcode(CLD    );
-  testOpcode(STD    );
-  testOpcode(SAHF   );
-  testOpcode(LAHF   );
-  testOpcode(PUSHF  );
-  testOpcode(POPF   );
+  testOpcode(RET     );
+  testOpcode(CMC     );
+  testOpcode(CLC     );
+  testOpcode(STC     );
+  testOpcode(CLI     );
+  testOpcode(STI     );
+  testOpcode(CLD     );
+  testOpcode(STD     );
+  testOpcode(SAHF    );
+  testOpcode(LAHF    );
+  testOpcode(PUSHF   );
+  testOpcode(POPF    );
 #ifdef IS32BIT
-  testOpcode(PUSHFD );
-  testOpcode(POPFD  );
-  testOpcode(PUSHAD );
-  testOpcode(POPAD  );
+  testOpcode(PUSHFD  );
+  testOpcode(POPFD   );
+  testOpcode(PUSHAD  );
+  testOpcode(POPAD   );
 #else // IS64BIT
-  testOpcode(PUSHFQ );
-  testOpcode(POPFQ  );
+  testOpcode(PUSHFQ  );
+  testOpcode(POPFQ   );
 #endif // IS64BIT
-  testOpcode(NOOP   );
-  testOpcode(CBW    );
-  testOpcode(CWDE   );
-  testOpcode(CWD    );
-  testOpcode(CDQ    );
+  testOpcode(NOOP    );
+  testOpcode(CBW     );
+  testOpcode(CWDE    );
+  testOpcode(CWD     );
+  testOpcode(CDQ     );
 
 #ifdef IS64BIT
-  testOpcode(CDQE   );
-  testOpcode(CQO    );
-  testOpcode(CLGI   );
-  testOpcode(STGI   );
+  testOpcode(CDQE    );
+  testOpcode(CQO     );
+  testOpcode(CLGI    );
+  testOpcode(STGI    );
 #endif // IS64BIT
 }
 
 void TestMachineCode::testArg1Opcodes() {
-  testOpcode(PUSH  );
-  testOpcode(POP   );
-  testOpcode(INC   );
-  testOpcode(DEC   );
-  testOpcode(NOT   );
-  testOpcode(NEG   );
-  testOpcode(JMP   );
+  testOpcode(PUSH    );
+  testOpcode(POP     );
+  testOpcode(INC     );
+  testOpcode(DEC     );
+  testOpcode(NOT     );
+  testOpcode(NEG     );
+  testOpcode(JMP     );
   clear(true);
 #ifdef IS32BIT
-  testOpcode(JCXZ  );
-  testOpcode(JECXZ );
+  testOpcode(JCXZ    );
+  testOpcode(JECXZ   );
 #else // IS64BIT
-  testOpcode(JECXZ );
-  testOpcode(JRCXZ );
+  testOpcode(JECXZ   );
+  testOpcode(JRCXZ   );
 #endif // IS64BIT
 
-  testOpcode(LOOP  );
-  testOpcode(LOOPE );
-  testOpcode(LOOPNE);
+  testOpcode(LOOP    );
+  testOpcode(LOOPE   );
+  testOpcode(LOOPNE  );
 
-  testOpcode(CALL  );
-  testOpcode(IMUL  );
-  testOpcode(IDIV  );
+  testOpcode(CALL    );
+  testOpcode(IMUL    );
+  testOpcode(IDIV    );
 }
 
 void TestMachineCode::testArg2Opcodes() {
   clear(true);
-  testOpcode(MUL    );
-  testOpcode(DIV    );
+  testOpcode(MUL     );
+  testOpcode(DIV     );
 
-  testOpcode(ADD    );
-  testOpcode(ADC    );
-  testOpcode(OR     );
-  testOpcode(AND    );
-  testOpcode(SUB    );
-  testOpcode(SBB    );
-  testOpcode(XOR    );
-  testOpcode(CMP    );
-  testOpcode(XCHG   );
-  testOpcode(TEST   );
-  testOpcode(MOV    );
-  testOpcode(MOVSX  );
-  testOpcode(MOVZX  );
-  testOpcode(LEA    );
+  testOpcode(ADD     );
+  testOpcode(ADC     );
+  testOpcode(OR      );
+  testOpcode(AND     );
+  testOpcode(SUB     );
+  testOpcode(SBB     );
+  testOpcode(XOR     );
+  testOpcode(CMP     );
+  testOpcode(XCHG    );
+  testOpcode(TEST    );
+  testOpcode(MOV     );
+  testOpcode(MOVSX   );
+  testOpcode(MOVZX   );
+  testOpcode(LEA     );
 }
 
 void TestMachineCode::testArg3Opcodes() {
-  testOpcode(SHLD   );
-  testOpcode(SHRD   );
+  testOpcode(SHLD    );
+  testOpcode(SHRD    );
 }
 
 void TestMachineCode::testSetccOpcodes() {
   clear(true);
-  testOpcode(SETO );
-  testOpcode(SETNO);
-  testOpcode(SETB );
-  testOpcode(SETAE);
-  testOpcode(SETE );
-  testOpcode(SETNE);
-  testOpcode(SETBE);
-  testOpcode(SETA );
-  testOpcode(SETS );
-  testOpcode(SETNS);
-  testOpcode(SETP );
-  testOpcode(SETNP);
-  testOpcode(SETL );
-  testOpcode(SETGE);
-  testOpcode(SETLE);
-  testOpcode(SETG );
+  testOpcode(SETO    );
+  testOpcode(SETNO   );
+  testOpcode(SETB    );
+  testOpcode(SETAE   );
+  testOpcode(SETE    );
+  testOpcode(SETNE   );
+  testOpcode(SETBE   );
+  testOpcode(SETA    );
+  testOpcode(SETS    );
+  testOpcode(SETNS   );
+  testOpcode(SETP    );
+  testOpcode(SETNP   );
+  testOpcode(SETL    );
+  testOpcode(SETGE   );
+  testOpcode(SETLE   );
+  testOpcode(SETG    );
 
   clear(true);
-  testOpcode(CMOVO );
-  testOpcode(CMOVNO);
-  testOpcode(CMOVB );
-  testOpcode(CMOVAE);
-  testOpcode(CMOVE );
-  testOpcode(CMOVNE);
-  testOpcode(CMOVBE);
-  testOpcode(CMOVA );
-  testOpcode(CMOVS );
-  testOpcode(CMOVNS);
-  testOpcode(CMOVP );
-  testOpcode(CMOVNP);
-  testOpcode(CMOVL );
-  testOpcode(CMOVGE);
-  testOpcode(CMOVLE);
-  testOpcode(CMOVG );
+  testOpcode(CMOVO   );
+  testOpcode(CMOVNO  );
+  testOpcode(CMOVB   );
+  testOpcode(CMOVAE  );
+  testOpcode(CMOVE   );
+  testOpcode(CMOVNE  );
+  testOpcode(CMOVBE  );
+  testOpcode(CMOVA   );
+  testOpcode(CMOVS   );
+  testOpcode(CMOVNS  );
+  testOpcode(CMOVP   );
+  testOpcode(CMOVNP  );
+  testOpcode(CMOVL   );
+  testOpcode(CMOVGE  );
+  testOpcode(CMOVLE  );
+  testOpcode(CMOVG   );
 
 //  clear(true);
-  testOpcode(JO   );
-  testOpcode(JNO  );
-  testOpcode(JB   );
-  testOpcode(JAE  );
-  testOpcode(JE   );
-  testOpcode(JNE  );
-  testOpcode(JBE  );
-  testOpcode(JA   );
-  testOpcode(JS   );
-  testOpcode(JNS  );
-  testOpcode(JP   );
-  testOpcode(JNP  );
-  testOpcode(JL   );
-  testOpcode(JGE  );
-  testOpcode(JLE  );
-  testOpcode(JG   );
+  testOpcode(JO      );
+  testOpcode(JNO     );
+  testOpcode(JB      );
+  testOpcode(JAE     );
+  testOpcode(JE      );
+  testOpcode(JNE     );
+  testOpcode(JBE     );
+  testOpcode(JA      );
+  testOpcode(JS      );
+  testOpcode(JNS     );
+  testOpcode(JP      );
+  testOpcode(JNP     );
+  testOpcode(JL      );
+  testOpcode(JGE     );
+  testOpcode(JLE     );
+  testOpcode(JG      );
 }
 
 void TestMachineCode::testBitOperations() {
   clear(true);
-  testOpcode(ROL    );
-  testOpcode(ROR    );
-  testOpcode(RCL    );
-  testOpcode(RCR    );
-  testOpcode(SHL    );
-  testOpcode(SHR    );
-  testOpcode(SAR    );
+  testOpcode(ROL     );
+  testOpcode(ROR     );
+  testOpcode(RCL     );
+  testOpcode(RCR     );
+  testOpcode(SHL     );
+  testOpcode(SHR     );
+  testOpcode(SAR     );
 
-  testOpcode(BSF    );
-  testOpcode(BSR    );
+  testOpcode(BSF     );
+  testOpcode(BSR     );
 
-  testOpcode(BT     );
-  testOpcode(BTS    );
-  testOpcode(BTR    );
-  testOpcode(BTC    );
+  testOpcode(BT      );
+  testOpcode(BTS     );
+  testOpcode(BTR     );
+  testOpcode(BTC     );
 }
 
 void TestMachineCode::testStringInstructions() {
   clear(true);
-  testOpcode(MOVSB  );
-  testOpcode(CMPSB  );
-  testOpcode(STOSB  );
-  testOpcode(LODSB  );
-  testOpcode(SCASB  );
+  testOpcode(MOVSB   );
+  testOpcode(CMPSB   );
+  testOpcode(STOSB   );
+  testOpcode(LODSB   );
+  testOpcode(SCASB   );
 
-  testOpcode(MOVSW  );
-  testOpcode(CMPSW  );
-  testOpcode(STOSW  );
-  testOpcode(LODSW  );
-  testOpcode(SCASW  );
+  testOpcode(MOVSW   );
+  testOpcode(CMPSW   );
+  testOpcode(STOSW   );
+  testOpcode(LODSW   );
+  testOpcode(SCASW   );
 
-  testOpcode(MOVSD  );
-  testOpcode(CMPSD  );
-  testOpcode(STOSD  );
-  testOpcode(LODSD  );
-  testOpcode(SCASD  );
+  testOpcode(MOVSD   );
+  testOpcode(CMPSD   );
+  testOpcode(STOSD   );
+  testOpcode(LODSD   );
+  testOpcode(SCASD   );
 
 #ifdef IS64BIT
-  testOpcode(MOVSQ  );
-  testOpcode(CMPSQ  );
-  testOpcode(STOSQ  );
-  testOpcode(LODSQ  );
-  testOpcode(SCASQ  );
+  testOpcode(MOVSQ   );
+  testOpcode(CMPSQ   );
+  testOpcode(STOSQ   );
+  testOpcode(LODSQ   );
+  testOpcode(SCASQ   );
 #endif // IS64BIT
 
-  testOpcode(REP    );
-  testOpcode(REPE   );
-  testOpcode(REPNE  );
+  testOpcode(REP     );
+  testOpcode(REPE    );
+  testOpcode(REPNE   );
 }
 
 void TestMachineCode::testFPUOpcodes() {
@@ -939,26 +939,26 @@ void TestMachineCode::testFPUOpcodes() {
   testOpcode(FIDIV   );
   testOpcode(FIDIVR  );
 
-  testOpcode(FCMOVB  );                            // Move if below (CF=1)
-  testOpcode(FCMOVE  );                            // Move if equal (ZF=1)
-  testOpcode(FCMOVBE );                            // Move if below or equal (CF=1 or ZF=1)
-  testOpcode(FCMOVU  );                            // Move if unordered (PF=1)
-  testOpcode(FCMOVAE );                            // Move if above or equal (CF=0)
-  testOpcode(FCMOVNE );                            // Move if not equal (ZF=0)
-  testOpcode(FCMOVA  );                            // Move if above (CF=0 and ZF=0)
-  testOpcode(FCMOVNU );                            // Move if not unordered (PF=0)
-  testOpcode(FFREE   );                            // Free a data register
-  testOpcode(FXCH    );                            // Swap st(0) and st(i)
+  testOpcode(FCMOVB  );
+  testOpcode(FCMOVE  );
+  testOpcode(FCMOVBE );
+  testOpcode(FCMOVU  );
+  testOpcode(FCMOVAE );
+  testOpcode(FCMOVNE );
+  testOpcode(FCMOVA  );
+  testOpcode(FCMOVNU );
+  testOpcode(FFREE   );
+  testOpcode(FXCH    );
 }
 
 void TestMachineCode::testXMMOpcodes() {
   clear(true);
-  testOpcode(MOVAPS);
-  testOpcode(MOVSD1);
-  testOpcode(ADDSD );
-  testOpcode(MULSD );
-  testOpcode(SUBSD );
-  testOpcode(DIVSD );
+  testOpcode(MOVAPS  );
+  testOpcode(MOVSD1  );
+  testOpcode(ADDSD   );
+  testOpcode(MULSD   );
+  testOpcode(SUBSD   );
+  testOpcode(DIVSD   );
 }
 
 #endif // TEST_MACHINECODE

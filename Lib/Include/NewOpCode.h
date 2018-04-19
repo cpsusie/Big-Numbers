@@ -1146,30 +1146,30 @@ extern Opcode0Arg        POPFQ;                            // Pop data into RFLA
 
 extern Opcode0Arg        NOOP;                             // No operation
 
-extern OpcodeStd2Arg     ADD;                              // Integer Addition
-extern OpcodeStd2Arg     ADC;                              // Integer Addition with Carry
-extern OpcodeStd2Arg     OR;                               // Logical Inclusive OR
-extern OpcodeStd2Arg     AND;                              // Logical AND
-extern OpcodeStd2Arg     SUB;                              // Integer Subtraction
-extern OpcodeStd2Arg     SBB;                              // Integer Subtraction with Borrow
-extern OpcodeStd2Arg     XOR;                              // Logical Exclusive OR
-extern OpcodeStd2Arg     CMP;                              // Compare Two Operands
+extern OpcodeStd2Arg     ADD;                              // ADD(r/m8-64,r/m8/64/imm8-32). Integer Addition
+extern OpcodeStd2Arg     ADC;                              // ADC(r/m8-64,r/m8/64/imm8-32). Integer Addition with Carry
+extern OpcodeStd2Arg     OR;                               // OR(r/m8-64,r/m8/64/imm8-32). Logical Inclusive OR
+extern OpcodeStd2Arg     AND;                              // AND(r/m8-64,r/m8/64/imm8-32). Logical AND
+extern OpcodeStd2Arg     SUB;                              // SUB(r/m8-64,r/m8/64/imm8-32). Integer Subtraction
+extern OpcodeStd2Arg     SBB;                              // SBB(r/m8-64,r/m8/64/imm8-32). Integer Subtraction with Borrow
+extern OpcodeStd2Arg     XOR;                              // XOR(r/m8-64,r/m8/64/imm8-32). Logical Exclusive OR
+extern OpcodeStd2Arg     CMP;                              // CMP(r/m8-64,r/m8/64/imm8-32). Compare Two Operands
 
-extern OpcodeXchg        XCHG;                             // Exchange Two operands
-extern OpcodeStd2Arg     TEST;                             // Logical Compare. same as AND but doesn't change dst. set SF,ZF,PF according to result
+extern OpcodeXchg        XCHG;                             // XCHG(r/m8-64,r/m8-64). Exchange Two operands
+extern OpcodeStd2Arg     TEST;                             // TEST(r/m8-64,r/m8/64/imm8-32). Logical Compare. same as AND but doesn't change dst. set SF,ZF,PF according to result
 extern OpcodeMov         MOV;                              // Move data (copying)
 extern OpcodeMovExtend   MOVZX;                            // Move with zero-extend
 extern OpcodeMovExtend   MOVSX;                            // Move with sign-extend
 extern OpcodeLea         LEA;                              // Load effective address
 
-extern OpcodePushPop     PUSH;
-extern OpcodePushPop     POP;
+extern OpcodePushPop     PUSH;                             // PUSH(r/m16/32,imm8/32) in x86, PUSH(r/m16/64,imm8/32) in x64
+extern OpcodePushPop     POP;                              // POP(r/m16/32) in x86, PUSH(r/m16/64) in x64
 
-extern OpcodeIncDec      INC;
-extern OpcodeIncDec      DEC;
+extern OpcodeIncDec      INC;                              // INC(r/m8-64). Increment by 1
+extern OpcodeIncDec      DEC;                              // DEC(r/m8-64). Decrement by 1.
 
-extern Opcode1Arg        NOT;                              // Negate the operand, logical NOT
-extern Opcode1Arg        NEG;                              // Two's complement negation
+extern Opcode1Arg        NOT;                              // NOT(r/m8-64). Negate the operand, logical NOT
+extern Opcode1Arg        NEG;                              // NEG(r/m8-64). Two's complement negation
 extern OpcodeIMul        IMUL;                             // Signed multiply   ah:al=al*src, dx:ax=ax*src, edx:eax=eax*src, rdx:rax=rax*src
 
 extern Opcode1Arg        IDIV;                             // Signed divide     ah :al  /= src, al  = quot, ah  = rem. ah  must contain sign extension of al.
@@ -1182,158 +1182,162 @@ extern Opcode2ArgM       DIV;                              // Unsigned divide   
                                                            //                   dx :ax  /= src, ax  = quot, dx  = rem
                                                            //                   edx:eax /= src, eax = quot, edx = rem
                                                            //                   rdx:rax /= src, rax = quot, rdx = rem
-extern OpcodeShiftRot    ROL;                              // Rotate left  by cl/imm
-extern OpcodeShiftRot    ROR;                              // Rotate right by cl/imm
-extern OpcodeShiftRot    RCL;                              // Rotate left  by cl/imm (with carry)
-extern OpcodeShiftRot    RCR;                              // Rotate right by cl/imm (with carry)
-extern OpcodeShiftRot    SHL;                              // Shift  left  by cl/imm                 (unsigned shift left )
-extern OpcodeShiftRot    SHR;                              // Shift  right by cl/imm                 (unsigned shift right)
-#define                  SAL SHL                           // Shift  Arithmetically left  by cl/imm  (signed shift   left - same as shl)
-extern OpcodeShiftRot    SAR;                              // Shift  Arithmetically right by cl/imm  (signed shift   right)
 
-extern OpcodeDoubleShift SHLD;                             // Shift left  by cl/imm, filling opened bitpositions, by most significant bits of reg
-extern OpcodeDoubleShift SHRD;                             // Shift right by cl/imm, filling opened bitpositions, by least significant bits of reg
+extern OpcodeShiftRot    ROL;                              // ROL(r/m8-64,CL/imm8). Rotate left by CL/imm8
+extern OpcodeShiftRot    ROR;                              // ROR(r/m8-64,CL/imm8). Rotate right by CL/imm8
+extern OpcodeShiftRot    RCL;                              // RCL(r/m8-64,CL/imm8). Rotate left by CL/imm8 (with carry)
+extern OpcodeShiftRot    RCR;                              // RCR(r/m8-64,CL/imm8). Rotate right by CL/imm8 (with carry)
+extern OpcodeShiftRot    SHL;                              // SHL(r/m8-64,CL/imm8). Shift left by CL/imm8 (unsigned shift left )
+extern OpcodeShiftRot    SHR;                              // SHR(r/m8-64,CL/imm8). Shift right by CL/imm8 (unsigned shift right)
+#define                  SAL SHL                           // SAL(r/m8-64,CL/imm8). Shift arithmetically left by CL/imm8 (signed shift left - same as shl)
+extern OpcodeShiftRot    SAR;                              // SAR(r/m8-64,CL/imm8). Shift arithmetically right by CL/imm8 (signed shift right)
+
+extern OpcodeDoubleShift SHLD;                             // SHLD(r/m16-64,reg,CL/imm8). Shift left by CL/imm8, filling opened bitpositions, by most significant bits of reg
+extern OpcodeDoubleShift SHRD;                             // SHRD(r/m16-64,reg,CL/imm8). Shift right by CL/imm8, filling opened bitpositions, by least significant bits of reg
 
 
-extern Opcode2Arg        BSF;                              // Bitscan forward
-extern Opcode2Arg        BSR;                              // Bitscan reversed
+extern Opcode2Arg        BSF;                              // BSF(r16-64,r/m16-64). Bitscan forward
+extern Opcode2Arg        BSR;                              // BSR(r16-64,r/m16-64). Bitscan reversed
 
-extern OpcodeBitTest     BT;
-extern OpcodeBitTest     BTS;
-extern OpcodeBitTest     BTR;
-extern OpcodeBitTest     BTC;
+extern OpcodeBitTest     BT;                               // BT(r/m16-64,r16-64/imm8). Bit Test. Store selected bit in CF
+extern OpcodeBitTest     BTS;                              // BTS(r/m16-64,r16-64/imm8). Bit Test and Set. Store selected bi in CF and set
+extern OpcodeBitTest     BTR;                              // BTR(r/m16-64,r16-64/imm8). Bit Test and Reset. Store selected bi in CF and clear
+extern OpcodeBitTest     BTC;                              // BTC(r/m16-64,r16-64/imm8). Bit Test and Complement. Store selected bi in CF and reset
 
-extern OpcodeJmp         JMP;
-extern OpcodeCall        CALL;
+
+extern OpcodeJmp         JMP;                              // JMP(rel8/32), JMP(r/m32-64). Unconditional jump. jump short/jump near.
+extern OpcodeCall        CALL;                             // Call procedure.
 
 // Use less/greater opcode for signed comparison. below/above for unsigned.
 // Jmp PC relative offset on condition
-extern OpcodeJcc         JO;                               // Jump       if overflow                                 (OF==1 )
-extern OpcodeJcc         JNO;                              // Jump       if not overflow                             (OF==0 )
-extern OpcodeJcc         JB;                               // Jump       if below                (unsigned)          (CF==1 )
-extern OpcodeJcc         JAE;                              // Jump       if above or equal       (unsigned)          (CF==0 )
-extern OpcodeJcc         JE;                               // Jump       if equal                (signed/unsigned)   (ZF==1 )
-extern OpcodeJcc         JNE;                              // Jump       if not equal            (signed/unsigned)   (ZF==0 )
-extern OpcodeJcc         JBE;                              // Jump       if below or equal       (unsigned)          (CF==1 || ZF==1)
-extern OpcodeJcc         JA;                               // Jump       if above                (unsigned)          (CF==0 && ZF==0)
-extern OpcodeJcc         JS;                               // Jump       if sign                                     (SF==1 )
-extern OpcodeJcc         JNS;                              // Jump       if not sign                                 (SF==0 )
-extern OpcodeJcc         JP;                               // Jump       if parity even                              (PF==1 )
-extern OpcodeJcc         JNP;                              // Jump       if parity odd                               (PF==0 )
-extern OpcodeJcc         JL;                               // Jump       if less                 (signed  )          (SF!=OF)
-extern OpcodeJcc         JGE;                              // Jump       if greater or equal     (signed  )          (SF==OF)
-extern OpcodeJcc         JLE;                              // Jump       if less or equal        (signed  )          (ZF==1 || SF!=OF)
-extern OpcodeJcc         JG;                               // Jump       if greater              (signed  )          (ZF==0 && SF==OF)
+// jcc rel8, jcc rel32
+extern OpcodeJcc         JO;                               // JO(rel8/32). Jump if overflow (OF==1)
+extern OpcodeJcc         JNO;                              // JNO(rel8/32). Jump if not overflow (OF==0)
+extern OpcodeJcc         JB;                               // JB(rel8/32). Jump if below (unsigned) (CF==1)
+extern OpcodeJcc         JAE;                              // JAE(rel8/32). Jump if above or equal (unsigned) (CF==0)
+extern OpcodeJcc         JE;                               // JE(rel8/32). Jump if equal (signed/unsigned) (ZF==1)
+extern OpcodeJcc         JNE;                              // JNE(rel8/32). Jump if not equal (signed/unsigned) (ZF==0)
+extern OpcodeJcc         JBE;                              // JBE(rel8/32). Jump if below or equal (unsigned) (CF==1 || ZF==1)
+extern OpcodeJcc         JA;                               // JA(rel8/32). Jump if above (unsigned) (CF==0 && ZF==0)
+extern OpcodeJcc         JS;                               // JS(rel8/32). Jump if sign (SF==1)
+extern OpcodeJcc         JNS;                              // JNS(rel8/32). Jump if not sign (SF==0)
+extern OpcodeJcc         JP;                               // JP(rel8/32). Jump if parity even (PF==1)
+extern OpcodeJcc         JNP;                              // JNP(rel8/32). Jump if parity odd (PF==0)
+extern OpcodeJcc         JL;                               // JL(rel8/32). Jump if less (signed) (SF!=OF)
+extern OpcodeJcc         JGE;                              // JGE(rel8/32). Jump if greater or equal (signed) (SF==OF)
+extern OpcodeJcc         JLE;                              // JLE(rel8/32). Jump if less or equal (signed) (ZF==1 || SF!=OF)
+extern OpcodeJcc         JG;                               // JG(rel8/32). Jump if greater (signed) (ZF==0 && SF==OF)
 
-#define                  JNAE           JB                 // Jump       if not above or equal   (unsigned)
-#define                  JC             JB                 // Jump       if carry                (unsigned)
-#define                  JNC            JAE                // Jump       if not carry            (unsigned)
-#define                  JNB            JAE                // Jump       if not below            (unsigned)
-#define                  JZ             JE                 // Jump       if zero                 (signed/unsigned)
-#define                  JNZ            JNE                // Jump       if not zero             (signed/unsigned)
-#define                  JNA            JBE                // Jump       if not above            (unsigned)
-#define                  JNBE           JA                 // Jump       if not below or equal   (unsigned)
-#define                  JNGE           JL                 // Jump       if not greater or equal (signed  )
-#define                  JNL            JGE                // Jump       if not less             (signed  )
-#define                  JNG            JLE                // Jump       if not greater          (signed  )
-#define                  JNLE           JG                 // Jump       if not less or equal    (signed  )
+#define                  JNAE           JB                 // JNAE(rel8/32). Jump if not above or equal (unsigned)
+#define                  JC             JB                 // JC(rel8/32). Jump if carry (unsigned)
+#define                  JNC            JAE                // JNC(rel8/32). Jump if not carry (unsigned)
+#define                  JNB            JAE                // JNB(rel8/32). Jump if not below (unsigned)
+#define                  JZ             JE                 // JZ(rel8/32). Jump if zero (signed/unsigned)
+#define                  JNZ            JNE                // JNZ(rel8/32). Jump if not zero (signed/unsigned)
+#define                  JNA            JBE                // JNA(rel8/32). Jump if not above (unsigned)
+#define                  JNBE           JA                 // JNBE(rel8/32). Jump if not below or equal (unsigned)
+#define                  JNGE           JL                 // JNGE(rel8/32). Jump if not greater or equal (signed)
+#define                  JNL            JGE                // JNL(rel8/32). Jump if not less (signed)
+#define                  JNG            JLE                // JNG(rel8/32). Jump if not greater (signed)
+#define                  JNLE           JG                 // JNLE(rel8/32). Jump if not less or equal (signed)
 
 #ifdef IS32BIT
-extern Opcode1Arg        JCXZ;                             // Jump if CX  register is 0. 1 byte PC relative offset
-extern Opcode1Arg        JECXZ;                            // Jump if ECX register is 0. 1 byte PC relative offset
+extern Opcode1Arg        JCXZ;                             // JCXZ(rel8). Jump if CX  register is 0. 1 byte PC relative offset
+extern Opcode1Arg        JECXZ;                            // JECXZ(rel8). Jump if ECX register is 0. 1 byte PC relative offset
 #else // IS64BIT
-extern Opcode1Arg        JECXZ;                            // Jump if ECX register is 0. 1 byte PC relative offset
-extern Opcode1Arg        JRCXZ;                            // Jump if RCX register is 0. 1 byte PC relative offset
+extern Opcode1Arg        JECXZ;                            // JECXZ(rel8). Jump if ECX register is 0. 1 byte PC relative offset
+extern Opcode1Arg        JRCXZ;                            // JRCXZ(rel8). Jump if RCX register is 0. 1 byte PC relative offset
 #endif // IS64BIT
 
-extern Opcode1Arg        LOOP;                             // Decrement count jump if count != 0
-extern Opcode1Arg        LOOPE;                            // Decrement count jump if count != 0 and ZF = 1
-extern Opcode1Arg        LOOPNE;                           // Decrement count jump if count != 0 and ZF = 0
+// loop according to ecx/rcx, LOOPcc(rel8)
+extern Opcode1Arg        LOOP;                             // LOOP(rel8). Decrement count and jump if count != 0. 1 byte PC relative offset
+extern Opcode1Arg        LOOPE;                            // LOOPE(rel8). Decrement count and jump if count != 0 and ZF = 1. 1 byte PC relative offset
+extern Opcode1Arg        LOOPNE;                           // LOOPNE(rel8). Decrement count and jump if count != 0 and ZF = 0. 1 byte PC relative offset
 
-// Set Byte on Condition
-extern Opcode1Arg        SETO;                             // Set byte   if overflow                                 (OF==1 )
-extern Opcode1Arg        SETNO;                            // Set byte   if not overflow                             (OF==0 )
-extern Opcode1Arg        SETB;                             // Set byte   if below                (unsigned)          (CF==1 )
-extern Opcode1Arg        SETAE;                            // Set byte   if above or equal       (unsigned)          (CF==0 )
-extern Opcode1Arg        SETE;                             // Set byte   if equal                (signed/unsigned)   (ZF==1 )
-extern Opcode1Arg        SETNE;                            // Set byte   if not equal            (signed/unsigned)   (ZF==0 )
-extern Opcode1Arg        SETBE;                            // Set byte   if below or equal       (unsigned)          (CF==1 || ZF==1)
-extern Opcode1Arg        SETA;                             // Set byte   if above                (unsigned)          (CF==0 && ZF==0)
-extern Opcode1Arg        SETS;                             // Set byte   if sign                                     (SF==1 )
-extern Opcode1Arg        SETNS;                            // Set byte   if not sign                                 (SF==0 )
-extern Opcode1Arg        SETP;                             // Set byte   if parity even                              (PF==1 )
-extern Opcode1Arg        SETNP;                            // Set byte   if parity odd                               (PF==0 )
-extern Opcode1Arg        SETL;                             // Set byte   if less                 (signed  )          (SF!=OF)          
-extern Opcode1Arg        SETGE;                            // Set byte   if greater or equal     (signed  )          (SF==OF)          
-extern Opcode1Arg        SETLE;                            // Set byte   if less or equal        (signed  )          (ZF==1 || SF!=OF) 
-extern Opcode1Arg        SETG;                             // Set byte   if greater              (signed  )          (ZF==0 && SF==OF) 
+// Set Byte on Condition, SETcc(r/m8)
+extern Opcode1Arg        SETO;                             // SETO(r/m8). Set byte if overflow (OF==1)
+extern Opcode1Arg        SETNO;                            // SETNO(r/m8). Set byte if not overflow (OF==0)
+extern Opcode1Arg        SETB;                             // SETB(r/m8). Set byte if below (unsigned) (CF==1)
+extern Opcode1Arg        SETAE;                            // SETAE(r/m8). Set byte if above or equal (unsigned) (CF==0)
+extern Opcode1Arg        SETE;                             // SETE(r/m8). Set byte if equal (signed/unsigned) (ZF==1)
+extern Opcode1Arg        SETNE;                            // SETNE(r/m8). Set byte if not equal (signed/unsigned) (ZF==0 )
+extern Opcode1Arg        SETBE;                            // SETBE(r/m8). Set byte if below or equal (unsigned) (CF==1 || ZF==1)
+extern Opcode1Arg        SETA;                             // SETA(r/m8). Set byte if above (unsigned) (CF==0 && ZF==0)
+extern Opcode1Arg        SETS;                             // SETS(r/m8). Set byte if sign (SF==1)
+extern Opcode1Arg        SETNS;                            // SETNS(r/m8). Set byte if not sign (SF==0)
+extern Opcode1Arg        SETP;                             // SETP(r/m8). Set byte if parity even (PF==1)
+extern Opcode1Arg        SETNP;                            // SETNP(r/m8). Set byte if parity odd (PF==0)
+extern Opcode1Arg        SETL;                             // SETL(r/m8). Set byte if less (signed) (SF!=OF)
+extern Opcode1Arg        SETGE;                            // SETGE(r/m8). Set byte if greater or equal (signed) (SF==OF)
+extern Opcode1Arg        SETLE;                            // SETLE(r/m8). Set byte if less or equal (signed) (ZF==1 || SF!=OF)
+extern Opcode1Arg        SETG;                             // SETG(r/m8). Set byte if greater (signed) (ZF==0 && SF==OF)
 
-#define                  SETNAE         SETB               // Set byte   if not above or equal   (unsigned)
-#define                  SETC           SETB               // Set byte   if carry                (unsigned)
-#define                  SETNC          SETAE              // Set byte   if not carry            (unsigned)
-#define                  SETNB          SETAE              // Set byte   if not below            (unsigned)
-#define                  SETZ           SETE               // Set byte   if 0                    (signed/unsigned)
-#define                  SETNZ          SETNE              // Set byte   if not zero             (signed/unsigned)
-#define                  SETNA          SETBE              // Set byte   if not above            (unsigned)
-#define                  SETNBE         SETA               // Set byte   if not below or equal   (unsigned)
-#define                  SETNGE         SETL               // Set byte   if not greater or equal (signed  )
-#define                  SETNL          SETGE              // Set byte   if not less             (signed  )
-#define                  SETNG          SETLE              // Set byte   if not greater          (signed  )
-#define                  SETNLE         SETG               // Set byte   if not less or equal    (signed  )
-
-
-
-// Move on Condition
-extern Opcode2Arg        CMOVO;                            // Move       if overflow                                 (OF==1 )
-extern Opcode2Arg        CMOVNO;                           // Move       if not overflow                             (OF==0 )
-extern Opcode2Arg        CMOVB;                            // Move       if below                (unsigned)          (CF==1 )
-extern Opcode2Arg        CMOVAE;                           // Move       if above or equal       (unsigned)          (CF==0 )
-extern Opcode2Arg        CMOVE;                            // Move       if equal                (signed/unsigned)   (ZF==1 )
-extern Opcode2Arg        CMOVNE;                           // Move       if not equal            (signed/unsigned)   (ZF==0 )
-extern Opcode2Arg        CMOVBE;                           // Move       if below or equal       (unsigned)          (CF==1 || ZF==1)
-extern Opcode2Arg        CMOVA;                            // Move       if above                (unsigned)          (CF==0 && ZF==0)
-extern Opcode2Arg        CMOVS;                            // Move       if sign                                     (SF==1 )
-extern Opcode2Arg        CMOVNS;                           // Move       if not sign                                 (SF==0 )
-extern Opcode2Arg        CMOVP;                            // Move       if parity even                              (PF==1 )
-extern Opcode2Arg        CMOVNP;                           // Move       if parity odd                               (PF==0 )
-extern Opcode2Arg        CMOVL;                            // Move       if less                 (signed  )          (SF!=OF)          
-extern Opcode2Arg        CMOVGE;                           // Move       if greater or equal     (signed  )          (SF==OF)          
-extern Opcode2Arg        CMOVLE;                           // Move       if less or equal        (signed  )          (ZF==1 || SF!=OF) 
-extern Opcode2Arg        CMOVG;                            // Move       if greater              (signed  )          (ZF==0 && SF==OF) 
-
-#define                  CMOVNAE        CMOVB              // Move       if not above or equal   (unsigned)
-#define                  CMOVC          CMOVB              // Move       if carry                (unsigned)
-#define                  CMOVNC         CMOVAE             // Move       if not carry            (unsigned)
-#define                  CMOVNB         CMOVAE             // Move       if not below            (unsigned)
-#define                  CMOVZ          CMOVE              // Move       if 0                    (signed/unsigned)
-#define                  CMOVNZ         CMOVNE             // Move       if not zero             (signed/unsigned)
-#define                  CMOVNA         CMOVBE             // Move       if not above            (unsigned)
-#define                  CMOVNBE        CMOVA              // Move       if not below or equal   (unsigned)
-#define                  CMOVNGE        CMOVL              // Move       if not greater or equal (signed  )
-#define                  CMOVNL         CMOVGE             // Move       if not less             (signed  )
-#define                  CMOVNG         CMOVLE             // Move       if not greater          (signed  )
-#define                  CMOVNLE        CMOVG              // Move       if not less or equal    (signed  )
+#define                  SETNAE         SETB               // SETNAE(r/m8). Set byte if not above or equal (unsigned)
+#define                  SETC           SETB               // SETC(r/m8). Set byte if carry (unsigned)
+#define                  SETNC          SETAE              // SETNC(r/m8). Set byte if not carry (unsigned)
+#define                  SETNB          SETAE              // SETNB(r/m8). Set byte if not below (unsigned)
+#define                  SETZ           SETE               // SETZ(r/m8). Set byte if 0 (signed/unsigned)
+#define                  SETNZ          SETNE              // SETNZ(r/m8). Set byte if not zero (signed/unsigned)
+#define                  SETNA          SETBE              // SETNA(r/m8). Set byte if not above (unsigned)
+#define                  SETNBE         SETA               // SETNBE(r/m8). Set byte if not below or equal (unsigned)
+#define                  SETNGE         SETL               // SETNGE(r/m8). Set byte if not greater or equal (signed)
+#define                  SETNL          SETGE              // SETNL(r/m8). Set byte if not less (signed)
+#define                  SETNG          SETLE              // SETNG(r/m8). Set byte if not greater (signed)
+#define                  SETNLE         SETG               // SETNLE(r/m8). Set byte if not less or equal (signed)
 
 
 
-extern Opcode0Arg        CWDE;                             // Convert word  to dword. Sign extend AX  into EAX.     Copy sign (bit 15) of AX  into higher 16 bits of EAX
-extern Opcode0Arg        CDQ;                              // Convert dword to qword. Sign extend EAX into EDX:EAX. Copy sign (bit 31) of EAX into every     bit  of EDX
-extern Opcode0Arg        CBW;                              // Convert byte  to word.  Sign extend AL  into AX.      Copy sign (bit  7) of AL  into higher  8 bits of AX
-extern Opcode0Arg        CWD;                              // Convert word  to dword. Sign extend AX  into DX:AX.   Copy sign (bit 15) of AX  into every     bit  of DX
+// Move on Condition, CMOVcc(r16-64, r/m16-64)
+extern Opcode2Arg        CMOVO;                            // CMOVO(r16-64, r/m16-64). Move if overflow (OF==1)
+extern Opcode2Arg        CMOVNO;                           // CMOVNO(r16-64, r/m16-64). Move if not overflow (OF==0)
+extern Opcode2Arg        CMOVB;                            // CMOVB(r16-64, r/m16-64). Move if below (unsigned) (CF==1)
+extern Opcode2Arg        CMOVAE;                           // CMOVAE(r16-64, r/m16-64). Move if above or equal (unsigned) (CF==0)
+extern Opcode2Arg        CMOVE;                            // CMOVE(r16-64, r/m16-64). Move if equal (signed/unsigned) (ZF==1)
+extern Opcode2Arg        CMOVNE;                           // CMOVNE(r16-64, r/m16-64). Move if not equal (signed/unsigned) (ZF==0)
+extern Opcode2Arg        CMOVBE;                           // CMOVBE(r16-64, r/m16-64). Move if below or equal (unsigned) (CF==1 || ZF==1)
+extern Opcode2Arg        CMOVA;                            // CMOVA(r16-64, r/m16-64). Move if above (unsigned) (CF==0 && ZF==0)
+extern Opcode2Arg        CMOVS;                            // CMOVS(r16-64, r/m16-64). Move if sign (SF==1)
+extern Opcode2Arg        CMOVNS;                           // CMOVNS(r16-64, r/m16-64). Move if not sign (SF==0)
+extern Opcode2Arg        CMOVP;                            // CMOVP(r16-64, r/m16-64). Move if parity even (PF==1)
+extern Opcode2Arg        CMOVNP;                           // CMOVNP(r16-64, r/m16-64). Move if parity odd (PF==0)
+extern Opcode2Arg        CMOVL;                            // CMOVL(r16-64, r/m16-64). Move if less (signed) (SF!=OF)
+extern Opcode2Arg        CMOVGE;                           // CMOVGE(r16-64, r/m16-64). Move if greater or equal (signed  ) (SF==OF)
+extern Opcode2Arg        CMOVLE;                           // CMOVLE(r16-64, r/m16-64). Move if less or equal (signed) (ZF==1 || SF!=OF)
+extern Opcode2Arg        CMOVG;                            // CMOVG(r16-64, r/m16-64). Move if greater (signed) (ZF==0 && SF==OF)
+
+#define                  CMOVNAE        CMOVB              // CMOVNAE(r16-64, r/m16-64). Move if not above or equal (unsigned)
+#define                  CMOVC          CMOVB              // CMOVC(r16-64, r/m16-64). Move if carry (unsigned)
+#define                  CMOVNC         CMOVAE             // CMOVNC(r16-64, r/m16-64). Move if not carry (unsigned)
+#define                  CMOVNB         CMOVAE             // CMOVNB(r16-64, r/m16-64). Move if not below (unsigned)
+#define                  CMOVZ          CMOVE              // CMOVZ(r16-64, r/m16-64). Move if 0 (signed/unsigned)
+#define                  CMOVNZ         CMOVNE             // CMOVNZ(r16-64, r/m16-64). Move if not zero (signed/unsigned)
+#define                  CMOVNA         CMOVBE             // CMOVNA(r16-64, r/m16-64). Move if not above (unsigned)
+#define                  CMOVNBE        CMOVA              // CMOVNBE(r16-64, r/m16-64). Move if not below or equal (unsigned)
+#define                  CMOVNGE        CMOVL              // CMOVNGE(r16-64, r/m16-64). Move if not greater or equal (signed  )
+#define                  CMOVNL         CMOVGE             // CMOVNL(r16-64, r/m16-64). Move if not less (signed  )
+#define                  CMOVNG         CMOVLE             // CMOVNG(r16-64, r/m16-64). Move if not greater (signed  )
+#define                  CMOVNLE        CMOVG              // CMOVNLE(r16-64, r/m16-64). Move if not less or equal (signed  )
+
+
+
+extern Opcode0Arg        CWDE;                             // Convert word to dword. Sign extend AX into EAX. Copy sign (bit 15) of AX into higher 16 bits of EAX
+extern Opcode0Arg        CDQ;                              // Convert dword to qword. Sign extend EAX into EDX:EAX. Copy sign (bit 31) of EAX into every bit of EDX
+extern Opcode0Arg        CBW;                              // Convert byte to word. Sign extend AL into AX. Copy sign (bit 7) of AL into higher 8 bits of AX
+extern Opcode0Arg        CWD;                              // Convert word to dword. Sign extend AX into DX:AX. Copy sign (bit 15) of AX into every bit of DX
 
 #ifdef IS64BIT
-extern Opcode0Arg        CDQE;                             // Convert dword to qword. Sign extend EAX into RAX.     Copy sign (bit 31) of EAX into higher 32 bits of RAX
-extern Opcode0Arg        CQO;                              // Convert qword to oword. Sign extend RAX into RDX:RAX. Copy sign (bit 63) of RAX into every     bit  of RDX
+extern Opcode0Arg        CDQE;                             // Convert dword to qword. Sign extend EAX into RAX. Copy sign (bit 31) of EAX into higher 32 bits of RAX
+extern Opcode0Arg        CQO;                              // Convert qword to oword. Sign extend RAX into RDX:RAX. Copy sign (bit 63) of RAX into every bit of RDX
 #endif // IS64BIT
 
 //#define INS_BYTE                               B1INS(0x6C)
 //#define OUTS_BYTE                              B1INS(0x6E)
 
-extern StringInstruction MOVSB;                            // Move byte from string to string; if(DF==0) *(byte*)DI++ = *(byte*)SI++;      else *(byte*)DI-- = *(byte*)SI--;
-extern StringInstruction CMPSB;                            // Compare bytes in memory        ; if(DF==0) Compares ES:[DI++] with DS:[SI++] else Compares ES:[DI--] with DS:[SI--] 
-extern StringInstruction STOSB;                            // Store byte in string           ; if(DF==0) *ES:DI++     = AL;                else *ES:DI--     = AL;
-extern StringInstruction LODSB;                            // Load string byte               ; if(DF==0)     AL       = *SI++;             else     AL       = *SI--;
-extern StringInstruction SCASB;                            // Compare byte string            ; if(DF==0) Compares ES:[DI++] with AL        else Compares ES:[DI--] with AL
+extern StringInstruction MOVSB;                            // Move byte from string to string; if(DF==0) *(byte*)DI++ = *(byte*)SI++; else *(byte*)DI-- = *(byte*)SI--;
+extern StringInstruction CMPSB;                            // Compare bytes in memory; if(DF==0) Compares ES:[DI++] with DS:[SI++] else Compares ES:[DI--] with DS:[SI--] 
+extern StringInstruction STOSB;                            // Store byte in string; if(DF==0) *ES:DI++ = AL; else *ES:DI-- = AL;
+extern StringInstruction LODSB;                            // Load string byte; if(DF==0) AL = *SI++; else AL = *SI--;
+extern StringInstruction SCASB;                            // Compare byte string; if(DF==0) Compares ES:[DI++] with AL else Compares ES:[DI--] with AL
 
 // Same as MOVSB...,but with WORD, and AL -> AX
 extern StringInstruction MOVSW;
@@ -1367,72 +1371,72 @@ extern StringPrefix      REPNE;                            // Apply to CMPS and 
 // ---------------- See http://www.ray.masmcode.com/tutorial/ for documentation ---------
 
 // ----------------------------- FPU transfer opcodes ----------------------------
-extern OpcodeFPUTransfer FLD;                              // fld  (src). Push src into st(0).  src={st0-st7,dword ptr,qword ptr,tbyte ptr}
-extern OpcodeFPUTransfer FSTP;                             // fstp (dst). Pop st(0) into dst.   dst={st0-st7,dword ptr,qword ptr,tbyte ptr}
-extern OpcodeFPUTransfer FST;                              // fst  (dst). Store st(0) into dst. dst={st0-st7,dword ptr,qword ptr}
+extern OpcodeFPUTransfer FLD;                              // FLD(src). Push src into st(0). src={st(i),Real4/8/10 in memory}
+extern OpcodeFPUTransfer FSTP;                             // FSTP(dst). Pop st(0) into dst. dst={st(i),Real4/8/10 in memory}
+extern OpcodeFPUTransfer FST;                              // FST(dst). Store st(0) into dst. dst={st(i),Real4/8 in memory}
 
-extern Opcode1Arg        FBLD;                             // fbld (src). Push BCD data from src into st(0).   src=tbyte ptr
-extern Opcode1Arg        FBSTP;                            // fbstp(dst). Pop st(0) as BCD data into dst.      dst=tbyte ptr
+extern Opcode1Arg        FBLD;                             // FBLD(src). Push BCD data from src into st(0). src=tbyte ptr
+extern Opcode1Arg        FBSTP;                            // FBSTP(dst). Pop st(0) as BCD data into dst. dst=tbyte ptr
 
 // ----------------------------- FPU arithmetic opcodes ----------------------------
 // For opcode={FADD,FMUL,FSUB,FDIV,FSUBR,FDIVR}, the following rules apply:
 // No operand means opcodeP(st(1)).
 // If dst not specified, then dst=st(0) and src must be Real4/Real8 in memory.
 // If both src and dst are specified, then both must be st(i), and at least 1 must be st(0).
-extern OpcodeFPUArithm   FADD;                             // fadd |fadd (src)|fadd (dst,src). dst += src
-extern OpcodeFPUArithm   FMUL;                             // fmul |fmul (src)|fmul (dst,src). dst *= src
-extern OpcodeFPUArithm   FSUB;                             // fsub |fsub (src)|fsub (dst,src). dst -= src
-extern OpcodeFPUArithm   FDIV;                             // fdiv |fdiv (src)|fdiv (dst,src). dst /= src
-extern OpcodeFPUArithm   FSUBR;                            // fsubr|fsubr(src)|fsubr(dst,src). dst = src-dst
-extern OpcodeFPUArithm   FDIVR;                            // fdivr|fdivr(src)|fdivr(dst,src). dst = src/dst
+extern OpcodeFPUArithm   FADD;                             // FADD |FADD(src)|FADD(dst,src). dst += src. No operand=FADDP(st(1)). 1 operand:dst=st(0). 2 operands:FADD(st(i),st(0)), FADD(st(0),st(i))
+extern OpcodeFPUArithm   FMUL;                             // FMUL |FMUL(src)|FMUL(dst,src). dst *= src. No operand=FMULP(st(1)). 1 operand:dst=st(0). 2 operands:FMUL(st(i),st(0)), FADD(st(0),st(i))
+extern OpcodeFPUArithm   FSUB;                             // FSUB |FSUB(src)|FSUB(dst,src). dst -= src. No operand=FSUBP(st(1)). 1 operand:dst=st(0). 2 operands:FSUB(st(i),st(0)), FADD(st(0),st(i))
+extern OpcodeFPUArithm   FDIV;                             // FDIV |FDIV(src)|FDIV(dst,src). dst /= src. No operand=FDIVP(st(1)). 1 operand:dst=st(0). 2 operands:FDIV(st(i),st(0)), FADD(st(0),st(i))
+extern OpcodeFPUArithm   FSUBR;                            // FSUBR|FSUBR(src)|FSUBR(dst,src). dst = src-dst. No operand=FSUBRP(st(1)). 1 operand:dst=st(0). 2 operands:FSUBR(st(i),st(0)), FADD(st(0),st(i))
+extern OpcodeFPUArithm   FDIVR;                            // FDIVR|FDIVR(src)|FDIVR(dst,src). dst = src/dst. No operand=FDIVRP(st(1)). 1 operand:dst=st(0). 2 operands:FDIVR(st(i),st(0)), FADD(st(0),st(i))
 
-extern Opcode1Arg        FADDP;                            // faddp (st(i)). st(i) += st(0); pop st(0);
-extern Opcode1Arg        FMULP;                            // fmulp (st(i)). st(i) *= st(0); pop st(0);
-extern Opcode1Arg        FSUBP;                            // fsubp (st(i)). st(i) -= st(0); pop st(0);
-extern Opcode1Arg        FDIVP;                            // fdivp (st(i)). st(i) /= st(0); pop st(0);
-extern Opcode1Arg        FSUBRP;                           // fsubrp(st(i)). st(i) =  st(0)-st(i); pop st(0);
-extern Opcode1Arg        FDIVRP;                           // fdivrp(st(i)). st(i) =  st(0)/st(i); pop st(0);
+extern Opcode1Arg        FADDP;                            // FADDP(st(i)). st(i) += st(0); pop st(0);
+extern Opcode1Arg        FMULP;                            // FMULP(st(i)). st(i) *= st(0); pop st(0);
+extern Opcode1Arg        FSUBP;                            // FSUBP(st(i)). st(i) -= st(0); pop st(0);
+extern Opcode1Arg        FDIVP;                            // FDIVP(st(i)). st(i) /= st(0); pop st(0);
+extern Opcode1Arg        FSUBRP;                           // FSUBRP(st(i)). st(i) = st(0)-st(i); pop st(0);
+extern Opcode1Arg        FDIVRP;                           // FDIVRP(st(i)). st(i) = st(0)/st(i); pop st(0);
 
 // ----------------------------- FPU compare opcodes ----------------------------
-extern OpcodeFPUCompare  FCOM;                             // fcom  (src  ). Compare st(0) to src, src={st0..st7,Real4/Real8 in memory}
-extern Opcode1Arg        FCOMI;                            // fcomi (st(i)). Compare st(0) to st(i) and set CPU-flags
-extern Opcode1Arg        FUCOM;                            // fucom (st(i)). Unordered compare st(0) to st(i)
-extern Opcode1Arg        FUCOMI;                           // fucomi(st(i)). Unordered compare st(0) to st(i) and set CPU-flags
+extern OpcodeFPUCompare  FCOM;                             // FCOM(src). Compare st(0) to src, src={st(i),Real4/Real8 in memory}
+extern Opcode1Arg        FCOMI;                            // FCOMI(st(i)). Compare st(0) to st(i) and set CPU-flags
+extern Opcode1Arg        FUCOM;                            // FUCOM(st(i)). Unordered compare st(0) to st(i)
+extern Opcode1Arg        FUCOMI;                           // FUCOMI(st(i)). Unordered compare st(0) to st(i) and set CPU-flags
 
-extern OpcodeFPUCompare  FCOMP;                            // Same as fcom,   but pop st(0) after compare
-extern Opcode1Arg        FCOMIP;                           // Same as fcomi,  but pop st(0) after compare
-extern Opcode1Arg        FUCOMP;                           // Same as fucom,  but pop st(0) after compare
-extern Opcode1Arg        FUCOMIP;                          // Same as fucomi, but pop st(0) after compare
+extern OpcodeFPUCompare  FCOMP;                            // Same as FCOM,   but pop st(0) after compare
+extern Opcode1Arg        FCOMIP;                           // Same as FCOMI,  but pop st(0) after compare
+extern Opcode1Arg        FUCOMP;                           // Same as FUCOM,  but pop st(0) after compare
+extern Opcode1Arg        FUCOMIP;                          // Same as FUCOMI, but pop st(0) after compare
 
 extern Opcode0Arg        FCOMPP;                           // Compare st(0) to st(1); pop both
 extern Opcode0Arg        FUCOMPP;                          // Unordered compare st(0) to st(1); pop both
 
 // ------------------------ FPU integer opcodes ---------------------------------
-extern OpcodeFPUIArithm  FILD;                             // fild  (src). Push src into st(0).  src=(signed short/int/__int64 in memory)
-extern OpcodeFPUIArithm  FISTP;                            // fistp (dst). Pop   st(0) into dst, rounding according to RC-field FPU control word. dst=(signed short/int/__int64 in memory)
-extern OpcodeFPUIArithm  FISTTP;                           // fisttp(dst). Same as fistp, but truncates to nearest integer, regardless of RC-field in FPU control word
-extern OpcodeFPUIArithm  FIST;                             // fist  (dst). Store st(0) into dst, rounding according to RC-field FPU control word. dst=(signed short/int in memory)
-extern OpcodeFPUIArithm  FIADD;                            // fiadd (src). st(0) += src.         src=(signed short/int in memory)
-extern OpcodeFPUIArithm  FIMUL;                            // fimul (src). st(0) *= src.         src=(signed short/int in memory)
-extern OpcodeFPUIArithm  FISUB;                            // fisub (src). st(0) -= src.         src=(signed short/int in memory)
-extern OpcodeFPUIArithm  FIDIV;                            // fidiv (src). st(0) /= src.         src=(signed short/int in memory)
-extern OpcodeFPUIArithm  FISUBR;                           // fisubr(src). st(0) = src-st(0).    src=(signed short/int in memory)
-extern OpcodeFPUIArithm  FIDIVR;                           // fidivr(src). st(0) = src/st(0).    src=(signed short/int in memory)
-extern OpcodeFPUIArithm  FICOM;                            // ficom (src). Compare st(0) to an integer in memory (signed short/int)
+extern OpcodeFPUIArithm  FILD;                             // FILD(src). Push src into st(0). src=(signed int16/int32/int64 in memory)
+extern OpcodeFPUIArithm  FISTP;                            // FISTP(dst). Pop st(0) into dst, rounding according to RC-field FPU control word. dst=(signed int16/int32/int64 in memory)
+extern OpcodeFPUIArithm  FISTTP;                           // FISTTP(dst). Same as fistp, but truncates to nearest integer, regardless of RC-field in FPU control word
+extern OpcodeFPUIArithm  FIST;                             // FIST(dst). Store st(0) into dst, rounding according to RC-field FPU control word. dst=(signed int16/int32 in memory)
+extern OpcodeFPUIArithm  FIADD;                            // FIADD(src). st(0) += src. src=(signed int16/int32 in memory)
+extern OpcodeFPUIArithm  FIMUL;                            // FIMUL(src). st(0) *= src. src=(signed int16/int32 in memory)
+extern OpcodeFPUIArithm  FISUB;                            // FISUB(src). st(0) -= src. src=(signed int16/int32 in memory)
+extern OpcodeFPUIArithm  FIDIV;                            // FIDIV(src). st(0) /= src. src=(signed int16/int32 in memory)
+extern OpcodeFPUIArithm  FISUBR;                           // FISUBR(src). st(0) = src-st(0). src=(signed int16/int32 in memory)
+extern OpcodeFPUIArithm  FIDIVR;                           // FIDIVR(src). st(0) = src/st(0). src=(signed int16/int32 in memory)
+extern OpcodeFPUIArithm  FICOM;                            // FICOM(src). Compare st(0) to an integer in memory (signed int16/int32)
 extern OpcodeFPUIArithm  FICOMP;                           // Same as ficom, but pop st(0) after compare
 
 // ------------------- Conditional Copy st(i) to st(0) --------------------------
-extern Opcode1Arg        FCMOVB;                           // Copy       if below            (CF==1 )
-extern Opcode1Arg        FCMOVAE;                          // Copy       if above or equal   (CF==0 )
-extern Opcode1Arg        FCMOVE;                           // Copy       if equal            (ZF==1 )
-extern Opcode1Arg        FCMOVNE;                          // Copy       if not equal        (ZF==0 )
-extern Opcode1Arg        FCMOVBE;                          // Copy       if below or equal   (CF==1 || ZF==1)
-extern Opcode1Arg        FCMOVA;                           // Copy       if above            (CF==0 && ZF==0)
-extern Opcode1Arg        FCMOVU;                           // Copy       if unordered        (PF==1 )
-extern Opcode1Arg        FCMOVNU;                          // Copy       if not unordered    (PF==0 )
+extern Opcode1Arg        FCMOVB;                           // FCMOVB(st(i)). Copy if below (CF==1)
+extern Opcode1Arg        FCMOVAE;                          // FCMOVAE(st(i)). Copy if above or equal (CF==0)
+extern Opcode1Arg        FCMOVE;                           // FCMOVE(st(i)). Copy if equal (ZF==1)
+extern Opcode1Arg        FCMOVNE;                          // FCMOVNE(st(i)). Copy if not equal (ZF==0)
+extern Opcode1Arg        FCMOVBE;                          // FCMOVBE(st(i)). Copy if below or equal (CF==1 || ZF==1)
+extern Opcode1Arg        FCMOVA;                           // FCMOVA(st(i)). Copy if above (CF==0 && ZF==0)
+extern Opcode1Arg        FCMOVU;                           // FCMOVU(st(i)). Copy if unordered (PF==1)
+extern Opcode1Arg        FCMOVNU;                          // FCMOVNU(st(i)). Copy if not unordered (PF==0)
 
-extern Opcode1Arg        FFREE;                            // ffree(st(i)). Free a data register
-extern Opcode1Arg        FXCH;                             // fxch(st(i).   Swap st(0) and st(i)
+extern Opcode1Arg        FFREE;                            // FFREE(st(i)). Free a data register
+extern Opcode1Arg        FXCH;                             // FXCH(st(i)). Swap st(0) and st(i)
 extern Opcode0Arg        FNSTSWAX;                         // Store status word into CPU register AX
 extern Opcode0Arg        FWAIT;                            // Wait while FPU is busy
 extern Opcode0Arg        FNOP;                             // No operation
@@ -1452,26 +1456,26 @@ extern Opcode0Arg        FYL2X;                            // st(1) = log2(st(0)
 extern Opcode0Arg        FPTAN;                            // st(0) = tan(st(0)); push 1.0
 extern Opcode0Arg        FPATAN;                           // st(1) = atan(st(1)/st(0)); pop st(0)
 extern Opcode0Arg        FXTRACT;                          // st(0) = unbiased exponent in floating point format of st(0). then push signinificant wiht exponent 0
-extern Opcode0Arg        FPREM1;                           // As FPREM. Magnitude of the remainder <= ST(1) / 2
+extern Opcode0Arg        FPREM1;                           // As FPREM. Magnitude of the remainder <= st(1)/2
 extern Opcode0Arg        FDECSTP;                          // Decrement stack pointer. st0->st1, st7->st0, ..., st1->st2
 extern Opcode0Arg        FINCSTP;                          // Increment stack pointer. st0->st7, st1->st0, ..., st7->st6
 extern Opcode0Arg        FPREM;                            // Partial remainder. st(0) %= st(1). Exponent of st(0) reduced with at most 63
 extern Opcode0Arg        FYL2XP1;                          // st(1) = log2(st(0)+1)*st(1); pop st(0)
 extern Opcode0Arg        FSQRT;                            // st(0) = sqrt(st(0))
-extern Opcode0Arg        FSINCOS;                          // Sine and cosine of the angle value in ST(0), st(0)=sin; push(cos)
+extern Opcode0Arg        FSINCOS;                          // Sine and cosine of the angle value in st(0), st(0)=sin; push(cos)
 extern Opcode0Arg        FRNDINT;                          // st(0) = nearest integral value according to the rounding mode
 extern Opcode0Arg        FSCALE;                           // st(0) *= 2^int(st(1))
-extern Opcode0Arg        FSIN;                             // st(0) = sin(ST(0))
-extern Opcode0Arg        FCOS;                             // st(0) = cos(ST(0))
+extern Opcode0Arg        FSIN;                             // st(0) = sin(st(0))
+extern Opcode0Arg        FCOS;                             // st(0) = cos(st(0))
 
-extern Opcode1Arg        FLDCW;                            // load control word.  op=word ptr
-extern Opcode1Arg        FNSTCW;                           // store control word. op=word ptr
-extern Opcode1Arg        FNSTSW;                           // store status word.  op=word ptr
+extern Opcode1Arg        FLDCW;                            // FLDCW(m16). Load control word.
+extern Opcode1Arg        FNSTCW;                           // FNSTCW(m16). Store control word.
+extern Opcode1Arg        FNSTSW;                           // FNSTSW(m16). Store status word.
 
 // ---------------------------- XMM opcodes -----------------------------------------
 
-extern Opcode2Arg        MOVAPS;
-extern Opcode2ArgPfxF2SD MOVSD1;
+extern Opcode2Arg        MOVAPS;                           // MOVAPS(xmm(i)/m128,xmm(i)/m128).
+extern Opcode2ArgPfxF2SD MOVSD1;                           // MOVSD1(xmm1/m64,xmm2/m64). Move scalar double-precision floating-point value from xmm2 to xmm1 register. Load scalar double-precision floating-point value from m64 to xmm1 register.
 extern Opcode2ArgPfxF2SD ADDSD;
 extern Opcode2ArgPfxF2SD MULSD;
 extern Opcode2ArgPfxF2SD SUBSD;
