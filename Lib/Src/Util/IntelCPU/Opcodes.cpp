@@ -152,6 +152,29 @@ DEFNAME(Opcode1Arg       ,  SETGE ,0x0F9D ,0,SETCC_FLAGS); // Set byte if greate
 DEFNAME(Opcode1Arg       ,  SETLE ,0x0F9E ,0,SETCC_FLAGS); // Set byte if less or equal         (signed  )
 DEFNAME(Opcode1Arg       ,  SETG  ,0x0F9F ,0,SETCC_FLAGS); // Set byte if greater               (signed  )
 
+
+#define CMOV_FLAGS   (NONBYTE_GPR_ALLOWED|NONBYTE_GPRPTR_ALLOWED|OP1_REGONLY|HAS_NONBYTE_SIZEBITS)
+
+DEFNAME(Opcode2Arg       ,  CMOVO ,0x0F40 ,0,CMOV_FLAGS ); // Move       if overflow                                 (OF==1 )
+DEFNAME(Opcode2Arg       ,  CMOVNO,0x0F41 ,0,CMOV_FLAGS ); // Move       if not overflow                             (OF==0 )
+DEFNAME(Opcode2Arg       ,  CMOVB ,0x0F42 ,0,CMOV_FLAGS ); // Move       if below                (unsigned)          (CF==1 )
+DEFNAME(Opcode2Arg       ,  CMOVAE,0x0F43 ,0,CMOV_FLAGS ); // Move       if above or equal       (unsigned)          (CF==0 )
+DEFNAME(Opcode2Arg       ,  CMOVE ,0x0F44 ,0,CMOV_FLAGS ); // Move       if equal                (signed/unsigned)   (ZF==1 )
+DEFNAME(Opcode2Arg       ,  CMOVNE,0x0F45 ,0,CMOV_FLAGS ); // Move       if not equal            (signed/unsigned)   (ZF==0 )
+DEFNAME(Opcode2Arg       ,  CMOVBE,0x0F46 ,0,CMOV_FLAGS ); // Move       if below or equal       (unsigned)          (CF==1 || ZF==1)
+DEFNAME(Opcode2Arg       ,  CMOVA ,0x0F47 ,0,CMOV_FLAGS ); // Move       if above                (unsigned)          (CF==0 && ZF==0)
+DEFNAME(Opcode2Arg       ,  CMOVS ,0x0F48 ,0,CMOV_FLAGS ); // Move       if sign                                     (SF==1 )
+DEFNAME(Opcode2Arg       ,  CMOVNS,0x0F49 ,0,CMOV_FLAGS ); // Move       if not sign                                 (SF==0 )
+DEFNAME(Opcode2Arg       ,  CMOVP ,0x0F4A ,0,CMOV_FLAGS ); // Move       if parity even                              (PF==1 )
+DEFNAME(Opcode2Arg       ,  CMOVNP,0x0F4B ,0,CMOV_FLAGS ); // Move       if parity odd                               (PF==0 )
+DEFNAME(Opcode2Arg       ,  CMOVL ,0x0F4C ,0,CMOV_FLAGS ); // Move       if less                 (signed  )          (SF!=OF)          
+DEFNAME(Opcode2Arg       ,  CMOVGE,0x0F4D ,0,CMOV_FLAGS ); // Move       if greater or equal     (signed  )          (SF==OF)          
+DEFNAME(Opcode2Arg       ,  CMOVLE,0x0F4E ,0,CMOV_FLAGS ); // Move       if less or equal        (signed  )          (ZF==1 || SF!=OF) 
+DEFNAME(Opcode2Arg       ,  CMOVG ,0x0F4F ,0,CMOV_FLAGS ); // Move       if greater              (signed  )          (ZF==0 && SF==OF) 
+
+
+
+
 DEFNAME(Opcode0Arg       ,  CWDE  ,0x98,ARG0_SIZEABLE);    // Convert word  to dword  Copy sign (bit 15) of AX  into higher 16 bits of EAX
 DEFNAME(Opcode0Arg       ,  CDQ   ,0x99,ARG0_SIZEABLE);    // Convert dword to qword  Copy sign (bit 31) of EAX into every bit of EDX
 DEFNAME(Opcode0Arg       ,  CBW   ,CWDE,REGSIZE_WORD );    // Convert byte  to word   Copy sign (bit 7)  of AL  into higher  8 bits of AX (AH)

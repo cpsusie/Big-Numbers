@@ -1281,6 +1281,41 @@ extern Opcode1Arg        SETG;                             // Set byte   if grea
 #define                  SETNG          SETLE              // Set byte   if not greater          (signed  )
 #define                  SETNLE         SETG               // Set byte   if not less or equal    (signed  )
 
+
+
+// Move on Condition
+extern Opcode2Arg        CMOVO;                            // Move       if overflow                                 (OF==1 )
+extern Opcode2Arg        CMOVNO;                           // Move       if not overflow                             (OF==0 )
+extern Opcode2Arg        CMOVB;                            // Move       if below                (unsigned)          (CF==1 )
+extern Opcode2Arg        CMOVAE;                           // Move       if above or equal       (unsigned)          (CF==0 )
+extern Opcode2Arg        CMOVE;                            // Move       if equal                (signed/unsigned)   (ZF==1 )
+extern Opcode2Arg        CMOVNE;                           // Move       if not equal            (signed/unsigned)   (ZF==0 )
+extern Opcode2Arg        CMOVBE;                           // Move       if below or equal       (unsigned)          (CF==1 || ZF==1)
+extern Opcode2Arg        CMOVA;                            // Move       if above                (unsigned)          (CF==0 && ZF==0)
+extern Opcode2Arg        CMOVS;                            // Move       if sign                                     (SF==1 )
+extern Opcode2Arg        CMOVNS;                           // Move       if not sign                                 (SF==0 )
+extern Opcode2Arg        CMOVP;                            // Move       if parity even                              (PF==1 )
+extern Opcode2Arg        CMOVNP;                           // Move       if parity odd                               (PF==0 )
+extern Opcode2Arg        CMOVL;                            // Move       if less                 (signed  )          (SF!=OF)          
+extern Opcode2Arg        CMOVGE;                           // Move       if greater or equal     (signed  )          (SF==OF)          
+extern Opcode2Arg        CMOVLE;                           // Move       if less or equal        (signed  )          (ZF==1 || SF!=OF) 
+extern Opcode2Arg        CMOVG;                            // Move       if greater              (signed  )          (ZF==0 && SF==OF) 
+
+#define                  CMOVNAE        CMOVB              // Move       if not above or equal   (unsigned)
+#define                  CMOVC          CMOVB              // Move       if carry                (unsigned)
+#define                  CMOVNC         CMOVAE             // Move       if not carry            (unsigned)
+#define                  CMOVNB         CMOVAE             // Move       if not below            (unsigned)
+#define                  CMOVZ          CMOVE              // Move       if 0                    (signed/unsigned)
+#define                  CMOVNZ         CMOVNE             // Move       if not zero             (signed/unsigned)
+#define                  CMOVNA         CMOVBE             // Move       if not above            (unsigned)
+#define                  CMOVNBE        CMOVA              // Move       if not below or equal   (unsigned)
+#define                  CMOVNGE        CMOVL              // Move       if not greater or equal (signed  )
+#define                  CMOVNL         CMOVGE             // Move       if not less             (signed  )
+#define                  CMOVNG         CMOVLE             // Move       if not greater          (signed  )
+#define                  CMOVNLE        CMOVG              // Move       if not less or equal    (signed  )
+
+
+
 extern Opcode0Arg        CWDE;                             // Convert word  to dword. Sign extend AX  into EAX.     Copy sign (bit 15) of AX  into higher 16 bits of EAX
 extern Opcode0Arg        CDQ;                              // Convert dword to qword. Sign extend EAX into EDX:EAX. Copy sign (bit 31) of EAX into every     bit  of EDX
 extern Opcode0Arg        CBW;                              // Convert byte  to word.  Sign extend AL  into AX.      Copy sign (bit  7) of AL  into higher  8 bits of AX

@@ -767,6 +767,24 @@ void TestMachineCode::testSetccOpcodes() {
   testOpcode(SETLE);
   testOpcode(SETG );
 
+  clear(true);
+  testOpcode(CMOVO );
+  testOpcode(CMOVNO);
+  testOpcode(CMOVB );
+  testOpcode(CMOVAE);
+  testOpcode(CMOVE );
+  testOpcode(CMOVNE);
+  testOpcode(CMOVBE);
+  testOpcode(CMOVA );
+  testOpcode(CMOVS );
+  testOpcode(CMOVNS);
+  testOpcode(CMOVP );
+  testOpcode(CMOVNP);
+  testOpcode(CMOVL );
+  testOpcode(CMOVGE);
+  testOpcode(CMOVLE);
+  testOpcode(CMOVG );
+
 //  clear(true);
   testOpcode(JO   );
   testOpcode(JNO  );
