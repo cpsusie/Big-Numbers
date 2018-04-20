@@ -418,6 +418,21 @@ String ParserTree::variablesToString() const {
   return result;
 }
 
+void ParserTree::throwInvalidSymbolForTreeMode(const TCHAR *method, const ExpressionNode *n) const {
+  throwException(_T("%s:Invalid symbol in tree form %s:<%s>")
+                ,method, getTreeFormName().cstr(),  n->getSymbolName().cstr());
+}
+
+void ParserTree::throwUnknownSymbolException(const TCHAR *method, SNode n) { // static
+  throwUnknownSymbolException(method, n.node());
+}
+
+void ParserTree::throwUnknownSymbolException(const TCHAR *method, const ExpressionNode *n) { // static
+  throwException(_T("%s:Unexpected symbol in expression tree:%s")
+                ,method, n->getSymbolName().cstr());
+}
+
+
 #ifdef TRACE_REDUCTION_CALLSTACK
 
 void ParserTree::pushReductionMethod(const TCHAR *method, const String &s, const ExpressionNode *n) const {

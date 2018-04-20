@@ -1,5 +1,5 @@
 #include "pch.h"
-#include <Math/Expression/OpCode.h>
+#include "OpCode.h"
 
 // ---------------------------------- IntelOpcode ----------------------------
 

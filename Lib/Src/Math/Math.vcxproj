@@ -1214,6 +1214,7 @@
     <ClInclude Include="..\..\Include\Math\Statistic.h" />
     <ClInclude Include="..\..\Include\Math\Transformation.h" />
     <ClInclude Include="..\..\Include\Math\Triangle\Triangle.h" />
+    <ClInclude Include="Expression\ExpressionCompile.h" />
     <ClInclude Include="Expression\pch.h" />
     <ClInclude Include="MemoryPool.h" />
     <ClInclude Include="pch.h" />

@@ -1,12 +1,13 @@
 #include "pch.h"
-#include <Math/Expression/Expression.h>
+#include "ExpressionCompile.h"
 
 DEFINECLASSNAME(MachineCode);
 
 #define ISBYTE(i)  IntelOpcode::isByte(i)
 
-MachineCode::MachineCode() {
-  setValueCount(0);
+MachineCode::MachineCode(const CompactRealArray &valueTable) : m_valueTable(valueTable) {
+  setValueCount(m_valueTable.size());
+  m_entryPoint = NULL;
 }
 
 MachineCode::~MachineCode() {
@@ -20,18 +21,14 @@ void MachineCode::clear() {
   setValueCount(0);
 }
 
-MachineCode::MachineCode(const MachineCode &src) : ExecutableByteArray(src) {
-  m_refenceArray = src.m_refenceArray;
-  setValueCount(src.getValueCount());
+void MachineCode::finalize() {
+  fixupJumps();
   linkReferences();
-}
 
-MachineCode &MachineCode::operator=(const MachineCode &src) {
-  ExecutableByteArray::operator=(src);
-  m_refenceArray = src.m_refenceArray;
-  setValueCount(src.getValueCount());
-  linkReferences();
-  return *this;
+  m_entryPoint = (ExpressionEntryPoint)getData();
+  m_refenceArray.clear();
+  m_jumpFixups.clear();
+  flushInstructionCache();
 }
 
 int MachineCode::addBytes(const void *bytes, int count) {
@@ -58,16 +55,20 @@ void MachineCode::emitStackOp(const IntelOpcode &op, int offset) {
   emit(MEM_ADDR_PTR(op,STACK_REGISTER,offset));
 }
 
-
 void MachineCode::emitTableOp(const IntelOpcode &op, int index) {
   const int offset = getESIOffset(index);
   emit(MEM_ADDR_PTR(op, TABLEREF_REGISTER, offset));
 }
 
 void MachineCode::setValueCount(size_t valueCount) {
-  m_valueCount = valueCount;
-  const int maxOffset = 127-127%sizeof(Real);
-  m_esiOffset = (char)min(maxOffset, (valueCount / 2) * sizeof(Real));
+  if(valueCount == 0) {
+    m_esiOffset = 0;
+    m_esi       = NULL;
+  } else {
+    const int maxOffset = 127-127%sizeof(Real);
+    m_esiOffset = (char)min(maxOffset, (valueCount / 2) * sizeof(Real));
+    m_esi = (BYTE*)m_valueTable.getBuffer() + m_esiOffset;
+  }
 }
 
 void MachineCode::emitFLoad(const ExpressionNode *n) {
@@ -301,7 +302,7 @@ void MachineCode::emitCall(BuiltInFunction f, const ExpressionDestination &dst) 
   switch(dst.getType()) {
   case RESULT_IN_FPU       :
     emit(REGREG(MOV_REG_MEM(RCX), RSI));                            // RCX = RSI + getESIOffset(0);
-    emitAddR64(RCX, getESIOffset(0));                                  // Will generate code after call, that pushed *rsi in FPU
+    emitAddR64(RCX, getESIOffset(0));                               // Will generate code after call, that pushed *rsi in FPU
     break;
   case RESULT_IN_ADDRRDI   :
     emit(REGREG(MOV_REG_MEM(RCX), RDI));                            // RCX = RDI
@@ -339,14 +340,6 @@ void MachineCode::linkReferences() {
 }
 
 #pragma warning(disable:4717)
-void Expression::compile(const String &expr, bool machineCode) {
-  parse(expr);
-  if(!isOk()) {
-    return;
-  }
-  setReturnType(findReturnType());
-  setMachineCode(machineCode);
-}
 
 #ifdef IS64BIT
 extern "C" {
@@ -355,7 +348,7 @@ extern "C" {
 };
 #endif // IS64BIT
 
-Real Expression::fastEvaluateReal() {
+Real MachineCode::evaluateReal() const {
   Real result;
 #ifdef IS32BIT
   ExpressionEntryPoint  ep    = m_entryPoint;
@@ -374,7 +367,7 @@ Real Expression::fastEvaluateReal() {
   return result;
 }
 
-bool Expression::fastEvaluateBool() {
+bool MachineCode::evaluateBool() const {
 #ifdef IS32BIT
   ExpressionEntryPoint  ep    = m_entryPoint;
   const void           *daddr = m_esi;
@@ -392,61 +385,46 @@ bool Expression::fastEvaluateBool() {
 #endif // IS32BIT
 }
 
-ExpressionReturnType Expression::findReturnType() const {
-  DEFINEMETHODNAME;
-  const ExpressionNodeArray stmtList = getStatementList((ExpressionNode*)getRoot());
-  switch(stmtList.last()->getSymbol()) {
-  case RETURNREAL : return EXPR_RETURN_REAL;
-  case RETURNBOOL : return EXPR_RETURN_BOOL;
-  default         : throwUnknownSymbolException(method, stmtList.last());
-                    return EXPR_RETURN_REAL;
+
+CodeGenerator::CodeGenerator(ParserTree *tree, TrigonometricMode trigonometricMode)
+  : m_tree(*tree)
+  , m_trigonometricMode(trigonometricMode)
+{
+  if(tree->getTreeForm() != TREEFORM_STANDARD) {
+    throwException(_T("Treeform must be STANDARD to generate machinecode. Form=%s"), m_tree.getTreeFormName().cstr());
   }
+  m_code = new MachineCode(m_tree.getValueTable());
+  genMachineCode();
 }
 
-void Expression::clearMachineCode() {
-  m_code.clear();
-  m_entryPoint   = NULL;
-  m_esi          = NULL;
-}
-
-void Expression::genMachineCode() {
-  if(getTreeForm() != TREEFORM_STANDARD) {
-    throwException(_T("Treeform must be STANDARD to generate machinecode. Form=%s"), getTreeFormName().cstr());
-  }
-  clearMachineCode();
-  m_code.setValueCount(getValueCount());
+void CodeGenerator::genMachineCode() {
   genProlog();
-  genStatementList(getRoot());
-  m_code.fixupJumps();
-  m_code.linkReferences();
-
-  m_entryPoint = m_code.getEntryPoint();
-  m_esi        = getESI();
-  m_code.flushInstructionCache();
+  genStatementList(m_tree.getRoot());
+  m_code->finalize();
 }
 
-void Expression::genProlog() {
+void CodeGenerator::genProlog() {
 #ifdef IS64BIT
 #define LOCALSTACKSPACE   80
 #define RESERVESTACKSPACE 40
-  m_hasCalls = getRoot()->containsFunctionCall();
-  m_code.resetStack(RESERVESTACKSPACE);
+  m_hasCalls = m_tree.getRoot()->containsFunctionCall();
+  m_code->resetStack(RESERVESTACKSPACE);
   if(m_hasCalls) {
-    m_code.emitSubRSP(LOCALSTACKSPACE + RESERVESTACKSPACE); // to get 16-byte aligned RSP
+    m_code->emitSubRSP(LOCALSTACKSPACE + RESERVESTACKSPACE); // to get 16-byte aligned RSP
   }
 #endif
 }
 
-void Expression::genEpilog() {
+void CodeGenerator::genEpilog() {
 #ifdef IS64BIT
   if(m_hasCalls) {
-    m_code.emitAddRSP(LOCALSTACKSPACE + RESERVESTACKSPACE);
+    m_code->emitAddRSP(LOCALSTACKSPACE + RESERVESTACKSPACE);
   }
 #endif
-  m_code.emit(RET);
+  m_code->emit(RET);
 }
 
-void Expression::genStatementList(const ExpressionNode *n) {
+void CodeGenerator::genStatementList(const ExpressionNode *n) {
   switch(n->getSymbol()) {
   case SEMI      :
     genStatementList(n->left());
@@ -463,46 +441,46 @@ void Expression::genStatementList(const ExpressionNode *n) {
     genReturnBoolExpression(n);
     break;
   default    :
-    throwUnknownSymbolException(__TFUNCTION__, n);
+    ParserTree::throwUnknownSymbolException(__TFUNCTION__, n);
     break;
   }
 }
 
 #ifdef IS32BIT
-void Expression::genAssignment(const ExpressionNode *n) {
+void CodeGenerator::genAssignment(const ExpressionNode *n) {
   genExpression(n->right(), DST_FPU);
-  m_code.emitFStorePop(n->left());
+  m_code->emitFStorePop(n->left());
 }
 #else // IS64BIT
-void Expression::genAssignment(const ExpressionNode *n) {
+void CodeGenerator::genAssignment(const ExpressionNode *n) {
   genExpression(n->right(), DST_INVALUETABLE(n->left()->getValueIndex()));
 }
 #endif IS32BIT
 
-void Expression::genReturnBoolExpression(const ExpressionNode *n) {
+void CodeGenerator::genReturnBoolExpression(const ExpressionNode *n) {
   const JumpList jumps     = genBoolExpression(n->left());
-  const int      trueLabel = m_code.emit(MOV_REG_IMM(EAX,1));
+  const int      trueLabel = m_code->emit(MOV_REG_IMM(EAX,1));
   genEpilog();
 
-  const int falseLabel = m_code.emit(REGREG(XOR_REG_MEM(EAX),EAX));
+  const int falseLabel = m_code->emit(REGREG(XOR_REG_MEM(EAX),EAX));
   genEpilog();
 
-  m_code.fixupShortJumps(jumps.trueJumps ,trueLabel );
-  m_code.fixupShortJumps(jumps.falseJumps,falseLabel);
+  m_code->fixupShortJumps(jumps.trueJumps ,trueLabel );
+  m_code->fixupShortJumps(jumps.falseJumps,falseLabel);
 }
 
 // Generate multiplication-sequence to calculate st(0) = st(0)^y
 // using st(0), and if neccessary st(1), by logarithmic powering
 // Assume st(0) = x contains value to raise to the power y
-void Expression::genPowMultSequence(UINT y) {
+void CodeGenerator::genPowMultSequence(UINT y) {
   UINT p2 = 1;
   for(UINT t = y; t && ((t&1)==0); t >>= 1) {
     p2 <<= 1;
-    m_code.emit(FMUL_0i(0));
+    m_code->emit(FMUL_0i(0));
   }
   // st(0) = x^p2
   if(p2 < y) {
-    m_code.emit(FLD(0)); // st(0) = x^p2, st(1) = x^p2
+    m_code->emit(FLD(0)); // st(0) = x^p2, st(1) = x^p2
     UINT reg = 0, count = 0;
     // Calculate the sequence of multiplications of st(1), st(0) needed
     // to make st(0) = x^(y-p2) and st(1) = x^p2
@@ -511,9 +489,9 @@ void Expression::genPowMultSequence(UINT y) {
       if(y&p2) { y-=p2; reg |= 1; } else y >>= 1;
     }
     for(;count--; reg >>= 1) {
-      m_code.emit(FMUL_0i(reg&1));
+      m_code->emit(FMUL_0i(reg&1));
     }
-    m_code.emit(FMUL); // finally st(1) *= st(0), pop st(0)
+    m_code->emit(FMUL); // finally st(1) *= st(0), pop st(0)
   }
 }
 
@@ -523,7 +501,7 @@ void Expression::genPowMultSequence(UINT y) {
 #define GENPOLY(n)       genPolynomial(n  ,dst); return
 #define GENIF(n)         genIf(n,dst);           return
 
-void Expression::throwInvalidTrigonometricMode() {
+void CodeGenerator::throwInvalidTrigonometricMode() {
   throwInvalidArgumentException(_T("genExpression"), _T("Invalid trigonometricMode:%d"), m_trigonometricMode);
 }
 
@@ -535,14 +513,14 @@ void Expression::throwInvalidTrigonometricMode() {
   default     : throwInvalidTrigonometricMode();  \
   }
 
-void Expression::genExpression(const ExpressionNode *n, const ExpressionDestination &dst) {
+void CodeGenerator::genExpression(const ExpressionNode *n, const ExpressionDestination &dst) {
   switch(n->getSymbol()) {
   case NAME  :
   case NUMBER:
 #ifdef IS32BIT
-    m_code.emitFLoad(n);
+    m_code->emitFLoad(n);
 #else // IS64BIT
-    if(m_code.emitFLoad(n, dst)) {
+    if(m_code->emitFLoad(n, dst)) {
       return;
     }
 #endif // IS64BIT
@@ -555,19 +533,19 @@ void Expression::genExpression(const ExpressionNode *n, const ExpressionDestinat
 #ifdef LONGDOUBLE
     genExpression(n->left() , DST_FPU);
     genExpression(n->right(), DST_FPU);
-    m_code.emit(FADD);
+    m_code->emit(FADD);
     break;
 #else // !LONGDOUBLE
     if(n->left()->isNameOrNumber()) {
       genExpression(n->right(), DST_FPU);
-      m_code.emitTableOp(FADD_QWORD,n->left());
+      m_code->emitTableOp(FADD_QWORD,n->left());
     } else if(n->right()->isNameOrNumber()) {
       genExpression(n->left(), DST_FPU);
-      m_code.emitTableOp(FADD_QWORD,n->right());
+      m_code->emitTableOp(FADD_QWORD,n->right());
     } else {
       genExpression(n->left() , DST_FPU);
       genExpression(n->right(), DST_FPU);
-      m_code.emit(FADD);
+      m_code->emit(FADD);
     }
     break;
 #endif // LONGDOUBLE
@@ -575,25 +553,25 @@ void Expression::genExpression(const ExpressionNode *n, const ExpressionDestinat
   case MINUS :
     if(n->isUnaryMinus()) {
       genExpression(n->left(), DST_FPU);
-      m_code.emit(FCHS);
+      m_code->emit(FCHS);
       break;
     }
 #ifdef LONGDOUBLE
     genExpression(n->left() , DST_FPU);
     genExpression(n->right(), DST_FPU);
-    m_code.emit(FSUB);
+    m_code->emit(FSUB);
     break;
 #else // !LONGDOUBLE
     if(n->right()->isNameOrNumber()) {
       genExpression(n->left(), DST_FPU);
-      m_code.emitTableOp(FSUB_QWORD,n->right());
+      m_code->emitTableOp(FSUB_QWORD,n->right());
     } else if(n->left()->isNameOrNumber()) {
       genExpression(n->right(), DST_FPU);
-      m_code.emitTableOp(FSUBR_QWORD,n->left());
+      m_code->emitTableOp(FSUBR_QWORD,n->left());
     } else {
       genExpression(n->left() , DST_FPU);
       genExpression(n->right(), DST_FPU);
-      m_code.emit(FSUB);
+      m_code->emit(FSUB);
     }
     break;
 #endif // LONGDOUBLE
@@ -602,19 +580,19 @@ void Expression::genExpression(const ExpressionNode *n, const ExpressionDestinat
 #ifdef LONGDOUBLE
     genExpression(n->left() , DST_FPU);
     genExpression(n->right(), DST_FPU);
-    m_code.emit(FMUL);
+    m_code->emit(FMUL);
     break;
 #else // !LONGDOUBLE
     if(n->left()->isNameOrNumber()) {
       genExpression(n->right(), DST_FPU);
-      m_code.emitTableOp(FMUL_QWORD,n->left());
+      m_code->emitTableOp(FMUL_QWORD,n->left());
     } else if(n->right()->isNameOrNumber()) {
       genExpression(n->left(), DST_FPU);
-      m_code.emitTableOp(FMUL_QWORD,n->right());
+      m_code->emitTableOp(FMUL_QWORD,n->right());
     } else {
       genExpression(n->left() , DST_FPU);
       genExpression(n->right(), DST_FPU);
-      m_code.emit(FMUL);
+      m_code->emit(FMUL);
     }
     break;
 #endif // LONGDOUBLE
@@ -623,19 +601,19 @@ void Expression::genExpression(const ExpressionNode *n, const ExpressionDestinat
 #ifdef LONGDOUBLE
     genExpression(n->left() , DST_FPU);
     genExpression(n->right(), DST_FPU);
-    m_code.emit(FDIV);
+    m_code->emit(FDIV);
     break;
 #else // !LONGDOUBLE
     if(n->right()->isNameOrNumber()) {
       genExpression(n->left(), DST_FPU);
-      m_code.emitTableOp(FDIV_QWORD,n->right());
+      m_code->emitTableOp(FDIV_QWORD,n->right());
     } else if(n->left()->isNameOrNumber()) {
       genExpression(n->right(), DST_FPU);
-      m_code.emitTableOp(FDIVR_QWORD,n->left());
+      m_code->emitTableOp(FDIVR_QWORD,n->left());
     } else {
       genExpression(n->left() , DST_FPU);
       genExpression(n->right(), DST_FPU);
-      m_code.emit(FDIV);
+      m_code->emit(FDIV);
     }
     break;
 #endif // LONGDOUBLE
@@ -650,11 +628,11 @@ void Expression::genExpression(const ExpressionNode *n, const ExpressionDestinat
       GENCALLARG(  n->right(), exp10                 );
     }
     if(n->right()->isConstant()) {
-      const Real p = evaluateRealExpr(n->right());
+      const Real p = m_tree.evaluateRealExpr(n->right());
       if((fabs(p) <= 64) && (p - floor(p) == 0)) {
         const int y = getInt(p);
         if(y == 0) {
-          genExpression(getOne(), dst);
+          genExpression(m_tree.getOne(), dst);
           return;
         } else if(y == 1) {
           genExpression(n->left(), dst);
@@ -663,8 +641,8 @@ void Expression::genExpression(const ExpressionNode *n, const ExpressionDestinat
           genExpression(n->left(), DST_FPU);
           genPowMultSequence(abs(y));
           if(y < 0) { // make st0 = 1/st0
-            m_code.emit(FLD1);         // st0=1 , st1=x^|y|
-            m_code.emit(FDIVRP_i0(1)); // st1=st0/st1; pop st0 => st0=x^y
+            m_code->emit(FLD1);         // st0=1 , st1=x^|y|
+            m_code->emit(FDIVRP_i0(1)); // st1=st0/st1; pop st0 => st0=x^y
           }
         }
         break;
@@ -673,21 +651,21 @@ void Expression::genExpression(const ExpressionNode *n, const ExpressionDestinat
     GENCALL(     n, mypow                 );
   case SQR           :
     genExpression(n->left(), DST_FPU);
-    m_code.emit(FMUL_0i(0));              // st0=x^2
+    m_code->emit(FMUL_0i(0));              // st0=x^2
     break;
   case SQRT          :
     genExpression(n->left(), DST_FPU);
-    m_code.emit(FSQRT);                   // st0=sqrt(st0)
+    m_code->emit(FSQRT);                   // st0=sqrt(st0)
     break;
   case ABS           :
     genExpression(n->left(), DST_FPU);
-    m_code.emit(FABS);                    // st0=|st0|
+    m_code->emit(FABS);                    // st0=|st0|
     break;
   case ATAN          :                    // atan(left)
     if(getTrigonometricMode() == RADIANS) {
       genExpression(n->left(), DST_FPU);
-      m_code.emit(FLD1);                  // st0=1, st1=left
-      m_code.emit(FPATAN);                // st1=atan(st1/st0); pop st0
+      m_code->emit(FLD1);                  // st0=1, st1=left
+      m_code->emit(FPATAN);                // st1=atan(st1/st0); pop st0
       break;
     }
     GENTRIGOCALL(n, atan                  );
@@ -695,7 +673,7 @@ void Expression::genExpression(const ExpressionNode *n, const ExpressionDestinat
     if(getTrigonometricMode() == RADIANS) {
       genExpression(n->left() , DST_FPU); // st0=left
       genExpression(n->right(), DST_FPU); // st0=right, st1=left
-      m_code.emit(FPATAN);                // st1=atan(st1/st0); pop st0
+      m_code->emit(FPATAN);                // st1=atan(st1/st0); pop st0
       break;
     }
     GENTRIGOCALL(n, atan2                 );
@@ -750,7 +728,7 @@ void Expression::genExpression(const ExpressionNode *n, const ExpressionDestinat
     break;
   case IIF           :    GENIF(n);
   default            :
-    throwUnknownSymbolException(__TFUNCTION__, n);
+    ParserTree::throwUnknownSymbolException(__TFUNCTION__, n);
     break;
   }
 #ifdef IS64BIT
@@ -759,25 +737,25 @@ void Expression::genExpression(const ExpressionNode *n, const ExpressionDestinat
   case RESULT_IN_FPU       : // do nothing
     break;
   case RESULT_IN_ADDRRDI   :
-    m_code.emit(MEM_ADDR_PTR(FSTP_REAL, RDI,0));                        // FPU -> *RDI
+    m_code->emit(MEM_ADDR_PTR(FSTP_REAL, RDI,0));                        // FPU -> *RDI
     break;
   case RESULT_ON_STACK     :
-    m_code.emitStackOp(FSTP_REAL, dst.getStackOffset());                  // FPU -> RSP[offset]
+    m_code->emitStackOp(FSTP_REAL, dst.getStackOffset());                  // FPU -> RSP[offset]
     break;
   case RESULT_IN_VALUETABLE:
-    m_code.emitFStorePop(dst.getTableIndex());                          // FPU -> m_valuetable[tableIndex]
+    m_code->emitFStorePop(dst.getTableIndex());                          // FPU -> m_valuetable[tableIndex]
     break;
 #ifndef LONGDOUBLE
   case RESULT_IN_XMM       :
-    m_code.emitStackOp(FSTP_REAL,0);                                      // FPU  -> *RSP
-    m_code.emitStackOp(MOVSD_XMM_MMWORD(dst.getXMMReg()),0);              // *RSP -> XMM0 or XMM1
+    m_code->emitStackOp(FSTP_REAL,0);                                      // FPU  -> *RSP
+    m_code->emitStackOp(MOVSD_XMM_MMWORD(dst.getXMMReg()),0);              // *RSP -> XMM0 or XMM1
     break;
 #endif // LONGDOUBLE
   }
 #endif // IS64BIT
 }
 
-void Expression::genIndexedExpression(const ExpressionNode *n) {
+void CodeGenerator::genIndexedExpression(const ExpressionNode *n) {
   const bool            summation       = n->getSymbol() == INDEXEDSUM;
   const ExpressionNode *startAssignment = n->child(0);
   const ExpressionNode *loopVar         = startAssignment->left();
@@ -785,34 +763,34 @@ void Expression::genIndexedExpression(const ExpressionNode *n) {
   const ExpressionNode *expr            = n->child(2);
 
   genExpression(endExpr, DST_FPU);                     // Evaluate end value for loopVar. and keep it in FPU-register
-  m_code.emit(summation ? FLDZ : FLD1);                // Initialize accumulator
+  m_code->emit(summation ? FLDZ : FLD1);                // Initialize accumulator
   genExpression(startAssignment->right(), DST_FPU);    // Evaluate start value for loopVar
-  const int loopStart = (int)m_code.size();
-  m_code.emit(FCOMI(2));                               // Invariant:loopVar in st(0), endExpr in st(2)
-  const int jmpEnd   = m_code.emitShortJmp(JASHORT);   // Jump loopEnd if st(0) > st(2)
-  m_code.emitFStorePop(loopVar);                       // Pop st(0) to loopVar
+  const int loopStart = (int)m_code->size();
+  m_code->emit(FCOMI(2));                               // Invariant:loopVar in st(0), endExpr in st(2)
+  const int jmpEnd   = m_code->emitShortJmp(JASHORT);   // Jump loopEnd if st(0) > st(2)
+  m_code->emitFStorePop(loopVar);                       // Pop st(0) to loopVar
   genExpression(expr, DST_FPU);                        // Accumulator in st(0) (starting at 0 for INDEXEDSUM, 1 for INDEXEDPRODUCT)
-  m_code.emit(summation ? FADD : FMUL);                // Update accumulator with st(0)
-  m_code.emitFLoad(loopVar);
-  m_code.emit(FLD1);
-  m_code.emit(FADD);                                   // Increment loopVar
-  const int jmpStart = m_code.emitShortJmp(JMPSHORT);  // Jump loopStart
-  const int loopEnd  = (int)m_code.size();
-  m_code.emit(FSTP(0));                                // Pop loopVar
-  m_code.emit(FXCH(1));                                // Result in st(0), end value in st(1). swap these and pop st(0)
-  m_code.emit(FSTP(0));                                // Pop end value
-  m_code.fixupShortJump(jmpStart,loopStart);
-  m_code.fixupShortJump(jmpEnd  ,loopEnd  );
+  m_code->emit(summation ? FADD : FMUL);                // Update accumulator with st(0)
+  m_code->emitFLoad(loopVar);
+  m_code->emit(FLD1);
+  m_code->emit(FADD);                                   // Increment loopVar
+  const int jmpStart = m_code->emitShortJmp(JMPSHORT);  // Jump loopStart
+  const int loopEnd  = (int)m_code->size();
+  m_code->emit(FSTP(0));                                // Pop loopVar
+  m_code->emit(FXCH(1));                                // Result in st(0), end value in st(1). swap these and pop st(0)
+  m_code->emit(FSTP(0));                                // Pop end value
+  m_code->fixupShortJump(jmpStart,loopStart);
+  m_code->fixupShortJump(jmpEnd  ,loopEnd  );
 }
 
-void Expression::genIf(const ExpressionNode *n, const ExpressionDestination &dst) {
+void CodeGenerator::genIf(const ExpressionNode *n, const ExpressionDestination &dst) {
   const JumpList jumps = genBoolExpression(n->child(0));
-  m_code.fixupShortJumps(jumps.trueJumps,(int)m_code.size());
+  m_code->fixupShortJumps(jumps.trueJumps,(int)m_code->size());
   GENEXPRESSION(n->child(1)); // true-expression
-  const int trueResultJump  = m_code.emitShortJmp(JMPSHORT);
-  m_code.fixupShortJumps(jumps.falseJumps,(int)m_code.size());
+  const int trueResultJump  = m_code->emitShortJmp(JMPSHORT);
+  m_code->fixupShortJumps(jumps.falseJumps,(int)m_code->size());
   GENEXPRESSION(n->child(2)); // false-expression
-  m_code.fixupShortJump(trueResultJump,(int)m_code.size());
+  m_code->fixupShortJump(trueResultJump,(int)m_code->size());
 }
 
 static ExpressionInputSymbol reverseComparator(ExpressionInputSymbol symbol) {
@@ -828,13 +806,13 @@ static ExpressionInputSymbol reverseComparator(ExpressionInputSymbol symbol) {
   return EQ;
 }
 
-JumpList Expression::genBoolExpression(const ExpressionNode *n) {
+JumpList CodeGenerator::genBoolExpression(const ExpressionNode *n) {
 //  dumpSyntaxTree(n);
   JumpList result;
   switch(n->getSymbol()) {
   case NOT  :
     { const JumpList jumps    = genBoolExpression(n->child(0));
-      const int      trueJump = m_code.emitShortJmp(JMPSHORT);
+      const int      trueJump = m_code->emitShortJmp(JMPSHORT);
       result.falseJumps.addAll(jumps.trueJumps);
       result.falseJumps.add(trueJump);
       result.trueJumps.addAll(jumps.falseJumps);
@@ -843,7 +821,7 @@ JumpList Expression::genBoolExpression(const ExpressionNode *n) {
   case AND  :
     { const JumpList jump1 = genBoolExpression(n->left());
       const JumpList jump2 = genBoolExpression(n->right());
-      m_code.fixupShortJumps(jump1.trueJumps,(int)m_code.size());
+      m_code->fixupShortJumps(jump1.trueJumps,(int)m_code->size());
       result.falseJumps.addAll(jump1.falseJumps);
       result.falseJumps.addAll(jump2.falseJumps);
       result.trueJumps.addAll(jump2.trueJumps);
@@ -851,8 +829,8 @@ JumpList Expression::genBoolExpression(const ExpressionNode *n) {
     break;
   case OR   :
     { const JumpList jump1 = genBoolExpression(n->left());
-      const int trueJump   = m_code.emitShortJmp(JMPSHORT);
-      m_code.fixupShortJumps(jump1.falseJumps,(int)m_code.size());
+      const int trueJump   = m_code->emitShortJmp(JMPSHORT);
+      m_code->fixupShortJumps(jump1.falseJumps,(int)m_code->size());
       const JumpList jump2 = genBoolExpression(n->right());
       result.falseJumps.addAll(jump2.falseJumps);
       result.trueJumps.addAll(jump1.trueJumps);
@@ -870,49 +848,49 @@ JumpList Expression::genBoolExpression(const ExpressionNode *n) {
 #ifdef LONGDOUBLE
       genExpression(n->right(), DST_FPU);
       genExpression(n->left() , DST_FPU);
-      m_code.emit(FCOMPP);
+      m_code->emit(FCOMPP);
 #else // !LONGDOUBLE
       if(n->left()->isNameOrNumber()) {
         genExpression(n->right(), DST_FPU);
-        m_code.emitFComparePop(n->left());
+        m_code->emitFComparePop(n->left());
         symbol = reverseComparator(symbol);
       } else if(n->right()->isNameOrNumber()) {
         genExpression(n->left(), DST_FPU);
-        m_code.emitFComparePop(n->right());
+        m_code->emitFComparePop(n->right());
       } else {
         genExpression(n->right(), DST_FPU);
         genExpression(n->left(), DST_FPU);
-        m_code.emit(FCOMPP);
+        m_code->emit(FCOMPP);
       }
 #endif // LONGDOUBLE
-      m_code.emit(FNSTSW_AX);
-      m_code.emit(SAHF);
+      m_code->emit(FNSTSW_AX);
+      m_code->emit(SAHF);
 
       switch(symbol) {
       case EQ:
-        result.falseJumps.add(m_code.emitShortJmp(JNESHORT));
+        result.falseJumps.add(m_code->emitShortJmp(JNESHORT));
         break;
       case NE:
-        result.falseJumps.add(m_code.emitShortJmp(JESHORT));
+        result.falseJumps.add(m_code->emitShortJmp(JESHORT));
         break;
       case LE:
-        result.falseJumps.add(m_code.emitShortJmp(JASHORT));
+        result.falseJumps.add(m_code->emitShortJmp(JASHORT));
         break;
       case LT:
-        result.falseJumps.add(m_code.emitShortJmp(JAESHORT));
+        result.falseJumps.add(m_code->emitShortJmp(JAESHORT));
         break;
       case GE:
-        result.falseJumps.add(m_code.emitShortJmp(JBSHORT));
+        result.falseJumps.add(m_code->emitShortJmp(JBSHORT));
         break;
       case GT:
-        result.falseJumps.add(m_code.emitShortJmp(JBESHORT));
+        result.falseJumps.add(m_code->emitShortJmp(JBESHORT));
         break;
       }
     }
     break;
 
   default:
-    throwUnknownSymbolException(__TFUNCTION__, n);
+    ParserTree::throwUnknownSymbolException(__TFUNCTION__, n);
   }
   return result;
 }
@@ -932,60 +910,60 @@ static Real evaluatePolynomial(Real x, int n, const Real *coef) {
 
 #ifdef IS32BIT
 
-void Expression::genCall1Arg(const ExpressionNode *arg, BuiltInFunction1 f, const ExpressionDestination &dummy) {
+void CodeGenerator::genCall1Arg(const ExpressionNode *arg, BuiltInFunction1 f, const ExpressionDestination &dummy) {
   int bytesPushed = 0;
   bytesPushed += genPush(arg);
   bytesPushed += genPushReturnAddr();
-  m_code.emitCall((BuiltInFunction)f, dummy);
-  m_code.emitAddESP(bytesPushed);
+  m_code->emitCall((BuiltInFunction)f, dummy);
+  m_code->emitAddESP(bytesPushed);
 }
 
-void Expression::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode *arg2, BuiltInFunction2 f, const ExpressionDestination &dummy) {
+void CodeGenerator::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode *arg2, BuiltInFunction2 f, const ExpressionDestination &dummy) {
   int bytesPushed = 0;
   bytesPushed += genPush(arg2);
   bytesPushed += genPush(arg1);
   bytesPushed += genPushReturnAddr();
-  m_code.emitCall((BuiltInFunction)f, dummy);
-  m_code.emitAddESP(bytesPushed);
+  m_code->emitCall((BuiltInFunction)f, dummy);
+  m_code->emitAddESP(bytesPushed);
 }
 
-void Expression::genCall1Arg(const ExpressionNode *arg, BuiltInFunctionRef1 f, const ExpressionDestination &dummy) {
+void CodeGenerator::genCall1Arg(const ExpressionNode *arg, BuiltInFunctionRef1 f, const ExpressionDestination &dummy) {
   int bytesPushed = 0;
   bytesPushed += genPushRef(arg,0);
   bytesPushed += genPushReturnAddr();
-  m_code.emitCall((BuiltInFunction)f, dummy);
-  m_code.emitAddESP(bytesPushed);
+  m_code->emitCall((BuiltInFunction)f, dummy);
+  m_code->emitAddESP(bytesPushed);
 }
 
-void Expression::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode *arg2, BuiltInFunctionRef2 f, const ExpressionDestination &dummy) {
+void CodeGenerator::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode *arg2, BuiltInFunctionRef2 f, const ExpressionDestination &dummy) {
   int bytesPushed = 0;
   bytesPushed += genPushRef(arg2,0);
   bytesPushed += genPushRef(arg1,1);
   bytesPushed += genPushReturnAddr();
-  m_code.emitCall((BuiltInFunction)f, dummy);
-  m_code.emitAddESP(bytesPushed);
+  m_code->emitCall((BuiltInFunction)f, dummy);
+  m_code->emitAddESP(bytesPushed);
 }
 
-void Expression::genPolynomial(const ExpressionNode *n, const ExpressionDestination &dummy) {
+void CodeGenerator::genPolynomial(const ExpressionNode *n, const ExpressionDestination &dummy) {
   const ExpressionNodeArray &coefArray       = n->getCoefficientArray();
   const int                  firstCoefIndex  = n->getFirstCoefIndex();
   for(int i = 0; i < (int)coefArray.size(); i++) {
     const ExpressionNode *coef = coefArray[i];
     if(coef->isConstant()) {
-      setValueByIndex(firstCoefIndex + i, evaluateRealExpr(coef));
+      m_tree.getValueRef(firstCoefIndex + i) = m_tree.evaluateRealExpr(coef);
     } else {
       genExpression(coef, dummy);
-      m_code.emitFStorePop(firstCoefIndex + i);
+      m_code->emitFStorePop(firstCoefIndex + i);
     }
   }
 
   int bytesPushed = 0;
-  bytesPushed += genPushRef(&getValueRef(firstCoefIndex));
+  bytesPushed += genPushRef(&m_tree.getValueRef(firstCoefIndex));
   bytesPushed += genPushInt((int)coefArray.size());
   bytesPushed += genPush(n->getArgument());
   bytesPushed += genPushReturnAddr();
-  m_code.emitCall((BuiltInFunction)::evaluatePolynomial, dummy);
-  m_code.emitAddESP(bytesPushed);
+  m_code->emitCall((BuiltInFunction)::evaluatePolynomial, dummy);
+  m_code->emitAddESP(bytesPushed);
 }
 
 static int getAlignedSize(int size) {
@@ -993,44 +971,44 @@ static int getAlignedSize(int size) {
   return rest ? (size + (4-rest)) : size;
 }
 
-int Expression::genPush(const ExpressionNode *n) {
+int CodeGenerator::genPush(const ExpressionNode *n) {
   if(n->isNameOrNumber()) {
     return genPushReal(n->getValueRef());
   } else {
     genExpression(n, DST_FPU);
     int bytesPushed = getAlignedSize(sizeof(Real));
-    m_code.emitSubESP(bytesPushed);
-    m_code.emit(FSTP_REAL_PTR_ESP);
+    m_code->emitSubESP(bytesPushed);
+    m_code->emit(FSTP_REAL_PTR_ESP);
     return bytesPushed;
   }
 }
 
-int Expression::genPushRef(const ExpressionNode *n, int index) {
+int CodeGenerator::genPushRef(const ExpressionNode *n, int index) {
   if(n->isNameOrNumber()) {
     return genPushRef(&n->getValueRef());
   } else {
     genExpression(n, DST_FPU);
-    m_code.emitFStorePop(index);
-    return genPushRef(&getValueRef(index));
+    m_code->emitFStorePop(index);
+    return genPushRef(&m_tree.getValueRef(index));
   }
 }
 
-int Expression::genPushReal(const Real &x) {
+int CodeGenerator::genPushReal(const Real &x) {
   return genPush(&x,sizeof(Real));
 }
 
 // return size rounded up to nearest multiply of 4
-int Expression::genPush(const void *p, UINT size) {
+int CodeGenerator::genPush(const void *p, UINT size) {
   switch(size) {
   case 2:
-    m_code.emit(MOV_TO_AX_IMM_ADDR_WORD);
-    m_code.addBytes(&p,4);
-    m_code.emit(PUSH_R32(EAX));
+    m_code->emit(MOV_TO_AX_IMM_ADDR_WORD);
+    m_code->addBytes(&p,4);
+    m_code->emit(PUSH_R32(EAX));
     return 4;
   case 4:
-    m_code.emit(MOV_TO_EAX_IMM_ADDR_DWORD);
-    m_code.addBytes(&p,4);
-    m_code.emit(PUSH_R32(EAX));
+    m_code->emit(MOV_TO_EAX_IMM_ADDR_DWORD);
+    m_code->addBytes(&p,4);
+    m_code->emit(PUSH_R32(EAX));
     return 4;
   case 6:
     genPush(((BYTE*)p)+4,4);
@@ -1047,36 +1025,36 @@ int Expression::genPush(const void *p, UINT size) {
   default:
     size = getAlignedSize(size);
     UINT count = size / 4;
-    m_code.emitSubESP(size);
-    m_code.emit(MOV_REG_IMM(ECX,count));
-    m_code.emit(MOV_REG_IMM(ESI,p));
-    m_code.emit(REGREG(MOV_REG_MEM(EDI),ESP));
-    m_code.emit(REP); m_code.emit(MOVS_DWORD);
+    m_code->emitSubESP(size);
+    m_code->emit(MOV_REG_IMM(ECX,count));
+    m_code->emit(MOV_REG_IMM(ESI,p));
+    m_code->emit(REGREG(MOV_REG_MEM(EDI),ESP));
+    m_code->emit(REP); m_code->emit(MOVS_DWORD);
     return size;
   }
 }
 
-int Expression::genPushRef(const void *p) {
-  m_code.emit(PUSH_IMM_DWORD);
-  m_code.addBytes(&p,sizeof(p));
+int CodeGenerator::genPushRef(const void *p) {
+  m_code->emit(PUSH_IMM_DWORD);
+  m_code->addBytes(&p,sizeof(p));
   return sizeof(void*);
 }
 
-int Expression::genPushInt(int n) {
+int CodeGenerator::genPushInt(int n) {
   if(ISBYTE(n)) {
-    m_code.emit(PUSH_IMM_BYTE);
+    m_code->emit(PUSH_IMM_BYTE);
     char byte = (char)n;
-    m_code.addBytes(&byte,1);
+    m_code->addBytes(&byte,1);
   } else {
-    m_code.emit(PUSH_IMM_DWORD);
-    m_code.addBytes(&n,4);
+    m_code->emit(PUSH_IMM_DWORD);
+    m_code->addBytes(&n,4);
   }
   return sizeof(int);
 }
 
-int Expression::genPushReturnAddr() {
+int CodeGenerator::genPushReturnAddr() {
 #ifdef LONGDOUBLE
-  return genPushRef(&getValueRef(0));
+  return genPushRef(&m_tree.getValueRef(0));
 #else
   return 0;
 #endif
@@ -1094,12 +1072,12 @@ static const IndexRegister int64ParamRegister[] = {
 
 #ifndef LONGDOUBLE
 
-void Expression::genCall1Arg(const ExpressionNode *arg, BuiltInFunction1 f, const ExpressionDestination &dst) {
+void CodeGenerator::genCall1Arg(const ExpressionNode *arg, BuiltInFunction1 f, const ExpressionDestination &dst) {
   genSetParameter(arg, 0, false);
-  m_code.emitCall((BuiltInFunction)f, dst);
+  m_code->emitCall((BuiltInFunction)f, dst);
 }
 
-void Expression::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode *arg2, BuiltInFunction2 f, const ExpressionDestination &dst) {
+void CodeGenerator::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode *arg2, BuiltInFunction2 f, const ExpressionDestination &dst) {
   const bool arg1HasCalls = arg1->containsFunctionCall();
   const bool arg2HasCalls = arg2->containsFunctionCall();
   if (!arg2HasCalls) {
@@ -1111,18 +1089,18 @@ void Expression::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode *a
   } else { // both parmeters are expressions using function calls
     const BYTE offset = genSetParameter(arg1, 0, true);
     genSetParameter(arg2, 1, false);
-    m_code.emitStackOp(MOVSD_XMM_MMWORD(XMM0), offset);
-    m_code.popTmp();
+    m_code->emitStackOp(MOVSD_XMM_MMWORD(XMM0), offset);
+    m_code->popTmp();
   }
-  m_code.emitCall((BuiltInFunction)f, dst);
+  m_code->emitCall((BuiltInFunction)f, dst);
 }
 
-void Expression::genCall1Arg(const ExpressionNode *arg, BuiltInFunctionRef1 f, const ExpressionDestination &dst) {
+void CodeGenerator::genCall1Arg(const ExpressionNode *arg, BuiltInFunctionRef1 f, const ExpressionDestination &dst) {
   genSetRefParameter(arg, 0);
-  m_code.emitCall((BuiltInFunction)f, dst);
+  m_code->emitCall((BuiltInFunction)f, dst);
 }
 
-void Expression::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode *arg2, BuiltInFunctionRef2 f, const ExpressionDestination &dst) {
+void CodeGenerator::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode *arg2, BuiltInFunctionRef2 f, const ExpressionDestination &dst) {
   const bool arg2HasCalls = arg2->containsFunctionCall();
 
   bool stacked1, stacked2;
@@ -1136,26 +1114,26 @@ void Expression::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode *a
     offset1 = genSetRefParameter(arg1, 0, stacked1);
   }
   if(stacked1) {
-    m_code.emit(REGREG(MOV_REG_MEM(RCX), RSP));
-    m_code.emit(ADD_REG_IMM(RCX,offset1));
-    m_code.popTmp();
+    m_code->emit(REGREG(MOV_REG_MEM(RCX), RSP));
+    m_code->emit(ADD_REG_IMM(RCX,offset1));
+    m_code->popTmp();
   }
   if(stacked2) {
-    m_code.emit(REGREG(MOV_REG_MEM(RDX), RSP));
-    m_code.emit(ADD_REG_IMM(RDX,offset2));
-    m_code.popTmp();
+    m_code->emit(REGREG(MOV_REG_MEM(RDX), RSP));
+    m_code->emit(ADD_REG_IMM(RDX,offset2));
+    m_code->popTmp();
   }
-  m_code.emitCall((BuiltInFunction)f, dst);
+  m_code->emitCall((BuiltInFunction)f, dst);
 }
 
 #else // LONGDOUBLE
 
-void Expression::genCall1Arg(const ExpressionNode *arg, BuiltInFunctionRef1 f, const ExpressionDestination &dst) {
+void CodeGenerator::genCall1Arg(const ExpressionNode *arg, BuiltInFunctionRef1 f, const ExpressionDestination &dst) {
   genSetRefParameter(arg, 0);
-  m_code.emitCall((BuiltInFunction)f, dst);
+  m_code->emitCall((BuiltInFunction)f, dst);
 }
 
-void Expression::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode *arg2, BuiltInFunctionRef2 f, const ExpressionDestination &dst) {
+void CodeGenerator::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode *arg2, BuiltInFunctionRef2 f, const ExpressionDestination &dst) {
   const bool arg2HasCalls = arg2->containsFunctionCall();
 
   bool stacked1, stacked2;
@@ -1169,31 +1147,31 @@ void Expression::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode *a
     offset1 = genSetRefParameter(arg1, 0, stacked1);
   }
   if(stacked1) {
-    m_code.emit(REGREG(MOV_REG_MEM(RDX), RSP));
+    m_code->emit(REGREG(MOV_REG_MEM(RDX), RSP));
     if(offset1) {
-      m_code.emit(ADD_REG_IMM(RDX, offset1));
-      m_code.popTmp();
+      m_code->emit(ADD_REG_IMM(RDX, offset1));
+      m_code->popTmp();
     }
   }
   if(stacked2) {
-    m_code.emit(REGREG(MOV_REG_MEM(R8), RSP));
+    m_code->emit(REGREG(MOV_REG_MEM(R8), RSP));
     if(offset2) {
-      m_code.emit(ADD_REG_IMM(R8,offset2));
-      m_code.popTmp();
+      m_code->emit(ADD_REG_IMM(R8,offset2));
+      m_code->popTmp();
     }
   }
-  m_code.emitCall((BuiltInFunction)f, dst);
+  m_code->emitCall((BuiltInFunction)f, dst);
 }
 
 #endif // LONGDOUBLE
 
-void Expression::genPolynomial(const ExpressionNode *n, const ExpressionDestination &dst) {
+void CodeGenerator::genPolynomial(const ExpressionNode *n, const ExpressionDestination &dst) {
   const ExpressionNodeArray &coefArray       = n->getCoefficientArray();
   const int                  firstCoefIndex  = n->getFirstCoefIndex();
   for(int i = 0; i < (int)coefArray.size(); i++) {
     const ExpressionNode *coef = coefArray[i];
     if(coef->isConstant()) {
-      setValueByIndex(firstCoefIndex + i, evaluateRealExpr(coef));
+      m_tree.getValueRef(firstCoefIndex + i) = m_tree.evaluateRealExpr(coef);
     } else {
       genExpression(coef, DST_INVALUETABLE(firstCoefIndex + i));
     }
@@ -1206,35 +1184,35 @@ void Expression::genPolynomial(const ExpressionNode *n, const ExpressionDestinat
 
   const IndexRegister &param2    = int64ParamRegister[1];
   const size_t         coefCount = coefArray.size();
-  m_code.emit(MOV_REG_IMM(param2,coefCount));
+  m_code->emit(MOV_REG_IMM(param2,coefCount));
 
   const IndexRegister &param3    = int64ParamRegister[2];
-  const Real          *coef0     = &getValueRef(firstCoefIndex);
-  m_code.emit(MOV_REG_IMM(param3,coef0));
+  const Real          *coef0     = &m_tree.getValueRef(firstCoefIndex);
+  m_code->emit(MOV_REG_IMM(param3,coef0));
 
-  m_code.emitCall((BuiltInFunction)::evaluatePolynomial, dst);
+  m_code->emitCall((BuiltInFunction)::evaluatePolynomial, dst);
 }
 
-void Expression::genSetRefParameter(const ExpressionNode *n, int index) {
+void CodeGenerator::genSetRefParameter(const ExpressionNode *n, int index) {
   bool stacked;
   const BYTE offset = genSetRefParameter(n, index, stacked);
   if(stacked) {
     const GPRegister &r64 = int64ParamRegister[index];
-    m_code.emit(REGREG(MOV_REG_MEM(r64), RSP));
-    m_code.emitAddR64(r64, offset);
-    m_code.popTmp();
+    m_code->emit(REGREG(MOV_REG_MEM(r64), RSP));
+    m_code->emitAddR64(r64, offset);
+    m_code->popTmp();
   }
 }
 
-BYTE Expression::genSetRefParameter(const ExpressionNode *n, int index, bool &savedOnStack) {
+BYTE CodeGenerator::genSetRefParameter(const ExpressionNode *n, int index, bool &savedOnStack) {
   const GPRegister &dstRegister = int64ParamRegister[index];
   if(n->isNameOrNumber()) {
-    m_code.emit(REGREG(MOV_REG_MEM(dstRegister), RSI));
-    m_code.emitAddR64(dstRegister, m_code.getESIOffset(n->getValueIndex()));
+    m_code->emit(REGREG(MOV_REG_MEM(dstRegister), RSI));
+    m_code->emitAddR64(dstRegister, m_code->getESIOffset(n->getValueIndex()));
     savedOnStack = false;
     return 0;
   } else {
-    const BYTE offset = m_code.pushTmp();
+    const BYTE offset = m_code->pushTmp();
     genExpression(n, DST_ONSTACK(offset));
     savedOnStack = true;
     return offset;
@@ -1242,14 +1220,14 @@ BYTE Expression::genSetRefParameter(const ExpressionNode *n, int index, bool &sa
 }
 
 #ifndef LONGDOUBLE
-BYTE Expression::genSetParameter(const ExpressionNode *n, int index, bool saveOnStack) {
+BYTE CodeGenerator::genSetParameter(const ExpressionNode *n, int index, bool saveOnStack) {
   const XMMRegister &dstRegister = (index == 0) ? XMM0 : XMM1;
   if(n->isNameOrNumber()) {
     assert(saveOnStack == false);
     const int index = n->getValueIndex();
-    m_code.emitTableOp(MOVSD_XMM_MMWORD(dstRegister),index);
+    m_code->emitTableOp(MOVSD_XMM_MMWORD(dstRegister),index);
   } else if(saveOnStack) {
-    const BYTE offset = m_code.pushTmp();
+    const BYTE offset = m_code->pushTmp();
     genExpression(n, DST_ONSTACK(offset));
     return offset;
   } else {

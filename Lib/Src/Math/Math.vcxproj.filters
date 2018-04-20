@@ -520,6 +520,9 @@
     <ClInclude Include="..\..\Include\Math\Expression\Opcode.h">
       <Filter>Header Files\Expression</Filter>
     </ClInclude>
+    <ClInclude Include="Expression\ExpressionCompile.h">
+      <Filter>Source Files\Expression</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="FPU.inc">

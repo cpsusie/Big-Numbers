@@ -1,17 +1,21 @@
 #include "pch.h"
 #include <Math/Expression/Expression.h>
+#include "ExpressionCompile.h"
 
 DEFINECLASSNAME(Expression);
 
 Expression::Expression(TrigonometricMode mode) {
-  clear();
+  m_machineCode       = false;
+  m_code              = NULL;
   m_returnType        = EXPR_NORETURNTYPE;
+  m_state             = EXPR_EMPTY;
+  m_reduceIteration   = 0;
   m_trigonometricMode = mode;
 }
 
 Expression::Expression(const Expression &src) : ParserTree(src) {
   m_machineCode       = false;
-  clearMachineCode();
+  m_code              = NULL;
   m_returnType        = src.m_returnType;
   m_state             = src.m_state;
   m_reduceIteration   = src.m_reduceIteration;
@@ -34,19 +38,29 @@ Expression &Expression::operator=(const Expression &src) {
   buildSymbolTable();
   copyValues((ParserTree&)src);
 
-  setMachineCode(src.isMachineCode());
+  setMachineCode(    src.isMachineCode());
   setReduceIteration(src.getReduceIteration());
-  setReturnType(src.getReturnType());
-  setState(src.getState());
+  setReturnType(     src.getReturnType());
+  setState(          src.getState());
 
   return *this;
 }
 
 void Expression::clear() {
   releaseAll();
+  setReturnType(EXPR_NORETURNTYPE);
   setMachineCode(false);
   setState(EXPR_EMPTY);
   setReduceIteration(0);
+}
+
+void Expression::compile(const String &expr, bool machineCode) {
+  parse(expr);
+  if(!isOk()) {
+    return;
+  }
+  setReturnType(findReturnType());
+  setMachineCode(machineCode);
 }
 
 void Expression::parse(const String &expr) {
@@ -65,18 +79,15 @@ void Expression::parse(const String &expr) {
   }
 }
 
-void Expression::throwUnknownSymbolException(const TCHAR *method, SNode n) { // static
-  throwUnknownSymbolException(method, n.node());
-}
-
-void Expression::throwUnknownSymbolException(const TCHAR *method, const ExpressionNode *n) { // static
-  throwException(_T("%s:Unexpected symbol in expression tree:%s")
-                ,method, n->getSymbolName().cstr());
-}
-
-void Expression::throwInvalidSymbolForTreeMode(const TCHAR *method, const ExpressionNode *n) const {
-  throwException(_T("%s:Invalid symbol in tree form %s:<%s>")
-                ,method, getTreeFormName().cstr(),  n->getSymbolName().cstr());
+ExpressionReturnType Expression::findReturnType() const {
+  DEFINEMETHODNAME;
+  const ExpressionNodeArray stmtList = getStatementList((ExpressionNode*)getRoot());
+  switch(stmtList.last()->getSymbol()) {
+  case RETURNREAL : return EXPR_RETURN_REAL;
+  case RETURNBOOL : return EXPR_RETURN_BOOL;
+  default         : throwUnknownSymbolException(method, stmtList.last());
+                    return EXPR_RETURN_REAL;
+  }
 }
 
 void Expression::setState(ExpressionState newState) {
@@ -100,6 +111,26 @@ void Expression::setMachineCode(bool machinecode) {
     }
     setProperty(EXPR_MACHINECODE, m_machineCode, machinecode);
   }
+}
+
+void Expression::genMachineCode() {
+  clearMachineCode();
+  m_code = CodeGenerator(this, getTrigonometricMode()).getCode();
+}
+
+void Expression::clearMachineCode() {
+  if(m_code) {
+    delete (MachineCode*)m_code;
+    m_code = NULL;
+  }
+}
+
+Real Expression::fastEvaluateReal() {
+  return ((MachineCode*)m_code)->evaluateReal();
+}
+
+bool Expression::fastEvaluateBool() {
+  return ((MachineCode*)m_code)->evaluateBool();
 }
 
 void Expression::setTrigonometricMode(TrigonometricMode mode) {

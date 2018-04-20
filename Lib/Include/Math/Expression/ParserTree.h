@@ -283,6 +283,7 @@ protected:
   ExpressionNode *secC(                      ExpressionNode *n);
 
   void initDynamicOperations(ParserTreeForm treeForm);
+
 public:
   virtual ~ParserTree();
   virtual Real evaluateRealExpr(const ExpressionNode *n) const = 0;
@@ -300,6 +301,9 @@ public:
   inline bool isOk() const {
     return m_ok;
   }
+  void        throwInvalidSymbolForTreeMode(const TCHAR *method, const ExpressionNode *n) const;
+  static void throwUnknownSymbolException(  const TCHAR *method, SNode                 n);
+  static void throwUnknownSymbolException(  const TCHAR *method, const ExpressionNode *n);
 
   inline ParserTreeForm getTreeForm() const {
     return m_treeForm;
@@ -349,6 +353,9 @@ public:
   }
   inline size_t getValueCount() const {
     return m_valueTable.size();
+  }
+  const CompactRealArray &getValueTable() const {
+    return m_valueTable;
   }
   ExpressionNodePoly     *fetchPolyNode(     const ExpressionNodeArray  &coefficientArray, ExpressionNode *argument);
   ExpressionFactor       *getFactor(         ExpressionNode *base, ExpressionNode *exponent = NULL);
