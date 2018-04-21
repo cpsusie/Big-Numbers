@@ -32,7 +32,7 @@ class Expression : public ParserTree {
 private:
   DECLARECLASSNAME;
   bool                       m_machineCode;
-  const void                *m_code; // actually MachineCode*
+  const void                *m_code, *m_code1; // actually MachineCode*
   ExpressionReturnType       m_returnType;
   mutable ExpressionState    m_state;
   mutable UINT               m_reduceIteration;
@@ -44,6 +44,10 @@ private:
   friend class MarkedNodeMultiplier;
   friend class RationalPowersReducer;
 
+  void   init(TrigonometricMode    trigonometricMode
+             ,ExpressionReturnType returnType      = EXPR_NORETURNTYPE
+             ,ExpressionState      state           = EXPR_EMPTY
+             ,UINT                 reduceIteration = 0);
   void   parse(const String &expr);
   ExpressionReturnType findReturnType() const;
 

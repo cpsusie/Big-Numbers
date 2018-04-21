@@ -14,9 +14,9 @@
     ,TO              =  10
     ,INDEXEDSUM      =  11
     ,INDEXEDPRODUCT  =  12
-    ,OR              =  13
-    ,AND             =  14
-    ,NOT             =  15
+    ,SYMOR           =  13
+    ,SYMAND          =  14
+    ,SYMNOT          =  15
     ,EQ              =  16
     ,GE              =  17
     ,GT              =  18

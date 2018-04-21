@@ -1,26 +1,16 @@
 #include "pch.h"
 #include <Math/Expression/Expression.h>
-#include "ExpressionCompile.h"
+#include "ExpressionCompileWrapper.h"
+#include "ExpressionCompile1.h"
 
 DEFINECLASSNAME(Expression);
 
 Expression::Expression(TrigonometricMode mode) {
-  m_machineCode       = false;
-  m_code              = NULL;
-  m_returnType        = EXPR_NORETURNTYPE;
-  m_state             = EXPR_EMPTY;
-  m_reduceIteration   = 0;
-  m_trigonometricMode = mode;
+  init(mode);
 }
 
 Expression::Expression(const Expression &src) : ParserTree(src) {
-  m_machineCode       = false;
-  m_code              = NULL;
-  m_returnType        = src.m_returnType;
-  m_state             = src.m_state;
-  m_reduceIteration   = src.m_reduceIteration;
-  m_trigonometricMode = src.m_trigonometricMode;
-
+  init(src.getTrigonometricMode(), src.getReturnType(), src.getState(), src.getReduceIteration());
   buildSymbolTable();
   copyValues((ParserTree&)src);
   setMachineCode(src.isMachineCode());
@@ -44,6 +34,20 @@ Expression &Expression::operator=(const Expression &src) {
   setState(          src.getState());
 
   return *this;
+}
+
+void Expression::init(TrigonometricMode    trigonometricMode
+                     ,ExpressionReturnType returnType
+                     ,ExpressionState      state
+                     ,UINT                 reduceIteration)
+{
+  m_machineCode       = false;
+  m_code              = NULL;
+  m_code1             = NULL;
+  m_trigonometricMode = trigonometricMode; // this is init.  so don't call set-properties here
+  m_returnType        = returnType;
+  m_state             = state;
+  m_reduceIteration   = reduceIteration;
 }
 
 void Expression::clear() {
@@ -115,22 +119,27 @@ void Expression::setMachineCode(bool machinecode) {
 
 void Expression::genMachineCode() {
   clearMachineCode();
-  m_code = CodeGenerator(this, getTrigonometricMode()).getCode();
+  m_code  = CodeGeneratorWrapper(this, getTrigonometricMode()).getCode();
+  m_code1 = CodeGenerator1(this, getTrigonometricMode()).getCode();
 }
 
 void Expression::clearMachineCode() {
   if(m_code) {
-    delete (MachineCode*)m_code;
+    delete (MachineCodeWrapper*)m_code;
     m_code = NULL;
+  }
+  if(m_code1) {
+    delete (MachineCode1*)m_code1;
+    m_code1 = NULL;
   }
 }
 
 Real Expression::fastEvaluateReal() {
-  return ((MachineCode*)m_code)->evaluateReal();
+  return ((MachineCodeWrapper*)m_code)->evaluateReal();
 }
 
 bool Expression::fastEvaluateBool() {
-  return ((MachineCode*)m_code)->evaluateBool();
+  return ((MachineCodeWrapper*)m_code)->evaluateBool();
 }
 
 void Expression::setTrigonometricMode(TrigonometricMode mode) {

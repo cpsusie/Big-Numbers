@@ -171,9 +171,9 @@ bool ExpressionNode::isBinaryOperator() const {
 
 bool ExpressionNode::isBooleanOperator() const {
   switch(getSymbol()) {
-  case OR :
-  case AND:
-  case NOT:
+  case SYMOR :
+  case SYMAND:
+  case SYMNOT:
   case EQ :
   case GE :
   case GT :
@@ -285,9 +285,9 @@ bool ExpressionNode::needParentheses(const ExpressionNode *parent) const {
 
 int ExpressionNode::getPrecedence() const {
   switch(getSymbol()) {
-  case OR     : return 1;
-  case AND    : return 2;
-  case NOT    : return 3;
+  case SYMOR  : return 1;
+  case SYMAND : return 2;
+  case SYMNOT : return 3;
   case PLUS   :
   case MINUS  :
   case SUM    : return 4;

@@ -312,6 +312,7 @@ extern const IndexRegister R8  ,R9  ,R10 ,R11 ,R12 ,R13 ,R14 ,R15;
 #endif // IS64BIT
 
 extern const FPURegister ST0,ST1,ST2,ST3,ST4,ST5,ST6,ST7;
+const FPURegister &ST(BYTE index);
 
 extern const XMMRegister XMM0,XMM1,XMM2,XMM3,XMM4,XMM5,XMM6,XMM7;
 

@@ -81,9 +81,9 @@ white   [\x00-\x09\x0b\s\r\n]  /* White space: all control chars        */
 ")"		    return RPAR;
 "["		    return LB;
 "]"		    return RB;
-"&&"	    return AND;
-"||"	    return OR;
-"!"		    return NOT;
+"&&"	    return SYMAND;
+"||"	    return SYMOR;
+"!"		    return SYMNOT;
 "=="	    return EQ;
 "<"       return LT;
 "<="      return LE;
@@ -112,7 +112,7 @@ static const KeyWord keywordtable[] = {
 ,_T("ACOSH")     ,ACOSH
 ,_T("ACOT")      ,ACOT
 ,_T("ACSC")      ,ACSC
-,_T("AND")       ,AND
+,_T("AND")       ,SYMAND
 ,_T("ASEC")      ,ASEC
 ,_T("ASIN")      ,ASIN
 ,_T("ASINH")     ,ASINH
@@ -149,8 +149,8 @@ static const KeyWord keywordtable[] = {
 ,_T("NORMRAND")  ,NORMRAND
 ,_T("NORMRANDOM"),NORMRAND
 ,_T("NORMRND")   ,NORMRAND
-,_T("NOT")       ,NOT
-,_T("OR")        ,OR
+,_T("NOT")       ,SYMNOT
+,_T("OR")        ,SYMOR
 ,_T("POLY")      ,POLY
 ,_T("PROBIT")    ,PROBIT
 ,_T("PRODUCT")   ,INDEXEDPRODUCT

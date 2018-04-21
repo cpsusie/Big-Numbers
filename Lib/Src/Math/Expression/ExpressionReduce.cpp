@@ -168,9 +168,9 @@ SNode Expression::reduceBoolExp(SNode n) {
     RETURNNODE(booleanExpression(evaluateBoolExpr(n)));
   } else {
     switch(n.getSymbol()) {
-    case NOT   : RETURNNODE( !reduceBoolExp(n.left()) );
-    case AND   : RETURNNODE( reduceBoolExp(n.left()) && reduceBoolExp(n.right()) );
-    case OR    : RETURNNODE( reduceBoolExp(n.left()) || reduceBoolExp(n.right()) );
+    case SYMNOT: RETURNNODE( !reduceBoolExp(n.left()) );
+    case SYMAND: RETURNNODE( reduceBoolExp(n.left()) && reduceBoolExp(n.right()) );
+    case SYMOR : RETURNNODE( reduceBoolExp(n.left()) || reduceBoolExp(n.right()) );
 
     case EQ    :
     case NE    :

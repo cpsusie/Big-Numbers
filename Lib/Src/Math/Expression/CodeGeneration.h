@@ -1,0 +1,113 @@
+#pragma once
+
+#include <Registers.h>
+#include <Math/MathLib.h>
+#include <Math/Expression/ParserTree.h>
+#include <ExecutableByteArray.h>
+
+typedef void (*BuiltInFunction)();
+typedef BuiltInFunction ExpressionEntryPoint;
+typedef Real (*BuiltInFunctionRef1)(const Real &x);
+typedef Real (*BuiltInFunctionRef2)(const Real &x, const Real &y);
+typedef Real (*BuiltInFunction1)(Real x);
+typedef Real (*BuiltInFunction2)(Real x, Real y);
+
+
+#ifdef IS64BIT
+typedef enum {
+  RESULT_IN_FPU
+ ,RESULT_IN_ADDRRDI
+ ,RESULT_ON_STACK
+ ,RESULT_IN_VALUETABLE
+#ifndef LONGDOUBLE
+ ,RESULT_IN_XMM  // XMM-register cannot be used for 80-bit floating points
+#endif
+} ExpressionDestinationType;
+
+class ExpressionDestination {
+private:
+  const ExpressionDestinationType m_type;
+  union {
+    const int                       m_offset;
+    const XMMRegister              *m_register;
+  };
+public:
+  ExpressionDestination(ExpressionDestinationType type, int offset)
+    : m_type(type), m_offset(offset)
+  {
+  }
+#ifndef LONGDOUBLE
+  ExpressionDestination(const XMMRegister &xmmReg)
+    : m_type(RESULT_IN_XMM)
+    , m_register(&xmmReg)
+  {
+  }
+#endif
+  inline ExpressionDestinationType getType() const {
+    return m_type;
+  }
+  inline BYTE getStackOffset() const {
+    assert(m_type == RESULT_ON_STACK);
+    return (BYTE)m_offset;
+  }
+  inline int getTableIndex() const {
+    assert(m_type == RESULT_IN_VALUETABLE);
+    return m_offset;
+  }
+#ifndef LONGDOUBLE
+  inline const XMMRegister &getXMMReg() const {
+    assert(m_type == RESULT_IN_XMM);
+    return *m_register;
+  }
+#endif
+};
+
+#define DST_FPU                 ExpressionDestination(RESULT_IN_FPU       , -1     )
+#define DST_ADDRRDI             ExpressionDestination(RESULT_IN_ADDRRDI   , -1     )
+#define DST_ONSTACK(offs1)      ExpressionDestination(RESULT_ON_STACK     , offs1  )
+#define DST_INVALUETABLE(index) ExpressionDestination(RESULT_IN_VALUETABLE, index  )
+#ifndef LONGDOUBLE
+#define DST_XMM(xmmReg)         ExpressionDestination(xmmReg )
+#endif
+#else
+
+typedef int ExpressionDestination;
+
+#define DST_FPU                 0
+#define DST_ADDRRDI             0
+#define DST_ONSTACK(     offs1) 0
+#define DST_INVALUETABLE(offs4) 0
+#ifndef LONGDOUBLE
+#define DST_XMM(xmmReg)         0
+#endif
+
+#endif // IS64BIT
+
+class MemoryReference {
+public:
+  // index of address in Machinecode
+  int             m_byteIndex;
+  // 4/8 byte absolute address (depending on x86/x64 mode)
+  const BYTE     *m_memAddr;
+  inline MemoryReference() {
+  }
+  inline MemoryReference(int byteIndex, const BYTE *memAddr) : m_byteIndex(byteIndex), m_memAddr(memAddr) {
+  }
+};
+
+class JumpFixup {
+public:
+  bool m_isShortJump;
+  int  m_addr;
+  int  m_jmpAddr;
+  JumpFixup() {
+  }
+  JumpFixup(int addr, int jmpAddr) : m_isShortJump(true), m_addr(addr), m_jmpAddr(jmpAddr) {
+  }
+};
+
+class JumpList {
+public:
+  CompactIntArray trueJumps;
+  CompactIntArray falseJumps;
+};

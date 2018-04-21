@@ -610,9 +610,9 @@ static const TCHAR *symbolName[101] = {
   /*  10 */ _T("TO"),
   /*  11 */ _T("INDEXEDSUM"),
   /*  12 */ _T("INDEXEDPRODUCT"),
-  /*  13 */ _T("OR"),
-  /*  14 */ _T("AND"),
-  /*  15 */ _T("NOT"),
+  /*  13 */ _T("SYMOR"),
+  /*  14 */ _T("SYMAND"),
+  /*  15 */ _T("SYMNOT"),
   /*  16 */ _T("EQ"),
   /*  17 */ _T("GE"),
   /*  18 */ _T("GT"),
@@ -698,7 +698,7 @@ static const TCHAR *symbolName[101] = {
   /*  98 */ _T("productExpr"),
   /*  99 */ _T("polyExpr"),
   /* 100 */ _T("exprList")
-}; // Total size of strings:780 bytes, size of pointertable:808 bytes.
+}; // Total size of strings:792 bytes, size of pointertable:808 bytes.
 
 static const ParserShortTables ExpressionTables_s(compressedSet, compressedLasets
                                                  ,action, successor, productionLength, leftSide
@@ -709,5 +709,5 @@ const ParserTables *ExpressionTables = &ExpressionTables_s;
 // Size of ExpressionTables_s: 88 bytes. Size of ExpressionTables:8 bytes
 
 
-// Total size of table data:8.864 bytes.
+// Total size of table data:8.876 bytes.
 

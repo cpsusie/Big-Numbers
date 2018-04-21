@@ -346,6 +346,12 @@
     <ClCompile Include="Expression\Opcode.cpp">
       <Filter>Source Files\Expression</Filter>
     </ClCompile>
+    <ClCompile Include="Expression\ExpressionCompile1.cpp">
+      <Filter>Source Files\Expression</Filter>
+    </ClCompile>
+    <ClCompile Include="Expression\ExpressionCompileWrapper.cpp">
+      <Filter>Source Files\Expression</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="NatvisFile.natvis" />
@@ -521,6 +527,18 @@
       <Filter>Header Files\Expression</Filter>
     </ClInclude>
     <ClInclude Include="Expression\ExpressionCompile.h">
+      <Filter>Source Files\Expression</Filter>
+    </ClInclude>
+    <ClInclude Include="Expression\ExpressionCompile1.h">
+      <Filter>Source Files\Expression</Filter>
+    </ClInclude>
+    <ClInclude Include="Expression\CodeGeneration.h">
+      <Filter>Source Files\Expression</Filter>
+    </ClInclude>
+    <ClInclude Include="Expression\Opcode.h">
+      <Filter>Source Files\Expression</Filter>
+    </ClInclude>
+    <ClInclude Include="Expression\ExpressionCompileWrapper.h">
       <Filter>Source Files\Expression</Filter>
     </ClInclude>
   </ItemGroup>

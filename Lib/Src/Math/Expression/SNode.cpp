@@ -80,7 +80,7 @@ SNode SNode::operator||(const SNode &n) const {
 }
 
 SNode SNode::operator!() const {
-  return m_node->getTree()->unaryExpression(NOT, m_node);
+  return m_node->getTree()->unaryExpression(SYMNOT, m_node);
 }
 
 bool SNode::operator==(const SNode &n) const {

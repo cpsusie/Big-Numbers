@@ -7,13 +7,13 @@
 ExpressionNode *ParserTree::and(ExpressionNode *n1, ExpressionNode *n2) {
   if(n1->isTrue()) return n2; else if(n1->isFalse()) return n1;
   if(n2->isTrue()) return n1; else if(n2->isFalse()) return n2;
-  return binaryExpression(AND, n1, n2);
+  return binaryExpression(SYMAND, n1, n2);
 }
 
 ExpressionNode *ParserTree::or(ExpressionNode *n1, ExpressionNode *n2) {
   if(n1->isTrue()) return n1; else if(n1->isFalse()) return n2;
   if(n2->isTrue()) return n2; else if(n2->isFalse()) return n1;
-  return binaryExpression(OR, n1, n2);
+  return binaryExpression(SYMOR, n1, n2);
 }
 
 

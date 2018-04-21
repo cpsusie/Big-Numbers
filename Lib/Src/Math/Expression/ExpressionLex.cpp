@@ -36,7 +36,7 @@ static ExpressionInputSymbol nameOrKeyWord(const _TUCHAR *lexeme);
 //   goto 33 on |
 // DFA State   1 [accepting, line  98 <;>]
 //   goto  1 on \x00\x01\x02\x03\x04\x05\x06\x07\b\t\n\x0b\r\s
-// DFA State   2 [accepting, line  86 <return NOT;>]
+// DFA State   2 [accepting, line  86 <return SYMNOT;>]
 //   goto 20 on =
 // DFA State   3 [accepting, line  77 <return MOD;>]
 // DFA State   4 [accepting, line  80 <return LPAR;>]
@@ -67,14 +67,14 @@ static ExpressionInputSymbol nameOrKeyWord(const _TUCHAR *lexeme);
 // DFA State  18 [accepting, line  83 <return RB;>]
 // DFA State  19 [accepting, line  78 <return POW;>]
 // DFA State  20 [accepting, line  92 <return NE;>]
-// DFA State  21 [accepting, line  84 <return AND;>]
+// DFA State  21 [accepting, line  84 <return SYMAND;>]
 // DFA State  22 [accepting, line  48 <{ int i;                   const SourcePosition st>]
 // DFA State  23 [accepting, line  63 <{ int i;                   while(i = input()) {   >]
 // DFA State  24 [accepting, line  89 <return LE;>]
 // DFA State  25 [accepting, line  93 <return NE;>]
 // DFA State  26 [accepting, line  87 <return EQ;>]
 // DFA State  27 [accepting, line  91 <return GE;>]
-// DFA State  28 [accepting, line  85 <return OR;>]
+// DFA State  28 [accepting, line  85 <return SYMOR;>]
 // DFA State  29 [nonAccepting]
 //   goto 21 on &
 // DFA State  30 [accepting, line  46 <return NUMBER;>]
@@ -259,7 +259,7 @@ int ExpressionLex::getNextLexeme() {
         break;
       case 2:
 #line 86 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
-        return NOT;
+        return SYMNOT;
 
 #line 93 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
@@ -375,7 +375,7 @@ int ExpressionLex::getNextLexeme() {
         break;
       case 21:
 #line 84 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
-        return AND;
+        return SYMAND;
 
 #line 93 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
@@ -438,7 +438,7 @@ int ExpressionLex::getNextLexeme() {
         break;
       case 28:
 #line 85 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
-        return OR;
+        return SYMOR;
 
 #line 93 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
@@ -477,7 +477,7 @@ static const KeyWord keywordtable[] = {
 ,_T("ACOSH")     ,ACOSH
 ,_T("ACOT")      ,ACOT
 ,_T("ACSC")      ,ACSC
-,_T("AND")       ,AND
+,_T("AND")       ,SYMAND
 ,_T("ASEC")      ,ASEC
 ,_T("ASIN")      ,ASIN
 ,_T("ASINH")     ,ASINH
@@ -514,8 +514,8 @@ static const KeyWord keywordtable[] = {
 ,_T("NORMRAND")  ,NORMRAND
 ,_T("NORMRANDOM"),NORMRAND
 ,_T("NORMRND")   ,NORMRAND
-,_T("NOT")       ,NOT
-,_T("OR")        ,OR
+,_T("NOT")       ,SYMNOT
+,_T("OR")        ,SYMOR
 ,_T("POLY")      ,POLY
 ,_T("PROBIT")    ,PROBIT
 ,_T("PRODUCT")   ,INDEXEDPRODUCT

@@ -25,9 +25,9 @@ private:
 
 %term NUMBER NAME TYPEBOOL
 %left IIF ASSIGN RETURNREAL RETURNBOOL SEMI COMMA TO INDEXEDSUM INDEXEDPRODUCT
-%left OR
-%left AND
-%term NOT
+%left SYMOR
+%left SYMAND
+%term SYMNOT
 %term EQ GE GT LE LT NE
 %left SUM PLUS MINUS             /*  + - (lowest precedence)      */
 %left PRODUCT PROD QUOT MOD      /*  * / %                        */
@@ -165,9 +165,9 @@ boolExpr            : expr EQ expr                          { $$ = newNode( getP
                     | expr LT expr                          { $$ = newNode( getPos(2), LT      , $1, $3, NULL);         }
                     | expr GE expr                          { $$ = newNode( getPos(2), GE      , $1, $3, NULL);         }
                     | expr GT expr                          { $$ = newNode( getPos(2), GT      , $1, $3, NULL);         }
-                    | boolExpr AND boolExpr                 { $$ = newNode( getPos(2), AND     , $1, $3, NULL);         }
-                    | boolExpr OR  boolExpr                 { $$ = newNode( getPos(2), OR      , $1, $3, NULL);         }
-                    | NOT boolExpr                          { $$ = newNode( getPos(2), NOT     , $2    , NULL);         }
+                    | boolExpr SYMAND boolExpr              { $$ = newNode( getPos(2), SYMAND  , $1, $3, NULL);         }
+                    | boolExpr SYMOR  boolExpr              { $$ = newNode( getPos(2), SYMOR   , $1, $3, NULL);         }
+                    | SYMNOT boolExpr                       { $$ = newNode( getPos(2), SYMNOT  , $2    , NULL);         }
                     | LPAR boolExpr RPAR                    { $$ = $2;                                                  }
                     ;
 

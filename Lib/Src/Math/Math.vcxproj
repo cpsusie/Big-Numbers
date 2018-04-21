@@ -893,6 +893,8 @@
     <ClCompile Include="Expression\ExpressionAction.cpp" />
     <ClCompile Include="Expression\ExpressionCompare.cpp" />
     <ClCompile Include="Expression\ExpressionCompile.cpp" />
+    <ClCompile Include="Expression\ExpressionCompile1.cpp" />
+    <ClCompile Include="Expression\ExpressionCompileWrapper.cpp" />
     <ClCompile Include="Expression\ExpressionDerive.cpp" />
     <ClCompile Include="Expression\ExpressionEvaluate.cpp" />
     <ClCompile Include="Expression\ExpressionFactor.cpp" />
@@ -1214,7 +1216,11 @@
     <ClInclude Include="..\..\Include\Math\Statistic.h" />
     <ClInclude Include="..\..\Include\Math\Transformation.h" />
     <ClInclude Include="..\..\Include\Math\Triangle\Triangle.h" />
+    <ClInclude Include="Expression\CodeGeneration.h" />
     <ClInclude Include="Expression\ExpressionCompile.h" />
+    <ClInclude Include="Expression\ExpressionCompile1.h" />
+    <ClInclude Include="Expression\ExpressionCompileWrapper.h" />
+    <ClInclude Include="Expression\Opcode.h" />
     <ClInclude Include="Expression\pch.h" />
     <ClInclude Include="MemoryPool.h" />
     <ClInclude Include="pch.h" />

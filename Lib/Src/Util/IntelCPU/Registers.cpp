@@ -312,6 +312,21 @@ const FPURegister ST5( 5);
 const FPURegister ST6( 6);
 const FPURegister ST7( 7);
 
+const FPURegister &ST(BYTE index) {
+  switch(index) {
+  case 0 : return ST0;
+  case 1 : return ST1;
+  case 2 : return ST2;
+  case 3 : return ST3;
+  case 4 : return ST4;
+  case 5 : return ST5;
+  case 6 : return ST6;
+  case 7 : return ST7;
+  default: throwInvalidArgumentException(__TFUNCTION__,_T("index=%d"), index);
+  }
+  return ST0;
+}
+
 const XMMRegister XMM0(  0);
 const XMMRegister XMM1(  1);
 const XMMRegister XMM2(  2);

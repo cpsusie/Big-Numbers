@@ -73,11 +73,11 @@ SNode Expression::toNFormBoolExp(ExpressionNode *n) {
     return booleanExpression(evaluateBoolExpr(n));
   }
   switch(n->getSymbol()) {
-  case NOT   :
+  case SYMNOT:
     return !toNFormBoolExp(n->left());
-  case AND   :
+  case SYMAND:
     return toNFormBoolExp(n->left()) && toNFormBoolExp(n->right());
-  case OR    :
+  case SYMOR :
     return toNFormBoolExp(n->left()) || toNFormBoolExp(n->right());
 
   case EQ    :

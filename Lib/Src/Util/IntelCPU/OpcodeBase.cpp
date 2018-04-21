@@ -658,16 +658,27 @@ bool OpcodeBase::isValidOperandCombination(const InstructionOperand &op1, const 
 }
 
 InstructionBase OpcodeBase::operator()(const InstructionOperand &op) const {
-  throwUnsupportedOperationException(__TFUNCTION__);
+  throwUnsupportedOperationException(format(_T("%s %s"), m_mnemonic.cstr(), op.toString().cstr()).cstr());
   return InstructionBuilder(*this);
 }
 
 InstructionBase OpcodeBase::operator()(const InstructionOperand &op1, const InstructionOperand &op2) const {
-  throwUnsupportedOperationException(__TFUNCTION__);
+  throwUnsupportedOperationException(format(_T("%s %s,%s")
+                                           ,m_mnemonic.cstr()
+                                           ,op1.toString().cstr()
+                                           ,op2.toString().cstr()
+                                           ).cstr()
+                                     );
   return InstructionBuilder(*this);
 }
 
 InstructionBase OpcodeBase::operator()(const InstructionOperand &op1, const InstructionOperand &op2, const InstructionOperand &op3) const {
-  throwUnsupportedOperationException(__TFUNCTION__);
+  throwUnsupportedOperationException(format(_T("%s %s,%s,%s")
+                                           ,m_mnemonic.cstr()
+                                           ,op1.toString().cstr()
+                                           ,op2.toString().cstr()
+                                           ,op3.toString().cstr()
+                                           ).cstr()
+                                     );
   return InstructionBuilder(*this);
 }

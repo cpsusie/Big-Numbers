@@ -240,9 +240,9 @@ bool Expression::evaluateBoolExpr(const ExpressionNode *n) const {
   DEFINEMETHODNAME;
   switch(n->getSymbol()) {
   case TYPEBOOL: return n->getBool();
-  case NOT     : return !evaluateBoolExpr(n->child(0));
-  case AND     : return evaluateBoolExpr(n->left()) && evaluateBoolExpr(n->right());
-  case OR      : return evaluateBoolExpr(n->left()) || evaluateBoolExpr(n->right());
+  case SYMNOT  : return !evaluateBoolExpr(n->child(0));
+  case SYMAND  : return evaluateBoolExpr(n->left()) && evaluateBoolExpr(n->right());
+  case SYMOR   : return evaluateBoolExpr(n->left()) || evaluateBoolExpr(n->right());
   case EQ      : return evaluateRealExpr(n->left()) == evaluateRealExpr(n->right());
   case NE      : return evaluateRealExpr(n->left()) != evaluateRealExpr(n->right());
   case LE      : return evaluateRealExpr(n->left()) <= evaluateRealExpr(n->right());

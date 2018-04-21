@@ -350,19 +350,19 @@ int ExpressionParser::reduceAction(unsigned int prod) {
     { m_dollardollar = newNode( getPos(2), GT      , getStackTop(2), getStackTop(0), NULL);         }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 77: /* boolExpr -> boolExpr AND boolExpr */
+  case 77: /* boolExpr -> boolExpr SYMAND boolExpr */
 #line 168 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
-    { m_dollardollar = newNode( getPos(2), AND     , getStackTop(2), getStackTop(0), NULL);         }
+    { m_dollardollar = newNode( getPos(2), SYMAND  , getStackTop(2), getStackTop(0), NULL);         }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 78: /* boolExpr -> boolExpr OR boolExpr */
+  case 78: /* boolExpr -> boolExpr SYMOR boolExpr */
 #line 169 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
-    { m_dollardollar = newNode( getPos(2), OR      , getStackTop(2), getStackTop(0), NULL);         }
+    { m_dollardollar = newNode( getPos(2), SYMOR   , getStackTop(2), getStackTop(0), NULL);         }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 79: /* boolExpr -> NOT boolExpr */
+  case 79: /* boolExpr -> SYMNOT boolExpr */
 #line 170 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.y"
-    { m_dollardollar = newNode( getPos(2), NOT     , getStackTop(0), NULL);         }
+    { m_dollardollar = newNode( getPos(2), SYMNOT  , getStackTop(0), NULL);         }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
   case 80: /* boolExpr -> LPAR boolExpr RPAR */
