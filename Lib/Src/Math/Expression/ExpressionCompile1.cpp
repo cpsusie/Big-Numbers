@@ -254,9 +254,9 @@ void MachineCode1::emitCall(BuiltInFunction f, const ExpressionDestination &dumm
   const int pos = emit(CALL((intptr_t)f));
   m_callArray.add(FunctionCall(pos, (BYTE)(size()-pos), f));
 #ifdef LONGDOUBLE
-  emitStackOp(MOV_REG_MEM(EAX),0);
-  emit(MEM_ADDR_PTR(FLD_REAL, EAX,0));
-#endif
+  emit(MOV(EAX,DWORDPtr(ESP)));
+  emit(FLD_REAL(EAX));
+#endif // LONGDOUBLE
 }
 
 #else // 64 Bit
