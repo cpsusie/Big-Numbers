@@ -91,9 +91,9 @@ SymbolStringMap::SymbolStringMap() {
   putString(GE             , false, _T("\xb3" ));
   putString(LT             , true , _T("<"    ));
   putString(LE             , false, _T("\xa3" ));
-  putString(AND            , false, _T("\xd9" ));
-  putString(OR             , false, _T("\xda" ));
-  putString(NOT            , true , _T("\xac" ));
+  putString(SYMAND         , false, _T("\xd9" ));
+  putString(SYMOR          , false, _T("\xda" ));
+  putString(SYMNOT         , true , _T("\xac" ));
   putString(INDEXEDSUM     , false, _T("\xe5" ));
   putString(INDEXEDPRODUCT , false, _T("\xd5" ));
   putString(GAMMA          , false, _T("\x47" ));
@@ -462,14 +462,14 @@ AlignedImage *ExpressionPainter::getImage1(const ExpressionNode *n, int fontSize
   case SQRT              :
     return getRootImage(m_expression.binaryExpression(ROOT, (ExpressionNode*)n->left(), m_expression.getTwo()), fontSize, rect);
 
-  case NOT               :
+  case SYMNOT            :
     return getUnaryOpImage(n, fontSize, rect);
 
   case PLUS              :
   case PROD              :
   case MOD               :
-  case AND               :
-  case OR                :
+  case SYMAND            :
+  case SYMOR             :
   case EQ                :
   case NE                :
   case GE                :

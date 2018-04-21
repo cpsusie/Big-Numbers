@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Registers.h>
+#include <NewOpCode.h>
 #include <Math/MathLib.h>
 #include <Math/Expression/ParserTree.h>
 #include <ExecutableByteArray.h>
@@ -83,27 +83,22 @@ typedef int ExpressionDestination;
 
 #endif // IS64BIT
 
-class MemoryReference {
-public:
-  // index of address in Machinecode
-  int             m_byteIndex;
-  // 4/8 byte absolute address (depending on x86/x64 mode)
-  const BYTE     *m_memAddr;
-  inline MemoryReference() {
-  }
-  inline MemoryReference(int byteIndex, const BYTE *memAddr) : m_byteIndex(byteIndex), m_memAddr(memAddr) {
-  }
-};
-
 class JumpFixup {
 public:
-  bool m_isShortJump;
-  int  m_addr;
-  int  m_jmpAddr;
-  JumpFixup() {
+  const OpcodeBase &m_op;
+  bool              m_isShortJump;    // is jump-instruction short/near (IP-rel8/rel32)
+  int               m_instructionPos; // index of first Byte of jmp-instruction in CodeArray
+  int               m_jmpTo;          // index of BYTE to jump to
+  BYTE              m_instructionSize;
+  JumpFixup(const OpcodeBase &op, int pos, int jmpTo = 0)
+    : m_op(op)
+    , m_isShortJump(true)
+    , m_instructionPos(pos)
+    , m_jmpTo(jmpTo)
+    , m_instructionSize(0)
+  {
   }
-  JumpFixup(int addr, int jmpAddr) : m_isShortJump(true), m_addr(addr), m_jmpAddr(jmpAddr) {
-  }
+  InstructionBase makeInstruction() const;
 };
 
 class JumpList {
@@ -111,3 +106,23 @@ public:
   CompactIntArray trueJumps;
   CompactIntArray falseJumps;
 };
+
+#ifdef IS32BIT
+class MachineCode;
+
+class FunctionCall {
+public:
+  int              m_pos;              // index of address in Machinecode
+  BYTE             m_instructionSize;
+  BuiltInFunction  m_func;             // 4 ip-rel
+  inline FunctionCall() : m_pos(0), m_instructionSize(0), m_func(NULL) {
+  }
+  inline FunctionCall(int pos, BYTE insSize, const BuiltInFunction f)
+    : m_pos(pos)
+    , m_instructionSize(insSize)
+    , m_func(f)
+  {
+  }
+  InstructionBase makeInstruction(const MachineCode *code) const;
+};
+#endif // IS32BIT

@@ -1,24 +1,40 @@
 #pragma once
 #include "CodeGeneration.h"
-#include "OpCode.h"
 
 #ifndef LONGDOUBLE
-#define FLD_REAL           FLD_QWORD
-#define FSTP_REAL          FSTP_QWORD
-#else // LONGDOUBLE
-#define FLD_REAL           FLD_TBYTE
-#define FSTP_REAL          FSTP_TBYTE
+#define RealPtr QWORDPtr
+#define FADD_Real8Ptr( arg)  FADD( QWORDPtr(arg))
+#define FSUB_Real8Ptr( arg)  FSUB( QWORDPtr(arg))
+#define FSUBR_Real8Ptr( arg) FSUBR(QWORDPtr(arg))
+#define FMUL_Real8Ptr( arg)  FMUL( QWORDPtr(arg))
+#define FDIV_Real8Ptr( arg)  FDIV( QWORDPtr(arg))
+#define FDIVR_Real8Ptr(arg)  FDIVR(QWORDPtr(arg))
+#define FCOMP_Real8Ptr(arg)  FCOMP(QWORDPtr(arg))
+#else  // LONGDOUBLE
+#define RealPtr TBYTEPtr
 #endif // LONGDOUBLE
 
-#define FSTP_REAL_PTR_ESP  MEM_ADDR_PTR(FSTP_REAL,ESP,0)
+#define FLD_REAL( arg)      FLD( RealPtr(arg))
+#define FSTP_REAL(arg)      FSTP(RealPtr(arg))
+
+#ifdef IS32BIT
+#define TABLEREF_REG ESI
+#define STACK_REG    ESP
+#else  // IS64BIT
+#define TABLEREF_REG RSI
+#define STACK_REG    RSP
+#endif // IS64BIT
+
+#define EMITTABLEOP(memPtrOp, index ) emit(memPtrOp(TABLEREF_REG + getESIOffset(index)))
+#define EMITSTACKOP(memPtrOp, offset) emit(memPtrOp(STACK_REG    + (offset)))
+
 
 class MachineCode : public ExecutableByteArray {
 private:
   DECLARECLASSNAME;
   ExpressionEntryPoint            m_entryPoint;
   void                           *m_esi;
-  CompactArray<MemoryReference>   m_refenceArray;
-  CompactArray<JumpFixup>         m_jumpFixups;
+  Array<JumpFixup>                m_jumpFixups;
   // Reference to first element in ParserTree::m_valueTable
   const CompactRealArray         &m_valueTable;
   // Offset in bytes, of esi/rsi from m_valueTable[0], when code is executing. 0 <= m_esiOffset < 128
@@ -26,11 +42,17 @@ private:
 #ifdef IS64BIT
   BYTE                            m_stackTop;
 #endif // IS64BIT
-  void changeShortJumpToNearJump(int addr);
+  void changeShortJumpToNearJump(JumpFixup &jf);
   void fixupJumps();
-  void fixupMemoryReference(const MemoryReference &ref);
-  void adjustReferenceArray(int addr, int n);
-  void linkReferences();
+#ifdef IS32BIT
+  CompactArray<FunctionCall>      m_callArray;
+  void clearFunctionCalls() {
+    m_callArray.clear();
+  }
+  void linkFunctionCalls();
+  void linkFunctionCall(const FunctionCall &call);
+  void adjustFunctionCalls(int pos, int bytesAdded);
+#endif // IS32BIT
   MachineCode(const MachineCode &src);             // not implemented
   MachineCode &operator=(const MachineCode &src);  // not implemented
 public:
@@ -38,32 +60,52 @@ public:
   ~MachineCode();
   void clear();
   int  addBytes(const void *bytes, int count);
-  int  emit(const IntelInstruction &ins);
+  int  emit(const InstructionBase &ins);
   void emitCall(BuiltInFunction f, const ExpressionDestination &dst);
-  void emitFLoad(       const ExpressionNode *n);
-  void emitFStorePop(   int               index) { emitTableOp(FSTP_REAL   , index); }
-  void emitFStorePop(   const ExpressionNode *n) { emitTableOp(FSTP_REAL   , n    ); }
+  void emitFLoad(   const ExpressionNode *n);
+  inline void emitFPopVal(int index) {
+    EMITTABLEOP(FSTP_REAL, index);
+  }
+  inline void emitFPopVal( const ExpressionNode *n) {
+    emitFPopVal(n->getValueIndex());
+  }
 #ifndef LONGDOUBLE
-  void emitFComparePop( const ExpressionNode *n) { emitTableOp(FCOMP_QWORD , n    ); }
+  void emitFAddVal( const ExpressionNode *n) { EMITTABLEOP(FADD_Real8Ptr , n->getValueIndex()); }
+  void emitFSubVal( const ExpressionNode *n) { EMITTABLEOP(FSUB_Real8Ptr , n->getValueIndex()); }
+  void emitFSubRVal(const ExpressionNode *n) { EMITTABLEOP(FSUBR_Real8Ptr, n->getValueIndex()); }
+  void emitFMulVal( const ExpressionNode *n) { EMITTABLEOP(FMUL_Real8Ptr , n->getValueIndex()); }
+  void emitFDivVal( const ExpressionNode *n) { EMITTABLEOP(FDIV_Real8Ptr , n->getValueIndex()); }
+  void emitFDivRVal(const ExpressionNode *n) { EMITTABLEOP(FDIVR_Real8Ptr, n->getValueIndex()); }
+  void emitFCompVal(const ExpressionNode *n) { EMITTABLEOP(FCOMP_Real8Ptr, n->getValueIndex()); }
 #endif
 #ifdef IS64BIT
 #ifndef LONGDOUBLE
-  void emitXMM0ToAddr(  int               index) { emitTableOp(MOVSD_MMWORD_XMM(XMM0), index); }
-#endif
-  bool emitFLoad(       const ExpressionNode *n, const ExpressionDestination &dst);
-#endif
-  // return address of fixup address
-  int  emitShortJmp(const IntelInstruction &ins);
-  inline void fixupShortJump(int addr, int jmpAddr) {
-    m_jumpFixups.add(JumpFixup(addr, jmpAddr));
+  void emitXMMToVal(const XMMRegister &reg, int index) {
+    emit(MOVSD1(MMWORDPtr(TABLEREF_REG + getESIOffset(index)), reg));
   }
-  void fixupShortJumps(const CompactIntArray &jumps, int jmpAddr);
+  void emitValToXMM(const XMMRegister &reg, int index) {
+    emit(MOVSD1(reg, MMWORDPtr(TABLEREF_REG + getESIOffset(index))));
+  }
+  void emitXMMToStack(const XMMRegister &reg, int offset) {
+    emit(MOVSD1(MMWORDPtr(STACK_REG + offset), reg));
+  }
+  void emitStackToXMM(const XMMRegister &reg, int offset) {
+    emit(MOVSD1(reg, MMWORDPtr(STACK_REG + offset)));
+  }
+#endif // !LONGDOUBLE
+  bool emitFLoad(   const ExpressionNode *n, const ExpressionDestination &dst);
+#endif // IS64BIT
 
-  void emitStackOp(const IntelOpcode &op, int offset);
-  inline void emitTableOp(const IntelOpcode &op, const ExpressionNode *n) {
-    emitTableOp(op, n->getValueIndex());
+  // Return index in m_jumpFixups of new jump-instruction
+  int emitJmp(const OpcodeBase &op);
+  inline void fixupJump(int index, int jmpTo) {
+    m_jumpFixups[index].m_jmpTo = jmpTo;
   }
-  void emitTableOp(const IntelOpcode &op, int index);
+  void fixupJumps(const CompactIntArray &jumps, int jmpTo);
+  void clearJumpTable() {
+    m_jumpFixups.clear();
+  }
+
   void setValueCount(size_t valueCount);
   inline size_t getValueCount() const {
     return m_valueTable.size();
@@ -84,23 +126,30 @@ public:
   void emitAddRSP(  int               n);
   void emitSubRSP(  int               n);
   void emitAddR64(  const GPRegister &r64, int  value);
-#endif // IS32BIT
-  void   finalize();
-  Real   evaluateReal() const;
-  bool   evaluateBool() const;
+  void emitSubR64(  const GPRegister &r64, int  value);
+#endif // IS64BIT
+
+  void finalize();
+  Real evaluateReal() const;
+  bool evaluateBool() const;
+  void dump(const String &fname, const String &title) const;
 };
 
 class CodeGenerator {
 private:
-  ParserTree                     &m_tree;
-  const TrigonometricMode         m_trigonometricMode;
-  MachineCode                    *m_code;
+  ParserTree             &m_tree;
+  const TrigonometricMode m_trigonometricMode;
+  MachineCode            *m_code;
 #ifdef IS64BIT
-  bool                            m_hasCalls;
+  bool                    m_hasCalls;
 #endif // IS64BIT
 
   inline TrigonometricMode getTrigonometricMode() const {
     return m_trigonometricMode;
+  }
+
+  inline int getESIOffset(size_t valueIndex) const {
+    return m_code->getESIOffset(valueIndex);
   }
 
   // Code generation (compile to machinecode)

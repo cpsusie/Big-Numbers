@@ -1,7 +1,6 @@
 #include "pch.h"
 #include <Math/Expression/Expression.h>
-#include "ExpressionCompileWrapper.h"
-#include "ExpressionCompile1.h"
+#include "ExpressionCompile.h"
 
 DEFINECLASSNAME(Expression);
 
@@ -43,7 +42,6 @@ void Expression::init(TrigonometricMode    trigonometricMode
 {
   m_machineCode       = false;
   m_code              = NULL;
-  m_code1             = NULL;
   m_trigonometricMode = trigonometricMode; // this is init.  so don't call set-properties here
   m_returnType        = returnType;
   m_state             = state;
@@ -69,7 +67,6 @@ void Expression::compile(const String &expr, bool machineCode) {
 
 void Expression::parse(const String &expr) {
   clear();
-
   setOk(true);
   LexStringStream    stream(expr);
   ExpressionLex      lex(&stream);
@@ -119,27 +116,22 @@ void Expression::setMachineCode(bool machinecode) {
 
 void Expression::genMachineCode() {
   clearMachineCode();
-  m_code  = CodeGeneratorWrapper(this, getTrigonometricMode()).getCode();
-  m_code1 = CodeGenerator1(this, getTrigonometricMode()).getCode();
+  m_code  = CodeGenerator(this, getTrigonometricMode()).getCode();
 }
 
 void Expression::clearMachineCode() {
   if(m_code) {
-    delete (MachineCodeWrapper*)m_code;
+    delete (MachineCode*)m_code;
     m_code = NULL;
-  }
-  if(m_code1) {
-    delete (MachineCode1*)m_code1;
-    m_code1 = NULL;
   }
 }
 
 Real Expression::fastEvaluateReal() {
-  return ((MachineCodeWrapper*)m_code)->evaluateReal();
+  return ((MachineCode*)m_code)->evaluateReal();
 }
 
 bool Expression::fastEvaluateBool() {
-  return ((MachineCodeWrapper*)m_code)->evaluateBool();
+  return ((MachineCode*)m_code)->evaluateBool();
 }
 
 void Expression::setTrigonometricMode(TrigonometricMode mode) {
