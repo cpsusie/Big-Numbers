@@ -1,4 +1,5 @@
 #include "pch.h"
+#include "pch.h"
 #include "ExpressionCompile1.h"
 
 DEFINECLASSNAME(MachineCode1);
@@ -14,18 +15,24 @@ MachineCode1::~MachineCode1() {
 
 void MachineCode1::clear() {
   __super::clear();
-  m_jumpFixups.clear();
-  m_refenceArray.clear();
+  clearJumpTable();
+#ifdef IS32BIT
+  clearFunctionCalls();
+#endif
   setValueCount(0);
 }
 
 void MachineCode1::finalize() {
   fixupJumps();
-  linkReferences();
+#ifdef IS32BIT
+  linkFunctionCalls();
+#endif
 
   m_entryPoint = (ExpressionEntryPoint)getData();
-  m_refenceArray.clear();
-  m_jumpFixups.clear();
+  clearJumpTable();
+#ifdef IS32BIT
+  clearFunctionCalls();
+#endif
   flushInstructionCache();
 }
 
@@ -130,13 +137,29 @@ BYTE MachineCode1::popTmp()  {
 
 #endif // IS64BIT
 
-int MachineCode1::emitJmp(const OpcodeBase &op) {
-  return emit(op(0)) + 1;
+InstructionBase JumpFixup1::makeInstruction() const {
+  int lastSize = m_instructionSize;
+  for(;;) {
+    const InstructionBase ins = m_op(m_jmpTo - m_instructionPos - lastSize);
+    if(ins.size() == lastSize) {
+      return ins;
+    }
+    lastSize = ins.size();
+  }
 }
 
-void MachineCode1::fixupJumps(const CompactIntArray &jumps, int jmpAddr) {
+int MachineCode1::emitJmp(const OpcodeBase &op) {
+  const int result = (int)m_jumpFixups.size();
+  JumpFixup1 jf(op, (int)size());
+  emit(op(0));
+  jf.m_instructionSize = (BYTE)((int)size() - jf.m_instructionPos);
+  m_jumpFixups.add(jf);
+  return result;
+}
+
+void MachineCode1::fixupJumps(const CompactIntArray &jumps, int jmpTo) {
   for(size_t i = 0; i < jumps.size(); i++) {
-    fixupJump(jumps[i],jmpAddr);
+    fixupJump(jumps[i],jmpTo);
   }
 }
 
@@ -145,90 +168,91 @@ void MachineCode1::fixupJumps() {
   do {
     stable = true;
     for(size_t i = 0; i < m_jumpFixups.size(); i++) {
-      JumpFixup &jf = m_jumpFixups[i];
+      JumpFixup1 &jf = m_jumpFixups[i];
       if(jf.m_isShortJump) {
-        const int v = jf.m_jmpAddr - jf.m_addr - 1;
+        const int v = jf.m_jmpTo - jf.m_instructionPos - jf.m_instructionSize;
         if(!isByte(v)) {
-          changeShortJumpToNearJump(jf.m_addr);
-          jf.m_isShortJump = false;
-          stable           = false;
+          changeShortJumpToNearJump(jf);
+          stable = false;
         }
       }
     }
   } while(!stable);
 
   for(size_t i = 0; i < m_jumpFixups.size(); i++) {
-    JumpFixup &jf = m_jumpFixups[i];
+    JumpFixup1 &jf = m_jumpFixups[i];
+    const int ipRel = jf.m_jmpTo - jf.m_instructionPos - jf.m_instructionSize;
     if(jf.m_isShortJump) {
-      const int v = jf.m_jmpAddr - jf.m_addr - 1;
-      assert(isByte(v));
-      const BYTE pcRelativAddr = (BYTE)v;
-      (*this)[jf.m_addr] = pcRelativAddr;
-    } else {
-      const int pcRelativAddr = jf.m_jmpAddr - jf.m_addr - 4;
-      setBytes(jf.m_addr,(BYTE*)&pcRelativAddr,4);
+      assert(isByte(ipRel));
     }
+    const InstructionBase ins = jf.m_op(ipRel);
+    setBytes(jf.m_instructionPos,ins.getBytes(),ins.size());
   }
 }
 
-void MachineCode1::changeShortJumpToNearJump(int addr) {
-  const int  opcodeAddr = addr-1;
-  const BYTE opcode     = (*this)[opcodeAddr];
-  int        bytesAdded;
-  switch(opcode) {
-  case 0xEB: // JMPSHORT
-    { const BYTE JmpNear = 0xE9;
-      (*this)[opcodeAddr] = JmpNear;
-      bytesAdded = 3;
-      insertZeroes(addr, bytesAdded);
-      for(size_t i = 0; i < m_jumpFixups.size(); i++) {
-        JumpFixup &jf = m_jumpFixups[i];
-        if(jf.m_addr    > addr) jf.m_addr    += bytesAdded;
-        if(jf.m_jmpAddr > addr) jf.m_jmpAddr += bytesAdded;
-      }
-    }
-    break;
-  default:
-    { assert((opcode >= 0x70) && (opcode <= 0x7F));
-//      const IntelInstruction newOpcode = B2INS(0x0F80 | (opcode&0xf));
-//      setBytes(opcodeAddr, (BYTE*)&newOpcode, 2);
-      bytesAdded = 4;
-      insertZeroes(addr+1,bytesAdded);
-      for(size_t i = 0; i < m_jumpFixups.size(); i++) {
-        JumpFixup &jf = m_jumpFixups[i];
-        if(     jf.m_addr == addr) jf.m_addr++; // opcode of instruction being changed, goes from 1 to 2 bytes.
-        else if(jf.m_addr >  addr) jf.m_addr    += bytesAdded;
-        if(jf.m_jmpAddr > addr)    jf.m_jmpAddr += bytesAdded;
-      }
-    }
-    break;
-  }
-  adjustReferenceArray(addr, bytesAdded);
-}
+void MachineCode1::changeShortJumpToNearJump(JumpFixup1 &jf) {
+  assert(jf.m_isShortJump);
 
-void MachineCode1::adjustReferenceArray(int addr, int n) {
-  for(size_t i = 0; i < m_refenceArray.size(); i++) {
-    MemoryReference &mr = m_refenceArray[i];
-    if(mr.m_byteIndex > addr) {
-      mr.m_byteIndex += n;
+  const int             pos        = jf.m_instructionPos;
+  const int             oldInsSize = jf.m_instructionSize;
+  const InstructionBase newIns     = jf.makeInstruction();
+  const int             newInsSize = newIns.size();
+  const int             bytesAdded = newInsSize - oldInsSize;
+  if(bytesAdded > 0) {
+    insertZeroes(pos, bytesAdded);
+    for(size_t i = 0; i < m_jumpFixups.size(); i++) {
+      JumpFixup1 &jf1 = m_jumpFixups[i];
+      if(jf1.m_instructionPos > pos) jf1.m_instructionPos += bytesAdded;
+      if(jf1.m_jmpTo          > pos) jf1.m_jmpTo          += bytesAdded;
     }
+    jf.m_isShortJump     = false;
+    jf.m_instructionSize = newInsSize;
+#ifdef IS32BIT
+    adjustFunctionCalls(pos, bytesAdded);
+#endif
   }
 }
-
-void MachineCode1::fixupMemoryReference(const MemoryReference &ref) {
-  const BYTE    *instructionAddr  = getData() + ref.m_byteIndex;
-  const intptr_t PCrelativeOffset = ref.m_memAddr - instructionAddr - sizeof(instructionAddr);
-  setBytes(ref.m_byteIndex,(BYTE*)&PCrelativeOffset,sizeof(PCrelativeOffset));
-}
-
 
 #ifdef IS32BIT
 
+void MachineCode1::adjustFunctionCalls(int pos, int bytesAdded) {
+  for(size_t i = 0; i < m_callArray.size(); i++) {
+    FunctionCall &fc = m_callArray[i];
+    if(fc.m_pos > pos) {
+      fc.m_pos += bytesAdded;
+    }
+  }
+}
+
+InstructionBase FunctionCall::makeInstruction(const MachineCode1 *code) const {
+  int lastSize = m_instructionSize;
+  const BYTE    *insAddr  = code->getData() + m_pos;
+  for(;;) {
+    const intptr_t iprel    = (BYTE*)m_func - insAddr - lastSize;
+    const InstructionBase ins = CALL(iprel);
+    if(ins.size() == lastSize) {
+      return ins;
+    }
+    lastSize = ins.size();
+  }
+}
+
+void MachineCode1::linkFunctionCalls() {
+  for(size_t i = 0; i < m_callArray.size(); i++) {
+    linkFunctionCall(m_callArray[i]);
+  }
+}
+
+void MachineCode1::linkFunctionCall(const FunctionCall &fc) {
+  const InstructionBase ins = fc.makeInstruction(this);
+  assert(ins.size() == fc.m_instructionSize);
+  setBytes(fc.m_pos, ins.getBytes(), ins.size());
+}
+
+
 void MachineCode1::emitCall(BuiltInFunction f, const ExpressionDestination &dummy) {
-  emit(CALL);
-  BuiltInFunction ref = NULL;
-  const int addr = addBytes(&ref, 4);
-  m_refenceArray.add(MemoryReference(addr, (BYTE*)f));
+  const int pos = emit(CALL((intptr_t)f));
+  m_callArray.add(FunctionCall(pos, (BYTE)(size()-pos), f));
 #ifdef LONGDOUBLE
   emitStackOp(MOV_REG_MEM(EAX),0);
   emit(MEM_ADDR_PTR(FLD_REAL, EAX,0));
@@ -315,12 +339,6 @@ void MachineCode1::emitCall(BuiltInFunction f, const ExpressionDestination &dst)
 
 #endif // IS32BIT
 
-void MachineCode1::linkReferences() {
-  for(size_t i = 0; i < m_refenceArray.size(); i++) {
-    fixupMemoryReference(m_refenceArray[i]);
-  }
-}
-
 #pragma warning(disable:4717)
 
 #ifdef IS64BIT
@@ -365,6 +383,14 @@ bool MachineCode1::evaluateBool() const {
 #else
   return callIntResultExpression(m_entryPoint, m_esi) ? true : false;
 #endif // IS32BIT
+}
+
+void MachineCode1::dump(const String &fname, const String &title) const {
+  FILE *f = FOPEN(fname,_T("a"));
+  _ftprintf(f, _T("%s\n"), title.cstr());
+  hexdump(getData(), (int)size(), f);
+  _ftprintf(f,_T("----------------------------------------------\n"));
+  fclose(f);
 }
 
 
@@ -431,7 +457,7 @@ void CodeGenerator1::genStatementList(const ExpressionNode *n) {
 #ifdef IS32BIT
 void CodeGenerator1::genAssignment(const ExpressionNode *n) {
   genExpression(n->right(), DST_FPU);
-  m_code->emitFStorePop(n->left());
+  m_code->emitFPopVal(n->left());
 }
 #else // IS64BIT
 void CodeGenerator1::genAssignment(const ExpressionNode *n) {
@@ -935,7 +961,7 @@ void CodeGenerator1::genPolynomial(const ExpressionNode *n, const ExpressionDest
       m_tree.getValueRef(firstCoefIndex + i) = m_tree.evaluateRealExpr(coef);
     } else {
       genExpression(coef, dummy);
-      m_code->emitFStorePop(firstCoefIndex + i);
+      m_code->emitFPopVal(firstCoefIndex + i);
     }
   }
 
@@ -960,7 +986,7 @@ int CodeGenerator1::genPush(const ExpressionNode *n) {
     genExpression(n, DST_FPU);
     int bytesPushed = getAlignedSize(sizeof(Real));
     m_code->emitSubESP(bytesPushed);
-    m_code->emit(FSTP_REAL_PTR_ESP);
+    m_code->emit(FSTP_REAL(ESP));
     return bytesPushed;
   }
 }
@@ -970,7 +996,7 @@ int CodeGenerator1::genPushRef(const ExpressionNode *n, int index) {
     return genPushRef(&n->getValueRef());
   } else {
     genExpression(n, DST_FPU);
-    m_code->emitFStorePop(index);
+    m_code->emitFPopVal(index);
     return genPushRef(&m_tree.getValueRef(index));
   }
 }
@@ -983,14 +1009,10 @@ int CodeGenerator1::genPushReal(const Real &x) {
 int CodeGenerator1::genPush(const void *p, UINT size) {
   switch(size) {
   case 2:
-    m_code->emit(MOV_TO_AX_IMM_ADDR_WORD);
-    m_code->addBytes(&p,4);
-    m_code->emit(PUSH_R32(EAX));
+    m_code->emit(PUSH(WORDPtr((intptr_t)p)));
     return 4;
   case 4:
-    m_code->emit(MOV_TO_EAX_IMM_ADDR_DWORD);
-    m_code->addBytes(&p,4);
-    m_code->emit(PUSH_R32(EAX));
+    m_code->emit(PUSH(DWORDPtr((intptr_t)p)));
     return 4;
   case 6:
     genPush(((BYTE*)p)+4,4);
@@ -1006,31 +1028,23 @@ int CodeGenerator1::genPush(const void *p, UINT size) {
     return 12;
   default:
     size = getAlignedSize(size);
-    UINT count = size / 4;
-    m_code->emitSubESP(size);
-    m_code->emit(MOV_REG_IMM(ECX,count));
-    m_code->emit(MOV_REG_IMM(ESI,p));
-    m_code->emit(REGREG(MOV_REG_MEM(EDI),ESP));
-    m_code->emit(REP); m_code->emit(MOVS_DWORD);
+    const UINT count = size / 4;
+    m_code->emitSubESP(size   );
+    m_code->emit(MOV(ECX,count));
+    m_code->emit(MOV(ESI,(intptr_t)p));
+    m_code->emit(MOV(EDI,ESP  ));
+    m_code->emit(REP(MOVSD    ));
     return size;
   }
 }
 
 int CodeGenerator1::genPushRef(const void *p) {
-  m_code->emit(PUSH_IMM_DWORD);
-  m_code->addBytes(&p,sizeof(p));
+  m_code->emit(PUSH((intptr_t)p));
   return sizeof(void*);
 }
 
 int CodeGenerator1::genPushInt(int n) {
-  if(isByte(n)) {
-    m_code->emit(PUSH_IMM_BYTE);
-    char byte = (char)n;
-    m_code->addBytes(&byte,1);
-  } else {
-    m_code->emit(PUSH_IMM_DWORD);
-    m_code->addBytes(&n,4);
-  }
+  m_code->emit(PUSH(n));
   return sizeof(int);
 }
 

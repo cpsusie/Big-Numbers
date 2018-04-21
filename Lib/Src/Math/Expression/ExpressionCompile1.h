@@ -18,8 +18,6 @@
 #define FLD_REAL( arg)      FLD( RealPtr(arg))
 #define FSTP_REAL(arg)      FSTP(RealPtr(arg))
 
-#define FSTP_REAL_PTR_ESP  MEM_ADDR_PTR(FSTP_REAL,ESP,0)
-
 #ifdef IS32BIT
 #define TABLEREF_REG ESI
 #define STACK_REG    ESP
@@ -31,13 +29,56 @@
 #define EMITTABLEOP(memPtrOp, index ) emit(memPtrOp(TABLEREF_REG + getESIOffset(index)))
 #define EMITSTACKOP(memPtrOp, offset) emit(memPtrOp(STACK_REG    + (offset)))
 
+class JumpFixup1 {
+public:
+  const OpcodeBase &m_op;
+  bool              m_isShortJump;    // is jump-instruction short/near (IP-rel8/rel32)
+  int               m_instructionPos; // index of first Byte of jmp-instruction in CodeArray
+  int               m_jmpTo;          // index of BYTE to jump to
+  BYTE              m_instructionSize;
+  JumpFixup1(const OpcodeBase &op, int pos, int jmpTo = 0)
+    : m_op(op)
+    , m_isShortJump(true)
+    , m_instructionPos(pos)
+    , m_jmpTo(jmpTo)
+    , m_instructionSize(0)
+  {
+  }
+  InstructionBase makeInstruction() const;
+};
+
+class JumpList1 {
+public:
+  CompactIntArray trueJumps;
+  CompactIntArray falseJumps;
+};
+
+#ifdef IS32BIT
+class MachineCode1;
+
+class FunctionCall {
+public:
+  int              m_pos;              // index of address in Machinecode
+  BYTE             m_instructionSize;
+  BuiltInFunction  m_func;             // 4 ip-rel
+  inline FunctionCall() : m_pos(0), m_instructionSize(0), m_func(NULL) {
+  }
+  inline FunctionCall(int pos, BYTE insSize, const BuiltInFunction f)
+    : m_pos(pos)
+    , m_instructionSize(insSize)
+    , m_func(f)
+  {
+  }
+  InstructionBase makeInstruction(const MachineCode1 *code) const;
+};
+#endif
+
 class MachineCode1 : public ExecutableByteArray {
 private:
   DECLARECLASSNAME;
   ExpressionEntryPoint            m_entryPoint;
   void                           *m_esi;
-  CompactArray<MemoryReference>   m_refenceArray;
-  CompactArray<JumpFixup>         m_jumpFixups;
+  Array<JumpFixup1>               m_jumpFixups;
   // Reference to first element in ParserTree::m_valueTable
   const CompactRealArray         &m_valueTable;
   // Offset in bytes, of esi/rsi from m_valueTable[0], when code is executing. 0 <= m_esiOffset < 128
@@ -45,11 +86,17 @@ private:
 #ifdef IS64BIT
   BYTE                            m_stackTop;
 #endif // IS64BIT
-  void changeShortJumpToNearJump(int addr);
+  void changeShortJumpToNearJump(JumpFixup1 &jf);
   void fixupJumps();
-  void fixupMemoryReference(const MemoryReference &ref);
-  void adjustReferenceArray(int addr, int n);
-  void linkReferences();
+#ifdef IS32BIT
+  CompactArray<FunctionCall>      m_callArray;
+  void clearFunctionCalls() {
+    m_callArray.clear();
+  }
+  void linkFunctionCalls();
+  void linkFunctionCall(const FunctionCall &call);
+  void adjustFunctionCalls(int pos, int bytesAdded);
+#endif // IS32BIT
   MachineCode1(const MachineCode1 &src);             // not implemented
   MachineCode1 &operator=(const MachineCode1 &src);  // not implemented
 public:
@@ -89,15 +136,19 @@ public:
   void emitStackToXMM(const XMMRegister &reg, int offset) {
     emit(MOVSD1(reg, MMWORDPtr(STACK_REG + offset)));
   }
-#endif
+#endif // !LONGDOUBLE
   bool emitFLoad(   const ExpressionNode *n, const ExpressionDestination &dst);
-#endif
-  // return address of fixup address
-  int  emitJmp(const OpcodeBase &op);
-  inline void fixupJump(int addr, int jmpAddr) {
-    m_jumpFixups.add(JumpFixup(addr, jmpAddr));
+#endif // IS64BIT
+
+  // Return index in m_jumpFixups of new jump-instruction
+  int emitJmp(const OpcodeBase &op);
+  inline void fixupJump(int index, int jmpTo) {
+    m_jumpFixups[index].m_jmpTo = jmpTo;
   }
-  void fixupJumps(const CompactIntArray &jumps, int jmpAddr);
+  void fixupJumps(const CompactIntArray &jumps, int jmpTo);
+  void clearJumpTable() {
+    m_jumpFixups.clear();
+  }
 
   void setValueCount(size_t valueCount);
   inline size_t getValueCount() const {
@@ -120,10 +171,12 @@ public:
   void emitSubRSP(  int               n);
   void emitAddR64(  const GPRegister &r64, int  value);
   void emitSubR64(  const GPRegister &r64, int  value);
-#endif // IS32BIT
+#endif // IS64BIT
+
   void finalize();
   Real evaluateReal() const;
   bool evaluateBool() const;
+  void dump(const String &fname, const String &title) const;
 };
 
 class CodeGenerator1 {
