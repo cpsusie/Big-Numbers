@@ -1,5 +1,4 @@
 #include "pch.h"
-#include <NewOpCode.h>
 #include "InstructionBuilder.h"
 
 bool OpcodeBitTest::isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError) const {

@@ -806,7 +806,7 @@
     <ClInclude Include="..\..\Include\MyString.h" />
     <ClInclude Include="..\..\Include\MyUtil.h" />
     <ClInclude Include="..\..\Include\NatvisAddInHelper.h" />
-    <ClInclude Include="..\..\Include\NewOpCode.h" />
+    <ClInclude Include="..\..\Include\Opcode.h" />
     <ClInclude Include="..\..\Include\NullOutputStream.h" />
     <ClInclude Include="..\..\Include\NumberInterval.h" />
     <ClInclude Include="..\..\Include\ObjectManager.h" />

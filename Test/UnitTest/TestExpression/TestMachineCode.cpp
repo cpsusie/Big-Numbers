@@ -2,7 +2,7 @@
 #include <HashSet.h>
 #include <Date.h>
 #include <ExecutableByteArray.h>
-#include <NewOpcode.h>
+#include <Opcode.h>
 
 #define TEST_MACHINECODE
 

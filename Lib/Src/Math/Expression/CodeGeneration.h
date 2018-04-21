@@ -1,9 +1,9 @@
 #pragma once
 
-#include <NewOpCode.h>
+#include <OpCode.h>
+#include <ExecutableByteArray.h>
 #include <Math/MathLib.h>
 #include <Math/Expression/ParserTree.h>
-#include <ExecutableByteArray.h>
 
 typedef void (*BuiltInFunction)();
 typedef BuiltInFunction ExpressionEntryPoint;

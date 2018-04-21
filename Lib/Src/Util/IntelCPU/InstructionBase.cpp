@@ -1,5 +1,5 @@
 #include "pch.h"
-#include <NewOpCode.h>
+#include <OpCode.h>
 #include "InstructionBuilder.h"
 
 #pragma warning(disable : 4073)

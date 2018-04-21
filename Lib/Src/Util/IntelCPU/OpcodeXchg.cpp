@@ -1,5 +1,4 @@
 #include "pch.h"
-#include <NewOpCode.h>
 #include "InstructionBuilder.h"
 
 static inline bool isEAXOrRAX(const Register &reg) {

@@ -1,5 +1,5 @@
 #include "pch.h"
-#include <NewOpCode.h>
+#include <OpCode.h>
 
 bool OpcodeLea::isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError) const {
   if(!validateIsRegisterOperand(op1, 1, throwOnError)) {

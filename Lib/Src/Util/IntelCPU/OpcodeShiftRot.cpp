@@ -1,5 +1,4 @@
 #include "pch.h"
-#include <NewOpCode.h>
 #include "InstructionBuilder.h"
 
 OpcodeShiftRot::OpcodeShiftRot(const String &mnemonic, BYTE extension)

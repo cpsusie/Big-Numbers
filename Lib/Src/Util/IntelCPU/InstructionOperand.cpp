@@ -1,5 +1,5 @@
 #include "pch.h"
-#include <NewOpCode.h>
+#include <OpCode.h>
 
 String toString(OperandType type) {
   switch(type) {
