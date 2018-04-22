@@ -12,7 +12,7 @@ InstructionBase Opcode1Arg::operator()(const InstructionOperand &op) const {
 }
 
 InstructionBase Opcode1ArgNoMode::operator()(const InstructionOperand &op) const {
-  isValidOperand(true);
+  isValidOperand(op,true);
   switch(op.getType()) {
   case REGISTER       : return InstructionBuilderNoMode(*this).setRegisterOperand(op.getRegister());
   case MEMORYOPERAND  : break;

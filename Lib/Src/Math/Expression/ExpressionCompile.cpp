@@ -6,6 +6,13 @@ DEFINECLASSNAME(MachineCode);
 MachineCode::MachineCode(const CompactRealArray &valueTable) : m_valueTable(valueTable) {
   setValueCount(m_valueTable.size());
   m_entryPoint = NULL;
+#ifdef IS64BIT
+#ifndef LONGDOUBLE
+  m_referenceFunction = (BYTE*)(BuiltInFunction1)exp;
+#else // LONGDOUBLE
+  m_referenceFunction = (BYTE*)(BuiltInFunctionRef1)exp;
+#endif // LONGDOUBLE
+#endif // IS64BIT
 }
 
 MachineCode::~MachineCode() {
@@ -213,7 +220,6 @@ void MachineCode::changeShortJumpToNearJump(JumpFixup &jf) {
 }
 
 #ifdef IS32BIT
-
 void MachineCode::adjustFunctionCalls(int pos, int bytesAdded) {
   for(size_t i = 0; i < m_callArray.size(); i++) {
     FunctionCall &fc = m_callArray[i];
@@ -248,7 +254,6 @@ void MachineCode::linkFunctionCall(const FunctionCall &fc) {
   setBytes(fc.m_pos, ins.getBytes(), ins.size());
 }
 
-
 void MachineCode::emitCall(BuiltInFunction f, const ExpressionDestination &dummy) {
   const int pos = emit(CALL((intptr_t)f));
   m_callArray.add(FunctionCall(pos, (BYTE)(size()-pos), f));
@@ -261,24 +266,11 @@ void MachineCode::emitCall(BuiltInFunction f, const ExpressionDestination &dummy
 #else // IS64BIT
 
 #ifndef LONGDOUBLE
-
-static void *getFuncAbsAddr(BuiltInFunction f) {
-  if(*(BYTE*)f == 0xE9) { // jmp-instruction
-    int tmp;
-    memcpy(&tmp, ((BYTE*)f)+1,4);    // tmp is relative to ip
-    return ((BYTE*)f) + tmp + 5;
-  } else if(*(USHORT*)f == 0x25FF) { // actually JMP QWORD PTR, which is 0xFF25, but we are little-endian here
-    int tmp;
-    memcpy(&tmp, ((BYTE*)f)+2,4);    // tmp is relative to ip
-    return ((BYTE*)f) + tmp + 6;
-  }
-  return f;
-}
-
 void MachineCode::emitCall(BuiltInFunction f, const ExpressionDestination &dst) {
-  emit(MOV(RAX,(INT64)f));
-//  void *addr = getFuncAbsAddr(f);
+  emit(LEA(RAX,QWORDPtr(RBP+(int)((BYTE*)f-m_referenceFunction))));
   emit(CALL(RAX));
+//  emit(MOV(RAX,(INT64)f));
+//  emit(CALL(RAX));
   switch(dst.getType()) {
   case RESULT_IN_FPU       :
     emitXMMToStack(XMM0,0);                                // XMM0 -> FPU-top
@@ -392,6 +384,7 @@ void MachineCode::dump(const String &fname, const String &title) const {
   fclose(f);
 }
 
+// --------------------------------- CodeGenerator -----------------------------------
 
 CodeGenerator::CodeGenerator(ParserTree *tree, TrigonometricMode trigonometricMode)
   : m_tree(*tree)
@@ -412,11 +405,13 @@ void CodeGenerator::genMachineCode() {
 
 void CodeGenerator::genProlog() {
 #ifdef IS64BIT
-#define LOCALSTACKSPACE   80
+#define LOCALSTACKSPACE   72
 #define RESERVESTACKSPACE 40
   m_hasCalls = m_tree.getRoot()->containsFunctionCall();
   m_code->resetStack(RESERVESTACKSPACE);
   if(m_hasCalls) {
+    m_code->emit(PUSH(RBP));
+    m_code->emit(MOV(RBP,(INT64)m_code->getReferenceFunction()));
     m_code->emitSubRSP(LOCALSTACKSPACE + RESERVESTACKSPACE); // to get 16-byte aligned RSP
   }
 #endif
@@ -426,6 +421,7 @@ void CodeGenerator::genEpilog() {
 #ifdef IS64BIT
   if(m_hasCalls) {
     m_code->emitAddRSP(LOCALSTACKSPACE + RESERVESTACKSPACE);
+    m_code->emit(POP(RBP));
   }
 #endif
   m_code->emit(RET);
@@ -1069,7 +1065,7 @@ static const IndexRegister int64ParamRegister[] = {
 
 void CodeGenerator::genCall1Arg(const ExpressionNode *arg, BuiltInFunction1 f, const ExpressionDestination &dst) {
   genSetParameter(arg, 0, false);
-  m_code->emitCall((BuiltInFunction)f, dst);
+  emitCall((BuiltInFunction)f, dst);
 }
 
 void CodeGenerator::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode *arg2, BuiltInFunction2 f, const ExpressionDestination &dst) {
@@ -1087,12 +1083,12 @@ void CodeGenerator::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode
     m_code->emitValToXMM(XMM0, offset);
     m_code->popTmp();
   }
-  m_code->emitCall((BuiltInFunction)f, dst);
+  emitCall((BuiltInFunction)f, dst);
 }
 
 void CodeGenerator::genCall1Arg(const ExpressionNode *arg, BuiltInFunctionRef1 f, const ExpressionDestination &dst) {
   genSetRefParameter(arg, 0);
-  m_code->emitCall((BuiltInFunction)f, dst);
+  emitCall((BuiltInFunction)f, dst);
 }
 
 void CodeGenerator::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode *arg2, BuiltInFunctionRef2 f, const ExpressionDestination &dst) {
@@ -1118,14 +1114,14 @@ void CodeGenerator::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode
     m_code->emit(ADD(RDX, offset2));
     m_code->popTmp();
   }
-  m_code->emitCall((BuiltInFunction)f, dst);
+  emitCall((BuiltInFunction)f, dst);
 }
 
 #else // LONGDOUBLE
 
 void CodeGenerator::genCall1Arg(const ExpressionNode *arg, BuiltInFunctionRef1 f, const ExpressionDestination &dst) {
   genSetRefParameter(arg, 0);
-  m_code->emitCall((BuiltInFunction)f, dst);
+  emitCall((BuiltInFunction)f, dst);
 }
 
 void CodeGenerator::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode *arg2, BuiltInFunctionRef2 f, const ExpressionDestination &dst) {
@@ -1155,7 +1151,7 @@ void CodeGenerator::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode
       m_code->popTmp();
     }
   }
-  m_code->emitCall((BuiltInFunction)f, dst);
+  emitCall((BuiltInFunction)f, dst);
 }
 
 #endif // LONGDOUBLE
@@ -1185,7 +1181,12 @@ void CodeGenerator::genPolynomial(const ExpressionNode *n, const ExpressionDesti
   const Real          *coef0     = &m_tree.getValueRef(firstCoefIndex);
   m_code->emit(MOV(param3,(intptr_t)coef0));
 
-  m_code->emitCall((BuiltInFunction)::evaluatePolynomial, dst);
+  emitCall((BuiltInFunction)::evaluatePolynomial, dst);
+}
+
+void CodeGenerator::emitCall(BuiltInFunction f, const ExpressionDestination &dst) {
+  assert(m_hasCalls);
+  m_code->emitCall(f,dst);
 }
 
 void CodeGenerator::genSetRefParameter(const ExpressionNode *n, int index) {

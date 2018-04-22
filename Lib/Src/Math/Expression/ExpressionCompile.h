@@ -41,6 +41,7 @@ private:
   char                            m_esiOffset;
 #ifdef IS64BIT
   BYTE                            m_stackTop;
+  BYTE                           *m_referenceFunction;
 #endif // IS64BIT
   void changeShortJumpToNearJump(JumpFixup &jf);
   void fixupJumps();
@@ -127,6 +128,9 @@ public:
   void emitSubRSP(  int               n);
   void emitAddR64(  const GPRegister &r64, int  value);
   void emitSubR64(  const GPRegister &r64, int  value);
+  const BYTE *getReferenceFunction() const {
+    return m_referenceFunction;
+  }
 #endif // IS64BIT
 
   void finalize();
@@ -209,6 +213,7 @@ private:
   BYTE     genSetParameter(     const ExpressionNode *n, int index, bool saveOnStack);
   void     genSetRefParameter(  const ExpressionNode *n, int index);
   BYTE     genSetRefParameter(  const ExpressionNode *n, int index, bool &savedOnStack);
+  void     emitCall(            BuiltInFunction f, const ExpressionDestination &dst);
 #endif // IS64BIT
 
   void     genAssignment(       const ExpressionNode *n);
