@@ -277,7 +277,7 @@ void MemoryRef::sortBaseInx() {
 
 String MemoryRef::toString() const {
   if(isDisplaceOnly()) {
-    return formatHexValue(getAddr());
+    return formatHexValue((size_t)getAddr());
   }
   String result;
   if(hasBase()) {
@@ -324,7 +324,7 @@ int MemoryRef::offsetCmp(const MemoryRef &mr1, const MemoryRef &mr2) { // static
   if(c = boolCmp(mr1.hasOffset(), mr2.hasOffset())) return c;
   if(!mr1.hasOffset()) return 0;
   if(c = boolCmp(isByte(mr2.getOffset()), isByte(mr1.getOffset()))) return c;
-  return sign((INT64)mr1.getOffset() - (INT64)mr2.getOffset());
+  return sign(mr1.getOffset() - mr2.getOffset());
 }
 
 int MemoryRef::addrCmp(const MemoryRef &mr1, const MemoryRef &mr2) { // static
@@ -333,7 +333,7 @@ int MemoryRef::addrCmp(const MemoryRef &mr1, const MemoryRef &mr2) { // static
   if(!mr1.hasOffset()) return 0;
   if(c = boolCmp(isByte(mr2.getAddr()), isByte(mr1.getAddr()))) return c;
   if(c = boolCmp(isDword(mr2.getAddr()), isDword(mr1.getAddr()))) return c;
-  return sign((INT64)mr1.getAddr() - (INT64)mr2.getAddr());
+  return sign(mr1.getAddr() - mr2.getAddr());
 }
 
 int MemoryRef::memRefCmp(const MemoryRef &mr1, const MemoryRef &mr2) { // static

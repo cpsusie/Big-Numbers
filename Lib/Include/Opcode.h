@@ -68,7 +68,7 @@ private:
   static const char s_shift[9];
   const IndexRegister *m_base,*m_inx;
   const BYTE           m_shift;
-  const size_t         m_offset;
+  const intptr_t       m_offset;
 #ifdef IS32BIT
 #define SETNEEDREXBYTE(base,inx)
 #else // IS64BIT
@@ -103,7 +103,7 @@ public:
   {
     SETDEBUGSTR();
   }
-  inline MemoryRef(size_t addr)
+  inline MemoryRef(intptr_t addr)
     : m_base(  NULL  )
     , m_inx(   NULL  )
     , m_shift( 0     )
@@ -127,8 +127,8 @@ public:
   inline const IndexRegister *getBase()   const { return m_base;         }
   inline const IndexRegister *getInx()    const { return m_inx;          }
   inline BYTE                 getShift()  const { return m_shift;        }
-  inline int                  getOffset() const { assert(isInt(m_offset)); return (int)m_offset;  }
-  inline size_t               getAddr()   const { return m_offset;       }
+  inline int                  getOffset() const { assert(isDword(m_offset)); return (int)m_offset;  }
+  inline intptr_t             getAddr()   const { return m_offset;       }
   inline bool                 hasBase()   const { return m_base != NULL; }
   inline bool                 hasInx()    const { return m_inx  != NULL; }
   inline bool                 hasShift()  const { return m_shift >= 1;   }
