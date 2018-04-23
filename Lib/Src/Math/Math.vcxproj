@@ -915,6 +915,7 @@
     <ClCompile Include="Expression\ExpressionVariable.cpp" />
     <ClCompile Include="Expression\ExpressionWrapper.cpp" />
     <ClCompile Include="Expression\FactorArray.cpp" />
+    <ClCompile Include="Expression\MachineCode.cpp" />
     <ClCompile Include="Expression\ParserTree.cpp" />
     <ClCompile Include="Expression\ParserTreeComplexity.cpp" />
     <ClCompile Include="Expression\ParserTreeGarbageCollect.cpp" />

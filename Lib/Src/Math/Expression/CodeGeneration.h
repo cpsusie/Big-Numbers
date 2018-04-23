@@ -83,6 +83,11 @@ typedef int ExpressionDestination;
 
 #endif // IS64BIT
 
+typedef int CodeLabel;
+inline String labelToString(CodeLabel label) {
+  return format(_T("L%d"), label);
+}
+
 class JumpFixup {
 public:
   const OpcodeBase &m_op;

@@ -343,6 +343,9 @@
     <ClCompile Include="FPU.cpp">
       <Filter>Source Files\Misc</Filter>
     </ClCompile>
+    <ClCompile Include="Expression\MachineCode.cpp">
+      <Filter>Source Files\Expression</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="NatvisFile.natvis" />

@@ -37,6 +37,7 @@ private:
   DECLARECLASSNAME;
   bool                       m_machineCode;
   const void                *m_code; // actually MachineCode*
+  FILE                      *m_listFile;
   ExpressionReturnType       m_returnType;
   mutable ExpressionState    m_state;
   mutable UINT               m_reduceIteration;
@@ -80,6 +81,8 @@ private:
   void   doAssignment(                                     const ExpressionNode *n) const;
   void   print(                                            const ExpressionNode *n, FILE *f = stdout) const;
 
+  void   openListFile();
+  void   closeListFile();
   void   genMachineCode();
   void   clearMachineCode();
   Real   fastEvaluateReal();
@@ -182,7 +185,7 @@ public:
   Expression(const Expression &src);
   Expression &operator=(const Expression &src);
   Expression getDerived(const String &name, bool reduceResult = true) const;
-  void   compile(const String &expr, bool machineCode);
+  void   compile(const String &expr, bool machineCode, bool makeListFile = false);
   inline ExpressionReturnType getReturnType() const {
     return m_returnType;
   }

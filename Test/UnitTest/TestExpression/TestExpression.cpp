@@ -1480,8 +1480,11 @@ redirectDebugLog();
           debugLog(_T("testcase %3d:<%-50s>:"),i,expr.cstr());
 #endif
           OUTPUT(_T("Test[%d]:%s"),i,expr.cstr());
+          if(i == 79) {
+            int fisk = 1;
+          }
           Expression compiledExpr, interpreterExpr;
-          compiledExpr.compile(expr, true);
+          compiledExpr.compile(expr, true, true);
 #ifdef TRACE_CALLS
           debugLog(_T("\n"));
 #endif
@@ -1562,7 +1565,7 @@ redirectDebugLog();
         for(Real p = -70; p <= 70; p += 0.5) {
           str = format(_T("(1+x)^%s"),toString(p).cstr());
           Expression compiledExpr, interpreterExpr;
-          compiledExpr.compile(   str, true );
+          compiledExpr.compile(   str, true ,true);
           interpreterExpr.compile(str, false);
           verify(compiledExpr.isOk());
           verify(interpreterExpr.isOk());

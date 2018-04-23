@@ -42,6 +42,7 @@ void Expression::init(TrigonometricMode    trigonometricMode
 {
   m_machineCode       = false;
   m_code              = NULL;
+  m_listFile          = NULL;
   m_trigonometricMode = trigonometricMode; // this is init.  so don't call set-properties here
   m_returnType        = returnType;
   m_state             = state;
@@ -56,13 +57,24 @@ void Expression::clear() {
   setReduceIteration(0);
 }
 
-void Expression::compile(const String &expr, bool machineCode) {
+void Expression::compile(const String &expr, bool machineCode, bool makeListFile) {
   parse(expr);
   if(!isOk()) {
     return;
   }
   setReturnType(findReturnType());
+  if(machineCode && makeListFile) {
+    openListFile();
+    _ftprintf(m_listFile, _T("%s\n\n"), expr.cstr());
+    _ftprintf(m_listFile, _T("%s\n\n"), variablesToString().cstr());
+  }
+
   setMachineCode(machineCode);
+
+  if(m_listFile) {
+    _ftprintf(m_listFile, _T("----------------------------------------------------\n"));
+    closeListFile();
+  }
 }
 
 void Expression::parse(const String &expr) {
@@ -116,7 +128,7 @@ void Expression::setMachineCode(bool machinecode) {
 
 void Expression::genMachineCode() {
   clearMachineCode();
-  m_code  = CodeGenerator(this, getTrigonometricMode()).getCode();
+  m_code  = CodeGenerator(this, getTrigonometricMode(),m_listFile).getCode();
 }
 
 void Expression::clearMachineCode() {
@@ -216,4 +228,31 @@ void Expression::print(const ExpressionNode *n, FILE *f) const {
 
 void Expression::print(FILE *f) const {
   _ftprintf(f,_T("%s"),toString().cstr());
+}
+
+void Expression::openListFile() {
+#ifdef _DEBUG
+#define CONFSTR "Dbg"
+#else
+#define CONFSTR "Rel"
+#endif // _DEBUG
+#ifdef IS32BIT
+#define PFSTR "x86"
+#else // IS64BIT
+#define PFSTR "x64"
+#endif // IS64BIT
+#ifdef LONGDOUBLE
+#define REALSTR "TB"
+#else
+#define REALSTR "QW"
+#endif // LONGDOUBLE
+  closeListFile();
+  m_listFile = MKFOPEN(_T("c:\\temp\\Expr" PFSTR CONFSTR REALSTR "lst"),_T("a"));
+}
+
+void Expression::closeListFile() {
+  if(m_listFile) {
+    fclose(m_listFile);
+    m_listFile = NULL;
+  }
 }

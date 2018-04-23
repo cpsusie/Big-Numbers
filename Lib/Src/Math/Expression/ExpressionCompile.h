@@ -3,19 +3,9 @@
 
 #ifndef LONGDOUBLE
 #define RealPtr QWORDPtr
-#define FADD_Real8Ptr( arg)  FADD( QWORDPtr(arg))
-#define FSUB_Real8Ptr( arg)  FSUB( QWORDPtr(arg))
-#define FSUBR_Real8Ptr( arg) FSUBR(QWORDPtr(arg))
-#define FMUL_Real8Ptr( arg)  FMUL( QWORDPtr(arg))
-#define FDIV_Real8Ptr( arg)  FDIV( QWORDPtr(arg))
-#define FDIVR_Real8Ptr(arg)  FDIVR(QWORDPtr(arg))
-#define FCOMP_Real8Ptr(arg)  FCOMP(QWORDPtr(arg))
 #else  // LONGDOUBLE
 #define RealPtr TBYTEPtr
 #endif // LONGDOUBLE
-
-#define FLD_REAL( arg)      FLD( RealPtr(arg))
-#define FSTP_REAL(arg)      FSTP(RealPtr(arg))
 
 #ifdef IS32BIT
 #define TABLEREF_REG ESI
@@ -24,10 +14,6 @@
 #define TABLEREF_REG RSI
 #define STACK_REG    RSP
 #endif // IS64BIT
-
-#define EMITTABLEOP(memPtrOp, index ) emit(memPtrOp(TABLEREF_REG + getESIOffset(index)))
-#define EMITSTACKOP(memPtrOp, offset) emit(memPtrOp(STACK_REG    + (offset)))
-
 
 #ifdef IS64BIT
 extern "C" {
@@ -46,6 +32,9 @@ private:
   const CompactRealArray         &m_valueTable;
   // Offset in bytes, of esi/rsi from m_valueTable[0], when code is executing. 0 <= m_esiOffset < 128
   char                            m_esiOffset;
+  FILE                           *m_listFile;
+  int                             m_lastCodeSize;
+  String                          m_insStr;
 #ifdef IS64BIT
   BYTE                            m_stackTop;
   BYTE                           *m_referenceFunction;
@@ -63,47 +52,64 @@ private:
 #endif // IS32BIT
   MachineCode(const MachineCode &src);             // not implemented
   MachineCode &operator=(const MachineCode &src);  // not implemented
+  int emitIns(const InstructionBase &ins);
 public:
 
 #ifdef TRACE_CALLS
   bool m_callsGenerated;
 #endif
-  MachineCode(const CompactRealArray &valueTable);
+  MachineCode(const CompactRealArray &valueTable, FILE *listFile = NULL);
   ~MachineCode();
   void clear();
   int  addBytes(const void *bytes, int count);
-  int  emit(const InstructionBase &ins);
+  int  emit(const Opcode0Arg &opCode);
+  int  emitJmpWithLabel(const OpcodeBase &opCode, CodeLabel label);
+  int  emit(const OpcodeBase &opCode, const InstructionOperand &op);
+  int  emit(const OpcodeBase &opCode, const InstructionOperand &op1, const InstructionOperand &op2);
+  int  emit(const StringPrefix &prefix, const StringInstruction &strins);
   void emitCall(BuiltInFunction f);
   void emitCall(BuiltInFunction f, const ExpressionDestination &dst);
   void emitFLoad(   const ExpressionNode *n);
-  inline void emitFPopVal(int index) {
-    EMITTABLEOP(FSTP_REAL, index);
+  MemoryRef getTableRef(int index) const {
+    return TABLEREF_REG + getESIOffset(index);
   }
-  inline void emitFPopVal( const ExpressionNode *n) {
-    emitFPopVal(n->getValueIndex());
+  MemoryRef getStackRef(int offset) const {
+    return STACK_REG + offset;
+  }
+  inline RealPtr getValPtr(int index) const {
+    return RealPtr(getTableRef(index));
+  }
+  inline RealPtr getValPtr(const ExpressionNode *n) const {
+    return getValPtr(n->getValueIndex());
+  }
+  inline RealPtr getValStackPtr(int offset) const {
+    return RealPtr(getStackRef(offset));
+  }
+  inline void emitFSTP(const RealPtr &mem) {
+    emit(FSTP, mem);
   }
 #ifndef LONGDOUBLE
-  void emitFAddVal( const ExpressionNode *n) { EMITTABLEOP(FADD_Real8Ptr , n->getValueIndex()); }
-  void emitFSubVal( const ExpressionNode *n) { EMITTABLEOP(FSUB_Real8Ptr , n->getValueIndex()); }
-  void emitFSubRVal(const ExpressionNode *n) { EMITTABLEOP(FSUBR_Real8Ptr, n->getValueIndex()); }
-  void emitFMulVal( const ExpressionNode *n) { EMITTABLEOP(FMUL_Real8Ptr , n->getValueIndex()); }
-  void emitFDivVal( const ExpressionNode *n) { EMITTABLEOP(FDIV_Real8Ptr , n->getValueIndex()); }
-  void emitFDivRVal(const ExpressionNode *n) { EMITTABLEOP(FDIVR_Real8Ptr, n->getValueIndex()); }
-  void emitFCompVal(const ExpressionNode *n) { EMITTABLEOP(FCOMP_Real8Ptr, n->getValueIndex()); }
+  void emitFAddVal( const ExpressionNode *n) { emit(FADD ,getValPtr(n)); }
+  void emitFSubVal( const ExpressionNode *n) { emit(FSUB ,getValPtr(n)); }
+  void emitFSubRVal(const ExpressionNode *n) { emit(FSUBR,getValPtr(n)); }
+  void emitFMulVal( const ExpressionNode *n) { emit(FMUL ,getValPtr(n)); }
+  void emitFDivVal( const ExpressionNode *n) { emit(FDIV ,getValPtr(n)); }
+  void emitFDivRVal(const ExpressionNode *n) { emit(FDIVR,getValPtr(n)); }
+  void emitFCompVal(const ExpressionNode *n) { emit(FCOMP,getValPtr(n)); }
 #endif
 #ifdef IS64BIT
 #ifndef LONGDOUBLE
   void emitXMMToVal(const XMMRegister &reg, int index) {
-    emit(MOVSD1(MMWORDPtr(TABLEREF_REG + getESIOffset(index)), reg));
+    emit(MOVSD1,MMWORDPtr(getTableRef(index)), reg);
   }
   void emitValToXMM(const XMMRegister &reg, int index) {
-    emit(MOVSD1(reg, MMWORDPtr(TABLEREF_REG + getESIOffset(index))));
+    emit(MOVSD1,reg, MMWORDPtr(getTableRef(index)));
   }
   void emitXMMToStack(const XMMRegister &reg, int offset) {
-    emit(MOVSD1(MMWORDPtr(STACK_REG + offset), reg));
+    emit(MOVSD1,MMWORDPtr(getStackRef(offset)), reg);
   }
   void emitStackToXMM(const XMMRegister &reg, int offset) {
-    emit(MOVSD1(reg, MMWORDPtr(STACK_REG + offset)));
+    emit(MOVSD1,reg, MMWORDPtr(getStackRef(offset)));
   }
 #endif // !LONGDOUBLE
   bool emitFLoad(   const ExpressionNode *n, const ExpressionDestination &dst);
@@ -112,7 +118,7 @@ public:
   // if offset==0, emit(MOV dst,src); else emit(LEA dst,RealPtr(src+offset));
   void emitLoadAddr(const IndexRegister &dst, const IndexRegister &src, int offset);
   // Return index in m_jumpFixups of new jump-instruction
-  int emitJmp(const OpcodeBase &op);
+  int emitJmp(const OpcodeBase &op, CodeLabel label);
   inline void fixupJump(int index, int jmpTo) {
     m_jumpFixups[index].m_jmpTo = jmpTo;
   }
@@ -147,8 +153,11 @@ public:
 #endif // IS64BIT
 
   void finalize();
-  void dump(const String &fname, const String &title) const;
-
+  void list(const TCHAR *format,...);
+  void listIns(const TCHAR *format,...);
+  inline bool isListFileOpen() const {
+    return m_listFile != NULL;
+  }
   inline Real evaluateReal() const {
     Real result;
 #ifdef IS32BIT
@@ -186,11 +195,22 @@ public:
   }
 };
 
+class CodeLabelPair {
+public:
+  const CodeLabel m_falseLabel;
+  const CodeLabel m_trueLabel;
+  inline CodeLabelPair(CodeLabel falseLabel, CodeLabel trueLabel)
+    : m_falseLabel(falseLabel), m_trueLabel(trueLabel)
+  {
+  }
+};
+
 class CodeGenerator {
 private:
   ParserTree             &m_tree;
   const TrigonometricMode m_trigonometricMode;
   MachineCode            *m_code;
+  int                     m_nextLbl;
 #ifdef IS64BIT
   bool                    m_hasCalls;
 #endif // IS64BIT
@@ -265,12 +285,20 @@ private:
 
   void     genAssignment(       const ExpressionNode *n);
   void     genIndexedExpression(const ExpressionNode *n);
-  JumpList genBoolExpression(   const ExpressionNode *n);
-
+  JumpList genBoolExpression(   const ExpressionNode *n, const CodeLabelPair &lp);
+  inline CodeLabel nextLabel() {
+    return m_nextLbl++;
+  }
+  inline CodeLabelPair getLabelPair() {
+    return CodeLabelPair(nextLabel(), nextLabel());
+  }
+  inline void listLabel(CodeLabel label) {
+    if(m_code->isListFileOpen()) m_code->list(_T("%s:\n"), labelToString(label).cstr());
+  }
   void throwInvalidTrigonometricMode();
 
 public:
-  CodeGenerator(ParserTree *tree, TrigonometricMode trigonometricMode);
+  CodeGenerator(ParserTree *tree, TrigonometricMode trigonometricMode, FILE *listFile = NULL);
   const MachineCode *getCode() const {
     return m_code;
   }
