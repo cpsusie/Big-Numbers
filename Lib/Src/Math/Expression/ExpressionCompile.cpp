@@ -281,8 +281,6 @@ void MachineCode::emitCall(BuiltInFunction f) {
 #endif
   emit(LEA(RAX,QWORDPtr(RBP+(int)((BYTE*)f-m_referenceFunction))));
   emit(CALL(RAX));
-//  emit(MOV(RAX,(INT64)f));
-//  emit(CALL(RAX));
 }
 
 #ifndef LONGDOUBLE
