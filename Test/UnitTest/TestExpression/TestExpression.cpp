@@ -1479,7 +1479,7 @@ redirectDebugLog();
 #ifdef TRACE_CALLS
           debugLog(_T("testcase %3d:<%-50s>:"),i,expr.cstr());
 #endif
-//            tcout << _T("Test[") << i << _T("]:") << expr << spaceString(40) << _T("\r");
+          OUTPUT(_T("Test[%d]:%s"),i,expr.cstr());
           Expression compiledExpr, interpreterExpr;
           compiledExpr.compile(expr, true);
 #ifdef TRACE_CALLS

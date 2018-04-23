@@ -102,6 +102,14 @@ bool MachineCode::emitFLoad(const ExpressionNode *n, const ExpressionDestination
 }
 #endif // IS64BIT
 
+void MachineCode::emitLoadAddr(const IndexRegister &dst, const IndexRegister &src, int offset) {
+  if(offset == 0) {
+    emit(MOV(dst, src));
+  } else {
+    emit(LEA(dst, RealPtr(src+offset)));
+  }
+}
+
 #ifdef IS32BIT
 void MachineCode::emitAddESP(int n) {
   if(n == 0) return;
@@ -147,11 +155,14 @@ BYTE MachineCode::popTmp()  {
 #endif // IS64BIT
 
 InstructionBase JumpFixup::makeInstruction() const {
-  int lastSize = m_instructionSize;
-  for(;;) {
-    const InstructionBase ins = m_op(m_jmpTo - m_instructionPos - lastSize);
+  for(int lastSize = m_instructionSize, jmpTo = m_jmpTo;;) {
+    const int ipRel = jmpTo - m_instructionPos - lastSize;
+    const InstructionBase ins = m_op(ipRel);
     if(ins.size() == lastSize) {
       return ins;
+    }
+    if(jmpTo > m_instructionPos) {
+      jmpTo += ins.size() - lastSize;
     }
     lastSize = ins.size();
   }
@@ -313,22 +324,17 @@ void MachineCode::emitCall(BuiltInFunction f, const ExpressionDestination &dst) 
 void MachineCode::emitCall(BuiltInFunction f, const ExpressionDestination &dst) {
   switch(dst.getType()) {
   case RESULT_IN_FPU       :
-    emit(MOV(RCX, RSI));                                   // RCX = RSI + getESIOffset(0);
-    emitAddR64(RCX, getESIOffset(0));                      // Will generate code after call, that pushed *rsi in FPU
+    emitLoadAddr(RCX, RSI, getESIOffset(0));                       // RCX = RSI + getESIOffset(0);
     break;
   case RESULT_IN_ADDRRDI   :
-    emit(MOV(RCX, RDI));                                   // RCX = RDI
+    emit(MOV(RCX, RDI));                                           // RCX = RDI
     break;
   case RESULT_ON_STACK:
-    { emit(MOV(RCX, RSP));                                 // RCX = RSP + dst.stackOffset
-      emitAddR64(RCX, dst.getStackOffset());
-    }
+    emitLoadAddr(RCX, RSP, dst.getStackOffset());                  // RCX = RSP + dst.stackOffset
     break;
   case RESULT_IN_VALUETABLE:
-    { emit(MOV(RCX, RSI));                                 // RCX = RSI + getESIOffset(dst.tableIndex))
-      emitAddR64(RCX, getESIOffset(dst.getTableIndex()));
-      break;
-    }
+    emitLoadAddr(RCX, RSI, getESIOffset(dst.getTableIndex()));     // RCX = RSI + getESIOffset(dst.tableIndex))
+    break;
   }
 
   emitCall(f);
@@ -1076,13 +1082,11 @@ void CodeGenerator::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode
     offset1 = genSetRefParameter(arg1, 0, stacked1);
   }
   if(stacked1) {
-    m_code->emit(MOV(RCX, RSP    ));
-    m_code->emit(ADD(RCX, offset1));
+    m_code->emitLoadAddr(RCX, RSP, offset1);
     m_code->popTmp();
   }
   if(stacked2) {
-    m_code->emit(MOV(RDX, RSP    ));
-    m_code->emit(ADD(RDX, offset2));
+    m_code->emitLoadAddr(RDX, RSP, offset2);
     m_code->popTmp();
   }
   emitCall((BuiltInFunction)f, dst);
@@ -1109,16 +1113,14 @@ void CodeGenerator::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode
     offset1 = genSetRefParameter(arg1, 0, stacked1);
   }
   if(stacked1) {
-    m_code->emit(MOV(RDX, RSP));
+    m_code->emitLoadAddr(RDX,RSP,offset1);
     if(offset1) {
-      m_code->emit(ADD(RDX, offset1));
       m_code->popTmp();
     }
   }
   if(stacked2) {
-    m_code->emit(MOV(R8, RSP));
+    m_code->emitLoadAddr(R8,RSP,offset2);
     if(offset2) {
-      m_code->emit(ADD(R8,offset2));
       m_code->popTmp();
     }
   }
@@ -1149,9 +1151,7 @@ void CodeGenerator::genPolynomial(const ExpressionNode *n, const ExpressionDesti
   m_code->emit(MOV(param2,coefCount));
 
   const IndexRegister &param3    = int64ParamRegister[2];
-  const Real          *coef0     = &m_tree.getValueRef(firstCoefIndex);
-  m_code->emit(MOV(param3,(intptr_t)coef0));
-
+  m_code->emitLoadAddr(param3, RSI, getESIOffset(firstCoefIndex));
   emitCall((BuiltInFunction)::evaluatePolynomial, dst);
 }
 
@@ -1164,18 +1164,14 @@ void CodeGenerator::genSetRefParameter(const ExpressionNode *n, int index) {
   bool stacked;
   const BYTE offset = genSetRefParameter(n, index, stacked);
   if(stacked) {
-    const GPRegister &r64 = int64ParamRegister[index];
-    m_code->emit(MOV(r64, RSP));
-    m_code->emitAddR64(r64, offset);
+    m_code->emitLoadAddr(int64ParamRegister[index], RSP, offset);
     m_code->popTmp();
   }
 }
 
 BYTE CodeGenerator::genSetRefParameter(const ExpressionNode *n, int index, bool &savedOnStack) {
-  const GPRegister &dstRegister = int64ParamRegister[index];
   if(n->isNameOrNumber()) {
-    m_code->emit(MOV(dstRegister, RSI));
-    m_code->emitAddR64(dstRegister, m_code->getESIOffset(n->getValueIndex()));
+    m_code->emitLoadAddr(int64ParamRegister[index], RSI, getESIOffset(n->getValueIndex()));
     savedOnStack = false;
     return 0;
   } else {

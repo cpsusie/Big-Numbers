@@ -109,6 +109,8 @@ public:
   bool emitFLoad(   const ExpressionNode *n, const ExpressionDestination &dst);
 #endif // IS64BIT
 
+  // if offset==0, emit(MOV dst,src); else emit(LEA dst,RealPtr(src+offset));
+  void emitLoadAddr(const IndexRegister &dst, const IndexRegister &src, int offset);
   // Return index in m_jumpFixups of new jump-instruction
   int emitJmp(const OpcodeBase &op);
   inline void fixupJump(int index, int jmpTo) {
@@ -118,7 +120,6 @@ public:
   void clearJumpTable() {
     m_jumpFixups.clear();
   }
-
   void setValueCount(size_t valueCount);
   inline size_t getValueCount() const {
     return m_valueTable.size();
