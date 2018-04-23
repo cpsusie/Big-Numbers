@@ -1469,15 +1469,22 @@ namespace TestExpression {
     TEST_METHOD(ExpressionTestEvaluate) {
       ExpressionTest::startEvaluateTest();
       FPU::init();
-//      redirectDebugLog();
+#ifdef TRACE_CALLS
+redirectDebugLog();
+#endif
       try {
         for(int i = 0; i < ARRAYSIZE(testCases); i++) {
           ExpressionTest &test = *testCases[i];
           const String expr = test.getExpr();
+#ifdef TRACE_CALLS
+          debugLog(_T("testcase %3d:<%-50s>:"),i,expr.cstr());
+#endif
 //            tcout << _T("Test[") << i << _T("]:") << expr << spaceString(40) << _T("\r");
           Expression compiledExpr, interpreterExpr;
           compiledExpr.compile(expr, true);
-
+#ifdef TRACE_CALLS
+          debugLog(_T("\n"));
+#endif
 //          debugLog(_T("Test %d %s\n%s\n"), i, expr.cstr(), compiledExpr.treeToString().cstr());
 
           interpreterExpr.compile(expr, false);

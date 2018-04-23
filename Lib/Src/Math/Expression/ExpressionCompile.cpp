@@ -6,6 +6,9 @@ DEFINECLASSNAME(MachineCode);
 MachineCode::MachineCode(const CompactRealArray &valueTable) : m_valueTable(valueTable) {
   setValueCount(m_valueTable.size());
   m_entryPoint = NULL;
+#ifdef TRACE_CALLS
+  m_callsGenerated = false;
+#endif
 #ifdef IS64BIT
 #ifndef LONGDOUBLE
   m_referenceFunction = (BYTE*)(BuiltInFunction1)exp;
@@ -254,9 +257,16 @@ void MachineCode::linkFunctionCall(const FunctionCall &fc) {
   setBytes(fc.m_pos, ins.getBytes(), ins.size());
 }
 
-void MachineCode::emitCall(BuiltInFunction f, const ExpressionDestination &dummy) {
+void MachineCode::emitCall(BuiltInFunction f) {
+#ifdef TRACE_CALLS
+  m_callsGenerated = true;
+#endif
   const int pos = emit(CALL((intptr_t)f));
   m_callArray.add(FunctionCall(pos, (BYTE)(size()-pos), f));
+}
+
+void MachineCode::emitCall(BuiltInFunction f, const ExpressionDestination &dummy) {
+  emitCall(f);
 #ifdef LONGDOUBLE
   emit(MOV(EAX,DWORDPtr(ESP)));
   emit(FLD_REAL(EAX));
@@ -265,12 +275,19 @@ void MachineCode::emitCall(BuiltInFunction f, const ExpressionDestination &dummy
 
 #else // IS64BIT
 
-#ifndef LONGDOUBLE
-void MachineCode::emitCall(BuiltInFunction f, const ExpressionDestination &dst) {
+void MachineCode::emitCall(BuiltInFunction f) {
+#ifdef TRACE_CALLS
+  m_callsGenerated = true;
+#endif
   emit(LEA(RAX,QWORDPtr(RBP+(int)((BYTE*)f-m_referenceFunction))));
   emit(CALL(RAX));
 //  emit(MOV(RAX,(INT64)f));
 //  emit(CALL(RAX));
+}
+
+#ifndef LONGDOUBLE
+void MachineCode::emitCall(BuiltInFunction f, const ExpressionDestination &dst) {
+  emitCall(f);
   switch(dst.getType()) {
   case RESULT_IN_FPU       :
     emitXMMToStack(XMM0,0);                                // XMM0 -> FPU-top
@@ -298,26 +315,25 @@ void MachineCode::emitCall(BuiltInFunction f, const ExpressionDestination &dst) 
 void MachineCode::emitCall(BuiltInFunction f, const ExpressionDestination &dst) {
   switch(dst.getType()) {
   case RESULT_IN_FPU       :
-    emit(MOV(RCX, RSI));                                            // RCX = RSI + getESIOffset(0);
-    emitAddR64(RCX, getESIOffset(0));                               // Will generate code after call, that pushed *rsi in FPU
+    emit(MOV(RCX, RSI));                                   // RCX = RSI + getESIOffset(0);
+    emitAddR64(RCX, getESIOffset(0));                      // Will generate code after call, that pushed *rsi in FPU
     break;
   case RESULT_IN_ADDRRDI   :
-    emit(MOV(RCX, RDI));                                            // RCX = RDI
+    emit(MOV(RCX, RDI));                                   // RCX = RDI
     break;
   case RESULT_ON_STACK:
-    { emit(MOV(RCX, RSP));                                          // RCX = RSP + dst.stackOffset
+    { emit(MOV(RCX, RSP));                                 // RCX = RSP + dst.stackOffset
       emitAddR64(RCX, dst.getStackOffset());
     }
     break;
   case RESULT_IN_VALUETABLE:
-    { emit(MOV(RCX, RSI));                                          // RCX = RSI + getESIOffset(dst.tableIndex))
+    { emit(MOV(RCX, RSI));                                 // RCX = RSI + getESIOffset(dst.tableIndex))
       emitAddR64(RCX, getESIOffset(dst.getTableIndex()));
       break;
     }
   }
 
-  emit(MOV(RAX,(intptr_t)f));
-  emit(CALL(RAX));
+  emitCall(f);
 
   switch(dst.getType()) {
   case RESULT_IN_FPU       :
@@ -329,52 +345,6 @@ void MachineCode::emitCall(BuiltInFunction f, const ExpressionDestination &dst) 
 #endif // LONGDOUBLE
 
 #endif // IS64BIT
-
-#pragma warning(disable:4717)
-
-#ifdef IS64BIT
-extern "C" {
-  void callRealResultExpression(ExpressionEntryPoint ep, const void *rsiValue, Real &result);
-  int  callIntResultExpression( ExpressionEntryPoint ep, const void *rsiValue);
-};
-#endif // IS64BIT
-
-Real MachineCode::evaluateReal() const {
-  Real result;
-#ifdef IS32BIT
-  ExpressionEntryPoint  ep    = m_entryPoint;
-  const void           *daddr = m_esi;
-  __asm {
-    push esi
-    mov  esi, daddr
-    call ep
-    pop  esi
-    fstp result;
-  }
-#else // IS64BIT
-  callRealResultExpression(m_entryPoint, m_esi, result);
-#endif // IS64BIT
-
-  return result;
-}
-
-bool MachineCode::evaluateBool() const {
-#ifdef IS32BIT
-  ExpressionEntryPoint  ep    = m_entryPoint;
-  const void           *daddr = m_esi;
-  int result;
-  __asm {
-    push esi
-    mov  esi, daddr
-    call ep
-    pop  esi
-    mov result, eax
-  }
-  return result ? true : false;
-#else  // IS64BIT
-  return callIntResultExpression(m_entryPoint, m_esi) ? true : false;
-#endif // IS64BIT
-}
 
 void MachineCode::dump(const String &fname, const String &title) const {
   FILE *f = FOPEN(fname,_T("a"));
@@ -401,6 +371,9 @@ void CodeGenerator::genMachineCode() {
   genProlog();
   genStatementList(m_tree.getRoot());
   m_code->finalize();
+#ifdef TRACE_CALLS
+  debugLog(_T("hasCalls:%5s Calls generated:%5s"), boolToStr(m_hasCalls), boolToStr(m_code->m_callsGenerated));
+#endif
 }
 
 void CodeGenerator::genProlog() {
