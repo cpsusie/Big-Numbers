@@ -83,7 +83,7 @@ void CodeGenerator::genAssignment(const ExpressionNode *n) {
 
 void CodeGenerator::genReturnBoolExpression(const ExpressionNode *n) {
   JumpList jumps(getLabelPair());
-  genBoolExpression(n->left(),jumps);
+  genBoolExpression(n->left(),jumps, false);
 
   m_code->fixupJumps(jumps,true);
   m_code->emit(MOV,EAX,1);
@@ -414,7 +414,7 @@ void CodeGenerator::genIndexedExpression(const ExpressionNode *n) {
 
 void CodeGenerator::genIf(const ExpressionNode *n, const ExpressionDestination &dst) {
   JumpList jumps(getLabelPair());
-  genBoolExpression(n->child(0),jumps);
+  genBoolExpression(n->child(0),jumps,false);
   m_code->fixupJumps(jumps,true);
   GENEXPRESSION(n->child(1)); // true-expression
   const CodeLabel endLabel = nextLabel();
@@ -438,33 +438,39 @@ static ExpressionInputSymbol reverseComparator(ExpressionInputSymbol symbol) {
   return EQ;
 }
 
-void CodeGenerator::genBoolExpression(const ExpressionNode *n, JumpList &jl) {
-  const bool genTrueJump = false;
+void CodeGenerator::genBoolExpression(const ExpressionNode *n, JumpList &jl, bool genTrueJumps) {
 //  dumpSyntaxTree(n);
   switch(n->getSymbol()) {
   case SYMNOT:
     { JumpList jumps(jl.m_trueLabel,jl.m_falseLabel);
-      genBoolExpression(n->child(0), jumps);
+      genBoolExpression(n->child(0), jumps, genTrueJumps);
       const int trueJump = m_code->emitJmp(JMP,jumps.m_trueLabel);
       jl.m_falseJumps.addAll(jumps.m_trueJumps);
       jl.m_falseJumps.add(trueJump);
       jl.m_trueJumps.addAll(jumps.m_falseJumps);
+
+
+//      genBoolExpression(n->child(0), jumps,true);
+//      const int falseJump = m_code->emitJmp(JMP,jumps.m_falseLabel);
+//      jl.m_falseJumps.addAll(jumps.m_trueJumps);
+//      jl.m_trueJumps.add(falseJump);
+//      jl.m_trueJumps.addAll(jumps.m_falseJumps);
     }
     break;
   case SYMAND:
     { JumpList jump1(jl.m_falseLabel,nextLabel());
-      genBoolExpression(n->left(),jump1);
-      genBoolExpression(n->right(),jl);
+      genBoolExpression(n->left() ,jump1,false);
+      genBoolExpression(n->right(),jl   ,false);
       m_code->fixupJumps(jump1,true);
       jl.m_falseJumps.addAll(jump1.m_falseJumps);
     }
     break;
   case SYMOR   :
     { JumpList jump1(nextLabel(),jl.m_trueLabel);
-      genBoolExpression(n->left(),jump1);
+      genBoolExpression(n->left(),jump1,false);
       const int trueJump = m_code->emitJmp(JMP,jl.m_trueLabel);
       m_code->fixupJumps(jump1,false);
-      genBoolExpression(n->right(),jl);
+      genBoolExpression(n->right(),jl,false);
       jl.m_trueJumps.addAll(jump1.m_trueJumps);
       jl.m_trueJumps.add(trueJump);
     }
@@ -499,42 +505,42 @@ void CodeGenerator::genBoolExpression(const ExpressionNode *n, JumpList &jl) {
 
       switch(symbol) {
       case EQ:
-        if(genTrueJump) {
+        if(genTrueJumps) {
           jl.m_trueJumps.add( m_code->emitJmp(JE ,jl.m_trueLabel));
         } else {
           jl.m_falseJumps.add(m_code->emitJmp(JNE,jl.m_falseLabel));
         }
         break;
       case NE:
-        if(genTrueJump) {
+        if(genTrueJumps) {
           jl.m_trueJumps.add( m_code->emitJmp(JNE,jl.m_trueLabel));
         } else {
           jl.m_falseJumps.add(m_code->emitJmp(JE ,jl.m_falseLabel));
         }
         break;
       case LE:
-        if(genTrueJump) {
+        if(genTrueJumps) {
           jl.m_trueJumps.add( m_code->emitJmp(JBE,jl.m_trueLabel));
         } else {
           jl.m_falseJumps.add(m_code->emitJmp(JA ,jl.m_falseLabel));
         }
         break;
       case LT:
-        if(genTrueJump) {
+        if(genTrueJumps) {
           jl.m_trueJumps.add( m_code->emitJmp(JB ,jl.m_trueLabel));
         } else {
           jl.m_falseJumps.add(m_code->emitJmp(JAE,jl.m_falseLabel));
         }
         break;
       case GE:
-        if(genTrueJump) {
+        if(genTrueJumps) {
           jl.m_trueJumps.add( m_code->emitJmp(JAE,jl.m_trueLabel));
         } else {
           jl.m_falseJumps.add(m_code->emitJmp(JB ,jl.m_falseLabel));
         }
         break;
       case GT:
-        if(genTrueJump) {
+        if(genTrueJumps) {
           jl.m_trueJumps.add( m_code->emitJmp(JA ,jl.m_trueLabel));
         } else {
           jl.m_falseJumps.add(m_code->emitJmp(JBE,jl.m_falseLabel));

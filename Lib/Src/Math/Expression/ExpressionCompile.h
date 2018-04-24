@@ -288,7 +288,7 @@ private:
 
   void     genAssignment(       const ExpressionNode *n);
   void     genIndexedExpression(const ExpressionNode *n);
-  void     genBoolExpression(   const ExpressionNode *n, JumpList &jumpList);
+  void     genBoolExpression(   const ExpressionNode *n, JumpList &jumpList, bool genTrueJumps);
   inline CodeLabel nextLabel() {
     return m_nextLbl++;
   }
