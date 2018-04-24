@@ -34,7 +34,9 @@ private:
   char                            m_esiOffset;
   FILE                           *m_listFile;
   int                             m_lastCodeSize;
+  StringArray                     m_valueStr;     // for comments in listfile
   String                          m_insStr;
+  const TCHAR                    *m_listComment;
 #ifdef IS64BIT
   BYTE                            m_stackTop;
   BYTE                           *m_referenceFunction;
@@ -47,6 +49,10 @@ private:
     }
     return (int)valueIndex * sizeof(Real) - m_esiOffset;
   }
+  inline size_t esiOffsetToIndex(int offset) const {
+    return (offset + m_esiOffset) / sizeof(Real);
+  }
+
 #ifdef IS32BIT
   CompactArray<FunctionCall>      m_callArray;
   void clearFunctionCalls() {
@@ -59,12 +65,15 @@ private:
   MachineCode(const MachineCode &src);             // not implemented
   MachineCode &operator=(const MachineCode &src);  // not implemented
   int emitIns(const InstructionBase &ins);
+  void initValueStr(const ExpressionVariableArray &variables);
+  // return NULL if not comment found
+  const TCHAR *findListComment(const InstructionOperand &op) const;
 public:
 
 #ifdef TRACE_CALLS
   bool m_callsGenerated;
 #endif
-  MachineCode(const CompactRealArray &valueTable, FILE *listFile = NULL);
+  MachineCode(ParserTree &m_tree, FILE *listFile = NULL);
   ~MachineCode();
   void clear();
   int  addBytes(const void *bytes, int count);

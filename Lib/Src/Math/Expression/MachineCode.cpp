@@ -3,14 +3,20 @@
 
 DEFINECLASSNAME(MachineCode);
 
-MachineCode::MachineCode(const CompactRealArray &valueTable, FILE *listFile) : m_valueTable(valueTable) {
+MachineCode::MachineCode(ParserTree &tree, FILE *listFile)
+  : m_valueTable(tree.getValueTable())
+{
   setValueCount(m_valueTable.size());
   m_entryPoint   = NULL;
+
+  initValueStr(tree.getAllVariables());
   m_lastCodeSize = 0;
   m_listFile     = listFile;
+  m_listComment  = NULL;
   if(isListFileOpen()) {
     list(_T("ESI offset from &valueTable[0] (in bytes):%d (%#02x)\n"), m_esiOffset, m_esiOffset);
   }
+
 #ifdef TRACE_CALLS
   m_callsGenerated = false;
 #endif
@@ -74,12 +80,53 @@ void MachineCode::list(const TCHAR *format, ...) {
   va_end(argptr);
 }
 
+void MachineCode::initValueStr(const ExpressionVariableArray &variables) {
+  for(size_t i = 0; i < getValueCount(); i++) {
+    m_valueStr.add(EMPTYSTRING);
+  }
+  for(size_t i = 0; i < variables.size(); i++) {
+    const ExpressionVariable &var = variables[i];
+    m_valueStr[var.getValueIndex()] = var.getName();
+  }
+  int tmpCounter = 0;
+  for(size_t i = 0; i < m_valueStr.size(); i++) {
+    if(m_valueStr[i].isEmpty()) {
+      if(isNan(m_valueTable[i])) {
+        m_valueStr[i] = format(_T("$tmp%d"), tmpCounter++);
+      } else {
+        m_valueStr[i] = toString(m_valueTable[i]);
+      }
+    }
+  }
+  for(size_t i = 0; i < m_valueStr.size(); i++) {
+    m_valueStr[i] = format(_T("value[%2d]:%s"), i, m_valueStr[i].cstr());
+  }
+}
+
+const TCHAR *MachineCode::findListComment(const InstructionOperand &op) const {
+  if(op.isMemoryRef()) {
+    const MemoryRef &mr = op.getMemoryReference();
+    if(mr.hasBase() && (mr.getBase() == &TABLEREF_REG)) {
+      const size_t index = esiOffsetToIndex(mr.getOffset());
+      if(index < m_valueStr.size()) {
+        return m_valueStr[index].cstr();
+      }
+    }
+  }
+  return NULL;
+}
+
 void MachineCode::listIns(const TCHAR *format, ...) {
   va_list argptr;
   va_start(argptr,format);
   const String str = vformat(format,argptr);
   va_end(argptr);
-  list(_T("    %-4d:%-30s   %s\n"), m_lastCodeSize, m_insStr.cstr(), str.cstr());
+  if(m_listComment) {
+    list(_T("    %-4d:%-36s %-40s ;%s\n"), m_lastCodeSize, m_insStr.cstr(), str.cstr(), m_listComment);
+    m_listComment = NULL;
+  } else {
+    list(_T("    %-4d:%-36s %s\n"), m_lastCodeSize, m_insStr.cstr(), str.cstr());
+  }
   m_lastCodeSize = (int)size();
 }
 
@@ -98,23 +145,30 @@ int MachineCode::emit(const Opcode0Arg &opCode) {
 
 int  MachineCode::emitJmpWithLabel(const OpcodeBase &opCode, CodeLabel label) {
   const int ret = emitIns(opCode(0));
-  if(isListFileOpen()) listIns(_T("%s %s"), opCode.getMnemonic().cstr(), labelToString(label).cstr());
+  if(isListFileOpen()) listIns(_T("%-6s %s"), opCode.getMnemonic().cstr(), labelToString(label).cstr());
   return ret;
 }
 
 int MachineCode::emit(const OpcodeBase &opCode, const InstructionOperand &op) {
   const int ret = emitIns(opCode(op));
-  if(isListFileOpen()) listIns(_T("%s %s"), opCode.getMnemonic().cstr(), op.toString().cstr());
+  if(isListFileOpen()) {
+    m_listComment = findListComment(op);
+    listIns(_T("%-6s %s"), opCode.getMnemonic().cstr(), op.toString().cstr());
+  }
   return ret;
 }
 int MachineCode::emit(const OpcodeBase &opCode, const InstructionOperand &op1, const InstructionOperand &op2) {
   const int ret = emitIns(opCode(op1,op2));
-  if(isListFileOpen()) listIns(_T("%s %s,%s"), opCode.getMnemonic().cstr(), op1.toString().cstr(), op2.toString().cstr());
+  if(isListFileOpen()) {
+    m_listComment = findListComment(op1);
+    if(m_listComment == NULL) m_listComment = findListComment(op2);
+    listIns(_T("%-6s %s,%s"), opCode.getMnemonic().cstr(), op1.toString().cstr(), op2.toString().cstr());
+  }
   return ret;
 }
 int MachineCode::emit(const StringPrefix &prefix, const StringInstruction &strins) {
   const int ret = emitIns(prefix(strins));
-  if(isListFileOpen()) listIns(_T("%s %s"), prefix.getMnemonic().cstr(), strins.getMnemonic().cstr());
+  if(isListFileOpen()) listIns(_T("%-6s %s"), prefix.getMnemonic().cstr(), strins.getMnemonic().cstr());
   return ret;
 }
 

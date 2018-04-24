@@ -12,7 +12,7 @@ CodeGenerator::CodeGenerator(ParserTree *tree, TrigonometricMode trigonometricMo
   if(tree->getTreeForm() != TREEFORM_STANDARD) {
     throwException(_T("Treeform must be STANDARD to generate machinecode. Form=%s"), m_tree.getTreeFormName().cstr());
   }
-  m_code = new MachineCode(m_tree.getValueTable(), listFile);
+  m_code = new MachineCode(m_tree, listFile);
   genMachineCode();
 }
 

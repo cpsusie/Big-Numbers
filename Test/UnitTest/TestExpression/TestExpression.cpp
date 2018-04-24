@@ -1480,9 +1480,6 @@ redirectDebugLog();
           debugLog(_T("testcase %3d:<%-50s>:"),i,expr.cstr());
 #endif
           OUTPUT(_T("Test[%d]:%s"),i,expr.cstr());
-          if(i == 79) {
-            int fisk = 1;
-          }
           Expression compiledExpr, interpreterExpr;
           compiledExpr.compile(expr, true, true);
 #ifdef TRACE_CALLS
