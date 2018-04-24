@@ -42,7 +42,7 @@ private:
   BYTE                           *m_referenceFunction;
 #endif // IS64BIT
   void changeShortJumpToNearJump(JumpFixup &jf);
-  void fixupJumps();
+  void finalJumpFixup();
   inline int getESIOffset(size_t valueIndex) const {
     if(valueIndex >= getValueCount()) {
       throwInvalidArgumentException(__TFUNCTION__, _T("valueIndex=%zu. #values=%zu"), valueIndex, getValueCount());
@@ -122,7 +122,7 @@ public:
   inline void fixupJump(int index, int jmpTo) {
     m_jumpFixups[index].m_jmpTo = jmpTo;
   }
-  void fixupJumps(const CompactIntArray &jumps, int jmpTo);
+  void fixupJumps(const JumpList &list, bool b);
   void clearJumpTable() {
     m_jumpFixups.clear();
   }
@@ -165,6 +165,9 @@ public:
   void finalize();
   void list(const TCHAR *format,...);
   void listIns(const TCHAR *format,...);
+  inline void listLabel(CodeLabel label) {
+    if(isListFileOpen()) list(_T("%s:\n"), labelToString(label).cstr());
+  }
   inline bool isListFileOpen() const {
     return m_listFile != NULL;
   }
@@ -202,16 +205,6 @@ public:
 #else  // IS64BIT
     return callIntResultExpression(m_entryPoint, m_esi) ? true : false;
 #endif // IS64BIT
-  }
-};
-
-class CodeLabelPair {
-public:
-  const CodeLabel m_falseLabel;
-  const CodeLabel m_trueLabel;
-  inline CodeLabelPair(CodeLabel falseLabel, CodeLabel trueLabel)
-    : m_falseLabel(falseLabel), m_trueLabel(trueLabel)
-  {
   }
 };
 
@@ -295,15 +288,12 @@ private:
 
   void     genAssignment(       const ExpressionNode *n);
   void     genIndexedExpression(const ExpressionNode *n);
-  JumpList genBoolExpression(   const ExpressionNode *n, const CodeLabelPair &lp);
+  void     genBoolExpression(   const ExpressionNode *n, JumpList &jumpList);
   inline CodeLabel nextLabel() {
     return m_nextLbl++;
   }
   inline CodeLabelPair getLabelPair() {
     return CodeLabelPair(nextLabel(), nextLabel());
-  }
-  inline void listLabel(CodeLabel label) {
-    if(m_code->isListFileOpen()) m_code->list(_T("%s:\n"), labelToString(label).cstr());
   }
   void throwInvalidTrigonometricMode();
 

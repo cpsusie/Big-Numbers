@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "ExpressionCompile.h"
 
-
 // --------------------------------- CodeGenerator -----------------------------------
 
 CodeGenerator::CodeGenerator(ParserTree *tree, TrigonometricMode trigonometricMode, FILE *listFile)
@@ -83,19 +82,16 @@ void CodeGenerator::genAssignment(const ExpressionNode *n) {
 #endif IS32BIT
 
 void CodeGenerator::genReturnBoolExpression(const ExpressionNode *n) {
-  CodeLabelPair clp = getLabelPair();
-  const JumpList jumps     = genBoolExpression(n->left(),clp);
+  JumpList jumps(getLabelPair());
+  genBoolExpression(n->left(),jumps);
 
-  listLabel(clp.m_trueLabel);
-  const int      trueLabel = m_code->emit(MOV,EAX,1);
+  m_code->fixupJumps(jumps,true);
+  m_code->emit(MOV,EAX,1);
   genEpilog();
 
-  listLabel(clp.m_falseLabel);
-  const int falseLabel = m_code->emit(XOR,EAX,EAX);
+  m_code->fixupJumps(jumps,false);
+  m_code->emit(XOR,EAX,EAX);
   genEpilog();
-
-  m_code->fixupJumps(jumps.trueJumps ,trueLabel );
-  m_code->fixupJumps(jumps.falseJumps,falseLabel);
 }
 
 // Generate multiplication-sequence to calculate st(0) = st(0)^y
@@ -396,7 +392,7 @@ void CodeGenerator::genIndexedExpression(const ExpressionNode *n) {
   genExpression(startAssignment->right(), DST_FPU);     // Evaluate start value for loopVar
   const int loopStart = (int)m_code->size();
   const CodeLabel startLabel = nextLabel();
-  listLabel(startLabel);
+  m_code->listLabel(startLabel);
   m_code->emit(FCOMI,ST2);                              // Invariant:loopVar in st(0), endExpr in st(2)
   const CodeLabel endLabel = nextLabel();
   const int jmpEnd   = m_code->emitJmp(JA,endLabel);    // Jump loopEnd if st(0) > st(2)
@@ -408,7 +404,7 @@ void CodeGenerator::genIndexedExpression(const ExpressionNode *n) {
   m_code->emit(FADD);                                   // Increment loopVar
   const int jmpStart = m_code->emitJmp(JMP,startLabel); // Jump loopStart
   const int loopEnd  = (int)m_code->size();
-  listLabel(endLabel);
+  m_code->listLabel(endLabel);
   m_code->emit(FSTP,ST0);                               // Pop loopVar
   m_code->emit(FXCH,ST1);                               // Result in st(0), end value in st(1). swap these and pop st(0)
   m_code->emit(FSTP,ST0);                               // Pop end value
@@ -417,18 +413,16 @@ void CodeGenerator::genIndexedExpression(const ExpressionNode *n) {
 }
 
 void CodeGenerator::genIf(const ExpressionNode *n, const ExpressionDestination &dst) {
-  const CodeLabelPair clp = getLabelPair();
-  const JumpList jumps = genBoolExpression(n->child(0),clp);
-  m_code->fixupJumps(jumps.trueJumps,(int)m_code->size());
-  listLabel(clp.m_trueLabel);
+  JumpList jumps(getLabelPair());
+  genBoolExpression(n->child(0),jumps);
+  m_code->fixupJumps(jumps,true);
   GENEXPRESSION(n->child(1)); // true-expression
   const CodeLabel endLabel = nextLabel();
   const int trueResultJump  = m_code->emitJmp(JMP,endLabel);
-  m_code->fixupJumps(jumps.falseJumps,(int)m_code->size());
-  listLabel(clp.m_falseLabel);
+  m_code->fixupJumps(jumps,false);
   GENEXPRESSION(n->child(2)); // false-expression
   m_code->fixupJump(trueResultJump,(int)m_code->size());
-  listLabel(endLabel);
+  m_code->listLabel(endLabel);
 }
 
 static ExpressionInputSymbol reverseComparator(ExpressionInputSymbol symbol) {
@@ -444,41 +438,35 @@ static ExpressionInputSymbol reverseComparator(ExpressionInputSymbol symbol) {
   return EQ;
 }
 
-JumpList CodeGenerator::genBoolExpression(const ExpressionNode *n, const CodeLabelPair &clp) {
+void CodeGenerator::genBoolExpression(const ExpressionNode *n, JumpList &jl) {
+  const bool genTrueJump = false;
 //  dumpSyntaxTree(n);
-  JumpList result;
   switch(n->getSymbol()) {
   case SYMNOT:
-    { const CodeLabelPair clpNot(clp.m_trueLabel,clp.m_falseLabel);
-      const JumpList jumps    = genBoolExpression(n->child(0),clpNot);
-      const int      trueJump = m_code->emitJmp(JMP,clpNot.m_trueLabel);
-      result.falseJumps.addAll(jumps.trueJumps);
-      result.falseJumps.add(trueJump);
-      result.trueJumps.addAll(jumps.falseJumps);
+    { JumpList jumps(jl.m_trueLabel,jl.m_falseLabel);
+      genBoolExpression(n->child(0), jumps);
+      const int trueJump = m_code->emitJmp(JMP,jumps.m_trueLabel);
+      jl.m_falseJumps.addAll(jumps.m_trueJumps);
+      jl.m_falseJumps.add(trueJump);
+      jl.m_trueJumps.addAll(jumps.m_falseJumps);
     }
     break;
   case SYMAND:
-    { const CodeLabelPair clpAnd(clp.m_falseLabel,nextLabel());
-      const JumpList jump1 = genBoolExpression(n->left(),clpAnd);
-      listLabel(clpAnd.m_trueLabel);
-      const JumpList jump2 = genBoolExpression(n->right(),clp);
-      m_code->fixupJumps(jump1.trueJumps,(int)m_code->size());
-      result.falseJumps.addAll(jump1.falseJumps);
-      result.falseJumps.addAll(jump2.falseJumps);
-      result.trueJumps.addAll(jump2.trueJumps);
+    { JumpList jump1(jl.m_falseLabel,nextLabel());
+      genBoolExpression(n->left(),jump1);
+      genBoolExpression(n->right(),jl);
+      m_code->fixupJumps(jump1,true);
+      jl.m_falseJumps.addAll(jump1.m_falseJumps);
     }
     break;
   case SYMOR   :
-    { const CodeLabelPair clpOr(nextLabel(),clp.m_trueLabel);
-      const JumpList jump1 = genBoolExpression(n->left(),clpOr);
-      const int trueJump   = m_code->emitJmp(JMP,clp.m_trueLabel);
-      m_code->fixupJumps(jump1.falseJumps,(int)m_code->size());
-      listLabel(clpOr.m_falseLabel);
-      const JumpList jump2 = genBoolExpression(n->right(),clp);
-      result.falseJumps.addAll(jump2.falseJumps);
-      result.trueJumps.addAll(jump1.trueJumps);
-      result.trueJumps.addAll(jump2.trueJumps);
-      result.trueJumps.add(trueJump);
+    { JumpList jump1(nextLabel(),jl.m_trueLabel);
+      genBoolExpression(n->left(),jump1);
+      const int trueJump = m_code->emitJmp(JMP,jl.m_trueLabel);
+      m_code->fixupJumps(jump1,false);
+      genBoolExpression(n->right(),jl);
+      jl.m_trueJumps.addAll(jump1.m_trueJumps);
+      jl.m_trueJumps.add(trueJump);
     }
     break;
   case EQ   :
@@ -511,31 +499,53 @@ JumpList CodeGenerator::genBoolExpression(const ExpressionNode *n, const CodeLab
 
       switch(symbol) {
       case EQ:
-        result.falseJumps.add(m_code->emitJmp(JNE,clp.m_falseLabel));
+        if(genTrueJump) {
+          jl.m_trueJumps.add( m_code->emitJmp(JE ,jl.m_trueLabel));
+        } else {
+          jl.m_falseJumps.add(m_code->emitJmp(JNE,jl.m_falseLabel));
+        }
         break;
       case NE:
-        result.falseJumps.add(m_code->emitJmp(JE,clp.m_falseLabel));
+        if(genTrueJump) {
+          jl.m_trueJumps.add( m_code->emitJmp(JNE,jl.m_trueLabel));
+        } else {
+          jl.m_falseJumps.add(m_code->emitJmp(JE ,jl.m_falseLabel));
+        }
         break;
       case LE:
-        result.falseJumps.add(m_code->emitJmp(JA,clp.m_falseLabel));
+        if(genTrueJump) {
+          jl.m_trueJumps.add( m_code->emitJmp(JBE,jl.m_trueLabel));
+        } else {
+          jl.m_falseJumps.add(m_code->emitJmp(JA ,jl.m_falseLabel));
+        }
         break;
       case LT:
-        result.falseJumps.add(m_code->emitJmp(JAE,clp.m_falseLabel));
+        if(genTrueJump) {
+          jl.m_trueJumps.add( m_code->emitJmp(JB ,jl.m_trueLabel));
+        } else {
+          jl.m_falseJumps.add(m_code->emitJmp(JAE,jl.m_falseLabel));
+        }
         break;
       case GE:
-        result.falseJumps.add(m_code->emitJmp(JB,clp.m_falseLabel));
+        if(genTrueJump) {
+          jl.m_trueJumps.add( m_code->emitJmp(JAE,jl.m_trueLabel));
+        } else {
+          jl.m_falseJumps.add(m_code->emitJmp(JB ,jl.m_falseLabel));
+        }
         break;
       case GT:
-        result.falseJumps.add(m_code->emitJmp(JBE,clp.m_falseLabel));
+        if(genTrueJump) {
+          jl.m_trueJumps.add( m_code->emitJmp(JA ,jl.m_trueLabel));
+        } else {
+          jl.m_falseJumps.add(m_code->emitJmp(JBE,jl.m_falseLabel));
+        }
         break;
       }
     }
     break;
-
   default:
     ParserTree::throwUnknownSymbolException(__TFUNCTION__, n);
   }
-  return result;
 }
 
 

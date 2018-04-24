@@ -84,6 +84,16 @@ typedef int ExpressionDestination;
 #endif // IS64BIT
 
 typedef int CodeLabel;
+class CodeLabelPair {
+public:
+  const CodeLabel m_falseLabel;
+  const CodeLabel m_trueLabel;
+  inline CodeLabelPair(CodeLabel falseLabel, CodeLabel trueLabel)
+    : m_falseLabel(falseLabel), m_trueLabel(trueLabel)
+  {
+  }
+};
+
 inline String labelToString(CodeLabel label) {
   return format(_T("L%d"), label);
 }
@@ -106,10 +116,14 @@ public:
   InstructionBase makeInstruction() const;
 };
 
-class JumpList {
+class JumpList : public CodeLabelPair {
 public:
-  CompactIntArray trueJumps;
-  CompactIntArray falseJumps;
+  CompactIntArray m_trueJumps;
+  CompactIntArray m_falseJumps;
+  JumpList(const CodeLabelPair &clp) : CodeLabelPair(clp) {
+  }
+  JumpList(CodeLabel falseLabel, CodeLabel trueLabel) : CodeLabelPair(falseLabel, trueLabel) {
+  }
 };
 
 #ifdef IS32BIT

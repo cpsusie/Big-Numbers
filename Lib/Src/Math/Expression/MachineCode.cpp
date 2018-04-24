@@ -43,7 +43,7 @@ void MachineCode::clear() {
 }
 
 void MachineCode::finalize() {
-  fixupJumps();
+  finalJumpFixup();
 #ifdef IS32BIT
   linkFunctionCalls();
 #endif
@@ -237,13 +237,19 @@ int MachineCode::emitJmp(const OpcodeBase &op, CodeLabel lbl) {
   return result;
 }
 
-void MachineCode::fixupJumps(const CompactIntArray &jumps, int jmpTo) {
-  for(size_t i = 0; i < jumps.size(); i++) {
-    fixupJump(jumps[i],jmpTo);
+void MachineCode::fixupJumps(const JumpList &list, bool b) {
+  const CompactIntArray &jumps = b ? list.m_trueJumps : list.m_falseJumps;
+  const size_t           n     = jumps.size();
+  if(n) {
+    const int jmpTo = (int)size();
+    for(size_t i = 0; i < n; i++) {
+      fixupJump(jumps[i],jmpTo);
+    }
+    listLabel(b?list.m_trueLabel:list.m_falseLabel);
   }
 }
 
-void MachineCode::fixupJumps() {
+void MachineCode::finalJumpFixup() {
   bool stable;
   do {
     stable = true;
