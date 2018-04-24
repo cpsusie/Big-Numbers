@@ -118,7 +118,7 @@ int MachineCode::emit(const StringPrefix &prefix, const StringInstruction &strin
   return ret;
 }
 
-void MachineCode::emitFLoad(const ExpressionNode *n) {
+void MachineCode::emitFLD(const ExpressionNode *n) {
   if(n->isOne()) {
     emit(FLD1);
   } else if (n->isPi()) {
@@ -126,7 +126,7 @@ void MachineCode::emitFLoad(const ExpressionNode *n) {
   } else if(n->isZero()) {
     emit(FLDZ);
   } else {
-    emit(FLD, getValPtr(n));
+    emitFLD(getTableRef(n->getValueIndex()));
   }
 }
 
@@ -140,11 +140,11 @@ bool MachineCode::emitFLoad(const ExpressionNode *n, const ExpressionDestination
     returnValue = false; // false  indicates that value needs to be moved from FPU to desired destination
     // NB continue case
   case RESULT_IN_FPU       :
-    emitFLoad(n);
+    emitFLD(n);
     break;
 #ifndef LONGDOUBLE
   case RESULT_IN_XMM     :
-    emitValToXMM(dst.getXMMReg(), n->getValueIndex());
+    emitMemToXMM(dst.getXMMReg(), getTableRef(n->getValueIndex()));
     return true;
 #endif // LONGDOUBLE
   }
@@ -152,57 +152,13 @@ bool MachineCode::emitFLoad(const ExpressionNode *n, const ExpressionDestination
 }
 #endif // IS64BIT
 
-void MachineCode::emitLoadAddr(const IndexRegister &dst, const IndexRegister &src, int offset) {
-  if(offset == 0) {
-    emit(MOV,dst, src);
+void MachineCode::emitLoadAddr(const IndexRegister &dst, const MemoryRef &ref) {
+  if(ref.getOffset() == 0) {
+    emit(MOV,dst, *ref.getBase());
   } else {
-    emit(LEA,dst, RealPtr(src+offset));
+    emit(LEA,dst, RealPtr(ref));
   }
 }
-
-#ifdef IS32BIT
-void MachineCode::emitAddESP(int n) {
-  if(n == 0) return;
-  emit(ADD,ESP,n);
-}
-
-void MachineCode::emitSubESP(int n) {
-  if(n == 0) return;
-  emit(SUB,ESP,n);
-}
-
-#else // IS64BIT
-
-void MachineCode::emitAddRSP(int n) {
-  emitAddR64(RSP,n);
-}
-
-void MachineCode::emitSubRSP(int n) {
-  emitSubR64(RSP,n);
-}
-
-void MachineCode::emitAddR64(const GPRegister &r64, int value) {
-  if(value == 0) return;
-  emit(ADD,r64,value);
-}
-
-void MachineCode::emitSubR64(const GPRegister &r64, int value) {
-  if(value == 0) return;
-  emit(SUB,r64,value);
-}
-
-BYTE MachineCode::pushTmp() {
-  const BYTE offset = m_stackTop;
-  m_stackTop += sizeof(Real);
-  return offset;
-}
-
-BYTE MachineCode::popTmp()  {
-  m_stackTop -= sizeof(Real);
-  return m_stackTop;
-}
-
-#endif // IS64BIT
 
 InstructionBase JumpFixup::makeInstruction() const {
   for(int lastSize = m_instructionSize, jmpTo = m_jmpTo;;) {
@@ -329,8 +285,8 @@ void MachineCode::emitCall(BuiltInFunction f) {
 void MachineCode::emitCall(BuiltInFunction f, const ExpressionDestination &dummy) {
   emitCall(f);
 #ifdef LONGDOUBLE
-  emit(MOV(EAX,DWORDPtr(ESP)));
-  emit(FLD_REAL(EAX));
+  emit(MOV,EAX,DWORDPtr(ESP));
+  emitFLD(EAX);
 #endif // LONGDOUBLE
 }
 
@@ -349,22 +305,22 @@ void MachineCode::emitCall(BuiltInFunction f, const ExpressionDestination &dst) 
   emitCall(f);
   switch(dst.getType()) {
   case RESULT_IN_FPU       :
-    emitXMMToStack(XMM0,0);                                // XMM0 -> FPU-top
-    emit(FLD, getValStackPtr(0));
+    emitXMMToMem(XMM0,getStackRef(0));                                // XMM0 -> FPU-top
+    emitFLD(getStackRef(0));
     break;
   case RESULT_IN_XMM       :
     if(dst.getXMMReg() == XMM1) {
-      emit(MOVAPS,XMM1, XMM0);                             // XMM0 -> XMM1
+      emit(MOVAPS,XMM1, XMM0);                                        // XMM0 -> XMM1
     } // else do nothing
     break;
   case RESULT_IN_ADDRRDI   :
-    emit(MOVSD1,MMWORDPtr(RDI),XMM0);                      // XMM0 -> *RDI
+    emitXMMToMem(XMM0, RDI);                                          // XMM0 -> *RDI
     break;
   case RESULT_ON_STACK:
-    emitXMMToStack(XMM0, dst.getStackOffset());            // XMM0 -> RSP[dst.stackOffset]
+    emitXMMToMem(XMM0, getStackRef(dst.getStackOffset()));            // XMM0 -> RSP[dst.stackOffset]
     break;
   case RESULT_IN_VALUETABLE:
-    emitXMMToVal(XMM0, dst.getTableIndex());               // XMM0 -> QWORD PTR[RSI+tableOffset]
+    emitXMMToMem(XMM0, getTableRef(dst.getTableIndex()));             // XMM0 -> QWORD PTR[RSI+tableOffset]
     break;
   }
 }
@@ -374,16 +330,16 @@ void MachineCode::emitCall(BuiltInFunction f, const ExpressionDestination &dst) 
 void MachineCode::emitCall(BuiltInFunction f, const ExpressionDestination &dst) {
   switch(dst.getType()) {
   case RESULT_IN_FPU       :
-    emitLoadAddr(RCX, RSI, getESIOffset(0));                       // RCX = RSI + getESIOffset(0);
+    emitLoadAddr(RCX, getTableRef(0));                             // RCX = RSI + getESIOffset(0);
     break;
   case RESULT_IN_ADDRRDI   :
     emit(MOV,RCX, RDI);                                            // RCX = RDI
     break;
   case RESULT_ON_STACK:
-    emitLoadAddr(RCX, RSP, dst.getStackOffset());                  // RCX = RSP + dst.stackOffset
+    emitLoadAddr(RCX, getStackRef(dst.getStackOffset()));          // RCX = RSP + dst.stackOffset
     break;
   case RESULT_IN_VALUETABLE:
-    emitLoadAddr(RCX, RSI, getESIOffset(dst.getTableIndex()));     // RCX = RSI + getESIOffset(dst.tableIndex))
+    emitLoadAddr(RCX, getTableRef(dst.getTableIndex()));           // RCX = RSI + getESIOffset(dst.tableIndex))
     break;
   }
 
@@ -391,7 +347,7 @@ void MachineCode::emitCall(BuiltInFunction f, const ExpressionDestination &dst) 
 
   switch(dst.getType()) {
   case RESULT_IN_FPU       :
-    emit(FLD, RealPtr(RAX)); // push *rax into FPU
+    emitFLD(RAX); // push *rax into FPU
     break;
   }
 }

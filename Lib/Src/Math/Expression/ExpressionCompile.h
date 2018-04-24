@@ -41,6 +41,12 @@ private:
 #endif // IS64BIT
   void changeShortJumpToNearJump(JumpFixup &jf);
   void fixupJumps();
+  inline int getESIOffset(size_t valueIndex) const {
+    if(valueIndex >= getValueCount()) {
+      throwInvalidArgumentException(__TFUNCTION__, _T("valueIndex=%zu. #values=%zu"), valueIndex, getValueCount());
+    }
+    return (int)valueIndex * sizeof(Real) - m_esiOffset;
+  }
 #ifdef IS32BIT
   CompactArray<FunctionCall>      m_callArray;
   void clearFunctionCalls() {
@@ -69,54 +75,39 @@ public:
   int  emit(const StringPrefix &prefix, const StringInstruction &strins);
   void emitCall(BuiltInFunction f);
   void emitCall(BuiltInFunction f, const ExpressionDestination &dst);
-  void emitFLoad(   const ExpressionNode *n);
-  MemoryRef getTableRef(int index) const {
+  inline void emitFSTP(const MemoryRef &mem) {
+    emit(FSTP, RealPtr(mem));
+  }
+  inline void emitFLD(const MemoryRef &mem) {
+    emit(FLD, RealPtr(mem));
+  }
+  void emitFLD(const ExpressionNode *n);
+  inline MemoryRef getTableRef(int index) const {
     return TABLEREF_REG + getESIOffset(index);
   }
-  MemoryRef getStackRef(int offset) const {
+  inline MemoryRef getStackRef(int offset) const {
     return STACK_REG + offset;
   }
-  inline RealPtr getValPtr(int index) const {
-    return RealPtr(getTableRef(index));
-  }
-  inline RealPtr getValPtr(const ExpressionNode *n) const {
-    return getValPtr(n->getValueIndex());
-  }
-  inline RealPtr getValStackPtr(int offset) const {
-    return RealPtr(getStackRef(offset));
-  }
-  inline void emitFSTP(const RealPtr &mem) {
-    emit(FSTP, mem);
-  }
 #ifndef LONGDOUBLE
-  void emitFAddVal( const ExpressionNode *n) { emit(FADD ,getValPtr(n)); }
-  void emitFSubVal( const ExpressionNode *n) { emit(FSUB ,getValPtr(n)); }
-  void emitFSubRVal(const ExpressionNode *n) { emit(FSUBR,getValPtr(n)); }
-  void emitFMulVal( const ExpressionNode *n) { emit(FMUL ,getValPtr(n)); }
-  void emitFDivVal( const ExpressionNode *n) { emit(FDIV ,getValPtr(n)); }
-  void emitFDivRVal(const ExpressionNode *n) { emit(FDIVR,getValPtr(n)); }
-  void emitFCompVal(const ExpressionNode *n) { emit(FCOMP,getValPtr(n)); }
+  inline void emitFPUOpVal(const OpcodeBase &op, const ExpressionNode *n) {
+    emit(op, RealPtr(getTableRef(n->getValueIndex())));
+  }
 #endif
+
 #ifdef IS64BIT
+  bool emitFLoad(const ExpressionNode *n, const ExpressionDestination &dst);
 #ifndef LONGDOUBLE
-  void emitXMMToVal(const XMMRegister &reg, int index) {
-    emit(MOVSD1,MMWORDPtr(getTableRef(index)), reg);
+  inline void emitXMMToMem(const XMMRegister &reg, const MemoryRef &mem) {
+    emit(MOVSD1,MMWORDPtr(mem), reg);
   }
-  void emitValToXMM(const XMMRegister &reg, int index) {
-    emit(MOVSD1,reg, MMWORDPtr(getTableRef(index)));
-  }
-  void emitXMMToStack(const XMMRegister &reg, int offset) {
-    emit(MOVSD1,MMWORDPtr(getStackRef(offset)), reg);
-  }
-  void emitStackToXMM(const XMMRegister &reg, int offset) {
-    emit(MOVSD1,reg, MMWORDPtr(getStackRef(offset)));
+  inline void emitMemToXMM(const XMMRegister &reg, const MemoryRef &mem) {
+    emit(MOVSD1,reg,MMWORDPtr(mem));
   }
 #endif // !LONGDOUBLE
-  bool emitFLoad(   const ExpressionNode *n, const ExpressionDestination &dst);
 #endif // IS64BIT
 
   // if offset==0, emit(MOV dst,src); else emit(LEA dst,RealPtr(src+offset));
-  void emitLoadAddr(const IndexRegister &dst, const IndexRegister &src, int offset);
+  void emitLoadAddr(const IndexRegister &dst, const MemoryRef &ref);
   // Return index in m_jumpFixups of new jump-instruction
   int emitJmp(const OpcodeBase &op, CodeLabel label);
   inline void fixupJump(int index, int jmpTo) {
@@ -130,24 +121,34 @@ public:
   inline size_t getValueCount() const {
     return m_valueTable.size();
   }
-  inline int getESIOffset(size_t valueIndex) const {
-    if(valueIndex >= getValueCount()) {
-      throwInvalidArgumentException(__TFUNCTION__, _T("valueIndex=%zu. #values=%zu"), valueIndex, getValueCount());
-    }
-    return (int)valueIndex * sizeof(Real) - m_esiOffset;
+  inline void emitAddReg(const GPRegister &reg, int  value) {
+    if(value == 0) return;
+    emit(ADD,reg,value);
   }
-#ifdef IS32BIT
-  void emitAddESP(  int             n);
-  void emitSubESP(  int             n);
-#else // IS64BIT
-  void resetStack(BYTE startOffset) { m_stackTop = startOffset; }
-  BYTE pushTmp();
-  BYTE popTmp();
-  void emitAddRSP(  int               n);
-  void emitSubRSP(  int               n);
-  void emitAddR64(  const GPRegister &r64, int  value);
-  void emitSubR64(  const GPRegister &r64, int  value);
-  const BYTE *getReferenceFunction() const {
+  inline void emitSubReg(const GPRegister &reg, int value) {
+    if(value == 0) return;
+    emit(SUB,reg,value);
+  }
+  inline void emitAddStack(int n) {
+    emitAddReg(STACK_REG,n);
+  }
+  inline void emitSubStack(int n) {
+    emitSubReg(STACK_REG,n);
+  }
+#ifdef IS64BIT
+  inline void resetStack(BYTE startOffset) {
+    m_stackTop = startOffset;
+  }
+  inline BYTE pushTmp() {
+    const BYTE offset = m_stackTop;
+    m_stackTop += sizeof(Real);
+    return offset;
+  }
+  inline BYTE popTmp() {
+    m_stackTop -= sizeof(Real);
+    return m_stackTop;
+  }
+  inline const BYTE *getReferenceFunction() const {
     return m_referenceFunction;
   }
 #endif // IS64BIT
@@ -219,8 +220,8 @@ private:
     return m_trigonometricMode;
   }
 
-  inline int getESIOffset(size_t valueIndex) const {
-    return m_code->getESIOffset(valueIndex);
+  inline MemoryRef getTableRef(const ExpressionNode *n) {
+    return m_code->getTableRef(n->getValueIndex());
   }
 
   // Code generation (compile to machinecode)
@@ -277,7 +278,7 @@ private:
   int      genPush(             const void           *p, UINT size); // return size
   int      genPushRef(          const void           *p);
 #else // IS64BIT
-  BYTE     genSetParameter(     const ExpressionNode *n, int index, bool saveOnStack);
+  void     genSetParameter(     const ExpressionNode *n, int index);
   void     genSetRefParameter(  const ExpressionNode *n, int index);
   BYTE     genSetRefParameter(  const ExpressionNode *n, int index, bool &savedOnStack);
   void     emitCall(            BuiltInFunction f, const ExpressionDestination &dst);

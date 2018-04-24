@@ -34,7 +34,7 @@ void CodeGenerator::genProlog() {
   if(m_hasCalls) {
     m_code->emit(PUSH,RBP);
     m_code->emit(MOV,RBP,(INT64)m_code->getReferenceFunction());
-    m_code->emitSubRSP(LOCALSTACKSPACE + RESERVESTACKSPACE); // to get 16-byte aligned RSP
+    m_code->emitSubStack(LOCALSTACKSPACE + RESERVESTACKSPACE); // to get 16-byte aligned RSP
   }
 #endif
 }
@@ -42,7 +42,7 @@ void CodeGenerator::genProlog() {
 void CodeGenerator::genEpilog() {
 #ifdef IS64BIT
   if(m_hasCalls) {
-    m_code->emitAddRSP(LOCALSTACKSPACE + RESERVESTACKSPACE);
+    m_code->emitAddStack(LOCALSTACKSPACE + RESERVESTACKSPACE);
     m_code->emit(POP,RBP);
   }
 #endif
@@ -74,7 +74,7 @@ void CodeGenerator::genStatementList(const ExpressionNode *n) {
 #ifdef IS32BIT
 void CodeGenerator::genAssignment(const ExpressionNode *n) {
   genExpression(n->right(), DST_FPU);
-  m_code->emitFSTP(m_code->getValPtr(n->left()));
+  m_code->emitFSTP(getTableRef(n->left()));
 }
 #else // IS64BIT
 void CodeGenerator::genAssignment(const ExpressionNode *n) {
@@ -147,7 +147,7 @@ void CodeGenerator::genExpression(const ExpressionNode *n, const ExpressionDesti
   case NAME  :
   case NUMBER:
 #ifdef IS32BIT
-    m_code->emitFLoad(n);
+    m_code->emitFLD(n);
 #else // IS64BIT
     if(m_code->emitFLoad(n, dst)) {
       return;
@@ -167,10 +167,10 @@ void CodeGenerator::genExpression(const ExpressionNode *n, const ExpressionDesti
 #else // !LONGDOUBLE
     if(n->left()->isNameOrNumber()) {
       genExpression(n->right(), DST_FPU);
-      m_code->emitFAddVal(n->left());
+      m_code->emitFPUOpVal(FADD,n->left());
     } else if(n->right()->isNameOrNumber()) {
       genExpression(n->left(), DST_FPU);
-      m_code->emitFAddVal(n->right());
+      m_code->emitFPUOpVal(FADD,n->right());
     } else {
       genExpression(n->left() , DST_FPU);
       genExpression(n->right(), DST_FPU);
@@ -193,10 +193,10 @@ void CodeGenerator::genExpression(const ExpressionNode *n, const ExpressionDesti
 #else // !LONGDOUBLE
     if(n->right()->isNameOrNumber()) {
       genExpression(n->left(), DST_FPU);
-      m_code->emitFSubVal(n->right());
+      m_code->emitFPUOpVal(FSUB,n->right());
     } else if(n->left()->isNameOrNumber()) {
       genExpression(n->right(), DST_FPU);
-      m_code->emitFSubRVal(n->left());
+      m_code->emitFPUOpVal(FSUBR,n->left());
     } else {
       genExpression(n->left() , DST_FPU);
       genExpression(n->right(), DST_FPU);
@@ -214,10 +214,10 @@ void CodeGenerator::genExpression(const ExpressionNode *n, const ExpressionDesti
 #else // !LONGDOUBLE
     if(n->left()->isNameOrNumber()) {
       genExpression(n->right(), DST_FPU);
-      m_code->emitFMulVal(n->left());
+      m_code->emitFPUOpVal(FMUL,n->left());
     } else if(n->right()->isNameOrNumber()) {
       genExpression(n->left(), DST_FPU);
-      m_code->emitFMulVal(n->right());
+      m_code->emitFPUOpVal(FMUL,n->right());
     } else {
       genExpression(n->left() , DST_FPU);
       genExpression(n->right(), DST_FPU);
@@ -235,10 +235,10 @@ void CodeGenerator::genExpression(const ExpressionNode *n, const ExpressionDesti
 #else // !LONGDOUBLE
     if(n->right()->isNameOrNumber()) {
       genExpression(n->left(), DST_FPU);
-      m_code->emitFDivVal(n->right());
+      m_code->emitFPUOpVal(FDIV,n->right());
     } else if(n->left()->isNameOrNumber()) {
       genExpression(n->right(), DST_FPU);
-      m_code->emitFDivRVal(n->left());
+      m_code->emitFPUOpVal(FDIVR,n->left());
     } else {
       genExpression(n->left() , DST_FPU);
       genExpression(n->right(), DST_FPU);
@@ -366,18 +366,18 @@ void CodeGenerator::genExpression(const ExpressionNode *n, const ExpressionDesti
   case RESULT_IN_FPU       : // do nothing
     break;
   case RESULT_IN_ADDRRDI   :
-    m_code->emitFSTP(RealPtr(RDI));                                          // FPU -> *RDI
+    m_code->emitFSTP(RDI);                                                   // FPU -> *RDI
     break;
   case RESULT_ON_STACK     :
-    m_code->emitFSTP(m_code->getValStackPtr(dst.getStackOffset()));          // FPU -> RSP[offset]
+    m_code->emitFSTP(m_code->getStackRef(dst.getStackOffset()));             // FPU -> RSP[offset]
     break;
   case RESULT_IN_VALUETABLE:
-    m_code->emitFSTP(m_code->getValPtr(dst.getTableIndex()));                // FPU -> m_valuetable[tableIndex]
+    m_code->emitFSTP(m_code->getTableRef(dst.getTableIndex()));              // FPU -> m_valuetable[tableIndex]
     break;
 #ifndef LONGDOUBLE
   case RESULT_IN_XMM       :
-    m_code->emitFSTP(m_code->getValStackPtr(0));                             // FPU  -> *RSP
-    m_code->emitStackToXMM(dst.getXMMReg(),0);                             // *RSP -> XMM0 or XMM1
+    m_code->emitFSTP(m_code->getStackRef(0));                                // FPU  -> *RSP
+    m_code->emitMemToXMM(dst.getXMMReg(),m_code->getStackRef(0));            // *RSP -> XMM0 or XMM1
     break;
 #endif // LONGDOUBLE
   }
@@ -400,10 +400,10 @@ void CodeGenerator::genIndexedExpression(const ExpressionNode *n) {
   m_code->emit(FCOMI,ST2);                              // Invariant:loopVar in st(0), endExpr in st(2)
   const CodeLabel endLabel = nextLabel();
   const int jmpEnd   = m_code->emitJmp(JA,endLabel);    // Jump loopEnd if st(0) > st(2)
-  m_code->emitFSTP(m_code->getValPtr(loopVar));         // Pop st(0) to loopVar
+  m_code->emitFSTP(getTableRef(loopVar));       // Pop st(0) to loopVar
   genExpression(expr, DST_FPU);                         // Accumulator in st(0) (starting at 0 for INDEXEDSUM, 1 for INDEXEDPRODUCT)
   m_code->emit(summation ? FADD : FMUL);                // Update accumulator with st(0)
-  m_code->emitFLoad(loopVar);
+  m_code->emitFLD(loopVar);
   m_code->emit(FLD1);
   m_code->emit(FADD);                                   // Increment loopVar
   const int jmpStart = m_code->emitJmp(JMP,startLabel); // Jump loopStart
@@ -495,11 +495,11 @@ JumpList CodeGenerator::genBoolExpression(const ExpressionNode *n, const CodeLab
 #else // !LONGDOUBLE
       if(n->left()->isNameOrNumber()) {
         genExpression(n->right(), DST_FPU);
-        m_code->emitFCompVal(n->left());
+        m_code->emitFPUOpVal(FCOMP,n->left());
         symbol = reverseComparator(symbol);
       } else if(n->right()->isNameOrNumber()) {
         genExpression(n->left(), DST_FPU);
-        m_code->emitFCompVal(n->right());
+        m_code->emitFPUOpVal(FCOMP,n->right());
       } else {
         genExpression(n->right(), DST_FPU);
         genExpression(n->left(), DST_FPU);
@@ -558,7 +558,7 @@ void CodeGenerator::genCall1Arg(const ExpressionNode *arg, BuiltInFunction1 f, c
   bytesPushed += genPush(arg);
   bytesPushed += genPushReturnAddr();
   m_code->emitCall((BuiltInFunction)f, dummy);
-  m_code->emitAddESP(bytesPushed);
+  m_code->emitAddStack(bytesPushed);
 }
 
 void CodeGenerator::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode *arg2, BuiltInFunction2 f, const ExpressionDestination &dummy) {
@@ -567,7 +567,7 @@ void CodeGenerator::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode
   bytesPushed += genPush(arg1);
   bytesPushed += genPushReturnAddr();
   m_code->emitCall((BuiltInFunction)f, dummy);
-  m_code->emitAddESP(bytesPushed);
+  m_code->emitAddStack(bytesPushed);
 }
 
 void CodeGenerator::genCall1Arg(const ExpressionNode *arg, BuiltInFunctionRef1 f, const ExpressionDestination &dummy) {
@@ -575,7 +575,7 @@ void CodeGenerator::genCall1Arg(const ExpressionNode *arg, BuiltInFunctionRef1 f
   bytesPushed += genPushRef(arg,0);
   bytesPushed += genPushReturnAddr();
   m_code->emitCall((BuiltInFunction)f, dummy);
-  m_code->emitAddESP(bytesPushed);
+  m_code->emitAddStack(bytesPushed);
 }
 
 void CodeGenerator::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode *arg2, BuiltInFunctionRef2 f, const ExpressionDestination &dummy) {
@@ -584,7 +584,7 @@ void CodeGenerator::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode
   bytesPushed += genPushRef(arg1,1);
   bytesPushed += genPushReturnAddr();
   m_code->emitCall((BuiltInFunction)f, dummy);
-  m_code->emitAddESP(bytesPushed);
+  m_code->emitAddStack(bytesPushed);
 }
 
 void CodeGenerator::genPolynomial(const ExpressionNode *n, const ExpressionDestination &dummy) {
@@ -596,7 +596,7 @@ void CodeGenerator::genPolynomial(const ExpressionNode *n, const ExpressionDesti
       m_tree.getValueRef(firstCoefIndex + i) = m_tree.evaluateRealExpr(coef);
     } else {
       genExpression(coef, dummy);
-      m_code->emitFSTP(m_code->getValPtr(firstCoefIndex + i));
+      m_code->emitFSTP(m_code->getTableRef(firstCoefIndex + i));
     }
   }
 
@@ -606,7 +606,7 @@ void CodeGenerator::genPolynomial(const ExpressionNode *n, const ExpressionDesti
   bytesPushed += genPush(n->getArgument());
   bytesPushed += genPushReturnAddr();
   m_code->emitCall((BuiltInFunction)::evaluatePolynomial, dummy);
-  m_code->emitAddESP(bytesPushed);
+  m_code->emitAddStack(bytesPushed);
 }
 
 static int getAlignedSize(int size) {
@@ -620,8 +620,8 @@ int CodeGenerator::genPush(const ExpressionNode *n) {
   } else {
     genExpression(n, DST_FPU);
     int bytesPushed = getAlignedSize(sizeof(Real));
-    m_code->emitSubESP(bytesPushed);
-    m_code->emitFSTP(m_code->getValStackPtr(0));
+    m_code->emitSubStack(bytesPushed);
+    m_code->emitFSTP(m_code->getStackRef(0));
     return bytesPushed;
   }
 }
@@ -631,7 +631,7 @@ int CodeGenerator::genPushRef(const ExpressionNode *n, int index) {
     return genPushRef(&n->getValueRef());
   } else {
     genExpression(n, DST_FPU);
-    m_code->emitFSTP(m_code->getValPtr(index));
+    m_code->emitFSTP(m_code->getTableRef(index));
     return genPushRef(&m_tree.getValueRef(index));
   }
 }
@@ -664,7 +664,7 @@ int CodeGenerator::genPush(const void *p, UINT size) {
   default:
     size = getAlignedSize(size);
     const UINT count = size / 4;
-    m_code->emitSubESP(size   );
+    m_code->emitSubStack(size   );
     m_code->emit(MOV,ECX,count);
     m_code->emit(MOV,ESI,(intptr_t)p);
     m_code->emit(MOV,EDI,ESP  );
@@ -704,23 +704,24 @@ static const IndexRegister int64ParamRegister[] = {
 #ifndef LONGDOUBLE
 
 void CodeGenerator::genCall1Arg(const ExpressionNode *arg, BuiltInFunction1 f, const ExpressionDestination &dst) {
-  genSetParameter(arg, 0, false);
+  genSetParameter(arg, 0);
   emitCall((BuiltInFunction)f, dst);
 }
 
 void CodeGenerator::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode *arg2, BuiltInFunction2 f, const ExpressionDestination &dst) {
   const bool arg1HasCalls = arg1->containsFunctionCall();
   const bool arg2HasCalls = arg2->containsFunctionCall();
-  if (!arg2HasCalls) {
-    genSetParameter(arg1, 0, false);
-    genSetParameter(arg2, 1, false);
+  if(!arg2HasCalls) {
+    genSetParameter(arg1, 0);
+    genSetParameter(arg2, 1);
   } else if (!arg1HasCalls) {
-    genSetParameter(arg2, 1, false);
-    genSetParameter(arg1, 0, false);
+    genSetParameter(arg2, 1);
+    genSetParameter(arg1, 0);
   } else { // both parmeters are expressions using function calls
-    const BYTE offset = genSetParameter(arg1, 0, true);
-    genSetParameter(arg2, 1, false);
-    m_code->emitValToXMM(XMM0, offset);
+    const BYTE offset = m_code->pushTmp();
+    genExpression(arg1, DST_ONSTACK(offset));
+    genSetParameter(arg2, 1);
+    m_code->emitMemToXMM(XMM0, m_code->getStackRef(offset));
     m_code->popTmp();
   }
   emitCall((BuiltInFunction)f, dst);
@@ -745,11 +746,11 @@ void CodeGenerator::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode
     offset1 = genSetRefParameter(arg1, 0, stacked1);
   }
   if(stacked1) {
-    m_code->emitLoadAddr(RCX, RSP, offset1);
+    m_code->emitLoadAddr(RCX, m_code->getStackRef(offset1));
     m_code->popTmp();
   }
   if(stacked2) {
-    m_code->emitLoadAddr(RDX, RSP, offset2);
+    m_code->emitLoadAddr(RDX, m_code->getStackRef(offset2));
     m_code->popTmp();
   }
   emitCall((BuiltInFunction)f, dst);
@@ -776,13 +777,13 @@ void CodeGenerator::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode
     offset1 = genSetRefParameter(arg1, 0, stacked1);
   }
   if(stacked1) {
-    m_code->emitLoadAddr(RDX,RSP,offset1);
+    m_code->emitLoadAddr(RDX,m_code->getStackRef(offset1));
     if(offset1) {
       m_code->popTmp();
     }
   }
   if(stacked2) {
-    m_code->emitLoadAddr(R8,RSP,offset2);
+    m_code->emitLoadAddr(R8,m_code->getStackRef(offset2));
     if(offset2) {
       m_code->popTmp();
     }
@@ -804,7 +805,7 @@ void CodeGenerator::genPolynomial(const ExpressionNode *n, const ExpressionDesti
     }
   }
 #ifndef LONGDOUBLE
-  genSetParameter(n->getArgument(), 0, false);
+  genSetParameter(n->getArgument(), 0);
 #else
   genSetRefParameter(n->getArgument(), 0);
 #endif // LONGDOUBLE
@@ -814,7 +815,7 @@ void CodeGenerator::genPolynomial(const ExpressionNode *n, const ExpressionDesti
   m_code->emit(MOV,param2,coefCount);
 
   const IndexRegister &param3    = int64ParamRegister[2];
-  m_code->emitLoadAddr(param3, RSI, getESIOffset(firstCoefIndex));
+  m_code->emitLoadAddr(param3, m_code->getTableRef(firstCoefIndex));
   emitCall((BuiltInFunction)::evaluatePolynomial, dst);
 }
 
@@ -827,14 +828,14 @@ void CodeGenerator::genSetRefParameter(const ExpressionNode *n, int index) {
   bool stacked;
   const BYTE offset = genSetRefParameter(n, index, stacked);
   if(stacked) {
-    m_code->emitLoadAddr(int64ParamRegister[index], RSP, offset);
+    m_code->emitLoadAddr(int64ParamRegister[index], m_code->getStackRef(offset));
     m_code->popTmp();
   }
 }
 
 BYTE CodeGenerator::genSetRefParameter(const ExpressionNode *n, int index, bool &savedOnStack) {
   if(n->isNameOrNumber()) {
-    m_code->emitLoadAddr(int64ParamRegister[index], RSI, getESIOffset(n->getValueIndex()));
+    m_code->emitLoadAddr(int64ParamRegister[index], getTableRef(n));
     savedOnStack = false;
     return 0;
   } else {
@@ -846,19 +847,13 @@ BYTE CodeGenerator::genSetRefParameter(const ExpressionNode *n, int index, bool 
 }
 
 #ifndef LONGDOUBLE
-BYTE CodeGenerator::genSetParameter(const ExpressionNode *n, int index, bool saveOnStack) {
+void CodeGenerator::genSetParameter(const ExpressionNode *n, int index) {
   const XMMRegister &dstRegister = (index == 0) ? XMM0 : XMM1;
   if(n->isNameOrNumber()) {
-    assert(saveOnStack == false);
-    m_code->emitValToXMM(dstRegister,n->getValueIndex());
-  } else if(saveOnStack) {
-    const BYTE offset = m_code->pushTmp();
-    genExpression(n, DST_ONSTACK(offset));
-    return offset;
+    m_code->emitMemToXMM(dstRegister,getTableRef(n));
   } else {
     genExpression(n, DST_XMM(dstRegister));
   }
-  return 0;
 }
 
 #endif // LONGDOUBLE
