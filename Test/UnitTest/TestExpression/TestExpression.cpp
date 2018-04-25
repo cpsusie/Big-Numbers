@@ -1463,6 +1463,13 @@ namespace TestExpression {
     ,(ExpressionTest*)&test106
   };
 
+  FILE *openListFile(int testCase) {
+    const String fileName = Expression::getDefaultListFileName();
+    FileNameSplitter fs(fileName);
+    fs.setFileName(fs.getFileName() + format(_T("%03d"), testCase));
+    return MKFOPEN(fs.getFullPath(),_T("w"));
+  }
+
 	TEST_CLASS(TestExpression) {
     public:
 
@@ -1480,8 +1487,14 @@ redirectDebugLog();
           debugLog(_T("testcase %3d:<%-50s>:"),i,expr.cstr());
 #endif
           OUTPUT(_T("Test[%d]:%s"),i,expr.cstr());
+          if(i == 70) {
+            int fisk = 1;
+          }
+          FILE *listFile = openListFile(i);
           Expression compiledExpr, interpreterExpr;
-          compiledExpr.compile(expr, true, true);
+          compiledExpr.compile(expr, true, listFile);
+          fclose(listFile);
+
 #ifdef TRACE_CALLS
           debugLog(_T("\n"));
 #endif
@@ -1562,7 +1575,7 @@ redirectDebugLog();
         for(Real p = -70; p <= 70; p += 0.5) {
           str = format(_T("(1+x)^%s"),toString(p).cstr());
           Expression compiledExpr, interpreterExpr;
-          compiledExpr.compile(   str, true ,true);
+          compiledExpr.compile(   str, true);
           interpreterExpr.compile(str, false);
           verify(compiledExpr.isOk());
           verify(interpreterExpr.isOk());

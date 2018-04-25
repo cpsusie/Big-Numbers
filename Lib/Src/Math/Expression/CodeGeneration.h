@@ -84,6 +84,11 @@ typedef int ExpressionDestination;
 #endif // IS64BIT
 
 typedef int CodeLabel;
+
+inline String labelToString(CodeLabel label) {
+  return format(_T("L%d"), label);
+}
+
 class CodeLabelPair {
 public:
   const CodeLabel m_falseLabel;
@@ -92,37 +97,86 @@ public:
     : m_falseLabel(falseLabel), m_trueLabel(trueLabel)
   {
   }
+  inline String toString() const {
+    return format(_T("(falseLabel:%-3s, trueLabel:%-3s)")
+                 ,labelToString(m_falseLabel).cstr()
+                 ,labelToString(m_trueLabel).cstr());
+  }
 };
 
-inline String labelToString(CodeLabel label) {
-  return format(_T("L%d"), label);
+inline CodeLabelPair operator!(const CodeLabelPair &clp) {
+  return CodeLabelPair(clp.m_trueLabel, clp.m_falseLabel);
 }
 
 class JumpFixup {
 public:
-  const OpcodeBase &m_op;
+  const OpcodeBase *m_op;
   bool              m_isShortJump;    // is jump-instruction short/near (IP-rel8/rel32)
   int               m_instructionPos; // index of first Byte of jmp-instruction in CodeArray
   int               m_jmpTo;          // index of BYTE to jump to
+  CodeLabel         m_jmpLabel;
   BYTE              m_instructionSize;
-  JumpFixup(const OpcodeBase &op, int pos, int jmpTo = 0)
-    : m_op(op)
-    , m_isShortJump(true)
-    , m_instructionPos(pos)
-    , m_jmpTo(jmpTo)
-    , m_instructionSize(0)
+  bool              m_fixed;
+  JumpFixup()
+    :m_op(NULL)
+    ,m_isShortJump(false)
+    ,m_instructionPos(-1)
+    ,m_jmpTo(-1)
+    ,m_jmpLabel(-1)
+    ,m_instructionSize(0)
+    ,m_fixed(false)
+
+  {}
+
+  JumpFixup(const OpcodeBase &op, int pos, CodeLabel label, int jmpTo = 0)
+    :m_op(&op)
+    ,m_isShortJump(true)
+    ,m_instructionPos(pos)
+    ,m_jmpTo(jmpTo)
+    ,m_jmpLabel(label)
+    ,m_instructionSize(0)
+    ,m_fixed(false)
   {
   }
   InstructionBase makeInstruction() const;
+  String toString() const;
 };
 
 class JumpList : public CodeLabelPair {
 public:
   CompactIntArray m_trueJumps;
   CompactIntArray m_falseJumps;
-  JumpList(const CodeLabelPair &clp) : CodeLabelPair(clp) {
+  inline JumpList(const CodeLabelPair &clp) : CodeLabelPair(clp) {
   }
-  JumpList(CodeLabel falseLabel, CodeLabel trueLabel) : CodeLabelPair(falseLabel, trueLabel) {
+  inline JumpList(CodeLabel falseLabel, CodeLabel trueLabel) : CodeLabelPair(falseLabel, trueLabel) {
+  }
+  inline bool hasFalseJumps() const {
+    return !m_falseJumps.isEmpty();
+  }
+  inline bool hasTrueJumps() const {
+    return !m_trueJumps.isEmpty();
+  }
+  inline bool hasJumps(bool b) const {
+    return b ? hasTrueJumps() : hasFalseJumps();
+  }
+  inline bool hasJumps() const {
+    return hasFalseJumps() || hasTrueJumps();
+  }
+  inline CompactIntArray &getJumps(bool b) {
+    return b ? m_trueJumps : m_falseJumps;
+  }
+  inline const CompactIntArray &getJumps(bool b) const {
+    return b ? m_trueJumps : m_falseJumps;
+  }
+  inline JumpList &operator^=(const JumpList &jl) {
+    getJumps(false).addAll(jl.getJumps(true ));
+    getJumps(true ).addAll(jl.getJumps(false));
+    return *this;
+  }
+  inline String toString() const {
+    return __super::toString() + _T(": <")
+         + m_falseJumps.toStringBasicType() + _T(",")
+         + m_trueJumps.toStringBasicType()  + _T(">");
   }
 };
 

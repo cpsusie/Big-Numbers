@@ -57,23 +57,28 @@ void Expression::clear() {
   setReduceIteration(0);
 }
 
-void Expression::compile(const String &expr, bool machineCode, bool makeListFile) {
+void Expression::compile(const String &expr, bool machineCode, FILE *listFile) {
   parse(expr);
   if(!isOk()) {
     return;
   }
   setReturnType(findReturnType());
-  if(machineCode && makeListFile) {
-    openListFile();
-    _ftprintf(m_listFile, _T("%s\n\n"), expr.cstr());
-    _ftprintf(m_listFile, _T("%s\n\n"), variablesToString().cstr());
-  }
+  try {
+    if(machineCode && (listFile!=NULL)) {
+      m_listFile = listFile;
+      _ftprintf(m_listFile, _T("%s\n\n"), expr.cstr());
+      _ftprintf(m_listFile, _T("%s\n\n"), variablesToString().cstr());
+    }
 
-  setMachineCode(machineCode);
+    setMachineCode(machineCode);
 
-  if(m_listFile) {
-    _ftprintf(m_listFile, _T("----------------------------------------------------\n"));
-    closeListFile();
+    if(m_listFile) {
+      _ftprintf(m_listFile, _T("----------------------------------------------------\n"));
+      m_listFile = NULL;
+    }
+  } catch (...) {
+    m_listFile = NULL;
+    throw;
   }
 }
 
@@ -230,7 +235,7 @@ void Expression::print(FILE *f) const {
   _ftprintf(f,_T("%s"),toString().cstr());
 }
 
-void Expression::openListFile() {
+String Expression::getDefaultListFileName() { // static
 #ifdef _DEBUG
 #define CONFSTR "Dbg"
 #else
@@ -246,13 +251,5 @@ void Expression::openListFile() {
 #else
 #define REALSTR "QW"
 #endif // LONGDOUBLE
-  closeListFile();
-  m_listFile = MKFOPEN(_T("c:\\temp\\Expr" PFSTR CONFSTR REALSTR "lst"),_T("a"));
-}
-
-void Expression::closeListFile() {
-  if(m_listFile) {
-    fclose(m_listFile);
-    m_listFile = NULL;
-  }
+  return _T("c:\\temp\\ExprList\\expr" PFSTR CONFSTR REALSTR "lst");
 }

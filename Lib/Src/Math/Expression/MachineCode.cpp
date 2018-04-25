@@ -13,7 +13,7 @@ MachineCode::MachineCode(ParserTree &tree, FILE *listFile)
   m_lastCodeSize = 0;
   m_listFile     = listFile;
   m_listComment  = NULL;
-  if(isListFileOpen()) {
+  if(hasListFile()) {
     list(_T("ESI offset from &valueTable[0] (in bytes):%d (%#02x)\n"), m_esiOffset, m_esiOffset);
   }
 
@@ -73,13 +73,6 @@ void MachineCode::setValueCount(size_t valueCount) {
   }
 }
 
-void MachineCode::list(const TCHAR *format, ...) {
-  va_list argptr;
-  va_start(argptr,format);
-  _vftprintf(m_listFile, format, argptr);
-  va_end(argptr);
-}
-
 void MachineCode::initValueStr(const ExpressionVariableArray &variables) {
   for(size_t i = 0; i < getValueCount(); i++) {
     m_valueStr.add(EMPTYSTRING);
@@ -101,6 +94,14 @@ void MachineCode::initValueStr(const ExpressionVariableArray &variables) {
   for(size_t i = 0; i < m_valueStr.size(); i++) {
     m_valueStr[i] = format(_T("value[%2d]:%s"), i, m_valueStr[i].cstr());
   }
+}
+
+void MachineCode::list(const TCHAR *format, ...) const {
+  va_list argptr;
+  va_start(argptr,format);
+  _vftprintf(m_listFile, format, argptr);
+  va_end(argptr);
+  fflush(m_listFile);
 }
 
 const TCHAR *MachineCode::findListComment(const InstructionOperand &op) const {
@@ -130,28 +131,38 @@ void MachineCode::listIns(const TCHAR *format, ...) {
   m_lastCodeSize = (int)size();
 }
 
+void MachineCode::listFixupTable() const {
+  if(hasListFile() && !m_jumpFixups.isEmpty()) {
+    list(_T("Jump table:\n"));
+    for(size_t i = 0; i < m_jumpFixups.size(); i++) {
+      list(_T("  %s\n"), m_jumpFixups[i].toString().cstr());
+    }
+    list(_T("\n"));
+  }
+}
+
 int MachineCode::emitIns(const InstructionBase &ins) {
   const int pos = (int)size();
   append(ins.getBytes(), ins.size());
-  if(isListFileOpen()) m_insStr = ins.toString();
+  if(hasListFile()) m_insStr = ins.toString();
   return pos;
 }
 
 int MachineCode::emit(const Opcode0Arg &opCode) {
   const int ret = emitIns(opCode);
-  if(isListFileOpen()) listIns(_T("%s"), opCode.getMnemonic().cstr());
+  if(hasListFile()) listIns(_T("%s"), opCode.getMnemonic().cstr());
   return ret;
 }
 
 int  MachineCode::emitJmpWithLabel(const OpcodeBase &opCode, CodeLabel label) {
   const int ret = emitIns(opCode(0));
-  if(isListFileOpen()) listIns(_T("%-6s %s"), opCode.getMnemonic().cstr(), labelToString(label).cstr());
+  if(hasListFile()) listIns(_T("%-6s %s"), opCode.getMnemonic().cstr(), labelToString(label).cstr());
   return ret;
 }
 
 int MachineCode::emit(const OpcodeBase &opCode, const InstructionOperand &op) {
   const int ret = emitIns(opCode(op));
-  if(isListFileOpen()) {
+  if(hasListFile()) {
     m_listComment = findListComment(op);
     listIns(_T("%-6s %s"), opCode.getMnemonic().cstr(), op.toString().cstr());
   }
@@ -159,7 +170,7 @@ int MachineCode::emit(const OpcodeBase &opCode, const InstructionOperand &op) {
 }
 int MachineCode::emit(const OpcodeBase &opCode, const InstructionOperand &op1, const InstructionOperand &op2) {
   const int ret = emitIns(opCode(op1,op2));
-  if(isListFileOpen()) {
+  if(hasListFile()) {
     m_listComment = findListComment(op1);
     if(m_listComment == NULL) m_listComment = findListComment(op2);
     listIns(_T("%-6s %s,%s"), opCode.getMnemonic().cstr(), op1.toString().cstr(), op2.toString().cstr());
@@ -168,7 +179,7 @@ int MachineCode::emit(const OpcodeBase &opCode, const InstructionOperand &op1, c
 }
 int MachineCode::emit(const StringPrefix &prefix, const StringInstruction &strins) {
   const int ret = emitIns(prefix(strins));
-  if(isListFileOpen()) listIns(_T("%-6s %s"), prefix.getMnemonic().cstr(), strins.getMnemonic().cstr());
+  if(hasListFile()) listIns(_T("%-6s %s"), prefix.getMnemonic().cstr(), strins.getMnemonic().cstr());
   return ret;
 }
 
@@ -217,7 +228,7 @@ void MachineCode::emitLoadAddr(const IndexRegister &dst, const MemoryRef &ref) {
 InstructionBase JumpFixup::makeInstruction() const {
   for(int lastSize = m_instructionSize, jmpTo = m_jmpTo;;) {
     const int ipRel = jmpTo - m_instructionPos - lastSize;
-    const InstructionBase ins = m_op(ipRel);
+    const InstructionBase ins = (*m_op)(ipRel);
     if(ins.size() == lastSize) {
       return ins;
     }
@@ -228,9 +239,21 @@ InstructionBase JumpFixup::makeInstruction() const {
   }
 }
 
+String JumpFixup::toString() const {
+  return format(_T("%3d:%-4s %-4s  addr:%-5d (%-5s size:%d)%s")
+               ,m_instructionPos
+               ,m_op->getMnemonic().cstr()
+               ,labelToString(m_jmpLabel).cstr()
+               ,m_jmpTo
+               ,m_isShortJump?_T("short"):_T("near")
+               ,m_instructionSize
+               ,m_fixed?_T(""):_T("<----- Need fixup")
+               );
+}
+
 int MachineCode::emitJmp(const OpcodeBase &op, CodeLabel lbl) {
   const int result = (int)m_jumpFixups.size();
-  JumpFixup jf(op, (int)size());
+  JumpFixup jf(op, (int)size(), lbl);
   emitJmpWithLabel(op,lbl);
   jf.m_instructionSize = (BYTE)((int)size() - jf.m_instructionPos);
   m_jumpFixups.add(jf);
@@ -238,7 +261,7 @@ int MachineCode::emitJmp(const OpcodeBase &op, CodeLabel lbl) {
 }
 
 void MachineCode::fixupJumps(const JumpList &list, bool b) {
-  const CompactIntArray &jumps = b ? list.m_trueJumps : list.m_falseJumps;
+  const CompactIntArray &jumps = list.getJumps(b);
   const size_t           n     = jumps.size();
   if(n) {
     const int jmpTo = (int)size();
@@ -249,7 +272,18 @@ void MachineCode::fixupJumps(const JumpList &list, bool b) {
   }
 }
 
+void MachineCode::fixupJump(int index, int jmpTo) {
+  JumpFixup &jf = m_jumpFixups[index];
+  if(jf.m_fixed) {
+    throwException(_T("Jump already fixed (%s)"), jf.toString().cstr());
+  }
+  jf.m_jmpTo = jmpTo;
+  jf.m_fixed = true;
+}
+
 void MachineCode::finalJumpFixup() {
+  listFixupTable();
+
   bool stable;
   do {
     stable = true;
@@ -271,7 +305,7 @@ void MachineCode::finalJumpFixup() {
     if(jf.m_isShortJump) {
       assert(isByte(ipRel));
     }
-    const InstructionBase ins = jf.m_op(ipRel);
+    const InstructionBase ins = (*jf.m_op)(ipRel);
     setBytes(jf.m_instructionPos,ins.getBytes(),ins.size());
   }
 }

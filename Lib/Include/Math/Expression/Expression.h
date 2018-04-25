@@ -185,7 +185,9 @@ public:
   Expression(const Expression &src);
   Expression &operator=(const Expression &src);
   Expression getDerived(const String &name, bool reduceResult = true) const;
-  void   compile(const String &expr, bool machineCode, bool makeListFile = false);
+  static String getDefaultListFileName();
+
+  void compile(const String &expr, bool machineCode, FILE *listFile = NULL);
   inline ExpressionReturnType getReturnType() const {
     return m_returnType;
   }

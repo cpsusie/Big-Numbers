@@ -27,7 +27,7 @@ private:
   DECLARECLASSNAME;
   ExpressionEntryPoint            m_entryPoint;
   void                           *m_esi;
-  Array<JumpFixup>                m_jumpFixups;
+  CompactArray<JumpFixup>         m_jumpFixups;
   // Reference to first element in ParserTree::m_valueTable
   const CompactRealArray         &m_valueTable;
   // Offset in bytes, of esi/rsi from m_valueTable[0], when code is executing. 0 <= m_esiOffset < 128
@@ -68,6 +68,7 @@ private:
   void initValueStr(const ExpressionVariableArray &variables);
   // return NULL if not comment found
   const TCHAR *findListComment(const InstructionOperand &op) const;
+  void listFixupTable() const;
 public:
 
 #ifdef TRACE_CALLS
@@ -119,9 +120,7 @@ public:
   void emitLoadAddr(const IndexRegister &dst, const MemoryRef &ref);
   // Return index in m_jumpFixups of new jump-instruction
   int emitJmp(const OpcodeBase &op, CodeLabel label);
-  inline void fixupJump(int index, int jmpTo) {
-    m_jumpFixups[index].m_jmpTo = jmpTo;
-  }
+  void fixupJump(int index, int jmpTo);
   void fixupJumps(const JumpList &list, bool b);
   void clearJumpTable() {
     m_jumpFixups.clear();
@@ -163,12 +162,12 @@ public:
 #endif // IS64BIT
 
   void finalize();
-  void list(const TCHAR *format,...);
+  void list(const TCHAR *format,...) const;
   void listIns(const TCHAR *format,...);
   inline void listLabel(CodeLabel label) {
-    if(isListFileOpen()) list(_T("%s:\n"), labelToString(label).cstr());
+    if(hasListFile()) list(_T("%s:\n"), labelToString(label).cstr());
   }
-  inline bool isListFileOpen() const {
+  inline bool hasListFile() const {
     return m_listFile != NULL;
   }
   inline Real evaluateReal() const {
@@ -288,7 +287,7 @@ private:
 
   void     genAssignment(       const ExpressionNode *n);
   void     genIndexedExpression(const ExpressionNode *n);
-  void     genBoolExpression(   const ExpressionNode *n, JumpList &jumpList, bool genTrueJumps);
+  void     genBoolExpression(   const ExpressionNode *n, JumpList &jumpList, bool trueAtEnd);
   inline CodeLabel nextLabel() {
     return m_nextLbl++;
   }
