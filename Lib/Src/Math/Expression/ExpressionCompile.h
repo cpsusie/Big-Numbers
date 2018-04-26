@@ -297,6 +297,11 @@ private:
   void throwInvalidTrigonometricMode();
 
 public:
+  // Allocates a pointer to MachineCode with new, and generate instructions from parserTree to
+  // be executed. The allocated pointer can be retrieved by getCode() and should be released with
+  // delete after usage. No exceptions should be thrown, as syntax-checks has been done, when
+  // building the parsertree/symbol-table, but in case of an internal error, m_code will
+  // automaticly be deleted.
   CodeGenerator(ParserTree *tree, TrigonometricMode trigonometricMode, FILE *listFile = NULL);
   const MachineCode *getCode() const {
     return m_code;

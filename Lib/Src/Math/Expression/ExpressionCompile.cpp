@@ -11,8 +11,13 @@ CodeGenerator::CodeGenerator(ParserTree *tree, TrigonometricMode trigonometricMo
   if(tree->getTreeForm() != TREEFORM_STANDARD) {
     throwException(_T("Treeform must be STANDARD to generate machinecode. Form=%s"), m_tree.getTreeFormName().cstr());
   }
-  m_code = new MachineCode(m_tree, listFile);
-  genMachineCode();
+  m_code = new MachineCode(m_tree, listFile); TRACE_NEW(m_code);
+  try {
+    genMachineCode();
+  } catch (...) {
+    SAFEDELETE(m_code);
+    throw;
+  }
 }
 
 void CodeGenerator::genMachineCode() {

@@ -137,10 +137,8 @@ void Expression::genMachineCode() {
 }
 
 void Expression::clearMachineCode() {
-  if(m_code) {
-    delete (MachineCode*)m_code;
-    m_code = NULL;
-  }
+  MachineCode *mcode = (MachineCode*)m_code;
+  SAFEDELETE(mcode);
 }
 
 Real Expression::fastEvaluateReal() {
