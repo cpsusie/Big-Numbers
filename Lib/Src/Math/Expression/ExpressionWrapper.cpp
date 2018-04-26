@@ -15,9 +15,9 @@ ExpressionWrapper::~ExpressionWrapper() {
   delete M_EXPR;
 }
 
-ExpressionWrapper::ExpressionWrapper(const String &text, bool machineCode) {
+ExpressionWrapper::ExpressionWrapper(const String &text, bool machineCode, FILE *listFile) {
   m_expr = new Expression();
-  compile(text, machineCode);
+  compile(text, machineCode, listFile);
   if(!ok()) {
     const String msg = getErrorMessage();
     delete M_EXPR;
@@ -25,9 +25,9 @@ ExpressionWrapper::ExpressionWrapper(const String &text, bool machineCode) {
   }
 }
 
-void ExpressionWrapper::compile(const String &text, bool machineCode) {
+void ExpressionWrapper::compile(const String &text, bool machineCode, FILE *listFile) {
   Expression *e = M_EXPR;
-  e->compile(text, machineCode);
+  e->compile(text, machineCode, listFile);
 
   m_xp = getVariableByName(_T("x"));
   m_yp = getVariableByName(_T("y"));
@@ -76,4 +76,8 @@ bool ExpressionWrapper::isReturnTypeReal() const {
 
 bool ExpressionWrapper::isReturnTypeBool() const {
   return M_EXPR->getReturnType() == EXPR_RETURN_BOOL;
+}
+
+String ExpressionWrapper::getDefaultFileName() { // static
+  return Expression::getDefaultListFileName();
 }

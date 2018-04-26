@@ -12,9 +12,10 @@ public:
   ExpressionWrapper();
   ExpressionWrapper(const ExpressionWrapper &src);            // not defined
   ExpressionWrapper &operator=(const ExpressionWrapper &src); // not defined
-  ExpressionWrapper(const String &text, bool machineCode);    // throws exception on error
+  ExpressionWrapper(const String &text, bool machineCode, FILE *listFile = NULL); // throws exception on error
   virtual ~ExpressionWrapper();
-  void compile(const String &text, bool machineCode); // doesn't throw on error
+  void compile(const String &text, bool machineCode, FILE *listFile = NULL); // doesn't throw on error
+  static String getDefaultFileName();
   bool ok();
   Real *getVariableByName(const String &name);
   Real evaluate();
