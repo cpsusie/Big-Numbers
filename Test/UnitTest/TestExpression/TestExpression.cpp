@@ -1466,7 +1466,7 @@ namespace TestExpression {
   FILE *openListFile(int testCase) {
     const String fileName = Expression::getDefaultListFileName();
     FileNameSplitter fs(fileName);
-    fs.setFileName(fs.getFileName() + format(_T("%03d"), testCase));
+    fs.setFileName(format(_T("testCase%03d"), testCase));
     return MKFOPEN(fs.getFullPath(),_T("w"));
   }
 

@@ -28,10 +28,6 @@ public:
   virtual ExpressionState getState() const = 0;
 };
 
-#ifdef IS64BIT
-#define TRACE_CALLS
-#endif
-
 class Expression : public ParserTree {
 private:
   DECLARECLASSNAME;

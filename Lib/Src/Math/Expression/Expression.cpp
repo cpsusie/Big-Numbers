@@ -234,20 +234,20 @@ void Expression::print(FILE *f) const {
 }
 
 String Expression::getDefaultListFileName() { // static
-#ifdef _DEBUG
-#define CONFSTR "Dbg"
-#else
-#define CONFSTR "Rel"
-#endif // _DEBUG
 #ifdef IS32BIT
-#define PFSTR "x86"
+#define PFSTR "x86\\"
 #else // IS64BIT
-#define PFSTR "x64"
+#define PFSTR "x64\\"
 #endif // IS64BIT
-#ifdef LONGDOUBLE
-#define REALSTR "TB"
+#ifdef _DEBUG
+#define CONFSTR "Debug\\"
 #else
-#define REALSTR "QW"
+#define CONFSTR "Release\\"
+#endif // _DEBUG
+#ifdef LONGDOUBLE
+#define REALSTR "TB\\"
+#else
+#define REALSTR "QW\\"
 #endif // LONGDOUBLE
-  return _T("c:\\temp\\ExprList\\expr" PFSTR CONFSTR REALSTR "lst");
+  return _T("c:\\temp\\ExprList\\" PFSTR CONFSTR REALSTR "expr.lst");
 }

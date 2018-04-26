@@ -28,6 +28,7 @@ private:
   ExpressionEntryPoint            m_entryPoint;
   void                           *m_esi;
   CompactArray<JumpFixup>         m_jumpFixups;
+  Array<FunctionCallInfo>         m_callTable;
   // Reference to first element in ParserTree::m_valueTable
   const CompactRealArray         &m_valueTable;
   // Offset in bytes, of esi/rsi from m_valueTable[0], when code is executing. 0 <= m_esiOffset < 128
@@ -53,13 +54,12 @@ private:
     return (offset + m_esiOffset) / sizeof(Real);
   }
 
-#ifdef IS32BIT
-  CompactArray<FunctionCall>      m_callArray;
   void clearFunctionCalls() {
-    m_callArray.clear();
+    m_callTable.clear();
   }
+#ifdef IS32BIT
   void linkFunctionCalls();
-  void linkFunctionCall(const FunctionCall &call);
+  void linkFunctionCall(const FunctionCallInfo &call);
   void adjustFunctionCalls(int pos, int bytesAdded);
 #endif // IS32BIT
   MachineCode(const MachineCode &src);             // not implemented
@@ -70,11 +70,9 @@ private:
   const TCHAR *findListComment(const InstructionOperand &op) const;
   void listIns(const TCHAR *format,...);
   void listFixupTable() const;
+  void listCallTable() const;
 public:
 
-#ifdef TRACE_CALLS
-  bool m_callsGenerated;
-#endif
   MachineCode(ParserTree &m_tree, FILE *listFile = NULL);
   ~MachineCode();
   void clear();
@@ -83,8 +81,8 @@ public:
   int  emit(const OpcodeBase &opCode, const InstructionOperand &op);
   int  emit(const OpcodeBase &opCode, const InstructionOperand &op1, const InstructionOperand &op2);
   int  emit(const StringPrefix &prefix, const StringInstruction &strins);
-  void emitCall(BuiltInFunction f);
-  void emitCall(BuiltInFunction f, const ExpressionDestination &dst);
+  void emitCall(const FunctionCall &fc);
+  void emitCall(const FunctionCall &fc, const ExpressionDestination &dst);
   inline void emitFSTP(const MemoryRef &mem) {
     emit(FSTP, RealPtr(mem));
   }
@@ -231,10 +229,10 @@ private:
   void genStatementList(       const ExpressionNode *n);
   void genReturnBoolExpression(const ExpressionNode *n);
   void genExpression(          const ExpressionNode *n, const ExpressionDestination &dst);
-  void genCall1Arg(            const ExpressionNode *arg                             , BuiltInFunction1    f, const ExpressionDestination &dst);
-  void genCall1Arg(            const ExpressionNode *arg                             , BuiltInFunctionRef1 f, const ExpressionDestination &dst);
-  void genCall2Arg(            const ExpressionNode *arg1, const ExpressionNode *arg2, BuiltInFunction2    f, const ExpressionDestination &dst);
-  void genCall2Arg(            const ExpressionNode *arg1, const ExpressionNode *arg2, BuiltInFunctionRef2 f, const ExpressionDestination &dst);
+  void genCall1Arg(            const ExpressionNode *arg                             , BuiltInFunction1    f, const String &name, const ExpressionDestination &dst);
+  void genCall1Arg(            const ExpressionNode *arg                             , BuiltInFunctionRef1 f, const String &name, const ExpressionDestination &dst);
+  void genCall2Arg(            const ExpressionNode *arg1, const ExpressionNode *arg2, BuiltInFunction2    f, const String &name, const ExpressionDestination &dst);
+  void genCall2Arg(            const ExpressionNode *arg1, const ExpressionNode *arg2, BuiltInFunctionRef2 f, const String &name, const ExpressionDestination &dst);
 
 #ifdef IS64BIT
 #ifdef LONGDOUBLE
@@ -242,25 +240,25 @@ private:
 #endif
 #endif
 
-  void genCall(const ExpressionNode *n, BuiltInFunctionRef1 f, const ExpressionDestination &dst) {
-    genCall1Arg(n->left(), f, dst);
+  void genCall(const ExpressionNode *n, BuiltInFunctionRef1 f, const String &name, const ExpressionDestination &dst) {
+    genCall1Arg(n->left(), f, name, dst);
   }
-  void genCall(const ExpressionNode *n, BuiltInFunctionRef2 f, const ExpressionDestination &dst) {
-    genCall2Arg(n->left(), n->right(), f, dst);
+  void genCall(const ExpressionNode *n, BuiltInFunctionRef2 f, const String &name, const ExpressionDestination &dst) {
+    genCall2Arg(n->left(), n->right(), f, name, dst);
   }
 #ifndef ALLARGS_BYREF
-  void genCall(const ExpressionNode *n, BuiltInFunction1 f, const ExpressionDestination &dst) {
-    genCall1Arg(n->left(), f, dst);
+  void genCall(const ExpressionNode *n, BuiltInFunction1 f, const String &name, const ExpressionDestination &dst) {
+    genCall1Arg(n->left(), f, name, dst);
   }
-  void genCall(const ExpressionNode *n, BuiltInFunction2 f, const ExpressionDestination &dst) {
-    genCall2Arg(n->left(), n->right(), f, dst);
+  void genCall(const ExpressionNode *n, BuiltInFunction2 f, const String &name, const ExpressionDestination &dst) {
+    genCall2Arg(n->left(), n->right(), f, name, dst);
   }
 #else // ALLARGS_BYREF
-  void genCall(const ExpressionNode *n, BuiltInFunction1 f, const ExpressionDestination &dst) {
-    genCall(n, (BuiltInFunctionRef1)f, dst);
+  void genCall(const ExpressionNode *n, BuiltInFunction1 f, const String &name, const ExpressionDestination &dst) {
+    genCall(n, (BuiltInFunctionRef1)f, name, dst);
   }
-  void genCall(const ExpressionNode *n, BuiltInFunction2 f, const ExpressionDestination &dst) {
-    genCall(n, (BuiltInFunctionRef2)f, dst);
+  void genCall(const ExpressionNode *n, BuiltInFunction2 f, const String &name, const ExpressionDestination &dst) {
+    genCall(n, (BuiltInFunctionRef2)f, name, dst);
   }
 #endif // ALLARGS_BYREF
 
@@ -281,7 +279,7 @@ private:
   void     genSetParameter(     const ExpressionNode *n, int index);
   void     genSetRefParameter(  const ExpressionNode *n, int index);
   BYTE     genSetRefParameter(  const ExpressionNode *n, int index, bool &savedOnStack);
-  void     emitCall(            BuiltInFunction f, const ExpressionDestination &dst);
+  void     emitCall(            const FunctionCall  &fc, const ExpressionDestination &dst);
 #endif // IS64BIT
 
   void     genAssignment(       const ExpressionNode *n);

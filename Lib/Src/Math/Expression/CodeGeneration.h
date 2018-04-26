@@ -12,7 +12,6 @@ typedef Real (*BuiltInFunctionRef2)(const Real &x, const Real &y);
 typedef Real (*BuiltInFunction1)(Real x);
 typedef Real (*BuiltInFunction2)(Real x, Real y);
 
-
 #ifdef IS64BIT
 typedef enum {
   RESULT_IN_FPU
@@ -180,22 +179,61 @@ public:
   }
 };
 
-#ifdef IS32BIT
+class FunctionCall {
+private:
+  const TCHAR *m_paramStr;
+public:
+  const BuiltInFunction m_fp;
+  const String          m_name;
+  inline FunctionCall(const BuiltInFunction fp, const String &name, const TCHAR *paramStr)
+    : m_fp(fp)
+    , m_name(name)
+    , m_paramStr(paramStr)
+  {
+  }
+  inline FunctionCall(BuiltInFunction1 fp, const String &name)
+    : m_fp((BuiltInFunction)fp)
+    , m_name(name)
+    , m_paramStr(_T("(real x)"))
+  {
+  }
+  inline FunctionCall(BuiltInFunction2 fp, const String &name)
+    : m_fp((BuiltInFunction)fp)
+    , m_name(name)
+    , m_paramStr(_T("(real x, real y)"))
+  {
+  }
+  inline FunctionCall(BuiltInFunctionRef1 fp, const String &name)
+    : m_fp((BuiltInFunction)fp)
+    , m_name(name)
+    , m_paramStr(_T("(real &x)"))
+  {
+  }
+  inline FunctionCall(BuiltInFunctionRef2 fp, const String &name)
+    : m_fp((BuiltInFunction)fp)
+    , m_name(name)
+    , m_paramStr(_T("(real &x, real &y)"))
+  {
+  }
+  inline String toString() const {
+    return format(_T("%-20s (%p)"), format(_T("%s%s"),m_name.cstr(),m_paramStr).cstr(), m_fp);
+  }
+};
+
 class MachineCode;
 
-class FunctionCall {
+class FunctionCallInfo : public FunctionCall {
 public:
   int              m_pos;              // index of address in Machinecode
   BYTE             m_instructionSize;
-  BuiltInFunction  m_func;             // 4 ip-rel
-  inline FunctionCall() : m_pos(0), m_instructionSize(0), m_func(NULL) {
-  }
-  inline FunctionCall(int pos, BYTE insSize, const BuiltInFunction f)
-    : m_pos(pos)
+  inline FunctionCallInfo(const FunctionCall &fc, int pos, BYTE insSize)
+    : FunctionCall(fc)
+    , m_pos(pos)
     , m_instructionSize(insSize)
-    , m_func(f)
   {
   }
   InstructionBase makeInstruction(const MachineCode *code) const;
+  String toString() const {
+    return format(_T("  %4d %-40s  (size:%d)"), m_pos, __super::toString().cstr(), m_instructionSize);
+  }
 };
-#endif // IS32BIT

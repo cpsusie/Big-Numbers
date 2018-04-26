@@ -17,9 +17,6 @@ MachineCode::MachineCode(ParserTree &tree, FILE *listFile)
     list(_T("ESI offset from &valueTable[0] (in bytes):%d (%#02x)\n"), m_esiOffset, m_esiOffset);
   }
 
-#ifdef TRACE_CALLS
-  m_callsGenerated = false;
-#endif
 #ifdef IS64BIT
 #ifndef LONGDOUBLE
   m_referenceFunction = (BYTE*)(BuiltInFunction1)exp;
@@ -141,6 +138,16 @@ void MachineCode::listFixupTable() const {
   }
 }
 
+void MachineCode::listCallTable() const {
+  if(hasListFile() && !m_callTable.isEmpty()) {
+    list(_T("Call table:\n"));
+    for(size_t i = 0; i < m_callTable.size(); i++) {
+      list(_T("  %s\n"), m_callTable[i].toString().cstr());
+    }
+    list(_T("\n"));
+  }
+}
+
 int MachineCode::emitIns(const InstructionBase &ins) {
   const int pos = (int)size();
   append(ins.getBytes(), ins.size());
@@ -157,7 +164,7 @@ int MachineCode::emit(const Opcode0Arg &opCode) {
 int MachineCode::emit(const OpcodeBase &opCode, const InstructionOperand &op) {
   const int ret = emitIns(opCode(op));
   if(hasListFile()) {
-    m_listComment = findListComment(op);
+    if(m_listComment == NULL) m_listComment = findListComment(op);
     listIns(_T("%-6s %s"), opCode.getMnemonic().cstr(), op.toString().cstr());
   }
   return ret;
@@ -165,7 +172,7 @@ int MachineCode::emit(const OpcodeBase &opCode, const InstructionOperand &op) {
 int MachineCode::emit(const OpcodeBase &opCode, const InstructionOperand &op1, const InstructionOperand &op2) {
   const int ret = emitIns(opCode(op1,op2));
   if(hasListFile()) {
-    m_listComment = findListComment(op1);
+    if(m_listComment == NULL) m_listComment = findListComment(op1);
     if(m_listComment == NULL) m_listComment = findListComment(op2);
     listIns(_T("%-6s %s,%s"), opCode.getMnemonic().cstr(), op1.toString().cstr(), op2.toString().cstr());
   }
@@ -278,7 +285,7 @@ void MachineCode::fixupJump(int index, int jmpTo) {
 
 void MachineCode::finalJumpFixup() {
   listFixupTable();
-
+  listCallTable();
   bool stable;
   do {
     stable = true;
@@ -330,19 +337,19 @@ void MachineCode::changeShortJumpToNearJump(JumpFixup &jf) {
 
 #ifdef IS32BIT
 void MachineCode::adjustFunctionCalls(int pos, int bytesAdded) {
-  for(size_t i = 0; i < m_callArray.size(); i++) {
-    FunctionCall &fc = m_callArray[i];
-    if(fc.m_pos > pos) {
-      fc.m_pos += bytesAdded;
+  for(size_t i = 0; i < m_callTable.size(); i++) {
+    FunctionCallInfo &fi = m_callTable[i];
+    if(fi.m_pos > pos) {
+      fi.m_pos += bytesAdded;
     }
   }
 }
 
-InstructionBase FunctionCall::makeInstruction(const MachineCode *code) const {
+InstructionBase FunctionCallInfo::makeInstruction(const MachineCode *code) const {
   int lastSize = m_instructionSize;
   const BYTE    *insAddr  = code->getData() + m_pos;
   for(;;) {
-    const intptr_t        iprel = (BYTE*)m_func - insAddr - lastSize;
+    const intptr_t        iprel = (BYTE*)m_fp - insAddr - lastSize;
     const InstructionBase ins   = CALL(iprel);
     if(ins.size() == lastSize) {
       return ins;
@@ -352,27 +359,29 @@ InstructionBase FunctionCall::makeInstruction(const MachineCode *code) const {
 }
 
 void MachineCode::linkFunctionCalls() {
-  for(size_t i = 0; i < m_callArray.size(); i++) {
-    linkFunctionCall(m_callArray[i]);
+  for(size_t i = 0; i < m_callTable.size(); i++) {
+    linkFunctionCall(m_callTable[i]);
   }
 }
 
-void MachineCode::linkFunctionCall(const FunctionCall &fc) {
-  const InstructionBase ins = fc.makeInstruction(this);
-  assert(ins.size() == fc.m_instructionSize);
-  setBytes(fc.m_pos, ins.getBytes(), ins.size());
+void MachineCode::linkFunctionCall(const FunctionCallInfo &fci) {
+  const InstructionBase ins = fci.makeInstruction(this);
+  assert(ins.size() == fci.m_instructionSize);
+  setBytes(fci.m_pos, ins.getBytes(), ins.size());
 }
 
-void MachineCode::emitCall(BuiltInFunction f) {
-#ifdef TRACE_CALLS
-  m_callsGenerated = true;
-#endif
-  const int pos = emit(CALL,(intptr_t)f);
-  m_callArray.add(FunctionCall(pos, (BYTE)(size()-pos), f));
+void MachineCode::emitCall(const FunctionCall &fc) {
+  String tmpComment;
+  if(hasListFile()) {
+    tmpComment    = fc.toString();
+    m_listComment = tmpComment.cstr();
+  }
+  const int pos = emit(CALL,(intptr_t)fc.m_fp);
+  m_callTable.add(FunctionCallInfo(fc, pos, (BYTE)(size()-pos)));
 }
 
-void MachineCode::emitCall(BuiltInFunction f, const ExpressionDestination &dummy) {
-  emitCall(f);
+void MachineCode::emitCall(const FunctionCall &fc, const ExpressionDestination &dummy) {
+  emitCall(fc);
 #ifdef LONGDOUBLE
   emit(MOV,EAX,DWORDPtr(ESP));
   emitFLD(EAX);
@@ -381,17 +390,21 @@ void MachineCode::emitCall(BuiltInFunction f, const ExpressionDestination &dummy
 
 #else // IS64BIT
 
-void MachineCode::emitCall(BuiltInFunction f) {
-#ifdef TRACE_CALLS
-  m_callsGenerated = true;
-#endif
-  emit(LEA,RAX,QWORDPtr(RBP+(int)((BYTE*)f-m_referenceFunction)));
+void MachineCode::emitCall(const FunctionCall &fc) {
+  const int pos = emit(LEA,RAX,QWORDPtr(RBP+(int)((BYTE*)fc.m_fp-m_referenceFunction)));
+  m_callTable.add(FunctionCallInfo(fc, pos, (BYTE)(size()-pos)));
+
+  String tmpComment;
+  if(hasListFile()) {
+    tmpComment    = fc.toString();
+    m_listComment = tmpComment.cstr();
+  }
   emit(CALL,RAX);
 }
 
 #ifndef LONGDOUBLE
-void MachineCode::emitCall(BuiltInFunction f, const ExpressionDestination &dst) {
-  emitCall(f);
+void MachineCode::emitCall(const FunctionCall &fc, const ExpressionDestination &dst) {
+  emitCall(fc);
   switch(dst.getType()) {
   case RESULT_IN_FPU       :
     emitXMMToMem(XMM0,getStackRef(0));                                // XMM0 -> FPU-top
@@ -416,7 +429,7 @@ void MachineCode::emitCall(BuiltInFunction f, const ExpressionDestination &dst) 
 
 #else // LONGDOUBLE
 
-void MachineCode::emitCall(BuiltInFunction f, const ExpressionDestination &dst) {
+void MachineCode::emitCall(const FunctionCall &fc, const ExpressionDestination &dst) {
   switch(dst.getType()) {
   case RESULT_IN_FPU       :
     emitLoadAddr(RCX, getTableRef(0));                             // RCX = RSI + getESIOffset(0);
@@ -432,7 +445,7 @@ void MachineCode::emitCall(BuiltInFunction f, const ExpressionDestination &dst) 
     break;
   }
 
-  emitCall(f);
+  emitCall(fc);
 
   switch(dst.getType()) {
   case RESULT_IN_FPU       :

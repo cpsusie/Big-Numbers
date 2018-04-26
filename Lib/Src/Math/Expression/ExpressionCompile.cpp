@@ -24,9 +24,6 @@ void CodeGenerator::genMachineCode() {
   genProlog();
   genStatementList(m_tree.getRoot());
   m_code->finalize();
-#ifdef TRACE_CALLS
-  debugLog(_T("hasCalls:%5s Calls generated:%5s"), boolToStr(m_hasCalls), boolToStr(m_code->m_callsGenerated));
-#endif
 }
 
 #ifdef DEBUG_JUMPLIST
@@ -137,10 +134,10 @@ void CodeGenerator::genPowMultSequence(UINT y) {
 }
 
 #define GENEXPRESSION(n) genExpression(n  ,dst)
-#define GENCALL(n,f)     genCall(      n,f,dst); return
-#define GENCALLARG(n,f)  genCall1Arg(  n,f,dst); return
-#define GENPOLY(n)       genPolynomial(n  ,dst); return
-#define GENIF(n)         genIf(n,dst);           return
+#define GENCALL(n,f)     genCall(      n,f,_T(#f), dst); return
+#define GENCALLARG(n,f)  genCall1Arg(  n,f,_T(#f), dst); return
+#define GENPOLY(n)       genPolynomial(n  ,dst);         return
+#define GENIF(n)         genIf(n,dst);                   return
 
 void CodeGenerator::throwInvalidTrigonometricMode() {
   throwInvalidArgumentException(_T("genExpression"), _T("Invalid trigonometricMode:%d"), m_trigonometricMode);
@@ -580,6 +577,9 @@ LISTJUMPLIST(jl);
   }
 }
 
+static const TCHAR *polyName         = _T("poly");
+static const TCHAR *polySignatureStr = _T("(Real x, int n, const Real *coef)");
+
 // n is number of coeffients which is degree - 1.
 // coef[0] if coefficient for x^(n-1), coef[n-1] is constant term of polynomial
 static Real evaluatePolynomial(Real x, int n, const Real *coef) {
@@ -593,37 +593,37 @@ static Real evaluatePolynomial(Real x, int n, const Real *coef) {
 
 #ifdef IS32BIT
 
-void CodeGenerator::genCall1Arg(const ExpressionNode *arg, BuiltInFunction1 f, const ExpressionDestination &dummy) {
+void CodeGenerator::genCall1Arg(const ExpressionNode *arg, BuiltInFunction1 f, const String &name, const ExpressionDestination &dummy) {
   int bytesPushed = 0;
   bytesPushed += genPush(arg);
   bytesPushed += genPushReturnAddr();
-  m_code->emitCall((BuiltInFunction)f, dummy);
+  m_code->emitCall(FunctionCall(f,name), dummy);
   m_code->emitAddStack(bytesPushed);
 }
 
-void CodeGenerator::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode *arg2, BuiltInFunction2 f, const ExpressionDestination &dummy) {
+void CodeGenerator::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode *arg2, BuiltInFunction2 f, const String &name, const ExpressionDestination &dummy) {
   int bytesPushed = 0;
   bytesPushed += genPush(arg2);
   bytesPushed += genPush(arg1);
   bytesPushed += genPushReturnAddr();
-  m_code->emitCall((BuiltInFunction)f, dummy);
+  m_code->emitCall(FunctionCall(f,name), dummy);
   m_code->emitAddStack(bytesPushed);
 }
 
-void CodeGenerator::genCall1Arg(const ExpressionNode *arg, BuiltInFunctionRef1 f, const ExpressionDestination &dummy) {
+void CodeGenerator::genCall1Arg(const ExpressionNode *arg, BuiltInFunctionRef1 f, const String &name, const ExpressionDestination &dummy) {
   int bytesPushed = 0;
   bytesPushed += genPushRef(arg,0);
   bytesPushed += genPushReturnAddr();
-  m_code->emitCall((BuiltInFunction)f, dummy);
+  m_code->emitCall(FunctionCall(f,name), dummy);
   m_code->emitAddStack(bytesPushed);
 }
 
-void CodeGenerator::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode *arg2, BuiltInFunctionRef2 f, const ExpressionDestination &dummy) {
+void CodeGenerator::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode *arg2, BuiltInFunctionRef2 f, const String &name, const ExpressionDestination &dummy) {
   int bytesPushed = 0;
   bytesPushed += genPushRef(arg2,0);
   bytesPushed += genPushRef(arg1,1);
   bytesPushed += genPushReturnAddr();
-  m_code->emitCall((BuiltInFunction)f, dummy);
+  m_code->emitCall(FunctionCall(f,name), dummy);
   m_code->emitAddStack(bytesPushed);
 }
 
@@ -645,7 +645,7 @@ void CodeGenerator::genPolynomial(const ExpressionNode *n, const ExpressionDesti
   bytesPushed += genPushInt((int)coefArray.size());
   bytesPushed += genPush(n->getArgument());
   bytesPushed += genPushReturnAddr();
-  m_code->emitCall((BuiltInFunction)::evaluatePolynomial, dummy);
+  m_code->emitCall(FunctionCall((BuiltInFunction)::evaluatePolynomial, polyName, polySignatureStr), dummy);
   m_code->emitAddStack(bytesPushed);
 }
 
@@ -743,12 +743,12 @@ static const IndexRegister int64ParamRegister[] = {
 
 #ifndef LONGDOUBLE
 
-void CodeGenerator::genCall1Arg(const ExpressionNode *arg, BuiltInFunction1 f, const ExpressionDestination &dst) {
+void CodeGenerator::genCall1Arg(const ExpressionNode *arg, BuiltInFunction1 f, const String &name, const ExpressionDestination &dst) {
   genSetParameter(arg, 0);
-  emitCall((BuiltInFunction)f, dst);
+  emitCall(FunctionCall(f, name), dst);
 }
 
-void CodeGenerator::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode *arg2, BuiltInFunction2 f, const ExpressionDestination &dst) {
+void CodeGenerator::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode *arg2, BuiltInFunction2 f, const String &name, const ExpressionDestination &dst) {
   const bool arg1HasCalls = arg1->containsFunctionCall();
   const bool arg2HasCalls = arg2->containsFunctionCall();
   if(!arg2HasCalls) {
@@ -764,15 +764,15 @@ void CodeGenerator::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode
     m_code->emitMemToXMM(XMM0, m_code->getStackRef(offset));
     m_code->popTmp();
   }
-  emitCall((BuiltInFunction)f, dst);
+  emitCall(FunctionCall(f, name), dst);
 }
 
-void CodeGenerator::genCall1Arg(const ExpressionNode *arg, BuiltInFunctionRef1 f, const ExpressionDestination &dst) {
+void CodeGenerator::genCall1Arg(const ExpressionNode *arg, BuiltInFunctionRef1 f, const String &name, const ExpressionDestination &dst) {
   genSetRefParameter(arg, 0);
-  emitCall((BuiltInFunction)f, dst);
+  emitCall(FunctionCall(f, name), dst);
 }
 
-void CodeGenerator::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode *arg2, BuiltInFunctionRef2 f, const ExpressionDestination &dst) {
+void CodeGenerator::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode *arg2, BuiltInFunctionRef2 f, const String &name, const ExpressionDestination &dst) {
   const bool arg2HasCalls = arg2->containsFunctionCall();
 
   bool stacked1, stacked2;
@@ -793,17 +793,17 @@ void CodeGenerator::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode
     m_code->emitLoadAddr(RDX, m_code->getStackRef(offset2));
     m_code->popTmp();
   }
-  emitCall((BuiltInFunction)f, dst);
+  emitCall(FunctionCall(f, name), dst);
 }
 
 #else // LONGDOUBLE
 
-void CodeGenerator::genCall1Arg(const ExpressionNode *arg, BuiltInFunctionRef1 f, const ExpressionDestination &dst) {
+void CodeGenerator::genCall1Arg(const ExpressionNode *arg, BuiltInFunctionRef1 f, const String &name, const ExpressionDestination &dst) {
   genSetRefParameter(arg, 0);
-  emitCall((BuiltInFunction)f, dst);
+  emitCall(FunctionCall(f, name), dst);
 }
 
-void CodeGenerator::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode *arg2, BuiltInFunctionRef2 f, const ExpressionDestination &dst) {
+void CodeGenerator::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode *arg2, BuiltInFunctionRef2 f, const String &name, const ExpressionDestination &dst) {
   const bool arg2HasCalls = arg2->containsFunctionCall();
 
   bool stacked1, stacked2;
@@ -828,7 +828,7 @@ void CodeGenerator::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode
       m_code->popTmp();
     }
   }
-  emitCall((BuiltInFunction)f, dst);
+  emitCall(FunctionCall(f, name), dst);
 }
 
 #endif // LONGDOUBLE
@@ -856,12 +856,12 @@ void CodeGenerator::genPolynomial(const ExpressionNode *n, const ExpressionDesti
 
   const IndexRegister &param3    = int64ParamRegister[2];
   m_code->emitLoadAddr(param3, m_code->getTableRef(firstCoefIndex));
-  emitCall((BuiltInFunction)::evaluatePolynomial, dst);
+  emitCall(FunctionCall((BuiltInFunction)::evaluatePolynomial, polyName, polySignatureStr), dst);
 }
 
-void CodeGenerator::emitCall(BuiltInFunction f, const ExpressionDestination &dst) {
+void CodeGenerator::emitCall(const FunctionCall &fc, const ExpressionDestination &dst) {
   assert(m_hasCalls);
-  m_code->emitCall(f,dst);
+  m_code->emitCall(fc,dst);
 }
 
 void CodeGenerator::genSetRefParameter(const ExpressionNode *n, int index) {
