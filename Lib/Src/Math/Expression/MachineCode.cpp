@@ -154,12 +154,6 @@ int MachineCode::emit(const Opcode0Arg &opCode) {
   return ret;
 }
 
-int  MachineCode::emitJmpWithLabel(const OpcodeBase &opCode, CodeLabel label) {
-  const int ret = emitIns(opCode(0));
-  if(hasListFile()) listIns(_T("%-6s %s"), opCode.getMnemonic().cstr(), labelToString(label).cstr());
-  return ret;
-}
-
 int MachineCode::emit(const OpcodeBase &opCode, const InstructionOperand &op) {
   const int ret = emitIns(opCode(op));
   if(hasListFile()) {
@@ -254,7 +248,8 @@ String JumpFixup::toString() const {
 int MachineCode::emitJmp(const OpcodeBase &op, CodeLabel lbl) {
   const int result = (int)m_jumpFixups.size();
   JumpFixup jf(op, (int)size(), lbl);
-  emitJmpWithLabel(op,lbl);
+  emitIns(op(0));
+  if(hasListFile()) listIns(_T("%-6s %s"), op.getMnemonic().cstr(), labelToString(lbl).cstr());
   jf.m_instructionSize = (BYTE)((int)size() - jf.m_instructionPos);
   m_jumpFixups.add(jf);
   return result;
@@ -347,8 +342,8 @@ InstructionBase FunctionCall::makeInstruction(const MachineCode *code) const {
   int lastSize = m_instructionSize;
   const BYTE    *insAddr  = code->getData() + m_pos;
   for(;;) {
-    const intptr_t iprel    = (BYTE*)m_func - insAddr - lastSize;
-    const InstructionBase ins = CALL(iprel);
+    const intptr_t        iprel = (BYTE*)m_func - insAddr - lastSize;
+    const InstructionBase ins   = CALL(iprel);
     if(ins.size() == lastSize) {
       return ins;
     }

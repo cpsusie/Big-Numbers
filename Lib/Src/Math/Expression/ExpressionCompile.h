@@ -68,6 +68,7 @@ private:
   void initValueStr(const ExpressionVariableArray &variables);
   // return NULL if not comment found
   const TCHAR *findListComment(const InstructionOperand &op) const;
+  void listIns(const TCHAR *format,...);
   void listFixupTable() const;
 public:
 
@@ -79,7 +80,6 @@ public:
   void clear();
   int  addBytes(const void *bytes, int count);
   int  emit(const Opcode0Arg &opCode);
-  int  emitJmpWithLabel(const OpcodeBase &opCode, CodeLabel label);
   int  emit(const OpcodeBase &opCode, const InstructionOperand &op);
   int  emit(const OpcodeBase &opCode, const InstructionOperand &op1, const InstructionOperand &op2);
   int  emit(const StringPrefix &prefix, const StringInstruction &strins);
@@ -163,7 +163,6 @@ public:
 
   void finalize();
   void list(const TCHAR *format,...) const;
-  void listIns(const TCHAR *format,...);
   inline void listLabel(CodeLabel label) {
     if(hasListFile()) list(_T("%s:\n"), labelToString(label).cstr());
   }
