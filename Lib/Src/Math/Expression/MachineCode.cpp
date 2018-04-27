@@ -10,8 +10,8 @@ MachineCode::MachineCode(ParserTree &tree, FILE *listFile)
   setValueCount(m_valueTable.size());
   m_entryPoint   = NULL;
 #ifdef IS64BIT
-  m_loadRBPInsPos  = 0;
-  m_loadRBPInsSize = 0;
+  m_loadRBXInsPos  = 0;
+  m_loadRBXInsSize = 0;
   m_codeSize       = 0;
 #endif // IS64BIT
 
@@ -229,34 +229,34 @@ void MachineCode::emitLoadAddr(const IndexRegister &dst, const MemoryRef &ref) {
 }
 
 #ifdef IS64BIT
-void MachineCode::emitLoadRBP() {
-  m_loadRBPInsPos = emit(LEA,RBP,QWORDPtr(RCX + 1));
-  m_loadRBPInsSize = (int)size() - m_loadRBPInsPos;
+void MachineCode::emitLoadRBX() {
+  m_loadRBXInsPos = emit(LEA,RBX,QWORDPtr(RCX + 1));
+  m_loadRBXInsSize = (int)size() - m_loadRBXInsPos;
 }
 
 // This should be called after finalJumpFixUp, becuase code-size can change there
 // There are no jumps across this instruction, so all ip-relative jumps will still be valid
 // after this. And the address-table contains absolute addresses, so it will not cause any troubles to
 // move these.
-void MachineCode::fixupLoadRBP() {
-  int lastSize  = m_loadRBPInsSize;
-  int rbpOffset = m_codeSize;
+void MachineCode::fixupLoadRBX() {
+  int lastSize  = m_loadRBXInsSize;
+  int rbxOffset = m_codeSize;
   for(;;) {
-    InstructionBase ins = LEA(RBP,QWORDPtr(RCX + rbpOffset));
+    InstructionBase ins = LEA(RBX,QWORDPtr(RCX + rbxOffset));
     const int newSize    = ins.size();
     const int bytesAdded = newSize - lastSize;
     if(bytesAdded == 0) {
       break;
     }
-    rbpOffset += bytesAdded;
+    rbxOffset += bytesAdded;
     lastSize = newSize;
   }
-  if(lastSize != m_loadRBPInsSize) {
-    const int bytesAdded = lastSize - m_loadRBPInsSize;
-    insertZeroes(m_loadRBPInsPos, bytesAdded);
+  if(lastSize != m_loadRBXInsSize) {
+    const int bytesAdded = lastSize - m_loadRBXInsSize;
+    insertZeroes(m_loadRBXInsPos, bytesAdded);
   }
-  InstructionBase ins = LEA(RBP,QWORDPtr(RCX + rbpOffset));
-  setBytes(m_loadRBPInsPos, ins.getBytes(), ins.size());
+  InstructionBase ins = LEA(RBX,QWORDPtr(RCX + rbxOffset));
+  setBytes(m_loadRBXInsPos, ins.getBytes(), ins.size());
 }
 #endif // IS64BIT
 
@@ -435,9 +435,9 @@ void MachineCode::emitCall(const FunctionCall &fc) {
   const int pos = emit(CALL,(intptr_t)fc.m_fp);
 #else // IS64BIT
   // Call using reference-table addeded after code, and during exeution
-  // has RBP pointing at element 0
+  // has RBX pointing at element 0
   const int index = getFunctionRefIndex(fc);
-  const int pos   = emit(CALL,QWORDPtr(RBP + (index*sizeof(BuiltInFunction))));
+  const int pos   = emit(CALL,QWORDPtr(RBX + (index*sizeof(BuiltInFunction))));
 #endif // IS64BIT
   m_callTable.add(FunctionCallInfo(fc, pos, (BYTE)(size()-pos)));
 }

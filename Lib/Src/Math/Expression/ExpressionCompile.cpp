@@ -27,7 +27,7 @@ void CodeGenerator::genMachineCode() {
 #ifdef IS64BIT
   if(m_code->isCallsGenerated()) {
     assert(m_hasCalls);
-    m_code->fixupLoadRBP();
+    m_code->fixupLoadRBX();
   }
 #endif
 }
@@ -52,12 +52,12 @@ void CodeGenerator::genProlog() {
   m_hasCalls = m_tree.getRoot()->containsFunctionCall();
   m_code->resetStack(RESERVESTACKSPACE);
   if(m_hasCalls) {
-    m_code->emit(PUSH,RBP);
+    m_code->emit(PUSH,RBX);
     // generate a dummy-instruction, which will be adjusted
     // with the right offset (4-bytes) when code is generated.
     // After the instructions, there will be an array of QWORD's
     // with absolute addresses of the called functions
-    m_code->emitLoadRBP();
+    m_code->emitLoadRBX();
     m_code->emitSubStack(LOCALSTACKSPACE + RESERVESTACKSPACE); // to get 16-byte aligned RSP
   }
 #endif
@@ -67,7 +67,7 @@ void CodeGenerator::genEpilog() {
 #ifdef IS64BIT
   if(m_hasCalls) {
     m_code->emitAddStack(LOCALSTACKSPACE + RESERVESTACKSPACE);
-    m_code->emit(POP,RBP);
+    m_code->emit(POP,RBX);
   }
 #endif
   m_code->emit(RET);

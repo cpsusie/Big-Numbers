@@ -42,8 +42,8 @@ private:
 
 #ifdef IS64BIT
   BYTE                              m_stackTop;
-  int                               m_loadRBPInsPos;
-  BYTE                              m_loadRBPInsSize;
+  int                               m_loadRBXInsPos;
+  BYTE                              m_loadRBXInsSize;
   int                               m_codeSize;
   typedef CompactKeyType<BuiltInFunction> FunctionKey;
   CompactHashMap<FunctionKey, int>  m_fpMap; // value is index into m_uniqueFunctionCall, not offset
@@ -170,8 +170,8 @@ public:
     m_stackTop -= sizeof(Real);
     return m_stackTop;
   }
-  void emitLoadRBP();
-  void fixupLoadRBP();
+  void emitLoadRBX();
+  void fixupLoadRBX();
 #endif // IS64BIT
 
   inline bool isCallsGenerated() const {
@@ -298,7 +298,6 @@ private:
   void     genSetRefParameter(  const ExpressionNode *n, int index);
   BYTE     genSetRefParameter(  const ExpressionNode *n, int index, bool &savedOnStack);
   void     genCall(             const FunctionCall  &fc, const ExpressionDestination &dst);
-  void     updateSetRBPInstruction();
 #endif // IS64BIT
 
   void     genAssignment(       const ExpressionNode *n);
