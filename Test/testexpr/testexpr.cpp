@@ -1,7 +1,8 @@
 #include "stdafx.h"
 
 static const TCHAR *samples[] = {
-   _T("cos(x+1)")
+   _T("poly[1,poly[2,-1,3](x),3,4](x)")
+  ,_T("cos(x+1)")
   ,_T("if(x+1 == x*2,x+1,x-1)")
   ,_T("if(x+1 <> x*2,x+1,x-1)")
   ,_T("if(x+1 <  x*2,x+1,x-1)")
