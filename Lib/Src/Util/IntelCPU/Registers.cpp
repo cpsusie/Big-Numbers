@@ -44,13 +44,13 @@ String toString(RegSize regSize) {
 
 BYTE regSizeToByteCount(RegSize regSize) {
   switch(regSize) {
-  case REGSIZE_BYTE    : 1;
-  case REGSIZE_WORD    : 2;
-  case REGSIZE_DWORD   : 4;
-  case REGSIZE_QWORD   : 8;
-  case REGSIZE_TBYTE   : 10;
-  case REGSIZE_MMWORD  : 8;
-  case REGSIZE_XMMWORD : 16;
+  case REGSIZE_BYTE    : return  1;
+  case REGSIZE_WORD    : return  2;
+  case REGSIZE_DWORD   : return  4;
+  case REGSIZE_QWORD   : return  8;
+  case REGSIZE_TBYTE   : return 10;
+  case REGSIZE_MMWORD  : return  8;
+  case REGSIZE_XMMWORD : return 16;
   default              : throwInvalidArgumentException(__TFUNCTION__,_T("Unknown register size:%d"), regSize);
   }
   return 0;
