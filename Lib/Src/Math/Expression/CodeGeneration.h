@@ -61,26 +61,24 @@ public:
 #endif
 };
 
-#define DST_FPU                 ExpressionDestination(RESULT_IN_FPU       , -1     )
-#define DST_ADDRRDI             ExpressionDestination(RESULT_IN_ADDRRDI   , -1     )
-#define DST_ONSTACK(offs1)      ExpressionDestination(RESULT_ON_STACK     , offs1  )
-#define DST_INVALUETABLE(index) ExpressionDestination(RESULT_IN_VALUETABLE, index  )
+#define DST_FPU                 ,ExpressionDestination(RESULT_IN_FPU       , -1     )
+#define DST_ADDRRDI             ,ExpressionDestination(RESULT_IN_ADDRRDI   , -1     )
+#define DST_ONSTACK(offs1)      ,ExpressionDestination(RESULT_ON_STACK     , offs1  )
+#define DST_INVALUETABLE(index) ,ExpressionDestination(RESULT_IN_VALUETABLE, index  )
 #ifndef LONGDOUBLE
-#define DST_XMM(xmmReg)         ExpressionDestination(xmmReg )
+#define DST_XMM(xmmReg)         ,ExpressionDestination(xmmReg )
 #endif
-#else
+#define DCL_DSTPARAM            ,const ExpressionDestination &dst
+#define DST_PARAM               ,dst
 
-typedef int ExpressionDestination;
+#else // IS32BIT
 
-#define DST_FPU                 0
-#define DST_ADDRRDI             0
-#define DST_ONSTACK(     offs1) 0
-#define DST_INVALUETABLE(offs4) 0
-#ifndef LONGDOUBLE
-#define DST_XMM(xmmReg)         0
-#endif
+#define DCL_DSTPARAM
+#define DST_PARAM
+#define DST_FPU
+#define DST_ADDRRDI
 
-#endif // IS64BIT
+#endif // IS32BIT
 
 typedef int CodeLabel;
 
@@ -233,10 +231,5 @@ public:
   {
   }
   InstructionBase makeInstruction(const MachineCode *code) const;
-  String toString() const {
-    return format(_T("%4d %-40s  (size:%d)")
-                 ,m_pos, __super::toString().cstr()
-                 ,m_instructionSize
-                 );
-  }
+  String toString() const;
 };

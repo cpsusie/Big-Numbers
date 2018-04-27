@@ -97,8 +97,14 @@ public:
   int  emit(const OpcodeBase &opCode, const InstructionOperand &op);
   int  emit(const OpcodeBase &opCode, const InstructionOperand &op1, const InstructionOperand &op2);
   int  emit(const StringPrefix &prefix, const StringInstruction &strins);
+#ifdef IS32BIT
   void emitCall(const FunctionCall &fc);
+#else // IS64BIT
+private:
+  void emitCall(const FunctionCall &fc);
+public:
   void emitCall(const FunctionCall &fc, const ExpressionDestination &dst);
+#endif // IS64BIT
   inline void emitFSTP(const MemoryRef &mem) {
     emit(FSTP, RealPtr(mem));
   }
@@ -246,11 +252,11 @@ private:
   void genEpilog();
   void genStatementList(       const ExpressionNode *n);
   void genReturnBoolExpression(const ExpressionNode *n);
-  void genExpression(          const ExpressionNode *n, const ExpressionDestination &dst);
-  void genCall1Arg(            const ExpressionNode *arg                             , BuiltInFunction1    f, const String &name, const ExpressionDestination &dst);
-  void genCall1Arg(            const ExpressionNode *arg                             , BuiltInFunctionRef1 f, const String &name, const ExpressionDestination &dst);
-  void genCall2Arg(            const ExpressionNode *arg1, const ExpressionNode *arg2, BuiltInFunction2    f, const String &name, const ExpressionDestination &dst);
-  void genCall2Arg(            const ExpressionNode *arg1, const ExpressionNode *arg2, BuiltInFunctionRef2 f, const String &name, const ExpressionDestination &dst);
+  void genExpression(          const ExpressionNode *n DCL_DSTPARAM);
+  void genCall1Arg(            const ExpressionNode *arg                             , BuiltInFunction1    f, const String &name DCL_DSTPARAM);
+  void genCall1Arg(            const ExpressionNode *arg                             , BuiltInFunctionRef1 f, const String &name DCL_DSTPARAM);
+  void genCall2Arg(            const ExpressionNode *arg1, const ExpressionNode *arg2, BuiltInFunction2    f, const String &name DCL_DSTPARAM);
+  void genCall2Arg(            const ExpressionNode *arg1, const ExpressionNode *arg2, BuiltInFunctionRef2 f, const String &name DCL_DSTPARAM);
 
 #ifdef IS64BIT
 #ifdef LONGDOUBLE
@@ -258,37 +264,38 @@ private:
 #endif
 #endif
 
-  void genCall(const ExpressionNode *n, BuiltInFunctionRef1 f, const String &name, const ExpressionDestination &dst) {
-    genCall1Arg(n->left(), f, name, dst);
+  void genCall(const ExpressionNode *n, BuiltInFunctionRef1 f, const String &name DCL_DSTPARAM) {
+    genCall1Arg(n->left(), f, name DST_PARAM);
   }
-  void genCall(const ExpressionNode *n, BuiltInFunctionRef2 f, const String &name, const ExpressionDestination &dst) {
-    genCall2Arg(n->left(), n->right(), f, name, dst);
+  void genCall(const ExpressionNode *n, BuiltInFunctionRef2 f, const String &name DCL_DSTPARAM) {
+    genCall2Arg(n->left(), n->right(), f, name DST_PARAM);
   }
 #ifndef ALLARGS_BYREF
-  void genCall(const ExpressionNode *n, BuiltInFunction1 f, const String &name, const ExpressionDestination &dst) {
-    genCall1Arg(n->left(), f, name, dst);
+  void genCall(const ExpressionNode *n, BuiltInFunction1 f, const String &name DCL_DSTPARAM) {
+    genCall1Arg(n->left(), f, name DST_PARAM);
   }
-  void genCall(const ExpressionNode *n, BuiltInFunction2 f, const String &name, const ExpressionDestination &dst) {
-    genCall2Arg(n->left(), n->right(), f, name, dst);
+  void genCall(const ExpressionNode *n, BuiltInFunction2 f, const String &name DCL_DSTPARAM) {
+    genCall2Arg(n->left(), n->right(), f, name DST_PARAM);
   }
 #else // ALLARGS_BYREF
-  void genCall(const ExpressionNode *n, BuiltInFunction1 f, const String &name, const ExpressionDestination &dst) {
-    genCall(n, (BuiltInFunctionRef1)f, name, dst);
+  void genCall(const ExpressionNode *n, BuiltInFunction1 f, const String &name DCL_DSTPARAM) {
+    genCall(n, (BuiltInFunctionRef1)f, name DST_PARAM);
   }
-  void genCall(const ExpressionNode *n, BuiltInFunction2 f, const String &name, const ExpressionDestination &dst) {
-    genCall(n, (BuiltInFunctionRef2)f, name, dst);
+  void genCall(const ExpressionNode *n, BuiltInFunction2 f, const String &name DCL_DSTPARAM) {
+    genCall(n, (BuiltInFunctionRef2)f, name DST_PARAM);
   }
 #endif // ALLARGS_BYREF
 
-  void     genPolynomial(       const ExpressionNode *n, const ExpressionDestination &dst);
-  void     genIf(               const ExpressionNode *n, const ExpressionDestination &dst);
+  void     genPolynomial(       const ExpressionNode *n DCL_DSTPARAM);
+  void     genIf(               const ExpressionNode *n DCL_DSTPARAM);
   void     genPowMultSequence(  UINT y);
-
+  void     genCall(             const FunctionCall  &fc DCL_DSTPARAM);
 
 #ifdef IS32BIT
   int      genPush(             const ExpressionNode *n);
   int      genPushRef(          const ExpressionNode *n, int index);
   int      genPushReal(         const Real           &x);
+  int      genPushValue(        const ExpressionNode *n); // assume n is name/number
   int      genPushReturnAddr();
   int      genPushInt(int n);
   int      genPush(             const void           *p, UINT size); // return size
@@ -297,7 +304,6 @@ private:
   void     genSetParameter(     const ExpressionNode *n, int index);
   void     genSetRefParameter(  const ExpressionNode *n, int index);
   BYTE     genSetRefParameter(  const ExpressionNode *n, int index, bool &savedOnStack);
-  void     genCall(             const FunctionCall  &fc, const ExpressionDestination &dst);
 #endif // IS64BIT
 
   void     genAssignment(       const ExpressionNode *n);
