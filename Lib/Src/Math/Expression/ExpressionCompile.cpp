@@ -598,6 +598,13 @@ void CodeGenerator::genCall(const FunctionCall &fc DCL_DSTPARAM) {
   assert(m_hasCalls);
 #endif
   m_code->emitCall(fc DST_PARAM);
+
+#ifdef IS32BIT
+#ifdef LONGDOUBLE
+  m_code->emitFLD(m_code->getTableRef(0)); // this is the address which was pushed for returnvalue
+#endif // LONGDOUBLE
+#endif // IS32BIT
+
 }
 
 #ifdef IS32BIT
@@ -687,11 +694,21 @@ int CodeGenerator::genPushRef(const ExpressionNode *n, int index) {
 }
 
 int CodeGenerator::genPushValue(const ExpressionNode *n) {
+  int bytesPushed = 0;
   const MemoryRef mem1 = m_code->getTableRef(n->getValueIndex());
   const MemoryRef mem2 = MemoryRef(TABLEREF_REG + (mem1.getOffset()+sizeof(DWORD)));
+
+#ifdef LONGDOUBLE
+  const MemoryRef mem3 = MemoryRef(TABLEREF_REG + (mem2.getOffset()+sizeof(DWORD)));
+  m_code->emit(PUSH, DWORDPtr(mem3)); // reverse sequence, because stack grows downwards
+  bytesPushed += sizeof(DWORD);
+#endif
+
   m_code->emit(PUSH, DWORDPtr(mem2)); // reverse sequence, because stack grows downwards
+  bytesPushed += sizeof(DWORD);
   m_code->emit(PUSH, DWORDPtr(mem1));
-  return 2 * sizeof(DWORD);
+  bytesPushed += sizeof(DWORD);
+  return bytesPushed;
 }
 
 int CodeGenerator::genPushReal(const Real &x) {

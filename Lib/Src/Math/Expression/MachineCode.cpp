@@ -470,10 +470,6 @@ void MachineCode::emitCall(const FunctionCall &fc) { // public
   // Call immediate addr
   const int pos = emit(CALL,(intptr_t)fc.m_fp);
   m_callTable.add(FunctionCallInfo(fc, pos, (BYTE)(size()-pos)));
-#ifdef LONGDOUBLE
-  emit(MOV,EAX,DWORDPtr(ESP));
-  emitFLD(EAX);
-#endif // LONGDOUBLE
 }
 
 #else // IS64BIT
