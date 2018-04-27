@@ -25,23 +25,32 @@ extern "C" {
 class MachineCode : public ExecutableByteArray {
 private:
   DECLARECLASSNAME;
-  ExpressionEntryPoint            m_entryPoint;
-  void                           *m_esi;
-  CompactArray<JumpFixup>         m_jumpFixups;
-  Array<FunctionCallInfo>         m_callTable;
+  ExpressionEntryPoint              m_entryPoint;
+  void                             *m_esi;
+  CompactArray<JumpFixup>           m_jumpFixups;
+  Array<FunctionCallInfo>           m_callTable;
+  bool                              m_callsGenerated;
   // Reference to first element in ParserTree::m_valueTable
-  const CompactRealArray         &m_valueTable;
+  const CompactRealArray           &m_valueTable;
   // Offset in bytes, of esi/rsi from m_valueTable[0], when code is executing. 0 <= m_esiOffset < 128
-  char                            m_esiOffset;
-  FILE                           *m_listFile;
-  int                             m_lastCodeSize;
-  StringArray                     m_valueStr;     // for comments in listfile
-  String                          m_insStr;
-  const TCHAR                    *m_listComment;
+  char                              m_esiOffset;
+  FILE                             *m_listFile;
+  int                               m_lastCodeSize;
+  StringArray                       m_valueStr;     // for comments in listfile
+  String                            m_insStr;
+  const TCHAR                      *m_listComment;
+
 #ifdef IS64BIT
-  BYTE                            m_stackTop;
-  BYTE                           *m_referenceFunction;
+  BYTE                              m_stackTop;
+  int                               m_loadRBPInsPos;
+  BYTE                              m_loadRBPInsSize;
+  int                               m_codeSize;
+  typedef CompactKeyType<BuiltInFunction> FunctionKey;
+  CompactHashMap<FunctionKey, int>  m_fpMap; // value is index into m_uniqueFunctionCall, not offset
+  Array<FunctionCall>               m_uniqueFunctionCall;
+  int getFunctionRefIndex(const FunctionCall &fc);
 #endif // IS64BIT
+
   void changeShortJumpToNearJump(JumpFixup &jf);
   void finalJumpFixup();
   inline int getESIOffset(size_t valueIndex) const {
@@ -56,23 +65,30 @@ private:
 
   void clearFunctionCalls() {
     m_callTable.clear();
+#ifdef IS64BIT
+    m_fpMap.clear();
+    m_uniqueFunctionCall.clear();
+#endif
   }
+
 #ifdef IS32BIT
-  void linkFunctionCalls();
   void linkFunctionCall(const FunctionCallInfo &call);
+#else // IS64BIT
+  void emit(int offset, const FunctionCall &fc);
+#endif // IS64BIT
+  void linkFunctionCalls();
   void adjustFunctionCalls(int pos, int bytesAdded);
-#endif // IS32BIT
-  MachineCode(const MachineCode &src);             // not implemented
-  MachineCode &operator=(const MachineCode &src);  // not implemented
   int emitIns(const InstructionBase &ins);
   void initValueStr(const ExpressionVariableArray &variables);
+  void clearValueStr();
   // return NULL if not comment found
   const TCHAR *findListComment(const InstructionOperand &op) const;
   void listIns(const TCHAR *format,...);
   void listFixupTable() const;
   void listCallTable() const;
+  MachineCode(const MachineCode &src);             // not implemented
+  MachineCode &operator=(const MachineCode &src);  // not implemented
 public:
-
   MachineCode(ParserTree &m_tree, FILE *listFile = NULL);
   ~MachineCode();
   void clear();
@@ -154,11 +170,13 @@ public:
     m_stackTop -= sizeof(Real);
     return m_stackTop;
   }
-  inline const BYTE *getReferenceFunction() const {
-    return m_referenceFunction;
-  }
+  void emitLoadRBP();
+  void fixupLoadRBP();
 #endif // IS64BIT
 
+  inline bool isCallsGenerated() const {
+    return m_callsGenerated;
+  }
   void finalize();
   void list(const TCHAR *format,...) const;
   inline void listLabel(CodeLabel label) {
@@ -206,12 +224,12 @@ public:
 
 class CodeGenerator {
 private:
-  ParserTree             &m_tree;
-  const TrigonometricMode m_trigonometricMode;
-  MachineCode            *m_code;
-  int                     m_nextLbl;
+  ParserTree                     &m_tree;
+  const TrigonometricMode         m_trigonometricMode;
+  MachineCode                    *m_code;
+  int                             m_nextLbl;
 #ifdef IS64BIT
-  bool                    m_hasCalls;
+  bool                            m_hasCalls;
 #endif // IS64BIT
 
   inline TrigonometricMode getTrigonometricMode() const {
@@ -279,7 +297,8 @@ private:
   void     genSetParameter(     const ExpressionNode *n, int index);
   void     genSetRefParameter(  const ExpressionNode *n, int index);
   BYTE     genSetRefParameter(  const ExpressionNode *n, int index, bool &savedOnStack);
-  void     emitCall(            const FunctionCall  &fc, const ExpressionDestination &dst);
+  void     genCall(             const FunctionCall  &fc, const ExpressionDestination &dst);
+  void     updateSetRBPInstruction();
 #endif // IS64BIT
 
   void     genAssignment(       const ExpressionNode *n);

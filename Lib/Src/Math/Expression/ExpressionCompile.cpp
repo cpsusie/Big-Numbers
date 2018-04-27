@@ -24,6 +24,12 @@ void CodeGenerator::genMachineCode() {
   genProlog();
   genStatementList(m_tree.getRoot());
   m_code->finalize();
+#ifdef IS64BIT
+  if(m_code->isCallsGenerated()) {
+    assert(m_hasCalls);
+    m_code->fixupLoadRBP();
+  }
+#endif
 }
 
 #ifdef DEBUG_JUMPLIST
@@ -38,6 +44,7 @@ void CodeGenerator::genMachineCode() {
 #define LISTJUMPLIST(jl)
 #endif // DEBUG_JUMPLIST
 
+// At entry in x64-mode, RCX contains address of the first instruction
 void CodeGenerator::genProlog() {
 #ifdef IS64BIT
 #define LOCALSTACKSPACE   72
@@ -46,7 +53,11 @@ void CodeGenerator::genProlog() {
   m_code->resetStack(RESERVESTACKSPACE);
   if(m_hasCalls) {
     m_code->emit(PUSH,RBP);
-    m_code->emit(MOV,RBP,(INT64)m_code->getReferenceFunction());
+    // generate a dummy-instruction, which will be adjusted
+    // with the right offset (4-bytes) when code is generated.
+    // After the instructions, there will be an array of QWORD's
+    // with absolute addresses of the called functions
+    m_code->emitLoadRBP();
     m_code->emitSubStack(LOCALSTACKSPACE + RESERVESTACKSPACE); // to get 16-byte aligned RSP
   }
 #endif
@@ -133,11 +144,11 @@ void CodeGenerator::genPowMultSequence(UINT y) {
   }
 }
 
-#define GENEXPRESSION(n) genExpression(n  ,dst)
-#define GENCALL(n,f)     genCall(      n,f,_T(#f), dst); return
-#define GENCALLARG(n,f)  genCall1Arg(  n,f,_T(#f), dst); return
-#define GENPOLY(n)       genPolynomial(n  ,dst);         return
-#define GENIF(n)         genIf(n,dst);                   return
+#define GENEXPRESSION(n) genExpression(n         ,dst)
+#define GENCALL(n,f)     genCall(      n,f,_T(#f),dst); return
+#define GENCALLARG(n,f)  genCall1Arg(  n,f,_T(#f),dst); return
+#define GENPOLY(n)       genPolynomial(n         ,dst); return
+#define GENIF(n)         genIf(n                 ,dst); return
 
 void CodeGenerator::throwInvalidTrigonometricMode() {
   throwInvalidArgumentException(_T("genExpression"), _T("Invalid trigonometricMode:%d"), m_trigonometricMode);
@@ -745,7 +756,7 @@ static const IndexRegister int64ParamRegister[] = {
 
 void CodeGenerator::genCall1Arg(const ExpressionNode *arg, BuiltInFunction1 f, const String &name, const ExpressionDestination &dst) {
   genSetParameter(arg, 0);
-  emitCall(FunctionCall(f, name), dst);
+  genCall(FunctionCall(f, name), dst);
 }
 
 void CodeGenerator::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode *arg2, BuiltInFunction2 f, const String &name, const ExpressionDestination &dst) {
@@ -764,12 +775,12 @@ void CodeGenerator::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode
     m_code->emitMemToXMM(XMM0, m_code->getStackRef(offset));
     m_code->popTmp();
   }
-  emitCall(FunctionCall(f, name), dst);
+  genCall(FunctionCall(f, name), dst);
 }
 
 void CodeGenerator::genCall1Arg(const ExpressionNode *arg, BuiltInFunctionRef1 f, const String &name, const ExpressionDestination &dst) {
   genSetRefParameter(arg, 0);
-  emitCall(FunctionCall(f, name), dst);
+  genCall(FunctionCall(f, name), dst);
 }
 
 void CodeGenerator::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode *arg2, BuiltInFunctionRef2 f, const String &name, const ExpressionDestination &dst) {
@@ -793,14 +804,14 @@ void CodeGenerator::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode
     m_code->emitLoadAddr(RDX, m_code->getStackRef(offset2));
     m_code->popTmp();
   }
-  emitCall(FunctionCall(f, name), dst);
+  genCall(FunctionCall(f, name), dst);
 }
 
 #else // LONGDOUBLE
 
 void CodeGenerator::genCall1Arg(const ExpressionNode *arg, BuiltInFunctionRef1 f, const String &name, const ExpressionDestination &dst) {
   genSetRefParameter(arg, 0);
-  emitCall(FunctionCall(f, name), dst);
+  genCall(FunctionCall(f, name), dst);
 }
 
 void CodeGenerator::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode *arg2, BuiltInFunctionRef2 f, const String &name, const ExpressionDestination &dst) {
@@ -828,7 +839,7 @@ void CodeGenerator::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode
       m_code->popTmp();
     }
   }
-  emitCall(FunctionCall(f, name), dst);
+  genCall(FunctionCall(f, name), dst);
 }
 
 #endif // LONGDOUBLE
@@ -856,10 +867,10 @@ void CodeGenerator::genPolynomial(const ExpressionNode *n, const ExpressionDesti
 
   const IndexRegister &param3    = int64ParamRegister[2];
   m_code->emitLoadAddr(param3, m_code->getTableRef(firstCoefIndex));
-  emitCall(FunctionCall((BuiltInFunction)::evaluatePolynomial, polyName, polySignatureStr), dst);
+  genCall(FunctionCall((BuiltInFunction)::evaluatePolynomial, polyName, polySignatureStr), dst);
 }
 
-void CodeGenerator::emitCall(const FunctionCall &fc, const ExpressionDestination &dst) {
+void CodeGenerator::genCall(const FunctionCall &fc, const ExpressionDestination &dst) {
   assert(m_hasCalls);
   m_code->emitCall(fc,dst);
 }

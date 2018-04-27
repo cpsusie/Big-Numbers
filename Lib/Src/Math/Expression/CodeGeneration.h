@@ -234,6 +234,9 @@ public:
   }
   InstructionBase makeInstruction(const MachineCode *code) const;
   String toString() const {
-    return format(_T("  %4d %-40s  (size:%d)"), m_pos, __super::toString().cstr(), m_instructionSize);
+    return format(_T("%4d %-40s  (size:%d)")
+                 ,m_pos, __super::toString().cstr()
+                 ,m_instructionSize
+                 );
   }
 };

@@ -5,9 +5,15 @@ DEFINECLASSNAME(MachineCode);
 
 MachineCode::MachineCode(ParserTree &tree, FILE *listFile)
   : m_valueTable(tree.getValueTable())
+  , m_callsGenerated(false)
 {
   setValueCount(m_valueTable.size());
   m_entryPoint   = NULL;
+#ifdef IS64BIT
+  m_loadRBPInsPos  = 0;
+  m_loadRBPInsSize = 0;
+  m_codeSize       = 0;
+#endif // IS64BIT
 
   initValueStr(tree.getAllVariables());
   m_lastCodeSize = 0;
@@ -16,14 +22,6 @@ MachineCode::MachineCode(ParserTree &tree, FILE *listFile)
   if(hasListFile()) {
     list(_T("ESI offset from &valueTable[0] (in bytes):%d (%#02x)\n"), m_esiOffset, m_esiOffset);
   }
-
-#ifdef IS64BIT
-#ifndef LONGDOUBLE
-  m_referenceFunction = (BYTE*)(BuiltInFunction1)exp;
-#else // LONGDOUBLE
-  m_referenceFunction = (BYTE*)(BuiltInFunctionRef1)exp;
-#endif // LONGDOUBLE
-#endif // IS64BIT
 }
 
 MachineCode::~MachineCode() {
@@ -33,23 +31,23 @@ MachineCode::~MachineCode() {
 void MachineCode::clear() {
   __super::clear();
   clearJumpTable();
-#ifdef IS32BIT
   clearFunctionCalls();
-#endif
+  clearValueStr();
   setValueCount(0);
 }
 
 void MachineCode::finalize() {
+  m_callsGenerated = !m_callTable.isEmpty();
   finalJumpFixup();
-#ifdef IS32BIT
-  linkFunctionCalls();
+#ifdef IS64BIT
+  m_codeSize = (int)size();
 #endif
+  linkFunctionCalls();
 
   m_entryPoint = (ExpressionEntryPoint)getData();
   clearJumpTable();
-#ifdef IS32BIT
   clearFunctionCalls();
-#endif
+  clearValueStr();
   flushInstructionCache();
 }
 
@@ -91,6 +89,10 @@ void MachineCode::initValueStr(const ExpressionVariableArray &variables) {
   for(size_t i = 0; i < m_valueStr.size(); i++) {
     m_valueStr[i] = format(_T("value[%2d]:%s"), i, m_valueStr[i].cstr());
   }
+}
+
+void MachineCode::clearValueStr() {
+  m_valueStr.clear();
 }
 
 void MachineCode::list(const TCHAR *format, ...) const {
@@ -226,6 +228,38 @@ void MachineCode::emitLoadAddr(const IndexRegister &dst, const MemoryRef &ref) {
   }
 }
 
+#ifdef IS64BIT
+void MachineCode::emitLoadRBP() {
+  m_loadRBPInsPos = emit(LEA,RBP,QWORDPtr(RCX + 1));
+  m_loadRBPInsSize = (int)size() - m_loadRBPInsPos;
+}
+
+// This should be called after finalJumpFixUp, becuase code-size can change there
+// There are no jumps across this instruction, so all ip-relative jumps will still be valid
+// after this. And the address-table contains absolute addresses, so it will not cause any troubles to
+// move these.
+void MachineCode::fixupLoadRBP() {
+  int lastSize  = m_loadRBPInsSize;
+  int rbpOffset = m_codeSize;
+  for(;;) {
+    InstructionBase ins = LEA(RBP,QWORDPtr(RCX + rbpOffset));
+    const int newSize    = ins.size();
+    const int bytesAdded = newSize - lastSize;
+    if(bytesAdded == 0) {
+      break;
+    }
+    rbpOffset += bytesAdded;
+    lastSize = newSize;
+  }
+  if(lastSize != m_loadRBPInsSize) {
+    const int bytesAdded = lastSize - m_loadRBPInsSize;
+    insertZeroes(m_loadRBPInsPos, bytesAdded);
+  }
+  InstructionBase ins = LEA(RBP,QWORDPtr(RCX + rbpOffset));
+  setBytes(m_loadRBPInsPos, ins.getBytes(), ins.size());
+}
+#endif // IS64BIT
+
 InstructionBase JumpFixup::makeInstruction() const {
   for(int lastSize = m_instructionSize, jmpTo = m_jmpTo;;) {
     const int ipRel = jmpTo - m_instructionPos - lastSize;
@@ -329,13 +363,10 @@ void MachineCode::changeShortJumpToNearJump(JumpFixup &jf) {
     }
     jf.m_isShortJump     = false;
     jf.m_instructionSize = newInsSize;
-#ifdef IS32BIT
     adjustFunctionCalls(pos, bytesAdded);
-#endif
   }
 }
 
-#ifdef IS32BIT
 void MachineCode::adjustFunctionCalls(int pos, int bytesAdded) {
   for(size_t i = 0; i < m_callTable.size(); i++) {
     FunctionCallInfo &fi = m_callTable[i];
@@ -345,6 +376,7 @@ void MachineCode::adjustFunctionCalls(int pos, int bytesAdded) {
   }
 }
 
+#ifdef IS32BIT
 InstructionBase FunctionCallInfo::makeInstruction(const MachineCode *code) const {
   int lastSize = m_instructionSize;
   const BYTE    *insAddr  = code->getData() + m_pos;
@@ -358,16 +390,38 @@ InstructionBase FunctionCallInfo::makeInstruction(const MachineCode *code) const
   }
 }
 
-void MachineCode::linkFunctionCalls() {
-  for(size_t i = 0; i < m_callTable.size(); i++) {
-    linkFunctionCall(m_callTable[i]);
-  }
-}
-
 void MachineCode::linkFunctionCall(const FunctionCallInfo &fci) {
   const InstructionBase ins = fci.makeInstruction(this);
   assert(ins.size() == fci.m_instructionSize);
   setBytes(fci.m_pos, ins.getBytes(), ins.size());
+}
+#else // IS64BIT
+int MachineCode::getFunctionRefIndex(const FunctionCall &fc) {
+  const int *p = m_fpMap.get(fc.m_fp);
+  if(p) return *p;
+  const int index = (int)m_uniqueFunctionCall.size();
+  m_uniqueFunctionCall.add(fc); // add new entry
+  m_fpMap.put(FunctionKey(fc.m_fp), index);
+  return index;
+}
+
+void MachineCode::emit(int offset, const FunctionCall &fc) {
+  append((BYTE*)&fc.m_fp, sizeof(BuiltInFunction));
+  if(hasListFile()) list(_T("[%#02X]:%s\n"), offset, fc.toString().cstr());
+}
+#endif // IS64BIT
+
+void MachineCode::linkFunctionCalls() {
+#ifdef IS32BIT
+  for(size_t i = 0; i < m_callTable.size(); i++) {
+    linkFunctionCall(m_callTable[i]);
+  }
+#else // IS64BIT
+  const int tableStart = (int)size();
+  for(size_t i = 0; i < m_uniqueFunctionCall.size(); i++) {
+    emit((int)size() - tableStart, m_uniqueFunctionCall[i]);
+  }
+#endif // IS64BIT
 }
 
 void MachineCode::emitCall(const FunctionCall &fc) {
@@ -376,10 +430,19 @@ void MachineCode::emitCall(const FunctionCall &fc) {
     tmpComment    = fc.toString();
     m_listComment = tmpComment.cstr();
   }
+#ifdef IS32BIT
+  // Call immediate addr
   const int pos = emit(CALL,(intptr_t)fc.m_fp);
+#else // IS64BIT
+  // Call using reference-table addeded after code, and during exeution
+  // has RBP pointing at element 0
+  const int index = getFunctionRefIndex(fc);
+  const int pos   = emit(CALL,QWORDPtr(RBP + (index*sizeof(BuiltInFunction))));
+#endif // IS64BIT
   m_callTable.add(FunctionCallInfo(fc, pos, (BYTE)(size()-pos)));
 }
 
+#ifdef IS32BIT
 void MachineCode::emitCall(const FunctionCall &fc, const ExpressionDestination &dummy) {
   emitCall(fc);
 #ifdef LONGDOUBLE
@@ -389,18 +452,6 @@ void MachineCode::emitCall(const FunctionCall &fc, const ExpressionDestination &
 }
 
 #else // IS64BIT
-
-void MachineCode::emitCall(const FunctionCall &fc) {
-  const int pos = emit(LEA,RAX,QWORDPtr(RBP+(int)((BYTE*)fc.m_fp-m_referenceFunction)));
-  m_callTable.add(FunctionCallInfo(fc, pos, (BYTE)(size()-pos)));
-
-  String tmpComment;
-  if(hasListFile()) {
-    tmpComment    = fc.toString();
-    m_listComment = tmpComment.cstr();
-  }
-  emit(CALL,RAX);
-}
 
 #ifndef LONGDOUBLE
 void MachineCode::emitCall(const FunctionCall &fc, const ExpressionDestination &dst) {
@@ -453,7 +504,5 @@ void MachineCode::emitCall(const FunctionCall &fc, const ExpressionDestination &
     break;
   }
 }
-
 #endif // LONGDOUBLE
-
 #endif // IS64BIT
