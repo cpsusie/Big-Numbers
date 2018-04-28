@@ -3,7 +3,7 @@
 #include <OpCode.h>
 #include <Math/MathLib.h>
 #include <Math/Expression/ParserTree.h>
-#include "MachineCode.h"
+#include <Math/Expression/MachineCode.h>
 
 typedef void (*BuiltInFunction)();
 typedef Real (*BuiltInFunctionRef1)(const Real &x);

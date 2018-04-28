@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ExpressionParser.h"
+#include "MachineCode.h"
 
 typedef enum {
   EXPR_NORETURNTYPE
@@ -32,7 +33,7 @@ class Expression : public ParserTree {
 private:
   DECLARECLASSNAME;
   bool                       m_machineCode;
-  const void                *m_code; // actually MachineCode*
+  const MachineCode         *m_code;
   FILE                      *m_listFile;
   ExpressionReturnType       m_returnType;
   mutable ExpressionState    m_state;
@@ -77,12 +78,15 @@ private:
   void   doAssignment(                                     const ExpressionNode *n) const;
   void   print(                                            const ExpressionNode *n, FILE *f = stdout) const;
 
-  void   openListFile();
-  void   closeListFile();
   void   genMachineCode();
   void   clearMachineCode();
-  Real   fastEvaluateReal();
-  bool   fastEvaluateBool();
+  inline Real fastEvaluateReal() {
+    return m_code->evaluateReal();
+  }
+  inline bool fastEvaluateBool() {
+    return m_code->evaluateBool();
+  }
+
   // Differentiation
   SNode                       D(                           SNode n, const String &name);
   SNode                       DPolynomial(                 SNode n, const String &name);

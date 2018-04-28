@@ -133,20 +133,11 @@ void Expression::setMachineCode(bool machinecode) {
 
 void Expression::genMachineCode() {
   clearMachineCode();
-  m_code  = CodeGenerator(this, getTrigonometricMode(),m_listFile).getCode();
+  m_code = CodeGenerator(this, getTrigonometricMode(),m_listFile).getCode();
 }
 
 void Expression::clearMachineCode() {
-  MachineCode *mcode = (MachineCode*)m_code;
-  SAFEDELETE(mcode);
-}
-
-Real Expression::fastEvaluateReal() {
-  return ((MachineCode*)m_code)->evaluateReal();
-}
-
-bool Expression::fastEvaluateBool() {
-  return ((MachineCode*)m_code)->evaluateBool();
+  SAFEDELETE(m_code);
 }
 
 void Expression::setTrigonometricMode(TrigonometricMode mode) {

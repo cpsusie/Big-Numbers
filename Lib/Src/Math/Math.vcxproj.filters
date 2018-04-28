@@ -526,8 +526,8 @@
     <ClInclude Include="Expression\CodeGeneration.h">
       <Filter>Source Files\Expression</Filter>
     </ClInclude>
-    <ClInclude Include="Expression\MachineCode.h">
-      <Filter>Source Files\Expression</Filter>
+    <ClInclude Include="..\..\Include\Math\Expression\MachineCode.h">
+      <Filter>Header Files\Expression</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
