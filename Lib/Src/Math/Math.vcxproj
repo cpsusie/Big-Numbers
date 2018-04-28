@@ -889,6 +889,7 @@
     <ClCompile Include="Double80Str.cpp" />
     <ClCompile Include="DoubleFunctions.cpp" />
     <ClCompile Include="Expression\AddentArray.cpp" />
+    <ClCompile Include="Expression\CodeGeneration.cpp" />
     <ClCompile Include="Expression\Expression.cpp" />
     <ClCompile Include="Expression\ExpressionAction.cpp" />
     <ClCompile Include="Expression\ExpressionCompare.cpp" />
@@ -1215,6 +1216,7 @@
     <ClInclude Include="..\..\Include\Math\Triangle\Triangle.h" />
     <ClInclude Include="Expression\CodeGeneration.h" />
     <ClInclude Include="Expression\ExpressionCompile.h" />
+    <ClInclude Include="Expression\MachineCode.h" />
     <ClInclude Include="Expression\pch.h" />
     <ClInclude Include="MemoryPool.h" />
     <ClInclude Include="pch.h" />

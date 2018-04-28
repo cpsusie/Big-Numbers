@@ -6,16 +6,18 @@
 CodeGenerator::CodeGenerator(ParserTree *tree, TrigonometricMode trigonometricMode, FILE *listFile)
   : m_tree(*tree)
   , m_trigonometricMode(trigonometricMode)
-  , m_nextLbl(0)
 {
   if(tree->getTreeForm() != TREEFORM_STANDARD) {
     throwException(_T("Treeform must be STANDARD to generate machinecode. Form=%s"), m_tree.getTreeFormName().cstr());
   }
-  m_code = new MachineCode(m_tree, listFile); TRACE_NEW(m_code);
+  m_codeArray = new MachineCode;                                   TRACE_NEW(m_codeArray);
+  m_code     = new CodeGeneration(*m_codeArray, *tree, listFile); TRACE_NEW(m_code)
   try {
     genMachineCode();
+    SAFEDELETE(m_code);
   } catch (...) {
     SAFEDELETE(m_code);
+    SAFEDELETE(m_codeArray)
     throw;
   }
 }
@@ -107,9 +109,8 @@ void CodeGenerator::genAssignment(const ExpressionNode *n) {
 #endif IS32BIT
 
 void CodeGenerator::genReturnBoolExpression(const ExpressionNode *n) {
-  JumpList jumps(getLabelPair());
+  JumpList jumps(m_labelGen.nextLabelPair());
   genBoolExpression(n->left(),jumps, true);
-  LISTJUMPLIST(jumps);
   m_code->fixupJumps(jumps,true );
   m_code->emit(MOV,EAX,1  );
   genEpilog();
@@ -415,10 +416,10 @@ void CodeGenerator::genIndexedExpression(const ExpressionNode *n) {
   m_code->emit(summation ? FLDZ : FLD1);                // Initialize accumulator
   genExpression(startAssignment->right() DST_FPU);      // Evaluate start value for loopVar
   const int loopStart = (int)m_code->size();
-  const CodeLabel startLabel = nextLabel();
+  const CodeLabel startLabel = m_labelGen.nextLabel();
   m_code->listLabel(startLabel);
   m_code->emit(FCOMI,ST2);                              // Invariant:loopVar in st(0), endExpr in st(2)
-  const CodeLabel endLabel = nextLabel();
+  const CodeLabel endLabel = m_labelGen.nextLabel();
   const int jmpEnd   = m_code->emitJmp(JA,endLabel);    // Jump loopEnd if st(0) > st(2)
   m_code->emitFSTP(getTableRef(loopVar));               // Pop st(0) to loopVar
   genExpression(expr DST_FPU);                          // Accumulator in st(0) (starting at 0 for INDEXEDSUM, 1 for INDEXEDPRODUCT)
@@ -437,16 +438,15 @@ void CodeGenerator::genIndexedExpression(const ExpressionNode *n) {
 }
 
 void CodeGenerator::genIf(const ExpressionNode *n DCL_DSTPARAM) {
-  JumpList jumps(getLabelPair());
+  JumpList jumps(m_labelGen.nextLabelPair());
   genBoolExpression(n->child(0),jumps,true);
-  LISTJUMPLIST(jumps);
-  const CodeLabel endLabel = nextLabel();
+  const CodeLabel endLabel = m_labelGen.nextLabel();
   m_code->fixupJumps(jumps,true);
   GENEXPRESSION(n->child(1));           // "true"-expr
   const int firstResultJump  = m_code->emitJmp(JMP,endLabel);
   m_code->fixupJumps(jumps,false);
   GENEXPRESSION(n->child(2));           // "false"-expr
-  m_code->fixupJump(firstResultJump,(int)m_code->size());
+  m_code->fixupJump(firstResultJump);
   m_code->listLabel(endLabel);
 }
 
@@ -473,7 +473,6 @@ void CodeGenerator::genBoolExpression(const ExpressionNode *n, JumpList &jl, boo
   case SYMNOT:
     { JumpList jumps(!jl);
       genBoolExpression(n->child(0), jumps, !trueAtEnd);
-LISTJUMPLIST(jumps);
       jl ^= jumps;
     }
     break;
@@ -493,7 +492,7 @@ LISTJUMPLIST(jumps);
       genBoolExpression(!SNode((ExpressionNode*)n->left()) && !SNode((ExpressionNode*)n->right()), jumps, !trueAtEnd);
       jl ^= jumps;
     } else {
-      JumpList jump1(nextLabel(),jl.m_trueLabel);
+      JumpList jump1(m_labelGen.nextLabel(),jl.m_trueLabel);
       genBoolExpression(n->left(), jump1, !trueAtEnd);
       m_code->fixupJumps(jump1,!trueAtEnd);
       genBoolExpression(n->right(), jl, trueAtEnd);

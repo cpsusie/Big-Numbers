@@ -1,12 +1,11 @@
 #pragma once
 
 #include <OpCode.h>
-#include <ExecutableByteArray.h>
 #include <Math/MathLib.h>
 #include <Math/Expression/ParserTree.h>
+#include "MachineCode.h"
 
 typedef void (*BuiltInFunction)();
-typedef BuiltInFunction ExpressionEntryPoint;
 typedef Real (*BuiltInFunctionRef1)(const Real &x);
 typedef Real (*BuiltInFunctionRef2)(const Real &x, const Real &y);
 typedef Real (*BuiltInFunction1)(Real x);
@@ -104,6 +103,20 @@ public:
 inline CodeLabelPair operator!(const CodeLabelPair &clp) {
   return CodeLabelPair(clp.m_trueLabel, clp.m_falseLabel);
 }
+
+class LabelGenerator {
+private:
+  CodeLabel m_next;
+public:
+  LabelGenerator() : m_next(0) {
+  }
+  CodeLabel nextLabel() {
+    return m_next++;
+  }
+  CodeLabelPair nextLabelPair() {
+    return CodeLabelPair(nextLabel(), nextLabel());
+  }
+};
 
 class JumpFixup {
 public:
@@ -218,8 +231,6 @@ public:
   }
 };
 
-class MachineCode;
-
 class FunctionCallInfo : public FunctionCall {
 public:
   int              m_pos;              // index of address in Machinecode
@@ -230,6 +241,175 @@ public:
     , m_instructionSize(insSize)
   {
   }
-  InstructionBase makeInstruction(const MachineCode *code) const;
+  InstructionBase makeInstruction(const MachineCode &code) const;
   String toString() const;
+};
+
+#ifndef LONGDOUBLE
+#define RealPtr QWORDPtr
+#else  // LONGDOUBLE
+#define RealPtr TBYTEPtr
+#endif // LONGDOUBLE
+
+#ifdef IS32BIT
+#define TABLEREF_REG ESI
+#define STACK_REG    ESP
+#else  // IS64BIT
+#define TABLEREF_REG RSI
+#define STACK_REG    RSP
+#endif // IS64BIT
+
+class CodeGeneration {
+private:
+  MachineCode                      &m_code;
+  CompactArray<JumpFixup>           m_jumpFixups;
+  Array<FunctionCallInfo>           m_callTable;
+  bool                              m_callsGenerated;
+  // Reference to first element in ParserTree::m_valueTable
+  const CompactRealArray           &m_valueTable;
+  // Offset in bytes, of esi/rsi from m_valueTable[0], when code is executing. 0 <= m_esiOffset < 128
+  void                             *m_esi;
+  char                              m_esiOffset;
+  FILE                             *m_listFile;
+  int                               m_lastCodeSize;
+  StringArray                       m_valueStr;     // for comments in listfile
+  String                            m_insStr;
+  const TCHAR                      *m_listComment;
+
+#ifdef IS64BIT
+  BYTE                              m_stackTop;
+  int                               m_loadRBXInsPos;
+  BYTE                              m_loadRBXInsSize;
+  int                               m_functionTableStart; // offset in bytes from code[0] to first function-reference
+  typedef CompactKeyType<BuiltInFunction> FunctionKey;
+  CompactHashMap<FunctionKey, int>  m_fpMap; // value is index into m_uniqueFunctionCall, not offset
+  Array<FunctionCall>               m_uniqueFunctionCall;
+  int getFunctionRefIndex(const FunctionCall &fc);
+#endif // IS64BIT
+
+  void changeShortJumpToNearJump(JumpFixup &jf);
+  void finalJumpFixup();
+  void setValueCount(size_t valueCount);
+  inline UINT getValueCount() const {
+    return (UINT)m_valueTable.size();
+  }
+  inline int getESIOffset(UINT valueIndex) const {
+    if(valueIndex >= getValueCount()) {
+      throwInvalidArgumentException(__TFUNCTION__, _T("valueIndex=%u. #values=%u"), valueIndex, getValueCount());
+    }
+    return (int)valueIndex * sizeof(Real) - m_esiOffset;
+  }
+  inline UINT esiOffsetToIndex(int offset) const {
+    return (offset + m_esiOffset) / sizeof(Real);
+  }
+
+#ifdef IS32BIT
+  void linkFunctionCall(const FunctionCallInfo &call);
+#else // IS64BIT
+  void emit(int offset, const FunctionCall &fc);
+#endif // IS64BIT
+  void linkFunctionCalls();
+  void adjustFunctionCalls(int pos, int bytesAdded);
+  int  emitIns(const InstructionBase &ins);
+  void initValueStr(const ExpressionVariableArray &variables);
+  // return NULL if no comment found
+  const TCHAR *findListComment(const InstructionOperand &op) const;
+  void listIns(const TCHAR *format,...);
+  void listFixupTable() const;
+  void listCallTable() const;
+public:
+  CodeGeneration(MachineCode &code, ParserTree &tree, FILE *listFile);
+  inline int size() const {
+    return (int)m_code.size();
+  }
+  void list(const TCHAR *format,...) const;
+  inline void listLabel(CodeLabel label) {
+    if(hasListFile()) list(_T("%s:\n"), labelToString(label).cstr());
+  }
+  inline bool hasListFile() const {
+    return m_listFile != NULL;
+  }
+
+  int  emit(   const Opcode0Arg   &opCode);
+  int  emit(   const OpcodeBase   &opCode, const InstructionOperand &op);
+  int  emit(   const OpcodeBase   &opCode, const InstructionOperand &op1, const InstructionOperand &op2);
+  int  emit(   const StringPrefix &prefix, const StringInstruction &strins);
+  int  emitJmp(const OpcodeBase   &opCode, CodeLabel lbl);
+  void emitFLD(const ExpressionNode *n);
+  void emitLoadAddr(const IndexRegister &dst, const MemoryRef &ref);
+#ifdef IS32BIT
+  void emitCall(const FunctionCall &fc);
+#else // IS64BIT
+private:
+  void emitCall(const FunctionCall &fc);
+public:
+  void emitCall(const FunctionCall &fc, const ExpressionDestination &dst);
+#endif // IS64BIT
+
+  inline void emitFSTP(const MemoryRef &mem) {
+    emit(FSTP, RealPtr(mem));
+  }
+  inline void emitFLD(const MemoryRef &mem) {
+    emit(FLD, RealPtr(mem));
+  }
+  inline MemoryRef getTableRef(int index) const {
+    return TABLEREF_REG + getESIOffset(index);
+  }
+  inline MemoryRef getStackRef(int offset) const {
+    return STACK_REG + offset;
+  }
+#ifndef LONGDOUBLE
+  inline void emitFPUOpVal(const OpcodeBase &op, const ExpressionNode *n) {
+    emit(op, RealPtr(getTableRef(n->getValueIndex())));
+  }
+#endif
+#ifdef IS64BIT
+  bool emitFLoad(const ExpressionNode *n, const ExpressionDestination &dst);
+#ifndef LONGDOUBLE
+  inline void emitXMMToMem(const XMMRegister &reg, const MemoryRef &mem) {
+    emit(MOVSD1,MMWORDPtr(mem), reg);
+  }
+  inline void emitMemToXMM(const XMMRegister &reg, const MemoryRef &mem) {
+    emit(MOVSD1,reg,MMWORDPtr(mem));
+  }
+#endif // !LONGDOUBLE
+#endif // IS64BIT
+  inline void emitAddReg(const GPRegister &reg, int value) {
+    if(value == 0) return;
+    emit(ADD,reg,value);
+  }
+  inline void emitSubReg(const GPRegister &reg, int value) {
+    if(value == 0) return;
+    emit(SUB,reg,value);
+  }
+  inline void emitAddStack(int n) {
+    emitAddReg(STACK_REG,n);
+  }
+  inline void emitSubStack(int n) {
+    emitSubReg(STACK_REG,n);
+  }
+  void fixupJumps(const JumpList &list, bool b);
+  // if jmpTo==-1, then use m_code->size()
+  void fixupJump(int index, int jmpTo = -1);
+#ifdef IS64BIT
+  inline void resetStack(BYTE startOffset) {
+    m_stackTop = startOffset;
+  }
+  inline BYTE pushTmp() {
+    const BYTE offset = m_stackTop;
+    m_stackTop += sizeof(Real);
+    return offset;
+  }
+  inline BYTE popTmp() {
+    m_stackTop -= sizeof(Real);
+    return m_stackTop;
+  }
+  void emitLoadRBX();
+  void fixupLoadRBX();
+#endif // IS64BIT
+
+  inline bool isCallsGenerated() const {
+    return m_callsGenerated;
+  }
+  void finalize();
 };
