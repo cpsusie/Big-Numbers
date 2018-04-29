@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CodeGeneration.h"
+#include <Math/Expression/ParserTree.h>
 
 class CodeGenerator {
 private:
@@ -9,9 +10,8 @@ private:
   MachineCode            *m_codeArray;
   CodeGeneration         *m_code;
   LabelGenerator          m_labelGen;
-#ifdef IS64BIT
-  bool                    m_hasCalls;
-#endif // IS64BIT
+
+  StringArray getNameCommentArray() const;
 
   inline TrigonometricMode getTrigonometricMode() const {
     return m_trigonometricMode;
@@ -23,17 +23,18 @@ private:
 
   // Code generation (compile to machinecode)
   void genMachineCode();
-  void genProlog();
-  void genEpilog();
   void genStatementList(       const ExpressionNode *n);
   void genReturnBoolExpression(const ExpressionNode *n);
   void genExpression(          const ExpressionNode *n DCL_DSTPARAM);
+  void genFLD(                 const ExpressionNode *n);
+
   void genCall1Arg(            const ExpressionNode *arg                             , BuiltInFunction1    f, const String &name DCL_DSTPARAM);
   void genCall1Arg(            const ExpressionNode *arg                             , BuiltInFunctionRef1 f, const String &name DCL_DSTPARAM);
   void genCall2Arg(            const ExpressionNode *arg1, const ExpressionNode *arg2, BuiltInFunction2    f, const String &name DCL_DSTPARAM);
   void genCall2Arg(            const ExpressionNode *arg1, const ExpressionNode *arg2, BuiltInFunctionRef2 f, const String &name DCL_DSTPARAM);
 
 #ifdef IS64BIT
+  bool genFLoad(               const ExpressionNode *n   DCL_DSTPARAM);
 #ifdef LONGDOUBLE
 #define ALLARGS_BYREF
 #endif
@@ -65,6 +66,9 @@ private:
   void     genIf(               const ExpressionNode *n DCL_DSTPARAM);
   void     genPowMultSequence(  UINT y);
   void     genCall(             const FunctionCall  &fc DCL_DSTPARAM);
+  inline void genFPUOpVal(const OpcodeBase &op, const ExpressionNode *n) {
+    m_code->emit(op, RealPtr(getTableRef(n)));
+  }
 
 #ifdef IS32BIT
   int      genPush(             const ExpressionNode *n);

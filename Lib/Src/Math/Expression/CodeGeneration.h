@@ -1,8 +1,8 @@
 #pragma once
 
 #include <OpCode.h>
+#include <CompactHashMap.h>
 #include <Math/MathLib.h>
-#include <Math/Expression/ParserTree.h>
 #include <Math/Expression/MachineCode.h>
 
 typedef void (*BuiltInFunction)();
@@ -108,12 +108,12 @@ class LabelGenerator {
 private:
   CodeLabel m_next;
 public:
-  LabelGenerator() : m_next(0) {
+  inline LabelGenerator() : m_next(0) {
   }
-  CodeLabel nextLabel() {
+  inline CodeLabel nextLabel() {
     return m_next++;
   }
-  CodeLabelPair nextLabelPair() {
+  inline CodeLabelPair nextLabelPair() {
     return CodeLabelPair(nextLabel(), nextLabel());
   }
 };
@@ -122,8 +122,8 @@ class JumpFixup {
 public:
   const OpcodeBase *m_op;
   bool              m_isShortJump;    // is jump-instruction short/near (IP-rel8/rel32)
-  int               m_instructionPos; // index of first Byte of jmp-instruction in CodeArray
-  int               m_jmpTo;          // index of BYTE to jump to
+  UINT              m_instructionPos; // index of first Byte of jmp-instruction in CodeArray
+  UINT              m_jmpTo;          // index of BYTE to jump to
   CodeLabel         m_jmpLabel;
   BYTE              m_instructionSize;
   bool              m_fixed;
@@ -135,16 +135,16 @@ public:
     ,m_jmpLabel(-1)
     ,m_instructionSize(0)
     ,m_fixed(false)
+  {
+  }
 
-  {}
-
-  JumpFixup(const OpcodeBase &op, int pos, CodeLabel label, int jmpTo = 0)
+  JumpFixup(const OpcodeBase &op, UINT pos, CodeLabel label, UINT jmpTo, BYTE instructionSize)
     :m_op(&op)
     ,m_isShortJump(true)
     ,m_instructionPos(pos)
     ,m_jmpTo(jmpTo)
     ,m_jmpLabel(label)
-    ,m_instructionSize(0)
+    ,m_instructionSize(instructionSize)
     ,m_fixed(false)
   {
   }
@@ -154,8 +154,8 @@ public:
 
 class JumpList : public CodeLabelPair {
 public:
-  CompactIntArray m_trueJumps;
-  CompactIntArray m_falseJumps;
+  CompactUintArray m_trueJumps;
+  CompactUintArray m_falseJumps;
   inline JumpList(const CodeLabelPair &clp) : CodeLabelPair(clp) {
   }
   inline JumpList(CodeLabel falseLabel, CodeLabel trueLabel) : CodeLabelPair(falseLabel, trueLabel) {
@@ -172,10 +172,10 @@ public:
   inline bool hasJumps() const {
     return hasFalseJumps() || hasTrueJumps();
   }
-  inline CompactIntArray &getJumps(bool b) {
+  inline CompactUintArray &getJumps(bool b) {
     return b ? m_trueJumps : m_falseJumps;
   }
-  inline const CompactIntArray &getJumps(bool b) const {
+  inline const CompactUintArray &getJumps(bool b) const {
     return b ? m_trueJumps : m_falseJumps;
   }
   inline JumpList &operator^=(const JumpList &jl) {
@@ -191,57 +191,55 @@ public:
 };
 
 class FunctionCall {
-private:
-  const TCHAR *m_paramStr;
+  static String makeSignatureString(const String &name, const TCHAR *param) {
+    return format(_T("%s%s"),name.cstr(),param);
+  }
 public:
   const BuiltInFunction m_fp;
-  const String          m_name;
+  const String          m_signature;
   inline FunctionCall(const BuiltInFunction fp, const String &name, const TCHAR *paramStr)
     : m_fp(fp)
-    , m_name(name)
-    , m_paramStr(paramStr)
+    , m_signature(makeSignatureString(name,paramStr))
   {
   }
   inline FunctionCall(BuiltInFunction1 fp, const String &name)
     : m_fp((BuiltInFunction)fp)
-    , m_name(name)
-    , m_paramStr(_T("(real x)"))
+    , m_signature(makeSignatureString(name,_T("(real x)")))
   {
   }
   inline FunctionCall(BuiltInFunction2 fp, const String &name)
     : m_fp((BuiltInFunction)fp)
-    , m_name(name)
-    , m_paramStr(_T("(real x, real y)"))
+    , m_signature(makeSignatureString(name,_T("(real x, real y)")))
   {
   }
   inline FunctionCall(BuiltInFunctionRef1 fp, const String &name)
     : m_fp((BuiltInFunction)fp)
-    , m_name(name)
-    , m_paramStr(_T("(real &x)"))
+    , m_signature(makeSignatureString(name,_T("(real &x)")))
   {
   }
   inline FunctionCall(BuiltInFunctionRef2 fp, const String &name)
     : m_fp((BuiltInFunction)fp)
-    , m_name(name)
-    , m_paramStr(_T("(real &x, real &y)"))
+    , m_signature(makeSignatureString(name,_T("(real &x, real &y)")))
   {
   }
   inline String toString() const {
-    return format(_T("%-20s (%p)"), format(_T("%s%s"),m_name.cstr(),m_paramStr).cstr(), m_fp);
+    return format(_T("%-20s (%s)"),m_signature.cstr(),formatHexValue((size_t)m_fp).cstr());
   }
 };
 
 class FunctionCallInfo : public FunctionCall {
 public:
-  int              m_pos;              // index of address in Machinecode
-  BYTE             m_instructionSize;
-  inline FunctionCallInfo(const FunctionCall &fc, int pos, BYTE insSize)
+  UINT              m_instructionPos;      // index of address in Machinecode
+  BYTE              m_instructionSize;
+  inline FunctionCallInfo(const FunctionCall &fc, UINT pos, BYTE insSize)
     : FunctionCall(fc)
-    , m_pos(pos)
+    , m_instructionPos(pos)
     , m_instructionSize(insSize)
   {
   }
+#ifdef IS32BIT
   InstructionBase makeInstruction(const MachineCode &code) const;
+#endif
   String toString() const;
 };
 
@@ -264,27 +262,23 @@ private:
   MachineCode                      &m_code;
   CompactArray<JumpFixup>           m_jumpFixups;
   Array<FunctionCallInfo>           m_callTable;
-  bool                              m_callsGenerated;
-  // Reference to first element in ParserTree::m_valueTable
-  const CompactRealArray           &m_valueTable;
+  const CompactRealArray           &m_valueTable;         // Reference to ParserTree::m_valueTable
   // Offset in bytes, of esi/rsi from m_valueTable[0], when code is executing. 0 <= m_esiOffset < 128
   void                             *m_esi;
   char                              m_esiOffset;
   FILE                             *m_listFile;
   int                               m_lastCodeSize;
-  StringArray                       m_valueStr;     // for comments in listfile
+  const StringArray                 m_nameCommentArray;   // For comments in listfile
   String                            m_insStr;
   const TCHAR                      *m_listComment;
 
 #ifdef IS64BIT
   BYTE                              m_stackTop;
-  int                               m_loadRBXInsPos;
-  BYTE                              m_loadRBXInsSize;
-  int                               m_functionTableStart; // offset in bytes from code[0] to first function-reference
+  int                               m_functionTableStart; // Offset in bytes from code[0] to first function-reference
   typedef CompactKeyType<BuiltInFunction> FunctionKey;
-  CompactHashMap<FunctionKey, int>  m_fpMap; // value is index into m_uniqueFunctionCall, not offset
+  CompactHashMap<FunctionKey, UINT> m_fpMap;              // Value is index into m_uniqueFunctionCall, not offset
   Array<FunctionCall>               m_uniqueFunctionCall;
-  int getFunctionRefIndex(const FunctionCall &fc);
+  UINT getFunctionRefIndex(const FunctionCall &fc);
 #endif // IS64BIT
 
   void changeShortJumpToNearJump(JumpFixup &jf);
@@ -302,25 +296,28 @@ private:
   inline UINT esiOffsetToIndex(int offset) const {
     return (offset + m_esiOffset) / sizeof(Real);
   }
-
+  void insertZeroes(UINT pos, UINT count);
 #ifdef IS32BIT
   void linkFunctionCall(const FunctionCallInfo &call);
-#else // IS64BIT
-  void emit(int offset, const FunctionCall &fc);
-#endif // IS64BIT
+#endif // IS32BIT
   void linkFunctionCalls();
-  void adjustFunctionCalls(int pos, int bytesAdded);
-  int  emitIns(const InstructionBase &ins);
-  void initValueStr(const ExpressionVariableArray &variables);
+  inline bool hasCalls() const {
+    return !m_callTable.isEmpty();
+  }
+  // Return bytes added
+  UINT insertIns(UINT pos, const InstructionBase &ins);
+  inline UINT emitIns(const InstructionBase &ins) {
+    const UINT pos = size(); insertIns(pos, ins); return pos;
+  }
   // return NULL if no comment found
   const TCHAR *findListComment(const InstructionOperand &op) const;
   void listIns(const TCHAR *format,...);
   void listFixupTable() const;
   void listCallTable() const;
 public:
-  CodeGeneration(MachineCode &code, ParserTree &tree, FILE *listFile);
-  inline int size() const {
-    return (int)m_code.size();
+  CodeGeneration(MachineCode *code, const CompactRealArray &valueTable, const StringArray &nameCommentArray, FILE *listFile);
+  inline UINT size() const {
+    return (UINT)m_code.size();
   }
   void list(const TCHAR *format,...) const;
   inline void listLabel(CodeLabel label) {
@@ -330,27 +327,50 @@ public:
     return m_listFile != NULL;
   }
 
-  int  emit(   const Opcode0Arg   &opCode);
-  int  emit(   const OpcodeBase   &opCode, const InstructionOperand &op);
-  int  emit(   const OpcodeBase   &opCode, const InstructionOperand &op1, const InstructionOperand &op2);
-  int  emit(   const StringPrefix &prefix, const StringInstruction &strins);
-  int  emitJmp(const OpcodeBase   &opCode, CodeLabel lbl);
-  void emitFLD(const ExpressionNode *n);
-  void emitLoadAddr(const IndexRegister &dst, const MemoryRef &ref);
+  // Returns bytes added/inserted
+  UINT insert(   UINT pos, const Opcode0Arg    &opCode);
+  UINT insert(   UINT pos, const OpcodeBase    &opCode, const InstructionOperand &op);
+  UINT insert(   UINT pos, const OpcodeBase    &opCode, const InstructionOperand &op1, const InstructionOperand &op2);
+  UINT insert(   UINT pos, const StringPrefix  &prefix, const StringInstruction  &strins);
+  UINT insertLEA(UINT pos, const IndexRegister &dst   , const MemoryOperand      &mem);
+  // Returns index into m_jumpFixups. not index in code-array
+  UINT insertJmp(UINT pos, const OpcodeBase    &opCode, CodeLabel lbl);
+
+  // Return index of instruction in byte array
+  inline UINT emit(   const Opcode0Arg &opCode) {
+    const UINT pos = size(); insert(pos, opCode          ); return pos;
+  }
+  inline UINT emit(   const OpcodeBase &opCode, const InstructionOperand &op) {
+    const UINT pos = size(); insert(pos, opCode, op      ); return pos;
+  }
+  inline UINT emit(   const OpcodeBase &opCode, const InstructionOperand &op1, const InstructionOperand &op2) {
+    const UINT pos = size(); insert(pos, opCode, op1, op2); return pos;
+  }
+  inline UINT emit(   const StringPrefix &prefix, const StringInstruction &strins) {
+    const UINT pos = size(); insert(pos, prefix, strins  ); return pos;
+  }
+  inline UINT emitLEAReal(const IndexRegister &dst, const MemoryRef &ref) {
+    const UINT pos = size(); insertLEA(pos, dst, RealPtr(ref)); return pos;
+  }
+  // Returns index into m_jumpFixups. not index in code-array
+  inline UINT emitJmp(const OpcodeBase &opCode, CodeLabel lbl) {
+    return insertJmp(size(), opCode, lbl);
+  }
+
 #ifdef IS32BIT
-  void emitCall(const FunctionCall &fc);
+  UINT emitCall(const FunctionCall &fc);
 #else // IS64BIT
 private:
-  void emitCall(const FunctionCall &fc);
+  UINT emitCall(const FunctionCall &fc);
 public:
-  void emitCall(const FunctionCall &fc, const ExpressionDestination &dst);
+  UINT emitCall(const FunctionCall &fc, const ExpressionDestination &dst);
 #endif // IS64BIT
 
-  inline void emitFSTP(const MemoryRef &mem) {
-    emit(FSTP, RealPtr(mem));
+  inline UINT emitFSTP(const MemoryRef &mem) {
+    return emit(FSTP, RealPtr(mem));
   }
-  inline void emitFLD(const MemoryRef &mem) {
-    emit(FLD, RealPtr(mem));
+  inline UINT emitFLD( const MemoryRef &mem) {
+    return emit(FLD, RealPtr(mem));
   }
   inline MemoryRef getTableRef(int index) const {
     return TABLEREF_REG + getESIOffset(index);
@@ -359,21 +379,16 @@ public:
     return STACK_REG + offset;
   }
 #ifndef LONGDOUBLE
-  inline void emitFPUOpVal(const OpcodeBase &op, const ExpressionNode *n) {
-    emit(op, RealPtr(getTableRef(n->getValueIndex())));
-  }
-#endif
 #ifdef IS64BIT
-  bool emitFLoad(const ExpressionNode *n, const ExpressionDestination &dst);
-#ifndef LONGDOUBLE
-  inline void emitXMMToMem(const XMMRegister &reg, const MemoryRef &mem) {
-    emit(MOVSD1,MMWORDPtr(mem), reg);
+  inline UINT emitXMMToMem(const XMMRegister &reg, const MemoryRef &mem) {
+    return emit(MOVSD1,MMWORDPtr(mem), reg);
   }
-  inline void emitMemToXMM(const XMMRegister &reg, const MemoryRef &mem) {
-    emit(MOVSD1,reg,MMWORDPtr(mem));
+  inline UINT emitMemToXMM(const XMMRegister &reg, const MemoryRef &mem) {
+    return emit(MOVSD1,reg,MMWORDPtr(mem));
   }
-#endif // !LONGDOUBLE
 #endif // IS64BIT
+#endif // !LONGDOUBLE
+
   inline void emitAddReg(const GPRegister &reg, int value) {
     if(value == 0) return;
     emit(ADD,reg,value);
@@ -390,7 +405,7 @@ public:
   }
   void fixupJumps(const JumpList &list, bool b);
   // if jmpTo==-1, then use m_code->size()
-  void fixupJump(int index, int jmpTo = -1);
+  CodeGeneration &fixupJump(UINT index, int jmpTo = -1);
 #ifdef IS64BIT
   inline void resetStack(BYTE startOffset) {
     m_stackTop = startOffset;
@@ -404,12 +419,7 @@ public:
     m_stackTop -= sizeof(Real);
     return m_stackTop;
   }
-  void emitLoadRBX();
-  void fixupLoadRBX();
 #endif // IS64BIT
 
-  inline bool isCallsGenerated() const {
-    return m_callsGenerated;
-  }
   void finalize();
 };
