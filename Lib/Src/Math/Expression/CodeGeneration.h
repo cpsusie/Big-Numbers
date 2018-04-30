@@ -197,6 +197,8 @@ class FunctionCall {
 public:
   const BuiltInFunction m_fp;
   const String          m_signature;
+  inline FunctionCall() : m_fp(NULL), m_signature(_T("")) {
+  }
   inline FunctionCall(const BuiltInFunction fp, const String &name, const TCHAR *paramStr)
     : m_fp(fp)
     , m_signature(makeSignatureString(name,paramStr))
@@ -257,6 +259,157 @@ public:
 #define STACK_REG    RSP
 #endif // IS64BIT
 
+typedef enum {
+  LLT_LABEL
+ ,LLT_0ARG
+ ,LLT_1ARG
+ ,LLT_2ARG
+ ,LLT_STRINGOP
+ ,LLT_JUMP
+ ,LLT_CALL
+ ,LLT_FUNCADDR
+} ListLineType;
+
+class ListLine {
+private:
+  static String toInsStr(const InstructionBase &ins) {
+    return ins.toString();
+  }
+  static MemoryOperand s_dummy;
+public:
+  const ListLineType       m_type;
+  UINT                     m_pos;
+  union {
+    const OpcodeBase      *m_opcode;
+    const Opcode0Arg      *m_opcode0;
+    const StringPrefix    *m_stringPrefix;
+    UINT                   m_rbxOffset;
+  };
+  union {
+    int                      m_iprel;   // for jumps
+    const StringInstruction *m_strins;
+  };
+  InstructionOperand       m_ins1, m_ins2;
+  MemoryOperand            m_mem1, m_mem2;
+  InstructionOperand      *m_op1,*m_op2;
+  FunctionCall             m_call;
+  const CodeLabel          m_label;
+
+#define SETOP(i,a) m_ins##i(a.isMemoryRef()?0:a)                       \
+                 , m_mem##i(a.isMemoryRef()?(MemoryOperand&)a:s_dummy) \
+                 , m_op##i( a.isMemoryRef()?&m_mem##i:&m_ins##i)
+
+#define SETOPEMPTY(i) m_ins##i(0), m_mem##i(s_dummy),m_op##i(NULL)
+
+  ListLine(const ListLine &src)
+    : m_type(src.m_type)
+    , m_pos(src.m_pos)
+    , m_opcode(src.m_opcode)
+    , m_strins(src.m_strins)
+    , m_ins1(src.m_ins1), m_ins2(src.m_ins2)
+    , m_mem1(src.m_mem1), m_mem2(src.m_mem2)
+    , m_call(src.m_call)
+    , m_label(src.m_label)
+  {
+    m_op1 = (src.m_op1 == &src.m_ins1) ? &m_ins1 : &m_mem1;
+    m_op2 = (src.m_op2 == &src.m_ins2) ? &m_ins2 : &m_mem2;
+  }
+
+  ListLine(UINT pos, const Opcode0Arg &opcode)
+    : m_type(LLT_0ARG) , m_pos(pos)
+    , m_opcode0(&opcode), m_strins(NULL)
+    , SETOPEMPTY(1), SETOPEMPTY(2)
+    , m_label(-1)
+  {
+  }
+
+  ListLine(UINT pos, const OpcodeBase &opcode, const InstructionOperand &arg)
+    : m_type(LLT_1ARG) , m_pos(pos)
+    , m_opcode(&opcode), m_strins(NULL)
+    , SETOP(1,arg), SETOPEMPTY(2)
+    , m_label(-1)
+  {
+  }
+  ListLine(UINT pos, const OpcodeBase &opcode, const InstructionOperand &arg1, const InstructionOperand &arg2)
+    : m_type(LLT_2ARG) , m_pos(pos)
+    , m_opcode(&opcode), m_strins(NULL)
+    , SETOP(1,arg1), SETOP(2,arg2)
+    , m_label(-1)
+  {
+  }
+  ListLine(UINT pos, const StringPrefix &prefix, const StringInstruction &strins)
+    : m_type(LLT_STRINGOP), m_pos(pos)
+    , m_stringPrefix(&prefix), m_strins(&strins)
+    , SETOPEMPTY(1), SETOPEMPTY(2)
+    , m_label(-1)
+  {
+  }
+  ListLine(UINT pos, const OpcodeBase &opcode, int iprel, CodeLabel label)
+    : m_type(LLT_JUMP), m_pos(pos)
+    , m_opcode(&opcode), m_iprel(iprel)
+    , SETOPEMPTY(1), SETOPEMPTY(2)
+    , m_label(label)
+  {
+  }
+  ListLine(UINT pos, const OpcodeCall &opcode, const InstructionOperand &arg1, const FunctionCall &fc)
+    : m_type(LLT_CALL), m_pos(pos)
+    , m_opcode(&opcode), m_strins(NULL)
+    , SETOP(1,arg1), SETOPEMPTY(2)
+    , m_call(fc)
+    , m_label(-1)
+  {
+  }
+  ListLine(UINT pos, CodeLabel label)
+    : m_type(LLT_LABEL), m_pos(pos)
+    , m_opcode(NULL), m_strins(NULL)
+    , SETOPEMPTY(1), SETOPEMPTY(2)
+    , m_label(label)
+  {
+  }
+  ListLine(UINT pos, UINT rbxOffset, const FunctionCall &fc)
+    : m_type(LLT_FUNCADDR), m_pos(pos)
+    , m_rbxOffset(rbxOffset)
+    , SETOPEMPTY(1), SETOPEMPTY(2)
+    , m_call(fc)
+    , m_label(-1)
+  {
+  }
+  String toString() const;
+};
+
+class ListFile : public Array<ListLine> {
+private:
+  FILE             *m_f;
+  const StringArray m_nameCommentArray;   // For comments
+  const TCHAR      *m_listComment;
+  char              m_esiOffset;
+
+  const TCHAR *findListComment(const InstructionOperand &op) const;
+  inline UINT esiOffsetToIndex(int offset) const {
+    return (offset + m_esiOffset) / sizeof(Real);
+  }
+public:
+  ListFile(FILE *f, const StringArray &commentArray) 
+    : m_f(f)
+    , m_nameCommentArray(commentArray)
+    , m_listComment(NULL)
+  {
+  }
+  ~ListFile() {
+    flush();
+  }
+  ListLine *findLineByPos(UINT pos);
+  inline bool hasListFile() const {
+    return m_f != NULL;
+  }
+  inline void setEsiOffset(char esiOffset) {
+    m_esiOffset = esiOffset;
+  }
+  void adjustPositions(UINT pos, UINT bytesAdded);
+  void vprintf(const TCHAR *format, va_list argptr) const;
+  void flush();
+};
+
 class CodeGeneration {
 private:
   MachineCode                      &m_code;
@@ -266,11 +419,9 @@ private:
   // Offset in bytes, of esi/rsi from m_valueTable[0], when code is executing. 0 <= m_esiOffset < 128
   void                             *m_esi;
   char                              m_esiOffset;
-  FILE                             *m_listFile;
+  ListFile                          m_listFile;
   int                               m_lastCodeSize;
-  const StringArray                 m_nameCommentArray;   // For comments in listfile
-  String                            m_insStr;
-  const TCHAR                      *m_listComment;
+  bool                              m_listEnabled;
 
 #ifdef IS64BIT
   BYTE                              m_stackTop;
@@ -293,9 +444,6 @@ private:
     }
     return (int)valueIndex * sizeof(Real) - m_esiOffset;
   }
-  inline UINT esiOffsetToIndex(int offset) const {
-    return (offset + m_esiOffset) / sizeof(Real);
-  }
   void insertZeroes(UINT pos, UINT count);
 #ifdef IS32BIT
   void linkFunctionCall(const FunctionCallInfo &call);
@@ -309,11 +457,13 @@ private:
   inline UINT emitIns(const InstructionBase &ins) {
     const UINT pos = size(); insertIns(pos, ins); return pos;
   }
-  // return NULL if no comment found
-  const TCHAR *findListComment(const InstructionOperand &op) const;
-  void listIns(const TCHAR *format,...);
   void listFixupTable() const;
   void listCallTable() const;
+  inline bool enableListing(bool enable) {
+    const bool old = m_listEnabled;
+    m_listEnabled = enable;
+    return old;
+  }
 public:
   CodeGeneration(MachineCode *code, const CompactRealArray &valueTable, const StringArray &nameCommentArray, FILE *listFile);
   inline UINT size() const {
@@ -321,30 +471,30 @@ public:
   }
   void list(const TCHAR *format,...) const;
   inline void listLabel(CodeLabel label) {
-    if(hasListFile()) list(_T("%s:\n"), labelToString(label).cstr());
+    if(listingEnabled()) m_listFile.add(ListLine(size(), label));
   }
-  inline bool hasListFile() const {
-    return m_listFile != NULL;
+  inline bool listingEnabled() const {
+    return m_listEnabled && m_listFile.hasListFile();
   }
 
   // Returns bytes added/inserted
-  UINT insert(   UINT pos, const Opcode0Arg    &opCode);
-  UINT insert(   UINT pos, const OpcodeBase    &opCode, const InstructionOperand &op);
-  UINT insert(   UINT pos, const OpcodeBase    &opCode, const InstructionOperand &op1, const InstructionOperand &op2);
+  UINT insert(   UINT pos, const Opcode0Arg    &opcode);
+  UINT insert(   UINT pos, const OpcodeBase    &opcode, const InstructionOperand &arg);
+  UINT insert(   UINT pos, const OpcodeBase    &opcode, const InstructionOperand &arg1, const InstructionOperand &arg2);
   UINT insert(   UINT pos, const StringPrefix  &prefix, const StringInstruction  &strins);
   UINT insertLEA(UINT pos, const IndexRegister &dst   , const MemoryOperand      &mem);
   // Returns index into m_jumpFixups. not index in code-array
-  UINT insertJmp(UINT pos, const OpcodeBase    &opCode, CodeLabel lbl);
+  UINT insertJmp(UINT pos, const OpcodeBase    &opcode, CodeLabel lbl);
 
   // Return index of instruction in byte array
-  inline UINT emit(   const Opcode0Arg &opCode) {
-    const UINT pos = size(); insert(pos, opCode          ); return pos;
+  inline UINT emit(   const Opcode0Arg &opcode) {
+    const UINT pos = size(); insert(pos, opcode          ); return pos;
   }
-  inline UINT emit(   const OpcodeBase &opCode, const InstructionOperand &op) {
-    const UINT pos = size(); insert(pos, opCode, op      ); return pos;
+  inline UINT emit(   const OpcodeBase &opcode, const InstructionOperand &arg) {
+    const UINT pos = size(); insert(pos, opcode, arg      ); return pos;
   }
-  inline UINT emit(   const OpcodeBase &opCode, const InstructionOperand &op1, const InstructionOperand &op2) {
-    const UINT pos = size(); insert(pos, opCode, op1, op2); return pos;
+  inline UINT emit(   const OpcodeBase &opcode, const InstructionOperand &arg1, const InstructionOperand &arg2) {
+    const UINT pos = size(); insert(pos, opcode, arg1, arg2); return pos;
   }
   inline UINT emit(   const StringPrefix &prefix, const StringInstruction &strins) {
     const UINT pos = size(); insert(pos, prefix, strins  ); return pos;
@@ -353,8 +503,8 @@ public:
     const UINT pos = size(); insertLEA(pos, dst, RealPtr(ref)); return pos;
   }
   // Returns index into m_jumpFixups. not index in code-array
-  inline UINT emitJmp(const OpcodeBase &opCode, CodeLabel lbl) {
-    return insertJmp(size(), opCode, lbl);
+  inline UINT emitJmp(const OpcodeBase &opcode, CodeLabel lbl) {
+    return insertJmp(size(), opcode, lbl);
   }
 
 #ifdef IS32BIT

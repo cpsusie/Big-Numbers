@@ -9,8 +9,8 @@
 CodeGeneration::CodeGeneration(MachineCode *code, const CompactRealArray &valueTable, const StringArray &nameCommentArray, FILE *listFile)
   : m_code(*code)
   , m_valueTable(valueTable)
-  , m_nameCommentArray(nameCommentArray)
-  , m_listFile(listFile)
+  , m_listFile(listFile, nameCommentArray)
+  , m_listEnabled(listFile!=NULL)
 {
   setValueCount(m_valueTable.size());
 #ifdef IS64BIT
@@ -19,8 +19,7 @@ CodeGeneration::CodeGeneration(MachineCode *code, const CompactRealArray &valueT
 #endif // IS64BIT
 
   m_lastCodeSize = 0;
-  m_listComment  = NULL;
-  if(hasListFile()) {
+  if(listingEnabled()) {
     list(_T("ESI offset from &valueTable[0] (in bytes):%d (%#02x)\n"), m_esiOffset, m_esiOffset);
   }
 }
@@ -34,129 +33,42 @@ void CodeGeneration::setValueCount(size_t valueCount) {
     m_esiOffset = (char)min(maxOffset, (valueCount / 2) * sizeof(Real));
     m_esi       = (BYTE*)m_valueTable.getBuffer() + m_esiOffset;
   }
-}
-
-void CodeGeneration::list(const TCHAR *format, ...) const {
-  va_list argptr;
-  va_start(argptr,format);
-  _vftprintf(m_listFile, format, argptr);
-  va_end(argptr);
-  fflush(m_listFile);
-}
-
-const TCHAR *CodeGeneration::findListComment(const InstructionOperand &op) const {
-  if(op.isMemoryRef()) {
-    const MemoryRef &mr = op.getMemoryReference();
-    if(mr.hasBase() && (mr.getBase() == &TABLEREF_REG)) {
-      const UINT index = esiOffsetToIndex(mr.getOffset());
-      if(index < m_nameCommentArray.size()) {
-        return m_nameCommentArray[index].cstr();
-      }
-    }
-  }
-  return NULL;
-}
-
-#define LISTFILE_MARGIN 4
-#define LISTFILE_POSLEN 4
-#define LISTFILE_OPCLEN 6
-
-void CodeGeneration::listIns(const TCHAR *format, ...) {
-  va_list argptr;
-  va_start(argptr,format);
-  const String str = vformat(format,argptr);
-  va_end(argptr);
-  if(m_listComment) {
-    list(_T("%*s%-*d:%-36s %-40s ;%s\n")
-        ,LISTFILE_MARGIN,_T("")
-        ,LISTFILE_POSLEN,m_lastCodeSize
-        ,m_insStr.cstr(), str.cstr()
-        ,m_listComment);
-    m_listComment = NULL;
-  } else {
-    list(_T("%*s%-*d:%-36s %s\n")
-        ,LISTFILE_MARGIN,_T("")
-        ,LISTFILE_POSLEN,m_lastCodeSize
-        ,m_insStr.cstr(), str.cstr());
-  }
-  m_lastCodeSize = size();
-}
-
-void CodeGeneration::listFixupTable() const {
-  if(hasListFile() && !m_jumpFixups.isEmpty()) {
-    list(_T("Jump table:\n"));
-    for(size_t i = 0; i < m_jumpFixups.size(); i++) {
-      list(_T("%*s%s\n")
-          ,LISTFILE_MARGIN,_T("")
-          ,m_jumpFixups[i].toString().cstr());
-    }
-    list(_T("\n"));
-  }
-}
-
-void CodeGeneration::listCallTable() const {
-  if(hasListFile() && !m_callTable.isEmpty()) {
-    list(_T("Call table:\n"));
-    for(size_t i = 0; i < m_callTable.size(); i++) {
-      list(_T("%*s%s\n")
-          ,LISTFILE_MARGIN,_T("")
-          ,m_callTable[i].toString().cstr());
-    }
-    list(_T("\n"));
-  }
+  m_listFile.setEsiOffset(m_esiOffset);
 }
 
 UINT CodeGeneration::insertIns(UINT pos, const InstructionBase &ins) {
   assert(pos <= size());
   const UINT added = ins.size();
   if(pos < size()) {
-    m_code.insertZeroes(pos,added);
+    insertZeroes(pos,added);
     m_code.setBytes(pos, ins.getBytes(), added);
   } else {
     m_code.append(ins.getBytes(), added);
   }
-  if(hasListFile()) m_insStr = ins.toString();
   return added;
 }
 
-UINT CodeGeneration::insert(UINT pos, const Opcode0Arg &opCode) {
-  const UINT added = insertIns(pos, opCode);
-  if(hasListFile()) {
-    listIns(_T("%s"), opCode.getMnemonic().cstr());
-  }
+UINT CodeGeneration::insert(UINT pos, const Opcode0Arg &opcode) {
+  const UINT added = insertIns(pos, opcode);
+  if(listingEnabled()) m_listFile.add(ListLine(pos,opcode));
   return added;
 }
 
-UINT CodeGeneration::insert(UINT pos, const OpcodeBase &opCode, const InstructionOperand &op) {
-  const UINT added = insertIns(pos,opCode(op));
-  if(hasListFile()) {
-    if(m_listComment == NULL) m_listComment = findListComment(op);
-    listIns(_T("%-*s %s")
-           ,LISTFILE_OPCLEN, opCode.getMnemonic().cstr()
-           ,op.toString().cstr());
-  }
+UINT CodeGeneration::insert(UINT pos, const OpcodeBase &opcode, const InstructionOperand &arg) {
+  const UINT added = insertIns(pos,opcode(arg));
+  if(listingEnabled()) m_listFile.add(ListLine(pos,opcode,arg));
   return added;
 }
 
-UINT CodeGeneration::insert(UINT pos, const OpcodeBase &opCode, const InstructionOperand &op1, const InstructionOperand &op2) {
-  const UINT added = insertIns(pos, opCode(op1,op2));
-  if(hasListFile()) {
-    if(m_listComment == NULL) m_listComment = findListComment(op1);
-    if(m_listComment == NULL) m_listComment = findListComment(op2);
-    listIns(_T("%-*s %s,%s")
-           ,LISTFILE_OPCLEN, opCode.getMnemonic().cstr()
-           ,op1.toString().cstr(), op2.toString().cstr());
-  }
+UINT CodeGeneration::insert(UINT pos, const OpcodeBase &opcode, const InstructionOperand &arg1, const InstructionOperand &arg2) {
+  const UINT added = insertIns(pos, opcode(arg1,arg2));
+  if(listingEnabled()) m_listFile.add(ListLine(pos, opcode,arg1, arg2));
   return added;
 }
 
 UINT CodeGeneration::insert(UINT pos, const StringPrefix &prefix, const StringInstruction &strins) {
   const UINT added = insertIns(pos, prefix(strins));
-  if(hasListFile()) {
-    listIns(_T("%-*s %s")
-           ,LISTFILE_OPCLEN, prefix.getMnemonic().cstr()
-           ,strins.getMnemonic().cstr());
-  }
+  if(listingEnabled()) m_listFile.add(ListLine(pos, prefix, strins));
   return added;
 }
 
@@ -169,15 +81,11 @@ UINT CodeGeneration::insertLEA(UINT pos, const IndexRegister &dst, const MemoryO
   }
 }
 
-UINT CodeGeneration::insertJmp(UINT pos, const OpcodeBase &opCode, CodeLabel lbl) {
-  const InstructionBase ins = opCode(0);
-  JumpFixup jf(opCode, pos, lbl, 0, ins.size());
+UINT CodeGeneration::insertJmp(UINT pos, const OpcodeBase &opcode, CodeLabel label) {
+  const InstructionBase ins = opcode(0);
+  JumpFixup jf(opcode, pos, label, 0, ins.size());
   insertIns(pos, ins);
-  if(hasListFile()) {
-    listIns(_T("%-*s %s")
-           ,LISTFILE_OPCLEN, opCode.getMnemonic().cstr()
-           ,labelToString(lbl).cstr());
-  }
+  if(listingEnabled()) m_listFile.add(ListLine(pos, opcode, 0, label));
   const UINT result = (UINT)m_jumpFixups.size();
   m_jumpFixups.add(jf);
   return result;
@@ -209,8 +117,6 @@ CodeGeneration &CodeGeneration::fixupJump(UINT index, int jmpTo) {
 }
 
 void CodeGeneration::finalJumpFixup() {
-  listFixupTable();
-  listCallTable();
   bool stable;
   do {
     stable = true;
@@ -234,6 +140,14 @@ void CodeGeneration::finalJumpFixup() {
     }
     const InstructionBase ins = (*jf.m_op)(ipRel);
     m_code.setBytes(jf.m_instructionPos,ins.getBytes(),ins.size());
+
+    if(m_listFile.hasListFile()) {
+      ListLine *ll = m_listFile.findLineByPos(jf.m_instructionPos);
+      if(ll) {
+        assert(ll->m_type == LLT_JUMP);
+        ll->m_iprel = ipRel;
+      }
+    }
   }
 }
 
@@ -246,7 +160,7 @@ void CodeGeneration::changeShortJumpToNearJump(JumpFixup &jf) {
   const int             newInsSize = newIns.size();
   const int             bytesAdded = newInsSize - oldInsSize;
   if(bytesAdded > 0) {
-    insertZeroes(pos, bytesAdded);
+    insertZeroes(pos+1, bytesAdded);
     jf.m_isShortJump     = false;
     jf.m_instructionSize = newInsSize;
   }
@@ -265,6 +179,7 @@ void CodeGeneration::insertZeroes(UINT pos, UINT count) {
       fi.m_instructionPos += count;
     }
   }
+  if(listingEnabled()) m_listFile.adjustPositions(pos, count);
 }
 
 InstructionBase JumpFixup::makeInstruction() const {
@@ -281,26 +196,6 @@ InstructionBase JumpFixup::makeInstruction() const {
   }
 }
 
-String JumpFixup::toString() const {
-  return format(_T("%-*d:%-*s %-4s  addr:%-5d (%-5s size:%d)%s")
-               ,LISTFILE_POSLEN, m_instructionPos
-               ,LISTFILE_OPCLEN, m_op->getMnemonic().cstr()
-               ,labelToString(m_jmpLabel).cstr()
-               ,m_jmpTo
-               ,m_isShortJump?_T("short"):_T("near")
-               ,m_instructionSize
-               ,m_fixed?_T(""):_T("<----- Need fixup")
-               );
-}
-
-String FunctionCallInfo::toString() const {
-  return format(_T("%-*d:%-40s  (size:%d)")
-                ,LISTFILE_POSLEN,m_instructionPos
-                ,__super::toString().cstr()
-                ,m_instructionSize
-                );
-}
-
 void CodeGeneration::finalize() {
   finalJumpFixup();
 
@@ -311,8 +206,13 @@ void CodeGeneration::finalize() {
   }
 #endif // IS64BIT
   emit(RET);
+
   linkFunctionCalls();
   m_code.finalize(m_esi);
+
+  m_listFile.flush();
+  listFixupTable();
+  listCallTable();
 }
 
 #ifdef IS32BIT
@@ -363,17 +263,12 @@ void CodeGeneration::linkFunctionCalls() {
     assert(pos <= fillers);
 
     for(UINT i = 0; i < m_uniqueFunctionCall.size(); i++) {
-      const UINT          RBXoffset = i*FUNCENTRYSIZE;
+      const UINT          rbxOffset = i*FUNCENTRYSIZE;
       const FunctionCall &fc        = m_uniqueFunctionCall[i];
-      const UINT          codeIndex = m_functionTableStart + RBXoffset;
-      m_code.setBytes(codeIndex, (BYTE*)&fc.m_fp, FUNCENTRYSIZE);
-      if(hasListFile()) {
-        list(_T("%*s%-*d:[%-#0*x] %s (%s)\n")
-            ,LISTFILE_MARGIN,_T("")
-            ,LISTFILE_POSLEN, codeIndex
-            ,LISTFILE_POSLEN, RBXoffset
-            ,formatHexValue((UINT64)fc.m_fp).cstr()
-            ,fc.m_signature.cstr());
+      const UINT          pos       = m_functionTableStart + rbxOffset;
+      m_code.setBytes(pos, (BYTE*)&fc.m_fp, FUNCENTRYSIZE);
+      if(listingEnabled()) {
+        m_listFile.add(ListLine(pos, rbxOffset, fc));
       }
     }
   }
@@ -392,22 +287,20 @@ UINT CodeGeneration::getFunctionRefIndex(const FunctionCall &fc) {
 
 // public in x86/private in x64
 UINT CodeGeneration::emitCall(const FunctionCall &fc) {
-  String tmpComment;
-  if(hasListFile()) {
-    tmpComment    = fc.toString();
-    m_listComment = tmpComment.cstr();
-  }
-
+  const OpcodeCall &opcodeCALL = CALL;
 #ifdef IS32BIT
-  // Call immediate addr
-  const UINT pos = emit(CALL,(intptr_t)fc.m_fp);
+  const InstructionOperand arg1((intptr_t)fc.m_fp); // Call immediate addr
 #else // iIS64BIT
   // Call using reference-table added after code, and during exeution
   // has RBX pointing at element 0
   const UINT index = getFunctionRefIndex(fc);
-  const UINT pos   = emit(CALL,QWORDPtr(RBX + (index*sizeof(BuiltInFunction))));
+  const MemoryOperand arg1(QWORDPtr(RBX + (index*sizeof(BuiltInFunction))));
 #endif // IS64BIT
 
+  const bool old = enableListing(false);
+  const UINT pos = emit(opcodeCALL,arg1);
+  enableListing(old);
+  if(listingEnabled()) m_listFile.add(ListLine(pos,opcodeCALL, arg1, fc));
   m_callTable.add(FunctionCallInfo(fc, pos, (BYTE)(size()-pos)));
   return pos;
 }
@@ -469,3 +362,213 @@ UINT CodeGeneration::emitCall(const FunctionCall &fc, const ExpressionDestinatio
 
 #endif // LONGDOUBLE
 #endif // IS64BIT
+
+// --------------------------------- ListFile functions ----------------------------
+
+void CodeGeneration::list(const TCHAR *format, ...) const {
+  if(!listingEnabled()) return;
+  va_list argptr;
+  va_start(argptr,format);
+  m_listFile.vprintf(format,argptr);
+  va_end(argptr);
+}
+
+void ListFile::adjustPositions(UINT pos, UINT bytesAdded) {
+  const size_t n = size();
+  for(size_t i = 0; i < n; i++) {
+    ListLine &l = (*this)[i];
+    if(l.m_pos >= pos) l.m_pos += bytesAdded;
+  }
+}
+
+static int listFileLineCmp(const ListLine &l1, const ListLine &l2) {
+  return (int)l1.m_pos - (int)l2.m_pos;
+}
+
+void ListFile::flush() {
+  if(!hasListFile()) return;
+  sort(listFileLineCmp);
+  const size_t n = size();
+  for(size_t i = 0; i < n; i++) {
+    const ListLine &l = (*this)[i];
+    _ftprintf(m_f, _T("%s\n"), l.toString().cstr());
+  }
+  clear();
+}
+
+void ListFile::vprintf(const TCHAR *format, va_list argptr) const {
+  _vftprintf(m_f, format, argptr);
+}
+
+const TCHAR *ListFile::findListComment(const InstructionOperand &op) const {
+  if(op.isMemoryRef()) {
+    const MemoryRef &mr = op.getMemoryReference();
+    if(mr.hasBase() && (mr.getBase() == &TABLEREF_REG)) {
+      const UINT index = esiOffsetToIndex(mr.getOffset());
+      if(index < m_nameCommentArray.size()) {
+        return m_nameCommentArray[index].cstr();
+      }
+    }
+  }
+  return NULL;
+}
+
+ListLine *ListFile::findLineByPos(UINT pos) {
+  const size_t n = size();
+  for(size_t i = 0; i < n; i++) {
+    ListLine &line = (*this)[i];
+    if(line.m_pos == pos) {
+      return &line;
+    }
+  }
+  return NULL;
+}
+
+MemoryOperand ListLine::s_dummy = BYTEPtr(0);
+
+#define LF_MARGIN  4
+#define LF_POSLEN  4
+#define LF_INSLEN 36
+#define LF_MNELEN  6
+#define LF_OPSLEN 40
+
+String ListLine::toString() const {
+  switch(m_type) {
+  case LLT_LABEL    :
+    return format(_T("%s:"), labelToString(m_label).cstr());
+  case LLT_0ARG     :
+    return format(_T("%*s%-*d:%-*s %-*s")
+                 ,LF_MARGIN,_T("")
+                 ,LF_POSLEN, m_pos
+                 ,LF_INSLEN, toInsStr(*m_opcode0).cstr()
+                 ,LF_OPSLEN, m_opcode0->getMnemonic().cstr()
+                 );
+
+  case LLT_1ARG     :
+    return format(_T("%*s%-*d:%-*s %-*s")
+                 ,LF_MARGIN,_T("")
+                 ,LF_POSLEN, m_pos
+                 ,LF_INSLEN, toInsStr((*m_opcode)(*m_op1)).cstr()
+                 ,LF_OPSLEN, format(_T("%-*s %s")
+                                   ,LF_MNELEN, m_opcode->getMnemonic().cstr()
+                                   ,m_op1->toString().cstr()).cstr()
+                 );
+  case LLT_2ARG     :
+    return format(_T("%*s%-*d:%-*s %-*s")
+                 ,LF_MARGIN,_T("")
+                 ,LF_POSLEN, m_pos
+                 ,LF_INSLEN, toInsStr((*m_opcode)(*m_op1,*m_op2)).cstr()
+                 ,LF_OPSLEN, format(_T("%-*s %s, %s")
+                                   ,LF_MNELEN, m_opcode->getMnemonic().cstr()
+                                   ,m_op1->toString().cstr()
+                                   ,m_op2->toString().cstr()
+                                   ).cstr()
+                 );
+  case LLT_STRINGOP :
+    return format(_T("%*s%-*d:%-*s %-*s")
+                 ,LF_MARGIN,_T("")
+                 ,LF_POSLEN, m_pos
+                 ,LF_INSLEN, toInsStr((*m_stringPrefix)(*m_strins)).cstr()
+                 ,LF_OPSLEN, format(_T("%-*s %s")
+                                   ,LF_MNELEN, m_stringPrefix->getMnemonic().cstr()
+                                   ,m_strins->getMnemonic().cstr()
+                                   ).cstr()
+                 );
+  case LLT_JUMP     :
+    return format(_T("%*s%-*d:%-*s %-*s; %s")
+                 ,LF_MARGIN,_T("")
+                 ,LF_POSLEN, m_pos
+                 ,LF_INSLEN, toInsStr((*m_opcode)(m_iprel)).cstr()
+                 ,LF_OPSLEN, format(_T("%-*s %s")
+                                   ,LF_MNELEN, m_opcode->getMnemonic().cstr()
+                                   ,formatHexValue(m_iprel,false).cstr()
+                                   ).cstr()
+                 ,labelToString(m_label).cstr()
+                 );
+  case LLT_CALL     :
+    return format(_T("%*s%-*d:%-*s %-*s; %s")
+                 ,LF_MARGIN,_T("")
+                 ,LF_POSLEN, m_pos
+                 ,LF_INSLEN, toInsStr((*m_opcode)(*m_op1)).cstr()
+                 ,LF_OPSLEN, format(_T("%-*s %s")
+                                   ,LF_MNELEN, m_opcode->getMnemonic().cstr()
+                                   ,m_op1->toString().cstr()
+                                   ).cstr()
+                 ,m_call.toString().cstr()
+                 );
+  case LLT_FUNCADDR:
+    return format(_T("%*s%-*d:[%-#0*x] %s (%s)")
+                 ,LF_MARGIN,_T("")
+                 ,LF_POSLEN, m_pos
+                 ,LF_POSLEN, m_rbxOffset
+                 ,formatHexValue((UINT64)m_call.m_fp).cstr()
+                 ,m_call.m_signature.cstr());
+  default:
+    return format(_T("Unkown linetype:%d"), m_type);
+  }
+}
+/*
+void CodeGeneration::listIns(const TCHAR *format, ...) {
+  va_list argptr;
+  va_start(argptr,format);
+  const String str = vformat(format,argptr);
+  va_end(argptr);
+  if(m_listComment) {
+    list(_T("%*s%-*d:%-36s %-40s ;%s\n")
+        ,LF_MARGIN,_T("")
+        ,LF_POSLEN,m_lastCodeSize
+        ,m_insStr.cstr(), str.cstr()
+        ,m_listComment);
+    m_listComment = NULL;
+  } else {
+    list(_T("%*s%-*d:%-36s %s\n")
+        ,LF_MARGIN,_T("")
+        ,LF_POSLEN,m_lastCodeSize
+        ,m_insStr.cstr(), str.cstr());
+  }
+  m_lastCodeSize = size();
+}
+*/
+void CodeGeneration::listFixupTable() const {
+  if(listingEnabled() && !m_jumpFixups.isEmpty()) {
+    list(_T("Jump table:\n"));
+    for(size_t i = 0; i < m_jumpFixups.size(); i++) {
+      list(_T("%*s%s\n")
+          ,LF_MARGIN,_T("")
+          ,m_jumpFixups[i].toString().cstr());
+    }
+    list(_T("\n"));
+  }
+}
+
+void CodeGeneration::listCallTable() const {
+  if(listingEnabled() && !m_callTable.isEmpty()) {
+    list(_T("Call table:\n"));
+    for(size_t i = 0; i < m_callTable.size(); i++) {
+      list(_T("%*s%s\n")
+          ,LF_MARGIN,_T("")
+          ,m_callTable[i].toString().cstr());
+    }
+    list(_T("\n"));
+  }
+}
+
+String JumpFixup::toString() const {
+  return format(_T("%-*d:%-*s %-4s  addr:%-5d (%-5s size:%d)%s")
+               ,LF_POSLEN, m_instructionPos
+               ,LF_MNELEN, m_op->getMnemonic().cstr()
+               ,labelToString(m_jmpLabel).cstr()
+               ,m_jmpTo
+               ,m_isShortJump?_T("short"):_T("near")
+               ,m_instructionSize
+               ,m_fixed?_T(""):_T("<----- Need fixup")
+               );
+}
+
+String FunctionCallInfo::toString() const {
+  return format(_T("%-*d:%-40s  (size:%d)")
+                ,LF_POSLEN,m_instructionPos
+                ,__super::toString().cstr()
+                ,m_instructionSize
+                );
+}
