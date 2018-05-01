@@ -37,9 +37,9 @@ void ListFile::vprintf(const TCHAR *format, va_list argptr) const {
   _vftprintf(m_f, format, argptr);
 }
 
-const TCHAR *ListFile::findListComment(const InstructionOperand &op) const {
-  if(op.isMemoryRef()) {
-    const MemoryRef &mr = op.getMemoryReference();
+const TCHAR *ListFile::findArgComment(const InstructionOperand &arg) const {
+  if(arg.isMemoryRef()) {
+    const MemoryRef &mr = arg.getMemoryReference();
     if(mr.hasBase() && (mr.getBase() == &m_tableRefRegister)) {
       const UINT index = m_addressTable.esiOffsetToIndex(mr.getOffset());
       if(index < m_nameCommentArray.size()) {

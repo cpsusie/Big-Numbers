@@ -11,7 +11,7 @@ private:
   CodeGeneration         *m_code;
   LabelGenerator          m_labelGen;
 
-  StringArray getNameCommentArray() const;
+  static StringArray createNameCommentArray(const ParserTree &tree);
 
   inline TrigonometricMode getTrigonometricMode() const {
     return m_trigonometricMode;

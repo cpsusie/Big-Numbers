@@ -223,7 +223,6 @@ private:
   Array<FunctionCallInfo>           m_callTable;
   ValueAddressCalculation           m_addressTable;
   ListFile                          m_listFile;
-  int                               m_lastCodeSize;
   bool                              m_listEnabled;
 
 #ifdef IS64BIT
@@ -277,7 +276,7 @@ public:
   UINT insert(   UINT pos, const StringPrefix  &prefix, const StringInstruction  &strins);
   UINT insertLEA(UINT pos, const IndexRegister &dst   , const MemoryOperand      &mem);
   // Returns index into m_jumpFixups. not index in code-array
-  UINT insertJmp(UINT pos, const OpcodeBase    &opcode, CodeLabel lbl);
+  UINT insertJump(UINT pos, const OpcodeBase    &opcode, CodeLabel lbl);
 
   // Return index of instruction in byte array
   inline UINT emit(   const Opcode0Arg &opcode) {
@@ -296,8 +295,8 @@ public:
     const UINT pos = size(); insertLEA(pos, dst, RealPtr(ref)); return pos;
   }
   // Returns index into m_jumpFixups. not index in code-array
-  inline UINT emitJmp(const OpcodeBase &opcode, CodeLabel lbl) {
-    return insertJmp(size(), opcode, lbl);
+  inline UINT emitJump(const OpcodeBase &opcode, CodeLabel lbl) {
+    return insertJump(size(), opcode, lbl);
   }
 
 #ifdef IS32BIT

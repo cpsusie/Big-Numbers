@@ -45,6 +45,10 @@ protected:
                  ,strins.getMnemonic().cstr()
                  );
   }
+  static String formatOpAndComment(const String &opstr, const TCHAR *comment=NULL) {
+    return comment ? format(_T("%-*s; %s"),LF_OPSLEN, opstr.cstr(), comment)
+                   : format(_T("%s"), opstr.cstr());
+  }
 public:
   UINT m_pos;
   ListLine(UINT pos) : m_pos(pos) {
@@ -73,8 +77,7 @@ public:
   String toString() const {
     return __super::toString()
          + formatIns(m_opcode0)
-         + format(_T("%-*s;")
-                 ,LF_OPSLEN, formatOp(m_opcode0).cstr());
+         + formatOpAndComment(formatOp(m_opcode0));
   }
 };
 
@@ -82,11 +85,13 @@ class ListLine1Arg : public ListLine {
 private:
   const OpcodeBase         &m_opcode;
   const InstructionOperand *m_arg;
+  const TCHAR              *m_nameComment;
 public:
-  ListLine1Arg(UINT pos, const OpcodeBase &opcode, const InstructionOperand &arg)
+  ListLine1Arg(UINT pos, const OpcodeBase &opcode, const InstructionOperand &arg, const TCHAR *nameComment)
     : ListLine(pos)
     , m_opcode(opcode)
     , m_arg(arg.clone())
+    , m_nameComment(nameComment)
   {
   }
   ~ListLine1Arg() {
@@ -95,8 +100,7 @@ public:
   String toString() const {
     return __super::toString()
          + formatIns(m_opcode(*m_arg))
-         + format(_T("%-*s;")
-                 ,LF_OPSLEN, formatOp(m_opcode,m_arg).cstr());
+         + formatOpAndComment(formatOp(m_opcode,m_arg), m_nameComment);
   }
 };
 
@@ -104,12 +108,14 @@ class ListLine2Arg : public ListLine {
 private:
   const OpcodeBase         &m_opcode;
   const InstructionOperand *m_arg1, *m_arg2;
+  const TCHAR              *m_nameComment;
 public:
-  ListLine2Arg(UINT pos, const OpcodeBase &opcode, const InstructionOperand &arg1, const InstructionOperand &arg2)
+  ListLine2Arg(UINT pos, const OpcodeBase &opcode, const InstructionOperand &arg1, const InstructionOperand &arg2, const TCHAR *nameComment)
     : ListLine(pos)
     , m_opcode(opcode)
     , m_arg1(arg1.clone())
     , m_arg2(arg2.clone())
+    , m_nameComment(nameComment)
   {
   }
 
@@ -120,8 +126,7 @@ public:
   String toString() const {
     return __super::toString()
          + formatIns(m_opcode(*m_arg1,*m_arg2))
-         + format(_T("%-*s;")
-                 ,LF_OPSLEN, formatOp(m_opcode,m_arg1,m_arg2).cstr());
+         + formatOpAndComment(formatOp(m_opcode,m_arg1,m_arg2), m_nameComment);
   }
 };
 
@@ -161,13 +166,12 @@ public:
   String toString() const {
     return __super::toString()
          + formatIns(m_opcode(m_iprel))
-         + format(_T("%-*s; %s")
-                 ,LF_OPSLEN, format(_T("%s %s")
+         + formatOpAndComment(format(_T("%s %s")
                                    ,formatOp(m_opcode).cstr()
                                    ,formatHexValue(m_iprel,false).cstr()
-                                   ).cstr()
-                 ,labelToString(m_label).cstr()
-                 );
+                                   )
+                             ,labelToString(m_label).cstr()
+                             );
   }
 };
 
@@ -190,10 +194,9 @@ public:
   String toString() const {
     return __super::toString()
          + formatIns(m_opcode(*m_arg))
-         + format(_T("%-*s; %s")
-                 ,LF_OPSLEN, formatOp(m_opcode,m_arg).cstr()
-                 ,m_fc.toString().cstr()
-                 );
+         + formatOpAndComment(formatOp(m_opcode,m_arg)
+                             ,m_fc.toString().cstr()
+                             );
   }
 };
 
@@ -239,7 +242,7 @@ private:
   const StringArray              m_nameCommentArray;   // For comments
   const IndexRegister           &m_tableRefRegister;
 
-  const TCHAR *findListComment(const InstructionOperand &op) const;
+  const TCHAR *findArgComment(const InstructionOperand &arg) const;
 public:
   ListFile(FILE *f, const ValueAddressCalculation &addressTable, const StringArray &commentArray, const IndexRegister &tableRefRegister) 
     : m_f(f)
@@ -257,10 +260,11 @@ public:
     m_lineArray.add(new ListLine0Arg(pos,opcode));
   }
   inline void add(UINT pos, const OpcodeBase &opcode, const InstructionOperand &arg) {
-    m_lineArray.add(new ListLine1Arg(pos,opcode,arg));
+    m_lineArray.add(new ListLine1Arg(pos,opcode,arg,findArgComment(arg)));
   }
   inline void add(UINT pos, const OpcodeBase &opcode, const InstructionOperand &arg1, const InstructionOperand &arg2) {
-    m_lineArray.add(new ListLine2Arg(pos,opcode,arg1,arg2));
+    const TCHAR *comment1 = findArgComment(arg1);
+    m_lineArray.add(new ListLine2Arg(pos,opcode,arg1,arg2, comment1?comment1:findArgComment(arg2)));
   }
   inline void add(UINT pos, const StringPrefix &prefix, const StringInstruction &strins) {
     m_lineArray.add(new ListLineStringOp(pos,prefix,strins));

@@ -17,11 +17,13 @@ CodeGeneration::CodeGeneration(MachineCode *code, const CompactRealArray &valueT
   resetStack(RESERVESTACKSPACE);
 #endif // IS64BIT
 
-  m_lastCodeSize = 0;
   if(m_listFile.isOpen()) {
-    list(_T("ESI offset from &valueTable[0] (in bytes):%d (%#02x)\n")
-        ,m_addressTable.getESITableOffset()
-        ,m_addressTable.getESITableOffset()
+    const char offset = m_addressTable.getESITableOffset();
+    list(_T("%s offset from &valueTable[0] (in bytes):%d (%s), &value[%u]\n")
+        ,TABLEREF_REG.getName().cstr()
+        ,offset
+        ,formatHexValue(offset,false).cstr()
+        ,m_addressTable.esiOffsetToIndex(0)
     );
   }
 }
@@ -71,7 +73,7 @@ UINT CodeGeneration::insertLEA(UINT pos, const IndexRegister &dst, const MemoryO
   }
 }
 
-UINT CodeGeneration::insertJmp(UINT pos, const OpcodeBase &opcode, CodeLabel label) {
+UINT CodeGeneration::insertJump(UINT pos, const OpcodeBase &opcode, CodeLabel label) {
   const InstructionBase ins = opcode(0);
   JumpFixup jf(opcode, pos, label, 0, ins.size());
   insertIns(pos, ins);

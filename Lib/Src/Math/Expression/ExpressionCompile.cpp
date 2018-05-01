@@ -13,7 +13,7 @@ CodeGenerator::CodeGenerator(ParserTree *tree, TrigonometricMode trigonometricMo
   m_codeArray = new MachineCode;                                 TRACE_NEW(m_codeArray);
   m_code      = new CodeGeneration(m_codeArray
                                   ,tree->getValueTable()
-                                  ,getNameCommentArray()
+                                  ,createNameCommentArray(m_tree)
                                   ,listFile);
   TRACE_NEW(m_code);
 
@@ -27,9 +27,9 @@ CodeGenerator::CodeGenerator(ParserTree *tree, TrigonometricMode trigonometricMo
   }
 }
 
-StringArray CodeGenerator::getNameCommentArray() const {
-  const CompactRealArray       &values    = m_tree.getValueTable();
-  const ExpressionVariableArray variables = m_tree.getAllVariables();
+StringArray CodeGenerator::createNameCommentArray(const ParserTree &tree) {
+  const CompactRealArray       &values    = tree.getValueTable();
+  const ExpressionVariableArray variables = tree.getAllVariables();
   StringArray a;
   for(size_t i = 0; i < values.size(); i++) {
     a.add(EMPTYSTRING);
@@ -80,7 +80,6 @@ void CodeGenerator::genStatementList(const ExpressionNode *n) {
   }
 }
 
-
 void CodeGenerator::genFLD(const ExpressionNode *n) {
   if(n->isOne()) {
     m_code->emit(FLD1);
@@ -93,7 +92,19 @@ void CodeGenerator::genFLD(const ExpressionNode *n) {
   }
 }
 
-#ifdef IS64BIT
+#ifdef IS32BIT
+
+void CodeGenerator::genAssignment(const ExpressionNode *n) {
+  genExpression(n->right() DST_FPU);
+  m_code->emitFSTP(getTableRef(n->left()));
+}
+
+#else // IS64BIT
+
+void CodeGenerator::genAssignment(const ExpressionNode *n) {
+  genExpression(n->right() DST_INVALUETABLE(n->left()->getValueIndex()));
+}
+
 bool CodeGenerator::genFLoad(const ExpressionNode *n, const ExpressionDestination &dst) {
   bool returnValue = true;
   switch(dst.getType()) {
@@ -115,25 +126,13 @@ bool CodeGenerator::genFLoad(const ExpressionNode *n, const ExpressionDestinatio
 }
 #endif // IS64BIT
 
-
-#ifdef IS32BIT
-void CodeGenerator::genAssignment(const ExpressionNode *n) {
-  genExpression(n->right() DST_FPU);
-  m_code->emitFSTP(getTableRef(n->left()));
-}
-#else // IS64BIT
-void CodeGenerator::genAssignment(const ExpressionNode *n) {
-  genExpression(n->right() DST_INVALUETABLE(n->left()->getValueIndex()));
-}
-#endif IS32BIT
-
 void CodeGenerator::genReturnBoolExpression(const ExpressionNode *n) {
   JumpList jumps(m_labelGen.nextLabelPair());
   genBoolExpression(n->left(),jumps, true);
   m_code->fixupJumps(jumps,true );
   m_code->emit(MOV,EAX,1  );
   const CodeLabel endLabel = m_labelGen.nextLabel();
-  const UINT jmpEnd = m_code->emitJmp(JMP, endLabel);
+  const UINT jmpEnd = m_code->emitJump(JMP, endLabel);
   m_code->fixupJumps(jumps,false);
   m_code->emit(XOR,EAX,EAX);
   m_code->fixupJump(jmpEnd).listLabel(endLabel);
@@ -440,14 +439,14 @@ void CodeGenerator::genIndexedExpression(const ExpressionNode *n) {
   m_code->listLabel(startLabel);
   m_code->emit(FCOMI,ST2);                                 // Invariant:loopVar in st(0), endExpr in st(2)
   const CodeLabel endLabel = m_labelGen.nextLabel();
-  const UINT      jmpEnd   = m_code->emitJmp(JA,endLabel); // Jump loopEnd if st(0) > st(2)
+  const UINT      jmpEnd   = m_code->emitJump(JA,endLabel); // Jump loopEnd if st(0) > st(2)
   m_code->emitFSTP(getTableRef(loopVar));                  // Pop st(0) to loopVar
   genExpression(expr DST_FPU);                             // Accumulator in st(0) (starting at 0 for INDEXEDSUM, 1 for INDEXEDPRODUCT)
   m_code->emit(summation ? FADD : FMUL);                   // Update accumulator with st(0)
   genFLD(loopVar);
   m_code->emit(FLD1);
   m_code->emit(FADD);                                      // Increment loopVar
-  const UINT jmpStart = m_code->emitJmp(JMP,startLabel);   // Jump loopStart
+  const UINT jmpStart = m_code->emitJump(JMP,startLabel);   // Jump loopStart
   const UINT loopEnd  = m_code->size();
   m_code->listLabel(endLabel);
   m_code->emit(FSTP,ST0);                                  // Pop loopVar
@@ -463,7 +462,7 @@ void CodeGenerator::genIf(const ExpressionNode *n DCL_DSTPARAM) {
   const CodeLabel endLabel = m_labelGen.nextLabel();
   m_code->fixupJumps(jumps,true);
   GENEXPRESSION(n->child(1));           // "true"-expr
-  const UINT firstResultJump = m_code->emitJmp(JMP,endLabel);
+  const UINT firstResultJump = m_code->emitJump(JMP,endLabel);
   m_code->fixupJumps(jumps,false);
   GENEXPRESSION(n->child(2));           // "false"-expr
   m_code->fixupJump(firstResultJump).listLabel(endLabel);
@@ -549,44 +548,44 @@ void CodeGenerator::genBoolExpression(const ExpressionNode *n, JumpList &jl, boo
       switch(symbol) {
       case EQ:
         if(trueAtEnd) {
-          jl.m_falseJumps.add(m_code->emitJmp(JNE,jl.m_falseLabel));
+          jl.m_falseJumps.add(m_code->emitJump(JNE,jl.m_falseLabel));
         } else {
-          jl.m_trueJumps.add( m_code->emitJmp(JE ,jl.m_trueLabel ));
+          jl.m_trueJumps.add( m_code->emitJump(JE ,jl.m_trueLabel ));
         }
         break;
       case NE:
         if(trueAtEnd) {
-          jl.m_falseJumps.add(m_code->emitJmp(JE ,jl.m_falseLabel));
+          jl.m_falseJumps.add(m_code->emitJump(JE ,jl.m_falseLabel));
         } else {
-          jl.m_trueJumps.add( m_code->emitJmp(JNE,jl.m_trueLabel ));
+          jl.m_trueJumps.add( m_code->emitJump(JNE,jl.m_trueLabel ));
         }
         break;
       case LE:
         if(trueAtEnd) {
-          jl.m_falseJumps.add(m_code->emitJmp(JA ,jl.m_falseLabel));
+          jl.m_falseJumps.add(m_code->emitJump(JA ,jl.m_falseLabel));
         } else {
-          jl.m_trueJumps.add( m_code->emitJmp(JBE,jl.m_trueLabel ));
+          jl.m_trueJumps.add( m_code->emitJump(JBE,jl.m_trueLabel ));
         }
         break;
       case GT:
         if(trueAtEnd) {
-          jl.m_falseJumps.add(m_code->emitJmp(JBE,jl.m_falseLabel));
+          jl.m_falseJumps.add(m_code->emitJump(JBE,jl.m_falseLabel));
         } else {
-          jl.m_trueJumps.add( m_code->emitJmp(JA ,jl.m_trueLabel ));
+          jl.m_trueJumps.add( m_code->emitJump(JA ,jl.m_trueLabel ));
         }
         break;
       case GE:
         if(trueAtEnd) {
-          jl.m_falseJumps.add(m_code->emitJmp(JB ,jl.m_falseLabel));
+          jl.m_falseJumps.add(m_code->emitJump(JB ,jl.m_falseLabel));
         } else {
-          jl.m_trueJumps.add( m_code->emitJmp(JAE,jl.m_trueLabel ));
+          jl.m_trueJumps.add( m_code->emitJump(JAE,jl.m_trueLabel ));
         }
         break;
       case LT:
         if(trueAtEnd) {
-          jl.m_falseJumps.add(m_code->emitJmp(JAE,jl.m_falseLabel));
+          jl.m_falseJumps.add(m_code->emitJump(JAE,jl.m_falseLabel));
         } else {
-          jl.m_trueJumps.add( m_code->emitJmp(JB ,jl.m_trueLabel ));
+          jl.m_trueJumps.add( m_code->emitJump(JB ,jl.m_trueLabel ));
         }
         break;
       }
