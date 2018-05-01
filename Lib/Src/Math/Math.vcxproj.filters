@@ -349,6 +349,12 @@
     <ClCompile Include="Expression\CodeGeneration.cpp">
       <Filter>Source Files\Expression</Filter>
     </ClCompile>
+    <ClCompile Include="Expression\ListFile.cpp">
+      <Filter>Source Files\Expression</Filter>
+    </ClCompile>
+    <ClCompile Include="Expression\FunctionCall.cpp">
+      <Filter>Source Files\Expression</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="NatvisFile.natvis" />
@@ -528,6 +534,12 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\Math\Expression\MachineCode.h">
       <Filter>Header Files\Expression</Filter>
+    </ClInclude>
+    <ClInclude Include="Expression\ListFile.h">
+      <Filter>Source Files\Expression</Filter>
+    </ClInclude>
+    <ClInclude Include="Expression\FunctionCall.h">
+      <Filter>Source Files\Expression</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

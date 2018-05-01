@@ -105,11 +105,11 @@ bool CodeGenerator::genFLoad(const ExpressionNode *n, const ExpressionDestinatio
   case RESULT_IN_FPU       :
     genFLD(n);
     break;
-#ifndef LONGDOUBLE
+#ifdef USEXMMREG
   case RESULT_IN_XMM     :
     m_code->emitMemToXMM(dst.getXMMReg(), getTableRef(n));
     return true;
-#endif // LONGDOUBLE
+#endif // USEXMMREG
   }
   return returnValue;
 }
@@ -415,12 +415,12 @@ void CodeGenerator::genExpression(const ExpressionNode *n DCL_DSTPARAM) {
   case RESULT_IN_VALUETABLE:
     m_code->emitFSTP(m_code->getTableRef(dst.getTableIndex()));              // FPU -> m_valuetable[tableIndex]
     break;
-#ifndef LONGDOUBLE
+#ifdef USEXMMREG
   case RESULT_IN_XMM       :
     m_code->emitFSTP(m_code->getStackRef(0));                                // FPU  -> *RSP
     m_code->emitMemToXMM(dst.getXMMReg(),m_code->getStackRef(0));            // *RSP -> XMM0 or XMM1
     break;
-#endif // LONGDOUBLE
+#endif // USEXMMREG
   }
 #endif // IS64BIT
 }
@@ -791,7 +791,7 @@ static const IndexRegister int64ParamRegister[] = {
 #endif
 };
 
-#ifndef LONGDOUBLE
+#ifdef USEXMMREG
 
 void CodeGenerator::genCall1Arg(const ExpressionNode *arg, BuiltInFunction1 f, const String &name DCL_DSTPARAM) {
   genSetParameter(arg, 0);
@@ -846,7 +846,7 @@ void CodeGenerator::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode
   genCall(FunctionCall(f, name), dst);
 }
 
-#else // LONGDOUBLE
+#else // !USEXMMREG
 
 void CodeGenerator::genCall1Arg(const ExpressionNode *arg, BuiltInFunctionRef1 f, const String &name DCL_DSTPARAM) {
   genSetRefParameter(arg, 0);
@@ -881,7 +881,7 @@ void CodeGenerator::genCall2Arg(const ExpressionNode *arg1, const ExpressionNode
   genCall(FunctionCall(f, name), dst);
 }
 
-#endif // LONGDOUBLE
+#endif // !USEXMMREG
 
 void CodeGenerator::genPolynomial(const ExpressionNode *n DCL_DSTPARAM) {
   const ExpressionNodeArray &coefArray       = n->getCoefficientArray();
@@ -931,7 +931,7 @@ BYTE CodeGenerator::genSetRefParameter(const ExpressionNode *n, int index, bool 
   }
 }
 
-#ifndef LONGDOUBLE
+#ifdef USEXMMREG
 void CodeGenerator::genSetParameter(const ExpressionNode *n, int index) {
   const XMMRegister &dstRegister = (index == 0) ? XMM0 : XMM1;
   if(n->isNameOrNumber()) {
@@ -941,6 +941,6 @@ void CodeGenerator::genSetParameter(const ExpressionNode *n, int index) {
   }
 }
 
-#endif // LONGDOUBLE
+#endif // USEXMMREG
 
 #endif // IS64BIT

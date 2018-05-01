@@ -252,6 +252,8 @@ public:
     setValue(v);
     SETDEBUGSTR();
   }
+  virtual ~InstructionOperand() {
+  }
   inline OperandType getType() const {
     return m_type;
   }
@@ -316,7 +318,9 @@ public:
   }
 #endif // IS64BIT
   virtual String toString() const;
-
+  virtual InstructionOperand *clone() const {
+    return new InstructionOperand(*this);
+  }
   static const OperandTypeSet R,M,IMM,RM,S,ALL,EMPTY;
 
   static int insOpCmp(const InstructionOperand &op1, const InstructionOperand &op2);
@@ -361,6 +365,9 @@ public:
   }
 #endif // IS64BIT
   String toString() const;
+  InstructionOperand *clone() const {
+    return new MemoryOperand(*this);
+  }
 
   static int memOpCmp(const MemoryOperand &mem1, const MemoryOperand &mem2);
 };
