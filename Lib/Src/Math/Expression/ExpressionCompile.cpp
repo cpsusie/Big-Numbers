@@ -92,6 +92,12 @@ void CodeGenerator::genFLD(const ExpressionNode *n) {
   }
 }
 
+// make st0 = 1/st0
+void CodeGenerator::genReciprocal() {
+  m_code->emit(FLD1);                  // st0=1 , st1=x^|y|
+  m_code->emit(FDIVRP,ST1);            // st1=st0/st1; pop st0 => st0=x^y
+}
+
 #ifdef IS32BIT
 
 void CodeGenerator::genAssignment(const ExpressionNode *n) {
@@ -290,34 +296,36 @@ void CodeGenerator::genExpression(const ExpressionNode *n DCL_DSTPARAM) {
   case MOD           :    GENCALL(     n, fmod                  );
   case POW           :
     if(n->left()->isEulersConstant()) {
-      GENCALLARG(  n->right(), exp                   );
+      GENCALLARG(  n->right(), exp  );
     } else if(n->left()->isTwo()) {
-      GENCALLARG(  n->right(), exp2                  );
+      GENCALLARG(  n->right(), exp2 );
     } else if (n->left()->isTen()) {
-      GENCALLARG(  n->right(), exp10                 );
+      GENCALLARG(  n->right(), exp10);
     }
     if(n->right()->isConstant()) {
       const Real p = m_tree.evaluateRealExpr(n->right());
-      if((fabs(p) <= 64) && (p - floor(p) == 0)) {
+      if(fabs(p) == 0.5) {
+        genExpression(n->left() DST_FPU);
+        m_code->emit(FSQRT);                   // st0=sqrt(st0)
+        if(p < 0) genReciprocal();
+        break;
+      } else if(p == 0) {
+        genExpression(m_tree.getOne() DST_PARAM);
+        return;
+      } else if(p == 1) {
+        genExpression(n->left() DST_PARAM);
+        return;
+      } else {
         const int y = getInt(p);
-        if(y == 0) {
-          genExpression(m_tree.getOne() DST_PARAM);
-          return;
-        } else if(y == 1) {
-          genExpression(n->left() DST_PARAM);
-          return;
-        } else {
+        if((p == y) && (abs(y) <= 64)) {
           genExpression(n->left() DST_FPU);
           genPowMultSequence(abs(y));
-          if(y < 0) {                    // make st0 = 1/st0
-            m_code->emit(FLD1);          // st0=1 , st1=x^|y|
-            m_code->emit(FDIVRP,ST1);    // st1=st0/st1; pop st0 => st0=x^y
-          }
+          if(y < 0) genReciprocal();
+          break;
         }
-        break;
       }
     }
-    GENCALL(     n, mypow                 );
+    GENCALL(     n, mypow          );
   case SQR           :
     genExpression(n->left() DST_FPU);
     m_code->emit(FMUL,ST0,ST0);            // st0=x^2
@@ -347,7 +355,17 @@ void CodeGenerator::genExpression(const ExpressionNode *n DCL_DSTPARAM) {
     }
     GENTRIGOCALL(n, atan2                 );
 
-  case ROOT          :    GENCALL(     n, root                  );
+  case ROOT          :
+    if(n->right()->isConstant()) {
+      const Real p = m_tree.evaluateRealExpr(n->right());
+      if(fabs(p) == 2) {
+        genExpression(n->left() DST_FPU);
+        m_code->emit(FSQRT);                   // st0=sqrt(st0)
+        if(p < 0) genReciprocal();
+        break;
+      }
+    }
+    GENCALL(n, root);
   case SIN           :    GENTRIGOCALL(n, sin                   );
   case COS           :    GENTRIGOCALL(n, cos                   );
   case TAN           :    GENTRIGOCALL(n, tan                   );

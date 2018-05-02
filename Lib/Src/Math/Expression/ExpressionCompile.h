@@ -27,7 +27,7 @@ private:
   void genReturnBoolExpression(const ExpressionNode *n);
   void genExpression(          const ExpressionNode *n DCL_DSTPARAM);
   void genFLD(                 const ExpressionNode *n);
-
+  void genReciprocal();
   void genCall1Arg(            const ExpressionNode *arg                             , BuiltInFunction1    f, const String &name DCL_DSTPARAM);
   void genCall1Arg(            const ExpressionNode *arg                             , BuiltInFunctionRef1 f, const String &name DCL_DSTPARAM);
   void genCall2Arg(            const ExpressionNode *arg1, const ExpressionNode *arg2, BuiltInFunction2    f, const String &name DCL_DSTPARAM);

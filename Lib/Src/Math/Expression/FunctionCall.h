@@ -76,4 +76,7 @@ public:
   inline UINT esiOffsetToIndex(int offset) const {
     return (offset + m_esiOffset) / sizeof(Real);
   }
+  inline size_t realRefToIndex(const Real *p) const {
+    return p - m_valueTable.getBuffer();
+  }
 };

@@ -46,6 +46,11 @@ const TCHAR *ListFile::findArgComment(const InstructionOperand &arg) const {
         return m_nameCommentArray[index].cstr();
       }
     }
+  } else if(arg.isImmediateValue() && (arg.getSize() == REGSIZE_DWORD)) {
+    const size_t index = m_addressTable.realRefToIndex((Real*)(size_t)arg.getImmUint32());
+    if(index < m_nameCommentArray.size()) {
+      return m_nameCommentArray[index].cstr();
+    }
   }
   return NULL;
 }
