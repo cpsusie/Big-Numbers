@@ -1245,6 +1245,36 @@ namespace TestExpression {
     }
   };
 
+  class Test107 : public RealExpressionTest {
+  public:
+    String getExpr() const {
+      return _T("x^0.5");
+    }
+    Real fr(const Real &x) const {
+      return sqrt(x);
+    }
+  };
+
+  class Test108 : public RealExpressionTest {
+  public:
+    String getExpr() const {
+      return _T("x^-0.5");
+    }
+    Real fr(const Real &x) const {
+      return 1 / sqrt(x);
+    }
+  };
+
+  class Test109 : public RealExpressionTest {
+  public:
+    String getExpr() const {
+      return _T("root(x,-2)");
+    }
+    Real fr(const Real &x) const {
+      return 1 / sqrt(x);
+    }
+  };
+
   static Test00  test00;
   static Test01  test01;
   static Test02  test02;
@@ -1352,6 +1382,9 @@ namespace TestExpression {
   static Test104 test104;
   static Test105 test105;
   static Test106 test106;
+  static Test107 test107;
+  static Test108 test108;
+  static Test109 test109;
 
   static ExpressionTest *testCases[] = {
      (ExpressionTest*)&test00
@@ -1461,6 +1494,9 @@ namespace TestExpression {
     ,(ExpressionTest*)&test104
     ,(ExpressionTest*)&test105
     ,(ExpressionTest*)&test106
+    ,(ExpressionTest*)&test107
+    ,(ExpressionTest*)&test108
+    ,(ExpressionTest*)&test109
   };
 
   FILE *openListFile(int testCase) {
@@ -1487,8 +1523,8 @@ redirectDebugLog();
           debugLog(_T("testcase %3d:<%-50s>:"),i,expr.cstr());
 #endif
           OUTPUT(_T("Test[%d]:%s"),i,expr.cstr());
-          if(i == 70) {
-            int fisk = 1;
+          if(i == 106) {
+            int fisk = 106;
           }
           FILE *listFile = openListFile(i);
           Expression compiledExpr, interpreterExpr;
