@@ -557,29 +557,43 @@ void TestMachineCode::clear(bool force) {
   }
 }
 
+static String formatIns(const InstructionBase &ins) {
+  const char stackDelta = ins.getFPUStackDelta();
+  return stackDelta
+       ? format(_T("%-36s FPUstDelta:%+2d"),ins.toString().cstr(),stackDelta)
+       : format(_T("%-36s              "),ins.toString().cstr());
+}
+
 int TestMachineCode::emit(const InstructionBase &ins) {
-  debugLog(_T("%-36s %s\n"), ins.toString().cstr(), m_currentMnemonic.cstr());
+  debugLog(_T("%s %s\n")
+          ,formatIns(ins).cstr(), m_currentMnemonic.cstr());
   m_emitCount++;
   return __super::emit(ins);
 }
 
 int TestMachineCode::emit(const OpcodeBase &opcode, const InstructionOperand &op) {
   const InstructionBase ins = opcode(op);
-  debugLog(_T("%-36s %s %s\n"), ins.toString().cstr(), m_currentMnemonic.cstr(), op.toString().cstr());
+  debugLog(_T("%s %s %s\n")
+          ,formatIns(ins).cstr(), m_currentMnemonic.cstr()
+          ,op.toString().cstr());
   m_emitCount++;
   return __super::emit(ins);
 }
 
 int TestMachineCode::emit(const OpcodeBase &opcode, const InstructionOperand &op1, const InstructionOperand &op2) {
   const InstructionBase ins = opcode(op1,op2);
-  debugLog(_T("%-36s %s %s, %s\n"), ins.toString().cstr(), m_currentMnemonic.cstr(), op1.toString().cstr(), op2.toString().cstr());
+  debugLog(_T("%s %s %s, %s\n")
+          ,formatIns(ins).cstr(), m_currentMnemonic.cstr()
+          ,op1.toString().cstr(), op2.toString().cstr());
   m_emitCount++;
   return __super::emit(ins);
 }
 
 int TestMachineCode::emit(const OpcodeBase &opcode, const InstructionOperand &op1, const InstructionOperand &op2, const InstructionOperand &op3) {
   const InstructionBase ins = opcode(op1,op2,op3);
-  debugLog(_T("%-36s %s %s,%s,%s\n"), ins.toString().cstr(), m_currentMnemonic.cstr(), op1.toString().cstr(), op2.toString().cstr(),op3.toString().cstr());
+  debugLog(_T("%s %s %s,%s,%s\n")
+          ,formatIns(ins).cstr(), m_currentMnemonic.cstr()
+          ,op1.toString().cstr(), op2.toString().cstr(),op3.toString().cstr());
   m_emitCount++;
   return __super::emit(ins);
 }
