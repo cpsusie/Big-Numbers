@@ -412,8 +412,9 @@ class Opcode0Arg;
 
 class InstructionBase {
 protected:
-  BYTE   m_bytes[15];
-  UINT   m_size            : 4; // = [0..15]
+  BYTE      m_bytes[15];
+  UINT      m_size            : 4; // = [0..15]
+  const int m_FPUStackDelta   : 3; // = [-2..1]
   InstructionBase(const OpcodeBase &opcode);
 public:
   InstructionBase(const Opcode0Arg &opcode);
@@ -423,6 +424,9 @@ public:
   }
   inline const BYTE *getBytes() const {
     return m_bytes;
+  }
+  inline char getFPUStackDelta() const {
+    return m_FPUStackDelta;
   }
   String toString() const;
 };
@@ -529,11 +533,12 @@ private:
 #ifdef IS64BIT
   bool validateIsRexCompatible1(const Register &reg1, const Register &reg2, bool throwOnError) const;
 #endif // IS64BIT
+  void checkExtension(BYTE extension) const;
+  void checkSize(     BYTE size) const;
 protected:
   OpcodeBase(const String &mnemonic,   const InstructionBase &src, BYTE extension=0, UINT flags=0);
   bool throwInvalidOperandCombination( const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError=true) const;
   bool throwInvalidOperandCombination( const InstructionOperand &op1, const InstructionOperand &op2, const InstructionOperand &op3, bool throwOnError=true) const;
-  bool throwInvalidOperandCombination( const Register           &reg, const InstructionOperand &op2, bool throwOnError) const;
   bool throwInvalidOperandType(        const InstructionOperand &op, BYTE index, bool throwOnError=true) const;
   void throwUnknownOperandType(        const InstructionOperand &op, BYTE index) const;
   static void throwUnknownRegisterType(const TCHAR *method, RegType      type);
@@ -541,6 +546,7 @@ protected:
   bool isGPRegisterSizeAllowed(   RegSize     size) const;
   bool isMemoryOperandSizeAllowed(OperandSize size) const;
   bool isImmediateSizeAllowed(    OperandSize size) const;
+  void checkFPUStackDelta(char delta) const; // throws if !(-2 <= delta <= 1)
 
   inline bool isImmAddrAllowed() const {
     return (getFlags() & IMMMADDR_ALLOWED) != 0;
@@ -611,6 +617,9 @@ public:
   // Various attributes
   inline UINT getFlags() const {
     return m_flags;
+  }
+  virtual char getFPUStackDelta() const {
+    return 0;
   }
   // Returns by default RM for index 1,2; S for 3, or else EMPTY
   virtual const OperandTypeSet &getValidOperandTypes(BYTE index) const;
@@ -1016,18 +1025,47 @@ public:
   InstructionBase operator()(const StringInstruction &ins) const;
 };
 
-class OpcodeFPUTransfer : public Opcode1Arg {
+class OpcodeFPU0Arg : public Opcode0Arg {
 private:
-  const Opcode1Arg m_dwordCode;
-  const Opcode1Arg m_qwordCode;
-  const Opcode1Arg m_tbyteCode;
+  const char m_stackDelta;
+public:
+  inline OpcodeFPU0Arg(const String &mnemonic, UINT op, char stackDelta, UINT flags=0)
+    : Opcode0Arg(mnemonic, op, flags)
+    , m_stackDelta(stackDelta)
+  {
+    checkFPUStackDelta(stackDelta);
+  }
+  char getFPUStackDelta() const {
+    return m_stackDelta;
+  }
+};
+class OpcodeFPU1Arg : public Opcode1Arg {
+private:
+  const char m_stackDelta;
+public:
+  inline OpcodeFPU1Arg(const String &mnemonic, UINT op, BYTE extension, char stackDelta, UINT flags)
+    : Opcode1Arg(mnemonic, op, extension, flags)
+    , m_stackDelta(stackDelta)
+  {
+    checkFPUStackDelta(stackDelta);
+  }
+  char getFPUStackDelta() const {
+    return m_stackDelta;
+  }
+};
+
+class OpcodeFPUTransfer : public OpcodeFPU1Arg {
+private:
+  const OpcodeFPU1Arg m_dwordCode;
+  const OpcodeFPU1Arg m_qwordCode;
+  const OpcodeFPU1Arg m_tbyteCode;
 public:
   OpcodeFPUTransfer(const String &mnemonic
-    , UINT opreg, BYTE opdw, BYTE extdw, BYTE opqw, BYTE extqw, BYTE optb, BYTE exttb)
-    : Opcode1Arg( mnemonic, opreg, 0    ,      REGTYPE_FPU_ALLOWED)
-    , m_dwordCode(mnemonic, opdw , extdw,      DWORDPTR_ALLOWED   )
-    , m_qwordCode(mnemonic, opqw , extqw,      QWORDPTR_ALLOWED   )
-    , m_tbyteCode(mnemonic, optb , exttb, optb?TBYTEPTR_ALLOWED:0 )
+    , UINT opreg, BYTE opdw, BYTE extdw, BYTE opqw, BYTE extqw, BYTE optb, BYTE exttb, char stackDelta)
+    : OpcodeFPU1Arg( mnemonic, opreg, 0    , stackDelta, REGTYPE_FPU_ALLOWED    )
+    , m_dwordCode(   mnemonic, opdw , extdw, stackDelta, DWORDPTR_ALLOWED       )
+    , m_qwordCode(   mnemonic, opqw , extqw, stackDelta, QWORDPTR_ALLOWED       )
+    , m_tbyteCode(   mnemonic, optb , exttb, stackDelta, optb?TBYTEPTR_ALLOWED:0)
   {
   }
   bool isValidOperand(const InstructionOperand &op, bool throwOnError=false) const;
@@ -1036,28 +1074,34 @@ public:
 
 class OpcodeFPU2Reg : public Opcode2Arg {
 private:
-  const OpcodeBase m_st0iCode;
+  const OpcodeFPU1Arg m_st0iCode;
+  const char          m_stackDelta;
 public:
-  OpcodeFPU2Reg(const String &mnemonic, UINT opi0, UINT op0i)
-    : Opcode2Arg(mnemonic,opi0    ,REGTYPE_FPU_ALLOWED)
-    , m_st0iCode(mnemonic,op0i,0,1,REGTYPE_FPU_ALLOWED)
+  OpcodeFPU2Reg(const String &mnemonic, UINT opi0, UINT op0i, char stackDelta)
+    : Opcode2Arg(mnemonic,opi0             ,REGTYPE_FPU_ALLOWED)
+    , m_st0iCode(mnemonic,op0i,0,stackDelta,REGTYPE_FPU_ALLOWED)
+    , m_stackDelta(stackDelta)
   {
+    checkFPUStackDelta(stackDelta);
   }
   InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
+  char getFPUStackDelta() const {
+    return m_stackDelta;
+  }
 };
 
-class OpcodeFPUArithm : public Opcode0Arg {
+class OpcodeFPUArithm : public OpcodeFPU0Arg {
 private:
-  const Opcode1Arg    m_dwordCode;
-  const Opcode1Arg    m_qwordCode;
+  const OpcodeFPU1Arg m_dwordCode;
+  const OpcodeFPU1Arg m_qwordCode;
   const OpcodeFPU2Reg m_2regCode;
 public:
   OpcodeFPUArithm(const String &mnemonic
-    , UINT opp, UINT opi0, UINT op0i, BYTE opdw, BYTE extdw, BYTE opqw, BYTE extqw)
-    : Opcode0Arg( mnemonic, opp                          )
-    , m_2regCode( mnemonic, opi0,op0i                    )
-    , m_dwordCode(mnemonic, opdw, extdw, DWORDPTR_ALLOWED)
-    , m_qwordCode(mnemonic, opqw, extqw, QWORDPTR_ALLOWED)
+    , UINT opp, UINT opi0, UINT op0i, BYTE opdw, BYTE extdw, BYTE opqw, BYTE extqw, const char *stackDelta)
+    : OpcodeFPU0Arg(mnemonic, opp        , stackDelta[0]                 )
+    , m_dwordCode(  mnemonic, opdw, extdw, stackDelta[1],DWORDPTR_ALLOWED)
+    , m_qwordCode(  mnemonic, opqw, extqw, stackDelta[1],QWORDPTR_ALLOWED)
+    , m_2regCode(   mnemonic, opi0, op0i , stackDelta[2]                 )
   {
   }
   BYTE getMaxOpCount() const {
@@ -1069,32 +1113,32 @@ public:
   InstructionBase operator()(    const InstructionOperand &op1, const InstructionOperand &op2                         ) const;
 };
 
-class OpcodeFPUCompare : public Opcode1Arg {
+class OpcodeFPUCompare : public OpcodeFPU1Arg {
 private:
-  const Opcode1Arg m_dwordCode;
-  const Opcode1Arg m_qwordCode;
+  const OpcodeFPU1Arg m_dwordCode;
+  const OpcodeFPU1Arg m_qwordCode;
 public:
   OpcodeFPUCompare(const String &mnemonic
-    , UINT opreg, BYTE opdw, BYTE extdw, BYTE opqw, BYTE extqw)
-    : Opcode1Arg( mnemonic, opreg, 0    , REGTYPE_FPU_ALLOWED)
-    , m_dwordCode(mnemonic, opdw , extdw, DWORDPTR_ALLOWED   )
-    , m_qwordCode(mnemonic, opqw , extqw, QWORDPTR_ALLOWED   )
+    , UINT opreg, BYTE opdw, BYTE extdw, BYTE opqw, BYTE extqw, char stackDelta)
+    : OpcodeFPU1Arg( mnemonic, opreg, 0    , stackDelta, REGTYPE_FPU_ALLOWED)
+    , m_dwordCode(   mnemonic, opdw , extdw, stackDelta, DWORDPTR_ALLOWED   )
+    , m_qwordCode(   mnemonic, opqw , extqw, stackDelta, QWORDPTR_ALLOWED   )
   {
   }
   bool isValidOperand(const InstructionOperand &op, bool throwOnError=false) const;
   InstructionBase operator()(const InstructionOperand &op) const;
 };
 
-class OpcodeFPUIArithm : public Opcode1Arg {
+class OpcodeFPUIArithm : public OpcodeFPU1Arg {
 private:
-  const Opcode1Arg m_dwordCode;
-  const Opcode1Arg m_qwordCode;
+  const OpcodeFPU1Arg m_dwordCode;
+  const OpcodeFPU1Arg m_qwordCode;
 public:
   OpcodeFPUIArithm(const String &mnemonic
-    , UINT opw, BYTE extw, BYTE opdw, BYTE extdw, BYTE opqw, BYTE extqw)
-    : Opcode1Arg( mnemonic, opw , extw ,      WORDPTR_ALLOWED   )
-    , m_dwordCode(mnemonic, opdw, extdw,      DWORDPTR_ALLOWED  )
-    , m_qwordCode(mnemonic, opqw, extqw, opqw?QWORDPTR_ALLOWED:0)
+    , UINT opw, BYTE extw, BYTE opdw, BYTE extdw, BYTE opqw, BYTE extqw, char stackDelta)
+    : OpcodeFPU1Arg( mnemonic, opw , extw , stackDelta,      WORDPTR_ALLOWED   )
+    , m_dwordCode(   mnemonic, opdw, extdw, stackDelta,      DWORDPTR_ALLOWED  )
+    , m_qwordCode(   mnemonic, opqw, extqw, stackDelta, opqw?QWORDPTR_ALLOWED:0)
   {
   }
   bool isValidOperand(const InstructionOperand &op, bool throwOnError=false) const;
@@ -1382,8 +1426,8 @@ extern OpcodeFPUTransfer FLD;                              // FLD(src). Push src
 extern OpcodeFPUTransfer FSTP;                             // FSTP(dst). Pop st(0) into dst. dst={st(i),Real4/8/10 in memory}
 extern OpcodeFPUTransfer FST;                              // FST(dst). Store st(0) into dst. dst={st(i),Real4/8 in memory}
 
-extern Opcode1Arg        FBLD;                             // FBLD(src). Push BCD data from src into st(0). src=tbyte ptr
-extern Opcode1Arg        FBSTP;                            // FBSTP(dst). Pop st(0) as BCD data into dst. dst=tbyte ptr
+extern OpcodeFPU1Arg     FBLD;                             // FBLD(src). Push BCD data from src into st(0). src=tbyte ptr
+extern OpcodeFPU1Arg     FBSTP;                            // FBSTP(dst). Pop st(0) as BCD data into dst. dst=tbyte ptr
 
 // ----------------------------- FPU arithmetic opcodes ----------------------------
 // For opcode={FADD,FMUL,FSUB,FDIV,FSUBR,FDIVR}, the following rules apply:
@@ -1397,26 +1441,26 @@ extern OpcodeFPUArithm   FDIV;                             // FDIV |FDIV(src)|FD
 extern OpcodeFPUArithm   FSUBR;                            // FSUBR|FSUBR(src)|FSUBR(dst,src). dst = src-dst. No operand=FSUBRP(st(1)). 1 operand:dst=st(0). 2 operands:FSUBR(st(i),st(0)), FADD(st(0),st(i))
 extern OpcodeFPUArithm   FDIVR;                            // FDIVR|FDIVR(src)|FDIVR(dst,src). dst = src/dst. No operand=FDIVRP(st(1)). 1 operand:dst=st(0). 2 operands:FDIVR(st(i),st(0)), FADD(st(0),st(i))
 
-extern Opcode1Arg        FADDP;                            // FADDP(st(i)). st(i) += st(0); pop st(0);
-extern Opcode1Arg        FMULP;                            // FMULP(st(i)). st(i) *= st(0); pop st(0);
-extern Opcode1Arg        FSUBP;                            // FSUBP(st(i)). st(i) -= st(0); pop st(0);
-extern Opcode1Arg        FDIVP;                            // FDIVP(st(i)). st(i) /= st(0); pop st(0);
-extern Opcode1Arg        FSUBRP;                           // FSUBRP(st(i)). st(i) = st(0)-st(i); pop st(0);
-extern Opcode1Arg        FDIVRP;                           // FDIVRP(st(i)). st(i) = st(0)/st(i); pop st(0);
+extern OpcodeFPU1Arg     FADDP;                            // FADDP(st(i)). st(i) += st(0); pop st(0);
+extern OpcodeFPU1Arg     FMULP;                            // FMULP(st(i)). st(i) *= st(0); pop st(0);
+extern OpcodeFPU1Arg     FSUBP;                            // FSUBP(st(i)). st(i) -= st(0); pop st(0);
+extern OpcodeFPU1Arg     FDIVP;                            // FDIVP(st(i)). st(i) /= st(0); pop st(0);
+extern OpcodeFPU1Arg     FSUBRP;                           // FSUBRP(st(i)). st(i) = st(0)-st(i); pop st(0);
+extern OpcodeFPU1Arg     FDIVRP;                           // FDIVRP(st(i)). st(i) = st(0)/st(i); pop st(0);
 
 // ----------------------------- FPU compare opcodes ----------------------------
 extern OpcodeFPUCompare  FCOM;                             // FCOM(src). Compare st(0) to src, src={st(i),Real4/Real8 in memory}
-extern Opcode1Arg        FCOMI;                            // FCOMI(st(i)). Compare st(0) to st(i) and set CPU-flags
-extern Opcode1Arg        FUCOM;                            // FUCOM(st(i)). Unordered compare st(0) to st(i)
-extern Opcode1Arg        FUCOMI;                           // FUCOMI(st(i)). Unordered compare st(0) to st(i) and set CPU-flags
+extern OpcodeFPU1Arg     FCOMI;                            // FCOMI(st(i)). Compare st(0) to st(i) and set CPU-flags
+extern OpcodeFPU1Arg     FUCOM;                            // FUCOM(st(i)). Unordered compare st(0) to st(i)
+extern OpcodeFPU1Arg     FUCOMI;                           // FUCOMI(st(i)). Unordered compare st(0) to st(i) and set CPU-flags
 
 extern OpcodeFPUCompare  FCOMP;                            // Same as FCOM,   but pop st(0) after compare
-extern Opcode1Arg        FCOMIP;                           // Same as FCOMI,  but pop st(0) after compare
-extern Opcode1Arg        FUCOMP;                           // Same as FUCOM,  but pop st(0) after compare
-extern Opcode1Arg        FUCOMIP;                          // Same as FUCOMI, but pop st(0) after compare
+extern OpcodeFPU1Arg     FCOMIP;                           // Same as FCOMI,  but pop st(0) after compare
+extern OpcodeFPU1Arg     FUCOMP;                           // Same as FUCOM,  but pop st(0) after compare
+extern OpcodeFPU1Arg     FUCOMIP;                          // Same as FUCOMI, but pop st(0) after compare
 
-extern Opcode0Arg        FCOMPP;                           // Compare st(0) to st(1); pop both
-extern Opcode0Arg        FUCOMPP;                          // Unordered compare st(0) to st(1); pop both
+extern OpcodeFPU0Arg     FCOMPP;                           // Compare st(0) to st(1); pop both
+extern OpcodeFPU0Arg     FUCOMPP;                          // Unordered compare st(0) to st(1); pop both
 
 // ------------------------ FPU integer opcodes ---------------------------------
 extern OpcodeFPUIArithm  FILD;                             // FILD(src). Push src into st(0). src=(signed int16/int32/int64 in memory)
@@ -1433,51 +1477,51 @@ extern OpcodeFPUIArithm  FICOM;                            // FICOM(src). Compar
 extern OpcodeFPUIArithm  FICOMP;                           // Same as ficom, but pop st(0) after compare
 
 // ------------------- Conditional Copy st(i) to st(0) --------------------------
-extern Opcode1Arg        FCMOVB;                           // FCMOVB(st(i)). Copy if below (CF==1)
-extern Opcode1Arg        FCMOVAE;                          // FCMOVAE(st(i)). Copy if above or equal (CF==0)
-extern Opcode1Arg        FCMOVE;                           // FCMOVE(st(i)). Copy if equal (ZF==1)
-extern Opcode1Arg        FCMOVNE;                          // FCMOVNE(st(i)). Copy if not equal (ZF==0)
-extern Opcode1Arg        FCMOVBE;                          // FCMOVBE(st(i)). Copy if below or equal (CF==1 || ZF==1)
-extern Opcode1Arg        FCMOVA;                           // FCMOVA(st(i)). Copy if above (CF==0 && ZF==0)
-extern Opcode1Arg        FCMOVU;                           // FCMOVU(st(i)). Copy if unordered (PF==1)
-extern Opcode1Arg        FCMOVNU;                          // FCMOVNU(st(i)). Copy if not unordered (PF==0)
+extern OpcodeFPU1Arg     FCMOVB;                           // FCMOVB(st(i)). Copy if below (CF==1)
+extern OpcodeFPU1Arg     FCMOVAE;                          // FCMOVAE(st(i)). Copy if above or equal (CF==0)
+extern OpcodeFPU1Arg     FCMOVE;                           // FCMOVE(st(i)). Copy if equal (ZF==1)
+extern OpcodeFPU1Arg     FCMOVNE;                          // FCMOVNE(st(i)). Copy if not equal (ZF==0)
+extern OpcodeFPU1Arg     FCMOVBE;                          // FCMOVBE(st(i)). Copy if below or equal (CF==1 || ZF==1)
+extern OpcodeFPU1Arg     FCMOVA;                           // FCMOVA(st(i)). Copy if above (CF==0 && ZF==0)
+extern OpcodeFPU1Arg     FCMOVU;                           // FCMOVU(st(i)). Copy if unordered (PF==1)
+extern OpcodeFPU1Arg     FCMOVNU;                          // FCMOVNU(st(i)). Copy if not unordered (PF==0)
 
-extern Opcode1Arg        FFREE;                            // FFREE(st(i)). Free a data register
-extern Opcode1Arg        FXCH;                             // FXCH(st(i)). Swap st(0) and st(i)
-extern Opcode0Arg        FNSTSWAX;                         // Store status word into CPU register AX
-extern Opcode0Arg        FWAIT;                            // Wait while FPU is busy
-extern Opcode0Arg        FNOP;                             // No operation
-extern Opcode0Arg        FCHS;                             // st(0) = -st(0)
-extern Opcode0Arg        FABS;                             // st(0) = abs(st(0))
-extern Opcode0Arg        FTST;                             // Compare st(0) to 0.0
-extern Opcode0Arg        FXAM;                             // Examine the content of st(0)
-extern Opcode0Arg        FLD1;                             // push 1.0
-extern Opcode0Arg        FLDL2T;                           // push log2(10)
-extern Opcode0Arg        FLDL2E;                           // push log2(e)
-extern Opcode0Arg        FLDPI;                            // push pi
-extern Opcode0Arg        FLDLG2;                           // push log10(2)
-extern Opcode0Arg        FLDLN2;                           // push ln(2)
-extern Opcode0Arg        FLDZ;                             // push 0.0
-extern Opcode0Arg        F2XM1;                            // st(0) = 2^st(0)-1, assume -1 <= st(0) <= 1
-extern Opcode0Arg        FYL2X;                            // st(1) = log2(st(0))*st(1); pop st(0)
-extern Opcode0Arg        FPTAN;                            // st(0) = tan(st(0)); push 1.0
-extern Opcode0Arg        FPATAN;                           // st(1) = atan(st(1)/st(0)); pop st(0)
-extern Opcode0Arg        FXTRACT;                          // st(0) = unbiased exponent in floating point format of st(0). then push signinificant wiht exponent 0
-extern Opcode0Arg        FPREM1;                           // As FPREM. Magnitude of the remainder <= st(1)/2
-extern Opcode0Arg        FDECSTP;                          // Decrement stack pointer. st0->st1, st7->st0, ..., st1->st2
-extern Opcode0Arg        FINCSTP;                          // Increment stack pointer. st0->st7, st1->st0, ..., st7->st6
-extern Opcode0Arg        FPREM;                            // Partial remainder. st(0) %= st(1). Exponent of st(0) reduced with at most 63
-extern Opcode0Arg        FYL2XP1;                          // st(1) = log2(st(0)+1)*st(1); pop st(0)
-extern Opcode0Arg        FSQRT;                            // st(0) = sqrt(st(0))
-extern Opcode0Arg        FSINCOS;                          // Sine and cosine of the angle value in st(0), st(0)=sin; push(cos)
-extern Opcode0Arg        FRNDINT;                          // st(0) = nearest integral value according to the rounding mode
-extern Opcode0Arg        FSCALE;                           // st(0) *= 2^int(st(1))
-extern Opcode0Arg        FSIN;                             // st(0) = sin(st(0))
-extern Opcode0Arg        FCOS;                             // st(0) = cos(st(0))
+extern OpcodeFPU1Arg     FFREE;                            // FFREE(st(i)). Free a data register
+extern OpcodeFPU1Arg     FXCH;                             // FXCH(st(i)). Swap st(0) and st(i)
+extern OpcodeFPU0Arg     FNSTSWAX;                         // Store status word into CPU register AX
+extern OpcodeFPU0Arg     FWAIT;                            // Wait while FPU is busy
+extern OpcodeFPU0Arg     FNOP;                             // No operation
+extern OpcodeFPU0Arg     FCHS;                             // st(0) = -st(0)
+extern OpcodeFPU0Arg     FABS;                             // st(0) = abs(st(0))
+extern OpcodeFPU0Arg     FTST;                             // Compare st(0) to 0.0
+extern OpcodeFPU0Arg     FXAM;                             // Examine the content of st(0)
+extern OpcodeFPU0Arg     FLD1;                             // push 1.0
+extern OpcodeFPU0Arg     FLDL2T;                           // push log2(10)
+extern OpcodeFPU0Arg     FLDL2E;                           // push log2(e)
+extern OpcodeFPU0Arg     FLDPI;                            // push pi
+extern OpcodeFPU0Arg     FLDLG2;                           // push log10(2)
+extern OpcodeFPU0Arg     FLDLN2;                           // push ln(2)
+extern OpcodeFPU0Arg     FLDZ;                             // push 0.0
+extern OpcodeFPU0Arg     F2XM1;                            // st(0) = 2^st(0)-1, assume -1 <= st(0) <= 1
+extern OpcodeFPU0Arg     FYL2X;                            // st(1) = log2(st(0))*st(1); pop st(0)
+extern OpcodeFPU0Arg     FPTAN;                            // st(0) = tan(st(0)); push 1.0
+extern OpcodeFPU0Arg     FPATAN;                           // st(1) = atan(st(1)/st(0)); pop st(0)
+extern OpcodeFPU0Arg     FXTRACT;                          // st(0) = unbiased exponent in floating point format of st(0). then push signinificant wiht exponent 0
+extern OpcodeFPU0Arg     FPREM1;                           // As FPREM. Magnitude of the remainder <= st(1)/2
+extern OpcodeFPU0Arg     FDECSTP;                          // Decrement stack pointer. st0->st1, st7->st0, ..., st1->st2
+extern OpcodeFPU0Arg     FINCSTP;                          // Increment stack pointer. st0->st7, st1->st0, ..., st7->st6
+extern OpcodeFPU0Arg     FPREM;                            // Partial remainder. st(0) %= st(1). Exponent of st(0) reduced with at most 63
+extern OpcodeFPU0Arg     FYL2XP1;                          // st(1) = log2(st(0)+1)*st(1); pop st(0)
+extern OpcodeFPU0Arg     FSQRT;                            // st(0) = sqrt(st(0))
+extern OpcodeFPU0Arg     FSINCOS;                          // Sine and cosine of the angle value in st(0), st(0)=sin; push(cos)
+extern OpcodeFPU0Arg     FRNDINT;                          // st(0) = nearest integral value according to the rounding mode
+extern OpcodeFPU0Arg     FSCALE;                           // st(0) *= 2^int(st(1))
+extern OpcodeFPU0Arg     FSIN;                             // st(0) = sin(st(0))
+extern OpcodeFPU0Arg     FCOS;                             // st(0) = cos(st(0))
 
-extern Opcode1Arg        FLDCW;                            // FLDCW(m16). Load control word.
-extern Opcode1Arg        FNSTCW;                           // FNSTCW(m16). Store control word.
-extern Opcode1Arg        FNSTSW;                           // FNSTSW(m16). Store status word.
+extern OpcodeFPU1Arg     FLDCW;                            // FLDCW(m16). Load control word.
+extern OpcodeFPU1Arg     FNSTCW;                           // FNSTCW(m16). Store control word.
+extern OpcodeFPU1Arg     FNSTSW;                           // FNSTSW(m16). Store status word.
 
 // ---------------------------- XMM opcodes -----------------------------------------
 

@@ -38,46 +38,47 @@ OpcodeBase::OpcodeBase(const String &mnemonic, UINT op, BYTE extension, BYTE opC
   , m_opCount(   opCount              )
   , m_flags(     flags                )
 {
+  m_bytes = swapBytes(op, m_size);
+
+#ifdef _DEBUG
   DEFINEMETHODNAME;
-  if(extension > 7) {
-    THROWINVALIDFLAGS(_T("Extension=%d. Max is 7"), extension);
-  }
-  m_bytes = swapBytes(op,m_size);
+  checkExtension(extension);
+  checkSize(m_size);
   if(getFlags() & HAS_BYTE_SIZEBIT) {
     if(op & 1) {
-      THROWINVALIDFLAGS(_T("HAS_BYTE_SIZEBIT set for opcode %X (bit 0 already set)"),op);
+      THROWINVALIDFLAGS(_T("HAS_BYTE_SIZEBIT set for opcode %X (bit 0 already set)"), op);
     }
   }
   if(getFlags() & HAS_IMM_XBIT) {
     if(op & 2) {
-      THROWINVALIDFLAGS(_T("HAS_IMM_XBIT set for opcode %X (bit 1 already set)"),op);
+      THROWINVALIDFLAGS(_T("HAS_IMM_XBIT set for opcode %X (bit 1 already set)"), op);
     }
-    if(getFlags() & (HAS_DIRBIT0|HAS_DIRBIT1)) {
-      THROWINVALIDFLAGS(_T("Cannot have both HAS_IMM_XBIT and DIRBIT0/1 set for opcode %X"),op);
+    if(getFlags() & (HAS_DIRBIT0 | HAS_DIRBIT1)) {
+      THROWINVALIDFLAGS(_T("Cannot have both HAS_IMM_XBIT and DIRBIT0/1 set for opcode %X"), op);
     }
   }
   if(getFlags() & HAS_WORDPREFIX) {
     if(!(getFlags() & (WORDPTR_ALLOWED | WORDGPR_ALLOWED | IMM16_ALLOWED))) {
-      THROWINVALIDFLAGS(_T("HAS_WORDPREFIX set for opcode %X, but word size operands not allowed"),op);
+      THROWINVALIDFLAGS(_T("HAS_WORDPREFIX set for opcode %X, but word size operands not allowed"), op);
     }
   }
 
-  if (getFlags() & LASTOP_IMMONLY) {
+  if(getFlags() & LASTOP_IMMONLY) {
     if((opCount == 2) && (getFlags() & OP2_REGONLY)) {
-      THROWINVALIDFLAGS(_T("Cannot have both LASTOP_IMMONLY and OP2_REGONLY for 2-argument opcode %X"),op);
+      THROWINVALIDFLAGS(_T("Cannot have both LASTOP_IMMONLY and OP2_REGONLY for 2-argument opcode %X"), op);
     }
   }
 #ifdef IS64BIT
   if(getFlags() & HAS_REXWBIT) {
     if(!(getFlags() & (QWORDPTR_ALLOWED | QWORDGPR_ALLOWED))) {
-      THROWINVALIDFLAGS(_T("HAS_REXWBIT set for opcode %X, but qword size operands not allowed"),op);
+      THROWINVALIDFLAGS(_T("HAS_REXWBIT set for opcode %X, but qword size operands not allowed"), op);
     }
   }
 #endif // IS64BIT
 
   if(getFlags() & HAS_DIRBIT1) {
     if(op & 2) {
-      THROWINVALIDFLAGS(_T("HAS_DIRBIT1 set for opcode %X (bit 1 already set)"),op);
+      THROWINVALIDFLAGS(_T("HAS_DIRBIT1 set for opcode %X (bit 1 already set)"), op);
     }
     if(getFlags() & OP1_REGONLY) {
       THROWINVALIDFLAGS(_T("HAS_DIRBIT1 and OP1_REGONLY cannot both be set"));
@@ -89,16 +90,16 @@ OpcodeBase::OpcodeBase(const String &mnemonic, UINT op, BYTE extension, BYTE opC
 
   if(getFlags() & HAS_DIRBIT0) {
     if(op & 1) {
-      THROWINVALIDFLAGS(_T("HAS_DIRBIT0 set for opcode %X (bit 0 already set)"),op);
+      THROWINVALIDFLAGS(_T("HAS_DIRBIT0 set for opcode %X (bit 0 already set)"), op);
     }
     if(getFlags() & HAS_DIRBIT1) {
-      THROWINVALIDFLAGS(_T("Cannot have both HAS_DIRBIT0 and HAS_DIRBIT1 set for opcode %X"),op);
+      THROWINVALIDFLAGS(_T("Cannot have both HAS_DIRBIT0 and HAS_DIRBIT1 set for opcode %X"), op);
     }
     if(getFlags() & OP1_REGONLY) {
       THROWINVALIDFLAGS(_T("Cannot have both HAS_DIRBIT0 and OP1_REGONLY set"));
     }
     if(getFlags() & HAS_BYTE_SIZEBIT) {
-      THROWINVALIDFLAGS(_T("HAS_DIRBIT0 and HAS_BYTE_SIZEBIT cannot both be set for opcode %X"),op);
+      THROWINVALIDFLAGS(_T("HAS_DIRBIT0 and HAS_BYTE_SIZEBIT cannot both be set for opcode %X"), op);
     }
   }
 
@@ -110,19 +111,41 @@ OpcodeBase::OpcodeBase(const String &mnemonic, UINT op, BYTE extension, BYTE opC
   if((getFlags() & LASTOP_IMMONLY) && ((getFlags() & (IMMEDIATEVALUE_ALLOWED | IMM64_ALLOWED)) == 0)) {
     THROWINVALIDFLAGS(_T("LASTOP_IMMONLY is set, but no immediate operands allowed"));
   }
+#endif // _DEBUG
 }
 
 OpcodeBase::OpcodeBase(const String &mnemonic, const InstructionBase &src, BYTE extension, UINT flags)
-  : m_mnemonic( toLowerCase(mnemonic))
-  , m_size(     src.size()           )
-  , m_extension(extension            )
-  , m_opCount(  0                    )
-  , m_flags(    flags                )
+  : m_mnemonic(toLowerCase(mnemonic))
+  , m_size(src.size())
+  , m_extension(extension)
+  , m_opCount(0)
+  , m_flags(flags)
 {
-  assert(extension  <= 7);
-  assert(src.size() <= 4);
+  checkExtension(extension);
+  checkSize(m_size);
   m_bytes = 0;
   memcpy(&m_bytes, src.getBytes(), src.size()); // no byte swap
+}
+
+void OpcodeBase::checkExtension(BYTE extension) const {
+  DEFINEMETHODNAME;
+  if(extension > 7) {
+    THROWINVALIDFLAGS(_T("Extension=%d. Max is 7"), extension);
+  }
+}
+
+void OpcodeBase::checkSize(BYTE size) const {
+  if(size > 4) {
+    throwInvalidArgumentException(__TFUNCTION__, _T("%s:size=%d. max=4")
+                                 ,getMnemonic().cstr(), size);
+  }
+}
+
+void OpcodeBase::checkFPUStackDelta(char delta) const {
+  if((delta < -2) || (delta > 1)) {
+    throwInvalidArgumentException(__TFUNCTION__, _T("%s:FPUStackDelta=%d. valid:[-2..1]")
+                                 ,getMnemonic().cstr(), delta);
+  }
 }
 
 bool OpcodeBase::isRegisterAllowed(const Register &reg) const {

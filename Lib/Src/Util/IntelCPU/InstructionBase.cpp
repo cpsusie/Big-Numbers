@@ -7,12 +7,14 @@
 
 InstructionBase::InstructionBase(const OpcodeBase &opcode)
   : m_size(opcode.size())
+  , m_FPUStackDelta(opcode.getFPUStackDelta())
 {
   memcpy(m_bytes, opcode.getBytes(),m_size);
 }
 
 InstructionBase::InstructionBase(const Opcode0Arg &opcode)
   : m_size(opcode.size())
+  , m_FPUStackDelta(opcode.getFPUStackDelta())
 {
   memcpy(m_bytes, opcode.getBytes(),m_size);
 }
