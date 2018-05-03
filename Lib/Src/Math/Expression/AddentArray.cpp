@@ -6,7 +6,8 @@ void AddentArray::add(ExpressionNode *n, bool positive) {
   switch(n->getSymbol()) {
   case NUMBER:
     if(!n->isZero()) {      // dont add Zero
-      add(new SumElement(n, positive));
+      SumElement *e = new SumElement(n, positive); TRACE_NEW(e);
+      add(e);
     }
     break;
   case SUM   :
@@ -21,7 +22,9 @@ void AddentArray::add(ExpressionNode *n, bool positive) {
     }
     break;
   default    :
-    add(new SumElement(n, positive));
+    { SumElement *e = new SumElement(n, positive); TRACE_NEW(e);
+      add(e);
+    }
     break;
   }
 }

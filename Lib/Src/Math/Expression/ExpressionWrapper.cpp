@@ -6,21 +6,29 @@
 static Real dummy = 0;
 #define M_EXPR ((Expression*)m_expr)
 
+static Expression *allocateExpression() {
+  Expression *e = new Expression(); TRACE_NEW(e);
+  return e;
+}
+static void deleteExpression(Expression *e) {
+  SAFEDELETE(e);
+}
+
 ExpressionWrapper::ExpressionWrapper() {
-  m_expr = new Expression();
+  m_expr = allocateExpression();
   compile(_T("0"),false);
 }
 
 ExpressionWrapper::~ExpressionWrapper() {
-  delete M_EXPR;
+  deleteExpression(M_EXPR);
 }
 
 ExpressionWrapper::ExpressionWrapper(const String &text, bool machineCode, FILE *listFile) {
-  m_expr = new Expression();
+  m_expr = allocateExpression();
   compile(text, machineCode, listFile);
   if(!ok()) {
     const String msg = getErrorMessage();
-    delete M_EXPR;
+    deleteExpression(M_EXPR);
     throwException(msg);
   }
 }

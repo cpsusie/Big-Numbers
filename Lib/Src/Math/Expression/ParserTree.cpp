@@ -9,7 +9,6 @@ using namespace std;
 
 ParserTree::ParserTree() {
   resetSimpleConstants();
-  m_indexNameCounter = 0;
   m_root             = NULL;
   m_treeForm         = TREEFORM_STANDARD;
   initDynamicOperations(m_treeForm);
@@ -19,7 +18,6 @@ ParserTree::ParserTree() {
 ParserTree::ParserTree(const ParserTree &src) {
   resetSimpleConstants();
   m_errors           = src.m_errors;
-  m_indexNameCounter = 0;
   m_root             = src.m_root ? src.m_root->clone(this) : NULL;
   m_treeForm         = src.m_treeForm;
   initDynamicOperations(m_treeForm);
@@ -31,8 +29,7 @@ ParserTree &ParserTree::operator=(const ParserTree &rhs) {
     return *this;
   }
   releaseAll();
-  m_errors           = rhs.m_errors;
-  m_indexNameCounter = 0;
+  m_errors = rhs.m_errors;
   setRoot(rhs.m_root ? rhs.m_root->clone(this) : NULL);
   setTreeForm(rhs.getTreeForm());
   setOk(rhs.m_ok);
@@ -123,10 +120,10 @@ void ParserTree::initDynamicOperations(ParserTreeForm treeForm) {
 
 void ParserTree::releaseAll() {
   for(size_t i = 0; i < m_nodeTable.size(); i++) {
-    delete m_nodeTable[i];
+    SAFEDELETE(m_nodeTable[i]);
   }
   for(size_t i = 0; i < m_addentTable.size(); i++) {
-    delete m_addentTable[i];
+    SAFEDELETE(m_addentTable[i]);
   }
   resetSimpleConstants();
   setRoot(NULL);
@@ -134,7 +131,7 @@ void ParserTree::releaseAll() {
   m_errors.clear();
   m_nodeTable.clear();
   m_addentTable.clear();
-  clearSymbolTable();
+  m_symbolTable.clear(NULL);
 }
 
 void ParserTree::addError(ExpressionNode *n, _In_z_ _Printf_format_string_ TCHAR const * const format,...) {
@@ -370,17 +367,21 @@ void ParserTree::traverseTree(ExpressionNodeHandler &handler) {
 // ---------------------------------------- only used by parser --------------------------------------------------
 
 ExpressionNode *ParserTree::vFetchNode(const SourcePosition &pos, ExpressionInputSymbol symbol, va_list argptr) {
+  ExpressionNode *n;
   switch(symbol) {
-  case NUMBER: return new ExpressionNodeNumberWithPos(   this, pos, va_arg(argptr,Real  ));
-  case NAME  : return new ExpressionNodeVariableWithPos( this, pos, va_arg(argptr,TCHAR*));
-  case POLY  : return new ExpressionNodePolyWithPos(     this, pos, argptr);
-  default    : return new ExpressionNodeTreeWithPos(     this, pos, symbol, argptr);
+  case NUMBER: n = new ExpressionNodeNumberWithPos(   this, pos, va_arg(argptr,Real  )); break;
+  case NAME  : n = new ExpressionNodeVariableWithPos( this, pos, va_arg(argptr,TCHAR*)); break;
+  case POLY  : n = new ExpressionNodePolyWithPos(     this, pos, argptr); break;
+  default    : n = new ExpressionNodeTreeWithPos(     this, pos, symbol, argptr); break;
   }
+  TRACE_NEW(n);
+  return n;
 }
 
 // Used by derivate, reduce, graphics
 ExpressionNodeVariable *ParserTree::fetchVariableNode(const String &name) {
-  return new ExpressionNodeVariable(this, name);
+  ExpressionNodeVariable *v = new ExpressionNodeVariable(this, name); TRACE_NEW(v);
+  return v;
 }
 
 ExpressionNode *ParserTree::constExpression(const String &name) {
@@ -392,29 +393,15 @@ ExpressionNode *ParserTree::constExpression(const String &name) {
   } else if(!v->isConstant()) {
     throwInvalidArgumentException(method, _T("%s is not a constant"), name.cstr());
   }
-  return new ExpressionNodeVariable(this, name, *(ExpressionVariable*)v);
+  ExpressionNode *n = new ExpressionNodeVariable(this, name, *(ExpressionVariable*)v); TRACE_NEW(n);
+  return n;
 }
 
 String ParserTree::treeToString() const {
   ((ParserTree*)this)->unmarkAll();
   String result;
   if(m_root) m_root->dumpNode(result, 0);
-  result += variablesToString();
-  return result;
-}
-
-String ParserTree::variablesToString() const {
-  String result = _T("SymbolTable:\n");
-  if(m_variableTable.size() > 0) {
-    for(size_t i = 0; i < m_variableTable.size(); i++) {
-      const ExpressionVariable &var = m_variableTable[i];
-      result += format(_T("  %2d: %s\n"), (int)i, var.toString().cstr());
-    }
-  }
-  result += _T("ValueTable:\n");
-  for (size_t i = 0; i < m_valueTable.size(); i++) {
-    result += format(_T("  %2d: %s\n"), (int)i, ::toString(m_valueTable[i]).cstr());
-  }
+  result += getSymbolTable().toString();
   return result;
 }
 

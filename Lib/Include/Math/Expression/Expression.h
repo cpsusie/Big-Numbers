@@ -184,6 +184,9 @@ public:
   Expression(TrigonometricMode mode = RADIANS);
   Expression(const Expression &src);
   Expression &operator=(const Expression &src);
+  ~Expression() {
+    clear();
+  }
   Expression getDerived(const String &name, bool reduceResult = true) const;
   static String getDefaultListFileName();
 

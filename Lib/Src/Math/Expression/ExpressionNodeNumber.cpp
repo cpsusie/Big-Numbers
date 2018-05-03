@@ -9,7 +9,8 @@ int ExpressionNodeNumber::compare(ExpressionNode *n) {
 }
 
 ExpressionNode *ExpressionNodeNumber::clone(ParserTree *tree) const {
-  return new ExpressionNodeNumber(tree, m_number);
+  ExpressionNode *n = new ExpressionNodeNumber(tree, m_number); TRACE_NEW(n);
+  return n;
 }
 
 bool ExpressionNodeNumber::traverseExpression(ExpressionNodeHandler &handler, int level) {
@@ -28,7 +29,8 @@ int ExpressionNodeBoolean::compare(ExpressionNode *n) {
 }
 
 ExpressionNode *ExpressionNodeBoolean::clone(ParserTree *tree) const {
-  return new ExpressionNodeBoolean(tree, getBool());
+  ExpressionNode *n = new ExpressionNodeBoolean(tree, getBool()); TRACE_NEW(n);
+  return n;
 }
 
 bool ExpressionNodeBoolean::traverseExpression(ExpressionNodeHandler &handler, int level) {

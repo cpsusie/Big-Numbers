@@ -3,11 +3,10 @@
 #include <MyUtil.h>
 #include <Stack.h>
 #include <HashMap.h>
-#include <TreeMap.h>
 #include <PropertyContainer.h>
 #include <Scanner.h>
 #include "ExpressionSymbol.h"
-#include "ExpressionNode.h"
+#include "ParserTreeSymbolTable.h"
 
 #ifdef _DEBUG
 #define TRACE_REDUCTION_CALLSTACK
@@ -77,6 +76,7 @@ public:
 };
 typedef Stack<ReductionStackElement> ReductionStack;
 #endif
+
 
 class ParserTree : public PropertyContainer {
 
@@ -150,34 +150,14 @@ protected:
 private:
   DECLARECLASSNAME;
   ExpressionNode               *m_root;
-  int                           m_indexNameCounter;
-  // map name -> index in m_variableTable
-  StringTreeMap<int>            m_nameTable;
-  Array<ExpressionVariable>     m_variableTable;
-  mutable CompactRealArray      m_valueTable;
   CompactArray<ExpressionNode*> m_nodeTable;
   CompactArray<SumElement*>     m_addentTable;
+  ParserTreeSymbolTable         m_symbolTable;
   StringArray                   m_errors;
   bool                          m_ok;
   ParserTreeForm                m_treeForm;
   ExpressionNodeNumber         *m_minusOne, *m_zero, *m_one, *m_two, *m_ten, *m_half;
 
-  ExpressionVariable   *allocateSymbol(     const String &name, const Real &value, bool isConstant, bool isLeftSide, bool isLoopVar);
-  ExpressionVariable   *allocateSymbol(     ExpressionNode *n                    , bool isConstant, bool isLeftSide, bool isLoopVar);
-  ExpressionVariable   *allocateConstant(   ExpressionNode *n, const String &name, const Real &value);
-  void                  allocateNumber(     ExpressionNode *n, bool reuseIfExist);
-  // Insert value into m_valueTable, return index of position
-  int                   insertValue(Real value);
-  // Find i, so m_valueTable[i] == value, and m_valueTable[i] is not used by a vaiable. return -1, if not found
-  int                   findNumberIndexByValue(const Real &value) const;
-  // Return set with indices in m_valueTable, for all elements usedby variables
-  BitSet                getVariablesIndexSet() const;
-  void buildSymbolTable(                    ExpressionNode *n);
-  void buildSymbolTableIndexedExpression(   ExpressionNode *n);
-  void buildSymbolTableAssign(              ExpressionNode *n, bool loopAssignment);
-  void checkDependentOnLoopVariablesOnly(   ExpressionNode *n);
-  String getNewTempName();
-  String getNewLoopName(const String &oldName) const;
 
   inline void resetSimpleConstants() {;
     m_minusOne = m_zero = m_one = m_two = m_ten = m_half = NULL;
@@ -186,9 +166,9 @@ private:
   friend class SNode;
   friend class ExpressionNode;
   friend class ExpressionNodeVariable;
+  friend class ParserTreeSymbolTable;
   friend class SumElement;
   friend class FactorArray;
-  friend class AllocateNumbers;
   friend class MarkedNodeTransformer;
   friend class ExpressionPainter;
 protected:
@@ -202,10 +182,12 @@ protected:
   void pruneUnusedNodes();
   void markPow1Nodes();
   void deleteUnmarked();
-  void buildSymbolTable();
-  void clearSymbolTable();
-  void copyValues(ParserTree &src);
-  ExpressionVariable *getVariableByName(const String &name);
+  void buildSymbolTable(const ParserTreeSymbolTable *oldValues = NULL) {
+    m_symbolTable.create(this, oldValues);
+  }
+  ExpressionVariable *getVariableByName(const String &name) {
+    return m_symbolTable.getVariable(name);
+  }
   inline void setValueByIndex(UINT valueIndex, Real value) const {
     getValueRef(valueIndex) = value;
   }
@@ -213,6 +195,12 @@ protected:
     return getValueRef(valueIndex);
   }
   ExpressionNode *traverseSubstituteNodes(ExpressionNode *n, CompactNodeHashMap<ExpressionNode*> &nodeMap);
+
+  ExpressionNode *allocateLoopVarNode(const String &prefix) {
+    ExpressionNodeVariable *result = fetchVariableNode(m_symbolTable.getNewLoopName(prefix));
+    m_symbolTable.allocateSymbol(result, false, true, true);
+    return result;
+  }
 
   ExpressionNodeVariable *fetchVariableNode( const String               &name    );
   ExpressionNode         *constExpression(   const String               &name    );
@@ -222,27 +210,33 @@ protected:
   ExpressionNodeTree     *fetchTreeNode(     ExpressionInputSymbol     symbol, ...                );
 
   inline ExpressionNodeNumber *numberExpression(const Real     &v) {
-    return new ExpressionNodeNumber(this, v);
+    ExpressionNodeNumber *n = new ExpressionNodeNumber(this, v); TRACE_NEW(n);
+    return n;
   }
   inline ExpressionNodeNumber *numberExpression(const Rational &v) {
-    return new ExpressionNodeNumber(this, v);
+    ExpressionNodeNumber *n = new ExpressionNodeNumber(this, v); TRACE_NEW(n);
+    return n;
   }
   inline ExpressionNodeNumber *numberExpression(int             v) {
-    return new ExpressionNodeNumber(this, Rational(v));
+    ExpressionNodeNumber *n = new ExpressionNodeNumber(this, Rational(v)); TRACE_NEW(n);
+    return n;
   }
   inline ExpressionNodeNumber *numberExpression(UINT            v) {
-    return new ExpressionNodeNumber(this, Rational(v));
+    ExpressionNodeNumber *n = new ExpressionNodeNumber(this, Rational(v)); TRACE_NEW(n);
+    return n;
   }
   inline ExpressionNodeNumber *numberExpression(__int64         v) {
-    return new ExpressionNodeNumber(this, Rational(v));
+    ExpressionNodeNumber *n = new ExpressionNodeNumber(this, Rational(v)); TRACE_NEW(n);
+    return n;
   }
   inline ExpressionNodeNumber *numberExpression(const Number   &v) {
-    return new ExpressionNodeNumber(this, v);
+    ExpressionNodeNumber *n = new ExpressionNodeNumber(this, v); TRACE_NEW(n);
+    return n;
   }
   inline ExpressionNodeBoolean *booleanExpression(bool b)          {
-    return new ExpressionNodeBoolean(this, b);
+    ExpressionNodeBoolean *n = new ExpressionNodeBoolean(this, b); TRACE_NEW(n);
+    return n;
   }
-  ExpressionNode *allocateLoopVarNode( const String &prefix);
 
   // Return nodes in std. form
   ExpressionNode *minusS(                    ExpressionNode *n);
@@ -349,13 +343,7 @@ public:
     return getValueRef(var.getValueIndex());
   }
   inline Real &getValueRef(UINT valueIndex) const {
-    return m_valueTable[valueIndex];
-  }
-  inline size_t getValueCount() const {
-    return m_valueTable.size();
-  }
-  const CompactRealArray &getValueTable() const {
-    return m_valueTable;
+    return m_symbolTable.getValueRef(valueIndex);
   }
   ExpressionNodePoly     *fetchPolyNode(     const ExpressionNodeArray  &coefficientArray, ExpressionNode *argument);
   ExpressionFactor       *getFactor(         ExpressionNode *base, ExpressionNode *exponent = NULL);
@@ -436,8 +424,12 @@ typedef ExpressionNode *(ParserTree::*BinaryOperator)(ExpressionNode *n1, Expres
   void listErrors(FILE *f = stdout) const;
   void listErrors(tostream &out) const;
   void listErrors(const TCHAR *fname) const;
-  void setValue(const String &name, const Real &value);
-  const ExpressionVariable *getVariable(const String &name) const;
+  inline void setValue(const String &name, const Real &value) {
+    m_symbolTable.setValue(name,value);
+  }
+  inline const ExpressionVariable *getVariable(const String &name) const {
+    return m_symbolTable.getVariable(name);
+  }
 
   int getNodeCount(ExpressionNodeSelector *selector = NULL);
   // Terminate symbolset with 0. Only specified symbols will be counted
@@ -450,7 +442,6 @@ typedef ExpressionNode *(ParserTree::*BinaryOperator)(ExpressionNode *n1, Expres
   }
   void clearAllBreakPoints();
 #endif
-  ExpressionVariableArray getAllVariables() const;
   int getNodeTableSize() const {
     return (int)m_nodeTable.size();
   }
@@ -459,6 +450,8 @@ typedef ExpressionNode *(ParserTree::*BinaryOperator)(ExpressionNode *n1, Expres
   }
   void substituteNodes(CompactNodeHashMap<ExpressionNode*> &nodeMap);
   void traverseTree(ExpressionNodeHandler &handler);
-  String variablesToString() const;
+  const ParserTreeSymbolTable &getSymbolTable() const {
+    return m_symbolTable;
+  }
   String treeToString() const;
 };

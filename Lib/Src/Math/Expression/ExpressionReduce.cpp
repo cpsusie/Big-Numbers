@@ -42,7 +42,7 @@ public:
 void Expression::reduce() {
 
   try {
-    const ExpressionVariableArray variables = getAllVariables();
+    const ExpressionVariableArray variables = getSymbolTable().getAllVariables();
 
     const ParserTreeForm startTreeForm = getTreeForm();
     if(startTreeForm != TREEFORM_CANONICAL) {
@@ -503,7 +503,7 @@ bool Expression::canUseReverseIdiotRule(SumElement *e1, SumElement *e2, SumEleme
       if((fabs(r1) == 1) && isSquareOfSinOrCos(e2->getNode()) && (r1 == 1) != (e2->isPositive())) {
         ExpressionNode *sinOrCos = e2->getNode()->left();
         ExpressionNode *n = powerC(functionExpression(getDualTrigonometricFunction(sinOrCos->getSymbol()), sinOrCos->left()), getTwo());
-        result = new SumElement(n, r1 == 1);
+        result = new SumElement(n, r1 == 1); TRACE_NEW(result);
         RETURNBOOL( true );
       }
     }
@@ -534,14 +534,16 @@ SumElement *Expression::mergeLogarithms(SumElement &e1, SumElement &e2) {
   const SNode arg1        = e1.getNode()->left();
   const SNode arg2        = e2.getNode()->left();
   const ExpressionInputSymbol logFunction = e1.getNode()->getSymbol();
-
+  SumElement *result;
   if(e1.isPositive() == e2.isPositive()) { // log(arg1) + log(arg2) = log(arg1*arg2)
-    RETURN( new SumElement(functionExpression(logFunction, reduceRealExp(arg1 * arg2)), e1.isPositive()));
+    result = new SumElement(functionExpression(logFunction, reduceRealExp(arg1 * arg2)), e1.isPositive());
   } else if(e1.isPositive()) {             // log(arg1) - log(arg2) = log(arg1/arg2)
-    RETURN( new SumElement(functionExpression(logFunction, reduceRealExp(arg1 / arg2)),true) );
+    result = new SumElement(functionExpression(logFunction, reduceRealExp(arg1 / arg2)),true);
   } else {                                 // log(arg2) - log(arg1) = log(arg2/arg1)
-    RETURN( new SumElement(functionExpression(logFunction, reduceRealExp(arg2 / arg1)),true) );
+    result = new SumElement(functionExpression(logFunction, reduceRealExp(arg2 / arg1)),true);
   }
+  TRACE_NEW(result);
+  RETURN(result);
 }
 
 /*
@@ -649,7 +651,7 @@ StartSearch:
   } else { // e1 negative and e2 positive
     bc = factorsToNode(fl2) - factorsToNode(fl1);
   }
-  SumElement *result = new SumElement(a * bc, positive);
+  SumElement *result = new SumElement(a * bc, positive); TRACE_NEW(result);
   RETURNPSHOWSTR( result );
 }
 

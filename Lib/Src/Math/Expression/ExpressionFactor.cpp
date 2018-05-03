@@ -5,7 +5,8 @@
 DEFINECLASSNAME(ExpressionFactor);
 
 ExpressionNode *ExpressionFactor::clone(ParserTree *tree) const {
-  return new ExpressionFactor(base()->clone(tree), exponent()->clone(tree));
+  ExpressionNode *n = new ExpressionFactor(base()->clone(tree), exponent()->clone(tree)); TRACE_NEW(n);
+  return n;
 }
 
 int ExpressionFactor::compare(ExpressionNode *n) {

@@ -41,27 +41,31 @@ ExpressionFactor *ParserTree::fetchFactorNode(ExpressionNode *base, ExpressionNo
   if(exponent == NULL) {
     exponent = getOne();
   }
+  ExpressionFactor *f;
   if(exponent->isOne()) {
     if(base->getSymbol() == POW) {
       if(base->getNodeType() == EXPRESSIONNODEFACTOR) {
         return (ExpressionFactor*)base;
       } else {
-        return new ExpressionFactor(base->left(), base->right());
+        f = new ExpressionFactor(base->left(), base->right());
       }
     } else {
-      return new ExpressionFactor(base, exponent);
+      f = new ExpressionFactor(base, exponent);
     }
   } else { // exponent != 1
     if(base->getSymbol() == POW) {
-      return new ExpressionFactor(base->left(), productC(base->right(), exponent));
+      f = new ExpressionFactor(base->left(), productC(base->right(), exponent));
     } else {
-      return new ExpressionFactor(base, exponent);
+      f = new ExpressionFactor(base, exponent);
     }
   }
+  TRACE_NEW(f);
+  return f;
 }
 
 ExpressionNodePoly *ParserTree::fetchPolyNode(const ExpressionNodeArray &coefficientArray, ExpressionNode *argument) {
-  return new ExpressionNodePoly(this, coefficientArray, argument);
+  ExpressionNodePoly *n = new ExpressionNodePoly(this, coefficientArray, argument); TRACE_NEW(n);
+  return n;
 }
 
 // -----------------------------------------------------------------------------------------
@@ -77,7 +81,9 @@ ExpressionNode *ParserTree::getSum(AddentArray &a) {
   case 1 :
     return a[0]->isPositive() ? a[0]->getNode() : minusC(a[0]->getNode());
   default:
-    return new ExpressionNodeSum(this, a);
+    { ExpressionNode *n = new ExpressionNodeSum(this, a); TRACE_NEW(n);
+      return n;
+    }
   }
 }
 
@@ -85,7 +91,10 @@ ExpressionNode *ParserTree::getProduct(FactorArray &a) {
   switch(a.size()) {
   case 0 : return getOne();
   case 1 : return a[0]->exponent()->isOne() ? a[0]->base() : a[0];
-  default: return new ExpressionNodeProduct(this, a);
+  default: 
+    { ExpressionNode *n = new ExpressionNodeProduct(this, a); TRACE_NEW(n);
+      return n;
+    }
   }
 }
 
@@ -157,11 +166,13 @@ ExpressionNodeTree *ParserTree::fetchTreeNode(ExpressionInputSymbol symbol,...) 
   va_start(argptr, symbol);
   ExpressionNodeTree *result = new ExpressionNodeTree(this, symbol, argptr);
   va_end(argptr);
+  TRACE_NEW(result);
   return result;
 }
 
 ExpressionNode *ParserTree::getTree(ExpressionInputSymbol symbol, ExpressionNodeArray &a) {
-  return new ExpressionNodeTree(this, symbol, a);
+  ExpressionNode *n = new ExpressionNodeTree(this, symbol, a); TRACE_NEW(n);
+  return n;
 }
 
 ExpressionNode *ParserTree::getTree(ExpressionNode *oldTree, ExpressionNodeArray &newChildArray) {

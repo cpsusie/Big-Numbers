@@ -1190,6 +1190,7 @@
     <ClInclude Include="..\..\Include\Math\Expression\ExpressionWrapper.h" />
     <ClInclude Include="..\..\Include\Math\Expression\MachineCode.h" />
     <ClInclude Include="..\..\Include\Math\Expression\ParserTree.h" />
+    <ClInclude Include="..\..\Include\Math\Expression\ParserTreeSymbolTable.h" />
     <ClInclude Include="..\..\Include\Math\Expression\SumElement.h" />
     <ClInclude Include="..\..\Include\Math\fft.h" />
     <ClInclude Include="..\..\Include\Math\FPU.h" />

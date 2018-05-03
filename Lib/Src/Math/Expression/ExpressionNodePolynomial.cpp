@@ -61,7 +61,8 @@ int ExpressionNodePoly::compare(ExpressionNode *n) {
 }
 
 ExpressionNode *ExpressionNodePoly::clone(ParserTree *tree) const {
-  return new ExpressionNodePoly(tree, this);
+  ExpressionNode *n = new ExpressionNodePoly(tree, this); TRACE_NEW(n);
+  return n;
 }
 
 bool ExpressionNodePoly::isConstant() const {

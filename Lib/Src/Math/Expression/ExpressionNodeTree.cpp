@@ -126,7 +126,8 @@ int ExpressionNodeTree::compare(ExpressionNode *n) {
 }
 
 ExpressionNode *ExpressionNodeTree::clone(ParserTree *tree) const {
-  return new ExpressionNodeTree(tree, this);
+  ExpressionNode *n = new ExpressionNodeTree(tree, this); TRACE_NEW(n);
+  return n;
 }
 
 class IndexedExpressionDependencyChecker : public ExpressionNodeHandler {

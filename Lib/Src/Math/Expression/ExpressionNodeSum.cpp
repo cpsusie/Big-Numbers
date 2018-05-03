@@ -27,7 +27,8 @@ ExpressionNodeSum *ExpressionNodeSum::multiply(ExpressionNodeSum *n1, Expression
       newAddentArray.add(s1 * s2, e1->isPositive() == e2->isPositive());
     }
   }
-  return new ExpressionNodeSum(tree, newAddentArray); // dont use getSum here. It has to be an ExpressionNodeSum
+  ExpressionNodeSum *n = new ExpressionNodeSum(tree, newAddentArray); TRACE_NEW(n); // dont use getSum here. It has to be an ExpressionNodeSum
+  return n;
 }
 
 int ExpressionNodeSum::compare(ExpressionNode *n) {
@@ -53,7 +54,8 @@ ExpressionNode *ExpressionNodeSum::clone(ParserTree *tree) const {
   for(size_t i = 0; i < m_elements.size(); i++) {
     a.add(m_elements[i]->clone(tree));
   }
-  return new ExpressionNodeSum(tree, a);
+  ExpressionNode *n = new ExpressionNodeSum(tree, a); TRACE_NEW(n);
+  return n;
 }
 
 bool ExpressionNodeSum::isConstant() const {

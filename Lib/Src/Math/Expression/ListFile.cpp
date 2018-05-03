@@ -14,7 +14,7 @@ void ListFile::adjustPositions(UINT pos, UINT bytesAdded) {
 void ListFile::clear() {
   const size_t n = m_lineArray.size();
   for(size_t i = 0; i < n; i++) {
-    delete m_lineArray[i];
+    SAFEDELETE(m_lineArray[i]);
   }
   m_lineArray.clear();
 }

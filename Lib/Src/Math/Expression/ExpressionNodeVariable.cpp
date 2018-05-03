@@ -3,7 +3,7 @@
 
 ExpressionNodeVariable::ExpressionNodeVariable(ParserTree *tree, const String &name) : ExpressionNode(tree, NAME) {
   m_name = name;
-  ((ParserTree*)tree)->allocateSymbol(this, false, false, false);
+  tree->m_symbolTable.allocateSymbol(this, false, false, false);
 }
 
 int ExpressionNodeVariable::compare(ExpressionNode *n) {
@@ -14,7 +14,8 @@ int ExpressionNodeVariable::compare(ExpressionNode *n) {
 }
 
 ExpressionNode *ExpressionNodeVariable::clone(ParserTree *tree) const {
-  return new ExpressionNodeVariable(tree, m_name);
+  ExpressionNode *n = new ExpressionNodeVariable(tree, m_name); TRACE_NEW(n);
+  return n;
 }
 
 bool ExpressionNodeVariable::traverseExpression(ExpressionNodeHandler &handler, int level) {

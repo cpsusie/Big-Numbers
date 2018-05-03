@@ -541,6 +541,9 @@
     <ClInclude Include="Expression\FunctionCall.h">
       <Filter>Source Files\Expression</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Expression\ParserTreeSymbolTable.h">
+      <Filter>Header Files\Expression</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="FPU.inc">

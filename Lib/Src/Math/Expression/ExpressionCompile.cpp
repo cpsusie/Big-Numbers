@@ -10,10 +10,11 @@ CodeGenerator::CodeGenerator(ParserTree *tree, TrigonometricMode trigonometricMo
   if(tree->getTreeForm() != TREEFORM_STANDARD) {
     throwException(_T("Treeform must be STANDARD to generate machinecode. Form=%s"), m_tree.getTreeFormName().cstr());
   }
-  m_codeArray = new MachineCode;                                 TRACE_NEW(m_codeArray);
+  m_codeArray = new MachineCode; TRACE_NEW(m_codeArray);
+  const ParserTreeSymbolTable &table = tree->getSymbolTable();
   m_code      = new CodeGeneration(m_codeArray
-                                  ,tree->getValueTable()
-                                  ,createNameCommentArray(m_tree)
+                                  ,table.getValueTable()
+                                  ,table.getIndexedNameArray()
                                   ,listFile);
   TRACE_NEW(m_code);
 
@@ -25,33 +26,6 @@ CodeGenerator::CodeGenerator(ParserTree *tree, TrigonometricMode trigonometricMo
     SAFEDELETE(m_codeArray)
     throw;
   }
-}
-
-StringArray CodeGenerator::createNameCommentArray(const ParserTree &tree) {
-  const CompactRealArray       &values    = tree.getValueTable();
-  const ExpressionVariableArray variables = tree.getAllVariables();
-  StringArray a;
-  for(size_t i = 0; i < values.size(); i++) {
-    a.add(EMPTYSTRING);
-  }
-  for(size_t i = 0; i < variables.size(); i++) {
-    const ExpressionVariable &var = variables[i];
-    a[var.getValueIndex()] = var.getName();
-  }
-  int tmpCounter = 0;
-  for(size_t i = 0; i < a.size(); i++) {
-    if(a[i].isEmpty()) {
-      if(isNan(values[i])) {
-        a[i] = format(_T("$tmp%d"), tmpCounter++);
-      } else {
-        a[i] = toString(values[i]);
-      }
-    }
-  }
-  for(size_t i = 0; i < a.size(); i++) {
-    a[i] = format(_T("value[%2d]:%s"), i, a[i].cstr());
-  }
-  return a;
 }
 
 void CodeGenerator::genMachineCode() {

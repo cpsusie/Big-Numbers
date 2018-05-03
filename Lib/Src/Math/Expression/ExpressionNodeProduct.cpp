@@ -42,7 +42,8 @@ ExpressionNode *ExpressionNodeProduct::clone(ParserTree *tree) const {
   for(size_t i = 0; i < m_factors.size(); i++) {
     factors.add(m_factors[i]->clone(tree));
   }
-  return new ExpressionNodeProduct(tree, factors);
+  ExpressionNode *n = new ExpressionNodeProduct(tree, factors); TRACE_NEW(n);
+  return n;
 }
 
 bool ExpressionNodeProduct::isConstant() const {

@@ -33,7 +33,8 @@ bool SumElement::isConstant() const {
 }
 
 SumElement *SumElement::clone(ParserTree *tree) const {
-  return new SumElement(m_n->clone(tree), m_positive);
+  SumElement *e = new SumElement(m_n->clone(tree), m_positive); TRACE_NEW(e);
+  return e;
 }
 
 int SumElement::compare(const SumElement *e) const {

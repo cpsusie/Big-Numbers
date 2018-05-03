@@ -53,7 +53,7 @@ void ParserTree::markSimpleConstants() {
 void ParserTree::unmarkAll() {
   for(size_t i = 0; i < m_nodeTable.size()    ; i++) m_nodeTable[i]->unMark();
   for(size_t i = 0; i < m_addentTable.size()  ; i++) m_addentTable[i]->unMark();
-  for(size_t i = 0; i < m_variableTable.size(); i++) m_variableTable[i].unMark();
+  m_symbolTable.unmarkAllReferencedNodes();
 }
 
 void ParserTree::deleteUnmarked() {
@@ -64,7 +64,7 @@ void ParserTree::deleteUnmarked() {
     if(n->isMarked()) {
       m_nodeTable.add(n);
     } else {
-      delete n;
+      SAFEDELETE(n);
     }
   }
   tmp.clear();
@@ -75,7 +75,7 @@ void ParserTree::deleteUnmarked() {
     if(e->isMarked()) {
       m_addentTable.add(e);
     } else {
-      delete e;
+      SAFEDELETE(e);
     }
   }
   tmp1.clear();

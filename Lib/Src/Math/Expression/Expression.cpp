@@ -10,8 +10,7 @@ Expression::Expression(TrigonometricMode mode) {
 
 Expression::Expression(const Expression &src) : ParserTree(src) {
   init(src.getTrigonometricMode(), src.getReturnType(), src.getState(), src.getReduceIteration());
-  buildSymbolTable();
-  copyValues((ParserTree&)src);
+  buildSymbolTable(&src.getSymbolTable());
   setMachineCode(src.isMachineCode());
 }
 
@@ -24,8 +23,7 @@ Expression &Expression::operator=(const Expression &src) {
   ParserTree::operator=(src);
   setTrigonometricMode(src.getTrigonometricMode());
 
-  buildSymbolTable();
-  copyValues((ParserTree&)src);
+  buildSymbolTable(&src.getSymbolTable());
 
   setMachineCode(    src.isMachineCode());
   setReduceIteration(src.getReduceIteration());
@@ -67,7 +65,7 @@ void Expression::compile(const String &expr, bool machineCode, FILE *listFile) {
     if(machineCode && (listFile!=NULL)) {
       m_listFile = listFile;
       _ftprintf(m_listFile, _T("%s\n\n"), expr.cstr());
-      _ftprintf(m_listFile, _T("%s\n\n"), variablesToString().cstr());
+      _ftprintf(m_listFile, _T("%s\n\n"), getSymbolTable().toString().cstr());
     }
 
     setMachineCode(machineCode);

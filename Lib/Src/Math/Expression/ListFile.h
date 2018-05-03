@@ -10,9 +10,9 @@ inline String labelToString(CodeLabel label) {
   return format(_T("L%d"), label);
 }
 
-#define LF_MARGIN  4
+#define LF_MARGIN  2
 #define LF_POSLEN  4
-#define LF_INSLEN 36
+#define LF_INSLEN 32
 #define LF_MNELEN  6
 #define LF_OPSLEN 40
 
@@ -93,9 +93,10 @@ public:
     , m_arg(arg.clone())
     , m_nameComment(nameComment)
   {
+    TRACE_NEW(m_arg);
   }
   ~ListLine1Arg() {
-    delete m_arg;
+    SAFEDELETE(m_arg);
   }
   String toString() const {
     return __super::toString()
@@ -117,11 +118,13 @@ public:
     , m_arg2(arg2.clone())
     , m_nameComment(nameComment)
   {
+    TRACE_NEW(m_arg1);
+    TRACE_NEW(m_arg2);
   }
 
   ~ListLine2Arg() {
-    delete m_arg1;
-    delete m_arg2;
+    SAFEDELETE(m_arg1);
+    SAFEDELETE(m_arg2);
   }
   String toString() const {
     return __super::toString()
@@ -187,15 +190,16 @@ public:
     , m_arg(arg.clone())
     , m_fc(fc)
   {
+    TRACE_NEW(m_arg);
   }
   ~ListLineCall() {
-    delete m_arg;
+    SAFEDELETE(m_arg);
   }
   String toString() const {
     return __super::toString()
          + formatIns(m_opcode(*m_arg))
          + formatOpAndComment(formatOp(m_opcode,m_arg)
-                             ,m_fc.toString().cstr()
+                             ,m_fc.m_signature.cstr()
                              );
   }
 };
@@ -242,6 +246,9 @@ private:
   const StringArray              m_nameCommentArray;   // For comments
   const IndexRegister           &m_tableRefRegister;
 
+  inline void addLine(ListLine *l) {
+    TRACE_NEW(l); m_lineArray.add(l);
+  }
   const TCHAR *findArgComment(const InstructionOperand &arg) const;
 public:
   ListFile(FILE *f, const ValueAddressCalculation &addressTable, const StringArray &commentArray, const IndexRegister &tableRefRegister) 
@@ -257,29 +264,29 @@ public:
   }
   void clear();
   inline void add(UINT pos, const Opcode0Arg &opcode) {
-    m_lineArray.add(new ListLine0Arg(pos,opcode));
+    addLine(new ListLine0Arg(pos,opcode));
   }
   inline void add(UINT pos, const OpcodeBase &opcode, const InstructionOperand &arg) {
-    m_lineArray.add(new ListLine1Arg(pos,opcode,arg,findArgComment(arg)));
+    addLine(new ListLine1Arg(pos,opcode,arg,findArgComment(arg)));
   }
   inline void add(UINT pos, const OpcodeBase &opcode, const InstructionOperand &arg1, const InstructionOperand &arg2) {
     const TCHAR *comment1 = findArgComment(arg1);
-    m_lineArray.add(new ListLine2Arg(pos,opcode,arg1,arg2, comment1?comment1:findArgComment(arg2)));
+    addLine(new ListLine2Arg(pos,opcode,arg1,arg2, comment1?comment1:findArgComment(arg2)));
   }
   inline void add(UINT pos, const StringPrefix &prefix, const StringInstruction &strins) {
-    m_lineArray.add(new ListLineStringOp(pos,prefix,strins));
+    addLine(new ListLineStringOp(pos,prefix,strins));
   }
   inline void add(UINT pos, const OpcodeBase &opcode, int iprel, CodeLabel label) {
-    m_lineArray.add(new ListLineJump(pos,opcode,iprel,label));
+    addLine(new ListLineJump(pos,opcode,iprel,label));
   }
   inline void add(UINT pos, const OpcodeCall &opcode, const InstructionOperand &arg, const FunctionCall &fc) {
-    m_lineArray.add(new ListLineCall(pos,opcode,arg,fc));
+    addLine(new ListLineCall(pos,opcode,arg,fc));
   }
   inline void add(UINT pos, CodeLabel label) {
-    m_lineArray.add(new ListLineLabel(pos,label));
+    addLine(new ListLineLabel(pos,label));
   }
   inline void add(UINT pos, UINT rbxOffset, const FunctionCall &fc) {
-    m_lineArray.add(new ListLineFuncAddr(pos,rbxOffset,fc));
+    addLine(new ListLineFuncAddr(pos,rbxOffset,fc));
   }
   ListLine *findLineByPos(UINT pos);
   inline bool isOpen() const {
