@@ -1512,28 +1512,22 @@ namespace TestExpression {
     TEST_METHOD(ExpressionTestEvaluate) {
       ExpressionTest::startEvaluateTest();
       FPU::init();
-#ifdef TRACE_CALLS
-redirectDebugLog();
+#ifdef TRACE_MEMORY
+//redirectDebugLog();
 #endif
       try {
         for(int i = 0; i < ARRAYSIZE(testCases); i++) {
           ExpressionTest &test = *testCases[i];
           const String expr = test.getExpr();
-#ifdef TRACE_CALLS
-          debugLog(_T("testcase %3d:<%-50s>:"),i,expr.cstr());
+#ifdef TRACE_MEMORY
+          debugLog(_T("testcase %3d:<%-50s>\n"),i,expr.cstr());
 #endif
           OUTPUT(_T("Test[%d]:%s"),i,expr.cstr());
-          if(i == 106) {
-            int fisk = 106;
-          }
           FILE *listFile = openListFile(i);
           Expression compiledExpr, interpreterExpr;
           compiledExpr.compile(expr, true, listFile);
           fclose(listFile);
 
-#ifdef TRACE_CALLS
-          debugLog(_T("\n"));
-#endif
 //          debugLog(_T("Test %d %s\n%s\n"), i, expr.cstr(), compiledExpr.treeToString().cstr());
 
           interpreterExpr.compile(expr, false);

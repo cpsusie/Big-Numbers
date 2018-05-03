@@ -1,4 +1,31 @@
 #include "stdafx.h"
+#include <Math/Expression/Expression.h>
+
+static const TCHAR *jacktool = 
+_T("pi2 = 2 * pi;\n"
+   "br0 = 8/(9*(1.1+cos(t*pi2)));\n"
+   "br1 = 8/(9*(1.1+cos((t+1/6)*pi2)));\n"
+   "br2 = 8/(9*(1.1+cos((t+2/6)*pi2)));\n"
+   "br3 = 8/(9*(1.1+cos((t+3/6)*pi2)));\n"
+   "br4 = 8/(9*(1.1+cos((t+4/6)*pi2)));\n"
+   "br5 = 8/(9*(1.1+cos((t+5/6)*pi2)));\n"
+   "\n"
+   "sqrx=sqr(x);\n"
+   "sqry=sqr(y);\n"
+   "sqrz=sqr(z);\n"
+   "\n"
+   "( (sqrx/9+4*(sqry+sqrz))^-4\n"
+   "+ (sqry/9+4*(sqrx+sqrz))^-4\n"
+   "+ (sqrz/9+4*(sqry+sqrx))^-4\n"
+   "+ ((4/3*x-4)^2+br0*(sqry+sqrz))^-4\n"
+   "+ ((4/3*x+4)^2+br1*(sqry+sqrz))^-4\n"
+   "+ ((4/3*z-4)^2+br2*(sqrx+sqry))^-4\n"
+   "+ ((4/3*z+4)^2+br3*(sqrx+sqry))^-4\n"
+   "+ ((4/3*y-4)^2+br4*(sqrx+sqrz))^-4\n"
+   "+ ((4/3*y+4)^2+br5*(sqrx+sqrz))^-4)\n"
+   "^-0.25\n"
+   "-1");
+
 
 static const TCHAR *samples[] = {
    _T("poly[1,poly[2,-1,3](x),3,4](x)")
@@ -21,6 +48,7 @@ static const TCHAR *samples[] = {
   ,_T("if(not(x+1 >= x*2 or  x < 0 or x == 0),x+1,x-1)")
   ,_T("if(not(x+1 >= x*2 and x < 0 or x == 0),x+1,x-1)")
   ,_T("if(not((x < 0 or x == 0) and x+1 >= x*2),x+1,x-1)")
+  ,jacktool
 };
 
 static void listSamples() {
@@ -90,6 +118,7 @@ int main() {
   for(;;) {
     const String str = inputString(_T("\nEnter expression:"));
     String expr;
+    if(str.isEmpty()) continue;
     switch(str[0]) {
     case '?':
       listSamples();
@@ -107,7 +136,7 @@ int main() {
         if((_stscanf(str.cstr()+1,_T("%d"), &n) == 1) && (n >= 0) && (n < ARRAYSIZE(samples))) {
           expr = samples[n];
         } else {
-          _tprintf(_T("%d:Illegal index (valid range:[0..%d]"), n, ARRAYSIZE(samples)-1);
+          _tprintf(_T("%d:Illegal index (valid range:[0..%zu]"), n, ARRAYSIZE(samples)-1);
           continue;
         }
       }
@@ -121,4 +150,3 @@ int main() {
 
   return 0;
 }
-

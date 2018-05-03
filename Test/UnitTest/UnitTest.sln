@@ -217,7 +217,6 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "testexpr", "..\testexpr\testexpr.vcxproj", "{9C7F1744-1E47-4FFE-A47E-E8BB593F6AA7}"
 	ProjectSection(ProjectDependencies) = postProject
 		{DA57B57F-CFF3-4620-87AE-69D3598B492D} = {DA57B57F-CFF3-4620-87AE-69D3598B492D}
-		{0D1324F1-16AC-4245-9A51-8BF3B09A6C5F} = {0D1324F1-16AC-4245-9A51-8BF3B09A6C5F}
 	EndProjectSection
 EndProject
 Global
@@ -664,10 +663,10 @@ Global
 		{310BC4C9-172B-4A2F-8E5F-B04605F80ADC}.Release|x64.Build.0 = Release|x64
 		{310BC4C9-172B-4A2F-8E5F-B04605F80ADC}.Release|x86.ActiveCfg = Release|Win32
 		{310BC4C9-172B-4A2F-8E5F-B04605F80ADC}.Release|x86.Build.0 = Release|Win32
-		{310BC4C9-172B-4A2F-8E5F-B04605F80ADC}.TraceMemRelease|x64.ActiveCfg = Release|x64
-		{310BC4C9-172B-4A2F-8E5F-B04605F80ADC}.TraceMemRelease|x64.Build.0 = Release|x64
-		{310BC4C9-172B-4A2F-8E5F-B04605F80ADC}.TraceMemRelease|x86.ActiveCfg = Release|Win32
-		{310BC4C9-172B-4A2F-8E5F-B04605F80ADC}.TraceMemRelease|x86.Build.0 = Release|Win32
+		{310BC4C9-172B-4A2F-8E5F-B04605F80ADC}.TraceMemRelease|x64.ActiveCfg = TraceMemRelease|x64
+		{310BC4C9-172B-4A2F-8E5F-B04605F80ADC}.TraceMemRelease|x64.Build.0 = TraceMemRelease|x64
+		{310BC4C9-172B-4A2F-8E5F-B04605F80ADC}.TraceMemRelease|x86.ActiveCfg = TraceMemRelease|Win32
+		{310BC4C9-172B-4A2F-8E5F-B04605F80ADC}.TraceMemRelease|x86.Build.0 = TraceMemRelease|Win32
 		{26E7F2D6-3654-4FC2-8CFE-FFC81D123A18}.Debug|x64.ActiveCfg = Debug|x64
 		{26E7F2D6-3654-4FC2-8CFE-FFC81D123A18}.Debug|x64.Build.0 = Debug|x64
 		{26E7F2D6-3654-4FC2-8CFE-FFC81D123A18}.Debug|x86.ActiveCfg = Debug|Win32
