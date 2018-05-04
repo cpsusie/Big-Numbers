@@ -371,8 +371,7 @@ static UINT getFirst16(const _uint128 &n, int &expo2) {
     jmp         End1Result
 
 SearchBit:                                     ; assume ecx hold the index of integer with first 1-bit
-    add         edi , 4
-    mov         edx , dword ptr [edi]
+    mov         edx , dword ptr [edi+4]
     bsr         eax , edx                      ; eax holds index of highest 1 bit
     cmp         eax , 15
     je          End2Results
@@ -384,7 +383,7 @@ SearchBit:                                     ; assume ecx hold the index of in
     add         ecx , eax
     mov         expo, ecx
 
-    mov         edi , dword ptr[edi-4]         ; edi = previous int
+    mov         edi , dword ptr[edi]           ; edi = previous int
     mov         ecx , 15
     sub         ecx , eax                      ; ecx = 15 - index of higest 1-bit
     shld        edx , edi, cl                  ; Shift edx left adding new bits from previous digit (edi)
@@ -426,8 +425,7 @@ static UINT getFirst32(const _uint128 &n, int &expo2) {
     jmp         End1Result
 
 SearchBit:                                     ; assume ecx hold the index of integer with first 1-bit
-    add         edi, 4
-    mov         edx, dword ptr[edi]
+    mov         edx, dword ptr[edi+4]
     bsr         eax, edx                       ; eax holds index of highest 1 bit
     cmp         eax, 31
     je          End2Results
@@ -438,7 +436,7 @@ SearchBit:                                     ; assume ecx hold the index of in
     add         ecx, eax
     mov         expo, ecx
 
-    mov         edi, dword ptr[edi-4]          ; edi = previous int
+    mov         edi, dword ptr[edi]            ; edi = previous int
     mov         ecx, 31
     sub         ecx, eax                       ; ecx = 31 - bits already in edx
     shld        edx, edi, cl                   ; Shift edx left adding new bits from previous digit (edi)
@@ -460,8 +458,7 @@ End1Result:
 static inline int getExpo2(UINT x) {
   UINT result;
   _asm {
-    mov         edx, x
-    bsr         eax, edx
+    bsr         eax, x
     mov         result, eax
   }
   return result;
