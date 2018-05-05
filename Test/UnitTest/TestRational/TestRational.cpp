@@ -277,10 +277,27 @@ namespace TestRational {
         rationalNanTest(FLT_MAX  );
         rationalNanTest(DBL_MAX  );
         rationalNanTest(DBL80_MAX);
-      } catch (Exception e) {
+      } catch(Exception e) {
         OUTPUT(_T("Exception:%s"), e.what());
         verify(false);
       }
     }
+
+    TEST_METHOD(RationalPowers) {
+      try {
+        const Rational b(46656,12167000);
+        const Rational e(2,3);
+        Rational p;
+        verify(Rational::isRationalPow(b,e,&p));
+        const double pd = pow(getDouble(b),getDouble(e));
+        const double error = pd - getDouble(p);
+        const double relError = fabs(error / pd);
+        verify(relError < 1e-15);
+      } catch(Exception e) {
+        OUTPUT(_T("Exception:%s"), e.what());
+        verify(false);
+      }
+    }
+
   };
 }

@@ -2,6 +2,7 @@
 #include <limits.h>
 #include <Math/Int128.h>
 #include <Math/Rational.h>
+#include <Math/PrimeFactors.h>
 
 const Rational RAT_MIN(  1,_I64_MAX);    // Min positive value (=1/_I64_MAX)
 const Rational RAT_MAX(_I16_MAX    );    // Max value          (=_I64_MAX)
@@ -471,5 +472,53 @@ bool Rational::isRational(const Double80 &x, Rational *r) { // static
     }
   } catch(Exception) {
     return false;
+  }
+}
+
+bool Rational::isRationalPow(const Rational &base, const Rational &e, Rational *r) {
+  if(e.isInteger()) {
+    if(r) *r = ::pow(base, getInt(e));
+    return true;
+  } else {
+    const __int64 &bn = base.getNumerator();
+    const __int64 &bd = base.getDenominator();
+    const __int64 &en = e.getNumerator();
+    const __int64 &ed = e.getDenominator();
+
+    if(!isInt(ed) || !isInt(en) || ((bn < 0) && ::isEven(ed))) {
+      return false;
+    }
+    PrimeFactorArray bnFactors(bn);
+    PrimeFactorArray bdFactors(bd);
+
+    const UINT ed32 = (UINT)ed;
+    if(bnFactors.hasFactorsWithNonDividableMultiplicity(ed32)
+    || bdFactors.hasFactorsWithNonDividableMultiplicity(ed32)) {
+      return false;
+    }
+
+    if(r != NULL) {
+      for(size_t i = 0; i < bnFactors.size(); i++) {
+        bnFactors[i].m_multiplicity /= ed32;
+      }
+      for(size_t i = 0; i < bdFactors.size(); i++) {
+        bdFactors[i].m_multiplicity /= ed32;
+      }
+
+      const UINT enU32 = abs((int)en);
+      if(enU32 != 1) {
+        for(size_t i = 0; i < bnFactors.size(); i++) {
+          bnFactors[i].m_multiplicity *= enU32;
+        }
+        for(size_t i = 0; i < bdFactors.size(); i++) {
+          bdFactors[i].m_multiplicity *= enU32;
+        }
+      }
+      if(::isEven(en)) bnFactors.setPositive();
+      const __int64 Rn = bnFactors.getProduct();
+      const __int64 Rd = bdFactors.getProduct();
+      *r = (en < 0) ? Rational(Rd,Rn) : Rational(Rn,Rd);
+    }
+    return true;
   }
 }

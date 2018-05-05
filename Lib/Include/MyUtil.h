@@ -267,6 +267,15 @@ inline int boolCmp(bool b1, bool b2) {
   return ordinal(b1) - ordinal(b2);
 }
 
+inline bool isInt( int    v) { return true;         }
+inline bool isInt( UINT   v) { return v <= INT_MAX; }
+inline bool isInt( INT64  v) { return v == (int)v;  }
+inline bool isInt( UINT64 v) { return v == (int)v;  }
+inline bool isUint(int    v) { return v >= 0;       }
+inline bool isUint(UINT   v) { return true;         }
+inline bool isUint(INT64  v) { return v == (UINT)v; }
+inline bool isUint(UINT64 v) { return v == (UINT)v; }
+
 // 5-rounding
 double round(   double x, int dec);
 double trunc(   double x, int dec=0);

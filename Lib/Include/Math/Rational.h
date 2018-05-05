@@ -117,6 +117,9 @@ public:
   static bool isRational(float           x, Rational *r);
   static bool isRational(double          x, Rational *r);
   static bool isRational(const Double80 &x, Rational *r);
+  // Return true if base^e is a rational
+  // if(r != NULL), *r will contain the calculated value
+  static bool isRationalPow(const Rational &base, const Rational &e, Rational *r);
 
   inline ULONG hashCode() const {
     return int64Hash(m_numerator) + 100999 * int64Hash(m_denominator);

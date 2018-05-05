@@ -28,6 +28,8 @@ public:
   // Find all primefactors of n <= limit. if limit == 0 then n
   PrimeFactorArray(INT64 n, UINT limit = 0);
   PrimeFactorSet findFactorsWithMultiplicityAtLeast(UINT m) const;
+  PrimeFactorSet findFactorsWithMultiplicityLessThan(UINT m) const;
+  bool hasFactorsWithNonDividableMultiplicity(UINT m) const;
   // Return list of all positive combinations of primefactors in array, ie. ignore sign
   CompactInt64Array getAllFactors() const;
   INT64 getProduct() const;

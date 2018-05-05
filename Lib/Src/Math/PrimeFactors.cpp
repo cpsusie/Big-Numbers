@@ -105,6 +105,27 @@ PrimeFactorSet PrimeFactorArray::findFactorsWithMultiplicityAtLeast(UINT m) cons
   return result;
 }
 
+PrimeFactorSet PrimeFactorArray::findFactorsWithMultiplicityLessThan(UINT m) const {
+  PrimeFactorSet result((UINT)size() + 1);
+  for(size_t i = 0; i < size(); i++) {
+    const PrimeFactor &pf = (*this)[i];
+    if(pf.m_multiplicity < m) {
+      result.add(i);
+    }
+  }
+  return result;
+}
+
+bool PrimeFactorArray::hasFactorsWithNonDividableMultiplicity(UINT m) const {
+  for(size_t i = 0; i < size(); i++) {
+    const PrimeFactor &pf = (*this)[i];
+    if((pf.m_multiplicity % m) != 0) {
+      return true;
+    }
+  }
+  return false;
+}
+
 CompactInt64Array PrimeFactorArray::getAllFactors() const {
   const PrimeFactorArray &pfa        = *this;
   const UINT              digitCount = (UINT)pfa.size();

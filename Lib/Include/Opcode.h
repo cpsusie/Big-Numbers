@@ -4,45 +4,18 @@
 #include <MyAssert.h>
 #include "Registers.h"
 
-inline bool isByte( int    v) {
-  return v == (char)v;
-}
-inline bool isWord( int    v) {
-  return v == (short)v;
-}
-inline bool isDword(int    v) {
-  return true;
-}
-inline bool isByte( UINT   v) {
-  return v == (BYTE)v;
-}
-inline bool isWord( UINT   v) {
-  return v == (USHORT)v;
-}
-inline bool isDword(UINT   v) {
-  return true;
-}
-inline bool isByte( INT64  v) {
-  return v == (char)v;
-}
-inline bool isWord( INT64  v) {
-  return v == (short)v;
-}
-inline bool isDword(INT64  v) {
-  return v == (int)v;
-}
-inline bool isByte( UINT64 v) {
-  return v == (BYTE)v;
-}
-inline bool isWord( UINT64 v) {
-  return v == (USHORT)v;
-}
-inline bool isDword(UINT64 v) {
-  return v == (UINT)v;
-}
-inline bool isInt(size_t v) {
-  return (intptr_t)v == (int)v;
-}
+inline bool isByte( int    v) { return v == (char)v;  }
+inline bool isWord( int    v) { return v == (short)v; }
+inline bool isDword(int    v) { return true;          }
+inline bool isByte( UINT   v) { return v == (BYTE)v;  }
+inline bool isWord( UINT   v) { return v == (USHORT)v;}
+inline bool isDword(UINT   v) { return true;          }
+inline bool isByte( INT64  v) { return v == (char)v;  }
+inline bool isWord( INT64  v) { return v == (short)v; }
+inline bool isDword(INT64  v) { return v == (int)v;   }
+inline bool isByte( UINT64 v) { return v == (BYTE)v;  }
+inline bool isWord( UINT64 v) { return v == (USHORT)v;}
+inline bool isDword(UINT64 v) { return v == (UINT)v;  }
 
 typedef RegSize OperandSize;
 
