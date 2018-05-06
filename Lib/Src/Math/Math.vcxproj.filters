@@ -11,15 +11,6 @@
     <Filter Include="Header Files">
       <UniqueIdentifier>{d974eb51-6adc-47c7-963e-f2d9aa1d6b55}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Expression">
-      <UniqueIdentifier>{d9dbdac3-1d93-4ab6-ba41-8c1d883dc29a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Expression">
-      <UniqueIdentifier>{a0f57c13-5073-401e-ab75-1995345a1220}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Expression\Expression Grammar">
-      <UniqueIdentifier>{499e8907-5cb3-4644-b0d4-ad3ada685767}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Asm Files">
       <UniqueIdentifier>{0f95d5a8-ec2f-4b4e-857b-b69c9711e495}</UniqueIdentifier>
     </Filter>
@@ -41,9 +32,6 @@
     <Filter Include="Source Files\Misc">
       <UniqueIdentifier>{7e1aa498-1f12-447d-aaa9-545466d9b731}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Expression\Asm Files">
-      <UniqueIdentifier>{05b8f80c-c529-40dd-9738-b8dcb1c1e480}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Triangle">
       <UniqueIdentifier>{186d8b24-c503-420e-9e06-895f811aa236}</UniqueIdentifier>
     </Filter>
@@ -52,90 +40,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Expression\AddentArray.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\Expression.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\ExpressionAction.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\ExpressionCompile.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\ExpressionFactor.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\ExpressionHelp.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\ExpressionLex.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\ExpressionNode.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\ExpressionNodeNumber.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\ExpressionNodePolynomial.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\ExpressionNodeProduct.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\ExpressionNodeSum.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\ExpressionNodeTree.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\ExpressionNodeVariable.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\ExpressionReplacePowers.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\ExpressionTables.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\ExpressionToCForm.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\ExpressionToNForm.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\ExpressionToSForm.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\ExpressionVariable.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\FactorArray.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\ParserTree.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\ParserTreeComplexity.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\ParserTreeGarbageCollect.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\ParserTreeOpCommon.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\ParserTreeSymbolTable.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\SNode.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\SumElement.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
     <ClCompile Include="ComplexMatrix.cpp">
       <Filter>Source Files\Matrix</Filter>
     </ClCompile>
@@ -271,9 +175,6 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Expression\ExpressionWrapper.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
     <ClCompile Include="ChiSquaredDistribution.cpp">
       <Filter>Source Files\Functions</Filter>
     </ClCompile>
@@ -285,9 +186,6 @@
     </ClCompile>
     <ClCompile Include="FindZeroes.cpp">
       <Filter>Source Files\Misc</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\ExpressionFunction.cpp">
-      <Filter>Source Files\Expression</Filter>
     </ClCompile>
     <ClCompile Include="Int128ToString.cpp">
       <Filter>Source Files\Number Types</Filter>
@@ -325,70 +223,16 @@
     <ClCompile Include="FPU.cpp">
       <Filter>Source Files\Misc</Filter>
     </ClCompile>
-    <ClCompile Include="Expression\MachineCode.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\CodeGeneration.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\ListFile.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\FunctionCall.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\SNodeDerive.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\ExpressionDerive.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\ExpressionNodeEvaluate.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\NodeOperatorsCanonForm.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\NodeOperatorsStdForm.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\NodeOperators.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\ExpressionNodeToRational.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\ExpressionNodeCompare.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\SNodeReduce.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\ParserTreeReduce.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\SNodeReduceDbgStack.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="NatvisFile.natvis" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Expression\Expression.txt">
-      <Filter>Source Files\Expression\Expression Grammar</Filter>
-    </Text>
     <Text Include="Triangle\ReadMe.txt">
       <Filter>Source Files\Triangle</Filter>
     </Text>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="Expression\Expression.y">
-      <Filter>Source Files\Expression\Expression Grammar</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Expression\Expression.lex">
-      <Filter>Source Files\Expression\Expression Grammar</Filter>
-    </CustomBuild>
     <CustomBuild Include="Double80x64.asm">
       <Filter>Source Files\Asm Files</Filter>
     </CustomBuild>
@@ -398,35 +242,8 @@
     <CustomBuild Include="Doublex64.asm">
       <Filter>Source Files\Asm Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="Expression\ExpressionCallx64.asm">
-      <Filter>Source Files\Expression\Asm Files</Filter>
-    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Include\Math\Expression\Expression.h">
-      <Filter>Header Files\Expression</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Math\Expression\ExpressionFactor.h">
-      <Filter>Header Files\Expression</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Math\Expression\ExpressionLex.h">
-      <Filter>Header Files\Expression</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Math\Expression\ExpressionNode.h">
-      <Filter>Header Files\Expression</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Math\Expression\ExpressionParser.h">
-      <Filter>Header Files\Expression</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Math\Expression\ExpressionSymbol.h">
-      <Filter>Header Files\Expression</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Math\Expression\ParserTree.h">
-      <Filter>Header Files\Expression</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Math\Expression\SumElement.h">
-      <Filter>Header Files\Expression</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\Math\AlgorithmHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -511,9 +328,6 @@
     <ClInclude Include="..\..\Include\Math\Spherical.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Expression\pch.h">
-      <Filter>Source Files\Expression</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\Math\Triangle\Triangle.h">
       <Filter>Header Files\Triangle</Filter>
     </ClInclude>
@@ -523,14 +337,8 @@
     <ClInclude Include="..\..\Include\Math\RungekuttaFehlBerg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\Math\Expression\ExpressionWrapper.h">
-      <Filter>Header Files\Expression</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\Math\PrimeFactors.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Math\Expression\ExpressionFunction.h">
-      <Filter>Header Files\Expression</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\Math\Number.h">
       <Filter>Header Files</Filter>
@@ -540,30 +348,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\Math\FPU.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Expression\ExpressionCompile.h">
-      <Filter>Source Files\Expression</Filter>
-    </ClInclude>
-    <ClInclude Include="Expression\CodeGeneration.h">
-      <Filter>Source Files\Expression</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Math\Expression\MachineCode.h">
-      <Filter>Header Files\Expression</Filter>
-    </ClInclude>
-    <ClInclude Include="Expression\ListFile.h">
-      <Filter>Source Files\Expression</Filter>
-    </ClInclude>
-    <ClInclude Include="Expression\FunctionCall.h">
-      <Filter>Source Files\Expression</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Math\Expression\ParserTreeSymbolTable.h">
-      <Filter>Header Files\Expression</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Math\Expression\SNode.h">
-      <Filter>Header Files\Expression</Filter>
-    </ClInclude>
-    <ClInclude Include="Expression\SNodeReduceDbgStack.h">
-      <Filter>Source Files\Expression</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

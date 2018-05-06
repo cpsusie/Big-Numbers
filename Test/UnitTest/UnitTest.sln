@@ -91,6 +91,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestDouble80", "TestDouble8
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestExpression", "TestExpression\TestExpression.vcxproj", "{310BC4C9-172B-4A2F-8E5F-B04605F80ADC}"
 	ProjectSection(ProjectDependencies) = postProject
+		{20C38850-59EE-46E3-AD91-7327685B83D2} = {20C38850-59EE-46E3-AD91-7327685B83D2}
 		{DA57B57F-CFF3-4620-87AE-69D3598B492D} = {DA57B57F-CFF3-4620-87AE-69D3598B492D}
 		{0D1324F1-16AC-4245-9A51-8BF3B09A6C5F} = {0D1324F1-16AC-4245-9A51-8BF3B09A6C5F}
 	EndProjectSection
@@ -218,6 +219,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "testexpr", "..\testexpr\tes
 	ProjectSection(ProjectDependencies) = postProject
 		{DA57B57F-CFF3-4620-87AE-69D3598B492D} = {DA57B57F-CFF3-4620-87AE-69D3598B492D}
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Expression", "..\..\Lib\Src\Expression\Expression.vcxproj", "{20C38850-59EE-46E3-AD91-7327685B83D2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1097,10 +1100,10 @@ Global
 		{EC9661C7-AA70-418D-BC1C-4F9A87837BFD}.Release|x64.Build.0 = Release|x64
 		{EC9661C7-AA70-418D-BC1C-4F9A87837BFD}.Release|x86.ActiveCfg = Release|Win32
 		{EC9661C7-AA70-418D-BC1C-4F9A87837BFD}.Release|x86.Build.0 = Release|Win32
-		{EC9661C7-AA70-418D-BC1C-4F9A87837BFD}.TraceMemLDRelease|x64.ActiveCfg = TraceMemDebug|x64
-		{EC9661C7-AA70-418D-BC1C-4F9A87837BFD}.TraceMemLDRelease|x64.Build.0 = TraceMemDebug|x64
-		{EC9661C7-AA70-418D-BC1C-4F9A87837BFD}.TraceMemLDRelease|x86.ActiveCfg = TraceMemDebug|Win32
-		{EC9661C7-AA70-418D-BC1C-4F9A87837BFD}.TraceMemLDRelease|x86.Build.0 = TraceMemDebug|Win32
+		{EC9661C7-AA70-418D-BC1C-4F9A87837BFD}.TraceMemLDRelease|x64.ActiveCfg = TraceMemRelease|x64
+		{EC9661C7-AA70-418D-BC1C-4F9A87837BFD}.TraceMemLDRelease|x64.Build.0 = TraceMemRelease|x64
+		{EC9661C7-AA70-418D-BC1C-4F9A87837BFD}.TraceMemLDRelease|x86.ActiveCfg = TraceMemRelease|Win32
+		{EC9661C7-AA70-418D-BC1C-4F9A87837BFD}.TraceMemLDRelease|x86.Build.0 = TraceMemRelease|Win32
 		{EC9661C7-AA70-418D-BC1C-4F9A87837BFD}.TraceMemRelease|x64.ActiveCfg = TraceMemRelease|x64
 		{EC9661C7-AA70-418D-BC1C-4F9A87837BFD}.TraceMemRelease|x64.Build.0 = TraceMemRelease|x64
 		{EC9661C7-AA70-418D-BC1C-4F9A87837BFD}.TraceMemRelease|x86.ActiveCfg = TraceMemRelease|Win32
@@ -1125,10 +1128,10 @@ Global
 		{1A2B1860-57C7-4A1B-BA1D-3CA3D773446C}.Release|x64.Build.0 = Release|x64
 		{1A2B1860-57C7-4A1B-BA1D-3CA3D773446C}.Release|x86.ActiveCfg = Release|Win32
 		{1A2B1860-57C7-4A1B-BA1D-3CA3D773446C}.Release|x86.Build.0 = Release|Win32
-		{1A2B1860-57C7-4A1B-BA1D-3CA3D773446C}.TraceMemLDRelease|x64.ActiveCfg = TraceMemDebug|x64
-		{1A2B1860-57C7-4A1B-BA1D-3CA3D773446C}.TraceMemLDRelease|x64.Build.0 = TraceMemDebug|x64
-		{1A2B1860-57C7-4A1B-BA1D-3CA3D773446C}.TraceMemLDRelease|x86.ActiveCfg = TraceMemDebug|Win32
-		{1A2B1860-57C7-4A1B-BA1D-3CA3D773446C}.TraceMemLDRelease|x86.Build.0 = TraceMemDebug|Win32
+		{1A2B1860-57C7-4A1B-BA1D-3CA3D773446C}.TraceMemLDRelease|x64.ActiveCfg = TraceMemRelease|x64
+		{1A2B1860-57C7-4A1B-BA1D-3CA3D773446C}.TraceMemLDRelease|x64.Build.0 = TraceMemRelease|x64
+		{1A2B1860-57C7-4A1B-BA1D-3CA3D773446C}.TraceMemLDRelease|x86.ActiveCfg = TraceMemRelease|Win32
+		{1A2B1860-57C7-4A1B-BA1D-3CA3D773446C}.TraceMemLDRelease|x86.Build.0 = TraceMemRelease|Win32
 		{1A2B1860-57C7-4A1B-BA1D-3CA3D773446C}.TraceMemRelease|x64.ActiveCfg = TraceMemRelease|x64
 		{1A2B1860-57C7-4A1B-BA1D-3CA3D773446C}.TraceMemRelease|x64.Build.0 = TraceMemRelease|x64
 		{1A2B1860-57C7-4A1B-BA1D-3CA3D773446C}.TraceMemRelease|x86.ActiveCfg = TraceMemRelease|Win32
@@ -1413,6 +1416,34 @@ Global
 		{9C7F1744-1E47-4FFE-A47E-E8BB593F6AA7}.TraceMemRelease|x64.Build.0 = Release|x64
 		{9C7F1744-1E47-4FFE-A47E-E8BB593F6AA7}.TraceMemRelease|x86.ActiveCfg = Release|Win32
 		{9C7F1744-1E47-4FFE-A47E-E8BB593F6AA7}.TraceMemRelease|x86.Build.0 = Release|Win32
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.Debug|x64.ActiveCfg = Debug|x64
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.Debug|x64.Build.0 = Debug|x64
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.Debug|x86.ActiveCfg = Debug|Win32
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.Debug|x86.Build.0 = Debug|Win32
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.LDDebug|x64.ActiveCfg = LDDebug|x64
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.LDDebug|x64.Build.0 = LDDebug|x64
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.LDDebug|x86.ActiveCfg = LDDebug|Win32
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.LDDebug|x86.Build.0 = LDDebug|Win32
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.LDRelease|x64.ActiveCfg = LDRelease|x64
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.LDRelease|x64.Build.0 = LDRelease|x64
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.LDRelease|x86.ActiveCfg = LDRelease|Win32
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.LDRelease|x86.Build.0 = LDRelease|Win32
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.Profiling|x64.ActiveCfg = LDRelease|x64
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.Profiling|x64.Build.0 = LDRelease|x64
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.Profiling|x86.ActiveCfg = LDRelease|Win32
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.Profiling|x86.Build.0 = LDRelease|Win32
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.Release|x64.ActiveCfg = Release|x64
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.Release|x64.Build.0 = Release|x64
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.Release|x86.ActiveCfg = Release|Win32
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.Release|x86.Build.0 = Release|Win32
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.TraceMemLDRelease|x64.ActiveCfg = TraceMemLDRelease|x64
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.TraceMemLDRelease|x64.Build.0 = TraceMemLDRelease|x64
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.TraceMemLDRelease|x86.ActiveCfg = TraceMemLDRelease|Win32
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.TraceMemLDRelease|x86.Build.0 = TraceMemLDRelease|Win32
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.TraceMemRelease|x64.ActiveCfg = TraceMemRelease|x64
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.TraceMemRelease|x64.Build.0 = TraceMemRelease|x64
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.TraceMemRelease|x86.ActiveCfg = TraceMemRelease|Win32
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.TraceMemRelease|x86.Build.0 = TraceMemRelease|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

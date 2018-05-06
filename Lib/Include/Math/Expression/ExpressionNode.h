@@ -5,6 +5,7 @@
 #include <Scanner.h>
 #include <Math/Number.h>
 #include "ExpressionSymbol.h"
+#include "PragmaLib.h"
 
 class ExpressionVariable {
 private:

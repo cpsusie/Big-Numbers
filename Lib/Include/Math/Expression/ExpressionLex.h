@@ -2,7 +2,7 @@
 #pragma once
 #include <Scanner.h>
 
-#line 2 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
+#line 2 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
 #pragma once
 
  /* This part goes to the h file */
