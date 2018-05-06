@@ -49,7 +49,7 @@ void CodeGenerator::genStatementList(const ExpressionNode *n) {
     genReturnBoolExpression(n);
     break;
   default    :
-    ParserTree::throwUnknownSymbolException(__TFUNCTION__, n);
+    n->throwUnknownSymbolException(__TFUNCTION__);
     break;
   }
 }
@@ -277,7 +277,7 @@ void CodeGenerator::genExpression(const ExpressionNode *n DCL_DSTPARAM) {
       GENCALLARG(  n->right(), exp10);
     }
     if(n->right()->isConstant()) {
-      const Real p = m_tree.evaluateRealExpr(n->right());
+      const Real p = n->right()->evaluateReal();
       if(fabs(p) == 0.5) {
         genExpression(n->left() DST_FPU);
         m_code->emit(FSQRT);                   // st0=sqrt(st0)
@@ -331,7 +331,7 @@ void CodeGenerator::genExpression(const ExpressionNode *n DCL_DSTPARAM) {
 
   case ROOT          :
     if(n->right()->isConstant()) {
-      const Real p = m_tree.evaluateRealExpr(n->right());
+      const Real p = n->right()->evaluateReal();
       if(fabs(p) == 2) {
         genExpression(n->left() DST_FPU);
         m_code->emit(FSQRT);                   // st0=sqrt(st0)
@@ -389,7 +389,7 @@ void CodeGenerator::genExpression(const ExpressionNode *n DCL_DSTPARAM) {
     break;
   case IIF           :    GENIF(n);
   default            :
-    ParserTree::throwUnknownSymbolException(__TFUNCTION__, n);
+    n->throwUnknownSymbolException(__TFUNCTION__);
     break;
   }
 #ifdef IS64BIT
@@ -584,7 +584,7 @@ void CodeGenerator::genBoolExpression(const ExpressionNode *n, JumpList &jl, boo
     }
     break;
   default:
-    ParserTree::throwUnknownSymbolException(__TFUNCTION__, n);
+    n->throwUnknownSymbolException(__TFUNCTION__);
   }
 }
 
@@ -655,7 +655,7 @@ void CodeGenerator::genPolynomial(const ExpressionNode *n) {
   for(int i = 0; i < (int)coefArray.size(); i++) {
     const ExpressionNode *coef = coefArray[i];
     if(coef->isConstant()) {
-      m_tree.getValueRef(firstCoefIndex + i) = m_tree.evaluateRealExpr(coef);
+      m_tree.getValueRef(firstCoefIndex + i) = coef->evaluateReal();
     } else {
       genExpression(coef);
       m_code->emitFSTP(m_code->getTableRef(firstCoefIndex + i));
@@ -880,7 +880,7 @@ void CodeGenerator::genPolynomial(const ExpressionNode *n DCL_DSTPARAM) {
   for(int i = 0; i < (int)coefArray.size(); i++) {
     const ExpressionNode *coef = coefArray[i];
     if(coef->isConstant()) {
-      m_tree.getValueRef(firstCoefIndex + i) = m_tree.evaluateRealExpr(coef);
+      m_tree.getValueRef(firstCoefIndex + i) = coef->evaluateReal();
     } else {
       genExpression(coef DST_INVALUETABLE(firstCoefIndex + i));
     }

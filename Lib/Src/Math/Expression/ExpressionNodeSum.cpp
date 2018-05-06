@@ -68,6 +68,21 @@ bool ExpressionNodeSum::isConstant() const {
   return true;
 }
 
+Real ExpressionNodeSum::evaluateReal() const {
+  Real sum = 0;
+  const AddentArray &a = getAddentArray();
+  for(size_t i = 0; i < a.size(); i++) {
+    const SumElement *e = a[i];
+    const Real v = e->getNode()->evaluateReal();
+    if(e->isPositive()) {
+      sum += v;
+    } else {
+      sum -= v;
+    }
+  }
+  return sum;
+}
+
 bool ExpressionNodeSum::traverseExpression(ExpressionNodeHandler &handler, int level) {
   if(!handler.handleNode(this, level)) return false;
   const AddentArray &a = getAddentArray();

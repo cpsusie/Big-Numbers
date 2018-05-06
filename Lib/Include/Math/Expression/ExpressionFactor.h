@@ -3,12 +3,8 @@
 #include "ExpressionNode.h"
 
 class ExpressionFactor : public ExpressionNodeTree {
-private:
-  DECLARECLASSNAME;
 public:
-  ExpressionFactor(ExpressionNode *base, ExpressionNode *exponent)
-    : ExpressionNodeTree(base->getTree(), POW, base, exponent?exponent:base->getTree()->getOne(), NULL) {
-  }
+  ExpressionFactor(ExpressionNode *base, ExpressionNode *exponent);
 
   inline ExpressionNode *base() {
     return child(0);

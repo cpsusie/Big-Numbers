@@ -2,14 +2,12 @@
 #include <Math/Expression/Expression.h>
 #include "ExpressionCompile.h"
 
-DEFINECLASSNAME(Expression);
-
 Expression::Expression(TrigonometricMode mode) {
   init(mode);
 }
 
 Expression::Expression(const Expression &src) : ParserTree(src) {
-  init(src.getTrigonometricMode(), src.getReturnType(), src.getState(), src.getReduceIteration());
+  init(src.getTrigonometricMode(), src.getReturnType());
   buildSymbolTable(&src.getSymbolTable());
   setMachineCode(src.isMachineCode());
 }
@@ -22,36 +20,28 @@ Expression &Expression::operator=(const Expression &src) {
   clear();
   ParserTree::operator=(src);
   setTrigonometricMode(src.getTrigonometricMode());
-
   buildSymbolTable(&src.getSymbolTable());
-
   setMachineCode(    src.isMachineCode());
-  setReduceIteration(src.getReduceIteration());
   setReturnType(     src.getReturnType());
-  setState(          src.getState());
 
   return *this;
 }
 
 void Expression::init(TrigonometricMode    trigonometricMode
-                     ,ExpressionReturnType returnType
-                     ,ExpressionState      state
-                     ,UINT                 reduceIteration)
+                     ,ExpressionReturnType returnType)
 {
+  m_trigonometricMode = trigonometricMode;
+  m_returnType        = returnType;
   m_machineCode       = false;
   m_code              = NULL;
   m_listFile          = NULL;
-  m_trigonometricMode = trigonometricMode; // this is init.  so don't call set-properties here
-  m_returnType        = returnType;
-  m_state             = state;
-  m_reduceIteration   = reduceIteration;
 }
 
 void Expression::clear() {
   releaseAll();
   setReturnType(EXPR_NORETURNTYPE);
   setMachineCode(false);
-  setState(EXPR_EMPTY);
+  setState(PS_EMPTY);
   setReduceIteration(0);
 }
 
@@ -91,7 +81,7 @@ void Expression::parse(const String &expr) {
   if(isOk()) {
     buildSymbolTable();
     setTreeForm(TREEFORM_STANDARD);
-    setState(EXPR_COMPILED);
+    setState(PS_COMPILED);
   }
 }
 
@@ -101,21 +91,13 @@ ExpressionReturnType Expression::findReturnType() const {
   switch(stmtList.last()->getSymbol()) {
   case RETURNREAL : return EXPR_RETURN_REAL;
   case RETURNBOOL : return EXPR_RETURN_BOOL;
-  default         : throwUnknownSymbolException(method, stmtList.last());
+  default         : stmtList.last()->throwUnknownSymbolException(method);
                     return EXPR_RETURN_REAL;
   }
 }
 
-void Expression::setState(ExpressionState newState) {
-  setProperty(EXPR_STATE, m_state, newState);
-}
-
-void Expression::setReduceIteration(UINT iteration) {
-  setProperty(EXPR_REDUCEITERATION, m_reduceIteration, iteration);
-}
-
 void Expression::setReturnType(ExpressionReturnType returnType) {
-  setProperty(EXPR_RETURNTYPE, m_returnType, returnType);
+  setProperty(EP_RETURNTYPE, m_returnType, returnType);
 }
 
 void Expression::setMachineCode(bool machinecode) {
@@ -125,7 +107,7 @@ void Expression::setMachineCode(bool machinecode) {
     } else {
       clearMachineCode();
     }
-    setProperty(EXPR_MACHINECODE, m_machineCode, machinecode);
+    setProperty(EP_MACHINECODE, m_machineCode, machinecode);
   }
 }
 
@@ -145,68 +127,8 @@ void Expression::setTrigonometricMode(TrigonometricMode mode) {
     if(isMachineCode()) {
       genMachineCode();
     }
-    notifyPropertyChanged(EXPR_TRIGONOMETRICMODE, &oldMode, &m_trigonometricMode);
+    notifyPropertyChanged(EP_TRIGONOMETRICMODE, &oldMode, &m_trigonometricMode);
   }
-}
-
-class MarkedNodeTransformer : public ExpressionNodeHandler {
-private:
-  CompactNodeHashMap<ExpressionNode*> m_nodeMap;
-protected:
-  Expression &m_expr;
-public:
-  MarkedNodeTransformer(Expression *expr) : m_expr(*expr) {
-  }
-  inline void putNodes(const ExpressionNode *from, ExpressionNode *to) {
-    if(to != from) m_nodeMap.put(from, to);
-  }
-  Expression &transform();
-};
-
-Expression &MarkedNodeTransformer::transform() {
-  m_expr.traverseTree(*this);
-  if(m_nodeMap.isEmpty()) {
-    return m_expr;
-  }
-  m_expr.substituteNodes(m_nodeMap);
-  m_expr.pruneUnusedNodes();
-  return m_expr;
-}
-
-class MarkedNodeExpander : public MarkedNodeTransformer {
-public:
-  MarkedNodeExpander(Expression *expr) : MarkedNodeTransformer(expr) {
-  }
-  bool handleNode(ExpressionNode *n, int level);
-};
-
-bool MarkedNodeExpander::handleNode(ExpressionNode *n, int level) {
-  if(n->isMarked() && n->isExpandable()) {
-    putNodes(n, n->expand());
-  }
-  return true;
-}
-
-class MarkedNodeMultiplier : public MarkedNodeTransformer {
-public:
-  MarkedNodeMultiplier(Expression *expr) : MarkedNodeTransformer(expr) {
-  }
-  bool handleNode(ExpressionNode *n, int level);
-};
-
-bool MarkedNodeMultiplier::handleNode(ExpressionNode *n, int level) {
-  if(n->isMarked()) {
-    putNodes(n, m_expr.multiplyParentheses(n));
-  }
-  return true;
-}
-
-Expression &Expression::expandMarkedNodes() {
-  return MarkedNodeExpander(this).transform();
-}
-
-Expression &Expression::multiplyMarkedNodes() {
-  return MarkedNodeMultiplier(this).transform();
 }
 
 String Expression::toString() const {

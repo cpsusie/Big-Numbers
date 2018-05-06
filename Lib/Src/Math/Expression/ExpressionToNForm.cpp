@@ -3,6 +3,8 @@
 #include <Math/Expression/SumElement.h>
 #include <Math/Expression/ExpressionFactor.h>
 
+#ifdef __NEVER__
+
 Expression &Expression::toNumericForm() {
   if(getRoot() == NULL) return *this;
   switch(getTreeForm()) {
@@ -47,7 +49,7 @@ SNode Expression::toNForm(ExpressionNode *n) {
     newStmtList.add(unaryExp(RETURNBOOL, toNFormBoolExp(last.left())));
     break;
   default:
-    throwUnknownSymbolException(method, last);
+    last.throwUnknownSymbolException(method);
   }
   return newStmtList.removeUnusedAssignments();
 }
@@ -91,7 +93,7 @@ SNode Expression::toNFormBoolExp(ExpressionNode *n) {
       return binExp(n->getSymbol(), l, r);
     }
   default    :
-    throwUnknownSymbolException(method, n);
+    n->throwUnknownSymbolException(method);
     return NULL;
   }
 }
@@ -197,3 +199,5 @@ SNode Expression::toNFormTreeNode(ExpressionNode *n) {
     }
   }
 }
+
+#endif

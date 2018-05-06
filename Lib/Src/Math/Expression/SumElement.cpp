@@ -2,8 +2,6 @@
 #include <Math/Expression/ParserTree.h>
 #include <Math/Expression/SumElement.h>
 
-DEFINECLASSNAME(SumElement);
-
 SumElement::SumElement(ExpressionNode *n, bool positive) {
   if(n->getSymbol() == POW) {
     if(n->left()->isOne() || n->right()->isOne()) {
@@ -18,14 +16,14 @@ SumElement::SumElement(ExpressionNode *n, bool positive) {
   }
   m_positive = positive;
   if(m_n->isNegative()) {
-    m_n = m_n->getTree()->minusC(m_n);
+    m_n = m_n->getTree()->minus(m_n);
     m_positive = !m_positive;
   }
   m_n->getTree()->m_addentTable.add(this);
 }
 
 const ExpressionNode *SumElement::createExpressionNode() const {
-  return m_positive ? m_n : m_n->getTree()->minusC(m_n);
+  return m_positive ? m_n : m_n->getTree()->minus(m_n);
 }
 
 bool SumElement::isConstant() const {

@@ -2,7 +2,9 @@
 #include <Math/Expression/ParserTree.h>
 #include <Math/Expression/ExpressionFactor.h>
 
-DEFINECLASSNAME(ExpressionFactor);
+ExpressionFactor::ExpressionFactor(ExpressionNode *base, ExpressionNode *exponent)
+  : ExpressionNodeTree(base->getTree(), POW, base, exponent?exponent:base->getTree()->getOne(), NULL) {
+}
 
 ExpressionNode *ExpressionFactor::clone(ParserTree *tree) const {
   ExpressionNode *n = new ExpressionFactor(base()->clone(tree), exponent()->clone(tree)); TRACE_NEW(n);

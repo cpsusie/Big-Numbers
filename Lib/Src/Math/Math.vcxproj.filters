@@ -61,16 +61,7 @@
     <ClCompile Include="Expression\ExpressionAction.cpp">
       <Filter>Source Files\Expression</Filter>
     </ClCompile>
-    <ClCompile Include="Expression\ExpressionCompare.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
     <ClCompile Include="Expression\ExpressionCompile.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\ExpressionDerive.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\ExpressionEvaluate.cpp">
       <Filter>Source Files\Expression</Filter>
     </ClCompile>
     <ClCompile Include="Expression\ExpressionFactor.cpp">
@@ -103,9 +94,6 @@
     <ClCompile Include="Expression\ExpressionNodeVariable.cpp">
       <Filter>Source Files\Expression</Filter>
     </ClCompile>
-    <ClCompile Include="Expression\ExpressionReduce.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
     <ClCompile Include="Expression\ExpressionReplacePowers.cpp">
       <Filter>Source Files\Expression</Filter>
     </ClCompile>
@@ -136,13 +124,7 @@
     <ClCompile Include="Expression\ParserTreeGarbageCollect.cpp">
       <Filter>Source Files\Expression</Filter>
     </ClCompile>
-    <ClCompile Include="Expression\ParserTreeOpCForm.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
     <ClCompile Include="Expression\ParserTreeOpCommon.cpp">
-      <Filter>Source Files\Expression</Filter>
-    </ClCompile>
-    <ClCompile Include="Expression\ParserTreeOpSForm.cpp">
       <Filter>Source Files\Expression</Filter>
     </ClCompile>
     <ClCompile Include="Expression\ParserTreeSymbolTable.cpp">
@@ -355,6 +337,39 @@
     <ClCompile Include="Expression\FunctionCall.cpp">
       <Filter>Source Files\Expression</Filter>
     </ClCompile>
+    <ClCompile Include="Expression\SNodeDerive.cpp">
+      <Filter>Source Files\Expression</Filter>
+    </ClCompile>
+    <ClCompile Include="Expression\ExpressionDerive.cpp">
+      <Filter>Source Files\Expression</Filter>
+    </ClCompile>
+    <ClCompile Include="Expression\ExpressionNodeEvaluate.cpp">
+      <Filter>Source Files\Expression</Filter>
+    </ClCompile>
+    <ClCompile Include="Expression\NodeOperatorsCanonForm.cpp">
+      <Filter>Source Files\Expression</Filter>
+    </ClCompile>
+    <ClCompile Include="Expression\NodeOperatorsStdForm.cpp">
+      <Filter>Source Files\Expression</Filter>
+    </ClCompile>
+    <ClCompile Include="Expression\NodeOperators.cpp">
+      <Filter>Source Files\Expression</Filter>
+    </ClCompile>
+    <ClCompile Include="Expression\ExpressionNodeToRational.cpp">
+      <Filter>Source Files\Expression</Filter>
+    </ClCompile>
+    <ClCompile Include="Expression\ExpressionNodeCompare.cpp">
+      <Filter>Source Files\Expression</Filter>
+    </ClCompile>
+    <ClCompile Include="Expression\SNodeReduce.cpp">
+      <Filter>Source Files\Expression</Filter>
+    </ClCompile>
+    <ClCompile Include="Expression\ParserTreeReduce.cpp">
+      <Filter>Source Files\Expression</Filter>
+    </ClCompile>
+    <ClCompile Include="Expression\SNodeReduceDbgStack.cpp">
+      <Filter>Source Files\Expression</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="NatvisFile.natvis" />
@@ -543,6 +558,12 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\Math\Expression\ParserTreeSymbolTable.h">
       <Filter>Header Files\Expression</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Expression\SNode.h">
+      <Filter>Header Files\Expression</Filter>
+    </ClInclude>
+    <ClInclude Include="Expression\SNodeReduceDbgStack.h">
+      <Filter>Source Files\Expression</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

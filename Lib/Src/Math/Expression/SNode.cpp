@@ -1,11 +1,19 @@
 #include "pch.h"
-#include <Math/Expression/Expression.h>
+#include <Math/Expression/ParserTree.h>
+#include <Math/Expression/ExpressionFactor.h>
+
+SNode SNode::_0()  const { return SNode( getTree()->getZero());     }
+SNode SNode::_1()  const { return SNode( getTree()->getOne());      }
+SNode SNode::_m1() const { return SNode( getTree()->getMinusOne()); }
+SNode SNode::_2()  const { return SNode( getTree()->getTwo());      }
+SNode SNode::_10() const { return SNode( getTree()->getTen());      }
+SNode SNode::_05() const { return SNode( getTree()->getHalf());     }
 
 SNode::SNode(ParserTree *tree, int v) {
   m_node = tree->numberExpression(v);
 }
 
-SNode::SNode(ParserTree *tree, __int64 v) {
+SNode::SNode(ParserTree *tree, INT64 v) {
   m_node = tree->numberExpression(v);
 }
 
@@ -17,34 +25,40 @@ SNode::SNode(ParserTree *tree, const Real &v) {
   m_node = tree->numberExpression(v);
 }
 
+SNode::SNode(ParserTree *tree, const Number &v) {
+  m_node = tree->numberExpression(v);
+}
 
-#define CALLUNARYOP(op, n1)               \
-  ParserTree *tree = n1->getTree();       \
-  return (tree->*(tree->op))(n1);
+SNode::SNode(ParserTree *tree, bool v) {
+  m_node = v ? tree->getTrue() : tree->getFalse();
+}
 
-#define CALLBINOP(op, n1,n2)              \
-  ParserTree *tree = n1->getTree();       \
-  return (tree->*(tree->op))(n1, n2);
+SNode::SNode(ParserTree *tree, FactorArray &a) {
+  m_node = tree->getProduct(a);
+}
 
+SNode::SNode(ParserTree *tree, AddentArray &a) {
+  m_node = tree->getSum(a);
+}
 
 SNode SNode::operator+(const SNode &n) const {
-  CALLBINOP(psum, m_node, n.m_node);
+  return getTree()->sum(m_node, n.m_node);
 }
 
 SNode SNode::operator-(const SNode &n) const { // binary -
-  CALLBINOP(pdiff, m_node, n.m_node);
+  return getTree()->diff(m_node, n.m_node);
 }
 
-SNode SNode::operator-() const { // unary  -
-  CALLUNARYOP(pminus, m_node);
+SNode SNode::operator-() const { // unary -
+  return getTree()->minus(m_node);
 }
 
 SNode SNode::operator*(const SNode &n) const {
-  CALLBINOP(pprod, m_node, n.m_node);
+  return getTree()->prod(m_node, n.m_node);
 }
 
 SNode SNode::operator/(const SNode &n) const {
-  CALLBINOP(pquot, m_node, n.m_node);
+  return getTree()->quot(m_node, n.m_node);
 }
 
 SNode &SNode::operator+=(const SNode &n) {
@@ -68,7 +82,7 @@ SNode &SNode::operator/=(const SNode &n) {
 }
 
 SNode SNode::operator%(const SNode &n) const {
-  CALLBINOP(pmod, m_node, n.m_node);
+  return getTree()->mod(m_node, n.m_node);
 }
 
 SNode SNode::operator&&(const SNode &n) const {
@@ -84,39 +98,47 @@ SNode SNode::operator!() const {
 }
 
 bool SNode::operator==(const SNode &n) const {
-  return m_node->getExpr()->treesEqual(m_node, n.m_node);
+  return equal(m_node, n.m_node);
+}
+
+bool SNode::reducesToRationalConstant(Rational *r) const {
+  return m_node->reducesToRationalConstant(r);
+}
+
+bool SNode::reducesToRational(Rational *r) const {
+  return m_node->reducesToRational(r);
 }
 
 SNode reciprocal(const SNode &x) {
-  CALLUNARYOP(preciprocal, x.m_node);
+  return x.getTree()->reciprocal(x.m_node);
 }
 
 SNode sqrt(const SNode &x) {
-  CALLUNARYOP(psqrt, x.m_node);
+  return x.getTree()->sqrt(x.m_node);
 }
 
 SNode sqr(const SNode &x) {
-  CALLUNARYOP(psqr, x.m_node);
+  return x.getTree()->sqr(x.m_node);
 }
 
 SNode pow(const SNode &x, const SNode &y) {
-  CALLBINOP(ppower, x.m_node, y.m_node);
+  return x.getTree()->power(x.m_node, y.m_node);
 }
 
 SNode root(const SNode &x, const SNode &y) {
-  CALLBINOP(proot, x.m_node, y.m_node);
+  return x.getTree()->root(x.m_node, y.m_node);
 }
 
 SNode exp(const SNode &x) {
-  CALLUNARYOP(pexp, x.m_node);
+  return x.getTree()->exp(x.m_node);
 }
 
 SNode exp10(const SNode &x) {
-  CALLUNARYOP(pexp10, x.m_node);
+  return x.getTree()->exp10(x.m_node);
 }
 
 SNode exp2(const SNode &x) {
-  CALLUNARYOP(pexp2, x.m_node);
+  return x.getTree()->exp2(x.m_node);
 }
 
 SNode ln(const SNode &x) {
@@ -144,7 +166,7 @@ SNode tan(const SNode &x) {
 }
 
 SNode cot(const SNode &x) {
-  CALLUNARYOP(pcot, x.m_node);
+  return x.getTree()->cot(x.m_node);
 }
 
 SNode asin(const SNode &x) {
@@ -163,12 +185,16 @@ SNode atan2(const SNode &y, const SNode &x) {
   return binExp(ATAN2, y, x);
 }
 
+SNode acot(const SNode &x) {
+  return unaryExp(ACOT, x);
+}
+
 SNode csc(const SNode &x) {
-  CALLUNARYOP(pcsc, x.m_node);
+  return x.getTree()->csc(x.m_node);
 }
 
 SNode sec(const SNode &x) {
-  CALLUNARYOP(psec, x.m_node);
+  return x.getTree()->sec(x.m_node);
 }
 
 SNode sinh(const SNode &x) {
@@ -195,6 +221,11 @@ SNode binExp(ExpressionInputSymbol symbol, SNode n1, SNode n2) {
   return n1.node()->getTree()->binaryExpression(symbol, n1.node(), n2.node());
 }
 
+SNode treeExp(ExpressionInputSymbol symbol, const ExpressionNodeArray &a) {
+  ExpressionNode *n = new ExpressionNodeTree(a[0]->getTree(), symbol, a); TRACE_NEW(n);
+  return n;
+}
+
 SNode condExp(SNode condition, SNode nTrue, SNode nFalse) {
   return condition.node()->getTree()->conditionalExpression(condition.node(), nTrue.node(), nFalse.node());
 }
@@ -213,6 +244,19 @@ SNode indexProd(SNode assignStmt, SNode endExpr, SNode expr) {
 
 SNode assignStmt(SNode leftSide, SNode expr) {
   return leftSide.node()->getTree()->assignStatement(leftSide.node(), expr.node());
+}
+
+SNode factorExp(SNode b, SNode e) {
+  ExpressionNode *n = new ExpressionFactor(b,e); TRACE_NEW(n);
+  return n;
+}
+
+Real SNode::evaluateReal() const {
+  return m_node->evaluateReal();
+}
+
+bool SNode::evaluateBool() const {
+  return m_node->evaluateBool();
 }
 
 SNode SNodeArray::toTree(ExpressionInputSymbol delimiter) {
@@ -261,4 +305,8 @@ SExprList::operator ExpressionNodeArray() {
     result.add((*this)[i].node());
   }
   return result;
+}
+
+String SNode::getSymbolName(ExpressionInputSymbol symbol) {
+  return ExpressionNode::getSymbolName(symbol);
 }

@@ -48,6 +48,8 @@ void ParserTree::markSimpleConstants() {
   MARKCONSTANT(m_one     );
   MARKCONSTANT(m_two     );
   MARKCONSTANT(m_half    );
+  MARKCONSTANT(m_false   );
+  MARKCONSTANT(m_true    );
 }
 
 void ParserTree::unmarkAll() {

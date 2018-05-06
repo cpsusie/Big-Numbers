@@ -35,7 +35,7 @@ void ExpressionFunction::compile(const String &expr, const String &name, Trigono
 }
 
 void ExpressionFunction::initx() {
-  if(m_expr.getState() == EXPR_COMPILED) {
+  if(m_expr.getState() == PS_COMPILED) {
     const ExpressionVariable *xvp = m_expr.getVariable(m_varName);
     m_x = xvp ? &m_expr.getValueRef(*xvp) : &m_dummyX;
   } else {

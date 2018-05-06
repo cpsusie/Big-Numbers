@@ -208,7 +208,7 @@ void ParserTreeSymbolTable::buildSymbolTableAssign(ExpressionNode *n, bool loopA
   }
   buildSymbolTable(n->right());
   if(!loopAssignment && n->right()->isConstant()) {
-    ExpressionVariable *v = allocateConstant(n->left(), n->left()->getName(), m_tree->evaluateRealExpr(n->right()));
+    ExpressionVariable *v = allocateConstant(n->left(), n->left()->getName(), n->right()->evaluateReal());
     if(v) {
       n->left()->setVariable(v);
     }

@@ -9,47 +9,29 @@ typedef enum {
  ,EXPR_RETURN_BOOL
 } ExpressionReturnType;
 
-typedef enum {
-  EXPR_EMPTY
- ,EXPR_COMPILED
- ,EXPR_DERIVED
- ,EXPR_CANONICALFORM
- ,EXPR_MAINREDUCTION1
- ,EXPR_MAINREDUCTION2
- ,EXPR_RATIONALPOWERSREDUCTION
- ,EXPR_STANDARDFORM
- ,EXPR_REDUCTIONDONE
-} ExpressionState;
-
 class ExpressionTransformer {
 public:
   ExpressionTransformer() {
   }
   virtual SNode           transform(SNode n) = 0;
-  virtual ExpressionState getState() const = 0;
+  virtual ParserTreeState getState() const = 0;
 };
 
 class Expression : public ParserTree {
 private:
-  DECLARECLASSNAME;
   bool                       m_machineCode;
   const MachineCode         *m_code;
   FILE                      *m_listFile;
-  ExpressionReturnType       m_returnType;
-  mutable ExpressionState    m_state;
-  mutable UINT               m_reduceIteration;
   TrigonometricMode          m_trigonometricMode;
+  ExpressionReturnType       m_returnType;
 
   friend class ExpressionNodeTree;
   friend class ExpressionPainter;
   friend class MainReducer;
-  friend class MarkedNodeMultiplier;
   friend class RationalPowersReducer;
 
   void   init(TrigonometricMode    trigonometricMode
-             ,ExpressionReturnType returnType      = EXPR_NORETURNTYPE
-             ,ExpressionState      state           = EXPR_EMPTY
-             ,UINT                 reduceIteration = 0);
+             ,ExpressionReturnType returnType      = EXPR_NORETURNTYPE);
   void   parse(const String &expr);
   ExpressionReturnType findReturnType() const;
 
@@ -64,19 +46,7 @@ private:
 #define CHECKRETURNTYPE(expectedType)
 #endif // _DEBUG
 
-  // Evaluate tree nodes
-  Real   evaluateStatementListReal(                        const ExpressionNode *n) const;
-  bool   evaluateStatementListBool(                        const ExpressionNode *n) const;
-  Real   evaluateRealExpr(                                 const ExpressionNode *n) const;
-  bool   evaluateBoolExpr(                                 const ExpressionNode *n) const;
-  Real   evaluateProduct(                                  const ExpressionNode *n) const;
-  Real   evaluateSum(                                      const ExpressionNode *n) const;
-  Real   evaluatePow(                                      const ExpressionNode *n) const;
-  Real   evaluateRoot(                                     const ExpressionNode *n) const;
-  Real   evaluatePolynomial(                               const ExpressionNode *n) const;
-  void   getCoefficients(         CompactArray<Real> &dst, const ExpressionNodeArray &coefficientArray) const;
-  void   doAssignment(                                     const ExpressionNode *n) const;
-  void   print(                                            const ExpressionNode *n, FILE *f = stdout) const;
+  void   print(const ExpressionNode *n, FILE *f = stdout) const;
 
   void   genMachineCode();
   void   clearMachineCode();
@@ -87,11 +57,7 @@ private:
     return m_code->evaluateBool();
   }
 
-  // Differentiation
-  SNode                       D(                           SNode n, const String &name);
-  SNode                       DPolynomial(                 SNode n, const String &name);
-  SNode                       DStatementList(              SNode n, const String &name);
-
+#ifdef __NEVER__
   // Conversion between Standard-, Canonical- and Numeric tree form
   SNode toSForm(               ExpressionNode *n);
   SNode toSFormSum(            ExpressionNode *n);
@@ -118,53 +84,10 @@ private:
   SNode toNFormProduct(        ExpressionNode *n);
   SNode toNFormPoly(           ExpressionNode *n);
   SNode toNFormTreeNode(       ExpressionNode *n);
+#endif // __NEVER__
 
   // Reduction
   void  iterateTransformation(ExpressionTransformer &transformer);
-
-  SNode                   reduce(                      SNode             n);
-  SNode                   reduceBoolExp(               SNode             n);
-  SNode                   reduceRealExp(               SNode             n);
-  SNode                   reduceTreeNode(              SNode             n);
-  SNode                   reduceSum(                   SNode             n);
-  SNode                   reduceProduct(               SNode             n);
-  SNode                   reduceModulus(               SNode             n);
-
-  SNode                   reducePower(                 SNode             n);
-  SNode                   reduceConstantFactors(       FactorArray            &factors);
-  SNode                   reduceRationalPower(         const Rational         &base, const Rational &exponent);
-  bool                    reducesToRationalConstant(   SNode             n, Rational *r = NULL);
-  bool                    reducesToRational(           SNode             n, Rational *r = NULL);
-  SNode                   multiplyParentheses(         SNode             n);
-  SNode                   multiplyParenthesesInSum(    SNode             n);
-  SNode                   multiplyParenthesesInProduct(SNode             n);
-  SNode                   multiplyParenthesesInPoly(   SNode             n);
-  SNode                   multiplyTreeNode(            SNode             n);
-  SNode                   multiply(                    ExpressionFactor *a, ExpressionNodeSum *s);
-
-  SNode                   factorsToNode(               FactorArray      &a);
-  SNode                   addentsToNode(               AddentArray      &a);
-  SumElement             *getCommonFactor(             SumElement       &e1, SumElement &e2);
-  FactorArray            &getFactors(                  FactorArray &result,   const SNode            n);
-  FactorArray            &getFactors(                  FactorArray &result,   const SNode            n,        const SNode exponent);
-  FactorArray            &getFactorsInPower(           FactorArray &result,   const SNode            n,        const SNode exponent);
-  FactorArray            &multiplyExponents(           FactorArray &result,   FactorArray           &factors,  const SNode exponent);
-  SNode                   changeFirstNegativeFactor(   SNode             n);
-  SNode                   reduceLn(                    SNode             n);
-  SNode                   reduceLog10(                 SNode             n);
-  SNode                   getPowerOfE(                 SNode             n);
-  SNode                   getPowerOf10(                SNode             n);
-  SumElement             *mergeLogarithms(             SumElement             &e1, SumElement &e2);
-  SNode                   reduceAsymmetricFunction(    SNode             n);
-  SNode                   reduceSymmetricFunction(     SNode             n);
-  SNode                   reducePolynomial(            SNode             n);
-  ExpressionFactor       *reduceTrigonometricFactors(  ExpressionFactor       &f1, ExpressionFactor &f2);
-
-  bool                    canUseIdiotRule(             SNode             n1, const SNode n2);
-  bool                    canUseReverseIdiotRule(      SumElement       *e1,       SumElement *e2, SumElement* &result);
-  bool                    isSquareOfSinOrCos(          SNode             n);
-  bool                    sameLogarithm(               SNode             n1, const SNode n2);
-  static bool             rationalExponentsMultiply(   const Rational         &r1, const Rational &r2);
 
 #ifdef __NEVER__
   const ExpressionNode   *replaceRationalPowers(       const ExpressionNode   *n) const;
@@ -173,11 +96,9 @@ private:
   const ExpressionNode   *replaceRationalFactors(      const ExpressionNode   *n) const;
   const ExpressionNode   *substituteName(              const ExpressionNode   *n,  const String &from, const String &to) const;
   const ExpressionNode   *normalizePolynomial(         const ExpressionNode   *n) const;
-#endif
+#endif __NEVER__
 
   // Properties
-  void setState(ExpressionState           newState   );
-  void setReduceIteration(UINT            iteration  );
   void setReturnType(ExpressionReturnType returnType );
   void setMachineCode(bool                machinecode);
 public:
@@ -199,11 +120,11 @@ public:
   }
   inline Real evaluate() {
     CHECKRETURNTYPE(EXPR_RETURN_REAL);
-    return isMachineCode() ? fastEvaluateReal() : evaluateStatementListReal(getRoot());
+    return isMachineCode() ? fastEvaluateReal() : getRoot()->evaluateStatementListReal();
   }
   inline bool evaluateBool() {
     CHECKRETURNTYPE(EXPR_RETURN_BOOL);
-    return isMachineCode() ? fastEvaluateBool() : evaluateStatementListBool(getRoot());
+    return isMachineCode() ? fastEvaluateBool() : getRoot()->evaluateStatementListBool();
   }
 
   void checkIsStandardForm();
@@ -212,25 +133,13 @@ public:
   void clear();
   void reduce();
 
-  bool treesEqual(     const ExpressionNode *n1, const ExpressionNode *n2);
-  bool treesEqualMinus(SNode n1, SNode n2);
-
   bool equalMinus(Expression &e) {
-    return treesEqualMinus(getRoot(), e.getRoot());
+    return ::equalMinus(getRoot(), e.getRoot());
   }
 
   void setTrigonometricMode(TrigonometricMode mode);
-
-  inline TrigonometricMode getTrigonometricMode() const {
+  TrigonometricMode getTrigonometricMode() const {
     return m_trigonometricMode;
-  }
-
-  inline ExpressionState getState() const {
-    return m_state;
-  }
-
-  inline UINT getReduceIteration() const {
-    return m_reduceIteration;
   }
 
   // return this
@@ -240,9 +149,15 @@ public:
   // return this
   Expression &toNumericForm();
   // return this
-  Expression &expandMarkedNodes();
+  inline Expression &expandMarkedNodes() {
+    __super::expandMarkedNodes();
+    return *this;
+  }
   // return this
-  Expression &multiplyMarkedNodes();
+  inline Expression &multiplyMarkedNodes() {
+    __super::multiplyMarkedNodes();
+    return *this;
+  }
 
   String toString() const;
   void print(FILE *f = stdout) const;

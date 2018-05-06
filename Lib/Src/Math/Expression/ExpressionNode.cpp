@@ -21,12 +21,11 @@ Expression *ExpressionNode::getExpr() {
   return (Expression*)getTree();
 }
 
-String ExpressionNode::getSymbolName() const {
-  const ExpressionInputSymbol sym = getSymbol();
-  if((UINT)sym >= ExpressionTables->getSymbolCount()) {
-    return format(_T("Unknown symbol (=%u)"), sym);
+/*static*/ String ExpressionNode::getSymbolName(ExpressionInputSymbol symbol) {
+  if((UINT)symbol >= ExpressionTables->getSymbolCount()) {
+    return format(_T("Unknown symbol (=%u)"), symbol);
   }
-  return ExpressionTables->getSymbolName(sym);
+  return ExpressionTables->getSymbolName(symbol);
 }
 
 Real &ExpressionNode::getValueRef() const {
@@ -142,7 +141,7 @@ static ExpressionNodeSelector *getBuiltInFunctionSelector() {
   static ExpressionSymbolSet          functionSet;
   static ExpressionNodeSymbolSelector selector(&functionSet);
   if (!initDone) {
-    for (int i = 0; i < ARRAYSIZE(builtInSymbols); i++) {
+    for(size_t i = 0; i < ARRAYSIZE(builtInSymbols); i++) {
       functionSet.add(builtInSymbols[i]);
     }
     initDone = true;
@@ -256,6 +255,10 @@ bool ExpressionNode::isAsymmetricExponent() const {
   return isRational() && ::isAsymmetricExponent(getRational());
 }
 
+TrigonometricMode ExpressionNode::getTrigonometricMode() const {
+  return m_tree.getTrigonometricMode();
+}
+
 bool ExpressionNode::needParentheses(const ExpressionNode *parent) const {
   if(isName()) return false;
   if(isNumber()) return isNegative() && (parent->getSymbol() == POW) && (parent->left() == this);
@@ -360,7 +363,7 @@ void InverseFunctionMap::init() {
    ,INVERF, ERF
   };
 
-  for(int i = 0; i < ARRAYSIZE(table); i++) {
+  for(size_t i = 0; i < ARRAYSIZE(table); i++) {
     const FunctionInverseFunctionPair &fp = table[i];
     put(fp.m_f, fp.m_invf);
   }
@@ -425,3 +428,14 @@ String ExpressionNodeArray::toString() const {
     return result;
   }
 }
+
+void ExpressionNode::throwInvalidSymbolForTreeMode(const TCHAR *method) const {
+  throwException(_T("%s:Invalid symbol in tree form %s:<%s>")
+                ,method, getTree()->getTreeFormName().cstr(),  getSymbolName().cstr());
+}
+
+void ExpressionNode::throwUnknownSymbolException(const TCHAR *method) const {
+  throwException(_T("%s:Unexpected symbol in expression tree:%s")
+                ,method, getSymbolName().cstr());
+}
+

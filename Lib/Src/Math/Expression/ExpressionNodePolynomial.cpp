@@ -33,7 +33,7 @@ ExpressionNode *ExpressionNodePoly::expand() {
   const ExpressionNodeArray  &coefficientArray = getCoefficientArray();
   const SNode                 arg              = getArgument();
   int                         expo             = getDegree();
-  SNode                       result           = tree->_0();
+  SNode                       result           = tree->getZero();
 
   for(size_t i = 0; i < coefficientArray.size(); i++) {
     SNode coef  = coefficientArray[i];
@@ -67,6 +67,27 @@ ExpressionNode *ExpressionNodePoly::clone(ParserTree *tree) const {
 
 bool ExpressionNodePoly::isConstant() const {
   return m_argument->isConstant() && m_coefficientArray.isConstant();
+}
+
+static void getCoefficients(CompactArray<Real> &dst, const ExpressionNodeArray &coefficientArray) {
+  dst.setCapacity(coefficientArray.size());
+  for(size_t i = 0; i < coefficientArray.size(); i++) {
+    dst.add(coefficientArray[i]->evaluateReal());
+  }
+}
+/**
+ * n.symbol = POLY, n.getCoefficientArray = coefficients. coef[0..n] poly(x) = ((coef[0] * x) + coef[1]) * x)... ) + coef[n]
+ * return value of polynomial p(x) with coefficients contained in n.getCoefficientArray, and x in n.getArgument()
+ */
+Real ExpressionNodePoly::evaluateReal() const {
+  const Real         x = getArgument()->evaluateReal();
+  CompactArray<Real> coef;
+  getCoefficients(coef, getCoefficientArray());
+  Real result = 0;
+  for(size_t i = 0; i < coef.size(); i++) {
+    result = result * x + coef[i];
+  }
+  return result;
 }
 
 bool ExpressionNodePoly::traverseExpression(ExpressionNodeHandler &handler, int level) {

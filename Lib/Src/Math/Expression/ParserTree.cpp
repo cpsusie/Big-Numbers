@@ -3,36 +3,41 @@
 #include <Math/Expression/SumElement.h>
 #include <Math/Expression/ExpressionFactor.h>
 
-DEFINECLASSNAME(ParserTree);
-
 using namespace std;
 
 ParserTree::ParserTree() {
-  resetSimpleConstants();
+  init(PS_EMPTY,0);
   m_root             = NULL;
-  m_treeForm         = TREEFORM_STANDARD;
-  initDynamicOperations(m_treeForm);
+  m_ops              = NodeOperators::s_stdForm;
   m_ok               = false;
 }
 
 ParserTree::ParserTree(const ParserTree &src) {
-  resetSimpleConstants();
+  init(src.getState(), src.getReduceIteration());
   m_errors           = src.m_errors;
   m_root             = src.m_root ? src.m_root->clone(this) : NULL;
-  m_treeForm         = src.m_treeForm;
-  initDynamicOperations(m_treeForm);
+  m_ops              = src.m_ops;
   m_ok               = src.m_ok;
 }
 
-ParserTree &ParserTree::operator=(const ParserTree &rhs) {
-  if(&rhs == this) {
+void ParserTree::init(ParserTreeState      state
+                     ,UINT                 reduceIteration) {
+  m_state           = state;
+  m_reduceIteration = reduceIteration;
+  resetSimpleConstants();
+}
+
+ParserTree &ParserTree::operator=(const ParserTree &src) {
+  if(&src == this) {
     return *this;
   }
   releaseAll();
-  m_errors = rhs.m_errors;
-  setRoot(rhs.m_root ? rhs.m_root->clone(this) : NULL);
-  setTreeForm(rhs.getTreeForm());
-  setOk(rhs.m_ok);
+  m_errors = src.m_errors;
+  setRoot(           src.m_root ? src.m_root->clone(this) : NULL);
+  setTreeForm(       src.getTreeForm());
+  setOk(             src.m_ok);
+  setReduceIteration(src.getReduceIteration());
+  setState(          src.getState());
   return *this;
 }
 
@@ -41,19 +46,32 @@ ParserTree::~ParserTree() {
 }
 
 void ParserTree::setRoot(ExpressionNode *n) {
-  setProperty(EXPR_ROOT, m_root, n);
+  setProperty(PP_ROOT, m_root, n);
 }
 
 void ParserTree::setOk(bool ok) {
-  setProperty(EXPR_OK, m_ok, ok);
+  setProperty(PP_OK, m_ok, ok);
+}
+
+void ParserTree::setState(ParserTreeState newState) {
+  setProperty(PP_STATE, m_state, newState);
+}
+
+void ParserTree::setReduceIteration(UINT iteration) {
+  setProperty(PP_REDUCEITERATION, m_reduceIteration, iteration);
 }
 
 void ParserTree::setTreeForm(ParserTreeForm form) {
-  const ParserTreeForm oldForm = m_treeForm;
+  const ParserTreeForm oldForm = getTreeForm();
   if(form != oldForm) {
-    m_treeForm = form;
-    initDynamicOperations(m_treeForm);
-    notifyPropertyChanged(EXPR_TREEFORM, &oldForm, &m_treeForm);
+    switch(form) {
+    case TREEFORM_STANDARD :
+    case TREEFORM_CANONICAL:
+    case TREEFORM_NUMERIC  :
+    default                :
+      throwInvalidArgumentException(__TFUNCTION__,_T("form=%d"), form);
+    }
+    notifyPropertyChanged(PP_TREEFORM, &oldForm, &form);
   }
 }
 
@@ -64,57 +82,6 @@ String ParserTree::getTreeFormName(ParserTreeForm treeForm) { // static
   case TREEFORM_CANONICAL: return _T("canonical");
   case TREEFORM_NUMERIC  : return _T("numeric");
   default                : return format(_T("Unknown treeForm:%d"), treeForm);
-  }
-}
-
-void ParserTree::initDynamicOperations(ParserTreeForm treeForm) {
-  DEFINEMETHODNAME;
-  switch(treeForm) {
-  case TREEFORM_STANDARD :
-    pminus      = &ParserTree::minusS;
-    preciprocal = &ParserTree::reciprocalS;
-    psqr        = &ParserTree::sqrS;
-    psqrt       = &ParserTree::sqrtS;
-    psum        = &ParserTree::sumS;
-    pdiff       = &ParserTree::differenceS;
-    pprod       = &ParserTree::productS;
-    pquot       = &ParserTree::quotientS;
-    pmod        = &ParserTree::modulusS;
-    ppower      = &ParserTree::powerS;
-    proot       = &ParserTree::rootS;
-    pexp        = &ParserTree::expS;
-    pexp10      = &ParserTree::exp10S;
-    pexp2       = &ParserTree::exp2S;
-    pcot        = &ParserTree::cotS;
-    pcsc        = &ParserTree::cscS;
-    psec        = &ParserTree::secS;
-    break;
-
-  case TREEFORM_CANONICAL:
-    pminus      = &ParserTree::minusC;
-    preciprocal = &ParserTree::reciprocalC;
-    psqr        = &ParserTree::sqrC;
-    psqrt       = &ParserTree::sqrtC;
-    psum        = &ParserTree::sumC;
-    pdiff       = &ParserTree::differenceC;
-    pprod       = &ParserTree::productC;
-    pquot       = &ParserTree::quotientC;
-    pmod        = &ParserTree::modulusC;
-    ppower      = &ParserTree::powerC;
-    proot       = &ParserTree::rootC;
-    pexp        = &ParserTree::expC;
-    pexp10      = &ParserTree::exp10C;
-    pexp2       = &ParserTree::exp2C;
-    pcot        = &ParserTree::cotC;
-    pcsc        = &ParserTree::cscC;
-    psec        = &ParserTree::secC;
-    break;
-
-  case TREEFORM_NUMERIC:
-    break;
-
-  default                :
-    throwInvalidArgumentException(method, _T("Unknown treeForm:%d"), treeForm);
   }
 }
 
@@ -363,6 +330,63 @@ void ParserTree::traverseTree(ExpressionNodeHandler &handler) {
   }
 }
 
+class MarkedNodeTransformer : public ExpressionNodeHandler {
+private:
+  CompactNodeHashMap<ExpressionNode*> m_nodeMap;
+protected:
+  ParserTree &m_tree;
+public:
+  MarkedNodeTransformer(ParserTree *tree) : m_tree(*tree) {
+  }
+  inline void putNodes(const ExpressionNode *from, ExpressionNode *to) {
+    if(to != from) m_nodeMap.put(from, to);
+  }
+  void transform();
+};
+
+void MarkedNodeTransformer::transform() {
+  m_tree.traverseTree(*this);
+  if(!m_nodeMap.isEmpty()) {
+    m_tree.substituteNodes(m_nodeMap);
+    m_tree.pruneUnusedNodes();
+  }
+}
+
+class MarkedNodeExpander : public MarkedNodeTransformer {
+public:
+  MarkedNodeExpander(ParserTree *tree) : MarkedNodeTransformer(tree) {
+  }
+  bool handleNode(ExpressionNode *n, int level);
+};
+
+bool MarkedNodeExpander::handleNode(ExpressionNode *n, int level) {
+  if(n->isMarked() && n->isExpandable()) {
+    putNodes(n, n->expand());
+  }
+  return true;
+}
+
+class MarkedNodeMultiplier : public MarkedNodeTransformer {
+public:
+  MarkedNodeMultiplier(ParserTree *tree) : MarkedNodeTransformer(tree) {
+  }
+  bool handleNode(ExpressionNode *n, int level);
+};
+
+bool MarkedNodeMultiplier::handleNode(ExpressionNode *n, int level) {
+  if(n->isMarked()) {
+    putNodes(n, SNode(n).multiplyParentheses());
+  }
+  return true;
+}
+
+void ParserTree::expandMarkedNodes() {
+  MarkedNodeExpander(this).transform();
+}
+
+void ParserTree::multiplyMarkedNodes() {
+  MarkedNodeMultiplier(this).transform();
+}
 
 // ---------------------------------------- only used by parser --------------------------------------------------
 
@@ -405,50 +429,3 @@ String ParserTree::treeToString() const {
   return result;
 }
 
-void ParserTree::throwInvalidSymbolForTreeMode(const TCHAR *method, const ExpressionNode *n) const {
-  throwException(_T("%s:Invalid symbol in tree form %s:<%s>")
-                ,method, getTreeFormName().cstr(),  n->getSymbolName().cstr());
-}
-
-void ParserTree::throwUnknownSymbolException(const TCHAR *method, SNode n) { // static
-  throwUnknownSymbolException(method, n.node());
-}
-
-void ParserTree::throwUnknownSymbolException(const TCHAR *method, const ExpressionNode *n) { // static
-  throwException(_T("%s:Unexpected symbol in expression tree:%s")
-                ,method, n->getSymbolName().cstr());
-}
-
-
-#ifdef TRACE_REDUCTION_CALLSTACK
-
-void ParserTree::pushReductionMethod(const TCHAR *method, const String &s, const ExpressionNode *n) const {
-  const int oldHeight = m_reductionStack.getHeight();
-  m_reductionStack.push(ReductionStackElement(method, s,n));
-  const int newHeight = m_reductionStack.getHeight();
-  notifyPropertyChanged(REDUCTION_STACKHIGHT, &oldHeight, &newHeight);
-}
-
-void ParserTree::popReductionMethod(const TCHAR *method) const {
-  const int oldHeight = m_reductionStack.getHeight();
-  m_reductionStack.pop();
-  const int newHeight = m_reductionStack.getHeight();
-  notifyPropertyChanged(REDUCTION_STACKHIGHT, &oldHeight, &newHeight);
-}
-
-void ParserTree::resetReductionStack() {
-  const int oldHeight = m_reductionStack.getHeight();
-  m_reductionStack.clear();
-  const int newHeight = m_reductionStack.getHeight();
-  if(newHeight != oldHeight) {
-    notifyPropertyChanged(REDUCTION_STACKHIGHT, &oldHeight, &newHeight);
-  }
-}
-
-void ParserTree::clearAllBreakPoints() {
-  for (size_t i = 0; i < m_nodeTable.size(); i++) {
-    m_nodeTable[i]->clearBreakPoint();
-  }
-}
-
-#endif

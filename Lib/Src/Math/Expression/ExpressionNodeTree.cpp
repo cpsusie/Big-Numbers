@@ -52,7 +52,7 @@ ExpressionNode *ExpressionNodeTree::expand() {
     { Expression     *expr = getExpr();
       ExpressionNode *expo = right();
       Rational        expoR;
-      if(!expr->reducesToRationalConstant(expo, &expoR)) {
+      if(!expo->reducesToRationalConstant(&expoR)) {
         return false;
       }
       return expr->expandPower(left(), expoR);
@@ -68,7 +68,7 @@ bool ExpressionNodeTree::isExpandable() {
     { Expression     *expr = getExpr();
       ExpressionNode *expo = right();
       Rational        expoR;
-      if(!expr->reducesToRational(expo, &expoR) || (abs(expoR.getNumerator()) <= 1)) {
+      if(!expo->reducesToRational(&expoR) || (abs(expoR.getNumerator()) <= 1)) {
         return false;
       }
       const ExpressionNode *base = left();

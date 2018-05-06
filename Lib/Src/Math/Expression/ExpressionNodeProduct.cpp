@@ -56,6 +56,15 @@ bool ExpressionNodeProduct::isConstant() const {
   return true;
 }
 
+Real ExpressionNodeProduct::evaluateReal() const {
+  Real prod = 1;
+  const FactorArray &factors = m_factors;
+  for(size_t i = 0; i < factors.size(); i++) {
+    prod *= factors[i]->evaluateReal();
+  }
+  return prod;
+}
+
 bool ExpressionNodeProduct::traverseExpression(ExpressionNodeHandler &handler, int level) {
   if(!handler.handleNode(this, level)) return false;
   FactorArray &a = getFactorArray();
@@ -65,7 +74,6 @@ bool ExpressionNodeProduct::traverseExpression(ExpressionNodeHandler &handler, i
   }
   return true;
 }
-
 
 void ExpressionNodeProduct::dumpNode(String &s, int level) const {
   addLeftMargin(s, level) += format(_T("%s\n"), getSymbolName().cstr());

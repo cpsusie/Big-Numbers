@@ -10,7 +10,6 @@ class SumElement {
   friend class ParserTree;
 
 private:
-  DECLARECLASSNAME;
   ExpressionNode *m_n;
   // true for +, false for -
   bool            m_positive;

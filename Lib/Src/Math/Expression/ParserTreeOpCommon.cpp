@@ -16,7 +16,6 @@ ExpressionNode *ParserTree::or(ExpressionNode *n1, ExpressionNode *n2) {
   return binaryExpression(SYMOR, n1, n2);
 }
 
-
 ExpressionNode *ParserTree::indexedSum(ExpressionNode *assign, ExpressionNode *endExpr, ExpressionNode *expr) {
 //  assert(assign->getSymbol() == ASSIGN);
   return ternaryExpression(INDEXEDSUM, assign, endExpr, expr);
@@ -54,7 +53,7 @@ ExpressionFactor *ParserTree::fetchFactorNode(ExpressionNode *base, ExpressionNo
     }
   } else { // exponent != 1
     if(base->getSymbol() == POW) {
-      f = new ExpressionFactor(base->left(), productC(base->right(), exponent));
+      f = new ExpressionFactor(base->left(), prod(base->right(), exponent));
     } else {
       f = new ExpressionFactor(base, exponent);
     }
@@ -79,7 +78,7 @@ ExpressionNode *ParserTree::getSum(AddentArray &a) {
   case 0 :
     return getZero();
   case 1 :
-    return a[0]->isPositive() ? a[0]->getNode() : minusC(a[0]->getNode());
+    return a[0]->isPositive() ? a[0]->getNode() : minus(a[0]->getNode());
   default:
     { ExpressionNode *n = new ExpressionNodeSum(this, a); TRACE_NEW(n);
       return n;
@@ -183,7 +182,7 @@ ExpressionNode *ParserTree::getTree(ExpressionNode *oldTree, ExpressionNodeArray
 
 ExpressionNode *ParserTree::expandPower(ExpressionNode *base, const Rational &exponent) {
   SNode b(base);
-  SNode result(_1());
+  SNode result(getOne());
   __int64 num = exponent.getNumerator();
   __int64 den = exponent.getDenominator();
   if(num < 0) {

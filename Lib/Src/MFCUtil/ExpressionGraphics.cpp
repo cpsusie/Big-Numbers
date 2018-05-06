@@ -563,7 +563,7 @@ AlignedImage *ExpressionPainter::getImage1(const ExpressionNode *n, int fontSize
     }
     break;
   default                                 :
-    Expression::throwUnknownSymbolException(method, n);
+    n->throwUnknownSymbolException(method);
     break;
   }
   return result;
@@ -645,7 +645,7 @@ AlignedImage *ExpressionPainter::getProductImage(const FactorArray &factors, con
 AlignedImage *ExpressionPainter::getFactorImage(const ExpressionFactor *f, const ExpressionNode *parent, int fontSize, bool changeExponentSign, ExpressionRectangle &rect) {
   AlignedImage *result;
   if(changeExponentSign) {
-    const ExpressionFactor *rf = m_expression.fetchFactorNode(((ExpressionFactor*)f)->base(), m_expression.minusC(((ExpressionFactor*)f)->exponent()));
+    const ExpressionFactor *rf = m_expression.fetchFactorNode(((ExpressionFactor*)f)->base(), m_expression.minus(((ExpressionFactor*)f)->exponent()));
     result = getParenthesizedImage(rf, parent, fontSize, rect);
   } else {
     result = getParenthesizedImage(f, parent, fontSize, rect);
@@ -886,7 +886,7 @@ AlignedImage *ExpressionPainter::getStdPolyImage(const ExpressionNode *n, int fo
   int pow = (int)coefArray.size() - 1;
   for(size_t i = 0; i < coefArray.size(); i++, pow--) {
     const ExpressionNode *coef = coefArray[i];
-    Number c = coef->isNumber() ? coef->getNumber() : m_expression.evaluateRealExpr(coef);
+    Number c = coef->isNumber() ? coef->getNumber() : coef->evaluateReal();
     if(c == 0) continue;
     if(c > 0) {
       if (result.size() > 0) {

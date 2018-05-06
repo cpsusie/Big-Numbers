@@ -3,6 +3,8 @@
 #include <Math/Expression/SumElement.h>
 #include <Math/Expression/ExpressionFactor.h>
 
+#ifdef __NEVER_
+
 Expression &Expression::toCanonicalForm() {
   if((getTreeForm() == TREEFORM_CANONICAL) || (getRoot() == NULL)) {
     return *this;
@@ -259,3 +261,5 @@ void Expression::checkIsCanonicalForm() {
     throwException(checker.getErrorMessage());
   }
 }
+
+#endif

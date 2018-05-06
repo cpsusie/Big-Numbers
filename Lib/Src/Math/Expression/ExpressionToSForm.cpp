@@ -3,6 +3,8 @@
 #include <Math/Expression/SumElement.h>
 #include <Math/Expression/ExpressionFactor.h>
 
+#ifdef __NEVER__
+
 Expression &Expression::toStandardForm() {
   if((getTreeForm() == TREEFORM_STANDARD) || (getRoot() == NULL)) {
     return *this;
@@ -238,3 +240,5 @@ void Expression::checkIsStandardForm() {
     throwException(checker.getErrorMessage());
   }
 }
+
+#endif

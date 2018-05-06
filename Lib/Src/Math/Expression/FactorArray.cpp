@@ -18,7 +18,7 @@ void FactorArray::add(ExpressionFactor *f) {
       ParserTree *tree = f->getTree();
       for(size_t i = 0; i < a.size(); i++) {
         ExpressionFactor *f = a[i];
-        add(tree->fetchFactorNode(f->base(), tree->productC(f->exponent(), exponent)));
+        add(tree->fetchFactorNode(f->base(), tree->prod(f->exponent(), exponent)));
       }
     }
   }
