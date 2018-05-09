@@ -19,13 +19,15 @@ void ListFile::clear() {
   m_lineArray.clear();
 }
 
-static int listFileLineCmp(ListLine * const &l1, ListLine * const &l2) {
-  return (int)l1->m_pos - (int)l2->m_pos;
+static int listLineCmp(ListLine * const &l1, ListLine * const &l2) {
+  int c = (int)l1->m_pos - (int)l2->m_pos;
+  if(c) return c;
+  return ordinal(l2->m_isLabel) - ordinal(l1->m_isLabel);
 }
 
 void ListFile::flush() {
   if(!isOpen()) return;
-  m_lineArray.sort(listFileLineCmp);
+  m_lineArray.sort(listLineCmp);
   const size_t n = m_lineArray.size();
   for(size_t i = 0; i < n; i++) {
     const ListLine *l = m_lineArray[i];
@@ -35,6 +37,7 @@ void ListFile::flush() {
 
 void ListFile::vprintf(const TCHAR *format, va_list argptr) const {
   _vftprintf(m_f, format, argptr);
+  fflush(m_f);
 }
 
 const TCHAR *ListFile::findArgComment(const InstructionOperand &arg) const {

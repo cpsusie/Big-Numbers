@@ -873,7 +873,6 @@ void TestMachineCode::testStringInstructions() {
 void TestMachineCode::testFPUOpcodes() {
   clear(true);
 
-  testOpcode(FNSTSWAX);
   testOpcode(FWAIT   );
   testOpcode(FNOP    );
   testOpcode(FCHS    );

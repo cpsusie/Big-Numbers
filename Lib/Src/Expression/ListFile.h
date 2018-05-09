@@ -51,7 +51,8 @@ protected:
   }
 public:
   UINT m_pos;
-  ListLine(UINT pos) : m_pos(pos) {
+  const bool m_isLabel; // used by sort, to put labels BEFORE the ListLine with same m_pos
+  ListLine(UINT pos, bool isLabel=false) : m_pos(pos), m_isLabel(isLabel)  {
   }
   virtual ~ListLine() {
   }
@@ -209,7 +210,7 @@ private:
   const CodeLabel m_label;
 public:
   ListLineLabel(UINT pos, CodeLabel label)
-    : ListLine(pos)
+    : ListLine(pos, true)
     , m_label(label)
   {
   }
@@ -248,6 +249,9 @@ private:
 
   inline void addLine(ListLine *l) {
     TRACE_NEW(l); m_lineArray.add(l);
+#ifdef _DEBUG
+    if(isOpen() && isatty(m_f)) { _ftprintf(m_f, _T("%s\n"), l->toString().cstr()); fflush(m_f); }
+#endif // _DEBUG
   }
   const TCHAR *findArgComment(const InstructionOperand &arg) const;
 public:

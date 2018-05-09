@@ -112,3 +112,20 @@ InstructionBase OpcodeFPUIArithm::operator()(const InstructionOperand &op) const
   throwInvalidOperandType(op,1);
   return InstructionBuilder(*this);
 }
+
+// ---------------------------------- Opcode1ArgFNSTSW mem16/AX --------------------------------
+
+bool Opcode1ArgFNSTSW::isValidOperand(const InstructionOperand &op, bool throwOnError) const {
+  if(op.isGPR0() && op.getRegister() == AX) {
+    return true;
+  }
+  return __super::isValidOperand(op,throwOnError);
+}
+
+InstructionBase Opcode1ArgFNSTSW::operator()(const InstructionOperand &op) const {
+  isValidOperand(op,true);
+  if(op.isRegister()) {
+    return m_opAX;
+  }
+  return __super::operator()(op);
+}

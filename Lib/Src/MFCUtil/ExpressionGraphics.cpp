@@ -454,13 +454,13 @@ AlignedImage *ExpressionPainter::getImage1(const ExpressionNode *n, int fontSize
     return getPowerImage(  n, fontSize, rect);
 
   case SQR               :
-    return getPowerImage(m_expression.binaryExpression(POW, (ExpressionNode*)n->left(), m_expression.getTwo()), fontSize, rect);
+    return getPowerImage(m_expression.binaryExpr(POW, (ExpressionNode*)n->left(), m_expression.getTwo()), fontSize, rect);
 
   case ROOT              :
     return getRootImage(   n, fontSize, rect);
 
   case SQRT              :
-    return getRootImage(m_expression.binaryExpression(ROOT, (ExpressionNode*)n->left(), m_expression.getTwo()), fontSize, rect);
+    return getRootImage(m_expression.binaryExpr(ROOT, (ExpressionNode*)n->left(), m_expression.getTwo()), fontSize, rect);
 
   case SYMNOT            :
     return getUnaryOpImage(n, fontSize, rect);
@@ -478,13 +478,6 @@ AlignedImage *ExpressionPainter::getImage1(const ExpressionNode *n, int fontSize
   case LT                :
   case ASSIGN            :
     return getBinaryOpImage(n, fontSize, rect);
-
-  case RETURNREAL        :
-    { ExpressionRectangle rect1(rect.TopLeft());
-      result = getImage(n->left(), fontSize, rect1);
-      rect.addChild(rect1);
-    }
-    break;
 
   case FAC               :
     { AlignedImage *parImage, *facImage;
@@ -554,14 +547,8 @@ AlignedImage *ExpressionPainter::getImage1(const ExpressionNode *n, int fontSize
   case IIF                :
     return getIfImage(n, fontSize, rect);
 
-  case SEMI              :
-    { ExpressionRectangle stmtRect, lastRect;
-      AlignedImage *stmtListImage = getStatementImages(n->left(), fontSize, stmtRect);
-      AlignedImage *lastImage     = getImage(n->right(), fontSize, lastRect);
-      rect.addChild(stmtRect).addChild(lastRect);
-      result = stackImages(rect, false, stmtListImage, lastImage, NULL);
-    }
-    break;
+  case STMTLIST           :
+    return getStatementImages(n, fontSize, rect);
   default                                 :
     n->throwUnknownSymbolException(method);
     break;
@@ -914,7 +901,7 @@ AlignedImage *ExpressionPainter::getStdPolyImage(const ExpressionNode *n, int fo
       break;
     default:
       { ExpressionRectangle powerRect;
-        result.add(getPowerImage(m_expression.binaryExpression(POW, (ExpressionNode*)n->getArgument(), m_expression.numberExpression(pow)), fontSize, powerRect));
+        result.add(getPowerImage(m_expression.binaryExpr(POW, (ExpressionNode*)n->getArgument(), m_expression.numberExpression(pow)), fontSize, powerRect));
         rect.addChild(powerRect);
       }
       break;
@@ -965,17 +952,21 @@ AlignedImage *ExpressionPainter::getIfImage(const ExpressionNode *n, int fontSiz
 }
 
 AlignedImage *ExpressionPainter::getStatementImages(const ExpressionNode *n, int fontSize, ExpressionRectangle &rect) {
-  ExpressionRectangle semiRect;
-  AlignedImage       *semiImage = getOpImage(SEMI, fontSize, semiRect);
-  ExpressionNodeArray list      = getStatementList((ExpressionNode*)n);
-
+  ExpressionRectangle        semiRect;
+  AlignedImage              *semiImage = getOpImage(SEMI, fontSize, semiRect);
+  const ExpressionNodeArray &list      = n->getChildArray();
+  const size_t               stmtCount = list.size();
   ImageArray result;
-  for(size_t i = 0; i < list.size(); i++) {
+  for(size_t i = 0; i < stmtCount; i++) {
     ExpressionRectangle assignRect, stmtRect;
-    AlignedImage *assignImage = getImage(list[i], fontSize, assignRect);
-    stmtRect.addChild(assignRect).addChild(semiRect);
-    result.add(concatImages(stmtRect, assignImage, semiImage, NULL));
-    rect.addChild(stmtRect);
+    AlignedImage *stmtImage = getImage(list[i], fontSize, assignRect);
+    if(i < stmtCount-1) {
+      stmtRect.addChild(assignRect).addChild(semiRect);
+      result.add(concatImages(stmtRect, stmtImage, semiImage, NULL));
+      rect.addChild(stmtRect);
+    } else {
+      result.add(stmtImage); // no ',' after the last expression
+    }
   }
   return stackImages(result, rect);
 }

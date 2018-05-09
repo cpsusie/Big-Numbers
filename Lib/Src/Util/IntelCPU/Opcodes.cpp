@@ -278,7 +278,6 @@ DEFNAME(OpcodeFPU1Arg    ,FCMOVNU ,0xDBD8,0,0,REGTYPE_FPU_ALLOWED);  // Move if 
 DEFNAME(OpcodeFPU1Arg    ,FFREE   ,0xDDC0,0,0,REGTYPE_FPU_ALLOWED);  // Free a data register
 DEFNAME(OpcodeFPU1Arg    ,FXCH    ,0xD9C8,0,0,REGTYPE_FPU_ALLOWED);  // Swap st(0) and st(i)
 
-DEFNAME(OpcodeFPU0Arg    ,FNSTSWAX,0xDFE0, 0);                       // Store status word into CPU register AX
 DEFNAME(OpcodeFPU0Arg    ,FWAIT   ,0x9B  , 0);                       // Wait while FPU is busy
 DEFNAME(OpcodeFPU0Arg    ,FNOP    ,0xD9D0, 0);                       // No operation
 DEFNAME(OpcodeFPU0Arg    ,FCHS    ,0xD9E0, 0);                       // st(0); = -st(0)
@@ -309,10 +308,9 @@ DEFNAME(OpcodeFPU0Arg    ,FSCALE  ,0xD9FD, 0);                       // st(0) *=
 DEFNAME(OpcodeFPU0Arg    ,FSIN    ,0xD9FE, 0);                       // st(0) = sin(ST(0))
 DEFNAME(OpcodeFPU0Arg    ,FCOS    ,0xD9FF, 0);                       // st(0) = cos(ST(0))
 
-DEFNAME(OpcodeFPU1Arg    ,FLDCW   ,0xD9  ,5,0,WORDPTR_ALLOWED);      // load control word
-DEFNAME(OpcodeFPU1Arg    ,FNSTCW  ,0xD9  ,7,0,WORDPTR_ALLOWED);      // store control word
-DEFNAME(OpcodeFPU1Arg    ,FNSTSW  ,0xDD  ,7,0,WORDPTR_ALLOWED);      // store status word
-
+DEFNAME(Opcode1Arg       ,FLDCW   ,0xD9  ,5,WORDPTR_ALLOWED);        // load control word
+DEFNAME(Opcode1Arg       ,FNSTCW  ,0xD9  ,7,WORDPTR_ALLOWED);        // store control word
+DEFNAME(Opcode1ArgFNSTSW ,FNSTSW  ,0xDD  );                          // store status word in m16/AX
 
 // --------------------------- XMM opcodes --------------------------------
 

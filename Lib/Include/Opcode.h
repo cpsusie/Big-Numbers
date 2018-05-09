@@ -1118,6 +1118,20 @@ public:
   InstructionBase operator()(const InstructionOperand &op) const;
 };
 
+class Opcode1ArgFNSTSW : public Opcode1Arg {
+private:
+  Opcode0Arg m_opAX;
+public:
+  inline Opcode1ArgFNSTSW(const String &mnemonic, UINT op)
+    : Opcode1Arg(mnemonic, op, 7, WORDPTR_ALLOWED)
+    , m_opAX(mnemonic, 0xDFE0)
+  {
+  }
+
+  bool isValidOperand(const InstructionOperand &op, bool throwOnError=false) const;
+  InstructionBase operator()(const InstructionOperand &op) const;
+};
+
 class Opcode2ArgPfxF2 : public Opcode2Arg {
 public:
   Opcode2ArgPfxF2(const String &mnemonic, UINT op, UINT flags)
@@ -1461,7 +1475,6 @@ extern OpcodeFPU1Arg     FCMOVNU;                          // FCMOVNU(st(i)). Co
 
 extern OpcodeFPU1Arg     FFREE;                            // FFREE(st(i)). Free a data register
 extern OpcodeFPU1Arg     FXCH;                             // FXCH(st(i)). Swap st(0) and st(i)
-extern OpcodeFPU0Arg     FNSTSWAX;                         // Store status word into CPU register AX
 extern OpcodeFPU0Arg     FWAIT;                            // Wait while FPU is busy
 extern OpcodeFPU0Arg     FNOP;                             // No operation
 extern OpcodeFPU0Arg     FCHS;                             // st(0) = -st(0)
@@ -1492,9 +1505,9 @@ extern OpcodeFPU0Arg     FSCALE;                           // st(0) *= 2^int(st(
 extern OpcodeFPU0Arg     FSIN;                             // st(0) = sin(st(0))
 extern OpcodeFPU0Arg     FCOS;                             // st(0) = cos(st(0))
 
-extern OpcodeFPU1Arg     FLDCW;                            // FLDCW(m16). Load control word.
-extern OpcodeFPU1Arg     FNSTCW;                           // FNSTCW(m16). Store control word.
-extern OpcodeFPU1Arg     FNSTSW;                           // FNSTSW(m16). Store status word.
+extern Opcode1Arg        FLDCW;                            // FLDCW(m16). Load control word.
+extern Opcode1Arg        FNSTCW;                           // FNSTCW(m16). Store control word.
+extern Opcode1ArgFNSTSW  FNSTSW;                           // FNSTSW(m16/AX). Store status word.
 
 // ---------------------------- XMM opcodes -----------------------------------------
 

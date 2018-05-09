@@ -528,7 +528,7 @@ void CodeGenerator::genBoolExpression(const ExpressionNode *n, JumpList &jl, boo
         m_code->emit(FCOMPP);
       }
 #endif // LONGDOUBLE
-      m_code->emit(FNSTSWAX);
+      m_code->emit(FNSTSW,AX);
       m_code->emit(SAHF);
 
       switch(symbol) {
