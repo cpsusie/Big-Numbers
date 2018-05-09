@@ -170,14 +170,8 @@ SNode SNode::D(const String &name) const {
   case IIF        :
     return condExp(child(0), ddx(child(1)), ddx(child(2)));
 
-  case SEMI      :
-    return binExp(SEMI, child(0).DStmtList(name), ddx(child(1)));
-
-  case RETURNREAL:
-    return getTree()->unaryExpression(RETURNREAL, ddx(left()));
-
-  case RETURNBOOL:
-    throwException(_T("Cannot get derived of boolean expression"));
+  case STMTLIST      :
+    return DStmtList(name);
 
   case INDEXEDSUM:
     return indexSum(child(0), child(1), ddx(child(2)));
@@ -218,29 +212,30 @@ SNode SNode::D(const String &name) const {
  * throws ExpressionUnderivableException if any of the SNode involved in evaluating the polynomial cannot be derived
  */
 SNode SNode::DPoly(const String &name) const {
-  const SExprList coefficients(getCoefficientArray());
-  SNode           u            = getArgument();   // u(x) is the parameter to the polynomial
-  const SNode     dudx         = ddx(u);          // dudx is u derived wrt. name
+  const SExprList coefArray(getCoefficientArray());
+  SNode           arg          = getArgument();   // arg(x) is the parameter to the polynomial
+  const SNode     dargdx       = ddx(arg);        // dudx is u derived wrt. name
 
-  SExprList newCoefficients;
+  ExpressionNodeArray newCoefArray;
   const int degree = getDegree();
-  newCoefficients.add(ddx(coefficients[0]));
-  for(int i = 1; i < (int)coefficients.size(); i++) {
-    newCoefficients.add(SNode(getTree(), degree-i+1) * coefficients[i-1] * dudx + ddx(coefficients[i]));
+  newCoefArray.add(ddx(coefArray[0]));
+  for(int i = 1; i < (int)coefArray.size(); i++) {
+    newCoefArray.add(SNode(getTree(), degree-i+1) * coefArray[i-1] * dargdx + ddx(coefArray[i]));
   }
-  if(newCoefficients.size() == 0) {
+  if(newCoefArray.size() == 0) {
     return _0();
   }
-  return getTree()->fetchPolyNode(newCoefficients, u);
+  return polyExp(newCoefArray, arg);
 }
 
 SNode SNode::DStmtList(const String &name) const {
   DEFINEMETHODNAME;
 
-  SStmtList stmtList(*this);
-  SStmtList d;
-  for(size_t i = 0; i < stmtList.size(); i++) {
-    const SNode &stmt = stmtList[i];
+  SStmtList alist(*this);
+  ExpressionNodeArray result;
+  const size_t assignCount = alist.size() - 1;
+  for(size_t i = 0; i < assignCount; i++) {
+    SNode &stmt = alist[i];
     switch(stmt.getSymbol()) {
     case ASSIGN:
       { const SNode var(stmt.left());   // variable assigned to
@@ -248,13 +243,14 @@ SNode SNode::DStmtList(const String &name) const {
         if(var.name() == name) {
           throwException(_T("Cannot find derived of statement \"%s\", because a value is assigned to %s"), stmt.toString().cstr(), name.cstr());
         }
-        d.add(stmt);
-        d.add(assignStmt(getTree()->fetchVariableNode(var.name()+_T("'")), ddx(expr)));
+        result.add(stmt.node());
+        result.add(assignStmt(getTree()->fetchVariableNode(var.name()+_T("'")), ddx(expr)));
       }
       break;
     default:
       stmt.throwUnknownSymbolException(method);
     }
   }
-  return d;
+  result.add(ddx(alist.last()));
+  return stmtList(result);
 }

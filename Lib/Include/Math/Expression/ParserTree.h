@@ -1,17 +1,12 @@
 #pragma once
 
 #include <MyUtil.h>
-#include <Stack.h>
 #include <HashMap.h>
 #include <PropertyContainer.h>
 #include <Scanner.h>
 #include "ExpressionSymbol.h"
 #include "ParserTreeSymbolTable.h"
 #include "SNode.h"
-
-#ifdef _DEBUG
-//#define TRACE_REDUCTION_CALLSTACK
-#endif
 
 typedef enum {
   PP_STATE                 // ParserTreeState
@@ -22,7 +17,6 @@ typedef enum {
  ,EP_TRIGONOMETRICMODE     // TrigonometricMode    (expressionProperty)
  ,EP_RETURNTYPE            // ExpressionReturnType (expressionProperty)
  ,EP_MACHINECODE           // bool                 (expressionProperty)
- ,REDUCTION_STACKHIGHT
 } ParserTreeProperties;
 
 typedef enum {
@@ -48,31 +42,40 @@ private:
   int m_nodeCount;
   int m_nameCount;
   int m_treeDepth;
+  int compare(const ParserTreeComplexity &tc) const;
 public:
   ParserTreeComplexity(ParserTree &tree);
-  friend int parserTreeComplexityCmp(const ParserTreeComplexity &rs1, const ParserTreeComplexity &rs2);
-  inline bool operator==(const ParserTreeComplexity &rs) const {
-    return parserTreeComplexityCmp(*this, rs) == 0;
+  inline bool operator==(const ParserTreeComplexity &tc) const {
+    return compare(tc) == 0;
   }
-  inline bool operator!=(const ParserTreeComplexity &rs) const {
-    return parserTreeComplexityCmp(*this, rs) != 0;
+  inline bool operator!=(const ParserTreeComplexity &tc) const {
+    return compare(tc) != 0;
   }
-  inline bool operator< (const ParserTreeComplexity &rs) const {
-    return parserTreeComplexityCmp(*this, rs) <  0;
+  inline bool operator< (const ParserTreeComplexity &tc) const {
+    return compare(tc) <  0;
   }
-  inline bool operator<=(const ParserTreeComplexity &rs) const {
-    return parserTreeComplexityCmp(*this, rs) <= 0;
+  inline bool operator<=(const ParserTreeComplexity &tc) const {
+    return compare(tc) <= 0;
   }
-  inline bool operator> (const ParserTreeComplexity &rs) const {
-    return parserTreeComplexityCmp(*this, rs) >  0;
+  inline bool operator> (const ParserTreeComplexity &tc) const {
+    return compare(tc) >  0;
   }
-  inline bool operator>=(const ParserTreeComplexity &rs) const {
-    return parserTreeComplexityCmp(*this, rs) >= 0;
+  inline bool operator>=(const ParserTreeComplexity &tc) const {
+    return compare(tc) >= 0;
   }
   String toString() const {
     return format(_T("#nodes:%3d, #names:%2d, treedepth:%d\n"), m_nodeCount, m_nameCount, m_treeDepth);
   }
 };
+
+class ParserTreeTransformer {
+public:
+  ParserTreeTransformer() {
+  }
+  virtual SNode           transform(SNode n) = 0;
+  virtual ParserTreeState getState() const = 0;
+};
+
 
 // Only an interface....do not save any state in this, or any derived classes
 class NodeOperators {
@@ -85,9 +88,9 @@ protected:
   static ExpressionNode  *numberExpression(  ExpressionNode *n, const Number &v);
   static ExpressionNode  *numberExpression(  ExpressionNode *n, INT64         v);
 
-  static ExpressionNode  *unaryExpression(   ExpressionInputSymbol symbol, ExpressionNode *n);
-  static ExpressionNode  *binaryExpression(  ExpressionInputSymbol symbol, ExpressionNode *n1, ExpressionNode *n2);
-  static ExpressionNode  *functionExpression(ExpressionInputSymbol symbol, ExpressionNode *n);
+  static ExpressionNode  *unaryExpr(   ExpressionInputSymbol symbol, ExpressionNode *n);
+  static ExpressionNode  *binaryExpr(  ExpressionInputSymbol symbol, ExpressionNode *n1, ExpressionNode *n2);
+  static ExpressionNode  *functionExpr(ExpressionInputSymbol symbol, ExpressionNode *n);
 public:
   virtual ExpressionNode *sum(       ExpressionNode *n1, ExpressionNode *n2) const = NULL;
   virtual ExpressionNode *diff(      ExpressionNode *n1, ExpressionNode *n2) const = NULL;
@@ -120,16 +123,21 @@ private:
   StringArray                   m_errors;
   bool                          m_ok;
   const NodeOperators          *m_ops;
+  TrigonometricMode             m_trigonometricMode;
   mutable ParserTreeState       m_state;
   mutable UINT                  m_reduceIteration;
   ExpressionNodeNumber         *m_minusOne, *m_zero, *m_one, *m_two, *m_ten, *m_half;
-  ExpressionNodeBoolean        *m_false, *m_true;
+  ExpressionNodeBoolConst      *m_false, *m_true;
+
+  DEFINEREDUCTIONSTACK;
+
 private:
   inline void resetSimpleConstants() {
     m_minusOne = m_zero = m_one = m_two = m_ten = m_half = NULL;
     m_false = m_true = NULL;
   }
-  void init(ParserTreeState      state
+  void init(TrigonometricMode    mode
+           ,ParserTreeState      state
            ,UINT                 reduceIteration);
   void markSimpleConstants();
   friend class ExpressionNode;
@@ -144,13 +152,23 @@ private:
   friend class ExpressionPainter;
 
 protected:
-  ParserTree();
+  ParserTree(TrigonometricMode mode);
   ParserTree(           const ParserTree &src);
   ParserTree &operator=(const ParserTree &src);
+  void setTrigonometricMode(TrigonometricMode mode) { // no notification from here.
+    m_trigonometricMode = mode;
+  }
   void setOk(             bool            ok      );
   void setTreeForm(       ParserTreeForm  form    );
   void setState(          ParserTreeState newState);
+  // Reduction
   void setReduceIteration(UINT            it      );
+  void iterateTransformation(ParserTreeTransformer &transformer);
+  void checkIsStandardForm();
+  void checkIsCanonicalForm();
+  ExpressionNode *toStandardForm( ExpressionNode *n);
+  ExpressionNode *toCanonicalForm(ExpressionNode *n);
+  ExpressionNode *toNumericForm(  ExpressionNode *n);
   void releaseAll();
   void pruneUnusedNodes();
   void markPow1Nodes();
@@ -206,8 +224,8 @@ protected:
     ExpressionNodeNumber *n = new ExpressionNodeNumber(this, v); TRACE_NEW(n);
     return n;
   }
-  inline ExpressionNodeBoolean *booleanExpression(bool b)          {
-    ExpressionNodeBoolean *n = new ExpressionNodeBoolean(this, b); TRACE_NEW(n);
+  inline ExpressionNodeBoolConst *booleanExpression(bool b)          {
+    ExpressionNodeBoolConst *n = new ExpressionNodeBoolConst(this, b); TRACE_NEW(n);
     return n;
   }
 
@@ -226,7 +244,11 @@ public:
 
   void setRoot(ExpressionNode *n);
 
-  virtual TrigonometricMode getTrigonometricMode() const = NULL;
+  inline TrigonometricMode getTrigonometricMode() const {
+    return m_trigonometricMode;
+  }
+  void reduce();
+  static UINT getTerminalCount();
 
   void unmarkAll();
   inline bool isOk() const {
@@ -307,12 +329,12 @@ public:
   inline ExpressionNode  *csc(       ExpressionNode *n) { return m_ops->csc(n);        }
   inline ExpressionNode  *sec(       ExpressionNode *n) { return m_ops->sec(n);        }
 
-  ExpressionNodePoly     *fetchPolyNode(     const ExpressionNodeArray  &coefficientArray, ExpressionNode *argument);
   ExpressionFactor       *getFactor(         ExpressionNode *base, ExpressionNode *exponent = NULL);
-  ExpressionNode         *getTree(           ExpressionInputSymbol       symbol, ExpressionNodeArray &a);
+  ExpressionNode         *getTree(           ExpressionInputSymbol symbol, ExpressionNodeArray &a);
   ExpressionNode         *getSum(            AddentArray          &addentArray);
   ExpressionNode         *getProduct(        FactorArray          &factorArray);
-  ExpressionNode         *getPoly(           ExpressionNodeArray  &coefficientArray, ExpressionNode *argument);
+  ExpressionNode         *getPoly(           const ExpressionNodeArray  &coefficientArray, ExpressionNode *argument);
+  ExpressionNode         *getStmtList(       const ExpressionNodeArray  &stmtArray);
 
   ExpressionFactor       *getFactor(         ExpressionFactor     *oldFactor,  ExpressionNode *newBase, ExpressionNode *newExpo);
   ExpressionNode         *getTree(           ExpressionNode *oldTree         , ExpressionNodeArray  &newChildArray  );
@@ -325,24 +347,24 @@ public:
   // used by parser
   ExpressionNode         *vFetchNode(const SourcePosition &pos, ExpressionInputSymbol symbol, va_list argptr);
 
-  ExpressionNode *conditionalExpression(     ExpressionNode *condition
+  ExpressionNode *condExpr(                  ExpressionNode *condition
                                             ,ExpressionNode *exprTrue
                                             ,ExpressionNode *exprFalse);
 
   ExpressionNode *and(                       ExpressionNode *n1, ExpressionNode *n2);
   ExpressionNode *or(                        ExpressionNode *n1, ExpressionNode *n2);
 
-  ExpressionNode *assignStatement(           ExpressionNode *leftSide
+  ExpressionNode *assignStmt(                ExpressionNode *leftSide
                                             ,ExpressionNode *expr );
-  ExpressionNode *functionExpression(        ExpressionInputSymbol symbol
+  ExpressionNode *functionExpr(              ExpressionInputSymbol symbol
                                             ,ExpressionNode *child);
   ExpressionNode *unaryMinus(                ExpressionNode *child);
-  ExpressionNode *unaryExpression(           ExpressionInputSymbol symbol
+  ExpressionNode *unaryExpr(                 ExpressionInputSymbol symbol
                                             ,ExpressionNode *child);
-  ExpressionNode *binaryExpression(          ExpressionInputSymbol symbol
+  ExpressionNode *binaryExpr(                ExpressionInputSymbol symbol
                                             ,ExpressionNode *left
                                             ,ExpressionNode *right);
-  ExpressionNode *ternaryExpression(         ExpressionInputSymbol symbol
+  ExpressionNode *ternaryExpr(               ExpressionInputSymbol symbol
                                             ,ExpressionNode *child0
                                             ,ExpressionNode *child1
                                             ,ExpressionNode *child2);
@@ -393,11 +415,12 @@ public:
   int getTreeDepth() const;
   ParserTreeComplexity getComplexity();
 #ifdef TRACE_REDUCTION_CALLSTACK
-  const ReductionStack &getReductionStack() const {
+  inline ReductionStack &getReductionStack() {
     return m_reductionStack;
   }
   void clearAllBreakPoints();
-#endif
+#endif // TRACE_REDUCTION_CALLSTACK
+
   int getNodeTableSize() const {
     return (int)m_nodeTable.size();
   }

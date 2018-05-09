@@ -7,33 +7,33 @@
 ExpressionNode *ParserTree::and(ExpressionNode *n1, ExpressionNode *n2) {
   if(n1->isTrue()) return n2; else if(n1->isFalse()) return n1;
   if(n2->isTrue()) return n1; else if(n2->isFalse()) return n2;
-  return binaryExpression(SYMAND, n1, n2);
+  return binaryExpr(SYMAND, n1, n2);
 }
 
 ExpressionNode *ParserTree::or(ExpressionNode *n1, ExpressionNode *n2) {
   if(n1->isTrue()) return n1; else if(n1->isFalse()) return n2;
   if(n2->isTrue()) return n2; else if(n2->isFalse()) return n1;
-  return binaryExpression(SYMOR, n1, n2);
+  return binaryExpr(SYMOR, n1, n2);
 }
 
 ExpressionNode *ParserTree::indexedSum(ExpressionNode *assign, ExpressionNode *endExpr, ExpressionNode *expr) {
 //  assert(assign->getSymbol() == ASSIGN);
-  return ternaryExpression(INDEXEDSUM, assign, endExpr, expr);
+  return ternaryExpr(INDEXEDSUM, assign, endExpr, expr);
 }
 
 ExpressionNode *ParserTree::indexedProduct(ExpressionNode *assign, ExpressionNode *endExpr, ExpressionNode *expr) {
 //  assert(assign->getSymbol() == ASSIGN);
-  return ternaryExpression(INDEXEDPRODUCT, assign, endExpr, expr);
+  return ternaryExpr(INDEXEDPRODUCT, assign, endExpr, expr);
 }
 
-ExpressionNode *ParserTree::conditionalExpression(ExpressionNode *condition, ExpressionNode *exprTrue, ExpressionNode *exprFalse) {
+ExpressionNode *ParserTree::condExpr(ExpressionNode *condition, ExpressionNode *exprTrue, ExpressionNode *exprFalse) {
 //  assert(condition->isBooleanOperator());
-  return ternaryExpression(IIF, condition, exprTrue, exprFalse);
+  return ternaryExpr(IIF, condition, exprTrue, exprFalse);
 }
 
-ExpressionNode *ParserTree::assignStatement(ExpressionNode *leftSide, ExpressionNode *expr) {
+ExpressionNode *ParserTree::assignStmt(ExpressionNode *leftSide, ExpressionNode *expr) {
 //  assert(leftSide->getNodeType() == EXPRESSIONNODEVARIABLE);
-  return binaryExpression(ASSIGN, leftSide, expr);
+  return binaryExpr(ASSIGN, leftSide, expr);
 }
 
 ExpressionFactor *ParserTree::fetchFactorNode(ExpressionNode *base, ExpressionNode *exponent) {
@@ -60,11 +60,6 @@ ExpressionFactor *ParserTree::fetchFactorNode(ExpressionNode *base, ExpressionNo
   }
   TRACE_NEW(f);
   return f;
-}
-
-ExpressionNodePoly *ParserTree::fetchPolyNode(const ExpressionNodeArray &coefficientArray, ExpressionNode *argument) {
-  ExpressionNodePoly *n = new ExpressionNodePoly(this, coefficientArray, argument); TRACE_NEW(n);
-  return n;
 }
 
 // -----------------------------------------------------------------------------------------
@@ -97,8 +92,14 @@ ExpressionNode *ParserTree::getProduct(FactorArray &a) {
   }
 }
 
-ExpressionNode *ParserTree::getPoly(ExpressionNodeArray &coefficientArray, ExpressionNode *argument) {
-  return fetchPolyNode(coefficientArray, argument);
+ExpressionNode *ParserTree::getPoly(const ExpressionNodeArray &coefArray, ExpressionNode *arg) {
+  ExpressionNode *n = new ExpressionNodePoly(this, coefArray, arg); TRACE_NEW(n);
+  return n;
+}
+
+ExpressionNode *ParserTree::getStmtList(const ExpressionNodeArray  &stmtArray) {
+  ExpressionNode *n = new ExpressionNodeStmtList(this, stmtArray); TRACE_NEW(n);
+  return n;
 }
 
 // -------------------------------------------------------------------------------------------
@@ -135,28 +136,28 @@ ExpressionNode *ParserTree::getPoly(ExpressionNode *oldPoly, ExpressionNodeArray
   return result;
 }
 
-ExpressionNode *ParserTree::functionExpression(ExpressionInputSymbol symbol, ExpressionNode *child) {
-  return unaryExpression(symbol, child);
+ExpressionNode *ParserTree::functionExpr(ExpressionInputSymbol symbol, ExpressionNode *child) {
+  return unaryExpr(symbol, child);
 }
 
 ExpressionNode *ParserTree::unaryMinus(ExpressionNode *child) {
-  return unaryExpression(MINUS, child);
+  return unaryExpr(MINUS, child);
 }
 
-ExpressionNode *ParserTree::unaryExpression(ExpressionInputSymbol symbol, ExpressionNode *child) {
+ExpressionNode *ParserTree::unaryExpr(ExpressionInputSymbol symbol, ExpressionNode *child) {
   return fetchTreeNode(symbol, child, NULL);
 }
 
-ExpressionNode *ParserTree::binaryExpression(ExpressionInputSymbol symbol
-                                            ,ExpressionNode       *left
-                                            ,ExpressionNode       *right) {
+ExpressionNode *ParserTree::binaryExpr(ExpressionInputSymbol symbol
+                                      ,ExpressionNode       *left
+                                      ,ExpressionNode       *right) {
   return fetchTreeNode(symbol, left, right, NULL);
 }
 
-ExpressionNode *ParserTree::ternaryExpression( ExpressionInputSymbol  symbol
-                                             , ExpressionNode        *child0
-                                             , ExpressionNode        *child1
-                                             , ExpressionNode        *child2) {
+ExpressionNode *ParserTree::ternaryExpr( ExpressionInputSymbol  symbol
+                                       , ExpressionNode        *child0
+                                       , ExpressionNode        *child1
+                                       , ExpressionNode        *child2) {
   return fetchTreeNode(symbol, child0, child1, child2, NULL);
 }
 

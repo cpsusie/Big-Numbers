@@ -36,9 +36,6 @@
     <ClInclude Include="ListFile.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="SNodeReduceDbgStack.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\Math\Expression\Expression.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -82,6 +79,9 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\Math\Expression\PragmaLib.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Expression\SNodeReduceDbgStack.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -131,9 +131,6 @@
     <ClCompile Include="ExpressionNodeNumber.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ExpressionNodePolynomial.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ExpressionNodeProduct.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -153,15 +150,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ExpressionTables.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ExpressionToCForm.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ExpressionToNForm.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ExpressionToSForm.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ExpressionVariable.cpp">
@@ -222,6 +210,24 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SumElement.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NodeOperatorsNumericForm.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ExpressionNodePoly.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ExpressionNodeBoolExpr.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ExpressionNodeStmtList.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ExpressionNodeAssign.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ExpressionNodeBoolConst.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

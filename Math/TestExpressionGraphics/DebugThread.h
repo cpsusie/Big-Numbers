@@ -25,8 +25,9 @@ private:
   bool                  m_stoppedOnReturn;
   Expression           &m_expr;
   const Expression     *m_exprp;
+  ParserTree           *m_treep;
   void stop(bool onReturn = false);
-  void throwInvalidStateException(const TCHAR *method, ExpressionState state) const;
+  void throwInvalidStateException(const TCHAR *method, ParserTreeState state) const;
 public:
   DebugThread(Expression &expr);
   ~DebugThread();

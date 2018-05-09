@@ -1,5 +1,6 @@
 #include "pch.h"
-#include "SNodeReduceDbgStack.h"
+#include <Math/Expression/ParserTree.h>
+#include <Math/Expression/SNodeReduceDbgStack.h>
 
 #ifdef TRACE_REDUCTION_CALLSTACK
 
@@ -19,7 +20,7 @@ void ReductionStack::pop(const TCHAR *method) {
 
 void ReductionStack::reset(ParserTree *tree) {
   const int oldHeight = getHeight();
-  clear();
+  Stack::clear();
   const int newHeight = getHeight();
   if(newHeight != oldHeight) {
     notifyPropertyChanged(REDUCTION_STACKHIGHT, &oldHeight, &newHeight);
@@ -32,4 +33,4 @@ void ParserTree::clearAllBreakPoints() {
   }
 }
 
-#endif
+#endif // TRACE_REDUCTION_CALLSTACK

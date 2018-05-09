@@ -2,12 +2,12 @@
 #include <Math/Expression/Expression.h>
 #include "ExpressionCompile.h"
 
-Expression::Expression(TrigonometricMode mode) {
-  init(mode);
+Expression::Expression(TrigonometricMode mode) : ParserTree(mode) {
+  init();
 }
 
 Expression::Expression(const Expression &src) : ParserTree(src) {
-  init(src.getTrigonometricMode(), src.getReturnType());
+  init(src.getReturnType());
   buildSymbolTable(&src.getSymbolTable());
   setMachineCode(src.isMachineCode());
 }
@@ -20,17 +20,14 @@ Expression &Expression::operator=(const Expression &src) {
   clear();
   ParserTree::operator=(src);
   setTrigonometricMode(src.getTrigonometricMode());
-  buildSymbolTable(&src.getSymbolTable());
-  setMachineCode(    src.isMachineCode());
-  setReturnType(     src.getReturnType());
+  buildSymbolTable(   &src.getSymbolTable());
+  setMachineCode(      src.isMachineCode());
+  setReturnType(       src.getReturnType());
 
   return *this;
 }
 
-void Expression::init(TrigonometricMode    trigonometricMode
-                     ,ExpressionReturnType returnType)
-{
-  m_trigonometricMode = trigonometricMode;
+void Expression::init(ExpressionReturnType returnType) {
   m_returnType        = returnType;
   m_machineCode       = false;
   m_code              = NULL;
@@ -50,7 +47,7 @@ void Expression::compile(const String &expr, bool machineCode, FILE *listFile) {
   if(!isOk()) {
     return;
   }
-  setReturnType(findReturnType());
+  setReturnType(getRoot()->getReturnType());
   try {
     if(machineCode && (listFile!=NULL)) {
       m_listFile = listFile;
@@ -70,6 +67,12 @@ void Expression::compile(const String &expr, bool machineCode, FILE *listFile) {
   }
 }
 
+ExpressionNodeArray getStatementList(ExpressionNode *n) {
+  ExpressionNodeArray result(10);
+  n->getListFromTree(SEMI, result);
+  return result;
+}
+
 void Expression::parse(const String &expr) {
   clear();
   setOk(true);
@@ -79,22 +82,13 @@ void Expression::parse(const String &expr) {
   lex.setParser(&parser);
   parser.parse();
   if(isOk()) {
+    setRoot(getStmtList(getStatementList(getRoot())));
     buildSymbolTable();
     setTreeForm(TREEFORM_STANDARD);
     setState(PS_COMPILED);
   }
 }
 
-ExpressionReturnType Expression::findReturnType() const {
-  DEFINEMETHODNAME;
-  const ExpressionNodeArray stmtList = getStatementList((ExpressionNode*)getRoot());
-  switch(stmtList.last()->getSymbol()) {
-  case RETURNREAL : return EXPR_RETURN_REAL;
-  case RETURNBOOL : return EXPR_RETURN_BOOL;
-  default         : stmtList.last()->throwUnknownSymbolException(method);
-                    return EXPR_RETURN_REAL;
-  }
-}
 
 void Expression::setReturnType(ExpressionReturnType returnType) {
   setProperty(EP_RETURNTYPE, m_returnType, returnType);
@@ -113,7 +107,7 @@ void Expression::setMachineCode(bool machinecode) {
 
 void Expression::genMachineCode() {
   clearMachineCode();
-  m_code = CodeGenerator(this, getTrigonometricMode(),m_listFile).getCode();
+  m_code = CodeGenerator(this, m_listFile).getCode();
 }
 
 void Expression::clearMachineCode() {
@@ -121,14 +115,19 @@ void Expression::clearMachineCode() {
 }
 
 void Expression::setTrigonometricMode(TrigonometricMode mode) {
-  const TrigonometricMode oldMode = m_trigonometricMode;
+  const TrigonometricMode oldMode = getTrigonometricMode();
   if(mode != oldMode) {
-    m_trigonometricMode = mode;
+    __super::setTrigonometricMode(mode);
     if(isMachineCode()) {
       genMachineCode();
     }
-    notifyPropertyChanged(EP_TRIGONOMETRICMODE, &oldMode, &m_trigonometricMode);
+    notifyPropertyChanged(EP_TRIGONOMETRICMODE, &oldMode, &mode);
   }
+}
+
+void Expression::setTreeForm(ParserTreeForm form) {
+  if(form == getTreeForm()) return;
+  __super::setTreeForm(form);
 }
 
 String Expression::toString() const {

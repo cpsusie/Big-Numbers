@@ -24,7 +24,7 @@ private:
 %}
 
 %term NUMBER NAME TYPEBOOL
-%left IIF ASSIGN RETURNREAL RETURNBOOL SEMI COMMA TO INDEXEDSUM INDEXEDPRODUCT
+%left IIF STMTLIST ASSIGN SEMI COMMA TO INDEXEDSUM INDEXEDPRODUCT
 %left SYMOR
 %left SYMAND
 %term SYMNOT
@@ -60,8 +60,8 @@ function            : final_expr
                     | assignStmtList final_expr             { $$ = newNode( getPos(1), SEMI   , $1, $2, NULL );         }
                     ;
 
-final_expr          : expr                                  { $$ = newNode( getPos(1), RETURNREAL, $1, NULL );          }
-                    | boolExpr                              { $$ = newNode( getPos(1), RETURNBOOL, $1, NULL );          }
+final_expr          : expr
+                    | boolExpr
                     ;
 
 assignStmtList      : assignStmt

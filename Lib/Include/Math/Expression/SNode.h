@@ -1,14 +1,12 @@
 #pragma once
 
 #include "ExpressionNode.h"
+#include <Math/Expression/SNodeReduceDbgStack.h>
 
 // Wrapper class til ExpressionNode
 class SNode {
 private:
   ExpressionNode *m_node;
-  inline ParserTree *getTree() const {
-    return m_node->getTree();
-  }
 
   SNode DPoly(    const String &name) const;
   SNode DStmtList(const String &name) const;
@@ -25,7 +23,6 @@ private:
   SNode              reducePower();
   SNode              reduceConstantFactors(       FactorArray            &factors);
   SNode              reduceRationalPower(         const Rational         &base, const Rational &exponent);
-  SNode              multiplyParentheses();
   SNode              multiplyParenthesesInSum();
   SNode              multiplyParenthesesInProduct();
   SNode              multiplyParenthesesInPoly();
@@ -53,10 +50,14 @@ private:
   bool               canUseIdiotRule(             SNode             n1, const SNode n2) const;
   bool               canUseReverseIdiotRule(      SumElement       *e1,       SumElement *e2, SumElement* &result) const;
   bool               isSquareOfSinOrCos() const;
-  static bool        sameLogarithm(               SNode             n1, const SNode n2);
+  bool               sameLogarithm(               const SNode n) const;
   static bool        rationalExponentsMultiply(   const Rational   &r1, const Rational &r2);
 
   friend class MarkedNodeMultiplier;
+protected:
+  inline ParserTree *getTree() const {
+    return m_node->getTree();
+  }
 public:
   inline SNode() : m_node(NULL) {
   }
@@ -95,10 +96,15 @@ public:
   inline ExpressionInputSymbol getSymbol() const   {
     return m_node->getSymbol();
   }
+  ExpressionReturnType getReturnType() const {
+    return m_node->getReturnType();
+  }
   inline String getSymbolName() const {
     return m_node->getSymbolName();
   }
-  static String getSymbolName(ExpressionInputSymbol symbol);
+  inline static String getSymbolName(ExpressionInputSymbol symbol) {
+    return ExpressionNode::getSymbolName(symbol);
+  }
   inline ExpressionVariable &variable() const {
     return m_node->getVariable();
   }
@@ -137,6 +143,9 @@ public:
   }
   inline bool isRational() const {
     return m_node->isRational();
+  }
+  inline bool isBooleanOperator() const {
+    return m_node->isBooleanOperator();
   }
   inline const Number &getNumber() const {
     return m_node->getNumber();
@@ -250,6 +259,8 @@ public:
   SNode reduce();
   Real  evaluateReal() const;
   bool  evaluateBool() const;
+  SNode multiplyParentheses();
+
   inline void throwInvalidSymbolForTreeMode(const TCHAR *method) const {
     m_node->throwInvalidSymbolForTreeMode(method);
   }
@@ -295,7 +306,8 @@ SNode unaryExp(  ExpressionInputSymbol symbol, SNode n);
 SNode binExp(    ExpressionInputSymbol symbol, SNode n1, SNode n2);
 SNode treeExp(   ExpressionInputSymbol symbol, const ExpressionNodeArray &a); // assumy a.size() > 0
 SNode condExp(   SNode condition , SNode nTrue  , SNode nFalse);
-SNode polyExp(   SExprList &coefficientArray, SNode argument  );
+SNode polyExp(   const ExpressionNodeArray &coefArray, SNode arg);
+SNode stmtList(  const ExpressionNodeArray &list);
 SNode indexSum(  SNode assignStmt, SNode endExpr, SNode expr  );
 SNode indexProd( SNode assignStmt, SNode endExpr, SNode expr  );
 SNode assignStmt(SNode leftSide  , SNode expr);

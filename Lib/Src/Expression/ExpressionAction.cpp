@@ -22,16 +22,6 @@ int ExpressionParser::reduceAction(unsigned int prod) {
     { m_dollardollar = newNode( getPos(1), SEMI   , getStackTop(1), getStackTop(0), NULL );         }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 3: /* final_expr -> expr */
-#line 63 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.y"
-    { m_dollardollar = newNode( getPos(1), RETURNREAL, getStackTop(0), NULL );          }
-#line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
-    break;
-  case 4: /* final_expr -> boolExpr */
-#line 64 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.y"
-    { m_dollardollar = newNode( getPos(1), RETURNBOOL, getStackTop(0), NULL );          }
-#line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
-    break;
   case 6: /* assignStmtList -> assignStmtList assignStmt */
 #line 68 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.y"
     { m_dollardollar = newNode( getPos(1), SEMI   , getStackTop(1), getStackTop(0), NULL );         }

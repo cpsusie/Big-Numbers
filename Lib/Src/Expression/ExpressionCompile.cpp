@@ -3,9 +3,7 @@
 
 // --------------------------------- CodeGenerator -----------------------------------
 
-CodeGenerator::CodeGenerator(ParserTree *tree, TrigonometricMode trigonometricMode, FILE *listFile)
-  : m_tree(*tree)
-  , m_trigonometricMode(trigonometricMode)
+CodeGenerator::CodeGenerator(ParserTree *tree, FILE *listFile) : m_tree(*tree)
 {
   if(tree->getTreeForm() != TREEFORM_STANDARD) {
     throwException(_T("Treeform must be STANDARD to generate machinecode. Form=%s"), m_tree.getTreeFormName().cstr());
@@ -34,22 +32,21 @@ void CodeGenerator::genMachineCode() {
 }
 
 void CodeGenerator::genStatementList(const ExpressionNode *n) {
-  switch(n->getSymbol()) {
-  case SEMI      :
-    genStatementList(n->left());
-    genStatementList(n->right());
+  const ExpressionNodeArray &list  = n->getChildArray();
+  const size_t               count = list.size()-1;
+  for(size_t i = 0; i < count; i++) {
+    genAssignment(list[i]);
+  }
+  const ExpressionNode *last = list.last();
+  switch(last->getReturnType()) {
+  case EXPR_RETURN_REAL:
+    genExpression(last DST_ADDRRDI);
     break;
-  case ASSIGN    :
-    genAssignment(n);
-    break;
-  case RETURNREAL:
-    genExpression(n->left() DST_ADDRRDI);
-    break;
-  case RETURNBOOL:
-    genReturnBoolExpression(n);
+  case EXPR_RETURN_BOOL:
+    genReturnBoolExpression(last);
     break;
   default    :
-    n->throwUnknownSymbolException(__TFUNCTION__);
+    last->throwUnknownSymbolException(__TFUNCTION__);
     break;
   }
 }
@@ -108,7 +105,7 @@ bool CodeGenerator::genFLoad(const ExpressionNode *n, const ExpressionDestinatio
 
 void CodeGenerator::genReturnBoolExpression(const ExpressionNode *n) {
   JumpList jumps(m_labelGen.nextLabelPair());
-  genBoolExpression(n->left(),jumps, true);
+  genBoolExpression(n,jumps, true);
   m_code->fixupJumps(jumps,true );
   m_code->emit(MOV,EAX,1  );
   const CodeLabel endLabel = m_labelGen.nextLabel();
@@ -151,7 +148,7 @@ void CodeGenerator::genPowMultSequence(UINT y) {
 #define GENIF(n)         genIf(n                  DST_PARAM); return
 
 void CodeGenerator::throwInvalidTrigonometricMode() {
-  throwInvalidArgumentException(_T("genExpression"), _T("Invalid trigonometricMode:%d"), m_trigonometricMode);
+  throwInvalidArgumentException(_T("genExpression"), _T("Invalid trigonometricMode:%d"), getTrigonometricMode());
 }
 
 #define GENTRIGOCALL(n,f)                         \
@@ -173,9 +170,6 @@ void CodeGenerator::genExpression(const ExpressionNode *n DCL_DSTPARAM) {
       return;
     }
 #endif // IS64BIT
-    break;
-  case SEMI:
-    genStatementList(n);
     break;
 
   case PLUS  :

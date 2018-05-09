@@ -182,13 +182,6 @@ bool equalMinus(const SNode n1, const SNode n2) { // static
   case COT   :
     n1.throwInvalidSymbolForTreeMode(method);
 
-  case RETURNREAL:
-    return equalMinus(n1.left(), n2.left());
-
-  case RETURNBOOL :
-  case SEMI       :
-    return false;
-
   default:
     if(n1.isAsymmetricFunction()) {
       return equalMinus(n1.left(), n2.left());

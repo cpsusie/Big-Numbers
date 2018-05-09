@@ -373,7 +373,7 @@ void CTestExpressionGraphicsDlg::handlePropertyChanged(const PropertyContainer *
       PostMessage(ID_MSG_RUNSTATE_CHANGED, (WPARAM)(*(bool*)oldValue), (LPARAM)(*(bool*)newValue));
       break;
     case THREAD_TERMINATED:
-      if(m_derivedExpr.getState() == EXPR_REDUCTIONDONE) {
+      if(m_derivedExpr.getState() == PS_REDUCTIONDONE) {
       }
       INVALIDATE();
       break;
@@ -497,7 +497,7 @@ void CTestExpressionGraphicsDlg::paintDebugExpr() {
   try {
     m_debugExpr                     = &m_debugThread->getDebugExpr();
     const int             iteration = m_debugExpr->getReduceIteration();
-    const ExpressionState state     = m_debugExpr->getState();
+    const ParserTreeState state     = m_debugExpr->getState();
     showDebugInfo(_T("State:%-13s. it:%d (%s)"), exprStateName[state], iteration, m_debugExpr->getComplexity().toString().cstr());
 
 #ifdef TRACE_REDUCTION_CALLSTACK
@@ -639,7 +639,7 @@ void CTestExpressionGraphicsDlg::OnFunctionsEvaluateDerived() {
   OnFunctionsEvaluateFx();
   if(!m_flags.contains(HASFVALUE)) return;
 
-  ExpressionVariableArray variables = m_derivedExpr.getAllVariables();
+  ExpressionVariableArray variables = m_derivedExpr.getSymbolTable().getAllVariables();
   for(size_t i = 0; i < variables.size(); i++) {
     ExpressionVariable &v = variables[i];
     if(v.isInput()) {
@@ -873,7 +873,7 @@ void CTestExpressionGraphicsDlg::OnContextMenuToStandardForm() {
     showWarning(_T("No expression to convert"));
     return;
   }
-  expr->toStandardForm();
+  expr->setTreeForm(TREEFORM_STANDARD);
   updateContextWinImage();
   INVALIDATE();
 }
@@ -884,7 +884,7 @@ void CTestExpressionGraphicsDlg::OnContextMenuToCanoncalForm() {
     showWarning(_T("No expression to convert"));
     return;
   }
-  expr->toCanonicalForm();
+  expr->setTreeForm(TREEFORM_CANONICAL);
   updateContextWinImage();
   INVALIDATE();
 }
@@ -895,7 +895,7 @@ void CTestExpressionGraphicsDlg::OnContextMenuToNumericForm() {
     showWarning(_T("No expression to convert"));
     return;
   }
-  expr->toNumericForm();
+  expr->setTreeForm(TREEFORM_NUMERIC);
   updateContextWinImage();
   INVALIDATE();
 }
@@ -1193,7 +1193,7 @@ static bool isSameVariableNames(const ExpressionVariableArray &a1, const Express
 
 void CTestExpressionGraphicsDlg::saveExprVariables() {
   if(m_flags.contains(HASFVALUE)) {
-    m_savedVariables = m_expr.getAllVariables();
+    m_savedVariables = m_expr.getSymbolTable().getAllVariables();
     m_savedVariables.sort(variableNameCompare);
     m_flags.add(HASSAVEDVARIABLES);
   } else {
@@ -1210,7 +1210,7 @@ bool CTestExpressionGraphicsDlg::restoreExprVariables() {
   if(!m_flags.contains(ISCOMPILED)) {
     return false;
   }
-  ExpressionVariableArray a = m_expr.getAllVariables();
+  ExpressionVariableArray a = m_expr.getSymbolTable().getAllVariables();
   a.sort(variableNameCompare);
   if(!isSameVariableNames(a, m_savedVariables)) {
     clearSavedVariables();

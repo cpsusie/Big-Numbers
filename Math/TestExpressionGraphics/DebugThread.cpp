@@ -4,6 +4,10 @@
 DebugThread::DebugThread(Expression &expr) : m_expr(expr) {
   m_running = m_killed = m_terminated = false;
   m_exprp   = &m_expr;
+  m_treep   = &m_expr;
+#ifdef TRACE_REDUCTION_CALLSTACK
+  m_reductionStack   = &(m_treep->getReductionStack());
+#endif
 }
 
 DebugThread::~DebugThread() {
@@ -15,7 +19,7 @@ typedef enum {
  ,BREAKONRETURN
 } BreakPointType;
 
-void DebugThread::throwInvalidStateException(const TCHAR *method, ExpressionState state) const {
+void DebugThread::throwInvalidStateException(const TCHAR *method, ParserTreeState state) const {
   throwInvalidArgumentException(method, _T("State=%d"), state);
 }
 
@@ -26,19 +30,18 @@ void DebugThread::handlePropertyChanged(const PropertyContainer *source, int id,
   m_exprp = (const Expression*)source;
 
   switch(id) {
-  case EXPR_STATE           :
+  case PP_STATE           :
     switch(m_exprp->getState()) {
-    case EXPR_EMPTY    :
-    case EXPR_COMPILED :
-    case EXPR_DERIVED  :
+    case PS_EMPTY    :
+    case PS_COMPILED :
+    case PS_DERIVED  :
       break;
     default:
       if(m_breakPoints.contains(BREAKSTEP)) stop();
       break;
     }
     break;
-
-  case EXPR_ROOT            :
+  case PP_ROOT            :
     { const ExpressionNode *newRoot = (const ExpressionNode*)newValue;
       if(newRoot) { // dont stop on null-trees
         stop();
@@ -46,7 +49,7 @@ void DebugThread::handlePropertyChanged(const PropertyContainer *source, int id,
     }
     break;
 
-  case EXPR_REDUCEITERATION :
+  case PP_REDUCEITERATION :
     if(m_breakPoints.contains(BREAKSUBSTEP)) stop();
     break;
 
@@ -55,8 +58,7 @@ void DebugThread::handlePropertyChanged(const PropertyContainer *source, int id,
     { const int oldStack = *(int*)oldValue;
       const int newStack = *(int*)newValue;
       if(newStack > oldStack) { // its a push
-        const ReductionStack        &reductionStack = m_exprp->getReductionStack();
-        const ReductionStackElement &top = reductionStack.top();
+        const ReductionStackElement &top = m_reductionStack->top();
         if(top.m_node && top.m_node->isBreakPoint()) {
           stop();
           break;
@@ -141,7 +143,6 @@ void DebugThread::goUntilReturn() {
     m_breakPoints.remove( BREAKSTEP    );
     m_breakPoints.remove( BREAKSUBSTEP );
     m_breakPoints.add(    BREAKONRETURN);
-    m_reductionStack   = &(m_exprp->getReductionStack());
     m_savedStackHeight = m_reductionStack->getHeight();
     m_savedMethod      = m_reductionStack->top().m_method;
     resume();

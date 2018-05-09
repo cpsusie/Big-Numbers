@@ -821,13 +821,13 @@
     <ClInclude Include="..\..\Include\Math\Expression\ParserTreeSymbolTable.h" />
     <ClInclude Include="..\..\Include\Math\Expression\PragmaLib.h" />
     <ClInclude Include="..\..\Include\Math\Expression\SNode.h" />
+    <ClInclude Include="..\..\Include\Math\Expression\SNodeReduceDbgStack.h" />
     <ClInclude Include="..\..\Include\Math\Expression\SumElement.h" />
     <ClInclude Include="CodeGeneration.h" />
     <ClInclude Include="ExpressionCompile.h" />
     <ClInclude Include="FunctionCall.h" />
     <ClInclude Include="ListFile.h" />
     <ClInclude Include="pch.h" />
-    <ClInclude Include="SNodeReduceDbgStack.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
@@ -842,20 +842,22 @@
     <ClCompile Include="ExpressionHelp.cpp" />
     <ClCompile Include="ExpressionLex.cpp" />
     <ClCompile Include="ExpressionNode.cpp" />
+    <ClCompile Include="ExpressionNodeAssign.cpp" />
+    <ClCompile Include="ExpressionNodeBoolConst.cpp" />
+    <ClCompile Include="ExpressionNodeBoolExpr.cpp" />
     <ClCompile Include="ExpressionNodeCompare.cpp" />
     <ClCompile Include="ExpressionNodeEvaluate.cpp" />
     <ClCompile Include="ExpressionNodeNumber.cpp" />
-    <ClCompile Include="ExpressionNodePolynomial.cpp" />
+    <ClCompile Include="ExpressionNodePoly.cpp" />
     <ClCompile Include="ExpressionNodeProduct.cpp" />
+    <ClCompile Include="ExpressionNodeStmtList.cpp" />
     <ClCompile Include="ExpressionNodeSum.cpp" />
     <ClCompile Include="ExpressionNodeToRational.cpp" />
     <ClCompile Include="ExpressionNodeTree.cpp" />
     <ClCompile Include="ExpressionNodeVariable.cpp" />
     <ClCompile Include="ExpressionReplacePowers.cpp" />
     <ClCompile Include="ExpressionTables.cpp" />
-    <ClCompile Include="ExpressionToCForm.cpp" />
-    <ClCompile Include="ExpressionToNForm.cpp" />
-    <ClCompile Include="ExpressionToSForm.cpp" />
+    <ClCompile Include="NodeOperatorsNumericForm.cpp" />
     <ClCompile Include="ExpressionVariable.cpp" />
     <ClCompile Include="ExpressionWrapper.cpp" />
     <ClCompile Include="FactorArray.cpp" />

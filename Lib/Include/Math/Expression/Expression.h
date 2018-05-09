@@ -3,37 +3,15 @@
 #include "ExpressionParser.h"
 #include "MachineCode.h"
 
-typedef enum {
-  EXPR_NORETURNTYPE
- ,EXPR_RETURN_REAL
- ,EXPR_RETURN_BOOL
-} ExpressionReturnType;
-
-class ExpressionTransformer {
-public:
-  ExpressionTransformer() {
-  }
-  virtual SNode           transform(SNode n) = 0;
-  virtual ParserTreeState getState() const = 0;
-};
-
 class Expression : public ParserTree {
 private:
   bool                       m_machineCode;
   const MachineCode         *m_code;
   FILE                      *m_listFile;
-  TrigonometricMode          m_trigonometricMode;
   ExpressionReturnType       m_returnType;
 
-  friend class ExpressionNodeTree;
-  friend class ExpressionPainter;
-  friend class MainReducer;
-  friend class RationalPowersReducer;
-
-  void   init(TrigonometricMode    trigonometricMode
-             ,ExpressionReturnType returnType      = EXPR_NORETURNTYPE);
+  void   init(ExpressionReturnType returnType = EXPR_NORETURNTYPE);
   void   parse(const String &expr);
-  ExpressionReturnType findReturnType() const;
 
 #ifdef _DEBUG
   inline void checkReturnType(const TCHAR *method, ExpressionReturnType expectedReturnType) const {
@@ -86,9 +64,6 @@ private:
   SNode toNFormTreeNode(       ExpressionNode *n);
 #endif // __NEVER__
 
-  // Reduction
-  void  iterateTransformation(ExpressionTransformer &transformer);
-
 #ifdef __NEVER__
   const ExpressionNode   *replaceRationalPowers(       const ExpressionNode   *n) const;
   const ExpressionNode   *replaceRationalPower(        const ExpressionNode   *n) const;
@@ -120,35 +95,22 @@ public:
   }
   inline Real evaluate() {
     CHECKRETURNTYPE(EXPR_RETURN_REAL);
-    return isMachineCode() ? fastEvaluateReal() : getRoot()->evaluateStatementListReal();
+    return isMachineCode() ? fastEvaluateReal() : getRoot()->evaluateReal();
   }
   inline bool evaluateBool() {
     CHECKRETURNTYPE(EXPR_RETURN_BOOL);
-    return isMachineCode() ? fastEvaluateBool() : getRoot()->evaluateStatementListBool();
+    return isMachineCode() ? fastEvaluateBool() : getRoot()->evaluateBool();
   }
 
-  void checkIsStandardForm();
-  void checkIsCanonicalForm();
-
   void clear();
-  void reduce();
 
   bool equalMinus(Expression &e) {
     return ::equalMinus(getRoot(), e.getRoot());
   }
 
   void setTrigonometricMode(TrigonometricMode mode);
-  TrigonometricMode getTrigonometricMode() const {
-    return m_trigonometricMode;
-  }
+  void setTreeForm(ParserTreeForm form);
 
-  // return this
-  Expression &toCanonicalForm();
-  // return this
-  Expression &toStandardForm();
-  // return this
-  Expression &toNumericForm();
-  // return this
   inline Expression &expandMarkedNodes() {
     __super::expandMarkedNodes();
     return *this;

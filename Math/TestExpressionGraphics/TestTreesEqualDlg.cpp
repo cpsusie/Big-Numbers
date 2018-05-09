@@ -98,7 +98,7 @@ void CTestTreesEqualDlg::OnTestTreesEqual() {
   try {
     const ExpressionNode *root1 = m_e[0].getRoot();
     const ExpressionNode *root2 = m_e[1].getRoot();
-    const bool            eq    = m_e[0].treesEqual(root1, root2);
+    const bool            eq    = equal(root1, root2);
     showInformation(_T("Exspressions are %sequal"), eq?EMPTYSTRING:_T("not "));
   } catch(Exception e) {
     showException(e);
@@ -147,11 +147,11 @@ void CTestTreesEqualDlg::OnButtonConvert() {
   if(expOk) {
     const bool isCanonicalForm = (m_e[0].getTreeForm() == TREEFORM_CANONICAL) && (m_e[1].getTreeForm() == TREEFORM_CANONICAL);
     if(isCanonicalForm) {
-      m_e[0].toStandardForm();
-      m_e[1].toStandardForm();
+      m_e[0].setTreeForm(TREEFORM_STANDARD);
+      m_e[1].setTreeForm(TREEFORM_STANDARD);
     } else {
-      m_e[0].toCanonicalForm();
-      m_e[1].toCanonicalForm();
+      m_e[0].setTreeForm(TREEFORM_CANONICAL);
+      m_e[1].setTreeForm(TREEFORM_CANONICAL);
     }
     makeImage(0);
     makeImage(1);

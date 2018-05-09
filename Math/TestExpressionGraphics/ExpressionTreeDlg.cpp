@@ -48,7 +48,7 @@ BOOL CExpressionTreeDlg::OnInitDialog() {
   expandAll(treeCtrl, TVI_ROOT);
 
   CListBox *lb = (CListBox*)GetDlgItem(IDC_LIST_SYMBOLTABLE);
-  const ExpressionVariableArray variables = m_expr->getAllVariables();
+  const ExpressionVariableArray variables = m_expr->getSymbolTable().getAllVariables();
   for(size_t i = 0; i < variables.size(); i++) {
     const ExpressionVariableWithValue &v = variables[i];
     lb->InsertString(-1, v.toString().cstr());

@@ -2,28 +2,28 @@
 #include <Math/Expression/ParserTree.h>
 
 ExpressionNodePoly::ExpressionNodePoly(ParserTree *tree, va_list argptr) : ExpressionNode(tree, POLY) {
-  m_coefficientArray = getExpressionList(va_arg(argptr, ExpressionNode*));
-  m_argument         = va_arg(argptr, ExpressionNode*);
+  m_coefArray = getExpressionList(va_arg(argptr, ExpressionNode*));
+  m_arg       = va_arg(argptr, ExpressionNode*);
   m_firstCoefIndex   = -1;
 }
 
-ExpressionNodePoly::ExpressionNodePoly(ParserTree *tree, const ExpressionNodeArray &coefficientArray, ExpressionNode *argument) : ExpressionNode(tree, POLY) {
-  m_coefficientArray.setCapacity(coefficientArray.size());
-  for(size_t i = 0; i < coefficientArray.size(); i++) {
-    m_coefficientArray.add(coefficientArray[i]);
+ExpressionNodePoly::ExpressionNodePoly(ParserTree *tree, const ExpressionNodeArray &coefArray, ExpressionNode *arg) : ExpressionNode(tree, POLY) {
+  m_coefArray.setCapacity(coefArray.size());
+  for(size_t i = 0; i < coefArray.size(); i++) {
+    m_coefArray.add(coefArray[i]);
   }
-  m_argument = argument;
+  m_arg = arg;
   m_firstCoefIndex   = -1;
 }
 
 ExpressionNodePoly::ExpressionNodePoly(ParserTree *tree, const ExpressionNodePoly *src) : ExpressionNode(tree, POLY) {
   const ExpressionNodeArray &sa = src->getCoefficientArray();
-  m_coefficientArray.setCapacity(sa.size());
+  m_coefArray.setCapacity(sa.size());
   for(size_t i = 0; i < sa.size(); i++) {
-    m_coefficientArray.add(sa[i]->clone(tree));
+    m_coefArray.add(sa[i]->clone(tree));
   }
-  m_argument = src->getArgument()->clone(tree);
-  m_firstCoefIndex   = -1;
+  m_arg            = src->getArgument()->clone(tree);
+  m_firstCoefIndex = -1;
 }
 
 ExpressionNode *ExpressionNodePoly::expand() {
@@ -66,7 +66,7 @@ ExpressionNode *ExpressionNodePoly::clone(ParserTree *tree) const {
 }
 
 bool ExpressionNodePoly::isConstant() const {
-  return m_argument->isConstant() && m_coefficientArray.isConstant();
+  return m_arg->isConstant() && m_coefArray.isConstant();
 }
 
 static void getCoefficients(CompactArray<Real> &dst, const ExpressionNodeArray &coefficientArray) {
@@ -80,12 +80,12 @@ static void getCoefficients(CompactArray<Real> &dst, const ExpressionNodeArray &
  * return value of polynomial p(x) with coefficients contained in n.getCoefficientArray, and x in n.getArgument()
  */
 Real ExpressionNodePoly::evaluateReal() const {
-  const Real         x = getArgument()->evaluateReal();
-  CompactArray<Real> coef;
-  getCoefficients(coef, getCoefficientArray());
+  const Real         arg = getArgument()->evaluateReal();
+  CompactArray<Real> coefArray;
+  getCoefficients(coefArray, getCoefficientArray());
   Real result = 0;
-  for(size_t i = 0; i < coef.size(); i++) {
-    result = result * x + coef[i];
+  for(size_t i = 0; i < coefArray.size(); i++) {
+    result = result * arg + coefArray[i];
   }
   return result;
 }
@@ -103,12 +103,12 @@ bool ExpressionNodePoly::traverseExpression(ExpressionNodeHandler &handler, int 
 
 void ExpressionNodePoly::dumpNode(String &s, int level) const {
   addLeftMargin(s, level) += format(_T("%s first coefIndex:%d\n"), getSymbolName().cstr(), getFirstCoefIndex());
-  for(size_t i = 0; i < m_coefficientArray.size(); i++) {
-    m_coefficientArray[i]->dumpNode(s, level+1);
+  for(size_t i = 0; i < m_coefArray.size(); i++) {
+    m_coefArray[i]->dumpNode(s, level+1);
   }
-  m_argument->dumpNode(s, level+1);
+  m_arg->dumpNode(s, level+1);
 }
 
 String ExpressionNodePoly::toString() const {
-  return _T("poly[") + m_coefficientArray.toString() + _T("](") + m_argument->toString() + _T(")");
+  return _T("poly[") + m_coefArray.toString() + _T("](") + m_arg->toString() + _T(")");
 }

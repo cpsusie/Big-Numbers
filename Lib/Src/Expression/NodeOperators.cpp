@@ -29,14 +29,14 @@ ExpressionNode *NodeOperators::numberExpression(ExpressionNode *n, INT64 v) { //
   return n->getTree()->numberExpression(v);
 }
 
-ExpressionNode *NodeOperators::unaryExpression(ExpressionInputSymbol symbol, ExpressionNode *n) { // static
-  return n->getTree()->unaryExpression(symbol, n);
+ExpressionNode *NodeOperators::unaryExpr(ExpressionInputSymbol symbol, ExpressionNode *n) { // static
+  return n->getTree()->unaryExpr(symbol, n);
 }
 
-ExpressionNode *NodeOperators::binaryExpression(ExpressionInputSymbol symbol, ExpressionNode *n1, ExpressionNode *n2) { // static
-  return n1->getTree()->binaryExpression(symbol,n1,n2);
+ExpressionNode *NodeOperators::binaryExpr(ExpressionInputSymbol symbol, ExpressionNode *n1, ExpressionNode *n2) { // static
+  return n1->getTree()->binaryExpr(symbol,n1,n2);
 }
 
-ExpressionNode *NodeOperators::functionExpression(ExpressionInputSymbol symbol, ExpressionNode *n) { // static
-  return n->getTree()->functionExpression(symbol, n);
+ExpressionNode *NodeOperators::functionExpr(ExpressionInputSymbol symbol, ExpressionNode *n) { // static
+  return n->getTree()->functionExpr(symbol, n);
 }

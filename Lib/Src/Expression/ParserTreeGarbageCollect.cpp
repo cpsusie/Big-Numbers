@@ -29,7 +29,7 @@ bool SetMark::handleNode(ExpressionNode *n, int level) {
 }
 
 void ParserTree::pruneUnusedNodes() {
-  debugLog(_T("Garbage collection. Before.(#Nodes,#Addents):(%6d,%6d)."), getNodeTableSize(), getAddentTableSize());
+  debugLog(_T("Garbage collection. Before.(#Nodes,#Addents):(%6d,%6d).\n"), getNodeTableSize(), getAddentTableSize());
   unmarkAll();
 
   traverseTree(SetMark(true));
@@ -47,6 +47,7 @@ void ParserTree::markSimpleConstants() {
   MARKCONSTANT(m_zero    );
   MARKCONSTANT(m_one     );
   MARKCONSTANT(m_two     );
+  MARKCONSTANT(m_ten     );
   MARKCONSTANT(m_half    );
   MARKCONSTANT(m_false   );
   MARKCONSTANT(m_true    );

@@ -21,22 +21,3 @@ void ExpressionNodeNumber::dumpNode(String &s, int level) const {
   addLeftMargin(s, level) += format(_T("NUMBER:%s valueIndex:%2d\n"), getNumber().toString().cstr(), getValueIndex());
 }
 
-int ExpressionNodeBoolean::compare(ExpressionNode *n) {
-  if(n->getNodeType() != getNodeType()) {
-    return ExpressionNode::compare(n);
-  }
-  return getBool() - n->getBool();
-}
-
-ExpressionNode *ExpressionNodeBoolean::clone(ParserTree *tree) const {
-  ExpressionNode *n = new ExpressionNodeBoolean(tree, getBool()); TRACE_NEW(n);
-  return n;
-}
-
-bool ExpressionNodeBoolean::traverseExpression(ExpressionNodeHandler &handler, int level) {
-  return handler.handleNode(this, level);
-}
-
-void ExpressionNodeBoolean::dumpNode(String &s, int level) const {
-  addLeftMargin(s, level) += format(_T("BOOLEAN:%s\n"), boolToStr(getBool()));
-}

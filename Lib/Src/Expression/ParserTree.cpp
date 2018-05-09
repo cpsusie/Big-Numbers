@@ -5,25 +5,27 @@
 
 using namespace std;
 
-ParserTree::ParserTree() {
-  init(PS_EMPTY,0);
+ParserTree::ParserTree(TrigonometricMode mode) {
+  init(mode, PS_EMPTY,0);
   m_root             = NULL;
   m_ops              = NodeOperators::s_stdForm;
   m_ok               = false;
 }
 
 ParserTree::ParserTree(const ParserTree &src) {
-  init(src.getState(), src.getReduceIteration());
+  init(src.getTrigonometricMode(), src.getState(), src.getReduceIteration());
   m_errors           = src.m_errors;
   m_root             = src.m_root ? src.m_root->clone(this) : NULL;
   m_ops              = src.m_ops;
   m_ok               = src.m_ok;
 }
 
-void ParserTree::init(ParserTreeState      state
+void ParserTree::init(TrigonometricMode    mode
+                     ,ParserTreeState      state
                      ,UINT                 reduceIteration) {
-  m_state           = state;
-  m_reduceIteration = reduceIteration;
+  m_trigonometricMode = mode;
+  m_state             = state;
+  m_reduceIteration   = reduceIteration;
   resetSimpleConstants();
 }
 
@@ -33,11 +35,11 @@ ParserTree &ParserTree::operator=(const ParserTree &src) {
   }
   releaseAll();
   m_errors = src.m_errors;
-  setRoot(           src.m_root ? src.m_root->clone(this) : NULL);
-  setTreeForm(       src.getTreeForm());
-  setOk(             src.m_ok);
-  setReduceIteration(src.getReduceIteration());
-  setState(          src.getState());
+  setRoot(             src.m_root ? src.m_root->clone(this) : NULL);
+  setTreeForm(         src.getTreeForm());
+  setOk(               src.m_ok);
+  setReduceIteration(  src.getReduceIteration());
+  setState(            src.getState());
   return *this;
 }
 
@@ -65,12 +67,14 @@ void ParserTree::setTreeForm(ParserTreeForm form) {
   const ParserTreeForm oldForm = getTreeForm();
   if(form != oldForm) {
     switch(form) {
-    case TREEFORM_STANDARD :
-    case TREEFORM_CANONICAL:
-    case TREEFORM_NUMERIC  :
+    case TREEFORM_STANDARD : setRoot(toStandardForm( getRoot())); break;
+    case TREEFORM_CANONICAL: setRoot(toCanonicalForm(getRoot())); break;
+    case TREEFORM_NUMERIC  : setRoot(toNumericForm(  getRoot())); break;
     default                :
       throwInvalidArgumentException(__TFUNCTION__,_T("form=%d"), form);
     }
+    pruneUnusedNodes();
+    buildSymbolTable();
     notifyPropertyChanged(PP_TREEFORM, &oldForm, &form);
   }
 }
@@ -175,24 +179,9 @@ void ParserTree::listErrors(const TCHAR *fname) const {
   }
 }
 
-static void getListFromTree(ExpressionNode *n, int delimiterSymbol, ExpressionNodeArray &list) {
-  if(n->getSymbol() == delimiterSymbol) {
-    getListFromTree(n->left(),delimiterSymbol,list);
-    list.add(n->right());
-  } else {
-    list.add(n);
-  }
-}
-
 ExpressionNodeArray getExpressionList(ExpressionNode *n) {
   ExpressionNodeArray result(10);
-  getListFromTree(n, COMMA, result);
-  return result;
-}
-
-ExpressionNodeArray getStatementList(ExpressionNode *n) {
-  ExpressionNodeArray result(10);
-  getListFromTree(n, SEMI, result);
+  n->getListFromTree(COMMA, result);
   return result;
 }
 
@@ -396,6 +385,15 @@ ExpressionNode *ParserTree::vFetchNode(const SourcePosition &pos, ExpressionInpu
   case NUMBER: n = new ExpressionNodeNumberWithPos(   this, pos, va_arg(argptr,Real  )); break;
   case NAME  : n = new ExpressionNodeVariableWithPos( this, pos, va_arg(argptr,TCHAR*)); break;
   case POLY  : n = new ExpressionNodePolyWithPos(     this, pos, argptr); break;
+  case EQ    :
+  case NE    :
+  case LE    :
+  case LT    :
+  case GE    :
+  case GT    :
+  case SYMAND:
+  case SYMOR :
+  case SYMNOT: n = new ExpressionNodeBoolExprWithPos( this, pos, symbol, argptr); break;
   default    : n = new ExpressionNodeTreeWithPos(     this, pos, symbol, argptr); break;
   }
   TRACE_NEW(n);

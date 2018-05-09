@@ -3,24 +3,28 @@
 #include <Math/Expression/ParserTree.h>
 #include <Math/Expression/SumElement.h>
 #include <Math/Expression/ExpressionFactor.h>
+#include <Math/Expression/ExpressionParser.h>
+#include <Math/Expression/SNodeReduceDbgStack.h>
 
-#ifdef __NEVER__
+UINT ParserTree::getTerminalCount() { // static
+  return ExpressionTables->getTerminalCount();
+};
 
-class MainReducer : public ExpressionTransformer {
+class MainReducer : public ParserTreeTransformer {
 private:
   ParserTree     &m_tree;
-  ExpressionState m_state;
+  ParserTreeState m_state;
 public:
   MainReducer(ParserTree *tree) : m_tree(*tree) {
-    m_state = EXPR_MAINREDUCTION1;
+    m_state = PS_MAINREDUCTION1;
   }
   SNode transform(SNode n) {
-    return m_expr.reduce(n);
+    return n.reduce();
   }
-  ExpressionState getState() const {
+  ParserTreeState getState() const {
     return m_state;
   }
-  void setState(ExpressionState state) {
+  void setState(ParserTreeState state) {
     m_state = state;
   }
 };
@@ -48,8 +52,7 @@ void ParserTree::reduce() {
 
     const ParserTreeForm startTreeForm = getTreeForm();
     if(startTreeForm != TREEFORM_CANONICAL) {
-      toCanonicalForm();
-      setState(EXPR_CANONICALFORM);
+      setTreeForm(TREEFORM_CANONICAL);
     }
     checkIsCanonicalForm();
 
@@ -57,8 +60,8 @@ void ParserTree::reduce() {
 
     iterateTransformation(mainTransformer);
 
-    mainTransformer.setState(EXPR_MAINREDUCTION2);
-    setRoot(multiplyParentheses(getRoot()));
+    mainTransformer.setState(PS_MAINREDUCTION2);
+    setRoot(SNode(getRoot()).multiplyParentheses());
     iterateTransformation(mainTransformer);
 
   /*
@@ -70,29 +73,28 @@ void ParserTree::reduce() {
   */
 
     if(startTreeForm == TREEFORM_STANDARD) {
-      toStandardForm();
-      setState(EXPR_STANDARDFORM);
+      setTreeForm(TREEFORM_STANDARD);
     }
 
     buildSymbolTable();
     pruneUnusedNodes();
 
-    setState(EXPR_REDUCTIONDONE);
+    setState(PS_REDUCTIONDONE);
   } catch(...) {
     clear();
     throw;
   }
 }
 
-void ParserTree::iterateTransformation(ExpressionTransformer &transformer) {
+void ParserTree::iterateTransformation(ParserTreeTransformer &transformer) {
   DEFINEMETHODNAME;
 
-  const int                  maxIterations = 30;
+  const int                  maxIterations = 3;
   SNode                      oldRoot       = getRoot();
   ParserTree                 bestReduction = *this;
   const ParserTreeComplexity startComplexity(bestReduction);
   ParserTreeComplexity       bestComplexity(startComplexity);
-  STARTREDUCTION();
+  STARTREDUCTION(this);
 
   setReduceIteration(0);
   setRoot(oldRoot);
@@ -134,5 +136,3 @@ void ParserTree::iterateTransformation(ExpressionTransformer &transformer) {
     *this = bestReduction;
   }
 }
-
-#endif

@@ -60,7 +60,7 @@ VariableEditField *VariableEditFieldArray::findFieldByName(const String &name) {
 
 void VariableEditFieldArray::Create(CWnd *parent, const Expression &expr) {
   m_parent = parent;
-  const ExpressionVariableArray variables = expr.getAllVariables();
+  const ExpressionVariableArray variables = expr.getSymbolTable().getAllVariables();
 
   int count = 0;
   for(size_t i = 0; i< variables.size(); i++) {

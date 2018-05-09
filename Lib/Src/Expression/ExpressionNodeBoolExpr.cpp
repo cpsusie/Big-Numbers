@@ -1,0 +1,55 @@
+#include "pch.h"
+#include <Math/Expression/ParserTree.h>
+
+bool ExpressionNodeBoolExpr::isConstant() const {
+  switch(getSymbol()) {
+  case SYMNOT  :
+    return child(0)->isConstant();
+  case SYMAND  :
+    { const bool lConst = left()->isConstant();
+      const bool rConst = right()->isConstant();
+      if(!lConst) {        // left not const => this is const if right is constant false.     (value = false)
+        return rConst && !right()->evaluateBool();
+      } else if(!rConst) { // left const && right not const => this is const if left = false. (value = false)
+        return !left()->evaluateBool();
+      } else {             // left const && right const => this is const
+        return true;
+      }
+    }
+  case SYMOR   :
+    { const bool lConst = left()->isConstant();
+      const bool rConst = right()->isConstant();
+      if(!lConst) {        // left not const => this is const if right is constant true.     (value = true)
+        return rConst && right()->evaluateBool();
+      } else if(!rConst) { // left const && right not const => this is const if left = true. (value = true)
+        return left()->evaluateBool();
+      } else {             // left const && right const => this is const
+        return true;
+      }
+    }
+  case EQ      :
+  case NE      :
+  case LE      :
+  case LT      :
+  case GE      :
+  case GT      : return left()->isConstant() && right()->isConstant();
+  default      : throwUnknownSymbolException(__TFUNCTION__);
+  }
+  return false;
+}
+
+bool ExpressionNodeBoolExpr::evaluateBool() const {
+  switch(getSymbol()) {
+  case SYMNOT  : return !child(0)->evaluateBool();
+  case SYMAND  : return left()->evaluateBool() && right()->evaluateBool();
+  case SYMOR   : return left()->evaluateBool() || right()->evaluateBool();
+  case EQ      : return left()->evaluateReal() == right()->evaluateReal();
+  case NE      : return left()->evaluateReal() != right()->evaluateReal();
+  case LE      : return left()->evaluateReal() <= right()->evaluateReal();
+  case LT      : return left()->evaluateReal() <  right()->evaluateReal();
+  case GE      : return left()->evaluateReal() >= right()->evaluateReal();
+  case GT      : return left()->evaluateReal() >  right()->evaluateReal();
+  default      : throwUnknownSymbolException(__TFUNCTION__);
+  }
+  return true;
+}

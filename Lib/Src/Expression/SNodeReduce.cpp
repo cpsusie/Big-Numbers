@@ -3,9 +3,7 @@
 #include <Math/Expression/ParserTree.h>
 #include <Math/Expression/SumElement.h>
 #include <Math/Expression/ExpressionFactor.h>
-#include "SNodeReduceDbgStack.h"
-
-DEFINEREDUCTIONSTACK;
+#include <Math/Expression/SNodeReduceDbgStack.h>
 
 #define N( n) SNode(n)
 #define NV(v) SNode(getTree(),v)
@@ -27,12 +25,12 @@ SNode SNode::reduce() {
     newStmtList.add(assignStmt(stmt.left(), stmt.right().reduceRealExp()));
   }
   SNode last = stmtList.last();
-  switch(last.getSymbol()) {
-  case RETURNREAL:
-    newStmtList.add(unaryExp(RETURNREAL, last.left().reduceRealExp()));
+  switch(last.getReturnType()) {
+  case EXPR_RETURN_REAL:
+    newStmtList.add(last.reduceRealExp());
     break;
-  case RETURNBOOL:
-    newStmtList.add(unaryExp(RETURNBOOL, last.left().reduceBoolExp()));
+  case EXPR_RETURN_BOOL:
+    newStmtList.add(last.reduceBoolExp());
     break;
   default:
     last.throwUnknownSymbolException(method);
@@ -241,7 +239,7 @@ SNode SNode::reduceSum() const {
           reduced.add(sqrSinOrCos);
           done.add(i1);
           done.add(i2);
-        } else if(hasLogarithmicFunctions && sameLogarithm(e1->getNode(), e2->getNode())) {
+        } else if(hasLogarithmicFunctions && N(e1->getNode()).sameLogarithm(e2->getNode())) {
           reduced.add(mergeLogarithms(*e1, *e2));
           done.add(i1);
           done.add(i2);
@@ -393,18 +391,18 @@ bool SNode::canUseReverseIdiotRule(SumElement *e1, SumElement *e2, SumElement* &
   RETURNBOOL( false );
 }
 
-bool SNode::sameLogarithm(SNode n1, SNode n2) { // static
+bool SNode::sameLogarithm(SNode n) const {
   DEFINEMETHODNAME;
-  ENTERMETHOD2(n1, n2);
+  ENTERMETHOD2(*this, n);
 
-  RETURNBOOL( ((n1.getSymbol() == LN   ) && (n2.getSymbol() == LN   ))
-          ||  ((n2.getSymbol() == LOG10) && (n2.getSymbol() == LOG10))
-          ||  ((n2.getSymbol() == LOG2 ) && (n2.getSymbol() == LOG2 ))
+  RETURNBOOL( ((getSymbol() == LN   ) && (n.getSymbol() == LN   ))
+           || ((getSymbol() == LOG10) && (n.getSymbol() == LOG10))
+           || ((getSymbol() == LOG2 ) && (n.getSymbol() == LOG2 ))
             );
 }
 
 /*
- * e1 assumes e1->getNode.getSymbol = LN or LOG10
+ * e1 assumes e1->getNode.getSymbol = LN,LOG10 or LOG2
  * e2 assumes e2->getNode.getSymbol = e1.getNode.getSymbol
  * return  log(a*b) =  log(a) + log(b),
  *        -log(a*b) = -log(a) - log(b),
@@ -661,7 +659,7 @@ FactorArray &SNode::getFactors(FactorArray &result) {
 
 FactorArray &SNode::getFactors(FactorArray &result, SNode exponent) {
   DEFINEMETHODNAME;
-  ENTERMETHOD2(n, exponent);
+  ENTERMETHOD2(*this, exponent);
 
   switch(getSymbol()) {
   case NUMBER:
@@ -699,7 +697,7 @@ FactorArray &SNode::getFactors(FactorArray &result, SNode exponent) {
  */
 FactorArray &SNode::getFactorsInPower(FactorArray &result, SNode exponent) {
   DEFINEMETHODNAME;
-  ENTERMETHOD2(n, exponent);
+  ENTERMETHOD2(*this, exponent);
   FactorArray tmp1, tmp2;
   SNode base = left();
   switch(base.getSymbol()) {
@@ -1096,14 +1094,14 @@ SNode SNode::multiplyParenthesesInProduct() {
 SNode SNode::multiplyParenthesesInPoly() {
   DEFINEMETHODNAME;
   ENTERMETHOD();
-  const ExpressionNodeArray &coef    = getCoefficientArray();
-  SNode                      newArg  = getArgument().multiplyParentheses();
+  const ExpressionNodeArray &coefArray = getCoefficientArray();
+  SNode                      newArg    = getArgument().multiplyParentheses();
 
-  SExprList newCoef(coef.size());
-  for(size_t i = 0; i < coef.size(); i++) {
-    newCoef.add(NV(coef[i]).multiplyParentheses());
+  ExpressionNodeArray newCoefArray(coefArray.size());
+  for(size_t i = 0; i < coefArray.size(); i++) {
+    newCoefArray.add(NV(coefArray[i]).multiplyParentheses());
   }
-  SNode result = polyExp(newCoef, newArg);
+  SNode result = polyExp(newCoefArray, newArg);
   RETURNNODE( result );
 }
 
@@ -1131,9 +1129,9 @@ SNode SNode::multiplyTreeNode() {
   const ExpressionNodeArray &a = getChildArray();
   ExpressionNodeArray newChildArray(a.size());
   for(size_t i = 0; i < a.size(); i++) {
-    newChildArray.add(NV(a[i]).multiplyParentheses());
+    newChildArray.add(N(a[i]).multiplyParentheses());
   }
-  SNode result = getTree()->fetchTreeNode(getSymbol(), newChildArray);
+  SNode result = treeExp(getSymbol(), newChildArray);
   RETURNNODE( result );
 }
 
@@ -1280,40 +1278,40 @@ SNode SNode::reducePolynomial() {
   DEFINEMETHODNAME;
   ENTERMETHOD();
 
-  SExprList coefficients(getCoefficientArray());
+  SExprList coefArray(getCoefficientArray());
   SNode     arg = getArgument();  // arg is the parameter to the polynomial ex. poly[a,b,c,d](arg)
 
-  SExprList newCoefficients;
+  SExprList newCoefArray;
   bool leadingCoef = true;
-  for(size_t i = 0; i < coefficients.size(); i++) {
-    SNode &coef = coefficients[i];
+  for(size_t i = 0; i < coefArray.size(); i++) {
+    SNode &coef = coefArray[i];
     if(!coef.isConstant()) {     // coef not constant
-      newCoefficients.add(coef.reduceRealExp());
+      newCoefArray.add(coef.reduceRealExp());
     } else if(coef.isNumber()) { // coef is constant
       if(coef.isZero() && leadingCoef) continue;
-      newCoefficients.add(coef);
+      newCoefArray.add(coef);
     } else {
       Rational r;
       if(coef.reducesToRationalConstant(&r)) {
         if(r.isZero() && leadingCoef) continue;
-        newCoefficients.add(NV(r));
+        newCoefArray.add(NV(r));
       } else {
         const Real c = coef.evaluateReal();
         if(c == 0 && leadingCoef) continue;
-        newCoefficients.add(NV(c));
+        newCoefArray.add(NV(c));
       }
     }
     leadingCoef = false;
   }
-  switch(newCoefficients.size()) {
+  switch(newCoefArray.size()) {
   case 0 : RETURNNODE( _0() );               // 0 polynomial == 0
-  case 1 : RETURNNODE( newCoefficients[0] ); // Independent of arg
+  case 1 : RETURNNODE( newCoefArray[0] ); // Independent of arg
   default:
     { const SNode newArg = arg.reduceRealExp();
-      if((newCoefficients == coefficients) && (newArg == arg)) {
+      if((newCoefArray == coefArray) && (newArg == arg)) {
         RETURNNODE(*this);
       } else {
-        RETURNNODE( polyExp(newCoefficients, newArg) );
+        RETURNNODE( polyExp(newCoefArray, newArg) );
       }
     }
   }

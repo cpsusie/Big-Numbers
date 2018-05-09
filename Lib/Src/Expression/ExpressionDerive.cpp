@@ -6,7 +6,7 @@ Expression Expression::getDerived(const String &name, bool reduceResult /*=false
     throwException(_T("Cannot get derived of an expression returning boolean"));
   }
   Expression result = *this;
-  result.toStandardForm();
+  result.setTreeForm(TREEFORM_STANDARD);
   result.setMachineCode(false);
   SNode e(result.getRoot());
   result.setRoot(e.D(name));
@@ -18,7 +18,7 @@ Expression Expression::getDerived(const String &name, bool reduceResult /*=false
     result.reduce();
   }
   if(isMachineCode()) {
-    result.toStandardForm();
+    result.setTreeForm(TREEFORM_STANDARD);
     result.setMachineCode(true);
   }
   return result;

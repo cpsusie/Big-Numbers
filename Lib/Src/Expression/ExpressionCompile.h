@@ -6,13 +6,12 @@
 class CodeGenerator {
 private:
   ParserTree             &m_tree;
-  const TrigonometricMode m_trigonometricMode;
   MachineCode            *m_codeArray;
   CodeGeneration         *m_code;
   LabelGenerator          m_labelGen;
 
   inline TrigonometricMode getTrigonometricMode() const {
-    return m_trigonometricMode;
+    return m_tree.getTrigonometricMode();
   }
 
   inline MemoryRef getTableRef(const ExpressionNode *n) {
@@ -94,7 +93,7 @@ public:
   // delete after usage. No exceptions should be thrown, as syntax-checks has been done, when
   // building the parsertree/symbol-table, but in case of an internal error, m_code will
   // automaticly be deleted.
-  CodeGenerator(ParserTree *tree, TrigonometricMode trigonometricMode, FILE *listFile = NULL);
+  CodeGenerator(ParserTree *tree, FILE *listFile = NULL);
   const MachineCode *getCode() const {
     return m_codeArray;
   }

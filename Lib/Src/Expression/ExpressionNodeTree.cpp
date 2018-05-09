@@ -279,10 +279,7 @@ String ExpressionNodeTree::toString() const {
   case TAN           : return _T("tan("   ) + CHILDSTR(0) + RPSTR;
   case TANH          : return _T("tanh("  ) + CHILDSTR(0) + RPSTR;
   case IIF           : return _T("if("    ) + CHILDSTR(0) + COMMASTR + CHILDSTR(1) + COMMASTR + CHILDSTR(2) + RPSTR;
-  case SEMI          : return m_childArray[0]->statementListToString() + CHILDSTR(1);
   case ASSIGN        : return CHILDSTR(0) + _T(" = ") + CHILDSTR(1);
-  case RETURNREAL    : return CHILDSTR(0);
-  case RETURNBOOL    : return CHILDSTR(0);
   case INDEXEDSUM    : return _T("sum(")     + CHILDSTR(0) + _T(" to ") + CHILDSTR(1) + _T(") ") + CHILDSTR(2);
   case INDEXEDPRODUCT: return _T("product(") + CHILDSTR(0) + _T(" to ") + CHILDSTR(1) + _T(") ") + CHILDSTR(2);
   default            : return _T("Unknown symbol:") + getSymbolName();

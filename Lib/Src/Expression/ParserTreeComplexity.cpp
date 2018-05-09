@@ -7,10 +7,10 @@ ParserTreeComplexity::ParserTreeComplexity(ParserTree &tree) {
   m_treeDepth = tree.getRoot() ? tree.getRoot()->getMaxTreeDepth() : 0;
 }
 
-int parserTreeComplexityCmp(const ParserTreeComplexity &rs1, const ParserTreeComplexity &rs2) {
-  int c = (rs1.m_nodeCount + 2 * rs1.m_nameCount) - (rs2.m_nodeCount + 2 * rs2.m_nameCount);
+int ParserTreeComplexity::compare(const ParserTreeComplexity &tc) const {
+  int c = (m_nodeCount + 2 * m_nameCount) - (tc.m_nodeCount + 2 * tc.m_nameCount);
   if(c) return c;
-  return rs1.m_treeDepth - rs2.m_treeDepth;
+  return m_treeDepth - tc.m_treeDepth;
 }
 
 ParserTreeComplexity ParserTree::getComplexity() {

@@ -117,14 +117,13 @@ String ExpressionNode::parenthesizedExpressionToString(const ExpressionNode *par
   }
 }
 
-String ExpressionNode::statementListToString() const {
-  String result;
-  ExpressionNodeArray list = getStatementList((ExpressionNode*)this);
-  for(size_t i = 0; i < list.size(); i++) {
-    result += list[i]->toString();
-    result += _T(";\n");
+void ExpressionNode::getListFromTree(int delimiterSymbol, ExpressionNodeArray &list) {
+  if(getSymbol() == delimiterSymbol) {
+    left()->getListFromTree(delimiterSymbol,list);
+    list.add(right());
+  } else {
+    list.add(this);
   }
-  return result;
 }
 
 static ExpressionNodeSelector *getBuiltInFunctionSelector() {
@@ -162,23 +161,6 @@ bool ExpressionNode::isBinaryOperator() const {
   case PLUS :
   case MINUS:
   case MOD  :
-    return true;
-  default:
-    return false;
-  }
-}
-
-bool ExpressionNode::isBooleanOperator() const {
-  switch(getSymbol()) {
-  case SYMOR :
-  case SYMAND:
-  case SYMNOT:
-  case EQ :
-  case GE :
-  case GT :
-  case LE :
-  case LT :
-  case NE :
     return true;
   default:
     return false;
@@ -394,7 +376,7 @@ ExpressionNode *ExpressionNodeArray::toTree(ExpressionInputSymbol delimiter) con
   ExpressionNode *result = (*this)[0];
   ParserTree *tree = result->getTree();
   for(size_t i = 1; i < size(); i++) {
-    result = tree->binaryExpression(delimiter, result, (*this)[i]);
+    result = tree->binaryExpr(delimiter, result, (*this)[i]);
   }
   return result;
 }

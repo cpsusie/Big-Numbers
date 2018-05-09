@@ -3,46 +3,10 @@
 #include <Math/Expression/SumElement.h>
 #include <Math/Expression/ExpressionFactor.h>
 
-Real ExpressionNode::evaluateStatementListReal() const {
-  DEFINEMETHODNAME;
-  ExpressionNodeArray stmtList = getStatementList((ExpressionNode*)this);
-
-  const size_t stmtCount = stmtList.size() - 1;
-  for(size_t i = 0; i < stmtCount; i++) {
-    stmtList[i]->doAssignment();
-  }
-  const ExpressionNode *last = stmtList.last();
-  switch(last->getSymbol()) {
-  case RETURNREAL: return last->left()->evaluateReal();
-  default        : last->throwUnknownSymbolException(method);
-  }
-  return 0;
-}
-
-bool ExpressionNode::evaluateStatementListBool() const {
-  DEFINEMETHODNAME;
-  ExpressionNodeArray stmtList = getStatementList((ExpressionNode *)this);
-
-  const int stmtCount = (int)stmtList.size() - 1;
-  for(int i = 0; i < stmtCount; i++) {
-    stmtList[i]->doAssignment();
-  }
-  const ExpressionNode *last = stmtList.last();
-  switch(last->getSymbol()) {
-  case RETURNBOOL: return last->left()->evaluateBool();
-  default        : last->throwUnknownSymbolException(method);
-  }
-  return false;
-}
-
 Real ExpressionNode::evaluateReal() const {
   DEFINEMETHODNAME;
 
   switch(getSymbol()) {
-  case NAME    : return getValueRef();
-  case NUMBER  : return getReal(); // dont use getValue() as it takes the value in m_valueTable
-                                   // We might be called from buildSymbolTable
-                                   // before this table is filled with constants
   case PLUS     : return left()->evaluateReal() + right()->evaluateReal();
   case MINUS    : return isUnaryMinus() ? -left()->evaluateReal() : (left()->evaluateReal() - right()->evaluateReal());
   case PROD     : return left()->evaluateReal() * right()->evaluateReal();
@@ -100,26 +64,21 @@ Real ExpressionNode::evaluateReal() const {
   case IIF      : return child(0)->evaluateBool() ? child(1)->evaluateReal() : child(2)->evaluateReal();
 
   case INDEXEDSUM     :
-    {            const ExpressionNode *startAssignment = child(0);
-                 const ExpressionNode *beginExpr       = startAssignment->right();
-                 const ExpressionNode *expr            = child(2);
-                 Real                 &i               = startAssignment->left()->getValueRef();
+    {            Real                 &i               = child(0)->doAssignment();
                  const Real            endIndex        = child(1)->evaluateReal();
+                 const ExpressionNode *expr            = child(2);
                  Real                  sum             = 0;
-                 for(i = beginExpr->evaluateReal(); i <= endIndex; i++) {
+                 for(;i <= endIndex; i++) {
                    sum += expr->evaluateReal();
                  }
                  return sum;
     }
   case INDEXEDPRODUCT :
-    {            const ExpressionNode *startAssignment = child(0);
-                 const ExpressionNode *beginExpr       = startAssignment->right();
-                 const ExpressionNode *expr            = child(2);
-                 Real                 &i               = startAssignment->left()->getValueRef();
+    {            Real                 &i               = child(0)->doAssignment();
                  const Real            endIndex        = child(1)->evaluateReal();
+                 const ExpressionNode *expr            = child(2);
                  Real                  product         = 1;
-
-                 for(i = beginExpr->evaluateReal(); i <= endIndex; i++) {
+                 for(;i <= endIndex; i++) {
                    product *= expr->evaluateReal();
                  }
                  return product;
@@ -169,37 +128,4 @@ Real ExpressionNode::evaluateRoot() const {
       return root(rad, rt); // -1.#IND
     }
   }
-}
-
-void ExpressionNode::doAssignment() const {
-  switch(getSymbol()) {
-  case ASSIGN:
-//    printf(_T("doasign:<%s> = %le\n"),n->left()->getName().cstr(),evaluateReal(n->right()));
-    { ExpressionVariable &var = left()->getVariable();
-      if(!var.isConstant()) {
-        m_tree.getValueRef(var) = right()->evaluateReal();
-      }
-    }
-    break;
-  default:
-    throwUnknownSymbolException(__TFUNCTION__);
-  }
-}
-
-bool ExpressionNode::evaluateBool() const {
-  DEFINEMETHODNAME;
-  switch(getSymbol()) {
-  case TYPEBOOL: return getBool();
-  case SYMNOT  : return !child(0)->evaluateBool();
-  case SYMAND  : return left()->evaluateBool() && right()->evaluateBool();
-  case SYMOR   : return left()->evaluateBool() || right()->evaluateBool();
-  case EQ      : return left()->evaluateReal() == right()->evaluateReal();
-  case NE      : return left()->evaluateReal() != right()->evaluateReal();
-  case LE      : return left()->evaluateReal() <= right()->evaluateReal();
-  case LT      : return left()->evaluateReal() <  right()->evaluateReal();
-  case GE      : return left()->evaluateReal() >= right()->evaluateReal();
-  case GT      : return left()->evaluateReal() >  right()->evaluateReal();
-  default      : throwUnknownSymbolException(method);
-  }
-  return true;
 }

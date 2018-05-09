@@ -94,7 +94,7 @@ SNode SNode::operator||(const SNode &n) const {
 }
 
 SNode SNode::operator!() const {
-  return m_node->getTree()->unaryExpression(SYMNOT, m_node);
+  return m_node->getTree()->unaryExpr(SYMNOT, m_node);
 }
 
 bool SNode::operator==(const SNode &n) const {
@@ -214,11 +214,11 @@ SNode gauss(const SNode &x) {
 }
 
 SNode unaryExp(ExpressionInputSymbol symbol, SNode n) {
-  return n.node()->getTree()->unaryExpression(symbol, n.node());
+  return n.node()->getTree()->unaryExpr(symbol, n.node());
 }
 
 SNode binExp(ExpressionInputSymbol symbol, SNode n1, SNode n2) {
-  return n1.node()->getTree()->binaryExpression(symbol, n1.node(), n2.node());
+  return n1.node()->getTree()->binaryExpr(symbol, n1.node(), n2.node());
 }
 
 SNode treeExp(ExpressionInputSymbol symbol, const ExpressionNodeArray &a) {
@@ -227,11 +227,15 @@ SNode treeExp(ExpressionInputSymbol symbol, const ExpressionNodeArray &a) {
 }
 
 SNode condExp(SNode condition, SNode nTrue, SNode nFalse) {
-  return condition.node()->getTree()->conditionalExpression(condition.node(), nTrue.node(), nFalse.node());
+  return condition.node()->getTree()->condExpr(condition.node(), nTrue.node(), nFalse.node());
 }
 
-SNode polyExp(SExprList &coefficientArray, SNode argument) {
-  return argument.node()->getTree()->fetchPolyNode(coefficientArray, argument);
+SNode polyExp(const ExpressionNodeArray &coefArray, SNode arg) {
+  return arg.node()->getTree()->getPoly(coefArray, arg.node());
+}
+
+SNode stmtList(const ExpressionNodeArray &list) {
+  return list[0]->getTree()->getStmtList(list);
 }
 
 SNode indexSum(SNode assignStmt, SNode endExpr, SNode expr) {
@@ -243,7 +247,7 @@ SNode indexProd(SNode assignStmt, SNode endExpr, SNode expr) {
 }
 
 SNode assignStmt(SNode leftSide, SNode expr) {
-  return leftSide.node()->getTree()->assignStatement(leftSide.node(), expr.node());
+  return leftSide.node()->getTree()->assignStmt(leftSide.node(), expr.node());
 }
 
 SNode factorExp(SNode b, SNode e) {
@@ -269,7 +273,7 @@ SNode SNodeArray::toTree(ExpressionInputSymbol delimiter) {
 }
 
 SStmtList::SStmtList(SNode n) {
-  ExpressionNodeArray stmtList = getStatementList(n.node());
+  const ExpressionNodeArray &stmtList = n.node()->getChildArray();
   for(size_t i = 0; i < stmtList.size(); i++) {
     add(stmtList[i]);
   }
@@ -305,8 +309,4 @@ SExprList::operator ExpressionNodeArray() {
     result.add((*this)[i].node());
   }
   return result;
-}
-
-String SNode::getSymbolName(ExpressionInputSymbol symbol) {
-  return ExpressionNode::getSymbolName(symbol);
 }
