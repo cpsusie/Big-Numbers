@@ -3,12 +3,17 @@
 #include <TreeMap.h>
 #include "ExpressionNode.h"
 
+class NameTable : public StringIHashMap<int> {
+public:
+  String toString() const;
+};
+
 class ParserTreeSymbolTable {
 private:
   ParserTree                   *m_tree;
   int                           m_indexNameCounter;
   // map name -> index in m_variableTable
-  StringTreeMap<int>            m_nameTable;
+  NameTable                     m_nameTable;
   Array<ExpressionVariable>     m_variableTable;
   mutable CompactRealArray      m_valueTable;
 

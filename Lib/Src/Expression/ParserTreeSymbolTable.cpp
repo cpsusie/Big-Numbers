@@ -311,15 +311,32 @@ void ParserTreeSymbolTable::unmarkAllReferencedNodes() {
   }
 }
 
+String NameTable::toString() const {
+  String result = _T("{");
+  const TCHAR *del = NULL;
+
+  for(Iterator<Entry<String, int> > it = ((NameTable*)this)->entrySet().getIterator(); it.hasNext();) {
+    const Entry<String, int> &e = it.next();
+    if(del) result += del; else del = _T(", ");
+    result += format(_T("(%s,%d)"), e.getKey().cstr(), e.getValue());
+  }
+  result += _T("}");
+  return result;
+}
+
 String ParserTreeSymbolTable::toString() const {
   String result = _T("SymbolTable:\n");
+  result += _T("  Hashmap:\n    ");
+  result += m_nameTable.toString();
+
+  result += _T("\n  Variables:\n");
   if(m_variableTable.size() > 0) {
     for(size_t i = 0; i < m_variableTable.size(); i++) {
       const ExpressionVariable &var = m_variableTable[i];
-      result += format(_T("  %2d: %s\n"), (int)i, var.toString().cstr());
+      result += format(_T("    %2d: %s\n"), (int)i, var.toString().cstr());
     }
   }
-  result += _T("ValueTable:\n");
+  result += _T("  ValueTable:\n  ");
   const size_t n = m_valueTable.size();
   const size_t colCount = 5;
   for(size_t i = 0; i < n; i++) {
@@ -328,6 +345,7 @@ String ParserTreeSymbolTable::toString() const {
                     ,::toString(m_valueTable[i]).cstr());
     if(((i%colCount)==(colCount-1)) || (i == n-1)) {
       result += _T("\n");
+      if(i < n-1) result += _T("  ");
     };
   }
   return result;
