@@ -256,7 +256,7 @@ public:
   String toString(const TCHAR *delimiter = _T(",")) const {
     String result = _T("(");
     const TCHAR *delim = NULL;
-    for(Iterator<Entry<K, V> > it = ((Map<K, V>*)this)->getIterator(); it.hasNext();) {
+    for(Iterator<Entry<K, V> > it = ((Map<K, V>*)this)->entrySet().getIterator(); it.hasNext();) {
       const Entry<K, V> &entry = it.next();
       if(delim) result += delim; else delim = delimiter;
       result += entry.toString();
