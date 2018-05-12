@@ -965,7 +965,7 @@ AlignedImage *ExpressionPainter::getStatementImages(const ExpressionNode *n, int
       result.add(concatImages(stmtRect, stmtImage, semiImage, NULL));
       rect.addChild(stmtRect);
     } else {
-      result.add(stmtImage); // no ',' after the last expression
+      result.add(stmtImage); // no ';' after the last expression
     }
   }
   return stackImages(result, rect);
