@@ -33,8 +33,10 @@ public:
   void vprintf( _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
   void printf(  _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
 
-  void setLeftMargin(int m)  {
+  int setLeftMargin(int m)  {
+    const int old = getLeftMargin();
     m_leftFiller = spaceString(m);
+    return old;
   }
   int getLeftMargin() const {
     return (int)m_leftFiller.length();
