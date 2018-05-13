@@ -5,11 +5,16 @@
 #include "ParserTree.h"
 
 class ResourceParser : public LRparser {
+private:
+  static const ParserTables *ResourceTables;
 public:
   ResourceParser(ParserTree &tree, ResourceLex *lex = NULL) : m_tree(tree), LRparser(*ResourceTables,lex) {}
   void  verror(const SourcePosition &pos, const TCHAR *format,va_list argptr);
   static int    ttoi(const TCHAR *s);
   static String stripQuotes(const String &s);
+  static const ParserTables &getTables() {
+    return *ResourceTables;
+  }
 private:
   ParserTree &m_tree;
   SyntaxNode *m_dollardollar,**m_stacktop,*m_userstack[256];

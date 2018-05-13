@@ -68,9 +68,9 @@ const extern ParserTables *CppTables;
 #elif USE_GRAMMAR == JAVA5_GRAMMAR
 
 #include "../java/Java5lex.h"
+#include "../java/Java5Parser.h"
 typedef      Java5Lex      ScannerToTest;
-const extern ParserTables *Java5Tables;
-#define      tablesToTest  Java5Tables
+#define      tablesToTest  Java5Parser::Java5Tables
 
 #else
 

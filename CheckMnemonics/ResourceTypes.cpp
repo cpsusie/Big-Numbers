@@ -45,7 +45,7 @@ ControlDefinition::ControlDefinition(const SyntaxNode *n) {
   case PUSHBUTTON   :
   case DEFPUSHBUTTON: m_type = CTRL_PUSHBUTTON; break;
   case CONTROL      : m_type = CTRL_CHECKBOX;   break;
-  default           : _tprintf(_T("Unknown controltype:%s\n"), ResourceTables->getSymbolName(n->getSymbol()));
+  default           : _tprintf(_T("Unknown controltype:%s\n"), ResourceParser::getTables().getSymbolName(n->getSymbol()));
                       ParserTree::dumpSyntaxTree(n);
   }
   m_id          = n->getChild(0)->getName();
@@ -389,7 +389,7 @@ Accelerator::Accelerator(const SyntaxNode *n) {
     addTokenToType(CONTROL)
     addTokenToType(ALT)
     addTokenToType(NOINVERT)
-    default: throwException(_T("invalid accelerator-modifier:%s"), ResourceTables->getSymbolName(child->getSymbol()));
+    default: throwException(_T("invalid accelerator-modifier:%s"), ResourceParser::getTables().getSymbolName(child->getSymbol()));
     }
   }
 }

@@ -19,10 +19,11 @@ Exception SyntaxNode::createException(const String &attribute) const {
 }
 
 String SyntaxNode::getSymbolName() const {
-  if(m_symbol < 0 || m_symbol >= (int)ResourceTables->getSymbolCount()) {
+  const ParserTables &tables = ResourceParser::getTables();
+  if(m_symbol < 0 || m_symbol >= (int)tables.getSymbolCount()) {
     return format(_T("Unknown symbol (=%d)"),m_symbol);
   }
-  return ResourceTables->getSymbolName(m_symbol);
+  return tables.getSymbolName(m_symbol);
 }
 
 class NameChecker : public SyntaxNodeHandler {

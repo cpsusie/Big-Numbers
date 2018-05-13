@@ -8,13 +8,13 @@
 #include "$CLASSNAMEsymbol.h"
 #include "$CLASSNAMElex.h"
 
-const extern PAtables *$CLASSNAMEPAtables;
-
 #ifndef YYSTYPE
 #define YYSTYPE int
 #endif
 
 class $CLASSNAMEparser : public LRparser {
+private:
+  static const Parsertables *$CLASSNAMEPAtables;
 public:
   $CLASSNAMEparser(scanner *lex=NULL) : LRparser(*$CLASSNAMEPAtables,lex) { }
 private:

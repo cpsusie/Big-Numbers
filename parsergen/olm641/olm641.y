@@ -6,6 +6,8 @@
 
 class Olm641Parser : public LRparser {
 public:
+  static const ParserTables *Olm641Tables;
+public:
   Olm641Parser(Scanner *lex=NULL) : LRparser(*Olm641Tables,lex) {}
 private:
   int m_dollardollar,*m_stacktop,m_userstack[256];

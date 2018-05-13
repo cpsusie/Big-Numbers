@@ -6,7 +6,7 @@
 
 #pragma warning(disable:4312)
 
-#line 45 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
+#line 43 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
 
 #pragma warning(disable : 4312)
 
@@ -4917,7 +4917,7 @@ static const ParserShortTables Java5Tables_s(compressedSet, compressedLasets
                                             ,rightSideTable, symbolName
                                             ,105, 306, 635, 1191);
 
-const ParserTables *Java5Tables = &Java5Tables_s;
+const ParserTables *Java5Parser::Java5Tables = &Java5Tables_s;
 // Size of Java5Tables_s: 88 bytes. Size of Java5Tables:8 bytes
 
 

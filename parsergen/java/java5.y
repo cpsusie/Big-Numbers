@@ -8,9 +8,9 @@
 #include "Java5Symbol.h"
 #include "Java5Lex.h"
 
-const extern ParserTables *Java5Tables;
-
 class Java5Parser : public LRparser {
+public:
+  static const ParserTables *Java5Tables;
 private:
   int reduceAction(unsigned int prod);
 

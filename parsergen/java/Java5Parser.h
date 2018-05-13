@@ -3,8 +3,6 @@
 
 #include <LRparser.h>
 
-const extern ParserTables *Java5Tables;
-
 #line 5 "C:\\mytools2015\\ParserGen\\java\\Java5.y"
 #pragma once
 
@@ -12,9 +10,9 @@ const extern ParserTables *Java5Tables;
 #include "Java5Symbol.h"
 #include "Java5Lex.h"
 
-const extern ParserTables *Java5Tables;
-
 class Java5Parser : public LRparser {
+public:
+  static const ParserTables *Java5Tables;
 private:
   int reduceAction(unsigned int prod);
 
@@ -45,5 +43,5 @@ public:
   }
 };
 
-#line 24 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
+#line 22 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
 

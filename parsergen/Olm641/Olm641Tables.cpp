@@ -185,7 +185,7 @@ static const ParserCharTables Olm641Tables_s(compressedSet, compressedLasets
                                             ,rightSideTable, symbolName
                                             ,7, 13, 13, 21);
 
-const ParserTables *Olm641Tables = &Olm641Tables_s;
+const ParserTables *Olm641Parser::Olm641Tables = &Olm641Tables_s;
 // Size of Olm641Tables_s: 88 bytes. Size of Olm641Tables:8 bytes
 
 

@@ -3,11 +3,11 @@
 
 #include <LRparser.h>
 
-const extern ParserTables *Olm641Tables;
-
 #include "olm641symbol.h"
 
 class Olm641Parser : public LRparser {
+public:
+  static const ParserTables *Olm641Tables;
 public:
   Olm641Parser(Scanner *lex=NULL) : LRparser(*Olm641Tables,lex) {}
 private:

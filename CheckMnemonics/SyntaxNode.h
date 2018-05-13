@@ -16,7 +16,6 @@ private:
   int            m_symbol;
   SourcePosition m_pos;
   Exception createException(const String &attribute) const;
-
 public:
   SyntaxNode(int symbol);
   SyntaxNode(const SourcePosition &pos, int symbol);

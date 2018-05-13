@@ -147,7 +147,7 @@ void ParserTree::dumpSyntaxNode(const SyntaxNode *node, FILE *f, int level, bool
     _ftprintf(f,_T("%*.*s (%d,%d) [%s] ")
            ,level,level,_T(" ")
            ,pos.getLineNumber(), pos.getColumn()
-           ,ResourceTables->getSymbolName(node->getSymbol())
+           ,ResourceParser::getTables().getSymbolName(node->getSymbol())
            );
     switch(node->getSymbol()) {
     case IDENTIFIER:
