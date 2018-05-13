@@ -1,7 +1,9 @@
 #pragma once
 
 #include "ExpressionNode.h"
-#include <Math/Expression/SNodeReduceDbgStack.h>
+#include "SNodeReduceDbgStack.h"
+
+namespace Expr {
 
 // Wrapper class til ExpressionNode
 class SNode {
@@ -315,3 +317,5 @@ SNode factorExp( SNode b         , SNode e);
 
 bool equal(const ExpressionNode *n1, const ExpressionNode *n2);
 bool equalMinus(SNode n1, SNode n2);
+
+}; // namespace Expr

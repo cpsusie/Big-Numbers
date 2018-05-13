@@ -2,6 +2,8 @@
 #include <Math/Expression/ParserTree.h>
 #include <Math/Expression/ExpressionFactor.h>
 
+namespace Expr {
+
 SNode SNode::_0()  const { return SNode( getTree()->getZero());     }
 SNode SNode::_1()  const { return SNode( getTree()->getOne());      }
 SNode SNode::_m1() const { return SNode( getTree()->getMinusOne()); }
@@ -94,7 +96,7 @@ SNode SNode::operator||(const SNode &n) const {
 }
 
 SNode SNode::operator!() const {
-  return m_node->getTree()->unaryExpr(SYMNOT, m_node);
+  return m_node->getTree()->unaryExpr(NOT, m_node);
 }
 
 bool SNode::operator==(const SNode &n) const {
@@ -310,3 +312,5 @@ SExprList::operator ExpressionNodeArray() {
   }
   return result;
 }
+
+}; // namespace Expr

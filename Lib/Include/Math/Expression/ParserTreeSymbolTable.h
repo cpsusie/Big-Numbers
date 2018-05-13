@@ -3,6 +3,8 @@
 #include <TreeMap.h>
 #include "ExpressionNode.h"
 
+namespace Expr {
+
 class NameTable : public StringIHashMap<int> {
 public:
   String toString() const;
@@ -82,3 +84,5 @@ public:
   String toString() const;
   StringArray getIndexedNameArray() const;
 };
+
+}; // namespace Expr

@@ -1,6 +1,8 @@
 #include "pch.h"
 #include <Math/Expression/ParserTree.h>
 
+namespace Expr {
+
 ExpressionNode *NodeOperators::getZero(ExpressionNode *n) { // static
   return n->getTree()->getZero();
 }
@@ -40,3 +42,5 @@ ExpressionNode *NodeOperators::binaryExpr(ExpressionInputSymbol symbol, Expressi
 ExpressionNode *NodeOperators::functionExpr(ExpressionInputSymbol symbol, ExpressionNode *n) { // static
   return n->getTree()->functionExpr(symbol, n);
 }
+
+}; // namespace Expr

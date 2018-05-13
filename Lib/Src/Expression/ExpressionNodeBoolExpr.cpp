@@ -1,11 +1,13 @@
 #include "pch.h"
 #include <Math/Expression/ParserTree.h>
 
+namespace Expr {
+
 bool ExpressionNodeBoolExpr::isConstant() const {
   switch(getSymbol()) {
-  case SYMNOT  :
+  case NOT     :
     return child(0)->isConstant();
-  case SYMAND  :
+  case AND     :
     { const bool lConst = left()->isConstant();
       const bool rConst = right()->isConstant();
       if(!lConst) {        // left not const => this is const if right is constant false.     (value = false)
@@ -16,7 +18,7 @@ bool ExpressionNodeBoolExpr::isConstant() const {
         return true;
       }
     }
-  case SYMOR   :
+  case OR      :
     { const bool lConst = left()->isConstant();
       const bool rConst = right()->isConstant();
       if(!lConst) {        // left not const => this is const if right is constant true.     (value = true)
@@ -40,9 +42,9 @@ bool ExpressionNodeBoolExpr::isConstant() const {
 
 bool ExpressionNodeBoolExpr::evaluateBool() const {
   switch(getSymbol()) {
-  case SYMNOT  : return !child(0)->evaluateBool();
-  case SYMAND  : return left()->evaluateBool() && right()->evaluateBool();
-  case SYMOR   : return left()->evaluateBool() || right()->evaluateBool();
+  case NOT     : return !child(0)->evaluateBool();
+  case AND     : return left()->evaluateBool() && right()->evaluateBool();
+  case OR      : return left()->evaluateBool() || right()->evaluateBool();
   case EQ      : return left()->evaluateReal() == right()->evaluateReal();
   case NE      : return left()->evaluateReal() != right()->evaluateReal();
   case LE      : return left()->evaluateReal() <= right()->evaluateReal();
@@ -53,3 +55,5 @@ bool ExpressionNodeBoolExpr::evaluateBool() const {
   }
   return true;
 }
+
+}; // namespace Expr

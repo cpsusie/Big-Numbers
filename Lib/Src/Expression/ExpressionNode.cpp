@@ -4,6 +4,8 @@
 #include <Math/Expression/ExpressionFactor.h>
 #include <Math/Expression/SumElement.h>
 
+namespace Expr {
+
 ExpressionNode::ExpressionNode(ParserTree *tree, ExpressionInputSymbol symbol) : m_tree(*tree), m_info(symbol) {
   m_tree.m_nodeTable.add(this);
 }
@@ -22,10 +24,11 @@ Expression *ExpressionNode::getExpr() {
 }
 
 /*static*/ String ExpressionNode::getSymbolName(ExpressionInputSymbol symbol) {
-  if((UINT)symbol >= ExpressionTables->getSymbolCount()) {
+  const ParserTables &tables = ExpressionParser::getTables();
+  if((UINT)symbol >= tables.getSymbolCount()) {
     return format(_T("Unknown symbol (=%u)"), symbol);
   }
-  return ExpressionTables->getSymbolName(symbol);
+  return tables.getSymbolName(symbol);
 }
 
 Real &ExpressionNode::getValueRef() const {
@@ -52,7 +55,7 @@ public:
   }
 };
 
-ExpressionSymbolSet::ExpressionSymbolSet() : BitSet(ExpressionTables->getTerminalCount()) {
+ExpressionSymbolSet::ExpressionSymbolSet() : BitSet(ParserTree::getTerminalCount()) {
 }
 
 class NodeCounter : public ExpressionNodeHandler {
@@ -270,9 +273,9 @@ bool ExpressionNode::needParentheses(const ExpressionNode *parent) const {
 
 int ExpressionNode::getPrecedence() const {
   switch(getSymbol()) {
-  case SYMOR  : return 1;
-  case SYMAND : return 2;
-  case SYMNOT : return 3;
+  case OR     : return 1;
+  case AND    : return 2;
+  case NOT    : return 3;
   case PLUS   :
   case MINUS  :
   case SUM    : return 4;
@@ -306,10 +309,11 @@ void SymbolOrderMap::init() {
   };
 
   int order = 1;
-  for(int i = 0; i < ARRAYSIZE(symbols); i++) {
+  for(UINT i = 0; i < ARRAYSIZE(symbols); i++) {
     put(symbols[i], order++);
   }
-  for(UINT i = 1; i < ExpressionTables->getTerminalCount(); i++) {
+  const UINT termCount = ParserTree::getTerminalCount();
+  for(UINT i = 1; i < termCount; i++) {
     if(get((ExpressionInputSymbol)i) == NULL) {
       put((ExpressionInputSymbol)i, order++);
     }
@@ -421,3 +425,4 @@ void ExpressionNode::throwUnknownSymbolException(const TCHAR *method) const {
                 ,method, getSymbolName().cstr());
 }
 
+}; // namespace Expr

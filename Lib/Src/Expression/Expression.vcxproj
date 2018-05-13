@@ -916,22 +916,22 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='TraceMemLDRelease|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">false</ExcludedFromBuild>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">c:\bin\lexgen -v -O.,..\..\Include\Math\Expression Expression.lex</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|Win32'">c:\bin\lexgen -v -O.,..\..\Include\Math\Expression Expression.lex</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='LDDebug|Win32'">c:\bin\lexgen -v -O.,..\..\Include\Math\Expression Expression.lex</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemLDDebug|Win32'">c:\bin\lexgen -v -O.,..\..\Include\Math\Expression Expression.lex</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='LDRelease|Win32'">c:\bin\lexgen -v -O.,..\..\Include\Math\Expression Expression.lex</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemLDRelease|Win32'">c:\bin\lexgen -v -O.,..\..\Include\Math\Expression Expression.lex</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">c:\bin\lexgen -v -O.,..\..\Include\Math\Expression Expression.lex</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|Win32'">c:\bin\lexgen -v -O.,..\..\Include\Math\Expression Expression.lex</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">c:\bin\lexgen -v -O.,..\..\Include\Math\Expression Expression.lex</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">c:\bin\lexgen -v -O.,..\..\Include\Math\Expression Expression.lex</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">c:\bin\lexgen -v -O.,..\..\Include\Math\Expression Expression.lex</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemLDDebug|x64'">c:\bin\lexgen -v -O.,..\..\Include\Math\Expression Expression.lex</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">c:\bin\lexgen -v -O.,..\..\Include\Math\Expression Expression.lex</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemLDRelease|x64'">c:\bin\lexgen -v -O.,..\..\Include\Math\Expression Expression.lex</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">c:\bin\lexgen -v -O.,..\..\Include\Math\Expression Expression.lex</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">c:\bin\lexgen -v -O.,..\..\Include\Math\Expression Expression.lex</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">c:\bin\lexgen -v -NExpr -O.,..\..\Include\Math\Expression Expression.lex</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|Win32'">c:\bin\lexgen -v -NExpr -O.,..\..\Include\Math\Expression Expression.lex</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='LDDebug|Win32'">c:\bin\lexgen -v -NExpr -O.,..\..\Include\Math\Expression Expression.lex</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemLDDebug|Win32'">c:\bin\lexgen -v -NExpr -O.,..\..\Include\Math\Expression Expression.lex</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='LDRelease|Win32'">c:\bin\lexgen -v -NExpr -O.,..\..\Include\Math\Expression Expression.lex</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemLDRelease|Win32'">c:\bin\lexgen -v -NExpr -O.,..\..\Include\Math\Expression Expression.lex</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">c:\bin\lexgen -v -NExpr -O.,..\..\Include\Math\Expression Expression.lex</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|Win32'">c:\bin\lexgen -v -NExpr -O.,..\..\Include\Math\Expression Expression.lex</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">c:\bin\lexgen -v -NExpr -O.,..\..\Include\Math\Expression Expression.lex</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">c:\bin\lexgen -v -NExpr -O.,..\..\Include\Math\Expression Expression.lex</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">c:\bin\lexgen -v -NExpr -O.,..\..\Include\Math\Expression Expression.lex</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemLDDebug|x64'">c:\bin\lexgen -v -NExpr -O.,..\..\Include\Math\Expression Expression.lex</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">c:\bin\lexgen -v -NExpr -O.,..\..\Include\Math\Expression Expression.lex</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemLDRelease|x64'">c:\bin\lexgen -v -NExpr -O.,..\..\Include\Math\Expression Expression.lex</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">c:\bin\lexgen -v -NExpr -O.,..\..\Include\Math\Expression Expression.lex</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">c:\bin\lexgen -v -NExpr -O.,..\..\Include\Math\Expression Expression.lex</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Generating Expression lexer </Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|Win32'">Generating Expression lexer </Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='LDDebug|Win32'">Generating Expression lexer </Message>
@@ -999,22 +999,22 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='TraceMemLDRelease|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">false</ExcludedFromBuild>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">parsergen -O.,..\..\include\math\Expression  Expression.y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|Win32'">parsergen -O.,..\..\include\math\Expression  Expression.y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='LDDebug|Win32'">parsergen -O.,..\..\include\math\Expression  Expression.y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemLDDebug|Win32'">parsergen -O.,..\..\include\math\Expression  Expression.y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='LDRelease|Win32'">parsergen -O.,..\..\include\math\Expression  Expression.y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemLDRelease|Win32'">parsergen -O.,..\..\include\math\Expression  Expression.y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">parsergen -O.,..\..\include\math\Expression  Expression.y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|Win32'">parsergen -O.,..\..\include\math\Expression  Expression.y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">parsergen -O.,..\..\include\math\Expression  Expression.y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">parsergen -O.,..\..\include\math\Expression  Expression.y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">parsergen -O.,..\..\include\math\Expression  Expression.y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemLDDebug|x64'">parsergen -O.,..\..\include\math\Expression  Expression.y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">parsergen -O.,..\..\include\math\Expression  Expression.y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemLDRelease|x64'">parsergen -O.,..\..\include\math\Expression  Expression.y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">parsergen -O.,..\..\include\math\Expression  Expression.y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">parsergen -O.,..\..\include\math\Expression  Expression.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">parsergen -NExpr -O.,..\..\include\math\Expression  Expression.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|Win32'">parsergen -NExpr -O.,..\..\include\math\Expression  Expression.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='LDDebug|Win32'">parsergen -NExpr -O.,..\..\include\math\Expression  Expression.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemLDDebug|Win32'">parsergen -NExpr -O.,..\..\include\math\Expression  Expression.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='LDRelease|Win32'">parsergen -NExpr -O.,..\..\include\math\Expression  Expression.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemLDRelease|Win32'">parsergen -NExpr -O.,..\..\include\math\Expression  Expression.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">parsergen -NExpr -O.,..\..\include\math\Expression  Expression.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|Win32'">parsergen -NExpr -O.,..\..\include\math\Expression  Expression.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">parsergen -NExpr -O.,..\..\include\math\Expression  Expression.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">parsergen -NExpr -O.,..\..\include\math\Expression  Expression.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">parsergen -NExpr -O.,..\..\include\math\Expression  Expression.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemLDDebug|x64'">parsergen -NExpr -O.,..\..\include\math\Expression  Expression.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">parsergen -NExpr -O.,..\..\include\math\Expression  Expression.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemLDRelease|x64'">parsergen -NExpr -O.,..\..\include\math\Expression  Expression.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">parsergen -NExpr -O.,..\..\include\math\Expression  Expression.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">parsergen -NExpr -O.,..\..\include\math\Expression  Expression.y</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Analyzing Expression Grammar</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|Win32'">Analyzing Expression Grammar</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='LDDebug|Win32'">Analyzing Expression Grammar</Message>

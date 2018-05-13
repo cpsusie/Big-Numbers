@@ -4,6 +4,8 @@
 #include <Opcode.h>
 #include "FunctionCall.h"
 
+namespace Expr {
+
 typedef int CodeLabel;
 
 inline String labelToString(CodeLabel label) {
@@ -247,11 +249,16 @@ private:
   const StringArray              m_nameCommentArray;   // For comments
   const IndexRegister           &m_tableRefRegister;
 
+  inline bool isTracing() const {
+#ifdef _DEBUG
+    return isOpen() && isatty(m_f) && IsDebuggerPresent();
+#else
+    return false;
+#endif // _DEBUG
+  }
   inline void addLine(ListLine *l) {
     TRACE_NEW(l); m_lineArray.add(l);
-#ifdef _DEBUG
-    if(isOpen() && isatty(m_f)) { _ftprintf(m_f, _T("%s\n"), l->toString().cstr()); fflush(m_f); }
-#endif // _DEBUG
+    if(isTracing()) { _ftprintf(m_f, _T("%s\n"), l->toString().cstr()); fflush(m_f); }
   }
   const TCHAR *findArgComment(const InstructionOperand &arg) const;
 public:
@@ -300,3 +307,5 @@ public:
   void vprintf(const TCHAR *format, va_list argptr) const;
   void flush();
 };
+
+}; // namespace Expr

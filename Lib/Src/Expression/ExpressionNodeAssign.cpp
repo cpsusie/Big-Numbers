@@ -1,6 +1,8 @@
 #include "pch.h"
 #include <Math/Expression/ParserTree.h>
 
+namespace Expr {
+
 Real &ExpressionNode::doAssignment() const {
   switch(getSymbol()) {
   case ASSIGN:
@@ -19,3 +21,5 @@ Real &ExpressionNode::doAssignment() const {
   static Real dummy;
   return dummy;
 }
+
+}; // namespace Expr

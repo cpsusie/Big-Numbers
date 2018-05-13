@@ -1,7 +1,9 @@
 #pragma once
 
-#include "CodeGeneration.h"
 #include <Math/Expression/ParserTree.h>
+#include "CodeGeneration.h"
+
+namespace Expr {
 
 class CodeGenerator {
 private:
@@ -98,3 +100,5 @@ public:
     return m_codeArray;
   }
 };
+
+}; // namespace Expr

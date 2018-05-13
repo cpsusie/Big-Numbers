@@ -3,6 +3,8 @@
 #include "ExpressionParser.h"
 #include "MachineCode.h"
 
+namespace Expr {
+
 class Expression : public ParserTree {
 private:
   bool                       m_machineCode;
@@ -105,7 +107,7 @@ public:
   void clear();
 
   bool equalMinus(Expression &e) {
-    return ::equalMinus(getRoot(), e.getRoot());
+    return Expr::equalMinus(getRoot(), e.getRoot());
   }
 
   void setTrigonometricMode(TrigonometricMode mode);
@@ -151,3 +153,5 @@ public:
     return helpListSize;
   }
 };
+
+}; // namespace Expr

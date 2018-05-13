@@ -3,7 +3,7 @@
 #include <Math/Expression/SumElement.h>
 #include <Math/Expression/ExpressionFactor.h>
 
-using namespace std;
+namespace Expr {
 
 ParserTree::ParserTree(TrigonometricMode mode) {
   init(mode, PS_EMPTY,0);
@@ -391,9 +391,9 @@ ExpressionNode *ParserTree::vFetchNode(const SourcePosition &pos, ExpressionInpu
   case LT    :
   case GE    :
   case GT    :
-  case SYMAND:
-  case SYMOR :
-  case SYMNOT: n = new ExpressionNodeBoolExprWithPos( this, pos, symbol, argptr); break;
+  case AND:
+  case OR    :
+  case NOT   : n = new ExpressionNodeBoolExprWithPos( this, pos, symbol, argptr); break;
   default    : n = new ExpressionNodeTreeWithPos(     this, pos, symbol, argptr); break;
   }
   TRACE_NEW(n);
@@ -427,3 +427,4 @@ String ParserTree::treeToString() const {
   return result;
 }
 
+}; // namespace Expr

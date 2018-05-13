@@ -2,6 +2,8 @@
 #include <Math/Expression/ParserTree.h>
 #include <Math/Expression/SumElement.h>
 
+namespace Expr {
+
 class SetMark : public ExpressionNodeHandler {
 private:
   const bool m_setMark;
@@ -83,3 +85,5 @@ void ParserTree::deleteUnmarked() {
   }
   tmp1.clear();
 }
+
+}; // namespace Expr

@@ -1,6 +1,8 @@
 #include "pch.h"
 #include <Math/Expression/ParserTree.h>
 
+namespace Expr {
+
 #define ddx(n) n.D(name)
 
 SNode SNode::D(const String &name) const {
@@ -53,7 +55,7 @@ SNode SNode::D(const String &name) const {
     return ddx(pow(left(), _2()));
 
   case SQRT      :        // sqrt(u(x)) = rootS(u(x),2)
-    return ddx(::root(left(), _2()));
+    return ddx(Expr::root(left(), _2()));
 
   case ROOT      :
     { const SNode l = left(), r = right();
@@ -254,3 +256,5 @@ SNode SNode::DStmtList(const String &name) const {
   result.add(ddx(alist.last()));
   return stmtList(result);
 }
+
+}; // namespace Expr

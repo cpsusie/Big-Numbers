@@ -3,6 +3,8 @@
 #include <Math/Expression/SumElement.h>
 #include <Math/Expression/ExpressionFactor.h>
 
+namespace Expr {
+
 bool ExpressionNode::reducesToRationalConstant(Rational *r) const {
   if(!isConstant()) {
     return false;
@@ -77,3 +79,5 @@ bool ExpressionNode::reducesToRational(Rational *r) const {
     return Rational::isRational(evaluateReal(), r);
   }
 }
+
+}; // namespace Expr

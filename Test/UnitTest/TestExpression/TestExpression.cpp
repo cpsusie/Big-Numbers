@@ -18,6 +18,8 @@ static Real relativeDiff(const Real &x, const Real &x0) {
 
 #define EPS 1e-8
 
+using namespace Expr;
+
 namespace TestExpression {
 
 #include <UnitTestTraits.h>

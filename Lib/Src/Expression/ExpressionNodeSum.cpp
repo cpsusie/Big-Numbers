@@ -2,6 +2,8 @@
 #include <Math/Expression/ParserTree.h>
 #include <Math/Expression/SumElement.h>
 
+namespace Expr {
+
 static int compareSumElement(SumElement * const &e1, SumElement * const &e2) {
   return e1->compare(e2);
 }
@@ -123,3 +125,5 @@ String ExpressionNodeSum::toString() const {
   }
   return result;
 }
+
+}; // namespace Expr

@@ -3,6 +3,8 @@
 #include <Math/Expression/ExpressionFactor.h>
 #include <Math/Expression/SumElement.h>
 
+namespace Expr {
+
 // ---------------------------------------- Operators for StandardForm ----------------------------------------------------
 // Not using SUM and PRODUCT nodes
 
@@ -493,3 +495,5 @@ ExpressionNode *ParserTree::toStandardForm(ExpressionNode *n) {
   m_ops = NodeOperators::s_stdForm;
   return StdNode(n).convert();
 }
+
+}; // namespace Expr

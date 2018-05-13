@@ -2,6 +2,8 @@
 #include <string.h>
 #include <Math/Expression/Expression.h>
 
+namespace Expr {
+
 ExpressionDescription::ExpressionDescription(const TCHAR *syntax, const TCHAR *description) {
   m_syntax      = syntax;
   m_description = description;
@@ -87,3 +89,5 @@ const ExpressionDescription ExpressionDescription::expressionHelpList[] = {
 };
 
 const int ExpressionDescription::helpListSize = ARRAYSIZE(expressionHelpList);
+
+}; // namespace Expr

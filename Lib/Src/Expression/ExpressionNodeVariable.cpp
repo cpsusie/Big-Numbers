@@ -1,6 +1,8 @@
 #include "pch.h"
 #include <Math/Expression/ParserTree.h>
 
+namespace Expr {
+
 ExpressionNodeVariable::ExpressionNodeVariable(ParserTree *tree, const String &name) : ExpressionNode(tree, NAME) {
   m_name = name;
   tree->m_symbolTable.allocateSymbol(this, false, false, false);
@@ -33,3 +35,5 @@ void ExpressionNodeVariable::dumpNode(String &s, int level) const {
     s += _T("\n");
   }
 }
+
+}; // namespace Expr

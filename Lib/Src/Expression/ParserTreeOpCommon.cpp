@@ -3,17 +3,19 @@
 #include <Math/Expression/ExpressionFactor.h>
 #include <Math/Expression/SumElement.h>
 
+namespace Expr {
+
 // ------------------------------------ Operators common to Standard/Canonical form --------------------------------------
 ExpressionNode *ParserTree::and(ExpressionNode *n1, ExpressionNode *n2) {
   if(n1->isTrue()) return n2; else if(n1->isFalse()) return n1;
   if(n2->isTrue()) return n1; else if(n2->isFalse()) return n2;
-  return binaryExpr(SYMAND, n1, n2);
+  return binaryExpr(AND, n1, n2);
 }
 
 ExpressionNode *ParserTree::or(ExpressionNode *n1, ExpressionNode *n2) {
   if(n1->isTrue()) return n1; else if(n1->isFalse()) return n2;
   if(n2->isTrue()) return n2; else if(n2->isFalse()) return n1;
-  return binaryExpr(SYMOR, n1, n2);
+  return binaryExpr(OR, n1, n2);
 }
 
 ExpressionNode *ParserTree::indexedSum(ExpressionNode *assign, ExpressionNode *endExpr, ExpressionNode *expr) {
@@ -198,3 +200,5 @@ ExpressionNode *ParserTree::expandPower(ExpressionNode *base, const Rational &ex
   }
   return result;
 }
+
+}; // namespace Expr

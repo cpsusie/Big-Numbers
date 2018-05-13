@@ -6,8 +6,10 @@
 #include <Math/Expression/ExpressionParser.h>
 #include <Math/Expression/SNodeReduceDbgStack.h>
 
+namespace Expr {
+
 UINT ParserTree::getTerminalCount() { // static
-  return ExpressionTables->getTerminalCount();
+  return ExpressionParser::getTables().getTerminalCount();
 };
 
 class MainReducer : public ParserTreeTransformer {
@@ -136,3 +138,5 @@ void ParserTree::iterateTransformation(ParserTreeTransformer &transformer) {
     *this = bestReduction;
   }
 }
+
+}; // namespace Expr

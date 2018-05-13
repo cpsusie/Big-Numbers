@@ -2,6 +2,8 @@
 
 #include <Math/Number.h>
 
+namespace Expr {
+
 class ParserTree;
 class ExpressionNode;
 class AddentArray;
@@ -47,3 +49,5 @@ public:
 
   String toString() const;
 };
+
+}; // namespace Expr

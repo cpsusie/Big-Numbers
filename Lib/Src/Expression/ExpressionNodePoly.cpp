@@ -1,6 +1,8 @@
 #include "pch.h"
 #include <Math/Expression/ParserTree.h>
 
+namespace Expr {
+
 ExpressionNodePoly::ExpressionNodePoly(ParserTree *tree, va_list argptr) : ExpressionNode(tree, POLY) {
   m_coefArray = getExpressionList(va_arg(argptr, ExpressionNode*));
   m_arg       = va_arg(argptr, ExpressionNode*);
@@ -112,3 +114,5 @@ void ExpressionNodePoly::dumpNode(String &s, int level) const {
 String ExpressionNodePoly::toString() const {
   return _T("poly[") + m_coefArray.toString() + _T("](") + m_arg->toString() + _T(")");
 }
+
+}; // namespace Expr

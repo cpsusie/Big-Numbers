@@ -3,6 +3,8 @@
 #include <Math/Expression/SumElement.h>
 #include <Math/Expression/ExpressionFactor.h>
 
+namespace Expr {
+
 // Should only be called in Canonical treeform
 bool equal(const ExpressionNode *n1, const ExpressionNode *n2) {
   DEFINEMETHODNAME;
@@ -190,3 +192,5 @@ bool equalMinus(const SNode n1, const SNode n2) { // static
     return false;
   }
 }
+
+}; // namespace Expr

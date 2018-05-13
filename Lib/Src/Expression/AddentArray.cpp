@@ -2,6 +2,8 @@
 #include <Math/Expression/ExpressionNode.h>
 #include <Math/Expression/SumElement.h>
 
+namespace Expr {
+
 void AddentArray::add(ExpressionNode *n, bool positive) {
   switch(n->getSymbol()) {
   case NUMBER:
@@ -41,3 +43,5 @@ String AddentArray::toString() const {
   }
   return result;
 }
+
+}; // namespace Expr

@@ -5,6 +5,8 @@
 
 #ifdef __NEVER__
 
+namespace Expr {
+
 /* -------------------------------------------- replaceRationalPowers -----------------------------------------------------------*/
 
 const ExpressionNode *Expression::replaceRationalPowers(const ExpressionNode *n) const {
@@ -178,5 +180,7 @@ const ExpressionNode *Expression::substituteName(const ExpressionNode *n, const 
     }
   }
 }
+
+}; // namespace Expr
 
 #endif

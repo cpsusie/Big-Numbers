@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "CodeGeneration.h"
 
+namespace Expr {
+
 #ifdef IS64BIT
 #define LOCALSTACKSPACE   72
 #define RESERVESTACKSPACE 40
@@ -28,43 +30,43 @@ CodeGeneration::CodeGeneration(MachineCode *code, const CompactRealArray &valueT
   }
 }
 
-UINT CodeGeneration::insertIns(UINT pos, const InstructionBase &ins) {
+InstructionInfo CodeGeneration::insertIns(UINT pos, const InstructionBase &ins) {
   assert(pos <= size());
-  const UINT added = ins.size();
+  const UINT n = ins.size();
   if(pos < size()) {
-    insertZeroes(pos,added);
-    m_code.setBytes(pos, ins.getBytes(), added);
+    insertZeroes(pos,n);
+    m_code.setBytes(pos, ins.getBytes(), n);
   } else {
-    m_code.append(ins.getBytes(), added);
+    m_code.append(ins.getBytes(), n);
   }
-  return added;
+  return InstructionInfo(pos,ins);
 }
 
-UINT CodeGeneration::insert(UINT pos, const Opcode0Arg &opcode) {
-  const UINT added = insertIns(pos, opcode);
+InstructionInfo CodeGeneration::insert(UINT pos, const Opcode0Arg &opcode) {
+  const InstructionInfo info = insertIns(pos, opcode);
   if(listEnabled()) m_listFile.add(pos,opcode);
-  return added;
+  return info;
 }
 
-UINT CodeGeneration::insert(UINT pos, const OpcodeBase &opcode, const InstructionOperand &arg) {
-  const UINT added = insertIns(pos,opcode(arg));
+InstructionInfo CodeGeneration::insert(UINT pos, const OpcodeBase &opcode, const InstructionOperand &arg) {
+  const InstructionInfo info = insertIns(pos,opcode(arg));
   if(listEnabled()) m_listFile.add(pos,opcode,arg);
-  return added;
+  return info;
 }
 
-UINT CodeGeneration::insert(UINT pos, const OpcodeBase &opcode, const InstructionOperand &arg1, const InstructionOperand &arg2) {
-  const UINT added = insertIns(pos, opcode(arg1,arg2));
+InstructionInfo CodeGeneration::insert(UINT pos, const OpcodeBase &opcode, const InstructionOperand &arg1, const InstructionOperand &arg2) {
+  const InstructionInfo info = insertIns(pos, opcode(arg1,arg2));
   if(listEnabled()) m_listFile.add(pos, opcode,arg1,arg2);
-  return added;
+  return info;
 }
 
-UINT CodeGeneration::insert(UINT pos, const StringPrefix &prefix, const StringInstruction &strins) {
-  const UINT added = insertIns(pos, prefix(strins));
+InstructionInfo CodeGeneration::insert(UINT pos, const StringPrefix &prefix, const StringInstruction &strins) {
+  const InstructionInfo info = insertIns(pos, prefix(strins));
   if(listEnabled()) m_listFile.add(pos, prefix,strins);
-  return added;
+  return info;
 }
 
-UINT CodeGeneration::insertLEA(UINT pos, const IndexRegister &dst, const MemoryOperand &mem) {
+InstructionInfo CodeGeneration::insertLEA(UINT pos, const IndexRegister &dst, const MemoryOperand &mem) {
   const MemoryRef &mr = mem.getMemoryReference();
   if(mr.hasOffset()) {
     return insert(pos, LEA, dst, mem);
@@ -248,9 +250,9 @@ void CodeGeneration::linkFunctionCalls() {
     m_code.appendZeroes(m_uniqueFunctionCall.size() * FUNCENTRYSIZE); // for functionTable
 // At entry in x64-mode, RCX contains address of the first instruction
     UINT pos = 0;
-    pos += insert(   pos,PUSH,RBX);
-    pos += insertLEA(pos,RBX ,QWORDPtr(RCX + m_functionTableStart));
-    pos += insert(   pos,SUB ,STACK_REG,(LOCALSTACKSPACE + RESERVESTACKSPACE));
+    pos += insert(   pos,PUSH,RBX).size();
+    pos += insertLEA(pos,RBX ,QWORDPtr(RCX + m_functionTableStart)).size();
+    pos += insert(   pos,SUB ,STACK_REG,(LOCALSTACKSPACE + RESERVESTACKSPACE)).size();
 
     assert(pos <= fillers);
 
@@ -290,7 +292,7 @@ UINT CodeGeneration::emitCall(const FunctionCall &fc) {
 #endif // IS64BIT
 
   const bool old = enableListing(false);
-  const UINT pos = emit(opcodeCALL,arg1);
+  const UINT pos = emit(opcodeCALL,arg1).getPos();
   enableListing(old);
   if(listEnabled()) m_listFile.add(pos,opcodeCALL, arg1, fc);
   m_callTable.add(FunctionCallInfo(fc, pos, (BYTE)(size()-pos)));
@@ -406,3 +408,20 @@ String FunctionCallInfo::toString() const {
                 ,m_instructionSize
                 );
 }
+
+String FPUSlot::toString() const {
+  if(isEmpty()) return EMPTYSTRING;
+  if(isMixed()) return _T("mixed");
+  return format(_T("v[%2d]"), m_valueIndex);
+}
+
+String FPUContent::toString() const {
+  const UINT h = getHeight();
+  String result;
+  for(UINT i = 0; i < h; i++) {
+    result += format(_T("ST(%u):%-6s"),i,ST(i).toString().cstr());
+  }
+  return result;
+}
+
+}; // namespace Expr

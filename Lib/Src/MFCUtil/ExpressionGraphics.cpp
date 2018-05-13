@@ -6,6 +6,8 @@
 
 //#define SHOW_LINES
 
+namespace Expr {
+
 typedef CompactKeyType<UINT> FontSizeKey;
 
 #define CUT_LEFT   0x01
@@ -91,9 +93,9 @@ SymbolStringMap::SymbolStringMap() {
   putString(GE             , false, _T("\xb3" ));
   putString(LT             , true , _T("<"    ));
   putString(LE             , false, _T("\xa3" ));
-  putString(SYMAND         , false, _T("\xd9" ));
-  putString(SYMOR          , false, _T("\xda" ));
-  putString(SYMNOT         , true , _T("\xac" ));
+  putString(AND            , false, _T("\xd9" ));
+  putString(OR             , false, _T("\xda" ));
+  putString(NOT            , true , _T("\xac" ));
   putString(INDEXEDSUM     , false, _T("\xe5" ));
   putString(INDEXEDPRODUCT , false, _T("\xd5" ));
   putString(GAMMA          , false, _T("\x47" ));
@@ -462,14 +464,14 @@ AlignedImage *ExpressionPainter::getImage1(const ExpressionNode *n, int fontSize
   case SQRT              :
     return getRootImage(m_expression.binaryExpr(ROOT, (ExpressionNode*)n->left(), m_expression.getTwo()), fontSize, rect);
 
-  case SYMNOT            :
+  case NOT               :
     return getUnaryOpImage(n, fontSize, rect);
 
   case PLUS              :
   case PROD              :
   case MOD               :
-  case SYMAND            :
-  case SYMOR             :
+  case AND               :
+  case OR                :
   case EQ                :
   case NE                :
   case GE                :
@@ -651,7 +653,7 @@ AlignedImage *ExpressionPainter::getQuotImage(const ExpressionNode *n, int fontS
 
 AlignedImage *ExpressionPainter::getQuotImage(const AlignedImage *p, const AlignedImage *q, ExpressionRectangle &rect) {
   const int totalHeight = p->getHeight() + q->getHeight();
-  const int lineWidth   = max((int)sqrt(totalHeight / 20), 1);
+  const int lineWidth   = max((int)::sqrt(totalHeight / 20), 1);
 
   const CSize   size(max(p->getWidth(), q->getWidth()), lineWidth);
   AlignedImage *lineImage = createImage(size);
@@ -1380,3 +1382,5 @@ ExpressionImage expressionToImage(PixRectDevice &device, const Expression &expr,
 //  result.getRectangleTree().dump();
   return result;
 }
+
+}; // amespace Expr

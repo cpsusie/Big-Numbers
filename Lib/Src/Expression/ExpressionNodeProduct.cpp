@@ -2,6 +2,8 @@
 #include <Math/Expression/ParserTree.h>
 #include <Math/Expression/ExpressionFactor.h>
 
+namespace Expr {
+
 static int compareFactors(ExpressionFactor * const &f1, ExpressionFactor * const &f2) {
   return f1->compare(f2);
 }
@@ -139,3 +141,4 @@ String ExpressionNodeProduct::toString() const {
 */
 }
 
+}; // namespace Expr

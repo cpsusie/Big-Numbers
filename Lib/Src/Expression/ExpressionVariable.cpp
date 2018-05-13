@@ -1,6 +1,8 @@
 #include "pch.h"
 #include <Math/Expression/ExpressionNode.h>
 
+namespace Expr {
+
 ExpressionVariable::ExpressionVariable(const String &name, bool isConstant, bool isDefined, bool isLoopVar)
 : m_name(name)
 {
@@ -20,3 +22,5 @@ String ExpressionVariable::toString() const {
               , (m_loopVar  ? _T("loop var") : EMPTYSTRING)
               , (m_defined  ? _T("defined" ) : _T("undefined")));
 }
+
+}; // namespace Expr

@@ -5,6 +5,8 @@
 
 #include <LRParser.h>
 
+$PUSHNAMESPACE$
+
 class ExpressionLex : public Scanner {
 private:
   LRparser *m_parser; // if set, redirect errors to parsers verror-routine
@@ -21,6 +23,8 @@ public:
   static ExpressionInputSymbol nameOrKeyWord(const _TUCHAR *lexeme);
 };
 
+$POPNAMESPACE$
+
 %}
 
 %{
@@ -28,9 +32,11 @@ public:
  /* This part goes to the first part of the cpp file */
 
 #include "pch.h"
-#include <CompactHashMap.h>
 #include <Math/Expression/ExpressionSymbol.h>
 #include <Math/Expression/ExpressionLex.h>
+#include <CompactHashMap.h>
+
+$PUSHNAMESPACE$
 
 static ExpressionInputSymbol nameOrKeyWord(const _TUCHAR *lexeme);
 
@@ -81,9 +87,9 @@ white   [\x00-\x09\x0b\s\r\n]  /* White space: all control chars        */
 ")"		    return RPAR;
 "["		    return LB;
 "]"		    return RB;
-"&&"	    return SYMAND;
-"||"	    return SYMOR;
-"!"		    return SYMNOT;
+"&&"	    return AND;
+"||"	    return OR;
+"!"		    return NOT;
 "=="	    return EQ;
 "<"       return LT;
 "<="      return LE;
@@ -112,7 +118,7 @@ static const KeyWord keywordtable[] = {
 ,_T("ACOSH")     ,ACOSH
 ,_T("ACOT")      ,ACOT
 ,_T("ACSC")      ,ACSC
-,_T("AND")       ,SYMAND
+,_T("AND")       ,AND
 ,_T("ASEC")      ,ASEC
 ,_T("ASIN")      ,ASIN
 ,_T("ASINH")     ,ASINH
@@ -149,8 +155,8 @@ static const KeyWord keywordtable[] = {
 ,_T("NORMRAND")  ,NORMRAND
 ,_T("NORMRANDOM"),NORMRAND
 ,_T("NORMRND")   ,NORMRAND
-,_T("NOT")       ,SYMNOT
-,_T("OR")        ,SYMOR
+,_T("NOT")       ,NOT
+,_T("OR")        ,OR
 ,_T("POLY")      ,POLY
 ,_T("PROBIT")    ,PROBIT
 ,_T("PRODUCT")   ,INDEXEDPRODUCT
@@ -229,3 +235,5 @@ void ExpressionLex::findBestHashMapSize() { // static
 static CheckKeywordMap checkKeywordMap;
 
 #endif
+
+$POPNAMESPACE$

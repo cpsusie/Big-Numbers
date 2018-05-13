@@ -5,6 +5,8 @@
 #include <MFCUtil/Resource.h>
 #include <MFCUtil/ExprDialog.h>
 
+using namespace Expr;
+
 void CExprDialog::createExprFont() {
   if(m_exprFont.m_hObject) return;
   CFont *dlgFont = GetFont();

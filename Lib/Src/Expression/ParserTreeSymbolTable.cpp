@@ -3,6 +3,8 @@
 #include <Math/Expression/ExpressionFactor.h>
 #include <Math/Expression/SumElement.h>
 
+namespace Expr {
+
 class AllocateNumbers : public ExpressionNodeHandler {
 private:
   ParserTreeSymbolTable &m_table;
@@ -375,3 +377,5 @@ StringArray ParserTreeSymbolTable::getIndexedNameArray() const {
   }
   return a;
 }
+
+}; // namespace Expr

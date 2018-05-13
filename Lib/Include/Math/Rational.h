@@ -191,7 +191,7 @@ template<class T> bool isEven(T x) {
 }
 
 inline bool isSymmetricExponent(const Rational &r) {
-  return ::isEven(r.getNumerator()) || ::isEven(r.getDenominator());
+  return isEven(r.getNumerator()) || ::isEven(r.getDenominator());
 }
 
 inline bool isAsymmetricExponent(const Rational &r) {

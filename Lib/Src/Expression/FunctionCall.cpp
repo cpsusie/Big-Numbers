@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "FunctionCall.h"
 
+namespace Expr {
+
 void ValueAddressCalculation::setValueCount(size_t valueCount) {
   if(valueCount == 0) {
     m_esiOffset = 0;
@@ -11,3 +13,5 @@ void ValueAddressCalculation::setValueCount(size_t valueCount) {
     m_esi       = (BYTE*)m_valueTable.getBuffer() + m_esiOffset;
   }
 }
+
+}; // namespace Expr

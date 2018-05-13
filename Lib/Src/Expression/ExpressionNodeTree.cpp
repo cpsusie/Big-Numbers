@@ -1,6 +1,8 @@
 #include "pch.h"
 #include <Math/Expression/Expression.h>
 
+namespace Expr {
+
 ExpressionNodeTree::ExpressionNodeTree(ParserTree *tree, ExpressionInputSymbol symbol, va_list argptr) : ExpressionNode(tree, symbol) {
   initChildArray(argptr);
 }
@@ -222,9 +224,9 @@ String ExpressionNodeTree::toString() const {
   case QUOT          : return CHILDPARSTR(0) + _T("/"    ) + CHILDPARSTR(1);
   case MOD           : return CHILDPARSTR(0) + _T("%"    ) + CHILDPARSTR(1);
   case POW           : return CHILDPARSTR(0) + _T("^"    ) + CHILDPARSTR(1);
-  case SYMAND        : return CHILDPARSTR(0) + _T(" and ") + CHILDPARSTR(1);
-  case SYMOR         : return CHILDPARSTR(0) + _T(" or " ) + CHILDPARSTR(1);
-  case SYMNOT        : return _T("not "      ) + CHILDPARSTR(0);
+  case AND           : return CHILDPARSTR(0) + _T(" and ") + CHILDPARSTR(1);
+  case OR            : return CHILDPARSTR(0) + _T(" or " ) + CHILDPARSTR(1);
+  case NOT           : return _T("not "      ) + CHILDPARSTR(0);
   case ROOT          : return _T("root("     ) + CHILDSTR(0) + COMMASTR + CHILDSTR(1) + RPSTR;
   case BINOMIAL      : return _T("binomial(" ) + CHILDSTR(0) + COMMASTR + CHILDSTR(1) + RPSTR;
   case CHI2DENS      : return _T("chi2dens(" ) + CHILDSTR(0) + COMMASTR + CHILDSTR(1) + RPSTR;
@@ -285,3 +287,5 @@ String ExpressionNodeTree::toString() const {
   default            : return _T("Unknown symbol:") + getSymbolName();
   }
 }
+
+}; // namespace Expr

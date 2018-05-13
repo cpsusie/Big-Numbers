@@ -74,9 +74,9 @@ State 0:
  ( 74)  boolExpr        -> .expr LT expr
  ( 75)  boolExpr        -> .expr GE expr
  ( 76)  boolExpr        -> .expr GT expr
- ( 77)  boolExpr        -> .boolExpr SYMAND boolExpr
- ( 78)  boolExpr        -> .boolExpr SYMOR boolExpr
- ( 79)  boolExpr        -> .SYMNOT boolExpr
+ ( 77)  boolExpr        -> .boolExpr AND boolExpr
+ ( 78)  boolExpr        -> .boolExpr OR boolExpr
+ ( 79)  boolExpr        -> .NOT boolExpr
  ( 80)  boolExpr        -> .LPAR boolExpr RPAR
  ( 81)  function2       -> .MAX
  ( 82)  function2       -> .MIN
@@ -97,7 +97,7 @@ State 0:
    shift to 21 on IIF
    shift to 22 on INDEXEDSUM
    shift to 23 on INDEXEDPRODUCT
-   shift to 62 on SYMNOT
+   shift to 62 on NOT
    shift to 15 on PLUS
    shift to 14 on MINUS
    shift to 26 on ACOS
@@ -251,9 +251,9 @@ State 3:
  ( 74)  boolExpr        -> .expr LT expr
  ( 75)  boolExpr        -> .expr GE expr
  ( 76)  boolExpr        -> .expr GT expr
- ( 77)  boolExpr        -> .boolExpr SYMAND boolExpr
- ( 78)  boolExpr        -> .boolExpr SYMOR boolExpr
- ( 79)  boolExpr        -> .SYMNOT boolExpr
+ ( 77)  boolExpr        -> .boolExpr AND boolExpr
+ ( 78)  boolExpr        -> .boolExpr OR boolExpr
+ ( 79)  boolExpr        -> .NOT boolExpr
  ( 80)  boolExpr        -> .LPAR boolExpr RPAR
  ( 81)  function2       -> .MAX
  ( 82)  function2       -> .MIN
@@ -274,7 +274,7 @@ State 3:
    shift to 21 on IIF
    shift to 22 on INDEXEDSUM
    shift to 23 on INDEXEDPRODUCT
-   shift to 62 on SYMNOT
+   shift to 62 on NOT
    shift to 15 on PLUS
    shift to 14 on MINUS
    shift to 26 on ACOS
@@ -374,12 +374,12 @@ State 4:
 
 State 5:
  (  4)K final_expr      -> boolExpr .
- ( 77)K boolExpr        -> boolExpr .SYMAND boolExpr
- ( 78)K boolExpr        -> boolExpr .SYMOR boolExpr
+ ( 77)K boolExpr        -> boolExpr .AND boolExpr
+ ( 78)K boolExpr        -> boolExpr .OR boolExpr
 
    reduce by 4 on EOI
-   shift to 91 on SYMOR
-   shift to 90 on SYMAND
+   shift to 91 on OR
+   shift to 90 on AND
 
 State 6:
  (  5)K assignStmtList  -> assignStmt .
@@ -389,7 +389,7 @@ State 6:
    reduce by 5 on IIF
    reduce by 5 on INDEXEDSUM
    reduce by 5 on INDEXEDPRODUCT
-   reduce by 5 on SYMNOT
+   reduce by 5 on NOT
    reduce by 5 on PLUS
    reduce by 5 on MINUS
    reduce by 5 on ACOS
@@ -475,8 +475,8 @@ State 9:
    reduce by 15 on SEMI
    reduce by 15 on COMMA
    reduce by 15 on TO
-   reduce by 15 on SYMOR
-   reduce by 15 on SYMAND
+   reduce by 15 on OR
+   reduce by 15 on AND
    reduce by 15 on EQ
    reduce by 15 on GE
    reduce by 15 on GT
@@ -499,8 +499,8 @@ State 10:
    reduce by 16 on SEMI
    reduce by 16 on COMMA
    reduce by 16 on TO
-   reduce by 16 on SYMOR
-   reduce by 16 on SYMAND
+   reduce by 16 on OR
+   reduce by 16 on AND
    reduce by 16 on EQ
    reduce by 16 on GE
    reduce by 16 on GT
@@ -595,9 +595,9 @@ State 13:
  ( 74)  boolExpr        -> .expr LT expr
  ( 75)  boolExpr        -> .expr GE expr
  ( 76)  boolExpr        -> .expr GT expr
- ( 77)  boolExpr        -> .boolExpr SYMAND boolExpr
- ( 78)  boolExpr        -> .boolExpr SYMOR boolExpr
- ( 79)  boolExpr        -> .SYMNOT boolExpr
+ ( 77)  boolExpr        -> .boolExpr AND boolExpr
+ ( 78)  boolExpr        -> .boolExpr OR boolExpr
+ ( 79)  boolExpr        -> .NOT boolExpr
  ( 80)  boolExpr        -> .LPAR boolExpr RPAR
  ( 81)  function2       -> .MAX
  ( 82)  function2       -> .MIN
@@ -618,7 +618,7 @@ State 13:
    shift to 21 on IIF
    shift to 22 on INDEXEDSUM
    shift to 23 on INDEXEDPRODUCT
-   shift to 62 on SYMNOT
+   shift to 62 on NOT
    shift to 15 on PLUS
    shift to 14 on MINUS
    shift to 26 on ACOS
@@ -981,8 +981,8 @@ State 16:
    reduce by 23 on SEMI
    reduce by 23 on COMMA
    reduce by 23 on TO
-   reduce by 23 on SYMOR
-   reduce by 23 on SYMAND
+   reduce by 23 on OR
+   reduce by 23 on AND
    reduce by 23 on EQ
    reduce by 23 on GE
    reduce by 23 on GT
@@ -1005,8 +1005,8 @@ State 17:
    reduce by 24 on SEMI
    reduce by 24 on COMMA
    reduce by 24 on TO
-   reduce by 24 on SYMOR
-   reduce by 24 on SYMAND
+   reduce by 24 on OR
+   reduce by 24 on AND
    reduce by 24 on EQ
    reduce by 24 on GE
    reduce by 24 on GT
@@ -1029,8 +1029,8 @@ State 18:
    reduce by 25 on SEMI
    reduce by 25 on COMMA
    reduce by 25 on TO
-   reduce by 25 on SYMOR
-   reduce by 25 on SYMAND
+   reduce by 25 on OR
+   reduce by 25 on AND
    reduce by 25 on EQ
    reduce by 25 on GE
    reduce by 25 on GT
@@ -1053,8 +1053,8 @@ State 19:
    reduce by 26 on SEMI
    reduce by 26 on COMMA
    reduce by 26 on TO
-   reduce by 26 on SYMOR
-   reduce by 26 on SYMAND
+   reduce by 26 on OR
+   reduce by 26 on AND
    reduce by 26 on EQ
    reduce by 26 on GE
    reduce by 26 on GT
@@ -1138,9 +1138,9 @@ State 20:
  ( 74)  boolExpr        -> .expr LT expr
  ( 75)  boolExpr        -> .expr GE expr
  ( 76)  boolExpr        -> .expr GT expr
- ( 77)  boolExpr        -> .boolExpr SYMAND boolExpr
- ( 78)  boolExpr        -> .boolExpr SYMOR boolExpr
- ( 79)  boolExpr        -> .SYMNOT boolExpr
+ ( 77)  boolExpr        -> .boolExpr AND boolExpr
+ ( 78)  boolExpr        -> .boolExpr OR boolExpr
+ ( 79)  boolExpr        -> .NOT boolExpr
  ( 80)  boolExpr        -> .LPAR boolExpr RPAR
  ( 81)  function2       -> .MAX
  ( 82)  function2       -> .MIN
@@ -1161,7 +1161,7 @@ State 20:
    shift to 21 on IIF
    shift to 22 on INDEXEDSUM
    shift to 23 on INDEXEDPRODUCT
-   shift to 62 on SYMNOT
+   shift to 62 on NOT
    shift to 15 on PLUS
    shift to 14 on MINUS
    shift to 26 on ACOS
@@ -1433,7 +1433,7 @@ State 61:
    reduce by 70 on LPAR
 
 State 62:
- ( 79)K boolExpr        -> SYMNOT .boolExpr
+ ( 79)K boolExpr        -> NOT .boolExpr
  (  9)  expr            -> .expr PLUS expr
  ( 10)  expr            -> .expr MINUS expr
  ( 11)  expr            -> .expr PROD expr
@@ -1500,9 +1500,9 @@ State 62:
  ( 74)  boolExpr        -> .expr LT expr
  ( 75)  boolExpr        -> .expr GE expr
  ( 76)  boolExpr        -> .expr GT expr
- ( 77)  boolExpr        -> .boolExpr SYMAND boolExpr
- ( 78)  boolExpr        -> .boolExpr SYMOR boolExpr
- ( 79)  boolExpr        -> .SYMNOT boolExpr
+ ( 77)  boolExpr        -> .boolExpr AND boolExpr
+ ( 78)  boolExpr        -> .boolExpr OR boolExpr
+ ( 79)  boolExpr        -> .NOT boolExpr
  ( 80)  boolExpr        -> .LPAR boolExpr RPAR
  ( 81)  function2       -> .MAX
  ( 82)  function2       -> .MIN
@@ -1523,7 +1523,7 @@ State 62:
    shift to 21 on IIF
    shift to 22 on INDEXEDSUM
    shift to 23 on INDEXEDPRODUCT
-   shift to 62 on SYMNOT
+   shift to 62 on NOT
    shift to 15 on PLUS
    shift to 14 on MINUS
    shift to 26 on ACOS
@@ -1652,8 +1652,8 @@ State 74:
    reduce by 92 on SEMI
    reduce by 92 on COMMA
    reduce by 92 on TO
-   reduce by 92 on SYMOR
-   reduce by 92 on SYMAND
+   reduce by 92 on OR
+   reduce by 92 on AND
    reduce by 92 on EQ
    reduce by 92 on GE
    reduce by 92 on GT
@@ -1676,8 +1676,8 @@ State 75:
    reduce by 93 on SEMI
    reduce by 93 on COMMA
    reduce by 93 on TO
-   reduce by 93 on SYMOR
-   reduce by 93 on SYMAND
+   reduce by 93 on OR
+   reduce by 93 on AND
    reduce by 93 on EQ
    reduce by 93 on GE
    reduce by 93 on GT
@@ -1706,7 +1706,7 @@ State 77:
    reduce by 6 on IIF
    reduce by 6 on INDEXEDSUM
    reduce by 6 on INDEXEDPRODUCT
-   reduce by 6 on SYMNOT
+   reduce by 6 on NOT
    reduce by 6 on PLUS
    reduce by 6 on MINUS
    reduce by 6 on ACOS
@@ -3502,7 +3502,7 @@ State 89:
    goto 19 on polyExpr
 
 State 90:
- ( 77)K boolExpr        -> boolExpr SYMAND .boolExpr
+ ( 77)K boolExpr        -> boolExpr AND .boolExpr
  (  9)  expr            -> .expr PLUS expr
  ( 10)  expr            -> .expr MINUS expr
  ( 11)  expr            -> .expr PROD expr
@@ -3569,9 +3569,9 @@ State 90:
  ( 74)  boolExpr        -> .expr LT expr
  ( 75)  boolExpr        -> .expr GE expr
  ( 76)  boolExpr        -> .expr GT expr
- ( 77)  boolExpr        -> .boolExpr SYMAND boolExpr
- ( 78)  boolExpr        -> .boolExpr SYMOR boolExpr
- ( 79)  boolExpr        -> .SYMNOT boolExpr
+ ( 77)  boolExpr        -> .boolExpr AND boolExpr
+ ( 78)  boolExpr        -> .boolExpr OR boolExpr
+ ( 79)  boolExpr        -> .NOT boolExpr
  ( 80)  boolExpr        -> .LPAR boolExpr RPAR
  ( 81)  function2       -> .MAX
  ( 82)  function2       -> .MIN
@@ -3592,7 +3592,7 @@ State 90:
    shift to 21 on IIF
    shift to 22 on INDEXEDSUM
    shift to 23 on INDEXEDPRODUCT
-   shift to 62 on SYMNOT
+   shift to 62 on NOT
    shift to 15 on PLUS
    shift to 14 on MINUS
    shift to 26 on ACOS
@@ -3659,7 +3659,7 @@ State 90:
    goto 19 on polyExpr
 
 State 91:
- ( 78)K boolExpr        -> boolExpr SYMOR .boolExpr
+ ( 78)K boolExpr        -> boolExpr OR .boolExpr
  (  9)  expr            -> .expr PLUS expr
  ( 10)  expr            -> .expr MINUS expr
  ( 11)  expr            -> .expr PROD expr
@@ -3726,9 +3726,9 @@ State 91:
  ( 74)  boolExpr        -> .expr LT expr
  ( 75)  boolExpr        -> .expr GE expr
  ( 76)  boolExpr        -> .expr GT expr
- ( 77)  boolExpr        -> .boolExpr SYMAND boolExpr
- ( 78)  boolExpr        -> .boolExpr SYMOR boolExpr
- ( 79)  boolExpr        -> .SYMNOT boolExpr
+ ( 77)  boolExpr        -> .boolExpr AND boolExpr
+ ( 78)  boolExpr        -> .boolExpr OR boolExpr
+ ( 79)  boolExpr        -> .NOT boolExpr
  ( 80)  boolExpr        -> .LPAR boolExpr RPAR
  ( 81)  function2       -> .MAX
  ( 82)  function2       -> .MIN
@@ -3749,7 +3749,7 @@ State 91:
    shift to 21 on IIF
    shift to 22 on INDEXEDSUM
    shift to 23 on INDEXEDPRODUCT
-   shift to 62 on SYMNOT
+   shift to 62 on NOT
    shift to 15 on PLUS
    shift to 14 on MINUS
    shift to 26 on ACOS
@@ -3823,7 +3823,7 @@ State 92:
    reduce by 7 on IIF
    reduce by 7 on INDEXEDSUM
    reduce by 7 on INDEXEDPRODUCT
-   reduce by 7 on SYMNOT
+   reduce by 7 on NOT
    reduce by 7 on PLUS
    reduce by 7 on MINUS
    reduce by 7 on ACOS
@@ -4343,12 +4343,12 @@ State 96:
    shift to 126 on RPAR
 
 State 97:
- ( 77)K boolExpr        -> boolExpr .SYMAND boolExpr
- ( 78)K boolExpr        -> boolExpr .SYMOR boolExpr
+ ( 77)K boolExpr        -> boolExpr .AND boolExpr
+ ( 78)K boolExpr        -> boolExpr .OR boolExpr
  ( 80)K boolExpr        -> LPAR boolExpr .RPAR
 
-   shift to 91 on SYMOR
-   shift to 90 on SYMAND
+   shift to 91 on OR
+   shift to 90 on AND
    shift to 127 on RPAR
 
 State 98:
@@ -4358,8 +4358,8 @@ State 98:
    reduce by 17 on SEMI
    reduce by 17 on COMMA
    reduce by 17 on TO
-   reduce by 17 on SYMOR
-   reduce by 17 on SYMAND
+   reduce by 17 on OR
+   reduce by 17 on AND
    reduce by 17 on EQ
    reduce by 17 on GE
    reduce by 17 on GT
@@ -4388,8 +4388,8 @@ State 99:
    reduce by 21 on SEMI
    reduce by 21 on COMMA
    reduce by 21 on TO
-   reduce by 21 on SYMOR
-   reduce by 21 on SYMAND
+   reduce by 21 on OR
+   reduce by 21 on AND
    reduce by 21 on EQ
    reduce by 21 on GE
    reduce by 21 on GT
@@ -4569,8 +4569,8 @@ State 101:
    reduce by 22 on SEMI
    reduce by 22 on COMMA
    reduce by 22 on TO
-   reduce by 22 on SYMOR
-   reduce by 22 on SYMAND
+   reduce by 22 on OR
+   reduce by 22 on AND
    reduce by 22 on EQ
    reduce by 22 on GE
    reduce by 22 on GT
@@ -4594,11 +4594,11 @@ warning --- Shift/reduce conflict on MOD (prec=5, left assoc). Choose shift inst
 warning --- Shift/reduce conflict on POW (prec=6, left assoc). Choose shift instead of reduce by prod 22 (prec=4).
 State 102:
  ( 27)K unary           -> LB boolExpr .RB
- ( 77)K boolExpr        -> boolExpr .SYMAND boolExpr
- ( 78)K boolExpr        -> boolExpr .SYMOR boolExpr
+ ( 77)K boolExpr        -> boolExpr .AND boolExpr
+ ( 78)K boolExpr        -> boolExpr .OR boolExpr
 
-   shift to 91 on SYMOR
-   shift to 90 on SYMAND
+   shift to 91 on OR
+   shift to 90 on AND
    shift to 129 on RB
 
 State 103:
@@ -4696,9 +4696,9 @@ State 104:
  ( 74)  boolExpr        -> .expr LT expr
  ( 75)  boolExpr        -> .expr GE expr
  ( 76)  boolExpr        -> .expr GT expr
- ( 77)  boolExpr        -> .boolExpr SYMAND boolExpr
- ( 78)  boolExpr        -> .boolExpr SYMOR boolExpr
- ( 79)  boolExpr        -> .SYMNOT boolExpr
+ ( 77)  boolExpr        -> .boolExpr AND boolExpr
+ ( 78)  boolExpr        -> .boolExpr OR boolExpr
+ ( 79)  boolExpr        -> .NOT boolExpr
  ( 80)  boolExpr        -> .LPAR boolExpr RPAR
  ( 81)  function2       -> .MAX
  ( 82)  function2       -> .MIN
@@ -4719,7 +4719,7 @@ State 104:
    shift to 21 on IIF
    shift to 22 on INDEXEDSUM
    shift to 23 on INDEXEDPRODUCT
-   shift to 62 on SYMNOT
+   shift to 62 on NOT
    shift to 15 on PLUS
    shift to 14 on MINUS
    shift to 26 on ACOS
@@ -4952,19 +4952,19 @@ State 107:
    goto 134 on exprList
 
 State 108:
- ( 77)K boolExpr        -> boolExpr .SYMAND boolExpr
- ( 78)K boolExpr        -> boolExpr .SYMOR boolExpr
- ( 79)K boolExpr        -> SYMNOT boolExpr .
+ ( 77)K boolExpr        -> boolExpr .AND boolExpr
+ ( 78)K boolExpr        -> boolExpr .OR boolExpr
+ ( 79)K boolExpr        -> NOT boolExpr .
 
    reduce by 79 on EOI
    reduce by 79 on COMMA
-   reduce by 79 on SYMOR
-   reduce by 79 on SYMAND
+   reduce by 79 on OR
+   reduce by 79 on AND
    reduce by 79 on RPAR
    reduce by 79 on RB
 
-warning --- Shift/reduce conflict on SYMAND (prec=3, left assoc). Choose reduce by prod 79 (prec=3).
-warning --- Shift/reduce conflict on SYMOR (prec=2, left assoc). Choose reduce by prod 79 (prec=3).
+warning --- Shift/reduce conflict on AND (prec=3, left assoc). Choose reduce by prod 79 (prec=3).
+warning --- Shift/reduce conflict on OR (prec=2, left assoc). Choose reduce by prod 79 (prec=3).
 State 109:
  (  9)K expr            -> expr .PLUS expr
  (  9)K expr            -> expr PLUS expr .
@@ -4978,8 +4978,8 @@ State 109:
    reduce by 9 on SEMI
    reduce by 9 on COMMA
    reduce by 9 on TO
-   reduce by 9 on SYMOR
-   reduce by 9 on SYMAND
+   reduce by 9 on OR
+   reduce by 9 on AND
    reduce by 9 on EQ
    reduce by 9 on GE
    reduce by 9 on GT
@@ -5014,8 +5014,8 @@ State 110:
    reduce by 10 on SEMI
    reduce by 10 on COMMA
    reduce by 10 on TO
-   reduce by 10 on SYMOR
-   reduce by 10 on SYMAND
+   reduce by 10 on OR
+   reduce by 10 on AND
    reduce by 10 on EQ
    reduce by 10 on GE
    reduce by 10 on GT
@@ -5050,8 +5050,8 @@ State 111:
    reduce by 11 on SEMI
    reduce by 11 on COMMA
    reduce by 11 on TO
-   reduce by 11 on SYMOR
-   reduce by 11 on SYMAND
+   reduce by 11 on OR
+   reduce by 11 on AND
    reduce by 11 on EQ
    reduce by 11 on GE
    reduce by 11 on GT
@@ -5086,8 +5086,8 @@ State 112:
    reduce by 12 on SEMI
    reduce by 12 on COMMA
    reduce by 12 on TO
-   reduce by 12 on SYMOR
-   reduce by 12 on SYMAND
+   reduce by 12 on OR
+   reduce by 12 on AND
    reduce by 12 on EQ
    reduce by 12 on GE
    reduce by 12 on GT
@@ -5122,8 +5122,8 @@ State 113:
    reduce by 13 on SEMI
    reduce by 13 on COMMA
    reduce by 13 on TO
-   reduce by 13 on SYMOR
-   reduce by 13 on SYMAND
+   reduce by 13 on OR
+   reduce by 13 on AND
    reduce by 13 on EQ
    reduce by 13 on GE
    reduce by 13 on GT
@@ -5158,8 +5158,8 @@ State 114:
    reduce by 14 on SEMI
    reduce by 14 on COMMA
    reduce by 14 on TO
-   reduce by 14 on SYMOR
-   reduce by 14 on SYMAND
+   reduce by 14 on OR
+   reduce by 14 on AND
    reduce by 14 on EQ
    reduce by 14 on GE
    reduce by 14 on GT
@@ -5192,8 +5192,8 @@ State 115:
 
    reduce by 71 on EOI
    reduce by 71 on COMMA
-   reduce by 71 on SYMOR
-   reduce by 71 on SYMAND
+   reduce by 71 on OR
+   reduce by 71 on AND
    shift to 78 on PLUS
    shift to 79 on MINUS
    shift to 80 on PROD
@@ -5214,8 +5214,8 @@ State 116:
 
    reduce by 72 on EOI
    reduce by 72 on COMMA
-   reduce by 72 on SYMOR
-   reduce by 72 on SYMAND
+   reduce by 72 on OR
+   reduce by 72 on AND
    shift to 78 on PLUS
    shift to 79 on MINUS
    shift to 80 on PROD
@@ -5236,8 +5236,8 @@ State 117:
 
    reduce by 73 on EOI
    reduce by 73 on COMMA
-   reduce by 73 on SYMOR
-   reduce by 73 on SYMAND
+   reduce by 73 on OR
+   reduce by 73 on AND
    shift to 78 on PLUS
    shift to 79 on MINUS
    shift to 80 on PROD
@@ -5258,8 +5258,8 @@ State 118:
 
    reduce by 74 on EOI
    reduce by 74 on COMMA
-   reduce by 74 on SYMOR
-   reduce by 74 on SYMAND
+   reduce by 74 on OR
+   reduce by 74 on AND
    shift to 78 on PLUS
    shift to 79 on MINUS
    shift to 80 on PROD
@@ -5280,8 +5280,8 @@ State 119:
 
    reduce by 75 on EOI
    reduce by 75 on COMMA
-   reduce by 75 on SYMOR
-   reduce by 75 on SYMAND
+   reduce by 75 on OR
+   reduce by 75 on AND
    shift to 78 on PLUS
    shift to 79 on MINUS
    shift to 80 on PROD
@@ -5302,8 +5302,8 @@ State 120:
 
    reduce by 76 on EOI
    reduce by 76 on COMMA
-   reduce by 76 on SYMOR
-   reduce by 76 on SYMAND
+   reduce by 76 on OR
+   reduce by 76 on AND
    shift to 78 on PLUS
    shift to 79 on MINUS
    shift to 80 on PROD
@@ -5314,33 +5314,33 @@ State 120:
    reduce by 76 on RB
 
 State 121:
- ( 77)K boolExpr        -> boolExpr .SYMAND boolExpr
- ( 77)K boolExpr        -> boolExpr SYMAND boolExpr .
- ( 78)K boolExpr        -> boolExpr .SYMOR boolExpr
+ ( 77)K boolExpr        -> boolExpr .AND boolExpr
+ ( 77)K boolExpr        -> boolExpr AND boolExpr .
+ ( 78)K boolExpr        -> boolExpr .OR boolExpr
 
    reduce by 77 on EOI
    reduce by 77 on COMMA
-   reduce by 77 on SYMOR
-   reduce by 77 on SYMAND
+   reduce by 77 on OR
+   reduce by 77 on AND
    reduce by 77 on RPAR
    reduce by 77 on RB
 
-warning --- Shift/reduce conflict on SYMAND (prec=3, left assoc). Choose reduce by prod 77 (prec=3).
-warning --- Shift/reduce conflict on SYMOR (prec=2, left assoc). Choose reduce by prod 77 (prec=3).
+warning --- Shift/reduce conflict on AND (prec=3, left assoc). Choose reduce by prod 77 (prec=3).
+warning --- Shift/reduce conflict on OR (prec=2, left assoc). Choose reduce by prod 77 (prec=3).
 State 122:
- ( 77)K boolExpr        -> boolExpr .SYMAND boolExpr
- ( 78)K boolExpr        -> boolExpr .SYMOR boolExpr
- ( 78)K boolExpr        -> boolExpr SYMOR boolExpr .
+ ( 77)K boolExpr        -> boolExpr .AND boolExpr
+ ( 78)K boolExpr        -> boolExpr .OR boolExpr
+ ( 78)K boolExpr        -> boolExpr OR boolExpr .
 
    reduce by 78 on EOI
    reduce by 78 on COMMA
-   reduce by 78 on SYMOR
-   shift to 90 on SYMAND
+   reduce by 78 on OR
+   shift to 90 on AND
    reduce by 78 on RPAR
    reduce by 78 on RB
 
-warning --- Shift/reduce conflict on SYMAND (prec=3, left assoc). Choose shift instead of reduce by prod 78 (prec=2).
-warning --- Shift/reduce conflict on SYMOR (prec=2, left assoc). Choose reduce by prod 78 (prec=2).
+warning --- Shift/reduce conflict on AND (prec=3, left assoc). Choose shift instead of reduce by prod 78 (prec=2).
+warning --- Shift/reduce conflict on OR (prec=2, left assoc). Choose reduce by prod 78 (prec=2).
 State 123:
  (  8)K assign          -> name ASSIGN expr .
  (  9)K expr            -> expr .PLUS expr
@@ -5400,8 +5400,8 @@ State 126:
    reduce by 20 on SEMI
    reduce by 20 on COMMA
    reduce by 20 on TO
-   reduce by 20 on SYMOR
-   reduce by 20 on SYMAND
+   reduce by 20 on OR
+   reduce by 20 on AND
    reduce by 20 on EQ
    reduce by 20 on GE
    reduce by 20 on GT
@@ -5422,8 +5422,8 @@ State 127:
 
    reduce by 80 on EOI
    reduce by 80 on COMMA
-   reduce by 80 on SYMOR
-   reduce by 80 on SYMAND
+   reduce by 80 on OR
+   reduce by 80 on AND
    reduce by 80 on RPAR
    reduce by 80 on RB
 
@@ -5451,8 +5451,8 @@ State 129:
    reduce by 27 on SEMI
    reduce by 27 on COMMA
    reduce by 27 on TO
-   reduce by 27 on SYMOR
-   reduce by 27 on SYMAND
+   reduce by 27 on OR
+   reduce by 27 on AND
    reduce by 27 on EQ
    reduce by 27 on GE
    reduce by 27 on GT
@@ -5470,12 +5470,12 @@ State 129:
 
 State 130:
  ( 28)K conditionalExpr -> IIF LPAR boolExpr .COMMA expr COMMA expr RPAR
- ( 77)K boolExpr        -> boolExpr .SYMAND boolExpr
- ( 78)K boolExpr        -> boolExpr .SYMOR boolExpr
+ ( 77)K boolExpr        -> boolExpr .AND boolExpr
+ ( 78)K boolExpr        -> boolExpr .OR boolExpr
 
    shift to 138 on COMMA
-   shift to 91 on SYMOR
-   shift to 90 on SYMAND
+   shift to 91 on OR
+   shift to 90 on AND
 
 State 131:
  ( 29)K sumExpr         -> INDEXEDSUM LPAR assign .TO expr RPAR expr
@@ -5524,8 +5524,8 @@ State 136:
    reduce by 18 on SEMI
    reduce by 18 on COMMA
    reduce by 18 on TO
-   reduce by 18 on SYMOR
-   reduce by 18 on SYMAND
+   reduce by 18 on OR
+   reduce by 18 on AND
    reduce by 18 on EQ
    reduce by 18 on GE
    reduce by 18 on GT
@@ -6509,8 +6509,8 @@ State 149:
    reduce by 19 on SEMI
    reduce by 19 on COMMA
    reduce by 19 on TO
-   reduce by 19 on SYMOR
-   reduce by 19 on SYMAND
+   reduce by 19 on OR
+   reduce by 19 on AND
    reduce by 19 on EQ
    reduce by 19 on GE
    reduce by 19 on GT
@@ -7008,8 +7008,8 @@ State 155:
    reduce by 29 on SEMI
    reduce by 29 on COMMA
    reduce by 29 on TO
-   reduce by 29 on SYMOR
-   reduce by 29 on SYMAND
+   reduce by 29 on OR
+   reduce by 29 on AND
    reduce by 29 on EQ
    reduce by 29 on GE
    reduce by 29 on GT
@@ -7044,8 +7044,8 @@ State 156:
    reduce by 30 on SEMI
    reduce by 30 on COMMA
    reduce by 30 on TO
-   reduce by 30 on SYMOR
-   reduce by 30 on SYMAND
+   reduce by 30 on OR
+   reduce by 30 on AND
    reduce by 30 on EQ
    reduce by 30 on GE
    reduce by 30 on GT
@@ -7074,8 +7074,8 @@ State 157:
    reduce by 31 on SEMI
    reduce by 31 on COMMA
    reduce by 31 on TO
-   reduce by 31 on SYMOR
-   reduce by 31 on SYMAND
+   reduce by 31 on OR
+   reduce by 31 on AND
    reduce by 31 on EQ
    reduce by 31 on GE
    reduce by 31 on GT
@@ -7098,8 +7098,8 @@ State 158:
    reduce by 28 on SEMI
    reduce by 28 on COMMA
    reduce by 28 on TO
-   reduce by 28 on SYMOR
-   reduce by 28 on SYMAND
+   reduce by 28 on OR
+   reduce by 28 on AND
    reduce by 28 on EQ
    reduce by 28 on GE
    reduce by 28 on GT
@@ -7121,7 +7121,7 @@ State 158:
   94	productions
  159	LALR(1) states
 3106	items
-8856	bytes required for parsertables
+8844	bytes required for parsertables
 
    0	shift/reduce  conflicts
    0	reduce/reduce conflicts

@@ -2,6 +2,8 @@
 #include <Math/Expression/ParserTree.h>
 #include <Math/Expression/ExpressionFactor.h>
 
+namespace Expr {
+
 ExpressionFactor::ExpressionFactor(ExpressionNode *base, ExpressionNode *exponent)
   : ExpressionNodeTree(base->getTree(), POW, base, exponent?exponent:base->getTree()->getOne(), NULL) {
 }
@@ -48,3 +50,5 @@ void ExpressionFactor::dumpNode(String &s, int level) const {
   base()->dumpNode(s, level+1);
   exponent()->dumpNode(s, level+1);
 }
+
+}; // namespace Expr

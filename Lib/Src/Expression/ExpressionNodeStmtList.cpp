@@ -1,6 +1,8 @@
 #include "pch.h"
 #include <Math/Expression/ParserTree.h>
 
+namespace Expr {
+
 ExpressionNodeStmtList::ExpressionNodeStmtList(ParserTree *tree, const ExpressionNodeArray &childArray) 
   : ExpressionNodeTree(tree, STMTLIST, childArray)
   , m_returnType(childArray.last()->getReturnType())
@@ -49,3 +51,4 @@ String ExpressionNodeStmtList::toString() const {
   return result;
 }
 
+}; // namespace Expr

@@ -2,6 +2,8 @@
 #include <Math/Expression/ParserTree.h>
 #include <Math/Expression/ExpressionFactor.h>
 
+namespace Expr {
+
 void FactorArray::add(ExpressionFactor *f) {
   ExpressionNode *base     = f->base();
   ExpressionNode *exponent = f->exponent();
@@ -85,3 +87,5 @@ String FactorArray::toString() const {
   }
   return result;
 }
+
+}; // namespace Expr

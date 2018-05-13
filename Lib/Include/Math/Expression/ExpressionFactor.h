@@ -2,6 +2,8 @@
 
 #include "ExpressionNode.h"
 
+namespace Expr {
+
 class ExpressionFactor : public ExpressionNodeTree {
 public:
   ExpressionFactor(ExpressionNode *base, ExpressionNode *exponent);
@@ -36,3 +38,5 @@ public:
 
   void dumpNode(String &s, int level) const;
 };
+
+}; // namespace Expr

@@ -3,6 +3,8 @@
 #include <ExecutableByteArray.h>
 #include <Math/Real.h>
 
+namespace Expr {
+
 typedef void *ExpressionEntryPoint;
 
 #ifdef IS64BIT
@@ -60,3 +62,5 @@ public:
 #endif // IS64BIT
   }
 };
+
+}; // namespace Expr

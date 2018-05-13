@@ -9,6 +9,8 @@
 #include <Stack.h>
 #include <PropertyContainer.h>
 
+namespace Expr {
+
 class ReductionStackElement {
 public:
   const TCHAR          *m_method;
@@ -83,7 +85,11 @@ public:
   RETURN(p);                                                                               \
 }
 
+}; // namespace Expr
+
 #else // TRACE_REDUCTION_CALLSTACK
+
+namespace Expr {
 
 #define DEFINEREDUCTIONSTACK
 #define STARTREDUCTION(tree)
@@ -100,4 +106,7 @@ public:
 #define RETURNSHOWSTR(v)  return v
 #define RETURNPSHOWSTR(p) return p
 
+}; // namespace Expr
+
 #endif // TRACE_REDUCTION_CALLSTACK
+

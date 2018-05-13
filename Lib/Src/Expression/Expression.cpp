@@ -2,6 +2,8 @@
 #include <Math/Expression/Expression.h>
 #include "ExpressionCompile.h"
 
+namespace Expr {
+
 Expression::Expression(TrigonometricMode mode) : ParserTree(mode) {
   init();
 }
@@ -161,3 +163,5 @@ String Expression::getDefaultListFileName() { // static
 #endif // LONGDOUBLE
   return _T("c:\\temp\\ExprList\\" PFSTR CONFSTR REALSTR "expr.lst");
 }
+
+}; // namespace Expr

@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "ExpressionCompile.h"
 
+namespace Expr {
+
 // --------------------------------- CodeGenerator -----------------------------------
 
 CodeGenerator::CodeGenerator(ParserTree *tree, FILE *listFile) : m_tree(*tree)
@@ -264,11 +266,11 @@ void CodeGenerator::genExpression(const ExpressionNode *n DCL_DSTPARAM) {
   case MOD           :    GENCALL(     n, fmod                  );
   case POW           :
     if(n->left()->isEulersConstant()) {
-      GENCALLARG(  n->right(), exp  );
+      GENCALLARG(  n->right(), ::exp  );
     } else if(n->left()->isTwo()) {
-      GENCALLARG(  n->right(), exp2 );
+      GENCALLARG(  n->right(), ::exp2 );
     } else if (n->left()->isTen()) {
-      GENCALLARG(  n->right(), exp10);
+      GENCALLARG(  n->right(), ::exp10);
     }
     if(n->right()->isConstant()) {
       const Real p = n->right()->evaluateReal();
@@ -313,7 +315,7 @@ void CodeGenerator::genExpression(const ExpressionNode *n DCL_DSTPARAM) {
       m_code->emit(FPATAN);                // st1=atan(st1/st0); pop st0
       break;
     }
-    GENTRIGOCALL(n, atan                  );
+    GENTRIGOCALL(n, ::atan                );
   case ATAN2         :                     // atan2(left,right)
     if(getTrigonometricMode() == RADIANS) {
       genExpression(n->left()  DST_FPU);   // st0=left
@@ -321,7 +323,7 @@ void CodeGenerator::genExpression(const ExpressionNode *n DCL_DSTPARAM) {
       m_code->emit(FPATAN);                // st1=atan(st1/st0); pop st0
       break;
     }
-    GENTRIGOCALL(n, atan2                 );
+    GENTRIGOCALL(n, ::atan2               );
 
   case ROOT          :
     if(n->right()->isConstant()) {
@@ -333,49 +335,49 @@ void CodeGenerator::genExpression(const ExpressionNode *n DCL_DSTPARAM) {
         break;
       }
     }
-    GENCALL(n, root);
-  case SIN           :    GENTRIGOCALL(n, sin                   );
-  case COS           :    GENTRIGOCALL(n, cos                   );
-  case TAN           :    GENTRIGOCALL(n, tan                   );
-  case COT           :    GENTRIGOCALL(n, cot                   );
-  case CSC           :    GENTRIGOCALL(n, csc                   );
-  case SEC           :    GENTRIGOCALL(n, sec                   );
-  case ASIN          :    GENTRIGOCALL(n, asin                  );
-  case ACOS          :    GENTRIGOCALL(n, acos                  );
-  case ACOT          :    GENTRIGOCALL(n, acot                  );
-  case ACSC          :    GENTRIGOCALL(n, acsc                  );
-  case ASEC          :    GENTRIGOCALL(n, asec                  );
-  case COSH          :    GENCALL(     n, cosh                  );
-  case SINH          :    GENCALL(     n, sinh                  );
-  case TANH          :    GENCALL(     n, tanh                  );
-  case ACOSH         :    GENCALL(     n, acosh                 );
-  case ASINH         :    GENCALL(     n, asinh                 );
-  case ATANH         :    GENCALL(     n, atanh                 );
-  case LN            :    GENCALL(     n, log                   );
-  case LOG10         :    GENCALL(     n, log10                 );
-  case LOG2          :    GENCALL(     n, log2                  );
-  case EXP           :    GENCALL(     n, exp                   );
-  case EXP10         :    GENCALL(     n, exp10                 );
-  case EXP2          :    GENCALL(     n, exp2                  );
-  case FLOOR         :    GENCALL(     n, floor                 );
-  case CEIL          :    GENCALL(     n, ceil                  );
-  case HYPOT         :    GENCALL(     n, hypot                 );
-  case LINCGAMMA     :    GENCALL(     n, lowerIncGamma         );
-  case CHI2DENS      :    GENCALL(     n, chiSquaredDensity     );
-  case CHI2DIST      :    GENCALL(     n, chiSquaredDistribution);
-  case BINOMIAL      :    GENCALL(     n, binomial              );
-  case GAMMA         :    GENCALL(     n, gamma                 );
-  case GAUSS         :    GENCALL(     n, gauss                 );
-  case FAC           :    GENCALL(     n, fac                   );
-  case NORM          :    GENCALL(     n, norm                  );
-  case PROBIT        :    GENCALL(     n, probitFunction        );
-  case ERF           :    GENCALL(     n, errorFunction         );
-  case INVERF        :    GENCALL(     n, inverseErrorFunction  );
-  case SIGN          :    GENCALL(     n, dsign                 );
-  case MAX           :    GENCALL(     n, dmax                  );
-  case MIN           :    GENCALL(     n, dmin                  );
-  case RAND          :    GENCALL(     n, randReal              );
-  case NORMRAND      :    GENCALL(     n, randomGaussian        );
+    GENCALL(n, ::root);
+  case SIN           :    GENTRIGOCALL(n, ::sin                   );
+  case COS           :    GENTRIGOCALL(n, ::cos                   );
+  case TAN           :    GENTRIGOCALL(n, ::tan                   );
+  case COT           :    GENTRIGOCALL(n, ::cot                   );
+  case CSC           :    GENTRIGOCALL(n, ::csc                   );
+  case SEC           :    GENTRIGOCALL(n, ::sec                   );
+  case ASIN          :    GENTRIGOCALL(n, ::asin                  );
+  case ACOS          :    GENTRIGOCALL(n, ::acos                  );
+  case ACOT          :    GENTRIGOCALL(n, ::acot                  );
+  case ACSC          :    GENTRIGOCALL(n, ::acsc                  );
+  case ASEC          :    GENTRIGOCALL(n, ::asec                  );
+  case COSH          :    GENCALL(     n, ::cosh                  );
+  case SINH          :    GENCALL(     n, ::sinh                  );
+  case TANH          :    GENCALL(     n, ::tanh                  );
+  case ACOSH         :    GENCALL(     n, ::acosh                 );
+  case ASINH         :    GENCALL(     n, ::asinh                 );
+  case ATANH         :    GENCALL(     n, ::atanh                 );
+  case LN            :    GENCALL(     n, ::log                   );
+  case LOG10         :    GENCALL(     n, ::log10                 );
+  case LOG2          :    GENCALL(     n, ::log2                  );
+  case EXP           :    GENCALL(     n, ::exp                   );
+  case EXP10         :    GENCALL(     n, ::exp10                 );
+  case EXP2          :    GENCALL(     n, ::exp2                  );
+  case FLOOR         :    GENCALL(     n, ::floor                 );
+  case CEIL          :    GENCALL(     n, ::ceil                  );
+  case HYPOT         :    GENCALL(     n, ::hypot                 );
+  case LINCGAMMA     :    GENCALL(     n, ::lowerIncGamma         );
+  case CHI2DENS      :    GENCALL(     n, ::chiSquaredDensity     );
+  case CHI2DIST      :    GENCALL(     n, ::chiSquaredDistribution);
+  case BINOMIAL      :    GENCALL(     n, ::binomial              );
+  case GAMMA         :    GENCALL(     n, ::gamma                 );
+  case GAUSS         :    GENCALL(     n, ::gauss                 );
+  case FAC           :    GENCALL(     n, ::fac                   );
+  case NORM          :    GENCALL(     n, ::norm                  );
+  case PROBIT        :    GENCALL(     n, ::probitFunction        );
+  case ERF           :    GENCALL(     n, ::errorFunction         );
+  case INVERF        :    GENCALL(     n, ::inverseErrorFunction  );
+  case SIGN          :    GENCALL(     n, ::dsign                 );
+  case MAX           :    GENCALL(     n, ::dmax                  );
+  case MIN           :    GENCALL(     n, ::dmin                  );
+  case RAND          :    GENCALL(     n, ::randReal              );
+  case NORMRAND      :    GENCALL(     n, ::randomGaussian        );
   case POLY          :    GENPOLY(     n);
   case INDEXEDSUM    :
   case INDEXEDPRODUCT:
@@ -474,13 +476,13 @@ static ExpressionInputSymbol reverseComparator(ExpressionInputSymbol symbol) {
 void CodeGenerator::genBoolExpression(const ExpressionNode *n, JumpList &jl, bool trueAtEnd) {
 //  dumpSyntaxTree(n);
   switch(n->getSymbol()) {
-  case SYMNOT:
+  case NOT:
     { JumpList jumps(!jl);
       genBoolExpression(n->child(0), jumps, !trueAtEnd);
       jl ^= jumps;
     }
     break;
-  case SYMAND:
+  case AND:
     if(!trueAtEnd) { // De Morgan's law
       JumpList jumps(!jl);
       genBoolExpression(!SNode((ExpressionNode*)n->left()) || !SNode((ExpressionNode*)n->right()), jumps, !trueAtEnd);
@@ -490,7 +492,7 @@ void CodeGenerator::genBoolExpression(const ExpressionNode *n, JumpList &jl, boo
       genBoolExpression(n->right(), jl, trueAtEnd);
     }
     break;
-  case SYMOR   :
+  case OR   :
     if(!trueAtEnd) { // De Morgan's law
       JumpList jumps(!jl);
       genBoolExpression(!SNode((ExpressionNode*)n->left()) && !SNode((ExpressionNode*)n->right()), jumps, !trueAtEnd);
@@ -661,7 +663,7 @@ void CodeGenerator::genPolynomial(const ExpressionNode *n) {
   bytesPushed += genPushInt((int)coefArray.size());
   bytesPushed += genPush(n->getArgument());
   bytesPushed += genPushReturnAddr();
-  genCall(FunctionCall((BuiltInFunction)::evaluatePolynomial, polyName, polySignatureStr));
+  genCall(FunctionCall((BuiltInFunction)Expr::evaluatePolynomial, polyName, polySignatureStr));
   m_code->emitAddStack(bytesPushed);
 }
 
@@ -891,7 +893,7 @@ void CodeGenerator::genPolynomial(const ExpressionNode *n DCL_DSTPARAM) {
 
   const IndexRegister &param3    = int64ParamRegister[2];
   m_code->emitLEAReal(param3, m_code->getTableRef(firstCoefIndex));
-  genCall(FunctionCall((BuiltInFunction)::evaluatePolynomial, polyName, polySignatureStr) DST_PARAM);
+  genCall(FunctionCall((BuiltInFunction)Expr::evaluatePolynomial, polyName, polySignatureStr) DST_PARAM);
 }
 
 void CodeGenerator::genSetRefParameter(const ExpressionNode *n, int index) {
@@ -929,3 +931,5 @@ void CodeGenerator::genSetParameter(const ExpressionNode *n, int index) {
 #endif // USEXMMREG
 
 #endif // IS64BIT
+
+}; // namespace Expr

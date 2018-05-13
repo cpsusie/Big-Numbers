@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "ListFile.h"
 
+namespace Expr {
+
 // --------------------------------- ListFile functions ----------------------------
 
 void ListFile::adjustPositions(UINT pos, UINT bytesAdded) {
@@ -27,6 +29,9 @@ static int listLineCmp(ListLine * const &l1, ListLine * const &l2) {
 
 void ListFile::flush() {
   if(!isOpen()) return;
+  if(isTracing()) {
+    _ftprintf(m_f,_T("----------------------------------------------------\n"));
+  }
   m_lineArray.sort(listLineCmp);
   const size_t n = m_lineArray.size();
   for(size_t i = 0; i < n; i++) {
@@ -68,3 +73,5 @@ ListLine *ListFile::findLineByPos(UINT pos) {
   }
   return NULL;
 }
+
+}; // namespace Expr

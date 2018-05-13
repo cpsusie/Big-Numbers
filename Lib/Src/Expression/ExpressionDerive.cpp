@@ -1,6 +1,8 @@
 #include "pch.h"
 #include <Math/Expression/Expression.h>
 
+namespace Expr {
+
 Expression Expression::getDerived(const String &name, bool reduceResult /*=false*/) const {
   if(getReturnType() != EXPR_RETURN_REAL) {
     throwException(_T("Cannot get derived of an expression returning boolean"));
@@ -23,3 +25,5 @@ Expression Expression::getDerived(const String &name, bool reduceResult /*=false
   }
   return result;
 }
+
+}; // namespace Expr

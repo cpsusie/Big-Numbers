@@ -2,6 +2,8 @@
 #include <Math/Expression/ParserTree.h>
 #include <Math/Expression/SumElement.h>
 
+namespace Expr {
+
 SumElement::SumElement(ExpressionNode *n, bool positive) {
   if(n->getSymbol() == POW) {
     if(n->left()->isOne() || n->right()->isOne()) {
@@ -56,3 +58,4 @@ String SumElement::toString() const {
   }
 }
 
+}; // namespace Expr

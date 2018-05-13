@@ -3,6 +3,8 @@
 #include <Opcode.h>
 #include <Math/MathLib.h>
 
+namespace Expr {
+
 typedef void (*BuiltInFunction)();
 typedef Real (*BuiltInFunctionRef1)(const Real &x);
 typedef Real (*BuiltInFunctionRef2)(const Real &x, const Real &y);
@@ -10,8 +12,12 @@ typedef Real (*BuiltInFunction1)(Real x);
 typedef Real (*BuiltInFunction2)(Real x, Real y);
 
 class FunctionCall {
+  static String &removeColons(String &name) {
+    return name.replace(_T(':'),_T(""));
+  }
   static String makeSignatureString(const String &name, const TCHAR *param) {
-    return format(_T("%s%s"),name.cstr(),param);
+    String tmp(name);
+    return format(_T("%s%s"),removeColons(tmp).cstr(),param);
   }
 public:
   const BuiltInFunction m_fp;
@@ -80,3 +86,5 @@ public:
     return p - m_valueTable.getBuffer();
   }
 };
+
+}; // namespace Expr

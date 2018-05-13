@@ -3,6 +3,8 @@
 #include <Math/Expression/SumElement.h>
 #include <Math/Expression/ExpressionFactor.h>
 
+namespace Expr {
+
 Real ExpressionNode::evaluateReal() const {
   DEFINEMETHODNAME;
 
@@ -36,31 +38,31 @@ Real ExpressionNode::evaluateReal() const {
   case ATANH    : return atanh(                  left()->evaluateReal());
   case CEIL     : return ceil(                   left()->evaluateReal());
   case COS      : return cos(                    left()->evaluateReal(),  getTrigonometricMode());
-  case COSH     : return cosh(                   left()->evaluateReal());
+  case COSH     : return ::cosh(                 left()->evaluateReal());
   case COT      : return cot(                    left()->evaluateReal(),  getTrigonometricMode());
   case CSC      : return csc(                    left()->evaluateReal(),  getTrigonometricMode());
   case ERF      : return errorFunction(          left()->evaluateReal());
-  case EXP      : return exp(                    left()->evaluateReal());
-  case EXP10    : return exp10(                  left()->evaluateReal());
-  case EXP2     : return exp2(                   left()->evaluateReal());
+  case EXP      : return ::exp(                  left()->evaluateReal());
+  case EXP10    : return ::exp10(                left()->evaluateReal());
+  case EXP2     : return ::exp2(                 left()->evaluateReal());
   case FAC      : return fac(                    left()->evaluateReal());
   case FLOOR    : return floor(                  left()->evaluateReal());
   case GAMMA    : return gamma(                  left()->evaluateReal());
-  case GAUSS    : return gauss(                  left()->evaluateReal());
+  case GAUSS    : return ::gauss(                left()->evaluateReal());
   case INVERF   : return inverseErrorFunction(   left()->evaluateReal());
   case LN       : return log(                    left()->evaluateReal());
-  case LOG10    : return log10(                  left()->evaluateReal());
-  case LOG2     : return log2(                   left()->evaluateReal());
+  case LOG10    : return ::log10(                left()->evaluateReal());
+  case LOG2     : return ::log2(                 left()->evaluateReal());
   case NORM     : return norm(                   left()->evaluateReal());
   case PROBIT   : return probitFunction(         left()->evaluateReal());
   case SEC      : return sec(                    left()->evaluateReal(),  getTrigonometricMode());
   case SIGN     : return sign(                   left()->evaluateReal());
   case SIN      : return sin(                    left()->evaluateReal(),  getTrigonometricMode());
-  case SINH     : return sinh(                   left()->evaluateReal());
-  case SQR      : return sqr(                    left()->evaluateReal());
-  case SQRT     : return sqrt(                   left()->evaluateReal());
+  case SINH     : return ::sinh(                 left()->evaluateReal());
+  case SQR      : return ::sqr(                  left()->evaluateReal());
+  case SQRT     : return ::sqrt(                 left()->evaluateReal());
   case TAN      : return tan(                    left()->evaluateReal(),  getTrigonometricMode());
-  case TANH     : return tanh(                   left()->evaluateReal());
+  case TANH     : return ::tanh(                 left()->evaluateReal());
   case IIF      : return child(0)->evaluateBool() ? child(1)->evaluateReal() : child(2)->evaluateReal();
 
   case INDEXEDSUM     :
@@ -100,11 +102,11 @@ Real ExpressionNode::evaluatePow() const {
         base = mypow(base, (Real)expoR.getNumerator());
       }
       if(expoR.getDenominator() != 1) {
-        base = root(base, (Real)expoR.getDenominator());
+        base = ::root(base, (Real)expoR.getDenominator());
       }
       return base;
     } else {
-      return pow(base, expo); // -1.#IND
+      return ::pow(base, expo); // -1.#IND
     }
   }
 }
@@ -113,19 +115,21 @@ Real ExpressionNode::evaluateRoot() const {
   Real       rad  = left()->evaluateReal();
   const Real rt   = right()->evaluateReal();
   if(rad >= 0) {
-    return root(rad, rt);
+    return ::root(rad, rt);
   } else {
     Rational rootR;
     if(Rational::isRational(rt, &rootR)) {
       if(rootR.getNumerator() != 1) {
-        rad = root(rad, (Real)rootR.getNumerator());
+        rad = ::root(rad, (Real)rootR.getNumerator());
       }
       if(rootR.getDenominator() != 1) {
         rad = mypow(rad, (Real)rootR.getDenominator());
       }
       return rad;
     } else {
-      return root(rad, rt); // -1.#IND
+      return ::root(rad, rt); // -1.#IND
     }
   }
 }
+
+}; // namespace Expr

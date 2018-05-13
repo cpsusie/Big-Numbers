@@ -1,6 +1,8 @@
 #include "pch.h"
 #include <Math/Expression/MachineCode.h>
 
+namespace Expr {
+
 void MachineCode::finalize(void *esi) {
   m_entryPoint = (ExpressionEntryPoint)getData();
   m_esi        = esi;
@@ -12,3 +14,5 @@ int MachineCode::addBytes(const void *bytes, int count) {
   append((BYTE*)bytes,count);
   return ret;
 }
+
+}; // namespace Expr

@@ -5,6 +5,8 @@
 #include <Math/Expression/ExpressionFactor.h>
 #include <Math/Expression/SNodeReduceDbgStack.h>
 
+namespace Expr {
+
 #define N( n) SNode(n)
 #define NV(v) SNode(getTree(),v)
 
@@ -47,9 +49,9 @@ SNode SNode::reduceBoolExp() {
     RETURNNODE(NV(evaluateBool()));
   } else {
     switch(getSymbol()) {
-    case SYMNOT: RETURNNODE( !left().reduceBoolExp() );
-    case SYMAND: RETURNNODE( left().reduceBoolExp() && right().reduceBoolExp() );
-    case SYMOR : RETURNNODE( left().reduceBoolExp() || right().reduceBoolExp() );
+    case NOT   : RETURNNODE( !left().reduceBoolExp() );
+    case AND   : RETURNNODE( left().reduceBoolExp() && right().reduceBoolExp() );
+    case OR    : RETURNNODE( left().reduceBoolExp() || right().reduceBoolExp() );
 
     case EQ    : 
     case NE    :
@@ -1345,3 +1347,5 @@ SNode SNode::reduceTreeNode() {
     }
   }
 }
+
+}; // namespace Expr

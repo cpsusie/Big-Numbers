@@ -2,11 +2,15 @@
 
 #include <Math/Point2D.h>
 #include <Math/Point3D.h>
+#include <Math/Expression/Expression.h>
+
+using namespace Expr;
 
 // this class is only here to avoid nameclashes between MFC and mytools
 class ExpressionWrapper : public Function2D, public Function3D {
 private:
-  void *m_expr; // real expression-evaluater
+  static Real s_dummy;
+  Expression *m_expr; // real expression-evaluater
   Real *m_xp, *m_yp, *m_zp, *m_tp;
 public:
   ExpressionWrapper();
@@ -16,15 +20,26 @@ public:
   virtual ~ExpressionWrapper();
   void compile(const String &text, bool machineCode, FILE *listFile = NULL); // doesn't throw on error
   static String getDefaultFileName();
-  bool ok();
+  inline bool ok() const {
+    return m_expr->isOk();
+  }
+
   Real *getVariableByName(const String &name);
-  Real evaluate();
+  Real evaluate() const {
+    return m_expr->evaluate();
+  }
+
+
   String getErrorMessage();
   Real operator()(const Point2D &p);
   Real operator()(const Point3D &p);
-  void setT(double t) {
+  inline void setT(double t) {
     *m_tp = t;
   }
-  bool isReturnTypeReal() const;
-  bool isReturnTypeBool() const;
+  inline bool isReturnTypeReal() const {
+    return m_expr->getReturnType() == EXPR_RETURN_REAL;
+  }
+  inline bool isReturnTypeBool() const {
+    return m_expr->getReturnType() == EXPR_RETURN_BOOL;
+  }
 };

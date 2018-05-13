@@ -4,7 +4,10 @@
 #include "PixRect.h"
 #include <Math/Expression/Expression.h>
 
+namespace Expr {
+
 class ExpressionRectangle;
+
 
 class ExpressionRectangleHandler {
 public:
@@ -106,3 +109,5 @@ typedef enum {
 } NumberFormat;
 
 ExpressionImage expressionToImage(PixRectDevice &device, const Expression &expr, int fontSize, NumberFormat numberFormat = SCIENTIFIC_NOTATION, int decimals = 6, int maxWidth = -1);
+
+}; // namespace Expr

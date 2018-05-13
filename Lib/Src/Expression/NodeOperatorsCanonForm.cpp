@@ -3,6 +3,8 @@
 #include <Math/Expression/ExpressionFactor.h>
 #include <Math/Expression/SumElement.h>
 
+namespace Expr {
+
 // -------------------------------------Operators for CanonicalForm-------------------------------------------------------------------------
 // Not using PLUS,(binary) MINUS,PROD,QUOT,ROOT,SQR,SQRT,EXP,COT,CSC,SEC
 
@@ -550,3 +552,5 @@ ExpressionNode *ParserTree::toCanonicalForm(ExpressionNode *n) {
   m_ops = NodeOperators::s_canonForm;
   return CNode(n).convert();
 }
+
+}; // namespace Expr

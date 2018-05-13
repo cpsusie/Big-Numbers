@@ -6,6 +6,8 @@
 #include <Math/Expression/MachineCode.h>
 #include "ListFile.h"
 
+namespace Expr {
+
 #ifdef IS64BIT
 #ifndef LONGDOUBLE
 #define USEXMMREG 1
@@ -215,6 +217,98 @@ public:
 #define STACK_REG    RSP
 #endif // IS64BIT
 
+class FPUSlot {
+private:
+  int  m_valueIndex;
+public:
+  inline FPUSlot() {
+    setEmpty();
+  }
+  inline bool isEmpty() const {
+    return m_valueIndex == -1;
+  }
+  inline bool isMixed() const {
+    return m_valueIndex == -2;
+  }
+  inline void setEmpty() {
+    m_valueIndex = -1;
+  }
+  inline void setMixed() {
+    m_valueIndex = -2;
+  }
+  inline void setValueIndex(BYTE index) {
+    m_valueIndex = index;
+  }
+  String toString() const;
+};
+
+class FPUContent {
+private:
+  BYTE    m_topSlot;
+  FPUSlot m_slot[8];
+public:
+  inline FPUContent() {
+    m_topSlot = 8;
+  }
+  inline UINT getHeight() const {
+    return 8 - m_topSlot;
+  }
+  inline bool isEmpty() const {
+    return getHeight() == 0;
+  }
+  inline FPUSlot &ST(BYTE index) {
+    assert(index < getHeight());
+    return m_slot[m_topSlot+index-1];
+  }
+  inline const FPUSlot &ST(BYTE index) const {
+    assert(index < getHeight());
+    return m_slot[m_topSlot+index-1];
+  }
+  inline void push(BYTE valueIndex) {
+    assert(getHeight() < 8);
+    m_topSlot--;
+    ST(0).setValueIndex(valueIndex);
+  }
+  inline void pushMixed() {
+    push(0);
+    setMixed(0);
+  }
+  inline void setMixed(BYTE index) { // index=0 is ST(0)., etc
+    ST(index).setMixed();
+  }
+  void pop(BYTE count = 1) {
+    assert(count <= getHeight());
+    m_topSlot += count;
+  }
+  void fxch(const FPURegister &reg) {
+    const UINT index = reg.getIndex();
+    assert(index <= getHeight());
+    const FPUSlot slot0 = ST(0); ST(0) = ST(index); ST(index) = slot0;
+  }
+  String toString() const;
+};
+
+class InstructionInfo {
+  const UINT m_pos           : 25;
+  const UINT m_size          : 4;   // [1..15];
+  const INT  m_FPUStackDelta : 3;   // [-2..1];
+public:
+  InstructionInfo(UINT pos, const InstructionBase &ins)
+    : m_pos(pos)
+    , m_size(ins.size())
+    , m_FPUStackDelta(ins.getFPUStackDelta())
+  {
+  }
+  inline UINT getPos() const {
+    return m_pos;
+  }
+  inline UINT size() const {
+    return m_size;
+  }
+  inline int getFPUStackDelta() const {
+    return m_FPUStackDelta;
+  }
+};
 
 class CodeGeneration {
 private:
@@ -222,6 +316,7 @@ private:
   CompactArray<JumpFixup>           m_jumpFixups;
   Array<FunctionCallInfo>           m_callTable;
   ValueAddressCalculation           m_addressTable;
+  FPUContent                        m_FPUContent;
   ListFile                          m_listFile;
   bool                              m_listEnabled;
 
@@ -244,10 +339,9 @@ private:
   inline bool hasCalls() const {
     return !m_callTable.isEmpty();
   }
-  // Return bytes added
-  UINT insertIns(UINT pos, const InstructionBase &ins);
-  inline UINT emitIns(const InstructionBase &ins) {
-    const UINT pos = size(); insertIns(pos, ins); return pos;
+  InstructionInfo insertIns(UINT pos, const InstructionBase &ins);
+  inline InstructionInfo emitIns(const InstructionBase &ins) {
+    return insertIns(size(), ins);
   }
   void listFixupTable() const;
   void listCallTable() const;
@@ -270,29 +364,29 @@ public:
   }
 
   // Returns bytes added/inserted
-  UINT insert(   UINT pos, const Opcode0Arg    &opcode);
-  UINT insert(   UINT pos, const OpcodeBase    &opcode, const InstructionOperand &arg);
-  UINT insert(   UINT pos, const OpcodeBase    &opcode, const InstructionOperand &arg1, const InstructionOperand &arg2);
-  UINT insert(   UINT pos, const StringPrefix  &prefix, const StringInstruction  &strins);
-  UINT insertLEA(UINT pos, const IndexRegister &dst   , const MemoryOperand      &mem);
+  InstructionInfo insert(   UINT pos, const Opcode0Arg    &opcode);
+  InstructionInfo insert(   UINT pos, const OpcodeBase    &opcode, const InstructionOperand &arg);
+  InstructionInfo insert(   UINT pos, const OpcodeBase    &opcode, const InstructionOperand &arg1, const InstructionOperand &arg2);
+  InstructionInfo insert(   UINT pos, const StringPrefix  &prefix, const StringInstruction  &strins);
+  InstructionInfo insertLEA(UINT pos, const IndexRegister &dst   , const MemoryOperand      &mem);
   // Returns index into m_jumpFixups. not index in code-array
   UINT insertJump(UINT pos, const OpcodeBase    &opcode, CodeLabel lbl);
 
   // Return index of instruction in byte array
-  inline UINT emit(   const Opcode0Arg &opcode) {
-    const UINT pos = size(); insert(pos, opcode          ); return pos;
+  inline InstructionInfo emit(   const Opcode0Arg &opcode) {
+    return insert(size(), opcode          );
   }
-  inline UINT emit(   const OpcodeBase &opcode, const InstructionOperand &arg) {
-    const UINT pos = size(); insert(pos, opcode, arg      ); return pos;
+  inline InstructionInfo emit(   const OpcodeBase &opcode, const InstructionOperand &arg) {
+    return insert(size(), opcode, arg      );
   }
-  inline UINT emit(   const OpcodeBase &opcode, const InstructionOperand &arg1, const InstructionOperand &arg2) {
-    const UINT pos = size(); insert(pos, opcode, arg1, arg2); return pos;
+  inline InstructionInfo emit(   const OpcodeBase &opcode, const InstructionOperand &arg1, const InstructionOperand &arg2) {
+    return insert(size(), opcode, arg1, arg2);
   }
-  inline UINT emit(   const StringPrefix &prefix, const StringInstruction &strins) {
-    const UINT pos = size(); insert(pos, prefix, strins  ); return pos;
+  inline InstructionInfo emit(   const StringPrefix &prefix, const StringInstruction &strins) {
+    return insert(size(), prefix, strins  );
   }
-  inline UINT emitLEAReal(const IndexRegister &dst, const MemoryRef &ref) {
-    const UINT pos = size(); insertLEA(pos, dst, RealPtr(ref)); return pos;
+  inline InstructionInfo emitLEAReal(const IndexRegister &dst, const MemoryRef &ref) {
+    return insertLEA(size(), dst, RealPtr(ref));
   }
   // Returns index into m_jumpFixups. not index in code-array
   inline UINT emitJump(const OpcodeBase &opcode, CodeLabel lbl) {
@@ -308,10 +402,10 @@ public:
   UINT emitCall(const FunctionCall &fc, const ExpressionDestination &dst);
 #endif // IS64BIT
 
-  inline UINT emitFSTP(const MemoryRef &mem) {
+  inline InstructionInfo emitFSTP(const MemoryRef &mem) {
     return emit(FSTP, RealPtr(mem));
   }
-  inline UINT emitFLD( const MemoryRef &mem) {
+  inline InstructionInfo emitFLD( const MemoryRef &mem) {
     return emit(FLD, RealPtr(mem));
   }
   inline MemoryRef getTableRef(int index) const {
@@ -321,10 +415,10 @@ public:
     return STACK_REG + offset;
   }
 #ifdef USEXMMREG
-  inline UINT emitXMMToMem(const XMMRegister &reg, const MemoryRef &mem) {
+  inline InstructionInfo emitXMMToMem(const XMMRegister &reg, const MemoryRef &mem) {
     return emit(MOVSD1,MMWORDPtr(mem), reg);
   }
-  inline UINT emitMemToXMM(const XMMRegister &reg, const MemoryRef &mem) {
+  inline InstructionInfo emitMemToXMM(const XMMRegister &reg, const MemoryRef &mem) {
     return emit(MOVSD1,reg,MMWORDPtr(mem));
   }
 #endif // USEXMMREG
@@ -363,3 +457,5 @@ public:
 
   void finalize();
 };
+
+}; // namespace Expr

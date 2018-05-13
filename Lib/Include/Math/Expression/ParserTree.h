@@ -8,6 +8,8 @@
 #include "ParserTreeSymbolTable.h"
 #include "SNode.h"
 
+namespace Expr {
+
 typedef enum {
   PP_STATE                 // ParserTreeState
  ,PP_REDUCEITERATION       // UINT
@@ -434,3 +436,5 @@ public:
   }
   String treeToString() const;
 };
+
+}; // namespace Expr

@@ -3,6 +3,8 @@
 #include <Math/Expression/SumElement.h>
 #include <Math/Expression/ExpressionFactor.h>
 
+namespace Expr {
+
 // ------------------------------ toNForm -------------------------------------------------------------------------
 
 class NNode : public SNode {
@@ -78,11 +80,11 @@ NNode NNode::toNFormBoolExp() const {
     return NV(evaluateBool());
   }
   switch(getSymbol()) {
-  case SYMNOT:
+  case NOT  :
     return !N(left()).toNFormBoolExp();
-  case SYMAND:
+  case AND   :
     return N(left()).toNFormBoolExp() && N(right()).toNFormBoolExp();
-  case SYMOR :
+  case OR    :
     return N(left()).toNFormBoolExp() || N(right()).toNFormBoolExp();
 
   case EQ    :
@@ -221,3 +223,5 @@ ExpressionNode *ParserTree::toNumericForm(ExpressionNode *n) {
   }
   return n;
 }
+
+}; // namespace Expr

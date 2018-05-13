@@ -1,6 +1,8 @@
 #include "pch.h"
 #include <Math/Expression/ExpressionFunction.h>
 
+namespace Expr {
+
 ExpressionFunction::ExpressionFunction(const String &expr, const String &name, TrigonometricMode mode, bool machineCode) {
   compile(expr, name, mode, machineCode);
 }
@@ -53,3 +55,5 @@ Real ExpressionFunction::operator()(const Real &x) {
   *m_x = x;
   return m_expr.evaluate();
 }
+
+}; // namespace Expr

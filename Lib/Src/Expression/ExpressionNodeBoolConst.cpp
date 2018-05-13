@@ -1,6 +1,8 @@
 #include "pch.h"
 #include <Math/Expression/ParserTree.h>
 
+namespace Expr {
+
 int ExpressionNodeBoolConst::compare(ExpressionNode *n) {
   if(n->getNodeType() != getNodeType()) {
     return ExpressionNode::compare(n);
@@ -20,3 +22,5 @@ bool ExpressionNodeBoolConst::traverseExpression(ExpressionNodeHandler &handler,
 void ExpressionNodeBoolConst::dumpNode(String &s, int level) const {
   addLeftMargin(s, level) += format(_T("BOOLEAN:%s\n"), boolToStr(getBool()));
 }
+
+}; // namespace Expr

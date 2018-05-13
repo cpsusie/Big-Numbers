@@ -3,17 +3,23 @@
 
 #include <LRparser.h>
 
-const extern ParserTables *ExpressionTables;
-
 #line 3 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.y"
 #include <Math/Expression/ExpressionSymbol.h>
 #include <Math/Expression/ExpressionLex.h>
 #include <Math/Expression/ParserTree.h>
 
+namespace Expr {
+
+
 class ExpressionParser : public LRparser {
+private:
+  static const ParserTables *ExpressionTables;
 public:
   ExpressionParser(ParserTree &tree, ExpressionLex *lex = NULL) : m_tree(tree), LRparser(*ExpressionTables,lex) {}
   void verror(const SourcePosition &pos, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
+  static const ParserTables &getTables() {
+    return *ExpressionTables;
+  }
 private:
   ParserTree &m_tree;
   ExpressionNode *m_dollardollar, **m_stacktop, *m_userstack[256];
@@ -27,6 +33,8 @@ private:
   void  defaultReduce(       unsigned int prod)    { m_dollardollar  = *m_stacktop;    } // $$ = $1
 };
 
+}; // namespace Expr
 
-#line 18 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
+
+#line 22 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
 

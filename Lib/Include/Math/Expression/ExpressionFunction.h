@@ -3,6 +3,8 @@
 #include <Math/MathLib.h>
 #include "Expression.h"
 
+namespace Expr {
+
 class ExpressionFunction : public Function {
 private:
   Expression           m_expr;
@@ -28,3 +30,5 @@ public:
     return m_varName;
   }
 };
+
+}; // namespace Expr

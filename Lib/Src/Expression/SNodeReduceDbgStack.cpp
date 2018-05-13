@@ -2,6 +2,8 @@
 #include <Math/Expression/ParserTree.h>
 #include <Math/Expression/SNodeReduceDbgStack.h>
 
+namespace Expr {
+
 #ifdef TRACE_REDUCTION_CALLSTACK
 
 void ReductionStack ::push(const TCHAR *method, const String &s, const ExpressionNode *n) {
@@ -34,3 +36,5 @@ void ParserTree::clearAllBreakPoints() {
 }
 
 #endif // TRACE_REDUCTION_CALLSTACK
+
+}; // namespace Expr

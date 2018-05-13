@@ -1,6 +1,8 @@
 #include "pch.h"
 #include <Math/Expression/ParserTree.h>
 
+namespace Expr {
+
 ParserTreeComplexity::ParserTreeComplexity(ParserTree &tree) {
   m_nodeCount = tree.getNodeCount(true, EOI);
   m_nameCount = tree.getNodeCount(true, NAME,EOI);
@@ -16,3 +18,5 @@ int ParserTreeComplexity::compare(const ParserTreeComplexity &tc) const {
 ParserTreeComplexity ParserTree::getComplexity() {
   return ParserTreeComplexity(*this);
 }
+
+}; // namespace Expr

@@ -1,6 +1,8 @@
 #include "pch.h"
 #include <Math/Expression/ParserTree.h>
 
+namespace Expr {
+
 int ExpressionNodeNumber::compare(ExpressionNode *n) {
   if(n->getNodeType() != getNodeType()) {
     return ExpressionNode::compare(n);
@@ -21,3 +23,4 @@ void ExpressionNodeNumber::dumpNode(String &s, int level) const {
   addLeftMargin(s, level) += format(_T("NUMBER:%s valueIndex:%2d\n"), getNumber().toString().cstr(), getValueIndex());
 }
 
+}; // namespace Expr
