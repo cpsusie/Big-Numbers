@@ -149,7 +149,10 @@ void GrammarTables::printCpp(MarginFile &output, bool useTableCompression) const
                    ,getTerminalCount(), getSymbolCount(), getProductionCount(), getStateCount());
 
   const int pointerSize = sizeof(void*);
-  output.printf(_T("const ParserTables *%s = &%s_s;\n"), m_tablesClassName.cstr(), m_tablesClassName.cstr());
+  output.printf(_T("const ParserTables *%s::%s = &%s_s;\n")
+               ,m_parserClassName.cstr()
+               ,m_tablesClassName.cstr()
+               ,m_tablesClassName.cstr());
   output.printf(_T("// Size of %s_s: %d bytes. Size of %s:%d bytes\n")
                ,m_tablesClassName.cstr(), tableClassSize
                ,m_tablesClassName.cstr(), pointerSize);

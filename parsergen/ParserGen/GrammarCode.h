@@ -37,6 +37,10 @@ public:
     return m_sourceName;
   }
 
+  const String &getParserClassName() const {
+    return m_parserClassName;
+  }
+
   const String &getTablesClassName() const {
     return m_tablesClassName;
   }
@@ -62,7 +66,8 @@ private:
   Array<CompactIntArray>       m_rightSide;
   Array<ActionArray>           m_stateActions;
   Array<ActionArray>           m_stateSucc;
-  String                       m_tablesClassName;
+  const String                 m_parserClassName;
+  const String                 m_tablesClassName;
   mutable BitSet               m_compressibleStateSet;
   mutable unsigned int         m_countTableBytes;
   mutable unsigned int         m_uncompressedStateBytes;
@@ -106,7 +111,7 @@ private:
   int  printSymbolNameTableCpp(        MarginFile &output) const;                      // return size in bytes
   int  printByteArray(                 MarginFile &output, const String &name, const ByteArray &ba, UINT bytesPerLine = 20, const StringArray *linePrefix = NULL) const;
 public:
-  GrammarTables(const Grammar &g, const String &tableClassName);
+  GrammarTables(const Grammar &g, const String &tableClassName, const String &parserClassName);
   int getAction(   unsigned int state, int input) const;
   int getSuccessor(unsigned int state, int nt   ) const;
 

@@ -1,11 +1,12 @@
 #include "stdafx.h"
 #include "GrammarCode.h"
 
-GrammarTables::GrammarTables(const Grammar &grammar, const String &tablesClassName)
+GrammarTables::GrammarTables(const Grammar &grammar, const String &tablesClassName, const String &parserClassName)
 : m_compressibleStateSet(grammar.getStateCount())
+, m_tablesClassName(tablesClassName)
+, m_parserClassName(parserClassName)
 {
   m_terminalCount   = grammar.getTerminalCount();
-  m_tablesClassName = tablesClassName;
   m_countTableBytes = 0;
 
   for(int p = 0; p < grammar.getProductionCount(); p++) {

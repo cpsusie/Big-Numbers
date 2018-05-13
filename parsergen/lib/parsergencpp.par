@@ -19,8 +19,6 @@ $NEWHEADERFILE$=$GRAMMARNAME$Parser.h
 
 #include <LRparser.h>
 
-const extern ParserTables *$GRAMMARNAME$Tables;
-
 $FILEHEAD$
 
 $NEWFILE$=$GRAMMARNAME$Action.cpp
