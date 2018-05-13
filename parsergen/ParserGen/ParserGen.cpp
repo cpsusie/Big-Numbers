@@ -22,6 +22,8 @@ static void usage() {
        " -l : Suppress #line directives in output.\n"
        " -b : Suppress break-statements in output.\n"
        " -a : No reduceactions generated.\n"
+       " -Nnamespace: Wrappes everything into a namespace with the given name.\n"
+       "      Applies only to c++-code.\n"
        " -n : Generate nonterminalsymbols in XXXSymbol.h/XXXSymbol.java).\n"
        " -h : Write lookahead symbols in docfile.\n"
        " -c : Disable parser tables compression. (states where all actions are reduce with the same prod). Default is on\n"
@@ -61,8 +63,8 @@ int _tmain(int argc, TCHAR **argv) {
   String    implOutputDir   = _T(".");
   String    headerOutputDir = implOutputDir;
   String    templateName    = EMPTYSTRING;
+  String    nameSpace       = EMPTYSTRING;
   CodeFlags flags;
-  bool      callWizard      = false;
   Language  language        = CPP;
   TCHAR    *wizardName      = EMPTYSTRING;
   int       tabSize         = 4;
@@ -132,7 +134,7 @@ int _tmain(int argc, TCHAR **argv) {
           break;
 
         case 'w':
-          callWizard = true;
+          flags.m_callWizard = true;
           wizardName = cp+1;
           break;
         case 't':
@@ -143,6 +145,12 @@ int _tmain(int argc, TCHAR **argv) {
         case 'j':
           language = JAVA;
           continue;
+        case 'N':
+          nameSpace = cp+1;
+          if(nameSpace.length() == 0) {
+            usage();
+          }
+          break;
         default :
           usage();
         }
@@ -168,7 +176,7 @@ int _tmain(int argc, TCHAR **argv) {
     }
 
     bool ok = true;
-    if(callWizard) {
+    if(flags.m_callWizard) {
       wizard(stdout, wizardTemplate, wizardName);
     } else {
       if(!*argv) {
@@ -203,6 +211,7 @@ int _tmain(int argc, TCHAR **argv) {
                          ,grammar
                          ,implOutputDir
                          ,headerOutputDir
+                         ,nameSpace
                          ,flags);
 
         if(first1File.length() != 0) {

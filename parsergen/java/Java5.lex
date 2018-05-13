@@ -1,9 +1,6 @@
 %{
-#pragma once
 
  /* This part goes to javalex.h */
-
-#include <Scanner.h>
 
 class Java5Lex : public Scanner {
   void init();

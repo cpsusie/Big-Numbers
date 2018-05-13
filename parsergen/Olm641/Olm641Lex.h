@@ -11,6 +11,5 @@ class Olm641Lex : public Scanner {
 public:
   int getNextLexeme();
 };
-
 #line 5 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
 

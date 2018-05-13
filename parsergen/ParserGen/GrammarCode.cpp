@@ -1,20 +1,11 @@
 #include "stdafx.h"
 #include "GrammarCode.h"
-#include "TemplateWriter.h"
-
-CodeFlags::CodeFlags() {
-  m_lineDirectives       = true;
-  m_generateBreaks       = true;
-  m_generateActions      = true;
-  m_generateLookahead    = false;
-  m_generateNonTerminals = false;
-  m_useTableCompression  = true;
-}
 
 GrammarCoder::GrammarCoder(const String &templateName
                           ,Grammar      &grammar
                           ,const String &implOutputDir
                           ,const String &headerOutputDir
+                          ,const String &nameSpace
                           ,CodeFlags     flags)
 : m_grammar(        grammar                                                     )
 , m_templateName(   templateName                                                )
@@ -25,6 +16,7 @@ GrammarCoder::GrammarCoder(const String &templateName
 , m_grammarName(    FileNameSplitter(m_grammar.getName()).getFileName()         )
 , m_parserClassName(m_grammarName + _T("Parser")                                )
 , m_tablesClassName(m_grammarName + _T("Tables")                                )
+, m_nameSpace(      nameSpace                                                   )
 , m_docFileName(    FileNameSplitter(m_sourceName).setExtension(_T("txt")).getFullPath())
 {
   m_tablesByteCount  = 0;
@@ -42,9 +34,8 @@ public:
 };
 
 void ActionsWriter::handleKeyword(TemplateWriter &writer, String &line) const {
-  MarginFile    &output  = writer.getOutput();
-  const Grammar &grammar = m_coder.getGrammar();
-  const CodeFlags &flags = m_coder.getFlags();
+  const Grammar               &grammar  = m_coder.getGrammar();
+  const CodeFlags              flags    = m_coder.getFlags();
 
   const int productionCount = grammar.getProductionCount();
   int actionCount     = 0;
@@ -59,19 +50,19 @@ void ActionsWriter::handleKeyword(TemplateWriter &writer, String &line) const {
     return; // dont generate any switch
   }
 
+  String text;
   for(int p = 0; p < productionCount; p++) {
     const Production &prod = grammar.getProduction(p);
     if(!prod.m_actionBody.isDefined()) {
       continue;
     }
-    output.printf(_T("case %d: /* %s */\n"), p, grammar.getProductionString(p).cstr());
-    int m = output.getLeftMargin();
-    output.setLeftMargin(m+2);
-    writeSourceText(output, prod.m_actionBody, writer.getPos(), flags.m_lineDirectives);
+    writer.printf(_T("case %d: /* %s */\n"), p, grammar.getProductionString(p).cstr());
+    writer.incrLeftMargin(2);
+    writer.writeSourceText(prod.m_actionBody);
     if(flags.m_generateBreaks) {
-      output.printf(_T("break;\n"));
+      writer.printf(_T("break;\n"));
     }
-    output.setLeftMargin(m);
+    writer.decrLeftMargin(2);
   }
 }
 
@@ -85,9 +76,13 @@ public:
 
 void TablesWriter::handleKeyword(TemplateWriter &writer, String &line) const {
   GrammarTables tables(m_coder.getGrammar(), m_coder.getTablesClassName());
-
-  tables.print(writer.getOutput(), m_coder.getGrammar().getLanguage(), m_coder.getFlags().m_useTableCompression);
-
+  String tmpFileName = TemplateWriter::createTempFileName(_T("txt"));
+  MarginFile f(tmpFileName);
+  tables.print(f, m_coder.getGrammar().getLanguage(), m_coder.getFlags().m_useTableCompression);
+  f.close();
+  const String text = readTextFile(tmpFileName);
+  writer.printf(_T("%s"),text.cstr());
+  unlink(tmpFileName);
   m_coder.setByteCount(tables.getTotalSizeInBytes(m_coder.getFlags().m_useTableCompression));
 }
 
@@ -113,39 +108,41 @@ void SymbolsWriter::handleKeyword(TemplateWriter &writer, String &line) const {
 }
 
 void SymbolsWriter::writeCppSymbols(TemplateWriter &writer) const {
-  const Grammar &grammar = m_coder.getGrammar();
-  int   maxNameLength    = grammar.getMaxSymbolNameLength();
-  MarginFile &output     = writer.getOutput();
+  const Grammar &grammar       = m_coder.getGrammar();
+  const int      maxNameLength = grammar.getMaxSymbolNameLength();
+  String text;
   if(m_terminals) {
     char delimiter = ' ';
     for(int s = 0; s < grammar.getTerminalCount(); s++, delimiter=',') {
-      output.printf(_T("%c%-*s = %3d\n"), delimiter, maxNameLength, grammar.getSymbol(s).m_name.cstr(), s);
+      text += format(_T("%c%-*s = %3d\n"), delimiter, maxNameLength, grammar.getSymbol(s).m_name.cstr(), s);
     }
   } else {
     if(m_coder.getFlags().m_generateNonTerminals) {
       char delimiter = ' ';
       for(int s = grammar.getTerminalCount(); s < grammar.getSymbolCount(); s++, delimiter=',') {
-        output.printf(_T("%c%-*s = %3d\n"), delimiter, maxNameLength, grammar.getSymbol(s).m_name.cstr(), s);
+        text += format(_T("%c%-*s = %3d\n"), delimiter, maxNameLength, grammar.getSymbol(s).m_name.cstr(), s);
       }
     }
   }
+  writer.printf(_T("%s"),text.cstr());
 }
 
 void SymbolsWriter::writeJavaSymbols(TemplateWriter &writer) const {
-  const Grammar &grammar = m_coder.getGrammar();
-  int   maxNameLength    = grammar.getMaxSymbolNameLength();
-  MarginFile &output     = writer.getOutput();
+  const Grammar &grammar       = m_coder.getGrammar();
+  int            maxNameLength = grammar.getMaxSymbolNameLength();
+  String         text;
   if(m_terminals) {
     for(int s = 0; s < grammar.getTerminalCount(); s++) {
-      output.printf(_T("public static final int %-*s = %3d;\n"), maxNameLength, grammar.getSymbol(s).m_name.cstr(), s);
+      text += format(_T("public static final int %-*s = %3d;\n"), maxNameLength, grammar.getSymbol(s).m_name.cstr(), s);
     }
   } else {
     if(m_coder.getFlags().m_generateNonTerminals) {
       for(int s = grammar.getTerminalCount(); s < grammar.getSymbolCount(); s++) {
-        output.printf(_T("public static final int %-*s = %3d;\n"), maxNameLength, grammar.getSymbol(s).m_name.cstr(), s);
+        text += format(_T("public static final int %-*s = %3d;\n"), maxNameLength, grammar.getSymbol(s).m_name.cstr(), s);
       }
     }
   }
+  writer.printf(_T("%s"), text.cstr());
 }
 
 class DocFileWriter : public KeywordHandler {
@@ -157,7 +154,7 @@ public:
 };
 
 void DocFileWriter::handleKeyword(TemplateWriter &writer, String &line) const {
-  m_coder.generateDocFile(writer.getOutput());
+  m_coder.generateDocFile();
 }
 
 void GrammarCoder::generateDocFile() {
@@ -192,9 +189,9 @@ void GrammarCoder::generateDocFile(MarginFile &output) {
 
 void GrammarCoder::generateParser() {
 
-  SourceTextWriter headerWriter(     m_grammar.getHeader()    , m_flags.m_lineDirectives);
-  SourceTextWriter driverHeadWriter( m_grammar.getDriverHead(), m_flags.m_lineDirectives);
-  SourceTextWriter driverTailWriter( m_grammar.getDriverTail(), m_flags.m_lineDirectives);
+  SourceTextWriter headerWriter(     m_grammar.getHeader()    );
+  SourceTextWriter driverHeadWriter( m_grammar.getDriverHead());
+  SourceTextWriter driverTailWriter( m_grammar.getDriverTail());
   TablesWriter     tablesWriter(*this);
   ActionsWriter    actionsWriter(*this);
   SymbolsWriter    terminalsWriter(*this, true);
@@ -202,7 +199,7 @@ void GrammarCoder::generateParser() {
   DocFileWriter    docFileWriter(*this);
   NewFileHandler   newFileHandler;
 
-  TemplateWriter writer(m_templateName, m_implOutputDir, m_headerOutputDir, false);
+  TemplateWriter writer(m_templateName, m_implOutputDir, m_headerOutputDir, m_flags);
 
   writer.addKeywordHandler(_T("FILEHEAD"           ), headerWriter      );
   writer.addKeywordHandler(_T("CLASSHEAD"          ), driverHeadWriter  );
@@ -222,8 +219,16 @@ void GrammarCoder::generateParser() {
   writer.addMacro(         _T("SYMBOLCOUNT"        ), toString(m_grammar.getSymbolCount()));
   writer.addMacro(         _T("PRODUCTIONCOUNT"    ), toString(m_grammar.getProductionCount()));
   writer.addMacro(         _T("STATECOUNT"         ), toString(m_grammar.getStateCount()));
-  writer.addMacro(         _T("OUTPUTDIR"          ), m_implOutputDir);
-  writer.addMacro(         _T("HEADERDIR"          ), m_headerOutputDir);
+  writer.addMacro(         _T("OUTPUTDIR"          ), m_implOutputDir    );
+  writer.addMacro(         _T("HEADERDIR"          ), m_headerOutputDir  );
+  writer.addMacro(         _T("NAMESPACE"          ), m_nameSpace        );
+  if(m_nameSpace.length() > 0) {
+    writer.addMacro(       _T("PUSHNAMESPACE"      ), format(_T("namespace %s {\n"    ), m_nameSpace.cstr()));
+    writer.addMacro(       _T("POPNAMESPACE"       ), format(_T("}; // namespace %s\n"), m_nameSpace.cstr()));
+  } else {
+    writer.addMacro(       _T("PUSHNAMESPACE"      ), _T(""));
+    writer.addMacro(       _T("POPNAMESPACE"       ), _T(""));
+  }
 
   writer.generateOutput();
 }

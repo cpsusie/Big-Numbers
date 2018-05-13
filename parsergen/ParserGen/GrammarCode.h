@@ -1,17 +1,7 @@
 #pragma once
 
 #include <TreeMap.h>
-
-class CodeFlags {
-public:
-  bool m_lineDirectives       : 1;
-  bool m_generateBreaks       : 1;
-  bool m_generateActions      : 1;
-  bool m_generateLookahead    : 1;
-  bool m_generateNonTerminals : 1;
-  bool m_useTableCompression  : 1;
-  CodeFlags();
-};
+#include "TemplateWriter.h"
 
 class GrammarCoder {
 private:
@@ -25,12 +15,14 @@ private:
   const String     m_parserClassName;
   const String     m_tablesClassName;
   const String     m_docFileName;
+  const String     m_nameSpace;
   unsigned int     m_tablesByteCount;
 public:
   GrammarCoder(const String &templateName
              , Grammar      &grammar
              , const String &outputDirImpl
              , const String &outputDirHeaders
+             , const String &nameSpace
              , CodeFlags     flags);
   ~GrammarCoder();
   void generateParser();
