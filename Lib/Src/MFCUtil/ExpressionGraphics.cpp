@@ -80,7 +80,7 @@ const SymbolString &SymbolStringMap::getString(ExpressionInputSymbol symbol) con
   DEFINEMETHODNAME;
   const SymbolString *ss = get(symbol);
   if(ss == NULL) {
-    throwInvalidArgumentException(method, _T("Unknown symbol:%s"), ExpressionTables->getSymbolName(symbol));
+    throwInvalidArgumentException(method, _T("Unknown symbol:%s"), ExpressionParser::getTables().getSymbolName(symbol));
   }
   return *ss;
 }
