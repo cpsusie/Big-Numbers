@@ -75,6 +75,7 @@ void ParserTreeSymbolTable::create(ParserTree *tree, const ParserTreeSymbolTable
   allocateConstant(NULL, _T("e") , M_E);
   buildSymbolTable(tree->getRoot());
   m_tree->traverseTree(AllocateNumbers(this));
+  buildValueRefCountTable();
   for(size_t i = 0; i < oldVariables.size(); i++) {
     const ExpressionVariableWithValue &oldVar = oldVariables[i];
     if(oldVar.isInput()) {
@@ -224,7 +225,6 @@ ExpressionVariable *ParserTreeSymbolTable::allocateSymbol(ExpressionNode *n, boo
   if(v == NULL) {
     v = allocateSymbol(n->getName(), 0, isConstant, isLeftSide, isLoopVar);
   } else {
-    v->incrOccurrence();
     if(isLoopVar) {
       m_tree->addError(n, _T("Control variable %s has already been used"), n->getName().cstr());
     } else if(isLeftSide) {
@@ -238,6 +238,7 @@ ExpressionVariable *ParserTreeSymbolTable::allocateSymbol(ExpressionNode *n, boo
     }
   }
   n->setVariable(v);
+  incrValueRefCount(v->getValueIndex());
   return v;
 }
 
@@ -266,10 +267,12 @@ void ParserTreeSymbolTable::allocateNumber(ExpressionNode *n, bool reuseIfExist)
     const int index = findNumberIndexByValue(n->getReal());
     if(index >= 0) {
       n->setValueIndex(index);
+      incrValueRefCount(index);
       return;
     }
   }
   n->setValueIndex(insertValue(n->getReal()));
+  incrValueRefCount(n->getValueIndex());
 }
 
 // insert value into m_valueTable, return index
@@ -313,6 +316,27 @@ void ParserTreeSymbolTable::unmarkAllReferencedNodes() {
   }
 }
 
+void ParserTreeSymbolTable::incrValueRefCount(UINT valueIndex) {
+  int *count = m_valueRefCountHashMap.get(valueIndex);
+  if(count) {
+    (*count)++;
+  } else {
+    m_valueRefCountHashMap.put(valueIndex,1);
+  }
+}
+
+void ParserTreeSymbolTable::buildValueRefCountTable() {
+  const size_t n = getValueTable().size();
+  m_valueRefCountTable.clear();
+  m_valueRefCountTable.setCapacity(n);
+  m_valueRefCountTable.add(0,0,n);
+  for(Iterator<Entry<CompactIntKeyType, int> > it = m_valueRefCountHashMap.getEntryIterator(); it.hasNext();) {
+    const Entry<CompactIntKeyType, int> &e = it.next();
+    m_valueRefCountTable[e.getKey()] = e.getValue();
+  }
+  m_valueRefCountHashMap.clear();
+}
+
 String NameTable::toString() const {
   String result = _T("{");
   const TCHAR *del = NULL;
@@ -350,6 +374,8 @@ String ParserTreeSymbolTable::toString() const {
       if(i < n-1) result += _T("  ");
     };
   }
+
+//  result += valueRefCountToString();
   return result;
 }
 
@@ -376,6 +402,15 @@ StringArray ParserTreeSymbolTable::getIndexedNameArray() const {
     a[i] = format(_T("value[%2d]:%s"), i, a[i].cstr());
   }
   return a;
+}
+
+String ParserTreeSymbolTable::valueRefCountToString() const {
+  const size_t n = m_valueRefCountTable.size();
+  String result = _T("Value references\n");
+  for(size_t i = 0; i < n; i++) {
+    result += format(_T("  Value[%2d]:%3d references\n"),i,m_valueRefCountTable[i]);
+  }
+  return result;
 }
 
 }; // namespace Expr

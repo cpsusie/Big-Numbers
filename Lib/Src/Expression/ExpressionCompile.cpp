@@ -5,8 +5,7 @@ namespace Expr {
 
 // --------------------------------- CodeGenerator -----------------------------------
 
-CodeGenerator::CodeGenerator(ParserTree *tree, FILE *listFile) : m_tree(*tree)
-{
+CodeGenerator::CodeGenerator(ParserTree *tree, FILE *listFile) : m_tree(*tree) {
   if(tree->getTreeForm() != TREEFORM_STANDARD) {
     throwException(_T("Treeform must be STANDARD to generate machinecode. Form=%s"), m_tree.getTreeFormName().cstr());
   }
@@ -29,7 +28,30 @@ CodeGenerator::CodeGenerator(ParserTree *tree, FILE *listFile) : m_tree(*tree)
 }
 
 void CodeGenerator::genMachineCode() {
+#ifdef FPU_OPTIMIZE
+  const CompactIntArray &refCountTable = m_tree.getSymbolTable().getValueRefCountTable();
+  const size_t n = refCountTable.size();
+  int    maxRefCount   =  0;
+  UINT   mostUsedIndex = -1;
+  for(UINT i = 0; i < n; i++) {
+    const int v = refCountTable[i];
+    if(v > maxRefCount) {
+      maxRefCount   = v;
+      mostUsedIndex = i;
+    }
+  }
+  bool hasExtraPush = false;
+  if(maxRefCount > 5) {
+    m_code->emitFLD(m_code->getTableRef(mostUsedIndex));
+    hasExtraPush = true;
+  }
   genStatementList(m_tree.getRoot());
+  if(hasExtraPush) {
+    m_code->emit(FSTP,ST0);
+  }
+#else  // !FPU_OPTIMIZE
+  genStatementList(m_tree.getRoot());
+#endif // !FPU_OPTIMIZE
   m_code->finalize();
 }
 

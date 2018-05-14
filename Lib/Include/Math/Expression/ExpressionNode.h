@@ -14,7 +14,6 @@ private:
   const String m_name;
   // Index into parserTree.m_valueTable
   int          m_valueIndex;
-  UINT         m_occurrenceCount;
   UINT         m_constant : 1;
   UINT         m_defined  : 1;
   UINT         m_loopVar  : 1;
@@ -26,7 +25,6 @@ public:
   inline       int     getValueIndex() const    { return m_valueIndex;              }
   inline void          setValueIndex(int index) { m_valueIndex = index;             }
   inline void          setDefined()             { m_defined = 1;                    }
-  inline void          incrOccurrence()         { m_occurrenceCount++;              }
   inline bool          isConstant()    const    { return m_constant ? true : false; }
   inline bool          isDefined()     const    { return m_defined  ? true : false; }
   inline bool          isLoopVar()     const    { return m_loopVar  ? true : false; }

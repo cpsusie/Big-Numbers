@@ -9,6 +9,8 @@
 
 namespace Expr {
 
+#define FPU_OPTIMIZE
+
 #ifdef IS64BIT
 #ifndef LONGDOUBLE
 #define USEXMMREG 1
@@ -266,6 +268,8 @@ private:
   bool wantFPUComment() const {
     return listEnabled();
   }
+  // return index of FPU-register containing value, if it exist. -1 if not exist
+  int findFPURegIndex(const MemoryOperand &mem) const;
   void changeShortJumpToNearJump(JumpFixup &jf);
   void finalJumpFixup();
   void insertZeroes(UINT pos, UINT count);
@@ -343,8 +347,8 @@ public:
   inline InstructionInfo emitFSTP(const MemoryRef &mem) {
     return emit(FSTP, RealPtr(mem));
   }
-  inline InstructionInfo emitFLD( const MemoryRef &mem) {
-    return emit(FLD, RealPtr(mem));
+  inline void emitFLD( const MemoryRef &mem) {
+    emitFPUOpMem(FLD, RealPtr(mem));
   }
   inline MemoryRef getTableRef(int index) const {
     return TABLEREF_REG + m_addressTable.getESIOffset(index);

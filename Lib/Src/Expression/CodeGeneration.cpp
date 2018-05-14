@@ -79,8 +79,6 @@ InstructionInfo CodeGeneration::insertLEA(UINT pos, const IndexRegister &dst, co
   }
 }
 
-#define FPU_OPTIMIZE
-
 void CodeGeneration::emitFPUOpMem(const OpcodeBase &opcode, const MemoryOperand &mem) {
 #ifndef FPU_OPTIMIZE
   emit(opcode, mem);
@@ -92,19 +90,29 @@ void CodeGeneration::emitFPUOpMem(const OpcodeBase &opcode, const MemoryOperand 
   case _FDIV :
   case _FSUBR:
   case _FDIVR:
-    { const int valueIndex = getValueIndex(mem);
-      if(valueIndex >= 0) {
-        const int stIndex = m_FPUEmulator.findRegisterWithValueIndex(valueIndex);
-        if(stIndex >= 0) {
-          insert(size(), opcode, ST0, ST(stIndex));
-          return;
-        }
+    { const int stIndex = findFPURegIndex(mem);
+      if(stIndex >= 0) {
+        insert(size(), opcode, ST0, ST(stIndex));
+        return;
+      }
+    }
+    break;
+  case _FLD  :
+    { const int stIndex = findFPURegIndex(mem);
+      if(stIndex >= 0) {
+        insert(size(), FLD, ST(stIndex));
+        return;
       }
     }
     break;
   }
   emit(opcode, mem);
 #endif // FPU_OPTIMIZE
+}
+
+int CodeGeneration::findFPURegIndex(const MemoryOperand &mem) const {
+  const int valueIndex = getValueIndex(mem);
+  return (valueIndex >= 0) ? m_FPUEmulator.findRegisterWithValueIndex(valueIndex) : -1;
 }
 
 int CodeGeneration::getValueIndex(const InstructionOperand &op) const {

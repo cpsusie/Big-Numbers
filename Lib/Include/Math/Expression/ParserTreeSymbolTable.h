@@ -18,7 +18,10 @@ private:
   NameTable                     m_nameTable;
   Array<ExpressionVariable>     m_variableTable;
   mutable CompactRealArray      m_valueTable;
-
+  CompactIntArray               m_valueRefCountTable;
+  CompactIntHashMap<int>        m_valueRefCountHashMap;
+  void                  incrValueRefCount(UINT valueIndex);
+  void                  buildValueRefCountTable();
   void                  init();
   void                  buildSymbolTable(                    ExpressionNode *n);
   void                  buildSymbolTableIndexedExpression(   ExpressionNode *n);
@@ -81,7 +84,11 @@ public:
   inline const CompactRealArray &getValueTable() const {
     return m_valueTable;
   }
+  inline const CompactIntArray &getValueRefCountTable() const {
+    return m_valueRefCountTable;
+  }
   String toString() const;
+  String valueRefCountToString() const;
   StringArray getIndexedNameArray() const;
 };
 
