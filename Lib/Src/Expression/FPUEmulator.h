@@ -1,0 +1,161 @@
+#pragma once
+
+#include <CompactHashMap.h>
+#include <OpCode.h>
+
+namespace Expr {
+
+typedef enum {
+  _FLD       ,_FSTP      ,_FST       ,_FADD      ,_FMUL
+ ,_FSUB      ,_FDIV      ,_FSUBR     ,_FDIVR     ,_FADDP
+ ,_FMULP     ,_FSUBP     ,_FDIVP     ,_FSUBRP    ,_FDIVRP
+ ,_FCOM      ,_FCOMI     ,_FUCOM     ,_FUCOMI    ,_FCOMP
+ ,_FCOMIP    ,_FUCOMP    ,_FUCOMIP   ,_FCOMPP    ,_FUCOMPP
+ ,_FILD      ,_FISTP     ,_FISTTP    ,_FIST      ,_FIADD
+ ,_FIMUL     ,_FISUB     ,_FIDIV     ,_FISUBR    ,_FIDIVR
+ ,_FICOM     ,_FICOMP    ,_FCMOVB    ,_FCMOVAE   ,_FCMOVE
+ ,_FCMOVNE   ,_FCMOVBE   ,_FCMOVA    ,_FCMOVU    ,_FCMOVNU
+ ,_FFREE     ,_FXCH      ,_FWAIT     ,_FNOP      ,_FCHS      
+ ,_FABS      ,_FTST      ,_FXAM      ,_FLD1      ,_FLDL2T
+ ,_FLDL2E    ,_FLDPI     ,_FLDLG2    ,_FLDLN2    ,_FLDZ
+ ,_F2XM1     ,_FYL2X     ,_FPTAN     ,_FPATAN    ,_FXTRACT
+ ,_FPREM1    ,_FDECSTP   ,_FINCSTP   ,_FPREM     ,_FYL2XP1
+ ,_FSQRT     ,_FSINCOS   ,_FRNDINT   ,_FSCALE    ,_FSIN
+ ,_FCOS      ,_NOTFPU=-1
+} FPUOpcodeKey;
+
+class FPUOpcodeHashMap : public CompactStrHashMap<FPUOpcodeKey> {
+public:
+  FPUOpcodeHashMap();
+  // Returns the corresponding FPUOpcodeKey if opcode is for FPU. _NOTFPU if not
+  inline FPUOpcodeKey getOpcodeKey(const OpcodeBase &opcode) const {
+    const FPUOpcodeKey *v = get(opcode.getMnemonic().cstr());
+    return v ? *v : _NOTFPU;
+  }
+};
+
+class FPUSlot {
+private:
+  int  m_valueIndex;
+public:
+  inline FPUSlot() {
+    setEmpty();
+  }
+  inline bool isEmpty() const {
+    return m_valueIndex == -1;
+  }
+  inline bool isMixed() const {
+    return m_valueIndex == -2;
+  }
+  inline void setEmpty() {
+    m_valueIndex = -1;
+  }
+  inline void setMixed() {
+    m_valueIndex = -2;
+  }
+  inline void setValueIndex(UINT index) {
+    m_valueIndex = index;
+  }
+  inline int getValueIndex() const {
+    return m_valueIndex;
+  }
+  String toString() const;
+};
+
+class FPUContainer {
+public:
+  virtual int  getValueIndex(const InstructionOperand &op) const = NULL;
+  virtual void putFPUComment(const String &str) = NULL;
+  virtual bool wantFPUComment() const = NULL;
+};
+
+class FPUEmulator {
+private:
+  char          m_height; // Number of registers pushed.               m_height=[0..8]
+  BYTE          m_bottom; // Index of slot at the bottom of the stack. m_bottom=[0..7]
+  FPUSlot       m_slot[8];
+  bool          m_changed;
+  FPUContainer *m_container;
+
+  static FPUOpcodeHashMap s_FPUOpcodeMap;
+
+  inline BYTE getSlotIndex(BYTE index) const {
+    return (m_bottom + index + 1 - m_height) & 7;
+  }
+  inline FPUSlot &ST(BYTE index) {
+    assert(index < getHeight());
+    return m_slot[getSlotIndex(index)];
+  }
+  inline const FPUSlot &ST(BYTE index) const {
+    assert(index < getHeight());
+    return m_slot[getSlotIndex(index)];
+  }
+  inline void push(UINT valueIndex) {
+    assert(getHeight() < 8);
+    m_height++;
+    ST(0).setValueIndex(valueIndex);
+    m_changed = true;
+  }
+  void pop(BYTE count = 1) {
+    assert(count <= getHeight());
+    m_height -= count;
+    m_changed = true;
+  }
+  inline void pushMixed() {
+    push(0);
+    setMixed(0);
+  }
+  inline void setMixed(BYTE index) { // index=0 is ST(0)., etc
+    ST(index).setMixed();
+    m_changed = true;
+  }
+  inline void setEmpty(BYTE index) {
+    ST(index).setEmpty();
+    m_changed = true;
+  }
+  void swapWith0(BYTE index) {
+    assert(index <= getHeight());
+    FPUSlot &st0 = ST(0), &sti = ST(index);
+    const FPUSlot tmp = st0; st0 = sti; sti = tmp;
+    m_changed = true;
+  }
+  inline void fincstp() {
+    if(m_bottom == 7) m_bottom = 0; else m_bottom++;
+    m_changed = true;
+  }
+  inline void fdecstp() {
+    if(m_bottom == 0) m_bottom = 7; else m_bottom--;
+    m_changed = true;
+  }
+  inline bool isFPUOpcode(const OpcodeBase &opcode, FPUOpcodeKey &opcodeKey) const {
+    return (opcodeKey = s_FPUOpcodeMap.getOpcodeKey(opcode)) != _NOTFPU;
+  }
+  FPUOpcodeKey execute(FPUOpcodeKey code, char stackDelta, int memIndex=-1, int reg1=-1, int reg2=-1);
+public:
+  inline FPUEmulator() {
+    m_bottom    = 7;
+    m_height    = 0;
+    m_container = NULL;
+  }
+  inline UINT getHeight() const {
+    return m_height;
+  }
+  inline bool isEmpty() const {
+    return getHeight() == 0;
+  }
+  void setContainer(FPUContainer *container) {
+    m_container = container;
+  }
+
+  FPUOpcodeKey execute(const OpcodeBase &opcode);
+  FPUOpcodeKey execute(const OpcodeBase &opcode, const InstructionOperand &arg);
+  FPUOpcodeKey execute(const OpcodeBase &opcode, const InstructionOperand &arg1, const InstructionOperand &arg2);
+  static inline FPUOpcodeKey codeLookup(const OpcodeBase &opcode) {
+    return s_FPUOpcodeMap.getOpcodeKey(opcode);
+  }
+  // return index of reg with the specified value. -1 if not found
+  int findRegisterWithValueIndex(UINT valueIndex) const;
+  String toString() const;
+};
+
+}; // namespace Expr

@@ -14,6 +14,7 @@ CodeGeneration::CodeGeneration(MachineCode *code, const CompactRealArray &valueT
   , m_listFile(listFile, m_addressTable, nameCommentArray, TABLEREF_REG)
   , m_listEnabled(listFile!=NULL)
 {
+  m_FPUEmulator.setContainer(this);
 #ifdef IS64BIT
   m_functionTableStart = 0;
   resetStack(RESERVESTACKSPACE);
@@ -43,18 +44,21 @@ InstructionInfo CodeGeneration::insertIns(UINT pos, const InstructionBase &ins) 
 }
 
 InstructionInfo CodeGeneration::insert(UINT pos, const Opcode0Arg &opcode) {
+  if(pos == size()) m_FPUEmulator.execute(opcode);
   const InstructionInfo info = insertIns(pos, opcode);
   if(listEnabled()) m_listFile.add(pos,opcode);
   return info;
 }
 
 InstructionInfo CodeGeneration::insert(UINT pos, const OpcodeBase &opcode, const InstructionOperand &arg) {
+  if(pos == size()) m_FPUEmulator.execute(opcode,arg);
   const InstructionInfo info = insertIns(pos,opcode(arg));
   if(listEnabled()) m_listFile.add(pos,opcode,arg);
   return info;
 }
 
 InstructionInfo CodeGeneration::insert(UINT pos, const OpcodeBase &opcode, const InstructionOperand &arg1, const InstructionOperand &arg2) {
+  if(pos == size()) m_FPUEmulator.execute(opcode,arg1,arg2);
   const InstructionInfo info = insertIns(pos, opcode(arg1,arg2));
   if(listEnabled()) m_listFile.add(pos, opcode,arg1,arg2);
   return info;
@@ -73,6 +77,46 @@ InstructionInfo CodeGeneration::insertLEA(UINT pos, const IndexRegister &dst, co
   } else {
     return insert(pos, MOV, dst, *mr.getBase());
   }
+}
+
+#define FPU_OPTIMIZE
+
+void CodeGeneration::emitFPUOpMem(const OpcodeBase &opcode, const MemoryOperand &mem) {
+#ifndef FPU_OPTIMIZE
+  emit(opcode, mem);
+#else
+  switch(FPUEmulator::codeLookup(opcode)) {
+  case _FADD :
+  case _FMUL :
+  case _FSUB :
+  case _FDIV :
+  case _FSUBR:
+  case _FDIVR:
+    { const int valueIndex = getValueIndex(mem);
+      if(valueIndex >= 0) {
+        const int stIndex = m_FPUEmulator.findRegisterWithValueIndex(valueIndex);
+        if(stIndex >= 0) {
+          insert(size(), opcode, ST0, ST(stIndex));
+          return;
+        }
+      }
+    }
+    break;
+  }
+  emit(opcode, mem);
+#endif // FPU_OPTIMIZE
+}
+
+int CodeGeneration::getValueIndex(const InstructionOperand &op) const {
+  if(!op.isMemoryRef()) return -1;
+  const MemoryRef &mr = op.getMemoryReference();
+  if(mr.hasBase() && (mr.getBase() == &TABLEREF_REG)) {
+    const UINT valueIndex = m_addressTable.esiOffsetToIndex(mr.getOffset());
+    if(valueIndex < m_addressTable.getValueCount()) {
+      return valueIndex;
+    }
+  }
+  return -1;
 }
 
 UINT CodeGeneration::insertJump(UINT pos, const OpcodeBase &opcode, CodeLabel label) {
@@ -407,21 +451,6 @@ String FunctionCallInfo::toString() const {
                 ,__super::toString().cstr()
                 ,m_instructionSize
                 );
-}
-
-String FPUSlot::toString() const {
-  if(isEmpty()) return EMPTYSTRING;
-  if(isMixed()) return _T("mixed");
-  return format(_T("v[%2d]"), m_valueIndex);
-}
-
-String FPUContent::toString() const {
-  const UINT h = getHeight();
-  String result;
-  for(UINT i = 0; i < h; i++) {
-    result += format(_T("ST(%u):%-6s"),i,ST(i).toString().cstr());
-  }
-  return result;
 }
 
 }; // namespace Expr

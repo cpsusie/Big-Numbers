@@ -65,8 +65,11 @@ private:
   void     genIf(               const ExpressionNode *n DCL_DSTPARAM);
   void     genPowMultSequence(  UINT y);
   void     genCall(             const FunctionCall  &fc DCL_DSTPARAM);
-  inline void genFPUOpVal(const OpcodeBase &op, const ExpressionNode *n) {
-    m_code->emit(op, RealPtr(getTableRef(n)));
+  inline void genFPUOpVal(const OpcodeFPUArithm &op, const ExpressionNode *n) {
+    m_code->emitFPUOpMem(op, RealPtr(getTableRef(n)));
+  }
+  inline void genFPUOpVal(const OpcodeFPUCompare &op, const ExpressionNode *n) {
+    m_code->emitFPUOpMem(op, RealPtr(getTableRef(n)));
   }
 
 #ifdef IS32BIT

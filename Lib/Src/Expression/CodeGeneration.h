@@ -5,6 +5,7 @@
 #include <Math/MathLib.h>
 #include <Math/Expression/MachineCode.h>
 #include "ListFile.h"
+#include "FPUEmulator.h"
 
 namespace Expr {
 
@@ -217,77 +218,6 @@ public:
 #define STACK_REG    RSP
 #endif // IS64BIT
 
-class FPUSlot {
-private:
-  int  m_valueIndex;
-public:
-  inline FPUSlot() {
-    setEmpty();
-  }
-  inline bool isEmpty() const {
-    return m_valueIndex == -1;
-  }
-  inline bool isMixed() const {
-    return m_valueIndex == -2;
-  }
-  inline void setEmpty() {
-    m_valueIndex = -1;
-  }
-  inline void setMixed() {
-    m_valueIndex = -2;
-  }
-  inline void setValueIndex(BYTE index) {
-    m_valueIndex = index;
-  }
-  String toString() const;
-};
-
-class FPUContent {
-private:
-  BYTE    m_topSlot;
-  FPUSlot m_slot[8];
-public:
-  inline FPUContent() {
-    m_topSlot = 8;
-  }
-  inline UINT getHeight() const {
-    return 8 - m_topSlot;
-  }
-  inline bool isEmpty() const {
-    return getHeight() == 0;
-  }
-  inline FPUSlot &ST(BYTE index) {
-    assert(index < getHeight());
-    return m_slot[m_topSlot+index-1];
-  }
-  inline const FPUSlot &ST(BYTE index) const {
-    assert(index < getHeight());
-    return m_slot[m_topSlot+index-1];
-  }
-  inline void push(BYTE valueIndex) {
-    assert(getHeight() < 8);
-    m_topSlot--;
-    ST(0).setValueIndex(valueIndex);
-  }
-  inline void pushMixed() {
-    push(0);
-    setMixed(0);
-  }
-  inline void setMixed(BYTE index) { // index=0 is ST(0)., etc
-    ST(index).setMixed();
-  }
-  void pop(BYTE count = 1) {
-    assert(count <= getHeight());
-    m_topSlot += count;
-  }
-  void fxch(const FPURegister &reg) {
-    const UINT index = reg.getIndex();
-    assert(index <= getHeight());
-    const FPUSlot slot0 = ST(0); ST(0) = ST(index); ST(index) = slot0;
-  }
-  String toString() const;
-};
-
 class InstructionInfo {
   const UINT m_pos           : 25;
   const UINT m_size          : 4;   // [1..15];
@@ -310,13 +240,13 @@ public:
   }
 };
 
-class CodeGeneration {
+class CodeGeneration : FPUContainer {
 private:
   MachineCode                      &m_code;
   CompactArray<JumpFixup>           m_jumpFixups;
   Array<FunctionCallInfo>           m_callTable;
-  ValueAddressCalculation           m_addressTable;
-  FPUContent                        m_FPUContent;
+  const ValueAddressCalculation     m_addressTable;
+  FPUEmulator                       m_FPUEmulator;
   ListFile                          m_listFile;
   bool                              m_listEnabled;
 
@@ -329,6 +259,13 @@ private:
   UINT getFunctionRefIndex(const FunctionCall &fc);
 #endif // IS64BIT
 
+  int  getValueIndex(const InstructionOperand &op) const;
+  void putFPUComment(const String &str) {
+    m_listFile.setFPUComment(str);
+  }
+  bool wantFPUComment() const {
+    return listEnabled();
+  }
   void changeShortJumpToNearJump(JumpFixup &jf);
   void finalJumpFixup();
   void insertZeroes(UINT pos, UINT count);
@@ -392,6 +329,7 @@ public:
   inline UINT emitJump(const OpcodeBase &opcode, CodeLabel lbl) {
     return insertJump(size(), opcode, lbl);
   }
+  void emitFPUOpMem(const OpcodeBase &opcode, const MemoryOperand &mem);
 
 #ifdef IS32BIT
   UINT emitCall(const FunctionCall &fc);

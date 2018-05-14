@@ -825,6 +825,7 @@
     <ClInclude Include="..\..\Include\Math\Expression\SumElement.h" />
     <ClInclude Include="CodeGeneration.h" />
     <ClInclude Include="ExpressionCompile.h" />
+    <ClInclude Include="FPUEmulator.h" />
     <ClInclude Include="FunctionCall.h" />
     <ClInclude Include="ListFile.h" />
     <ClInclude Include="pch.h" />
@@ -857,6 +858,8 @@
     <ClCompile Include="ExpressionNodeVariable.cpp" />
     <ClCompile Include="ExpressionReplacePowers.cpp" />
     <ClCompile Include="ExpressionTables.cpp" />
+    <ClCompile Include="FPUEmulator.cpp" />
+    <ClCompile Include="FPUOpcodeHashMap.cpp" />
     <ClCompile Include="NodeOperatorsNumericForm.cpp" />
     <ClCompile Include="ExpressionVariable.cpp" />
     <ClCompile Include="ExpressionWrapper.cpp" />

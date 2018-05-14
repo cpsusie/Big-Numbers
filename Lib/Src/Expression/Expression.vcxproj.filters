@@ -84,6 +84,9 @@
     <ClInclude Include="..\..\Include\Math\Expression\SNodeReduceDbgStack.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="FPUEmulator.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -228,6 +231,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ExpressionNodeBoolConst.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FPUOpcodeHashMap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FPUEmulator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
