@@ -208,7 +208,6 @@ protected:
   // startMark. You can, however, push back characters after end of file has been encountered.
   bool pushback(int count);
 
-  // When called, next call to getNextLexeme() will return EOS (0)
   void terminateLexeme();
   void unTerminateLexeme();
 
@@ -223,7 +222,7 @@ protected:
 public:
   Scanner();
   Scanner(LexStream *stream);
-  ~Scanner();
+  virtual ~Scanner();
   void newStream(LexStream *stream, const SourcePosition &pos);
   void newStream(LexStream *stream, int lineno = 1);
   int setLineNumber(int lineNumber);
