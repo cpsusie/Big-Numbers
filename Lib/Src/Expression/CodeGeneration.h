@@ -244,13 +244,14 @@ public:
 
 class CodeGeneration : FPUContainer {
 private:
-  MachineCode                      &m_code;
-  CompactArray<JumpFixup>           m_jumpFixups;
-  Array<FunctionCallInfo>           m_callTable;
-  const ValueAddressCalculation     m_addressTable;
-  FPUEmulator                       m_FPUEmulator;
-  ListFile                          m_listFile;
-  bool                              m_listEnabled;
+  MachineCode                                       &m_code;
+  CompactArray<JumpFixup>                            m_jumpFixups;
+  Array<FunctionCallInfo>                            m_callTable;
+  const ValueAddressCalculation                      m_addressTable;
+  FPUEmulator                                        m_FPUEmulator;
+  CompactHashMap<CompactKeyType<CodeLabel>,FPUState> m_labelStateMap;
+  ListFile                                           m_listFile;
+  bool                                               m_listEnabled;
 
 #ifdef IS64BIT
   BYTE                              m_stackTop;
@@ -284,6 +285,9 @@ private:
   inline InstructionInfo emitIns(const InstructionBase &ins) {
     return insertIns(size(), ins);
   }
+  inline void listLabel(CodeLabel label, const FPUState &state) {
+    if(listEnabled()) m_listFile.add(size(), label, state);
+  }
   void listFixupTable() const;
   void listCallTable() const;
   inline bool enableListing(bool enable) {
@@ -297,9 +301,6 @@ public:
     return (UINT)m_code.size();
   }
   void list(const TCHAR *format,...) const;
-  inline void listLabel(CodeLabel label) {
-    if(listEnabled()) m_listFile.add(size(), label);
-  }
   inline bool listEnabled() const {
     return m_listEnabled && m_listFile.isOpen();
   }
@@ -310,8 +311,6 @@ public:
   InstructionInfo insert(   UINT pos, const OpcodeBase    &opcode, const InstructionOperand &arg1, const InstructionOperand &arg2);
   InstructionInfo insert(   UINT pos, const StringPrefix  &prefix, const StringInstruction  &strins);
   InstructionInfo insertLEA(UINT pos, const IndexRegister &dst   , const MemoryOperand      &mem);
-  // Returns index into m_jumpFixups. not index in code-array
-  UINT insertJump(UINT pos, const OpcodeBase    &opcode, CodeLabel lbl);
 
   // Return index of instruction in byte array
   inline InstructionInfo emit(   const Opcode0Arg &opcode) {
@@ -330,9 +329,8 @@ public:
     return insertLEA(size(), dst, RealPtr(ref));
   }
   // Returns index into m_jumpFixups. not index in code-array
-  inline UINT emitJump(const OpcodeBase &opcode, CodeLabel lbl) {
-    return insertJump(size(), opcode, lbl);
-  }
+  UINT emitJump(const OpcodeBase &opcode, CodeLabel label);
+  void emitLabel(CodeLabel label);
   void emitFPUOpMem(const OpcodeBase &opcode, const MemoryOperand &mem);
 
 #ifdef IS32BIT
@@ -344,8 +342,8 @@ public:
   UINT emitCall(const FunctionCall &fc, const ExpressionDestination &dst);
 #endif // IS64BIT
 
-  inline InstructionInfo emitFSTP(const MemoryRef &mem) {
-    return emit(FSTP, RealPtr(mem));
+  inline void emitFSTP(const MemoryRef &mem) {
+    emitFPUOpMem(FSTP, RealPtr(mem));
   }
   inline void emitFLD( const MemoryRef &mem) {
     emitFPUOpMem(FLD, RealPtr(mem));

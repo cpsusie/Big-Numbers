@@ -337,6 +337,34 @@ void ParserTreeSymbolTable::buildValueRefCountTable() {
   m_valueRefCountHashMap.clear();
 }
 
+int ParserTreeSymbolTable::findMostReferencedValueIndex(int &count) const {
+  const CompactIntArray &refCountTable = getValueRefCountTable();
+  const size_t           n             = refCountTable.size();
+  BitSet unusableValueIndexSet(n);
+  for(size_t v = 0; v < m_variableTable.size(); v++) {
+    const ExpressionVariable &var = m_variableTable[v];
+    if(var.isLoopVar() || var.isDefined()) {
+      unusableValueIndexSet.add(var.getValueIndex());
+    }
+  }
+  int    maxRefCount   =  0;
+  UINT   mostUsedIndex = -1;
+  for(UINT index = TMPVARCOUNT; index < n; index++) {
+    if(unusableValueIndexSet.contains(index)) continue;
+    const int rc = refCountTable[index];
+    if(rc > maxRefCount) {
+      maxRefCount   = rc;
+      mostUsedIndex = index;
+    }
+  }
+  count = maxRefCount;
+  return mostUsedIndex;
+}
+
+bool ParserTreeSymbolTable::isTempVarIndex(UINT valueIndex) { // static
+  return valueIndex < TMPVARCOUNT;
+}
+
 String NameTable::toString() const {
   String result = _T("{");
   const TCHAR *del = NULL;
@@ -375,7 +403,7 @@ String ParserTreeSymbolTable::toString() const {
     };
   }
 
-//  result += valueRefCountToString();
+  result += valueRefCountToString();
   return result;
 }
 

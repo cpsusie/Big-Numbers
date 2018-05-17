@@ -139,6 +139,7 @@ static const TCHAR *samples[] = {
    ,_T("x^0.5")
    ,_T("x^-0.5")
    ,_T("root(x,-2)")
+   ,_T("if(x==1 or x+1 < 1,x,x-1)")
    ,jacktool
 };
 

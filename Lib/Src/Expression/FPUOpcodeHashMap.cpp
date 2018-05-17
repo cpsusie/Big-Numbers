@@ -23,6 +23,11 @@ FPUOpcodeHashMap::FPUOpcodeHashMap() {
   addKey(FPREM1  ) ;addKey(FDECSTP ) ;addKey(FINCSTP ) ;addKey(FPREM   ) ;addKey(FYL2XP1 );
   addKey(FSQRT   ) ;addKey(FSINCOS ) ;addKey(FRNDINT ) ;addKey(FSCALE  ) ;addKey(FSIN    );
   addKey(FCOS    );
+#ifdef IS32BIT
+#ifndef LONGDOUBLE
+  addKey(CALL);
+#endif
+#endif
 };
 
 }; // namespace Expr

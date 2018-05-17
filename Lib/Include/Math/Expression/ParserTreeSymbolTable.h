@@ -1,6 +1,6 @@
 #pragma once
 
-#include <TreeMap.h>
+#include <HashMap.h>
 #include "ExpressionNode.h"
 
 namespace Expr {
@@ -87,6 +87,8 @@ public:
   inline const CompactIntArray &getValueRefCountTable() const {
     return m_valueRefCountTable;
   }
+  int findMostReferencedValueIndex(int &count) const; // count is out
+  static bool isTempVarIndex(UINT valueIndex);
   String toString() const;
   String valueRefCountToString() const;
   StringArray getIndexedNameArray() const;

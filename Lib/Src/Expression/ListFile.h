@@ -7,6 +7,7 @@
 namespace Expr {
 
 typedef int CodeLabel;
+class FPUState;
 
 inline String labelToString(CodeLabel label) {
   return format(_T("L%d"), label);
@@ -96,7 +97,7 @@ private:
   const CodeLabel           m_label;
   int                       m_iprel;
 public:
-  ListLineJump(UINT pos, const OpcodeBase &opcode, int iprel, CodeLabel label);
+  ListLineJump(UINT pos, const OpcodeBase &opcode, int iprel, CodeLabel label, const FPUState &state);
   void setIPrelativeOffset(int iprel) {
     m_iprel = iprel;
   }
@@ -118,7 +119,7 @@ class ListLineLabel : public ListLine {
 private:
   const CodeLabel m_label;
 public:
-  ListLineLabel(UINT pos, CodeLabel label);
+  ListLineLabel(UINT pos, CodeLabel label, const FPUState &state);
   String toString() const;
 };
 
@@ -169,14 +170,14 @@ public:
   inline void add(UINT pos, const StringPrefix &prefix, const StringInstruction &strins) {
     addLine(new ListLineStringOp(pos,prefix,strins));
   }
-  inline void add(UINT pos, const OpcodeBase &opcode, int iprel, CodeLabel label) {
-    addLine(new ListLineJump(pos,opcode,iprel,label));
+  inline void add(UINT pos, const OpcodeBase &opcode, int iprel, CodeLabel label, const FPUState &state) {
+    addLine(new ListLineJump(pos,opcode,iprel,label,state));
   }
   inline void add(UINT pos, const OpcodeCall &opcode, const InstructionOperand &arg, const FunctionCall &fc) {
     addLine(new ListLineCall(pos,opcode,arg,fc));
   }
-  inline void add(UINT pos, CodeLabel label) {
-    addLine(new ListLineLabel(pos,label));
+  inline void add(UINT pos, CodeLabel label, const FPUState &state) {
+    addLine(new ListLineLabel(pos,label, state));
   }
   inline void add(UINT pos, UINT rbxOffset, const FunctionCall &fc) {
     addLine(new ListLineFuncAddr(pos,rbxOffset,fc));

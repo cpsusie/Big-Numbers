@@ -1,19 +1,18 @@
 #include "pch.h"
 #include "FPUEmulator.h"
+#include "Math/Expression/ParserTreeSymbolTable.h"
 
 namespace Expr {
 
 FPUOpcodeHashMap FPUEmulator::s_FPUOpcodeMap;
 
 FPUOpcodeKey FPUEmulator::execute(const OpcodeBase &opcode) {
-  m_changed = false;
   FPUOpcodeKey codeKey;
   if(!isFPUOpcode(opcode,codeKey)) return codeKey;
   return execute(codeKey, opcode.getFPUStackDelta());
 }
 
 FPUOpcodeKey FPUEmulator::execute(const OpcodeBase &opcode, const InstructionOperand &arg) {
-  m_changed = false;
   FPUOpcodeKey codeKey;
   if(!isFPUOpcode(opcode,codeKey)) return codeKey;
   if(arg.isRegister()) {
@@ -24,7 +23,6 @@ FPUOpcodeKey FPUEmulator::execute(const OpcodeBase &opcode, const InstructionOpe
 }
 
 FPUOpcodeKey FPUEmulator::execute(const OpcodeBase &opcode, const InstructionOperand &arg1, const InstructionOperand &arg2) {
-  m_changed = false;
   FPUOpcodeKey codeKey;
   if(!isFPUOpcode(opcode,codeKey)) return codeKey;
   assert(arg1.isRegister());
@@ -33,6 +31,15 @@ FPUOpcodeKey FPUEmulator::execute(const OpcodeBase &opcode, const InstructionOpe
 }
 
 FPUOpcodeKey FPUEmulator::execute(FPUOpcodeKey codeKey, char stackDelta, int memIndex, int reg1, int reg2) {
+  m_state.resetChanged();
+  m_state.execute(codeKey,stackDelta,memIndex,reg1,reg2);
+  if(m_state.isChanged() && m_container && m_container->wantFPUComment()) {
+    m_container->putFPUComment(toString());
+  }
+  return codeKey;
+}
+
+void FPUState::execute(FPUOpcodeKey codeKey, char stackDelta, int memIndex, int reg1, int reg2) {
   switch(stackDelta) {
   case -2:
     pop(2); // FCOMPP, FUCOMPP
@@ -133,18 +140,34 @@ FPUOpcodeKey FPUEmulator::execute(FPUOpcodeKey codeKey, char stackDelta, int mem
     case _FINCSTP:  
       fincstp();
       break;
+    case _CALL   : // only activated in 32bit !LONGDOUBLE
+      pushMixed();
+      break;
     }
     break;
   case  1:
     switch(codeKey) {
     case _FLD:
       if(reg1 >= 0) {
-        push(ST(reg1).getValueIndex());
+        push(ST(reg1));
       } else if(memIndex >= 0) {
-        push(memIndex);
+        if(ParserTreeSymbolTable::isTempVarIndex(memIndex)) {
+          push(TEMPVAR);
+        } else {
+          push(memIndex);
+        }
       } else {
         pushMixed();
       }
+      break;
+    case _FLDZ:
+      push(CONST_0);
+      break;
+    case _FLD1:
+      push(CONST_1);
+      break;
+    case _FLDPI:
+      push(CONST_PI);
       break;
     default:
       pushMixed();
@@ -152,23 +175,26 @@ FPUOpcodeKey FPUEmulator::execute(FPUOpcodeKey codeKey, char stackDelta, int mem
     }
     break;
   }
-  if(m_changed && m_container && m_container->wantFPUComment()) {
-    m_container->putFPUComment(toString());
-  }
-  return codeKey;
 }
 
-int FPUEmulator::findRegisterWithValueIndex(UINT valueIndex) const {
+int FPUState::findRegisterWithValueIndex(UINT valueIndex) const {
   const UINT h = getHeight();
   for(BYTE index = 0; index < h; index++) {
-    if(ST(index).getValueIndex() == valueIndex) {
+    const FPUSlot &slot = ST(index);
+    if(slot.isIndex() && (slot.getValueIndex() == valueIndex)) {
       return index;
     }
   }
   return -1;
 }
 
-String FPUEmulator::toString() const {
+bool FPUState::operator==(const FPUState &state) const {
+  return (m_bottom == state.m_bottom)
+      && (m_height == state.m_height);
+  // maybe check labelled registers too....need more thinking
+}
+
+String FPUState::toString() const {
   const UINT h = getHeight();
   if(h == 0) return _T("FPU empty");
   String result;
@@ -179,9 +205,19 @@ String FPUEmulator::toString() const {
 }
 
 String FPUSlot::toString() const {
-  if(isEmpty()) return EMPTYSTRING;
-  if(isMixed()) return _T("mixed");
-  return format(_T("v[%2d]"), m_valueIndex);
+  switch (m_value) {
+  case SLOT_EMPTY: return EMPTYSTRING;
+  case SLOT_MIXED: return _T("mixed");
+  case TEMPVAR   : return _T("$temp");
+  case CONST_0   : return _T("0.000");
+  case CONST_1   : return _T("1.000");
+  case CONST_PI  : return _T("pi"   );
+  default        :
+    if(!isIndex()) {
+      return format(_T("Invalid content:%d"), m_value);
+    }
+    return format(_T("v[%2d]"), m_value);
+  }
 }
 
 }; // namespace Expr

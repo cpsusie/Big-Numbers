@@ -80,9 +80,7 @@ InstructionInfo CodeGeneration::insertLEA(UINT pos, const IndexRegister &dst, co
 }
 
 void CodeGeneration::emitFPUOpMem(const OpcodeBase &opcode, const MemoryOperand &mem) {
-#ifndef FPU_OPTIMIZE
-  emit(opcode, mem);
-#else
+#ifdef FPU_OPTIMIZE
   switch(FPUEmulator::codeLookup(opcode)) {
   case _FADD :
   case _FMUL :
@@ -92,22 +90,24 @@ void CodeGeneration::emitFPUOpMem(const OpcodeBase &opcode, const MemoryOperand 
   case _FDIVR:
     { const int stIndex = findFPURegIndex(mem);
       if(stIndex >= 0) {
-        insert(size(), opcode, ST0, ST(stIndex));
+        emit(opcode, ST0, ST(stIndex));
         return;
       }
     }
     break;
   case _FLD  :
+  case _FSTP :
+  case _FCOMP:
     { const int stIndex = findFPURegIndex(mem);
       if(stIndex >= 0) {
-        insert(size(), FLD, ST(stIndex));
+        emit(opcode, ST(stIndex));
         return;
       }
     }
     break;
   }
-  emit(opcode, mem);
 #endif // FPU_OPTIMIZE
+  emit(opcode, mem);
 }
 
 int CodeGeneration::findFPURegIndex(const MemoryOperand &mem) const {
@@ -127,11 +127,39 @@ int CodeGeneration::getValueIndex(const InstructionOperand &op) const {
   return -1;
 }
 
-UINT CodeGeneration::insertJump(UINT pos, const OpcodeBase &opcode, CodeLabel label) {
+void CodeGeneration::emitLabel(CodeLabel label) {
+  const FPUState *state = m_labelStateMap.get(label);
+  if(state) { // set the emulators state to be as it was at the jump.
+    m_FPUEmulator.setState(*state);
+  } else {    // Jump not generated yet. will come later as a backward jump.
+              // save emulators state at this point, so it can be checked,
+              // that it will be the same (height and bottom-position),
+              // when jump is generated. If they don't match, there will be
+              // something wrong with codegenerator.
+    state = &m_FPUEmulator.getState();
+    m_labelStateMap.put(label, *state);
+  }
+  listLabel(label, *state);
+}
+
+UINT CodeGeneration::emitJump(const OpcodeBase &opcode, CodeLabel label) {
+  const UINT            pos = size();
   const InstructionBase ins = opcode(0);
-  JumpFixup jf(opcode, pos, label, 0, ins.size());
+  JumpFixup             jf(opcode, pos, label, 0, ins.size());
+  const FPUState       *state = m_labelStateMap.get(label);
+  if(state) {
+    if(*state != m_FPUEmulator.getState()) {
+      throwException(_T("FPUState mismatch. State saved at label %s:<%s>, current:<%s>")
+                    ,labelToString(label).cstr()
+                    ,state->toString().cstr()
+                    ,m_FPUEmulator.getState().toString().cstr());
+    }
+  } else {
+    state = &m_FPUEmulator.getState();
+    m_labelStateMap.put(label, *state);
+  }
   insertIns(pos, ins);
-  if(listEnabled()) m_listFile.add(pos, opcode, 0, label);
+  if(listEnabled()) m_listFile.add(pos, opcode, 0, label, *state);
   const UINT result = (UINT)m_jumpFixups.size();
   m_jumpFixups.add(jf);
   return result;
@@ -145,7 +173,7 @@ void CodeGeneration::fixupJumps(const JumpList &list, bool b) {
     for(size_t i = 0; i < n; i++) {
       fixupJump(jumps[i],jmpTo);
     }
-    listLabel(b?list.m_trueLabel:list.m_falseLabel);
+    emitLabel(b?list.m_trueLabel:list.m_falseLabel);
   }
 }
 

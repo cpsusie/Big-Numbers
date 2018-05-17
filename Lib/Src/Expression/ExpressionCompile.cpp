@@ -29,24 +29,19 @@ CodeGenerator::CodeGenerator(ParserTree *tree, FILE *listFile) : m_tree(*tree) {
 
 void CodeGenerator::genMachineCode() {
 #ifdef FPU_OPTIMIZE
-  const CompactIntArray &refCountTable = m_tree.getSymbolTable().getValueRefCountTable();
-  const size_t n = refCountTable.size();
-  int    maxRefCount   =  0;
-  UINT   mostUsedIndex = -1;
-  for(UINT i = 0; i < n; i++) {
-    const int v = refCountTable[i];
-    if(v > maxRefCount) {
-      maxRefCount   = v;
-      mostUsedIndex = i;
-    }
-  }
-  bool hasExtraPush = false;
-  if(maxRefCount > 5) {
+  int       maxRefCount   = 0;
+  const int mostUsedIndex = m_tree.getSymbolTable().findMostReferencedValueIndex(maxRefCount);
+  bool      hasExtraPush  = false;
+
+  if(maxRefCount > 2) {
     m_code->emitFLD(m_code->getTableRef(mostUsedIndex));
     hasExtraPush = true;
   }
   genStatementList(m_tree.getRoot());
   if(hasExtraPush) {
+#ifdef IS32BIT
+    m_code->emit(FXCH,ST1);
+#endif // IS32BIT
     m_code->emit(FSTP,ST0);
   }
 #else  // !FPU_OPTIMIZE
@@ -136,7 +131,7 @@ void CodeGenerator::genReturnBoolExpression(const ExpressionNode *n) {
   const UINT jmpEnd = m_code->emitJump(JMP, endLabel);
   m_code->fixupJumps(jumps,false);
   m_code->emit(XOR,EAX,EAX);
-  m_code->fixupJump(jmpEnd).listLabel(endLabel);
+  m_code->fixupJump(jmpEnd).emitLabel(endLabel);
 }
 
 // Generate multiplication-sequence to calculate st(0) = st(0)^y
@@ -446,7 +441,7 @@ void CodeGenerator::genIndexedExpression(const ExpressionNode *n) {
   genExpression(startAssignment->right() DST_FPU);         // Evaluate start value for loopVar
   const int loopStart = (int)m_code->size();
   const CodeLabel startLabel = m_labelGen.nextLabel();
-  m_code->listLabel(startLabel);
+  m_code->emitLabel(startLabel);
   m_code->emit(FCOMI,ST2);                                 // Invariant:loopVar in st(0), endExpr in st(2)
   const CodeLabel endLabel = m_labelGen.nextLabel();
   const UINT      jmpEnd   = m_code->emitJump(JA,endLabel); // Jump loopEnd if st(0) > st(2)
@@ -456,9 +451,9 @@ void CodeGenerator::genIndexedExpression(const ExpressionNode *n) {
   genFLD(loopVar);
   m_code->emit(FLD1);
   m_code->emit(FADD);                                      // Increment loopVar
-  const UINT jmpStart = m_code->emitJump(JMP,startLabel);   // Jump loopStart
+  const UINT jmpStart = m_code->emitJump(JMP,startLabel);  // Jump loopStart
   const UINT loopEnd  = m_code->size();
-  m_code->listLabel(endLabel);
+  m_code->emitLabel(endLabel);
   m_code->emit(FSTP,ST0);                                  // Pop loopVar
   m_code->emit(FXCH,ST1);                                  // Result in st(0), end value in st(1). swap these and pop st(0)
   m_code->emit(FSTP,ST0);                                  // Pop end value
@@ -475,7 +470,7 @@ void CodeGenerator::genIf(const ExpressionNode *n DCL_DSTPARAM) {
   const UINT firstResultJump = m_code->emitJump(JMP,endLabel);
   m_code->fixupJumps(jumps,false);
   GENEXPRESSION(n->child(2));           // "false"-expr
-  m_code->fixupJump(firstResultJump).listLabel(endLabel);
+  m_code->fixupJump(firstResultJump).emitLabel(endLabel);
 }
 
 static ExpressionInputSymbol reverseComparator(ExpressionInputSymbol symbol) {
@@ -534,21 +529,23 @@ void CodeGenerator::genBoolExpression(const ExpressionNode *n, JumpList &jl, boo
   case GE   :
   case GT   :
     { ExpressionInputSymbol symbol = n->getSymbol();
+      const ExpressionNode *left  = n->left();
+      const ExpressionNode *right = n->right();
 #ifdef LONGDOUBLE
-      genExpression(n->right() DST_FPU);
-      genExpression(n->left()  DST_FPU);
+      genExpression(right DST_FPU);
+      genExpression(left  DST_FPU);
       m_code->emit(FCOMPP);
 #else // !LONGDOUBLE
-      if(n->left()->isNameOrNumber()) {
-        genExpression(n->right() DST_FPU);
-        genFPUOpVal(FCOMP,n->left());
+      if(left->isNameOrNumber()) {
+        genExpression(right DST_FPU);
+        genFPUOpVal(FCOMP,left);
         symbol = reverseComparator(symbol);
-      } else if(n->right()->isNameOrNumber()) {
-        genExpression(n->left() DST_FPU);
-        genFPUOpVal(FCOMP,n->right());
+      } else if(right->isNameOrNumber()) {
+        genExpression(left DST_FPU);
+        genFPUOpVal(FCOMP,right);
       } else {
-        genExpression(n->right() DST_FPU);
-        genExpression(n->left() DST_FPU);
+        genExpression(right DST_FPU);
+        genExpression(left DST_FPU);
         m_code->emit(FCOMPP);
       }
 #endif // LONGDOUBLE

@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "ListFile.h"
+#include "FPUEmulator.h"
 
 namespace Expr {
 
@@ -140,7 +141,6 @@ String ListLine::formatOpAndComment(const String &opstr, const TCHAR *comment) {
 }
 
 
-
 String ListLine::toString() const {
   return format(_T("%*s%-*d: ")
                ,LF_MARGIN, _T("")
@@ -215,12 +215,13 @@ String ListLineStringOp::toString() const {
 }
 
 
-ListLineJump::ListLineJump(UINT pos, const OpcodeBase &opcode, int iprel, CodeLabel label)
+ListLineJump::ListLineJump(UINT pos, const OpcodeBase &opcode, int iprel, CodeLabel label, const FPUState &state)
   : ListLine(pos)
   , m_opcode(opcode)
   , m_label(label)
   , m_iprel(iprel)
 {
+  setFPUComment(state.toString());
 }
 String ListLineJump::toString() const {
   return __super::toString()
@@ -230,7 +231,8 @@ String ListLineJump::toString() const {
                                   ,formatHexValue(m_iprel,false).cstr()
                                   )
                            ,labelToString(m_label).cstr()
-                           );
+                           )
+       + getFPUComment();
 }
 
 
@@ -255,13 +257,20 @@ String ListLineCall::toString() const {
 }
 
 
-ListLineLabel::ListLineLabel(UINT pos, CodeLabel label)
+ListLineLabel::ListLineLabel(UINT pos, CodeLabel label, const FPUState &state)
   : ListLine(pos, true)
   , m_label(label)
 {
+  setFPUComment(state.toString());
 }
 String ListLineLabel::toString() const {
-  return format(_T("%s:"), labelToString(m_label).cstr());
+  const String labelStr     = labelToString(m_label);
+  const int    fillerLength = LF_MARGIN + LF_POSLEN + 2 + LF_INSLEN + LF_OPSLEN + LF_COMLEN + 2 - (int)labelStr.length() - 1;
+  return format(_T("%s:%*s"), labelStr.cstr()
+               , fillerLength, _T("")
+               )
+               + getFPUComment();
+
 }
 
 
