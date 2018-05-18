@@ -2,12 +2,12 @@
 #pragma once
 #include <Scanner.h>
 
-#line 5 "C:\\mytools2015\\Parsergen\\java\\Java5.lex"
+#line 5 "C:\\mytools2015\\ParserGen\\java\\Java5.lex"
 class Java5Lex : public Scanner {
   void init();
 public:
   int getNextLexeme();
   static void findBestHashMapSize();
 };
-#line 5 "c:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
+#line 5 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
 

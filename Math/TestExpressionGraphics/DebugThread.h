@@ -4,6 +4,8 @@
 #include <TinyBitSet.h>
 #include <PropertyContainer.h>
 
+using namespace Expr;
+
 typedef enum {
   THREAD_RUNNING           // bool*
  ,THREAD_TERMINATED        // bool*

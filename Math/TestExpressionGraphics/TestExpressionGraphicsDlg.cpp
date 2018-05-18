@@ -1246,7 +1246,7 @@ void CTestExpressionGraphicsDlg::setContextWindow(int winId, const ExpressionRec
   m_contextRect  = rect;
   setWindowText(this, IDC_STATICDEBUGINFO, format(_T("context:(%s,%s)")
                                                  ,winName
-                                                 ,ExpressionTables->getSymbolName(getContextNodeSymbol())
+                                                 ,ExpressionParser::getTables().getSymbolName(getContextNodeSymbol())
                                                  )
                 );
 }
