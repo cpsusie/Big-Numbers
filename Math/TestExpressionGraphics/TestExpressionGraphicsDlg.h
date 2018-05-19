@@ -51,6 +51,7 @@ private:
   int          getFontSize();
   NumberFormat getNumberFormat();
   bool loadMenu(CMenu &menu, int id);
+  void buildSamplesMenu();
   void compileExpr();
   void deriveExpr();
   void makeExprImage();
@@ -112,6 +113,7 @@ private:
   Expression                        *getExprFromWinId( int winId);
   ExpressionImage                   &getImageFromWinId(int winId);
   bool                               hasImageInWindow( int winId) const;
+  static void startViewPhoto(const String &dir, const String &fileName);
 
 public:
   CTestExpressionGraphicsDlg(CWnd *pParent = NULL);
@@ -172,8 +174,11 @@ protected:
   afx_msg void OnFunctionsReduceFx();
   afx_msg void OnFunctionsReduceDerived();
   afx_msg void OnFunctionsEvaluateAll();
+  afx_msg void OnSamplesSampleId(UINT cmd);
   afx_msg LRESULT OnMsgRunStateChanged(      WPARAM wp, LPARAM lp);
   afx_msg LRESULT OnMsgShowDebugError(       WPARAM wp, LPARAM lp);
   DECLARE_MESSAGE_MAP()
+public:
+  afx_msg void OnSamplesRunall();
 };
 

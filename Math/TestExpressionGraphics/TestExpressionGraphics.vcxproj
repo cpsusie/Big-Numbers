@@ -430,6 +430,7 @@
     </Xdcmake>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Test\testexpr\ExpressionSamples.cpp" />
     <ClCompile Include="DebugThread.cpp" />
     <ClCompile Include="EnterVariablesDlg.cpp" />
     <ClCompile Include="ExpressionTreeDlg.cpp" />
@@ -456,6 +457,7 @@
     <ResourceCompile Include="TestExpressionGraphics.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Test\testexpr\ExpressionSamples.h" />
     <ClInclude Include="DebugThread.h" />
     <ClInclude Include="EnterVariablesDlg.h" />
     <ClInclude Include="ExpressionTreeDlg.h" />

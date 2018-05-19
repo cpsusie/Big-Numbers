@@ -536,6 +536,7 @@ AlignedImage *ExpressionPainter::getImage1(const ExpressionNode *n, int fontSize
   case EXP               :
   case EXP10             :
   case EXP2              :
+  case HYPOT             :
   case GAMMA             :
   case GAUSS             :
   case INVERF            :

@@ -39,6 +39,9 @@
     <ClCompile Include="VariableEditField.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Test\testexpr\ExpressionSamples.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="TestExpressionGraphics.rc">
@@ -74,6 +77,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="targetver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Test\testexpr\ExpressionSamples.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -73,7 +73,8 @@
 #define ID_GOTOEXPR1                    32832
 #define ID_GOTOEXPR2                    32833
 #define ID_GOTONUMBERFORMAT             32834
-#define ID_CONTEXTMENU_MULTIPLY         32854
+#define ID_CONTEXTMENU_MULTIPLY         32840
+#define ID_SAMPLES_RUNALL               32850
 #define ID_MSG_RUNSTATE_CHANGED         32900
 #define ID_MSG_SHOW_DEBUGERROR          32901
 #define ID_CONTEXTMENU_TOSTANDARDFORM   32910
@@ -90,7 +91,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        137
-#define _APS_NEXT_COMMAND_VALUE         32857
+#define _APS_NEXT_COMMAND_VALUE         32940
 #define _APS_NEXT_CONTROL_VALUE         1036
 #define _APS_NEXT_SYMED_VALUE           104
 #endif

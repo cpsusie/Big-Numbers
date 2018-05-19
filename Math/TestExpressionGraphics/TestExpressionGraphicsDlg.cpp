@@ -4,10 +4,17 @@
 #include "EnterVariablesDlg.h"
 #include "ExpressionTreeDlg.h"
 #include "TestTreesEqualDlg.h"
+#include "../../Test/testexpr/ExpressionSamples.h"
+
+#define APSTUDIO_INVOKED
+#include "Resource.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
+
+#define FIRST_SAMPLE_COMMAND _APS_NEXT_COMMAND_VALUE
+#define LAST_SAMPLE_COMMAND  FIRST_SAMPLE_COMMAND + 200
 
 class CAboutDlg : public CDialog {
 public:
@@ -91,8 +98,10 @@ BEGIN_MESSAGE_MAP(CTestExpressionGraphicsDlg, CDialog)
     ON_COMMAND(      ID_FUNCTIONS_REDUCEFX         , OnFunctionsReduceFx            )
     ON_COMMAND(      ID_FUNCTIONS_REDUCEDERIVED    , OnFunctionsReduceDerived       )
     ON_COMMAND(      ID_FUNCTIONS_EVALUATEALL      , OnFunctionsEvaluateAll         )
+    ON_COMMAND_RANGE(FIRST_SAMPLE_COMMAND,LAST_SAMPLE_COMMAND, OnSamplesSampleId    )
     ON_MESSAGE(      ID_MSG_RUNSTATE_CHANGED       , OnMsgRunStateChanged           )
     ON_MESSAGE(      ID_MSG_SHOW_DEBUGERROR        , OnMsgShowDebugError            )
+    ON_COMMAND(      ID_SAMPLES_RUNALL             , OnSamplesRunall                )
 END_MESSAGE_MAP()
 
 BOOL CTestExpressionGraphicsDlg::OnInitDialog() {
@@ -150,6 +159,7 @@ BOOL CTestExpressionGraphicsDlg::OnInitDialog() {
   getFontSizeCombo()->SetCurSel(5);
   gotoEditBox(this, IDC_EDITEXPR);
 
+  buildSamplesMenu();
   return FALSE;
 }
 
@@ -202,6 +212,26 @@ BOOL CTestExpressionGraphicsDlg::PreTranslateMessage(MSG *pMsg) {
     return true;
   }
   return __super::PreTranslateMessage(pMsg);
+}
+
+void CTestExpressionGraphicsDlg::buildSamplesMenu() {
+  int index;
+  HMENU samplesMenu    = findMenuContainingId(*GetMenu(), ID_SAMPLES_RUNALL, index);
+  HMENU currentSubMenu = NULL;
+  int   subMenuCount   = 0, itemsInSubMenu;
+  const size_t count = ExpressionSamples::getCount();
+#define SAMPLESPERMENU 20
+  for(UINT i = 0; i < count; i++) {
+    if(currentSubMenu == NULL) {
+      currentSubMenu = insertSubMenu(samplesMenu, subMenuCount++, format(_T("%2d - %2d"), i, i + SAMPLESPERMENU-1));
+      itemsInSubMenu = 0;
+    }
+    const TCHAR *text = ExpressionSamples::getSample(i);
+    insertMenuItem(currentSubMenu, itemsInSubMenu++, text, FIRST_SAMPLE_COMMAND + i);
+    if(itemsInSubMenu == SAMPLESPERMENU) {
+      currentSubMenu = NULL;
+    }
+  }
 }
 
 void CTestExpressionGraphicsDlg::OnFileExit() {
@@ -308,6 +338,41 @@ void CTestExpressionGraphicsDlg::OnClose() {
 void CTestExpressionGraphicsDlg::OnSize(UINT nType, int cx, int cy) {
   __super::OnSize(nType, cx, cy);
   m_layoutManager.OnSize(nType, cx, cy);
+}
+
+void CTestExpressionGraphicsDlg::OnSamplesSampleId(UINT cmd) {
+  const int id = cmd - FIRST_SAMPLE_COMMAND;
+  const TCHAR *sample = ExpressionSamples::getSample(id);
+  setWindowText(this, IDC_EDITEXPR, sample);
+}
+
+
+void CTestExpressionGraphicsDlg::OnSamplesRunall() {
+  const UINT count = ExpressionSamples::getCount();
+  const String dir = _T("C:\\temp\\ExprList\\Images");
+  for(UINT i = 0; i < count; i++) {
+    const String str = ExpressionSamples::getSample(i);
+    try {
+      Expression expr;
+      expr.compile(str,false);
+      Expr::ExpressionImage image = expressionToImage(m_device, expr, getFontSize(), getNumberFormat());
+      const String fileName = format(_T("testCase%03d.jpg"), i);
+      const String fullName = FileNameSplitter::getChildName(dir,fileName);
+      image.getImage()->writeAsJPG(ByteOutputFile(fullName));
+    } catch(Exception e) {
+      const String msg = format(_T("Testcase %d\n%s"), i, e.what());
+      showMessageBox(0, _T("%s"), msg.cstr());
+    } catch (...) {
+      showWarning(_T("Unknown exception in %s"), __TFUNCTION__);
+    }
+  }
+  startViewPhoto(dir, _T("testCase000.jpg"));
+}
+
+void CTestExpressionGraphicsDlg::startViewPhoto(const String &dir, const String &fileName) { // static
+  const String fullName = FileNameSplitter::getChildName(dir,fileName);
+  const String cmd = format(_T("shimgvw.dll,ImageView_Fullscreen %s"), fullName.cstr());
+  HINSTANCE inst = ::ShellExecute(NULL,L"open",_T("rundll32.exe"),cmd.cstr(),dir.cstr(),SW_SHOWNORMAL);
 }
 
 void CTestExpressionGraphicsDlg::startThread(int debugWinId, bool singleStep) {
@@ -1300,4 +1365,3 @@ ExpressionImage &CTestExpressionGraphicsDlg::getImageFromWinId(int winId) {
                                return m_exprImage;
   }
 }
-

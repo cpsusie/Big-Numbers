@@ -116,6 +116,10 @@ BEGIN
         MENUITEM "E&valuate F'(x)\tCtrl+M",     ID_FUNCTIONS_EVALUATEDERIVED
         MENUITEM "Evaluate &all\tCtrl+A",       ID_FUNCTIONS_EVALUATEALL
     END
+    POPUP "&Samples"
+    BEGIN
+        MENUITEM "Run &all\tCtrl+A",            ID_SAMPLES_RUNALL
+    END
 END
 
 IDR_CONTEXTMENU MENU
@@ -306,6 +310,7 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 352
     END
+
     IDD_ABOUTBOX, DIALOG
     BEGIN
         LEFTMARGIN, 7
