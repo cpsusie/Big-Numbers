@@ -141,7 +141,7 @@ static const TCHAR *samples[] = {
    ,jacktool
 };
 
-int ExpressionSamples::getCount() {
+UINT ExpressionSamples::getCount() {
   return ARRAYSIZE(samples);
 }
 

@@ -4,6 +4,6 @@
 
 class ExpressionSamples {
 public:
-  static int getCount();
+  static UINT getCount();
   static const TCHAR *getSample(UINT i);
 };
