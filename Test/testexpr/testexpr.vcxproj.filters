@@ -29,10 +29,10 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="testexpr.cpp">
+    <ClCompile Include="ExpressionSamples.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ExpressionSamples.cpp">
+    <ClCompile Include="TestExpr.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
