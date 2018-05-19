@@ -233,13 +233,23 @@ AlignedTextImage::AlignedTextImage(PixRectDevice &device, FontCache &fontCache, 
 }
 
 class ImageArray : public CompactArray<const AlignedImage*> {
+  inline static int getArgCount(const AlignedImage *img1, va_list argptr) {
+    int count = 1;
+    for(const AlignedImage *img = va_arg(argptr, const AlignedImage*); img; img = va_arg(argptr, const AlignedImage*)) {
+      count++;
+    }
+    return count;
+  }
 public:
-  ImageArray() {
+  inline ImageArray() {
+  }
+  inline explicit ImageArray(size_t capacity) : CompactArray<const AlignedImage*>(capacity) {
   }
   ImageArray(const AlignedImage *img1, va_list argptr);
 };
 
 ImageArray::ImageArray(const AlignedImage *img1, va_list argptr) {
+  setCapacity(getArgCount(img1, argptr));
   add(img1);
   for(const AlignedImage *img = va_arg(argptr, const AlignedImage*); img; img = va_arg(argptr, const AlignedImage*)) {
     add(img);
@@ -954,23 +964,29 @@ AlignedImage *ExpressionPainter::getIfImage(const ExpressionNode *n, int fontSiz
 }
 
 AlignedImage *ExpressionPainter::getStatementImages(const ExpressionNode *n, int fontSize, ExpressionRectangle &rect) {
-  ExpressionRectangle        semiRect;
-  AlignedImage              *semiImage = getOpImage(SEMI, fontSize, semiRect);
   const ExpressionNodeArray &list      = n->getChildArray();
   const size_t               stmtCount = list.size();
-  ImageArray result;
-  for(size_t i = 0; i < stmtCount; i++) {
-    ExpressionRectangle assignRect, stmtRect;
-    AlignedImage *stmtImage = getImage(list[i], fontSize, assignRect);
-    if(i < stmtCount-1) {
-      stmtRect.addChild(assignRect).addChild(semiRect);
-      result.add(concatImages(stmtRect, stmtImage, semiImage, NULL));
-      rect.addChild(stmtRect);
-    } else {
-      result.add(stmtImage); // no ';' after the last expression
+  if(stmtCount == 1) {
+    return getImage(list[0], fontSize, rect);
+  } else {
+    ExpressionRectangle semiRect;
+    AlignedImage       *semiImage = getOpImage(SEMI, fontSize, semiRect);
+    ImageArray result;
+    for(size_t i = 0; i < stmtCount; i++) {
+      ExpressionRectangle mathRect;
+      AlignedImage       *mathImage = getImage(list[i], fontSize, mathRect);
+      if(i < stmtCount-1) {
+        ExpressionRectangle stmtRect;
+        stmtRect.addChild(mathRect).addChild(semiRect);
+        result.add(concatImages(stmtRect, mathImage, semiImage, NULL));
+        rect.addChild(stmtRect);
+      } else {
+        rect.addChild(mathRect);
+        result.add(mathImage); // no ';' after the last expression
+      }
     }
+    return stackImages(result, rect);
   }
-  return stackImages(result, rect);
 }
 
 AlignedImage *ExpressionPainter::getUnaryOpImage(const ExpressionNode *n, int fontSize, ExpressionRectangle &rect) {
