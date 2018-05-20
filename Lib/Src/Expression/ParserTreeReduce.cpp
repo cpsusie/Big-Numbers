@@ -63,7 +63,7 @@ void ParserTree::reduce() {
     iterateTransformation(mainTransformer);
 
     mainTransformer.setState(PS_MAINREDUCTION2);
-    setRoot(SNode(getRoot()).multiplyParentheses());
+    setRoot(SNode(getRoot()).multiplyParentheses().node());
     iterateTransformation(mainTransformer);
 
   /*
@@ -99,7 +99,7 @@ void ParserTree::iterateTransformation(ParserTreeTransformer &transformer) {
   STARTREDUCTION(this);
 
   setReduceIteration(0);
-  setRoot(oldRoot);
+  setRoot(oldRoot.node());
   pruneUnusedNodes();
 
   setState(transformer.getState());
@@ -111,7 +111,7 @@ void ParserTree::iterateTransformation(ParserTreeTransformer &transformer) {
   for(setReduceIteration(1); getReduceIteration() < maxIterations; setReduceIteration(getReduceIteration()+1)) {
     SNode n1 = transformer.transform(n);
 
-    setRoot(n1);
+    setRoot(n1.node());
     setState(transformer.getState());
     checkIsCanonicalForm();
 
@@ -127,7 +127,7 @@ void ParserTree::iterateTransformation(ParserTreeTransformer &transformer) {
       n = n1;
     }
   }
-  setRoot(oldRoot);
+  setRoot(oldRoot.node());
   if(!done) {
     throwException(_T("%s:Maxiterations reached for expression <%s>"), method, n.toString().cstr());
   }

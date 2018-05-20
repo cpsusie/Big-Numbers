@@ -3,23 +3,27 @@
 
 namespace Expr {
 
-Real &ExpressionNode::doAssignment() const {
-  switch(getSymbol()) {
-  case ASSIGN:
-//    printf(_T("doasign:<%s> = %le\n"),n->left()->getName().cstr(),evaluateReal(n->right()));
-    { ExpressionVariable &var = left()->getVariable();
-      Real &ref = m_tree.getValueRef(var);
-      if(!var.isConstant()) {
-        ref = right()->evaluateReal();
-      }
-      return ref;
-    }
-    break;
-  default:
-    throwUnknownSymbolException(__TFUNCTION__);
+ExpressionNodeAssign::ExpressionNodeAssign(ParserTree *tree, const ExpressionNodeAssign *src) 
+: ExpressionNodeTree(tree, src)
+{
+}
+
+ExpressionNode *ExpressionNodeAssign::clone(ParserTree *tree) const {
+  ExpressionNode *n = new ExpressionNodeAssign(tree, this); TRACE_NEW(n);
+  return n;
+}
+
+Real &ExpressionNodeAssign::doAssignment() const {
+  ExpressionVariable &var = left()->getVariable();
+  Real &ref = left()->getValueRef();
+  if(!var.isConstant()) {
+    ref = right()->evaluateReal();
   }
-  static Real dummy;
-  return dummy;
+  return ref;
+}
+
+String ExpressionNodeAssign::toString() const {
+  return left()->toString() + _T(" = ") + right()->toString();
 }
 
 }; // namespace Expr

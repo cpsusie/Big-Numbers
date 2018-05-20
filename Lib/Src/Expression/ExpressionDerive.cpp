@@ -11,7 +11,7 @@ Expression Expression::getDerived(const String &name, bool reduceResult /*=false
   result.setTreeForm(TREEFORM_STANDARD);
   result.setMachineCode(false);
   SNode e(result.getRoot());
-  result.setRoot(e.D(name));
+  result.setRoot(e.D(name).node());
   result.pruneUnusedNodes();
   result.buildSymbolTable();
   result.setState(PS_DERIVED);

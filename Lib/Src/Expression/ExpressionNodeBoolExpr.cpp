@@ -6,7 +6,7 @@ namespace Expr {
 bool ExpressionNodeBoolExpr::isConstant() const {
   switch(getSymbol()) {
   case NOT     :
-    return child(0)->isConstant();
+    return left()->isConstant();
   case AND     :
     { const bool lConst = left()->isConstant();
       const bool rConst = right()->isConstant();
@@ -42,7 +42,7 @@ bool ExpressionNodeBoolExpr::isConstant() const {
 
 bool ExpressionNodeBoolExpr::evaluateBool() const {
   switch(getSymbol()) {
-  case NOT     : return !child(0)->evaluateBool();
+  case NOT     : return !left()->evaluateBool();
   case AND     : return left()->evaluateBool() && right()->evaluateBool();
   case OR      : return left()->evaluateBool() || right()->evaluateBool();
   case EQ      : return left()->evaluateReal() == right()->evaluateReal();

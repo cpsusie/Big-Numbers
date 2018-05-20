@@ -69,12 +69,6 @@ void Expression::compile(const String &expr, bool machineCode, FILE *listFile) {
   }
 }
 
-ExpressionNodeArray getStatementList(ExpressionNode *n) {
-  ExpressionNodeArray result(10);
-  n->getListFromTree(SEMI, result);
-  return result;
-}
-
 void Expression::parse(const String &expr) {
   clear();
   setOk(true);
@@ -84,7 +78,6 @@ void Expression::parse(const String &expr) {
   lex.setParser(&parser);
   parser.parse();
   if(isOk()) {
-    setRoot(getStmtList(getStatementList(getRoot())));
     buildSymbolTable();
     setTreeForm(TREEFORM_STANDARD);
     setState(PS_COMPILED);

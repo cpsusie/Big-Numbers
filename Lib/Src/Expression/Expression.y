@@ -62,7 +62,7 @@ $POPNAMESPACE$
 %}
 %%
 
-start               : function                              { m_tree.setRoot($1);                                       }
+start               : function                              { m_tree.setRoot(newNode(getPos(1), STMTLIST, $1, NULL));   }
                     ;
 
 function            : final_expr                        

@@ -4,19 +4,19 @@
 
 namespace Expr {
 
-void AddentArray::add(ExpressionNode *n, bool positive) {
-  switch(n->getSymbol()) {
+void AddentArray::add(SNode n, bool positive) {
+  switch(n.getSymbol()) {
   case NUMBER:
-    if(!n->isZero()) {      // dont add Zero
-      SumElement *e = new SumElement(n, positive); TRACE_NEW(e);
+    if(!n.isZero()) {      // dont add Zero
+      SumElement *e = new SumElement(n.node(), positive); TRACE_NEW(e);
       add(e);
     }
     break;
   case SUM   :
     if(positive) {
-      addAll(n->getAddentArray());
+      addAll(n.getAddentArray());
     } else {
-      const AddentArray &a = n->getAddentArray();
+      const AddentArray &a = n.getAddentArray();
       for(size_t i = 0; i < a.size(); i++) {
         SumElement *e = a[i];
         add(e->getNode(), !e->isPositive());
@@ -24,7 +24,7 @@ void AddentArray::add(ExpressionNode *n, bool positive) {
     }
     break;
   default    :
-    { SumElement *e = new SumElement(n, positive); TRACE_NEW(e);
+    { SumElement *e = new SumElement(n.node(), positive); TRACE_NEW(e);
       add(e);
     }
     break;

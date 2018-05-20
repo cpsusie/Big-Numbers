@@ -11,7 +11,7 @@ SNode SNode::D(const String &name) const {
     return _0();
 
   case NAME      :
-    { const ExpressionVariable &v = variable();
+    { const ExpressionVariable &v = getVariable();
       if(v.getName() == name) {
         return _1();
       } else if(v.isConstant() || v.isLoopVar() || !v.isDefined()) {
@@ -183,7 +183,7 @@ SNode SNode::D(const String &name) const {
       const SNode endExpr         = child(1);
       const SNode expr            = child(2); // the expression to multiply
       const SNode productCounter  = startAssignment.left();
-      const SNode sumCounter(getTree()->allocateLoopVarNode(productCounter.name()));
+      const SNode sumCounter(getTree()->allocateLoopVarNode(productCounter.getName()));
 
       return indexSum(assignStmt(sumCounter, startAssignment.right())
                      ,endExpr
@@ -214,11 +214,11 @@ SNode SNode::D(const String &name) const {
  * throws ExpressionUnderivableException if any of the SNode involved in evaluating the polynomial cannot be derived
  */
 SNode SNode::DPoly(const String &name) const {
-  const SExprList coefArray(getCoefficientArray());
+  const SNodeArray &coefArray  = getCoefArray();
   SNode           arg          = getArgument();   // arg(x) is the parameter to the polynomial
   const SNode     dargdx       = ddx(arg);        // dudx is u derived wrt. name
 
-  ExpressionNodeArray newCoefArray;
+  SNodeArray newCoefArray;
   const int degree = getDegree();
   newCoefArray.add(ddx(coefArray[0]));
   for(int i = 1; i < (int)coefArray.size(); i++) {
@@ -233,20 +233,20 @@ SNode SNode::DPoly(const String &name) const {
 SNode SNode::DStmtList(const String &name) const {
   DEFINEMETHODNAME;
 
-  SStmtList alist(*this);
-  ExpressionNodeArray result;
+  const SStmtList &alist = getChildArray();
+  SNodeArray result;
   const size_t assignCount = alist.size() - 1;
   for(size_t i = 0; i < assignCount; i++) {
-    SNode &stmt = alist[i];
+    SNode stmt = alist[i];
     switch(stmt.getSymbol()) {
     case ASSIGN:
       { const SNode var(stmt.left());   // variable assigned to
         const SNode expr(stmt.right()); // expression on the right side of =
-        if(var.name() == name) {
+        if(var.getName() == name) {
           throwException(_T("Cannot find derived of statement \"%s\", because a value is assigned to %s"), stmt.toString().cstr(), name.cstr());
         }
         result.add(stmt.node());
-        result.add(assignStmt(getTree()->fetchVariableNode(var.name()+_T("'")), ddx(expr)));
+        result.add(assignStmt(getTree()->fetchVariableNode(var.getName()+_T("'")), ddx(expr)));
       }
       break;
     default:

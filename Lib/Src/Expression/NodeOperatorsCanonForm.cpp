@@ -19,7 +19,7 @@ private:
   static inline ExpressionNode   *unaryMinus(ExpressionNode *n) {
     return n->getTree()->unaryMinus(n);
   }
-  static inline ExpressionNode   *getPoly(const ExpressionNodeArray &coefArray, ExpressionNode *arg) {
+  static inline ExpressionNode   *getPoly(const SNodeArray &coefArray, ExpressionNode *arg) {
     return arg->getTree()->getPoly(coefArray, arg);
   }
   static inline ExpressionNode   *indexedSum(ExpressionNode *assign, ExpressionNode *end, ExpressionNode *expr) {
@@ -92,7 +92,7 @@ ExpressionNode *NodeOperatorsCanonForm::minus(ExpressionNode *n) const {
         if(i != index) {
           newFactors.add(factor);
         } else {
-          newFactors.add(minus(factor->base()),factor->exponent());
+          newFactors.add(-factor->base(),factor->exponent());
         }
       }
       if(index < 0) {
@@ -102,17 +102,17 @@ ExpressionNode *NodeOperatorsCanonForm::minus(ExpressionNode *n) const {
     }
 
   case POLY      :
-    { const ExpressionNodeArray &coefArray = n->getCoefficientArray();
-      ExpressionNodeArray       newCoefArray(coefArray.size());
+    { const SNodeArray &coefArray = n->getCoefArray();
+      SNodeArray        newCoefArray(coefArray.size());
       for(size_t i = 0; i < coefArray.size(); i++) {
-        newCoefArray.add(minus(coefArray[i]));
+        newCoefArray.add(-coefArray[i]);
       }
-      ExpressionNode *arg = n->getArgument();
+      ExpressionNode *arg = n->getArgument().node();
       return getPoly(newCoefArray, arg);
     }
 
   case INDEXEDSUM:
-    return indexedSum(n->child(0), n->child(1), minus(n->child(2)));
+    return indexedSum(n->child(0).node(), n->child(1).node(), (-n->child(2)).node());
   }
 
   return unaryMinus(n);
@@ -131,12 +131,12 @@ ExpressionNode *NodeOperatorsCanonForm::reciprocal(ExpressionNode *n) const {
       FactorArray newFactors;
       for(size_t i = 0; i < factors.size(); i++) {
         ExpressionFactor *factor = factors[i];
-        newFactors.add(factor->base(), minus(factor->exponent()));
+        newFactors.add(factor->base(), -factor->exponent());
       }
       return getProduct(n,newFactors);
     }
   case INDEXEDPRODUCT:
-    return indexedProduct(n->child(0), n->child(1), reciprocal(n->child(2)));
+    return indexedProduct(n->child(0).node(), n->child(1).node(), reciprocal(n->child(2).node()));
   case POW    : // reciprocal(l^r) = l^-r
     return power(n->left(), minus(n->right()));
   }
@@ -201,7 +201,7 @@ ExpressionNode *NodeOperatorsCanonForm::quot(ExpressionNode *n1, ExpressionNode 
     const FactorArray &a2 = n2->getFactorArray();
     for(size_t i = 0; i < a2.size(); i++) {
       ExpressionFactor *f = a2[i];
-      a.add(f->base(), minus(f->exponent()));
+      a.add(f->base(), -f->exponent());
     }
   }
   return getProduct(n1,a);
@@ -294,7 +294,7 @@ public:
   inline CNode(ExpressionNode *n) : SNode(n) {
   }
   ExpressionNode *convert() const {
-    return toCForm();
+    return toCForm().node();
   }
 };
 
@@ -473,8 +473,8 @@ FactorArray &CNode::toCFormRoot(FactorArray &result, SNode &exponent) const {
 }
 
 CNode CNode::toCFormPoly() const {
-  const ExpressionNodeArray &coefArray = getCoefficientArray();
-  ExpressionNodeArray newCoefArray(coefArray.size());
+  const SNodeArray &coefArray = getCoefArray();
+  SNodeArray        newCoefArray(coefArray.size());
   for(size_t i = 0; i < coefArray.size(); i++) {
     newCoefArray.add(N(coefArray[i]).toCForm());
   }
@@ -483,8 +483,8 @@ CNode CNode::toCFormPoly() const {
 }
 
 CNode CNode::toCFormTreeNode() const {
-  const ExpressionNodeArray &a = getChildArray();
-  ExpressionNodeArray newChildArray(a.size());
+  const SNodeArray &a = getChildArray();
+  SNodeArray newChildArray(a.size());
   for(size_t i = 0; i < a.size(); i++) {
     newChildArray.add(N(a[i]).toCForm());
   }

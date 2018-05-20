@@ -3,9 +3,9 @@
 
 namespace Expr {
 
-ExpressionNodeStmtList::ExpressionNodeStmtList(ParserTree *tree, const ExpressionNodeArray &childArray) 
+ExpressionNodeStmtList::ExpressionNodeStmtList(ParserTree *tree, const SNodeArray &childArray) 
   : ExpressionNodeTree(tree, STMTLIST, childArray)
-  , m_returnType(childArray.last()->getReturnType())
+  , m_returnType(childArray.last().getReturnType())
 {
 }
 ExpressionNodeStmtList::ExpressionNodeStmtList(ParserTree *tree, const ExpressionNodeStmtList *src)
@@ -21,31 +21,31 @@ ExpressionNode *ExpressionNodeStmtList::clone(ParserTree *tree) const {
 
 Real ExpressionNodeStmtList::evaluateReal() const {
   if(m_returnType != EXPR_RETURN_REAL) UNSUPPORTEDOP();
-  const ExpressionNode *last = doAssignments();
-  return last->evaluateReal();
+  SNode last = doAssignments();
+  return last.evaluateReal();
 }
 
 bool ExpressionNodeStmtList::evaluateBool() const {
   if(m_returnType != EXPR_RETURN_BOOL) UNSUPPORTEDOP();
-  const ExpressionNode *last = doAssignments();
-  return last->evaluateBool();
+  SNode last = doAssignments();
+  return last.evaluateBool();
 }
 
-const ExpressionNode *ExpressionNodeStmtList::doAssignments() const {
-  const ExpressionNodeArray &stmtList = getChildArray();
+SNode ExpressionNodeStmtList::doAssignments() const {
+  const SNodeArray &stmtList = getChildArray();
 
   const int stmtCount = (int)stmtList.size() - 1;
   for(int i = 0; i < stmtCount; i++) {
-    stmtList[i]->doAssignment();
+    stmtList[i].doAssignment();
   }
   return stmtList.last();
 }
 
 String ExpressionNodeStmtList::toString() const {
   String result;
-  const ExpressionNodeArray &list = getChildArray();
+  const SNodeArray &list = getChildArray();
   for(size_t i = 0; i < list.size(); i++) {
-    result += list[i]->toString();
+    result += list[i].toString();
     result += _T(";\n");
   }
   return result;

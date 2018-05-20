@@ -1,10 +1,11 @@
 #include "pch.h"
 #include <Math/Expression/ParserTree.h>
 #include <Math/Expression/SumElement.h>
+#include <Math/Expression/SNode.h>
 
 namespace Expr {
 
-SumElement::SumElement(ExpressionNode *n, bool positive) {
+void SumElement::init(ExpressionNode *n, bool positive) {
   if(n->getSymbol() == POW) {
     if(n->left()->isOne() || n->right()->isOne()) {
       m_n = n->left();
@@ -22,6 +23,10 @@ SumElement::SumElement(ExpressionNode *n, bool positive) {
     m_positive = !m_positive;
   }
   m_n->getTree()->m_addentTable.add(this);
+}
+
+SumElement::SumElement(const SNode &n, bool positive) {
+  init(n.node(), positive);
 }
 
 const ExpressionNode *SumElement::createExpressionNode() const {

@@ -7,6 +7,7 @@ namespace Expr {
 class ParserTree;
 class ExpressionNode;
 class AddentArray;
+class SNode;
 
 class SumElement {
   friend class ParserTree;
@@ -17,8 +18,12 @@ private:
   bool            m_positive;
   // Used for garbage-collection
   bool            m_marked;
+  void init(ExpressionNode *n, bool positive);
 public:
-  SumElement(ExpressionNode *n, bool positive);
+  inline SumElement(ExpressionNode *n, bool positive) {
+    init(n,positive);
+  }
+  SumElement(const SNode &n, bool positive);
   SumElement *clone(ParserTree *tree) const;
 
   inline void mark() {

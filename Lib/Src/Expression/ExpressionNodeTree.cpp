@@ -7,19 +7,14 @@ ExpressionNodeTree::ExpressionNodeTree(ParserTree *tree, ExpressionInputSymbol s
   initChildArray(argptr);
 }
 
-ExpressionNodeTree::ExpressionNodeTree(ParserTree *tree, ExpressionInputSymbol symbol, const ExpressionNodeArray &childArray) : ExpressionNode(tree, symbol) {
-  m_childArray.setCapacity(childArray.size());
-  for(size_t i = 0; i < childArray.size(); i++) {
-    m_childArray.add((ExpressionNode*)childArray[i]);
-  }
+ExpressionNodeTree::ExpressionNodeTree(ParserTree *tree, ExpressionInputSymbol symbol, const SNodeArray &childArray) 
+  : ExpressionNode(tree, symbol)
+  , m_childArray(childArray)
+{
 }
 
 ExpressionNodeTree::ExpressionNodeTree(ParserTree *tree, const ExpressionNodeTree *src) : ExpressionNode(tree, src->getSymbol()) {
-  const ExpressionNodeArray &sa = src->getChildArray();
-  m_childArray.setCapacity(sa.size());
-  for(size_t i = 0; i < sa.size(); i++) {
-    m_childArray.add(sa[i]->clone(tree));
-  }
+  src->getChildArray().cloneNodes(m_childArray, tree);
 }
 
 ExpressionNodeTree::ExpressionNodeTree(ParserTree *tree, ExpressionInputSymbol symbol, ...) : ExpressionNode(tree, symbol) {
@@ -40,7 +35,7 @@ static int countVargs(va_list argptr) {
 void ExpressionNodeTree::initChildArray(va_list argptr) {
   int count = countVargs(argptr);;
   m_childArray.clear(count);
-  for (ExpressionNode *p = va_arg(argptr, ExpressionNode*); p; p = va_arg(argptr, ExpressionNode*)) {
+  for(ExpressionNode *p = va_arg(argptr, ExpressionNode*); p; p = va_arg(argptr, ExpressionNode*)) {
     m_childArray.add(p);
   }
 }
@@ -117,10 +112,10 @@ int ExpressionNodeTree::compare(ExpressionNode *n) {
       return compare(n->left());
     }
   } else {
-    const ExpressionNodeArray &a1 = getChildArray();
-    const ExpressionNodeArray &a2 = n->getChildArray();
+    const SNodeArray &a1 = getChildArray();
+    const SNodeArray &a2 = n->getChildArray();
     for(size_t i = 0; i < a1.size(); i++) { // the have the same symbol => a1.size() == a2.size()
-      const int c = a1[i]->compare(a2[i]);
+      const int c = a1[i].node()->compare(a2[i].node());
       if(c) return c;
     }
   }
@@ -174,12 +169,12 @@ bool ExpressionNodeTree::isConstant() const {
     break;
   case INDEXEDSUM    :
   case INDEXEDPRODUCT:
-    { const ExpressionNode     *startAssignment = child(0);
-      const ExpressionVariable &loopVar         = startAssignment->left()->getVariable();
-      const ExpressionNode     *beginExpr       = startAssignment->right();
-      const ExpressionNode     *endExpr         = child(1);
-      const ExpressionNode     *expr            = child(2);
-      return beginExpr->isConstant() && endExpr->isConstant() && !exprDependsOnNonConstantNames(expr, loopVar);
+    { const SNode startAssignment = child(0);
+      const ExpressionVariable &loopVar         = startAssignment.left().getVariable();
+      const SNode               beginExpr       = startAssignment.right();
+      const SNode               endExpr         = child(1);
+      const SNode               expr            = child(2);
+      return beginExpr.isConstant() && endExpr.isConstant() && !exprDependsOnNonConstantNames(expr.node(), loopVar);
     }
   }
   return m_childArray.isConstant();
@@ -187,10 +182,10 @@ bool ExpressionNodeTree::isConstant() const {
 
 bool ExpressionNodeTree::traverseExpression(ExpressionNodeHandler &handler, int level) {
   if(!handler.handleNode(this, level)) return false;
-  const ExpressionNodeArray &a = getChildArray();
+  SNodeArray &a = getChildArray();
   level++;
   for(size_t i = 0; i < a.size(); i++) {
-    if(!a[i]->traverseExpression(handler, level)) return false;
+    if(!a[i].node()->traverseExpression(handler, level)) return false;
   }
   return true;
 }
@@ -199,12 +194,12 @@ bool ExpressionNodeTree::traverseExpression(ExpressionNodeHandler &handler, int 
 void ExpressionNodeTree::dumpNode(String &s, int level) const {
   addLeftMargin(s, level) += format(_T("%s\n"), getSymbolName().cstr());
   for(size_t i = 0; i < m_childArray.size(); i++) {
-    m_childArray[i]->dumpNode(s, level+1);
+    m_childArray[i].node()->dumpNode(s, level+1);
   }
 }
 
-#define CHILDSTR(i)    m_childArray[i]->toString()
-#define CHILDPARSTR(i) m_childArray[i]->parenthesizedExpressionToString(this)
+#define CHILDSTR(i)    m_childArray[i].node()->toString()
+#define CHILDPARSTR(i) m_childArray[i].node()->parenthesizedExpressionToString(this)
 
 #define RPSTR    _T(")")
 #define COMMASTR _T(",")
@@ -281,7 +276,6 @@ String ExpressionNodeTree::toString() const {
   case TAN           : return _T("tan("   ) + CHILDSTR(0) + RPSTR;
   case TANH          : return _T("tanh("  ) + CHILDSTR(0) + RPSTR;
   case IIF           : return _T("if("    ) + CHILDSTR(0) + COMMASTR + CHILDSTR(1) + COMMASTR + CHILDSTR(2) + RPSTR;
-  case ASSIGN        : return CHILDSTR(0) + _T(" = ") + CHILDSTR(1);
   case INDEXEDSUM    : return _T("sum(")     + CHILDSTR(0) + _T(" to ") + CHILDSTR(1) + _T(") ") + CHILDSTR(2);
   case INDEXEDPRODUCT: return _T("product(") + CHILDSTR(0) + _T(" to ") + CHILDSTR(1) + _T(") ") + CHILDSTR(2);
   default            : return _T("Unknown symbol:") + getSymbolName();

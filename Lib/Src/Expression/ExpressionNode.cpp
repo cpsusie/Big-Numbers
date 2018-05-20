@@ -120,15 +120,6 @@ String ExpressionNode::parenthesizedExpressionToString(const ExpressionNode *par
   }
 }
 
-void ExpressionNode::getListFromTree(int delimiterSymbol, ExpressionNodeArray &list) {
-  if(getSymbol() == delimiterSymbol) {
-    left()->getListFromTree(delimiterSymbol,list);
-    list.add(right());
-  } else {
-    list.add(this);
-  }
-}
-
 static ExpressionNodeSelector *getBuiltInFunctionSelector() {
   // all functions in this array use call to evaluate in compiled code
   static const ExpressionInputSymbol builtInSymbols[] = {
@@ -246,7 +237,7 @@ TrigonometricMode ExpressionNode::getTrigonometricMode() const {
 
 bool ExpressionNode::needParentheses(const ExpressionNode *parent) const {
   if(isName()) return false;
-  if(isNumber()) return isNegative() && (parent->getSymbol() == POW) && (parent->left() == this);
+  if(isNumber()) return isNegative() && (parent->getSymbol() == POW) && (parent->child(0).node() == this);
 
   const int precedence       = getPrecedence();
   const int parentPrecedence = parent->getPrecedence();
@@ -290,7 +281,7 @@ int ExpressionNode::getPrecedence() const {
 
 bool ExpressionNode::isCoefficientArrayConstant() const {
   if(!m_info.m_coefChecked) {
-    m_info.m_coefficientsConstant = getCoefficientArray().isConstant() ? 1 : 0;
+    m_info.m_coefficientsConstant = getCoefArray().isConstant() ? 1 : 0;
     m_info.m_coefChecked          = 1;
   }
   return m_info.m_coefficientsConstant ? true : false;
@@ -374,45 +365,6 @@ int ExpressionNode::compare(ExpressionNode *n) {
 String &ExpressionNode::addLeftMargin(String &s, int level) { // static
   s += format(_T("%*.*s%2d:"), level*2, level*2, EMPTYSTRING, level);
   return s;
-}
-
-ExpressionNode *ExpressionNodeArray::toTree(ExpressionInputSymbol delimiter) const {
-  ExpressionNode *result = (*this)[0];
-  ParserTree *tree = result->getTree();
-  for(size_t i = 1; i < size(); i++) {
-    result = tree->binaryExpr(delimiter, result, (*this)[i]);
-  }
-  return result;
-}
-
-bool ExpressionNodeArray::isConstant() const {
-  for(size_t i = 0; i < size(); i++) {
-    if(!(*this)[i]->isConstant()) return false;
-  }
-  return true;
-}
-
-BitSet ExpressionNodeArray::getNonConstantNodes() const {
-  if(isEmpty()) return BitSet(1);
-  BitSet result(size());
-  for (size_t i = 0; i < size(); i++) {
-    if (!(*this)[i]->isConstant()) {
-      result.add(i);
-    }
-  }
-  return result;
-}
-
-String ExpressionNodeArray::toString() const {
-  if(size() == 0) {
-    return EMPTYSTRING;
-  } else {
-    String result = format(_T("(%s)"), (*this)[0]->toString().cstr());
-    for(size_t i = 1; i < size(); i++) {
-      result += format(_T(",(%s)"), (*this)[i]->toString().cstr());
-    }
-    return result;
-  }
 }
 
 void ExpressionNode::throwInvalidSymbolForTreeMode(const TCHAR *method) const {

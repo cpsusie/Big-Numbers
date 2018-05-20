@@ -63,25 +63,25 @@ Real ExpressionNode::evaluateReal() const {
   case SQRT     : return ::sqrt(                 left()->evaluateReal());
   case TAN      : return tan(                    left()->evaluateReal(),  getTrigonometricMode());
   case TANH     : return ::tanh(                 left()->evaluateReal());
-  case IIF      : return child(0)->evaluateBool() ? child(1)->evaluateReal() : child(2)->evaluateReal();
+  case IIF      : return child(0).evaluateBool() ? child(1).evaluateReal() : child(2).evaluateReal();
 
   case INDEXEDSUM     :
-    {            Real                 &i               = child(0)->doAssignment();
-                 const Real            endIndex        = child(1)->evaluateReal();
-                 const ExpressionNode *expr            = child(2);
-                 Real                  sum             = 0;
+    {            Real       &i               = child(0).doAssignment();
+                 const Real  endIndex        = child(1).evaluateReal();
+                 const SNode expr            = child(2);
+                 Real        sum             = 0;
                  for(;i <= endIndex; i++) {
-                   sum += expr->evaluateReal();
+                   sum += expr.evaluateReal();
                  }
                  return sum;
     }
   case INDEXEDPRODUCT :
-    {            Real                 &i               = child(0)->doAssignment();
-                 const Real            endIndex        = child(1)->evaluateReal();
-                 const ExpressionNode *expr            = child(2);
-                 Real                  product         = 1;
+    {            Real       &i               = child(0).doAssignment();
+                 const Real  endIndex        = child(1).evaluateReal();
+                 const SNode expr            = child(2);
+                 Real        product         = 1;
                  for(;i <= endIndex; i++) {
-                   product *= expr->evaluateReal();
+                   product *= expr.evaluateReal();
                  }
                  return product;
     }

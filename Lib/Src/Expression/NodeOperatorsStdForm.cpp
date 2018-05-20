@@ -257,7 +257,7 @@ public:
   inline StdNode(ExpressionNode *n) : SNode(n) {
   }
   ExpressionNode *convert() const {
-    return toSForm();
+    return toSForm().node();
   }
 };
 
@@ -423,10 +423,10 @@ StdNode StdNode::toSFormPow() const {
 }
 
 StdNode StdNode::toSFormPoly() const {
-  const ExpressionNodeArray &coefArray = getCoefficientArray();
-  StdNode                    arg       = getArgument();
+  const SNodeArray &coefArray = getCoefArray();
+  StdNode           arg       = getArgument();
 
-  ExpressionNodeArray newCoefArray(coefArray.size());
+  SNodeArray newCoefArray(coefArray.size());
   for(size_t i = 0; i < coefArray.size(); i++) {
     newCoefArray.add(N(coefArray[i]).toSForm());
   }
@@ -434,8 +434,8 @@ StdNode StdNode::toSFormPoly() const {
 }
 
 StdNode StdNode::toSFormTreeNode() const {
-  const ExpressionNodeArray &a = getChildArray();
-  ExpressionNodeArray        newChildArray(a.size());
+  const SNodeArray &a = getChildArray();
+  SNodeArray        newChildArray(a.size());
   for(size_t i = 0; i < a.size(); i++) {
     newChildArray.add(N(a[i]).toSForm());
   }

@@ -8,22 +8,16 @@ class ExpressionFactor : public ExpressionNodeTree {
 public:
   ExpressionFactor(ExpressionNode *base, ExpressionNode *exponent);
 
-  inline ExpressionNode *base() {
-    return child(0);
-  }
-  inline const ExpressionNode *base() const {
+  inline SNode base() const {
     return child(0);
   }
 
-  inline ExpressionNode *exponent() {
-    return child(1);
-  }
-  inline const ExpressionNode *exponent() const {
+  inline SNode exponent() const {
     return child(1);
   }
 
   bool hasOddExponent() const {
-    return exponent()->isNumber() && exponent()->getNumber().isOdd();
+    return exponent().isNumber() && exponent().getNumber().isOdd();
   }
 
   int compare(ExpressionNode *n);

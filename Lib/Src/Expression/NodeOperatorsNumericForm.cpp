@@ -27,7 +27,7 @@ public:
   inline NNode(ExpressionNode *n) : SNode(n) {
   }
   ExpressionNode *convert() const {
-    return toNForm();
+    return toNForm().node();
   }
 };
 
@@ -37,7 +37,7 @@ public:
 NNode NNode::toNForm() const {
   DEFINEMETHODNAME;
 
-  const SStmtList stmtList(*this);
+  const SStmtList &stmtList = getChildArray();
   SStmtList       newStmtList;
 
   const int stmtCount = (int)stmtList.size() - 1;
@@ -172,10 +172,10 @@ NNode NNode::toNFormProduct() const {
 }
 
 NNode NNode::toNFormPoly() const {
-  const ExpressionNodeArray &coefArray = getCoefficientArray();
-  NNode                      arg       = getArgument();
+  const SNodeArray &coefArray = getCoefArray();
+  NNode             arg       = getArgument();
 
-  ExpressionNodeArray newCoefArray(coefArray.size());
+  SNodeArray newCoefArray(coefArray.size());
   for(size_t i = 0; i < coefArray.size(); i++) {
     newCoefArray.add(N(coefArray[i]).toNFormRealExp());
   }
@@ -195,8 +195,8 @@ NNode NNode::toNFormTreeNode() const {
       return condExp(cond, eTrue, eFalse);
     }
   default:
-    { const ExpressionNodeArray &a = getChildArray();
-      ExpressionNodeArray        newChildArray(a.size());
+    { const SNodeArray &a = getChildArray();
+      SNodeArray        newChildArray(a.size());
       for(size_t i = 0; i < a.size(); i++) {
         newChildArray.add(N(a[i]).toNFormRealExp());
       }

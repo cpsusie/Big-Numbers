@@ -9,7 +9,7 @@ ExpressionFactor::ExpressionFactor(ExpressionNode *base, ExpressionNode *exponen
 }
 
 ExpressionNode *ExpressionFactor::clone(ParserTree *tree) const {
-  ExpressionNode *n = new ExpressionFactor(base()->clone(tree), exponent()->clone(tree)); TRACE_NEW(n);
+  ExpressionNode *n = new ExpressionFactor(base().node()->clone(tree), exponent().node()->clone(tree)); TRACE_NEW(n);
   return n;
 }
 
@@ -23,32 +23,31 @@ int ExpressionFactor::compare(ExpressionNode *n) {
   int c = b1 - b2;
   if(c) return -c; // Constants are first
 
-  b1 = exponent()->isNumber();
-  b2 = f->exponent()->isNumber();
+  b1 = exponent().isNumber();
+  b2 = f->exponent().isNumber();
   c = b1 - b2;
   if(c) return c; // Numeric exponents are next
 
   if(b1) { // both have numeric exponents, but not constant bases. 1. priority: Order by exponent desc
-    c = numberCmp(f->exponent()->getNumber(), exponent()->getNumber());
+    c = numberCmp(f->exponent().getNumber(), exponent().getNumber());
     if(c) return c;
-    return base()->compare(f->base()); // 2. priority: Order by base
+    return base().node()->compare(f->base().node()); // 2. priority: Order by base
   }
 
-  c = base()->compare(f->base());
+  c = base().node()->compare(f->base().node());
   if(c) return c;
-  return exponent()->compare(f->exponent());
+  return exponent().node()->compare(f->exponent().node());
 }
 
 bool ExpressionFactor::isConstant() const {
-  const ExpressionNode *expo = exponent();
-  if(expo->isZero()) return true;
-  return base()->isConstant() && expo->isConstant();
+  if(exponent().isZero()) return true;
+  return base().isConstant() && exponent().isConstant();
 }
 
 void ExpressionFactor::dumpNode(String &s, int level) const {
   addLeftMargin(s, level) += _T("POW\n");
-  base()->dumpNode(s, level+1);
-  exponent()->dumpNode(s, level+1);
+  base().node()->dumpNode(s, level+1);
+  exponent().node()->dumpNode(s, level+1);
 }
 
 }; // namespace Expr

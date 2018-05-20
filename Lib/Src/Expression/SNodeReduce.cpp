@@ -10,18 +10,18 @@ namespace Expr {
 #define N( n) SNode(n)
 #define NV(v) SNode(getTree(),v)
 
-ExpressionFactor *SNode::factor(SNode b, ExpressionNode *e) { // static
-  return b.getTree()->fetchFactorNode(b,e);
+ExpressionFactor *SNode::factor(SNode b, SNode e) { // static
+  return b.getTree()->fetchFactorNode(b.node(),e.node());
 }
 
 SNode SNode::reduce() {
   DEFINEMETHODNAME;
   ENTERMETHOD();
 
-  const SStmtList stmtList(*this);
-  SStmtList       newStmtList;
+  const SStmtList &stmtList  = getChildArray();
+  const int        stmtCount = (int)stmtList.size() - 1;
+  SStmtList        newStmtList;
 
-  const int stmtCount = (int)stmtList.size() - 1;
   for(int i = 0; i < stmtCount; i++) {
     const SNode &stmt = stmtList[i];
     newStmtList.add(assignStmt(stmt.left(), stmt.right().reduceRealExp()));
@@ -176,11 +176,11 @@ SNode SNode::reduceSum() const {
 
   AddentArray reduced;
   for(size_t i = 0; i < a.size(); i++) {
-    SumElement     *e = a[i];
-    ExpressionNode *reducedNode = N(e->getNode()).reduceRealExp();
-    if(reducedNode != e->getNode()) anyChanges = true;
-    if(!hasTrigonometricFunctions) hasTrigonometricFunctions = reducedNode->getNodeCount(getTrigonometricFunctionSelector()) > 0;
-    if(!hasLogarithmicFunctions  ) hasLogarithmicFunctions   = reducedNode->getNodeCount(getLogarithmicFunctionSelector())   > 0;
+    SumElement *e = a[i];
+    SNode       reducedNode = N(e->getNode()).reduceRealExp();
+    if(reducedNode.node() != e->getNode()) anyChanges = true;
+    if(!hasTrigonometricFunctions) hasTrigonometricFunctions = reducedNode.node()->getNodeCount(getTrigonometricFunctionSelector()) > 0;
+    if(!hasLogarithmicFunctions  ) hasLogarithmicFunctions   = reducedNode.node()->getNodeCount(getLogarithmicFunctionSelector())   > 0;
     reduced.add(reducedNode, e->isPositive());
   }
 
@@ -281,7 +281,7 @@ SNode SNode::reduceSum() const {
   for(size_t i = 0; i < tmp.size(); i++) {
     SumElement     *e  = tmp[i];
     ExpressionNode *n  = e->getNode();
-    ExpressionNode *n1 = changeFirstNegativeFactor();
+    ExpressionNode *n1 = changeFirstNegativeFactor().node();
     if(n1) {
       reduced.add(n1, !e->isPositive());
       anyChanges = true;
@@ -383,7 +383,7 @@ bool SNode::canUseReverseIdiotRule(SumElement *e1, SumElement *e2, SumElement* &
       if(!e1->isPositive()) r1 = -r1;
       if((fabs(r1) == 1) && N(e2->getNode()).isSquareOfSinOrCos() && (r1 == 1) != (e2->isPositive())) {
         ExpressionNode *sinOrCos = e2->getNode()->left();
-        ExpressionNode *n = pow(unaryExp(getDualTrigonometricFunction(sinOrCos->getSymbol()), sinOrCos->left()), _2());
+        SNode           n = pow(unaryExp(getDualTrigonometricFunction(sinOrCos->getSymbol()), sinOrCos->left()), _2());
         result = new SumElement(n, r1 == 1); TRACE_NEW(result);
         RETURNBOOL( true );
       }
@@ -462,14 +462,14 @@ StartSearch:
         commonFactors.add(factor1);
         goto StartSearch;
       } else if((equal(factor1->base(), factor2->base()))
-            &&  (factor1->exponent()->isNumber() && factor2->exponent()->isNumber())) { // exponents are different
+            &&  (factor1->exponent().isNumber() && factor2->exponent().isNumber())) { // exponents are different
         fl1.remove(i1);
         fl2.remove(i2);
-        ExpressionNode *base        = factor1->base(); // == factor2->base()
-        const Number   &c1          = factor1->exponent()->getNumber();
-        const Number   &c2          = factor2->exponent()->getNumber();
-        const Number   *minExponent , *maxExponent;
-        FactorArray    *flEMin      , *flEMax;
+        SNode         base        = factor1->base(); // == factor2->base()
+        const Number &c1          = factor1->exponent().getNumber();
+        const Number &c2          = factor2->exponent().getNumber();
+        const Number *minExponent , *maxExponent;
+        FactorArray  *flEMin      , *flEMax;
 
         if(c1 < c2) {
           minExponent  = &c1 ; maxExponent  = &c2;
@@ -483,7 +483,7 @@ StartSearch:
         goto StartSearch;
       } else {
         Rational eR1,eR2;
-        if((factor1->exponent()->reducesToRationalConstant(&eR1) && factor2->exponent()->reducesToRationalConstant(&eR2))
+        if((factor1->exponent().reducesToRationalConstant(&eR1) && factor2->exponent().reducesToRationalConstant(&eR2))
          && equalMinus(factor1->base(), factor2->base())) {
 
           if(isAsymmetricExponent(eR1) && isAsymmetricExponent(eR2)) {
@@ -496,7 +496,7 @@ StartSearch:
           fl1.remove(i1);
           fl2.remove(i2);
 
-          ExpressionNode *base        = factor1->base(); // == -factor2->base()
+          SNode           base = factor1->base(); // == -factor2->base()
           const Rational *minExponent , *maxExponent;
           FactorArray    *flEMin      , *flEMax;
 
@@ -525,7 +525,7 @@ StartSearch:
   const SNode a = NV(commonFactors);
 
   bool positive = true;
-  const bool e2positive = (e2.isPositive() == isEven(signShiftCount));
+  const bool e2positive = (e2.isPositive() == ::isEven(signShiftCount));
 
   if(e1.isPositive() == e2positive) {
     bc = NV(fl1) + NV(fl2);
@@ -553,8 +553,8 @@ SNode SNode::changeFirstNegativeFactor() const {
       if(factorArray.size() == 0) RETURNNULL;
       FactorArray newFactorArray;
       ExpressionFactor *f0 = factorArray[0];
-      if(f0->base()->isNegative() && f0->exponent()->isOdd()) {
-        newFactorArray.add(-N(f0->base()), f0->exponent());
+      if(f0->base().isNegative() && f0->exponent().isOdd()) {
+        newFactorArray.add(-f0->base(), f0->exponent());
         for(size_t i = 1; i < factorArray.size(); i++) newFactorArray.add(factorArray[i]);
         RETURNNODE( NV(newFactorArray) );
       }
@@ -612,8 +612,8 @@ SNode SNode::reduceProduct() {
           if(done.contains(i2)) continue;
           ExpressionFactor *f2 = tmp[i2];
           if(equal(f1->base(),f2->base())) { // Common base
-            ExpressionNode *newExponent = (N(f1->exponent()) + N(f2->exponent())).reduceRealExp();
-            if(!newExponent->isZero()) {
+            SNode newExponent = (f1->exponent() + f2->exponent()).reduceRealExp();
+            if(!newExponent.isZero()) {
               reduced.add(f1->base(), newExponent);
             }
             done.add(i1);
@@ -647,8 +647,8 @@ SNode SNode::reduceProduct() {
     } while(!done.isEmpty() && reduced.size() > 1);
   }
 
-  ExpressionNode *constantFactor = reduceConstantFactors(constantFactors);
-  if(!constantFactor->isOne()) {
+  SNode constantFactor = reduceConstantFactors(constantFactors);
+  if(!constantFactor.isOne()) {
     reduced.add(constantFactor);
   }
   const SNode result = NV(reduced);
@@ -781,39 +781,58 @@ bool SNode::rationalExponentsMultiply(const Rational &r1, const Rational &r2) { 
   return isAsymmetricExponent(r1) || isAsymmetricExponent(r2);
 }
 
+SNode SNode::multiplySumSum(SNode n1, SNode n2) const {
+  const AddentArray &aa1 = n1.getAddentArray();
+  const AddentArray &aa2 = n2.getAddentArray();
+
+  ParserTree *tree = n1.getTree();
+  AddentArray newAddentArray(aa1.size() * aa2.size());
+  for(size_t i = 0; i < aa1.size(); i++) {
+    SumElement *e1 = aa1[i];
+    const SNode s1 = e1->getNode();
+    for(size_t j = 0; j < aa2.size(); j++) {
+      SumElement *e2 = aa2[j];
+      const SNode s2 = e2->getNode();
+      newAddentArray.add(s1 * s2, e1->isPositive() == e2->isPositive());
+    }
+  }
+  ExpressionNodeSum *n = new ExpressionNodeSum(tree, newAddentArray); TRACE_NEW(n); // dont use getSum here. It has to be an ExpressionNodeSum
+  return n;
+}
+
 ExpressionFactor *SNode::reduceTrigonometricFactors(ExpressionFactor &f1, ExpressionFactor &f2) {
   DEFINEMETHODNAME;
   ENTERMETHOD2(f1,f2);
 
-  if(!f1.base()->isTrigonomtricFunction() || !f2.base()->isTrigonomtricFunction()) {
+  if(!f1.base().isTrigonomtricFunction() || !f2.base().isTrigonomtricFunction()) {
     RETURNNULL;
   }
-  ExpressionNode *arg = f1.base()->left();
-  if(!equal(arg,f2.base()->left())) {
+  SNode arg = f1.base().left();
+  if(!equal(arg,f2.base().left())) {
     RETURNNULL;
   }
 
-  if(!f1.exponent()->isNumber() || !f2.exponent()->isNumber()) {
+  if(!f1.exponent().isNumber() || !f2.exponent().isNumber()) {
     RETURNNULL;
   }
-  const Real e1 = f1.exponent()->getReal();
-  const Real e2 = f2.exponent()->getReal();
+  const Real e1 = f1.exponent().getReal();
+  const Real e2 = f2.exponent().getReal();
 
-  switch(f1.base()->getSymbol()) {
+  switch(f1.base().getSymbol()) {
   case SIN:
-    switch(f2.base()->getSymbol()) {
+    switch(f2.base().getSymbol()) {
     case COS: RETURN( e1 == -e2 ? factor(unaryExp(TAN,arg),f1.exponent()) : NULL );
     case TAN: RETURN( e1 == -e2 ? factor(unaryExp(COS,arg),f1.exponent()) : NULL );
     }
     RETURNNULL;
   case COS:
-    switch(f2.base()->getSymbol()) {
+    switch(f2.base().getSymbol()) {
     case SIN: RETURN( e1 == -e2 ? factor(unaryExp(TAN,arg),f2.exponent()) : NULL );
     case TAN: RETURN( e1 ==  e2 ? factor(unaryExp(SIN,arg),f1.exponent()) : NULL );
     }
     RETURNNULL;
   case TAN:
-    switch(f2.base()->getSymbol()) {
+    switch(f2.base().getSymbol()) {
     case SIN: RETURN( e1 == -e2 ? factor(unaryExp(COS,arg),f2.exponent()) : NULL );
     case COS: RETURN( e1 ==  e2 ? factor(unaryExp(SIN,arg),f1.exponent()) : NULL );
     }
@@ -838,39 +857,39 @@ SNode SNode::reduceConstantFactors(FactorArray &factorArray) {
     for(size_t i1 = 1; i1 < tmp.size(); i1++) {
       if(done.contains(i1)) continue;
       ExpressionFactor       *f1                   = tmp[i1];
-      ExpressionNode         *base1                = f1->base();
-      ExpressionNode         *expo1                = f1->exponent();
+      SNode                   base1                = f1->base();
+      SNode                   expo1                = f1->exponent();
       Rational                B1R, E1R;
-      const bool              b1IsRationalConstant = base1->reducesToRationalConstant(&B1R);
-      const bool              e1IsRationalConstant = expo1->reducesToRationalConstant(&E1R);
+      const bool              b1IsRationalConstant = base1.reducesToRationalConstant(&B1R);
+      const bool              e1IsRationalConstant = expo1.reducesToRationalConstant(&E1R);
       SNode                   reducedBase1         = b1IsRationalConstant ? NV(B1R) : base1;
 
       for(size_t i2 = 0; i2 < i1; i2++) {
         if(done.contains(i1)) break;
         if(done.contains(i2)) continue;
-        ExpressionFactor *f2                   = tmp[i2];
-        ExpressionNode   *base2                = f2->base();
-        ExpressionNode   *expo2                = f2->exponent();
+        ExpressionFactor *f2    = tmp[i2];
+        SNode             base2 = f2->base();
+        SNode             expo2 = f2->exponent();
         Rational          B2R, E2R;
-        const bool        b2IsRationalConstant = base2->reducesToRationalConstant(&B2R);
-        const bool        e2IsRationalConstant = expo2->reducesToRationalConstant(&E2R);
+        const bool        b2IsRationalConstant = base2.reducesToRationalConstant(&B2R);
+        const bool        e2IsRationalConstant = expo2.reducesToRationalConstant(&E2R);
         SNode             reducedBase2         = b2IsRationalConstant ? NV(B2R) : base2;
 
         if(e1IsRationalConstant && e2IsRationalConstant) {
           if(E1R == E2R) {
-            reduced.add(reducedBase1 * reducedBase2, NV(E1R));
+            reduced.add(reducedBase1 * reducedBase2, E1R);
             done.add(i1);
             done.add(i2);
           } else if(E1R == -E2R) {
             if(E1R > 0) {
-              reduced.add(reducedBase1 / reducedBase2, NV(E1R));
+              reduced.add(reducedBase1 / reducedBase2, E1R);
             } else {
-              reduced.add(reducedBase2 / reducedBase1, NV(E2R));
+              reduced.add(reducedBase2 / reducedBase1, E2R);
             }
             done.add(i1);
             done.add(i2);
           } else if(equal(base1, base2)) {
-            reduced.add(reducedBase1, NV(E2R + E1R));
+            reduced.add(reducedBase1, E2R + E1R);
             done.add(i1);
             done.add(i2);
           }
@@ -906,11 +925,11 @@ SNode SNode::reduceConstantFactors(FactorArray &factorArray) {
         rationalPart *= r;
       }
     } else {
-      ExpressionNode *base = f->base();
-      ExpressionNode *expo = f->exponent();
+      SNode base = f->base();
+      SNode expo = f->exponent();
       Rational baseR, expoR;
-      if(base->reducesToRationalConstant(&baseR)) {
-        if(expo->reducesToRationalConstant(&expoR)) {
+      if(base.reducesToRationalConstant(&baseR)) {
+        if(expo.reducesToRationalConstant(&expoR)) {
           fa.add(reduceRationalPower(baseR, expoR));
         } else { // base is rational. expo is irrational
           fa.add(NV(baseR), expo);
@@ -1014,7 +1033,7 @@ SNode SNode::reduceModulus() const {
 
 /* ------------------------------------------- multiplyParentheses ----------------------------------------- */
 
-SNode SNode::multiplyParentheses() {
+SNode SNode::multiplyParentheses() const {
   DEFINEMETHODNAME;
   ENTERMETHOD();
 
@@ -1028,7 +1047,7 @@ SNode SNode::multiplyParentheses() {
   }
 }
 
-SNode SNode::multiplyParenthesesInSum() {
+SNode SNode::multiplyParenthesesInSum() const {
   DEFINEMETHODNAME;
   ENTERMETHOD();
 
@@ -1042,7 +1061,7 @@ SNode SNode::multiplyParenthesesInSum() {
   RETURNNODE( result );
 }
 
-SNode SNode::multiplyParenthesesInProduct() {
+SNode SNode::multiplyParenthesesInProduct() const {
   DEFINEMETHODNAME;
   ENTERMETHOD();
 
@@ -1062,22 +1081,22 @@ SNode SNode::multiplyParenthesesInProduct() {
     for(size_t i1 = 1; i1 < tmp.size(); i1++) {
       if(done.contains(i1)) continue;
       ExpressionFactor *f1 = tmp[i1];
-      if((f1->base()->getSymbol() == SUM) && !f1->exponent()->isOne()) {
+      if((f1->base().getSymbol() == SUM) && !f1->exponent().isOne()) {
         continue;
       }
       for(size_t i2 = 0; i2 < i1; i2++) {
         if(done.contains(i1)) break;
         if(done.contains(i2)) continue;
         ExpressionFactor *f2 = tmp[i2];
-        if(f2->base()->getSymbol() == SUM && !f2->exponent()->isOne()) {
+        if(f2->base().getSymbol() == SUM && !f2->exponent().isOne()) {
           continue;
         }
-        if(f1->base()->getSymbol() == SUM) {
-          newFactorArray.add(multiply(f2, (ExpressionNodeSum*)(f1->base())));
+        if(f1->base().getSymbol() == SUM) {
+          newFactorArray.add(multiplyFactorSum(f2, f1->base()));
           done.add(i1);
           done.add(i2);
-        } else if(f2->base()->getSymbol() == SUM) {
-          newFactorArray.add(multiply(f1, (ExpressionNodeSum*)(f2->base())));
+        } else if(f2->base().getSymbol() == SUM) {
+          newFactorArray.add(multiplyFactorSum(f1, f2->base()));
           done.add(i1);
           done.add(i2);
         }
@@ -1093,45 +1112,45 @@ SNode SNode::multiplyParenthesesInProduct() {
   RETURNNODE( result );
 }
 
-SNode SNode::multiplyParenthesesInPoly() {
+SNode SNode::multiplyParenthesesInPoly() const {
   DEFINEMETHODNAME;
   ENTERMETHOD();
-  const ExpressionNodeArray &coefArray = getCoefficientArray();
-  SNode                      newArg    = getArgument().multiplyParentheses();
+  const SNodeArray &coefArray = getCoefArray();
+  SNode             newArg    = getArgument().multiplyParentheses();
 
-  ExpressionNodeArray newCoefArray(coefArray.size());
+  SNodeArray newCoefArray(coefArray.size());
   for(size_t i = 0; i < coefArray.size(); i++) {
-    newCoefArray.add(NV(coefArray[i]).multiplyParentheses());
+    newCoefArray.add(coefArray[i].multiplyParentheses());
   }
   SNode result = polyExp(newCoefArray, newArg);
   RETURNNODE( result );
 }
 
-SNode SNode::multiply(ExpressionFactor *a, ExpressionNodeSum *s) {
+SNode SNode::multiplyFactorSum(SNode factor, SNode sum) const { // ExpressionFactor *a, ExpressionNodeSum *s) {
   DEFINEMETHODNAME;
   ENTERMETHOD2(*a,*s);
 
-  if(a->base()->getSymbol() == SUM && a->exponent()->isOne()) {
-    RETURNNODE( NV(ExpressionNodeSum::multiply((ExpressionNodeSum*)(a->base()),s)) );
+  if((factor.base().getSymbol() == SUM) && factor.exponent().isOne()) {
+    RETURNNODE(multiplySumSum(factor.base(),sum));
   } else {
     AddentArray        tmp;
-    const AddentArray &sa = s->getAddentArray();
+    const AddentArray &sa = sum.getAddentArray();
     for(size_t i = 0; i < sa.size(); i++) {
       SumElement *e = sa[i];
-      tmp.add(N(a) * N(e->getNode()),e->isPositive());
+      tmp.add(factor * N(e->getNode()),e->isPositive());
     }
     RETURNNODE( factorExp(NV(tmp),_1()) );
   }
 }
 
-SNode SNode::multiplyTreeNode() {
+SNode SNode::multiplyTreeNode() const {
   DEFINEMETHODNAME;
   ENTERMETHOD();
 
-  const ExpressionNodeArray &a = getChildArray();
-  ExpressionNodeArray newChildArray(a.size());
+  const SNodeArray &a = getChildArray();
+  SNodeArray        newChildArray(a.size());
   for(size_t i = 0; i < a.size(); i++) {
-    newChildArray.add(N(a[i]).multiplyParentheses());
+    newChildArray.add(a[i].multiplyParentheses());
   }
   SNode result = treeExp(getSymbol(), newChildArray);
   RETURNNODE( result );
@@ -1280,10 +1299,10 @@ SNode SNode::reducePolynomial() {
   DEFINEMETHODNAME;
   ENTERMETHOD();
 
-  SExprList coefArray(getCoefficientArray());
-  SNode     arg = getArgument();  // arg is the parameter to the polynomial ex. poly[a,b,c,d](arg)
+  SNodeArray &coefArray = getCoefArray();
+  SNode       arg       = getArgument();  // arg is the parameter to the polynomial ex. poly[a,b,c,d](arg)
 
-  SExprList newCoefArray;
+  SNodeArray newCoefArray;
   bool leadingCoef = true;
   for(size_t i = 0; i < coefArray.size(); i++) {
     SNode &coef = coefArray[i];
@@ -1306,7 +1325,7 @@ SNode SNode::reducePolynomial() {
     leadingCoef = false;
   }
   switch(newCoefArray.size()) {
-  case 0 : RETURNNODE( _0() );               // 0 polynomial == 0
+  case 0 : RETURNNODE( _0() );            // 0 polynomial == 0
   case 1 : RETURNNODE( newCoefArray[0] ); // Independent of arg
   default:
     { const SNode newArg = arg.reduceRealExp();
@@ -1337,8 +1356,8 @@ SNode SNode::reduceTreeNode() {
       RETURNNODE( condExp(cond, eTrue, eFalse) );
     }
   default:
-    { const ExpressionNodeArray &a = getChildArray();
-      ExpressionNodeArray newChildArray(a.size());
+    { const SNodeArray &a = getChildArray();
+      SNodeArray newChildArray(a.size());
       for(size_t i = 0; i < a.size(); i++) {
         newChildArray.add(N(a[i]).reduceRealExp());
       }

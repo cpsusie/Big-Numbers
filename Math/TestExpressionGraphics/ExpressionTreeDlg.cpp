@@ -102,18 +102,18 @@ void CExpressionTreeDlg::traverse(CTreeCtrl *ctrl, HTREEITEM p, const Expression
     break;
   case POLY    :
     { q = ctrl->InsertItem(n->getSymbolName().cstr(), p);
-      const ExpressionNodeArray &coef = n->getCoefficientArray();
+      const SNodeArray &coef = n->getCoefArray();
       for(size_t i = 0; i < coef.size(); i++) {
-        traverse(ctrl, q, coef[i]);
+        traverse(ctrl, q, coef[i].node());
       }
-      traverse(ctrl, q, n->getArgument());
+      traverse(ctrl, q, n->getArgument().node());
     }
     break;
   default      :
     { q = ctrl->InsertItem(n->getSymbolName().cstr(), p);
-      const ExpressionNodeArray &a = n->getChildArray();
+      const SNodeArray &a = n->getChildArray();
       for(size_t i = 0; i < a.size(); i++) {
-        traverse(ctrl, q, a[i]);
+        traverse(ctrl, q, a[i].node());
       }
     }
     break;

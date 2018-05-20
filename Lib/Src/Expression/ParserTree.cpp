@@ -179,12 +179,6 @@ void ParserTree::listErrors(const TCHAR *fname) const {
   }
 }
 
-ExpressionNodeArray getExpressionList(ExpressionNode *n) {
-  ExpressionNodeArray result(10);
-  n->getListFromTree(COMMA, result);
-  return result;
-}
-
 int ParserTree::getNodeCount(ExpressionNodeSelector *selector) {
   if(getRoot() == NULL) {
     return 0;
@@ -241,37 +235,40 @@ int ParserTree::getTreeDepth() const {
   return getRoot() ? getRoot()->getMaxTreeDepth() : 0;
 }
 
-ExpressionNode *ParserTree::traverseSubstituteNodes(ExpressionNode *n, CompactNodeHashMap<ExpressionNode*> &nodeMap) {
+SNode ParserTree::traverseSubstituteNodes(SNode n, CompactNodeHashMap<ExpressionNode*> &nodeMap) {
   DEFINEMETHODNAME;
-  ExpressionNode **n1 = nodeMap.get(n);
+  ExpressionNode **n1 = nodeMap.get(n.node());
   if(n1) {
     return *n1;
   }
   // not found;
-  switch(n->getNodeType()) {
+  switch(n.getNodeType()) {
   case EXPRESSIONNODENUMBER    :
   case EXPRESSIONNODEBOOLEAN   :
-  case EXPRESSIONNODEVARIABLE  : return n;
+  case EXPRESSIONNODEVARIABLE  :
+    return n;
   case EXPRESSIONNODEFACTOR    :
-    { ExpressionFactor *oldFactor = (ExpressionFactor*)n;
-      ExpressionNode   *newBase   = traverseSubstituteNodes(oldFactor->base()    , nodeMap);
-      ExpressionNode   *newExpo   = traverseSubstituteNodes(oldFactor->exponent(), nodeMap);
+    { ExpressionFactor *oldFactor = (ExpressionFactor*)n.node();
+      SNode newBase   = traverseSubstituteNodes(oldFactor->base()    , nodeMap);
+      SNode newExpo   = traverseSubstituteNodes(oldFactor->exponent(), nodeMap);
       return getFactor(oldFactor, newBase, newExpo);
     }
   case EXPRESSIONNODETREE      :
-    { const ExpressionNodeArray  &a = n->getChildArray();
-      ExpressionNodeArray         newChildArray(a.size());
-      for(size_t i = 0; i < a.size(); i++) newChildArray.add(traverseSubstituteNodes(a[i], nodeMap));
+    { const SNodeArray &a = n.getChildArray();
+      SNodeArray        newChildArray(a.size());
+      for(size_t i = 0; i < a.size(); i++) {
+        newChildArray.add(traverseSubstituteNodes(a[i], nodeMap));
+      }
       return getTree(n, newChildArray);
     }
   case EXPRESSIONNODESUM       :
-    { const AddentArray &a = n->getAddentArray();
+    { const AddentArray &a = n.getAddentArray();
       AddentArray newAddentArray(a.size());
       for(size_t i = 0; i < a.size(); i++) {
-        SumElement     *e       = a[i];
-        ExpressionNode *oldNode = e->getNode();
-        ExpressionNode *newNode = traverseSubstituteNodes(oldNode, nodeMap);
-        if(newNode == oldNode) {
+        SumElement *e       = a[i];
+        SNode oldNode = e->getNode();
+        SNode newNode = traverseSubstituteNodes(oldNode, nodeMap);
+        if(newNode.isSameNode(oldNode)) {
           newAddentArray.add(e);
         } else {
           newAddentArray.add(newNode, e->isPositive());
@@ -280,28 +277,25 @@ ExpressionNode *ParserTree::traverseSubstituteNodes(ExpressionNode *n, CompactNo
       return getSum(n, newAddentArray);
     }
   case EXPRESSIONNODEPRODUCT   :
-    { const FactorArray           &a = n->getFactorArray();
+    { const FactorArray           &a = n.getFactorArray();
       FactorArray                  newFactorArray(a.size());
       for(size_t i = 0; i < a.size(); i++) {
-        ExpressionNode *newNode = traverseSubstituteNodes(a[i], nodeMap);
-        if(newNode->getNodeType() == EXPRESSIONNODEFACTOR) {
-          newFactorArray.add((ExpressionFactor*)newNode);
-        } else {
-          newFactorArray.add(newNode);
-        }
+        newFactorArray.add(traverseSubstituteNodes(a[i], nodeMap));
       }
       return getProduct(n, newFactorArray);
     }
   case EXPRESSIONNODEPOLYNOMIAL:
-    { const ExpressionNodeArray  &coef = n->getCoefficientArray();
-      ExpressionNode             *arg  = n->getArgument();
-      ExpressionNodeArray         newCoef(coef.size());
-      ExpressionNode             *newArg  = traverseSubstituteNodes(arg, nodeMap);
-      for(size_t i = 0; i < coef.size(); i++) newCoef.add(traverseSubstituteNodes(coef[i], nodeMap));
+    { const SNodeArray &coef = n.getCoefArray();
+      SNode             arg  = n.getArgument();
+      SNodeArray        newCoef(coef.size());
+      SNode             newArg  = traverseSubstituteNodes(arg, nodeMap);
+      for(size_t i = 0; i < coef.size(); i++) {
+        newCoef.add(traverseSubstituteNodes(coef[i], nodeMap));
+      }
       return getPoly(n, newCoef, newArg);
     }
   default:
-    throwInvalidArgumentException(method, _T("Unknown nodeType:%d"), n->getNodeType());
+    throwInvalidArgumentException(method, _T("Unknown nodeType:%d"), n.getNodeType());
     return NULL;
   }
 }
@@ -309,7 +303,7 @@ ExpressionNode *ParserTree::traverseSubstituteNodes(ExpressionNode *n, CompactNo
 void ParserTree::substituteNodes(CompactNodeHashMap<ExpressionNode*> &nodeMap) {
   ExpressionNode *root = getRoot();
   if(root) {
-    setRoot(traverseSubstituteNodes(root, nodeMap));
+    setRoot(traverseSubstituteNodes(root, nodeMap).node());
   }
 }
 
@@ -364,7 +358,7 @@ public:
 
 bool MarkedNodeMultiplier::handleNode(ExpressionNode *n, int level) {
   if(n->isMarked()) {
-    putNodes(n, SNode(n).multiplyParentheses());
+    putNodes(n, SNode(n).multiplyParentheses().node());
   }
   return true;
 }
@@ -379,22 +373,55 @@ void ParserTree::multiplyMarkedNodes() {
 
 // ---------------------------------------- only used by parser --------------------------------------------------
 
+static SNodeArray &getListFromTree(ExpressionNode *n, ExpressionInputSymbol delimiterSymbol, SNodeArray &list) {
+  if(n->getSymbol() == delimiterSymbol) {
+    getListFromTree(n->left(), delimiterSymbol,list);
+    list.add(n->right());
+  } else {
+    list.add(n);
+  }
+  return list;
+}
+
 ExpressionNode *ParserTree::vFetchNode(const SourcePosition &pos, ExpressionInputSymbol symbol, va_list argptr) {
   ExpressionNode *n;
   switch(symbol) {
-  case NUMBER: n = new ExpressionNodeNumberWithPos(   this, pos, va_arg(argptr,Real  )); break;
-  case NAME  : n = new ExpressionNodeVariableWithPos( this, pos, va_arg(argptr,TCHAR*)); break;
-  case POLY  : n = new ExpressionNodePolyWithPos(     this, pos, argptr); break;
-  case EQ    :
-  case NE    :
-  case LE    :
-  case LT    :
-  case GE    :
-  case GT    :
-  case AND:
-  case OR    :
-  case NOT   : n = new ExpressionNodeBoolExprWithPos( this, pos, symbol, argptr); break;
-  default    : n = new ExpressionNodeTreeWithPos(     this, pos, symbol, argptr); break;
+  case NUMBER  :
+    n = new ExpressionNodeNumberWithPos(   this, pos, va_arg(argptr,Real  ));
+    break;
+  case NAME    :
+    n = new ExpressionNodeVariableWithPos( this, pos, va_arg(argptr,TCHAR*));
+    break;
+  case EQ      :
+  case NE      :
+  case LE      :
+  case LT      :
+  case GE      :
+  case GT      :
+  case AND     :
+  case OR      :
+  case NOT     :
+    n = new ExpressionNodeBoolExprWithPos( this, pos, symbol, argptr);
+    break;
+  case ASSIGN  :
+    n = new ExpressionNodeAssignWithPos(   this, pos,         argptr);
+    break;
+  case STMTLIST:
+    { SNodeArray stmtArray;
+      getListFromTree(va_arg(argptr, ExpressionNode*), SEMI, stmtArray);
+      n = new ExpressionNodeStmtList(      this, stmtArray);
+    }
+    break;
+  case POLY    :
+    { SNodeArray coefArray;
+      getListFromTree(va_arg(argptr, ExpressionNode*), COMMA, coefArray);
+      SNode arg = va_arg(argptr, ExpressionNode*);
+      n = new ExpressionNodePolyWithPos(   this, pos, coefArray, arg);
+    }
+    break;
+  default      :
+    n = new ExpressionNodeTreeWithPos(     this, pos, symbol, argptr);
+    break;
   }
   TRACE_NEW(n);
   return n;

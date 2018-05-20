@@ -5,36 +5,48 @@
 namespace Expr {
 
 void FactorArray::add(ExpressionFactor *f) {
-  ExpressionNode *base     = f->base();
-  ExpressionNode *exponent = f->exponent();
+  SNode base     = f->base();
+  SNode exponent = f->exponent();
 
-  if(base->getSymbol() != PRODUCT) {
-    if(!base->isOne() && !(exponent->isZero())) {
+  if(base.getSymbol() != PRODUCT) {
+    if(!base.isOne() && !(exponent.isZero())) {
       CompactArray<ExpressionFactor*>::add(f);
     }
   } else {
-    const FactorArray &a = base->getFactorArray();
-    if(exponent->isOne()) {
+    const FactorArray &a = base.getFactorArray();
+    if(exponent.isOne()) {
       addAll(a);
     } else {
       ParserTree *tree = f->getTree();
       for(size_t i = 0; i < a.size(); i++) {
         ExpressionFactor *f = a[i];
-        add(tree->fetchFactorNode(f->base(), tree->prod(f->exponent(), exponent)));
+        add(f->base(), f->exponent() * exponent);
       }
     }
   }
 }
 
-void FactorArray::add(ExpressionNode *base, ExpressionNode *exponent) {
-  add(base->getTree()->fetchFactorNode(base, exponent));
+void FactorArray::add(SNode base, SNode exponent) {
+  add(base.getTree()->fetchFactorNode(base.node(), exponent.node()));
+}
+
+void FactorArray::add(SNode base) {
+  if (base.getNodeType() == EXPRESSIONNODEFACTOR) {
+    __super::add((ExpressionFactor*)base.node());
+  } else {
+    add(base,base._1());
+  }
+}
+
+void FactorArray::add(SNode base, const Rational &exponent) {
+  add(base, base.getTree()->numberExpression(exponent));
 }
 
 FactorArray FactorArray::selectConstantPositiveExponentFactors() const {
   FactorArray result;
   for(size_t i = 0; i < size(); i++) {
     ExpressionFactor *f = (*this)[i];
-    if(f->exponent()->isPositive()) {
+    if(f->exponent().isPositive()) {
       result.add(f);
     }
   }
@@ -45,7 +57,7 @@ FactorArray FactorArray::selectConstantNegativeExponentFactors() const {
   FactorArray result;
   for(size_t i = 0; i < size(); i++) {
     ExpressionFactor *f = (*this)[i];
-    if(f->exponent()->isNegative()) {
+    if(f->exponent().isNegative()) {
       result.add(f);
     }
   }
@@ -56,7 +68,7 @@ FactorArray FactorArray::selectNonConstantExponentFactors() const {
   FactorArray result;
   for(size_t i = 0; i < size(); i++) {
     ExpressionFactor *f = (*this)[i];
-    if(!f->exponent()->isNumber()) {
+    if(!f->exponent().isNumber()) {
       result.add(f);
     }
   }
@@ -64,15 +76,16 @@ FactorArray FactorArray::selectNonConstantExponentFactors() const {
 }
 
 int FactorArray::findFactorWithChangeableSign() const {
-  for(size_t i = 0; i < size(); i++) {
-    if((*this)[i]->isConstant()) return (int)i;
+  const UINT n = (UINT)size();
+  for(UINT i = 0; i < n; i++) {
+    if((*this)[i]->isConstant()) return i;
   }
-  for(size_t i = 0; i < size(); i++) {
+  for(UINT i = 0; i < n; i++) {
     ExpressionFactor *f = (*this)[i];
-    if(f->hasOddExponent() && f->exponent()->isPositive()) return (int)i;
+    if(f->hasOddExponent() && f->exponent().isPositive()) return i;
   }
-  for(size_t i = 0; i < size(); i++) {
-    if((*this)[i]->hasOddExponent()) return (int)i;
+  for(UINT i = 0; i < n; i++) {
+    if((*this)[i]->hasOddExponent()) return i;
   }
   return -1;
 }

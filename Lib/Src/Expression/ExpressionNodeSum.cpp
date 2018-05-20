@@ -13,26 +13,6 @@ ExpressionNodeSum::ExpressionNodeSum(ParserTree *tree, const AddentArray &elemen
   m_elements.sort(compareSumElement);
 }
 
-ExpressionNodeSum *ExpressionNodeSum::multiply(ExpressionNodeSum *n1, ExpressionNodeSum *n2) { // static
-  AddentArray newAddentArray;
-
-  const AddentArray &aa1 = n1->getAddentArray();
-  const AddentArray &aa2 = n2->getAddentArray();
-
-  ParserTree *tree = n1->getTree();
-  for(size_t i = 0; i < aa1.size(); i++) {
-    SumElement *e1 = aa1[i];
-    const SNode s1 = e1->getNode();
-    for(size_t j = 0; j < aa2.size(); j++) {
-      SumElement *e2 = aa2[j];
-      const SNode s2 = e2->getNode();
-      newAddentArray.add(s1 * s2, e1->isPositive() == e2->isPositive());
-    }
-  }
-  ExpressionNodeSum *n = new ExpressionNodeSum(tree, newAddentArray); TRACE_NEW(n); // dont use getSum here. It has to be an ExpressionNodeSum
-  return n;
-}
-
 int ExpressionNodeSum::compare(ExpressionNode *n) {
   if(n->getSymbol() != SUM) {
     return ExpressionNode::compare(n);

@@ -4,9 +4,9 @@
 using namespace Expr;
 
 static void listSamples() {
-  const size_t count = ExpressionSamples::getCount();
-  for(size_t i = 0; i < count; i++) {
-    _tprintf(_T("%3zu: %-50s"), i, ExpressionSamples::getSample(i));
+  const UINT count = ExpressionSamples::getCount();
+  for(UINT i = 0; i < count; i++) {
+    _tprintf(_T("%3u: %-50s"), i, ExpressionSamples::getSample(i));
     if((i % 2 == 1) || (i == count - 1)) {
       _tprintf(_T("\n"));
     }
@@ -93,20 +93,20 @@ int main() {
       _tprintf(_T("run mode\n"));
       continue;
     case ':':
-      { const size_t count = ExpressionSamples::getCount();
-        UINT         n;
+      { const UINT count = ExpressionSamples::getCount();
+        UINT       n;
         if((_stscanf(str.cstr()+1,_T("%u"), &n) == 1) && (n < count)) {
           expr = ExpressionSamples::getSample(n);
         } else {
-          _tprintf(_T("%u:Illegal index (valid range:[0..%zu]"), n, count-1);
+          _tprintf(_T("%u:Illegal index (valid range:[0..%u]"), n, count-1);
           continue;
         }
       }
       break;
     case '*':
-      { const size_t count = ExpressionSamples::getCount();
-        for(size_t i = 0; i < count; i++) {
-          _tprintf(_T("sample[%zu]:"),i);
+      { const UINT count = ExpressionSamples::getCount();
+        for(UINT i = 0; i < count; i++) {
+          _tprintf(_T("sample[%u]:"),i);
           const TCHAR *expr = ExpressionSamples::getSample(i);
           if(!test(expr,runCode)) break;
         }

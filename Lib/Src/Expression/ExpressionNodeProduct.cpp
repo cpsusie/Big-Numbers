@@ -69,7 +69,7 @@ Real ExpressionNodeProduct::evaluateReal() const {
 
 bool ExpressionNodeProduct::traverseExpression(ExpressionNodeHandler &handler, int level) {
   if(!handler.handleNode(this, level)) return false;
-  FactorArray &a = getFactorArray();
+  const FactorArray &a = getFactorArray();
   level++;
   for(size_t i = 0; i < a.size(); i++) {
     if(!a[i]->traverseExpression(handler, level)) return false;

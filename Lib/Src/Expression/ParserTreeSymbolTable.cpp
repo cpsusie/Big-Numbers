@@ -22,10 +22,10 @@ bool AllocateNumbers::handleNode(ExpressionNode *n, int level) {
     }
     break;
   case POLY  :
-    { const ExpressionNodeArray &coefArray = n->getCoefficientArray();
+    { const SNodeArray &coefArray = n->getCoefArray();
       n->setFirstCoefIndex((int)m_table.getValueTable().size());
       for(size_t i = 0; i < coefArray.size(); i++) {
-        ExpressionNode *coef = coefArray[i];
+        ExpressionNode *coef = coefArray[i].node();
         if(coef->isNumber()) {
           m_table.allocateNumber(coef,false);
         } else {
@@ -111,11 +111,11 @@ void ParserTreeSymbolTable::buildSymbolTable(ExpressionNode *n) {
     }
     break;
   case POLY   :
-    { const ExpressionNodeArray &coefficientArray = n->getCoefficientArray();
-      for(size_t i = 0; i < coefficientArray.size(); i++) {
-        buildSymbolTable(coefficientArray[i]);
+    { const SNodeArray &coefArray = n->getCoefArray();
+      for(size_t i = 0; i < coefArray.size(); i++) {
+        buildSymbolTable(coefArray[i].node());
       }
-      buildSymbolTable(n->getArgument());
+      buildSymbolTable(n->getArgument().node());
     }
     break;
   case INDEXEDSUM    :
@@ -126,9 +126,9 @@ void ParserTreeSymbolTable::buildSymbolTable(ExpressionNode *n) {
     buildSymbolTableAssign(n, false);
     break;
   default:
-    { const ExpressionNodeArray &a = n->getChildArray();
+    { const SNodeArray &a = n->getChildArray();
       for(size_t i = 0; i < a.size(); i++) {
-        buildSymbolTable(a[i]);
+        buildSymbolTable(a[i].node());
       }
     }
     break;
@@ -136,10 +136,10 @@ void ParserTreeSymbolTable::buildSymbolTable(ExpressionNode *n) {
 }
 
 void ParserTreeSymbolTable::buildSymbolTableIndexedExpression(ExpressionNode *n) {
-  ExpressionNode *startAssignment = n->child(0);
+  ExpressionNode *startAssignment = n->left();
   ExpressionNode *loopVar         = startAssignment->left();
-  ExpressionNode *endExpr         = n->child(1);
-  ExpressionNode *expr            = n->child(2);
+  ExpressionNode *endExpr         = n->right();
+  ExpressionNode *expr            = n->child(2).node();
   String          loopVarName     = loopVar->getName();
 
   buildSymbolTableAssign(startAssignment,true);

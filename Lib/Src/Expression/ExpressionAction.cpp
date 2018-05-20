@@ -17,7 +17,7 @@ int ExpressionParser::reduceAction(unsigned int prod) {
   switch(prod) {
   case 0: /* start -> function */
 #line 65 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.y"
-    { m_tree.setRoot(getStackTop(0));                                       }
+    { m_tree.setRoot(newNode(getPos(1), STMTLIST, getStackTop(0), NULL));   }
 #line 33 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
   case 2: /* function -> assignStmtList final_expr */
