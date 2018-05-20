@@ -856,7 +856,6 @@
     <ClCompile Include="ExpressionNodeToRational.cpp" />
     <ClCompile Include="ExpressionNodeTree.cpp" />
     <ClCompile Include="ExpressionNodeVariable.cpp" />
-    <ClCompile Include="ExpressionReplacePowers.cpp" />
     <ClCompile Include="ExpressionTables.cpp" />
     <ClCompile Include="FPUEmulator.cpp" />
     <ClCompile Include="FPUOpcodeHashMap.cpp" />

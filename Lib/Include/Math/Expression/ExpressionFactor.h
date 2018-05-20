@@ -6,7 +6,8 @@ namespace Expr {
 
 class ExpressionFactor : public ExpressionNodeTree {
 public:
-  ExpressionFactor(ExpressionNode *base, ExpressionNode *exponent);
+  ExpressionFactor(SNode base);
+  ExpressionFactor(SNode base, SNode exponent);
 
   inline SNode base() const {
     return child(0);

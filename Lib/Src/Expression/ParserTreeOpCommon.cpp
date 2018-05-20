@@ -40,24 +40,25 @@ ExpressionNode *ParserTree::assignStmt(ExpressionNode *leftSide, ExpressionNode 
   return n;
 }
 
-ExpressionFactor *ParserTree::fetchFactorNode(ExpressionNode *base, ExpressionNode *exponent) {
-  if(exponent == NULL) {
-    exponent = getOne();
-  }
+ExpressionFactor *ParserTree::fetchFactorNode(SNode base) {
+  return fetchFactorNode(base,base._1());
+}
+
+ExpressionFactor *ParserTree::fetchFactorNode(SNode base, SNode exponent) {
   ExpressionFactor *f;
-  if(exponent->isOne()) {
-    if(base->getSymbol() == POW) {
-      if(base->getNodeType() == EXPRESSIONNODEFACTOR) {
-        return (ExpressionFactor*)base;
+  if(exponent.isOne()) {
+    if(base.getSymbol() == POW) {
+      if(base.getNodeType() == EXPRESSIONNODEFACTOR) {
+        return (ExpressionFactor*)(base.node());
       } else {
-        f = new ExpressionFactor(base->left(), base->right());
+        f = new ExpressionFactor(base.left(), base.right());
       }
     } else {
       f = new ExpressionFactor(base, exponent);
     }
   } else { // exponent != 1
-    if(base->getSymbol() == POW) {
-      f = new ExpressionFactor(base->left(), prod(base->right(), exponent));
+    if(base.getSymbol() == POW) {
+      f = new ExpressionFactor(base.left(), base.right() * exponent);
     } else {
       f = new ExpressionFactor(base, exponent);
     }
@@ -67,14 +68,6 @@ ExpressionFactor *ParserTree::fetchFactorNode(ExpressionNode *base, ExpressionNo
 }
 
 // -----------------------------------------------------------------------------------------
-
-ExpressionFactor *ParserTree::getFactor(SNode base) {
-  return fetchFactorNode(base.node());
-}
-
-ExpressionFactor *ParserTree::getFactor(SNode base, SNode exponent) {
-  return fetchFactorNode(base.node(), exponent.node());
-}
 
 ExpressionNode *ParserTree::getSum(AddentArray &a) {
   switch(a.size()) {
@@ -115,7 +108,7 @@ ExpressionNode *ParserTree::getStmtList(const SNodeArray &stmtArray) {
 ExpressionFactor *ParserTree::getFactor(SNode oldFactor, SNode newBase, SNode newExpo) {
   SNode oldBase = oldFactor.left();
   SNode oldExpo = oldFactor.right();
-  return (newBase.isSameNode(oldBase) && newExpo.isSameNode(oldExpo)) ? (ExpressionFactor*)oldFactor.node() : getFactor(newBase, newExpo);
+  return (newBase.isSameNode(oldBase) && newExpo.isSameNode(oldExpo)) ? (ExpressionFactor*)oldFactor.node() : fetchFactorNode(newBase, newExpo);
 }
 
 ExpressionNode *ParserTree::getSum(SNode oldSum, AddentArray &newAddentArray) {

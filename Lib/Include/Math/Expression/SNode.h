@@ -248,6 +248,7 @@ protected:
   SNode toTree(ExpressionInputSymbol delimiter);
 public:
   SNodeArray() {}
+  SNodeArray(int n,...);
   explicit SNodeArray(size_t capacity) : CompactArray(capacity) {
   }
   inline ParserTree *getTree() const {

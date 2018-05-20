@@ -4,8 +4,15 @@
 
 namespace Expr {
 
-ExpressionFactor::ExpressionFactor(ExpressionNode *base, ExpressionNode *exponent)
-  : ExpressionNodeTree(base->getTree(), POW, base, exponent?exponent:base->getTree()->getOne(), NULL) {
+
+ExpressionFactor::ExpressionFactor(SNode base)
+  : ExpressionNodeTree(base.getTree(), POW, SNodeArray(2,base,base._1()))
+{
+}
+
+ExpressionFactor::ExpressionFactor(SNode base, SNode exponent)
+  : ExpressionNodeTree(base.getTree(), POW, SNodeArray(2,base,exponent))
+{
 }
 
 ExpressionNode *ExpressionFactor::clone(ParserTree *tree) const {

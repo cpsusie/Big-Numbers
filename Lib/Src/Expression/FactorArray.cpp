@@ -27,7 +27,7 @@ void FactorArray::add(ExpressionFactor *f) {
 }
 
 void FactorArray::add(SNode base, SNode exponent) {
-  add(base.getTree()->fetchFactorNode(base.node(), exponent.node()));
+  add(base.getTree()->fetchFactorNode(base, exponent));
 }
 
 void FactorArray::add(SNode base) {

@@ -195,8 +195,9 @@ protected:
 
   ExpressionNodeVariable *fetchVariableNode( const String               &name    );
   ExpressionNode         *constExpression(   const String               &name    );
-  // if exponent not specified, it is set to 1
-  ExpressionFactor       *fetchFactorNode(   ExpressionNode *base, ExpressionNode *exponent = NULL);
+  // if exponent not specified, it is set to 1. Use getFactor to get SNode
+  ExpressionFactor *fetchFactorNode(   SNode base);
+  ExpressionFactor *fetchFactorNode(   SNode base, SNode exponent);
   // terminate argumentlist with NULL
   ExpressionNodeTree     *fetchTreeNode(     ExpressionInputSymbol     symbol, ...                );
 
@@ -329,8 +330,6 @@ public:
   inline ExpressionNode  *csc(       ExpressionNode *n) { return m_ops->csc(n);        }
   inline ExpressionNode  *sec(       ExpressionNode *n) { return m_ops->sec(n);        }
 
-  ExpressionFactor       *getFactor(         SNode base);
-  ExpressionFactor       *getFactor(         SNode base, SNode exponent);
   ExpressionNode         *getTree(           ExpressionInputSymbol symbol, SNodeArray &a);
   ExpressionNode         *getSum(            AddentArray          &addentArray);
   ExpressionNode         *getProduct(        FactorArray          &factorArray);

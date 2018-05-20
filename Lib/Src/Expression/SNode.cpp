@@ -480,6 +480,16 @@ SNode gauss(const SNode &x) {
 
 // -------------------------- SNodeArray -----------------------
 
+SNodeArray::SNodeArray(int n, ...) {
+  va_list argptr;
+  va_start(argptr,n);
+  setCapacity(n);
+  for(int i = 0; i < n; i++) {
+    add(va_arg(argptr,SNode));
+  }
+  va_end(argptr);
+}
+
 SNode SNodeArray::toTree(ExpressionInputSymbol delimiter) {
   ParserTree *tree = getTree();
   ExpressionNode *result = (*this)[0].node();
@@ -566,7 +576,7 @@ SNode assignStmt(SNode leftSide, SNode expr) {
 }
 
 SNode factorExp(SNode b, SNode e) {
-  ExpressionNode *n = new ExpressionFactor(b.node(),e.node()); TRACE_NEW(n);
+  ExpressionNode *n = new ExpressionFactor(b,e); TRACE_NEW(n);
   return n;
 }
 

@@ -37,44 +37,6 @@ private:
     return m_code->evaluateBool();
   }
 
-#ifdef __NEVER__
-  // Conversion between Standard-, Canonical- and Numeric tree form
-  SNode toSForm(               ExpressionNode *n);
-  SNode toSFormSum(            ExpressionNode *n);
-  SNode toSFormProduct(        ExpressionNode *n);
-  SNode toSFormPow(            ExpressionNode *n);
-  SNode toSFormPoly(           ExpressionNode *n);
-  SNode toSFormTreeNode(       ExpressionNode *n);
-  SNode toSFormFactorArray(    FactorArray    &a, bool changeExponentSign);
-
-  SNode toCForm(               ExpressionNode *n);
-  SNode toCFormSum(            ExpressionNode *n);
-  SNode toCFormProduct(        ExpressionNode *n);
-  SNode toCFormPoly(           ExpressionNode *n);
-  SNode toCFormTreeNode(       ExpressionNode *n);
-  AddentArray &toCFormSum(     AddentArray &result, ExpressionNode *n, bool positive);
-  FactorArray &toCFormProduct( FactorArray &result, ExpressionNode *n, SNode &exponent);
-  FactorArray &toCFormPower(   FactorArray &result, ExpressionNode *n, SNode &exponent);
-  FactorArray &toCFormRoot(    FactorArray &result, ExpressionNode *n, SNode &exponent);
-
-  SNode toNForm(               ExpressionNode *n);
-  SNode toNFormBoolExp(        ExpressionNode *n);
-  SNode toNFormRealExp(        ExpressionNode *n);
-  SNode toNFormSum(            ExpressionNode *n);
-  SNode toNFormProduct(        ExpressionNode *n);
-  SNode toNFormPoly(           ExpressionNode *n);
-  SNode toNFormTreeNode(       ExpressionNode *n);
-#endif // __NEVER__
-
-#ifdef __NEVER__
-  const ExpressionNode   *replaceRationalPowers(       const ExpressionNode   *n) const;
-  const ExpressionNode   *replaceRationalPower(        const ExpressionNode   *n) const;
-  const ExpressionFactor *replaceRationalPower(        const ExpressionFactor *f) const;
-  const ExpressionNode   *replaceRationalFactors(      const ExpressionNode   *n) const;
-  const ExpressionNode   *substituteName(              const ExpressionNode   *n,  const String &from, const String &to) const;
-  const ExpressionNode   *normalizePolynomial(         const ExpressionNode   *n) const;
-#endif __NEVER__
-
   // Properties
   void setReturnType(ExpressionReturnType returnType );
   void setMachineCode(bool                machinecode);

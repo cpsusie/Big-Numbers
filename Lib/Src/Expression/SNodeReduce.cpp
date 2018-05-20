@@ -11,7 +11,7 @@ namespace Expr {
 #define NV(v) SNode(getTree(),v)
 
 ExpressionFactor *SNode::factor(SNode b, SNode e) { // static
-  return b.getTree()->fetchFactorNode(b.node(),e.node());
+  return b.getTree()->fetchFactorNode(b,e);
 }
 
 SNode SNode::reduce() {

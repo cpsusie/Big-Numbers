@@ -149,9 +149,6 @@
     <ClCompile Include="ExpressionNodeVariable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ExpressionReplacePowers.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ExpressionTables.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
