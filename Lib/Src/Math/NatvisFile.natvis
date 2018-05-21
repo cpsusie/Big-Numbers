@@ -27,17 +27,4 @@
   <Type Name="Number">
     <DisplayString LegacyAddin="C:\mytools2015\Lib\Win32\Release\NumberAddIn.dll" Export="AddIn_Number"></DisplayString>
   </Type>
-  <Type Name="ExpressionVariable">
-    <DisplayString>{Name={m_name} Value={m_value}}</DisplayString>
-  </Type>
-  <Type Name="ExpressionNodeNumber">
-    <DisplayString>{Value={m_number}}</DisplayString>
-  </Type>
-  <Type Name="ExpressionNodeBoolean">
-    <DisplayString>{Value={m_value}}</DisplayString>
-  </Type>
-  <Type Name="SNode">
-    <DisplayString Condition="m_node == 0">null</DisplayString>
-    <DisplayString>{Node={*m_node}}</DisplayString>
-  </Type>
 </AutoVisualizer>
