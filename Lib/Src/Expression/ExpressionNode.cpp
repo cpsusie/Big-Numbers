@@ -361,7 +361,7 @@ String &ExpressionNode::addLeftMargin(String &s, int level) { // static
 
 void ExpressionNode::throwInvalidSymbolForTreeMode(const TCHAR *method) const {
   throwException(_T("%s:Invalid symbol in tree form %s:<%s>")
-                ,method, getTree()->getTreeFormName().cstr(),  getSymbolName().cstr());
+                ,method, getTree().getTreeFormName().cstr(),  getSymbolName().cstr());
 }
 
 void ExpressionNode::throwUnknownSymbolException(const TCHAR *method) const {

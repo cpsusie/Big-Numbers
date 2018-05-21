@@ -44,7 +44,7 @@ public:
 
 #define DEFINEREDUCTIONSTACK   ReductionStack m_reductionStack
 
-#define GETSTACK()             getTree()->getReductionStack()
+#define GETSTACK()             getTree().getReductionStack()
 #define STARTREDUCTION(tree)   m_reductionStack.reset(tree)
 #define ENTERMETHOD()          GETSTACK().push(method, format(_T("n:<%s>"), toString().cstr()),m_node)
 #define ENTERMETHOD1(v)        GETSTACK().push(method, format(_T("%s:<%s>"), _T(#v), (v).toString().cstr()))

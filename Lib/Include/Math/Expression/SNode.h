@@ -90,14 +90,14 @@ public:
   }
   inline SNode(ExpressionNode *node) : m_node(node) {
   }
-  SNode(ParserTree *tree, int                v);
-  SNode(ParserTree *tree, INT64              v);
-  SNode(ParserTree *tree, const Rational    &v);
-  SNode(ParserTree *tree, const Real        &v);
-  SNode(ParserTree *tree, const Number      &v);
-  SNode(ParserTree *tree, bool               v);
-  SNode(ParserTree *tree, AddentArray       &a);
-  SNode(ParserTree *tree, FactorArray       &a);
+  SNode(ParserTree &tree, int                v);
+  SNode(ParserTree &tree, INT64              v);
+  SNode(ParserTree &tree, const Rational    &v);
+  SNode(ParserTree &tree, const Real        &v);
+  SNode(ParserTree &tree, const Number      &v);
+  SNode(ParserTree &tree, bool               v);
+  SNode(ParserTree &tree, AddentArray       &a);
+  SNode(ParserTree &tree, FactorArray       &a);
 
   SNode _0()  const; // zero
   SNode _1()  const; // 1
@@ -113,7 +113,7 @@ public:
     return m_node;
   }
   ExpressionInputSymbol getSymbol()                            const;
-  ParserTree           *getTree()                              const;
+  ParserTree           &getTree()                              const;
   String                getSymbolName()                        const;
   static String         getSymbolName(ExpressionInputSymbol symbol);
   void                  mark();
@@ -253,7 +253,7 @@ public:
   SNodeArray(int n,...);
   explicit SNodeArray(size_t capacity) : CompactArray(capacity) {
   }
-  inline ParserTree *getTree() const {
+  inline ParserTree &getTree() const {
     if(isEmpty()) throwException(_T("SNodeArray:array is empty"));
     return (*this)[0].getTree();
   }

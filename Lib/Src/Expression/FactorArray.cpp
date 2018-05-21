@@ -17,7 +17,6 @@ void FactorArray::add(ExpressionFactor *f) {
     if(exponent.isOne()) {
       addAll(a);
     } else {
-      ParserTree *tree = f->getTree();
       for(size_t i = 0; i < a.size(); i++) {
         ExpressionFactor *f = a[i];
         add(f->base(), f->exponent() * exponent);
@@ -27,7 +26,7 @@ void FactorArray::add(ExpressionFactor *f) {
 }
 
 void FactorArray::add(SNode base, SNode exponent) {
-  add(base.getTree()->fetchFactorNode(base, exponent));
+  add(base.getTree().fetchFactorNode(base, exponent));
 }
 
 void FactorArray::add(SNode base) {
@@ -39,7 +38,7 @@ void FactorArray::add(SNode base) {
 }
 
 void FactorArray::add(SNode base, const Rational &exponent) {
-  add(base, base.getTree()->numberExpression(exponent));
+  add(base, base.getTree().numberExpression(exponent));
 }
 
 FactorArray FactorArray::selectConstantPositiveExponentFactors() const {

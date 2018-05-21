@@ -17,7 +17,7 @@ SNode SNode::D(const String &name) const {
       } else if(v.isConstant() || v.isLoopVar() || !v.isDefined()) {
         return _0();
       } else {
-        return getTree()->fetchVariableNode(v.getName()+_T("'"));
+        return getTree().fetchVariableNode(v.getName()+_T("'"));
       }
     }
 
@@ -183,7 +183,7 @@ SNode SNode::D(const String &name) const {
       const SNode endExpr         = child(1);
       const SNode expr            = child(2); // the expression to multiply
       const SNode productCounter  = startAssignment.left();
-      const SNode sumCounter(getTree()->allocateLoopVarNode(productCounter.getName()));
+      const SNode sumCounter(getTree().allocateLoopVarNode(productCounter.getName()));
 
       return indexSum(assignStmt(sumCounter, startAssignment.right())
                      ,endExpr
@@ -246,7 +246,7 @@ SNode SNode::DStmtList(const String &name) const {
           throwException(_T("Cannot find derived of statement \"%s\", because a value is assigned to %s"), stmt.toString().cstr(), name.cstr());
         }
         result.add(stmt.node());
-        result.add(assignStmt(getTree()->fetchVariableNode(var.getName()+_T("'")), ddx(expr)));
+        result.add(assignStmt(getTree().fetchVariableNode(var.getName()+_T("'")), ddx(expr)));
       }
       break;
     default:

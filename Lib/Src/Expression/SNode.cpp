@@ -4,51 +4,51 @@
 
 namespace Expr {
 
-SNode::SNode(ParserTree *tree, int v) {
-  m_node = tree->numberExpression(v);
+SNode::SNode(ParserTree &tree, int v) {
+  m_node = tree.numberExpression(v);
 }
 
-SNode::SNode(ParserTree *tree, INT64 v) {
-  m_node = tree->numberExpression(v);
+SNode::SNode(ParserTree &tree, INT64 v) {
+  m_node = tree.numberExpression(v);
 }
 
-SNode::SNode(ParserTree *tree, const Rational &v) {
-  m_node = tree->numberExpression(v);
+SNode::SNode(ParserTree &tree, const Rational &v) {
+  m_node = tree.numberExpression(v);
 }
 
-SNode::SNode(ParserTree *tree, const Real &v) {
-  m_node = tree->numberExpression(v);
+SNode::SNode(ParserTree &tree, const Real &v) {
+  m_node = tree.numberExpression(v);
 }
 
-SNode::SNode(ParserTree *tree, const Number &v) {
-  m_node = tree->numberExpression(v);
+SNode::SNode(ParserTree &tree, const Number &v) {
+  m_node = tree.numberExpression(v);
 }
 
-SNode::SNode(ParserTree *tree, bool v) {
-  m_node = v ? tree->getTrue() : tree->getFalse();
+SNode::SNode(ParserTree &tree, bool v) {
+  m_node = v ? tree.getTrue() : tree.getFalse();
 }
 
-SNode::SNode(ParserTree *tree, AddentArray &a) {
-  m_node = tree->getSum(a);
+SNode::SNode(ParserTree &tree, AddentArray &a) {
+  m_node = tree.getSum(a);
 }
 
-SNode::SNode(ParserTree *tree, FactorArray &a) {
-  m_node = tree->getProduct(a);
+SNode::SNode(ParserTree &tree, FactorArray &a) {
+  m_node = tree.getProduct(a);
 }
 
-SNode SNode::_0()  const { return SNode( getTree()->getZero());     }
-SNode SNode::_1()  const { return SNode( getTree()->getOne());      }
-SNode SNode::_m1() const { return SNode( getTree()->getMinusOne()); }
-SNode SNode::_2()  const { return SNode( getTree()->getTwo());      }
-SNode SNode::_10() const { return SNode( getTree()->getTen());      }
-SNode SNode::_05() const { return SNode( getTree()->getHalf());     }
+SNode SNode::_0()  const { return SNode( getTree().getZero());     }
+SNode SNode::_1()  const { return SNode( getTree().getOne());      }
+SNode SNode::_m1() const { return SNode( getTree().getMinusOne()); }
+SNode SNode::_2()  const { return SNode( getTree().getTwo());      }
+SNode SNode::_10() const { return SNode( getTree().getTen());      }
+SNode SNode::_05() const { return SNode( getTree().getHalf());     }
 
 
 ExpressionInputSymbol SNode::getSymbol() const {
   return m_node->getSymbol();
 }
 
-ParserTree *SNode::getTree() const {
+ParserTree &SNode::getTree() const {
   return m_node->getTree();
 }
 
@@ -309,23 +309,23 @@ SNode SNode::exponent() const {
 
 
 SNode SNode::operator+(const SNode &n) const {
-  return getTree()->sum(m_node, n.m_node);
+  return getTree().sum(m_node, n.m_node);
 }
 
 SNode SNode::operator-(const SNode &n) const { // binary -
-  return getTree()->diff(m_node, n.m_node);
+  return getTree().diff(m_node, n.m_node);
 }
 
 SNode SNode::operator-() const { // unary -
-  return getTree()->minus(m_node);
+  return getTree().minus(m_node);
 }
 
 SNode SNode::operator*(const SNode &n) const {
-  return getTree()->prod(m_node, n.m_node);
+  return getTree().prod(m_node, n.m_node);
 }
 
 SNode SNode::operator/(const SNode &n) const {
-  return getTree()->quot(m_node, n.m_node);
+  return getTree().quot(m_node, n.m_node);
 }
 
 SNode &SNode::operator+=(const SNode &n) {
@@ -349,19 +349,19 @@ SNode &SNode::operator/=(const SNode &n) {
 }
 
 SNode SNode::operator%(const SNode &n) const {
-  return getTree()->mod(m_node, n.m_node);
+  return getTree().mod(m_node, n.m_node);
 }
 
 SNode SNode::operator&&(const SNode &n) const {
-  return m_node->getTree()->and(m_node, n.m_node);
+  return m_node->getTree().and(m_node, n.m_node);
 }
 
 SNode SNode::operator||(const SNode &n) const {
-  return m_node->getTree()->or(m_node, n.m_node);
+  return m_node->getTree().or(m_node, n.m_node);
 }
 
 SNode SNode::operator!() const {
-  return m_node->getTree()->unaryExpr(NOT, m_node);
+  return m_node->getTree().unaryExpr(NOT, m_node);
 }
 
 bool SNode::operator==(const SNode &n) const {
@@ -379,35 +379,35 @@ void SNode::throwUnknownSymbolException(const TCHAR *method) const {
 // ----------------------------------- SNode member functions -------------------------------
 
 SNode reciprocal(const SNode &x) {
-  return x.getTree()->reciprocal(x.m_node);
+  return x.getTree().reciprocal(x.m_node);
 }
 
 SNode sqrt(const SNode &x) {
-  return x.getTree()->sqrt(x.m_node);
+  return x.getTree().sqrt(x.m_node);
 }
 
 SNode sqr(const SNode &x) {
-  return x.getTree()->sqr(x.m_node);
+  return x.getTree().sqr(x.m_node);
 }
 
 SNode pow(const SNode &x, const SNode &y) {
-  return x.getTree()->power(x.m_node, y.m_node);
+  return x.getTree().power(x.m_node, y.m_node);
 }
 
 SNode root(const SNode &x, const SNode &y) {
-  return x.getTree()->root(x.m_node, y.m_node);
+  return x.getTree().root(x.m_node, y.m_node);
 }
 
 SNode exp(const SNode &x) {
-  return x.getTree()->exp(x.m_node);
+  return x.getTree().exp(x.m_node);
 }
 
 SNode exp10(const SNode &x) {
-  return x.getTree()->exp10(x.m_node);
+  return x.getTree().exp10(x.m_node);
 }
 
 SNode exp2(const SNode &x) {
-  return x.getTree()->exp2(x.m_node);
+  return x.getTree().exp2(x.m_node);
 }
 
 SNode ln(const SNode &x) {
@@ -435,7 +435,7 @@ SNode tan(const SNode &x) {
 }
 
 SNode cot(const SNode &x) {
-  return x.getTree()->cot(x.m_node);
+  return x.getTree().cot(x.m_node);
 }
 
 SNode asin(const SNode &x) {
@@ -459,11 +459,11 @@ SNode acot(const SNode &x) {
 }
 
 SNode csc(const SNode &x) {
-  return x.getTree()->csc(x.m_node);
+  return x.getTree().csc(x.m_node);
 }
 
 SNode sec(const SNode &x) {
-  return x.getTree()->sec(x.m_node);
+  return x.getTree().sec(x.m_node);
 }
 
 SNode sinh(const SNode &x) {
@@ -495,10 +495,10 @@ SNodeArray::SNodeArray(int n, ...) {
 }
 
 SNode SNodeArray::toTree(ExpressionInputSymbol delimiter) {
-  ParserTree *tree = getTree();
+  ParserTree &tree = getTree();
   ExpressionNode *result = (*this)[0].node();
   for(size_t i = 1; i < size(); i++) {
-    result = tree->binaryExpr(delimiter, result, (*this)[i].node());
+    result = tree.binaryExpr(delimiter, result, (*this)[i].node());
   }
   return result;
 }
@@ -543,40 +543,40 @@ SNodeArray &SStmtList::removeUnusedAssignments() {
 // ---------------------------- helpers -----------------
 
 SNode unaryExp(ExpressionInputSymbol symbol, SNode n) {
-  return n.node()->getTree()->unaryExpr(symbol, n.node());
+  return n.node()->getTree().unaryExpr(symbol, n.node());
 }
 
 SNode binExp(ExpressionInputSymbol symbol, SNode n1, SNode n2) {
-  return n1.node()->getTree()->binaryExpr(symbol, n1.node(), n2.node());
+  return n1.node()->getTree().binaryExpr(symbol, n1.node(), n2.node());
 }
 
 SNode treeExp(ExpressionInputSymbol symbol, const SNodeArray &a) {
-  ExpressionNode *n = new ExpressionNodeTree(a.getTree(), symbol, a); TRACE_NEW(n);
+  ExpressionNode *n = new ExpressionNodeTree(&a.getTree(), symbol, a); TRACE_NEW(n);
   return n;
 }
 
 SNode condExp(SNode condition, SNode nTrue, SNode nFalse) {
-  return condition.node()->getTree()->condExpr(condition.node(), nTrue.node(), nFalse.node());
+  return condition.node()->getTree().condExpr(condition.node(), nTrue.node(), nFalse.node());
 }
 
 SNode polyExp(const SNodeArray &coefArray, SNode arg) {
-  return arg.node()->getTree()->getPoly(coefArray, arg.node());
+  return arg.node()->getTree().getPoly(coefArray, arg.node());
 }
 
 SNode stmtList(const SNodeArray &list) {
-  return list.getTree()->getStmtList(list);
+  return list.getTree().getStmtList(list);
 }
 
 SNode indexSum(SNode assignStmt, SNode endExpr, SNode expr) {
-  return assignStmt.node()->getTree()->indexedSum(assignStmt.node(), endExpr.node(), expr.node());
+  return assignStmt.node()->getTree().indexedSum(assignStmt.node(), endExpr.node(), expr.node());
 }
 
 SNode indexProd(SNode assignStmt, SNode endExpr, SNode expr) {
-  return assignStmt.node()->getTree()->indexedProduct(assignStmt.node(), endExpr.node(), expr.node());
+  return assignStmt.node()->getTree().indexedProduct(assignStmt.node(), endExpr.node(), expr.node());
 }
 
 SNode assignStmt(SNode leftSide, SNode expr) {
-  return leftSide.node()->getTree()->assignStmt(leftSide.node(), expr.node());
+  return leftSide.node()->getTree().assignStmt(leftSide.node(), expr.node());
 }
 
 SNode factorExp(SNode b, SNode e) {

@@ -20,11 +20,11 @@ ExpressionNodePoly::ExpressionNodePoly(ParserTree *tree, const ExpressionNodePol
 ExpressionNode *ExpressionNodePoly::expand() {
   DEFINEMETHODNAME;
 
-  ParserTree        *tree             = getTree();
+  ParserTree        &tree             = getTree();
   const SNodeArray  &coefficientArray = getCoefArray();
   const SNode        arg              = getArgument();
   int                expo             = getDegree();
-  SNode              result           = tree->getZero();
+  SNode              result           = tree.getZero();
 
   for(size_t i = 0; i < coefficientArray.size(); i++) {
     SNode coef  = coefficientArray[i];

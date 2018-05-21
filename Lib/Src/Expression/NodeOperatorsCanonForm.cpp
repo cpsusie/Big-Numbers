@@ -11,28 +11,28 @@ namespace Expr {
 class NodeOperatorsCanonForm : public NodeOperators {
 private:
   static inline ExpressionNode   *getSum(         ExpressionNode *n, AddentArray &aa) {
-    return n->getTree()->getSum(aa);
+    return n->getTree().getSum(aa);
   }
   static inline ExpressionNode   *getProduct(     ExpressionNode *n, FactorArray &fa) {
-    return n->getTree()->getProduct(fa);
+    return n->getTree().getProduct(fa);
   }
   static inline ExpressionNode   *unaryMinus(ExpressionNode *n) {
-    return n->getTree()->unaryMinus(n);
+    return n->getTree().unaryMinus(n);
   }
   static inline ExpressionNode   *getPoly(const SNodeArray &coefArray, ExpressionNode *arg) {
-    return arg->getTree()->getPoly(coefArray, arg);
+    return arg->getTree().getPoly(coefArray, arg);
   }
   static inline ExpressionNode   *indexedSum(ExpressionNode *assign, ExpressionNode *end, ExpressionNode *expr) {
-    return assign->getTree()->indexedSum(assign,end,expr);
+    return assign->getTree().indexedSum(assign,end,expr);
   }
   static inline ExpressionNode   *indexedProduct(ExpressionNode *assign, ExpressionNode *end, ExpressionNode *expr) {
-    return assign->getTree()->indexedProduct(assign,end,expr);
+    return assign->getTree().indexedProduct(assign,end,expr);
   }
   static inline ExpressionFactor *fetchFactorNode(ExpressionNode *base, ExpressionNode *exponent) {
-    return base->getTree()->fetchFactorNode(base,exponent);
+    return base->getTree().fetchFactorNode(base,exponent);
   }
   static inline ExpressionNode   *constExpression(ExpressionNode *n, const TCHAR *name) {
-    return n->getTree()->constExpression(name);
+    return n->getTree().constExpression(name);
   }
 public:
   ExpressionNode *minus(     ExpressionNode *n) const;
@@ -342,7 +342,7 @@ CNode CNode::toCForm() const {
 
 CNode CNode::toCFormSum() const {
   AddentArray a;
-  return getTree()->getSum(toCFormSum(a, true));
+  return getTree().getSum(toCFormSum(a, true));
 }
 
 AddentArray &CNode::toCFormSum(AddentArray &result, bool positive) const {
@@ -374,7 +374,7 @@ AddentArray &CNode::toCFormSum(AddentArray &result, bool positive) const {
 
 CNode CNode::toCFormProduct() const {
   FactorArray a;
-  return getTree()->getProduct(toCFormProduct(a, _1()));
+  return getTree().getProduct(toCFormProduct(a, _1()));
 }
 
 FactorArray &CNode::toCFormProduct(FactorArray &result, SNode &exponent) const {

@@ -192,7 +192,7 @@ ExpressionNode *ParserTree::expandPower(ExpressionNode *base, const Rational &ex
     num = -num;
   }
   if(den > 1) {
-    b = root(b.node(), SNode(this, den).node());
+    b = root(b.node(), SNode(*this, den).node());
   }
   for(int i = 0; i < num; i++) {
     result *= b;

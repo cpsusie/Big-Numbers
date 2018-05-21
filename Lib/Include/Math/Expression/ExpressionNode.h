@@ -183,8 +183,7 @@ public:
   virtual ~ExpressionNode() {}
 
   inline ExpressionInputSymbol       getSymbol()                    const   { return (ExpressionInputSymbol)m_info.m_symbol;                   }
-  inline  const ParserTree          *getTree()                      const   { return &m_tree;                                                  }
-  inline        ParserTree          *getTree()                              { return &m_tree;                                                  }
+  inline        ParserTree          &getTree()                      const   { return m_tree;                                                   }
   inline String                      getSymbolName()                const   { return getSymbolName(getSymbol());  }
   static String                      getSymbolName(ExpressionInputSymbol symbol);
   inline  void                       mark()                                 { m_info.m_marked = true;                                          }
@@ -600,7 +599,7 @@ public:
   {
   }
   ExpressionNodeAssign(ExpressionNode *leftSide, ExpressionNode *expr)
-    : ExpressionNodeTree(leftSide->getTree(), ASSIGN, leftSide, expr, NULL)
+    : ExpressionNodeTree(&(leftSide->getTree()), ASSIGN, leftSide, expr, NULL)
   {
   }
   ExpressionNodeAssign(ParserTree *tree, const ExpressionNodeAssign *src);

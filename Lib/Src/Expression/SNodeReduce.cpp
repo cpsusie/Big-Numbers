@@ -11,7 +11,7 @@ namespace Expr {
 #define NV(v) SNode(getTree(),v)
 
 ExpressionFactor *SNode::factor(SNode b, SNode e) { // static
-  return b.getTree()->fetchFactorNode(b,e);
+  return b.getTree().fetchFactorNode(b,e);
 }
 
 SNode SNode::reduce() {
@@ -246,7 +246,7 @@ SNode SNode::reduceSum() const {
           done.add(i1);
           done.add(i2);
         } else {
-          SumElement *cf = (getTree()->getState() == PS_MAINREDUCTION1) ? getCommonFactor(*e1, *e2) : NULL;
+          SumElement *cf = (getTree().getState() == PS_MAINREDUCTION1) ? getCommonFactor(*e1, *e2) : NULL;
           if(cf != NULL) {
             if(cf->getNode()->getSymbol() != SUM) {
               reduced.add(cf);
@@ -785,7 +785,7 @@ SNode SNode::multiplySumSum(SNode n1, SNode n2) const {
   const AddentArray &aa1 = n1.getAddentArray();
   const AddentArray &aa2 = n2.getAddentArray();
 
-  ParserTree *tree = n1.getTree();
+  ParserTree &tree = n1.getTree();
   AddentArray newAddentArray(aa1.size() * aa2.size());
   for(size_t i = 0; i < aa1.size(); i++) {
     SumElement *e1 = aa1[i];
@@ -796,7 +796,7 @@ SNode SNode::multiplySumSum(SNode n1, SNode n2) const {
       newAddentArray.add(s1 * s2, e1->isPositive() == e2->isPositive());
     }
   }
-  ExpressionNodeSum *n = new ExpressionNodeSum(tree, newAddentArray); TRACE_NEW(n); // dont use getSum here. It has to be an ExpressionNodeSum
+  ExpressionNodeSum *n = new ExpressionNodeSum(&tree, newAddentArray); TRACE_NEW(n); // dont use getSum here. It has to be an ExpressionNodeSum
   return n;
 }
 
