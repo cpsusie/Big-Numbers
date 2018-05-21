@@ -10,7 +10,7 @@ void SumElement::init(ExpressionNode *n, bool positive) {
     if(n->left()->isOne() || n->right()->isOne()) {
       m_n = n->left();
     } else if(n->right()->isZero()) {
-      m_n = n->getTree()->getOne();
+      m_n = n->getTree().getOne();
     } else {
       m_n = n;
     }
@@ -19,10 +19,10 @@ void SumElement::init(ExpressionNode *n, bool positive) {
   }
   m_positive = positive;
   if(m_n->isNegative()) {
-    m_n = m_n->getTree()->minus(m_n);
+    m_n = m_n->getTree().minus(m_n);
     m_positive = !m_positive;
   }
-  m_n->getTree()->m_addentTable.add(this);
+  m_n->getTree().m_addentTable.add(this);
 }
 
 SumElement::SumElement(const SNode &n, bool positive) {
@@ -30,7 +30,7 @@ SumElement::SumElement(const SNode &n, bool positive) {
 }
 
 const ExpressionNode *SumElement::createExpressionNode() const {
-  return m_positive ? m_n : m_n->getTree()->minus(m_n);
+  return m_positive ? m_n : m_n->getTree().minus(m_n);
 }
 
 bool SumElement::isConstant() const {

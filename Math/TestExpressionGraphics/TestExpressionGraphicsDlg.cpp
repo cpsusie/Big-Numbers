@@ -410,7 +410,9 @@ void CTestExpressionGraphicsDlg::createThread(Expression &expr) {
   m_debugThread = new DebugThread(expr);
   m_debugThread->addPropertyChangeListener(this);
   expr.addPropertyChangeListener(m_debugThread);
+#ifdef TRACE_REDUCTION_CALLSTACK
   expr.getReductionStack().addPropertyChangeListener(m_debugThread);
+#endif
 }
 
 void CTestExpressionGraphicsDlg::destroyThread() {
@@ -420,11 +422,15 @@ void CTestExpressionGraphicsDlg::destroyThread() {
     switch(m_debugWinId) {
     case IDC_STATICEXPRIMAGE   :
       m_expr.removePropertyChangeListener(m_debugThread);
+#ifdef TRACE_REDUCTION_CALLSTACK
       m_expr.getReductionStack().removePropertyChangeListener(m_debugThread);
+#endif
       break;
     case IDC_STATICDERIVEDIMAGE:
       m_derivedExpr.removePropertyChangeListener(m_debugThread);
+#ifdef TRACE_REDUCTION_CALLSTACK
       m_derivedExpr.getReductionStack().removePropertyChangeListener(m_debugThread);
+#endif
       break;
     }
     delete m_debugThread;

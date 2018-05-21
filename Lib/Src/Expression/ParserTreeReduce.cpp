@@ -50,7 +50,7 @@ public:
 void ParserTree::reduce() {
 
   try {
-    const ExpressionVariableArray variables = getSymbolTable().getAllVariables();
+    const ExpressionVariableArray oldVariables = getSymbolTable().getAllVariables();
 
     const ParserTreeForm startTreeForm = getTreeForm();
     if(startTreeForm != TREEFORM_CANONICAL) {
@@ -78,7 +78,7 @@ void ParserTree::reduce() {
       setTreeForm(TREEFORM_STANDARD);
     }
 
-    buildSymbolTable();
+    buildSymbolTable(&oldVariables);
     pruneUnusedNodes();
 
     setState(PS_REDUCTIONDONE);

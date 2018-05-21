@@ -23,13 +23,13 @@ private:
   void                  incrValueRefCount(UINT valueIndex);
   void                  buildValueRefCountTable();
   void                  init();
-  void                  buildSymbolTable(                    ExpressionNode *n);
-  void                  buildSymbolTableIndexedExpression(   ExpressionNode *n);
-  void                  buildSymbolTableAssign(              ExpressionNode *n, bool loopAssignment);
-  ExpressionVariable   *allocateSymbol(     const String &name, const Real &value, bool isConstant, bool isLeftSide, bool isLoopVar);
-  ExpressionVariable   *allocateSymbol(     ExpressionNode *n                    , bool isConstant, bool isLeftSide, bool isLoopVar);
-  ExpressionVariable   *allocateConstant(   ExpressionNode *n, const String &name, const Real &value);
-  void                  allocateNumber(     ExpressionNode *n, bool reuseIfExist);
+  void                  buildTable(           ExpressionNode *n);
+  void                  buildTableIndexedExpr(ExpressionNode *n);
+  void                  buildTableAssign(     ExpressionNode *n, bool loopAssignment);
+  ExpressionVariable   *allocateSymbol(       const String &name, const Real &value, bool isConstant, bool isLeftSide, bool isLoopVar);
+  ExpressionVariable   *allocateSymbol(       ExpressionNode *n                    , bool isConstant, bool isLeftSide, bool isLoopVar);
+  ExpressionVariable   *allocateConstant(     ExpressionNode *n, const String &name, const Real &value);
+  void                  allocateNumber(       ExpressionNode *n, bool reuseIfExist);
   // Insert value into m_valueTable, return index of position
   int                   insertValue(Real value);
   // Return set with indices in m_valueTable, for all elements usedby variables
@@ -38,9 +38,8 @@ private:
   int                   findNumberIndexByValue(const Real &value) const;
   void                  checkDependentOnLoopVariablesOnly(   ExpressionNode *n);
   String                getNewTempName();
-  void                  copyValues(const ParserTreeSymbolTable &src);
-  ParserTreeSymbolTable(           const ParserTreeSymbolTable &src); // not implemented
-  ParserTreeSymbolTable &operator=(const ParserTreeSymbolTable &src); // not implemented
+  ParserTreeSymbolTable(           const ParserTreeSymbolTable   &src); // not implemented
+  ParserTreeSymbolTable &operator=(const ParserTreeSymbolTable   &src); // not implemented
   friend class ParserTree;
   friend class AllocateNumbers;
   friend class ExpressionNodeVariable;
@@ -48,7 +47,7 @@ public:
   ParserTreeSymbolTable() {
     init();
   }
-  void                             create(ParserTree *tree, const ParserTreeSymbolTable *oldValues);
+  void                             create(ParserTree *tree, const ExpressionVariableArray *oldVariables);
   void                             clear(ParserTree  *tree);
   inline ExpressionVariable       *getVariable(const String &name) {
     const int *index = m_nameTable.get(name);

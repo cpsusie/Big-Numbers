@@ -10,7 +10,7 @@ Expression::Expression(TrigonometricMode mode) : ParserTree(mode) {
 
 Expression::Expression(const Expression &src) : ParserTree(src) {
   init(src.getReturnType());
-  buildSymbolTable(&src.getSymbolTable());
+  buildSymbolTable(&src.getSymbolTable().getAllVariables());
   setMachineCode(src.isMachineCode());
 }
 
@@ -22,7 +22,7 @@ Expression &Expression::operator=(const Expression &src) {
   clear();
   ParserTree::operator=(src);
   setTrigonometricMode(src.getTrigonometricMode());
-  buildSymbolTable(   &src.getSymbolTable());
+  buildSymbolTable(   &src.getSymbolTable().getAllVariables());
   setMachineCode(      src.isMachineCode());
   setReturnType(       src.getReturnType());
 

@@ -66,6 +66,7 @@ void ParserTree::setReduceIteration(UINT iteration) {
 void ParserTree::setTreeForm(ParserTreeForm form) {
   const ParserTreeForm oldForm = getTreeForm();
   if(form != oldForm) {
+    const ExpressionVariableArray oldVariables = getSymbolTable().getAllVariables();
     switch(form) {
     case TREEFORM_STANDARD : setRoot(toStandardForm( getRoot())); break;
     case TREEFORM_CANONICAL: setRoot(toCanonicalForm(getRoot())); break;
@@ -74,7 +75,7 @@ void ParserTree::setTreeForm(ParserTreeForm form) {
       throwInvalidArgumentException(__TFUNCTION__,_T("form=%d"), form);
     }
     pruneUnusedNodes();
-    buildSymbolTable();
+    buildSymbolTable(&oldVariables);
     notifyPropertyChanged(PP_TREEFORM, &oldForm, &form);
   }
 }

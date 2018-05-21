@@ -63,21 +63,23 @@ void ParserTreeSymbolTable::clear(ParserTree *tree) {
   m_indexNameCounter = 0;
 }
 
-void ParserTreeSymbolTable::create(ParserTree *tree, const ParserTreeSymbolTable *oldValues) {
+void ParserTreeSymbolTable::create(ParserTree *tree, const ExpressionVariableArray *oldVariables) {
   clear(tree);
   m_tree = tree;
-  const ExpressionVariableArray oldVariables = getAllVariables();
+  const ExpressionVariableArray tmp       = getAllVariables();
+  const ExpressionVariableArray &varTable = oldVariables ? *oldVariables : tmp;
 
   for(int i = 0; i < TMPVARCOUNT; i++) {
     insertValue(getRealNaN());
   }
   allocateConstant(NULL, _T("pi"), M_PI);
   allocateConstant(NULL, _T("e") , M_E);
-  buildSymbolTable(tree->getRoot());
+  buildTable(tree->getRoot());
   m_tree->traverseTree(AllocateNumbers(this));
   buildValueRefCountTable();
-  for(size_t i = 0; i < oldVariables.size(); i++) {
-    const ExpressionVariableWithValue &oldVar = oldVariables[i];
+
+  for(size_t i = 0; i < varTable.size(); i++) {
+    const ExpressionVariableWithValue &oldVar = varTable[i];
     if(oldVar.isInput()) {
       const ExpressionVariable *newVar = getVariable(oldVar.getName());
       if(newVar && newVar->isInput()) {
@@ -85,12 +87,9 @@ void ParserTreeSymbolTable::create(ParserTree *tree, const ParserTreeSymbolTable
       }
     }
   }
-  if(oldValues != NULL) {
-    copyValues(*oldValues);
-  }
 }
 
-void ParserTreeSymbolTable::buildSymbolTable(ExpressionNode *n) {
+void ParserTreeSymbolTable::buildTable(ExpressionNode *n) {
   switch(n->getSymbol()) {
   case NAME:
     allocateSymbol(n, false, false, false);
@@ -102,54 +101,54 @@ void ParserTreeSymbolTable::buildSymbolTable(ExpressionNode *n) {
 
   case SUM    :
     { const AddentArray &a = n->getAddentArray();
-      for(size_t i = 0; i < a.size(); i++) buildSymbolTable(a[i]->getNode());
+      for(size_t i = 0; i < a.size(); i++) buildTable(a[i]->getNode());
     }
     break;
   case PRODUCT:
     { const FactorArray &a = n->getFactorArray();
-      for(size_t i = 0; i < a.size(); i++) buildSymbolTable(a[i]);
+      for(size_t i = 0; i < a.size(); i++) buildTable(a[i]);
     }
     break;
   case POLY   :
     { const SNodeArray &coefArray = n->getCoefArray();
       for(size_t i = 0; i < coefArray.size(); i++) {
-        buildSymbolTable(coefArray[i].node());
+        buildTable(coefArray[i].node());
       }
-      buildSymbolTable(n->getArgument().node());
+      buildTable(n->getArgument().node());
     }
     break;
   case INDEXEDSUM    :
   case INDEXEDPRODUCT:
-    buildSymbolTableIndexedExpression(n);
+    buildTableIndexedExpr(n);
     break;
   case ASSIGN :
-    buildSymbolTableAssign(n, false);
+    buildTableAssign(n, false);
     break;
   default:
     { const SNodeArray &a = n->getChildArray();
       for(size_t i = 0; i < a.size(); i++) {
-        buildSymbolTable(a[i].node());
+        buildTable(a[i].node());
       }
     }
     break;
   }
 }
 
-void ParserTreeSymbolTable::buildSymbolTableIndexedExpression(ExpressionNode *n) {
+void ParserTreeSymbolTable::buildTableIndexedExpr(ExpressionNode *n) {
   ExpressionNode *startAssignment = n->left();
   ExpressionNode *loopVar         = startAssignment->left();
   ExpressionNode *endExpr         = n->right();
   ExpressionNode *expr            = n->child(2).node();
   String          loopVarName     = loopVar->getName();
 
-  buildSymbolTableAssign(startAssignment,true);
-  buildSymbolTable(endExpr);
+  buildTableAssign(startAssignment,true);
+  buildTable(endExpr);
   checkDependentOnLoopVariablesOnly(startAssignment->right());
   checkDependentOnLoopVariablesOnly(endExpr);
   if(endExpr->dependsOn(loopVarName)) {
     m_tree->addError(endExpr, _T("Max limit of %s cannot depend on %s"), loopVarName.cstr(), loopVarName.cstr());
   }
-  buildSymbolTable(expr);
+  buildTable(expr);
   if(m_tree->isOk()) {
     int index = *m_nameTable.get(loopVarName);
     m_nameTable.remove(loopVarName);
@@ -190,26 +189,12 @@ void ParserTreeSymbolTable::checkDependentOnLoopVariablesOnly(ExpressionNode *n)
   n->traverseExpression(checker, 0);
 }
 
-void ParserTreeSymbolTable::copyValues(const ParserTreeSymbolTable &src) {
-  for(Iterator<ExpressionVariable>  it = src.getVariablesIterator(); it.hasNext();) {
-    const ExpressionVariable &srcVar = it.next();
-    const ExpressionVariable *dstVar = getVariable(srcVar.getName());
-    if(dstVar == NULL || dstVar->isConstant() || dstVar->isLoopVar()) {
-      continue;
-    }
-    try {
-      setValue(srcVar.getName(), src.getValueRef(srcVar));
-    } catch(Exception) {
-    }
-  }
-}
-
-void ParserTreeSymbolTable::buildSymbolTableAssign(ExpressionNode *n, bool loopAssignment) {
+void ParserTreeSymbolTable::buildTableAssign(ExpressionNode *n, bool loopAssignment) {
   assert(n->getSymbol() == ASSIGN);
   if(n->right()->dependsOn(n->left()->getName())) {
     m_tree->addError(n->left(), _T("Variable %s cannot depend on itself"), n->left()->getName().cstr());
   }
-  buildSymbolTable(n->right());
+  buildTable(n->right());
   if(!loopAssignment && n->right()->isConstant()) {
     ExpressionVariable *v = allocateConstant(n->left(), n->left()->getName(), n->right()->evaluateReal());
     if(v) {

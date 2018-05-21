@@ -173,8 +173,8 @@ protected:
   void pruneUnusedNodes();
   void markPow1Nodes();
   void deleteUnmarked();
-  void buildSymbolTable(const ParserTreeSymbolTable *oldValues = NULL) {
-    m_symbolTable.create(this, oldValues);
+  void buildSymbolTable(const ExpressionVariableArray *oldVariables = NULL) {
+    m_symbolTable.create(this, oldVariables);
   }
   ExpressionVariable *getVariableByName(const String &name) {
     return m_symbolTable.getVariable(name);
