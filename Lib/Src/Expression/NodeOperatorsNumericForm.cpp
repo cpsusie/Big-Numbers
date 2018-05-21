@@ -37,15 +37,15 @@ public:
 NNode NNode::toNForm() const {
   DEFINEMETHODNAME;
 
-  const SStmtList &stmtList = getChildArray();
+  const SStmtList &childArray = getChildArray();
   SStmtList       newStmtList;
 
-  const int stmtCount = (int)stmtList.size() - 1;
-  for(int i = 0; i < stmtCount; i++) {
-    const SNode &stmt = stmtList[i];
+  const int childCount = (int)childArray.size() - 1;
+  for(int i = 0; i < childCount; i++) {
+    const SNode &stmt = childArray[i];
     newStmtList.add(assignStmt(stmt.left(), N(stmt.right()).toNFormRealExp()));
   }
-  SNode last = stmtList.last();
+  SNode last = childArray.last();
   switch(last.getReturnType()) {
   case EXPR_RETURN_REAL:
     newStmtList.add(N(last.left()).toNFormRealExp());
@@ -56,7 +56,7 @@ NNode NNode::toNForm() const {
   default:
     last.throwUnknownSymbolException(method);
   }
-  return newStmtList.removeUnusedAssignments();
+  return stmtList(newStmtList.removeUnusedAssignments());
 }
 
 NNode NNode::toNFormRealExp() const {

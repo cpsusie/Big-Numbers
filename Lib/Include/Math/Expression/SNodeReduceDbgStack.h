@@ -1,7 +1,7 @@
 #pragma once
 
 #ifdef _DEBUG
-//#define TRACE_REDUCTION_CALLSTACK
+#define TRACE_REDUCTION_CALLSTACK
 #endif
 
 #ifdef TRACE_REDUCTION_CALLSTACK
@@ -10,6 +10,9 @@
 #include <PropertyContainer.h>
 
 namespace Expr {
+
+class ParserTree;
+class ExpressionNode;
 
 class ReductionStackElement {
 public:

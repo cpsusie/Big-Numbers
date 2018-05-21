@@ -197,7 +197,7 @@ SNode SNode::D(const String &name) const {
   default        :
   case SUM       :
   case PRODUCT   :
-    { if(!m_node->dependsOn(name)) {
+    { if(!dependsOn(name)) {
         return _0();
       }
       throwException(_T("Cannot find derived of \"%s\""), toString().cstr());

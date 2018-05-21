@@ -18,15 +18,15 @@ SNode SNode::reduce() {
   DEFINEMETHODNAME;
   ENTERMETHOD();
 
-  const SStmtList &stmtList  = getChildArray();
-  const int        stmtCount = (int)stmtList.size() - 1;
+  const SNodeArray &childArray = getChildArray();
+  const int        childCount  = (int)childArray.size() - 1;
   SStmtList        newStmtList;
 
-  for(int i = 0; i < stmtCount; i++) {
-    const SNode &stmt = stmtList[i];
+  for(int i = 0; i < childCount; i++) {
+    const SNode &stmt = childArray[i];
     newStmtList.add(assignStmt(stmt.left(), stmt.right().reduceRealExp()));
   }
-  SNode last = stmtList.last();
+  SNode last = childArray.last();
   switch(last.getReturnType()) {
   case EXPR_RETURN_REAL:
     newStmtList.add(last.reduceRealExp());
@@ -37,7 +37,7 @@ SNode SNode::reduce() {
   default:
     last.throwUnknownSymbolException(method);
   }
-  RETURNNODE( newStmtList.removeUnusedAssignments() );
+  RETURNNODE( stmtList(newStmtList.removeUnusedAssignments()) );
 }
 
 SNode SNode::reduceBoolExp() {
@@ -1128,7 +1128,7 @@ SNode SNode::multiplyParenthesesInPoly() const {
 
 SNode SNode::multiplyFactorSum(SNode factor, SNode sum) const { // ExpressionFactor *a, ExpressionNodeSum *s) {
   DEFINEMETHODNAME;
-  ENTERMETHOD2(*a,*s);
+  ENTERMETHOD2(factor,sum);
 
   if((factor.base().getSymbol() == SUM) && factor.exponent().isOne()) {
     RETURNNODE(multiplySumSum(factor.base(),sum));

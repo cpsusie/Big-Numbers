@@ -27,58 +27,65 @@ void DebugThread::handlePropertyChanged(const PropertyContainer *source, int id,
   DEFINEMETHODNAME;
   if(m_killed) throw true;
 
-  m_exprp = (const Expression*)source;
-
-  switch(id) {
-  case PP_STATE           :
-    switch(m_exprp->getState()) {
-    case PS_EMPTY    :
-    case PS_COMPILED :
-    case PS_DERIVED  :
-      break;
-    default:
-      if(m_breakPoints.contains(BREAKSTEP)) stop();
-      break;
-    }
-    break;
-  case PP_ROOT            :
-    { const ExpressionNode *newRoot = (const ExpressionNode*)newValue;
-      if(newRoot) { // dont stop on null-trees
-        stop();
-      }
-    }
-    break;
-
-  case PP_REDUCEITERATION :
-    if(m_breakPoints.contains(BREAKSUBSTEP)) stop();
-    break;
-
 #ifdef TRACE_REDUCTION_CALLSTACK
-  case REDUCTION_STACKHIGHT :
-    { const int oldStack = *(int*)oldValue;
-      const int newStack = *(int*)newValue;
-      if(newStack > oldStack) { // its a push
-        const ReductionStackElement &top = m_reductionStack->top();
-        if(top.m_node && top.m_node->isBreakPoint()) {
+  if(source == m_reductionStack) {
+    switch(id) {
+    case REDUCTION_STACKHIGHT :
+      { const int oldStack = *(int*)oldValue;
+        const int newStack = *(int*)newValue;
+        if(newStack > oldStack) { // its a push
+          const ReductionStackElement &top = m_reductionStack->top();
+          if(top.m_node && top.m_node->isBreakPoint()) {
+            stop();
+            break;
+          }
+          if(m_breakPoints.contains(BREAKONRETURN)) {
+            if((oldStack == m_savedStackHeight) && (m_reductionStack->top().m_method == m_savedMethod)) {
+              stop(true);
+              break;
+            }
+          }
+        }
+        if(m_breakPoints.contains(BREAKSUBSTEP)) {
           stop();
           break;
         }
-        if(m_breakPoints.contains(BREAKONRETURN)) {
-          if((oldStack == m_savedStackHeight) && (m_reductionStack->top().m_method == m_savedMethod)) {
-            stop(true);
-            break;
-          }
-        }
       }
-      if(m_breakPoints.contains(BREAKSUBSTEP)) {
-        stop();
+      return;
+    }
+  }
+#endif
+
+  if(source == m_treep) {
+    m_exprp = (const Expression*)source;
+
+    switch(id) {
+    case PP_STATE           :
+      switch(m_exprp->getState()) {
+      case PS_EMPTY    :
+      case PS_COMPILED :
+      case PS_DERIVED  :
+        break;
+      default:
+        if(m_breakPoints.contains(BREAKSTEP)) stop();
         break;
       }
+      break;
+    case PP_ROOT            :
+      { const ExpressionNode *newRoot = (const ExpressionNode*)newValue;
+        if(newRoot) { // dont stop on null-trees
+          stop();
+        }
+      }
+      break;
+
+    case PP_REDUCEITERATION :
+      if(m_breakPoints.contains(BREAKSUBSTEP)) stop();
+      break;
+
     }
-    break;
-#endif
+    m_exprp = &m_expr;
   }
-  m_exprp = &m_expr;
 }
 
 unsigned int DebugThread::run() {
@@ -91,8 +98,7 @@ unsigned int DebugThread::run() {
     notifyPropertyChanged(THREAD_ERROR, EMPTYSTRING, m_errorMsg.cstr());
   } catch(bool) {
     // ignore. thrown after resume, when killed
-  }
-  catch (...) {
+  } catch (...) {
     m_errorMsg = _T("Unknown exception caught in DebugThread");
   }
   setProperty(THREAD_TERMINATED, m_terminated, true );

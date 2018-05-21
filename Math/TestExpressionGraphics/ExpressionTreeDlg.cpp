@@ -11,11 +11,11 @@ CExpressionTreeDlg::CExpressionTreeDlg(const Expression &expr, CWnd *pParent) : 
 }
 
 CExpressionTreeDlg::CExpressionTreeDlg(const ExpressionNode *n, CWnd *pParent) : m_node(n), CDialog(CExpressionTreeDlg::IDD, pParent) {
-  m_expr = m_node->getExpr();
+  m_expr = (Expression*)m_node->getTree();
 }
 
 void CExpressionTreeDlg::DoDataExchange(CDataExchange *pDX) {
-    __super::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 

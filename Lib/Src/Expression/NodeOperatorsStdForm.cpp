@@ -249,6 +249,8 @@ private:
   StdNode toSFormProduct() const;
   StdNode toSFormPow() const;
   StdNode toSFormPoly() const;
+  StdNode toSFormStmtList() const;
+  StdNode toSFormAssign() const;
   StdNode toSFormTreeNode() const;
   StdNode toSFormFactorArray(FactorArray &a, bool changeExponentSign) const;
   inline StdNode(const SNode &n) : SNode(n) {
@@ -264,13 +266,15 @@ public:
 // Eliminate all Product- and Sum nodes
 StdNode StdNode::toSForm() const {
   switch(getSymbol()) {
-  case NUMBER :
-  case NAME   : return *this;
-  case SUM    : return toSFormSum();
-  case PRODUCT: return toSFormProduct();
-  case POW    : return toSFormPow();
-  case POLY   : return toSFormPoly();
-  default     : return toSFormTreeNode();
+  case NUMBER  :
+  case NAME    : return *this;
+  case SUM     : return toSFormSum();
+  case PRODUCT : return toSFormProduct();
+  case POW     : return toSFormPow();
+  case POLY    : return toSFormPoly();
+  case STMTLIST: return toSFormStmtList();
+  case ASSIGN  : return toSFormAssign();
+  default      : return toSFormTreeNode();
   }
 }
 
@@ -432,6 +436,19 @@ StdNode StdNode::toSFormPoly() const {
   }
   return polyExp(newCoefArray, arg.toSForm());
 }
+
+StdNode StdNode::toSFormStmtList() const {
+  const SNodeArray &a = getChildArray();
+  SNodeArray newChildArray(a.size());
+  for(size_t i = 0; i < a.size(); i++) {
+    newChildArray.add(N(a[i]).toSForm());
+  }
+  return stmtList(newChildArray);
+}
+
+StdNode StdNode::toSFormAssign() const {
+  return assignStmt(left(), N(right()).toSForm());
+};
 
 StdNode StdNode::toSFormTreeNode() const {
   const SNodeArray &a = getChildArray();

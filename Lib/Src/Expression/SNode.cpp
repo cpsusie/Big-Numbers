@@ -260,6 +260,10 @@ bool SNode::isCoefficientArrayConstant() const {
   return m_node->isCoefficientArrayConstant();
 }
 
+bool SNode::dependsOn(const String &name) const {
+  return m_node->dependsOn(name);
+}
+
 bool SNode::containsFunctionCall() const {
   return m_node->containsFunctionCall();
 }
@@ -518,13 +522,13 @@ SNodeArray &SNodeArray::cloneNodes(SNodeArray &dst, ParserTree *tree) const {
 
 // -------------------------------SStmtList -------------------
 
-SStmtList &SStmtList::removeUnusedAssignments() {
+SNodeArray &SStmtList::removeUnusedAssignments() {
   for(int i = (int)size()-1; i--;) { // Remove unused assignments
-    const SNode &stmt = (*this)[i];
+    const SNode  &stmt = (*this)[i];
     const String &varName = stmt.left().getName();
     bool isUsed = false;
     for(size_t j = i+1; j < size(); j++) {
-      if((*this)[j].node()->dependsOn(varName)) {
+      if((*this)[j].dependsOn(varName)) {
         isUsed = true;
         break;
       }

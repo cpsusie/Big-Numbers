@@ -282,6 +282,8 @@ private:
   CNode toCFormSum() const;
   CNode toCFormProduct() const;
   CNode toCFormPoly() const;
+  CNode toCFormStmtList() const;
+  CNode toCFormAssign() const;
   CNode toCFormTreeNode() const;
   FactorArray &toCFormProduct(FactorArray &result, SNode &exponent) const;
   AddentArray &toCFormSum(    AddentArray &result, bool   positive) const;
@@ -330,6 +332,9 @@ CNode CNode::toCForm() const {
   case COT            : return cot(N(left()).toCForm());
 
   case POLY           : return toCFormPoly();
+
+  case STMTLIST       : return toCFormStmtList();
+  case ASSIGN         : return toCFormAssign();
 
   default             : return toCFormTreeNode();
   }
@@ -481,6 +486,19 @@ CNode CNode::toCFormPoly() const {
   SNode newArg = N(getArgument()).toCForm();
   return polyExp(newCoefArray, newArg);
 }
+
+CNode CNode::toCFormStmtList() const {
+  const SNodeArray &a = getChildArray();
+  SNodeArray newChildArray(a.size());
+  for(size_t i = 0; i < a.size(); i++) {
+    newChildArray.add(N(a[i]).toCForm());
+  }
+  return stmtList(newChildArray);
+}
+
+CNode CNode::toCFormAssign() const {
+  return assignStmt(left(), N(right()).toCForm());
+};
 
 CNode CNode::toCFormTreeNode() const {
   const SNodeArray &a = getChildArray();

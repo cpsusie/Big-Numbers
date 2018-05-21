@@ -169,6 +169,8 @@ public:
   ExpressionInputSymbol getInverseFunction()                   const;
 
   bool                  isCoefficientArrayConstant()           const;
+  bool                  dependsOn(const String &name)          const;
+
   bool                  containsFunctionCall()                 const;
   const Real           &getValueRef()                          const;
   bool                  isTrigonomtricFunction()               const;
@@ -264,11 +266,7 @@ public:
   SStmtList() {}
   SStmtList(const SNodeArray &a) : SNodeArray(a) {
   };
-  SStmtList &removeUnusedAssignments();
-
-  operator SNode() {
-    return toTree(SEMI);
-  }
+  SNodeArray &removeUnusedAssignments();
 };
 
 SNode unaryExp(  ExpressionInputSymbol symbol, SNode n);

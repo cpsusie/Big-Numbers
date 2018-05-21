@@ -46,13 +46,13 @@ ExpressionNode *ExpressionNodeTree::expand() {
   }
   switch(getSymbol()) {
   case POW:
-    { Expression     *expr = getExpr();
+    { ParserTree     *tree = getTree();
       ExpressionNode *expo = right();
       Rational        expoR;
       if(!expo->reducesToRationalConstant(&expoR)) {
         return false;
       }
-      return expr->expandPower(left(), expoR);
+      return tree->expandPower(left(), expoR);
     }
   default :
     return this;
@@ -62,8 +62,7 @@ ExpressionNode *ExpressionNodeTree::expand() {
 bool ExpressionNodeTree::isExpandable() {
   switch(getSymbol()) {
   case POW:
-    { Expression     *expr = getExpr();
-      ExpressionNode *expo = right();
+    { ExpressionNode *expo = right();
       Rational        expoR;
       if(!expo->reducesToRational(&expoR) || (abs(expoR.getNumerator()) <= 1)) {
         return false;

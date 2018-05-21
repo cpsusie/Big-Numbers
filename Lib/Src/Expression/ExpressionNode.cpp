@@ -15,14 +15,6 @@ Exception ExpressionNode::createAttributeNotSupportedException(const char *attri
   return Exception(format(_T("Attribute %s not defined for syntaxNode with symbol=%s"), attr.cstr(), getSymbolName().cstr()));
 }
 
-const Expression *ExpressionNode::getExpr() const {
-  return (const Expression*)getTree();
-}
-
-Expression *ExpressionNode::getExpr() {
-  return (Expression*)getTree();
-}
-
 /*static*/ String ExpressionNode::getSymbolName(ExpressionInputSymbol symbol) {
   const ParserTables &tables = ExpressionParser::getTables();
   if((UINT)symbol >= tables.getSymbolCount()) {

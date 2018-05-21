@@ -8,7 +8,7 @@ void AddentArray::add(SNode n, bool positive) {
   switch(n.getSymbol()) {
   case NUMBER:
     if(!n.isZero()) {      // dont add Zero
-      SumElement *e = new SumElement(n.node(), positive); TRACE_NEW(e);
+      SumElement *e = new SumElement(n, positive); TRACE_NEW(e);
       add(e);
     }
     break;
@@ -24,7 +24,7 @@ void AddentArray::add(SNode n, bool positive) {
     }
     break;
   default    :
-    { SumElement *e = new SumElement(n.node(), positive); TRACE_NEW(e);
+    { SumElement *e = new SumElement(n, positive); TRACE_NEW(e);
       add(e);
     }
     break;

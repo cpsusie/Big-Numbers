@@ -185,8 +185,6 @@ public:
   inline ExpressionInputSymbol       getSymbol()                    const   { return (ExpressionInputSymbol)m_info.m_symbol;                   }
   inline  const ParserTree          *getTree()                      const   { return &m_tree;                                                  }
   inline        ParserTree          *getTree()                              { return &m_tree;                                                  }
-          const Expression          *getExpr()                      const;
-                Expression          *getExpr();
   inline String                      getSymbolName()                const   { return getSymbolName(getSymbol());  }
   static String                      getSymbolName(ExpressionInputSymbol symbol);
   inline  void                       mark()                                 { m_info.m_marked = true;                                          }
