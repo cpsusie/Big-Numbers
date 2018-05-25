@@ -34,6 +34,9 @@ void vdebugLog(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list
 void debugLog( _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
 void debugLogLine(const TCHAR *fileName, int line);
 void debugLogSetTimePrefix(bool prefixWithDate, bool prefixWithTime);
+typedef void (*vprintfFunction)(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
+typedef void (*printfFunction )(_In_z_ _Printf_format_string_ TCHAR const * const format, ...);
+
 String getMessageName(int msg);
 
 #define DEBUGTRACE debugLogLine(__TFILE__, __LINE__)

@@ -652,6 +652,7 @@
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="TestSamples.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -670,6 +671,7 @@
     </ClCompile>
     <ClCompile Include="TestExpression.cpp" />
     <ClCompile Include="TestMachineCode.cpp" />
+    <ClCompile Include="TestSamples.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="assemblerx64.asm">

@@ -406,7 +406,7 @@ void CodeArray::checkKeyboard() { // static
 
 class TestMachineCode : public CodeArray {
 private:
-  const vprintFunction    m_vpf;
+  const vprintfFunction   m_vpf;
   InstructionOperandArray m_allOperands;
   AllVOIDPtrOperands      m_allVOIDPtrOperands;
   AllStringInstructions   m_allStringInstructions;
@@ -446,7 +446,7 @@ private:
   void logEmitCount();
   void printf(const TCHAR *format,...) const;
 public:
-  TestMachineCode(vprintFunction vpf);
+  TestMachineCode(vprintfFunction vpf);
   ~TestMachineCode();
   void testAll();
   void testOpcode(         const OpcodeBase      &opcode, bool selectVOIDPtr = false);
@@ -463,7 +463,7 @@ public:
   void testXMMOpcodes();
 };
 
-TestMachineCode::TestMachineCode(vprintFunction vpf) : m_vpf(vpf) {
+TestMachineCode::TestMachineCode(vprintfFunction vpf) : m_vpf(vpf) {
   setClearOn(true);
   m_debugLogOn = true;
   initAllOperands();
@@ -976,7 +976,7 @@ void TestMachineCode::testXMMOpcodes() {
 
 #endif // TEST_MACHINECODE
 
-void generateTestSequence(vprintFunction vpf) {
+void generateTestSequence(vprintfFunction vpf) {
 #ifdef TEST_MACHINECODE
   TestMachineCode test(vpf);
   test.testAll();
