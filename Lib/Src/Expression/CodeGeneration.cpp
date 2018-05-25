@@ -22,7 +22,7 @@ CodeGeneration::CodeGeneration(MachineCode *code, const CompactRealArray &valueT
 
   if(m_listFile.isOpen()) {
     const char offset = m_addressTable.getESITableOffset();
-    list(_T("%s offset from &valueTable[0] (in bytes):%d (%s), &value[%u]\n")
+    list(_T(";%s offset from &valueTable[0] (in bytes):%d (%s), &value[%u]\n")
         ,TABLEREF_REG.getName().cstr()
         ,offset
         ,formatHexValue(offset,false).cstr()
@@ -447,9 +447,9 @@ void CodeGeneration::list(const TCHAR *format, ...) const {
 
 void CodeGeneration::listFixupTable() const {
   if(listEnabled() && !m_jumpFixups.isEmpty()) {
-    list(_T("Jump table:\n"));
+    list(_T(";Jump table:\n"));
     for(size_t i = 0; i < m_jumpFixups.size(); i++) {
-      list(_T("%*s%s\n")
+      list(_T(";%*s%s\n")
           ,LF_MARGIN,_T("")
           ,m_jumpFixups[i].toString().cstr());
     }
@@ -459,9 +459,9 @@ void CodeGeneration::listFixupTable() const {
 
 void CodeGeneration::listCallTable() const {
   if(listEnabled() && !m_callTable.isEmpty()) {
-    list(_T("Call table:\n"));
+    list(_T(";Call table:\n"));
     for(size_t i = 0; i < m_callTable.size(); i++) {
-      list(_T("%*s%s\n")
+      list(_T(";%*s%s\n")
           ,LF_MARGIN,_T("")
           ,m_callTable[i].toString().cstr());
     }

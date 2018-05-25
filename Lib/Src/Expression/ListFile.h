@@ -192,6 +192,7 @@ public:
   void adjustPositions(UINT pos, UINT bytesAdded);
   void vprintf(const TCHAR *format, va_list argptr) const;
   void flush();
+  static void printComment(FILE *file, const TCHAR *format,...); // prefixes every line with ';'
 };
 
 }; // namespace Expr

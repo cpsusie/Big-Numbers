@@ -381,12 +381,6 @@ SNode SNode::operator!() const {
   return boolExp(NOT,*this);
 }
 
-/*
-bool SNode::operator==(const SNode &n) const {
-  return Expr::equal(m_node, n.m_node);
-}
-*/
-
 bool SNode::equal(const SNode &n) const {
   return Expr::equal(m_node, n.m_node);
 }
@@ -523,17 +517,6 @@ SNodeArray::SNodeArray(int n, ...) {
   }
   va_end(argptr);
 }
-
-/*
-SNode SNodeArray::toTree(ExpressionInputSymbol delimiter) {
-  ParserTree &tree = getTree();
-  ExpressionNode *result = (*this)[0].node();
-  for(size_t i = 1; i < size(); i++) {
-    result = tree.binaryExpr(delimiter, result, (*this)[i].node());
-  }
-  return result;
-}
-*/
 
 bool SNodeArray::isConstant() const {
   const size_t n = size();

@@ -71,6 +71,19 @@ void ListFile::vprintf(const TCHAR *format, va_list argptr) const {
   fflush(m_f);
 }
 
+// prefixes every line with ';'
+void ListFile::printComment(FILE *file, const TCHAR *format,...) { // static
+  va_list argptr;
+  va_start(argptr,format);
+  String str = vformat(format,argptr);
+  va_end(argptr);
+  StringArray a(Tokenizer(str,_T("\n\r")));
+  const size_t n = a.size();
+  for(size_t i = 0; i < n; i++) {
+    _ftprintf(file,_T(";%s\n"), trimRight(a[i]).cstr());
+  }
+}
+
 const TCHAR *ListFile::findArgComment(const InstructionOperand &arg) const {
   if(arg.isMemoryRef()) {
     const MemoryRef &mr = arg.getMemoryReference();
@@ -101,7 +114,6 @@ ListLine *ListFile::findLineByPos(UINT pos) {
 }
 
 // --------------------------------------------- ListLines ----------------------------
-
 
 String ListLine::formatIns(const InstructionBase &ins) { // static
   return format(_T("%-*s"),LF_INSLEN, ins.toString().cstr());
@@ -140,7 +152,6 @@ String ListLine::formatOpAndComment(const String &opstr, const TCHAR *comment) {
   return format(_T("%-*s; %-*s"),LF_OPSLEN, opstr.cstr(), LF_COMLEN, comment);
 }
 
-
 String ListLine::toString() const {
   return format(_T("%*s%-*d: ")
                ,LF_MARGIN, _T("")
@@ -160,7 +171,6 @@ String ListLine0Arg::toString() const {
        + getFPUComment();
 }
 
-
 ListLine1Arg::ListLine1Arg(UINT pos, const OpcodeBase &opcode, const InstructionOperand &arg, const TCHAR *nameComment)
   : ListLine(pos)
   , m_opcode(opcode)
@@ -169,16 +179,17 @@ ListLine1Arg::ListLine1Arg(UINT pos, const OpcodeBase &opcode, const Instruction
 {
   TRACE_NEW(m_arg);
 }
+
 ListLine1Arg::~ListLine1Arg() {
   SAFEDELETE(m_arg);
 }
+
 String ListLine1Arg::toString() const {
   return __super::toString()
        + formatIns(m_opcode(*m_arg))
        + formatOpAndComment(formatOp(m_opcode,m_arg), m_nameComment)
        + getFPUComment();
 }
-
 
 ListLine2Arg::ListLine2Arg(UINT pos, const OpcodeBase &opcode, const InstructionOperand &arg1, const InstructionOperand &arg2, const TCHAR *nameComment)
   : ListLine(pos)
@@ -195,6 +206,7 @@ ListLine2Arg::~ListLine2Arg() {
   SAFEDELETE(m_arg1);
   SAFEDELETE(m_arg2);
 }
+
 String ListLine2Arg::toString() const {
   return __super::toString()
        + formatIns(m_opcode(*m_arg1,*m_arg2))
@@ -202,18 +214,17 @@ String ListLine2Arg::toString() const {
        + getFPUComment();
 }
 
-
 ListLineStringOp::ListLineStringOp(UINT pos, const StringPrefix &prefix, const StringInstruction &strins)
   : ListLine(pos)
   , m_prefix(prefix), m_strins(strins)
 {
 }
+
 String ListLineStringOp::toString() const {
   return __super::toString()
        + formatIns(m_prefix(m_strins))
        + formatOp(m_prefix, m_strins);
 }
-
 
 ListLineJump::ListLineJump(UINT pos, const OpcodeBase &opcode, int iprel, CodeLabel label, const FPUState &state)
   : ListLine(pos)
@@ -223,6 +234,7 @@ ListLineJump::ListLineJump(UINT pos, const OpcodeBase &opcode, int iprel, CodeLa
 {
   setFPUComment(state.toString());
 }
+
 String ListLineJump::toString() const {
   return __super::toString()
        + formatIns(m_opcode(m_iprel))
@@ -245,9 +257,11 @@ ListLineCall::ListLineCall(UINT pos, const OpcodeCall &opcode, const Instruction
 {
   TRACE_NEW(m_arg);
 }
+
 ListLineCall::~ListLineCall() {
   SAFEDELETE(m_arg);
 }
+
 String ListLineCall::toString() const {
   return __super::toString()
        + formatIns(m_opcode(*m_arg))
@@ -263,16 +277,18 @@ ListLineLabel::ListLineLabel(UINT pos, CodeLabel label, const FPUState &state)
 {
   setFPUComment(state.toString());
 }
+
 String ListLineLabel::toString() const {
-  const String labelStr     = labelToString(m_label);
-  const int    fillerLength = LF_MARGIN + LF_POSLEN + 2 + LF_INSLEN + LF_OPSLEN + LF_COMLEN + 2 - (int)labelStr.length() - 1;
-  return format(_T("%s:%*s"), labelStr.cstr()
-               , fillerLength, _T("")
+  const String labelStr      = labelToString(m_label);
+  const int    fillerLength1 = LF_MARGIN + LF_POSLEN + 2 + LF_INSLEN + LF_OPSLEN - (int)labelStr.length() - 1;
+  const int    fillerLength2 = LF_COMLEN + 1;
+  return format(_T("%s:%*s;%*s")
+               , labelStr.cstr()
+               , fillerLength1, _T("")
+               , fillerLength2, _T("")
                )
                + getFPUComment();
-
 }
-
 
 ListLineFuncAddr::ListLineFuncAddr(UINT pos, UINT rbxOffset, const FunctionCall &fc)
   : ListLine(pos)
@@ -280,6 +296,7 @@ ListLineFuncAddr::ListLineFuncAddr(UINT pos, UINT rbxOffset, const FunctionCall 
   , m_fc(fc)
 {
 }
+
 String ListLineFuncAddr::toString() const {
   return __super::toString()
        + format(_T("[%-#0*x] %s (%s)")

@@ -39,6 +39,8 @@ typedef enum {
 class SNode {
 private:
   ExpressionNode *m_node;
+  bool operator==(       const SNode &n) const; // not implemented
+  inline bool operator!=(const SNode &n) const; // not implemented
 #ifdef _DEBUG
   const TCHAR *m_debugStr;
   void setDebugStr();
@@ -226,12 +228,6 @@ public:
   bool equal(       const SNode &n) const;
   bool equalMinus(  const SNode &n) const;
 
-  // compare trees recursively
-//  bool operator==(  const SNode &n) const;
-//  inline bool operator!=(const SNode &n) const {
-//    return !(*this == n);
-//  }
-
   inline bool isSameNode(const SNode n) const {
     return m_node == n.m_node;
   }
@@ -276,10 +272,9 @@ public:
 };
 
 class SNodeArray : public CompactArray<SNode> {
+private:
   bool operator==(const SNodeArray &a) const; // not implemented
   bool operator!=(const SNodeArray &a) const; // not implemented
-protected:
-//  SNode toTree(ExpressionInputSymbol delimiter);
 public:
   SNodeArray() {}
   SNodeArray(int n,...);

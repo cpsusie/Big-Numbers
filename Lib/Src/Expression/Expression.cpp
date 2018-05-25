@@ -53,14 +53,14 @@ void Expression::compile(const String &expr, bool machineCode, FILE *listFile) {
   try {
     if(machineCode && (listFile!=NULL)) {
       m_listFile = listFile;
-      _ftprintf(m_listFile, _T("%s\n\n"), expr.cstr());
-      _ftprintf(m_listFile, _T("%s\n\n"), getSymbolTable().toString().cstr());
+      ListFile::printComment(m_listFile, _T("%s\n\n"), expr.cstr());
+      ListFile::printComment(m_listFile, _T("%s\n\n"), getSymbolTable().toString().cstr());
     }
 
     setMachineCode(machineCode);
 
     if(m_listFile) {
-      _ftprintf(m_listFile, _T("----------------------------------------------------\n"));
+      ListFile::printComment(m_listFile, _T("----------------------------------------------------\n"));
       m_listFile = NULL;
     }
   } catch (...) {
