@@ -285,8 +285,10 @@ public:
   String  parenthesizedExpressionToString(const ExpressionNode  *parent)  const;
   bool    needParentheses(                const ExpressionNode  *parent)  const;
   int     getMaxTreeDepth()                                               const;
-  bool    isConsistent();
+#ifdef CHECK_CONSISTENCY
+  void    checkIsConsistent()                                             const;
   bool    isConsistentSymbolAndType()                                     const;
+#endif // CHECK_CONSISTENCY
 
   void throwInvalidSymbolForTreeMode(const TCHAR *method) const;
   void throwUnknownSymbolException(  const TCHAR *method) const;

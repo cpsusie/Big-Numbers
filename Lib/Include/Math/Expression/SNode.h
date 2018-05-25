@@ -15,6 +15,16 @@ class AddentArray;
 class FactorArray;
 class ParserTree;
 
+// Define this, to have consistency check of ExpressionNodes when doing reduction
+// and transformation to Canon-form/Std-form/Num-form
+#define CHECK_CONSISTENCY
+
+#ifdef CHECK_CONSISTENCY
+#define CHECKISCONSISTENT(n) (n).checkIsConsistent()
+#else
+#define CHECKISCONSISTENT(n)
+#endif // CHECK_CONSISTENCY
+
 typedef enum {
   EXPR_NORETURNTYPE
  ,EXPR_RETURN_REAL
@@ -39,8 +49,9 @@ typedef enum {
 class SNode {
 private:
   ExpressionNode *m_node;
-  bool operator==(       const SNode &n) const; // not implemented
-  inline bool operator!=(const SNode &n) const; // not implemented
+  bool operator==(const SNode &n) const; // not implemented
+  bool operator!=(const SNode &n) const; // not implemented
+
 #ifdef _DEBUG
   const TCHAR *m_debugStr;
   void setDebugStr();
@@ -208,7 +219,9 @@ public:
   bool                  needParentheses(SNode parent)          const;
   SNode                 base()                                 const;
   SNode                 exponent()                             const;
-  bool                  isConsistent()                         const;
+#ifdef CHECK_CONSISTENCY
+  void                  checkIsConsistent()                    const;
+#endif // CHECK_CONSISTENCY
 
   SNode operator+(  const SNode &n) const;
   // binary -

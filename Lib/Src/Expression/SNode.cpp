@@ -320,10 +320,11 @@ SNode SNode::exponent() const {
   return ((ExpressionFactor*)m_node)->exponent();
 }
 
-bool SNode::isConsistent() const {
-  return m_node->isConsistent();
+#ifdef CHECK_CONSISTENCY
+void SNode::checkIsConsistent() const {
+  m_node->checkIsConsistent();
 }
-
+#endif // CHECK_CONSISTENCY
 
 SNode SNode::operator+(const SNode &n) const {
   return getTree().sum(m_node, n.m_node);

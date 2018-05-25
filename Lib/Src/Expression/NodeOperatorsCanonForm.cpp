@@ -292,11 +292,11 @@ private:
   FactorArray &toCFormRoot(   FactorArray &result, SNode &exponent) const;
 
   inline CNode(const SNode &n) : SNode(n) {
-    n.isConsistent();
+    CHECKISCONSISTENT(n);
   }
 public:
   inline CNode(ExpressionNode *n) : SNode(n) {
-    n->isConsistent();
+    CHECKISCONSISTENT(*n);
   }
   ExpressionNode *convert() const {
     return toCForm().node();

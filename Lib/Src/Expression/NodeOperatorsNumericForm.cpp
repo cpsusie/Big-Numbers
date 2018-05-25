@@ -18,15 +18,13 @@ private:
   NNode        toNFormStmtList() const;
   NNode        toNFormAssign()   const;
   NNode        toNFormTreeNode() const;
-  FactorArray &toNFormProduct(FactorArray &result, SNode &exponent) const;
-  AddentArray &toNFormSum(    AddentArray &result, bool   positive) const;
-  FactorArray &toNFormPower(  FactorArray &result, SNode &exponent) const;
-  FactorArray &toNFormRoot(   FactorArray &result, SNode &exponent) const;
 
   inline NNode(const SNode &n) : SNode(n) {
+    CHECKISCONSISTENT(n);
   }
 public:
   inline NNode(ExpressionNode *n) : SNode(n) {
+    CHECKISCONSISTENT(*n);
   }
   ExpressionNode *convert() const {
     return toNForm().node();
@@ -41,7 +39,6 @@ NNode NNode::toNForm() const {
   switch(getSymbol()) {
   case STMTLIST       : return toNFormStmtList();
   case ASSIGN         : return toNFormAssign();
-
   default             : return toNFormTreeNode();
   }
 }
@@ -108,7 +105,7 @@ NNode NNode::toNFormBoolExp() const {
   case GE    :
   case GT    :
     { NNode l = N(left()).toNFormRealExp();
-      SNode r = N(right()).toNFormRealExp();
+      NNode r = N(right()).toNFormRealExp();
       return boolExp(getSymbol(), l, r);
     }
   default    :
@@ -205,6 +202,7 @@ NNode NNode::toNFormTreeNode() const {
     { const NNode cond   = N(child(0)).toNFormBoolExp();
       const NNode eTrue  = N(child(1)).toNFormRealExp();
       const NNode eFalse = N(child(2)).toNFormRealExp();
+      if(eTrue.equal(eFalse)) return eTrue; // dont care about condition
       if(cond.isTrue()) return eTrue; else if(cond.isFalse()) return eFalse;
       return condExp(cond, eTrue, eFalse);
     }

@@ -255,9 +255,11 @@ private:
   StdNode toSFormPow()      const;
   StdNode toSFormFactorArray(FactorArray &a, bool changeExponentSign) const;
   inline StdNode(const SNode &n) : SNode(n) {
+    CHECKISCONSISTENT(n);
   }
 public:
   inline StdNode(ExpressionNode *n) : SNode(n) {
+    CHECKISCONSISTENT(*n);
   }
   ExpressionNode *convert() const {
     return toSForm().node();

@@ -72,7 +72,7 @@ public:
 
 #define RETURNNODE(n)                                                    \
 { const SNode &_n = n;                                                   \
-  _n.isConsistent();                                                     \
+  CHECKISCONSISTENT(_n);                                                 \
   _PUSH(format(_T("Reduced:<%s>"), _n.toString().cstr()),_n.m_node);     \
   _POP();                                                                \
   RETURN(_n);                                                            \

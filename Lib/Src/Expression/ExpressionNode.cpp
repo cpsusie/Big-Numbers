@@ -358,6 +358,7 @@ void ExpressionNode::throwUnknownNodeTypeException(const TCHAR *method) const {
                 ,method, getNodeType());
 }
 
+#ifdef CHECK_CONSISTENCY
 bool ExpressionNode::isConsistentSymbolAndType() const {
   ExpressionNodeType type1, type2;
   switch(getSymbol()) {
@@ -403,12 +404,19 @@ public:
   bool isOK() const {
     return m_failureNode == NULL;
   }
+  const ExpressionNode *getInconsistentNode() const {
+    return m_failureNode;
+  }
 };
 
-bool ExpressionNode::isConsistent() {
+void ExpressionNode::checkIsConsistent() const {
   ConsistencyCheck checker;
-  traverseExpression(checker,0);
-  return checker.isOK();
+  ((ExpressionNode*)(this))->traverseExpression(checker,0);
+  if(!checker.isOK()) {
+    throwException(_T("Inconsistent ExpressionNode"));
+  }
 }
+
+#endif // CHECK_CONSISTENCY
 
 }; // namespace Expr
