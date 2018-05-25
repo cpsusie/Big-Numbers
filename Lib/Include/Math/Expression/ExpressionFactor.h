@@ -28,7 +28,7 @@ public:
   bool isConstant() const;
 
   ExpressionNodeType getNodeType() const {
-    return EXPRESSIONNODEFACTOR;
+    return NT_FACTOR;
   }
 
   void dumpNode(String &s, int level) const;

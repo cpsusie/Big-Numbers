@@ -56,4 +56,22 @@ bool ExpressionNodeBoolExpr::evaluateBool() const {
   return true;
 }
 
+#define CHILDSTR(i)    child(i).node()->toString()
+#define CHILDPARSTR(i) child(i).node()->parenthesizedExpressionToString(this)
+
+String ExpressionNodeBoolExpr::toString() const {
+  switch(getSymbol()) {
+  case AND           : return CHILDPARSTR(0) + _T(" and ") + CHILDPARSTR(1);
+  case OR            : return CHILDPARSTR(0) + _T(" or " ) + CHILDPARSTR(1);
+  case NOT           : return _T("not "      ) + CHILDPARSTR(0);
+  case EQ            : return CHILDSTR(0) + _T(" == ") + CHILDSTR(1);
+  case NE            : return CHILDSTR(0) + _T(" <> ") + CHILDSTR(1);
+  case LT            : return CHILDSTR(0) + _T(" < " ) + CHILDSTR(1);
+  case LE            : return CHILDSTR(0) + _T(" <= ") + CHILDSTR(1);
+  case GT            : return CHILDSTR(0) + _T(" > " ) + CHILDSTR(1);
+  case GE            : return CHILDSTR(0) + _T(" >= ") + CHILDSTR(1);
+  default            : return _T("Unknown symbol:") + getSymbolName();
+  }
+}
+
 }; // namespace Expr

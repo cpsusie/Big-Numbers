@@ -81,6 +81,8 @@ public:
     add(n, false);
     return *this;
   }
+  bool equal(     const AddentArray &a) const;
+  bool equalMinus(const AddentArray &a) const;
   String toString() const;
 };
 
@@ -100,12 +102,16 @@ public:
   void add(SNode base);
   void add(SNode base, SNode exponent);
   void add(SNode base, const Rational &exponent);
+  bool equal(     const FactorArray &a) const;
+  bool equalMinus(const FactorArray &a) const;
+
   String toString() const;
 };
 
 class ExpressionSymbolSet : public BitSet {
 public:
   ExpressionSymbolSet();
+  ExpressionSymbolSet(ExpressionInputSymbol s1,...); // terminate list with EOI
 };
 
 class ExpressionNodeHandler {
@@ -116,28 +122,6 @@ public:
 typedef CompactKeyType<ExpressionInputSymbol> ExpressionSymbolKey;
 
 template<class E> class CompactSymbolHashMap : public CompactHashMap<ExpressionSymbolKey, E> {
-};
-
-class SymbolOrderMap : private CompactSymbolHashMap<int> {
-private:
-  bool m_initDone;
-  void init();
-public:
-  SymbolOrderMap() {
-    m_initDone = false;
-  };
-  int compare(ExpressionInputSymbol s1, ExpressionInputSymbol s2);
-};
-
-class InverseFunctionMap : private CompactSymbolHashMap<ExpressionInputSymbol> {
-private:
-  bool m_initDone;
-  void init();
-public:
-  InverseFunctionMap() {
-    m_initDone = false;
-  };
-  ExpressionInputSymbol getInverse(ExpressionInputSymbol symbol);
 };
 
 class PackedSyntaxNodeInfo {
@@ -163,11 +147,10 @@ public:
 
 class ExpressionNode {
 private:
-  static SymbolOrderMap      s_orderMap;
-  static InverseFunctionMap  s_inverseFunctionMap;
-         ParserTree         &m_tree;
-  PackedSyntaxNodeInfo       m_info;
-
+  ParserTree          &m_tree;
+protected:
+  PackedSyntaxNodeInfo m_info;
+private:
   Real evaluatePow()               const;
   Real evaluateRoot()              const;
   ExpressionNode &operator=(const ExpressionNode &src); // not implemented
@@ -209,6 +192,8 @@ public:
   virtual       SNodeArray          &getCoefArray()                         { UNSUPPORTEDOP(); }
   virtual int                        getFirstCoefIndex()            const   { UNSUPPORTEDOP(); }
   virtual void                       setFirstCoefIndex(int index)           { UNSUPPORTEDOP(); }
+  virtual bool                       isCoefficientArrayConstant()   const   { UNSUPPORTEDOP(); }
+
   virtual int                        getDegree()                    const   { UNSUPPORTEDOP(); }
   virtual const String              &getName()                      const   { UNSUPPORTEDOP(); }
   virtual void                       setVariable(ExpressionVariable *var)   { UNSUPPORTEDOP(); }
@@ -264,21 +249,32 @@ public:
   inline  bool                       isPositive()                   const   { return isNumber()   && getReal()  > 0;                           }
   inline  bool                       isTrue()                       const   { return isBoolean()  && getBool();                                }
   inline  bool                       isFalse()                      const   { return isBoolean()  && !getBool();                               }
-  inline  ExpressionInputSymbol      getInverseFunction() const {
-    return s_inverseFunctionMap.getInverse(getSymbol());
-  }
 
-  bool    isCoefficientArrayConstant()  const;
+  static bool                  isBooleanOperator(     ExpressionInputSymbol symbol); // { AND,OR,NOT,EQ,NE,LT,LE,GT,GE }
+  static bool                  isCompareOperator(     ExpressionInputSymbol symbol); // { EQ,NE,LT,LE,GT,GE }
+  static bool                  isBinaryOperator(      ExpressionInputSymbol symbol); // { POW,ROOT,PROD,QUOT,PLUS,MINUS,MOD }
+  static bool                  isTrigonomtricFunction(ExpressionInputSymbol symbol);
+  static bool                  isSymmetricFunction(   ExpressionInputSymbol symbol);
+  static bool                  isAsymmetricFunction(  ExpressionInputSymbol symbol);
+  static ExpressionInputSymbol getInverseFunction(    ExpressionInputSymbol symbol);
+  // symbol in { EQ,NE,LE,LT,GE,GT } (EQ,NE are symmetric, the rest are changed. left<->right. ie. GE->LE, etc..
+  static ExpressionInputSymbol reverseComparator(ExpressionInputSymbol symbol);
+  // symbol in { EQ,NE,LE,LT,GE,GT } (EQ->NE, LE->GT, etc... (this is not the same as reverseComparator)
+  static ExpressionInputSymbol negateComparator( ExpressionInputSymbol symbol);
+  inline ExpressionInputSymbol getInverseFunction() const { return getInverseFunction(getSymbol()); }
+  inline  bool isCompareOperator()       const { return isCompareOperator(     getSymbol()); }
+  inline  bool isBinaryOperator()        const { return isBinaryOperator(      getSymbol()); }
+  inline  bool isTrigonomtricFunction()  const { return isTrigonomtricFunction(getSymbol()); }
+  virtual bool isSymmetricFunction()     const { return isSymmetricFunction(   getSymbol()); }
+  virtual bool isAsymmetricFunction()    const { return isAsymmetricFunction(  getSymbol()); }
+
   bool    dependsOn(const String &name) const;
   // If selector specified, only nodes where selector.select(n) is true will be counted.
   // If not specified, all nodes is counted
   int     getNodeCount(ExpressionNodeSelector *selector = NULL) const;
   bool    containsFunctionCall()        const;
   Real   &getValueRef()                 const;
-  bool    isBinaryOperator()            const;
-  bool    isTrigonomtricFunction()      const;
-  bool    isSymmetricFunction()         const;
-  bool    isAsymmetricFunction()        const;
+
   bool    isSymmetricExponent()         const;
   bool    isAsymmetricExponent()        const;
   TrigonometricMode getTrigonometricMode() const;
@@ -289,9 +285,12 @@ public:
   String  parenthesizedExpressionToString(const ExpressionNode  *parent)  const;
   bool    needParentheses(                const ExpressionNode  *parent)  const;
   int     getMaxTreeDepth()                                               const;
+  bool    isConsistent();
+  bool    isConsistentSymbolAndType()                                     const;
 
   void throwInvalidSymbolForTreeMode(const TCHAR *method) const;
   void throwUnknownSymbolException(  const TCHAR *method) const;
+  void throwUnknownNodeTypeException(const TCHAR *method) const;
 };
 
 // Should only be called in Canonical treeform
@@ -348,7 +347,7 @@ public:
   }
 
   ExpressionNodeType getNodeType() const {
-    return EXPRESSIONNODENUMBER;
+    return NT_NUMBER;
   }
 
   bool traverseExpression(ExpressionNodeHandler &handler, int level);
@@ -382,7 +381,7 @@ public:
   bool evaluateBool() const { return m_value;  }
 
   ExpressionNodeType getNodeType() const {
-    return EXPRESSIONNODEBOOLEAN;
+    return NT_BOOLCONST;
   }
 
   bool traverseExpression(ExpressionNodeHandler &handler, int level);
@@ -442,7 +441,7 @@ public:
   }
 
   ExpressionNodeType getNodeType() const {
-    return EXPRESSIONNODEVARIABLE;
+    return NT_VARIABLE;
   }
 
   bool traverseExpression(ExpressionNodeHandler &handler, int level);
@@ -489,7 +488,7 @@ public:
   bool isConstant() const;
 
   ExpressionNodeType getNodeType() const {
-    return EXPRESSIONNODETREE;
+    return NT_TREE;
   }
 
   bool traverseExpression(ExpressionNodeHandler &handler, int level);
@@ -501,18 +500,18 @@ public:
 class ExpressionNodeBoolExpr : public ExpressionNodeTree {
 public:
   inline ExpressionNodeBoolExpr(ParserTree *tree, ExpressionInputSymbol symbol, ExpressionNode *bexpr)
-    : ExpressionNodeTree(tree,symbol, bexpr,NULL)
+    : ExpressionNodeTree(tree, symbol, bexpr, NULL)
   {
   }
   inline ExpressionNodeBoolExpr(ParserTree *tree, ExpressionInputSymbol symbol, ExpressionNode *left, ExpressionNode *right)
-    : ExpressionNodeTree(tree,symbol, left, right, NULL)
+    : ExpressionNodeTree(tree, symbol, left, right, NULL)
   {
   }
   inline ExpressionNodeBoolExpr(ParserTree *tree, const ExpressionNodeBoolExpr *src)
     : ExpressionNodeTree(tree,src)
   {
   }
-  inline ExpressionNodeBoolExpr(ParserTree *tree, ExpressionInputSymbol symbol, va_list argptr)
+   inline ExpressionNodeBoolExpr(ParserTree *tree, ExpressionInputSymbol symbol, va_list argptr)
     : ExpressionNodeTree(tree, symbol, argptr)
   {
   }
@@ -533,8 +532,9 @@ public:
   }
 
   ExpressionNodeType getNodeType() const {
-    return EXPRESSIONNODETREE; // HERTIL.....HVAD HER??
+    return NT_BOOLEXPR;
   }
+  String toString() const;
 };
 
 class ExpressionNodePoly : public ExpressionNode {
@@ -561,7 +561,14 @@ public:
   SNode getArgument() const {
     return m_arg;
   }
+  bool isCoefficientArrayConstant() const;
+  // return true, if all coefficients are constant, and non-zero coef[i] for even i
+  bool isSymmetricFunction()        const;
+  // return true, if all coefficients are constant, and non-zero coef[i] for odd i
+  bool isAsymmetricFunction()       const;
 
+  bool equal(     const ExpressionNode *poly) const; // assume poly.symbol == POLY
+  bool equalMinus(const ExpressionNode *poly) const; // assume poly.symbol == POLY
   int getFirstCoefIndex() const {
     return m_firstCoefIndex;
   }
@@ -584,7 +591,7 @@ public:
 
   bool traverseExpression(ExpressionNodeHandler &handler, int level);
   ExpressionNodeType getNodeType() const {
-    return EXPRESSIONNODEPOLYNOMIAL;
+    return NT_POLY;
   }
 
   void dumpNode(String &s, int level) const;
@@ -613,6 +620,10 @@ public:
   }
   Real &doAssignment() const;
 
+  ExpressionNodeType getNodeType() const {
+    return NT_ASSIGN;
+  }
+
   String toString() const;
 };
 
@@ -639,7 +650,7 @@ public:
   bool evaluateBool() const;
 
   ExpressionNodeType getNodeType() const {
-    return EXPRESSIONNODETREE;
+    return NT_STMTLIST;
   }
   String toString() const;
 };
@@ -697,10 +708,10 @@ public:
   }
 };
 
-class ExpressionNodePolyWithPos : public ExpressionNodePoly, private SourcePositionAttribute {
+class ExpressionNodeBoolExprWithPos : public ExpressionNodeBoolExpr, private SourcePositionAttribute {
 public:
-  ExpressionNodePolyWithPos(ParserTree *tree, const SourcePosition &pos, const SNodeArray &coefArray, SNode arg)
-    : ExpressionNodePoly(tree, coefArray, arg), SourcePositionAttribute(pos) {
+  ExpressionNodeBoolExprWithPos(ParserTree *tree, const SourcePosition &pos, ExpressionInputSymbol symbol, va_list argptr)
+    : ExpressionNodeBoolExpr(tree, symbol, argptr), SourcePositionAttribute(pos) {
   }
   const SourcePosition &getPos() const {
     return SourcePositionAttribute::getPos();
@@ -710,10 +721,10 @@ public:
   }
 };
 
-class ExpressionNodeBoolExprWithPos : public ExpressionNodeBoolExpr, private SourcePositionAttribute {
+class ExpressionNodePolyWithPos : public ExpressionNodePoly, private SourcePositionAttribute {
 public:
-  ExpressionNodeBoolExprWithPos(ParserTree *tree, const SourcePosition &pos, ExpressionInputSymbol symbol, va_list argptr)
-    : ExpressionNodeBoolExpr(tree, symbol, argptr), SourcePositionAttribute(pos) {
+  ExpressionNodePolyWithPos(ParserTree *tree, const SourcePosition &pos, const SNodeArray &coefArray, SNode arg)
+    : ExpressionNodePoly(tree, coefArray, arg), SourcePositionAttribute(pos) {
   }
   const SourcePosition &getPos() const {
     return SourcePositionAttribute::getPos();
@@ -759,7 +770,7 @@ public:
   Real evaluateReal() const;
 
   ExpressionNodeType getNodeType() const {
-    return EXPRESSIONNODESUM;
+    return NT_SUM;
   }
 
   bool traverseExpression(ExpressionNodeHandler &handler, int level);
@@ -789,7 +800,7 @@ public:
   Real evaluateReal() const;
 
   ExpressionNodeType getNodeType() const {
-    return EXPRESSIONNODEPRODUCT;
+    return NT_PRODUCT;
   }
 
   bool traverseExpression(ExpressionNodeHandler &handler, int level);

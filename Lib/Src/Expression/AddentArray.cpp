@@ -31,6 +31,28 @@ void AddentArray::add(SNode n, bool positive) {
   }
 }
 
+bool AddentArray::equal(const AddentArray &a) const {
+  const size_t n = size();
+  if(a.size() != n) return false;
+  for(size_t i = 0; i < n; i++) {
+    if(!(*this)[i]->equal(a[i])) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool AddentArray::equalMinus(const AddentArray &a) const {
+  const size_t n = size();
+  if(a.size() != n) return false;
+  for(size_t i = 0; i < n; i++) {
+    if(!(*this)[i]->equalMinus(a[i])) {
+      return false;
+    }
+  }
+  return true;
+}
+
 String AddentArray::toString() const {
   if(size() == 0) {
     return _T("0");

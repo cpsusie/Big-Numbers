@@ -29,11 +29,17 @@ void ReductionStack::reset(ParserTree *tree) {
   }
 }
 
+const TCHAR *ReductionStack::getRawName(const TCHAR *str) { // static
+  const TCHAR *s = _tcsrchr(str,':');
+  return s ? s+1 : str;
+}
+
 void ParserTree::clearAllBreakPoints() {
   for (size_t i = 0; i < m_nodeTable.size(); i++) {
     m_nodeTable[i]->clearBreakPoint();
   }
 }
+
 
 #endif // TRACE_REDUCTION_CALLSTACK
 

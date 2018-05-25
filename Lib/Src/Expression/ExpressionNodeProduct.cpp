@@ -14,7 +14,7 @@ ExpressionNodeProduct::ExpressionNodeProduct(ParserTree *tree, FactorArray &fact
 }
 
 int ExpressionNodeProduct::compare(ExpressionNode *n) {
-  if(n->getNodeType() != EXPRESSIONNODEPRODUCT) {
+  if(n->getNodeType() != NT_PRODUCT) {
     return ExpressionNode::compare(n);
   }
   const FactorArray &na    = n->getFactorArray();

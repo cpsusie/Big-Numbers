@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+  <Type Name="Expr::ExpressionVariable">
+    <DisplayString>{Name={m_name} Value={m_value}}</DisplayString>
+  </Type>
+  <Type Name="Expr::ExpressionNodeNumber">
+    <DisplayString>{Value={m_number}}</DisplayString>
+  </Type>
+  <Type Name="Expr::ExpressionNodeBoolConst">
+    <DisplayString>{Value={m_value}}</DisplayString>
+  </Type>
+  <Type Name="Expr::ExpressionNodeVariable">
+    <DisplayString>{Name={m_name}}</DisplayString>
+  </Type>
+  <Type Name="Expr::ExpressionNode">
+    <DisplayString>{m_info.m_symbol}</DisplayString>
+  </Type>
+  <Type Name="Expr::SNode">
+    <DisplayString>{*m_node}</DisplayString>
+  </Type>
+</AutoVisualizer>

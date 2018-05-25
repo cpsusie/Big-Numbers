@@ -19,7 +19,7 @@ private:
   static inline ExpressionNode   *unaryMinus(ExpressionNode *n) {
     return n->getTree().unaryMinus(n);
   }
-  static inline ExpressionNode   *getPoly(const SNodeArray &coefArray, ExpressionNode *arg) {
+  static inline ExpressionNode   *getPoly(SNodeArray &coefArray, ExpressionNode *arg) {
     return arg->getTree().getPoly(coefArray, arg);
   }
   static inline ExpressionNode   *indexedSum(ExpressionNode *assign, ExpressionNode *end, ExpressionNode *expr) {
@@ -278,22 +278,25 @@ const NodeOperators *NodeOperators::s_canonNumForm = &canonNumFormOps;
 
 class CNode : public SNode {
 private:
-  CNode toCForm() const;
-  CNode toCFormSum() const;
-  CNode toCFormProduct() const;
-  CNode toCFormPoly() const;
-  CNode toCFormStmtList() const;
-  CNode toCFormAssign() const;
+  CNode toCForm()         const;
   CNode toCFormTreeNode() const;
+  CNode toCFormBoolExpr() const;
+  CNode toCFormPoly()     const;
+  CNode toCFormAssign()   const;
+  CNode toCFormStmtList() const;
+  CNode toCFormSum()      const;
+  CNode toCFormProduct()  const;
   FactorArray &toCFormProduct(FactorArray &result, SNode &exponent) const;
   AddentArray &toCFormSum(    AddentArray &result, bool   positive) const;
   FactorArray &toCFormPower(  FactorArray &result, SNode &exponent) const;
   FactorArray &toCFormRoot(   FactorArray &result, SNode &exponent) const;
 
   inline CNode(const SNode &n) : SNode(n) {
+    n.isConsistent();
   }
 public:
   inline CNode(ExpressionNode *n) : SNode(n) {
+    n->isConsistent();
   }
   ExpressionNode *convert() const {
     return toCForm().node();
@@ -331,13 +334,64 @@ CNode CNode::toCForm() const {
   case CSC            : return csc(N(left()).toCForm());
   case COT            : return cot(N(left()).toCForm());
 
+  case AND            :
+  case OR             :
+  case NOT            :
+  case EQ             :
+  case NE             :
+  case LT             :
+  case LE             :
+  case GT             :
+  case GE             : return toCFormBoolExpr();
+
   case POLY           : return toCFormPoly();
 
-  case STMTLIST       : return toCFormStmtList();
   case ASSIGN         : return toCFormAssign();
+  case STMTLIST       : return toCFormStmtList();
 
   default             : return toCFormTreeNode();
   }
+}
+
+CNode CNode::toCFormTreeNode() const {
+  const SNodeArray &a = getChildArray();
+  SNodeArray newChildArray(a.size());
+  for(size_t i = 0; i < a.size(); i++) {
+    newChildArray.add(N(a[i]).toCForm());
+  }
+  return treeExp(getSymbol(), newChildArray);
+}
+
+CNode CNode::toCFormBoolExpr() const {
+  const SNodeArray &a = getChildArray();
+  SNodeArray newChildArray(a.size());
+  for(size_t i = 0; i < a.size(); i++) {
+    newChildArray.add(N(a[i]).toCForm());
+  }
+  return boolExp(getSymbol(), newChildArray);
+}
+
+CNode CNode::toCFormPoly() const {
+  const SNodeArray &coefArray = getCoefArray();
+  SNodeArray        newCoefArray(coefArray.size());
+  for(size_t i = 0; i < coefArray.size(); i++) {
+    newCoefArray.add(N(coefArray[i]).toCForm());
+  }
+  SNode newArg = N(getArgument()).toCForm();
+  return polyExp(newCoefArray, newArg);
+}
+
+CNode CNode::toCFormAssign() const {
+  return assignStmt(left(), N(right()).toCForm());
+};
+
+CNode CNode::toCFormStmtList() const {
+  const SNodeArray &a = getChildArray();
+  SNodeArray newChildArray(a.size());
+  for(size_t i = 0; i < a.size(); i++) {
+    newChildArray.add(N(a[i]).toCForm());
+  }
+  return stmtList(newChildArray);
 }
 
 CNode CNode::toCFormSum() const {
@@ -475,38 +529,6 @@ FactorArray &CNode::toCFormRoot(FactorArray &result, SNode &exponent) const {
     break;
   }
   return result;
-}
-
-CNode CNode::toCFormPoly() const {
-  const SNodeArray &coefArray = getCoefArray();
-  SNodeArray        newCoefArray(coefArray.size());
-  for(size_t i = 0; i < coefArray.size(); i++) {
-    newCoefArray.add(N(coefArray[i]).toCForm());
-  }
-  SNode newArg = N(getArgument()).toCForm();
-  return polyExp(newCoefArray, newArg);
-}
-
-CNode CNode::toCFormStmtList() const {
-  const SNodeArray &a = getChildArray();
-  SNodeArray newChildArray(a.size());
-  for(size_t i = 0; i < a.size(); i++) {
-    newChildArray.add(N(a[i]).toCForm());
-  }
-  return stmtList(newChildArray);
-}
-
-CNode CNode::toCFormAssign() const {
-  return assignStmt(left(), N(right()).toCForm());
-};
-
-CNode CNode::toCFormTreeNode() const {
-  const SNodeArray &a = getChildArray();
-  SNodeArray newChildArray(a.size());
-  for(size_t i = 0; i < a.size(); i++) {
-    newChildArray.add(N(a[i]).toCForm());
-  }
-  return treeExp(getSymbol(), newChildArray);
 }
 
 // -------------------------------------------------------------------------------------------------------

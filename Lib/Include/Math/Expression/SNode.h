@@ -22,20 +22,30 @@ typedef enum {
 } ExpressionReturnType;
 
 typedef enum {
-  EXPRESSIONNODENUMBER
- ,EXPRESSIONNODEBOOLEAN
- ,EXPRESSIONNODEVARIABLE
- ,EXPRESSIONNODEPOLYNOMIAL
- ,EXPRESSIONNODETREE
- ,EXPRESSIONNODESUM
- ,EXPRESSIONNODEPRODUCT
- ,EXPRESSIONNODEFACTOR
+  NT_NUMBER
+ ,NT_BOOLCONST
+ ,NT_VARIABLE
+ ,NT_TREE
+ ,NT_BOOLEXPR
+ ,NT_POLY
+ ,NT_ASSIGN
+ ,NT_STMTLIST
+ ,NT_SUM
+ ,NT_PRODUCT
+ ,NT_FACTOR
 } ExpressionNodeType;
 
 // Wrapper class til ExpressionNode
 class SNode {
 private:
   ExpressionNode *m_node;
+#ifdef _DEBUG
+  const TCHAR *m_debugStr;
+  void setDebugStr();
+#define SETDEBUGSTRING() setDebugStr()
+#else
+#define SETDEBUGSTRING()
+#endif
 
   SNode DPoly(    const String &name) const;
   SNode DStmtList(const String &name) const;
@@ -43,19 +53,23 @@ private:
   static ExpressionFactor *factor(SNode b, SNode e);
 
   SNode              reduceBoolExp();
+  SNode              reduceNot();
+  SNode              reduceAndOr();
   SNode              reduceRealExp();
   SNode              reduceTreeNode();
   SNode              reduceSum() const;
   SNode              reduceProduct();
   SNode              reduceModulus() const;
-
   SNode              reducePower();
   SNode              reduceConstantFactors(       FactorArray            &factors);
   SNode              reduceRationalPower(         const Rational         &base, const Rational &exponent);
+  SNode              multiplyTreeNode() const;
+  SNode              multiplyBoolExpr() const;
+  SNode              multiplyParenthesesInPoly() const;
+  SNode              multiplyAssignStmt() const;
+  SNode              multiplyStmtList() const;
   SNode              multiplyParenthesesInSum() const;
   SNode              multiplyParenthesesInProduct() const;
-  SNode              multiplyParenthesesInPoly() const;
-  SNode              multiplyTreeNode() const;
   SNode              multiplyFactorSum(SNode factor, SNode sum) const; //  ExpressionFactor *a, ExpressionNodeSum *s) const;
 
   SumElement        *getCommonFactor(             SumElement  &e1, SumElement &e2) const;
@@ -63,7 +77,7 @@ private:
   FactorArray       &getFactors(                  FactorArray &result, const SNode exponent);
   FactorArray       &getFactorsInPower(           FactorArray &result, const SNode exponent);
   FactorArray       &multiplyExponents(           FactorArray &result, FactorArray &factors, const SNode exponent);
-  SNode              multiplySumSum(              SNode n1, SNode n2) const; // assume n1 and n2 are EXPRESSIONNODESUM
+  SNode              multiplySumSum(              SNode n1, SNode n2) const; // assume n1 and n2 are NT_SUM
   SNode              changeFirstNegativeFactor() const;
   SNode              reduceLn();
   SNode              reduceLog10();
@@ -74,7 +88,8 @@ private:
   SumElement        *mergeLogarithms(            SumElement        &e1, SumElement       &e2) const;
   SNode              reduceAsymmetricFunction();
   SNode              reduceSymmetricFunction();
-  SNode              reducePolynomial();
+  SNode              reducePoly();
+  SNode              reduceCondExp();
   ExpressionFactor  *reduceTrigonometricFactors(  ExpressionFactor &f1, ExpressionFactor &f2);
 
   bool               canUseIdiotRule(             SNode             n1, const SNode n2) const;
@@ -87,9 +102,17 @@ private:
 public:
   friend class SNodeArray;
   inline SNode() : m_node(NULL) {
+    SETDEBUGSTRING();
   }
   inline SNode(ExpressionNode *node) : m_node(node) {
+    SETDEBUGSTRING();
   }
+#ifdef _DEBUG
+  inline SNode &operator=(const SNode &src) {
+    m_node = src.m_node; SETDEBUGSTRING();
+    return *this;
+  }
+#endif
   SNode(ParserTree &tree, int                v);
   SNode(ParserTree &tree, INT64              v);
   SNode(ParserTree &tree, const Rational    &v);
@@ -99,13 +122,14 @@ public:
   SNode(ParserTree &tree, AddentArray       &a);
   SNode(ParserTree &tree, FactorArray       &a);
 
-  SNode _0()  const; // zero
-  SNode _1()  const; // 1
-  SNode _m1() const; // -1
-  SNode _2()  const; // 2
-  SNode _10() const; // 10
-  SNode _05() const; // 1/2
-
+  SNode _0()     const; // zero
+  SNode _1()     const; // 1
+  SNode _m1()    const; // -1
+  SNode _2()     const; // 2
+  SNode _10()    const; // 10
+  SNode _05()    const; // 1/2
+  SNode _false() const; // false
+  SNode _true()  const; // true
   inline bool isEmpty() const {
     return m_node == NULL;
   }
@@ -139,6 +163,7 @@ public:
   int                   getValueIndex()                        const;
   bool                  isConstant()                           const;
   bool                  isBooleanOperator()                    const;
+  bool                  isCompareOperator()                    const; // is symbol in { EQ,NE,LE,LT,GE,GT }
   Real                 &doAssignment()                         const;
   Real                  evaluateReal()                         const;
   bool                  evaluateBool()                         const;
@@ -181,6 +206,7 @@ public:
   bool                  needParentheses(SNode parent)          const;
   SNode                 base()                                 const;
   SNode                 exponent()                             const;
+  bool                  isConsistent()                         const;
 
   SNode operator+(  const SNode &n) const;
   // binary -
@@ -197,11 +223,14 @@ public:
   SNode operator&&( const SNode &n) const;
   SNode operator||( const SNode &n) const;
   SNode operator!() const;
+  bool equal(       const SNode &n) const;
+  bool equalMinus(  const SNode &n) const;
+
   // compare trees recursively
-  bool operator==(  const SNode &n) const;
-  inline bool operator!=(const SNode &n) const {
-    return !(*this == n);
-  }
+//  bool operator==(  const SNode &n) const;
+//  inline bool operator!=(const SNode &n) const {
+//    return !(*this == n);
+//  }
 
   inline bool isSameNode(const SNode n) const {
     return m_node == n.m_node;
@@ -214,7 +243,8 @@ public:
   SNode reduce();
 
   void throwInvalidSymbolForTreeMode(const TCHAR *method) const;
-  void throwUnknownSymbolException(const TCHAR *method) const;
+  void throwUnknownSymbolException(  const TCHAR *method) const;
+  void throwUnknownNodeTypeException(const TCHAR *method) const;
 
   friend SNode reciprocal(const SNode &x);
   friend SNode sqrt(      const SNode &x);
@@ -246,8 +276,10 @@ public:
 };
 
 class SNodeArray : public CompactArray<SNode> {
+  bool operator==(const SNodeArray &a) const; // not implemented
+  bool operator!=(const SNodeArray &a) const; // not implemented
 protected:
-  SNode toTree(ExpressionInputSymbol delimiter);
+//  SNode toTree(ExpressionInputSymbol delimiter);
 public:
   SNodeArray() {}
   SNodeArray(int n,...);
@@ -258,6 +290,9 @@ public:
     return (*this)[0].getTree();
   }
   bool isConstant() const;
+  bool isSameNodes(const SNodeArray &a) const; // compare only if ExpressionNode* equals
+  bool equal(      const SNodeArray &a) const; // recursive compare all nodes ( deep compare)
+  bool equalMinus( const SNodeArray &a) const; // recursive compare all nodes ( deep compare)
   SNodeArray &cloneNodes(SNodeArray &dst, ParserTree *tree) const;
 };
 
@@ -271,16 +306,18 @@ public:
 
 SNode unaryExp(  ExpressionInputSymbol symbol, SNode n);
 SNode binExp(    ExpressionInputSymbol symbol, SNode n1, SNode n2);
-SNode treeExp(   ExpressionInputSymbol symbol, const SNodeArray &a); // assumy a.size() > 0
 SNode condExp(   SNode condition , SNode nTrue  , SNode nFalse);
-SNode polyExp(   const SNodeArray &coefArray, SNode arg);
-SNode stmtList(  const SNodeArray &list);
+
+SNode polyExp(   SNodeArray &coefArray, SNode arg);
+SNode boolExp(   ExpressionInputSymbol symbol, SNode left, SNode right);
+SNode boolExp(   ExpressionInputSymbol symbol, SNode child);
+SNode boolExp(   ExpressionInputSymbol symbol, SNodeArray &a);
+SNode treeExp(   ExpressionInputSymbol symbol, SNodeArray &a); // assumy a.size() > 0
+SNode assignStmt(SNode leftSide  , SNode expr);
+SNode assignStmt(SNodeArray &list);
+SNode stmtList(  SNodeArray &list);
 SNode indexSum(  SNode assignStmt, SNode endExpr, SNode expr  );
 SNode indexProd( SNode assignStmt, SNode endExpr, SNode expr  );
-SNode assignStmt(SNode leftSide  , SNode expr);
-SNode factorExp( SNode b         , SNode e);
-
-bool equal(     SNode n1, SNode n2);
-bool equalMinus(SNode n1, SNode n2);
+SNode factorExp( SNode base      , SNode expo);
 
 }; // namespace Expr

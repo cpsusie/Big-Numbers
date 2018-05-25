@@ -47,7 +47,8 @@ public:
   inline bool isPositive() const {
     return m_positive;
   }
-
+  bool equal(     const SumElement *e) const;
+  bool equalMinus(const SumElement *e) const;
   bool isConstant() const;
 
   int compare(const SumElement *e) const;

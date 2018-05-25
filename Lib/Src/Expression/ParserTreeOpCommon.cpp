@@ -10,13 +10,44 @@ namespace Expr {
 ExpressionNode *ParserTree::and(ExpressionNode *n1, ExpressionNode *n2) {
   if(n1->isTrue()) return n2; else if(n1->isFalse()) return n1;
   if(n2->isTrue()) return n1; else if(n2->isFalse()) return n2;
-  return binaryExpr(AND, n1, n2);
+  return boolExpr(AND, n1,n2);
 }
 
 ExpressionNode *ParserTree::or(ExpressionNode *n1, ExpressionNode *n2) {
   if(n1->isTrue()) return n1; else if(n1->isFalse()) return n2;
   if(n2->isTrue()) return n2; else if(n2->isFalse()) return n1;
-  return binaryExpr(OR, n1, n2);
+  return boolExpr(OR, n1,n2);
+}
+
+ExpressionNode *ParserTree::not(ExpressionNode *n) {
+  if(n->isTrue()) return getFalse(); else if(n->isFalse()) return getTrue();
+  if(n->getSymbol() == NOT) return n->left();
+  return boolExpr(NOT,n,NULL);
+}
+
+ExpressionNode *ParserTree::boolExpr(ExpressionInputSymbol symbol, ExpressionNode *n1, ExpressionNode *n2) {
+  ExpressionNode *result;
+  if(n2) {
+    result = new ExpressionNodeBoolExpr(this,symbol,n1,n2);
+  } else {
+    result = new ExpressionNodeBoolExpr(this,symbol,n1);
+  }
+  TRACE_NEW(result);
+  return result;
+}
+
+ExpressionNode *ParserTree::treeExpr(ExpressionInputSymbol symbol, SNodeArray &a) {
+  ExpressionNode *n = new ExpressionNodeTree(this, symbol, a); TRACE_NEW(n);
+  return n;
+}
+
+ExpressionNode *ParserTree::assignStmt(ExpressionNode *leftSide, ExpressionNode *expr) {
+  ExpressionNode *n = new ExpressionNodeAssign(leftSide, expr); TRACE_NEW(n);
+  return n;
+}
+
+ExpressionNode *ParserTree::factorExpr(ExpressionNode *base, ExpressionNode *expo) {
+  return fetchFactorNode(base,expo);
 }
 
 ExpressionNode *ParserTree::indexedSum(ExpressionNode *assign, ExpressionNode *endExpr, ExpressionNode *expr) {
@@ -34,12 +65,6 @@ ExpressionNode *ParserTree::condExpr(ExpressionNode *condition, ExpressionNode *
   return ternaryExpr(IIF, condition, exprTrue, exprFalse);
 }
 
-ExpressionNode *ParserTree::assignStmt(ExpressionNode *leftSide, ExpressionNode *expr) {
-//  assert(leftSide->getNodeType() == EXPRESSIONNODEVARIABLE);
-  ExpressionNode *n = new ExpressionNodeAssign(leftSide, expr); TRACE_NEW(n);
-  return n;
-}
-
 ExpressionFactor *ParserTree::fetchFactorNode(SNode base) {
   return fetchFactorNode(base,base._1());
 }
@@ -48,7 +73,7 @@ ExpressionFactor *ParserTree::fetchFactorNode(SNode base, SNode exponent) {
   ExpressionFactor *f;
   if(exponent.isOne()) {
     if(base.getSymbol() == POW) {
-      if(base.getNodeType() == EXPRESSIONNODEFACTOR) {
+      if(base.getNodeType() == NT_FACTOR) {
         return (ExpressionFactor*)(base.node());
       } else {
         f = new ExpressionFactor(base.left(), base.right());
@@ -67,7 +92,95 @@ ExpressionFactor *ParserTree::fetchFactorNode(SNode base, SNode exponent) {
   return f;
 }
 
+// -------------------------------------------------------------------------------------------
+
+ExpressionNode *ParserTree::getPoly(SNode oldPoly, SNodeArray &newCoefArray, SNode newArgument) {
+  const SNodeArray &oldCoefArray = oldPoly.getCoefArray();
+  const SNode       oldArgument  = oldPoly.getArgument().node();
+  SNode             result       = (newCoefArray.isSameNodes(oldCoefArray) && newArgument.isSameNode(oldArgument))
+                                 ? oldPoly
+                                 : getPoly(newCoefArray, newArgument);
+  return result.node();
+}
+
+ExpressionNode *ParserTree::getBoolExpr(SNode oldExpr, SNodeArray &newChildArray) {
+  const SNodeArray &oldChildArray = oldExpr.getChildArray();
+  SNode             result = newChildArray.isSameNodes(oldChildArray) ? oldExpr : getBoolExpr(oldExpr.getSymbol(), newChildArray);
+  return result.node();
+}
+
+ExpressionNode *ParserTree::getTree(SNode oldTree, SNodeArray &newChildArray) {
+  const SNodeArray &oldChildArray = oldTree.getChildArray();
+  SNode             result = newChildArray.isSameNodes(oldChildArray) ? oldTree : getTree(oldTree.getSymbol(), newChildArray);
+  return result.node();
+}
+
+ExpressionNode *ParserTree::getAssignStmt(SNode oldAssign, SNodeArray &newChildArray) {
+  const SNodeArray &oldChildArray = oldAssign.getChildArray();
+  SNode             result = newChildArray.isSameNodes(oldChildArray) ? oldAssign: getAssignStmt(newChildArray);
+  return result.node();
+}
+
+ExpressionNode *ParserTree::getStmtList(SNode oldStmtList, SNodeArray &newChildArray) {
+  const SNodeArray &oldChildArray = oldStmtList.getChildArray();
+  SNode             result = newChildArray.isSameNodes(oldChildArray) ? oldStmtList : getStmtList(newChildArray);
+  return result.node();
+}
+
+ExpressionNode *ParserTree::getSum(SNode oldSum, AddentArray &newAddentArray) {
+  const AddentArray &oldAddentArray = oldSum.getAddentArray();
+  SNode              result         = (newAddentArray == oldAddentArray)
+                                    ? oldSum
+                                    : getSum(newAddentArray);
+  return result.node();
+}
+
+ExpressionNode *ParserTree::getProduct(SNode oldProduct, FactorArray &newFactorArray) {
+  const FactorArray  &oldFactorArray = oldProduct.getFactorArray();
+  SNode               result         = (newFactorArray == oldFactorArray)
+                                     ? oldProduct
+                                     : getProduct(newFactorArray);
+  return result.node();
+}
+
+ExpressionFactor *ParserTree::getFactor(SNode oldFactor, SNode newBase, SNode newExpo) {
+  SNode oldBase = oldFactor.left();
+  SNode oldExpo = oldFactor.right();
+  return (newBase.isSameNode(oldBase) && newExpo.isSameNode(oldExpo)) ? (ExpressionFactor*)oldFactor.node() : fetchFactorNode(newBase, newExpo);
+}
+
 // -----------------------------------------------------------------------------------------
+
+ExpressionNode *ParserTree::getPoly(SNodeArray &coefArray, SNode arg) {
+  ExpressionNode *n = new ExpressionNodePoly(this, coefArray, arg); TRACE_NEW(n);
+  return n;
+}
+
+ExpressionNode *ParserTree::getBoolExpr(ExpressionInputSymbol symbol, SNodeArray &childArray) {
+  if(childArray.size() == 2) {
+    assert(ExpressionNode::isBooleanOperator(symbol) && (symbol!=NOT));
+    return boolExpr(symbol,childArray[0].node(), childArray[1].node());
+  } else {
+    assert(symbol == NOT);
+    return boolExpr(symbol,childArray[0].node(), NULL);
+  }
+}
+
+ExpressionNode *ParserTree::getTree(ExpressionInputSymbol symbol, SNodeArray &a) {
+  return treeExpr(symbol, a);
+}
+
+ExpressionNode *ParserTree::getAssignStmt(SNodeArray &a) {
+  assert(a.size() == 2);
+  assert(a[0].getNodeType() == NT_VARIABLE);
+  return assignStmt(a[0].node(), a[1].node());
+}
+
+ExpressionNode *ParserTree::getStmtList(SNodeArray &stmtArray) {
+  ExpressionNode *n = new ExpressionNodeStmtList(this, stmtArray); TRACE_NEW(n);
+  return n;
+}
+
 
 ExpressionNode *ParserTree::getSum(AddentArray &a) {
   switch(a.size()) {
@@ -93,49 +206,7 @@ ExpressionNode *ParserTree::getProduct(FactorArray &a) {
   }
 }
 
-ExpressionNode *ParserTree::getPoly(const SNodeArray &coefArray, SNode arg) {
-  ExpressionNode *n = new ExpressionNodePoly(this, coefArray, arg); TRACE_NEW(n);
-  return n;
-}
-
-ExpressionNode *ParserTree::getStmtList(const SNodeArray &stmtArray) {
-  ExpressionNode *n = new ExpressionNodeStmtList(this, stmtArray); TRACE_NEW(n);
-  return n;
-}
-
-// -------------------------------------------------------------------------------------------
-
-ExpressionFactor *ParserTree::getFactor(SNode oldFactor, SNode newBase, SNode newExpo) {
-  SNode oldBase = oldFactor.left();
-  SNode oldExpo = oldFactor.right();
-  return (newBase.isSameNode(oldBase) && newExpo.isSameNode(oldExpo)) ? (ExpressionFactor*)oldFactor.node() : fetchFactorNode(newBase, newExpo);
-}
-
-ExpressionNode *ParserTree::getSum(SNode oldSum, AddentArray &newAddentArray) {
-  const AddentArray &oldAddentArray = oldSum.getAddentArray();
-  SNode              result         = (newAddentArray == oldAddentArray)
-                                    ? oldSum
-                                    : getSum(newAddentArray);
-  return result.node();
-}
-
-ExpressionNode *ParserTree::getProduct(SNode oldProduct, FactorArray &newFactorArray) {
-  const FactorArray  &oldFactorArray = oldProduct.getFactorArray();
-  SNode               result         = (newFactorArray == oldFactorArray)
-                                     ? oldProduct
-                                     : getProduct(newFactorArray);
-  return result.node();
-}
-
-ExpressionNode *ParserTree::getPoly(SNode oldPoly, SNodeArray &newCoefArray, SNode newArgument) {
-  const SNodeArray &oldCoefArray = oldPoly.getCoefArray();
-  const SNode       oldArgument  = oldPoly.getArgument().node();
-  SNode             result       = (newCoefArray == oldCoefArray)
-                                && (newArgument.isSameNode(oldArgument))
-                                 ? oldPoly
-                                 : getPoly(newCoefArray, newArgument);
-  return result.node();
-}
+// -----------------------------------------------------------------------------------------------------
 
 ExpressionNode *ParserTree::functionExpr(ExpressionInputSymbol symbol, ExpressionNode *child) {
   return unaryExpr(symbol, child);
@@ -169,17 +240,6 @@ ExpressionNodeTree *ParserTree::fetchTreeNode(ExpressionInputSymbol symbol,...) 
   va_end(argptr);
   TRACE_NEW(result);
   return result;
-}
-
-ExpressionNode *ParserTree::getTree(ExpressionInputSymbol symbol, SNodeArray &a) {
-  ExpressionNode *n = new ExpressionNodeTree(this, symbol, a); TRACE_NEW(n);
-  return n;
-}
-
-ExpressionNode *ParserTree::getTree(SNode oldTree, SNodeArray &newChildArray) {
-  const SNodeArray &oldChildArray = oldTree.getChildArray();
-  SNode             result = (newChildArray == oldChildArray) ? oldTree : getTree(oldTree.getSymbol(), newChildArray);
-  return result.node();
 }
 
 ExpressionNode *ParserTree::expandPower(ExpressionNode *base, const Rational &exponent) {

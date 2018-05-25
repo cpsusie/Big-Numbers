@@ -196,8 +196,8 @@ protected:
   ExpressionNodeVariable *fetchVariableNode( const String               &name    );
   ExpressionNode         *constExpression(   const String               &name    );
   // if exponent not specified, it is set to 1. Use getFactor to get SNode
-  ExpressionFactor *fetchFactorNode(   SNode base);
-  ExpressionFactor *fetchFactorNode(   SNode base, SNode exponent);
+  ExpressionFactor       *fetchFactorNode(   SNode base);
+  ExpressionFactor       *fetchFactorNode(   SNode base, SNode exponent);
   // terminate argumentlist with NULL
   ExpressionNodeTree     *fetchTreeNode(     ExpressionInputSymbol     symbol, ...                );
 
@@ -225,7 +225,7 @@ protected:
     ExpressionNodeNumber *n = new ExpressionNodeNumber(this, v); TRACE_NEW(n);
     return n;
   }
-  inline ExpressionNodeBoolConst *booleanExpression(bool b)          {
+  inline ExpressionNodeBoolConst *boolConstExpression(bool b)          {
     ExpressionNodeBoolConst *n = new ExpressionNodeBoolConst(this, b); TRACE_NEW(n);
     return n;
   }
@@ -298,11 +298,11 @@ public:
     return m_half;
   }
   inline ExpressionNode *getFalse() {
-    if(!m_false   ) m_false    = booleanExpression(false);
+    if(!m_false   ) m_false    = boolConstExpression(false);
     return m_false;
   }
   inline ExpressionNode *getTrue() {
-    if(!m_true    ) m_true     = booleanExpression(true);
+    if(!m_true    ) m_true     = boolConstExpression(true);
     return m_true;
   }
   inline Real &getValueRef(UINT valueIndex) const {
@@ -330,17 +330,22 @@ public:
   inline ExpressionNode  *csc(       ExpressionNode *n) { return m_ops->csc(n);        }
   inline ExpressionNode  *sec(       ExpressionNode *n) { return m_ops->sec(n);        }
 
-  ExpressionNode         *getTree(           ExpressionInputSymbol symbol, SNodeArray &a);
-  ExpressionNode         *getSum(            AddentArray          &addentArray);
-  ExpressionNode         *getProduct(        FactorArray          &factorArray);
-  ExpressionNode         *getPoly(           const SNodeArray &coefficientArray, SNode argument);
-  ExpressionNode         *getStmtList(       const SNodeArray &stmtArray);
+  ExpressionNode         *getTree(      SNode oldTree               , SNodeArray           &newChildArray                   );
+  ExpressionNode         *getBoolExpr(  SNode oldExpr               , SNodeArray           &newChildArray                   );
+  ExpressionNode         *getPoly(      SNode oldPoly               , SNodeArray           &newCoefArray    , SNode newArg  );
+  ExpressionNode         *getAssignStmt(SNode oldAssign             , SNodeArray           &newChildArray                   );
+  ExpressionNode         *getStmtList(  SNode oldStmtList           , SNodeArray           &newChildArray                   );
+  ExpressionNode         *getSum(       SNode oldSum                , AddentArray          &newAddentArray                  );
+  ExpressionNode         *getProduct(   SNode oldProduct            , FactorArray          &newFactorArray                  );
+  ExpressionFactor       *getFactor(    SNode oldFactor             , SNode                 newBase         , SNode newExpo );
 
-  ExpressionFactor       *getFactor(         SNode oldFactor   , SNode newBase, SNode newExpo);
-  ExpressionNode         *getTree(           SNode oldTree     , SNodeArray           &newChildArray  );
-  ExpressionNode         *getSum(            SNode oldSum      , AddentArray          &newAddentArray );
-  ExpressionNode         *getProduct(        SNode oldProduct  , FactorArray          &newFactorArray );
-  ExpressionNode         *getPoly(           SNode oldPoly     , SNodeArray           &newCoefArray, SNode newArgument);
+  ExpressionNode         *getTree(      ExpressionInputSymbol symbol, SNodeArray           &a                               );
+  ExpressionNode         *getBoolExpr(  ExpressionInputSymbol symbol, SNodeArray           &a                               );
+  ExpressionNode         *getPoly(                                    SNodeArray           &coefArray       , SNode arg     );
+  ExpressionNode         *getAssignStmt(                              SNodeArray           &a                               );
+  ExpressionNode         *getStmtList(                                SNodeArray           &stmtArray                       );
+  ExpressionNode         *getSum(                                     AddentArray          &addentArray);
+  ExpressionNode         *getProduct(                                 FactorArray          &factorArray);
 
   ExpressionNode         *expandPower(       ExpressionNode *base, const Rational &exponent);
 
@@ -353,8 +358,14 @@ public:
 
   ExpressionNode *and(                       ExpressionNode *n1, ExpressionNode *n2);
   ExpressionNode *or(                        ExpressionNode *n1, ExpressionNode *n2);
+  ExpressionNode *not(                       ExpressionNode *n);
+  ExpressionNode *boolExpr(                  ExpressionInputSymbol symbol, ExpressionNode *n1, ExpressionNode *n2);
 
+  ExpressionNode *treeExpr(                  ExpressionInputSymbol symbol
+                                            ,SNodeArray            &a                       );
   ExpressionNode *assignStmt(                ExpressionNode *leftSide, ExpressionNode *expr );
+  ExpressionNode *factorExpr(                ExpressionNode *base    , ExpressionNode *expo );
+
   ExpressionNode *functionExpr(              ExpressionInputSymbol symbol
                                             ,ExpressionNode *child);
   ExpressionNode *unaryMinus(                ExpressionNode *child);

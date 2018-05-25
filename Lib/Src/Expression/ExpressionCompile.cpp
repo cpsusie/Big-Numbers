@@ -473,19 +473,6 @@ void CodeGenerator::genIf(SNode n DCL_DSTPARAM) {
   m_code->fixupJump(firstResultJump).emitLabel(endLabel);
 }
 
-static ExpressionInputSymbol reverseComparator(ExpressionInputSymbol symbol) {
-  switch(symbol) {
-  case EQ :
-  case NE : return symbol;
-  case LE : return GE;
-  case LT : return GT;
-  case GE : return LE;
-  case GT : return LT;
-  }
-  throwInvalidArgumentException(__TFUNCTION__,_T("symbol=%d"), symbol);
-  return EQ;
-}
-
 // Generates code and updates jl, so that the generated code will end with a
 // conditional jump, which will do a jump only if evaluteBool(n) != trueAtEnd
 // It's up to the caller of the function to fixup the jump's generated.
@@ -493,12 +480,6 @@ static ExpressionInputSymbol reverseComparator(ExpressionInputSymbol symbol) {
 void CodeGenerator::genBoolExpression(SNode n, JumpList &jl, bool trueAtEnd) {
 //  dumpSyntaxTree(n);
   switch(n.getSymbol()) {
-  case NOT:
-    { JumpList jumps(!jl);
-      genBoolExpression(n.child(0), jumps, !trueAtEnd);
-      jl ^= jumps;
-    }
-    break;
   case AND:
     if(!trueAtEnd) { // De Morgan's law
       JumpList jumps(!jl);
@@ -522,12 +503,18 @@ void CodeGenerator::genBoolExpression(SNode n, JumpList &jl, bool trueAtEnd) {
       jl.getJumps(trueAtEnd).addAll(jump1.getJumps(trueAtEnd));
     }
     break;
+  case NOT:
+    { JumpList jumps(!jl);
+      genBoolExpression(n.child(0), jumps, !trueAtEnd);
+      jl ^= jumps;
+    }
+    break;
   case EQ   :
   case NE   :
-  case LE   :
   case LT   :
-  case GE   :
+  case LE   :
   case GT   :
+  case GE   :
     { ExpressionInputSymbol symbol = n.getSymbol();
       SNode left  = n.left();
       SNode right = n.right();
@@ -539,7 +526,7 @@ void CodeGenerator::genBoolExpression(SNode n, JumpList &jl, bool trueAtEnd) {
       if(left.isNameOrNumber()) {
         genExpression(right DST_FPU);
         genFPUOpVal(FCOMP,left);
-        symbol = reverseComparator(symbol);
+        symbol = ExpressionNode::reverseComparator(symbol);
       } else if(right.isNameOrNumber()) {
         genExpression(left DST_FPU);
         genFPUOpVal(FCOMP,right);
@@ -567,6 +554,13 @@ void CodeGenerator::genBoolExpression(SNode n, JumpList &jl, bool trueAtEnd) {
           jl.m_trueJumps.add( m_code->emitJump(JNE,jl.m_trueLabel ));
         }
         break;
+      case LT:
+        if(trueAtEnd) {
+          jl.m_falseJumps.add(m_code->emitJump(JAE,jl.m_falseLabel));
+        } else {
+          jl.m_trueJumps.add( m_code->emitJump(JB ,jl.m_trueLabel ));
+        }
+        break;
       case LE:
         if(trueAtEnd) {
           jl.m_falseJumps.add(m_code->emitJump(JA ,jl.m_falseLabel));
@@ -586,13 +580,6 @@ void CodeGenerator::genBoolExpression(SNode n, JumpList &jl, bool trueAtEnd) {
           jl.m_falseJumps.add(m_code->emitJump(JB ,jl.m_falseLabel));
         } else {
           jl.m_trueJumps.add( m_code->emitJump(JAE,jl.m_trueLabel ));
-        }
-        break;
-      case LT:
-        if(trueAtEnd) {
-          jl.m_falseJumps.add(m_code->emitJump(JAE,jl.m_falseLabel));
-        } else {
-          jl.m_trueJumps.add( m_code->emitJump(JB ,jl.m_trueLabel ));
         }
         break;
       }

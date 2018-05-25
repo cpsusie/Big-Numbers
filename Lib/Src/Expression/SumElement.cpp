@@ -33,6 +33,14 @@ const ExpressionNode *SumElement::createExpressionNode() const {
   return m_positive ? m_n : m_n->getTree().minus(m_n);
 }
 
+bool SumElement::equal(const SumElement *e) const {
+  return (isPositive() == e->isPositive()) ? Expr::equal(m_n, e->m_n) : Expr::equalMinus(m_n,e->m_n);
+}
+
+bool SumElement::equalMinus(const SumElement *e) const {
+  return (isPositive() != e->isPositive()) ? Expr::equal(m_n, e->m_n) : Expr::equalMinus(m_n,e->m_n);
+}
+
 bool SumElement::isConstant() const {
   return m_n->isConstant();
 }

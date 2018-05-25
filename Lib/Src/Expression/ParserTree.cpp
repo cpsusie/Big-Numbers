@@ -244,17 +244,29 @@ SNode ParserTree::traverseSubstituteNodes(SNode n, CompactNodeHashMap<Expression
   }
   // not found;
   switch(n.getNodeType()) {
-  case EXPRESSIONNODENUMBER    :
-  case EXPRESSIONNODEBOOLEAN   :
-  case EXPRESSIONNODEVARIABLE  :
+  case NT_NUMBER    :
+  case NT_BOOLCONST :
+  case NT_VARIABLE  :
     return n;
-  case EXPRESSIONNODEFACTOR    :
-    { ExpressionFactor *oldFactor = (ExpressionFactor*)n.node();
-      SNode newBase   = traverseSubstituteNodes(oldFactor->base()    , nodeMap);
-      SNode newExpo   = traverseSubstituteNodes(oldFactor->exponent(), nodeMap);
-      return getFactor(oldFactor, newBase, newExpo);
+  case NT_POLY:
+    { const SNodeArray &coefArray = n.getCoefArray();
+      SNode             arg       = n.getArgument();
+      SNodeArray        newCoefArray(coefArray.size());
+      SNode             newArg    = traverseSubstituteNodes(arg, nodeMap);
+      for(size_t i = 0; i < coefArray.size(); i++) {
+        newCoefArray.add(traverseSubstituteNodes(coefArray[i], nodeMap));
+      }
+      return getPoly(n, newCoefArray, newArg);
     }
-  case EXPRESSIONNODETREE      :
+  case NT_BOOLEXPR  :
+    { const SNodeArray &a = n.getChildArray();
+      SNodeArray        newChildArray(a.size());
+      for(size_t i = 0; i < a.size(); i++) {
+        newChildArray.add(traverseSubstituteNodes(a[i], nodeMap));
+      }
+      return getBoolExpr(n, newChildArray);
+    }
+  case NT_TREE      :
     { const SNodeArray &a = n.getChildArray();
       SNodeArray        newChildArray(a.size());
       for(size_t i = 0; i < a.size(); i++) {
@@ -262,9 +274,25 @@ SNode ParserTree::traverseSubstituteNodes(SNode n, CompactNodeHashMap<Expression
       }
       return getTree(n, newChildArray);
     }
-  case EXPRESSIONNODESUM       :
+  case NT_ASSIGN    :
+    { const SNodeArray &a = n.getChildArray();
+      SNodeArray        newChildArray(a.size());
+      for(size_t i = 0; i < a.size(); i++) {
+        newChildArray.add(traverseSubstituteNodes(a[i], nodeMap));
+      }
+      return getAssignStmt(n, newChildArray);
+    }
+  case NT_STMTLIST  :
+    { const SNodeArray &a = n.getChildArray();
+      SNodeArray        newChildArray(a.size());
+      for(size_t i = 0; i < a.size(); i++) {
+        newChildArray.add(traverseSubstituteNodes(a[i], nodeMap));
+      }
+      return getStmtList(n, newChildArray);
+    }
+  case NT_SUM       :
     { const AddentArray &a = n.getAddentArray();
-      AddentArray newAddentArray(a.size());
+      AddentArray        newAddentArray(a.size());
       for(size_t i = 0; i < a.size(); i++) {
         SumElement *e       = a[i];
         SNode oldNode = e->getNode();
@@ -277,26 +305,23 @@ SNode ParserTree::traverseSubstituteNodes(SNode n, CompactNodeHashMap<Expression
       }
       return getSum(n, newAddentArray);
     }
-  case EXPRESSIONNODEPRODUCT   :
-    { const FactorArray           &a = n.getFactorArray();
-      FactorArray                  newFactorArray(a.size());
+  case NT_PRODUCT   :
+    { const FactorArray &a = n.getFactorArray();
+      FactorArray        newFactorArray(a.size());
       for(size_t i = 0; i < a.size(); i++) {
         newFactorArray.add(traverseSubstituteNodes(a[i], nodeMap));
       }
       return getProduct(n, newFactorArray);
     }
-  case EXPRESSIONNODEPOLYNOMIAL:
-    { const SNodeArray &coef = n.getCoefArray();
-      SNode             arg  = n.getArgument();
-      SNodeArray        newCoef(coef.size());
-      SNode             newArg  = traverseSubstituteNodes(arg, nodeMap);
-      for(size_t i = 0; i < coef.size(); i++) {
-        newCoef.add(traverseSubstituteNodes(coef[i], nodeMap));
-      }
-      return getPoly(n, newCoef, newArg);
+  case NT_FACTOR    :
+    { ExpressionFactor *oldFactor = (ExpressionFactor*)n.node();
+      SNode newBase   = traverseSubstituteNodes(oldFactor->base()    , nodeMap);
+      SNode newExpo   = traverseSubstituteNodes(oldFactor->exponent(), nodeMap);
+      return getFactor(oldFactor, newBase, newExpo);
     }
-  default:
-    throwInvalidArgumentException(method, _T("Unknown nodeType:%d"), n.getNodeType());
+
+  default            :
+    n.throwUnknownNodeTypeException(method);
     return NULL;
   }
 }

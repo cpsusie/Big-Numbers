@@ -236,6 +236,12 @@
     <ClCompile Include="FPUEmulator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SNodeReduceAndOrNot.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SNodeMultiplyPar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Expression.txt">

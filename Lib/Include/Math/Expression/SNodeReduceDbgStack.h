@@ -40,52 +40,56 @@ public:
   void push(const TCHAR *method, const String &s, const ExpressionNode *n = NULL);
   void pop( const TCHAR *method);
   void reset(ParserTree *tree);
+  static const TCHAR *getRawName(const TCHAR *str);
 };
 
 #define DEFINEREDUCTIONSTACK   ReductionStack m_reductionStack
 
 #define GETSTACK()             getTree().getReductionStack()
 #define STARTREDUCTION(tree)   m_reductionStack.reset(tree)
-#define ENTERMETHOD()          GETSTACK().push(method, format(_T("n:<%s>"), toString().cstr()),m_node)
-#define ENTERMETHOD1(v)        GETSTACK().push(method, format(_T("%s:<%s>"), _T(#v), (v).toString().cstr()))
-#define ENTERMETHOD2(v1,v2)    GETSTACK().push(method, format(_T("%s:<%s>, %s:<%s>"), _T(#v1), (v1).toString().cstr(), _T(#v2), (v2).toString().cstr()))
-#define ENTERMETHOD2NUM(v1,v2) GETSTACK().push(method, format(_T("%s:<%s>, %s:<%s>"), _T(#v1), ::toString(v2).cstr(), _T(#v2), ::toString(v2).cstr()))
-#define LEAVEMETHOD()          GETSTACK().pop(method)
+#define DEFFUNC                const TCHAR *_func = ReductionStack::getRawName(__TFUNCTION__)
+#define _PUSH(...)             GETSTACK().push(_func,__VA_ARGS__)
+#define _POP()                 GETSTACK().pop(_func)
+#define ENTERMETHOD()          DEFFUNC; _PUSH(format(_T("n:<%s>"), toString().cstr()),m_node)
+#define ENTERMETHOD1(v)        DEFFUNC; _PUSH(format(_T("%s:<%s>"), _T(#v), (v).toString().cstr()))
+#define ENTERMETHOD2(v1,v2)    DEFFUNC; _PUSH(format(_T("%s:<%s>, %s:<%s>"), _T(#v1), (v1).toString().cstr(), _T(#v2), (v2).toString().cstr()))
+#define ENTERMETHOD2NUM(v1,v2) DEFFUNC; _PUSH(format(_T("%s:<%s>, %s:<%s>"), _T(#v1), ::toString(v2).cstr(), _T(#v2), ::toString(v2).cstr()))
+#define LEAVEMETHOD()          _POP()
+#define RETURN(x)              { LEAVEMETHOD(); return x; }
 
-#define RETURN(x) { LEAVEMETHOD(); return x; }
-
-#define RETURNNULL                                                                         \
-{ GETSTACK().push(method, _T("Return NULL"));                                              \
-  GETSTACK().pop(method);                                                                  \
-  RETURN(NULL);                                                                            \
+#define RETURNNULL                                                       \
+{ _PUSH(_T("Return NULL"));                                              \
+  _POP();                                                                \
+  RETURN(NULL);                                                          \
 }
 
-#define RETURNBOOL(b)                                                                      \
-{ const bool _b = b;                                                                       \
-  GETSTACK().push(method, format(method, _T("Return %s"), boolToStr(_b)));                 \
-  GETSTACK().pop(method);                                                                  \
-  RETURN(_b);                                                                              \
+#define RETURNBOOL(b)                                                    \
+{ const bool _b = b;                                                     \
+  _PUSH(format(_T("Return %s"), boolToStr(_b)));                         \
+  _POP();                                                                \
+  RETURN(_b);                                                            \
 }
 
-#define RETURNNODE(n)                                                                      \
-{ const SNode &_n = n;                                                                     \
-  GETSTACK().push(method, format(_T("Reduced:<%s>"), _n.toString().cstr()),_n.m_node);     \
-  GETSTACK().pop(method);                                                                  \
-  RETURN(_n);                                                                              \
+#define RETURNNODE(n)                                                    \
+{ const SNode &_n = n;                                                   \
+  _n.isConsistent();                                                     \
+  _PUSH(format(_T("Reduced:<%s>"), _n.toString().cstr()),_n.m_node);     \
+  _POP();                                                                \
+  RETURN(_n);                                                            \
 }
 
-#define RETURNSHOWSTR(v)                                                                   \
-{ const String _s = (v).toString();                                                        \
-  GETSTACK().push(method, format(_T("%s:<%s>"), _T(#v), _s.cstr()));                       \
-  GETSTACK().pop(method);                                                                  \
-  RETURN(v);                                                                               \
+#define RETURNSHOWSTR(v)                                                 \
+{ const String _s = (v).toString();                                      \
+  _PUSH(format(_T("%s:<%s>"), _T(#v), _s.cstr()));                       \
+  _POP();                                                                \
+  RETURN(v);                                                             \
 }
 
-#define RETURNPSHOWSTR(p)                                                                  \
-{ const String _s = (p)->toString();                                                       \
-  GETSTACK().push(method, format(_T("%s:<%s>"), _T(#p), _s.cstr()));                       \
-  GETSTACK().pop(method);                                                                  \
-  RETURN(p);                                                                               \
+#define RETURNPSHOWSTR(p)                                                \
+{ const String _s = (p)->toString();                                     \
+  _PUSH(format(_T("%s:<%s>"), _T(#p), _s.cstr()));                       \
+  _POP();                                                                \
+  RETURN(p);                                                             \
 }
 
 }; // namespace Expr

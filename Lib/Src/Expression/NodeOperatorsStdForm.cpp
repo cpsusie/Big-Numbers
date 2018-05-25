@@ -244,14 +244,15 @@ const NodeOperators *NodeOperators::s_stdNumForm = &stdNumFormOps;
 
 class StdNode : public SNode {
 private:
-  StdNode toSForm() const;
-  StdNode toSFormSum() const;
-  StdNode toSFormProduct() const;
-  StdNode toSFormPow() const;
-  StdNode toSFormPoly() const;
-  StdNode toSFormStmtList() const;
-  StdNode toSFormAssign() const;
+  StdNode toSForm()         const;
   StdNode toSFormTreeNode() const;
+  StdNode toSFormBoolExpr() const;
+  StdNode toSFormPoly()     const;
+  StdNode toSFormAssign()   const;
+  StdNode toSFormStmtList() const;
+  StdNode toSFormSum()      const;
+  StdNode toSFormProduct()  const;
+  StdNode toSFormPow()      const;
   StdNode toSFormFactorArray(FactorArray &a, bool changeExponentSign) const;
   inline StdNode(const SNode &n) : SNode(n) {
   }
@@ -265,21 +266,68 @@ public:
 
 // Eliminate all Product- and Sum nodes
 StdNode StdNode::toSForm() const {
-  switch(getSymbol()) {
-  case NUMBER  :
-  case NAME    : return *this;
-  case SUM     : return toSFormSum();
-  case PRODUCT : return toSFormProduct();
-  case POW     : return toSFormPow();
-  case POLY    : return toSFormPoly();
-  case STMTLIST: return toSFormStmtList();
-  case ASSIGN  : return toSFormAssign();
-  default      : return toSFormTreeNode();
+  switch(getNodeType()) {
+  case NT_NUMBER     :
+  case NT_BOOLCONST  :
+  case NT_VARIABLE   : return *this;
+  case NT_TREE       :
+  case NT_FACTOR     : return (getSymbol() == POW) ? toSFormPow() : toSFormTreeNode();
+  case NT_BOOLEXPR   : return toSFormBoolExpr();
+  case NT_POLY       : return toSFormPoly();
+  case NT_ASSIGN     : return toSFormAssign();
+  case NT_STMTLIST   : return toSFormStmtList();
+  case NT_SUM        : return toSFormSum();
+  case NT_PRODUCT    : return toSFormProduct();
+  default                       : throwUnknownNodeTypeException(__TFUNCTION__);
+                                  return *this;
   }
 }
 
 #define N(n)  StdNode(n)
 #define NV(v) SNode(getTree(),v)
+
+StdNode StdNode::toSFormTreeNode() const {
+  const SNodeArray &a = getChildArray();
+  SNodeArray        newChildArray(a.size());
+  for(size_t i = 0; i < a.size(); i++) {
+    newChildArray.add(N(a[i]).toSForm());
+  }
+  return treeExp(getSymbol(), newChildArray);
+}
+
+StdNode StdNode::toSFormBoolExpr() const {
+  const SNodeArray &a = getChildArray();
+  SNodeArray        newChildArray(a.size());
+  for(size_t i = 0; i < a.size(); i++) {
+    newChildArray.add(N(a[i]).toSForm());
+  }
+  return boolExp(getSymbol(), newChildArray);
+}
+
+StdNode StdNode::toSFormPoly() const {
+  const SNodeArray &coefArray = getCoefArray();
+  StdNode           arg       = getArgument();
+
+  SNodeArray newCoefArray(coefArray.size());
+  for(size_t i = 0; i < coefArray.size(); i++) {
+    newCoefArray.add(N(coefArray[i]).toSForm());
+  }
+  return polyExp(newCoefArray, arg.toSForm());
+}
+
+StdNode StdNode::toSFormAssign() const {
+  return assignStmt(left(), N(right()).toSForm());
+};
+
+StdNode StdNode::toSFormStmtList() const {
+  const SNodeArray &a = getChildArray();
+  SNodeArray newChildArray(a.size());
+  for(size_t i = 0; i < a.size(); i++) {
+    newChildArray.add(N(a[i]).toSForm());
+  }
+  return stmtList(newChildArray);
+}
+
 
 static int compare2(SumElement * const &e1, SumElement * const &e2) {
   const bool p1 = e1->isPositive();
@@ -424,39 +472,6 @@ StdNode StdNode::toSFormPow() const {
       return pow(base, exponent);
     }
   }
-}
-
-StdNode StdNode::toSFormPoly() const {
-  const SNodeArray &coefArray = getCoefArray();
-  StdNode           arg       = getArgument();
-
-  SNodeArray newCoefArray(coefArray.size());
-  for(size_t i = 0; i < coefArray.size(); i++) {
-    newCoefArray.add(N(coefArray[i]).toSForm());
-  }
-  return polyExp(newCoefArray, arg.toSForm());
-}
-
-StdNode StdNode::toSFormStmtList() const {
-  const SNodeArray &a = getChildArray();
-  SNodeArray newChildArray(a.size());
-  for(size_t i = 0; i < a.size(); i++) {
-    newChildArray.add(N(a[i]).toSForm());
-  }
-  return stmtList(newChildArray);
-}
-
-StdNode StdNode::toSFormAssign() const {
-  return assignStmt(left(), N(right()).toSForm());
-};
-
-StdNode StdNode::toSFormTreeNode() const {
-  const SNodeArray &a = getChildArray();
-  SNodeArray        newChildArray(a.size());
-  for(size_t i = 0; i < a.size(); i++) {
-    newChildArray.add(N(a[i]).toSForm());
-  }
-  return treeExp(getSymbol(), newChildArray);
 }
 
 // -------------------------------------------------------------------------------------------------------

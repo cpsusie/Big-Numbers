@@ -14,53 +14,28 @@ bool equal(const ExpressionNode *n1, const ExpressionNode *n2) {
     return false;
   }
   switch(n1->getSymbol()) {
-  case NUMBER:
+  case NUMBER  :
     return n1->getNumber() == n2->getNumber();
-  case NAME  :
-    return n1->getName() == n2->getName();
+  case TYPEBOOL:
+    return n1->getBool()   == n2->getBool();
+  case NAME    :
+    return n1->getName()   == n2->getName();
   case SUM:
-    { const AddentArray &a1 = n1->getAddentArray(); // they have been sorted
-      const AddentArray &a2 = n2->getAddentArray();
-      if(a1.size() != a2.size()) return false;
-      for(size_t i = 0; i < a1.size(); i++) {
-        const SumElement *e1 = a1[i];
-        const SumElement *e2 = a2[i];
-        if((e1->isPositive() != e2->isPositive()) || !equal(e1->getNode(), e2->getNode())) return false;
-      }
-    }
-    return true;
-
+    return n1->getAddentArray().equal(n2->getAddentArray());
   case MINUS :
     assert(n1->isUnaryMinus());
     assert(n2->isUnaryMinus());
     return equal(n1->left(), n2->left());
 
   case PRODUCT  :
-    { const FactorArray &a1 = n1->getFactorArray(); // they have been sorted
-      const FactorArray &a2 = n2->getFactorArray();
-      if(a1.size() != a2.size()) return false;
-      for(size_t i = 0; i < a1.size(); i++) {
-        if(!equal(a1[i], a2[i])) return false;
-      }
-    }
-    return true;
+    return n1->getFactorArray().equal(n2->getFactorArray());
 
   case MOD   :
     if(!equal(n1->left(), n2->left())) return false;
-    return equal(n1->right(), n2->right()) || equalMinus(((ExpressionNode*)n1)->right(), ((ExpressionNode*)n2)->right());
+    return equal(n1->right(), n2->right()) || equalMinus(n1->right(), n2->right());
 
   case POLY  :
-    { const SNodeArray &coef1 = n1->getCoefArray();
-      const SNodeArray &coef2 = n2->getCoefArray();
-      const SNode       arg1  = n1->getArgument();
-      const SNode       arg2  = n2->getArgument();
-      const size_t      cn1   = coef1.size();
-      if(cn1 != coef2.size()) return false;
-      for(size_t i = 0; i < cn1; i++) {
-        if(!equal(coef1[i].node(), coef2[i].node())) return false;
-      }
-      return equal(arg1.node(), arg2.node());
-    }
+    return ((ExpressionNodePoly*)n1)->equal(n2);
 
   case PLUS  :
   case PROD  :
@@ -75,15 +50,14 @@ bool equal(const ExpressionNode *n1, const ExpressionNode *n2) {
     n1->throwInvalidSymbolForTreeMode(method);
 
   default:
-    { const SNodeArray &a1  = n1->getChildArray();
-      const SNodeArray &a2  = n2->getChildArray();
-      const size_t      sz1 = a1.size();
-      if(sz1 != a2.size()) return false;
-      for(size_t i = 0; i < sz1; i++) {
-        if(!equal(a1[i].node(), a2[i].node())) return false;
-      }
+    if(n1->isSymmetricFunction()) {
+      return equal(n1->left(), n2->left()) || equalMinus(n1->left(), n2->left());
     }
-    return true;
+    if(n1->isAsymmetricFunction()) {
+      return equalMinus(n1->left(), n2->left());
+    }
+
+    return n1->getChildArray().equal(n2->getChildArray());
   }
 }
 
@@ -107,47 +81,14 @@ bool equalMinus(const ExpressionNode *n1, const ExpressionNode *n2) {
   case NAME  :
     return false;
   case SUM:
-    { const AddentArray &a1  = n1->getAddentArray(); // they have been sorted
-      const AddentArray &a2  = n2->getAddentArray();
-      const size_t       sz1 = a1.size();
-      if(sz1 != a2.size()) return false;
-      for(size_t i = 0; i < sz1; i++) {
-        SumElement *e1 = a1[i];
-        SumElement *e2 = a2[i];
-        if(e1->isPositive() == e2->isPositive()) {
-          if(!equalMinus(e1->getNode(), e2->getNode())) {
-            return false;
-          }
-        } else { // e1->isPositive() != e2->isPositive()
-          if(!equal(e1->getNode(), e2->getNode())) {
-            return false;
-          }
-        }
-      }
-    }
-    return true;
+    return n1->getAddentArray().equalMinus(n2->getAddentArray());
   case MINUS :
     assert(n1->isUnaryMinus());
     assert(n2->isUnaryMinus());
     return equalMinus(n1->left(), n2->left());
 
   case PRODUCT  :
-    { const FactorArray &a1 = n1->getFactorArray(); // they have been sorted
-      const FactorArray &a2 = n2->getFactorArray();
-      if(a1.size() != a2.size()) {
-        return false;
-      }
-      int signShiftCount = 0;
-      for(size_t i = 0; i < a1.size(); i++) {
-        if(equal(a1[i], a2[i])) continue;
-        if(equalMinus(a1[i], a2[i])) {
-          signShiftCount++;
-          continue;
-        }
-        return false;
-      }
-      return isOdd(signShiftCount);
-    }
+    return n1->getFactorArray().equalMinus(n2->getFactorArray());
 
   case MOD   :
     if(!equalMinus(n1->left(), n2->left())) {
@@ -173,22 +114,7 @@ bool equalMinus(const ExpressionNode *n1, const ExpressionNode *n2) {
         && equalMinus(n1->child(2).node(), n2->child(2).node());
 
   case POLY  :
-    { const SNodeArray &coefList1 = n1->getCoefArray();
-      const SNodeArray &coefList2 = n2->getCoefArray();
-      const SNode       arg1      = n1->getArgument();
-      const SNode       arg2      = n2->getArgument();
-      const size_t      c1size    = coefList1.size();
-      if(c1size != coefList2.size()) {
-        return false;
-      }
-      if(arg1 != arg2) return false;
-      for(size_t i = 0; i < c1size; i++) {
-        if(!equalMinus(coefList1[i].node(), coefList2[i].node())) {
-          return false;
-        }
-      }
-      return true;
-    }
+    return ((ExpressionNodePoly*)n1)->equalMinus(n2);
 
   case PLUS  :
   case PROD  :

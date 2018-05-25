@@ -30,7 +30,7 @@ void FactorArray::add(SNode base, SNode exponent) {
 }
 
 void FactorArray::add(SNode base) {
-  if (base.getNodeType() == EXPRESSIONNODEFACTOR) {
+  if (base.getNodeType() == NT_FACTOR) {
     __super::add((ExpressionFactor*)base.node());
   } else {
     add(base,base._1());
@@ -75,7 +75,7 @@ FactorArray FactorArray::selectNonConstantExponentFactors() const {
 }
 
 int FactorArray::findFactorWithChangeableSign() const {
-  const UINT n = (UINT)size();
+  const size_t n = size();
   for(UINT i = 0; i < n; i++) {
     if((*this)[i]->isConstant()) return i;
   }
@@ -87,6 +87,34 @@ int FactorArray::findFactorWithChangeableSign() const {
     if((*this)[i]->hasOddExponent()) return i;
   }
   return -1;
+}
+
+bool FactorArray::equal(const FactorArray &a) const {
+  const size_t n = size();
+  if(a.size() != n) return false;
+  for(size_t i = 0; i < n; i++) {
+    if(!Expr::equal((*this)[i], a[i])) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool FactorArray::equalMinus(const FactorArray &a) const {
+  const size_t n = size();
+  if(a.size() != n) return false;
+  int signShiftCount = 0;
+  for(size_t i = 0; i < n; i++) {
+    if(Expr::equal((*this)[i], a[i])) {
+      continue;
+    }
+    if(Expr::equalMinus((*this)[i], a[i])) {
+      signShiftCount++;
+      continue;
+    }
+    return false;
+  }
+  return isOdd(signShiftCount);
 }
 
 String FactorArray::toString() const {

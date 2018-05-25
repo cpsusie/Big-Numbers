@@ -9,13 +9,15 @@ namespace Expr {
 
 class NNode : public SNode {
 private:
-  NNode toNForm() const;
-  NNode toNFormRealExp() const;
-  NNode toNFormBoolExp() const;
-  NNode toNFormSum() const;
-  NNode toNFormProduct() const;
-  NNode toNFormPoly() const;
-  NNode toNFormTreeNode() const;
+  NNode        toNForm()         const;
+  NNode        toNFormRealExp()  const;
+  NNode        toNFormBoolExp()  const;
+  NNode        toNFormSum()      const;
+  NNode        toNFormProduct()  const;
+  NNode        toNFormPoly()     const;
+  NNode        toNFormStmtList() const;
+  NNode        toNFormAssign()   const;
+  NNode        toNFormTreeNode() const;
   FactorArray &toNFormProduct(FactorArray &result, SNode &exponent) const;
   AddentArray &toNFormSum(    AddentArray &result, bool   positive) const;
   FactorArray &toNFormPower(  FactorArray &result, SNode &exponent) const;
@@ -36,27 +38,39 @@ public:
 
 NNode NNode::toNForm() const {
   DEFINEMETHODNAME;
+  switch(getSymbol()) {
+  case STMTLIST       : return toNFormStmtList();
+  case ASSIGN         : return toNFormAssign();
 
+  default             : return toNFormTreeNode();
+  }
+}
+
+NNode NNode::toNFormStmtList() const {
   const SStmtList &childArray = getChildArray();
-  SStmtList       newStmtList;
+  const int        childCount = (int)childArray.size() - 1;
+  SStmtList        newStmtList;
 
-  const int childCount = (int)childArray.size() - 1;
   for(int i = 0; i < childCount; i++) {
     const SNode &stmt = childArray[i];
-    newStmtList.add(assignStmt(stmt.left(), N(stmt.right()).toNFormRealExp()));
+    newStmtList.add(N(stmt).toNForm());
   }
-  SNode last = childArray.last();
+  NNode last = childArray.last();
   switch(last.getReturnType()) {
   case EXPR_RETURN_REAL:
-    newStmtList.add(N(last.left()).toNFormRealExp());
+    newStmtList.add(last.toNFormRealExp());
     break;
   case EXPR_RETURN_BOOL:
-    newStmtList.add(N(last.left()).toNFormBoolExp());
+    newStmtList.add(last.toNFormBoolExp());
     break;
   default:
-    last.throwUnknownSymbolException(method);
+    last.throwUnknownSymbolException(__TFUNCTION__);
   }
   return stmtList(newStmtList.removeUnusedAssignments());
+}
+
+NNode NNode::toNFormAssign() const {
+  return assignStmt(left(), N(right()).toNFormRealExp());
 }
 
 NNode NNode::toNFormRealExp() const {
@@ -95,7 +109,7 @@ NNode NNode::toNFormBoolExp() const {
   case GT    :
     { NNode l = N(left()).toNFormRealExp();
       SNode r = N(right()).toNFormRealExp();
-      return binExp(getSymbol(), l, r);
+      return boolExp(getSymbol(), l, r);
     }
   default    :
     throwUnknownSymbolException(method);

@@ -63,27 +63,14 @@ public:
   }
 };
 
-class SymbolStringMap : private CompactSymbolHashMap<SymbolString> {
+class SymbolStringMap : public CompactSymbolHashMap<SymbolString> {
 private:
-  DECLARECLASSNAME;
   void putString(ExpressionInputSymbol symbol, bool textFont, const TCHAR *text) {
     put(symbol, SymbolString(textFont, text));
   }
 public:
   SymbolStringMap();
-  const SymbolString &getString(ExpressionInputSymbol symbol) const;
 };
-
-DEFINECLASSNAME(SymbolStringMap);
-
-const SymbolString &SymbolStringMap::getString(ExpressionInputSymbol symbol) const {
-  DEFINEMETHODNAME;
-  const SymbolString *ss = get(symbol);
-  if(ss == NULL) {
-    throwInvalidArgumentException(method, _T("Unknown symbol:%s"), ExpressionParser::getTables().getSymbolName(symbol));
-  }
-  return *ss;
-}
 
 SymbolStringMap::SymbolStringMap() {
   putString(EQ             , true , _T("="    ));
@@ -261,19 +248,19 @@ ImageArray::ImageArray(const AlignedImage *img1, va_list argptr) {
 class ExpressionPainter {
 private:
   DECLARECLASSNAME;
-  static FontCache            s_fontCache;
-  static SymbolStringMap      s_stringMap;
-  const NumberFormat          m_numberFormat;
-  const int                   m_decimals;
-  const int                   m_maxWidth;
-  bool                        m_getNumberActive;
-  CompactArray<AlignedImage*> m_imageTable;
-  PixRectDevice              &m_device;
-  Expression                 &m_expression;
-  D3DCOLOR                    m_backgroundColor;
-  ExpressionRectangle         m_rectangle;
+  static FontCache             s_fontCache;
+  static const SymbolStringMap s_stringMap;
+  const NumberFormat           m_numberFormat;
+  const int                    m_decimals;
+  const int                    m_maxWidth;
+  bool                         m_getNumberActive;
+  CompactArray<AlignedImage*>  m_imageTable;
+  PixRectDevice               &m_device;
+  Expression                  &m_expression;
+  D3DCOLOR                     m_backgroundColor;
+  ExpressionRectangle          m_rectangle;
 
-  static CFont *getFont(bool textFont, int fontSize);
+ static CFont *getFont(bool textFont, int fontSize);
   inline int createSubFontSize(int fontSize) const {
     return (fontSize >= 10) ? (fontSize * 3 / 5) : fontSize;
   }
@@ -335,8 +322,8 @@ public:
 };
 
 DEFINECLASSNAME(ExpressionPainter);
-FontCache       ExpressionPainter::s_fontCache;
-SymbolStringMap ExpressionPainter::s_stringMap;
+FontCache             ExpressionPainter::s_fontCache;
+const SymbolStringMap ExpressionPainter::s_stringMap;
 
 ExpressionPainter::ExpressionPainter(PixRectDevice &device, const Expression &expr, NumberFormat numberFormat, int decimals, int maxWidth)
 : m_device(    device           )
@@ -790,14 +777,14 @@ AlignedImage *ExpressionPainter::getRootImage(SNode n, int fontSize, ExpressionR
 }
 
 AlignedImage *ExpressionPainter::getFunctionImage(SNode n, int fontSize, ExpressionRectangle &rect) {
-  SymbolString ss;
+  SymbolString ssBuf;
   String tmpStr;
-  try {
-    ss = s_stringMap.getString(n.getSymbol());
-  } catch(Exception) {
+  const SymbolString *ssp = s_stringMap.get(n.getSymbol());
+  if(ssp == NULL) {
     tmpStr = toLowerCase(n.getSymbolName());
-    ss = SymbolString(true, tmpStr.cstr());
+    ssBuf = SymbolString(true, tmpStr.cstr());
   }
+  const SymbolString &ss = ssp ? *ssp : ssBuf;
 
   ExpressionRectangle funcRect, lpRect,rpRect, commaRect;
   AlignedImage *functionImage = getTextImage(ss.m_text, ss.m_textFont, fontSize, funcRect);
@@ -1010,8 +997,11 @@ AlignedImage *ExpressionPainter::getBinaryOpImage(SNode n, int fontSize, Express
 }
 
 AlignedImage *ExpressionPainter::getOpImage(ExpressionInputSymbol symbol, int fontSize, ExpressionRectangle &rect) {
-  const SymbolString &ss = s_stringMap.getString(symbol);
-  return getTextImage(ss.m_text, ss.m_textFont, fontSize, rect);
+  const SymbolString *ss = s_stringMap.get(symbol);
+  if(ss == NULL) {
+    throwInvalidArgumentException(__TFUNCTION__,_T("symbol=%d"), symbol);
+  }
+  return getTextImage(ss->m_text, ss->m_textFont, fontSize, rect);
 }
 
 AlignedImage *ExpressionPainter::getFloorImage(SNode n, int fontSize, ExpressionRectangle &rect) {

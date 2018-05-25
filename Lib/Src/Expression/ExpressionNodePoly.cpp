@@ -17,17 +17,79 @@ ExpressionNodePoly::ExpressionNodePoly(ParserTree *tree, const ExpressionNodePol
   m_firstCoefIndex = -1;
 }
 
+bool ExpressionNodePoly::isCoefficientArrayConstant() const {
+  if(!m_info.m_coefChecked) {
+    m_info.m_coefficientsConstant = getCoefArray().isConstant() ? 1 : 0;
+    m_info.m_coefChecked          = 1;
+  }
+  return m_info.m_coefficientsConstant ? true : false;
+}
+
+bool ExpressionNodePoly::isSymmetricFunction() const {
+  if(!isCoefficientArrayConstant()) return false;
+  const SNodeArray &coefArray = getCoefArray();
+  const size_t      n         = coefArray.size();
+  for(size_t i = 0; i < n; i++) {
+    const Real c = coefArray[i].evaluateReal();
+    if(::isOdd(i) && (c != 0)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool ExpressionNodePoly::isAsymmetricFunction() const {
+  if(!isCoefficientArrayConstant()) return false;
+  const SNodeArray &coefArray = getCoefArray();
+  const size_t      n         = coefArray.size();
+  for(size_t i = 0; i < n; i++) {
+    const Real c = coefArray[i].evaluateReal();
+    if(::isEven(i) && (c != 0)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool ExpressionNodePoly::equal(const ExpressionNode *poly) const { // assume poly.symbol == POLY
+  if(Expr::equal(getArgument().node(), poly->getArgument().node())) {
+    return getCoefArray().equal(poly->getCoefArray());
+  }
+  if(Expr::equalMinus(getArgument().node(), poly->getArgument().node())) {
+    if(isSymmetricFunction()) {
+      return getCoefArray().equal(poly->getCoefArray());
+    } else if(isAsymmetricFunction()) {
+      return getCoefArray().equalMinus(poly->getCoefArray());
+    }
+  }
+  return false;
+}
+
+bool ExpressionNodePoly::equalMinus(const ExpressionNode *poly) const { // assume poly.symbol == POLY
+  if(Expr::equal(getArgument().node(), poly->getArgument().node())) {
+    return getCoefArray().equalMinus(poly->getCoefArray());
+  }
+  if(Expr::equalMinus(getArgument().node(), poly->getArgument().node())) {
+    if(isSymmetricFunction()) {
+      return getCoefArray().equalMinus(poly->getCoefArray());
+    } else if(isAsymmetricFunction()) {
+      return getCoefArray().equal(poly->getCoefArray());
+    }
+  }
+  return false;
+}
+
 ExpressionNode *ExpressionNodePoly::expand() {
   DEFINEMETHODNAME;
 
-  ParserTree        &tree             = getTree();
-  const SNodeArray  &coefficientArray = getCoefArray();
-  const SNode        arg              = getArgument();
-  int                expo             = getDegree();
-  SNode              result           = tree.getZero();
+  ParserTree        &tree      = getTree();
+  const SNodeArray  &coefArray = getCoefArray();
+  const SNode        arg       = getArgument();
+  int                expo      = getDegree();
+  SNode              result    = tree.getZero();
 
-  for(size_t i = 0; i < coefficientArray.size(); i++) {
-    SNode coef  = coefficientArray[i];
+  for(size_t i = 0; i < coefArray.size(); i++) {
+    SNode coef  = coefArray[i];
     if(!coef.isZero()) {
       result += coef * pow(arg, SNode(tree, expo));
     }
@@ -42,11 +104,11 @@ int ExpressionNodePoly::compare(ExpressionNode *n) {
   }
   int c = getDegree() - n->getDegree();
   if(c) return c;
-  const SNodeArray &coef1 = getCoefArray();
-  const SNodeArray &coef2 = getCoefArray();
-  const size_t      sz    = coef1.size();
+  const SNodeArray &coefArray1 = getCoefArray();
+  const SNodeArray &coefArray2 = getCoefArray();
+  const size_t      sz    = coefArray1.size();
   for(size_t i = 0; i < sz; i++) {
-    c = coef1[i].node()->compare(coef2[i].node());
+    c = coefArray1[i].node()->compare(coefArray2[i].node());
     if(c) return c;
   }
   return 0;
@@ -85,10 +147,10 @@ Real ExpressionNodePoly::evaluateReal() const {
 bool ExpressionNodePoly::traverseExpression(ExpressionNodeHandler &handler, int level) {
   if(!handler.handleNode(this, level)) return false;
 
-  const SNodeArray &coef = getCoefArray();
+  const SNodeArray &coefArray = getCoefArray();
   level++;
-  for(size_t i = 0; i < coef.size(); i++) {
-    if(!coef[i].node()->traverseExpression(handler, level)) return false;
+  for(size_t i = 0; i < coefArray.size(); i++) {
+    if(!coefArray[i].node()->traverseExpression(handler, level)) return false;
   }
   return getArgument().node()->traverseExpression(handler, level);
 }

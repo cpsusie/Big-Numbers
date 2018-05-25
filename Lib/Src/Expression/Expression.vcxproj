@@ -895,7 +895,9 @@
     </ClCompile>
     <ClCompile Include="SNode.cpp" />
     <ClCompile Include="SNodeDerive.cpp" />
+    <ClCompile Include="SNodeMultiplyPar.cpp" />
     <ClCompile Include="SNodeReduce.cpp" />
+    <ClCompile Include="SNodeReduceAndOrNot.cpp" />
     <ClCompile Include="SNodeReduceDbgStack.cpp" />
     <ClCompile Include="SumElement.cpp" />
   </ItemGroup>

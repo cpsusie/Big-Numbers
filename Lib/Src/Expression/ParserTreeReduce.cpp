@@ -91,7 +91,7 @@ void ParserTree::reduce() {
 void ParserTree::iterateTransformation(ParserTreeTransformer &transformer) {
   DEFINEMETHODNAME;
 
-  const int                  maxIterations = 3;
+  const int                  maxIterations = 30;
   SNode                      oldRoot       = getRoot();
   ParserTree                 bestReduction = *this;
   const ParserTreeComplexity startComplexity(bestReduction);
@@ -115,7 +115,7 @@ void ParserTree::iterateTransformation(ParserTreeTransformer &transformer) {
     setState(transformer.getState());
     checkIsCanonicalForm();
 
-    if(n1 == n) {
+    if(n1.equal(n)) {
       done = true;
       break;
     } else {

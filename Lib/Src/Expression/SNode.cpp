@@ -1,8 +1,17 @@
 #include "pch.h"
 #include <Math/Expression/ParserTree.h>
 #include <Math/Expression/ExpressionFactor.h>
+#ifdef _DEBUG
+#include <Math/Expression/ExpressionParser.h>
+#endif
 
 namespace Expr {
+
+#ifdef _DEBUG
+void SNode::setDebugStr() {
+ m_debugStr = m_node ? ExpressionParser::getTables().getSymbolName(m_node->getSymbol()) : _T("null");
+}
+#endif
 
 SNode::SNode(ParserTree &tree, int v) {
   m_node = tree.numberExpression(v);
@@ -36,13 +45,14 @@ SNode::SNode(ParserTree &tree, FactorArray &a) {
   m_node = tree.getProduct(a);
 }
 
-SNode SNode::_0()  const { return SNode( getTree().getZero());     }
-SNode SNode::_1()  const { return SNode( getTree().getOne());      }
-SNode SNode::_m1() const { return SNode( getTree().getMinusOne()); }
-SNode SNode::_2()  const { return SNode( getTree().getTwo());      }
-SNode SNode::_10() const { return SNode( getTree().getTen());      }
-SNode SNode::_05() const { return SNode( getTree().getHalf());     }
-
+SNode SNode::_0()     const { return getTree().getZero();     }
+SNode SNode::_1()     const { return getTree().getOne();      }
+SNode SNode::_m1()    const { return getTree().getMinusOne(); }
+SNode SNode::_2()     const { return getTree().getTwo();      }
+SNode SNode::_10()    const { return getTree().getTen();      }
+SNode SNode::_05()    const { return getTree().getHalf();     }
+SNode SNode::_false() const { return getTree().getFalse();    } // false
+SNode SNode::_true()  const { return getTree().getTrue();     } // true
 
 ExpressionInputSymbol SNode::getSymbol() const {
   return m_node->getSymbol();
@@ -150,6 +160,10 @@ bool SNode::isConstant() const {
 
 bool SNode::isBooleanOperator() const {
   return m_node->isBooleanOperator();
+}
+
+bool SNode::isCompareOperator() const {
+  return m_node->isCompareOperator();
 }
 
 Real &SNode::doAssignment() const {
@@ -297,15 +311,18 @@ bool SNode::needParentheses(SNode parent) const {
 }
 
 SNode SNode::base() const {
-  assert(getNodeType() == EXPRESSIONNODEFACTOR);
+  assert(getNodeType() == NT_FACTOR);
   return ((ExpressionFactor*)m_node)->base();
 }
 
 SNode SNode::exponent() const {
-  assert(getNodeType() == EXPRESSIONNODEFACTOR);
+  assert(getNodeType() == NT_FACTOR);
   return ((ExpressionFactor*)m_node)->exponent();
 }
 
+bool SNode::isConsistent() const {
+  return m_node->isConsistent();
+}
 
 
 SNode SNode::operator+(const SNode &n) const {
@@ -353,27 +370,40 @@ SNode SNode::operator%(const SNode &n) const {
 }
 
 SNode SNode::operator&&(const SNode &n) const {
-  return m_node->getTree().and(m_node, n.m_node);
+  return boolExp(AND, *this, n);
 }
 
 SNode SNode::operator||(const SNode &n) const {
-  return m_node->getTree().or(m_node, n.m_node);
+  return boolExp(OR, *this, n);
 }
 
 SNode SNode::operator!() const {
-  return m_node->getTree().unaryExpr(NOT, m_node);
+  return boolExp(NOT,*this);
 }
 
+/*
 bool SNode::operator==(const SNode &n) const {
-  return equal(m_node, n.m_node);
+  return Expr::equal(m_node, n.m_node);
+}
+*/
+
+bool SNode::equal(const SNode &n) const {
+  return Expr::equal(m_node, n.m_node);
 }
 
+bool SNode::equalMinus(const SNode &n) const {
+  return Expr::equalMinus(m_node, n.m_node);
+}
 
 void SNode::throwInvalidSymbolForTreeMode(const TCHAR *method) const {
   m_node->throwInvalidSymbolForTreeMode(method);
 }
 void SNode::throwUnknownSymbolException(const TCHAR *method) const {
   m_node->throwUnknownSymbolException(method);
+}
+
+void SNode::throwUnknownNodeTypeException(const TCHAR *method) const {
+  m_node->throwUnknownNodeTypeException(method);
 }
 
 // ----------------------------------- SNode member functions -------------------------------
@@ -494,6 +524,7 @@ SNodeArray::SNodeArray(int n, ...) {
   va_end(argptr);
 }
 
+/*
 SNode SNodeArray::toTree(ExpressionInputSymbol delimiter) {
   ParserTree &tree = getTree();
   ExpressionNode *result = (*this)[0].node();
@@ -502,11 +533,51 @@ SNode SNodeArray::toTree(ExpressionInputSymbol delimiter) {
   }
   return result;
 }
+*/
 
 bool SNodeArray::isConstant() const {
   const size_t n = size();
   for(size_t i = 0; i < n; i++) {
     if(!(*this)[i].isConstant()) return false;
+  }
+  return true;
+}
+
+bool SNodeArray::isSameNodes(const SNodeArray &a) const {
+  const size_t n = size();
+  if(a.size() != n) {
+    return false;
+  }
+  for(size_t i = 0; i < n; i++) {
+    if(!(*this)[i].isSameNode(a[i])) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool SNodeArray::equal(const SNodeArray &a) const { // recursive compare all nodes
+  const size_t n = size();
+  if(a.size() != n) {
+    return false;
+  }
+  for(size_t i = 0; i < n; i++) {
+    if(!Expr::equal((*this)[i].node(), a[i].node())) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool SNodeArray::equalMinus(const SNodeArray &a) const { // recursive compare all nodes ( deep compare)
+  const size_t n = size();
+  if(a.size() != n) {
+    return false;
+  }
+  for(size_t i = 0; i < n; i++) {
+    if(!Expr::equalMinus((*this)[i].node(), a[i].node())) {
+      return false;
+    }
   }
   return true;
 }
@@ -543,53 +614,60 @@ SNodeArray &SStmtList::removeUnusedAssignments() {
 // ---------------------------- helpers -----------------
 
 SNode unaryExp(ExpressionInputSymbol symbol, SNode n) {
-  return n.node()->getTree().unaryExpr(symbol, n.node());
+  return n.getTree().unaryExpr(symbol, n.node());
 }
 
 SNode binExp(ExpressionInputSymbol symbol, SNode n1, SNode n2) {
-  return n1.node()->getTree().binaryExpr(symbol, n1.node(), n2.node());
+  return n1.getTree().binaryExpr(symbol, n1.node(), n2.node());
 }
 
-SNode treeExp(ExpressionInputSymbol symbol, const SNodeArray &a) {
-  ExpressionNode *n = new ExpressionNodeTree(&a.getTree(), symbol, a); TRACE_NEW(n);
-  return n;
+SNode treeExp(ExpressionInputSymbol symbol, SNodeArray &a) {
+  return a.getTree().treeExpr(symbol, a);
 }
 
 SNode condExp(SNode condition, SNode nTrue, SNode nFalse) {
-  return condition.node()->getTree().condExpr(condition.node(), nTrue.node(), nFalse.node());
+  return condition.getTree().condExpr(condition.node(), nTrue.node(), nFalse.node());
 }
 
-SNode polyExp(const SNodeArray &coefArray, SNode arg) {
-  return arg.node()->getTree().getPoly(coefArray, arg.node());
+SNode boolExp(ExpressionInputSymbol symbol, SNode left, SNode right) {
+  return left.getTree().boolExpr(symbol, left.node(), right.node());
 }
 
-SNode stmtList(const SNodeArray &list) {
+SNode boolExp(ExpressionInputSymbol symbol, SNode child) {
+  return child.getTree().boolExpr(symbol, child.node(), NULL);
+}
+
+SNode boolExp(ExpressionInputSymbol symbol, SNodeArray &a) {
+  return a[0].getTree().getBoolExpr(symbol, a);
+}
+
+SNode polyExp(SNodeArray &coefArray, SNode arg) {
+  return arg.getTree().getPoly(coefArray, arg.node());
+}
+
+SNode assignStmt(SNode leftSide, SNode expr) {
+  return leftSide.getTree().assignStmt(leftSide.node(), expr.node());
+}
+
+SNode assignStmt(SNodeArray &list) {
+  assert(list.size() == 2);
+  return assignStmt(list[0],list[1]);
+}
+
+SNode stmtList(SNodeArray &list) {
   return list.getTree().getStmtList(list);
 }
 
 SNode indexSum(SNode assignStmt, SNode endExpr, SNode expr) {
-  return assignStmt.node()->getTree().indexedSum(assignStmt.node(), endExpr.node(), expr.node());
+  return assignStmt.getTree().indexedSum(assignStmt.node(), endExpr.node(), expr.node());
 }
 
 SNode indexProd(SNode assignStmt, SNode endExpr, SNode expr) {
-  return assignStmt.node()->getTree().indexedProduct(assignStmt.node(), endExpr.node(), expr.node());
+  return assignStmt.getTree().indexedProduct(assignStmt.node(), endExpr.node(), expr.node());
 }
 
-SNode assignStmt(SNode leftSide, SNode expr) {
-  return leftSide.node()->getTree().assignStmt(leftSide.node(), expr.node());
-}
-
-SNode factorExp(SNode b, SNode e) {
-  ExpressionNode *n = new ExpressionFactor(b,e); TRACE_NEW(n);
-  return n;
-}
-
-bool equal(SNode n1, SNode n2) {
-  return equal(n1.node(), n2.node());
-}
-
-bool equalMinus(SNode n1, SNode n2) {
-  return equalMinus(n1.node(), n2.node());
+SNode factorExp(SNode base, SNode expo) {
+  return base.getTree().factorExpr(base.node(),expo.node());
 }
 
 }; // namespace Expr

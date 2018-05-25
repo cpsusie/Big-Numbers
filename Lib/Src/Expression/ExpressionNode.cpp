@@ -50,6 +50,17 @@ public:
 ExpressionSymbolSet::ExpressionSymbolSet() : BitSet(ParserTree::getTerminalCount()) {
 }
 
+// terminate list with EOI
+ExpressionSymbolSet::ExpressionSymbolSet(ExpressionInputSymbol s1,...) : BitSet(ParserTree::getTerminalCount()) {
+  va_list argptr;
+  va_start(argptr, s1);
+  add(s1);
+  for(ExpressionInputSymbol s=va_arg(argptr, ExpressionInputSymbol); s != EOI; s = va_arg(argptr, ExpressionInputSymbol)) {
+    add(s);
+  }
+  va_end(argptr);
+}
+
 class NodeCounter : public ExpressionNodeHandler {
 private:
   int                     m_count;
@@ -113,24 +124,17 @@ String ExpressionNode::parenthesizedExpressionToString(const ExpressionNode *par
 }
 
 static ExpressionNodeSelector *getBuiltInFunctionSelector() {
-  // all functions in this array use call to evaluate in compiled code
-  static const ExpressionInputSymbol builtInSymbols[] = {
+  // All functions in this array use call to evaluate in compiled code
+  static const ExpressionSymbolSet functionSet(
       MOD      , POW      , ROOT     , SIN      , COS      , TAN      , COT      , CSC
     , SEC      , ASIN     , ACOS     , ATAN     , ATAN2    , ACOT     , ACSC     , ASEC
     , COSH     , SINH     , TANH     , ACOSH    , ASINH    , ATANH    , LN       , LOG10
     , LOG2     , EXP      , EXP10    , EXP2     , FLOOR    , CEIL     , BINOMIAL , GAMMA
     , GAUSS    , FAC      , NORM     , PROBIT   , ERF      , INVERF   , SIGN     , MAX
     , MIN      , HYPOT    , RAND     , NORMRAND , POLY     , CHI2DIST , CHI2DENS , LINCGAMMA
-  };
-  static bool                         initDone = false;
-  static ExpressionSymbolSet          functionSet;
+    , EOI
+  );
   static ExpressionNodeSymbolSelector selector(&functionSet);
-  if (!initDone) {
-    for(size_t i = 0; i < ARRAYSIZE(builtInSymbols); i++) {
-      functionSet.add(builtInSymbols[i]);
-    }
-    initDone = true;
-  }
   return &selector;
 }
 
@@ -138,81 +142,69 @@ bool ExpressionNode::containsFunctionCall() const {
   return getNodeCount(getBuiltInFunctionSelector()) > 0;
 }
 
-bool ExpressionNode::isBinaryOperator() const {
-  switch(getSymbol()) {
-  case POW  :
-  case ROOT :
-  case PROD :
-  case QUOT :
-  case PLUS :
-  case MINUS:
-  case MOD  :
-    return true;
-  default:
-    return false;
+bool ExpressionNode::isBinaryOperator(ExpressionInputSymbol symbol) { // static
+  static const ExpressionSymbolSet set(POW  , ROOT , PROD , QUOT , PLUS , MINUS, MOD  , EOI);
+  return set.contains(symbol);
+}
+
+bool ExpressionNode::isTrigonomtricFunction(ExpressionInputSymbol symbol) { // static
+  static const ExpressionSymbolSet set(SIN  , COS  , SEC  , CSC  , TAN
+                                      ,COT  , ASIN , ACOS , ASEC , ACSC
+                                      ,ATAN , ACOT , SINH , COSH , TANH
+                                      ,ASINH, ACOSH, ATANH, EOI );
+  return set.contains(symbol);
+}
+
+bool ExpressionNode::isSymmetricFunction(ExpressionInputSymbol symbol) { // static
+  static const ExpressionSymbolSet set(ABS  , COS  ,COSH  ,GAUSS , SEC ,  SQR ,  EOI);
+  return set.contains(symbol);
+}
+
+bool ExpressionNode::isAsymmetricFunction(ExpressionInputSymbol symbol) { // static
+  static const ExpressionSymbolSet set(ACSC , ASIN , ASINH, ATAN  , ATANH
+                                      ,COT  , CSC  , ERF  , INVERF, SIGN
+                                      ,SIN  , SINH , TAN  , TANH  , EOI );
+  return set.contains(symbol);
+}
+
+typedef struct {
+  ExpressionInputSymbol m_f,m_invf;
+} FunctionInverseFunctionPair;
+
+class InverseFunctionMap : public CompactSymbolHashMap<ExpressionInputSymbol> {
+public:
+  InverseFunctionMap();
+};
+
+InverseFunctionMap::InverseFunctionMap() {
+  static const FunctionInverseFunctionPair table[] = {
+    SIN   , ASIN
+   ,COS   , ACOS
+   ,TAN   , ATAN
+   ,COT   , ACOT
+   ,CSC   , ACSC
+   ,SEC   , ASEC
+   ,SINH  , ASINH
+   ,ASINH , SINH
+   ,COSH  , ACOSH
+   ,TANH  , ATANH
+   ,ATANH , TANH
+   ,NORM  , PROBIT
+   ,PROBIT, NORM
+   ,ERF   , INVERF
+   ,INVERF, ERF
+  };
+
+  for(size_t i = 0; i < ARRAYSIZE(table); i++) {
+    const FunctionInverseFunctionPair &fp = table[i];
+    put(fp.m_f, fp.m_invf);
   }
 }
 
-bool ExpressionNode::isTrigonomtricFunction() const {
-  switch(getSymbol()) {
-  case SIN:
-  case COS:
-  case SEC:
-  case CSC:
-  case TAN:
-  case COT:
-  case ASIN:
-  case ACOS:
-  case ASEC:
-  case ACSC:
-  case ATAN:
-  case ACOT:
-  case SINH:
-  case COSH:
-  case TANH:
-  case ASINH:
-  case ACOSH:
-  case ATANH:
-    return true;
-  default:
-    return false;
-  }
-}
-
-bool ExpressionNode::isSymmetricFunction() const {
-  switch(getSymbol()) {
-  case ABS     :
-  case COS     :
-  case COSH    :
-  case GAUSS   :
-  case SEC     :
-  case SQR     :
-    return true;
-  default      :
-    return false;
-  }
-}
-
-bool ExpressionNode::isAsymmetricFunction() const {
-  switch(getSymbol()) {
-  case ACSC    :
-  case ASIN    :
-  case ASINH   :
-  case ATAN    :
-  case ATANH   :
-  case COT     :
-  case CSC     :
-  case ERF     :
-  case INVERF  :
-  case SIGN    :
-  case SIN     :
-  case SINH    :
-  case TAN     :
-  case TANH    :
-    return true;
-  default      :
-    return false;
-  }
+ExpressionInputSymbol ExpressionNode::getInverseFunction(ExpressionInputSymbol symbol) { // static
+  static const InverseFunctionMap map;
+  const ExpressionInputSymbol *s = map.get(symbol);
+  return s ? *s : EOI;
 }
 
 bool ExpressionNode::isSymmetricExponent() const {
@@ -271,15 +263,51 @@ int ExpressionNode::getPrecedence() const {
   }
 }
 
-bool ExpressionNode::isCoefficientArrayConstant() const {
-  if(!m_info.m_coefChecked) {
-    m_info.m_coefficientsConstant = getCoefArray().isConstant() ? 1 : 0;
-    m_info.m_coefChecked          = 1;
-  }
-  return m_info.m_coefficientsConstant ? true : false;
+bool ExpressionNode::isBooleanOperator(ExpressionInputSymbol symbol) { // static
+  static const ExpressionSymbolSet set(AND,OR,NOT,EQ,NE,LT,LE,GT,GE,EOI);
+  return set.contains(symbol);
 }
 
-void SymbolOrderMap::init() {
+bool ExpressionNode::isCompareOperator(ExpressionInputSymbol symbol) { // static
+  static const ExpressionSymbolSet set(EQ,NE,LT,LE,GT,GE,EOI);
+  return set.contains(symbol);
+}
+
+ExpressionInputSymbol ExpressionNode::reverseComparator(ExpressionInputSymbol symbol) { // static
+  switch(symbol) {
+  case EQ :
+  case NE : return symbol;
+  case LE : return GE;
+  case LT : return GT;
+  case GE : return LE;
+  case GT : return LT;
+  }
+  throwInvalidArgumentException(__TFUNCTION__,_T("symbol=%d"), symbol);
+  return EQ;
+}
+
+ExpressionInputSymbol ExpressionNode::negateComparator(ExpressionInputSymbol symbol) { // static
+  switch(symbol) {
+  case EQ : return NE;
+  case NE : return EQ;
+  case LE : return GT;
+  case LT : return GE;
+  case GE : return LT;
+  case GT : return LE;
+  }
+  throwInvalidArgumentException(__TFUNCTION__,_T("symbol=%d"), symbol);
+  return EQ;
+}
+
+class SymbolOrderMap : public CompactSymbolHashMap<int> {
+public:
+  SymbolOrderMap();
+  inline int compare(ExpressionInputSymbol s1, ExpressionInputSymbol s2) const {
+    return *get(s1) - *get(s2);
+  }
+};
+
+SymbolOrderMap::SymbolOrderMap() {
   static const ExpressionInputSymbol symbols[] = {
     POW
    ,PROD
@@ -301,57 +329,13 @@ void SymbolOrderMap::init() {
       put((ExpressionInputSymbol)i, order++);
     }
   }
-  m_initDone = true;
 }
-
-int SymbolOrderMap::compare(ExpressionInputSymbol s1, ExpressionInputSymbol s2) {
-  if(!m_initDone) init();
-  return *get(s1) - *get(s2);
-}
-
-typedef struct {
-  ExpressionInputSymbol m_f,m_invf;
-} FunctionInverseFunctionPair;
-
-void InverseFunctionMap::init() {
-  static const FunctionInverseFunctionPair table[] = {
-    SIN   , ASIN
-   ,COS   , ACOS
-   ,TAN   , ATAN
-   ,COT   , ACOT
-   ,CSC   , ACSC
-   ,SEC   , ASEC
-   ,SINH  , ASINH
-   ,ASINH , SINH
-   ,COSH  , ACOSH
-   ,TANH  , ATANH
-   ,ATANH , TANH
-   ,NORM  , PROBIT
-   ,PROBIT, NORM
-   ,ERF   , INVERF
-   ,INVERF, ERF
-  };
-
-  for(size_t i = 0; i < ARRAYSIZE(table); i++) {
-    const FunctionInverseFunctionPair &fp = table[i];
-    put(fp.m_f, fp.m_invf);
-  }
-  m_initDone = true;
-}
-
-ExpressionInputSymbol InverseFunctionMap::getInverse(ExpressionInputSymbol symbol) {
-  if(!m_initDone) init();
-  const ExpressionInputSymbol *s = get(symbol);
-  return s ? *s : (ExpressionInputSymbol)0;
-}
-
-SymbolOrderMap     ExpressionNode::s_orderMap;
-InverseFunctionMap ExpressionNode::s_inverseFunctionMap;
 
 int ExpressionNode::compare(ExpressionNode *n) {
+  static const SymbolOrderMap orderMap;
   const ExpressionInputSymbol s1 = getSymbol();
   const ExpressionInputSymbol s2 = n->getSymbol();
-  return (s1 != s2) ? s_orderMap.compare(s1, s2) : 0;
+  return (s1 != s2) ? orderMap.compare(s1, s2) : 0;
 }
 
 String &ExpressionNode::addLeftMargin(String &s, int level) { // static
@@ -367,6 +351,64 @@ void ExpressionNode::throwInvalidSymbolForTreeMode(const TCHAR *method) const {
 void ExpressionNode::throwUnknownSymbolException(const TCHAR *method) const {
   throwException(_T("%s:Unexpected symbol in expression tree:%s")
                 ,method, getSymbolName().cstr());
+}
+
+void ExpressionNode::throwUnknownNodeTypeException(const TCHAR *method) const {
+  throwException(_T("%s:Unexpected nodeType in expression tree:%d")
+                ,method, getNodeType());
+}
+
+bool ExpressionNode::isConsistentSymbolAndType() const {
+  ExpressionNodeType type1, type2;
+  switch(getSymbol()) {
+  case NUMBER  : type1 = type2  = NT_NUMBER;    break;
+  case TYPEBOOL: type1 = type2  = NT_BOOLCONST; break;
+  case NAME    : type1 = type2  = NT_VARIABLE;  break;
+  case AND     :
+  case OR      :
+  case NOT     :
+  case EQ      :
+  case NE      :
+  case LT      :
+  case LE      :
+  case GT      :
+  case GE      : type1 = type2  = NT_BOOLEXPR;  break;
+  case POLY    : type1 = type2  = NT_POLY;      break;
+  case ASSIGN  : type1 = type2  = NT_ASSIGN;    break;
+  case STMTLIST: type1 = type2  = NT_STMTLIST;  break;
+  case SUM     : type1 = type2  = NT_SUM;       break;
+  case PRODUCT : type1 = type2  = NT_PRODUCT;   break;
+  case POW     : type1 = NT_FACTOR;  type2  = NT_TREE;  break;
+  default      : type1 = type2  = NT_TREE;      break;
+  }
+
+  if((getNodeType() != type1) && (getNodeType() != type2)) {
+    return false;
+  }
+  return true;
+}
+
+class ConsistencyCheck : public ExpressionNodeHandler {
+  const ExpressionNode *m_failureNode;
+public:
+  ConsistencyCheck() : m_failureNode(NULL) {
+  }
+  bool handleNode(ExpressionNode *n, int level) {
+    if(!n->isConsistentSymbolAndType()) {
+      m_failureNode = n;
+      return false;
+    }
+    return true;
+  }
+  bool isOK() const {
+    return m_failureNode == NULL;
+  }
+};
+
+bool ExpressionNode::isConsistent() {
+  ConsistencyCheck checker;
+  traverseExpression(checker,0);
+  return checker.isOK();
 }
 
 }; // namespace Expr

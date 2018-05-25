@@ -407,7 +407,7 @@ void CTestExpressionGraphicsDlg::startThread(int debugWinId, bool singleStep) {
 }
 
 void CTestExpressionGraphicsDlg::createThread(Expression &expr) {
-  m_debugThread = new DebugThread(expr);
+  m_debugThread = new DebugThread(expr); TRACE_NEW(m_debugThread);
   m_debugThread->addPropertyChangeListener(this);
   expr.addPropertyChangeListener(m_debugThread);
 #ifdef TRACE_REDUCTION_CALLSTACK
@@ -433,8 +433,7 @@ void CTestExpressionGraphicsDlg::destroyThread() {
 #endif
       break;
     }
-    delete m_debugThread;
-    m_debugThread = NULL;
+    SAFEDELETE(m_debugThread);
     m_debugWinId  = -1;
     clearDebugInfo();
   }
