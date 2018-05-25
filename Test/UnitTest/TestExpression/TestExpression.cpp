@@ -47,7 +47,7 @@ namespace TestExpression {
       try {
         const CompactArray<ExpressionTest*> &testArray = ExpressionTest::getAllSamples();
         const size_t                         n         = testArray.size();
-        for(size_t i = 0; i < n; i++) {
+        for(UINT i = 0; i < n; i++) {
           ExpressionTest &test = *testArray[i];
           const String expr = test.getExpr();
 #ifdef TRACE_MEMORY
