@@ -506,6 +506,20 @@ public:
     return result;
   }
 
+  String toStringPointerType(const TCHAR *delimiter = _T(",")) const {
+    String result = _T("(");
+    if(m_size) {
+      const T *p = m_array;
+      result += (*(p++))->toString();
+      for(size_t i = m_size-1; i--;) {
+        result += delimiter;
+        result += (*(p++))->toString();
+      }
+    }
+    result += _T(")");
+    return result;
+  }
+
   String toStringBasicType(const TCHAR *delimiter = _T(",")) const {
     String result = _T("(");
     if(m_size) {
