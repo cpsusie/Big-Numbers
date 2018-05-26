@@ -1,6 +1,20 @@
 #include "pch.h"
 #include <FileNameSplitter.h>
 
+DirComponents::DirComponents(const String &dir)
+  : m_absolutePath(dir.length() && dir[0] == '\\')
+  , StringArray(Tokenizer(dir, _T("\\")))
+{
+}
+
+String DirComponents::toString() const {
+  String result = m_absolutePath ? _T("\\") : EMPTYSTRING;
+  for(size_t i = 0; i < size(); i++) {
+    result = FileNameSplitter::getChildName(result,(*this)[i]);
+  }
+  return result;
+}
+
 FileNameSplitter::FileNameSplitter(const String &fullPath) {
   _tsplitpath(fullPath.cstr(), m_drive, m_dir, m_fname, m_ext);
 }

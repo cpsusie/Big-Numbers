@@ -1,6 +1,18 @@
 #pragma once
 
 #include "MyString.h"
+#include "Array.h"
+
+class DirComponents : public StringArray {
+private:
+  const bool m_absolutePath;
+public:
+  DirComponents(const String &dir);
+  inline bool isAbsolutePath() const {
+    return m_absolutePath;
+  }
+  String toString() const;
+};
 
 class FileNameSplitter {
 private:
@@ -12,15 +24,18 @@ private:
 public:
   FileNameSplitter(const String &fullPath);
 
-  String getDrive() const {
+  inline String getDrive() const {
     return m_drive;
   }
 
-  String getDir() const {
+  inline String getDir() const {
     return m_dir;
   }
 
-  String getFileName() const {
+  inline DirComponents getDirComponents() const {
+    return DirComponents(getDir());
+  }
+  inline String getFileName() const {
     return m_fname;
   }
 
@@ -28,19 +43,22 @@ public:
     return m_ext;
   }
 
-  FileNameSplitter &setDrive(    const TCHAR *drive    );
-  FileNameSplitter &setDrive(    const String    &drive    );
-  FileNameSplitter &setDir(      const TCHAR *dir      );
-  FileNameSplitter &setDir(      const String    &dir      );
-  FileNameSplitter &setFileName( const TCHAR *fileName );
-  FileNameSplitter &setFileName( const String    &fileName );
-  FileNameSplitter &setExtension(const TCHAR *extension);
-  FileNameSplitter &setExtension(const String    &extension);
+  FileNameSplitter &setDrive(    const TCHAR         *drive    );
+  FileNameSplitter &setDrive(    const String        &drive    );
+  FileNameSplitter &setDir(      const TCHAR         *dir      );
+  FileNameSplitter &setDir(      const String        &dir      );
+  FileNameSplitter &setDir(      const DirComponents &dc       ) {
+    return setDir(dc.toString());
+  }
+  FileNameSplitter &setFileName( const TCHAR         *fileName );
+  FileNameSplitter &setFileName( const String        &fileName );
+  FileNameSplitter &setExtension(const TCHAR         *extension);
+  FileNameSplitter &setExtension(const String        &extension);
 
-  String getFullPath() const;
+  String getFullPath()     const;
   String getAbsolutePath() const;
 
-  static TCHAR *getChildName(  TCHAR *dst, const TCHAR *dir, const TCHAR *fileName);
-  static String     getChildName(  const String &dir, const String &fileName);
+  static TCHAR *getChildName(TCHAR        *dst, const TCHAR  *dir, const TCHAR *fileName);
+  static String getChildName(const String &dir, const String &fileName);
 
 };

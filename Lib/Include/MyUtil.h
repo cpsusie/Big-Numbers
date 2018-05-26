@@ -24,7 +24,6 @@
 #include "MyString.h"
 #include "MyAssert.h"
 #include "Comparator.h"
-#include "FileNameSplitter.h"
 #include "Exception.h"
 
 void redirectDebugLog(bool append = false, const TCHAR *fileName = NULL);
@@ -444,4 +443,4 @@ template<class T> int pointerHashCmp(const T * const &p1, const T * const &p2) {
   return sizetHashCmp((size_t)p1, size_t(p2));
 }
 
-#include "Array.h"
+#include "FileNameSplitter.h"
