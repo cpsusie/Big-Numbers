@@ -47,10 +47,10 @@ public:
   ~Expression() {
     clear();
   }
-  Expression getDerived(const String &name, bool reduceResult = true) const;
+  Expression getDerived(const String &name, bool optimize = true) const;
   static String getDefaultListFileName();
 
-  void compile(const String &expr, bool machineCode, FILE *listFile = NULL);
+  void compile(const String &expr, bool machineCode, bool optimize = false, FILE *listFile = NULL);
   inline ExpressionReturnType getReturnType() const {
     return m_returnType;
   }
@@ -67,10 +67,6 @@ public:
   }
 
   void clear();
-
-  bool equalMinus(Expression &e) {
-    return Expr::equalMinus(getRoot(), e.getRoot());
-  }
 
   void setTrigonometricMode(TrigonometricMode mode);
   void setTreeForm(ParserTreeForm form);

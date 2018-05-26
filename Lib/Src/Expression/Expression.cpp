@@ -44,12 +44,15 @@ void Expression::clear() {
   setReduceIteration(0);
 }
 
-void Expression::compile(const String &expr, bool machineCode, FILE *listFile) {
+void Expression::compile(const String &expr, bool machineCode, bool optimize, FILE *listFile) {
   parse(expr);
   if(!isOk()) {
     return;
   }
   setReturnType(getRoot()->getReturnType());
+  if(optimize) {
+    reduce();
+  }
   try {
     if(machineCode && (listFile!=NULL)) {
       m_listFile = listFile;

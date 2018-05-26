@@ -3,7 +3,7 @@
 
 namespace Expr {
 
-Expression Expression::getDerived(const String &name, bool reduceResult /*=false*/) const {
+Expression Expression::getDerived(const String &name, bool optimize /*=true*/) const {
   if(getReturnType() != EXPR_RETURN_REAL) {
     throwException(_T("Cannot get derived of an expression returning boolean"));
   }
@@ -16,7 +16,7 @@ Expression Expression::getDerived(const String &name, bool reduceResult /*=false
   result.buildSymbolTable();
   result.setState(PS_DERIVED);
 
-  if(reduceResult) {
+  if(optimize) {
     result.reduce();
   }
   if(isMachineCode()) {

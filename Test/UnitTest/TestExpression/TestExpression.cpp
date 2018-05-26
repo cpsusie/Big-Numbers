@@ -34,9 +34,89 @@ namespace TestExpression {
     fs.setFileName(format(_T("testCase%03d"), testCase));
     return MKFOPEN(fs.getFullPath(),_T("w"));
   }
+  FILE *openReducedListFile(int testCase) {
+    const String fileName = Expression::getDefaultListFileName();
+    FileNameSplitter fs(fileName);
+    DirComponents dc = fs.getDirComponents();
+    dc.add(2,_T("reduced"));
+    fs.setDir(dc).setFileName(format(_T("testCase%03d"), testCase));
+    return MKFOPEN(fs.getFullPath(),_T("w"));
+  }
+
+  typedef enum {
+    CMP_EQUAL
+   ,CMP_EQUALMINUS
+   ,CMP_NOTEQUAL
+  } CompareResult;
+
+  class EqualExpressionSample {
+  public:
+    const String        m_e1,m_e2;
+    const CompareResult m_expected;
+    EqualExpressionSample(const String &e1, const String &e2, CompareResult expected)
+      : m_e1(e1)
+      , m_e2(e2)
+      , m_expected(expected)
+    {
+    }
+    void doTest() const;
+  };
+
+  void EqualExpressionSample::doTest() const {
+    Expression exp1, exp2;
+    exp1.compile(m_e1, false);
+    verify(exp1.isOk());
+    exp2.compile(m_e1, false);
+    verify(exp2.isOk());
+    switch(m_expected) {
+    case CMP_EQUAL     :
+      verify(exp1.equal(exp2));
+      break;
+    case CMP_EQUALMINUS:
+      verify(exp1.equalMinus(exp2));
+      break;
+    case CMP_NOTEQUAL  :
+      verify(!exp1.equal(     exp2));
+      verify(!exp1.equalMinus(exp2));
+      break;
+    }
+  }
 
 	TEST_CLASS(TestExpression) {
     public:
+
+    TEST_METHOD(SNodeEqual) {
+      static const EqualExpressionSample testData[] = {
+        EqualExpressionSample("x"        ,"x"                       ,CMP_EQUAL     )
+       ,EqualExpressionSample("x"        ,"-x"                      ,CMP_EQUALMINUS)
+       ,EqualExpressionSample("1"        ,"1"                       ,CMP_EQUAL     )
+       ,EqualExpressionSample("1"        ,"-1"                      ,CMP_EQUALMINUS)
+       ,EqualExpressionSample("abs(x)"   ,"abs(-x)"                 ,CMP_EQUAL     )
+       ,EqualExpressionSample("cos(x)"   ,"cos(-x)"                 ,CMP_EQUAL     )
+       ,EqualExpressionSample("cosh(x)"  ,"cosh(-x)"                ,CMP_EQUAL     )
+       ,EqualExpressionSample("gauss(x)" ,"gauss(-x)"               ,CMP_EQUAL     )
+       ,EqualExpressionSample("sec(x)"   ,"sec(-x)"                 ,CMP_EQUAL     )
+       ,EqualExpressionSample("sqr(x)"   ,"sqr(-x)"                 ,CMP_EQUAL     )
+       ,EqualExpressionSample("acsc(x)"  ,"acsc(-x)"                ,CMP_EQUALMINUS)
+       ,EqualExpressionSample("asin(x)"  ,"asin(-x)"                ,CMP_EQUALMINUS)
+       ,EqualExpressionSample("asinh(x)" ,"asinh(-x)"               ,CMP_EQUALMINUS)
+       ,EqualExpressionSample("atan(x)"  ,"atan(-x)"                ,CMP_EQUALMINUS)
+       ,EqualExpressionSample("atanh(x)" ,"atanh(-x)"               ,CMP_EQUALMINUS)
+       ,EqualExpressionSample("cot(x)"   ,"cot(-x)"                 ,CMP_EQUALMINUS)
+       ,EqualExpressionSample("csc(x)"   ,"csc(-x)"                 ,CMP_EQUALMINUS)
+       ,EqualExpressionSample("erf(x)"   ,"erf(-x)"                 ,CMP_EQUALMINUS)
+       ,EqualExpressionSample("inverf(x)","inverf(-x)"              ,CMP_EQUALMINUS)
+       ,EqualExpressionSample("sign(x)"  ,"sign(-x)"                ,CMP_EQUALMINUS)
+       ,EqualExpressionSample("sin(x)"   ,"sin(-x)"                 ,CMP_EQUALMINUS)
+       ,EqualExpressionSample("sinh(x)"  ,"sinh(-x)"                ,CMP_EQUALMINUS)
+       ,EqualExpressionSample("tan(x)"   ,"tan(-x)"                 ,CMP_EQUALMINUS)
+       ,EqualExpressionSample("tanh(x)"  ,"tanh(-x)"                ,CMP_EQUALMINUS)
+
+      };
+      for(size_t i = 0; i < ARRAYSIZE(testData); i++) {
+        const EqualExpressionSample &sample = testData[i];
+      }
+    };
 
     TEST_METHOD(ExpressionTestEvaluate) {
       ExpressionTest::startEvaluateTest(OUTPUT);
@@ -49,19 +129,22 @@ namespace TestExpression {
         const size_t                         n         = testArray.size();
         for(UINT i = 0; i < n; i++) {
           ExpressionTest &test = *testArray[i];
-          const String expr = test.getExpr();
+          const String    expr = test.getExpr();
 #ifdef TRACE_MEMORY
           debugLog(_T("testcase %3d:<%-50s>\n"),i,expr.cstr());
 #endif
-          OUTPUT(_T("Test[%d]:%s"),i,expr.cstr());
-          FILE *listFile = openListFile(i);
-          Expression compiledExpr, interpreterExpr;
-          compiledExpr.compile(expr, true, listFile);
-          fclose(listFile);
+          OUTPUT(_T("Test[%d]:%s"), i, expr.cstr());
+          FILE      *listFile        = openListFile(i);
+          FILE      *reducedListFile = openReducedListFile(i);
+          Expression compiledExpr, interpreterExpr, reducedExpr;
+          compiledExpr.compile(expr, true,false,listFile       );
+          reducedExpr.compile( expr, true,true ,reducedListFile);
+          fclose(reducedListFile);
+          fclose(listFile       );
 
 //          debugLog(_T("Test %d %s\n%s\n"), i, expr.cstr(), compiledExpr.treeToString().cstr());
 
-          interpreterExpr.compile(expr, false);
+          interpreterExpr.compile(expr, false,false);
           if(!compiledExpr.isOk()) {
             OUTPUT(_T("Error in testcase[%d]<%s>"), i, expr.cstr());
             const StringArray &errors = compiledExpr.getErrors();
@@ -70,49 +153,63 @@ namespace TestExpression {
             }
             verify(false);
           } else {
+            verify(reducedExpr.isOk());
+            verify(interpreterExpr.isOk());
             verify(compiledExpr.getReturnType()    == test.getReturnType());
+            verify(reducedExpr.getReturnType()     == test.getReturnType());
             verify(interpreterExpr.getReturnType() == test.getReturnType());
-            for(Real x = -2; x <= 2; x += 0.5) {
+            for(Real x = -1.91; x <= 2; x += 0.12489) {
               compiledExpr.setValue(   _T("x"), x);
+              reducedExpr.setValue(    _T("x"), x);
               interpreterExpr.setValue(_T("x"), x);
               switch(compiledExpr.getReturnType()) {
               case EXPR_RETURN_REAL:
                 { const Real cppResult          = test.fr(x);
                   const Real compiledResult     = compiledExpr.evaluate();
+                  const Real reducedResult      = reducedExpr.evaluate();
                   const Real interpreterResult  = interpreterExpr.evaluate();
-                  const bool cppDefined         = !isNan(cppResult);
-                  const bool compiledDefined    = !isNan(compiledResult);
+                  const bool cppDefined         = !isNan(cppResult        );
+                  const bool compiledDefined    = !isNan(compiledResult   );
+                  const bool reducedDefined     = !isNan(reducedResult    );
                   const bool interpreterDefined = !isNan(interpreterResult);
 
-                  if((compiledDefined != cppDefined) || (compiledDefined && fabs(compiledResult - cppResult) > 3e-15)) {
-                    LOG log;
-                    log << _T("TestCase[") << i << _T("]:<") << expr << _T(">(x=") << toString(x) << _T(") failed.") << endl
-                        << _T("Result(C++          ):") << toString(cppResult                   ) << _T(".") << endl
-                        << _T("Result(Compiled     ):") << toString(compiledResult              ) << _T(".") << endl
-                        << _T("Result(Interpreter  ):") << toString(interpreterResult           ) << _T(".") << endl
-                        << _T("Difference(comp-C++ ):") << toString(compiledResult - cppResult  ) << _T(".") << endl;
+#define LOGERROR()                                                                                         \
+{ LOG log;                                                                                                 \
+  log << _T("TestCase[") << i << _T("]:<") << expr << _T(">(x=") << toString(x) << _T(") failed.") << endl \
+      << _T("Result(C++          ):") << toString(cppResult                   ) << _T(".") << endl         \
+      << _T("Result(Compiled     ):") << toString(compiledResult              ) << _T(".") << endl         \
+      << _T("Result(Reduced      ):") << toString(reducedResult               ) << _T(".") << endl         \
+      << _T("Result(Interpreter  ):") << toString(interpreterResult           ) << _T(".") << endl         \
+      << _T("Difference(comp-C++ ):") << toString(compiledResult - cppResult  ) << _T(".") << endl;        \
+}
+
+                  if((compiledDefined    != cppDefined) || (compiledDefined && fabs(compiledResult - cppResult) > 3e-15)) {
+                    LOGERROR();
+                    verify(false);
+                  }
+                  if((reducedDefined     != cppDefined) || (reducedDefined  && fabs(reducedResult  - cppResult) > 3e-15)) {
+                    LOGERROR();
                     verify(false);
                   }
                   if((interpreterDefined != cppDefined) || (interpreterDefined && fabs(interpreterResult - cppResult) > 3e-15)) {
-                    LOG log;
-                    log << _T("TestCase[") << i << _T("]:<") << expr << _T(">(x=") << toString(x)  << _T(") failed.") << endl
-                        << _T("Result(C++          ):") << toString(cppResult                    ) << _T(".") << endl
-                        << _T("Result(Interpreter  ):") << toString(interpreterResult            ) << _T(".") << endl
-                        << _T("Result(Compiled     ):") << toString(compiledResult               ) << _T(".") << endl
-                        << _T("Difference(intp-C++ ):") << toString(interpreterResult - cppResult) << _T(".") << endl;
+                    LOGERROR();
                     verify(false);
                   }
                 }
                 break;
               case EXPR_RETURN_BOOL:
-                { const bool compiledResult    = compiledExpr.evaluateBool();
+                { const bool cppResult         = test.fb(x);
+                  const bool compiledResult    = compiledExpr.evaluateBool();
+                  const bool reducedResult     = reducedExpr.evaluateBool();
                   const bool interpreterResult = interpreterExpr.evaluateBool();
-                  const bool cppResult         = test.fb(x);
-                  if((compiledResult != cppResult) || (interpreterResult != cppResult)) {
+                  if((compiledResult    != cppResult)
+                  || (reducedResult     != cppResult)
+                  || (interpreterResult != cppResult)) {
                     LOG log;
                     log << _T("TestCase[") << i << _T("]:<") << expr << _T(">(x=") << toString(x) << _T(") failed.") << endl
                         << _T("Result(C++          ):") << toString(cppResult        ) << _T(".") << endl
                         << _T("Result(Compiled     ):") << toString(compiledResult   ) << _T(".") << endl
+                        << _T("Result(Reduced      ):") << toString(reducedResult    ) << _T(".") << endl
                         << _T("Result(Interpreter  ):") << toString(interpreterResult) << _T(".") << endl;
                     verify(false);
                   }

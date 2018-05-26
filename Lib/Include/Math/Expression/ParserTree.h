@@ -245,6 +245,14 @@ public:
 
   void setRoot(ExpressionNode *n);
 
+  bool equal(const ParserTree &tree) const {
+    return Expr::equal(getRoot(), tree.getRoot());
+  }
+
+  bool equalMinus(const ParserTree &tree) const {
+    return Expr::equalMinus(getRoot(), tree.getRoot());
+  }
+
   inline TrigonometricMode getTrigonometricMode() const {
     return m_trigonometricMode;
   }
