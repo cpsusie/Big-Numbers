@@ -24,7 +24,10 @@ ExpressionTest::ExpressionTest(bool derivable) : m_derivable(derivable) {
 Real ExpressionTest::numDFDX(const Real &x) const {
   verify(getReturnType() == EXPR_RETURN_REAL);
   Real x1, x2;
-  if(x == 0) { x1 = EPS/2; x2 = -EPS/2; }
+  if(x == 0) {
+    x1 = EPS/2;
+    x2 = -EPS/2;
+  }
   else { x1 = x*(1+EPS); x2 = x*(1-EPS); }
   const Real y1 = fr(x1), y2=fr(x2);
   return (y1-y2)/(x1-x2);
