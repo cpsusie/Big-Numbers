@@ -30,7 +30,7 @@ void FactorArray::add(SNode base, SNode exponent) {
 }
 
 void FactorArray::add(SNode base) {
-  if (base.getNodeType() == NT_FACTOR) {
+  if(base.getNodeType() == NT_FACTOR) {
     __super::add((ExpressionFactor*)base.node());
   } else {
     add(base,base._1());
@@ -77,14 +77,20 @@ FactorArray FactorArray::selectNonConstantExponentFactors() const {
 int FactorArray::findFactorWithChangeableSign() const {
   const size_t n = size();
   for(UINT i = 0; i < n; i++) {
-    if((*this)[i]->isConstant()) return i;
+    if((*this)[i]->isConstant()) {
+      return i;
+    }
   }
   for(UINT i = 0; i < n; i++) {
     ExpressionFactor *f = (*this)[i];
-    if(f->hasOddExponent() && f->exponent().isPositive()) return i;
+    if(f->hasOddExponent() && f->exponent().isPositive()) {
+      return i;
+    }
   }
   for(UINT i = 0; i < n; i++) {
-    if((*this)[i]->hasOddExponent()) return i;
+    if((*this)[i]->hasOddExponent()) {
+      return i;
+    }
   }
   return -1;
 }

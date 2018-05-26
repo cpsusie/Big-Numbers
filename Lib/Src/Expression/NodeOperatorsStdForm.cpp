@@ -480,11 +480,12 @@ StdNode StdNode::toSFormPow() const {
 
 class StandardFormChecker : public ExpressionNodeHandler {
 private:
-  BitSet m_illegalSymbolSet;
+  static const ExpressionSymbolSet s_illegalSymbolSet;
   String m_error;
   bool   m_ok;
 public:
-  StandardFormChecker();
+  StandardFormChecker() : m_ok(true) {
+  };
   bool handleNode(ExpressionNode *n, int level);
   bool isOk() const {
     return m_ok;
@@ -494,20 +495,14 @@ public:
   }
 };
 
-StandardFormChecker::StandardFormChecker() : m_illegalSymbolSet(ParserTree::getTerminalCount() + 1) {
-  static const ExpressionInputSymbol table[] = {
-    PRODUCT
-   ,SUM
-  };
-  for(int i = 0; i < ARRAYSIZE(table); i++) {
-    m_illegalSymbolSet.add(table[i]);
-  }
-  m_ok = true;
-}
+const ExpressionSymbolSet StandardFormChecker::s_illegalSymbolSet(
+    PRODUCT, SUM, EOI
+);
 
 bool StandardFormChecker::handleNode(ExpressionNode *n, int level) {
-  if(m_illegalSymbolSet.contains(n->getSymbol())) {
-    m_error = format(_T("Illegal symbol in standard form:<%s>. node=<%s>"), n->getSymbolName().cstr(), n->toString().cstr());
+  if(s_illegalSymbolSet.contains(n->getSymbol())) {
+    m_error = format(_T("Illegal symbol in standard form:<%s>. node=<%s>")
+                    ,n->getSymbolName().cstr(), n->toString().cstr());
     m_ok = false;
     return false;
   }

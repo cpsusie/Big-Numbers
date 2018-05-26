@@ -19,22 +19,13 @@
     <Filter Include="Source Files\Expression Grammar">
       <UniqueIdentifier>{2ab945d8-b267-4379-bbc8-238dda65457a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\MachineCode">
+      <UniqueIdentifier>{3c0bac24-bd3c-4455-909f-84e3baf74e4f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CodeGeneration.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ExpressionCompile.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FunctionCall.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ListFile.h">
-      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\Math\Expression\Expression.h">
       <Filter>Header Files</Filter>
@@ -84,8 +75,20 @@
     <ClInclude Include="..\..\Include\Math\Expression\SNodeReduceDbgStack.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CodeGeneration.h">
+      <Filter>Source Files\MachineCode</Filter>
+    </ClInclude>
+    <ClInclude Include="ExpressionCompile.h">
+      <Filter>Source Files\MachineCode</Filter>
+    </ClInclude>
     <ClInclude Include="FPUEmulator.h">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\MachineCode</Filter>
+    </ClInclude>
+    <ClInclude Include="FunctionCall.h">
+      <Filter>Source Files\MachineCode</Filter>
+    </ClInclude>
+    <ClInclude Include="ListFile.h">
+      <Filter>Source Files\MachineCode</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -95,16 +98,7 @@
     <ClCompile Include="AddentArray.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CodeGeneration.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Expression.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ExpressionAction.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ExpressionCompile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ExpressionDerive.cpp">
@@ -117,9 +111,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ExpressionHelp.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ExpressionLex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ExpressionNode.cpp">
@@ -149,9 +140,6 @@
     <ClCompile Include="ExpressionNodeVariable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ExpressionTables.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ExpressionVariable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -159,15 +147,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="FactorArray.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FunctionCall.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ListFile.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MachineCode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="NodeOperators.cpp">
@@ -230,17 +209,41 @@
     <ClCompile Include="ExpressionNodeBoolConst.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FPUOpcodeHashMap.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FPUEmulator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="SNodeReduceAndOrNot.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SNodeMultiplyPar.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ExpressionAction.cpp">
+      <Filter>Source Files\Expression Grammar</Filter>
+    </ClCompile>
+    <ClCompile Include="ExpressionLex.cpp">
+      <Filter>Source Files\Expression Grammar</Filter>
+    </ClCompile>
+    <ClCompile Include="ExpressionTables.cpp">
+      <Filter>Source Files\Expression Grammar</Filter>
+    </ClCompile>
+    <ClCompile Include="CodeGeneration.cpp">
+      <Filter>Source Files\MachineCode</Filter>
+    </ClCompile>
+    <ClCompile Include="ExpressionCompile.cpp">
+      <Filter>Source Files\MachineCode</Filter>
+    </ClCompile>
+    <ClCompile Include="FPUEmulator.cpp">
+      <Filter>Source Files\MachineCode</Filter>
+    </ClCompile>
+    <ClCompile Include="FPUOpcodeHashMap.cpp">
+      <Filter>Source Files\MachineCode</Filter>
+    </ClCompile>
+    <ClCompile Include="FunctionCall.cpp">
+      <Filter>Source Files\MachineCode</Filter>
+    </ClCompile>
+    <ClCompile Include="ListFile.cpp">
+      <Filter>Source Files\MachineCode</Filter>
+    </ClCompile>
+    <ClCompile Include="MachineCode.cpp">
+      <Filter>Source Files\MachineCode</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -256,7 +259,7 @@
       <Filter>Source Files\Expression Grammar</Filter>
     </CustomBuild>
     <CustomBuild Include="ExpressionCallx64.asm">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ASM Files</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>

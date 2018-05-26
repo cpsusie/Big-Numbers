@@ -311,9 +311,12 @@ public:
 CNode CNode::toCForm() const {
   switch(getSymbol()) {
   case NUMBER         :
+  case TYPEBOOL       :
   case NAME           : return *this;
 
-  case MINUS          : if(isUnaryMinus()) return -N(left()).toCForm();
+  case MINUS          : if(isUnaryMinus()) {
+                          return -N(left()).toCForm();
+                        }
                         // NB continue case
 
   case PLUS           :
@@ -495,7 +498,9 @@ FactorArray &CNode::toCFormPower(FactorArray &result, SNode &exponent) const {
   case PRODUCT:
     { const FactorArray &factors = base.getFactorArray();
       SNode              newExpo = exponent * expo;
-      for(size_t i = 0; i < factors.size(); i++) N(factors[i]).toCFormPower(result, newExpo);
+      for(size_t i = 0; i < factors.size(); i++) {
+        N(factors[i]).toCFormPower(result, newExpo);
+      }
     }
     break;
   default                   :
@@ -521,7 +526,9 @@ FactorArray &CNode::toCFormRoot(FactorArray &result, SNode &exponent) const {
   case PRODUCT:
     { const FactorArray &factors = rad.getFactorArray();
       SNode              newExpo = exponent / root;
-      for(size_t i = 0; i < factors.size(); i++) N(factors[i]).toCFormPower(result, newExpo);
+      for(size_t i = 0; i < factors.size(); i++) {
+        N(factors[i]).toCFormPower(result, newExpo);
+      }
     }
     break;
   default                   :
@@ -535,11 +542,13 @@ FactorArray &CNode::toCFormRoot(FactorArray &result, SNode &exponent) const {
 
 class CanonicalFormChecker : public ExpressionNodeHandler {
 private:
-  BitSet m_illegalSymbolSet;
-  String m_error;
-  bool   m_ok;
+  static const ExpressionSymbolSet s_illegalSymbolSet;
+  String                           m_error;
+  bool                             m_ok;
 public:
-  CanonicalFormChecker();
+  CanonicalFormChecker() : m_ok(true) {
+  }
+
   bool handleNode(ExpressionNode *n, int level);
   bool isOk() const {
     return m_ok;
@@ -549,28 +558,17 @@ public:
   }
 };
 
-CanonicalFormChecker::CanonicalFormChecker() : m_illegalSymbolSet(ParserTree::getTerminalCount() + 1) {
-  static const ExpressionInputSymbol table[] = {
-    PLUS
-   ,PROD
-   ,QUOT
-   ,ROOT
-   ,SQRT
-   ,SQR
-   ,EXP
-   ,SEC
-   ,CSC
-   ,COT
-  };
-  for(int i = 0; i < ARRAYSIZE(table); i++) {
-    m_illegalSymbolSet.add(table[i]);
-  }
-  m_ok = true;
-}
+const ExpressionSymbolSet CanonicalFormChecker::s_illegalSymbolSet(
+  PLUS  ,PROD  ,QUOT  ,ROOT  ,SQRT
+ ,SQR   ,EXP   ,SEC   ,CSC   ,COT
+ ,EOI
+);
 
 bool CanonicalFormChecker::handleNode(ExpressionNode *n, int level) {
-  if(m_illegalSymbolSet.contains(n->getSymbol()) || n->isBinaryMinus()) {
-    m_error = format(_T("Illegal symbol in canonical form:<%s>. node=<%s>"), n->getSymbolName().cstr(), n->toString().cstr());
+  if(s_illegalSymbolSet.contains(n->getSymbol()) || n->isBinaryMinus()) {
+    m_error = format(_T("Illegal symbol in canonical form:<%s>. node=<%s>")
+                    ,n->getSymbolName().cstr()
+                    ,n->toString().cstr());
     m_ok = false;
     return false;
   }
