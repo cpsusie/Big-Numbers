@@ -18,10 +18,10 @@ static String tinyBitSetToString(BYTE *bits, int byteCount) {
       }
     }
   }
-  if (result.length() == 0) {
+  if(result.length() == 0) {
     result = _T("empty");
   }
-  return result;
+  return _T("{") +  result + _T("}");
 }
 
 ADDIN_API HRESULT WINAPI AddIn_BitSet8(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t maxResult, DWORD /*reserved*/) {

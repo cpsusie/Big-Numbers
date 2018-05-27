@@ -26,9 +26,10 @@ public:
 template<class BitSet> String BitSetAddIn<BitSet>::toString(BitSet &set, size_t maxResult) const {
   const QWORD  capacity = set.m_capacity;
 
-  if (capacity == 0) {
+  if(capacity == 0) {
     return _T("empty");
   }
+  maxResult -= 2;
   const QWORD  startAddr  = set.m_paddr;
   QWORD        byte0Index = 0; // in bytes
   String       result;
@@ -39,7 +40,7 @@ template<class BitSet> String BitSetAddIn<BitSet>::toString(BitSet &set, size_t 
     BYTE      buffer[4096];
     const int n = (int)min(bytesLeft, sizeof(buffer));
     if(buffersRead++ == maxBufCount) {
-      if (result.length() == 0) {
+      if(result.length() == 0) {
         result = format(_T("It will take a long time to expand BitSet. Capacity=%I64u."), capacity);
       } else {
         for(size_t rl = result.length(); rl < maxResult; rl++) {
@@ -51,16 +52,16 @@ template<class BitSet> String BitSetAddIn<BitSet>::toString(BitSet &set, size_t 
     bytesLeft -= n;
     m_helper->getObjectx64(buffer, startAddr + byte0Index, n);
     const BYTE *p = (BYTE*)buffer;
-    for (int i = n; i--; p++) {
-      if (*p) {
+    for(int i = n; i--; p++) {
+      if(*p) {
         QWORD k = (byte0Index + (p - buffer)) * 8;
-        for (BYTE b = *p; b; b >>= 1, k++) {
-          if (b & 1) {
+        for(BYTE b = *p; b; b >>= 1, k++) {
+          if(b & 1) {
             TCHAR numStr[20];
             _ui64tot(k, numStr, 10);
             size_t nl = _tcslen(numStr)+1;
             size_t rl = result.length();
-            if (rl + nl >= maxResult) {
+            if(rl + nl >= maxResult) {
               while(rl < maxResult) {
                 result += _T('.'); rl++;
               }
@@ -74,7 +75,7 @@ template<class BitSet> String BitSetAddIn<BitSet>::toString(BitSet &set, size_t 
     }
     byte0Index += n;
   }
-  return result.length() ? result : _T("empty");
+  return result.length() ? (_T("{") + result + _T("}")) : _T("empty");
 }
 
 ADDIN_API HRESULT WINAPI AddIn_BitSet(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t maxResult, DWORD /*reserved*/) {
