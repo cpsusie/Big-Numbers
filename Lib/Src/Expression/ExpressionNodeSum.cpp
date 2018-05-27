@@ -4,13 +4,10 @@
 
 namespace Expr {
 
-static int compareSumElement(SumElement * const &e1, SumElement * const &e2) {
-  return e1->compare(e2);
-}
-
 ExpressionNodeSum::ExpressionNodeSum(ParserTree *tree, const AddentArray &elements) : ExpressionNode(tree, SUM) {
   m_elements = elements;
-  m_elements.sort(compareSumElement);
+  m_elements.sort();
+  SETDEBUGSTR();
 }
 
 int ExpressionNodeSum::compare(ExpressionNode *n) {
@@ -85,25 +82,7 @@ void ExpressionNodeSum::dumpNode(String &s, int level) const {
 }
 
 String ExpressionNodeSum::toString() const {
-  const int n = (int)m_elements.size();
-  if (n == 0) {
-    return _T("0");
-  }
-  bool first = true;
-  String result;
-  for(int i = 0; i < n; i++) {
-    SumElement *e = m_elements[i];
-    if(e->isPositive()) {
-      if(!first) {
-        result += _T(" + ");
-      }
-    } else {
-      result += _T(" - ");
-    }
-    first = false;
-    result += e->getNode()->parenthesizedExpressionToString(this);
-  }
-  return result;
+  return m_elements.toString();
 }
 
 }; // namespace Expr

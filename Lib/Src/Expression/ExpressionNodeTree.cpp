@@ -11,10 +11,12 @@ ExpressionNodeTree::ExpressionNodeTree(ParserTree *tree, ExpressionInputSymbol s
   : ExpressionNode(tree, symbol)
   , m_childArray(childArray)
 {
+  SETDEBUGSTR();
 }
 
 ExpressionNodeTree::ExpressionNodeTree(ParserTree *tree, const ExpressionNodeTree *src) : ExpressionNode(tree, src->getSymbol()) {
   src->getChildArray().cloneNodes(m_childArray, tree);
+  SETDEBUGSTR();
 }
 
 ExpressionNodeTree::ExpressionNodeTree(ParserTree *tree, ExpressionInputSymbol symbol, ...) : ExpressionNode(tree, symbol) {
@@ -85,8 +87,8 @@ bool ExpressionNodeTree::isExpandable() {
 }
 
 int ExpressionNodeTree::compare(ExpressionNode *n) {
-  if(n->getNodeType() != getNodeType()) {
-    return ExpressionNode::compare(n);
+  if(n->getSymbol() != getSymbol()) {
+    return __super::compare(n);
   }
   if(isBinaryOperator()) {
     const int leftCompare = left()->compare(n->left());

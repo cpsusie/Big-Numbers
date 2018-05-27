@@ -215,6 +215,40 @@ bool ExpressionNode::isAsymmetricExponent() const {
   return isRational() && ::isAsymmetricExponent(getRational());
 }
 
+ExpressionNode *ExpressionNode::multiplyExponents(ExpressionNode *n1, ExpressionNode *n2) const {
+  if(n1->isRational() && n2->isRational()) {
+    const Rational r1 = n1->getRational();
+    const Rational r2 = n2->getRational();
+    if(rationalExponentsMultiply(r1, r2)) {
+      return getTree().numberExpression(r1*r2);
+    } else {
+      const Rational r   = r1 * r2;
+      const INT64    num = 2*r.getNumerator();
+      const INT64    den = 2*r.getDenominator();
+      return getTree().quot(num,den);
+    }
+  } else {
+    return getTree().prod(n1,n2);
+  }
+}
+
+ExpressionNode *ExpressionNode::divideExponents(ExpressionNode *n1, ExpressionNode *n2) const {
+  if(n1->isRational() && n2->isRational()) {
+    const Rational r1 = n1->getRational();
+    const Rational r2 = n2->getRational();
+    if(rationalExponentsMultiply(r1, r2)) {
+      return getTree().numberExpression(r1/r2);
+    } else {
+      const Rational r   = r1 / r2;
+      const INT64    num = 2*r.getNumerator();
+      const INT64    den = 2*r.getDenominator();
+      return getTree().quot(num,den);
+    }
+  } else {
+    return getTree().quot(n1,n2);
+  }
+}
+
 TrigonometricMode ExpressionNode::getTrigonometricMode() const {
   return m_tree.getTrigonometricMode();
 }

@@ -53,10 +53,6 @@ bool equal(const ExpressionNode *n1, const ExpressionNode *n2) {
     if(n1->isSymmetricFunction()) {
       return equal(n1->left(), n2->left()) || equalMinus(n1->left(), n2->left());
     }
-    if(n1->isAsymmetricFunction()) {
-      return equalMinus(n1->left(), n2->left());
-    }
-
     return n1->getChildArray().equal(n2->getChildArray());
   }
 }

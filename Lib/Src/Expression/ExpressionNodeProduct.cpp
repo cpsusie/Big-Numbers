@@ -4,13 +4,10 @@
 
 namespace Expr {
 
-static int compareFactors(ExpressionFactor * const &f1, ExpressionFactor * const &f2) {
-  return f1->compare(f2);
-}
-
 ExpressionNodeProduct::ExpressionNodeProduct(ParserTree *tree, FactorArray &factors) : ExpressionNode(tree, PRODUCT) {
   m_factors = factors;
-  m_factors.sort(compareFactors);
+  m_factors.sort();
+  SETDEBUGSTR();
 }
 
 int ExpressionNodeProduct::compare(ExpressionNode *n) {
@@ -85,60 +82,7 @@ void ExpressionNodeProduct::dumpNode(String &s, int level) const {
 }
 
 String ExpressionNodeProduct::toString() const {
-  if(m_factors.size() == 0) {
-    return _T("1");
-  } else {
-    String result = m_factors[0]->parenthesizedExpressionToString(this);
-    for(size_t i = 1; i < m_factors.size(); i++) {
-      result += _T("*");
-      result += m_factors[i]->parenthesizedExpressionToString(this);
-    }
-    return result;
-  }
-
-/*
-  String result;
-  FactorArray p = m_factors.selectConstantPositiveExponentFactors();
-  p.addAll(m_factors.selectNonConstantExponentFactors());
-  FactorArray q = m_factors.selectConstantNegativeExponentFactors();
-
-  String op;
-
-  if(p.size() > 0) {
-    for(int i = 0; i < p.size(); i++) {
-      const ExpressionFactor *f = p[i];
-      if(op.length() == 0) {
-        op = _T("*");
-      } else {
-        result += op;
-      }
-      if(f->getExponent()->isOne()) {
-        result += f->getBase()->parenthesizedExpressionToString(this);
-      } else {
-        result += f->parenthesizedExpressionToString(this);
-      }
-    }
-  }
-
-  if(q.size() > 0) {
-    if(op.length() == 0) {
-      result += _T("1");
-    }
-    op = _T("/");
-
-    for(int i  = 0; i < q.size(); i++) {
-      const ExpressionFactor *f = q[i];
-      result += op;
-      if(f->getExponent()->isMinusOne()) {
-        result += f->getBase()->parenthesizedExpressionToString(this);
-      } else {
-        const ParserTree *tree = f->getTree();
-        result += tree->power(f->getBase(), tree->minus(f->getExponent()))->parenthesizedExpressionToString(this);
-      }
-    }
-  }
-  return result;
-*/
+  return m_factors.toString();
 }
 
 }; // namespace Expr

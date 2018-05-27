@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Math/Number.h>
+#include <Math/Expression/SNodeReduceDbgStack.h>
 
 namespace Expr {
 
@@ -11,7 +12,7 @@ class SNode;
 
 class SumElement {
   friend class ParserTree;
-
+  DECLAREDEBUGSTR;
 private:
   ExpressionNode *m_n;
   // true for +, false for -
@@ -22,6 +23,7 @@ private:
 public:
   inline SumElement(ExpressionNode *n, bool positive) {
     init(n,positive);
+    SETDEBUGSTR();
   }
   SumElement(const SNode &n, bool positive);
   SumElement *clone(ParserTree *tree) const;

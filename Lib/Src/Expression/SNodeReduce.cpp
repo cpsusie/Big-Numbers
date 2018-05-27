@@ -14,6 +14,15 @@ ExpressionFactor *SNode::factor(SNode b, SNode e) { // static
   return b.getTree().fetchFactorNode(b, e);
 }
 
+SNode &SNode::setReduced() {
+  m_node->setReduced();
+  return *this;
+}
+
+bool SNode::isReduced() const {
+  return m_node->isReduced();
+}
+
 SNode SNode::reduce() {
   ENTERMETHOD();
   const SNodeArray &childArray = getChildArray();
@@ -39,6 +48,7 @@ SNode SNode::reduce() {
 }
 
 SNode SNode::reduceBoolExp() {
+  if(isReduced()) return *this;
   ENTERMETHOD();
   if (isConstant()) {
     RETURNNODE(NV(evaluateBool()));
@@ -63,6 +73,7 @@ SNode SNode::reduceBoolExp() {
 }
 
 SNode SNode::reduceRealExp() {
+  if(isReduced()) return *this;
   ENTERMETHOD();
   switch(getSymbol()) {
   case NUMBER         :
@@ -99,7 +110,10 @@ SNode SNode::reduceRealExp() {
 
   case ACOS           :
   case ACOT           :
+  case ATAN2          :
   case ACOSH          :
+  case ACSC           :
+  case ASEC           :
   case BINOMIAL       :
   case CHI2DENS       :
   case CHI2DIST       :
@@ -110,6 +124,7 @@ SNode SNode::reduceRealExp() {
   case GAMMA          :
   case MAX            :
   case MIN            :
+  case HYPOT          :
   case NORM           :
   case PROBIT         : RETURNNODE( reduceTreeNode() );
 
@@ -554,6 +569,8 @@ SNode SNode::reduceProduct() {
     ExpressionFactor *f = unreducedFactors[i];
     if(!f->isConstant()) {
       nonConstantFactors.add(f); // contains non-constant factors
+    } else if(f->isReduced()) {
+      constantFactors.add(f);
     } else {
       Rational r;
       if(!f->reducesToRational(&r)) {
@@ -562,6 +579,7 @@ SNode SNode::reduceProduct() {
         RETURNNODE( _0() );
       } else if(r != 1) { // No need to add 1 as a factor
         constantFactors.add(NV(r));
+        constantFactors.last()->setReduced();
       }
     }
   }
@@ -622,6 +640,10 @@ SNode SNode::reduceProduct() {
   if(!constantFactor.isOne()) {
     reduced.add(constantFactor);
   }
+  reduced.sort();
+  if(getFactorArray().isSameNodes(reduced)) {
+    RETURNNODE(*this);
+  }
   const SNode result = NV(reduced);
   RETURNNODE( result );
 }
@@ -649,7 +671,9 @@ FactorArray &SNode::getFactors(FactorArray &result, SNode exponent) {
     break;
   case PRODUCT:
     { const FactorArray &a = getFactorArray();
-      for(size_t i = 0; i < a.size(); i++) N(a[i]).getFactors(result, exponent);
+      for(size_t i = 0; i < a.size(); i++) {
+        N(a[i]).getFactors(result, exponent);
+      }
     }
     break;
   case POW :
@@ -695,9 +719,20 @@ SNode SNode::reducePower() {
   SNode result;
 
   if(rBase.getSymbol() == POW) {
-    result = pow(rBase.left(), rBase.right() * rExpo);
+    result = pow(rBase.left(), multiplyExponents(rBase.right(), rExpo));
   } else if(rBase.isSameNode(base) && rExpo.isSameNode(expo)) { // nothing changed
-    result = *this;
+    Rational r;
+    if(rExpo.reducesToRationalConstant(&r)) {
+      if((r == 1) && !rExpo.isOne()) {
+        result = unaryExp(ABS,rBase);
+      } else if((r == -1) && !rExpo.isMinusOne()) {
+        result = reciprocal(unaryExp(ABS,rBase));
+      } else {
+        result = *this;
+      }
+    } else {
+      result = *this;
+    }
   } else {
     result = pow(rBase, rExpo);
   }
@@ -731,7 +766,7 @@ FactorArray &SNode::multiplyExponents(FactorArray &result, FactorArray &factors,
     Rational              eR = 1;
     const bool            eIsRationalConstant = e.reducesToRationalConstant(&eR);
     if(exponentIsRationalConstant && eIsRationalConstant) {
-      if(rationalExponentsMultiply(eR, exponentR)) {
+      if(ExpressionNode::rationalExponentsMultiply(eR, exponentR)) {
         result.add(f->base(), NV(eR * exponentR));
       } else {
         const Rational newE = eR * exponentR;
@@ -744,8 +779,12 @@ FactorArray &SNode::multiplyExponents(FactorArray &result, FactorArray &factors,
   RETURNSHOWSTR( result );
 }
 
-bool SNode::rationalExponentsMultiply(const Rational &r1, const Rational &r2) { // static
-  return isAsymmetricExponent(r1) || isAsymmetricExponent(r2);
+SNode SNode::multiplyExponents(SNode e1, SNode e2) const {
+  return m_node->multiplyExponents(e1.node(), e2.node());
+}
+
+SNode SNode::divideExponents(SNode e1, SNode e2) const {
+  return m_node->divideExponents(e1.node(), e2.node());
 }
 
 SNode SNode::multiplySumSum(SNode n1, SNode n2) const {

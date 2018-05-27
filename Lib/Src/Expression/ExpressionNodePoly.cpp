@@ -9,24 +9,26 @@ ExpressionNodePoly::ExpressionNodePoly(ParserTree *tree, const SNodeArray &coefA
   , m_arg(arg)
 {
   m_firstCoefIndex   = -1;
+  SETDEBUGSTR();
 }
 
 ExpressionNodePoly::ExpressionNodePoly(ParserTree *tree, const ExpressionNodePoly *src) : ExpressionNode(tree, POLY) {
   src->getCoefArray().cloneNodes(m_coefArray, tree);
   m_arg            = src->getArgument().node()->clone(tree);
   m_firstCoefIndex = -1;
+  SETDEBUGSTR();
 }
 
-bool ExpressionNodePoly::isCoefficientArrayConstant() const {
-  if(!m_info.m_coefChecked) {
-    m_info.m_coefficientsConstant = getCoefArray().isConstant() ? 1 : 0;
-    m_info.m_coefChecked          = 1;
+bool ExpressionNodePoly::isCoefArrayConstant() const {
+  if(!m_info.m_coefArrayChecked) {
+    m_info.m_coefArrayConstant = getCoefArray().isConstant() ? 1 : 0;
+    m_info.m_coefArrayChecked          = 1;
   }
-  return m_info.m_coefficientsConstant ? true : false;
+  return m_info.m_coefArrayConstant ? true : false;
 }
 
 bool ExpressionNodePoly::isSymmetricFunction() const {
-  if(!isCoefficientArrayConstant()) return false;
+  if(!isCoefArrayConstant()) return false;
   const SNodeArray &coefArray = getCoefArray();
   const size_t      n         = coefArray.size();
   for(size_t i = 0; i < n; i++) {
@@ -39,7 +41,7 @@ bool ExpressionNodePoly::isSymmetricFunction() const {
 }
 
 bool ExpressionNodePoly::isAsymmetricFunction() const {
-  if(!isCoefficientArrayConstant()) return false;
+  if(!isCoefArrayConstant()) return false;
   const SNodeArray &coefArray = getCoefArray();
   const size_t      n         = coefArray.size();
   for(size_t i = 0; i < n; i++) {

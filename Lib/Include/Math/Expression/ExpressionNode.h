@@ -83,6 +83,9 @@ public:
   }
   bool equal(     const AddentArray &a) const;
   bool equalMinus(const AddentArray &a) const;
+  AddentArray &sort();        // return *this
+  AddentArray &sortStdForm(); // return *this
+
   String toString() const;
 };
 
@@ -102,8 +105,10 @@ public:
   void add(SNode base);
   void add(SNode base, SNode exponent);
   void add(SNode base, const Rational &exponent);
-  bool equal(     const FactorArray &a) const;
-  bool equalMinus(const FactorArray &a) const;
+  bool isSameNodes(const FactorArray &a) const; // compare if ExpressionNode* equals
+  bool equal(      const FactorArray &a) const;
+  bool equalMinus( const FactorArray &a) const;
+  FactorArray &sort(); // return *this
 
   String toString() const;
 };
@@ -127,25 +132,24 @@ template<class E> class CompactSymbolHashMap : public CompactHashMap<ExpressionS
 class PackedSyntaxNodeInfo {
 public:
   const ExpressionInputSymbol m_symbol         : 15;
-  // used for garbage-collection
-          UINT          m_marked               : 1;
-  // used for DebugThread
-          UINT          m_breakPoint           : 1;
-  // used by polynomials
-  mutable UINT          m_coefficientsConstant : 1;
-  // used by polynomials
-  mutable UINT          m_coefChecked          : 1;
+          UINT          m_marked               : 1;  // used for garbage-collection
+          UINT          m_breakPoint           : 1;  // used for DebugThread
+  mutable UINT          m_coefArrayConstant    : 1;  // used by polynomials
+  mutable UINT          m_coefArrayChecked     : 1;  // used by polynomials
+  mutable UINT          m_reduced              : 1;
   PackedSyntaxNodeInfo(ExpressionInputSymbol symbol)
-    : m_symbol(symbol)
-    , m_marked(0)
-    , m_breakPoint(0)
-    , m_coefficientsConstant(0)
-    , m_coefChecked(0)
+    : m_symbol(      symbol)
+    , m_marked(           0)
+    , m_breakPoint(       0)
+    , m_coefArrayConstant(0)
+    , m_coefArrayChecked( 0)
+    , m_reduced(          0)
   {
   }
 };
 
 class ExpressionNode {
+  DECLAREDEBUGSTR;
 private:
   ParserTree          &m_tree;
 protected:
@@ -172,6 +176,8 @@ public:
   inline  void                       mark()                                 { m_info.m_marked = true;                                          }
   inline  void                       unMark()                               { m_info.m_marked = false;                                         }
   inline  bool                       isMarked()                     const   { return m_info.m_marked;                                          }
+  inline  void                       setReduced()                   const   { m_info.m_reduced = true;                                         }
+  inline  bool                       isReduced()                    const   { return m_info.m_reduced;                                         }
   inline  void                       setBreakPoint()                        { m_info.m_breakPoint = 1;                                         }
   inline  void                       clearBreakPoint()                      { m_info.m_breakPoint = 0;                                         }
   inline  bool                       isBreakPoint()                 const   { return m_info.m_breakPoint;                                      }
@@ -192,7 +198,7 @@ public:
   virtual       SNodeArray          &getCoefArray()                         { UNSUPPORTEDOP(); }
   virtual int                        getFirstCoefIndex()            const   { UNSUPPORTEDOP(); }
   virtual void                       setFirstCoefIndex(int index)           { UNSUPPORTEDOP(); }
-  virtual bool                       isCoefficientArrayConstant()   const   { UNSUPPORTEDOP(); }
+  virtual bool                       isCoefArrayConstant()          const   { UNSUPPORTEDOP(); }
 
   virtual int                        getDegree()                    const   { UNSUPPORTEDOP(); }
   virtual const String              &getName()                      const   { UNSUPPORTEDOP(); }
@@ -277,6 +283,15 @@ public:
 
   bool    isSymmetricExponent()         const;
   bool    isAsymmetricExponent()        const;
+  static bool rationalExponentsMultiply(const Rational &r1, const Rational &r2) {
+    return ::isAsymmetricExponent(r1) || ::isAsymmetricExponent(r2);
+  }
+
+  // if both n1 and n2 are rational constants, they will be reduced as much as possible
+  // without loosing symmetry with even exponents. if one or both are not rational
+  // these 2 functions will just return as normal (prod/quot)
+  ExpressionNode *multiplyExponents(ExpressionNode *n1, ExpressionNode *n2) const;
+  ExpressionNode *divideExponents(  ExpressionNode *n1, ExpressionNode *n2) const;
   TrigonometricMode getTrigonometricMode() const;
   int     getPrecedence()               const;
   bool    reducesToRationalConstant(Rational *r) const;
@@ -313,16 +328,19 @@ public:
   inline ExpressionNodeNumber(ParserTree *tree, const Real &value) : ExpressionNode(tree, NUMBER) {
     m_number     = value;
     m_valueIndex = -1;
+    SETDEBUGSTR();
   }
 
   inline ExpressionNodeNumber(ParserTree *tree, const Rational &value) : ExpressionNode(tree, NUMBER) {
     m_number     = value;
     m_valueIndex = -1;
+    SETDEBUGSTR();
   }
 
   inline ExpressionNodeNumber(ParserTree *tree, const Number &value) : ExpressionNode(tree, NUMBER) {
     m_number     = value;
     m_valueIndex = -1;
+    SETDEBUGSTR();
   }
 
   int getValueIndex() const {
@@ -365,6 +383,7 @@ private:
   const bool m_value;
 public:
   inline ExpressionNodeBoolConst(ParserTree *tree, bool b) : ExpressionNode(tree, TYPEBOOL), m_value(b) {
+    SETDEBUGSTR();
   }
   bool getBool() const {
     return m_value;
@@ -405,6 +424,7 @@ public:
     , m_name(name)
   {
     m_var  = &var;
+    SETDEBUGSTR();
   }
 
   const String &getName() const {
@@ -563,7 +583,7 @@ public:
   SNode getArgument() const {
     return m_arg;
   }
-  bool isCoefficientArrayConstant() const;
+  bool isCoefArrayConstant() const;
   // return true, if all coefficients are constant, and non-zero coef[i] for even i
   bool isSymmetricFunction()        const;
   // return true, if all coefficients are constant, and non-zero coef[i] for odd i
@@ -700,7 +720,10 @@ public:
 class ExpressionNodeTreeWithPos : public ExpressionNodeTree, private SourcePositionAttribute {
 public:
   ExpressionNodeTreeWithPos(ParserTree *tree, const SourcePosition &pos, ExpressionInputSymbol symbol, va_list argptr)
-    : ExpressionNodeTree(tree, symbol, argptr), SourcePositionAttribute(pos) {
+    : ExpressionNodeTree(tree, symbol, argptr), SourcePositionAttribute(pos)
+  {
+    if(getChildCount() > 0)
+      SETDEBUGSTR();
   }
   const SourcePosition &getPos() const {
     return SourcePositionAttribute::getPos();
@@ -714,6 +737,7 @@ class ExpressionNodeBoolExprWithPos : public ExpressionNodeBoolExpr, private Sou
 public:
   ExpressionNodeBoolExprWithPos(ParserTree *tree, const SourcePosition &pos, ExpressionInputSymbol symbol, va_list argptr)
     : ExpressionNodeBoolExpr(tree, symbol, argptr), SourcePositionAttribute(pos) {
+    SETDEBUGSTR();
   }
   const SourcePosition &getPos() const {
     return SourcePositionAttribute::getPos();
@@ -726,7 +750,9 @@ public:
 class ExpressionNodePolyWithPos : public ExpressionNodePoly, private SourcePositionAttribute {
 public:
   ExpressionNodePolyWithPos(ParserTree *tree, const SourcePosition &pos, const SNodeArray &coefArray, SNode arg)
-    : ExpressionNodePoly(tree, coefArray, arg), SourcePositionAttribute(pos) {
+    : ExpressionNodePoly(tree, coefArray, arg), SourcePositionAttribute(pos)
+  {
+    SETDEBUGSTR();
   }
   const SourcePosition &getPos() const {
     return SourcePositionAttribute::getPos();
@@ -739,7 +765,9 @@ public:
 class ExpressionNodeAssignWithPos : public ExpressionNodeAssign, private SourcePositionAttribute {
 public:
   ExpressionNodeAssignWithPos(ParserTree *tree, const SourcePosition &pos, va_list argptr)
-    : ExpressionNodeAssign(tree, argptr), SourcePositionAttribute(pos) {
+    : ExpressionNodeAssign(tree, argptr), SourcePositionAttribute(pos)
+  {
+    SETDEBUGSTR();
   }
   const SourcePosition &getPos() const {
     return SourcePositionAttribute::getPos();

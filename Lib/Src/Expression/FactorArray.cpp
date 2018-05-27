@@ -4,13 +4,22 @@
 
 namespace Expr {
 
+static int compareFactors(ExpressionFactor * const &f1, ExpressionFactor * const &f2) {
+  return f1->compare(f2);
+}
+
+FactorArray &FactorArray::sort() {
+  __super::sort(compareFactors);
+  return *this;
+}
+
 void FactorArray::add(ExpressionFactor *f) {
   SNode base     = f->base();
   SNode exponent = f->exponent();
 
   if(base.getSymbol() != PRODUCT) {
     if(!base.isOne() && !(exponent.isZero())) {
-      CompactArray<ExpressionFactor*>::add(f);
+      __super::add(f);
     }
   } else {
     const FactorArray &a = base.getFactorArray();
@@ -95,6 +104,11 @@ int FactorArray::findFactorWithChangeableSign() const {
   return -1;
 }
 
+// compare if ExpressionNode* equals
+bool FactorArray::isSameNodes(const FactorArray &a) const {
+  return __super::operator==(a);
+}
+
 bool FactorArray::equal(const FactorArray &a) const {
   const size_t n = size();
   if(a.size() != n) return false;
@@ -124,14 +138,7 @@ bool FactorArray::equalMinus(const FactorArray &a) const {
 }
 
 String FactorArray::toString() const {
-  if(size() == 0) {
-    return _T("1");
-  }
-  String result = format(_T("(%s)"), (*this)[0]->toString().cstr());;
-  for(size_t i = 1; i < size(); i++) {
-    result += format(_T("*(%s)"), (*this)[i]->toString().cstr());
-  }
-  return result;
+  return _T("PRODUCT") + __super::toStringPointerType();
 }
 
 }; // namespace Expr

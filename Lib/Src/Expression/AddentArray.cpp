@@ -53,17 +53,38 @@ bool AddentArray::equalMinus(const AddentArray &a) const {
   return true;
 }
 
+static int compareSumElement(SumElement * const &e1, SumElement * const &e2) {
+  return e1->compare(e2);
+}
+
+AddentArray &AddentArray::sort() {
+  __super::sort(compareSumElement);
+  return *this;
+}
+
+static int compare2(SumElement * const &e1, SumElement * const &e2) {
+  const bool p1 = e1->isPositive();
+  const bool p2 = e2->isPositive();
+  int c = p2 - p1;
+  if(c) return c;
+  return e1->compare(e2);
+}
+
+static int compareMany(SumElement * const &e1, SumElement * const &e2) {
+  return e1->compare(e2);
+}
+
+AddentArray &AddentArray::sortStdForm() {
+  if(size() == 2) {
+    __super::sort(compare2);
+  } else {
+    __super::sort(compareMany);
+  }
+  return *this;
+}
+
 String AddentArray::toString() const {
-  if(size() == 0) {
-    return _T("0");
-  }
-  String result = (*this)[0]->toString();
-  for(size_t i = 1; i < size(); i++) {
-    const SumElement *e = (*this)[i];
-    result += e->isPositive() ? _T("+") : _T("-");
-    result += e->getNode()->toString();
-  }
-  return result;
+  return _T("SUM") + __super::toStringPointerType();
 }
 
 }; // namespace Expr

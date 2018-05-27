@@ -6,6 +6,7 @@ namespace Expr {
 ExpressionNodeVariable::ExpressionNodeVariable(ParserTree *tree, const String &name) : ExpressionNode(tree, NAME) {
   m_name = name;
   tree->m_symbolTable.allocateSymbol(this, false, false, false);
+  SETDEBUGSTR();
 }
 
 int ExpressionNodeVariable::compare(ExpressionNode *n) {

@@ -7,11 +7,13 @@ ExpressionNodeStmtList::ExpressionNodeStmtList(ParserTree *tree, const SNodeArra
   : ExpressionNodeTree(tree, STMTLIST, childArray)
   , m_returnType(childArray.last().getReturnType())
 {
+  SETDEBUGSTR();
 }
 ExpressionNodeStmtList::ExpressionNodeStmtList(ParserTree *tree, const ExpressionNodeStmtList *src)
   : ExpressionNodeTree(tree, src)
   , m_returnType(src->getReturnType())
 {
+  SETDEBUGSTR();
 }
 
 ExpressionNode *ExpressionNodeStmtList::clone(ParserTree *tree) const {
@@ -32,22 +34,23 @@ bool ExpressionNodeStmtList::evaluateBool() const {
 }
 
 SNode ExpressionNodeStmtList::doAssignments() const {
-  const SNodeArray &stmtList = getChildArray();
-
-  const int stmtCount = (int)stmtList.size() - 1;
-  for(int i = 0; i < stmtCount; i++) {
-    stmtList[i].doAssignment();
+  const SNodeArray &list = getChildArray();
+  const size_t      n    = list.size() - 1;
+  for(size_t i = 0; i < n; i++) {
+    list[i].doAssignment();
   }
-  return stmtList.last();
+  return list.last();
 }
 
 String ExpressionNodeStmtList::toString() const {
   String result;
   const SNodeArray &list = getChildArray();
-  for(size_t i = 0; i < list.size(); i++) {
+  const size_t      n    = list.size() - 1;
+  for(size_t i = 0; i < n; i++) {
     result += list[i].toString();
     result += _T(";\n");
   }
+  result += list.last().toString();
   return result;
 }
 

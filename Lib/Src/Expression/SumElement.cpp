@@ -27,6 +27,7 @@ void SumElement::init(ExpressionNode *n, bool positive) {
 
 SumElement::SumElement(const SNode &n, bool positive) {
   init(n.node(), positive);
+  SETDEBUGSTR();
 }
 
 const ExpressionNode *SumElement::createExpressionNode() const {

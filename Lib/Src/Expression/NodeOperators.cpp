@@ -19,6 +19,10 @@ ExpressionNode *NodeOperators::getTwo(ExpressionNode *n) { // static
   return n->getTree().getTwo();
 }
 
+ExpressionNode *NodeOperators::getHalf(ExpressionNode *n) { // static
+  return n->getTree().getHalf();
+}
+
 ExpressionNode *NodeOperators::getTen(ExpressionNode *n) { // static
   return n->getTree().getTen();
 }

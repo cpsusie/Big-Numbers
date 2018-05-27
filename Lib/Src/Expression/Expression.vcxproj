@@ -1131,6 +1131,9 @@
   <ItemGroup>
     <Text Include="Expression.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="Expression.natvis" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

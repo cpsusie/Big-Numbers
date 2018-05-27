@@ -52,19 +52,13 @@ private:
   bool operator==(const SNode &n) const; // not implemented
   bool operator!=(const SNode &n) const; // not implemented
 
-#ifdef _DEBUG
-  const TCHAR *m_debugStr;
-  void setDebugStr();
-#define SETDEBUGSTRING() setDebugStr()
-#else
-#define SETDEBUGSTRING()
-#endif
-
   SNode DPoly(    const String &name) const;
   SNode DStmtList(const String &name) const;
 
   static ExpressionFactor *factor(SNode b, SNode e);
 
+  SNode             &setReduced(); // return *this
+  bool               isReduced() const;
   SNode              reduceBoolExp();
   SNode              reduceNot();
   SNode              reduceAndOr();
@@ -109,20 +103,20 @@ private:
   bool               canUseReverseIdiotRule(      SumElement       *e1,       SumElement *e2, SumElement* &result) const;
   bool               isSquareOfSinOrCos() const;
   bool               sameLogarithm(               const SNode n) const;
-  static bool        rationalExponentsMultiply(   const Rational   &r1, const Rational &r2);
+protected:
+  SNode              multiplyExponents(           SNode e1, SNode e2) const;
+  SNode              divideExponents(             SNode e1, SNode e2) const;
 
   friend class MarkedNodeMultiplier;
 public:
   friend class SNodeArray;
   inline SNode() : m_node(NULL) {
-    SETDEBUGSTRING();
   }
   inline SNode(ExpressionNode *node) : m_node(node) {
-    SETDEBUGSTRING();
   }
 #ifdef _DEBUG
   inline SNode &operator=(const SNode &src) {
-    m_node = src.m_node; SETDEBUGSTRING();
+    m_node = src.m_node;
     return *this;
   }
 #endif
@@ -200,13 +194,15 @@ public:
   bool                  isOne()                                const;
   bool                  isTwo()                                const;
   bool                  isTen()                                const;
+  bool                  isMinusOne()                           const;
+  bool                  isMinusTwo()                           const;
   bool                  isNegative()                           const;
   bool                  isPositive()                           const;
   bool                  isTrue()                               const;
   bool                  isFalse()                              const;
   ExpressionInputSymbol getInverseFunction()                   const;
 
-  bool                  isCoefficientArrayConstant()           const;
+  bool                  isCoefArrayConstant()                  const;
   bool                  dependsOn(const String &name)          const;
 
   bool                  containsFunctionCall()                 const;
@@ -298,7 +294,7 @@ public:
     return (*this)[0].getTree();
   }
   bool isConstant() const;
-  bool isSameNodes(const SNodeArray &a) const; // compare only if ExpressionNode* equals
+  bool isSameNodes(const SNodeArray &a) const; // return true, if ExpressionNode pointers are the same
   bool equal(      const SNodeArray &a) const; // recursive compare all nodes ( deep compare)
   bool equalMinus( const SNodeArray &a) const; // recursive compare all nodes ( deep compare)
   SNodeArray &cloneNodes(SNodeArray &dst, ParserTree *tree) const;

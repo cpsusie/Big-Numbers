@@ -84,6 +84,7 @@ protected:
   static ExpressionNode  *getOne(            ExpressionNode *n);
   static ExpressionNode  *getMinusOne(       ExpressionNode *n);
   static ExpressionNode  *getTwo(            ExpressionNode *n);
+  static ExpressionNode  *getHalf(           ExpressionNode *n);
   static ExpressionNode  *getTen(            ExpressionNode *n);
   static ExpressionNode  *numberExpression(  ExpressionNode *n, const Number &v);
   static ExpressionNode  *numberExpression(  ExpressionNode *n, INT64         v);
@@ -96,6 +97,8 @@ public:
   virtual ExpressionNode *diff(      ExpressionNode *n1, ExpressionNode *n2) const = NULL;
   virtual ExpressionNode *prod(      ExpressionNode *n1, ExpressionNode *n2) const = NULL;
   virtual ExpressionNode *quot(      ExpressionNode *n1, ExpressionNode *n2) const = NULL;
+  // Return a division node without reduction to rational. to be used with exponents ie sqrt(x^2) != x
+  virtual ExpressionNode *quot(      ParserTree *tree, INT64 num, INT64 den) const = NULL;
   virtual ExpressionNode *mod(       ExpressionNode *n1, ExpressionNode *n2) const = NULL;
   virtual ExpressionNode *power(     ExpressionNode *n1, ExpressionNode *n2) const = NULL;
   virtual ExpressionNode *root(      ExpressionNode *n1, ExpressionNode *n2) const = NULL;
@@ -130,7 +133,11 @@ private:
   ExpressionNodeBoolConst      *m_false, *m_true;
 
   DEFINEREDUCTIONSTACK;
-
+#ifdef TRACE_REDUCTION_CALLSTACK
+  inline ParserTree &getTree() {
+    return *this;
+  }
+#endif // TRACE_REDUCTION_CALLSTACK
 private:
   inline void resetSimpleConstants() {
     m_minusOne = m_zero = m_one = m_two = m_ten = m_half = NULL;
@@ -144,6 +151,7 @@ private:
   friend class ExpressionNodeVariable;
   friend class NodeOperators;
   friend class NodeOperatorsCanonForm;
+  friend class NodeOperatorsStdForm;
   friend class SNode;
   friend class ParserTreeSymbolTable;
   friend class SumElement;
@@ -324,6 +332,8 @@ public:
   inline ExpressionNode  *diff(      ExpressionNode *n1, ExpressionNode *n2) { return m_ops->diff( n1,n2); }
   inline ExpressionNode  *prod(      ExpressionNode *n1, ExpressionNode *n2) { return m_ops->prod( n1,n2); }
   inline ExpressionNode  *quot(      ExpressionNode *n1, ExpressionNode *n2) { return m_ops->quot( n1,n2); }
+  // Return a division node without reduction to rational. to be used with exponents ie sqrt(x^2) != x
+  inline ExpressionNode  *quot(      INT64 num, INT64 den) { return m_ops->quot(this,num,den); }
   inline ExpressionNode  *mod(       ExpressionNode *n1, ExpressionNode *n2) { return m_ops->mod(  n1,n2); }
   inline ExpressionNode  *power(     ExpressionNode *n1, ExpressionNode *n2) { return m_ops->power(n1,n2); }
   inline ExpressionNode  *root(      ExpressionNode *n1, ExpressionNode *n2) { return m_ops->root( n1,n2); }

@@ -262,4 +262,7 @@
       <Filter>Source Files\ASM Files</Filter>
     </CustomBuild>
   </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="Expression.natvis" />
+  </ItemGroup>
 </Project>

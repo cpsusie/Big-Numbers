@@ -1,5 +1,15 @@
 #pragma once
 
+#define USE_DEBUGSTR
+
+#ifdef USE_DEBUGSTR
+#define SETDEBUGSTR() m_debugStr = toString()
+#define DECLAREDEBUGSTR  protected: String m_debugStr
+#else
+#define SETDEBUGSTR()
+#define DECLAREDEBUGSTR
+#endif // _DEBUG
+
 #ifdef _DEBUG
 #define TRACE_REDUCTION_CALLSTACK
 #endif
@@ -50,7 +60,7 @@ public:
 #define DEFFUNC                const TCHAR *_func = ReductionStack::getRawName(__TFUNCTION__)
 #define _PUSH(...)             GETSTACK().push(_func,__VA_ARGS__)
 #define _POP()                 GETSTACK().pop(_func)
-#define ENTERMETHOD()          DEFFUNC; _PUSH(format(_T("n:<%s>"), toString().cstr()),m_node)
+#define ENTERMETHOD()          DEFFUNC; _PUSH(format(_T("n:<%s>"), toString().cstr()),node())
 #define ENTERMETHOD1(v)        DEFFUNC; _PUSH(format(_T("%s:<%s>"), _T(#v), (v).toString().cstr()))
 #define ENTERMETHOD2(v1,v2)    DEFFUNC; _PUSH(format(_T("%s:<%s>, %s:<%s>"), _T(#v1), (v1).toString().cstr(), _T(#v2), (v2).toString().cstr()))
 #define ENTERMETHOD2NUM(v1,v2) DEFFUNC; _PUSH(format(_T("%s:<%s>, %s:<%s>"), _T(#v1), ::toString(v2).cstr(), _T(#v2), ::toString(v2).cstr()))
@@ -73,9 +83,17 @@ public:
 #define RETURNNODE(n)                                                    \
 { const SNode &_n = n;                                                   \
   CHECKISCONSISTENT(_n);                                                 \
-  _PUSH(format(_T("Reduced:<%s>"), _n.toString().cstr()),_n.m_node);     \
+  _PUSH(format(_T("Reduced:<%s>"), _n.toString().cstr()),_n.node());     \
   _POP();                                                                \
   RETURN(_n);                                                            \
+}
+
+#define RETURNNODEP(n)                                                   \
+{ const SNode &_n = n;                                                   \
+  CHECKISCONSISTENT(_n);                                                 \
+  _PUSH(format(_T("Reduced:<%s>"), _n.toString().cstr()),_n.node());     \
+  _POP();                                                                \
+  RETURN(_n.node());                                                     \
 }
 
 #define RETURNSHOWSTR(v)                                                 \

@@ -1,17 +1,8 @@
 #include "pch.h"
 #include <Math/Expression/ParserTree.h>
 #include <Math/Expression/ExpressionFactor.h>
-#ifdef _DEBUG
-#include <Math/Expression/ExpressionParser.h>
-#endif
 
 namespace Expr {
-
-#ifdef _DEBUG
-void SNode::setDebugStr() {
- m_debugStr = m_node ? ExpressionParser::getTables().getSymbolName(m_node->getSymbol()) : _T("null");
-}
-#endif
 
 SNode::SNode(ParserTree &tree, int v) {
   m_node = tree.numberExpression(v);
@@ -250,6 +241,14 @@ bool SNode::isTen() const {
   return m_node->isTen();
 }
 
+bool SNode::isMinusOne() const {
+  return m_node->isMinusOne();
+}
+
+bool SNode::isMinusTwo() const {
+  return m_node->isMinusTwo();
+}
+
 bool SNode::isNegative() const {
   return m_node->isNegative();
 }
@@ -270,8 +269,8 @@ ExpressionInputSymbol SNode::getInverseFunction() const {
   return m_node->getInverseFunction();
 }
 
-bool SNode::isCoefficientArrayConstant() const {
-  return m_node->isCoefficientArrayConstant();
+bool SNode::isCoefArrayConstant() const {
+  return m_node->isCoefArrayConstant();
 }
 
 bool SNode::dependsOn(const String &name) const {
@@ -606,7 +605,20 @@ SNode binExp(ExpressionInputSymbol symbol, SNode n1, SNode n2) {
 }
 
 SNode treeExp(ExpressionInputSymbol symbol, SNodeArray &a) {
-  return a.getTree().treeExpr(symbol, a);
+  switch (symbol) {
+  case STMTLIST: return stmtList(a);
+  case ASSIGN  : return assignStmt(a);
+  case AND     :
+  case OR      :
+  case NOT     :
+  case EQ      :
+  case NE      :
+  case LT      :
+  case LE      :
+  case GT      :
+  case GE      : return boolExp(symbol, a);
+  default      : return a.getTree().treeExpr(symbol, a);
+  }
 }
 
 SNode condExp(SNode condition, SNode nTrue, SNode nFalse) {

@@ -830,7 +830,7 @@ AlignedImage *ExpressionPainter::getBinomialImage(SNode n, int fontSize, Express
 }
 
 AlignedImage *ExpressionPainter::getPolyImage(SNode n, int fontSize, ExpressionRectangle &rect) {
-  if(n.getArgument().isNameOrNumber() && n.isCoefficientArrayConstant()) {
+  if(n.getArgument().isNameOrNumber() && n.isCoefArrayConstant()) {
     return getStdPolyImage(n, fontSize, rect);
   }
   ExpressionRectangle polyRect, lbRect, rbRect, commaRect, lpRect, rpRect, argRect;

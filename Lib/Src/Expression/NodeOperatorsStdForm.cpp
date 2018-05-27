@@ -25,6 +25,8 @@ public:
   ExpressionNode *diff(      ExpressionNode *n1, ExpressionNode *n2) const;
   ExpressionNode *prod(      ExpressionNode *n1, ExpressionNode *n2) const;
   ExpressionNode *quot(      ExpressionNode *n1, ExpressionNode *n2) const;
+  // Return a division node without reduction to rational. to be used with exponents ie sqrt(x^2) != x
+  ExpressionNode *quot(      ParserTree *tree, INT64 num, INT64 den) const;
   ExpressionNode *mod(       ExpressionNode *n1, ExpressionNode *n2) const;
   ExpressionNode *power(     ExpressionNode *n1, ExpressionNode *n2) const;
   ExpressionNode *root(      ExpressionNode *n1, ExpressionNode *n2) const;
@@ -151,6 +153,12 @@ ExpressionNode *NodeOperatorsStdForm::quot(ExpressionNode *n1, ExpressionNode *n
   } else {
     return binaryExpr(QUOT, n1, n2);
   }
+}
+
+ExpressionNode *NodeOperatorsStdForm::quot(ParserTree *tree, INT64 num, INT64 den) const {
+  ExpressionNode *q = binaryExpr(QUOT, tree->numberExpression(num), tree->numberExpression(den));
+  q->setReduced();
+  return q;
 }
 
 ExpressionNode *NodeOperatorsStdForm::mod(ExpressionNode *n1, ExpressionNode *n2) const {
@@ -330,33 +338,12 @@ StdNode StdNode::toSFormStmtList() const {
   return stmtList(newChildArray);
 }
 
-
-static int compare2(SumElement * const &e1, SumElement * const &e2) {
-  const bool p1 = e1->isPositive();
-  const bool p2 = e2->isPositive();
-  int c = p2 - p1;
-  if(c) return c;
-  return e1->compare(e2);
-}
-
-static int compareMany(SumElement * const &e1, SumElement * const &e2) {
-  return e1->compare(e2);
-}
-
-static void sortAddentArrayStdForm(AddentArray &a) {
-  if(a.size() == 2) {
-    a.sort(compare2);
-  } else {
-    a.sort(compareMany);
-  }
-}
-
 StdNode StdNode::toSFormSum() const {
   AddentArray a = getAddentArray();
   if(a.size() == 0) {
     return _0();
   } else {
-    sortAddentArrayStdForm(a);
+    a.sortStdForm();
     StdNode result = N(a[0]->getNode()).toSForm(); // not createExpressionNode here. We'll get infinite recursion
     if(!a[0]->isPositive()) result = -result;
     for(size_t i = 1; i < a.size(); i++) {
@@ -480,7 +467,6 @@ StdNode StdNode::toSFormPow() const {
 
 class StandardFormChecker : public ExpressionNodeHandler {
 private:
-  static const ExpressionSymbolSet s_illegalSymbolSet;
   String m_error;
   bool   m_ok;
 public:
@@ -495,12 +481,11 @@ public:
   }
 };
 
-const ExpressionSymbolSet StandardFormChecker::s_illegalSymbolSet(
-    PRODUCT, SUM, EOI
-);
-
 bool StandardFormChecker::handleNode(ExpressionNode *n, int level) {
-  if(s_illegalSymbolSet.contains(n->getSymbol())) {
+  static const ExpressionSymbolSet illegalSymbolSet(
+    PRODUCT, SUM, EOI
+  );
+  if(illegalSymbolSet.contains(n->getSymbol())) {
     m_error = format(_T("Illegal symbol in standard form:<%s>. node=<%s>")
                     ,n->getSymbolName().cstr(), n->toString().cstr());
     m_ok = false;

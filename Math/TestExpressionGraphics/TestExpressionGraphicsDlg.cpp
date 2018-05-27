@@ -397,7 +397,7 @@ void CTestExpressionGraphicsDlg::startThread(int debugWinId, bool singleStep) {
     createThread(*ee);
     INVALIDATE();
     if(singleStep) {
-      m_debugThread->singleStep();
+      m_debugThread->singleSubStep();
     } else {
       m_debugThread->go();
     }
