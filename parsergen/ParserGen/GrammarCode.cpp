@@ -19,7 +19,6 @@ GrammarCoder::GrammarCoder(const String &templateName
 , m_nameSpace(      nameSpace                                                   )
 , m_docFileName(    FileNameSplitter(m_sourceName).setExtension(_T("txt")).getFullPath())
 {
-  m_tablesByteCount  = 0;
 }
 
 GrammarCoder::~GrammarCoder() {
@@ -173,9 +172,9 @@ void GrammarCoder::generateDocFile(MarginFile &output) {
   output.printf(_T("%4d\tproductions\n")   , m_grammar.getProductionCount() );
   output.printf(_T("%4d\tLALR(1) states\n"), m_grammar.getStateCount()      );
   output.printf(_T("%4d\titems\n")         , m_grammar.getItemCount()       );
-  const int byteCount = getByteCount();
-  if(byteCount > 0) {
-    output.printf(_T("%4d\tbytes required for parsertables\n"), byteCount);
+  const ByteCount &byteCount = getByteCount();
+  if(!byteCount.isEmpty()) {
+    output.printf(_T("%s\t required for parsertables\n"), byteCount.toString().cstr());
   }
   output.printf(_T("\n"));
   output.printf(_T("%4d\tshift/reduce  conflicts\n"), m_grammar.m_SRconflicts);

@@ -3,6 +3,48 @@
 #include <TreeMap.h>
 #include "TemplateWriter.h"
 
+class ByteCount {
+private:
+  UINT m_countx86;
+  UINT m_countx64;
+public:
+  inline ByteCount() : m_countx86(0), m_countx64(0) {
+  }
+  inline ByteCount(UINT countx86, UINT countx64) : m_countx86(countx86), m_countx64(countx64) {
+  }
+  inline void reset() {
+    m_countx86 = m_countx64 = 0;
+  }
+  inline bool isEmpty() const {
+    return (m_countx86 == 0) && (m_countx64 == 0);
+  }
+  inline ByteCount operator+(const ByteCount &rhs) const {
+    return ByteCount(m_countx86+rhs.m_countx86, m_countx64+rhs.m_countx64);
+  }
+  inline ByteCount &operator+=(const ByteCount &rhs) {
+    m_countx86 += rhs.m_countx86;
+    m_countx64 += rhs.m_countx64;
+    return *this;
+  }
+  friend inline ByteCount operator*(UINT n, const ByteCount &c) {
+    return ByteCount(n*c.m_countx86,n*c.m_countx64);
+  }
+  friend inline ByteCount operator*(const ByteCount &c, UINT n) {
+    return ByteCount(n*c.m_countx86,n*c.m_countx64);
+  }
+  ByteCount getAlignedSize() const {
+    const int restx86 = m_countx86%4, restx64 = m_countx64%8;
+    return ByteCount(restx86 ? (m_countx86 + (4-restx86)) : m_countx86
+                    ,restx64 ? (m_countx64 + (8-restx64)) : m_countx64);
+  }
+  inline String toString() const {
+    return format(_T("%s(x86)/%s(x64) bytes")
+                 ,format1000(m_countx86).cstr()
+                 ,format1000(m_countx64).cstr());
+  }
+  static ByteCount s_pointerSize;
+};
+
 class GrammarCoder {
 private:
   const String     m_templateName;
@@ -16,7 +58,7 @@ private:
   const String     m_tablesClassName;
   const String     m_docFileName;
   const String     m_nameSpace;
-  unsigned int     m_tablesByteCount;
+  ByteCount        m_tablesByteCount;
 public:
   GrammarCoder(const String &templateName
              , Grammar      &grammar
@@ -49,11 +91,11 @@ public:
     return m_flags;
   }
 
-  void setByteCount(unsigned int count) {
+  void setByteCount(const ByteCount &count) {
     m_tablesByteCount = count;
   }
 
-  unsigned int getByteCount() const {
+  const ByteCount &getByteCount() const {
     return m_tablesByteCount;
   }
 };
@@ -69,9 +111,9 @@ private:
   const String                 m_parserClassName;
   const String                 m_tablesClassName;
   mutable BitSet               m_compressibleStateSet;
-  mutable unsigned int         m_countTableBytes;
-  mutable unsigned int         m_uncompressedStateBytes;
-  mutable unsigned int         m_compressedLASetBytes;
+  mutable ByteCount            m_countTableBytes;
+  mutable ByteCount            m_uncompressedStateBytes;
+  mutable ByteCount            m_compressedLASetBytes;
 
   bool tableTypeIsShort() const {
     return getStateCount() >= 128 || getSymbolCount() >= 128 || getProductionCount() >= 128 || getMaxInputCount() >= 128;
@@ -79,7 +121,8 @@ private:
   int getTableTypeSize() const {
     return tableTypeIsShort() ? sizeof(short) : sizeof(char);
   }
-  static int wordAlignedSize(int size);
+  static ByteCount wordAlignedSize(int size);
+  static ByteCount wordAlignedSize(const ByteCount &c, UINT n); // for arrays with n elements, each of size s
   int getMaxInputCount() const;
 
   void initCompressibleStateSet();
@@ -99,17 +142,17 @@ private:
 
   void printCpp( MarginFile &output, bool useTableCompression) const;
   void printJava(MarginFile &output, bool useTableCompression) const;
-  int  printActionMatrixCpp(           MarginFile &output) const;                      // return size in bytes
-  int  printCompressedActionsCpp(      MarginFile &output) const;
-  int  printUncompressedActionsCpp(    MarginFile &output) const;                      // return size in bytes
-  int  printUncompressedActionArrayCpp(MarginFile &output, unsigned int state) const;  // return size in bytes
-  int  printSuccessorMatrixCpp(        MarginFile &output) const;                      // return size in bytes
-  int  printSuccessorArrayCpp(         MarginFile &output, unsigned int state) const;  // return size in bytes
-  int  printProductionLengthTableCpp(  MarginFile &output) const;                      // return size in bytes
-  int  printLeftSideTableCpp(          MarginFile &output) const;                      // return size in bytes
-  int  printRightSideTableCpp(         MarginFile &output) const;                      // return size in bytes
-  int  printSymbolNameTableCpp(        MarginFile &output) const;                      // return size in bytes
-  int  printByteArray(                 MarginFile &output, const String &name, const ByteArray &ba, UINT bytesPerLine = 20, const StringArray *linePrefix = NULL) const;
+  ByteCount printActionMatrixCpp(           MarginFile &output) const;                      // return size in bytes
+  ByteCount printCompressedActionsCpp(      MarginFile &output) const;
+  ByteCount printUncompressedActionsCpp(    MarginFile &output) const;                      // return size in bytes
+  ByteCount printUncompressedActionArrayCpp(MarginFile &output, unsigned int state) const;  // return size in bytes
+  ByteCount printSuccessorMatrixCpp(        MarginFile &output) const;                      // return size in bytes
+  ByteCount printSuccessorArrayCpp(         MarginFile &output, unsigned int state) const;  // return size in bytes
+  ByteCount printProductionLengthTableCpp(  MarginFile &output) const;                      // return size in bytes
+  ByteCount printLeftSideTableCpp(          MarginFile &output) const;                      // return size in bytes
+  ByteCount printRightSideTableCpp(         MarginFile &output) const;                      // return size in bytes
+  ByteCount printSymbolNameTableCpp(        MarginFile &output) const;                      // return size in bytes
+  ByteCount printByteArray(                 MarginFile &output, const String &name, const ByteArray &ba, UINT bytesPerLine = 20, const StringArray *linePrefix = NULL) const;
 public:
   GrammarTables(const Grammar &g, const String &tableClassName, const String &parserClassName);
   int getAction(   unsigned int state, int input) const;
@@ -150,6 +193,6 @@ public:
   }
 
   void getLegalInputs(unsigned int state, unsigned int *symbols) const;
-  unsigned int getTotalSizeInBytes(bool useTableCompression) const;
+  ByteCount getTotalSizeInBytes(bool useTableCompression) const;
   void print(MarginFile &output, Language language, bool useTableCompression) const;
 };

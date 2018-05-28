@@ -7,7 +7,7 @@ GrammarTables::GrammarTables(const Grammar &grammar, const String &tablesClassNa
 , m_parserClassName(parserClassName)
 {
   m_terminalCount   = grammar.getTerminalCount();
-  m_countTableBytes = 0;
+  m_countTableBytes.reset();
 
   for(int p = 0; p < grammar.getProductionCount(); p++) {
     const Production &prod = grammar.getProduction(p);
@@ -108,19 +108,22 @@ bool GrammarTables::calcIsCompressibleState(unsigned int state) const {
   }
 }
 
-int GrammarTables::wordAlignedSize(int size) { // static
-  const int rest = size%4;
-  return rest ? (size + (4-rest)) : size;
+ByteCount GrammarTables::wordAlignedSize(const ByteCount &c, UINT n) { // static
+  return (n *c).getAlignedSize();
 }
 
-UINT GrammarTables::getTotalSizeInBytes(bool useTableCompression) const {
-  if(m_countTableBytes > 0) {
+ByteCount GrammarTables::wordAlignedSize(int size) { // static
+  return wordAlignedSize(ByteCount(size,size),1);
+}
+
+ByteCount GrammarTables::getTotalSizeInBytes(bool useTableCompression) const {
+  if(!m_countTableBytes.isEmpty()) {
     return m_countTableBytes;
   }
 
   const UINT tableTypeSize = getTableTypeSize();
 
-  const int compressedSetSize = wordAlignedSize(sizeof(unsigned char) * ((getStateCount()-1)/8+1));
+  const ByteCount compressedSetSize = wordAlignedSize(sizeof(unsigned char) * ((getStateCount()-1)/8+1));
 
   m_countTableBytes += compressedSetSize + m_compressedLASetBytes + m_uncompressedStateBytes;
 
@@ -137,16 +140,16 @@ UINT GrammarTables::getTotalSizeInBytes(bool useTableCompression) const {
 
   unsigned int countStringBytes = 0;
   for(size_t s = 0; s < m_symbolName.size(); s++) {
-    countStringBytes += (UINT)m_symbolName[s].length() + 1;
+    countStringBytes += sizeof(TCHAR)*((UINT)m_symbolName[s].length() + 1);
   }
 
-  m_countTableBytes += 2 * sizeof(void*) * getStateCount()      // action + successor
-                     + sizeof(char)      * getProductionCount() // productionLength
-                     + tableTypeSize     * getProductionCount() // leftSide
-                     + countStringBytes                         // symbolname[i]
-                     + sizeof(char*)     * getSymbolCount()     // symbolname array
-                     + sizeof(void*)     * 8;                   // PAshorttable/PAchartables + PAtables
-                     + 4 * sizeof(short);                       // noorterminals, symbolCount, productionCount, stateCount
+  m_countTableBytes += 2 * wordAlignedSize(ByteCount::s_pointerSize,getStateCount())  // action + successor
+                     + wordAlignedSize(sizeof(char)      * getProductionCount())      // productionLength
+                     + wordAlignedSize(tableTypeSize     * getProductionCount())      // leftSide
+                     + wordAlignedSize(countStringBytes)                              // symbolname[i]
+                     + wordAlignedSize(ByteCount::s_pointerSize    ,getSymbolCount()) // symbolname array
+                     + wordAlignedSize(ByteCount::s_pointerSize,    8               ) // PAshorttable/PAchartables + PAtables
+                     + wordAlignedSize(sizeof(short)*4);                              // noorterminals, symbolCount, productionCount, stateCount
 
   return m_countTableBytes;
 }
@@ -196,7 +199,7 @@ void GrammarTables::print(MarginFile &output, Language language, bool useTableCo
   }
 }
 
-int GrammarTables::printByteArray(MarginFile &output, const String &name, const ByteArray &ba, UINT bytesPerLine, const StringArray *linePrefix) const {
+ByteCount GrammarTables::printByteArray(MarginFile &output, const String &name, const ByteArray &ba, UINT bytesPerLine, const StringArray *linePrefix) const {
   const UINT nBytes = (UINT)ba.size();
   output.setLeftMargin(0);
   output.printf(_T("static const BYTE %s[%u] = {"), name.cstr(), nBytes);
@@ -219,8 +222,7 @@ int GrammarTables::printByteArray(MarginFile &output, const String &name, const 
     }
   }
   output.setLeftMargin(0);
-  const int byteCount = wordAlignedSize(nBytes*sizeof(unsigned char));
-  output.printf(_T("\n}; // Size of table:%d bytes.\n"), byteCount);
+  const ByteCount byteCount = wordAlignedSize(nBytes*sizeof(unsigned char));
+  output.printf(_T("\n}; // Size of table:%s.\n"), byteCount.toString().cstr());
   return byteCount;
 }
-
