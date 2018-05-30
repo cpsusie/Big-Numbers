@@ -247,11 +247,16 @@ public:
   inline const ExpressionNode *getRoot() const {
     return m_root;
   }
+
   inline ExpressionNode *getRoot() {
     return m_root;
   }
 
   void setRoot(ExpressionNode *n);
+
+  inline bool isEmpty() const {
+    return m_root == NULL;
+  }
 
   bool equal(const ParserTree &tree) const {
     return Expr::equal(getRoot(), tree.getRoot());
@@ -404,6 +409,12 @@ public:
   ExpressionNode *indexedProduct(            ExpressionNode *assign
                                             ,ExpressionNode *endExpr
                                             ,ExpressionNode *expr);
+
+  // if both n1 and n2 are rational constants, they will be reduced as much as possible
+  // without loosing symmetry with even exponents. if one or both are not rational
+  // these 2 functions will just return as normal (prod/quot)
+  ExpressionNode *multiplyExponents(         ExpressionNode *n1, ExpressionNode *n2);
+  ExpressionNode *divideExponents(           ExpressionNode *n1, ExpressionNode *n2);
 
   void addError( ExpressionNode *n              , _In_z_ _Printf_format_string_ TCHAR const * const format,...);
   void addError( const SourcePosition       &pos, _In_z_ _Printf_format_string_ TCHAR const * const format,...);

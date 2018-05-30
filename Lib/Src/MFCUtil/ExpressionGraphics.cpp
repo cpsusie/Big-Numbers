@@ -292,10 +292,10 @@ private:
   AlignedImage *getParenthesizedImage(SNode n, bool textFont, const String &leftPar, const String &rightPar, int fontSize, ExpressionRectangle &rect, double alignPar = 0.5);
   AlignedImage *getImage(             SNode n, int fontSize, ExpressionRectangle &rect);
   AlignedImage *getImage1(            SNode n, int fontSize, ExpressionRectangle &rect);
-  AlignedImage *getSummationImage(    SNode n, int fontSize, ExpressionRectangle &rect);
+  AlignedImage *getSumImage(          SNode n, int fontSize, ExpressionRectangle &rect);
+  AlignedImage *getSumElementImage(   SumElement *e, int fontSize, ExpressionRectangle &rect);
   AlignedImage *getProductImage(      SNode n, int fontSize, ExpressionRectangle &rect);
-  AlignedImage *getProductImage(      const FactorArray &factors, SNode parent, int fontSize, bool changeExponentSign, ExpressionRectangle &rect);
-  AlignedImage *getFactorImage(       SNode factor, SNode parent, int fontSize, bool changeExponentSign, ExpressionRectangle &rect);
+  AlignedImage *getFactorImage(       SNode factor , int fontSize, ExpressionRectangle &rect);
   AlignedImage *getQuotImage(         SNode n, int fontSize, ExpressionRectangle &rect);
   AlignedImage *getQuotImage(         const AlignedImage *p, const AlignedImage *q, ExpressionRectangle &rect);
   AlignedImage *getPowerImage(        SNode n, int fontSize, ExpressionRectangle &rect);
@@ -434,10 +434,10 @@ AlignedImage *ExpressionPainter::getImage1(SNode n, int fontSize, ExpressionRect
     return getNumberImage(n, fontSize, rect);
 
   case SUM               :
-    return getSummationImage(n, fontSize, rect);
+    return getSumImage(n, fontSize, rect);
 
   case PRODUCT           :
-    return getProductImage(  n, fontSize, rect);
+    return getProductImage(n, fontSize, rect);
 
   case MINUS             :
     if(n.isUnaryMinus()) {
@@ -556,89 +556,76 @@ AlignedImage *ExpressionPainter::getImage1(SNode n, int fontSize, ExpressionRect
   return result;
 }
 
-AlignedImage *ExpressionPainter::getSummationImage(SNode n, int fontSize, ExpressionRectangle &rect) {
-  ExpressionRectangle plusRect, minusRect;
-  AlignedImage *plusImage  = getOpImage(PLUS , fontSize, plusRect );
-  AlignedImage *minusImage = getOpImage(MINUS, fontSize, minusRect);
-  ImageArray    imageList;
+AlignedImage *ExpressionPainter::getSumImage(SNode n, int fontSize, ExpressionRectangle &rect) {
+  ExpressionRectangle sumRect, commaRect, lpRect, rpRect;
+  ImageArray result;
+  result.add(getTextImage(_T("sum"), true, fontSize, sumRect));
+  result.add(getOpImage(LPAR, fontSize, lpRect));
+  rect.addChild(sumRect).addChild(lpRect);
 
-  bool first = true;
-  AddentArray &elements = n.getAddentArray();
-  for(size_t i = 0; i < elements.size(); i++) {
-    SumElement *e = elements[i];
-    ExpressionRectangle childRect;
-    AlignedImage *img = getImage(e->getNode(), fontSize, childRect);
-    if(first) {
-      if(!e->isPositive()) {
-        imageList.add(minusImage);
-        rect.addChild(minusRect);
-      }
-      first = false;
+  AlignedImage *commaImage = NULL;
+  AddentArray &addentArray = n.getAddentArray();
+  for(size_t i = 0; i < addentArray.size(); i++) {
+    SumElement *e = addentArray[i];
+    if(commaImage == NULL) {
+      commaImage = getOpImage(COMMA, fontSize, commaRect);
     } else {
-      if(e->isPositive()) {
-        imageList.add(plusImage);
-        rect.addChild(plusRect);
-      } else {
-        imageList.add(minusImage);
-        rect.addChild(minusRect);
-      }
+      result.add(commaImage);
+      rect.addChild(commaRect);
     }
-    imageList.add(img);
-    rect.addChild(childRect);
+    ExpressionRectangle eRect;
+    result.add(getSumElementImage(e, fontSize, eRect));
+    rect.addChild(eRect);
   }
-  return concatImages(imageList, rect);
+  result.add(getOpImage(RPAR, fontSize, rpRect));
+  rect.addChild(rpRect);
+  return concatImages(result, rect);
+}
+
+AlignedImage *ExpressionPainter::getSumElementImage(SumElement *e, int fontSize, ExpressionRectangle &rect) {
+  if(e->isPositive()) {
+    return getImage(e->getNode(), fontSize, rect);
+  } else {
+    ExpressionRectangle minusRect, lpRect, rpRect, childRect;
+    ImageArray result;
+    AlignedImage *minusImage = getOpImage(MINUS, fontSize, minusRect);
+    result.add(minusImage);
+    result.add(getOpImage(LPAR, fontSize, lpRect));
+    result.add(getImage(e->getNode(), fontSize, childRect));
+    result.add(getOpImage(RPAR, fontSize, rpRect));
+    rect.addChild(minusRect).addChild(lpRect).addChild(childRect).addChild(rpRect);
+    return concatImages(result, rect);
+  }
 }
 
 AlignedImage *ExpressionPainter::getProductImage(SNode n, int fontSize, ExpressionRectangle &rect) {
-  const FactorArray &a = n.getFactorArray();
-  FactorArray p = a.selectConstantPositiveExponentFactors();
-  p.addAll(a.selectNonConstantExponentFactors());
-  FactorArray q = a.selectConstantNegativeExponentFactors();
+  ExpressionRectangle productRect, commaRect, lpRect, rpRect;
+  ImageArray result;
+  result.add(getTextImage(_T("product"), true, fontSize, productRect));
+  result.add(getOpImage(LPAR, fontSize, lpRect));
+  rect.addChild(productRect).addChild(lpRect);
 
-  ExpressionRectangle pRect(rect.TopLeft()), qRect;
-
-  AlignedImage *pImage = p.size() > 0 ? getProductImage(p, n, fontSize, false, pRect) : getTextImage(_T("1"), false, fontSize, pRect);
-  AlignedImage *qImage = q.size() > 0 ? getProductImage(q, n, fontSize, true , qRect) : NULL;
-  if(qImage == NULL) {
-    rect = pRect;
-    return pImage;
-  } else {
-    rect.addChild(pRect).addChild(qRect);
-    AlignedImage *result = getQuotImage(pImage, qImage, rect);
-    return result;
-  }
-}
-
-AlignedImage *ExpressionPainter::getProductImage(const FactorArray &factors, SNode parent, int fontSize, bool changeExponentSign, ExpressionRectangle &rect) {
-  ExpressionRectangle prodRect;
-  AlignedImage *multiplyImage = getOpImage(PROD, fontSize, prodRect);
-  ImageArray imageList;
-  AlignedImage *operatorImage = NULL;
-  for(size_t i = 0; i < factors.size(); i++) {
-    ExpressionFactor *factor = factors[i];
-    if(operatorImage == NULL) {
-      operatorImage = multiplyImage;
+  AlignedImage *commaImage = NULL;
+  const FactorArray &factorArray = n.getFactorArray();
+  for(size_t i = 0; i < factorArray.size(); i++) {
+    SNode factor = factorArray[i];
+    if(commaImage == NULL) {
+      commaImage = getOpImage(COMMA, fontSize, commaRect);
     } else {
-      imageList.add(operatorImage);
-      rect.addChild(prodRect);
+      result.add(commaImage);
+      rect.addChild(commaRect);
     }
-    ExpressionRectangle childRect;
-    imageList.add(getFactorImage(factor, parent, fontSize, changeExponentSign, childRect));
-    rect.addChild(childRect);
+    ExpressionRectangle fRect;
+    result.add(getFactorImage(factor, fontSize, fRect));
+    rect.addChild(fRect);
   }
-  return concatImages(imageList, rect);
+  result.add(getOpImage(RPAR, fontSize, rpRect));
+  rect.addChild(rpRect);
+  return concatImages(result, rect);
 }
 
-AlignedImage *ExpressionPainter::getFactorImage(SNode factor, SNode parent, int fontSize, bool changeExponentSign, ExpressionRectangle &rect) {
-  AlignedImage *result;
-  if(changeExponentSign) {
-    SNode rfactor = factorExp(factor.base(), -factor.exponent());
-    result = getParenthesizedImage(rfactor, parent, fontSize, rect);
-  } else {
-    result = getParenthesizedImage(factor, parent, fontSize, rect);
-  }
-  rect.m_node = factor.node();
-  return result;
+AlignedImage *ExpressionPainter::getFactorImage(SNode factor, int fontSize, ExpressionRectangle &rect) {
+  return getPowerImage(factor, fontSize, rect);
 }
 
 AlignedImage *ExpressionPainter::getQuotImage(SNode n, int fontSize, ExpressionRectangle &rect) {

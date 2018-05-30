@@ -7,7 +7,7 @@ namespace Expr {
 ExpressionNodeSum::ExpressionNodeSum(ParserTree *tree, const AddentArray &elements) : ExpressionNode(tree, SUM) {
   m_elements = elements;
   m_elements.sort();
-  SETDEBUGSTR();
+  SETDEBUGSTRING();
 }
 
 int ExpressionNodeSum::compare(ExpressionNode *n) {

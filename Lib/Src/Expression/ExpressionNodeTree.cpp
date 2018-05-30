@@ -11,12 +11,12 @@ ExpressionNodeTree::ExpressionNodeTree(ParserTree *tree, ExpressionInputSymbol s
   : ExpressionNode(tree, symbol)
   , m_childArray(childArray)
 {
-  SETDEBUGSTR();
+  SETDEBUGSTRING();
 }
 
 ExpressionNodeTree::ExpressionNodeTree(ParserTree *tree, const ExpressionNodeTree *src) : ExpressionNode(tree, src->getSymbol()) {
   src->getChildArray().cloneNodes(m_childArray, tree);
-  SETDEBUGSTR();
+  SETDEBUGSTRING();
 }
 
 ExpressionNodeTree::ExpressionNodeTree(ParserTree *tree, ExpressionInputSymbol symbol, ...) : ExpressionNode(tree, symbol) {

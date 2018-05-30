@@ -5,19 +5,26 @@
 
 namespace Expr {
 
+#ifdef CHECK_CONSISTENCY
+#define CHECKROOT_ISCONSISTENT() if(!isEmpty()) getRoot()->checkIsConsistent();
+#else // CHECK_CONSISTENCY
+  #define CHECKROOT_ISCONSISTENT()
+#endif
+
 ParserTree::ParserTree(TrigonometricMode mode) {
   init(mode, PS_EMPTY,0);
-  m_root             = NULL;
-  m_ops              = NodeOperators::s_stdForm;
-  m_ok               = false;
+  m_root   = NULL;
+  m_ops    = NodeOperators::s_stdForm;
+  m_ok     = false;
 }
 
 ParserTree::ParserTree(const ParserTree &src) {
   init(src.getTrigonometricMode(), src.getState(), src.getReduceIteration());
-  m_errors           = src.m_errors;
-  m_root             = src.m_root ? src.m_root->clone(this) : NULL;
-  m_ops              = src.m_ops;
-  m_ok               = src.m_ok;
+  m_errors = src.m_errors;
+  m_root   = src.isEmpty() ? NULL : src.getRoot()->clone(this);
+  m_ops    = src.m_ops;
+  m_ok     = src.m_ok;
+  CHECKROOT_ISCONSISTENT();
 }
 
 void ParserTree::init(TrigonometricMode    mode
@@ -35,7 +42,7 @@ ParserTree &ParserTree::operator=(const ParserTree &src) {
   }
   releaseAll();
   m_errors = src.m_errors;
-  setRoot(             src.m_root ? src.m_root->clone(this) : NULL);
+  setRoot(             src.isEmpty() ? NULL : src.getRoot()->clone(this));
   setTreeForm(         src.getTreeForm());
   setOk(               src.m_ok);
   setReduceIteration(  src.getReduceIteration());
@@ -49,6 +56,7 @@ ParserTree::~ParserTree() {
 
 void ParserTree::setRoot(ExpressionNode *n) {
   setProperty(PP_ROOT, m_root, n);
+  CHECKROOT_ISCONSISTENT();
 }
 
 void ParserTree::setOk(bool ok) {
@@ -334,8 +342,8 @@ void ParserTree::substituteNodes(CompactNodeHashMap<ExpressionNode*> &nodeMap) {
 }
 
 void ParserTree::traverseTree(ExpressionNodeHandler &handler) {
-  if(m_root) {
-    m_root->traverseExpression(handler, 0);
+  if(!isEmpty()) {
+    getRoot()->traverseExpression(handler, 0);
   }
 }
 
@@ -475,7 +483,9 @@ ExpressionNode *ParserTree::constExpression(const String &name) {
 String ParserTree::treeToString() const {
   ((ParserTree*)this)->unmarkAll();
   String result;
-  if(m_root) m_root->dumpNode(result, 0);
+  if(!isEmpty()) {
+    getRoot()->dumpNode(result, 0);
+  }
   result += getSymbolTable().toString();
   return result;
 }

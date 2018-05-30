@@ -10,6 +10,7 @@ static int compareFactors(ExpressionFactor * const &f1, ExpressionFactor * const
 
 FactorArray &FactorArray::sort() {
   __super::sort(compareFactors);
+  SETDEBUGSTRING();
   return *this;
 }
 
@@ -17,6 +18,7 @@ void FactorArray::add(ExpressionFactor *f) {
   SNode base     = f->base();
   SNode exponent = f->exponent();
 
+  DISABLEDEBUGSTRING(*this);
   if(base.getSymbol() != PRODUCT) {
     if(!base.isOne() && !(exponent.isZero())) {
       __super::add(f);
@@ -26,12 +28,14 @@ void FactorArray::add(ExpressionFactor *f) {
     if(exponent.isOne()) {
       addAll(a);
     } else {
+      ParserTree &tree = f->getTree();
       for(size_t i = 0; i < a.size(); i++) {
         ExpressionFactor *f = a[i];
-        add(f->base(), f->exponent() * exponent);
+        add(f->base(), tree.multiplyExponents(f->right(),exponent.node()));
       }
     }
   }
+  ENABLEDEBUGSTRING(*this);
 }
 
 void FactorArray::add(SNode base, SNode exponent) {
@@ -41,6 +45,7 @@ void FactorArray::add(SNode base, SNode exponent) {
 void FactorArray::add(SNode base) {
   if(base.getNodeType() == NT_FACTOR) {
     __super::add((ExpressionFactor*)base.node());
+    SETDEBUGSTRING();
   } else {
     add(base,base._1());
   }
@@ -52,34 +57,40 @@ void FactorArray::add(SNode base, const Rational &exponent) {
 
 FactorArray FactorArray::selectConstantPositiveExponentFactors() const {
   FactorArray result;
+  DISABLEDEBUGSTRING(result);
   for(size_t i = 0; i < size(); i++) {
     ExpressionFactor *f = (*this)[i];
     if(f->exponent().isPositive()) {
       result.add(f);
     }
   }
+  ENABLEDEBUGSTRING(result);
   return result;
 }
 
 FactorArray FactorArray::selectConstantNegativeExponentFactors() const {
   FactorArray result;
+  DISABLEDEBUGSTRING(result);
   for(size_t i = 0; i < size(); i++) {
     ExpressionFactor *f = (*this)[i];
     if(f->exponent().isNegative()) {
       result.add(f);
     }
   }
+  ENABLEDEBUGSTRING(result);
   return result;
 }
 
 FactorArray FactorArray::selectNonConstantExponentFactors() const {
   FactorArray result;
+  DISABLEDEBUGSTRING(result);
   for(size_t i = 0; i < size(); i++) {
     ExpressionFactor *f = (*this)[i];
     if(!f->exponent().isNumber()) {
       result.add(f);
     }
   }
+  ENABLEDEBUGSTRING(result);
   return result;
 }
 

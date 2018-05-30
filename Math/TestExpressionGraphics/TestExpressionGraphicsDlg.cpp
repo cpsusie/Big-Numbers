@@ -1317,10 +1317,10 @@ void CTestExpressionGraphicsDlg::setContextWindow(int winId, const ExpressionRec
   }
   m_contextWinId = winId;
   m_contextRect  = rect;
-  setWindowText(this, IDC_STATICDEBUGINFO, format(_T("context:(%s,%s)")
-                                                 ,winName
-                                                 ,ExpressionParser::getTables().getSymbolName(getContextNodeSymbol())
-                                                 )
+  setWindowText(this, IDC_STATICCONTEXT, format(_T("Context:(%s,%s)")
+                                               ,winName
+                                               ,ExpressionNode::getSymbolName(getContextNodeSymbol()).cstr()
+                                               )
                 );
 }
 

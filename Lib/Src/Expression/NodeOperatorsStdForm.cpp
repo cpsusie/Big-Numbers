@@ -288,8 +288,8 @@ StdNode StdNode::toSForm() const {
   case NT_STMTLIST   : return toSFormStmtList();
   case NT_SUM        : return toSFormSum();
   case NT_PRODUCT    : return toSFormProduct();
-  default                       : throwUnknownNodeTypeException(__TFUNCTION__);
-                                  return *this;
+  default            : throwUnknownNodeTypeException(__TFUNCTION__);
+                       return *this;
   }
 }
 

@@ -9,6 +9,12 @@
   <Type Name="Expr::SumElement">
     <DisplayString>{m_debugStr}</DisplayString>
   </Type>
+  <Type Name="Expr::AddentArray">
+    <DisplayString>{m_debugStr}</DisplayString>
+  </Type>
+  <Type Name="Expr::FactorArray                    ">
+    <DisplayString>{m_debugStr}</DisplayString>
+  </Type>
   <Type Name="Expr::SNode">
     <DisplayString>{*m_node}</DisplayString>
   </Type>

@@ -757,34 +757,29 @@ FactorArray &SNode::multiplyExponents(FactorArray &result, FactorArray &factors,
     RETURNSHOWSTR( result ); // the empty list has value 1
   }
 
-  Rational   exponentR                  = 1;
-  const bool exponentIsRationalConstant = exponent.reducesToRationalConstant(&exponentR);
-
-  for(size_t i = 0; i < factors.size(); i++) {
-    ExpressionFactor     *f  = factors[i];
-    const SNode           e  = f->exponent();
-    Rational              eR = 1;
-    const bool            eIsRationalConstant = e.reducesToRationalConstant(&eR);
-    if(exponentIsRationalConstant && eIsRationalConstant) {
-      if(ExpressionNode::rationalExponentsMultiply(eR, exponentR)) {
-        result.add(f->base(), NV(eR * exponentR));
-      } else {
-        const Rational newE = eR * exponentR;
-        result.add(f->base(), NV(newE.getNumerator()*2) / NV(newE.getDenominator()*2));
-      }
-    } else {
-      result.add(f, exponent);
+  Rational eR;
+  if(exponent.reducesToRationalConstant(&eR)) {
+    ParserTree &tree = getTree();
+    ExpressionNode *er = SNode(tree, eR).node();
+    for(size_t i = 0; i < factors.size(); i++) {
+      ExpressionFactor *f  = factors[i];
+      result.add(f->base(), tree.multiplyExponents(f->right(), er));
+    }
+  } else { // exponent is not rational. so no need to use multiplyExponents
+    for(size_t i = 0; i < factors.size(); i++) {
+      ExpressionFactor *f  = factors[i];
+      result.add(f->base(), f->exponent() * exponent);
     }
   }
   RETURNSHOWSTR( result );
 }
 
 SNode SNode::multiplyExponents(SNode e1, SNode e2) const {
-  return m_node->multiplyExponents(e1.node(), e2.node());
+  return getTree().multiplyExponents(e1.node(), e2.node());
 }
 
 SNode SNode::divideExponents(SNode e1, SNode e2) const {
-  return m_node->divideExponents(e1.node(), e2.node());
+  return getTree().divideExponents(e1.node(), e2.node());
 }
 
 SNode SNode::multiplySumSum(SNode n1, SNode n2) const {

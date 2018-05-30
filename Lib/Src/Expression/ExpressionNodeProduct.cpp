@@ -7,7 +7,7 @@ namespace Expr {
 ExpressionNodeProduct::ExpressionNodeProduct(ParserTree *tree, FactorArray &factors) : ExpressionNode(tree, PRODUCT) {
   m_factors = factors;
   m_factors.sort();
-  SETDEBUGSTR();
+  SETDEBUGSTRING();
 }
 
 int ExpressionNodeProduct::compare(ExpressionNode *n) {

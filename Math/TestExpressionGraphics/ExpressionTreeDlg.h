@@ -12,14 +12,20 @@ private:
   const Expression     *m_expr;
   const ExpressionNode *m_node;
   ExpressionNode       *m_selectedNode;
+  BOOL                  m_extendedInfo;
 
+  void buildTree();
   void traverse( CTreeCtrl *ctrl, HTREEITEM p, const ExpressionNode *n);
   void expandAll(CTreeCtrl *ctrl, HTREEITEM p);
+  HTREEITEM findItemFromNode(const ExpressionNode *n);
   const ExpressionNode *getNodeFromPoint(CPoint p);
   CTreeCtrl *getTreeCtrl();
+  String getExtendedString(const ExpressionNode *n) const;
+  String getSimpleString(  const ExpressionNode *n) const;
+  String getString(        const ExpressionNode *n) const;
 
   void setSelectedNode(const ExpressionNode *m_selectedNode); // property
-
+  void updateNodeText(const ExpressionNode *n);
 public:
     CExpressionTreeDlg(const Expression     &expr, CWnd *pParent = NULL);
     CExpressionTreeDlg(const ExpressionNode *n   , CWnd *pParent = NULL);
@@ -34,6 +40,7 @@ public:
     afx_msg void OnClearBreakPoint();
     afx_msg void OnSetBreakPoint();
     afx_msg void OnSelchangedTreeExpression(NMHDR *pNMHDR, LRESULT *pResult);
+    afx_msg void OnBnClickedCheckExtendedInfo();
     DECLARE_MESSAGE_MAP()
 };
 

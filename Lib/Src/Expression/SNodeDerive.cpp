@@ -164,10 +164,13 @@ SNode SNode::D(const String &name) const {
    return DPoly(name);
 
   case MAX       :
-    return condExp(binExp(GE, left(), right()),ddx(left()), ddx(right()));
+    return condExp(boolExp(GE, left(), right()),ddx(left()), ddx(right()));
 
   case MIN       :
-    return condExp(binExp(LE, left(), right()),ddx(left()), ddx(right()));
+    return condExp(boolExp(LE, left(), right()),ddx(left()), ddx(right()));
+
+  case ABS        :
+    return condExp(boolExp(GE, left(), _0()), ddx(left()), -ddx(left()));
 
   case IIF        :
     return condExp(child(0), ddx(child(1)), ddx(child(2)));
@@ -189,7 +192,7 @@ SNode SNode::D(const String &name) const {
                      ,endExpr
                      ,indexProd(startAssignment
                                ,endExpr
-                               ,condExp(binExp(EQ, productCounter, sumCounter), ddx(expr), expr)
+                               ,condExp(boolExp(EQ, productCounter, sumCounter), ddx(expr), expr)
                                )
                      );
     }

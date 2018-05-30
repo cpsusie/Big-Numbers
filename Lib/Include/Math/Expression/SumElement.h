@@ -12,7 +12,7 @@ class SNode;
 
 class SumElement {
   friend class ParserTree;
-  DECLAREDEBUGSTR;
+  DECLAREDEBUGSTRING;
 private:
   ExpressionNode *m_n;
   // true for +, false for -
@@ -23,7 +23,7 @@ private:
 public:
   inline SumElement(ExpressionNode *n, bool positive) {
     init(n,positive);
-    SETDEBUGSTR();
+    SETDEBUGSTRING();
   }
   SumElement(const SNode &n, bool positive);
   SumElement *clone(ParserTree *tree) const;

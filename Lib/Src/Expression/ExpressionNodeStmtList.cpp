@@ -7,13 +7,13 @@ ExpressionNodeStmtList::ExpressionNodeStmtList(ParserTree *tree, const SNodeArra
   : ExpressionNodeTree(tree, STMTLIST, childArray)
   , m_returnType(childArray.last().getReturnType())
 {
-  SETDEBUGSTR();
+  SETDEBUGSTRING();
 }
 ExpressionNodeStmtList::ExpressionNodeStmtList(ParserTree *tree, const ExpressionNodeStmtList *src)
   : ExpressionNodeTree(tree, src)
   , m_returnType(src->getReturnType())
 {
-  SETDEBUGSTR();
+  SETDEBUGSTRING();
 }
 
 ExpressionNode *ExpressionNodeStmtList::clone(ParserTree *tree) const {

@@ -246,7 +246,8 @@ ExpressionNode *NodeOperatorsCanonForm::power(ExpressionNode *n1, ExpressionNode
   } else if(n2->isMinusOne()) {
     return reciprocal(n1);
   } else if(n1->getSymbol() == POW) {
-    return n1->getTree().fetchFactorNode(n1->left(), n1->multiplyExponents(n1->right(), n2));
+    ParserTree &tree = n1->getTree();
+    return tree.fetchFactorNode(n1->left(), tree.multiplyExponents(n1->right(), n2));
   } else {
     return n1->getTree().fetchFactorNode(n1, n2);
   }

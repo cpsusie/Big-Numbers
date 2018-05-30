@@ -191,11 +191,15 @@ template<class T> bool isEven(T x) {
 }
 
 inline bool isSymmetricExponent(const Rational &r) {
-  return isEven(r.getNumerator()) || ::isEven(r.getDenominator());
+  return isEven(r.getNumerator()) || isEven(r.getDenominator());
 }
 
 inline bool isAsymmetricExponent(const Rational &r) {
   return isOdd(r.getNumerator()) && isOdd(r.getDenominator());
+}
+
+inline bool rationalExponentsMultiply(const Rational &r1, const Rational &r2) {
+  return isAsymmetricExponent(r1) || isAsymmetricExponent(r2);
 }
 
 inline bool isNan(const Rational &r) {

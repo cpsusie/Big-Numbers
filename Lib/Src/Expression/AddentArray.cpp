@@ -5,6 +5,7 @@
 namespace Expr {
 
 void AddentArray::add(SNode n, bool positive) {
+  DISABLEDEBUGSTRING(*this);
   switch(n.getSymbol()) {
   case NUMBER:
     if(!n.isZero()) {      // dont add Zero
@@ -29,6 +30,7 @@ void AddentArray::add(SNode n, bool positive) {
     }
     break;
   }
+  ENABLEDEBUGSTRING(*this);
 }
 
 bool AddentArray::equal(const AddentArray &a) const {
@@ -59,6 +61,7 @@ static int compareSumElement(SumElement * const &e1, SumElement * const &e2) {
 
 AddentArray &AddentArray::sort() {
   __super::sort(compareSumElement);
+  SETDEBUGSTRING();
   return *this;
 }
 
@@ -80,6 +83,7 @@ AddentArray &AddentArray::sortStdForm() {
   } else {
     __super::sort(compareMany);
   }
+  SETDEBUGSTRING();
   return *this;
 }
 

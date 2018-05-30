@@ -31,7 +31,7 @@ public:
   inline bool          isMarked()      const    { return m_marked   ? true : false; }
   inline void          unMark()                 { m_marked = 0; }
   inline void          mark()                   { m_marked = 1; }
-  String toString() const;
+  String toString(bool fillers=true) const;
 };
 
 class ExpressionVariableWithValue : public ExpressionVariable {
@@ -64,6 +64,7 @@ class ParserTree;
 class Expression;
 
 class AddentArray : public CompactArray<SumElement*> {
+  DECLAREARRAYDEBUGSTRING;
 public:
   AddentArray() {
   }
@@ -72,6 +73,7 @@ public:
   void add(SNode n, bool positive);
   inline void add(SumElement *e) {
     __super::add(e);
+    SETDEBUGSTRING();
   }
   inline AddentArray &operator+=(SNode n) {
     add(n, true);
@@ -90,6 +92,7 @@ public:
 };
 
 class FactorArray : public CompactArray<ExpressionFactor*> {
+  DECLAREARRAYDEBUGSTRING;
 public:
   FactorArray() {
   }
@@ -117,6 +120,7 @@ class ExpressionSymbolSet : public BitSet {
 public:
   ExpressionSymbolSet();
   ExpressionSymbolSet(ExpressionInputSymbol s1,...); // terminate list with EOI
+  String toString() const;
 };
 
 class ExpressionNodeHandler {
@@ -131,12 +135,12 @@ template<class E> class CompactSymbolHashMap : public CompactHashMap<ExpressionS
 
 class PackedSyntaxNodeInfo {
 public:
-  const ExpressionInputSymbol m_symbol         : 15;
-          UINT          m_marked               : 1;  // used for garbage-collection
-          UINT          m_breakPoint           : 1;  // used for DebugThread
-  mutable UINT          m_coefArrayConstant    : 1;  // used by polynomials
-  mutable UINT          m_coefArrayChecked     : 1;  // used by polynomials
-  mutable UINT          m_reduced              : 1;
+  const ExpressionInputSymbol m_symbol               : 10;
+          UINT                m_marked               : 1;  // used for garbage-collection
+          UINT                m_breakPoint           : 1;  // used for DebugThread
+  mutable UINT                m_coefArrayConstant    : 1;  // used by polynomials
+  mutable UINT                m_coefArrayChecked     : 1;  // used by polynomials
+  mutable UINT                m_reduced              : 1;
   PackedSyntaxNodeInfo(ExpressionInputSymbol symbol)
     : m_symbol(      symbol)
     , m_marked(           0)
@@ -146,10 +150,11 @@ public:
     , m_reduced(          0)
   {
   }
+  String toString() const;
 };
 
 class ExpressionNode {
-  DECLAREDEBUGSTR;
+  DECLAREDEBUGSTRING;
 private:
   ParserTree          &m_tree;
 protected:
@@ -169,10 +174,14 @@ public:
   ExpressionNode(ParserTree *tree, ExpressionInputSymbol symbol);
   virtual ~ExpressionNode() {}
 
-  inline ExpressionInputSymbol       getSymbol()                    const   { return (ExpressionInputSymbol)m_info.m_symbol;                   }
+  inline ExpressionInputSymbol       getSymbol()                    const   { return m_info.m_symbol;                                          }
   inline        ParserTree          &getTree()                      const   { return m_tree;                                                   }
-  inline String                      getSymbolName()                const   { return getSymbolName(getSymbol());  }
+  inline const PackedSyntaxNodeInfo &getInfo()                      const   { return m_info;                                                   }
   static String                      getSymbolName(ExpressionInputSymbol symbol);
+  static String                      getNodeTypeName(ExpressionNodeType  nt);
+  inline String                      getSymbolName()                const   { return getSymbolName(getSymbol());  }
+  String                             getNodeTypeName()              const   { return getNodeTypeName(getNodeType()); }
+
   inline  void                       mark()                                 { m_info.m_marked = true;                                          }
   inline  void                       unMark()                               { m_info.m_marked = false;                                         }
   inline  bool                       isMarked()                     const   { return m_info.m_marked;                                          }
@@ -283,15 +292,7 @@ public:
 
   bool    isSymmetricExponent()         const;
   bool    isAsymmetricExponent()        const;
-  static bool rationalExponentsMultiply(const Rational &r1, const Rational &r2) {
-    return ::isAsymmetricExponent(r1) || ::isAsymmetricExponent(r2);
-  }
 
-  // if both n1 and n2 are rational constants, they will be reduced as much as possible
-  // without loosing symmetry with even exponents. if one or both are not rational
-  // these 2 functions will just return as normal (prod/quot)
-  ExpressionNode *multiplyExponents(ExpressionNode *n1, ExpressionNode *n2) const;
-  ExpressionNode *divideExponents(  ExpressionNode *n1, ExpressionNode *n2) const;
   TrigonometricMode getTrigonometricMode() const;
   int     getPrecedence()               const;
   bool    reducesToRationalConstant(Rational *r) const;
@@ -301,7 +302,8 @@ public:
   bool    needParentheses(                const ExpressionNode  *parent)  const;
   int     getMaxTreeDepth()                                               const;
 #ifdef CHECK_CONSISTENCY
-  void    checkIsConsistent()                                             const;
+  // Return nodes visited. or throw Exception if any nodes is insoncistent
+  UINT    checkIsConsistent()                                             const;
   bool    isConsistentSymbolAndType()                                     const;
 #endif // CHECK_CONSISTENCY
 
@@ -328,19 +330,19 @@ public:
   inline ExpressionNodeNumber(ParserTree *tree, const Real &value) : ExpressionNode(tree, NUMBER) {
     m_number     = value;
     m_valueIndex = -1;
-    SETDEBUGSTR();
+    SETDEBUGSTRING();
   }
 
   inline ExpressionNodeNumber(ParserTree *tree, const Rational &value) : ExpressionNode(tree, NUMBER) {
     m_number     = value;
     m_valueIndex = -1;
-    SETDEBUGSTR();
+    SETDEBUGSTRING();
   }
 
   inline ExpressionNodeNumber(ParserTree *tree, const Number &value) : ExpressionNode(tree, NUMBER) {
     m_number     = value;
     m_valueIndex = -1;
-    SETDEBUGSTR();
+    SETDEBUGSTRING();
   }
 
   int getValueIndex() const {
@@ -383,7 +385,7 @@ private:
   const bool m_value;
 public:
   inline ExpressionNodeBoolConst(ParserTree *tree, bool b) : ExpressionNode(tree, TYPEBOOL), m_value(b) {
-    SETDEBUGSTR();
+    SETDEBUGSTRING();
   }
   bool getBool() const {
     return m_value;
@@ -424,7 +426,7 @@ public:
     , m_name(name)
   {
     m_var  = &var;
-    SETDEBUGSTR();
+    SETDEBUGSTRING();
   }
 
   const String &getName() const {
@@ -723,7 +725,7 @@ public:
     : ExpressionNodeTree(tree, symbol, argptr), SourcePositionAttribute(pos)
   {
     if(getChildCount() > 0)
-      SETDEBUGSTR();
+      SETDEBUGSTRING();
   }
   const SourcePosition &getPos() const {
     return SourcePositionAttribute::getPos();
@@ -737,7 +739,7 @@ class ExpressionNodeBoolExprWithPos : public ExpressionNodeBoolExpr, private Sou
 public:
   ExpressionNodeBoolExprWithPos(ParserTree *tree, const SourcePosition &pos, ExpressionInputSymbol symbol, va_list argptr)
     : ExpressionNodeBoolExpr(tree, symbol, argptr), SourcePositionAttribute(pos) {
-    SETDEBUGSTR();
+    SETDEBUGSTRING();
   }
   const SourcePosition &getPos() const {
     return SourcePositionAttribute::getPos();
@@ -752,7 +754,7 @@ public:
   ExpressionNodePolyWithPos(ParserTree *tree, const SourcePosition &pos, const SNodeArray &coefArray, SNode arg)
     : ExpressionNodePoly(tree, coefArray, arg), SourcePositionAttribute(pos)
   {
-    SETDEBUGSTR();
+    SETDEBUGSTRING();
   }
   const SourcePosition &getPos() const {
     return SourcePositionAttribute::getPos();
@@ -767,7 +769,7 @@ public:
   ExpressionNodeAssignWithPos(ParserTree *tree, const SourcePosition &pos, va_list argptr)
     : ExpressionNodeAssign(tree, argptr), SourcePositionAttribute(pos)
   {
-    SETDEBUGSTR();
+    SETDEBUGSTRING();
   }
   const SourcePosition &getPos() const {
     return SourcePositionAttribute::getPos();

@@ -23,7 +23,7 @@ typedef short TableType;
 * Number of bytes in bitset = (statecount-1)/8+1                             *
 \****************************************************************************/
 static const BYTE compressedSet[20] = { 0xc6,0x1e,0xef,0xff,0xff,0xff,0xff,0xbf,0xff,0x3f,0x00,0x10,0x04,0x16,0x04,0xc2,0x3a,0x21,0x20,0x60
-}; // Size of table:20 bytes.
+}; // Size of table:20(x86)/24(x64) bytes.
 
 /****************************************************************************\
 * The action matrix holds the parse action(state,terminal)                   *
@@ -32,14 +32,14 @@ static const BYTE compressedSet[20] = { 0xc6,0x1e,0xef,0xff,0xff,0xff,0xff,0xbf,
 *                                                                            *
 * Compressed:When there is only 1 possible action in the state.              *
 *            or all actions are reduce by the same production.               *
-*   If bit 16 (0x8000) is 0, there is only one possible action which is      *
+*   If bit 15 (0x8000) is 0, there is only one possible action which is      *
 *   encoded as:                                                              *
 *      #define   act0001  (void*)((action << 16) | (token&0x7fff)            *
 *   State index------+               |                |                      *
 *   Highorder 16 bits = action-------+                |                      *
 *   Loworder  15 bits = legal token-------------------+                      *
 *                                                                            *
-*   If bit 16 is 1, the loworder 15 bits is an index.                        *
+*   If bit 15 is 1, the loworder 15 bits is an index.                        *
 *      #define   act0002  (void*)((action<<16)  |  0x8000 | (index&0x7fff))  *
 *   State index------+               |                |        |             *
 *   Highorder 16 bits = action-------+                |        |             *
@@ -75,7 +75,7 @@ static const BYTE compressedLasets[44] = {
   /*  1  20 tokens */ ,0x81,0xb3,0xdf,0x1e,0x00,0x00,0x00,0x00,0x00,0x80,0x02
   /*  2  21 tokens */ ,0xc1,0xb3,0xdf,0x1e,0x00,0x00,0x00,0x00,0x00,0x80,0x02
   /*  3   6 tokens */ ,0x01,0x31,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x80,0x02
-}; // Size of table:44 bytes.
+}; // Size of table:44(x86)/48(x64) bytes.
 
 #define act0001 (void*)0x00000000    /* reduce by 0 on EOI                       */
 #define act0002 (void*)0xffff0000    /* reduce by 1 on EOI                       */
@@ -286,42 +286,42 @@ static const TableType act0156[] = {  20,   0, -30,   7, -30,   8, -30,   9, -30
                                         ,  19, -30,  20, -30,  22,  78,  23,  79,  25,  80
                                         ,  26,  81,  27,  82,  28,  83,  79, -30,  81, -30};
 
-// Total size of uncompressed actNNNN tables:2268 bytes.
+// Total size of uncompressed actNNNN tables:2.268(x86)/2.360(x64) bytes.
 
-#define act0003 act0000 /* Saved 240 bytes */
-#define act0013 act0000 /* Saved 240 bytes */
-#define act0015 act0014 /* Saved 236 bytes */
-#define act0020 act0000 /* Saved 240 bytes */
-#define act0062 act0000 /* Saved 240 bytes */
-#define act0078 act0014 /* Saved 236 bytes */
-#define act0079 act0014 /* Saved 236 bytes */
-#define act0080 act0014 /* Saved 236 bytes */
-#define act0081 act0014 /* Saved 236 bytes */
-#define act0082 act0014 /* Saved 236 bytes */
-#define act0083 act0014 /* Saved 236 bytes */
-#define act0084 act0014 /* Saved 236 bytes */
-#define act0085 act0014 /* Saved 236 bytes */
-#define act0086 act0014 /* Saved 236 bytes */
-#define act0087 act0014 /* Saved 236 bytes */
-#define act0088 act0014 /* Saved 236 bytes */
-#define act0089 act0014 /* Saved 236 bytes */
-#define act0090 act0000 /* Saved 240 bytes */
-#define act0091 act0000 /* Saved 240 bytes */
-#define act0093 act0014 /* Saved 236 bytes */
-#define act0094 act0014 /* Saved 236 bytes */
-#define act0095 act0014 /* Saved 236 bytes */
-#define act0100 act0014 /* Saved 236 bytes */
-#define act0104 act0000 /* Saved 240 bytes */
-#define act0107 act0014 /* Saved 236 bytes */
-#define act0137 act0014 /* Saved 236 bytes */
-#define act0138 act0014 /* Saved 236 bytes */
-#define act0139 act0014 /* Saved 236 bytes */
-#define act0140 act0014 /* Saved 236 bytes */
-#define act0142 act0014 /* Saved 236 bytes */
-#define act0147 act0014 /* Saved 236 bytes */
-#define act0150 act0014 /* Saved 236 bytes */
-#define act0151 act0014 /* Saved 236 bytes */
-#define act0152 act0014 /* Saved 236 bytes */
+#define act0003 act0000 /* Saved 240(x86)/240(x64) bytes */
+#define act0013 act0000 /* Saved 240(x86)/240(x64) bytes */
+#define act0015 act0014 /* Saved 236(x86)/240(x64) bytes */
+#define act0020 act0000 /* Saved 240(x86)/240(x64) bytes */
+#define act0062 act0000 /* Saved 240(x86)/240(x64) bytes */
+#define act0078 act0014 /* Saved 236(x86)/240(x64) bytes */
+#define act0079 act0014 /* Saved 236(x86)/240(x64) bytes */
+#define act0080 act0014 /* Saved 236(x86)/240(x64) bytes */
+#define act0081 act0014 /* Saved 236(x86)/240(x64) bytes */
+#define act0082 act0014 /* Saved 236(x86)/240(x64) bytes */
+#define act0083 act0014 /* Saved 236(x86)/240(x64) bytes */
+#define act0084 act0014 /* Saved 236(x86)/240(x64) bytes */
+#define act0085 act0014 /* Saved 236(x86)/240(x64) bytes */
+#define act0086 act0014 /* Saved 236(x86)/240(x64) bytes */
+#define act0087 act0014 /* Saved 236(x86)/240(x64) bytes */
+#define act0088 act0014 /* Saved 236(x86)/240(x64) bytes */
+#define act0089 act0014 /* Saved 236(x86)/240(x64) bytes */
+#define act0090 act0000 /* Saved 240(x86)/240(x64) bytes */
+#define act0091 act0000 /* Saved 240(x86)/240(x64) bytes */
+#define act0093 act0014 /* Saved 236(x86)/240(x64) bytes */
+#define act0094 act0014 /* Saved 236(x86)/240(x64) bytes */
+#define act0095 act0014 /* Saved 236(x86)/240(x64) bytes */
+#define act0100 act0014 /* Saved 236(x86)/240(x64) bytes */
+#define act0104 act0000 /* Saved 240(x86)/240(x64) bytes */
+#define act0107 act0014 /* Saved 236(x86)/240(x64) bytes */
+#define act0137 act0014 /* Saved 236(x86)/240(x64) bytes */
+#define act0138 act0014 /* Saved 236(x86)/240(x64) bytes */
+#define act0139 act0014 /* Saved 236(x86)/240(x64) bytes */
+#define act0140 act0014 /* Saved 236(x86)/240(x64) bytes */
+#define act0142 act0014 /* Saved 236(x86)/240(x64) bytes */
+#define act0147 act0014 /* Saved 236(x86)/240(x64) bytes */
+#define act0150 act0014 /* Saved 236(x86)/240(x64) bytes */
+#define act0151 act0014 /* Saved 236(x86)/240(x64) bytes */
+#define act0152 act0014 /* Saved 236(x86)/240(x64) bytes */
 
 static const void *action[159] = {
    act0000,act0001,act0002,act0003,act0004,act0005,act0006,act0007,act0008,act0009
@@ -340,7 +340,7 @@ static const void *action[159] = {
   ,act0130,act0131,act0132,act0133,act0134,act0135,act0136,act0137,act0138,act0139
   ,act0140,act0141,act0142,act0143,act0144,act0145,act0146,act0147,act0148,act0149
   ,act0150,act0151,act0152,act0153,act0154,act0155,act0156,act0157,act0158
-}; // Size of table:1272 bytes.
+}; // Size of table:636(x86)/1.272(x64) bytes.
 
 /****************************************************************************\
 * The successor matrix is used when the parser has reduced by prod A -> alfa *
@@ -437,7 +437,7 @@ static const TableType succ0151[] = { 10,  86, 155,  90,  98,  91,   9,  92,  10
 static const TableType succ0152[] = { 10,  86, 156,  90,  98,  91,   9,  92,  10,  93,  11
                                         ,  94,  12,  95,  16,  96,  17,  97,  18,  98,  19};
 
-// Total size of all succNNNN tables:1676 bytes.
+// Total size of all succNNNN tables:1.676(x86)/1.800(x64) bytes.
 
 static const TableType *successor[159] = {
    succ0000,NULL    ,NULL    ,succ0003,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL
@@ -456,7 +456,7 @@ static const TableType *successor[159] = {
   ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,succ0137,succ0138,succ0139
   ,succ0140,NULL    ,succ0142,NULL    ,NULL    ,NULL    ,NULL    ,succ0147,NULL    ,NULL
   ,succ0150,succ0151,succ0152,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL
-}; // Size of pointertable:1272 bytes.
+}; // Size of pointertable:636(x86)/1.272(x64) bytes.
 
 /****************************************************************************\
 * The productionLength[] array is indexed by production number and holds     *
@@ -473,7 +473,7 @@ static const unsigned char productionLength[94] = {
   /*  70 */    1,   3,   3,   3,   3,   3,   3,   3,   3,   2,
   /*  80 */    3,   1,   1,   1,   1,   1,   1,   1,   1,   1,
   /*  90 */    1,   1,   1,   1
-}; // Size of table:96 bytes.
+}; // Size of table:96(x86)/96(x64) bytes.
 
 /****************************************************************************\
 * The leftSide[] array is indexed by production number, and holds the        *
@@ -490,7 +490,7 @@ static const TableType leftSide[94] = {
   /*  70 */   93,  87,  87,  87,  87,  87,  87,  87,  87,  87,
   /*  80 */   87,  94,  94,  94,  94,  94,  94,  94,  94,  94,
   /*  90 */   94,  94,  90,  92
-}; // Size of table:188 bytes.
+}; // Size of table:188(x86)/192(x64) bytes.
 
 /****************************************************************************\
 * The rightSide[] matrix is indexed by production number and holds           *
@@ -592,7 +592,7 @@ static const TableType rightSideTable[171] = {
   /*  91 */ , 56
   /*  92 */ ,  2
   /*  93 */ ,  1
-}; // Size of table:344 bytes.
+}; // Size of table:344(x86)/344(x64) bytes.
 
 /****************************************************************************\
 * The symbolName[] array is indexed by symbol and holds                      *
@@ -700,7 +700,7 @@ static const TCHAR *symbolName[100] = {
   /*  97 */ _T("productExpr"),
   /*  98 */ _T("polyExpr"),
   /*  99 */ _T("exprList")
-}; // Total size of strings:768 bytes, size of pointertable:800 bytes.
+}; // Total size of strings:1.202(x86)/1.202(x64) bytes, size of pointertable:400(x86)/800(x64) bytes.
 
 static const ParserShortTables ExpressionTables_s(compressedSet, compressedLasets
                                                  ,action, successor, productionLength, leftSide
@@ -708,10 +708,10 @@ static const ParserShortTables ExpressionTables_s(compressedSet, compressedLaset
                                                  ,82, 100, 94, 159);
 
 const ParserTables *ExpressionParser::ExpressionTables = &ExpressionTables_s;
-// Size of ExpressionTables_s: 88 bytes. Size of ExpressionTables:8 bytes
+// Size of ExpressionTables_s: 48(x86)/88(x64) bytes. Size of ExpressionTables:4(x86)/8(x64) bytes
 
 
-// Total size of table data:8.844 bytes.
+// Total size of table data:7.562(x86)/9.506(x64) bytes.
 
 }; // namespace Expr
 

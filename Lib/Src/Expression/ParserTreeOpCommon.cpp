@@ -72,24 +72,56 @@ ExpressionFactor *ParserTree::fetchFactorNode(SNode base) {
 ExpressionFactor *ParserTree::fetchFactorNode(SNode base, SNode exponent) {
   ExpressionFactor *f;
   if(exponent.isOne()) {
-    if(base.getSymbol() == POW) {
-      if(base.getNodeType() == NT_FACTOR) {
-        return (ExpressionFactor*)(base.node());
-      } else {
-        f = new ExpressionFactor(base.left(), base.right());
-      }
-    } else {
+    if(base.getSymbol() != POW) {
       f = new ExpressionFactor(base, exponent);
-    }
-  } else { // exponent != 1
-    if(base.getSymbol() == POW) {
-      f = new ExpressionFactor(base.left(), base.right() * exponent);
+    } else if(base.getNodeType() == NT_FACTOR) {
+      return (ExpressionFactor*)(base.node());
     } else {
-      f = new ExpressionFactor(base, exponent);
+      f = new ExpressionFactor(base.left(), base.right());
     }
+  } else if(base.getSymbol() != POW) { // exponent != 1
+    f = new ExpressionFactor(base, exponent);
+  } else if(base.right().isOne()) {
+    f = new ExpressionFactor(base.left(), exponent);
+  } else { // both exponents are != 1
+    f = new ExpressionFactor(base.left(), multiplyExponents(base.right().node(),exponent.node()));
   }
   TRACE_NEW(f);
   return f;
+}
+
+ExpressionNode *ParserTree::multiplyExponents(ExpressionNode *n1, ExpressionNode *n2) {
+  if(n1->isRational() && n2->isRational()) {
+    const Rational r1 = n1->getRational();
+    const Rational r2 = n2->getRational();
+    if(rationalExponentsMultiply(r1, r2)) {
+      return numberExpression(r1*r2);
+    } else {
+      const Rational r   = r1 * r2;
+      const INT64    num = 2*r.getNumerator();
+      const INT64    den = 2*r.getDenominator();
+      return quot(num,den);
+    }
+  } else {
+    return prod(n1,n2);
+  }
+}
+
+ExpressionNode *ParserTree::divideExponents(ExpressionNode *n1, ExpressionNode *n2) {
+  if(n1->isRational() && n2->isRational()) {
+    const Rational r1 = n1->getRational();
+    const Rational r2 = n2->getRational();
+    if(rationalExponentsMultiply(r1, r2)) {
+      return numberExpression(r1/r2);
+    } else {
+      const Rational r   = r1 / r2;
+      const INT64    num = 2*r.getNumerator();
+      const INT64    den = 2*r.getDenominator();
+      return quot(num,den);
+    }
+  } else {
+    return quot(n1,n2);
+  }
 }
 
 // -------------------------------------------------------------------------------------------

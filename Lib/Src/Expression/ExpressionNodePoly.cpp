@@ -9,14 +9,14 @@ ExpressionNodePoly::ExpressionNodePoly(ParserTree *tree, const SNodeArray &coefA
   , m_arg(arg)
 {
   m_firstCoefIndex   = -1;
-  SETDEBUGSTR();
+  SETDEBUGSTRING();
 }
 
 ExpressionNodePoly::ExpressionNodePoly(ParserTree *tree, const ExpressionNodePoly *src) : ExpressionNode(tree, POLY) {
   src->getCoefArray().cloneNodes(m_coefArray, tree);
   m_arg            = src->getArgument().node()->clone(tree);
   m_firstCoefIndex = -1;
-  SETDEBUGSTR();
+  SETDEBUGSTRING();
 }
 
 bool ExpressionNodePoly::isCoefArrayConstant() const {

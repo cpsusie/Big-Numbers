@@ -16,36 +16,38 @@
 #define IDR_CONTEXTMENU_TREE            134
 #define IDC_BUTTONDUMMY                 1001
 #define IDC_EDITEXPR                    1002
-#define IDC_STATICXLABEL                1003
-#define IDC_EDITX                       1004
-#define IDC_STATICRESULTLABEL           1005
+#define IDC_EDITEXPR1                   1003
+#define IDC_EDITEXPR2                   1004
+#define IDC_EDITX                       1005
 #define IDC_EDITRESULTVALUE             1006
-#define IDC_STATICDERIVEDLABEL1         1007
-#define IDC_EDITDERIVEDVALUE1           1008
-#define IDC_STATICFONTSIZE              1009
+#define IDC_EDITDERIVEDVALUE1           1007
+#define IDC_EDITDERIVEDVALUE2           1008
+#define IDC_EDITDERIVED                 1009
 #define IDC_COMBOFONTSIZE               1010
-#define IDC_STATICDERIVEDLABEL2         1011
-#define IDC_EDITDERIVEDVALUE2           1012
-#define IDC_STATICEXPRIMAGE             1013
-#define IDC_EDITDERIVED                 1014
-#define IDC_STATICDERIVEDLABEL          1015
-#define IDC_STATICDERIVEDIMAGE          1016
-#define IDC_STATICDEBUGINFO             1017
-#define IDC_EDITEXPR1                   1020
+#define IDC_STATICXLABEL                1011
+#define IDC_STATICRESULTLABEL           1012
+#define IDC_STATICFONTSIZE              1013
+#define IDC_STATICDERIVEDLABEL1         1014
+#define IDC_STATICDERIVEDLABEL2         1015
+#define IDC_STATICEXPRIMAGE             1016
+#define IDC_STATICDERIVEDLABEL          1017
+#define IDC_STATICDERIVEDIMAGE          1018
+#define IDC_STATICDEBUGINFO             1019
+#define IDC_STATICCONTEXT               1020
 #define IDC_STATICLABEL1                1021
 #define IDC_STATICLABEL2                1022
-#define IDC_EDITEXPR2                   1023
-#define IDC_TREE_EXPRESSION             1023
-#define IDC_LIST_SYMBOLTABLE            1024
-#define IDC_STATICREDUCTIONSTACK        1026
-#define IDC_STATICIMAGE2                1027
-#define IDC_STATICIMAGE1                1028
-#define IDC_BUTTONCONVERT               1029
-#define IDC_TESTTREESEQUAL              1030
-#define IDC_BUTTONCOMPILE               1031
-#define IDC_TESTTREESEQUALMINUS         1032
-#define IDC_COMBONUMBERFORMAT           1034
-#define IDC_STATICFORMATLABEL           1035
+#define IDC_STATICREDUCTIONSTACK        1023
+#define IDC_TREE_EXPRESSION             1030
+#define IDC_LIST_SYMBOLTABLE            1031
+#define IDC_STATICIMAGE2                1032
+#define IDC_STATICIMAGE1                1033
+#define IDC_BUTTONCONVERT               1034
+#define IDC_TESTTREESEQUAL              1035
+#define IDC_BUTTONCOMPILE               1036
+#define IDC_TESTTREESEQUALMINUS         1037
+#define IDC_COMBONUMBERFORMAT           1038
+#define IDC_STATICFORMATLABEL           1039
+#define IDC_CHECKEXTENDEDINFO           1040
 #define ID_FILE_EXIT                    32771
 #define ID_EDIT_FINDMATCHINGPARENTESIS  32780
 #define ID_EDIT_GOTOEDITFX              32781
@@ -90,9 +92,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        137
+#define _APS_NEXT_RESOURCE_VALUE        138
 #define _APS_NEXT_COMMAND_VALUE         32940
-#define _APS_NEXT_CONTROL_VALUE         1036
+#define _APS_NEXT_CONTROL_VALUE         1038
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

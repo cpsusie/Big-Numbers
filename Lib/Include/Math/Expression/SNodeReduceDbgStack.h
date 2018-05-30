@@ -1,14 +1,38 @@
 #pragma once
 
-#define USE_DEBUGSTR
+#define USE_DEBUGSTRING
 
-#ifdef USE_DEBUGSTR
-#define SETDEBUGSTR() m_debugStr = toString()
-#define DECLAREDEBUGSTR  protected: String m_debugStr
-#else
-#define SETDEBUGSTR()
-#define DECLAREDEBUGSTR
-#endif // _DEBUG
+class UpdateableDebugStr {
+private:
+  BYTE m_count;
+public:
+  inline UpdateableDebugStr() : m_count(0) {
+  }
+  inline void disable() { m_count++; }
+  inline bool enable()  { return (--m_count == 0); }
+  inline bool enabled() const { return m_count == 0; }
+};
+
+class AlwaysEnabledDebugStr {
+public:
+  inline bool enabled() { return true; }
+};
+
+#ifdef USE_DEBUGSTRING
+#define DECLAREDEBUGSTRING      protected: String m_debugStr; AlwaysEnabledDebugStr _setDebugStr
+#define DECLAREARRAYDEBUGSTRING protected: String m_debugStr; UpdateableDebugStr    _setDebugStr
+#define UPDATEDEBUGSTRING( a)   (a).m_debugStr = (a).toString()
+#define SETDEBUGSTRING()        if(_setDebugStr.enabled()) UPDATEDEBUGSTRING(*this)
+#define DISABLEDEBUGSTRING(a)   (a)._setDebugStr.disable()
+#define ENABLEDEBUGSTRING( a)   { if((a)._setDebugStr.enable()) UPDATEDEBUGSTRING(a); }
+#else // USE_DEBUGSTRING
+#define DECLAREDEBUGSTRING
+#define DECLAREARRAYDEBUGSTRING
+#define SETDEBUGSTRING()
+#define UPDATEDEBUGSTRING( a)
+#define DISABLEDEBUGSTRING(a)
+#define ENABLEDEBUGSTRING( a)
+#endif  // USE_DEBUGSTRING
 
 #ifdef _DEBUG
 #define TRACE_REDUCTION_CALLSTACK

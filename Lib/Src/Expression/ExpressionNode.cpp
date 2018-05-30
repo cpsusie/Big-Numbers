@@ -10,6 +10,43 @@ ExpressionNode::ExpressionNode(ParserTree *tree, ExpressionInputSymbol symbol) :
   m_tree.m_nodeTable.add(this);
 }
 
+String ExpressionNode::getNodeTypeName(ExpressionNodeType nt) { // static
+  switch(nt) {
+#define CASESTR(t) case NT_##t: return _T("NT_" #t);
+  CASESTR(NUMBER   );
+  CASESTR(BOOLCONST);
+  CASESTR(VARIABLE );
+  CASESTR(TREE     );
+  CASESTR(BOOLEXPR );
+  CASESTR(POLY     );
+  CASESTR(ASSIGN   );
+  CASESTR(STMTLIST );
+  CASESTR(SUM      );
+  CASESTR(PRODUCT  );
+  CASESTR(FACTOR   );
+  default: return format(_T("Unknown nodetype:%d"),nt);
+  }
+}
+
+String PackedSyntaxNodeInfo::toString() const {
+  String result;
+  const TCHAR *del = NULL;
+#ifdef ADD_ATTR
+#undef ADD_ATTR
+#endif
+#define ADD_ATTR(a) if(m_##a) { if(del) result += del; else del = _T(","); result += _T(#a); }
+
+  ADD_ATTR(marked);
+  ADD_ATTR(breakPoint);
+  ADD_ATTR(coefArrayConstant);
+  ADD_ATTR(coefArrayChecked);
+  ADD_ATTR(reduced);
+
+#undef ADD_ATTR
+
+  return result;
+}
+
 Exception ExpressionNode::createAttributeNotSupportedException(const char *attribute) const {
   const String attr = attribute;
   return Exception(format(_T("Attribute %s not defined for syntaxNode with symbol=%s"), attr.cstr(), getSymbolName().cstr()));
@@ -59,6 +96,25 @@ ExpressionSymbolSet::ExpressionSymbolSet(ExpressionInputSymbol s1,...) : BitSet(
     add(s);
   }
   va_end(argptr);
+}
+
+class SymbolStringifier : public AbstractStringifier<ExpressionInputSymbol> {
+public:
+  String toString(const ExpressionInputSymbol &e) {
+    return ExpressionNode::getSymbolName(e);
+  }
+};
+
+class SymbolSetStringifier : public AbstractStringifier<size_t> {
+public:
+  String toString(const size_t &e) {
+    const ExpressionInputSymbol symbol = (ExpressionInputSymbol)e;
+    return ExpressionNode::getSymbolName(symbol);
+  }
+};
+
+String ExpressionSymbolSet::toString() const {
+  return __super::toString(&SymbolSetStringifier());
 }
 
 class NodeCounter : public ExpressionNodeHandler {
@@ -215,40 +271,6 @@ bool ExpressionNode::isAsymmetricExponent() const {
   return isRational() && ::isAsymmetricExponent(getRational());
 }
 
-ExpressionNode *ExpressionNode::multiplyExponents(ExpressionNode *n1, ExpressionNode *n2) const {
-  if(n1->isRational() && n2->isRational()) {
-    const Rational r1 = n1->getRational();
-    const Rational r2 = n2->getRational();
-    if(rationalExponentsMultiply(r1, r2)) {
-      return getTree().numberExpression(r1*r2);
-    } else {
-      const Rational r   = r1 * r2;
-      const INT64    num = 2*r.getNumerator();
-      const INT64    den = 2*r.getDenominator();
-      return getTree().quot(num,den);
-    }
-  } else {
-    return getTree().prod(n1,n2);
-  }
-}
-
-ExpressionNode *ExpressionNode::divideExponents(ExpressionNode *n1, ExpressionNode *n2) const {
-  if(n1->isRational() && n2->isRational()) {
-    const Rational r1 = n1->getRational();
-    const Rational r2 = n2->getRational();
-    if(rationalExponentsMultiply(r1, r2)) {
-      return getTree().numberExpression(r1/r2);
-    } else {
-      const Rational r   = r1 / r2;
-      const INT64    num = 2*r.getNumerator();
-      const INT64    den = 2*r.getDenominator();
-      return getTree().quot(num,den);
-    }
-  } else {
-    return getTree().quot(n1,n2);
-  }
-}
-
 TrigonometricMode ExpressionNode::getTrigonometricMode() const {
   return m_tree.getTrigonometricMode();
 }
@@ -397,8 +419,8 @@ bool ExpressionNode::isConsistentSymbolAndType() const {
   ExpressionNodeType type1, type2;
   switch(getSymbol()) {
   case NUMBER  : type1 = type2  = NT_NUMBER;    break;
-  case TYPEBOOL: type1 = type2  = NT_BOOLCONST; break;
   case NAME    : type1 = type2  = NT_VARIABLE;  break;
+  case TYPEBOOL: type1 = type2  = NT_BOOLCONST; break;
   case AND     :
   case OR      :
   case NOT     :
@@ -424,11 +446,14 @@ bool ExpressionNode::isConsistentSymbolAndType() const {
 }
 
 class ConsistencyCheck : public ExpressionNodeHandler {
+private:
   const ExpressionNode *m_failureNode;
+  UINT                  m_nodesVisited;
 public:
-  ConsistencyCheck() : m_failureNode(NULL) {
+  ConsistencyCheck() : m_failureNode(NULL), m_nodesVisited(0) {
   }
   bool handleNode(ExpressionNode *n, int level) {
+    m_nodesVisited++;
     if(!n->isConsistentSymbolAndType()) {
       m_failureNode = n;
       return false;
@@ -441,14 +466,18 @@ public:
   const ExpressionNode *getInconsistentNode() const {
     return m_failureNode;
   }
+  UINT getNodesVisited() const {
+    return m_nodesVisited;
+  }
 };
 
-void ExpressionNode::checkIsConsistent() const {
+UINT ExpressionNode::checkIsConsistent() const {
   ConsistencyCheck checker;
   ((ExpressionNode*)(this))->traverseExpression(checker,0);
   if(!checker.isOK()) {
     throwException(_T("Inconsistent ExpressionNode"));
   }
+  return checker.getNodesVisited();
 }
 
 #endif // CHECK_CONSISTENCY
