@@ -57,6 +57,11 @@ public:
   inline NumberType getType() const {
     return m_type;
   }
+  static String getTypeName(NumberType nt);
+  String getTypeName() const {
+    return getTypeName(getType());
+  }
+
   inline bool isUndefined() const {
     return m_type == NUMBERTYPE_UNDEFINED;
   }

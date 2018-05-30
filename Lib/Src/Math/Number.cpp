@@ -106,6 +106,19 @@ void Number::cleanup() {
   m_type = NUMBERTYPE_UNDEFINED;
 }
 
+String Number::getTypeName(NumberType nt) { // static
+#define CASESTR(t) case NUMBERTYPE_##t: return _T(#t);
+  switch(nt) {
+  CASESTR(UNDEFINED);
+  CASESTR(FLOAT    );
+  CASESTR(DOUBLE   );
+  CASESTR(DOUBLE80 );
+  CASESTR(RATIONAL );
+  default:return format(_T("Unknown numbertype:%d"), nt);
+  }
+}
+
+
 void Number::throwUnknownTypeException(const TCHAR *method) const {
   throwUnknownTypeException(method, m_type);
 }
