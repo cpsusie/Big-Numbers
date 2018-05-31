@@ -1000,7 +1000,7 @@ AlignedImage *ExpressionPainter::getCeilImage(SNode n, int fontSize, ExpressionR
 }
 
 AlignedImage *ExpressionPainter::getAbsImage(SNode n, int fontSize, ExpressionRectangle &rect) {
-  return getParenthesizedImage(n, false, _T("|"), _T("|"), fontSize, rect);
+  return getParenthesizedImage(n, false, _T("|"), _T("|"), fontSize, rect,0.7);
 }
 
 AlignedImage *ExpressionPainter::getParenthesizedImage(SNode n, int fontSize, ExpressionRectangle &rect) {
