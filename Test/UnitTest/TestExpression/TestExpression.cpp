@@ -24,6 +24,8 @@ namespace TestExpression {
     }
   };
 
+//#define TEST_DERIVATIVES
+
   static void vprint(const TCHAR *format, va_list argptr) {
     OUTPUT(_T("%s"),vformat(format,argptr).cstr());
   }
@@ -34,6 +36,7 @@ namespace TestExpression {
     fs.setFileName(format(_T("testCase%03d"), testCase));
     return MKFOPEN(fs.getFullPath(),_T("w"));
   }
+
   FILE *openReducedListFile(int testCase) {
     const String fileName = Expression::getDefaultListFileName();
     FileNameSplitter fs(fileName);
@@ -263,7 +266,7 @@ namespace TestExpression {
       try {
         const CompactArray<ExpressionTest*> &testArray = ExpressionTest::getAllSamples();
         const size_t                         n         = testArray.size();
-        for(int i = 0; i < n; i++) {
+        for(size_t i = 0; i < n; i++) {
           ExpressionTest &test = *testArray[i];
           if(!test.isDerivable()) {
             continue;
@@ -285,8 +288,8 @@ namespace TestExpression {
           }
           verify(compiledExpr.getReturnType()    == EXPR_RETURN_REAL);
           verify(interpreterExpr.getReturnType() == EXPR_RETURN_REAL);
-          Expression compiledDFDX    = compiledExpr.getDerived(   _T("x"),false);
-          Expression interpreterDFDX = interpreterExpr.getDerived(_T("x"),false);
+          Expression compiledDFDX    = compiledExpr.getDerived(   _T("x"),true);
+          Expression interpreterDFDX = interpreterExpr.getDerived(_T("x"),true);
           verify(compiledDFDX.isOk());
           verify(interpreterDFDX.isOk());
           for(Real x = -2; x <= 2; x += 0.31) {
@@ -344,17 +347,6 @@ namespace TestExpression {
       }
     }
 #endif // TEST_DERIVATIVES
-
-    TEST_METHOD(TestMachineCode) {
-      try {
-        generateTestSequence(vprint);
-      } catch (Exception e) {
-        OUTPUT(_T("Exception:%s"), e.what());
-      }
-    }
-    TEST_METHOD(CallAssemblerCode) {
-      callAssemblerCode();
-    }
 
   };
 }

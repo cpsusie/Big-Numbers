@@ -232,6 +232,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestExpressionGraphics", ".
 		{0D1324F1-16AC-4245-9A51-8BF3B09A6C5F} = {0D1324F1-16AC-4245-9A51-8BF3B09A6C5F}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestOpcodes", "TestOpcodes\TestOpcodes.vcxproj", "{8189FA95-571D-423C-85AD-F55FCDD888E9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -1482,6 +1484,34 @@ Global
 		{0ADD092B-D686-47E7-8423-D4C64761BDAD}.TraceMemRelease|x64.Build.0 = TraceMemRelease|x64
 		{0ADD092B-D686-47E7-8423-D4C64761BDAD}.TraceMemRelease|x86.ActiveCfg = TraceMemRelease|Win32
 		{0ADD092B-D686-47E7-8423-D4C64761BDAD}.TraceMemRelease|x86.Build.0 = TraceMemRelease|Win32
+		{8189FA95-571D-423C-85AD-F55FCDD888E9}.Debug|x64.ActiveCfg = Debug|x64
+		{8189FA95-571D-423C-85AD-F55FCDD888E9}.Debug|x64.Build.0 = Debug|x64
+		{8189FA95-571D-423C-85AD-F55FCDD888E9}.Debug|x86.ActiveCfg = Debug|Win32
+		{8189FA95-571D-423C-85AD-F55FCDD888E9}.Debug|x86.Build.0 = Debug|Win32
+		{8189FA95-571D-423C-85AD-F55FCDD888E9}.LDDebug|x64.ActiveCfg = Debug|x64
+		{8189FA95-571D-423C-85AD-F55FCDD888E9}.LDDebug|x64.Build.0 = Debug|x64
+		{8189FA95-571D-423C-85AD-F55FCDD888E9}.LDDebug|x86.ActiveCfg = Debug|Win32
+		{8189FA95-571D-423C-85AD-F55FCDD888E9}.LDDebug|x86.Build.0 = Debug|Win32
+		{8189FA95-571D-423C-85AD-F55FCDD888E9}.LDRelease|x64.ActiveCfg = Release|x64
+		{8189FA95-571D-423C-85AD-F55FCDD888E9}.LDRelease|x64.Build.0 = Release|x64
+		{8189FA95-571D-423C-85AD-F55FCDD888E9}.LDRelease|x86.ActiveCfg = Release|Win32
+		{8189FA95-571D-423C-85AD-F55FCDD888E9}.LDRelease|x86.Build.0 = Release|Win32
+		{8189FA95-571D-423C-85AD-F55FCDD888E9}.Profiling|x64.ActiveCfg = Release|x64
+		{8189FA95-571D-423C-85AD-F55FCDD888E9}.Profiling|x64.Build.0 = Release|x64
+		{8189FA95-571D-423C-85AD-F55FCDD888E9}.Profiling|x86.ActiveCfg = Release|Win32
+		{8189FA95-571D-423C-85AD-F55FCDD888E9}.Profiling|x86.Build.0 = Release|Win32
+		{8189FA95-571D-423C-85AD-F55FCDD888E9}.Release|x64.ActiveCfg = Release|x64
+		{8189FA95-571D-423C-85AD-F55FCDD888E9}.Release|x64.Build.0 = Release|x64
+		{8189FA95-571D-423C-85AD-F55FCDD888E9}.Release|x86.ActiveCfg = Release|Win32
+		{8189FA95-571D-423C-85AD-F55FCDD888E9}.Release|x86.Build.0 = Release|Win32
+		{8189FA95-571D-423C-85AD-F55FCDD888E9}.TraceMemLDRelease|x64.ActiveCfg = Release|x64
+		{8189FA95-571D-423C-85AD-F55FCDD888E9}.TraceMemLDRelease|x64.Build.0 = Release|x64
+		{8189FA95-571D-423C-85AD-F55FCDD888E9}.TraceMemLDRelease|x86.ActiveCfg = Release|Win32
+		{8189FA95-571D-423C-85AD-F55FCDD888E9}.TraceMemLDRelease|x86.Build.0 = Release|Win32
+		{8189FA95-571D-423C-85AD-F55FCDD888E9}.TraceMemRelease|x64.ActiveCfg = Release|x64
+		{8189FA95-571D-423C-85AD-F55FCDD888E9}.TraceMemRelease|x64.Build.0 = Release|x64
+		{8189FA95-571D-423C-85AD-F55FCDD888E9}.TraceMemRelease|x86.ActiveCfg = Release|Win32
+		{8189FA95-571D-423C-85AD-F55FCDD888E9}.TraceMemRelease|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

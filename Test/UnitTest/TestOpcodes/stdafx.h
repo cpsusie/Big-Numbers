@@ -6,3 +6,6 @@
 #include "CppUnitTest.h"
 
 #include <MyUtil.h>
+
+void generateTestSequence(vprintfFunction vpf);
+void callAssemblerCode();
