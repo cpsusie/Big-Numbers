@@ -26,7 +26,7 @@ typedef enum {
 
 class FPUOpcodeHashMap : public CompactStrHashMap<FPUOpcodeKey> {
 public:
-  FPUOpcodeHashMap();
+  FPUOpcodeHashMap(size_t capacity);
   // Returns the corresponding FPUOpcodeKey if opcode is for FPU. _NOTFPU if not
   inline FPUOpcodeKey getOpcodeKey(const OpcodeBase &opcode) const {
     const FPUOpcodeKey *v = get(opcode.getMnemonic().cstr());

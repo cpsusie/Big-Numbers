@@ -4,7 +4,7 @@
 
 namespace Expr {
 
-FPUOpcodeHashMap FPUEmulator::s_FPUOpcodeMap;
+FPUOpcodeHashMap FPUEmulator::s_FPUOpcodeMap(555);
 
 FPUOpcodeKey FPUEmulator::execute(const OpcodeBase &opcode) {
   FPUOpcodeKey codeKey;
