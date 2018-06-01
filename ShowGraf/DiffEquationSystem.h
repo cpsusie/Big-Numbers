@@ -3,6 +3,8 @@
 #include <Math/Matrix.h>
 #include <Math/Expression/Expression.h>
 
+using namespace Expr;
+
 class DiffEquationDescription {
 public:
   // name of the function;

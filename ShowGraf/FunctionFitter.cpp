@@ -21,7 +21,7 @@ double FunctionFitter::computeSSD() {
     const double d = evaluate() - m_data[i].y;
     sum += d * d;
   }
-  return sqrt(sum);
+  return ::sqrt(sum);
 }
 
 double FunctionFitter::eval(double x) {
@@ -59,7 +59,7 @@ double FunctionFitter::computeGradient(Vector &gradient) { // return SSD of curr
 }
 
 void FunctionFitter::dumpVarList(FILE *f) {
-  const ExpressionVariableArray a = getAllVariables();
+  const ExpressionVariableArray a = getSymbolTable().getAllVariables();
   for(size_t i = 0; i < a.size(); i++) {
     const ExpressionVariableWithValue &v = a[i];
     if(v.getName() == _T("x")) {
@@ -225,7 +225,7 @@ FunctionFitter::FunctionFitter(const String &expr, const Point2DArray &data) : m
     return;
   }
   m_x = NULL;
-  const ExpressionVariableArray va = getAllVariables();
+  const ExpressionVariableArray va = getSymbolTable().getAllVariables();
   for(size_t i = 0; i < va.size(); i++) {
     const ExpressionVariableWithValue &v = va[i];
     if(v.getName() == _T("x")) {

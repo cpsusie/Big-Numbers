@@ -3,6 +3,8 @@
 #include <Math/MathException.h>
 #include <Math/Expression/Expression.h>
 
+using namespace Expr;
+
 String getExpression() {
   String result;
   _tprintf(_T("Enter expression (terminate with empty line):\n"));
