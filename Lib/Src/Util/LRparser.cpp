@@ -228,7 +228,7 @@ int LRparser::parseStep() { // return 0 on continue, != 0 terminate parse
 
     parserStackPop(m_productionLength);
     userStackPopSymbols(m_productionLength);
-    userStackShiftDollarDollar();
+    userStackShiftLeftSide();
 
     if(reduceProduction == 0) {
       const UINT nt = m_tables.getLeftSymbol(reduceProduction);

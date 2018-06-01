@@ -16,19 +16,19 @@ public:
 private:
   int reduceAction(unsigned int prod);
 
-  void userStackInit() {                     // Called before the first parsecycle
+  void userStackInit() {                              // Called before the first parsecycle
   }
 
   void userStackShiftSymbol(unsigned int symbol) {    // Called when LRparser shift in inputtoken
   }
 
-  void userStackPopSymbols(unsigned int count) {       // Pop count symbols from userstack
+  void userStackPopSymbols(unsigned int count)   {    // Pop count symbols from userstack
   }
 
-  void userStackShiftDollarDollar() {        // Push($$) to userstack. called at the end of each reduction
+  void userStackShiftLeftSide()                  {    // Push($$) to userstack. called at the end of each reduction
   }
 
-  void defaultReduce(unsigned int prod) {             // $$ = $1
+  void defaultReduce(unsigned int prod)          {    // $$ = $1
   }
 
   int *getStackTop(int fromtop) {

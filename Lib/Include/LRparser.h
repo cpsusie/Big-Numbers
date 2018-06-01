@@ -359,7 +359,7 @@ protected:
   // Pop count symbols from userstack
   virtual void userStackPopSymbols( UINT count ) = 0;
   // Push($$) to userstack. called at the end of each reduction
-  virtual void userStackShiftDollarDollar()      = 0;
+  virtual void userStackShiftLeftSide()          = 0;
   // $$ = $1
   virtual void defaultReduce(       UINT prod  ) = 0;
 public:

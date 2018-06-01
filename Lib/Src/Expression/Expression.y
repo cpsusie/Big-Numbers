@@ -17,15 +17,15 @@ public:
   }
 private:
   ParserTree &m_tree;
-  ExpressionNode *m_dollardollar, **m_stacktop, *m_userstack[256];
-  ExpressionNode *newNode(const SourcePosition &pos, ExpressionInputSymbol symbol, ... );
-  int   reduceAction(        unsigned int prod);
-  ExpressionNode *getStackTop(int fromtop)   { return m_stacktop[-fromtop];      }
-  void  userStackInit()                            { m_stacktop = m_userstack;         }
-  void  userStackShiftSymbol(unsigned int symbol)  { m_stacktop++;                     } // push 1 element (garbage) on userstack
-  void  userStackPopSymbols( unsigned int count)   { m_stacktop -= count;              } // pop count symbols from userstack
-  void  userStackShiftDollarDollar()               { *(++m_stacktop) = m_dollardollar; } // push($$) on userstack
-  void  defaultReduce(       unsigned int prod)    { m_dollardollar  = *m_stacktop;    } // $$ = $1
+  ExpressionNode *m_leftSide, **m_stacktop, *m_userstack[256];
+  ExpressionNode *getStackTop(int fromtop)       { return m_stacktop[-fromtop];            }
+  void userStackInit()                           { m_stacktop = m_userstack;               }
+  void userStackShiftSymbol(unsigned int symbol) { m_stacktop++;                           } // push 1 element (garbage) on userstack
+  void userStackPopSymbols( unsigned int count ) { m_stacktop      -= count;               } // pop count symbols from userstack
+  void userStackShiftLeftSide()                  { *(++m_stacktop) = m_leftSide;           } // push($$) on userstack
+  void defaultReduce(       unsigned int prod)   { m_leftSide      = *m_stacktop;          } // $$ = $1
+  int  reduceAction(        unsigned int prod);
+  ExpressionNode   *newNode(const SourcePosition &pos, ExpressionInputSymbol symbol, ...   );
 };
 
 $POPNAMESPACE$

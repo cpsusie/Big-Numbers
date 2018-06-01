@@ -116,9 +116,9 @@ void TestParser::buildReduceActionArray() {
   const ParserTables &tables = getParserTables();
   for(UINT prod = 0; prod < tables.getProductionCount(); prod++) {
     m_reduceActionStr.add(format(_T("Reduce by (%d) %s -> %s")
-                                 ,prod
-                                 ,getSymbolName(tables.getLeftSymbol(prod))
-                                 ,tables.getRightString(prod).cstr()
+                                ,prod
+                                ,getSymbolName(tables.getLeftSymbol(prod))
+                                ,tables.getRightString(prod).cstr()
                                 )
                          );
   }
@@ -191,9 +191,9 @@ int TestParser::reduceAction(unsigned int prod) {
     SyntaxNodep child = getStackTop(prodlen - i - 1);
     p->setChild(i, child);
   }
-  m_dollardollar = p;
+  m_leftSide = p;
   if(prod == 0) {
-    m_root = m_dollardollar ;
+    m_root = m_leftSide;
   }
   m_handler->handleReduction(prod);
   return 0;

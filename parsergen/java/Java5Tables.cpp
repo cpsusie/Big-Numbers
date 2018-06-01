@@ -29,7 +29,7 @@ static const BYTE compressedSet[149] = {
   ,0xb3,0x11,0x72,0x6a,0xe6,0x07,0x04,0xf0,0x9e,0xbd,0xfc,0xea,0x11,0x3b,0xa0,0x37,0xbe,0xd5,0xde,0x5f
   ,0x99,0xef,0x33,0x26,0x35,0xcb,0x3f,0xed,0x8f,0xf8,0xbe,0xff,0xfe,0xbf,0xe7,0xeb,0x77,0x66,0xc9,0xff
   ,0x2f,0x1f,0xc9,0xf6,0x25,0xd9,0x9e,0x6d,0x7b
-}; // Size of table:152 bytes.
+}; // Size of table:152(x86)/152(x64) bytes.
 
 /****************************************************************************\
 * The action matrix holds the parse action(state,terminal)                   *
@@ -38,14 +38,14 @@ static const BYTE compressedSet[149] = {
 *                                                                            *
 * Compressed:When there is only 1 possible action in the state.              *
 *            or all actions are reduce by the same production.               *
-*   If bit 16 (0x8000) is 0, there is only one possible action which is      *
+*   If bit 15 (0x8000) is 0, there is only one possible action which is      *
 *   encoded as:                                                              *
 *      #define   act0001  (void*)((action << 16) | (token&0x7fff)            *
 *   State index------+               |                |                      *
 *   Highorder 16 bits = action-------+                |                      *
 *   Loworder  15 bits = legal token-------------------+                      *
 *                                                                            *
-*   If bit 16 is 1, the loworder 15 bits is an index.                        *
+*   If bit 15 is 1, the loworder 15 bits is an index.                        *
 *      #define   act0002  (void*)((action<<16)  |  0x8000 | (index&0x7fff))  *
 *   State index------+               |                |        |             *
 *   Highorder 16 bits = action-------+                |        |             *
@@ -126,7 +126,7 @@ static const BYTE compressedLasets[686] = {
   /* 46  36 tokens */ ,0xc0,0xff,0x97,0x4f,0x40,0xe0,0x5f,0x15,0x00,0x00,0x00,0x00,0x60,0x01
   /* 47   3 tokens */ ,0x00,0x00,0x60,0x00,0x00,0x00,0x00,0x08,0x00,0x00,0x00,0x00,0x00,0x00
   /* 48  50 tokens */ ,0xca,0xff,0x97,0xcf,0xff,0xe3,0x5f,0x1d,0x02,0x00,0x00,0x00,0x60,0x01
-}; // Size of table:688 bytes.
+}; // Size of table:688(x86)/688(x64) bytes.
 
 #define act0001 (void*)0x00000000    /* reduce by 0 on EOI                       */
 #define act0004 (void*)0xffe08000    /* reduce by 32 on tokens in set[0]         */
@@ -1985,182 +1985,182 @@ static const TableType act1156[] = {  23,   6, 114,   7, 115,   8, 116,   9, 117
                                         ,  51, 127,  52, 137,  54, 135,  60, 422,  61,1173
                                         , 101, 155, 102, 156, 104,  51};
 
-// Total size of uncompressed actNNNN tables:21864 bytes.
+// Total size of uncompressed actNNNN tables:21.864(x86)/22.576(x64) bytes.
 
-#define act0063 act0057 /* Saved  20 bytes */
-#define act0064 act0058 /* Saved  16 bytes */
-#define act0065 act0059 /* Saved  12 bytes */
-#define act0091 act0074 /* Saved  16 bytes */
-#define act0092 act0073 /* Saved  12 bytes */
-#define act0095 act0082 /* Saved  12 bytes */
-#define act0153 act0152 /* Saved 108 bytes */
-#define act0155 act0152 /* Saved 108 bytes */
-#define act0156 act0152 /* Saved 108 bytes */
-#define act0158 act0152 /* Saved 108 bytes */
-#define act0159 act0152 /* Saved 108 bytes */
-#define act0175 act0073 /* Saved  12 bytes */
-#define act0236 act0073 /* Saved  12 bytes */
-#define act0258 act0152 /* Saved 108 bytes */
-#define act0259 act0152 /* Saved 108 bytes */
-#define act0260 act0152 /* Saved 108 bytes */
-#define act0261 act0152 /* Saved 108 bytes */
-#define act0262 act0152 /* Saved 108 bytes */
-#define act0263 act0152 /* Saved 108 bytes */
-#define act0264 act0152 /* Saved 108 bytes */
-#define act0265 act0152 /* Saved 108 bytes */
-#define act0267 act0152 /* Saved 108 bytes */
-#define act0268 act0152 /* Saved 108 bytes */
-#define act0269 act0152 /* Saved 108 bytes */
-#define act0270 act0152 /* Saved 108 bytes */
-#define act0271 act0152 /* Saved 108 bytes */
-#define act0272 act0152 /* Saved 108 bytes */
-#define act0273 act0152 /* Saved 108 bytes */
-#define act0274 act0152 /* Saved 108 bytes */
-#define act0275 act0152 /* Saved 108 bytes */
-#define act0276 act0152 /* Saved 108 bytes */
-#define act0277 act0152 /* Saved 108 bytes */
-#define act0278 act0152 /* Saved 108 bytes */
-#define act0282 act0152 /* Saved 108 bytes */
-#define act0301 act0152 /* Saved 108 bytes */
-#define act0302 act0152 /* Saved 108 bytes */
-#define act0303 act0152 /* Saved 108 bytes */
-#define act0304 act0152 /* Saved 108 bytes */
-#define act0305 act0152 /* Saved 108 bytes */
-#define act0306 act0152 /* Saved 108 bytes */
-#define act0307 act0152 /* Saved 108 bytes */
-#define act0308 act0152 /* Saved 108 bytes */
-#define act0309 act0266 /* Saved  40 bytes */
-#define act0310 act0152 /* Saved 108 bytes */
-#define act0311 act0152 /* Saved 108 bytes */
-#define act0312 act0152 /* Saved 108 bytes */
-#define act0313 act0152 /* Saved 108 bytes */
-#define act0314 act0152 /* Saved 108 bytes */
-#define act0315 act0152 /* Saved 108 bytes */
-#define act0316 act0152 /* Saved 108 bytes */
-#define act0317 act0152 /* Saved 108 bytes */
-#define act0318 act0152 /* Saved 108 bytes */
-#define act0319 act0152 /* Saved 108 bytes */
-#define act0320 act0152 /* Saved 108 bytes */
-#define act0321 act0152 /* Saved 108 bytes */
-#define act0327 act0152 /* Saved 108 bytes */
-#define act0328 act0152 /* Saved 108 bytes */
-#define act0331 act0152 /* Saved 108 bytes */
-#define act0332 act0152 /* Saved 108 bytes */
-#define act0419 act0152 /* Saved 108 bytes */
-#define act0421 act0152 /* Saved 108 bytes */
-#define act0422 act0128 /* Saved 108 bytes */
-#define act0441 act0266 /* Saved  40 bytes */
-#define act0494 act0300 /* Saved  12 bytes */
-#define act0529 act0152 /* Saved 108 bytes */
-#define act0530 act0152 /* Saved 108 bytes */
-#define act0551 act0548 /* Saved  12 bytes */
-#define act0563 act0300 /* Saved  12 bytes */
-#define act0611 act0435 /* Saved  12 bytes */
-#define act0616 act0414 /* Saved 148 bytes */
-#define act0618 act0152 /* Saved 108 bytes */
-#define act0624 act0414 /* Saved 148 bytes */
-#define act0647 act0435 /* Saved  12 bytes */
-#define act0680 act0152 /* Saved 108 bytes */
-#define act0681 act0152 /* Saved 108 bytes */
-#define act0682 act0152 /* Saved 108 bytes */
-#define act0683 act0152 /* Saved 108 bytes */
-#define act0684 act0152 /* Saved 108 bytes */
-#define act0685 act0152 /* Saved 108 bytes */
-#define act0686 act0152 /* Saved 108 bytes */
-#define act0687 act0152 /* Saved 108 bytes */
-#define act0688 act0152 /* Saved 108 bytes */
-#define act0689 act0266 /* Saved  40 bytes */
-#define act0690 act0152 /* Saved 108 bytes */
-#define act0691 act0152 /* Saved 108 bytes */
-#define act0692 act0152 /* Saved 108 bytes */
-#define act0693 act0152 /* Saved 108 bytes */
-#define act0694 act0152 /* Saved 108 bytes */
-#define act0695 act0152 /* Saved 108 bytes */
-#define act0696 act0152 /* Saved 108 bytes */
-#define act0697 act0152 /* Saved 108 bytes */
-#define act0698 act0152 /* Saved 108 bytes */
-#define act0699 act0152 /* Saved 108 bytes */
-#define act0700 act0152 /* Saved 108 bytes */
-#define act0701 act0152 /* Saved 108 bytes */
-#define act0707 act0152 /* Saved 108 bytes */
-#define act0711 act0133 /* Saved  12 bytes */
-#define act0712 act0710 /* Saved  92 bytes */
-#define act0715 act0152 /* Saved 108 bytes */
-#define act0728 act0298 /* Saved  44 bytes */
-#define act0731 act0266 /* Saved  40 bytes */
-#define act0732 act0266 /* Saved  40 bytes */
-#define act0739 act0152 /* Saved 108 bytes */
-#define act0747 act0640 /* Saved  20 bytes */
-#define act0750 act0435 /* Saved  12 bytes */
-#define act0751 act0648 /* Saved  16 bytes */
-#define act0775 act0656 /* Saved  88 bytes */
-#define act0791 act0152 /* Saved 108 bytes */
-#define act0793 act0640 /* Saved  20 bytes */
-#define act0802 act0640 /* Saved  20 bytes */
-#define act0803 act0648 /* Saved  16 bytes */
-#define act0806 act0795 /* Saved  12 bytes */
-#define act0818 act0656 /* Saved  88 bytes */
-#define act0819 act0657 /* Saved  12 bytes */
-#define act0826 act0266 /* Saved  40 bytes */
-#define act0869 act0710 /* Saved  92 bytes */
-#define act0899 act0640 /* Saved  20 bytes */
-#define act0901 act0795 /* Saved  12 bytes */
-#define act0902 act0640 /* Saved  20 bytes */
-#define act0903 act0648 /* Saved  16 bytes */
-#define act0906 act0795 /* Saved  12 bytes */
-#define act0910 act0414 /* Saved 148 bytes */
-#define act0911 act0622 /* Saved 148 bytes */
-#define act0912 act0622 /* Saved 148 bytes */
-#define act0913 act0622 /* Saved 148 bytes */
-#define act0918 act0152 /* Saved 108 bytes */
-#define act0934 act0795 /* Saved  12 bytes */
-#define act0937 act0640 /* Saved  20 bytes */
-#define act0939 act0795 /* Saved  12 bytes */
-#define act0941 act0795 /* Saved  12 bytes */
-#define act0957 act0266 /* Saved  40 bytes */
-#define act0959 act0266 /* Saved  40 bytes */
-#define act0978 act0152 /* Saved 108 bytes */
-#define act0982 act0710 /* Saved  92 bytes */
-#define act0988 act0727 /* Saved  44 bytes */
-#define act0990 act0266 /* Saved  40 bytes */
-#define act0991 act0266 /* Saved  40 bytes */
-#define act0998 act0253 /* Saved 116 bytes */
-#define act0999 act0795 /* Saved  12 bytes */
-#define act1002 act0640 /* Saved  20 bytes */
-#define act1004 act0795 /* Saved  12 bytes */
-#define act1005 act0795 /* Saved  12 bytes */
-#define act1014 act0656 /* Saved  88 bytes */
-#define act1032 act0414 /* Saved 148 bytes */
-#define act1034 act0152 /* Saved 108 bytes */
-#define act1040 act0795 /* Saved  12 bytes */
-#define act1070 act0710 /* Saved  92 bytes */
-#define act1091 act0795 /* Saved  12 bytes */
-#define act1095 act0622 /* Saved 148 bytes */
-#define act1105 act0414 /* Saved 148 bytes */
-#define act1106 act0152 /* Saved 108 bytes */
-#define act1108 act0414 /* Saved 148 bytes */
-#define act1109 act0414 /* Saved 148 bytes */
-#define act1124 act0987 /* Saved  44 bytes */
-#define act1126 act0266 /* Saved  40 bytes */
-#define act1127 act0266 /* Saved  40 bytes */
-#define act1137 act0622 /* Saved 148 bytes */
-#define act1138 act0152 /* Saved 108 bytes */
-#define act1140 act0414 /* Saved 148 bytes */
-#define act1141 act0414 /* Saved 148 bytes */
-#define act1144 act0414 /* Saved 148 bytes */
-#define act1147 act0414 /* Saved 148 bytes */
-#define act1158 act0622 /* Saved 148 bytes */
-#define act1159 act0152 /* Saved 108 bytes */
-#define act1161 act0622 /* Saved 148 bytes */
-#define act1162 act0622 /* Saved 148 bytes */
-#define act1165 act0414 /* Saved 148 bytes */
-#define act1168 act0414 /* Saved 148 bytes */
-#define act1173 act0622 /* Saved 148 bytes */
-#define act1174 act0622 /* Saved 148 bytes */
-#define act1177 act0622 /* Saved 148 bytes */
-#define act1180 act0622 /* Saved 148 bytes */
-#define act1183 act0622 /* Saved 148 bytes */
-#define act1186 act0622 /* Saved 148 bytes */
+#define act0063 act0057 /* Saved 20(x86)/24(x64) bytes */
+#define act0064 act0058 /* Saved 16(x86)/16(x64) bytes */
+#define act0065 act0059 /* Saved 12(x86)/16(x64) bytes */
+#define act0091 act0074 /* Saved 16(x86)/16(x64) bytes */
+#define act0092 act0073 /* Saved 12(x86)/16(x64) bytes */
+#define act0095 act0082 /* Saved 12(x86)/16(x64) bytes */
+#define act0153 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0155 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0156 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0158 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0159 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0175 act0073 /* Saved 12(x86)/16(x64) bytes */
+#define act0236 act0073 /* Saved 12(x86)/16(x64) bytes */
+#define act0258 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0259 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0260 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0261 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0262 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0263 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0264 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0265 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0267 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0268 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0269 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0270 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0271 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0272 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0273 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0274 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0275 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0276 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0277 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0278 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0282 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0301 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0302 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0303 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0304 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0305 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0306 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0307 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0308 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0309 act0266 /* Saved 40(x86)/40(x64) bytes */
+#define act0310 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0311 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0312 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0313 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0314 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0315 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0316 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0317 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0318 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0319 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0320 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0321 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0327 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0328 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0331 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0332 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0419 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0421 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0422 act0128 /* Saved 108(x86)/112(x64) bytes */
+#define act0441 act0266 /* Saved 40(x86)/40(x64) bytes */
+#define act0494 act0300 /* Saved 12(x86)/16(x64) bytes */
+#define act0529 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0530 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0551 act0548 /* Saved 12(x86)/16(x64) bytes */
+#define act0563 act0300 /* Saved 12(x86)/16(x64) bytes */
+#define act0611 act0435 /* Saved 12(x86)/16(x64) bytes */
+#define act0616 act0414 /* Saved 148(x86)/152(x64) bytes */
+#define act0618 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0624 act0414 /* Saved 148(x86)/152(x64) bytes */
+#define act0647 act0435 /* Saved 12(x86)/16(x64) bytes */
+#define act0680 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0681 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0682 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0683 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0684 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0685 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0686 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0687 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0688 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0689 act0266 /* Saved 40(x86)/40(x64) bytes */
+#define act0690 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0691 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0692 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0693 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0694 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0695 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0696 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0697 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0698 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0699 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0700 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0701 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0707 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0711 act0133 /* Saved 12(x86)/16(x64) bytes */
+#define act0712 act0710 /* Saved 92(x86)/96(x64) bytes */
+#define act0715 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0728 act0298 /* Saved 44(x86)/48(x64) bytes */
+#define act0731 act0266 /* Saved 40(x86)/40(x64) bytes */
+#define act0732 act0266 /* Saved 40(x86)/40(x64) bytes */
+#define act0739 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0747 act0640 /* Saved 20(x86)/24(x64) bytes */
+#define act0750 act0435 /* Saved 12(x86)/16(x64) bytes */
+#define act0751 act0648 /* Saved 16(x86)/16(x64) bytes */
+#define act0775 act0656 /* Saved 88(x86)/88(x64) bytes */
+#define act0791 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0793 act0640 /* Saved 20(x86)/24(x64) bytes */
+#define act0802 act0640 /* Saved 20(x86)/24(x64) bytes */
+#define act0803 act0648 /* Saved 16(x86)/16(x64) bytes */
+#define act0806 act0795 /* Saved 12(x86)/16(x64) bytes */
+#define act0818 act0656 /* Saved 88(x86)/88(x64) bytes */
+#define act0819 act0657 /* Saved 12(x86)/16(x64) bytes */
+#define act0826 act0266 /* Saved 40(x86)/40(x64) bytes */
+#define act0869 act0710 /* Saved 92(x86)/96(x64) bytes */
+#define act0899 act0640 /* Saved 20(x86)/24(x64) bytes */
+#define act0901 act0795 /* Saved 12(x86)/16(x64) bytes */
+#define act0902 act0640 /* Saved 20(x86)/24(x64) bytes */
+#define act0903 act0648 /* Saved 16(x86)/16(x64) bytes */
+#define act0906 act0795 /* Saved 12(x86)/16(x64) bytes */
+#define act0910 act0414 /* Saved 148(x86)/152(x64) bytes */
+#define act0911 act0622 /* Saved 148(x86)/152(x64) bytes */
+#define act0912 act0622 /* Saved 148(x86)/152(x64) bytes */
+#define act0913 act0622 /* Saved 148(x86)/152(x64) bytes */
+#define act0918 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0934 act0795 /* Saved 12(x86)/16(x64) bytes */
+#define act0937 act0640 /* Saved 20(x86)/24(x64) bytes */
+#define act0939 act0795 /* Saved 12(x86)/16(x64) bytes */
+#define act0941 act0795 /* Saved 12(x86)/16(x64) bytes */
+#define act0957 act0266 /* Saved 40(x86)/40(x64) bytes */
+#define act0959 act0266 /* Saved 40(x86)/40(x64) bytes */
+#define act0978 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act0982 act0710 /* Saved 92(x86)/96(x64) bytes */
+#define act0988 act0727 /* Saved 44(x86)/48(x64) bytes */
+#define act0990 act0266 /* Saved 40(x86)/40(x64) bytes */
+#define act0991 act0266 /* Saved 40(x86)/40(x64) bytes */
+#define act0998 act0253 /* Saved 116(x86)/120(x64) bytes */
+#define act0999 act0795 /* Saved 12(x86)/16(x64) bytes */
+#define act1002 act0640 /* Saved 20(x86)/24(x64) bytes */
+#define act1004 act0795 /* Saved 12(x86)/16(x64) bytes */
+#define act1005 act0795 /* Saved 12(x86)/16(x64) bytes */
+#define act1014 act0656 /* Saved 88(x86)/88(x64) bytes */
+#define act1032 act0414 /* Saved 148(x86)/152(x64) bytes */
+#define act1034 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act1040 act0795 /* Saved 12(x86)/16(x64) bytes */
+#define act1070 act0710 /* Saved 92(x86)/96(x64) bytes */
+#define act1091 act0795 /* Saved 12(x86)/16(x64) bytes */
+#define act1095 act0622 /* Saved 148(x86)/152(x64) bytes */
+#define act1105 act0414 /* Saved 148(x86)/152(x64) bytes */
+#define act1106 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act1108 act0414 /* Saved 148(x86)/152(x64) bytes */
+#define act1109 act0414 /* Saved 148(x86)/152(x64) bytes */
+#define act1124 act0987 /* Saved 44(x86)/48(x64) bytes */
+#define act1126 act0266 /* Saved 40(x86)/40(x64) bytes */
+#define act1127 act0266 /* Saved 40(x86)/40(x64) bytes */
+#define act1137 act0622 /* Saved 148(x86)/152(x64) bytes */
+#define act1138 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act1140 act0414 /* Saved 148(x86)/152(x64) bytes */
+#define act1141 act0414 /* Saved 148(x86)/152(x64) bytes */
+#define act1144 act0414 /* Saved 148(x86)/152(x64) bytes */
+#define act1147 act0414 /* Saved 148(x86)/152(x64) bytes */
+#define act1158 act0622 /* Saved 148(x86)/152(x64) bytes */
+#define act1159 act0152 /* Saved 108(x86)/112(x64) bytes */
+#define act1161 act0622 /* Saved 148(x86)/152(x64) bytes */
+#define act1162 act0622 /* Saved 148(x86)/152(x64) bytes */
+#define act1165 act0414 /* Saved 148(x86)/152(x64) bytes */
+#define act1168 act0414 /* Saved 148(x86)/152(x64) bytes */
+#define act1173 act0622 /* Saved 148(x86)/152(x64) bytes */
+#define act1174 act0622 /* Saved 148(x86)/152(x64) bytes */
+#define act1177 act0622 /* Saved 148(x86)/152(x64) bytes */
+#define act1180 act0622 /* Saved 148(x86)/152(x64) bytes */
+#define act1183 act0622 /* Saved 148(x86)/152(x64) bytes */
+#define act1186 act0622 /* Saved 148(x86)/152(x64) bytes */
 
 static const void *action[1191] = {
    act0000,act0001,act0002,act0003,act0004,act0005,act0006,act0007,act0008,act0009
@@ -2283,7 +2283,7 @@ static const void *action[1191] = {
   ,act1170,act1171,act1172,act1173,act1174,act1175,act1176,act1177,act1178,act1179
   ,act1180,act1181,act1182,act1183,act1184,act1185,act1186,act1187,act1188,act1189
   ,act1190
-}; // Size of table:9528 bytes.
+}; // Size of table:4.764(x86)/9.528(x64) bytes.
 
 /****************************************************************************\
 * The successor matrix is used when the parser has reduced by prod A -> alfa *
@@ -3645,51 +3645,51 @@ static const TableType succ1186[] = { 45, 110, 126, 112, 133, 116, 323, 120, 760
                                         , 206, 406, 207, 407, 208, 408, 209, 409, 210, 410
                                         , 221, 124, 222, 125, 224, 130, 225, 132, 231, 290};
 
-// Total size of all succNNNN tables:24424 bytes.
+// Total size of all succNNNN tables:24.424(x86)/25.184(x64) bytes.
 
-#define succ0040 succ0032  /* Saved  48 bytes */
-#define succ0041 succ0003  /* Saved  24 bytes */
-#define succ0046 succ0029  /* Saved  12 bytes */
-#define succ0054 succ0032  /* Saved  48 bytes */
-#define succ0061 succ0032  /* Saved  48 bytes */
-#define succ0070 succ0067  /* Saved   8 bytes */
-#define succ0103 succ0067  /* Saved   8 bytes */
-#define succ0164 succ0029  /* Saved  12 bytes */
-#define succ0282 succ0279  /* Saved 140 bytes */
-#define succ0286 succ0122  /* Saved   8 bytes */
-#define succ0291 succ0256  /* Saved   8 bytes */
-#define succ0323 succ0123  /* Saved  16 bytes */
-#define succ0362 succ0256  /* Saved   8 bytes */
-#define succ0363 succ0256  /* Saved   8 bytes */
-#define succ0374 succ0122  /* Saved   8 bytes */
-#define succ0460 succ0183  /* Saved 112 bytes */
-#define succ0478 succ0290  /* Saved   8 bytes */
-#define succ0508 succ0185  /* Saved  12 bytes */
-#define succ0524 succ0256  /* Saved   8 bytes */
-#define succ0528 succ0256  /* Saved   8 bytes */
-#define succ0554 succ0189  /* Saved   8 bytes */
-#define succ0599 succ0427  /* Saved  12 bytes */
-#define succ0603 succ0256  /* Saved   8 bytes */
-#define succ0614 succ0256  /* Saved   8 bytes */
-#define succ0615 succ0256  /* Saved   8 bytes */
-#define succ0626 succ0375  /* Saved   8 bytes */
-#define succ0637 succ0123  /* Saved  16 bytes */
-#define succ0639 succ0427  /* Saved  12 bytes */
-#define succ0643 succ0256  /* Saved   8 bytes */
-#define succ0711 succ0372  /* Saved  12 bytes */
-#define succ0713 succ0256  /* Saved   8 bytes */
-#define succ0720 succ0256  /* Saved   8 bytes */
-#define succ0724 succ0256  /* Saved   8 bytes */
-#define succ0742 succ0427  /* Saved  12 bytes */
-#define succ0760 succ0122  /* Saved   8 bytes */
-#define succ0811 succ0370  /* Saved 220 bytes */
-#define succ0878 succ0189  /* Saved   8 bytes */
-#define succ0898 succ0256  /* Saved   8 bytes */
-#define succ0944 succ0370  /* Saved 220 bytes */
-#define succ0983 succ0256  /* Saved   8 bytes */
-#define succ1017 succ0916  /* Saved 228 bytes */
-#define succ1020 succ0370  /* Saved 220 bytes */
-#define succ1046 succ0565  /* Saved   8 bytes */
+#define succ0040 succ0032  /* Saved 48(x86)/48(x64) bytes */
+#define succ0041 succ0003  /* Saved 24(x86)/24(x64) bytes */
+#define succ0046 succ0029  /* Saved 12(x86)/16(x64) bytes */
+#define succ0054 succ0032  /* Saved 48(x86)/48(x64) bytes */
+#define succ0061 succ0032  /* Saved 48(x86)/48(x64) bytes */
+#define succ0070 succ0067  /* Saved 8(x86)/8(x64) bytes */
+#define succ0103 succ0067  /* Saved 8(x86)/8(x64) bytes */
+#define succ0164 succ0029  /* Saved 12(x86)/16(x64) bytes */
+#define succ0282 succ0279  /* Saved 140(x86)/144(x64) bytes */
+#define succ0286 succ0122  /* Saved 8(x86)/8(x64) bytes */
+#define succ0291 succ0256  /* Saved 8(x86)/8(x64) bytes */
+#define succ0323 succ0123  /* Saved 16(x86)/16(x64) bytes */
+#define succ0362 succ0256  /* Saved 8(x86)/8(x64) bytes */
+#define succ0363 succ0256  /* Saved 8(x86)/8(x64) bytes */
+#define succ0374 succ0122  /* Saved 8(x86)/8(x64) bytes */
+#define succ0460 succ0183  /* Saved 112(x86)/112(x64) bytes */
+#define succ0478 succ0290  /* Saved 8(x86)/8(x64) bytes */
+#define succ0508 succ0185  /* Saved 12(x86)/16(x64) bytes */
+#define succ0524 succ0256  /* Saved 8(x86)/8(x64) bytes */
+#define succ0528 succ0256  /* Saved 8(x86)/8(x64) bytes */
+#define succ0554 succ0189  /* Saved 8(x86)/8(x64) bytes */
+#define succ0599 succ0427  /* Saved 12(x86)/16(x64) bytes */
+#define succ0603 succ0256  /* Saved 8(x86)/8(x64) bytes */
+#define succ0614 succ0256  /* Saved 8(x86)/8(x64) bytes */
+#define succ0615 succ0256  /* Saved 8(x86)/8(x64) bytes */
+#define succ0626 succ0375  /* Saved 8(x86)/8(x64) bytes */
+#define succ0637 succ0123  /* Saved 16(x86)/16(x64) bytes */
+#define succ0639 succ0427  /* Saved 12(x86)/16(x64) bytes */
+#define succ0643 succ0256  /* Saved 8(x86)/8(x64) bytes */
+#define succ0711 succ0372  /* Saved 12(x86)/16(x64) bytes */
+#define succ0713 succ0256  /* Saved 8(x86)/8(x64) bytes */
+#define succ0720 succ0256  /* Saved 8(x86)/8(x64) bytes */
+#define succ0724 succ0256  /* Saved 8(x86)/8(x64) bytes */
+#define succ0742 succ0427  /* Saved 12(x86)/16(x64) bytes */
+#define succ0760 succ0122  /* Saved 8(x86)/8(x64) bytes */
+#define succ0811 succ0370  /* Saved 220(x86)/224(x64) bytes */
+#define succ0878 succ0189  /* Saved 8(x86)/8(x64) bytes */
+#define succ0898 succ0256  /* Saved 8(x86)/8(x64) bytes */
+#define succ0944 succ0370  /* Saved 220(x86)/224(x64) bytes */
+#define succ0983 succ0256  /* Saved 8(x86)/8(x64) bytes */
+#define succ1017 succ0916  /* Saved 228(x86)/232(x64) bytes */
+#define succ1020 succ0370  /* Saved 220(x86)/224(x64) bytes */
+#define succ1046 succ0565  /* Saved 8(x86)/8(x64) bytes */
 
 static const TableType *successor[1191] = {
    succ0000,NULL    ,succ0002,succ0003,NULL    ,NULL    ,NULL    ,NULL    ,succ0008,NULL
@@ -3812,7 +3812,7 @@ static const TableType *successor[1191] = {
   ,NULL    ,NULL    ,NULL    ,succ1173,succ1174,NULL    ,NULL    ,succ1177,NULL    ,NULL
   ,succ1180,NULL    ,NULL    ,succ1183,NULL    ,NULL    ,succ1186,NULL    ,NULL    ,NULL
   ,NULL
-}; // Size of pointertable:9528 bytes.
+}; // Size of pointertable:4.764(x86)/9.528(x64) bytes.
 
 /****************************************************************************\
 * The productionLength[] array is indexed by production number and holds     *
@@ -3883,7 +3883,7 @@ static const unsigned char productionLength[635] = {
   /* 610 */    7,   7,   6,   2,   3,   3,   8,   8,   3,   3,
   /* 620 */    3,   3,   3,   1,   1,   6,   2,   6,   5,   5,
   /* 630 */    1,   6,   6,   2,   0
-}; // Size of table:636 bytes.
+}; // Size of table:636(x86)/640(x64) bytes.
 
 /****************************************************************************\
 * The leftSide[] array is indexed by production number, and holds the        *
@@ -3954,7 +3954,7 @@ static const TableType leftSide[635] = {
   /* 610 */  164, 164, 164, 177, 212, 212, 184, 190, 200, 221,
   /* 620 */  221, 222, 222, 106, 106, 141, 147, 164, 141, 164,
   /* 630 */  106, 141, 164, 212, 106
-}; // Size of table:1272 bytes.
+}; // Size of table:1.272(x86)/1.272(x64) bytes.
 
 /****************************************************************************\
 * The rightSide[] matrix is indexed by production number and holds           *
@@ -4596,7 +4596,7 @@ static const TableType rightSideTable[1784] = {
   /* 631 */ ,131,111,143,144,145,146
   /* 632 */ ,131,111,143,144,145, 56
   /* 633 */ , 58, 59
-}; // Size of table:3568 bytes.
+}; // Size of table:3.568(x86)/3.568(x64) bytes.
 
 /****************************************************************************\
 * The symbolName[] array is indexed by symbol and holds                      *
@@ -4910,7 +4910,7 @@ static const TCHAR *symbolName[306] = {
   /* 303 */ _T("SwitchLabel_plus"),
   /* 304 */ _T("CatchClause_plus"),
   /* 305 */ _T("DimExpression_plus")
-}; // Total size of strings:4932 bytes, size of pointertable:2448 bytes.
+}; // Total size of strings:8.906(x86)/8.906(x64) bytes, size of pointertable:1.224(x86)/2.448(x64) bytes.
 
 static const ParserShortTables Java5Tables_s(compressedSet, compressedLasets
                                             ,action, successor, productionLength, leftSide
@@ -4918,9 +4918,9 @@ static const ParserShortTables Java5Tables_s(compressedSet, compressedLasets
                                             ,105, 306, 635, 1191);
 
 const ParserTables *Java5Parser::Java5Tables = &Java5Tables_s;
-// Size of Java5Tables_s: 88 bytes. Size of Java5Tables:8 bytes
+// Size of Java5Tables_s: 48(x86)/88(x64) bytes. Size of Java5Tables:4(x86)/8(x64) bytes
 
 
-// Total size of table data:79.136 bytes.
+// Total size of table data:72.314(x86)/84.586(x64) bytes.
 
 

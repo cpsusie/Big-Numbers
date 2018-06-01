@@ -258,7 +258,7 @@ void GrammarParser::parseActionBody(const SourcePosition &sourcePos, CompactShor
         m_lex.getCollected(tmp);
         m_lex.collectEnd();
         next();
-        m_actionBody += tmp.m_sourceText + _T("m_dollardollar ");
+        m_actionBody += tmp.m_sourceText + _T("m_leftSide ");
         m_lex.collectBegin();
       }
       break;

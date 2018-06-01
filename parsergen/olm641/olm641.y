@@ -10,13 +10,13 @@ public:
 public:
   Olm641Parser(Scanner *lex=NULL) : LRparser(*Olm641Tables,lex) {}
 private:
-  int m_dollardollar,*m_stacktop,m_userstack[256];
-  int reduceAction(unsigned int prod);
-  void userStackInit()                           { m_stacktop = m_userstack;         }
-  void userStackShiftSymbol(unsigned int symbol) { m_stacktop++;                     } // push 1 element (garbage) on userstack
-  void userStackPopSymbols(unsigned int count)   { m_stacktop -= count;              } // pop count symbols from userstack
-  void userStackShiftDollarDollar()              { *(++m_stacktop) = m_dollardollar; } // push($$) on userstack
-  void defaultReduce(unsigned int p)             { m_dollardollar  = *m_stacktop;    } // $$ = $1
+  int m_leftSide,*m_stacktop,m_userstack[256];
+  void userStackInit()                           { m_stacktop = m_userstack;               }
+  void userStackShiftSymbol(unsigned int symbol) { m_stacktop++;                           } // push 1 element (garbage) on userstack
+  void userStackPopSymbols( unsigned int count ) { m_stacktop      -= count;               } // pop count symbols from userstack
+  void userStackShiftLeftSide()                  { *(++m_stacktop) = m_leftSide;           } // push($$) on userstack
+  void defaultReduce(       unsigned int prod)   { m_leftSide      = *m_stacktop;          } // $$ = $1
+  int  reduceAction(        unsigned int prod);
 };
 
 %}

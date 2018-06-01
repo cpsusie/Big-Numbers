@@ -38,7 +38,7 @@ private:
   Grammar            m_grammar;
   ParserHandler     *m_handler;
   bool               m_ok;
-  SyntaxNodep        m_dollardollar,*m_stacktop;
+  SyntaxNodep        m_leftSide,*m_stacktop;
   SyntaxNodep       *m_userStack;
   Array<SyntaxNodep> m_nodeList;
   SyntaxNodep        m_root;
@@ -74,6 +74,6 @@ public:
   void userStackShiftSymbol(unsigned int symbol);
   void userStackPopSymbols(unsigned int count)       { m_stacktop -= count;              } // pop count symbols from userstack
   void push(SyntaxNodep p)                           { *(++m_stacktop) = p;              } // push p onto userstack
-  void userStackShiftDollarDollar()                  { push(m_dollardollar);             } // push($$) onto userstack
-  void defaultReduce(unsigned int prod)              { m_dollardollar  = *m_stacktop;    } // $$ = $1
+  void userStackShiftLeftSide()                      { push(m_leftSide);                 } // push($$) onto userstack
+  void defaultReduce(unsigned int prod)              { m_leftSide = *m_stacktop;         } // $$ = $1
 };

@@ -14,16 +14,16 @@ private:
   Date      ttoDate(     const TCHAR *str);
   Time      ttoTime(     const TCHAR *str);
   Timestamp ttoTimestamp(const TCHAR *str);
-  SyntaxNodeP m_dollardollar,*m_stacktop,m_userstack[256];
-  int   reduceAction(unsigned int prod);
-  int   userStackGetHeight() const                { return (int)(m_stacktop - m_userstack); }
-  void  userStackInit()		                      { m_stacktop = m_userstack;		     }
-  void  userStackShiftSymbol(unsigned int symbol) { m_stacktop++;					     } // push 1 element (garbage) on userstack
-  void  userStackPopSymbols(unsigned int count)   { m_stacktop -= count; 			     } // pop count symbols from userstack
-  void  userStackShiftDollarDollar()	          { *(++m_stacktop) = m_dollardollar;    } // push($$) on userstack
-  void  defaultReduce(unsigned int prod)	      { m_dollardollar  = getStackTop(getProductionLength(prod)?0:1);	 } // $$ = $1
-  SyntaxNodeP getStackTop(int fromtop)            { return m_stacktop[-fromtop];         }
-  SyntaxNode *newNode( const SourcePosition &pos, int token, ... );
+  SyntaxNodeP m_leftSide,*m_stacktop,m_userstack[256];
+  SyntaxNodeP getStackTop(int fromtop)           { return m_stacktop[-fromtop];            }
+  int  userStackGetHeight() const                { return (int)(m_stacktop - m_userstack); }
+  void userStackInit()		                     { m_stacktop = m_userstack;		       }
+  void userStackShiftSymbol(unsigned int symbol) { m_stacktop++;					       } // push 1 element (garbage) on userstack
+  void userStackPopSymbols( unsigned int count ) { m_stacktop      -= count; 	           } // pop count symbols from userstack
+  void userStackShiftLeftSide()                  { *(++m_stacktop) = m_leftSide;           } // push($$) on userstack
+  void defaultReduce(       unsigned int prod)   { m_leftSide      = getStackTop(getProductionLength(prod)?0:1);} // $$ = $1
+  int  reduceAction(        unsigned int prod);
+  SyntaxNode       *newNode(const SourcePosition &pos, int token, ...  );
 public:
   SqlParser(ParserTree &tree, Scanner *lex = NULL) : LRparser(*SqlTables,lex), m_tree(tree) {
   }

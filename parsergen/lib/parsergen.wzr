@@ -8,25 +8,27 @@
 #include "$CLASSNAMEsymbol.h"
 #include "$CLASSNAMElex.h"
 
-const extern PAtables *$CLASSNAMEPAtables;
-
 #ifndef YYSTYPE
 #define YYSTYPE int
 #endif
 
 class $CLASSNAMEparser : public LRparser {
-public:
-  $CLASSNAMEparser(scanner *lex=NULL) : LRparser(*$CLASSNAMEPAtables,lex) { }
 private:
-  YYSTYPE m_dollardollar,*m_stacktop,m_userstack[256];
-  int reduceaction(int prod);
-  void inituserstack()          { m_stacktop = m_userstack;         }
-  void shiftsymbol(int symbol)  { m_stacktop++;                     } // push 1 element (garbage) on userstack
-  void popsymbols(int count)    { m_stacktop -= count;              } // pop count symbols from userstack
-  void shiftdollardollar()      { *(++m_stacktop) = m_dollardollar; } // push($$) on userstack
-  void defaultreduce(int prod)  { m_dollardollar  = *m_stacktop;    } // $$ = $1
-  YYSTYPE stacktop(int fromtop) { return m_stacktop[-fromtop];      }
+  static const ParserTables *$CLASSNAMETables;
+
+public:
+  $CLASSNAMEparser(scanner *lex=NULL) : LRparser(*$CLASSNAMEtables,lex) { }
+private:
+  YYSTYPE m_leftSide,*m_stacktop,m_userstack[256];
+  void userStackInit()                           { m_stacktop = m_userstack;               }
+  YYSTYPE stacktop(int fromtop)                  { return m_stacktop[-fromtop];            }
+  void userStackShiftSymbol(unsigned int symbol) { m_stacktop++;                           } // push 1 element (garbage) on userstack
+  void userStackPopSymbols( unsigned int count ) { m_stacktop      -= count;               } // pop count symbols from userstack
+  void userStackShiftLeftSide()                  { *(++m_stacktop) = m_leftSide;           } // push($$) on userstack
+  void defaultreduce(       unsigned int prod  ) { m_leftSide      = *m_stacktop;          } // $$ = $1
+  int  reduceaction(        unsigned int prod  );
 };
+
 %}
 %term /* TODO:Enter terminalsymbols here
 %{
