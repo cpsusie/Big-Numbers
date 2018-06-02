@@ -15,7 +15,7 @@
 #define IDD_TREESEQUAL_ACCELERATOR      133
 #define IDR_CONTEXTMENU_TREE            134
 #define IDC_BUTTONDUMMY                 1001
-#define IDC_EDITEXPR                    1002
+#define IDC_COMBOEXPR                   1002
 #define IDC_EDITEXPR1                   1003
 #define IDC_EDITEXPR2                   1004
 #define IDC_EDITX                       1005
@@ -50,7 +50,7 @@
 #define IDC_CHECKEXTENDEDINFO           1040
 #define ID_FILE_EXIT                    32771
 #define ID_EDIT_FINDMATCHINGPARENTESIS  32780
-#define ID_EDIT_GOTOEDITFX              32781
+#define ID_EDIT_GOTOCOMBOFX             32781
 #define ID_EDIT_ENTERPARAMETERS         32782
 #define ID_VIEW_SHOWREDUCTIONSTACK      32790
 #define ID_VIEW_SHOWRECTANGLES          32791
@@ -94,7 +94,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        138
 #define _APS_NEXT_COMMAND_VALUE         32940
-#define _APS_NEXT_CONTROL_VALUE         1038
+#define _APS_NEXT_CONTROL_VALUE         1041
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

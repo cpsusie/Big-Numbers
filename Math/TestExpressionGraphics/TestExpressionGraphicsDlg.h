@@ -1,6 +1,7 @@
 #pragma once
 
 #include <MFCUtil/StaticBottomAligned.h>
+#include <MFCUtil/ComboBoxWithHistory.h>
 #include <TinyBitSet.h>
 #include "DebugThread.h"
 
@@ -23,6 +24,7 @@ private:
   PixRectDevice                m_device;
   SimpleLayoutManager          m_layoutManager;
   CStaticBottomAligned         m_reductionStackWindow;
+  CComboBoxWithHistory         m_exprCombo;
   BitSet16                     m_flags;
   Expression                   m_expr     , m_derivedExpr;
   ExpressionImage              m_exprImage, m_derivedImage;
@@ -31,10 +33,12 @@ private:
   DebugThread                 *m_debugThread;
   PropertyContainer           *m_currentChildDlg;
   int                          m_contextWinId;
-  const ExpressionRectangle   *m_contextRect;
+  const ExpressionRectangle   *m_contextRect, *m_leastContextRect;
   int                          m_debugWinId;
   Expression                  *m_debugExpr;
   String                       m_debugError;
+  double	                     m_x;
+  CString                      m_exprText;
 
 #ifdef TRACE_REDUCTION_CALLSTACK
   const ReductionStackElement *m_selectedStackElement;
@@ -49,7 +53,11 @@ private:
     return ((CComboBox*)GetDlgItem(IDC_COMBONUMBERFORMAT));
   }
   int          getFontSize();
+  void         setFontSize(int size);
   NumberFormat getNumberFormat();
+  void         setNumberFormat(NumberFormat nf);
+  void         saveOptions();
+  void         loadOptions();
   bool loadMenu(CMenu &menu, int id);
   void buildSamplesMenu();
   void compileExpr();
@@ -94,20 +102,20 @@ private:
   }
 
   int                                getWindowIdFromPoint(CPoint &p); // return childwindow and adjust p to be relative to this window (if selectable)
-  void                               setContextWindow(int winId, const ExpressionRectangle *rect = NULL);
+  void                               setContextWindow(int winId);
+  void                               setContextRect(  int winId, const ExpressionRectangle *rect, const ExpressionRectangle *leastRect);
   void                               clearContextWindow();
-  void                               clearContextRect();
-  inline bool                        hasContextWindow()          const { return m_contextWinId != -1;      }
-  inline bool                        hasContextImage()                 { return getContextImage() != NULL; }
-  inline bool                        hasContextRect()            const { return m_contextRect  != NULL;    }
-  inline int                         getContextWindow()          const { return m_contextWinId;            }
-  inline bool                        hasContextNode()            const { return getContextNode() != NULL;  }
+  inline bool                        hasContextWindow()          const { return getContextWindowId() != -1; }
+  inline bool                        hasContextImage()                 { return getContextImage() != NULL;  }
+  inline bool                        hasContextRect()            const { return m_contextRect     != NULL;  }
+  inline int                         getContextWindowId()        const { return m_contextWinId;             }
+  inline bool                        hasContextNode()            const { return getContextNode()  != NULL;  }
                Expression           *getContextExpression();
                ExpressionImage      *getContextImage();
-  inline const ExpressionRectangle  *getContextRect()            const { return m_contextRect;             }
+  inline const ExpressionRectangle  *getContextRect()            const { return m_contextRect;              }
   inline       ExpressionNode       *getContextNode()            const { return hasContextRect() ? m_contextRect->getNode() : NULL; }
-  inline       ExpressionInputSymbol getContextNodeSymbol()      const { return hasContextNode() ? getContextNode()->getSymbol() : EOI; }
-  inline       bool                  isContextNodeExpandable()   const { return hasContextNode() ? getContextNode()->isExpandable() : false; }
+  inline       String                getContextNodeName()        const { return hasContextNode() ? getContextNode()->getSymbolName()  : _T("NULL"); }
+  inline       bool                  isContextNodeExpandable()   const { return hasContextNode() ? getContextNode()->isExpandable()   : false; }
   inline       bool                  isContextNodeMultiplyable() const { return hasContextNode() ? getContextNode()->isMultiplyable() : false; }
   void                               updateContextWinImage();
   Expression                        *getExprFromWinId( int winId);
@@ -120,15 +128,10 @@ public:
  ~CTestExpressionGraphicsDlg();
   void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
   enum { IDD = IDD_TESTEXPRESSIONGRAPHICS_DIALOG };
-  CString	m_exprText;
-  double	m_x;
 
 public:
   virtual BOOL PreTranslateMessage(MSG *pMsg);
-protected:
   virtual void DoDataExchange(CDataExchange *pDX);
-protected:
-
   afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
   afx_msg HCURSOR OnQueryDragIcon();
   virtual BOOL OnInitDialog();
@@ -149,13 +152,14 @@ protected:
   afx_msg void OnGotoX();
   afx_msg void OnGotoFontSize();
   afx_msg void OnGotoNumberFormat();
-  afx_msg void OnChangeEditExpr();
+  afx_msg void OnCbnEditChangeComboExpr();
+  afx_msg void OnCbnSelChangeComboExpr();
   afx_msg void OnChangeEditX();
   afx_msg void OnSelchangeComboNumberFormat();
   afx_msg void OnSelChangeComboFontSize();
   afx_msg void OnFileExit();
   afx_msg void OnEditFindMatchingParentesis();
-  afx_msg void OnEditGotoEditFx();
+  afx_msg void OnEditGotoComboFx();
   afx_msg void OnEditEnterParameters();
   afx_msg void OnViewShowReductionStack();
   afx_msg void OnViewShowRectangles();
@@ -177,8 +181,8 @@ protected:
   afx_msg void OnSamplesSampleId(UINT cmd);
   afx_msg LRESULT OnMsgRunStateChanged(      WPARAM wp, LPARAM lp);
   afx_msg LRESULT OnMsgShowDebugError(       WPARAM wp, LPARAM lp);
-  DECLARE_MESSAGE_MAP()
-public:
   afx_msg void OnSamplesRunall();
+
+  DECLARE_MESSAGE_MAP()
 };
 

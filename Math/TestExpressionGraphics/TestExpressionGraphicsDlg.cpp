@@ -31,17 +31,17 @@ CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
-CTestExpressionGraphicsDlg::CTestExpressionGraphicsDlg(CWnd *pParent /*=NULL*/) : CDialog(CTestExpressionGraphicsDlg::IDD, pParent), m_numberFormat(0)
-{
-    m_exprText        = EMPTYSTRING;
-    m_x               = 0.0;
-    m_hIcon           = theApp.LoadIcon(IDR_MAINFRAME);
-    m_debugExpr       = NULL;
-    m_debugThread     = NULL;
-    m_debugWinId      = -1;
-    m_contextWinId    = -1;
-    m_contextRect     = NULL;
-    m_currentChildDlg = NULL;
+CTestExpressionGraphicsDlg::CTestExpressionGraphicsDlg(CWnd *pParent /*=NULL*/) : CDialog(CTestExpressionGraphicsDlg::IDD, pParent), m_numberFormat(0) {
+    m_exprText         = EMPTYSTRING;
+    m_x                = 0.0;
+    m_hIcon            = theApp.LoadIcon(IDR_MAINFRAME);
+    m_debugExpr        = NULL;
+    m_debugThread      = NULL;
+    m_debugWinId       = -1;
+    m_contextWinId     = -1;
+    m_contextRect      = NULL;
+    m_leastContextRect = NULL;
+    m_currentChildDlg  = NULL;
 }
 
 CTestExpressionGraphicsDlg::~CTestExpressionGraphicsDlg() {
@@ -49,8 +49,8 @@ CTestExpressionGraphicsDlg::~CTestExpressionGraphicsDlg() {
 
 void CTestExpressionGraphicsDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
-  DDX_Text(pDX, IDC_EDITEXPR  , m_exprText);
-  DDX_Text(pDX, IDC_EDITX     , m_x       );
+  DDX_Text(pDX, IDC_EDITX, m_x);
+  DDX_CBString(pDX, IDC_COMBOEXPR, m_exprText);
 }
 
 #define INVALIDATE() Invalidate(FALSE)
@@ -63,45 +63,46 @@ BEGIN_MESSAGE_MAP(CTestExpressionGraphicsDlg, CDialog)
     ON_WM_SIZE()
     ON_WM_LBUTTONDOWN()
     ON_WM_CONTEXTMENU()
-    ON_COMMAND(      ID_CONTEXTMENU_SHOWEXPRTREE   , OnContextMenuShowExprTree      )
-    ON_COMMAND(      ID_CONTEXTMENU_TOSTANDARDFORM , OnContextMenuToStandardForm    )
-    ON_COMMAND(      ID_CONTEXTMENU_TOCANONCALFORM , OnContextMenuToCanoncalForm    )
-    ON_COMMAND(      ID_CONTEXTMENU_TONUMERICFORM  , OnContextMenuToNumericForm     )
-    ON_COMMAND(      ID_CONTEXTMENU_SHOWNODETREE   , OnContextMenuShowNodeTree      )
-    ON_COMMAND(      ID_CONTEXTMENU_EXPAND         , OnContextMenuExpand            )
-    ON_COMMAND(      ID_CONTEXTMENU_MULTIPLY       , OnContextMenuMultiply          )
-    ON_COMMAND(      ID_GOTOX                      , OnGotoX                        )
-    ON_COMMAND(      ID_GOTOFONTSIZE               , OnGotoFontSize                 )
-    ON_COMMAND(      ID_GOTONUMBERFORMAT           , OnGotoNumberFormat             )
-    ON_EN_CHANGE(    IDC_EDITEXPR                  , OnChangeEditExpr               )
-    ON_EN_CHANGE(    IDC_EDITX                     , OnChangeEditX                  )
-    ON_CBN_SELCHANGE(IDC_COMBONUMBERFORMAT         , OnSelchangeComboNumberFormat   )
-    ON_CBN_SELCHANGE(IDC_COMBOFONTSIZE             , OnSelChangeComboFontSize       )
-    ON_COMMAND(      ID_FILE_EXIT                  , OnFileExit                     )
-    ON_COMMAND(      ID_EDIT_FINDMATCHINGPARENTESIS, OnEditFindMatchingParentesis   )
-    ON_COMMAND(      ID_EDIT_GOTOEDITFX            , OnEditGotoEditFx               )
-    ON_COMMAND(      ID_EDIT_ENTERPARAMETERS       , OnEditEnterParameters          )
-    ON_COMMAND(      ID_VIEW_SHOWREDUCTIONSTACK    , OnViewShowReductionStack       )
-    ON_COMMAND(      ID_VIEW_SHOWRECTANGLES        , OnViewShowRectangles           )
-    ON_COMMAND(      ID_DEBUG_REDUCEEXPR           , OnDebugReduceExpr              )
-    ON_COMMAND(      ID_DEBUG_REDUCEDERIVED        , OnDebugReduceDerived           )
-    ON_COMMAND(      ID_DEBUG_RUN                  , OnDebugRun                     )
-    ON_COMMAND(      ID_DEBUG_STOP                 , OnDebugStop                    )
-    ON_COMMAND(      ID_DEBUG_CLEARALLBREAKPOINTS  , OnDebugClearAllBreakPoints     )
-    ON_COMMAND(      ID_DEBUG_TRACEREDUCTIONSTEP   , OnDebugTraceReductionStep      )
-    ON_COMMAND(      ID_DEBUG_STEP1REDUCEITERATION , OnDebugStep1ReduceIteration    )
-    ON_COMMAND(      ID_DEBUG_TESTTREESEQUAL       , OnDebugTestTreesEqual          )
-    ON_COMMAND(      ID_FUNCTIONS_COMPILEFX        , OnFunctionsCompileFx           )
-    ON_COMMAND(      ID_FUNCTIONS_DERIVEFX         , OnFunctionsDeriveFx            )
-    ON_COMMAND(      ID_FUNCTIONS_EVALUATEFX       , OnFunctionsEvaluateFx          )
-    ON_COMMAND(      ID_FUNCTIONS_EVALUATEDERIVED  , OnFunctionsEvaluateDerived     )
-    ON_COMMAND(      ID_FUNCTIONS_REDUCEFX         , OnFunctionsReduceFx            )
-    ON_COMMAND(      ID_FUNCTIONS_REDUCEDERIVED    , OnFunctionsReduceDerived       )
-    ON_COMMAND(      ID_FUNCTIONS_EVALUATEALL      , OnFunctionsEvaluateAll         )
-    ON_COMMAND_RANGE(FIRST_SAMPLE_COMMAND,LAST_SAMPLE_COMMAND, OnSamplesSampleId    )
-    ON_MESSAGE(      ID_MSG_RUNSTATE_CHANGED       , OnMsgRunStateChanged           )
-    ON_MESSAGE(      ID_MSG_SHOW_DEBUGERROR        , OnMsgShowDebugError            )
-    ON_COMMAND(      ID_SAMPLES_RUNALL             , OnSamplesRunall                )
+    ON_COMMAND(       ID_CONTEXTMENU_SHOWEXPRTREE   , OnContextMenuShowExprTree      )
+    ON_COMMAND(       ID_CONTEXTMENU_TOSTANDARDFORM , OnContextMenuToStandardForm    )
+    ON_COMMAND(       ID_CONTEXTMENU_TOCANONCALFORM , OnContextMenuToCanoncalForm    )
+    ON_COMMAND(       ID_CONTEXTMENU_TONUMERICFORM  , OnContextMenuToNumericForm     )
+    ON_COMMAND(       ID_CONTEXTMENU_SHOWNODETREE   , OnContextMenuShowNodeTree      )
+    ON_COMMAND(       ID_CONTEXTMENU_EXPAND         , OnContextMenuExpand            )
+    ON_COMMAND(       ID_CONTEXTMENU_MULTIPLY       , OnContextMenuMultiply          )
+    ON_COMMAND(       ID_GOTOX                      , OnGotoX                        )
+    ON_COMMAND(       ID_GOTOFONTSIZE               , OnGotoFontSize                 )
+    ON_COMMAND(       ID_GOTONUMBERFORMAT           , OnGotoNumberFormat             )
+    ON_CBN_SELCHANGE( IDC_COMBOEXPR                 , OnCbnSelChangeComboExpr        )
+    ON_CBN_EDITCHANGE(IDC_COMBOEXPR                 , OnCbnEditChangeComboExpr       )
+    ON_EN_CHANGE(     IDC_EDITX                     , OnChangeEditX                  )
+    ON_CBN_SELCHANGE( IDC_COMBONUMBERFORMAT         , OnSelchangeComboNumberFormat   )
+    ON_CBN_SELCHANGE( IDC_COMBOFONTSIZE             , OnSelChangeComboFontSize       )
+    ON_COMMAND(       ID_FILE_EXIT                  , OnFileExit                     )
+    ON_COMMAND(       ID_EDIT_FINDMATCHINGPARENTESIS, OnEditFindMatchingParentesis   )
+    ON_COMMAND(       ID_EDIT_GOTOCOMBOFX           , OnEditGotoComboFx              )
+    ON_COMMAND(       ID_EDIT_ENTERPARAMETERS       , OnEditEnterParameters          )
+    ON_COMMAND(       ID_VIEW_SHOWREDUCTIONSTACK    , OnViewShowReductionStack       )
+    ON_COMMAND(       ID_VIEW_SHOWRECTANGLES        , OnViewShowRectangles           )
+    ON_COMMAND(       ID_DEBUG_REDUCEEXPR           , OnDebugReduceExpr              )
+    ON_COMMAND(       ID_DEBUG_REDUCEDERIVED        , OnDebugReduceDerived           )
+    ON_COMMAND(       ID_DEBUG_RUN                  , OnDebugRun                     )
+    ON_COMMAND(       ID_DEBUG_STOP                 , OnDebugStop                    )
+    ON_COMMAND(       ID_DEBUG_CLEARALLBREAKPOINTS  , OnDebugClearAllBreakPoints     )
+    ON_COMMAND(       ID_DEBUG_TRACEREDUCTIONSTEP   , OnDebugTraceReductionStep      )
+    ON_COMMAND(       ID_DEBUG_STEP1REDUCEITERATION , OnDebugStep1ReduceIteration    )
+    ON_COMMAND(       ID_DEBUG_TESTTREESEQUAL       , OnDebugTestTreesEqual          )
+    ON_COMMAND(       ID_FUNCTIONS_COMPILEFX        , OnFunctionsCompileFx           )
+    ON_COMMAND(       ID_FUNCTIONS_DERIVEFX         , OnFunctionsDeriveFx            )
+    ON_COMMAND(       ID_FUNCTIONS_EVALUATEFX       , OnFunctionsEvaluateFx          )
+    ON_COMMAND(       ID_FUNCTIONS_EVALUATEDERIVED  , OnFunctionsEvaluateDerived     )
+    ON_COMMAND(       ID_FUNCTIONS_REDUCEFX         , OnFunctionsReduceFx            )
+    ON_COMMAND(       ID_FUNCTIONS_REDUCEDERIVED    , OnFunctionsReduceDerived       )
+    ON_COMMAND(       ID_FUNCTIONS_EVALUATEALL      , OnFunctionsEvaluateAll         )
+    ON_COMMAND_RANGE( FIRST_SAMPLE_COMMAND,LAST_SAMPLE_COMMAND, OnSamplesSampleId    )
+    ON_MESSAGE(       ID_MSG_RUNSTATE_CHANGED       , OnMsgRunStateChanged           )
+    ON_MESSAGE(       ID_MSG_SHOW_DEBUGERROR        , OnMsgShowDebugError            )
+    ON_COMMAND(       ID_SAMPLES_RUNALL             , OnSamplesRunall                )
 END_MESSAGE_MAP()
 
 BOOL CTestExpressionGraphicsDlg::OnInitDialog() {
@@ -127,9 +128,10 @@ BOOL CTestExpressionGraphicsDlg::OnInitDialog() {
   m_accelTabel = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_MAINFRAME));
 
   m_reductionStackWindow.substituteControl(this, IDC_STATICREDUCTIONSTACK);
+  m_exprCombo.substituteControl(           this, IDC_COMBOEXPR, _T("ExprHistory"));
   m_layoutManager.OnInitDialog(this);
 
-  m_layoutManager.addControl(IDC_EDITEXPR             , RELATIVE_WIDTH);
+  m_layoutManager.addControl(IDC_COMBOEXPR            , RELATIVE_WIDTH);
   m_layoutManager.addControl(IDC_STATICXLABEL         , RELATIVE_X_POS);
   m_layoutManager.addControl(IDC_EDITX                , RELATIVE_X_POS);
   m_layoutManager.addControl(IDC_STATICRESULTLABEL    , RELATIVE_X_POS);
@@ -140,14 +142,15 @@ BOOL CTestExpressionGraphicsDlg::OnInitDialog() {
   m_layoutManager.addControl(IDC_EDITDERIVEDVALUE1    , RELATIVE_X_POS);
   m_layoutManager.addControl(IDC_STATICDERIVEDLABEL2  , RELATIVE_X_POS);
   m_layoutManager.addControl(IDC_EDITDERIVEDVALUE2    , RELATIVE_X_POS);
-  m_layoutManager.addControl(IDC_STATICDEBUGINFO      , RELATIVE_WIDTH);
+  m_layoutManager.addControl(IDC_STATICDEBUGINFO      , PCT_RELATIVE_RIGHT);
+  m_layoutManager.addControl(IDC_STATICCONTEXT        , PCT_RELATIVE_LEFT   | RELATIVE_RIGHT);
   m_layoutManager.addControl(IDC_STATICFONTSIZE       , RELATIVE_X_POS);
   m_layoutManager.addControl(IDC_COMBOFONTSIZE        , RELATIVE_X_POS);
-  m_layoutManager.addControl(IDC_STATICEXPRIMAGE      , RELATIVE_RIGHT  | PCT_RELATIVE_BOTTOM);
+  m_layoutManager.addControl(IDC_STATICEXPRIMAGE      , PCT_RELATIVE_RIGHT  | PCT_RELATIVE_BOTTOM);
   m_layoutManager.addControl(IDC_STATICDERIVEDLABEL   , PCT_RELATIVE_Y_POS);
-  m_layoutManager.addControl(IDC_EDITDERIVED          , RELATIVE_RIGHT  | PCT_RELATIVE_Y_POS );
-  m_layoutManager.addControl(IDC_STATICDERIVEDIMAGE   , RELATIVE_RIGHT  | PCT_RELATIVE_TOP | RELATIVE_BOTTOM );
-  m_layoutManager.addControl(IDC_STATICREDUCTIONSTACK , RELATIVE_X_POS | RELATIVE_HEIGHT);
+  m_layoutManager.addControl(IDC_EDITDERIVED          , PCT_RELATIVE_RIGHT  | PCT_RELATIVE_Y_POS );
+  m_layoutManager.addControl(IDC_STATICDERIVEDIMAGE   , PCT_RELATIVE_RIGHT  | PCT_RELATIVE_TOP | RELATIVE_BOTTOM );
+  m_layoutManager.addControl(IDC_STATICREDUCTIONSTACK , PCT_RELATIVE_X_POS  | RELATIVE_HEIGHT);
 
   m_device.attach(*this);
 
@@ -155,9 +158,8 @@ BOOL CTestExpressionGraphicsDlg::OnInitDialog() {
   enableMenuItem(this, ID_VIEW_SHOWREDUCTIONSTACK , false);
 #endif
 
-  getNumberFormatCombo()->SetCurSel(E_NOTATION);
-  getFontSizeCombo()->SetCurSel(5);
-  gotoEditBox(this, IDC_EDITEXPR);
+  loadOptions();
+  OnEditGotoComboFx();
 
   buildSamplesMenu();
   return FALSE;
@@ -242,11 +244,11 @@ void CTestExpressionGraphicsDlg::OnFileExit() {
 }
 
 void CTestExpressionGraphicsDlg::OnEditFindMatchingParentesis() {
-  gotoMatchingParanthes(this, IDC_EDITEXPR);
+  gotoMatchingParanthes(&m_exprCombo);
 }
 
-void CTestExpressionGraphicsDlg::OnEditGotoEditFx() {
-  gotoEditBox(this, IDC_EDITEXPR);
+void CTestExpressionGraphicsDlg::OnEditGotoComboFx() {
+  m_exprCombo.SetFocus();
 }
 
 void CTestExpressionGraphicsDlg::OnEditEnterParameters() {
@@ -313,6 +315,11 @@ NumberFormat CTestExpressionGraphicsDlg::getNumberFormat() {
   return (NumberFormat)cb->GetCurSel();
 }
 
+void CTestExpressionGraphicsDlg::setNumberFormat(NumberFormat nf) {
+  CComboBox *cb = getNumberFormatCombo();
+  cb->SetCurSel(nf);
+}
+
 int CTestExpressionGraphicsDlg::getFontSize() {
   CString str;
   CComboBox *cb = getFontSizeCombo();
@@ -323,6 +330,20 @@ int CTestExpressionGraphicsDlg::getFontSize() {
     return -1;
   }
   return result;
+}
+
+void CTestExpressionGraphicsDlg::setFontSize(int size) {
+  CString    sizeStr = format(_T("%d"),size).cstr();
+  CComboBox *cb      = getFontSizeCombo();
+  const int  n       = cb->GetCount();
+  for(int i = 0; i < n; i++) {
+    CString str;
+    cb->GetLBText(i, str);
+    if(str == sizeStr) {
+      cb->SetCurSel(i);
+      return;
+    }
+  }
 }
 
 void CTestExpressionGraphicsDlg::OnOK() {
@@ -343,7 +364,7 @@ void CTestExpressionGraphicsDlg::OnSize(UINT nType, int cx, int cy) {
 void CTestExpressionGraphicsDlg::OnSamplesSampleId(UINT cmd) {
   const int id = cmd - FIRST_SAMPLE_COMMAND;
   const TCHAR *sample = ExpressionSamples::getSample(id);
-  setWindowText(this, IDC_EDITEXPR, sample);
+  setWindowText(this, IDC_COMBOEXPR, sample);
 }
 
 
@@ -502,7 +523,7 @@ void CTestExpressionGraphicsDlg::enableFieldList(const int *ids, int n, bool ena
 
 void CTestExpressionGraphicsDlg::ajourDialogItems() {
   static const int dialogFields[] = {
-    IDC_EDITEXPR
+    IDC_COMBOEXPR
    ,IDC_EDITX
    ,IDC_COMBOFONTSIZE
    ,IDC_COMBONUMBERFORMAT
@@ -739,7 +760,12 @@ void CTestExpressionGraphicsDlg::OnFunctionsEvaluateAll() {
   INVALIDATE();
 }
 
-void CTestExpressionGraphicsDlg::OnChangeEditExpr() {
+
+void CTestExpressionGraphicsDlg::OnCbnSelChangeComboExpr() {
+  OnCbnEditChangeComboExpr();
+}
+
+void CTestExpressionGraphicsDlg::OnCbnEditChangeComboExpr() {
   m_flags.add(ISDIRTY);
 }
 
@@ -757,6 +783,7 @@ void CTestExpressionGraphicsDlg::OnSelChangeComboFontSize() {
 }
 
 void CTestExpressionGraphicsDlg::onSelChangeCombo() {
+  saveOptions();
   if(isThreadPaused()) {
     paintDebugExpr();
   } else {
@@ -769,26 +796,62 @@ void CTestExpressionGraphicsDlg::onSelChangeCombo() {
   }
 }
 
+static const TCHAR *registryEntry = _T("Software\\JGMData\\TestExpressionGraphics");
+
+class InitRegistry {
+public:
+  InitRegistry();
+};
+
+InitRegistry::InitRegistry() {
+  try {
+    RegistryKey(HKEY_CURRENT_USER).createOrOpenPath(registryEntry);
+  } catch(Exception) {
+    // ignore
+  }
+}
+
+static InitRegistry dummy;
+
+static RegistryKey getKey() {
+  return RegistryKey(HKEY_CURRENT_USER, registryEntry).createOrOpenKey(_T("Settings"));
+}
+
+void CTestExpressionGraphicsDlg::saveOptions() {
+  RegistryKey root = getKey();
+  root.setValue(_T("fontsize"    ), getFontSize());
+  root.setValue(_T("numberformat"), numberFormatToString(getNumberFormat()));
+}
+
+void CTestExpressionGraphicsDlg::loadOptions() {
+  RegistryKey        root     = getKey();
+  const int          fontSize =                   root.getInt(   _T("fontsize"    ), 24         );
+  const NumberFormat nf       = ::getNumberFormat(root.getString(_T("numberformat"), EMPTYSTRING));
+  setFontSize(fontSize);
+  setNumberFormat(nf);
+}
+
 void CTestExpressionGraphicsDlg::OnLButtonDown(UINT nFlags, CPoint point) {
   const int mouseWinId = getWindowIdFromPoint(point);;
   switch(mouseWinId) {
   case IDC_STATICEXPRIMAGE     :
   case IDC_STATICDERIVEDIMAGE  :
-    if(hasContextImage() && (getContextWindow() == mouseWinId)) {
-      const ExpressionRectangle *rect        = getContextImage()->findLeastRectangle(point);
+    if(hasContextImage() && (getContextWindowId() == mouseWinId)) {
+      const ExpressionRectangle *leastRect   = getContextImage()->findLeastRectangle(point);
       const ExpressionRectangle *contextRect = getContextRect();
-
-      if(rect && (rect == contextRect || rect->isDescentantOf(*contextRect))) {
-        if(contextRect->hasParent()) {
-          setContextWindow(mouseWinId, contextRect->getParent());
+      if(leastRect) {
+        if(leastRect->hasNode() && (leastRect != m_leastContextRect)) {
+          setContextRect(mouseWinId, leastRect, leastRect);
+        } else if(contextRect && contextRect->hasAncestorWithNode()) {
+          setContextRect(mouseWinId, contextRect->getFirstAncestorWithNode(), leastRect);
         }
       } else {
-        setContextWindow(mouseWinId, rect);
+        setContextWindow(mouseWinId);
       }
-    } else if(hasImageInWindow(mouseWinId)) {
+    } else if(hasImageInWindow(mouseWinId)) { // clicked on a window with another id
       ExpressionImage &image = getImageFromWinId(mouseWinId);
-      const ExpressionRectangle *rect = image.findLeastRectangle(point);
-      setContextWindow(mouseWinId, rect);
+      const ExpressionRectangle *leastRect = image.findLeastRectangle(point);
+      setContextRect(mouseWinId, leastRect, leastRect);
     } else {
       clearContextWindow();
     }
@@ -809,7 +872,8 @@ void CTestExpressionGraphicsDlg::OnContextMenu(CWnd *pWnd, CPoint point) {
   switch(mouseWinId) {
   case IDC_STATICEXPRIMAGE     :
   case IDC_STATICDERIVEDIMAGE  :
-    { setContextWindow(mouseWinId, getImageFromWinId(mouseWinId).findLeastRectangle(mouseDown));
+    { const ExpressionRectangle *leastRect = getImageFromWinId(mouseWinId).findLeastRectangle(mouseDown);
+      setContextRect(mouseWinId, leastRect, leastRect);
       if(!loadMenu(menu, IDR_CONTEXTMENU)) return;
       if(hasDebugThread()) {
         removeMenuItem(menu, ID_CONTEXTMENU_TOSTANDARDFORM);
@@ -910,7 +974,7 @@ void CTestExpressionGraphicsDlg::OnContextMenuShowExprTree() {
   Expression     *expr;
   ExpressionNode *node = NULL;
   bool  handleNodeChanges = false;
-  if(isThreadPaused() && (getContextWindow() == m_debugWinId)) {
+  if(isThreadPaused() && (getContextWindowId() == m_debugWinId)) {
     expr = m_debugExpr;
   } else {
     expr = getContextExpression();
@@ -1081,13 +1145,13 @@ void CTestExpressionGraphicsDlg::compileExpr() {
 
     if(m_expr.isOk()) {
       m_flags.add(ISCOMPILED);
+      m_exprCombo.updateList();
     } else {
       const StringArray &errors = m_expr.getErrors();
       String error = errors[0];
       int pos = m_expr.decodeErrorString(exprStr, error);
-      gotoEditBox(this, IDC_EDITEXPR);
-      CEdit *eb = (CEdit*)GetDlgItem(IDC_EDITEXPR);
-      eb->SetSel(pos, pos);
+      OnEditGotoComboFx();
+      m_exprCombo.SetEditSel(pos, pos);
       showWarning(error);
     }
   }
@@ -1129,7 +1193,7 @@ void CTestExpressionGraphicsDlg::makeDerivedImage() {
 
 void CTestExpressionGraphicsDlg::makeExprImage(const Expression &expr) {
   try {
-    const int oldContextWindow = getContextWindow();
+    const int oldContextWindow = getContextWindowId();
     clearExprImage();
     m_exprImage = expressionToImage(m_device, expr, getFontSize(), getNumberFormat());
     if(oldContextWindow == IDC_STATICEXPRIMAGE) {
@@ -1144,7 +1208,7 @@ void CTestExpressionGraphicsDlg::makeExprImage(const Expression &expr) {
 
 void CTestExpressionGraphicsDlg::makeDerivedImage(const Expression &expr) {
   try {
-    const int oldContextWindow = getContextWindow();
+    const int oldContextWindow = getContextWindowId();
     clearDerivedImage();
     m_derivedImage = expressionToImage(m_device, expr, getFontSize(), getNumberFormat());
     if(oldContextWindow == IDC_STATICDERIVEDIMAGE) {
@@ -1215,7 +1279,7 @@ void CTestExpressionGraphicsDlg::clearDerivedExpr() {
 
 void CTestExpressionGraphicsDlg::clearDerivedImage() {
   m_derivedImage.clear();
-  if(getContextWindow() == IDC_STATICDERIVEDIMAGE) {
+  if(getContextWindowId() == IDC_STATICDERIVEDIMAGE) {
     clearContextWindow();
   }
 }
@@ -1300,14 +1364,14 @@ bool CTestExpressionGraphicsDlg::restoreExprVariables() {
 }
 
 void CTestExpressionGraphicsDlg::clearContextWindow() {
-  setContextWindow(-1, NULL);
+  setContextWindow(-1);
 }
 
-void CTestExpressionGraphicsDlg::clearContextRect() {
-  setContextWindow(m_contextWinId, NULL);
+void CTestExpressionGraphicsDlg::setContextWindow(int winId) {
+  setContextRect(winId,NULL,NULL);
 }
 
-void CTestExpressionGraphicsDlg::setContextWindow(int winId, const ExpressionRectangle *rect) {
+void CTestExpressionGraphicsDlg::setContextRect(int winId, const ExpressionRectangle *rect, const ExpressionRectangle *leastRect) {
   const TCHAR *winName;
   switch(winId) {
   case IDC_STATICEXPRIMAGE     : winName = _T("Expr"   ); break;
@@ -1315,17 +1379,28 @@ void CTestExpressionGraphicsDlg::setContextWindow(int winId, const ExpressionRec
   case IDC_STATICREDUCTIONSTACK: winName = _T("Stack"  ); break;
   default                      : winName = _T("None"   ); break;
   }
-  m_contextWinId = winId;
-  m_contextRect  = rect;
+  if(leastRect != NULL) {
+    if(rect == NULL) {
+      showMessageBox(0, _T("rect == NULL && leastRect != NULL"));
+      return;
+    }
+    if((rect != leastRect) && !leastRect->isDescentantOf(*rect)) {
+      showMessageBox(0, _T("rect (=%p), leastRect (=%p) not related"), rect,leastRect);
+      return;
+    }
+  }
+  m_contextWinId     = winId;
+  m_contextRect      = rect;
+  m_leastContextRect = leastRect;
   setWindowText(this, IDC_STATICCONTEXT, format(_T("Context:(%s,%s)")
                                                ,winName
-                                               ,ExpressionNode::getSymbolName(getContextNodeSymbol()).cstr()
+                                               ,getContextNodeName().cstr()
                                                )
                 );
 }
 
 void CTestExpressionGraphicsDlg::updateContextWinImage() {
-  switch(getContextWindow()) {
+  switch(getContextWindowId()) {
   case IDC_STATICEXPRIMAGE   :
     { const bool hadDerivedImage = hasDerivedImage();
       makeExprImage(m_expr);

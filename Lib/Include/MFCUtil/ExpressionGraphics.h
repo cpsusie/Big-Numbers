@@ -46,6 +46,9 @@ public:
   inline CPoint TopRight() const {
     return CPoint(right, top);
   }
+  inline bool hasNode() const {
+    return getNode() != NULL;
+  }
   inline ExpressionNode *getNode() const {
     return m_node;
   }
@@ -59,6 +62,11 @@ public:
   inline bool hasParent() const {
     return m_parent != NULL;
   }
+  inline bool hasAncestorWithNode() const {
+    return getFirstAncestorWithNode() != NULL;
+  }
+  const ExpressionRectangle *getFirstAncestorWithNode() const;
+
   inline const ExpressionRectangle *getParent() const {
     return m_parent;
   }
@@ -107,6 +115,9 @@ typedef enum {
  ,ENGINEERING_NOTATION
  ,E_NOTATION
 } NumberFormat;
+
+String       numberFormatToString(NumberFormat  nf );
+NumberFormat getNumberFormat(     const String &str);
 
 ExpressionImage expressionToImage(PixRectDevice &device, const Expression &expr, int fontSize, NumberFormat numberFormat = SCIENTIFIC_NOTATION, int decimals = 6, int maxWidth = -1);
 

@@ -8,6 +8,26 @@
 
 namespace Expr {
 
+String numberFormatToString(NumberFormat nf) {
+  switch(nf) {
+  case SCIENTIFIC_NOTATION : return _T("scientific" );
+  case ENGINEERING_NOTATION: return _T("engineering");
+  case E_NOTATION          : return _T("enotation"  );
+  default                  : return format(_T("Unknwn numberformat:%d"), nf);
+  }
+}
+
+NumberFormat getNumberFormat(const String &str) {
+  if(str.equalsIgnoreCase(_T("scientific"))) {
+    return SCIENTIFIC_NOTATION;
+  } else if(str.equalsIgnoreCase(_T("engineering"))) {
+    return ENGINEERING_NOTATION;
+  } else if(str.equalsIgnoreCase(_T("enotation"))) {
+    return E_NOTATION;
+  } else {
+    return SCIENTIFIC_NOTATION;
+  }
+}
 typedef CompactKeyType<UINT> FontSizeKey;
 
 #define CUT_LEFT   0x01
@@ -601,7 +621,7 @@ AlignedImage *ExpressionPainter::getSumElementImage(SumElement *e, int fontSize,
 AlignedImage *ExpressionPainter::getProductImage(SNode n, int fontSize, ExpressionRectangle &rect) {
   ExpressionRectangle productRect, commaRect, lpRect, rpRect;
   ImageArray result;
-  result.add(getTextImage(_T("product"), true, fontSize, productRect));
+  result.add(getTextImage(_T("prod"), true, fontSize, productRect));
   result.add(getOpImage(LPAR, fontSize, lpRect));
   rect.addChild(productRect).addChild(lpRect);
 
@@ -1230,6 +1250,15 @@ bool ExpressionRectangle::traverseTree(ExpressionRectangleHandler &handler, cons
     if(!r.traverseTree(handler,this)) return false;
   }
   return true;
+}
+
+const ExpressionRectangle *ExpressionRectangle::getFirstAncestorWithNode() const {
+  for(const ExpressionRectangle *p = getParent(); p; p = p->getParent()) {
+    if(p->m_node != NULL) {
+      return p;
+    }
+  }
+  return NULL;
 }
 
 bool ExpressionRectangle::isDescentantOf(const ExpressionRectangle &r) const {
