@@ -108,9 +108,10 @@ void   setWindowText(              CWnd *wnd,         const String &str);
 void   setWindowText(              CWnd *wnd, int id, const String &str);
 
 int    getFocusCtrlId(       const CWnd *wnd);
-void   gotoEditBox(                CWnd *wnd, int id);
-void   gotoMatchingParanthes(      CWnd *wnd, int id);
-void   gotoMatchingParanthes(      CEdit *edit);
+void   gotoEditBox(                CWnd *wnd, int id); // assume id is CEdit
+void   gotoMatchingParanthes(      CWnd *wnd, int id); // assume id is CEdit
+void   gotoMatchingParanthes(      CEdit     *edit);
+void   gotoMatchingParanthes(      CComboBox *cb);
 
 CompactIntArray getTabOrder(CWnd *wnd);
 void            setTabOrder(CWnd *wnd, const CompactIntArray &tabOrderArray);
