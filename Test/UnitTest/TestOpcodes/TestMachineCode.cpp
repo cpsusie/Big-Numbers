@@ -750,6 +750,7 @@ void TestMachineCode::testArg2Opcodes() {
   testOpcode(XOR     );
   testOpcode(CMP     );
   testOpcode(XCHG    );
+  testOpcode(BSWAP   );
   testOpcode(TEST    );
   testOpcode(MOV     );
   testOpcode(MOVSX   );

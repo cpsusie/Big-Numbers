@@ -1194,6 +1194,7 @@ extern OpcodeStd2Arg     XOR;                              // XOR(r/m8-64,r/m8/6
 extern OpcodeStd2Arg     CMP;                              // CMP(r/m8-64,r/m8/64/imm8-32). Compare Two Operands
 
 extern OpcodeXchg        XCHG;                             // XCHG(r/m8-64,r/m8-64). Exchange Two operands
+extern Opcode1ArgNoMode  BSWAP;                            // BSWAP(r32/r64)         Swap bytes of 32- or 64 bit register
 extern OpcodeStd2Arg     TEST;                             // TEST(r/m8-64,r/m8/64/imm8-32). Logical Compare. same as AND but doesn't change dst. set SF,ZF,PF according to result
 extern OpcodeMov         MOV;                              // Move data (copying)
 extern OpcodeMovExtend   MOVZX;                            // Move with zero-extend

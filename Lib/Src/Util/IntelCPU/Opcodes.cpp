@@ -52,6 +52,7 @@ DEFNAME(OpcodeStd2Arg    ,  XOR   ,0x30,0x34,0x80,6,HAS_IMM_XBIT|HAS_DIRBIT1);
 DEFNAME(OpcodeStd2Arg    ,  CMP   ,0x38,0x3C,0x80,7,HAS_IMM_XBIT|HAS_DIRBIT1);
 
 DEFNAME(OpcodeXchg       ,  XCHG       );                  // Exchange Two operands
+DEFNAME(Opcode1ArgNoMode ,  BSWAP ,0x0FC8,        0,REGTYPE_GPR_ALLOWED|DWORDGPR_ALLOWED|QWORDGPR_ALLOWED|HAS_REXWBIT);
 DEFNAME(OpcodeStd2Arg    ,  TEST  ,0x84,0xA8,0xF6,0);      // Logical Compare. same as AND but doesn't change dst. set SF,ZF,PF according to result
 
 DEFNAME(OpcodeMov        ,  MOV        );
