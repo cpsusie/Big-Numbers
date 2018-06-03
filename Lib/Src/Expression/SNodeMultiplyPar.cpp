@@ -100,8 +100,9 @@ SNode SNode::multiplyParenthesesInProduct() const {
   ENTERMETHOD();
 
   const FactorArray &a = getFactorArray();
-  FactorArray        newFactorArray;
-  for(size_t i = 0; i < a.size(); i++) {
+  const size_t       n = a.size();
+  FactorArray        newFactorArray(n);
+  for(size_t i = 0; i < n; i++) {
     ExpressionFactor *f = a[i];
     newFactorArray.add(f->base().multiplyParentheses(), f->exponent().multiplyParentheses());
   }
