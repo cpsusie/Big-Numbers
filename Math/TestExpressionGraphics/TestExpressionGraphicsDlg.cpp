@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <Process.h>
+#include <MFCUtil/ProgressWindow.h>
 #include "TestExpressionGraphicsDlg.h"
 #include "EnterVariablesDlg.h"
 #include "ExpressionTreeDlg.h"
@@ -367,26 +368,74 @@ void CTestExpressionGraphicsDlg::OnSamplesSampleId(UINT cmd) {
   setWindowText(this, IDC_COMBOEXPR, sample);
 }
 
+class AllSamplesTester : public InteractiveRunnable {
+private:
+  const String       m_dir;
+  PixRectDevice     &m_device;
+  const int          m_fontSize;
+  const NumberFormat m_numberFormat;
+  UINT               m_maxCount, m_count;
 
-void CTestExpressionGraphicsDlg::OnSamplesRunall() {
-  const UINT count = ExpressionSamples::getCount();
-  const String dir = _T("C:\\temp\\ExprList\\Images");
-  for(UINT i = 0; i < count; i++) {
-    const String str = ExpressionSamples::getSample(i);
+  NumberFormat getNumberFormat() const {
+    return m_numberFormat;
+  }
+  int getFontSize() const {
+    return m_fontSize;
+  }
+public:
+  AllSamplesTester(const String &dir, PixRectDevice &device, int fontSize, NumberFormat numberFormat)
+                 : m_dir(         dir         )
+                 , m_device(      device      )
+                 , m_fontSize(    fontSize    )
+                 , m_numberFormat(numberFormat)
+  {
+    m_maxCount = ExpressionSamples::getCount();
+    m_count    = 0;
+  }
+  double getMaxProgress() const {
+    return m_maxCount;
+  }
+  double getProgress() const {
+    return m_count;
+  };
+  String getTitle() {
+    return _T("Testing all samples");
+  }
+  int getSupportedFeatures() {                 // Should return any combination of IR_-constants
+    return IR_PROGRESSBAR
+         | IR_INTERRUPTABLE
+         | IR_SUSPENDABLE
+         | IR_SHOWTIMEESTIMATE
+         | IR_AUTOCORRELATETIME
+         | IR_SHOWPERCENT;
+  }
+  UINT run();
+};
+
+UINT AllSamplesTester::run() {
+  for(m_count = 0; m_count < m_maxCount; m_count++) {
+    const String str = ExpressionSamples::getSample(m_count);
     try {
       Expression expr;
       expr.compile(str,false);
       Expr::ExpressionImage image = expressionToImage(m_device, expr, getFontSize(), getNumberFormat());
-      const String fileName = format(_T("testCase%03d.jpg"), i);
-      const String fullName = FileNameSplitter::getChildName(dir,fileName);
+      const String fileName = format(_T("testCase%03d.jpg"), m_count);
+      const String fullName = FileNameSplitter::getChildName(m_dir,fileName);
       image.getImage()->writeAsJPG(ByteOutputFile(fullName));
     } catch(Exception e) {
-      const String msg = format(_T("Testcase %d\n%s"), i, e.what());
+      const String msg = format(_T("Testcase %d\n%s"), m_count, e.what());
       showMessageBox(0, _T("%s"), msg.cstr());
     } catch (...) {
       showWarning(_T("Unknown exception in %s"), __TFUNCTION__);
     }
   }
+  return 0;
+}
+
+void CTestExpressionGraphicsDlg::OnSamplesRunall() {
+  const String     dir = _T("C:\\temp\\ExprList\\Images");
+  AllSamplesTester testJob(dir, m_device, getFontSize(), getNumberFormat());
+  ProgressWindow(this, testJob, 1);
   startViewPhoto(dir, _T("testCase000.jpg"));
 }
 
