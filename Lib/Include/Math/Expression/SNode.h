@@ -8,10 +8,8 @@ namespace Expr {
 
 class ExpressionVariable;
 class ExpressionNode;
-class SumElement;
 class ExpressionFactor;
 class ExpressionNodeSum;
-class AddentArray;
 class FactorArray;
 class ParserTree;
 
@@ -42,6 +40,7 @@ typedef enum {
  ,NT_STMTLIST
  ,NT_SUM
  ,NT_PRODUCT
+ ,NT_ADDENT
  ,NT_FACTOR
 } ExpressionNodeType;
 
@@ -54,8 +53,6 @@ private:
 
   SNode DPoly(    const String &name) const;
   SNode DStmtList(const String &name) const;
-
-  static ExpressionFactor *factor(SNode b, SNode e);
 
   SNode             &setReduced(); // return *this
   bool               isReduced() const;
@@ -77,9 +74,9 @@ private:
   SNode              multiplyStmtList() const;
   SNode              multiplyParenthesesInSum() const;
   SNode              multiplyParenthesesInProduct() const;
-  SNode              multiplyFactorSum(SNode factor, SNode sum) const; //  ExpressionFactor *a, ExpressionNodeSum *s) const;
+  SNode              multiplyFactorSum(SNode factor, SNode sum) const; //  ExpressionFactor *a, ExpressionNodeSum sum) const;
 
-  SumElement        *getCommonFactor(             SumElement  &e1, SumElement &e2) const;
+  SNode              getCommonFactor(             SNode e1, SNode e2) const;
   FactorArray       &getFactors(                  FactorArray &result);
   FactorArray       &getFactors(                  FactorArray &result, const SNode exponent);
   FactorArray       &getFactorsInPower(           FactorArray &result, const SNode exponent);
@@ -92,15 +89,15 @@ private:
   SNode              getPowerOfE();
   SNode              getPowerOf10();
   SNode              getPowerOf2();
-  SumElement        *mergeLogarithms(            SumElement        &e1, SumElement       &e2) const;
+  SNode              mergeLogarithms(SNode e1, SNode e2) const;
   SNode              reduceAsymmetricFunction();
   SNode              reduceSymmetricFunction();
   SNode              reducePoly();
   SNode              reduceCondExp();
-  ExpressionFactor  *reduceTrigonometricFactors(  ExpressionFactor &f1, ExpressionFactor &f2);
+  SNode              reduceTrigonometricFactors(  ExpressionFactor &f1, ExpressionFactor &f2);
 
   bool               canUseIdiotRule(             SNode             n1, const SNode n2) const;
-  bool               canUseReverseIdiotRule(      SumElement       *e1,       SumElement *e2, SumElement* &result) const;
+  bool               canUseReverseIdiotRule(      SNode e1, SNode e2, SNode &result) const;
   bool               isSquareOfSinOrCos() const;
   bool               sameLogarithm(               const SNode n) const;
 protected:
@@ -126,7 +123,6 @@ public:
   SNode(ParserTree &tree, const Real        &v);
   SNode(ParserTree &tree, const Number      &v);
   SNode(ParserTree &tree, bool               v);
-  SNode(ParserTree &tree, AddentArray       &a);
   SNode(ParserTree &tree, FactorArray       &a);
 
   SNode _0()     const; // zero
@@ -147,6 +143,7 @@ public:
   ParserTree           &getTree()                              const;
   String                getSymbolName()                        const;
   static String         getSymbolName(ExpressionInputSymbol symbol);
+  String                getNodeTypeName()                      const;
   void                  mark();
   void                  unMark();
   bool                  isMarked()                             const;
@@ -158,8 +155,6 @@ public:
         SNodeArray     &getChildArray();
   const FactorArray    &getFactorArray()                       const;
         FactorArray    &getFactorArray();
-  const AddentArray    &getAddentArray()                       const;
-        AddentArray    &getAddentArray();
   const SNodeArray     &getCoefArray()                         const;
         SNodeArray     &getCoefArray();
   int                   getFirstCoefIndex()                    const;
@@ -196,13 +191,14 @@ public:
   bool                  isTen()                                const;
   bool                  isMinusOne()                           const;
   bool                  isMinusTwo()                           const;
-  bool                  isNegative()                           const;
-  bool                  isPositive()                           const;
+  bool                  isNegativeNumber()                     const;
+  bool                  isPositiveNumber()                     const;
   bool                  isTrue()                               const;
   bool                  isFalse()                              const;
   ExpressionInputSymbol getInverseFunction()                   const;
 
   bool                  isCoefArrayConstant()                  const;
+  bool                  isPositive()                           const;
   bool                  dependsOn(const String &name)          const;
 
   bool                  containsFunctionCall()                 const;
@@ -281,18 +277,24 @@ public:
 };
 
 class SNodeArray : public CompactArray<SNode> {
+  DECLAREARRAYDEBUGSTRING;
 private:
+  ParserTree &m_tree;
   bool operator==(const SNodeArray &a) const; // not implemented
   bool operator!=(const SNodeArray &a) const; // not implemented
 public:
-  SNodeArray() {}
-  SNodeArray(int n,...);
-  explicit SNodeArray(size_t capacity) : CompactArray(capacity) {
+  SNodeArray(ParserTree &tree) : m_tree(tree) {
+  }
+  SNodeArray(ParserTree &tree, int n,...); // n = number of following arguments. ... are all SNode
+  explicit SNodeArray(ParserTree &tree, size_t capacity) : m_tree(tree), CompactArray(capacity) {
   }
   inline ParserTree &getTree() const {
-    if(isEmpty()) throwException(_T("SNodeArray:array is empty"));
-    return (*this)[0].getTree();
+    return m_tree;
   }
+  void convertFromParserTree(ExpressionNode *n, ExpressionInputSymbol delimiterSymbol);
+  void add(SNode n);
+  void remove(size_t i);
+  void addAll(const SNodeArray &a);
   bool isConstant() const;
   bool isSameNodes(const SNodeArray &a) const; // return true, if ExpressionNode pointers are the same
   bool equal(      const SNodeArray &a) const; // recursive compare all nodes ( deep compare)
@@ -302,9 +304,10 @@ public:
 
 class SStmtList : public SNodeArray {
 public:
-  SStmtList() {}
+  SStmtList(ParserTree &tree) : SNodeArray(tree) {
+  }
   SStmtList(const SNodeArray &a) : SNodeArray(a) {
-  };
+  }
   SNodeArray &removeUnusedAssignments();
 };
 
@@ -316,12 +319,15 @@ SNode polyExp(   SNodeArray &coefArray, SNode arg);
 SNode boolExp(   ExpressionInputSymbol symbol, SNode left, SNode right);
 SNode boolExp(   ExpressionInputSymbol symbol, SNode child);
 SNode boolExp(   ExpressionInputSymbol symbol, SNodeArray &a);
-SNode treeExp(   ExpressionInputSymbol symbol, SNodeArray &a); // assumy a.size() > 0
+SNode treeExp(   ExpressionInputSymbol symbol, SNodeArray &a); // assume a.size() > 0
+SNode productExp(FactorArray &a);                              // assume a.size() > 0
+SNode sumExp(    SNodeArray  &a);                              // assume a.size() > 0
 SNode assignStmt(SNode leftSide  , SNode expr);
 SNode assignStmt(SNodeArray &list);
 SNode stmtList(  SNodeArray &list);
 SNode indexSum(  SNode assignStmt, SNode endExpr, SNode expr  );
 SNode indexProd( SNode assignStmt, SNode endExpr, SNode expr  );
+SNode addentExp( SNode child     , bool positive);
 SNode factorExp( SNode base      , SNode expo);
 
 }; // namespace Expr

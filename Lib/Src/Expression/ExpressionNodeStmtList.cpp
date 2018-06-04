@@ -3,7 +3,7 @@
 
 namespace Expr {
 
-ExpressionNodeStmtList::ExpressionNodeStmtList(ParserTree *tree, const SNodeArray &childArray) 
+ExpressionNodeStmtList::ExpressionNodeStmtList(ParserTree *tree, const SNodeArray &childArray)
   : ExpressionNodeTree(tree, STMTLIST, childArray)
   , m_returnType(childArray.last().getReturnType())
 {

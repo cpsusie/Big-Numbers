@@ -12,7 +12,10 @@ ExpressionNodePoly::ExpressionNodePoly(ParserTree *tree, const SNodeArray &coefA
   SETDEBUGSTRING();
 }
 
-ExpressionNodePoly::ExpressionNodePoly(ParserTree *tree, const ExpressionNodePoly *src) : ExpressionNode(tree, POLY) {
+ExpressionNodePoly::ExpressionNodePoly(ParserTree *tree, const ExpressionNodePoly *src)
+: ExpressionNode(tree, POLY)
+, m_coefArray(*tree)
+{
   src->getCoefArray().cloneNodes(m_coefArray, tree);
   m_arg            = src->getArgument().node()->clone(tree);
   m_firstCoefIndex = -1;

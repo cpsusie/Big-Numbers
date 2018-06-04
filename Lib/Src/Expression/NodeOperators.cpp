@@ -27,12 +27,12 @@ ExpressionNode *NodeOperators::getTen(ExpressionNode *n) { // static
   return n->getTree().getTen();
 }
 
-ExpressionNode *NodeOperators::numberExpression(ExpressionNode *n, const Number &v) { // static
-  return n->getTree().numberExpression(v);
+ExpressionNode *NodeOperators::numberExpr(ExpressionNode *n, const Number &v) { // static
+  return n->getTree().numberExpr(v);
 }
 
-ExpressionNode *NodeOperators::numberExpression(ExpressionNode *n, INT64 v) { // static
-  return n->getTree().numberExpression(v);
+ExpressionNode *NodeOperators::numberExpr(ExpressionNode *n, INT64 v) { // static
+  return n->getTree().numberExpr(v);
 }
 
 ExpressionNode *NodeOperators::unaryExpr(ExpressionInputSymbol symbol, ExpressionNode *n) { // static

@@ -1,17 +1,15 @@
 #include "pch.h"
 #include <Math/Expression/ParserTree.h>
-#include <Math/Expression/ExpressionFactor.h>
 
 namespace Expr {
 
-
 ExpressionFactor::ExpressionFactor(SNode base)
-  : ExpressionNodeTree(&base.getTree(), POW, SNodeArray(2,base,base._1()))
+: ExpressionNodeTree(&base.getTree(), POW, SNodeArray(base.getTree(),2,base,base._1()))
 {
 }
 
 ExpressionFactor::ExpressionFactor(SNode base, SNode exponent)
-  : ExpressionNodeTree(&base.getTree(), POW, SNodeArray(2,base,exponent))
+: ExpressionNodeTree(&base.getTree(), POW, SNodeArray(base.getTree(),2,base,exponent))
 {
 }
 

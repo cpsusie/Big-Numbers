@@ -1,8 +1,6 @@
 #include "pch.h"
 #include <Math/Expression/ExpressionParser.h>
 #include <Math/Expression/ExpressionNode.h>
-#include <Math/Expression/ExpressionFactor.h>
-#include <Math/Expression/SumElement.h>
 
 namespace Expr {
 
@@ -23,6 +21,7 @@ String ExpressionNode::getNodeTypeName(ExpressionNodeType nt) { // static
   CASESTR(STMTLIST );
   CASESTR(SUM      );
   CASESTR(PRODUCT  );
+  CASESTR(ADDENT   );
   CASESTR(FACTOR   );
   default: return format(_T("Unknown nodetype:%d"),nt);
   }
@@ -277,7 +276,7 @@ TrigonometricMode ExpressionNode::getTrigonometricMode() const {
 
 bool ExpressionNode::needParentheses(const ExpressionNode *parent) const {
   if(isName()) return false;
-  if(isNumber()) return isNegative() && (parent->getSymbol() == POW) && (parent->child(0).node() == this);
+  if(isNumber()) return isNegativeNumber() && (parent->getSymbol() == POW) && (parent->child(0).node() == this);
 
   const int precedence       = getPrecedence();
   const int parentPrecedence = parent->getPrecedence();
@@ -434,6 +433,7 @@ bool ExpressionNode::isConsistentSymbolAndType() const {
   case ASSIGN  : type1 = type2  = NT_ASSIGN;    break;
   case STMTLIST: type1 = type2  = NT_STMTLIST;  break;
   case SUM     : type1 = type2  = NT_SUM;       break;
+  case ADDENT  : type1 = type2  = NT_ADDENT;    break;
   case PRODUCT : type1 = type2  = NT_PRODUCT;   break;
   case POW     : type1 = NT_FACTOR;  type2  = NT_TREE;  break;
   default      : type1 = type2  = NT_TREE;      break;

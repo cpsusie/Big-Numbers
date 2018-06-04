@@ -822,7 +822,6 @@
     <ClInclude Include="..\..\Include\Math\Expression\PragmaLib.h" />
     <ClInclude Include="..\..\Include\Math\Expression\SNode.h" />
     <ClInclude Include="..\..\Include\Math\Expression\SNodeReduceDbgStack.h" />
-    <ClInclude Include="..\..\Include\Math\Expression\SumElement.h" />
     <ClInclude Include="CodeGeneration.h" />
     <ClInclude Include="ExpressionCompile.h" />
     <ClInclude Include="FPUEmulator.h" />
@@ -832,10 +831,10 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AddentArray.cpp" />
     <ClCompile Include="CodeGeneration.cpp" />
     <ClCompile Include="Expression.cpp" />
     <ClCompile Include="ExpressionAction.cpp" />
+    <ClCompile Include="ExpressionAddent.cpp" />
     <ClCompile Include="ExpressionCompile.cpp" />
     <ClCompile Include="ExpressionDerive.cpp" />
     <ClCompile Include="ExpressionFactor.cpp" />
@@ -899,7 +898,6 @@
     <ClCompile Include="SNodeReduce.cpp" />
     <ClCompile Include="SNodeReduceAndOrNot.cpp" />
     <ClCompile Include="SNodeReduceDbgStack.cpp" />
-    <ClCompile Include="SumElement.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="Expression.lex">

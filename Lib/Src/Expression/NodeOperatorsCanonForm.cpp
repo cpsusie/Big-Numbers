@@ -1,7 +1,5 @@
 #include "pch.h"
 #include <Math/Expression/ParserTree.h>
-#include <Math/Expression/ExpressionFactor.h>
-#include <Math/Expression/SumElement.h>
 
 namespace Expr {
 
@@ -10,29 +8,32 @@ namespace Expr {
 
 class NodeOperatorsCanonForm : public NodeOperators {
 private:
-  static inline ExpressionNode   *getSum(         ExpressionNode *n, AddentArray &aa) {
-    return n->getTree().getSum(aa);
+  static inline ExpressionNode *addentExpr(     ExpressionNode *n, bool positive) {
+    return n->getTree().addentExpr(n,positive);
   }
-  static inline ExpressionNode   *getProduct(     ExpressionNode *n, FactorArray &fa) {
-    return n->getTree().getProduct(fa);
+  static inline ExpressionNode *sumExpr(        SNodeArray &a) {
+    return a.getTree().sumExpr(a);
   }
-  static inline ExpressionNode   *unaryMinus(ExpressionNode *n) {
+  static inline ExpressionNode *productExpr(    FactorArray &fa) {
+    return fa.getTree().productExpr(fa);
+  }
+  static inline ExpressionNode *unaryMinus(     ExpressionNode *n) {
     return n->getTree().unaryMinus(n);
   }
-  static inline ExpressionNode   *getPoly(SNodeArray &coefArray, ExpressionNode *arg) {
-    return arg->getTree().getPoly(coefArray, arg);
+  static inline ExpressionNode *polyExpr(       SNodeArray &coefArray, ExpressionNode *arg) {
+    return arg->getTree().polyExpr(coefArray, arg);
   }
-  static inline ExpressionNode   *indexedSum(ExpressionNode *assign, ExpressionNode *end, ExpressionNode *expr) {
+  static inline ExpressionNode *indexedSum(     ExpressionNode *assign, ExpressionNode *end, ExpressionNode *expr) {
     return assign->getTree().indexedSum(assign,end,expr);
   }
-  static inline ExpressionNode   *indexedProduct(ExpressionNode *assign, ExpressionNode *end, ExpressionNode *expr) {
+  static inline ExpressionNode *indexedProduct( ExpressionNode *assign, ExpressionNode *end, ExpressionNode *expr) {
     return assign->getTree().indexedProduct(assign,end,expr);
   }
-  static inline ExpressionFactor *fetchFactorNode(ExpressionNode *base, ExpressionNode *exponent) {
-    return base->getTree().fetchFactorNode(base,exponent);
+  static inline ExpressionNode *factorExpr(     ExpressionNode *base, ExpressionNode *exponent) {
+    return base->getTree().factorExpr(base,exponent);
   }
-  static inline ExpressionNode   *constExpression(ExpressionNode *n, const TCHAR *name) {
-    return n->getTree().constExpression(name);
+  static inline ExpressionNode *constExpr(      ExpressionNode *n, const TCHAR *name) {
+    return n->getTree().constExpr(name);
   }
 public:
   ExpressionNode *minus(     ExpressionNode *n) const;
@@ -69,28 +70,28 @@ public:
 
 ExpressionNode *NodeOperatorsCanonForm::minus(ExpressionNode *n) const {
   switch(n->getSymbol()) {
-  case NUMBER:
-    return numberExpression(n,-n->getNumber());
-  case MINUS:
+  case NUMBER    :
+    return numberExpr(n,-n->getNumber());
+  case MINUS     :
     assert(n->isUnaryMinus());
     return n->left();
-
+  case ADDENT    :
+    return addentExpr(n->left(),!n->isPositive());
   case SUM       :
-    { const AddentArray &a  = n->getAddentArray();
-      const size_t       sz = a.size();
-      AddentArray newAddentArray(sz);
+    { const SNodeArray &a  = n->getChildArray();
+      const size_t      sz = a.size();
+      SNodeArray        newChildArray(a.getTree(),sz);
       for(size_t i = 0; i < sz; i++) { // change sign for all elements in list
-        SumElement *e = a[i];
-        newAddentArray.add(e->getNode(),!e->isPositive());
+        newChildArray.add(-a[i]);
       }
-      return getSum(n,newAddentArray);
+      return sumExpr(newChildArray);
     }
 
   case PRODUCT   :
     { const FactorArray &factors = n->getFactorArray();
       const size_t       sz      = factors.size();
       const int          index   = factors.findFactorWithChangeableSign();
-      FactorArray        newFactors(sz);
+      FactorArray        newFactors(factors.getTree(), sz);
       for(size_t i = 0; i < sz; i++) {
         ExpressionFactor *factor = factors[i];
         if(i != index) {
@@ -102,18 +103,18 @@ ExpressionNode *NodeOperatorsCanonForm::minus(ExpressionNode *n) const {
       if(index < 0) {
         newFactors.add(getMinusOne(n));
       }
-      return getProduct(n,newFactors);
+      return productExpr(newFactors);
     }
 
   case POLY      :
     { const SNodeArray &coefArray = n->getCoefArray();
       const size_t      sz        = coefArray.size();
-      SNodeArray        newCoefArray(sz);
+      SNodeArray        newCoefArray(coefArray.getTree(),sz);
       for(size_t i = 0; i < sz; i++) {
         newCoefArray.add(-coefArray[i]);
       }
       ExpressionNode *arg = n->getArgument().node();
-      return getPoly(newCoefArray, arg);
+      return polyExpr(newCoefArray, arg);
     }
 
   case INDEXEDSUM:
@@ -125,25 +126,25 @@ ExpressionNode *NodeOperatorsCanonForm::minus(ExpressionNode *n) const {
 
 ExpressionNode *NodeOperatorsCanonForm::reciprocal(ExpressionNode *n) const {
   switch(n->getSymbol()) {
-  case NUMBER :
+  case NUMBER        :
     if(n->isRational()) {
-      return numberExpression(n,::reciprocal(n->getRational()));
+      return numberExpr(n,::reciprocal(n->getRational()));
     }
     break;
 
   case PRODUCT       :
     { const FactorArray &factors = n->getFactorArray();
       const size_t       sz        = factors.size();
-      FactorArray newFactors(sz);
+      FactorArray newFactors(factors.getTree(), sz);
       for(size_t i = 0; i < sz; i++) {
         ExpressionFactor *factor = factors[i];
         newFactors.add(factor->base(), -factor->exponent());
       }
-      return getProduct(n,newFactors);
+      return productExpr(newFactors);
     }
   case INDEXEDPRODUCT:
     return indexedProduct(n->child(0).node(), n->child(1).node(), reciprocal(n->child(2).node()));
-  case POW    : // reciprocal(l^r) = l^-r
+  case POW           : // reciprocal(l^r) = l^-r
     return power(n->left(), minus(n->right()));
   }
   return quot(getOne(n), n);
@@ -151,30 +152,30 @@ ExpressionNode *NodeOperatorsCanonForm::reciprocal(ExpressionNode *n) const {
 
 ExpressionNode *NodeOperatorsCanonForm::sum(ExpressionNode *n1, ExpressionNode *n2) const {
   if(n1->isRational() && n2->isRational()) {
-    return numberExpression(n1, n1->getRational() + n2->getRational());
+    return numberExpr(n1, n1->getRational() + n2->getRational());
   } else if(n1->isZero()) {
     return n2;
   } else if(n2->isZero()) {
     return n1;
   }
-  AddentArray a;
-  a.add(n1, true);
-  a.add(n2, true);
-  return getSum(n1,a);
+  SNodeArray a(n1->getTree(),2);
+  a.add(addentExpr(n1, true));
+  a.add(addentExpr(n2, true));
+  return sumExpr(a);
 }
 
 ExpressionNode *NodeOperatorsCanonForm::diff(ExpressionNode *n1, ExpressionNode *n2) const {
   if(n1->isRational() && n2->isRational()) {
-    return numberExpression(n1, n1->getRational() - n2->getRational());
+    return numberExpr(n1, n1->getRational() - n2->getRational());
   } else if(n2->isZero()) {
     return n1;
   } else if(n1->isZero()) {
     return minus(n2);
   }
-  AddentArray a;
-  a.add(n1, true );
-  a.add(n2, false);
-  return getSum(n1,a);
+  SNodeArray a(n1->getTree(),2);
+  a.add(addentExpr(n1, true ));
+  a.add(addentExpr(n2, false));
+  return sumExpr(a);
 }
 
 ExpressionNode *NodeOperatorsCanonForm::prod(ExpressionNode *n1, ExpressionNode *n2) const {
@@ -182,12 +183,12 @@ ExpressionNode *NodeOperatorsCanonForm::prod(ExpressionNode *n1, ExpressionNode 
     return getZero(n1);
   }
   if(n1->isRational() && n2->isRational()) {
-    return numberExpression(n1, n1->getRational() * n2->getRational());
+    return numberExpr(n1, n1->getRational() * n2->getRational());
   }
-  FactorArray a;
+  FactorArray a(n1->getTree(),2);
   a.add(n1);
   a.add(n2);
-  return getProduct(n1,a);
+  return productExpr(a);
 }
 
 ExpressionNode *NodeOperatorsCanonForm::quot(ExpressionNode *n1, ExpressionNode *n2) const {
@@ -195,14 +196,14 @@ ExpressionNode *NodeOperatorsCanonForm::quot(ExpressionNode *n1, ExpressionNode 
     return getZero(n1);
   }
   if(n1->isRational() && n2->isRational()) {
-    return numberExpression(n1, n1->getRational() / n2->getRational());
+    return numberExpr(n1, n1->getRational() / n2->getRational());
   } else if(n2->isOne()) {
     return n1;
   }
-  FactorArray a;
+  FactorArray a(n1->getTree());
   a.add(n1);
   if(n2->getSymbol() != PRODUCT) {
-    a.add((n2->getSymbol() == POW) ? fetchFactorNode(n2->left(), minus(n2->right())) : fetchFactorNode(n2, getMinusOne(n2)));
+    a.add((n2->getSymbol() == POW) ? factorExpr(n2->left(), minus(n2->right())) : factorExpr(n2, getMinusOne(n2)));
   } else {
     const FactorArray &a2 = n2->getFactorArray();
     const size_t       sz = a2.size();
@@ -212,16 +213,16 @@ ExpressionNode *NodeOperatorsCanonForm::quot(ExpressionNode *n1, ExpressionNode 
       a.add(f->base(), -f->exponent());
     }
   }
-  return getProduct(n1,a);
+  return productExpr(a);
 }
 
 ExpressionNode *NodeOperatorsCanonForm::quot(ParserTree *tree, INT64 num, INT64 den) const {
-  ExpressionNode *n1 = tree->numberExpression(num);
-  ExpressionNode *n2 = tree->numberExpression(den);
-  FactorArray a;
+  ExpressionNode *n1 = tree->numberExpr(num);
+  ExpressionNode *n2 = tree->numberExpr(den);
+  FactorArray a(*tree);
   a.add(n1);
   a.add(n2,tree->getMinusOne());
-  ExpressionNode *q = tree->getProduct(a);
+  ExpressionNode *q = productExpr(a);
   q->setReduced();
   return q;
 }
@@ -247,9 +248,9 @@ ExpressionNode *NodeOperatorsCanonForm::power(ExpressionNode *n1, ExpressionNode
     return reciprocal(n1);
   } else if(n1->getSymbol() == POW) {
     ParserTree &tree = n1->getTree();
-    return tree.fetchFactorNode(n1->left(), tree.multiplyExponents(n1->right(), n2));
+    return factorExpr(n1->left(), tree.multiplyExponents(n1->right(), n2));
   } else {
-    return n1->getTree().fetchFactorNode(n1, n2);
+    return factorExpr(n1, n2);
   }
 }
 
@@ -263,7 +264,7 @@ ExpressionNode *NodeOperatorsCanonForm::root(ExpressionNode *n1, ExpressionNode 
 }
 
 ExpressionNode *NodeOperatorsCanonForm::exp(ExpressionNode *n) const {
-  return power(constExpression(n,_T("e")), n);
+  return power(constExpr(n,_T("e")), n);
 }
 
 ExpressionNode *NodeOperatorsCanonForm::exp10(ExpressionNode *n) const {
@@ -303,8 +304,8 @@ private:
   CNode toCFormPoly()     const;
   CNode toCFormSum()      const;
   CNode toCFormProduct()  const;
+  SNodeArray  &toCFormSum(    SNodeArray  &result, bool   positive) const;
   FactorArray &toCFormProduct(FactorArray &result, SNode &exponent) const;
-  AddentArray &toCFormSum(    AddentArray &result, bool   positive) const;
   FactorArray &toCFormPower(  FactorArray &result, SNode &exponent) const;
   FactorArray &toCFormRoot(   FactorArray &result, SNode &exponent) const;
 
@@ -374,7 +375,7 @@ CNode CNode::toCFormTreeNode() const {
   ENTERMETHOD();
   const SNodeArray &a  = getChildArray();
   const size_t      sz = a.size();
-  SNodeArray newChildArray(sz);
+  SNodeArray newChildArray(a.getTree(),sz);
   for(size_t i = 0; i < sz; i++) {
     newChildArray.add(N(a[i]).toCForm());
   }
@@ -386,7 +387,7 @@ CNode CNode::toCFormPoly() const {
 
   const SNodeArray &coefArray = getCoefArray();
   const size_t      sz        = coefArray.size();
-  SNodeArray        newCoefArray(sz);
+  SNodeArray        newCoefArray(coefArray.getTree(), sz);
   for(size_t i = 0; i < sz; i++) {
     newCoefArray.add(N(coefArray[i]).toCForm());
   }
@@ -396,20 +397,30 @@ CNode CNode::toCFormPoly() const {
 
 CNode CNode::toCFormSum() const {
   ENTERMETHOD();
-  AddentArray a;
-  CNode result = NV(toCFormSum(a, true));
-  RETURNNODE( result );
+  SNodeArray a(getTree());
+  toCFormSum(a, true );
+  RETURNNODE( sumExp(a) );
 }
 
-AddentArray &CNode::toCFormSum(AddentArray &result, bool positive) const {
+SNodeArray &CNode::toCFormSum(SNodeArray &result, bool positive) const {
   ENTERMETHOD2(*this,SNode(getTree(),positive));
   switch(getSymbol()) {
+  case NUMBER:
+    if(isZero()) break; // don't bother about this
+    if((getNumber() < 0) && !positive) { // -(-5) == +5
+      result.add(addentExp(-*this,true));
+      break;
+    }
+    // NB continue case
+  case NAME  :
+    result.add(addentExp(node(), positive));
+    break;
   case SUM:
-    { const AddentArray &a  = getAddentArray();
-      const size_t       sz = a.size();
+    { const SNodeArray &a  = getChildArray();
+      const size_t      sz = a.size();
       for(size_t i = 0; i < sz; i++) {
-        SumElement *e = a[i];
-        N(a[i]->getNode()).toCFormSum(result, e->isPositive() == positive);
+        const SNode &e = a[i];
+        N(e.left()).toCFormSum(result, e.isPositive() == positive);
       }
     }
     break;
@@ -423,18 +434,8 @@ AddentArray &CNode::toCFormSum(AddentArray &result, bool positive) const {
       N(right()).toCFormSum(N(left()).toCFormSum(result, positive), !positive);
     }
     break;
-  case NUMBER:
-    if(isZero()) break; // don't bother about this
-    if((getNumber() < 0) && !positive) {
-      result.add(-*this, true);
-      break;
-    }
-    // NB continue case
-  case NAME  :
-    result.add(node(), positive);
-    break;
   default:
-    result.add(toCForm(), positive);
+    result.add(addentExp(toCForm(), positive));
     break;
   }
   RETURNSHOWSTR( result );
@@ -442,9 +443,9 @@ AddentArray &CNode::toCFormSum(AddentArray &result, bool positive) const {
 
 CNode CNode::toCFormProduct() const {
   ENTERMETHOD();
-  FactorArray res;
-  CNode result = NV(toCFormProduct(res, _1()));
-  RETURNNODE(result);
+  FactorArray a(getTree());
+  toCFormProduct(a, _1());
+  RETURNNODE(productExp(a));
 }
 
 // Accumulate nodes in result
@@ -473,7 +474,7 @@ FactorArray &CNode::toCFormProduct(FactorArray &result, SNode &exponent) const {
     N(right()).toCFormProduct(N(left()).toCFormProduct(result, exponent), -exponent);
     break;
   case POW :
-    { FactorArray tmp;
+    { FactorArray tmp(getTree());
       result.addAll(toCFormPower(tmp, exponent));
     }
     break;
@@ -485,11 +486,6 @@ FactorArray &CNode::toCFormProduct(FactorArray &result, SNode &exponent) const {
         s.toCFormProduct(result,exponent);
       }
     }
-/*
-    { FactorArray tmp; 
-      result.addAll(toCFormRoot(tmp, exponent));
-    }
-*/
     break;
   case SQR:
     { CNode s = sqr(N(left()).toCForm());
@@ -542,9 +538,6 @@ FactorArray &CNode::toCFormPower(FactorArray &result, SNode &exponent) const {
   ENTERMETHOD2(*this, exponent);
   SNode base = N(left()).toCForm();
   SNode expo = N(right()).toCForm();
-  String bs = base.toString();
-  String es = expo.toString();
-  String expos = exponent.toString();
 
   switch(base.getSymbol()) {
   case POW :

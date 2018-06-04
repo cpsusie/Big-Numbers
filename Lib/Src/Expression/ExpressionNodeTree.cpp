@@ -3,23 +3,33 @@
 
 namespace Expr {
 
-ExpressionNodeTree::ExpressionNodeTree(ParserTree *tree, ExpressionInputSymbol symbol, va_list argptr) : ExpressionNode(tree, symbol) {
+ExpressionNodeTree::ExpressionNodeTree(ParserTree *tree, ExpressionInputSymbol symbol, va_list argptr)
+: ExpressionNode(tree, symbol)
+, m_childArray(*tree)
+{
   initChildArray(argptr);
 }
 
-ExpressionNodeTree::ExpressionNodeTree(ParserTree *tree, ExpressionInputSymbol symbol, const SNodeArray &childArray) 
+ExpressionNodeTree::ExpressionNodeTree(ParserTree *tree, ExpressionInputSymbol symbol, const SNodeArray &childArray)
   : ExpressionNode(tree, symbol)
-  , m_childArray(childArray)
+  , m_childArray(*tree)
 {
+  m_childArray.addAll(childArray);
   SETDEBUGSTRING();
 }
 
-ExpressionNodeTree::ExpressionNodeTree(ParserTree *tree, const ExpressionNodeTree *src) : ExpressionNode(tree, src->getSymbol()) {
+ExpressionNodeTree::ExpressionNodeTree(ParserTree *tree, const ExpressionNodeTree *src)
+: ExpressionNode(tree, src->getSymbol())
+, m_childArray(*tree)
+{
   src->getChildArray().cloneNodes(m_childArray, tree);
   SETDEBUGSTRING();
 }
 
-ExpressionNodeTree::ExpressionNodeTree(ParserTree *tree, ExpressionInputSymbol symbol, ...) : ExpressionNode(tree, symbol) {
+ExpressionNodeTree::ExpressionNodeTree(ParserTree *tree, ExpressionInputSymbol symbol, ...)
+: ExpressionNode(tree, symbol)
+, m_childArray(*tree)
+{
   va_list argptr;
   va_start(argptr, symbol);
   initChildArray(argptr);
@@ -35,7 +45,7 @@ static int countVargs(va_list argptr) {
 }
 
 void ExpressionNodeTree::initChildArray(va_list argptr) {
-  int count = countVargs(argptr);;
+  const int count = countVargs(argptr);
   m_childArray.clear(count);
   for(ExpressionNode *p = va_arg(argptr, ExpressionNode*); p; p = va_arg(argptr, ExpressionNode*)) {
     m_childArray.add(p);

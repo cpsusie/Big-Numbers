@@ -1,8 +1,6 @@
 #include "pch.h"
 #include <Math/PrimeFactors.h>
 #include <Math/Expression/ParserTree.h>
-#include <Math/Expression/SumElement.h>
-#include <Math/Expression/ExpressionFactor.h>
 #include <Math/Expression/ExpressionParser.h>
 #include <Math/Expression/SNodeReduceDbgStack.h>
 

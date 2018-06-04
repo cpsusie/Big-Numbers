@@ -57,48 +57,24 @@ public:
 typedef Array<ExpressionVariableWithValue> ExpressionVariableArray;
 
 class ExpressionNode;
-class SumElement;
 class ExpressionFactor;
 class ExpressionNodeSelector;
 class ParserTree;
 class Expression;
 
-class AddentArray : public CompactArray<SumElement*> {
-  DECLAREARRAYDEBUGSTRING;
-public:
-  AddentArray() {
-  }
-  explicit AddentArray(size_t capacity) : CompactArray<SumElement*>(capacity) {
-  }
-  void add(SNode n, bool positive);
-  inline void add(SumElement *e) {
-    __super::add(e);
-    SETDEBUGSTRING();
-  }
-  inline AddentArray &operator+=(SNode n) {
-    add(n, true);
-    return *this;
-  }
-  inline AddentArray &operator-=(SNode n) {
-    add(n, false);
-    return *this;
-  }
-  bool equal(     const AddentArray &a) const;
-  bool equalMinus(const AddentArray &a) const;
-  AddentArray &sort();        // return *this
-  AddentArray &sortStdForm(); // return *this
-
-  String toString() const;
-};
-
 class FactorArray : public CompactArray<ExpressionFactor*> {
   DECLAREARRAYDEBUGSTRING;
+private:
+  ParserTree &m_tree;
 public:
-  FactorArray() {
+  FactorArray(ParserTree &tree) : m_tree(tree) {
   }
-  explicit FactorArray(size_t capacity) : CompactArray<ExpressionFactor*>(capacity) {
+  explicit FactorArray(ParserTree &tree, size_t capacity) : m_tree(tree), CompactArray<ExpressionFactor*>(capacity) {
   }
 
+  inline ParserTree &getTree() const {
+    return m_tree;
+  }
   FactorArray selectConstantPositiveExponentFactors() const;
   FactorArray selectConstantNegativeExponentFactors() const;
   FactorArray selectNonConstantExponentFactors() const;
@@ -108,6 +84,8 @@ public:
   void add(SNode base);
   void add(SNode base, SNode exponent);
   void add(SNode base, const Rational &exponent);
+  void addAll(const FactorArray &src);
+  void remove(size_t index);
   bool isSameNodes(const FactorArray &a) const; // compare if ExpressionNode* equals
   bool equal(      const FactorArray &a) const;
   bool equalMinus( const FactorArray &a) const;
@@ -201,14 +179,12 @@ public:
   virtual       SNodeArray          &getChildArray()                        { UNSUPPORTEDOP(); }
   virtual const FactorArray         &getFactorArray()               const   { UNSUPPORTEDOP(); }
   virtual       FactorArray         &getFactorArray()                       { UNSUPPORTEDOP(); }
-  virtual const AddentArray         &getAddentArray()               const   { UNSUPPORTEDOP(); }
-  virtual       AddentArray         &getAddentArray()                       { UNSUPPORTEDOP(); }
   virtual const SNodeArray          &getCoefArray()                 const   { UNSUPPORTEDOP(); }
   virtual       SNodeArray          &getCoefArray()                         { UNSUPPORTEDOP(); }
   virtual int                        getFirstCoefIndex()            const   { UNSUPPORTEDOP(); }
   virtual void                       setFirstCoefIndex(int index)           { UNSUPPORTEDOP(); }
   virtual bool                       isCoefArrayConstant()          const   { UNSUPPORTEDOP(); }
-
+  virtual bool                       isPositive()                   const   { UNSUPPORTEDOP(); }
   virtual int                        getDegree()                    const   { UNSUPPORTEDOP(); }
   virtual const String              &getName()                      const   { UNSUPPORTEDOP(); }
   virtual void                       setVariable(ExpressionVariable *var)   { UNSUPPORTEDOP(); }
@@ -260,8 +236,8 @@ public:
   inline  bool                       isTen()                        const   { return isNumber()   && getReal()  == 10;                         }
   inline  bool                       isMinusOne()                   const   { return isNumber()   && getReal()  == -1;                         }
   inline  bool                       isMinusTwo()                   const   { return isNumber()   && getReal()  == -2;                         }
-  inline  bool                       isNegative()                   const   { return isNumber()   && getReal()  < 0;                           }
-  inline  bool                       isPositive()                   const   { return isNumber()   && getReal()  > 0;                           }
+  inline  bool                       isNegativeNumber()             const   { return isNumber()   && getReal()  < 0;                           }
+  inline  bool                       isPositiveNumber()             const   { return isNumber()   && getReal()  > 0;                           }
   inline  bool                       isTrue()                       const   { return isBoolean()  && getBool();                                }
   inline  bool                       isFalse()                      const   { return isBoolean()  && !getBool();                               }
 
@@ -539,10 +515,7 @@ public:
     : ExpressionNodeTree(tree, symbol, argptr)
   {
   }
-  ExpressionNode *clone(ParserTree *tree) const {
-    ExpressionNode *n = new ExpressionNodeBoolExpr(tree, this); TRACE_NEW(n);
-    return n;
-  }
+  ExpressionNode *clone(ParserTree *tree) const;
 
   bool isConstant() const;
   ExpressionReturnType getReturnType() const {
@@ -679,6 +652,65 @@ public:
   String toString() const;
 };
 
+class ExpressionAddent : public ExpressionNodeTree {
+private:
+  bool m_positive;
+public:
+  ExpressionAddent(SNode n, bool positive);
+  ExpressionAddent(ParserTree *tree, const ExpressionAddent *src);
+
+  bool isPositive() const {
+    return m_positive;
+  }
+
+  ExpressionNode   *expand()       { return this;  }
+  bool              isExpandable() { return false; }
+
+  int compare(ExpressionNode *n);
+
+  ExpressionNode *clone(ParserTree *tree) const;
+
+  ExpressionNodeType getNodeType() const {
+    return NT_ADDENT;
+  }
+
+  void dumpNode(String &s, int level) const;
+
+  Real evaluateReal() const;
+
+  String toString() const;
+};
+
+class ExpressionFactor : public ExpressionNodeTree {
+public:
+  ExpressionFactor(SNode base);
+  ExpressionFactor(SNode base, SNode exponent);
+
+  inline SNode base() const {
+    return child(0);
+  }
+
+  inline SNode exponent() const {
+    return child(1);
+  }
+
+  bool hasOddExponent() const {
+    return exponent().isNumber() && exponent().getNumber().isOdd();
+  }
+
+  int compare(ExpressionNode *n);
+
+  ExpressionNode *clone(ParserTree *tree) const;
+
+  bool isConstant() const;
+
+  ExpressionNodeType getNodeType() const {
+    return NT_FACTOR;
+  }
+
+  void dumpNode(String &s, int level) const;
+};
+
 // ----------------------------------- Used by parser to save sourceposition in text -------------------------------------
 class SourcePositionAttribute {
 private:
@@ -781,32 +813,23 @@ public:
 
 // ------------------------------------------------------------------------------------------------------
 
-class ExpressionNodeSum : public ExpressionNode {
+class ExpressionNodeSum : public ExpressionNodeTree {
 private:
-  AddentArray m_elements;
+  void validateNodeArray(const SNodeArray &a) const; // check, that all nodes have type NT_ADDENT
+
 public:
-  ExpressionNodeSum(ParserTree *tree, const AddentArray &elements);
-
-  AddentArray &getAddentArray() {
-    return m_elements;
-  }
-  const AddentArray &getAddentArray() const {
-    return m_elements;
-  }
-
-  int compare(ExpressionNode *n);
+  ExpressionNodeSum(ParserTree *tree, const SNodeArray &childArray);
+  ExpressionNodeSum(ParserTree *tree, const ExpressionNodeSum *src);
 
   ExpressionNode *clone(ParserTree *tree) const;
 
-  bool isConstant() const;
   Real evaluateReal() const;
 
   ExpressionNodeType getNodeType() const {
     return NT_SUM;
   }
-
-  bool traverseExpression(ExpressionNodeHandler &handler, int level);
-  void dumpNode(String &s, int level) const;
+  static void sort(       SNodeArray &a);
+  static void sortStdForm(SNodeArray &a);
 
   String toString() const;
 };
@@ -814,6 +837,7 @@ public:
 class ExpressionNodeProduct : public ExpressionNode {
 private:
   FactorArray m_factors;
+  void validateFactorArray(const FactorArray &a) const; // check, that all nodes have type NT_FACTOR
 public:
   ExpressionNodeProduct(ParserTree *tree, FactorArray &factors);
 

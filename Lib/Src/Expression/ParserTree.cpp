@@ -1,7 +1,5 @@
 #include "pch.h"
 #include <Math/Expression/ParserTree.h>
-#include <Math/Expression/SumElement.h>
-#include <Math/Expression/ExpressionFactor.h>
 
 namespace Expr {
 
@@ -102,15 +100,11 @@ void ParserTree::releaseAll() {
   for(size_t i = 0; i < m_nodeTable.size(); i++) {
     SAFEDELETE(m_nodeTable[i]);
   }
-  for(size_t i = 0; i < m_addentTable.size(); i++) {
-    SAFEDELETE(m_addentTable[i]);
-  }
   resetSimpleConstants();
   setRoot(NULL);
   setOk(false);
   m_errors.clear();
   m_nodeTable.clear();
-  m_addentTable.clear();
   m_symbolTable.clear(NULL);
 }
 
@@ -259,63 +253,29 @@ SNode ParserTree::traverseSubstituteNodes(SNode n, CompactNodeHashMap<Expression
   case NT_POLY:
     { const SNodeArray &coefArray = n.getCoefArray();
       SNode             arg       = n.getArgument();
-      SNodeArray        newCoefArray(coefArray.size());
+      SNodeArray        newCoefArray(coefArray.getTree(),coefArray.size());
       SNode             newArg    = traverseSubstituteNodes(arg, nodeMap);
       for(size_t i = 0; i < coefArray.size(); i++) {
         newCoefArray.add(traverseSubstituteNodes(coefArray[i], nodeMap));
       }
       return getPoly(n, newCoefArray, newArg);
     }
-  case NT_BOOLEXPR  :
-    { const SNodeArray &a = n.getChildArray();
-      SNodeArray        newChildArray(a.size());
-      for(size_t i = 0; i < a.size(); i++) {
-        newChildArray.add(traverseSubstituteNodes(a[i], nodeMap));
-      }
-      return getBoolExpr(n, newChildArray);
-    }
   case NT_TREE      :
+  case NT_BOOLEXPR  :
+  case NT_SUM       :
+  case NT_ADDENT    :
+  case NT_ASSIGN    :
+  case NT_STMTLIST  :
     { const SNodeArray &a = n.getChildArray();
-      SNodeArray        newChildArray(a.size());
+      SNodeArray        newChildArray(a.getTree(),a.size());
       for(size_t i = 0; i < a.size(); i++) {
         newChildArray.add(traverseSubstituteNodes(a[i], nodeMap));
       }
       return getTree(n, newChildArray);
     }
-  case NT_ASSIGN    :
-    { const SNodeArray &a = n.getChildArray();
-      SNodeArray        newChildArray(a.size());
-      for(size_t i = 0; i < a.size(); i++) {
-        newChildArray.add(traverseSubstituteNodes(a[i], nodeMap));
-      }
-      return getAssignStmt(n, newChildArray);
-    }
-  case NT_STMTLIST  :
-    { const SNodeArray &a = n.getChildArray();
-      SNodeArray        newChildArray(a.size());
-      for(size_t i = 0; i < a.size(); i++) {
-        newChildArray.add(traverseSubstituteNodes(a[i], nodeMap));
-      }
-      return getStmtList(n, newChildArray);
-    }
-  case NT_SUM       :
-    { const AddentArray &a = n.getAddentArray();
-      AddentArray        newAddentArray(a.size());
-      for(size_t i = 0; i < a.size(); i++) {
-        SumElement *e       = a[i];
-        SNode oldNode = e->getNode();
-        SNode newNode = traverseSubstituteNodes(oldNode, nodeMap);
-        if(newNode.isSameNode(oldNode)) {
-          newAddentArray.add(e);
-        } else {
-          newAddentArray.add(newNode, e->isPositive());
-        }
-      }
-      return getSum(n, newAddentArray);
-    }
   case NT_PRODUCT   :
     { const FactorArray &a = n.getFactorArray();
-      FactorArray        newFactorArray(a.size());
+      FactorArray        newFactorArray(a.getTree(),a.size());
       for(size_t i = 0; i < a.size(); i++) {
         newFactorArray.add(traverseSubstituteNodes(a[i], nodeMap));
       }
@@ -407,16 +367,6 @@ void ParserTree::multiplyMarkedNodes() {
 
 // ---------------------------------------- only used by parser --------------------------------------------------
 
-static SNodeArray &getListFromTree(ExpressionNode *n, ExpressionInputSymbol delimiterSymbol, SNodeArray &list) {
-  if(n->getSymbol() == delimiterSymbol) {
-    getListFromTree(n->left(), delimiterSymbol,list);
-    list.add(n->right());
-  } else {
-    list.add(n);
-  }
-  return list;
-}
-
 ExpressionNode *ParserTree::vFetchNode(const SourcePosition &pos, ExpressionInputSymbol symbol, va_list argptr) {
   ExpressionNode *n;
   switch(symbol) {
@@ -441,14 +391,14 @@ ExpressionNode *ParserTree::vFetchNode(const SourcePosition &pos, ExpressionInpu
     n = new ExpressionNodeAssignWithPos(   this, pos,         argptr);
     break;
   case STMTLIST:
-    { SNodeArray stmtArray;
-      getListFromTree(va_arg(argptr, ExpressionNode*), SEMI, stmtArray);
+    { SNodeArray stmtArray(*this);
+      stmtArray.convertFromParserTree(va_arg(argptr, ExpressionNode*), SEMI);
       n = new ExpressionNodeStmtList(      this, stmtArray);
     }
     break;
   case POLY    :
-    { SNodeArray coefArray;
-      getListFromTree(va_arg(argptr, ExpressionNode*), COMMA, coefArray);
+    { SNodeArray coefArray(*this);
+      coefArray.convertFromParserTree(va_arg(argptr, ExpressionNode*), COMMA);
       SNode arg = va_arg(argptr, ExpressionNode*);
       n = new ExpressionNodePolyWithPos(   this, pos, coefArray, arg);
     }
@@ -467,7 +417,7 @@ ExpressionNodeVariable *ParserTree::fetchVariableNode(const String &name) {
   return v;
 }
 
-ExpressionNode *ParserTree::constExpression(const String &name) {
+ExpressionNode *ParserTree::constExpr(const String &name) {
   DEFINEMETHODNAME;
 
   const ExpressionVariable *v = getVariable(name);

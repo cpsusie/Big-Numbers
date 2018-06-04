@@ -221,7 +221,7 @@ SNode SNode::DPoly(const String &name) const {
   SNode           arg          = getArgument();   // arg(x) is the parameter to the polynomial
   const SNode     dargdx       = ddx(arg);        // dudx is u derived wrt. name
 
-  SNodeArray newCoefArray;
+  SNodeArray newCoefArray(getTree());
   const int degree = getDegree();
   newCoefArray.add(ddx(coefArray[0]));
   for(int i = 1; i < (int)coefArray.size(); i++) {
@@ -237,7 +237,7 @@ SNode SNode::DStmtList(const String &name) const {
   DEFINEMETHODNAME;
 
   const SStmtList &alist = getChildArray();
-  SNodeArray result;
+  SNodeArray result(getTree());
   const size_t assignCount = alist.size() - 1;
   for(size_t i = 0; i < assignCount; i++) {
     SNode stmt = alist[i];

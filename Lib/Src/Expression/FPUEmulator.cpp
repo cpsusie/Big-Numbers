@@ -63,9 +63,9 @@ void FPUState::execute(FPUOpcodeKey codeKey, char stackDelta, int memIndex, int 
       break;
     case _FADDP  :
     case _FMULP  :
-    case _FSUBP  : 
-    case _FDIVP  :  
-    case _FSUBRP :   
+    case _FSUBP  :
+    case _FDIVP  :
+    case _FSUBRP :
     case _FDIVRP :
       setMixed(reg1);
       pop();
@@ -137,7 +137,7 @@ void FPUState::execute(FPUOpcodeKey codeKey, char stackDelta, int memIndex, int 
     case _FDECSTP:
       fdecstp();
       break;
-    case _FINCSTP:  
+    case _FINCSTP:
       fincstp();
       break;
     case _CALL   : // only activated in 32bit !LONGDOUBLE

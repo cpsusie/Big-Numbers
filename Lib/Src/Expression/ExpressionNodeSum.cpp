@@ -1,88 +1,77 @@
 #include "pch.h"
 #include <Math/Expression/ParserTree.h>
-#include <Math/Expression/SumElement.h>
 
 namespace Expr {
 
-ExpressionNodeSum::ExpressionNodeSum(ParserTree *tree, const AddentArray &elements) : ExpressionNode(tree, SUM) {
-  m_elements = elements;
-  m_elements.sort();
+ExpressionNodeSum::ExpressionNodeSum(ParserTree *tree, const SNodeArray &childArray)
+: ExpressionNodeTree(tree, SUM, childArray) {
+
+#ifdef _DEBUG
+  validateNodeArray(childArray);
+#endif // _DEBUG
+
+  sort(getChildArray());
   SETDEBUGSTRING();
 }
 
-int ExpressionNodeSum::compare(ExpressionNode *n) {
-  if(n->getSymbol() != SUM) {
-    return ExpressionNode::compare(n);
+void ExpressionNodeSum::validateNodeArray(const SNodeArray &a) const {
+  const size_t sz = a.size();
+  for(size_t i = 0; i < sz; i++) {
+    const SNode &n = a[i];
+    if(n.getNodeType() != NT_ADDENT) {
+      throwInvalidArgumentException(__TFUNCTION__
+                                   ,_T("node[%zu] not type NT_ADDENT (=%s)")
+                                   ,i, n.getNodeTypeName().cstr());
+    }
   }
-  const AddentArray &na = n->getAddentArray();
-  const int count = (int)min(m_elements.size(), na.size());
-  int i;
-  for(i = 0; i < count; i++) {
-    const int c = m_elements[i]->compare(na[i]);
-    if(c) return c;
-  }
-  if(i == m_elements.size()) {
-    return (i == na.size()) ? 0 : 1;
-  } else {
-    return -1;
-  }
+}
+
+ExpressionNodeSum::ExpressionNodeSum(ParserTree *tree, const ExpressionNodeSum *src)
+: ExpressionNodeTree(tree, src)
+{
+  SETDEBUGSTRING();
 }
 
 ExpressionNode *ExpressionNodeSum::clone(ParserTree *tree) const {
-  AddentArray a(m_elements.size());
-  for(size_t i = 0; i < m_elements.size(); i++) {
-    a.add(m_elements[i]->clone(tree));
-  }
-  ExpressionNode *n = new ExpressionNodeSum(tree, a); TRACE_NEW(n);
+  ExpressionNode *n = new ExpressionNodeSum(tree, this); TRACE_NEW(n);
   return n;
-}
-
-bool ExpressionNodeSum::isConstant() const {
-  const int n = (int)m_elements.size();
-  for(int i = 0; i < n; i++) {
-    if(!m_elements[i]->isConstant()) {
-      return false;
-    }
-  }
-  return true;
 }
 
 Real ExpressionNodeSum::evaluateReal() const {
   Real sum = 0;
-  const AddentArray &a = getAddentArray();
+  const SNodeArray &a = getChildArray();
   for(size_t i = 0; i < a.size(); i++) {
-    const SumElement *e = a[i];
-    const Real v = e->getNode()->evaluateReal();
-    if(e->isPositive()) {
-      sum += v;
-    } else {
-      sum -= v;
-    }
+    sum += a[i].evaluateReal();
   }
   return sum;
 }
 
-bool ExpressionNodeSum::traverseExpression(ExpressionNodeHandler &handler, int level) {
-  if(!handler.handleNode(this, level)) return false;
-  const AddentArray &a = getAddentArray();
-  level++;
-  for(size_t i = 0; i < a.size(); i++) {
-    if(!a[i]->getNode()->traverseExpression(handler, level)) return false;
-  }
-  return true;
+static int compareMany(const SNode &e1, const SNode &e2) {
+  return e1.node()->compare(e2.node());
 }
 
-void ExpressionNodeSum::dumpNode(String &s, int level) const {
-  addLeftMargin(s, level) += format(_T("%s\n"), getSymbolName().cstr());
-  for(size_t i = 0; i < m_elements.size(); i++) {
-    SumElement *e = m_elements[i];
-    addLeftMargin(s, level+1) += e->isPositive() ? _T("+\n") : _T("\x96\n");
-    e->getNode()->dumpNode(s, level+2);
+void ExpressionNodeSum::sort(SNodeArray &a) { // static
+  a.sort(compareMany);
+}
+
+static int compare2(const SNode &e1, const SNode &e2) {
+  const bool p1 = e1.isPositive();
+  const bool p2 = e2.isPositive();
+  int c = ordinal(p2) - ordinal(p1);
+  if(c) return c;
+  return compareMany(e1,e2);
+}
+
+void ExpressionNodeSum::sortStdForm(SNodeArray &a) { // static
+  if(a.size() == 2) {
+    a.sort(compare2);
+  } else {
+    a.sort(compareMany);
   }
 }
 
 String ExpressionNodeSum::toString() const {
-  return m_elements.toString();
+  return _T("SUM") + getChildArray().toString();
 }
 
 }; // namespace Expr

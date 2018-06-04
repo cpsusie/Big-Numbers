@@ -1,7 +1,5 @@
 #include "pch.h"
 #include <Math/Expression/ParserTree.h>
-#include <Math/Expression/SumElement.h>
-#include <Math/Expression/ExpressionFactor.h>
 
 namespace Expr {
 
@@ -46,7 +44,7 @@ NNode NNode::toNForm() const {
 NNode NNode::toNFormStmtList() const {
   const SStmtList &childArray = getChildArray();
   const int        childCount = (int)childArray.size() - 1;
-  SStmtList        newStmtList;
+  SStmtList        newStmtList(getTree());
 
   for(int i = 0; i < childCount; i++) {
     const SNode &stmt = childArray[i];
@@ -115,28 +113,28 @@ NNode NNode::toNFormBoolExp() const {
 }
 
 NNode NNode::toNFormSum() const {
-  const AddentArray &a = getAddentArray();
+  const SNodeArray &a = getChildArray();
   if(a.size() == 0) {
     return _0();
   } else {
     Real constant = 0;
-    AddentArray newArray;
+    SNodeArray newArray(a.getTree());
     for(size_t i = 0; i < a.size(); i++) {
-      SumElement *e = a[i];
-      SNode tmp = N(e->getNode()).toNFormRealExp();
+      const SNode &e = a[i];
+      SNode tmp = N(e.left()).toNFormRealExp();
       if(tmp.isNumber()) {
-        if(e->isPositive()) constant += tmp.getReal(); else constant -= tmp.getReal();
+        if(e.isPositive()) constant += tmp.getReal(); else constant -= tmp.getReal();
       } else {
-        newArray.add(tmp, e->isPositive());
+        newArray.add(addentExp(tmp, e.isPositive()));
       }
     }
     if(newArray.size() == 0) return NV(constant);
-    SNode result = newArray[0]->getNode();
-    if(!newArray[0]->isPositive()) result = -result;
+    SNode result = newArray[0].left();
+    if(!newArray[0].isPositive()) result = -result;
     for(size_t i = 1; i < newArray.size(); i++) {
-      SumElement *e  = newArray[i];
-      SNode       ne = e->getNode();
-      if(e->isPositive()) result += ne; else result -= ne;
+      SNode &e  = newArray[i];
+      SNode  ne = e.left();
+      if(e.isPositive()) result += ne; else result -= ne;
     }
     return (constant == 0) ? result
          : (constant >  0) ? result + NV(constant)
@@ -147,7 +145,7 @@ NNode NNode::toNFormSum() const {
 NNode NNode::toNFormProduct() const {
   Real constant = 1;
   const FactorArray &a = getFactorArray();
-  FactorArray newArray;
+  FactorArray newArray(a.getTree());
   for(size_t i = 0; i < a.size(); i++) {
     ExpressionFactor *f        = a[i];
     NNode             base     = N(f->base()).toNFormRealExp();
@@ -186,7 +184,7 @@ NNode NNode::toNFormPoly() const {
   const SNodeArray &coefArray = getCoefArray();
   NNode             arg       = getArgument();
 
-  SNodeArray newCoefArray(coefArray.size());
+  SNodeArray newCoefArray(coefArray.getTree(),coefArray.size());
   for(size_t i = 0; i < coefArray.size(); i++) {
     newCoefArray.add(N(coefArray[i]).toNFormRealExp());
   }
@@ -208,7 +206,7 @@ NNode NNode::toNFormTreeNode() const {
     }
   default:
     { const SNodeArray &a = getChildArray();
-      SNodeArray        newChildArray(a.size());
+      SNodeArray        newChildArray(a.getTree(),a.size());
       for(size_t i = 0; i < a.size(); i++) {
         newChildArray.add(N(a[i]).toNFormRealExp());
       }

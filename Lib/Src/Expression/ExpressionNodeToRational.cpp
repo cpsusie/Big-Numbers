@@ -1,7 +1,5 @@
 #include "pch.h"
 #include <Math/Expression/ParserTree.h>
-#include <Math/Expression/SumElement.h>
-#include <Math/Expression/ExpressionFactor.h>
 
 namespace Expr {
 
@@ -35,16 +33,16 @@ bool ExpressionNode::reducesToRational(Rational *r) const {
     }
 
   case SUM            :
-    { const AddentArray &a = getAddentArray();
+    { const SNodeArray &a = getChildArray();
       Rational sum = 0, tmp, *tmpp = r ? &tmp : NULL;
       for(size_t i = 0; i < a.size(); i++) {
-        SumElement *e = a[i];
+        const SNode &e = a[i];
 
-        if(!SNode(e->getNode()).reducesToRational(tmpp)) {
+        if(!e.left().reducesToRational(tmpp)) {
           return false;
         }
         if(tmpp) {
-          if(e->isPositive()) sum += tmp; else sum -= tmp;
+          if(e.isPositive()) sum += tmp; else sum -= tmp;
         }
       }
       if(r) *r = sum;

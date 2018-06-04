@@ -15,7 +15,7 @@ typedef enum {
  ,_FIMUL     ,_FISUB     ,_FIDIV     ,_FISUBR    ,_FIDIVR
  ,_FICOM     ,_FICOMP    ,_FCMOVB    ,_FCMOVAE   ,_FCMOVE
  ,_FCMOVNE   ,_FCMOVBE   ,_FCMOVA    ,_FCMOVU    ,_FCMOVNU
- ,_FFREE     ,_FXCH      ,_FWAIT     ,_FNOP      ,_FCHS      
+ ,_FFREE     ,_FXCH      ,_FWAIT     ,_FNOP      ,_FCHS
  ,_FABS      ,_FTST      ,_FXAM      ,_FLD1      ,_FLDL2T
  ,_FLDL2E    ,_FLDPI     ,_FLDLG2    ,_FLDLN2    ,_FLDZ
  ,_F2XM1     ,_FYL2X     ,_FPTAN     ,_FPATAN    ,_FXTRACT

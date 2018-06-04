@@ -6,13 +6,10 @@
   <Type Name="Expr::ExpressionNode">
     <DisplayString>{m_debugStr}</DisplayString>
   </Type>
-  <Type Name="Expr::SumElement">
+  <Type Name="Expr::SNodeArray">
     <DisplayString>{m_debugStr}</DisplayString>
   </Type>
-  <Type Name="Expr::AddentArray">
-    <DisplayString>{m_debugStr}</DisplayString>
-  </Type>
-  <Type Name="Expr::FactorArray                    ">
+  <Type Name="Expr::FactorArray">
     <DisplayString>{m_debugStr}</DisplayString>
   </Type>
   <Type Name="Expr::SNode">

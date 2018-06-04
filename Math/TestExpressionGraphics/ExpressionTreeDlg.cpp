@@ -98,7 +98,7 @@ String CExpressionTreeDlg::getExtendedString(const ExpressionNode *n) const {
     }
   default:
     return format(_T("%s - (%-8s %s)")
-                 ,n->getSymbolName().cstr()
+                 ,getSimpleString(n).cstr()
                  ,n->getNodeTypeName().cstr()
                  ,n->getInfo().toString().cstr());
   }
@@ -110,6 +110,8 @@ String CExpressionTreeDlg::getSimpleString(const ExpressionNode *n) const {
   case NAME    : 
   case TYPEBOOL:
     return n->toString();
+  case ADDENT  :
+    return format(_T("%c%s"), n->isPositive()?'+':'-',n->getSymbolName().cstr());
   default      :
     return n->getSymbolName();
   }
@@ -130,16 +132,9 @@ void CExpressionTreeDlg::traverse(CTreeCtrl *ctrl, HTREEITEM p, const Expression
   case TYPEBOOL:
     q = ADDITEM(n,p);
     break;
-  case SUM     :
-    { q = ADDITEM(n,p);
-      const AddentArray &a = n->getAddentArray();
-      for(size_t i = 0; i < a.size(); i++) {
-        const SumElement *e = a[i];
-        TCHAR *signStr = e->isPositive() ? _T("+") : _T("-");
-        HTREEITEM q1 = ctrl->InsertItem(signStr, q);
-        traverse(ctrl, q1, e->getNode());
-      }
-    }
+  case ADDENT  :
+    q = ADDITEM(n,p);
+    traverse(ctrl, q, n->left());
     break;
 
   case PRODUCT :

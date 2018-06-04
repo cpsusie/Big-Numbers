@@ -1,6 +1,5 @@
 #include "pch.h"
 #include <Math/Expression/ParserTree.h>
-#include <Math/Expression/SumElement.h>
 
 namespace Expr {
 
@@ -16,22 +15,14 @@ public:
 bool SetMark::handleNode(ExpressionNode *n, int level) {
   if(m_setMark) {
     n->mark();
-    if(n->getSymbol() == SUM) {
-      const AddentArray &a = n->getAddentArray();
-      for(size_t i = a.size(); i--;) a[i]->mark();
-    }
   } else {
     n->unMark();
-    if(n->getSymbol() == SUM) {
-      const AddentArray &a = n->getAddentArray();
-      for(size_t i = a.size(); i--;) a[i]->unMark();
-    }
   }
   return true;
 }
 
 void ParserTree::pruneUnusedNodes() {
-  debugLog(_T("Garbage collection. Before.(#Nodes,#Addents):(%6d,%6d).\n"), getNodeTableSize(), getAddentTableSize());
+  debugLog(_T("Garbage collection. Before.(#Nodes:%6d.\n"), getNodeTableSize());
   unmarkAll();
 
   traverseTree(SetMark(true));
@@ -39,7 +30,7 @@ void ParserTree::pruneUnusedNodes() {
   markSimpleConstants();
   deleteUnmarked();
   unmarkAll();
-  debugLog(_T(" After:(%3d,%3d)\n"), getNodeTableSize(), getAddentTableSize());
+  debugLog(_T(" After:%3d\n"), getNodeTableSize());
 }
 
 #define MARKCONSTANT(n) if(n) n->mark()
@@ -56,8 +47,7 @@ void ParserTree::markSimpleConstants() {
 }
 
 void ParserTree::unmarkAll() {
-  for(size_t i = 0; i < m_nodeTable.size()    ; i++) m_nodeTable[i]->unMark();
-  for(size_t i = 0; i < m_addentTable.size()  ; i++) m_addentTable[i]->unMark();
+  for(size_t i = 0; i < m_nodeTable.size(); i++) m_nodeTable[i]->unMark();
   m_symbolTable.unmarkAllReferencedNodes();
 }
 
@@ -73,17 +63,6 @@ void ParserTree::deleteUnmarked() {
     }
   }
   tmp.clear();
-  CompactArray<SumElement*> tmp1 = m_addentTable;
-  m_addentTable.clear();
-  for(size_t i = 0; i < tmp1.size(); i++) {
-    SumElement *e = tmp1[i];
-    if(e->isMarked()) {
-      m_addentTable.add(e);
-    } else {
-      SAFEDELETE(e);
-    }
-  }
-  tmp1.clear();
 }
 
 }; // namespace Expr

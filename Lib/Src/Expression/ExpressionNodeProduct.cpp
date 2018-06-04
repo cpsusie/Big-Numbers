@@ -1,13 +1,30 @@
 #include "pch.h"
 #include <Math/Expression/ParserTree.h>
-#include <Math/Expression/ExpressionFactor.h>
 
 namespace Expr {
 
-ExpressionNodeProduct::ExpressionNodeProduct(ParserTree *tree, FactorArray &factors) : ExpressionNode(tree, PRODUCT) {
-  m_factors = factors;
+ExpressionNodeProduct::ExpressionNodeProduct(ParserTree *tree, FactorArray &factors)
+: ExpressionNode(tree, PRODUCT)
+, m_factors(*tree, factors.size())
+{
+#ifdef _DEBUG
+  validateFactorArray(factors);
+#endif
+  m_factors.addAll(factors);
   m_factors.sort();
   SETDEBUGSTRING();
+}
+
+void ExpressionNodeProduct::validateFactorArray(const FactorArray &factors) const {
+  const size_t sz = factors.size();
+  for(size_t i = 0; i < sz; i++) {
+    const ExpressionNode *n = factors[i];
+    if(n->getNodeType() != NT_FACTOR) {
+      throwInvalidArgumentException(__TFUNCTION__
+                                   ,_T("node[%zu] not type NT_FACTOR (=%s)")
+                                   ,i, n->getNodeTypeName().cstr());
+    }
+  }
 }
 
 int ExpressionNodeProduct::compare(ExpressionNode *n) {
@@ -37,12 +54,11 @@ int ExpressionNodeProduct::compare(ExpressionNode *n) {
 }
 
 ExpressionNode *ExpressionNodeProduct::clone(ParserTree *tree) const {
-  FactorArray factors(m_factors.size());
+  FactorArray factors(*tree, m_factors.size());
   for(size_t i = 0; i < m_factors.size(); i++) {
     factors.add(m_factors[i]->clone(tree));
   }
-  ExpressionNode *n = new ExpressionNodeProduct(tree, factors); TRACE_NEW(n);
-  return n;
+  return tree->productExpr(factors);
 }
 
 bool ExpressionNodeProduct::isConstant() const {

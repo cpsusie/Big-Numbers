@@ -3,7 +3,7 @@
 
 namespace Expr {
 
-ExpressionNodeAssign::ExpressionNodeAssign(ParserTree *tree, const ExpressionNodeAssign *src) 
+ExpressionNodeAssign::ExpressionNodeAssign(ParserTree *tree, const ExpressionNodeAssign *src)
 : ExpressionNodeTree(tree, src)
 {
 }

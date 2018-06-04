@@ -1,7 +1,5 @@
 #include "pch.h"
 #include <Math/Expression/ParserTree.h>
-#include <Math/Expression/SumElement.h>
-#include <Math/Expression/ExpressionFactor.h>
 #include <Math/Expression/SNodeReduceDbgStack.h>
 
 namespace Expr {
@@ -34,7 +32,7 @@ SNode SNode::multiplyParentheses() const {
 SNode SNode::multiplyTreeNode() const {
   ENTERMETHOD();
   const SNodeArray &a = getChildArray();
-  SNodeArray        newChildArray(a.size());
+  SNodeArray        newChildArray(a.getTree(), a.size());
   for(size_t i = 0; i < a.size(); i++) {
     newChildArray.add(a[i].multiplyParentheses());
   }
@@ -45,7 +43,7 @@ SNode SNode::multiplyTreeNode() const {
 SNode SNode::multiplyBoolExpr() const {
   ENTERMETHOD();
   const SNodeArray &a = getChildArray();
-  SNodeArray        newChildArray(a.size());
+  SNodeArray        newChildArray(a.getTree(),a.size());
   for(size_t i = 0; i < a.size(); i++) {
     newChildArray.add(a[i].multiplyParentheses());
   }
@@ -58,7 +56,7 @@ SNode SNode::multiplyParenthesesInPoly() const {
   const SNodeArray &coefArray = getCoefArray();
   SNode             newArg    = getArgument().multiplyParentheses();
 
-  SNodeArray newCoefArray(coefArray.size());
+  SNodeArray newCoefArray(coefArray.getTree(),coefArray.size());
   for(size_t i = 0; i < coefArray.size(); i++) {
     newCoefArray.add(coefArray[i].multiplyParentheses());
   }
@@ -76,7 +74,7 @@ SNode SNode::multiplyAssignStmt() const {
 SNode SNode::multiplyStmtList() const {
   ENTERMETHOD();
   const SNodeArray &a = getChildArray();
-  SNodeArray        newChildArray(a.size());
+  SNodeArray        newChildArray(a.getTree(),a.size());
   for(size_t i = 0; i < a.size(); i++) {
     newChildArray.add(a[i].multiplyParentheses());
   }
@@ -86,13 +84,13 @@ SNode SNode::multiplyStmtList() const {
 
 SNode SNode::multiplyParenthesesInSum() const {
   ENTERMETHOD();
-  const AddentArray &a = getAddentArray();
-  AddentArray        newAddentArray(a.size());
+  const SNodeArray &a = getChildArray();
+  SNodeArray        newAddentArray(a.getTree(), a.size());
   for(size_t i = 0; i < a.size(); i++) {
-    SumElement *e = a[i];
-    newAddentArray.add(N(e->getNode()).multiplyParentheses(), e->isPositive());
+    const SNode &e = a[i];
+    newAddentArray.add(addentExp(e.left().multiplyParentheses(), e.isPositive()));
   }
-  SNode result = NV(newAddentArray);
+  SNode result = sumExp(newAddentArray);
   RETURNNODE( result );
 }
 
@@ -101,7 +99,7 @@ SNode SNode::multiplyParenthesesInProduct() const {
 
   const FactorArray &a = getFactorArray();
   const size_t       n = a.size();
-  FactorArray        newFactorArray(n);
+  FactorArray        newFactorArray(a.getTree(), n);
   for(size_t i = 0; i < n; i++) {
     ExpressionFactor *f = a[i];
     newFactorArray.add(f->base().multiplyParentheses(), f->exponent().multiplyParentheses());
@@ -153,13 +151,13 @@ SNode SNode::multiplyFactorSum(SNode factor, SNode sum) const {
   if((factor.base().getSymbol() == SUM) && factor.exponent().isOne()) {
     RETURNNODE(multiplySumSum(factor.base(),sum));
   } else {
-    const AddentArray &sa = sum.getAddentArray();
-    AddentArray        tmp(sa.size());
+    const SNodeArray &sa = sum.getChildArray();
+    SNodeArray        tmp(sa.getTree(),sa.size());
     for(size_t i = 0; i < sa.size(); i++) {
-      SumElement *e = sa[i];
-      tmp.add(factor * N(e->getNode()),e->isPositive());
+      const SNode &e = sa[i];
+      tmp.add(addentExp(factor * e.left(),e.isPositive()));
     }
-    RETURNNODE( factorExp(NV(tmp),_1()) );
+    RETURNNODE( factorExp(sumExp(tmp),_1()) );
   }
 }
 

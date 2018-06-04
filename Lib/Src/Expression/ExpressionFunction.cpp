@@ -7,7 +7,7 @@ ExpressionFunction::ExpressionFunction(const String &expr, const String &name, T
   compile(expr, name, mode, machineCode);
 }
 
-ExpressionFunction::ExpressionFunction(ExpressionFunction &src) 
+ExpressionFunction::ExpressionFunction(ExpressionFunction &src)
 : m_expr(   src.m_expr      )
 , m_varName(src.getVarName())
 {

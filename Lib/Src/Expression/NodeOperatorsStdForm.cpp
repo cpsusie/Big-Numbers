@@ -1,7 +1,5 @@
 #include "pch.h"
 #include <Math/Expression/ParserTree.h>
-#include <Math/Expression/ExpressionFactor.h>
-#include <Math/Expression/SumElement.h>
 
 namespace Expr {
 
@@ -52,7 +50,7 @@ ExpressionNode *NodeOperatorsStdForm::minus(ExpressionNode *n) const {
     } else if(n->isMinusOne()) {
       return getOne(n);
     } else {
-      return numberExpression(n,-n->getNumber());
+      return numberExpr(n,-n->getNumber());
     }
   case MINUS:
     if(n->isUnaryMinus()) {
@@ -70,7 +68,7 @@ ExpressionNode *NodeOperatorsStdForm::reciprocal(ExpressionNode *n) const {
   case NUMBER:
     { const Number &v = n->getNumber();
       if(v.isRational()) {
-        return numberExpression(n,::reciprocal(v.getRationalValue()));
+        return numberExpr(n,::reciprocal(v.getRationalValue()));
       }
     }
     break;
@@ -91,7 +89,7 @@ ExpressionNode *NodeOperatorsStdForm::reciprocal(ExpressionNode *n) const {
 
 ExpressionNode *NodeOperatorsStdForm::sum(ExpressionNode *n1, ExpressionNode *n2) const {
   if(n1->isRational() && n2->isRational()) {
-    return numberExpression(n1, n1->getRational() + n2->getRational());
+    return numberExpr(n1, n1->getRational() + n2->getRational());
   }
   if(n1->isZero()) {
     return n2;
@@ -108,7 +106,7 @@ ExpressionNode *NodeOperatorsStdForm::sum(ExpressionNode *n1, ExpressionNode *n2
 
 ExpressionNode *NodeOperatorsStdForm::diff(ExpressionNode *n1, ExpressionNode *n2) const {
   if(n1->isRational() && n2->isRational()) {
-    return numberExpression(n1, n1->getRational() - n2->getRational());
+    return numberExpr(n1, n1->getRational() - n2->getRational());
   }
   if(n2->isZero()) {
     return n1;
@@ -123,7 +121,7 @@ ExpressionNode *NodeOperatorsStdForm::diff(ExpressionNode *n1, ExpressionNode *n
 
 ExpressionNode *NodeOperatorsStdForm::prod(ExpressionNode *n1, ExpressionNode *n2) const {
   if(n1->isRational() && n2->isRational()) {
-    return numberExpression(n1, n1->getRational() * n2->getRational());
+    return numberExpr(n1, n1->getRational() * n2->getRational());
   }
   if(n1->isZero() || n2->isZero()) {
     return getZero(n1);
@@ -142,7 +140,7 @@ ExpressionNode *NodeOperatorsStdForm::prod(ExpressionNode *n1, ExpressionNode *n
 
 ExpressionNode *NodeOperatorsStdForm::quot(ExpressionNode *n1, ExpressionNode *n2) const {
   if(n1->isRational() && n2->isRational()) {
-    return numberExpression(n1, n1->getRational() / n2->getRational());
+    return numberExpr(n1, n1->getRational() / n2->getRational());
   }
   if(n2->isOne()) {
     return n1;
@@ -156,7 +154,7 @@ ExpressionNode *NodeOperatorsStdForm::quot(ExpressionNode *n1, ExpressionNode *n
 }
 
 ExpressionNode *NodeOperatorsStdForm::quot(ParserTree *tree, INT64 num, INT64 den) const {
-  ExpressionNode *q = binaryExpr(QUOT, tree->numberExpression(num), tree->numberExpression(den));
+  ExpressionNode *q = binaryExpr(QUOT, tree->numberExpr(num), tree->numberExpr(den));
   q->setReduced();
   return q;
 }
@@ -175,7 +173,7 @@ ExpressionNode *NodeOperatorsStdForm::sqrt(ExpressionNode *n) const {
 
 ExpressionNode *NodeOperatorsStdForm::power(ExpressionNode *n1, ExpressionNode *n2) const {
   if(n1->isRational() && n2->isInteger()) {
-    return numberExpression(n1, pow(n1->getRational(), n2->getNumber().getIntValue()));
+    return numberExpr(n1, pow(n1->getRational(), n2->getNumber().getIntValue()));
   }
   if(n1->isEulersConstant()) {
     if(n2->isZero()) {
@@ -199,9 +197,9 @@ ExpressionNode *NodeOperatorsStdForm::power(ExpressionNode *n1, ExpressionNode *
       } else if(eR == -1) {
         return reciprocal(n1);
       } else if(eR.getNumerator() == 1) {
-        return root(n1, numberExpression(n1,eR.getDenominator()));
+        return root(n1, numberExpr(n1,eR.getDenominator()));
       } else if(eR.getNumerator() == -1) {
-        return reciprocal(root(n1, numberExpression(n1,eR.getDenominator())));
+        return reciprocal(root(n1, numberExpr(n1,eR.getDenominator())));
       }
     }
   }
@@ -274,7 +272,7 @@ public:
   }
 };
 
-// Eliminate all Product- and Sum nodes
+// Eliminate all product-,addent- and Sum nodes
 StdNode StdNode::toSForm() const {
   switch(getNodeType()) {
   case NT_NUMBER     :
@@ -298,7 +296,7 @@ StdNode StdNode::toSForm() const {
 
 StdNode StdNode::toSFormTreeNode() const {
   const SNodeArray &a = getChildArray();
-  SNodeArray        newChildArray(a.size());
+  SNodeArray        newChildArray(a.getTree(),a.size());
   for(size_t i = 0; i < a.size(); i++) {
     newChildArray.add(N(a[i]).toSForm());
   }
@@ -307,7 +305,7 @@ StdNode StdNode::toSFormTreeNode() const {
 
 StdNode StdNode::toSFormBoolExpr() const {
   const SNodeArray &a = getChildArray();
-  SNodeArray        newChildArray(a.size());
+  SNodeArray        newChildArray(a.getTree(),a.size());
   for(size_t i = 0; i < a.size(); i++) {
     newChildArray.add(N(a[i]).toSForm());
   }
@@ -318,7 +316,7 @@ StdNode StdNode::toSFormPoly() const {
   const SNodeArray &coefArray = getCoefArray();
   StdNode           arg       = getArgument();
 
-  SNodeArray newCoefArray(coefArray.size());
+  SNodeArray newCoefArray(coefArray.getTree(),coefArray.size());
   for(size_t i = 0; i < coefArray.size(); i++) {
     newCoefArray.add(N(coefArray[i]).toSForm());
   }
@@ -331,7 +329,7 @@ StdNode StdNode::toSFormAssign() const {
 
 StdNode StdNode::toSFormStmtList() const {
   const SNodeArray &a = getChildArray();
-  SNodeArray newChildArray(a.size());
+  SNodeArray newChildArray(a.getTree(),a.size());
   for(size_t i = 0; i < a.size(); i++) {
     newChildArray.add(N(a[i]).toSForm());
   }
@@ -339,17 +337,17 @@ StdNode StdNode::toSFormStmtList() const {
 }
 
 StdNode StdNode::toSFormSum() const {
-  AddentArray a = getAddentArray();
+  SNodeArray a = getChildArray();
   if(a.size() == 0) {
     return _0();
   } else {
-    a.sortStdForm();
-    StdNode result = N(a[0]->getNode()).toSForm(); // not createExpressionNode here. We'll get infinite recursion
-    if(!a[0]->isPositive()) result = -result;
+    ExpressionNodeSum::sortStdForm(a);
+    StdNode result = N(a[0].left()).toSForm(); // not createExpressionNode here. We'll get infinite recursion
+    if(!a[0].isPositive()) result = -result;
     for(size_t i = 1; i < a.size(); i++) {
-      SumElement *e = a[i];
-      SNode ne = N(e->getNode()).toSForm();
-      if(e->isPositive()) result += ne; else result -= ne;
+      SNode &e = a[i];
+      SNode ne = N(e.left()).toSForm();
+      if(e.isPositive()) result += ne; else result -= ne;
     }
     return result;
   }
@@ -359,7 +357,7 @@ StdNode StdNode::toSFormProduct() const {
   Rational constant = 1;
 
   const FactorArray &a = getFactorArray();
-  FactorArray newArray;
+  FactorArray newArray(a.getTree());
   for(size_t i = 0; i < a.size(); i++) {
     ExpressionFactor *f = a[i];
     Rational r;
@@ -369,7 +367,7 @@ StdNode StdNode::toSFormProduct() const {
       newArray.add(f);
     }
   }
-  FactorArray p,q;
+  FactorArray p(getTree()),q(getTree());
   if(constant.getNumerator() != 1) {
     p.add(NV(constant.getNumerator()));
   }
@@ -385,7 +383,7 @@ StdNode StdNode::toSFormProduct() const {
 }
 
 StdNode StdNode::toSFormFactorArray(FactorArray &a, bool changeExponentSign) const {
-  SNodeArray a1;
+  SNodeArray a1(a.getTree());
   for(size_t i = 0; i < a.size(); i++) {
     ExpressionFactor *f = a[i];
     if(changeExponentSign) {
@@ -483,7 +481,7 @@ public:
 
 bool StandardFormChecker::handleNode(ExpressionNode *n, int level) {
   static const ExpressionSymbolSet illegalSymbolSet(
-    PRODUCT, SUM, EOI
+    PRODUCT, SUM, ADDENT, EOI
   );
   if(illegalSymbolSet.contains(n->getSymbol())) {
     m_error = format(_T("Illegal symbol in standard form:<%s>. node=<%s>")

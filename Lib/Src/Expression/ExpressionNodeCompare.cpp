@@ -1,6 +1,5 @@
 #include "pch.h"
-#include <Math/Expression/SumElement.h>
-#include <Math/Expression/ExpressionFactor.h>
+#include <Math/Expression/ExpressionNode.h>
 
 namespace Expr {
 
@@ -20,21 +19,23 @@ bool equal(const ExpressionNode *n1, const ExpressionNode *n2) {
     return n1->getBool()   == n2->getBool();
   case NAME    :
     return n1->getName()   == n2->getName();
-  case SUM:
-    return n1->getAddentArray().equal(n2->getAddentArray());
   case MINUS :
     assert(n1->isUnaryMinus());
     assert(n2->isUnaryMinus());
     return equal(n1->left(), n2->left());
 
+  case ADDENT   :
+    return (equal(     n1->left(),n2->left()) && (n1->isPositive() == n2->isPositive()))
+        || (equalMinus(n1->left(),n2->left()) && (n1->isPositive() != n2->isPositive()));
+
   case PRODUCT  :
     return n1->getFactorArray().equal(n2->getFactorArray());
 
-  case MOD   :
+  case MOD      :
     if(!equal(n1->left(), n2->left())) return false;
     return equal(n1->right(), n2->right()) || equalMinus(n1->right(), n2->right());
 
-  case POLY  :
+  case POLY     :
     return ((ExpressionNodePoly*)n1)->equal(n2);
 
   case PLUS  :
@@ -76,8 +77,24 @@ bool equalMinus(const ExpressionNode *n1, const ExpressionNode *n2) {
     return n1->getNumber() == -n2->getNumber();
   case NAME  :
     return false;
-  case SUM:
-    return n1->getAddentArray().equalMinus(n2->getAddentArray());
+  case ADDENT:
+    return (equal(     n1->left(),n2->left()) && (n1->isPositive() != n2->isPositive()))
+        || (equalMinus(n1->left(),n2->left()) && (n1->isPositive() == n2->isPositive()));
+
+  case SUM   :
+    { const SNodeArray &a1 = n1->getChildArray();
+      const SNodeArray &a2 = n2->getChildArray();
+      const size_t      sz1 = a1.size();
+      if(sz1 != a2.size()) {
+        return false;
+      }
+      for(size_t i = 0; i < sz1; i++) {
+        if(!equalMinus(a1[i].node(), a2[i].node())) {
+          return false;
+        }
+      }
+    }
+    return true;
   case MINUS :
     assert(n1->isUnaryMinus());
     assert(n2->isUnaryMinus());
@@ -99,8 +116,8 @@ bool equalMinus(const ExpressionNode *n1, const ExpressionNode *n2) {
       const ExpressionNode *e2 = n2->right();
       Rational er1, er2;
       if(!e1->reducesToRationalConstant(&er1) || !e2->reducesToRationalConstant(&er2)) return false;
-      return (er1 == er2) 
-          && isOdd(er1.getNumerator()) 
+      return (er1 == er2)
+          && isOdd(er1.getNumerator())
           && isOdd(er1.getDenominator())
           && equalMinus(b1, b2);
     }

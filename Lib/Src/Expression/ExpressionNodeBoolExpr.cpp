@@ -3,6 +3,11 @@
 
 namespace Expr {
 
+ExpressionNode *ExpressionNodeBoolExpr::clone(ParserTree *tree) const {
+  ExpressionNode *n = new ExpressionNodeBoolExpr(tree, this); TRACE_NEW(n);
+  return n;
+}
+
 bool ExpressionNodeBoolExpr::isConstant() const {
   switch(getSymbol()) {
   case NOT     :

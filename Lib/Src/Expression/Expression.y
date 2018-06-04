@@ -38,7 +38,7 @@ $POPNAMESPACE$
 %left AND
 %term NOT
 %term EQ GE GT LE LT NE
-%left SUM PLUS MINUS             /*  + - (lowest precedence)      */
+%left SUM ADDENT PLUS MINUS      /*  + - (lowest precedence)      */
 %left PRODUCT PROD QUOT MOD      /*  * / %                        */
 %left POW                        /*  ^                            */
 %term ACOS ACOSH ACOT ACSC ASEC ASIN ASINH ATAN ATAN2 ATANH COS COSH COT CSC SEC SIN SINH TAN TANH

@@ -1,39 +1,34 @@
 #include "pch.h"
 #include <Math/Expression/ParserTree.h>
-#include <Math/Expression/ExpressionFactor.h>
 
 namespace Expr {
 
 SNode::SNode(ParserTree &tree, int v) {
-  m_node = tree.numberExpression(v);
+  m_node = tree.numberExpr(v);
 }
 
 SNode::SNode(ParserTree &tree, INT64 v) {
-  m_node = tree.numberExpression(v);
+  m_node = tree.numberExpr(v);
 }
 
 SNode::SNode(ParserTree &tree, const Rational &v) {
-  m_node = tree.numberExpression(v);
+  m_node = tree.numberExpr(v);
 }
 
 SNode::SNode(ParserTree &tree, const Real &v) {
-  m_node = tree.numberExpression(v);
+  m_node = tree.numberExpr(v);
 }
 
 SNode::SNode(ParserTree &tree, const Number &v) {
-  m_node = tree.numberExpression(v);
+  m_node = tree.numberExpr(v);
 }
 
 SNode::SNode(ParserTree &tree, bool v) {
   m_node = v ? tree.getTrue() : tree.getFalse();
 }
 
-SNode::SNode(ParserTree &tree, AddentArray &a) {
-  m_node = tree.getSum(a);
-}
-
 SNode::SNode(ParserTree &tree, FactorArray &a) {
-  m_node = tree.getProduct(a);
+  m_node = tree.productExpr(a);
 }
 
 SNode SNode::_0()     const { return getTree().getZero();     }
@@ -54,11 +49,15 @@ ParserTree &SNode::getTree() const {
 }
 
 String SNode::getSymbolName() const {
-  return getSymbolName(getSymbol());
+  return m_node->getSymbolName();
 }
 
 String SNode::getSymbolName(ExpressionInputSymbol symbol) { // static
   return ExpressionNode::getSymbolName(symbol);
+}
+
+String SNode::getNodeTypeName() const {
+  return m_node->getNodeTypeName();
 }
 
 void SNode::mark() {
@@ -103,14 +102,6 @@ const FactorArray &SNode::getFactorArray() const {
 
 FactorArray &SNode::getFactorArray() {
   return m_node->getFactorArray();
-}
-
-const AddentArray &SNode::getAddentArray() const {
-  return m_node->getAddentArray();
-}
-
-AddentArray &SNode::getAddentArray() {
-  return m_node->getAddentArray();
 }
 
 const SNodeArray &SNode::getCoefArray() const {
@@ -249,12 +240,12 @@ bool SNode::isMinusTwo() const {
   return m_node->isMinusTwo();
 }
 
-bool SNode::isNegative() const {
-  return m_node->isNegative();
+bool SNode::isNegativeNumber() const {
+  return m_node->isNegativeNumber();
 }
 
-bool SNode::isPositive() const {
-  return m_node->isPositive();
+bool SNode::isPositiveNumber() const {
+  return m_node->isPositiveNumber();
 }
 
 bool SNode::isTrue() const {
@@ -271,6 +262,10 @@ ExpressionInputSymbol SNode::getInverseFunction() const {
 
 bool SNode::isCoefArrayConstant() const {
   return m_node->isCoefArrayConstant();
+}
+
+bool SNode::isPositive() const {
+  return m_node->isPositive();
 }
 
 bool SNode::dependsOn(const String &name) const {
@@ -508,7 +503,7 @@ SNode gauss(const SNode &x) {
 
 // -------------------------- SNodeArray -----------------------
 
-SNodeArray::SNodeArray(int n, ...) {
+SNodeArray::SNodeArray(ParserTree &tree, int n, ...) : m_tree(tree) {
   va_list argptr;
   va_start(argptr,n);
   setCapacity(n);
@@ -516,6 +511,38 @@ SNodeArray::SNodeArray(int n, ...) {
     add(va_arg(argptr,SNode));
   }
   va_end(argptr);
+  SETDEBUGSTRING();
+}
+
+static SNodeArray &getListFromTree(ExpressionNode *n, ExpressionInputSymbol delimiterSymbol, SNodeArray &list) {
+  if(n->getSymbol() == delimiterSymbol) {
+    getListFromTree(n->left(), delimiterSymbol,list);
+    list.add(n->right());
+  } else {
+    list.add(n);
+  }
+  return list;
+}
+
+void SNodeArray::convertFromParserTree(ExpressionNode *n, ExpressionInputSymbol delimiterSymbol) {
+  DISABLEDEBUGSTRING(*this);
+  getListFromTree(n,delimiterSymbol, *this);
+  ENABLEDEBUGSTRING(*this);
+}
+
+void SNodeArray::add(SNode n) {
+  __super::add(n);
+  SETDEBUGSTRING();
+}
+
+void SNodeArray::remove(size_t i) {
+  __super::remove(i);
+  SETDEBUGSTRING();
+}
+
+void SNodeArray::addAll(const SNodeArray &a) {
+  __super::addAll(a);
+  SETDEBUGSTRING();
 }
 
 bool SNodeArray::isConstant() const {
@@ -566,17 +593,21 @@ bool SNodeArray::equalMinus(const SNodeArray &a) const { // recursive compare al
 }
 
 SNodeArray &SNodeArray::cloneNodes(SNodeArray &dst, ParserTree *tree) const {
+  DISABLEDEBUGSTRING(dst);
   dst.clear(-1);
   dst.setCapacity(size());
+
   for(size_t i = 0; i < size(); i++) {
     dst.add((*this)[i].node()->clone(tree));
   }
+  ENABLEDEBUGSTRING(dst);
   return dst;
 }
 
 // -------------------------------SStmtList -------------------
 
 SNodeArray &SStmtList::removeUnusedAssignments() {
+  DISABLEDEBUGSTRING(*this);
   for(int i = (int)size()-1; i--;) { // Remove unused assignments
     const SNode  &stmt = (*this)[i];
     const String &varName = stmt.left().getName();
@@ -591,6 +622,7 @@ SNodeArray &SStmtList::removeUnusedAssignments() {
       remove(i);
     }
   }
+  ENABLEDEBUGSTRING(*this);
   return *this;
 }
 
@@ -605,20 +637,15 @@ SNode binExp(ExpressionInputSymbol symbol, SNode n1, SNode n2) {
 }
 
 SNode treeExp(ExpressionInputSymbol symbol, SNodeArray &a) {
-  switch (symbol) {
-  case STMTLIST: return stmtList(a);
-  case ASSIGN  : return assignStmt(a);
-  case AND     :
-  case OR      :
-  case NOT     :
-  case EQ      :
-  case NE      :
-  case LT      :
-  case LE      :
-  case GT      :
-  case GE      : return boolExp(symbol, a);
-  default      : return a.getTree().treeExpr(symbol, a);
-  }
+  return a.getTree().treeExpr(symbol, a);
+}
+
+SNode sumExp(SNodeArray &a) {
+  return a.getTree().sumExpr(a);
+}
+
+SNode productExp(FactorArray &a) {
+  return a.getTree().productExpr(a);
 }
 
 SNode condExp(SNode condition, SNode nTrue, SNode nFalse) {
@@ -634,11 +661,11 @@ SNode boolExp(ExpressionInputSymbol symbol, SNode child) {
 }
 
 SNode boolExp(ExpressionInputSymbol symbol, SNodeArray &a) {
-  return a[0].getTree().getBoolExpr(symbol, a);
+  return a.getTree().boolExpr(symbol, a);
 }
 
 SNode polyExp(SNodeArray &coefArray, SNode arg) {
-  return arg.getTree().getPoly(coefArray, arg.node());
+  return arg.getTree().polyExpr(coefArray, arg.node());
 }
 
 SNode assignStmt(SNode leftSide, SNode expr) {
@@ -647,11 +674,11 @@ SNode assignStmt(SNode leftSide, SNode expr) {
 
 SNode assignStmt(SNodeArray &list) {
   assert(list.size() == 2);
-  return assignStmt(list[0],list[1]);
+  return list.getTree().assignStmt(list);
 }
 
 SNode stmtList(SNodeArray &list) {
-  return list.getTree().getStmtList(list);
+  return list.getTree().stmtList(list);
 }
 
 SNode indexSum(SNode assignStmt, SNode endExpr, SNode expr) {
@@ -662,8 +689,12 @@ SNode indexProd(SNode assignStmt, SNode endExpr, SNode expr) {
   return assignStmt.getTree().indexedProduct(assignStmt.node(), endExpr.node(), expr.node());
 }
 
+SNode addentExp(SNode child, bool positive) {
+  return child.getTree().addentExpr(child, positive);
+}
+
 SNode factorExp(SNode base, SNode expo) {
-  return base.getTree().factorExpr(base.node(),expo.node());
+  return base.getTree().factorExpr(base,expo);
 }
 
 }; // namespace Expr

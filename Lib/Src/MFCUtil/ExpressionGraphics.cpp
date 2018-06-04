@@ -1,8 +1,6 @@
 #include "pch.h"
 #include <CompactHashMap.h>
 #include <MFCUtil/ExpressionGraphics.h>
-#include <Math/Expression/SumElement.h>
-#include <Math/Expression/ExpressionFactor.h>
 
 //#define SHOW_LINES
 
@@ -313,7 +311,7 @@ private:
   AlignedImage *getImage(             SNode n, int fontSize, ExpressionRectangle &rect);
   AlignedImage *getImage1(            SNode n, int fontSize, ExpressionRectangle &rect);
   AlignedImage *getSumImage(          SNode n, int fontSize, ExpressionRectangle &rect);
-  AlignedImage *getSumElementImage(   SumElement *e, int fontSize, ExpressionRectangle &rect);
+  AlignedImage *getSumElementImage(   SNode e, int fontSize, ExpressionRectangle &rect);
   AlignedImage *getProductImage(      SNode n, int fontSize, ExpressionRectangle &rect);
   AlignedImage *getFactorImage(       SNode factor , int fontSize, ExpressionRectangle &rect);
   AlignedImage *getQuotImage(         SNode n, int fontSize, ExpressionRectangle &rect);
@@ -584,9 +582,9 @@ AlignedImage *ExpressionPainter::getSumImage(SNode n, int fontSize, ExpressionRe
   rect.addChild(sumRect).addChild(lpRect);
 
   AlignedImage *commaImage = NULL;
-  AddentArray &addentArray = n.getAddentArray();
+  const SNodeArray &addentArray = n.getChildArray();
   for(size_t i = 0; i < addentArray.size(); i++) {
-    SumElement *e = addentArray[i];
+    const SNode &e = addentArray[i];
     if(commaImage == NULL) {
       commaImage = getOpImage(COMMA, fontSize, commaRect);
     } else {
@@ -602,17 +600,17 @@ AlignedImage *ExpressionPainter::getSumImage(SNode n, int fontSize, ExpressionRe
   return concatImages(result, rect);
 }
 
-AlignedImage *ExpressionPainter::getSumElementImage(SumElement *e, int fontSize, ExpressionRectangle &rect) {
-  if(e->isPositive()) {
-    return getImage(e->getNode(), fontSize, rect);
+AlignedImage *ExpressionPainter::getSumElementImage(SNode e, int fontSize, ExpressionRectangle &rect) {
+  if(e.isPositive()) {
+    return getImage(e.left(), fontSize, rect);
   } else {
     ExpressionRectangle minusRect, lpRect, rpRect, childRect;
     ImageArray result;
     AlignedImage *minusImage = getOpImage(MINUS, fontSize, minusRect);
     result.add(minusImage);
-    result.add(getOpImage(LPAR, fontSize, lpRect));
-    result.add(getImage(e->getNode(), fontSize, childRect));
-    result.add(getOpImage(RPAR, fontSize, rpRect));
+    result.add(getOpImage(LPAR  , fontSize, lpRect   ));
+    result.add(getImage(e.left(), fontSize, childRect));
+    result.add(getOpImage(RPAR  , fontSize, rpRect   ));
     rect.addChild(minusRect).addChild(lpRect).addChild(childRect).addChild(rpRect);
     return concatImages(result, rect);
   }
@@ -1169,10 +1167,10 @@ AlignedImage *ExpressionPainter::getNumberImage(SNode n, int fontSize, Expressio
     }
 
     ExpressionNode *en = m_expression.fetchTreeNode(PROD
-                                                   ,m_expression.numberExpression(significand)
+                                                   ,m_expression.numberExpr(significand)
                                                    ,m_expression.fetchTreeNode(POW
-                                                                              ,m_expression.numberExpression(10)
-                                                                              ,m_expression.numberExpression(exponent)
+                                                                              ,m_expression.getTen()
+                                                                              ,m_expression.numberExpr(exponent)
                                                                               ,NULL
                                                                               )
                                                     ,NULL

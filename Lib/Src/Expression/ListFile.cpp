@@ -6,7 +6,7 @@ namespace Expr {
 
 // --------------------------------- ListFile functions ----------------------------
 
-ListFile::ListFile(FILE *f, const ValueAddressCalculation &addressTable, const StringArray &commentArray, const IndexRegister &tableRefRegister) 
+ListFile::ListFile(FILE *f, const ValueAddressCalculation &addressTable, const StringArray &commentArray, const IndexRegister &tableRefRegister)
   : m_f(f)
   , m_addressTable(addressTable)
   , m_nameCommentArray(commentArray)

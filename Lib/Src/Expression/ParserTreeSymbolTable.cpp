@@ -1,7 +1,5 @@
 #include "pch.h"
 #include <Math/Expression/ParserTree.h>
-#include <Math/Expression/ExpressionFactor.h>
-#include <Math/Expression/SumElement.h>
 
 namespace Expr {
 
@@ -99,11 +97,6 @@ void ParserTreeSymbolTable::buildTable(ExpressionNode *n) {
 //    allocateNumber(n);
     break;
 
-  case SUM    :
-    { const AddentArray &a = n->getAddentArray();
-      for(size_t i = 0; i < a.size(); i++) buildTable(a[i]->getNode());
-    }
-    break;
   case PRODUCT:
     { const FactorArray &a = n->getFactorArray();
       for(size_t i = 0; i < a.size(); i++) buildTable(a[i]);

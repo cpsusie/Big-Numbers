@@ -90,7 +90,7 @@ AND        ==   !=   <    <=   >    >=
   >=       r    >    F    ==   r    l
 */
 const ReduceCompareMatrix CompareOpPairAndMap::s_m = {
-//         ==   !=   <    <=   >    >=   
+//         ==   !=   <    <=   >    >=
 /*==*/   { _L  ,_F  ,_F  ,_L  ,_F  ,_L  }
 /*!=*/  ,{ _F  ,_L  ,_R  ,_LT ,_R  ,_GT }
 /*< */  ,{ _F  ,_L  ,_L  ,_L  ,_F  ,_F  }
@@ -103,7 +103,7 @@ const ReduceCompareMatrix CompareOpPairAndMap::s_m = {
 36 combinations of left and right oprand
 OR         ==   !=   <    <=   >    >=
 
-  ==       l    T    <=   r    >=   r 
+  ==       l    T    <=   r    >=   r
   !=       T    l    l    T    l    T
   <        <=   r    l    r    !=   T
   <=       l    T    l    l    T    T
@@ -111,7 +111,7 @@ OR         ==   !=   <    <=   >    >=
   >=       l    T    T    T    l    l
 */
 const ReduceCompareMatrix CompareOpPairOrMap::s_m = {
-//         ==   !=   <    <=   >    >=   
+//         ==   !=   <    <=   >    >=
 /*==*/   { _L  ,_T  ,_LE ,_R  ,_GE ,_R  }
 /*!=*/  ,{ _T  ,_L  ,_L  ,_T  ,_L  ,_T  }
 /*< */  ,{ _LE ,_R  ,_L  ,_R  ,_NE ,_T  }

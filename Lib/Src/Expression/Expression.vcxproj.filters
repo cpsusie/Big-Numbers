@@ -63,9 +63,6 @@
     <ClInclude Include="..\..\Include\Math\Expression\SNode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\Math\Expression\SumElement.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="pch.h">
       <Filter>Source Files</Filter>
     </ClInclude>
@@ -93,9 +90,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="AddentArray.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Expression.cpp">
@@ -188,9 +182,6 @@
     <ClCompile Include="SNodeReduceDbgStack.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SumElement.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="NodeOperatorsNumericForm.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -244,6 +235,9 @@
     </ClCompile>
     <ClCompile Include="MachineCode.cpp">
       <Filter>Source Files\MachineCode</Filter>
+    </ClCompile>
+    <ClCompile Include="ExpressionAddent.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
