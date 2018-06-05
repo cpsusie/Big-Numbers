@@ -239,6 +239,12 @@
     <ClCompile Include="ExpressionAddent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SNodeArray.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StmtList.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Expression.txt">

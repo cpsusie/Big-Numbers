@@ -302,11 +302,11 @@ public:
   SNodeArray &cloneNodes(SNodeArray &dst, ParserTree *tree) const;
 };
 
-class SStmtList : public SNodeArray {
+class StmtList : public SNodeArray {
 public:
-  SStmtList(ParserTree &tree) : SNodeArray(tree) {
+  StmtList(ParserTree &tree) : SNodeArray(tree) {
   }
-  SStmtList(const SNodeArray &a) : SNodeArray(a) {
+  StmtList(const SNodeArray &a) : SNodeArray(a) {
   }
   SNodeArray &removeUnusedAssignments();
 };

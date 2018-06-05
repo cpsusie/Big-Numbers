@@ -21,7 +21,7 @@ SNode SNode::reduce() {
   ENTERMETHOD();
   const SNodeArray &childArray = getChildArray();
   const int        childCount = (int)childArray.size() - 1;
-  SStmtList        newStmtList(getTree());
+  StmtList         newStmtList(getTree());
 
   for(int i = 0; i < childCount; i++) {
     const SNode &stmt = childArray[i];

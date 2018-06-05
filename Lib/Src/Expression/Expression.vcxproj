@@ -893,11 +893,13 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='TraceMemLDRelease|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="SNode.cpp" />
+    <ClCompile Include="SNodeArray.cpp" />
     <ClCompile Include="SNodeDerive.cpp" />
     <ClCompile Include="SNodeMultiplyPar.cpp" />
     <ClCompile Include="SNodeReduce.cpp" />
     <ClCompile Include="SNodeReduceAndOrNot.cpp" />
     <ClCompile Include="SNodeReduceDbgStack.cpp" />
+    <ClCompile Include="StmtList.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="Expression.lex">

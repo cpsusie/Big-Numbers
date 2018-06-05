@@ -42,9 +42,9 @@ NNode NNode::toNForm() const {
 }
 
 NNode NNode::toNFormStmtList() const {
-  const SStmtList &childArray = getChildArray();
-  const int        childCount = (int)childArray.size() - 1;
-  SStmtList        newStmtList(getTree());
+  const StmtList &childArray = getChildArray();
+  const int       childCount = (int)childArray.size() - 1;
+  StmtList        newStmtList(getTree());
 
   for(int i = 0; i < childCount; i++) {
     const SNode &stmt = childArray[i];

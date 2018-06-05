@@ -236,7 +236,7 @@ SNode SNode::DPoly(const String &name) const {
 SNode SNode::DStmtList(const String &name) const {
   DEFINEMETHODNAME;
 
-  const SStmtList &alist = getChildArray();
+  const StmtList &alist = getChildArray();
   SNodeArray result(getTree());
   const size_t assignCount = alist.size() - 1;
   for(size_t i = 0; i < assignCount; i++) {
