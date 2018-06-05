@@ -369,10 +369,10 @@ StdNode StdNode::toSFormProduct() const {
   }
   FactorArray p(getTree()),q(getTree());
   if(constant.getNumerator() != 1) {
-    p.add(NV(constant.getNumerator()));
+    p.add(factorExp(NV(constant.getNumerator()),1));
   }
   if(constant.getDenominator() != 1) {
-    q.add(NV(constant.getDenominator()), _m1());
+    q.add(factorExp(NV(constant.getDenominator()), -1));
   }
 
   p.addAll(newArray.selectConstantPositiveExponentFactors());

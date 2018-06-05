@@ -31,14 +31,14 @@ SNode::SNode(ParserTree &tree, FactorArray &a) {
   m_node = tree.productExpr(a);
 }
 
-SNode SNode::_0()     const { return getTree().getZero();     }
-SNode SNode::_1()     const { return getTree().getOne();      }
-SNode SNode::_m1()    const { return getTree().getMinusOne(); }
-SNode SNode::_2()     const { return getTree().getTwo();      }
-SNode SNode::_10()    const { return getTree().getTen();      }
-SNode SNode::_05()    const { return getTree().getHalf();     }
-SNode SNode::_false() const { return getTree().getFalse();    } // false
-SNode SNode::_true()  const { return getTree().getTrue();     } // true
+SNode SNode::_0()     const { return getTree().numberExpr( 0);            }
+SNode SNode::_1()     const { return getTree().numberExpr( 1);            }
+SNode SNode::_m1()    const { return getTree().numberExpr(-1);            }
+SNode SNode::_2()     const { return getTree().numberExpr( 2);            }
+SNode SNode::_10()    const { return getTree().numberExpr(10);            }
+SNode SNode::_05()    const { return getTree().numberExpr(Rational(1,2)); }
+SNode SNode::_false() const { return getTree().getFalse();                } // false
+SNode SNode::_true()  const { return getTree().getTrue();                 } // true
 
 ExpressionInputSymbol SNode::getSymbol() const {
   return m_node->getSymbol();
@@ -567,6 +567,10 @@ SNode addentExp(SNode child, bool positive) {
 }
 
 SNode factorExp(SNode base, SNode expo) {
+  return base.getTree().factorExpr(base,expo);
+}
+
+SNode factorExp(SNode base, const Rational &expo) {
   return base.getTree().factorExpr(base,expo);
 }
 

@@ -22,7 +22,8 @@ bool SetMark::handleNode(ExpressionNode *n, int level) {
 }
 
 void ParserTree::pruneUnusedNodes() {
-  debugLog(_T("Garbage collection. Before.(#Nodes:%6d.\n"), getNodeTableSize());
+  debugLog(_T("Garbage collection. Before.(#Nodes:%6d, rationalMap.size:%4zu).\n")
+          ,getNodeTableSize(),m_rationalConstantMap.size());
   unmarkAll();
 
   traverseTree(SetMark(true));
@@ -30,18 +31,13 @@ void ParserTree::pruneUnusedNodes() {
   markSimpleConstants();
   deleteUnmarked();
   unmarkAll();
-  debugLog(_T(" After:%3d\n"), getNodeTableSize());
+  debugLog(_T(" After:(#Nodes:%6d, rationalMap.size:%4zu).\n")
+          ,getNodeTableSize(),m_rationalConstantMap.size());
 }
 
 #define MARKCONSTANT(n) if(n) n->mark()
 
 void ParserTree::markSimpleConstants() {
-  MARKCONSTANT(m_minusOne);
-  MARKCONSTANT(m_zero    );
-  MARKCONSTANT(m_one     );
-  MARKCONSTANT(m_two     );
-  MARKCONSTANT(m_ten     );
-  MARKCONSTANT(m_half    );
   MARKCONSTANT(m_false   );
   MARKCONSTANT(m_true    );
 }
@@ -52,6 +48,7 @@ void ParserTree::unmarkAll() {
 }
 
 void ParserTree::deleteUnmarked() {
+  m_rationalConstantMap.removeUnmarked();
   CompactArray<ExpressionNode*> tmp = m_nodeTable;
   m_nodeTable.clear();
   for(size_t i = 0; i < tmp.size(); i++) {
@@ -63,6 +60,15 @@ void ParserTree::deleteUnmarked() {
     }
   }
   tmp.clear();
+}
+
+void RationalConstantMap::removeUnmarked() {
+  for(Iterator<Entry<Rational, ExpressionNodeNumber*> > it = getEntryIterator(); it.hasNext();) {
+    Entry<Rational, ExpressionNodeNumber*> &e = it.next();
+    if(!e.getValue()->isMarked()) {
+      it.remove();
+    }
+  }
 }
 
 }; // namespace Expr

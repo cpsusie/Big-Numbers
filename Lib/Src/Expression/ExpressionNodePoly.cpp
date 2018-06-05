@@ -91,7 +91,7 @@ ExpressionNode *ExpressionNodePoly::expand() {
   const SNodeArray  &coefArray = getCoefArray();
   const SNode        arg       = getArgument();
   int                expo      = getDegree();
-  SNode              result    = tree.getZero();
+  SNode              result    = arg._0();
 
   for(size_t i = 0; i < coefArray.size(); i++) {
     SNode coef  = coefArray[i];

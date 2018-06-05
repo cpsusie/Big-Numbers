@@ -42,6 +42,7 @@ SNode SNode::multiplyTreeNode() const {
 
 SNode SNode::multiplyBoolExpr() const {
   ENTERMETHOD();
+  CHECKNODETYPE(*this,NT_BOOLEXPR);
   const SNodeArray &a = getChildArray();
   SNodeArray        newChildArray(a.getTree(),a.size());
   for(size_t i = 0; i < a.size(); i++) {
@@ -53,6 +54,7 @@ SNode SNode::multiplyBoolExpr() const {
 
 SNode SNode::multiplyParenthesesInPoly() const {
   ENTERMETHOD();
+  CHECKNODETYPE(*this,NT_POLY);
   const SNodeArray &coefArray = getCoefArray();
   SNode             newArg    = getArgument().multiplyParentheses();
 
@@ -64,15 +66,16 @@ SNode SNode::multiplyParenthesesInPoly() const {
   RETURNNODE( result );
 }
 
-
 SNode SNode::multiplyAssignStmt() const {
   ENTERMETHOD();
+  CHECKNODETYPE(*this,NT_ASSIGN);
   SNode result = assignStmt(left(), right().multiplyParentheses());
   RETURNNODE( result );
 }
 
 SNode SNode::multiplyStmtList() const {
   ENTERMETHOD();
+  CHECKNODETYPE(*this,NT_STMTLIST);
   const SNodeArray &a = getChildArray();
   SNodeArray        newChildArray(a.getTree(),a.size());
   for(size_t i = 0; i < a.size(); i++) {
@@ -84,6 +87,7 @@ SNode SNode::multiplyStmtList() const {
 
 SNode SNode::multiplyParenthesesInSum() const {
   ENTERMETHOD();
+  CHECKNODETYPE(*this,NT_SUM);
   const SNodeArray &a = getChildArray();
   SNodeArray        newAddentArray(a.getTree(), a.size());
   for(size_t i = 0; i < a.size(); i++) {
@@ -96,13 +100,14 @@ SNode SNode::multiplyParenthesesInSum() const {
 
 SNode SNode::multiplyParenthesesInProduct() const {
   ENTERMETHOD();
+  CHECKNODETYPE(*this,NT_PRODUCT);
 
   const FactorArray &a = getFactorArray();
   const size_t       n = a.size();
   FactorArray        newFactorArray(a.getTree(), n);
   for(size_t i = 0; i < n; i++) {
     ExpressionFactor *f = a[i];
-    newFactorArray.add(f->base().multiplyParentheses(), f->exponent().multiplyParentheses());
+    newFactorArray.add(factorExp(f->base().multiplyParentheses(), f->exponent().multiplyParentheses()));
   }
 
   BitSet done(newFactorArray.size() + 1);
@@ -125,11 +130,11 @@ SNode SNode::multiplyParenthesesInProduct() const {
           continue;
         }
         if(f1->base().getSymbol() == SUM) {
-          newFactorArray.add(multiplyFactorSum(f2, f1->base()));
+          newFactorArray.add(factorExp(multiplyFactorSum(f2, f1->base()),1));
           done.add(i1);
           done.add(i2);
         } else if(f2->base().getSymbol() == SUM) {
-          newFactorArray.add(multiplyFactorSum(f1, f2->base()));
+          newFactorArray.add(factorExp(multiplyFactorSum(f1, f2->base()),1));
           done.add(i1);
           done.add(i2);
         }
@@ -147,6 +152,8 @@ SNode SNode::multiplyParenthesesInProduct() const {
 
 SNode SNode::multiplyFactorSum(SNode factor, SNode sum) const {
   ENTERMETHOD2(factor,sum);
+  CHECKNODETYPE(factor,NT_FACTOR);
+  CHECKNODETYPE(sum   ,NT_SUM   );
 
   if((factor.base().getSymbol() == SUM) && factor.exponent().isOne()) {
     RETURNNODE(multiplySumSum(factor.base(),sum));
@@ -157,7 +164,7 @@ SNode SNode::multiplyFactorSum(SNode factor, SNode sum) const {
       const SNode &e = sa[i];
       tmp.add(addentExp(factor * e.left(),e.isPositive()));
     }
-    RETURNNODE( factorExp(sumExp(tmp),_1()) );
+    RETURNNODE( sumExp(tmp) );
   }
 }
 

@@ -16,4 +16,8 @@
     <DisplayString Condition="m_node == 0">NULL</DisplayString>
     <DisplayString>{*m_node}</DisplayString>
   </Type>
+  <Type Name="Expr::CNode">
+    <DisplayString Condition="m_node == 0">NULL</DisplayString>
+    <DisplayString>{*m_node}</DisplayString>
+  </Type>
 </AutoVisualizer>

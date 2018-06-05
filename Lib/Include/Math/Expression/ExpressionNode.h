@@ -81,16 +81,13 @@ public:
   int findFactorWithChangeableSign() const;
 
   void clear(intptr_t capacity = 0);
-  void add(ExpressionFactor *f);
-  void add(SNode base);
-  void add(SNode base, SNode exponent);
-  void add(SNode base, const Rational &exponent);
+  void add(SNode n);
   void addAll(const FactorArray &src);
   void remove(size_t index);
+  void sort();
   bool isSameNodes(const FactorArray &a) const; // compare if ExpressionNode* equals
   bool equal(      const FactorArray &a) const;
   bool equalMinus( const FactorArray &a) const;
-  FactorArray &sort(); // return *this
 
   String toString() const;
 };
@@ -283,7 +280,7 @@ public:
   UINT    checkIsConsistent()                                             const;
   bool    isConsistentSymbolAndType()                                     const;
 #endif // CHECK_CONSISTENCY
-
+  static void checkNodeType(         const TCHAR *method, const ExpressionNode *n, ExpressionNodeType expectedType);
   void throwInvalidSymbolForTreeMode(const TCHAR *method) const;
   void throwUnknownSymbolException(  const TCHAR *method) const;
   void throwUnknownNodeTypeException(const TCHAR *method) const;
@@ -456,7 +453,7 @@ public:
 class ExpressionNodeTree : public ExpressionNode {
 private:
   SNodeArray m_childArray;
-  void initChildArray(va_list argptr);
+  int initChildArray(va_list argptr); // return number of arguments
 protected:
   // Terminate arguemnt list with NULL. ... is a variable list of ExpressionNode*
   ExpressionNodeTree(ParserTree *tree, ExpressionInputSymbol symbol, ...);
@@ -503,18 +500,22 @@ public:
   inline ExpressionNodeBoolExpr(ParserTree *tree, ExpressionInputSymbol symbol, ExpressionNode *bexpr)
     : ExpressionNodeTree(tree, symbol, bexpr, NULL)
   {
+    SETDEBUGSTRING();
   }
   inline ExpressionNodeBoolExpr(ParserTree *tree, ExpressionInputSymbol symbol, ExpressionNode *left, ExpressionNode *right)
     : ExpressionNodeTree(tree, symbol, left, right, NULL)
   {
+    SETDEBUGSTRING();
   }
   inline ExpressionNodeBoolExpr(ParserTree *tree, const ExpressionNodeBoolExpr *src)
     : ExpressionNodeTree(tree,src)
   {
+    SETDEBUGSTRING();
   }
    inline ExpressionNodeBoolExpr(ParserTree *tree, ExpressionInputSymbol symbol, va_list argptr)
     : ExpressionNodeTree(tree, symbol, argptr)
   {
+    SETDEBUGSTRING();
   }
   ExpressionNode *clone(ParserTree *tree) const;
 
@@ -602,10 +603,12 @@ public:
   ExpressionNodeAssign(ParserTree *tree, va_list argptr)
     : ExpressionNodeTree(tree, ASSIGN, argptr)
   {
+    SETDEBUGSTRING();
   }
   ExpressionNodeAssign(ExpressionNode *leftSide, ExpressionNode *expr)
     : ExpressionNodeTree(&(leftSide->getTree()), ASSIGN, leftSide, expr, NULL)
   {
+    SETDEBUGSTRING();
   }
   ExpressionNodeAssign(ParserTree *tree, const ExpressionNodeAssign *src);
   ExpressionNode *clone(ParserTree *tree) const;
@@ -757,8 +760,6 @@ public:
   ExpressionNodeTreeWithPos(ParserTree *tree, const SourcePosition &pos, ExpressionInputSymbol symbol, va_list argptr)
     : ExpressionNodeTree(tree, symbol, argptr), SourcePositionAttribute(pos)
   {
-    if(getChildCount() > 0)
-      SETDEBUGSTRING();
   }
   const SourcePosition &getPos() const {
     return SourcePositionAttribute::getPos();
@@ -772,7 +773,6 @@ class ExpressionNodeBoolExprWithPos : public ExpressionNodeBoolExpr, private Sou
 public:
   ExpressionNodeBoolExprWithPos(ParserTree *tree, const SourcePosition &pos, ExpressionInputSymbol symbol, va_list argptr)
     : ExpressionNodeBoolExpr(tree, symbol, argptr), SourcePositionAttribute(pos) {
-    SETDEBUGSTRING();
   }
   const SourcePosition &getPos() const {
     return SourcePositionAttribute::getPos();
@@ -787,7 +787,6 @@ public:
   ExpressionNodePolyWithPos(ParserTree *tree, const SourcePosition &pos, const SNodeArray &coefArray, SNode arg)
     : ExpressionNodePoly(tree, coefArray, arg), SourcePositionAttribute(pos)
   {
-    SETDEBUGSTRING();
   }
   const SourcePosition &getPos() const {
     return SourcePositionAttribute::getPos();
@@ -802,7 +801,6 @@ public:
   ExpressionNodeAssignWithPos(ParserTree *tree, const SourcePosition &pos, va_list argptr)
     : ExpressionNodeAssign(tree, argptr), SourcePositionAttribute(pos)
   {
-    SETDEBUGSTRING();
   }
   const SourcePosition &getPos() const {
     return SourcePositionAttribute::getPos();

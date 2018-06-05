@@ -96,6 +96,22 @@ String ParserTree::getTreeFormName(ParserTreeForm treeForm) { // static
   }
 }
 
+String ParserTree::getStateName(ParserTreeState state) { // static
+#define CASESTR(s) case PS_##s: return _T(#s)
+  switch (state) {
+  CASESTR(EMPTY         );
+  CASESTR(COMPILED      );
+  CASESTR(DERIVED       );
+  CASESTR(CANONICALFORM );
+  CASESTR(MAINREDUCTION1);
+  CASESTR(MAINREDUCTION2);
+  CASESTR(STANDARDFORM  );
+  CASESTR(REDUCTIONDONE );
+  default: return format(_T("unknown treestate:%d"), state);
+  }
+#undef CASESTR
+}
+
 void ParserTree::releaseAll() {
   for(size_t i = 0; i < m_nodeTable.size(); i++) {
     SAFEDELETE(m_nodeTable[i]);
@@ -105,7 +121,18 @@ void ParserTree::releaseAll() {
   setOk(false);
   m_errors.clear();
   m_nodeTable.clear();
+  m_rationalConstantMap.clear();
   m_symbolTable.clear(NULL);
+}
+
+ExpressionNodeNumber *ParserTree::getRationalConstant(const Rational &r) {
+  ExpressionNodeNumber **v = m_rationalConstantMap.get(r);
+  if(v) {
+    return *v;
+  }
+  ExpressionNodeNumber *n = new ExpressionNodeNumber(this, r); TRACE_NEW(n);
+  m_rationalConstantMap.put(r,n);
+  return n;
 }
 
 void ParserTree::addError(ExpressionNode *n, _In_z_ _Printf_format_string_ TCHAR const * const format,...) {

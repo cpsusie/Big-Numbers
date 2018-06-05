@@ -32,7 +32,6 @@ typedef enum {
  ,PS_CANONICALFORM
  ,PS_MAINREDUCTION1
  ,PS_MAINREDUCTION2
- ,PS_RATIONALPOWERSREDUCTION
  ,PS_STANDARDFORM
  ,PS_REDUCTIONDONE
 } ParserTreeState;
@@ -117,6 +116,15 @@ public:
   static const NodeOperators *s_stdForm, *s_canonForm, *s_stdNumForm, *s_canonNumForm;
 };
 
+class RationalConstantMap : public CompactHashMap<Rational, ExpressionNodeNumber*> {
+private:
+  RationalConstantMap(           const RationalConstantMap &src); // not implemented
+  RationalConstantMap &operator=(const RationalConstantMap &src); // not implemented
+public:
+  RationalConstantMap() {}
+  void removeUnmarked();
+};
+
 class ParserTree : public PropertyContainer {
 private:
   ExpressionNode               *m_root;
@@ -128,7 +136,7 @@ private:
   TrigonometricMode             m_trigonometricMode;
   mutable ParserTreeState       m_state;
   mutable UINT                  m_reduceIteration;
-  ExpressionNodeNumber         *m_minusOne, *m_zero, *m_one, *m_two, *m_ten, *m_half;
+  RationalConstantMap           m_rationalConstantMap;
   ExpressionNodeBoolConst      *m_false, *m_true;
 
   DEFINEREDUCTIONSTACK;
@@ -139,13 +147,13 @@ private:
 #endif // TRACE_REDUCTION_CALLSTACK
 private:
   inline void resetSimpleConstants() {
-    m_minusOne = m_zero = m_one = m_two = m_ten = m_half = NULL;
     m_false = m_true = NULL;
   }
+  void markSimpleConstants();
+  ExpressionNodeNumber *getRationalConstant(const Rational &r);
   void init(TrigonometricMode    mode
            ,ParserTreeState      state
            ,UINT                 reduceIteration);
-  void markSimpleConstants();
   friend class ExpressionNode;
   friend class ExpressionNodeVariable;
   friend class NodeOperators;
@@ -203,31 +211,29 @@ protected:
   // terminate argumentlist with NULL
   ExpressionNodeTree     *fetchTreeNode(     ExpressionInputSymbol     symbol, ...                );
 
+  inline ExpressionNodeNumber *numberExpr(const Rational &v) {
+    return getRationalConstant(v);
+  }
+  inline ExpressionNodeNumber *numberExpr(int             v) {
+    return numberExpr(Rational(v));
+  }
+  inline ExpressionNodeNumber *numberExpr(UINT            v) {
+    return numberExpr(Rational(v));
+  }
+  inline ExpressionNodeNumber *numberExpr(INT64           v) {
+    return numberExpr(Rational(v));
+  }
+  inline ExpressionNodeNumber *numberExpr(const Number   &v) {
+    if(v.isRational()) return numberExpr(v.getRationalValue());
+    ExpressionNodeNumber *n = new ExpressionNodeNumber(this, v); TRACE_NEW(n);
+    return n;
+  }
   inline ExpressionNodeNumber *numberExpr(const Real     &v) {
     ExpressionNodeNumber *n = new ExpressionNodeNumber(this, v); TRACE_NEW(n);
     return n;
   }
-  inline ExpressionNodeNumber *numberExpr(const Rational &v) {
-    ExpressionNodeNumber *n = new ExpressionNodeNumber(this, v); TRACE_NEW(n);
-    return n;
-  }
-  inline ExpressionNodeNumber *numberExpr(int             v) {
-    ExpressionNodeNumber *n = new ExpressionNodeNumber(this, Rational(v)); TRACE_NEW(n);
-    return n;
-  }
-  inline ExpressionNodeNumber *numberExpr(UINT            v) {
-    ExpressionNodeNumber *n = new ExpressionNodeNumber(this, Rational(v)); TRACE_NEW(n);
-    return n;
-  }
-  inline ExpressionNodeNumber *numberExpr(INT64           v) {
-    ExpressionNodeNumber *n = new ExpressionNodeNumber(this, Rational(v)); TRACE_NEW(n);
-    return n;
-  }
-  inline ExpressionNodeNumber *numberExpr(const Number   &v) {
-    ExpressionNodeNumber *n = new ExpressionNodeNumber(this, v); TRACE_NEW(n);
-    return n;
-  }
-  inline ExpressionNodeBoolConst *boolConstExpr(bool b)          {
+  inline ExpressionNodeBoolConst *boolConstExpr(bool b, bool checkIsSimple=true) {
+    if(checkIsSimple) return b ? getTrue() : getFalse();
     ExpressionNodeBoolConst *n = new ExpressionNodeBoolConst(this, b); TRACE_NEW(n);
     return n;
   }
@@ -285,40 +291,22 @@ public:
     return m_state;
   }
 
+  inline String getStateName() const {
+    return getStateName(getState());
+  }
+
+  static String getStateName(ParserTreeState state);
+
   inline UINT getReduceIteration() const {
     return m_reduceIteration;
   }
 
-  inline ExpressionNode *getMinusOne() {
-    if(!m_minusOne) m_minusOne = numberExpr(-1);
-    return m_minusOne;
-  }
-  inline ExpressionNode *getZero() {
-    if(!m_zero    ) m_zero     = numberExpr(0);
-    return m_zero;
-  }
-  inline ExpressionNode *getOne() {
-    if(!m_one     ) m_one      = numberExpr(1);
-    return m_one;
-  }
-  inline ExpressionNode *getTwo() {
-    if(!m_two     ) m_two      = numberExpr(2);
-    return m_two;
-  }
-  inline ExpressionNode *getTen() {
-    if(!m_ten     ) m_ten      = numberExpr(10);
-    return m_ten;
-  }
-  inline ExpressionNode *getHalf() {
-    if(!m_half    ) m_half     = numberExpr(Rational(1,2));
-    return m_half;
-  }
-  inline ExpressionNode *getFalse() {
-    if(!m_false   ) m_false    = boolConstExpr(false);
+  inline ExpressionNodeBoolConst *getFalse() {
+    if(!m_false   ) m_false    = boolConstExpr(false,false);
     return m_false;
   }
-  inline ExpressionNode *getTrue() {
-    if(!m_true    ) m_true     = boolConstExpr(true);
+  inline ExpressionNodeBoolConst *getTrue() {
+    if(!m_true    ) m_true     = boolConstExpr(true,false);
     return m_true;
   }
   inline Real &getValueRef(UINT valueIndex) const {
@@ -367,8 +355,9 @@ public:
   ExpressionNode         *sumExpr(                                    SNodeArray           &addentArray);
   ExpressionNode         *productExpr(                                FactorArray          &factorArray);
   ExpressionNode         *addentExpr(                                 SNode           child, bool positive);
-  ExpressionNode         *factorExpr(                                 SNode           base , SNode expo);
   ExpressionNode         *factorExpr(                                 SNode           base);
+  ExpressionNode         *factorExpr(                                 SNode           base , SNode exponent);
+  ExpressionNode         *factorExpr(                                 SNode           base , const Rational &exponent);
 
   ExpressionNode         *expandPower(   ExpressionNode *base, const Rational &exponent);
 
@@ -461,6 +450,9 @@ public:
   void traverseTree(ExpressionNodeHandler &handler);
   const ParserTreeSymbolTable &getSymbolTable() const {
     return m_symbolTable;
+  }
+  const RationalConstantMap &getRationalConstantMap() const {
+    return m_rationalConstantMap;
   }
   String treeToString() const;
 };

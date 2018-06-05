@@ -7,7 +7,12 @@ ExpressionNodeTree::ExpressionNodeTree(ParserTree *tree, ExpressionInputSymbol s
 : ExpressionNode(tree, symbol)
 , m_childArray(*tree)
 {
-  initChildArray(argptr);
+  const int count = initChildArray(argptr);
+#ifdef _DEBUG
+  if(count) {
+    SETDEBUGSTRING();
+  }
+#endif // _DEBUG
 }
 
 ExpressionNodeTree::ExpressionNodeTree(ParserTree *tree, ExpressionInputSymbol symbol, const SNodeArray &childArray)
@@ -32,8 +37,13 @@ ExpressionNodeTree::ExpressionNodeTree(ParserTree *tree, ExpressionInputSymbol s
 {
   va_list argptr;
   va_start(argptr, symbol);
-  initChildArray(argptr);
+  const int count = initChildArray(argptr);
   va_end(argptr);
+#ifdef _DEBUG
+  if(count) {
+    SETDEBUGSTRING();
+  }
+#endif // _DEBUG
 }
 
 static int countVargs(va_list argptr) {
@@ -44,12 +54,13 @@ static int countVargs(va_list argptr) {
   return count;
 }
 
-void ExpressionNodeTree::initChildArray(va_list argptr) {
+int ExpressionNodeTree::initChildArray(va_list argptr) {
   const int count = countVargs(argptr);
   m_childArray.clear(count);
   for(ExpressionNode *p = va_arg(argptr, ExpressionNode*); p; p = va_arg(argptr, ExpressionNode*)) {
     m_childArray.add(p);
   }
+  return count;
 }
 
 ExpressionNode *ExpressionNodeTree::expand() {

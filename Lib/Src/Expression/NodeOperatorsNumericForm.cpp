@@ -153,7 +153,7 @@ NNode NNode::toNFormProduct() const {
     if(base.isNumber() && exponent.isNumber()) {
       constant *= N(f).evaluateReal();
     } else {
-      newArray.add(base, exponent);
+      newArray.add(factorExp(base, exponent));
     }
   }
   if(newArray.size() == 0) return NV(constant);

@@ -39,6 +39,11 @@ void SNodeArray::addAll(const SNodeArray &a) {
   SETDEBUGSTRING();
 }
 
+void SNodeArray::sort(int (*cmp)(const SNode &e1, const SNode &e2)) {
+  __super::sort(cmp);
+  SETDEBUGSTRING();
+}
+
 bool SNodeArray::isConstant() const {
   const size_t n = size();
   for(size_t i = 0; i < n; i++) {

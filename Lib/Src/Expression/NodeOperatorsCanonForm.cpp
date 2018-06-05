@@ -97,11 +97,11 @@ ExpressionNode *NodeOperatorsCanonForm::minus(ExpressionNode *n) const {
         if(i != index) {
           newFactors.add(factor);
         } else {
-          newFactors.add(-factor->base(),factor->exponent());
+          newFactors.add(factorExp(-factor->base(),factor->exponent()));
         }
       }
       if(index < 0) {
-        newFactors.add(getMinusOne(n));
+        newFactors.add(factorExp(getMinusOne(n),1));
       }
       return productExpr(newFactors);
     }
@@ -138,7 +138,7 @@ ExpressionNode *NodeOperatorsCanonForm::reciprocal(ExpressionNode *n) const {
       FactorArray newFactors(factors.getTree(), sz);
       for(size_t i = 0; i < sz; i++) {
         ExpressionFactor *factor = factors[i];
-        newFactors.add(factor->base(), -factor->exponent());
+        newFactors.add(factorExp(factor->base(), -factor->exponent()));
       }
       return productExpr(newFactors);
     }
@@ -186,8 +186,8 @@ ExpressionNode *NodeOperatorsCanonForm::prod(ExpressionNode *n1, ExpressionNode 
     return numberExpr(n1, n1->getRational() * n2->getRational());
   }
   FactorArray a(n1->getTree(),2);
-  a.add(n1);
-  a.add(n2);
+  a.add(factorExp(n1,1));
+  a.add(factorExp(n2,1));
   return productExpr(a);
 }
 
@@ -201,16 +201,16 @@ ExpressionNode *NodeOperatorsCanonForm::quot(ExpressionNode *n1, ExpressionNode 
     return n1;
   }
   FactorArray a(n1->getTree());
-  a.add(n1);
+  a.add(factorExp(n1,1));
   if(n2->getSymbol() != PRODUCT) {
-    a.add((n2->getSymbol() == POW) ? factorExpr(n2->left(), minus(n2->right())) : factorExpr(n2, getMinusOne(n2)));
+    a.add((n2->getSymbol() == POW) ? factorExp(n2->left(), minus(n2->right())) : factorExp(n2, -1));
   } else {
     const FactorArray &a2 = n2->getFactorArray();
     const size_t       sz = a2.size();
 
     for(size_t i = 0; i < sz; i++) {
       ExpressionFactor *f = a2[i];
-      a.add(f->base(), -f->exponent());
+      a.add(factorExp(f->base(), -f->exponent()));
     }
   }
   return productExpr(a);
@@ -220,8 +220,8 @@ ExpressionNode *NodeOperatorsCanonForm::quot(ParserTree *tree, INT64 num, INT64 
   ExpressionNode *n1 = tree->numberExpr(num);
   ExpressionNode *n2 = tree->numberExpr(den);
   FactorArray a(*tree);
-  a.add(n1);
-  a.add(n2,tree->getMinusOne());
+  a.add(factorExp(n1, 1));
+  a.add(factorExp(n2,-1));
   ExpressionNode *q = productExpr(a);
   q->setReduced();
   return q;
@@ -524,10 +524,10 @@ FactorArray &CNode::toCFormProduct(FactorArray &result, SNode &exponent) const {
     if(isOne()) break; // don't bother about this
     // NB continue case
   case NAME  :
-    result.add(node(), exponent);
+    result.add(factorExp(*this, exponent));
     break;
   default:
-    result.add(toCForm(), exponent);
+    result.add(factorExp(toCForm(), exponent));
     break;
   }
   RETURNSHOWSTR(result);
@@ -541,18 +541,18 @@ FactorArray &CNode::toCFormPower(FactorArray &result, SNode &exponent) const {
 
   switch(base.getSymbol()) {
   case POW :
-    result.add(base.left(), multiplyExponents(multiplyExponents(base.right(),expo), exponent));
+    result.add(factorExp(base.left(), multiplyExponents(multiplyExponents(base.right(),expo), exponent)));
     break;
   case ROOT:
     throwInvalidSymbolForTreeMode(__TFUNCTION__);
     break;
   default                   :
     if(exponent.isOne()) {
-      result.add(base, expo);
+      result.add(factorExp(base, expo));
     } else if(expo.isOne()) {
-      result.add(base, exponent);
+      result.add(factorExp(base, exponent));
     } else {
-      result.add(base, multiplyExponents(expo, exponent));
+      result.add(factorExp(base, multiplyExponents(expo, exponent)));
     }
     break;
   }
@@ -567,13 +567,13 @@ FactorArray &CNode::toCFormRoot(FactorArray &result, SNode &exponent) const {
 
   switch(rad.getSymbol()) {
   case POW :
-    result.add(rad.left(), multiplyExponents(divideExponents(rad.right(), root), exponent));
+    result.add(factorExp(rad.left(), multiplyExponents(divideExponents(rad.right(), root), exponent)));
     break;
   case ROOT:
     throwInvalidSymbolForTreeMode(__TFUNCTION__);
     break;
   default                   :
-    result.add(rad, divideExponents(exponent,root));
+    result.add(factorExp(rad, divideExponents(exponent,root)));
     break;
   }
   RETURNSHOWSTR( result );

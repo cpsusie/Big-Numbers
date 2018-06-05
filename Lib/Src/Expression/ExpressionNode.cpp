@@ -413,6 +413,17 @@ void ExpressionNode::throwUnknownNodeTypeException(const TCHAR *method) const {
                 ,method, getNodeType());
 }
 
+void ExpressionNode::checkNodeType(const TCHAR *method, const ExpressionNode *n, ExpressionNodeType expectedType) {
+  if((n==NULL) || (n->getNodeType() != expectedType)) {
+    throwInvalidArgumentException(method
+                                 ,_T("Expected nodetype:%s. Type=%s")
+                                 ,getNodeTypeName(expectedType).cstr()
+                                 ,n?n->getNodeTypeName().cstr():_T("NULL")
+                                 );
+  }
+}
+
+
 #ifdef CHECK_CONSISTENCY
 bool ExpressionNode::isConsistentSymbolAndType() const {
   ExpressionNodeType type1, type2;

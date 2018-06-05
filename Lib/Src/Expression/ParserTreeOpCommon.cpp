@@ -72,7 +72,7 @@ ExpressionNode *ParserTree::polyExpr(SNodeArray &coefArray, SNode arg) {
 ExpressionNode *ParserTree::sumExpr(SNodeArray &a) {
   switch(a.size()) {
   case 0 :
-    return getZero();
+    return numberExpr(0);
   case 1 :
     return a[0].isPositive() ? a[0].left().node() : minus(a[0].left().node());
   default:
@@ -84,7 +84,7 @@ ExpressionNode *ParserTree::sumExpr(SNodeArray &a) {
 
 ExpressionNode *ParserTree::productExpr(FactorArray &a) {
   switch(a.size()) {
-  case 0 : return getOne();
+  case 0 : return numberExpr(1);
   case 1 : return a[0]->exponent().isOne() ? a[0]->base().node() : a[0];
   default:
     { ExpressionNode *n = new ExpressionNodeProduct(this, a); TRACE_NEW(n);
@@ -175,6 +175,10 @@ ExpressionNode *ParserTree::factorExpr(SNode base, SNode exponent) {
   }
   TRACE_NEW(f);
   return f;
+}
+
+ExpressionNode *ParserTree::factorExpr(SNode base, const Rational &exponent) {
+  return factorExpr(base,numberExpr(exponent));
 }
 
 ExpressionNode *ParserTree::addentExpr(SNode n, bool positive) {
@@ -293,7 +297,7 @@ ExpressionNodeTree *ParserTree::fetchTreeNode(ExpressionInputSymbol symbol,...) 
 
 ExpressionNode *ParserTree::expandPower(ExpressionNode *base, const Rational &exponent) {
   SNode b(base);
-  SNode result(getOne());
+  SNode result(b._1());
   __int64 num = exponent.getNumerator();
   __int64 den = exponent.getDenominator();
   if(num < 0) {

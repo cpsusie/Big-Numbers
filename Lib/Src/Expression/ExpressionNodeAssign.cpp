@@ -6,6 +6,7 @@ namespace Expr {
 ExpressionNodeAssign::ExpressionNodeAssign(ParserTree *tree, const ExpressionNodeAssign *src)
 : ExpressionNodeTree(tree, src)
 {
+  SETDEBUGSTRING();
 }
 
 ExpressionNode *ExpressionNodeAssign::clone(ParserTree *tree) const {

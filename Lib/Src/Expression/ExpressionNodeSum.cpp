@@ -18,18 +18,13 @@ void ExpressionNodeSum::validateNodeArray(const SNodeArray &a) const {
   const size_t sz = a.size();
   for(size_t i = 0; i < sz; i++) {
     const SNode &n = a[i];
-    if(n.getNodeType() != NT_ADDENT) {
-      throwInvalidArgumentException(__TFUNCTION__
-                                   ,_T("node[%zu] not type NT_ADDENT (=%s)")
-                                   ,i, n.getNodeTypeName().cstr());
-    }
+    CHECKNODETYPE(n,NT_ADDENT);
   }
 }
 
 ExpressionNodeSum::ExpressionNodeSum(ParserTree *tree, const ExpressionNodeSum *src)
 : ExpressionNodeTree(tree, src)
 {
-  SETDEBUGSTRING();
 }
 
 ExpressionNode *ExpressionNodeSum::clone(ParserTree *tree) const {
@@ -52,6 +47,7 @@ static int compareMany(const SNode &e1, const SNode &e2) {
 
 void ExpressionNodeSum::sort(SNodeArray &a) { // static
   a.sort(compareMany);
+
 }
 
 static int compare2(const SNode &e1, const SNode &e2) {

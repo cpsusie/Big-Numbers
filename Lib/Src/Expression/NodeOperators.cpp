@@ -4,27 +4,27 @@
 namespace Expr {
 
 ExpressionNode *NodeOperators::getZero(ExpressionNode *n) { // static
-  return n->getTree().getZero();
+  return numberExpr(n,0);
 }
 
 ExpressionNode *NodeOperators::getOne(ExpressionNode *n) { // static
-  return n->getTree().getOne();
+  return numberExpr(n,1);
 }
 
 ExpressionNode *NodeOperators::getMinusOne(ExpressionNode *n) { // static
-  return n->getTree().getMinusOne();
+  return numberExpr(n,-1);
 }
 
 ExpressionNode *NodeOperators::getTwo(ExpressionNode *n) { // static
-  return n->getTree().getTwo();
+  return numberExpr(n,2);
 }
 
 ExpressionNode *NodeOperators::getHalf(ExpressionNode *n) { // static
-  return n->getTree().getHalf();
+  return n->getTree().numberExpr(Rational(1,2));
 }
 
 ExpressionNode *NodeOperators::getTen(ExpressionNode *n) { // static
-  return n->getTree().getTen();
+  return numberExpr(n,10);
 }
 
 ExpressionNode *NodeOperators::numberExpr(ExpressionNode *n, const Number &v) { // static

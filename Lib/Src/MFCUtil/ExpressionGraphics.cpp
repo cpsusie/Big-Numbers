@@ -1169,7 +1169,7 @@ AlignedImage *ExpressionPainter::getNumberImage(SNode n, int fontSize, Expressio
     ExpressionNode *en = m_expression.fetchTreeNode(PROD
                                                    ,m_expression.numberExpr(significand)
                                                    ,m_expression.fetchTreeNode(POW
-                                                                              ,m_expression.getTen()
+                                                                              ,m_expression.numberExpr(10)
                                                                               ,m_expression.numberExpr(exponent)
                                                                               ,NULL
                                                                               )

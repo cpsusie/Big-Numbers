@@ -19,11 +19,7 @@ void ExpressionNodeProduct::validateFactorArray(const FactorArray &factors) cons
   const size_t sz = factors.size();
   for(size_t i = 0; i < sz; i++) {
     const ExpressionNode *n = factors[i];
-    if(n->getNodeType() != NT_FACTOR) {
-      throwInvalidArgumentException(__TFUNCTION__
-                                   ,_T("node[%zu] not type NT_FACTOR (=%s)")
-                                   ,i, n->getNodeTypeName().cstr());
-    }
+    CHECKNODEPTYPE(n,NT_FACTOR);
   }
 }
 

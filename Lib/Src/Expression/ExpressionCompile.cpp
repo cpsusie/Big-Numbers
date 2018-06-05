@@ -297,7 +297,7 @@ void CodeGenerator::genExpression(SNode n DCL_DSTPARAM) {
         if(p < 0) genReciprocal();
         break;
       } else if(p == 0) {
-        genExpression(m_tree.getOne() DST_PARAM);
+        genExpression(n._1() DST_PARAM);
         return;
       } else if(p == 1) {
         genExpression(n.left() DST_PARAM);

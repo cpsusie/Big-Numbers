@@ -151,7 +151,7 @@ BOOL CTestExpressionGraphicsDlg::OnInitDialog() {
   m_layoutManager.addControl(IDC_STATICDERIVEDLABEL   , PCT_RELATIVE_Y_POS);
   m_layoutManager.addControl(IDC_EDITDERIVED          , PCT_RELATIVE_RIGHT  | PCT_RELATIVE_Y_POS );
   m_layoutManager.addControl(IDC_STATICDERIVEDIMAGE   , PCT_RELATIVE_RIGHT  | PCT_RELATIVE_TOP | RELATIVE_BOTTOM );
-  m_layoutManager.addControl(IDC_STATICREDUCTIONSTACK , PCT_RELATIVE_X_POS  | RELATIVE_HEIGHT);
+  m_layoutManager.addControl(IDC_STATICREDUCTIONSTACK , PCT_RELATIVE_LEFT   | RELATIVE_RIGHT | RELATIVE_HEIGHT);
 
   m_device.attach(*this);
 
@@ -623,25 +623,15 @@ void CTestExpressionGraphicsDlg::ajourDialogItems() {
   }
 }
 
-
-static const TCHAR *exprStateName[] = { // must match values in ExpressionState defined in Expression.h
-  _T("EMPTY")
- ,_T("COMPILED")
- ,_T("DERIVED")
- ,_T("CANONICALFORM")
- ,_T("MAINREDUCE 1")
- ,_T("MAINREDUCE 2")
- ,_T("RP.REDUCTION")
- ,_T("STANDARDFORM")
- ,_T("DONE")
-};
-
 void CTestExpressionGraphicsDlg::paintDebugExpr() {
   try {
-    m_debugExpr                     = &m_debugThread->getDebugExpr();
-    const int             iteration = m_debugExpr->getReduceIteration();
-    const ParserTreeState state     = m_debugExpr->getState();
-    showDebugInfo(_T("State:%-13s. it:%d (%s)"), exprStateName[state], iteration, m_debugExpr->getComplexity().toString().cstr());
+    m_debugExpr = &m_debugThread->getDebugExpr();
+    showDebugInfo(_T("State:%-14s. it:%d complexity(%s), rat.const:%3zu")
+                 ,m_debugExpr->getStateName().cstr()
+                 ,m_debugExpr->getReduceIteration()
+                 ,m_debugExpr->getComplexity().toString().cstr()
+                 ,m_debugExpr->getRationalConstantMap().size()
+                 );
 
 #ifdef TRACE_REDUCTION_CALLSTACK
     if(isMenuItemChecked(this, ID_VIEW_SHOWREDUCTIONSTACK)) {

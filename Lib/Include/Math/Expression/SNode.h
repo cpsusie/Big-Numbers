@@ -44,9 +44,18 @@ typedef enum {
  ,NT_FACTOR
 } ExpressionNodeType;
 
+#ifdef _DEBUG
+#define CHECKNODETYPE( n,expectedType) ExpressionNode::checkNodeType(__TFUNCTION__,(n).node(),expectedType)
+#define CHECKNODEPTYPE(n,expectedType) ExpressionNode::checkNodeType(__TFUNCTION__,n         ,expectedType)
+#else _DEBUG
+#define CHECKNODETYPE( n,expectedType)
+#define CHECKNODEPTYPE(n,expectedType)
+#endif _DEBUG
+
 // Wrapper class til ExpressionNode
 class SNode {
 private:
+  friend class SNodeArray;
   ExpressionNode *m_node;
   bool operator==(const SNode &n) const; // not implemented
   bool operator!=(const SNode &n) const; // not implemented
@@ -74,14 +83,20 @@ private:
   SNode              multiplyStmtList() const;
   SNode              multiplyParenthesesInSum() const;
   SNode              multiplyParenthesesInProduct() const;
-  SNode              multiplyFactorSum(SNode factor, SNode sum) const; //  ExpressionFactor *a, ExpressionNodeSum sum) const;
+  // Assume factor.type=NT_FACTOR and sum.type=NT_SUM
+  SNode              multiplyFactorSum(SNode factor, SNode sum) const;
 
+  // Assume e1.type==e2.type==NT_ADDENT
   SNode              getCommonFactor(             SNode e1, SNode e2) const;
+  // Assume this.symbol = SUM. nested SUM-nodes will all be put in result at the same level, by recursive calls
+  // return true if result differs from childArray()
+  bool               getAddents(                  SNodeArray  &result, bool positive=true) const;
   FactorArray       &getFactors(                  FactorArray &result);
   FactorArray       &getFactors(                  FactorArray &result, const SNode exponent);
   FactorArray       &getFactorsInPower(           FactorArray &result, const SNode exponent);
   FactorArray       &multiplyExponents(           FactorArray &result, FactorArray &factors, const SNode exponent);
-  SNode              multiplySumSum(              SNode n1, SNode n2) const; // assume n1 and n2 are NT_SUM
+  // Assume n1.type==n2.type==NT_SUM
+  SNode              multiplySumSum(              SNode n1, SNode n2) const;
   SNode              changeFirstNegativeFactor() const;
   SNode              reduceLn();
   SNode              reduceLog10();
@@ -106,7 +121,6 @@ protected:
 
   friend class MarkedNodeMultiplier;
 public:
-  friend class SNodeArray;
   inline SNode() : m_node(NULL) {
   }
   inline SNode(ExpressionNode *node) : m_node(node) {
@@ -293,8 +307,9 @@ public:
   void convertFromParserTree(ExpressionNode *n, ExpressionInputSymbol delimiterSymbol);
   void clear(intptr_t capacity=0);
   void add(SNode n);
-  void remove(size_t i);
   void addAll(const SNodeArray &a);
+  void remove(size_t i);
+  void sort(int (*cmp)(const SNode &e1, const SNode &e2));
   bool isConstant() const;
   bool isSameNodes(const SNodeArray &a) const; // return true, if ExpressionNode pointers are the same
   bool equal(      const SNodeArray &a) const; // recursive compare all nodes ( deep compare)
@@ -329,5 +344,6 @@ SNode indexSum(  SNode assignStmt, SNode endExpr, SNode expr  );
 SNode indexProd( SNode assignStmt, SNode endExpr, SNode expr  );
 SNode addentExp( SNode child     , bool positive);
 SNode factorExp( SNode base      , SNode expo);
+SNode factorExp( SNode base      , const Rational &expo);
 
 }; // namespace Expr
