@@ -4,12 +4,12 @@
 namespace Expr {
 
 ExpressionFactor::ExpressionFactor(SNode base)
-: ExpressionNodeTree(&base.getTree(), POW, SNodeArray(base.getTree(),2,base,base._1()))
+: ExpressionNodeTree(&base.getTree(), POW, base.node(), base._1().node(), NULL)
 {
 }
 
 ExpressionFactor::ExpressionFactor(SNode base, SNode exponent)
-: ExpressionNodeTree(&base.getTree(), POW, SNodeArray(base.getTree(),2,base,exponent))
+: ExpressionNodeTree(&base.getTree(), POW, base.node(), exponent.node(), NULL)
 {
 }
 

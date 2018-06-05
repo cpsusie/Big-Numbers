@@ -13,6 +13,7 @@
     <DisplayString>{m_debugStr}</DisplayString>
   </Type>
   <Type Name="Expr::SNode">
+    <DisplayString Condition="m_node == 0">NULL</DisplayString>
     <DisplayString>{*m_node}</DisplayString>
   </Type>
 </AutoVisualizer>

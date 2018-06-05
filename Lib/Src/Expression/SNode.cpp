@@ -503,17 +503,6 @@ SNode gauss(const SNode &x) {
 
 // -------------------------- SNodeArray -----------------------
 
-SNodeArray::SNodeArray(ParserTree &tree, int n, ...) : m_tree(tree) {
-  va_list argptr;
-  va_start(argptr,n);
-  setCapacity(n);
-  for(int i = 0; i < n; i++) {
-    add(va_arg(argptr,SNode));
-  }
-  va_end(argptr);
-  SETDEBUGSTRING();
-}
-
 static SNodeArray &getListFromTree(ExpressionNode *n, ExpressionInputSymbol delimiterSymbol, SNodeArray &list) {
   if(n->getSymbol() == delimiterSymbol) {
     getListFromTree(n->left(), delimiterSymbol,list);

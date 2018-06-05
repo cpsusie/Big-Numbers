@@ -285,7 +285,6 @@ private:
 public:
   SNodeArray(ParserTree &tree) : m_tree(tree) {
   }
-  SNodeArray(ParserTree &tree, int n,...); // n = number of following arguments. ... are all SNode
   explicit SNodeArray(ParserTree &tree, size_t capacity) : m_tree(tree), CompactArray(capacity) {
   }
   inline ParserTree &getTree() const {

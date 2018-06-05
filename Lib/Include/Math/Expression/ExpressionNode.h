@@ -457,7 +457,7 @@ private:
   SNodeArray m_childArray;
   void initChildArray(va_list argptr);
 protected:
-  // Terminate arguemnt list with NULL
+  // Terminate arguemnt list with NULL. ... is a variable list of ExpressionNode*
   ExpressionNodeTree(ParserTree *tree, ExpressionInputSymbol symbol, ...);
 
 public:
