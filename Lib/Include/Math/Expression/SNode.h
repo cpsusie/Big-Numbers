@@ -291,6 +291,7 @@ public:
     return m_tree;
   }
   void convertFromParserTree(ExpressionNode *n, ExpressionInputSymbol delimiterSymbol);
+  void clear(intptr_t capacity=0);
   void add(SNode n);
   void remove(size_t i);
   void addAll(const SNodeArray &a);

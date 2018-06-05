@@ -519,6 +519,11 @@ void SNodeArray::convertFromParserTree(ExpressionNode *n, ExpressionInputSymbol 
   ENABLEDEBUGSTRING(*this);
 }
 
+void SNodeArray::clear(intptr_t capacity) {
+  __super::clear(capacity);
+  SETDEBUGSTRING();
+}
+
 void SNodeArray::add(SNode n) {
   __super::add(n);
   SETDEBUGSTRING();

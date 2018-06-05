@@ -13,6 +13,11 @@ FactorArray &FactorArray::sort() {
   return *this;
 }
 
+void FactorArray::clear(intptr_t capacity) {
+  __super::clear(capacity);
+  SETDEBUGSTRING();
+}
+
 void FactorArray::add(ExpressionFactor *f) { // private
   SNode base     = f->base();
   SNode exponent = f->exponent();

@@ -80,6 +80,7 @@ public:
   FactorArray selectNonConstantExponentFactors() const;
   int findFactorWithChangeableSign() const;
 
+  void clear(intptr_t capacity = 0);
   void add(ExpressionFactor *f);
   void add(SNode base);
   void add(SNode base, SNode exponent);
