@@ -57,10 +57,7 @@ public:
 typedef Array<ExpressionVariableWithValue> ExpressionVariableArray;
 
 class ExpressionNode;
-class ExpressionFactor;
-class ExpressionNodeSelector;
 class ParserTree;
-class Expression;
 
 class AddentArray : public SNodeArray { // don't add any members, because of typecast
 public:
@@ -87,24 +84,17 @@ public:
   FactorArray selectNonConstantExponentFactors() const;
   int findFactorWithChangeableSign() const;
 
-  // must be NT_FACTOR
+  // must be NT_POWER
   void add(SNode n);
   void addAll(const FactorArray &src);
-  // if(n.type==NT_FACTOR=>add, ==NT_PRODUCT=>addAll, else add(factorExp(n,1))
+  // if(n.type==NT_POWER=>add, ==NT_PRODUCT=>addAll, else add(powerExp(n,1))
   void addAutoConvert(SNode n);
   void sort();
   bool equal(      const FactorArray &a) const;
   bool equalMinus( const FactorArray &a) const;
 };
 
-class ExpressionSymbolSet : public BitSet {
-private:
-  void init(ExpressionInputSymbol s1, va_list argptr); // terminate list with EOI
-public:
-  ExpressionSymbolSet();
-  ExpressionSymbolSet(ExpressionInputSymbol s1,...);   // terminate list with EOI
-  ExpressionSymbolSet(ExpressionInputSymbol s1, va_list argptr);
-  String toString() const;
+class ExpressionNodeSelector : public Selector<const ExpressionNode*> {
 };
 
 class ExpressionNodeHandler {
@@ -144,7 +134,6 @@ private:
 protected:
   PackedSyntaxNodeInfo m_info;
 private:
-  Real evaluatePow()               const;
   Real evaluateRoot()              const;
   ExpressionNode &operator=(const ExpressionNode &src); // not implemented
   ExpressionNode(           const ExpressionNode &src); // not implemented
@@ -295,6 +284,7 @@ public:
   bool    isConsistentSymbolAndType()                                     const;
 #endif // CHECK_CONSISTENCY
   static void checkNodeType(         const TCHAR *method, const ExpressionNode *n, ExpressionNodeType    expectedType  );
+  static void checkNodeType(         const TCHAR *method, const ExpressionNode *n, const NodeTypeSet    &validTypes    );
   static void checkSymbol(           const TCHAR *method, const ExpressionNode *n, ExpressionInputSymbol expectedSymbol);
   void throwInvalidSymbolForTreeMode(const TCHAR *method) const;
   void throwUnknownSymbolException(  const TCHAR *method) const;
@@ -700,10 +690,23 @@ public:
   String toString() const;
 };
 
-class ExpressionFactor : public ExpressionNodeTree {
+class ExpressionNodePower : public ExpressionNodeTree {
+protected:
+   ExpressionNodePower(ParserTree *tree, va_list argptr)
+    : ExpressionNodeTree(tree, POW, argptr)
+  {
+    SETDEBUGSTRING();
+  }
 public:
-  ExpressionFactor(SNode base);
-  ExpressionFactor(SNode base, SNode exponent);
+  ExpressionNodePower::ExpressionNodePower(SNode base)
+    : ExpressionNodeTree(&base.getTree(), POW, base.node(), base._1().node(), NULL)
+  {
+  }
+
+  ExpressionNodePower::ExpressionNodePower(SNode base, SNode exponent)
+    : ExpressionNodeTree(&base.getTree(), POW, base.node(), exponent.node(), NULL)
+  {
+  }
 
   SNode base() const {
     return child(0);
@@ -720,10 +723,10 @@ public:
   bool isConstant() const;
 
   ExpressionNodeType getNodeType() const {
-    return NT_FACTOR;
+    return NT_POWER;
   }
 
-  void dumpNode(String &s, int level) const;
+  Real evaluateReal() const;
 };
 
 // ----------------------------------- Used by parser to save sourceposition in text -------------------------------------
@@ -771,6 +774,19 @@ public:
   ExpressionNodeTreeWithPos(ParserTree *tree, const SourcePosition &pos, ExpressionInputSymbol symbol, va_list argptr)
     : ExpressionNodeTree(tree, symbol, argptr), SourcePositionAttribute(pos)
   {
+  }
+  const SourcePosition &getPos() const {
+    return SourcePositionAttribute::getPos();
+  }
+  bool hasPos() const {
+    return true;
+  }
+};
+
+class ExpressionNodePowerWithPos : public ExpressionNodePower, private SourcePositionAttribute {
+public:
+  ExpressionNodePowerWithPos(ParserTree *tree, const SourcePosition &pos, va_list argptr)
+    : ExpressionNodePower(tree, argptr), SourcePositionAttribute(pos) {
   }
   const SourcePosition &getPos() const {
     return SourcePositionAttribute::getPos();
@@ -849,7 +865,7 @@ public:
 
 class ExpressionNodeProduct : public ExpressionNodeTree {
 private:
-  void validateFactorArray(const FactorArray &a) const; // check, that all nodes have type NT_FACTOR
+  void validateFactorArray(const FactorArray &a) const; // check, that all nodes have type NT_POWER
 public:
   ExpressionNodeProduct(ParserTree *tree, FactorArray &factors);
   ExpressionNodeProduct(ParserTree *tree, const ExpressionNodeProduct *src);
@@ -871,9 +887,6 @@ public:
     return NT_PRODUCT;
   }
   String toString() const;
-};
-
-class ExpressionNodeSelector : public Selector<const ExpressionNode*> {
 };
 
 class ExpressionNodeSymbolSelector : public ExpressionNodeSelector {

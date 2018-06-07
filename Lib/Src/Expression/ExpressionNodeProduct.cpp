@@ -17,7 +17,7 @@ void ExpressionNodeProduct::validateFactorArray(const FactorArray &factors) cons
   const size_t sz = factors.size();
   for(size_t i = 0; i < sz; i++) {
     const SNode &n = factors[i];
-    CHECKNODETYPE(n,NT_FACTOR);
+    CHECKNODETYPE(n,NT_POWER);
   }
 }
 

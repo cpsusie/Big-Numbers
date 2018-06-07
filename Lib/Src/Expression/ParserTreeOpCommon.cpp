@@ -31,6 +31,7 @@ ExpressionNode *ParserTree::treeExpr(ExpressionInputSymbol symbol, SNodeArray &a
                                               ,_T("symbol=%s not allowed")
                                               ,ExpressionNode::getSymbolName(symbol).cstr()
                                               );
+  case POW     : return powerExpr(a[0].node(),a[1].node());
   case AND     :
   case OR      :
   case NOT     :
@@ -97,17 +98,17 @@ ExpressionNode *ParserTree::productExpr(FactorArray &a) {
 
 
 ExpressionNode *ParserTree::indexedSum(ExpressionNode *assign, ExpressionNode *endExpr, ExpressionNode *expr) {
-//  assert(assign->getSymbol() == ASSIGN);
+  CHECKNODEPTYPE(assign, NT_ASSIGN);
   return ternaryExpr(INDEXEDSUM, assign, endExpr, expr);
 }
 
 ExpressionNode *ParserTree::indexedProduct(ExpressionNode *assign, ExpressionNode *endExpr, ExpressionNode *expr) {
-//  assert(assign->getSymbol() == ASSIGN);
+  CHECKNODEPTYPE(assign, NT_ASSIGN);
   return ternaryExpr(INDEXEDPRODUCT, assign, endExpr, expr);
 }
 
 ExpressionNode *ParserTree::condExpr(ExpressionNode *condition, ExpressionNode *exprTrue, ExpressionNode *exprFalse) {
-//  assert(condition->isBooleanOperator());
+  CHECKNODEPTYPE(condition, NT_BOOLEXPR);
   return ternaryExpr(IIF, condition, exprTrue, exprFalse);
 }
 
@@ -154,33 +155,32 @@ ExpressionNode *ParserTree::ternaryExpr( ExpressionInputSymbol  symbol
   return fetchTreeNode(symbol, child0, child1, child2, NULL);
 }
 
-ExpressionNode *ParserTree::factorExpr(SNode base) {
-  return factorExpr(base,base._1());
+ExpressionNode *ParserTree::powerExpr(SNode base) {
+  return powerExpr(base,base._1());
 }
 
-ExpressionNode *ParserTree::factorExpr(SNode base, SNode exponent) {
+// will always return a node of type NT_POWER
+ExpressionNode *ParserTree::powerExpr(SNode base, SNode exponent) {
   ExpressionNode *f;
   if(exponent.isOne()) {
-    if(base.getSymbol() != POW) {
-      f = new ExpressionFactor(base, exponent);
-    } else if(base.getNodeType() == NT_FACTOR) {
-      return (ExpressionFactor*)(base.node());
+    if(base.getSymbol() == POW) {
+      return base.node();
     } else {
-      f = new ExpressionFactor(base.left(), base.right());
+      f = new ExpressionNodePower(base, exponent);
     }
   } else if(base.getSymbol() != POW) { // exponent != 1
-    f = new ExpressionFactor(base, exponent);
-  } else if(base.right().isOne()) {
-    f = new ExpressionFactor(base.left(), exponent);
-  } else { // both exponents are != 1
-    f = new ExpressionFactor(base.left(), multiplyExponents(base.right().node(),exponent.node()));
+    f = new ExpressionNodePower(base, exponent);
+  } else if(base.right().isOne()) {    // base is POW, with right==1
+    f = new ExpressionNodePower(base.left(), exponent);
+  } else {                             // both exponents are != 1
+    f = new ExpressionNodePower(base.left(), multiplyExponents(base.right().node(),exponent.node()));
   }
   TRACE_NEW(f);
   return f;
 }
 
-ExpressionNode *ParserTree::factorExpr(SNode base, const Rational &exponent) {
-  return factorExpr(base,numberExpr(exponent));
+ExpressionNode *ParserTree::powerExpr(SNode base, const Rational &exponent) {
+  return powerExpr(base, numberExpr(exponent));
 }
 
 ExpressionNode *ParserTree::addentExpr(SNode n, bool positive) {
@@ -280,10 +280,10 @@ ExpressionNode *ParserTree::getProduct(SNode oldProduct, FactorArray &newFactorA
   return result.node();
 }
 
-ExpressionNode *ParserTree::getFactor(SNode oldFactor, SNode newBase, SNode newExpo) {
-  SNode oldBase = oldFactor.left();
-  SNode oldExpo = oldFactor.right();
-  return (newBase.isSameNode(oldBase) && newExpo.isSameNode(oldExpo)) ? oldFactor.node() : factorExpr(newBase, newExpo);
+ExpressionNode *ParserTree::getPower(SNode oldPower, SNode newBase, SNode newExpo) {
+  SNode oldBase = oldPower.left();
+  SNode oldExpo = oldPower.right();
+  return (newBase.isSameNode(oldBase) && newExpo.isSameNode(oldExpo)) ? oldPower.node() : powerExpr(newBase, newExpo);
 }
 
 // -----------------------------------------------------------------------------------------

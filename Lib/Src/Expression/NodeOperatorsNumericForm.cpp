@@ -24,24 +24,46 @@ public:
   inline NNode(ExpressionNode *n) : SNode(n) {
     CHECKISCONSISTENT(*n);
   }
-  ExpressionNode *convert() const {
-    return toNForm().node();
+  SNode convert() const {
+    ENTERMETHOD();
+    RETURNNODE(toNForm());
   }
 };
 
 #define N(n)  NNode(n)
 #define NV(v) SNode(getTree(),v)
 
+SNode ParserTree::toNumericForm(SNode n) {
+  if(n.isEmpty()) return n;
+  STARTREDUCTION(this);
+  switch(getTreeForm()) {
+  case TREEFORM_STANDARD :
+    n = toStandardForm(N(toCanonicalForm(n).node()).convert());
+    m_ops = NodeOperators::s_stdNumForm;
+    break;
+
+  case TREEFORM_CANONICAL:
+    n = toCanonicalForm((N(n.node()).convert()));
+    m_ops = NodeOperators::s_canonNumForm;
+    break;
+
+  case TREEFORM_NUMERIC  :
+    break;
+  }
+  return n;
+}
+
 NNode NNode::toNForm() const {
-  DEFINEMETHODNAME;
+  ENTERMETHOD();
   switch(getSymbol()) {
-  case STMTLIST       : return toNFormStmtList();
-  case ASSIGN         : return toNFormAssign();
-  default             : return toNFormTreeNode();
+  case STMTLIST       : RETURNNODE( toNFormStmtList());
+  case ASSIGN         : RETURNNODE( toNFormAssign()  );
+  default             : RETURNNODE( toNFormTreeNode());
   }
 }
 
 NNode NNode::toNFormStmtList() const {
+  ENTERMETHOD();
   const StmtList &childArray = getChildArray();
   const int       childCount = (int)childArray.size() - 1;
   StmtList        newStmtList(getTree());
@@ -61,40 +83,41 @@ NNode NNode::toNFormStmtList() const {
   default:
     last.throwUnknownSymbolException(__TFUNCTION__);
   }
-  return stmtList(newStmtList.removeUnusedAssignments());
+  RETURNNODE( stmtList(newStmtList.removeUnusedAssignments()) );
 }
 
 NNode NNode::toNFormAssign() const {
-  return assignStmt(left(), N(right()).toNFormRealExp());
+  ENTERMETHOD();
+  RETURNNODE( assignStmt(left(), N(right()).toNFormRealExp()) );
 }
 
 NNode NNode::toNFormRealExp() const {
-  DEFINEMETHODNAME;
+  ENTERMETHOD();
   if(isConstant()) {
-    return NV(evaluateReal());
+    RETURNNODE( NV(evaluateReal()) );
   }
   switch(getSymbol()) {
-  case NUMBER    : throwException(_T("%s:Unexpected node-symbol (NUMBER)"), method);
-  case NAME      : return *this;
-  case SUM       : return toNFormSum();
-  case PRODUCT   : return toNFormProduct();
-  case POLY      : return toNFormPoly();
-  default        : return toNFormTreeNode();
+  case NUMBER    : throwException(_T("%s:Unexpected node-symbol (NUMBER)"), __TFUNCTION__);
+  case NAME      : RETURNNODE( *this             );
+  case SUM       : RETURNNODE( toNFormSum()      );
+  case PRODUCT   : RETURNNODE( toNFormProduct()  );
+  case POLY      : RETURNNODE( toNFormPoly()     );
+  default        : RETURNNODE( toNFormTreeNode() );
   }
 }
 
 NNode NNode::toNFormBoolExp() const {
-  DEFINEMETHODNAME;
+  ENTERMETHOD();
   if(isConstant()) {
-    return NV(evaluateBool());
+    RETURNNODE( NV(evaluateBool()) );
   }
   switch(getSymbol()) {
   case NOT  :
-    return !N(left()).toNFormBoolExp();
+    RETURNNODE( !N(left()).toNFormBoolExp() );
   case AND   :
-    return N(left()).toNFormBoolExp() && N(right()).toNFormBoolExp();
+    RETURNNODE( N(left()).toNFormBoolExp() && N(right()).toNFormBoolExp() );
   case OR    :
-    return N(left()).toNFormBoolExp() || N(right()).toNFormBoolExp();
+    RETURNNODE( N(left()).toNFormBoolExp() || N(right()).toNFormBoolExp() );
 
   case EQ    :
   case NE    :
@@ -104,18 +127,19 @@ NNode NNode::toNFormBoolExp() const {
   case GT    :
     { NNode l = N(left()).toNFormRealExp();
       NNode r = N(right()).toNFormRealExp();
-      return boolExp(getSymbol(), l, r);
+      RETURNNODE( boolExp(getSymbol(), l, r) );
     }
   default    :
-    throwUnknownSymbolException(method);
+    throwUnknownSymbolException(__TFUNCTION__);
     return NULL;
   }
 }
 
 NNode NNode::toNFormSum() const {
+  ENTERMETHOD();
   const AddentArray &a = getAddentArray();
   if(a.size() == 0) {
-    return _0();
+    RETURNNODE( _0() );
   } else {
     Real constant = 0;
     AddentArray newArray(a.getTree());
@@ -127,20 +151,24 @@ NNode NNode::toNFormSum() const {
         newArray.add(addentExp(tmp, e.isPositive()));
       }
     }
-    if(newArray.size() == 0) return NV(constant);
-    SNode result = newArray[0].left();
-    if(!newArray[0].isPositive()) result = -result;
+    if(newArray.size() == 0) {
+      RETURNNODE( NV(constant) );
+    }
+    SNode acc = newArray[0].left();
+    if(!newArray[0].isPositive()) acc = -acc;
     for(size_t i = 1; i < newArray.size(); i++) {
       SNode e = newArray[i], ne = e.left();
-      if(e.isPositive()) result += ne; else result -= ne;
+      if(e.isPositive()) acc += ne; else acc -= ne;
     }
-    return (constant == 0) ? result
-         : (constant >  0) ? result + NV(constant)
-                           : result - NV(-constant);
+    NNode result = (constant == 0) ? acc
+                 : (constant >  0) ? acc + NV(constant )
+                                   : acc - NV(-constant);
+    RETURNNODE( result );
   }
 }
 
 NNode NNode::toNFormProduct() const {
+  ENTERMETHOD();
   Real constant = 1;
   const FactorArray &a = getFactorArray();
   FactorArray newArray(a.getTree());
@@ -151,10 +179,12 @@ NNode NNode::toNFormProduct() const {
     if(base.isNumber() && exponent.isNumber()) {
       constant *= N(f).evaluateReal();
     } else {
-      newArray.add(factorExp(base, exponent));
+      newArray.add(powerExp(base, exponent));
     }
   }
-  if(newArray.size() == 0) return NV(constant);
+  if(newArray.size() == 0) {
+    RETURNNODE( NV(constant) );
+  }
 
   FactorArray p = newArray.selectConstantPositiveExponentFactors();
   p.addAll(newArray.selectNonConstantExponentFactors());
@@ -175,10 +205,11 @@ NNode NNode::toNFormProduct() const {
   for(size_t i = 0; i < q.size(); i++) {
     result /= reciprocal(q[i]);
   }
-  return result;
+  RETURNNODE( result );
 }
 
 NNode NNode::toNFormPoly() const {
+  ENTERMETHOD();
   const SNodeArray &coefArray = getCoefArray();
   NNode             arg       = getArgument();
 
@@ -186,21 +217,28 @@ NNode NNode::toNFormPoly() const {
   for(size_t i = 0; i < coefArray.size(); i++) {
     newCoefArray.add(N(coefArray[i]).toNFormRealExp());
   }
-  return polyExp(newCoefArray, arg.toNFormRealExp());
+  RETURNNODE( polyExp(newCoefArray, arg.toNFormRealExp()) );
 }
 
 NNode NNode::toNFormTreeNode() const {
+  ENTERMETHOD();
   if(isBooleanOperator()) {
-    return toNFormBoolExp();
+    RETURNNODE( toNFormBoolExp() );
   }
   switch(getSymbol()) {
   case IIF:
     { const NNode cond   = N(child(0)).toNFormBoolExp();
       const NNode eTrue  = N(child(1)).toNFormRealExp();
       const NNode eFalse = N(child(2)).toNFormRealExp();
-      if(eTrue.equal(eFalse)) return eTrue; // dont care about condition
-      if(cond.isTrue()) return eTrue; else if(cond.isFalse()) return eFalse;
-      return condExp(cond, eTrue, eFalse);
+      if(eTrue.equal(eFalse)) {
+        RETURNNODE( eTrue ); // dont care about condition
+      }
+      if(cond.isTrue()) {
+        RETURNNODE( eTrue );
+      } else if(cond.isFalse()) {
+        RETURNNODE( eFalse );
+      }
+      RETURNNODE( condExp(cond, eTrue, eFalse) );
     }
   default:
     { const SNodeArray &a = getChildArray();
@@ -208,28 +246,9 @@ NNode NNode::toNFormTreeNode() const {
       for(size_t i = 0; i < a.size(); i++) {
         newChildArray.add(N(a[i]).toNFormRealExp());
       }
-      return treeExp(getSymbol(), newChildArray);
+      RETURNNODE( treeExp(getSymbol(), newChildArray) );
     }
   }
-}
-
-ExpressionNode *ParserTree::toNumericForm(ExpressionNode *n) {
-  if(n == NULL) return n;
-  switch(getTreeForm()) {
-  case TREEFORM_STANDARD :
-    n = toStandardForm(N(toCanonicalForm(n)).convert());
-    m_ops = NodeOperators::s_stdNumForm;
-    break;
-
-  case TREEFORM_CANONICAL:
-    n = toCanonicalForm((N(n).convert()));
-    m_ops = NodeOperators::s_canonNumForm;
-    break;
-
-  case TREEFORM_NUMERIC  :
-    return n;
-  }
-  return n;
 }
 
 }; // namespace Expr

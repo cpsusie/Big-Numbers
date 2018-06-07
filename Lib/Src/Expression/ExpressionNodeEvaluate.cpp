@@ -12,7 +12,6 @@ Real ExpressionNode::evaluateReal() const {
   case PROD     : return left()->evaluateReal() * right()->evaluateReal();
   case QUOT     : return left()->evaluateReal() / right()->evaluateReal();
   case MOD      : return fmod(left()->evaluateReal(), right()->evaluateReal());
-  case POW      : return evaluatePow();
   case ROOT     : return evaluateRoot();
   case BINOMIAL : return binomial(               left()->evaluateReal(),  right()->evaluateReal());
   case CHI2DIST : return chiSquaredDistribution( left()->evaluateReal(),  right()->evaluateReal());
@@ -85,27 +84,6 @@ Real ExpressionNode::evaluateReal() const {
     }
   default      : throwUnknownSymbolException(method);
                  return 0;
-  }
-}
-
-Real ExpressionNode::evaluatePow() const {
-  Real base = left()->evaluateReal();
-  const Real expo = right()->evaluateReal();
-  if(base >= 0) {
-    return mypow(base, expo);
-  } else {
-    Rational expoR;
-    if(Rational::isRational(expo, &expoR)) {
-      if(expoR.getNumerator() != 1) {
-        base = mypow(base, (Real)expoR.getNumerator());
-      }
-      if(expoR.getDenominator() != 1) {
-        base = ::root(base, (Real)expoR.getDenominator());
-      }
-      return base;
-    } else {
-      return ::pow(base, expo); // -1.#IND
-    }
   }
 }
 

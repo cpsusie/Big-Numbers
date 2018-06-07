@@ -12,7 +12,7 @@ void FactorArray::sort() {
 }
 
 void FactorArray::add(SNode n) {
-  CHECKNODETYPE(n,NT_FACTOR);
+  CHECKNODETYPE(n,NT_POWER);
   __super::add(n);
 }
 
@@ -24,9 +24,9 @@ void FactorArray::addAll(const FactorArray &src) {
 
 void FactorArray::addAutoConvert(SNode n) {
   switch(n.getNodeType()) {
-  case NT_FACTOR : add(n);                     break;
+  case NT_POWER  : add(n);                     break;
   case NT_PRODUCT: addAll(n.getFactorArray()); break;
-  default        : add(factorExp(n,1));        break;
+  default        : add(powerExp(n,1));         break;
   }
 }
 

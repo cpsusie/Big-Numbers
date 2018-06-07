@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Math/Number.h>
+#include <TinyBitSet.h>
 #include <Math/Expression/ExpressionSymbol.h>
 #include "SNodeReduceDbgStack.h"
 
@@ -13,7 +14,6 @@ class ExpressionNodeSum;
 class AddentArray;
 class FactorArray;
 class ParserTree;
-class ExpressionSymbolSet;
 
 // Define this, to have consistency check of ExpressionNodes when doing reduction
 // and transformation to Canon-form/Std-form/Num-form
@@ -43,16 +43,42 @@ typedef enum {
  ,NT_SUM
  ,NT_PRODUCT
  ,NT_ADDENT
- ,NT_FACTOR
+ ,NT_POWER
 } ExpressionNodeType;
 
+class NodeTypeSet : public BitSet32 {
+  DECLAREDEBUGSTRING;
+private:
+  void init(ExpressionNodeType t1, va_list argptr); // terminate list with -1
+public:
+  NodeTypeSet() {}
+  NodeTypeSet(ExpressionNodeType t1,...); // terminate argumentlist with -1
+  String toString() const;
+};
+
+class ExpressionSymbolSet : public BitSet {
+  DECLAREDEBUGSTRING;
+private:
+  void init(ExpressionInputSymbol s1, va_list argptr); // terminate list with EOI
+public:
+  ExpressionSymbolSet();
+  ExpressionSymbolSet(ExpressionInputSymbol s1,...);   // terminate list with EOI
+  ExpressionSymbolSet(ExpressionInputSymbol s1, va_list argptr);
+  String toString() const;
+};
+
 #ifdef _DEBUG
-#define CHECKNODETYPE( n,expectedType  ) ExpressionNode::checkNodeType(__TFUNCTION__,(n).node(),expectedType  )
-#define CHECKSYMBOL(   n,expectedSymbol) ExpressionNode::checkSymbol(  __TFUNCTION__,(n).node(),expectedSymbol)
-#else _DEBUG
-#define CHECKNODETYPE( n,expectedType  )
-#define CHECKSYMBOL(   n,expectedSymbol)
-#endif _DEBUG
+#define DEFINEVALIDTYPES(...             ) static const NodeTypeSet _validNodeTypes(__VA_ARGS__)
+#define CHECKNODETYPE(   n,expectedType  ) ExpressionNode::checkNodeType(__TFUNCTION__,(n).node(),expectedType   )
+#define CHECKNODETYPESET(n               ) ExpressionNode::checkNodeType(__TFUNCTION__,(n).node(),_validNodeTypes)
+#define CHECKNODEPTYPE(  n,expectedType  ) ExpressionNode::checkNodeType(__TFUNCTION__,n         ,expectedType   )
+#define CHECKSYMBOL(     n,expectedSymbol) ExpressionNode::checkSymbol(  __TFUNCTION__,(n).node(),expectedSymbol )
+#else // _DEBUG
+#define DEFINEVALIDTYPES(...             )
+#define CHECKNODETYPE(   n,expectedType  )
+#define CHECKNODEPTYPE(  n,expectedType  )
+#define CHECKSYMBOL(     n,expectedSymbol)
+#endif // _DEBUG
 
 // Wrapper class til ExpressionNode
 class SNode {
@@ -85,7 +111,7 @@ private:
   SNode              multiplyStmtList() const;
   SNode              multiplyParenthesesInSum() const;
   SNode              multiplyParenthesesInProduct() const;
-  // Assume factor.type=NT_FACTOR and sum.type=NT_SUM
+  // Assume factor.type=NT_POWER and sum.type=NT_SUM
   SNode              multiplyFactorSum(SNode factor, SNode sum) const;
 
   // Assume e1.type==e2.type==NT_ADDENT
@@ -332,24 +358,24 @@ public:
   SNodeArray &removeUnusedAssignments();
 };
 
-SNode unaryExp(  ExpressionInputSymbol symbol, SNode n);
-SNode binExp(    ExpressionInputSymbol symbol, SNode n1, SNode n2);
-SNode condExp(   SNode condition , SNode nTrue  , SNode nFalse);
+SNode unaryExp(   ExpressionInputSymbol symbol, SNode n);
+SNode binExp(     ExpressionInputSymbol symbol, SNode n1, SNode n2);
+SNode condExp(    SNode condition , SNode nTrue  , SNode nFalse);
 
-SNode polyExp(   SNodeArray &coefArray, SNode arg);
-SNode boolExp(   ExpressionInputSymbol symbol, SNode left, SNode right);
-SNode boolExp(   ExpressionInputSymbol symbol, SNode child);
-SNode boolExp(   ExpressionInputSymbol symbol, SNodeArray &a);
-SNode treeExp(   ExpressionInputSymbol symbol, SNodeArray &a); // assume a.size() > 0
-SNode productExp(FactorArray &a);                              // assume a.size() > 0
-SNode sumExp(    AddentArray &a);                              // assume a.size() > 0
-SNode assignStmt(SNode leftSide  , SNode expr);
-SNode assignStmt(SNodeArray &list);
-SNode stmtList(  SNodeArray &list);
+SNode polyExp(    SNodeArray &coefArray, SNode arg);
+SNode boolExp(    ExpressionInputSymbol symbol, SNode left, SNode right);
+SNode boolExp(    ExpressionInputSymbol symbol, SNode child);
+SNode boolExp(    ExpressionInputSymbol symbol, SNodeArray &a);
+SNode treeExp(    ExpressionInputSymbol symbol, SNodeArray &a); // assume a.size() > 0
+SNode productExp( FactorArray &a);                              // assume a.size() > 0
+SNode sumExp(     AddentArray &a);                              // assume a.size() > 0
+SNode assignStmt( SNode leftSide  , SNode expr);
+SNode assignStmt( SNodeArray &list);
+SNode stmtList(   SNodeArray &list);
 SNode indexedSum( SNode assignStmt, SNode endExpr, SNode expr  );
 SNode indexedProd(SNode assignStmt, SNode endExpr, SNode expr  );
-SNode addentExp( SNode child     , bool positive);
-SNode factorExp( SNode base      , SNode expo);
-SNode factorExp( SNode base      , const Rational &expo);
+SNode addentExp(  SNode child     , bool positive);
+SNode powerExp(   SNode base      , SNode expo);
+SNode powerExp(   SNode base      , const Rational &expo);
 
 }; // namespace Expr

@@ -75,6 +75,7 @@ void Expression::compile(const String &expr, bool machineCode, bool optimize, FI
 void Expression::parse(const String &expr) {
   clear();
   setOk(true);
+  setTreeForm(TREEFORM_STANDARD);
   LexStringStream    stream(expr);
   ExpressionLex      lex(&stream);
   ExpressionParser   parser(*this, &lex);
@@ -82,7 +83,6 @@ void Expression::parse(const String &expr) {
   parser.parse();
   if(isOk()) {
     buildSymbolTable();
-    setTreeForm(TREEFORM_STANDARD);
     setState(PS_COMPILED);
   }
 }

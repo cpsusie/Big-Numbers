@@ -3,6 +3,12 @@
   <Type Name="Expr::ExpressionVariable">
     <DisplayString>{Name={m_name} Value={m_value}}</DisplayString>
   </Type>
+  <Type Name="Expr::NodeTypeSet">
+    <DisplayString>{m_debugStr}</DisplayString>
+  </Type>
+  <Type Name="Expr::ExpressionSymbolSet">
+    <DisplayString>{m_debugStr}</DisplayString>
+  </Type>
   <Type Name="Expr::ExpressionNode">
     <DisplayString>{m_debugStr}</DisplayString>
   </Type>

@@ -3,6 +3,33 @@
 
 namespace Expr {
 
+NodeTypeSet::NodeTypeSet(ExpressionNodeType t1,...) { // terminate argumentlist with -1
+  va_list argptr;
+  va_start(argptr, t1);
+  init(t1,argptr);
+  va_end(argptr);
+}
+
+void NodeTypeSet::init(ExpressionNodeType t1, va_list argptr) {
+  add(t1);
+  for(ExpressionNodeType t=va_arg(argptr, ExpressionNodeType); (int)t != -1; t = va_arg(argptr, ExpressionNodeType)) {
+    add(t);
+  }
+  UPDATEDEBUGSTRING(*this);
+}
+
+class NodeTypeSetStringifier : public AbstractStringifier<UINT> {
+public:
+  String toString(const UINT &e) {
+    const ExpressionNodeType type = (ExpressionNodeType)e;
+    return ExpressionNode::getNodeTypeName(type);
+  }
+};
+
+String NodeTypeSet::toString() const {
+  return __super::toString(&NodeTypeSetStringifier());
+}
+
 ExpressionSymbolSet::ExpressionSymbolSet() : BitSet(ParserTree::getTerminalCount()) {
 }
 
@@ -23,6 +50,7 @@ void ExpressionSymbolSet::init(ExpressionInputSymbol s1, va_list argptr) {
   for(ExpressionInputSymbol s=va_arg(argptr, ExpressionInputSymbol); s != EOI; s = va_arg(argptr, ExpressionInputSymbol)) {
     add(s);
   }
+  UPDATEDEBUGSTRING(*this);
 }
 
 class SymbolStringifier : public AbstractStringifier<ExpressionInputSymbol> {

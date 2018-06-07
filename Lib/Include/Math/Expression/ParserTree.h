@@ -180,9 +180,9 @@ protected:
   void iterateTransformation(ParserTreeTransformer &transformer);
   void checkIsStandardForm();
   void checkIsCanonicalForm();
-  ExpressionNode *toStandardForm( ExpressionNode *n);
-  ExpressionNode *toCanonicalForm(ExpressionNode *n);
-  ExpressionNode *toNumericForm(  ExpressionNode *n);
+  SNode toStandardForm( SNode n);
+  SNode toCanonicalForm(SNode n);
+  SNode toNumericForm(  SNode n);
   void releaseAll();
   void pruneUnusedNodes();
   void markPow1Nodes();
@@ -344,7 +344,7 @@ public:
   ExpressionNode         *getPoly(      SNode oldPoly               , SNodeArray           &newCoefArray    , SNode newArg  );
   ExpressionNode         *getSum(       SNode oldSum                , AddentArray          &newAddentArray                  );
   ExpressionNode         *getProduct(   SNode oldProduct            , FactorArray          &newFactorArray                  );
-  ExpressionNode         *getFactor(    SNode oldFactor             , SNode                 newBase         , SNode newExpo );
+  ExpressionNode         *getPower(     SNode oldPower              , SNode                 newBase         , SNode newExpo );
 
   ExpressionNode         *stmtList(                                   SNodeArray           &stmtArray                       );
   ExpressionNode         *assignStmt(                                 SNodeArray           &a                               );
@@ -356,9 +356,9 @@ public:
   ExpressionNode         *sumExpr(                                    AddentArray          &addentArray);
   ExpressionNode         *productExpr(                                FactorArray          &factorArray);
   ExpressionNode         *addentExpr(                                 SNode           child, bool positive);
-  ExpressionNode         *factorExpr(                                 SNode           base);
-  ExpressionNode         *factorExpr(                                 SNode           base , SNode exponent);
-  ExpressionNode         *factorExpr(                                 SNode           base , const Rational &exponent);
+  ExpressionNode         *powerExpr(                                  SNode           base);
+  ExpressionNode         *powerExpr(                                  SNode           base , SNode exponent);
+  ExpressionNode         *powerExpr(                                  SNode           base , const Rational &exponent);
 
   ExpressionNode         *expandPower(   ExpressionNode *base, const Rational &exponent);
 

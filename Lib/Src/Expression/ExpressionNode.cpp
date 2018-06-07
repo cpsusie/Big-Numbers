@@ -22,7 +22,7 @@ String ExpressionNode::getNodeTypeName(ExpressionNodeType nt) { // static
   CASESTR(SUM      );
   CASESTR(PRODUCT  );
   CASESTR(ADDENT   );
-  CASESTR(FACTOR   );
+  CASESTR(POWER    );
   default: return format(_T("Unknown nodetype:%d"),nt);
   }
 }
@@ -389,6 +389,16 @@ void ExpressionNode::checkNodeType(const TCHAR *method, const ExpressionNode *n,
   }
 }
 
+void ExpressionNode::checkNodeType(const TCHAR *method, const ExpressionNode *n, const NodeTypeSet &validTypes) { // static
+  if((n==NULL) || !validTypes.contains(n->getNodeType())) {
+    throwInvalidArgumentException(method
+                                 ,_T("Valid nodetypes:%s. Type=%s")
+                                 ,validTypes.toString().cstr()
+                                 ,n?n->getNodeTypeName().cstr():_T("NULL")
+                                 );
+  }
+}
+
 void ExpressionNode::checkSymbol(const TCHAR *method, const ExpressionNode *n, ExpressionInputSymbol expectedSymbol) { // static
   if((n==NULL) || (n->getSymbol() != expectedSymbol)) {
     throwInvalidArgumentException(method
@@ -401,11 +411,11 @@ void ExpressionNode::checkSymbol(const TCHAR *method, const ExpressionNode *n, E
 
 #ifdef CHECK_CONSISTENCY
 bool ExpressionNode::isConsistentSymbolAndType() const {
-  ExpressionNodeType type1, type2;
+  ExpressionNodeType type;
   switch(getSymbol()) {
-  case NUMBER  : type1 = type2  = NT_NUMBER;    break;
-  case NAME    : type1 = type2  = NT_VARIABLE;  break;
-  case TYPEBOOL: type1 = type2  = NT_BOOLCONST; break;
+  case NUMBER  : type = NT_NUMBER;    break;
+  case NAME    : type = NT_VARIABLE;  break;
+  case TYPEBOOL: type = NT_BOOLCONST; break;
   case AND     :
   case OR      :
   case NOT     :
@@ -414,18 +424,18 @@ bool ExpressionNode::isConsistentSymbolAndType() const {
   case LT      :
   case LE      :
   case GT      :
-  case GE      : type1 = type2  = NT_BOOLEXPR;  break;
-  case POLY    : type1 = type2  = NT_POLY;      break;
-  case ASSIGN  : type1 = type2  = NT_ASSIGN;    break;
-  case STMTLIST: type1 = type2  = NT_STMTLIST;  break;
-  case SUM     : type1 = type2  = NT_SUM;       break;
-  case ADDENT  : type1 = type2  = NT_ADDENT;    break;
-  case PRODUCT : type1 = type2  = NT_PRODUCT;   break;
-  case POW     : type1 = NT_FACTOR;  type2  = NT_TREE;  break;
-  default      : type1 = type2  = NT_TREE;      break;
+  case GE      : type = NT_BOOLEXPR;  break;
+  case POLY    : type = NT_POLY;      break;
+  case ASSIGN  : type = NT_ASSIGN;    break;
+  case STMTLIST: type = NT_STMTLIST;  break;
+  case SUM     : type = NT_SUM;       break;
+  case ADDENT  : type = NT_ADDENT;    break;
+  case PRODUCT : type = NT_PRODUCT;   break;
+  case POW     : type = NT_POWER;     break;
+  default      : type = NT_TREE;      break;
   }
 
-  if((getNodeType() != type1) && (getNodeType() != type2)) {
+  if(getNodeType() != type) {
     return false;
   }
   return true;

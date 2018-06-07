@@ -74,9 +74,9 @@ void ParserTree::setTreeForm(ParserTreeForm form) {
   if(form != oldForm) {
     const ExpressionVariableArray oldVariables = getSymbolTable().getAllVariables();
     switch(form) {
-    case TREEFORM_STANDARD : setRoot(toStandardForm( getRoot())); break;
-    case TREEFORM_CANONICAL: setRoot(toCanonicalForm(getRoot())); break;
-    case TREEFORM_NUMERIC  : setRoot(toNumericForm(  getRoot())); break;
+    case TREEFORM_STANDARD : setRoot(toStandardForm( getRoot()).node()); break;
+    case TREEFORM_CANONICAL: setRoot(toCanonicalForm(getRoot()).node()); break;
+    case TREEFORM_NUMERIC  : setRoot(toNumericForm(  getRoot()).node()); break;
     default                :
       throwInvalidArgumentException(__TFUNCTION__,_T("form=%d"), form);
     }
@@ -301,11 +301,11 @@ SNode ParserTree::traverseSubstituteNodes(SNode n, CompactNodeHashMap<Expression
       }
       return getProduct(n, newFactorArray);
     }
-  case NT_FACTOR    :
-    { ExpressionFactor *oldFactor = (ExpressionFactor*)n.node();
-      SNode newBase   = traverseSubstituteNodes(oldFactor->base()    , nodeMap);
-      SNode newExpo   = traverseSubstituteNodes(oldFactor->exponent(), nodeMap);
-      return getFactor(oldFactor, newBase, newExpo);
+  case NT_POWER     :
+    { ExpressionNode *oldPower = n.node();
+      SNode newBase   = traverseSubstituteNodes(oldPower->base()    , nodeMap);
+      SNode newExpo   = traverseSubstituteNodes(oldPower->exponent(), nodeMap);
+      return getPower(oldPower, newBase, newExpo);
     }
 
   default            :
@@ -423,8 +423,11 @@ ExpressionNode *ParserTree::vFetchNode(const SourcePosition &pos, ExpressionInpu
       n = new ExpressionNodePolyWithPos(   this, pos, coefArray, arg);
     }
     break;
+  case POW     :
+    n = new ExpressionNodePowerWithPos(       this, pos,         argptr);
+    break;
   default      :
-    n = new ExpressionNodeTreeWithPos(     this, pos, symbol, argptr);
+    n = new ExpressionNodeTreeWithPos(    this, pos, symbol, argptr);
     break;
   }
   TRACE_NEW(n);

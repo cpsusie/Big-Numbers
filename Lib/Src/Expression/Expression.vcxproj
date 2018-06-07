@@ -838,7 +838,7 @@
     <ClCompile Include="ExpressionAddent.cpp" />
     <ClCompile Include="ExpressionCompile.cpp" />
     <ClCompile Include="ExpressionDerive.cpp" />
-    <ClCompile Include="ExpressionFactor.cpp" />
+    <ClCompile Include="ExpressionNodePower.cpp" />
     <ClCompile Include="ExpressionFunction.cpp" />
     <ClCompile Include="ExpressionHelp.cpp" />
     <ClCompile Include="ExpressionLex.cpp" />

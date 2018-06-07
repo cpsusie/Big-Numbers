@@ -29,8 +29,8 @@ private:
   static inline ExpressionNode *indexedProduct( ExpressionNode *assign, ExpressionNode *end, ExpressionNode *expr) {
     return assign->getTree().indexedProduct(assign,end,expr);
   }
-  static inline ExpressionNode *factorExpr(     ExpressionNode *base, ExpressionNode *exponent) {
-    return base->getTree().factorExpr(base,exponent);
+  static inline ExpressionNode *powerExpr(      ExpressionNode *base, ExpressionNode *exponent) {
+    return base->getTree().powerExpr(base,exponent);
   }
   static inline ExpressionNode *constExpr(      ExpressionNode *n, const TCHAR *name) {
     return n->getTree().constExpr(name);
@@ -97,11 +97,11 @@ ExpressionNode *NodeOperatorsCanonForm::minus(ExpressionNode *n) const {
         if(i != index) {
           newFactors.add(factor);
         } else {
-          newFactors.add(factorExp(-factor.base(),factor.exponent()));
+          newFactors.add(powerExp(-factor.base(),factor.exponent()));
         }
       }
       if(index < 0) {
-        newFactors.add(factorExp(getMinusOne(n),1));
+        newFactors.add(powerExp(getMinusOne(n),1));
       }
       return productExpr(newFactors);
     }
@@ -138,7 +138,7 @@ ExpressionNode *NodeOperatorsCanonForm::reciprocal(ExpressionNode *n) const {
       FactorArray newFactors(factors.getTree(), sz);
       for(size_t i = 0; i < sz; i++) {
         SNode factor = factors[i];
-        newFactors.add(factorExp(factor.base(), -factor.exponent()));
+        newFactors.add(powerExp(factor.base(), -factor.exponent()));
       }
       return productExpr(newFactors);
     }
@@ -186,8 +186,8 @@ ExpressionNode *NodeOperatorsCanonForm::prod(ExpressionNode *n1, ExpressionNode 
     return numberExpr(n1, n1->getRational() * n2->getRational());
   }
   FactorArray a(n1->getTree(),2);
-  a.add(factorExp(n1,1));
-  a.add(factorExp(n2,1));
+  a.add(powerExp(n1,1));
+  a.add(powerExp(n2,1));
   return productExpr(a);
 }
 
@@ -201,16 +201,16 @@ ExpressionNode *NodeOperatorsCanonForm::quot(ExpressionNode *n1, ExpressionNode 
     return n1;
   }
   FactorArray a(n1->getTree());
-  a.add(factorExp(n1,1));
+  a.add(powerExp(n1,1));
   if(n2->getSymbol() != PRODUCT) {
-    a.add((n2->getSymbol() == POW) ? factorExp(n2->left(), minus(n2->right())) : factorExp(n2, -1));
+    a.add((n2->getSymbol() == POW) ? powerExp(n2->left(), minus(n2->right())) : powerExp(n2, -1));
   } else {
     const FactorArray &a2 = n2->getFactorArray();
     const size_t       sz = a2.size();
 
     for(size_t i = 0; i < sz; i++) {
       SNode f = a2[i];
-      a.add(factorExp(f.base(), -f.exponent()));
+      a.add(powerExp(f.base(), -f.exponent()));
     }
   }
   return productExpr(a);
@@ -220,8 +220,8 @@ ExpressionNode *NodeOperatorsCanonForm::quot(ParserTree *tree, INT64 num, INT64 
   ExpressionNode *n1 = tree->numberExpr(num);
   ExpressionNode *n2 = tree->numberExpr(den);
   FactorArray a(*tree);
-  a.add(factorExp(n1, 1));
-  a.add(factorExp(n2,-1));
+  a.add(powerExp(n1, 1));
+  a.add(powerExp(n2,-1));
   ExpressionNode *q = productExpr(a);
   q->setReduced();
   return q;
@@ -239,6 +239,7 @@ ExpressionNode *NodeOperatorsCanonForm::sqrt(ExpressionNode *n) const {
   return power(n, getHalf(n));
 }
 
+// doesn't always return a node of type NT_POW
 ExpressionNode *NodeOperatorsCanonForm::power(ExpressionNode *n1, ExpressionNode *n2) const {
   if(n2->isZero()) {
     return getOne(n1);
@@ -248,9 +249,9 @@ ExpressionNode *NodeOperatorsCanonForm::power(ExpressionNode *n1, ExpressionNode
     return reciprocal(n1);
   } else if(n1->getSymbol() == POW) {
     ParserTree &tree = n1->getTree();
-    return factorExpr(n1->left(), tree.multiplyExponents(n1->right(), n2));
+    return powerExpr(n1->left(), tree.multiplyExponents(n1->right(), n2));
   } else {
-    return factorExpr(n1, n2);
+    return powerExpr(n1, n2);
   }
 }
 
@@ -316,19 +317,19 @@ public:
   inline CNode(ExpressionNode *n) : SNode(n) {
     CHECKISCONSISTENT(*n);
   }
-  CNode convert() const {
+  SNode convert() const {
     ENTERMETHOD();
     RETURNNODE( toCForm() );
   }
 };
 
-ExpressionNode *ParserTree::toCanonicalForm(ExpressionNode *n) {
-  if((getTreeForm() == TREEFORM_CANONICAL) || (n == NULL)) {
+SNode ParserTree::toCanonicalForm(SNode n) {
+  if((getTreeForm() == TREEFORM_CANONICAL) || n.isEmpty()) {
     return n;
   }
   m_ops = NodeOperators::s_canonForm;
   STARTREDUCTION(this);
-  return CNode(n).convert().node();
+  return CNode(n.node()).convert();
 }
 
 
@@ -384,7 +385,6 @@ CNode CNode::toCFormTreeNode() const {
 
 CNode CNode::toCFormPoly() const {
   ENTERMETHOD();
-
   const SNodeArray &coefArray = getCoefArray();
   const size_t      sz        = coefArray.size();
   SNodeArray        newCoefArray(coefArray.getTree(), sz);
@@ -480,7 +480,7 @@ FactorArray &CNode::toCFormProduct(FactorArray &result, SNode &exponent) const {
     break;
   case ROOT:
     { CNode s = root(N(left()).toCForm(), N(right()).toCForm());
-      if((s.getNodeType() == NT_FACTOR) && exponent.isOne()) {
+      if((s.getNodeType() == NT_POWER) && exponent.isOne()) {
         result.add(s);
       } else {
         s.toCFormProduct(result,exponent);
@@ -489,7 +489,7 @@ FactorArray &CNode::toCFormProduct(FactorArray &result, SNode &exponent) const {
     break;
   case SQR:
     { CNode s = sqr(N(left()).toCForm());
-      if((s.getNodeType() == NT_FACTOR) && exponent.isOne()) {
+      if((s.getNodeType() == NT_POWER) && exponent.isOne()) {
         result.add(s);
       } else {
         s.toCFormProduct(result,exponent);
@@ -498,7 +498,7 @@ FactorArray &CNode::toCFormProduct(FactorArray &result, SNode &exponent) const {
     break;
   case SQRT:
     { CNode s = sqrt(N(left()).toCForm());
-      if((s.getNodeType() == NT_FACTOR) && exponent.isOne()) {
+      if((s.getNodeType() == NT_POWER) && exponent.isOne()) {
         result.add(s);
       } else {
         s.toCFormProduct(result,exponent);
@@ -524,10 +524,10 @@ FactorArray &CNode::toCFormProduct(FactorArray &result, SNode &exponent) const {
     if(isOne()) break; // don't bother about this
     // NB continue case
   case NAME  :
-    result.add(factorExp(*this, exponent));
+    result.add(powerExp(*this, exponent));
     break;
   default:
-    result.add(factorExp(toCForm(), exponent));
+    result.add(powerExp(toCForm(), exponent));
     break;
   }
   RETURNSHOWSTR(result);
@@ -541,18 +541,18 @@ FactorArray &CNode::toCFormPower(FactorArray &result, SNode &exponent) const {
 
   switch(base.getSymbol()) {
   case POW :
-    result.add(factorExp(base.left(), multiplyExponents(multiplyExponents(base.right(),expo), exponent)));
+    result.add(powerExp(base.left(), multiplyExponents(multiplyExponents(base.right(),expo), exponent)));
     break;
   case ROOT:
     throwInvalidSymbolForTreeMode(__TFUNCTION__);
     break;
   default                   :
     if(exponent.isOne()) {
-      result.add(factorExp(base, expo));
+      result.add(powerExp(base, expo));
     } else if(expo.isOne()) {
-      result.add(factorExp(base, exponent));
+      result.add(powerExp(base, exponent));
     } else {
-      result.add(factorExp(base, multiplyExponents(expo, exponent)));
+      result.add(powerExp(base, multiplyExponents(expo, exponent)));
     }
     break;
   }
@@ -567,13 +567,13 @@ FactorArray &CNode::toCFormRoot(FactorArray &result, SNode &exponent) const {
 
   switch(rad.getSymbol()) {
   case POW :
-    result.add(factorExp(rad.left(), multiplyExponents(divideExponents(rad.right(), root), exponent)));
+    result.add(powerExp(rad.left(), multiplyExponents(divideExponents(rad.right(), root), exponent)));
     break;
   case ROOT:
     throwInvalidSymbolForTreeMode(__TFUNCTION__);
     break;
   default                   :
-    result.add(factorExp(rad, divideExponents(exponent,root)));
+    result.add(powerExp(rad, divideExponents(exponent,root)));
     break;
   }
   RETURNSHOWSTR( result );

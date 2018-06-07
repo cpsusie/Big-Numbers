@@ -16,7 +16,7 @@ SNode SNode::multiplyParentheses() const {
   case NT_NUMBER   :
   case NT_BOOLCONST:
   case NT_VARIABLE : RETURNNODE( *this );
-  case NT_FACTOR   :
+  case NT_POWER    :
   case NT_TREE     : RETURNNODE( multiplyTreeNode() );
   case NT_BOOLEXPR : RETURNNODE( multiplyBoolExpr() );
   case NT_POLY     : RETURNNODE( multiplyParenthesesInPoly() );
@@ -31,6 +31,8 @@ SNode SNode::multiplyParentheses() const {
 
 SNode SNode::multiplyTreeNode() const {
   ENTERMETHOD();
+  DEFINEVALIDTYPES(NT_TREE,NT_POWER,-1);
+  CHECKNODETYPESET(*this);
   const SNodeArray &a = getChildArray();
   SNodeArray        newChildArray(a.getTree(), a.size());
   for(size_t i = 0; i < a.size(); i++) {
@@ -107,7 +109,7 @@ SNode SNode::multiplyParenthesesInProduct() const {
   FactorArray        newFactorArray(a.getTree(), n);
   for(size_t i = 0; i < n; i++) {
     SNode f = a[i];
-    newFactorArray.add(factorExp(f.base().multiplyParentheses(), f.exponent().multiplyParentheses()));
+    newFactorArray.add(powerExp(f.base().multiplyParentheses(), f.exponent().multiplyParentheses()));
   }
 
   BitSet done(newFactorArray.size() + 1);
@@ -130,11 +132,11 @@ SNode SNode::multiplyParenthesesInProduct() const {
           continue;
         }
         if(f1.base().getSymbol() == SUM) {
-          newFactorArray.add(factorExp(multiplyFactorSum(f2, f1.base()),1));
+          newFactorArray.add(powerExp(multiplyFactorSum(f2, f1.base()),1));
           done.add(i1);
           done.add(i2);
         } else if(f2.base().getSymbol() == SUM) {
-          newFactorArray.add(factorExp(multiplyFactorSum(f1, f2.base()),1));
+          newFactorArray.add(powerExp(multiplyFactorSum(f1, f2.base()),1));
           done.add(i1);
           done.add(i2);
         }
@@ -152,8 +154,8 @@ SNode SNode::multiplyParenthesesInProduct() const {
 
 SNode SNode::multiplyFactorSum(SNode factor, SNode sum) const {
   ENTERMETHOD2(factor,sum);
-  CHECKNODETYPE(factor,NT_FACTOR);
-  CHECKNODETYPE(sum   ,NT_SUM   );
+  CHECKNODETYPE(factor,NT_POWER);
+  CHECKNODETYPE(sum   ,NT_SUM  );
 
   if((factor.base().getSymbol() == SUM) && factor.exponent().isOne()) {
     RETURNNODE(multiplySumSum(factor.base(),sum));

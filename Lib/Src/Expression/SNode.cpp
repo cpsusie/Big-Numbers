@@ -580,12 +580,12 @@ SNode addentExp(SNode child, bool positive) {
   return child.getTree().addentExpr(child, positive);
 }
 
-SNode factorExp(SNode base, SNode expo) {
-  return base.getTree().factorExpr(base,expo);
+SNode powerExp(SNode base, SNode expo) {
+  return base.getTree().powerExpr(base,expo);
 }
 
-SNode factorExp(SNode base, const Rational &expo) {
-  return base.getTree().factorExpr(base,expo);
+SNode powerExp(SNode base, const Rational &expo) {
+  return base.getTree().powerExpr(base,expo);
 }
 
 }; // namespace Expr

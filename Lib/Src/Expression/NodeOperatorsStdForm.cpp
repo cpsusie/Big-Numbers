@@ -183,7 +183,8 @@ ExpressionNode *NodeOperatorsStdForm::power(ExpressionNode *n1, ExpressionNode *
     }
     return exp(n2);
   } else if(n1->getSymbol() == POW) {
-    return binaryExpr(POW, n1->left(), prod(n1->right(), n2));
+    ParserTree &tree = n1->getTree();
+    return tree.powerExpr(n1->left(), tree.multiplyExponents(n1->right(), n2));
   }
 
   if(n2->isNumber()) {
@@ -203,7 +204,7 @@ ExpressionNode *NodeOperatorsStdForm::power(ExpressionNode *n1, ExpressionNode *
       }
     }
   }
-  return binaryExpr(POW, n1, n2);
+  return n1->getTree().powerExpr(n1, n2);
 }
 
 ExpressionNode *NodeOperatorsStdForm::root(ExpressionNode *n1, ExpressionNode *n2) const {
@@ -267,25 +268,36 @@ public:
   inline StdNode(ExpressionNode *n) : SNode(n) {
     CHECKISCONSISTENT(*n);
   }
-  ExpressionNode *convert() const {
-    return toSForm().node();
+  SNode convert() const {
+    ENTERMETHOD();
+    RETURNNODE(toSForm());
   }
 };
 
+SNode ParserTree::toStandardForm(SNode n) {
+  if((getTreeForm() == TREEFORM_STANDARD) || n.isEmpty()) {
+    return n;
+  }
+  STARTREDUCTION(this);
+  m_ops = NodeOperators::s_stdForm;
+  return StdNode(n.node()).convert();
+}
+
 // Eliminate all product-,addent- and Sum nodes
 StdNode StdNode::toSForm() const {
+  ENTERMETHOD();
   switch(getNodeType()) {
   case NT_NUMBER     :
   case NT_BOOLCONST  :
-  case NT_VARIABLE   : return *this;
-  case NT_TREE       :
-  case NT_FACTOR     : return (getSymbol() == POW) ? toSFormPow() : toSFormTreeNode();
-  case NT_BOOLEXPR   : return toSFormBoolExpr();
-  case NT_POLY       : return toSFormPoly();
-  case NT_ASSIGN     : return toSFormAssign();
-  case NT_STMTLIST   : return toSFormStmtList();
-  case NT_SUM        : return toSFormSum();
-  case NT_PRODUCT    : return toSFormProduct();
+  case NT_VARIABLE   : RETURNNODE(*this              );
+  case NT_TREE       : RETURNNODE( toSFormTreeNode() );
+  case NT_POWER      : RETURNNODE( toSFormPow()      );
+  case NT_BOOLEXPR   : RETURNNODE( toSFormBoolExpr() );
+  case NT_POLY       : RETURNNODE( toSFormPoly()     );
+  case NT_ASSIGN     : RETURNNODE( toSFormAssign()   );
+  case NT_STMTLIST   : RETURNNODE( toSFormStmtList() );
+  case NT_SUM        : RETURNNODE( toSFormSum()      );
+  case NT_PRODUCT    : RETURNNODE( toSFormProduct()  );
   default            : throwUnknownNodeTypeException(__TFUNCTION__);
                        return *this;
   }
@@ -295,24 +307,27 @@ StdNode StdNode::toSForm() const {
 #define NV(v) SNode(getTree(),v)
 
 StdNode StdNode::toSFormTreeNode() const {
+  ENTERMETHOD();
   const SNodeArray &a = getChildArray();
   SNodeArray        newChildArray(a.getTree(),a.size());
   for(size_t i = 0; i < a.size(); i++) {
     newChildArray.add(N(a[i]).toSForm());
   }
-  return treeExp(getSymbol(), newChildArray);
+  RETURNNODE( treeExp(getSymbol(), newChildArray) );
 }
 
 StdNode StdNode::toSFormBoolExpr() const {
+  ENTERMETHOD();
   const SNodeArray &a = getChildArray();
   SNodeArray        newChildArray(a.getTree(),a.size());
   for(size_t i = 0; i < a.size(); i++) {
     newChildArray.add(N(a[i]).toSForm());
   }
-  return boolExp(getSymbol(), newChildArray);
+  RETURNNODE( boolExp(getSymbol(), newChildArray) );
 }
 
 StdNode StdNode::toSFormPoly() const {
+  ENTERMETHOD();
   const SNodeArray &coefArray = getCoefArray();
   StdNode           arg       = getArgument();
 
@@ -320,26 +335,29 @@ StdNode StdNode::toSFormPoly() const {
   for(size_t i = 0; i < coefArray.size(); i++) {
     newCoefArray.add(N(coefArray[i]).toSForm());
   }
-  return polyExp(newCoefArray, arg.toSForm());
+  RETURNNODE( polyExp(newCoefArray, arg.toSForm()) );
 }
 
 StdNode StdNode::toSFormAssign() const {
-  return assignStmt(left(), N(right()).toSForm());
+  ENTERMETHOD();
+  RETURNNODE( assignStmt(left(), N(right()).toSForm()) );
 };
 
 StdNode StdNode::toSFormStmtList() const {
+  ENTERMETHOD();
   const SNodeArray &a = getChildArray();
   SNodeArray newChildArray(a.getTree(),a.size());
   for(size_t i = 0; i < a.size(); i++) {
     newChildArray.add(N(a[i]).toSForm());
   }
-  return stmtList(newChildArray);
+  RETURNNODE( stmtList(newChildArray) );
 }
 
 StdNode StdNode::toSFormSum() const {
+  ENTERMETHOD();
   AddentArray a = getAddentArray();
   if(a.size() == 0) {
-    return _0();
+    RETURNNODE( _0() );
   } else {
     a.sortStdForm();
     StdNode result = N(a[0].left()).toSForm(); // not createExpressionNode here. We'll get infinite recursion
@@ -349,11 +367,12 @@ StdNode StdNode::toSFormSum() const {
       SNode ne = N(e.left()).toSForm();
       if(e.isPositive()) result += ne; else result -= ne;
     }
-    return result;
+    RETURNNODE( result );
   }
 }
 
 StdNode StdNode::toSFormProduct() const {
+  ENTERMETHOD();
   Rational constant = 1;
 
   const FactorArray &a = getFactorArray();
@@ -369,20 +388,22 @@ StdNode StdNode::toSFormProduct() const {
   }
   FactorArray p(getTree()),q(getTree());
   if(constant.getNumerator() != 1) {
-    p.add(factorExp(NV(constant.getNumerator()),1));
+    p.add(powerExp(NV(constant.getNumerator()),1));
   }
   if(constant.getDenominator() != 1) {
-    q.add(factorExp(NV(constant.getDenominator()), -1));
+    q.add(powerExp(NV(constant.getDenominator()), -1));
   }
 
   p.addAll(newArray.selectConstantPositiveExponentFactors());
   p.addAll(newArray.selectNonConstantExponentFactors());
   q.addAll(newArray.selectConstantNegativeExponentFactors());
 
-  return toSFormFactorArray(p, false) / toSFormFactorArray(q, true);
+  StdNode result = toSFormFactorArray(p, false) / toSFormFactorArray(q, true);
+  RETURNNODE( result );
 }
 
 StdNode StdNode::toSFormFactorArray(FactorArray &a, bool changeExponentSign) const {
+  ENTERMETHOD();
   SNodeArray a1(a.getTree());
   for(size_t i = 0; i < a.size(); i++) {
     StdNode f = a[i];
@@ -393,15 +414,18 @@ StdNode StdNode::toSFormFactorArray(FactorArray &a, bool changeExponentSign) con
     }
   }
   if(a1.size() == 0) {
-    return _1();
+    RETURNNODE( _1() );
   } else {
     SNode result = a1[0];
-    for(size_t i = 1; i < a1.size(); i++) result *= a1[i];
-    return result;
+    for(size_t i = 1; i < a1.size(); i++) {
+      result *= a1[i];
+    }
+    RETURNNODE( result );
   }
 }
 
 StdNode StdNode::toSFormPow() const {
+  ENTERMETHOD();
   const SNode base     = N(left()).toSForm();
   const SNode exponent = N(right()).toSForm();
 
@@ -410,22 +434,22 @@ StdNode StdNode::toSFormPow() const {
     const __int64 &num = expoR.getNumerator();
     if(expoR.isInteger()) {
       switch(num) {
-      case  0 : return _1();
-      case  1 : return base;
+      case  0 : RETURNNODE( _1() );
+      case  1 : RETURNNODE( base );
       case -1:
         switch(base.getSymbol()) {
-        case COS: return sec(base.left());
-        case SIN: return csc(base.left());
-        case TAN: return cot(base.left());
-        default : return reciprocal(base);
+        case COS: RETURNNODE( sec(base.left()) );
+        case SIN: RETURNNODE( csc(base.left()) );
+        case TAN: RETURNNODE( cot(base.left()) );
+        default : RETURNNODE( reciprocal(base) );
         }
-      case  2: return sqr(base);
-      case -2: return reciprocal(sqr(base));
+      case  2: RETURNNODE( sqr(base) );
+      case -2: RETURNNODE( reciprocal(sqr(base)) );
       default:
         if(num > 0) {
-          return pow(base, NV(expoR.getNumerator()));
+          RETURNNODE( pow(base, NV(expoR.getNumerator())) );
         } else {
-          return reciprocal(pow(base, NV(-num)));
+          RETURNNODE( reciprocal(pow(base, NV(-num))) );
         }
       }
     } else { // r not integer
@@ -433,30 +457,30 @@ StdNode StdNode::toSFormPow() const {
       if(::abs(num) == 1) {
         if(den == 2) {
           if(num == 1) {
-            return sqrt(base);
+            RETURNNODE( sqrt(base) );
           } else { // num == -1
-            return reciprocal(sqrt(base));
+            RETURNNODE( reciprocal(sqrt(base)) );
           }
         } else {
           if(num == 1) {
-            return root(base, NV(den));
+            RETURNNODE( root(base, NV(den)) );
           } else { // num == -1
-            return reciprocal(root(base, NV(den)));
+            RETURNNODE( reciprocal(root(base, NV(den))) );
           }
         }
       } else { // num != 1 and num != -1 and r not integer
         if(num > 0) {
-          return root(pow(base, NV(num)), NV(den));
+          RETURNNODE( root(pow(base, NV(num)), NV(den)) );
         } else {
-          return reciprocal(root(pow(base, NV(-num)), NV(den)));
+          RETURNNODE( reciprocal(root(pow(base, NV(-num)), NV(den))) );
         }
       }
     }
   } else { // exponent not rational constant
     if(exponent.getSymbol() == QUOT) {
-      return root(pow(base, exponent.left()), exponent.right());
+      RETURNNODE( root(pow(base, exponent.left()), exponent.right()) );
     } else {
-      return pow(base, exponent);
+      RETURNNODE( pow(base, exponent) );
     }
   }
 }
@@ -498,14 +522,6 @@ void ParserTree::checkIsStandardForm() {
   if(!checker.isOk()) {
     throwException(checker.getErrorMessage());
   }
-}
-
-ExpressionNode *ParserTree::toStandardForm(ExpressionNode *n) {
-  if((getTreeForm() == TREEFORM_STANDARD) || (n == NULL)) {
-    return n;
-  }
-  m_ops = NodeOperators::s_stdForm;
-  return StdNode(n).convert();
 }
 
 }; // namespace Expr
