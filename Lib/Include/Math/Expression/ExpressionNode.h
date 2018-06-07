@@ -661,12 +661,12 @@ public:
   String toString() const;
 };
 
-class ExpressionAddent : public ExpressionNodeTree {
+class ExpressionNodeAddent : public ExpressionNodeTree {
 private:
   bool m_positive;
 public:
-  ExpressionAddent(SNode n, bool positive);
-  ExpressionAddent(ParserTree *tree, const ExpressionAddent *src);
+  ExpressionNodeAddent(SNode n, bool positive);
+  ExpressionNodeAddent(ParserTree *tree, const ExpressionNodeAddent *src);
 
   bool isPositive() const {
     return m_positive;

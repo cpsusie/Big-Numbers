@@ -30,9 +30,6 @@
     <ClInclude Include="..\..\Include\Math\Expression\Expression.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\Math\Expression\ExpressionFactor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\Math\Expression\ExpressionFunction.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -233,9 +230,6 @@
     <ClCompile Include="MachineCode.cpp">
       <Filter>Source Files\MachineCode</Filter>
     </ClCompile>
-    <ClCompile Include="ExpressionAddent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="SNodeArray.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -249,6 +243,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ExpressionNodePower.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ExpressionNodeAddent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

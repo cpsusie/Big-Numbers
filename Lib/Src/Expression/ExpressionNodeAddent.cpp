@@ -3,26 +3,26 @@
 
 namespace Expr {
 
-ExpressionAddent::ExpressionAddent(SNode n, bool positive)
+ExpressionNodeAddent::ExpressionNodeAddent(SNode n, bool positive)
 : ExpressionNodeTree(&n.getTree(), ADDENT, n.node(), NULL)
 , m_positive(positive)
 {
   SETDEBUGSTRING();
 }
 
-ExpressionAddent::ExpressionAddent(ParserTree *tree, const ExpressionAddent *src)
+ExpressionNodeAddent::ExpressionNodeAddent(ParserTree *tree, const ExpressionNodeAddent *src)
 : ExpressionNodeTree(tree, src)
 , m_positive(src->isPositive())
 {
   SETDEBUGSTRING();
 }
 
-ExpressionNode *ExpressionAddent::clone(ParserTree *tree) const {
-  ExpressionNode *n = new ExpressionAddent(tree, this); TRACE_NEW(n);
+ExpressionNode *ExpressionNodeAddent::clone(ParserTree *tree) const {
+  ExpressionNode *n = new ExpressionNodeAddent(tree, this); TRACE_NEW(n);
   return n;
 }
 
-int ExpressionAddent::compare(ExpressionNode *n) {
+int ExpressionNodeAddent::compare(ExpressionNode *n) {
   const bool b1 = isConstant();
   const bool b2 = n->isConstant();
   int c = ordinal(b1) - ordinal(b2);
@@ -35,16 +35,16 @@ int ExpressionAddent::compare(ExpressionNode *n) {
   return ordinal(p1) - ordinal(p2);
 }
 
-Real ExpressionAddent::evaluateReal() const {
+Real ExpressionNodeAddent::evaluateReal() const {
   return m_positive ? left()->evaluateReal() : -left()->evaluateReal();
 }
 
-void ExpressionAddent::dumpNode(String &s, int level) const {
+void ExpressionNodeAddent::dumpNode(String &s, int level) const {
   addLeftMargin(s, level) += isPositive() ? _T("+ADDENT\n") : _T("-ADDENT\n");
   left()->dumpNode(s, level+1);
 }
 
-String ExpressionAddent::toString() const {
+String ExpressionNodeAddent::toString() const {
   if(m_positive) {
     return left()->toString();
   } else {

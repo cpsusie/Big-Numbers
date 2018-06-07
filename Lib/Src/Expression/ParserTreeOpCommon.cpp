@@ -188,7 +188,7 @@ ExpressionNode *ParserTree::addentExpr(SNode n, bool positive) {
   if(n.getNodeType() == NT_ADDENT) {
     return (n.isPositive() == positive) ? n.node() : addentExpr(n.left(),!positive);
   } else {
-    a = new ExpressionAddent(n, positive);
+    a = new ExpressionNodeAddent(n, positive);
   }
   TRACE_NEW(a);
   return a;
