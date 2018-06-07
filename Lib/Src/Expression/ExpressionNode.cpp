@@ -83,39 +83,6 @@ public:
   }
 };
 
-ExpressionSymbolSet::ExpressionSymbolSet() : BitSet(ParserTree::getTerminalCount()) {
-}
-
-// terminate list with EOI
-ExpressionSymbolSet::ExpressionSymbolSet(ExpressionInputSymbol s1,...) : BitSet(ParserTree::getTerminalCount()) {
-  va_list argptr;
-  va_start(argptr, s1);
-  add(s1);
-  for(ExpressionInputSymbol s=va_arg(argptr, ExpressionInputSymbol); s != EOI; s = va_arg(argptr, ExpressionInputSymbol)) {
-    add(s);
-  }
-  va_end(argptr);
-}
-
-class SymbolStringifier : public AbstractStringifier<ExpressionInputSymbol> {
-public:
-  String toString(const ExpressionInputSymbol &e) {
-    return ExpressionNode::getSymbolName(e);
-  }
-};
-
-class SymbolSetStringifier : public AbstractStringifier<size_t> {
-public:
-  String toString(const size_t &e) {
-    const ExpressionInputSymbol symbol = (ExpressionInputSymbol)e;
-    return ExpressionNode::getSymbolName(symbol);
-  }
-};
-
-String ExpressionSymbolSet::toString() const {
-  return __super::toString(&SymbolSetStringifier());
-}
-
 class NodeCounter : public ExpressionNodeHandler {
 private:
   int                     m_count;
@@ -143,6 +110,10 @@ int ExpressionNode::getNodeCount(ExpressionNodeSelector *selector) const {
   NodeCounter nodeCounter(selector);
   ((ExpressionNode*)this)->traverseExpression(nodeCounter, 0);
   return nodeCounter.getCount();
+}
+
+int ExpressionNode::getNodeCount(const ExpressionSymbolSet &validSymbolSet) const {
+  return getNodeCount(&ExpressionNodeSymbolSelector(&validSymbolSet));
 }
 
 class MaxLevelFinder : public ExpressionNodeHandler {
@@ -178,7 +149,7 @@ String ExpressionNode::parenthesizedExpressionToString(const ExpressionNode *par
   }
 }
 
-static ExpressionNodeSelector *getBuiltInFunctionSelector() {
+bool ExpressionNode::containsFunctionCall() const {
   // All functions in this array use call to evaluate in compiled code
   static const ExpressionSymbolSet functionSet(
       MOD      , POW      , ROOT     , SIN      , COS      , TAN      , COT      , CSC
@@ -189,12 +160,7 @@ static ExpressionNodeSelector *getBuiltInFunctionSelector() {
     , MIN      , HYPOT    , RAND     , NORMRAND , POLY     , CHI2DIST , CHI2DENS , LINCGAMMA
     , EOI
   );
-  static ExpressionNodeSymbolSelector selector(&functionSet);
-  return &selector;
-}
-
-bool ExpressionNode::containsFunctionCall() const {
-  return getNodeCount(getBuiltInFunctionSelector()) > 0;
+  return getNodeCount(functionSet) > 0;
 }
 
 bool ExpressionNode::isBinaryOperator(ExpressionInputSymbol symbol) { // static

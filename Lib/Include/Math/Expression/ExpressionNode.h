@@ -98,9 +98,12 @@ public:
 };
 
 class ExpressionSymbolSet : public BitSet {
+private:
+  void init(ExpressionInputSymbol s1, va_list argptr); // terminate list with EOI
 public:
   ExpressionSymbolSet();
-  ExpressionSymbolSet(ExpressionInputSymbol s1,...); // terminate list with EOI
+  ExpressionSymbolSet(ExpressionInputSymbol s1,...);   // terminate list with EOI
+  ExpressionSymbolSet(ExpressionInputSymbol s1, va_list argptr);
   String toString() const;
 };
 
@@ -269,8 +272,9 @@ public:
 
   bool    dependsOn(const String &name) const;
   // If selector specified, only nodes where selector.select(n) is true will be counted.
-  // If not specified, all nodes is counted
+  // If not specified, all nodes are counted
   int     getNodeCount(ExpressionNodeSelector *selector = NULL) const;
+  int     getNodeCount(const ExpressionSymbolSet &validSymbolSet) const;
   bool    containsFunctionCall()        const;
   Real   &getValueRef()                 const;
 

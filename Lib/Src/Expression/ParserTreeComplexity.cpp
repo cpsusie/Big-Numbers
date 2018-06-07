@@ -4,8 +4,8 @@
 namespace Expr {
 
 ParserTreeComplexity::ParserTreeComplexity(ParserTree &tree) {
-  m_nodeCount = tree.getNodeCount(true, EOI);
-  m_nameCount = tree.getNodeCount(true, NAME,EOI);
+  m_nodeCount = tree.getNodeCount(true);
+  m_nameCount = tree.getNodeCount(true, &ExpressionSymbolSet(NAME,EOI));
   m_treeDepth = tree.getRoot() ? tree.getRoot()->getMaxTreeDepth() : 0;
 }
 

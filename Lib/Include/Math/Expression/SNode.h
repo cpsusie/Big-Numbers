@@ -13,6 +13,7 @@ class ExpressionNodeSum;
 class AddentArray;
 class FactorArray;
 class ParserTree;
+class ExpressionSymbolSet;
 
 // Define this, to have consistency check of ExpressionNodes when doing reduction
 // and transformation to Canon-form/Std-form/Num-form
@@ -187,6 +188,7 @@ public:
   bool                  evaluateBool()                         const;
   ExpressionNodeType    getNodeType()                          const;
   ExpressionReturnType  getReturnType()                        const;
+  int                   getNodeCount(const ExpressionSymbolSet &validSymbolSet) const;
 
   String                toString()                             const;
 

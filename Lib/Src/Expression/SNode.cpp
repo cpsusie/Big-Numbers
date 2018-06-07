@@ -172,6 +172,10 @@ ExpressionReturnType SNode::getReturnType() const {
   return m_node->getReturnType();
 }
 
+int SNode::getNodeCount(const ExpressionSymbolSet &validSymbolSet) const {
+  return isEmpty() ? 0 : m_node->getNodeCount(validSymbolSet);
+}
+
 String SNode::toString() const {
   return isEmpty() ? _T("") : m_node->toString();
 }

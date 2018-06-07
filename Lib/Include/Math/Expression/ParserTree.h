@@ -433,8 +433,8 @@ public:
   }
 
   int getNodeCount(ExpressionNodeSelector *selector = NULL);
-  // Terminate symbolset with 0. Only specified symbols will be counted
-  int getNodeCount(bool ignoreMarked, ExpressionInputSymbol s1,...);
+  // if(validSymbolSet != NULL, only node with symbols contained in set will be counted
+  int getNodeCount(bool ignoreMarked, const ExpressionSymbolSet *validSymbolSet = NULL);
   int getTreeDepth() const;
   ParserTreeComplexity getComplexity();
 #ifdef TRACE_REDUCTION_CALLSTACK

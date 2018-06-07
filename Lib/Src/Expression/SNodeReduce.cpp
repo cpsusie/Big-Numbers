@@ -145,22 +145,13 @@ SNode SNode::reduceRealExp() {
 
 //------------------------------------ reduceSum ----------------------------------------
 
-static ExpressionNodeSelector *getTrigonometricFunctionSelector() {
-  static const ExpressionSymbolSet    functionSet(SIN,COS,EOI);
-  static ExpressionNodeSymbolSelector selector(&functionSet);
-  return &selector;
-}
-
-static ExpressionNodeSelector *getLogarithmicFunctionSelector() {
-  static const ExpressionSymbolSet    functionSet(LN,LOG10,LOG2,EOI);
-  static ExpressionNodeSymbolSelector selector(&functionSet);
-  return &selector;
-}
-
 // symbol == SUM
 SNode SNode::reduceSum() const {
   ENTERMETHOD();
   CHECKNODETYPE(*this,NT_SUM);
+
+  static const ExpressionSymbolSet logFunctionSet(   LN,LOG10,LOG2,EOI);
+  static const ExpressionSymbolSet sinCosFunctionSet(SIN,COS,      EOI);
 
   bool hasTrigonometricFunctions = false, hasLogarithmicFunctions = false;
   AddentArray a(getTree());
@@ -171,8 +162,8 @@ SNode SNode::reduceSum() const {
     SNode e = a[i], n = e.left();
     SNode reducedNode = n.reduceRealExp();
     if(!reducedNode.isSameNode(n)) anyChanges = true;
-    if(!hasTrigonometricFunctions) hasTrigonometricFunctions = reducedNode.node()->getNodeCount(getTrigonometricFunctionSelector()) > 0;
-    if(!hasLogarithmicFunctions  ) hasLogarithmicFunctions   = reducedNode.node()->getNodeCount(getLogarithmicFunctionSelector())   > 0;
+    if(!hasTrigonometricFunctions) hasTrigonometricFunctions = reducedNode.getNodeCount(sinCosFunctionSet) > 0;
+    if(!hasLogarithmicFunctions  ) hasLogarithmicFunctions   = reducedNode.getNodeCount(logFunctionSet   ) > 0;
     reduced.add(addentExp(reducedNode, e.isPositive()));
   }
 

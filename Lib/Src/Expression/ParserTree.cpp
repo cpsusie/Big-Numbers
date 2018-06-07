@@ -221,26 +221,12 @@ int ParserTree::getNodeCount(ExpressionNodeSelector *selector) {
   }
 }
 
-int ParserTree::getNodeCount(bool ignoreMarked, ExpressionInputSymbol s1,...) { // terminate symbolset with 0. Only specified symbols will be counted
-  ExpressionSymbolSet legalSymbols;
-  bool                setIsEmpty = true;
-  if(s1) {
-    legalSymbols.add(s1);
-    va_list argptr;
-    va_start(argptr,s1);
-    for(ExpressionInputSymbol s = va_arg(argptr, ExpressionInputSymbol); s; s = va_arg(argptr, ExpressionInputSymbol)) {
-      legalSymbols.add(s);
-    }
-    va_end(argptr);
-    setIsEmpty = false;
-  }
-
-  ExpressionNodeSymbolSelector selector(setIsEmpty ? NULL : &legalSymbols, ignoreMarked);
-
-  if(setIsEmpty && !ignoreMarked) {
+// if(validSymbolSet != NULL, only node with symbols contained in set will be counted
+int ParserTree::getNodeCount(bool ignoreMarked, const ExpressionSymbolSet *validSymbolSet) {
+  if((validSymbolSet == NULL) && !ignoreMarked) {
     return getNodeCount();
   } else {
-    return getNodeCount(&selector);
+    return getNodeCount(&ExpressionNodeSymbolSelector(validSymbolSet, ignoreMarked));
   }
 }
 
