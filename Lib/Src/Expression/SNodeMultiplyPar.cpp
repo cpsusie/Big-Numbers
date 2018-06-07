@@ -88,8 +88,8 @@ SNode SNode::multiplyStmtList() const {
 SNode SNode::multiplyParenthesesInSum() const {
   ENTERMETHOD();
   CHECKNODETYPE(*this,NT_SUM);
-  const SNodeArray &a = getChildArray();
-  SNodeArray        newAddentArray(a.getTree(), a.size());
+  const AddentArray &a = getAddentArray();
+  AddentArray        newAddentArray(a.getTree(), a.size());
   for(size_t i = 0; i < a.size(); i++) {
     const SNode &e = a[i];
     newAddentArray.add(addentExp(e.left().multiplyParentheses(), e.isPositive()));
@@ -146,7 +146,7 @@ SNode SNode::multiplyParenthesesInProduct() const {
       }
     }
   } while(!done.isEmpty());
-  SNode result = NV(newFactorArray);
+  SNode result = productExp(newFactorArray);
   RETURNNODE( result );
 }
 
@@ -158,8 +158,8 @@ SNode SNode::multiplyFactorSum(SNode factor, SNode sum) const {
   if((factor.base().getSymbol() == SUM) && factor.exponent().isOne()) {
     RETURNNODE(multiplySumSum(factor.base(),sum));
   } else {
-    const SNodeArray &sa = sum.getChildArray();
-    SNodeArray        tmp(sa.getTree(),sa.size());
+    const AddentArray &sa = sum.getAddentArray();
+    AddentArray        tmp(sa.getTree(),sa.size());
     for(size_t i = 0; i < sa.size(); i++) {
       SNode e = sa[i];
       tmp.add(addentExp(factor * e.left(),e.isPositive()));

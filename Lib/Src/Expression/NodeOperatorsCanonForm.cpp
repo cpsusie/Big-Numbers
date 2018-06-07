@@ -11,7 +11,7 @@ private:
   static inline ExpressionNode *addentExpr(     ExpressionNode *n, bool positive) {
     return n->getTree().addentExpr(n,positive);
   }
-  static inline ExpressionNode *sumExpr(        SNodeArray &a) {
+  static inline ExpressionNode *sumExpr(        AddentArray &a) {
     return a.getTree().sumExpr(a);
   }
   static inline ExpressionNode *productExpr(    FactorArray &fa) {
@@ -78,13 +78,13 @@ ExpressionNode *NodeOperatorsCanonForm::minus(ExpressionNode *n) const {
   case ADDENT    :
     return addentExpr(n->left(),!n->isPositive());
   case SUM       :
-    { const SNodeArray &a  = n->getChildArray();
-      const size_t      sz = a.size();
-      SNodeArray        newChildArray(a.getTree(),sz);
+    { const AddentArray &a  = n->getAddentArray();
+      const size_t       sz = a.size();
+      AddentArray        newAddentArray(a.getTree(),sz);
       for(size_t i = 0; i < sz; i++) { // change sign for all elements in list
-        newChildArray.add(-a[i]);
+        newAddentArray.add(-a[i]);
       }
-      return sumExpr(newChildArray);
+      return sumExpr(newAddentArray);
     }
 
   case PRODUCT   :
@@ -158,7 +158,7 @@ ExpressionNode *NodeOperatorsCanonForm::sum(ExpressionNode *n1, ExpressionNode *
   } else if(n2->isZero()) {
     return n1;
   }
-  SNodeArray a(n1->getTree(),2);
+  AddentArray a(n1->getTree(),2);
   a.add(addentExpr(n1, true));
   a.add(addentExpr(n2, true));
   return sumExpr(a);
@@ -172,7 +172,7 @@ ExpressionNode *NodeOperatorsCanonForm::diff(ExpressionNode *n1, ExpressionNode 
   } else if(n1->isZero()) {
     return minus(n2);
   }
-  SNodeArray a(n1->getTree(),2);
+  AddentArray a(n1->getTree(),2);
   a.add(addentExpr(n1, true ));
   a.add(addentExpr(n2, false));
   return sumExpr(a);
@@ -304,7 +304,7 @@ private:
   CNode toCFormPoly()     const;
   CNode toCFormSum()      const;
   CNode toCFormProduct()  const;
-  SNodeArray  &toCFormSum(    SNodeArray  &result, bool   positive) const;
+  AddentArray &toCFormSum(    AddentArray &result, bool   positive) const;
   FactorArray &toCFormProduct(FactorArray &result, SNode &exponent) const;
   FactorArray &toCFormPower(  FactorArray &result, SNode &exponent) const;
   FactorArray &toCFormRoot(   FactorArray &result, SNode &exponent) const;
@@ -397,12 +397,12 @@ CNode CNode::toCFormPoly() const {
 
 CNode CNode::toCFormSum() const {
   ENTERMETHOD();
-  SNodeArray a(getTree());
+  AddentArray a(getTree());
   toCFormSum(a, true );
   RETURNNODE( sumExp(a) );
 }
 
-SNodeArray &CNode::toCFormSum(SNodeArray &result, bool positive) const {
+AddentArray &CNode::toCFormSum(AddentArray &result, bool positive) const {
   ENTERMETHOD2(*this,SNode(getTree(),positive));
   switch(getSymbol()) {
   case NUMBER:
@@ -416,8 +416,8 @@ SNodeArray &CNode::toCFormSum(SNodeArray &result, bool positive) const {
     result.add(addentExp(node(), positive));
     break;
   case SUM:
-    { const SNodeArray &a  = getChildArray();
-      const size_t      sz = a.size();
+    { const AddentArray &a  = getAddentArray();
+      const size_t       sz = a.size();
       for(size_t i = 0; i < sz; i++) {
         const SNode &e = a[i];
         N(e.left()).toCFormSum(result, e.isPositive() == positive);

@@ -289,7 +289,6 @@ SNode ParserTree::traverseSubstituteNodes(SNode n, CompactNodeHashMap<Expression
     }
   case NT_TREE      :
   case NT_BOOLEXPR  :
-  case NT_SUM       :
   case NT_ADDENT    :
   case NT_ASSIGN    :
   case NT_STMTLIST  :
@@ -299,6 +298,14 @@ SNode ParserTree::traverseSubstituteNodes(SNode n, CompactNodeHashMap<Expression
         newChildArray.add(traverseSubstituteNodes(a[i], nodeMap));
       }
       return getTree(n, newChildArray);
+    }
+  case NT_SUM       :
+    { const AddentArray &a = n.getAddentArray();
+      AddentArray        newAddentArray(a.getTree(),a.size());
+      for(size_t i = 0; i < a.size(); i++) {
+        newAddentArray.add(traverseSubstituteNodes(a[i], nodeMap));
+      }
+      return getSum(n, newAddentArray);
     }
   case NT_PRODUCT   :
     { const FactorArray &a = n.getFactorArray();

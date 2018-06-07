@@ -3,18 +3,18 @@
 
 namespace Expr {
 
-ExpressionNodeSum::ExpressionNodeSum(ParserTree *tree, const SNodeArray &childArray)
-: ExpressionNodeTree(tree, SUM, childArray) {
+ExpressionNodeSum::ExpressionNodeSum(ParserTree *tree, const AddentArray &addentArray)
+: ExpressionNodeTree(tree, SUM, addentArray) {
 
 #ifdef _DEBUG
-  validateNodeArray(childArray);
+  validateNodeArray(addentArray);
 #endif // _DEBUG
 
-  sort(getChildArray());
+  getAddentArray().sort();
   SETDEBUGSTRING();
 }
 
-void ExpressionNodeSum::validateNodeArray(const SNodeArray &a) const {
+void ExpressionNodeSum::validateNodeArray(const AddentArray &a) const {
   const size_t sz = a.size();
   for(size_t i = 0; i < sz; i++) {
     const SNode &n = a[i];
@@ -34,40 +34,15 @@ ExpressionNode *ExpressionNodeSum::clone(ParserTree *tree) const {
 
 Real ExpressionNodeSum::evaluateReal() const {
   Real sum = 0;
-  const SNodeArray &a = getChildArray();
+  const AddentArray &a = getAddentArray();
   for(size_t i = 0; i < a.size(); i++) {
     sum += a[i].evaluateReal();
   }
   return sum;
 }
 
-static int compareMany(const SNode &e1, const SNode &e2) {
-  return e1.node()->compare(e2.node());
-}
-
-void ExpressionNodeSum::sort(SNodeArray &a) { // static
-  a.sort(compareMany);
-
-}
-
-static int compare2(const SNode &e1, const SNode &e2) {
-  const bool p1 = e1.isPositive();
-  const bool p2 = e2.isPositive();
-  int c = ordinal(p2) - ordinal(p1);
-  if(c) return c;
-  return compareMany(e1,e2);
-}
-
-void ExpressionNodeSum::sortStdForm(SNodeArray &a) { // static
-  if(a.size() == 2) {
-    a.sort(compare2);
-  } else {
-    a.sort(compareMany);
-  }
-}
-
 String ExpressionNodeSum::toString() const {
-  return _T("SUM") + getChildArray().toString();
+  return _T("SUM") + getAddentArray().toString();
 }
 
 }; // namespace Expr

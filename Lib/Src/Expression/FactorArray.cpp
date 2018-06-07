@@ -9,13 +9,11 @@ static int compareFactors(const SNode &n1, const SNode &n2) {
 
 void FactorArray::sort() {
   __super::sort(compareFactors);
-  SETDEBUGSTRING();
 }
 
 void FactorArray::add(SNode n) {
   CHECKNODETYPE(n,NT_FACTOR);
   __super::add(n);
-  SETDEBUGSTRING();
 }
 
 void FactorArray::addAll(const FactorArray &src) {

@@ -33,7 +33,7 @@ bool ExpressionNode::reducesToRational(Rational *r) const {
     }
 
   case SUM            :
-    { const SNodeArray &a = getChildArray();
+    { const AddentArray &a = getAddentArray();
       Rational sum = 0, tmp, *tmpp = r ? &tmp : NULL;
       for(size_t i = 0; i < a.size(); i++) {
         const SNode &e = a[i];

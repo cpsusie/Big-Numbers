@@ -62,11 +62,24 @@ class ExpressionNodeSelector;
 class ParserTree;
 class Expression;
 
+class AddentArray : public SNodeArray { // don't add any members, because of typecast
+public:
+  AddentArray(ParserTree &tree) : SNodeArray(tree) {
+  }
+  AddentArray(ParserTree &tree, size_t capacity) : SNodeArray(tree, capacity) {
+  }
+  // must be NT_ADDENT
+  void add(SNode n);
+  void addAll(const AddentArray &src);
+  void sort();
+  void sortStdForm();
+};
+
 class FactorArray : public SNodeArray { // don't add any members, because of typecast
 public:
   FactorArray(ParserTree &tree) : SNodeArray(tree) {
   }
-  explicit FactorArray(ParserTree &tree, size_t capacity) : SNodeArray(tree, capacity) {
+  FactorArray(ParserTree &tree, size_t capacity) : SNodeArray(tree, capacity) {
   }
 
   FactorArray selectConstantPositiveExponentFactors() const;
@@ -169,6 +182,8 @@ public:
   virtual int                        getChildCount()                const   { UNSUPPORTEDOP(); }
   virtual const SNodeArray          &getChildArray()                const   { UNSUPPORTEDOP(); }
   virtual       SNodeArray          &getChildArray()                        { UNSUPPORTEDOP(); }
+  virtual const AddentArray         &getAddentArray()               const   { UNSUPPORTEDOP(); }
+  virtual       AddentArray         &getAddentArray()                       { UNSUPPORTEDOP(); }
   virtual const FactorArray         &getFactorArray()               const   { UNSUPPORTEDOP(); }
   virtual       FactorArray         &getFactorArray()                       { UNSUPPORTEDOP(); }
   virtual const SNodeArray          &getCoefArray()                 const   { UNSUPPORTEDOP(); }
@@ -806,10 +821,17 @@ public:
 
 class ExpressionNodeSum : public ExpressionNodeTree {
 private:
-  void validateNodeArray(const SNodeArray &a) const; // check, that all nodes have type NT_ADDENT
+  void validateNodeArray(const AddentArray &addentArray) const; // check, that all nodes have type NT_ADDENT
 public:
-  ExpressionNodeSum(ParserTree *tree, const SNodeArray &childArray);
+  ExpressionNodeSum(ParserTree *tree, const AddentArray &addentArray);
   ExpressionNodeSum(ParserTree *tree, const ExpressionNodeSum *src);
+
+  AddentArray &getAddentArray() {
+    return (AddentArray&)getChildArray();
+  }
+  const AddentArray &getAddentArray() const {
+    return (AddentArray&)getChildArray();
+  }
 
   ExpressionNode *clone(ParserTree *tree) const;
 
@@ -818,9 +840,6 @@ public:
   ExpressionNodeType getNodeType() const {
     return NT_SUM;
   }
-  static void sort(       SNodeArray &a);
-  static void sortStdForm(SNodeArray &a);
-
   String toString() const;
 };
 

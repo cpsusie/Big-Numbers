@@ -113,15 +113,14 @@ NNode NNode::toNFormBoolExp() const {
 }
 
 NNode NNode::toNFormSum() const {
-  const SNodeArray &a = getChildArray();
+  const AddentArray &a = getAddentArray();
   if(a.size() == 0) {
     return _0();
   } else {
     Real constant = 0;
-    SNodeArray newArray(a.getTree());
+    AddentArray newArray(a.getTree());
     for(size_t i = 0; i < a.size(); i++) {
-      const SNode &e = a[i];
-      SNode tmp = N(e.left()).toNFormRealExp();
+      const SNode e = a[i], tmp = N(e.left()).toNFormRealExp();
       if(tmp.isNumber()) {
         if(e.isPositive()) constant += tmp.getReal(); else constant -= tmp.getReal();
       } else {
@@ -132,8 +131,7 @@ NNode NNode::toNFormSum() const {
     SNode result = newArray[0].left();
     if(!newArray[0].isPositive()) result = -result;
     for(size_t i = 1; i < newArray.size(); i++) {
-      SNode &e  = newArray[i];
-      SNode  ne = e.left();
+      SNode e = newArray[i], ne = e.left();
       if(e.isPositive()) result += ne; else result -= ne;
     }
     return (constant == 0) ? result

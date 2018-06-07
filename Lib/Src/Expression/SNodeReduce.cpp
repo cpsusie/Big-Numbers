@@ -163,10 +163,10 @@ SNode SNode::reduceSum() const {
   CHECKNODETYPE(*this,NT_SUM);
 
   bool hasTrigonometricFunctions = false, hasLogarithmicFunctions = false;
-  SNodeArray a(getTree());
+  AddentArray a(getTree());
   bool anyChanges = getAddents(a);
 
-  SNodeArray reduced(a.getTree());
+  AddentArray reduced(a.getTree());
   for(size_t i = 0; i < a.size(); i++) {
     SNode e = a[i], n = e.left();
     SNode reducedNode = n.reduceRealExp();
@@ -244,7 +244,7 @@ SNode SNode::reduceSum() const {
               reduced.add(cf);
             } else {
               SNode cn = cf.left();
-              const SNodeArray &a = cn.getChildArray();
+              const AddentArray &a = cn.getAddentArray();
               if(cf.isPositive()) {
                 reduced.addAll(a);
               } else {
@@ -523,16 +523,15 @@ StartSearch:
 }
 
 // Assume symbol = SUM. nested SUM-nodes will all be put on the same level, (in result), by recursive calls
-bool SNode::getAddents(SNodeArray &result, bool positive) const {
+bool SNode::getAddents(AddentArray &result, bool positive) const {
   ENTERMETHOD();
   CHECKNODETYPE(*this, NT_SUM);
 
-  const SNodeArray &a       = getChildArray();
-  const size_t      n       = a.size();
-  bool              changed = false;
+  const AddentArray &a       = getAddentArray();
+  const size_t       n       = a.size();
+  bool               changed = false;
   for(size_t i = 0; i < n; i++) {
-    SNode e     = a[i];
-    SNode child = e.left();
+    SNode e = a[i], child = e.left();
     if(child.getSymbol() == SUM) {
       child.getAddents(result, e.isPositive() == positive);
       changed = true;
@@ -811,11 +810,11 @@ SNode SNode::multiplySumSum(SNode n1, SNode n2) const {
   CHECKNODETYPE(n1,NT_SUM);
   CHECKNODETYPE(n2,NT_SUM);
 
-  const SNodeArray &aa1 = n1.getChildArray();
-  const SNodeArray &aa2 = n2.getChildArray();
+  const AddentArray &aa1 = n1.getAddentArray();
+  const AddentArray &aa2 = n2.getAddentArray();
 
   ParserTree &tree = n1.getTree();
-  SNodeArray newAddentArray(tree, aa1.size() * aa2.size());
+  AddentArray newAddentArray(tree, aa1.size() * aa2.size());
   for(size_t i = 0; i < aa1.size(); i++) {
     SNode e1 = aa1[i], s1 = e1.left();
     for(size_t j = 0; j < aa2.size(); j++) {

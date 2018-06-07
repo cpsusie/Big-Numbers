@@ -82,8 +82,8 @@ bool equalMinus(const ExpressionNode *n1, const ExpressionNode *n2) {
         || (equalMinus(n1->left(),n2->left()) && (n1->isPositive() == n2->isPositive()));
 
   case SUM   :
-    { const SNodeArray &a1 = n1->getChildArray();
-      const SNodeArray &a2 = n2->getChildArray();
+    { const AddentArray &a1 = n1->getAddentArray();
+      const AddentArray &a2 = n2->getAddentArray();
       const size_t      sz1 = a1.size();
       if(sz1 != a2.size()) {
         return false;

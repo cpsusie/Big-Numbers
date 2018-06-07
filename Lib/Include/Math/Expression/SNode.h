@@ -10,6 +10,7 @@ class ExpressionVariable;
 class ExpressionNode;
 class ExpressionFactor;
 class ExpressionNodeSum;
+class AddentArray;
 class FactorArray;
 class ParserTree;
 
@@ -90,7 +91,7 @@ private:
   SNode              getCommonFactor(             SNode e1, SNode e2) const;
   // Assume this.symbol = SUM. nested SUM-nodes will all be put in result at the same level, by recursive calls
   // return true if result differs from childArray()
-  bool               getAddents(                  SNodeArray  &result, bool positive=true) const;
+  bool               getAddents(                  AddentArray &result, bool positive=true) const;
   FactorArray       &getFactors(                  FactorArray &result);
   FactorArray       &getFactors(                  FactorArray &result, const SNode exponent);
   FactorArray       &getFactorsInPower(           FactorArray &result, const SNode exponent);
@@ -137,7 +138,6 @@ public:
   SNode(ParserTree &tree, const Real        &v);
   SNode(ParserTree &tree, const Number      &v);
   SNode(ParserTree &tree, bool               v);
-  SNode(ParserTree &tree, FactorArray       &a);
 
   SNode _0()     const; // zero
   SNode _1()     const; // 1
@@ -167,6 +167,8 @@ public:
   SNode                 child(UINT index)                      const;
   const SNodeArray     &getChildArray()                        const;
         SNodeArray     &getChildArray();
+  const AddentArray    &getAddentArray()                       const;
+        AddentArray    &getAddentArray();
   const FactorArray    &getFactorArray()                       const;
         FactorArray    &getFactorArray();
   const SNodeArray     &getCoefArray()                         const;
@@ -338,7 +340,7 @@ SNode boolExp(   ExpressionInputSymbol symbol, SNode child);
 SNode boolExp(   ExpressionInputSymbol symbol, SNodeArray &a);
 SNode treeExp(   ExpressionInputSymbol symbol, SNodeArray &a); // assume a.size() > 0
 SNode productExp(FactorArray &a);                              // assume a.size() > 0
-SNode sumExp(    SNodeArray  &a);                              // assume a.size() > 0
+SNode sumExp(    AddentArray &a);                              // assume a.size() > 0
 SNode assignStmt(SNode leftSide  , SNode expr);
 SNode assignStmt(SNodeArray &list);
 SNode stmtList(  SNodeArray &list);

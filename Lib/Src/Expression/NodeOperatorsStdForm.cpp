@@ -337,11 +337,11 @@ StdNode StdNode::toSFormStmtList() const {
 }
 
 StdNode StdNode::toSFormSum() const {
-  SNodeArray a = getChildArray();
+  AddentArray a = getAddentArray();
   if(a.size() == 0) {
     return _0();
   } else {
-    ExpressionNodeSum::sortStdForm(a);
+    a.sortStdForm();
     StdNode result = N(a[0].left()).toSForm(); // not createExpressionNode here. We'll get infinite recursion
     if(!a[0].isPositive()) result = -result;
     for(size_t i = 1; i < a.size(); i++) {

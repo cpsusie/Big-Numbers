@@ -24,9 +24,13 @@ ExpressionNode *ParserTree::assignStmt(SNodeArray &a) {
 
 ExpressionNode *ParserTree::treeExpr(ExpressionInputSymbol symbol, SNodeArray &a) {
   switch(symbol) {
-  case STMTLIST: return stmtList(a);
+  case STMTLIST: return stmtList(  a);
   case ASSIGN  : return assignStmt(a);
-  case SUM     : return sumExpr(a);
+  case SUM     :
+  case PRODUCT : throwInvalidArgumentException(__TFUNCTION__
+                                              ,_T("symbol=%s not allowed")
+                                              ,ExpressionNode::getSymbolName(symbol).cstr()
+                                              );
   case AND     :
   case OR      :
   case NOT     :
@@ -69,12 +73,10 @@ ExpressionNode *ParserTree::polyExpr(SNodeArray &coefArray, SNode arg) {
   return n;
 }
 
-ExpressionNode *ParserTree::sumExpr(SNodeArray &a) {
+ExpressionNode *ParserTree::sumExpr(AddentArray &a) {
   switch(a.size()) {
-  case 0 :
-    return numberExpr(0);
-  case 1 :
-    return a[0].isPositive() ? a[0].left().node() : minus(a[0].left().node());
+  case 0 : return numberExpr(0);
+  case 1 : return a[0].isPositive() ? a[0].left().node() : minus(a[0].left().node());
   default:
     { ExpressionNode *n = new ExpressionNodeSum(this, a); TRACE_NEW(n);
       return n;
@@ -262,11 +264,11 @@ ExpressionNode *ParserTree::getPoly(SNode oldPoly, SNodeArray &newCoefArray, SNo
   return result.node();
 }
 
-ExpressionNode *ParserTree::getSum(SNode oldSum, SNodeArray &newAddentArray) {
-  const SNodeArray &oldAddentArray = oldSum.getChildArray();
-  SNode             result         = newAddentArray.isSameNodes(oldAddentArray)
-                                   ? oldSum
-                                   : sumExpr(newAddentArray);
+ExpressionNode *ParserTree::getSum(SNode oldSum, AddentArray &newAddentArray) {
+  const AddentArray &oldAddentArray = oldSum.getAddentArray();
+  SNode             result          = newAddentArray.isSameNodes(oldAddentArray)
+                                    ? oldSum
+                                    : sumExpr(newAddentArray);
   return result.node();
 }
 

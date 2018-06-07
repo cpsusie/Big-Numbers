@@ -27,10 +27,6 @@ SNode::SNode(ParserTree &tree, bool v) {
   m_node = v ? tree.getTrue() : tree.getFalse();
 }
 
-SNode::SNode(ParserTree &tree, FactorArray &a) {
-  m_node = tree.productExpr(a);
-}
-
 SNode SNode::_0()     const { return getTree().numberExpr( 0);            }
 SNode SNode::_1()     const { return getTree().numberExpr( 1);            }
 SNode SNode::_m1()    const { return getTree().numberExpr(-1);            }
@@ -94,6 +90,14 @@ const SNodeArray &SNode::getChildArray() const {
 
 SNodeArray &SNode::getChildArray() {
   return m_node->getChildArray();
+}
+
+const AddentArray &SNode::getAddentArray() const {
+  return m_node->getAddentArray();
+}
+
+AddentArray &SNode::getAddentArray() {
+  return m_node->getAddentArray();
 }
 
 const FactorArray &SNode::getFactorArray() const {
@@ -519,7 +523,7 @@ SNode treeExp(ExpressionInputSymbol symbol, SNodeArray &a) {
   return a.getTree().treeExpr(symbol, a);
 }
 
-SNode sumExp(SNodeArray &a) {
+SNode sumExp(AddentArray &a) {
   return a.getTree().sumExpr(a);
 }
 

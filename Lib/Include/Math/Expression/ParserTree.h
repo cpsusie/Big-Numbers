@@ -342,7 +342,7 @@ public:
   ExpressionNode         *getTree(      SNode oldTree               , SNodeArray           &newChildArray                   );
   ExpressionNode         *getBoolExpr(  SNode oldExpr               , SNodeArray           &newChildArray                   );
   ExpressionNode         *getPoly(      SNode oldPoly               , SNodeArray           &newCoefArray    , SNode newArg  );
-  ExpressionNode         *getSum(       SNode oldSum                , SNodeArray           &newAddentArray                  );
+  ExpressionNode         *getSum(       SNode oldSum                , AddentArray          &newAddentArray                  );
   ExpressionNode         *getProduct(   SNode oldProduct            , FactorArray          &newFactorArray                  );
   ExpressionNode         *getFactor(    SNode oldFactor             , SNode                 newBase         , SNode newExpo );
 
@@ -353,7 +353,7 @@ public:
   ExpressionNode         *boolExpr(     ExpressionInputSymbol symbol, SNodeArray           &a                               );
   ExpressionNode         *boolExpr(     ExpressionInputSymbol symbol, ExpressionNode *n1, ExpressionNode *n2);
   ExpressionNode         *polyExpr(                                   SNodeArray           &coefArray       , SNode arg     );
-  ExpressionNode         *sumExpr(                                    SNodeArray           &addentArray);
+  ExpressionNode         *sumExpr(                                    AddentArray          &addentArray);
   ExpressionNode         *productExpr(                                FactorArray          &factorArray);
   ExpressionNode         *addentExpr(                                 SNode           child, bool positive);
   ExpressionNode         *factorExpr(                                 SNode           base);
