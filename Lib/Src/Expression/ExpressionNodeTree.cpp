@@ -87,7 +87,7 @@ bool ExpressionNodeTree::isExpandable() {
   case POW:
     { ExpressionNode *expo = right();
       Rational        expoR;
-      if(!expo->reducesToRational(&expoR) || (abs(expoR.getNumerator()) <= 1)) {
+      if(!expo->reducesToRational(&expoR) || (::abs(expoR.getNumerator()) <= 1)) {
         return false;
       }
       const ExpressionNode *base = left();

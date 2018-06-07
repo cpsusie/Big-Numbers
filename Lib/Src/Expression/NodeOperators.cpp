@@ -43,8 +43,8 @@ ExpressionNode *NodeOperators::binaryExpr(ExpressionInputSymbol symbol, Expressi
   return n1->getTree().binaryExpr(symbol,n1,n2);
 }
 
-ExpressionNode *NodeOperators::functionExpr(ExpressionInputSymbol symbol, ExpressionNode *n) { // static
-  return n->getTree().functionExpr(symbol, n);
+ExpressionNode *NodeOperators::funcExpr(ExpressionInputSymbol symbol, ExpressionNode *n) { // static
+  return n->getTree().funcExpr(symbol, n);
 }
 
 }; // namespace Expr

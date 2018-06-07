@@ -62,34 +62,26 @@ class ExpressionNodeSelector;
 class ParserTree;
 class Expression;
 
-class FactorArray : public CompactArray<ExpressionFactor*> {
-  DECLAREARRAYDEBUGSTRING;
-private:
-  ParserTree &m_tree;
+class FactorArray : public SNodeArray { // don't add any members, because of typecast
 public:
-  FactorArray(ParserTree &tree) : m_tree(tree) {
+  FactorArray(ParserTree &tree) : SNodeArray(tree) {
   }
-  explicit FactorArray(ParserTree &tree, size_t capacity) : m_tree(tree), CompactArray<ExpressionFactor*>(capacity) {
+  explicit FactorArray(ParserTree &tree, size_t capacity) : SNodeArray(tree, capacity) {
   }
 
-  inline ParserTree &getTree() const {
-    return m_tree;
-  }
   FactorArray selectConstantPositiveExponentFactors() const;
   FactorArray selectConstantNegativeExponentFactors() const;
   FactorArray selectNonConstantExponentFactors() const;
   int findFactorWithChangeableSign() const;
 
-  void clear(intptr_t capacity = 0);
+  // must be NT_FACTOR
   void add(SNode n);
   void addAll(const FactorArray &src);
-  void remove(size_t index);
+  // if(n.type==NT_FACTOR=>add, ==NT_PRODUCT=>addAll, else add(factorExp(n,1))
+  void addAutoConvert(SNode n);
   void sort();
-  bool isSameNodes(const FactorArray &a) const; // compare if ExpressionNode* equals
   bool equal(      const FactorArray &a) const;
   bool equalMinus( const FactorArray &a) const;
-
-  String toString() const;
 };
 
 class ExpressionSymbolSet : public BitSet {
@@ -166,10 +158,12 @@ public:
   inline  void                       setBreakPoint()                        { m_info.m_breakPoint = 1;                                         }
   inline  void                       clearBreakPoint()                      { m_info.m_breakPoint = 0;                                         }
   inline  bool                       isBreakPoint()                 const   { return m_info.m_breakPoint;                                      }
-  virtual bool                       hasPos()                       const   { return false;    }
-  virtual const SourcePosition      &getPos()                       const   { UNSUPPORTEDOP(); }
+  virtual bool                       hasPos()                       const   { return false;           }
+  virtual const SourcePosition      &getPos()                       const   { UNSUPPORTEDOP();        }
   ExpressionNode                    *left()                         const   { return child(0).node(); }
   ExpressionNode                    *right()                        const   { return child(1).node(); }
+  virtual       SNode                base()                         const   { UNSUPPORTEDOP();        }
+  virtual       SNode                exponent()                     const   { UNSUPPORTEDOP();        }
   virtual       SNode                getArgument()                  const   { UNSUPPORTEDOP(); }
   virtual       SNode                child(UINT i)                  const   { UNSUPPORTEDOP(); }
   virtual int                        getChildCount()                const   { UNSUPPORTEDOP(); }
@@ -238,6 +232,7 @@ public:
   inline  bool                       isPositiveNumber()             const   { return isNumber()   && getReal()  > 0;                           }
   inline  bool                       isTrue()                       const   { return isBoolean()  && getBool();                                }
   inline  bool                       isFalse()                      const   { return isBoolean()  && !getBool();                               }
+  inline  bool                       hasOddExponent()               const   { return exponent().isOdd();                                       }
 
   static bool                  isBooleanOperator(     ExpressionInputSymbol symbol); // { AND,OR,NOT,EQ,NE,LT,LE,GT,GE }
   static bool                  isCompareOperator(     ExpressionInputSymbol symbol); // { EQ,NE,LT,LE,GT,GE }
@@ -280,7 +275,8 @@ public:
   UINT    checkIsConsistent()                                             const;
   bool    isConsistentSymbolAndType()                                     const;
 #endif // CHECK_CONSISTENCY
-  static void checkNodeType(         const TCHAR *method, const ExpressionNode *n, ExpressionNodeType expectedType);
+  static void checkNodeType(         const TCHAR *method, const ExpressionNode *n, ExpressionNodeType    expectedType  );
+  static void checkSymbol(           const TCHAR *method, const ExpressionNode *n, ExpressionInputSymbol expectedSymbol);
   void throwInvalidSymbolForTreeMode(const TCHAR *method) const;
   void throwUnknownSymbolException(  const TCHAR *method) const;
   void throwUnknownNodeTypeException(const TCHAR *method) const;
@@ -690,16 +686,12 @@ public:
   ExpressionFactor(SNode base);
   ExpressionFactor(SNode base, SNode exponent);
 
-  inline SNode base() const {
+  SNode base() const {
     return child(0);
   }
 
-  inline SNode exponent() const {
+  SNode exponent() const {
     return child(1);
-  }
-
-  bool hasOddExponent() const {
-    return exponent().isNumber() && exponent().getNumber().isOdd();
   }
 
   int compare(ExpressionNode *n);
@@ -815,7 +807,6 @@ public:
 class ExpressionNodeSum : public ExpressionNodeTree {
 private:
   void validateNodeArray(const SNodeArray &a) const; // check, that all nodes have type NT_ADDENT
-
 public:
   ExpressionNodeSum(ParserTree *tree, const SNodeArray &childArray);
   ExpressionNodeSum(ParserTree *tree, const ExpressionNodeSum *src);
@@ -833,34 +824,29 @@ public:
   String toString() const;
 };
 
-class ExpressionNodeProduct : public ExpressionNode {
+class ExpressionNodeProduct : public ExpressionNodeTree {
 private:
-  FactorArray m_factors;
   void validateFactorArray(const FactorArray &a) const; // check, that all nodes have type NT_FACTOR
 public:
   ExpressionNodeProduct(ParserTree *tree, FactorArray &factors);
+  ExpressionNodeProduct(ParserTree *tree, const ExpressionNodeProduct *src);
 
   FactorArray &getFactorArray() {
-    return m_factors;
+    return (FactorArray&)getChildArray();
   }
   const FactorArray &getFactorArray() const {
-    return m_factors;
+    return (FactorArray&)getChildArray();
   }
 
   int compare(ExpressionNode *n);
 
   ExpressionNode *clone(ParserTree *tree) const;
 
-  bool isConstant() const;
   Real evaluateReal() const;
 
   ExpressionNodeType getNodeType() const {
     return NT_PRODUCT;
   }
-
-  bool traverseExpression(ExpressionNodeHandler &handler, int level);
-  void dumpNode(String &s, int level) const;
-
   String toString() const;
 };
 

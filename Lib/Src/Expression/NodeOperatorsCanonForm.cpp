@@ -93,11 +93,11 @@ ExpressionNode *NodeOperatorsCanonForm::minus(ExpressionNode *n) const {
       const int          index   = factors.findFactorWithChangeableSign();
       FactorArray        newFactors(factors.getTree(), sz);
       for(size_t i = 0; i < sz; i++) {
-        ExpressionFactor *factor = factors[i];
+        SNode factor = factors[i];
         if(i != index) {
           newFactors.add(factor);
         } else {
-          newFactors.add(factorExp(-factor->base(),factor->exponent()));
+          newFactors.add(factorExp(-factor.base(),factor.exponent()));
         }
       }
       if(index < 0) {
@@ -137,8 +137,8 @@ ExpressionNode *NodeOperatorsCanonForm::reciprocal(ExpressionNode *n) const {
       const size_t       sz        = factors.size();
       FactorArray newFactors(factors.getTree(), sz);
       for(size_t i = 0; i < sz; i++) {
-        ExpressionFactor *factor = factors[i];
-        newFactors.add(factorExp(factor->base(), -factor->exponent()));
+        SNode factor = factors[i];
+        newFactors.add(factorExp(factor.base(), -factor.exponent()));
       }
       return productExpr(newFactors);
     }
@@ -209,8 +209,8 @@ ExpressionNode *NodeOperatorsCanonForm::quot(ExpressionNode *n1, ExpressionNode 
     const size_t       sz = a2.size();
 
     for(size_t i = 0; i < sz; i++) {
-      ExpressionFactor *f = a2[i];
-      a.add(factorExp(f->base(), -f->exponent()));
+      SNode f = a2[i];
+      a.add(factorExp(f.base(), -f.exponent()));
     }
   }
   return productExpr(a);
@@ -276,15 +276,15 @@ ExpressionNode *NodeOperatorsCanonForm::exp2(ExpressionNode *n) const {
 }
 
 ExpressionNode *NodeOperatorsCanonForm::cot(ExpressionNode *n) const {
-  return reciprocal(functionExpr(TAN, n));
+  return reciprocal(funcExpr(TAN, n));
 }
 
 ExpressionNode *NodeOperatorsCanonForm::csc(ExpressionNode *n) const {
-  return reciprocal(functionExpr(SIN, n));
+  return reciprocal(funcExpr(SIN, n));
 }
 
 ExpressionNode *NodeOperatorsCanonForm::sec(ExpressionNode *n) const {
-  return reciprocal(functionExpr(COS, n));
+  return reciprocal(funcExpr(COS, n));
 }
 
 static const NodeOperatorsCanonForm    canonFormOps;

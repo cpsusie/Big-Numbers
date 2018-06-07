@@ -73,16 +73,16 @@ ExpressionNode *NodeOperatorsStdForm::reciprocal(ExpressionNode *n) const {
     }
     break;
 
-  case QUOT: return quot(n->right(), n->left());
-  case EXP : return functionExpr(EXP      , minus(n->left()));
+  case QUOT: return quot(    n->right(), n->left());
+  case EXP : return funcExpr(EXP       , minus(n->left()));
   case POW : return power(   n->left() , minus(n->right()));
   case ROOT: return root(    n->left() , minus(n->right()));
-  case COS : return functionExpr(SEC, n->left());
-  case SIN : return functionExpr(CSC, n->left());
-  case TAN : return functionExpr(COT, n->left());
-  case COT : return functionExpr(TAN, n->left());
-  case SEC : return functionExpr(COS, n->left());
-  case CSC : return functionExpr(SIN, n->left());
+  case COS : return funcExpr(SEC, n->left());
+  case SIN : return funcExpr(CSC, n->left());
+  case TAN : return funcExpr(COT, n->left());
+  case COT : return funcExpr(TAN, n->left());
+  case SEC : return funcExpr(COS, n->left());
+  case CSC : return funcExpr(SIN, n->left());
   }
   return quot(getOne(n), n);
 }
@@ -164,11 +164,11 @@ ExpressionNode *NodeOperatorsStdForm::mod(ExpressionNode *n1, ExpressionNode *n2
 }
 
 ExpressionNode *NodeOperatorsStdForm::sqr(ExpressionNode *n) const {
-  return functionExpr(SQR, n);
+  return funcExpr(SQR, n);
 }
 
 ExpressionNode *NodeOperatorsStdForm::sqrt(ExpressionNode *n) const {
-  return functionExpr(SQRT, n);
+  return funcExpr(SQRT, n);
 }
 
 ExpressionNode *NodeOperatorsStdForm::power(ExpressionNode *n1, ExpressionNode *n2) const {
@@ -216,27 +216,27 @@ ExpressionNode *NodeOperatorsStdForm::root(ExpressionNode *n1, ExpressionNode *n
 }
 
 ExpressionNode *NodeOperatorsStdForm::exp(ExpressionNode *n) const {
-  return functionExpr(EXP, n);
+  return funcExpr(EXP, n);
 }
 
 ExpressionNode *NodeOperatorsStdForm::exp10(ExpressionNode *n) const {
-  return functionExpr(EXP10, n);
+  return funcExpr(EXP10, n);
 }
 
 ExpressionNode *NodeOperatorsStdForm::exp2(ExpressionNode *n) const {
-  return functionExpr(EXP2, n);
+  return funcExpr(EXP2, n);
 }
 
 ExpressionNode *NodeOperatorsStdForm::cot(ExpressionNode *n) const {
-  return functionExpr(COT, n);
+  return funcExpr(COT, n);
 }
 
 ExpressionNode *NodeOperatorsStdForm::csc(ExpressionNode *n) const {
-  return functionExpr(CSC, n);
+  return funcExpr(CSC, n);
 }
 
 ExpressionNode *NodeOperatorsStdForm::sec(ExpressionNode *n) const {
-  return functionExpr(SEC, n);
+  return funcExpr(SEC, n);
 }
 
 static const NodeOperatorsStdForm    stdFormOps;
@@ -345,7 +345,7 @@ StdNode StdNode::toSFormSum() const {
     StdNode result = N(a[0].left()).toSForm(); // not createExpressionNode here. We'll get infinite recursion
     if(!a[0].isPositive()) result = -result;
     for(size_t i = 1; i < a.size(); i++) {
-      SNode &e = a[i];
+      SNode e  = a[i];
       SNode ne = N(e.left()).toSForm();
       if(e.isPositive()) result += ne; else result -= ne;
     }
@@ -359,9 +359,9 @@ StdNode StdNode::toSFormProduct() const {
   const FactorArray &a = getFactorArray();
   FactorArray newArray(a.getTree());
   for(size_t i = 0; i < a.size(); i++) {
-    ExpressionFactor *f = a[i];
+    SNode f = a[i];
     Rational r;
-    if(f->reducesToRationalConstant(&r)) {
+    if(f.reducesToRationalConstant(&r)) {
       constant *= r;
     } else {
       newArray.add(f);
@@ -385,11 +385,11 @@ StdNode StdNode::toSFormProduct() const {
 StdNode StdNode::toSFormFactorArray(FactorArray &a, bool changeExponentSign) const {
   SNodeArray a1(a.getTree());
   for(size_t i = 0; i < a.size(); i++) {
-    ExpressionFactor *f = a[i];
+    StdNode f = a[i];
     if(changeExponentSign) {
-      a1.add(reciprocal(N(f).toSFormPow()));
+      a1.add(reciprocal(f.toSFormPow()));
     } else {
-      a1.add(N(f).toSFormPow());
+      a1.add(f.toSFormPow());
     }
   }
   if(a1.size() == 0) {
@@ -430,7 +430,7 @@ StdNode StdNode::toSFormPow() const {
       }
     } else { // r not integer
       const __int64 &den = expoR.getDenominator(); // > 0
-      if(abs(num) == 1) {
+      if(::abs(num) == 1) {
         if(den == 2) {
           if(num == 1) {
             return sqrt(base);

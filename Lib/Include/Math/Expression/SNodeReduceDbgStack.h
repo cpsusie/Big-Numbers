@@ -21,7 +21,7 @@ public:
 #ifdef USE_DEBUGSTRING
 #define DECLAREDEBUGSTRING      protected: String m_debugStr; AlwaysEnabledDebugStr _setDebugStr
 #define DECLAREARRAYDEBUGSTRING protected: String m_debugStr; UpdateableDebugStr    _setDebugStr
-#define UPDATEDEBUGSTRING( a)   (a).m_debugStr = (a).toString()
+#define UPDATEDEBUGSTRING( a)   { if(getDebuggerPresent()) { (a).m_debugStr = (a).toString(); } }
 #define SETDEBUGSTRING()        if(_setDebugStr.enabled()) UPDATEDEBUGSTRING(*this)
 #define DISABLEDEBUGSTRING(a)   (a)._setDebugStr.disable()
 #define ENABLEDEBUGSTRING( a)   { if((a)._setDebugStr.enable()) UPDATEDEBUGSTRING(a); }

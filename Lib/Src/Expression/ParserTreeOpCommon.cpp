@@ -85,7 +85,7 @@ ExpressionNode *ParserTree::sumExpr(SNodeArray &a) {
 ExpressionNode *ParserTree::productExpr(FactorArray &a) {
   switch(a.size()) {
   case 0 : return numberExpr(1);
-  case 1 : return a[0]->exponent().isOne() ? a[0]->base().node() : a[0];
+  case 1 : return a[0].exponent().isOne() ? a[0].base().node() : a[0].node();
   default:
     { ExpressionNode *n = new ExpressionNodeProduct(this, a); TRACE_NEW(n);
       return n;
@@ -127,7 +127,7 @@ ExpressionNode *ParserTree::not(ExpressionNode *n) {
   return boolExpr(NOT,n,NULL);
 }
 
-ExpressionNode *ParserTree::functionExpr(ExpressionInputSymbol symbol, ExpressionNode *child) {
+ExpressionNode *ParserTree::funcExpr(ExpressionInputSymbol symbol, ExpressionNode *child) {
   return unaryExpr(symbol, child);
 }
 
@@ -272,7 +272,7 @@ ExpressionNode *ParserTree::getSum(SNode oldSum, SNodeArray &newAddentArray) {
 
 ExpressionNode *ParserTree::getProduct(SNode oldProduct, FactorArray &newFactorArray) {
   const FactorArray  &oldFactorArray = oldProduct.getFactorArray();
-  SNode               result         = (newFactorArray == oldFactorArray)
+  SNode               result         = (newFactorArray.isSameNodes(oldFactorArray))
                                      ? oldProduct
                                      : productExpr(newFactorArray);
   return result.node();

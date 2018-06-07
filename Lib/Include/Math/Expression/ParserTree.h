@@ -88,9 +88,9 @@ protected:
   static ExpressionNode  *numberExpr(        ExpressionNode *n, const Number &v);
   static ExpressionNode  *numberExpr(        ExpressionNode *n, INT64         v);
 
-  static ExpressionNode  *unaryExpr(   ExpressionInputSymbol symbol, ExpressionNode *n);
-  static ExpressionNode  *binaryExpr(  ExpressionInputSymbol symbol, ExpressionNode *n1, ExpressionNode *n2);
-  static ExpressionNode  *functionExpr(ExpressionInputSymbol symbol, ExpressionNode *n);
+  static ExpressionNode  *unaryExpr( ExpressionInputSymbol symbol, ExpressionNode *n);
+  static ExpressionNode  *binaryExpr(ExpressionInputSymbol symbol, ExpressionNode *n1, ExpressionNode *n2);
+  static ExpressionNode  *funcExpr(  ExpressionInputSymbol symbol, ExpressionNode *n);
 public:
   virtual ExpressionNode *sum(       ExpressionNode *n1, ExpressionNode *n2) const = NULL;
   virtual ExpressionNode *diff(      ExpressionNode *n1, ExpressionNode *n2) const = NULL;
@@ -327,6 +327,7 @@ public:
   inline ExpressionNode  *root(      ExpressionNode *n1, ExpressionNode *n2) { return m_ops->root( n1,n2); }
   inline ExpressionNode  *minus(     ExpressionNode *n) { return m_ops->minus(n);      }
   inline ExpressionNode  *reciprocal(ExpressionNode *n) { return m_ops->reciprocal(n); }
+  inline ExpressionNode  *abs(       ExpressionNode *n) { return funcExpr(ABS,n);      }
   inline ExpressionNode  *sqr(       ExpressionNode *n) { return m_ops->sqr(n);        }
   inline ExpressionNode  *sqrt(      ExpressionNode *n) { return m_ops->sqrt(n);       }
   inline ExpressionNode  *exp(       ExpressionNode *n) { return m_ops->exp(n);        }
@@ -372,7 +373,7 @@ public:
   ExpressionNode *or(                        ExpressionNode *n1, ExpressionNode *n2);
   ExpressionNode *not(                       ExpressionNode *n);
 
-  ExpressionNode *functionExpr(              ExpressionInputSymbol symbol
+  ExpressionNode *funcExpr(                  ExpressionInputSymbol symbol
                                             ,ExpressionNode *child);
   ExpressionNode *unaryMinus(                ExpressionNode *child);
   ExpressionNode *unaryExpr(                 ExpressionInputSymbol symbol

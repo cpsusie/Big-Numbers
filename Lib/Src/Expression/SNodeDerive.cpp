@@ -179,7 +179,7 @@ SNode SNode::D(const String &name) const {
     return DStmtList(name);
 
   case INDEXEDSUM:
-    return indexSum(child(0), child(1), ddx(child(2)));
+    return indexedSum(child(0), child(1), ddx(child(2)));
 
   case INDEXEDPRODUCT:
     { const SNode startAssignment = child(0);
@@ -188,13 +188,13 @@ SNode SNode::D(const String &name) const {
       const SNode productCounter  = startAssignment.left();
       const SNode sumCounter(getTree().allocateLoopVarNode(productCounter.getName()));
 
-      return indexSum(assignStmt(sumCounter, startAssignment.right())
-                     ,endExpr
-                     ,indexProd(startAssignment
-                               ,endExpr
-                               ,condExp(boolExp(EQ, productCounter, sumCounter), ddx(expr), expr)
-                               )
-                     );
+      return indexedSum(assignStmt(sumCounter, startAssignment.right())
+                       ,endExpr
+                       ,indexedProd(startAssignment
+                                   ,endExpr
+                                   ,condExp(boolExp(EQ, productCounter, sumCounter), ddx(expr), expr)
+                                   )
+                       );
     }
 
   default        :

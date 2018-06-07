@@ -132,19 +132,6 @@ void CExpressionTreeDlg::traverse(CTreeCtrl *ctrl, HTREEITEM p, const Expression
   case TYPEBOOL:
     q = ADDITEM(n,p);
     break;
-  case ADDENT  :
-    q = ADDITEM(n,p);
-    traverse(ctrl, q, n->left());
-    break;
-
-  case PRODUCT :
-    { q = ADDITEM(n,p);
-      const FactorArray &a = n->getFactorArray();
-      for(size_t i = 0; i < a.size(); i++) {
-        traverse(ctrl, q, a[i]);
-      }
-    }
-    break;
 
   case POLY    :
     { q = ADDITEM(n,p);

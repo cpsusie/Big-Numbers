@@ -97,11 +97,6 @@ void ParserTreeSymbolTable::buildTable(ExpressionNode *n) {
 //    allocateNumber(n);
     break;
 
-  case PRODUCT:
-    { const FactorArray &a = n->getFactorArray();
-      for(size_t i = 0; i < a.size(); i++) buildTable(a[i]);
-    }
-    break;
   case POLY   :
     { const SNodeArray &coefArray = n->getCoefArray();
       for(size_t i = 0; i < coefArray.size(); i++) {

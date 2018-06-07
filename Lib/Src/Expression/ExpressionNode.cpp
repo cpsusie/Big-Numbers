@@ -413,7 +413,7 @@ void ExpressionNode::throwUnknownNodeTypeException(const TCHAR *method) const {
                 ,method, getNodeType());
 }
 
-void ExpressionNode::checkNodeType(const TCHAR *method, const ExpressionNode *n, ExpressionNodeType expectedType) {
+void ExpressionNode::checkNodeType(const TCHAR *method, const ExpressionNode *n, ExpressionNodeType expectedType) { // static
   if((n==NULL) || (n->getNodeType() != expectedType)) {
     throwInvalidArgumentException(method
                                  ,_T("Expected nodetype:%s. Type=%s")
@@ -423,6 +423,15 @@ void ExpressionNode::checkNodeType(const TCHAR *method, const ExpressionNode *n,
   }
 }
 
+void ExpressionNode::checkSymbol(const TCHAR *method, const ExpressionNode *n, ExpressionInputSymbol expectedSymbol) { // static
+  if((n==NULL) || (n->getSymbol() != expectedSymbol)) {
+    throwInvalidArgumentException(method
+                                 ,_T("Expected symbol:%s. Symbol=%s")
+                                 ,getSymbolName(expectedSymbol).cstr()
+                                 ,n?n->getSymbolName().cstr():_T("NULL")
+                                 );
+  }
+}
 
 #ifdef CHECK_CONSISTENCY
 bool ExpressionNode::isConsistentSymbolAndType() const {

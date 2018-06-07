@@ -147,9 +147,9 @@ NNode NNode::toNFormProduct() const {
   const FactorArray &a = getFactorArray();
   FactorArray newArray(a.getTree());
   for(size_t i = 0; i < a.size(); i++) {
-    ExpressionFactor *f        = a[i];
-    NNode             base     = N(f->base()).toNFormRealExp();
-    NNode             exponent = N(f->exponent()).toNFormRealExp();
+    SNode f        = a[i];
+    NNode base     = N(f.base()).toNFormRealExp();
+    NNode exponent = N(f.exponent()).toNFormRealExp();
     if(base.isNumber() && exponent.isNumber()) {
       constant *= N(f).evaluateReal();
     } else {

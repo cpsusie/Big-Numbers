@@ -305,13 +305,15 @@ bool SNode::needParentheses(SNode parent) const {
 }
 
 SNode SNode::base() const {
-  assert(getNodeType() == NT_FACTOR);
-  return ((ExpressionFactor*)m_node)->base();
+  return m_node->base();
 }
 
 SNode SNode::exponent() const {
-  assert(getNodeType() == NT_FACTOR);
-  return ((ExpressionFactor*)m_node)->exponent();
+  return m_node->exponent();
+}
+
+bool SNode::hasOddExponent() const {
+  return m_node->hasOddExponent();
 }
 
 #ifdef CHECK_CONSISTENCY
@@ -397,6 +399,10 @@ void SNode::throwUnknownNodeTypeException(const TCHAR *method) const {
 
 SNode reciprocal(const SNode &x) {
   return x.getTree().reciprocal(x.m_node);
+}
+
+SNode abs(const SNode &x) {
+  return x.getTree().abs(x.m_node);
 }
 
 SNode sqrt(const SNode &x) {
@@ -554,11 +560,11 @@ SNode stmtList(SNodeArray &list) {
   return list.getTree().stmtList(list);
 }
 
-SNode indexSum(SNode assignStmt, SNode endExpr, SNode expr) {
+SNode indexedSum(SNode assignStmt, SNode endExpr, SNode expr) {
   return assignStmt.getTree().indexedSum(assignStmt.node(), endExpr.node(), expr.node());
 }
 
-SNode indexProd(SNode assignStmt, SNode endExpr, SNode expr) {
+SNode indexedProd(SNode assignStmt, SNode endExpr, SNode expr) {
   return assignStmt.getTree().indexedProduct(assignStmt.node(), endExpr.node(), expr.node());
 }
 

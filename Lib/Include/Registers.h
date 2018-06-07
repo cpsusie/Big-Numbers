@@ -28,7 +28,7 @@ inline int regSizeCmp(RegSize s1, RegSize s2) {
 #define USE_DEBUGSTR
 
 #ifdef USE_DEBUGSTR
-#define SETDEBUGSTR() m_debugStr = toString()
+#define SETDEBUGSTR() { if(getDebuggerPresent()) m_debugStr = toString(); }
 #define DECLAREDEBUGSTR  protected: String m_debugStr
 #else
 #define SETDEBUGSTR()

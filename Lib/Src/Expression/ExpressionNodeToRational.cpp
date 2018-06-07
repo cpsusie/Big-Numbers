@@ -53,7 +53,7 @@ bool ExpressionNode::reducesToRational(Rational *r) const {
     { const FactorArray &a = getFactorArray();
       Rational product = 1, tmp, *tmpp = r ? &tmp : NULL;
       for(size_t i = 0; i < a.size(); i++) {
-        if(!a[i]->reducesToRational(tmpp)) {
+        if(!a[i].reducesToRational(tmpp)) {
           return false;
         }
         if(r) product *= tmp;

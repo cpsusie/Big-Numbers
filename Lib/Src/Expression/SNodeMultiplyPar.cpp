@@ -106,8 +106,8 @@ SNode SNode::multiplyParenthesesInProduct() const {
   const size_t       n = a.size();
   FactorArray        newFactorArray(a.getTree(), n);
   for(size_t i = 0; i < n; i++) {
-    ExpressionFactor *f = a[i];
-    newFactorArray.add(factorExp(f->base().multiplyParentheses(), f->exponent().multiplyParentheses()));
+    SNode f = a[i];
+    newFactorArray.add(factorExp(f.base().multiplyParentheses(), f.exponent().multiplyParentheses()));
   }
 
   BitSet done(newFactorArray.size() + 1);
@@ -118,23 +118,23 @@ SNode SNode::multiplyParenthesesInProduct() const {
     done.clear();
     for(size_t i1 = 1; i1 < tmp.size(); i1++) {
       if(done.contains(i1)) continue;
-      ExpressionFactor *f1 = tmp[i1];
-      if((f1->base().getSymbol() == SUM) && !f1->exponent().isOne()) {
+      SNode f1 = tmp[i1];
+      if((f1.base().getSymbol() == SUM) && !f1.exponent().isOne()) {
         continue;
       }
       for(size_t i2 = 0; i2 < i1; i2++) {
         if(done.contains(i1)) break;
         if(done.contains(i2)) continue;
-        ExpressionFactor *f2 = tmp[i2];
-        if(f2->base().getSymbol() == SUM && !f2->exponent().isOne()) {
+        SNode f2 = tmp[i2];
+        if((f2.base().getSymbol() == SUM) && !f2.exponent().isOne()) {
           continue;
         }
-        if(f1->base().getSymbol() == SUM) {
-          newFactorArray.add(factorExp(multiplyFactorSum(f2, f1->base()),1));
+        if(f1.base().getSymbol() == SUM) {
+          newFactorArray.add(factorExp(multiplyFactorSum(f2, f1.base()),1));
           done.add(i1);
           done.add(i2);
-        } else if(f2->base().getSymbol() == SUM) {
-          newFactorArray.add(factorExp(multiplyFactorSum(f1, f2->base()),1));
+        } else if(f2.base().getSymbol() == SUM) {
+          newFactorArray.add(factorExp(multiplyFactorSum(f1, f2.base()),1));
           done.add(i1);
           done.add(i2);
         }
@@ -161,7 +161,7 @@ SNode SNode::multiplyFactorSum(SNode factor, SNode sum) const {
     const SNodeArray &sa = sum.getChildArray();
     SNodeArray        tmp(sa.getTree(),sa.size());
     for(size_t i = 0; i < sa.size(); i++) {
-      const SNode &e = sa[i];
+      SNode e = sa[i];
       tmp.add(addentExp(factor * e.left(),e.isPositive()));
     }
     RETURNNODE( sumExp(tmp) );

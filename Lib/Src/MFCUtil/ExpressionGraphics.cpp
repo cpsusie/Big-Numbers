@@ -1158,8 +1158,8 @@ AlignedImage *ExpressionPainter::getNumberImage(SNode n, int fontSize, Expressio
     Real significand;
     int  exponent;
     splitReal(num.getRealValue(), significand, exponent);
-    if (m_numberFormat == ENGINEERING_NOTATION) {
-      const int r = abs(exponent % 3);
+    if(m_numberFormat == ENGINEERING_NOTATION) {
+      const int r = ::abs(exponent % 3);
       if (r) {
         exponent    -= r;
         significand *= (r==1) ? 10 : 100;

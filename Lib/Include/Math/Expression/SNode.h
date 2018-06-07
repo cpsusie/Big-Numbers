@@ -45,11 +45,11 @@ typedef enum {
 } ExpressionNodeType;
 
 #ifdef _DEBUG
-#define CHECKNODETYPE( n,expectedType) ExpressionNode::checkNodeType(__TFUNCTION__,(n).node(),expectedType)
-#define CHECKNODEPTYPE(n,expectedType) ExpressionNode::checkNodeType(__TFUNCTION__,n         ,expectedType)
+#define CHECKNODETYPE( n,expectedType  ) ExpressionNode::checkNodeType(__TFUNCTION__,(n).node(),expectedType  )
+#define CHECKSYMBOL(   n,expectedSymbol) ExpressionNode::checkSymbol(  __TFUNCTION__,(n).node(),expectedSymbol)
 #else _DEBUG
-#define CHECKNODETYPE( n,expectedType)
-#define CHECKNODEPTYPE(n,expectedType)
+#define CHECKNODETYPE( n,expectedType  )
+#define CHECKSYMBOL(   n,expectedSymbol)
 #endif _DEBUG
 
 // Wrapper class til ExpressionNode
@@ -109,7 +109,7 @@ private:
   SNode              reduceSymmetricFunction();
   SNode              reducePoly();
   SNode              reduceCondExp();
-  SNode              reduceTrigonometricFactors(  ExpressionFactor &f1, ExpressionFactor &f2);
+  SNode              reduceTrigonometricFactors(  SNode f1, SNode f2);
 
   bool               canUseIdiotRule(             SNode             n1, const SNode n2) const;
   bool               canUseReverseIdiotRule(      SNode e1, SNode e2, SNode &result) const;
@@ -225,6 +225,7 @@ public:
   bool                  needParentheses(SNode parent)          const;
   SNode                 base()                                 const;
   SNode                 exponent()                             const;
+  bool                  hasOddExponent()                       const;
 #ifdef CHECK_CONSISTENCY
   void                  checkIsConsistent()                    const;
 #endif // CHECK_CONSISTENCY
@@ -262,6 +263,7 @@ public:
   void throwUnknownNodeTypeException(const TCHAR *method) const;
 
   friend SNode reciprocal(const SNode &x);
+  friend SNode abs(       const SNode &x);
   friend SNode sqrt(      const SNode &x);
   friend SNode sqr(       const SNode &x);
   friend SNode pow(       const SNode &x, const SNode &y);
@@ -340,8 +342,8 @@ SNode sumExp(    SNodeArray  &a);                              // assume a.size(
 SNode assignStmt(SNode leftSide  , SNode expr);
 SNode assignStmt(SNodeArray &list);
 SNode stmtList(  SNodeArray &list);
-SNode indexSum(  SNode assignStmt, SNode endExpr, SNode expr  );
-SNode indexProd( SNode assignStmt, SNode endExpr, SNode expr  );
+SNode indexedSum( SNode assignStmt, SNode endExpr, SNode expr  );
+SNode indexedProd(SNode assignStmt, SNode endExpr, SNode expr  );
 SNode addentExp( SNode child     , bool positive);
 SNode factorExp( SNode base      , SNode expo);
 SNode factorExp( SNode base      , const Rational &expo);
