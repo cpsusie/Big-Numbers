@@ -17,10 +17,12 @@ private:
   NNode        toNFormAssign()   const;
   NNode        toNFormTreeNode() const;
 
+  // assume !n.isEmpty
   inline NNode(const SNode &n) : SNode(n) {
     CHECKISCONSISTENT(n);
   }
 public:
+  // assume n != NULL
   inline NNode(ExpressionNode *n) : SNode(n) {
     CHECKISCONSISTENT(*n);
   }
@@ -34,16 +36,19 @@ public:
 #define NV(v) SNode(getTree(),v)
 
 SNode ParserTree::toNumericForm(SNode n) {
-  if(n.isEmpty()) return n;
   STARTREDUCTION(this);
   switch(getTreeForm()) {
   case TREEFORM_STANDARD :
-    n = toStandardForm(N(toCanonicalForm(n).node()).convert());
+    if(!n.isEmpty()) {
+      n = toStandardForm(N(toCanonicalForm(n).node()).convert());
+    }
     m_ops = NodeOperators::s_stdNumForm;
     break;
 
   case TREEFORM_CANONICAL:
-    n = toCanonicalForm((N(n.node()).convert()));
+    if(!n.isEmpty()) {
+      n = toCanonicalForm((N(n.node()).convert()));
+    }
     m_ops = NodeOperators::s_canonNumForm;
     break;
 
@@ -179,7 +184,7 @@ NNode NNode::toNFormProduct() const {
     if(base.isNumber() && exponent.isNumber()) {
       constant *= N(f).evaluateReal();
     } else {
-      newArray.add(powerExp(base, exponent));
+      newArray *=powerExp(base, exponent);
     }
   }
   if(newArray.size() == 0) {
@@ -187,7 +192,7 @@ NNode NNode::toNFormProduct() const {
   }
 
   FactorArray p = newArray.selectConstantPositiveExponentFactors();
-  p.addAll(newArray.selectNonConstantExponentFactors());
+  p *= newArray.selectNonConstantExponentFactors();
   FactorArray q = newArray.selectConstantNegativeExponentFactors();
 
   SNode result;

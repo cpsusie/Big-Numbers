@@ -62,7 +62,7 @@ public:
     return ((ParserTreeSymbolTable*)this)->m_variableTable.getIterator();
   }
   ExpressionVariableArray getAllVariables() const;
-  void unmarkAllReferencedNodes();
+  void unmarkAllReferencedNodes() const;
   inline void setValue(UINT valueIndex, const Real &value) const {
     m_valueTable[valueIndex] = value;
   }

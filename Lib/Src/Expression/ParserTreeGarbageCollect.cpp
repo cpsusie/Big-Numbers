@@ -42,8 +42,10 @@ void ParserTree::markSimpleConstants() {
   MARKCONSTANT(m_true    );
 }
 
-void ParserTree::unmarkAll() {
-  for(size_t i = 0; i < m_nodeTable.size(); i++) m_nodeTable[i]->unMark();
+void ParserTree::unmarkAll() const {
+  for(size_t i = 0; i < m_nodeTable.size(); i++) {
+    m_nodeTable[i]->unMark();
+  }
   m_symbolTable.unmarkAllReferencedNodes();
 }
 

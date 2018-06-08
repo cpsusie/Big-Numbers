@@ -17,17 +17,62 @@ void FactorArray::add(SNode n) {
 }
 
 void FactorArray::addAll(const FactorArray &src) {
-  DISABLEDEBUGSTRING(*this);
   __super::addAll(src);
-  ENABLEDEBUGSTRING(*this);
 }
 
-void FactorArray::addAutoConvert(SNode n) {
+FactorArray &FactorArray::operator*=(SNode n) {
   switch(n.getNodeType()) {
-  case NT_POWER  : add(n);                     break;
-  case NT_PRODUCT: addAll(n.getFactorArray()); break;
-  default        : add(powerExp(n,1));         break;
+  case NT_POWER  : add(n);                      break;
+  case NT_PRODUCT: *this *= n.getFactorArray(); break;
+  default        : add(powerExp(n,1));          break;
   }
+  return *this;
+}
+
+FactorArray &FactorArray::operator/=(SNode n) {
+  DISABLEDEBUGSTRING(*this);
+  switch(n.getNodeType()) {
+  case NT_POWER  : add(powerExp(n.base(),-n.exponent())); break;
+  case NT_PRODUCT: *this /= n.getFactorArray();           break;
+  default        : add(powerExp(n,-1));                   break;
+  }
+  ENABLEDEBUGSTRING(*this);
+  return *this;
+}
+
+FactorArray &FactorArray::operator*=(const FactorArray &a) {
+  addAll(a);
+  return *this;
+}
+
+FactorArray &FactorArray::operator/=(const FactorArray &a) {
+  DISABLEDEBUGSTRING(*this);
+  const size_t n = a.size();
+  for(size_t i = 0; i < n; i++) {
+    *this /= a[i];
+  }
+  ENABLEDEBUGSTRING(*this);
+  return *this;
+}
+
+FactorArray &FactorArray::operator*=(const Rational &r) {
+  if(r != 1) {
+    const INT64 num = r.getNumerator();
+    const INT64 den = r.getDenominator();
+    if(den == 1) {
+      *this *= SNode(getTree(),num);
+    } else if(num == 1) {
+      *this /= SNode(getTree(),den);
+    } else {
+      *this *= SNode(getTree(),r);
+    }
+  }
+  return *this;
+}
+
+FactorArray &FactorArray::operator/=(const Rational &r) {
+  *this *= ::reciprocal(r);
+  return *this;
 }
 
 FactorArray FactorArray::selectConstantPositiveExponentFactors() const {

@@ -434,7 +434,7 @@ StartSearch:
       if(Expr::equal(factor1.node(), factor2.node())) {
         fl1.remove(i1);
         fl2.remove(i2);
-        commonFactors.add(factor1);
+        commonFactors *= factor1;
         goto StartSearch;
       } else if((factor1.base().equal(factor2.base()))
             &&  (factor1.exponent().isNumber() && factor2.exponent().isNumber())) { // exponents are different
@@ -453,8 +453,8 @@ StartSearch:
           minExponent  = &c2 ; maxExponent  = &c1;
           flEMin       = &fl2; flEMax       = &fl1;
         }
-        commonFactors.add(powerExp(base, NV(*minExponent)));
-        flEMax->add(powerExp(base, NV(*maxExponent - *minExponent)));
+        commonFactors *= powerExp(base, NV(*minExponent));
+        *flEMax *= powerExp(base, NV(*maxExponent - *minExponent));
         goto StartSearch;
       } else {
         Rational eR1,eR2;
@@ -475,7 +475,7 @@ StartSearch:
           FactorArray    *flEMin      , *flEMax;
 
           if(eR1 == eR2) {
-            commonFactors.add(factor1);
+            commonFactors *= factor1;
           } else {
             if(eR1 < eR2) {
               minExponent  = &eR1; maxExponent = &eR2;
@@ -484,8 +484,8 @@ StartSearch:
               minExponent  = &eR2; maxExponent = &eR1;
               flEMin       = &fl2; flEMax      = &fl1;
             }
-            commonFactors.add(powerExp(base, NV(*minExponent)));
-            flEMax->add(powerExp(base, NV(*maxExponent - *minExponent)));
+            commonFactors *= powerExp(base, *minExponent);
+            *flEMax       *= powerExp(base, *maxExponent - *minExponent);
           }
           goto StartSearch;
         }
@@ -550,9 +550,9 @@ SNode SNode::changeFirstNegativeFactor() const {
       FactorArray newFactorArray(getTree());
       SNode f0 = factorArray[0];
       if(f0.base().isNegativeNumber() && f0.exponent().isOdd()) {
-        newFactorArray.add(powerExp(-f0.base(), f0.exponent()));
+        newFactorArray *= powerExp(-f0.base(), f0.exponent());
         for(size_t i = 1; i < factorArray.size(); i++) {
-          newFactorArray.add(factorArray[i]);
+          newFactorArray *= factorArray[i];
         }
         RETURNNODE( productExp(newFactorArray) );
       }
@@ -580,17 +580,17 @@ SNode SNode::reduceProduct() {
   for(size_t i = 0; i < unreducedFactors.size(); i++) { // first remove all number factors, multiplied together in constantFactor
     SNode f = unreducedFactors[i];
     if(!f.isConstant()) {
-      nonConstantFactors.add(f); // contains non-constant factors
+      nonConstantFactors *= f; // contains non-constant factors
     } else if(f.isReduced()) {
-      constantFactors.add(f);
+      constantFactors *= f;
     } else {
       Rational r;
       if(!f.reducesToRational(&r)) {
-        constantFactors.add(f);
+        constantFactors *= f;
       } else if(r == 0) {
         RETURNNODE( _0() );
       } else if(r != 1) { // No need to add 1 as a factor
-        constantFactors.add(powerExp(NV(r),1));
+        constantFactors *= r;
         constantFactors.last().setReduced();
       }
     }
@@ -615,7 +615,7 @@ SNode SNode::reduceProduct() {
           if(f1.base().equal(f2.base())) { // Common base
             SNode newExponent = (f1.exponent() + f2.exponent()).reduceRealExp();
             if(!newExponent.isZero()) {
-              reduced.add(powerExp(f1.base(), newExponent));
+              reduced *= powerExp(f1.base(), newExponent);
             }
             done.add(i1);
             done.add(i2);
@@ -625,15 +625,15 @@ SNode SNode::reduceProduct() {
               done.add(i1);
               done.add(i2);
               if(!f.isConstant()) {
-                reduced.add(f);
+                reduced *= f;
               } else {
                 Rational r;
                 if(!f.reducesToRational(&r)) {
-                  constantFactors.add(f);
+                  constantFactors *= f;
                 } else if(r == 0) {        // No need to go further. The product is 0
                   RETURNNODE( _0() );
                 } else if(r != 1) {        // No need to add 1 as a factor
-                  constantFactors.add(powerExp(NV(r),1));
+                  constantFactors *= r;
                 }
               }
             }
@@ -642,7 +642,7 @@ SNode SNode::reduceProduct() {
       }
       for(size_t i = 0; i < tmp.size(); i++) {
         if(!done.contains(i)) {
-          reduced.add(tmp[i]);
+          reduced *= tmp[i];
         }
       }
     } while(!done.isEmpty() && reduced.size() > 1);
@@ -650,7 +650,7 @@ SNode SNode::reduceProduct() {
 
   SNode constantFactor = reduceConstantFactors(constantFactors);
   if(!constantFactor.isOne()) {
-    reduced.add(powerExp(constantFactor,1));
+    reduced *= constantFactor;
   }
   reduced.sort();
   if(getFactorArray().isSameNodes(reduced)) {
@@ -674,11 +674,11 @@ FactorArray &SNode::getFactors(FactorArray &result, SNode exponent) {
       if(v.isRational()) {
         const Rational r = v.getRationalValue();
         if(::abs(r.getNumerator()) == 1) {
-          result.add(powerExp(NV(sign(r.getNumerator()) * r.getDenominator()), (-exponent).reduceRealExp()));
+          result *= powerExp(NV(sign(r.getNumerator()) * r.getDenominator()), (-exponent).reduceRealExp());
           break;
         }
       }
-      result.add(powerExp(*this, exponent));
+      result *= powerExp(*this, exponent);
     }
     break;
   case PRODUCT:
@@ -692,7 +692,7 @@ FactorArray &SNode::getFactors(FactorArray &result, SNode exponent) {
     getFactorsInPower(result, exponent);
     break;
   default:
-    result.add(powerExp(reduceRealExp(), exponent));
+    result *= powerExp(reduceRealExp(), exponent);
     break;
   }
   RETURNSHOWSTR( result );
@@ -766,7 +766,7 @@ FactorArray &SNode::multiplyExponents(FactorArray &result, FactorArray &factors,
   ENTERMETHOD2(factors, exponent);
 
   if(exponent.isOne()) {
-    result.addAll(factors);
+    result *= factors;
     RETURNSHOWSTR( result );
   } else if(exponent.isZero()) {
     RETURNSHOWSTR( result ); // the empty list has value 1
@@ -777,12 +777,12 @@ FactorArray &SNode::multiplyExponents(FactorArray &result, FactorArray &factors,
     SNode er = SNode(getTree(), erat);
     for(size_t i = 0; i < factors.size(); i++) {
       SNode f = factors[i];
-      result.add(powerExp(f.base(), multiplyExponents(f.exponent(), er)));
+      result *= powerExp(f.base(), multiplyExponents(f.exponent(), er));
     }
   } else { // exponent is not rational. so no need to use multiplyExponents
     for(size_t i = 0; i < factors.size(); i++) {
       SNode f  = factors[i];
-      result.add(powerExp(f.base(), f.exponent() * exponent));
+      result *= powerExp(f.base(), f.exponent() * exponent);
     }
   }
   RETURNSHOWSTR( result );
@@ -892,24 +892,24 @@ SNode SNode::reduceConstantFactors(FactorArray &factorArray) {
 
         if(e1IsRationalConstant && e2IsRationalConstant) {
           if(E1R == E2R) {
-            reduced.add(powerExp(reducedBase1 * reducedBase2, E1R));
+            reduced *= powerExp(reducedBase1 * reducedBase2, E1R);
             done.add(i1);
             done.add(i2);
           } else if(E1R == -E2R) {
             if(E1R > 0) {
-              reduced.add(powerExp(reducedBase1 / reducedBase2, E1R));
+              reduced *= powerExp(reducedBase1 / reducedBase2, E1R);
             } else {
-              reduced.add(powerExp(reducedBase2 / reducedBase1, E2R));
+              reduced *= powerExp(reducedBase2 / reducedBase1, E2R);
             }
             done.add(i1);
             done.add(i2);
           } else if(base1.equal(base2)) {
-            reduced.add(powerExp(reducedBase1, E2R + E1R));
+            reduced *= powerExp(reducedBase1, E2R + E1R);
             done.add(i1);
             done.add(i2);
           }
         } else if(expo1.equal(expo2)) {
-          reduced.add(powerExp(reducedBase1 * reducedBase2, expo1));
+          reduced *= powerExp(reducedBase1 * reducedBase2, expo1);
           done.add(i1);
           done.add(i2);
         }
@@ -917,7 +917,7 @@ SNode SNode::reduceConstantFactors(FactorArray &factorArray) {
     }
     for(size_t i = 0; i < tmp.size(); i++) {
       if(!done.contains(i)) {
-        reduced.add(tmp[i]);
+        reduced *= tmp[i];
       }
     }
     if(reduced.size() == startSize) {
@@ -945,12 +945,12 @@ SNode SNode::reduceConstantFactors(FactorArray &factorArray) {
       Rational baseR, expoR;
       if(base.reducesToRationalConstant(&baseR)) {
         if(expo.reducesToRationalConstant(&expoR)) {
-          fa.addAutoConvert(reduceRationalPower(baseR, expoR));
+          fa *= reduceRationalPower(baseR, expoR);
         } else { // base is rational. expo is irrational
-          fa.add(powerExp(NV(baseR), expo));
+          fa *= powerExp(NV(baseR), expo);
         }
       } else {
-        fa.add(f);
+        fa *= f;
       }
     }
   }
@@ -958,15 +958,10 @@ SNode SNode::reduceConstantFactors(FactorArray &factorArray) {
   if(rationalPart != 1) {
     const INT64 &num = rationalPart.getNumerator();
     const INT64 &den = rationalPart.getDenominator();
-    if(num != 1) {
-      fa.add(powerExp(NV(num),1));
-    }
-    if(den != 1) {
-      fa.add(powerExp(NV(den), -1));
-    }
+    fa *= num;
+    fa /= den;
   }
-  SNode result = productExp(fa);
-  RETURNNODE( result );
+  RETURNNODE( productExp(fa) );
 }
 
 SNode SNode::reduceRationalPower(const Rational &base, const Rational &exponent) {
@@ -1013,15 +1008,15 @@ SNode SNode::reduceRationalPower(const Rational &base, const Rational &exponent)
 
     FactorArray fa(getTree());
     if(niceRootFactor != 1) {
-      fa.add(powerExp(NV(niceRootFactor), exponent.getNumerator()));
+      fa *= powerExp(NV(niceRootFactor), exponent.getNumerator());
     }
 
     const Rational nonRootFactor = pow(Rational(bnPrimeFactors.getProduct(), bdPrimeFactors.getProduct()), (int)exponent.getNumerator());
     if(nonRootFactor != 1) {
       if(nonRootFactor.getNumerator() == 1) {
-        fa.add(powerExp(NV(nonRootFactor.getDenominator()), Rational(-1,ed)));
+        fa *= powerExp(NV(nonRootFactor.getDenominator()), Rational(-1,ed));
       } else {
-        fa.add(powerExp(NV(nonRootFactor), Rational(1,ed)));
+        fa *= powerExp(NV(nonRootFactor), Rational(1,ed));
       }
     }
     RETURNNODE( productExp(fa) );

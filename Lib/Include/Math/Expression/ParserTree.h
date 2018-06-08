@@ -43,7 +43,7 @@ private:
   int m_treeDepth;
   int compare(const ParserTreeComplexity &tc) const;
 public:
-  ParserTreeComplexity(ParserTree &tree);
+  ParserTreeComplexity(const ParserTree &tree);
   inline bool operator==(const ParserTreeComplexity &tc) const {
     return compare(tc) == 0;
   }
@@ -113,6 +113,7 @@ public:
   virtual ExpressionNode *sec(       ExpressionNode *n) const = NULL;
 
   virtual ParserTreeForm  getTreeForm() const = NULL;
+  virtual void            checkTreeFormConsistent(const ParserTree *tree) const = NULL;
   static const NodeOperators *s_stdForm, *s_canonForm, *s_stdNumForm, *s_canonNumForm;
 };
 
@@ -165,6 +166,9 @@ private:
   friend class MarkedNodeTransformer;
   friend class ExpressionPainter;
 
+#ifdef CHECK_CONSISTENCY
+  void checkIsConsistent() const;
+#endif // CHECK_CONSISTENCY
 protected:
   ParserTree(TrigonometricMode mode);
   ParserTree(           const ParserTree &src);
@@ -178,14 +182,14 @@ protected:
   // Reduction
   void setReduceIteration(UINT            it      );
   void iterateTransformation(ParserTreeTransformer &transformer);
-  void checkIsStandardForm();
-  void checkIsCanonicalForm();
+  void checkIsStandardForm() const;
+  void checkIsCanonicalForm() const;
   SNode toStandardForm( SNode n);
   SNode toCanonicalForm(SNode n);
   SNode toNumericForm(  SNode n);
   void releaseAll();
   void pruneUnusedNodes();
-  void markPow1Nodes();
+  void markPow1Nodes() const;
   void deleteUnmarked();
   void buildSymbolTable(const ExpressionVariableArray *oldVariables = NULL) {
     m_symbolTable.create(this, oldVariables);
@@ -255,6 +259,7 @@ public:
 
   void setRoot(ExpressionNode *n);
 
+  // Do we have a root
   inline bool isEmpty() const {
     return m_root == NULL;
   }
@@ -273,7 +278,7 @@ public:
   void reduce();
   static UINT getTerminalCount();
 
-  void unmarkAll();
+  void unmarkAll() const;
   inline bool isOk() const {
     return m_ok;
   }
@@ -432,11 +437,11 @@ public:
     return m_symbolTable.getVariable(name);
   }
 
-  int getNodeCount(ExpressionNodeSelector *selector = NULL);
+  int getNodeCount(ExpressionNodeSelector *selector = NULL) const;
   // if(validSymbolSet != NULL, only node with symbols contained in set will be counted
-  int getNodeCount(bool ignoreMarked, const ExpressionSymbolSet *validSymbolSet = NULL);
+  int getNodeCount(bool ignoreMarked, const ExpressionSymbolSet *validSymbolSet = NULL) const;
   int getTreeDepth() const;
-  ParserTreeComplexity getComplexity();
+  ParserTreeComplexity getComplexity() const;
 #ifdef TRACE_REDUCTION_CALLSTACK
   inline ReductionStack &getReductionStack() {
     return m_reductionStack;

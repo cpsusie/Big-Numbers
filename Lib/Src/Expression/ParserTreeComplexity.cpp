@@ -3,7 +3,7 @@
 
 namespace Expr {
 
-ParserTreeComplexity::ParserTreeComplexity(ParserTree &tree) {
+ParserTreeComplexity::ParserTreeComplexity(const ParserTree &tree) {
   m_nodeCount = tree.getNodeCount(true);
   m_nameCount = tree.getNodeCount(true, &ExpressionSymbolSet(NAME,EOI));
   m_treeDepth = tree.getRoot() ? tree.getRoot()->getMaxTreeDepth() : 0;
@@ -15,7 +15,7 @@ int ParserTreeComplexity::compare(const ParserTreeComplexity &tc) const {
   return m_treeDepth - tc.m_treeDepth;
 }
 
-ParserTreeComplexity ParserTree::getComplexity() {
+ParserTreeComplexity ParserTree::getComplexity() const {
   return ParserTreeComplexity(*this);
 }
 

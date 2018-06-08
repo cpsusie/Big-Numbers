@@ -31,6 +31,9 @@ public:
   ParserTreeForm  getTreeForm() const {
     return TREEFORM_STANDARD;
   }
+  void checkTreeFormConsistent(const ParserTree *tree) const {
+    tree->checkIsStandardForm();
+  }
 };
 
 class NodeOperatorsStdNumForm : public NodeOperatorsStdForm {
@@ -261,10 +264,12 @@ private:
   StdNode toSFormProduct()  const;
   StdNode toSFormPow()      const;
   StdNode toSFormFactorArray(FactorArray &a, bool changeExponentSign) const;
+  // assume !n.isEmpty()
   inline StdNode(const SNode &n) : SNode(n) {
     CHECKISCONSISTENT(n);
   }
 public:
+  // assume n != NULL
   inline StdNode(ExpressionNode *n) : SNode(n) {
     CHECKISCONSISTENT(*n);
   }
@@ -275,12 +280,16 @@ public:
 };
 
 SNode ParserTree::toStandardForm(SNode n) {
-  if((getTreeForm() == TREEFORM_STANDARD) || n.isEmpty()) {
+  if(getTreeForm() == TREEFORM_STANDARD) {
     return n;
   }
   STARTREDUCTION(this);
   m_ops = NodeOperators::s_stdForm;
-  return StdNode(n.node()).convert();
+  if(n.isEmpty()) {
+    return n;
+  } else {
+    return StdNode(n.node()).convert();
+  }
 }
 
 // Eliminate all product-,addent- and Sum nodes
@@ -383,20 +392,20 @@ StdNode StdNode::toSFormProduct() const {
     if(f.reducesToRationalConstant(&r)) {
       constant *= r;
     } else {
-      newArray.add(f);
+      newArray *= f;
     }
   }
   FactorArray p(getTree()),q(getTree());
   if(constant.getNumerator() != 1) {
-    p.add(powerExp(NV(constant.getNumerator()),1));
+    p *= constant.getNumerator();
   }
   if(constant.getDenominator() != 1) {
-    q.add(powerExp(NV(constant.getDenominator()), -1));
+    q /= constant.getDenominator();
   }
 
-  p.addAll(newArray.selectConstantPositiveExponentFactors());
-  p.addAll(newArray.selectNonConstantExponentFactors());
-  q.addAll(newArray.selectConstantNegativeExponentFactors());
+  p *= newArray.selectConstantPositiveExponentFactors();
+  p *= newArray.selectNonConstantExponentFactors();
+  q *= newArray.selectConstantNegativeExponentFactors();
 
   StdNode result = toSFormFactorArray(p, false) / toSFormFactorArray(q, true);
   RETURNNODE( result );
@@ -516,9 +525,9 @@ bool StandardFormChecker::handleNode(ExpressionNode *n, int level) {
   return true;
 }
 
-void ParserTree::checkIsStandardForm() {
+void ParserTree::checkIsStandardForm() const {
   StandardFormChecker checker;
-  traverseTree(checker);
+  ((ParserTree*)this)->traverseTree(checker);
   if(!checker.isOk()) {
     throwException(checker.getErrorMessage());
   }

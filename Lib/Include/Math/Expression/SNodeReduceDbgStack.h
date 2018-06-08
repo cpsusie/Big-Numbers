@@ -1,7 +1,10 @@
 #pragma once
 
+#ifdef _DEBUG
 #define USE_DEBUGSTRING
+#endif // _DEBUG
 
+#ifdef USE_DEBUGSTRING
 class UpdateableDebugStr {
 private:
   BYTE m_count;
@@ -18,7 +21,6 @@ public:
   inline bool enabled() { return true; }
 };
 
-#ifdef USE_DEBUGSTRING
 #define DECLAREDEBUGSTRING      protected: String m_debugStr; AlwaysEnabledDebugStr _setDebugStr
 #define DECLAREARRAYDEBUGSTRING protected: String m_debugStr; UpdateableDebugStr    _setDebugStr
 #define UPDATEDEBUGSTRING( a)   { if(getDebuggerPresent()) { (a).m_debugStr = (a).toString(); } }

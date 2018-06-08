@@ -77,6 +77,7 @@ public:
 #define DEFINEVALIDTYPES(...             )
 #define CHECKNODETYPE(   n,expectedType  )
 #define CHECKNODEPTYPE(  n,expectedType  )
+#define CHECKNODETYPESET(n               )
 #define CHECKSYMBOL(     n,expectedSymbol)
 #endif // _DEBUG
 

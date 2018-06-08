@@ -73,6 +73,10 @@ public:
 };
 
 class FactorArray : public SNodeArray { // don't add any members, because of typecast
+private:
+  // must be NT_POWER
+  void add(SNode n);
+  void addAll(const FactorArray &src);
 public:
   FactorArray(ParserTree &tree) : SNodeArray(tree) {
   }
@@ -84,11 +88,13 @@ public:
   FactorArray selectNonConstantExponentFactors() const;
   int findFactorWithChangeableSign() const;
 
-  // must be NT_POWER
-  void add(SNode n);
-  void addAll(const FactorArray &src);
-  // if(n.type==NT_POWER=>add, ==NT_PRODUCT=>addAll, else add(powerExp(n,1))
-  void addAutoConvert(SNode n);
+  FactorArray &operator*=(SNode              n);
+  FactorArray &operator/=(SNode              n);
+  FactorArray &operator*=(const FactorArray &a);
+  FactorArray &operator/=(const FactorArray &a);
+  // r==1=> skip, r.den==1=>*=num, r.num==1=>/=den, else *= numberExp(r)
+  FactorArray &operator*=(const Rational    &r);
+  FactorArray &operator/=(const Rational    &r);
   void sort();
   bool equal(      const FactorArray &a) const;
   bool equalMinus( const FactorArray &a) const;

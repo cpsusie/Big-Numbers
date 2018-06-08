@@ -44,8 +44,15 @@ BOOL CExpressionTreeDlg::OnInitDialog() {
   buildTree();
 
   const String treeFormName = m_expr->getTreeFormName();
+  const String stateName    = m_expr->getStateName();
+  const int    nodeCount    = m_expr->getNodeCount();
+
   String title = getWindowText(this);
-  title += format(_T(" - %s form"), treeFormName.cstr());
+  title += format(_T(" - %s form - state %s. %d nodes")
+                 ,treeFormName.cstr()
+                 ,stateName.cstr()
+                 ,nodeCount
+                 );
   setWindowText(this, title);
 
   CListBox *lb = (CListBox*)GetDlgItem(IDC_LIST_SYMBOLTABLE);

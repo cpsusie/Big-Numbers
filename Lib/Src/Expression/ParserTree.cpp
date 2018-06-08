@@ -4,9 +4,23 @@
 namespace Expr {
 
 #ifdef CHECK_CONSISTENCY
-#define CHECKROOT_ISCONSISTENT() if(!isEmpty()) getRoot()->checkIsConsistent();
+void ParserTree::checkIsConsistent() const {
+  try {
+    if(!isEmpty()) {
+      getRoot()->checkIsConsistent();
+      m_ops->checkTreeFormConsistent(this);
+    }
+  } catch (Exception e) {
+    int fisk = 1;
+    throw;
+  } catch (...) {
+    int fisk = 1;
+    throw;
+  }
+}
+#define CHECKTREE_ISCONSISTENT(tree) { (tree).checkIsConsistent(); }
 #else // CHECK_CONSISTENCY
-  #define CHECKROOT_ISCONSISTENT()
+#define CHECKTREE_ISCONSISTENT(tree)
 #endif
 
 ParserTree::ParserTree(TrigonometricMode mode) {
@@ -17,12 +31,13 @@ ParserTree::ParserTree(TrigonometricMode mode) {
 }
 
 ParserTree::ParserTree(const ParserTree &src) {
+  CHECKTREE_ISCONSISTENT(src)
   init(src.getTrigonometricMode(), src.getState(), src.getReduceIteration());
   m_errors = src.m_errors;
   m_root   = src.isEmpty() ? NULL : src.getRoot()->clone(this);
   m_ops    = src.m_ops;
   m_ok     = src.m_ok;
-  CHECKROOT_ISCONSISTENT();
+  CHECKTREE_ISCONSISTENT(*this);
 }
 
 void ParserTree::init(TrigonometricMode    mode
@@ -38,13 +53,15 @@ ParserTree &ParserTree::operator=(const ParserTree &src) {
   if(&src == this) {
     return *this;
   }
+  CHECKTREE_ISCONSISTENT(src)
   releaseAll();
   m_errors = src.m_errors;
-  setRoot(             src.isEmpty() ? NULL : src.getRoot()->clone(this));
   setTreeForm(         src.getTreeForm());
+  setRoot(             src.isEmpty() ? NULL : src.getRoot()->clone(this));
   setOk(               src.m_ok);
   setReduceIteration(  src.getReduceIteration());
   setState(            src.getState());
+  CHECKTREE_ISCONSISTENT(*this)
   return *this;
 }
 
@@ -54,7 +71,7 @@ ParserTree::~ParserTree() {
 
 void ParserTree::setRoot(ExpressionNode *n) {
   setProperty(PP_ROOT, m_root, n);
-  CHECKROOT_ISCONSISTENT();
+  CHECKTREE_ISCONSISTENT(*this);
 }
 
 void ParserTree::setOk(bool ok) {
@@ -72,6 +89,7 @@ void ParserTree::setReduceIteration(UINT iteration) {
 void ParserTree::setTreeForm(ParserTreeForm form) {
   const ParserTreeForm oldForm = getTreeForm();
   if(form != oldForm) {
+    CHECKTREE_ISCONSISTENT(*this);
     const ExpressionVariableArray oldVariables = getSymbolTable().getAllVariables();
     switch(form) {
     case TREEFORM_STANDARD : setRoot(toStandardForm( getRoot()).node()); break;
@@ -82,6 +100,7 @@ void ParserTree::setTreeForm(ParserTreeForm form) {
     }
     pruneUnusedNodes();
     buildSymbolTable(&oldVariables);
+    CHECKTREE_ISCONSISTENT(*this);
     notifyPropertyChanged(PP_TREEFORM, &oldForm, &form);
   }
 }
@@ -209,7 +228,7 @@ void ParserTree::listErrors(const TCHAR *fname) const {
   }
 }
 
-int ParserTree::getNodeCount(ExpressionNodeSelector *selector) {
+int ParserTree::getNodeCount(ExpressionNodeSelector *selector) const {
   if(getRoot() == NULL) {
     return 0;
   } else {
@@ -222,7 +241,7 @@ int ParserTree::getNodeCount(ExpressionNodeSelector *selector) {
 }
 
 // if(validSymbolSet != NULL, only node with symbols contained in set will be counted
-int ParserTree::getNodeCount(bool ignoreMarked, const ExpressionSymbolSet *validSymbolSet) {
+int ParserTree::getNodeCount(bool ignoreMarked, const ExpressionSymbolSet *validSymbolSet) const {
   if((validSymbolSet == NULL) && !ignoreMarked) {
     return getNodeCount();
   } else {
@@ -243,8 +262,8 @@ bool Pow1NodeMarker::handleNode(ExpressionNode *n, int level) {
   return true;
 }
 
-void ParserTree::markPow1Nodes() {
-  traverseTree(Pow1NodeMarker());
+void ParserTree::markPow1Nodes() const {
+  ((ParserTree*)this)->traverseTree(Pow1NodeMarker());
 }
 
 int ParserTree::getTreeDepth() const {
@@ -297,7 +316,7 @@ SNode ParserTree::traverseSubstituteNodes(SNode n, CompactNodeHashMap<Expression
     { const FactorArray &a = n.getFactorArray();
       FactorArray        newFactorArray(a.getTree(),a.size());
       for(size_t i = 0; i < a.size(); i++) {
-        newFactorArray.add(traverseSubstituteNodes(a[i], nodeMap));
+        newFactorArray *= traverseSubstituteNodes(a[i], nodeMap);
       }
       return getProduct(n, newFactorArray);
     }

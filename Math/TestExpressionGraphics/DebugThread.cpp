@@ -117,25 +117,25 @@ void DebugThread::stop(bool onReturn) {
 
 void DebugThread::go() {
   if(m_running) return;
-  m_breakPoints.remove( BREAKSTEP    );
-  m_breakPoints.remove( BREAKSUBSTEP );
-  m_breakPoints.remove( BREAKONRETURN);
+  m_breakPoints.remove(BREAKSTEP    );
+  m_breakPoints.remove(BREAKSUBSTEP );
+  m_breakPoints.remove(BREAKONRETURN);
   resume();
 }
 
 void DebugThread::singleStep() {
   if(m_running) return;
-  m_breakPoints.add(    BREAKSTEP   );
-  m_breakPoints.remove( BREAKSUBSTEP);
-  m_breakPoints.remove( BREAKONRETURN);
+  m_breakPoints.add(   BREAKSTEP    );
+  m_breakPoints.remove(BREAKSUBSTEP );
+  m_breakPoints.remove(BREAKONRETURN);
   resume();
 }
 
 void DebugThread::singleSubStep() {
   if(m_running) return;
-  m_breakPoints.add(    BREAKSTEP   );
-  m_breakPoints.add(    BREAKSUBSTEP);
-  m_breakPoints.remove( BREAKONRETURN);
+  m_breakPoints.add(   BREAKSTEP    );
+  m_breakPoints.add(   BREAKSUBSTEP );
+  m_breakPoints.remove(BREAKONRETURN);
   resume();
 }
 
@@ -146,9 +146,9 @@ void DebugThread::goUntilReturn() {
   if(m_stoppedOnReturn) {
     singleSubStep();
   } else {
-    m_breakPoints.remove( BREAKSTEP    );
-    m_breakPoints.remove( BREAKSUBSTEP );
-    m_breakPoints.add(    BREAKONRETURN);
+    m_breakPoints.remove(BREAKSTEP    );
+    m_breakPoints.remove(BREAKSUBSTEP );
+    m_breakPoints.add(   BREAKONRETURN);
     m_savedStackHeight = m_reductionStack->getHeight();
     m_savedMethod      = m_reductionStack->top().m_method;
     resume();

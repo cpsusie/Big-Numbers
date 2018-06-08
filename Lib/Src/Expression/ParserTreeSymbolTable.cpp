@@ -72,16 +72,18 @@ void ParserTreeSymbolTable::create(ParserTree *tree, const ExpressionVariableArr
   }
   allocateConstant(NULL, _T("pi"), M_PI);
   allocateConstant(NULL, _T("e") , M_E);
-  buildTable(tree->getRoot());
-  m_tree->traverseTree(AllocateNumbers(this));
-  buildValueRefCountTable();
+  if(!tree->isEmpty()) {
+    buildTable(tree->getRoot());
+    m_tree->traverseTree(AllocateNumbers(this));
+    buildValueRefCountTable();
 
-  for(size_t i = 0; i < varTable.size(); i++) {
-    const ExpressionVariableWithValue &oldVar = varTable[i];
-    if(oldVar.isInput()) {
-      const ExpressionVariable *newVar = getVariable(oldVar.getName());
-      if(newVar && newVar->isInput()) {
-        setValue(newVar->getValueIndex(), oldVar.getValue());
+    for(size_t i = 0; i < varTable.size(); i++) {
+      const ExpressionVariableWithValue &oldVar = varTable[i];
+      if(oldVar.isInput()) {
+        const ExpressionVariable *newVar = getVariable(oldVar.getName());
+        if(newVar && newVar->isInput()) {
+          setValue(newVar->getValueIndex(), oldVar.getValue());
+        }
       }
     }
   }
@@ -283,7 +285,7 @@ ExpressionVariableArray ParserTreeSymbolTable::getAllVariables() const {
   return result;
 }
 
-void ParserTreeSymbolTable::unmarkAllReferencedNodes() {
+void ParserTreeSymbolTable::unmarkAllReferencedNodes() const {
   for(Iterator<ExpressionVariable> it = getVariablesIterator(); it.hasNext();) {
     it.next().unMark();
   }
