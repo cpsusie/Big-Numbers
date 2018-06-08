@@ -173,7 +173,7 @@ SNode SNode::reduceSum() const {
 
   BitSet done(reduced.size());
   do {
-    SNodeArray tmp = reduced;
+    AddentArray tmp = reduced;
     reduced.clear();
     done.setCapacity(tmp.size());
     done.clear();
@@ -251,15 +251,11 @@ SNode SNode::reduceSum() const {
         }
       }
     }
-    for(size_t i = 0; i < tmp.size(); i++) { // now add the untouched
-      if(!done.contains(i)) {
-        reduced.add(tmp[i]);
-      }
-    }
+    reduced.addAll(tmp.selectNodes(compl(done))); // now add the untouched
     if(!done.isEmpty()) anyChanges = true;
   } while(!done.isEmpty() && reduced.size() > 1);
 
-  SNodeArray tmp = reduced;
+  AddentArray tmp = reduced;
   reduced.clear();
   for(size_t i = 0; i < tmp.size(); i++) {
     SNode  e  = tmp[i], n  = e.left();
@@ -915,11 +911,7 @@ SNode SNode::reduceConstantFactors(FactorArray &factorArray) {
         }
       }
     }
-    for(size_t i = 0; i < tmp.size(); i++) {
-      if(!done.contains(i)) {
-        reduced *= tmp[i];
-      }
-    }
+    reduced *= tmp.selectFactors(compl(done));
     if(reduced.size() == startSize) {
       break;
     }

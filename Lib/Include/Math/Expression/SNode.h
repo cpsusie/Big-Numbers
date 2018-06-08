@@ -329,10 +329,15 @@ private:
   ParserTree &m_tree;
   bool operator==(const SNodeArray &a) const; // not implemented
   bool operator!=(const SNodeArray &a) const; // not implemented
+protected:
+  // return an array of nodes from this, containing nodes with index
+  // contained in set.
+  // Assume set doesn't contain elements >= this.size()!!
+  SNodeArray  filterNodes(const BitSet &set) const;
 public:
   SNodeArray(ParserTree &tree) : m_tree(tree) {
   }
-  explicit SNodeArray(ParserTree &tree, size_t capacity) : m_tree(tree), CompactArray(capacity) {
+  SNodeArray(ParserTree &tree, size_t capacity) : m_tree(tree), CompactArray(capacity) {
   }
   inline ParserTree &getTree() const {
     return m_tree;

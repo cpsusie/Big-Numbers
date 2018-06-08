@@ -70,6 +70,9 @@ public:
   void addAll(const AddentArray &src);
   void sort();
   void sortStdForm();
+  AddentArray selectNodes(const BitSet &set) const {
+    return (AddentArray&)(__super::filterNodes(set));
+  }
 };
 
 class FactorArray : public SNodeArray { // don't add any members, because of typecast
@@ -98,6 +101,9 @@ public:
   void sort();
   bool equal(      const FactorArray &a) const;
   bool equalMinus( const FactorArray &a) const;
+  FactorArray selectFactors(const BitSet &set) const {
+    return (FactorArray&)(__super::filterNodes(set));
+  }
 };
 
 class ExpressionNodeSelector : public Selector<const ExpressionNode*> {

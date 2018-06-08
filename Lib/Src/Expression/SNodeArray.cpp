@@ -103,4 +103,13 @@ SNodeArray &SNodeArray::cloneNodes(SNodeArray &dst, ParserTree *tree) const {
   return dst;
 }
 
+SNodeArray SNodeArray::filterNodes(const BitSet &set) const {
+  SNodeArray result(getTree(), set.size());
+  for(Iterator<size_t> it = ((BitSet&)set).getIterator(); it.hasNext();) {
+    const size_t index = it.next();
+    result.add((*this)[index]);
+  }
+  return result;
+}
+
 }; // namespace Expr
