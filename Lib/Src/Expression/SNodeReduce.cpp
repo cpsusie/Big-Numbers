@@ -234,15 +234,10 @@ SNode SNode::reduceSum() const {
             if(cf.left().getSymbol() != SUM) {
               reduced.add(cf);
             } else {
-              SNode cn = cf.left();
-              const AddentArray &a = cn.getAddentArray();
               if(cf.isPositive()) {
-                reduced.addAll(a);
+                reduced += cf.left().getAddentArray();
               } else {
-                for(size_t j = 0; j < a.size(); j++) {
-                  SNode e = a[j];
-                  reduced.add(addentExp(e.left(), !e.isPositive()));
-                }
+                reduced -= cf.left().getAddentArray();
               }
             }
             done.add(i1);
@@ -251,7 +246,7 @@ SNode SNode::reduceSum() const {
         }
       }
     }
-    reduced.addAll(tmp.selectNodes(compl(done))); // now add the untouched
+    reduced += tmp.selectNodes(compl(done)); // now add the untouched
     if(!done.isEmpty()) anyChanges = true;
   } while(!done.isEmpty() && reduced.size() > 1);
 
@@ -268,8 +263,7 @@ SNode SNode::reduceSum() const {
     }
   }
 
-  tmp.clear();
-  tmp.addAll(reduced);
+  tmp = reduced;
   reduced.clear();
   Rational constantElements = 0;
   int constAdditionCount = 0;

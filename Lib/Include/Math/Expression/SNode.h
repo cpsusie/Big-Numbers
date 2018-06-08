@@ -364,6 +364,57 @@ public:
   SNodeArray &removeUnusedAssignments();
 };
 
+class AddentArray : public SNodeArray { // don't add any members, because of typecast
+private:
+  void addAll(const FactorArray &src); // not implemented. should not be called
+public:
+  AddentArray(ParserTree &tree) : SNodeArray(tree) {
+  }
+  AddentArray(ParserTree &tree, size_t capacity) : SNodeArray(tree, capacity) {
+  }
+  AddentArray &operator=(const AddentArray &rhs);
+  // must be NT_ADDENT
+  void add(SNode n);
+  AddentArray &operator+=(const AddentArray &rhs);
+  AddentArray &operator-=(const AddentArray &rhs);
+  void sort();
+  void sortStdForm();
+  AddentArray selectNodes(const BitSet &set) const {
+    return (AddentArray&)(__super::filterNodes(set));
+  }
+};
+
+class FactorArray : public SNodeArray { // don't add any members, because of typecast
+private:
+  // must be NT_POWER
+  void add(SNode n);
+  void addAll(const FactorArray &src);
+public:
+  FactorArray(ParserTree &tree) : SNodeArray(tree) {
+  }
+  FactorArray(ParserTree &tree, size_t capacity) : SNodeArray(tree, capacity) {
+  }
+
+  FactorArray selectConstantPositiveExponentFactors() const;
+  FactorArray selectConstantNegativeExponentFactors() const;
+  FactorArray selectNonConstantExponentFactors() const;
+  int findFactorWithChangeableSign() const;
+
+  FactorArray &operator*=(SNode              n);
+  FactorArray &operator/=(SNode              n);
+  FactorArray &operator*=(const FactorArray &a);
+  FactorArray &operator/=(const FactorArray &a);
+  // r==1=> skip, r.den==1=>*=num, r.num==1=>/=den, else *= numberExp(r)
+  FactorArray &operator*=(const Rational    &r);
+  FactorArray &operator/=(const Rational    &r);
+  void sort();
+  bool equal(      const FactorArray &a) const;
+  bool equalMinus( const FactorArray &a) const;
+  FactorArray selectFactors(const BitSet &set) const {
+    return (FactorArray&)(__super::filterNodes(set));
+  }
+};
+
 SNode unaryExp(   ExpressionInputSymbol symbol, SNode n);
 SNode binExp(     ExpressionInputSymbol symbol, SNode n1, SNode n2);
 SNode condExp(    SNode condition , SNode nTrue  , SNode nFalse);

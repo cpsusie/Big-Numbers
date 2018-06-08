@@ -36,9 +36,9 @@ public:
 #define ENABLEDEBUGSTRING( a)
 #endif  // USE_DEBUGSTRING
 
-#ifdef _DEBUG
+//#ifdef _DEBUG
 #define TRACE_REDUCTION_CALLSTACK
-#endif
+//#endif
 
 #ifdef TRACE_REDUCTION_CALLSTACK
 
