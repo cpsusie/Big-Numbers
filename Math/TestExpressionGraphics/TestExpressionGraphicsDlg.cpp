@@ -962,7 +962,7 @@ int CTestExpressionGraphicsDlg::getWindowIdFromPoint(CPoint &p) { // assume p re
     ClientToScreen(&stackPoint);
     m_reductionStackWindow.ScreenToClient(&stackPoint);
     m_selectedStackElement = getSelectedStackElement(stackPoint);
-    if((m_selectedStackElement == NULL) || (m_selectedStackElement->m_node == NULL)) {
+    if((m_selectedStackElement == NULL) || !m_selectedStackElement->hasNode()) {
       return -1;
     }
     p = stackPoint;
@@ -1078,7 +1078,7 @@ void CTestExpressionGraphicsDlg::OnContextMenuToNumericForm() {
 
 void CTestExpressionGraphicsDlg::OnContextMenuShowNodeTree() {
 #ifdef TRACE_REDUCTION_CALLSTACK
-  CExpressionTreeDlg dlg(m_selectedStackElement->m_node);
+  CExpressionTreeDlg dlg(m_selectedStackElement->getNode());
   dlg.DoModal();
 #endif
 }

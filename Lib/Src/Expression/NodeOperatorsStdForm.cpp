@@ -283,7 +283,7 @@ SNode ParserTree::toStandardForm(SNode n) {
   if(getTreeForm() == TREEFORM_STANDARD) {
     return n;
   }
-  STARTREDUCTION(this);
+  STARTREDUCTION();
   m_ops = NodeOperators::s_stdForm;
   if(n.isEmpty()) {
     return n;

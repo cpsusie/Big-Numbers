@@ -94,7 +94,7 @@ void ParserTree::iterateTransformation(ParserTreeTransformer &transformer) {
   ParserTree                 bestReduction = *this;
   const ParserTreeComplexity startComplexity(bestReduction);
   ParserTreeComplexity       bestComplexity(startComplexity);
-  STARTREDUCTION(this);
+  STARTREDUCTION();
 
   setReduceIteration(0);
   setRoot(oldRoot.node());
@@ -126,9 +126,9 @@ void ParserTree::iterateTransformation(ParserTreeTransformer &transformer) {
     }
   }
   setRoot(oldRoot.node());
-  if(!done) {
-    throwException(_T("%s:Maxiterations reached for expression <%s>"), method, n.toString().cstr());
-  }
+//  if(!done) {
+//    throwException(_T("%s:Maxiterations reached for expression <%s>"), method, n.toString().cstr());
+//  }
 
   pruneUnusedNodes();
 

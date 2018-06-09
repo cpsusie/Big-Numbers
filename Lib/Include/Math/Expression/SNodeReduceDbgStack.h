@@ -36,9 +36,7 @@ public:
 #define ENABLEDEBUGSTRING( a)
 #endif  // USE_DEBUGSTRING
 
-//#ifdef _DEBUG
 #define TRACE_REDUCTION_CALLSTACK
-//#endif
 
 #ifdef TRACE_REDUCTION_CALLSTACK
 
@@ -47,19 +45,28 @@ public:
 
 namespace Expr {
 
-class ParserTree;
 class ExpressionNode;
 
 class ReductionStackElement {
-public:
+private:
   const TCHAR          *m_method;
   String                m_str;
   const ExpressionNode *m_node;
+public:
   ReductionStackElement(const TCHAR *method, const String &str, const ExpressionNode *node = NULL) : m_method(method), m_node(node) {
     m_str = format(_T("%-20s:%s"), m_method, str.cstr());
   }
+  inline const TCHAR *getMethod() const {
+    return m_method;
+  }
   inline const String &toString() const {
     return m_str;
+  }
+  inline const ExpressionNode *getNode() const {
+    return m_node;
+  }
+  inline bool hasNode() const {
+    return m_node != NULL;
   }
 };
 
@@ -68,21 +75,17 @@ typedef enum {
 } ReductionStackProperties;
 
 class ReductionStack : public Stack<ReductionStackElement>, public PropertyContainer {
-private:
-  ParserTree *m_tree;
 public:
-  ReductionStack() : m_tree(NULL) {
-  }
+  void clear();
   void push(const TCHAR *method, const String &s, const ExpressionNode *n = NULL);
   void pop( const TCHAR *method);
-  void reset(ParserTree *tree);
   static const TCHAR *getRawName(const TCHAR *str);
 };
 
 #define DEFINEREDUCTIONSTACK   ReductionStack m_reductionStack
 
 #define GETSTACK()             getTree().getReductionStack()
-#define STARTREDUCTION(tree)   m_reductionStack.reset(tree)
+#define STARTREDUCTION()       m_reductionStack.clear()
 #define DEFFUNC                const TCHAR *_func = ReductionStack::getRawName(__TFUNCTION__)
 #define _PUSH(...)             GETSTACK().push(_func,__VA_ARGS__)
 #define _POP()                 GETSTACK().pop(_func)
@@ -143,7 +146,7 @@ public:
 namespace Expr {
 
 #define DEFINEREDUCTIONSTACK
-#define STARTREDUCTION(tree)
+#define STARTREDUCTION()
 #define ENTERMETHOD()
 #define ENTERMETHOD1(v)
 #define ENTERMETHOD2(v1,v2)

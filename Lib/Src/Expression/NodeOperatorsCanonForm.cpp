@@ -318,7 +318,7 @@ SNode ParserTree::toCanonicalForm(SNode n) {
     return n;
   }
   m_ops = NodeOperators::s_canonForm;
-  STARTREDUCTION(this);
+  STARTREDUCTION();
   if(n.isEmpty()) {
     return n;
   } else {

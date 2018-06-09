@@ -36,7 +36,7 @@ public:
 #define NV(v) SNode(getTree(),v)
 
 SNode ParserTree::toNumericForm(SNode n) {
-  STARTREDUCTION(this);
+  STARTREDUCTION();
   switch(getTreeForm()) {
   case TREEFORM_STANDARD :
     if(!n.isEmpty()) {

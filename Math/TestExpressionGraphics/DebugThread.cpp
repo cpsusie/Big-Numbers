@@ -35,12 +35,12 @@ void DebugThread::handlePropertyChanged(const PropertyContainer *source, int id,
         const int newStack = *(int*)newValue;
         if(newStack > oldStack) { // its a push
           const ReductionStackElement &top = m_reductionStack->top();
-          if(top.m_node && top.m_node->isBreakPoint()) {
+          if(top.hasNode() && top.getNode()->isBreakPoint()) {
             stop();
             break;
           }
           if(m_breakPoints.contains(BREAKONRETURN)) {
-            if((oldStack == m_savedStackHeight) && (m_reductionStack->top().m_method == m_savedMethod)) {
+            if((oldStack == m_savedStackHeight) && (m_reductionStack->top().getMethod() == m_savedMethod)) {
               stop(true);
               break;
             }
@@ -150,7 +150,7 @@ void DebugThread::goUntilReturn() {
     m_breakPoints.remove(BREAKSUBSTEP );
     m_breakPoints.add(   BREAKONRETURN);
     m_savedStackHeight = m_reductionStack->getHeight();
-    m_savedMethod      = m_reductionStack->top().m_method;
+    m_savedMethod      = m_reductionStack->top().getMethod();
     resume();
   }
 }

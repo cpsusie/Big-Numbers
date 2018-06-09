@@ -20,7 +20,7 @@ void ReductionStack::pop(const TCHAR *method) {
   notifyPropertyChanged(REDUCTION_STACKHIGHT, &oldHeight, &newHeight);
 }
 
-void ReductionStack::reset(ParserTree *tree) {
+void ReductionStack::clear() {
   const int oldHeight = getHeight();
   Stack::clear();
   const int newHeight = getHeight();
@@ -35,11 +35,10 @@ const TCHAR *ReductionStack::getRawName(const TCHAR *str) { // static
 }
 
 void ParserTree::clearAllBreakPoints() {
-  for (size_t i = 0; i < m_nodeTable.size(); i++) {
+  for(size_t i = 0; i < m_nodeTable.size(); i++) {
     m_nodeTable[i]->clearBreakPoint();
   }
 }
-
 
 #endif // TRACE_REDUCTION_CALLSTACK
 
