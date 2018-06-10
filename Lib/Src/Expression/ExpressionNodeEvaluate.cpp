@@ -3,6 +3,25 @@
 
 namespace Expr {
 
+static Real myroot(Real rad, Real rt) {
+  if(rad >= 0) {
+    return ::root(rad, rt);
+  } else {
+    Rational rootR;
+    if(Rational::isRational(rt, &rootR)) {
+      if(rootR.getNumerator() != 1) {
+        rad = ::root(rad, (Real)rootR.getNumerator());
+      }
+      if(rootR.getDenominator() != 1) {
+        rad = mypow(rad, (Real)rootR.getDenominator());
+      }
+      return rad;
+    } else {
+      return ::root(rad, rt); // -1.#IND
+    }
+  }
+}
+
 Real ExpressionNode::evaluateReal() const {
   DEFINEMETHODNAME;
 
@@ -11,8 +30,8 @@ Real ExpressionNode::evaluateReal() const {
   case MINUS    : return isUnaryMinus() ? -left()->evaluateReal() : (left()->evaluateReal() - right()->evaluateReal());
   case PROD     : return left()->evaluateReal() * right()->evaluateReal();
   case QUOT     : return left()->evaluateReal() / right()->evaluateReal();
-  case MOD      : return fmod(left()->evaluateReal(), right()->evaluateReal());
-  case ROOT     : return evaluateRoot();
+  case MOD      : return fmod(                   left()->evaluateReal(),  right()->evaluateReal());
+  case ROOT     : return myroot(                 left()->evaluateReal(),  right()->evaluateReal());
   case BINOMIAL : return binomial(               left()->evaluateReal(),  right()->evaluateReal());
   case CHI2DIST : return chiSquaredDistribution( left()->evaluateReal(),  right()->evaluateReal());
   case CHI2DENS : return chiSquaredDensity(      left()->evaluateReal(),  right()->evaluateReal());
@@ -63,48 +82,27 @@ Real ExpressionNode::evaluateReal() const {
   case IIF      : return child(0).evaluateBool() ? child(1).evaluateReal() : child(2).evaluateReal();
 
   case INDEXEDSUM     :
-    {            Real       &i               = child(0).doAssignment();
-                 const Real  endIndex        = child(1).evaluateReal();
-                 const SNode expr            = child(2);
-                 Real        sum             = 0;
-                 for(;i <= endIndex; i++) {
-                   sum += expr.evaluateReal();
+    {            Real                 &i     = child(0).doAssignment();
+                 const Real            end   = child(1).evaluateReal();
+                 const ExpressionNode *expr  = child(2).node();
+                 Real                  acc   = 0;
+                 for(;i <= end; i++) {
+                   acc += expr->evaluateReal();
                  }
-                 return sum;
+                 return acc;
     }
   case INDEXEDPRODUCT :
-    {            Real       &i               = child(0).doAssignment();
-                 const Real  endIndex        = child(1).evaluateReal();
-                 const SNode expr            = child(2);
-                 Real        product         = 1;
-                 for(;i <= endIndex; i++) {
-                   product *= expr.evaluateReal();
+    {            Real                 &i     = child(0).doAssignment();
+                 const Real            end   = child(1).evaluateReal();
+                 const ExpressionNode *expr  = child(2).node();
+                 Real                  acc   = 1;
+                 for(;i <= end; i++) {
+                   acc *= expr->evaluateReal();
                  }
-                 return product;
+                 return acc;
     }
   default      : throwUnknownSymbolException(method);
                  return 0;
-  }
-}
-
-Real ExpressionNode::evaluateRoot() const {
-  Real       rad  = left()->evaluateReal();
-  const Real rt   = right()->evaluateReal();
-  if(rad >= 0) {
-    return ::root(rad, rt);
-  } else {
-    Rational rootR;
-    if(Rational::isRational(rt, &rootR)) {
-      if(rootR.getNumerator() != 1) {
-        rad = ::root(rad, (Real)rootR.getNumerator());
-      }
-      if(rootR.getDenominator() != 1) {
-        rad = mypow(rad, (Real)rootR.getDenominator());
-      }
-      return rad;
-    } else {
-      return ::root(rad, rt); // -1.#IND
-    }
   }
 }
 

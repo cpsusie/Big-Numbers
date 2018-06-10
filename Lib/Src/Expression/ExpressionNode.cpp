@@ -391,6 +391,10 @@ void ExpressionNode::throwUnknownNodeTypeException(const TCHAR *method) const {
                 ,method, getNodeType());
 }
 
+void ExpressionNode::throwUnExpandableException() const {
+  throwException(_T("Cannot expand expression %s"), toString().cstr());
+}
+
 void ExpressionNode::checkNodeType(const TCHAR *method, const ExpressionNode *n, ExpressionNodeType expectedNodeType) { // static
   if((n==NULL) || (n->getNodeType() != expectedNodeType)) {
     throwInvalidArgumentException(method

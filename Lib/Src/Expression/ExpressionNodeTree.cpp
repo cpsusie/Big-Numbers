@@ -63,50 +63,6 @@ int ExpressionNodeTree::initChildArray(va_list argptr) {
   return count;
 }
 
-ExpressionNode *ExpressionNodeTree::expand() {
-  if(!isExpandable()) {
-    return this;
-  }
-  switch(getSymbol()) {
-  case POW:
-    { ParserTree     &tree = getTree();
-      ExpressionNode *expo = right();
-      Rational        expoR;
-      if(!expo->reducesToRationalConstant(&expoR)) {
-        return false;
-      }
-      return tree.expandPower(left(), expoR);
-    }
-  default :
-    return this;
-  }
-}
-
-bool ExpressionNodeTree::isExpandable() {
-  switch(getSymbol()) {
-  case POW:
-    { ExpressionNode *expo = right();
-      Rational        expoR;
-      if(!expo->reducesToRational(&expoR) || (::abs(expoR.getNumerator()) <= 1)) {
-        return false;
-      }
-      const ExpressionNode *base = left();
-      switch(base->getSymbol()) {
-      case MINUS:
-        if(base->isUnaryMinus()) return false;
-        // NB continue case;
-      case SUM  :
-      case PLUS :
-        return true;
-      default   :
-        return false;
-      }
-    }
-  default:
-    return false;
-  }
-}
-
 int ExpressionNodeTree::compare(ExpressionNode *n) {
   if(n->getSymbol() != getSymbol()) {
     return __super::compare(n);

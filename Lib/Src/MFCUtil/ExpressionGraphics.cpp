@@ -838,6 +838,7 @@ AlignedImage *ExpressionPainter::getBinomialImage(SNode n, int fontSize, Express
 }
 
 AlignedImage *ExpressionPainter::getPolyImage(SNode n, int fontSize, ExpressionRectangle &rect) {
+  assert(n.getSymbol() == POLY);
   if(n.getArgument().isNameOrNumber() && n.isCoefArrayConstant()) {
     return getStdPolyImage(n, fontSize, rect);
   }
@@ -873,7 +874,7 @@ AlignedImage *ExpressionPainter::getPolyImage(SNode n, int fontSize, ExpressionR
 
 // assume argument is name of number, and coefficientarray is constant
 AlignedImage *ExpressionPainter::getStdPolyImage(SNode n, int fontSize, ExpressionRectangle &rect) {
-  ExpressionRectangle polyRect, plusRect, minusRect;
+  ExpressionRectangle plusRect, minusRect;
   AlignedImage *plusImage  = getOpImage(PLUS , fontSize, plusRect );
   AlignedImage *minusImage = getOpImage(MINUS, fontSize, minusRect);
   ImageArray result;
@@ -960,29 +961,29 @@ AlignedImage *ExpressionPainter::getIfImage(SNode n, int fontSize, ExpressionRec
 }
 
 AlignedImage *ExpressionPainter::getStatementImages(SNode n, int fontSize, ExpressionRectangle &rect) {
-  const SNodeArray &list      = n.getChildArray();
-  const size_t      stmtCount = list.size();
-  if(stmtCount == 1) {
-    return getImage(list[0], fontSize, rect);
-  } else {
-    ExpressionRectangle semiRect;
-    AlignedImage       *semiImage = getOpImage(SEMI, fontSize, semiRect);
-    ImageArray result;
-    for(size_t i = 0; i < stmtCount; i++) {
-      ExpressionRectangle mathRect;
-      AlignedImage       *mathImage = getImage(list[i], fontSize, mathRect);
-      if(i < stmtCount-1) {
-        ExpressionRectangle stmtRect;
-        stmtRect.addChild(mathRect).addChild(semiRect);
-        result.add(concatImages(stmtRect, mathImage, semiImage, NULL));
-        rect.addChild(stmtRect);
-      } else {
-        rect.addChild(mathRect);
-        result.add(mathImage); // no ';' after the last expression
+  const SNodeArray &list       = n.getChildArray();
+  const size_t      childCount = list.size();
+
+  ExpressionRectangle semiRect;
+  AlignedImage       *semiImage = NULL;
+  ImageArray          imageArray;
+  for(size_t i = 0; i < childCount; i++) {
+    ExpressionRectangle mathRect;
+    AlignedImage       *mathImage = getImage(list[i], fontSize, mathRect);
+    if(i < childCount-1) {
+      ExpressionRectangle stmtRect;
+      stmtRect.addChild(mathRect).addChild(semiRect);
+      if(semiImage == NULL) {
+        semiImage = getOpImage(SEMI, fontSize, semiRect);
       }
+      imageArray.add(concatImages(stmtRect, mathImage, semiImage, NULL));
+      rect.addChild(stmtRect);
+    } else {
+      imageArray.add(mathImage); // no ';' after the last expression
+      rect.addChild(mathRect);
     }
-    return stackImages(result, rect);
   }
+  return stackImages(imageArray, rect);
 }
 
 AlignedImage *ExpressionPainter::getUnaryOpImage(SNode n, int fontSize, ExpressionRectangle &rect) {

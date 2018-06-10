@@ -99,7 +99,6 @@ private:
 protected:
   PackedSyntaxNodeInfo m_info;
 private:
-  Real evaluateRoot()              const;
   ExpressionNode &operator=(const ExpressionNode &src); // not implemented
   ExpressionNode(           const ExpressionNode &src); // not implemented
 protected:
@@ -159,23 +158,22 @@ public:
   virtual       bool                 getBool()                      const   { UNSUPPORTEDOP(); }
   virtual       int                  getValueIndex()                const   { UNSUPPORTEDOP(); }
   virtual       void                 setValueIndex(int index)               { UNSUPPORTEDOP(); }
-  virtual ExpressionNode            *expand()                               { UNSUPPORTEDOP(); }
-  virtual bool                       isExpandable()                         { return false;    }
+  virtual       SNode                expand()                       const   { UNSUPPORTEDOP(); }
+  virtual bool                       isExpandable()                 const   { return false;    }
 
   virtual int                        compare(ExpressionNode *n);
 
   virtual ExpressionNode            *clone(ParserTree *tree)        const = 0;
 
   virtual bool                       isConstant()                   const = 0;
-  virtual bool                       isBooleanOperator()            const { return false; }
   // return reference to lvalue
-  virtual Real                      &doAssignment()                 const { UNSUPPORTEDOP(); }
+  virtual Real                      &doAssignment()                 const   { UNSUPPORTEDOP();                                                 }
   virtual Real                       evaluateReal()                 const;
-  virtual bool                       evaluateBool()                 const { UNSUPPORTEDOP(); }
+  virtual bool                       evaluateBool()                 const   { UNSUPPORTEDOP();                                                 }
 
   virtual ExpressionNodeType         getNodeType()                  const = 0;
-  virtual ExpressionReturnType       getReturnType()                const   { return EXPR_RETURN_REAL; }
-  virtual bool                       hasVariable()                  const   { return false;    }
+  virtual ExpressionReturnType       getReturnType()                const   { return EXPR_RETURN_REAL;                                         }
+  virtual bool                       hasVariable()                  const   { return false;                                                    }
   virtual bool                       traverseExpression(ExpressionNodeHandler &handler, int level) = 0;
 
   virtual void                       dumpNode(String &s, int level) const = 0;
@@ -220,6 +218,7 @@ public:
   // symbol in { EQ,NE,LE,LT,GE,GT } (EQ->NE, LE->GT, etc... (this is not the same as reverseComparator)
   static ExpressionInputSymbol negateComparator( ExpressionInputSymbol symbol);
   inline ExpressionInputSymbol getInverseFunction() const { return getInverseFunction(getSymbol()); }
+  inline  bool isBooleanOperator()       const { return isBooleanOperator(     getSymbol()); }
   inline  bool isCompareOperator()       const { return isCompareOperator(     getSymbol()); }
   inline  bool isBinaryOperator()        const { return isBinaryOperator(      getSymbol()); }
   inline  bool isTrigonomtricFunction()  const { return isTrigonomtricFunction(getSymbol()); }
@@ -258,6 +257,7 @@ public:
   void throwInvalidSymbolForTreeMode(const TCHAR *method) const;
   void throwUnknownSymbolException(  const TCHAR *method) const;
   void throwUnknownNodeTypeException(const TCHAR *method) const;
+  void throwUnExpandableException() const;
 };
 
 // Should only be called in Canonical treeform
@@ -450,9 +450,6 @@ public:
     return m_childArray;
   }
 
-  ExpressionNode   *expand();
-  bool              isExpandable();
-
   int compare(ExpressionNode *n);
 
   ExpressionNode *clone(ParserTree *tree) const;
@@ -500,10 +497,6 @@ public:
   Real evaluateReal() const { UNSUPPORTEDOP(); }
   bool evaluateBool() const;
 
-  bool isBooleanOperator() const {
-    return true;
-  }
-
   ExpressionNodeType getNodeType() const {
     return NT_BOOLEXPR;
   }
@@ -550,8 +543,8 @@ public:
     m_firstCoefIndex = index;
   }
 
-  ExpressionNode       *expand();
-  bool                  isExpandable() {
+  SNode             expand()       const;
+  bool              isExpandable() const {
     return true;
   }
 
@@ -610,14 +603,10 @@ public:
   ExpressionNodeStmtList(ParserTree *tree, const SNodeArray &childArray);
   ExpressionNodeStmtList(ParserTree *tree, const ExpressionNodeStmtList *src);
 
-//  ExpressionNode            *expand();
-//  bool                       isExpandable();
-
-//  int compare(ExpressionNode *n);
-
   ExpressionNode *clone(ParserTree *tree) const;
 
 //  bool isConstant() const;
+
   ExpressionReturnType getReturnType() const {
     return m_returnType;
   }
@@ -640,9 +629,6 @@ public:
   bool isPositive() const {
     return m_positive;
   }
-
-  ExpressionNode   *expand()       { return this;  }
-  bool              isExpandable() { return false; }
 
   int compare(ExpressionNode *n);
 
@@ -684,6 +670,9 @@ public:
   SNode exponent() const {
     return child(1);
   }
+
+  SNode             expand()       const;
+  bool              isExpandable() const;
 
   int compare(ExpressionNode *n);
 

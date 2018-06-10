@@ -84,9 +84,7 @@ bool ExpressionNodePoly::equalMinus(const ExpressionNode *poly) const { // assum
   return false;
 }
 
-ExpressionNode *ExpressionNodePoly::expand() {
-  DEFINEMETHODNAME;
-
+SNode ExpressionNodePoly::expand() const {
   ParserTree        &tree      = getTree();
   const SNodeArray  &coefArray = getCoefArray();
   const SNode        arg       = getArgument();
@@ -100,7 +98,7 @@ ExpressionNode *ExpressionNodePoly::expand() {
     }
     expo--;
   }
-  return result.node();
+  return result;
 }
 
 int ExpressionNodePoly::compare(ExpressionNode *n) {

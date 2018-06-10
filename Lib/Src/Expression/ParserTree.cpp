@@ -377,7 +377,7 @@ public:
 
 bool MarkedNodeExpander::handleNode(ExpressionNode *n, int level) {
   if(n->isMarked() && n->isExpandable()) {
-    putNodes(n, n->expand());
+    putNodes(n, n->expand().node());
   }
   return true;
 }
