@@ -15,7 +15,7 @@ SNode SNode::multiplyParentheses() const {
   switch(getNodeType()) {
   case NT_NUMBER   :
   case NT_BOOLCONST:
-  case NT_VARIABLE : RETURNNODE( *this );
+  case NT_VARIABLE : break;
   case NT_POWER    :
   case NT_TREE     : RETURNNODE( multiplyTreeNode() );
   case NT_BOOLEXPR : RETURNNODE( multiplyBoolExpr() );
@@ -26,7 +26,7 @@ SNode SNode::multiplyParentheses() const {
   case NT_PRODUCT  : RETURNNODE( multiplyParenthesesInProduct() );
   default          : throwUnknownNodeTypeException(__TFUNCTION__);
   }
-  RETURNNODE( *this );
+  RETURNTHIS;
 }
 
 SNode SNode::multiplyTreeNode() const {

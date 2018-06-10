@@ -68,17 +68,23 @@ public:
 };
 
 #ifdef _DEBUG
-#define DEFINEVALIDTYPES(...             ) static const NodeTypeSet _validNodeTypes(__VA_ARGS__)
-#define CHECKNODETYPE(   n,expectedType  ) ExpressionNode::checkNodeType(__TFUNCTION__,(n).node(),expectedType   )
-#define CHECKNODETYPESET(n               ) ExpressionNode::checkNodeType(__TFUNCTION__,(n).node(),_validNodeTypes)
-#define CHECKNODEPTYPE(  n,expectedType  ) ExpressionNode::checkNodeType(__TFUNCTION__,n         ,expectedType   )
-#define CHECKSYMBOL(     n,expectedSymbol) ExpressionNode::checkSymbol(  __TFUNCTION__,(n).node(),expectedSymbol )
+#define DEFINEVALIDTYPES(    ...             ) static const NodeTypeSet _validNodeTypes(__VA_ARGS__)
+#define CHECKNODEPTYPE(      n,expectedType  ) ExpressionNode::checkNodeType(  __TFUNCTION__,n,expectedType   )
+#define CHECKNODEPTYPESET(   n               ) ExpressionNode::checkNodeType(  __TFUNCTION__,n,_validNodeTypes)
+#define CHECKNODEPRETURNTYPE(n,expectedType  ) ExpressionNode::checkReturnType(__TFUNCTION__,n,expectedType   )
+#define CHECKNODETYPE(       n,expectedType  ) CHECKNODEPTYPE(                      (n).node(),expectedType   )
+#define CHECKNODETYPESET(    n               ) CHECKNODEPTYPESET(                   (n).node()                )
+#define CHECKNODERETURNTYPE( n,expectedType  ) CHECKNODEPRETURNTYPE(                (n).node(),expectedType   )
+#define CHECKSYMBOL(         n,expectedSymbol) ExpressionNode::checkSymbol(    __TFUNCTION__,(n).node(),expectedSymbol )
 #else // _DEBUG
-#define DEFINEVALIDTYPES(...             )
-#define CHECKNODETYPE(   n,expectedType  )
-#define CHECKNODEPTYPE(  n,expectedType  )
-#define CHECKNODETYPESET(n               )
-#define CHECKSYMBOL(     n,expectedSymbol)
+#define DEFINEVALIDTYPES(    ...             )
+#define CHECKNODEPTYPE(      n,expectedType  )
+#define CHECKNODEPTYPESET(   n               )
+#define CHECKNODEPRETURNTYPE(n,expectedType  )
+#define CHECKNODETYPE(       n,expectedType  )
+#define CHECKNODETYPESET(    n               )
+#define CHECKNODERETURNTYPE( n,expectedType  )
+#define CHECKSYMBOL(         n,expectedSymbol)
 #endif // _DEBUG
 
 // Wrapper class til ExpressionNode
@@ -92,13 +98,14 @@ private:
   SNode DPoly(    const String &name) const;
   SNode DStmtList(const String &name) const;
 
-  SNode             &setReduced(); // return *this
-  bool               isReduced() const;
+  void               setReduced() const; // return *this
+  SNode              reduceAssign() const;
   SNode              reduceBoolExp();
   SNode              reduceNot();
   SNode              reduceAndOr();
   SNode              reduceRealExp();
   SNode              reduceTreeNode();
+  SNode              reduceIndexedExpr();
   SNode              reduceSum() const;
   SNode              reduceProduct();
   SNode              reduceModulus() const;
@@ -189,6 +196,7 @@ public:
   void                  mark();
   void                  unMark();
   bool                  isMarked()                             const;
+  bool                  isReduced()                            const;
   SNode                 left()                                 const;
   SNode                 right()                                const;
   SNode                 getArgument()                          const;
@@ -206,6 +214,7 @@ public:
   const String         &getName()                              const;
   ExpressionVariable   &getVariable()                          const;
   const Number         &getNumber()                            const;
+  bool                  getBool()                              const;
   int                   getValueIndex()                        const;
   bool                  isConstant()                           const;
   bool                  isBooleanOperator()                    const;
@@ -359,6 +368,8 @@ class StmtList : public SNodeArray {
 public:
   StmtList(ParserTree &tree) : SNodeArray(tree) {
   }
+  StmtList(ParserTree &tree, size_t capacity) : SNodeArray(tree, capacity) {
+  }
   StmtList(const SNodeArray &a) : SNodeArray(a) {
   }
   SNodeArray &removeUnusedAssignments();
@@ -377,6 +388,8 @@ public:
   void add(SNode n);
   AddentArray &operator+=(const AddentArray &rhs);
   AddentArray &operator-=(const AddentArray &rhs);
+  AddentArray &operator+=(const Rational    &r  );
+  AddentArray &operator-=(const Rational    &r  );
   void sort();
   void sortStdForm();
   AddentArray selectNodes(const BitSet &set) const {
@@ -429,8 +442,9 @@ SNode sumExp(     AddentArray &a);                              // assume a.size
 SNode assignStmt( SNode leftSide  , SNode expr);
 SNode assignStmt( SNodeArray &list);
 SNode stmtList(   SNodeArray &list);
-SNode indexedSum( SNode assignStmt, SNode endExpr, SNode expr  );
-SNode indexedProd(SNode assignStmt, SNode endExpr, SNode expr  );
+SNode indexedExp( ExpressionInputSymbol symbol, SNode assignStmt, SNode endExp, SNode exp);
+SNode indexedSum( SNode assignStmt, SNode endExp, SNode exp  );
+SNode indexedProd(SNode assignStmt, SNode endExp, SNode exp  );
 SNode addentExp(  SNode child     , bool positive);
 SNode powerExp(   SNode base      , SNode expo);
 SNode powerExp(   SNode base      , const Rational &expo);

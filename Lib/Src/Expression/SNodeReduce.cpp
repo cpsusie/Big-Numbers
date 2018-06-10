@@ -8,24 +8,17 @@ namespace Expr {
 #define N( n) SNode(n)
 #define NV(v) SNode(getTree(),v)
 
-SNode &SNode::setReduced() {
-  m_node->setReduced();
-  return *this;
-}
-
-bool SNode::isReduced() const {
-  return m_node->isReduced();
-}
-
 SNode SNode::reduce() {
   ENTERMETHOD();
+  CHECKNODETYPE(*this,NT_STMTLIST);
+  if(isReduced()) RETURNTHIS;
   const SNodeArray &childArray = getChildArray();
-  const int        childCount = (int)childArray.size() - 1;
-  StmtList         newStmtList(getTree());
+  const size_t      childCount = childArray.size();
+  const size_t      stmtCount  = childCount - 1;
+  StmtList          newStmtList(getTree(), childCount);
 
-  for(int i = 0; i < childCount; i++) {
-    const SNode &stmt = childArray[i];
-    newStmtList.add(assignStmt(stmt.left(), stmt.right().reduceRealExp()));
+  for(int i = 0; i < stmtCount; i++) {
+    newStmtList.add(childArray[i].reduceAssign());
   }
   SNode last = childArray.last();
   switch (last.getReturnType()) {
@@ -38,17 +31,35 @@ SNode SNode::reduce() {
   default:
     last.throwUnknownSymbolException(__TFUNCTION__);
   }
-  RETURNNODE(stmtList(newStmtList.removeUnusedAssignments()));
+  newStmtList.removeUnusedAssignments();
+  if(newStmtList.isSameNodes(childArray)) {
+    setReduced();
+    RETURNTHIS;
+  }
+  RETURNNODE(stmtList(newStmtList));
+}
+
+SNode SNode::reduceAssign() const {
+  ENTERMETHOD();
+  CHECKNODETYPE(*this,NT_ASSIGN);
+  if(isReduced()) RETURNTHIS;
+  SNode Rr = right().reduceRealExp();
+  if(Rr.isSameNode(right())) {
+    right().setReduced();
+    setReduced();
+    RETURNTHIS;
+  }
+  return assignStmt(left(), Rr);
 }
 
 SNode SNode::reduceBoolExp() {
-  if(isReduced()) return *this;
   ENTERMETHOD();
-  if (isConstant()) {
+  CHECKNODERETURNTYPE(*this,EXPR_RETURN_BOOL);
+  if(isReduced()) RETURNTHIS;
+  if(isConstant()) {
     RETURNNODE(NV(evaluateBool()));
-  }
-  else {
-    switch (getSymbol()) {
+  } else {
+    switch(getSymbol()) {
     case AND:
     case OR : RETURNNODE(reduceAndOr());
     case NOT: RETURNNODE(reduceNot());
@@ -58,7 +69,15 @@ SNode SNode::reduceBoolExp() {
     case LT:
     case LE:
     case GT:
-    case GE: RETURNNODE(boolExp(getSymbol(), left().reduceRealExp(), right().reduceRealExp()));
+    case GE:
+      { SNode Rl = left().reduceRealExp(), Rr = right().reduceRealExp();
+        if(Rl.isSameNode(left()) && Rr.isSameNode(right())) {
+          setReduced();
+          RETURNTHIS;
+        } else {
+          RETURNNODE(boolExp(getSymbol(), Rl, Rr));
+        }
+      }
     default:
       throwUnknownSymbolException(__TFUNCTION__);
       RETURNNULL;
@@ -67,12 +86,15 @@ SNode SNode::reduceBoolExp() {
 }
 
 SNode SNode::reduceRealExp() {
-  if(isReduced()) return *this;
   ENTERMETHOD();
+  CHECKNODERETURNTYPE(*this, EXPR_RETURN_REAL);
+  if(isReduced()) RETURNTHIS;
   switch(getSymbol()) {
   case NUMBER         :
   case TYPEBOOL       :
-  case NAME           : RETURNNODE( *this );
+  case NAME           :
+    setReduced();
+    RETURNTHIS;
   case MINUS          : RETURNNODE( -left().reduceRealExp() );
   case SUM            : RETURNNODE( reduceSum()     );
   case PRODUCT        : RETURNNODE( reduceProduct() );
@@ -121,26 +143,31 @@ SNode SNode::reduceRealExp() {
   case HYPOT          :
   case NORM           :
   case PROBIT         : RETURNNODE( reduceTreeNode() );
-
-  case INDEXEDPRODUCT :
-    RETURNNODE( indexedProd(assignStmt(child(0).left(), child(0).right().reduceRealExp()) // startAssignment
-                           ,child(1).reduceRealExp()                                      // endExpr
-                           ,child(2).reduceRealExp()                                      // expr
-                           )
-                );
   case INDEXEDSUM     :
-    RETURNNODE( indexedSum(assignStmt(child(0).left(), child(0).right().reduceRealExp())  // startAssignment
-                          ,child(1).reduceRealExp()                                       // endExpr
-                          ,child(2).reduceRealExp()                                       // expr
-                          )
-              );
-
+  case INDEXEDPRODUCT : RETURNNODE( reduceIndexedExpr() );
   case IIF            : RETURNNODE( reduceCondExp() );
-
   default             :
     throwUnknownSymbolException(__TFUNCTION__);
     RETURNNULL;
   }
+}
+
+SNode SNode::reduceIndexedExpr() {
+  ENTERMETHOD();
+  if(isReduced()) RETURNTHIS;
+
+  SNode assign  = child(0);
+  SNode end     = child(1);
+  SNode exp     = child(2);
+  SNode Rassign = assign.reduceAssign();
+  SNode Rend    = end.reduceRealExp();
+  SNode Rexp    = exp.reduceRealExp();
+  if(Rassign.isSameNode(assign) && Rend.isSameNode(end) && Rexp.isSameNode(exp)) {
+    setReduced();
+    RETURNTHIS;
+  }
+
+  RETURNNODE( indexedExp(getSymbol(), Rassign, Rend, Rexp) );
 }
 
 //------------------------------------ reduceSum ----------------------------------------
@@ -149,26 +176,36 @@ SNode SNode::reduceRealExp() {
 SNode SNode::reduceSum() const {
   ENTERMETHOD();
   CHECKNODETYPE(*this,NT_SUM);
+  if(isReduced()) RETURNTHIS;
 
   static const ExpressionSymbolSet logFunctionSet(   LN,LOG10,LOG2,EOI);
   static const ExpressionSymbolSet sinCosFunctionSet(SIN,COS,      EOI);
 
   bool hasTrigonometricFunctions = false, hasLogarithmicFunctions = false;
   AddentArray a(getTree());
-  bool anyChanges = getAddents(a);
+  getAddents(a);
 
   AddentArray reduced(a.getTree());
   for(size_t i = 0; i < a.size(); i++) {
     SNode e = a[i], n = e.left();
-    SNode reducedNode = n.reduceRealExp();
-    if(!reducedNode.isSameNode(n)) anyChanges = true;
-    if(!hasTrigonometricFunctions) hasTrigonometricFunctions = reducedNode.getNodeCount(sinCosFunctionSet) > 0;
-    if(!hasLogarithmicFunctions  ) hasLogarithmicFunctions   = reducedNode.getNodeCount(logFunctionSet   ) > 0;
-    reduced.add(addentExp(reducedNode, e.isPositive()));
+    SNode Rn = n.reduceRealExp();
+    if(!hasTrigonometricFunctions) hasTrigonometricFunctions = Rn.getNodeCount(sinCosFunctionSet) > 0;
+    if(!hasLogarithmicFunctions  ) hasLogarithmicFunctions   = Rn.getNodeCount(logFunctionSet   ) > 0;
+    if(Rn.isSameNode(n)) {
+      reduced.add(e);
+    } else {
+      reduced.add(addentExp(Rn, e.isPositive()));
+    }
   }
 
   if(reduced.size() <= 1) {
-    RETURNNODE( sumExp(reduced) );
+    if(reduced.isSameNodes(a)) {
+      setReduced();
+      RETURNTHIS;
+    }
+    SNode result = sumExp(reduced);
+    result.setReduced();
+    RETURNNODE( result );
   }
 
   BitSet done(reduced.size());
@@ -247,7 +284,6 @@ SNode SNode::reduceSum() const {
       }
     }
     reduced += tmp.selectNodes(compl(done)); // now add the untouched
-    if(!done.isEmpty()) anyChanges = true;
   } while(!done.isEmpty() && reduced.size() > 1);
 
   AddentArray tmp = reduced;
@@ -257,7 +293,6 @@ SNode SNode::reduceSum() const {
     SNode  n1 = changeFirstNegativeFactor();
     if(!n1.isEmpty()) {
       reduced.add(addentExp(n1, !e.isPositive()));
-      anyChanges = true;
     } else {
       reduced.add(e);
     }
@@ -265,28 +300,36 @@ SNode SNode::reduceSum() const {
 
   tmp = reduced;
   reduced.clear();
-  Rational constantElements = 0;
-  int constAdditionCount = 0;
-  for(size_t i = 0; i < tmp.size(); i++) { // then remove all rational constants, added together in constantElements
-    SNode e = tmp[i], a = e.left();
+  Rational rationalAcc         = 0;
+  BitSet   rationalAddentSet(tmp.size());
+  // then replace all rational constants, added together in rationalAcc
+  // if only 1 rational exist, then reuse it
+  for(size_t i = 0; i < tmp.size(); i++) { 
+    SNode e = tmp[i], c = e.left();
     Rational r;
-    if(!a.reducesToRationalConstant(&r)) {
+    if(!c.reducesToRationalConstant(&r)) {
       reduced.add(e);
     } else {
-      constAdditionCount++;
-      if(!a.isNumber() || (constAdditionCount > 1)) anyChanges = true;
+      if(c.isRational()) {
+        rationalAddentSet.add(i);
+      }
       if(e.isPositive()) {
-        constantElements += r;
+        rationalAcc += r;
       } else {
-        constantElements -= r;
+        rationalAcc -= r;
       }
     }
   }
-
-  if(!anyChanges) RETURNNODE( *this );
-
-  reduced.add(addentExp(NV(constantElements), true));
-
+  if(rationalAddentSet.size() == 1) {
+    reduced.add(tmp[rationalAddentSet.select()]); // put the one found back again, to keep array the same (if not changed already)
+  } else if(rationalAcc != 0) {
+    reduced += rationalAcc;
+  }
+  reduced.sort();
+  if(reduced.isSameNodes(a)) {
+    setReduced();
+    RETURNTHIS;
+  }
   RETURNNODE( sumExp( reduced) );
 }
 
@@ -304,7 +347,7 @@ bool SNode::canUseIdiotRule(SNode n1, SNode n2) const {
       if((e1 == 2) && (e2 == 2)) {
         const ExpressionInputSymbol f1 = n1.left().getSymbol();
         const ExpressionInputSymbol f2 = n2.left().getSymbol();
-        RETURNBOOL ( ((f1 == SIN && f2 == COS) || (f1 == COS && f2 == SIN)) && n1.left().left().equal(n2.left().left()));
+        RETURNBOOL( ((f1 == SIN && f2 == COS) || (f1 == COS && f2 == SIN)) && n1.left().left().equal(n2.left().left()));
       }
     }
   }
@@ -392,7 +435,7 @@ SNode SNode::mergeLogarithms(SNode e1, SNode e2) const {
   } else {                                 // log(arg2) - log(arg1) = log(arg2/arg1)
     result = addentExp(unaryExp(logFunction, (arg2 / arg1).reduceRealExp()),true);
   }
-  RETURN(result);
+  RETURNNODE(result);
 }
 
 /*
@@ -644,10 +687,10 @@ SNode SNode::reduceProduct() {
   }
   reduced.sort();
   if(getFactorArray().isSameNodes(reduced)) {
-    RETURNNODE(*this);
+    setReduced();
+    RETURNTHIS;
   }
-  SNode result = productExp(reduced);
-  RETURNNODE( result );
+  RETURNNODE( productExp(reduced) );
 }
 
 FactorArray &SNode::getFactors(FactorArray &result) {
@@ -827,20 +870,20 @@ SNode SNode::reduceTrigonometricFactors(SNode f1, SNode f2) {
   switch(f1.base().getSymbol()) {
   case SIN:
     switch(f2.base().getSymbol()) {
-    case COS: RETURN( e1 == -e2 ? powerExp(tan(arg),f1.exponent()) : NULL );
-    case TAN: RETURN( e1 == -e2 ? powerExp(cos(arg),f1.exponent()) : NULL );
+    case COS: RETURNNODE( e1 == -e2 ? powerExp(tan(arg),f1.exponent()) : NULL );
+    case TAN: RETURNNODE( e1 == -e2 ? powerExp(cos(arg),f1.exponent()) : NULL );
     }
     RETURNNULL;
   case COS:
     switch(f2.base().getSymbol()) {
-    case SIN: RETURN( e1 == -e2 ? powerExp(tan(arg),f2.exponent()) : NULL );
-    case TAN: RETURN( e1 ==  e2 ? powerExp(tan(arg),f1.exponent()) : NULL );
+    case SIN: RETURNNODE( e1 == -e2 ? powerExp(tan(arg),f2.exponent()) : NULL );
+    case TAN: RETURNNODE( e1 ==  e2 ? powerExp(tan(arg),f1.exponent()) : NULL );
     }
     RETURNNULL;
   case TAN:
     switch(f2.base().getSymbol()) {
-    case SIN: RETURN( e1 == -e2 ? powerExp(cos(arg),f2.exponent()) : NULL );
-    case COS: RETURN( e1 ==  e2 ? powerExp(sin(arg),f1.exponent()) : NULL );
+    case SIN: RETURNNODE( e1 == -e2 ? powerExp(cos(arg),f2.exponent()) : NULL );
+    case COS: RETURNNODE( e1 ==  e2 ? powerExp(sin(arg),f1.exponent()) : NULL );
     }
     RETURNNULL;
   }
@@ -1012,6 +1055,7 @@ SNode SNode::reduceRationalPower(const Rational &base, const Rational &exponent)
 SNode SNode::reduceModulus() const {
   ENTERMETHOD();
   CHECKSYMBOL(*this,MOD);
+  if(isReduced()) RETURNTHIS;
 
   SNode l  = left();
   SNode r  = right();
@@ -1021,7 +1065,8 @@ SNode SNode::reduceModulus() const {
   if(Rr.isNegativeNumber() || Rr.isUnaryMinus()) Rr = -Rr;
 
   if(Rl.isSameNode(l) && Rr.isSameNode(r)) {
-    RETURNNODE( *this );
+    setReduced();
+    RETURNTHIS;
   } else {
     RETURNNODE( Rl % Rr );
   }
@@ -1034,6 +1079,8 @@ SNode SNode::reduceModulus() const {
 SNode SNode::reduceLn() {
   ENTERMETHOD();
   CHECKSYMBOL(*this,LN);
+  if(isReduced()) RETURNTHIS;
+
   SNode arg  = left();
   SNode Rarg = arg.reduceRealExp();
   SNode p    = Rarg.getPowerOfE();
@@ -1043,7 +1090,12 @@ SNode SNode::reduceLn() {
   if(Rarg.getSymbol() == POW) { // ln(a^b) = b * ln(a)
     RETURNNODE( Rarg.right() * ln( Rarg.left()) );
   }
-  RETURNNODE( Rarg.isSameNode(arg) ? *this : ln( Rarg) );
+  if(Rarg.isSameNode(arg)) {
+    setReduced();
+    RETURNTHIS;
+  } else {
+    RETURNNODE(ln( Rarg) );
+  }
 }
 
 SNode SNode::getPowerOfE() {
@@ -1067,6 +1119,7 @@ SNode SNode::getPowerOfE() {
 SNode SNode::reduceLog10() {
   ENTERMETHOD();
   CHECKSYMBOL(*this,LOG10);
+  if(isReduced()) RETURNTHIS;
 
   SNode arg  = left();
   SNode Rarg = arg.reduceRealExp();
@@ -1078,7 +1131,12 @@ SNode SNode::reduceLog10() {
   if(Rarg.getSymbol() == POW) {
     RETURNNODE( Rarg.right() * log10( Rarg.left()) );
   }
-  RETURNNODE( Rarg.isSameNode(arg) ? *this : log10( Rarg) );
+  if( Rarg.isSameNode(arg) ) {
+    setReduced();
+    RETURNTHIS;
+  } else {
+    RETURNNODE( log10( Rarg) );
+  }
 }
 
 SNode SNode::getPowerOf10() {
@@ -1102,6 +1160,7 @@ SNode SNode::getPowerOf10() {
 SNode SNode::reduceLog2() {
   ENTERMETHOD();
   CHECKSYMBOL(*this,LOG2);
+  if(isReduced()) RETURNTHIS;
 
   SNode arg  = left();
   SNode Rarg = arg.reduceRealExp();
@@ -1113,7 +1172,12 @@ SNode SNode::reduceLog2() {
   if(Rarg.getSymbol() == POW) {
     RETURNNODE( Rarg.right() * log2( Rarg.left()) );
   }
-  RETURNNODE( Rarg.isSameNode(arg) ? *this : log2( Rarg) );
+  if(Rarg.isSameNode(arg)) {
+    setReduced();
+    RETURNTHIS;
+  } else {
+    RETURNNODE( log2( Rarg) );
+  }
 }
 
 SNode SNode::getPowerOf2() {
@@ -1132,6 +1196,8 @@ SNode SNode::getPowerOf2() {
 
 SNode SNode::reduceAsymmetricFunction() {
   ENTERMETHOD();
+  CHECKNODETYPE(*this,NT_TREE);
+  if(isReduced()) RETURNTHIS;
 
   SNode arg  = left();
   if(getInverseFunction() == arg.getSymbol()) {
@@ -1140,13 +1206,18 @@ SNode SNode::reduceAsymmetricFunction() {
   const SNode Rarg = arg.reduceRealExp();
   if(Rarg.isUnaryMinus()) {                                                       // f(-exp) = -f(exp)
     RETURNNODE( -unaryExp(getSymbol(), Rarg.left()) );
+  } else if( Rarg.isSameNode(arg) ) {
+    setReduced();
+    RETURNTHIS;
   } else {
-    RETURNNODE( Rarg.isSameNode(arg) ? *this : unaryExp(getSymbol(), Rarg) );
+    RETURNNODE( unaryExp(getSymbol(), Rarg) );
   }
 }
 
 SNode SNode::reduceSymmetricFunction() {
   ENTERMETHOD();
+  CHECKNODETYPE(*this,NT_TREE);
+  if(isReduced()) RETURNTHIS;
 
   SNode arg  = left();
   if(getInverseFunction() == arg.getSymbol()) {
@@ -1155,8 +1226,11 @@ SNode SNode::reduceSymmetricFunction() {
   const SNode Rarg = arg.reduceRealExp();
   if(Rarg.isUnaryMinus()) {                                                       // f(-exp) = f(exp)
     RETURNNODE( unaryExp(getSymbol(), Rarg.left()) );
+  } else if( Rarg.isSameNode(arg) ) {
+    setReduced();
+    RETURNTHIS;
   } else {
-    RETURNNODE( Rarg.isSameNode(arg) ? *this : unaryExp(getSymbol(), Rarg) );
+    RETURNNODE( unaryExp(getSymbol(), Rarg) );
   }
 }
 
@@ -1167,6 +1241,7 @@ SNode SNode::reduceSymmetricFunction() {
 SNode SNode::reducePoly() {
   ENTERMETHOD();
   CHECKSYMBOL(*this,POLY);
+  if(isReduced()) RETURNTHIS;
 
   SNodeArray &coefArray = getCoefArray();
   SNode       arg       = getArgument();  // arg is the parameter to the polynomial ex. poly[a,b,c,d](arg)
@@ -1199,7 +1274,8 @@ SNode SNode::reducePoly() {
   default:
     { const SNode newArg = arg.reduceRealExp();
       if((newCoefArray.isSameNodes(coefArray)) && (newArg.isSameNode(arg))) {
-        RETURNNODE(*this);
+        setReduced();
+        RETURNTHIS;
       } else {
         RETURNNODE( polyExp(newCoefArray, newArg) );
       }
@@ -1210,40 +1286,48 @@ SNode SNode::reducePoly() {
 SNode SNode::reduceCondExp() {
   ENTERMETHOD();
   CHECKSYMBOL(*this, IIF);
+  if(isReduced()) RETURNTHIS;
 
-  SNode trueExp = child(1).reduceRealExp(), falseExp = child(2).reduceRealExp();
-  if(trueExp.equal(falseExp)) {
-    RETURNNODE( trueExp );
+  SNode cond      = child(0);
+  SNode trueExp   = child(1);
+  SNode falseExp  = child(2);
+  SNode RtrueExp  = trueExp.reduceRealExp();
+  SNode RfalseExp = falseExp.reduceRealExp();
+  if(RtrueExp.equal(RfalseExp)) {
+    RETURNNODE( RtrueExp );
   }
-  RETURNNODE( condExp(child(0).reduceBoolExp(), trueExp, falseExp ) );
+  SNode Rcond = cond.reduceBoolExp();
+  if(Rcond.isTrue() ) RETURNNODE( RtrueExp  );
+  if(Rcond.isFalse()) RETURNNODE( RfalseExp );
+
+  if(Rcond.isSameNode(cond) && RtrueExp.isSameNode(trueExp) && RfalseExp.isSameNode(falseExp)) {
+    setReduced();
+    RETURNTHIS;
+  } else {
+    RETURNNODE( condExp(Rcond, RtrueExp, RfalseExp ) );
+  }
 }
 
 SNode SNode::reduceTreeNode() {
   ENTERMETHOD();
   CHECKNODETYPE(*this, NT_TREE);
+  if(isReduced()) RETURNTHIS;
 
   if(getInverseFunction() == left().getSymbol()) {
     RETURNNODE( left().left() );
   }
 
-  switch(getSymbol()) {
-  case IIF:
-    { const SNode cond   = child(0).reduceBoolExp();
-      const SNode eTrue  = child(1).reduceRealExp();
-      const SNode eFalse = child(2).reduceRealExp();
-      if(cond.isTrue() ) RETURNNODE( eTrue  );
-      if(cond.isFalse()) RETURNNODE( eFalse );
-      RETURNNODE( condExp(cond, eTrue, eFalse) );
-    }
-  default:
-    { const SNodeArray &a = getChildArray();
-      SNodeArray newChildArray(a.getTree(),a.size());
-      for(size_t i = 0; i < a.size(); i++) {
-        newChildArray.add(N(a[i]).reduceRealExp());
-      }
-      SNode result = treeExp(getSymbol(), newChildArray);
-      RETURNNODE( result );
-    }
+  SNodeArray  &a  = getChildArray();
+  const size_t sz = a.size();
+  SNodeArray newChildArray(a.getTree(),sz);
+  for(size_t i = 0; i < sz; i++) {
+    newChildArray.add(a[i].reduceRealExp());
+  }
+  if(newChildArray.isSameNodes(a)) {
+    setReduced();
+    RETURNTHIS;
+  } else {
+    RETURNNODE( treeExp(getSymbol(), newChildArray) );
   }
 }
 

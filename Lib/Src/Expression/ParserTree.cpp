@@ -473,7 +473,7 @@ ExpressionNode *ParserTree::constExpr(const String &name) {
 }
 
 String ParserTree::treeToString() const {
-  ((ParserTree*)this)->unmarkAll();
+  unmarkAll();
   String result;
   if(!isEmpty()) {
     getRoot()->dumpNode(result, 0);

@@ -25,6 +25,18 @@ String ExpressionNode::getNodeTypeName(ExpressionNodeType nt) { // static
   CASESTR(POWER    );
   default: return format(_T("Unknown nodetype:%d"),nt);
   }
+#undef CASESTR
+}
+
+String ExpressionNode::getReturnTypeName(ExpressionReturnType rt) { // static
+#define CASESTR(t) case EXPR_##t: return _T("EXPR_" #t);
+  switch(rt) {
+  CASESTR(NORETURNTYPE);
+  CASESTR(RETURN_REAL );
+  CASESTR(RETURN_BOOL );
+  default: return format(_T("Unknown returntype:%d"),rt);
+  }
+#undef CASESTR
 }
 
 String PackedSyntaxNodeInfo::toString() const {
@@ -379,11 +391,11 @@ void ExpressionNode::throwUnknownNodeTypeException(const TCHAR *method) const {
                 ,method, getNodeType());
 }
 
-void ExpressionNode::checkNodeType(const TCHAR *method, const ExpressionNode *n, ExpressionNodeType expectedType) { // static
-  if((n==NULL) || (n->getNodeType() != expectedType)) {
+void ExpressionNode::checkNodeType(const TCHAR *method, const ExpressionNode *n, ExpressionNodeType expectedNodeType) { // static
+  if((n==NULL) || (n->getNodeType() != expectedNodeType)) {
     throwInvalidArgumentException(method
                                  ,_T("Expected nodetype:%s. Type=%s")
-                                 ,getNodeTypeName(expectedType).cstr()
+                                 ,getNodeTypeName(expectedNodeType).cstr()
                                  ,n?n->getNodeTypeName().cstr():_T("NULL")
                                  );
   }
@@ -395,6 +407,16 @@ void ExpressionNode::checkNodeType(const TCHAR *method, const ExpressionNode *n,
                                  ,_T("Valid nodetypes:%s. Type=%s")
                                  ,validTypes.toString().cstr()
                                  ,n?n->getNodeTypeName().cstr():_T("NULL")
+                                 );
+  }
+}
+
+void ExpressionNode::checkReturnType(const TCHAR *method, const ExpressionNode *n, ExpressionReturnType expectedReturnType) { // static
+  if((n==NULL) || (n->getReturnType() != expectedReturnType)) {
+    throwInvalidArgumentException(method
+                                 ,_T("Expected returntype:%s. Type=%s")
+                                 ,getReturnTypeName(expectedReturnType).cstr()
+                                 ,n?n->getReturnTypeName().cstr():_T("NULL")
                                  );
   }
 }

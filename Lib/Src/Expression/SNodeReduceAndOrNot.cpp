@@ -134,23 +134,23 @@ SNode SNode::reduceAndOr() {
     }
   }
 
-  SNode l = b[0], r = b[1];
+  SNode Rl = b[0], Rr = b[1];
 
   static const CompareOpPairAndMap opPairAndMap;
   static const CompareOpPairOrMap  opPairOrMap;
 
-  if(l.isCompareOperator() && r.isCompareOperator()) {
-    SNode ll = l.left(), lr = l.right();
-    SNode rl = r.left(), rr = r.right();
-    ExpressionInputSymbol rightRelation = r.getSymbol();
+  if(Rl.isCompareOperator() && Rr.isCompareOperator()) {
+    SNode ll = Rl.left(), lr = Rl.right();
+    SNode rl = Rr.left(), rr = Rr.right();
+    ExpressionInputSymbol rightRelation = Rr.getSymbol();
     for(int i = 0; i < 2; i++) {
       if(ll.equal(rl) && lr.equal(rr)) {
         const CompareOpPairMap &pairMap = (getSymbol() == AND) ? (CompareOpPairMap&)opPairAndMap : (CompareOpPairMap&)opPairOrMap;
-        switch(pairMap.lookup(l.getSymbol(),rightRelation)) {
+        switch(pairMap.lookup(Rl.getSymbol(),rightRelation)) {
         case _F : RETURNNODE(_false());
         case _T : RETURNNODE(_true());
-        case _L : RETURNNODE( l );
-        case _R : RETURNNODE( r );
+        case _L : RETURNNODE( Rl );
+        case _R : RETURNNODE( Rr );
         case _EQ: RETURNNODE( boolExp(EQ,ll,lr));
         case _NE: RETURNNODE( boolExp(NE,ll,lr));
         case _LT: RETURNNODE( boolExp(LT,ll,lr));
@@ -158,35 +158,41 @@ SNode SNode::reduceAndOr() {
         case _GT: RETURNNODE( boolExp(GT,ll,lr));
         case _GE: RETURNNODE( boolExp(GE,ll,lr));
         default : throwException(_T("opPairMap:unknown operatorPair <%s,%s>")
-                                ,l.toString().cstr(), r.toString().cstr());
+                                ,Rl.toString().cstr(), Rr.toString().cstr());
         }
       }
       // try to swap r.left<->r.right, and reverse relation
       rightRelation = ExpressionNode::reverseComparator(rightRelation);
-      rl = r.right(); rr = r.left();
+      rl = Rr.right(); rr = Rr.left();
     }
   }
+  SNode result;
   switch(getSymbol()) {
-  case AND: RETURNNODE( l && r );
-  case OR : RETURNNODE( l || r );
+  case AND: result = getTree().getAnd(*this,Rl,Rr); break;
+  case OR : result = getTree().getOr( *this,Rl,Rr); break;
+  default : throwInvalidArgumentException(__TFUNCTION__, _T("not AND/OR-expression:&s"),toString().cstr());
   }
-  throwInvalidArgumentException(__TFUNCTION__, _T("not AND/OR-expression:&s"),toString().cstr());
-  RETURNNODE(*this);
+  if(result.isSameNode(*this)) {
+    setReduced();
+    RETURNTHIS;
+  }
+  RETURNNODE(result);
 }
 
 // assume symbol == NOT
 SNode SNode::reduceNot() {
+  ENTERMETHOD();
   SNode l = left();
   if(l.isCompareOperator()) {
-    return boolExp(ExpressionNode::negateComparator(l.getSymbol()), l.left(), l.right());
+    RETURNNODE(boolExp(ExpressionNode::negateComparator(l.getSymbol()), l.left(), l.right()));
   } else {
     switch(l.getSymbol()) {
-    case AND: return !l.left() || !l.right(); // !(a && b) = !a || !b
-    case OR : return !l.left() && !l.right(); // !(a || b) = !a && !b
-    case NOT: return l.left();                // !(!b) == b
+    case AND: RETURNNODE(!l.left() || !l.right()); // !(a && b) = !a || !b
+    case OR : RETURNNODE(!l.left() && !l.right()); // !(a || b) = !a && !b
+    case NOT: RETURNNODE(l.left());                // !(!b) == b
     default :
       throwUnknownSymbolException(__TFUNCTION__);
-      return *this;
+      RETURNTHIS;
     }
   }
 }

@@ -34,6 +34,26 @@ AddentArray &AddentArray::operator-=(const AddentArray &rhs) {
   return *this;
 }
 
+AddentArray &AddentArray::operator+=(const Rational &rhs) {
+  if(rhs == 0) return *this;
+  if(rhs > 0) {
+    add(addentExp(SNode(getTree(),  rhs),true ));
+  } else { // rhs < 0
+    add(addentExp(SNode(getTree(), -rhs),false));
+  }
+  return *this;
+}
+
+AddentArray &AddentArray::operator-=(const Rational &rhs) {
+  if(rhs == 0) return *this;
+  if(rhs > 0) {
+    add(addentExp(SNode(getTree(),  rhs),false));
+  } else { // rhs < 0
+    add(addentExp(SNode(getTree(), -rhs),true ));
+  }
+  return *this;
+}
+
 static int compareMany(const SNode &e1, const SNode &e2) {
   return e1.node()->compare(e2.node());
 }

@@ -7,26 +7,47 @@ namespace Expr {
 #ifdef TRACE_REDUCTION_CALLSTACK
 
 void ReductionStack ::push(const TCHAR *method, const String &s, const ExpressionNode *n) {
-  const int oldHeight = getHeight();
-  __super::push(ReductionStackElement(method, s,n));
-  const int newHeight = getHeight();
+  const ReductionStackElement *oldTop    = topPointer();
+  const int                    oldHeight = getHeight();
+
+  __super::push(ReductionStackElement(oldHeight, method, s,n));
+
+  const ReductionStackElement *newTop    = topPointer();
+  const int                    newHeight = getHeight();
+  notifyPropertyChanged(REDUCTION_STACKTOP  ,  oldTop   ,  newTop   );
   notifyPropertyChanged(REDUCTION_STACKHIGHT, &oldHeight, &newHeight);
 }
 
 void ReductionStack::pop(const TCHAR *method) {
-  const int oldHeight = getHeight();
+  const ReductionStackElement *oldTop    = topPointer();
+  const int                    oldHeight = getHeight();
+  const ReductionStackElement *newTop    = topPointer(1);
+  notifyPropertyChanged(REDUCTION_STACKTOP  ,  oldTop   ,  newTop   );
+
   __super::pop();
-  const int newHeight = getHeight();
+
+  const int                    newHeight  = getHeight();
   notifyPropertyChanged(REDUCTION_STACKHIGHT, &oldHeight, &newHeight);
 }
 
 void ReductionStack::clear() {
-  const int oldHeight = getHeight();
+  const ReductionStackElement *oldTop    = topPointer();
+  const int                    oldHeight = getHeight();
+  const ReductionStackElement *newTop    = NULL;
+  if(newTop != oldTop) {
+    notifyPropertyChanged(REDUCTION_STACKTOP  ,  oldTop   ,  newTop   );
+  }
+
   Stack::clear();
-  const int newHeight = getHeight();
+
+  const int                     newHeight = 0;
   if(newHeight != oldHeight) {
     notifyPropertyChanged(REDUCTION_STACKHIGHT, &oldHeight, &newHeight);
   }
+}
+
+const ReductionStackElement *ReductionStack::topPointer(UINT index) const {
+  return (index >= getHeight()) ? NULL : &top(index);
 }
 
 const TCHAR *ReductionStack::getRawName(const TCHAR *str) { // static

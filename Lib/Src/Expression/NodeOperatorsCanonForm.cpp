@@ -20,14 +20,14 @@ private:
   static inline ExpressionNode *unaryMinus(     ExpressionNode *n) {
     return n->getTree().unaryMinus(n);
   }
-  static inline ExpressionNode *polyExpr(       SNodeArray &coefArray, ExpressionNode *arg) {
-    return arg->getTree().polyExpr(coefArray, arg);
+  static inline ExpressionNode *polyExpr(       SNodeArray &coefArray, SNode arg) {
+    return arg.getTree().polyExpr(coefArray, arg);
   }
-  static inline ExpressionNode *indexedSum(     ExpressionNode *assign, ExpressionNode *end, ExpressionNode *expr) {
-    return assign->getTree().indexedSum(assign,end,expr);
+  static inline ExpressionNode *indexedSum(     SNode assign, SNode end, SNode expr) {
+    return assign.getTree().indexedSum(assign,end,expr);
   }
-  static inline ExpressionNode *indexedProduct( ExpressionNode *assign, ExpressionNode *end, ExpressionNode *expr) {
-    return assign->getTree().indexedProduct(assign,end,expr);
+  static inline ExpressionNode *indexedProduct( SNode assign, SNode end, SNode expr) {
+    return assign.getTree().indexedProduct(assign,end,expr);
   }
   static inline ExpressionNode *powerExpr(      ExpressionNode *base, ExpressionNode *exponent) {
     return base->getTree().powerExpr(base,exponent);
@@ -117,11 +117,10 @@ ExpressionNode *NodeOperatorsCanonForm::minus(ExpressionNode *n) const {
       for(size_t i = 0; i < sz; i++) {
         newCoefArray.add(-coefArray[i]);
       }
-      ExpressionNode *arg = n->getArgument().node();
-      return polyExpr(newCoefArray, arg);
+      return polyExpr(newCoefArray, n->getArgument());
     }
   case INDEXEDSUM:
-    return indexedSum(n->child(0).node(), n->child(1).node(), (-n->child(2)).node());
+    return indexedSum(n->child(0), n->child(1), -n->child(2));
   }
   return unaryMinus(n);
 }
@@ -141,7 +140,7 @@ ExpressionNode *NodeOperatorsCanonForm::reciprocal(ExpressionNode *n) const {
       return productExpr(newFactors);
     }
   case INDEXEDPRODUCT:
-    return indexedProduct(n->child(0).node(), n->child(1).node(), reciprocal(n->child(2).node()));
+    return indexedProduct(n->child(0), n->child(1), reciprocal(n->child(2).node()));
   case POW           : // reciprocal(l^r) = l^-r
     return power(n->left(), minus(n->right()));
   }
@@ -337,7 +336,7 @@ CNode CNode::toCForm() const {
   switch(getSymbol()) {
   case NUMBER         :
   case TYPEBOOL       :
-  case NAME           : RETURNNODE(*this);
+  case NAME           : RETURNTHIS;
 
   case MINUS          : if(isUnaryMinus()) {
                           RETURNNODE(-N(left()).toCForm());

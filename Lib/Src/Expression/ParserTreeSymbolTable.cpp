@@ -91,15 +91,16 @@ void ParserTreeSymbolTable::create(ParserTree *tree, const ExpressionVariableArr
 
 void ParserTreeSymbolTable::buildTable(ExpressionNode *n) {
   switch(n->getSymbol()) {
-  case NAME:
+  case NAME    :
     allocateSymbol(n, false, false, false);
     break;
 
-  case NUMBER:
+  case NUMBER  :
+  case TYPEBOOL:
 //    allocateNumber(n);
     break;
 
-  case POLY   :
+  case POLY    :
     { const SNodeArray &coefArray = n->getCoefArray();
       for(size_t i = 0; i < coefArray.size(); i++) {
         buildTable(coefArray[i].node());

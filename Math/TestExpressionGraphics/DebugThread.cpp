@@ -16,20 +16,46 @@ DebugThread::~DebugThread() {
 typedef enum {
   BREAKSTEP
  ,BREAKSUBSTEP
+ ,COUNTONRETURN
  ,BREAKONRETURN
+ ,BREAKASAP
 } BreakPointType;
 
 void DebugThread::throwInvalidStateException(const TCHAR *method, ParserTreeState state) const {
   throwInvalidArgumentException(method, _T("State=%d"), state);
 }
 
+#define ISPOP(to,tn) (to && ((tn==NULL) || ((tn)->getIndex() < (to)->getIndex())))
+#define ISPOPFROMSAVEDPOP(to,tn) ISPOP(to,tn) && ((to)->getIndex() == m_breakOnTopIndex)
+
 void DebugThread::handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
-  DEFINEMETHODNAME;
   if(m_killed) throw true;
+
+  if(m_breakPoints.contains(BREAKASAP)) {
+    stop();
+    return;
+  }
 
 #ifdef TRACE_REDUCTION_CALLSTACK
   if(source == m_reductionStack) {
     switch(id) {
+    case REDUCTION_STACKTOP   :
+      { const ReductionStackElement *oldTop = (ReductionStackElement*)oldValue;
+        const ReductionStackElement *newTop = (ReductionStackElement*)newValue;
+        if(m_breakPoints.contains(COUNTONRETURN)) {
+          if(ISPOPFROMSAVEDPOP(oldTop,newTop)) {
+            m_breakPoints.remove(COUNTONRETURN);
+            m_breakPoints.add(   BREAKONRETURN);
+          }
+        } else if(m_breakPoints.contains(BREAKONRETURN)) {
+          if(ISPOPFROMSAVEDPOP(oldTop,newTop)) {
+            m_breakPoints.remove(BREAKONRETURN);
+            stop(true);
+            break;
+          }
+        }
+      }
+      break;
     case REDUCTION_STACKHIGHT :
       { const int oldStack = *(int*)oldValue;
         const int newStack = *(int*)newValue;
@@ -39,20 +65,14 @@ void DebugThread::handlePropertyChanged(const PropertyContainer *source, int id,
             stop();
             break;
           }
-          if(m_breakPoints.contains(BREAKONRETURN)) {
-            if((oldStack == m_savedStackHeight) && (m_reductionStack->top().getMethod() == m_savedMethod)) {
-              stop(true);
-              break;
-            }
-          }
         }
         if(m_breakPoints.contains(BREAKSUBSTEP)) {
           stop();
           break;
         }
       }
-      return;
     }
+    return;
   }
 #endif
 
@@ -67,7 +87,9 @@ void DebugThread::handlePropertyChanged(const PropertyContainer *source, int id,
       case PS_DERIVED  :
         break;
       default:
-        if(m_breakPoints.contains(BREAKSTEP)) stop();
+        if(m_breakPoints.contains(BREAKSTEP)) {
+          stop();
+        }
         break;
       }
       break;
@@ -80,7 +102,9 @@ void DebugThread::handlePropertyChanged(const PropertyContainer *source, int id,
       break;
 
     case PP_REDUCEITERATION :
-      if(m_breakPoints.contains(BREAKSUBSTEP)) stop();
+      if(m_breakPoints.contains(BREAKSUBSTEP)) {
+        stop();
+      }
       break;
 
     }
@@ -112,30 +136,27 @@ void DebugThread::stop(bool onReturn) {
   m_stoppedOnReturn = onReturn;
   suspend();
   if(m_killed) throw true;
-  setProperty(THREAD_RUNNING, m_running, true );
+  setProperty(THREAD_RUNNING, m_running, true  );
 }
 
 void DebugThread::go() {
   if(m_running) return;
-  m_breakPoints.remove(BREAKSTEP    );
-  m_breakPoints.remove(BREAKSUBSTEP );
-  m_breakPoints.remove(BREAKONRETURN);
+  m_breakPoints.clear();
   resume();
 }
 
 void DebugThread::singleStep() {
   if(m_running) return;
+  m_breakPoints.clear();
   m_breakPoints.add(   BREAKSTEP    );
-  m_breakPoints.remove(BREAKSUBSTEP );
-  m_breakPoints.remove(BREAKONRETURN);
   resume();
 }
 
 void DebugThread::singleSubStep() {
   if(m_running) return;
+  m_breakPoints.clear();
   m_breakPoints.add(   BREAKSTEP    );
   m_breakPoints.add(   BREAKSUBSTEP );
-  m_breakPoints.remove(BREAKONRETURN);
   resume();
 }
 
@@ -143,23 +164,19 @@ void DebugThread::singleSubStep() {
 
 void DebugThread::goUntilReturn() {
   if(m_running) return;
-  if(m_stoppedOnReturn) {
-    singleSubStep();
-  } else {
-    m_breakPoints.remove(BREAKSTEP    );
-    m_breakPoints.remove(BREAKSUBSTEP );
-    m_breakPoints.add(   BREAKONRETURN);
-    m_savedStackHeight = m_reductionStack->getHeight();
-    m_savedMethod      = m_reductionStack->top().getMethod();
-    resume();
-  }
+  const ReductionStackElement *e = m_reductionStack->topPointer(m_stoppedOnReturn?1:0);
+  m_breakOnTopIndex = e ? e->getIndex() : 0;
+
+  m_breakPoints.clear();
+  m_breakPoints.add(COUNTONRETURN);
+  resume();
 }
 #endif
 
 void DebugThread::stopASAP() {
   if(!m_running) return;
-  m_breakPoints.add(   BREAKSTEP   );
-  m_breakPoints.add(   BREAKSUBSTEP);
+  m_breakPoints.clear();
+  m_breakPoints.add(BREAKASAP);
 }
 
 void DebugThread::kill() {

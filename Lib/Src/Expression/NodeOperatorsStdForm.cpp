@@ -298,7 +298,7 @@ StdNode StdNode::toSForm() const {
   switch(getNodeType()) {
   case NT_NUMBER     :
   case NT_BOOLCONST  :
-  case NT_VARIABLE   : RETURNNODE(*this              );
+  case NT_VARIABLE   : RETURNTHIS;
   case NT_TREE       : RETURNNODE( toSFormTreeNode() );
   case NT_POWER      : RETURNNODE( toSFormPow()      );
   case NT_BOOLEXPR   : RETURNNODE( toSFormBoolExpr() );

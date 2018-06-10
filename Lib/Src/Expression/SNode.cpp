@@ -56,6 +56,14 @@ String SNode::getNodeTypeName() const {
   return m_node->getNodeTypeName();
 }
 
+void SNode::setReduced() const {
+  m_node->setReduced();
+}
+
+bool SNode::isReduced() const {
+  return m_node->isReduced();
+}
+
 void SNode::mark() {
   m_node->mark();
 }
@@ -134,6 +142,10 @@ ExpressionVariable &SNode::getVariable() const {
 
 const Number &SNode::getNumber() const {
   return m_node->getNumber();
+}
+
+bool SNode::getBool() const {
+  return m_node->getBool();
 }
 
 int SNode::getValueIndex() const {
@@ -536,7 +548,7 @@ SNode productExp(FactorArray &a) {
 }
 
 SNode condExp(SNode condition, SNode nTrue, SNode nFalse) {
-  return condition.getTree().condExpr(condition.node(), nTrue.node(), nFalse.node());
+  return condition.getTree().condExpr(condition, nTrue, nFalse);
 }
 
 SNode boolExp(ExpressionInputSymbol symbol, SNode left, SNode right) {
@@ -552,7 +564,7 @@ SNode boolExp(ExpressionInputSymbol symbol, SNodeArray &a) {
 }
 
 SNode polyExp(SNodeArray &coefArray, SNode arg) {
-  return arg.getTree().polyExpr(coefArray, arg.node());
+  return arg.getTree().polyExpr(coefArray, arg);
 }
 
 SNode assignStmt(SNode leftSide, SNode expr) {
@@ -568,12 +580,16 @@ SNode stmtList(SNodeArray &list) {
   return list.getTree().stmtList(list);
 }
 
-SNode indexedSum(SNode assignStmt, SNode endExpr, SNode expr) {
-  return assignStmt.getTree().indexedSum(assignStmt.node(), endExpr.node(), expr.node());
+SNode indexedExp(ExpressionInputSymbol symbol, SNode assignStmt, SNode endExp, SNode exp) {
+  return assignStmt.getTree().indexedExpr(symbol,assignStmt, endExp, exp);
 }
 
-SNode indexedProd(SNode assignStmt, SNode endExpr, SNode expr) {
-  return assignStmt.getTree().indexedProduct(assignStmt.node(), endExpr.node(), expr.node());
+SNode indexedSum(SNode assignStmt, SNode endExp, SNode exp) {
+  return assignStmt.getTree().indexedSum(assignStmt, endExp, exp);
+}
+
+SNode indexedProd(SNode assignStmt, SNode endExp, SNode exp) {
+  return assignStmt.getTree().indexedProduct(assignStmt, endExp, exp);
 }
 
 SNode addentExp(SNode child, bool positive) {

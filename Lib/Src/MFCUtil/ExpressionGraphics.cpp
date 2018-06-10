@@ -451,6 +451,9 @@ AlignedImage *ExpressionPainter::getImage1(SNode n, int fontSize, ExpressionRect
   case NUMBER            :
     return getNumberImage(n, fontSize, rect);
 
+  case TYPEBOOL          :
+    return getTextImage(boolToStr(n.getBool()), true, fontSize, rect);
+
   case SUM               :
     return getSumImage(n, fontSize, rect);
 

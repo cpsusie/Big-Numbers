@@ -17,9 +17,8 @@ private:
   bool                  m_running, m_killed, m_terminated;
 
 #ifdef TRACE_REDUCTION_CALLSTACK
-  const ReductionStack *m_reductionStack;
-  int                   m_savedStackHeight;
-  const TCHAR          *m_savedMethod;
+  const ReductionStack        *m_reductionStack;
+  UINT                         m_breakOnTopIndex;
 #endif
 
   String                m_errorMsg;

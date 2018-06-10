@@ -115,10 +115,12 @@ public:
   inline ExpressionInputSymbol       getSymbol()                    const   { return m_info.m_symbol;                                          }
   inline        ParserTree          &getTree()                      const   { return m_tree;                                                   }
   inline const PackedSyntaxNodeInfo &getInfo()                      const   { return m_info;                                                   }
-  static String                      getSymbolName(ExpressionInputSymbol symbol);
-  static String                      getNodeTypeName(ExpressionNodeType  nt);
-  inline String                      getSymbolName()                const   { return getSymbolName(getSymbol());  }
-  String                             getNodeTypeName()              const   { return getNodeTypeName(getNodeType()); }
+  static String                      getSymbolName(    ExpressionInputSymbol symbol);
+  static String                      getNodeTypeName(  ExpressionNodeType    nt    );
+  static String                      getReturnTypeName(ExpressionReturnType  rt    );
+  inline String                      getSymbolName()                const   { return getSymbolName(    getSymbol());     }
+  String                             getNodeTypeName()              const   { return getNodeTypeName(  getNodeType());   }
+  String                             getReturnTypeName()            const   { return getReturnTypeName(getReturnType()); }
 
   inline  void                       mark()                                 { m_info.m_marked = true;                                          }
   inline  void                       unMark()                               { m_info.m_marked = false;                                         }
@@ -154,9 +156,9 @@ public:
   virtual void                       setVariable(ExpressionVariable *var)   { UNSUPPORTEDOP(); }
   virtual       ExpressionVariable  &getVariable()                  const   { UNSUPPORTEDOP(); }
   virtual const Number              &getNumber()                    const   { UNSUPPORTEDOP(); }
+  virtual       bool                 getBool()                      const   { UNSUPPORTEDOP(); }
   virtual       int                  getValueIndex()                const   { UNSUPPORTEDOP(); }
   virtual       void                 setValueIndex(int index)               { UNSUPPORTEDOP(); }
-  virtual       bool                 getBool()                      const   { UNSUPPORTEDOP(); }
   virtual ExpressionNode            *expand()                               { UNSUPPORTEDOP(); }
   virtual bool                       isExpandable()                         { return false;    }
 
@@ -248,9 +250,11 @@ public:
   UINT    checkIsConsistent()                                             const;
   bool    isConsistentSymbolAndType()                                     const;
 #endif // CHECK_CONSISTENCY
-  static void checkNodeType(         const TCHAR *method, const ExpressionNode *n, ExpressionNodeType    expectedType  );
-  static void checkNodeType(         const TCHAR *method, const ExpressionNode *n, const NodeTypeSet    &validTypes    );
-  static void checkSymbol(           const TCHAR *method, const ExpressionNode *n, ExpressionInputSymbol expectedSymbol);
+  static void checkNodeType(         const TCHAR *method, const ExpressionNode *n, ExpressionNodeType    expectedNodeType  );
+  static void checkNodeType(         const TCHAR *method, const ExpressionNode *n, const NodeTypeSet    &validTypes        );
+  static void checkReturnType(       const TCHAR *method, const ExpressionNode *n, ExpressionReturnType  expectedReturnType);
+  static void checkSymbol(           const TCHAR *method, const ExpressionNode *n, ExpressionInputSymbol expectedSymbol    );
+
   void throwInvalidSymbolForTreeMode(const TCHAR *method) const;
   void throwUnknownSymbolException(  const TCHAR *method) const;
   void throwUnknownNodeTypeException(const TCHAR *method) const;

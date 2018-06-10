@@ -12,7 +12,8 @@ ExpressionNode *ParserTree::stmtList(SNodeArray &stmtArray) {
 }
 
 ExpressionNode *ParserTree::assignStmt(ExpressionNode *leftSide, ExpressionNode *expr) {
-  assert(leftSide->getNodeType() == NT_VARIABLE);
+  CHECKNODEPTYPE(      leftSide,NT_VARIABLE     );
+  CHECKNODEPRETURNTYPE(expr    ,EXPR_RETURN_REAL);
   ExpressionNode *n = new ExpressionNodeAssign(leftSide, expr); TRACE_NEW(n);
   return n;
 }
@@ -96,35 +97,55 @@ ExpressionNode *ParserTree::productExpr(FactorArray &a) {
   }
 }
 
-
-ExpressionNode *ParserTree::indexedSum(ExpressionNode *assign, ExpressionNode *endExpr, ExpressionNode *expr) {
-  CHECKNODEPTYPE(assign, NT_ASSIGN);
-  return ternaryExpr(INDEXEDSUM, assign, endExpr, expr);
+ExpressionNode *ParserTree::indexedSum(SNode assign, SNode endExpr, SNode expr) {
+  CHECKNODETYPE(      assign , NT_ASSIGN      );
+  CHECKNODERETURNTYPE(endExpr,EXPR_RETURN_REAL);
+  CHECKNODERETURNTYPE(expr   ,EXPR_RETURN_REAL);
+  return ternaryExpr(INDEXEDSUM, assign.node(), endExpr.node(), expr.node());
 }
 
-ExpressionNode *ParserTree::indexedProduct(ExpressionNode *assign, ExpressionNode *endExpr, ExpressionNode *expr) {
-  CHECKNODEPTYPE(assign, NT_ASSIGN);
-  return ternaryExpr(INDEXEDPRODUCT, assign, endExpr, expr);
+ExpressionNode *ParserTree::indexedProduct(SNode assign, SNode endExpr, SNode expr) {
+  CHECKNODETYPE(      assign ,NT_ASSIGN       );
+  CHECKNODERETURNTYPE(endExpr,EXPR_RETURN_REAL);
+  CHECKNODERETURNTYPE(expr   ,EXPR_RETURN_REAL);
+  return ternaryExpr(INDEXEDPRODUCT, assign.node(), endExpr.node(), expr.node());
 }
 
-ExpressionNode *ParserTree::condExpr(ExpressionNode *condition, ExpressionNode *exprTrue, ExpressionNode *exprFalse) {
-  CHECKNODEPTYPE(condition, NT_BOOLEXPR);
-  return ternaryExpr(IIF, condition, exprTrue, exprFalse);
+// symbol must be INDEXEDSUM/INDEXPRODUCT
+ExpressionNode *ParserTree::indexedExpr(  ExpressionInputSymbol symbol, SNode assign, SNode endExpr, SNode expr) {
+  switch(symbol) {
+  case INDEXEDSUM    : return indexedSum(    assign,endExpr,expr);
+  case INDEXEDPRODUCT: return indexedProduct(assign,endExpr,expr);
+  default            : throwInvalidArgumentException(__TFUNCTION__,_T("symbol=%s"), ExpressionNode::getSymbolName(symbol).cstr());
+                       return NULL;
+  }
+}
+
+ExpressionNode *ParserTree::condExpr(SNode condition, SNode exprTrue, SNode exprFalse) {
+  CHECKNODETYPE(      condition ,NT_BOOLEXPR     );
+  CHECKNODERETURNTYPE(exprTrue  ,EXPR_RETURN_REAL);
+  CHECKNODERETURNTYPE(exprFalse ,EXPR_RETURN_REAL);
+  return ternaryExpr(IIF, condition.node(), exprTrue.node(), exprFalse.node());
 }
 
 ExpressionNode *ParserTree::and(ExpressionNode *n1, ExpressionNode *n2) {
+  CHECKNODEPRETURNTYPE(n1,EXPR_RETURN_BOOL);
+  CHECKNODEPRETURNTYPE(n2,EXPR_RETURN_BOOL);
   if(n1->isTrue()) return n2; else if(n1->isFalse()) return n1;
   if(n2->isTrue()) return n1; else if(n2->isFalse()) return n2;
   return boolExpr(AND, n1,n2);
 }
 
 ExpressionNode *ParserTree::or(ExpressionNode *n1, ExpressionNode *n2) {
+  CHECKNODEPRETURNTYPE(n1,EXPR_RETURN_BOOL);
+  CHECKNODEPRETURNTYPE(n2,EXPR_RETURN_BOOL);
   if(n1->isTrue()) return n1; else if(n1->isFalse()) return n2;
   if(n2->isTrue()) return n2; else if(n2->isFalse()) return n1;
   return boolExpr(OR, n1,n2);
 }
 
 ExpressionNode *ParserTree::not(ExpressionNode *n) {
+  CHECKNODEPRETURNTYPE(n,EXPR_RETURN_BOOL);
   if(n->isTrue()) return getFalse(); else if(n->isFalse()) return getTrue();
   if(n->getSymbol() == NOT) return n->left();
   return boolExpr(NOT,n,NULL);
@@ -249,10 +270,27 @@ ExpressionNode *ParserTree::getTree(SNode oldTree, SNodeArray &newChildArray) {
   return result.node();
 }
 
-ExpressionNode *ParserTree::getBoolExpr(SNode oldExpr, SNodeArray &newChildArray) {
-  const SNodeArray &oldChildArray = oldExpr.getChildArray();
-  SNode             result = newChildArray.isSameNodes(oldChildArray) ? oldExpr : boolExpr(oldExpr.getSymbol(), newChildArray);
-  return result.node();
+ExpressionNode *ParserTree::getAnd(SNode oldAnd, SNode left, SNode right) {
+  if(left.isTrue() ) return right.node(); else if(left.isFalse( )) return left.node();
+  if(right.isTrue()) return left.node() ; else if(right.isFalse()) return right.node();
+  return ((oldAnd.left().isSameNode(left ) && (oldAnd.right().isSameNode(right)))
+      ||  (oldAnd.left().isSameNode(right) && (oldAnd.right().isSameNode(left))))
+       ? oldAnd.node()
+       : and(left.node(),right.node());
+}
+
+ExpressionNode *ParserTree::getOr(SNode oldOr, SNode left, SNode right) {
+  if(left.isFalse() ) return right.node(); else if(left.isTrue( )) return left.node();
+  if(right.isFalse()) return left.node() ; else if(right.isTrue()) return right.node();
+  return ((oldOr.left().isSameNode(left ) && (oldOr.right().isSameNode(right)))
+      ||  (oldOr.left().isSameNode(right) && (oldOr.right().isSameNode(left))))
+       ? oldOr.node()
+       : or(left.node(),right.node());
+}
+
+ExpressionNode *ParserTree::getNot(SNode oldNot, SNode left) {
+  if(left.isFalse() ) return getTrue(); else if(left.isTrue( )) return getFalse();
+  return (oldNot.left().isSameNode(left)) ? oldNot.node() : not(left.node());
 }
 
 ExpressionNode *ParserTree::getPoly(SNode oldPoly, SNodeArray &newCoefArray, SNode newArgument) {

@@ -103,7 +103,7 @@ NNode NNode::toNFormRealExp() const {
   }
   switch(getSymbol()) {
   case NUMBER    : throwException(_T("%s:Unexpected node-symbol (NUMBER)"), __TFUNCTION__);
-  case NAME      : RETURNNODE( *this             );
+  case NAME      : RETURNTHIS;
   case SUM       : RETURNNODE( toNFormSum()      );
   case PRODUCT   : RETURNNODE( toNFormProduct()  );
   case POLY      : RETURNNODE( toNFormPoly()     );

@@ -345,7 +345,9 @@ public:
   ExpressionNode         *getStmtList(  SNode oldStmtList           , SNodeArray           &newChildArray                   );
   ExpressionNode         *getAssignStmt(SNode oldAssign             , SNodeArray           &newChildArray                   );
   ExpressionNode         *getTree(      SNode oldTree               , SNodeArray           &newChildArray                   );
-  ExpressionNode         *getBoolExpr(  SNode oldExpr               , SNodeArray           &newChildArray                   );
+  ExpressionNode         *getAnd(       SNode oldAnd                , SNode                 left            , SNode right   );
+  ExpressionNode         *getOr(        SNode oldOr                 , SNode                 left            , SNode right   );
+  ExpressionNode         *getNot(       SNode oldNot                , SNode                 left                            );
   ExpressionNode         *getPoly(      SNode oldPoly               , SNodeArray           &newCoefArray    , SNode newArg  );
   ExpressionNode         *getSum(       SNode oldSum                , AddentArray          &newAddentArray                  );
   ExpressionNode         *getProduct(   SNode oldProduct            , FactorArray          &newFactorArray                  );
@@ -364,15 +366,16 @@ public:
   ExpressionNode         *powerExpr(                                  SNode           base);
   ExpressionNode         *powerExpr(                                  SNode           base , SNode exponent);
   ExpressionNode         *powerExpr(                                  SNode           base , const Rational &exponent);
+  // symbol must be INDEXEDSUM/INDEXPRODUCT
+  ExpressionNode         *indexedExpr(  ExpressionInputSymbol symbol, SNode           assign, SNode endExpr, SNode expr);
+  ExpressionNode         *indexedSum(                                 SNode           assign, SNode endExpr, SNode expr);
+  ExpressionNode         *indexedProduct(                             SNode           assign, SNode endExpr, SNode expr);
+  ExpressionNode         *condExpr(                                   SNode           condition, SNode exprTrue,SNode exprFalse);
 
-  ExpressionNode         *expandPower(   ExpressionNode *base, const Rational &exponent);
+  ExpressionNode         *expandPower(  ExpressionNode *base, const Rational &exponent);
 
   // used by parser
   ExpressionNode         *vFetchNode(const SourcePosition &pos, ExpressionInputSymbol symbol, va_list argptr);
-
-  ExpressionNode *condExpr(                  ExpressionNode *condition
-                                            ,ExpressionNode *exprTrue
-                                            ,ExpressionNode *exprFalse);
 
   ExpressionNode *and(                       ExpressionNode *n1, ExpressionNode *n2);
   ExpressionNode *or(                        ExpressionNode *n1, ExpressionNode *n2);
@@ -390,14 +393,6 @@ public:
                                             ,ExpressionNode *child0
                                             ,ExpressionNode *child1
                                             ,ExpressionNode *child2);
-
-  ExpressionNode *indexedSum(                ExpressionNode *assign
-                                            ,ExpressionNode *endExpr
-                                            ,ExpressionNode *expr);
-
-  ExpressionNode *indexedProduct(            ExpressionNode *assign
-                                            ,ExpressionNode *endExpr
-                                            ,ExpressionNode *expr);
 
   // if both n1 and n2 are rational constants, they will be reduced as much as possible
   // without loosing symmetry with even exponents. if one or both are not rational
