@@ -519,9 +519,10 @@ ByteCount GrammarTables::printSymbolNameTableCpp(MarginFile &output) const {
   ByteCount stringByteCount;
   output.printf(_T("static const TCHAR *symbolName[%d] = {\n"), symbolCount);
   output.setLeftMargin(2);
+  const UINT maxNameLength = (UINT)m_symbolName.maxLength()+1;
   for(int s = 0; s < symbolCount; s++) {
     const String &name = m_symbolName[s];
-    output.printf(_T("/* %3d */ _T(\"%s\")"), s, name.cstr());
+    output.printf(_T("/* %3d */ _T(\"%s\"%*s"), s, name.cstr(), maxNameLength-name.length(),_T(")"));
     const UINT stringSize = sizeof(TCHAR)*((int)name.length() + 1);
     stringByteCount += ByteCount(stringSize,stringSize);
     if(s < symbolCount-1) {
