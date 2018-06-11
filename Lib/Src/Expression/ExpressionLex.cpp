@@ -8,9 +8,6 @@
 
 namespace Expr {
 
-
-static ExpressionInputSymbol nameOrKeyWord(const _TUCHAR *lexeme);
-
 #line 9 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
 
 // DFA State   0 [nonAccepting]
@@ -37,55 +34,55 @@ static ExpressionInputSymbol nameOrKeyWord(const _TUCHAR *lexeme);
 //   goto 19 on ^
 //   goto 16 on _abcdefghijklmnopqrstuvwxyz
 //   goto 33 on |
-// DFA State   1 [accepting, line 104 <;>]
+// DFA State   1 [accepting, line 102 <;>]
 //   goto  1 on \x00\x01\x02\x03\x04\x05\x06\x07\b\t\n\x0b\r\s
-// DFA State   2 [accepting, line  92 <return NOT;>]
+// DFA State   2 [accepting, line  90 <return NOT;>]
 //   goto 20 on =
-// DFA State   3 [accepting, line  83 <return MOD;>]
-// DFA State   4 [accepting, line  86 <return LPAR;>]
-// DFA State   5 [accepting, line  87 <return RPAR;>]
-// DFA State   6 [accepting, line  81 <return PROD;>]
+// DFA State   3 [accepting, line  81 <return MOD;>]
+// DFA State   4 [accepting, line  84 <return LPAR;>]
+// DFA State   5 [accepting, line  85 <return RPAR;>]
+// DFA State   6 [accepting, line  79 <return PROD;>]
 //   goto 19 on *
-// DFA State   7 [accepting, line  79 <return PLUS;>]
-// DFA State   8 [accepting, line  85 <return COMMA;>]
-// DFA State   9 [accepting, line  80 <return MINUS;>]
-// DFA State  10 [accepting, line  82 <return QUOT;>]
+// DFA State   7 [accepting, line  77 <return PLUS;>]
+// DFA State   8 [accepting, line  83 <return COMMA;>]
+// DFA State   9 [accepting, line  78 <return MINUS;>]
+// DFA State  10 [accepting, line  80 <return QUOT;>]
 //   goto 22 on *
 //   goto 23 on /
-// DFA State  11 [accepting, line  52 <return NUMBER;>]
+// DFA State  11 [accepting, line  50 <return NUMBER;>]
 //   goto 30 on .
 //   goto 11 on 0123456789
 //   goto 34 on Ee
-// DFA State  12 [accepting, line 101 <return SEMI;>]
-// DFA State  13 [accepting, line  94 <return LT;>]
+// DFA State  12 [accepting, line  99 <return SEMI;>]
+// DFA State  13 [accepting, line  92 <return LT;>]
 //   goto 24 on =
 //   goto 25 on >
-// DFA State  14 [accepting, line 100 <return ASSIGN;>]
+// DFA State  14 [accepting, line  98 <return ASSIGN;>]
 //   goto 26 on =
-// DFA State  15 [accepting, line  96 <return GT;>]
+// DFA State  15 [accepting, line  94 <return GT;>]
 //   goto 27 on =
-// DFA State  16 [accepting, line 103 <return nameOrKeyWord((_TUCHAR*)getText());>]
+// DFA State  16 [accepting, line 101 <return nameOrKeyWord((_TUCHAR*)getText());>]
 //   goto 16 on 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz
-// DFA State  17 [accepting, line  88 <return LB;>]
-// DFA State  18 [accepting, line  89 <return RB;>]
-// DFA State  19 [accepting, line  84 <return POW;>]
-// DFA State  20 [accepting, line  98 <return NE;>]
-// DFA State  21 [accepting, line  90 <return AND;>]
-// DFA State  22 [accepting, line  54 <{ int i;                   const SourcePosition st>]
-// DFA State  23 [accepting, line  69 <{ int i;                   while(i = input()) {   >]
-// DFA State  24 [accepting, line  95 <return LE;>]
-// DFA State  25 [accepting, line  99 <return NE;>]
-// DFA State  26 [accepting, line  93 <return EQ;>]
-// DFA State  27 [accepting, line  97 <return GE;>]
-// DFA State  28 [accepting, line  91 <return OR;>]
+// DFA State  17 [accepting, line  86 <return LB;>]
+// DFA State  18 [accepting, line  87 <return RB;>]
+// DFA State  19 [accepting, line  82 <return POW;>]
+// DFA State  20 [accepting, line  96 <return NE;>]
+// DFA State  21 [accepting, line  88 <return AND;>]
+// DFA State  22 [accepting, line  52 <{ int i;             const SourcePosition startpos>]
+// DFA State  23 [accepting, line  67 <{ int i;             while(i = input()) {         >]
+// DFA State  24 [accepting, line  93 <return LE;>]
+// DFA State  25 [accepting, line  97 <return NE;>]
+// DFA State  26 [accepting, line  91 <return EQ;>]
+// DFA State  27 [accepting, line  95 <return GE;>]
+// DFA State  28 [accepting, line  89 <return OR;>]
 // DFA State  29 [nonAccepting]
 //   goto 21 on &
-// DFA State  30 [accepting, line  52 <return NUMBER;>]
+// DFA State  30 [accepting, line  50 <return NUMBER;>]
 //   goto 30 on 0123456789
 //   goto 34 on Ee
 // DFA State  31 [nonAccepting]
 //   goto 30 on 0123456789
-// DFA State  32 [accepting, line  52 <return NUMBER;>]
+// DFA State  32 [accepting, line  50 <return NUMBER;>]
 //   goto 32 on 0123456789
 // DFA State  33 [nonAccepting]
 //   goto 28 on |
@@ -255,165 +252,165 @@ int ExpressionLex::getNextLexeme() {
 
       switch(lastAcceptState) {
       case 1:
-#line 104 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
+#line 102 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
         ;
 #line 94 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 2:
-#line 92 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
+#line 90 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
         return NOT;
 #line 94 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 3:
-#line 83 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
+#line 81 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
         return MOD;
 #line 94 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 4:
-#line 86 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
+#line 84 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
         return LPAR;
 #line 94 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 5:
-#line 87 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
+#line 85 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
         return RPAR;
 #line 94 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 6:
-#line 81 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
+#line 79 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
         return PROD;
 #line 94 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 7:
-#line 79 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
+#line 77 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
         return PLUS;
 #line 94 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 8:
-#line 85 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
+#line 83 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
         return COMMA;
 #line 94 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 9:
-#line 80 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
+#line 78 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
         return MINUS;
 #line 94 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 10:
-#line 82 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
+#line 80 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
         return QUOT;
 #line 94 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 11:
       case 30:
       case 32:
-#line 52 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
+#line 50 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
         return NUMBER;
 #line 94 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 12:
-#line 101 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
+#line 99 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
         return SEMI;
 #line 94 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 13:
-#line 94 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
+#line 92 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
         return LT;
 #line 94 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 14:
-#line 100 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
+#line 98 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
         return ASSIGN;
 #line 94 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 15:
-#line 96 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
+#line 94 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
         return GT;
 #line 94 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 16:
-#line 103 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
+#line 101 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
         return nameOrKeyWord((_TUCHAR*)getText());
 #line 94 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 17:
-#line 88 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
+#line 86 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
         return LB;
 #line 94 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 18:
-#line 89 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
+#line 87 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
         return RB;
 #line 94 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 19:
-#line 84 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
+#line 82 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
         return POW;
 #line 94 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 20:
-#line 98 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
+#line 96 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
         return NE;
 #line 94 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 21:
-#line 90 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
+#line 88 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
         return AND;
 #line 94 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 22:
-#line 54 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
+#line 52 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
         { int i;
-                          const SourcePosition startpos = getPos();
-                          while(i = input()) {
-                            if(i < 0) {
-                              flushBuf();  /* Discard lexeme.     */
-                            } else if(i == '*' && look(1) == '/') {
-                             input();
-                             break;        /* Recognized comment. */
-                            }
-                          }
-                          if(i == 0) {
-                            error(startpos,_T("End of file in comment\n") );
-                          }
-                        }
+                    const SourcePosition startpos = getPos();
+                    while(i = input()) {
+                      if(i < 0) {
+                        flushBuf();  /* Discard lexeme.     */
+                      } else if(i == '*' && look(1) == '/') {
+                        input();
+                        break;        /* Recognized comment. */
+                      }
+                    }
+                    if(i == 0) {
+                      error(startpos,_T("End of file in comment\n") );
+                    }
+                  }
 #line 94 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 23:
-#line 69 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
+#line 67 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
         { int i;
-                          while(i = input()) {
-                            if(i < 0) {
-                              flushBuf();  /* Discard lexeme. */
-                            } else if(i == '\n') {
-                              break;
-                            }
-                          }
-                        }
+                    while(i = input()) {
+                      if(i < 0) {
+                        flushBuf();  /* Discard lexeme. */
+                      } else if(i == '\n') {
+                        break;
+                      }
+                    }
+                  }
 #line 94 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 24:
-#line 95 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
+#line 93 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
         return LE;
 #line 94 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 25:
-#line 99 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
+#line 97 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
         return NE;
 #line 94 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 26:
-#line 93 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
+#line 91 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
         return EQ;
 #line 94 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 27:
-#line 97 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
+#line 95 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
         return GE;
 #line 94 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 28:
-#line 91 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
+#line 89 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
         return OR;
 #line 94 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
@@ -437,7 +434,7 @@ int ExpressionLex::getNextLexeme() {
   }
 }
 
-#line 107 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
+#line 105 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
 
   /* This part goes to the last part of exprlex.cpp */
 
@@ -571,5 +568,4 @@ static CheckKeywordMap checkKeywordMap;
 #endif
 
 }; // namespace Expr
-
 #line 115 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"

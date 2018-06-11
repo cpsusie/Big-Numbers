@@ -10,7 +10,6 @@
 
 namespace Expr {
 
-
 class ExpressionParser : public LRparser {
 private:
   static const ParserTables *ExpressionTables;
@@ -34,7 +33,6 @@ private:
 };
 
 }; // namespace Expr
-
 
 #line 22 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
 

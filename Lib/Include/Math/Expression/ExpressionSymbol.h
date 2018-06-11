@@ -4,7 +4,6 @@
 
 namespace Expr {
 
-
   typedef enum {
      EOI             =   0
     ,NUMBER          =   1
@@ -95,5 +94,4 @@ namespace Expr {
   } ExpressionNonTerminal;
 
 }; // namespace Expr
-
 

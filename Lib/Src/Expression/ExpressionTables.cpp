@@ -5,14 +5,11 @@
 #include <Math/Real.h>
 #include <Math/Expression/ExpressionParser.h>
 
-#pragma warning(disable:4312)
-
-#line 43 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
+#line 44 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
 
 #pragma warning(disable : 4312)
 
 namespace Expr {
-
 
 typedef short TableType;
 
@@ -715,4 +712,3 @@ const ParserTables *ExpressionParser::ExpressionTables = &ExpressionTables_s;
 // Total size of table data:7.580(x86)/9.528(x64) bytes.
 
 }; // namespace Expr
-

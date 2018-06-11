@@ -57,8 +57,6 @@ $POPNAMESPACE$
 #include <Math/Real.h>
 #include <Math/Expression/ExpressionParser.h>
 
-#pragma warning(disable:4312)
-
 %}
 %%
 

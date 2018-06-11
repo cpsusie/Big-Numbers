@@ -11,7 +11,6 @@
 
 namespace Expr {
 
-
 class ExpressionLex : public Scanner {
 private:
   LRparser *m_parser; // if set, redirect errors to parsers verror-routine
@@ -29,7 +28,6 @@ public:
 };
 
 }; // namespace Expr
-
 
 #line 5 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
 

@@ -38,8 +38,6 @@ $POPNAMESPACE$
 
 $PUSHNAMESPACE$
 
-static ExpressionInputSymbol nameOrKeyWord(const _TUCHAR *lexeme);
-
 %}
 
 let     [_a-zA-Z]              /* Letter                                */
@@ -51,30 +49,30 @@ white   [\x00-\x09\x0b\s\r\n]  /* White space: all control chars        */
 
 ({d}+|{d}+\.{d}*|{d}*\.{d}+)([eE][\-+]?{d}+)?   return NUMBER;
 
-"/*"						{ int i;
-                  const SourcePosition startpos = getPos();
-                  while(i = input()) {
-                    if(i < 0) {
-                      flushBuf();  /* Discard lexeme.     */
-                    } else if(i == '*' && look(1) == '/') {
-                     input();
-                     break;        /* Recognized comment. */
-                    }
-                  }
-                  if(i == 0) {
-                    error(startpos,_T("End of file in comment\n") );
-                  }
-                }
+"/*"			{ int i;
+            const SourcePosition startpos = getPos();
+            while(i = input()) {
+              if(i < 0) {
+                flushBuf();  /* Discard lexeme.     */
+              } else if(i == '*' && look(1) == '/') {
+                input();
+                break;        /* Recognized comment. */
+              }
+            }
+            if(i == 0) {
+              error(startpos,_T("End of file in comment\n") );
+            }
+          }
 
-"//"						{ int i;
-                  while(i = input()) {
-                    if(i < 0) {
-                      flushBuf();  /* Discard lexeme. */
-                    } else if(i == '\n') {
-                      break;
-                    }
-                  }
-                }
+"//"			{ int i;
+            while(i = input()) {
+              if(i < 0) {
+                flushBuf();  /* Discard lexeme. */
+              } else if(i == '\n') {
+                break;
+              }
+            }
+          }
 
 "+"		    return PLUS;
 "-"		    return MINUS;
