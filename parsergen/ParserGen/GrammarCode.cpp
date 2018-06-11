@@ -33,11 +33,14 @@ public:
 };
 
 void ActionsWriter::handleKeyword(TemplateWriter &writer, String &line) const {
-  const Grammar               &grammar  = m_coder.getGrammar();
-  const CodeFlags              flags    = m_coder.getFlags();
+  const CodeFlags flags    = m_coder.getFlags();
+  if(!flags.m_generateActions) {
+    return;
+  }
 
-  const int productionCount = grammar.getProductionCount();
-  int actionCount     = 0;
+  const Grammar &grammar         = m_coder.getGrammar();
+  const int      productionCount = grammar.getProductionCount();
+  int            actionCount     = 0;
 
   for(int p = 0; p < productionCount; p++) { // first count the number of real actions
     if(grammar.getProduction(p).m_actionBody.isDefined()) {
@@ -222,8 +225,8 @@ void GrammarCoder::generateParser() {
   writer.addMacro(         _T("HEADERDIR"          ), m_headerOutputDir  );
   writer.addMacro(         _T("NAMESPACE"          ), m_nameSpace        );
   if(m_nameSpace.length() > 0) {
-    writer.addMacro(       _T("PUSHNAMESPACE"      ), format(_T("namespace %s {\n"    ), m_nameSpace.cstr()));
-    writer.addMacro(       _T("POPNAMESPACE"       ), format(_T("}; // namespace %s\n"), m_nameSpace.cstr()));
+    writer.addMacro(       _T("PUSHNAMESPACE"      ), format(_T("namespace %s {"    ), m_nameSpace.cstr()));
+    writer.addMacro(       _T("POPNAMESPACE"       ), format(_T("}; // namespace %s"), m_nameSpace.cstr()));
   } else {
     writer.addMacro(       _T("PUSHNAMESPACE"      ), _T(""));
     writer.addMacro(       _T("POPNAMESPACE"       ), _T(""));

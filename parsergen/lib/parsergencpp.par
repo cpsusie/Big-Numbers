@@ -27,8 +27,9 @@ $CLASSHEAD$
 
 $PUSHNAMESPACE$
 
-int $GRAMMARNAME$Parser::reduceAction(unsigned int prod) {
+#pragma warning(disable : 4060)
 
+int $GRAMMARNAME$Parser::reduceAction(unsigned int prod) {
   switch(prod) {
   $ACTIONS$
   }

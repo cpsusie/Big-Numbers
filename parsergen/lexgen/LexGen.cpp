@@ -98,8 +98,8 @@ static void printOutputFiles(const String    &templateName
   writer.addMacro(_T("HEADERDIR"), headerOutputDir);
   writer.addMacro(_T("NAMESPACE"), nameSpace      );
   if(nameSpace.length() > 0) {
-    writer.addMacro(       _T("PUSHNAMESPACE"      ), format(_T("namespace %s {\n"    ), nameSpace.cstr()));
-    writer.addMacro(       _T("POPNAMESPACE"       ), format(_T("}; // namespace %s\n"), nameSpace.cstr()));
+    writer.addMacro(       _T("PUSHNAMESPACE"      ), format(_T("namespace %s {"    ), nameSpace.cstr()));
+    writer.addMacro(       _T("POPNAMESPACE"       ), format(_T("}; // namespace %s"), nameSpace.cstr()));
   } else {
     writer.addMacro(       _T("PUSHNAMESPACE"      ), _T(""));
     writer.addMacro(       _T("POPNAMESPACE"       ), _T(""));
