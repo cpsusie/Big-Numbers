@@ -5,7 +5,7 @@ namespace Expr {
 
 int ExpressionNodeBoolConst::compare(ExpressionNode *n) {
   if(n->getNodeType() != getNodeType()) {
-    return ExpressionNode::compare(n);
+    return __super::compare(n);
   }
   return ordinal(getBool()) - ordinal(n->getBool());
 }

@@ -11,7 +11,7 @@ ExpressionNodeVariable::ExpressionNodeVariable(ParserTree *tree, const String &n
 
 int ExpressionNodeVariable::compare(ExpressionNode *n) {
   if(n->getNodeType() != getNodeType()) {
-    return ExpressionNode::compare(n);
+    return __super::compare(n);
   }
   return stringHashCmp(getName(), n->getName());
 }

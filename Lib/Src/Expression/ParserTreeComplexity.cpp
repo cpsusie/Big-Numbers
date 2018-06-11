@@ -10,7 +10,7 @@ ParserTreeComplexity::ParserTreeComplexity(const ParserTree &tree) {
 }
 
 int ParserTreeComplexity::compare(const ParserTreeComplexity &tc) const {
-  int c = (m_nodeCount + 2 * m_nameCount) - (tc.m_nodeCount + 2 * tc.m_nameCount);
+  const int c = (m_nodeCount + 2 * m_nameCount) - (tc.m_nodeCount + 2 * tc.m_nameCount);
   if(c) return c;
   return m_treeDepth - tc.m_treeDepth;
 }

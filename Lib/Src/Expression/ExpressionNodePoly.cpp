@@ -103,7 +103,7 @@ SNode ExpressionNodePoly::expand() const {
 
 int ExpressionNodePoly::compare(ExpressionNode *n) {
   if(n->getNodeType() != getNodeType()) {
-    return ExpressionNode::compare(n);
+    return __super::compare(n);
   }
   int c = getDegree() - n->getDegree();
   if(c) return c;
