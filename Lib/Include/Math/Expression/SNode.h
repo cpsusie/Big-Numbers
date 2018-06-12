@@ -72,10 +72,11 @@ public:
 #define CHECKNODEPTYPE(      n,expectedType  ) ExpressionNode::checkNodeType(  __TFUNCTION__,n,expectedType   )
 #define CHECKNODEPTYPESET(   n               ) ExpressionNode::checkNodeType(  __TFUNCTION__,n,_validNodeTypes)
 #define CHECKNODEPRETURNTYPE(n,expectedType  ) ExpressionNode::checkReturnType(__TFUNCTION__,n,expectedType   )
+#define CHECKPSYMBOL(        n,expectedSymbol) ExpressionNode::checkSymbol(    __TFUNCTION__,n,expectedSymbol )
 #define CHECKNODETYPE(       n,expectedType  ) CHECKNODEPTYPE(                      (n).node(),expectedType   )
 #define CHECKNODETYPESET(    n               ) CHECKNODEPTYPESET(                   (n).node()                )
 #define CHECKNODERETURNTYPE( n,expectedType  ) CHECKNODEPRETURNTYPE(                (n).node(),expectedType   )
-#define CHECKSYMBOL(         n,expectedSymbol) ExpressionNode::checkSymbol(    __TFUNCTION__,(n).node(),expectedSymbol )
+#define CHECKSYMBOL(         n,expectedSymbol) CHECKPSYMBOL(                        (n).node(),expectedSymbol )
 #else // _DEBUG
 #define DEFINEVALIDTYPES(    ...             )
 #define CHECKNODEPTYPE(      n,expectedType  )

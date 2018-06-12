@@ -44,7 +44,7 @@ public:
   }
 };
 
-#define TMPVARCOUNT 5 // the first 5 elements are reserverd for temporary variables in machinecode
+#define TMPVARCOUNT 2 // the first 2 elements are reserverd for temporary variables in machinecode
 
 void ParserTreeSymbolTable::init() {
   m_tree             = NULL;
@@ -130,7 +130,7 @@ void ParserTreeSymbolTable::buildTableIndexedExpr(ExpressionNode *n) {
   ExpressionNode *loopVar         = startAssignment->left();
   ExpressionNode *endExpr         = n->right();
   ExpressionNode *expr            = n->child(2).node();
-  String          loopVarName     = loopVar->getName();
+  const String   &loopVarName     = loopVar->getName();
 
   buildTableAssign(startAssignment,true);
   buildTable(endExpr);
@@ -141,20 +141,15 @@ void ParserTreeSymbolTable::buildTableIndexedExpr(ExpressionNode *n) {
   }
   buildTable(expr);
   if(m_tree->isOk()) {
-    int index = *m_nameTable.get(loopVarName);
-    m_nameTable.remove(loopVarName);
-    m_nameTable.put(getNewTempName(),index);
+    const UINT index = *m_nameTable.get(loopVarName.cstr());
+    m_nameTable.remove(loopVarName.cstr());
   }
-}
-
-String ParserTreeSymbolTable::getNewTempName() {
-  return format(_T("$indexVariable%d"), m_indexNameCounter++);
 }
 
 String ParserTreeSymbolTable::getNewLoopName(const String &oldName) const {
   for(int i = 1;; i++) {
     const String newName = oldName + String(i);
-    if(m_nameTable.get(newName) == NULL) {
+    if(m_nameTable.get(newName.cstr()) == NULL) {
       return newName;
     }
   }
@@ -181,7 +176,7 @@ void ParserTreeSymbolTable::checkDependentOnLoopVariablesOnly(ExpressionNode *n)
 }
 
 void ParserTreeSymbolTable::buildTableAssign(ExpressionNode *n, bool loopAssignment) {
-  CHECKSYMBOL(n, ASSIGN);
+  CHECKPSYMBOL(n, ASSIGN);
   if(n->right()->dependsOn(n->left()->getName())) {
     m_tree->addError(n->left(), _T("Variable %s cannot depend on itself"), n->left()->getName().cstr());
   }
@@ -219,15 +214,15 @@ ExpressionVariable *ParserTreeSymbolTable::allocateSymbol(ExpressionNode *n, boo
 }
 
 ExpressionVariable *ParserTreeSymbolTable::allocateName(const String &name, const Real &value, bool isConstant, bool isLeftSide, bool isLoopVar) {
-  if(m_nameTable.get(name) != NULL) {
+  if(m_nameTable.get(name.cstr()) != NULL) {
     throwInvalidArgumentException(__TFUNCTION__,_T("Name <%s> already exist"), name.cstr());
   }
   const int varIndex   = (int)m_variableTable.size();
   m_variableTable.add(ExpressionVariable(name, isConstant, isLeftSide, isLoopVar));
-  m_nameTable.put(name, varIndex);
-  ExpressionVariable *var = getVariable(name);
-  var->setValueIndex(insertValue(value));
-  return var;
+  ExpressionVariable &var = m_variableTable.last();
+  m_nameTable.put(var.getName().cstr(), varIndex);
+  var.setValueIndex(insertValue(value));
+  return &var;
 }
 
 // assume n->getSymbol() == NAME
@@ -255,8 +250,8 @@ void ParserTreeSymbolTable::allocateNumber(ExpressionNode *n, bool reuseIfExist)
 }
 
 // insert value into m_valueTable, return index
-int ParserTreeSymbolTable::insertValue(Real value) {
-  const int index = (int)m_valueTable.size();
+UINT ParserTreeSymbolTable::insertValue(Real value) {
+  const UINT index = (UINT)m_valueTable.size();
   m_valueTable.add(value);
   return index;
 }
@@ -348,10 +343,10 @@ String NameTable::toString() const {
   String result = _T("{");
   const TCHAR *del = NULL;
 
-  for(Iterator<Entry<String, int> > it = ((NameTable*)this)->entrySet().getIterator(); it.hasNext();) {
-    const Entry<String, int> &e = it.next();
+  for(Iterator<Entry<CompactStrIKeyType, UINT> > it = ((NameTable*)this)->getEntryIterator(); it.hasNext();) {
+    const Entry<CompactStrIKeyType, UINT> &e = it.next();
     if(del) result += del; else del = _T(", ");
-    result += format(_T("(%s,%d)"), e.getKey().cstr(), e.getValue());
+    result += format(_T("(%s,%u)"), e.getKey(), e.getValue());
   }
   result += _T("}");
   return result;

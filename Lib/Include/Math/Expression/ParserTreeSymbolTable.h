@@ -1,11 +1,11 @@
 #pragma once
 
-#include <HashMap.h>
+#include <CompactHashMap.h>
 #include "ExpressionNode.h"
 
 namespace Expr {
 
-class NameTable : public StringIHashMap<int> { // variables-names are case-insensitive
+class NameTable : public CompactStrIHashMap<UINT> { // Variable-names are case-insensitive
 public:
   String toString() const;
 };
@@ -31,7 +31,7 @@ private:
   ExpressionVariable   *allocateName(         const String &name, const Real &value, bool isConstant, bool isLeftSide, bool isLoopVar);
   void                  allocateNumber(       ExpressionNode *n, bool reuseIfExist);
   // Insert value into m_valueTable, return index of position
-  int                   insertValue(Real value);
+  UINT                  insertValue(Real value);
   // Return set with indices in m_valueTable, for all elements usedby variables
   BitSet                getVariablesIndexSet() const;
   // Find i, so m_valueTable[i] == value, and m_valueTable[i] is not used by a vaiable. return -1, if not found
@@ -48,13 +48,13 @@ public:
     init();
   }
   void                             create(ParserTree *tree, const ExpressionVariableArray *oldVariables);
-  void                             clear(ParserTree  *tree);
+  void                             clear( ParserTree *tree);
   inline ExpressionVariable       *getVariable(const String &name) {
-    const int *index = m_nameTable.get(name);
+    const UINT *index = m_nameTable.get(name.cstr());
     return index ? &m_variableTable[*index] : NULL;
   }
   inline const ExpressionVariable *getVariable(const String &name) const {
-    const int *index = m_nameTable.get(name);
+    const UINT *index = m_nameTable.get(name.cstr());
     return index ? &m_variableTable[*index] : NULL;
   }
   String                           getNewLoopName(const String &oldName) const;

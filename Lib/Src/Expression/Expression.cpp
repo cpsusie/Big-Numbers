@@ -137,12 +137,14 @@ Real Expression::evalRealError() const {
   throwException(_T("Cannot evaluate real. Returntype is %s")
                 ,ExpressionNode::getReturnTypeName(m_returnType).cstr()
                 );
+  return 0;
 }
 
 bool Expression::evalBoolError() const {
   throwException(_T("Cannot evaluate bool. Returntype is %s")
                 ,ExpressionNode::getReturnTypeName(m_returnType).cstr()
                 );
+  return false;
 }
 
 void Expression::setTrigonometricMode(TrigonometricMode mode) {
