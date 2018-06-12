@@ -153,27 +153,25 @@ public:
   virtual int                        getDegree()                    const   { UNSUPPORTEDOP(); }
   virtual const String              &getName()                      const   { UNSUPPORTEDOP(); }
   virtual void                       setVariable(ExpressionVariable *var)   { UNSUPPORTEDOP(); }
-  virtual       ExpressionVariable  &getVariable()                  const   { UNSUPPORTEDOP(); }
+  virtual bool                       hasVariable()                  const   { return false;    }
+  virtual ExpressionVariable        &getVariable()                  const   { UNSUPPORTEDOP(); }
   virtual const Number              &getNumber()                    const   { UNSUPPORTEDOP(); }
-  virtual       bool                 getBool()                      const   { UNSUPPORTEDOP(); }
-  virtual       int                  getValueIndex()                const   { UNSUPPORTEDOP(); }
-  virtual       void                 setValueIndex(int index)               { UNSUPPORTEDOP(); }
-  virtual       SNode                expand()                       const   { UNSUPPORTEDOP(); }
+  virtual bool                       getBool()                      const   { UNSUPPORTEDOP(); }
+  virtual int                        getValueIndex()                const   { UNSUPPORTEDOP(); }
+  virtual void                       setValueIndex(int index)               { UNSUPPORTEDOP(); }
+  virtual SNode                      expand()                       const   { UNSUPPORTEDOP(); }
   virtual bool                       isExpandable()                 const   { return false;    }
+  // return reference to lvalue
+  virtual Real                      &doAssignment()                 const   { UNSUPPORTEDOP(); }
+  virtual ExpressionNode            *clone(ParserTree *tree)        const = 0;
+  virtual ExpressionNodeType         getNodeType()                  const = 0;
+  virtual ExpressionReturnType       getReturnType()                const   { return EXPR_RETURN_REAL; }
+  virtual Real                       evaluateReal()                 const;
+  virtual bool                       evaluateBool()                 const   { UNSUPPORTEDOP(); }
 
   virtual int                        compare(ExpressionNode *n);
 
-  virtual ExpressionNode            *clone(ParserTree *tree)        const = 0;
-
   virtual bool                       isConstant()                   const = 0;
-  // return reference to lvalue
-  virtual Real                      &doAssignment()                 const   { UNSUPPORTEDOP();                                                 }
-  virtual Real                       evaluateReal()                 const;
-  virtual bool                       evaluateBool()                 const   { UNSUPPORTEDOP();                                                 }
-
-  virtual ExpressionNodeType         getNodeType()                  const = 0;
-  virtual ExpressionReturnType       getReturnType()                const   { return EXPR_RETURN_REAL;                                         }
-  virtual bool                       hasVariable()                  const   { return false;                                                    }
   virtual bool                       traverseExpression(ExpressionNodeHandler &handler, int level) = 0;
 
   virtual void                       dumpNode(String &s, int level) const = 0;
@@ -218,8 +216,11 @@ public:
   // symbol in { EQ,NE,LE,LT,GE,GT } (EQ->NE, LE->GT, etc... (this is not the same as reverseComparator)
   static ExpressionInputSymbol negateComparator( ExpressionInputSymbol symbol);
   inline ExpressionInputSymbol getInverseFunction() const { return getInverseFunction(getSymbol()); }
+  // { AND,OR,NOT,EQ,NE,LT,LE,GT,GE }
   inline  bool isBooleanOperator()       const { return isBooleanOperator(     getSymbol()); }
+  // { EQ,NE,LT,LE,GT,GE }
   inline  bool isCompareOperator()       const { return isCompareOperator(     getSymbol()); }
+  // { POW,ROOT,PROD,QUOT,PLUS,MINUS,MOD }
   inline  bool isBinaryOperator()        const { return isBinaryOperator(      getSymbol()); }
   inline  bool isTrigonomtricFunction()  const { return isTrigonomtricFunction(getSymbol()); }
   virtual bool isSymmetricFunction()     const { return isSymmetricFunction(   getSymbol()); }
@@ -305,27 +306,16 @@ public:
     return m_number;
   }
 
-  int compare(ExpressionNode *n);
-
-  ExpressionNode *clone(ParserTree *tree) const;
-
-  bool isConstant() const {
-    return true;
-  }
-  Real evaluateReal() const {
-    return m_number.getRealValue();
-  }
-
-  ExpressionNodeType getNodeType() const {
-    return NT_NUMBER;
-  }
-
-  bool traverseExpression(ExpressionNodeHandler &handler, int level);
-  void dumpNode(String &s, int level) const;
-
-  String toString() const {
-    return m_number.toString();
-  }
+  ExpressionNode      *clone(ParserTree *tree)        const;
+  ExpressionNodeType   getNodeType()                  const { return NT_NUMBER;                }
+//ExpressionReturnType getReturnType()                const { as ExpressionNode                }
+  Real                 evaluateReal()                 const { return m_number.getRealValue();  }
+//bool                 evaluateBool()                 const { as ExpresionNode                 }
+  int                  compare(ExpressionNode *n);
+  bool                 isConstant()                   const { return true;                     }
+  bool                 traverseExpression(ExpressionNodeHandler &handler, int level);
+  void                 dumpNode(String &s, int level) const;
+  String               toString()                     const { return m_number.toString();      }
 };
 
 class ExpressionNodeBoolConst : public ExpressionNode {
@@ -338,29 +328,16 @@ public:
   bool getBool() const {
     return m_value;
   }
-  int compare(ExpressionNode *n);
-
-  ExpressionNode *clone(ParserTree *tree) const;
-
-  bool isConstant() const {
-    return true;
-  }
-  ExpressionReturnType getReturnType() const   {
-    return EXPR_RETURN_BOOL;
-  }
-  Real evaluateReal() const { UNSUPPORTEDOP(); }
-  bool evaluateBool() const { return m_value;  }
-
-  ExpressionNodeType getNodeType() const {
-    return NT_BOOLCONST;
-  }
-
-  bool traverseExpression(ExpressionNodeHandler &handler, int level);
-  void dumpNode(String &s, int level) const;
-
-  String toString() const {
-    return boolToStr(m_value);
-  }
+  ExpressionNode      *clone(ParserTree *tree)        const;
+  ExpressionNodeType   getNodeType()                  const { return NT_BOOLCONST;             }
+  ExpressionReturnType getReturnType()                const { return EXPR_RETURN_BOOL;         }
+  Real                 evaluateReal()                 const { UNSUPPORTEDOP();                 }
+  bool                 evaluateBool()                 const { return m_value;                  }
+  int                  compare(ExpressionNode *n);
+  bool                 isConstant()                   const { return true;                     }
+  bool                 traverseExpression(ExpressionNodeHandler &handler, int level);
+  void                 dumpNode(String &s, int level) const;
+  String               toString()                     const { return boolToStr(m_value);       }
 };
 
 class ExpressionNodeVariable : public ExpressionNode {
@@ -401,27 +378,16 @@ public:
     m_var->setValueIndex(index);
   }
 
-  int compare(ExpressionNode *n);
-
-  ExpressionNode *clone(ParserTree *tree) const;
-
-  bool isConstant() const {
-    return m_var->isConstant();
-  }
-  Real evaluateReal() const {
-    return getValueRef();
-  }
-
-  ExpressionNodeType getNodeType() const {
-    return NT_VARIABLE;
-  }
-
-  bool traverseExpression(ExpressionNodeHandler &handler, int level);
-  void dumpNode(String &s, int level) const;
-
-  String toString() const {
-    return getName();
-  }
+  ExpressionNode      *clone(ParserTree *tree)        const;
+  ExpressionNodeType   getNodeType()                  const { return NT_VARIABLE;              }
+//ExpressionReturnType getReturnType()                const { as ExpressionNode                }
+  Real                 evaluateReal()                 const { return getValueRef();            }
+//bool                 evaluateBool()                 const { as ExpressionNode                }
+  int                  compare(ExpressionNode *n);
+  bool                 isConstant()                   const { return m_var->isConstant();      }
+  bool                 traverseExpression(ExpressionNodeHandler &handler, int level);
+  void                 dumpNode(String &s, int level) const;
+  String               toString()                     const { return getName();                }
 };
 
 class ExpressionNodeTree : public ExpressionNode {
@@ -450,20 +416,16 @@ public:
     return m_childArray;
   }
 
-  int compare(ExpressionNode *n);
-
-  ExpressionNode *clone(ParserTree *tree) const;
-
-  bool isConstant() const;
-
-  ExpressionNodeType getNodeType() const {
-    return NT_TREE;
-  }
-
-  bool traverseExpression(ExpressionNodeHandler &handler, int level);
-  void dumpNode(String &s, int level) const;
-
-  String toString() const;
+  ExpressionNode      *clone(ParserTree *tree)        const;
+  ExpressionNodeType   getNodeType()                  const { return NT_TREE;                  }
+//ExpressionReturnType getReturnType()                const not implemented here
+//Real                 evaluateReal()                 const not implemented here
+//bool                 evaluateBool()                 const not implemented here
+  int                  compare(ExpressionNode *n);
+  bool                 isConstant()                   const;
+  bool                 traverseExpression(ExpressionNodeHandler &handler, int level);
+  void                 dumpNode(String &s, int level) const;
+  String               toString()                     const;
 };
 
 class ExpressionNodeBoolExpr : public ExpressionNodeTree {
@@ -488,19 +450,17 @@ public:
   {
     SETDEBUGSTRING();
   }
-  ExpressionNode *clone(ParserTree *tree) const;
 
-  bool isConstant() const;
-  ExpressionReturnType getReturnType() const {
-    return EXPR_RETURN_BOOL;
-  }
-  Real evaluateReal() const { UNSUPPORTEDOP(); }
-  bool evaluateBool() const;
-
-  ExpressionNodeType getNodeType() const {
-    return NT_BOOLEXPR;
-  }
-  String toString() const;
+  ExpressionNode      *clone(ParserTree *tree)        const;
+  ExpressionNodeType   getNodeType()                  const { return NT_BOOLEXPR;              }
+  ExpressionReturnType getReturnType()                const { return EXPR_RETURN_BOOL;         }
+  Real                 evaluateReal()                 const { UNSUPPORTEDOP();                 }
+  bool                 evaluateBool()                 const;
+//int                  compare(ExpressionNode *n)           { as ExpressionNodeTree;           }
+  bool                 isConstant()                   const;
+//bool                 traverseExpression(ExpressionNodeHandler &handler, int level); as ExpressionNodeTree
+//void                 dumpNode(String &s, int level) const;                          as ExpressionNodeTree
+  String               toString()                     const;
 };
 
 class ExpressionNodePoly : public ExpressionNode {
@@ -548,21 +508,16 @@ public:
     return true;
   }
 
-  int compare(ExpressionNode *n);
-
-  ExpressionNode *clone(ParserTree *tree) const;
-
-  bool isConstant() const;
-  Real evaluateReal() const;
-
-  bool traverseExpression(ExpressionNodeHandler &handler, int level);
-  ExpressionNodeType getNodeType() const {
-    return NT_POLY;
-  }
-
-  void dumpNode(String &s, int level) const;
-
-  String toString() const;
+  ExpressionNode      *clone(ParserTree *tree)        const;
+  ExpressionNodeType   getNodeType()                  const { return NT_POLY;                  }
+//ExpressionReturnType getReturnType()                const { as ExpressionNode                }
+  Real                 evaluateReal()                 const;
+//bool                 evaluateBool()                 const { as ExpressionNode                }
+  int                  compare(ExpressionNode *n);
+  bool                 isConstant()                   const;
+  bool                 traverseExpression(ExpressionNodeHandler &handler, int level);
+  void                 dumpNode(String &s, int level) const;
+  String               toString()                     const;
 };
 
 class ExpressionNodeAssign : public ExpressionNodeTree {
@@ -578,21 +533,21 @@ public:
     SETDEBUGSTRING();
   }
   ExpressionNodeAssign(ParserTree *tree, const ExpressionNodeAssign *src);
-  ExpressionNode *clone(ParserTree *tree) const;
 
-  ExpressionReturnType getReturnType() const {
-    return EXPR_NORETURNTYPE;
-  }
-  Real evaluateReal() const {
-    UNSUPPORTEDOP();
-  }
+
+
   Real &doAssignment() const;
 
-  ExpressionNodeType getNodeType() const {
-    return NT_ASSIGN;
-  }
-
-  String toString() const;
+  ExpressionNode      *clone(ParserTree *tree)        const;
+  ExpressionNodeType   getNodeType()                  const { return NT_ASSIGN;                }
+  ExpressionReturnType getReturnType()                const { return EXPR_NORETURNTYPE;        }
+  Real                 evaluateReal()                 const { UNSUPPORTEDOP();                 }
+//bool                 evaluateBool()                 const { as ExpressionNode                }
+  int                  compare(ExpressionNode *n)           { UNSUPPORTEDOP();                 }
+//bool                 isConstant()                   const { as ExpressionNodeTree;           }
+//bool                 traverseExpression(ExpressionNodeHandler &handler, int level); as ExpressionNodeTree
+//void                 dumpNode(String &s, int level) const;                          as ExpressionNodeTree
+  String               toString()                     const;
 };
 
 class ExpressionNodeStmtList : public ExpressionNodeTree {
@@ -603,20 +558,20 @@ public:
   ExpressionNodeStmtList(ParserTree *tree, const SNodeArray &childArray);
   ExpressionNodeStmtList(ParserTree *tree, const ExpressionNodeStmtList *src);
 
-  ExpressionNode *clone(ParserTree *tree) const;
 
-//  bool isConstant() const;
 
-  ExpressionReturnType getReturnType() const {
-    return m_returnType;
-  }
-  Real evaluateReal() const;
-  bool evaluateBool() const;
 
-  ExpressionNodeType getNodeType() const {
-    return NT_STMTLIST;
-  }
-  String toString() const;
+
+  ExpressionNode      *clone(ParserTree *tree)        const;
+  ExpressionNodeType   getNodeType()                  const { return NT_STMTLIST;              }
+  ExpressionReturnType getReturnType()                const { return m_returnType;             }
+  Real                 evaluateReal()                 const;
+  bool                 evaluateBool()                 const;
+  int                  compare(ExpressionNode *n)           { UNSUPPORTEDOP();                 }
+//bool                 isConstant()                   const { as ExpressionNodeTree;           }
+//bool                 traverseExpression(ExpressionNodeHandler &handler, int level); as ExpressionNodeTree
+//void                 dumpNode(String &s, int level) const;                          as ExpressionNodeTree
+  String               toString()                     const;
 };
 
 class ExpressionNodeAddent : public ExpressionNodeTree {
@@ -630,19 +585,16 @@ public:
     return m_positive;
   }
 
-  int compare(ExpressionNode *n);
-
-  ExpressionNode *clone(ParserTree *tree) const;
-
-  ExpressionNodeType getNodeType() const {
-    return NT_ADDENT;
-  }
-
-  void dumpNode(String &s, int level) const;
-
-  Real evaluateReal() const;
-
-  String toString() const;
+  ExpressionNode      *clone(ParserTree *tree)        const;
+  ExpressionNodeType   getNodeType()                  const { return NT_ADDENT;                }
+//ExpressionReturnType getReturnType()                const { as ExpressionNode                }
+  Real                 evaluateReal()                 const;
+//bool                 evaluateBool()                 const { as ExpressionNode                }
+  int                  compare(ExpressionNode *n);
+//bool                 isConstant()                   const { as ExpressionNodeTree;           }
+//bool                 traverseExpression(ExpressionNodeHandler &handler, int level); as ExpressionNodeTree
+  void                 dumpNode(String &s, int level) const;
+  String               toString()                     const;
 };
 
 class ExpressionNodePower : public ExpressionNodeTree {
@@ -666,7 +618,6 @@ public:
   SNode base() const {
     return child(0);
   }
-
   SNode exponent() const {
     return child(1);
   }
@@ -674,17 +625,16 @@ public:
   SNode             expand()       const;
   bool              isExpandable() const;
 
-  int compare(ExpressionNode *n);
-
-  ExpressionNode *clone(ParserTree *tree) const;
-
-  bool isConstant() const;
-
-  ExpressionNodeType getNodeType() const {
-    return NT_POWER;
-  }
-
-  Real evaluateReal() const;
+  ExpressionNode      *clone(ParserTree *tree)        const;
+  ExpressionNodeType   getNodeType()                  const { return NT_POWER;                 }
+//ExpressionReturnType getReturnType()                const { as ExpressionNode                }
+  Real                 evaluateReal()                 const;
+//bool                 evaluateBool()                 const { as ExpressionNode                }
+  int                  compare(ExpressionNode *n);
+  bool                 isConstant()                   const;
+//bool                 traverseExpression(ExpressionNodeHandler &handler, int level); as ExpressionNodeTree
+//void                 dumpNode(String &s, int level) const;                          as ExpressionNodeTree
+//String               toString()                     const { as ExpressionNodeTree;            }
 };
 
 // ----------------------------------- Used by parser to save sourceposition in text -------------------------------------
@@ -811,14 +761,16 @@ public:
     return (AddentArray&)getChildArray();
   }
 
-  ExpressionNode *clone(ParserTree *tree) const;
-
-  Real evaluateReal() const;
-
-  ExpressionNodeType getNodeType() const {
-    return NT_SUM;
-  }
-  String toString() const;
+  ExpressionNode      *clone(ParserTree *tree)        const;
+  ExpressionNodeType   getNodeType()                  const { return NT_SUM;                   }
+//ExpressionReturnType getReturnType()                const { as ExpressionNode                }
+  Real                 evaluateReal()                 const;
+//bool                 evaluateBool()                 const { as ExpressionNode                }
+//int                  compare(ExpressionNode *n)           { as ExpressionNodeTree;           }
+//bool                 isConstant()                   const { as ExpressionNodeTree;           }
+//bool                 traverseExpression(ExpressionNodeHandler &handler, int level); as ExpressionNodeTree
+//void                 dumpNode(String &s, int level) const;                          as ExpressionNodeTree
+  String               toString()                     const;
 };
 
 class ExpressionNodeProduct : public ExpressionNodeTree {
@@ -835,16 +787,16 @@ public:
     return (FactorArray&)getChildArray();
   }
 
-  int compare(ExpressionNode *n);
-
-  ExpressionNode *clone(ParserTree *tree) const;
-
-  Real evaluateReal() const;
-
-  ExpressionNodeType getNodeType() const {
-    return NT_PRODUCT;
-  }
-  String toString() const;
+  ExpressionNode      *clone(ParserTree *tree)        const;
+  ExpressionNodeType   getNodeType()                  const { return NT_PRODUCT;               }
+//ExpressionReturnType getReturnType()                const { as ExpressionNode                }
+  Real                 evaluateReal()                 const;
+//bool                 evaluateBool()                 const { as ExpressionNode                }
+  int                  compare(ExpressionNode *n);
+//bool                 isConstant()                   const { as ExpressionNodeTree;           }
+//bool                 traverseExpression(ExpressionNodeHandler &handler, int level); as ExpressionNodeTree
+//void                 dumpNode(String &s, int level) const;                          as ExpressionNodeTree
+  String               toString()                     const;
 };
 
 class ExpressionNodeSymbolSelector : public ExpressionNodeSelector {

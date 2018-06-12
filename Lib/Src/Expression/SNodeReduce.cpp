@@ -17,7 +17,7 @@ SNode SNode::reduce() {
   const size_t      stmtCount  = childCount - 1;
   StmtList          newStmtList(getTree(), childCount);
 
-  for(int i = 0; i < stmtCount; i++) {
+  for(size_t i = 0; i < stmtCount; i++) {
     newStmtList.add(childArray[i].reduceAssign());
   }
   SNode last = childArray.last();
