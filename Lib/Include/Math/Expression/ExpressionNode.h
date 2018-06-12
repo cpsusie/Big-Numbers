@@ -169,7 +169,7 @@ public:
   virtual Real                       evaluateReal()                 const;
   virtual bool                       evaluateBool()                 const   { UNSUPPORTEDOP(); }
 
-  virtual int                        compare(ExpressionNode *n);
+  virtual int                        compare(const ExpressionNode *n) const;
 
   virtual bool                       isConstant()                   const = 0;
   virtual bool                       traverseExpression(ExpressionNodeHandler &handler, int level) = 0;
@@ -311,7 +311,7 @@ public:
 //ExpressionReturnType getReturnType()                const { as ExpressionNode                }
   Real                 evaluateReal()                 const { return m_number.getRealValue();  }
 //bool                 evaluateBool()                 const { as ExpresionNode                 }
-  int                  compare(ExpressionNode *n);
+  int                  compare(const ExpressionNode *n) const;
   bool                 isConstant()                   const { return true;                     }
   bool                 traverseExpression(ExpressionNodeHandler &handler, int level);
   void                 dumpNode(String &s, int level) const;
@@ -333,7 +333,7 @@ public:
   ExpressionReturnType getReturnType()                const { return EXPR_RETURN_BOOL;         }
   Real                 evaluateReal()                 const { UNSUPPORTEDOP();                 }
   bool                 evaluateBool()                 const { return m_value;                  }
-  int                  compare(ExpressionNode *n);
+  int                  compare(const ExpressionNode *n) const;
   bool                 isConstant()                   const { return true;                     }
   bool                 traverseExpression(ExpressionNodeHandler &handler, int level);
   void                 dumpNode(String &s, int level) const;
@@ -383,7 +383,7 @@ public:
 //ExpressionReturnType getReturnType()                const { as ExpressionNode                }
   Real                 evaluateReal()                 const { return getValueRef();            }
 //bool                 evaluateBool()                 const { as ExpressionNode                }
-  int                  compare(ExpressionNode *n);
+  int                  compare(const ExpressionNode *n) const;
   bool                 isConstant()                   const { return m_var->isConstant();      }
   bool                 traverseExpression(ExpressionNodeHandler &handler, int level);
   void                 dumpNode(String &s, int level) const;
@@ -421,7 +421,7 @@ public:
 //ExpressionReturnType getReturnType()                const not implemented here
 //Real                 evaluateReal()                 const not implemented here
 //bool                 evaluateBool()                 const not implemented here
-  int                  compare(ExpressionNode *n);
+  int                  compare(const ExpressionNode *n) const;
   bool                 isConstant()                   const;
   bool                 traverseExpression(ExpressionNodeHandler &handler, int level);
   void                 dumpNode(String &s, int level) const;
@@ -456,7 +456,7 @@ public:
   ExpressionReturnType getReturnType()                const { return EXPR_RETURN_BOOL;         }
   Real                 evaluateReal()                 const { UNSUPPORTEDOP();                 }
   bool                 evaluateBool()                 const;
-//int                  compare(ExpressionNode *n)           { as ExpressionNodeTree;           }
+//int                  compare(const ExpressionNode *n) const { as ExpressionNodeTree;           }
   bool                 isConstant()                   const;
 //bool                 traverseExpression(ExpressionNodeHandler &handler, int level); as ExpressionNodeTree
 //void                 dumpNode(String &s, int level) const;                          as ExpressionNodeTree
@@ -513,7 +513,7 @@ public:
 //ExpressionReturnType getReturnType()                const { as ExpressionNode                }
   Real                 evaluateReal()                 const;
 //bool                 evaluateBool()                 const { as ExpressionNode                }
-  int                  compare(ExpressionNode *n);
+  int                  compare(const ExpressionNode *n) const;
   bool                 isConstant()                   const;
   bool                 traverseExpression(ExpressionNodeHandler &handler, int level);
   void                 dumpNode(String &s, int level) const;
@@ -543,7 +543,7 @@ public:
   ExpressionReturnType getReturnType()                const { return EXPR_NORETURNTYPE;        }
   Real                 evaluateReal()                 const { UNSUPPORTEDOP();                 }
 //bool                 evaluateBool()                 const { as ExpressionNode                }
-  int                  compare(ExpressionNode *n)           { UNSUPPORTEDOP();                 }
+  int                  compare(const ExpressionNode *n) const { UNSUPPORTEDOP();                 }
 //bool                 isConstant()                   const { as ExpressionNodeTree;           }
 //bool                 traverseExpression(ExpressionNodeHandler &handler, int level); as ExpressionNodeTree
 //void                 dumpNode(String &s, int level) const;                          as ExpressionNodeTree
@@ -567,7 +567,7 @@ public:
   ExpressionReturnType getReturnType()                const { return m_returnType;             }
   Real                 evaluateReal()                 const;
   bool                 evaluateBool()                 const;
-  int                  compare(ExpressionNode *n)           { UNSUPPORTEDOP();                 }
+  int                  compare(const ExpressionNode *n) const { UNSUPPORTEDOP();                 }
 //bool                 isConstant()                   const { as ExpressionNodeTree;           }
 //bool                 traverseExpression(ExpressionNodeHandler &handler, int level); as ExpressionNodeTree
 //void                 dumpNode(String &s, int level) const;                          as ExpressionNodeTree
@@ -590,7 +590,7 @@ public:
 //ExpressionReturnType getReturnType()                const { as ExpressionNode                }
   Real                 evaluateReal()                 const;
 //bool                 evaluateBool()                 const { as ExpressionNode                }
-  int                  compare(ExpressionNode *n);
+  int                  compare(const ExpressionNode *n) const;
 //bool                 isConstant()                   const { as ExpressionNodeTree;           }
 //bool                 traverseExpression(ExpressionNodeHandler &handler, int level); as ExpressionNodeTree
   void                 dumpNode(String &s, int level) const;
@@ -630,7 +630,7 @@ public:
 //ExpressionReturnType getReturnType()                const { as ExpressionNode                }
   Real                 evaluateReal()                 const;
 //bool                 evaluateBool()                 const { as ExpressionNode                }
-  int                  compare(ExpressionNode *n);
+  int                  compare(const ExpressionNode *n) const;
   bool                 isConstant()                   const;
 //bool                 traverseExpression(ExpressionNodeHandler &handler, int level); as ExpressionNodeTree
 //void                 dumpNode(String &s, int level) const;                          as ExpressionNodeTree
@@ -766,7 +766,7 @@ public:
 //ExpressionReturnType getReturnType()                const { as ExpressionNode                }
   Real                 evaluateReal()                 const;
 //bool                 evaluateBool()                 const { as ExpressionNode                }
-//int                  compare(ExpressionNode *n)           { as ExpressionNodeTree;           }
+//int                  compare(const ExpressionNode *n) const { as ExpressionNodeTree;           }
 //bool                 isConstant()                   const { as ExpressionNodeTree;           }
 //bool                 traverseExpression(ExpressionNodeHandler &handler, int level); as ExpressionNodeTree
 //void                 dumpNode(String &s, int level) const;                          as ExpressionNodeTree
@@ -792,7 +792,7 @@ public:
 //ExpressionReturnType getReturnType()                const { as ExpressionNode                }
   Real                 evaluateReal()                 const;
 //bool                 evaluateBool()                 const { as ExpressionNode                }
-  int                  compare(ExpressionNode *n);
+  int                  compare(const ExpressionNode *n) const;
 //bool                 isConstant()                   const { as ExpressionNodeTree;           }
 //bool                 traverseExpression(ExpressionNodeHandler &handler, int level); as ExpressionNodeTree
 //void                 dumpNode(String &s, int level) const;                          as ExpressionNodeTree

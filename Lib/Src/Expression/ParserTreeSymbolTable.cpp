@@ -181,7 +181,7 @@ void ParserTreeSymbolTable::checkDependentOnLoopVariablesOnly(ExpressionNode *n)
 }
 
 void ParserTreeSymbolTable::buildTableAssign(ExpressionNode *n, bool loopAssignment) {
-  assert(n->getSymbol() == ASSIGN);
+  CHECKSYMBOL(n, ASSIGN);
   if(n->right()->dependsOn(n->left()->getName())) {
     m_tree->addError(n->left(), _T("Variable %s cannot depend on itself"), n->left()->getName().cstr());
   }
@@ -199,7 +199,7 @@ void ParserTreeSymbolTable::buildTableAssign(ExpressionNode *n, bool loopAssignm
 ExpressionVariable *ParserTreeSymbolTable::allocateSymbol(ExpressionNode *n, bool isConstant, bool isLeftSide, bool isLoopVar) {
   ExpressionVariable *v = getVariable(n->getName());
   if(v == NULL) {
-    v = allocateSymbol(n->getName(), 0, isConstant, isLeftSide, isLoopVar);
+    v = allocateName(n->getName(), 0, isConstant, isLeftSide, isLoopVar);
   } else {
     if(isLoopVar) {
       m_tree->addError(n, _T("Control variable %s has already been used"), n->getName().cstr());
@@ -218,7 +218,10 @@ ExpressionVariable *ParserTreeSymbolTable::allocateSymbol(ExpressionNode *n, boo
   return v;
 }
 
-ExpressionVariable *ParserTreeSymbolTable::allocateSymbol(const String &name, const Real &value, bool isConstant, bool isLeftSide, bool isLoopVar) {
+ExpressionVariable *ParserTreeSymbolTable::allocateName(const String &name, const Real &value, bool isConstant, bool isLeftSide, bool isLoopVar) {
+  if(m_nameTable.get(name) != NULL) {
+    throwInvalidArgumentException(__TFUNCTION__,_T("Name <%s> already exist"), name.cstr());
+  }
   const int varIndex   = (int)m_variableTable.size();
   m_variableTable.add(ExpressionVariable(name, isConstant, isLeftSide, isLoopVar));
   m_nameTable.put(name, varIndex);
@@ -234,7 +237,7 @@ ExpressionVariable *ParserTreeSymbolTable::allocateConstant(ExpressionNode *n, c
     m_tree->addError(n, _T("Constant %s has already been declared"), name.cstr());
     return NULL;
   }
-  return allocateSymbol(name, value, true, true, false);
+  return allocateName(name, value, true, true, false);
 }
 
 // assume n->getSymbol() == NUMBER

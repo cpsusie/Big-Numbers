@@ -3,7 +3,7 @@
 
 namespace Expr {
 
-int ExpressionNodeBoolConst::compare(ExpressionNode *n) {
+int ExpressionNodeBoolConst::compare(const ExpressionNode *n) const {
   if(n->getNodeType() != getNodeType()) {
     return __super::compare(n);
   }

@@ -5,7 +5,7 @@
 
 namespace Expr {
 
-class NameTable : public StringIHashMap<int> {
+class NameTable : public StringIHashMap<int> { // variables-names are case-insensitive
 public:
   String toString() const;
 };
@@ -26,9 +26,9 @@ private:
   void                  buildTable(           ExpressionNode *n);
   void                  buildTableIndexedExpr(ExpressionNode *n);
   void                  buildTableAssign(     ExpressionNode *n, bool loopAssignment);
-  ExpressionVariable   *allocateSymbol(       const String &name, const Real &value, bool isConstant, bool isLeftSide, bool isLoopVar);
   ExpressionVariable   *allocateSymbol(       ExpressionNode *n                    , bool isConstant, bool isLeftSide, bool isLoopVar);
   ExpressionVariable   *allocateConstant(     ExpressionNode *n, const String &name, const Real &value);
+  ExpressionVariable   *allocateName(         const String &name, const Real &value, bool isConstant, bool isLeftSide, bool isLoopVar);
   void                  allocateNumber(       ExpressionNode *n, bool reuseIfExist);
   // Insert value into m_valueTable, return index of position
   int                   insertValue(Real value);

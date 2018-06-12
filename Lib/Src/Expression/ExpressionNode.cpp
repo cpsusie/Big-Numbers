@@ -364,7 +364,7 @@ SymbolOrderMap::SymbolOrderMap() {
   }
 }
 
-int ExpressionNode::compare(ExpressionNode *n) {
+int ExpressionNode::compare(const ExpressionNode *n) const {
   static const SymbolOrderMap orderMap;
   const ExpressionInputSymbol s1 = getSymbol();
   const ExpressionInputSymbol s2 = n->getSymbol();

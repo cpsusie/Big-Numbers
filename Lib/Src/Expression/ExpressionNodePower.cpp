@@ -40,7 +40,7 @@ bool ExpressionNodePower::isExpandable() const {
   }
 }
 
-int ExpressionNodePower::compare(ExpressionNode *n) {
+int ExpressionNodePower::compare(const ExpressionNode *n) const {
   if(n->getNodeType() != getNodeType()) {
     return ExpressionNode::compare(n);
   }

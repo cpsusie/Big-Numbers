@@ -9,11 +9,11 @@ ExpressionNodeVariable::ExpressionNodeVariable(ParserTree *tree, const String &n
   SETDEBUGSTRING();
 }
 
-int ExpressionNodeVariable::compare(ExpressionNode *n) {
+int ExpressionNodeVariable::compare(const ExpressionNode *n) const {
   if(n->getNodeType() != getNodeType()) {
     return __super::compare(n);
   }
-  return stringHashCmp(getName(), n->getName());
+  return stringiHashCmp(getName(), n->getName());
 }
 
 ExpressionNode *ExpressionNodeVariable::clone(ParserTree *tree) const {

@@ -63,7 +63,7 @@ int ExpressionNodeTree::initChildArray(va_list argptr) {
   return count;
 }
 
-int ExpressionNodeTree::compare(ExpressionNode *n) {
+int ExpressionNodeTree::compare(const ExpressionNode *n) const {
   if(n->getSymbol() != getSymbol()) {
     return __super::compare(n);
   }

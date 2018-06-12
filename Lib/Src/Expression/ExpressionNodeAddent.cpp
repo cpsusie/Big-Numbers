@@ -22,7 +22,7 @@ ExpressionNode *ExpressionNodeAddent::clone(ParserTree *tree) const {
   return n;
 }
 
-int ExpressionNodeAddent::compare(ExpressionNode *n) {
+int ExpressionNodeAddent::compare(const ExpressionNode *n) const {
   const bool b1 = isConstant();
   const bool b2 = n->isConstant();
   int c = ordinal(b1) - ordinal(b2);
