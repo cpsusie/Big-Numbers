@@ -7,35 +7,32 @@ namespace Expr {
 
 class Expression : public ParserTree {
 private:
+  typedef Real (Expression::*PevalReal)() const;
+  typedef bool (Expression::*PevalBool)() const;
+
   bool                       m_machineCode;
   const MachineCode         *m_code;
+  PevalReal                  m_realfp;
+  PevalBool                  m_boolfp;
   FILE                      *m_listFile;
   ExpressionReturnType       m_returnType;
 
   void   init(ExpressionReturnType returnType = EXPR_NORETURNTYPE);
   void   parse(const String &expr);
-
-#ifdef _DEBUG
-  inline void checkReturnType(const TCHAR *method, ExpressionReturnType expectedReturnType) const {
-    if(m_returnType != expectedReturnType) {
-      throwException(_T("%s:Returntype=%d. exptected=%d\n"), method, m_returnType, expectedReturnType);
-    }
-  }
-#define CHECKRETURNTYPE(expectedType) checkReturnType(__TFUNCTION__, expectedType)
-#else
-#define CHECKRETURNTYPE(expectedType)
-#endif // _DEBUG
-
   void   print(const ExpressionNode *n, FILE *f = stdout) const;
 
   void   genMachineCode();
   void   clearMachineCode();
-  inline Real fastEvaluateReal() {
-    return m_code->evaluateReal();
+  Real evalRealError() const;
+  bool evalBoolError() const;
+  inline Real evalRealFast()  const { return m_code->evaluateReal();    }
+  inline bool evalBoolFast()  const { return m_code->evaluateBool();    }
+  inline Real evalRealTree()  const { return getRoot()->evaluateReal(); }
+  inline bool evalBoolTree()  const { return getRoot()->evaluateBool(); }
+  inline void setEvalPointers(PevalReal rf, PevalBool bf) {
+    m_realfp = rf; m_boolfp = bf;
   }
-  inline bool fastEvaluateBool() {
-    return m_code->evaluateBool();
-  }
+  void updateEvalPointers();
 
   // Properties
   void setReturnType(ExpressionReturnType returnType );
@@ -57,17 +54,14 @@ public:
   inline bool isMachineCode() const {
     return m_machineCode;
   }
-  inline Real evaluate() {
-    CHECKRETURNTYPE(EXPR_RETURN_REAL);
-    return isMachineCode() ? fastEvaluateReal() : getRoot()->evaluateReal();
-  }
-  inline bool evaluateBool() {
-    CHECKRETURNTYPE(EXPR_RETURN_BOOL);
-    return isMachineCode() ? fastEvaluateBool() : getRoot()->evaluateBool();
-  }
 
+  inline Real evaluate() const {
+    return (this->*m_realfp)();
+  }
+  inline bool evaluateBool() const {
+    return (this->*m_boolfp)();
+  }
   void clear();
-
   void setTrigonometricMode(TrigonometricMode mode);
   void setTreeForm(ParserTreeForm form);
 

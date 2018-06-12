@@ -34,6 +34,7 @@ void Expression::init(ExpressionReturnType returnType) {
   m_machineCode       = false;
   m_code              = NULL;
   m_listFile          = NULL;
+  updateEvalPointers();
 }
 
 void Expression::clear() {
@@ -90,6 +91,7 @@ void Expression::parse(const String &expr) {
 
 void Expression::setReturnType(ExpressionReturnType returnType) {
   setProperty(EP_RETURNTYPE, m_returnType, returnType);
+  updateEvalPointers();
 }
 
 void Expression::setMachineCode(bool machinecode) {
@@ -101,6 +103,7 @@ void Expression::setMachineCode(bool machinecode) {
     }
     setProperty(EP_MACHINECODE, m_machineCode, machinecode);
   }
+  updateEvalPointers();
 }
 
 void Expression::genMachineCode() {
@@ -110,6 +113,36 @@ void Expression::genMachineCode() {
 
 void Expression::clearMachineCode() {
   SAFEDELETE(m_code);
+}
+
+void Expression::updateEvalPointers() {
+  switch(getReturnType()) {
+  case EXPR_NORETURNTYPE:
+    setEvalPointers(&Expression::evalRealError, &Expression::evalBoolError   );
+    break;
+  case EXPR_RETURN_REAL :
+    setEvalPointers(isMachineCode()?&Expression::evalRealFast
+                                   :isEmpty()?&Expression::evalRealError:&Expression::evalRealTree
+                                   ,&Expression::evalBoolError   );
+    break;
+  case EXPR_RETURN_BOOL :
+    setEvalPointers(&Expression::evalRealError
+                   ,isMachineCode()?&Expression::evalBoolFast
+                                   :isEmpty()?&Expression::evalBoolError:&Expression::evalBoolTree);
+    break;
+  }
+}
+
+Real Expression::evalRealError() const {
+  throw Exception(format(_T("Cannot evaluate real. Returntype is %s")
+                        ,ExpressionNode::getReturnTypeName(m_returnType).cstr())
+                 );
+}
+
+bool Expression::evalBoolError() const {
+  throw Exception(format(_T("Cannot evaluate bool. Returntype is %s")
+                        ,ExpressionNode::getReturnTypeName(m_returnType).cstr())
+                 );
 }
 
 void Expression::setTrigonometricMode(TrigonometricMode mode) {
