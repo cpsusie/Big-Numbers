@@ -118,12 +118,12 @@ void Expression::clearMachineCode() {
 void Expression::updateEvalPointers() {
   switch(getReturnType()) {
   case EXPR_NORETURNTYPE:
-    setEvalPointers(&Expression::evalRealError, &Expression::evalBoolError   );
+    setEvalPointers(&Expression::evalRealError, &Expression::evalBoolError);
     break;
   case EXPR_RETURN_REAL :
     setEvalPointers(isMachineCode()?&Expression::evalRealFast
                                    :isEmpty()?&Expression::evalRealError:&Expression::evalRealTree
-                                   ,&Expression::evalBoolError   );
+                                   ,&Expression::evalBoolError);
     break;
   case EXPR_RETURN_BOOL :
     setEvalPointers(&Expression::evalRealError
@@ -134,15 +134,15 @@ void Expression::updateEvalPointers() {
 }
 
 Real Expression::evalRealError() const {
-  throw Exception(format(_T("Cannot evaluate real. Returntype is %s")
-                        ,ExpressionNode::getReturnTypeName(m_returnType).cstr())
-                 );
+  throwException(_T("Cannot evaluate real. Returntype is %s")
+                ,ExpressionNode::getReturnTypeName(m_returnType).cstr()
+                );
 }
 
 bool Expression::evalBoolError() const {
-  throw Exception(format(_T("Cannot evaluate bool. Returntype is %s")
-                        ,ExpressionNode::getReturnTypeName(m_returnType).cstr())
-                 );
+  throwException(_T("Cannot evaluate bool. Returntype is %s")
+                ,ExpressionNode::getReturnTypeName(m_returnType).cstr()
+                );
 }
 
 void Expression::setTrigonometricMode(TrigonometricMode mode) {
