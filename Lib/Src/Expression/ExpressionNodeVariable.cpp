@@ -9,6 +9,17 @@ ExpressionNodeVariable::ExpressionNodeVariable(ParserTree *tree, const String &n
   SETDEBUGSTRING();
 }
 
+void ExpressionNodeVariable::setName(const String &name) {
+  m_name = name;
+  const ExpressionVariable *v = getTree().getVariable(getName());
+  if(v) {
+    setVariable((ExpressionVariable*)v);
+  } else {
+    getTree().m_symbolTable.allocateSymbol(this, false, false, false);
+  }
+  SETDEBUGSTRING();
+}
+
 int ExpressionNodeVariable::compare(const ExpressionNode *n) const {
   if(n->getNodeType() != getNodeType()) {
     return __super::compare(n);

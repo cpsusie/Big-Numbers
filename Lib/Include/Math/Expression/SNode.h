@@ -229,7 +229,9 @@ public:
 
   String                toString()                             const;
 
+  bool                  isName()                               const;
   bool                  isNumber()                             const;
+  bool                  isBoolean()                            const;
   bool                  isRational()                           const;
   bool                  isInteger()                            const;
   bool                  isNameOrNumber()                       const;

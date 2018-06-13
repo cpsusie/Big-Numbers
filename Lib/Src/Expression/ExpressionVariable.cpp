@@ -4,12 +4,12 @@
 namespace Expr {
 
 ExpressionVariable::ExpressionVariable(const String &name, bool isConstant, bool isDefined, bool isLoopVar)
-: m_name(name)
+: m_name(    name      )
+, m_constant(isConstant)
+, m_loopVar  (isLoopVar)
 {
   m_valueIndex      = -1;
-  m_constant        = isConstant;
   m_defined         = isDefined;
-  m_loopVar         = isLoopVar;
 }
 
 String ExpressionVariable::toString(bool fillers) const {

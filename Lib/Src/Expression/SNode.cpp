@@ -192,8 +192,16 @@ String SNode::toString() const {
   return isEmpty() ? _T("") : m_node->toString();
 }
 
+bool SNode::isName() const {
+  return m_node->isName();
+}
+
 bool SNode::isNumber() const {
   return m_node->isNumber();
+}
+
+bool SNode::isBoolean() const {
+  return m_node->isBoolean();
 }
 
 bool SNode::isRational() const {

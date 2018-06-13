@@ -13,24 +13,24 @@ private:
   const String m_name;
   // Index into parserTree.m_valueTable
   int          m_valueIndex;
-  UINT         m_constant : 1;
   UINT         m_defined  : 1;
-  UINT         m_loopVar  : 1;
   UINT         m_marked   : 1;
+  const UINT   m_constant : 1;
+  const UINT   m_loopVar  : 1;
 
 public:
   ExpressionVariable(const String &name, bool isConstant, bool isDefined, bool isLoopVar);
   inline const String &getName()       const    { return m_name;                    }
   inline       int     getValueIndex() const    { return m_valueIndex;              }
   inline void          setValueIndex(int index) { m_valueIndex = index;             }
-  inline void          setDefined()             { m_defined = 1;                    }
-  inline bool          isConstant()    const    { return m_constant ? true : false; }
-  inline bool          isDefined()     const    { return m_defined  ? true : false; }
-  inline bool          isLoopVar()     const    { return m_loopVar  ? true : false; }
+  inline void          setDefined()             { m_defined    = 1;                 }
+  inline void          unMark()                 { m_marked     = 0;                 }
+  inline void          mark()                   { m_marked     = 1;                 }
+  inline bool          isDefined()     const    { return m_defined  != 0;           }
+  inline bool          isMarked()      const    { return m_marked   != 0;           }
+  inline bool          isConstant()    const    { return m_constant != 0;           }
+  inline bool          isLoopVar()     const    { return m_loopVar  != 0;           }
   inline bool          isInput()       const    { return (m_constant | m_defined | m_loopVar) == 0; }
-  inline bool          isMarked()      const    { return m_marked   ? true : false; }
-  inline void          unMark()                 { m_marked = 0; }
-  inline void          mark()                   { m_marked = 1; }
   String toString(bool fillers=true) const;
 };
 
@@ -152,8 +152,8 @@ public:
   virtual bool                       isPositive()                   const   { UNSUPPORTEDOP(); }
   virtual int                        getDegree()                    const   { UNSUPPORTEDOP(); }
   virtual const String              &getName()                      const   { UNSUPPORTEDOP(); }
+  virtual void                       setName(const String &name)            { UNSUPPORTEDOP(); }
   virtual void                       setVariable(ExpressionVariable *var)   { UNSUPPORTEDOP(); }
-  virtual bool                       hasVariable()                  const   { return false;    }
   virtual ExpressionVariable        &getVariable()                  const   { UNSUPPORTEDOP(); }
   virtual const Number              &getNumber()                    const   { UNSUPPORTEDOP(); }
   virtual bool                       getBool()                      const   { UNSUPPORTEDOP(); }
@@ -357,17 +357,13 @@ public:
   const String &getName() const {
     return m_name;
   }
-
+  void setName(const String &name);
   void setVariable(ExpressionVariable *var) {
     m_var = var;
   }
 
   ExpressionVariable &getVariable() const {
     return *m_var;
-  }
-
-  bool hasVariable() const {
-    return m_var != NULL;
   }
 
   int getValueIndex() const {
