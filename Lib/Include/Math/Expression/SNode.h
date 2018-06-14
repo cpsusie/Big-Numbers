@@ -82,6 +82,7 @@ public:
 #define CHECKNODEPTYPE(      n,expectedType  )
 #define CHECKNODEPTYPESET(   n               )
 #define CHECKNODEPRETURNTYPE(n,expectedType  )
+#define CHECKPSYMBOL(        n,expectedSymbol)
 #define CHECKNODETYPE(       n,expectedType  )
 #define CHECKNODETYPESET(    n               )
 #define CHECKNODERETURNTYPE( n,expectedType  )
