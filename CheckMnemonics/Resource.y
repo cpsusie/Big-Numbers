@@ -119,8 +119,6 @@ private:
 #include "stdafx.h"
 #include "ResourceParser.h"
 
-#pragma warning(disable:4312)
-
 %}
 %%
 

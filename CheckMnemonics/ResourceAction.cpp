@@ -4,365 +4,364 @@
 #include "stdafx.h"
 #include "ResourceParser.h"
 
-#pragma warning(disable:4312)
-
 #line 26 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
 
 
 
-int ResourceParser::reduceAction(unsigned int prod) {
+#pragma warning(disable : 4060)
 
+int ResourceParser::reduceAction(unsigned int prod) {
   switch(prod) {
   case 0: /* start -> resourceFile */
-#line 127 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 125 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_tree.setRoot(getStackTop(0)); }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 2: /* resourceDefinitionList -> resourceDefinitionList resourceDefinition */
-#line 133 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 131 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = (getStackTop(1)&&getStackTop(0))
                                                                                                    ? newNode(getPos(2), COMMA, getStackTop(1), getStackTop(0), NULL)
                                                                                                    : getStackTop(1)? getStackTop(1): getStackTop(0);
                                                                                             }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 4: /* resourceDefinition -> bitmapDefinition */
-#line 140 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 138 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = NULL; }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 5: /* resourceDefinition -> iconDefinition */
-#line 141 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 139 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = NULL; }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 6: /* resourceDefinition -> customTypeDefinition */
-#line 142 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 140 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = NULL; }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 9: /* resourceDefinition -> guideLinesDefinition */
-#line 145 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 143 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = NULL; }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 10: /* resourceDefinition -> toolbarDefnition */
-#line 146 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 144 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = NULL; }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 12: /* resourceDefinition -> dialogInitDefinition */
-#line 148 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 146 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = NULL; }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 14: /* resourceDefinition -> rcdataDefinition */
-#line 150 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 148 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = NULL; }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 16: /* resourceDefinition -> textIncludeDirective */
-#line 152 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 150 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = NULL; }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 18: /* resourceDefinition -> versionDefinition */
-#line 154 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 152 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = NULL; }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 19: /* resourceDefinition -> typelibDefinition */
-#line 155 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 153 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = NULL; }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 20: /* resourceDefinition -> afxDialogLayout */
-#line 156 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 154 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = NULL; }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 24: /* dialogDefinition -> resourceId DIALOG resourceAttributeList rectangleSpec dialogSpecList BEGIN opt_dialogControlSpecList END */
-#line 171 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 169 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = newNode(getPos(1), dialogDefinition, getStackTop(7), getStackTop(1), getStackTop(3), NULL); }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 25: /* extendedDialogDefinition -> resourceId DIALOGEX rectangleSpec extendedDialogSpecList BEGIN opt_dialogControlSpecList END */
-#line 176 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 174 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = newNode(getPos(1), dialogDefinition, getStackTop(6), getStackTop(1), getStackTop(3), NULL);  }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 26: /* dialogSpecList -> dialogSpecList dialogSpec */
-#line 179 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 177 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = (getStackTop(1)&&getStackTop(0))
                                                                                                    ? newNode(getPos(2), COMMA, getStackTop(1), getStackTop(0), NULL)
                                                                                                    : getStackTop(1)? getStackTop(1): getStackTop(0);
                                                                                             }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 28: /* dialogSpec -> STYLE dialogStyleExpr */
-#line 186 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 184 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = NULL; }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 29: /* dialogSpec -> CAPTION string */
-#line 187 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 185 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = NULL; }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 30: /* dialogSpec -> _MENU identifier */
-#line 188 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 186 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = newNode(getPos(1), _MENU, getStackTop(0), NULL);            }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 31: /* dialogSpec -> _FONT fontSpec */
-#line 189 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 187 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = NULL; }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 32: /* extendedDialogSpecList -> extendedDialogSpecList extendedDialogSpec */
-#line 193 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 191 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = (getStackTop(1)&&getStackTop(0))
                                                                                                    ? newNode(getPos(2), COMMA, getStackTop(1), getStackTop(0), NULL)
                                                                                                    : getStackTop(1)? getStackTop(1): getStackTop(0);
                                                                                             }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 34: /* extendedDialogSpec -> STYLE dialogStyleExpr */
-#line 200 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 198 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = NULL; }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 35: /* extendedDialogSpec -> EXSTYLE extendedDialogStyleExpr */
-#line 201 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 199 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = NULL; }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 36: /* extendedDialogSpec -> CAPTION string */
-#line 202 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 200 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = NULL; }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 37: /* extendedDialogSpec -> _MENU identifier */
-#line 203 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 201 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = newNode(getPos(1), _MENU, getStackTop(0), NULL);            }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 38: /* extendedDialogSpec -> _FONT extendedFontSpec */
-#line 204 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 202 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = NULL; }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 49: /* opt_dialogControlSpecList -> epsilon */
-#line 229 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 227 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = newNode(getPos(0), dialogControlSpecList, NULL    ); }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 50: /* opt_dialogControlSpecList -> dialogControlSpecList */
-#line 230 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 228 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = newNode(getPos(1), dialogControlSpecList, getStackTop(0), NULL); }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 52: /* dialogControlSpecList -> dialogControlSpecList dialogControlSpec */
-#line 234 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 232 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = (getStackTop(1)&&getStackTop(0))
                                                                                                  ? newNode(getPos(2), COMMA, getStackTop(1), getStackTop(0), NULL)
                                                                                                  : getStackTop(1)? getStackTop(1): getStackTop(0);
                                                                                             }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 55: /* dialogControlSpec -> editSpec */
-#line 243 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 241 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = NULL; }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 56: /* dialogControlSpec -> comboBoxSpec */
-#line 244 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 242 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = NULL; }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 57: /* dialogControlSpec -> listBoxSpec */
-#line 245 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 243 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = NULL; }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 58: /* dialogControlSpec -> iconSpec */
-#line 246 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 244 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = NULL; }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 59: /* dialogControlSpec -> scrollBarSpec */
-#line 247 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 245 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = NULL; }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 61: /* pushButtonSpec -> buttonType string COMMA identifier controlAttributeList */
-#line 251 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 249 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = newNode(getPos(1), getStackTop(4)->getSymbol(), getStackTop(1), getStackTop(3), NULL); }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 62: /* buttonType -> PUSHBUTTON */
-#line 254 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 252 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = newNode(getPos(1), PUSHBUTTON   , NULL); }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 63: /* buttonType -> DEFPUSHBUTTON */
-#line 255 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 253 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = newNode(getPos(1), DEFPUSHBUTTON, NULL); }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 64: /* buttonType -> GROUPBOX */
-#line 256 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 254 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = newNode(getPos(1), GROUPBOX     , NULL); }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 65: /* lrcTextSpec -> lrcText string COMMA identifier controlAttributeList */
-#line 259 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 257 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = newNode(getPos(1), LTEXT, getStackTop(1), getStackTop(3), NULL); }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 74: /* controlSpec -> CONTROL controlId COMMA identifier COMMA string controlAttributeList */
-#line 282 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 280 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = newNode(getPos(1), CONTROL, getStackTop(3), getStackTop(5), getStackTop(1), NULL); }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 360: /* menuDefinition -> resourceId menuType resourceAttributeList menuBody */
-#line 641 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 639 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = newNode(getPos(1), menuDefinition, getStackTop(3), getStackTop(0), NULL); }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 363: /* menuBody -> BEGIN menuSpecList END */
-#line 648 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 646 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = getStackTop(1); }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 364: /* menuSpecList -> menuSpecList menuSpec */
-#line 651 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 649 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = (getStackTop(1)&&getStackTop(0))
                                                                                                      ? newNode(getPos(2), COMMA, getStackTop(1), getStackTop(0), NULL)
                                                                                                      : getStackTop(1)? getStackTop(1): getStackTop(0);
                                                                                                 }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 368: /* popupMenu -> POPUP string menuItemModifierList menuBody */
-#line 662 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 660 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = newNode(getPos(1), POPUP, getStackTop(2), getStackTop(0), NULL); }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 369: /* menuItem -> _MENUITEM string COMMA identifierOrNumber menuItemModifierList */
-#line 665 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 663 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = newNode(getPos(1), _MENUITEM, getStackTop(3), getStackTop(1), NULL); }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 370: /* menuItem -> _MENUITEM SEPARATOR */
-#line 666 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 664 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = NULL; }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 408: /* acceleratorsDefinition -> resourceId ACCELERATORS resourceAttributeList BEGIN acceleratorList END */
-#line 720 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 718 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = newNode(getPos(1), acceleratorsDefinition, getStackTop(5), getStackTop(1), NULL ); }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 409: /* acceleratorList -> acceleratorList accelerator */
-#line 723 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 721 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = newNode(getPos(1), COMMA, getStackTop(1), getStackTop(0), NULL); }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 411: /* accelerator -> constant COMMA identifier opt_acceleratorSpecList */
-#line 727 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 725 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = newNode(getPos(1), accelerator, getStackTop(1), getStackTop(3), getStackTop(0), NULL); }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 413: /* opt_acceleratorSpecList -> COMMA acceleratorSpecList */
-#line 731 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 729 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = getStackTop(0); }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 415: /* acceleratorSpecList -> acceleratorSpecList COMMA acceleratorModifier */
-#line 735 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 733 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = newNode(getPos(2), COMMA, getStackTop(2), getStackTop(0), NULL); }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 416: /* acceleratorModifier -> VIRTKEY */
-#line 738 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 736 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = newNode(getPos(1), VIRTKEY , NULL); }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 417: /* acceleratorModifier -> ASCII */
-#line 739 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 737 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = newNode(getPos(1), ASCII   , NULL); }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 418: /* acceleratorModifier -> SHIFT */
-#line 740 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 738 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = newNode(getPos(1), SHIFT   , NULL); }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 419: /* acceleratorModifier -> CONTROL */
-#line 741 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 739 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = newNode(getPos(1), CONTROL , NULL); }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 420: /* acceleratorModifier -> ALT */
-#line 742 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 740 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = newNode(getPos(1), ALT     , NULL); }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 421: /* acceleratorModifier -> NOINVERT */
-#line 743 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 741 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = newNode(getPos(1), NOINVERT, NULL); }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 426: /* stringTableDefinition -> STRINGTABLE resourceAttributeList BEGIN stringSpecList END */
-#line 754 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 752 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = newNode(getPos(1), stringTableDefinition, getStackTop(1), NULL); }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 427: /* stringSpecList -> stringSpecList stringSpec */
-#line 758 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 756 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = newNode(getPos(1), COMMA, getStackTop(1), getStackTop(0), NULL); }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 429: /* stringSpec -> identifier string */
-#line 762 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 760 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = newNode(getPos(1), stringSpec, getStackTop(1), getStackTop(0), NULL); }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 433: /* languageDirective -> LANGUAGE constant COMMA constant */
-#line 772 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 770 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = newNode(getPos(1), languageDirective, getStackTop(2), getStackTop(0), NULL); }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 457: /* name -> identifier */
-#line 822 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 820 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = newNode( getPos(1), STRING, getStackTop(0)->getName().cstr());                                 }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 458: /* name -> name DOT identifier */
-#line 823 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 821 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = newNode( getPos(1), STRING, String(getStackTop(2)->getString() + _T(".") + getStackTop(0)->getName()).cstr()); }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 472: /* number -> NUMBER */
-#line 853 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 851 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = newNode( getPos(1), NUMBER, ttoi(getText()));       }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 473: /* identifier -> IDENTIFIER */
-#line 856 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 854 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = newNode( getPos(1), IDENTIFIER, getText());         }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 474: /* string -> STRING */
-#line 859 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 857 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = newNode( getPos(1), STRING, stripQuotes(getText()).cstr()); }
-#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   }
   return 0;
 }
 
-#line 865 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 863 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
 SyntaxNode *ResourceParser::newNode(const SourcePosition &pos, int symbol, ...) {
   va_list argptr;
   va_start(argptr,symbol);
@@ -393,6 +392,6 @@ String ResourceParser::stripQuotes(const String &s) { // static
     return s;
   }
 }
-#line 38 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 39 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
 
 
