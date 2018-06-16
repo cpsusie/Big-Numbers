@@ -12,7 +12,7 @@ SNode SNode::D(const String &name) const {
 
   case NAME      :
     { const ExpressionVariable &v = getVariable();
-      if(v.getName() == name) {
+      if(v.getName().equalsIgnoreCase(name)) {
         return _1();
       } else if(v.isConstant() || v.isLoopVar() || !v.isDefined()) {
         return _0();
@@ -245,7 +245,7 @@ SNode SNode::DStmtList(const String &name) const {
     case ASSIGN:
       { const SNode var(stmt.left());   // variable assigned to
         const SNode expr(stmt.right()); // expression on the right side of =
-        if(var.getName() == name) {
+        if(var.getName().equalsIgnoreCase(name)) {
           throwException(_T("Cannot find derived of statement \"%s\", because a value is assigned to %s"), stmt.toString().cstr(), name.cstr());
         }
         result.add(stmt.node());

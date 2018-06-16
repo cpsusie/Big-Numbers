@@ -75,23 +75,17 @@ Real &ExpressionNode::getValueRef() const {
   return m_tree.getValueRef(getValueIndex());
 }
 
-class NameChecker : public ExpressionNodeHandler {
+class NameSelector : public ExpressionNodeSelector {
 private:
   const String &m_name;
-  bool          m_nameFound;
 public:
-  NameChecker(const String &name) : m_name(name) {
-    m_nameFound = false;
+  NameSelector(const String &name) : m_name(name) {
   }
-  bool handleNode(ExpressionNode *n, int level) {
-    if(n->isName() && (n->getName() == m_name)) {
-      m_nameFound = true;
-      return false;
-    }
-    return true;
+  bool select(const ExpressionNode * const &n) {
+    return n->isName() && (n->getName().equalsIgnoreCase(m_name));
   }
-  bool isFound() const {
-    return m_nameFound;
+  AbstractSelector *clone() const {
+    return new NameSelector(m_name);
   }
 };
 
@@ -113,9 +107,7 @@ public:
 };
 
 bool ExpressionNode::dependsOn(const String &name) const {
-  NameChecker nameChecker(name);
-  ((ExpressionNode*)this)->traverseExpression(nameChecker,0);
-  return nameChecker.isFound();
+  return getNodeCount(&NameSelector(name)) > 0;
 }
 
 int ExpressionNode::getNodeCount(ExpressionNodeSelector *selector) const {

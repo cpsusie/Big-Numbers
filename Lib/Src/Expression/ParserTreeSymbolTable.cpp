@@ -48,7 +48,6 @@ public:
 
 void ParserTreeSymbolTable::init() {
   m_tree             = NULL;
-  m_indexNameCounter = 0;
 }
 
 void ParserTreeSymbolTable::clear(ParserTree *tree) {
@@ -58,7 +57,6 @@ void ParserTreeSymbolTable::clear(ParserTree *tree) {
   if(tree) {
     tree->traverseTree(ResetValueIndex());
   }
-  m_indexNameCounter = 0;
 }
 
 void ParserTreeSymbolTable::create(ParserTree *tree, const ExpressionVariableArray *oldVariables) {

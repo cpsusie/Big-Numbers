@@ -176,14 +176,16 @@ public:
   SNode(ParserTree &tree, const Number      &v);
   SNode(ParserTree &tree, bool               v);
 
-  SNode _0()     const; // zero
-  SNode _1()     const; // 1
-  SNode _m1()    const; // -1
-  SNode _2()     const; // 2
-  SNode _10()    const; // 10
-  SNode _05()    const; // 1/2
-  SNode _false() const; // false
-  SNode _true()  const; // true
+#define SNV(v) SNode(getTree(),v)
+
+  inline SNode _0()     const { return SNV( 0);            } // zero
+  inline SNode _1()     const { return SNV( 1);            } // 1
+  inline SNode _m1()    const { return SNV(-1);            } // -1
+  inline SNode _2()     const { return SNV( 2);            } // 2
+  inline SNode _10()    const { return SNV(10);            } // 10
+  inline SNode _05()    const { return SNV(Rational(1,2)); } // 1/2
+  inline SNode _false() const { return SNV(false);         } // false
+  inline SNode _true()  const { return SNV(true);          } // true
   inline bool isEmpty() const {
     return m_node == NULL;
   }

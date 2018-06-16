@@ -27,15 +27,6 @@ SNode::SNode(ParserTree &tree, bool v) {
   m_node = v ? tree.getTrue() : tree.getFalse();
 }
 
-SNode SNode::_0()     const { return getTree().numberExpr( 0);            }
-SNode SNode::_1()     const { return getTree().numberExpr( 1);            }
-SNode SNode::_m1()    const { return getTree().numberExpr(-1);            }
-SNode SNode::_2()     const { return getTree().numberExpr( 2);            }
-SNode SNode::_10()    const { return getTree().numberExpr(10);            }
-SNode SNode::_05()    const { return getTree().numberExpr(Rational(1,2)); }
-SNode SNode::_false() const { return getTree().getFalse();                } // false
-SNode SNode::_true()  const { return getTree().getTrue();                 } // true
-
 ExpressionInputSymbol SNode::getSymbol() const {
   return m_node->getSymbol();
 }

@@ -13,7 +13,6 @@ public:
 class ParserTreeSymbolTable {
 private:
   ParserTree                   *m_tree;
-  int                           m_indexNameCounter;
   // map name -> index in m_variableTable
   NameTable                     m_nameTable;
   Array<ExpressionVariable>     m_variableTable;

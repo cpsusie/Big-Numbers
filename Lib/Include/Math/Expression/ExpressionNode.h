@@ -310,7 +310,7 @@ public:
   ExpressionNodeType   getNodeType()                    const { return NT_NUMBER;                }
 //ExpressionReturnType getReturnType()                  const { as ExpressionNode                }
   Real                 evaluateReal()                   const { return m_number.getRealValue();  }
-//bool                 evaluateBool()                   const { as ExpresionNode                 }
+//bool                 evaluateBool()                   const { as ExpressionNode                }
   int                  compare(const ExpressionNode *n) const;
   bool                 isConstant()                     const { return true;                     }
   bool                 traverseExpression(ExpressionNodeHandler &handler, int level);

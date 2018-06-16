@@ -344,7 +344,7 @@ public:
 
   ExpressionNode         *getStmtList(  SNode oldStmtList           , SNodeArray           &newChildArray                   );
   ExpressionNode         *getAssignStmt(SNode oldAssign             , SNodeArray           &newChildArray                   );
-  ExpressionNode         *getTree(      SNode oldTree               , SNodeArray           &newChildArray                   );
+  ExpressionNode         *getTreeNode(  SNode oldTree               , SNodeArray           &newChildArray                   );
   ExpressionNode         *getAnd(       SNode oldAnd                , SNode                 left            , SNode right   );
   ExpressionNode         *getOr(        SNode oldOr                 , SNode                 left            , SNode right   );
   ExpressionNode         *getNot(       SNode oldNot                , SNode                 left                            );

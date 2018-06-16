@@ -312,15 +312,14 @@ StdNode StdNode::toSForm() const {
   }
 }
 
-#define N(n)  StdNode(n)
-#define NV(v) SNode(getTree(),v)
+#define S(n)  StdNode(n)
 
 StdNode StdNode::toSFormTreeNode() const {
   ENTERMETHOD();
   const SNodeArray &a = getChildArray();
   SNodeArray        newChildArray(a.getTree(),a.size());
   for(size_t i = 0; i < a.size(); i++) {
-    newChildArray.add(N(a[i]).toSForm());
+    newChildArray.add(S(a[i]).toSForm());
   }
   RETURNNODE( treeExp(getSymbol(), newChildArray) );
 }
@@ -330,7 +329,7 @@ StdNode StdNode::toSFormBoolExpr() const {
   const SNodeArray &a = getChildArray();
   SNodeArray        newChildArray(a.getTree(),a.size());
   for(size_t i = 0; i < a.size(); i++) {
-    newChildArray.add(N(a[i]).toSForm());
+    newChildArray.add(S(a[i]).toSForm());
   }
   RETURNNODE( boolExp(getSymbol(), newChildArray) );
 }
@@ -342,14 +341,14 @@ StdNode StdNode::toSFormPoly() const {
 
   SNodeArray newCoefArray(coefArray.getTree(),coefArray.size());
   for(size_t i = 0; i < coefArray.size(); i++) {
-    newCoefArray.add(N(coefArray[i]).toSForm());
+    newCoefArray.add(S(coefArray[i]).toSForm());
   }
   RETURNNODE( polyExp(newCoefArray, arg.toSForm()) );
 }
 
 StdNode StdNode::toSFormAssign() const {
   ENTERMETHOD();
-  RETURNNODE( assignStmt(left(), N(right()).toSForm()) );
+  RETURNNODE( assignStmt(left(), S(right()).toSForm()) );
 };
 
 StdNode StdNode::toSFormStmtList() const {
@@ -357,7 +356,7 @@ StdNode StdNode::toSFormStmtList() const {
   const SNodeArray &a = getChildArray();
   SNodeArray newChildArray(a.getTree(),a.size());
   for(size_t i = 0; i < a.size(); i++) {
-    newChildArray.add(N(a[i]).toSForm());
+    newChildArray.add(S(a[i]).toSForm());
   }
   RETURNNODE( stmtList(newChildArray) );
 }
@@ -369,11 +368,11 @@ StdNode StdNode::toSFormSum() const {
     RETURNNODE( _0() );
   } else {
     a.sortStdForm();
-    StdNode result = N(a[0].left()).toSForm(); // not createExpressionNode here. We'll get infinite recursion
+    StdNode result = S(a[0].left()).toSForm(); // not createExpressionNode here. We'll get infinite recursion
     if(!a[0].isPositive()) result = -result;
     for(size_t i = 1; i < a.size(); i++) {
       SNode e  = a[i];
-      SNode ne = N(e.left()).toSForm();
+      SNode ne = S(e.left()).toSForm();
       if(e.isPositive()) result += ne; else result -= ne;
     }
     RETURNNODE( result );
@@ -435,8 +434,8 @@ StdNode StdNode::toSFormFactorArray(FactorArray &a, bool changeExponentSign) con
 
 StdNode StdNode::toSFormPow() const {
   ENTERMETHOD();
-  const SNode base     = N(left()).toSForm();
-  const SNode exponent = N(right()).toSForm();
+  const SNode base     = S(left()).toSForm();
+  const SNode exponent = S(right()).toSForm();
 
   Rational expoR;
   if(exponent.reducesToRationalConstant(&expoR)) {
@@ -456,9 +455,9 @@ StdNode StdNode::toSFormPow() const {
       case -2: RETURNNODE( reciprocal(sqr(base)) );
       default:
         if(num > 0) {
-          RETURNNODE( pow(base, NV(expoR.getNumerator())) );
+          RETURNNODE( pow(base, SNV(expoR.getNumerator())) );
         } else {
-          RETURNNODE( reciprocal(pow(base, NV(-num))) );
+          RETURNNODE( reciprocal(pow(base, SNV(-num))) );
         }
       }
     } else { // r not integer
@@ -472,16 +471,16 @@ StdNode StdNode::toSFormPow() const {
           }
         } else {
           if(num == 1) {
-            RETURNNODE( root(base, NV(den)) );
+            RETURNNODE( root(base, SNV(den)) );
           } else { // num == -1
-            RETURNNODE( reciprocal(root(base, NV(den))) );
+            RETURNNODE( reciprocal(root(base, SNV(den))) );
           }
         }
       } else { // num != 1 and num != -1 and r not integer
         if(num > 0) {
-          RETURNNODE( root(pow(base, NV(num)), NV(den)) );
+          RETURNNODE( root(pow(base, SNV(num)), SNV(den)) );
         } else {
-          RETURNNODE( reciprocal(root(pow(base, NV(-num)), NV(den))) );
+          RETURNNODE( reciprocal(root(pow(base, SNV(-num)), SNV(den))) );
         }
       }
     }

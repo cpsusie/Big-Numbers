@@ -264,7 +264,7 @@ ExpressionNode *ParserTree::getAssignStmt(SNode oldAssign, SNodeArray &newChildA
   return result.node();
 }
 
-ExpressionNode *ParserTree::getTree(SNode oldTree, SNodeArray &newChildArray) {
+ExpressionNode *ParserTree::getTreeNode(SNode oldTree, SNodeArray &newChildArray) {
   const SNodeArray &oldChildArray = oldTree.getChildArray();
   SNode             result = newChildArray.isSameNodes(oldChildArray) ? oldTree : treeExpr(oldTree.getSymbol(), newChildArray);
   return result.node();

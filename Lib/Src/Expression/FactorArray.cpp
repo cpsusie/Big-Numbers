@@ -60,11 +60,11 @@ FactorArray &FactorArray::operator*=(const Rational &r) {
     const INT64 num = r.getNumerator();
     const INT64 den = r.getDenominator();
     if(den == 1) {
-      *this *= SNode(getTree(),num);
+      *this *= SNV(num);
     } else if(num == 1) {
-      *this /= SNode(getTree(),den);
+      *this /= SNV(den);
     } else {
-      *this *= SNode(getTree(),r);
+      *this *= SNV(r);
     }
   }
   return *this;

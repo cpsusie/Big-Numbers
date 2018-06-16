@@ -4,11 +4,6 @@
 
 namespace Expr {
 
-#define N( n) SNode(n)
-#define NV(v) SNode(getTree(),v)
-
-/* ------------------------------------------- multiplyParentheses ----------------------------------------- */
-
 SNode SNode::multiplyParentheses() const {
   ENTERMETHOD();
 

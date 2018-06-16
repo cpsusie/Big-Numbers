@@ -30,21 +30,21 @@ namespace TestExpression {
     OUTPUT(_T("%s"),vformat(format,argptr).cstr());
   }
 
-  FILE *openListFile(int testCase) {
+  String makeFileName(int testCase, const String &dirComponent = EMPTYSTRING) {
     const String fileName = Expression::getDefaultListFileName();
     FileNameSplitter fs(fileName);
+    if(dirComponent.length() > 0) {
+      DirComponents dc = fs.getDirComponents();
+      dc.add(2,dirComponent);
+      fs.setDir(dc);
+    }
     fs.setFileName(format(_T("testCase%03d"), testCase));
-    return MKFOPEN(fs.getFullPath(),_T("w"));
+    return fs.getFullPath();
   }
 
-  FILE *openReducedListFile(int testCase) {
-    const String fileName = Expression::getDefaultListFileName();
-    FileNameSplitter fs(fileName);
-    DirComponents dc = fs.getDirComponents();
-    dc.add(2,_T("reduced"));
-    fs.setDir(dc).setFileName(format(_T("testCase%03d"), testCase));
-    return MKFOPEN(fs.getFullPath(),_T("w"));
-  }
+  FILE *openListFile(       int testCase) { return MKFOPEN(makeFileName(testCase               ), _T("w")); }
+  FILE *openReducedListFile(int testCase) { return MKFOPEN(makeFileName(testCase, _T("reduced")), _T("w")); }
+  FILE *openDumpFile(       int testCase) { return MKFOPEN(makeFileName(testCase, _T("dump"   )), _T("w")); }
 
   typedef enum {
     CMP_EQUAL
@@ -137,11 +137,14 @@ namespace TestExpression {
           debugLog(_T("testcase %3d:<%-50s>\n"),i,expr.cstr());
 #endif
           OUTPUT(_T("Test[%d]:%s"), i, expr.cstr());
-          FILE      *listFile        = openListFile(i);
+          FILE      *listFile        = openListFile(       i);
           FILE      *reducedListFile = openReducedListFile(i);
+          FILE      *dumpFile        = openDumpFile(       i);
           Expression compiledExpr, interpreterExpr, reducedExpr;
           compiledExpr.compile(expr, true,false,listFile       );
           reducedExpr.compile( expr, true,true ,reducedListFile);
+          _ftprintf(dumpFile, _T("%s\n%s\n"), expr.cstr(),compiledExpr.treeToString().cstr());
+          fclose(dumpFile);
           fclose(reducedListFile);
           fclose(listFile       );
 

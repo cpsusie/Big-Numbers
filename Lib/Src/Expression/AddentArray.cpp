@@ -37,9 +37,9 @@ AddentArray &AddentArray::operator-=(const AddentArray &rhs) {
 AddentArray &AddentArray::operator+=(const Rational &rhs) {
   if(rhs == 0) return *this;
   if(rhs > 0) {
-    add(addentExp(SNode(getTree(),  rhs),true ));
+    add(addentExp(SNV(rhs),true ));
   } else { // rhs < 0
-    add(addentExp(SNode(getTree(), -rhs),false));
+    add(addentExp(SNV(-rhs),false));
   }
   return *this;
 }
@@ -47,9 +47,9 @@ AddentArray &AddentArray::operator+=(const Rational &rhs) {
 AddentArray &AddentArray::operator-=(const Rational &rhs) {
   if(rhs == 0) return *this;
   if(rhs > 0) {
-    add(addentExp(SNode(getTree(),  rhs),false));
+    add(addentExp(SNV(rhs),false));
   } else { // rhs < 0
-    add(addentExp(SNode(getTree(), -rhs),true ));
+    add(addentExp(SNV(-rhs),true ));
   }
   return *this;
 }

@@ -14,7 +14,7 @@ public:
 
 bool NameSubstituter::handleNode(ExpressionNode *n, int level) {
   if(n->isMarked()) return true;
-  if(n->isName() && (n->getName() == m_fromName)) {
+  if(n->isName() && (n->getName().equalsIgnoreCase(m_fromName))) {
     n->setName(m_toName);
   }
   return true;

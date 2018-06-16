@@ -302,7 +302,7 @@ SNode ParserTree::traverseSubstituteNodes(SNode n, CompactNodeHashMap<Expression
       for(size_t i = 0; i < a.size(); i++) {
         newChildArray.add(traverseSubstituteNodes(a[i], nodeMap));
       }
-      return getTree(n, newChildArray);
+      return getTreeNode(n, newChildArray);
     }
   case NT_SUM       :
     { const AddentArray &a = n.getAddentArray();

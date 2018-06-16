@@ -33,7 +33,6 @@ public:
 };
 
 #define N(n)  NNode(n)
-#define NV(v) SNode(getTree(),v)
 
 SNode ParserTree::toNumericForm(SNode n) {
   STARTREDUCTION();
@@ -99,7 +98,7 @@ NNode NNode::toNFormAssign() const {
 NNode NNode::toNFormRealExp() const {
   ENTERMETHOD();
   if(isConstant()) {
-    RETURNNODE( NV(evaluateReal()) );
+    RETURNNODE( SNV(evaluateReal()) );
   }
   switch(getSymbol()) {
   case NUMBER    : throwException(_T("%s:Unexpected node-symbol (NUMBER)"), __TFUNCTION__);
@@ -114,7 +113,7 @@ NNode NNode::toNFormRealExp() const {
 NNode NNode::toNFormBoolExp() const {
   ENTERMETHOD();
   if(isConstant()) {
-    RETURNNODE( NV(evaluateBool()) );
+    RETURNNODE( SNV(evaluateBool()) );
   }
   switch(getSymbol()) {
   case NOT  :
@@ -157,7 +156,7 @@ NNode NNode::toNFormSum() const {
       }
     }
     if(newArray.size() == 0) {
-      RETURNNODE( NV(constant) );
+      RETURNNODE( SNV(constant) );
     }
     SNode acc = newArray[0].left();
     if(!newArray[0].isPositive()) acc = -acc;
@@ -166,8 +165,8 @@ NNode NNode::toNFormSum() const {
       if(e.isPositive()) acc += ne; else acc -= ne;
     }
     NNode result = (constant == 0) ? acc
-                 : (constant >  0) ? acc + NV(constant )
-                                   : acc - NV(-constant);
+                 : (constant >  0) ? acc + SNV(constant )
+                                   : acc - SNV(-constant);
     RETURNNODE( result );
   }
 }
@@ -188,7 +187,7 @@ NNode NNode::toNFormProduct() const {
     }
   }
   if(newArray.size() == 0) {
-    RETURNNODE( NV(constant) );
+    RETURNNODE( SNV(constant) );
   }
 
   FactorArray p = newArray.selectConstantPositiveExponentFactors();
@@ -203,9 +202,9 @@ NNode NNode::toNFormProduct() const {
     }
   }
   if(result.isEmpty()) {
-    result = NV(constant);
+    result = SNV(constant);
   } else {
-    if(constant != 1) result *= NV(constant);
+    if(constant != 1) result *= SNV(constant);
   }
   for(size_t i = 0; i < q.size(); i++) {
     result /= reciprocal(q[i]);

@@ -18,7 +18,7 @@ bool equal(const ExpressionNode *n1, const ExpressionNode *n2) {
   case TYPEBOOL:
     return n1->getBool()   == n2->getBool();
   case NAME    :
-    return n1->getName()   == n2->getName();
+    return n1->getName().equalsIgnoreCase(n2->getName());
   case MINUS :
     assert(n1->isUnaryMinus());
     assert(n2->isUnaryMinus());
