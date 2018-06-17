@@ -20,8 +20,6 @@ private:
   HTREEITEM findItemFromNode(const ExpressionNode *n);
   const ExpressionNode *getNodeFromPoint(CPoint p);
   CTreeCtrl *getTreeCtrl();
-  String getExtendedString(const ExpressionNode *n) const;
-  String getSimpleString(  const ExpressionNode *n) const;
   String getString(        const ExpressionNode *n) const;
 
   void setSelectedNode(const ExpressionNode *m_selectedNode); // property

@@ -1,18 +1,25 @@
 #include "stdafx.h"
+#include <MFCUtil/TreeCtrlWalker.h>
 #include "ExpressionTreeDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
 
-CExpressionTreeDlg::CExpressionTreeDlg(const Expression &expr, CWnd *pParent) : m_expr(&expr), CDialog(CExpressionTreeDlg::IDD, pParent), m_extendedInfo(FALSE)
+CExpressionTreeDlg::CExpressionTreeDlg(const Expression &expr, CWnd *pParent)
+: m_expr(&expr)
+, CDialog(CExpressionTreeDlg::IDD, pParent)
+, m_extendedInfo(FALSE)
 {
   m_node         = expr.getRoot();
   m_extendedInfo = TRUE;
   m_selectedNode = NULL;
 }
 
-CExpressionTreeDlg::CExpressionTreeDlg(const ExpressionNode *n, CWnd *pParent) : m_node(n), CDialog(CExpressionTreeDlg::IDD, pParent) {
+CExpressionTreeDlg::CExpressionTreeDlg(const ExpressionNode *n, CWnd *pParent)
+: m_node(n)
+, CDialog(CExpressionTreeDlg::IDD, pParent)
+{
   m_expr = (Expression*)&m_node->getTree();
 }
 
@@ -87,7 +94,20 @@ void CExpressionTreeDlg::setSelectedNode(const ExpressionNode *selectedNode) { /
   }
 }
 
-String CExpressionTreeDlg::getExtendedString(const ExpressionNode *n) const {
+static String getSimpleString(const ExpressionNode *n) {
+  switch(n->getSymbol()) {
+  case NUMBER  :
+  case NAME    :
+  case TYPEBOOL:
+    return n->toString();
+  case ADDENT  :
+    return format(_T("%c%s"), n->isPositive()?'+':'-',n->getSymbolName().cstr());
+  default      :
+    return n->getSymbolName();
+  }
+}
+
+static String getExtendedString(const ExpressionNode *n) {
   switch(n->getSymbol()) {
   case NAME    :
     return format(_T("%s - (%-8s %s)")
@@ -108,19 +128,6 @@ String CExpressionTreeDlg::getExtendedString(const ExpressionNode *n) const {
                  ,getSimpleString(n).cstr()
                  ,n->getNodeTypeName().cstr()
                  ,n->getInfo().toString().cstr());
-  }
-}
-
-String CExpressionTreeDlg::getSimpleString(const ExpressionNode *n) const {
-  switch(n->getSymbol()) {
-  case NUMBER  : 
-  case NAME    : 
-  case TYPEBOOL:
-    return n->toString();
-  case ADDENT  :
-    return format(_T("%c%s"), n->isPositive()?'+':'-',n->getSymbolName().cstr());
-  default      :
-    return n->getSymbolName();
   }
 }
 
@@ -245,8 +252,25 @@ void CExpressionTreeDlg::OnSelchangedTreeExpression(NMHDR *pNMHDR, LRESULT *pRes
   *pResult = 0;
 }
 
+class ItemTextUpdater : public TreeCtrlWalker {
+private:
+  const bool m_extendedText;
+  String getString(const ExpressionNode *n) const {
+    return m_extendedText ? getExtendedString(n) : getSimpleString(n);
+  }
+public:
+  ItemTextUpdater(bool extendedText) : m_extendedText(extendedText) {
+  }
+  bool handleItem(HTREEITEM item);
+};
+
+bool ItemTextUpdater::handleItem(HTREEITEM item) {
+  CTreeCtrl &tree = getTreeCtrl();
+  tree.SetItemText(item, getString((const ExpressionNode*)tree.GetItemData(item)).cstr());
+  return true;
+}
 
 void CExpressionTreeDlg::OnBnClickedCheckExtendedInfo() {
   UpdateData();
-  buildTree();
+  ItemTextUpdater(m_extendedInfo).visitAllItems(getTreeCtrl());
 }

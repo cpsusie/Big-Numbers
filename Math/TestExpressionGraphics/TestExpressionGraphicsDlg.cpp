@@ -905,14 +905,15 @@ void CTestExpressionGraphicsDlg::OnLButtonDown(UINT nFlags, CPoint point) {
 void CTestExpressionGraphicsDlg::OnContextMenu(CWnd *pWnd, CPoint point) {
   CPoint mouseDown = point;
   ScreenToClient(&mouseDown);
-  const int mouseWinId = getWindowIdFromPoint(mouseDown);;
+  const int mouseWinId = getWindowIdFromPoint(mouseDown);
 
   CMenu menu;
   switch(mouseWinId) {
   case IDC_STATICEXPRIMAGE     :
   case IDC_STATICDERIVEDIMAGE  :
-    { const ExpressionRectangle *leastRect = getImageFromWinId(mouseWinId).findLeastRectangle(mouseDown);
-      setContextRect(mouseWinId, leastRect, leastRect);
+    { if(!hasContextImage() || (getContextWindowId() != mouseWinId)) {
+        return;
+      }
       if(!loadMenu(menu, IDR_CONTEXTMENU)) return;
       if(hasDebugThread()) {
         removeMenuItem(menu, ID_CONTEXTMENU_TOSTANDARDFORM);
