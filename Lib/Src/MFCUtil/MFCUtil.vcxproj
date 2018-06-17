@@ -741,6 +741,7 @@
     <ClCompile Include="TableModel.cpp" />
     <ClCompile Include="TextOut.cpp" />
     <ClCompile Include="TextOutTransparentBackground.cpp" />
+    <ClCompile Include="TreeCtrlWalker.cpp" />
     <ClCompile Include="Viewport2D.cpp" />
     <ClCompile Include="WinText.cpp" />
     <ClCompile Include="WinTools.cpp" />
@@ -801,6 +802,7 @@
     <ClInclude Include="..\..\Include\MFCUtil\ShapeFunctions.h" />
     <ClInclude Include="..\..\Include\MFCUtil\SliderCtrlWithTransformation.h" />
     <ClInclude Include="..\..\Include\MFCUtil\StaticBottomAligned.h" />
+    <ClInclude Include="..\..\Include\MFCUtil\TreeCtrlWalker.h" />
     <ClInclude Include="..\..\Include\MFCUtil\Viewport2D.h" />
     <ClInclude Include="..\..\Include\MFCUtil\WinTools.h" />
     <ClInclude Include="..\..\Include\MFCUtil\_Font.h" />
