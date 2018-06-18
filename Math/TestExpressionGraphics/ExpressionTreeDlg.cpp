@@ -186,10 +186,7 @@ void CExpressionTreeDlg::OnSize(UINT nType, int cx, int cy) {
 }
 
 void CExpressionTreeDlg::OnContextMenu(CWnd *pWnd, CPoint point) {
-  CPoint treePoint = point;
-  CTreeCtrl *treeCtrl = getTreeCtrl();
-  treeCtrl->ScreenToClient(&treePoint);
-  setSelectedNode(getNodeFromPoint(treePoint));
+  setSelectedNode(getNodeFromPoint(point));
   if(m_selectedNode == NULL) return;
   CMenu menu;
   if(!menu.LoadMenu(IDR_CONTEXTMENU_TREE)) {
@@ -204,16 +201,15 @@ void CExpressionTreeDlg::OnContextMenu(CWnd *pWnd, CPoint point) {
   menu.GetSubMenu(0)->TrackPopupMenu(TPM_LEFTALIGN|TPM_RIGHTBUTTON, point.x,point.y, this);
 }
 
+
 const ExpressionNode *CExpressionTreeDlg::getNodeFromPoint(CPoint p) {
   CTreeCtrl *treeCtrl = getTreeCtrl();
-  for(HTREEITEM item = treeCtrl->GetFirstVisibleItem(); item; item = treeCtrl->GetNextVisibleItem(item)) {
-    CRect rect;
-    treeCtrl->GetItemRect(item, &rect, true);
-    if(rect.PtInRect(p)) {
-      treeCtrl->SelectItem(item);
-      const ExpressionNode *n = (const ExpressionNode*)treeCtrl->GetItemData(item);
-      return n;
-    }
+  treeCtrl->ScreenToClient(&p);
+  HTREEITEM item = findTreeItemByPoint(treeCtrl,p);
+  if(item) {
+    treeCtrl->SelectItem(item);
+    const ExpressionNode *n = (const ExpressionNode*)treeCtrl->GetItemData(item);
+    return n;
   }
   return NULL;
 }

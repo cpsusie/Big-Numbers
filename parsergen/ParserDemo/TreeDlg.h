@@ -11,7 +11,6 @@ private:
     CImageList          m_images;
 
     CTreeCtrl *getTreeCtrl();
-    HTREEITEM  findTreeItem( CTreeCtrl *ctrl, const CPoint &pt);
     void       traverse(     CTreeCtrl *ctrl, SyntaxNodep tree, HTREEITEM p);
     void       getDerivation(CTreeCtrl *ctrl, HTREEITEM item, String &derivation, int maxlen);
     String     getDerivation(CTreeCtrl *ctrl, HTREEITEM item,int maxlen);

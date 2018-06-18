@@ -86,19 +86,6 @@ CTreeCtrl *TreeDlg::getTreeCtrl() {
   return (CTreeCtrl*)GetDlgItem(IDC_DERIVATIONTREE);
 }
 
-HTREEITEM TreeDlg::findTreeItem(CTreeCtrl *ctrl, const CPoint &pt) {
-  CPoint p = pt;
-  ctrl->ScreenToClient(&p);
-  for(HTREEITEM item = ctrl->GetFirstVisibleItem(); item; item = ctrl->GetNextVisibleItem(item)) {
-    CRect r;
-    ctrl->GetItemRect(item, &r, false);
-    if(r.PtInRect(p)) {
-      return item;
-    }
-  }
-  return NULL;
-}
-
 BOOL TreeDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
     return true;
@@ -107,11 +94,13 @@ BOOL TreeDlg::PreTranslateMessage(MSG *pMsg) {
   switch(pMsg->message) {
   case WM_RBUTTONDOWN:
     { CTreeCtrl *ctrl = getTreeCtrl();
-      HTREEITEM item = findTreeItem(ctrl, pMsg->pt);
+      CPoint     p    = pMsg->pt;
+      ctrl->ScreenToClient(&p);
+      HTREEITEM item = findTreeItemByPoint(ctrl, p);
       if(item != NULL) {
-        String derivation = getDerivation(ctrl, item, 160);
+        const String derivation = getDerivation(ctrl, item, 160);
         showInformation(derivation);
-        break;
+        return TRUE;
       }
     }
     break;

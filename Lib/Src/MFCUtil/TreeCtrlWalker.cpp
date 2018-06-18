@@ -20,3 +20,24 @@ bool TreeCtrlWalker::visitAllItems(CTreeCtrl *treeCtrl, HTREEITEM startItem) {
   m_treeCtrl = treeCtrl;
   return visitItem(startItem);
 }
+
+// pt is assumed to be relative to wnd
+HTREEITEM findTreeItemByPoint(const CWnd *wnd, int id, const CPoint &pt) {
+  CTreeCtrl *treeCtrl = (CTreeCtrl*)(wnd->GetDlgItem(id));
+  if(treeCtrl == NULL) return NULL;
+  CPoint p = pt;
+  wnd->ClientToScreen(&p);
+  treeCtrl->ScreenToClient(&p);
+  return findTreeItemByPoint(treeCtrl,p);
+}
+
+HTREEITEM findTreeItemByPoint(const CTreeCtrl *ctrl, const CPoint &pt) {
+  for(HTREEITEM item = ctrl->GetFirstVisibleItem(); item; item = ctrl->GetNextVisibleItem(item)) {
+    CRect r;
+    ctrl->GetItemRect(item, &r, false);
+    if(r.PtInRect(pt)) {
+      return item;
+    }
+  }
+  return NULL;
+}
