@@ -32,27 +32,25 @@ int ExpressionNodeProduct::compare(const ExpressionNode *n) const {
   }
   const FactorArray &a            = getFactorArray();
   const FactorArray &na           = n->getFactorArray();
-  const size_t       count        = min(a.size(), na.size());
+  const int          count        = (int)a.size();
+  int                c            = count - (int)na.size();
+  if(c) return -c; // put the product with highest number of factors first
   int                constCompare = 0;
-  size_t             i;
-  for(i = 0; i < count; i++) {
+  for(int i = 0; i < count; i++) {
     ExpressionNode *ai = a[i].node(), *nai = na[i].node();
-    const int c = ai->compare(nai);
+    c = ai->compare(nai);
     if(c) {
-      if(nai->isConstant() && ai->isConstant()) {
+      const bool aiConst = ai->isConstant(), naiConst = nai->isConstant();
+      if(aiConst && naiConst) {
         if(constCompare == 0) {
           constCompare = c;
         }
-        continue;
+      } else {
+        return ordinal(aiConst) - ordinal(naiConst); // products with most non-const factors first
       }
-      return c;
     }
   }
-  if(i == a.size()) {
-    return (i == na.size()) ? constCompare : 1;
-  } else {
-    return -1;
-  }
+  return constCompare;
 }
 
 ExpressionNode *ExpressionNodeProduct::clone(ParserTree *tree) const {
