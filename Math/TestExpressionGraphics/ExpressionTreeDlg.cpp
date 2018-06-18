@@ -79,7 +79,7 @@ void CExpressionTreeDlg::buildTree() {
   CTreeCtrl *treeCtrl = getTreeCtrl();
   treeCtrl->DeleteAllItems();
   traverse( treeCtrl, TVI_ROOT, m_node);
-  expandAll(treeCtrl, TVI_ROOT);
+  expandAllNodes();
 }
 
 CTreeCtrl *CExpressionTreeDlg::getTreeCtrl() {
@@ -176,13 +176,10 @@ void CExpressionTreeDlg::updateNodeText(const ExpressionNode *n) {
   }
 }
 
-void CExpressionTreeDlg::expandAll(CTreeCtrl *ctrl, HTREEITEM p) {
-  ctrl->Expand(p, TVE_EXPAND);
-  for(HTREEITEM child = ctrl->GetChildItem(p); child != NULL; child = ctrl->GetNextSiblingItem(child)) {
-    ctrl->Expand(child,TVE_EXPAND);
-    expandAll(ctrl,child);
-  }
+void CExpressionTreeDlg::expandAllNodes() {
+  TreeItemExpander(true).visitAllItems(getTreeCtrl());
 }
+
 void CExpressionTreeDlg::OnSize(UINT nType, int cx, int cy) {
   __super::OnSize(nType, cx, cy);
   m_layoutManager.OnSize(nType, cx, cy);
@@ -241,7 +238,6 @@ void CExpressionTreeDlg::OnClearBreakPoint() {
   m_selectedNode->clearBreakPoint();
   if(m_extendedInfo) updateNodeText(m_selectedNode);
 }
-
 
 void CExpressionTreeDlg::OnSelchangedTreeExpression(NMHDR *pNMHDR, LRESULT *pResult) {
   NM_TREEVIEW *pNMTreeView = (NM_TREEVIEW*)pNMHDR;

@@ -13,13 +13,10 @@ bool TreeCtrlWalker::visitItem(HTREEITEM p) {
   return true;
 }
 
-bool TreeCtrlWalker::visitAllItems(CTreeCtrl *treeCtrl) {
-  HTREEITEM root = treeCtrl->GetRootItem();
-  if(root == NULL) {
+bool TreeCtrlWalker::visitAllItems(CTreeCtrl *treeCtrl, HTREEITEM startItem) {
+  if(startItem==NULL) {
     return true;
-  } else {
-    m_treeCtrl = treeCtrl;
-    return visitItem(root);
   }
+  m_treeCtrl = treeCtrl;
+  return visitItem(startItem);
 }
-

@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <MFCUtil/WinTools.h>
+#include <MFCUtil/TreeCtrlWalker.h>
 #include "Chess.h"
 #include "OpeningDlg.h"
 #include "SelectOpeningDlg.h"
@@ -70,7 +71,7 @@ void COpeningDlg::traverse(CTreeCtrl *ctrl, HTREEITEM p, const LibraryState &sta
 
 void COpeningDlg::OnButtonExpand() {
   CTreeCtrl *ctrl = getTreeCtrl();
-  expandAll(ctrl,ctrl->GetSelectedItem());
+  TreeItemExpander(true).visitAllItems(ctrl,ctrl->GetSelectedItem());
   ctrl->SetFocus();
 }
 
@@ -78,26 +79,10 @@ void COpeningDlg::OnButtonExpandAll() {
   CTreeCtrl *ctrl = getTreeCtrl();
   int hp = ctrl->GetScrollPos(SB_HORZ);
   int vp = ctrl->GetScrollPos(SB_VERT);
-  expandAll(ctrl,TVI_ROOT);
+  TreeItemExpander(true).visitAllItems(ctrl);
   ctrl->SetFocus();
   ctrl->SetScrollPos(SB_HORZ,hp);
   ctrl->SetScrollPos(SB_VERT,vp);
-}
-
-void COpeningDlg::expandAll(CTreeCtrl *ctrl, HTREEITEM p) {
-  ctrl->Expand(p,TVE_EXPAND);
-  for(HTREEITEM child = ctrl->GetChildItem(p); child != NULL; child = ctrl->GetNextSiblingItem(child)) {
-    ctrl->Expand(child,TVE_EXPAND);
-    expandAll(ctrl,child);
-  }
-}
-
-void COpeningDlg::collapseAll(CTreeCtrl *ctrl, HTREEITEM p) {
-  ctrl->Expand(p,TVE_COLLAPSE);
-  for(HTREEITEM child = ctrl->GetChildItem(p); child != NULL; child = ctrl->GetNextSiblingItem(child)) {
-    ctrl->Expand(child,TVE_COLLAPSE);
-    collapseAll(ctrl,child);
-  }
 }
 
 HTREEITEM getChildByIndex(CTreeCtrl *ctrl, HTREEITEM parent, int index) {
@@ -117,7 +102,7 @@ void COpeningDlg::OnOpeningExpand() {
   CSelectOpeningDlg dlg(m_lib.getAllNames());
   if(dlg.DoModal() == IDOK) {
     CTreeCtrl *ctrl = getTreeCtrl();
-    collapseAll(ctrl,TVI_ROOT);
+    TreeItemExpander(false).visitAllItems(ctrl);
     int nameIndex = dlg.getSelectedIndex();
     HTREEITEM p = TVI_ROOT;
     for(int state = 0;;) {

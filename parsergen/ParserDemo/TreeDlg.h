@@ -10,12 +10,11 @@ private:
     SyntaxNodep         m_tree;
     CImageList          m_images;
 
-    void traverse(         CTreeCtrl *ctrl, SyntaxNodep tree, HTREEITEM p);
-    void expandAll(        CTreeCtrl *ctrl, HTREEITEM p);
-    void getDerivation(    CTreeCtrl *ctrl, HTREEITEM item, String &derivation, int maxlen);
-    String getDerivation(  CTreeCtrl *ctrl, HTREEITEM item,int maxlen);
-    HTREEITEM findTreeItem(CTreeCtrl *ctrl, const CPoint &pt);
-
+    CTreeCtrl *getTreeCtrl();
+    HTREEITEM  findTreeItem( CTreeCtrl *ctrl, const CPoint &pt);
+    void       traverse(     CTreeCtrl *ctrl, SyntaxNodep tree, HTREEITEM p);
+    void       getDerivation(CTreeCtrl *ctrl, HTREEITEM item, String &derivation, int maxlen);
+    String     getDerivation(CTreeCtrl *ctrl, HTREEITEM item,int maxlen);
 public:
 	TreeDlg(SyntaxNodep tree, CWnd *pParent = NULL);
 

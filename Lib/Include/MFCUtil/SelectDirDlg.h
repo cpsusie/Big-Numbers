@@ -9,6 +9,7 @@ private:
   CImageList m_images;
   void       fillTree(const TCHAR *path);
   CString    getSelectedPath() const;
+  CTreeCtrl *getTreeCtrl() const;
 public:
   CSelectDirDlg(const String &startDir, CWnd *pParent = NULL);
   String getSelectedDir() const {

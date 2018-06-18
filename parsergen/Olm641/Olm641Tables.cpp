@@ -165,19 +165,19 @@ static const TableType rightSideTable[26] = {
 * Used for debugging.                                                        *
 \****************************************************************************/
 static const TCHAR *symbolName[13] = {
-  /*   0 */ _T("EOI"),
-  /*   1 */ _T("a"),
-  /*   2 */ _T("b"),
-  /*   3 */ _T("d"),
-  /*   4 */ _T("f"),
-  /*   5 */ _T("z"),
-  /*   6 */ _T("x"),
+  /*   0 */ _T("EOI"  ),
+  /*   1 */ _T("a"    ),
+  /*   2 */ _T("b"    ),
+  /*   3 */ _T("d"    ),
+  /*   4 */ _T("f"    ),
+  /*   5 */ _T("z"    ),
+  /*   6 */ _T("x"    ),
   /*   7 */ _T("start"),
-  /*   8 */ _T("S"),
-  /*   9 */ _T("A"),
-  /*  10 */ _T("E"),
-  /*  11 */ _T("B"),
-  /*  12 */ _T("D")
+  /*   8 */ _T("S"    ),
+  /*   9 */ _T("A"    ),
+  /*  10 */ _T("E"    ),
+  /*  11 */ _T("B"    ),
+  /*  12 */ _T("D"    )
 }; // Total size of strings:64(x86)/64(x64) bytes, size of pointertable:52(x86)/104(x64) bytes.
 
 static const ParserCharTables Olm641Tables_s(compressedSet, compressedLasets

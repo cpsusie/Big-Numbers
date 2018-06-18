@@ -5,8 +5,9 @@
 
 
 
-int Olm641Parser::reduceAction(unsigned int prod) {
+#pragma warning(disable : 4060)
 
+int Olm641Parser::reduceAction(unsigned int prod) {
   switch(prod) {
   case 1: /* S -> a b A E */
     { debug(_T("reduce by a b A E pos of A is (%d,%d)\n"),getPos(3).getLineNumber(),getPos(3).getColumn()); }

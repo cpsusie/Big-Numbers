@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <MFCUtil/TreeCtrlWalker.h>
 #include "TreeDlg.h"
 
 #ifdef _DEBUG
@@ -13,12 +14,12 @@ void TreeDlg::DoDataExchange(CDataExchange *pDX) {
 }
 
 BEGIN_MESSAGE_MAP(TreeDlg, CDialog)
-	ON_BN_CLICKED(IDC_BUTTONEXPAND, OnButtonExpand)
-	ON_BN_CLICKED(IDC_BUTTONEXPANDALL, OnButtonExpandAll)
 	ON_WM_SIZE()
-	ON_COMMAND(ID_COLLAPSE, OnCollapse)
-	ON_COMMAND(ID_EXPAND, OnExpand)
-	ON_COMMAND(ID_EXPANDORCOLLAPSE, OnExpandOrCollapse)
+	ON_BN_CLICKED(IDC_BUTTONEXPAND   , OnButtonExpand    )
+	ON_BN_CLICKED(IDC_BUTTONEXPANDALL, OnButtonExpandAll )
+	ON_COMMAND(ID_COLLAPSE           , OnCollapse        )
+	ON_COMMAND(ID_EXPAND             , OnExpand          )
+	ON_COMMAND(ID_EXPANDORCOLLAPSE   , OnExpandOrCollapse)
 END_MESSAGE_MAP()
 
 void TreeDlg::traverse(CTreeCtrl *ctrl, SyntaxNodep tree, HTREEITEM p) {
@@ -37,7 +38,7 @@ BOOL TreeDlg::OnInitDialog() {
   __super::OnInitDialog();
   m_accelTable = LoadAccelerators(theApp.m_hInstance, MAKEINTRESOURCE(IDR_ACCELERATORTREE));
 
-  CTreeCtrl *ctrl = (CTreeCtrl*)GetDlgItem(IDC_DERIVATIONTREE);
+  CTreeCtrl *ctrl = getTreeCtrl();
   m_images.Create(IDB_BITMAPTERMINAL, 13, 1, RGB(255, 255, 255));
   ctrl->SetImageList(&m_images, TVSIL_NORMAL);
   traverse(ctrl, m_tree, TVI_ROOT);
@@ -53,40 +54,36 @@ BOOL TreeDlg::OnInitDialog() {
   return false;
 }
 
-void TreeDlg::expandAll(CTreeCtrl *ctrl, HTREEITEM p) {
-  ctrl->Expand(p, TVE_EXPAND);
-  for(HTREEITEM child = ctrl->GetChildItem(p); child != NULL; child = ctrl->GetNextSiblingItem(child)) {
-    ctrl->Expand(child, TVE_EXPAND);
-    expandAll(ctrl, child);
-  }
-}
-
 void TreeDlg::OnButtonExpand() {
-  CTreeCtrl *ctrl = (CTreeCtrl*)GetDlgItem(IDC_DERIVATIONTREE);
-  expandAll(ctrl, ctrl->GetSelectedItem());
+  CTreeCtrl *ctrl = getTreeCtrl();
+  TreeItemExpander(true).visitAllItems(ctrl, ctrl->GetSelectedItem());
   ctrl->SetFocus();
 }
 
 void TreeDlg::OnCollapse() {
-  CTreeCtrl *ctrl = (CTreeCtrl*)GetDlgItem(IDC_DERIVATIONTREE);
+  CTreeCtrl *ctrl = getTreeCtrl();
   ctrl->Expand(ctrl->GetSelectedItem(), TVE_COLLAPSE);
   ctrl->SetFocus();
 }
 
 void TreeDlg::OnExpand() {
-  CTreeCtrl *ctrl = (CTreeCtrl*)GetDlgItem(IDC_DERIVATIONTREE);
+  CTreeCtrl *ctrl = getTreeCtrl();
   ctrl->Expand(ctrl->GetSelectedItem(), TVE_EXPAND);
   ctrl->SetFocus();
 }
 
 void TreeDlg::OnButtonExpandAll() {
-  CTreeCtrl *ctrl = (CTreeCtrl*)GetDlgItem(IDC_DERIVATIONTREE);
+  CTreeCtrl *ctrl = getTreeCtrl();
   int hp = ctrl->GetScrollPos(SB_HORZ);
   int vp = ctrl->GetScrollPos(SB_VERT);
-  expandAll(ctrl, ctrl->GetRootItem());
+  TreeItemExpander(true).visitAllItems(ctrl);
   ctrl->SetFocus();
   ctrl->SetScrollPos(SB_HORZ, hp);
   ctrl->SetScrollPos(SB_VERT, vp);
+}
+
+CTreeCtrl *TreeDlg::getTreeCtrl() {
+  return (CTreeCtrl*)GetDlgItem(IDC_DERIVATIONTREE);
 }
 
 HTREEITEM TreeDlg::findTreeItem(CTreeCtrl *ctrl, const CPoint &pt) {
@@ -109,7 +106,7 @@ BOOL TreeDlg::PreTranslateMessage(MSG *pMsg) {
 
   switch(pMsg->message) {
   case WM_RBUTTONDOWN:
-    { CTreeCtrl *ctrl = (CTreeCtrl*)GetDlgItem(IDC_DERIVATIONTREE);
+    { CTreeCtrl *ctrl = getTreeCtrl();
       HTREEITEM item = findTreeItem(ctrl, pMsg->pt);
       if(item != NULL) {
         String derivation = getDerivation(ctrl, item, 160);
@@ -132,7 +129,7 @@ void TreeDlg::OnOK() {
 }
 
 void TreeDlg::OnExpandOrCollapse() {
-  CTreeCtrl *ctrl = (CTreeCtrl*)GetDlgItem(IDC_DERIVATIONTREE);
+  CTreeCtrl *ctrl = getTreeCtrl();
   HTREEITEM item = ctrl->GetSelectedItem();
   UINT state;
   if((state = ctrl->GetItemState(item, TVIS_EXPANDED)) & TVIS_EXPANDED) {

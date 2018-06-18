@@ -16,7 +16,7 @@ private:
 
   void buildTree();
   void traverse( CTreeCtrl *ctrl, HTREEITEM p, const ExpressionNode *n);
-  void expandAll(CTreeCtrl *ctrl, HTREEITEM p);
+  void expandAllNodes();
   HTREEITEM findItemFromNode(const ExpressionNode *n);
   const ExpressionNode *getNodeFromPoint(CPoint p);
   CTreeCtrl *getTreeCtrl();

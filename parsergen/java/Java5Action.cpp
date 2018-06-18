@@ -10,14 +10,15 @@
 
 
 
-int Java5Parser::reduceAction(unsigned int prod) {
+#pragma warning(disable : 4060)
 
+int Java5Parser::reduceAction(unsigned int prod) {
   switch(prod) {
   }
   return 0;
 }
 
 #line 907 "C:\\mytools2015\\ParserGen\\java\\Java5.y"
-#line 38 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
+#line 39 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
 
 

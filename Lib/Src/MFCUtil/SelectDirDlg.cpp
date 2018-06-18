@@ -2,6 +2,7 @@
 #include <Scandir.h>
 #include <Direct.h>
 #include <Tokenizer.h>
+#include <MFCUtil/TreeCtrlWalker.h>
 #include <MFCUtil/SelectDirDlg.h>
 
 #ifdef _DEBUG
@@ -34,7 +35,7 @@ BOOL CSelectDirDlg::OnInitDialog() {
   setControlText(IDD, this);
   m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance, MAKEINTRESOURCE(_IDR_SELECTDIR_ACCELERATOR));
   m_images.Create(_IDR_FOLDERIMAGES, 18, 1, RGB(255,255,255));
-  CTreeCtrl *ctrl = (CTreeCtrl*)GetDlgItem(_IDC_TREE_DIR);
+  CTreeCtrl *ctrl = getTreeCtrl();
   ctrl->SetImageList(&m_images, TVSIL_NORMAL);
   CComboBox *combo = (CComboBox*)GetDlgItem(_IDC_COMBO_DRIVE);
   for(int i = 0; drives; i++) {
@@ -74,17 +75,9 @@ void CSelectDirDlg::OnSelChangeDriveCombo() {
   OnEditChangeDriveCombo();
 }
 
-static void expandAll(CTreeCtrl *ctrl, HTREEITEM p) {
-  ctrl->Expand(p, TVE_EXPAND);
-  for(HTREEITEM child = ctrl->GetChildItem(p); child; child = ctrl->GetNextSiblingItem(child)) {
-    ctrl->Expand(child, TVE_EXPAND);
-    expandAll(ctrl, child);
-  }
-}
-
 void CSelectDirDlg::fillTree(const TCHAR *path) {
-  DirList list = scandir(FileNameSplitter::getChildName(path, _T("*.*")), SELECTSUBDIR);
-  CTreeCtrl *ctrl = (CTreeCtrl*)GetDlgItem(_IDC_TREE_DIR);
+  DirList    list = scandir(FileNameSplitter::getChildName(path, _T("*.*")), SELECTSUBDIR);
+  CTreeCtrl *ctrl = getTreeCtrl();
   ctrl->DeleteAllItems();
 
   HTREEITEM p = TVI_ROOT;
@@ -107,10 +100,8 @@ void CSelectDirDlg::fillTree(const TCHAR *path) {
     ctrl->InsertItem(list[i].name, 0, 0, p);
   }
 
-  p = ctrl->GetRootItem();
-  if(p != NULL) {
-    expandAll(ctrl, p);
-  }
+  TreeItemExpander(true).visitAllItems(ctrl);
+
   m_dir = path;
   UpdateData(false);
   ctrl->SelectItem(selecteditem);
@@ -126,13 +117,17 @@ void CSelectDirDlg::OnGotoDrive() {
 }
 
 CString CSelectDirDlg::getSelectedPath() const {
-  CTreeCtrl *ctrl = (CTreeCtrl*)GetDlgItem(_IDC_TREE_DIR);
+  CTreeCtrl *ctrl = getTreeCtrl();
   String path;
   for(HTREEITEM item = ctrl->GetSelectedItem(); item; item = ctrl->GetParentItem(item)) {
     CString f = ctrl->GetItemText(item);
     path = FileNameSplitter::getChildName((LPCTSTR)f, path);
   }
   return path.cstr();
+}
+
+CTreeCtrl *CSelectDirDlg::getTreeCtrl() const {
+  return (CTreeCtrl*)GetDlgItem(_IDC_TREE_DIR);
 }
 
 static int getChildCount(CTreeCtrl *ctrl, HTREEITEM item) {
@@ -148,7 +143,7 @@ void CSelectDirDlg::OnOK() {
   case _IDC_TREE_DIR:
     { CString path = getSelectedPath();
       DirList list = scandir(FileNameSplitter::getChildName((LPCTSTR)path, _T("*.*")), SELECTSUBDIR);
-      CTreeCtrl *ctrl = (CTreeCtrl*)GetDlgItem(_IDC_TREE_DIR);
+      CTreeCtrl *ctrl = getTreeCtrl();
       if(getChildCount(ctrl, ctrl->GetSelectedItem()) > 0 || list.size() == 0) {
         m_dir = path;
         UpdateData(false);
