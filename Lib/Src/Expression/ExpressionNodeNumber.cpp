@@ -10,6 +10,13 @@ int ExpressionNodeNumber::compare(const ExpressionNode *n) const {
   return numberCmp(getNumber(), n->getNumber());
 }
 
+bool ExpressionNodeNumber::isConstant(Number *v) const {
+  if(v != NULL) {
+    *v = getNumber();
+  }
+  return true;
+}
+
 ExpressionNode *ExpressionNodeNumber::clone(ParserTree *tree) const {
   ExpressionNode *n = new ExpressionNodeNumber(tree, m_number); TRACE_NEW(n);
   return n;

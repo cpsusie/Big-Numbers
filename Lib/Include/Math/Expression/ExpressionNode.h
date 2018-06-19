@@ -19,7 +19,7 @@ private:
   const UINT   m_loopVar  : 1;
 
 public:
-  ExpressionVariable(const String &name, bool isConstant, bool isDefined, bool isLoopVar);
+  ExpressionVariable(const String &name, bool constant, bool defined, bool loopVar);
   inline const String &getName()       const    { return m_name;                    }
   inline       int     getValueIndex() const    { return m_valueIndex;              }
   inline void          setValueIndex(int index) { m_valueIndex = index;             }
@@ -43,8 +43,8 @@ public:
     , m_value(value)
   {
   }
-  inline ExpressionVariableWithValue(const String &name, bool isConstant, bool isDefined, bool isLoopVar, Real value)
-    : ExpressionVariable(name, isConstant, isDefined, isLoopVar)
+  inline ExpressionVariableWithValue(const String &name, bool constant, bool defined, bool loopVar, Real value)
+    : ExpressionVariable(name, constant, defined, loopVar)
     , m_value(value)
   {
   }
@@ -171,7 +171,7 @@ public:
 
   virtual int                        compare(const ExpressionNode *n) const;
 
-  virtual bool                       isConstant()                   const = 0;
+  virtual bool                       isConstant(Number *v = NULL)   const = 0;
   virtual bool                       traverseExpression(ExpressionNodeHandler &handler, int level) = 0;
 
   virtual void                       dumpNode(String &s, int level) const = 0;
@@ -239,7 +239,6 @@ public:
 
   TrigonometricMode                  getTrigonometricMode()         const;
   int                                getPrecedence()                const;
-  bool                               reducesToRationalConstant(Rational *r) const;
   bool                               reducesToRational(        Rational *r) const;
 
   String                             parenthesizedExpressionToString(const ExpressionNode  *parent)  const;
@@ -312,7 +311,7 @@ public:
   Real                 evaluateReal()                   const { return m_number.getRealValue();  }
 //bool                 evaluateBool()                   const { as ExpressionNode                }
   int                  compare(const ExpressionNode *n) const;
-  bool                 isConstant()                     const { return true;                     }
+  bool                 isConstant(Number *v = NULL)     const;
   bool                 traverseExpression(ExpressionNodeHandler &handler, int level);
   void                 dumpNode(String &s, int level)   const;
   String               toString()                       const { return m_number.toString();      }
@@ -334,7 +333,7 @@ public:
   Real                 evaluateReal()                   const { UNSUPPORTEDOP();                 }
   bool                 evaluateBool()                   const { return m_value;                  }
   int                  compare(const ExpressionNode *n) const;
-  bool                 isConstant()                     const { return true;                     }
+  bool                 isConstant(Number *v = NULL)     const { return true;                     }
   bool                 traverseExpression(ExpressionNodeHandler &handler, int level);
   void                 dumpNode(String &s, int level)   const;
   String               toString()                       const { return boolToStr(m_value);       }
@@ -380,7 +379,7 @@ public:
   Real                 evaluateReal()                   const { return getValueRef();            }
 //bool                 evaluateBool()                   const { as ExpressionNode                }
   int                  compare(const ExpressionNode *n) const;
-  bool                 isConstant()                     const { return m_var->isConstant();      }
+  bool                 isConstant(Number *v = NULL)     const;
   bool                 traverseExpression(ExpressionNodeHandler &handler, int level);
   void                 dumpNode(String &s, int level)   const;
   String               toString()                       const { return getName();                }
@@ -418,7 +417,7 @@ public:
 //Real                 evaluateReal()                   const not implemented here
 //bool                 evaluateBool()                   const not implemented here
   int                  compare(const ExpressionNode *n) const;
-  bool                 isConstant()                     const;
+  bool                 isConstant(Number *v = NULL)     const;
   bool                 traverseExpression(ExpressionNodeHandler &handler, int level);
   void                 dumpNode(String &s, int level)   const;
   String               toString()                       const;
@@ -453,7 +452,7 @@ public:
   Real                 evaluateReal()                   const { UNSUPPORTEDOP();                 }
   bool                 evaluateBool()                   const;
 //int                  compare(const ExpressionNode *n) const { as ExpressionNodeTree;           }
-  bool                 isConstant()                     const;
+  bool                 isConstant(Number *v = NULL)     const;
 //bool                 traverseExpression(ExpressionNodeHandler &handler, int level); as ExpressionNodeTree
 //void                 dumpNode(String &s, int level)   const;                        as ExpressionNodeTree
   String               toString()                       const;
@@ -493,7 +492,7 @@ public:
   Real                 evaluateReal()                   const;
 //bool                 evaluateBool()                   const { as ExpressionNode                }
   int                  compare(const ExpressionNode *n) const;
-  bool                 isConstant()                     const;
+  bool                 isConstant(Number *v = NULL)     const;
 //bool                 traverseExpression(ExpressionNodeHandler &handler, int level); as ExpressionNodeTree
 //void                 dumpNode(String &s, int level)   const;                        as ExpressionNodeTree
 //String               toString()                       const { as ExpressionNodeTree;            }
@@ -550,7 +549,7 @@ public:
   Real                 evaluateReal()                   const;
 //bool                 evaluateBool()                   const { as ExpressionNode                }
   int                  compare(const ExpressionNode *n) const;
-  bool                 isConstant()                     const;
+  bool                 isConstant(Number *v = NULL)     const;
   bool                 traverseExpression(ExpressionNodeHandler &handler, int level);
   void                 dumpNode(String &s, int level)   const;
   String               toString()                       const;
@@ -580,7 +579,7 @@ public:
   Real                 evaluateReal()                   const { UNSUPPORTEDOP();                 }
 //bool                 evaluateBool()                   const { as ExpressionNode                }
   int                  compare(const ExpressionNode *n) const { UNSUPPORTEDOP();                 }
-//bool                 isConstant()                     const { as ExpressionNodeTree;           }
+//bool                 isConstant(Number *v = NULL)     const { as ExpressionNodeTree;           }
 //bool                 traverseExpression(ExpressionNodeHandler &handler, int level); as ExpressionNodeTree
 //void                 dumpNode(String &s, int level)   const;                        as ExpressionNodeTree
   String               toString()                       const;
@@ -604,7 +603,7 @@ public:
   Real                 evaluateReal()                   const;
   bool                 evaluateBool()                   const;
   int                  compare(const ExpressionNode *n) const { UNSUPPORTEDOP();                 }
-//bool                 isConstant()                     const { as ExpressionNodeTree;           }
+//bool                 isConstant(Number *v = NULL)     const { as ExpressionNodeTree;           }
 //bool                 traverseExpression(ExpressionNodeHandler &handler, int level); as ExpressionNodeTree
 //void                 dumpNode(String &s, int level)   const;                        as ExpressionNodeTree
   String               toString()                       const;
@@ -627,7 +626,7 @@ public:
   Real                 evaluateReal()                   const;
 //bool                 evaluateBool()                   const { as ExpressionNode                }
   int                  compare(const ExpressionNode *n) const;
-//bool                 isConstant()                     const { as ExpressionNodeTree;           }
+//bool                 isConstant(Number *v = NULL)     const { as ExpressionNodeTree            }
 //bool                 traverseExpression(ExpressionNodeHandler &handler, int level); as ExpressionNodeTree
   void                 dumpNode(String &s, int level)   const;
   String               toString()                       const;
@@ -653,7 +652,7 @@ public:
   Real                 evaluateReal()                   const;
 //bool                 evaluateBool()                   const { as ExpressionNode                }
 //int                  compare(const ExpressionNode *n) const { as ExpressionNodeTree;           }
-//bool                 isConstant()                     const { as ExpressionNodeTree;           }
+//bool                 isConstant(Number *v = NULL)     const;
 //bool                 traverseExpression(ExpressionNodeHandler &handler, int level); as ExpressionNodeTree
 //void                 dumpNode(String &s, int level)   const;                        as ExpressionNodeTree
   String               toString()                       const;
@@ -679,7 +678,7 @@ public:
   Real                 evaluateReal()                   const;
 //bool                 evaluateBool()                   const { as ExpressionNode                }
   int                  compare(const ExpressionNode *n) const;
-//bool                 isConstant()                     const { as ExpressionNodeTree;           }
+//bool                 isConstant(Number *v = NULL)     const { as ExpressionNodeTree;           }
 //bool                 traverseExpression(ExpressionNodeHandler &handler, int level); as ExpressionNodeTree
 //void                 dumpNode(String &s, int level)   const;                        as ExpressionNodeTree
   String               toString()                       const;

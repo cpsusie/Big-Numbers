@@ -27,6 +27,14 @@ int ExpressionNodeVariable::compare(const ExpressionNode *n) const {
   return stringiHashCmp(getName(), n->getName());
 }
 
+bool ExpressionNodeVariable::isConstant(Number *v) const {
+  const bool result = m_var->isConstant();
+  if(result && (v != NULL)) {
+    *v = getTree().getValueByIndex(m_var->getValueIndex());
+  }
+  return result;
+}
+
 ExpressionNode *ExpressionNodeVariable::clone(ParserTree *tree) const {
   ExpressionNode *n = new ExpressionNodeVariable(tree, m_name); TRACE_NEW(n);
   return n;

@@ -900,6 +900,7 @@
     <ClCompile Include="SNodeReduce.cpp" />
     <ClCompile Include="SNodeReduceAndOrNot.cpp" />
     <ClCompile Include="SNodeReduceDbgStack.cpp" />
+    <ClCompile Include="SNodeReduceToPoly.cpp" />
     <ClCompile Include="StmtList.cpp" />
   </ItemGroup>
   <ItemGroup>

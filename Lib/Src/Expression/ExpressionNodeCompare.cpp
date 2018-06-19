@@ -115,7 +115,7 @@ bool equalMinus(const ExpressionNode *n1, const ExpressionNode *n2) {
       const ExpressionNode *e1 = n1->right();
       const ExpressionNode *e2 = n2->right();
       Rational er1, er2;
-      if(!e1->reducesToRationalConstant(&er1) || !e2->reducesToRationalConstant(&er2)) return false;
+      if(!e1->reducesToRational(&er1) || !e2->reducesToRational(&er2)) return false;
       return (er1 == er2)
           && isOdd(er1.getNumerator())
           && isOdd(er1.getDenominator())

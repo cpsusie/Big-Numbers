@@ -138,13 +138,9 @@ static bool exprDependsOnNonConstantNames(const ExpressionNode *expr, const Expr
   return nodeHandler.dependsOnNonConstantNames();
 }
 
-bool ExpressionNodeTree::isConstant() const {
+bool ExpressionNodeTree::isConstant(Number *v) const {
+  bool result;
   switch(getSymbol()) {
-  case POW:
-    if(right()->isZero()) {
-      return true;
-    }
-    break;
   case INDEXEDSUM    :
   case INDEXEDPRODUCT:
     { const SNode startAssignment = child(0);
@@ -152,10 +148,17 @@ bool ExpressionNodeTree::isConstant() const {
       const SNode               beginExpr       = startAssignment.right();
       const SNode               endExpr         = child(1);
       const SNode               expr            = child(2);
-      return beginExpr.isConstant() && endExpr.isConstant() && !exprDependsOnNonConstantNames(expr.node(), loopVar);
+      result = beginExpr.isConstant() && endExpr.isConstant() && !exprDependsOnNonConstantNames(expr.node(), loopVar);
     }
+    break;
+  default:
+    result = m_childArray.isConstant();
+    break;
   }
-  return m_childArray.isConstant();
+  if(result && (v != NULL)) {
+    *v = evaluateReal();
+  }
+  return result;
 }
 
 bool ExpressionNodeTree::traverseExpression(ExpressionNodeHandler &handler, int level) {

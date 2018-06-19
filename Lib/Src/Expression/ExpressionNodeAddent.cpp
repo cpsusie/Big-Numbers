@@ -22,6 +22,10 @@ ExpressionNode *ExpressionNodeAddent::clone(ParserTree *tree) const {
   return n;
 }
 
+Real ExpressionNodeAddent::evaluateReal() const {
+  return m_positive ? left()->evaluateReal() : -left()->evaluateReal();
+}
+
 int ExpressionNodeAddent::compare(const ExpressionNode *n) const {
   const bool b1 = isConstant();
   const bool b2 = n->isConstant();
@@ -33,10 +37,6 @@ int ExpressionNodeAddent::compare(const ExpressionNode *n) const {
   const bool p1 = isPositive();
   const bool p2 = n->isPositive();
   return ordinal(p1) - ordinal(p2);
-}
-
-Real ExpressionNodeAddent::evaluateReal() const {
-  return m_positive ? left()->evaluateReal() : -left()->evaluateReal();
 }
 
 void ExpressionNodeAddent::dumpNode(String &s, int level) const {

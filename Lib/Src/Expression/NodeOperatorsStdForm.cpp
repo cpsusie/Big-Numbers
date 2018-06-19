@@ -388,7 +388,7 @@ StdNode StdNode::toSFormProduct() const {
   for(size_t i = 0; i < a.size(); i++) {
     SNode f = a[i];
     Rational r;
-    if(f.reducesToRationalConstant(&r)) {
+    if(f.reducesToRational(&r)) {
       constant *= r;
     } else {
       newArray *= f;
@@ -438,7 +438,7 @@ StdNode StdNode::toSFormPow() const {
   const SNode exponent = S(right()).toSForm();
 
   Rational expoR;
-  if(exponent.reducesToRationalConstant(&expoR)) {
+  if(exponent.reducesToRational(&expoR)) {
     const __int64 &num = expoR.getNumerator();
     if(expoR.isInteger()) {
       switch(num) {

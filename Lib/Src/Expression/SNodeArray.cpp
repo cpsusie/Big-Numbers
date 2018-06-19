@@ -47,7 +47,9 @@ void SNodeArray::sort(int (*cmp)(const SNode &e1, const SNode &e2)) {
 bool SNodeArray::isConstant() const {
   const size_t n = size();
   for(size_t i = 0; i < n; i++) {
-    if(!(*this)[i].isConstant()) return false;
+    if(!(*this)[i].isConstant()) {
+      return false;
+    }
   }
   return true;
 }

@@ -304,17 +304,17 @@ SNode SNode::reduceSum() const {
   for(size_t i = 0; i < tmp.size(); i++) { 
     SNode e = tmp[i], c = e.left();
     Rational r;
-    if(!c.reducesToRationalConstant(&r)) {
+    if(c.isRational()) {
+      rationalAddentSet.add(i);
+      r = c.getRational();
+    } else if(!c.reducesToRational(&r)) {
       reduced.add(e);
+      continue;
+    }
+    if(e.isPositive()) {
+      rationalAcc += r;
     } else {
-      if(c.isRational()) {
-        rationalAddentSet.add(i);
-      }
-      if(e.isPositive()) {
-        rationalAcc += r;
-      } else {
-        rationalAcc -= r;
-      }
+      rationalAcc -= r;
     }
   }
   if(rationalAddentSet.size() == 1) {
@@ -386,7 +386,7 @@ bool SNode::canUseReverseIdiotRule(SNode e1, SNode e2, SNode &result) const {
 
   for(int i = 0; i < 2; i++) {
     Rational r1;
-    if(e1.left().reducesToRationalConstant(&r1)) {
+    if(e1.left().reducesToRational(&r1)) {
       if(!e1.isPositive()) r1 = -r1;
       if((fabs(r1) == 1) && e2.left().isSquareOfSinOrCos() && (r1 == 1) != (e2.isPositive())) {
         SNode sinOrCos = e2.left().left();
@@ -488,7 +488,7 @@ StartSearch:
         goto StartSearch;
       } else {
         Rational eR1,eR2;
-        if((factor1.exponent().reducesToRationalConstant(&eR1) && factor2.exponent().reducesToRationalConstant(&eR2))
+        if((factor1.exponent().reducesToRational(&eR1) && factor2.exponent().reducesToRational(&eR2))
          && factor1.base().equalMinus(factor2.base())) {
           if(isAsymmetricExponent(eR1) && isAsymmetricExponent(eR2)) {
             signShiftCount++;
@@ -609,15 +609,16 @@ SNode SNode::reduceProduct() {
 
   for(size_t i = 0; i < unreducedFactors.size(); i++) { // first remove all number factors, multiplied together in constantFactor
     SNode f = unreducedFactors[i];
-    if(!f.isConstant()) {
+    Number v;
+    if(!f.isConstant(&v)) {
       nonConstantFactors *= f; // contains non-constant factors
     } else if(f.isReduced()) {
       constantFactors *= f;
+    } else if(!v.isRational()) {
+      constantFactors *= f;
     } else {
-      Rational r;
-      if(!f.reducesToRational(&r)) {
-        constantFactors *= f;
-      } else if(r == 0) {
+      const Rational r = v.getRationalValue();
+      if(r == 0) { // the whole product is 0
         RETURNNODE( _0() );
       } else if(r != 1) { // No need to add 1 as a factor
         constantFactors *= r;
@@ -654,13 +655,14 @@ SNode SNode::reduceProduct() {
             if(!f.isEmpty()) {
               done.add(i1);
               done.add(i2);
-              if(!f.isConstant()) {
+              Number v;
+              if(!f.isConstant(&v)) {
                 reduced *= f;
+              } else if(!v.isRational()) {
+                constantFactors *= f;
               } else {
-                Rational r;
-                if(!f.reducesToRational(&r)) {
-                  constantFactors *= f;
-                } else if(r == 0) {        // No need to go further. The product is 0
+                const Rational r = v.getRationalValue();
+                if(r == 0) {               // No need to go further. The product is 0
                   RETURNNODE( _0() );
                 } else if(r != 1) {        // No need to add 1 as a factor
                   constantFactors *= r;
@@ -767,7 +769,7 @@ SNode SNode::reducePower() {
     result = pow(rBase.left(), multiplyExponents(rBase.right(), rExpo));
   } else if(rBase.isSameNode(base) && rExpo.isSameNode(expo)) { // nothing changed
     Rational r;
-    if(rExpo.reducesToRationalConstant(&r)) {
+    if(rExpo.reducesToRational(&r)) {
       if((r == 1) && !rExpo.isOne()) {
         result = abs(rBase);
       } else if((r == -1) && !rExpo.isMinusOne()) {
@@ -782,7 +784,7 @@ SNode SNode::reducePower() {
     result = pow(rBase, rExpo);
   }
   Rational tmp;
-  if(result.reducesToRationalConstant(&tmp)) {
+  if(result.reducesToRational(&tmp)) {
     result = SNV(tmp);
   }
   RETURNNODE( result );
@@ -803,7 +805,7 @@ FactorArray &SNode::multiplyExponents(FactorArray &result, FactorArray &factors,
   }
 
   Rational erat;
-  if(exponent.reducesToRationalConstant(&erat)) {
+  if(exponent.reducesToRational(&erat)) {
     SNode er = SNode(getTree(), erat);
     for(size_t i = 0; i < factors.size(); i++) {
       SNode f = factors[i];
@@ -905,8 +907,8 @@ SNode SNode::reduceConstantFactors(FactorArray &factorArray) {
       SNode      base1                = f1.base();
       SNode      expo1                = f1.exponent();
       Rational   B1R, E1R;
-      const bool b1IsRationalConstant = base1.reducesToRationalConstant(&B1R);
-      const bool e1IsRationalConstant = expo1.reducesToRationalConstant(&E1R);
+      const bool b1IsRationalConstant = base1.reducesToRational(&B1R);
+      const bool e1IsRationalConstant = expo1.reducesToRational(&E1R);
       SNode      reducedBase1         = b1IsRationalConstant ? SNV(B1R) : base1;
 
       for(size_t i2 = 0; i2 < i1; i2++) {
@@ -916,8 +918,8 @@ SNode SNode::reduceConstantFactors(FactorArray &factorArray) {
         SNode      base2 = f2.base();
         SNode      expo2 = f2.exponent();
         Rational   B2R, E2R;
-        const bool b2IsRationalConstant = base2.reducesToRationalConstant(&B2R);
-        const bool e2IsRationalConstant = expo2.reducesToRationalConstant(&E2R);
+        const bool b2IsRationalConstant = base2.reducesToRational(&B2R);
+        const bool e2IsRationalConstant = expo2.reducesToRational(&E2R);
         SNode      reducedBase2         = b2IsRationalConstant ? SNV(B2R) : base2;
 
         if(e1IsRationalConstant && e2IsRationalConstant) {
@@ -957,7 +959,7 @@ SNode SNode::reduceConstantFactors(FactorArray &factorArray) {
   for(size_t i = 0; i < reduced.size(); i++) {
     SNode    f = reduced[i];
     Rational r;
-    if(f.reducesToRationalConstant(&r)) {
+    if(f.reducesToRational(&r)) {
       if(r == 0) {
         RETURNNODE( _0() );
       } else if(r == 1) {
@@ -969,8 +971,8 @@ SNode SNode::reduceConstantFactors(FactorArray &factorArray) {
       SNode base = f.base();
       SNode expo = f.exponent();
       Rational baseR, expoR;
-      if(base.reducesToRationalConstant(&baseR)) {
-        if(expo.reducesToRationalConstant(&expoR)) {
+      if(base.reducesToRational(&baseR)) {
+        if(expo.reducesToRational(&expoR)) {
           fa *= reduceRationalPower(baseR, expoR);
         } else { // base is rational. expo is irrational
           fa *= powerExp(SNV(baseR), expo);
@@ -1246,22 +1248,16 @@ SNode SNode::reducePoly() {
   SNodeArray newCoefArray(coefArray.getTree());
   bool leadingCoef = true;
   for(size_t i = 0; i < coefArray.size(); i++) {
-    SNode coef = coefArray[i];
-    if(!coef.isConstant()) {     // coef not constant
+    SNode  coef = coefArray[i];
+    Number cv;
+    if(!coef.isConstant(&cv)) {  // coef not constant
       newCoefArray.add(coef.reduceRealExp());
     } else if(coef.isNumber()) { // coef is constant
       if(coef.isZero() && leadingCoef) continue;
       newCoefArray.add(coef);
-    } else {
-      Rational r;
-      if(coef.reducesToRationalConstant(&r)) {
-        if(r.isZero() && leadingCoef) continue;
-        newCoefArray.add(SNV(r));
-      } else {
-        const Real c = coef.evaluateReal();
-        if(c == 0 && leadingCoef) continue;
-        newCoefArray.add(SNV(c));
-      }
+    } else {                     // coef is consant and !NUMBER
+      if((cv == 0) && leadingCoef) continue;
+      newCoefArray.add(SNV(cv));
     }
     leadingCoef = false;
   }

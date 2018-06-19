@@ -25,9 +25,9 @@ private:
   void                  buildTable(           ExpressionNode *n);
   void                  buildTableIndexedExpr(ExpressionNode *n);
   void                  buildTableAssign(     ExpressionNode *n, bool loopAssignment);
-  ExpressionVariable   *allocateSymbol(       ExpressionNode *n                    , bool isConstant, bool isLeftSide, bool isLoopVar);
+  ExpressionVariable   *allocateSymbol(       ExpressionNode *n                    , bool constant, bool leftSide, bool loopVar);
   ExpressionVariable   *allocateConstant(     ExpressionNode *n, const String &name, const Real &value);
-  ExpressionVariable   *allocateName(         const String &name, const Real &value, bool isConstant, bool isLeftSide, bool isLoopVar);
+  ExpressionVariable   *allocateName(         const String &name, const Real &value, bool constant, bool leftSide, bool loopVar);
   void                  allocateNumber(       ExpressionNode *n, bool reuseIfExist);
   // Insert value into m_valueTable, return index of position
   UINT                  insertValue(Real value);
@@ -36,7 +36,6 @@ private:
   // Find i, so m_valueTable[i] == value, and m_valueTable[i] is not used by a vaiable. return -1, if not found
   int                   findNumberIndexByValue(const Real &value) const;
   void                  checkDependentOnLoopVariablesOnly(   ExpressionNode *n);
-  String                getNewTempName();
   ParserTreeSymbolTable(           const ParserTreeSymbolTable   &src); // not implemented
   ParserTreeSymbolTable &operator=(const ParserTreeSymbolTable   &src); // not implemented
   friend class ParserTree;

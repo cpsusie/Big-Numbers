@@ -29,22 +29,6 @@ public:
   }
 };
 
-/*
-class RationalPowersReducer : public ExpressionTransformer {
-private:
-  ParserTree *m_expr;
-public:
-  RationalPowersReducer(ParserTree *expr) : m_expr(expr) {
-  }
-  const ExpressionNode *transform(const ExpressionNode *n) {
-    return m_expr->replaceRationalPowers(n);
-  }
-  ExpressionState getState() const {
-    return EXPR_RATIONALPOWERSREDUCTION;
-  }
-};
-*/
-
 void ParserTree::reduce() {
 
   try {
@@ -59,18 +43,11 @@ void ParserTree::reduce() {
     MainReducer mainTransformer(this);
 
     iterateTransformation(mainTransformer);
-
-    mainTransformer.setState(PS_MAINREDUCTION2);
-    setRoot(SNode(getRoot()).multiplyParentheses().node());
-    iterateTransformation(mainTransformer);
-
-  /*
-    tmp = replaceRationalFactors(iterateTransformation(getRoot(), RationalPowersReducer(this)));
-    if(!treesEqual(getRoot(), tmp, false)) {
-      setRoot(tmp);
-      checkIsCanonicalForm();
+    if(getNodeCount() > 1) {
+      mainTransformer.setState(PS_MAINREDUCTION2);
+      setRoot(SNode(getRoot()).multiplyParentheses().node());
+      iterateTransformation(mainTransformer);
     }
-  */
 
     if(startTreeForm == TREEFORM_STANDARD) {
       setTreeForm(TREEFORM_STANDARD);
@@ -86,55 +63,62 @@ void ParserTree::reduce() {
   }
 }
 
+class TreeWithScore : public ParserTree {
+private:
+  const ParserTreeComplexity m_complexity;
+public:
+  TreeWithScore(const ParserTree &tree) : ParserTree(tree), m_complexity(tree) {
+  }
+  const ParserTreeComplexity &getComplexity() const {
+    return m_complexity;
+  }
+};
+
+class ReductionArray : public Array<TreeWithScore> {
+public:
+  int find(const ParserTree &tree) const;
+};
+
+int ReductionArray::find(const ParserTree &tree) const {
+  for(UINT i = 0; i < size(); i++) {
+    if(tree.equal((*this)[i])) {
+      return i;
+    }
+  }
+  return -1;
+}
+
 void ParserTree::iterateTransformation(ParserTreeTransformer &transformer) {
   DEFINEMETHODNAME;
 
-  const int                  maxIterations = 30;
-  SNode                      oldRoot       = getRoot();
-  ParserTree                 bestReduction = *this;
-  const ParserTreeComplexity startComplexity(bestReduction);
-  ParserTreeComplexity       bestComplexity(startComplexity);
+  checkIsCanonicalForm();
+  pruneUnusedNodes();
+
+  const int      maxIterations = 30;
+  size_t         bestIndex     = 0;
+  ReductionArray reductionArray;
+  reductionArray.add(TreeWithScore(*this));
+
   STARTREDUCTION();
 
   setReduceIteration(0);
-  setRoot(oldRoot.node());
-  pruneUnusedNodes();
-
   setState(transformer.getState());
-  checkIsCanonicalForm();
-
-  SNode n    = getRoot();
-  bool  done = false;
 
   for(setReduceIteration(1); getReduceIteration() < maxIterations; setReduceIteration(getReduceIteration()+1)) {
-    SNode n1 = transformer.transform(n);
-
-    setRoot(n1.node());
+    setRoot(transformer.transform(getRoot()).node());
     setState(transformer.getState());
     checkIsCanonicalForm();
-
-    if(n1.equal(n)) {
-      done = true;
+    if(reductionArray.find(*this) >= 0) {
       break;
     } else {
-      const ParserTreeComplexity complexity(*this);
-      if(complexity < bestComplexity) {
-        bestReduction  = *this;
-        bestComplexity = complexity;
+      reductionArray.add(*this);
+      if(reductionArray.last().getComplexity() < reductionArray[bestIndex].getComplexity()) {
+        bestIndex = reductionArray.size() - 1;
       }
-      n = n1;
     }
+    pruneUnusedNodes();
   }
-  setRoot(oldRoot.node());
-//  if(!done) {
-//    throwException(_T("%s:Maxiterations reached for expression <%s>"), method, n.toString().cstr());
-//  }
-
-  pruneUnusedNodes();
-
-  if(bestComplexity < startComplexity) {
-    *this = bestReduction;
-  }
+  *this = reductionArray[bestIndex];
 }
 
 }; // namespace Expr

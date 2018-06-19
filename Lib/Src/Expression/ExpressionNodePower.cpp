@@ -8,16 +8,23 @@ ExpressionNode *ExpressionNodePower::clone(ParserTree *tree) const {
   return n;
 }
 
+static Rational reduceToRational(SNode n) {
+  Rational r;
+  if(!n.reducesToRational(&r)) {
+    throwInvalidArgumentException(__TFUNCTION__
+                                 ,_T("n=%s doesn't reduce to rational")
+                                 ,n.toString().cstr());
+  }
+  return r;
+}
+
 SNode ExpressionNodePower::expand() const {
   if(!isExpandable()) {
     throwUnExpandableException();
   }
-  ParserTree     &tree = getTree();
-  ExpressionNode *expo = right();
-  Rational        expoR;
-  if(!expo->reducesToRationalConstant(&expoR)) {
-    throwUnExpandableException();
-  }
+  ParserTree     &tree  = getTree();
+  ExpressionNode *expo  = right();
+  Rational        expoR = reduceToRational(expo);
   return tree.expandPower(left(), expoR);
 }
 
@@ -27,10 +34,13 @@ bool ExpressionNodePower::isExpandable() const {
   if(!expo->reducesToRational(&expoR) || (::abs(expoR.getNumerator()) <= 1)) {
     return false;
   }
+
   const ExpressionNode *base = left();
   switch(base->getSymbol()) {
   case MINUS:
-    if(base->isUnaryMinus()) return false;
+    if(base->isUnaryMinus()) {
+      return false;
+    }
     // NB continue case;
   case SUM  :
   case PLUS :
@@ -66,9 +76,36 @@ int ExpressionNodePower::compare(const ExpressionNode *n) const {
   return exponent().node()->compare(f->exponent().node());
 }
 
-bool ExpressionNodePower::isConstant() const {
-  if(exponent().isZero()) return true;
-  return __super::isConstant();
+bool ExpressionNodePower::isConstant(Number *v) const {
+  if(exponent().isZero()) {
+    if(v != NULL) {
+      *v = 1;
+    }
+    return true;
+  }
+  if(base().isZero()) {
+    if(v != NULL) {
+      *v = 0;
+    }
+    return true;
+  }
+  if(base().isOne()) {
+    if(v != NULL) {
+      *v = 1;
+    }
+    return true;
+  }
+  if(v != NULL) {
+    Rational baseR, expoR;
+    if(base().reducesToRational(&baseR) && exponent().reducesToRational(&expoR)) {
+      Rational powR;
+      if(Rational::isRationalPow(baseR, expoR, &powR)) {
+        *v = powR;
+        return true;
+      }
+    }
+  }
+  return __super::isConstant(v);
 }
 
 Real ExpressionNodePower::evaluateReal() const {

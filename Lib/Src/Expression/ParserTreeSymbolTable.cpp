@@ -189,14 +189,14 @@ void ParserTreeSymbolTable::buildTableAssign(ExpressionNode *n, bool loopAssignm
   }
 }
 
-ExpressionVariable *ParserTreeSymbolTable::allocateSymbol(ExpressionNode *n, bool isConstant, bool isLeftSide, bool isLoopVar) {
+ExpressionVariable *ParserTreeSymbolTable::allocateSymbol(ExpressionNode *n, bool constant, bool leftSide, bool loopVar) {
   ExpressionVariable *v = getVariable(n->getName());
   if(v == NULL) {
-    v = allocateName(n->getName(), 0, isConstant, isLeftSide, isLoopVar);
+    v = allocateName(n->getName(), 0, constant, leftSide, loopVar);
   } else {
-    if(isLoopVar) {
+    if(loopVar) {
       m_tree->addError(n, _T("Control variable %s has already been used"), n->getName().cstr());
-    } else if(isLeftSide) {
+    } else if(leftSide) {
       if(v->isConstant()) {
         m_tree->addError(n, _T("Cannot assign to constant %s"), n->getName().cstr());
       } else if(v->isDefined()) {
@@ -211,12 +211,12 @@ ExpressionVariable *ParserTreeSymbolTable::allocateSymbol(ExpressionNode *n, boo
   return v;
 }
 
-ExpressionVariable *ParserTreeSymbolTable::allocateName(const String &name, const Real &value, bool isConstant, bool isLeftSide, bool isLoopVar) {
+ExpressionVariable *ParserTreeSymbolTable::allocateName(const String &name, const Real &value, bool constant, bool leftSide, bool loopVar) {
   if(m_nameTable.get(name.cstr()) != NULL) {
     throwInvalidArgumentException(__TFUNCTION__,_T("Name <%s> already exist"), name.cstr());
   }
   const int varIndex   = (int)m_variableTable.size();
-  m_variableTable.add(ExpressionVariable(name, isConstant, isLeftSide, isLoopVar));
+  m_variableTable.add(ExpressionVariable(name, constant, leftSide, loopVar));
   ExpressionVariable &var = m_variableTable.last();
   m_nameTable.put(var.getName().cstr(), varIndex);
   var.setValueIndex(insertValue(value));

@@ -8,7 +8,7 @@ ExpressionNode *ExpressionNodeBoolExpr::clone(ParserTree *tree) const {
   return n;
 }
 
-bool ExpressionNodeBoolExpr::isConstant() const {
+bool ExpressionNodeBoolExpr::isConstant(Number *v) const {
   switch(getSymbol()) {
   case NOT     :
     return left()->isConstant();

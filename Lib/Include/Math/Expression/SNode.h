@@ -121,6 +121,8 @@ private:
   SNode              multiplyStmtList() const;
   SNode              multiplyParenthesesInSum() const;
   SNode              multiplyParenthesesInProduct() const;
+  // try to reduce this to poly(cn,c[n-1],...c1,c0)(v) and return poly-node if possible. return empty if not
+  SNode              reduceToPoly() const;
   // Assume factor.type=NT_POWER and sum.type=NT_SUM
   SNode              multiplyFactorSum(SNode factor, SNode sum) const;
 
@@ -220,7 +222,7 @@ public:
   const Number         &getNumber()                            const;
   bool                  getBool()                              const;
   int                   getValueIndex()                        const;
-  bool                  isConstant()                           const;
+  bool                  isConstant(Number *v = NULL)           const;
   bool                  isBooleanOperator()                    const;
   bool                  isCompareOperator()                    const; // is symbol in { EQ,NE,LE,LT,GE,GT }
   Real                 &doAssignment()                         const;
@@ -266,8 +268,7 @@ public:
   bool                  isTrigonomtricFunction()               const;
   bool                  isSymmetricFunction()                  const;
   bool                  isAsymmetricFunction()                 const;
-  bool                  reducesToRationalConstant(Rational *r) const;
-  bool                  reducesToRational(        Rational *r) const;
+  bool                  reducesToRational(        Rational *r) const; // if r==NULL) only true/false is returned
   bool                  needParentheses(SNode parent)          const;
   SNode                 base()                                 const;
   SNode                 exponent()                             const;

@@ -9,6 +9,7 @@ ExpressionNodeStmtList::ExpressionNodeStmtList(ParserTree *tree, const SNodeArra
 {
   SETDEBUGSTRING();
 }
+
 ExpressionNodeStmtList::ExpressionNodeStmtList(ParserTree *tree, const ExpressionNodeStmtList *src)
   : ExpressionNodeTree(tree, src)
   , m_returnType(src->getReturnType())

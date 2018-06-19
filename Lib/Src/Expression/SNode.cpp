@@ -143,8 +143,8 @@ int SNode::getValueIndex() const {
   return m_node->getValueIndex();
 }
 
-bool SNode::isConstant() const {
-  return m_node->isConstant();
+bool SNode::isConstant(Number *v) const {
+  return m_node->isConstant(v);
 }
 
 bool SNode::isBooleanOperator() const {
@@ -309,10 +309,6 @@ bool SNode::isSymmetricFunction() const {
 
 bool SNode::isAsymmetricFunction() const {
   return m_node->isAsymmetricFunction();
-}
-
-bool SNode::reducesToRationalConstant(Rational *r) const {
-  return m_node->reducesToRationalConstant(r);
 }
 
 bool SNode::reducesToRational(Rational *r) const {

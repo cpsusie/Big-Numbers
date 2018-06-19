@@ -248,6 +248,9 @@
     <ClCompile Include="ExpressionNodeAddent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SNodeReduceToPoly.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Expression.txt">

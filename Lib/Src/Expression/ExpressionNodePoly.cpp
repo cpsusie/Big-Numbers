@@ -8,6 +8,9 @@ ExpressionNodePoly::ExpressionNodePoly(ParserTree *tree, const SNodeArray &coefA
   , m_coefArray(coefArray)
   , m_arg(arg)
 {
+  if(coefArray.size() < 1) {
+    throwInvalidArgumentException(__TFUNCTION__,_T("coefArray.size()==%zu"), coefArray.size());
+  }
   m_firstCoefIndex   = -1;
   SETDEBUGSTRING();
 }
@@ -25,7 +28,7 @@ ExpressionNodePoly::ExpressionNodePoly(ParserTree *tree, const ExpressionNodePol
 bool ExpressionNodePoly::isCoefArrayConstant() const {
   if(!m_info.m_coefArrayChecked) {
     m_info.m_coefArrayConstant = getCoefArray().isConstant() ? 1 : 0;
-    m_info.m_coefArrayChecked          = 1;
+    m_info.m_coefArrayChecked  = 1;
   }
   return m_info.m_coefArrayConstant ? true : false;
 }
@@ -101,6 +104,39 @@ SNode ExpressionNodePoly::expand() const {
   return result;
 }
 
+ExpressionNode *ExpressionNodePoly::clone(ParserTree *tree) const {
+  ExpressionNode *n = new ExpressionNodePoly(tree, this); TRACE_NEW(n);
+  return n;
+}
+
+static void getCoefficients(CompactArray<Real> &dst, const SNodeArray &coefArray) {
+  dst.setCapacity(coefArray.size());
+  for(size_t i = 0; i < coefArray.size(); i++) {
+    dst.add(coefArray[i].evaluateReal());
+  }
+}
+
+/**
+ * n.symbol = POLY, n.getCoefArray = coefficients. coef[0..n] poly(x) = ((coef[0] * x) + coef[1]) * x)... ) + coef[n]
+ * return value of polynomial p(x) with coefficients contained in n.getCoefArray, and x in n.getArgument()
+ */
+Real ExpressionNodePoly::evaluateReal() const {
+  CompactArray<Real> coefArray;
+  getCoefficients(coefArray, getCoefArray());
+  Real result = 0;
+  const size_t last = coefArray.size() - 1;
+  if(last > 0) {
+    const Real arg = getArgument().evaluateReal();
+    if(arg != 0) {
+      for(size_t i = 0; i < last; i++) {
+        result = result * arg + coefArray[i];
+      }
+      result *= arg;
+    }
+  }
+  return result + coefArray[last];
+}
+
 int ExpressionNodePoly::compare(const ExpressionNode *n) const {
   if(n->getNodeType() != getNodeType()) {
     return __super::compare(n);
@@ -117,32 +153,19 @@ int ExpressionNodePoly::compare(const ExpressionNode *n) const {
   return 0;
 }
 
-ExpressionNode *ExpressionNodePoly::clone(ParserTree *tree) const {
-  ExpressionNode *n = new ExpressionNodePoly(tree, this); TRACE_NEW(n);
-  return n;
-}
-
-bool ExpressionNodePoly::isConstant() const {
-  return m_arg.isConstant() && m_coefArray.isConstant();
-}
-
-static void getCoefficients(CompactArray<Real> &dst, const SNodeArray &coefArray) {
-  dst.setCapacity(coefArray.size());
-  for(size_t i = 0; i < coefArray.size(); i++) {
-    dst.add(coefArray[i].evaluateReal());
+bool ExpressionNodePoly::isConstant(Number *v) const {
+  if(!isCoefArrayConstant()) {
+    return false;
   }
-}
-/**
- * n.symbol = POLY, n.getCoefArray = coefficients. coef[0..n] poly(x) = ((coef[0] * x) + coef[1]) * x)... ) + coef[n]
- * return value of polynomial p(x) with coefficients contained in n.getCoefArray, and x in n.getArgument()
- */
-Real ExpressionNodePoly::evaluateReal() const {
-  const Real         arg = getArgument().evaluateReal();
-  CompactArray<Real> coefArray;
-  getCoefficients(coefArray, getCoefArray());
-  Real result = 0;
-  for(size_t i = 0; i < coefArray.size(); i++) {
-    result = result * arg + coefArray[i];
+  if(m_coefArray.size() == 1) {
+    if(v != NULL) {
+      *v = evaluateReal();
+    }
+    return true;
+  }
+  const bool result = m_arg.isConstant();
+  if(result && (v != NULL)) {
+    *v = evaluateReal();
   }
   return result;
 }

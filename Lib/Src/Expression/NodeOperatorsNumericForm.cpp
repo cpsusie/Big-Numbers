@@ -97,8 +97,9 @@ NNode NNode::toNFormAssign() const {
 
 NNode NNode::toNFormRealExp() const {
   ENTERMETHOD();
-  if(isConstant()) {
-    RETURNNODE( SNV(evaluateReal()) );
+  Number v;
+  if(isConstant(&v)) {
+    RETURNNODE( SNV(v) );
   }
   switch(getSymbol()) {
   case NUMBER    : throwException(_T("%s:Unexpected node-symbol (NUMBER)"), __TFUNCTION__);
