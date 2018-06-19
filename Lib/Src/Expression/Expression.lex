@@ -1,6 +1,4 @@
 %{
-#pragma once
-
  /* This part goes to the h file */
 
 #include <LRParser.h>
