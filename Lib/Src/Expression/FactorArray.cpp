@@ -140,10 +140,10 @@ bool FactorArray::equal(const FactorArray &a) const {
   if(a.size() != n) return false;
   int signShiftCount = 0;
   for(size_t i = 0; i < n; i++) {
-    if(Expr::equal((*this)[i].node(), a[i].node())) {
+    if((*this)[i].equal(a[i])) {
       continue;
     }
-    if(Expr::equalMinus((*this)[i].node(), a[i].node())) {
+    if((*this)[i].equalMinus(a[i])) {
       signShiftCount++;
       continue;
     }
@@ -157,10 +157,10 @@ bool FactorArray::equalMinus(const FactorArray &a) const {
   if(a.size() != n) return false;
   int signShiftCount = 0;
   for(size_t i = 0; i < n; i++) {
-    if(Expr::equal((*this)[i].node(), a[i].node())) {
+    if((*this)[i].equal(a[i])) {
       continue;
     }
-    if(Expr::equalMinus((*this)[i].node(), a[i].node())) {
+    if((*this)[i].equalMinus(a[i])) {
       signShiftCount++;
       continue;
     }

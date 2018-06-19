@@ -336,10 +336,10 @@ StdNode StdNode::toSFormBoolExpr() const {
 
 StdNode StdNode::toSFormPoly() const {
   ENTERMETHOD();
-  const SNodeArray &coefArray = getCoefArray();
-  StdNode           arg       = getArgument();
+  const CoefArray &coefArray = getCoefArray();
+  StdNode          arg       = getArgument();
 
-  SNodeArray newCoefArray(coefArray.getTree(),coefArray.size());
+  CoefArray newCoefArray(coefArray.getTree(),coefArray.size());
   for(size_t i = 0; i < coefArray.size(); i++) {
     newCoefArray.add(S(coefArray[i]).toSForm());
   }

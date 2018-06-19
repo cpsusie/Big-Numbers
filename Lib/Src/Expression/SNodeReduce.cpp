@@ -461,7 +461,7 @@ StartSearch:
     for(size_t i2 = 0; i2 < fl2.size(); i2++) {
       SNode factor2 = fl2[i2];
 
-      if(Expr::equal(factor1.node(), factor2.node())) {
+      if(factor1.equal(factor2)) {
         fl1.remove(i1);
         fl2.remove(i2);
         commonFactors *= factor1;
@@ -1242,10 +1242,10 @@ SNode SNode::reducePoly() {
   CHECKSYMBOL(*this,POLY);
   if(isReduced()) RETURNTHIS;
 
-  SNodeArray &coefArray = getCoefArray();
-  SNode       arg       = getArgument();  // arg is the parameter to the polynomial ex. poly[a,b,c,d](arg)
+  CoefArray &coefArray = getCoefArray();
+  SNode      arg       = getArgument();  // arg is the parameter to the polynomial ex. poly[a,b,c,d](arg)
 
-  SNodeArray newCoefArray(coefArray.getTree());
+  CoefArray newCoefArray(coefArray.getTree());
   bool leadingCoef = true;
   for(size_t i = 0; i < coefArray.size(); i++) {
     SNode  coef = coefArray[i];

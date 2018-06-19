@@ -107,11 +107,11 @@ FactorArray &SNode::getFactorArray() {
   return m_node->getFactorArray();
 }
 
-const SNodeArray &SNode::getCoefArray() const {
+const CoefArray &SNode::getCoefArray() const {
   return m_node->getCoefArray();
 }
 
-SNodeArray &SNode::getCoefArray() {
+CoefArray &SNode::getCoefArray() {
   return m_node->getCoefArray();
 }
 
@@ -558,7 +558,7 @@ SNode boolExp(ExpressionInputSymbol symbol, SNodeArray &a) {
   return a.getTree().boolExpr(symbol, a);
 }
 
-SNode polyExp(SNodeArray &coefArray, SNode arg) {
+SNode polyExp(CoefArray &coefArray, SNode arg) {
   return arg.getTree().polyExpr(coefArray, arg);
 }
 

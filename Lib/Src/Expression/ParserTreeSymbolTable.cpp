@@ -20,7 +20,7 @@ bool AllocateNumbers::handleNode(ExpressionNode *n, int level) {
     }
     break;
   case POLY  :
-    { const SNodeArray &coefArray = n->getCoefArray();
+    { const CoefArray &coefArray = n->getCoefArray();
       n->setFirstCoefIndex((int)m_table.getValueTable().size());
       for(size_t i = 0; i < coefArray.size(); i++) {
         ExpressionNode *coef = coefArray[i].node();
@@ -99,7 +99,7 @@ void ParserTreeSymbolTable::buildTable(ExpressionNode *n) {
     break;
 
   case POLY    :
-    { const SNodeArray &coefArray = n->getCoefArray();
+    { const CoefArray &coefArray = n->getCoefArray();
       for(size_t i = 0; i < coefArray.size(); i++) {
         buildTable(coefArray[i].node());
       }

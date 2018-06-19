@@ -52,10 +52,10 @@ SNode SNode::multiplyBoolExpr() const {
 SNode SNode::multiplyParenthesesInPoly() const {
   ENTERMETHOD();
   CHECKNODETYPE(*this,NT_POLY);
-  const SNodeArray &coefArray = getCoefArray();
-  SNode             newArg    = getArgument().multiplyParentheses();
+  const CoefArray &coefArray = getCoefArray();
+  SNode            newArg    = getArgument().multiplyParentheses();
 
-  SNodeArray newCoefArray(coefArray.getTree(),coefArray.size());
+  CoefArray newCoefArray(coefArray.getTree(),coefArray.size());
   for(size_t i = 0; i < coefArray.size(); i++) {
     newCoefArray.add(coefArray[i].multiplyParentheses());
   }

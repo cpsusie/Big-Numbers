@@ -144,8 +144,8 @@ public:
   virtual       AddentArray         &getAddentArray()                       { UNSUPPORTEDOP();                                                 }
   virtual const FactorArray         &getFactorArray()               const   { UNSUPPORTEDOP();                                                 }
   virtual       FactorArray         &getFactorArray()                       { UNSUPPORTEDOP();                                                 }
-  virtual const SNodeArray          &getCoefArray()                 const   { UNSUPPORTEDOP();                                                 }
-  virtual       SNodeArray          &getCoefArray()                         { UNSUPPORTEDOP();                                                 }
+  virtual const CoefArray           &getCoefArray()                 const   { UNSUPPORTEDOP();                                                 }
+  virtual       CoefArray           &getCoefArray()                         { UNSUPPORTEDOP();                                                 }
   virtual int                        getFirstCoefIndex()            const   { UNSUPPORTEDOP();                                                 }
   virtual void                       setFirstCoefIndex(int index)           { UNSUPPORTEDOP();                                                 }
   virtual bool                       isCoefArrayConstant()          const   { UNSUPPORTEDOP();                                                 }
@@ -500,22 +500,22 @@ public:
 
 class ExpressionNodePoly : public ExpressionNode {
 private:
-  SNodeArray m_coefArray;
-  SNode      m_arg;
-  int        m_firstCoefIndex;
+  CoefArray m_coefArray;
+  SNode     m_arg;
+  int       m_firstCoefIndex;
 
 public:
-  ExpressionNodePoly(ParserTree *tree, const SNodeArray &coefArray, SNode arg);
+  ExpressionNodePoly(ParserTree *tree, const CoefArray &coefArray, SNode arg);
   ExpressionNodePoly(ParserTree *tree, const ExpressionNodePoly *src);
 
   int getDegree() const {
     return (int)m_coefArray.size() - 1;
   }
 
-  const SNodeArray &getCoefArray() const {
+  const CoefArray &getCoefArray() const {
     return m_coefArray;
   }
-  SNodeArray &getCoefArray() {
+  CoefArray &getCoefArray() {
     return m_coefArray;
   }
 
@@ -662,7 +662,7 @@ class ExpressionNodeProduct : public ExpressionNodeTree {
 private:
   void validateFactorArray(const FactorArray &a) const; // check, that all nodes have type NT_POWER
 public:
-  ExpressionNodeProduct(ParserTree *tree, FactorArray &factors);
+  ExpressionNodeProduct(ParserTree *tree, const FactorArray &factors);
   ExpressionNodeProduct(ParserTree *tree, const ExpressionNodeProduct *src);
 
   FactorArray &getFactorArray() {
@@ -753,7 +753,7 @@ class ExpressionNodePolyWithPos : public ExpressionNodePoly {
 private:
   const SourcePosition m_pos;
 public:
-  ExpressionNodePolyWithPos(ParserTree *tree, const SourcePosition &pos, const SNodeArray &coefArray, SNode arg)
+  ExpressionNodePolyWithPos(ParserTree *tree, const SourcePosition &pos, const CoefArray &coefArray, SNode arg)
     : ExpressionNodePoly(tree, coefArray, arg)
   {
   }

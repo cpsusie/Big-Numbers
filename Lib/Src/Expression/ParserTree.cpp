@@ -283,10 +283,10 @@ SNode ParserTree::traverseSubstituteNodes(SNode n, CompactNodeHashMap<Expression
   case NT_VARIABLE  :
     return n;
   case NT_POLY:
-    { const SNodeArray &coefArray = n.getCoefArray();
-      SNode             arg       = n.getArgument();
-      SNodeArray        newCoefArray(coefArray.getTree(),coefArray.size());
-      SNode             newArg    = traverseSubstituteNodes(arg, nodeMap);
+    { const CoefArray &coefArray = n.getCoefArray();
+      SNode            arg       = n.getArgument();
+      CoefArray        newCoefArray(coefArray.getTree(),coefArray.size());
+      SNode            newArg    = traverseSubstituteNodes(arg, nodeMap);
       for(size_t i = 0; i < coefArray.size(); i++) {
         newCoefArray.add(traverseSubstituteNodes(coefArray[i], nodeMap));
       }
@@ -436,7 +436,7 @@ ExpressionNode *ParserTree::vFetchNode(const SourcePosition &pos, ExpressionInpu
     }
     break;
   case POLY    :
-    { SNodeArray coefArray(*this);
+    { CoefArray coefArray(*this);
       coefArray.convertFromParserTree(va_arg(argptr, ExpressionNode*), COMMA);
       SNode arg = va_arg(argptr, ExpressionNode*);
       n = new ExpressionNodePolyWithPos(   this, pos, coefArray, arg);

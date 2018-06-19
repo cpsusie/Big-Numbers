@@ -13,6 +13,7 @@ class ExpressionFactor;
 class ExpressionNodeSum;
 class AddentArray;
 class FactorArray;
+class CoefArray;
 class ParserTree;
 
 // Define this, to have consistency check of ExpressionNodes when doing reduction
@@ -213,8 +214,8 @@ public:
         AddentArray    &getAddentArray();
   const FactorArray    &getFactorArray()                       const;
         FactorArray    &getFactorArray();
-  const SNodeArray     &getCoefArray()                         const;
-        SNodeArray     &getCoefArray();
+  const CoefArray      &getCoefArray()                         const;
+        CoefArray      &getCoefArray();
   int                   getFirstCoefIndex()                    const;
   int                   getDegree()                            const;
   const String         &getName()                              const;
@@ -367,7 +368,6 @@ public:
   bool isConstant() const;
   bool isSameNodes(const SNodeArray &a) const; // return true, if ExpressionNode pointers are the same
   bool equal(      const SNodeArray &a) const; // recursive compare all nodes ( deep compare)
-  bool equalMinus( const SNodeArray &a) const; // recursive compare all nodes ( deep compare)
   SNodeArray &cloneNodes(SNodeArray &dst, ParserTree *tree) const;
 };
 
@@ -435,11 +435,20 @@ public:
   }
 };
 
+class CoefArray : public SNodeArray {
+public:
+  CoefArray(ParserTree &tree) : SNodeArray(tree) {
+  }
+  CoefArray(ParserTree &tree, size_t capacity) : SNodeArray(tree, capacity) {
+  }
+  bool equalMinus( const CoefArray &a) const;
+};
+
 SNode unaryExp(   ExpressionInputSymbol symbol, SNode n);
 SNode binExp(     ExpressionInputSymbol symbol, SNode n1, SNode n2);
 SNode condExp(    SNode condition , SNode nTrue  , SNode nFalse);
 
-SNode polyExp(    SNodeArray &coefArray, SNode arg);
+SNode polyExp(    CoefArray &coefArray, SNode arg);
 SNode boolExp(    ExpressionInputSymbol symbol, SNode left, SNode right);
 SNode boolExp(    ExpressionInputSymbol symbol, SNode child);
 SNode boolExp(    ExpressionInputSymbol symbol, SNodeArray &a);

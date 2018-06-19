@@ -342,26 +342,26 @@ public:
   inline ExpressionNode  *csc(       ExpressionNode *n) { return m_ops->csc(n);        }
   inline ExpressionNode  *sec(       ExpressionNode *n) { return m_ops->sec(n);        }
 
-  ExpressionNode         *getStmtList(  SNode oldStmtList           , SNodeArray           &newChildArray                   );
-  ExpressionNode         *getAssignStmt(SNode oldAssign             , SNodeArray           &newChildArray                   );
-  ExpressionNode         *getTreeNode(  SNode oldTree               , SNodeArray           &newChildArray                   );
+  ExpressionNode         *getStmtList(  SNode oldStmtList           , const SNodeArray     &newChildArray                   );
+  ExpressionNode         *getAssignStmt(SNode oldAssign             , const SNodeArray     &newChildArray                   );
+  ExpressionNode         *getTreeNode(  SNode oldTree               , const SNodeArray     &newChildArray                   );
   ExpressionNode         *getAnd(       SNode oldAnd                , SNode                 left            , SNode right   );
   ExpressionNode         *getOr(        SNode oldOr                 , SNode                 left            , SNode right   );
   ExpressionNode         *getNot(       SNode oldNot                , SNode                 left                            );
-  ExpressionNode         *getPoly(      SNode oldPoly               , SNodeArray           &newCoefArray    , SNode newArg  );
-  ExpressionNode         *getSum(       SNode oldSum                , AddentArray          &newAddentArray                  );
-  ExpressionNode         *getProduct(   SNode oldProduct            , FactorArray          &newFactorArray                  );
+  ExpressionNode         *getPoly(      SNode oldPoly               , const CoefArray      &newCoefArray    , SNode newArg  );
+  ExpressionNode         *getSum(       SNode oldSum                , const AddentArray    &newAddentArray                  );
+  ExpressionNode         *getProduct(   SNode oldProduct            , const FactorArray    &newFactorArray                  );
   ExpressionNode         *getPower(     SNode oldPower              , SNode                 newBase         , SNode newExpo );
 
-  ExpressionNode         *stmtList(                                   SNodeArray           &stmtArray                       );
-  ExpressionNode         *assignStmt(                                 SNodeArray           &a                               );
+  ExpressionNode         *stmtList(                                   const SNodeArray     &stmtArray                       );
+  ExpressionNode         *assignStmt(                                 const SNodeArray     &a                               );
   ExpressionNode         *assignStmt(                                 ExpressionNode *leftSide, ExpressionNode *expr        );
-  ExpressionNode         *treeExpr(     ExpressionInputSymbol symbol, SNodeArray           &a                               );
-  ExpressionNode         *boolExpr(     ExpressionInputSymbol symbol, SNodeArray           &a                               );
+  ExpressionNode         *treeExpr(     ExpressionInputSymbol symbol, const SNodeArray     &a                               );
+  ExpressionNode         *boolExpr(     ExpressionInputSymbol symbol, const SNodeArray     &a                               );
   ExpressionNode         *boolExpr(     ExpressionInputSymbol symbol, ExpressionNode *n1, ExpressionNode *n2);
-  ExpressionNode         *polyExpr(                                   SNodeArray           &coefArray       , SNode arg     );
-  ExpressionNode         *sumExpr(                                    AddentArray          &addentArray);
-  ExpressionNode         *productExpr(                                FactorArray          &factorArray);
+  ExpressionNode         *polyExpr(                                   const CoefArray      &coefArray       , SNode arg     );
+  ExpressionNode         *sumExpr(                                    const AddentArray    &addentArray);
+  ExpressionNode         *productExpr(                                const FactorArray    &factorArray);
   ExpressionNode         *addentExpr(                                 SNode           child, bool positive);
   ExpressionNode         *powerExpr(                                  SNode           base);
   ExpressionNode         *powerExpr(                                  SNode           base , SNode exponent);

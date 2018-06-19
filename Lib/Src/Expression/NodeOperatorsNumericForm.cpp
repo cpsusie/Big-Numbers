@@ -215,10 +215,10 @@ NNode NNode::toNFormProduct() const {
 
 NNode NNode::toNFormPoly() const {
   ENTERMETHOD();
-  const SNodeArray &coefArray = getCoefArray();
-  NNode             arg       = getArgument();
+  const CoefArray &coefArray = getCoefArray();
+  NNode            arg       = getArgument();
 
-  SNodeArray newCoefArray(coefArray.getTree(),coefArray.size());
+  CoefArray newCoefArray(coefArray.getTree(),coefArray.size());
   for(size_t i = 0; i < coefArray.size(); i++) {
     newCoefArray.add(N(coefArray[i]).toNFormRealExp());
   }

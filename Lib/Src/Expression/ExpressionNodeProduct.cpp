@@ -3,7 +3,7 @@
 
 namespace Expr {
 
-ExpressionNodeProduct::ExpressionNodeProduct(ParserTree *tree, FactorArray &factors)
+ExpressionNodeProduct::ExpressionNodeProduct(ParserTree *tree, const FactorArray &factors)
 : ExpressionNodeTree(tree, PRODUCT, factors)
 {
 #ifdef _DEBUG

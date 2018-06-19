@@ -652,8 +652,8 @@ void CodeGenerator::genCall2Arg(SNode arg1, SNode arg2, BuiltInFunctionRef2 f, c
 }
 
 void CodeGenerator::genPolynomial(SNode n) {
-  const SNodeArray &coefArray       = n.getCoefArray();
-  const int         firstCoefIndex  = n.getFirstCoefIndex();
+  const CoefArray &coefArray       = n.getCoefArray();
+  const int        firstCoefIndex  = n.getFirstCoefIndex();
   for(int i = 0; i < (int)coefArray.size(); i++) {
     SNode coef = coefArray[i];
     if(coef.isConstant()) {
@@ -877,8 +877,8 @@ void CodeGenerator::genCall2Arg(SNode arg1, SNode arg2, BuiltInFunctionRef2 f, c
 #endif // !USEXMMREG
 
 void CodeGenerator::genPolynomial(SNode n DCL_DSTPARAM) {
-  const SNodeArray &coefArray       = n.getCoefArray();
-  const int         firstCoefIndex  = n.getFirstCoefIndex();
+  const CoefArray &coefArray       = n.getCoefArray();
+  const int        firstCoefIndex  = n.getFirstCoefIndex();
   for(int i = 0; i < (int)coefArray.size(); i++) {
     SNode coef = coefArray[i];
     if(coef.isConstant()) {

@@ -832,6 +832,7 @@
   <ItemGroup>
     <ClCompile Include="AddentArray.cpp" />
     <ClCompile Include="CodeGeneration.cpp" />
+    <ClCompile Include="CoefArray.cpp" />
     <ClCompile Include="Expression.cpp" />
     <ClCompile Include="ExpressionAction.cpp" />
     <ClCompile Include="ExpressionNodeAddent.cpp" />

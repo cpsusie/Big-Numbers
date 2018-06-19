@@ -3,7 +3,7 @@
 
 namespace Expr {
 
-ExpressionNodePoly::ExpressionNodePoly(ParserTree *tree, const SNodeArray &coefArray, SNode arg)
+ExpressionNodePoly::ExpressionNodePoly(ParserTree *tree, const CoefArray &coefArray, SNode arg)
   : ExpressionNode(tree, POLY)
   , m_coefArray(coefArray)
   , m_arg(arg)
@@ -35,8 +35,8 @@ bool ExpressionNodePoly::isCoefArrayConstant() const {
 
 bool ExpressionNodePoly::isSymmetricFunction() const {
   if(!isCoefArrayConstant()) return false;
-  const SNodeArray &coefArray = getCoefArray();
-  const size_t      n         = coefArray.size();
+  const CoefArray &coefArray = getCoefArray();
+  const size_t     n         = coefArray.size();
   for(size_t i = 0; i < n; i++) {
     const Real c = coefArray[i].evaluateReal();
     if(::isOdd(i) && (c != 0)) {
@@ -48,8 +48,8 @@ bool ExpressionNodePoly::isSymmetricFunction() const {
 
 bool ExpressionNodePoly::isAsymmetricFunction() const {
   if(!isCoefArrayConstant()) return false;
-  const SNodeArray &coefArray = getCoefArray();
-  const size_t      n         = coefArray.size();
+  const CoefArray &coefArray = getCoefArray();
+  const size_t     n         = coefArray.size();
   for(size_t i = 0; i < n; i++) {
     const Real c = coefArray[i].evaluateReal();
     if(::isEven(i) && (c != 0)) {
@@ -60,10 +60,10 @@ bool ExpressionNodePoly::isAsymmetricFunction() const {
 }
 
 bool ExpressionNodePoly::equal(const ExpressionNode *poly) const { // assume poly.symbol == POLY
-  if(Expr::equal(getArgument().node(), poly->getArgument().node())) {
+  if(getArgument().equal(poly->getArgument())) {
     return getCoefArray().equal(poly->getCoefArray());
   }
-  if(Expr::equalMinus(getArgument().node(), poly->getArgument().node())) {
+  if(getArgument().equalMinus(poly->getArgument())) {
     if(isSymmetricFunction()) {
       return getCoefArray().equal(poly->getCoefArray());
     } else if(isAsymmetricFunction()) {
@@ -74,10 +74,10 @@ bool ExpressionNodePoly::equal(const ExpressionNode *poly) const { // assume pol
 }
 
 bool ExpressionNodePoly::equalMinus(const ExpressionNode *poly) const { // assume poly.symbol == POLY
-  if(Expr::equal(getArgument().node(), poly->getArgument().node())) {
+  if(getArgument().equal(poly->getArgument())) {
     return getCoefArray().equalMinus(poly->getCoefArray());
   }
-  if(Expr::equalMinus(getArgument().node(), poly->getArgument().node())) {
+  if(getArgument().equalMinus(poly->getArgument())) {
     if(isSymmetricFunction()) {
       return getCoefArray().equalMinus(poly->getCoefArray());
     } else if(isAsymmetricFunction()) {
@@ -88,16 +88,15 @@ bool ExpressionNodePoly::equalMinus(const ExpressionNode *poly) const { // assum
 }
 
 SNode ExpressionNodePoly::expand() const {
-  ParserTree        &tree      = getTree();
-  const SNodeArray  &coefArray = getCoefArray();
-  const SNode        arg       = getArgument();
-  int                expo      = getDegree();
-  SNode              result    = arg._0();
+  const CoefArray  &coefArray = getCoefArray();
+  const SNode       arg       = getArgument();
+  int               expo      = getDegree();
+  SNode             result    = arg._0();
 
   for(size_t i = 0; i < coefArray.size(); i++) {
     SNode coef  = coefArray[i];
     if(!coef.isZero()) {
-      result += coef * pow(arg, SNode(tree, expo));
+      result += coef * pow(arg, SNV(expo));
     }
     expo--;
   }
@@ -109,7 +108,7 @@ ExpressionNode *ExpressionNodePoly::clone(ParserTree *tree) const {
   return n;
 }
 
-static void getCoefficients(CompactArray<Real> &dst, const SNodeArray &coefArray) {
+static void getCoefficients(CompactArray<Real> &dst, const CoefArray &coefArray) {
   dst.setCapacity(coefArray.size());
   for(size_t i = 0; i < coefArray.size(); i++) {
     dst.add(coefArray[i].evaluateReal());
@@ -143,8 +142,8 @@ int ExpressionNodePoly::compare(const ExpressionNode *n) const {
   }
   int c = getDegree() - n->getDegree();
   if(c) return c;
-  const SNodeArray &coefArray1 = getCoefArray();
-  const SNodeArray &coefArray2 = getCoefArray();
+  const CoefArray &coefArray1 = getCoefArray();
+  const CoefArray &coefArray2 = getCoefArray();
   const size_t      sz    = coefArray1.size();
   for(size_t i = 0; i < sz; i++) {
     c = coefArray1[i].node()->compare(coefArray2[i].node());
@@ -173,7 +172,7 @@ bool ExpressionNodePoly::isConstant(Number *v) const {
 bool ExpressionNodePoly::traverseExpression(ExpressionNodeHandler &handler, int level) {
   if(!handler.handleNode(this, level)) return false;
 
-  const SNodeArray &coefArray = getCoefArray();
+  const CoefArray &coefArray = getCoefArray();
   level++;
   for(size_t i = 0; i < coefArray.size(); i++) {
     if(!coefArray[i].node()->traverseExpression(handler, level)) return false;

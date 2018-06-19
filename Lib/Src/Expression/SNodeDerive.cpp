@@ -217,11 +217,11 @@ SNode SNode::D(const String &name) const {
  * throws ExpressionUnderivableException if any of the SNode involved in evaluating the polynomial cannot be derived
  */
 SNode SNode::DPoly(const String &name) const {
-  const SNodeArray &coefArray  = getCoefArray();
-  SNode           arg          = getArgument();   // arg(x) is the parameter to the polynomial
-  const SNode     dargdx       = ddx(arg);        // dudx is u derived wrt. name
+  const CoefArray &coefArray  = getCoefArray();
+  SNode            arg        = getArgument();   // arg(x) is the parameter to the polynomial
+  const SNode      dargdx     = ddx(arg);        // dudx is u derived wrt. name
 
-  SNodeArray newCoefArray(getTree());
+  CoefArray newCoefArray(getTree());
   const int degree = getDegree();
   newCoefArray.add(ddx(coefArray[0]));
   for(int i = 1; i < (int)coefArray.size(); i++) {

@@ -11,16 +11,16 @@ private:
   static inline ExpressionNode *addentExpr(     ExpressionNode *n, bool positive) {
     return n->getTree().addentExpr(n,positive);
   }
-  static inline ExpressionNode *sumExpr(        AddentArray &a) {
+  static inline ExpressionNode *sumExpr(        const AddentArray &a) {
     return a.getTree().sumExpr(a);
   }
-  static inline ExpressionNode *productExpr(    FactorArray &fa) {
+  static inline ExpressionNode *productExpr(    const FactorArray &fa) {
     return fa.getTree().productExpr(fa);
   }
   static inline ExpressionNode *unaryMinus(     ExpressionNode *n) {
     return n->getTree().unaryMinus(n);
   }
-  static inline ExpressionNode *polyExpr(       SNodeArray &coefArray, SNode arg) {
+  static inline ExpressionNode *polyExpr(       const CoefArray &coefArray, SNode arg) {
     return arg.getTree().polyExpr(coefArray, arg);
   }
   static inline ExpressionNode *indexedSum(     SNode assign, SNode end, SNode expr) {
@@ -111,9 +111,9 @@ ExpressionNode *NodeOperatorsCanonForm::minus(ExpressionNode *n) const {
       return productExpr(newFactors);
     }
   case POLY      :
-    { const SNodeArray &coefArray = n->getCoefArray();
-      const size_t      sz        = coefArray.size();
-      SNodeArray        newCoefArray(coefArray.getTree(),sz);
+    { const CoefArray &coefArray = n->getCoefArray();
+      const size_t     sz        = coefArray.size();
+      CoefArray        newCoefArray(coefArray.getTree(),sz);
       for(size_t i = 0; i < sz; i++) {
         newCoefArray.add(-coefArray[i]);
       }
@@ -376,9 +376,9 @@ CNode CNode::toCFormTreeNode() const {
 
 CNode CNode::toCFormPoly() const {
   ENTERMETHOD();
-  const SNodeArray &coefArray = getCoefArray();
-  const size_t      sz        = coefArray.size();
-  SNodeArray        newCoefArray(coefArray.getTree(), sz);
+  const CoefArray &coefArray = getCoefArray();
+  const size_t     sz        = coefArray.size();
+  CoefArray        newCoefArray(coefArray.getTree(), sz);
   for(size_t i = 0; i < sz; i++) {
     newCoefArray.add(C(coefArray[i]).toCForm());
   }

@@ -73,20 +73,7 @@ bool SNodeArray::equal(const SNodeArray &a) const { // recursive compare all nod
     return false;
   }
   for(size_t i = 0; i < n; i++) {
-    if(!Expr::equal((*this)[i].node(), a[i].node())) {
-      return false;
-    }
-  }
-  return true;
-}
-
-bool SNodeArray::equalMinus(const SNodeArray &a) const { // recursive compare all nodes ( deep compare)
-  const size_t n = size();
-  if(a.size() != n) {
-    return false;
-  }
-  for(size_t i = 0; i < n; i++) {
-    if(!Expr::equalMinus((*this)[i].node(), a[i].node())) {
+    if(!(*this)[i].equal(a[i])) {
       return false;
     }
   }

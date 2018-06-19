@@ -6,7 +6,7 @@ namespace Expr {
 
 // ------------------------------------ Operators common to Standard/Canonical form --------------------------------------
 
-ExpressionNode *ParserTree::stmtList(SNodeArray &stmtArray) {
+ExpressionNode *ParserTree::stmtList(const SNodeArray &stmtArray) {
   ExpressionNode *n = new ExpressionNodeStmtList(this, stmtArray); TRACE_NEW(n);
   return n;
 }
@@ -18,12 +18,12 @@ ExpressionNode *ParserTree::assignStmt(ExpressionNode *leftSide, ExpressionNode 
   return n;
 }
 
-ExpressionNode *ParserTree::assignStmt(SNodeArray &a) {
+ExpressionNode *ParserTree::assignStmt(const SNodeArray &a) {
   assert(a.size() == 2);
   return assignStmt(a[0].node(), a[1].node());
 }
 
-ExpressionNode *ParserTree::treeExpr(ExpressionInputSymbol symbol, SNodeArray &a) {
+ExpressionNode *ParserTree::treeExpr(ExpressionInputSymbol symbol, const SNodeArray &a) {
   switch(symbol) {
   case STMTLIST: return stmtList(  a);
   case ASSIGN  : return assignStmt(a);
@@ -62,7 +62,7 @@ ExpressionNode *ParserTree::boolExpr(ExpressionInputSymbol symbol, ExpressionNod
   return result;
 }
 
-ExpressionNode *ParserTree::boolExpr(ExpressionInputSymbol symbol, SNodeArray &childArray) {
+ExpressionNode *ParserTree::boolExpr(ExpressionInputSymbol symbol, const SNodeArray &childArray) {
   if(childArray.size() == 2) {
     return boolExpr(symbol,childArray[0].node(), childArray[1].node());
   } else {
@@ -70,12 +70,12 @@ ExpressionNode *ParserTree::boolExpr(ExpressionInputSymbol symbol, SNodeArray &c
   }
 }
 
-ExpressionNode *ParserTree::polyExpr(SNodeArray &coefArray, SNode arg) {
+ExpressionNode *ParserTree::polyExpr(const CoefArray &coefArray, SNode arg) {
   ExpressionNode *n = new ExpressionNodePoly(this, coefArray, arg); TRACE_NEW(n);
   return n;
 }
 
-ExpressionNode *ParserTree::sumExpr(AddentArray &a) {
+ExpressionNode *ParserTree::sumExpr(const AddentArray &a) {
   switch(a.size()) {
   case 0 : return numberExpr(0);
   case 1 : return a[0].isPositive() ? a[0].left().node() : minus(a[0].left().node());
@@ -86,7 +86,7 @@ ExpressionNode *ParserTree::sumExpr(AddentArray &a) {
   }
 }
 
-ExpressionNode *ParserTree::productExpr(FactorArray &a) {
+ExpressionNode *ParserTree::productExpr(const FactorArray &a) {
   switch(a.size()) {
   case 0 : return numberExpr(1);
   case 1 : return a[0].exponent().isOne() ? a[0].base().node() : a[0].node();
@@ -252,19 +252,19 @@ ExpressionNode *ParserTree::divideExponents(ExpressionNode *n1, ExpressionNode *
 
 // -------------------------------------------------------------------------------------------
 
-ExpressionNode *ParserTree::getStmtList(SNode oldStmtList, SNodeArray &newChildArray) {
+ExpressionNode *ParserTree::getStmtList(SNode oldStmtList, const SNodeArray &newChildArray) {
   const SNodeArray &oldChildArray = oldStmtList.getChildArray();
   SNode             result = newChildArray.isSameNodes(oldChildArray) ? oldStmtList : stmtList(newChildArray);
   return result.node();
 }
 
-ExpressionNode *ParserTree::getAssignStmt(SNode oldAssign, SNodeArray &newChildArray) {
+ExpressionNode *ParserTree::getAssignStmt(SNode oldAssign, const SNodeArray &newChildArray) {
   const SNodeArray &oldChildArray = oldAssign.getChildArray();
   SNode             result = newChildArray.isSameNodes(oldChildArray) ? oldAssign: assignStmt(newChildArray);
   return result.node();
 }
 
-ExpressionNode *ParserTree::getTreeNode(SNode oldTree, SNodeArray &newChildArray) {
+ExpressionNode *ParserTree::getTreeNode(SNode oldTree, const SNodeArray &newChildArray) {
   const SNodeArray &oldChildArray = oldTree.getChildArray();
   SNode             result = newChildArray.isSameNodes(oldChildArray) ? oldTree : treeExpr(oldTree.getSymbol(), newChildArray);
   return result.node();
@@ -293,16 +293,16 @@ ExpressionNode *ParserTree::getNot(SNode oldNot, SNode left) {
   return (oldNot.left().isSameNode(left)) ? oldNot.node() : not(left.node());
 }
 
-ExpressionNode *ParserTree::getPoly(SNode oldPoly, SNodeArray &newCoefArray, SNode newArgument) {
-  const SNodeArray &oldCoefArray = oldPoly.getCoefArray();
-  const SNode       oldArgument  = oldPoly.getArgument().node();
-  SNode             result       = (newCoefArray.isSameNodes(oldCoefArray) && newArgument.isSameNode(oldArgument))
-                                 ? oldPoly
-                                 : polyExpr(newCoefArray, newArgument);
+ExpressionNode *ParserTree::getPoly(SNode oldPoly, const CoefArray &newCoefArray, SNode newArgument) {
+  const CoefArray &oldCoefArray = oldPoly.getCoefArray();
+  const SNode      oldArgument  = oldPoly.getArgument();
+  SNode            result       = (newCoefArray.isSameNodes(oldCoefArray) && newArgument.isSameNode(oldArgument))
+                                ? oldPoly
+                                : polyExpr(newCoefArray, newArgument);
   return result.node();
 }
 
-ExpressionNode *ParserTree::getSum(SNode oldSum, AddentArray &newAddentArray) {
+ExpressionNode *ParserTree::getSum(SNode oldSum, const AddentArray &newAddentArray) {
   const AddentArray &oldAddentArray = oldSum.getAddentArray();
   SNode             result          = newAddentArray.isSameNodes(oldAddentArray)
                                     ? oldSum
@@ -310,7 +310,7 @@ ExpressionNode *ParserTree::getSum(SNode oldSum, AddentArray &newAddentArray) {
   return result.node();
 }
 
-ExpressionNode *ParserTree::getProduct(SNode oldProduct, FactorArray &newFactorArray) {
+ExpressionNode *ParserTree::getProduct(SNode oldProduct, const FactorArray &newFactorArray) {
   const FactorArray  &oldFactorArray = oldProduct.getFactorArray();
   SNode               result         = (newFactorArray.isSameNodes(oldFactorArray))
                                      ? oldProduct
