@@ -39,6 +39,16 @@ int ExpressionNodeAddent::compare(const ExpressionNode *n) const {
   return ordinal(p1) - ordinal(p2);
 }
 
+bool ExpressionNodeAddent::equal(const ExpressionNode *n) const {
+  return (((isPositive() == n->isPositive()) && Expr::equal(     left(),n->left()))
+       || ((isPositive() != n->isPositive()) && Expr::equalMinus(left(),n->left())));
+}
+
+bool ExpressionNodeAddent::equalMinus(const ExpressionNode *n) const {
+  return (((isPositive() != n->isPositive()) && Expr::equal(     left(),n->left()))
+       || ((isPositive() == n->isPositive()) && Expr::equalMinus(left(),n->left())));
+}
+
 void ExpressionNodeAddent::dumpNode(String &s, int level) const {
   addLeftMargin(s, level) += isPositive() ? _T("+ADDENT\n") : _T("-ADDENT\n");
   left()->dumpNode(s, level+1);

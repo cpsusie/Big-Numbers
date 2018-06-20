@@ -46,6 +46,11 @@ ExpressionNodeTree::ExpressionNodeTree(ParserTree *tree, ExpressionInputSymbol s
 #endif // _DEBUG
 }
 
+ExpressionNode *ExpressionNodeTree::clone(ParserTree *tree) const {
+  ExpressionNode *n = new ExpressionNodeTree(tree, this); TRACE_NEW(n);
+  return n;
+}
+
 static int countVargs(va_list argptr) {
   int count = 0;
   for(ExpressionNode *p = va_arg(argptr, ExpressionNode*); p; p = va_arg(argptr, ExpressionNode*)) {
@@ -100,9 +105,74 @@ int ExpressionNodeTree::compare(const ExpressionNode *n) const {
   return 0;
 }
 
-ExpressionNode *ExpressionNodeTree::clone(ParserTree *tree) const {
-  ExpressionNode *n = new ExpressionNodeTree(tree, this); TRACE_NEW(n);
-  return n;
+bool ExpressionNodeTree::equal(const ExpressionNode *n) const {
+  switch(getSymbol()) {
+  case MINUS :
+    assert(isUnaryMinus());
+    assert(n->isUnaryMinus());
+    return Expr::equal(left(), n->left());
+
+  case MOD      :
+    if(!Expr::equal(left(), n->left())) {
+      return false;
+    }
+    return Expr::equal(right(), n->right()) || Expr::equalMinus(right(), n->right());
+
+  case PLUS  :
+  case PROD  :
+  case QUOT  :
+  case SQR   :
+  case ROOT  :
+  case SQRT  :
+  case EXP   :
+  case SEC   :
+  case CSC   :
+  case COT   :
+    throwInvalidSymbolForTreeMode(__TFUNCTION__);
+
+  default:
+    if(isSymmetricFunction()) {
+      return Expr::equal(left(), n->left()) || Expr::equalMinus(left(), n->left());
+    }
+    return getChildArray().equal(n->getChildArray());
+  }
+}
+
+bool ExpressionNodeTree::equalMinus(const ExpressionNode *n) const {
+  switch(getSymbol()) {
+  case MINUS :
+    assert(isUnaryMinus());
+    assert(n->isUnaryMinus());
+    return Expr::equalMinus(left(), n->left());
+
+  case MOD   :
+    if(!Expr::equalMinus(left(), n->left())) {
+      return false;
+    }
+    return Expr::equal(right(), n->right()) || Expr::equalMinus(right(), n->right());
+
+  case INDEXEDSUM    :
+    return Expr::equal(left(), n->left()) && Expr::equal(right(), n->right())
+        && Expr::equalMinus(child(2).node(), n->child(2).node());
+
+  case PLUS  :
+  case PROD  :
+  case QUOT  :
+  case SQR   :
+  case ROOT  :
+  case SQRT  :
+  case EXP   :
+  case SEC   :
+  case CSC   :
+  case COT   :
+    throwInvalidSymbolForTreeMode(__TFUNCTION__);
+
+  default:
+    if(isAsymmetricFunction()) {
+      return Expr::equalMinus(left(), n->left());
+    }
+    return false;
+  }
 }
 
 class IndexedExpressionDependencyChecker : public ExpressionNodeHandler {

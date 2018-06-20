@@ -41,6 +41,10 @@ Real ExpressionNodeSum::evaluateReal() const {
   return sum;
 }
 
+bool ExpressionNodeSum::equalMinus(const ExpressionNode *n) const {
+  return getAddentArray().equalMinus(n->getAddentArray());
+}
+
 String ExpressionNodeSum::toString() const {
   return _T("SUM") + getAddentArray().toString();
 }

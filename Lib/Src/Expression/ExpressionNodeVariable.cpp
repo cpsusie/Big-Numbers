@@ -27,6 +27,14 @@ int ExpressionNodeVariable::compare(const ExpressionNode *n) const {
   return stringiHashCmp(getName(), n->getName());
 }
 
+bool ExpressionNodeVariable::equal(const ExpressionNode *n) const {
+  return getName().equalsIgnoreCase(n->getName());
+}
+
+bool ExpressionNodeVariable::equalMinus(const ExpressionNode *n) const {
+  return false;
+}
+
 bool ExpressionNodeVariable::isConstant(Number *v) const {
   const bool result = m_var->isConstant();
   if(result && (v != NULL)) {

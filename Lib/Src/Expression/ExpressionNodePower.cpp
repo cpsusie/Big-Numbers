@@ -76,6 +76,48 @@ int ExpressionNodePower::compare(const ExpressionNode *n) const {
   return exponent().node()->compare(f->exponent().node());
 }
 
+bool ExpressionNodePower::equal(const ExpressionNode *n) const {
+  if(__super::equal(n)) {
+    return true;
+  }
+  const ExpressionNode *b1 = left();
+  const ExpressionNode *b2 = n->left();
+  const ExpressionNode *e1 = right();
+  const ExpressionNode *e2 = n->right();
+  Rational er1, er2;
+  if(!e1->reducesToRational(&er1) || !e2->reducesToRational(&er2)) {
+    Number bv1,bv2;
+    if(!b1->isConstant(&bv1) || !b2->isConstant(&bv2)) {
+      return false;
+    } else if(bv1 == bv2) {
+      return bv1 == 1;
+    }
+  } else if(er1 == er2) {
+    if(er1 == 0) {
+      return true;
+    } else if(::isSymmetricExponent(er1)) {
+      return Expr::equal(b1, b2) || Expr::equalMinus(b1, b2);
+    } else if(::isAsymmetricExponent(er1)) {
+      return Expr::equal(b1, b2);
+    }
+  }
+  return false;
+}
+
+bool ExpressionNodePower::equalMinus(const ExpressionNode *n) const {
+  const ExpressionNode *b1 = left();
+  const ExpressionNode *b2 = n->left();
+  const ExpressionNode *e1 = right();
+  const ExpressionNode *e2 = n->right();
+  Rational er1, er2;
+  if(!e1->reducesToRational(&er1) || !e2->reducesToRational(&er2)) {
+    return false;
+  } else {
+    return (er1 == er2) && ::isAsymmetricExponent(er1)
+        && Expr::equalMinus(b1, b2);
+  }
+}
+
 bool ExpressionNodePower::isConstant(Number *v) const {
   if(exponent().isZero()) {
     if(v != NULL) {

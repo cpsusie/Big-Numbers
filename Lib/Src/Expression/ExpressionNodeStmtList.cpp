@@ -43,6 +43,22 @@ SNode ExpressionNodeStmtList::doAssignments() const {
   return list.last();
 }
 
+bool ExpressionNodeStmtList::equalMinus(const ExpressionNode *n) const {
+  const SNodeArray &l1  = getChildArray();
+  const SNodeArray &l2  = n->getChildArray();
+  const size_t      sz1 = l1.size();
+  if(sz1 != l2.size()) {
+    return false;
+  }
+  const size_t assignCount = sz1 - 1;
+  for(size_t i = 0; i < assignCount; i++) {
+    if(!l1[i].equal(l2[i])) {
+      return false;
+    }
+  }
+  return l1.last().equalMinus(l2.last());
+}
+
 String ExpressionNodeStmtList::toString() const {
   String result;
   const SNodeArray &list = getChildArray();

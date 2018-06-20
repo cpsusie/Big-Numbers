@@ -78,4 +78,17 @@ void AddentArray::sortStdForm() {
   }
 }
 
+bool AddentArray::equalMinus(const AddentArray &a) const {
+  const size_t n = size();
+  if(n != a.size()) {
+    return false;
+  }
+  for(size_t i = 0; i < n; i++) {
+    if(!(*this)[i].equalMinus(a[i])) {
+      return false;
+    }
+  }
+  return true;
+}
+
 }; // namespace Expr

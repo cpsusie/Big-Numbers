@@ -59,34 +59,6 @@ bool ExpressionNodePoly::isAsymmetricFunction() const {
   return true;
 }
 
-bool ExpressionNodePoly::equal(const ExpressionNode *poly) const { // assume poly.symbol == POLY
-  if(getArgument().equal(poly->getArgument())) {
-    return getCoefArray().equal(poly->getCoefArray());
-  }
-  if(getArgument().equalMinus(poly->getArgument())) {
-    if(isSymmetricFunction()) {
-      return getCoefArray().equal(poly->getCoefArray());
-    } else if(isAsymmetricFunction()) {
-      return getCoefArray().equalMinus(poly->getCoefArray());
-    }
-  }
-  return false;
-}
-
-bool ExpressionNodePoly::equalMinus(const ExpressionNode *poly) const { // assume poly.symbol == POLY
-  if(getArgument().equal(poly->getArgument())) {
-    return getCoefArray().equalMinus(poly->getCoefArray());
-  }
-  if(getArgument().equalMinus(poly->getArgument())) {
-    if(isSymmetricFunction()) {
-      return getCoefArray().equalMinus(poly->getCoefArray());
-    } else if(isAsymmetricFunction()) {
-      return getCoefArray().equal(poly->getCoefArray());
-    }
-  }
-  return false;
-}
-
 SNode ExpressionNodePoly::expand() const {
   const CoefArray  &coefArray = getCoefArray();
   const SNode       arg       = getArgument();
@@ -150,6 +122,36 @@ int ExpressionNodePoly::compare(const ExpressionNode *n) const {
     if(c) return c;
   }
   return 0;
+}
+
+// assume n.symbol == POLY
+bool ExpressionNodePoly::equal(const ExpressionNode *n) const {
+  if(getArgument().equal(n->getArgument())) {
+    return getCoefArray().equal(n->getCoefArray());
+  }
+  if(getArgument().equalMinus(n->getArgument())) {
+    if(isSymmetricFunction()) {
+      return getCoefArray().equal(n->getCoefArray());
+    } else if(isAsymmetricFunction()) {
+      return getCoefArray().equalMinus(n->getCoefArray());
+    }
+  }
+  return false;
+}
+
+// assume n.symbol == POLY
+bool ExpressionNodePoly::equalMinus(const ExpressionNode *n) const {
+  if(getArgument().equal(n->getArgument())) {
+    return getCoefArray().equalMinus(n->getCoefArray());
+  }
+  if(getArgument().equalMinus(n->getArgument())) {
+    if(isSymmetricFunction()) {
+      return getCoefArray().equalMinus(n->getCoefArray());
+    } else if(isAsymmetricFunction()) {
+      return getCoefArray().equal(n->getCoefArray());
+    }
+  }
+  return false;
 }
 
 bool ExpressionNodePoly::isConstant(Number *v) const {

@@ -3,6 +3,11 @@
 
 namespace Expr {
 
+ExpressionNode *ExpressionNodeBoolConst::clone(ParserTree *tree) const {
+  ExpressionNode *n = new ExpressionNodeBoolConst(tree, getBool()); TRACE_NEW(n);
+  return n;
+}
+
 int ExpressionNodeBoolConst::compare(const ExpressionNode *n) const {
   if(n->getNodeType() != getNodeType()) {
     return __super::compare(n);
@@ -10,9 +15,8 @@ int ExpressionNodeBoolConst::compare(const ExpressionNode *n) const {
   return ordinal(getBool()) - ordinal(n->getBool());
 }
 
-ExpressionNode *ExpressionNodeBoolConst::clone(ParserTree *tree) const {
-  ExpressionNode *n = new ExpressionNodeBoolConst(tree, getBool()); TRACE_NEW(n);
-  return n;
+bool ExpressionNodeBoolConst::equal(const ExpressionNode *n) const {
+  return getBool() == n->getBool();
 }
 
 bool ExpressionNodeBoolConst::traverseExpression(ExpressionNodeHandler &handler, int level) {

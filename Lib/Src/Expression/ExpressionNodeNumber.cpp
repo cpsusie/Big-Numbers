@@ -10,6 +10,14 @@ int ExpressionNodeNumber::compare(const ExpressionNode *n) const {
   return numberCmp(getNumber(), n->getNumber());
 }
 
+bool ExpressionNodeNumber::equal(const ExpressionNode *n) const {
+  return getNumber() == n->getNumber();
+}
+
+bool ExpressionNodeNumber::equalMinus(const ExpressionNode *n) const {
+  return getNumber() == -n->getNumber();
+}
+
 bool ExpressionNodeNumber::isConstant(Number *v) const {
   if(v != NULL) {
     *v = getNumber();

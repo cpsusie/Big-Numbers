@@ -26,6 +26,21 @@ ExpressionNodeProduct::ExpressionNodeProduct(ParserTree *tree, const ExpressionN
 {
 }
 
+ExpressionNode *ExpressionNodeProduct::clone(ParserTree *tree) const {
+  ExpressionNode *n = new ExpressionNodeProduct(tree, this); TRACE_NEW(n);
+  return n;
+}
+
+Real ExpressionNodeProduct::evaluateReal() const {
+  Real prod = 1;
+  const FactorArray &a = getFactorArray();
+  const size_t       n = a.size();
+  for(size_t i = 0; i < n; i++) {
+    prod *= a[i].evaluateReal();
+  }
+  return prod;
+}
+
 int ExpressionNodeProduct::compare(const ExpressionNode *n) const {
   if(n->getNodeType() != getNodeType()) {
     return ExpressionNode::compare(n);
@@ -53,19 +68,12 @@ int ExpressionNodeProduct::compare(const ExpressionNode *n) const {
   return constCompare;
 }
 
-ExpressionNode *ExpressionNodeProduct::clone(ParserTree *tree) const {
-  ExpressionNode *n = new ExpressionNodeProduct(tree, this); TRACE_NEW(n);
-  return n;
+bool ExpressionNodeProduct::equal(const ExpressionNode *n) const {
+  return getFactorArray().equal(n->getFactorArray());
 }
 
-Real ExpressionNodeProduct::evaluateReal() const {
-  Real prod = 1;
-  const FactorArray &a = getFactorArray();
-  const size_t       n = a.size();
-  for(size_t i = 0; i < n; i++) {
-    prod *= a[i].evaluateReal();
-  }
-  return prod;
+bool ExpressionNodeProduct::equalMinus(const ExpressionNode *n) const {
+  return getFactorArray().equalMinus(n->getFactorArray());
 }
 
 String ExpressionNodeProduct::toString() const {

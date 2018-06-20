@@ -399,6 +399,7 @@ public:
   AddentArray &operator-=(const Rational    &r  );
   void sort();
   void sortStdForm();
+  bool equalMinus( const AddentArray &a) const;
   AddentArray selectNodes(const BitSet &set) const {
     return (AddentArray&)(__super::filterNodes(set));
   }
