@@ -1,15 +1,22 @@
 #pragma once
 
 #include <MFCUtil/ComboBoxWithHistory.h>
+#include "ExpressionTreeCtrl.h"
+
+class ExprData {
+public:
+  CComboBoxWithHistory m_cb;
+  Expression           m_expr;
+  CExpressionTreeCtrl  m_tree;
+  ExpressionImage      m_image;
+};
 
 class CTestTreesEqualDlg : public CDialog {
 private:
   HACCEL                  m_accelTabel;
   SimpleLayoutManager     m_layoutManager;
   PixRectDevice           m_device;
-  CComboBoxWithHistory    m_cb[2];
-  Expression              m_e[2];
-  ExpressionImage         m_image[2];
+  ExprData                m_edata[2];
   int                     m_contextWinIndex, m_focusCtrlId;
 
   bool     compile(     int index);

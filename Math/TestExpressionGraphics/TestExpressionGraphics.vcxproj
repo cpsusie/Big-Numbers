@@ -433,6 +433,7 @@
     <ClCompile Include="..\..\Test\testexpr\ExpressionSamples.cpp" />
     <ClCompile Include="DebugThread.cpp" />
     <ClCompile Include="EnterVariablesDlg.cpp" />
+    <ClCompile Include="ExpressionTreeCtrl.cpp" />
     <ClCompile Include="ExpressionTreeDlg.cpp" />
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -460,6 +461,7 @@
     <ClInclude Include="..\..\Test\testexpr\ExpressionSamples.h" />
     <ClInclude Include="DebugThread.h" />
     <ClInclude Include="EnterVariablesDlg.h" />
+    <ClInclude Include="ExpressionTreeCtrl.h" />
     <ClInclude Include="ExpressionTreeDlg.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="StdAfx.h" />

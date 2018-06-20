@@ -1,6 +1,7 @@
 #pragma once
 
 #include <PropertyContainer.h>
+#include "ExpressionTreeCtrl.h"
 
 typedef enum {
   TREE_SELECTEDNODE            // const ExpressionNode *
@@ -9,18 +10,14 @@ typedef enum {
 class CExpressionTreeDlg : public CDialog, public PropertyContainer {
 private:
   SimpleLayoutManager   m_layoutManager;
-  const Expression     *m_expr;
+  const Expression     &m_expr;
   const ExpressionNode *m_node;
   ExpressionNode       *m_selectedNode;
+  CExpressionTreeCtrl   m_treeCtrl;
   BOOL                  m_extendedInfo;
 
-  void buildTree();
-  void traverse( CTreeCtrl *ctrl, HTREEITEM p, const ExpressionNode *n);
-  void expandAllNodes();
   HTREEITEM findItemFromNode(const ExpressionNode *n);
   const ExpressionNode *getNodeFromPoint(CPoint p);
-  CTreeCtrl *getTreeCtrl();
-  String getString(        const ExpressionNode *n) const;
 
   void setSelectedNode(const ExpressionNode *m_selectedNode); // property
   void updateNodeText(const ExpressionNode *n);

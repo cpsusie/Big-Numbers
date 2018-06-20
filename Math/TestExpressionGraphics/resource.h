@@ -48,6 +48,8 @@
 #define IDC_COMBONUMBERFORMAT           1038
 #define IDC_STATICFORMATLABEL           1039
 #define IDC_CHECKEXTENDEDINFO           1040
+#define IDC_TREE1                       1041
+#define IDC_TREE2                       1042
 #define ID_FILE_EXIT                    32771
 #define ID_EDIT_FINDMATCHINGPARENTESIS  32780
 #define ID_EDIT_GOTOCOMBOFX             32781
@@ -92,9 +94,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        135
+#define _APS_NEXT_RESOURCE_VALUE        136
 #define _APS_NEXT_COMMAND_VALUE         32940
-#define _APS_NEXT_CONTROL_VALUE         1041
+#define _APS_NEXT_CONTROL_VALUE         1042
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

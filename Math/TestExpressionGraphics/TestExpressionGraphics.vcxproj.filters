@@ -42,6 +42,9 @@
     <ClCompile Include="..\..\Test\testexpr\ExpressionSamples.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ExpressionTreeCtrl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="TestExpressionGraphics.rc">
@@ -80,6 +83,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Test\testexpr\ExpressionSamples.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ExpressionTreeCtrl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -11,3 +11,4 @@
 using namespace Expr;
 
 #include "TestExpressionGraphics.h"
+#include <afxcmn.h>

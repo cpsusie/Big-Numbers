@@ -38,13 +38,30 @@ BEGIN_MESSAGE_MAP(CTestTreesEqualDlg, CDialog)
 	ON_CBN_KILLFOCUS( IDC_EDITEXPR2                 , OnKillFocusEditExpr2        )
 END_MESSAGE_MAP()
 
+static const int s_comboID[] = {
+  IDC_EDITEXPR1
+ ,IDC_EDITEXPR2
+};
+
+static const int s_treeID[] = {
+  IDC_TREE1
+ ,IDC_TREE2
+};
+
+static const int s_imageID[] = {
+  IDC_STATICIMAGE1
+ ,IDC_STATICIMAGE2
+};
+
 BOOL CTestTreesEqualDlg::OnInitDialog() {
   __super::OnInitDialog();
 
   m_accelTabel = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDD_TREESEQUAL_ACCELERATOR));
 
-  m_cb[0].substituteControl(this, IDC_EDITEXPR1, _T("EqualExpr1"));
-  m_cb[1].substituteControl(this, IDC_EDITEXPR2, _T("EqualExpr2"));
+  for(int i = 0; i < 2; i++) {
+    m_edata[i].m_cb.substituteControl(  this, s_comboID[i], format(_T("EqualExpr%d"),i+1));
+    m_edata[i].m_tree.substituteControl(this, s_treeID[i]);
+  }
 
   m_layoutManager.OnInitDialog(this);
 
@@ -52,11 +69,15 @@ BOOL CTestTreesEqualDlg::OnInitDialog() {
   m_layoutManager.addControl(IDC_BUTTONCONVERT        , RELATIVE_X_POS);
   m_layoutManager.addControl(IDC_TESTTREESEQUAL       , RELATIVE_X_POS);
   m_layoutManager.addControl(IDC_TESTTREESEQUALMINUS  , RELATIVE_X_POS);
+
   m_layoutManager.addControl(IDC_EDITEXPR1            , RELATIVE_WIDTH);
-  m_layoutManager.addControl(IDC_STATICIMAGE1         , RELATIVE_WIDTH | PCT_RELATIVE_BOTTOM);
-  m_layoutManager.addControl(IDC_STATICLABEL2         ,                  PCT_RELATIVE_Y_POS );
-  m_layoutManager.addControl(IDC_EDITEXPR2            , RELATIVE_WIDTH | PCT_RELATIVE_Y_POS );
-  m_layoutManager.addControl(IDC_STATICIMAGE2         , RELATIVE_WIDTH | PCT_RELATIVE_TOP   | RELATIVE_BOTTOM);
+  m_layoutManager.addControl(IDC_STATICIMAGE1         , PCT_RELATIVE_RIGHT | PCT_RELATIVE_BOTTOM);
+  m_layoutManager.addControl(IDC_TREE1                , PCT_RELATIVE_LEFT  | RELATIVE_RIGHT     | PCT_RELATIVE_BOTTOM);
+
+  m_layoutManager.addControl(IDC_STATICLABEL2         ,                      PCT_RELATIVE_Y_POS );
+  m_layoutManager.addControl(IDC_EDITEXPR2            , RELATIVE_WIDTH     | PCT_RELATIVE_Y_POS );
+  m_layoutManager.addControl(IDC_STATICIMAGE2         , PCT_RELATIVE_RIGHT | PCT_RELATIVE_TOP   | RELATIVE_BOTTOM);
+  m_layoutManager.addControl(IDC_TREE2                , PCT_RELATIVE_LEFT  | RELATIVE_RIGHT     | PCT_RELATIVE_TOP | RELATIVE_BOTTOM);
 
   m_device.attach(*this);
 
@@ -71,8 +92,9 @@ void CTestTreesEqualDlg::OnPaint() {
 }
 
 void CTestTreesEqualDlg::ajourButtons() {
-  const bool expOk           = m_e[0].isOk() && m_e[1].isOk();
-  const bool isCanonicalForm = expOk && (m_e[0].getTreeForm() == TREEFORM_CANONICAL) && (m_e[1].getTreeForm() == TREEFORM_CANONICAL);
+  const bool expOk           = m_edata[0].m_expr.isOk() && m_edata[1].m_expr.isOk();
+  const bool isCanonicalForm = expOk && (m_edata[0].m_expr.getTreeForm() == TREEFORM_CANONICAL)
+                                     && (m_edata[1].m_expr.getTreeForm() == TREEFORM_CANONICAL);
 
   GetDlgItem(IDC_TESTTREESEQUAL     )->EnableWindow(expOk && isCanonicalForm);
   GetDlgItem(IDC_TESTTREESEQUALMINUS)->EnableWindow(expOk && isCanonicalForm);
@@ -96,10 +118,8 @@ BOOL CTestTreesEqualDlg::PreTranslateMessage(MSG *pMsg) {
 
 void CTestTreesEqualDlg::OnTestTreesEqual() {
   try {
-    const ExpressionNode *root1 = m_e[0].getRoot();
-    const ExpressionNode *root2 = m_e[1].getRoot();
-    const bool            eq    = equal(root1, root2);
-    showInformation(_T("Exspressions are %sequal"), eq?EMPTYSTRING:_T("not "));
+    const bool eq = m_edata[0].m_expr.equal(m_edata[1].m_expr);
+    showInformation(_T("Exspressions are %sequal"), eq ? EMPTYSTRING : _T("not "));
   } catch(Exception e) {
     showException(e);
   }
@@ -107,19 +127,19 @@ void CTestTreesEqualDlg::OnTestTreesEqual() {
 
 void CTestTreesEqualDlg::OnTestTreesEqualMinus() {
   try {
-    const bool eq = m_e[0].equalMinus(m_e[1]);
-    showInformation(_T("Exspressions are %sNegative-Equal"), eq?EMPTYSTRING:_T("not "));
+    const bool eqm = m_edata[0].m_expr.equalMinus(m_edata[1].m_expr);
+    showInformation(_T("Exspressions are %sNegative-Equal"), eqm ? EMPTYSTRING : _T("not "));
   } catch(Exception e) {
     showException(e);
   }
 }
 
 void CTestTreesEqualDlg::OnGotoExpr1() {
-  m_cb[0].SetFocus();
+  m_edata[0].m_cb.SetFocus();
 }
 
 void CTestTreesEqualDlg::OnGotoExpr2() {
-  m_cb[1].SetFocus();
+  m_edata[1].m_cb.SetFocus();
 }
 
 void CTestTreesEqualDlg::OnButtonCompile() {
@@ -143,15 +163,16 @@ void CTestTreesEqualDlg::OnEditFindMatchingParentesis() {
 }
 
 void CTestTreesEqualDlg::OnButtonConvert() {
-  const bool expOk = m_e[0].isOk() && m_e[1].isOk();
+  const bool expOk = m_edata[0].m_expr.isOk() && m_edata[1].m_expr.isOk();
   if(expOk) {
-    const bool isCanonicalForm = (m_e[0].getTreeForm() == TREEFORM_CANONICAL) && (m_e[1].getTreeForm() == TREEFORM_CANONICAL);
+    const bool isCanonicalForm = (m_edata[0].m_expr.getTreeForm() == TREEFORM_CANONICAL)
+                              && (m_edata[1].m_expr.getTreeForm() == TREEFORM_CANONICAL);
     if(isCanonicalForm) {
-      m_e[0].setTreeForm(TREEFORM_STANDARD);
-      m_e[1].setTreeForm(TREEFORM_STANDARD);
+      m_edata[0].m_expr.setTreeForm(TREEFORM_STANDARD);
+      m_edata[1].m_expr.setTreeForm(TREEFORM_STANDARD);
     } else {
-      m_e[0].setTreeForm(TREEFORM_CANONICAL);
-      m_e[1].setTreeForm(TREEFORM_CANONICAL);
+      m_edata[0].m_expr.setTreeForm(TREEFORM_CANONICAL);
+      m_edata[1].m_expr.setTreeForm(TREEFORM_CANONICAL);
     }
     makeImage(0);
     makeImage(1);
@@ -160,16 +181,18 @@ void CTestTreesEqualDlg::OnButtonConvert() {
 }
 
 bool CTestTreesEqualDlg::compile(int index) {
-  Expression &e = m_e[index];
+  ExprData &ed = m_edata[index];
 
-  const String str = getWindowText(&m_cb[index]);
+  Expression  &e   = ed.m_expr;
+  const String str = getWindowText(&ed.m_cb);
   e.compile(str, false);
   if(e.isOk()) {
     makeImage(index);
-    m_cb[index].updateList();
+    ed.m_cb.updateList();
     return true;
   } else {
     destroyImage(index);
+    ed.m_tree.DeleteAllItems();
   }
 
   const StringArray &errors = e.getErrors();
@@ -181,7 +204,9 @@ bool CTestTreesEqualDlg::compile(int index) {
 
 void CTestTreesEqualDlg::makeImage(int index) {
   destroyImage(index);
-  m_image[index] = makeImage(m_e[index]);
+  ExprData &ed = m_edata[index];
+  ed.m_image = makeImage(ed.m_expr);
+  ed.m_tree.showTree(ed.m_expr.getRoot(),false);
 }
 
 ExpressionImage CTestTreesEqualDlg::makeImage(const Expression &e) {
@@ -194,14 +219,14 @@ ExpressionImage CTestTreesEqualDlg::makeImage(const Expression &e) {
 }
 
 void CTestTreesEqualDlg::paintImage(int index) {
-  int imageWinId = (index == 0) ? IDC_STATICIMAGE1 : IDC_STATICIMAGE2;
-  paintImage(imageWinId, m_image[index]);
+  int imageWinId = s_imageID[index];
+  paintImage(imageWinId, m_edata[index].m_image);
 }
 
 void CTestTreesEqualDlg::paintImage(int winId, const ExpressionImage &image) {
   CWnd        *window = GetDlgItem(winId);
-  const CRect cr      = getClientRect(window);
-  CPaintDC    dc(window);
+  const CRect  cr     = getClientRect(window);
+  CPaintDC     dc(window);
   dc.FillSolidRect(0,0,cr.Width(), cr.Height(), GetSysColor(COLOR_BTNFACE));
 
   if(!image.isEmpty()) {
@@ -212,7 +237,7 @@ void CTestTreesEqualDlg::paintImage(int winId, const ExpressionImage &image) {
 }
 
 void CTestTreesEqualDlg::destroyImage(int index) {
-  m_image[index].clear();
+  m_edata[index].m_image.clear();
 }
 
 void CTestTreesEqualDlg::OnContextMenu(CWnd *pWnd, CPoint point) {
@@ -229,7 +254,7 @@ void CTestTreesEqualDlg::OnContextMenu(CWnd *pWnd, CPoint point) {
     return;
   }
 
-  if(!m_e[m_contextWinIndex].isOk()) return;
+  if(!m_edata[m_contextWinIndex].m_expr.isOk()) return;
 
   CMenu menu;
   int ret = menu.LoadMenu(IDR_CONTEXTMENUSTACK);
@@ -241,7 +266,7 @@ void CTestTreesEqualDlg::OnContextMenu(CWnd *pWnd, CPoint point) {
 }
 
 void CTestTreesEqualDlg::OnContextMenuShowTree() {
-  CExpressionTreeDlg dlg(m_e[m_contextWinIndex]);
+  CExpressionTreeDlg dlg(m_edata[m_contextWinIndex].m_expr);
   dlg.DoModal();
 }
 
