@@ -41,8 +41,9 @@ static void printsolution() {
     Console::printf(2*r+2,row[r]+1,_T("x"));
   }
 
-  _tprintf(_T("\nLøsning %lu. gennemgået %lu kombinationer\n"),solutioncounter,trycount);
-//  pause();
+  _tprintf(_T("\nLøsning %s. gennemgået %s kombinationer\n")
+          ,format1000(solutioncounter).cstr(),format1000(trycount).cstr());
+  pause();
 }
 
 #define DIAG1(r,c) diag1[r+c]
