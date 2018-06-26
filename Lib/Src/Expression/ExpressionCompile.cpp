@@ -123,15 +123,23 @@ bool CodeGenerator::genFLoad(SNode n, const ExpressionDestination &dst) {
 #endif // IS64BIT
 
 void CodeGenerator::genReturnBoolExpression(SNode n) {
-  JumpList jumps(m_labelGen.nextLabelPair());
-  genBoolExpression(n,jumps, true);
-  m_code->fixupJumps(jumps,true );
-  m_code->emit(MOV,EAX,1  );
-  const CodeLabel endLabel = m_labelGen.nextLabel();
-  const UINT jmpEnd = m_code->emitJump(JMP, endLabel);
-  m_code->fixupJumps(jumps,false);
-  m_code->emit(XOR,EAX,EAX);
-  m_code->fixupJump(jmpEnd).emitLabel(endLabel);
+  if(n.getSymbol() == BOOLCONST) {
+    if(n.getBool()) {
+      m_code->emit(MOV,EAX,1  );
+    } else {
+      m_code->emit(XOR,EAX,EAX);
+    }
+  } else {
+    JumpList jumps(m_labelGen.nextLabelPair());
+    genBoolExpression(n,jumps, true);
+    m_code->fixupJumps( jumps, true);
+    m_code->emit(MOV,EAX,1);
+    const CodeLabel endLabel = m_labelGen.nextLabel();
+    const UINT jmpEnd = m_code->emitJump(JMP, endLabel);
+    m_code->fixupJumps(jumps,false);
+    m_code->emit(XOR,EAX,EAX);
+    m_code->fixupJump(jmpEnd).emitLabel(endLabel);
+  }
 }
 
 // Generate multiplication-sequence to calculate st(0) = st(0)^y
@@ -480,7 +488,7 @@ void CodeGenerator::genIf(SNode n DCL_DSTPARAM) {
 void CodeGenerator::genBoolExpression(SNode n, JumpList &jl, bool trueAtEnd) {
 //  dumpSyntaxTree(n);
   switch(n.getSymbol()) {
-  case AND:
+  case AND      :
     if(!trueAtEnd) { // De Morgan's law
       JumpList jumps(!jl);
       genBoolExpression(!n.left() || !n.right(), jumps, !trueAtEnd);
@@ -490,7 +498,7 @@ void CodeGenerator::genBoolExpression(SNode n, JumpList &jl, bool trueAtEnd) {
       genBoolExpression(n.right(), jl, trueAtEnd);
     }
     break;
-  case OR   :
+  case OR       :
     if(!trueAtEnd) { // De Morgan's law
       JumpList jumps(!jl);
       genBoolExpression(!n.left() && !n.right(), jumps, !trueAtEnd);
@@ -503,18 +511,18 @@ void CodeGenerator::genBoolExpression(SNode n, JumpList &jl, bool trueAtEnd) {
       jl.getJumps(trueAtEnd).addAll(jump1.getJumps(trueAtEnd));
     }
     break;
-  case NOT:
+  case NOT      :
     { JumpList jumps(!jl);
       genBoolExpression(n.child(0), jumps, !trueAtEnd);
       jl ^= jumps;
     }
     break;
-  case EQ   :
-  case NE   :
-  case LT   :
-  case LE   :
-  case GT   :
-  case GE   :
+  case EQ       :
+  case NE       :
+  case LT       :
+  case LE       :
+  case GT       :
+  case GE       :
     { ExpressionInputSymbol symbol = n.getSymbol();
       SNode left  = n.left();
       SNode right = n.right();
@@ -540,42 +548,42 @@ void CodeGenerator::genBoolExpression(SNode n, JumpList &jl, bool trueAtEnd) {
       m_code->emit(SAHF);
 
       switch(symbol) {
-      case EQ:
+      case EQ   :
         if(trueAtEnd) {
           jl.m_falseJumps.add(m_code->emitJump(JNE,jl.m_falseLabel));
         } else {
           jl.m_trueJumps.add( m_code->emitJump(JE ,jl.m_trueLabel ));
         }
         break;
-      case NE:
+      case NE   :
         if(trueAtEnd) {
           jl.m_falseJumps.add(m_code->emitJump(JE ,jl.m_falseLabel));
         } else {
           jl.m_trueJumps.add( m_code->emitJump(JNE,jl.m_trueLabel ));
         }
         break;
-      case LT:
+      case LT   :
         if(trueAtEnd) {
           jl.m_falseJumps.add(m_code->emitJump(JAE,jl.m_falseLabel));
         } else {
           jl.m_trueJumps.add( m_code->emitJump(JB ,jl.m_trueLabel ));
         }
         break;
-      case LE:
+      case LE   :
         if(trueAtEnd) {
           jl.m_falseJumps.add(m_code->emitJump(JA ,jl.m_falseLabel));
         } else {
           jl.m_trueJumps.add( m_code->emitJump(JBE,jl.m_trueLabel ));
         }
         break;
-      case GT:
+      case GT   :
         if(trueAtEnd) {
           jl.m_falseJumps.add(m_code->emitJump(JBE,jl.m_falseLabel));
         } else {
           jl.m_trueJumps.add( m_code->emitJump(JA ,jl.m_trueLabel ));
         }
         break;
-      case GE:
+      case GE   :
         if(trueAtEnd) {
           jl.m_falseJumps.add(m_code->emitJump(JB ,jl.m_falseLabel));
         } else {
@@ -585,7 +593,7 @@ void CodeGenerator::genBoolExpression(SNode n, JumpList &jl, bool trueAtEnd) {
       }
     }
     break;
-  default:
+  default       :
     n.throwUnknownSymbolException(__TFUNCTION__);
   }
 }

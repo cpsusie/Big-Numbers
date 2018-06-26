@@ -106,6 +106,8 @@ private:
   SNode              reduceBoolExp();
   SNode              reduceNot();
   SNode              reduceAndOr();
+  SNode              reduceConstCompareSameExprAnd(const Number &c1, const Number &c2, ExpressionInputSymbol rel1, ExpressionInputSymbol rel2);
+  SNode              reduceConstCompareSameExprOr( const Number &c1, const Number &c2, ExpressionInputSymbol rel1, ExpressionInputSymbol rel2);
   SNode              reduceRealExp();
   SNode              reduceTreeNode();
   SNode              reduceIndexedExpr();
@@ -269,6 +271,9 @@ public:
   bool                  isTrigonomtricFunction()               const;
   bool                  isSymmetricFunction()                  const;
   bool                  isAsymmetricFunction()                 const;
+  // symbol in { EQ,NE,LE,LT,GE,GT } (EQ,NE are symmetric, the rest are changed. left<->right. ie. GE->LE, etc..
+  static ExpressionInputSymbol reverseComparator(ExpressionInputSymbol symbol);
+
   bool                  reducesToRational(        Rational *r) const; // if r==NULL) only true/false is returned
   bool                  needParentheses(SNode parent)          const;
   SNode                 base()                                 const;

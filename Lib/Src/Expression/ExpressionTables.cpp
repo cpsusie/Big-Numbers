@@ -68,7 +68,7 @@ static const BYTE compressedSet[20] = { 0xc6,0x1e,0xef,0xff,0xff,0xff,0xff,0xbf,
 *   action == _ParserError - not found (=unexpected input).                  *
 \****************************************************************************/
 static const BYTE compressedLasets[44] = {
-  /*  0  59 tokens */  0x16,0x4c,0x80,0xc1,0xff,0xff,0xff,0xff,0xff,0xff,0x02
+  /*  0  59 tokens */  0x1a,0x4c,0x80,0xc1,0xff,0xff,0xff,0xff,0xff,0xff,0x02
   /*  1  20 tokens */ ,0x81,0xb3,0x9f,0x3d,0x00,0x00,0x00,0x00,0x00,0x00,0x05
   /*  2  21 tokens */ ,0xc1,0xb3,0x9f,0x3d,0x00,0x00,0x00,0x00,0x00,0x00,0x05
   /*  3   6 tokens */ ,0x01,0x31,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x05
@@ -144,8 +144,8 @@ static const BYTE compressedLasets[44] = {
 #define act0077 (void*)0xfffa8000    /* reduce by 6 on tokens in set[0]          */
 #define act0092 (void*)0xfff98000    /* reduce by 7 on tokens in set[0]          */
 #define act0098 (void*)0xffef800b    /* reduce by 17 on tokens in set[1]         */
-#define act0105 (void*)0x004a0002    /* shift to 74 on NAME                      */
-#define act0106 (void*)0x004a0002    /* shift to 74 on NAME                      */
+#define act0105 (void*)0x004a0003    /* shift to 74 on NAME                      */
+#define act0106 (void*)0x004a0003    /* shift to 74 on NAME                      */
 #define act0108 (void*)0xffb18021    /* reduce by 79 on tokens in set[3]         */
 #define act0114 (void*)0xfff2800b    /* reduce by 14 on tokens in set[1]         */
 #define act0121 (void*)0xffb38021    /* reduce by 77 on tokens in set[3]         */
@@ -161,7 +161,7 @@ static const BYTE compressedLasets[44] = {
 #define act0157 (void*)0xffe1800b    /* reduce by 31 on tokens in set[1]         */
 #define act0158 (void*)0xffe4800b    /* reduce by 28 on tokens in set[1]         */
 
-static const TableType act0000[] = {  59,   1,  75,   2,  74,   4,  21,  10,  22,  11,  23
+static const TableType act0000[] = {  59,   1,  75,   3,  74,   4,  21,  10,  22,  11,  23
                                         ,  14,  62,  23,  15,  24,  14,  30,  26,  31,  27
                                         ,  32,  28,  33,  29,  34,  30,  35,  31,  36,  32
                                         ,  37,  33,  38,  72,  39,  34,  40,  36,  41,  37
@@ -180,7 +180,7 @@ static const TableType act0005[] = {   3,   0,  -4,  12,  91,  13,  90};
 static const TableType act0008[] = {  14,   0, -17,   6,  93,  15, -17,  16, -17,  17, -17
                                         ,  18, -17,  19, -17,  20, -17,  23, -17,  24, -17
                                         ,  26, -17,  27, -17,  28, -17,  29, -17};
-static const TableType act0014[] = {  58,   1,  75,   2,  74,   4,  21,  10,  22,  11,  23
+static const TableType act0014[] = {  58,   1,  75,   3,  74,   4,  21,  10,  22,  11,  23
                                         ,  23,  15,  24,  14,  30,  26,  31,  27,  32,  28
                                         ,  33,  29,  34,  30,  35,  31,  36,  32,  37,  33
                                         ,  38,  72,  39,  34,  40,  36,  41,  37,  42,  38
@@ -587,7 +587,7 @@ static const TableType rightSideTable[171] = {
   /*  89 */ , 68
   /*  90 */ , 38
   /*  91 */ , 57
-  /*  92 */ ,  2
+  /*  92 */ ,  3
   /*  93 */ ,  1
 }; // Size of table:344(x86)/344(x64) bytes.
 
@@ -599,8 +599,8 @@ static const TableType rightSideTable[171] = {
 static const TCHAR *symbolName[101] = {
   /*   0 */ _T("EOI"            ),
   /*   1 */ _T("NUMBER"         ),
-  /*   2 */ _T("NAME"           ),
-  /*   3 */ _T("TYPEBOOL"       ),
+  /*   2 */ _T("BOOLCONST"      ),
+  /*   3 */ _T("NAME"           ),
   /*   4 */ _T("IIF"            ),
   /*   5 */ _T("STMTLIST"       ),
   /*   6 */ _T("ASSIGN"         ),
@@ -698,7 +698,7 @@ static const TCHAR *symbolName[101] = {
   /*  98 */ _T("productExpr"    ),
   /*  99 */ _T("polyExpr"       ),
   /* 100 */ _T("exprList"       )
-}; // Total size of strings:1.216(x86)/1.216(x64) bytes, size of pointertable:404(x86)/808(x64) bytes.
+}; // Total size of strings:1.218(x86)/1.218(x64) bytes, size of pointertable:404(x86)/808(x64) bytes.
 
 static const ParserShortTables ExpressionTables_s(compressedSet, compressedLasets
                                                  ,action, successor, productionLength, leftSide
@@ -709,6 +709,6 @@ const ParserTables *ExpressionParser::ExpressionTables = &ExpressionTables_s;
 // Size of ExpressionTables_s: 48(x86)/88(x64) bytes. Size of ExpressionTables:4(x86)/8(x64) bytes
 
 
-// Total size of table data:7.580(x86)/9.528(x64) bytes.
+// Total size of table data:7.582(x86)/9.530(x64) bytes.
 
 }; // namespace Expr

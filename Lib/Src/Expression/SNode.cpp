@@ -311,6 +311,10 @@ bool SNode::isAsymmetricFunction() const {
   return m_node->isAsymmetricFunction();
 }
 
+ExpressionInputSymbol SNode::reverseComparator(ExpressionInputSymbol symbol) { // static
+  return ExpressionNode::reverseComparator(symbol);
+}
+
 bool SNode::reducesToRational(Rational *r) const {
   return m_node->reducesToRational(r);
 }

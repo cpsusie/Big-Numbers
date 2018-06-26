@@ -181,7 +181,7 @@ public:
 
   inline  bool                       isName()                       const   { return getSymbol() == NAME;                                      }
   inline  bool                       isNumber()                     const   { return getSymbol() == NUMBER;                                    }
-  inline  bool                       isBoolean()                    const   { return getSymbol() == TYPEBOOL;                                  }
+  inline  bool                       isBoolean()                    const   { return getSymbol() == BOOLCONST;                                 }
   inline  bool                       isRational()                   const   { return isNumber() && getNumber().isRational();                   }
   inline  bool                       isInteger()                    const   { return isNumber() && getNumber().isInteger();                    }
   inline  bool                       isNameOrNumber()               const   { return isName() || isNumber();                                   }
@@ -325,7 +325,7 @@ class ExpressionNodeBoolConst : public ExpressionNode {
 private:
   const bool m_value;
 public:
-  inline ExpressionNodeBoolConst(ParserTree *tree, bool b) : ExpressionNode(tree, TYPEBOOL), m_value(b) {
+  inline ExpressionNodeBoolConst(ParserTree *tree, bool b) : ExpressionNode(tree, BOOLCONST), m_value(b) {
     SETDEBUGSTRING();
   }
   bool getBool() const {

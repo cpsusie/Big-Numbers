@@ -88,7 +88,7 @@ SNode SNode::reduceRealExp() {
   if(isReduced()) RETURNTHIS;
   switch(getSymbol()) {
   case NUMBER         :
-  case TYPEBOOL       :
+  case BOOLCONST      :
   case NAME           :
     setReduced();
     RETURNTHIS;

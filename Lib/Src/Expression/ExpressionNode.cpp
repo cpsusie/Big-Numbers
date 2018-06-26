@@ -431,26 +431,26 @@ void ExpressionNode::checkSymbol(const TCHAR *method, const ExpressionNode *n, E
 bool ExpressionNode::isConsistentSymbolAndType() const {
   ExpressionNodeType type;
   switch(getSymbol()) {
-  case NUMBER  : type = NT_NUMBER;    break;
-  case NAME    : type = NT_VARIABLE;  break;
-  case TYPEBOOL: type = NT_BOOLCONST; break;
-  case AND     :
-  case OR      :
-  case NOT     :
-  case EQ      :
-  case NE      :
-  case LT      :
-  case LE      :
-  case GT      :
-  case GE      : type = NT_BOOLEXPR;  break;
-  case POLY    : type = NT_POLY;      break;
-  case ASSIGN  : type = NT_ASSIGN;    break;
-  case STMTLIST: type = NT_STMTLIST;  break;
-  case SUM     : type = NT_SUM;       break;
-  case ADDENT  : type = NT_ADDENT;    break;
-  case PRODUCT : type = NT_PRODUCT;   break;
-  case POW     : type = NT_POWER;     break;
-  default      : type = NT_TREE;      break;
+  case NUMBER   : type = NT_NUMBER;    break;
+  case NAME     : type = NT_VARIABLE;  break;
+  case BOOLCONST: type = NT_BOOLCONST; break;
+  case AND      :
+  case OR       :
+  case NOT      :
+  case EQ       :
+  case NE       :
+  case LT       :
+  case LE       :
+  case GT       :
+  case GE       : type = NT_BOOLEXPR;  break;
+  case POLY     : type = NT_POLY;      break;
+  case ASSIGN   : type = NT_ASSIGN;    break;
+  case STMTLIST : type = NT_STMTLIST;  break;
+  case SUM      : type = NT_SUM;       break;
+  case ADDENT   : type = NT_ADDENT;    break;
+  case PRODUCT  : type = NT_PRODUCT;   break;
+  case POW      : type = NT_POWER;     break;
+  default       : type = NT_TREE;      break;
   }
 
   if(getNodeType() != type) {

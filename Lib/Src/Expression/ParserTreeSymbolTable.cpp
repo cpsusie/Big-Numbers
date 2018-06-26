@@ -89,16 +89,14 @@ void ParserTreeSymbolTable::create(ParserTree *tree, const ExpressionVariableArr
 
 void ParserTreeSymbolTable::buildTable(ExpressionNode *n) {
   switch(n->getSymbol()) {
-  case NAME    :
-    allocateSymbol(n, false, false, false);
-    break;
-
-  case NUMBER  :
-  case TYPEBOOL:
+  case NUMBER        :
+  case BOOLCONST     :
 //    allocateNumber(n);
     break;
-
-  case POLY    :
+  case NAME          :
+    allocateSymbol(n, false, false, false);
+    break;
+  case POLY          :
     { const CoefArray &coefArray = n->getCoefArray();
       for(size_t i = 0; i < coefArray.size(); i++) {
         buildTable(coefArray[i].node());
@@ -110,10 +108,10 @@ void ParserTreeSymbolTable::buildTable(ExpressionNode *n) {
   case INDEXEDPRODUCT:
     buildTableIndexedExpr(n);
     break;
-  case ASSIGN :
+  case ASSIGN        :
     buildTableAssign(n, false);
     break;
-  default:
+  default            :
     { const SNodeArray &a = n->getChildArray();
       for(size_t i = 0; i < a.size(); i++) {
         buildTable(a[i].node());

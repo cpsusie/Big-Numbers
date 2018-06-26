@@ -62,13 +62,13 @@ void CExpressionTreeCtrl::expandAllNodes() {
 
 static String getSimpleString(const ExpressionNode *n) {
   switch(n->getSymbol()) {
-  case NUMBER  :
-  case NAME    :
-  case TYPEBOOL:
+  case NUMBER   :
+  case BOOLCONST:
+  case NAME     :
     return n->toString();
-  case ADDENT  :
+  case ADDENT   :
     return format(_T("%c%s"), n->isPositive()?'+':'-',n->getSymbolName().cstr());
-  default      :
+  default       :
     return n->getSymbolName();
   }
 }
@@ -106,13 +106,13 @@ static String getNodeString(const ExpressionNode *n, bool extended) {
 void CExpressionTreeCtrl::traverse(HTREEITEM p, const ExpressionNode *n) {
   HTREEITEM q;
   switch(n->getSymbol()) {
-  case NAME    :
-  case NUMBER  :
-  case TYPEBOOL:
+  case NUMBER   :
+  case BOOLCONST:
+  case NAME     :
     q = ADDITEM(n,p);
     break;
 
-  case POLY    :
+  case POLY     :
     { q = ADDITEM(n,p);
       const SNodeArray &coef = n->getCoefArray();
       for(size_t i = 0; i < coef.size(); i++) {
@@ -122,7 +122,7 @@ void CExpressionTreeCtrl::traverse(HTREEITEM p, const ExpressionNode *n) {
     }
     break;
 
-  default      :
+  default       :
     { q = ADDITEM(n,p);
       const SNodeArray &a = n->getChildArray();
       for(size_t i = 0; i < a.size(); i++) {

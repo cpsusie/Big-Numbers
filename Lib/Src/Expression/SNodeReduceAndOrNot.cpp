@@ -120,6 +120,149 @@ const ReduceCompareMatrix CompareOpPairOrMap::s_m = {
 /*>=*/  ,{ _L  ,_T  ,_T  ,_T  ,_L  ,_L  }
 };
 
+#define SFALSE       { RETURNNODE(SNV(false));                }
+#define STRUE        { RETURNNODE(SNV(true ));                }
+#define SCOMP(rel,c) { RETURNNODE(boolExp(rel,*this,SNV(c))); }
+#define SNULL        { RETURNNULL;                            }
+
+// rel1 and rel2 are both compare operators (=,!=,<,<=,>,>=)
+// and orignal boolean expression was (*this rel1 c1) AND (*this rel2 c2)
+// If reduction is not possible an empty SNode is returned
+SNode SNode::reduceConstCompareSameExprAnd(const Number &c1, const Number &c2, ExpressionInputSymbol rel1, ExpressionInputSymbol rel2) {
+  ENTERMETHOD();
+  switch(rel1) {
+  case EQ:
+    switch(rel2) {
+    case EQ: if(c1!=c2) SFALSE       else            SCOMP(EQ,c1);
+    case NE: if(c1==c2) SFALSE       else            SCOMP(EQ,c1);
+    case LT: if(c1>=c2) SFALSE       else            SCOMP(EQ,c1);
+    case LE: if(c1> c2) SFALSE       else            SCOMP(EQ,c1);
+    case GT: if(c1<=c2) SFALSE       else            SCOMP(EQ,c1);
+    case GE: if(c1< c2) SFALSE       else            SCOMP(EQ,c1);
+    }
+  case NE:
+    switch(rel2) {
+    case EQ: if(c1==c2) SFALSE       else            SCOMP(EQ,c2);
+    case NE: if(c1==c2) SCOMP(NE,c1)                                else SNULL;
+    case LT: if(c1>=c2) SCOMP(LT,c2)                                else SNULL;
+    case LE: if(c1> c2) SCOMP(LE,c2)                                else SNULL;
+    case GT: if(c1<=c2) SCOMP(GT,c2)                                else SNULL;
+    case GE: if(c1< c2) SCOMP(GE,c2)                                else SNULL;
+    }
+  case LT:
+    switch(rel2) {
+    case EQ: if(c1<=c2) SFALSE       else            SCOMP(EQ,c2);
+    case NE: if(c1<=c2) SCOMP(LT,c1)                                else SNULL;
+    case LT: if(c1<=c2) SCOMP(LT,c1) else            SCOMP(LT,c2);
+    case LE: if(c1<=c2) SCOMP(LT,c1) else            SCOMP(LE,c2);
+    case GT:
+    case GE: if(c1<=c2) SFALSE                                      else SNULL;
+    }
+  case LE:
+    switch(rel2) {
+    case EQ: if(c1< c2) SFALSE       else            SCOMP(EQ,c2);
+    case NE: if(c1< c2) SCOMP(LE,c1)                                else SNULL;
+    case LT: if(c1< c2) SCOMP(LE,c1) else            SCOMP(LT,c2);
+    case LE: if(c1<=c2) SCOMP(LE,c1) else            SCOMP(LE,c2);
+    case GT: if(c1<=c2) SFALSE                                      else SNULL;
+    case GE: if(c1< c2) SFALSE       else if(c1==c2) SCOMP(EQ,c1)   else SNULL;
+    }
+  case GT:
+    switch(rel2) {
+    case EQ: if(c1>=c2) SFALSE       else            SCOMP(EQ,c2);
+    case NE: if(c1>=c2) SCOMP(GT,c1)                                else SNULL;
+    case LT:
+    case LE: if(c1>=c2) SFALSE                                      else SNULL;
+    case GT: if(c1>=c2) SCOMP(GT,c1) else            SCOMP(GT,c2);
+    case GE: if(c1>=c2) SCOMP(GT,c1) else            SCOMP(GE,c2);
+    }
+  case GE:
+    switch(rel2) {
+    case EQ: if(c1> c2) SFALSE       else            SCOMP(EQ,c2);
+    case NE: if(c1> c2) SCOMP(GE,c1)                                else SNULL;
+    case LT: if(c1>=c2) SFALSE                                      else SNULL;
+    case LE: if(c1> c2) SFALSE       else if(c1==c2) SCOMP(EQ,c1)   else SNULL;
+    case GT: if(c1> c2) SCOMP(GE,c1) else            SCOMP(GT,c2);
+    case GE: if(c1>=c2) SCOMP(GE,c1) else            SCOMP(GE,c2);
+    }
+  }
+  throwInvalidArgumentException(__TFUNCTION__
+                               ,_T("c1=%s,c2=%s,rel1=%s,rel2=%s")
+                               ,c1.toString().cstr()      ,c2.toString().cstr()
+                               ,getSymbolName(rel1).cstr(),getSymbolName(rel2).cstr()
+                               );
+  SNULL;
+}
+
+// rel1 and rel2 are both compare operators (=,!=,<,<=,>,>=)
+// and orignal boolean expression was (*this rel1 c1) OR (*this rel2 c2)
+// If reduction is not possible an empty SNode is returned
+SNode SNode::reduceConstCompareSameExprOr(const Number &c1, const Number &c2, ExpressionInputSymbol rel1, ExpressionInputSymbol rel2) {
+  ENTERMETHOD();
+  switch(rel1) {
+  case EQ:
+    switch(rel2) {
+    case EQ: if(c1==c2) SCOMP(EQ,c1)                               else SNULL;
+    case NE: if(c1==c2) STRUE        else            SCOMP(NE,c2);
+    case LT: if(c1< c2) SCOMP(LT,c2) else if(c1==c2) SCOMP(LE,c2)  else SNULL;
+    case LE: if(c1<=c2) SCOMP(LE,c2)                               else SNULL;
+    case GT: if(c1> c2) SCOMP(GT,c2) else if(c1==c2) SCOMP(GE,c2)  else SNULL;
+    case GE: if(c1>=c2) SCOMP(GE,c2)                               else SNULL;
+    }
+  case NE:
+    switch(rel2) {
+    case EQ: if(c1==c2) STRUE        else            SCOMP(NE,c1);
+    case NE: if(c1!=c2) STRUE        else            SCOMP(NE,c1);
+    case LT: if(c1< c2) STRUE        else            SCOMP(NE,c1);
+    case LE: if(c1<=c2) STRUE        else            SCOMP(NE,c1);
+    case GT: if(c1> c2) STRUE        else            SCOMP(NE,c1);
+    case GE: if(c1>=c2) STRUE        else            SCOMP(NE,c1);
+    }
+  case LT:
+    switch(rel2) {
+    case EQ: if(c1> c2) SCOMP(LT,c1) else if(c1==c2) SCOMP(LE,c1)  else SNULL;
+    case NE: if(c1> c2) STRUE        else            SCOMP(NE,c2);
+    case LT: if(c1> c2) SCOMP(LT,c1) else            SCOMP(LT,c2);
+    case LE: if(c1> c2) SCOMP(LT,c1) else            SCOMP(LE,c2);
+    case GT: if(c1> c2) STRUE        else if(c1==c2) SCOMP(NE,c2)  else SNULL;
+    case GE: if(c1>=c2) STRUE                                      else SNULL;
+    }
+  case LE:
+    switch(rel2) {
+    case EQ: if(c1>=c2) SCOMP(LE,c1)                               else SNULL;
+    case NE: if(c1>=c2) STRUE        else            SCOMP(NE,c2);
+    case LT: if(c1>=c2) SCOMP(LE,c1) else            SCOMP(LT,c2);
+    case LE: if(c1>=c2) SCOMP(LE,c1) else            SCOMP(LE,c2);
+    case GT:
+    case GE: if(c1>=c2) STRUE                                      else SNULL;
+    }
+  case GT:
+    switch(rel2) {
+    case EQ: if(c1< c2) SCOMP(GT,c1) else if(c1==c2) SCOMP(GE,c1)  else SNULL;
+    case NE: if(c1< c2) STRUE        else            SCOMP(NE,c2);
+    case LT: if(c1< c2) STRUE        else if(c1==c2) SCOMP(NE,c2)  else SNULL;
+    case LE: if(c1<=c2) STRUE                                      else SNULL;
+    case GT: if(c1< c2) SCOMP(GT,c1) else            SCOMP(GT,c2);
+    case GE: if(c1< c2) SCOMP(GT,c1) else            SCOMP(GE,c2);
+    }
+  case GE:
+    switch(rel2) {
+    case EQ: if(c1<=c2) SCOMP(GE,c1)                               else SNULL;
+    case NE: if(c1<=c2) STRUE        else            SCOMP(NE,c2);
+    case LT:
+    case LE: if(c1<=c2) STRUE                                      else SNULL;
+    case GT: if(c1<=c2) SCOMP(GE,c1) else            SCOMP(GT,c2);
+    case GE: if(c1<=c2) SCOMP(GE,c1) else            SCOMP(GE,c2);
+    }
+  }
+  throwInvalidArgumentException(__TFUNCTION__
+                               ,_T("c1=%s,c2=%s,rel1=%s,rel2=%s")
+                               ,c1.toString().cstr()      ,c2.toString().cstr()
+                               ,getSymbolName(rel1).cstr(),getSymbolName(rel2).cstr()
+                               );
+  SNULL;
+}
+
 // assume symbol == AND/OR
 SNode SNode::reduceAndOr() {
   ENTERMETHOD();
@@ -162,8 +305,32 @@ SNode SNode::reduceAndOr() {
         }
       }
       // try to swap r.left<->r.right, and reverse relation
-      rightRelation = ExpressionNode::reverseComparator(rightRelation);
-      rl = Rr.right(); rr = Rr.left();
+      rightRelation = reverseComparator(rightRelation); swap(rl,rr);
+    }
+
+    // Check, if orignal boolean expression is (expr rel1 const1) [AND/OR] (expr rel2 const2)
+    // where rel1,rel2 isCompareOperator()
+    ExpressionInputSymbol leftRelation = Rl.getSymbol();
+    for(int i = 0; i < 2; i++) {
+      Number c1, c2;
+      if(lr.isConstant(&c1)) {
+        for(int j = 0; j < 2; j++) {
+          if(rr.isConstant(&c2) && ll.equal(rl)) {
+            SNode result;
+            switch(getSymbol()) {
+            case AND: result = ll.reduceConstCompareSameExprAnd(c1,c2,leftRelation,rightRelation); break;
+            case OR : result = ll.reduceConstCompareSameExprOr( c1,c2,leftRelation,rightRelation); break;
+            }
+            if(!result.isEmpty()) {
+              RETURNNODE(result);
+            } else {
+              i = j = 2; // to get out of the loop. We're done
+            }
+          }
+          rightRelation = reverseComparator(rightRelation); swap(rl,rr);
+        }
+      }
+      leftRelation = reverseComparator(leftRelation); swap(ll,lr);
     }
   }
   SNode result;

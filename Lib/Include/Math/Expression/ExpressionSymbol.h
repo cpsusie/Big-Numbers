@@ -7,8 +7,8 @@ namespace Expr {
   typedef enum {
      EOI             =   0
     ,NUMBER          =   1
-    ,NAME            =   2
-    ,TYPEBOOL        =   3
+    ,BOOLCONST       =   2
+    ,NAME            =   3
     ,IIF             =   4
     ,STMTLIST        =   5
     ,ASSIGN          =   6

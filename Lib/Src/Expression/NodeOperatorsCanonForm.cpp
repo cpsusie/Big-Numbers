@@ -333,7 +333,7 @@ CNode CNode::toCForm() const {
   ENTERMETHOD();
   switch(getSymbol()) {
   case NUMBER         :
-  case TYPEBOOL       :
+  case BOOLCONST      :
   case NAME           : RETURNTHIS;
 
   case MINUS          : if(isUnaryMinus()) {
