@@ -22,8 +22,10 @@ bool SetMark::handleNode(ExpressionNode *n, int level) {
 }
 
 void ParserTree::pruneUnusedNodes() {
+#ifdef _DEBUG
   debugLog(_T("Garbage collection. Before.(#Nodes:%6d, rationalMap.size:%4zu).\n")
           ,getNodeTableSize(),m_rationalConstantMap.size());
+#endif // _DEBUG
   unmarkAll();
 
   traverseTree(SetMark(true));
@@ -31,8 +33,10 @@ void ParserTree::pruneUnusedNodes() {
   markSimpleConstants();
   deleteUnmarked();
   unmarkAll();
+#ifdef _DEBUG
   debugLog(_T(" After:(#Nodes:%6d, rationalMap.size:%4zu).\n")
           ,getNodeTableSize(),m_rationalConstantMap.size());
+#endif // _DEBUG
 }
 
 #define MARKCONSTANT(n) if(n) n->mark()

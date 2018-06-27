@@ -62,6 +62,9 @@ public:
   inline bool operator>=(const ParserTreeComplexity &tc) const {
     return compare(tc) >= 0;
   }
+  inline int getNodeCount() const {
+    return m_nodeCount;
+  }
   String toString() const {
     return format(_T("#nodes:%3d, #names:%2d, treedepth:%d\n"), m_nodeCount, m_nameCount, m_treeDepth);
   }

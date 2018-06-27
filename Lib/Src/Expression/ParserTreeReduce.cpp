@@ -29,8 +29,10 @@ public:
   }
 };
 
-void ParserTree::reduce() {
+// Minimal number of nodes in a valid syntax-tree. stmtlist + returnvalue
+#define MINNODECOUNT 2
 
+void ParserTree::reduce() {
   try {
     const ExpressionVariableArray oldVariables = getSymbolTable().getAllVariables();
 
@@ -43,7 +45,7 @@ void ParserTree::reduce() {
     MainReducer mainTransformer(this);
 
     iterateTransformation(mainTransformer);
-    if(getNodeCount() > 1) {
+    if(getNodeCount() > MINNODECOUNT) {
       mainTransformer.setState(PS_MAINREDUCTION2);
       setRoot(SNode(getRoot()).multiplyParentheses().node());
       iterateTransformation(mainTransformer);
@@ -117,6 +119,9 @@ void ParserTree::iterateTransformation(ParserTreeTransformer &transformer) {
       }
     }
     pruneUnusedNodes();
+    if(reductionArray[bestIndex].getComplexity().getNodeCount() <= MINNODECOUNT) { // cannot reduce further
+      break;
+    }
   }
   *this = reductionArray[bestIndex];
 }

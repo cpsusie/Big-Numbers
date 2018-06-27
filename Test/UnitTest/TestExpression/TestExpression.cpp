@@ -309,14 +309,38 @@ namespace TestExpression {
       exprArray.addAll(aAndbr); aAndbr.clear();
       exprArray.addAll(aAndrb); aAndrb.clear();
       exprArray.addAll(aAndrr); aAndrr.clear();
+      exprArray.addAll(aOrbb ); aOrbb.clear();
+      exprArray.addAll(aOrbr ); aOrbr.clear();
+      exprArray.addAll(aOrrb ); aOrrb.clear();
+      exprArray.addAll(aOrrr ); aOrrr.clear();
 
+      for(int rop1 = 0; rop1 < ARRAYSIZE(relOp); rop1++) {
+        for(int rop2 = 0; rop2 < ARRAYSIZE(relOp); rop2++) {
+          const String op1  = format(_T("2*x %s x+1")  , relOp[rop1] );
+          const String op2  = format(_T("2*x %s x+1")  , relOp[rop2] );
+          const String op1r = format(_T("x+1 %s 2*x")  , relOpr[rop1]);
+          const String op2r = format(_T("x+1 %s 2*x")  , relOpr[rop2]);
+          aAndbb.add(format(_T("%s && %s"), op1.cstr() , op2.cstr()) );
+          aAndbr.add(format(_T("%s && %s"), op1.cstr() , op2r.cstr()));
+          aAndrb.add(format(_T("%s && %s"), op1r.cstr(), op2.cstr()) );
+          aAndrr.add(format(_T("%s && %s"), op1r.cstr(), op2r.cstr()));
+          aOrbb.add( format(_T("%s || %s"), op1.cstr() , op2.cstr()) );
+          aOrbr.add( format(_T("%s || %s"), op1.cstr() , op2r.cstr()));
+          aOrrb.add( format(_T("%s || %s"), op1r.cstr(), op2.cstr()) );
+          aOrrr.add( format(_T("%s || %s"), op1r.cstr(), op2r.cstr()));
+        }
+      }
+      exprArray.addAll(aAndbb); aAndbb.clear();
+      exprArray.addAll(aAndbr); aAndbr.clear();
+      exprArray.addAll(aAndrb); aAndrb.clear();
+      exprArray.addAll(aAndrr); aAndrr.clear();
       exprArray.addAll(aOrbb ); aOrbb.clear();
       exprArray.addAll(aOrbr ); aOrbr.clear();
       exprArray.addAll(aOrrb ); aOrrb.clear();
       exprArray.addAll(aOrrr ); aOrrr.clear();
 
       try {
-        size_t n = exprArray.size();
+        const size_t n = exprArray.size();
         for(UINT i = 0; i < n; i++) {
           const String  expr = exprArray[i];
 
