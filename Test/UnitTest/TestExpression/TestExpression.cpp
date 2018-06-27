@@ -39,7 +39,7 @@ namespace TestExpression {
       dc.add(3,dirComponent);
     }
     fs.setDir(dc);
-    fs.setFileName(format(_T("testCase%03d"), testCase));
+    fs.setFileName(format(_T("testCase%04d"), testCase));
     return fs.getFullPath();
   }
 
