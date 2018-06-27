@@ -3,19 +3,18 @@
 
 namespace Expr {
 
-static SNodeArray &getListFromTree(ExpressionNode *n, ExpressionInputSymbol delimiterSymbol, SNodeArray &list) {
+SNodeArray &SNodeArray::getListFromTree(ExpressionNode *n, ExpressionInputSymbol delimiterSymbol) {
   if(n->getSymbol() == delimiterSymbol) {
-    getListFromTree(n->left(), delimiterSymbol,list);
-    list.add(n->right());
+    getListFromTree(n->left(), delimiterSymbol).add(n->right());
   } else {
-    list.add(n);
+    add(n);
   }
-  return list;
+  return *this;
 }
 
 void SNodeArray::convertFromParserTree(ExpressionNode *n, ExpressionInputSymbol delimiterSymbol) {
   DISABLEDEBUGSTRING(*this);
-  getListFromTree(n,delimiterSymbol, *this);
+  getListFromTree(n,delimiterSymbol);
   ENABLEDEBUGSTRING(*this);
 }
 

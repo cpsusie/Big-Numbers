@@ -351,6 +351,7 @@ private:
   ParserTree &m_tree;
   bool operator==(const SNodeArray &a) const; // not implemented
   bool operator!=(const SNodeArray &a) const; // not implemented
+  SNodeArray &getListFromTree(ExpressionNode *n, ExpressionInputSymbol delimiterSymbol);
 protected:
   // return an array of nodes from this, containing nodes with index
   // contained in set.
