@@ -37,10 +37,12 @@ void CodeGenerator::genMachineCode() {
     m_code->emitFLD(m_code->getTableRef(mostUsedIndex));
     hasExtraPush = true;
   }
-  genStatementList(m_tree.getRoot());
+  const ExpressionReturnType returnType = genStatementList(m_tree.getRoot());
   if(hasExtraPush) {
 #ifdef IS32BIT
-    m_code->emit(FXCH,ST1);
+    if(returnType == EXPR_RETURN_REAL) {
+      m_code->emit(FXCH,ST1);
+    }
 #endif // IS32BIT
     m_code->emit(FSTP,ST0);
   }
@@ -50,7 +52,7 @@ void CodeGenerator::genMachineCode() {
   m_code->finalize();
 }
 
-void CodeGenerator::genStatementList(const ExpressionNode *n) {
+ExpressionReturnType CodeGenerator::genStatementList(const ExpressionNode *n) {
   const SNodeArray &list  = n->getChildArray();
   const size_t      count = list.size()-1;
   for(size_t i = 0; i < count; i++) {
@@ -68,6 +70,7 @@ void CodeGenerator::genStatementList(const ExpressionNode *n) {
     last.throwUnknownSymbolException(__TFUNCTION__);
     break;
   }
+  return last.getReturnType();
 }
 
 void CodeGenerator::genFLD(SNode n) {

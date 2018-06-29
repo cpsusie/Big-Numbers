@@ -22,7 +22,7 @@ private:
 
   // Code generation (compile to machinecode)
   void genMachineCode();
-  void genStatementList(       const ExpressionNode *n);
+  ExpressionReturnType genStatementList(const ExpressionNode *n);
   void genReturnBoolExpression(SNode n);
   void genExpression(          SNode n DCL_DSTPARAM);
   void genFLD(                 SNode n);

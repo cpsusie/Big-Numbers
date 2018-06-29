@@ -24,8 +24,8 @@ static bool test(const String &expr, bool runCode) {
   Expression compiledExpr, interpreterExpr;
   bool ok = true;
   try {
-    compiledExpr.compile(expr, true, stdout);
-    interpreterExpr.compile(expr, false);
+    compiledExpr.compile(expr, true, false,stdout);
+    interpreterExpr.compile(expr, false, false);
     if(!compiledExpr.isOk()) {
       const StringArray &errors = compiledExpr.getErrors();
       for(size_t i = 0; i < errors.size(); i++) {
