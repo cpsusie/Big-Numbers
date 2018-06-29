@@ -7,6 +7,10 @@
 
 /* ---------------- Implicit surface polygonizer supportfunctions ------------------- */
 
+static String getListFileName(const IsoSurfaceParameters &param) {
+  return format(_T("c:\\temp\\3DPlot\\ISO\\%s.lst"), param.getDisplayName().cstr());
+}
+
 class IsoSurface : public IsoSurfaceEvaluator {
 private:
   IsoSurfaceParameters                  m_param;
@@ -143,10 +147,7 @@ LPD3DXMESH createMesh(AbstractMeshFactory &amf, const IsoSurfaceParameters &para
   if(param.m_includeTime) {
     throwInvalidArgumentException(__TFUNCTION__, _T("param.includeTime=true"));
   }
-  FileNameSplitter fs(ExpressionWrapper::getDefaultFileName());
-  fs.setDir(_T("\\temp\\3Dplot\\ISO"));
-  fs.setFileName(fs.getFileName() + param.getName());
-  FILE *listFile = MKFOPEN(fs.getFullPath(), _T("w"));
+  FILE *listFile = MKFOPEN(getListFileName(param), _T("w"));
   LPD3DXMESH result = createMesh(amf, IsoSurface(param, listFile), NULL);
   fclose(listFile);
   return result;
@@ -179,12 +180,13 @@ class IsoSurfaceMeshArrayJobParameter : public AbstractMeshArrayJobParameter {
 private:
   AbstractMeshFactory        &m_amf;
   const IsoSurfaceParameters &m_param;
-  String                      m_fileName;
+  const String                m_fileName;
 public:
   IsoSurfaceMeshArrayJobParameter(AbstractMeshFactory &amf, const IsoSurfaceParameters &param)
     : m_amf(amf)
-    , m_param(param) {
-    m_fileName = format(_T("c:\\temp\\3DPlot\\ISO\\%s.lst"), param.getDisplayName().cstr());
+    , m_param(param)
+    , m_fileName(getListFileName(param))
+  {
   }
   const DoubleInterval &getTimeInterval() const {
     return m_param.getTimeInterval();

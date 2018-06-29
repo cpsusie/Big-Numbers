@@ -32,7 +32,7 @@ ExpressionWrapper::ExpressionWrapper(const String &text, bool machineCode, FILE 
 }
 
 void ExpressionWrapper::compile(const String &text, bool machineCode, FILE *listFile) {
-  m_expr->compile(text, machineCode, listFile);
+  m_expr->compile(text, machineCode, false, listFile);
 
   m_xp = getVariableByName(_T("x"));
   m_yp = getVariableByName(_T("y"));

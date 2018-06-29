@@ -158,8 +158,8 @@ void IsoSurfacePolygonizer::testFace(int i, int j, int k, const StackedCube &old
     }
   }
 
-  if(  !m_boundingBox.contains(newCube.m_corners[LBN]->m_point)
-    || !m_boundingBox.contains(newCube.m_corners[RTF]->m_point)) {
+  if(  !m_boundingBox.contains(*newCube.m_corners[LBN])
+    || !m_boundingBox.contains(*newCube.m_corners[RTF])) {
     return;
   }
   pushCube(newCube);
@@ -281,7 +281,7 @@ const HashedCubeCorner *IsoSurfacePolygonizer::getCorner(int i, int j, int k) {
     return result;
   } else {
     HashedCubeCorner corner(key, getCornerPoint(key));
-    corner.m_positive = evaluate(corner.m_point) > 0;
+    corner.setValue(evaluate(corner));
     m_cornerMap.put(key, corner);
     return m_cornerMap.get(key);
   }
@@ -302,24 +302,25 @@ Point3D IsoSurfacePolygonizer::findStartPoint(const Point3D &start) {
   if(!in.m_ok || !out.m_ok) {
     throwException(_T("Cannot find starting point1"));
   }
-  return converge(in.m_point, out.m_point, in.m_positive, RES + 7);
+  return converge(in, out, RES + 7);
 }
 
 // findStartPoint: search for point with value of sign specified by positive-parameter
 IsoSurfaceTest IsoSurfacePolygonizer::findStartPoint(bool positive, const Point3D &p) {
-  IsoSurfaceTest result;
-  double range = m_cellSize;
-  result.m_ok = true;
-  for(int i = 0; i < 10000; i++) {
-    result.m_point.x = p.x + randDouble(-range, range);
-    result.m_point.y = p.y + randDouble(-range, range);
-    result.m_point.z = p.z + randDouble(-range, range);
-    const double value = evaluate(result.m_point);
-    result.m_positive = value > 0.0;
+  IsoSurfaceTest result(p);
+#define STEPCOUNT 5000000
+  const double step  = root(10000,STEPCOUNT); // multiply range by this STEPCOUNT times
+                                              // range will end up with value 10000*cellSize
+  double       range = m_cellSize;
+  for(int i = 0; i < STEPCOUNT; i++) {
+    result.x = p.x + randDouble(-range, range);
+    result.y = p.y + randDouble(-range, range);
+    result.z = p.z + randDouble(-range, range);
+    result.setValue(evaluate(result));
     if(result.m_positive == positive) {
       return result;
     }
-    range *= 1.0005; // slowly expand search outwards
+    range *= step; // slowly expand search outwards
   }
   result.m_ok = false;
   return result;
@@ -413,7 +414,7 @@ UINT IsoSurfacePolygonizer::getVertexId(const HashedCubeCorner &c1, const Hashed
     return *p; // previously computed
   }
   IsoSurfaceVertex v;
-  v.m_position = converge(c1.m_point, c2.m_point, c1.m_positive); // position
+  v.m_position = converge(c1, c2); // position
   v.m_normal   = getNormal(v.m_position); // normal
   const UINT vid = (UINT)m_vertexArray.size();
   m_vertexArray.add(v);
@@ -432,28 +433,29 @@ Point3D IsoSurfacePolygonizer::getNormal(const Point3D &point) {
 }
 
 // converge: from two points of differing sign, converge to zero crossing
-Point3D IsoSurfacePolygonizer::converge(const Point3D &p1, const Point3D &p2, bool p1Positive, int itCount) {
-  Point3D pos, neg;
-  if(p1Positive) {
-    pos = p1;
-    neg = p2;
+// Assume sign(v1) = -sign(v2)
+Point3D IsoSurfacePolygonizer::converge(const Point3DWithValue &p1, const Point3DWithValue &p2, int itCount) {
+  Point3DWithValue x1, x2;
+  if(p1.m_positive) {
+    x1 = p1;
+    x2 = p2;
   } else {
-    pos = p2;
-    neg = p1;
+    x1 = p2;
+    x2 = p1;
   }
-  double v;
   for(int i = itCount = max(itCount, RES);;) {
-    const Point3D result = (pos + neg)/2;
+    const Point3D x = x2 - (x2-x1) * (x2.m_value/(x2.m_value-x1.m_value));
     if(i-- == 0) {
-      return result;
+      return x;
     }
-    if((v = evaluate(result)) > 0.0) {
-      pos = result;
-    } else if(v < 0) {
-      neg = result;
+    const double y = evaluate(x);
+    if(y > 0) {
+      (x1 = x).setValue(y);
+    } else if(y < 0) {
+      (x2 = x).setValue(y);
     } else {
       m_statistics.m_zeroHits++;
-      return result;
+      return x;
     }
   }
 }
@@ -515,26 +517,26 @@ UINT StackedCube::getIndex() const {
 }
 
 void StackedCube::validate() {
-  if((fabs(m_corners[LBN]->m_point.x - m_corners[LTN]->m_point.x) > TOLERANCE)
-  || (fabs(m_corners[LBN]->m_point.x - m_corners[LBF]->m_point.x) > TOLERANCE)
-  || (fabs(m_corners[LBN]->m_point.x - m_corners[LTF]->m_point.x) > TOLERANCE)
-  || (fabs(m_corners[RBN]->m_point.x - m_corners[RTN]->m_point.x) > TOLERANCE)
-  || (fabs(m_corners[RBN]->m_point.x - m_corners[RBF]->m_point.x) > TOLERANCE)
-  || (fabs(m_corners[RBN]->m_point.x - m_corners[RTF]->m_point.x) > TOLERANCE)
+  if((fabs(m_corners[LBN]->x - m_corners[LTN]->x) > TOLERANCE)
+  || (fabs(m_corners[LBN]->x - m_corners[LBF]->x) > TOLERANCE)
+  || (fabs(m_corners[LBN]->x - m_corners[LTF]->x) > TOLERANCE)
+  || (fabs(m_corners[RBN]->x - m_corners[RTN]->x) > TOLERANCE)
+  || (fabs(m_corners[RBN]->x - m_corners[RBF]->x) > TOLERANCE)
+  || (fabs(m_corners[RBN]->x - m_corners[RTF]->x) > TOLERANCE)
 
-  || (fabs(m_corners[LBN]->m_point.y - m_corners[RBN]->m_point.y) > TOLERANCE)
-  || (fabs(m_corners[LBN]->m_point.y - m_corners[RBF]->m_point.y) > TOLERANCE)
-  || (fabs(m_corners[LBN]->m_point.y - m_corners[LBF]->m_point.y) > TOLERANCE)
-  || (fabs(m_corners[LTN]->m_point.y - m_corners[RTN]->m_point.y) > TOLERANCE)
-  || (fabs(m_corners[LTN]->m_point.y - m_corners[RTF]->m_point.y) > TOLERANCE)
-  || (fabs(m_corners[LTN]->m_point.y - m_corners[LTF]->m_point.y) > TOLERANCE)
+  || (fabs(m_corners[LBN]->y - m_corners[RBN]->y) > TOLERANCE)
+  || (fabs(m_corners[LBN]->y - m_corners[RBF]->y) > TOLERANCE)
+  || (fabs(m_corners[LBN]->y - m_corners[LBF]->y) > TOLERANCE)
+  || (fabs(m_corners[LTN]->y - m_corners[RTN]->y) > TOLERANCE)
+  || (fabs(m_corners[LTN]->y - m_corners[RTF]->y) > TOLERANCE)
+  || (fabs(m_corners[LTN]->y - m_corners[LTF]->y) > TOLERANCE)
 
-  || (fabs(m_corners[LBN]->m_point.z - m_corners[RBN]->m_point.z) > TOLERANCE)
-  || (fabs(m_corners[LBN]->m_point.z - m_corners[LTN]->m_point.z) > TOLERANCE)
-  || (fabs(m_corners[LBN]->m_point.z - m_corners[RTN]->m_point.z) > TOLERANCE)
-  || (fabs(m_corners[LBF]->m_point.z - m_corners[RBF]->m_point.z) > TOLERANCE)
-  || (fabs(m_corners[LBF]->m_point.z - m_corners[LTF]->m_point.z) > TOLERANCE)
-  || (fabs(m_corners[LBF]->m_point.z - m_corners[RTF]->m_point.z) > TOLERANCE)
+  || (fabs(m_corners[LBN]->z - m_corners[RBN]->z) > TOLERANCE)
+  || (fabs(m_corners[LBN]->z - m_corners[LTN]->z) > TOLERANCE)
+  || (fabs(m_corners[LBN]->z - m_corners[RTN]->z) > TOLERANCE)
+  || (fabs(m_corners[LBF]->z - m_corners[RBF]->z) > TOLERANCE)
+  || (fabs(m_corners[LBF]->z - m_corners[LTF]->z) > TOLERANCE)
+  || (fabs(m_corners[LBF]->z - m_corners[RTF]->z) > TOLERANCE)
   ) {
     throwException(_T("cube not valid\n%s"), toString().cstr());
   }

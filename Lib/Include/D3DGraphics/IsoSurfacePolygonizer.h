@@ -48,15 +48,30 @@ typedef enum {
  ,NN    // No edge
 } CubeEdge;
 
-// Test the function for a signed value
-class IsoSurfaceTest {
+class Point3DWithValue : public Point3D {
 public:
-  // Location of test
-  Point3D m_point;
-  // Function value at m_point
-  bool    m_positive;
-  // True if value is of correct sign
-  bool    m_ok;
+  double m_value;    // Function value at m_point
+  bool   m_positive;
+  inline Point3DWithValue() {
+  }
+  inline Point3DWithValue(const Point3D &p) : Point3D(p) {
+  }
+  inline void setValue(double v) {
+    m_positive = (m_value = v) > 0;
+  }
+  inline String toString(int precision=6) const {
+    return format(_T("P:%s, V:%s")
+                 ,__super::toString(precision).cstr()
+                 ,::toString(m_value,precision,0,ios::showpos).cstr());
+  }
+};
+
+// Test the function for a signed value
+class IsoSurfaceTest : public Point3DWithValue {
+public:
+  bool m_ok; // True if value is of correct sign
+  IsoSurfaceTest(const Point3D &p) : Point3DWithValue(p), m_ok(true) {
+  }
 };
 
 // Surface vertex
@@ -99,7 +114,8 @@ private:
   Point3DKey m_key2;
   void checkAndSwap();
 public:
-  inline CubeEdgeHashKey() {}
+  inline CubeEdgeHashKey() {
+  }
   inline CubeEdgeHashKey(const Point3DKey &key1, const Point3DKey &key2) : m_key1(key1), m_key2(key2) {
     checkAndSwap();
   }
@@ -112,19 +128,20 @@ public:
 };
 
 // Corner of a cube
-class HashedCubeCorner {
+class HashedCubeCorner : public Point3DWithValue {
 public:
   Point3DKey m_key;
-  // Location
-  Point3D    m_point;
-  bool       m_positive;
   inline HashedCubeCorner() {
   }
-  inline HashedCubeCorner(const Point3DKey &k, const Point3D &p) : m_key(k) {
-    m_point = p;
+  inline HashedCubeCorner(const Point3DKey &k, const Point3D &p)
+    : m_key(k)
+    , Point3DWithValue(p)
+  {
   }
-  String toString() const {
-    return format(_T("HashedCubeCorner:(K:%s, P:%s, %c)"), m_key.toString().cstr(), m_point.toString(6).cstr(), m_positive?'+':'-');
+  inline String toString() const {
+    return format(_T("HashedCubeCorner:(K:%s, %s)")
+                 ,m_key.toString().cstr()
+                 ,__super::toString(6).cstr(), m_value);
   }
 };
 
@@ -181,18 +198,18 @@ public:
     return index && (index < 255);
   }
   inline bool contains(const Point3D &p) const {
-    return (m_corners[LBN]->m_point <= p) && (p <= m_corners[RTF]->m_point);
+    return (*m_corners[LBN] <= p) && (p <= *m_corners[RTF]);
   }
   inline bool contains(const StackedCube &cube) const {
-    return contains(cube.m_corners[LBN]->m_point) && contains(cube.m_corners[RTF]->m_point);
+    return contains(*cube.m_corners[LBN]) && contains(*cube.m_corners[RTF]);
   }
 
   void validate();
   inline Point3D getSize() const {
-    return m_corners[RTF]->m_point - m_corners[LBN]->m_point;
+    return *m_corners[RTF] - *m_corners[LBN];
   }
   inline Point3D getCenter() const {
-    return (m_corners[LBN]->m_point + m_corners[RTF]->m_point)/2;
+    return (*m_corners[LBN] + *m_corners[RTF])/2;
   }
   String toString() const;
 };
@@ -335,7 +352,6 @@ private:
   void                putTriangleStrip( const TriangleStrip &face);
   void                putTriangleStripR(const TriangleStrip &face);
   void                flushFaceBuffer();
-  bool                needSplit(const TriangleStrip &face) const;
   inline bool         hasActiveCubes() const {
     return !m_cubeStack.isEmpty();
   }
@@ -352,7 +368,7 @@ private:
     return getCornerPoint(key.i,key.j,key.k);
   }
   Point3D                 getCornerPoint(int i, int j, int k) const;
-  Point3D                 converge(const Point3D &p1, const Point3D &p2, bool p1Positive, int itCount = 0);
+  Point3D                 converge(const Point3DWithValue &p1, const Point3DWithValue &p2, int itCount = 0);
   void                    saveStatistics(double startTime);
   void                    dumpCornerMap();
 public:
