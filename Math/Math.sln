@@ -194,6 +194,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gcd", "gcd\gcd.vcxproj", "{
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Expression", "..\Lib\Src\Expression\Expression.vcxproj", "{20C38850-59EE-46E3-AD91-7327685B83D2}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Incremental Delaunay Triangulation", "Incremental Delaunay Triangulation\Incremental Delaunay Triangulation.vcxproj", "{B987EE4A-3425-4348-A337-930D32A0627D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -1750,6 +1752,38 @@ Global
 		{20C38850-59EE-46E3-AD91-7327685B83D2}.TraceMemRelease|x64.Build.0 = TraceMemRelease|x64
 		{20C38850-59EE-46E3-AD91-7327685B83D2}.TraceMemRelease|x86.ActiveCfg = TraceMemRelease|Win32
 		{20C38850-59EE-46E3-AD91-7327685B83D2}.TraceMemRelease|x86.Build.0 = TraceMemRelease|Win32
+		{B987EE4A-3425-4348-A337-930D32A0627D}.Debug|x64.ActiveCfg = Debug|x64
+		{B987EE4A-3425-4348-A337-930D32A0627D}.Debug|x64.Build.0 = Debug|x64
+		{B987EE4A-3425-4348-A337-930D32A0627D}.Debug|x86.ActiveCfg = Debug|Win32
+		{B987EE4A-3425-4348-A337-930D32A0627D}.Debug|x86.Build.0 = Debug|Win32
+		{B987EE4A-3425-4348-A337-930D32A0627D}.LDDebug|x64.ActiveCfg = Debug|x64
+		{B987EE4A-3425-4348-A337-930D32A0627D}.LDDebug|x64.Build.0 = Debug|x64
+		{B987EE4A-3425-4348-A337-930D32A0627D}.LDDebug|x86.ActiveCfg = Debug|Win32
+		{B987EE4A-3425-4348-A337-930D32A0627D}.LDDebug|x86.Build.0 = Debug|Win32
+		{B987EE4A-3425-4348-A337-930D32A0627D}.LDRelease|x64.ActiveCfg = Release|x64
+		{B987EE4A-3425-4348-A337-930D32A0627D}.LDRelease|x64.Build.0 = Release|x64
+		{B987EE4A-3425-4348-A337-930D32A0627D}.LDRelease|x86.ActiveCfg = Release|Win32
+		{B987EE4A-3425-4348-A337-930D32A0627D}.LDRelease|x86.Build.0 = Release|Win32
+		{B987EE4A-3425-4348-A337-930D32A0627D}.Release|x64.ActiveCfg = Release|x64
+		{B987EE4A-3425-4348-A337-930D32A0627D}.Release|x64.Build.0 = Release|x64
+		{B987EE4A-3425-4348-A337-930D32A0627D}.Release|x86.ActiveCfg = Release|Win32
+		{B987EE4A-3425-4348-A337-930D32A0627D}.Release|x86.Build.0 = Release|Win32
+		{B987EE4A-3425-4348-A337-930D32A0627D}.TraceMemDebug|x64.ActiveCfg = Debug|x64
+		{B987EE4A-3425-4348-A337-930D32A0627D}.TraceMemDebug|x64.Build.0 = Debug|x64
+		{B987EE4A-3425-4348-A337-930D32A0627D}.TraceMemDebug|x86.ActiveCfg = Debug|Win32
+		{B987EE4A-3425-4348-A337-930D32A0627D}.TraceMemDebug|x86.Build.0 = Debug|Win32
+		{B987EE4A-3425-4348-A337-930D32A0627D}.TraceMemLDDebug|x64.ActiveCfg = Debug|x64
+		{B987EE4A-3425-4348-A337-930D32A0627D}.TraceMemLDDebug|x64.Build.0 = Debug|x64
+		{B987EE4A-3425-4348-A337-930D32A0627D}.TraceMemLDDebug|x86.ActiveCfg = Debug|Win32
+		{B987EE4A-3425-4348-A337-930D32A0627D}.TraceMemLDDebug|x86.Build.0 = Debug|Win32
+		{B987EE4A-3425-4348-A337-930D32A0627D}.TraceMemLDRelease|x64.ActiveCfg = Release|x64
+		{B987EE4A-3425-4348-A337-930D32A0627D}.TraceMemLDRelease|x64.Build.0 = Release|x64
+		{B987EE4A-3425-4348-A337-930D32A0627D}.TraceMemLDRelease|x86.ActiveCfg = Release|Win32
+		{B987EE4A-3425-4348-A337-930D32A0627D}.TraceMemLDRelease|x86.Build.0 = Release|Win32
+		{B987EE4A-3425-4348-A337-930D32A0627D}.TraceMemRelease|x64.ActiveCfg = Release|x64
+		{B987EE4A-3425-4348-A337-930D32A0627D}.TraceMemRelease|x64.Build.0 = Release|x64
+		{B987EE4A-3425-4348-A337-930D32A0627D}.TraceMemRelease|x86.ActiveCfg = Release|Win32
+		{B987EE4A-3425-4348-A337-930D32A0627D}.TraceMemRelease|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
