@@ -105,7 +105,7 @@ public:
   inline void setValue(const TCHAR *nodeName, const TCHAR *tagName, const String    &value, bool force=true) {
     setValue(findNode(nodeName),tagName,value.cstr(),force);
   }
-  inline void setValue(const TCHAR *nodeName, const TCHAR *tagName, const TCHAR *value, bool force = true) {
+  inline void setValue(const TCHAR *nodeName, const TCHAR *tagName, const TCHAR     *value, bool force = true) {
     setValue(findNode(nodeName),tagName,value,force);
   }
   inline void setValue(const TCHAR *nodeName, const TCHAR *tagName, int              value, bool force = true) {
@@ -143,7 +143,7 @@ public:
   }
 
   void setValue(const XMLNodePtr &node    , const TCHAR *tagName, const String    &value, bool force=true);
-  void setValue(const XMLNodePtr &node    , const TCHAR *tagName, const TCHAR *value, bool force=true);
+  void setValue(const XMLNodePtr &node    , const TCHAR *tagName, const TCHAR     *value, bool force=true);
   void setValue(const XMLNodePtr &node    , const TCHAR *tagName, int              value, bool force=true);
   void setValue(const XMLNodePtr &node    , const TCHAR *tagName, UINT             value, bool force=true);
   void setValue(const XMLNodePtr &node    , const TCHAR *tagName, long             value, bool force=true);
