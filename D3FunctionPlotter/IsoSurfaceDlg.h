@@ -9,7 +9,7 @@ private:
   double  m_cellSize;
   UINT    m_bounds;
   BOOL    m_tetrahedral;
-  BOOL    m_adaptiveCellSize;
+  BOOL    m_tetraOptimize4;
   BOOL    m_originOutside;
   BOOL    m_machineCode;
   BOOL    m_doubleSided;
@@ -27,8 +27,9 @@ private:
   bool validate();
   void paramToWin(const IsoSurfaceParameters &param);
   bool winToParam(      IsoSurfaceParameters &param);
-  void enableCheckBox();
+  void enableCheckBoxOrigin();
   void enableTimeFields();
+  void enableCheckBoxTetraOptimize4();
   inline void setXInterval(const DoubleInterval &interval) {
     m_xfrom = interval.getMin(); m_xto = interval.getMax();
   }
@@ -71,6 +72,7 @@ protected:
     afx_msg void OnGotoFrameCount();
     afx_msg void OnCheckDoubleSided();
     afx_msg void OnCheckIncludeTime();
+    afx_msg void OnCheckTetrahedral();
     afx_msg void OnButtonHelp();
     DECLARE_MESSAGE_MAP()
 };

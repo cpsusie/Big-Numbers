@@ -9,6 +9,7 @@ public:
   double         m_cellSize;
   Cube3D         m_boundingBox;
   bool           m_tetrahedral;
+  bool           m_tetraOptimize4;
   bool           m_adaptiveCellSize;
   bool           m_originOutside;
   bool           m_machineCode;

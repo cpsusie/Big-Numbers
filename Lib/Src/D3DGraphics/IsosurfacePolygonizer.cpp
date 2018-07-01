@@ -11,6 +11,7 @@
 #include "pch.h"
 #include <Random.h>
 #include <TinyBitSet.h>
+#include <MFCUtil/ColorSpace.h>
 #include <D3DGraphics/IsoSurfacePolygonizer.h>
 
 #define RES 10 // # converge iterations
@@ -56,7 +57,8 @@ IsoSurfacePolygonizer::~IsoSurfacePolygonizer() {
 void IsoSurfacePolygonizer::polygonize(const Point3D &start
                                       ,double         cellSize
                                       ,const Cube3D  &boundingBox
-                                      ,bool           tetrahedralMode) {
+                                      ,bool           tetrahedralMode
+                                      ,bool           tetraOptimize4) {
 
   const double startTime = getThreadTime();
 
@@ -64,6 +66,7 @@ void IsoSurfacePolygonizer::polygonize(const Point3D &start
   m_boundingBox     = boundingBox;
   m_delta           = cellSize/(double)(RES*RES);
   m_tetrahedralMode = tetrahedralMode;
+  m_tetraOptimize4  = tetraOptimize4;
 
   m_statistics.clear();
   resetTables();
@@ -212,8 +215,8 @@ void IsoSurfacePolygonizer::doTetra(const HashedCubeCorner &a, const HashedCubeC
   TriangleStrip ts;
 
   switch (index) {
-  case  0:                                                     //----
-  case 15:                                                     //++++
+  case  0:                                         //----
+  case 15:                                         //++++
     m_statistics.m_nonProduktiveCalls++;
     return;
   case  1: ts = TriangleStrip(ad,bd,cd   ); break; //---+
@@ -236,8 +239,39 @@ void IsoSurfacePolygonizer::doTetra(const HashedCubeCorner &a, const HashedCubeC
 }
 
 void IsoSurfacePolygonizer::putTriangleStrip(const TriangleStrip &ts) {
-  for(int i = 2; i < ts.m_count; i++) {
-    putFace3(ts.m_vertexId[0], ts.m_vertexId[i-1], ts.m_vertexId[i]);
+  if(ts.m_count == 3) {
+    putFace3(ts.m_vertexId[0], ts.m_vertexId[1], ts.m_vertexId[2]);
+  } else if(!m_tetraOptimize4) {
+    for(int i = 2; i < ts.m_count; i++) {
+      putFace3(ts.m_vertexId[0], ts.m_vertexId[i-1], ts.m_vertexId[i]);
+    }
+  } else {
+    const Point3D &p0    = m_vertexArray[ts.m_vertexId[0]].m_position;
+    const Point3D &p1    = m_vertexArray[ts.m_vertexId[1]].m_position;
+    const Point3D &p2    = m_vertexArray[ts.m_vertexId[2]].m_position;
+    const Point3D &p3    = m_vertexArray[ts.m_vertexId[3]].m_position;
+
+    const Point3D v01    = p1 - p0;
+    const Point3D v02    = p2 - p0;
+    const Point3D v03    = p3 - p0;
+    const Point3D v12    = p2 - p1;
+    const Point3D v13    = p3 - p1;
+    const Point3D v10    = p0 - p1;
+
+    const double  ang102 = angle(v01,v02);
+    const double  ang203 = angle(v02,v03);
+    const double  ang213 = angle(v12,v13);
+    const double  ang310 = angle(v13,v10);
+    const double  q0     = (ang102 > ang203) ? ang203/ang102 : ang102/ang203;
+    const double  q1     = (ang213 > ang310) ? ang310/ang213 : ang213/ang310;
+
+    if(q0 > q1) {
+      putFace3(ts.m_vertexId[0], ts.m_vertexId[1], ts.m_vertexId[2]);
+      putFace3(ts.m_vertexId[0], ts.m_vertexId[2], ts.m_vertexId[3]);
+    } else {
+      putFace3(ts.m_vertexId[1], ts.m_vertexId[2], ts.m_vertexId[3]);
+      putFace3(ts.m_vertexId[1], ts.m_vertexId[3], ts.m_vertexId[0]);
+    }
   }
 }
 

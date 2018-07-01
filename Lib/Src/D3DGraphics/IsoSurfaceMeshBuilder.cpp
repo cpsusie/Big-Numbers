@@ -77,7 +77,8 @@ void IsoSurface::createData(InterruptableRunnable *ir) {
     polygonizer.polygonize(Point3D(0,0,0)
                           ,m_param.m_cellSize
                           ,m_param.m_boundingBox
-                          ,m_param.m_tetrahedral);
+                          ,m_param.m_tetrahedral
+                          ,m_param.m_tetraOptimize4);
     if(m_mb.isEmpty()) {
       throwException(_T("No polygons generated. Cannot create object"));
     }
@@ -117,7 +118,7 @@ void IsoSurface::receiveFace(const Face3 &face) {
     m_lastVertexCount = size;
     checkUserAction();
   }
-  Face &f = m_mb.addFace();
+  Face &f = m_mb.addFace(/*face.m_color*/);
   f.addVertexNormalIndex(face.m_i1, face.m_i1);
   f.addVertexNormalIndex(face.m_i2, face.m_i2);
   f.addVertexNormalIndex(face.m_i3, face.m_i3);

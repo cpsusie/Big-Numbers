@@ -34,21 +34,21 @@ void CIsoSurfaceDlg::DoDataExchange(CDataExchange *pDX) {
   DDX_Text( pDX, IDC_EDIT_EXPR             , m_expr                      );
   DDX_Text( pDX, IDC_EDIT_CELLSIZE         , m_cellSize                  );
   DDX_Check(pDX, IDC_CHECK_TETRAHEDRAL     , m_tetrahedral               );
-	DDX_Check(pDX, IDC_CHECK_ADAPTIVESIZE    , m_adaptiveCellSize          );
+  DDX_Check(pDX, IDC_CHECK_TETRAOPTIMIZE4  , m_tetraOptimize4            );
   DDX_Check(pDX, IDC_CHECK_ORIGINOUTSIDE   , m_originOutside             );
   DDX_Check(pDX, IDC_CHECK_MACHINECODE     , m_machineCode               );
-	DDX_Check(pDX, IDC_CHECK_DOUBLESIDED     , m_doubleSided               );
-	DDX_Check(pDX, IDC_CHECK_INCLUDETIME     , m_includeTime               );
-	DDX_Text( pDX, IDC_EDIT_FRAMECOUNT       , m_frameCount                );
+  DDX_Check(pDX, IDC_CHECK_DOUBLESIDED     , m_doubleSided               );
+  DDX_Check(pDX, IDC_CHECK_INCLUDETIME     , m_includeTime               );
+  DDX_Text( pDX, IDC_EDIT_FRAMECOUNT       , m_frameCount                );
   DDV_MinMaxUInt(pDX, m_frameCount, 1, 300            );
-	DDX_Text( pDX, IDC_EDIT_TIMEFROM         , m_timefrom                  );
-	DDX_Text( pDX, IDC_EDIT_TIMETO           , m_timeto                    );
-	DDX_Text( pDX, IDC_EDIT_XFROM            , m_xfrom                     );
-	DDX_Text( pDX, IDC_EDIT_XTO              , m_xto                       );
-	DDX_Text( pDX, IDC_EDIT_YFROM            , m_yfrom                     );
-	DDX_Text( pDX, IDC_EDIT_YTO              , m_yto                       );
-	DDX_Text( pDX, IDC_EDIT_ZFROM            , m_zfrom                     );
-	DDX_Text( pDX, IDC_EDIT_ZTO              , m_zto                       );
+  DDX_Text( pDX, IDC_EDIT_TIMEFROM         , m_timefrom                  );
+  DDX_Text( pDX, IDC_EDIT_TIMETO           , m_timeto                    );
+  DDX_Text( pDX, IDC_EDIT_XFROM            , m_xfrom                     );
+  DDX_Text( pDX, IDC_EDIT_XTO              , m_xto                       );
+  DDX_Text( pDX, IDC_EDIT_YFROM            , m_yfrom                     );
+  DDX_Text( pDX, IDC_EDIT_YTO              , m_yto                       );
+  DDX_Text( pDX, IDC_EDIT_ZFROM            , m_zfrom                     );
+  DDX_Text( pDX, IDC_EDIT_ZTO              , m_zto                       );
 }
 
 BEGIN_MESSAGE_MAP(CIsoSurfaceDlg, CDialog)
@@ -67,6 +67,7 @@ BEGIN_MESSAGE_MAP(CIsoSurfaceDlg, CDialog)
 	  ON_BN_CLICKED(IDC_BUTTON_HELP            , OnButtonHelp                )
     ON_BN_CLICKED(IDC_CHECK_DOUBLESIDED      , OnCheckDoubleSided          )
     ON_BN_CLICKED(IDC_CHECK_INCLUDETIME      , OnCheckIncludeTime          )
+    ON_BN_CLICKED(IDC_CHECK_TETRAHEDRAL      , OnCheckTetrahedral          )
 END_MESSAGE_MAP()
 
 BOOL CIsoSurfaceDlg::OnInitDialog() {
@@ -81,7 +82,7 @@ BOOL CIsoSurfaceDlg::OnInitDialog() {
   m_layoutManager.addControl(IDC_STATIC_CELLSIZE     , RELATIVE_Y_POS         );
   m_layoutManager.addControl(IDC_EDIT_CELLSIZE       , RELATIVE_Y_POS         );
   m_layoutManager.addControl(IDC_CHECK_TETRAHEDRAL   , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_CHECK_ADAPTIVESIZE  , RELATIVE_Y_POS         );
+  m_layoutManager.addControl(IDC_CHECK_TETRAOPTIMIZE4, RELATIVE_Y_POS         );
   m_layoutManager.addControl(IDC_CHECK_DOUBLESIDED   , RELATIVE_Y_POS         );
   m_layoutManager.addControl(IDC_CHECK_ORIGINOUTSIDE , RELATIVE_Y_POS         );
   m_layoutManager.addControl(IDC_CHECK_MACHINECODE   , RELATIVE_Y_POS         );
@@ -162,11 +163,19 @@ void CIsoSurfaceDlg::OnEditFindMatchingParentesis() {
 }
 
 void CIsoSurfaceDlg::OnCheckDoubleSided() {
-  enableCheckBox();
+  enableCheckBoxOrigin();
 }
-void CIsoSurfaceDlg::enableCheckBox() {
+void CIsoSurfaceDlg::OnCheckTetrahedral() {
+  enableCheckBoxTetraOptimize4();
+}
+
+void CIsoSurfaceDlg::enableCheckBoxOrigin() {
   GetDlgItem(IDC_CHECK_ORIGINOUTSIDE)->EnableWindow(!IsDlgButtonChecked(IDC_CHECK_DOUBLESIDED));
 }
+void CIsoSurfaceDlg::enableCheckBoxTetraOptimize4() {
+  GetDlgItem(IDC_CHECK_TETRAOPTIMIZE4)->EnableWindow(IsDlgButtonChecked(IDC_CHECK_TETRAHEDRAL));
+}
+
 void CIsoSurfaceDlg::OnGotoExpr() {
   gotoExpr(IDC_EDIT_EXPR);
 }
@@ -200,7 +209,7 @@ void CIsoSurfaceDlg::paramToWin(const IsoSurfaceParameters &param) {
   setYInterval(param.m_boundingBox.getYInterval());
   setZInterval(param.m_boundingBox.getZInterval());
   m_tetrahedral      = param.m_tetrahedral      ? TRUE : FALSE;
-  m_adaptiveCellSize = param.m_adaptiveCellSize ? TRUE : FALSE;
+  m_tetraOptimize4   = param.m_tetraOptimize4   ? TRUE : FALSE;
   m_doubleSided      = param.m_doubleSided      ? TRUE : FALSE;
   m_originOutside    = param.m_originOutside    ? TRUE : FALSE;
   m_machineCode      = param.m_machineCode      ? TRUE : FALSE;
@@ -208,8 +217,9 @@ void CIsoSurfaceDlg::paramToWin(const IsoSurfaceParameters &param) {
   m_frameCount       = param.m_frameCount;
   setTimeInterval(param.getTimeInterval());
   __super::paramToWin(param);
-  enableCheckBox();
+  enableCheckBoxOrigin();
   enableTimeFields();
+  enableCheckBoxTetraOptimize4();
 }
 
 bool CIsoSurfaceDlg::winToParam(IsoSurfaceParameters &param) {
@@ -220,7 +230,7 @@ bool CIsoSurfaceDlg::winToParam(IsoSurfaceParameters &param) {
   param.m_boundingBox.setYInterval(getYInterval());
   param.m_boundingBox.setZInterval(getZInterval());
   param.m_tetrahedral      = m_tetrahedral      ? true : false;
-  param.m_adaptiveCellSize = m_adaptiveCellSize ? true : false;
+  param.m_tetraOptimize4   = m_tetraOptimize4   ? true : false;
   param.m_doubleSided      = m_doubleSided      ? true : false;
   param.m_originOutside    = m_originOutside    ? true : false;
   param.m_machineCode      = m_machineCode      ? true : false;

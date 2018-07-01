@@ -9,4 +9,4 @@ sqrx=sqr(x1); sqry=sqr(y1); sqrz=sqr(z1);
 +((4/3*x1+4)^2+16/9*sqry+16/9*sqrz)^-4
 +((4/3*y1-4)^2+16/9*sqrx+16/9*sqrz)^-4
 +((4/3*y1+4)^2+16/9*sqrx+16/9*sqrz)^-4)
-^-0.25-1</expr><cellsize>5.000000000000000e-02</cellsize><boundingbox><lbn><x>-3.000000000000000e+00</x><y>-3.000000000000000e+00</y><z>-3.000000000000000e+00</z></lbn><rtf><x>3.000000000000000e+00</x><y>3.000000000000000e+00</y><z>3.000000000000000e+00</z></rtf></boundingbox><tetrahedral>0</tetrahedral><adaptivecellsize>0</adaptivecellsize><originoutside>0</originoutside><machinecode>1</machinecode><doublesided>0</doublesided><includetime>0</includetime></IsoSurface>
+^-0.25-1</expr><cellsize>5.000000000000000e-02</cellsize><boundingbox><lbn><x>-3.000000000000000e+00</x><y>-3.000000000000000e+00</y><z>-3.000000000000000e+00</z></lbn><rtf><x>3.000000000000000e+00</x><y>3.000000000000000e+00</y><z>3.000000000000000e+00</z></rtf></boundingbox><tetrahedral>0</tetrahedral><tetraoptimize4>0</tetraoptimize4><adaptivecellsize>0</adaptivecellsize><originoutside>0</originoutside><machinecode>1</machinecode><doublesided>0</doublesided><includetime>0</includetime></IsoSurface>

@@ -7,6 +7,7 @@ IsoSurfaceParameters::IsoSurfaceParameters() {
   m_cellSize         = 0.25;
   m_boundingBox      = Cube3D(Point3D(-5,-5,-5), Point3D( 5, 5, 5));
   m_tetrahedral      = true;
+  m_tetraOptimize4   = false;
   m_adaptiveCellSize = false;
   m_originOutside    = false;
   m_machineCode      = true;
@@ -22,6 +23,7 @@ void IsoSurfaceParameters::putDataToDoc(XMLDoc &doc) {
   doc.setValue(  root, _T("cellsize"          ), m_cellSize        );
   setValue( doc, root, _T("boundingbox"       ), m_boundingBox     );
   doc.setValue(  root, _T("tetrahedral"       ), m_tetrahedral     );
+  doc.setValue(  root, _T("tetraoptimize4"    ), m_tetraOptimize4  );
   doc.setValue(  root, _T("adaptivecellsize"  ), m_adaptiveCellSize);
   doc.setValue(  root, _T("originoutside"     ), m_originOutside   );
   doc.setValue(  root, _T("machinecode"       ), m_machineCode     );
@@ -40,6 +42,7 @@ void IsoSurfaceParameters::getDataFromDoc(XMLDoc &doc) {
   doc.getValue(  root, _T("cellsize"          ), m_cellSize        );
   getValue( doc, root, _T("boundingbox"       ), m_boundingBox     );
   doc.getValue(  root, _T("tetrahedral"       ), m_tetrahedral     );
+  doc.getValue(  root, _T("tetraoptimize4"    ), m_tetraOptimize4  );
   doc.getValue(  root, _T("adaptivecellsize"  ), m_adaptiveCellSize);
   doc.getValue(  root, _T("originoutside"     ), m_originOutside   );
   doc.getValue(  root, _T("machinecode"       ), m_machineCode     );

@@ -301,6 +301,7 @@ private:
   Point3D                                      m_start;
   // Use tetrahedral decomposition
   bool                                         m_tetrahedralMode;
+  bool                                         m_tetraOptimize4;
   // Active cubes
   Stack<StackedCube>                           m_cubeStack;
   // Surface vertices
@@ -379,10 +380,12 @@ public:
   // double size           : Width of the partitioning cube
   // int bounds            : max. range of cubes (+/- on the three axes) from first cube
   // bool tetrahedralmode  : if true, use tetrahedral decomposition of a rectangular cube. false to use cube directly
+  // bool tetraOptimize4   : only active if tetrahedralmode==true
   void polygonize(const Point3D &start
                  ,double         cellSize
                  ,const Cube3D  &boundingBox
                  ,bool           tetrahedralMode
+                 ,bool           tetraOptimize4
                  );
   inline const PolygonizerStatistics &getStatistics() const {
     return m_statistics;
