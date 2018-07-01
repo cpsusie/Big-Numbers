@@ -74,6 +74,24 @@ END
 // remains consistent on all systems.
 IDR_MAINFRAME           ICON                    "res\\Incremental Delaunay Triangulation.ico"
 
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MAINFRAME MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&Exit",                       ID_FILE_EXIT
+    END
+    POPUP "&Edit"
+    BEGIN
+        MENUITEM "&Clear",                      ID_EDIT_CLEAR
+    END
+END
+
 #endif    // Danish (Denmark) resources
 /////////////////////////////////////////////////////////////////////////////
 
@@ -105,6 +123,7 @@ IDD_INCREMENTALDELAUNAYTRIANGULATION_DIALOG DIALOGEX 0, 0, 421, 316
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
 EXSTYLE WS_EX_APPWINDOW
 CAPTION "Incremental Delaunay Triangulation"
+MENU IDR_MAINFRAME
 FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
 END

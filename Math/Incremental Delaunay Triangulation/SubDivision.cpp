@@ -3,66 +3,57 @@
 #include "SubDivision.h"
 
 QuadEdge::QuadEdge() {
-  e[0].num = 0, e[1].num = 1, e[2].num = 2, e[3].num = 3;
-  e[0].next = &(e[0]); e[1].next = &(e[3]);
-  e[2].next = &(e[2]); e[3].next = &(e[1]);
+  m_e[0].m_num = 0;
+  m_e[1].m_num = 1;
+  m_e[2].m_num = 2;
+  m_e[3].m_num = 3;
+  m_e[0].m_next = &(m_e[0]);
+  m_e[1].m_next = &(m_e[3]);
+  m_e[2].m_next = &(m_e[2]);
+  m_e[3].m_next = &(m_e[1]);
 }
 
-
-static Edge *MakeEdge() {
-  QuadEdge *ql = new QuadEdge;
+static Edge *newEdge() {
+  QuadEdge *ql = new QuadEdge; TRACE_NEW(ql);
   return ql->getEdge0();
 }
 
-static void DeleteEdge(Edge *e) {
-  Splice(e, e->Oprev());
-  Splice(e->Sym(), e->Sym()->Oprev());
-  delete e->Qedge();
+void Edge::remove() {
+  splice(Oprev());
+  Sym()->splice(Sym()->Oprev());
+  QuadEdge *qe = getQuadEdge();
+  SAFEDELETE(qe);
 }
 
-// Add a new edge e connecting the destination of a to the
-// origin of b, in such a way that all three have the same
-// left face after the connection is complete.
-// Additionally, the data pointers of the new edge are set.
-static Edge *Connect(Edge *a, Edge *b) {
-  Edge *e = MakeEdge();
-  Splice(e, a->Lnext());
-  Splice(e->Sym(), b);
-  e->EndPoints(a->Dest(), b->Org());
+Edge *Edge::connect(Edge *b) {
+  Edge *e = newEdge();
+  e->splice(Lnext());
+  e->Sym()->splice(b);
+  e->setEndPoints(Dest(), b->Org());
   return e;
 }
 
-// Essentially turns edge e counterclockwise inside its enclosing
-// quadrilateral. The data pointers are modified accordingly.
-static void Swap(Edge *e) {
-  Edge *a = e->Oprev();
-  Edge *b = e->Sym()->Oprev();
-  Splice(e, a);
-  Splice(e->Sym(), b);
-  Splice(e, a->Lnext());
-  Splice(e->Sym(), b->Lnext());
-  e->EndPoints(a->Dest(), b->Dest());
+void Edge::swap() {
+  Edge *a = Oprev();
+  Edge *b = Sym()->Oprev();
+  splice(a);
+  Sym()->splice(b);
+  splice(a->Lnext());
+  Sym()->splice(b->Lnext());
+  setEndPoints(a->Dest(), b->Dest());
 }
 
-// This operator affects the two edge rings around the origins of a and b,
-// and, independently, the two edge rings around the left faces of a and b.
-// In each case, (i) if the two rings are distinct, Splice will combine
-// them into one; (ii) if the two are the same ring, Splice will break it
-// into two separate pieces.
-// Thus, Splice can be used both to attach the two edges together, and
-// to break them apart. See Guibas and Stolfi (1985) p.96 for more details
-// and illustrations.
-void Splice(Edge *a, Edge *b) {
-  Edge *alpha = a->Onext()->Rot();
-  Edge *beta  = b->Onext()->Rot();
-  Edge *t1    = b->Onext();
-  Edge *t2    = a->Onext();
-  Edge *t3    = beta->Onext();
-  Edge *t4    = alpha->Onext();
-  a->next     = t1;
-  b->next     = t2;
-  alpha->next = t3;
-  beta->next  = t4;
+void Edge::splice(Edge *e) {
+  Edge *alpha   = Onext()->Rot();
+  Edge *beta    = e->Onext()->Rot();
+  Edge *t1      = e->Onext();
+  Edge *t2      = Onext();
+  Edge *t3      = beta->Onext();
+  Edge *t4      = alpha->Onext();
+  m_next        = t1;
+  e->m_next     = t2;
+  alpha->m_next = t3;
+  beta->m_next  = t4;
 }
 
 /*************** Geometric Predicates for Delaunay Diagrams *****************/
@@ -82,59 +73,110 @@ static bool InCircle(const Point2d &a, const Point2d &b, const Point2d &c, const
 }
 
 // Returns true, if the points a, b, c are in a counterclockwise order
-bool ccw(const Point2d &a, const Point2d &b, const Point2d &c) {
+static bool ccw(const Point2d &a, const Point2d &b, const Point2d &c) {
   return TriArea(a, b, c) > 0;
 }
 
-bool RightOf(const Point2d &x, Edge *e) {
-  return ccw(x, e->Dest2d(), e->Org2d());
+bool Edge::rightOf(const Point2d &x) const {
+  return ccw(x, Dest2d(), Org2d());
 }
 
-bool LeftOf(const Point2d &x, Edge *e) {
-  return ccw(x, e->Org2d(), e->Dest2d());
+bool Edge::leftOf(const Point2d &x) const {
+  return ccw(x, Org2d(), Dest2d());
 }
 
 #define EPS 1e-8
 
-// A predicate that determines if the point x is on the edge e.
-// The point is considered on if it is in the EPS-neighborhood
-// of the edge.
-bool OnEdge(const Point2d &x, Edge *e) {
-  const Real t1 = (x - e->Org2d()).norm();
-  const Real t2 = (x - e->Dest2d()).norm();
+bool Edge::onEdge(const Point2d &x) const {
+  const Real t1 = (x - Org2d()).norm();
+  const Real t2 = (x - Dest2d()).norm();
   if(t1 < EPS || t2 < EPS) {
     return true;
   }
-  const Real t3 = (e->Org2d() - e->Dest2d()).norm();
+  const Real t3 = (Org2d() - Dest2d()).norm();
   if(t1 > t3 || t2 > t3) {
     return false;
   }
-  const Line line(e->Org2d(), e->Dest2d());
+  const Line line(Org2d(), Dest2d());
   return (fabs(line.eval(x)) < EPS);
 }
 
 /************* An Incremental Algorithm for the Construction of *************/
 
 /************* Topological Operations for Delaunay Diagrams *****************/
-// Initialize a subdivision to the triangle defined by the points a, b, c.
-Subdivision::Subdivision(const Point2d &a, const Point2d &b, const Point2d &c) {
-  Point2d *da = new Point2d(a), *db = new Point2d(b), *dc = new Point2d(c);
-  Edge    *ea = MakeEdge();
-  ea->EndPoints(da, db);
-  Edge *eb = MakeEdge();
-  Splice(ea->Sym(), eb);
-  eb->EndPoints(db, dc);
-  Edge *ec = MakeEdge();
-  Splice(eb->Sym(), ec);
-  ec->EndPoints(dc, da);
-  Splice(ec->Sym(), ea);
+SubDivision::SubDivision(const Point2d &a, const Point2d &b, const Point2d &c) {
+  Point2d *da = newPoint(a), *db = newPoint(b), *dc = newPoint(c);
+  Edge    *ea = newEdge();
+  ea->setEndPoints(da, db);
+  Edge *eb = newEdge();
+  ea->Sym()->splice(eb);
+  eb->setEndPoints(db, dc);
+  Edge *ec = newEdge();
+  eb->Sym()->splice(ec);
+  ec->setEndPoints(dc, da);
+  ec->Sym()->splice(ea);
   m_startingEdge = ea;
 }
 
-typedef CompactKeyType<const Edge*>  EdgeKey;
-typedef CompactHashSet<EdgeKey>      EdgeSet;
+SubDivision::~SubDivision() {
+  clear();
+}
 
-Edge *Subdivision::Locate(const Point2d &x) {
+void SubDivision::clear() {
+  deleteAllEdges();
+  m_pointArray.clear();
+  m_startingEdge = NULL;
+}
+
+typedef CompactKeyType<const Edge*>  EdgeKey;
+class EdgeSet : public CompactHashSet<EdgeKey> {
+private:
+  void addAll(Edge *e);
+public:
+  EdgeSet(Edge *e = NULL) {
+    if(e) addAll(e);
+  }
+};
+
+void EdgeSet::addAll(Edge *e) {
+  if(!contains(e)) {
+    add(e);
+    addAll(e->Rnext());
+    addAll(e->Lnext());
+  }
+}
+
+typedef CompactKeyType<const QuadEdge*>  QuadEdgeKey;
+typedef CompactHashSet<QuadEdgeKey>      QuadEdgeSet;
+
+void SubDivision::getAllQuadEdges(CompactArray<QuadEdge*> &a) {
+  const EdgeSet set(m_startingEdge);
+  QuadEdgeSet   qset;
+  for(Iterator<EdgeKey> it = set.getIterator(); it.hasNext();) {
+    const Edge *e = it.next();
+    qset.add(e->getQuadEdge());
+  }
+  a.clear();
+  for(Iterator<QuadEdgeKey> it = qset.getIterator(); it.hasNext();) {
+    const QuadEdge *qe = it.next();
+    a.add((QuadEdge*)qe);
+  }
+}
+
+void SubDivision::deleteAllEdges() {
+  CompactArray<QuadEdge*> a;
+  getAllQuadEdges(a);
+  const size_t n = a.size();
+  for(size_t i = 0; i < n; i++) {
+    QuadEdge *qe = a[i];
+    SAFEDELETE(qe);
+  }
+}
+
+Edge *SubDivision::locate(const Point2d &x) {
+  if(m_startingEdge == NULL) {
+    return NULL;
+  }
   Edge *e = m_startingEdge;
   EdgeSet visited;
   for(;;) {
@@ -144,11 +186,11 @@ Edge *Subdivision::Locate(const Point2d &x) {
     visited.add(e);
     if((x == e->Org2d()) || (x == e->Dest2d())) {
       return e;
-    } else if(RightOf(x, e)) {
+    } else if(e->rightOf(x)) {
       e = e->Sym();
-    } else if(!RightOf(x, e->Onext())) {
+    } else if(!e->Onext()->rightOf(x)) {
       e = e->Onext();
-    } else if(!RightOf(x, e->Dprev())) {
+    } else if(!e->Dprev()->rightOf(x)) {
       e = e->Dprev();
     } else {
       return e;
@@ -156,62 +198,53 @@ Edge *Subdivision::Locate(const Point2d &x) {
   }
 }
 
-void Subdivision::InsertSite(const Point2d &x) {
-  Edge *e = Locate(x);
+void SubDivision::insertPoint(const Point2d &x) {
+  Edge *e = locate(x);
   if((e == NULL) || (x == e->Org2d()) || (x == e->Dest2d())) { // point is already in
     return;
-  } else if(OnEdge(x, e)) {
+  } else if(e->onEdge(x)) {
     e = e->Oprev();
-    DeleteEdge(e->Onext());
+    e->Onext()->remove();
   }
 
 // Connect the new point to the vertices of the containing
 // triangle (or quadrilateral, if the new point fell on an
 // existing edge.)
-
-  Edge *base = MakeEdge();
-  base->EndPoints(e->Org(), new Point2d(x));
-  Splice(base, e);
+  Edge *base = newEdge();
+  base->setEndPoints(e->Org(), newPoint(x));
+  base->splice(e);
   m_startingEdge = base;
   do {
-    base = Connect(e, base->Sym());
+    base = e->connect(base->Sym());
     e = base->Oprev();
   } while(e->Lnext() != m_startingEdge);
 
   // Examine suspect edges to ensure that the Delaunay condition is satisfied.
   for(;;) {
     Edge *t = e->Oprev();
-    if(RightOf(t->Dest2d(), e) && InCircle(e->Org2d(), t->Dest2d(), e->Dest2d(), x)) {
-      Swap(e);
+    if(e->rightOf(t->Dest2d()) && InCircle(e->Org2d(), t->Dest2d(), e->Dest2d(), x)) {
+      e->swap();
       e = e->Oprev();
-    } else if(e->Onext() == m_startingEdge) { // no more suspect edges
-      return;
-    } else { // pop a suspect edge
+    } else if(e->Onext() != m_startingEdge) { // pop a suspect edge
       e = e->Onext()->Lprev();
+    } else { // no more suspect edges
+      return;
     }
   }
 }
 
-class EdgePainter : public EdgeSet {
-private:
-  HDC m_hdc;
-public:
-  EdgePainter(HDC hdc) : m_hdc(hdc) {
-  }
-  void drawEdge(const Edge *e);
-};
-
-void EdgePainter::drawEdge(const Edge *e) {
-  if(contains(e)) return;
-  add(e);
-  const Point2d &p1 = e->Org2d(), &p2 = e->Dest2d();
-  POINT old;
-  MoveToEx(m_hdc, (int)p1.x,(int)p1.y, &old);
-  LineTo(  m_hdc, (int)p2.x,(int)p2.y);
-  drawEdge(e->Rnext());
-  drawEdge(e->Lnext());
+Point2d *SubDivision::newPoint(const Point2d &p) {
+  m_pointArray.add(p);
+  return &m_pointArray.last();
 }
 
-void Subdivision::paint(HDC hdc) const {
-  EdgePainter(hdc).drawEdge(m_startingEdge);
+void SubDivision::paint(HDC hdc) const {
+  const EdgeSet set(m_startingEdge);
+  for(Iterator<EdgeKey> it = set.getIterator(); it.hasNext();) {
+    const Edge *e = it.next();
+    const Point2d &p1 = e->Org2d(), &p2 = e->Dest2d();
+    POINT old;
+    MoveToEx(hdc, (int)p1.x,(int)p1.y, &old);
+    LineTo(  hdc, (int)p2.x,(int)p2.y);
+  }
 }

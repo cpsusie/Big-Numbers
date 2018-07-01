@@ -53,6 +53,8 @@ BEGIN_MESSAGE_MAP(CIncrementalDelaunayTriangulationDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
   ON_WM_LBUTTONDOWN()
+  ON_COMMAND(ID_FILE_EXIT , &CIncrementalDelaunayTriangulationDlg::OnFileExit )
+  ON_COMMAND(ID_EDIT_CLEAR, &CIncrementalDelaunayTriangulationDlg::OnEditClear)
 END_MESSAGE_MAP()
 
 BOOL CIncrementalDelaunayTriangulationDlg::OnInitDialog() {
@@ -115,6 +117,8 @@ void CIncrementalDelaunayTriangulationDlg::OnPaint() {
 		dc.DrawIcon(x, y, m_hIcon);
 	} else {
 		CDialogEx::OnPaint();
+    CClientDC dc(this);
+    paintAll(dc);
 	}
 }
 
@@ -122,27 +126,17 @@ HCURSOR CIncrementalDelaunayTriangulationDlg::OnQueryDragIcon() {
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
-void CIncrementalDelaunayTriangulationDlg::paintEdges() {
-  CClientDC dc(this);
+void CIncrementalDelaunayTriangulationDlg::paintAll(CDC &dc) {
   const CRect r = getClientRect(this);
   dc.FillSolidRect(&r, WHITE);
-  dc.SetDCPenColor(BLACK);
-  m_edges->paint(dc);
-}
-
-void CIncrementalDelaunayTriangulationDlg::OnLButtonDown(UINT nFlags, CPoint point) {
   if(m_edges) {
-    m_edges->InsertSite(Point2DP(point));
-    paintEdges();
+    paintEdges(dc);
   } else if(m_count < 3) {
-    m_p[m_count++] = point;
-    CClientDC dc(this);
     switch(m_count) {
+    case 0:
+      break;
     case 1:
-      { const CRect r = getClientRect(this);
-        dc.FillSolidRect(&r, WHITE);
-        dc.FillSolidRect(point.x-1,point.y-1,2,2,BLACK);
-      }
+      dc.FillSolidRect(m_p[0].x-1,m_p[0].y-1,2,2,BLACK);
       break;
     case 2:
       { CPoint old;
@@ -150,12 +144,39 @@ void CIncrementalDelaunayTriangulationDlg::OnLButtonDown(UINT nFlags, CPoint poi
         LineTo(dc,m_p[1].x,m_p[1].y);
       }
       break;
-    case 3:
-      m_edges = new Subdivision(Point2DP(m_p[0]),Point2DP(m_p[1]),Point2DP(m_p[2]));
-      paintEdges();
+    default:
+      paintEdges(dc);
       break;    
     }
   }
+}
 
+void CIncrementalDelaunayTriangulationDlg::paintEdges(CDC &dc) {
+  dc.SetDCPenColor(BLACK);
+  m_edges->paint(dc);
+}
+
+void CIncrementalDelaunayTriangulationDlg::OnLButtonDown(UINT nFlags, CPoint point) {
+  if(m_edges) {
+    m_edges->insertPoint(Point2DP(point));
+  } else if(m_count < 3) {
+    m_p[m_count++] = point;
+    if(m_count == 3) {
+      m_edges = new SubDivision(Point2DP(m_p[0]),Point2DP(m_p[1]),Point2DP(m_p[2])); TRACE_NEW(m_edges);
+    }
+  }
+  Invalidate();
   CDialogEx::OnLButtonDown(nFlags, point);
+}
+
+
+void CIncrementalDelaunayTriangulationDlg::OnFileExit() {
+  OnEditClear();
+  EndDialog(IDOK);
+}
+
+void CIncrementalDelaunayTriangulationDlg::OnEditClear() {
+  SAFEDELETE(m_edges);
+  m_count = 0;
+  Invalidate();
 }

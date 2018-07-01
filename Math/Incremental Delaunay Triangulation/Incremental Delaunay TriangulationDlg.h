@@ -4,10 +4,11 @@
 
 class CIncrementalDelaunayTriangulationDlg : public CDialogEx {
 private:
-  Subdivision *m_edges;
+  SubDivision *m_edges;
   CPoint       m_p[3];
   int          m_count;
-  void paintEdges();
+  void paintEdges(CDC &dc);
+  void paintAll(  CDC &dc);
 public:
 	CIncrementalDelaunayTriangulationDlg(CWnd* pParent = nullptr);	// standard constructor
 
@@ -25,7 +26,9 @@ protected:
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
+  afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+  afx_msg void OnFileExit();
+  afx_msg void OnEditClear();
 	DECLARE_MESSAGE_MAP()
 public:
-  afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 };
