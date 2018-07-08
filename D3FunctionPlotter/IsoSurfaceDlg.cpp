@@ -35,8 +35,10 @@ void CIsoSurfaceDlg::DoDataExchange(CDataExchange *pDX) {
   DDX_Text( pDX, IDC_EDIT_CELLSIZE         , m_cellSize                  );
   DDX_Check(pDX, IDC_CHECK_TETRAHEDRAL     , m_tetrahedral               );
   DDX_Check(pDX, IDC_CHECK_TETRAOPTIMIZE4  , m_tetraOptimize4            );
+  DDX_Check(pDX, IDC_CHECK_ADAPTIVECELLSIZE, m_adaptiveCellSize          );
   DDX_Check(pDX, IDC_CHECK_ORIGINOUTSIDE   , m_originOutside             );
   DDX_Check(pDX, IDC_CHECK_MACHINECODE     , m_machineCode               );
+  DDX_Check(pDX, IDC_CHECK_DEBUGPOLYGONIZER, m_debugPolygonizer          );
   DDX_Check(pDX, IDC_CHECK_DOUBLESIDED     , m_doubleSided               );
   DDX_Check(pDX, IDC_CHECK_INCLUDETIME     , m_includeTime               );
   DDX_Text( pDX, IDC_EDIT_FRAMECOUNT       , m_frameCount                );
@@ -76,39 +78,41 @@ BOOL CIsoSurfaceDlg::OnInitDialog() {
   createExprHelpButton(IDC_BUTTON_HELP, IDC_EDIT_EXPR);
 
   m_layoutManager.OnInitDialog(this);
-  m_layoutManager.addControl(IDC_EDIT_EXPR           , RELATIVE_SIZE          );
-  m_layoutManager.addControl(IDC_STATIC_FUNCTION     , PCT_RELATIVE_Y_CENTER  );
-  m_layoutManager.addControl(IDC_STATIC_EQUAL_ZERO   , PCT_RELATIVE_Y_CENTER | RELATIVE_X_POS);
-  m_layoutManager.addControl(IDC_STATIC_CELLSIZE     , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_EDIT_CELLSIZE       , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_CHECK_TETRAHEDRAL   , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_CHECK_TETRAOPTIMIZE4, RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_CHECK_DOUBLESIDED   , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_CHECK_ORIGINOUTSIDE , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_CHECK_MACHINECODE   , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_CHECK_INCLUDETIME   , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_CHECK_DOUBLESIDED   , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_STATIC_BOUNDINGBOX  , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_STATIC_XINTERVAL    , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_EDIT_XFROM          , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_STATIC_DASH1        , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_EDIT_XTO            , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_STATIC_YINTERVAL    , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_EDIT_YFROM          , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_STATIC_DASH2        , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_EDIT_YTO            , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_STATIC_ZINTERVAL    , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_EDIT_ZFROM          , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_STATIC_DASH3        , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_EDIT_ZTO            , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_STATIC_TIMEINTERVAL , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_EDIT_TIMEFROM       , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_STATIC_DASH4        , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_EDIT_TIMETO         , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_STATIC_FRAMECOUNT   , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_EDIT_FRAMECOUNT     , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDOK                    , RELATIVE_POSITION      );
-  m_layoutManager.addControl(IDCANCEL                , RELATIVE_POSITION      );
+  m_layoutManager.addControl(IDC_EDIT_EXPR             , RELATIVE_SIZE          );
+  m_layoutManager.addControl(IDC_STATIC_FUNCTION       , PCT_RELATIVE_Y_CENTER  );
+  m_layoutManager.addControl(IDC_STATIC_EQUAL_ZERO     , PCT_RELATIVE_Y_CENTER | RELATIVE_X_POS);
+  m_layoutManager.addControl(IDC_STATIC_CELLSIZE       , RELATIVE_Y_POS         );
+  m_layoutManager.addControl(IDC_EDIT_CELLSIZE         , RELATIVE_Y_POS         );
+  m_layoutManager.addControl(IDC_CHECK_TETRAHEDRAL     , RELATIVE_Y_POS         );
+  m_layoutManager.addControl(IDC_CHECK_TETRAOPTIMIZE4  , RELATIVE_Y_POS         );
+  m_layoutManager.addControl(IDC_CHECK_ADAPTIVECELLSIZE, RELATIVE_Y_POS         );
+  m_layoutManager.addControl(IDC_CHECK_DOUBLESIDED     , RELATIVE_Y_POS         );
+  m_layoutManager.addControl(IDC_CHECK_ORIGINOUTSIDE   , RELATIVE_Y_POS         );
+  m_layoutManager.addControl(IDC_CHECK_MACHINECODE     , RELATIVE_Y_POS         );
+  m_layoutManager.addControl(IDC_CHECK_DEBUGPOLYGONIZER, RELATIVE_Y_POS         );
+  m_layoutManager.addControl(IDC_CHECK_INCLUDETIME     , RELATIVE_Y_POS         );
+  m_layoutManager.addControl(IDC_CHECK_DOUBLESIDED     , RELATIVE_Y_POS         );
+  m_layoutManager.addControl(IDC_STATIC_BOUNDINGBOX    , RELATIVE_Y_POS         );
+  m_layoutManager.addControl(IDC_STATIC_XINTERVAL      , RELATIVE_Y_POS         );
+  m_layoutManager.addControl(IDC_EDIT_XFROM            , RELATIVE_Y_POS         );
+  m_layoutManager.addControl(IDC_STATIC_DASH1          , RELATIVE_Y_POS         );
+  m_layoutManager.addControl(IDC_EDIT_XTO              , RELATIVE_Y_POS         );
+  m_layoutManager.addControl(IDC_STATIC_YINTERVAL      , RELATIVE_Y_POS         );
+  m_layoutManager.addControl(IDC_EDIT_YFROM            , RELATIVE_Y_POS         );
+  m_layoutManager.addControl(IDC_STATIC_DASH2          , RELATIVE_Y_POS         );
+  m_layoutManager.addControl(IDC_EDIT_YTO              , RELATIVE_Y_POS         );
+  m_layoutManager.addControl(IDC_STATIC_ZINTERVAL      , RELATIVE_Y_POS         );
+  m_layoutManager.addControl(IDC_EDIT_ZFROM            , RELATIVE_Y_POS         );
+  m_layoutManager.addControl(IDC_STATIC_DASH3          , RELATIVE_Y_POS         );
+  m_layoutManager.addControl(IDC_EDIT_ZTO              , RELATIVE_Y_POS         );
+  m_layoutManager.addControl(IDC_STATIC_TIMEINTERVAL   , RELATIVE_Y_POS         );
+  m_layoutManager.addControl(IDC_EDIT_TIMEFROM         , RELATIVE_Y_POS         );
+  m_layoutManager.addControl(IDC_STATIC_DASH4          , RELATIVE_Y_POS         );
+  m_layoutManager.addControl(IDC_EDIT_TIMETO           , RELATIVE_Y_POS         );
+  m_layoutManager.addControl(IDC_STATIC_FRAMECOUNT     , RELATIVE_Y_POS         );
+  m_layoutManager.addControl(IDC_EDIT_FRAMECOUNT       , RELATIVE_Y_POS         );
+  m_layoutManager.addControl(IDOK                      , RELATIVE_POSITION      );
+  m_layoutManager.addControl(IDCANCEL                  , RELATIVE_POSITION      );
   gotoEditBox(this, IDC_EDIT_EXPR);
   return FALSE;
 }
@@ -156,6 +160,13 @@ void CIsoSurfaceDlg::enableTimeFields() {
   GetDlgItem(IDC_EDIT_TIMETO        )->EnableWindow(enable);
   GetDlgItem(IDC_EDIT_FRAMECOUNT    )->EnableWindow(enable);
   setWindowText(this, IDC_STATIC_FUNCTION, enable ? _T("&S(t,x,y,z) =") : _T("&S(x,y,z) ="));
+  GetDlgItem(IDC_CHECK_DEBUGPOLYGONIZER)->EnableWindow(!enable);
+  if(enable) {
+    if(m_debugPolygonizer) {
+      m_debugPolygonizer = false;
+      CheckDlgButton(IDC_CHECK_DEBUGPOLYGONIZER,BST_UNCHECKED);
+    }
+  }
 }
 
 void CIsoSurfaceDlg::OnEditFindMatchingParentesis() {
@@ -210,6 +221,7 @@ void CIsoSurfaceDlg::paramToWin(const IsoSurfaceParameters &param) {
   setZInterval(param.m_boundingBox.getZInterval());
   m_tetrahedral      = param.m_tetrahedral      ? TRUE : FALSE;
   m_tetraOptimize4   = param.m_tetraOptimize4   ? TRUE : FALSE;
+  m_adaptiveCellSize = param.m_adaptiveCellSize ? TRUE : FALSE;
   m_doubleSided      = param.m_doubleSided      ? TRUE : FALSE;
   m_originOutside    = param.m_originOutside    ? TRUE : FALSE;
   m_machineCode      = param.m_machineCode      ? TRUE : FALSE;
@@ -231,6 +243,7 @@ bool CIsoSurfaceDlg::winToParam(IsoSurfaceParameters &param) {
   param.m_boundingBox.setZInterval(getZInterval());
   param.m_tetrahedral      = m_tetrahedral      ? true : false;
   param.m_tetraOptimize4   = m_tetraOptimize4   ? true : false;
+  param.m_adaptiveCellSize = m_adaptiveCellSize ? true : false;
   param.m_doubleSided      = m_doubleSided      ? true : false;
   param.m_originOutside    = m_originOutside    ? true : false;
   param.m_machineCode      = m_machineCode      ? true : false;

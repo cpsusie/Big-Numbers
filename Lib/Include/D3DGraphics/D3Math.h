@@ -311,7 +311,8 @@ public:
 
 class D3Ray {
 public:
-  D3DXVECTOR3 m_orig, m_dir;
+  D3DXVECTOR3 m_orig; // Point in world space where ray starts
+  D3DXVECTOR3 m_dir;  // direction of ray in world space
   inline D3Ray() : m_orig(0, 0, 0), m_dir(0, 0, 0) {
   }
   inline D3Ray(const D3DXVECTOR3 &orig, const D3DXVECTOR3 &m_dir) : m_orig(orig), m_dir(unitVector(m_dir)) {

@@ -17,10 +17,10 @@ private:
   ExpressionWrapper                     m_exprWrapper;
   bool                                  m_reverseSign;
   Real                                 *m_xp,*m_yp,*m_zp,*m_tp;
-  int                                   m_lastVertexCount;
+  size_t                                m_lastVertexCount;
   MeshBuilder                           m_mb;
   PolygonizerStatistics                 m_statistics;
-  const CompactArray<IsoSurfaceVertex> *m_vertexArray;
+  const Array<IsoSurfaceVertex>        *m_vertexArray;
   CompactArray<Point3D>                 m_debugPoints;
   InterruptableRunnable                *m_interruptable;
   void checkUserAction() const {
@@ -78,7 +78,9 @@ void IsoSurface::createData(InterruptableRunnable *ir) {
                           ,m_param.m_cellSize
                           ,m_param.m_boundingBox
                           ,m_param.m_tetrahedral
-                          ,m_param.m_tetraOptimize4);
+                          ,m_param.m_tetraOptimize4
+                          ,m_param.m_adaptiveCellSize
+                          );
     if(m_mb.isEmpty()) {
       throwException(_T("No polygons generated. Cannot create object"));
     }
@@ -109,11 +111,12 @@ double IsoSurface::evaluate(const Point3D &p) {
 }
 
 void IsoSurface::receiveFace(const Face3 &face) {
-  const int size = (int)m_vertexArray->size();
+  const size_t size = m_vertexArray->size();
   if(size > m_lastVertexCount) {
-    for(const IsoSurfaceVertex *sv = &(*m_vertexArray)[m_lastVertexCount], *last = &m_vertexArray->last(); sv <= last; sv++) {
-      m_mb.addVertex(sv->m_position);
-      m_mb.addNormal(sv->m_normal  );
+    for(size_t i = m_lastVertexCount; i < size; i++) {
+      const IsoSurfaceVertex &sv = (*m_vertexArray)[i];
+      m_mb.addVertex(sv.m_position);
+      m_mb.addNormal(sv.m_normal  );
     }
     m_lastVertexCount = size;
     checkUserAction();

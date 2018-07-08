@@ -7,16 +7,18 @@
 #include "D3DGraphics/D3CoordinateSystem.h"
 #include "D3DGraphics/D3SceneEditor.h"
 #include "MemoryLogThread.h"
+#include "DebugThread.h"
 
 //#define LOGMEMORY
 
-class CD3FunctionPlotterDlg : public CDialog, public D3SceneContainer {
+class CD3FunctionPlotterDlg : public CDialog, public D3SceneContainer, public PropertyChangeListener {
 private:
     HICON                       m_hIcon;
     HACCEL                      m_accelTable;
     SimpleLayoutManager         m_layoutManager;
     D3Scene                     m_scene;
     D3SceneEditor               m_editor;
+    DebugThread                *m_debugThread;
 #ifdef LOGMEMORY
     MemoryLogThread             m_memlogThread;
 #endif
@@ -39,10 +41,31 @@ private:
     void createSaddle();
     void deleteCalculatedObject();
     void setCalculatedObject(D3SceneObject *obj, PersistentData *param = NULL);
-    void setCalculatedObject(Function2DSurfaceParameters *param);
-    void setCalculatedObject(ParametricSurfaceParameters *param);
-    void setCalculatedObject(IsoSurfaceParameters        *param);
+    void setCalculatedObject(Function2DSurfaceParameters &param);
+    void setCalculatedObject(ParametricSurfaceParameters &param);
+    void setCalculatedObject(IsoSurfaceParameters        &param);
     D3SceneObject *getCalculatedObject() const;
+
+  void startDebugging();
+  void stopDebugging();
+  void startThread(bool singleStep=false);
+  void killThread(bool showCreateSurface);
+  void asyncKillThread();
+  void ajourDebugMenuItems();
+  inline bool hasThread() const {
+    return m_debugThread != NULL;
+  }
+  inline bool isThreadRunning() const {
+    return hasThread() && m_debugThread->isRunning();
+  }
+  inline bool isThreadStopped() const {
+    return hasThread() && !m_debugThread->isRunning() && !m_debugThread->isFinished();
+  }
+  inline bool isThreadFinished() const {
+    return hasThread() && !m_debugThread->isRunning() && m_debugThread->isFinished();
+  }
+
+  void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
 
 public:
     CD3FunctionPlotterDlg(CWnd *pParent = NULL);
@@ -60,6 +83,17 @@ public:
     }
     void modifyContextMenu(CMenu &menu) {
       appendMenuItem(menu, _T("Add box"), ID_ADDBOXOBJECT);
+    }
+    bool isBreakOnNextLevelChecked() const;
+
+    const Function2DSurfaceParameters &get2DSurfaceParameters() const {
+      return m_function2DSurfaceParam;
+    }
+    const ParametricSurfaceParameters &getParametricSurfaceParameters() const {
+      return m_parametricSurfaceParam;
+    }
+    const IsoSurfaceParameters        &getIsoSurfaceParameters() const {
+      return m_isoSurfaceParam;
     }
     enum { IDD = IDR_MAINFRAME };
 
@@ -85,10 +119,17 @@ protected:
     afx_msg void OnFileExit();
     afx_msg void OnFileNexttry();
     afx_msg void OnViewShow3dinfo();
+    afx_msg void OnDebugGo();
+    afx_msg void OnDebugSinglestep();
+    afx_msg void OnDebugStepCube();
+    afx_msg void OnDebugBreakOnNextLevel();
     afx_msg void OnResetPositions();
     afx_msg void OnObjectEditFunction();
     afx_msg void OnAddBoxObject();
     afx_msg LRESULT OnMsgRender(WPARAM wp, LPARAM lp);
+    afx_msg LRESULT OnMsgThreadRunning(WPARAM wp, LPARAM lp);
+    afx_msg LRESULT OnMsgKillThread(WPARAM wp, LPARAM lp);
+
     DECLARE_MESSAGE_MAP()
 };
 

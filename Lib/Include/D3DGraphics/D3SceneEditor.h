@@ -57,8 +57,8 @@ private:
     BitSet8                           m_stateFlags;
     CPoint                            m_lastMouse;
     D3DXVECTOR3                       m_focusPoint;
-    D3DXVECTOR3                       m_pickedPoint;
-    D3Ray                             m_pickedRay;
+    D3DXVECTOR3                       m_pickedPoint; // in world space
+    D3Ray                             m_pickedRay;   // in world space
     D3PickedInfo                      m_pickedInfo;
     String                            m_paramFileName;
 

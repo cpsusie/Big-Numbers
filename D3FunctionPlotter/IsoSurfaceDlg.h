@@ -10,8 +10,10 @@ private:
   UINT    m_bounds;
   BOOL    m_tetrahedral;
   BOOL    m_tetraOptimize4;
+  BOOL    m_adaptiveCellSize;
   BOOL    m_originOutside;
   BOOL    m_machineCode;
+  BOOL    m_debugPolygonizer;
   BOOL    m_doubleSided;
   BOOL    m_includeTime;
   UINT    m_frameCount;
@@ -57,6 +59,9 @@ private:
 public:
   CIsoSurfaceDlg(const IsoSurfaceParameters &param, CWnd *pParent = NULL);
 
+  bool getDebugPolygonizer() const {
+    return m_debugPolygonizer ? true : false;
+  }
   enum { IDD = IDR_ISOSURFACE };
 
 protected:

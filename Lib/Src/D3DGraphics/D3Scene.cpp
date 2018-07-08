@@ -593,6 +593,10 @@ void D3Scene::removeAllSceneObjects() {
   }
 }
 
+bool D3Scene::isSceneObject(const D3SceneObject *obj) const {
+  return m_objectArray.getFirstIndex((D3SceneObject*)obj) >= 0;
+}
+
 void D3Scene::stopAllAnimations() {
   for (size_t i = 0; i < m_objectArray.size(); i++) {
     D3SceneObject *obj = m_objectArray[i];

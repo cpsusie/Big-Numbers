@@ -42,6 +42,7 @@
 #define IDC_CHECK_TETRAHEDRAL           1096
 #define IDC_CHECK_TETRAOPTIMIZE4        1097
 #define IDC_CHECK_ORIGINOUTSIDE         1098
+#define IDC_CHECK_ADAPTIVECELLSIZE      1099
 #define IDC_CHECK_DOUBLESIDED           1110
 #define IDC_CHECK_MACHINECODE           1111
 #define IDC_CHECK_INCLUDETIME           1112
@@ -51,6 +52,7 @@
 #define IDC_EDIT_TIMETO                 1116
 #define IDC_STATIC_FRAMECOUNT           1117
 #define IDC_EDIT_FRAMECOUNT             1118
+#define IDC_CHECK_DEBUGPOLYGONIZER      1119
 #define IDC_COMBO_EXPR_HELP             1130
 #define IDC_BUTTON_HELP                 1131
 #define IDC_STATIC_BOUNDINGBOX          1140
@@ -100,7 +102,11 @@
 #define ID_FILE_READ3DPOINTSFROMFILE    32778
 #define ID_FILE_EXIT                    32779
 #define ID_VIEW_SHOW3DINFO              32788
-#define ID_EDIT_FINDMATCHINGPARENTESIS  32790
+#define ID_DEBUG_GO                     32790
+#define ID_DEBUG_SINGLESTEP             32791
+#define ID_DEBUG_STEPCUBE               32792
+#define ID_DEBUG_BREAKONNEXTLEVEL       32793
+#define ID_EDIT_FINDMATCHINGPARENTESIS  32800
 #define ID_RESETPOSITIONS               32810
 #define ID_OBJECT_EDITFUNCTION          32820
 #define ID_ADDBOXOBJECT                 32821
@@ -119,7 +125,6 @@
 #define ID_TOOLS_POLYGON                32882
 #define ID_TOOLS_ELLIPSE                32883
 #define ID_TOOLS_SELECT                 32884
-#define ID_MSG_RENDER                   33100
 #define ID_GOTO_EXPR                    33110
 #define ID_GOTO_EXPRX                   33111
 #define ID_GOTO_EXPRY                   33112
@@ -138,14 +143,16 @@
 #define ID_GOTO_COMMON                  33130
 #define ID_FILE_READOBJ                 33257
 #define ID_FILE_READOBJFILE             33258
-#define ID_ACCELERATOR33262             33262
+#define ID_MSG_RENDER                   33300
+#define ID_MSG_THREADRUNNING            33301
+#define ID_MSG_KILLTHREAD               33302
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        207
-#define _APS_NEXT_COMMAND_VALUE         33264
+#define _APS_NEXT_COMMAND_VALUE         33275
 #define _APS_NEXT_CONTROL_VALUE         1233
 #define _APS_NEXT_SYMED_VALUE           103
 #endif

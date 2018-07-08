@@ -45,13 +45,26 @@ typedef enum {
 #define PICK_ANIMATEDOBJECT PICK_MASK(SOTYPE_ANIMATEDOBJECT)
 #define PICK_ALL            (-1)
 
+// Informarmation about where a ray intersects a mesh
 class D3PickedInfo {
-public:
+private:
+  // Index of face.
   int           m_faceIndex;
   // Indices into vertexArray
-  int           m_i1, m_i2, m_i3;
-  TextureVertex m_tv;
+  int           m_vertexIndex[3];
+  // TextureVertex. Relative coordinates in picked face
+  TextureVertex m_textureVertex;
+  // hitPoint relative to mesh's position/orientation
+  D3DXVECTOR3   m_meshPoint;
+public:
   inline D3PickedInfo() : m_faceIndex(-1) {
+  }
+  inline D3PickedInfo(int faceIndex, int i0,int i1,int i2, float pu,float pv, const D3DXVECTOR3 &meshPoint)
+                    : m_faceIndex(faceIndex)
+                    , m_textureVertex(pu, pv)
+                    , m_meshPoint(meshPoint)
+  {
+    m_vertexIndex[0] = i0; m_vertexIndex[1] = i1; m_vertexIndex[2] = i2;
   }
   inline void clear() {
     m_faceIndex = -1;
@@ -59,12 +72,26 @@ public:
   inline bool isSet() const {
     return m_faceIndex >= 0;
   }
+  inline int getFaceIndex() const {
+    return m_faceIndex;
+  }
+  inline const TextureVertex &getTextureVertex() const {
+    return m_textureVertex;
+  }
+  inline const D3DXVECTOR3 &getMeshPoint() const {
+    return m_meshPoint;
+  }
+  int getVertexIndex(int i) const { // i = [0..2];
+    return m_vertexIndex[i];
+  }
   inline String toString(int dec=3) const {
     return isSet()
-         ? format(_T("Face:%d (%5d,%5d,%5d) %s")
+         ? format(_T("Face:%5d:[%5d,%5d,%5d] TP:%s MP:(%s)")
                  ,m_faceIndex
-                 ,m_i1, m_i2, m_i3
-                 ,::toString(m_tv, dec).cstr())
+                 ,m_vertexIndex[0], m_vertexIndex[1], m_vertexIndex[2]
+                 ,::toString(m_textureVertex,dec).cstr()
+                 ,::toString(m_meshPoint    ,dec).cstr()
+                 )
          : EMPTYSTRING;
   }
 };
@@ -166,6 +193,7 @@ public:
   Iterator<D3SceneObject*> getObjectIterator() const {
     return ((D3Scene*)this)->m_objectArray.getIterator();
   }
+  bool isSceneObject(const D3SceneObject *obj) const;
   void stopAllAnimations();
   inline int getObjectCount() const {
     return (int)m_objectArray.size();
@@ -442,6 +470,7 @@ public:
     FV(m_device->DrawIndexedPrimitive(pt, baseVertexIndex, minVertexIndex, numVertices, startIndex, primCount));
   }
   D3Ray          getPickRay(     const CPoint &point) const;
+  // if hitPoint != 0, then will receive point (in worldspace) of rays intersection with nearest object
   D3SceneObject *getPickedObject(const CPoint &point, long mask = PICK_ALL, D3DXVECTOR3 *hitPoint = NULL, D3PickedInfo *info = NULL) const;
 
   LPDIRECT3DVERTEXBUFFER  allocateVertexBuffer(DWORD fvf , UINT count, UINT *bufferSize = NULL);

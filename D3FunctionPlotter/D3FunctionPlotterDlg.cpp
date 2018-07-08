@@ -24,7 +24,7 @@ CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
 void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-    __super::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
@@ -33,6 +33,7 @@ END_MESSAGE_MAP()
 CD3FunctionPlotterDlg::CD3FunctionPlotterDlg(CWnd *pParent) : CDialog(CD3FunctionPlotterDlg::IDD, pParent) {
   m_hIcon                = theApp.LoadIcon(IDR_MAINFRAME);
   m_infoVisible          = false;
+  m_debugThread          = NULL;
 }
 
 void CD3FunctionPlotterDlg::DoDataExchange(CDataExchange *pDX) {
@@ -62,10 +63,16 @@ BEGIN_MESSAGE_MAP(CD3FunctionPlotterDlg, CDialog)
   ON_COMMAND(ID_FILE_EXIT                     , OnFileExit                     )
   ON_COMMAND(ID_FILE_NEXTTRY                  , OnFileNexttry                  )
   ON_COMMAND(ID_VIEW_SHOW3DINFO               , OnViewShow3dinfo               )
+  ON_COMMAND(ID_DEBUG_GO                      , OnDebugGo                      )
+  ON_COMMAND(ID_DEBUG_SINGLESTEP              , OnDebugSinglestep              )
+  ON_COMMAND(ID_DEBUG_STEPCUBE                , OnDebugStepCube                )
+  ON_COMMAND(ID_DEBUG_BREAKONNEXTLEVEL        , OnDebugBreakOnNextLevel        )
   ON_COMMAND(ID_RESETPOSITIONS                , OnResetPositions               )
   ON_COMMAND(ID_OBJECT_EDITFUNCTION           , OnObjectEditFunction           )
   ON_COMMAND(ID_ADDBOXOBJECT                  , OnAddBoxObject                 )
   ON_MESSAGE(ID_MSG_RENDER                    , OnMsgRender                    )
+  ON_MESSAGE(ID_MSG_THREADRUNNING             , OnMsgThreadRunning             )
+  ON_MESSAGE(ID_MSG_KILLTHREAD                , OnMsgKillThread                )
 END_MESSAGE_MAP()
 
 #define REPAINT() Invalidate(FALSE)
@@ -202,7 +209,7 @@ void CD3FunctionPlotterDlg::createSaddle() {
   m_function2DSurfaceParam.m_machineCode = true;
   m_function2DSurfaceParam.m_doubleSided = true;
 
-  setCalculatedObject(&m_function2DSurfaceParam);
+  setCalculatedObject(m_function2DSurfaceParam);
 }
 
 BOOL CD3FunctionPlotterDlg::PreTranslateMessage(MSG *pMsg) {
@@ -288,13 +295,14 @@ public:
   }
 };
 
-void CD3FunctionPlotterDlg::setCalculatedObject(Function2DSurfaceParameters *param) {
-  if(param->m_includeTime) {
-    D3AnimatedFunctionSurface *obj = new D3AnimatedFunctionSurface(m_scene, createMeshArray(this, m_scene, *param)); TRACE_NEW(obj);
-    setCalculatedObject(obj, param);
+void CD3FunctionPlotterDlg::setCalculatedObject(Function2DSurfaceParameters &param) {
+  stopDebugging();
+  if(param.m_includeTime) {
+    D3AnimatedFunctionSurface *obj = new D3AnimatedFunctionSurface(m_scene, createMeshArray(this, m_scene, param)); TRACE_NEW(obj);
+    setCalculatedObject(obj, &param);
   } else {
-    D3FunctionSurface *obj = new D3FunctionSurface(m_scene, createMesh(m_scene, *param)); TRACE_NEW(obj);
-    setCalculatedObject(obj, param);
+    D3FunctionSurface *obj = new D3FunctionSurface(m_scene, createMesh(m_scene, param)); TRACE_NEW(obj);
+    setCalculatedObject(obj, &param);
   }
 }
 /*
@@ -303,23 +311,25 @@ void CD3FunctionPlotterDlg::setCalculatedObject(IsoSurfaceParameters *param) {
 }
 */
 
-void CD3FunctionPlotterDlg::setCalculatedObject(ParametricSurfaceParameters *param) {
-  if(param->m_includeTime) {
-    D3AnimatedFunctionSurface *obj = new D3AnimatedFunctionSurface(m_scene, createMeshArray(this, m_scene, *param)); TRACE_NEW(obj);
-    setCalculatedObject(obj, param);
+void CD3FunctionPlotterDlg::setCalculatedObject(ParametricSurfaceParameters &param) {
+  stopDebugging();
+  if(param.m_includeTime) {
+    D3AnimatedFunctionSurface *obj = new D3AnimatedFunctionSurface(m_scene, createMeshArray(this, m_scene, param)); TRACE_NEW(obj);
+    setCalculatedObject(obj, &param);
   } else {
-    D3FunctionSurface *obj = new D3FunctionSurface(m_scene, createMesh(m_scene, *param)); TRACE_NEW(obj);
-    setCalculatedObject(obj, param);
+    D3FunctionSurface *obj = new D3FunctionSurface(m_scene, createMesh(m_scene, param)); TRACE_NEW(obj);
+    setCalculatedObject(obj, &param);
   }
 }
 
-void CD3FunctionPlotterDlg::setCalculatedObject(IsoSurfaceParameters *param) {
-  if(param->m_includeTime) {
-    D3AnimatedFunctionSurface *obj = new D3AnimatedFunctionSurface(m_scene, createMeshArray(this, m_scene, *param)); TRACE_NEW(obj);
-    setCalculatedObject(obj, param);
+void CD3FunctionPlotterDlg::setCalculatedObject(IsoSurfaceParameters &param) {
+  stopDebugging();
+  if(param.m_includeTime) {
+    D3AnimatedFunctionSurface *obj = new D3AnimatedFunctionSurface(m_scene, createMeshArray(this, m_scene, param)); TRACE_NEW(obj);
+    setCalculatedObject(obj, &param);
   } else {
-    D3FunctionSurface *obj = new D3FunctionSurface(m_scene, createMesh(m_scene, *param)); TRACE_NEW(obj);
-    setCalculatedObject(obj, param);
+    D3FunctionSurface *obj = new D3FunctionSurface(m_scene, createMesh(m_scene, param)); TRACE_NEW(obj);
+    setCalculatedObject(obj, &param);
   }
 }
 
@@ -353,6 +363,135 @@ D3SceneObject *CD3FunctionPlotterDlg::getCalculatedObject() const {
   return NULL;
 }
 
+void CD3FunctionPlotterDlg::startDebugging() {
+  setCalculatedObject(NULL);
+  startThread(true);
+}
+
+void CD3FunctionPlotterDlg::stopDebugging() {
+  killThread(false);
+}
+
+void CD3FunctionPlotterDlg::startThread(bool singleStep) {
+  try {
+    killThread(false);
+    m_debugThread = new DebugThread(this);
+    m_debugThread->addPropertyChangeListener(this);
+    if(singleStep) {
+      m_debugThread->singleStep();
+    } else {
+      m_debugThread->go();
+    }
+  } catch(Exception e) {
+    showException(e);
+  }
+}
+
+void CD3FunctionPlotterDlg::asyncKillThread() {
+  PostMessage(ID_MSG_KILLTHREAD);
+}
+
+LRESULT CD3FunctionPlotterDlg::OnMsgKillThread(WPARAM wp, LPARAM lp) {
+  killThread(true);
+  return 0;
+}
+
+void CD3FunctionPlotterDlg::killThread(bool showCreateSurface) {
+  if(hasThread()) {
+    m_editor.setCurrentObject(NULL);
+    m_scene.removeAllSceneObjects();
+    m_debugThread->removePropertyChangeListener(this);
+    if(m_debugThread->isOK() && showCreateSurface) {
+      const DebugIsoSurface &surface = m_debugThread->getDebugSurface();
+      if(surface.getFaceCount()) {
+        D3SceneObject *obj = surface.createSceneObject();
+        setCalculatedObject(obj, &m_isoSurfaceParam);
+      }
+    }
+    SAFEDELETE(m_debugThread);
+  }
+}
+
+void CD3FunctionPlotterDlg::handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
+  switch(id) {
+  case THREAD_RUNNING      :
+    { const bool oldRunning = *(bool*)oldValue;
+      const bool newRunning = *(bool*)newValue;
+      m_editor.setEnabled(!newRunning);
+      SendMessage(ID_MSG_THREADRUNNING, oldRunning, newRunning);
+    }
+    break;
+  default:
+    showError(_T("%s:Unknown property:%d"), __TFUNCTION__,id);
+    break;
+  }
+}
+
+LRESULT CD3FunctionPlotterDlg::OnMsgThreadRunning(WPARAM wp, LPARAM lp) {
+  try {
+    const bool newRunning = (lp != 0);
+    if(newRunning) {
+      D3SceneObject *obj = m_debugThread->getSceneObject();
+      if(obj) {
+        m_editor.setCurrentObject(NULL);
+        m_scene.removeSceneObject(obj);
+      }
+    } else if(isThreadStopped()) {
+      D3SceneObject *obj = m_debugThread->getSceneObject();
+      m_scene.addSceneObject(obj);
+      m_editor.setCurrentObject(obj);
+    } else if(isThreadFinished()) {
+      asyncKillThread();
+    }
+    ajourDebugMenuItems();
+  } catch(Exception e) {
+    showException(e);
+  }
+  return 0;
+}
+
+void CD3FunctionPlotterDlg::ajourDebugMenuItems() {
+  bool enable;
+  if(hasThread()) {
+    enable = isThreadStopped();
+  } else {
+    enable = false;
+  }
+  enableMenuItem(this,ID_DEBUG_GO              , enable);
+  enableMenuItem(this,ID_DEBUG_SINGLESTEP      , enable);
+  enableMenuItem(this,ID_DEBUG_STEPCUBE        , enable);
+  enableMenuItem(this,ID_DEBUG_BREAKONNEXTLEVEL, enable);
+}
+
+void CD3FunctionPlotterDlg::OnDebugGo() {
+  if(isThreadStopped()) {
+    m_debugThread->go();
+  }
+}
+
+void CD3FunctionPlotterDlg::OnDebugSinglestep() {
+  if(isThreadStopped()) {
+    m_debugThread->singleStep();
+  }
+}
+
+void CD3FunctionPlotterDlg::OnDebugStepCube() {
+  if(hasThread()) {
+    m_debugThread->goUntilNextCube();
+  }
+}
+
+void CD3FunctionPlotterDlg::OnDebugBreakOnNextLevel() {
+  const bool breakOnLevel = toggleMenuItem(this, ID_DEBUG_BREAKONNEXTLEVEL);
+  if(hasThread()) {
+    m_debugThread->breakOnNextLevel(breakOnLevel);
+  }
+}
+
+bool CD3FunctionPlotterDlg::isBreakOnNextLevelChecked() const {
+  return isMenuItemChecked(this, ID_DEBUG_BREAKONNEXTLEVEL);
+}
+
 static const String stateFileName = _T("c:\\temp\\D3FunctionPlotter.dat");
 
 void CD3FunctionPlotterDlg::OnFileSaveState() {
@@ -380,7 +519,7 @@ void CD3FunctionPlotterDlg::OnFileFunctionSurface() {
       return;
     }
     m_function2DSurfaceParam = dlg.getData();
-    setCalculatedObject(&m_function2DSurfaceParam);
+    setCalculatedObject(m_function2DSurfaceParam);
     REPAINT();
   } catch(Exception e) {
     showException(e);
@@ -394,7 +533,7 @@ void CD3FunctionPlotterDlg::OnFileParametricSurface() {
       return;
     }
     m_parametricSurfaceParam = dlg.getData();
-    setCalculatedObject(&m_parametricSurfaceParam);
+    setCalculatedObject(m_parametricSurfaceParam);
     REPAINT();
   } catch(Exception e) {
     showException(e);
@@ -408,8 +547,12 @@ void CD3FunctionPlotterDlg::OnFileIsoSurface() {
       return;
     }
     m_isoSurfaceParam = dlg.getData();
-    setCalculatedObject(&m_isoSurfaceParam);
-    REPAINT();
+    if(dlg.getDebugPolygonizer()) {
+      startDebugging();
+    } else {
+      setCalculatedObject(m_isoSurfaceParam);
+      REPAINT();
+    }
   } catch(Exception e) {
     showException(e);
   }
@@ -473,7 +616,7 @@ void CD3FunctionPlotterDlg::OnFileReadObjFile() {
 
 void CD3FunctionPlotterDlg::OnFileNexttry() {
   try {
-    setCalculatedObject(&m_isoSurfaceParam);
+    setCalculatedObject(m_isoSurfaceParam);
     REPAINT();
   } catch(Exception e) {
     showException(e);
@@ -481,6 +624,7 @@ void CD3FunctionPlotterDlg::OnFileNexttry() {
 }
 
 void CD3FunctionPlotterDlg::OnFileExit() {
+  stopDebugging();
   m_editor.close();
   deleteCalculatedObject();
   m_scene.close();

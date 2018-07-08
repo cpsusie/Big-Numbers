@@ -10,16 +10,16 @@ bool D3SceneObject::intersectsWithRay(const D3Ray &ray, float &dist, D3PickedInf
   LPD3DXMESH mesh = getMesh();
   if(mesh == NULL) return false;
 
-  const D3DXMATRIX m = invers(getWorldMatrix());
-  D3DXVECTOR3 vOrig = m * ray.m_orig;
-  D3DXVECTOR3 vDir  = ray.m_dir * m;
+  const D3DXMATRIX  m      = invers(getWorldMatrix());
+  const D3DXVECTOR3 rayPos = m * ray.m_orig;
+  const D3DXVECTOR3 rayDir = ray.m_dir * m;
 
   BOOL         hit;
   DWORD        faceIndex;
   float        pu,pv;
   V(D3DXIntersect(mesh
-                 ,&vOrig
-                 ,&vDir
+                 ,&rayPos
+                 ,&rayDir
                  ,&hit
                  ,&faceIndex
                  ,&pu,&pv
@@ -29,9 +29,6 @@ bool D3SceneObject::intersectsWithRay(const D3Ray &ray, float &dist, D3PickedInf
                  ));
 
   if(hit && info != NULL) {
-    info->m_faceIndex = faceIndex;
-    info->m_tv.u = pu;
-    info->m_tv.v = pv;
     void *indexItems;
     LPDIRECT3DINDEXBUFFER indexBuffer;
     V(mesh->GetIndexBuffer(&indexBuffer));
@@ -41,18 +38,20 @@ bool D3SceneObject::intersectsWithRay(const D3Ray &ray, float &dist, D3PickedInf
     V(indexBuffer->Lock(0,0,&indexItems, D3DLOCK_READONLY));
 
     const int vertex0Index = faceIndex * 3;
+    int i0,i1,i2;
     if(use32Bit) {
-      const ULONG *ip = (ULONG*)indexItems;
-      info->m_i1 = ip[vertex0Index+0];
-      info->m_i2 = ip[vertex0Index+1];
-      info->m_i3 = ip[vertex0Index+2];
+      const ULONG *ip = (ULONG*)indexItems + vertex0Index;
+      i0 = *(ip++);
+      i1 = *(ip++);
+      i2 = *(ip++);
     } else {
-      const USHORT *ip = (USHORT*)indexItems;
-      info->m_i1 = ip[vertex0Index+0];
-      info->m_i2 = ip[vertex0Index+1];
-      info->m_i3 = ip[vertex0Index+2];
+      const USHORT *ip = (USHORT*)indexItems + vertex0Index;
+      i0 = *(ip++);
+      i1 = *(ip++);
+      i2 = *(ip++);
     }
     V(indexBuffer->Unlock());
+    *info = D3PickedInfo(faceIndex, i0,i1,i2,pu,pv,(ray.m_orig + dist * ray.m_dir - getPos()) * m);
   }
   return hit ? true : false;
 }

@@ -60,9 +60,8 @@ public:
     m_positive = (m_value = v) > 0;
   }
   inline String toString(int precision=6) const {
-    return format(_T("P:%s, V:%s")
-                 ,__super::toString(precision).cstr()
-                 ,::toString(m_value,precision,0,ios::showpos).cstr());
+    return format(_T("P:(%+.*le,%+.*le,%+.*le), V:%+.*le")
+                 ,precision,x,precision,y,precision,z,precision,m_value);
   }
 };
 
@@ -74,30 +73,56 @@ public:
   }
 };
 
+// Parameter to receiveFace
+class Face3 {
+public:
+  // Indices into vertexArray
+  UINT     m_i1,m_i2,m_i3;
+  D3DCOLOR m_color;
+  Face3() {}
+  inline Face3(UINT i1, UINT i2, UINT i3, D3DCOLOR color)
+    : m_i1(i1), m_i2(i2), m_i3(i3), m_color(color)
+  {
+  }
+  inline String toString() const {
+    return format(_T("(%5u,%5u,%5u)"),m_i1,m_i2,m_i3);
+  }
+};
+
 // Surface vertex
 class IsoSurfaceVertex {
 public:
   // Position and surface normal
-  Point3D m_position, m_normal;
-  String toString(int dec=4) const {
-    return format(_T("P:%s, N:%s"), m_position.toString(dec).cstr(), m_normal.toString(dec).cstr());
+  Point3D         m_position, m_normal;
+  CompactIntArray m_faceArray; // faces, using this vertex as corner. indices into m_faceArray
+  String toString(int precision=6) const {
+    return format(_T("P:(%+.*le,%+.*le,%+.*le), N:(%+.*le,%+.*le,%+.*le)")
+                 ,precision,m_position.x,precision,m_position.y,precision,m_position.z
+                 ,precision,m_normal.x  ,precision,m_normal.y  ,precision,m_normal.z)
+         + (m_faceArray.isEmpty() ? EMPTYSTRING : (_T(" faces:") + m_faceArray.toStringBasicType()));
   }
 };
+
+#define MAXSPLITLEVEL 1
 
 class Point3DKey {
 public:
   int i, j, k;
+  BYTE m_level;
   inline Point3DKey() {}
-  inline Point3DKey(int _i, int _j, int _k) : i(_i), j(_j), k(_k) {
+  inline Point3DKey(int _i, int _j, int _k, BYTE level) : i(_i), j(_j), k(_k), m_level(level) {
   }
   inline ULONG hashCode() const {
-    return (i*2347 + j) * 2341 + k;
+    return (((i*2347 + j) * 2341 + k) << 2) | m_level;
   }
   inline bool operator==(const Point3DKey &key) const {
-    return (i==key.i) && (j==key.j) && (k==key.k);
+    return (i==key.i) && (j==key.j) && (k==key.k) && (m_level==key.m_level);
+  }
+  inline bool operator!=(const Point3DKey &key) const {
+    return !(*this == key);
   }
   inline String toString() const {
-    return format(_T("(% 5d,% 5d,% 5d)"), i, j, k);
+    return format(_T("(% 5d,% 5d,% 5d) level=%d"), i, j, k, m_level);
   }
 };
 
@@ -105,8 +130,12 @@ public:
 //#define DUMP_CUBES
 //#define DUMP_CUBETABLE
 //#define DUMP_CORNERMAP
+//#define DUMP_EDGEMAP
+//#define DUMP_VERTEXARRAY
+//#define DUMP_FACEARRAY
 //#define VALIDATE_OPPOSITESIGN
 //#define VALIDATE_PUTFACE
+#define DEBUG_POLYGONNIZER
 
 class CubeEdgeHashKey {
 private:
@@ -125,23 +154,36 @@ public:
   inline bool operator==(const CubeEdgeHashKey &k) const {
     return (m_key1 == k.m_key1) && (m_key2 == k.m_key2);
   }
+  String toString() const {
+    return format(_T("EdgeKey:(%s,%s)"), m_key1.toString().cstr(), m_key2.toString().cstr());
+  }
+  inline const Point3DKey &getKey1() const {
+    return m_key1;
+  }
+  inline const Point3DKey &getKey2() const {
+    return m_key2;
+  }
 };
 
 // Corner of a cube
 class HashedCubeCorner : public Point3DWithValue {
 public:
   Point3DKey m_key;
-  inline HashedCubeCorner() {
+  int        m_vid; // index of vertex at previous level, if any. else -1
+  inline HashedCubeCorner() : m_vid(-1) {
   }
   inline HashedCubeCorner(const Point3DKey &k, const Point3D &p)
     : m_key(k)
     , Point3DWithValue(p)
+    , m_vid(-1)
   {
   }
   inline String toString() const {
-    return format(_T("HashedCubeCorner:(K:%s, %s)")
+    return format(_T("CubeCorner:(Key:%s, %s, vid:% 6d)")
                  ,m_key.toString().cstr()
-                 ,__super::toString(6).cstr(), m_value);
+                 ,__super::toString().cstr()
+                 ,m_vid
+                 );
   }
 };
 
@@ -169,30 +211,23 @@ public:
   String toString() const;
 };
 
-// Parameter to receiveFace
-class Face3 {
-public:
-  // Indices into vertexArray
-  UINT m_i1,m_i2,m_i3;
-  D3DCOLOR m_color;
-  Face3() {}
-  inline Face3(UINT i1, UINT i2, UINT i3, D3DCOLOR color)
-    : m_i1(i1), m_i2(i2), m_i3(i3), m_color(color)
-  {
-  }
-};
-
 // Partitioning cell (cube)
 class StackedCube {
+private:
+  mutable int m_index;
+  UINT calculateIndex() const;
 public:
   // Lattice location of cube
   Point3DKey              m_key;
   // Eight corners, each one in m_cornerMap
   const HashedCubeCorner *m_corners[8];
-  inline StackedCube(int i, int j, int k) : m_key(i,j,k) {
+  inline StackedCube(int i, int j, int k, BYTE level) : m_key(i,j,k,level), m_index(-1) {
     memset(m_corners, 0, sizeof(m_corners));
   }
-  UINT getIndex() const;
+  inline UINT getIndex() const {
+    if(m_index < 0) m_index = calculateIndex();
+    return m_index;
+  }
   inline bool intersectSurface() const {
     const UINT index = getIndex();
     return index && (index < 255);
@@ -203,7 +238,9 @@ public:
   inline bool contains(const StackedCube &cube) const {
     return contains(*cube.m_corners[LBN]) && contains(*cube.m_corners[RTF]);
   }
-
+  inline BYTE getLevel() const {
+    return m_key.m_level;
+  }
   void validate();
   inline Point3D getSize() const {
     return *m_corners[RTF] - *m_corners[LBN];
@@ -220,14 +257,18 @@ public:
   virtual void   receiveFace(const Face3 &face) = 0;
   virtual void   receiveDebugVertices(int id,...) {
   };
+#ifdef DEBUG_POLYGONNIZER
+  virtual void   markCurrentCube(const StackedCube &cube) {
+  }
+#endif // DEBUG_POLYGONNIZER
 };
 
 class PolygonizerStatistics {
 public:
   double m_threadTime;
-  UINT   m_faceCount;
+  UINT   m_cubeCount[MAXSPLITLEVEL+1];
+  UINT   m_faceCount[MAXSPLITLEVEL+1];
   UINT   m_vertexCount;
-  UINT   m_cubeCount;
   UINT   m_cornerCount;
   UINT   m_edgeCount;
   UINT   m_cornerHits;
@@ -302,24 +343,32 @@ private:
   // Use tetrahedral decomposition
   bool                                         m_tetrahedralMode;
   bool                                         m_tetraOptimize4;
-  // Active cubes
-  Stack<StackedCube>                           m_cubeStack;
+  bool                                         m_adaptiveCellSize;
+  // Active cubes. m_cubeStack[0] is used to create vertices/faces at current level
+  // The other will receive cubes at next level (halfsize cubes) and will be processed when stack[0] is empty.
+  Stack<StackedCube>                           m_cubeStack[2];
   // Surface vertices
-  CompactArray<IsoSurfaceVertex>               m_vertexArray;
+  Array<IsoSurfaceVertex>                      m_vertexArray;
   // Cubes done so far
   CompactHashSet<Point3DKey>                   m_cubesDoneSet;
   // Corners of cubes
   CompactHashMap<Point3DKey, HashedCubeCorner> m_cornerMap;
-  // Edge -> vertex id Map
+  // Edge -> index into m_vertexArray
   CompactHashMap<CubeEdgeHashKey, int>         m_edgeMap;
-  CompactArray<Face3>                          m_face3Buffer;
+  CompactArray<Face3>                          m_face3Buffer, m_faceArray;
+  BYTE                                         m_currentLevel;
+  // Number of faces generated at each level
+  UINT                                         m_faceCount[MAXSPLITLEVEL+1];
   PolygonizerStatistics                        m_statistics;
   D3DCOLOR                                     m_color;
 
   Point3D             findStartPoint(const Point3D &start);
   IsoSurfaceTest      findStartPoint(bool positive, const Point3D &start);
-  void                putInitialCube();
-  void                addSurfaceVertices(const StackedCube &cube);
+  bool                putInitialCube();
+  // return false, if cube should be divided into 8 smaller cubes. true if faces are accepted
+  bool                addSurfaceVertices(const StackedCube &cube);
+  bool                acceptPendingFaces() const;
+  void                splitCube(const StackedCube &cube); // create 8 smaller cubes, all contained in cube
   inline void         doTetra(const StackedCube &cube, CubeCorner c1, CubeCorner c2, CubeCorner c3, CubeCorner c4) {
     doTetra(*cube.m_corners[c1], *cube.m_corners[c2], *cube.m_corners[c3], *cube.m_corners[c4]);
   }
@@ -353,25 +402,36 @@ private:
   void                putTriangleStrip( const TriangleStrip &face);
   void                putTriangleStripR(const TriangleStrip &face);
   void                flushFaceBuffer();
+  inline void         clearFaceBuffer() {
+    m_face3Buffer.clear(-1);
+  }
+  void                flushFaceArray();
   inline bool         hasActiveCubes() const {
-    return !m_cubeStack.isEmpty();
+    return !m_cubeStack[0].isEmpty();
   }
   inline StackedCube      getActiveCube() {
-    return m_cubeStack.pop();
+    return m_cubeStack[0].pop();
   }
   void                    pushCube(const StackedCube &cube);
-
+  void                    pushNextLevelCube(const StackedCube &cube);
+  void                    prepareNextLevel();
   UINT                    getVertexId(const HashedCubeCorner &c1, const HashedCubeCorner &c2);
+  bool                    hasVertexId(const HashedCubeCorner &c1, const HashedCubeCorner &c2, int &id) const;
   Point3D                 getNormal(const Point3D &point);
   const HashedCubeCorner *getCorner(int i, int j, int k);
+  const HashedCubeCorner *getMiddle(const HashedCubeCorner &c1, const HashedCubeCorner &c2, BYTE level);
 
   inline Point3D          getCornerPoint(const Point3DKey &key) const {
     return getCornerPoint(key.i,key.j,key.k);
   }
   Point3D                 getCornerPoint(int i, int j, int k) const;
-  Point3D                 converge(const Point3DWithValue &p1, const Point3DWithValue &p2, int itCount = 0);
+  Point3D                 convergeStartPoint(const Point3DWithValue &p1, const Point3DWithValue &p2, int itCount);
+  Point3D                 converge(          const Point3DWithValue &p1, const Point3DWithValue &p2, int itCount = 0);
   void                    saveStatistics(double startTime);
-  void                    dumpCornerMap();
+  void                    dumpCornerMap()   const;
+  void                    dumpEdgeMap()     const;
+  void                    dumpVertexArray() const;
+  void                    dumpFaceArray()   const;
 public:
   IsoSurfacePolygonizer(IsoSurfaceEvaluator &eval);
   ~IsoSurfacePolygonizer();
@@ -386,11 +446,12 @@ public:
                  ,const Cube3D  &boundingBox
                  ,bool           tetrahedralMode
                  ,bool           tetraOptimize4
+                 ,bool           adaptiveCellSize
                  );
   inline const PolygonizerStatistics &getStatistics() const {
     return m_statistics;
   }
-  inline const CompactArray<IsoSurfaceVertex> &getVertexArray() const {
+  inline const Array<IsoSurfaceVertex> &getVertexArray() const {
     return m_vertexArray;
   }
 };
