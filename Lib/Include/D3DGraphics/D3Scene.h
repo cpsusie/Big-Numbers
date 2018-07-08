@@ -727,16 +727,26 @@ public:
 
 class SceneObjectSolidBox : public SceneObjectWithMesh {
 private:
-  int             m_materialIndex;
-  D3PosDirUpScale m_pdus;
+  int m_materialIndex;
   void makeSquareFace(MeshBuilder &mb, int v0, int v1, int v2, int v3);
 public:
   SceneObjectSolidBox(D3Scene &scene, const D3DXCube3 &cube, int materialIndex = 0);
-  D3PosDirUpScale &getPDUS() {
-    return m_pdus;
-  }
   int getMaterialIndex() const {
     return m_materialIndex;
+  }
+};
+
+class SolidBoxWithPos : public SceneObjectSolidBox {
+private:
+  D3PosDirUpScale m_pdus;
+public:
+  SolidBoxWithPos(D3Scene &scene, const D3DXCube3 &cube, int materialIndex = 0)
+    : SceneObjectSolidBox(scene, cube, materialIndex)
+    , m_pdus(scene.getObjPDUS())
+  {
+  }
+  D3PosDirUpScale &getPDUS() {
+    return m_pdus;
   }
 };
 

@@ -404,7 +404,7 @@ void CD3FunctionPlotterDlg::killThread(bool showCreateSurface) {
     if(m_debugThread->isOK() && showCreateSurface) {
       const DebugIsoSurface &surface = m_debugThread->getDebugSurface();
       if(surface.getFaceCount()) {
-        D3SceneObject *obj = surface.createSceneObject();
+        D3SceneObject *obj = surface.createMeshObject();
         setCalculatedObject(obj, &m_isoSurfaceParam);
       }
     }
@@ -704,7 +704,7 @@ void CD3FunctionPlotterDlg::OnObjectEditFunction() {
 void CD3FunctionPlotterDlg::OnAddBoxObject() {
   D3DXCube3 cube(D3DXVECTOR3(-1,-1,-1), D3DXVECTOR3(1,1,1));
   const int matIndex = m_scene.addMaterial(D3Scene::getDefaultMaterial());
-  SceneObjectSolidBox *box = new SceneObjectSolidBox(m_scene, cube, matIndex); TRACE_NEW(box);
+  D3SceneObject *box = new SolidBoxWithPos(m_scene, cube, matIndex); TRACE_NEW(box);
   m_scene.addSceneObject(box);
   render(RENDER_ALL);
 }

@@ -17,6 +17,8 @@ void DebugThread::initThread(bool singleStep) {
   breakOnNextLevel(m_dlg.isBreakOnNextLevelChecked());
 }
 
+#define CHECKKILLED() { if(m_breakPoints & THREADKILLED) throwException(_T("Killed")); }
+
 DebugThread::~DebugThread() {
   kill();
   for(int i = 0; i < 500; i++) {
@@ -88,21 +90,17 @@ UINT DebugThread::run() {
   return 0;
 }
 
-void DebugThread::setPropRunning(bool value) {
-  setProperty(THREAD_RUNNING, m_running, value);
-}
-
 void DebugThread::suspendThread() {
   m_surface->updateSceneObject();
   setPropRunning(false);
   suspend();
   setPropRunning(true);
-  if(m_breakPoints & THREADKILLED) throwException(_T("Killed"));
+  CHECKKILLED();
 }
 
 void DebugThread::handleStep(StepType type) {
   if(m_breakPoints) {
-    if(m_breakPoints & THREADKILLED) throwException(_T("Killed"));
+    CHECKKILLED();
     switch(type) {
     case NEW_FACE :
       if(m_breakPoints & BREAKONNEXTFACE) {
@@ -110,12 +108,12 @@ void DebugThread::handleStep(StepType type) {
       }
       break;
     case NEW_CUBE :
-      if(m_breakPoints & BREAKONNEXTCUBE) {
+      if(m_breakPoints & (BREAKONNEXTCUBE|BREAKONNEXTFACE)) {
         suspendThread();
       }
       break;
     case NEW_LEVEL:
-      if(m_breakPoints & BREAKONNEXTLEVEL) {
+      if(m_breakPoints & (BREAKONNEXTLEVEL|BREAKONNEXTCUBE|BREAKONNEXTFACE)) {
         suspendThread();
       }
       break;
@@ -128,51 +126,45 @@ D3SceneObject *DebugThread::getSceneObject() {
 }
 
 DebugIsoSurface::DebugIsoSurface(DebugThread *thread, D3SceneContainer &sc, const IsoSurfaceParameters &param)
-: m_thread(*thread)
-, m_sc(sc)
-, m_param(            param)
-, m_exprWrapper(      param.m_expr,param.m_machineCode)
-, m_lastVertexCount(  0)
-, m_faceCount(        0)
+: m_thread(                *thread)
+, m_sc(                     sc)
+, m_param(                  param)
+, m_exprWrapper(            param.m_expr,param.m_machineCode)
+, m_lastVertexCount(        0)
+, m_faceCount(              0)
+, m_cubeCount(              0)
 , m_lastCalculatedFaceCount(0)
-, m_currentLevel(     0)
-, m_sceneObject(      NULL)
-, m_currentCubeObject(NULL)
-, m_fillMode(         D3DFILL_WIREFRAME)
-, m_shadeMode(        D3DSHADE_FLAT)
+, m_lastCalculatedCubeCount(0)
+, m_currentLevel(           0)
+, m_currentCube(            0,0,0,0)
+, m_sceneObject(            sc.getScene())
 {
   m_xp = m_exprWrapper.getVariableByName(_T("x"));
   m_yp = m_exprWrapper.getVariableByName(_T("y"));
   m_zp = m_exprWrapper.getVariableByName(_T("z"));
 }
 
-DebugIsoSurface::~DebugIsoSurface() {
-  cleanup();
-}
-
-SceneObjectWithMesh *DebugIsoSurface::createSceneObject() const {
+SceneObjectWithMesh *DebugIsoSurface::createMeshObject() const {
   D3Scene             &scene = m_sc.getScene();
   SceneObjectWithMesh *obj   = new SceneObjectWithMesh(scene, m_mb.createMesh(scene, m_param.m_doubleSided)); TRACE_NEW(m_sceneObject);
-  obj->setFillMode( m_fillMode );
-  obj->setShadeMode(m_shadeMode);
+  obj->setFillMode( m_sceneObject.getFillMode());
+  obj->setShadeMode(m_sceneObject.getShadeMode());
   m_lastCalculatedFaceCount = m_faceCount;
   return obj;
 }
 
-void DebugIsoSurface::cleanup() {
-  if(m_sceneObject) {
-    m_fillMode  = m_sceneObject->getFillMode();
-    m_shadeMode = m_sceneObject->getShadeMode();
-    m_sc.getScene().removeSceneObject(m_sceneObject);
-    SAFEDELETE(m_sceneObject);
-  }
+D3WireFrameBox *DebugIsoSurface::createCubeObject() {
+  D3Scene &scene = m_sc.getScene();
+  D3WireFrameBox *cube = new D3WireFrameBox(scene, *m_currentCube.m_corners[LBN], *m_currentCube.m_corners[RTF]); TRACE_NEW(newCube);
+  m_lastCalculatedCubeCount = m_cubeCount;
+  return cube;
 }
 
 void DebugIsoSurface::createData() {
   Point3D origin(0,0,0);
 
-  m_reverseSign     = false; // dont delete this. Used in evaluate !!
-  m_reverseSign     = m_param.m_originOutside == (evaluate(origin) < 0);
+  m_reverseSign = false; // dont delete this. Used in evaluate !!
+  m_reverseSign = m_param.m_originOutside == (evaluate(origin) < 0);
 
   IsoSurfacePolygonizer polygonizer(*this);
   m_vertexArray = &polygonizer.getVertexArray();
@@ -205,15 +197,6 @@ double DebugIsoSurface::evaluate(const Point3D &p) {
   }
 }
 
-void DebugIsoSurface::updateSceneObject() {
-  if(m_faceCount > m_lastCalculatedFaceCount) {
-    if(m_sceneObject) {
-      cleanup();
-    }
-    m_sceneObject = createSceneObject();
-  }
-}
-
 void DebugIsoSurface::receiveFace(const Face3 &face) {
   m_faceCount++;
   const size_t size = m_vertexArray->size();
@@ -234,21 +217,39 @@ void DebugIsoSurface::receiveFace(const Face3 &face) {
 }
 
 void DebugIsoSurface::markCurrentCube(const StackedCube &cube) {
-  m_thread.handleStep(NEW_CUBE);
-  if(cube.getLevel() > m_currentLevel) {
+  m_cubeCount++;
+  m_currentCube = cube;
+  if(cube.getLevel() == m_currentLevel) {
+    m_thread.handleStep(NEW_CUBE);
+  } else {
     m_currentLevel = cube.getLevel();
     m_thread.handleStep(NEW_LEVEL);
   }
-/*
-  D3Scene &scene = m_sc.getScene();
-  D3WireFrameBox *newCube = new D3WireFrameBox(scene, *cube.m_corners[LBN], *cube.m_corners[RTF]); TRACE_NEW(newCube)
-  if(m_currentCubeObject) {
-    scene.removeSceneObject(m_currentCubeObject);
-    SAFEDELETE(m_currentCubeObject);
-  }
-  m_currentCubeObject = newCube;
-  scene.addSceneObject(m_currentCubeObject);
-  m_thread.handleStep();
-*/
 }
 
+DebugSceneobject::~DebugSceneobject() {
+  deleteMeshObject();
+  deleteCubeObject();
+}
+
+void DebugSceneobject::setMeshObject(D3SceneObject *obj) {
+  deleteMeshObject();
+  m_meshObject = obj;
+}
+
+void DebugSceneobject::setCubeObject(D3SceneObject *obj) {
+  deleteCubeObject();
+  m_cubeObject = obj;
+}
+
+void DebugSceneobject::deleteMeshObject() {
+  if(m_meshObject) {
+    m_fillMode  = m_meshObject->getFillMode();
+    m_shadeMode = m_meshObject->getShadeMode();
+    SAFEDELETE(m_meshObject);
+  }
+}
+
+void DebugSceneobject::deleteCubeObject() {
+  if(m_cubeObject) SAFEDELETE(m_cubeObject);
+}

@@ -38,7 +38,9 @@ private:
   bool                               m_running;
   bool                               m_finished;
   bool                               m_ok;
-  void setPropRunning(bool value);
+  inline void setPropRunning(bool value) {
+    setProperty(THREAD_RUNNING, m_running, value);
+  }
   void initThread(bool singleStep);
   void suspendThread();
 public:
@@ -66,6 +68,54 @@ public:
   }
 };
 
+class DebugSceneobject : public D3SceneObject {
+private:
+  D3SceneObject *m_meshObject, *m_cubeObject;
+  D3DFILLMODE    m_fillMode;
+  D3DSHADEMODE   m_shadeMode;
+  void deleteMeshObject();
+  void deleteCubeObject();
+public:
+  DebugSceneobject(D3Scene &scene)
+    : D3SceneObject(scene, _T("Debug Polygonizer"))
+    , m_meshObject(NULL)
+    , m_cubeObject(NULL)
+    , m_fillMode(  D3DFILL_WIREFRAME)
+    , m_shadeMode( D3DSHADE_FLAT)
+  {
+  }
+  ~DebugSceneobject();
+  void setMeshObject(D3SceneObject *obj);
+  void setCubeObject(D3SceneObject *obj);
+  void draw() {
+    if(m_meshObject) m_meshObject->draw();
+    if(m_cubeObject) m_cubeObject->draw();
+  }
+  LPD3DXMESH getMesh() const {
+    return m_meshObject ? m_meshObject->getMesh() : NULL;
+  }
+  bool hasFillMode() const {
+    return true;
+  }
+  void setFillMode(D3DFILLMODE fillMode) {
+    m_fillMode = fillMode;
+    if(m_meshObject) m_meshObject->setFillMode(fillMode);
+  }
+  D3DFILLMODE getFillMode() const {
+    return m_meshObject ? m_meshObject->getFillMode() : m_fillMode;
+  }
+  bool hasShadeMode() const {
+    return true;
+  }
+  void setShadeMode(D3DSHADEMODE shadeMode) {
+    m_shadeMode = shadeMode;
+    if(m_meshObject) m_meshObject->setShadeMode(shadeMode);
+  }
+  D3DSHADEMODE getShadeMode() const {
+    return m_meshObject ? m_meshObject->getShadeMode() : m_shadeMode;
+  }
+};
+
 class DebugIsoSurface : public IsoSurfaceEvaluator {
 private:
   DebugThread                          &m_thread;
@@ -76,31 +126,42 @@ private:
   Real                                 *m_xp,*m_yp,*m_zp;
   DWORD                                 m_lastVertexCount;
   DWORD                                 m_faceCount;
+  DWORD                                 m_cubeCount;
   mutable DWORD                         m_lastCalculatedFaceCount;
+  mutable DWORD                         m_lastCalculatedCubeCount;
   BYTE                                  m_currentLevel;
   const Array<IsoSurfaceVertex>        *m_vertexArray;
   MeshBuilder                           m_mb;
-  SceneObjectWithMesh                  *m_sceneObject;
-  D3WireFrameBox                       *m_currentCubeObject;
+  StackedCube                           m_currentCube;
+  DebugSceneobject                      m_sceneObject;
   PolygonizerStatistics                 m_statistics;
-  D3DFILLMODE                           m_fillMode;
-  D3DSHADEMODE                          m_shadeMode;
-  void cleanup();
+  D3WireFrameBox *createCubeObject();
+  inline void updateMeshObject() {
+    if(m_faceCount > m_lastCalculatedFaceCount) {
+      m_sceneObject.setMeshObject(createMeshObject());
+    }
+  }
+  inline void updateCubeObject() {
+    if(m_cubeCount > m_lastCalculatedCubeCount) {
+      m_sceneObject.setCubeObject(createCubeObject());
+    }
+  }
 public:
   DebugIsoSurface(DebugThread *thread, D3SceneContainer &sc, const IsoSurfaceParameters &param);
-  virtual ~DebugIsoSurface();
   void   createData();
   double evaluate(const Point3D &p);
   void   receiveFace(const Face3 &face);
   void   markCurrentCube(const StackedCube &cube);
-  void   updateSceneObject();
-
   String getInfoMessage() const;
   inline D3SceneObject *getSceneObject() {
-    return m_sceneObject;
+    return &m_sceneObject;
+  }
+  inline void updateSceneObject() {
+    updateMeshObject();
+    updateCubeObject();
   }
   inline int getFaceCount() const {
     return m_faceCount;
   }
-  SceneObjectWithMesh *createSceneObject() const;
+  SceneObjectWithMesh *createMeshObject() const;
 };

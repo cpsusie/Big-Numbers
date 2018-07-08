@@ -352,7 +352,6 @@ void SceneObjectSolidBox::makeSquareFace(MeshBuilder &mb, int v0, int v1, int v2
 SceneObjectSolidBox::SceneObjectSolidBox(D3Scene &scene, const D3DXCube3 &cube, int materialIndex)
 : SceneObjectWithMesh(scene)
 , m_materialIndex(materialIndex)
-, m_pdus(scene.getObjPDUS())
 {
   MeshBuilder mb;
   const D3DXVECTOR3 &pmin = cube.getMin(), &pmax = cube.getMax();
