@@ -788,22 +788,19 @@ Point3D IsoSurfacePolygonizer::convergeStartPoint(const Point3DWithValue &p1, co
   }
 }
 
-#define KEY_GT(k1,k2) ( ((k1).m_level  >  (k2).m_level)             \
-                     || (((k1).m_level == (k2).m_level)             \
-                       && (((k1).i     >  (k2).i)                   \
-                         || ((k1).i    == (k2).i                    \
-                           && ((k1).j  >  (k2).j                    \
-                           || ((k1).j  == (k2).j && (k1).k>(k2).k)) \
-                            )                                       \
-                          )                                         \
-                        )                                           \
-                      )
+static inline int point3DKeyCmp(const Point3DKey &k1, const Point3DKey &k2) {
+  int c = (int)k1.m_level - (int)k2.m_level;
+  if(c) return c;
+  if(c = k1.i - k2.i) return c;
+  if(c = k1.j - k2.j) return c;
+  return k1.k - k2.k;
+}
 
 #ifdef DUMP_CORNERMAP
 typedef Entry<Point3DKey, HashedCubeCorner> CornerMapEntry;
 
 static int cubeCornerCmp(const HashedCubeCorner * const &c1, const HashedCubeCorner * const &c2) {
-  return KEY_GT(c1->m_key,c2->m_key) ? 1 : -1;
+  return point3DKeyCmp(c1->m_key,c2->m_key);
 }
 
 void IsoSurfacePolygonizer::dumpCornerMap() const {
@@ -831,15 +828,14 @@ public:
   SortedCubeEdge(const EdgeMapEntry &e) : CubeEdgeHashKey(e.getKey()), m_index(e.getValue()) {
   }
 };
+
 static int sortedCubeEdgeCmp(const SortedCubeEdge &e1, const SortedCubeEdge &e2) {
   int c = (int)e1.getKey1().m_level - e2.getKey1().m_level;
   if(c) return c;
   c = (int)e1.getKey2().m_level - e2.getKey2().m_level;
   if(c) return c;
-  if(e1.getKey1() != e2.getKey1()) {
-    return KEY_GT(e1.getKey1(),e2.getKey1()) ? 1 : -1;
-  }
-  return KEY_GT(e1.getKey2(),e2.getKey2()) ? 1 : -1;
+  if(c = point3DKeyCmp(e1.getKey1(),e2.getKey1())) return c;
+  return point3DKeyCmp(e1.getKey2(),e2.getKey2());
 }
 
 void IsoSurfacePolygonizer::dumpEdgeMap() const {
@@ -877,7 +873,7 @@ void IsoSurfacePolygonizer::dumpFaceArray() const {
 #endif // DUMP_FACEARRAY
 
 void CubeEdgeHashKey::checkAndSwap() {
-  if(KEY_GT(m_key1, m_key2)) {
+  if(point3DKeyCmp(m_key1, m_key2)) {
     std::swap(m_key1, m_key2);
   }
 }

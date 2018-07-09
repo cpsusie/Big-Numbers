@@ -135,12 +135,13 @@ private:
   StackedCube                           m_currentCube;
   DebugSceneobject                      m_sceneObject;
   PolygonizerStatistics                 m_statistics;
-  D3WireFrameBox *createCubeObject();
+  D3SceneObject *createCubeObject();
   inline void updateMeshObject() {
     if(m_faceCount > m_lastCalculatedFaceCount) {
       m_sceneObject.setMeshObject(createMeshObject());
     }
   }
+
   inline void updateCubeObject() {
     if(m_cubeCount > m_lastCalculatedCubeCount) {
       m_sceneObject.setCubeObject(createCubeObject());
