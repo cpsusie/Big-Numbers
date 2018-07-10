@@ -1,9 +1,29 @@
 #pragma once
 
+#include <Registry.h>
+
 typedef enum {
   DOCSIZE_IN_PIXELS
  ,DOCSIZE_IN_CENTIMETERS
 } DocSizeFormat;
+
+class Options {
+private:
+  DocSizeFormat m_docSizeFormat;
+  int           m_nFilterIndex;
+  static RegistryKey getRootKey();
+public:
+  void load();
+  void save();
+  void setDocSizeFormat(DocSizeFormat docSizeFormat);
+  inline DocSizeFormat getDocSizeFormat() const {
+    return m_docSizeFormat;
+  }
+  void setFilterIndex(int index);
+  inline int getFilterIndex() const {
+    return m_nFilterIndex;
+  }
+};
 
 class CMainFrame : public CFrameWndEx {
 protected:
@@ -23,7 +43,6 @@ private:
   HPEN            m_blackPen;
   WINDOWPLACEMENT m_savedWindowPlacement;
   bool            m_capturingWindow;
-  DocSizeFormat   m_docSizeFormat;
 
   void repaint();
   void showDocSize();
@@ -74,6 +93,7 @@ public:
   virtual void AssertValid() const;
   virtual void Dump(CDumpContext& dc) const;
 #endif
+  Options m_options;
 
 protected:  // control bar embedded members
     CMFCMenuBar       m_wndMenuBar;

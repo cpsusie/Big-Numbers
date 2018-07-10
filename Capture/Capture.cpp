@@ -87,11 +87,9 @@ BOOL CCaptureApp::InitInstance() {
   return TRUE;
 }
 
-int CCaptureApp::ExitInstance()
-{
-    AfxOleTerm(FALSE);
-
-    return CWinAppEx::ExitInstance();
+int CCaptureApp::ExitInstance() {
+  AfxOleTerm(FALSE);
+  return CWinAppEx::ExitInstance();
 }
 
 class CAboutDlg : public CDialog {
@@ -127,21 +125,18 @@ void CCaptureApp::OnAppAbout() {
 }
 
 // CMFCApplication2App customization load/save methods
-void CCaptureApp::PreLoadState()
-{
-    BOOL bNameValid;
-    CString strName;
-    bNameValid = strName.LoadString(IDS_EDIT_MENU);
-    ASSERT(bNameValid);
-    GetContextMenuManager()->AddMenu(strName, IDR_POPUP_EDIT);
+void CCaptureApp::PreLoadState() {
+  BOOL bNameValid;
+  CString strName;
+  bNameValid = strName.LoadString(IDS_EDIT_MENU);
+  ASSERT(bNameValid);
+  GetContextMenuManager()->AddMenu(strName, IDR_POPUP_EDIT);
 }
 
-void CCaptureApp::LoadCustomState()
-{
+void CCaptureApp::LoadCustomState() {
 }
 
-void CCaptureApp::SaveCustomState()
-{
+void CCaptureApp::SaveCustomState() {
 }
 
 static const char *browsers[] = {
@@ -173,6 +168,5 @@ BOOL CAboutDlg::PreTranslateMessage(MSG *pMsg) {
     }
     break;
   }
-
   return __super::PreTranslateMessage(pMsg);
 }

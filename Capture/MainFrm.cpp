@@ -65,29 +65,26 @@ static UINT indicators[] = {
 
 #define PENSIZE 4
 
-CMainFrame::CMainFrame()
-{
+CMainFrame::CMainFrame() {
   m_blackPen = ::CreatePen(PS_SOLID, PENSIZE, RGB(0,0,0));
-  m_docSizeFormat = DOCSIZE_IN_PIXELS;
+  m_options.load();
   setCaptureAllEvents(false);
   initCurrent();
 }
 
-CMainFrame::~CMainFrame()
-{
+CMainFrame::~CMainFrame() {
 }
 
-int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
-{
-  if(__super::OnCreate(lpCreateStruct) == -1)
+int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
+  if(__super::OnCreate(lpCreateStruct) == -1) {
     return -1;
+  }
 
   BOOL bNameValid;
 
-  if (!m_wndMenuBar.Create(this))
-  {
-      TRACE0("Failed to create menubar\n");
-      return -1;      // fail to create
+  if(!m_wndMenuBar.Create(this)) {
+    TRACE0("Failed to create menubar\n");
+    return -1;      // fail to create
   }
 
   m_wndMenuBar.SetPaneStyle(m_wndMenuBar.GetPaneStyle() | CBRS_SIZE_DYNAMIC | CBRS_TOOLTIPS | CBRS_FLYBY);
@@ -95,11 +92,11 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
   // prevent the menu bar from taking the focus on activation
   CMFCPopupMenu::SetForceMenuFocus(FALSE);
 
-  if (!m_wndToolBar.CreateEx(this, TBSTYLE_FLAT, WS_CHILD | WS_VISIBLE | CBRS_TOP | CBRS_GRIPPER | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC) ||
-      !m_wndToolBar.LoadToolBar(theApp.m_bHiColorIcons ? IDR_MAINFRAME_256 : IDR_MAINFRAME))
+  if(!m_wndToolBar.CreateEx(this, TBSTYLE_FLAT, WS_CHILD | WS_VISIBLE | CBRS_TOP | CBRS_GRIPPER | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC) ||
+     !m_wndToolBar.LoadToolBar(theApp.m_bHiColorIcons ? IDR_MAINFRAME_256 : IDR_MAINFRAME))
   {
-      TRACE0("Failed to create toolbar\n");
-      return -1;      // fail to create
+    TRACE0("Failed to create toolbar\n");
+    return -1;      // fail to create
   }
 
   CString strToolBarName;
@@ -117,10 +114,9 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
   InitUserToolbars(NULL, uiFirstUserToolBarId, uiLastUserToolBarId);
 */
 
-  if (!m_wndStatusBar.Create(this))
-  {
-      TRACE0("Failed to create status bar\n");
-      return -1;      // fail to create
+  if(!m_wndStatusBar.Create(this)) {
+    TRACE0("Failed to create status bar\n");
+    return -1;      // fail to create
   }
   m_wndStatusBar.SetIndicators(indicators, sizeof(indicators)/sizeof(UINT));
 
@@ -130,7 +126,6 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
   EnableDocking(CBRS_ALIGN_ANY);
   DockPane(&m_wndMenuBar);
   DockPane(&m_wndToolBar);
-
 
   // enable Visual Studio 2005 style docking window behavior
   CDockingManager::SetDockingMode(DT_SMART);
@@ -178,78 +173,70 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
   return 0;
 }
 
-BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs)
-{
-    if(!__super::PreCreateWindow(cs) )
-        return FALSE;
-    return TRUE;
+BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs) {
+  if(!__super::PreCreateWindow(cs) ) {
+    return FALSE;
+  }
+  return TRUE;
 }
 
 // CMainFrame diagnostics
 
 #ifdef _DEBUG
-void CMainFrame::AssertValid() const
-{
+void CMainFrame::AssertValid() const {
   __super::AssertValid();
 }
 
-void CMainFrame::Dump(CDumpContext& dc) const
-{
+void CMainFrame::Dump(CDumpContext& dc) const {
   __super::Dump(dc);
 }
 #endif //_DEBUG
 
-
 // CMainFrame message handlers
 #ifdef __NEVER__
-void CMainFrame::OnViewCustomize()
-{
-    CMFCToolBarsCustomizeDialog* pDlgCust = new CMFCToolBarsCustomizeDialog(this, TRUE /* scan menus */);
-    pDlgCust->EnableUserDefinedToolbars();
-    pDlgCust->Create();
+void CMainFrame::OnViewCustomize() {
+  CMFCToolBarsCustomizeDialog* pDlgCust = new CMFCToolBarsCustomizeDialog(this, TRUE /* scan menus */);
+  pDlgCust->EnableUserDefinedToolbars();
+  pDlgCust->Create();
 }
 
-LRESULT CMainFrame::OnToolbarCreateNew(WPARAM wp,LPARAM lp)
-{
-    LRESULT lres = __super::OnToolbarCreateNew(wp,lp);
-    if (lres == 0)
-    {
-        return 0;
-    }
+LRESULT CMainFrame::OnToolbarCreateNew(WPARAM wp,LPARAM lp) {
+  LRESULT lres = __super::OnToolbarCreateNew(wp,lp);
+  if(lres == 0) {
+      return 0;
+  }
 
-    CMFCToolBar* pUserToolbar = (CMFCToolBar*)lres;
-    ASSERT_VALID(pUserToolbar);
+  CMFCToolBar *pUserToolbar = (CMFCToolBar*)lres;
+  ASSERT_VALID(pUserToolbar);
 
-    BOOL bNameValid;
-    CString strCustomize;
-    bNameValid = strCustomize.LoadString(IDS_TOOLBAR_CUSTOMIZE);
-    ASSERT(bNameValid);
+  BOOL bNameValid;
+  CString strCustomize;
+  bNameValid = strCustomize.LoadString(IDS_TOOLBAR_CUSTOMIZE);
+  ASSERT(bNameValid);
 
-    pUserToolbar->EnableCustomizeButton(TRUE, ID_VIEW_CUSTOMIZE, strCustomize);
-    return lres;
+  pUserToolbar->EnableCustomizeButton(TRUE, ID_VIEW_CUSTOMIZE, strCustomize);
+  return lres;
 }
 #endif
 
 BOOL CMainFrame::LoadFrame(UINT nIDResource, DWORD dwDefaultStyle, CWnd *pParentWnd, CCreateContext *pContext) {
-    if (!__super::LoadFrame(nIDResource, dwDefaultStyle, pParentWnd, pContext)) {
-        return FALSE;
+  if(!__super::LoadFrame(nIDResource, dwDefaultStyle, pParentWnd, pContext)) {
+    return FALSE;
+  }
+
+  // enable customization button for all user toolbars
+  BOOL bNameValid;
+  CString strCustomize;
+  bNameValid = strCustomize.LoadString(IDS_TOOLBAR_CUSTOMIZE);
+  ASSERT(bNameValid);
+
+  for(int i = 0; i < iMaxUserToolbars; i ++) {
+    CMFCToolBar* pUserToolbar = GetUserToolBarByIndex(i);
+    if(pUserToolbar != NULL) {
+      pUserToolbar->EnableCustomizeButton(TRUE, ID_VIEW_CUSTOMIZE, strCustomize);
     }
-
-
-    // enable customization button for all user toolbars
-    BOOL bNameValid;
-    CString strCustomize;
-    bNameValid = strCustomize.LoadString(IDS_TOOLBAR_CUSTOMIZE);
-    ASSERT(bNameValid);
-
-    for (int i = 0; i < iMaxUserToolbars; i ++) {
-        CMFCToolBar* pUserToolbar = GetUserToolBarByIndex(i);
-        if (pUserToolbar != NULL) {
-            pUserToolbar->EnableCustomizeButton(TRUE, ID_VIEW_CUSTOMIZE, strCustomize);
-        }
-    }
-
-    return TRUE;
+  }
+  return TRUE;
 }
 
 void CMainFrame::OnFilePrint() {
@@ -281,10 +268,10 @@ void CMainFrame::OnFileSave() {
 
 
   CFileDialog dlg(FALSE);
-  dlg.m_ofn.lpstrFilter = FileDialogExtensions;
-  dlg.m_ofn.lpstrDefExt = _T(".jpg");
-  dlg.m_ofn.lpstrTitle  = _T("Save picture");
-
+  dlg.m_ofn.lpstrFilter  = FileDialogExtensions;
+  dlg.m_ofn.lpstrDefExt  = _T(".jpg");
+  dlg.m_ofn.lpstrTitle   = _T("Save picture");
+  dlg.m_ofn.nFilterIndex = m_options.getFilterIndex();
   if(dlg.DoModal() != IDOK || _tcslen(dlg.m_ofn.lpstrFile) == 0) {
     return;
   }
@@ -292,6 +279,7 @@ void CMainFrame::OnFileSave() {
   try {
     CCaptureDoc *doc = GetDocument();
     const TCHAR *ext = dlg.m_ofn.lpstrFilter;
+    m_options.setFilterIndex(dlg.m_ofn.nFilterIndex);
     doc->save(dlg.m_ofn.lpstrFile);
   } catch(Exception e) {
     showException(e);
@@ -429,7 +417,7 @@ void CMainFrame::repaint() {
 }
 
 void CMainFrame::showDocSize() {
-  switch(m_docSizeFormat) {
+  switch(m_options.getDocSizeFormat()) {
   case DOCSIZE_IN_CENTIMETERS:
     { const CSize size = GetDocument()->getSizeInMillimeters();
       m_wndStatusBar.SetPaneText(1, format(_T("%.1lf x %.1lf centimeters"), (double)size.cx/10, (double)size.cy/10).cstr());
@@ -695,12 +683,12 @@ BOOL CMainFrame::PreTranslateMessage(MSG *pMsg) {
 }
 
 void CMainFrame::OnViewSizePixels() {
-  m_docSizeFormat = DOCSIZE_IN_PIXELS;
+  m_options.setDocSizeFormat(DOCSIZE_IN_PIXELS);
   repaint();
 }
 
 void CMainFrame::OnViewSizeCentimeters() {
-  m_docSizeFormat = DOCSIZE_IN_CENTIMETERS;
+  m_options.setDocSizeFormat(DOCSIZE_IN_CENTIMETERS);
   repaint();
 }
 
@@ -720,8 +708,34 @@ void CMainFrame::OnUpdateStartMSPaint(CCmdUI *pCmdUI) {
   pCmdUI->Enable(hasImage());
 }
 void CMainFrame::OnUpdateViewSizePixels(CCmdUI *pCmdUI) {
-  pCmdUI->SetCheck(m_docSizeFormat == DOCSIZE_IN_PIXELS);
+  pCmdUI->SetCheck(m_options.getDocSizeFormat() == DOCSIZE_IN_PIXELS);
 }
 void CMainFrame::OnUpdateViewSizeCentimeters(CCmdUI *pCmdUI) {
-  pCmdUI->SetCheck(m_docSizeFormat == DOCSIZE_IN_CENTIMETERS);
+  pCmdUI->SetCheck(m_options.getDocSizeFormat() == DOCSIZE_IN_CENTIMETERS);
+}
+
+void Options::setDocSizeFormat(DocSizeFormat docSizeFormat) {
+  m_docSizeFormat = docSizeFormat;
+  save();
+}
+
+void Options::setFilterIndex(int index) {
+  m_nFilterIndex = index;
+  save();
+}
+
+RegistryKey Options::getRootKey() { // static
+  return RegistryKey(HKEY_CURRENT_USER, _T("Software")).createOrOpenPath(_T("JGMData\\Capture\\Settings"));
+}
+
+void Options::load() {
+  RegistryKey root = getRootKey();
+  m_nFilterIndex  = root.getInt(_T("filterindex"),1);
+  m_docSizeFormat = (DocSizeFormat)root.getInt(_T("docsizeformat"), DOCSIZE_IN_PIXELS);
+}
+
+void Options::save() {
+  RegistryKey root = getRootKey();
+  root.setValue(_T("filterindex"  ), m_nFilterIndex );
+  root.setValue(_T("docsizeformat"), m_docSizeFormat);
 }
