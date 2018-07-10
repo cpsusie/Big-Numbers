@@ -155,7 +155,7 @@ StackedCubeObject::StackedCubeObject(D3Scene &scene, const StackedCube &cube, do
   : D3WireFrameBox(scene, *cube.m_corners[LBN], *cube.m_corners[RTF])
 {
   for(int i = 0; i < ARRAYSIZE(m_cornerMark); i++) {
-    m_cornerMark[i] = createCubeCornerMark(*cube.m_corners[i], cellSize);
+    m_cornerMark[i] = createCubeCornerMark(*cube.m_corners[i], cellSize/(1<<cube.getLevel()));
   }
 }
 
