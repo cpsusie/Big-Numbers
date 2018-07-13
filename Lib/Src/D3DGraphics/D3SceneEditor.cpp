@@ -399,9 +399,11 @@ void D3SceneEditor::setCurrentVisualOrientation(const D3DXVECTOR3 &dir, const D3
   if(centerOfRot == D3DXORIGIN) {
     obj->getPDUS().setOrientation(dir, up);
   } else {
+    const D3DXVECTOR3 crMesh = getCenterOfRotation();
+    const D3DXVECTOR3 crOldWorld = getCurrentVisual()->getWorldMatrix() * crMesh;
     obj->getPDUS().setOrientation(dir, up);
-//    D3PosDirUpScale &pdus = obj->getPDUS();
-//    setCurrentObjectPos(centerOfRot - pdus.getRotationMatrix() * rotp);
+    const D3DXVECTOR3 crNewWorld = getCurrentVisual()->getWorldMatrix() * crMesh;
+    obj->setPos(obj->getPos() + crOldWorld - crNewWorld);
   }
   render(RENDER_ALL);
 }
@@ -1308,9 +1310,10 @@ String D3SceneEditor::toString() const {
                       ,m_pickedInfo.toString().cstr());
     }
   }
-  if (getCenterOfRotation() != D3DXORIGIN) {
+  if(getCenterOfRotation() != D3DXORIGIN) {
     result += format(_T("\nCenter of rotation:MP:%s WP:%s")
                     ,::toString(getCenterOfRotation()).cstr()
+                    ,::toString(getCurrentVisual()->getWorldMatrix() * getCenterOfRotation()).cstr()
                     );
   }
   switch(m_propertyDialogMap.getVisibleDialogId()) {
