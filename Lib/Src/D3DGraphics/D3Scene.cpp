@@ -187,23 +187,23 @@ D3DLIGHT D3Scene::getDefaultLight(D3DLIGHTTYPE type) { // static
 
 BitSet D3Scene::getLightsVisible() const {
   BitSet result(m_maxLightCount);
-  for(size_t i = 0; i < m_objectArray.size(); i++) {
-    D3SceneObject *obj = m_objectArray[i];
-    if((obj->getType() == SOTYPE_LIGHTCONTROL) && obj->isVisible()) {
-      result.add(((D3LightControl*)obj)->getLightIndex());
+  for(Iterator<D3SceneObject*> it = getObjectIterator(OBJMASK_LIGHTCONTROL); it.hasNext();) {
+    D3LightControl *lc = (D3LightControl*)it.next();
+    if(lc->isVisible()) {
+      result.add(lc->getLightIndex());
     }
   }
   return result;
 }
 
-D3LightControl *D3Scene::setLightControlVisible(UINT index, bool visible) {
-  if(!isLightDefined(index)) {
-    showWarning(_T("%s:Light %d is undefined"), __TFUNCTION__, index);
+D3LightControl *D3Scene::setLightControlVisible(UINT lightIndex, bool visible) {
+  if(!isLightDefined(lightIndex)) {
+    showWarning(_T("%s:Light %d is undefined"), __TFUNCTION__, lightIndex);
     return NULL;
   }
-  D3LightControl *lc = findLightControlByLightIndex(index);
+  D3LightControl *lc = findLightControlByLightIndex(lightIndex);
   if(lc == NULL) {
-    lc = addLightControl(index);
+    lc = addLightControl(lightIndex);
   }
   if(lc) {
     lc->setVisible(visible);
@@ -211,26 +211,26 @@ D3LightControl *D3Scene::setLightControlVisible(UINT index, bool visible) {
   return lc;
 }
 
-D3LightControl *D3Scene::addLightControl(UINT index) {
-  if(!isLightDefined(index)) {
-    showWarning(_T("%s:Light %d is undefined"), __TFUNCTION__, index);
+D3LightControl *D3Scene::addLightControl(UINT lightIndex) {
+  if(!isLightDefined(lightIndex)) {
+    showWarning(_T("%s:Light %d is undefined"), __TFUNCTION__, lightIndex);
     return NULL;
   }
-  D3LightControl *result = findLightControlByLightIndex(index);
+  D3LightControl *result = findLightControlByLightIndex(lightIndex);
   if(result != NULL) return result;
-  LIGHT param = getLight(index);
+  LIGHT param = getLight(lightIndex);
   switch(param.Type) {
-  case D3DLIGHT_DIRECTIONAL    : result = new D3LightControlDirectional(*this, index); TRACE_NEW(result); break;
-  case D3DLIGHT_POINT          : result = new D3LightControlPoint(      *this, index); TRACE_NEW(result); break;
-  case D3DLIGHT_SPOT           : result = new D3LightControlSpot(       *this, index); TRACE_NEW(result); break;
-  default                      : throwException(_T("Unknown lighttype for light %d:%d"), index, param.Type);
+  case D3DLIGHT_DIRECTIONAL    : result = new D3LightControlDirectional(*this, lightIndex); TRACE_NEW(result); break;
+  case D3DLIGHT_POINT          : result = new D3LightControlPoint(      *this, lightIndex); TRACE_NEW(result); break;
+  case D3DLIGHT_SPOT           : result = new D3LightControlSpot(       *this, lightIndex); TRACE_NEW(result); break;
+  default                      : throwException(_T("Unknown lighttype for light %d:%d"), lightIndex, param.Type);
   }
   addSceneObject(result);
   return result;
 }
 
-void D3Scene::destroyLightControl(UINT index) {
-  D3LightControl *lc = findLightControlByLightIndex(index);
+void D3Scene::destroyLightControl(UINT lightIndex) {
+  D3LightControl *lc = findLightControlByLightIndex(lightIndex);
   if(lc == NULL) return;
   removeSceneObject(lc);
   SAFEDELETE(lc);
@@ -238,7 +238,7 @@ void D3Scene::destroyLightControl(UINT index) {
 
 void D3Scene::destroyAllLightControls() {
   const CompactArray<LIGHT> la = getAllLights();
-  for (size_t i = 0; i < la.size(); i++) {
+  for(size_t i = 0; i < la.size(); i++) {
     const LIGHT &l = la[i];
     destroyLightControl(l.m_index);
   }
@@ -256,36 +256,36 @@ int D3Scene::addLight(const D3DLIGHT &light) {
   return index;
 }
 
-void D3Scene::removeLight(UINT index) {
-  if(!isLightDefined(index)) return;
-  if(isLightEnabled(index)) {
-    m_lightsEnabled->remove(index);
+void D3Scene::removeLight(UINT lightIndex) {
+  if(!isLightDefined(lightIndex)) return;
+  if(isLightEnabled(lightIndex)) {
+    m_lightsEnabled->remove(lightIndex);
   }
-  destroyLightControl(index);
+  destroyLightControl(lightIndex);
   const UINT oldCount = getLightCount();
-  m_lightsDefined->remove(index);
-  V(m_device->LightEnable(index, FALSE));
+  m_lightsDefined->remove(lightIndex);
+  V(m_device->LightEnable(lightIndex, FALSE));
   const UINT newCount = oldCount - 1;
   notifyPropertyChanged(SP_LIGHTCOUNT, &oldCount, &newCount);
 }
 
-void D3Scene::setLightEnabled(UINT index, bool enabled) {
-  if(!isLightDefined(index)) return;
-  LIGHT param = getLight(index);
+void D3Scene::setLightEnabled(UINT lightIndex, bool enabled) {
+  if(!isLightDefined(lightIndex)) return;
+  LIGHT param = getLight(lightIndex);
   param.m_enabled = enabled;
   setLight(param);
 }
 
-void D3Scene::setLightDirection(UINT index, const D3DXVECTOR3 &dir) {
-  if(!isLightDefined(index)) return;
-  LIGHT param = getLight(index);
+void D3Scene::setLightDirection(UINT lightIndex, const D3DXVECTOR3 &dir) {
+  if(!isLightDefined(lightIndex)) return;
+  LIGHT param = getLight(lightIndex);
   param.Direction = unitVector(dir);
   setLight(param);
 }
 
-void D3Scene::setLightPosition(UINT index, const D3DXVECTOR3 &pos) {
-  if(!isLightDefined(index)) return;
-  LIGHT param = getLight(index);
+void D3Scene::setLightPosition(UINT lightIndex, const D3DXVECTOR3 &pos) {
+  if(!isLightDefined(lightIndex)) return;
+  LIGHT param = getLight(lightIndex);
   param.Position = pos;
   setLight(param);
 }
@@ -310,23 +310,23 @@ void D3Scene::setLight(const LIGHT &param) {
 }
 
 D3LightControl *D3Scene::findLightControlByLightIndex(int lightIndex) {
-  for(size_t i = 0; i < m_objectArray.size(); i++) {
-    D3SceneObject *obj = m_objectArray[i];
-    if((obj->getType() == SOTYPE_LIGHTCONTROL) && (((D3LightControl*)obj)->getLightIndex() == lightIndex)) {
-      return (D3LightControl*)obj;
+  for(Iterator<D3SceneObject*> it = getObjectIterator(OBJMASK_LIGHTCONTROL); it.hasNext();) {
+    D3LightControl *lc = (D3LightControl*)it.next();
+    if(lc->getLightIndex() == lightIndex) {
+      return lc;
     }
   }
   return NULL;
 }
 
-LIGHT D3Scene::getLight(UINT index) const {
+LIGHT D3Scene::getLight(UINT lightIndex) const {
   LIGHT lp;
-  if(!isLightDefined(index)) {
+  if(!isLightDefined(lightIndex)) {
     memset(&lp, 0xff, sizeof(lp));
   } else {
-    V(m_device->GetLight(index, &lp));
-    lp.m_index   = index;
-    lp.m_enabled = isLightEnabled(index);
+    V(m_device->GetLight(lightIndex, &lp));
+    lp.m_index   = lightIndex;
+    lp.m_enabled = isLightEnabled(lightIndex);
   }
   return lp;
 }
@@ -334,7 +334,7 @@ LIGHT D3Scene::getLight(UINT index) const {
 const CompactArray<LIGHT> D3Scene::getAllLights() const {
   BitSet lightSet = getLightsDefined();
   CompactArray<LIGHT> result(lightSet.size());
-  for (Iterator<size_t> it = lightSet.getIterator(); it.hasNext();) {
+  for(Iterator<size_t> it = lightSet.getIterator(); it.hasNext();) {
     result.add(getLight((UINT)it.next()));
   }
   return result;
@@ -350,19 +350,19 @@ int D3Scene::getFirstFreeLightIndex() const {
   return -1;
 }
 
-String D3Scene::getLightString(UINT index) const {
-  return isLightDefined(index)
-        ? getLight(index).toString()
-        : format(_T("Light[%d]:Undefined"), index);
+String D3Scene::getLightString(UINT lightIndex) const {
+  return isLightDefined(lightIndex)
+        ? getLight(lightIndex).toString()
+        : format(_T("Light[%d]:Undefined"), lightIndex);
 }
 
 String D3Scene::getLightString() const {
   String result;
   BitSet lightSet = getLightsDefined();
   for(Iterator<size_t> it = lightSet.getIterator(); it.hasNext(); ) {
-    const UINT index = (UINT)it.next();
+    const UINT lightIndex = (UINT)it.next();
     if(result.length()) result += _T("\n");
-    result += getLightString(index);
+    result += getLightString(lightIndex);
   }
   return result;
 }
@@ -458,8 +458,8 @@ void D3Scene::render() {
   updateViewMatrix();
 
   V(m_device->BeginScene());
-  for(size_t i = 0; i < m_objectArray.size(); i++) {
-    D3SceneObject *obj = m_objectArray[i];
+  for(Iterator<D3SceneObject*> it = getObjectIterator(); it.hasNext();) {
+    D3SceneObject *obj = it.next();
     if(obj->isVisible()) {
       V(m_device->SetTransform(D3DTS_WORLD, &obj->getWorldMatrix()));
       obj->draw();
@@ -491,10 +491,9 @@ D3SceneObject *D3Scene::getPickedObject(const CPoint &point, long mask, D3DXVECT
   const D3Ray    ray           = getPickRay(point);
   float          minDist       = -1;
   D3SceneObject *closestObject = NULL;
-  for(size_t i = 0; i < m_objectArray.size(); i++) {
-    D3SceneObject *obj = m_objectArray[i];
-    const String name = obj->getName();
-    if(!obj->isVisible() || ((mask & PICK_MASK(obj->getType())) == 0)) {
+  for(Iterator<D3SceneObject*> it = getObjectIterator(mask); it.hasNext();) {
+    D3SceneObject *obj = it.next();
+    if(!obj->isVisible()) {
       continue;
     }
     float dist;
@@ -577,20 +576,90 @@ void D3Scene::addSceneObject(D3SceneObject *obj) {
 }
 
 void D3Scene::removeSceneObject(D3SceneObject *obj) {
-  const int index = (int)m_objectArray.getFirstIndex(obj);
+  const intptr_t index = m_objectArray.getFirstIndex(obj);
   if(index >= 0) {
-    if (obj->getType() == SOTYPE_ANIMATEDOBJECT) {
-      ((D3AnimatedSurface*)obj)->stopAnimation();
-    }
-    m_objectArray.remove(index);
-    notifyIfObjectArrayChanged();
+    removeSceneObject(index);
   }
+}
+
+void D3Scene::removeSceneObject(size_t index) {
+  D3SceneObject *obj = m_objectArray[index];
+  if(obj->getType() == SOTYPE_ANIMATEDOBJECT) {
+    ((D3AnimatedSurface*)obj)->stopAnimation();
+  }
+  m_objectArray.remove(index);
+  notifyIfObjectArrayChanged();
 }
 
 void D3Scene::removeAllSceneObjects() {
   while(getObjectCount() > 0) {
-    removeSceneObject(m_objectArray.last());
+    removeSceneObject(getObjectCount()-1);
   }
+}
+
+class SceneObjectIterator : public AbstractIterator {
+private:
+  DECLARECLASSNAME;
+  D3Scene                      &m_scene;
+  CompactArray<D3SceneObject*> &m_a;
+  size_t                        m_next;
+  intptr_t                      m_current;
+  size_t                        m_updateCount;
+  const long                    m_mask;
+
+  inline bool checkMask(size_t i) const {
+    return (OBJTYPE_MASK(m_a[i]->getType()) & m_mask) != 0;
+  }
+  void checkUpdateCount() const {
+    if(m_updateCount != m_a.getUpdateCount()) {
+      concurrentModificationError(s_className);
+    }
+  }
+  size_t first() const {
+    size_t i;
+    for(i = 0; (i < m_a.size()) && !checkMask(i); i++);
+    return i;
+  }
+public:
+  SceneObjectIterator(D3Scene &scene, long mask)
+    : m_scene(scene)
+    , m_a(scene.m_objectArray)
+    , m_mask(mask)
+  {
+    m_current     = -1;
+    m_next        = first();
+    m_updateCount = m_a.getUpdateCount();
+  }
+  AbstractIterator *clone() {
+    return new SceneObjectIterator(*this);
+  }
+  inline bool hasNext() const {
+    return m_next < m_a.size();
+  }
+
+  void *next() {
+    if(m_next >= m_a.size()) {
+      noNextElementError(s_className);
+    }
+    checkUpdateCount();
+    for(m_current = m_next++; (m_next < m_a.size()) && !checkMask(m_next); m_next++);
+    return &m_a[m_current];
+  }
+  void remove() {
+    if(m_current < 0) {
+      noCurrentElementError(s_className);
+    }
+    checkUpdateCount();
+    m_scene.removeSceneObject(m_current);
+    m_current     = -1;
+    m_updateCount = m_a.getUpdateCount();
+  }
+};
+
+DEFINECLASSNAME(SceneObjectIterator);
+
+Iterator<D3SceneObject*> D3Scene::getObjectIterator(long mask) const {
+  return Iterator<D3SceneObject*>(new SceneObjectIterator(*(D3Scene*)this, mask));
 }
 
 bool D3Scene::isSceneObject(const D3SceneObject *obj) const {
@@ -598,11 +667,8 @@ bool D3Scene::isSceneObject(const D3SceneObject *obj) const {
 }
 
 void D3Scene::stopAllAnimations() {
-  for (size_t i = 0; i < m_objectArray.size(); i++) {
-    D3SceneObject *obj = m_objectArray[i];
-    if (obj->getType() == SOTYPE_ANIMATEDOBJECT) {
-      ((D3AnimatedSurface*)obj)->stopAnimation();
-    }
+  for(Iterator<D3SceneObject*> it = getObjectIterator(OBJMASK_ANIMATEDOBJECT); it.hasNext();) {
+    ((D3AnimatedSurface*)it.next())->stopAnimation();
   }
 }
 

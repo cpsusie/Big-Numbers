@@ -92,21 +92,21 @@ private:
       if(isRenderEnabled()) m_sceneContainer->render(flags);
     }
 
-    void rotateCurrentObjectFrwBckw(  double angle1 , double angle2);
-    void rotateCurrentObjectLeftRight(double angle) ;
-    void adjustCurrentObjectScale(int component, double factor);
+    void rotateCurrentVisualFrwBckw(  double angle1 , double angle2);
+    void rotateCurrentVisualLeftRight(double angle) ;
+    void adjustCurrentVisualScale(int component, double factor);
 
-    void moveCurrentObjectXY(CPoint pt);
-    void moveCurrentObjectXZ(CPoint pt);
+    void moveCurrentSceneObjectXY(CPoint pt);
+    void moveCurrentSceneObjectXZ(CPoint pt);
 
-    D3DXVECTOR3 getCurrentObjectPos();
-    void        setCurrentObjectPos(        const D3DXVECTOR3 &pos);
-    void        setCurrentObjectOrientation(const D3DXVECTOR3 &dir, const D3DXVECTOR3 &up);
-    void        setCurrentObjectScale(      const D3DXVECTOR3 &pos);
+    D3DXVECTOR3 getCurrentSceneObjectPos();
+    void        setCurrentSceneObjectPos(   const D3DXVECTOR3 &pos);
+    void        setCurrentVisualOrientation(const D3DXVECTOR3 &dir, const D3DXVECTOR3 &up);
+    void        setCurrentVisualScale(      const D3DXVECTOR3 &pos);
     void        resetCenterOfRotation();
     void        setCenterOfRotation();
     inline D3DXVECTOR3  getCenterOfRotation() const {
-      return (getCurrentVisualObject() == m_centerOfRotation.m_obj) ? m_centerOfRotation.m_pos : D3DXORIGIN;
+      return (getCurrentVisual() == m_centerOfRotation.m_obj) ? m_centerOfRotation.m_pos : D3DXORIGIN;
     }
     void walkWithCamera(       double dist   , double angle);
     void sidewalkWithCamera(   double upDist , double rightDist);
@@ -220,16 +220,26 @@ public:
     inline bool isEnabled() const {
       return m_stateFlags.contains(SE_ENABLED);
     }
-    void               setCurrentObject(D3SceneObject *obj);
+    void                  setCurrentSceneObject(D3SceneObject *obj);
 
-    inline D3SceneObject *getCurrentObject() const {
+    inline D3SceneObject *getCurrentSceneObject() const {
       return m_currentSceneObject;
     }
-    // Return NULL, if type not {SOTYPE_VISUALOBJECT, SOTYPE_ANIMATEDOBJECT, }
-    D3SceneObject     *getCurrentVisualObject() const;
-    D3AnimatedSurface *getCurrentAnimatedobject() const;
+    // Return NULL, if m_currentSceneObject->type not in {SOTYPE_VISUALOBJECT, SOTYPE_ANIMATEDOBJECT, }
+    D3SceneObject     *getCurrentVisual() const;
+    // return NULL, if m_currentSceneObject->type not SOTYPE_ANIMATEDOBJECT
+    D3AnimatedSurface *getCurrentAnimatedObject() const;
     inline const D3DXVECTOR3 &getPickedPoint() const {
       return m_pickedPoint;
+    }
+    inline bool hasCurrentSceneObject() const {
+      return getCurrentSceneObject() != NULL;
+    }
+    inline bool hasCurrentVisual() const {
+      return getCurrentVisual() != NULL;
+    }
+    inline bool hasCurrentAnimatedObject() const {
+      return getCurrentAnimatedObject() != NULL;
     }
     inline const D3Ray &getPickedRay() const {
       return m_pickedRay;

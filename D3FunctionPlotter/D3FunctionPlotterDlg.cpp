@@ -349,7 +349,7 @@ void CD3FunctionPlotterDlg::setCalculatedObject(D3SceneObject *obj, PersistentDa
     }
     m_scene.addSceneObject(obj);
   }
-  m_editor.setCurrentObject(obj);
+  m_editor.setCurrentSceneObject(obj);
 }
 
 D3SceneObject *CD3FunctionPlotterDlg::getCalculatedObject() const {
@@ -397,7 +397,7 @@ LRESULT CD3FunctionPlotterDlg::OnMsgKillThread(WPARAM wp, LPARAM lp) {
 
 void CD3FunctionPlotterDlg::killThread(bool showCreateSurface) {
   if(hasThread()) {
-    m_editor.setCurrentObject(NULL);
+    m_editor.setCurrentSceneObject(NULL);
     m_scene.removeAllSceneObjects();
     m_debugThread->removePropertyChangeListener(this);
     if(m_debugThread->isOK() && showCreateSurface) {
@@ -432,13 +432,13 @@ LRESULT CD3FunctionPlotterDlg::OnMsgThreadRunning(WPARAM wp, LPARAM lp) {
     if(newRunning) {
       D3SceneObject *obj = m_debugThread->getSceneObject();
       if(obj) {
-        m_editor.setCurrentObject(NULL);
+        m_editor.setCurrentSceneObject(NULL);
         m_scene.removeSceneObject(obj);
       }
     } else if(isThreadStopped()) {
       D3SceneObject *obj = m_debugThread->getSceneObject();
       m_scene.addSceneObject(obj);
-      m_editor.setCurrentObject(obj);
+      m_editor.setCurrentSceneObject(obj);
     } else if(isThreadFinished()) {
       asyncKillThread();
     }

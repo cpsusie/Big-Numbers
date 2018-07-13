@@ -38,12 +38,12 @@ typedef enum {
  ,SOTYPE_ANIMATEDOBJECT
 } SceneObjectType;
 
-#define PICK_MASK(type) (1 << (type))
+#define OBJTYPE_MASK(type) (1 << (type))
 
-#define PICK_VISUALOBJECT   PICK_MASK(SOTYPE_VISUALOBJECT  )
-#define PICK_LIGHTCONTROL   PICK_MASK(SOTYPE_LIGHTCONTROL  )
-#define PICK_ANIMATEDOBJECT PICK_MASK(SOTYPE_ANIMATEDOBJECT)
-#define PICK_ALL            (-1)
+#define OBJMASK_VISUALOBJECT   OBJTYPE_MASK(SOTYPE_VISUALOBJECT  )
+#define OBJMASK_LIGHTCONTROL   OBJTYPE_MASK(SOTYPE_LIGHTCONTROL  )
+#define OBJMASK_ANIMATEDOBJECT OBJTYPE_MASK(SOTYPE_ANIMATEDOBJECT)
+#define OBJMASK_ALL            (-1)
 
 // Informarmation about where a ray intersects a mesh
 class D3PickedInfo {
@@ -127,6 +127,7 @@ class D3Scene : public PropertyContainer
 {
 private:
   static const D3PosDirUpScale s_pdusOrigo;
+  friend class SceneObjectIterator;
 
   HWND                              m_hwnd;
   LPDIRECT3DDEVICE                  m_device;
@@ -174,6 +175,7 @@ private:
   // Remove and destroy all allocated lightcontrols
   // The lights will remain in their current states
   void destroyAllLightControls();
+  void removeSceneObject(size_t index);
 public:
   D3Scene();
   ~D3Scene();
@@ -190,9 +192,7 @@ public:
   // Does NOT delete the object
   void removeSceneObject(D3SceneObject *obj);
   void removeAllSceneObjects();
-  Iterator<D3SceneObject*> getObjectIterator() const {
-    return ((D3Scene*)this)->m_objectArray.getIterator();
-  }
+  Iterator<D3SceneObject*> getObjectIterator(long mask = OBJMASK_ALL) const;
   bool isSceneObject(const D3SceneObject *obj) const;
   void stopAllAnimations();
   inline int getObjectCount() const {
@@ -385,19 +385,19 @@ public:
 // --------------------------- LIGHT ----------------------------
 
   void   setLight(            const LIGHT &param);
-  LIGHT  getLight(            UINT index) const;
+  LIGHT  getLight(            UINT lightIndex) const;
   const CompactArray<LIGHT> getAllLights() const;
-  inline D3DLIGHTTYPE getLightType(UINT index) const {
-    return getLight(index).Type;
+  inline D3DLIGHTTYPE getLightType(UINT lightIndex) const {
+    return getLight(lightIndex).Type;
   }
   int  addLight(                   const D3DLIGHT &light);
-  void removeLight(                UINT index);
-  void setLightEnabled(            UINT index, bool enabled);
-  inline bool isLightEnabled(      UINT index) const {
-    return m_lightsEnabled->contains(index);
+  void removeLight(                UINT lightIndex);
+  void setLightEnabled(            UINT lightIndex, bool enabled);
+  inline bool isLightEnabled(      UINT lightIndex) const {
+    return m_lightsEnabled->contains(lightIndex);
   }
-  inline bool isLightDefined(      UINT index) const {
-    return m_lightsDefined->contains(index);
+  inline bool isLightDefined(      UINT lightIndex) const {
+    return m_lightsDefined->contains(lightIndex);
   }
   inline const BitSet &getLightsDefined() const {
     return *m_lightsDefined;
@@ -409,7 +409,7 @@ public:
     return getLightsVisible().contains(index);
   }
   BitSet getLightsVisible() const;
-  D3LightControl *setLightControlVisible(UINT index, bool visible);
+  D3LightControl *setLightControlVisible(UINT lightIndex, bool visible);
 
   inline int getMaxLightCount() const {
     return m_maxLightCount;
@@ -420,9 +420,9 @@ public:
   inline int getLightEnabledCount() const {
     return (int)m_lightsEnabled->size();
   }
-  void   setLightDirection(        UINT index, const D3DXVECTOR3 &dir);
-  void   setLightPosition(         UINT index, const D3DXVECTOR3 &pos);
-  String getLightString(           UINT index) const;
+  void   setLightDirection(        UINT lightIndex, const D3DXVECTOR3 &dir);
+  void   setLightPosition(         UINT lightIndex, const D3DXVECTOR3 &pos);
+  String getLightString(           UINT lightIndex) const;
   String getLightString() const;
 
   static D3DLIGHT getDefaultLight(D3DLIGHTTYPE type = D3DLIGHT_DIRECTIONAL);
@@ -471,7 +471,7 @@ public:
   }
   D3Ray          getPickRay(     const CPoint &point) const;
   // if hitPoint != 0, then will receive point (in worldspace) of rays intersection with nearest object
-  D3SceneObject *getPickedObject(const CPoint &point, long mask = PICK_ALL, D3DXVECTOR3 *hitPoint = NULL, D3PickedInfo *info = NULL) const;
+  D3SceneObject *getPickedObject(const CPoint &point, long mask = OBJMASK_ALL, D3DXVECTOR3 *hitPoint = NULL, D3PickedInfo *info = NULL) const;
 
   LPDIRECT3DVERTEXBUFFER  allocateVertexBuffer(DWORD fvf , UINT count, UINT *bufferSize = NULL);
   LPDIRECT3DINDEXBUFFER   allocateIndexBuffer( bool int32, UINT count, UINT *bufferSize = NULL);

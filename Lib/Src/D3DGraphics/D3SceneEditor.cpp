@@ -130,10 +130,10 @@ void D3SceneEditor::OnLButtonDown(UINT nFlags, CPoint point) {
     break;
 
   default:
-    { D3SceneObject *pickedObj = getScene().getPickedObject(point, PICK_ALL, &m_pickedPoint, &m_pickedInfo);
+    { D3SceneObject *pickedObj = getScene().getPickedObject(point, OBJMASK_ALL, &m_pickedPoint, &m_pickedInfo);
       if(pickedObj == NULL) {
         if(m_currentControl != CONTROL_CAMERA_WALK) {
-          setCurrentObject(NULL);
+          setCurrentSceneObject(NULL);
           setCurrentControl(CONTROL_IDLE);
         } else {
           setMouseVisible(false);
@@ -141,7 +141,7 @@ void D3SceneEditor::OnLButtonDown(UINT nFlags, CPoint point) {
         }
         m_pickedInfo.clear();
       } else {
-        setCurrentObject(pickedObj);
+        setCurrentSceneObject(pickedObj);
         switch(pickedObj->getType()) {
         case SOTYPE_VISUALOBJECT  :
         case SOTYPE_ANIMATEDOBJECT:
@@ -175,12 +175,12 @@ void D3SceneEditor::OnLButtonUp(UINT nFlags, CPoint point) {
 void D3SceneEditor::OnContextMenu(CWnd *pwnd, CPoint point) {
   m_lastMouse = screenPTo3DP(point);
   m_pickedRay = getScene().getPickRay(m_lastMouse);
-  D3SceneObject *pickedObject = getScene().getPickedObject(m_lastMouse, PICK_ALL, &m_pickedPoint, &m_pickedInfo);
+  D3SceneObject *pickedObject = getScene().getPickedObject(m_lastMouse, OBJMASK_ALL, &m_pickedPoint, &m_pickedInfo);
   if(pickedObject == NULL) {
     OnContextMenuBackground(point);
     m_pickedInfo.clear();
   } else {
-    setCurrentObject(pickedObject);
+    setCurrentSceneObject(pickedObject);
     OnContextMenuSceneObject(point);
   }
 }
@@ -306,7 +306,7 @@ BOOL D3SceneEditor::PreTranslateMessage(MSG *pMsg) {
     default:
       if ((ID_SELECT_LIGHT0 <= pMsg->wParam) && (pMsg->wParam <= ID_SELECT_LIGHT20)) {
         const int index = (int)pMsg->wParam - ID_SELECT_LIGHT0;
-        setCurrentObject(getScene().setLightControlVisible(index, true));
+        setCurrentSceneObject(getScene().setLightControlVisible(index, true));
         return true;
       }
     }
@@ -319,33 +319,33 @@ BOOL D3SceneEditor::PreTranslateMessage(MSG *pMsg) {
 void D3SceneEditor::OnMouseMoveObjectPos(UINT nFlags, CPoint pt) {
   switch(nFlags & MK_CTRLSHIFT) {
   case 0           :
-    moveCurrentObjectXY(pt);
+    moveCurrentSceneObjectXY(pt);
     break;
   case MK_SHIFT    :
-    moveCurrentObjectXZ(pt);
+    moveCurrentSceneObjectXZ(pt);
     break;
   case MK_CONTROL  :
-    rotateCurrentObjectFrwBckw(double(pt.x - m_lastMouse.x) / 100.0
+    rotateCurrentVisualFrwBckw(double(pt.x - m_lastMouse.x) / 100.0
                               ,double(pt.y - m_lastMouse.y) / 100.0);
     break;
   case MK_CTRLSHIFT:
-    rotateCurrentObjectLeftRight(double(pt.x - m_lastMouse.x) / 100.0);
+    rotateCurrentVisualLeftRight(double(pt.x - m_lastMouse.x) / 100.0);
     break;
   }
 }
 
-void D3SceneEditor::moveCurrentObjectXY(CPoint pt) {
-  const D3DXVECTOR3 dp             = getCurrentObjectPos() - m_pickedPoint;
+void D3SceneEditor::moveCurrentSceneObjectXY(CPoint pt) {
+  const D3DXVECTOR3 dp             = getCurrentSceneObjectPos() - m_pickedPoint;
   const float       dist           = length(m_pickedPoint - m_pickedRay.m_orig);
   const D3Ray       newPickedRay   = getScene().getPickRay(pt);
   D3DXVECTOR3       newPickedPoint = newPickedRay.m_orig + newPickedRay.m_dir * dist;
-  setCurrentObjectPos(newPickedPoint + dp);
+  setCurrentSceneObjectPos(newPickedPoint + dp);
   m_pickedRay   = newPickedRay;
   m_pickedPoint = newPickedPoint;
 }
 
-void D3SceneEditor::moveCurrentObjectXZ(CPoint pt) {
-  const D3DXVECTOR3 dp             = getCurrentObjectPos() - m_pickedPoint;
+void D3SceneEditor::moveCurrentSceneObjectXZ(CPoint pt) {
+  const D3DXVECTOR3 dp             = getCurrentSceneObjectPos() - m_pickedPoint;
   const float       dist           = length(m_pickedPoint - m_pickedRay.m_orig);
   const D3Ray       newPickedRay   = getScene().getPickRay(pt);
   const D3Ray       ray1           = getScene().getPickRay(CPoint(pt.x,pt.y+1));
@@ -356,13 +356,13 @@ void D3SceneEditor::moveCurrentObjectXZ(CPoint pt) {
                                    + (float)(-dMouse.cy * dRaydPixel) * camPDUS.getDir()
                                    + (float)( dMouse.cx * dRaydPixel) * camPDUS.getRight();
 
-  setCurrentObjectPos(newPickedPoint + dp);
+  setCurrentSceneObjectPos(newPickedPoint + dp);
   m_pickedRay   = newPickedRay;
   m_pickedPoint = newPickedPoint;
 }
 
-D3DXVECTOR3 D3SceneEditor::getCurrentObjectPos() {
-  D3SceneObject *obj = getCurrentObject();
+D3DXVECTOR3 D3SceneEditor::getCurrentSceneObjectPos() {
+  D3SceneObject *obj = getCurrentSceneObject();
   assert(obj != NULL);
   switch(obj->getType()) {
   case SOTYPE_VISUALOBJECT  :
@@ -375,8 +375,8 @@ D3DXVECTOR3 D3SceneEditor::getCurrentObjectPos() {
   }
 }
 
-void D3SceneEditor::setCurrentObjectPos(const D3DXVECTOR3 &pos) {
-  D3SceneObject *obj = getCurrentObject();
+void D3SceneEditor::setCurrentSceneObjectPos(const D3DXVECTOR3 &pos) {
+  D3SceneObject *obj = getCurrentSceneObject();
   if(obj == NULL) return;
   switch(obj->getType()) {
   case SOTYPE_LIGHTCONTROL  :
@@ -392,8 +392,8 @@ void D3SceneEditor::setCurrentObjectPos(const D3DXVECTOR3 &pos) {
   }
 }
 
-void D3SceneEditor::setCurrentObjectOrientation(const D3DXVECTOR3 &dir, const D3DXVECTOR3 &up) {
-  D3SceneObject *obj = getCurrentVisualObject();
+void D3SceneEditor::setCurrentVisualOrientation(const D3DXVECTOR3 &dir, const D3DXVECTOR3 &up) {
+  D3SceneObject *obj = getCurrentVisual();
   if(obj == NULL) return;
   const D3DXVECTOR3 centerOfRot = getCenterOfRotation();
   if(centerOfRot == D3DXORIGIN) {
@@ -406,8 +406,8 @@ void D3SceneEditor::setCurrentObjectOrientation(const D3DXVECTOR3 &dir, const D3
   render(RENDER_ALL);
 }
 
-void D3SceneEditor::setCurrentObjectScale(const D3DXVECTOR3 &scale) {
-  D3SceneObject *obj = getCurrentVisualObject();
+void D3SceneEditor::setCurrentVisualScale(const D3DXVECTOR3 &scale) {
+  D3SceneObject *obj = getCurrentVisual();
   if(obj == NULL) return;
   obj->getPDUS().setScale(scale);
   render(RENDER_ALL);
@@ -416,43 +416,43 @@ void D3SceneEditor::setCurrentObjectScale(const D3DXVECTOR3 &scale) {
 void D3SceneEditor::OnMouseWheelObjectPos(UINT nFlags, short zDelta, CPoint pt) {
   switch(nFlags & MK_CTRLSHIFT) {
   case 0           :
-    { const D3DXVECTOR3 objPos = getCurrentObjectPos();
+    { const D3DXVECTOR3 objPos = getCurrentSceneObjectPos();
       const D3DXVECTOR3 dir    = objPos - getScene().getCameraPos();
       const float       dist   = length(dir);
       if(dist > 0) {
-        setCurrentObjectPos(objPos + unitVector(dir) * dist / 30.0 * (float)sign(zDelta));
+        setCurrentSceneObjectPos(objPos + unitVector(dir) * dist / 30.0 * (float)sign(zDelta));
       }
     }
     break;
   case MK_CONTROL  :
-    rotateCurrentObjectFrwBckw(0, (double)sign(zDelta) / -50.0);
+    rotateCurrentVisualFrwBckw(0, (double)sign(zDelta) / -50.0);
     break;
   case MK_SHIFT    :
-    rotateCurrentObjectFrwBckw((double)sign(zDelta) / -50, 0);
+    rotateCurrentVisualFrwBckw((double)sign(zDelta) / -50, 0);
     break;
   case MK_CTRLSHIFT:
-    rotateCurrentObjectLeftRight((double)sign(zDelta) / 50.0);
+    rotateCurrentVisualLeftRight((double)sign(zDelta) / 50.0);
     break;
   }
 }
 
-void D3SceneEditor::rotateCurrentObjectFrwBckw(double angle1, double angle2) {
-  D3SceneObject *obj = getCurrentVisualObject();
+void D3SceneEditor::rotateCurrentVisualFrwBckw(double angle1, double angle2) {
+  D3SceneObject *obj = getCurrentVisual();
   if(obj == NULL) return;
   D3PosDirUpScale &pdus = obj->getPDUS();
   const D3DXVECTOR3 cameraUp    = getScene().getCameraUp();
   const D3DXVECTOR3 cameraRight = getScene().getCameraRight();
   const D3DXVECTOR3 newDir      = rotate(rotate(pdus.getDir(),cameraUp,angle1),cameraRight,angle2);
   const D3DXVECTOR3 newUp       = rotate(rotate(pdus.getUp() ,cameraUp,angle1),cameraRight,angle2);
-  setCurrentObjectOrientation(newDir, newUp);
+  setCurrentVisualOrientation(newDir, newUp);
 }
 
-void D3SceneEditor::rotateCurrentObjectLeftRight(double angle) {
-  D3SceneObject *obj = getCurrentVisualObject();
+void D3SceneEditor::rotateCurrentVisualLeftRight(double angle) {
+  D3SceneObject *obj = getCurrentVisual();
   if(obj == NULL) return;
   D3PosDirUpScale &pdus = obj->getPDUS();
   const D3DXVECTOR3 cameraDir = getScene().getCameraDir();
-  setCurrentObjectOrientation(rotate(pdus.getDir(),cameraDir, angle)
+  setCurrentVisualOrientation(rotate(pdus.getDir(),cameraDir, angle)
                              ,rotate(pdus.getUp(), cameraDir, angle));
 }
 
@@ -464,24 +464,24 @@ void D3SceneEditor::rotateCurrentObjectLeftRight(double angle) {
 void D3SceneEditor::OnMouseWheelObjectScale(UINT nFlags, short zDelta, CPoint pt) {
   const double factor = (1.0+(double)sign(zDelta)*0.04);
   switch(nFlags & MK_CTRLSHIFT) {
-  case 0           : adjustCurrentObjectScale(VADJUST_ALL, factor); break;
-  case MK_CONTROL  : adjustCurrentObjectScale(VADJUST_X  , factor); break;
-  case MK_SHIFT    : adjustCurrentObjectScale(VADJUST_Y  , factor); break;
-  case MK_CTRLSHIFT: adjustCurrentObjectScale(VADJUST_Z  , factor); break;
+  case 0           : adjustCurrentVisualScale(VADJUST_ALL, factor); break;
+  case MK_CONTROL  : adjustCurrentVisualScale(VADJUST_X  , factor); break;
+  case MK_SHIFT    : adjustCurrentVisualScale(VADJUST_Y  , factor); break;
+  case MK_CTRLSHIFT: adjustCurrentVisualScale(VADJUST_Z  , factor); break;
   }
 }
 
 void D3SceneEditor::OnMouseWheelAnimationSpeed(UINT nFlags, short zDelta, CPoint pt) {
   const double factor = (1.0+(double)sign(zDelta)*0.04);
-  D3AnimatedSurface *obj = getCurrentAnimatedobject();
+  D3AnimatedSurface *obj = getCurrentAnimatedObject();
   if(obj && obj->isRunning()) {
     obj->scaleSpeed(factor);
     render(RENDER_INFO);
   }
 }
 
-void D3SceneEditor::adjustCurrentObjectScale(int component, double factor) {
-  D3SceneObject *obj = getCurrentVisualObject();
+void D3SceneEditor::adjustCurrentVisualScale(int component, double factor) {
+  D3SceneObject *obj = getCurrentVisual();
   if(obj == NULL) return;
   D3PosDirUpScale &pdus = obj->getPDUS();
   D3DXVECTOR3 scale = pdus.getScale();
@@ -494,7 +494,7 @@ void D3SceneEditor::adjustCurrentObjectScale(int component, double factor) {
   if(component & VADJUST_Z) {
     scale.z *= (float)factor;
   }
-  setCurrentObjectScale(scale);
+  setCurrentVisualScale(scale);
 }
 
 // ------------------------------------- controlling camera -----------------------------------------
@@ -593,10 +593,10 @@ void D3SceneEditor::OnMouseMoveLightPoint(UINT nFlags, CPoint pt) {
   assert(lc && (lc->getLightType() == D3DLIGHT_POINT));
   switch(nFlags & MK_CTRLSHIFT) {
   case 0           :
-    moveCurrentObjectXY(pt);
+    moveCurrentSceneObjectXY(pt);
     break;
   case MK_SHIFT    :
-    moveCurrentObjectXZ(pt);
+    moveCurrentSceneObjectXZ(pt);
     break;
   case MK_CONTROL  :
     break;
@@ -614,10 +614,10 @@ void D3SceneEditor::OnMouseMoveLightSpot(UINT nFlags, CPoint pt) {
 
   switch(nFlags & MK_CTRLSHIFT) {
   case 0           :
-    moveCurrentObjectXY(pt);
+    moveCurrentSceneObjectXY(pt);
     break;
   case MK_SHIFT    :
-    moveCurrentObjectXZ(pt);
+    moveCurrentSceneObjectXZ(pt);
     break;
   case MK_CONTROL  :
     { const double angle1 = (double)(pt.x - m_lastMouse.x) / 100.0;
@@ -747,7 +747,7 @@ void D3SceneEditor::addLight(D3DLIGHTTYPE type) {
   getScene().setLightControlVisible(getScene().addLight(lp), true);
 }
 
-void D3SceneEditor::setCurrentObject(D3SceneObject *obj) {
+void D3SceneEditor::setCurrentSceneObject(D3SceneObject *obj) {
   m_currentSceneObject = obj;
   const D3LightControl *lc = getCurrentLightControl();
   if(m_propertyDialogMap.isDialogVisible()) {
@@ -760,39 +760,34 @@ void D3SceneEditor::setCurrentObject(D3SceneObject *obj) {
   render(RENDER_INFO);
 }
 
-D3SceneObject *D3SceneEditor::getCurrentVisualObject() const {
-  if(m_currentSceneObject == NULL) {
-    return NULL;
-  }
-  switch(m_currentSceneObject->getType()) {
+D3SceneObject *D3SceneEditor::getCurrentVisual() const {
+  D3SceneObject *obj = getCurrentSceneObject();
+  if(obj == NULL) return NULL;
+  switch(obj->getType()) {
   case SOTYPE_ANIMATEDOBJECT:
   case SOTYPE_VISUALOBJECT  :
-    return m_currentSceneObject;
+    return getCurrentSceneObject();
   default:
     return NULL;
   }
 }
 
-D3AnimatedSurface *D3SceneEditor::getCurrentAnimatedobject() const {
-  if((m_currentSceneObject == NULL)
-  || (m_currentSceneObject->getType() != SOTYPE_ANIMATEDOBJECT)) {
-    return NULL;
-  }
-  return (D3AnimatedSurface*)m_currentSceneObject;
+D3AnimatedSurface *D3SceneEditor::getCurrentAnimatedObject() const {
+  D3SceneObject *obj = getCurrentVisual();
+  if((obj == NULL) || (obj->getType() != SOTYPE_ANIMATEDOBJECT)) return NULL;
+  return (D3AnimatedSurface*)obj;
 }
 
 D3LightControl *D3SceneEditor::getCurrentLightControl() {
-  if((m_currentSceneObject == NULL) || (m_currentSceneObject->getType() != SOTYPE_LIGHTCONTROL)) {
-    return NULL;
-  }
-  return (D3LightControl*)m_currentSceneObject;
+  D3SceneObject *obj = getCurrentSceneObject();
+  if((obj == NULL) || (obj->getType() != SOTYPE_LIGHTCONTROL)) return NULL;
+  return (D3LightControl*)obj;
 }
 
 const D3LightControl *D3SceneEditor::getCurrentLightControl() const {
-  if((m_currentSceneObject == NULL) || (m_currentSceneObject->getType() != SOTYPE_LIGHTCONTROL)) {
-    return NULL;
-  }
-  return (D3LightControl*)m_currentSceneObject;
+  D3SceneObject *obj = getCurrentSceneObject();
+  if((obj == NULL) || (obj->getType() != SOTYPE_LIGHTCONTROL)) return NULL;
+  return (D3LightControl*)obj;
 }
 
 void D3SceneEditor::setLightControlsVisible(bool visible) {
@@ -835,7 +830,7 @@ void D3SceneEditor::setSpotToPointAt(CPoint point) {
     return;
   }
   D3DXVECTOR3 pointInSpace;
-  D3SceneObject *obj = getScene().getPickedObject(point, ~PICK_LIGHTCONTROL, &pointInSpace);
+  D3SceneObject *obj = getScene().getPickedObject(point, ~OBJMASK_LIGHTCONTROL, &pointInSpace);
   if(obj == NULL) return;
   LIGHT param = lc->getLight();
   param.Direction = unitVector(pointInSpace - param.Position);
@@ -936,7 +931,7 @@ void D3SceneEditor::OnContextMenuVisualObject(CPoint point) {
     break;
 
   case SOTYPE_ANIMATEDOBJECT:
-    { D3AnimatedSurface *obj = getCurrentAnimatedobject();
+    { D3AnimatedSurface *obj = getCurrentAnimatedObject();
       if(obj->isRunning()) {
         removeMenuItem(menu, ID_OBJECT_STARTANIMATION   );
         removeMenuItem(menu, ID_OBJECT_STARTBCKANIMATION);
@@ -1023,7 +1018,7 @@ void D3SceneEditor::setCurrentControl(CurrentObjectControl control) {
     render(RENDER_INFO);
     break;
   case CONTROL_CAMERA_WALK     :
-    setCurrentObject(NULL);
+    setCurrentSceneObject(NULL);
     setWindowCursor(*get3DWindow(), MAKEINTRESOURCE(OCR_NORMAL));
     render(RENDER_INFO);
     break;
@@ -1078,19 +1073,19 @@ static void setCurrentAnimationState(D3AnimatedSurface *obj, AnimationState newS
 }
 
 void D3SceneEditor::OnObjectStartAnimation() {
-  setCurrentAnimationState(getCurrentAnimatedobject(), ANIMATION_FORWARD);
+  setCurrentAnimationState(getCurrentAnimatedObject(), ANIMATION_FORWARD);
 }
 
 void D3SceneEditor::OnObjectStartBckAnimation() {
-  setCurrentAnimationState(getCurrentAnimatedobject(), ANIMATION_BACKWARDS);
+  setCurrentAnimationState(getCurrentAnimatedObject(), ANIMATION_BACKWARDS);
 }
 
 void D3SceneEditor::OnObjectStartAltAnimation() {
-  setCurrentAnimationState(getCurrentAnimatedobject(), ANIMATION_ALTERNATING);
+  setCurrentAnimationState(getCurrentAnimatedObject(), ANIMATION_ALTERNATING);
 }
 
 void D3SceneEditor::OnObjectReverseAnimation() {
-  D3AnimatedSurface *obj = getCurrentAnimatedobject();
+  D3AnimatedSurface *obj = getCurrentAnimatedObject();
   if((obj == NULL) || !obj->isRunning()) return;
   switch(obj->getAnimationType()) {
   case ANIMATE_FORWARD    : setCurrentAnimationState(obj, ANIMATION_BACKWARDS); break;
@@ -1099,14 +1094,14 @@ void D3SceneEditor::OnObjectReverseAnimation() {
 }
 
 void D3SceneEditor::OnObjectStopAnimation() {
-  setCurrentAnimationState(getCurrentAnimatedobject(), ANIMATION_STOPPED);
+  setCurrentAnimationState(getCurrentAnimatedObject(), ANIMATION_STOPPED);
 }
 
 void D3SceneEditor::OnObjectRemove() {
   if(m_currentSceneObject == NULL) return;
   getScene().removeSceneObject(m_currentSceneObject);
   SAFEDELETE(m_currentSceneObject);
-  setCurrentObject(NULL);
+  setCurrentSceneObject(NULL);
   render(RENDER_ALL);
 }
 
@@ -1156,7 +1151,7 @@ void D3SceneEditor::OnLightRemove() {
   if(lc == NULL) return;
   const int lightIndex = lc->getLightIndex();
   getScene().removeLight(lightIndex);
-  setCurrentObject(NULL);
+  setCurrentSceneObject(NULL);
   render(RENDER_ALL);
 }
 
@@ -1188,12 +1183,12 @@ void D3SceneEditor::OnEditBackgroundColor() {
   setCurrentControl(CONTROL_IDLE);
 }
 
-void D3SceneEditor::OnFillmodePoint()     { getCurrentObject()->setFillMode(D3DFILL_POINT     ); render(RENDER_ALL); }
-void D3SceneEditor::OnFillmodeWireframe() { getCurrentObject()->setFillMode(D3DFILL_WIREFRAME ); render(RENDER_ALL); }
-void D3SceneEditor::OnFillmodeSolid()     { getCurrentObject()->setFillMode(D3DFILL_SOLID     ); render(RENDER_ALL); }
-void D3SceneEditor::OnShadingFlat()       { getCurrentObject()->setShadeMode(D3DSHADE_FLAT    ); render(RENDER_ALL); }
-void D3SceneEditor::OnShadingGouraud()    { getCurrentObject()->setShadeMode(D3DSHADE_GOURAUD ); render(RENDER_ALL); }
-void D3SceneEditor::OnShadingPhong()      { getCurrentObject()->setShadeMode(D3DSHADE_PHONG   ); render(RENDER_ALL); }
+void D3SceneEditor::OnFillmodePoint()     { getCurrentSceneObject()->setFillMode(D3DFILL_POINT     ); render(RENDER_ALL); }
+void D3SceneEditor::OnFillmodeWireframe() { getCurrentSceneObject()->setFillMode(D3DFILL_WIREFRAME ); render(RENDER_ALL); }
+void D3SceneEditor::OnFillmodeSolid()     { getCurrentSceneObject()->setFillMode(D3DFILL_SOLID     ); render(RENDER_ALL); }
+void D3SceneEditor::OnShadingFlat()       { getCurrentSceneObject()->setShadeMode(D3DSHADE_FLAT    ); render(RENDER_ALL); }
+void D3SceneEditor::OnShadingGouraud()    { getCurrentSceneObject()->setShadeMode(D3DSHADE_GOURAUD ); render(RENDER_ALL); }
+void D3SceneEditor::OnShadingPhong()      { getCurrentSceneObject()->setShadeMode(D3DSHADE_PHONG   ); render(RENDER_ALL); }
 
 void D3SceneEditor::setCoordinateSystemVisible(bool visible) {
   if(visible) {
@@ -1314,7 +1309,9 @@ String D3SceneEditor::toString() const {
     }
   }
   if (getCenterOfRotation() != D3DXORIGIN) {
-    result += format(_T("\nCenter of rotation:%s"), ::toString(getCenterOfRotation()).cstr());
+    result += format(_T("\nCenter of rotation:MP:%s WP:%s")
+                    ,::toString(getCenterOfRotation()).cstr()
+                    );
   }
   switch(m_propertyDialogMap.getVisibleDialogId()) {
   case SP_LIGHTPARAMETERS   :
@@ -1352,7 +1349,7 @@ String D3SceneEditor::toString() const {
       return result;
     }
   case CONTROL_ANIMATION_SPEED       :
-    { D3AnimatedSurface *obj = getCurrentAnimatedobject();
+    { D3AnimatedSurface *obj = getCurrentAnimatedObject();
       if(obj) {
         result += format(_T("\nFrames/sec:%.2lf"), obj->getFramePerSec());
       }
