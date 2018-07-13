@@ -127,7 +127,7 @@ class D3Scene : public PropertyContainer
 {
 private:
   static const D3PosDirUpScale s_pdusOrigo;
-  friend class SceneObjectIterator;
+  friend class D3SceneObjectIterator;
 
   HWND                              m_hwnd;
   LPDIRECT3DDEVICE                  m_device;

@@ -626,6 +626,7 @@
     <ClCompile Include="D3CoordinateSystem.cpp" />
     <ClCompile Include="D3PDUS.cpp" />
     <ClCompile Include="D3SceneEditor.cpp" />
+    <ClCompile Include="D3SceneObjectIterator.cpp" />
     <ClCompile Include="D3SceneRenderState.cpp" />
     <ClCompile Include="FVF.cpp" />
     <ClCompile Include="IsoCurve.cpp" />
