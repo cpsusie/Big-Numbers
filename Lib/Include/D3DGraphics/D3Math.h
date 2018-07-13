@@ -48,6 +48,8 @@ D3DXVECTOR3 operator*(            const D3DXVECTOR3 &v, const D3DXMATRIX  &m);
 float       det(                  const D3DXMATRIX  &m);
 String      toString(             const D3DXMATRIX  &m, int dec = 3);
 
+#define D3DXORIGIN D3DXVECTOR3(0,0,0)
+
 inline float dist(const D3DXVECTOR3 &p1, const D3DXVECTOR3 &p2) {
   return length(p1 - p2);
 }
@@ -294,6 +296,10 @@ public:
   }
   inline D3DXMATRIX        getRotationMatrix() const {
     return D3PosDirUpScale(*this).setPos(D3DXVECTOR3(0,0,0)).setScale(D3DXVECTOR3(1,1,1)).getWorldMatrix();
+  }
+  inline D3DXQUATERNION    getQuarternion() const {
+    D3DXQUATERNION result;
+    return *D3DXQuaternionRotationMatrix(&result, &getRotationMatrix());
   }
   inline D3DXMATRIX        getScaleMatrix()    const {
     D3DXMATRIX result;

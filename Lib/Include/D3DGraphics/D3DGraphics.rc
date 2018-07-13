@@ -189,10 +189,8 @@ BEGIN
     POPUP "Visual object contextmenu"
     BEGIN
         MENUITEM "Move && Rotate",              ID_CONTROL_OBJECT_POS
-        MENUITEM "Move && Rotate (keep focus)", ID_CONTROL_OBJECT_KEEPFOCUS
-        MENUITEM "Move camera (keep focus)",    ID_CONTROL_CAMERA_KEEPFOCUS
         MENUITEM "Scale",                       ID_CONTROL_OBJECT_SCALE
-        MENUITEM "Scale (keep focus)",          ID_CONTROL_OBJECT_SCALE_KEEPFOCUS
+        MENUITEM "Set center of rotation",      ID_OBJECT_SETCENTEROFROTATION
         MENUITEM "Reset scale",                 ID_OBJECT_RESETSCALE
         MENUITEM SEPARATOR
         POPUP "Fillmode"

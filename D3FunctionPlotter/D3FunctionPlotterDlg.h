@@ -117,7 +117,6 @@ protected:
     afx_msg void OnFileRead3DPointsFromFile();
     afx_msg void OnFileReadObjFile();
     afx_msg void OnFileExit();
-    afx_msg void OnFileNexttry();
     afx_msg void OnViewShow3dinfo();
     afx_msg void OnDebugGo();
     afx_msg void OnDebugSinglestep();

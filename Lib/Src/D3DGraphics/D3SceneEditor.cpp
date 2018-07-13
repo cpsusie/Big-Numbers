@@ -220,15 +220,6 @@ BOOL D3SceneEditor::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) {
   case CONTROL_OBJECT_SCALE          :
     OnMouseWheelObjectScale(         nFlags, zDelta, pt);
     return TRUE;
-  case CONTROL_OBJECT_POS_KEEPFOCUS  :
-    OnMouseWheelObjectPosKeepFocus(  nFlags, zDelta, pt);
-    return TRUE;
-  case CONTROL_OBJECT_SCALE_KEEPFOCUS:
-    OnMouseWheelObjectScaleKeepFocus(nFlags, zDelta, pt);
-    return TRUE;
-  case CONTROL_CAMERA_KEEPFOCUS      :
-    OnMouseWheelCameraKeepFocus(     nFlags, zDelta, pt);
-    return TRUE;
   case CONTROL_ANIMATION_SPEED       :
     OnMouseWheelAnimationSpeed(      nFlags, zDelta, pt);
     return TRUE;
@@ -272,12 +263,11 @@ BOOL D3SceneEditor::PreTranslateMessage(MSG *pMsg) {
     switch (pMsg->wParam) {
     case ID_CONTROL_OBJECT_POS            : OnControlObjectPos()                ; return true;
     case ID_CONTROL_OBJECT_SCALE          : OnControlObjectScale()              ; return true;
-    case ID_CONTROL_OBJECT_KEEPFOCUS      : OnControlObjectKeepFocus()          ; return true;
-    case ID_CONTROL_OBJECT_SCALE_KEEPFOCUS: OnControlObjectScaleKeepFocus()     ; return true;
     case ID_CONTROL_OBJECT_MOVEROTATE     : OnControlObjectMoveRotate()         ; return true;
     case ID_OBJECT_RESETSCALE             : OnObjectResetScale()                ; return true;
     case ID_OBJECT_ADJUSTMATERIAL         : OnObjectEditMaterial()              ; return true;
     case ID_OBJECT_REMOVE                 : OnObjectRemove()                    ; return true;
+    case ID_OBJECT_SETCENTEROFROTATION    : OnObjectSetCenterOfRotation()       ; return true;
     case ID_OBJECT_STARTANIMATION         : OnObjectStartAnimation()            ; return true;
     case ID_OBJECT_STARTBCKANIMATION      : OnObjectStartBckAnimation()         ; return true;
     case ID_OBJECT_STARTALTANIMATION      : OnObjectStartAltAnimation()         ; return true;
@@ -285,7 +275,6 @@ BOOL D3SceneEditor::PreTranslateMessage(MSG *pMsg) {
     case ID_OBJECT_STOPANIMATION          : OnObjectStopAnimation()             ; return true;
     case ID_OBJECT_CONTROL_SPEED          : OnObjectControlSpeed()              ; return true;
     case ID_CONTROL_CAMERA_WALK           : OnControlCameraWalk()               ; return true;
-    case ID_CONTROL_CAMERA_KEEPFOCUS      : OnControlCameraKeepFocus()          ; return true;
     case ID_EDIT_AMBIENTLIGHT             : OnEditAmbientLight()                ; return true;
     case ID_EDIT_BACKGROUNDCOLOR          : OnEditBackgroundColor()             ; return true;
     case ID_FILLMODE_POINT                : OnFillmodePoint()                   ; return true;
@@ -406,7 +395,14 @@ void D3SceneEditor::setCurrentObjectPos(const D3DXVECTOR3 &pos) {
 void D3SceneEditor::setCurrentObjectOrientation(const D3DXVECTOR3 &dir, const D3DXVECTOR3 &up) {
   D3SceneObject *obj = getCurrentVisualObject();
   if(obj == NULL) return;
-  obj->getPDUS().setOrientation(dir, up);
+  const D3DXVECTOR3 centerOfRot = getCenterOfRotation();
+  if(centerOfRot == D3DXORIGIN) {
+    obj->getPDUS().setOrientation(dir, up);
+  } else {
+    obj->getPDUS().setOrientation(dir, up);
+//    D3PosDirUpScale &pdus = obj->getPDUS();
+//    setCurrentObjectPos(centerOfRot - pdus.getRotationMatrix() * rotp);
+  }
   render(RENDER_ALL);
 }
 
@@ -475,45 +471,6 @@ void D3SceneEditor::OnMouseWheelObjectScale(UINT nFlags, short zDelta, CPoint pt
   }
 }
 
-void D3SceneEditor::OnMouseWheelObjectPosKeepFocus(UINT nFlags, short zDelta, CPoint pt) {
-  D3SceneObject *obj = getCurrentVisualObject();
-  if(obj == NULL) return;
-  D3PosDirUpScale &pdus = obj->getPDUS();
-
-  switch(nFlags & MK_CTRLSHIFT) {
-  case 0           :
-    { const D3DXVECTOR3 camPos  = getScene().getCameraPos();
-      const float       dist    = length(m_focusPoint - camPos);
-      D3DXVECTOR3       dp      = pdus.getPos() - m_focusPoint;
-      m_focusPoint = camPos + (float)(dist * (1.0 - (float)sign(zDelta)/30)) * getScene().getCameraDir();
-      setCurrentObjectPos(m_focusPoint + dp);
-    }
-    break;
-  case MK_CONTROL  :
-  case MK_SHIFT    :
-  case MK_CTRLSHIFT:
-    { disableRender();
-      const D3DXVECTOR3 objFocus = invers(pdus.getRotationMatrix()) * (m_focusPoint - pdus.getPos());
-      OnMouseWheelObjectPos(nFlags, zDelta, pt);
-      enableRender();
-      setCurrentObjectPos(m_focusPoint - pdus.getRotationMatrix() * objFocus);
-    }
-    break;
-  }
-}
-
-void D3SceneEditor::OnMouseWheelObjectScaleKeepFocus(UINT nFlags, short zDelta, CPoint pt) {
-  D3SceneObject *obj = getCurrentVisualObject();
-  if(obj == NULL) return;
-  D3PosDirUpScale &pdus = obj->getPDUS();
-
-  disableRender();
-  const D3DXVECTOR3 objFocus = invers(pdus.getScaleMatrix()) * (m_focusPoint - pdus.getPos());
-  OnMouseWheelObjectScale(nFlags, zDelta, pt);
-  enableRender();
-  setCurrentObjectPos(m_focusPoint - pdus.getScaleMatrix() * objFocus);
-}
-
 void D3SceneEditor::OnMouseWheelAnimationSpeed(UINT nFlags, short zDelta, CPoint pt) {
   const double factor = (1.0+(double)sign(zDelta)*0.04);
   D3AnimatedSurface *obj = getCurrentAnimatedobject();
@@ -575,35 +532,6 @@ void D3SceneEditor::OnMouseWheelCameraWalk( UINT nFlags, short zDelta, CPoint pt
       const float d = ((a > D3DX_PI/2) ? (D3DX_PI - a) : a) / (D3DX_PI/2);
       getScene().setViewAngel(a + d * sign(zDelta) * 0.04f);
     }
-    break;
-  }
-}
-
-void D3SceneEditor::OnMouseWheelCameraKeepFocus(UINT nFlags, short zDelta, CPoint pt) {
-  const D3DXVECTOR3     &center  = m_focusPoint;
-        D3PosDirUpScale  camPDUS = getScene().getCameraPDUS();
-  const float            radius  = length(center - camPDUS.getPos());
-
-  switch(nFlags & MK_CTRLSHIFT) {
-  case 0           :
-    getScene().setCameraPos(camPDUS.getPos() + camPDUS.getDir() * radius / 30.0f * (float)sign(zDelta));
-    break;
-  case MK_CONTROL  :
-    {       D3DXVECTOR3 newPos = camPDUS.getPos() + unitVector(camPDUS.getUp()) * radius / 20.0f * (float)sign(zDelta);
-      const D3DXVECTOR3 newDir = unitVector(center - newPos);
-      const D3DXVECTOR3 newUp  = crossProduct(camPDUS.getRight(), newDir);
-      getScene().setCameraPDUS(camPDUS.setPos(center - newDir * radius)
-                                      .setOrientation(newDir,newUp));
-    }
-    break;
-  case MK_SHIFT    :
-    { const D3DXVECTOR3 newPos = camPDUS.getPos() + unitVector(camPDUS.getRight()) * radius / 20.0f * (float)sign(zDelta);
-      const D3DXVECTOR3 newDir = unitVector(center - newPos);
-      getScene().setCameraPDUS(camPDUS.setPos(center - newDir * radius)
-                                      .setOrientation(newDir, camPDUS.getUp()));
-    }
-    break;
-  case MK_CTRLSHIFT:
     break;
   }
 }
@@ -832,7 +760,7 @@ void D3SceneEditor::setCurrentObject(D3SceneObject *obj) {
   render(RENDER_INFO);
 }
 
-D3SceneObject *D3SceneEditor::getCurrentVisualObject() {
+D3SceneObject *D3SceneEditor::getCurrentVisualObject() const {
   if(m_currentSceneObject == NULL) {
     return NULL;
   }
@@ -1029,7 +957,7 @@ void D3SceneEditor::OnContextMenuVisualObject(CPoint point) {
   if(!m_currentSceneObject->hasFillMode()) {
     removeSubMenuContainingId(menu, ID_FILLMODE_WIREFRAME);
   } else {
-    switch (m_currentSceneObject->getFillMode()) {
+    switch(m_currentSceneObject->getFillMode()) {
     case D3DFILL_SOLID     : removeMenuItem(menu, ID_FILLMODE_SOLID    ); break;
     case D3DFILL_WIREFRAME : removeMenuItem(menu, ID_FILLMODE_WIREFRAME); break;
     case D3DFILL_POINT     : removeMenuItem(menu, ID_FILLMODE_POINT    ); break;
@@ -1083,41 +1011,6 @@ void D3SceneEditor::OnControlObjectMoveRotate() {
   setCurrentControl(CONTROL_OBJECT_POS);
 }
 
-void D3SceneEditor::OnControlObjectKeepFocus() {
-  if(moveLastMouseToFocusPoint()) {
-    setCurrentControl(CONTROL_OBJECT_POS_KEEPFOCUS);
-  }
-}
-
-void D3SceneEditor::OnControlObjectScaleKeepFocus() {
-  if(moveLastMouseToFocusPoint()) {
-    setCurrentControl(CONTROL_OBJECT_SCALE_KEEPFOCUS);
-  }
-}
-
-bool D3SceneEditor::moveLastMouseToFocusPoint() {
-  D3DXVECTOR3 hitPoint;
-  D3SceneObject *obj = getScene().getPickedObject(m_lastMouse, ~PICK_LIGHTCONTROL, &hitPoint);
-  if((obj == NULL) || (obj != m_currentSceneObject)) {
-    return false;
-  }
-
-  const D3DXVECTOR3 dp       = obj->getPos() - hitPoint;
-  const D3DXVECTOR3 camPos   = getScene().getCameraPos();
-  const float       distance = length(camPos - hitPoint);
-  m_focusPoint = camPos + distance * getScene().getCameraDir();
-
-  obj->setPos(m_focusPoint + dp);
-  return true;
-}
-
-void D3SceneEditor::OnControlCameraKeepFocus() {
-  D3SceneObject *obj = getScene().getPickedObject(m_lastMouse, ~PICK_LIGHTCONTROL, &m_focusPoint, &m_pickedInfo);
-  if(obj == NULL) return;
-  getScene().setCameraLookAt(m_focusPoint);
-  setCurrentControl(CONTROL_CAMERA_KEEPFOCUS);
-}
-
 void D3SceneEditor::OnObjectControlSpeed() {
   setCurrentControl(CONTROL_ANIMATION_SPEED);
 }
@@ -1129,9 +1022,6 @@ void D3SceneEditor::setCurrentControl(CurrentObjectControl control) {
     setWindowCursor(*get3DWindow(), MAKEINTRESOURCE(OCR_HAND));
     render(RENDER_INFO);
     break;
-  case CONTROL_CAMERA_KEEPFOCUS:
-//    showInfo(EMPTYSTRING);
-    // nb continue case
   case CONTROL_CAMERA_WALK     :
     setCurrentObject(NULL);
     setWindowCursor(*get3DWindow(), MAKEINTRESOURCE(OCR_NORMAL));
@@ -1218,6 +1108,20 @@ void D3SceneEditor::OnObjectRemove() {
   SAFEDELETE(m_currentSceneObject);
   setCurrentObject(NULL);
   render(RENDER_ALL);
+}
+
+void D3SceneEditor::OnObjectSetCenterOfRotation() {
+  setCenterOfRotation();
+}
+
+void D3SceneEditor::resetCenterOfRotation() {
+  m_centerOfRotation.reset();
+  render(RENDER_INFO);
+}
+
+void D3SceneEditor::setCenterOfRotation() {
+  m_centerOfRotation.set(m_currentSceneObject, m_pickedInfo.getMeshPoint());
+  render(RENDER_INFO);
 }
 
 void D3SceneEditor::setLightEnabled(bool enabled) {
@@ -1355,9 +1259,6 @@ const TCHAR *controlString(CurrentObjectControl control) {
   caseStr(CAMERA_WALK            )
   caseStr(OBJECT_POS             )
   caseStr(OBJECT_SCALE           )
-  caseStr(OBJECT_POS_KEEPFOCUS   )
-  caseStr(OBJECT_SCALE_KEEPFOCUS )
-  caseStr(CAMERA_KEEPFOCUS       )
   caseStr(LIGHT                  )
   caseStr(SPOTLIGHTPOINT         )
   caseStr(SPOTLIGHTANGLES        )
@@ -1412,6 +1313,9 @@ String D3SceneEditor::toString() const {
                       ,m_pickedInfo.toString().cstr());
     }
   }
+  if (getCenterOfRotation() != D3DXORIGIN) {
+    result += format(_T("\nCenter of rotation:%s"), ::toString(getCenterOfRotation()).cstr());
+  }
   switch(m_propertyDialogMap.getVisibleDialogId()) {
   case SP_LIGHTPARAMETERS   :
     result += format(_T("\nDlg-light:%s")
@@ -1429,13 +1333,6 @@ String D3SceneEditor::toString() const {
   case CONTROL_CAMERA_WALK           :
     return result + format(_T("\n%s"), getScene().getCameraString().cstr());
 
-  case CONTROL_CAMERA_KEEPFOCUS      :
-    result += format(_T("\n%s"), getScene().getCameraString().cstr());
-    if(hasFocusPoint()) {
-      result += format(_T("\nFocuspoint:%s"), ::toString(m_focusPoint).cstr());
-    }
-    return result;
-
   case CONTROL_OBJECT_POS            :
   case CONTROL_OBJECT_SCALE          :
     if(m_currentSceneObject != NULL) {
@@ -1443,16 +1340,6 @@ String D3SceneEditor::toString() const {
                       ,m_currentSceneObject->getPDUS().toString().cstr());
     }
     return result;
-  case CONTROL_OBJECT_POS_KEEPFOCUS  :
-  case CONTROL_OBJECT_SCALE_KEEPFOCUS:
-    if(m_currentSceneObject != NULL) {
-      result += format(_T("\nObject:\n%s")
-                      ,m_currentSceneObject->getPDUS().toString().cstr());
-    }
-    if(hasFocusPoint()) {
-      result += format(_T("\nFocuspoint:%s"), ::toString(m_focusPoint).cstr());
-    }
-    return result ;
 
   case CONTROL_LIGHTCOLOR            :
   case CONTROL_LIGHT                 :

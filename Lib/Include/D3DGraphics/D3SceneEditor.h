@@ -12,9 +12,6 @@ typedef enum {
  ,CONTROL_CAMERA_WALK
  ,CONTROL_OBJECT_POS
  ,CONTROL_OBJECT_SCALE
- ,CONTROL_OBJECT_POS_KEEPFOCUS
- ,CONTROL_OBJECT_SCALE_KEEPFOCUS
- ,CONTROL_CAMERA_KEEPFOCUS
  ,CONTROL_LIGHT
  ,CONTROL_SPOTLIGHTPOINT
  ,CONTROL_SPOTLIGHTANGLES
@@ -47,6 +44,22 @@ public:
   }
 };
 
+class CenterOfRotation {
+public:
+  D3SceneObject *m_obj; // which object does m_pos refer to
+  D3DXVECTOR3    m_pos; // relative to mesh (0,0,0)
+  CenterOfRotation() {
+    reset();
+  }
+  inline void reset() {
+    set(NULL,D3DXORIGIN);
+  }
+  inline void set(D3SceneObject *obj, const D3DXVECTOR3 &pos) {
+    m_obj = obj;
+    m_pos = pos;
+  }
+};
+
 class D3SceneEditor : public PropertyChangeListener {
 private:
     D3SceneContainer                 *m_sceneContainer;
@@ -56,7 +69,7 @@ private:
     PropertyContainer                *m_currentEditor;
     BitSet8                           m_stateFlags;
     CPoint                            m_lastMouse;
-    D3DXVECTOR3                       m_focusPoint;
+    CenterOfRotation                  m_centerOfRotation;
     D3DXVECTOR3                       m_pickedPoint; // in world space
     D3Ray                             m_pickedRay;   // in world space
     D3PickedInfo                      m_pickedInfo;
@@ -79,12 +92,6 @@ private:
       if(isRenderEnabled()) m_sceneContainer->render(flags);
     }
 
-    inline bool hasFocusPoint() const {
-      return m_currentControl == CONTROL_OBJECT_POS_KEEPFOCUS
-          || m_currentControl == CONTROL_OBJECT_SCALE_KEEPFOCUS
-          || m_currentControl == CONTROL_CAMERA_KEEPFOCUS
-          ;
-    }
     void rotateCurrentObjectFrwBckw(  double angle1 , double angle2);
     void rotateCurrentObjectLeftRight(double angle) ;
     void adjustCurrentObjectScale(int component, double factor);
@@ -96,7 +103,11 @@ private:
     void        setCurrentObjectPos(        const D3DXVECTOR3 &pos);
     void        setCurrentObjectOrientation(const D3DXVECTOR3 &dir, const D3DXVECTOR3 &up);
     void        setCurrentObjectScale(      const D3DXVECTOR3 &pos);
-
+    void        resetCenterOfRotation();
+    void        setCenterOfRotation();
+    inline D3DXVECTOR3  getCenterOfRotation() const {
+      return (getCurrentVisualObject() == m_centerOfRotation.m_obj) ? m_centerOfRotation.m_pos : D3DXORIGIN;
+    }
     void walkWithCamera(       double dist   , double angle);
     void sidewalkWithCamera(   double upDist , double rightDist);
     void rotateCameraUpDown(   double angle) ;
@@ -128,7 +139,6 @@ private:
     void showContextMenu(CMenu &menu, CPoint point);
 
     void setCurrentControl(CurrentObjectControl control);
-    bool moveLastMouseToFocusPoint();
 
           D3LightControl *getCurrentLightControl();
     const D3LightControl *getCurrentLightControl() const;
@@ -139,8 +149,6 @@ private:
     void OnControlObjectMoveRotate();
     void OnControlObjectPos();
     void OnControlObjectScale();
-    void OnControlObjectKeepFocus();
-    void OnControlObjectScaleKeepFocus();
 
     void setLightControlsVisible(bool visible);
     void addLight(D3DLIGHTTYPE type);
@@ -149,11 +157,8 @@ private:
     void OnMouseMoveObjectPos(            UINT nFlags, CPoint pt);
     void OnMouseWheelObjectPos(           UINT nFlags, short zDelta, CPoint pt);
     void OnMouseWheelObjectScale(         UINT nFlags, short zDelta, CPoint pt);
-    void OnMouseWheelObjectPosKeepFocus(  UINT nFlags, short zDelta, CPoint pt);
-    void OnMouseWheelObjectScaleKeepFocus(UINT nFlags, short zDelta, CPoint pt);
     void OnMouseWheelAnimationSpeed(      UINT nFlags, short zDelta, CPoint pt);
     void OnMouseWheelCameraWalk(          UINT nFlags, short zDelta, CPoint pt);
-    void OnMouseWheelCameraKeepFocus(     UINT nFlags, short zDelta, CPoint pt);
 
     void OnMouseMoveLight(                UINT nFlags, CPoint pt);
     void OnMouseMoveLightPoint(           UINT nFlags, CPoint pt);
@@ -169,7 +174,6 @@ private:
     void OnContextMenuVisualObject(CPoint point);
     void OnContextMenuLightControl(CPoint point);
     void OnControlCameraWalk();
-    void OnControlCameraKeepFocus();
     void OnObjectStartAnimation();
     void OnObjectStartBckAnimation();
     void OnObjectStartAltAnimation();
@@ -179,6 +183,7 @@ private:
     void OnObjectEditMaterial();
     void OnObjectResetScale();
     void OnObjectRemove();
+    void OnObjectSetCenterOfRotation();
     void OnLightAdjustColors();
     void OnLightAdjustSpotAngles();
     void OnLightControlSpotAt();
@@ -221,11 +226,8 @@ public:
       return m_currentSceneObject;
     }
     // Return NULL, if type not {SOTYPE_VISUALOBJECT, SOTYPE_ANIMATEDOBJECT, }
-    D3SceneObject     *getCurrentVisualObject();
+    D3SceneObject     *getCurrentVisualObject() const;
     D3AnimatedSurface *getCurrentAnimatedobject() const;
-    inline const D3DXVECTOR3 &getFocusPoint() const {
-      return m_focusPoint;
-    }
     inline const D3DXVECTOR3 &getPickedPoint() const {
       return m_pickedPoint;
     }

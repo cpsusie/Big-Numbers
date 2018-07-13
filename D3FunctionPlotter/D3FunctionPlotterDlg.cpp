@@ -61,7 +61,6 @@ BEGIN_MESSAGE_MAP(CD3FunctionPlotterDlg, CDialog)
   ON_COMMAND(ID_FILE_READ3DPOINTSFROMFILE     , OnFileRead3DPointsFromFile     )
   ON_COMMAND(ID_FILE_READOBJFILE              , OnFileReadObjFile              )
   ON_COMMAND(ID_FILE_EXIT                     , OnFileExit                     )
-  ON_COMMAND(ID_FILE_NEXTTRY                  , OnFileNexttry                  )
   ON_COMMAND(ID_VIEW_SHOW3DINFO               , OnViewShow3dinfo               )
   ON_COMMAND(ID_DEBUG_GO                      , OnDebugGo                      )
   ON_COMMAND(ID_DEBUG_SINGLESTEP              , OnDebugSinglestep              )
@@ -609,15 +608,6 @@ void CD3FunctionPlotterDlg::OnFileReadObjFile() {
       setCalculatedObject(obj);
       REPAINT();
     }
-  } catch(Exception e) {
-    showException(e);
-  }
-}
-
-void CD3FunctionPlotterDlg::OnFileNexttry() {
-  try {
-    setCalculatedObject(m_isoSurfaceParam);
-    REPAINT();
   } catch(Exception e) {
     showException(e);
   }
