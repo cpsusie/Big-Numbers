@@ -75,6 +75,18 @@ Real &ExpressionNode::getValueRef() const {
   return m_tree.getValueRef(getValueIndex());
 }
 
+bool ExpressionNode::traverseExpression(ExpressionNodeHandler &handler) {
+  handler.m_path.push(this);
+  try {
+    const bool result = traverseNode(handler);
+    handler.m_path.pop();
+    return result;
+  } catch (...) {
+    handler.m_path.pop();
+    throw;
+  }
+}
+
 class NameSelector : public ExpressionNodeSelector {
 private:
   const String &m_name;
@@ -97,7 +109,7 @@ public:
   NodeCounter(ExpressionNodeSelector *selector) : m_selector(selector) {
     m_count = 0;
   }
-  bool handleNode(ExpressionNode *n, int level) {
+  bool handleNode(ExpressionNode *n) {
     if((m_selector == NULL) || m_selector->select(n)) m_count++;
     return true;
   }
@@ -112,7 +124,7 @@ bool ExpressionNode::dependsOn(const String &name) const {
 
 int ExpressionNode::getNodeCount(ExpressionNodeSelector *selector) const {
   NodeCounter nodeCounter(selector);
-  ((ExpressionNode*)this)->traverseExpression(nodeCounter, 0);
+  ((ExpressionNode*)this)->traverseExpression(nodeCounter);
   return nodeCounter.getCount();
 }
 
@@ -126,13 +138,14 @@ private:
 public:
   MaxLevelFinder() : m_maxLevel(0) {
   }
-  bool handleNode(ExpressionNode *n, int level);
+  bool handleNode(ExpressionNode *n);
   int getMaxLevel() const {
     return m_maxLevel;
   }
 };
 
-bool MaxLevelFinder::handleNode(ExpressionNode *n, int level) {
+bool MaxLevelFinder::handleNode(ExpressionNode *n) {
+  const int level = getLevel();
   if(level > m_maxLevel) {
     m_maxLevel = level;
   }
@@ -141,7 +154,7 @@ bool MaxLevelFinder::handleNode(ExpressionNode *n, int level) {
 
 int ExpressionNode::getMaxTreeDepth() const {
   MaxLevelFinder handler;
-  ((ExpressionNode*)this)->traverseExpression(handler, 0);
+  ((ExpressionNode*)this)->traverseExpression(handler);
   return handler.getMaxLevel();
 }
 
@@ -238,6 +251,15 @@ bool ExpressionNode::isSymmetricExponent() const {
 
 bool ExpressionNode::isAsymmetricExponent() const {
   return isRational() && ::isAsymmetricExponent(getRational());
+}
+
+bool ExpressionNode::isLogarithmicPowExponent(int e) {
+  return ::abs(e) <= 64;
+}
+
+bool ExpressionNode::isLogarithmicPowExponent() const {
+  Number v;
+  return isConstant(&v) && v.isInteger() && isLogarithmicPowExponent(v.getIntValue());
 }
 
 TrigonometricMode ExpressionNode::getTrigonometricMode() const {
@@ -466,7 +488,7 @@ private:
 public:
   ConsistencyCheck() : m_failureNode(NULL), m_nodesVisited(0) {
   }
-  bool handleNode(ExpressionNode *n, int level) {
+  bool handleNode(ExpressionNode *n) {
     m_nodesVisited++;
     if(!n->isConsistentSymbolAndType()) {
       m_failureNode = n;
@@ -487,7 +509,7 @@ public:
 
 UINT ExpressionNode::checkIsConsistent() const {
   ConsistencyCheck checker;
-  ((ExpressionNode*)(this))->traverseExpression(checker,0);
+  ((ExpressionNode*)(this))->traverseExpression(checker);
   if(!checker.isOK()) {
     throwException(_T("Inconsistent ExpressionNode"));
   }

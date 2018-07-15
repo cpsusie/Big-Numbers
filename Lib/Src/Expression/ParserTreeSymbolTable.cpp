@@ -6,17 +6,21 @@ namespace Expr {
 class AllocateNumbers : public ExpressionNodeHandler {
 private:
   ParserTreeSymbolTable &m_table;
+  inline bool isExponent(const ExpressionNode *n) const {
+    const ExpressionNode *parent = getParent();
+    return parent && (parent->getSymbol() == POW) && (parent->exponent().node() == n);
+  }
 public:
   AllocateNumbers(ParserTreeSymbolTable *table) : m_table(*table) {
   }
-  bool handleNode(ExpressionNode *n, int level);
+  bool handleNode(ExpressionNode *n);
 };
 
-bool AllocateNumbers::handleNode(ExpressionNode *n, int level) {
+bool AllocateNumbers::handleNode(ExpressionNode *n) {
   switch(n->getSymbol()) {
   case NUMBER:
     if(n->getValueIndex() < 0) {
-      m_table.allocateNumber(n,true);
+      m_table.allocateNumber(n, true, isExponent(n));
     }
     break;
   case POLY  :
@@ -25,7 +29,7 @@ bool AllocateNumbers::handleNode(ExpressionNode *n, int level) {
       for(size_t i = 0; i < coefArray.size(); i++) {
         ExpressionNode *coef = coefArray[i].node();
         if(coef->isNumber()) {
-          m_table.allocateNumber(coef,false);
+          m_table.allocateNumber(coef, false, false);
         } else {
           m_table.insertValue(getRealNaN());
         }
@@ -38,7 +42,7 @@ bool AllocateNumbers::handleNode(ExpressionNode *n, int level) {
 
 class ResetValueIndex : public ExpressionNodeHandler {
 public:
-  bool handleNode(ExpressionNode *n, int level) {
+  bool handleNode(ExpressionNode *n) {
     if(n->getSymbol() == NUMBER) n->setValueIndex(-1);
     return true;
   }
@@ -47,7 +51,7 @@ public:
 #define TMPVARCOUNT 2 // the first 2 elements are reserverd for temporary variables in machinecode
 
 void ParserTreeSymbolTable::init() {
-  m_tree             = NULL;
+  m_tree     = NULL;
 }
 
 void ParserTreeSymbolTable::clear(ParserTree *tree) {
@@ -156,10 +160,10 @@ private:
   ParserTree &m_tree;
 public:
   DependencyChecker(ParserTree &tree) : m_tree(tree) {}
-  bool handleNode(ExpressionNode *n, int level);
+  bool handleNode(ExpressionNode *n);
 };
 
-bool DependencyChecker::handleNode(ExpressionNode *n, int level) {
+bool DependencyChecker::handleNode(ExpressionNode *n) {
   if(n->isName() && !n->getVariable().isLoopVar()) {
     m_tree.addError(n, _T("Control expression in the sum/product can only depend on constants and other control variables"));
   }
@@ -168,7 +172,7 @@ bool DependencyChecker::handleNode(ExpressionNode *n, int level) {
 
 void ParserTreeSymbolTable::checkDependentOnLoopVariablesOnly(ExpressionNode *n) {
   DependencyChecker checker(*m_tree);
-  n->traverseExpression(checker, 0);
+  n->traverseExpression(checker);
 }
 
 void ParserTreeSymbolTable::buildTableAssign(ExpressionNode *n, bool loopAssignment) {
@@ -232,17 +236,21 @@ ExpressionVariable *ParserTreeSymbolTable::allocateConstant(ExpressionNode *n, c
 }
 
 // assume n->getSymbol() == NUMBER
-void ParserTreeSymbolTable::allocateNumber(ExpressionNode *n, bool reuseIfExist) {
+void ParserTreeSymbolTable::allocateNumber(ExpressionNode *n, bool reuseIfExist, bool isExponent) {
   if(reuseIfExist) {
     const int index = findNumberIndexByValue(n->getReal());
     if(index >= 0) {
       n->setValueIndex(index);
-      incrValueRefCount(index);
+      if(!isExponent || !n->isLogarithmicPowExponent()) {
+        incrValueRefCount(index);
+      }
       return;
     }
   }
   n->setValueIndex(insertValue(n->getReal()));
-  incrValueRefCount(n->getValueIndex());
+  if(!isExponent || !n->isLogarithmicPowExponent()) {
+    incrValueRefCount(n->getValueIndex());
+  }
 }
 
 // insert value into m_valueTable, return index

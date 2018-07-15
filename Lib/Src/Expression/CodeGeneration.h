@@ -252,6 +252,7 @@ private:
   CompactHashMap<CompactKeyType<CodeLabel>,FPUState> m_labelStateMap;
   ListFile                                           m_listFile;
   bool                                               m_listEnabled;
+  int                                                m_FPUOptimizeCount, m_lastFPUOptimizeCount;
 
 #ifdef IS64BIT
   BYTE                              m_stackTop;
@@ -264,7 +265,8 @@ private:
 
   int  getValueIndex(const InstructionOperand &op) const;
   void putFPUComment(const String &str) {
-    m_listFile.setFPUComment(str);
+    m_listFile.setFPUComment(str, m_FPUOptimizeCount > m_lastFPUOptimizeCount);
+    m_lastFPUOptimizeCount = m_FPUOptimizeCount;
   }
   bool wantFPUComment() const {
     return listEnabled();
@@ -290,6 +292,7 @@ private:
   }
   void listFixupTable() const;
   void listCallTable() const;
+  void listAll();
   inline bool enableListing(bool enable) {
     const bool old = m_listEnabled;
     m_listEnabled = enable;

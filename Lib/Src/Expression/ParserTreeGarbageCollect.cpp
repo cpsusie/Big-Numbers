@@ -9,10 +9,10 @@ private:
 public:
   SetMark(bool setMark) : m_setMark(setMark) {
   }
-  bool handleNode(ExpressionNode *n, int level);
+  bool handleNode(ExpressionNode *n);
 };
 
-bool SetMark::handleNode(ExpressionNode *n, int level) {
+bool SetMark::handleNode(ExpressionNode *n) {
   if(m_setMark) {
     n->mark();
   } else {

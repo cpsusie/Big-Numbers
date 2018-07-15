@@ -171,15 +171,14 @@ bool ExpressionNodePoly::isConstant(Number *v) const {
   return result;
 }
 
-bool ExpressionNodePoly::traverseExpression(ExpressionNodeHandler &handler, int level) {
-  if(!handler.handleNode(this, level)) return false;
+bool ExpressionNodePoly::traverseNode(ExpressionNodeHandler &handler) {
+  if(!handler.handleNode(this)) return false;
 
   const CoefArray &coefArray = getCoefArray();
-  level++;
   for(size_t i = 0; i < coefArray.size(); i++) {
-    if(!coefArray[i].node()->traverseExpression(handler, level)) return false;
+    if(!coefArray[i].node()->traverseExpression(handler)) return false;
   }
-  return getArgument().node()->traverseExpression(handler, level);
+  return getArgument().node()->traverseExpression(handler);
 }
 
 void ExpressionNodePoly::dumpNode(String &s, int level) const {

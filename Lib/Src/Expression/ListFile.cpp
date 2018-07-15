@@ -11,6 +11,7 @@ ListFile::ListFile(FILE *f, const ValueAddressCalculation &addressTable, const S
   , m_addressTable(addressTable)
   , m_nameCommentArray(commentArray)
   , m_tableRefRegister(tableRefRegister)
+  , m_FPURegOptimized(false)
 {
 }
 
@@ -22,8 +23,9 @@ ListFile::~ListFile() {
 void ListFile::addLine(ListLine *l) {
   TRACE_NEW(l);
   if(hasFPUComment()) {
-    l->setFPUComment(m_FPUComment);
-    m_FPUComment = EMPTYSTRING;
+    l->setFPUComment(m_FPUComment, m_FPURegOptimized);
+    m_FPUComment      = EMPTYSTRING;
+    m_FPURegOptimized = false;
   }
   m_lineArray.add(l);
   if(isTracing()) {
@@ -147,9 +149,12 @@ String ListLine::formatOp(const StringPrefix &prefix, const StringInstruction &s
                );
 }
 
-String ListLine::formatOpAndComment(const String &opstr, const TCHAR *comment) { // static
+String ListLine::formatOpAndComment(const String &opstr, const TCHAR *comment, bool FPURegOptimized) { // static
   if(!comment) comment = EMPTYSTRING;
-  return format(_T("%-*s; %-*s"),LF_OPSLEN, opstr.cstr(), LF_COMLEN, comment);
+  return format(_T("%-*s;%c%-*s")
+               ,LF_OPSLEN, opstr.cstr()
+               ,FPURegOptimized?'+':' '
+               ,LF_COMLEN, comment);
 }
 
 String ListLine::toString() const {
@@ -187,7 +192,7 @@ ListLine1Arg::~ListLine1Arg() {
 String ListLine1Arg::toString() const {
   return __super::toString()
        + formatIns(m_opcode(*m_arg))
-       + formatOpAndComment(formatOp(m_opcode,m_arg), m_nameComment)
+       + formatOpAndComment(formatOp(m_opcode,m_arg), m_nameComment, getFPURegOptimized())
        + getFPUComment();
 }
 
@@ -210,7 +215,7 @@ ListLine2Arg::~ListLine2Arg() {
 String ListLine2Arg::toString() const {
   return __super::toString()
        + formatIns(m_opcode(*m_arg1,*m_arg2))
-       + formatOpAndComment(formatOp(m_opcode,m_arg1,m_arg2), m_nameComment)
+       + formatOpAndComment(formatOp(m_opcode,m_arg1,m_arg2), m_nameComment, getFPURegOptimized())
        + getFPUComment();
 }
 
@@ -232,7 +237,7 @@ ListLineJump::ListLineJump(UINT pos, const OpcodeBase &opcode, int iprel, CodeLa
   , m_label(label)
   , m_iprel(iprel)
 {
-  setFPUComment(state.toString());
+  setFPUComment(state.toString(), false);
 }
 
 String ListLineJump::toString() const {
@@ -275,7 +280,7 @@ ListLineLabel::ListLineLabel(UINT pos, CodeLabel label, const FPUState &state)
   : ListLine(pos, true)
   , m_label(label)
 {
-  setFPUComment(state.toString());
+  setFPUComment(state.toString(), false);
 }
 
 String ListLineLabel::toString() const {

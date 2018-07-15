@@ -48,8 +48,8 @@ ExpressionNode *ExpressionNodeVariable::clone(ParserTree *tree) const {
   return n;
 }
 
-bool ExpressionNodeVariable::traverseExpression(ExpressionNodeHandler &handler, int level) {
-  return handler.handleNode(this, level);
+bool ExpressionNodeVariable::traverseNode(ExpressionNodeHandler &handler) {
+  return handler.handleNode(this);
 }
 
 void ExpressionNodeVariable::dumpNode(String &s, int level) const {

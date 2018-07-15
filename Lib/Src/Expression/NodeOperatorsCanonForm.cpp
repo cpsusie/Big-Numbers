@@ -577,7 +577,7 @@ public:
   CanonicalFormChecker() : m_ok(true) {
   }
 
-  bool handleNode(ExpressionNode *n, int level);
+  bool handleNode(ExpressionNode *n);
   bool isOk() const {
     return m_ok;
   }
@@ -586,7 +586,7 @@ public:
   }
 };
 
-bool CanonicalFormChecker::handleNode(ExpressionNode *n, int level) {
+bool CanonicalFormChecker::handleNode(ExpressionNode *n) {
   static const ExpressionSymbolSet illegalSymbolSet(
     PLUS  ,PROD  ,QUOT  ,ROOT  ,SQRT
    ,SQR   ,EXP   ,EXP10 ,EXP2  ,SEC

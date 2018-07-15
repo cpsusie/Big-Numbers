@@ -23,23 +23,28 @@ inline String labelToString(CodeLabel label) {
 class ListLine {
 private:
   String m_FPUComment;
+  bool   m_FPURegOptimized;
 protected:
   static String formatIns(const InstructionBase &ins);
   static String formatOp(const OpcodeBase &opcode);
   static String formatOp(const OpcodeBase &opcode, const InstructionOperand *arg);
   static String formatOp(const OpcodeBase &opcode, const InstructionOperand *arg1, const InstructionOperand *arg2);
   static String formatOp(const StringPrefix &prefix, const StringInstruction &strins);
-  static String formatOpAndComment(const String &opstr, const TCHAR *comment=NULL);
-  const String &getFPUComment() const {
+  static String formatOpAndComment(const String &opstr, const TCHAR *comment=NULL, bool FPURegOptimized=false);
+  inline const String &getFPUComment() const {
     return m_FPUComment;
+  }
+  inline bool getFPURegOptimized() const {
+    return m_FPURegOptimized;
   }
 public:
   UINT m_pos;
   const bool m_isLabel; // used by sort, to put labels BEFORE the ListLine with same m_pos
-  ListLine(UINT pos, bool isLabel=false) : m_pos(pos), m_isLabel(isLabel)  {
+  ListLine(UINT pos, bool isLabel=false) : m_pos(pos), m_isLabel(isLabel), m_FPURegOptimized(false)  {
   }
-  inline void setFPUComment(const String &comment) {
-    m_FPUComment = comment;
+  inline void setFPUComment(const String &comment, bool FPURegOptimized) {
+    m_FPUComment      = comment;
+    m_FPURegOptimized = FPURegOptimized;
   }
   inline bool hasFPUComment() const {
     return m_FPUComment.length() > 0;
@@ -139,10 +144,11 @@ private:
   const ValueAddressCalculation &m_addressTable;
   const StringArray              m_nameCommentArray;   // For comments
   String                         m_FPUComment;
+  bool                           m_FPURegOptimized;
   const IndexRegister           &m_tableRefRegister;
 
   inline bool hasFPUComment() const {
-    return m_FPUComment.length() > 0;
+    return (m_FPUComment.length() > 0) || m_FPURegOptimized;
   }
   inline bool isTracing() const {
 #ifdef _DEBUG
@@ -186,8 +192,10 @@ public:
   inline bool isOpen() const {
     return m_f != NULL;
   }
-  void setFPUComment(const String &comment) {
-    m_FPUComment = comment;
+  inline void setFPUComment(const String &comment, bool FPURegOptimized) {
+    m_FPUComment      = comment;
+    m_FPURegOptimized = FPURegOptimized;
+
   }
   void adjustPositions(UINT pos, UINT bytesAdded);
   void vprintf(const TCHAR *format, va_list argptr) const;

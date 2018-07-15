@@ -315,7 +315,7 @@ void CodeGenerator::genExpression(SNode n DCL_DSTPARAM) {
         return;
       } else {
         const int y = getInt(p);
-        if((p == y) && (::abs(y) <= 64)) {
+        if((p == y) && ExpressionNode::isLogarithmicPowExponent(y)) {
           genExpression(n.left() DST_FPU);
           genPowMultSequence(::abs(y));
           if(y < 0) genReciprocal();

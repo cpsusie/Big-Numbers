@@ -4,11 +4,11 @@
 
 Real ExpressionWrapper::s_dummy = 0;
 
-static Expression *allocateExpression() {
-  Expression *e = new Expression(); TRACE_NEW(e);
+static Expr::Expression *allocateExpression() {
+  Expr::Expression *e = new Expr::Expression(); TRACE_NEW(e);
   return e;
 }
-static void deleteExpression(Expression *e) {
+static void deleteExpression(Expr::Expression *e) {
   SAFEDELETE(e);
 }
 
@@ -54,7 +54,7 @@ Real ExpressionWrapper::operator()(const Point3D &p) {
 }
 
 Real *ExpressionWrapper::getVariableByName(const String &name) {
-  const ExpressionVariable *var = m_expr->getVariable(name);
+  const Expr::ExpressionVariable *var = m_expr->getVariable(name);
   return (var == NULL) ? &s_dummy : &m_expr->getValueRef(*var);
 }
 
@@ -66,6 +66,5 @@ String ExpressionWrapper::getErrorMessage() {
 }
 
 String ExpressionWrapper::getDefaultFileName() { // static
-  return Expression::getDefaultListFileName();
+  return Expr::Expression::getDefaultListFileName();
 }
-

@@ -19,8 +19,8 @@ bool ExpressionNodeBoolConst::equal(const ExpressionNode *n) const {
   return getBool() == n->getBool();
 }
 
-bool ExpressionNodeBoolConst::traverseExpression(ExpressionNodeHandler &handler, int level) {
-  return handler.handleNode(this, level);
+bool ExpressionNodeBoolConst::traverseNode(ExpressionNodeHandler &handler) {
+  return handler.handleNode(this);
 }
 
 void ExpressionNodeBoolConst::dumpNode(String &s, int level) const {

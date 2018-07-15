@@ -251,10 +251,10 @@ int ParserTree::getNodeCount(bool ignoreMarked, const ExpressionSymbolSet *valid
 
 class Pow1NodeMarker : public ExpressionNodeHandler {
 public:
-  bool handleNode(ExpressionNode *n, int level);
+  bool handleNode(ExpressionNode *n);
 };
 
-bool Pow1NodeMarker::handleNode(ExpressionNode *n, int level) {
+bool Pow1NodeMarker::handleNode(ExpressionNode *n) {
   if((n->getSymbol() == POW) && (n->right()->isOne())) {
     n->mark();
     n->right()->mark();
@@ -342,7 +342,7 @@ void ParserTree::substituteNodes(CompactNodeHashMap<ExpressionNode*> &nodeMap) {
 
 void ParserTree::traverseTree(ExpressionNodeHandler &handler) {
   if(!isEmpty()) {
-    getRoot()->traverseExpression(handler, 0);
+    getRoot()->traverseExpression(handler);
   }
 }
 
@@ -372,10 +372,10 @@ class MarkedNodeExpander : public MarkedNodeTransformer {
 public:
   MarkedNodeExpander(ParserTree *tree) : MarkedNodeTransformer(tree) {
   }
-  bool handleNode(ExpressionNode *n, int level);
+  bool handleNode(ExpressionNode *n);
 };
 
-bool MarkedNodeExpander::handleNode(ExpressionNode *n, int level) {
+bool MarkedNodeExpander::handleNode(ExpressionNode *n) {
   if(n->isMarked() && n->isExpandable()) {
     putNodes(n, n->expand().node());
   }
@@ -386,10 +386,10 @@ class MarkedNodeMultiplier : public MarkedNodeTransformer {
 public:
   MarkedNodeMultiplier(ParserTree *tree) : MarkedNodeTransformer(tree) {
   }
-  bool handleNode(ExpressionNode *n, int level);
+  bool handleNode(ExpressionNode *n);
 };
 
-bool MarkedNodeMultiplier::handleNode(ExpressionNode *n, int level) {
+bool MarkedNodeMultiplier::handleNode(ExpressionNode *n) {
   if(n->isMarked()) {
     putNodes(n, SNode(n).multiplyParentheses().node());
   }

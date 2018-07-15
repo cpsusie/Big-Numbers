@@ -9,10 +9,10 @@ private:
 public:
   NameSubstituter(const String &from, const String to) : m_fromName(from), m_toName(to) {
   }
-  bool handleNode(ExpressionNode *n, int level);
+  bool handleNode(ExpressionNode *n);
 };
 
-bool NameSubstituter::handleNode(ExpressionNode *n, int level) {
+bool NameSubstituter::handleNode(ExpressionNode *n) {
   if(n->isMarked()) return true;
   if(n->isName() && (n->getName().equalsIgnoreCase(m_fromName))) {
     n->setName(m_toName);

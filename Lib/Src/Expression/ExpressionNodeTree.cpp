@@ -184,13 +184,13 @@ public:
     m_nonConstantFound = false;
   }
 
-  bool handleNode(ExpressionNode *n, int level);
+  bool handleNode(ExpressionNode *n);
   bool dependsOnNonConstantNames() const {
     return m_nonConstantFound;
   }
 };
 
-bool IndexedExpressionDependencyChecker::handleNode(ExpressionNode *n, int level) {
+bool IndexedExpressionDependencyChecker::handleNode(ExpressionNode *n) {
   if(!n->isName()) {
     return true;
   }
@@ -204,7 +204,7 @@ bool IndexedExpressionDependencyChecker::handleNode(ExpressionNode *n, int level
 
 static bool exprDependsOnNonConstantNames(const ExpressionNode *expr, const ExpressionVariable &loopVar) {
   IndexedExpressionDependencyChecker nodeHandler(loopVar);
-  ((ExpressionNode*)expr)->traverseExpression(nodeHandler, 0);
+  ((ExpressionNode*)expr)->traverseExpression(nodeHandler);
   return nodeHandler.dependsOnNonConstantNames();
 }
 
@@ -231,12 +231,11 @@ bool ExpressionNodeTree::isConstant(Number *v) const {
   return result;
 }
 
-bool ExpressionNodeTree::traverseExpression(ExpressionNodeHandler &handler, int level) {
-  if(!handler.handleNode(this, level)) return false;
+bool ExpressionNodeTree::traverseNode(ExpressionNodeHandler &handler) {
+  if(!handler.handleNode(this)) return false;
   SNodeArray &a = getChildArray();
-  level++;
   for(size_t i = 0; i < a.size(); i++) {
-    if(!a[i].node()->traverseExpression(handler, level)) return false;
+    if(!a[i].node()->traverseExpression(handler)) return false;
   }
   return true;
 }

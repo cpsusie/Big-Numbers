@@ -1,6 +1,7 @@
 #pragma once
 
 #include <MyUtil.h>
+#include <CompactStack.h>
 #include <CompactHashMap.h>
 #include <Scanner.h>
 #include "PragmaLib.h"
@@ -63,8 +64,21 @@ class ExpressionNodeSelector : public Selector<const ExpressionNode*> {
 };
 
 class ExpressionNodeHandler {
+private:
+  CompactStack<ExpressionNode*> m_path;
+  friend class ExpressionNode;
+protected:
+  inline const CompactStack<ExpressionNode*> &getPath() const {
+    return m_path;
+  }
+  inline const ExpressionNode *getParent(UINT i = 1) const {
+    return (i < m_path.getHeight()) ? m_path.top(i) : NULL;
+  }
+  inline int getLevel() const {
+    return m_path.getHeight();
+  }
 public:
-  virtual bool handleNode(ExpressionNode *n, int level) = 0;
+  virtual bool handleNode(ExpressionNode *n) = 0;
 };
 
 typedef CompactKeyType<ExpressionInputSymbol> ExpressionSymbolKey;
@@ -103,7 +117,6 @@ private:
   ExpressionNode(           const ExpressionNode &src); // not implemented
 protected:
   static String &addLeftMargin(String &s, int level);
-
   Exception createAttributeNotSupportedException(const char *attribute) const;
 #define UNSUPPORTEDOP() throw createAttributeNotSupportedException(__FUNCTION__)
 
@@ -174,7 +187,7 @@ public:
   virtual bool                       equalMinus(const ExpressionNode *n) const { UNSUPPORTEDOP();                                              }
 
   virtual bool                       isConstant(Number *v = NULL)   const = 0;
-  virtual bool                       traverseExpression(ExpressionNodeHandler &handler, int level) = 0;
+  virtual bool                       traverseNode(ExpressionNodeHandler &handler) = 0;
 
   virtual void                       dumpNode(String &s, int level) const = 0;
   virtual String                     toString()                     const = 0;
@@ -228,6 +241,7 @@ public:
   virtual bool                       isSymmetricFunction()          const { return isSymmetricFunction(   getSymbol()); }
   virtual bool                       isAsymmetricFunction()         const { return isAsymmetricFunction(  getSymbol()); }
 
+  bool                               traverseExpression(ExpressionNodeHandler &handler);
   bool                               dependsOn(const String &name)  const;
   // If selector specified, only nodes where selector.select(n) is true will be counted.
   // If not specified, all nodes are counted
@@ -238,7 +252,8 @@ public:
 
   bool                               isSymmetricExponent()          const;
   bool                               isAsymmetricExponent()         const;
-
+  bool                               isLogarithmicPowExponent()     const;
+  static bool                        isLogarithmicPowExponent(int e);
   TrigonometricMode                  getTrigonometricMode()         const;
   int                                getPrecedence()                const;
   bool                               reducesToRational(        Rational *r) const;
@@ -316,7 +331,7 @@ public:
   bool                 equal(     const ExpressionNode *n) const;
   bool                 equalMinus(const ExpressionNode *n) const;
   bool                 isConstant(Number *v = NULL)        const;
-  bool                 traverseExpression(ExpressionNodeHandler &handler, int level);
+  bool                 traverseNode(ExpressionNodeHandler &handler);
   void                 dumpNode(String &s, int level)      const;
   String               toString()                          const { return m_number.toString();      }
 };
@@ -340,7 +355,7 @@ public:
   bool                 equal(     const ExpressionNode *n) const;
 //bool                 equalMinus(const ExpressionNode *n) const; not implemented
   bool                 isConstant(Number *v = NULL)        const { return true;                     }
-  bool                 traverseExpression(ExpressionNodeHandler &handler, int level);
+  bool                 traverseNode(ExpressionNodeHandler &handler);
   void                 dumpNode(String &s, int level)      const;
   String               toString()                          const { return boolToStr(m_value);       }
 };
@@ -388,7 +403,7 @@ public:
   bool                 equal(     const ExpressionNode *n) const;
   bool                 equalMinus(const ExpressionNode *n) const;
   bool                 isConstant(Number *v = NULL)        const;
-  bool                 traverseExpression(ExpressionNodeHandler &handler, int level);
+  bool                 traverseNode(ExpressionNodeHandler &handler);
   void                 dumpNode(String &s, int level)      const;
   String               toString()                          const { return getName();                }
 };
@@ -428,7 +443,7 @@ public:
   bool                 equal(     const ExpressionNode *n) const;
   bool                 equalMinus(const ExpressionNode *n) const;
   bool                 isConstant(Number *v = NULL)        const;
-  bool                 traverseExpression(ExpressionNodeHandler &handler, int level);
+  bool                 traverseNode(ExpressionNodeHandler &handler);
   void                 dumpNode(String &s, int level)      const;
   String               toString()                          const;
 };
@@ -465,8 +480,8 @@ public:
 //bool                 equal(     const ExpressionNode *n) const { as ExpressionNodeTree;           }
 //bool                 equalMinus(const ExpressionNode *n) const { as ExpressionNodeTree;           }
   bool                 isConstant(Number *v = NULL)        const;
-//bool                 traverseExpression(ExpressionNodeHandler &handler, int level); as ExpressionNodeTree
-//void                 dumpNode(String &s, int level)      const;                     as ExpressionNodeTree
+//bool                 traverseNode(ExpressionNodeHandler &handler); as ExpressionNodeTree
+//void                 dumpNode(String &s, int level)      const;    as ExpressionNodeTree
   String               toString()                          const;
 };
 
@@ -509,8 +524,8 @@ public:
   bool                 equal(     const ExpressionNode *n) const;
   bool                 equalMinus(const ExpressionNode *n) const;
   bool                 isConstant(Number *v = NULL)        const;
-//bool                 traverseExpression(ExpressionNodeHandler &handler, int level); as ExpressionNodeTree
-//void                 dumpNode(String &s, int level)      const;                     as ExpressionNodeTree
+//bool                 traverseNode(ExpressionNodeHandler &handler); as ExpressionNodeTree
+//void                 dumpNode(String &s, int level)      const;    as ExpressionNodeTree
 //String               toString()                          const { as ExpressionNodeTree;            }
 };
 
@@ -566,7 +581,7 @@ public:
   bool                 equal(     const ExpressionNode *n) const;
   bool                 equalMinus(const ExpressionNode *n) const;
   bool                 isConstant(Number *v = NULL)        const;
-  bool                 traverseExpression(ExpressionNodeHandler &handler, int level);
+  bool                 traverseNode(ExpressionNodeHandler &handler);
   void                 dumpNode(String &s, int level)      const;
   String               toString()                          const;
 };
@@ -599,8 +614,8 @@ public:
 //bool                 equal(     const ExpressionNode *n) const { as ExpressionNodeTree;           }
 //bool                 equalMinus(const ExpressionNode *n) const { as ExpressionNodeTree;           }
 //bool                 isConstant(Number *v = NULL)        const { as ExpressionNodeTree;           }
-//bool                 traverseExpression(ExpressionNodeHandler &handler, int level); as ExpressionNodeTree
-//void                 dumpNode(String &s, int level)      const;                     as ExpressionNodeTree
+//bool                 traverseNode(ExpressionNodeHandler &handler); as ExpressionNodeTree
+//void                 dumpNode(String &s, int level)      const;    as ExpressionNodeTree
   String               toString()                          const;
 };
 
@@ -625,8 +640,8 @@ public:
 //bool                 equal(     const ExpressionNode *n) const { as ExpressionNodeTree;           }
   bool                 equalMinus(const ExpressionNode *n) const;
 //bool                 isConstant(Number *v = NULL)        const { as ExpressionNodeTree;           }
-//bool                 traverseExpression(ExpressionNodeHandler &handler, int level); as ExpressionNodeTree
-//void                 dumpNode(String &s, int level)      const;                     as ExpressionNodeTree
+//bool                 traverseNode(ExpressionNodeHandler &handler); as ExpressionNodeTree
+//void                 dumpNode(String &s, int level)      const;    as ExpressionNodeTree
   String               toString()                          const;
 };
 
@@ -650,7 +665,7 @@ public:
   bool                 equal(     const ExpressionNode *n) const;
   bool                 equalMinus(const ExpressionNode *n) const;
 //bool                 isConstant(Number *v = NULL)        const { as ExpressionNodeTree            }
-//bool                 traverseExpression(ExpressionNodeHandler &handler, int level); as ExpressionNodeTree
+//bool                 traverseNode(ExpressionNodeHandler &handler); as ExpressionNodeTree
   void                 dumpNode(String &s, int level)      const;
   String               toString()                          const;
 };
@@ -678,8 +693,8 @@ public:
 //bool                 equal(     const ExpressionNode *n) const { as ExpressionNodeTree;           }
   bool                 equalMinus(const ExpressionNode *n) const;
 //bool                 isConstant(Number *v = NULL)        const;
-//bool                 traverseExpression(ExpressionNodeHandler &handler, int level); as ExpressionNodeTree
-//void                 dumpNode(String &s, int level)      const;                     as ExpressionNodeTree
+//bool                 traverseNode(ExpressionNodeHandler &handler); as ExpressionNodeTree
+//void                 dumpNode(String &s, int level)      const;    as ExpressionNodeTree
   String               toString()                          const;
 };
 
@@ -706,8 +721,8 @@ public:
   bool                 equal(     const ExpressionNode *n) const;
   bool                 equalMinus(const ExpressionNode *n) const;
 //bool                 isConstant(Number *v = NULL)        const { as ExpressionNodeTree;           }
-//bool                 traverseExpression(ExpressionNodeHandler &handler, int level); as ExpressionNodeTree
-//void                 dumpNode(String &s, int level)      const;                     as ExpressionNodeTree
+//bool                 traverseNode(ExpressionNodeHandler &handler); as ExpressionNodeTree
+//void                 dumpNode(String &s, int level)      const;    as ExpressionNodeTree
   String               toString()                          const;
 };
 

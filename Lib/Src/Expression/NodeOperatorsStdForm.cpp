@@ -502,7 +502,7 @@ private:
 public:
   StandardFormChecker() : m_ok(true) {
   };
-  bool handleNode(ExpressionNode *n, int level);
+  bool handleNode(ExpressionNode *n);
   bool isOk() const {
     return m_ok;
   }
@@ -511,7 +511,7 @@ public:
   }
 };
 
-bool StandardFormChecker::handleNode(ExpressionNode *n, int level) {
+bool StandardFormChecker::handleNode(ExpressionNode *n) {
   static const ExpressionSymbolSet illegalSymbolSet(
     PRODUCT, SUM, ADDENT, EOI
   );

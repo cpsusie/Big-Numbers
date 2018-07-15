@@ -28,7 +28,7 @@ private:
   ExpressionVariable   *allocateSymbol(       ExpressionNode *n                    , bool constant, bool leftSide, bool loopVar);
   ExpressionVariable   *allocateConstant(     ExpressionNode *n, const String &name, const Real &value);
   ExpressionVariable   *allocateName(         const String &name, const Real &value, bool constant, bool leftSide, bool loopVar);
-  void                  allocateNumber(       ExpressionNode *n, bool reuseIfExist);
+  void                  allocateNumber(       ExpressionNode *n, bool reuseIfExist, bool isExponent);
   // Insert value into m_valueTable, return index of position
   UINT                  insertValue(Real value);
   // Return set with indices in m_valueTable, for all elements usedby variables

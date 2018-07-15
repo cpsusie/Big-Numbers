@@ -13,6 +13,8 @@ CodeGeneration::CodeGeneration(MachineCode *code, const CompactRealArray &valueT
   , m_addressTable(valueTable)
   , m_listFile(listFile, m_addressTable, nameCommentArray, TABLEREF_REG)
   , m_listEnabled(listFile!=NULL)
+  , m_FPUOptimizeCount(0)
+  , m_lastFPUOptimizeCount(0)
 {
   m_FPUEmulator.setContainer(this);
 #ifdef IS64BIT
@@ -90,6 +92,7 @@ void CodeGeneration::emitFPUOpMem(const OpcodeBase &opcode, const MemoryOperand 
   case _FDIVR:
     { const int stIndex = findFPURegIndex(mem);
       if(stIndex >= 0) {
+        m_FPUOptimizeCount++;
         emit(opcode, ST0, ST(stIndex));
         return;
       }
@@ -100,6 +103,7 @@ void CodeGeneration::emitFPUOpMem(const OpcodeBase &opcode, const MemoryOperand 
   case _FCOMP:
     { const int stIndex = findFPURegIndex(mem);
       if(stIndex >= 0) {
+        m_FPUOptimizeCount++;
         emit(opcode, ST(stIndex));
         return;
       }
@@ -283,10 +287,7 @@ void CodeGeneration::finalize() {
   linkFunctionCalls();
   m_code.finalize(m_addressTable.getESIValue());
 
-  m_listFile.flush();
-  m_listFile.clear();
-  listFixupTable();
-  listCallTable();
+  listAll();
 }
 
 #ifdef IS32BIT
@@ -469,6 +470,15 @@ void CodeGeneration::listCallTable() const {
   }
 }
 
+void CodeGeneration::listAll() {
+  m_listFile.flush();
+  m_listFile.clear();
+  listFixupTable();
+  listCallTable();
+  if(listEnabled()) {
+    list(_T(";Register optimizations:%d\n"), m_FPUOptimizeCount);
+  }
+}
 String JumpFixup::toString() const {
   return format(_T("%-*d:%-*s %-4s  addr:%-5d (%-5s size:%d)%s")
                ,LF_POSLEN, m_instructionPos
