@@ -337,7 +337,7 @@ SNode SNode::reduceAndOr() {
   switch(getSymbol()) {
   case AND: result = getTree().getAnd(*this,Rl,Rr); break;
   case OR : result = getTree().getOr( *this,Rl,Rr); break;
-  default : throwInvalidArgumentException(__TFUNCTION__, _T("not AND/OR-expression:&s"),toString().cstr());
+  default : throwInvalidArgumentException(__TFUNCTION__, _T("not AND/OR-expression:%s"),toString().cstr());
   }
   if(result.isSameNode(*this)) {
     setReduced();
