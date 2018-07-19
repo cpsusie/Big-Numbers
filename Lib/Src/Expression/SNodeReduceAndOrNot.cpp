@@ -12,83 +12,47 @@ typedef enum {
  ,_GT ,_GE          // >    , >=
 } ReducedCompare;
 
-class CompareOpPair {
-private:
-  ExpressionInputSymbol m_op1, m_op2;
-public:
-  CompareOpPair() : m_op1(EOI), m_op2(EOI) {
-  }
-  CompareOpPair(ExpressionInputSymbol op1, ExpressionInputSymbol op2) : m_op1(op1), m_op2(op2) {
-  }
-  bool operator==(const CompareOpPair &copPair) const {
-    return (m_op1 == copPair.m_op1) && (m_op2 == copPair.m_op2);
-  }
-  ULONG hashCode() const {
-    return (UINT)m_op1 * 229 + m_op2;
-  }
-};
-
 typedef ReducedCompare ReduceCompareMatrix[6][6];
 
-class CompareOpPairMap : public CompactHashMap<CompareOpPair, ReducedCompare> {
+class CompareOpPairMap {
 private:
-  void add(ExpressionInputSymbol op1, ExpressionInputSymbol op2, ReducedCompare rc) {
-    put(CompareOpPair(op1,op2),rc);
-  }
+  static int getIndex(ExpressionInputSymbol op);
 protected:
-  CompareOpPairMap(const ReduceCompareMatrix m);
+  virtual const ReduceCompareMatrix &getReduceMatrix() const = 0;
 public:
-  ReducedCompare lookup(ExpressionInputSymbol op1, ExpressionInputSymbol op2) const;
+  inline ReducedCompare lookup(ExpressionInputSymbol op1, ExpressionInputSymbol op2) const {
+    return getReduceMatrix()[getIndex(op1)][getIndex(op2)];
+  }
 };
 
-CompareOpPairMap::CompareOpPairMap(const ReduceCompareMatrix m) {
-  const ExpressionInputSymbol ops[] = { EQ,NE,LT,LE,GT,GE};  // dont change order. Must match matrices below
-  for(UINT r = 0; r < ARRAYSIZE(ops); r++) {
-    const ExpressionInputSymbol opL = ops[r];
-    for(UINT c = 0; c < ARRAYSIZE(ops); c++) {
-      const ExpressionInputSymbol opR = ops[c];
-      add(opL,opR,m[r][c]);
-    }
+int CompareOpPairMap::getIndex(ExpressionInputSymbol op) { // static
+  switch(op) {
+  case EQ: return 0;
+  case NE: return 1;
+  case LT: return 2;
+  case LE: return 3;
+  case GT: return 4;
+  case GE: return 5;
+  default:
+    throwInvalidArgumentException(__TFUNCTION__,_T("op=%s"),SNode::getSymbolName(op).cstr());
+    return 0;
   }
-}
-
-ReducedCompare CompareOpPairMap::lookup(ExpressionInputSymbol op1, ExpressionInputSymbol op2) const {
-  const ReducedCompare *rc = get(CompareOpPair(op1,op2));
-  if(rc == NULL) {
-    throwInvalidArgumentException(__TFUNCTION__,_T("op1=%s, op2=%s")
-                                 ,SNode::getSymbolName(op1).cstr()
-                                 ,SNode::getSymbolName(op2).cstr());
-  }
-  return *rc;
 }
 
 class CompareOpPairAndMap : public CompareOpPairMap {
 private:
   static const ReduceCompareMatrix s_m;
-public:
-  CompareOpPairAndMap::CompareOpPairAndMap() : CompareOpPairMap(s_m) {
-  }
+protected:
+  const ReduceCompareMatrix &getReduceMatrix() const { return s_m; }
 };
 
 class CompareOpPairOrMap : public CompareOpPairMap {
 private:
   static const ReduceCompareMatrix s_m;
-public:
-  CompareOpPairOrMap::CompareOpPairOrMap() : CompareOpPairMap(s_m) {
-  }
+protected:
+  const ReduceCompareMatrix &getReduceMatrix() const { return s_m; }
 };
 
-/*
-36 combinations of left and right oprand
-AND        ==   !=   <    <=   >    >=
-
-  ==       l    F    F    l    F    l
-  !=       F    l    r    <    r    >
-  <        F    l    l    l    F    F
-  <=       r    <    r    l    F    ==
-  >        F    l    F    F    l    l
-  >=       r    >    F    ==   r    l
-*/
 const ReduceCompareMatrix CompareOpPairAndMap::s_m = {
 //         ==   !=   <    <=   >    >=
 /*==*/   { _L  ,_F  ,_F  ,_L  ,_F  ,_L  }
@@ -99,17 +63,6 @@ const ReduceCompareMatrix CompareOpPairAndMap::s_m = {
 /*>=*/  ,{ _R  ,_GT ,_F  ,_EQ ,_R  ,_L  }
 };
 
-/*
-36 combinations of left and right oprand
-OR         ==   !=   <    <=   >    >=
-
-  ==       l    T    <=   r    >=   r
-  !=       T    l    l    T    l    T
-  <        <=   r    l    r    !=   T
-  <=       l    T    l    l    T    T
-  >        >=   r    !=   T    l    r
-  >=       l    T    T    T    l    l
-*/
 const ReduceCompareMatrix CompareOpPairOrMap::s_m = {
 //         ==   !=   <    <=   >    >=
 /*==*/   { _L  ,_T  ,_LE ,_R  ,_GE ,_R  }

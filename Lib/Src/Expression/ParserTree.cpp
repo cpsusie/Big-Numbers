@@ -413,7 +413,7 @@ ExpressionNode *ParserTree::vFetchNode(const SourcePosition &pos, ExpressionInpu
     n = new ExpressionNodeNumberWithPos(   this, pos, va_arg(argptr,Real  ));
     break;
   case NAME    :
-    n = new ExpressionNodeVariableWithPos( this, pos, va_arg(argptr,TCHAR*));
+    n = new ExpressionNodeNameWithPos(     this, pos, va_arg(argptr,TCHAR*));
     break;
   case EQ      :
   case NE      :
@@ -454,8 +454,8 @@ ExpressionNode *ParserTree::vFetchNode(const SourcePosition &pos, ExpressionInpu
 }
 
 // Used by derivate, reduce, graphics
-ExpressionNodeVariable *ParserTree::fetchVariableNode(const String &name) {
-  ExpressionNodeVariable *v = new ExpressionNodeVariable(this, name); TRACE_NEW(v);
+ExpressionNodeName *ParserTree::fetchNameNode(const String &name) {
+  ExpressionNodeName *v = new ExpressionNodeName(this, name); TRACE_NEW(v);
   return v;
 }
 
@@ -468,7 +468,7 @@ ExpressionNode *ParserTree::constExpr(const String &name) {
   } else if(!v->isConstant()) {
     throwInvalidArgumentException(method, _T("%s is not a constant"), name.cstr());
   }
-  ExpressionNode *n = new ExpressionNodeVariable(this, name, *(ExpressionVariable*)v); TRACE_NEW(n);
+  ExpressionNode *n = new ExpressionNodeName(this, name, *(ExpressionVariable*)v); TRACE_NEW(n);
   return n;
 }
 

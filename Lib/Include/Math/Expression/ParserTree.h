@@ -159,7 +159,7 @@ private:
            ,ParserTreeState      state
            ,UINT                 reduceIteration);
   friend class ExpressionNode;
-  friend class ExpressionNodeVariable;
+  friend class ExpressionNodeName;
   friend class NodeOperators;
   friend class NodeOperatorsCanonForm;
   friend class NodeOperatorsStdForm;
@@ -209,12 +209,12 @@ protected:
   SNode traverseSubstituteNodes(SNode n, CompactNodeHashMap<ExpressionNode*> &nodeMap);
 
   ExpressionNode *allocateLoopVarNode(const String &prefix) {
-    ExpressionNodeVariable *result = fetchVariableNode(m_symbolTable.getNewLoopName(prefix));
+    ExpressionNodeName *result = fetchNameNode(m_symbolTable.getNewLoopName(prefix));
     m_symbolTable.allocateSymbol(result, false, true, true);
     return result;
   }
 
-  ExpressionNodeVariable *fetchVariableNode( const String               &name    );
+  ExpressionNodeName *fetchNameNode( const String               &name    );
   // terminate argumentlist with NULL
   ExpressionNodeTree     *fetchTreeNode(     ExpressionInputSymbol     symbol, ...                );
 

@@ -17,7 +17,7 @@ SNode SNode::D(const String &name) const {
       } else if(v.isConstant() || v.isLoopVar() || !v.isDefined()) {
         return _0();
       } else {
-        return getTree().fetchVariableNode(v.getName()+_T("'"));
+        return getTree().fetchNameNode(v.getName()+_T("'"));
       }
     }
 
@@ -249,7 +249,7 @@ SNode SNode::DStmtList(const String &name) const {
           throwException(_T("Cannot find derived of statement \"%s\", because a value is assigned to %s"), stmt.toString().cstr(), name.cstr());
         }
         result.add(stmt.node());
-        result.add(assignStmt(getTree().fetchVariableNode(var.getName()+_T("'")), ddx(expr)));
+        result.add(assignStmt(getTree().fetchNameNode(var.getName()+_T("'")), ddx(expr)));
       }
       break;
     default:

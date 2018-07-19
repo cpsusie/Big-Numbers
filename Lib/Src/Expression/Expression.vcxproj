@@ -855,7 +855,7 @@
     <ClCompile Include="ExpressionNodeSum.cpp" />
     <ClCompile Include="ExpressionNodeToRational.cpp" />
     <ClCompile Include="ExpressionNodeTree.cpp" />
-    <ClCompile Include="ExpressionNodeVariable.cpp" />
+    <ClCompile Include="ExpressionNodeName.cpp" />
     <ClCompile Include="ExpressionSymbolSet.cpp" />
     <ClCompile Include="ExpressionTables.cpp" />
     <ClCompile Include="FPUEmulator.cpp" />

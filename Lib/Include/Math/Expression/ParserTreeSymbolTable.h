@@ -40,7 +40,7 @@ private:
   ParserTreeSymbolTable &operator=(const ParserTreeSymbolTable   &src); // not implemented
   friend class ParserTree;
   friend class AllocateNumbers;
-  friend class ExpressionNodeVariable;
+  friend class ExpressionNodeName;
 public:
   ParserTreeSymbolTable() {
     init();

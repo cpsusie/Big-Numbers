@@ -360,13 +360,13 @@ public:
   String               toString()                          const { return boolToStr(m_value);       }
 };
 
-class ExpressionNodeVariable : public ExpressionNode {
+class ExpressionNodeName : public ExpressionNode {
 private:
   String              m_name;
   ExpressionVariable *m_var;
 public:
-  ExpressionNodeVariable(ParserTree *tree, const String &name);
-  inline ExpressionNodeVariable(ParserTree *tree, const String &name, ExpressionVariable &var)
+  ExpressionNodeName(ParserTree *tree, const String &name);
+  inline ExpressionNodeName(ParserTree *tree, const String &name, ExpressionVariable &var)
     : ExpressionNode(tree, NAME)
     , m_name(name)
   {
@@ -747,12 +747,12 @@ public:
   DEFINESOURCEPOSTRAITS
 };
 
-class ExpressionNodeVariableWithPos : public ExpressionNodeVariable {
+class ExpressionNodeNameWithPos : public ExpressionNodeName {
 private:
   const SourcePosition m_pos;
 public:
-  ExpressionNodeVariableWithPos(ParserTree *tree, const SourcePosition &pos, const String &name)
-    : ExpressionNodeVariable(tree, name), m_pos(pos)
+  ExpressionNodeNameWithPos(ParserTree *tree, const SourcePosition &pos, const String &name)
+    : ExpressionNodeName(tree, name), m_pos(pos)
   {
   }
   DEFINESOURCEPOSTRAITS

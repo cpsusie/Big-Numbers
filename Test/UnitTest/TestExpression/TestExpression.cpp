@@ -347,7 +347,7 @@ namespace TestExpression {
 
       try {
         const size_t n = exprArray.size();
-        for(UINT i = 2592; i < n; i++) {
+        for(UINT i = 0; i < n; i++) {
           const String  expr = exprArray[i];
 
           OUTPUT(_T("Test[%d]:%s"), i, expr.cstr());
