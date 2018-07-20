@@ -1,0 +1,2 @@
+<IsoSurface><expr>a=-8;
+1 - (x^a+y^a)^-a</expr><cellsize>2.000000000000000e-01</cellsize><boundingbox><lbn><x>-2.000000000000000e+00</x><y>-2.000000000000000e+00</y><z>-1.000000000000000e+00</z></lbn><rtf><x>2.000000000000000e+00</x><y>2.000000000000000e+00</y><z>1.000000000000000e+00</z></rtf></boundingbox><tetrahedral>0</tetrahedral><tetraoptimize4>0</tetraoptimize4><adaptivecellsize>1</adaptivecellsize><originoutside>1</originoutside><machinecode>1</machinecode><doublesided>1</doublesided><includetime>0</includetime></IsoSurface>
