@@ -171,6 +171,14 @@ void CodeGenerator::genPowMultSequence(UINT y) {
   }
 }
 
+// Generate sequnce of FSQRT instructions, to calculate x^(1/r)
+// Assume st(0) = x and r is a positive power of 2
+void CodeGenerator::genSqrtSequence(UINT r) {
+  for(r>>=1; r; r>>=1) {
+    m_code->emit(FSQRT);  // ST(0) = sqrt(ST(0))
+  }
+}
+
 #define GENEXPRESSION(n) genExpression(n          DST_PARAM)
 #define GENCALL(n,f)     genCall(      n,f,_T(#f) DST_PARAM); return
 #define GENCALLARG(n,f)  genCall1Arg(  n,f,_T(#f) DST_PARAM); return
@@ -300,26 +308,30 @@ void CodeGenerator::genExpression(SNode n DCL_DSTPARAM) {
     } else if (n.left().isTen()) {
       GENCALLARG(  n.right(), ::exp10);
     }
-    if(n.right().isConstant()) {
-      const Real p = n.right().evaluateReal();
-      if(fabs(p) == 0.5) {
-        genExpression(n.left() DST_FPU);
-        m_code->emit(FSQRT);                   // st0=sqrt(st0)
-        if(p < 0) genReciprocal();
-        break;
-      } else if(p == 0) {
-        genExpression(n._1() DST_PARAM);
-        return;
-      } else if(p == 1) {
-        genExpression(n.left() DST_PARAM);
-        return;
-      } else {
-        const int y = getInt(p);
-        if((p == y) && ExpressionNode::isLogarithmicPowExponent(y)) {
-          genExpression(n.left() DST_FPU);
-          genPowMultSequence(::abs(y));
-          if(y < 0) genReciprocal();
-          break;
+    { Number nexpo;
+      if(n.right().isConstant(&nexpo)) {
+        if(nexpo.isRational()) {
+          const Rational rexpo = nexpo.getRationalValue();
+          if(rexpo.isInt32()) {
+            const int i32expo = getInt(rexpo);
+            if(i32expo == 0) {
+              genExpression(n._1() DST_PARAM);
+              return;
+            } else if(i32expo == 1) {
+              genExpression(n.left() DST_PARAM);
+              return;
+            } else if(ExpressionNode::isLogarithmicPowExponent(i32expo)) {
+              genExpression(n.left() DST_FPU);
+              genPowMultSequence(::abs(i32expo));
+              if(i32expo < 0) genReciprocal();
+              break;
+            }
+          } else if(ExpressionNode::isLogarithmicRoot(rexpo)) {
+            genExpression(n.left() DST_FPU);
+            genSqrtSequence((UINT)rexpo.getDenominator());
+            if(rexpo.isNegative()) genReciprocal();
+            break;
+          }
         }
       }
     }

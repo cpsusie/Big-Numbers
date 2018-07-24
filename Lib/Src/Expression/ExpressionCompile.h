@@ -64,6 +64,7 @@ private:
   void     genPolynomial(       SNode n DCL_DSTPARAM);
   void     genIf(               SNode n DCL_DSTPARAM);
   void     genPowMultSequence(  UINT y);
+  void     genSqrtSequence(     UINT r);
   void     genCall(             const FunctionCall  &fc DCL_DSTPARAM);
   inline void genFPUOpVal(const OpcodeFPUArithm &op, SNode n) {
     m_code->emitFPUOpMem(op, RealPtr(getTableRef(n)));

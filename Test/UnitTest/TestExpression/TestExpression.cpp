@@ -59,6 +59,8 @@ namespace TestExpression {
   FILE *openBoolDumpFile(       int testCase) { return MKFOPEN(makeFileName(testCase, _T("bool"), _T("dump"         )), _T("w")); }
   FILE *openBoolReducedDumpFile(int testCase) { return MKFOPEN(makeFileName(testCase, _T("bool"), _T("reduced\\dump")), _T("w")); }
 
+  FILE *openPowListFile(        int testCase) { return MKFOPEN(makeFileName(testCase, _T("pow" )                     ), _T("w")); }
+
   typedef enum {
     CMP_EQUAL
    ,CMP_EQUALMINUS
@@ -252,12 +254,16 @@ namespace TestExpression {
 
     TEST_METHOD(ExpressionTestPow) {
       FPU::init();
+      int listFileCounter = 0;
       String str;
       try {
         for(Real p = -70; p <= 70; p += 0.5) {
           str = format(_T("(1+x)^%s"),toString(p).cstr());
           Expression compiledExpr, interpreterExpr;
-          compiledExpr.compile(   str, true);
+          FILE *listFile = openPowListFile(listFileCounter++);
+          compiledExpr.compile(   str, true, false, listFile);
+          fclose(listFile);
+
           interpreterExpr.compile(str, false);
           verify(compiledExpr.isOk());
           verify(interpreterExpr.isOk());
@@ -270,14 +276,41 @@ namespace TestExpression {
             const Real y3 = interpreterExpr.evaluate();
             verify(relativeDiff(y2,y1) < 1e-13);
             verify(relativeDiff(y3,y1) < 1e-13);
-           }
-         }
-       } catch (Exception e) {
-         OUTPUT(_T("Exception:%s"), e.what());
-         OUTPUT(_T("str:[%s]"    ), str.cstr());
-         verify(false);
-       }
-     }
+          }
+        }
+
+        for(int num = -1; num <= 1; num+=2) {
+          for(int den = 2; den <= 64; den *= 2) {
+            const Rational p(num,den);
+            str = format(_T("(1+x)^(%s)"),toString(p).cstr());
+            Expression compiledExpr, interpreterExpr;
+
+            FILE *listFile = openPowListFile(listFileCounter++);
+            compiledExpr.compile(   str, true, false, listFile);
+            fclose(listFile);
+
+            interpreterExpr.compile(str, false);
+            verify(compiledExpr.isOk());
+            verify(interpreterExpr.isOk());
+            const Real startx = -0.9, step = 0.125;
+            for(Real x = startx; x <= 0.5; x += step) {
+              compiledExpr.setValue(   _T("x"),x);
+              interpreterExpr.setValue(_T("x"),x);
+              const Real y1 = mypow((1+x),getReal(p));
+              const Real y2 = compiledExpr.evaluate();
+              const Real y3 = interpreterExpr.evaluate();
+              verify(relativeDiff(y2,y1) < 1e-13);
+              verify(relativeDiff(y3,y1) < 1e-13);
+            }
+          }
+        }
+
+      } catch (Exception e) {
+        OUTPUT(_T("Exception:%s"), e.what());
+        OUTPUT(_T("str:[%s]"    ), str.cstr());
+        verify(false);
+      }
+    }
 
     TEST_METHOD(ExpressionTestAndOrReduction) {
       FPU::init();

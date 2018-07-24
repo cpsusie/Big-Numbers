@@ -254,6 +254,8 @@ public:
   bool                               isAsymmetricExponent()         const;
   bool                               isLogarithmicPowExponent()     const;
   static bool                        isLogarithmicPowExponent(int e);
+  bool                               isLogarithmicRoot()            const;
+  static bool                        isLogarithmicRoot(const Rational &r);
   TrigonometricMode                  getTrigonometricMode()         const;
   int                                getPrecedence()                const;
   bool                               reducesToRational(        Rational *r) const;

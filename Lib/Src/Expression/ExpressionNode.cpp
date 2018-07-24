@@ -262,6 +262,15 @@ bool ExpressionNode::isLogarithmicPowExponent() const {
   return isConstant(&v) && v.isInteger() && isLogarithmicPowExponent(v.getIntValue());
 }
 
+bool ExpressionNode::isLogarithmicRoot(const Rational &r) {
+  return (::abs(r.getNumerator()) == 1) && isPow2(r.getDenominator()) && (r.getDenominator() <= 64);
+}
+
+bool ExpressionNode::isLogarithmicRoot() const {
+  Number v;
+  return isConstant(&v) && v.isRational() && isLogarithmicRoot(v.getRationalValue());
+}
+
 TrigonometricMode ExpressionNode::getTrigonometricMode() const {
   return m_tree.getTrigonometricMode();
 }
