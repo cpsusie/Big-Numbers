@@ -278,6 +278,9 @@ inline bool isUint(UINT   v) { return true;         }
 inline bool isUint(INT64  v) { return v == (UINT)v; }
 inline bool isUint(UINT64 v) { return v == (UINT)v; }
 
+inline bool isPow2(int    v) { return (v & -v) == v;}
+inline bool isPow2(INT64  v) { return (v & -v) == v;}
+
 // 5-rounding
 double round(   double x, int dec);
 double trunc(   double x, int dec=0);
