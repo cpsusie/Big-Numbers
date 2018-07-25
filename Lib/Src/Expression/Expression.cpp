@@ -67,7 +67,10 @@ void Expression::compile(const String &expr, bool machineCode, bool optimize, FI
       ListFile::printComment(m_listFile, _T("----------------------------------------------------\n"));
       m_listFile = NULL;
     }
-  } catch (...) {
+  } catch(Exception e) {
+    addError(_T("%s"), e.what());
+    m_listFile = NULL;
+  } catch(...) {
     m_listFile = NULL;
     throw;
   }

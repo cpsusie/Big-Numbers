@@ -49,6 +49,17 @@ namespace TestExpression {
     return fs.getFullPath();
   }
 
+  void verifyExprOk(const Expression &e, bool expectedOk=true) {
+    if(expectedOk) {
+      if(!e.isOk()) {
+        OUTPUT(_T("Expr.isOk=false. %s"), e.getErrors().toString().cstr());
+        verify(false);
+      }
+    } else {
+      verify(!e.isOk());
+    }
+  }
+
   FILE *openEvalListFile(       int testCase) { return MKFOPEN(makeFileName(testCase, _T("eval")                     ), _T("w")); }
   FILE *openEvalReducedListFile(int testCase) { return MKFOPEN(makeFileName(testCase, _T("eval"), _T("reduced"      )), _T("w")); }
   FILE *openEvalDumpFile(       int testCase) { return MKFOPEN(makeFileName(testCase, _T("eval"), _T("dump"         )), _T("w")); }
@@ -60,6 +71,7 @@ namespace TestExpression {
   FILE *openBoolReducedDumpFile(int testCase) { return MKFOPEN(makeFileName(testCase, _T("bool"), _T("reduced\\dump")), _T("w")); }
 
   FILE *openPowListFile(        int testCase) { return MKFOPEN(makeFileName(testCase, _T("pow" )                     ), _T("w")); }
+  FILE *openRootListFile(       int testCase) { return MKFOPEN(makeFileName(testCase, _T("root")                     ), _T("w")); }
 
   typedef enum {
     CMP_EQUAL
@@ -83,9 +95,9 @@ namespace TestExpression {
   void EqualExpressionSample::doTest() const {
     Expression exp1, exp2;
     exp1.compile(m_e1, false);
-    verify(exp1.isOk());
+    verifyExprOk(exp1);
     exp2.compile(m_e1, false);
-    verify(exp2.isOk());
+    verifyExprOk(exp2);
     switch(m_expected) {
     case CMP_EQUAL     :
       verify(exp1.equal(exp2));
@@ -179,8 +191,8 @@ namespace TestExpression {
             }
             verify(false);
           } else {
-            verify(reducedExpr.isOk());
-            verify(interpreterExpr.isOk());
+            verifyExprOk(reducedExpr    );
+            verifyExprOk(interpreterExpr);
             verify(compiledExpr.getReturnType()    == test.getReturnType());
             verify(reducedExpr.getReturnType()     == test.getReturnType());
             verify(interpreterExpr.getReturnType() == test.getReturnType());
@@ -252,55 +264,98 @@ namespace TestExpression {
       }
     }
 
-    TEST_METHOD(ExpressionTestPow) {
+    static inline bool isOddInt(Real n) {
+      return isInt(n) && !isEven(getInt(n));
+    }
+
+    TEST_METHOD(ExpressionTestPowRoot) {
       FPU::init();
       int listFileCounter = 0;
       String str;
       try {
         for(Real p = -70; p <= 70; p += 0.5) {
           str = format(_T("(1+x)^%s"),toString(p).cstr());
-          Expression compiledExpr, interpreterExpr;
-          FILE *listFile = openPowListFile(listFileCounter++);
-          compiledExpr.compile(   str, true, false, listFile);
-          fclose(listFile);
+          Expression compPowExpr, interpretPowExpr;
+          FILE *powListFile = openPowListFile(listFileCounter);
+          compPowExpr.compile(   str, true, false, powListFile);
+          fclose(powListFile);
 
-          interpreterExpr.compile(str, false);
-          verify(compiledExpr.isOk());
-          verify(interpreterExpr.isOk());
+          interpretPowExpr.compile(str, false);
+          verifyExprOk(compPowExpr     );
+          verifyExprOk(interpretPowExpr);
+
+          str = format(_T("root(1+x,%s)"),toString(p).cstr());
+          Expression compRootExpr, interpretRootExpr;
+          FILE *rootListFile = openRootListFile(listFileCounter++);
+          compRootExpr.compile(   str, true, false, rootListFile);
+          fclose(rootListFile);
+
+          interpretRootExpr.compile(str, false);
+          verifyExprOk(compRootExpr     ,p!=0);
+          verifyExprOk(interpretRootExpr);
+
           const Real startx = (p == getInt(p)) ? -1.9 : -0.9, step = 0.125;
           for(Real x = startx; x <= 0.5; x += step) {
-            compiledExpr.setValue(   _T("x"),x);
-            interpreterExpr.setValue(_T("x"),x);
-            const Real y1 = mypow((1+x),p);
-            const Real y2 = compiledExpr.evaluate();
-            const Real y3 = interpreterExpr.evaluate();
-            verify(relativeDiff(y2,y1) < 1e-13);
-            verify(relativeDiff(y3,y1) < 1e-13);
+            compPowExpr.setValue(     _T("x"),x);
+            interpretPowExpr.setValue(_T("x"),x);
+            const Real yp1 = mypow((1+x),p);
+            const Real yp2 = compPowExpr.evaluate();
+            const Real yp3 = interpretPowExpr.evaluate();
+            verify(relativeDiff(yp2,yp1) < 1e-13);
+            verify(relativeDiff(yp3,yp1) < 1e-13);
+
+            if((p == 0) || ((1+x < 0) && !isOddInt(p))) {
+              continue;
+            }
+            compRootExpr.setValue(     _T("x"),x);
+            interpretRootExpr.setValue(_T("x"),x);
+            const Real yr1 = root(1+x,p);
+            const Real yr2 = compRootExpr.evaluate();
+            const Real yr3 = interpretRootExpr.evaluate();
+            verify(relativeDiff(yr2,yr1) < 1e-13);
+            verify(relativeDiff(yr3,yr1) < 1e-13);
+
           }
         }
 
         for(int num = -1; num <= 1; num+=2) {
-          for(int den = 2; den <= 64; den *= 2) {
+          for(int den = 2; den <= 64; den++) {
             const Rational p(num,den);
             str = format(_T("(1+x)^(%s)"),toString(p).cstr());
-            Expression compiledExpr, interpreterExpr;
+            Expression compPowExpr, interpretPowExpr;
+            FILE *listPowFile = openPowListFile(listFileCounter);
+            compPowExpr.compile(   str, true, false, listPowFile);
+            fclose(listPowFile);
+            interpretPowExpr.compile(str, false);
+            verifyExprOk(compPowExpr     );
+            verifyExprOk(interpretPowExpr);
 
-            FILE *listFile = openPowListFile(listFileCounter++);
-            compiledExpr.compile(   str, true, false, listFile);
-            fclose(listFile);
+            str = format(_T("root(1+x,%s)"),toString(p).cstr());
+            Expression compRootExpr, interpretRootExpr;
+            FILE *listRootFile = openRootListFile(listFileCounter++);
+            compRootExpr.compile(   str, true, false, listRootFile);
+            fclose(listRootFile);
+            interpretRootExpr.compile(str, false);
+            verifyExprOk(compRootExpr     );
+            verifyExprOk(interpretRootExpr);
 
-            interpreterExpr.compile(str, false);
-            verify(compiledExpr.isOk());
-            verify(interpreterExpr.isOk());
             const Real startx = -0.9, step = 0.125;
             for(Real x = startx; x <= 0.5; x += step) {
-              compiledExpr.setValue(   _T("x"),x);
-              interpreterExpr.setValue(_T("x"),x);
-              const Real y1 = mypow((1+x),getReal(p));
-              const Real y2 = compiledExpr.evaluate();
-              const Real y3 = interpreterExpr.evaluate();
-              verify(relativeDiff(y2,y1) < 1e-13);
-              verify(relativeDiff(y3,y1) < 1e-13);
+              compPowExpr.setValue(     _T("x"),x);
+              interpretPowExpr.setValue(_T("x"),x);
+              const Real yp1 = mypow((1+x),getReal(p));
+              const Real yp2 = compPowExpr.evaluate();
+              const Real yp3 = interpretPowExpr.evaluate();
+              verify(relativeDiff(yp2,yp1) < 1e-13);
+              verify(relativeDiff(yp3,yp1) < 1e-13);
+
+              compRootExpr.setValue(     _T("x"),x);
+              interpretRootExpr.setValue(_T("x"),x);
+              const Real yr1 = root(1+x,getReal(p));
+              const Real yr2 = compRootExpr.evaluate();
+              const Real yr3 = interpretRootExpr.evaluate();
+              verify(relativeDiff(yr2,yr1) < 1e-13);
+              verify(relativeDiff(yr3,yr1) < 1e-13);
             }
           }
         }
@@ -409,8 +464,8 @@ namespace TestExpression {
             }
             verify(false);
           } else {
-            verify(reducedExpr.isOk());
-            verify(interpreterExpr.isOk());
+            verifyExprOk(reducedExpr    );
+            verifyExprOk(interpreterExpr);
             verify(compiledExpr.getReturnType()    == EXPR_RETURN_BOOL);
             verify(reducedExpr.getReturnType()     == EXPR_RETURN_BOOL);
             verify(interpreterExpr.getReturnType() == EXPR_RETURN_BOOL);
@@ -472,8 +527,8 @@ namespace TestExpression {
           verify(interpreterExpr.getReturnType() == EXPR_RETURN_REAL);
           Expression compiledDFDX    = compiledExpr.getDerived(   _T("x"),true);
           Expression interpreterDFDX = interpreterExpr.getDerived(_T("x"),true);
-          verify(compiledDFDX.isOk());
-          verify(interpreterDFDX.isOk());
+          verifyExprOk(compiledDFDX   );
+          verifyExprOk(interpreterDFDX);
           for(Real x = -2; x <= 2; x += 0.31) {
             const Real y = test.fr(x);
             if(isNan(y)) continue;

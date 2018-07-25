@@ -253,7 +253,7 @@ bool ExpressionNode::isAsymmetricExponent() const {
   return isRational() && ::isAsymmetricExponent(getRational());
 }
 
-bool ExpressionNode::isLogarithmicPowExponent(int e) {
+bool ExpressionNode::isLogarithmicPowExponent(int e) { // static
   return ::abs(e) <= 64;
 }
 
@@ -262,13 +262,13 @@ bool ExpressionNode::isLogarithmicPowExponent() const {
   return isConstant(&v) && v.isInteger() && isLogarithmicPowExponent(v.getIntValue());
 }
 
-bool ExpressionNode::isLogarithmicRoot(const Rational &r) {
+bool ExpressionNode::isLogarithmicRoot(const Rational &r) { // static
   return (::abs(r.getNumerator()) == 1) && isPow2(r.getDenominator()) && (r.getDenominator() <= 64);
 }
 
 bool ExpressionNode::isLogarithmicRoot() const {
-  Number v;
-  return isConstant(&v) && v.isRational() && isLogarithmicRoot(v.getRationalValue());
+  Rational r;
+  return reducesToRational(&r) && isLogarithmicRoot(r);
 }
 
 TrigonometricMode ExpressionNode::getTrigonometricMode() const {

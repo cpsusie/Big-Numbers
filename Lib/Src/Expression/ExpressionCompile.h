@@ -16,6 +16,9 @@ private:
     return m_tree.getTrigonometricMode();
   }
 
+  inline ParserTree &getTree() {
+    return m_tree;
+  }
   inline MemoryRef getTableRef(SNode n) {
     return m_code->getTableRef(n.getValueIndex());
   }

@@ -308,34 +308,44 @@ void CodeGenerator::genExpression(SNode n DCL_DSTPARAM) {
     } else if (n.left().isTen()) {
       GENCALLARG(  n.right(), ::exp10);
     }
-    { Number nexpo;
-      if(n.right().isConstant(&nexpo)) {
-        if(nexpo.isRational()) {
-          const Rational rexpo = nexpo.getRationalValue();
-          if(rexpo.isInt32()) {
-            const int i32expo = getInt(rexpo);
-            if(i32expo == 0) {
-              genExpression(n._1() DST_PARAM);
-              return;
-            } else if(i32expo == 1) {
-              genExpression(n.left() DST_PARAM);
-              return;
-            } else if(ExpressionNode::isLogarithmicPowExponent(i32expo)) {
-              genExpression(n.left() DST_FPU);
-              genPowMultSequence(::abs(i32expo));
-              if(i32expo < 0) genReciprocal();
-              break;
-            }
-          } else if(ExpressionNode::isLogarithmicRoot(rexpo)) {
+    { Rational rexpo;
+      if(n.right().reducesToRational(&rexpo)) {
+        if(rexpo.isInt32()) {
+          const int i32expo = getInt(rexpo);
+          if(i32expo == 0) {
+            genExpression(n._1() DST_PARAM);
+            return;
+          } else if(i32expo == 1) {
+            genExpression(n.left() DST_PARAM);
+            return;
+          } else if(ExpressionNode::isLogarithmicPowExponent(i32expo)) {
             genExpression(n.left() DST_FPU);
-            genSqrtSequence((UINT)rexpo.getDenominator());
-            if(rexpo.isNegative()) genReciprocal();
+            genPowMultSequence(::abs(i32expo));
+            if(i32expo < 0) genReciprocal();
             break;
           }
+        } else if(ExpressionNode::isLogarithmicRoot(rexpo)) {
+          genExpression(n.left() DST_FPU);
+          genSqrtSequence((UINT)rexpo.getDenominator());
+          if(rexpo.isNegative()) genReciprocal();
+          break;
         }
       }
     }
     GENCALL(     n, mypow          );
+  case ROOT          :
+    { Rational rroot;
+      if(n.right().reducesToRational(&rroot)) {
+        const Rational rexpo = reciprocal(rroot);
+        if((rexpo.isInt32() && ExpressionNode::isLogarithmicPowExponent(getInt(rexpo)))
+         || ExpressionNode::isLogarithmicRoot(rexpo)) {
+          // don't use pow here, causes infinite recursion
+          genExpression(binExp(POW, n.left(), SNV(rexpo)) DST_PARAM);
+          return;
+        }
+      }
+    }
+    GENCALL(n, ::root);
   case SQR           :
     genExpression(n.left() DST_FPU);
     m_code->emit(FMUL,ST0,ST0);            // st0=x^2
@@ -365,17 +375,6 @@ void CodeGenerator::genExpression(SNode n DCL_DSTPARAM) {
     }
     GENTRIGOCALL(n, ::atan2               );
 
-  case ROOT          :
-    if(n.right().isConstant()) {
-      const Real p = n.right().evaluateReal();
-      if(fabs(p) == 2) {
-        genExpression(n.left() DST_FPU);
-        m_code->emit(FSQRT);                   // st0=sqrt(st0)
-        if(p < 0) genReciprocal();
-        break;
-      }
-    }
-    GENCALL(n, ::root);
   case SIN           :    GENTRIGOCALL(n, ::sin                   );
   case COS           :    GENTRIGOCALL(n, ::cos                   );
   case TAN           :    GENTRIGOCALL(n, ::tan                   );
