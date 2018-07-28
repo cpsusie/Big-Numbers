@@ -422,11 +422,26 @@ private:
   inline void appendZero() {
     appendDigit(0);
   }
+  // Insert one digit=n after digit q.
+  // Assume q is a digit in digit-list of this
+  // Dont modify m_expo,m_low
   void    insertAfter(            Digit *q, BRDigitType n);
+  // Insert one digit=n at head of this.
+  // Dont modify m_expo,m_low
   void    insertDigit(                      BRDigitType n);
+  // Insert count digits=0 at head of this
+  // Assume *this != zero. ie m_first != NULL (and m_last != NULL)
   void    insertZeroDigits(                 size_t count);
+  // Insert count digits=0 after digit p.
+  // Assume p is a digit in digit-list of this.
+  // Dont modify m_expo,m_low
   void    insertZeroDigitsAfter(  Digit *p, size_t count);
+  // Insert count digits=BIGREALBASE-1 after digit p.
+  // Assume p is a digit in digit-list of this.
+  // Dont modify m_expo,m_low
   void    insertBorrowDigitsAfter(Digit *p, size_t count);
+  // Releases all digits in digit-list to this.m_digitPool.
+  // Dont modify m_expo,m_low
   inline void clearDigits() {
     if(m_first) {
       m_digitPool.deleteDigits(m_first, m_last);
@@ -438,7 +453,9 @@ private:
     if(isZero()) m_expo = m_low = 0; else m_expo++;
   }
 
-  // return *this
+  // Remove all 0-digits at the ends of digit-list, and check for overflow/underflow.
+  // Adjust m_expo,m_low accordingly
+  // Return *this
   inline BigReal &trimZeroes() {
     if(m_first) {
       if(m_first->n == 0)     trimHead();
@@ -448,10 +465,12 @@ private:
     }
     return *this;
   }
-  // trim zeroes from head, AND if necessary from the tail to
-  // assume m_first && m_first == 0
+  // Trim zeroes from head, AND if necessary from the tail too
+  // Assume m_first && m_first->n == 0
+  // Adjust m_expo,m_low accordingly
   void    trimHead();
-  // assume m_first != NULL (=> m_last != NULL) and m_last->n == 0
+  // Assume m_first != NULL (=> m_last != NULL) and m_last->n == 0
+  // Adjust m_low accordingly
   void    trimTail();
   Digit  *findDigit(const BRExpoType exponent) const;
   Digit  *findDigitSubtract(const BigReal &f) const;
@@ -700,6 +719,8 @@ public:
   BigReal &operator--();                                                      // prefix-form
   BigReal  operator++(int);                                                   // postfix-form
   BigReal  operator--(int);                                                   // postfix-form
+  // Do *this *= pow(10,exp). (Fast) Check for overflow/underflow. Trim leading and trailling zeroes if necessessary
+  // Return *this
   BigReal &multPow10(BRExpoType exp);
 
   // Result.digitPool = x.digitPool
