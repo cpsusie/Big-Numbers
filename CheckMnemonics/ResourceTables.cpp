@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include "ResourceParser.h"
 
-#line 44 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 44 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
 
 #pragma warning(disable : 4312)
 
