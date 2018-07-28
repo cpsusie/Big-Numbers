@@ -176,33 +176,33 @@ BigReal &BigReal::product(BigReal &result, const BigReal &x, const BigReal &y, c
   const BigReal &zero = pool->get0();
   level++;
   X.split(a, b, n, g.isZero() ? zero : PAPCprod(#,gpm10,reciprocal(Y,pool),pool));            // a + b = X   O(n)
-  if((intptr_t)YLength < n) {                                                                            //
-    BigReal p1(pool),p2(pool);
-    return result = product(p1, a, Y, zero, level) + product(p2, b, Y, g, level);              // a*Y+b*Y     O(2*n/2*n+n/2)
+  if((intptr_t)YLength < n) {                                                                 //
+    BigReal p1(pool),p2(pool);                                                                //
+    return result = product(p1, a, Y, zero, level) + product(p2, b, Y, g, level);             // a*Y+b*Y     O(2*n/2*n+n/2)
   }
 
   BigReal c(pool), d(pool);
   Y.split(c, d, n, g.isZero() ? zero : PAPCprod(#,gpm10,reciprocal(X, pool),pool));           // c + d = Y   O(n)
 
-  const BRExpoType logBK = LOG10_BIGREALBASE * n;                    //                                       O(1)
+  const BRExpoType logBK = LOG10_BIGREALBASE * n;                    //                                      O(1)
                                                                      //
-  b.multPow10(logBK);                                                //                                       O(1)
-  d.multPow10(logBK);                                                //                                       O(1)
-  BigReal Kg(g);                                                     //                                       O(1)
-  Kg.multPow10(logBK);                                               //                                       O(1)
-  BigReal r(pool), s(pool), t(pool);                                 //                                       O(1)
+  b.multPow10(logBK);                                                //                                      O(1)
+  d.multPow10(logBK);                                                //                                      O(1)
+  BigReal Kg(g);                                                     //                                      O(1)
+  Kg.multPow10(logBK);                                               //                                      O(1)
+  BigReal r(pool), s(pool), t(pool);                                 //                                      O(1)
                                                                      //
-  product(r, a  , c  , zero, level);                                 // r = a * c                             O(n^2/4)
-  product(s, a+b, c+d, Kg  , level);                                 // s = (a+Kb) * (c+Kd)                   O(n^2/4+2n/2)
-  product(t, b  , d  , Kg  , level);                                 // t = Kb * Kd                           O(n^2/4)
+  product(r, a  , c  , zero, level);                                 // r = a * c                            O((n/2)^2)      = O((n^2)/4)
+  product(s, a+b, c+d, Kg  , level);                                 // s = (a+Kb) * (c+Kd)                  O((n/2)^2+2n/2) = O((n^2)/4+n)
+  product(t, b  , d  , Kg  , level);                                 // t = Kb * Kd                          O((n/2)^2)      = O((n^2)/4)
                                                                      //
-  s -= r;                                                            //                                       O(n)
-  s -= t;                                                            // s = (a+Kb) * (c+Kd) - (a*c + b*d)     O(n)
-  s.multPow10(-logBK);                                               // s /= K                                O(1)
-  r += s;                                                            //                                       O(n)
-  t.multPow10(-2*logBK);                                             // t /= K^2                              O(1)
-  return result = sum(r, t, g);                                      // return sum(r+(s-(r+t))/K,t/(K*K),g)   O(n)
-                                                                     //                              Total:   O(3/4n^2 + 6n + k)
+  s -= r;                                                            //                                      O(n)
+  s -= t;                                                            // s = (a+Kb) * (c+Kd) - (a*c + b*d)    O(n)
+  s.multPow10(-logBK);                                               // s /= K                               O(1)
+  r += s;                                                            //                                      O(n)
+  t.multPow10(-2*logBK);                                             // t /= K^2                             O(1)
+  return result = sum(r, t, g);                                      // return sum(r+(s-(r+t))/K,t/(K*K),g)  O(n)
+                                                                     //                              Total:  O(3/4(n^2) + 6n + k)
 }
 
 BigReal prod(const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *digitPool) {
