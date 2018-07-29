@@ -28,6 +28,12 @@ inline int dmax(int x1, int x2) {
 inline int dmin(int x1, int x2) {
   return (x1 < x2) ? x1 : x2;
 }
+inline UINT dmax(UINT x1, UINT x2) {
+  return (x1 > x2) ? x1 : x2;
+}
+inline UINT dmin(UINT x1, UINT x2) {
+  return (x1 < x2) ? x1 : x2;
+}
 
 double mypow(             double x, double y);
 double root(              double x, double y);
