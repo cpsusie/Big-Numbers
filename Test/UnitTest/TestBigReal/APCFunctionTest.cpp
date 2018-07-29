@@ -27,7 +27,7 @@ void testAPCSum(TestStatistic &stat) {
                                    ,bias,length,xScale,yScale);
             }
 
-            const BigReal    tolerance   = delta * Max(x, y);
+            const BigReal    tolerance   = delta * dmax(x, y);
             const BigReal    exactResult = x + y;
             const BigReal    APCResult   = BigReal::apcSum(bias, x, y, pool);
             const BigReal    error       = fabs(APCResult - exactResult);

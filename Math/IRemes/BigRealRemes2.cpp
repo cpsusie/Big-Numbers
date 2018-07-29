@@ -282,7 +282,7 @@ void Remes::findCoefficients() {
       m_coefVectorIndex++;
       if(m_nextE.isZero()) break;
 
-      setProperty(Q, m_Q, fabs(BIGREAL_1 - rQuot(Min(fabs(m_E), fabs(m_nextE)), Max(fabs(m_E), fabs(m_nextE)), m_digits)));
+      setProperty(Q, m_Q, fabs(BIGREAL_1 - rQuot(dmin(fabs(m_E), fabs(m_nextE)), dmax(fabs(m_E), fabs(m_nextE)), m_digits)));
       if(m_Q < m_QEpsilon) {
         break;
       }

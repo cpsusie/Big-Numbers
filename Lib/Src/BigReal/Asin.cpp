@@ -68,7 +68,7 @@ BigReal asin(const BigReal &x, const BigReal &f) {
       z = dif(_1,x,q,pool);
     }
     g = PAPCquot(<,PAPCprod(<,ASINC.c3,f,pool),x,pool);
-    t = sqrt(_1 - prod(x,x,PAPCprod(<,f,PAPCquot(<,e(ASINC.c5,BigReal::getExpo10(z)/2,pool),x,pool),pool),pool),Min(g,BigReal(ASINC.c4,pool)));
+    t = sqrt(_1 - prod(x,x,PAPCprod(<,f,PAPCquot(<,e(ASINC.c5,BigReal::getExpo10(z)/2,pool),x,pool),pool),pool),dmin(g,BigReal(ASINC.c4,pool)));
     if(t.isPositive()) {
       return atan(quot(x,t,PAPCquot(<,PAPCprod(<,ASINC.c6,f,pool),PAPCprod(>,t,t,pool),pool),pool),PAPCprod(<,ASINC.c7,f,pool));
     } else {

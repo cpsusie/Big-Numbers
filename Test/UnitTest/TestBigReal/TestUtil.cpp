@@ -16,7 +16,7 @@ static Array<BigReal> &generateTestDataExponentialStep(Array<BigReal> &a, const 
   const BigReal &_1         = pool->get1();
   BigReal        t          = _1;
   const BigReal  fromM1     = from - _1;
-  const BigReal  stepFactor = rRoot(to-fromM1,Max(_1,BigReal(count, pool)-_1),20);
+  const BigReal  stepFactor = rRoot(to-fromM1,dmax(_1,BigReal(count, pool)-_1),20);
 
   for(int i = 0; i < count; i++, t *= stepFactor) {
     a.add(fromM1 + t);

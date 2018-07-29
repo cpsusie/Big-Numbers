@@ -432,7 +432,7 @@ void Remes::findCoefficients(const BigReal &QEpsilon) {
         break;
       }
 
-      BigReal Q = fabs(BIGREAL_1 - rQuot(Min(fabs(m_E),fabs(newE)), Max(fabs(m_E),fabs(newE)), m_digits));
+      BigReal Q = fabs(BIGREAL_1 - rQuot(dmin(fabs(m_E),fabs(newE)), dmax(fabs(m_E),fabs(newE)), m_digits));
 
       if(m_verbose) {
         verbose(ELINE+3,format(_T("Q=1-min(|Last E|, |New E|)/max(|Last E|, |New E|):%s"), FormatBigReal(Q).cstr()));

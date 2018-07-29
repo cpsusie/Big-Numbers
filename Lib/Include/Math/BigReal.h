@@ -1340,11 +1340,14 @@ public:
   };
 };
 
-inline BigReal  Max(const BigReal &x, const BigReal &y) {
+inline BigReal dsign(const BigReal &x) {
+  DigitPool *pool = x.getDigitPool();
+  return x.isNegative() ? -pool->get1() : x.isPositive() ? pool->get1() : pool->get0();
+}
+inline BigReal  dmax(const BigReal &x, const BigReal &y) {
   return (compare(x, y) >= 0) ? x : y;
 }
-
-inline BigReal  Min(const BigReal &x, const BigReal &y) {
+inline BigReal  dmin(const BigReal &x, const BigReal &y) {
   return (compare(x, y) <= 0) ? x : y;
 }
 
