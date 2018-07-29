@@ -666,7 +666,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\Math\BigReal.h" />
+    <ClInclude Include="..\..\Include\Math\BigRealInterval.h" />
     <ClInclude Include="..\..\Include\Math\BigRealMatrix.h" />
+    <ClInclude Include="..\..\Include\Math\BigRealTransformation.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
@@ -693,6 +695,7 @@
     <ClCompile Include="BigRealStream.cpp" />
     <ClCompile Include="BigRealThread.cpp" />
     <ClCompile Include="BigRealResourcePool.cpp" />
+    <ClCompile Include="BigRealTransformation.cpp" />
     <ClCompile Include="BigRealVector.cpp" />
     <ClCompile Include="Cos.cpp" />
     <ClCompile Include="Cot.cpp" />

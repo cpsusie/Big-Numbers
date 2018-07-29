@@ -1212,7 +1212,9 @@
   <ItemGroup>
     <ClInclude Include="..\..\Include\Math\AlgorithmHandler.h" />
     <ClInclude Include="..\..\Include\Math\BigReal.h" />
+    <ClInclude Include="..\..\Include\Math\BigRealInterval.h" />
     <ClInclude Include="..\..\Include\Math\BigRealMatrix.h" />
+    <ClInclude Include="..\..\Include\Math\BigRealTransformation.h" />
     <ClInclude Include="..\..\Include\Math\Complex.h" />
     <ClInclude Include="..\..\Include\Math\Double64.h" />
     <ClInclude Include="..\..\Include\Math\Double80.h" />

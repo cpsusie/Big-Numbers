@@ -3,6 +3,7 @@
 #include <HashMap.h>
 #include <Math/MathLib.h>
 #include <Math/BigRealMatrix.h>
+#include <Math/BigRealInterval.h>
 #include <PropertyContainer.h>
 
 #define MULTITHREADEDEXTREMAFINDER
@@ -93,8 +94,6 @@ public:
     return ((ExtremaHashMap*)this)->ExtremaHashMap::entrySet().getIterator();
   }
 };
-
-typedef NumberInterval<BigReal> BigRealInterval;
 
 class RemesTargetFunction : public FunctionTemplate<BigReal, BigReal> {
 public:
