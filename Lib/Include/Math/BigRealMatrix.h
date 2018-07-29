@@ -21,7 +21,7 @@ public:
     return *this;
   }
   UINT setPrecision(UINT digits);
-  UINT getPrecision() const {
+  inline UINT getPrecision() const {
     return m_digits;
   }
   BigRealVector &operator*=(const BigReal &d);
@@ -51,7 +51,7 @@ public:
   explicit BigRealMatrix(size_t rows = 1, size_t cols = 1, UINT digits = 16);
   BigRealMatrix(const BigRealMatrix &a);
   UINT setPrecision(UINT digits);
-  UINT getPrecision() const {
+  inline UINT getPrecision() const {
     return m_digits;
   }
   static BigRealMatrix one( size_t dim , UINT digits = 16);
