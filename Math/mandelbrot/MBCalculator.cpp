@@ -13,7 +13,7 @@ extern "C" UINT64 mbloop(const Double80 &x, const Double80 &y, UINT64 maxIterati
 #endif
 #endif
 
-UINT MBCalculator::findITCountFast(const Real &X, const Real &Y, UINT maxIteration) {
+UINT MBCalculator::findITCountFast(const MBReal &X, const MBReal &Y, UINT maxIteration) {
 #ifndef ASMOPTIMIZED
   Double80 x = X;
   Double80 y = Y;
@@ -114,13 +114,13 @@ return:
 
 }
 
-UINT MBCalculator::findITCountPaintOrbit(const Real &X, const Real &Y, UINT maxIteration) {
+UINT MBCalculator::findITCountPaintOrbit(const MBReal &X, const MBReal &Y, UINT maxIteration) {
   double x = getDouble(X);
   double y = getDouble(Y);
   double a = x;
   double b = y;;
-  const RealRectangleTransformation &tr = m_mbc.getTransformation();
-  OrbitPoint                        *op = m_orbitPoints;
+  const MBRectangleTransformation &tr = m_mbc.getTransformation();
+  OrbitPoint                      *op = m_orbitPoints;
   const CPoint p0 = toCPoint(tr.forwardTransform(a,b));
   if(m_edgeTracing) m_mbc.paintMark(p0);
   UINT count;
@@ -194,11 +194,11 @@ UINT MBCalculator::run() {
   const bool                         useEdgeDetection = m_mbc.useEdgeDetection();
   PixelAccessor                     &pa               = *m_mbc.getPixelAccessor();
   const D3DCOLOR                    *colorMap         = m_mbc.getColorMap();
-  const RealRectangleTransformation &tr               = m_mbc.getTransformation();
-  const RealIntervalTransformation  &xtr              = tr.getXTransformation();
-  const RealIntervalTransformation  &ytr              = tr.getYTransformation();
-  const Real                         xStep            = xtr.backwardTransform(1) - xtr.backwardTransform(0);
-  const Real                         yStep            = ytr.backwardTransform(1) - ytr.backwardTransform(0);
+  const MBRectangleTransformation   &tr               = m_mbc.getTransformation();
+  const MBIntervalTransformation    &xtr              = tr.getXTransformation();
+  const MBIntervalTransformation    &ytr              = tr.getYTransformation();
+  const MBReal                       xStep            = xtr.backwardTransform(1) - xtr.backwardTransform(0);
+  const MBReal                       yStep            = ytr.backwardTransform(1) - ytr.backwardTransform(0);
 
   SETPHASE(_T("RUN"))
 
@@ -209,16 +209,16 @@ UINT MBCalculator::run() {
 //      DLOG(_T("calc(%d) got rect (%d,%d,%d,%d)\n"), m_id, m_currentRect.left,m_currentRect.top,m_currentRect.right,m_currentRect.bottom);
 
       m_edgeTracing = false;
-      Real        xt, yt = ytr.backwardTransform(m_currentRect.top);
-      const Real  xLeft  = xtr.backwardTransform(m_currentRect.left);
-      CPoint      p;
-      D3DCOLOR    emptyColor = EMPTY_COLOR;
+      MBReal       xt, yt = ytr.backwardTransform(m_currentRect.top);
+      const MBReal xLeft  = xtr.backwardTransform(m_currentRect.left);
+      CPoint       p;
+      D3DCOLOR     emptyColor = EMPTY_COLOR;
 
       for(p.y = m_currentRect.top; p.y < m_currentRect.bottom; p.y++, yt += yStep) {
         if(m_pool.isPending(m_pendingMask)) handlePending();
         for(p.x = m_currentRect.left, xt = xLeft; p.x < m_currentRect.right; p.x++, xt += xStep) {
           if(pa.getPixel(p) != EMPTY_COLOR) continue;
-          const Real xt         = xtr.backwardTransform(p.x);
+          const MBReal xt       = xtr.backwardTransform(p.x);
           const int  iterations = findItCount(xt, yt, maxIteration);
           pa.setPixel(p, colorMap[iterations]);
 
@@ -260,10 +260,10 @@ void MBCalculator::followBlackEdge(const CPoint &p) {
 
   SETPHASE(_T("FOLLOWEDGE"))
 
-  const RealRectangleTransformation &tr    = m_mbc.getTransformation();
-  const RealIntervalTransformation  &xtr   = tr.getXTransformation();
-  const RealIntervalTransformation  &ytr   = tr.getYTransformation();
-  const int                          maxIt = m_mbc.getMaxIteration();
+  const MBRectangleTransformation &tr    = m_mbc.getTransformation();
+  const MBIntervalTransformation  &xtr   = tr.getXTransformation();
+  const MBIntervalTransformation  &ytr   = tr.getYTransformation();
+  const int                        maxIt = m_mbc.getMaxIteration();
 
 #ifdef SAVE_CALCULATORINFO
   m_info = new CalculatorInfo(m_id, m_currentRect);
@@ -295,8 +295,8 @@ void MBCalculator::followBlackEdge(const CPoint &p) {
           } else if(c != EMPTY_COLOR) {
             edgeMatrix.setOutside(dy+1, dx+1);
           } else {
-            const Real X          = xtr.backwardTransform(qx);
-            const Real Y          = ytr.backwardTransform(qy);
+            const MBReal X        = xtr.backwardTransform(qx);
+            const MBReal Y        = ytr.backwardTransform(qy);
             const int  iterations = findItCount(X, Y, maxIt);
             if(iterations == maxIt) {
               edgeMatrix.setInside(dy+1, dx+1);

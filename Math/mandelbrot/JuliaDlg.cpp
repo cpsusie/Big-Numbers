@@ -6,7 +6,7 @@
 #define new DEBUG_NEW
 #endif
 
-CJuliaDlg::CJuliaDlg(const RealPoint2D &point, CWnd *pParent /*=NULL*/)
+CJuliaDlg::CJuliaDlg(const MBPoint2D &point, CWnd *pParent /*=NULL*/)
 : m_point(point)
 , CDialog(CJuliaDlg::IDD, pParent)
 {
@@ -24,7 +24,7 @@ END_MESSAGE_MAP()
 BOOL CJuliaDlg::OnInitDialog() {
   __super::OnInitDialog();
 
-  const RealRectangle2D rr(-2,-2,4,4);
+  const MBRectangle2D rr(-2,-2,4,4);
 
   m_transform.setFromRectangle(rr);
   adjustToRectangle();
@@ -39,7 +39,7 @@ void CJuliaDlg::adjustToRectangle() {
 //  const int t = cl.bottom;
 //  cl.bottom = cl.top;
 //  cl.top = t;
-  m_transform.setToRectangle(toRealRect(cl));
+  m_transform.setToRectangle(toMBRect(cl));
 }
 
 JuliaCalculatorThread::JuliaCalculatorThread(CJuliaDlg &dlg) : m_dlg(dlg) {
@@ -59,10 +59,10 @@ void JuliaCalculatorThread::kill() {
 };
 
 UINT JuliaCalculatorThread::run() {
-  const RealPoint2D                  c    = m_dlg.getC();
-  const RealRectangleTransformation &tr   = m_dlg.getTransform();
+  const MBPoint2D                  c    = m_dlg.getC();
+  const MBRectangleTransformation &tr   = m_dlg.getTransform();
 
-  RealPoint2D z = c;
+  MBPoint2D z = c;
 #define POINTBUFFERSIZE 10000
   CPoint pointBuffer[POINTBUFFERSIZE];
   int index = 0;
@@ -76,12 +76,12 @@ UINT JuliaCalculatorThread::run() {
       index = 0;
     }
 
-    const Real x2 = z.x*z.x;
-    const Real y2 = z.y*z.y;
+    const MBReal x2 = z.x*z.x;
+    const MBReal y2 = z.y*z.y;
     if(x2+y2 > 4) {
       break;
     }
-    const Real tmp = x2-y2-c.x;
+    const MBReal tmp = x2-y2-c.x;
     z.y = 2*z.x*z.y-c.y;
     z.x = tmp;
   }
@@ -93,4 +93,3 @@ UINT JuliaCalculatorThread::run() {
   }
   return 0;
 }
-

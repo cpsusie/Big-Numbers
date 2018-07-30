@@ -126,7 +126,7 @@ BOOL CMandelbrotDlg::OnInitDialog() {
 
   m_crossIcon  = createIcon(theApp.m_hInstance, IDB_MARK_COLORBITMAP, IDB_MARK_MASKBITMAP);
   m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_MAINFRAME));
-  m_rect0      = RealRectangle2D(-4.5,-4, 8,8);
+  m_rect0      = MBRectangle2D(-4.5,-4, 8,8);
 
   theApp.m_device.attach(*this);
 
@@ -188,7 +188,7 @@ void CMandelbrotDlg::OnFileSaveRectangle() {
     dlg.m_ofn.lpstrTitle  = _T("Save Rectangle");
     dlg.m_ofn.lpstrFilter = rectangleFileExtensions;
 
-    const RealRectangle2D r = m_transform.getFromRectangle();
+    const MBRectangle2D r = m_transform.getFromRectangle();
 
     String fileName = format(_T("[%s,%s]x[%s,%s].rect")
                             ,::toString(r.getMinX()  ,16,0, ios::scientific).cstr()
@@ -465,7 +465,7 @@ void CMandelbrotDlg::OnLButtonUp(UINT nFlags, CPoint point) {
     setState(STATE_IDLE);
     if(getArea(m_dragRect) != 0) {
       pushImage();
-      setScale(m_transform.backwardTransform(toRealRect(m_dragRect)));
+      setScale(m_transform.backwardTransform(toMBRect(m_dragRect)));
       startCalculation();
     }
   }
@@ -474,7 +474,7 @@ void CMandelbrotDlg::OnLButtonUp(UINT nFlags, CPoint point) {
 void CMandelbrotDlg::OnLButtonDblClk(UINT nFlags, CPoint point) {
   __super::OnLButtonDblClk(nFlags, point);
   m_mouseDownPoint = getImagePointFromMousePoint(point);
-  const RealPoint2D p = m_transform.backwardTransform(toRealPoint(m_mouseDownPoint));
+  const MBPoint2D p = m_transform.backwardTransform(toMBPoint(m_mouseDownPoint));
   CJuliaDlg dlg(p);
   dlg.DoModal();
 }
@@ -532,7 +532,7 @@ BOOL CMandelbrotDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) {
     if(zDelta > 0) {
       pushImage();
       m_imageWindow->ScreenToClient(&pt);
-      setScale(m_transform.zoom(RealPoint2D(pt.x,pt.y),0.25));
+      setScale(m_transform.zoom(MBPoint2D(pt.x,pt.y),0.25));
       startCalculation();
     } else {
       popImage();
@@ -700,7 +700,7 @@ void CMandelbrotDlg::setSuspendingMenuText(bool isSuspendingText) {
 
 void CMandelbrotDlg::showWindowState() {
   if(!isMakingMovie()) {
-    const RealRectangle2D r = m_transform.getFromRectangle();
+    const MBRectangle2D r = m_transform.getFromRectangle();
 
     setWindowText(this
                 , format(_T("[%s;%s]x[%s,%s]")
@@ -729,7 +729,7 @@ void CMandelbrotDlg::showWindowState() {
 
 void CMandelbrotDlg::showMousePoint(const CPoint &p) {
   if(m_pixRect->contains(p)) {
-    const RealPoint2D rp = m_transform.backwardTransform(toRealPoint(p));
+    const MBPoint2D rp = m_transform.backwardTransform(toMBPoint(p));
     const String msg = format(_T(" (%3d,%3d) [%s,%s]")
                              , p.x,p.y
                              ,::toString(rp.x,16,24,ios::scientific|ios::showpos).cstr()
@@ -769,7 +769,7 @@ void CMandelbrotDlg::setWorkSize(const CSize &size) {
     initScale();
   }
   if(isValidSize()) {
-    m_transform.setToRectangle(RealRectangle2D(0,0,size.cx, size.cy));
+    m_transform.setToRectangle(MBRectangle2D(0,0,size.cx, size.cy));
     if(isRetainAspectRatio()) {
       m_transform.adjustAspectRatio();
     }
@@ -874,12 +874,12 @@ void CMandelbrotDlg::loadColorMap(const String &fileName) {
 }
 
 void CMandelbrotDlg::saveRectangle(const String &fileName) {
-  const RealRectangle2D r = m_transform.getFromRectangle();
+  const MBRectangle2D r = m_transform.getFromRectangle();
   ByteOutputFile(fileName).putBytes((BYTE*)&r, sizeof(r));
 }
 
 void CMandelbrotDlg::loadRectangle(const String &fileName) {
-  RealRectangle2D r;
+  MBRectangle2D r;
   ByteInputFile(fileName).getBytesForced((BYTE*)&r, sizeof(r));
   setScale(r);
 }
@@ -908,20 +908,20 @@ void CMandelbrotDlg::setPrecision(int id) {
   startCalculation();
 }
 
-void CMandelbrotDlg::setScale(const RealRectangle2D &scale, bool allowAdjustAspectRatio) {
+void CMandelbrotDlg::setScale(const MBRectangle2D &scale, bool allowAdjustAspectRatio) {
   setScale(scale.getMinX(),scale.getMaxX(),scale.getMinY(),scale.getMaxY(), allowAdjustAspectRatio);
 }
 
-void CMandelbrotDlg::setScale(const Real &minX, const Real &maxX, const Real &minY, const Real &maxY, bool allowAdjustAspectRatio) {
+void CMandelbrotDlg::setScale(const MBReal &minX, const MBReal &maxX, const MBReal &minY, const MBReal &maxY, bool allowAdjustAspectRatio) {
   FPU::setPrecisionMode(getPrecisionMode());
-  m_transform.setFromRectangle(RealRectangle2D(minX, maxY, maxX-minX, minY-maxY));
+  m_transform.setFromRectangle(MBRectangle2D(minX, maxY, maxX-minX, minY-maxY));
   if(isRetainAspectRatio() && allowAdjustAspectRatio) {
     m_transform.adjustAspectRatio();
   }
 }
 
 void CMandelbrotDlg::updateZoomFactor() {
-  const RealRectangle2D r = m_transform.getFromRectangle();
+  const MBRectangle2D r = m_transform.getFromRectangle();
   if(isRetainAspectRatio()) {
     const double z = getDouble(m_zoom1Rect.getWidth()/r.getWidth());
     m_zoomFactor = Size2D(z,z);
@@ -999,8 +999,8 @@ void CMandelbrotDlg::calculateMovedImage(const CSize &dp) {
     break;
   }
   setRectanglesToCalculate(uncalculatedRectangles);
-  RealRectangle2D s(toRealRect(m_pixRect->getRect()));
-  s -= toRealPoint(dp);
+  MBRectangle2D s(toMBRect(m_pixRect->getRect()));
+  s -= toMBPoint(dp);
   setScale(m_transform.backwardTransform(s),false);
   startCalculation();
 }
@@ -1275,7 +1275,7 @@ void CMandelbrotDlg::OnTimer(UINT_PTR nIDEvent) {
   __super::OnTimer(nIDEvent);
 }
 
-const RealRectangleTransformation &DialogMBContainer::getTransformation() const {
+const MBRectangleTransformation &DialogMBContainer::getTransformation() const {
   return m_dlg->getTransformation();
 }
 

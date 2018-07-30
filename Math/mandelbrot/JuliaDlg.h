@@ -16,20 +16,20 @@ public:
 };
 
 class CJuliaDlg : public CDialog {
-  const RealPoint2D           m_point;
-  RealRectangleTransformation m_transform;
+  const MBPoint2D             m_point;
+  MBRectangleTransformation   m_transform;
   HRGN                        m_imageRGN;
   JuliaCalculatorThread      *m_thread;
   void adjustToRectangle();
 public:
-    CJuliaDlg(const RealPoint2D &point, CWnd *pParent = NULL);
+    CJuliaDlg(const MBPoint2D &point, CWnd *pParent = NULL);
    ~CJuliaDlg();
 
-    const RealPoint2D &getC() const {
+    const MBPoint2D &getC() const {
       return m_point;
     }
 
-    const RealRectangleTransformation &getTransform() const {
+    const MBRectangleTransformation &getTransform() const {
       return m_transform;
     }
     enum { IDD = IDD_JULIA_DIALOG };

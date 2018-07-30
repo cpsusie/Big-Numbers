@@ -10,20 +10,28 @@
 
 //#define SAVE_CALCULATORINFO
 
-inline CPoint toCPoint(const RealPoint2D &p) {
+typedef Real                        MBReal;
+typedef RealPoint2D                 MBPoint2D;
+typedef RealRectangle2D             MBRectangle2D;
+typedef RealInterval                MBInterval;
+typedef RealIntervalTransformation  MBIntervalTransformation;
+typedef RealLinearTransformation    MBLinearTransformation;
+typedef RealRectangleTransformation MBRectangleTransformation;
+
+inline CPoint toCPoint(const MBPoint2D &p) {
   return CPoint(getInt(p.x), getInt(p.y));
 }
 
-inline RealPoint2D toRealPoint(const CPoint &p) {
-  return RealPoint2D(p.x, p.y);
+inline MBPoint2D toMBPoint(const CPoint &p) {
+  return MBPoint2D(p.x, p.y);
 }
 
-inline CRect toCRect(const RealRectangle2D &r) {
+inline CRect toCRect(const MBRectangle2D &r) {
   return CRect(getInt(r.m_x),getInt(r.m_y),getInt(r.m_x+r.m_w),getInt(r.m_y+r.m_h));
 }
 
-inline RealRectangle2D toRealRect(const CRect &r) {
-  return RealRectangle2D(r.left,r.top,r.Width(),r.Height());
+inline MBRectangle2D toMBRect(const CRect &r) {
+  return MBRectangle2D(r.left,r.top,r.Width(),r.Height());
 }
 
 class OrbitPoint : public CPoint {
@@ -120,7 +128,7 @@ class MBContainer : public DWordPixelAccessor, public PropertyChangeListener {
 public:
   MBContainer(PixRect *pr) : DWordPixelAccessor(pr,0) {
   }
-  virtual const RealRectangleTransformation &getTransformation()       const  = 0;
+  virtual const MBRectangleTransformation   &getTransformation()       const  = 0;
   virtual UINT                               getMaxIteration()         const  = 0;
   virtual const D3DCOLOR                    *getColorMap()             const  = 0;
   virtual FPUPrecisionMode                   getPrecisionMode()        const  = 0;
@@ -164,16 +172,16 @@ private:
 #define SETPHASE(str)
 #endif
 
-  UINT (MBCalculator::*m_itCount)(const Real &, const Real &, UINT);
+  UINT (MBCalculator::*m_itCount)(const MBReal &, const MBReal &, UINT);
 
-  UINT  findITCountPaintOrbit(const Real &X, const Real &Y, UINT maxIteration);
-  UINT  findITCountFast(      const Real &X, const Real &Y, UINT maxIteration);
+  UINT  findITCountPaintOrbit(const MBReal &X, const MBReal &Y, UINT maxIteration);
+  UINT  findITCountFast(      const MBReal &X, const MBReal &Y, UINT maxIteration);
   void  followBlackEdge(const CPoint &p);
   void  fillInnerArea(PointSet &innerSet);
   void  releaseOrbitPoints();
   PixelAccessor *handlePending();
 
-  inline UINT findItCount(const Real &X, const Real &Y, UINT maxIteration) {
+  inline UINT findItCount(const MBReal &X, const MBReal &Y, UINT maxIteration) {
     return (this->*m_itCount)(X, Y, maxIteration);
   }
 public:

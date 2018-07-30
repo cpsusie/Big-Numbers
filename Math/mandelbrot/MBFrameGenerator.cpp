@@ -12,8 +12,8 @@ MBFrameGenerator::MBFrameGenerator(CMandelbrotDlg *dlg, const String &dirName)
   m_startRect       = m_dlg.getTransformation().getFromRectangle();
   m_totalFrameCount = findTotalFrameCount(m_startRect, m_finalRect);
   m_frameIndex      = 0;
-  m_expTransform    = new ExpTransformation(RealInterval(0, m_totalFrameCount), RealInterval(1,m_finalRect.getWidth()/m_startRect.getWidth())); TRACE_NEW(m_expTransform   );
-  m_linearTransform = new RealLinearTransformation(m_expTransform->getToInterval(), RealInterval(1,0));                                         TRACE_NEW(m_linearTransform);
+  m_expTransform    = new ExpTransformation(MBInterval(0, m_totalFrameCount), MBInterval(1,m_finalRect.getWidth()/m_startRect.getWidth())); TRACE_NEW(m_expTransform   );
+  m_linearTransform = new MBLinearTransformation(m_expTransform->getToInterval(), MBInterval(1,0));                                         TRACE_NEW(m_linearTransform);
 
   HDC screenDC = getScreenDC();
   m_dc = CreateCompatibleDC(screenDC);
@@ -41,26 +41,26 @@ MBFrameGenerator::~MBFrameGenerator() {
 
 #define ZOOMSTEP 0.0078125
 
-ExpTransformation::ExpTransformation(const RealInterval &from, const RealInterval &to) : m_toInterval(to) {
+ExpTransformation::ExpTransformation(const MBInterval &from, const MBInterval &to) : m_toInterval(to) {
   m_a = root(to.getTo() / to.getFrom(), from.getTo()-from.getFrom());
   m_b = to.getFrom() / pow(m_a, from.getFrom());
 }
 
-int MBFrameGenerator::findTotalFrameCount(const RealRectangle2D &startRect, const RealRectangle2D &finalRect) { // static
-  const Real l0 = startRect.getWidth();
-  const Real lf = finalRect.getWidth();
+int MBFrameGenerator::findTotalFrameCount(const MBRectangle2D &startRect, const MBRectangle2D &finalRect) { // static
+  const MBReal l0 = startRect.getWidth();
+  const MBReal lf = finalRect.getWidth();
   return getInt((log2(lf/l0) / log2(1.0 - ZOOMSTEP))) + 1;
 }
 
-RealRectangle2D MBFrameGenerator::getInterpolatedRectangle() const {
-  const Real fw = m_expTransform->transform(m_frameIndex);       // 1 -> finalWidth/startWidth
-  const Real t1 = m_linearTransform->forwardTransform(fw);       // 1 -> 0
-  const Real t2 = (1 - t1);                                      // 0 -> 1
-  const Real x = t1 * m_startRect.m_x + t2 * m_finalRect.m_x;
-  const Real y = t1 * m_startRect.m_y + t2 * m_finalRect.m_y;
-  const Real w = fw * m_startRect.getWidth();
-  const Real h = fw * m_startRect.getHeight();
-  return RealRectangle2D(x,y,w,h);
+MBRectangle2D MBFrameGenerator::getInterpolatedRectangle() const {
+  const MBReal fw = m_expTransform->transform(m_frameIndex);       // 1 -> finalWidth/startWidth
+  const MBReal t1 = m_linearTransform->forwardTransform(fw);       // 1 -> 0
+  const MBReal t2 = (1 - t1);                                      // 0 -> 1
+  const MBReal x  = t1 * m_startRect.m_x + t2 * m_finalRect.m_x;
+  const MBReal y  = t1 * m_startRect.m_y + t2 * m_finalRect.m_y;
+  const MBReal w  = fw * m_startRect.getWidth();
+  const MBReal h  = fw * m_startRect.getHeight();
+  return MBRectangle2D(x,y,w,h);
 }
 
 HBITMAP MBFrameGenerator::nextBitmap() { // should return NULL when no more frames.
