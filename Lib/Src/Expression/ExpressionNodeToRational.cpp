@@ -9,7 +9,7 @@ bool ExpressionNode::reducesToRational(Rational *r) const {
     return false;
   }
   if(r != NULL) {
-    *r = v.getRationalValue();
+    *r = ::getRational(v);
   }
   return true;
 }

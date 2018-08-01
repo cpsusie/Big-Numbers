@@ -1161,7 +1161,7 @@ AlignedImage *ExpressionPainter::getNumberImage(SNode n, int fontSize, Expressio
     m_getNumberActive = true; // to prevent infinte recursion
     Real significand;
     int  exponent;
-    splitReal(num.getRealValue(), significand, exponent);
+    splitReal(getReal(num), significand, exponent);
     if(m_numberFormat == ENGINEERING_NOTATION) {
       const int r = ::abs(exponent % 3);
       if (r) {
@@ -1207,7 +1207,7 @@ bool ExpressionPainter::mustConvertNumber(const Number &n) const {
     if(n.isRational()) return false;
     { Real significant;
       int  exponent;
-      splitReal(n.getRealValue(), significant, exponent);
+      splitReal(getReal(n), significant, exponent);
       return (exponent != 0);
     }
     break;

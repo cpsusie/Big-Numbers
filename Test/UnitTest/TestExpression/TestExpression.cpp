@@ -437,8 +437,9 @@ namespace TestExpression {
         const size_t n = exprArray.size();
         for(UINT i = 0; i < n; i++) {
           const String  expr = exprArray[i];
-
-          OUTPUT(_T("Test[%d]:%s"), i, expr.cstr());
+          if(i % 100 == 0) {
+            OUTPUT(_T("Test[%d]:%s"), i, expr.cstr());
+          }
           FILE      * listFile = openBoolListFile(       i);
           FILE      *RlistFile = openBoolReducedListFile(i);
           FILE      * dumpFile = openBoolDumpFile(       i);

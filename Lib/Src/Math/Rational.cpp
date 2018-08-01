@@ -476,7 +476,7 @@ bool Rational::isRational(const Double80 &x, Rational *r) { // static
 }
 
 bool Rational::isRationalPow(const Rational &base, const Rational &e, Rational *r) {
-  if(e.isInteger()) {
+  if(isInt(e)) {
     if(r) *r = ::pow(base, getInt(e));
     return true;
   } else {

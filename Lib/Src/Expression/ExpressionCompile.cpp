@@ -310,7 +310,7 @@ void CodeGenerator::genExpression(SNode n DCL_DSTPARAM) {
     }
     { Rational rexpo;
       if(n.right().reducesToRational(&rexpo)) {
-        if(rexpo.isInt32()) {
+        if(isInt(rexpo)) {
           const int i32expo = getInt(rexpo);
           if(i32expo == 0) {
             genExpression(n._1() DST_PARAM);
@@ -337,7 +337,7 @@ void CodeGenerator::genExpression(SNode n DCL_DSTPARAM) {
     { Rational rroot;
       if(n.right().reducesToRational(&rroot)) {
         const Rational rexpo = reciprocal(rroot);
-        if((rexpo.isInt32() && ExpressionNode::isLogarithmicPowExponent(getInt(rexpo)))
+        if((isInt(rexpo) && ExpressionNode::isLogarithmicPowExponent(getInt(rexpo)))
          || ExpressionNode::isLogarithmicRoot(rexpo)) {
           // don't use pow here, causes infinite recursion
           genExpression(binExp(POW, n.left(), SNV(rexpo)) DST_PARAM);

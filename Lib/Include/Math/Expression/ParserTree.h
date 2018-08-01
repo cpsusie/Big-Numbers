@@ -231,7 +231,7 @@ protected:
     return numberExpr(Rational(v));
   }
   inline ExpressionNodeNumber *numberExpr(const Number   &v) {
-    if(v.isRational()) return numberExpr(v.getRationalValue());
+    if(isRational(v)) return numberExpr(getRational(v));
     ExpressionNodeNumber *n = new ExpressionNodeNumber(this, v); TRACE_NEW(n);
     return n;
   }

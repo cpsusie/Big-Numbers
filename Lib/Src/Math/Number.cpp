@@ -1,5 +1,6 @@
 #include "pch.h"
 #include <Math/Number.h>
+#include <Math/Double64.h>
 
 Number::Number() {
   m_type     = NUMBERTYPE_UNDEFINED;
@@ -221,67 +222,67 @@ Number &Number::operator=(UINT v) {
   return *this;
 }
 
-int Number::getIntValue() const {
+int getInt(const Number &n) {
   DEFINEMETHODNAME;
-  switch(getType()) {
-  case NUMBERTYPE_UNDEFINED: throwTypeIsUndefinedException(method);
-  case NUMBERTYPE_FLOAT    : return getInt(*m_flt     );
-  case NUMBERTYPE_DOUBLE   : return getInt(*m_d64     );
-  case NUMBERTYPE_DOUBLE80 : return getInt(*m_d80     );
-  case NUMBERTYPE_RATIONAL : return getInt(*m_rational);
-  default                  : throwUnknownTypeException(method);
+  switch(n.getType()) {
+  case NUMBERTYPE_UNDEFINED: Number::throwTypeIsUndefinedException(method);
+  case NUMBERTYPE_FLOAT    : return getInt(*n.m_flt     );
+  case NUMBERTYPE_DOUBLE   : return getInt(*n.m_d64     );
+  case NUMBERTYPE_DOUBLE80 : return getInt(*n.m_d80     );
+  case NUMBERTYPE_RATIONAL : return getInt(*n.m_rational);
+  default                  : n.throwUnknownTypeException(method);
   }
   return 0;
 }
 
-float Number::getFloatValue() const {
+float getFloat(const Number &n) {
   DEFINEMETHODNAME;
-  switch(getType()) {
-  case NUMBERTYPE_UNDEFINED: throwTypeIsUndefinedException(method);
-  case NUMBERTYPE_FLOAT    : return *m_flt;
-  case NUMBERTYPE_DOUBLE   : return getFloat(*m_d64);
-  case NUMBERTYPE_DOUBLE80 : return getFloat(*m_d80);
-  case NUMBERTYPE_RATIONAL : return getFloat(*m_rational);
-  default                  : throwUnknownTypeException(method);
+  switch(n.getType()) {
+  case NUMBERTYPE_UNDEFINED: Number::throwTypeIsUndefinedException(method);
+  case NUMBERTYPE_FLOAT    : return *n.m_flt;
+  case NUMBERTYPE_DOUBLE   : return getFloat(*n.m_d64);
+  case NUMBERTYPE_DOUBLE80 : return getFloat(*n.m_d80);
+  case NUMBERTYPE_RATIONAL : return getFloat(*n.m_rational);
+  default                  : n.throwUnknownTypeException(method);
   }
   return 0;
 }
 
-double Number::getDoubleValue() const {
+double getDouble(const Number &n) {
   DEFINEMETHODNAME;
-  switch(getType()) {
-  case NUMBERTYPE_UNDEFINED: throwTypeIsUndefinedException(method);
-  case NUMBERTYPE_FLOAT    : return *m_flt;
-  case NUMBERTYPE_DOUBLE   : return *m_d64;
-  case NUMBERTYPE_DOUBLE80 : return getDouble(*m_d80);
-  case NUMBERTYPE_RATIONAL : return getDouble(*m_rational);
-  default                  : throwUnknownTypeException(method);
+  switch(n.getType()) {
+  case NUMBERTYPE_UNDEFINED: Number::throwTypeIsUndefinedException(method);
+  case NUMBERTYPE_FLOAT    : return *n.m_flt;
+  case NUMBERTYPE_DOUBLE   : return *n.m_d64;
+  case NUMBERTYPE_DOUBLE80 : return getDouble(*n.m_d80);
+  case NUMBERTYPE_RATIONAL : return getDouble(*n.m_rational);
+  default                  : n.throwUnknownTypeException(method);
   }
   return 0;
 }
 
-Double80 Number::getDouble80Value() const {
+Double80 getDouble80(const Number &n) {
   DEFINEMETHODNAME;
-  switch(getType()) {
-  case NUMBERTYPE_UNDEFINED: throwTypeIsUndefinedException(method);
-  case NUMBERTYPE_FLOAT    : return *m_flt;
-  case NUMBERTYPE_DOUBLE   : return *m_d64;
-  case NUMBERTYPE_DOUBLE80 : return *m_d80;
-  case NUMBERTYPE_RATIONAL : return getDouble80(*m_rational);
-  default                  : throwUnknownTypeException(method);
+  switch(n.getType()) {
+  case NUMBERTYPE_UNDEFINED: Number::throwTypeIsUndefinedException(method);
+  case NUMBERTYPE_FLOAT    : return *n.m_flt;
+  case NUMBERTYPE_DOUBLE   : return *n.m_d64;
+  case NUMBERTYPE_DOUBLE80 : return *n.m_d80;
+  case NUMBERTYPE_RATIONAL : return getDouble80(*n.m_rational);
+  default                  : n.throwUnknownTypeException(method);
   }
   return 0;
 }
 
-Rational Number::getRationalValue() const {
+Rational getRational(const Number &n) {
   DEFINEMETHODNAME;
-  switch(getType()) {
-  case NUMBERTYPE_UNDEFINED: throwTypeIsUndefinedException(method);
-  case NUMBERTYPE_FLOAT    : return Rational(*m_flt);
-  case NUMBERTYPE_DOUBLE   : return Rational(*m_d64);
-  case NUMBERTYPE_DOUBLE80 : return Rational(*m_d80);
-  case NUMBERTYPE_RATIONAL : return *m_rational;
-  default                  : throwUnknownTypeException(method);
+  switch(n.getType()) {
+  case NUMBERTYPE_UNDEFINED: Number::throwTypeIsUndefinedException(method);
+  case NUMBERTYPE_FLOAT    : return Rational(*n.m_flt);
+  case NUMBERTYPE_DOUBLE   : return Rational(*n.m_d64);
+  case NUMBERTYPE_DOUBLE80 : return Rational(*n.m_d80);
+  case NUMBERTYPE_RATIONAL : return *n.m_rational;
+  default                  : n.throwUnknownTypeException(method);
   }
   return 0;
 }
@@ -298,18 +299,18 @@ String Number::toString() const {
 }
 
 Number operator+(const Number &n1, const Number &n2) {
-  if(n1.isRational() && n2.isRational()) {
+  if(isRational(n1) && isRational(n2)) {
     return *n1.m_rational + *n2.m_rational;
   } else {
-    return n1.getRealValue() + n2.getRealValue();
+    return getReal(n1) + getReal(n2);
   }
 }
 
 Number operator-(const Number &n1, const Number &n2) {
-  if(n1.isRational() && n2.isRational()) {
+  if(isRational(n1) && isRational(n2)) {
     return *n1.m_rational - *n2.m_rational;
   } else {
-    return n1.getRealValue() - n2.getRealValue();
+    return getReal(n1) - getReal(n2);
   }
 }
 
@@ -320,50 +321,50 @@ Number operator-(const Number &v) {
   case NUMBERTYPE_FLOAT    : return -*v.m_flt;
   case NUMBERTYPE_DOUBLE   : return -*v.m_d64;
   case NUMBERTYPE_DOUBLE80 : return -*v.m_d80;
-  case NUMBERTYPE_RATIONAL : return -v.getRationalValue();
-  default                  : Number::throwUnknownTypeException(method, v.getType());
+  case NUMBERTYPE_RATIONAL : return -getRational(v);
+  default                  : v.throwUnknownTypeException(method);
   }
   return 0;
 }
 
 Number operator*(const Number &n1, const Number &n2) {
-  if(n1.isRational() && n2.isRational()) {
+  if(isRational(n1) && isRational(n2)) {
     return *n1.m_rational * *n2.m_rational;
   } else {
-    return n1.getRealValue() * n2.getRealValue();
+    return getReal(n1) * getReal(n2);
   }
 }
 
 Number operator/(const Number &n1, const Number &n2) {
-  if(n1.isRational() && n2.isRational()) {
+  if(isRational(n1) && isRational(n2)) {
     return *n1.m_rational / *n2.m_rational;
   } else {
-    return n1.getRealValue() / n2.getRealValue();
+    return getReal(n1) / getReal(n2);
   }
 }
 
 Number operator%(const Number &n1, const Number &n2) {
-  if(n1.isRational() && n2.isRational()) {
+  if(isRational(n1) && isRational(n2)) {
     return *n1.m_rational % *n2.m_rational;
   } else {
-    const Real r = fmod(n1.getRealValue(), n2.getRealValue());
+    const Real r = fmod(getReal(n1), getReal(n2));
     return Number(r);
   }
 }
 
 Number reciprocal(const Number &n) {
-  if(n.isRational()) {
+  if(isRational(n)) {
     return reciprocal(*n.m_rational);
   } else {
-    return 1.0/n.getRealValue();
+    return 1.0/getReal(n);
   }
 }
 
 Number pow(const Number &n1, const Number &n2) {
-  if(n1.isRational() && n2.isInteger()) {
-    return pow(*n1.m_rational, n2.getIntValue());
+  if(isRational(n1) && isInt(n2)) {
+    return pow(*n1.m_rational, getInt(n2));
   } else {
-    const Real r = mypow(n1.getRealValue(), n2.getRealValue());
+    const Real r = mypow(getReal(n1), getReal(n2));
     return Number(r);
   }
 }
@@ -377,10 +378,10 @@ int numberCmp(const Number &n1, const Number &n2) {
   } else if(t2 == NUMBERTYPE_UNDEFINED) {
     throwInvalidArgumentException(method, _T("n2 is undefined"));
   }
-  if((t1 != NUMBERTYPE_RATIONAL) && (t2 != NUMBERTYPE_RATIONAL)) {
-    return rationalCmp(n1.getRationalValue(), n2.getRationalValue());
+  if((t1 == NUMBERTYPE_RATIONAL) && (t2 == NUMBERTYPE_RATIONAL)) {
+    return rationalCmp(getRational(n1), getRational(n2));
   } else {
-    return sign(n1.getRealValue() - n2.getRealValue());
+    return sign(getReal(n1) - getReal(n2));
   }
 }
 

@@ -281,6 +281,19 @@ inline bool isUint(UINT64 v) { return v == (UINT)v; }
 inline bool isPow2(int    v) { return (v & -v) == v;}
 inline bool isPow2(INT64  v) { return (v & -v) == v;}
 
+inline bool isOdd(  int    x) { return (x & 1) != 0; }
+inline bool isEven( int    x) { return (x & 1) == 0; }
+inline bool isOdd(  UINT   x) { return (x & 1) != 0; }
+inline bool isEven( UINT   x) { return (x & 1) == 0; }
+inline bool isOdd(  long   x) { return (x & 1) != 0; }
+inline bool isEven( long   x) { return (x & 1) == 0; }
+inline bool isOdd(  ULONG  x) { return (x & 1) != 0; }
+inline bool isEven( ULONG  x) { return (x & 1) == 0; }
+inline bool isOdd(  INT64  x) { return (x & 1) != 0; }
+inline bool isEven( INT64  x) { return (x & 1) == 0; }
+inline bool isOdd(  UINT64 x) { return (x & 1) != 0; }
+inline bool isEven( UINT64 x) { return (x & 1) == 0; }
+
 // 5-rounding
 double round(   double x, int dec);
 double trunc(   double x, int dec=0);

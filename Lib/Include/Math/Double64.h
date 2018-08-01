@@ -45,6 +45,31 @@ extern "C" {
   double exp10(double x);
 };
 
+inline double getDouble(float x) {
+  return x;
+}
+inline float getFloat(float x) {
+  return x;
+}
+inline int getInt(float x) {
+  return (int)x;
+}
+inline UINT getUint(float x) {
+  return (UINT)x;
+}
+inline long getLong(float x) {
+  return getInt(x);
+}
+inline ULONG getUlong(float x) {
+  return getUint(x);
+}
+inline INT64 getInt64(float x) {
+  return (INT64)x;
+}
+inline UINT64 getUint64(float x) {
+  return (UINT64)x;
+}
+
 inline double getDouble(double x) {
   return x;
 }
@@ -70,6 +95,16 @@ inline UINT64 getUint64(double x) {
   return (UINT64)x;
 }
 
+inline bool isFloat(float x) {
+  return true;
+}
+inline bool isInt64(float x) {
+  return x == getInt64(x);
+}
+inline bool isInt(float x) {
+  return x == getInt(x);
+}
+
 inline bool isFloat(double x) {
   return x == (float)x;
 }
@@ -79,6 +114,7 @@ inline bool isInt64(double x) {
 inline bool isInt(double x) {
   return x == getInt(x);
 }
+
 
 inline UINT getSignificand(float x) {
   return (UINT)(((*((ULONG*)(&(x)))) & 0x7fffff) | 0x800000);

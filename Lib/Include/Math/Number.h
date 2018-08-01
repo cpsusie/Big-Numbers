@@ -73,26 +73,27 @@ public:
     return getType() == NUMBERTYPE_RATIONAL;
   }
 
-  inline bool isEven()     const {
-    return isRational() && m_rational->isEven();
+  friend inline bool isInteger(const Number &n) {
+    return n.isRational() && n.m_rational->isInteger();
+  }
+  friend inline bool isRational(const Number &n) {
+    return n.getType() == NUMBERTYPE_RATIONAL;
+  }
+  friend inline bool isInt(const Number &n) {
+    return n.isRational() && isInt(*n.m_rational);
+  }
+  friend inline bool isEven(const Number &n) {
+    return n.isRational() && isEven(*n.m_rational);
+  }
+  friend inline bool isOdd(const Number &n) {
+    return n.isRational() && isOdd(*n.m_rational);
   }
 
-  inline bool isOdd()      const {
-    return isRational() && m_rational->isOdd();
-  }
-
-  int      getIntValue()      const;
-  float    getFloatValue()    const;
-  double   getDoubleValue()   const;
-  Double80 getDouble80Value() const;
-  Rational getRationalValue() const;
-  inline Real getRealValue()  const {
-#ifdef LONGDOUBLE
-    return getDouble80Value();
-#else
-    return getDoubleValue();
-#endif
-  }
+  friend int      getInt(     const Number &n);
+  friend float    getFloat(   const Number &n);
+  friend double   getDouble(  const Number &n);
+  friend Double80 getDouble80(const Number &n);
+  friend Rational getRational(const Number &n);
   friend Number operator+( const Number &n1, const Number &n2);
   friend Number operator-( const Number &n1, const Number &n2);
   friend Number operator-( const Number &v);
@@ -115,6 +116,14 @@ public:
 
   String toString() const;
 };
+
+inline Real getReal( const Number &n) {
+#ifdef LONGDOUBLE
+  return getDouble80(n);
+#else
+  return getDouble(n);
+#endif
+}
 
 Number strton(const char    *s, char    **end);
 Number wcston(const wchar_t *s, wchar_t **end);

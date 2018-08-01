@@ -94,15 +94,6 @@ public:
   inline bool isInteger() const {
     return m_denominator == 1;
   }
-  inline bool isEven() const {
-    return isInteger() && ((m_numerator & 1) == 0);
-  }
-  inline bool isOdd() const {
-    return isInteger() && ((m_numerator & 1) == 1);
-  }
-  inline bool isInt32() const {
-    return isInteger() && (_I32_MIN <= m_numerator) && (m_numerator <= _I32_MAX);
-  }
   static UINT64 findGCD(const UINT64 &a, const UINT64 &b);
 
   inline const INT64 &getNumerator() const {
@@ -146,6 +137,12 @@ extern const Rational RAT_NAN;     // nan (undefined)    ( 0/0)
 extern const Rational RAT_PINF;    // +infinity;         ( 1/0)
 extern const Rational RAT_NINF;    // -infinity;         (-1/0)
 
+inline bool isInteger(const Rational &r) {
+  return r.getDenominator() == 1;
+}
+inline bool isInt(const Rational &r) {
+  return r.isInteger() && (_I32_MIN <= r.getNumerator()) && (r.getNumerator() <= _I32_MAX);
+}
 inline INT64    getInt64(   const Rational &r) {
   return r.getNumerator() / r.getDenominator();
 }
@@ -182,14 +179,12 @@ inline Real     getReal(    const Rational &r) {
 #endif
 }
 
-template<class T> bool isOdd(T x) {
-  return x & 1;
+inline bool isEven(const Rational &r) {
+  return isInteger(r) && isEven(r.getNumerator());
 }
-
-template<class T> bool isEven(T x) {
-  return (x & 1) == 0;
+inline bool isOdd(const Rational &r) {
+  return isInteger(r) && isOdd(r.getNumerator());
 }
-
 inline bool isSymmetricExponent(const Rational &r) {
   return isEven(r.getNumerator()) || isEven(r.getDenominator());
 }

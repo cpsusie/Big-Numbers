@@ -198,11 +198,11 @@ public:
   inline  bool                       isRational()                   const   { return isNumber() && getNumber().isRational();                   }
   inline  bool                       isInteger()                    const   { return isNumber() && getNumber().isInteger();                    }
   inline  bool                       isNameOrNumber()               const   { return isName() || isNumber();                                   }
-  inline  bool                       isEven()                       const   { return isRational() && getRational().isEven();                   }
-  inline  bool                       isOdd()                        const   { return isRational() && getRational().isOdd();                    }
+  inline  bool                       isEven()                       const   { return isRational() && ::isEven(getRational());                  }
+  inline  bool                       isOdd()                        const   { return isRational() && ::isOdd(getRational());                   }
   inline  bool                       isMultiplyable()               const   { return !isNameOrNumber();                                        }
-  inline  Real                       getReal()                      const   { return getNumber().getRealValue();                               }
-  inline  Rational                   getRational()                  const   { return getNumber().getRationalValue();                           }
+  inline  Real                       getReal()                      const   { return ::getReal(getNumber());                                   }
+  inline  Rational                   getRational()                  const   { return ::getRational(getNumber());                               }
   inline  bool                       isUnaryMinus()                 const   { return (getSymbol() == MINUS) && (getChildCount() == 1);         }
   inline  bool                       isBinaryMinus()                const   { return (getSymbol() == MINUS) && (getChildCount() == 2);         }
   inline  bool                       isEulersConstant()             const   { return isName()     && getName()  == _T("e");                    }
@@ -327,7 +327,7 @@ public:
   ExpressionNode      *clone(ParserTree *tree)             const;
   ExpressionNodeType   getNodeType()                       const { return NT_NUMBER;                }
 //ExpressionReturnType getReturnType()                     const { as ExpressionNode                }
-  Real                 evaluateReal()                      const { return m_number.getRealValue();  }
+  Real                 evaluateReal()                      const { return ::getReal(m_number);      }
 //bool                 evaluateBool()                      const { as ExpressionNode                }
   int                  compare(   const ExpressionNode *n) const;
   bool                 equal(     const ExpressionNode *n) const;

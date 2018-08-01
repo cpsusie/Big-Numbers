@@ -617,7 +617,7 @@ SNode SNode::reduceProduct() {
     } else if(!v.isRational()) {
       constantFactors *= f;
     } else {
-      const Rational r = v.getRationalValue();
+      const Rational r = ::getRational(v);
       if(r == 0) { // the whole product is 0
         RETURNNODE( _0() );
       } else if(r != 1) { // No need to add 1 as a factor
@@ -661,7 +661,7 @@ SNode SNode::reduceProduct() {
               } else if(!v.isRational()) {
                 constantFactors *= f;
               } else {
-                const Rational r = v.getRationalValue();
+                const Rational r = ::getRational(v);
                 if(r == 0) {               // No need to go further. The product is 0
                   RETURNNODE( _0() );
                 } else if(r != 1) {        // No need to add 1 as a factor
@@ -704,7 +704,7 @@ FactorArray &SNode::getFactors(FactorArray &result, SNode exponent) {
     if(!isOne()) { // 1 should not be added
       const Number &v = getNumber();
       if(v.isRational()) {
-        const Rational r = v.getRationalValue();
+        const Rational r = ::getRational(v);
         if(::abs(r.getNumerator()) == 1) {
           result *= powerExp(SNV(sign(r.getNumerator()) * r.getDenominator()), (-exponent).reduceRealExp());
           break;
