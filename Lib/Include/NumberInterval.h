@@ -6,9 +6,7 @@ template <class T> class NumberInterval {
 private:
   T m_from, m_to;
 public:
-  NumberInterval(const T &from, const T &to) {
-    m_from = from;
-    m_to   = to;
+  inline NumberInterval(const T &from, const T &to) : m_from(from), m_to(to) {
   }
 
   NumberInterval() {
