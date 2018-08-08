@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Mandelbrot.h"
 #include "MandelbrotDlg.h"
+#include <Math/BigReal.h>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -28,16 +29,20 @@ BOOL CMandelbrotApp::InitInstance() {
 
   __super::InitInstance();
   AfxEnableControlContainer();
+  BigReal::loadPow2Cache();
+  DigitPool *digitPool = BigRealResourcePool::getInstance().fetchDigitPool();
   try {
-    CMandelbrotDlg dlg;
+    CMandelbrotDlg dlg(digitPool);
     m_pMainWnd = &dlg;
     INT_PTR nResponse = dlg.DoModal();
     if(nResponse == IDOK) {
-    } else if (nResponse == IDCANCEL) {
+    } else if(nResponse == IDCANCEL) {
     }
   } catch(Exception e) {
     showException(e);
   }
+  BigRealResourcePool::getInstance().releaseDigitPool(digitPool);
+
   return FALSE;
 }
 

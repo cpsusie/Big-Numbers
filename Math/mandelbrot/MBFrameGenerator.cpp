@@ -1,19 +1,26 @@
 #include "stdafx.h"
 #include "MandelbrotDlg.h"
+#include "MBBigRealCalculator.h"
 
 MBFrameGenerator::MBFrameGenerator(CMandelbrotDlg *dlg, const String &dirName)
 : m_dlg(*dlg)
 , m_dirName(dirName)
-, m_finalRect(dlg->getTransformation().getFromRectangle())
+, m_finalRect(dlg->getBigRealTransformation().getFromRectangle())
 , m_imageSize(dlg->getImageSize())
 , m_frameReady(0)
 {
+  DigitPool *dp = getDigitPool();
   m_dlg.initScale();
-  m_startRect       = m_dlg.getTransformation().getFromRectangle();
+  m_startRect       = m_dlg.getBigRealTransformation().getFromRectangle();
   m_totalFrameCount = findTotalFrameCount(m_startRect, m_finalRect);
   m_frameIndex      = 0;
-  m_expTransform    = new ExpTransformation(MBInterval(0, m_totalFrameCount), MBInterval(1,m_finalRect.getWidth()/m_startRect.getWidth())); TRACE_NEW(m_expTransform   );
-  m_linearTransform = new MBLinearTransformation(m_expTransform->getToInterval(), MBInterval(1,0));                                         TRACE_NEW(m_linearTransform);
+  BigRealInterval frameInterval(dp), zoomInterval(dp), unitInterval(dp);
+  frameInterval     = RealInterval(0,m_totalFrameCount);
+  zoomInterval      = RealInterval(1,getReal(m_finalRect.getWidth())/getReal(m_startRect.getWidth()));
+  unitInterval      = IntInterval( 1,0);
+  m_expTransform    = new ExpTransformation(frameInterval, zoomInterval, dp); TRACE_NEW(m_expTransform);
+  m_linearTransform = new BigRealLinearTransformation(m_expTransform->getToInterval(), unitInterval,AUTOPRECISION,dp);
+  TRACE_NEW(m_linearTransform);
 
   HDC screenDC = getScreenDC();
   m_dc = CreateCompatibleDC(screenDC);
@@ -41,26 +48,31 @@ MBFrameGenerator::~MBFrameGenerator() {
 
 #define ZOOMSTEP 0.0078125
 
-ExpTransformation::ExpTransformation(const MBInterval &from, const MBInterval &to) : m_toInterval(to) {
-  m_a = root(to.getTo() / to.getFrom(), from.getTo()-from.getFrom());
-  m_b = to.getFrom() / pow(m_a, from.getFrom());
+ExpTransformation::ExpTransformation(const BigRealInterval &from, const BigRealInterval &to, DigitPool *digitPool)
+: m_a(digitPool?digitPool:from.getDigitPool())
+, m_b(digitPool?digitPool:from.getDigitPool())
+, m_toInterval(to, digitPool?digitPool:from.getDigitPool())
+{
+  m_a = rRoot(rQuot(to.getTo(),to.getFrom(),20), from.getTo()-from.getFrom(),20);
+  m_b = rQuot(to.getFrom(), rPow(m_a, from.getFrom(),20),20);
 }
 
-int MBFrameGenerator::findTotalFrameCount(const MBRectangle2D &startRect, const MBRectangle2D &finalRect) { // static
-  const MBReal l0 = startRect.getWidth();
-  const MBReal lf = finalRect.getWidth();
+int MBFrameGenerator::findTotalFrameCount(const BigRealRectangle2D &startRect, const BigRealRectangle2D &finalRect) { // static
+  const Double80 l0 = getDouble80(startRect.getWidth());
+  const Double80 lf = getDouble80(finalRect.getWidth());
   return getInt((log2(lf/l0) / log2(1.0 - ZOOMSTEP))) + 1;
 }
 
-MBRectangle2D MBFrameGenerator::getInterpolatedRectangle() const {
-  const MBReal fw = m_expTransform->transform(m_frameIndex);       // 1 -> finalWidth/startWidth
-  const MBReal t1 = m_linearTransform->forwardTransform(fw);       // 1 -> 0
-  const MBReal t2 = (1 - t1);                                      // 0 -> 1
-  const MBReal x  = t1 * m_startRect.m_x + t2 * m_finalRect.m_x;
-  const MBReal y  = t1 * m_startRect.m_y + t2 * m_finalRect.m_y;
-  const MBReal w  = fw * m_startRect.getWidth();
-  const MBReal h  = fw * m_startRect.getHeight();
-  return MBRectangle2D(x,y,w,h);
+BigRealRectangle2D MBFrameGenerator::getInterpolatedRectangle() const {
+  DigitPool *dp = getDigitPool();
+  const BigReal fw = m_expTransform->transform(m_frameIndex);       // 1 -> finalWidth/startWidth
+  const BigReal t1 = m_linearTransform->forwardTransform(fw);       // 1 -> 0
+  const BigReal t2 = (dp->get1() - t1);                             // 0 -> 1
+  const BigReal x  = t1 * m_startRect.m_x + t2 * m_finalRect.m_x;
+  const BigReal y  = t1 * m_startRect.m_y + t2 * m_finalRect.m_y;
+  const BigReal w  = fw * m_startRect.getWidth();
+  const BigReal h  = fw * m_startRect.getHeight();
+  return BigRealRectangle2D(x,y,w,h);
 }
 
 HBITMAP MBFrameGenerator::nextBitmap() { // should return NULL when no more frames.

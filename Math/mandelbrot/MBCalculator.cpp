@@ -1,148 +1,5 @@
 #include "stdafx.h"
 #include "MBCalculator.h"
-#include "EdgeMatrix.h"
-
-#pragma check_stack(off)
-
-#define ASMOPTIMIZED
-
-
-#ifdef ASMOPTIMIZED
-#ifdef IS64BIT
-extern "C" UINT64 mbloop(const Double80 &x, const Double80 &y, UINT64 maxIteration);
-#endif
-#endif
-
-UINT MBCalculator::findITCountFast(const MBReal &X, const MBReal &Y, UINT maxIteration) {
-#ifndef ASMOPTIMIZED
-  Double80 x = X;
-  Double80 y = Y;
-  Double80 a = x;
-  Double80 b = y;
-  for(int count = 0; count < maxIteration; count++) {
-    const Double80 a2 = a*a;
-    const Double80 b2 = b*b;
-    if(a2+b2 > 4) {
-      return count;
-    }
-    const Double80 c = a2-b2+x;
-    b = 2*a*b+y;
-    a = c;
-  }
-  return count;
-
-#else
-
-#ifdef IS64BIT
-  return (UINT)mbloop(X,Y, maxIteration);
-#else // IS32BIT
-  Double80 x = X;
-  Double80 y = Y;
-
-  static const float _4 = 4;
-  int count;
-  unsigned short cw;
-
-/*
-  unsigned short sw;
-  unsigned short tagsBuffer[14];
-  unsigned short stackSize;
-*/
-  __asm {                                                   // Registers after instruction has been executed
-    mov    ecx  , maxIteration                              // st0        st1        st2        st3        st4        st5        st6        st7
-    fld    _4           // Load 4                              4
-    fld    y            // Load y                              y          4
-    fld    x            // Load x                              x          y          4
-    fld    st(1)        // Load y                              b=y        x          y          4
-    fld    st(1)        // Load x                              a=x        b          x          y          4
-
-forloop:                // Stacksize = 5                       a          b          x          y          4
-    fld	   st(0)        // Load a.                             a          a          b          x          y           4
-    fmul   st(0), st(0) // st0*=st0                            a^2        a          b          x          y           4
-    fld    st(2)        // Load b                              b          a^2        a          b          x           y         4
-    fmul   st(0), st(0) // st0*=st0                            b^2        a^2        a          b          x           y         4
-    fld    st(1)        // Load a^2.                           a^2        b^2        a^2        a          b           x         y          4
-    fadd   st(0), st(1) // st0 += st1                          a^2+b^2    b^2        a^2        a          b           x         y          4
-    fcomip st(0), st(7) // Compare st0 and st7, pop st0        b^2        a^2        a          b          x           y         4
-    ja return           // if(a^2+b^2 > 4) goto return
-
-    fsub                // st0 = a^2-b^2, pop st1              a^2-b^2    a          b          x          y           4
-    fadd   st(0), st(3) // st0 += x                            a^2-b^2+x  a          b          x          y           4
-    fld    st(1)        // Load a                              a          a^2-b^2+x  a          b          x           y         4
-    fmul   st(0), st(3) // st0 *= b                            ab         a^2-b^2+x  a          b          x           y         4
-    fadd   st(0), st(0) // st0 *= 2                            2ab        a^2-b^2+x  a          b          x           y         4
-    fadd   st(0), st(5) // st0 += y                            2ab+y      a^2-b^2+x  a          b          x           y         4
-    fstp   st(3)        // b = 2ab+y, pop st0                  a^2-b^2+x  a          new b      x          y           4
-    fstp   st(1)        // a = a^2-b^2+x, pop st0              new a      new b      x          y          4
-    loop   forloop      // Stacksize = 5. if(--ecx) goto forloop
-
-/*
-getStackSize:
-    fnstsw sw
-    mov ax,sw
-    shr ax,11
-    and ax,7
-    cmp ax,0
-    jnz normalHeight
-    fstenv tagsBuffer
-    mov ax, WORD PTR tagsBuffer[4]
-    cmp ax, 0xffff
-    je stackSizeZero
-    mov stackSize,8
-    ret
-stackSizeZero:
-    mov stackSize,0
-    ret
-normalHeight:
-    neg ax
-    add ax, 8
-    mov stackSize, ax
-    ret
-*/
-return:
-    fnstcw cw
-    fninit
-    fldcw  cw
-    sub    ecx, maxIteration
-    neg    ecx
-    mov    count,ecx
-  }
-  return count;
-#endif // IS32BIT
-
-#endif // ASMOPTIMIZED
-
-}
-
-UINT MBCalculator::findITCountPaintOrbit(const MBReal &X, const MBReal &Y, UINT maxIteration) {
-  double x = getDouble(X);
-  double y = getDouble(Y);
-  double a = x;
-  double b = y;;
-  const MBRectangleTransformation &tr = m_mbc.getTransformation();
-  OrbitPoint                      *op = m_orbitPoints;
-  const CPoint p0 = toCPoint(tr.forwardTransform(a,b));
-  if(m_edgeTracing) m_mbc.paintMark(p0);
-  UINT count;
-  for(count = 0; count < maxIteration; count++) {
-    const CPoint p = toCPoint(tr.forwardTransform(a,b));
-    *(op++) = OrbitPoint(p, m_mbc.getPixel(p.x,p.y));
-    m_mbc.setPixel(p.x,p.y, RGB(0,0,255));
-    const double a2 = a*a;
-    const double b2 = b*b;
-    if(a2+b2 > 4) {
-      break;
-    }
-    const double c = a2-b2+x;
-    b = 2*a*b+y;
-    a = c;
-  }
-  if(m_edgeTracing) m_mbc.paintMark(p0);
-  while(--op >= m_orbitPoints) {
-    m_mbc.setPixel(op->x,op->y,op->m_oldColor);
-  }
-  return count;
-}
 
 MBCalculator::MBCalculator(CalculatorPool *pool, int id)
 : Thread(format(_T("MBCalc(%d)"),id))
@@ -151,14 +8,11 @@ MBCalculator::MBCalculator(CalculatorPool *pool, int id)
 , m_mbc(pool->getMBContainer())
 , m_wakeup(0)
 , m_pendingMask(pool->getPendingMask(id))
+, m_orbitPoints(NULL)
 {
   setDeamon(true);
   if(m_mbc.calculateWithOrbit()) {
-    m_itCount      = &MBCalculator::findITCountPaintOrbit;
     m_orbitPoints  = new OrbitPoint[m_mbc.getMaxIteration()]; TRACE_NEW(m_orbitPoints);
-  } else {
-    m_itCount      = &MBCalculator::findITCountFast;
-    m_orbitPoints  =  NULL;
   }
 #ifdef SAVE_CALCULATORINFO
   m_info = NULL;
@@ -169,6 +23,14 @@ void MBCalculator::releaseOrbitPoints() {
   m_gate.wait();
   SAFEDELETEARRAY(m_orbitPoints);
   m_gate.signal();
+}
+
+bool MBCalculator::isPending() const {
+  return m_pool.isPending(m_pendingMask);
+}
+
+void MBCalculator::setPoolState(CalculatorState state) {
+  m_pool.setState(m_id, state);
 }
 
 PixelAccessor *MBCalculator::handlePending() {
@@ -188,169 +50,19 @@ PixelAccessor *MBCalculator::handlePending() {
   return m_mbc.getPixelAccessor();
 }
 
-UINT MBCalculator::run() {
-  m_pool.setState(m_id, CALC_RUNNING);
-  const UINT                         maxIteration     = m_mbc.getMaxIteration();
-  const bool                         useEdgeDetection = m_mbc.useEdgeDetection();
-  PixelAccessor                     &pa               = *m_mbc.getPixelAccessor();
-  const D3DCOLOR                    *colorMap         = m_mbc.getColorMap();
-  const MBRectangleTransformation   &tr               = m_mbc.getTransformation();
-  const MBIntervalTransformation    &xtr              = tr.getXTransformation();
-  const MBIntervalTransformation    &ytr              = tr.getYTransformation();
-  const MBReal                       xStep            = xtr.backwardTransform(1) - xtr.backwardTransform(0);
-  const MBReal                       yStep            = ytr.backwardTransform(1) - ytr.backwardTransform(0);
+Semaphore MBCalculator::s_followBlackEdgeGate;
 
-  SETPHASE(_T("RUN"))
-
-  FPU::setPrecisionMode(m_mbc.getPrecisionMode());
-  try {
-    while(m_mbc.getJobToDo(m_currentRect)) {
-
-//      DLOG(_T("calc(%d) got rect (%d,%d,%d,%d)\n"), m_id, m_currentRect.left,m_currentRect.top,m_currentRect.right,m_currentRect.bottom);
-
-      m_edgeTracing = false;
-      MBReal       xt, yt = ytr.backwardTransform(m_currentRect.top);
-      const MBReal xLeft  = xtr.backwardTransform(m_currentRect.left);
-      CPoint       p;
-      D3DCOLOR     emptyColor = EMPTY_COLOR;
-
-      for(p.y = m_currentRect.top; p.y < m_currentRect.bottom; p.y++, yt += yStep) {
-        if(m_pool.isPending(m_pendingMask)) handlePending();
-        for(p.x = m_currentRect.left, xt = xLeft; p.x < m_currentRect.right; p.x++, xt += xStep) {
-          if(pa.getPixel(p) != EMPTY_COLOR) continue;
-          const MBReal xt       = xtr.backwardTransform(p.x);
-          const int  iterations = findItCount(xt, yt, maxIteration);
-          pa.setPixel(p, colorMap[iterations]);
-
-          if((iterations == maxIteration) && useEdgeDetection) {
-//            DLOG(_T("calc(%d) found black point (%d,%d)\n"), m_id, p.x,p.y);
-            m_edgeTracing = true;
-            followBlackEdge(p);
-            SETPHASE(_T("RUN"));
-            m_edgeTracing = false;
-          }
-        }
-      }
-    }
-    DLOG(_T("calc(%d) done\n"), m_id);
-  } catch(bool) {
-#ifdef SAVE_CALCULATORINFO
-    DLOG(_T("calc(%d) killed in phase %s\n"), m_id, m_phase);
-#else
-    DLOG(_T("calc(%d) killed\n"), m_id);
-#endif
-  } catch(Exception e) {
-    DLOG(_T("calc(%d) caught Exception:%s\n"), m_id, e.what());
-  } catch(...) {
-    DLOG(_T("calc(%d) caught unknown Exception\n"), m_id);
+bool MBCalculator::enterFollowBlackEdge(const CPoint &p) {
+  s_followBlackEdgeGate.wait();
+  if(m_mbc.getPixelAccessor()->getPixel(p) != EMPTY_COLOR) {
+    s_followBlackEdgeGate.signal();
+    return false;
   }
-  m_pool.setState(m_id, CALC_TERMINATED);
-  return 0;
+  return true;
 }
 
-void MBCalculator::followBlackEdge(const CPoint &p) {
-  PixelAccessor                     &pa            = *m_mbc.getPixelAccessor();
-  const D3DCOLOR                    *colorMap      =  m_mbc.getColorMap();
-  CPoint                             q             = p;
-  Direction                          dir           = S, firstDir = NODIR;
-  PointSet                           edgeSet(m_currentRect), innerSet(m_currentRect);
-  edgeSet.add(p);
-  int                                edgeCount     = 1; // p assumed to be set to black
-  bool                               innerDetected = false;
-
-  SETPHASE(_T("FOLLOWEDGE"))
-
-  const MBRectangleTransformation &tr    = m_mbc.getTransformation();
-  const MBIntervalTransformation  &xtr   = tr.getXTransformation();
-  const MBIntervalTransformation  &ytr   = tr.getYTransformation();
-  const int                        maxIt = m_mbc.getMaxIteration();
-
-#ifdef SAVE_CALCULATORINFO
-  m_info = new CalculatorInfo(m_id, m_currentRect);
-#endif
-//  DLOG(_T("Follow black edge starting at (%d,%d)\n"), p.x,p.y);
-
-  EdgeMatrix edgeMatrix;
-  for(;;) {
-    for(int dy = -1; dy <= 1; dy++) {
-      const int qy = q.y + dy;
-      if(qy < m_currentRect.top) {
-        edgeMatrix.setRowOutside(0);
-        continue;
-      } else if(qy >= m_currentRect.bottom) {
-        edgeMatrix.setRowOutside(2);
-        continue;
-      }
-      for(int dx = -1; dx <= 1; dx++) {
-        if(!edgeMatrix.isDirty(dy+1, dx+1)) {
-          continue;
-        }
-        const int qx = q.x+dx;
-        if((qx < m_currentRect.left) || (qx >= m_currentRect.right)) {
-          edgeMatrix.setOutside(dy+1, dx+1);
-        } else {
-          const D3DCOLOR c = pa.getPixel(qx, qy);
-          if(c == BLACK) {
-            edgeMatrix.setInside(dy+1, dx+1);
-          } else if(c != EMPTY_COLOR) {
-            edgeMatrix.setOutside(dy+1, dx+1);
-          } else {
-            const MBReal X        = xtr.backwardTransform(qx);
-            const MBReal Y        = ytr.backwardTransform(qy);
-            const int  iterations = findItCount(X, Y, maxIt);
-            if(iterations == maxIt) {
-              edgeMatrix.setInside(dy+1, dx+1);
-            } else {
-              edgeMatrix.setOutside(dy+1, dx+1);
-              pa.setPixel(qx,qy, colorMap[iterations]);
-            }
-          }
-        }
-      }
-    }
-    if((dir = edgeMatrix.findStepDirection(dir)) == NODIR) {
-      if(innerDetected) {
-        DLOG(_T("dir == NODIR and has innerpoints\n"));
-        innerSet -= edgeSet;
-      }
-#ifdef SAVE_CALCULATORINFO
-      m_info->setEdgeAndInnerSet(edgeSet, innerSet);
-      addInfoToPool();
-#endif
-      return;
-    } else if(firstDir == NODIR) {
-      firstDir = dir;
-    } else if((q == p) && dir == firstDir) {
-      break;
-    }
-
-    if(edgeMatrix.getLeftAttr(dir)) {
-      innerSet.add(q + EdgeMatrix::s_leftStep[dir]);
-      innerDetected = true;
-      if(m_pool.isPending(m_pendingMask)) handlePending();
-    }
-    q += EdgeMatrix::s_dirStep[dir];
-    if(!edgeSet.contains(q)) {
-      pa.setPixel(q, BLACK);
-      edgeSet.add(q);
-      edgeCount++;
-    }
-    edgeMatrix.adjustAttributes(dir);
-  }
-
-  bool edgeIsSubtracted = false;
-  if((edgeCount >= 8) && innerDetected) {
-    innerSet -= edgeSet; edgeIsSubtracted = true;
-    fillInnerArea(innerSet);
-  }
-
-#ifdef SAVE_CALCULATORINFO
-  if(!edgeIsSubtracted) {
-    innerSet -= edgeSet; edgeIsSubtracted = true;
-  }
-  m_info->setEdgeAndInnerSet(edgeSet, innerSet);
-  addInfoToPool();
-#endif
+void MBCalculator::leaveFollowBlackEdge() {
+  s_followBlackEdgeGate.signal();
 }
 
 #ifdef SAVE_CALCULATORINFO
@@ -393,8 +105,8 @@ void MBCalculator::fillInnerArea(PointSet &innerSet) {
 
   SETPHASE(_T("FILLINNERAREA"))
 
-  for(Iterator<size_t> it = innerSet.getIterator(); it.hasNext();) {
-    const CPoint start = innerSet.next(it);
+  for(Iterator<CPoint> it = innerSet.getIterator(); it.hasNext();) {
+    const CPoint start = it.next();
     if(!ISCOLORTOFILL(pa.getPixel(start))) {
       continue;
     }
@@ -402,7 +114,7 @@ void MBCalculator::fillInnerArea(PointSet &innerSet) {
     CompactStack<CPoint> stack;
     stack.push(start);
     while(!stack.isEmpty()) {
-      if(m_pool.isPending(m_pendingMask)) handlePending();
+      if(isPending()) handlePending();
       const CPoint np = stack.pop();
       const int    y1 = np.y-1;
       const int    y2 = np.y+1;

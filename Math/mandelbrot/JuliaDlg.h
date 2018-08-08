@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MBCalculator.h"
+#include "MBRealCalculator.h"
 
 class CJuliaDlg;
 
@@ -16,20 +16,20 @@ public:
 };
 
 class CJuliaDlg : public CDialog {
-  const MBPoint2D             m_point;
-  MBRectangleTransformation   m_transform;
-  HRGN                        m_imageRGN;
-  JuliaCalculatorThread      *m_thread;
+  const RealPoint2D             m_point;
+  RealRectangleTransformation   m_transform;
+  HRGN                          m_imageRGN;
+  JuliaCalculatorThread        *m_thread;
   void adjustToRectangle();
 public:
-    CJuliaDlg(const MBPoint2D &point, CWnd *pParent = NULL);
+    CJuliaDlg(const RealPoint2D &point, CWnd *pParent = NULL);
    ~CJuliaDlg();
 
-    const MBPoint2D &getC() const {
+    const RealPoint2D &getC() const {
       return m_point;
     }
 
-    const MBRectangleTransformation &getTransform() const {
+    const RealRectangleTransformation &getTransform() const {
       return m_transform;
     }
     enum { IDD = IDD_JULIA_DIALOG };

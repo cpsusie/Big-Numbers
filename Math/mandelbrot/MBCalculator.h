@@ -4,35 +4,10 @@
 #include <CompactStack.h>
 #include <TinyBitSet.h>
 #include <PropertyContainer.h>
-#include <Math/Transformation.h>
-#include <Math/Double80.h>
 #include <Math/FPU.h>
-
-//#define SAVE_CALCULATORINFO
-
-typedef Real                        MBReal;
-typedef RealPoint2D                 MBPoint2D;
-typedef RealRectangle2D             MBRectangle2D;
-typedef RealInterval                MBInterval;
-typedef RealIntervalTransformation  MBIntervalTransformation;
-typedef RealLinearTransformation    MBLinearTransformation;
-typedef RealRectangleTransformation MBRectangleTransformation;
-
-inline CPoint toCPoint(const MBPoint2D &p) {
-  return CPoint(getInt(p.x), getInt(p.y));
-}
-
-inline MBPoint2D toMBPoint(const CPoint &p) {
-  return MBPoint2D(p.x, p.y);
-}
-
-inline CRect toCRect(const MBRectangle2D &r) {
-  return CRect(getInt(r.m_x),getInt(r.m_y),getInt(r.m_x+r.m_w),getInt(r.m_y+r.m_h));
-}
-
-inline MBRectangle2D toMBRect(const CRect &r) {
-  return MBRectangle2D(r.left,r.top,r.Width(),r.Height());
-}
+#include <Math/Transformation.h>
+#include <Math/BigRealTransformation.h>
+#include "EdgeMatrix.h"
 
 class OrbitPoint : public CPoint {
 public:
@@ -57,6 +32,7 @@ private:
   inline CPoint getPoint(size_t index) const {
     return CPoint((int)(index % m_width + m_rect.left), (int)(index / m_width + m_rect.top));
   }
+  friend class PointSetIterator;
 public:
   PointSet(const CRect &r)
     : BitSet(getPixelCount(r))
@@ -73,10 +49,10 @@ public:
   inline const CRect &getRect() const {
     return m_rect;
   }
-  inline CPoint next(Iterator<size_t> &it) const {
-    return getPoint(it.next());
-  }
+  Iterator<CPoint> getIterator() const;
 };
+
+//#define SAVE_CALCULATORINFO
 
 #ifdef SAVE_CALCULATORINFO
 
@@ -128,15 +104,19 @@ class MBContainer : public DWordPixelAccessor, public PropertyChangeListener {
 public:
   MBContainer(PixRect *pr) : DWordPixelAccessor(pr,0) {
   }
-  virtual const MBRectangleTransformation   &getTransformation()       const  = 0;
-  virtual UINT                               getMaxIteration()         const  = 0;
-  virtual const D3DCOLOR                    *getColorMap()             const  = 0;
-  virtual FPUPrecisionMode                   getPrecisionMode()        const  = 0;
-  virtual PixelAccessor                     *getPixelAccessor()               = 0;
-  virtual bool                               calculateWithOrbit()      const  = 0;
-  virtual bool                               useEdgeDetection()        const  = 0;
-  virtual bool                               getJobToDo(CRect &rect)          = 0;
-  virtual void                               paintMark(const CPoint &p)       = 0;
+  virtual const RealRectangleTransformation    &getRealTransformation()    const  = 0;
+  virtual const BigRealRectangleTransformation &getBigRealTransformation() const  = 0;
+  virtual UINT                                  getMaxIteration()          const  = 0;
+  virtual const D3DCOLOR                       *getColorMap()              const  = 0;
+  virtual FPUPrecisionMode                      getPrecisionMode()         const  = 0;
+  virtual size_t                                getDigits()                const  = 0;
+  virtual bool                                  canUseRealCalculators()    const  = 0;
+  virtual PixelAccessor                        *getPixelAccessor()                = 0;
+  virtual bool                                  calculateWithOrbit()       const  = 0;
+  virtual bool                                  useEdgeDetection()         const  = 0;
+  virtual bool                                  getJobToDo(CRect &rect)           = 0;
+  virtual CSize                                 getWindowSize()            const  = 0;
+  virtual void                                  paintMark(const CPoint &p)        = 0;
 };
 
 typedef enum {
@@ -159,10 +139,10 @@ private:
   const ULONG         m_pendingMask;
   bool                m_edgeTracing;
   MBContainer        &m_mbc;
-  CRect               m_currentRect;
   OrbitPoint         *m_orbitPoints;
   Semaphore           m_gate;
   mutable Semaphore   m_wakeup;
+  static Semaphore    s_followBlackEdgeGate;
 #ifdef SAVE_CALCULATORINFO
   const char         *m_phase;
   CalculatorInfo     *m_info;
@@ -171,26 +151,39 @@ private:
 #else
 #define SETPHASE(str)
 #endif
-
-  UINT (MBCalculator::*m_itCount)(const MBReal &, const MBReal &, UINT);
-
-  UINT  findITCountPaintOrbit(const MBReal &X, const MBReal &Y, UINT maxIteration);
-  UINT  findITCountFast(      const MBReal &X, const MBReal &Y, UINT maxIteration);
-  void  followBlackEdge(const CPoint &p);
-  void  fillInnerArea(PointSet &innerSet);
   void  releaseOrbitPoints();
-  PixelAccessor *handlePending();
 
-  inline UINT findItCount(const MBReal &X, const MBReal &Y, UINT maxIteration) {
-    return (this->*m_itCount)(X, Y, maxIteration);
-  }
-public:
+protected:
+  CRect m_currentRect;
   MBCalculator(CalculatorPool *pool, int id);
-  ~MBCalculator() {
+  void  fillInnerArea(PointSet &innerSet);
+  inline MBContainer &getMBContainer() const {
+    return m_mbc;
+  }
+  inline OrbitPoint *getOrbitPoints() const {
+    return m_orbitPoints;
+  }
+  inline bool isWithOrbit() const {
+    return m_orbitPoints != NULL;
+  }
+  bool enterFollowBlackEdge(const CPoint &p);
+  void leaveFollowBlackEdge();
+  inline void enableEdgeTracing(bool enable) {
+    m_edgeTracing = enable;
+  }
+  inline bool isEdgeTracing() const {
+    return m_edgeTracing;
+  }
+  inline int getId() const {
+    return m_id;
+  }
+  bool isPending() const;
+  PixelAccessor *handlePending();
+  void setPoolState(CalculatorState state);
+public:
+  virtual ~MBCalculator() {
     releaseOrbitPoints();
   }
-
-  UINT run();
   void wakeUp() {
     m_wakeup.signal();
   }
@@ -272,5 +265,4 @@ public:
   void addCalculatorInfo(const CalculatorInfo &info);
   const CalculatorInfo *findInfo(const CPoint &p) const;
 #endif
-
 };

@@ -1,6 +1,7 @@
 #include "stdafx.h"
-#include "MBCalculator.h"
 #include <CPUInfo.h>
+#include "MBRealCalculator.h"
+#include "MBBigRealCalculator.h"
 
 int           CalculatorPool::s_CPUCount = 0;
 CalculatorSet CalculatorPool::s_maxSet;
@@ -35,9 +36,11 @@ void CalculatorPool::startCalculators(int count) {
 #endif
 
   count = min(count, s_CPUCount);
-
+  const bool useReal = m_mbc.canUseRealCalculators();
   for(int i = 0; i < count; i++) {
-    MBCalculator *calculator = new MBCalculator(this, i); TRACE_NEW(calculator);
+    MBCalculator *calculator = useReal ? (MBCalculator*)(new MBRealCalculator(   this, i))
+                                       : (MBCalculator*)(new MBBigRealCalculator(this, i));
+    TRACE_NEW(calculator);
     add(calculator);
     addToExistingInternal(i);
     setStateInternal(i, CALC_SUSPENDED);

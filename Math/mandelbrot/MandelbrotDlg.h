@@ -14,9 +14,9 @@ typedef enum {
 
 class FractalImage {
 public:
-  MBRectangle2D m_scale;
-  PixRect      *m_pixRect;
-  FractalImage(const MBRectangle2D &scale, PixRect *pixRect)
+  BigRealRectangle2D m_scale;
+  PixRect           *m_pixRect;
+  FractalImage(const BigRealRectangle2D &scale, PixRect *pixRect)
   : m_scale(scale)
   , m_pixRect(pixRect)
   {
@@ -34,58 +34,64 @@ class CMandelbrotDlg;
 
 class ExpTransformation {
 private:
-  MBReal m_a, m_b;
-  MBInterval m_toInterval;
+  BigReal         m_a, m_b;
+  BigRealInterval m_toInterval;
 public:
-  ExpTransformation(const MBInterval &from, const MBInterval &to);
-  Real transform(const MBReal &x) const {
-    return m_b*pow(m_a,x);
+  ExpTransformation(const BigRealInterval &from, const BigRealInterval &to, DigitPool *digitPool=NULL);
+  inline BigReal transform(const BigReal &x) const {
+    return m_b*rPow(m_a,x,20);
   }
-  const MBInterval &getToInterval() const {
+  inline const BigRealInterval &getToInterval() const {
     return m_toInterval;
+  }
+  inline DigitPool *getDigitPool() const {
+    return m_a.getDigitPool();
   }
 };
 
 class MBFrameGenerator : public FrameGenerator {
 private:
-  CMandelbrotDlg            &m_dlg;
-  const String               m_dirName;
+  CMandelbrotDlg              &m_dlg;
+  const String                 m_dirName;
   // in complex plane
-  const MBRectangle2D        m_finalRect;
-  MBRectangle2D              m_startRect;
-  ExpTransformation         *m_expTransform;
-  MBLinearTransformation    *m_linearTransform;
+  const BigRealRectangle2D     m_finalRect;
+  BigRealRectangle2D           m_startRect;
+  ExpTransformation           *m_expTransform;
+  BigRealLinearTransformation *m_linearTransform;
   // in pixels
-  const CSize                m_imageSize;
-  ImageListThread           *m_imageListThread;
-  Semaphore                  m_frameReady;
-  int                        m_totalFrameCount;
-  int                        m_frameIndex;
-  HBITMAP                    m_bm;
-  HDC                        m_dc;
+  const CSize                  m_imageSize;
+  ImageListThread             *m_imageListThread;
+  Semaphore                    m_frameReady;
+  int                          m_totalFrameCount;
+  int                          m_frameIndex;
+  HBITMAP                      m_bm;
+  HDC                          m_dc;
 
-  static int findTotalFrameCount(const MBRectangle2D &startRect, const MBRectangle2D &finalRect);
+  static int findTotalFrameCount(const BigRealRectangle2D &startRect, const BigRealRectangle2D &finalRect);
   void postMovieDone();
   // Return false if done
   bool requestNextFrame();
-  MBRectangle2D getInterpolatedRectangle() const;
+  BigRealRectangle2D getInterpolatedRectangle() const;
+  inline DigitPool *getDigitPool() const {
+    return m_finalRect.getDigitPool();
+  }
 public:
   MBFrameGenerator(CMandelbrotDlg *dlg, const String &dirName);
   ~MBFrameGenerator();
-  String getDirName() {
+  inline String getDirName() {
     return m_dirName;
   }
-  CSize getFrameSize() {
+  inline CSize getFrameSize() {
     return m_imageSize;
   }
   void notifyFrameReady() {
     DLOG(_T("notify FrameReady\n"));
     m_frameReady.signal();
   }
-  int getTotalFrameCount() const {
+  inline int getTotalFrameCount() const {
     return m_totalFrameCount;
   }
-  int getFrameIndex() const {
+  inline int getFrameIndex() const {
     return m_frameIndex;
   }
   // should return NULL when no more frames.
@@ -101,179 +107,202 @@ public:
   DialogMBContainer(CMandelbrotDlg *dlg, PixRect *pr) : MBContainer(pr), m_dlg(dlg) {
   }
 
-  const MBRectangleTransformation   &getTransformation()       const;
-  UINT                               getMaxIteration()         const;
-  const D3DCOLOR                    *getColorMap()             const;
-  FPUPrecisionMode                   getPrecisionMode()        const;
-  PixelAccessor                     *getPixelAccessor();
-  bool                               calculateWithOrbit()      const;
-  bool                               useEdgeDetection()        const;
-  bool                               getJobToDo(CRect &rect);
-  void                               paintMark(const CPoint &p);
-  void                               setPixel(UINT x, UINT y, D3DCOLOR color);
-  D3DCOLOR                           getPixel(UINT x, UINT y) const;
-  void                               handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
+  const RealRectangleTransformation    &getRealTransformation()    const;
+  const BigRealRectangleTransformation &getBigRealTransformation() const;
+  UINT                                  getMaxIteration()          const;
+  const D3DCOLOR                       *getColorMap()              const;
+  FPUPrecisionMode                      getPrecisionMode()         const;
+  size_t                                getDigits()                const;
+  bool                                  canUseRealCalculators()    const;
+  PixelAccessor                        *getPixelAccessor();
+  bool                                  calculateWithOrbit()       const;
+  bool                                  useEdgeDetection()         const;
+  bool                                  getJobToDo(CRect &rect);
+  CSize                                 getWindowSize()            const;
+  void                                  paintMark(const CPoint &p);
+  void                                  setPixel(UINT x, UINT y, D3DCOLOR color);
+  D3DCOLOR                              getPixel(UINT x, UINT y) const;
+  void                                  handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
 };
 
 class CMandelbrotDlg : public CDialog, public PropertyChangeListener {
 private:
-    static const TCHAR         *s_stateName[];
-    HICON                       m_hIcon;
-    HACCEL                      m_accelTable;
-    HICON                       m_crossIcon;
-    SimpleLayoutManager         m_layoutManager;
-    MBContainer                *m_mbContainer;
+  static const TCHAR            *s_stateName[];
+  HICON                          m_hIcon;
+  HACCEL                         m_accelTable;
+  HICON                          m_crossIcon;
+  SimpleLayoutManager            m_layoutManager;
+  MBContainer                   *m_mbContainer;
+  FPUPrecisionMode               m_precisionMode;
+  ColorMapData                   m_colorMapData;
+  DigitPool                     *m_digitPool;
+  size_t                         m_digits;
+  BigRealRectangle2D             m_rect0, m_zoom1Rect;
 
-    FPUPrecisionMode            m_precisionMode;
-    ColorMapData                m_colorMapData;
-    MBRectangle2D               m_rect0, m_zoom1Rect;
+  bool                           m_animateCalculation;
+  bool                           m_calculateWithOrbit;
+  bool                           m_useOnly1CPU;
+  bool                           m_useEdgeDetection;
+  bool                           m_retainAspectRatio;
+  bool                           m_showZoomFactor;
+  bool                           m_suspendingMenuTextIsSuspending;
+  Size2D                         m_zoomFactor;
+  DlgState                       m_state;
+  CalculatorPool                *m_calculatorPool;
+  MBFrameGenerator              *m_frameGenerator;
+  D3DCOLOR                      *m_colorMap; // last element is always BLACK
+  RealRectangleTransformation    m_realTransform;
+  BigRealRectangleTransformation m_bigRealTransform;
+  Semaphore                      m_gate;
+  bool                           m_hasResized;
+  BitSet8                        m_runningTimerSet;
+  SynchronizedQueue<CRect>       m_jobQueue;
+  CWnd                          *m_imageWindow;
+  CSize                          m_imageWindowSize; // in pixels
+  HRGN                           m_imageRGN;
+  HDC                            m_imageDC;
+  PixRect                       *m_pixRect, *m_dummyPr;
+  PixelAccessor                 *m_pixelAccessor;
+  CRect                          m_dragRect;
+  CPoint                         m_mouseDownPoint;
+  Stack<FractalImage>            m_pictureStack;
 
-    bool                        m_animateCalculation;
-    bool                        m_calculateWithOrbit;
-    bool                        m_useOnly1CPU;
-    bool                        m_useEdgeDetection;
-    bool                        m_retainAspectRatio;
-    bool                        m_showZoomFactor;
-    bool                        m_suspendingMenuTextIsSuspending;
-    Size2D                      m_zoomFactor;
-    DlgState                    m_state;
-    CalculatorPool             *m_calculatorPool;
-    MBFrameGenerator           *m_frameGenerator;
-    D3DCOLOR                   *m_colorMap; // last element is always BLACK
-    MBRectangleTransformation   m_transform;
-    Semaphore                   m_gate;
-    bool                        m_hasResized;
-    BitSet8                     m_runningTimerSet;
-    SynchronizedQueue<CRect>    m_jobQueue;
-    CWnd                       *m_imageWindow;
-    HRGN                        m_imageRGN;
-    HDC                         m_imageDC;
-    PixRect                    *m_pixRect, *m_dummyPr;
-    PixelAccessor              *m_pixelAccessor;
-    CRect                       m_dragRect;
-    CPoint                      m_mouseDownPoint;
-    Stack<FractalImage>         m_pictureStack;
-
-    void updateWindowStateInternal();
-    void showWindowState();
-    void showMousePoint(const CPoint &p);
-    void saveRectangle(const String &fileName);
-    void loadRectangle(const String &fileName);
-    void createColorMap();
-    void destroyColorMap();
-    void saveColorMap(const String &fileName);
-    void loadColorMap(const String &fileName);
-    void setWorkSize();
-    void setWorkSize(const PixRect *src);
-    void setWorkSize(  const CSize &size);
-    void createPixRect(const CSize &size);
-    void destroyPixRect();
-    void setUncalculatedPixelsToEmpty();
-    void clearUncalculatedWindowArea();
-    int  getCPUCountToUse() const;
-    bool setColorMapData(const ColorMapData &colorMapData);
-    void setPrecision(int id);
-    void setScale(const MBReal &minX, const MBReal &maxX, const MBReal &minY, const MBReal &maxY, bool allowAdjustAspectRatio);
-    void updateZoomFactor();
-    void startTimer(UINT id, int msec);
-    void stopTimer(UINT id);
-    inline bool isValidSize() const {
-      return m_pixRect != NULL;
-    }
-    inline MBRectangle2D getScale() const {
-      return m_transform.getFromRectangle();
-    }
-    void     setDragRect(   const CPoint &topLeft, const CPoint &bottomRight);
-    CRect    createDragRect(const CPoint &topLeft, const CPoint &bottomRight);
-    void     removeDragRect();
-    CPoint   getImagePointFromMousePoint(const CPoint &p) const;
-    PixRect *getCalculatedPart(    const CSize &dp);
-    void     paintMovedImage(      const CSize &dp);
-    void     calculateMovedImage(  const CSize &dp);
-    static   MoveDirection getMoveDirection(const CSize &dp);
-    void     flushPixRect();
-    void     paintZoomFactor(CDC &dc);
-    void     putPixRect(const PixRect *src);
-    void     pushImage();
-    void     popImage();
-    void     resetImageStack();
-    void     paintPointSet(const PointSet &ps, COLORREF color);
-    void     startCalculation();
-    void     setRectanglesToCalculate(const CompactArray<CRect> &rectangles);
-    void     setRectangleToCalculate(const CRect &rectangle);
-    void     setSuspendingMenuText(bool isSuspendingText);
-    inline bool hasPixelAccessor() const {
-      return m_pixelAccessor != NULL;
-    }
-    void clearPixelAccessor();
-    void setState(DlgState newState);
-    inline DlgState getState()  const {
-      return m_state;
-    }
-    inline const TCHAR *getStateName() const {
-      return s_stateName[m_state];
-    }
+  void updateWindowStateInternal();
+  void showWindowState();
+  void showMousePoint(const CPoint &p);
+  void saveRectangle(const String &fileName);
+  void loadRectangle(const String &fileName);
+  void createColorMap();
+  void destroyColorMap();
+  void saveColorMap(const String &fileName);
+  void loadColorMap(const String &fileName);
+  void setWorkSize();
+  void setWorkSize(const PixRect *src);
+  void setWorkSize(  const CSize &size);
+  void createPixRect(const CSize &size);
+  void destroyPixRect();
+  void setUncalculatedPixelsToEmpty();
+  void clearUncalculatedWindowArea();
+  int  getCPUCountToUse() const;
+  bool setColorMapData(const ColorMapData &colorMapData);
+  void setScale(const BigReal &minX, const BigReal &maxX, const BigReal &minY, const BigReal &maxY, bool allowAdjustAspectRatio);
+  void handleTransformChanged(bool adjustAspectRatio);
+  void setPrecision(int id);
+  void setDigits();
+  void updateZoomFactor();
+  void startTimer(UINT id, int msec);
+  void stopTimer(UINT id);
+  inline bool isValidSize() const {
+    return m_pixRect != NULL;
+  }
+  inline DigitPool *getDigitPool() {
+    return m_digitPool;
+  }
+  inline BigRealRectangle2D getScale() const {
+    return m_bigRealTransform.getFromRectangle();
+  }
+  void     setDragRect(   const CPoint &topLeft, const CPoint &bottomRight);
+  CRect    createDragRect(const CPoint &topLeft, const CPoint &bottomRight);
+  void     removeDragRect();
+  CPoint   getImagePointFromMousePoint(const CPoint &p) const;
+  PixRect *getCalculatedPart(    const CSize &dp);
+  void     paintMovedImage(      const CSize &dp);
+  void     calculateMovedImage(  const CSize &dp);
+  static   MoveDirection getMoveDirection(const CSize &dp);
+  void     flushPixRect();
+  void     paintZoomFactor(CDC &dc);
+  void     putPixRect(const PixRect *src);
+  void     pushImage();
+  void     popImage();
+  void     resetImageStack();
+  void     paintPointSet(const PointSet &ps, COLORREF color);
+  void     startCalculation();
+  void     setRectanglesToCalculate(const CompactArray<CRect> &rectangles);
+  void     setRectangleToCalculate(const CRect &rectangle);
+  void     setSuspendingMenuText(bool isSuspendingText);
+  inline bool hasPixelAccessor() const {
+    return m_pixelAccessor != NULL;
+  }
+  void clearPixelAccessor();
+  void setState(DlgState newState);
+  inline DlgState getState()  const {
+    return m_state;
+  }
+  inline const TCHAR *getStateName() const {
+    return s_stateName[m_state];
+  }
 public:
-    CMandelbrotDlg(CWnd *pParent = NULL);
+  CMandelbrotDlg(DigitPool *digitPool, CWnd *pParent = NULL);
+  void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
 
-    void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
+  inline CWnd *getImageWindow() {
+    return m_imageWindow;
+  }
+  inline CSize getImageSize() {
+    return getClientRect(m_imageWindow).Size();
+  }
+  void     setScale(const BigRealRectangle2D &scale, bool allowAdjustAspectRatio = true);
+  void     setPixel(UINT x, UINT y, D3DCOLOR color);
+  D3DCOLOR getPixel(UINT x, UINT y) const;
 
-    inline CWnd *getImageWindow() {
-      return m_imageWindow;
-    }
-    inline CSize getImageSize() {
-      return getClientRect(m_imageWindow).Size();
-    }
-    void     setScale(const MBRectangle2D &scale, bool allowAdjustAspectRatio = true);
-    void     setPixel(UINT x, UINT y, D3DCOLOR color);
-    D3DCOLOR getPixel(UINT x, UINT y) const;
+  inline const RealRectangleTransformation &getRealTransformation() const {
+    return m_realTransform;
+  }
+  inline RealRectangleTransformation &getRealTransformation() {
+    return m_realTransform;
+  }
+  inline const BigRealRectangleTransformation &getBigRealTransformation() const {
+    return m_bigRealTransform;
+  }
+  inline BigRealRectangleTransformation &getBigRealTransformation() {
+    return m_bigRealTransform;
+  }
 
-    inline const MBRectangleTransformation &getTransformation() const {
-      return m_transform;
-    }
+  inline UINT getMaxIteration() const {
+    return m_colorMapData.m_maxIteration;
+  }
 
-    inline MBRectangleTransformation &getTransformation() {
-      return m_transform;
-    }
+  inline const D3DCOLOR *getColorMap() const {
+    return m_colorMap;
+  }
 
-    inline UINT getMaxIteration() const {
-      return m_colorMapData.m_maxIteration;
-    }
+  inline FPUPrecisionMode getPrecisionMode() const {
+    return m_precisionMode;
+  }
 
-    inline const D3DCOLOR *getColorMap() const {
-      return m_colorMap;
-    }
+  PixelAccessor *getPixelAccessor();
 
-    inline FPUPrecisionMode getPrecisionMode() const {
-      return m_precisionMode;
-    }
+  inline size_t getDigits() const {
+    return m_digits;
+  }
+  inline bool canUseRealCalculators() const {
+    return getDigits() < 18;
+  }
+  inline bool calculateWithOrbit() const {
+    return m_calculateWithOrbit;
+  }
 
-    PixelAccessor *getPixelAccessor();
+  inline bool useEdgeDetection() const {
+    return m_useEdgeDetection;
+  }
 
-    inline bool calculateWithOrbit() const {
-      return m_calculateWithOrbit;
-    }
+  inline bool isRetainAspectRatio() const {
+    return m_retainAspectRatio;
+  }
 
-    inline bool useEdgeDetection() const {
-      return m_useEdgeDetection;
-    }
+  inline bool showZoomFactor() const {
+    return m_showZoomFactor;
+  }
 
-    inline bool isRetainAspectRatio() const {
-      return m_retainAspectRatio;
-    }
+  inline const Size2D &getZoomFactor() const {
+    return m_zoomFactor;
+  }
 
-    inline bool showZoomFactor() const {
-      return m_showZoomFactor;
-    }
-
-    inline const Size2D &getZoomFactor() const {
-      return m_zoomFactor;
-    }
-
-    void paintMark(const CPoint &p);
-
-    bool getJobToDo(CRect &rect);
-
+  void paintMark(const CPoint &p);
+  bool getJobToDo(CRect &rect);
+  CSize getWindowSize() const {
+    return m_imageWindowSize;
+  }
 //-----------------------------------------------
 
   void initScale();
@@ -306,15 +335,15 @@ public:
   virtual BOOL OnInitDialog();
   virtual void OnOK();
   afx_msg void OnCancel();
-  afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+  afx_msg void OnLButtonDown(  UINT nFlags, CPoint point);
   afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
-  afx_msg void OnLButtonUp(  UINT nFlags, CPoint point);
-  afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
-  afx_msg void OnRButtonUp(  UINT nFlags, CPoint point);
-  afx_msg void OnMouseMove(  UINT nFlags, CPoint point);
-  afx_msg BOOL OnMouseWheel( UINT nFlags, short zDelta, CPoint pt);
+  afx_msg void OnLButtonUp(    UINT nFlags, CPoint point);
+  afx_msg void OnRButtonDown(  UINT nFlags, CPoint point);
+  afx_msg void OnRButtonUp(    UINT nFlags, CPoint point);
+  afx_msg void OnMouseMove(    UINT nFlags, CPoint point);
+  afx_msg BOOL OnMouseWheel(   UINT nFlags, short zDelta, CPoint pt);
   afx_msg void OnNcLButtonDown(UINT nHitTest, CPoint point);
-  afx_msg void OnNcMouseMove(UINT nHitTest, CPoint point);
+  afx_msg void OnNcMouseMove(  UINT nHitTest, CPoint point);
   afx_msg void OnFileSaveRectangle();
   afx_msg void OnFileSaveColorMap();
   afx_msg void OnFileSaveImage();
