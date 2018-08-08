@@ -29,6 +29,9 @@ class BigRealSize2D : public Size2DTemplate<BigReal> {
     y = BigReal(src.cy,dp);
     return *this;
   }
+  inline operator RealSize2D() const {
+    return RealSize2D(getReal(cx), getReal(cy));
+  }
 };
 
 class BigRealPoint2D : public Point2DTemplate<BigReal> {
@@ -56,6 +59,9 @@ public:
     x = BigReal(src.x,dp);
     y = BigReal(src.y,dp);
     return *this;
+  }
+  inline operator RealPoint2D() const {
+    return RealPoint2D(getReal(x), getReal(y));
   }
 };
 
@@ -178,6 +184,15 @@ public:
                               ,BigReal(r.getWidth() ,dp)
                               ,BigReal(r.getHeight(),dp));
     return *this;
+  }
+  inline operator RealRectangle2D() const {
+    return RealRectangle2D(getReal(getX()), getReal(getY()), getReal(getWidth()), getReal(getHeight()));
+  }
+
+  inline size_t getNeededDecimalDigits(size_t digits) const {
+    const size_t digitsX = ((BigRealInterval&)getXInterval()).getNeededDecimalDigits(digits);
+    const size_t digitsY = ((BigRealInterval&)getYInterval()).getNeededDecimalDigits(digits);
+    return max(digitsX, digitsY);
   }
 };
 

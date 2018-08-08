@@ -31,5 +31,10 @@ public:
   }
   // Find needed decimal digitCount to use, so that add/sub of from and to will be done with at
   // least precision significant decimal digits.
-  static size_t getNeededDecimalDigits(const BigReal &from, const BigReal &to, size_t digits);
+  inline size_t getNeededDecimalDigits(size_t digits) const {
+    const BigReal length = getLength(); // don't care about sign. need only expo10
+    const BigReal &m     = (compareAbs(getFrom(),getTo()) > 0) ? getFrom() : getTo();
+    return BigReal::getExpo10(m) - BigReal::getExpo10(length) + digits;
+  }
+
 };

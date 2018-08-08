@@ -687,7 +687,6 @@
     <ClCompile Include="BigRealCons.cpp" />
     <ClCompile Include="BigRealException.cpp" />
     <ClCompile Include="BigRealFunctions.cpp" />
-    <ClCompile Include="BigRealInterval.cpp" />
     <ClCompile Include="BigRealIO.cpp" />
     <ClCompile Include="BigRealLUMatrix.cpp" />
     <ClCompile Include="BigRealMatrix.cpp" />
