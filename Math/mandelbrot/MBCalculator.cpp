@@ -12,18 +12,10 @@ MBCalculator::MBCalculator(CalculatorPool *pool, int id)
 , m_doneCount(0)
 {
   setDeamon(true);
-  if(m_mbc.calculateWithOrbit()) {
-    m_orbitPoints  = new OrbitPoint[m_mbc.getMaxIteration()]; TRACE_NEW(m_orbitPoints);
-  }
+  setWithOrbit();
 #ifdef SAVE_CALCULATORINFO
   m_info = NULL;
 #endif
-}
-
-void MBCalculator::releaseOrbitPoints() {
-  m_gate.wait();
-  SAFEDELETEARRAY(m_orbitPoints);
-  m_gate.signal();
 }
 
 bool MBCalculator::isPending() const {
@@ -32,6 +24,30 @@ bool MBCalculator::isPending() const {
 
 void MBCalculator::setPoolState(CalculatorState state) {
   m_pool.setState(m_id, state);
+}
+
+void MBCalculator::setWithOrbit() {
+  const bool enableOrbit = m_mbc.calculateWithOrbit();
+  if(enableOrbit != isWithOrbit()) {
+    if(enableOrbit) {
+      allocateOrbitPoints();
+    } else {
+      releaseOrbitPoints();
+    }
+  }
+}
+
+// assume thread is suspended
+void MBCalculator::allocateOrbitPoints() {
+  releaseOrbitPoints();
+  m_orbitPoints  = new OrbitPoint[m_mbc.getMaxIteration()]; TRACE_NEW(m_orbitPoints);
+}
+
+// assume thread is suspended
+void MBCalculator::releaseOrbitPoints() {
+  m_gate.wait();
+  SAFEDELETEARRAY(m_orbitPoints);
+  m_gate.signal();
 }
 
 PixelAccessor *MBCalculator::handlePending() {
@@ -48,6 +64,7 @@ PixelAccessor *MBCalculator::handlePending() {
       DLOG(_T("calc(%d) resuming\n"), m_id);
     }
   }
+  setWithOrbit();
   return m_mbc.getPixelAccessor();
 }
 
@@ -83,14 +100,14 @@ void MBCalculator::addInfoToPool() {
 #define FILLCOLOR        FILL_COLOR
 
 #define CHECKPIXELPP                          \
-{ const D3DCOLOR c = pa.getPixel(pp);         \
+{ const D3DCOLOR c = pa->getPixel(pp);        \
   if(!ISCOLORTOFILL(c)) break;                \
-  pa.setPixel(pp, FILLCOLOR); m_doneCount++;  \
+  pa->setPixel(pp, FILLCOLOR); m_doneCount++; \
   ADDPPTOINFO;                                \
 }
 
 #define CHECKNEIGHBOURPIXEL(i)                \
-{ const D3DCOLOR c = pa.getPixel(pp.x, y##i); \
+{ const D3DCOLOR c = pa->getPixel(pp.x, y##i);\
   if(!stacked##i) {                           \
     if(ISCOLORTOFILL(c)) {                    \
       stack.push(CPoint(pp.x, y##i));         \
@@ -101,21 +118,19 @@ void MBCalculator::addInfoToPool() {
   }                                           \
 }
 
-void MBCalculator::fillInnerArea(PointSet &innerSet) {
-  PixelAccessor &pa = *m_mbc.getPixelAccessor();
-
+PixelAccessor *MBCalculator::fillInnerArea(PointSet &innerSet, PixelAccessor *pa) {
   SETPHASE(_T("FILLINNERAREA"))
 
   for(Iterator<CPoint> it = innerSet.getIterator(); it.hasNext();) {
     const CPoint start = it.next();
-    if(!ISCOLORTOFILL(pa.getPixel(start))) {
+    if(!ISCOLORTOFILL(pa->getPixel(start))) {
       continue;
     }
 
     CompactStack<CPoint> stack;
     stack.push(start);
     while(!stack.isEmpty()) {
-      if(isPending()) handlePending();
+      CHECKPENDING();
       const CPoint np = stack.pop();
       const int    y1 = np.y-1;
       const int    y2 = np.y+1;
@@ -159,4 +174,5 @@ void MBCalculator::fillInnerArea(PointSet &innerSet) {
       }
     }
   }
+  return pa;
 }

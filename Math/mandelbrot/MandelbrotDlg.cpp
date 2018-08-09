@@ -399,7 +399,16 @@ void CMandelbrotDlg::OnOptionsAnimateCalculation() {
 }
 
 void CMandelbrotDlg::OnOptionsPaintOrbit() {
-  m_calculateWithOrbit = toggleMenuItem(this, ID_OPTIONS_PAINTORBIT);
+  if(isCalculationActive()) {
+    m_calculatorPool->suspendCalculation();
+    m_calculatorPool->waitUntilNoRunning();
+    m_calculateWithOrbit = toggleMenuItem(this, ID_OPTIONS_PAINTORBIT);
+    clearPixelAccessor();
+    getPixelAccessor();
+    m_calculatorPool->resumeCalculation();
+  } else {
+    m_calculateWithOrbit = toggleMenuItem(this, ID_OPTIONS_PAINTORBIT);
+  }
 }
 
 void CMandelbrotDlg::OnOptionsUseOnly1CPU() {
@@ -686,7 +695,7 @@ void CMandelbrotDlg::updateWindowStateInternal() {
   enableMenuItem(this, ID_OPTIONS_80BITSFLOATINGPOINT  ,!isActive   );
   enableSubMenuContainingId(this, ID_OPTIONS_80BITSFLOATINGPOINT  ,!isActive   );
   enableMenuItem(this, ID_OPTIONS_ANIMATE_CALCULATION  ,!isActive   );
-  enableMenuItem(this, ID_OPTIONS_PAINTORBIT           ,!isActive   );
+//  enableMenuItem(this, ID_OPTIONS_PAINTORBIT           ,!isActive   );
   enableMenuItem(this, ID_OPTIONS_USEEDGEDETECTION     ,!isActive   );
   enableMenuItem(this, ID_OPTIONS_USEONLY1CPU          ,!isActive   );
   enableMenuItem(this, ID_OPTIONS_RETAIN_ASPECTRATIO   ,!isActive   );

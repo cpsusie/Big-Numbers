@@ -151,13 +151,16 @@ private:
 #else
 #define SETPHASE(str)
 #endif
+// assume thread is suspended
+  void  allocateOrbitPoints();
+// assume thread is suspended
   void  releaseOrbitPoints();
 
 protected:
   CRect  m_currentRect;
   size_t m_doneCount; // number of pixels calculated
   MBCalculator(CalculatorPool *pool, int id);
-  void  fillInnerArea(PointSet &innerSet);
+  PixelAccessor *fillInnerArea(PointSet &innerSet, PixelAccessor *pa);
   inline MBContainer &getMBContainer() const {
     return m_mbc;
   }
@@ -192,6 +195,8 @@ public:
   inline size_t getDoneCount() const {
     return m_doneCount;
   }
+  // Assume m_pool.getState(getID()) != CALC_RUNNING
+  void setWithOrbit();
 };
 
 typedef enum {
@@ -243,7 +248,7 @@ public:
   }
   CalculatorState getState(int id);
   void            setState(int id, CalculatorState state);
-  String getStatesString() const;
+  String          getStatesString() const;
 
   int        getPendingMask(int id) {
     return 3 << (2*id);
@@ -254,6 +259,9 @@ public:
   inline int isPending(ULONG mask) {
     return m_pendingFlags & mask;
   }
+
+#define CHECKPENDING() { if(isPending()) { pa = handlePending(); } }
+
   inline CalculatorSet getCalculatorsInState(CalculatorState state) const {
     return m_calculatorsInState[state];
   }

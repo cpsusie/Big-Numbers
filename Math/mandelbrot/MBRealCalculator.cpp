@@ -144,7 +144,7 @@ UINT MBRealCalculator::run() {
   MBContainer                       &mbc              =  getMBContainer();
   const UINT                         maxIteration     =  mbc.getMaxIteration();
   const bool                         useEdgeDetection =  mbc.useEdgeDetection();
-  PixelAccessor                     &pa               = *mbc.getPixelAccessor();
+  PixelAccessor                     *pa               =  mbc.getPixelAccessor();
   const D3DCOLOR                    *colorMap         =  mbc.getColorMap();
   const RealRectangleTransformation &tr               =  mbc.getRealTransformation();
   m_xtr                                               = &tr.getXTransformation();
@@ -162,21 +162,21 @@ UINT MBRealCalculator::run() {
       enableEdgeTracing(false);
       CPoint p;
       for(p.y = m_currentRect.top; p.y < m_currentRect.bottom; p.y++) {
-        if(isPending()) handlePending();
+        CHECKPENDING();
         yt = m_ytr->backwardTransform(p.y);
         for(p.x = m_currentRect.left; p.x < m_currentRect.right; p.x++) {
-          if(pa.getPixel(p) != EMPTY_COLOR) continue;
+          if(pa->getPixel(p) != EMPTY_COLOR) continue;
           xt = m_xtr->backwardTransform(p.x);
           const UINT iterations = findItCount(xt, yt, maxIteration);
 
           if((iterations == maxIteration) && useEdgeDetection) {
 //            DLOG(_T("calc(%d) found black point (%d,%d)\n"), getId(), p.x,p.y);
             enableEdgeTracing(true);
-            followBlackEdge(p, pa, maxIteration);
+            pa = followBlackEdge(p, pa, maxIteration);
             SETPHASE(_T("RUN"));
             enableEdgeTracing(false);
           } else {
-            pa.setPixel(p, colorMap[iterations]); m_doneCount++;
+            pa->setPixel(p, colorMap[iterations]); m_doneCount++;
           }
         }
       }
@@ -197,8 +197,8 @@ UINT MBRealCalculator::run() {
   return 0;
 }
 
-void MBRealCalculator::followBlackEdge(const CPoint &p,PixelAccessor &pa, UINT maxIteration) {
-  if(!enterFollowBlackEdge(p)) return;
+PixelAccessor *MBRealCalculator::followBlackEdge(const CPoint &p, PixelAccessor *pa, UINT maxIteration) {
+  if(!enterFollowBlackEdge(p)) return pa;
   MBContainer       &mbc           =  getMBContainer();
   const CSize        sz            =  mbc.getWindowSize();
   const CRect        rect(m_currentRect.left,m_currentRect.top, sz.cx, sz.cy);
@@ -209,7 +209,7 @@ void MBRealCalculator::followBlackEdge(const CPoint &p,PixelAccessor &pa, UINT m
   bool               innerSetEmpty =  true;
   PointSet           edgeSet(rect), innerSet(rect);
   edgeSet.add(p);
-  pa.setPixel(p, colorMap[maxIteration]); m_doneCount++;
+  pa->setPixel(p, colorMap[maxIteration]); m_doneCount++;
 
   SETPHASE(_T("FOLLOWEDGE"))
 
@@ -238,7 +238,7 @@ void MBRealCalculator::followBlackEdge(const CPoint &p,PixelAccessor &pa, UINT m
         if((qx < rect.left) || (qx >= rect.right)) {
           edgeMatrix.setOutside(dy+1, dx+1);
         } else {
-          const D3DCOLOR c = pa.getPixel(qx, qy);
+          const D3DCOLOR c = pa->getPixel(qx, qy);
           if(c == BLACK) {
             edgeMatrix.setInside(dy+1, dx+1);
           } else if(c != EMPTY_COLOR) {
@@ -251,7 +251,7 @@ void MBRealCalculator::followBlackEdge(const CPoint &p,PixelAccessor &pa, UINT m
               edgeMatrix.setInside(dy+1, dx+1);
             } else {
               edgeMatrix.setOutside(dy+1, dx+1);
-              pa.setPixel(qx,qy, colorMap[iterations]); m_doneCount++;
+              pa->setPixel(qx,qy, colorMap[iterations]); m_doneCount++;
             }
           }
         }
@@ -276,11 +276,11 @@ void MBRealCalculator::followBlackEdge(const CPoint &p,PixelAccessor &pa, UINT m
     if(edgeMatrix.getLeftAttr(dir)) {
       innerSet.add(q + EdgeMatrix::s_leftStep[dir]);
       innerSetEmpty = false;
-      if(isPending()) handlePending();
+      CHECKPENDING();
     }
     q += EdgeMatrix::s_dirStep[dir];
     if(!edgeSet.contains(q)) {
-      pa.setPixel(q, BLACK); m_doneCount++;
+      pa->setPixel(q, BLACK); m_doneCount++;
       edgeSet.add(q);
       edgeCount++;
     }
@@ -290,7 +290,7 @@ void MBRealCalculator::followBlackEdge(const CPoint &p,PixelAccessor &pa, UINT m
   bool edgeIsSubtracted = false;
   if((edgeCount >= 8) && !innerSetEmpty) {
     innerSet -= edgeSet; edgeIsSubtracted = true;
-    fillInnerArea(innerSet);
+    pa = fillInnerArea(innerSet, pa);
   }
 
 #ifdef SAVE_CALCULATORINFO
@@ -302,4 +302,5 @@ void MBRealCalculator::followBlackEdge(const CPoint &p,PixelAccessor &pa, UINT m
 #endif
 Return:
   leaveFollowBlackEdge();
+  return pa;
 }

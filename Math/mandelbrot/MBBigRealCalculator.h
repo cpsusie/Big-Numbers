@@ -26,10 +26,10 @@ private:
   size_t     m_digits;
   BigReal    _4;
   const BigRealIntervalTransformation  *m_xtr, *m_ytr;
-  UINT  findITCountPaintOrbit(const BigReal &X, const BigReal &Y , UINT maxIteration);
-  UINT  findITCountFast(      const BigReal &X, const BigReal &Y , UINT maxIteration);
-  void  followBlackEdge(      const CPoint  &p, PixelAccessor &pa, UINT maxIteration);
-  inline CPoint toCPoint(     const BigReal &x, const BigReal &y) const {
+  UINT           findITCountPaintOrbit(const BigReal &X, const BigReal &Y , UINT maxIteration);
+  UINT           findITCountFast(      const BigReal &X, const BigReal &Y , UINT maxIteration);
+  PixelAccessor *followBlackEdge(      const CPoint  &p, PixelAccessor *pa, UINT maxIteration);
+  inline CPoint toCPoint(              const BigReal &x, const BigReal &y) const {
     return CPoint(getInt(m_xtr->forwardTransform(x)), getInt(m_ytr->forwardTransform(y)));
   }
   inline DigitPool *getDigitPool() const {
