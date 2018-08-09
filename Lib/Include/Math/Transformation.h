@@ -97,7 +97,14 @@ public:
     tTo   += (x1 - tTo  ) * factor;
     return setFromInterval(NumberInterval<T>(inverseTranslate(tFrom), inverseTranslate(tTo)));
   }
-
+  bool operator==(const IntervalTransformationTemplate &rhs) const {
+    return (getScale()        == rhs.getScale()       )
+        && (getFromInterval() == rhs.getFromInterval())
+        && (getToInterval()   == rhs.getToInterval()  );
+  }
+  bool operator!=(const IntervalTransformationTemplate &rhs) const {
+    return !(*this == rhs);
+  }
   virtual IntervalScale getScale() const = 0;
   virtual IntervalTransformationTemplate *clone() const = 0;
   virtual ~IntervalTransformationTemplate() {
@@ -364,12 +371,12 @@ public:
     const T                fromRatio = fabs(fr.getWidth() / fr.getHeight());
     const T                toRatio   = fabs(tr.getWidth() / tr.getHeight());
     bool                   changed   = false;
-    if(fromRatio / toRatio > 1) {
+    if(fromRatio > toRatio) {
       const T dh = dsign(fr.getHeight())*(fabs(fr.getWidth()/toRatio) - fabs(fr.getHeight()));
       fr.m_y -= dh / 2;
       fr.m_h += dh;
       changed = dh != 0;
-    } else if(fromRatio / toRatio < 1) {
+    } else if(fromRatio < toRatio) {
       const T dw = dsign(fr.getWidth())*(fabs(toRatio*fr.getHeight()) - fabs(fr.getWidth()));
       fr.m_x -= dw / 2;
       fr.m_w += dw;
@@ -381,6 +388,13 @@ public:
     return changed;
   }
 
+  bool operator==(const RectangleTransformationTemplate<T> &rhs) const {
+    return (getXTransformation() == rhs.getXTransformation())
+        && (getYTransformation() == rhs.getYTransformation());
+  }
+  bool operator!=(const RectangleTransformationTemplate<T> &rhs) const {
+    return !(*this == rhs);
+  }
   static RectangleTransformationTemplate<T> getId() {
     return RectangleTransformationTemplate(Rectangle2DTemplate<T>(0,0,1,1)
                                           ,Rectangle2DTemplate<T>(0,0,1,1));

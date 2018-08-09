@@ -75,6 +75,12 @@ public:
   T getLength() const {
     return m_to - m_from;
   }
+  bool operator==(const NumberInterval<T> &rhs) const {
+    return (getFrom() == rhs.getFrom()) && (getTo() == rhs.getTo());
+  }
+  bool operator!=(const NumberInterval<T> &rhs) const {
+    return !(*this == rhs);
+  }
   String toString(int precision = 3) const {
     return format(_T("[%s-%s]"), ::toString(m_from, precision).cstr(), ::toString(m_to, precision).cstr());
   }
