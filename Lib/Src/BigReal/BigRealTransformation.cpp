@@ -190,7 +190,7 @@ bool BigRealRectangleTransformation::adjustAspectRatio() {
     fr.m_h += dh;
     changed = !dh.isZero();
   } else if(fromRatio < toRatio) {
-    const BigReal dw = dsign(fr.getWidth())*(fabs(rProd(toRatio,fr.getHeight(),digits,dp)),fabs(fr.getWidth()));
+    const BigReal dw = dsign(fr.getWidth())*(fabs(rProd(toRatio,fr.getHeight(),digits,dp)) - fabs(fr.getWidth()));
     fr.m_x -= dw * dw.getDigitPool()->getHalf();
     fr.m_w += dw;
     changed = !dw.isZero();
