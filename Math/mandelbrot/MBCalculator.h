@@ -24,7 +24,7 @@ private:
   CRect m_rect;
   int   m_width;
   static inline UINT getPixelCount(const CRect &r) {
-    return r.Width() * r.Height();
+    return getArea(r);
   }
   inline UINT getIndex(const CPoint &p) const {
     return (p.y-m_rect.top) * m_width + (p.x-m_rect.left);
@@ -154,7 +154,8 @@ private:
   void  releaseOrbitPoints();
 
 protected:
-  CRect m_currentRect;
+  CRect  m_currentRect;
+  size_t m_doneCount; // number of pixels calculated
   MBCalculator(CalculatorPool *pool, int id);
   void  fillInnerArea(PointSet &innerSet);
   inline MBContainer &getMBContainer() const {
@@ -186,6 +187,10 @@ public:
   }
   void wakeUp() {
     m_wakeup.signal();
+  }
+  // return number of pixels done by this thread
+  inline size_t getDoneCount() const {
+    return m_doneCount;
   }
 };
 
@@ -256,6 +261,8 @@ public:
   inline bool isCalculationActive() const {
     return m_calculatorsInState[CALC_TERMINATED] < m_existing;
   }
+  // Return sum of pixels done by all threads together
+  size_t getDoneCount() const;
   void suspendCalculation();
   void resumeCalculation();
   void killAll();

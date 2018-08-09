@@ -125,6 +125,11 @@ public:
   void                                  handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
 };
 
+typedef enum {
+  TIMER_CALCULATION = 1
+ ,TIMER_MOVIEMAKER  = 2
+} TimerId;
+
 class CMandelbrotDlg : public CDialog, public PropertyChangeListener {
 private:
   static const TCHAR            *s_stateName[];
@@ -157,6 +162,7 @@ private:
   bool                           m_hasResized;
   BitSet8                        m_runningTimerSet;
   SynchronizedQueue<CRect>       m_jobQueue;
+  size_t                         m_totalPixelsInJob;
   CWnd                          *m_imageWindow;
   CSize                          m_imageWindowSize; // in pixels
   HRGN                           m_imageRGN;
@@ -169,6 +175,7 @@ private:
 
   void updateWindowStateInternal();
   void showWindowState();
+  void showCalculationState();
   void showMousePoint(const CPoint &p);
   void saveRectangle(const String &fileName);
   void loadRectangle(const String &fileName);
@@ -181,17 +188,19 @@ private:
   void setWorkSize(  const CSize &size);
   void createPixRect(const CSize &size);
   void destroyPixRect();
-  void setUncalculatedPixelsToEmpty();
+  // Return total number of uncalculated pixels
+  size_t setUncalculatedPixelsToEmpty();
   void clearUncalculatedWindowArea();
   int  getCPUCountToUse() const;
   bool setColorMapData(const ColorMapData &colorMapData);
   void setScale(const BigReal &minX, const BigReal &maxX, const BigReal &minY, const BigReal &maxY, bool allowAdjustAspectRatio);
-  void handleTransformChanged(bool adjustAspectRatio);
+  // Returns true if transformation has changed
+  bool handleTransformChanged(bool adjustAspectRatio);
   void setPrecision(int id);
   void setDigits();
   void updateZoomFactor();
-  void startTimer(UINT id, int msec);
-  void stopTimer(UINT id);
+  void startTimer(TimerId id, int msec);
+  void stopTimer(TimerId id);
   inline bool isValidSize() const {
     return m_pixRect != NULL;
   }
@@ -230,6 +239,9 @@ private:
   }
   inline const TCHAR *getStateName() const {
     return s_stateName[m_state];
+  }
+  inline double getPercentDone() const {
+    return PERCENT(m_calculatorPool->getDoneCount(),m_totalPixelsInJob);
   }
 public:
   CMandelbrotDlg(DigitPool *digitPool, CWnd *pParent = NULL);

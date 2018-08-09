@@ -85,7 +85,7 @@ UINT MBBigRealCalculator::run() {
             SETPHASE(_T("RUN"));
             enableEdgeTracing(false);
           } else {
-            pa.setPixel(p, colorMap[iterations]);
+            pa.setPixel(p, colorMap[iterations]); m_doneCount++;
           }
         }
       }
@@ -118,7 +118,7 @@ void MBBigRealCalculator::followBlackEdge(const CPoint &p, PixelAccessor &pa, UI
   bool               innerSetEmpty =  true;
   PointSet           edgeSet(rect), innerSet(rect);
   edgeSet.add(p);
-  pa.setPixel(p, colorMap[maxIteration]);
+  pa.setPixel(p, colorMap[maxIteration]); m_doneCount++;
 
   SETPHASE(_T("FOLLOWEDGE"))
 
@@ -160,7 +160,7 @@ void MBBigRealCalculator::followBlackEdge(const CPoint &p, PixelAccessor &pa, UI
               edgeMatrix.setInside(dy+1, dx+1);
             } else {
               edgeMatrix.setOutside(dy+1, dx+1);
-              pa.setPixel(qx,qy, colorMap[iterations]);
+              pa.setPixel(qx,qy, colorMap[iterations]); m_doneCount++;
             }
           }
         }
@@ -189,7 +189,7 @@ void MBBigRealCalculator::followBlackEdge(const CPoint &p, PixelAccessor &pa, UI
     }
     q += EdgeMatrix::s_dirStep[dir];
     if(!edgeSet.contains(q)) {
-      pa.setPixel(q, BLACK);
+      pa.setPixel(q, BLACK); m_doneCount++;
       edgeSet.add(q);
       edgeCount++;
     }

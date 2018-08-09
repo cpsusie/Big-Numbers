@@ -151,6 +151,16 @@ void CalculatorPool::createAllPendinglMasks() {
   m_killAllPendingFlags = mask;
 }
 
+size_t CalculatorPool::getDoneCount() const {
+  size_t sum = 0;
+  m_gate.wait();
+  for(UINT i = 0; i < size(); i++) {
+    sum += (*this)[i]->getDoneCount();
+  }
+  m_gate.signal();
+  return sum;
+}
+
 void CalculatorPool::suspendCalculation() {
   m_gate.wait();
   m_pendingFlags |= m_suspendAllPendingFlags;

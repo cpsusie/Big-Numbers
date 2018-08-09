@@ -9,6 +9,7 @@ MBCalculator::MBCalculator(CalculatorPool *pool, int id)
 , m_wakeup(0)
 , m_pendingMask(pool->getPendingMask(id))
 , m_orbitPoints(NULL)
+, m_doneCount(0)
 {
   setDeamon(true);
   if(m_mbc.calculateWithOrbit()) {
@@ -84,7 +85,7 @@ void MBCalculator::addInfoToPool() {
 #define CHECKPIXELPP                          \
 { const D3DCOLOR c = pa.getPixel(pp);         \
   if(!ISCOLORTOFILL(c)) break;                \
-  pa.setPixel(pp, FILLCOLOR);                 \
+  pa.setPixel(pp, FILLCOLOR); m_doneCount++;  \
   ADDPPTOINFO;                                \
 }
 

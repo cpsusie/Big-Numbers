@@ -302,12 +302,12 @@ void CMandelbrotDlg::OnFileMakeMovie() {
   }
   m_frameGenerator = new MBFrameGenerator(this, dlg.getSelectedDir()); TRACE_NEW(m_frameGenerator);
   updateMovieMenuItem();
-  startTimer(2, 5000);
+  startTimer(TIMER_MOVIEMAKER, 5000);
 }
 
 void CMandelbrotDlg::OnFileStopMovie() {
   if(!isMakingMovie()) return;
-  stopTimer(2);
+  stopTimer(TIMER_MOVIEMAKER);
   SAFEDELETE(m_frameGenerator);
   updateWindowStateInternal();
   updateMovieMenuItem();
@@ -412,7 +412,7 @@ void CMandelbrotDlg::OnOptionsUseEdgeDetection() {
 
 void CMandelbrotDlg::OnOptionsRetainAspectRatio() {
   if(m_retainAspectRatio = toggleMenuItem(this, ID_OPTIONS_RETAIN_ASPECTRATIO)) {
-    if(m_bigRealTransform.adjustAspectRatio()){
+    if(handleTransformChanged(true)) {
       startCalculation();
     }
   }
@@ -572,7 +572,7 @@ void CMandelbrotDlg::handlePropertyChanged(const PropertyContainer *source, int 
       const bool newActive = *(bool*)newValue;
       if(oldActive && !newActive) {
         m_jobQueue.clear();
-        stopTimer(1);
+        stopTimer(TIMER_CALCULATION);
         DLOG(_T("CalculationACtive=FALSE. Now POST WM_PAINT\n"));
         PostMessage(WM_PAINT);
       } else if(newActive) {
@@ -719,20 +719,32 @@ void CMandelbrotDlg::showWindowState() {
                         )
                  );
 
-    setWindowText(this, IDC_STATIC_INFOWINDOW
-                      , format(_T("Level:%2d. %s")
-                              , m_pictureStack.getHeight()
-                              , isCalculationActive()
-                              ? (isCalculationSuspended() ? _T("Suspended") : _T("Calculating"))
-                              : getStateName()
-                              )
-                 );
+    showCalculationState();
   } else {
     setWindowText(this, _T("Generating image list"));
 
     setWindowText(this, IDC_STATIC_INFOWINDOW
                       , format(_T("Calculating frame %d/%d"), m_frameGenerator->getFrameIndex(), m_frameGenerator->getTotalFrameCount()));
   }
+}
+
+void CMandelbrotDlg::showCalculationState() {
+  const bool calculating = isCalculationActive();
+  String stateStr;
+  if(!isCalculationActive()) {
+    stateStr = getStateName();
+  } else {
+    stateStr = format(_T("%s %3.0lf%%")
+                     ,isCalculationSuspended() ? _T("Suspended") : _T("Calculating")
+                     ,getPercentDone()
+                     );
+  }
+  setWindowText(this, IDC_STATIC_INFOWINDOW
+                    , format(_T("Level:%2d. %s")
+                            , m_pictureStack.getHeight()
+                            , stateStr.cstr()
+                            )
+                );
 }
 
 void CMandelbrotDlg::showMousePoint(const CPoint &p) {
@@ -778,7 +790,9 @@ void CMandelbrotDlg::setWorkSize(const CSize &size) {
     initScale();
   }
   if(isValidSize()) {
-    m_bigRealTransform.setToRectangle(BigRealRectangle2D(0,0,size.cx, size.cy, getDigitPool()));
+    BigRealRectangle2D r(getDigitPool());
+    r = RealRectangle2D(0,0,size.cx,size.cy);
+    m_bigRealTransform.setToRectangle(r);
     handleTransformChanged(isRetainAspectRatio());
     m_zoom1Rect = m_bigRealTransform.getFromRectangle();
   }
@@ -942,15 +956,19 @@ void CMandelbrotDlg::setScale(const BigReal &minX, const BigReal &maxX, const Bi
   handleTransformChanged(isRetainAspectRatio() && allowAdjustAspectRatio);
 }
 
-void CMandelbrotDlg::handleTransformChanged(bool adjustAspectRatio) {
+bool CMandelbrotDlg::handleTransformChanged(bool adjustAspectRatio) {
+  bool changed = false;
   if(adjustAspectRatio) {
-    m_bigRealTransform.adjustAspectRatio();
+    changed = m_bigRealTransform.adjustAspectRatio();
   }
   setDigits();
   if(canUseRealCalculators()) {
+    const RealRectangleTransformation old = m_realTransform;
     m_realTransform.setToRectangle(  m_bigRealTransform.getToRectangle());
     m_realTransform.setFromRectangle(m_bigRealTransform.getFromRectangle());
+    changed |= m_realTransform != old;
   }
+  return changed;
 }
 
 void CMandelbrotDlg::setDigits() {
@@ -1181,24 +1199,28 @@ void CMandelbrotDlg::startCalculation() {
   if(m_jobQueue.isEmpty()) { // calculate the whole visible area
     setRectangleToCalculate(toCRect(m_bigRealTransform.getToRectangle()));
   }
+
   clearPixelAccessor();
-  setUncalculatedPixelsToEmpty();
+  m_totalPixelsInJob = setUncalculatedPixelsToEmpty();
   if(calculateWithOrbit() || animateCalculation()) {
     clearUncalculatedWindowArea();
   }
   updateZoomFactor();
   getPixelAccessor();
 
-  startTimer(1, 500);
+  startTimer(TIMER_CALCULATION, 500);
   m_calculatorPool->startCalculators(getCPUCountToUse());
   m_gate.signal();
 }
 
-void CMandelbrotDlg::setUncalculatedPixelsToEmpty() {
-  D3DCOLOR emptyColor = EMPTY_COLOR;
+size_t CMandelbrotDlg::setUncalculatedPixelsToEmpty() {
+  size_t pixelCount = 0;
   for(size_t i = 0; i < m_jobQueue.size(); i++) {
-    m_pixRect->fillRect(m_jobQueue[i], EMPTY_COLOR);
+    const CRect &r = m_jobQueue[i];
+    pixelCount += getArea(r);
+    m_pixRect->fillRect(r, EMPTY_COLOR);
   }
+  return pixelCount;
 }
 
 void CMandelbrotDlg::clearUncalculatedWindowArea() {
@@ -1294,13 +1316,13 @@ void CMandelbrotDlg::updateMovieMenuItem() {
 
 // --------------------------------------------------------------------------------------------------
 
-void CMandelbrotDlg::startTimer(UINT id, int msec) {
+void CMandelbrotDlg::startTimer(TimerId id, int msec) {
   if(!m_runningTimerSet.contains(id) && SetTimer(id,msec,NULL)) {
     m_runningTimerSet.add(id);
   }
 }
 
-void CMandelbrotDlg::stopTimer(UINT id) {
+void CMandelbrotDlg::stopTimer(TimerId id) {
   if(m_runningTimerSet.contains(id) ) {
     KillTimer(id);
     m_runningTimerSet.remove(id);
@@ -1309,9 +1331,10 @@ void CMandelbrotDlg::stopTimer(UINT id) {
 
 void CMandelbrotDlg::OnTimer(UINT_PTR nIDEvent) {
   switch(nIDEvent) {
-  case 1:
+  case TIMER_CALCULATION:
+    showCalculationState();
     break;
-  case 2:
+  case TIMER_MOVIEMAKER :
     showWindowState();
     break;
   }
