@@ -177,7 +177,7 @@ BOOL CMandelbrotDlg::OnInitDialog() {
   initScale();
   setWorkSize();
   setColorMapData(ColorMapData());
-  //startCalculation();
+  startCalculation();
 
   return TRUE;  // return TRUE  unless you set the focus to a control
 }
