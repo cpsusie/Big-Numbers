@@ -191,7 +191,7 @@ private:
   // Return total number of uncalculated pixels
   size_t setUncalculatedPixelsToEmpty();
   void clearUncalculatedWindowArea();
-  int  getCPUCountToUse() const;
+  UINT getCPUCountToUse() const;
   bool setColorMapData(const ColorMapData &colorMapData);
   void setScale(const BigReal &minX, const BigReal &maxX, const BigReal &minY, const BigReal &maxY, bool allowAdjustAspectRatio);
   // Returns true if transformation has changed
@@ -227,7 +227,7 @@ private:
   void     paintPointSet(const PointSet &ps, COLORREF color);
   void     startCalculation();
   void     setRectanglesToCalculate(const CompactArray<CRect> &rectangles);
-  void     setRectangleToCalculate(const CRect &rectangle);
+  void     setRectangleToCalculate(const CRect &rectangle, bool splitLast=true);
   void     setSuspendingMenuText(bool isSuspendingText);
   inline bool hasPixelAccessor() const {
     return m_pixelAccessor != NULL;

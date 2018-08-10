@@ -134,7 +134,7 @@ class CalculatorPool;
 
 class MBCalculator : public Thread {
 private:
-  const int           m_id;
+  const UINT          m_id;
   bool                m_edgeTracing;
   MBContainer        &m_mbc;
   OrbitPoint         *m_orbitPoints;
@@ -159,7 +159,7 @@ protected:
   const ULONG     m_pendingMask;
   CRect           m_currentRect;
   size_t          m_doneCount; // number of pixels calculated
-  MBCalculator(CalculatorPool *pool, int id);
+  MBCalculator(CalculatorPool *pool, UINT id);
   PixelAccessor *fillInnerArea(PointSet &innerSet, PixelAccessor *pa);
   inline MBContainer &getMBContainer() const {
     return m_mbc;
@@ -178,7 +178,7 @@ protected:
   inline bool isEdgeTracing() const {
     return m_edgeTracing;
   }
-  inline int getId() const {
+  inline UINT getId() const {
     return m_id;
   }
 
@@ -208,7 +208,7 @@ typedef enum {
 
 class CalculatorPool : private CompactArray<MBCalculator*>, public PropertyContainer {
 private:
-  static int            s_CPUCount;
+  static UINT           s_CPUCount;
   static CalculatorSet  s_maxSet;
   static const TCHAR   *s_stateName[3];
   MBContainer          &m_mbc;
@@ -219,14 +219,14 @@ private:
   CalculatorSet         m_calculatorsInState[3]; // one for each possible value of CalculatorState
   CalculatorSet         m_existing;
 
-  void            setStateInternal(int id, CalculatorState state);
-  CalculatorState getStateInternal(int id) const;
+  void            setStateInternal(UINT id, CalculatorState state);
+  CalculatorState getStateInternal(UINT id) const;
   void            killAllInternal();
   void            wakeAllInternal();
   void            waitUntilAllTerminated();
   void            waitUntilNoRunningInternal();
   void            waitUntilAllTerminatedInternal();
-  void            addToExistingInternal(int id);
+  void            addToExistingInternal(UINT id);
   void            clearExistingInternal();
   static inline const TCHAR *getStateName(CalculatorState state) {
     return s_stateName[state];
@@ -245,27 +245,27 @@ public:
   MBContainer &getMBContainer() {
     return m_mbc;
   }
-  static inline int getCPUCount() {
+  static inline UINT getCPUCount() {
     return s_CPUCount;
   }
-  CalculatorState getState(int id);
-  void            setState(int id, CalculatorState state);
+  CalculatorState getState(UINT id);
+  void            setState(UINT id, CalculatorState state);
   String          getStatesString() const;
 
-  int        getPendingMask(int id) {
+  ULONG           getPendingMask(UINT id) {
     return 3 << (2*id);
   }
-  inline int getPendingFlags(int id) {
+  inline ULONG getPendingFlags(UINT id) {
     return (m_pendingFlags >> (2*id)) & 3;
   }
-  inline int isPending(ULONG mask) {
-    return m_pendingFlags & mask;
+  inline bool isPending(ULONG mask) {
+    return (m_pendingFlags & mask) != 0;
   }
 
   inline CalculatorSet getCalculatorsInState(CalculatorState state) const {
     return m_calculatorsInState[state];
   }
-  void startCalculators(int count);
+  void startCalculators(UINT count);
   inline bool isCalculationActive() const {
     return m_calculatorsInState[CALC_TERMINATED] < m_existing;
   }

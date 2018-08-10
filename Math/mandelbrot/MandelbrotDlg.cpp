@@ -743,7 +743,7 @@ void CMandelbrotDlg::showCalculationState() {
   if(!isCalculationActive()) {
     stateStr = getStateName();
   } else {
-    stateStr = format(_T("%s %3.0lf%%")
+    stateStr = format(_T("%s %4.1lf%%")
                      ,isCalculationSuspended() ? _T("Suspended") : _T("Calculating")
                      ,getPercentDone()
                      );
@@ -1241,18 +1241,20 @@ void CMandelbrotDlg::clearUncalculatedWindowArea() {
 
 void CMandelbrotDlg::setRectanglesToCalculate(const CompactArray<CRect> &rectangles) {
   m_gate.wait();
-  for(size_t i = 0; i < rectangles.size(); i++) {
-    setRectangleToCalculate(rectangles[i]);
+  const size_t n = rectangles.size();
+  for(size_t i = 0; i < n; i++) {
+    setRectangleToCalculate(rectangles[i], i == n-1);
   }
   m_gate.signal();
 }
 
-void CMandelbrotDlg::setRectangleToCalculate(const CRect &rectangle) {
+void CMandelbrotDlg::setRectangleToCalculate(const CRect &rectangle, bool splitLast) {
   if(rectangle.Width() <= 0 || rectangle.Height() <= 0) {
     return;
   }
-  const int cpus = getCPUCountToUse();
-  int height = (cpus == 1) ? rectangle.Height() : (rectangle.Height() / (7 * cpus));
+  const UINT cpuCount = getCPUCountToUse();
+  if(cpuCount == 1) splitLast = false;
+  int height = (cpuCount == 1) ? rectangle.Height() : (rectangle.Height() / (7 * cpuCount));
   if(height == 0) {
     height = 1;
   }
@@ -1263,6 +1265,11 @@ void CMandelbrotDlg::setRectangleToCalculate(const CRect &rectangle) {
     rect.right  = rectangle.right;
     rect.top    = lastBottom;
     rect.bottom = rect.top + height;
+    if((rect.bottom >= rectangle.bottom) && splitLast) {
+      height    = 1;
+      splitLast = false;
+      continue;
+    }
     if(rect.bottom > rectangle.bottom) {
       rect.bottom = rectangle.bottom;
     }
@@ -1273,7 +1280,7 @@ void CMandelbrotDlg::setRectangleToCalculate(const CRect &rectangle) {
   }
 }
 
-int CMandelbrotDlg::getCPUCountToUse() const {
+UINT CMandelbrotDlg::getCPUCountToUse() const {
   return (calculateWithOrbit() || m_useOnly1CPU) ? 1 : CalculatorPool::getCPUCount();
 }
 

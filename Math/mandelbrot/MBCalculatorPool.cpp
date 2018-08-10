@@ -3,7 +3,7 @@
 #include "MBRealCalculator.h"
 #include "MBBigRealCalculator.h"
 
-int           CalculatorPool::s_CPUCount = 0;
+UINT          CalculatorPool::s_CPUCount = 0;
 CalculatorSet CalculatorPool::s_maxSet;
 
 const TCHAR  *CalculatorPool::s_stateName[] = {
@@ -26,7 +26,7 @@ CalculatorPool::~CalculatorPool() {
   m_gate.signal();
 }
 
-void CalculatorPool::startCalculators(int count) {
+void CalculatorPool::startCalculators(UINT count) {
   m_gate.wait();
 
   killAllInternal();
@@ -37,7 +37,7 @@ void CalculatorPool::startCalculators(int count) {
 
   count = min(count, s_CPUCount);
   const bool useReal = m_mbc.canUseRealCalculators();
-  for(int i = 0; i < count; i++) {
+  for(UINT i = 0; i < count; i++) {
     MBCalculator *calculator = useReal ? (MBCalculator*)(new MBRealCalculator(   this, i))
                                        : (MBCalculator*)(new MBBigRealCalculator(this, i));
     TRACE_NEW(calculator);
@@ -47,7 +47,7 @@ void CalculatorPool::startCalculators(int count) {
   }
   createAllPendinglMasks();
   m_pendingFlags = 0;
-  for(int i = 0; i < s_CPUCount; i++) {
+  for(UINT i = 0; i < s_CPUCount; i++) {
     if(m_existing.contains(i)) {
       (*this)[i]->start();
     }
@@ -135,7 +135,7 @@ void CalculatorPool::wakeAllInternal() {
 
 void CalculatorPool::createAllPendinglMasks() {
   ULONG mask = 0;
-  for(int i = 0; i < s_CPUCount; i++) {
+  for(UINT i = 0; i < s_CPUCount; i++) {
     if(m_existing.contains(i)) {
       mask |= CALC_SUSPEND_PENDING << (2*i);
     }
@@ -143,7 +143,7 @@ void CalculatorPool::createAllPendinglMasks() {
   m_suspendAllPendingFlags = mask;
 
   mask = 0;
-  for(int i = 0; i < s_CPUCount; i++) {
+  for(UINT i = 0; i < s_CPUCount; i++) {
     if(m_existing.contains(i)) {
       mask |= CALC_KILL_PENDING << (2*i);
     }
@@ -174,20 +174,20 @@ void CalculatorPool::resumeCalculation() {
   m_gate.signal();
 }
 
-CalculatorState CalculatorPool::getState(int id) {
+CalculatorState CalculatorPool::getState(UINT id) {
   m_gate.wait();
   const CalculatorState state = getStateInternal(id);
   m_gate.signal();
   return state;
 }
 
-void CalculatorPool::setState(int id, CalculatorState state) {
+void CalculatorPool::setState(UINT id, CalculatorState state) {
   m_gate.wait();
   setStateInternal(id, state);
   m_gate.signal();
 }
 
-CalculatorState CalculatorPool::getStateInternal(int id) const {
+CalculatorState CalculatorPool::getStateInternal(UINT id) const {
          if(m_calculatorsInState[CALC_SUSPENDED ].contains(id)) {
     return CALC_SUSPENDED;
   } else if(m_calculatorsInState[CALC_RUNNING   ].contains(id)) {
@@ -195,7 +195,7 @@ CalculatorState CalculatorPool::getStateInternal(int id) const {
   } else if(m_calculatorsInState[CALC_TERMINATED].contains(id)) {
     return CALC_TERMINATED;
   } else if(m_existing.contains(id)) {
-    DLOG(_T("Undefined state for calculator %d. Existing:%s, Suspended:%s, Running:%s, Terminated:%s\n")
+    DLOG(_T("Undefined state for calculator %u. Existing:%s, Suspended:%s, Running:%s, Terminated:%s\n")
               ,id
               ,m_existing.toString().cstr()
               ,m_calculatorsInState[CALC_SUSPENDED ].toString().cstr()
@@ -203,12 +203,12 @@ CalculatorState CalculatorPool::getStateInternal(int id) const {
               ,m_calculatorsInState[CALC_TERMINATED].toString().cstr()
               );
   } else {
-    DLOG(_T("Trying to get state for non-existing calculator:%d\n"), id);
+    DLOG(_T("Trying to get state for non-existing calculator:%u\n"), id);
   }
   return CALC_TERMINATED;
 }
 
-void CalculatorPool::setStateInternal(int id, CalculatorState state) {
+void CalculatorPool::setStateInternal(UINT id, CalculatorState state) {
   assert(m_existing.contains(id));
 
   const CalculatorSet oldRunningSet = m_calculatorsInState[CALC_RUNNING];
@@ -217,7 +217,7 @@ void CalculatorPool::setStateInternal(int id, CalculatorState state) {
   switch(state) {
   case CALC_SUSPENDED :
     if(m_calculatorsInState[CALC_TERMINATED].contains(id)) {
-      DLOG(_T("Trying to set terminated calulator %d to state SUSPENDED. Skipped\n"), id);
+      DLOG(_T("Trying to set terminated calulator %u to state SUSPENDED. Skipped\n"), id);
       break;
     }
     m_calculatorsInState[CALC_RUNNING   ].remove(id);
@@ -225,7 +225,7 @@ void CalculatorPool::setStateInternal(int id, CalculatorState state) {
     break;
   case CALC_RUNNING   :
     if(m_calculatorsInState[CALC_TERMINATED].contains(id)) {
-      DLOG(_T("Trying to set terminated calulator %d to state RUNNING. Skipped\n"), id);
+      DLOG(_T("Trying to set terminated calulator %u to state RUNNING. Skipped\n"), id);
       break;
     }
     m_calculatorsInState[CALC_SUSPENDED ].remove(id);
@@ -242,7 +242,7 @@ void CalculatorPool::setStateInternal(int id, CalculatorState state) {
   notifyIfChanged(oldIsActive);
 }
 
-void CalculatorPool::addToExistingInternal(int id) {
+void CalculatorPool::addToExistingInternal(UINT id) {
   const bool oldIsActive = isCalculationActive();
   m_existing.add(id);
   notifyIfChanged(oldIsActive);

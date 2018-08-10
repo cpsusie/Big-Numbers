@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "MBCalculator.h"
 
-MBCalculator::MBCalculator(CalculatorPool *pool, int id)
+MBCalculator::MBCalculator(CalculatorPool *pool, UINT id)
 : Thread(format(_T("MBCalc(%d)"),id))
 , m_pool(*pool)
 , m_id(id)
