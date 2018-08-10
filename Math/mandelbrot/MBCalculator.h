@@ -134,9 +134,7 @@ class CalculatorPool;
 
 class MBCalculator : public Thread {
 private:
-  CalculatorPool     &m_pool;
   const int           m_id;
-  const ULONG         m_pendingMask;
   bool                m_edgeTracing;
   MBContainer        &m_mbc;
   OrbitPoint         *m_orbitPoints;
@@ -157,8 +155,10 @@ private:
   void  releaseOrbitPoints();
 
 protected:
-  CRect  m_currentRect;
-  size_t m_doneCount; // number of pixels calculated
+  CalculatorPool &m_pool;
+  const ULONG     m_pendingMask;
+  CRect           m_currentRect;
+  size_t          m_doneCount; // number of pixels calculated
   MBCalculator(CalculatorPool *pool, int id);
   PixelAccessor *fillInnerArea(PointSet &innerSet, PixelAccessor *pa);
   inline MBContainer &getMBContainer() const {
@@ -181,7 +181,9 @@ protected:
   inline int getId() const {
     return m_id;
   }
-  bool isPending() const;
+
+#define CHECKPENDING() { if(m_pool.isPending(m_pendingMask)) { pa = handlePending(); } }
+
   PixelAccessor *handlePending();
   void setPoolState(CalculatorState state);
 public:
@@ -259,8 +261,6 @@ public:
   inline int isPending(ULONG mask) {
     return m_pendingFlags & mask;
   }
-
-#define CHECKPENDING() { if(isPending()) { pa = handlePending(); } }
 
   inline CalculatorSet getCalculatorsInState(CalculatorState state) const {
     return m_calculatorsInState[state];

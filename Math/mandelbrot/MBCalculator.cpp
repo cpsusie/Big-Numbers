@@ -18,10 +18,6 @@ MBCalculator::MBCalculator(CalculatorPool *pool, int id)
 #endif
 }
 
-bool MBCalculator::isPending() const {
-  return m_pool.isPending(m_pendingMask);
-}
-
 void MBCalculator::setPoolState(CalculatorState state) {
   m_pool.setState(m_id, state);
 }
