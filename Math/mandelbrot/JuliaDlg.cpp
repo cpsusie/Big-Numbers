@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "mandelbrot.h"
 #include "JuliaDlg.h"
 
 #ifdef _DEBUG

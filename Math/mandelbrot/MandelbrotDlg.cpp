@@ -1,10 +1,6 @@
 #include "stdafx.h"
-#include <Math.h>
-#include <direct.h>
-#include <MFCUtil/SelectDirDlg.h>
 #include <ByteFile.h>
 #include <Random.h>
-#include "Mandelbrot.h"
 #include "MandelbrotDlg.h"
 #include "JuliaDlg.h"
 #include "ShowColorMapDlg.h"
@@ -196,13 +192,14 @@ void CMandelbrotDlg::OnFileSaveRectangle() {
     dlg.m_ofn.lpstrTitle  = _T("Save Rectangle");
     dlg.m_ofn.lpstrFilter = rectangleFileExtensions;
 
-    const BigRealRectangle2D r = m_bigRealTransform.getFromRectangle();
+    const BigRealRectangle2D r    = m_bigRealTransform.getFromRectangle();
+    const UINT               prec = (UINT)getDigits();
 
     String fileName = format(_T("[%s,%s]x[%s,%s].rect")
-                            ,::toString(r.getMinX()  ,16,0, ios::scientific).cstr()
-                            ,::toString(r.getMinY()  ,16,0, ios::scientific).cstr()
-                            ,::toString(r.getWidth() , 5,0, ios::scientific).cstr()
-                            ,::toString(r.getHeight(), 5,0, ios::scientific).cstr()
+                            ,::toString(r.getMinX()  ,prec,0, ios::scientific).cstr()
+                            ,::toString(r.getMinY()  ,prec,0, ios::scientific).cstr()
+                            ,::toString(r.getWidth() ,5   ,0, ios::scientific).cstr()
+                            ,::toString(r.getHeight(),5   ,0, ios::scientific).cstr()
                             );
     TCHAR nameBuffer[256];
     _tcscpy(nameBuffer, fileName.cstr());
@@ -716,15 +713,14 @@ void CMandelbrotDlg::setSuspendingMenuText(bool isSuspendingText) {
 
 void CMandelbrotDlg::showWindowState() {
   if(!isMakingMovie()) {
-    const BigRealRectangle2D r = m_bigRealTransform.getFromRectangle();
-    const UINT prec = (UINT)getDigits();
-    setWindowText(this
-                , format(_T("[%s;%s]x[%s,%s] (digits=%u)")
-                        ,::toString(r.getMinX()  ,prec,0, ios::scientific).cstr()
-                        ,::toString(r.getMinY()  ,prec,0, ios::scientific).cstr()
-                        ,::toString(r.getWidth() ,5   ,0, ios::scientific).cstr()
-                        ,::toString(r.getHeight(),5   ,0, ios::scientific).cstr()
-                        ,prec
+    const BigRealRectangle2D r    = m_bigRealTransform.getFromRectangle();
+    const UINT               prec = (UINT)getDigits();
+    setWindowText(this, format(_T("[%s;%s]x[%s,%s] (digits=%u)")
+                              ,::toString(r.getMinX()  ,prec,0, ios::scientific).cstr()
+                              ,::toString(r.getMinY()  ,prec,0, ios::scientific).cstr()
+                              ,::toString(r.getWidth() ,5   ,0, ios::scientific).cstr()
+                              ,::toString(r.getHeight(),5   ,0, ios::scientific).cstr()
+                              ,prec
                         )
                  );
 

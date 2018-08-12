@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Stack.h>
-#include <MFCUtil/Layoutmanager.h>
 #include "MBCalculator.h"
 #include "ColorMapDlg.h"
 #include "ImageListThread.h"

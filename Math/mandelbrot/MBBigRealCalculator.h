@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Math/BigRealTransformation.h>
 #include "MBCalculator.h"
 
 inline CPoint toCPoint(const BigRealPoint2D &p) {

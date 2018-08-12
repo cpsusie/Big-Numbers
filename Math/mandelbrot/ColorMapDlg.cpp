@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "Mandelbrot.h"
 #include "ColorMapDlg.h"
 
 #ifdef _DEBUG

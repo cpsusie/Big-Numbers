@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "Mandelbrot.h"
 #include "MandelbrotDlg.h"
 #include <Math/BigReal.h>
 

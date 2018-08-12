@@ -1,7 +1,5 @@
 #pragma once
 
-#include <MFCUtil/LayoutManager.h>
-
 class CShowColorMapDlg : public CDialog {
 private:
     SimpleLayoutManager m_layoutManager;

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Math/Transformation.h>
 #include "MBCalculator.h"
 
 inline CPoint toCPoint(const RealPoint2D &p) {

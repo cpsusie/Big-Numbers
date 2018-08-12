@@ -1,5 +1,5 @@
 #include "StdAfx.h"
-#include "MBCalculator.h"
+#include "PointSet.h"
 
 class PointSetIterator : public AbstractIterator {
 private:
