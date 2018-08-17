@@ -270,7 +270,7 @@ namespace TestMatrix {
       verify(fabs(C3) == sqrt(Real(14)));
     }
 
-    TEST_METHOD(MatrixRealEquationsText) {
+    TEST_METHOD(MatrixRealEquationsTest) {
       const int dimension = 5;
 
       for (int i = 0; i < 100; i++) {
@@ -552,6 +552,7 @@ namespace TestMatrix {
 
     TEST_METHOD(MatrixEigenValues) {
       OUTPUT(_T("  Begin test QRMatrix on 100 random matrices"));
+
       for (int i = 0; i < 100; i++) {
         testQRMatrix(randomMatrix(6, 6));
       }
