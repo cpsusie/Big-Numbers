@@ -85,6 +85,13 @@ public:
     m_x -= dp.x; m_y -= dp.y;
     return *this;
   }
+  inline bool operator==(const Rectangle2DTemplate &r) const {
+    return (m_x==r.m_x) && (m_y==r.m_y) && (m_w==r.m_w) && (m_h==r.m_h);
+  }
+  inline bool operator!=(const Rectangle2DTemplate &r) const {
+    return !(*this == r);
+  }
+
   inline bool contains(const Rectangle2DTemplate &rect) const {
     return contains(rect.getTopLeft()) && contains(rect.getBottomRight());
   }
