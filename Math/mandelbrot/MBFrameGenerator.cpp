@@ -6,7 +6,7 @@ MBFrameGenerator::MBFrameGenerator(CMandelbrotDlg *dlg, const String &dirName)
 : m_dlg(*dlg)
 , m_dirName(dirName)
 , m_finalRect(dlg->getBigRealTransformation().getFromRectangle())
-, m_imageSize(dlg->getImageSize())
+, m_frameSize(dlg->getWindowSize())
 , m_frameReady(0)
 {
   DigitPool *dp = getDigitPool();
@@ -24,7 +24,7 @@ MBFrameGenerator::MBFrameGenerator(CMandelbrotDlg *dlg, const String &dirName)
 
   HDC screenDC = getScreenDC();
   m_dc = CreateCompatibleDC(screenDC);
-  m_bm = CreateCompatibleBitmap(screenDC, m_imageSize.cx, m_imageSize.cy);
+  m_bm = CreateCompatibleBitmap(screenDC, m_frameSize.cx, m_frameSize.cy);
   DeleteDC(screenDC);
 
   m_imageListThread  = new ImageListThread(this); TRACE_NEW(m_imageListThread);
@@ -82,7 +82,7 @@ HBITMAP MBFrameGenerator::nextBitmap() { // should return NULL when no more fram
 
   HGDIOBJ oldGDI = SelectObject(m_dc, m_bm);
   CClientDC imageDC(m_dlg.getImageWindow());
-  BitBlt(m_dc, 0,0,m_imageSize.cx, m_imageSize.cy, imageDC, 0,0,SRCCOPY);
+  BitBlt(m_dc, 0,0,m_frameSize.cx, m_frameSize.cy, imageDC, 0,0,SRCCOPY);
   SelectObject(m_dc, oldGDI);
   DLOG(_T("BitBlt succeeded\n"));
   m_dlg.setScale(getInterpolatedRectangle(), true);

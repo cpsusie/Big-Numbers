@@ -20,7 +20,7 @@
 #define IDC_STATIC_COLORMAPWINDOW       1010
 #define IDC_STATIC_INTERVALWINDOW       1011
 #define IDC_CHECK_RANDOMSEED            1020
-#define IDC_EDIT_MAXITERATION           1021
+#define IDC_EDIT_MAXCOUNT               1021
 #define IDC_EDIT_SEED                   1022
 #define ID_FILE_SAVERECTANGLE           32771
 #define ID_FILE_SAVECOLORMAP            32772
@@ -47,7 +47,7 @@
 #define ID_OPTIONS_RETAIN_ASPECTRATIO   32844
 #define ID_OPTIONS_SHOWZOOMFACTOR       32845
 #define ID_HELP_ABOUTMANDELBROT         32850
-#define ID_GOTO_MAXITERATION            32900
+#define ID_GOTO_MAXCOUNT                32900
 #define ID_GOTO_SEED                    32901
 #define ID_MSG_STARTCALCULATION         32910
 #define ID_MSG_UPDATEWINDOWSTATE        32911

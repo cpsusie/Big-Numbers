@@ -25,19 +25,19 @@ private:
   size_t     m_digits;
   BigReal    _4;
   const BigRealIntervalTransformation  *m_xtr, *m_ytr;
-  UINT           findITCountPaintOrbit(const BigReal &X, const BigReal &Y , UINT maxIteration);
-  UINT           findITCountFast(      const BigReal &X, const BigReal &Y , UINT maxIteration);
-  PixelAccessor *followBlackEdge(      const CPoint  &p, PixelAccessor *pa, UINT maxIteration);
-  inline CPoint toCPoint(              const BigReal &x, const BigReal &y) const {
+  UINT               findCountPaintOrbit(const BigReal &X, const BigReal     &Y  , UINT maxCount);
+  UINT               findCountFast(      const BigReal &X, const BigReal     &Y  , UINT maxCount);
+  CellCountAccessor *followBlackEdge(    const CPoint  &p, CellCountAccessor *cca, UINT maxCount);
+  inline CPoint      toCPoint(           const BigReal &x, const BigReal     &y) const {
     return CPoint(getInt(m_xtr->forwardTransform(x)), getInt(m_ytr->forwardTransform(y)));
   }
   inline DigitPool *getDigitPool() const {
     return m_digitPool;
   }
 protected:
-  inline UINT findItCount(const BigReal &X, const BigReal &Y, UINT maxIteration) {
-    return isWithOrbit() ? findITCountPaintOrbit(X,Y,maxIteration)
-                         : findITCountFast(      X,Y,maxIteration);
+  inline UINT findCount(const BigReal &X, const BigReal &Y, UINT maxCount) {
+    return isWithOrbit() ? findCountPaintOrbit(X,Y,maxCount)
+                         : findCountFast(      X,Y,maxCount);
   };
 public:
   MBBigRealCalculator(CalculatorPool *pool, int id) 

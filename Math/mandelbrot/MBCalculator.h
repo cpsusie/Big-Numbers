@@ -6,17 +6,19 @@
 #include <Math/FPU.h>
 #include <Math/Transformation.h>
 #include <Math/BigRealTransformation.h>
+#include "CellCountMatrix.h"
 #include "PointSet.h"
 #include "EdgeMatrix.h"
 
+#define ORBITCOLOR RGB(0,0,255)
+
 class OrbitPoint : public CPoint {
 public:
+  COLORREF m_oldColor;
   inline OrbitPoint() {
   }
-  inline OrbitPoint(const CPoint &p, D3DCOLOR oldColor) : CPoint(p) {
-    m_oldColor = oldColor;
+  inline OrbitPoint(const CPoint &p, COLORREF oldColor) : CPoint(p), m_oldColor(oldColor) {
   }
-  D3DCOLOR m_oldColor;
 };
 
 //#define SAVE_CALCULATORINFO
@@ -58,32 +60,24 @@ public:
 
 #endif
 
-// None of these colors should be used in the generated colormap
-#define EMPTY_COLOR        RGB(255,255,255)
-#define FILL_COLOR         RGB(  0,  0,  0)
-
-// if an element of the colormap equals FILL_COLOR use this one instead
-#define NEXTTO_EMPTY_COLOR RGB(255,255,254)
-#define NEXTTO_BLACK       RGB(  0,  0,  1)
-#define NEXTTO_FILL_COLOR  RGB(255,  0,  1)
-
-class MBContainer : public DWordPixelAccessor, public PropertyChangeListener {
+class MBContainer : public CellCountAccessor, public PropertyChangeListener {
 public:
-  MBContainer(PixRect *pr) : DWordPixelAccessor(pr,0) {
+  MBContainer(CellCountMatrix *m) : CellCountAccessor(m) {
   }
   virtual const RealRectangleTransformation    &getRealTransformation()    const  = 0;
   virtual const BigRealRectangleTransformation &getBigRealTransformation() const  = 0;
-  virtual UINT                                  getMaxIteration()          const  = 0;
-  virtual const D3DCOLOR                       *getColorMap()              const  = 0;
+  virtual UINT                                  getMaxCount()              const  = 0;
   virtual FPUPrecisionMode                      getPrecisionMode()         const  = 0;
   virtual size_t                                getDigits()                const  = 0;
   virtual bool                                  canUseRealCalculators()    const  = 0;
-  virtual PixelAccessor                        *getPixelAccessor()                = 0;
+  virtual CellCountAccessor                    *getCCA()                          = 0;
   virtual bool                                  calculateWithOrbit()       const  = 0;
   virtual bool                                  useEdgeDetection()         const  = 0;
   virtual bool                                  getJobToDo(CRect &rect)           = 0;
   virtual CSize                                 getWindowSize()            const  = 0;
   virtual void                                  paintMark(const CPoint &p)        = 0;
+  virtual COLORREF                              setOrbitPixel(   const CPoint &p, COLORREF color) = 0; // return old color
+  virtual void                                  resetOrbitPixels(const OrbitPoint *p, size_t count) = 0;
 };
 
 typedef enum {
@@ -127,7 +121,7 @@ protected:
   CRect           m_currentRect;
   size_t          m_doneCount; // number of pixels calculated
   MBCalculator(CalculatorPool *pool, UINT id);
-  PixelAccessor *fillInnerArea(PointSet &innerSet, PixelAccessor *pa);
+  CellCountAccessor *fillInnerArea(PointSet &innerSet, CellCountAccessor *cca, UINT maxCount);
   inline MBContainer &getMBContainer() const {
     return m_mbc;
   }
@@ -149,9 +143,9 @@ protected:
     return m_id;
   }
 
-#define CHECKPENDING() { if(m_pool.isPending(m_pendingMask)) { pa = handlePending(); } }
+#define CHECKPENDING() { if(m_pool.isPending(m_pendingMask)) { cca = handlePending(); } }
 
-  PixelAccessor *handlePending();
+  CellCountAccessor *handlePending();
   void setPoolState(CalculatorState state);
 public:
   virtual ~MBCalculator() {

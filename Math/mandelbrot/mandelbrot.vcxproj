@@ -271,6 +271,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CellCountMatrix.cpp" />
+    <ClCompile Include="ColorMap.cpp" />
     <ClCompile Include="ColorMapDlg.cpp" />
     <ClCompile Include="DebugLogThread.cpp" />
     <ClCompile Include="EdgeMatrix.cpp" />
@@ -300,6 +302,8 @@
     <ResourceCompile Include="Mandelbrot.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CellCountMatrix.h" />
+    <ClInclude Include="ColorMap.h" />
     <ClInclude Include="ColorMapDlg.h" />
     <ClInclude Include="DebugLogThread.h" />
     <ClInclude Include="EdgeMatrix.h" />

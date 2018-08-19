@@ -21,21 +21,19 @@ inline RealRectangle2D toRealRect(const CRect &r) {
 class MBRealCalculator : public MBCalculator {
 private:
   const RealIntervalTransformation *m_xtr, *m_ytr;
-  UINT           findITCountPaintOrbit(const Real   &X, const Real    &Y , UINT maxIteration);
-  UINT           findITCountFast(      const Real   &X, const Real    &Y , UINT maxIteration);
-  PixelAccessor *followBlackEdge(      const CPoint &p, PixelAccessor *pa, UINT maxIteration);
-  inline CPoint toCPoint(              const Real   &x, const Real &y) const {
+  UINT               findCountPaintOrbit(const Real    &X, const Real        &Y  , UINT maxCount);
+  UINT               findCountFast(      const Real    &X, const Real        &Y  , UINT maxCount);
+  CellCountAccessor *followBlackEdge(    const CPoint  &p, CellCountAccessor *cca, UINT maxCount);
+  inline CPoint      toCPoint(           const Real    &x, const Real        &y) const {
     return CPoint(getInt(m_xtr->forwardTransform(x)), getInt(m_ytr->forwardTransform(y)));
   }
 protected:
-  inline UINT findItCount(const Real &X, const Real &Y, UINT maxIteration) {
-    return isWithOrbit() ? findITCountPaintOrbit(X,Y,maxIteration)
-                         : findITCountFast(      X,Y,maxIteration);
+  inline UINT findCount(const Real &X, const Real &Y, UINT maxCount) {
+    return isWithOrbit() ? findCountPaintOrbit(X,Y,maxCount)
+                         : findCountFast(      X,Y,maxCount);
   };
 public:
   MBRealCalculator(CalculatorPool *pool, int id) : MBCalculator(pool, id) {
   }
-
   UINT run();
 };
-

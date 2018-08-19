@@ -35,10 +35,10 @@ CMandelbrotDlg::CMandelbrotDlg(DigitPool *digitPool, CWnd *pParent)
   m_hIcon                     = theApp.LoadIcon(IDR_MAINFRAME);
   m_state                     = STATE_IDLE;
   m_precisionMode             = FPU_NORMAL_PRECISION;
-  m_pixRect                   = NULL;
-  m_pixelAccessor             = NULL;
+  m_ccMatrix                  = NULL;
+  m_cca                       = NULL;
   m_imageDC                   = NULL;
-  m_colorMap                  = NULL;
+  m_imageCopy                 = NULL;
   m_frameGenerator            = NULL;
   setDigits();
 }
@@ -128,15 +128,18 @@ BOOL CMandelbrotDlg::OnInitDialog() {
   SetIcon(m_hIcon, TRUE);   // Set big icon
   SetIcon(m_hIcon, FALSE);  // Set small icon
 
-  m_crossIcon  = createIcon(theApp.m_hInstance, IDB_MARK_COLORBITMAP, IDB_MARK_MASKBITMAP);
-  m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_MAINFRAME));
-  m_rect0      = RealRectangle2D(-4.5,-4, 8,8);
+  m_crossIcon      = createIcon(theApp.m_hInstance, IDB_MARK_COLORBITMAP, IDB_MARK_MASKBITMAP);
+  m_accelTable     = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_MAINFRAME));
+  m_rect0          = RealRectangle2D(-4.5,-4, 8,8);
+  m_imageWindow    = GetDlgItem(IDC_STATIC_IMAGEWINDOW);
 
   theApp.m_device.attach(*this);
 
-  m_dummyPr        = new PixRect(theApp.m_device, PIXRECT_PLAINSURFACE, 10, 10); TRACE_NEW(m_dummyPr);
-  m_mbContainer    = new DialogMBContainer(this, m_dummyPr);                     TRACE_NEW(m_mbContainer);
+  setColorMapData(ColorMapData());
+  m_dummyMatrix    = newCCM(CSize(10,10),getMaxCount());
+  m_mbContainer    = new DialogMBContainer(this, m_dummyMatrix);                 TRACE_NEW(m_mbContainer);
   m_calculatorPool = new CalculatorPool(*m_mbContainer);                         TRACE_NEW(m_calculatorPool);
+
   const CSize startSize(750,750);
 
   setClientRectSize(this, CSize(startSize.cx+50, startSize.cy+50));
@@ -167,14 +170,10 @@ BOOL CMandelbrotDlg::OnInitDialog() {
 
 //  setWindowPosition(this, CPoint(0,0));
   centerWindow(this);
-  m_imageWindow = GetDlgItem(IDC_STATIC_IMAGEWINDOW);
-
   m_calculatorPool->addPropertyChangeListener(m_mbContainer);
   initScale();
   setWorkSize();
-  setColorMapData(ColorMapData());
   startCalculation();
-
   return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -251,7 +250,7 @@ void CMandelbrotDlg::OnFileSaveImage() {
   }
 
   try {
-    m_pixRect->writeAsBMP(ByteOutputFile(FileNameSplitter(dlg.m_ofn.lpstrFile).setExtension(_T("bmp")).getFullPath()));
+//    m_pixRect->writeAsBMP(ByteOutputFile(FileNameSplitter(dlg.m_ofn.lpstrFile).setExtension(_T("bmp")).getFullPath())); TODO
   } catch(Exception e) {
     showException(e);
   }
@@ -266,8 +265,7 @@ void CMandelbrotDlg::OnFileLoadRectangle() {
     return;
   }
   try {
-    loadRectangle(dlg.m_ofn.lpstrFile);
-    startCalculation();
+    handleChangeCode(loadRectangle(dlg.m_ofn.lpstrFile));
   } catch(Exception e) {
     showException(e);
   }
@@ -282,8 +280,7 @@ void CMandelbrotDlg::OnFileLoadColorMap() {
     return;
   }
   try {
-    loadColorMap(dlg.m_ofn.lpstrFile);
-    startCalculation();
+    handleChangeCode(loadColorMap(dlg.m_ofn.lpstrFile));
   } catch(Exception e) {
     showException(e);
   }
@@ -314,10 +311,11 @@ void CMandelbrotDlg::OnFileExit() {
   OnFileStopMovie();
   SAFEDELETE(m_calculatorPool);
   SAFEDELETE(m_mbContainer   );
-  SAFEDELETE(m_dummyPr       );
+  deleteCCM( m_dummyMatrix   );
+  destroyImageCopy();
   resetImageStack();
-  destroyPixRect();
-  destroyColorMap();
+  destroyImageDC();
+  destroyCCM();
   EndDialog(IDOK);
 }
 
@@ -352,8 +350,7 @@ void CMandelbrotDlg::OnEditAbortCalculation() {
 }
 
 void CMandelbrotDlg::OnEditNewColorMap() {
-  createColorMap();
-  startCalculation();
+  handleChangeCode(createColorMap());
 }
 
 void CMandelbrotDlg::OnEditBack() {
@@ -368,14 +365,13 @@ void CMandelbrotDlg::OnOptionsColorMap() {
   }
   CColorMapDlg dlg(m_colorMapData);
   if(dlg.DoModal() == IDOK) {
-    if(setColorMapData(dlg.getColorMapData())) {
-      startCalculation();
-    }
+    handleChangeCode(setColorMapData(dlg.getColorMapData()));
   }
 }
 
+
 void CMandelbrotDlg::OnOptionsShowColorMap() {
-  CShowColorMapDlg dlg(m_colorMapData.m_maxIteration, m_colorMap);
+  CShowColorMapDlg dlg(getColorMap());
   dlg.DoModal();
 }
 
@@ -400,8 +396,8 @@ void CMandelbrotDlg::OnOptionsPaintOrbit() {
     m_calculatorPool->suspendCalculation();
     m_calculatorPool->waitUntilNoRunning();
     m_calculateWithOrbit = toggleMenuItem(this, ID_OPTIONS_PAINTORBIT);
-    clearPixelAccessor();
-    getPixelAccessor();
+    clearCCA();
+    getCCA();
     m_calculatorPool->resumeCalculation();
   } else {
     m_calculateWithOrbit = toggleMenuItem(this, ID_OPTIONS_PAINTORBIT);
@@ -418,9 +414,7 @@ void CMandelbrotDlg::OnOptionsUseEdgeDetection() {
 
 void CMandelbrotDlg::OnOptionsRetainAspectRatio() {
   if(m_retainAspectRatio = toggleMenuItem(this, ID_OPTIONS_RETAIN_ASPECTRATIO)) {
-    if(handleTransformChanged(true)) {
-      startCalculation();
-    }
+    handleChangeCode(handleTransformChanged(true));
   }
 }
 
@@ -465,21 +459,26 @@ void CMandelbrotDlg::OnLButtonDown(UINT nFlags, CPoint point) {
   }
 }
 
+#ifdef SAVE_CALCULATORINFO
 void CMandelbrotDlg::paintPointSet(const PointSet &ps, COLORREF color) {
   CClientDC dc(m_imageWindow);
   for(Iterator<CPoint> it = ps.getIterator(); it.hasNext();) {
     dc.SetPixel(it.next(), color);
   }
 }
+#endif
 
 void CMandelbrotDlg::OnLButtonUp(UINT nFlags, CPoint point) {
   __super::OnLButtonUp(nFlags, point);
   if(getState() == STATE_DRAGGING) {
     setState(STATE_IDLE);
     if(getArea(m_dragRect) != 0) {
-      pushImage();
-      setScale(m_bigRealTransform.backwardTransform(toBigRealRect(m_dragRect,getDigitPool())));
-      startCalculation();
+      try {
+        pushImage();
+        handleChangeCode(setScale(m_bigRealTransform.backwardTransform(toBigRealRect(m_dragRect,getDigitPool()))));
+      } catch(Exception e) {
+        showException(e);
+      }
     }
   }
 }
@@ -496,6 +495,7 @@ void CMandelbrotDlg::OnRButtonDown(UINT nFlags, CPoint point) {
   __super::OnRButtonDown(nFlags, point);
   if(!isCalculationActive()) {
     m_mouseDownPoint = getImagePointFromMousePoint(point);
+    createImageCopy();
     setState(STATE_MOVING);
   }
 }
@@ -504,7 +504,12 @@ void CMandelbrotDlg::OnRButtonUp(UINT nFlags, CPoint point) {
   __super::OnRButtonUp(nFlags, point);
   if(getState() == STATE_MOVING) {
     setState(STATE_IDLE);
-    calculateMovedImage(getImagePointFromMousePoint(point) - m_mouseDownPoint);
+    try {
+      destroyImageCopy();
+      calculateMovedImage(getImagePointFromMousePoint(point) - m_mouseDownPoint);
+    } catch (Exception e) {
+      showException(e);
+    }
   }
 }
 
@@ -545,8 +550,7 @@ BOOL CMandelbrotDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) {
     if(zDelta > 0) {
       pushImage();
       m_imageWindow->ScreenToClient(&pt);
-      setScale(m_bigRealTransform.zoom(BigRealPoint2D(pt.x,pt.y, getDigitPool()),BigReal(0.25,getDigitPool())));
-      startCalculation();
+      handleChangeCode(setScale(m_bigRealTransform.zoom(BigRealPoint2D(pt.x,pt.y, getDigitPool()),BigReal(0.25,getDigitPool()))));
     } else {
       popImage();
     }
@@ -615,7 +619,11 @@ void CMandelbrotDlg::OnPaint() {
   } else {
     if(!isCalculationActive(false)) {
       updateWindowStateInternal();
-      flushPixRect();
+      flushCCM();
+      if(showZoomFactor()) {
+        CPaintDC dc(this);
+        paintZoomFactor(dc);
+      }
       m_hasResized = false;
       if(isMakingMovie()) {
         m_frameGenerator->notifyFrameReady();
@@ -649,14 +657,18 @@ const TCHAR *CMandelbrotDlg::s_stateName[] = {
  ,_T("MOVING")
 };
 
-void CMandelbrotDlg::flushPixRect() {
+void CMandelbrotDlg::flushCCM() {
   m_gate.wait();
 
-  clearPixelAccessor();
-  CClientDC dc(m_imageWindow);
-  PixRect::bitBlt(dc,0,0,m_pixRect->getWidth(),m_pixRect->getHeight(),SRCCOPY,m_pixRect,0,0);
-  if(showZoomFactor()) {
-    paintZoomFactor(dc);
+  try {
+    clearCCA();
+    PixRect *tmppr = newPixRect(m_ccMatrix->getSize());
+    m_ccMatrix->convertToPixRect(tmppr, getColorMap());
+    CClientDC dc(m_imageWindow);
+    pixRectToWindow(tmppr, dc);
+    deletePixRect(tmppr);
+  } catch (Exception e) {
+    showException(e);
   }
   m_gate.signal();
 }
@@ -670,7 +682,7 @@ void CMandelbrotDlg::paintZoomFactor(CDC &dc) {
   String        zoomStr = (zoom.cx == zoom.cy) 
                         ? zoomToStr(zoom.cx)
                         : format(_T("(%s,%s)"), zoomToStr(zoom.cx).cstr(), zoomToStr(zoom.cy).cstr());
-  const CSize   sz      = getImageSize();
+  const CSize   sz      = getWindowSize();
   const CSize   tsz     = getTextExtent(dc, zoomStr);
   textOut(dc, 10, sz.cy-tsz.cy-10,zoomStr);
 }
@@ -684,7 +696,7 @@ void CMandelbrotDlg::updateWindowStateInternal() {
   enableMenuItem(this, ID_EDIT_ABORTCALCULATION        ,isActive    );
   enableMenuItem(this, ID_EDIT_SUSPENDCALCULATION      ,isActive    );
   enableMenuItem(this, ID_EDIT_NEWCOLORMAP             ,!isActive && m_colorMapData.m_randomSeed);
-  enableMenuItem(this, ID_EDIT_BACK                    ,!isActive && !m_pictureStack.isEmpty());
+  enableMenuItem(this, ID_EDIT_BACK                    ,!isActive && !m_imageStack.isEmpty());
   setSuspendingMenuText(!isCalculationSuspended());
   enableMenuItem(this, ID_OPTIONS_COLORMAP             ,!isActive   );
   enableMenuItem(this, ID_OPTIONS_32BITSFLOATINGPOINT  ,!isActive   );
@@ -711,6 +723,20 @@ void CMandelbrotDlg::setSuspendingMenuText(bool isSuspendingText) {
   }
 }
 
+static String changeFlagsToString(int flags) {
+  String result;
+  TCHAR *delim = NULL;
+#define ADDTEXT(str)                             \
+if(delim) result += delim; else delim = _T(" "); \
+result += _T(str)
+
+  if(flags & MAP_COLORSCHANGED) { ADDTEXT("COLORS"  ); }
+  if(flags & MAP_SIZECHANGED  ) { ADDTEXT("MAPSIZE" ); }
+  if(flags & MB_SCALECHANGED  ) { ADDTEXT("SCALE"   ); }
+  if(flags & WORK_SIZECHANGED ) { ADDTEXT("WORKSIZE"); }
+  return result;
+}
+
 void CMandelbrotDlg::showWindowState() {
   if(!isMakingMovie()) {
     const BigRealRectangle2D r    = m_bigRealTransform.getFromRectangle();
@@ -721,7 +747,7 @@ void CMandelbrotDlg::showWindowState() {
                               ,::toString(r.getWidth() ,5   ,0, ios::scientific).cstr()
                               ,::toString(r.getHeight(),5   ,0, ios::scientific).cstr()
                               ,prec
-                        )
+                              )
                  );
 
     showCalculationState();
@@ -745,15 +771,16 @@ void CMandelbrotDlg::showCalculationState() {
                      );
   }
   setWindowText(this, IDC_STATIC_INFOWINDOW
-                    , format(_T("Level:%2d. %s")
-                            , m_pictureStack.getHeight()
-                            , stateStr.cstr()
+                    , format(_T("Level:%2d. %s flags=%s")
+                            ,m_imageStack.getHeight()
+                            ,stateStr.cstr()
+                            ,changeFlagsToString(m_lastChangeFlags).cstr()
                             )
-                );
+               );
 }
 
 void CMandelbrotDlg::showMousePoint(const CPoint &p) {
-  if(m_pixRect->contains(p)) {
+  if(hasCCM() && m_ccMatrix->contains(p)) {
     const BigRealPoint2D rp   = m_bigRealTransform.backwardTransform(toBigRealPoint(p, getDigitPool()));
     const UINT           prec = (UINT)getDigits();
     const String msg = format(_T(" (%3d,%3d) [%s,%s]")
@@ -770,133 +797,147 @@ void CMandelbrotDlg::remoteStartCalculation() {
   PostMessage(ID_MSG_STARTCALCULATION);
 }
 
-void CMandelbrotDlg::setWorkSize() {
-  setWorkSize(getClientRect(m_imageWindow).Size());
+int CMandelbrotDlg::setWorkSize() {
+  return setWorkSize(getClientRect(m_imageWindow).Size());
 }
 
-void CMandelbrotDlg::setWorkSize(const PixRect *src) {
-  setWorkSize(src->getSize());
+int CMandelbrotDlg::setWorkSize(const CSize &size) {
+  createImageDC(size);
+  int flags = 0;
+  if(size != getWorkSize()) {
+    flags |= WORK_SIZECHANGED;
+  }
+  if (!hasCCM() || (getMaxCount() != m_ccMatrix->getMaxCount())) {
+    flags |= MAP_SIZECHANGED;
+  }
+  if(flags == 0) {
+    return 0;
+  }
+
+  createCCM(size);
+  if(m_imageStack.isEmpty()) {
+    initScale();
+  }
+  if(hasCCM()) {
+    BigRealRectangle2D r(getDigitPool());
+    r = RealRectangle2D(0,0,size.cx,size.cy);
+    m_bigRealTransform.setToRectangle(r);
+    flags |= handleTransformChanged(isRetainAspectRatio());
+    m_zoom1Rect = m_bigRealTransform.getFromRectangle();
+  }
+  return flags;
 }
 
-void CMandelbrotDlg::setWorkSize(const CSize &size) {
+void CMandelbrotDlg::createImageDC(const CSize &size) {
+  destroyImageDC();
+  m_imageRGN        = CreateRectRgn(0,0,size.cx, size.cy);
+  m_imageDC         = ::GetDCEx(m_imageWindow->m_hWnd, m_imageRGN, DCX_CACHE | DCX_LOCKWINDOWUPDATE);
+}
+
+void CMandelbrotDlg::destroyImageDC() {
   if(m_imageDC != NULL) {
     ::ReleaseDC(m_imageWindow->m_hWnd, m_imageDC);
     m_imageDC = NULL;
   }
-  m_imageRGN        = CreateRectRgn(0,0,size.cx, size.cy);
-  m_imageDC         = ::GetDCEx(m_imageWindow->m_hWnd, m_imageRGN, DCX_CACHE | DCX_LOCKWINDOWUPDATE);
-  m_imageWindowSize = size;
-  if((m_pixRect != NULL) && (size == m_pixRect->getSize())) {
-    return;
-  }
-
-  createPixRect(size);
-  if(m_pictureStack.getHeight() == 0) {
-    initScale();
-  }
-  if(isValidSize()) {
-    BigRealRectangle2D r(getDigitPool());
-    r = RealRectangle2D(0,0,size.cx,size.cy);
-    m_bigRealTransform.setToRectangle(r);
-    handleTransformChanged(isRetainAspectRatio());
-    m_zoom1Rect = m_bigRealTransform.getFromRectangle();
-  }
 }
 
-void CMandelbrotDlg::createPixRect(const CSize &size) {
-  destroyPixRect();
+void CMandelbrotDlg::createCCM(const CSize &size) {
+  destroyCCM();
   if(size.cx <= 0 || size.cy <= 0) {
     return;
   }
-  m_pixRect = new PixRect(theApp.m_device, PIXRECT_PLAINSURFACE, size); TRACE_NEW(m_pixRect);
+  m_ccMatrix = newCCM(size, getMaxCount());
 }
 
-void CMandelbrotDlg::destroyPixRect() {
-  SAFEDELETE(m_pixRect);
+void CMandelbrotDlg::destroyCCM() {
+  if(hasCCM()) {
+    deleteCCM(m_ccMatrix);
+    m_ccMatrix = NULL;
+  }
 }
 
-bool CMandelbrotDlg::setColorMapData(const ColorMapData &colorMapData) {
-  if((colorMapData != m_colorMapData) || (m_colorMap == NULL)) {
+int CMandelbrotDlg::copyCCM(const CellCountMatrix *ccm) {
+  int flags = 0;
+  clearCCA();
+  if(getWorkSize() != ccm->getSize()) {
+    flags = setWorkSize(ccm->getSize());
+  }
+  m_ccMatrix->rop(m_ccMatrix->getRect(), SRCCOPY, ccm, ORIGIN);
+  return flags;
+}
+
+CellCountMatrix *CMandelbrotDlg::newCCM(const CSize &size, UINT maxCount) { // static
+  CellCountMatrix *ccm = new CellCountMatrix(size, maxCount); TRACE_NEW(ccm);
+  return ccm;
+}
+
+void CMandelbrotDlg::deleteCCM(CellCountMatrix *ccm) { // static
+  SAFEDELETE(ccm);
+}
+
+PixRect *CMandelbrotDlg::newPixRect(const CSize &size) { // static
+  if(size.cx <= 0 || size.cy <= 0) {
+    throwInvalidArgumentException(__TFUNCTION__,_T("size=(%d,%d)"), size.cx, size.cy);
+  }
+  PixRect *pr = new PixRect(theApp.m_device, PIXRECT_PLAINSURFACE, size); TRACE_NEW(pr);
+  return pr;
+}
+
+void CMandelbrotDlg::deletePixRect(PixRect *pr) { // static
+  SAFEDELETE(pr);
+}
+
+void CMandelbrotDlg::createImageCopy() { // take a screenshut of m_imageDC, for dragging
+  destroyImageCopy();
+  m_imageCopy = windowToPixRect();
+}
+
+void CMandelbrotDlg::destroyImageCopy() {
+  SAFEDELETE(m_imageCopy);
+}
+
+
+PixRect *CMandelbrotDlg::windowToPixRect() {
+  PixRect *pr = newPixRect(getWorkSize());
+  PixRect::bitBlt(pr, ORIGIN, pr->getSize(), SRCCOPY, m_imageDC, ORIGIN);
+  return pr;
+}
+
+void CMandelbrotDlg::pixRectToWindow(PixRect *pr, HDC hdc) {
+  PixRect::bitBlt(hdc?hdc:m_imageDC,0,0,pr->getWidth(),pr->getHeight(),SRCCOPY,pr,0,0);
+}
+
+int CMandelbrotDlg::setColorMapData(const ColorMapData &colorMapData) {
+  if((colorMapData != m_colorMapData) || (m_colorMap.isEmpty())) {
     m_colorMapData = colorMapData;
-    createColorMap();
-    return true;
+    return createColorMap();
   }
-  return false;
+  return 0;
 }
 
-static int newRandomStep(int old) {
-  const int result = randInt(2, 16);
-  if(old > 0) {
-    return -result;
-  }
-  return result;
+int CMandelbrotDlg::createColorMap() {
+  int returnCode = setColorMap(ColorMap(m_colorMapData));
+  assert(m_colorMap.getMaxCount() == m_colorMapData.getMaxCount());
+  return returnCode;
 }
 
-void CMandelbrotDlg::createColorMap() {
-  destroyColorMap();
-  m_colorMap = new D3DCOLOR[m_colorMapData.m_maxIteration+1]; TRACE_NEW(m_colorMap);
-  if(m_colorMapData.m_randomSeed) {
-    randomize();
-  } else {
-    _standardRandomGenerator->setSeed(m_colorMapData.m_seed);
+int CMandelbrotDlg::setColorMap(const ColorMap &cm) {
+  if(cm == m_colorMap) {
+    return 0;
   }
-
-  int r  = randInt(0,255);
-  int g  = randInt(0,255);
-  int b  = randInt(0,255);
-  int dr = newRandomStep(randInt(-5,5));
-  int dg = newRandomStep(randInt(-5,5));
-  int db = newRandomStep(randInt(-5,5));
-  if(dr == 0) dr =  3;
-  if(dg == 0) dg = -7;
-  if(db == 0) db = 13;
-  UINT i;
-  for(i = 0; i < m_colorMapData.m_maxIteration; i++) {
-    D3DCOLOR &c = m_colorMap[i];
-    if((c = RGB(r,g,b)) == EMPTY_COLOR) {
-      c = NEXTTO_EMPTY_COLOR;
-    } else if(c == BLACK     ) {
-      c = NEXTTO_BLACK;
-    } else if(c == FILL_COLOR) {
-      c = NEXTTO_FILL_COLOR;
-    }
-
-    if(r+dr > 255 || r+dr < 0) dr = newRandomStep(dr);
-    if(g+dg > 255 || g+dg < 0) dg = newRandomStep(dg);
-    if(b+db > 255 || b+db < 0) db = newRandomStep(db);
-    r += dr;
-    g += dg;
-    b += db;
-  }
-  m_colorMap[i] = BLACK;
-}
-
-void CMandelbrotDlg::destroyColorMap() {
-  SAFEDELETEARRAY(m_colorMap);
+  int flags = MAP_COLORSCHANGED;
+  if(cm.size() != m_colorMap.size()) flags |= MAP_SIZECHANGED;
+  m_colorMap = cm;
+  return flags;
 }
 
 void CMandelbrotDlg::saveColorMap(const String &fileName) {
-  ByteOutputFile out(fileName);
-  const UINT maxIteration = m_colorMapData.m_maxIteration;
-  out.putBytes((BYTE*)&maxIteration, sizeof(maxIteration));
-  out.putBytes((BYTE*)m_colorMap, sizeof(m_colorMap[0])*(maxIteration+1));
+  showInformation(_T("%s not implemented"), __TFUNCTION__);
 }
 
-void CMandelbrotDlg::loadColorMap(const String &fileName) {
-  ByteInputFile in(fileName);
-  UINT maxIteration;
-  D3DCOLOR *colorMap = NULL;
-  try {
-    in.getBytesForced((BYTE*)&maxIteration, sizeof(maxIteration));
-    D3DCOLOR *colorMap = new D3DCOLOR[maxIteration+1]; TRACE_NEW(colorMap);
-    in.getBytesForced((BYTE*)colorMap, sizeof(colorMap[0])*(maxIteration+1));
-    m_colorMapData.m_maxIteration = maxIteration;
-    SAFEDELETEARRAY(m_colorMap);
-    m_colorMap = colorMap;
-  } catch(...) {
-    SAFEDELETEARRAY(colorMap);
-    throw;
-  }
+int CMandelbrotDlg::loadColorMap(const String &fileName) {
+  showInformation(_T("%s not implemented"), __TFUNCTION__);
+  return 0;
 }
 
 Packer &operator<<(Packer &p, const BigRealRectangle2D &r) {
@@ -919,12 +960,12 @@ void CMandelbrotDlg::saveRectangle(const String &fileName) {
   p.write(ByteOutputFile(fileName));
 }
 
-void CMandelbrotDlg::loadRectangle(const String &fileName) {
+int CMandelbrotDlg::loadRectangle(const String &fileName) {
   Packer p;
   p.read(ByteInputFile(fileName));
   BigRealRectangle2D r(getDigitPool());
   p >> r;
-  setScale(r);
+  return setScale(r);
 }
 
 void CMandelbrotDlg::setPrecision(int id) {
@@ -947,33 +988,40 @@ void CMandelbrotDlg::setPrecision(int id) {
     break;
   }
   FPU::setPrecisionMode(m_precisionMode);
-
   startCalculation();
 }
 
-void CMandelbrotDlg::setScale(const BigRealRectangle2D &scale, bool allowAdjustAspectRatio) {
-  setScale(scale.getMinX(),scale.getMaxX(),scale.getMinY(),scale.getMaxY(), allowAdjustAspectRatio);
+int CMandelbrotDlg::setScale(const BigRealRectangle2D &scale, bool allowAdjustAspectRatio) {
+  return setScale(scale.getMinX(),scale.getMaxX(),scale.getMinY(),scale.getMaxY(), allowAdjustAspectRatio);
 }
 
-void CMandelbrotDlg::setScale(const BigReal &minX, const BigReal &maxX, const BigReal &minY, const BigReal &maxY, bool allowAdjustAspectRatio) {
+int CMandelbrotDlg::setScale(const BigReal &minX, const BigReal &maxX, const BigReal &minY, const BigReal &maxY, bool allowAdjustAspectRatio) {
+  int flags = 0;
   FPU::setPrecisionMode(getPrecisionMode());
+  const BigRealRectangle2D old = m_bigRealTransform.getFromRectangle();
   m_bigRealTransform.setFromRectangle(BigRealRectangle2D(minX, maxY, maxX-minX, minY-maxY));
-  handleTransformChanged(isRetainAspectRatio() && allowAdjustAspectRatio);
+  if (m_bigRealTransform.getFromRectangle() != old) {
+    flags |= MB_SCALECHANGED;
+  }
+  flags |= handleTransformChanged(isRetainAspectRatio() && allowAdjustAspectRatio);
+  return flags;
 }
 
-bool CMandelbrotDlg::handleTransformChanged(bool adjustAspectRatio) {
-  bool changed = false;
-  if(adjustAspectRatio) {
-    changed = m_bigRealTransform.adjustAspectRatio();
+int CMandelbrotDlg::handleTransformChanged(bool adjustAspectRatio) {
+  int flags = 0;
+  if(adjustAspectRatio && m_bigRealTransform.adjustAspectRatio()) {
+    flags |= MB_SCALECHANGED;
   }
   setDigits();
   if(canUseRealCalculators()) {
     const RealRectangleTransformation old = m_realTransform;
     m_realTransform.setToRectangle(  m_bigRealTransform.getToRectangle());
     m_realTransform.setFromRectangle(m_bigRealTransform.getFromRectangle());
-    changed |= m_realTransform != old;
+    if(m_realTransform != old) {
+      flags |= MB_SCALECHANGED;
+    }
   }
-  return changed;
+  return flags;
 }
 
 void CMandelbrotDlg::setDigits() {
@@ -1015,8 +1063,8 @@ CRect CMandelbrotDlg::createDragRect(const CPoint &topLeft, const CPoint &bottom
   if(!isRetainAspectRatio()) {
     return CRect(topLeft,bottomRight);
   } else {
-    const CSize prSize = m_pixRect->getSize();
-    return CRect(topLeft.x, topLeft.y, bottomRight.x, topLeft.y + (bottomRight.x - topLeft.x) * prSize.cy / prSize.cx);
+    const CSize size = getWorkSize();
+    return CRect(topLeft.x, topLeft.y, bottomRight.x, topLeft.y + (bottomRight.x - topLeft.x) * size.cy / size.cx);
   }
 }
 
@@ -1027,10 +1075,15 @@ void CMandelbrotDlg::removeDragRect() {
 }
 
 void CMandelbrotDlg::paintMovedImage(const CSize &dp) {
-  PixRect *pr = getCalculatedPart(dp);
-  CClientDC dc(m_imageWindow);
-  PixRect::bitBlt(dc,0,0,pr->getWidth(),pr->getHeight(),SRCCOPY,pr,0,0);
-  SAFEDELETE(pr);
+  try {
+    PixRect *tmp = newPixRect(m_imageCopy->getSize());
+    copyVisiblePart(tmp, m_imageCopy, dp);
+    CClientDC dc(m_imageWindow);
+    pixRectToWindow(tmp, dc);
+    deletePixRect(tmp);
+  } catch(Exception e) {
+    showException(e);
+  }
 }
 
 void CMandelbrotDlg::calculateMovedImage(const CSize &dp) {
@@ -1039,12 +1092,11 @@ void CMandelbrotDlg::calculateMovedImage(const CSize &dp) {
   }
   const int  adx = abs(dp.cx);
   const int  ady = abs(dp.cy);
-  const int  w   = m_pixRect->getWidth();
-  const int  h   = m_pixRect->getHeight();
-  PixRect   *pr  = getCalculatedPart(dp);
-  m_pixRect->rop(0,0,w,h,SRCCOPY,pr,0,0);
-  SAFEDELETE(pr);
-
+  const int  w   = m_ccMatrix->getWidth();
+  const int  h   = m_ccMatrix->getHeight();
+  CellCountMatrix *tmp = getCalculatedPart(dp);
+  m_ccMatrix->rop(m_ccMatrix->getRect(), SRCCOPY, tmp, ORIGIN);
+  deleteCCM(tmp);
   CompactArray<CRect> uncalculatedRectangles;
   switch(getMoveDirection(dp)) {
   case NW:
@@ -1065,59 +1117,64 @@ void CMandelbrotDlg::calculateMovedImage(const CSize &dp) {
     break;
   }
   setRectanglesToCalculate(uncalculatedRectangles);
-  BigRealRectangle2D s(toBigRealRect(m_pixRect->getRect(), getDigitPool()));
+  BigRealRectangle2D s(toBigRealRect(m_ccMatrix->getRect(), getDigitPool()));
   s -= toBigRealPoint(CPoint(dp), getDigitPool());
   setScale(m_bigRealTransform.backwardTransform(s),false);
   startCalculation();
 }
 
-PixRect *CMandelbrotDlg::getCalculatedPart(const CSize &dp) {
-  const int  adx    = abs(dp.cx);
-  const int  ady    = abs(dp.cy);
-  PixRect   *result = m_pixRect->clone(false, PIXRECT_PLAINSURFACE);
-  const int  w      = m_pixRect->getWidth();
-  const int  h      = m_pixRect->getHeight();
-  switch(getMoveDirection(dp)) {
-  case NW: // point.x <  mousedownpoint.x && point.y <  mousedownpoint.y
-    result->rop(0  ,0  ,w,h,SRCCOPY,m_pixRect,adx,ady);
-    break;
-  case SW: // point.x <  mousedownpoint.x && point.y >= mousedownpoint.y
-    result->rop(0  ,ady,w,h,SRCCOPY,m_pixRect,adx,0  );
-    break;
-  case NE: // point.x >= mousedownpoint.x && point.y <  mousedownpoint.y
-    result->rop(adx,0  ,w,h,SRCCOPY,m_pixRect,0  ,ady);
-    break;
-  case SE: // point.x >= mousedownpoint.x && point.y >= mousedownpoint.y
-    result->rop(adx,ady,w,h,SRCCOPY,m_pixRect,0  ,0  );
-    break;
-  }
+CellCountMatrix *CMandelbrotDlg::getCalculatedPart(const CSize &dp) {
+  CellCountMatrix *src    = m_ccMatrix;
+  CellCountMatrix *result = newCCM(src->getSize(), src->getMaxCount());
+  copyVisiblePart(result, src, dp);
   return result;
 }
 
-MoveDirection CMandelbrotDlg::getMoveDirection(const CSize &dp) {
+void CMandelbrotDlg::copyVisiblePart(PixRect *dst, const PixRect *src, const CSize &dp) {
+  const int adx = abs(dp.cx);
+  const int ady = abs(dp.cy);
+  const int w   = dst->getWidth();
+  const int h   = dst->getHeight();
+  switch(getMoveDirection(dp)) {
+  case NW: // point.x <  mousedownpoint.x && point.y <  mousedownpoint.y
+    dst->rop(0  ,0  ,w,h,SRCCOPY,src,adx,ady);
+    break;
+  case SW: // point.x <  mousedownpoint.x && point.y >= mousedownpoint.y
+    dst->rop(0  ,ady,w,h,SRCCOPY,src,adx,0  );
+    break;
+  case NE: // point.x >= mousedownpoint.x && point.y <  mousedownpoint.y
+    dst->rop(adx,0  ,w,h,SRCCOPY,src,0  ,ady);
+    break;
+  case SE: // point.x >= mousedownpoint.x && point.y >= mousedownpoint.y
+    dst->rop(adx,ady,w,h,SRCCOPY,src,0  ,0  );
+    break;
+  }
+}
+
+MoveDirection CMandelbrotDlg::getMoveDirection(const CSize &dp) { // static
   const int code = dp.cx >= 0 ? 1 : 0;
   return (MoveDirection)((code << 1) + ((dp.cy >= 0) ? 1 : 0));
 }
 
 void CMandelbrotDlg::pushImage() {
   if(!isCalculationActive()) {
-    m_pictureStack.push(FractalImage(getScale(),m_pixRect->clone(true, PIXRECT_PLAINSURFACE)));
+    m_imageStack.push(ImageStackEntry(getScale(), m_ccMatrix->clone(), getColorMap()));
     updateWindowStateInternal();
   }
 }
 
 void CMandelbrotDlg::popImage() {
-  if(m_pictureStack.isEmpty()) {
+  if(m_imageStack.isEmpty()) {
     return;
   }
   if(!isCalculationActive()) {
-    FractalImage image = m_pictureStack.pop();
-    setWorkSize(image.m_pixRect);
-    putPixRect(image.m_pixRect);
-    SAFEDELETE(image.m_pixRect);
-    setScale(image.m_scale, false);
+    ImageStackEntry image = m_imageStack.pop();
+    int flags = setColorMap(image.m_colorMap);
+    flags |= copyCCM(image.m_ccm);
+    deleteCCM(image.m_ccm);
+    flags |= setScale(image.m_scale, false);
     updateZoomFactor();
-    PostMessage(WM_PAINT);
+    handleChangeCode(flags);
   }
 }
 
@@ -1125,44 +1182,41 @@ void CMandelbrotDlg::resetImageStack() {
   if(isCalculationActive()) {
     return;
   }
-  while(!m_pictureStack.isEmpty()) {
-    FractalImage image = m_pictureStack.pop();
-    SAFEDELETE(image.m_pixRect);
+  while(!m_imageStack.isEmpty()) {
+    ImageStackEntry image = m_imageStack.pop();
+    deletePixRect(image.m_ccm);
   }
 }
 
-void CMandelbrotDlg::putPixRect(const PixRect *src) {
-  m_pixRect->rop(0,0,src->getWidth(),src->getHeight(),SRCCOPY,src,0,0);
-}
-
-PixelAccessor *CMandelbrotDlg::getPixelAccessor() {
-  if(!hasPixelAccessor()) {
-    m_pixelAccessor = m_pixRect->getPixelAccessor();
-    DLOG(_T("pixRect locked with pixelAccessor\n"));
+CellCountAccessor *CMandelbrotDlg::getCCA() {
+  if(!hasCCA()) {
+    m_cca = m_ccMatrix->getCCA();
+    DLOG(_T("ccMatrix locked with CellCountAccessor\n"));
   }
-  return (calculateWithOrbit() || animateCalculation()) ? m_mbContainer : m_pixelAccessor;
+  return (calculateWithOrbit() || animateCalculation()) ? m_mbContainer : m_cca;
 }
 
-void CMandelbrotDlg::clearPixelAccessor() {
-  if(m_pixelAccessor) {
-    m_pixRect->releasePixelAccessor();
-    m_pixelAccessor = NULL;
-    DLOG(_T("pixRect unlocked\n"));
+void CMandelbrotDlg::clearCCA() {
+  if(hasCCA()) {
+    m_ccMatrix->releaseCCA();
+    m_cca = NULL;
+    DLOG(_T("ccMatrix unlocked\n"));
   }
 }
 
-void CMandelbrotDlg::setPixel(UINT x, UINT y, D3DCOLOR color) {
-  if(m_pixRect->contains(x,y)) {
-    m_pixelAccessor->setPixel(x,y,color);
-    SetPixel(m_imageDC, x,y,D3DCOLOR2COLORREF(color));
+COLORREF CMandelbrotDlg::setOrbitPixel(const CPoint &p, COLORREF color) {
+  if(m_ccMatrix->contains(p.x,p.y)) {
+    const COLORREF result = GetPixel(m_imageDC, p.x, p.y);
+    SetPixel(m_imageDC, p.x,p.y, color);
+    return result;
   }
+  return 0;
 }
 
-D3DCOLOR CMandelbrotDlg::getPixel(UINT x, UINT y) const {
-  if(!m_pixRect->contains(x,y)) {
-    return BLACK;
+void CMandelbrotDlg::resetOrbitPixels(const OrbitPoint *op, size_t count) {
+  for(const OrbitPoint *p = op + count; p-- > op;) {
+    SetPixel(m_imageDC, p->x,p->y, p->m_oldColor);
   }
-  return m_pixelAccessor->getPixel(x,y);
 }
 
 void CMandelbrotDlg::paintMark(const CPoint &p) {
@@ -1189,6 +1243,18 @@ bool CMandelbrotDlg::getJobToDo(CRect &rect) {
 
 // -----------------------------------------------------------------------------------------
 
+void CMandelbrotDlg::handleChangeCode(int flags) {
+  m_lastChangeFlags = flags;
+  if(flags & (MAP_SIZECHANGED | WORK_SIZECHANGED)) {
+    setWorkSize();
+    startCalculation();
+  } else if((flags & MB_SCALECHANGED) != 0) {
+    startCalculation();
+  } else if(flags & (MAP_COLORSCHANGED)) {
+    PostMessage(WM_PAINT);
+  }
+}
+
 void CMandelbrotDlg::initScale() {
   setScale(m_rect0, isRetainAspectRatio());
 }
@@ -1205,25 +1271,25 @@ void CMandelbrotDlg::startCalculation() {
     setRectangleToCalculate(toCRect(m_bigRealTransform.getToRectangle()));
   }
 
-  clearPixelAccessor();
-  m_totalPixelsInJob = setUncalculatedPixelsToEmpty();
+  clearCCA();
+  m_totalPixelsInJob = setUncalculatedRectsToEmpty();
   if(calculateWithOrbit() || animateCalculation()) {
     clearUncalculatedWindowArea();
   }
   updateZoomFactor();
-  getPixelAccessor();
+  getCCA();
 
   startTimer(TIMER_CALCULATION, 500);
   m_calculatorPool->startCalculators(getCPUCountToUse());
   m_gate.signal();
 }
 
-size_t CMandelbrotDlg::setUncalculatedPixelsToEmpty() {
+size_t CMandelbrotDlg::setUncalculatedRectsToEmpty() {
   size_t pixelCount = 0;
   for(size_t i = 0; i < m_jobQueue.size(); i++) {
     const CRect &r = m_jobQueue[i];
     pixelCount += getArea(r);
-    m_pixRect->fillRect(r, EMPTY_COLOR);
+    m_ccMatrix->clearRect(r);
   }
   return pixelCount;
 }
@@ -1282,7 +1348,7 @@ UINT CMandelbrotDlg::getCPUCountToUse() const {
 
 void CMandelbrotDlg::OnNcLButtonDown(UINT nHitTest, CPoint point) {
   if(isBorderHit(nHitTest)) {
-    if((m_pictureStack.getHeight() > 0) || isCalculationActive()) {
+    if(!m_imageStack.isEmpty() || isCalculationActive()) {
       return;
     }
   }
@@ -1304,7 +1370,7 @@ void CMandelbrotDlg::OnNcMouseMove(UINT nHitTest, CPoint point) {
   __super::OnNcMouseMove(nHitTest, point);
   if(m_hasResized) {
     setWorkSize();
-    if(isValidSize()) {
+    if(hasCCM()) {
       startCalculation();
     }
   }
@@ -1353,30 +1419,29 @@ void CMandelbrotDlg::OnTimer(UINT_PTR nIDEvent) {
   __super::OnTimer(nIDEvent);
 }
 
-const BigRealRectangleTransformation &DialogMBContainer::getBigRealTransformation() const {
-  return m_dlg->getBigRealTransformation();
+DialogMBContainer::DialogMBContainer(CMandelbrotDlg *dlg, CellCountMatrix *m) : MBContainer(m), m_dlg(dlg) {
+  m_colorMap = m_dlg->getColorMap().getBuffer();
 }
-
 const RealRectangleTransformation &DialogMBContainer::getRealTransformation() const {
   return m_dlg->getRealTransformation();
 }
-UINT DialogMBContainer::getMaxIteration() const {
-  return m_dlg->getMaxIteration();
+const BigRealRectangleTransformation &DialogMBContainer::getBigRealTransformation() const {
+  return m_dlg->getBigRealTransformation();
 }
-const D3DCOLOR *DialogMBContainer::getColorMap() const {
-  return m_dlg->getColorMap();
+UINT DialogMBContainer::getMaxCount() const {
+  return m_dlg->getMaxCount();
 }
 FPUPrecisionMode DialogMBContainer::getPrecisionMode() const {
   return m_dlg->getPrecisionMode();
-}
-PixelAccessor *DialogMBContainer::getPixelAccessor() {
-  return m_dlg->getPixelAccessor();
 }
 size_t DialogMBContainer::getDigits() const {
   return m_dlg->getDigits();
 }
 bool DialogMBContainer::canUseRealCalculators() const {
   return m_dlg->canUseRealCalculators();
+}
+CellCountAccessor *DialogMBContainer::getCCA() {
+  return m_dlg->getCCA();
 }
 bool DialogMBContainer::calculateWithOrbit() const {
   return m_dlg->calculateWithOrbit();
@@ -1390,15 +1455,23 @@ bool DialogMBContainer::getJobToDo(CRect &rect) {
 CSize DialogMBContainer::getWindowSize() const {
   return m_dlg->getWindowSize();
 }
-
 void DialogMBContainer::paintMark(const CPoint &p) {
   m_dlg->paintMark(p);
 }
-void DialogMBContainer::setPixel(UINT x, UINT y, D3DCOLOR color) {
-  m_dlg->setPixel(x,y,color);
+COLORREF DialogMBContainer::setOrbitPixel(const CPoint &p, COLORREF color) {
+  return m_dlg->setOrbitPixel(p, color);
 }
+void DialogMBContainer::resetOrbitPixels(const OrbitPoint *op, size_t count) {
+  m_dlg->resetOrbitPixels(op, count);
+}
+// overrides DWordpixelAccessor::setPixel. color actually count
+void DialogMBContainer::setPixel(UINT x, UINT y, D3DCOLOR color) {
+  m_dlg->setCount(x,y, color);
+  SetPixel(m_dlg->getImageDC(), x,y,m_colorMap[color].m_colorRef);
+}
+// overrides DWordPixelAccessor::getPixel. return count
 D3DCOLOR DialogMBContainer::getPixel(UINT x, UINT y) const {
-  return m_dlg->getPixel(x,y);
+  return m_dlg->getCount(x,y);
 }
 void DialogMBContainer::handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
   m_dlg->handlePropertyChanged(source, id, oldValue, newValue);

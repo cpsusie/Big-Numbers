@@ -5,17 +5,15 @@
 #define new DEBUG_NEW
 #endif
 
-CShowColorMapDlg::CShowColorMapDlg(UINT maxIteration, const D3DCOLOR *colorMap, CWnd *pParent /*=NULL*/)
+CShowColorMapDlg::CShowColorMapDlg(const ColorMap &colorMap, CWnd *pParent /*=NULL*/)
 : CDialog(CShowColorMapDlg::IDD, pParent)
-, m_maxIteration(maxIteration)
 , m_colorMap(colorMap)
 {
 }
 
 void CShowColorMapDlg::DoDataExchange(CDataExchange *pDX) {
-    __super::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
-
 
 BEGIN_MESSAGE_MAP(CShowColorMapDlg, CDialog)
     ON_WM_SIZE()
@@ -51,22 +49,23 @@ void CShowColorMapDlg::OnPaint() {
                   _T("Courier")
                  );
 
-  const int colorWidth = m_maxIteration < 60000 ? 2 : 1;
+  const UINT mapSize    = (UINT)m_colorMap.size();
+  const UINT colorWidth = mapSize < 60000 ? 2 : 1;
 
   const CSize sz = getClientRect(this, IDC_STATIC_COLORMAPWINDOW).Size();
   const UINT colorsPerRow = sz.cx / colorWidth;
   UINT rows;
-  for(rows = 1; colorsPerRow * rows < (m_maxIteration+1);) rows++;
+  for(rows = 1; colorsPerRow * rows < (mapSize+1);) rows++;
   UINT colorHeight = sz.cy / rows;
 
   CompactArray<UINT> intervals;
   CPoint p(0,0);
-  for(UINT index = 0, rowCount = 0; index <= m_maxIteration; index++) {
+  for(UINT index = 0, rowCount = 0; index < mapSize; index++) {
     if(rowCount == 0) {
       intervals.add(index);
     }
-    const D3DCOLOR c3 = m_colorMap[index];
-    dc.FillSolidRect(p.x,p.y,colorWidth,colorHeight, D3DCOLOR2COLORREF(c3));
+    const COLORREF c3 = m_colorMap[index].m_colorRef;
+    dc.FillSolidRect(p.x,p.y,colorWidth,colorHeight, c3);
     p.x += colorWidth;
     rowCount++;
     if(rowCount == colorsPerRow) {
@@ -75,10 +74,10 @@ void CShowColorMapDlg::OnPaint() {
       rowCount = 0;
     }
   }
-  if(intervals.last() == m_maxIteration) {
+  if(intervals.last() == mapSize) {
     intervals.last()++;
   } else {
-    intervals.add(m_maxIteration+1);
+    intervals.add(mapSize+1);
   }
   textDC.SelectObject(&font);
   const int textHeight = getTextExtent(textDC, _T("10-10")).cy;

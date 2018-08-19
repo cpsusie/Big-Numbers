@@ -1,13 +1,14 @@
 #pragma once
 
+#include "ColorMap.h"
+
 class CShowColorMapDlg : public CDialog {
 private:
     SimpleLayoutManager m_layoutManager;
-    const UINT          m_maxIteration; // m_colorMap has length m_maxIteration+1
-    const D3DCOLOR     *m_colorMap;     // last element is always BLACK
+    const ColorMap     &m_colorMap;   // last element is always BLACK
 
 public:
-    CShowColorMapDlg(UINT maxIteration, const D3DCOLOR *colorMap, CWnd *pParent = NULL);
+    CShowColorMapDlg(const ColorMap &colorMap, CWnd *pParent = NULL);
 
     enum { IDD = IDD_SHOWCOLORMAP_DIALOG };
 

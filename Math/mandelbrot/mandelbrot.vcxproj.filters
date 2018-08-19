@@ -63,6 +63,12 @@
     <ClCompile Include="PointSet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CellCountMatrix.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorMap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Mandelbrot.rc">
@@ -113,6 +119,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PointSet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CellCountMatrix.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ColorMap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

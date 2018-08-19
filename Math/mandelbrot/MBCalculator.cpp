@@ -36,7 +36,8 @@ void MBCalculator::setWithOrbit() {
 // assume thread is suspended
 void MBCalculator::allocateOrbitPoints() {
   releaseOrbitPoints();
-  m_orbitPoints  = new OrbitPoint[m_mbc.getMaxIteration()]; TRACE_NEW(m_orbitPoints);
+  const UINT maxCount = m_mbc.getMaxCount();
+  m_orbitPoints  = new OrbitPoint[maxCount]; TRACE_NEW(m_orbitPoints);
 }
 
 // assume thread is suspended
@@ -46,7 +47,7 @@ void MBCalculator::releaseOrbitPoints() {
   m_gate.signal();
 }
 
-PixelAccessor *MBCalculator::handlePending() {
+CellCountAccessor *MBCalculator::handlePending() {
   UINT pendingFlags;
   while(pendingFlags = m_pool.getPendingFlags(m_id)) {
     if(pendingFlags & CALC_KILL_PENDING) {
@@ -61,14 +62,14 @@ PixelAccessor *MBCalculator::handlePending() {
     }
   }
   setWithOrbit();
-  return m_mbc.getPixelAccessor();
+  return m_mbc.getCCA();
 }
 
 Semaphore MBCalculator::s_followBlackEdgeGate;
 
 bool MBCalculator::enterFollowBlackEdge(const CPoint &p) {
   s_followBlackEdgeGate.wait();
-  if(m_mbc.getPixelAccessor()->getPixel(p) != EMPTY_COLOR) {
+  if(!m_mbc.getCCA()->isEmptyCell(p)) {
     s_followBlackEdgeGate.signal();
     return false;
   }
@@ -92,34 +93,30 @@ void MBCalculator::addInfoToPool() {
 #endif
 
 
-#define ISCOLORTOFILL(c) ((c) == EMPTY_COLOR)
-#define FILLCOLOR        FILL_COLOR
-
-#define CHECKPIXELPP                          \
-{ const D3DCOLOR c = pa->getPixel(pp);        \
-  if(!ISCOLORTOFILL(c)) break;                \
-  pa->setPixel(pp, FILLCOLOR); m_doneCount++; \
+#define CHECKCOUNTPP                          \
+{ if(!cca->isEmptyCell(pp)) break;            \
+  cca->setCount(pp, maxCount); m_doneCount++; \
   ADDPPTOINFO;                                \
 }
 
-#define CHECKNEIGHBOURPIXEL(i)                \
-{ const D3DCOLOR c = pa->getPixel(pp.x, y##i);\
+#define CHECKNEIGHBOURCOUNT(i)                \
+{ const UINT c = cca->getCount(pp.x, y##i);   \
   if(!stacked##i) {                           \
-    if(ISCOLORTOFILL(c)) {                    \
+    if(c == EMPTYCELLVALUE) {                 \
       stack.push(CPoint(pp.x, y##i));         \
       stacked##i = true;                      \
     }                                         \
-  } else if(!ISCOLORTOFILL(c)) {              \
+  } else if(c != EMPTYCELLVALUE) {            \
     stacked##i = false;                       \
   }                                           \
 }
 
-PixelAccessor *MBCalculator::fillInnerArea(PointSet &innerSet, PixelAccessor *pa) {
+CellCountAccessor *MBCalculator::fillInnerArea(PointSet &innerSet, CellCountAccessor *cca, UINT maxCount) {
   SETPHASE(_T("FILLINNERAREA"))
 
   for(Iterator<CPoint> it = innerSet.getIterator(); it.hasNext();) {
     const CPoint start = it.next();
-    if(!ISCOLORTOFILL(pa->getPixel(start))) {
+    if(!cca->isEmptyCell(start)) {
       continue;
     }
 
@@ -134,41 +131,41 @@ PixelAccessor *MBCalculator::fillInnerArea(PointSet &innerSet, PixelAccessor *pa
         if(y2 < m_currentRect.bottom) {
           bool stacked1 = false, stacked2 = false;
           for(CPoint pp = np; pp.x >= m_currentRect.left; pp.x--) { // go left
-            CHECKPIXELPP
-            CHECKNEIGHBOURPIXEL(1)
-            CHECKNEIGHBOURPIXEL(2)
+            CHECKCOUNTPP
+            CHECKNEIGHBOURCOUNT(1)
+            CHECKNEIGHBOURCOUNT(2)
           }
           stacked1 = stacked2 = false;
           for(CPoint pp = np; ++pp.x < m_currentRect.right;) {      // go right
-            CHECKPIXELPP
-            CHECKNEIGHBOURPIXEL(1)
-            CHECKNEIGHBOURPIXEL(2)
+            CHECKCOUNTPP
+            CHECKNEIGHBOURCOUNT(1)
+            CHECKNEIGHBOURCOUNT(2)
           }
         } else {                                                    // dont check y2
           bool stacked1 = false;
           for(CPoint pp = np; pp.x >= m_currentRect.left; pp.x--) { // go left
-            CHECKPIXELPP
-            CHECKNEIGHBOURPIXEL(1)
+            CHECKCOUNTPP
+            CHECKNEIGHBOURCOUNT(1)
           }
           stacked1 = false;
           for(CPoint pp = np; ++pp.x < m_currentRect.right;) {      // go right
-            CHECKPIXELPP
-            CHECKNEIGHBOURPIXEL(1)
+            CHECKCOUNTPP
+            CHECKNEIGHBOURCOUNT(1)
           }
         }
       } else if(y2 < m_currentRect.bottom) {                        // dont check y1
         bool stacked2 = false;
         for(CPoint pp = np; pp.x >= m_currentRect.left; pp.x--) {   // go left
-          CHECKPIXELPP
-          CHECKNEIGHBOURPIXEL(2)
+          CHECKCOUNTPP
+          CHECKNEIGHBOURCOUNT(2)
         }
         stacked2 = false;
         for(CPoint pp = np; ++pp.x < m_currentRect.right;) {        // go right
-          CHECKPIXELPP
-          CHECKNEIGHBOURPIXEL(2)
+          CHECKCOUNTPP
+          CHECKNEIGHBOURCOUNT(2)
         }
       }
     }
   }
-  return pa;
+  return cca;
 }

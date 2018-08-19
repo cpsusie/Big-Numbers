@@ -5,7 +5,7 @@ _4  dword 40800000h
 
 .CODE
 
-; UINT64 mbloop(const Double80 &x, const Double80 &y, UINT64 maxIteration);
+; UINT64 mbloop(const Double80 &x, const Double80 &y, UINT64 maxCount);
 mbloop PROC              ;                         st0       st1       st2       st3       st4       st5       st6       st7
     fld    _4            ; Load 4                    4
     fld    tbyte ptr[rdx]; Load y                    y         4

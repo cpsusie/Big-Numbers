@@ -7,16 +7,16 @@
 
 #ifdef ASMOPTIMIZED
 #ifdef IS64BIT
-extern "C" UINT64 mbloop(const Double80 &x, const Double80 &y, UINT64 maxIteration);
+extern "C" UINT64 mbloop(const Double80 &x, const Double80 &y, UINT64 maxCount);
 #endif
 #endif
 
-UINT MBRealCalculator::findITCountFast(const Real &X, const Real &Y, UINT maxIteration) {
+UINT MBRealCalculator::findCountFast(const Real &X, const Real &Y, UINT maxCount) {
 #ifndef ASMOPTIMIZED
   UINT count = 0;
   Real a     = X;
   Real b     = Y;
-  for(; count < maxIteration; count++) {
+  for(; count < maxCount; count++) {
     const Real a2 = a*a;
     const Real b2 = b*b;
     if(a2+b2 > 4) {
@@ -31,7 +31,7 @@ UINT MBRealCalculator::findITCountFast(const Real &X, const Real &Y, UINT maxIte
 #else
 
 #ifdef IS64BIT
-  return (UINT)mbloop(X,Y, maxIteration);
+  return (UINT)mbloop(X,Y, maxCount);
 #else // IS32BIT
   UINT     count;
   Double80 x     = X;
@@ -46,7 +46,7 @@ UINT MBRealCalculator::findITCountFast(const Real &X, const Real &Y, UINT maxIte
   unsigned short stackSize;
 */
   __asm {                                                   // Registers after instruction has been executed
-    mov    ecx  , maxIteration                              // st0        st1        st2        st3        st4        st5        st6        st7
+    mov    ecx  , maxCount                                  // st0        st1        st2        st3        st4        st5        st6        st7
     fld    _4           // Load 4                              4
     fld    y            // Load y                              y          4
     fld    x            // Load x                              x          y          4
@@ -100,7 +100,7 @@ return:
     fnstcw cw
     fninit
     fldcw  cw
-    sub    ecx, maxIteration
+    sub    ecx, maxCount
     neg    ecx
     mov    count,ecx
   }
@@ -108,21 +108,21 @@ return:
 #endif // IS32BIT
 
 #endif // ASMOPTIMIZED
-
 }
 
-UINT MBRealCalculator::findITCountPaintOrbit(const Real &X, const Real &Y, UINT maxIteration) {
-  MBContainer  &mbc   = getMBContainer();
-  UINT          count = 0;
-  Real          a     = X;
-  Real          b     = Y;
-  OrbitPoint  *startOp = getOrbitPoints(), *op = startOp;
-  const CPoint p0(toCPoint(a,b));
+UINT MBRealCalculator::findCountPaintOrbit(const Real &X, const Real &Y, UINT maxCount) {
+  MBContainer  &mbc     = getMBContainer();
+  UINT          count   = 0;
+  Real          a       = X;
+  Real          b       = Y;
+  OrbitPoint   *startOp = getOrbitPoints(), *op = startOp;
+  const CPoint  p0(toCPoint(a,b));
   if(isEdgeTracing()) mbc.paintMark(p0);
-  for(; count < maxIteration; count++) {
+  for(; count < maxCount; count++) {
     const CPoint p(toCPoint(a,b));
-    *(op++) = OrbitPoint(p, mbc.getPixel(p.x,p.y));
-    mbc.setPixel(p.x,p.y, RGB(0,0,255));
+    if(m_currentRect.PtInRect(p)) {
+      *(op++) = OrbitPoint(p, mbc.setOrbitPixel(p, ORBITCOLOR));
+    }
     const Real a2 = a*a;
     const Real b2 = b*b;
     if(a2+b2 > 4) {
@@ -133,19 +133,16 @@ UINT MBRealCalculator::findITCountPaintOrbit(const Real &X, const Real &Y, UINT 
     a = c;
   }
   if(isEdgeTracing()) mbc.paintMark(p0);
-  while(--op >= startOp) {
-    mbc.setPixel(op->x,op->y,op->m_oldColor);
-  }
+  mbc.resetOrbitPixels(startOp, op-startOp);
   return count;
 }
 
 UINT MBRealCalculator::run() {
   setPoolState(CALC_RUNNING);
   MBContainer                       &mbc              =  getMBContainer();
-  const UINT                         maxIteration     =  mbc.getMaxIteration();
+  const UINT                         maxCount         =  mbc.getMaxCount();
   const bool                         useEdgeDetection =  mbc.useEdgeDetection();
-  PixelAccessor                     *pa               =  mbc.getPixelAccessor();
-  const D3DCOLOR                    *colorMap         =  mbc.getColorMap();
+  CellCountAccessor                 *cca              =  mbc.getCCA();
   const RealRectangleTransformation &tr               =  mbc.getRealTransformation();
   m_xtr                                               = &tr.getXTransformation();
   m_ytr                                               = &tr.getYTransformation();
@@ -165,18 +162,18 @@ UINT MBRealCalculator::run() {
         CHECKPENDING();
         yt = m_ytr->backwardTransform(p.y);
         for(p.x = m_currentRect.left; p.x < m_currentRect.right; p.x++) {
-          if(pa->getPixel(p) != EMPTY_COLOR) continue;
+          if(!cca->isEmptyCell(p)) continue;
           xt = m_xtr->backwardTransform(p.x);
-          const UINT iterations = findItCount(xt, yt, maxIteration);
+          const UINT count = findCount(xt, yt, maxCount);
 
-          if((iterations == maxIteration) && useEdgeDetection) {
+          if((count == maxCount) && useEdgeDetection) {
 //            DLOG(_T("calc(%d) found black point (%d,%d)\n"), getId(), p.x,p.y);
             enableEdgeTracing(true);
-            pa = followBlackEdge(p, pa, maxIteration);
+            cca = followBlackEdge(p, cca, maxCount);
             SETPHASE(_T("RUN"));
             enableEdgeTracing(false);
           } else {
-            pa->setPixel(p, colorMap[iterations]); m_doneCount++;
+            cca->setCount(p, count); m_doneCount++;
           }
         }
       }
@@ -197,19 +194,18 @@ UINT MBRealCalculator::run() {
   return 0;
 }
 
-PixelAccessor *MBRealCalculator::followBlackEdge(const CPoint &p, PixelAccessor *pa, UINT maxIteration) {
-  if(!enterFollowBlackEdge(p)) return pa;
+CellCountAccessor *MBRealCalculator::followBlackEdge(const CPoint &p, CellCountAccessor *cca, UINT maxCount) {
+  if(!enterFollowBlackEdge(p)) return cca;
   MBContainer       &mbc           =  getMBContainer();
   const CSize        sz            =  mbc.getWindowSize();
   const CRect        rect(m_currentRect.left,m_currentRect.top, sz.cx, sz.cy);
-  const D3DCOLOR    *colorMap      =  mbc.getColorMap();
   CPoint             q             =  p;
   Direction          dir           =  S, firstDir = NODIR;
   int                edgeCount     =  1; // p assumed to be set to black
   bool               innerSetEmpty =  true;
   PointSet           edgeSet(rect), innerSet(rect);
   edgeSet.add(p);
-  pa->setPixel(p, colorMap[maxIteration]); m_doneCount++;
+  cca->setCount(p, maxCount); m_doneCount++;
 
   SETPHASE(_T("FOLLOWEDGE"))
 
@@ -219,7 +215,7 @@ PixelAccessor *MBRealCalculator::followBlackEdge(const CPoint &p, PixelAccessor 
 //  DLOG(_T("Follow black edge starting at (%d,%d)\n"), p.x,p.y);
 
   EdgeMatrix edgeMatrix;
-  Real xt, yt;
+  Real       xt, yt;
   for(;;) {
     for(int dy = -1; dy <= 1; dy++) {
       const int qy = q.y + dy;
@@ -238,20 +234,20 @@ PixelAccessor *MBRealCalculator::followBlackEdge(const CPoint &p, PixelAccessor 
         if((qx < rect.left) || (qx >= rect.right)) {
           edgeMatrix.setOutside(dy+1, dx+1);
         } else {
-          const D3DCOLOR c = pa->getPixel(qx, qy);
-          if(c == BLACK) {
+          const UINT c = cca->getCount(qx, qy);
+          if(c == maxCount) {
             edgeMatrix.setInside(dy+1, dx+1);
-          } else if(c != EMPTY_COLOR) {
+          } else if(c != EMPTYCELLVALUE) {
             edgeMatrix.setOutside(dy+1, dx+1);
           } else {
             xt = m_xtr->backwardTransform(qx);
             yt = m_ytr->backwardTransform(qy);
-            const UINT iterations = findItCount(xt, yt, maxIteration);
-            if(iterations == maxIteration) {
+            const UINT count = findCount(xt, yt, maxCount);
+            if(count == maxCount) {
               edgeMatrix.setInside(dy+1, dx+1);
             } else {
               edgeMatrix.setOutside(dy+1, dx+1);
-              pa->setPixel(qx,qy, colorMap[iterations]); m_doneCount++;
+              cca->setCount(qx,qy, count); m_doneCount++;
             }
           }
         }
@@ -280,7 +276,7 @@ PixelAccessor *MBRealCalculator::followBlackEdge(const CPoint &p, PixelAccessor 
     }
     q += EdgeMatrix::s_dirStep[dir];
     if(!edgeSet.contains(q)) {
-      pa->setPixel(q, BLACK); m_doneCount++;
+      cca->setCount(q, maxCount); m_doneCount++;
       edgeSet.add(q);
       edgeCount++;
     }
@@ -290,7 +286,7 @@ PixelAccessor *MBRealCalculator::followBlackEdge(const CPoint &p, PixelAccessor 
   bool edgeIsSubtracted = false;
   if((edgeCount >= 8) && !innerSetEmpty) {
     innerSet -= edgeSet; edgeIsSubtracted = true;
-    pa = fillInnerArea(innerSet, pa);
+    cca = fillInnerArea(innerSet, cca, maxCount);
   }
 
 #ifdef SAVE_CALCULATORINFO
@@ -302,5 +298,5 @@ PixelAccessor *MBRealCalculator::followBlackEdge(const CPoint &p, PixelAccessor 
 #endif
 Return:
   leaveFollowBlackEdge();
-  return pa;
+  return cca;
 }
