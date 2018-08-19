@@ -95,13 +95,13 @@ class CalculatorPool;
 
 class MBCalculator : public Thread {
 private:
+  static Semaphore    s_followBlackEdgeGate;
   const UINT          m_id;
   bool                m_edgeTracing;
   MBContainer        &m_mbc;
   OrbitPoint         *m_orbitPoints;
   Semaphore           m_gate;
   mutable Semaphore   m_wakeup;
-  static Semaphore    s_followBlackEdgeGate;
 #ifdef SAVE_CALCULATORINFO
   const char         *m_phase;
   CalculatorInfo     *m_info;

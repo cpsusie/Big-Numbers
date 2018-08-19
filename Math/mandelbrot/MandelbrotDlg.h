@@ -136,7 +136,8 @@ typedef enum {
 #define MAP_COLORSCHANGED    0x0001
 #define MAP_SIZECHANGED      0x0002
 #define MB_SCALECHANGED      0x0004
-#define WORK_SIZECHANGED     0x0010
+#define MB_IMAGECHANGED      0x0010
+#define WORK_SIZECHANGED     0x0020
 
 class CMandelbrotDlg : public CDialog, public PropertyChangeListener {
 private:

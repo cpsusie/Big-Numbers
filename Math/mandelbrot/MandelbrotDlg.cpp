@@ -146,7 +146,7 @@ BOOL CMandelbrotDlg::OnInitDialog() {
   setWindowPosition(this, IDC_STATIC_IMAGEWINDOW, CPoint(0, 0));
   setClientRectSize(this, IDC_STATIC_IMAGEWINDOW, startSize);
   const CRect imageRect = ::getWindowRect(this, IDC_STATIC_IMAGEWINDOW);
-  const int infoWidth = imageRect.Width() * 3 / 7;
+  const int infoWidth = imageRect.Width() * 2 / 7;
   setWindowPosition(this, IDC_STATIC_INFOWINDOW, CPoint(0, imageRect.bottom));
   setWindowSize(    this, IDC_STATIC_INFOWINDOW, CSize(infoWidth, 20));
   const CRect infoRect = ::getWindowRect(this, IDC_STATIC_INFOWINDOW);
@@ -156,9 +156,9 @@ BOOL CMandelbrotDlg::OnInitDialog() {
   setClientRectSize(this, CSize(imageRect.Width(), infoRect.bottom));
 
   m_layoutManager.OnInitDialog(this);
-  m_layoutManager.addControl(IDC_STATIC_IMAGEWINDOW, RELATIVE_SIZE                  );
-  m_layoutManager.addControl(IDC_STATIC_INFOWINDOW , RELATIVE_Y_POS | RELATIVE_WIDTH);
-  m_layoutManager.addControl(IDC_STATIC_MOUSEINFO  , RELATIVE_POSITION              );
+  m_layoutManager.addControl(IDC_STATIC_IMAGEWINDOW, RELATIVE_SIZE                   );
+  m_layoutManager.addControl(IDC_STATIC_INFOWINDOW , RELATIVE_Y_POS );
+  m_layoutManager.addControl(IDC_STATIC_MOUSEINFO  , RELATIVE_Y_POS | RELATIVE_WIDTH );
 
   m_animateCalculation = isMenuItemChecked(this, ID_OPTIONS_ANIMATE_CALCULATION);
   m_calculateWithOrbit = isMenuItemChecked(this, ID_OPTIONS_PAINTORBIT         );
@@ -316,6 +316,7 @@ void CMandelbrotDlg::OnFileExit() {
   resetImageStack();
   destroyImageDC();
   destroyCCM();
+  DestroyIcon(m_crossIcon    );
   EndDialog(IDOK);
 }
 
@@ -733,6 +734,7 @@ result += _T(str)
   if(flags & MAP_COLORSCHANGED) { ADDTEXT("COLORS"  ); }
   if(flags & MAP_SIZECHANGED  ) { ADDTEXT("MAPSIZE" ); }
   if(flags & MB_SCALECHANGED  ) { ADDTEXT("SCALE"   ); }
+  if(flags & MB_IMAGECHANGED  ) { ADDTEXT("IMAGE"   ); }
   if(flags & WORK_SIZECHANGED ) { ADDTEXT("WORKSIZE"); }
   return result;
 }
@@ -781,13 +783,15 @@ void CMandelbrotDlg::showCalculationState() {
 
 void CMandelbrotDlg::showMousePoint(const CPoint &p) {
   if(hasCCM() && m_ccMatrix->contains(p)) {
-    const BigRealPoint2D rp   = m_bigRealTransform.backwardTransform(toBigRealPoint(p, getDigitPool()));
-    const UINT           prec = (UINT)getDigits();
-    const String msg = format(_T(" (%3d,%3d) [%s,%s]")
+    const BigRealPoint2D rp    = m_bigRealTransform.backwardTransform(toBigRealPoint(p, getDigitPool()));
+    const UINT           prec  = (UINT)getDigits();
+    const UINT           count = m_ccMatrix->getCount(p);
+    const String msg = format(_T(" (%3d,%3d) [%s,%s] Count=%s")
                              , p.x,p.y
                              ,::toString(rp.x,prec,prec+8,ios::scientific|ios::showpos).cstr()
                              ,::toString(rp.y,prec,prec+8,ios::scientific|ios::showpos).cstr()
-                       );
+                             ,(count == EMPTYCELLVALUE) ? _T("undefined"):format(_T("%u"),count).cstr()
+                             );
     setWindowText(this, IDC_STATIC_MOUSEINFO, msg);
   }
 }
@@ -863,7 +867,7 @@ int CMandelbrotDlg::copyCCM(const CellCountMatrix *ccm) {
     flags = setWorkSize(ccm->getSize());
   }
   m_ccMatrix->rop(m_ccMatrix->getRect(), SRCCOPY, ccm, ORIGIN);
-  return flags;
+  return flags | MB_IMAGECHANGED;
 }
 
 CellCountMatrix *CMandelbrotDlg::newCCM(const CSize &size, UINT maxCount) { // static
@@ -1172,7 +1176,7 @@ void CMandelbrotDlg::popImage() {
     int flags = setColorMap(image.m_colorMap);
     flags |= copyCCM(image.m_ccm);
     deleteCCM(image.m_ccm);
-    flags |= setScale(image.m_scale, false);
+    setScale(image.m_scale, false); // don't set ScaleChanged bit
     updateZoomFactor();
     handleChangeCode(flags);
   }
@@ -1250,7 +1254,7 @@ void CMandelbrotDlg::handleChangeCode(int flags) {
     startCalculation();
   } else if((flags & MB_SCALECHANGED) != 0) {
     startCalculation();
-  } else if(flags & (MAP_COLORSCHANGED)) {
+  } else if(flags & (MAP_COLORSCHANGED | MB_IMAGECHANGED)) {
     PostMessage(WM_PAINT);
   }
 }

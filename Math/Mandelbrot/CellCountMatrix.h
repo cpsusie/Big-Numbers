@@ -14,8 +14,11 @@ public:
   CellCountAccessor *getCCA() const;
   void               releaseCCA() const;
   void               clearRect(const CRect &r);
-  UINT               getMaxCount() const {
+  inline UINT        getMaxCount() const {
     return m_maxCount;
+  }
+  inline UINT        getCount(const CPoint &p) const {
+    return getPixel(p);
   }
   CellCountMatrix *clone() const;
   PixRect *convertToPixRect(PixRect *dst, const ColorMap &cm) const;

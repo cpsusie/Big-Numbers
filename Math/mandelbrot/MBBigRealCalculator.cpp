@@ -42,8 +42,8 @@ UINT MBBigRealCalculator::findCountPaintOrbit(const BigReal &X, const BigReal &Y
     b = rProd(a*_2,b,m_digits)+Y;
     a = c;
   }
-  if(isEdgeTracing()) mbc.paintMark(p0);
   mbc.resetOrbitPixels(startOp, op-startOp);
+  if(isEdgeTracing()) mbc.paintMark(p0);
   return count;
 }
 

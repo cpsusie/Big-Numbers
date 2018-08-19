@@ -129,16 +129,16 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="res\bitmap1.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\bmp00001.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="res\ico00001.ico">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\icon1.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\markColor.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\markMask.bmp">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

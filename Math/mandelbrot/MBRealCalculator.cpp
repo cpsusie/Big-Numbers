@@ -7,8 +7,34 @@
 
 #ifdef ASMOPTIMIZED
 #ifdef IS64BIT
-extern "C" UINT64 mbloop(const Double80 &x, const Double80 &y, UINT64 maxCount);
-#endif
+extern "C" {
+void   prepareFPU();
+void   cleanupFPU();
+UINT64 mbloop(const Double80 &x, const Double80 &y, UINT64 maxCount);
+};
+#else // IS32BIT
+static void prepareFPU() {
+  static const float _4 = 4;
+  __asm {                                                   // st0        st1        st2        st3        st4        st5        st6        st7
+    fld    _4           // Load 4                              4
+  }
+}
+
+static void cleanupFPU() {
+  unsigned short cw;
+  __asm {
+    fnstcw cw
+    fninit
+    fldcw  cw
+  }
+}
+#endif  IS64BIT
+
+#define PREPAREFPU() prepareFPU()
+#define CLEANUPFPU() cleanupFPU()
+#else
+#define PREPAREFPU()
+#define CLEANUPFPU()
 #endif
 
 UINT MBRealCalculator::findCountFast(const Real &X, const Real &Y, UINT maxCount) {
@@ -37,9 +63,6 @@ UINT MBRealCalculator::findCountFast(const Real &X, const Real &Y, UINT maxCount
   Double80 x     = X;
   Double80 y     = Y;
 
-  static const float _4 = 4;
-  unsigned short cw;
-
 /*
   unsigned short sw;
   unsigned short tagsBuffer[14];
@@ -47,7 +70,7 @@ UINT MBRealCalculator::findCountFast(const Real &X, const Real &Y, UINT maxCount
 */
   __asm {                                                   // Registers after instruction has been executed
     mov    ecx  , maxCount                                  // st0        st1        st2        st3        st4        st5        st6        st7
-    fld    _4           // Load 4                              4
+                        //                                     4 assumed to be loaded with prepareFPU
     fld    y            // Load y                              y          4
     fld    x            // Load x                              x          y          4
     fld    st(1)        // Load y                              b=y        x          y          4
@@ -61,7 +84,7 @@ forloop:                // Stacksize = 5                       a          b     
     fld    st(1)        // Load a^2.                           a^2        b^2        a^2        a          b           x         y          4
     fadd   st(0), st(1) // st0 += st1                          a^2+b^2    b^2        a^2        a          b           x         y          4
     fcomip st(0), st(7) // Compare st0 and st7, pop st0        b^2        a^2        a          b          x           y         4
-    ja return           // if(a^2+b^2 > 4) goto return
+    ja ReturnPop6       // Stacksize = 7. if(a^2+b^2 > 4) goto ReturnPop6
 
     fsub                // st0 = a^2-b^2, pop st1              a^2-b^2    a          b          x          y           4
     fadd   st(0), st(3) // st0 += x                            a^2-b^2+x  a          b          x          y           4
@@ -73,6 +96,15 @@ forloop:                // Stacksize = 5                       a          b     
     fstp   st(1)        // a = a^2-b^2+x, pop st0              new a      new b      x          y          4
     loop   forloop      // Stacksize = 5. if(--ecx) goto forloop
 
+    fstp   st(0)
+    fstp   st(0)
+    fstp   st(0)
+    fstp   st(0)
+
+    sub    ecx, maxCount
+    neg    ecx
+    mov    count,ecx
+    jmp End
 /*
 getStackSize:
     fnstsw sw
@@ -96,14 +128,19 @@ normalHeight:
     mov stackSize, ax
     ret
 */
-return:
-    fnstcw cw
-    fninit
-    fldcw  cw
+ReturnPop6:
+    fstp   st(0)
+    fstp   st(0)
+    fstp   st(0)
+    fstp   st(0)
+    fstp   st(0)
+    fstp   st(0)
+
     sub    ecx, maxCount
     neg    ecx
     mov    count,ecx
   }
+End:
   return count;
 #endif // IS32BIT
 
@@ -132,8 +169,8 @@ UINT MBRealCalculator::findCountPaintOrbit(const Real &X, const Real &Y, UINT ma
     b = 2*a*b+Y;
     a = c;
   }
-  if(isEdgeTracing()) mbc.paintMark(p0);
   mbc.resetOrbitPixels(startOp, op-startOp);
+  if(isEdgeTracing()) mbc.paintMark(p0);
   return count;
 }
 
@@ -152,6 +189,7 @@ UINT MBRealCalculator::run() {
   FPU::setPrecisionMode(mbc.getPrecisionMode());
   try {
     Real xt, yt;
+    PREPAREFPU();
     while(mbc.getJobToDo(m_currentRect)) {
 
 //      DLOG(_T("calc(%d) got rect (%d,%d,%d,%d)\n"), getId(), m_currentRect.left,m_currentRect.top,m_currentRect.right,m_currentRect.bottom);
@@ -190,6 +228,7 @@ UINT MBRealCalculator::run() {
   } catch(...) {
     DLOG(_T("calc(%d) caught unknown Exception\n"), getId());
   }
+  CLEANUPFPU();
   setPoolState(CALC_TERMINATED);
   return 0;
 }

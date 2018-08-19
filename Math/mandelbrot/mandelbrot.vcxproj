@@ -321,10 +321,10 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="res\bitmap1.bmp" />
-    <Image Include="res\bmp00001.bmp" />
     <Image Include="res\ico00001.ico" />
     <Image Include="res\icon1.ico" />
+    <Image Include="res\markColor.bmp" />
+    <Image Include="res\markMask.bmp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="res\Mandelbrot.rc2" />
