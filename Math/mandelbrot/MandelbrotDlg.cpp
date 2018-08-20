@@ -522,8 +522,7 @@ void CMandelbrotDlg::OnMouseMove(UINT nFlags, CPoint point) {
     break;
   case STATE_DRAGGING:
     if(nFlags & MK_LBUTTON) {
-      setDragRect(m_mouseDownPoint,p);
-      CPoint rb = m_dragRect.BottomRight();
+      CPoint rb = setDragRect(m_mouseDownPoint,p);
       if(rb != p) {
         m_imageWindow->ClientToScreen(&rb);
         SetCursorPos(rb.x,rb.y);
@@ -1048,7 +1047,7 @@ void CMandelbrotDlg::updateZoomFactor() {
   }
 }
 
-void CMandelbrotDlg::setDragRect(const CPoint &topLeft, const CPoint &bottomRight) {
+CPoint CMandelbrotDlg::setDragRect(const CPoint &topLeft, const CPoint &bottomRight) {
   CClientDC dc(m_imageWindow);
 
   const CRect newDragRect = createDragRect(topLeft, bottomRight);
@@ -1061,14 +1060,27 @@ void CMandelbrotDlg::setDragRect(const CPoint &topLeft, const CPoint &bottomRigh
     m_dragRect = newDragRect;
     dc.DrawDragRect(&m_dragRect, size, &m_dragRect, size);
   }
+  if(newDragRect.TopLeft() == topLeft) {
+    return newDragRect.BottomRight();
+  } else if(newDragRect.BottomRight() == topLeft) {
+    return newDragRect.TopLeft();
+  } else {
+    const CPoint nTopRight(newDragRect.right, newDragRect.top), nBottomLeft(newDragRect.left,newDragRect.bottom);
+    if(topLeft == nTopRight) {
+      return nBottomLeft;
+    } else if(topLeft == nBottomLeft) {
+      return nTopRight;
+    }
+  }
+  return newDragRect.BottomRight();
 }
 
 CRect CMandelbrotDlg::createDragRect(const CPoint &topLeft, const CPoint &bottomRight) {
   if(!isRetainAspectRatio()) {
-    return CRect(topLeft,bottomRight);
+    return makePositiveRect(CRect(topLeft,bottomRight));
   } else {
     const CSize size = getWorkSize();
-    return CRect(topLeft.x, topLeft.y, bottomRight.x, topLeft.y + (bottomRight.x - topLeft.x) * size.cy / size.cx);
+    return makePositiveRect(CRect(topLeft.x, topLeft.y, bottomRight.x, topLeft.y + (bottomRight.x - topLeft.x) * size.cy / size.cx));
   }
 }
 

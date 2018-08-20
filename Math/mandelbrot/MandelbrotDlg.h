@@ -232,7 +232,7 @@ private:
   inline BigRealRectangle2D getScale() const {
     return m_bigRealTransform.getFromRectangle();
   }
-  void             setDragRect(   const CPoint &topLeft, const CPoint &bottomRight);
+  CPoint           setDragRect(   const CPoint &topLeft, const CPoint &bottomRight); // return the point diagonal to topLeft
   CRect            createDragRect(const CPoint &topLeft, const CPoint &bottomRight);
   void             removeDragRect();
   CPoint           getImagePointFromMousePoint(const CPoint &p) const;
