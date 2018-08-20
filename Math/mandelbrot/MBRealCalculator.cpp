@@ -234,7 +234,7 @@ UINT MBRealCalculator::run() {
 }
 
 CellCountAccessor *MBRealCalculator::followBlackEdge(const CPoint &p, CellCountAccessor *cca, UINT maxCount) {
-  if(!enterFollowBlackEdge(p)) return cca;
+  if(!enterFollowBlackEdge(p, cca)) return cca;
   MBContainer       &mbc           =  getMBContainer();
   const CSize        sz            =  mbc.getWindowSize();
   const CRect        rect(m_currentRect.left,m_currentRect.top, sz.cx, sz.cy);

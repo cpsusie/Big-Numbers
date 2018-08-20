@@ -10,17 +10,28 @@ class CellCountMatrix : public PixRect {
 private:
   const UINT m_maxCount;
 public:
-  CellCountMatrix(const CSize &size, UINT maxCount);
-  CellCountAccessor *getCCA() const;
-  void               releaseCCA() const;
-  void               clearRect(const CRect &r);
-  inline UINT        getMaxCount() const {
+  inline CellCountMatrix(const CSize &size, UINT maxCount)
+  : PixRect(theApp.m_device, PIXRECT_PLAINSURFACE, size)
+  , m_maxCount(maxCount)
+  {
+    clearRect(getRect());
+  }
+  inline CellCountAccessor *getCCA() const {
+    return (CellCountAccessor*)getPixelAccessor();
+  }
+  inline void               releaseCCA() const {
+    __super::releasePixelAccessor();
+  }
+  inline void               clearRect(const CRect &r) {
+    __super::fillColor(EMPTYCELLVALUE, &r);
+  }
+  inline UINT               getMaxCount() const {
     return m_maxCount;
   }
-  inline UINT        getCount(const CPoint &p) const {
+  inline UINT               getCount(const CPoint &p) const {
     return getPixel(p);
   }
-  CellCountMatrix *clone() const;
+  CellCountMatrix          *clone() const;
   PixRect *convertToPixRect(PixRect *dst, const ColorMap &cm) const;
 };
 

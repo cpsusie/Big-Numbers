@@ -67,9 +67,9 @@ CellCountAccessor *MBCalculator::handlePending() {
 
 Semaphore MBCalculator::s_followBlackEdgeGate;
 
-bool MBCalculator::enterFollowBlackEdge(const CPoint &p) {
+bool MBCalculator::enterFollowBlackEdge(const CPoint &p, CellCountAccessor *cca) {
   s_followBlackEdgeGate.wait();
-  if(!m_mbc.getCCA()->isEmptyCell(p)) {
+  if(!cca->isEmptyCell(p)) {
     s_followBlackEdgeGate.signal();
     return false;
   }

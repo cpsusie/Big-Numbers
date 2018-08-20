@@ -1,6 +1,15 @@
 #include "StdAfx.h"
 #include "ColorMap.h"
 
+String ColorMapData::getDistributionName(ColorDistribution cd) { // static
+  switch (cd) {
+  case CD_LINEAR  : return _T("LINEAR");
+  case CD_SQRROOT : return _T("SQRROOT");
+  case CD_LOG     : return _T("LOG");
+  default         : return format(_T("Unknown colordistribution:%d"), cd);
+  }
+}
+
 static int newRandomStep(int old) {
   const int result = randInt(2, 16);
   if(old > 0) {

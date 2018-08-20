@@ -131,7 +131,7 @@ protected:
   inline bool isWithOrbit() const {
     return m_orbitPoints != NULL;
   }
-  bool enterFollowBlackEdge(const CPoint &p);
+  bool enterFollowBlackEdge(const CPoint &p, CellCountAccessor *cca);
   void leaveFollowBlackEdge();
   inline void enableEdgeTracing(bool enable) {
     m_edgeTracing = enable;

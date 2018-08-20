@@ -1,26 +1,6 @@
 #include "stdafx.h"
 #include "CellCountMatrix.h"
 
-CellCountMatrix::CellCountMatrix(const CSize &size, UINT maxCount)
-: PixRect(theApp.m_device, PIXRECT_PLAINSURFACE, size)
-, m_maxCount(maxCount)
-{
-  clearRect(getRect());
-}
-
-CellCountAccessor *CellCountMatrix::getCCA() const {
-  PixelAccessor *pa = getPixelAccessor();
-  return (CellCountAccessor*)pa;
-}
-
-void CellCountMatrix::releaseCCA() const {
-  __super::releasePixelAccessor();
-}
-
-void CellCountMatrix::clearRect(const CRect &r) {
-  __super::fillColor(EMPTYCELLVALUE, &r);
-}
-
 CellCountMatrix *CellCountMatrix::clone() const {
   CellCountMatrix *result = new CellCountMatrix(getSize(), getMaxCount());
   result->rop(getRect(), SRCCOPY, this, ORIGIN);

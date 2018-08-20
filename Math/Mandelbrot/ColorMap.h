@@ -1,16 +1,23 @@
 #pragma once
 
+typedef enum {
+  CD_LINEAR
+ ,CD_SQRROOT
+ ,CD_LOG
+} ColorDistribution;
+
 class ColorMapData {
 public:
-  UINT m_maxCount;
-  UINT m_seed;
-  BOOL m_randomSeed;
-
-  ColorMapData() : m_maxCount(2000), m_randomSeed(TRUE), m_seed(127) {
+  UINT              m_maxCount;
+  ColorDistribution m_distribution;
+  UINT              m_seed;
+  BOOL              m_randomSeed;
+  ColorMapData() : m_maxCount(2000), m_distribution(CD_LINEAR), m_randomSeed(TRUE), m_seed(127) {
   }
   bool operator==(const ColorMapData &d) const {
-    return (m_maxCount   == d.m_maxCount    )
-        && (m_randomSeed == d.m_randomSeed  )
+    return (m_maxCount     == d.m_maxCount    )
+        && (m_distribution == d.m_distribution)
+        && (m_randomSeed   == d.m_randomSeed  )
         && (m_randomSeed || (m_seed == d.m_seed));
   }
   bool operator!=(const ColorMapData &d) const {
@@ -19,8 +26,17 @@ public:
   inline UINT getMaxCount() const {
     return m_maxCount;
   }
+  static String getDistributionName(ColorDistribution cd);
+  inline String getDistributionName() const {
+    return getDistributionName(m_distribution);
+  }
+
   inline String toString() const {
-    return format(_T("ColorMapData(maxCount:%u, seed:%u, randomSeed:%s"), m_maxCount, m_seed, boolToStr(m_randomSeed));
+    return format(_T("ColorMapData(maxCount:%u, distribution:%s, seed:%u, randomSeed:%s")
+                 ,m_maxCount
+                 ,getDistributionName().cstr()
+                 ,m_seed
+                 ,boolToStr(m_randomSeed));
   }
 };
 
