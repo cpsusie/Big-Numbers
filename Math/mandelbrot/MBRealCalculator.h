@@ -22,16 +22,10 @@ class MBRealCalculator : public MBCalculator {
 private:
   const RealIntervalTransformation *m_xtr, *m_ytr;
   UINT               findCountPaintOrbit(const Real    &X, const Real        &Y  , UINT maxCount);
-  UINT               findCountFast(      const Real    &X, const Real        &Y  , UINT maxCount);
   CellCountAccessor *followBlackEdge(    const CPoint  &p, CellCountAccessor *cca, UINT maxCount);
   inline CPoint      toCPoint(           const Real    &x, const Real        &y) const {
     return CPoint(getInt(m_xtr->forwardTransform(x)), getInt(m_ytr->forwardTransform(y)));
   }
-protected:
-  inline UINT findCount(const Real &X, const Real &Y, UINT maxCount) {
-    return isWithOrbit() ? findCountPaintOrbit(X,Y,maxCount)
-                         : findCountFast(      X,Y,maxCount);
-  };
 public:
   MBRealCalculator(CalculatorPool *pool, int id) : MBCalculator(pool, id) {
   }

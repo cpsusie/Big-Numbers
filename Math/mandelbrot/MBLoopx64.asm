@@ -13,16 +13,14 @@ prepareFPU ENDP
 
 ;void cleanupFPU();
 cleanupFPU PROC          ;
-    push	0
-    fnstcw WORD PTR[rsp] ; save FPU ctrlWord in cwSave (=*rsp)
+    fnstcw WORD PTR[rsp-8] ; save FPU ctrlWord in cwSave (=*rsp)
     fninit
-    fldcw	 WORD PTR[rsp] ; restore FPU ctrlWord (*rsp)
-    add		 rsp, 8
+    fldcw  WORD PTR[rsp-8] ; restore FPU ctrlWord (*rsp)
     ret
 cleanupFPU ENDP
 
-;UINT64 mbloop(const Double80 &x, const Double80 &y, UINT64 maxCount);
-mbloop PROC              ;                         st0       st1       st2       st3       st4       st5       st6       st7
+;UINT findCountFast(const Double80 &x, const Double80 &y, UINT maxCount);
+findCountFast PROC       ;                         st0       st1       st2       st3       st4       st5       st6       st7
                          ;                           4 assumed to be loaded with prepareFPU
     fld    tbyte ptr[rdx]; Load y                    y         4
     fld    tbyte ptr[rcx]; Load x                    x         y         4
@@ -68,6 +66,6 @@ EpilogPop6:
     neg    rcx
     mov    rax, rcx
     ret
-mbloop ENDP
+findCountFast ENDP
 
 END

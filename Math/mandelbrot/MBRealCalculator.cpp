@@ -6,13 +6,17 @@
 #define ASMOPTIMIZED
 
 #ifdef ASMOPTIMIZED
+
 #ifdef IS64BIT
+
 extern "C" {
-void   prepareFPU();
-void   cleanupFPU();
-UINT64 mbloop(const Double80 &x, const Double80 &y, UINT64 maxCount);
+void prepareFPU();
+void cleanupFPU();
+UINT findCountFast(const Double80 &x, const Double80 &y, UINT maxCount);
 };
-#else // IS32BIT
+
+#else // !IS32BIT
+
 static void prepareFPU() {
   static const float _4 = 4;
   __asm {                                                   // st0        st1        st2        st3        st4        st5        st6        st7
@@ -28,80 +32,49 @@ static void cleanupFPU() {
     fldcw  cw
   }
 }
-#endif  IS64BIT
 
-#define PREPAREFPU() prepareFPU()
-#define CLEANUPFPU() cleanupFPU()
-#else
-#define PREPAREFPU()
-#define CLEANUPFPU()
-#endif
-
-UINT MBRealCalculator::findCountFast(const Real &X, const Real &Y, UINT maxCount) {
-#ifndef ASMOPTIMIZED
-  UINT count = 0;
-  Real a     = X;
-  Real b     = Y;
-  for(; count < maxCount; count++) {
-    const Real a2 = a*a;
-    const Real b2 = b*b;
-    if(a2+b2 > 4) {
-      break;
-    }
-    const Real c = a2-b2+X;
-    b = 2*a*b+Y;
-    a = c;
-  }
-  return count;
-
-#else
-
-#ifdef IS64BIT
-  return (UINT)mbloop(X,Y, maxCount);
-#else // IS32BIT
-  UINT     count;
-  Double80 x     = X;
-  Double80 y     = Y;
-
+static UINT findCountFast(const Double80 &x, const Double80 &y, UINT maxCount) {
+  // maxCount is return-value too
 /*
   unsigned short sw;
   unsigned short tagsBuffer[14];
   unsigned short stackSize;
 */
   __asm {                                                   // Registers after instruction has been executed
-    mov    ecx  , maxCount                                  // st0        st1        st2        st3        st4        st5        st6        st7
-                        //                                     4 assumed to be loaded with prepareFPU
-    fld    y            // Load y                              y          4
-    fld    x            // Load x                              x          y          4
-    fld    st(1)        // Load y                              b=y        x          y          4
-    fld    st(1)        // Load x                              a=x        b          x          y          4
+                                                            // st0        st1        st2        st3        st4        st5        st6        st7
+                            //                                 4 assumed to be loaded with prepareFPU
+    mov    ecx  , y         //
+    fld    tbyte ptr[ecx]   //                                 y          4
+    mov    ecx  , x         //
+    fld    tbyte ptr[ecx]   //                                 x          y          4
+    mov    ecx  , maxCount  //
+    fld    st(1)            // Load y                          b=y        x          y          4
+    fld    st(1)            // Load x                          a=x        b          x          y          4
 
-forloop:                // Stacksize = 5                       a          b          x          y          4
-    fld	   st(0)        // Load a.                             a          a          b          x          y           4
-    fmul   st(0), st(0) // st0*=st0                            a^2        a          b          x          y           4
-    fld    st(2)        // Load b                              b          a^2        a          b          x           y         4
-    fmul   st(0), st(0) // st0*=st0                            b^2        a^2        a          b          x           y         4
-    fld    st(1)        // Load a^2.                           a^2        b^2        a^2        a          b           x         y          4
-    fadd   st(0), st(1) // st0 += st1                          a^2+b^2    b^2        a^2        a          b           x         y          4
-    fcomip st(0), st(7) // Compare st0 and st7, pop st0        b^2        a^2        a          b          x           y         4
-    ja ReturnPop6       // Stacksize = 7. if(a^2+b^2 > 4) goto ReturnPop6
+forloop:                    // Stacksize = 5                   a          b          x          y          4
+    fld	   st(0)            // Load a.                         a          a          b          x          y           4
+    fmul   st(0), st(0)     // st0*=st0                        a^2        a          b          x          y           4
+    fld    st(2)            // Load b                          b          a^2        a          b          x           y         4
+    fmul   st(0), st(0)     // st0*=st0                        b^2        a^2        a          b          x           y         4
+    fld    st(1)            // Load a^2.                       a^2        b^2        a^2        a          b           x         y          4
+    fadd   st(0), st(1)     // st0 += st1                      a^2+b^2    b^2        a^2        a          b           x         y          4
+    fcomip st(0), st(7)     // Compare st0 and st7, pop st0    b^2        a^2        a          b          x           y         4
+    ja ReturnPop6           // Stacksize = 7. if(a^2+b^2 > 4) goto ReturnPop6
 
-    fsub                // st0 = a^2-b^2, pop st1              a^2-b^2    a          b          x          y           4
-    fadd   st(0), st(3) // st0 += x                            a^2-b^2+x  a          b          x          y           4
-    fld    st(1)        // Load a                              a          a^2-b^2+x  a          b          x           y         4
-    fmul   st(0), st(3) // st0 *= b                            ab         a^2-b^2+x  a          b          x           y         4
-    fadd   st(0), st(0) // st0 *= 2                            2ab        a^2-b^2+x  a          b          x           y         4
-    fadd   st(0), st(5) // st0 += y                            2ab+y      a^2-b^2+x  a          b          x           y         4
-    fstp   st(3)        // b = 2ab+y, pop st0                  a^2-b^2+x  a          new b      x          y           4
-    fstp   st(1)        // a = a^2-b^2+x, pop st0              new a      new b      x          y          4
-    loop   forloop      // Stacksize = 5. if(--ecx) goto forloop
+    fsub                    // st0 = a^2-b^2, pop st1          a^2-b^2    a          b          x          y           4
+    fadd   st(0), st(3)     // st0 += x                        a^2-b^2+x  a          b          x          y           4
+    fld    st(1)            // Load a                          a          a^2-b^2+x  a          b          x           y         4
+    fmul   st(0), st(3)     // st0 *= b                        ab         a^2-b^2+x  a          b          x           y         4
+    fadd   st(0), st(0)     // st0 *= 2                        2ab        a^2-b^2+x  a          b          x           y         4
+    fadd   st(0), st(5)     // st0 += y                        2ab+y      a^2-b^2+x  a          b          x           y         4
+    fstp   st(3)            // b = 2ab+y, pop st0              a^2-b^2+x  a          new b      x          y           4
+    fstp   st(1)            // a = a^2-b^2+x, pop st0          new a      new b      x          y          4
+    loop   forloop          // Stacksize = 5. if(--ecx) goto forloop
 
-    fstp   st(0)        // We've reached maxCount >= ecx == 0
+    fstp   st(0)            // We've reached maxCount >= ecx == 0
     fstp   st(0)
     fstp   st(0)
     fstp   st(0)
-    mov    ecx, maxCount
-    mov    count,ecx
     jmp End
 /*
 getStackSize:
@@ -135,14 +108,40 @@ ReturnPop6:
     fstp   st(0)
     sub    ecx, maxCount
     neg    ecx
-    mov    count,ecx
+    mov    maxCount, ecx
   }
 End:
-  return count;
+  return maxCount;
+}
+
 #endif // IS32BIT
 
-#endif // ASMOPTIMIZED
+#define PREPAREFPU() prepareFPU()
+#define CLEANUPFPU() cleanupFPU()
+
+#else // !ASMOPTIMIZED
+
+#define PREPAREFPU()
+#define CLEANUPFPU()
+
+static UINT findCountFast(const Double80 &X, const Double80 &Y, UINT maxCount) {
+  UINT     count = 0;
+  Double80 a     = X;
+  Double80 b     = Y;
+  for(; count < maxCount; count++) {
+    const Double80 a2 = a*a;
+    const Double80 b2 = b*b;
+    if(a2+b2 > 4) {
+      break;
+    }
+    const Double80 c = a2-b2+X;
+    b = 2*a*b+Y;
+    a = c;
+  }
+  return count;
 }
+
+#endif // !ASMOPTIMIZED
 
 UINT MBRealCalculator::findCountPaintOrbit(const Real &X, const Real &Y, UINT maxCount) {
   MBContainer  &mbc     = getMBContainer();
@@ -170,6 +169,8 @@ UINT MBRealCalculator::findCountPaintOrbit(const Real &X, const Real &Y, UINT ma
   if(isEdgeTracing()) mbc.paintMark(p0);
   return count;
 }
+
+#define FINDCOUNT(X,Y,maxCount) isWithOrbit() ? findCountPaintOrbit(X,Y,maxCount) : findCountFast(X,Y,maxCount)
 
 UINT MBRealCalculator::run() {
   setPoolState(CALC_RUNNING);
@@ -199,7 +200,7 @@ UINT MBRealCalculator::run() {
         for(p.x = m_currentRect.left; p.x < m_currentRect.right; p.x++) {
           if(!cca->isEmptyCell(p)) continue;
           xt = m_xtr->backwardTransform(p.x);
-          const UINT count = findCount(xt, yt, maxCount);
+          const UINT count = FINDCOUNT(xt, yt, maxCount);
 
           if((count == maxCount) && useEdgeDetection) {
 //            DLOG(_T("calc(%d) found black point (%d,%d)\n"), getId(), p.x,p.y);
@@ -278,7 +279,7 @@ CellCountAccessor *MBRealCalculator::followBlackEdge(const CPoint &p, CellCountA
           } else {
             xt = m_xtr->backwardTransform(qx);
             yt = m_ytr->backwardTransform(qy);
-            const UINT count = findCount(xt, yt, maxCount);
+            const UINT count = FINDCOUNT(xt, yt, maxCount);
             if(count == maxCount) {
               edgeMatrix.setInside(dy+1, dx+1);
             } else {
