@@ -50,14 +50,12 @@ forloop:                 ; Stacksize = 5             a         b         x      
     fstp   st(1)         ; a = a^2-b^2+x, pop st0    new a     new b     x         y         4
     loop   forloop       ; Stacksize = 5. if(--rcx) goto forloop
     
-EpilogPop4:
+EpilogPop4:              ; we have reached maxCount => rcx == 0
     fstp   st(0)
     fstp   st(0)
     fstp   st(0)
     fstp   st(0)
-    sub    rcx, r8
-    neg    rcx
-    mov    rax, rcx
+    mov    rax, r8
     ret
 EpilogPop6:
     fstp   st(0)

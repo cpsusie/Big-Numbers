@@ -96,13 +96,11 @@ forloop:                // Stacksize = 5                       a          b     
     fstp   st(1)        // a = a^2-b^2+x, pop st0              new a      new b      x          y          4
     loop   forloop      // Stacksize = 5. if(--ecx) goto forloop
 
+    fstp   st(0)        // We've reached maxCount >= ecx == 0
     fstp   st(0)
     fstp   st(0)
     fstp   st(0)
-    fstp   st(0)
-
-    sub    ecx, maxCount
-    neg    ecx
+    mov    ecx, maxCount
     mov    count,ecx
     jmp End
 /*
@@ -135,7 +133,6 @@ ReturnPop6:
     fstp   st(0)
     fstp   st(0)
     fstp   st(0)
-
     sub    ecx, maxCount
     neg    ecx
     mov    count,ecx
