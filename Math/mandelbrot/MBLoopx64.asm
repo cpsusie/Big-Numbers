@@ -36,7 +36,7 @@ forloop:                 ; Stacksize = 5             a         b         x      
     fld    st(1)         ; Load a^2.                 a^2       b^2       a^2       a         b         x         y         4
     fadd   st(0), st(1)  ; st0 += st1                a^2+b^2   b^2       a^2       a         b         x         y         4
     fcomip st(0), st(7)  ; Compare st0,st7, pop st0  b^2       a^2       a         b         x         y         4
-    ja EpilogPop6        ; Stacksize = 7. if(a^2+b^2 > 4) goto EpilogPop6
+    ja ReturnPop6        ; Stacksize = 7. if(a^2+b^2 > 4) goto EpilogPop6
 
     fsub                 ; st1 -= st0, pop st0       a^2-b^2   a         b         x         y         4
     fadd   st(0), st(3)  ; st0 += x                  a^2-b^2+x a         b         x         y         4
@@ -48,23 +48,22 @@ forloop:                 ; Stacksize = 5             a         b         x      
     fstp   st(1)         ; a = a^2-b^2+x, pop st0    new a     new b     x         y         4
     loop   forloop       ; Stacksize = 5. if(--rcx) goto forloop
     
-EpilogPop4:              ; we have reached maxCount => rcx == 0
+ReturnPop4:              ; We've reached maxCount => rcx == 0
     fstp   st(0)
     fstp   st(0)
     fstp   st(0)
     fstp   st(0)
     mov    rax, r8
     ret
-EpilogPop6:
+ReturnPop6:
     fstp   st(0)
     fstp   st(0)
     fstp   st(0)
     fstp   st(0)
     fstp   st(0)
     fstp   st(0)
-    sub    rcx, r8
-    neg    rcx
-    mov    rax, rcx
+    mov    rax, r8
+    sub    rax, rcx
     ret
 findCountFast ENDP
 

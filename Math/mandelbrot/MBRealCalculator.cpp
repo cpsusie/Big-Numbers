@@ -71,7 +71,7 @@ forloop:                    // Stacksize = 5                   a          b     
     fstp   st(1)            // a = a^2-b^2+x, pop st0          new a      new b      x          y          4
     loop   forloop          // Stacksize = 5. if(--ecx) goto forloop
 
-    fstp   st(0)            // We've reached maxCount >= ecx == 0
+    fstp   st(0)            // We've reached maxCount => ecx == 0
     fstp   st(0)
     fstp   st(0)
     fstp   st(0)
@@ -106,9 +106,7 @@ ReturnPop6:
     fstp   st(0)
     fstp   st(0)
     fstp   st(0)
-    sub    ecx, maxCount
-    neg    ecx
-    mov    maxCount, ecx
+    sub    maxCount, ecx
   }
 End:
   return maxCount;
@@ -172,21 +170,49 @@ UINT MBRealCalculator::findCountPaintOrbit(const Real &X, const Real &Y, UINT ma
 
 #define FINDCOUNT(X,Y,maxCount) isWithOrbit() ? findCountPaintOrbit(X,Y,maxCount) : findCountFast(X,Y,maxCount)
 
+const RealIntervalTransformation *MBRealCalculator::s_xtr    = NULL;
+const RealIntervalTransformation *MBRealCalculator::s_ytr    = NULL;
+Real                             *MBRealCalculator::s_xValue = NULL;
+Real                             *MBRealCalculator::s_yValue = NULL;
+
+void MBRealCalculator::prepareMaps(const RealRectangleTransformation &tr) {
+  cleanupMaps();
+  s_xtr = &tr.getXTransformation();
+  s_ytr = &tr.getYTransformation();
+  const RealInterval &xInterval = s_xtr->getToInterval();
+  const RealInterval &yInterval = s_ytr->getToInterval();
+  const int xFrom = getInt(xInterval.getFrom());
+  const int xTo   = getInt(xInterval.getTo());
+  const int xLen  = xTo - xFrom;
+  const int yFrom = getInt(yInterval.getFrom());
+  const int yTo   = getInt(yInterval.getTo());
+  const int yLen  = yTo - yFrom;
+  s_xValue = new Real[xLen]; TRACE_NEW(s_xValue);
+  s_yValue = new Real[yLen]; TRACE_NEW(s_yValue);
+  for(int i = 0; i < xLen; i++) {
+    s_xValue[i] = s_xtr->backwardTransform(i);
+  }
+  for(int i = 0; i < yLen; i++) {
+    s_yValue[i] = s_ytr->backwardTransform(i);
+  }
+}
+
+void MBRealCalculator::cleanupMaps() {
+  SAFEDELETEARRAY(s_xValue);
+  SAFEDELETEARRAY(s_yValue);
+}
+
 UINT MBRealCalculator::run() {
   setPoolState(CALC_RUNNING);
-  MBContainer                       &mbc              =  getMBContainer();
-  const UINT                         maxCount         =  mbc.getMaxCount();
-  const bool                         useEdgeDetection =  mbc.useEdgeDetection();
-  CellCountAccessor                 *cca              =  mbc.getCCA();
-  const RealRectangleTransformation &tr               =  mbc.getRealTransformation();
-  m_xtr                                               = &tr.getXTransformation();
-  m_ytr                                               = &tr.getYTransformation();
+  MBContainer       &mbc              =  getMBContainer();
+  const UINT         maxCount         =  mbc.getMaxCount();
+  const bool         useEdgeDetection =  mbc.useEdgeDetection();
+  CellCountAccessor *cca              =  mbc.getCCA();
 
   SETPHASE(_T("RUN"))
 
   FPU::setPrecisionMode(mbc.getPrecisionMode());
   try {
-    Real xt, yt;
     PREPAREFPU();
     while(mbc.getJobToDo(m_currentRect)) {
 
@@ -196,10 +222,10 @@ UINT MBRealCalculator::run() {
       CPoint p;
       for(p.y = m_currentRect.top; p.y < m_currentRect.bottom; p.y++) {
         CHECKPENDING();
-        yt = m_ytr->backwardTransform(p.y);
+        const Real &yt = s_yValue[p.y];
         for(p.x = m_currentRect.left; p.x < m_currentRect.right; p.x++) {
           if(!cca->isEmptyCell(p)) continue;
-          xt = m_xtr->backwardTransform(p.x);
+          const Real &xt = s_xValue[p.x];
           const UINT count = FINDCOUNT(xt, yt, maxCount);
 
           if((count == maxCount) && useEdgeDetection) {
@@ -252,7 +278,6 @@ CellCountAccessor *MBRealCalculator::followBlackEdge(const CPoint &p, CellCountA
 //  DLOG(_T("Follow black edge starting at (%d,%d)\n"), p.x,p.y);
 
   EdgeMatrix edgeMatrix;
-  Real       xt, yt;
   for(;;) {
     for(int dy = -1; dy <= 1; dy++) {
       const int qy = q.y + dy;
@@ -277,8 +302,8 @@ CellCountAccessor *MBRealCalculator::followBlackEdge(const CPoint &p, CellCountA
           } else if(c != EMPTYCELLVALUE) {
             edgeMatrix.setOutside(dy+1, dx+1);
           } else {
-            xt = m_xtr->backwardTransform(qx);
-            yt = m_ytr->backwardTransform(qy);
+            const Real &xt = s_xValue[qx];
+            const Real &yt = s_yValue[qy];
             const UINT count = FINDCOUNT(xt, yt, maxCount);
             if(count == maxCount) {
               edgeMatrix.setInside(dy+1, dx+1);

@@ -37,6 +37,9 @@ void CalculatorPool::startCalculators(UINT count) {
 
   count = min(count, s_CPUCount);
   const bool useReal = m_mbc.canUseRealCalculators();
+  if(useReal) {
+    MBRealCalculator::prepareMaps(m_mbc.getRealTransformation());
+  }
   for(UINT i = 0; i < count; i++) {
     MBCalculator *calculator = useReal ? (MBCalculator*)(new MBRealCalculator(   this, i))
                                        : (MBCalculator*)(new MBBigRealCalculator(this, i));
@@ -76,6 +79,8 @@ void CalculatorPool::killAllInternal() {
     MBCalculator *calculator = (*this)[i];
     SAFEDELETE(calculator);
   }
+  MBRealCalculator::cleanupMaps();
+
   CompactArray<MBCalculator*>::clear();
 
   const CalculatorSet oldRunningSet = m_calculatorsInState[CALC_RUNNING];

@@ -20,14 +20,17 @@ inline RealRectangle2D toRealRect(const CRect &r) {
 
 class MBRealCalculator : public MBCalculator {
 private:
-  const RealIntervalTransformation *m_xtr, *m_ytr;
+  static const RealIntervalTransformation *s_xtr   , *s_ytr;
+  static Real                             *s_xValue, *s_yValue; // indexed by CPoint p (p.x,p.y) giving (x,y)-point in tr.toRectangle()
   UINT               findCountPaintOrbit(const Real    &X, const Real        &Y  , UINT maxCount);
   CellCountAccessor *followBlackEdge(    const CPoint  &p, CellCountAccessor *cca, UINT maxCount);
   inline CPoint      toCPoint(           const Real    &x, const Real        &y) const {
-    return CPoint(getInt(m_xtr->forwardTransform(x)), getInt(m_ytr->forwardTransform(y)));
+    return CPoint(getInt(s_xtr->forwardTransform(x)), getInt(s_ytr->forwardTransform(y)));
   }
 public:
   MBRealCalculator(CalculatorPool *pool, int id) : MBCalculator(pool, id) {
   }
+  static void prepareMaps(const RealRectangleTransformation &tr);
+  static void cleanupMaps();
   UINT run();
 };
