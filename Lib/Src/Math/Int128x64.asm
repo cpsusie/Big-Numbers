@@ -1,11 +1,11 @@
 ; These functions implements the basic operations for _int128 type
-; running on 64 - bit intel CPU.
+; running on 64-bit intel CPU.
 ; They are (almost) identical to MS's workhorse-functions that do
-; __int64 - math using 32 - bit registers. Every memory reference that uses
+; __int64-math using 32-bit registers. Every memory reference that uses
 ; dword ptr(4 byte) are replaced by qword ptr(8 byte), and registernames
 ; eax, ebx, ecx... are replaced by rax, rbx, rcx etc.
-; Parameters are passed in rcx(1. argument) and rdx(2.argument) and
-; return value is in rax, where the runtime - stack is used in x86 mode.
+; Parameters are passed in rcx(1st argument) and rdx(2nd argument) and
+; return value is in rax, where the runtime-stack is used in x86 mode.
 ; So the code is modified to reflect this environment
 ;
 
