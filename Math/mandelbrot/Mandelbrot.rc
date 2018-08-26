@@ -200,9 +200,9 @@ BEGIN
         MENUITEM SEPARATOR
         POPUP "&Precision"
         BEGIN
-            MENUITEM "&32-bits floating point",     ID_OPTIONS_32BITSFLOATINGPOINT
-            MENUITEM "&64-bits floating point",     ID_OPTIONS_64BITSFLOATINGPOINT
-            MENUITEM "&80 bits floating point",     ID_OPTIONS_80BITSFLOATINGPOINT, CHECKED
+            MENUITEM "&Auto precision"                               , ID_OPTIONS_AUTOPRECISION, CHECKED
+            MENUITEM "Force &FPU (max 19 significant decimal digits)", ID_OPTIONS_FORCEFPU
+            MENUITEM "Force &Big real (arbitratry precision)"        , ID_OPTIONS_FORCEBIGREAL
         END
         MENUITEM SEPARATOR
         MENUITEM "&Animate calculation\tAlt+A", ID_OPTIONS_ANIMATE_CALCULATION

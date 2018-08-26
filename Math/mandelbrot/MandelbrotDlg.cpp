@@ -34,7 +34,7 @@ CMandelbrotDlg::CMandelbrotDlg(DigitPool *digitPool, CWnd *pParent)
 {
   m_hIcon                     = theApp.LoadIcon(IDR_MAINFRAME);
   m_state                     = STATE_IDLE;
-  m_precisionMode             = FPU_NORMAL_PRECISION;
+  m_precisionMode             = ID_OPTIONS_AUTOPRECISION;
   m_ccMatrix                  = NULL;
   m_cca                       = NULL;
   m_imageDC                   = NULL;
@@ -82,9 +82,9 @@ BEGIN_MESSAGE_MAP(CMandelbrotDlg, CDialog)
     ON_COMMAND(ID_EDIT_BACK                            , OnEditBack                           )
     ON_COMMAND(ID_OPTIONS_COLORMAP                     , OnOptionsColorMap                    )
     ON_COMMAND(ID_OPTIONS_SHOWCOLORMAP                 , OnOptionsShowColorMap                )
-    ON_COMMAND(ID_OPTIONS_32BITSFLOATINGPOINT          , OnOptions32BitsFloatingPoint         )
-    ON_COMMAND(ID_OPTIONS_64BITSFLOATINGPOINT          , OnOptions64BitsFloatingPoint         )
-    ON_COMMAND(ID_OPTIONS_80BITSFLOATINGPOINT          , OnOptions80BitsFloatingPoint         )
+    ON_COMMAND(ID_OPTIONS_AUTOPRECISION                , OnOptionsAutoPrecision               )
+    ON_COMMAND(ID_OPTIONS_FORCEFPU                     , OnOptionsForceFPU                    )
+    ON_COMMAND(ID_OPTIONS_FORCEBIGREAL                 , OnOptionsForceBigReal                )
     ON_COMMAND(ID_OPTIONS_ANIMATE_CALCULATION          , OnOptionsAnimateCalculation          )
     ON_COMMAND(ID_OPTIONS_PAINTORBIT                   , OnOptionsPaintOrbit                  )
     ON_COMMAND(ID_OPTIONS_USEEDGEDETECTION             , OnOptionsUseEdgeDetection            )
@@ -376,16 +376,16 @@ void CMandelbrotDlg::OnOptionsShowColorMap() {
   dlg.DoModal();
 }
 
-void CMandelbrotDlg::OnOptions32BitsFloatingPoint() {
-  setPrecision(ID_OPTIONS_32BITSFLOATINGPOINT);
+void CMandelbrotDlg::OnOptionsAutoPrecision() {
+  setPrecision(ID_OPTIONS_AUTOPRECISION);
 }
 
-void CMandelbrotDlg::OnOptions64BitsFloatingPoint() {
-  setPrecision(ID_OPTIONS_64BITSFLOATINGPOINT);
+void CMandelbrotDlg::OnOptionsForceFPU() {
+  setPrecision(ID_OPTIONS_FORCEFPU);
 }
 
-void CMandelbrotDlg::OnOptions80BitsFloatingPoint() {
-  setPrecision(ID_OPTIONS_80BITSFLOATINGPOINT);
+void CMandelbrotDlg::OnOptionsForceBigReal() {
+  setPrecision(ID_OPTIONS_FORCEBIGREAL);
 }
 
 void CMandelbrotDlg::OnOptionsAnimateCalculation() {
@@ -657,13 +657,22 @@ const TCHAR *CMandelbrotDlg::s_stateName[] = {
  ,_T("MOVING")
 };
 
+void CMandelbrotDlg::dumpHistogram() {
+  const CellCountHistogram &h = m_ccMatrix->getHistogram();
+  static int dumpCount = 0;
+  const String dumpFileName = format(_T("c:\\temp\\histo%04d.txt"),dumpCount++);
+  redirectDebugLog(false,dumpFileName.cstr());
+  debugLog(_T("%s"), h.toString().cstr());
+}
+
 void CMandelbrotDlg::flushCCM() {
   m_gate.wait();
 
   try {
     clearCCA();
     PixRect *tmppr = newPixRect(m_ccMatrix->getSize());
-    m_ccMatrix->convertToPixRect(tmppr, getColorMap());
+//    dumpHistogram();
+    m_ccMatrix->convertToPixRect(tmppr, getColorMap(), false);
     CClientDC dc(m_imageWindow);
     pixRectToWindow(tmppr, dc);
     deletePixRect(tmppr);
@@ -690,25 +699,25 @@ void CMandelbrotDlg::paintZoomFactor(CDC &dc) {
 void CMandelbrotDlg::updateWindowStateInternal() {
   const bool isActive = isCalculationActive();
 
-  enableMenuItem(this, ID_FILE_SAVEIMAGE               ,!isActive   );
-  enableMenuItem(this, ID_FILE_MAKEMOVIE               ,!isActive   );
-  enableMenuItem(this, ID_EDIT_CALCULATEIMAGE          ,!isActive   );
-  enableMenuItem(this, ID_EDIT_ABORTCALCULATION        ,isActive    );
-  enableMenuItem(this, ID_EDIT_SUSPENDCALCULATION      ,isActive    );
-  enableMenuItem(this, ID_EDIT_NEWCOLORMAP             ,!isActive && m_colorMapData.m_randomSeed);
-  enableMenuItem(this, ID_EDIT_BACK                    ,!isActive && !m_imageStack.isEmpty());
+  enableMenuItem(this, ID_FILE_SAVEIMAGE                   ,!isActive   );
+  enableMenuItem(this, ID_FILE_MAKEMOVIE                   ,!isActive   );
+  enableMenuItem(this, ID_EDIT_CALCULATEIMAGE              ,!isActive   );
+  enableMenuItem(this, ID_EDIT_ABORTCALCULATION            ,isActive    );
+  enableMenuItem(this, ID_EDIT_SUSPENDCALCULATION          ,isActive    );
+  enableMenuItem(this, ID_EDIT_NEWCOLORMAP                 ,!isActive && m_colorMapData.m_randomSeed);
+  enableMenuItem(this, ID_EDIT_BACK                        ,!isActive && !m_imageStack.isEmpty());
   setSuspendingMenuText(!isCalculationSuspended());
-  enableMenuItem(this, ID_OPTIONS_COLORMAP             ,!isActive   );
-  enableMenuItem(this, ID_OPTIONS_32BITSFLOATINGPOINT  ,!isActive   );
-  enableMenuItem(this, ID_OPTIONS_64BITSFLOATINGPOINT  ,!isActive   );
-  enableMenuItem(this, ID_OPTIONS_80BITSFLOATINGPOINT  ,!isActive   );
-  enableSubMenuContainingId(this, ID_OPTIONS_80BITSFLOATINGPOINT  ,!isActive   );
-  enableMenuItem(this, ID_OPTIONS_ANIMATE_CALCULATION  ,!isActive   );
-//  enableMenuItem(this, ID_OPTIONS_PAINTORBIT           ,!isActive   );
-  enableMenuItem(this, ID_OPTIONS_USEEDGEDETECTION     ,!isActive   );
-  enableMenuItem(this, ID_OPTIONS_USEONLY1CPU          ,!isActive   );
-  enableMenuItem(this, ID_OPTIONS_RETAIN_ASPECTRATIO   ,!isActive   );
-  enableMenuItem(this, ID_OPTIONS_SHOWZOOMFACTOR       ,!isActive   );
+  enableMenuItem(this, ID_OPTIONS_COLORMAP                 ,!isActive   );
+  enableMenuItem(this, ID_OPTIONS_AUTOPRECISION            ,!isActive   );
+  enableMenuItem(this, ID_OPTIONS_FORCEFPU                 ,!isActive   );
+  enableMenuItem(this, ID_OPTIONS_FORCEBIGREAL             ,!isActive   );
+  enableSubMenuContainingId(this, ID_OPTIONS_AUTOPRECISION ,!isActive   );
+  enableMenuItem(this, ID_OPTIONS_ANIMATE_CALCULATION      ,!isActive   );
+//enableMenuItem(this, ID_OPTIONS_PAINTORBIT               ,!isActive   );
+  enableMenuItem(this, ID_OPTIONS_USEEDGEDETECTION         ,!isActive   );
+  enableMenuItem(this, ID_OPTIONS_USEONLY1CPU              ,!isActive   );
+  enableMenuItem(this, ID_OPTIONS_RETAIN_ASPECTRATIO       ,!isActive   );
+  enableMenuItem(this, ID_OPTIONS_SHOWZOOMFACTOR           ,!isActive   );
   showWindowState();
 }
 
@@ -975,23 +984,17 @@ void CMandelbrotDlg::setPrecision(int id) {
   if(isCalculationActive()) {
     return;
   }
-  checkMenuItem(this, ID_OPTIONS_32BITSFLOATINGPOINT,false);
-  checkMenuItem(this, ID_OPTIONS_64BITSFLOATINGPOINT,false);
-  checkMenuItem(this, ID_OPTIONS_80BITSFLOATINGPOINT,false);
+  assert((id == ID_OPTIONS_AUTOPRECISION) || (id == ID_OPTIONS_FORCEFPU) || (id == ID_OPTIONS_FORCEBIGREAL));
+
+  const bool oldFPUUsage = useFPUCalculators();
+  checkMenuItem(this, ID_OPTIONS_AUTOPRECISION,false);
+  checkMenuItem(this, ID_OPTIONS_FORCEFPU     ,false);
+  checkMenuItem(this, ID_OPTIONS_FORCEBIGREAL ,false);
   checkMenuItem(this, id, true);
-  switch(id) {
-  case ID_OPTIONS_32BITSFLOATINGPOINT:
-    m_precisionMode = FPU_LOW_PRECISION;
-    break;
-  case ID_OPTIONS_64BITSFLOATINGPOINT:
-    m_precisionMode = FPU_NORMAL_PRECISION;
-    break;
-  case ID_OPTIONS_80BITSFLOATINGPOINT:
-    m_precisionMode = FPU_HIGH_PRECISION;
-    break;
+  m_precisionMode = id;
+  if(useFPUCalculators() != oldFPUUsage) {
+    startCalculation();
   }
-  FPU::setPrecisionMode(m_precisionMode);
-  startCalculation();
 }
 
 int CMandelbrotDlg::setScale(const BigRealRectangle2D &scale, bool allowAdjustAspectRatio) {
@@ -1000,7 +1003,6 @@ int CMandelbrotDlg::setScale(const BigRealRectangle2D &scale, bool allowAdjustAs
 
 int CMandelbrotDlg::setScale(const BigReal &minX, const BigReal &maxX, const BigReal &minY, const BigReal &maxY, bool allowAdjustAspectRatio) {
   int flags = 0;
-  FPU::setPrecisionMode(getPrecisionMode());
   const BigRealRectangle2D old = m_bigRealTransform.getFromRectangle();
   m_bigRealTransform.setFromRectangle(BigRealRectangle2D(minX, maxY, maxX-minX, minY-maxY));
   if (m_bigRealTransform.getFromRectangle() != old) {
@@ -1016,7 +1018,7 @@ int CMandelbrotDlg::handleTransformChanged(bool adjustAspectRatio) {
     flags |= MB_SCALECHANGED;
   }
   setDigits();
-  if(canUseRealCalculators()) {
+  if(useFPUCalculators()) {
     const RealRectangleTransformation old = m_realTransform;
     m_realTransform.setToRectangle(  m_bigRealTransform.getToRectangle());
     m_realTransform.setFromRectangle(m_bigRealTransform.getFromRectangle());
@@ -1241,6 +1243,15 @@ void CMandelbrotDlg::paintMark(const CPoint &p) {
   }
 }
 
+bool CMandelbrotDlg::useFPUCalculators() const {
+  switch (m_precisionMode) {
+  case ID_OPTIONS_AUTOPRECISION: return getDigits() < 18;
+  case ID_OPTIONS_FORCEFPU     : return true;
+  case ID_OPTIONS_FORCEBIGREAL : return false;
+  default                      : return true;
+  }
+}
+
 bool CMandelbrotDlg::getJobToDo(CRect &rect) {
   bool result = true;
 
@@ -1447,14 +1458,11 @@ const BigRealRectangleTransformation &DialogMBContainer::getBigRealTransformatio
 UINT DialogMBContainer::getMaxCount() const {
   return m_dlg->getMaxCount();
 }
-FPUPrecisionMode DialogMBContainer::getPrecisionMode() const {
-  return m_dlg->getPrecisionMode();
-}
 size_t DialogMBContainer::getDigits() const {
   return m_dlg->getDigits();
 }
-bool DialogMBContainer::canUseRealCalculators() const {
-  return m_dlg->canUseRealCalculators();
+bool DialogMBContainer::useFPUCalculators() const {
+  return m_dlg->useFPUCalculators();
 }
 CellCountAccessor *DialogMBContainer::getCCA() {
   return m_dlg->getCCA();

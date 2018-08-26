@@ -28,7 +28,9 @@ private:
     return CPoint(getInt(s_xtr->forwardTransform(x)), getInt(s_ytr->forwardTransform(y)));
   }
 public:
-  MBRealCalculator(CalculatorPool *pool, int id) : MBCalculator(pool, id) {
+  MBRealCalculator(CalculatorPool *pool, int id)
+    : MBCalculator(pool, id)
+  {
   }
   static void prepareMaps(const RealRectangleTransformation &tr);
   static void cleanupMaps();

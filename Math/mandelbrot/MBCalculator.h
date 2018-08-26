@@ -67,9 +67,8 @@ public:
   virtual const RealRectangleTransformation    &getRealTransformation()    const  = 0;
   virtual const BigRealRectangleTransformation &getBigRealTransformation() const  = 0;
   virtual UINT                                  getMaxCount()              const  = 0;
-  virtual FPUPrecisionMode                      getPrecisionMode()         const  = 0;
+  virtual bool                                  useFPUCalculators()        const  = 0;
   virtual size_t                                getDigits()                const  = 0;
-  virtual bool                                  canUseRealCalculators()    const  = 0;
   virtual CellCountAccessor                    *getCCA()                          = 0;
   virtual bool                                  calculateWithOrbit()       const  = 0;
   virtual bool                                  useEdgeDetection()         const  = 0;

@@ -110,9 +110,8 @@ public:
   const RealRectangleTransformation    &getRealTransformation()    const;
   const BigRealRectangleTransformation &getBigRealTransformation() const;
   UINT                                  getMaxCount()              const;
-  FPUPrecisionMode                      getPrecisionMode()         const;
   size_t                                getDigits()                const;
-  bool                                  canUseRealCalculators()    const;
+  bool                                  useFPUCalculators()        const;
   CellCountAccessor                    *getCCA();
   bool                                  calculateWithOrbit()       const;
   bool                                  useEdgeDetection()         const;
@@ -147,7 +146,7 @@ private:
   HICON                          m_crossIcon;
   SimpleLayoutManager            m_layoutManager;
   MBContainer                   *m_mbContainer;
-  FPUPrecisionMode               m_precisionMode;
+  int                            m_precisionMode; // one of { ID_OPTIONS_AUTOPRECISION, ID_OPTIONS_FORCEFPU, ID_OPTIONS_FORCEBIGREAL }
   ColorMapData                   m_colorMapData;
   DigitPool                     *m_digitPool;
   size_t                         m_digits;
@@ -183,10 +182,10 @@ private:
   CPoint                         m_mouseDownPoint;
   Stack<ImageStackEntry>         m_imageStack;
 
-  void updateWindowStateInternal();
-  void showWindowState();
-  void showCalculationState();
-  void showMousePoint(const CPoint &p);
+  void                    updateWindowStateInternal();
+  void                    showWindowState();
+  void                    showCalculationState();
+  void                    showMousePoint(const CPoint &p);
   void                    saveRectangle(const String &fileName);
   int                     loadRectangle(const String &fileName);
   int                     createColorMap();
@@ -221,51 +220,52 @@ private:
   int                     setColorMap(const ColorMap &cm);
   int                     setScale(const BigReal &minX, const BigReal &maxX, const BigReal &minY, const BigReal &maxY, bool allowAdjustAspectRatio);
   int                     handleTransformChanged(bool adjustAspectRatio);
-  void setPrecision(int id);
-  void setDigits();
-  void updateZoomFactor();
-  void startTimer(TimerId id, int msec);
-  void stopTimer(TimerId id);
-  inline DigitPool *getDigitPool() {
+  void                    setPrecision(int id);
+  void                    setDigits();
+  void                    updateZoomFactor();
+  void                    startTimer(TimerId id, int msec);
+  void                    stopTimer(TimerId id);
+  inline DigitPool       *getDigitPool() {
     return m_digitPool;
   }
   inline BigRealRectangle2D getScale() const {
     return m_bigRealTransform.getFromRectangle();
   }
-  CPoint           setDragRect(   const CPoint &topLeft, const CPoint &bottomRight); // return the point diagonal to topLeft
-  CRect            createDragRect(const CPoint &topLeft, const CPoint &bottomRight);
-  void             removeDragRect();
-  CPoint           getImagePointFromMousePoint(const CPoint &p) const;
-  void             copyVisiblePart(PixRect *dst, const PixRect *src, const CSize &dp);
-  void             paintMovedImage(       const CSize &dp);
-  CellCountMatrix *getCalculatedPart(     const CSize &dp);
-  void             calculateMovedImage(   const CSize &dp);
-  static   MoveDirection getMoveDirection(const CSize &dp);
-  void     flushCCM();
-  void     paintZoomFactor(CDC &dc);
-  void     pushImage();
-  void     popImage();
-  void     resetImageStack();
-  void     paintPointSet(const PointSet &ps, COLORREF color);
-  void     startCalculation();
-  void     setRectanglesToCalculate(const CompactArray<CRect> &rectangles);
-  void     setRectangleToCalculate(const CRect &rectangle, bool splitLast=true);
-  void     setSuspendingMenuText(bool isSuspendingText);
-  inline bool hasCCM() const {
+  CPoint                  setDragRect(   const CPoint &topLeft, const CPoint &bottomRight); // return the point diagonal to topLeft
+  CRect                   createDragRect(const CPoint &topLeft, const CPoint &bottomRight);
+  void                    removeDragRect();
+  CPoint                  getImagePointFromMousePoint(const CPoint &p) const;
+  void                    copyVisiblePart(PixRect *dst, const PixRect *src, const CSize &dp);
+  void                    paintMovedImage(       const CSize &dp);
+  CellCountMatrix        *getCalculatedPart(     const CSize &dp);
+  void                    calculateMovedImage(   const CSize &dp);
+  static    MoveDirection getMoveDirection(      const CSize &dp);
+  void                    dumpHistogram();
+  void                    flushCCM();
+  void                    paintZoomFactor(CDC &dc);
+  void                    pushImage();
+  void                    popImage();
+  void                    resetImageStack();
+  void                    paintPointSet(const PointSet &ps, COLORREF color);
+  void                    startCalculation();
+  void                    setRectanglesToCalculate(const CompactArray<CRect> &rectangles);
+  void                    setRectangleToCalculate(const CRect &rectangle, bool splitLast=true);
+  void                    setSuspendingMenuText(bool isSuspendingText);
+  inline bool             hasCCM() const {
     return m_ccMatrix != NULL;
   }
-  inline bool hasCCA() const {
+  inline bool             hasCCA() const {
     return m_cca != NULL;
   }
-  void clearCCA();
-  void setState(DlgState newState);
-  inline DlgState getState()  const {
+  void                    clearCCA();
+  void                    setState(DlgState newState);
+  inline DlgState         getState()  const {
     return m_state;
   }
-  inline const TCHAR *getStateName() const {
+  inline const TCHAR     *getStateName() const {
     return s_stateName[m_state];
   }
-  inline double getPercentDone() const {
+  inline double           getPercentDone() const {
     return PERCENT(m_calculatorPool->getDoneCount(),m_totalPixelsInJob);
   }
 public:
@@ -302,16 +302,11 @@ public:
   inline const ColorMap &getColorMap() const {
     return m_colorMap;
   }
-  inline FPUPrecisionMode getPrecisionMode() const {
-    return m_precisionMode;
-  }
   CellCountAccessor *getCCA();
   inline size_t getDigits() const {
     return m_digits;
   }
-  inline bool canUseRealCalculators() const {
-    return getDigits() < 18;
-  }
+  bool useFPUCalculators() const;
   inline bool calculateWithOrbit() const {
     return m_calculateWithOrbit;
   }
@@ -391,9 +386,9 @@ public:
   afx_msg void OnEditBack();
   afx_msg void OnOptionsColorMap();
   afx_msg void OnOptionsShowColorMap();
-  afx_msg void OnOptions32BitsFloatingPoint();
-  afx_msg void OnOptions64BitsFloatingPoint();
-  afx_msg void OnOptions80BitsFloatingPoint();
+  afx_msg void OnOptionsAutoPrecision();
+  afx_msg void OnOptionsForceFPU();
+  afx_msg void OnOptionsForceBigReal();
   afx_msg void OnOptionsAnimateCalculation();
   afx_msg void OnOptionsPaintOrbit();
   afx_msg void OnOptionsUseEdgeDetection();

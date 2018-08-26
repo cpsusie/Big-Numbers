@@ -36,13 +36,15 @@ void CalculatorPool::startCalculators(UINT count) {
 #endif
 
   count = min(count, s_CPUCount);
-  const bool useReal = m_mbc.canUseRealCalculators();
-  if(useReal) {
+  const bool useFPU = m_mbc.useFPUCalculators();
+  if(useFPU) {
     MBRealCalculator::prepareMaps(m_mbc.getRealTransformation());
+  } else {
+    MBBigRealCalculator::prepareMaps(m_mbc.getBigRealTransformation());
   }
   for(UINT i = 0; i < count; i++) {
-    MBCalculator *calculator = useReal ? (MBCalculator*)(new MBRealCalculator(   this, i))
-                                       : (MBCalculator*)(new MBBigRealCalculator(this, i));
+    MBCalculator *calculator = useFPU ? (MBCalculator*)(new MBRealCalculator(   this, i))
+                                      : (MBCalculator*)(new MBBigRealCalculator(this, i));
     TRACE_NEW(calculator);
     add(calculator);
     addToExistingInternal(i);
@@ -80,6 +82,7 @@ void CalculatorPool::killAllInternal() {
     SAFEDELETE(calculator);
   }
   MBRealCalculator::cleanupMaps();
+  MBBigRealCalculator::cleanupMaps();
 
   CompactArray<MBCalculator*>::clear();
 
