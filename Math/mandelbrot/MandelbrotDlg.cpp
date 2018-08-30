@@ -146,7 +146,7 @@ BOOL CMandelbrotDlg::OnInitDialog() {
   setWindowPosition(this, IDC_STATIC_IMAGEWINDOW, CPoint(0, 0));
   setClientRectSize(this, IDC_STATIC_IMAGEWINDOW, startSize);
   const CRect imageRect = ::getWindowRect(this, IDC_STATIC_IMAGEWINDOW);
-  const int infoWidth = imageRect.Width() * 2 / 7;
+  const int infoWidth = imageRect.Width() * 35 / 100;
   setWindowPosition(this, IDC_STATIC_INFOWINDOW, CPoint(0, imageRect.bottom));
   setWindowSize(    this, IDC_STATIC_INFOWINDOW, CSize(infoWidth, 20));
   const CRect infoRect = ::getWindowRect(this, IDC_STATIC_INFOWINDOW);
@@ -156,9 +156,9 @@ BOOL CMandelbrotDlg::OnInitDialog() {
   setClientRectSize(this, CSize(imageRect.Width(), infoRect.bottom));
 
   m_layoutManager.OnInitDialog(this);
-  m_layoutManager.addControl(IDC_STATIC_IMAGEWINDOW, RELATIVE_SIZE                   );
-  m_layoutManager.addControl(IDC_STATIC_INFOWINDOW , RELATIVE_Y_POS );
-  m_layoutManager.addControl(IDC_STATIC_MOUSEINFO  , RELATIVE_Y_POS | RELATIVE_WIDTH );
+  m_layoutManager.addControl(IDC_STATIC_IMAGEWINDOW, RELATIVE_SIZE                                       );
+  m_layoutManager.addControl(IDC_STATIC_INFOWINDOW , RELATIVE_Y_POS | PCT_RELATIVE_RIGHT                 );
+  m_layoutManager.addControl(IDC_STATIC_MOUSEINFO  , RELATIVE_Y_POS | PCT_RELATIVE_LEFT | RELATIVE_RIGHT );
 
   m_animateCalculation = isMenuItemChecked(this, ID_OPTIONS_ANIMATE_CALCULATION);
   m_calculateWithOrbit = isMenuItemChecked(this, ID_OPTIONS_PAINTORBIT         );
@@ -780,6 +780,7 @@ void CMandelbrotDlg::showCalculationState() {
                      ,getPercentDone()
                      );
   }
+#ifdef SHOW_CHANGEFLAGS
   setWindowText(this, IDC_STATIC_INFOWINDOW
                     , format(_T("Level:%2d. %s flags=%s")
                             ,m_imageStack.getHeight()
@@ -787,6 +788,16 @@ void CMandelbrotDlg::showCalculationState() {
                             ,changeFlagsToString(m_lastChangeFlags).cstr()
                             )
                );
+#else
+  setWindowText(this, IDC_STATIC_INFOWINDOW
+                    , format(_T("Level:%2d. %5.2lfsec. %s [%s]")
+                            ,m_imageStack.getHeight()
+                            ,m_calculatorPool->getTimeUsed()/1000000.0
+                            ,stateStr.cstr()
+                            ,m_calculatorPool->getStatesString().cstr()
+                            )
+               );
+#endif // SHOW_CHANGEFLAGS
 }
 
 void CMandelbrotDlg::showMousePoint(const CPoint &p) {

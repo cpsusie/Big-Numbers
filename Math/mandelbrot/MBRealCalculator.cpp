@@ -212,6 +212,7 @@ UINT MBRealCalculator::run() {
   SETPHASE(_T("RUN"))
 
   FPU::setPrecisionMode(FPU_HIGH_PRECISION);
+  initStartTime();
   try {
     PREPAREFPU();
     while(mbc.getJobToDo(m_currentRect)) {
@@ -222,6 +223,7 @@ UINT MBRealCalculator::run() {
       CPoint p;
       for(p.y = m_currentRect.top; p.y < m_currentRect.bottom; p.y++) {
         CHECKPENDING();
+        updateThreadTime();
         const Real &yt = s_yValue[p.y];
         for(p.x = m_currentRect.left; p.x < m_currentRect.right; p.x++) {
           if(!cca->isEmptyCell(p)) continue;
@@ -262,6 +264,7 @@ CellCountAccessor *MBRealCalculator::followBlackEdge(const CPoint &p, CellCountA
     return cca;
   }
   try {
+    CHECKPENDING();
     MBContainer &mbc           =  getMBContainer();
     const CSize  sz            =  mbc.getWindowSize();
     const CRect  rect(m_currentRect.left,m_currentRect.top, sz.cx, sz.cy);
@@ -343,7 +346,7 @@ CellCountAccessor *MBRealCalculator::followBlackEdge(const CPoint &p, CellCountA
       if(!edgeSet.contains(q)) {
         cca->setCount(q, maxCount); m_doneCount++;
         edgeSet.add(q);
-        edgeCount++;
+        if(!(edgeCount++ & 0x7f)) updateThreadTime();
       }
       edgeMatrix.adjustAttributes(dir);
     }

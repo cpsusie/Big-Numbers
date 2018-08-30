@@ -12,8 +12,8 @@ UINT MBBigRealCalculator::findCountFast(const BigReal &X, const BigReal &Y, UINT
     if(a2+b2 > _4) {
       break;
     }
-    const BigReal c = a2-b2+X;
-    b = rProd(a*_2,b,m_digits)+Y;
+    BigReal c(a2); c -= b2; c += X;
+    b = rProd(a*_2,b,m_digits); b += Y;
     a = c;
   }
   return count;
@@ -90,6 +90,7 @@ UINT MBBigRealCalculator::run() {
   SETPHASE(_T("RUN"))
 
   m_digits =  mbc.getDigits();
+  initStartTime();
   try {
     while(mbc.getJobToDo(m_currentRect)) {
 
@@ -99,6 +100,7 @@ UINT MBBigRealCalculator::run() {
       CPoint p;
       for(p.y = m_currentRect.top; p.y < m_currentRect.bottom; p.y++) {
         CHECKPENDING();
+        updateThreadTime();
         const BigReal &yt = s_yValue[p.y];
         for(p.x = m_currentRect.left; p.x < m_currentRect.right; p.x++) {
           if(!cca->isEmptyCell(p)) continue;
@@ -138,6 +140,7 @@ CellCountAccessor *MBBigRealCalculator::followBlackEdge(const CPoint &p, CellCou
     return cca;
   }
   try {
+    CHECKPENDING();
     MBContainer &mbc           =  getMBContainer();
     const CSize  sz            =  mbc.getWindowSize();
     const CRect  rect(m_currentRect.left,m_currentRect.top, sz.cx, sz.cy);
@@ -219,7 +222,7 @@ CellCountAccessor *MBBigRealCalculator::followBlackEdge(const CPoint &p, CellCou
       if(!edgeSet.contains(q)) {
         cca->setCount(q, maxCount); m_doneCount++;
         edgeSet.add(q);
-        edgeCount++;
+        if(!(edgeCount++ & 0xf)) updateThreadTime();
       }
       edgeMatrix.adjustAttributes(dir);
     }

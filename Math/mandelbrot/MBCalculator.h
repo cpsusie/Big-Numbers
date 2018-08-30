@@ -96,6 +96,7 @@ class MBCalculator : public Thread {
 private:
   static Semaphore    s_followBlackEdgeGate;
   const UINT          m_id;
+  double              m_startTime, m_threadTime;
   bool                m_edgeTracing;
   MBContainer        &m_mbc;
   OrbitPoint         *m_orbitPoints;
@@ -120,6 +121,12 @@ protected:
   CRect           m_currentRect;
   size_t          m_doneCount; // number of pixels calculated
   MBCalculator(CalculatorPool *pool, UINT id);
+  inline void initStartTime() {
+    m_startTime = m_threadTime = getThreadTime();
+  }
+  inline void updateThreadTime() {
+    m_threadTime = getThreadTime();
+  }
   CellCountAccessor *fillInnerArea(PointSet &innerSet, CellCountAccessor *cca, UINT maxCount);
   inline MBContainer &getMBContainer() const {
     return m_mbc;
@@ -159,6 +166,9 @@ public:
   }
   // Assume m_pool.getState(getID()) != CALC_RUNNING
   void setWithOrbit();
+  inline double getTimeUsed() const {
+    return m_threadTime - m_startTime;
+  }
 };
 
 typedef enum {
@@ -231,6 +241,7 @@ public:
   }
   // Return sum of pixels done by all threads together
   size_t getDoneCount() const;
+  double getTimeUsed() const;
   void suspendCalculation();
   void resumeCalculation();
   void killAll();

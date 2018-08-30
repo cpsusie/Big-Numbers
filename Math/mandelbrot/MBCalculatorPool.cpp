@@ -169,6 +169,16 @@ size_t CalculatorPool::getDoneCount() const {
   return sum;
 }
 
+double CalculatorPool::getTimeUsed() const {
+  double sum = 0;
+  m_gate.wait();
+  for(UINT i = 0; i < size(); i++) {
+    sum += (*this)[i]->getTimeUsed();
+  }
+  m_gate.signal();
+  return sum;
+}
+
 void CalculatorPool::suspendCalculation() {
   m_gate.wait();
   m_pendingFlags |= m_suspendAllPendingFlags;

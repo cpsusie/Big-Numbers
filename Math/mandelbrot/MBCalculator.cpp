@@ -10,6 +10,8 @@ MBCalculator::MBCalculator(CalculatorPool *pool, UINT id)
 , m_pendingMask(pool->getPendingMask(id))
 , m_orbitPoints(NULL)
 , m_doneCount(0)
+, m_startTime(0)
+, m_threadTime(0)
 {
   setDeamon(true);
   setWithOrbit();
@@ -68,7 +70,9 @@ CellCountAccessor *MBCalculator::handlePending() {
 Semaphore MBCalculator::s_followBlackEdgeGate;
 
 bool MBCalculator::enterFollowBlackEdge(const CPoint &p, CellCountAccessor *cca) {
+  m_pool.setState(m_id, CALC_SUSPENDED);
   s_followBlackEdgeGate.wait();
+  m_pool.setState(m_id, CALC_RUNNING  );
   if(!cca->isEmptyCell(p)) {
     s_followBlackEdgeGate.signal();
     return false;
