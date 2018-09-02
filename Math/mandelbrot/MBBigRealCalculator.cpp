@@ -20,17 +20,18 @@ UINT MBBigRealCalculator::findCountFast(const BigReal &X, const BigReal &Y, UINT
 }
 
 UINT MBBigRealCalculator::findCountPaintOrbit(const BigReal &X, const BigReal &Y, UINT maxCount) {
-  MBContainer  &mbc   = getMBContainer();
-  UINT          count = 0;
+  MBContainer  &mbc     = getMBContainer();
+  const CSize   winSize = mbc.getWindowSize();
+  OrbitPoint   *startOp = getOrbitPoints(), *op = startOp;
+  UINT          count   = 0;
   BigReal       a(X, getDigitPool());
   BigReal       b(Y, getDigitPool());
   const BigInt &_2 = getDigitPool()->get2();
-  OrbitPoint   *startOp = getOrbitPoints(), *op = startOp;
   const CPoint  p0(toCPoint(a,b));
   if(isEdgeTracing()) mbc.paintMark(p0);
   for(; count < maxCount; count++) {
     const CPoint p(toCPoint(a,b));
-    if(m_currentRect.PtInRect(p)) {
+    if(((UINT)p.x < (UINT)winSize.cx) && ((UINT)p.y < (UINT)winSize.cy)) {
       *(op++) = OrbitPoint(p, mbc.setOrbitPixel(p, ORBITCOLOR));
     }
     const BigReal a2 = rProd(a,a,m_digits);
@@ -52,7 +53,7 @@ const BigRealIntervalTransformation *MBBigRealCalculator::s_ytr    = NULL;
 Array<BigReal>                       MBBigRealCalculator::s_xValue;
 Array<BigReal>                       MBBigRealCalculator::s_yValue;
 
-void MBBigRealCalculator::prepareMaps(const BigRealRectangleTransformation &tr) {
+void MBBigRealCalculator::prepareMaps(const BigRealRectangleTransformation &tr) { // static
   cleanupMaps();
   DigitPool *digitPool = tr.getDigitPool();
   s_xtr = &tr.getXTransformation();
@@ -75,7 +76,7 @@ void MBBigRealCalculator::prepareMaps(const BigRealRectangleTransformation &tr) 
   }
 }
 
-void MBBigRealCalculator::cleanupMaps() {
+void MBBigRealCalculator::cleanupMaps() { // static
   s_xValue.clear();
   s_yValue.clear();
 }
@@ -87,7 +88,7 @@ UINT MBBigRealCalculator::run() {
   const bool         useEdgeDetection =  mbc.useEdgeDetection();
   CellCountAccessor *cca              =  mbc.getCCA();
 
-  SETPHASE(_T("RUN"))
+  PUSHPHASE("RUN")
 
   m_digits =  mbc.getDigits();
   initStartTime();
@@ -105,13 +106,12 @@ UINT MBBigRealCalculator::run() {
         for(p.x = m_currentRect.left; p.x < m_currentRect.right; p.x++) {
           if(!cca->isEmptyCell(p)) continue;
           const BigReal &xt = s_xValue[p.x];
-          const UINT count = findCount(xt, yt, maxCount);
+          const UINT count = FINDCOUNT(xt, yt, maxCount);
 
           if((count == maxCount) && useEdgeDetection) {
 //            DLOG(_T("calc(%d) found black point (%d,%d)\n"), getId(), p.x,p.y);
             enableEdgeTracing(true);
             cca = followBlackEdge(p, cca, maxCount);
-            SETPHASE(_T("RUN"));
             enableEdgeTracing(false);
           } else {
             cca->setCount(p, count); m_doneCount++;
@@ -131,6 +131,7 @@ UINT MBBigRealCalculator::run() {
   } catch(...) {
     DLOG(_T("calc(%d) caught unknown Exception\n"), getId());
   }
+  POPPHASE();
   setPoolState(CALC_TERMINATED);
   return 0;
 }
@@ -151,8 +152,6 @@ CellCountAccessor *MBBigRealCalculator::followBlackEdge(const CPoint &p, CellCou
     PointSet     edgeSet(rect), innerSet(rect);
     edgeSet.add(p);
     cca->setCount(p, maxCount); m_doneCount++;
-
-    SETPHASE(_T("FOLLOWEDGE"))
 
   #ifdef SAVE_CALCULATORINFO
     m_info = new CalculatorInfo(getId(), rect);
@@ -186,7 +185,7 @@ CellCountAccessor *MBBigRealCalculator::followBlackEdge(const CPoint &p, CellCou
             } else {
               const BigReal &xt = s_xValue[qx];
               const BigReal &yt = s_yValue[qy];
-              const UINT count = findCount(xt, yt, maxCount);
+              const UINT count = FINDCOUNT(xt, yt, maxCount);
               if(count == maxCount) {
                 edgeMatrix.setInside(dy+1, dx+1);
               } else {

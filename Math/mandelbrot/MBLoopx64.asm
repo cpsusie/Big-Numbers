@@ -5,11 +5,11 @@ _4  dword 40800000h
 
 .CODE
 
-;void prepareFPU();
-prepareFPU PROC          ;                         st0       st1       st2       st3       st4       st5       st6       st7
+;void load4();
+load4 PROC          ;                         st0       st1       st2       st3       st4       st5       st6       st7
     fld    _4            ; Load 4                    4
     ret
-prepareFPU ENDP
+load4 ENDP
 
 ;void cleanupFPU();
 cleanupFPU PROC          ;

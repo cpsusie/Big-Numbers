@@ -94,21 +94,23 @@ class CalculatorPool;
 
 class MBCalculator : public Thread {
 private:
-  static Semaphore    s_followBlackEdgeGate;
-  const UINT          m_id;
-  double              m_startTime, m_threadTime;
-  bool                m_edgeTracing;
-  MBContainer        &m_mbc;
-  OrbitPoint         *m_orbitPoints;
-  Semaphore           m_gate;
-  mutable Semaphore   m_wakeup;
+  static Semaphore     s_followBlackEdgeGate;
+  const UINT           m_id;
+  double               m_startTime, m_threadTime;
+  bool                 m_edgeTracing;
+  MBContainer         &m_mbc;
+  OrbitPoint          *m_orbitPoints;
+  Semaphore            m_gate;
+  mutable Semaphore    m_wakeup;
 #ifdef SAVE_CALCULATORINFO
-  const char         *m_phase;
-  CalculatorInfo     *m_info;
+  CompactStack<TCHAR*> m_phaseStack;
+  CalculatorInfo      *m_info;
   void addInfoToPool();
-#define SETPHASE(str) m_phase = str;
+#define PUSHPHASE(str) pushPhase(_T(str))
+#define POPPHASE()     popPhase()
 #else
-#define SETPHASE(str)
+#define PUSHPHASE(str)
+#define POPPHASE()
 #endif
 // assume thread is suspended
   void  allocateOrbitPoints();
@@ -148,7 +150,16 @@ protected:
   inline UINT getId() const {
     return m_id;
   }
+#ifdef SAVE_CALCULATORINFO
+  inline void pushPhase(const TCHAR *str) {
+    m_phaseStack.push(str);
+  }
+  inline void popPhase() {
+    m_phaseStack.pop();
+  }
+#endif
 
+#define FINDCOUNT(X,Y,maxCount) isWithOrbit() ? findCountPaintOrbit(X,Y,maxCount) : findCountFast(X,Y,maxCount)
 #define CHECKPENDING() { if(m_pool.isPending(m_pendingMask)) { cca = handlePending(); } }
 
   CellCountAccessor *handlePending();

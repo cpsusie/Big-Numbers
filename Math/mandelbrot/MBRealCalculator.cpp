@@ -10,14 +10,14 @@
 #ifdef IS64BIT
 
 extern "C" {
-void prepareFPU();
+void load4();
 void cleanupFPU();
 UINT findCountFast(const Double80 &x, const Double80 &y, UINT maxCount);
 };
 
 #else // !IS32BIT
 
-static void prepareFPU() {
+static void load4() {
   static const float _4 = 4;
   __asm {                                                   // st0        st1        st2        st3        st4        st5        st6        st7
     fld    _4           // Load 4                              4
@@ -114,6 +114,11 @@ End:
 
 #endif // IS32BIT
 
+static void prepareFPU() {
+  FPU::setPrecisionMode(FPU_HIGH_PRECISION);
+  load4();
+}
+
 #define PREPAREFPU() prepareFPU()
 #define CLEANUPFPU() cleanupFPU()
 
@@ -143,15 +148,16 @@ static UINT findCountFast(const Double80 &X, const Double80 &Y, UINT maxCount) {
 
 UINT MBRealCalculator::findCountPaintOrbit(const Real &X, const Real &Y, UINT maxCount) {
   MBContainer  &mbc     = getMBContainer();
+  const CSize   winSize = mbc.getWindowSize();
+  OrbitPoint   *startOp = getOrbitPoints(), *op = startOp;
   UINT          count   = 0;
   Real          a       = X;
   Real          b       = Y;
-  OrbitPoint   *startOp = getOrbitPoints(), *op = startOp;
   const CPoint  p0(toCPoint(a,b));
   if(isEdgeTracing()) mbc.paintMark(p0);
   for(; count < maxCount; count++) {
     const CPoint p(toCPoint(a,b));
-    if(m_currentRect.PtInRect(p)) {
+    if(((UINT)p.x < (UINT)winSize.cx) && ((UINT)p.y < (UINT)winSize.cy)) {
       *(op++) = OrbitPoint(p, mbc.setOrbitPixel(p, ORBITCOLOR));
     }
     const Real a2 = a*a;
@@ -168,14 +174,12 @@ UINT MBRealCalculator::findCountPaintOrbit(const Real &X, const Real &Y, UINT ma
   return count;
 }
 
-#define FINDCOUNT(X,Y,maxCount) isWithOrbit() ? findCountPaintOrbit(X,Y,maxCount) : findCountFast(X,Y,maxCount)
-
 const RealIntervalTransformation *MBRealCalculator::s_xtr    = NULL;
 const RealIntervalTransformation *MBRealCalculator::s_ytr    = NULL;
 Real                             *MBRealCalculator::s_xValue = NULL;
 Real                             *MBRealCalculator::s_yValue = NULL;
 
-void MBRealCalculator::prepareMaps(const RealRectangleTransformation &tr) {
+void MBRealCalculator::prepareMaps(const RealRectangleTransformation &tr) { // static
   cleanupMaps();
   s_xtr = &tr.getXTransformation();
   s_ytr = &tr.getYTransformation();
@@ -197,7 +201,7 @@ void MBRealCalculator::prepareMaps(const RealRectangleTransformation &tr) {
   }
 }
 
-void MBRealCalculator::cleanupMaps() {
+void MBRealCalculator::cleanupMaps() {  // static
   SAFEDELETEARRAY(s_xValue);
   SAFEDELETEARRAY(s_yValue);
 }
@@ -209,9 +213,8 @@ UINT MBRealCalculator::run() {
   const bool         useEdgeDetection =  mbc.useEdgeDetection();
   CellCountAccessor *cca              =  mbc.getCCA();
 
-  SETPHASE(_T("RUN"))
+  PUSHPHASE("RUN")
 
-  FPU::setPrecisionMode(FPU_HIGH_PRECISION);
   initStartTime();
   try {
     PREPAREFPU();
@@ -234,7 +237,6 @@ UINT MBRealCalculator::run() {
 //            DLOG(_T("calc(%d) found black point (%d,%d)\n"), getId(), p.x,p.y);
             enableEdgeTracing(true);
             cca = followBlackEdge(p, cca, maxCount);
-            SETPHASE(_T("RUN"));
             enableEdgeTracing(false);
           } else {
             cca->setCount(p, count); m_doneCount++;
@@ -255,6 +257,7 @@ UINT MBRealCalculator::run() {
     DLOG(_T("calc(%d) caught unknown Exception\n"), getId());
   }
   CLEANUPFPU();
+  POPPHASE();
   setPoolState(CALC_TERMINATED);
   return 0;
 }
@@ -275,8 +278,6 @@ CellCountAccessor *MBRealCalculator::followBlackEdge(const CPoint &p, CellCountA
     PointSet     edgeSet(rect), innerSet(rect);
     edgeSet.add(p);
     cca->setCount(p, maxCount); m_doneCount++;
-
-    SETPHASE(_T("FOLLOWEDGE"))
 
   #ifdef SAVE_CALCULATORINFO
     m_info = new CalculatorInfo(getId(), rect);

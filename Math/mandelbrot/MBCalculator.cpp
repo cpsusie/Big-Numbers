@@ -39,7 +39,7 @@ void MBCalculator::setWithOrbit() {
 void MBCalculator::allocateOrbitPoints() {
   releaseOrbitPoints();
   const UINT maxCount = m_mbc.getMaxCount();
-  m_orbitPoints  = new OrbitPoint[maxCount]; TRACE_NEW(m_orbitPoints);
+  m_orbitPoints  = new OrbitPoint[maxCount+1]; TRACE_NEW(m_orbitPoints);
 }
 
 // assume thread is suspended
@@ -77,10 +77,12 @@ bool MBCalculator::enterFollowBlackEdge(const CPoint &p, CellCountAccessor *cca)
     s_followBlackEdgeGate.signal();
     return false;
   }
+  PUSHPHASE("FOLLOWEDGE");
   return true;
 }
 
 void MBCalculator::leaveFollowBlackEdge() {
+  POPPHASE();
   s_followBlackEdgeGate.signal();
 }
 
@@ -116,7 +118,7 @@ void MBCalculator::addInfoToPool() {
 }
 
 CellCountAccessor *MBCalculator::fillInnerArea(PointSet &innerSet, CellCountAccessor *cca, UINT maxCount) {
-  SETPHASE(_T("FILLINNERAREA"))
+  PUSHPHASE("FILLINNERAREA")
 
   for(Iterator<CPoint> it = innerSet.getIterator(); it.hasNext();) {
     const CPoint start = it.next();
@@ -171,5 +173,6 @@ CellCountAccessor *MBCalculator::fillInnerArea(PointSet &innerSet, CellCountAcce
       }
     }
   }
+  POPPHASE();
   return cca;
 }

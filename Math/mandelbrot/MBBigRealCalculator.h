@@ -37,11 +37,6 @@ private:
   inline DigitPool *getDigitPool() const {
     return m_digitPool;
   }
-protected:
-  inline UINT findCount(const BigReal &X, const BigReal &Y, UINT maxCount) {
-    return isWithOrbit() ? findCountPaintOrbit(X,Y,maxCount)
-                         : findCountFast(      X,Y,maxCount);
-  };
 public:
   MBBigRealCalculator(CalculatorPool *pool, int id) 
     : MBCalculator(pool, id)
