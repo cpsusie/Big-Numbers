@@ -322,7 +322,8 @@ void CShowGrafView::initScale() {
   } else {
     dr = ga.getDataRange();
   }
-  m_coordinateSystem.setFromRectangle(dr, true);
+  int makeSpaceFlags = ((xt == AXIS_LINEAR) ? X_AXIS : 0) | ((yt == AXIS_LINEAR) ? Y_AXIS : 0);
+  m_coordinateSystem.setFromRectangle(dr, makeSpaceFlags);
   setXAxisType(xt);
   setYAxisType(yt);
 }

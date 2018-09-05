@@ -106,7 +106,8 @@ public:
     return m_occupationMap;
   }
 
-  void  setFromRectangle(const Rectangle2D &rectangle, bool makeSpace);
+  // flags any combination of X_AXIS and Y_AXIS
+  void  setFromRectangle(const Rectangle2D &rectangle, int makeSpaceFlags);
 
   inline Rectangle2D getFromRectangle() const {
     return getTransformation().getFromRectangle();
@@ -118,6 +119,7 @@ public:
     return getTransformation().getFromRectangle();
   }
 
+  // flags any combination of X_AXIS and Y_AXIS
   void zoom(const CPoint &p, bool in, int flags) {
     getTransformation().zoom(Point2DP(p), in, flags);
   }

@@ -243,10 +243,15 @@ void CCoordinateSystem::setDC(CDC &dc) {
 }
 
 void CCoordinateSystem::setDataRange(const DataRange &dataRange, bool makeSpace) {
-  setFromRectangle(dataRange, makeSpace);
+  int makeSpaceFlags = 0;
+  if(makeSpace) {
+    makeSpaceFlags |= m_vp.getXTransformation().isLinear() ? X_AXIS : 0;
+    makeSpaceFlags |= m_vp.getYTransformation().isLinear() ? Y_AXIS : 0;
+  }
+  setFromRectangle(dataRange, makeSpaceFlags);
 }
 
-void CCoordinateSystem::setFromRectangle(const Rectangle2D &rectangle, bool makeSpace) {
+void CCoordinateSystem::setFromRectangle(const Rectangle2D &rectangle, int makeSpaceFlags) {
   Rectangle2D r = Rectangle2D::makePositiveRectangle(rectangle);
   if(r.getWidth() == 0) {
     const double dw = r.m_x == 0 ? 20 : r.m_x / 20;
@@ -260,8 +265,8 @@ void CCoordinateSystem::setFromRectangle(const Rectangle2D &rectangle, bool make
   }
   RectangleTransformation &tr = getTransformation();
   tr.setFromRectangle(r);
-  if(makeSpace) {
-    tr.zoom(tr.getToRectangle().getCenter(), -0.08);
+  if(makeSpaceFlags) {
+    tr.zoom(tr.getToRectangle().getCenter(), -0.08, makeSpaceFlags);
   }
 }
 
