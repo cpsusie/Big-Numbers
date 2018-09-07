@@ -13,18 +13,6 @@ String D3PCOLOR::toString(bool showAlpha) const {
   }
 }
 
-RGBColor::RGBColor(float red, float green, float blue) {
-  m_red   = red;
-  m_green = green;
-  m_blue  = blue;
-}
-
-RGBColor::RGBColor(const D3DCOLOR c) {
-  m_red   = (float)ARGB_GETRED(c)   / 255;
-  m_green = (float)ARGB_GETGREEN(c) / 255;
-  m_blue  = (float)ARGB_GETBLUE(c)  / 255;
-}
-
 RGBColor::operator D3DCOLOR() const {
 /*
   const int r = (int)round(round(m_red   * 255, 2));

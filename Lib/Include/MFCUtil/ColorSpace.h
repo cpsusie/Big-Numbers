@@ -11,18 +11,57 @@ public:
   String toString(bool showAlpha=false) const;
 };
 
+// COLORREF has layout 0x00bbggrr  (lower to the right)
+// D3DCOLOR has layout 0xaarrggbb  (    ---- ""------ )
+
+//#define RGB(r,g,b)          ((COLORREF)(((BYTE)(r)|((WORD)((BYTE)(g))<<8))|(((DWORD)(BYTE)(b))<<16)))
+//#define D3DCOLOR_ARGB(a,r,g,b) \
+//    ((D3DCOLOR)((((a)&0xff)<<24)|(((r)&0xff)<<16)|(((g)&0xff)<<8)|((b)&0xff)))
+
+#define ARGB_GETALPHA(d3c)      ( (d3c) >> 24)
+#define ARGB_GETRED(  d3c)      (((d3c) >> 16) & 0xff)
+#define ARGB_GETGREEN(d3c)      (((d3c) >>  8) & 0xff)
+#define ARGB_GETBLUE( d3c)      ( (d3c)        & 0xff)
+
+#define ARGB_TORGB(d3c) ((d3c) & 0x00ffffff)
+
+#define ARGB_SETALPHA(argb, x) (((x) << 24) | ((argb) & 0x00ffffff))
+
+#define GETLUMINANCE(d3c) (0.2126*ARGB_GETRED(d3c) + 0.7152*ARGB_GETGREEN(d3c) + 0.0722*ARGB_GETBLUE(d3c))
+
+#define D3DCOLOR2COLORREF(d3c) RGB(ARGB_GETRED(d3c), ARGB_GETGREEN(d3c), ARGB_GETBLUE(d3c))
+#define COLORREF2D3DCOLOR(cr) D3DCOLOR_XRGB(GetRValue(cr), GetGValue(cr), GetBValue(cr))
+
+#define D3DCOLORVALUE2COLORREF(c) RGB((DWORD)((c.r)*255.f),(DWORD)((c.g)*255.f),(DWORD)((c.b)*255.f))
+D3DCOLORVALUE COLORREF2COLORVALUE(COLORREF c);
+
 class RGBColor {
 public:
   float m_red;        // 0..1
   float m_green;      // 0..1
   float m_blue;       // 0..1
-  RGBColor() : m_red(0), m_green(0), m_blue(0) {
+  inline RGBColor() : m_red(0), m_green(0), m_blue(0) {
   }
-  RGBColor(float red, float green, float blue);
-  RGBColor(const D3DCOLOR c);
+  inline RGBColor(float red, float green, float blue) : m_red(red), m_green(green), m_blue(blue) {
+  }
+
+  inline RGBColor(const D3DCOLOR c)
+    : m_red(  (float)ARGB_GETRED(  c)/255)
+    , m_green((float)ARGB_GETGREEN(c)/255)
+    , m_blue( (float)ARGB_GETBLUE( c)/255)
+  {}
   operator D3DCOLOR() const;
   float getMax() const;
   float getMin() const;
+
+  // 0 <= fc2 <= 1
+  // Return RGBColor, where each component C = c1.C*(1-fc2) + c2.C*fc2; C=[m_red,m_green,m_blue]
+  static inline RGBColor blendColor(const RGBColor &c1, const RGBColor &c2, float fc2) {
+    const float fc1=1.0f-fc2;
+    return RGBColor(c1.m_red  *fc1 + c2.m_red  *fc2
+                   ,c1.m_green*fc1 + c2.m_green*fc2
+                   ,c1.m_blue *fc1 + c2.m_blue *fc2);
+  }
 };
 
 class sRGBColor {
@@ -62,30 +101,6 @@ public:
 LSHColor getLSHColor(const RGBColor &c);
 RGBColor getRGBColor(const LSHColor &c);
 D3DCOLOR getGrayColor(     D3DCOLOR  c);
-
-// COLORREF has layout 0x00bbggrr  (lower to the right)
-// D3DCOLOR has layout 0xaarrggbb  (    ---- ""------ )
-
-//#define RGB(r,g,b)          ((COLORREF)(((BYTE)(r)|((WORD)((BYTE)(g))<<8))|(((DWORD)(BYTE)(b))<<16)))
-//#define D3DCOLOR_ARGB(a,r,g,b) \
-//    ((D3DCOLOR)((((a)&0xff)<<24)|(((r)&0xff)<<16)|(((g)&0xff)<<8)|((b)&0xff)))
-
-#define ARGB_GETALPHA(d3c)      ( (d3c) >> 24)
-#define ARGB_GETRED(  d3c)      (((d3c) >> 16) & 0xff)
-#define ARGB_GETGREEN(d3c)      (((d3c) >>  8) & 0xff)
-#define ARGB_GETBLUE( d3c)      ( (d3c)        & 0xff)
-
-#define ARGB_TORGB(d3c) ((d3c) & 0x00ffffff)
-
-#define ARGB_SETALPHA(argb, x) (((x) << 24) | ((argb) & 0x00ffffff))
-
-#define GETLUMINANCE(d3c) (0.2126*ARGB_GETRED(d3c) + 0.7152*ARGB_GETGREEN(d3c) + 0.0722*ARGB_GETBLUE(d3c))
-
-#define D3DCOLOR2COLORREF(d3c) RGB(ARGB_GETRED(d3c), ARGB_GETGREEN(d3c), ARGB_GETBLUE(d3c))
-#define COLORREF2D3DCOLOR(cr) D3DCOLOR_XRGB(GetRValue(cr), GetGValue(cr), GetBValue(cr))
-
-#define D3DCOLORVALUE2COLORREF(c) RGB((DWORD)((c.r)*255.f),(DWORD)((c.g)*255.f),(DWORD)((c.b)*255.f))
-D3DCOLORVALUE COLORREF2COLORVALUE(COLORREF c);
 
 D3DCOLORVALUE   colorToColorValue(D3DCOLOR c);
 inline D3DCOLOR colorValueToD3DColor(const D3DCOLORVALUE &cv) {
