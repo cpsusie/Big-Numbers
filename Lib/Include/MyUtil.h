@@ -298,6 +298,7 @@ inline bool isEven( UINT64 x) { return (x & 1) == 0; }
 double round(   double x, int dec);
 double trunc(   double x, int dec=0);
 double fraction(double x);
+float  fraction(float  x);
 
 // return (x > 0) ? +1 : (x < 0) ? -1 : 0
 inline int sign(int x) {

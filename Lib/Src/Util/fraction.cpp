@@ -9,3 +9,11 @@ double fraction(double x) {
   }
 }
 
+float fraction(float x) {
+  if(x < 0) {
+    return -fraction(-x);
+  } else {
+    return x - floor(x);
+  }
+}
+
