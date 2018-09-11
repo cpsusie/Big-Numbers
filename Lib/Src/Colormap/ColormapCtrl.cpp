@@ -213,7 +213,7 @@ void CColormapCtrl::OnDraw(CDC* pdc, const CRect& rcBounds, const CRect& /* rcIn
 
 void CColormapCtrl::DoPropExchange(CPropExchange* pPX) {
     ExchangeVersion(pPX, MAKELONG(_wVerMinor, _wVerMajor));
-    COleControl::DoPropExchange(pPX);
+    __super::DoPropExchange(pPX);
 
   BOOL          isSunken      = m_colorMap.getIsSunken();
   BOOL          hasBorder     = m_colorMap.getHasBorder();
@@ -240,24 +240,16 @@ void CColormapCtrl::DoPropExchange(CPropExchange* pPX) {
   m_colorMap.setTextAlignment(longToTextAlignment(textAlignment));
 }
 
-
 // CColormapCtrl::OnResetState - Reset control to default state
-
-void CColormapCtrl::OnResetState()
-{
-    COleControl::OnResetState();  // Resets defaults found in DoPropExchange
-
+void CColormapCtrl::OnResetState() {
+  __super::OnResetState();  // Resets defaults found in DoPropExchange
 }
 
 
 // CColormapCtrl::AboutBox - Display an "About" box to the user
-
-void CColormapCtrl::AboutBox()
-{
-    CDialogEx dlgAbout(IDD_ABOUTBOX_COLORMAP);
-    dlgAbout.DoModal();
+void CColormapCtrl::AboutBox() {
+  CDialogEx(IDD_ABOUTBOX_COLORMAP).DoModal();
 }
-
 
 BOOL CColormapCtrl::GetSunken() {
   return m_colorMap.getIsSunken();
@@ -360,7 +352,7 @@ void CColormapCtrl::createEditField(CEdit &f, const CRect &r, int id) {
 }
 
 int CColormapCtrl::OnCreate(LPCREATESTRUCT lpCreateStruct) {
-  if(COleControl::OnCreate(lpCreateStruct) == -1) {
+  if(__super::OnCreate(lpCreateStruct) == -1) {
     return -1;
   }
 
@@ -387,7 +379,7 @@ void CColormapCtrl::OnDestroy() {
   m_saturationEdit.DestroyWindow();
   m_luminationEdit.DestroyWindow();
 
-  COleControl::OnDestroy();
+  __super::OnDestroy();
 }
 
 void CColormapCtrl::gotoField(int field) {
@@ -414,7 +406,7 @@ void CColormapCtrl::gotoField(int field) {
 }
 
 void CColormapCtrl::OnLButtonDown(UINT nFlags, CPoint point) {
-  COleControl::OnLButtonDown(nFlags, point);
+  __super::OnLButtonDown(nFlags, point);
   if(!GetEnabled()) {
     return;
   }
@@ -448,7 +440,7 @@ void CColormapCtrl::OnLButtonDown(UINT nFlags, CPoint point) {
 }
 
 void CColormapCtrl::OnMouseMove(UINT nFlags, CPoint point) {
-  COleControl::OnMouseMove(nFlags, point);
+  __super::OnMouseMove(nFlags, point);
   if(!GetEnabled()) {
     return;
   }
@@ -471,7 +463,7 @@ void CColormapCtrl::OnMouseMove(UINT nFlags, CPoint point) {
 }
 
 void CColormapCtrl::OnLButtonUp(UINT nFlags, CPoint point) {
-  COleControl::OnLButtonUp(nFlags, point);
+  __super::OnLButtonUp(nFlags, point);
   if(!GetEnabled()) {
     return;
   }
@@ -579,7 +571,7 @@ BOOL CColormapCtrl::PreTranslateMessage(MSG *pMsg) {
     }
     break;
   }
-  return COleControl::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 void CColormapCtrl::OnSetFocus(CWnd *pOldWnd) {

@@ -31,7 +31,6 @@ public:
   virtual BOOL OnInitDialog();
   afx_msg void OnCheckSunken();
   afx_msg void OnCheckBorder();
-  afx_msg void OnUpdateEditCaption();
   afx_msg void OnCheckClientEdge();
   afx_msg void OnCheckStaticEdge();
   afx_msg void OnCheckModalFrame();
