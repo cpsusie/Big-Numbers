@@ -53,6 +53,7 @@ BOOL CTestColorControlDlg::OnInitDialog() {
   m_accelTable = LoadAccelerators(theApp.m_hInstance, MAKEINTRESOURCE(IDR_TESTCOLORCONTROL_ACCELERATOR));
 
   m_layoutManager.OnInitDialog(this);
+/*
   m_layoutManager.addControl(IDC_COLORMAPCTRL     , RELATIVE_SIZE  );
   m_layoutManager.addControl(IDC_STATIC_COLOR     , RELATIVE_X_POS );
   m_layoutManager.addControl(IDC_BUTTON_PICKCOLOR , RELATIVE_X_POS );
@@ -65,6 +66,7 @@ BOOL CTestColorControlDlg::OnInitDialog() {
   m_layoutManager.addControl(IDC_CHECK_MODALFRAME , RELATIVE_Y_POS | PCT_RELATIVE_X_CENTER);
   m_layoutManager.addControl(IDC_STATIC_CAPTION   , RELATIVE_Y_POS );
   m_layoutManager.addControl(IDC_EDIT_CAPTION     , RELATIVE_Y_POS );
+*/
 
   m_enabled    = m_colormap.IsWindowEnabled();
   m_sunken     = m_colormap.GetSunken();
