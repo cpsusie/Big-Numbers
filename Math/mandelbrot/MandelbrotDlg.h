@@ -2,8 +2,8 @@
 
 #include <Stack.h>
 #include "MBCalculator.h"
-#include "ColorMapDlg.h"
 #include "ImageListThread.h"
+#include "EditColorMapDlgThread.h"
 
 typedef enum {
   STATE_IDLE
@@ -15,11 +15,11 @@ class ImageStackEntry {
 public:
   const BigRealRectangle2D m_scale;
   CellCountMatrix         *m_ccm;
-  const ColorMap           m_colorMap;
-  ImageStackEntry(const BigRealRectangle2D &scale, CellCountMatrix *ccm, const ColorMap &colorMap)
+  const ColorMapData       m_cmd;
+  ImageStackEntry(const BigRealRectangle2D &scale, CellCountMatrix *ccm, const ColorMapData &cmd)
   : m_scale(scale)
-  , m_ccm(ccm)
-  , m_colorMap(colorMap)
+  , m_ccm(  ccm  )
+  , m_cmd(  cmd  )
   {
   }
 };
@@ -132,11 +132,11 @@ typedef enum {
  ,TIMER_MOVIEMAKER  = 2
 } TimerId;
 
-#define MAP_COLORSCHANGED    0x0001
-#define MAP_SIZECHANGED      0x0002
-#define MB_SCALECHANGED      0x0004
-#define MB_IMAGECHANGED      0x0010
-#define WORK_SIZECHANGED     0x0020
+#define MAXCOUNT_CHANGED     0x0001
+#define COLORDATA_CHANGED    0x0002
+#define IMAGE_CHANGED        0x0004
+#define WORKSIZE_CHANGED     0x0008
+#define SCALE_CHANGED        0x0010
 
 class CMandelbrotDlg : public CDialog, public PropertyChangeListener {
 private:
@@ -146,8 +146,7 @@ private:
   HICON                          m_crossIcon;
   SimpleLayoutManager            m_layoutManager;
   MBContainer                   *m_mbContainer;
-  int                            m_precisionMode; // one of { ID_OPTIONS_AUTOPRECISION, ID_OPTIONS_FORCEFPU, ID_OPTIONS_FORCEBIGREAL }
-  ColorMapData                   m_colorMapData;
+  ColorMap                       m_colorMap;
   DigitPool                     *m_digitPool;
   size_t                         m_digits;
   BigRealRectangle2D             m_rect0, m_zoom1Rect;
@@ -161,10 +160,11 @@ private:
   bool                           m_showZoomFactor;
   bool                           m_suspendingMenuTextIsSuspending;
   Size2D                         m_zoomFactor;
+  int                            m_precisionMode; // one of { ID_OPTIONS_AUTOPRECISION, ID_OPTIONS_FORCEFPU, ID_OPTIONS_FORCEBIGREAL }
   DlgState                       m_state;
   CalculatorPool                *m_calculatorPool;
   MBFrameGenerator              *m_frameGenerator;
-  ColorMap                       m_colorMap;
+  CEditColorMapDlgThread        *m_colorMapEditThread;
   RealRectangleTransformation    m_realTransform;
   BigRealRectangleTransformation m_bigRealTransform;
   Semaphore                      m_gate;
@@ -216,8 +216,8 @@ private:
   size_t                  setUncalculatedRectsToEmpty();
   void                    clearUncalculatedWindowArea();
   UINT                    getCPUCountToUse() const;
-  int                     setColorMapData(const ColorMapData &colorMapData);
-  int                     setColorMap(const ColorMap &cm);
+  int                     setMaxCount(UINT maxCount);
+  int                     setColorMapData(const ColorMapData &cdm);
   int                     setScale(const BigReal &minX, const BigReal &maxX, const BigReal &minY, const BigReal &maxY, bool allowAdjustAspectRatio);
   int                     handleTransformChanged(bool adjustAspectRatio);
   void                    setPrecision(int id);
@@ -225,6 +225,11 @@ private:
   void                    updateZoomFactor();
   void                    startTimer(TimerId id, int msec);
   void                    stopTimer(TimerId id);
+  void                    startColorMapEditor();
+  void                    stopColorMapEditor();
+  inline bool             hasColorMapEditor() const {
+    return m_colorMapEditThread != NULL;
+  }
   inline DigitPool       *getDigitPool() {
     return m_digitPool;
   }
@@ -296,7 +301,7 @@ public:
   inline BigRealRectangleTransformation &getBigRealTransformation() {
     return m_bigRealTransform;
   }
-  inline UINT getMaxCount() const {
+  UINT                    getMaxCount() const {
     return m_colorMap.getMaxCount();
   }
   inline const ColorMap &getColorMap() const {
@@ -347,6 +352,7 @@ public:
   }
   void updateMovieMenuItem();
   void remoteStartCalculation();
+  void remoteUpdateWindowState();
 
   enum { IDD = IDD_MANDELBROT_DIALOG };
 
@@ -382,9 +388,9 @@ public:
   afx_msg void OnEditCalculateImage();
   afx_msg void OnEditSuspendCalculation();
   afx_msg void OnEditAbortCalculation();
-  afx_msg void OnEditNewColorMap();
   afx_msg void OnEditBack();
-  afx_msg void OnOptionsColorMap();
+  afx_msg void OnOptionsMaxIterations();
+  afx_msg void OnOptionsEditColorMap();
   afx_msg void OnOptionsShowColorMap();
   afx_msg void OnOptionsAutoPrecision();
   afx_msg void OnOptionsForceFPU();
@@ -395,6 +401,8 @@ public:
   afx_msg void OnOptionsUseOnly1CPU();
   afx_msg void OnOptionsRetainAspectRatio();
   afx_msg void OnOptionsShowZoomFactor();
+  afx_msg void OnOptionsShowCalculationTime();
+  afx_msg void OnOptionsShowChangeFlags();
   afx_msg void OnHelpAboutMandelbrot();
   afx_msg LRESULT OnMsgStartCalculation( WPARAM wp, LPARAM lp);
   afx_msg LRESULT OnMsgUpdateWindowState(WPARAM wp, LPARAM lp);

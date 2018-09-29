@@ -5,8 +5,7 @@
 class CShowColorMapDlg : public CDialog {
 private:
     SimpleLayoutManager m_layoutManager;
-    const ColorMap     &m_colorMap;   // last element is always BLACK
-
+    const ColorMap     &m_colorMap;
 public:
     CShowColorMapDlg(const ColorMap &colorMap, CWnd *pParent = NULL);
 

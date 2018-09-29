@@ -18,9 +18,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ColorMapDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="DebugLogThread.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -69,6 +66,18 @@
     <ClCompile Include="ColorMap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MaxCountDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EditColorMapDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="colormapctrl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EditColorMapDlgThread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Mandelbrot.rc">
@@ -76,9 +85,6 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ColorMapDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="DebugLogThread.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -125,6 +131,21 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ColorMap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MaxCountDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EditColorMapDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="colormapctrl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="_Font.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EditColorMapDlgThread.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

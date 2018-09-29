@@ -64,7 +64,7 @@ void CShowColorMapDlg::OnPaint() {
     if(rowCount == 0) {
       intervals.add(index);
     }
-    const COLORREF c3 = m_colorMap[index].m_colorRef;
+    const COLORREF c3 = m_colorMap[index].getColorRef();
     dc.FillSolidRect(p.x,p.y,colorWidth,colorHeight, c3);
     p.x += colorWidth;
     rowCount++;
@@ -89,4 +89,5 @@ void CShowColorMapDlg::OnPaint() {
     const String s = format(_T("%d-%d"), from, to);
     textOut(textDC, 2, ty, s);
   }
+  __super::OnPaint();
 }

@@ -2,6 +2,7 @@
 #include <ByteFile.h>
 #include <Random.h>
 #include "MandelbrotDlg.h"
+#include "MaxCountDlg.h"
 #include "JuliaDlg.h"
 #include "ShowColorMapDlg.h"
 #include "MBBigRealCalculator.h"
@@ -31,15 +32,17 @@ CMandelbrotDlg::CMandelbrotDlg(DigitPool *digitPool, CWnd *pParent)
 , m_rect0(    digitPool)
 , m_zoom1Rect(digitPool)
 , m_bigRealTransform(LINEAR,LINEAR,digitPool)
+, m_colorMap(ColorMapData::getDefault(), 2000)
 {
   m_hIcon                     = theApp.LoadIcon(IDR_MAINFRAME);
-  m_state                     = STATE_IDLE;
   m_precisionMode             = ID_OPTIONS_AUTOPRECISION;
+  m_state                     = STATE_IDLE;
+  m_frameGenerator            = NULL;
+  m_colorMapEditThread        = NULL;
   m_ccMatrix                  = NULL;
   m_cca                       = NULL;
   m_imageDC                   = NULL;
   m_imageCopy                 = NULL;
-  m_frameGenerator            = NULL;
   setDigits();
 }
 
@@ -78,9 +81,9 @@ BEGIN_MESSAGE_MAP(CMandelbrotDlg, CDialog)
     ON_COMMAND(ID_EDIT_CALCULATEIMAGE                  , OnEditCalculateImage                 )
     ON_COMMAND(ID_EDIT_SUSPENDCALCULATION              , OnEditSuspendCalculation             )
     ON_COMMAND(ID_EDIT_ABORTCALCULATION                , OnEditAbortCalculation               )
-    ON_COMMAND(ID_EDIT_NEWCOLORMAP                     , OnEditNewColorMap                    )
     ON_COMMAND(ID_EDIT_BACK                            , OnEditBack                           )
-    ON_COMMAND(ID_OPTIONS_COLORMAP                     , OnOptionsColorMap                    )
+    ON_COMMAND(ID_OPTIONS_MAXITERATIONS                , OnOptionsMaxIterations               )
+    ON_COMMAND(ID_OPTIONS_EDITCOLORMAP                 , OnOptionsEditColorMap                )
     ON_COMMAND(ID_OPTIONS_SHOWCOLORMAP                 , OnOptionsShowColorMap                )
     ON_COMMAND(ID_OPTIONS_AUTOPRECISION                , OnOptionsAutoPrecision               )
     ON_COMMAND(ID_OPTIONS_FORCEFPU                     , OnOptionsForceFPU                    )
@@ -91,6 +94,8 @@ BEGIN_MESSAGE_MAP(CMandelbrotDlg, CDialog)
     ON_COMMAND(ID_OPTIONS_USEONLY1CPU                  , OnOptionsUseOnly1CPU                 )
     ON_COMMAND(ID_OPTIONS_RETAIN_ASPECTRATIO           , OnOptionsRetainAspectRatio           )
     ON_COMMAND(ID_OPTIONS_SHOWZOOMFACTOR               , OnOptionsShowZoomFactor              )
+    ON_COMMAND(ID_OPTIONS_SHOWCALULATIONTIME           , OnOptionsShowCalculationTime         )
+    ON_COMMAND(ID_OPTIONS_SHOWCHANGEFLAGS              , OnOptionsShowChangeFlags             )
     ON_COMMAND(ID_HELP_ABOUTMANDELBROT                 , OnHelpAboutMandelbrot                )
     ON_MESSAGE(ID_MSG_STARTCALCULATION                 , OnMsgStartCalculation                )
     ON_MESSAGE(ID_MSG_UPDATEWINDOWSTATE                , OnMsgUpdateWindowState               )
@@ -130,13 +135,12 @@ BOOL CMandelbrotDlg::OnInitDialog() {
 
   m_crossIcon      = createIcon(theApp.m_hInstance, IDB_MARK_COLORBITMAP, IDB_MARK_MASKBITMAP);
   m_accelTable     = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_MAINFRAME));
-  m_rect0          = RealRectangle2D(-4.5,-4, 8,8);
+  m_rect0          = RealRectangle2D(-2.1,-2.1, 4.2,4.2);
   m_imageWindow    = GetDlgItem(IDC_STATIC_IMAGEWINDOW);
 
   theApp.m_device.attach(*this);
 
-  setColorMapData(ColorMapData());
-  m_dummyMatrix    = newCCM(CSize(10,10),getMaxCount());
+  m_dummyMatrix    = newCCM(CSize(10,10),1);
   m_mbContainer    = new DialogMBContainer(this, m_dummyMatrix);                 TRACE_NEW(m_mbContainer);
   m_calculatorPool = new CalculatorPool(*m_mbContainer);                         TRACE_NEW(m_calculatorPool);
 
@@ -350,29 +354,50 @@ void CMandelbrotDlg::OnEditAbortCalculation() {
   m_calculatorPool->killAll();
 }
 
-void CMandelbrotDlg::OnEditNewColorMap() {
-  handleChangeCode(createColorMap());
-}
-
 void CMandelbrotDlg::OnEditBack() {
   popImage();
 }
 
 // -------------------------------- Options menu ----------------------------------------
 
-void CMandelbrotDlg::OnOptionsColorMap() {
+void CMandelbrotDlg::OnOptionsMaxIterations() {
   if(isCalculationActive()) {
     return;
   }
-  CColorMapDlg dlg(m_colorMapData);
+  CMaxCountDlg dlg(getMaxCount());
   if(dlg.DoModal() == IDOK) {
-    handleChangeCode(setColorMapData(dlg.getColorMapData()));
+    handleChangeCode(setMaxCount(dlg.getMaxCount()));
   }
+}
+
+void CMandelbrotDlg::OnOptionsEditColorMap() {
+  if(isCalculationActive()) {
+    return;
+  }
+  startColorMapEditor();
+}
+
+void CMandelbrotDlg::startColorMapEditor() {
+  m_gate.wait();
+  if(!hasColorMapEditor()) {
+    m_colorMapEditThread = CEditColorMapDlgThread::startThread(this, m_colorMap.getColorMapData());
+    remoteUpdateWindowState();
+  }
+  m_gate.signal();
+}
+
+void CMandelbrotDlg::stopColorMapEditor() {
+  m_gate.wait();
+  if(hasColorMapEditor()) {
+    m_colorMapEditThread = NULL;
+    remoteUpdateWindowState();
+  }
+  m_gate.signal();
 }
 
 
 void CMandelbrotDlg::OnOptionsShowColorMap() {
-  CShowColorMapDlg dlg(getColorMap());
+  CShowColorMapDlg dlg(m_colorMap);
   dlg.DoModal();
 }
 
@@ -422,6 +447,18 @@ void CMandelbrotDlg::OnOptionsRetainAspectRatio() {
 void CMandelbrotDlg::OnOptionsShowZoomFactor() {
   m_showZoomFactor = toggleMenuItem(this, ID_OPTIONS_SHOWZOOMFACTOR);
   Invalidate(false);
+}
+
+void CMandelbrotDlg::OnOptionsShowCalculationTime() {
+  checkMenuItem(this,ID_OPTIONS_SHOWCALULATIONTIME, true );
+  checkMenuItem(this,ID_OPTIONS_SHOWCHANGEFLAGS   , false);
+  showCalculationState();
+}
+
+void CMandelbrotDlg::OnOptionsShowChangeFlags() {
+  checkMenuItem(this,ID_OPTIONS_SHOWCALULATIONTIME, false);
+  checkMenuItem(this,ID_OPTIONS_SHOWCHANGEFLAGS   , true );
+  showCalculationState();
 }
 
 void CMandelbrotDlg::OnHelpAboutMandelbrot() {
@@ -576,28 +613,43 @@ LRESULT CMandelbrotDlg::OnMsgMovieDone(WPARAM wp, LPARAM lp) {
 }
 
 void CMandelbrotDlg::handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
-  switch(id) {
-  case CALCULATIONACTIVE:
-    { const bool oldActive = *(bool*)oldValue;
-      const bool newActive = *(bool*)newValue;
-      if(oldActive && !newActive) {
-        m_jobQueue.clear();
-        stopTimer(TIMER_CALCULATION);
-        DLOG(_T("CalculationACtive=FALSE. Now POST WM_PAINT\n"));
-        PostMessage(WM_PAINT);
-      } else if(newActive) {
-        PostMessage(ID_MSG_UPDATEWINDOWSTATE);
+  if(source == m_colorMapEditThread) {
+    switch(id) {
+    case DIALOGACTIVE:
+      if(!*(bool*)newValue) {
+        stopColorMapEditor();
+      }
+      break;
+    case COLORMAPDATA:
+      { const ColorMapData &cmd = *(ColorMapData*)newValue;
+        handleChangeCode(setColorMapData(cmd));
+        break;
       }
     }
-    break;
-  case RUNNINGSET:
-    { const CalculatorSet oldRunSet = *(CalculatorSet*)oldValue;
-      const CalculatorSet newRunSet = *(CalculatorSet*)newValue;
-      if(oldRunSet.isEmpty() != newRunSet.isEmpty()) {
-        PostMessage(ID_MSG_UPDATEWINDOWSTATE);
+  } else if(source == m_calculatorPool) {
+    switch(id) {
+    case CALCULATIONACTIVE:
+      { const bool oldActive = *(bool*)oldValue;
+        const bool newActive = *(bool*)newValue;
+        if(oldActive && !newActive) {
+          m_jobQueue.clear();
+          stopTimer(TIMER_CALCULATION);
+          DLOG(_T("CalculationACtive=FALSE. Now POST WM_PAINT\n"));
+          PostMessage(WM_PAINT);
+        } else if(newActive) {
+          remoteUpdateWindowState();
+        }
       }
+      break;
+    case RUNNINGSET:
+      { const CalculatorSet oldRunSet = *(CalculatorSet*)oldValue;
+        const CalculatorSet newRunSet = *(CalculatorSet*)newValue;
+        if(oldRunSet.isEmpty() != newRunSet.isEmpty()) {
+          remoteUpdateWindowState();
+        }
+      }
+      break;
     }
-    break;
   }
 }
 
@@ -658,25 +710,32 @@ const TCHAR *CMandelbrotDlg::s_stateName[] = {
 };
 
 void CMandelbrotDlg::dumpHistogram() {
-  const CellCountHistogram &h = m_ccMatrix->getHistogram();
   static int dumpCount = 0;
-  const String dumpFileName = format(_T("c:\\temp\\histo%04d.txt"),dumpCount++);
-  redirectDebugLog(false,dumpFileName.cstr());
+  const String histoFileName = format(_T("c:\\temp\\mandel\\histo%04d.txt"),dumpCount);
+  const String mapFileName   = format(_T("c:\\temp\\mandel\\map%04d.txt" ),dumpCount);
+  const CellCountHistogram &h = m_ccMatrix->getHistogram();
+  redirectDebugLog(false,histoFileName.cstr());
   debugLog(_T("%s"), h.toString().cstr());
+
+  redirectDebugLog(false,mapFileName.cstr());
+  debugLog(_T("%s"), m_colorMap.toString().cstr());
+
+  dumpCount++;
 }
 
 void CMandelbrotDlg::flushCCM() {
+//  dumpHistogram();
   m_gate.wait();
-
+  PixRect *pr = NULL;
   try {
     clearCCA();
-    PixRect *tmppr = newPixRect(m_ccMatrix->getSize());
-//    dumpHistogram();
-    m_ccMatrix->convertToPixRect(tmppr, getColorMap(), false);
+    pr = newPixRect(m_ccMatrix->getSize());
+    m_ccMatrix->convertToPixRect(pr, m_colorMap);
     CClientDC dc(m_imageWindow);
-    pixRectToWindow(tmppr, dc);
-    deletePixRect(tmppr);
+    pixRectToWindow(pr, dc);
+    deletePixRect(pr);
   } catch (Exception e) {
+    deletePixRect(pr);
     showException(e);
   }
   m_gate.signal();
@@ -704,10 +763,10 @@ void CMandelbrotDlg::updateWindowStateInternal() {
   enableMenuItem(this, ID_EDIT_CALCULATEIMAGE              ,!isActive   );
   enableMenuItem(this, ID_EDIT_ABORTCALCULATION            ,isActive    );
   enableMenuItem(this, ID_EDIT_SUSPENDCALCULATION          ,isActive    );
-  enableMenuItem(this, ID_EDIT_NEWCOLORMAP                 ,!isActive && m_colorMapData.m_randomSeed);
   enableMenuItem(this, ID_EDIT_BACK                        ,!isActive && !m_imageStack.isEmpty());
   setSuspendingMenuText(!isCalculationSuspended());
-  enableMenuItem(this, ID_OPTIONS_COLORMAP                 ,!isActive   );
+  enableMenuItem(this, ID_OPTIONS_MAXITERATIONS            ,!isActive   );
+  enableMenuItem(this, ID_OPTIONS_EDITCOLORMAP             ,!isActive   && !hasColorMapEditor());
   enableMenuItem(this, ID_OPTIONS_AUTOPRECISION            ,!isActive   );
   enableMenuItem(this, ID_OPTIONS_FORCEFPU                 ,!isActive   );
   enableMenuItem(this, ID_OPTIONS_FORCEBIGREAL             ,!isActive   );
@@ -735,15 +794,18 @@ void CMandelbrotDlg::setSuspendingMenuText(bool isSuspendingText) {
 static String changeFlagsToString(int flags) {
   String result;
   TCHAR *delim = NULL;
-#define ADDTEXT(str)                             \
-if(delim) result += delim; else delim = _T(" "); \
-result += _T(str)
+#define ADDFLAG(f)                                 \
+if(flags & f##_CHANGED) {                          \
+  if(delim) result += delim; else delim = _T(" "); \
+  result += _T(#f);                                \
+}
 
-  if(flags & MAP_COLORSCHANGED) { ADDTEXT("COLORS"  ); }
-  if(flags & MAP_SIZECHANGED  ) { ADDTEXT("MAPSIZE" ); }
-  if(flags & MB_SCALECHANGED  ) { ADDTEXT("SCALE"   ); }
-  if(flags & MB_IMAGECHANGED  ) { ADDTEXT("IMAGE"   ); }
-  if(flags & WORK_SIZECHANGED ) { ADDTEXT("WORKSIZE"); }
+  ADDFLAG(MAXCOUNT );
+  ADDFLAG(COLORDATA);
+  ADDFLAG(IMAGE    );
+  ADDFLAG(WORKSIZE );
+  ADDFLAG(SCALE    );
+
   return result;
 }
 
@@ -765,13 +827,16 @@ void CMandelbrotDlg::showWindowState() {
     setWindowText(this, _T("Generating image list"));
 
     setWindowText(this, IDC_STATIC_INFOWINDOW
-                      , format(_T("Calculating frame %d/%d"), m_frameGenerator->getFrameIndex(), m_frameGenerator->getTotalFrameCount()));
+                      , format(_T("Calculating frame %d/%d")
+                              ,m_frameGenerator->getFrameIndex()
+                              ,m_frameGenerator->getTotalFrameCount()
+                              )
+                 );
   }
 }
-
 void CMandelbrotDlg::showCalculationState() {
   const bool calculating = isCalculationActive();
-  String stateStr;
+  String stateStr, infoText;
   if(!isCalculationActive()) {
     stateStr = getStateName();
   } else {
@@ -780,36 +845,34 @@ void CMandelbrotDlg::showCalculationState() {
                      ,getPercentDone()
                      );
   }
-#ifdef SHOW_CHANGEFLAGS
-  setWindowText(this, IDC_STATIC_INFOWINDOW
-                    , format(_T("Level:%2d. %s flags=%s")
-                            ,m_imageStack.getHeight()
-                            ,stateStr.cstr()
-                            ,changeFlagsToString(m_lastChangeFlags).cstr()
-                            )
-               );
-#else
-  setWindowText(this, IDC_STATIC_INFOWINDOW
-                    , format(_T("Level:%2d. %5.2lfsec. %s [%s]")
-                            ,m_imageStack.getHeight()
-                            ,m_calculatorPool->getTimeUsed()/1000000.0
-                            ,stateStr.cstr()
-                            ,m_calculatorPool->getStatesString().cstr()
-                            )
-               );
-#endif // SHOW_CHANGEFLAGS
+  if(isMenuItemChecked(this, ID_OPTIONS_SHOWCHANGEFLAGS)) {
+    infoText = format(_T("Level:%2d. %s flags=%s")
+                     ,m_imageStack.getHeight()
+                     ,stateStr.cstr()
+                     ,changeFlagsToString(m_lastChangeFlags).cstr()
+                     );
+  } else {
+    infoText = format(_T("Level:%2d. %5.2lfsec. %s [%s]")
+                     ,m_imageStack.getHeight()
+                     ,m_calculatorPool->getTimeUsed()/1000000.0
+                     ,stateStr.cstr()
+                     ,m_calculatorPool->getStatesString().cstr()
+                     );
+  }
+  setWindowText(this, IDC_STATIC_INFOWINDOW, infoText);
+
 }
 
 void CMandelbrotDlg::showMousePoint(const CPoint &p) {
   if(hasCCM() && m_ccMatrix->contains(p)) {
-    const BigRealPoint2D rp    = m_bigRealTransform.backwardTransform(toBigRealPoint(p, getDigitPool()));
-    const UINT           prec  = (UINT)getDigits();
-    const UINT           count = m_ccMatrix->getCount(p);
+    const BigRealPoint2D rp       = m_bigRealTransform.backwardTransform(toBigRealPoint(p, getDigitPool()));
+    const UINT           prec     = (UINT)getDigits();
+    const String         pixelStr = m_ccMatrix->getPixelInfo(p);
     const String msg = format(_T(" (%3d,%3d) [%s,%s] Count=%s")
                              , p.x,p.y
                              ,::toString(rp.x,prec,prec+8,ios::scientific|ios::showpos).cstr()
                              ,::toString(rp.y,prec,prec+8,ios::scientific|ios::showpos).cstr()
-                             ,(count == EMPTYCELLVALUE) ? _T("undefined"):format(_T("%u"),count).cstr()
+                             ,pixelStr.cstr()
                              );
     setWindowText(this, IDC_STATIC_MOUSEINFO, msg);
   }
@@ -820,6 +883,11 @@ void CMandelbrotDlg::remoteStartCalculation() {
   PostMessage(ID_MSG_STARTCALCULATION);
 }
 
+void CMandelbrotDlg::remoteUpdateWindowState() {
+  DLOG(_T("Post UPDATEWINDOWSTATE\n"));
+  PostMessage(ID_MSG_UPDATEWINDOWSTATE);
+}
+
 int CMandelbrotDlg::setWorkSize() {
   return setWorkSize(getClientRect(m_imageWindow).Size());
 }
@@ -828,10 +896,10 @@ int CMandelbrotDlg::setWorkSize(const CSize &size) {
   createImageDC(size);
   int flags = 0;
   if(size != getWorkSize()) {
-    flags |= WORK_SIZECHANGED;
+    flags |= WORKSIZE_CHANGED;
   }
   if (!hasCCM() || (getMaxCount() != m_ccMatrix->getMaxCount())) {
-    flags |= MAP_SIZECHANGED;
+    flags |= MAXCOUNT_CHANGED;
   }
   if(flags == 0) {
     return 0;
@@ -885,8 +953,8 @@ int CMandelbrotDlg::copyCCM(const CellCountMatrix *ccm) {
   if(getWorkSize() != ccm->getSize()) {
     flags = setWorkSize(ccm->getSize());
   }
-  m_ccMatrix->rop(m_ccMatrix->getRect(), SRCCOPY, ccm, ORIGIN);
-  return flags | MB_IMAGECHANGED;
+  *m_ccMatrix = *ccm;
+  return flags | IMAGE_CHANGED;
 }
 
 CellCountMatrix *CMandelbrotDlg::newCCM(const CSize &size, UINT maxCount) { // static
@@ -899,7 +967,7 @@ void CMandelbrotDlg::deleteCCM(CellCountMatrix *ccm) { // static
 }
 
 PixRect *CMandelbrotDlg::newPixRect(const CSize &size) { // static
-  if(size.cx <= 0 || size.cy <= 0) {
+  if((size.cx <= 0) || (size.cy <= 0)) {
     throwInvalidArgumentException(__TFUNCTION__,_T("size=(%d,%d)"), size.cx, size.cy);
   }
   PixRect *pr = new PixRect(theApp.m_device, PIXRECT_PLAINSURFACE, size); TRACE_NEW(pr);
@@ -930,28 +998,29 @@ void CMandelbrotDlg::pixRectToWindow(PixRect *pr, HDC hdc) {
   PixRect::bitBlt(hdc?hdc:m_imageDC,0,0,pr->getWidth(),pr->getHeight(),SRCCOPY,pr,0,0);
 }
 
-int CMandelbrotDlg::setColorMapData(const ColorMapData &colorMapData) {
-  if((colorMapData != m_colorMapData) || (m_colorMap.isEmpty())) {
-    m_colorMapData = colorMapData;
-    return createColorMap();
+int CMandelbrotDlg::setMaxCount(UINT maxCount) {
+  m_gate.wait();
+  int ret = 0;
+  if(maxCount != getMaxCount()) {
+    m_colorMap.setMaxCount(maxCount);
+    if(hasCCM()) {
+      m_ccMatrix->setMaxCount(maxCount);
+    }
+    ret = MAXCOUNT_CHANGED;
   }
-  return 0;
+  m_gate.signal();
+  return ret;
 }
 
-int CMandelbrotDlg::createColorMap() {
-  int returnCode = setColorMap(ColorMap(m_colorMapData));
-  assert(m_colorMap.getMaxCount() == m_colorMapData.getMaxCount());
-  return returnCode;
-}
-
-int CMandelbrotDlg::setColorMap(const ColorMap &cm) {
-  if(cm == m_colorMap) {
-    return 0;
+int CMandelbrotDlg::setColorMapData(const ColorMapData &cdm) {
+  m_gate.wait();
+  int ret = 0;
+  if(cdm != m_colorMap.getColorMapData()) {
+    m_colorMap.setColorMapData(cdm);
+    ret = COLORDATA_CHANGED;
   }
-  int flags = MAP_COLORSCHANGED;
-  if(cm.size() != m_colorMap.size()) flags |= MAP_SIZECHANGED;
-  m_colorMap = cm;
-  return flags;
+  m_gate.signal();
+  return ret;
 }
 
 void CMandelbrotDlg::saveColorMap(const String &fileName) {
@@ -1017,7 +1086,7 @@ int CMandelbrotDlg::setScale(const BigReal &minX, const BigReal &maxX, const Big
   const BigRealRectangle2D old = m_bigRealTransform.getFromRectangle();
   m_bigRealTransform.setFromRectangle(BigRealRectangle2D(minX, maxY, maxX-minX, minY-maxY));
   if (m_bigRealTransform.getFromRectangle() != old) {
-    flags |= MB_SCALECHANGED;
+    flags |= SCALE_CHANGED;
   }
   flags |= handleTransformChanged(isRetainAspectRatio() && allowAdjustAspectRatio);
   return flags;
@@ -1026,7 +1095,7 @@ int CMandelbrotDlg::setScale(const BigReal &minX, const BigReal &maxX, const Big
 int CMandelbrotDlg::handleTransformChanged(bool adjustAspectRatio) {
   int flags = 0;
   if(adjustAspectRatio && m_bigRealTransform.adjustAspectRatio()) {
-    flags |= MB_SCALECHANGED;
+    flags |= SCALE_CHANGED;
   }
   setDigits();
   if(useFPUCalculators()) {
@@ -1034,7 +1103,7 @@ int CMandelbrotDlg::handleTransformChanged(bool adjustAspectRatio) {
     m_realTransform.setToRectangle(  m_bigRealTransform.getToRectangle());
     m_realTransform.setFromRectangle(m_bigRealTransform.getFromRectangle());
     if(m_realTransform != old) {
-      flags |= MB_SCALECHANGED;
+      flags |= SCALE_CHANGED;
     }
   }
   return flags;
@@ -1104,13 +1173,15 @@ void CMandelbrotDlg::removeDragRect() {
 }
 
 void CMandelbrotDlg::paintMovedImage(const CSize &dp) {
+  PixRect *tmp = NULL;
   try {
-    PixRect *tmp = newPixRect(m_imageCopy->getSize());
+    tmp = newPixRect(m_imageCopy->getSize());
     copyVisiblePart(tmp, m_imageCopy, dp);
     CClientDC dc(m_imageWindow);
     pixRectToWindow(tmp, dc);
     deletePixRect(tmp);
   } catch(Exception e) {
+    deletePixRect(tmp);
     showException(e);
   }
 }
@@ -1187,24 +1258,23 @@ MoveDirection CMandelbrotDlg::getMoveDirection(const CSize &dp) { // static
 
 void CMandelbrotDlg::pushImage() {
   if(!isCalculationActive()) {
-    m_imageStack.push(ImageStackEntry(getScale(), m_ccMatrix->clone(), getColorMap()));
+    m_imageStack.push(ImageStackEntry(getScale(), m_ccMatrix->clone(), getColorMap().getColorMapData()));
     updateWindowStateInternal();
   }
 }
 
 void CMandelbrotDlg::popImage() {
-  if(m_imageStack.isEmpty()) {
+  if(m_imageStack.isEmpty() || isCalculationActive()) {
     return;
   }
-  if(!isCalculationActive()) {
-    ImageStackEntry image = m_imageStack.pop();
-    int flags = setColorMap(image.m_colorMap);
-    flags |= copyCCM(image.m_ccm);
-    deleteCCM(image.m_ccm);
-    setScale(image.m_scale, false); // don't set ScaleChanged bit
-    updateZoomFactor();
-    handleChangeCode(flags);
-  }
+  ImageStackEntry e = m_imageStack.pop();
+  int flags = setColorMapData(e.m_cmd);
+  flags |= setMaxCount(e.m_ccm->getMaxCount());
+  flags |= copyCCM(e.m_ccm);
+  deleteCCM(e.m_ccm);
+  setScale(e.m_scale, false); // don't set ScaleChanged bit
+  updateZoomFactor();
+  handleChangeCode(flags);
 }
 
 void CMandelbrotDlg::resetImageStack() {
@@ -1283,12 +1353,12 @@ bool CMandelbrotDlg::getJobToDo(CRect &rect) {
 
 void CMandelbrotDlg::handleChangeCode(int flags) {
   m_lastChangeFlags = flags;
-  if(flags & (MAP_SIZECHANGED | WORK_SIZECHANGED)) {
+  if(flags & WORKSIZE_CHANGED) {
     setWorkSize();
     startCalculation();
-  } else if((flags & MB_SCALECHANGED) != 0) {
+  } else if(flags & (MAXCOUNT_CHANGED | SCALE_CHANGED)) {
     startCalculation();
-  } else if(flags & (MAP_COLORSCHANGED | MB_IMAGECHANGED)) {
+  } else if(flags & (COLORDATA_CHANGED | IMAGE_CHANGED)) {
     PostMessage(WM_PAINT);
   }
 }
@@ -1502,7 +1572,7 @@ void DialogMBContainer::resetOrbitPixels(const OrbitPoint *op, size_t count) {
 // overrides DWordpixelAccessor::setPixel. color actually count
 void DialogMBContainer::setPixel(UINT x, UINT y, D3DCOLOR color) {
   m_dlg->setCount(x,y, color);
-  SetPixel(m_dlg->getImageDC(), x,y,m_colorMap[color].m_colorRef);
+  SetPixel(m_dlg->getImageDC(), x,y,m_colorMap[color].getColorRef());
 }
 // overrides DWordPixelAccessor::getPixel. return count
 D3DCOLOR DialogMBContainer::getPixel(UINT x, UINT y) const {

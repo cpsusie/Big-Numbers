@@ -22,19 +22,18 @@ class CJuliaDlg : public CDialog {
   JuliaCalculatorThread        *m_thread;
   void adjustToRectangle();
 public:
-    CJuliaDlg(const RealPoint2D &point, CWnd *pParent = NULL);
-   ~CJuliaDlg();
+  CJuliaDlg(const RealPoint2D &point, CWnd *pParent = NULL);
+ ~CJuliaDlg();
 
-    const RealPoint2D &getC() const {
-      return m_point;
-    }
+  const RealPoint2D &getC() const {
+    return m_point;
+  }
 
-    const RealRectangleTransformation &getTransform() const {
-      return m_transform;
-    }
-    enum { IDD = IDD_JULIA_DIALOG };
+  const RealRectangleTransformation &getTransform() const {
+    return m_transform;
+  }
+  enum { IDD = IDD_JULIA_DIALOG };
 
-    virtual BOOL OnInitDialog();
-    DECLARE_MESSAGE_MAP()
+  virtual BOOL OnInitDialog();
+  DECLARE_MESSAGE_MAP()
 };
-

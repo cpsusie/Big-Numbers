@@ -273,13 +273,16 @@
   <ItemGroup>
     <ClCompile Include="CellCountMatrix.cpp" />
     <ClCompile Include="ColorMap.cpp" />
-    <ClCompile Include="ColorMapDlg.cpp" />
+    <ClCompile Include="colormapctrl.cpp" />
     <ClCompile Include="DebugLogThread.cpp" />
     <ClCompile Include="EdgeMatrix.cpp" />
+    <ClCompile Include="EditColorMapDlg.cpp" />
+    <ClCompile Include="EditColorMapDlgThread.cpp" />
     <ClCompile Include="ImageListThread.cpp" />
     <ClCompile Include="JuliaDlg.cpp" />
     <ClCompile Include="Mandelbrot.cpp" />
     <ClCompile Include="MandelbrotDlg.cpp" />
+    <ClCompile Include="MaxCountDlg.cpp" />
     <ClCompile Include="MBBigRealCalculator.cpp" />
     <ClCompile Include="MBCalculator.cpp" />
     <ClCompile Include="MBRealCalculator.cpp" />
@@ -304,13 +307,16 @@
   <ItemGroup>
     <ClInclude Include="CellCountMatrix.h" />
     <ClInclude Include="ColorMap.h" />
-    <ClInclude Include="ColorMapDlg.h" />
+    <ClInclude Include="colormapctrl.h" />
     <ClInclude Include="DebugLogThread.h" />
     <ClInclude Include="EdgeMatrix.h" />
+    <ClInclude Include="EditColorMapDlg.h" />
+    <ClInclude Include="EditColorMapDlgThread.h" />
     <ClInclude Include="ImageListThread.h" />
     <ClInclude Include="JuliaDlg.h" />
     <ClInclude Include="Mandelbrot.h" />
     <ClInclude Include="MandelbrotDlg.h" />
+    <ClInclude Include="MaxCountDlg.h" />
     <ClInclude Include="MBBigRealCalculator.h" />
     <ClInclude Include="MBCalculator.h" />
     <ClInclude Include="MBRealCalculator.h" />
@@ -319,6 +325,7 @@
     <ClInclude Include="ShowColorMapDlg.h" />
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="_Font.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\ico00001.ico" />
@@ -351,7 +358,7 @@
   </ImportGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties RESOURCE_FILE="Mandelbrot.rc" />
+      <UserProperties _x007B_B4097DDA-446A-4AB9-B210-3AF19276DF6C_x007D_="CDColormap" RESOURCE_FILE="Mandelbrot.rc" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>
