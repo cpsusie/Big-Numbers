@@ -53,6 +53,7 @@ public:
   operator D3DCOLOR() const;
   float getMax() const;
   float getMin() const;
+  bool  validate(bool throwOnError = true) const;
 
   // 0 <= fc2 <= 1
   // Return RGBColor, where each component C = c1.C*(1-fc2) + c2.C*fc2; C=[m_red,m_green,m_blue]

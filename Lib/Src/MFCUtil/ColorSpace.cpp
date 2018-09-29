@@ -41,6 +41,23 @@ float RGBColor::getMin() const {
   }
 }
 
+#define CHECKRANGE(c)                                                              \
+if(((c) < 0) || ((c) > 1)) {                                                       \
+  if(throwOnError) {                                                               \
+    throwException(_T("%s:%s(=%f) outside valid range [0..1]"), method,_T(#c), c); \
+  } else {                                                                         \
+    return false;                                                                  \
+  }                                                                                \
+}
+
+bool RGBColor::validate(bool throwOnError) const {
+  DEFINEMETHODNAME;
+  CHECKRANGE(m_red  );
+  CHECKRANGE(m_green);
+  CHECKRANGE(m_blue );
+  return true;
+}
+
 bool operator==(const RGBColor &c1, const RGBColor &c2) {
   return (c1.m_red == c2.m_red) && (c1.m_green == c2.m_green) && (c1.m_blue == c2.m_blue);
 }
