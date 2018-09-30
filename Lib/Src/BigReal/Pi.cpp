@@ -64,12 +64,12 @@ BigReal pi(const BigReal &f, DigitPool *digitPool) {
       if(f >= PIC.c1) {
         piValue = PIC.c2;
       } else {
-        const BigInt l = floor(PAPCsum(>,PAPCprod(>,ln(-BigReal::getExpo10N(PAPCprod(<,f,PIC.c4,PIP)),PIC.c5),PIC.c3,PIP),PIC.c6,PIP));
+        const BigInt l = floor(APCsum(>,APCprod(>,ln(-BigReal::getExpo10N(APCprod(<,f,PIC.c4,PIP)),PIC.c5),PIC.c3,PIP),PIC.c6,PIP));
         const int li = getInt(l);
-        BigReal w = PAPCprod(<,PAPCprod(<,PIC.c7,f,PIP),cut(BigReal::pow2(-li),APC_DIGITS, PIP),PIP); // PAPCpow(<,c16,l));
-        BigReal z = PAPCprod(<,PIC.c8,PAPCquot(<,f,l+PIP->get1(),PIP),PIP);
-        BigReal u = PAPCprod(<,PIC.c9,PAPCprod(<,z,PAPCpow(<,PIC.c10,l,PIP),PIP),PIP);
-        BigReal v = PAPCprod(<,PIC.c11,u,PIP);
+        BigReal w = APCprod(<,APCprod(<,PIC.c7,f,PIP),cut(BigReal::pow2(-li),APC_DIGITS, PIP),PIP); // APCpow(<,c16,l));
+        BigReal z = APCprod(<,PIC.c8,APCquot(<,f,l+PIP->get1(),PIP),PIP);
+        BigReal u = APCprod(<,PIC.c9,APCprod(<,z,APCpow(<,PIC.c10,l,PIP),PIP),PIP);
+        BigReal v = APCprod(<,PIC.c11,u,PIP);
         BigReal a = PIP->get1();
         BigReal b = sqrt(BigReal(PIC.c16,PIP),u);
         BigReal t = BigReal(PIC.c17,PIP);
@@ -82,16 +82,16 @@ BigReal pi(const BigReal &f, DigitPool *digitPool) {
           d = s - a;
           t -= prod(BigReal::pow2(i),prod(d,d,w,PIP),z,PIP);
         }
-        piValue = quot(prod(a,a,PAPCprod(<,PIC.c12,f,PIP)),t,PAPCprod(<,PIC.c13,f,PIP),PIP);
+        piValue = quot(prod(a,a,APCprod(<,PIC.c12,f,PIP)),t,APCprod(<,PIC.c13,f,PIP),PIP);
       }
-      piError = f; // rettet fra PAPCprod(c14,f,1);
+      piError = f; // rettet fra APCprod(c14,f,1);
 
       pi_gate.signal();
 
       return BigReal(piValue, pool);
     }
     BigReal tmp(pool);
-    copy(tmp, piValue,PAPCprod(<,PIC.c15, f,PIP));
+    copy(tmp, piValue,APCprod(<,PIC.c15, f,PIP));
 
     pi_gate.signal();
     return tmp;

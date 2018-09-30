@@ -26,7 +26,7 @@ BigReal BigReal::quotLinear32(const BigReal &x, const BigReal &y, const BigReal 
   const bool yNegative = y.isNegative();
   ((BigReal&)y).setPositive(); // cheating. We set it back agin
 
-  const BigReal v = PAPCprod(<, PAPCprod(<, f, Q32C.c1, pool), y, pool); // v >= 0
+  const BigReal v = APCprod(<, APCprod(<, f, Q32C.c1, pool), y, pool); // v >= 0
 
   BigReal z(pool);
   copy(z, x, v*Q32C.c2);

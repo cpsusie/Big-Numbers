@@ -160,7 +160,7 @@ static void testAPCSum() {
     FullFormatBigReal p = BigReal::apcSum(bias, x, y, &pool);
 
     _tprintf(_T("x:%50s y:%50s\n"), x.toString().cstr(), y.toString().cstr());
-    _tprintf(_T("PAPCSum(>,x,y) = %s\n"), p.toString().cstr());
+    _tprintf(_T("APCSum(>,x,y) = %s\n"), p.toString().cstr());
 
     try {
       p.assertIsValidBigReal();

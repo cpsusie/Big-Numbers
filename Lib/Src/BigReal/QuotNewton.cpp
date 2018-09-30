@@ -23,7 +23,7 @@ static const NewtonConstants NC;
 // Assume x != 0 and y != 0 and f != 0
 BigReal BigReal::quotNewton(const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *pool) { // static
 
-  const BigReal g = PAPCprod(<,PAPCprod(<,NC.c1,f,pool), fabs(PAPCprod(<,y,reciprocal(x,pool),pool)),pool);
+  const BigReal g = APCprod(<,APCprod(<,NC.c1,f,pool), fabs(APCprod(<,y,reciprocal(x,pool),pool)),pool);
 
   BRExpoType k = getExpo10(g);
   BRExpoType a[100];
@@ -35,7 +35,7 @@ BigReal BigReal::quotNewton(const BigReal &x, const BigReal &y, const BigReal &f
   }
 
   BigReal z = reciprocal(y, pool);
-  BigReal u = PAPCprod(<,NC.c5,fabs(z),pool);
+  BigReal u = APCprod(<,NC.c5,fabs(z),pool);
   for(int i = n-1; i >= 0; i--) {
     z += prod(z,dif(pool->get1(),prod(y,z,e(NC.c6,a[i], pool),pool), BIGREAL_0, pool), e(u,a[i], pool), pool);
   }

@@ -53,25 +53,25 @@ BigReal tan(const BigReal &x, const BigReal &f) {
   DigitPool *pool = x.getDigitPool();
 
   if(z > TANC.c1) {
-    BigReal m = floor(quot(x,pi(PAPCquot(<,TANC.c2,z,pool),pool),TANC.c3,pool))+TANC.c16;
-    BigReal r = PAPCquot(<,TANC.c4,fabs(m),pool);
+    BigReal m = floor(quot(x,pi(APCquot(<,TANC.c2,z,pool),pool),TANC.c3,pool))+TANC.c16;
+    BigReal r = APCquot(<,TANC.c4,fabs(m),pool);
     BigReal q(TANC.c5,pool);
-    z = fabs(dif(x, prod(pi(PAPCprod(<,r,q,pool),pool),m, PAPCprod(<,TANC.c6,q,pool),pool),PAPCprod(<,TANC.c7,q,pool),pool));
+    z = fabs(dif(x, prod(pi(APCprod(<,r,q,pool),pool),m, APCprod(<,TANC.c6,q,pool),pool),APCprod(<,TANC.c7,q,pool),pool));
     while(z < q) {
-      q = PAPCprod(<,q,q,pool);
-      z = fabs(dif(x, prod(pi(PAPCprod(<,q,r,pool),pool),m, PAPCprod(<,TANC.c6,q,pool),pool),PAPCprod(<,TANC.c7,q,pool),pool));
+      q = APCprod(<,q,q,pool);
+      z = fabs(dif(x, prod(pi(APCprod(<,q,r,pool),pool),m, APCprod(<,TANC.c6,q,pool),pool),APCprod(<,TANC.c7,q,pool),pool));
     }
-    BigReal d = PAPCprod(<,z,PAPCprod(<,TANC.c8,f,pool),pool);
+    BigReal d = APCprod(<,z,APCprod(<,TANC.c8,f,pool),pool);
     BigReal a = sin(x, d);
     return quot(a,
-                cos(x, PAPCquot(<,PAPCprod(<,PAPCprod(<,d,TANC.c9,pool),z,pool),fabs(a)+PAPCprod(<,d,TANC.c10,pool),pool)),
-                PAPCprod(<,TANC.c11,f,pool)
+                cos(x, APCquot(<,APCprod(<,APCprod(<,d,TANC.c9,pool),z,pool),fabs(a)+APCprod(<,d,TANC.c10,pool),pool)),
+                APCprod(<,TANC.c11,f,pool)
                );
   } else {
-    BigReal a = sin(x, PAPCprod(<,TANC.c12,f,pool));
+    BigReal a = sin(x, APCprod(<,TANC.c12,f,pool));
     return quot(a,
-                cos(x, PAPCquot(<,PAPCprod(<,TANC.c13,f,pool),fabs(a)+PAPCprod(<,TANC.c14,f,pool),pool)),
-                PAPCprod(<,TANC.c15,f,pool)
+                cos(x, APCquot(<,APCprod(<,TANC.c13,f,pool),fabs(a)+APCprod(<,TANC.c14,f,pool),pool)),
+                APCprod(<,TANC.c15,f,pool)
                );
   }
 }

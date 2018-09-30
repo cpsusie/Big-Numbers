@@ -28,5 +28,5 @@ BigReal acos(const BigReal &x, const BigReal &f) {
     return pool->get0();
   }
 
-  return pi(PAPCprod(<,f,ACOSC.c1,pool), pool)*ACOSC.c3 - asin(x,PAPCprod(<,f,ACOSC.c2,pool));
+  return pi(APCprod(<,f,ACOSC.c1,pool), pool)*ACOSC.c3 - asin(x,APCprod(<,f,ACOSC.c2,pool));
 }

@@ -47,11 +47,11 @@ BigReal pow(const BigReal &x, const BigReal &y, const BigReal &f) { // x^y
     throwBigRealInvalidArgumentException(method, _T("x < 0 and y not integer"));
   }
 
-  BigReal a = (x > _1) ? PAPCpow(>,x, floor(y)+_1,pool) : PAPCpow(>,x,floor(y),pool);
+  BigReal a = (x > _1) ? APCpow(>,x, floor(y)+_1,pool) : APCpow(>,x,floor(y),pool);
 
   if(a > f) {
-    const BigReal u = PAPCquot(<,f,a,pool);
-    return exp(prod(y,ln(x, PAPCquot(<,PAPCprod(<,POWC.c1,u,pool),fabs(y),pool)),PAPCprod(<,POWC.c2,u,pool),pool),PAPCprod(<,POWC.c3,f,pool));
+    const BigReal u = APCquot(<,f,a,pool);
+    return exp(prod(y,ln(x, APCquot(<,APCprod(<,POWC.c1,u,pool),fabs(y),pool)),APCprod(<,POWC.c2,u,pool),pool),APCprod(<,POWC.c3,f,pool));
   } else {
     return pool->get0();
   }

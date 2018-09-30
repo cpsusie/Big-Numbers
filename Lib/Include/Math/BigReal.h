@@ -1102,17 +1102,10 @@ public:
   static const ConstBigReal _dbl80_max;
 };
 
-/*
-#define APCsum(  bias, x, y)       BigReal::apcSum( #@bias, x, y)
-#define APCprod( bias, x, y)       BigReal::apcProd(#@bias, x, y)
-#define APCquot( bias, x, y)       BigReal::apcQuot(#@bias, x, y)
-#define APCpow(  bias, x, y)       BigReal::apcPow( #@bias, x, y)
-*/
-
-#define PAPCsum( bias, x, y, pool) BigReal::apcSum( #@bias, x, y, pool)
-#define PAPCprod(bias, x, y, pool) BigReal::apcProd(#@bias, x, y, pool)
-#define PAPCquot(bias, x, y, pool) BigReal::apcQuot(#@bias, x, y, pool)
-#define PAPCpow( bias, x, y, pool) BigReal::apcPow( #@bias, x, y, pool)
+#define APCsum( bias, x, y, pool) BigReal::apcSum( #@bias, x, y, pool)
+#define APCprod(bias, x, y, pool) BigReal::apcProd(#@bias, x, y, pool)
+#define APCquot(bias, x, y, pool) BigReal::apcQuot(#@bias, x, y, pool)
+#define APCpow( bias, x, y, pool) BigReal::apcPow( #@bias, x, y, pool)
 
 inline bool operator==(const BigReal &x, const BigReal &y) {
   return compare(x,y) == 0;

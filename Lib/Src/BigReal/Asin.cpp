@@ -63,16 +63,16 @@ BigReal asin(const BigReal &x, const BigReal &f) {
     }
     q = ASINC.c1;
     z = dif(_1,x,q);
-    while(z < PAPCprod(>,ASINC.c2,q,pool)) {
-      q = PAPCprod(<,q,q,pool);
+    while(z < APCprod(>,ASINC.c2,q,pool)) {
+      q = APCprod(<,q,q,pool);
       z = dif(_1,x,q,pool);
     }
-    g = PAPCquot(<,PAPCprod(<,ASINC.c3,f,pool),x,pool);
-    t = sqrt(_1 - prod(x,x,PAPCprod(<,f,PAPCquot(<,e(ASINC.c5,BigReal::getExpo10(z)/2,pool),x,pool),pool),pool),dmin(g,BigReal(ASINC.c4,pool)));
+    g = APCquot(<,APCprod(<,ASINC.c3,f,pool),x,pool);
+    t = sqrt(_1 - prod(x,x,APCprod(<,f,APCquot(<,e(ASINC.c5,BigReal::getExpo10(z)/2,pool),x,pool),pool),pool),dmin(g,BigReal(ASINC.c4,pool)));
     if(t.isPositive()) {
-      return atan(quot(x,t,PAPCquot(<,PAPCprod(<,ASINC.c6,f,pool),PAPCprod(>,t,t,pool),pool),pool),PAPCprod(<,ASINC.c7,f,pool));
+      return atan(quot(x,t,APCquot(<,APCprod(<,ASINC.c6,f,pool),APCprod(>,t,t,pool),pool),pool),APCprod(<,ASINC.c7,f,pool));
     } else {
-      return pi(PAPCprod(<,f,ASINC.c8,pool), pool) * ASINC.c13;
+      return pi(APCprod(<,f,ASINC.c8,pool), pool) * ASINC.c13;
     }
   } else { // x < 0
     if(x < ASINC.c14) {

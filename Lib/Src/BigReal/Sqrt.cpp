@@ -42,11 +42,11 @@ BigReal sqrt(const BigReal &x, const BigReal &f) {
   } else {
     m = (m-1) / 2;
   }
-  BigReal y = PAPCprod(<,e(SQRTC.c1,-m,pool),PAPCsum(<,x,e(SQRTC.c8,2*m,pool),pool),pool);
+  BigReal y = APCprod(<,e(SQRTC.c1,-m,pool),APCsum(<,x,e(SQRTC.c8,2*m,pool),pool),pool);
 
-  y = PAPCprod(#,PAPCsum(#,PAPCquot(#,x,y,pool),y,pool),SQRTC.c9,pool);
+  y = APCprod(#,APCsum(#,APCquot(#,x,y,pool),y,pool),SQRTC.c9,pool);
 
-  BigReal g = PAPCquot(<,PAPCprod(<,SQRTC.c2,f,pool),y,pool);
+  BigReal g = APCquot(<,APCprod(<,SQRTC.c2,f,pool),y,pool);
 
   BRExpoType k = BigReal::getExpo10(g);
   BRExpoType a[100];
@@ -55,9 +55,9 @@ BigReal sqrt(const BigReal &x, const BigReal &f) {
     k /= 2;
     a[n++] = k;
   }
-  BigReal u = PAPCprod(<,PAPCprod(<,y,y,pool),SQRTC.c6,pool);
+  BigReal u = APCprod(<,APCprod(<,y,y,pool),SQRTC.c6,pool);
 
-  BigReal v = PAPCprod(<,SQRTC.c7,y,pool);
+  BigReal v = APCprod(<,SQRTC.c7,y,pool);
 
   for(int i = n-1; i >= 0; i--) {
     y += quot(dif(x,y*y,e(u,a[i],pool),pool),y+y,e(v,a[i],pool),pool);

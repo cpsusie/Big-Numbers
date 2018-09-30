@@ -16,14 +16,14 @@ BigReal &BigReal::productMT(BigReal &result, const BigReal &x, const BigReal &y,
   }
 
 
-  const BigReal g = PAPCprod(#,C1third,f,pool);
+  const BigReal g = APCprod(#,C1third,f,pool);
   BigReal gpm10(g);
   gpm10.multPow10(-10);
   const intptr_t n = min((intptr_t)XLength, w)/2;
 
   BigReal a(pool), b(pool);
   level++;
-  x.split(a, b, n, g.isZero() ? pool->get0() : PAPCprod(#, gpm10, reciprocal(y, pool),pool));   // a + b = x   (=O(n))
+  x.split(a, b, n, g.isZero() ? pool->get0() : APCprod(#, gpm10, reciprocal(y, pool),pool));   // a + b = x   (=O(n))
 
 
   MThreadArray threads;
@@ -47,7 +47,7 @@ BigReal &BigReal::productMT(BigReal &result, const BigReal &x, const BigReal &y,
   }
 
   BigReal c(pool), d(pool);
-  y.split(c, d, n, g.isZero() ? pool->get0() : PAPCprod(#, gpm10, reciprocal(x, pool),pool));               // c + d = y   O(n)
+  y.split(c, d, n, g.isZero() ? pool->get0() : APCprod(#, gpm10, reciprocal(x, pool),pool));               // c + d = y   O(n)
 
   const BRExpoType logBK = LOG10_BIGREALBASE * n;
 

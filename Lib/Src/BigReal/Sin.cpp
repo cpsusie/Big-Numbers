@@ -29,5 +29,5 @@ BigReal sin(const BigReal &x, const BigReal &f) {
     return pool->get0();
   }
 
-  return cos(dif(pi(PAPCprod(<,SINC.c1,f,pool),pool)*SINC.c4,x,PAPCprod(<,SINC.c2,f,pool),pool),PAPCprod(<,SINC.c3,f,pool));
+  return cos(dif(pi(APCprod(<,SINC.c1,f,pool),pool)*SINC.c4,x,APCprod(<,SINC.c2,f,pool),pool),APCprod(<,SINC.c3,f,pool));
 }

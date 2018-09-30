@@ -61,38 +61,38 @@ BigReal exp( const BigReal &x, const BigReal &f) {
 #define _1 pool->get1()
 
   if(x.isNegative()) {
-    BigReal r = PAPCpow(<,EXPC.c1,BigInt(EXPC.c19,pool) - floor(x),pool);
-    BigReal g = PAPCprod(<,f,r,pool);
+    BigReal r = APCpow(<,EXPC.c1,BigInt(EXPC.c19,pool) - floor(x),pool);
+    BigReal g = APCprod(<,f,r,pool);
     if(g < EXPC.c20) {
-      return quot(_1,exp(-x,PAPCprod(<,r,PAPCprod(<,EXPC.c3,g,pool),pool)), f*EXPC.c4);
+      return quot(_1,exp(-x,APCprod(<,r,APCprod(<,EXPC.c3,g,pool),pool)), f*EXPC.c4);
     } else {
-      return PAPCquot(#,EXPC.c1,r,pool);
+      return APCquot(#,EXPC.c1,r,pool);
     }
   } else {
-    BigReal g = PAPCprod(<,f,PAPCpow(<,EXPC.c5,floor(x)+_1,pool),pool);
+    BigReal g = APCprod(<,f,APCpow(<,EXPC.c5,floor(x)+_1,pool),pool);
     if(g >= _1) {
       return g;
     } else {
-      BigReal kn = PAPCprod(>,EXPC.c6,BigReal::getExpo10N(x),pool) + EXPC.c7;
-      BigReal jn = PAPCprod(>,EXPC.c8, sqrt(-BigReal::getExpo10N(g),EXPC.c9),pool) + kn + EXPC.c10;
+      BigReal kn = APCprod(>,EXPC.c6,BigReal::getExpo10N(x),pool) + EXPC.c7;
+      BigReal jn = APCprod(>,EXPC.c8, sqrt(-BigReal::getExpo10N(g),EXPC.c9),pool) + kn + EXPC.c10;
       jn = (jn < _1) ? pool->get0() : floor(jn);
       kn = (kn < _1) ? _1  : (kn > jn) ? (jn + _1) : floor(kn);
       int j = getInt(jn),k = getInt(kn);
       BigReal h(pool);
       h = BigReal::pow2(-j);
-      g = PAPCprod(<,g,PAPCprod(<,EXPC.c11,h,pool),pool);
+      g = APCprod(<,g,APCprod(<,EXPC.c11,h,pool),pool);
       BigReal y = prod(x,h,g*EXPC.c12);
-      BigReal d = PAPCprod(>,EXPC.c13,y,pool);
+      BigReal d = APCprod(>,EXPC.c13,y,pool);
       BigReal q = BigReal(EXPC.c18, pool);
       BigReal l = _1;
       while(g < d) {
         l = l + l; // i.e l *= 2
-        q = PAPCprod(>,q,q,pool);
-        d = PAPCprod(>,q,PAPCprod(>,d,d,pool),pool);
+        q = APCprod(>,q,q,pool);
+        d = APCprod(>,q,APCprod(>,d,d,pool),pool);
       }
-      BigReal u = PAPCquot(<,PAPCprod(<,EXPC.c14,g,pool),l,pool);
-      BigReal v = PAPCprod(<,EXPC.c15,g,pool);
-      BigReal w = PAPCprod(<,EXPC.c16,u,pool);
+      BigReal u = APCquot(<,APCprod(<,EXPC.c14,g,pool),l,pool);
+      BigReal v = APCprod(<,EXPC.c15,g,pool);
+      BigReal w = APCprod(<,EXPC.c16,u,pool);
       BigReal s = _1;
       BigReal t = _1;
       BigReal n(pool);
@@ -101,12 +101,12 @@ BigReal exp( const BigReal &x, const BigReal &f) {
         t = quot(prod(t,y,w,pool),n,u,pool);
         s += t;
       }
-      g = PAPCprod(<,EXPC.c17,g,pool);
+      g = APCprod(<,EXPC.c17,g,pool);
       for(int i = k; i <= j; i++) {
         s = prod(s,s,g);
       }
       for(int i = 2; i <= k; i++) {
-        s = prod(s,s,PAPCprod(#,g,PAPCprod(#,s,s,pool),pool), pool);
+        s = prod(s,s,APCprod(#,g,APCprod(#,s,s,pool),pool), pool);
       }
       return s;
     }

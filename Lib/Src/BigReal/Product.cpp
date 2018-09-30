@@ -168,21 +168,21 @@ BigReal &BigReal::product(BigReal &result, const BigReal &x, const BigReal &y, c
     return productMT(result, X, Y, f, w, level+1);
   }
 
-  const BigReal g = PAPCprod(#, C1third, f, pool);
+  const BigReal g = APCprod(#, C1third, f, pool);
   BigReal gpm10(g);
   gpm10.multPow10(-10);
   const intptr_t n = min((intptr_t)XLength, w)/2;
   BigReal a(pool), b(pool);
   const BigReal &zero = pool->get0();
   level++;
-  X.split(a, b, n, g.isZero() ? zero : PAPCprod(#,gpm10,reciprocal(Y,pool),pool));            // a + b = X   O(n)
+  X.split(a, b, n, g.isZero() ? zero : APCprod(#,gpm10,reciprocal(Y,pool),pool));             // a + b = X   O(n)
   if((intptr_t)YLength < n) {                                                                 //
     BigReal p1(pool),p2(pool);                                                                //
     return result = product(p1, a, Y, zero, level) + product(p2, b, Y, g, level);             // a*Y+b*Y     O(2*n/2*n+n/2)
   }
 
   BigReal c(pool), d(pool);
-  Y.split(c, d, n, g.isZero() ? zero : PAPCprod(#,gpm10,reciprocal(X, pool),pool));           // c + d = Y   O(n)
+  Y.split(c, d, n, g.isZero() ? zero : APCprod(#,gpm10,reciprocal(X, pool),pool));            // c + d = Y   O(n)
 
   const BRExpoType logBK = LOG10_BIGREALBASE * n;                    //                                      O(1)
                                                                      //
