@@ -61,10 +61,7 @@ public:
 static const ATanConstants ATANC;
 
 BigReal atan(const BigReal &x, const BigReal &f) {
-  DEFINEMETHODNAME;
-  if(!f.isPositive()) {
-    throwInvalidToleranceException(method);
-  }
+  VALIDATETOLERANCE(f)
 
   DigitPool *pool = x.getDigitPool();
 #define _1 pool->get1()
@@ -107,8 +104,9 @@ BigReal atan(const BigReal &x, const BigReal &f) {
       const BigReal w = APCprod(<,ATANC.c23,u,pool);
       BigReal n = _1;
       BigReal s = y;
-      const BigReal t = -prod(y,y,APCprod(<,ATANC.c24,u,pool));
-      for(BigReal i = _1; i <= l; ++i) {
+      const BigReal t   = -prod(y,y,APCprod(<,ATANC.c24,u,pool));
+      const UINT    l32 = getUint(l);
+      for(UINT i = 1; i <= l32; i++) {
         n += ATANC.c26;
         s = prod(s,t,w,pool);
         y += quot(s,n,u,pool);

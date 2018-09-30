@@ -19,10 +19,7 @@ public:
 static const SinConstants SINC;
 
 BigReal sin(const BigReal &x, const BigReal &f) {
-  DEFINEMETHODNAME;
-  if(!f.isPositive()) {
-    throwInvalidToleranceException(method);
-  }
+  VALIDATETOLERANCE(f)
 
   DigitPool *pool = x.getDigitPool();
   if(x.isZero()) {

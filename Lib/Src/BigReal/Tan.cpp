@@ -43,10 +43,7 @@ public:
 static const TanConstants TANC;
 
 BigReal tan(const BigReal &x, const BigReal &f) {
-  DEFINEMETHODNAME;
-  if(!f.isPositive()) {
-    throwInvalidToleranceException(method);
-  }
+  VALIDATETOLERANCE(f)
 
   BigReal z = fabs(x);
 

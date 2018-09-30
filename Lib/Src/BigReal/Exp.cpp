@@ -52,10 +52,7 @@ public:
 static const ExpConstants EXPC;
 
 BigReal exp( const BigReal &x, const BigReal &f) {
-  DEFINEMETHODNAME;
-  if(!f.isPositive()) {
-    throwInvalidToleranceException(method);
-  }
+  VALIDATETOLERANCE(f)
 
   DigitPool *pool = x.getDigitPool();
 #define _1 pool->get1()

@@ -17,10 +17,7 @@ public:
 static const ACotConstants ACOTC;
 
 BigReal acot(const BigReal &x, const BigReal &f) {
-  DEFINEMETHODNAME;
-  if(!f.isPositive()) {
-    throwInvalidToleranceException(method);
-  }
+  VALIDATETOLERANCE(f)
 
   DigitPool *pool = x.getDigitPool();
 

@@ -16,12 +16,9 @@ BigReal &BigReal::operator%=(const BigReal &x) {
 }
 
 BigReal quot(const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *digitPool) {
-  DEFINEMETHODNAME;
+  VALIDATETOLERANCE(f)
   if(y.isZero()) {
     throwBigRealInvalidArgumentException(method, _T("Division by zero"));
-  }
-  if(!f.isPositive()) {
-    throwInvalidToleranceException(method);
   }
   DigitPool *pool = digitPool ? digitPool : x.getDigitPool();
 

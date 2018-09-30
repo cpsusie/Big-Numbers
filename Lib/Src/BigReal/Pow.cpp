@@ -17,10 +17,7 @@ public:
 static const PowConstants POWC;
 
 BigReal pow(const BigReal &x, const BigReal &y, const BigReal &f) { // x^y
-  DEFINEMETHODNAME;
-  if(!f.isPositive()) {
-    throwInvalidToleranceException(method);
-  }
+  VALIDATETOLERANCE(f)
 
   DigitPool *pool = x.getDigitPool();
 #define _1 pool->get1()

@@ -37,7 +37,6 @@ static const Ln10Constants LN10C;
 #define _1 pool->get1()
 
 BigReal BigReal::ln10(const BigReal &f) { // static
-  DEFINEMETHODNAME;
   ln_gate.wait();
 
   try {
@@ -45,10 +44,7 @@ BigReal BigReal::ln10(const BigReal &f) { // static
     static BigReal ln10Error(LNPOOL); // cache
     static BigReal ln10Value(LNPOOL); // cache
 
-    if(!f.isPositive()) {
-      throwInvalidToleranceException(method);
-    }
-
+    VALIDATETOLERANCE(f)
     if(ln10Error.isZero() || f < ln10Error) {
       if(f >= LN10C.c6) {
         ln10Value = LN10C.c7;
@@ -170,12 +166,9 @@ public:
 static LnConstants LNC;
 
 BigReal ln(const BigReal &x, const BigReal &f) {
-  DEFINEMETHODNAME;
+  VALIDATETOLERANCE(f)
   if(!x.isPositive()) {
     throwBigRealInvalidArgumentException(method, _T("x<=0"));
-  }
-  if(!f.isPositive()) {
-    throwInvalidToleranceException(method);
   }
 
   DigitPool *pool = x.getDigitPool();
@@ -283,12 +276,9 @@ public:
 static const Ln1Constants LN1C;
 
 BigReal ln1(const BigReal &x, const BigReal &f) {
-  DEFINEMETHODNAME;
+  VALIDATETOLERANCE(f)
   if(!x.isPositive()) {
     throwBigRealInvalidArgumentException(method, _T("x<=0"));
-  }
-  if(!f.isPositive()) {
-    throwInvalidToleranceException(method);
   }
 
   DigitPool *pool = x.getDigitPool();
@@ -388,7 +378,7 @@ public:
 static const LogConstants LOGC;
 
 BigReal log(const BigReal &base, const BigReal &x, const BigReal &f) { // log(x) base base
-  DEFINEMETHODNAME;
+  VALIDATETOLERANCE(f)
 
   DigitPool *pool = x.getDigitPool();
 
@@ -400,9 +390,6 @@ BigReal log(const BigReal &base, const BigReal &x, const BigReal &f) { // log(x)
   }
   if(!x.isPositive()) {
     throwBigRealInvalidArgumentException(method, _T("x<=0"));
-  }
-  if(!f.isPositive()) {
-    throwInvalidToleranceException(method);
   }
 
   BigReal r(pool);
@@ -447,12 +434,9 @@ public:
 static const Log10Constants L10C;
 
 BigReal log10(const BigReal &x, const BigReal &f) {
-  DEFINEMETHODNAME;
+  VALIDATETOLERANCE(f)
   if(!x.isPositive()) {
     throwBigRealInvalidArgumentException(method, _T("x<=0"));
-  }
-  if(!f.isPositive()) {
-    throwInvalidToleranceException(method);
   }
 
   DigitPool *pool = x.getDigitPool();

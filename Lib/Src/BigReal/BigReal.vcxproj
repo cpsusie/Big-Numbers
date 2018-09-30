@@ -669,6 +669,7 @@
     <ClInclude Include="..\..\Include\Math\BigRealInterval.h" />
     <ClInclude Include="..\..\Include\Math\BigRealMatrix.h" />
     <ClInclude Include="..\..\Include\Math\BigRealTransformation.h" />
+    <ClInclude Include="BigRealInternal.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>

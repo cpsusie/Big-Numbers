@@ -48,14 +48,11 @@ public:
 static const PiConstants PIC;
 
 BigReal pi(const BigReal &f, DigitPool *digitPool) {
-  DEFINEMETHODNAME;
+  VALIDATETOLERANCE(f)
   DigitPool *pool = digitPool ? digitPool : f.getDigitPool();
   pi_gate.wait();
 
   try {
-    if(!f.isPositive()) {
-      throwInvalidToleranceException(method);
-    }
 
     static BigReal piValue(PIP); // cache
     static BigReal piError(PIP); // cache

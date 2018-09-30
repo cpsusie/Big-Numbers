@@ -8,3 +8,4 @@
 #include <Math.h>
 #include <Math/MathLib.h>
 #include <Math/BigReal.h>
+#include "BigRealInternal.h"

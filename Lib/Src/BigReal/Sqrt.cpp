@@ -23,7 +23,7 @@ public:
 static const SqrtConstants SQRTC;
 
 BigReal sqrt(const BigReal &x, const BigReal &f) {
-  DEFINEMETHODNAME;
+  VALIDATETOLERANCE(f)
   if(x.isNegative()) {
     throwBigRealInvalidArgumentException(method, _T("x<0"));
   }
@@ -31,9 +31,6 @@ BigReal sqrt(const BigReal &x, const BigReal &f) {
   DigitPool *pool = x.getDigitPool();
   if(x.isZero()) {
     return pool->get0();
-  }
-  if(!f.isPositive()) {
-    throwInvalidToleranceException(method);
   }
 
   BRExpoType m = BigReal::getExpo10(x);
