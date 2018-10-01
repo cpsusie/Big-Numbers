@@ -291,7 +291,8 @@ bool isMenuItemChecked(const CWnd *wnd, UINT id) {
   return isMenuItemChecked(*m, id);
 }
 
-void insertMenuItem(const CWnd *wnd, UINT afterId, int flags, const String &itemText, UINT commandId) { // flags = 0,MF_SEPARATOR
+// flags = 0,MF_SEPARATOR
+void insertMenuItem(const CWnd *wnd, UINT afterId, int flags, const String &itemText, UINT commandId) {
   int index;
   HMENU menu = findMenuContainingId(wnd, afterId, index);
   if(menu) {

@@ -1,7 +1,7 @@
 #pragma once
 
 #ifndef VC_EXTRALEAN
-#define VC_EXTRALEAN            // Exclude rarely-used stuff from Windows headers
+#define VC_EXTRALEAN        // Exclude rarely-used stuff from Windows headers
 #endif
 
 #define _CRT_SECURE_NO_WARNINGS 1
@@ -18,21 +18,21 @@
 #include <afxext.h>         // MFC extensions
 #include <afxdisp.h>        // MFC Automation classes
 #include <afxdtctl.h>       // MFC support for Internet Explorer 4 Common Controls
-#include <afxcontrolbars.h>     // MFC support for ribbons and control bars
+#include <afxcontrolbars.h> // MFC support for ribbons and control bars
 
 #ifndef _AFX_NO_DB_SUPPORT
-#include <afxdb.h>                      // MFC ODBC database classes
+#include <afxdb.h>          // MFC ODBC database classes
 #endif // _AFX_NO_DB_SUPPORT
 
 #ifndef _AFX_NO_DAO_SUPPORT
-#include <afxdao.h>                     // MFC DAO database classes
+#include <afxdao.h>         // MFC DAO database classes
 #endif // _AFX_NO_DAO_SUPPORT
 
 #ifndef _AFX_NO_OLE_SUPPORT
-#include <afxdtctl.h>           // MFC support for Internet Explorer 4 Common Controls
+#include <afxdtctl.h>       // MFC support for Internet Explorer 4 Common Controls
 #endif
 #ifndef _AFX_NO_AFXCMN_SUPPORT
-#include <afxcmn.h>                     // MFC support for Windows Common Controls
+#include <afxcmn.h>         // MFC support for Windows Common Controls
 #endif // _AFX_NO_AFXCMN_SUPPORT
 
 #include <MyUtil.h>
@@ -58,22 +58,26 @@ bool   removeSubMenuContainingId(      HMENU menu,  UINT          id );
 bool   menuItemExists(                 HMENU menu,  UINT          id );
 
 String getMenuItemText(                HMENU menu,  int           pos);
-String setMenuItemText(                HMENU menu,  UINT          id , const String &itemText); // returns old itemtext
+// returns old itemtext
+String setMenuItemText(                HMENU menu,  UINT          id , const String &itemText);
 HMENU  getSubMenu(                     HMENU menu,  const String &s);               // see comment at enableMenuItem
 void   removeAllMenuItems(             HMENU menu);                                 // recursive destroy all submenus
 
 void   enableMenuItem(           const CWnd  *wnd , UINT          id, bool enabled);
 void   enableMenuItem(           const CWnd  *wnd , const String &s , bool enabled);
 void   checkMenuItem(            const CWnd  *wnd,  UINT          id, bool checked);
-bool   enableSubMenuContainingId(const CWnd  *wnd , UINT          id, bool enabled); // return true if done, false if not
+// return true if done, false if not
+bool   enableSubMenuContainingId(const CWnd  *wnd , UINT          id, bool enabled);
 bool   isMenuItemChecked(        const CWnd  *wnd,  UINT          id        );
-void   insertMenuItem(           const CWnd  *wnd,  UINT          afterId, int flags, const String &itemText, UINT commandId); // flags = 0,MF_SEPARATOR
+// flags = 0,MF_SEPARATOR
+void   insertMenuItem(           const CWnd  *wnd,  UINT          afterId, int flags, const String &itemText, UINT commandId);
 void   removeMenuItem(           const CWnd  *wnd,  UINT          id        );
 void   removeMenuItem(           const CWnd  *wnd,  const String &s);           // see comment at enableMenuItem
 bool   removeSubMenuContainingId(const CWnd  *wnd,  UINT          id        );
 bool   menuItemExists(           const CWnd  *wnd,  UINT          id        );
 String getMenuItemText(          const CWnd  *wnd,  UINT          id        );
-String setMenuItemText(          const CWnd  *wnd,  UINT          id, const String &itemText); // returns old itemtext
+// returns old itemtext
+String setMenuItemText(          const CWnd  *wnd,  UINT          id, const String &itemText);
 bool   toggleMenuItem(           const CWnd  *wnd,  UINT          id        );
 
 
@@ -108,8 +112,10 @@ void   setWindowText(              CWnd *wnd,         const String &str);
 void   setWindowText(              CWnd *wnd, int id, const String &str);
 
 int    getFocusCtrlId(       const CWnd *wnd);
-void   gotoEditBox(                CWnd *wnd, int id); // assume id is CEdit
-void   gotoMatchingParanthes(      CWnd *wnd, int id); // assume id is CEdit
+// assume id is CEdit
+void   gotoEditBox(                CWnd *wnd, int id);
+// assume id is CEdit
+void   gotoMatchingParanthes(      CWnd *wnd, int id);
 void   gotoMatchingParanthes(      CEdit     *edit);
 void   gotoMatchingParanthes(      CComboBox *cb);
 
@@ -141,15 +147,15 @@ HICON   createIcon(  const ByteArray &bytes);
 HICON   loadIcon(    FILE *f);
 HICON   loadIcon(    const String &fileName);
 
-BITMAP           getBitmapInfo(      HBITMAP bm);
-BITMAPINFOHEADER getBitmapInfoHeader(HBITMAP bm);
-CSize            getBitmapSize(      HBITMAP bm);
-CBitmap         *createFromHandle(   HBITMAP bm);
+BITMAP           getBitmapInfo(              HBITMAP   bm);
+BITMAPINFOHEADER getBitmapInfoHeader(        HBITMAP   bm);
+CSize            getBitmapSize(              HBITMAP   bm);
+CBitmap         *createFromHandle(           HBITMAP   bm);
 
-ICONINFO getIconInfo(                HICON    icon);
-CSize    getIconSize(                HICON    icon);
-void     closeIconInfo(              ICONINFO &info);
-ByteArray &bitmapToByteArray(ByteArray &dst, HBITMAP bm);
+ICONINFO  getIconInfo(                       HICON     icon);
+CSize     getIconSize(                       HICON     icon);
+void      closeIconInfo(                     ICONINFO &info);
+ByteArray &bitmapToByteArray(ByteArray &dst, HBITMAP   bm  );
 
 ByteArray &getBitmapBits(HBITMAP bm,       ByteArray &bytes,       BITMAPINFO &bmInfo);
 void       setBitmapBits(HBITMAP bm, const ByteArray &bytes, const BITMAPINFO &bmInfo);
