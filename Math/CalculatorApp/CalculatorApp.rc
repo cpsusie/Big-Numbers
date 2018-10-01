@@ -90,10 +90,10 @@ BEGIN
     END
     POPUP "&View"
     BEGIN
-        MENUITEM "&Hex\tF5",                    ID_VIEW_HEX
-        MENUITEM "&Dec\tF6",                    ID_VIEW_DEC
-        MENUITEM "&Oct\tF7",                    ID_VIEW_OCT
-        MENUITEM "&Bin\tF8",                    ID_VIEW_BIN
+        MENUITEM "&Bin\tF5",                    ID_VIEW_BIN
+        MENUITEM "&Oct\tF6",                    ID_VIEW_OCT
+        MENUITEM "&Dec\tF7",                    ID_VIEW_DEC
+        MENUITEM "&Hex\tF8",                    ID_VIEW_HEX
         MENUITEM SEPARATOR
         MENUITEM "D&egrees\tF2",                ID_VIEW_DEGREES
         MENUITEM "&Radians\tF3",                ID_VIEW_RADIANS
@@ -108,7 +108,7 @@ BEGIN
     END
 END
 
-IDR_MENU2 MENU
+IDR_MENUCONTEXTHELP MENU
 BEGIN
     POPUP "Control"
     BEGIN
@@ -122,135 +122,136 @@ END
 // Accelerator
 //
 
-IDC_ACCELERATORTABEL ACCELERATORS
+IDR_MAINFRAME ACCELERATORS
 BEGIN
-    "'",            IDIGNORE,               ASCII,  NOINVERT
-    "*",            ID_MULT,                ASCII,  NOINVERT
     "+",            ID_ADD,                 ASCII,  NOINVERT
-    ",",            ID_COMMA,               ASCII,  NOINVERT
-    "-",            ID_SUB,                 ASCII,  NOINVERT
-    ".",            ID_COMMA,               ASCII,  NOINVERT
-    "0",            ID_NUMBER0,             VIRTKEY, NOINVERT
-    "0",            ID_EQUAL,               VIRTKEY, SHIFT, NOINVERT
-    27,             IDIGNORE,               ASCII,  NOINVERT
-    "1",            ID_NUMBER1,             VIRTKEY, NOINVERT
-    "1",            ID_FAC,                 VIRTKEY, SHIFT, NOINVERT
-    "1",            ID_SHOWINFO,            VIRTKEY, SHIFT, CONTROL, NOINVERT
-    167,            IDIGNORE,               ASCII,  NOINVERT
-    168,            IDIGNORE,               ASCII,  NOINVERT
-    180,            IDIGNORE,               ASCII,  NOINVERT
-    189,            IDIGNORE,               ASCII,  NOINVERT
-    "2",            ID_NUMBER2,             VIRTKEY, NOINVERT
-    "2",            ID_SQUARE,              VIRTKEY, ALT, NOINVERT
-    "2",            ID_SQUARE,              VIRTKEY, CONTROL, ALT, NOINVERT
-    "2",            IDIGNORE,               VIRTKEY, SHIFT, NOINVERT
-    "3",            ID_NUMBER3,             VIRTKEY, NOINVERT
-    "3",            ID_POW3,                VIRTKEY, ALT, NOINVERT
-    "3",            ID_POW3,                VIRTKEY, CONTROL, ALT, NOINVERT
-    "3",            ID_POW3,                VIRTKEY, SHIFT, NOINVERT
-    "4",            ID_NUMBER4,             VIRTKEY, NOINVERT
-    "5",            ID_NUMBER5,             VIRTKEY, NOINVERT
-    "5",            ID_MOD,                 VIRTKEY, SHIFT, NOINVERT
-    "6",            ID_NUMBER6,             VIRTKEY, NOINVERT
+    VK_ADD,         ID_ADD,                 VIRTKEY, NOINVERT
     "6",            ID_AND,                 VIRTKEY, SHIFT, NOINVERT
-    "7",            ID_NUMBER7,             VIRTKEY, NOINVERT
+    VK_BACK,        ID_BACK,                VIRTKEY, NOINVERT
+    VK_DELETE,      ID_CE,                  VIRTKEY, NOINVERT
+    VK_ESCAPE,      ID_CLEAR,               VIRTKEY, NOINVERT
+    ",",            ID_COMMA,               ASCII,  NOINVERT
+    ".",            ID_COMMA,               ASCII,  NOINVERT
+    VK_DECIMAL,     ID_COMMA,               VIRTKEY, NOINVERT
+    "O",            ID_COS,                 VIRTKEY, NOINVERT
     "7",            ID_DIV,                 VIRTKEY, SHIFT, NOINVERT
-    "8",            ID_NUMBER8,             VIRTKEY, NOINVERT
-    "8",            ID_LPAR,                VIRTKEY, SHIFT, NOINVERT
-    "9",            ID_NUMBER9,             VIRTKEY, NOINVERT
-    "9",            ID_RPAR,                VIRTKEY, SHIFT, NOINVERT
+    VK_DIVIDE,      ID_DIV,                 VIRTKEY, NOINVERT
+    "M",            ID_DMS,                 VIRTKEY, NOINVERT
+    "C",            ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
+    "V",            ID_EDIT_PASTE,          VIRTKEY, CONTROL, NOINVERT
+    "X",            ID_EE,                  VIRTKEY, NOINVERT
+    "0",            ID_EQUAL,               VIRTKEY, SHIFT, NOINVERT
+    VK_RETURN,      ID_EQUAL,               VIRTKEY, NOINVERT
+    "1",            ID_FAC,                 VIRTKEY, SHIFT, NOINVERT
     ";",            ID_INT,                 ASCII,  NOINVERT
+    "N",            ID_LN,                  VIRTKEY, NOINVERT
+    "L",            ID_LOG,                 VIRTKEY, NOINVERT
+    "8",            ID_LPAR,                VIRTKEY, SHIFT, NOINVERT
     "<",            ID_LSH,                 ASCII,  NOINVERT
-    ">",            IDIGNORE,               ASCII,  NOINVERT
-    "?",            IDIGNORE,               ASCII,  NOINVERT
+    "5",            ID_MOD,                 VIRTKEY, SHIFT, NOINVERT
+    "*",            ID_MULT,                ASCII,  NOINVERT
+    VK_MULTIPLY,    ID_MULT,                VIRTKEY, NOINVERT
+    "~",            ID_NOT,                 ASCII,  ALT, NOINVERT
+    "0",            ID_NUMBER0,             VIRTKEY, NOINVERT
+    VK_NUMPAD0,     ID_NUMBER0,             VIRTKEY, NOINVERT
+    "1",            ID_NUMBER1,             VIRTKEY, NOINVERT
+    VK_NUMPAD1,     ID_NUMBER1,             VIRTKEY, NOINVERT
+    "2",            ID_NUMBER2,             VIRTKEY, NOINVERT
+    VK_NUMPAD2,     ID_NUMBER2,             VIRTKEY, NOINVERT
+    "3",            ID_NUMBER3,             VIRTKEY, NOINVERT
+    VK_NUMPAD3,     ID_NUMBER3,             VIRTKEY, NOINVERT
+    "4",            ID_NUMBER4,             VIRTKEY, NOINVERT
+    VK_NUMPAD4,     ID_NUMBER4,             VIRTKEY, NOINVERT
+    "5",            ID_NUMBER5,             VIRTKEY, NOINVERT
+    VK_NUMPAD5,     ID_NUMBER5,             VIRTKEY, NOINVERT
+    "6",            ID_NUMBER6,             VIRTKEY, NOINVERT
+    VK_NUMPAD6,     ID_NUMBER6,             VIRTKEY, NOINVERT
+    "7",            ID_NUMBER7,             VIRTKEY, NOINVERT
+    VK_NUMPAD7,     ID_NUMBER7,             VIRTKEY, NOINVERT
+    "8",            ID_NUMBER8,             VIRTKEY, NOINVERT
+    VK_NUMPAD8,     ID_NUMBER8,             VIRTKEY, NOINVERT
+    "9",            ID_NUMBER9,             VIRTKEY, NOINVERT
+    VK_NUMPAD9,     ID_NUMBER9,             VIRTKEY, NOINVERT
     "A",            ID_NUMBERA,             VIRTKEY, NOINVERT
     "A",            ID_NUMBERA,             VIRTKEY, SHIFT, NOINVERT
     "B",            ID_NUMBERB,             VIRTKEY, NOINVERT
     "B",            ID_NUMBERB,             VIRTKEY, SHIFT, NOINVERT
     "C",            ID_NUMBERC,             VIRTKEY, NOINVERT
-    "C",            ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
     "C",            ID_NUMBERC,             VIRTKEY, SHIFT, NOINVERT
     "D",            ID_NUMBERD,             VIRTKEY, NOINVERT
-    "D",            ID_VIEW_PRECISION,      VIRTKEY, CONTROL, NOINVERT
     "D",            ID_NUMBERD,             VIRTKEY, SHIFT, NOINVERT
     "E",            ID_NUMBERE,             VIRTKEY, NOINVERT
     "E",            ID_NUMBERE,             VIRTKEY, SHIFT, NOINVERT
     "F",            ID_NUMBERF,             VIRTKEY, NOINVERT
     "F",            ID_NUMBERF,             VIRTKEY, SHIFT, NOINVERT
+    "|",            ID_OR,                  ASCII,  ALT, NOINVERT
+    "P",            ID_PI,                  VIRTKEY, NOINVERT
+    "Y",            ID_POW,                 VIRTKEY, NOINVERT
+    "3",            ID_POW3,                VIRTKEY, ALT, NOINVERT
+    "3",            ID_POW3,                VIRTKEY, CONTROL, ALT, NOINVERT
+    "3",            ID_POW3,                VIRTKEY, SHIFT, NOINVERT
+    "R",            ID_RECIPROC,            VIRTKEY, NOINVERT
+    "9",            ID_RPAR,                VIRTKEY, SHIFT, NOINVERT
+    "1",            ID_SHOWINFO,            VIRTKEY, SHIFT, CONTROL, NOINVERT
+    VK_F9,          ID_SIGN,                VIRTKEY, NOINVERT
+    "S",            ID_SIN,                 VIRTKEY, NOINVERT
+    "2",            ID_SQUARE,              VIRTKEY, ALT, NOINVERT
+    "2",            ID_SQUARE,              VIRTKEY, CONTROL, ALT, NOINVERT
+    "-",            ID_SUB,                 ASCII,  NOINVERT
+    VK_SUBTRACT,    ID_SUB,                 VIRTKEY, NOINVERT
+    "T",            ID_TAN,                 VIRTKEY, NOINVERT
+    VK_F5,          ID_VIEW_BIN,            VIRTKEY, NOINVERT
+    VK_F7,          ID_VIEW_DEC,            VIRTKEY, NOINVERT
+    VK_F2,          ID_VIEW_DEGREES,        VIRTKEY, NOINVERT
     "G",            ID_VIEW_DIGITGROUPING,  VIRTKEY, CONTROL, NOINVERT
-    "G",            IDIGNORE,               VIRTKEY, SHIFT, NOINVERT
+    VK_F4,          ID_VIEW_GRADS,          VIRTKEY, NOINVERT
+    VK_F8,          ID_VIEW_HEX,            VIRTKEY, NOINVERT
+    VK_F6,          ID_VIEW_OCT,            VIRTKEY, NOINVERT
+    "D",            ID_VIEW_PRECISION,      VIRTKEY, CONTROL, NOINVERT
+    VK_F12,         ID_VIEW_QWORD,          VIRTKEY, NOINVERT
+    VK_F3,          ID_VIEW_RADIANS,        VIRTKEY, NOINVERT
+    94,             ID_XOR,                 ASCII,  NOINVERT
     "H",            IDC_CHECKHYP,           VIRTKEY, NOINVERT
     "H",            IDC_CHECKHYP,           VIRTKEY, SHIFT, NOINVERT
     "I",            IDC_CHECKINV,           VIRTKEY, NOINVERT
     "I",            IDC_CHECKINV,           VIRTKEY, SHIFT, NOINVERT
+    "'",            IDIGNORE,               ASCII,  NOINVERT
+    27,             IDIGNORE,               ASCII,  NOINVERT
+    167,            IDIGNORE,               ASCII,  NOINVERT
+    168,            IDIGNORE,               ASCII,  NOINVERT
+    180,            IDIGNORE,               ASCII,  NOINVERT
+    189,            IDIGNORE,               ASCII,  NOINVERT
+    "2",            IDIGNORE,               VIRTKEY, SHIFT, NOINVERT
+    ">",            IDIGNORE,               ASCII,  NOINVERT
+    "?",            IDIGNORE,               ASCII,  NOINVERT
+    "\\",           IDIGNORE,               ASCII,  ALT, NOINVERT
+    "_",            IDIGNORE,               ASCII,  NOINVERT
+    "`",            IDIGNORE,               ASCII,  NOINVERT
+    "G",            IDIGNORE,               VIRTKEY, SHIFT, NOINVERT
     "J",            IDIGNORE,               VIRTKEY, NOINVERT
     "J",            IDIGNORE,               VIRTKEY, SHIFT, NOINVERT
     "K",            IDIGNORE,               VIRTKEY, NOINVERT
     "K",            IDIGNORE,               VIRTKEY, SHIFT, NOINVERT
-    "L",            ID_LOG,                 VIRTKEY, NOINVERT
-    "M",            ID_DMS,                 VIRTKEY, NOINVERT
-    "N",            ID_LN,                  VIRTKEY, NOINVERT
-    "O",            ID_COS,                 VIRTKEY, NOINVERT
-    "P",            ID_PI,                  VIRTKEY, NOINVERT
     "Q",            IDIGNORE,               VIRTKEY, NOINVERT
     "Q",            IDIGNORE,               VIRTKEY, SHIFT, NOINVERT
-    "R",            ID_RECIPROC,            VIRTKEY, NOINVERT
-    "S",            ID_SIN,                 VIRTKEY, NOINVERT
-    "T",            ID_TAN,                 VIRTKEY, NOINVERT
     "U",            IDIGNORE,               VIRTKEY, NOINVERT
     "U",            IDIGNORE,               VIRTKEY, SHIFT, NOINVERT
     "V",            IDIGNORE,               VIRTKEY, NOINVERT
-    "V",            ID_EDIT_PASTE,          VIRTKEY, CONTROL, NOINVERT
     "V",            IDIGNORE,               VIRTKEY, SHIFT, NOINVERT
-    VK_ADD,         ID_ADD,                 VIRTKEY, NOINVERT
-    VK_BACK,        ID_BACK,                VIRTKEY, NOINVERT
-    VK_DECIMAL,     ID_COMMA,               VIRTKEY, NOINVERT
-    VK_DELETE,      ID_CE,                  VIRTKEY, NOINVERT
-    VK_DIVIDE,      ID_DIV,                 VIRTKEY, NOINVERT
-    VK_ESCAPE,      ID_CLEAR,               VIRTKEY, NOINVERT
-    VK_F12,         ID_VIEW_QWORD,          VIRTKEY, NOINVERT
-    VK_F2,          ID_VIEW_DEGREES,        VIRTKEY, NOINVERT
-    VK_F3,          ID_VIEW_RADIANS,        VIRTKEY, NOINVERT
-    VK_F4,          ID_VIEW_GRADS,          VIRTKEY, NOINVERT
-    VK_F5,          ID_VIEW_HEX,            VIRTKEY, NOINVERT
-    VK_F6,          ID_VIEW_DEC,            VIRTKEY, NOINVERT
-    VK_F7,          ID_VIEW_OCT,            VIRTKEY, NOINVERT
-    VK_F8,          ID_VIEW_BIN,            VIRTKEY, NOINVERT
-    VK_F9,          ID_SIGN,                VIRTKEY, NOINVERT
-    VK_MULTIPLY,    ID_MULT,                VIRTKEY, NOINVERT
-    VK_NUMPAD0,     ID_NUMBER0,             VIRTKEY, NOINVERT
-    VK_NUMPAD1,     ID_NUMBER1,             VIRTKEY, NOINVERT
-    VK_NUMPAD2,     ID_NUMBER2,             VIRTKEY, NOINVERT
-    VK_NUMPAD3,     ID_NUMBER3,             VIRTKEY, NOINVERT
-    VK_NUMPAD4,     ID_NUMBER4,             VIRTKEY, NOINVERT
-    VK_NUMPAD5,     ID_NUMBER5,             VIRTKEY, NOINVERT
-    VK_NUMPAD6,     ID_NUMBER6,             VIRTKEY, NOINVERT
-    VK_NUMPAD7,     ID_NUMBER7,             VIRTKEY, NOINVERT
-    VK_NUMPAD8,     ID_NUMBER8,             VIRTKEY, NOINVERT
-    VK_NUMPAD9,     ID_NUMBER9,             VIRTKEY, NOINVERT
-    VK_RETURN,      ID_EQUAL,               VIRTKEY, NOINVERT
     VK_RIGHT,       IDIGNORE,               VIRTKEY, NOINVERT
-    VK_SUBTRACT,    ID_SUB,                 VIRTKEY, NOINVERT
     VK_TAB,         IDIGNORE,               VIRTKEY, NOINVERT
     VK_TAB,         IDIGNORE,               VIRTKEY, SHIFT, NOINVERT
     "W",            IDIGNORE,               VIRTKEY, NOINVERT
     "W",            IDIGNORE,               VIRTKEY, SHIFT, NOINVERT
-    "X",            ID_EE,                  VIRTKEY, NOINVERT
-    "Y",            ID_POW,                 VIRTKEY, NOINVERT
     "Z",            IDIGNORE,               VIRTKEY, NOINVERT
     "Z",            IDIGNORE,               VIRTKEY, SHIFT, NOINVERT
-    "\\",           IDIGNORE,               ASCII,  ALT, NOINVERT
-    94,             ID_XOR,                 ASCII,  NOINVERT
-    "_",            IDIGNORE,               ASCII,  NOINVERT
-    "`",            IDIGNORE,               ASCII,  NOINVERT
-    "|",            ID_OR,                  ASCII,  ALT, NOINVERT
-    "~",            ID_NOT,                 ASCII,  ALT, NOINVERT
     197,            IDIGNORE,               ASCII,  NOINVERT
-    198,            IDIGNORE,               ASCII,  NOINVERT
-    216,            IDIGNORE,               ASCII,  NOINVERT
     229,            IDIGNORE,               ASCII,  NOINVERT
+    198,            IDIGNORE,               ASCII,  NOINVERT
     230,            IDIGNORE,               ASCII,  NOINVERT
+    216,            IDIGNORE,               ASCII,  NOINVERT
     248,            IDIGNORE,               ASCII,  NOINVERT
+    VK_F12,         ID_VIEW_OWORD,          VIRTKEY, SHIFT, NOINVERT
 END
 
 IDR_ACCELERATORPRECISION ACCELERATORS
@@ -291,22 +292,22 @@ CAPTION "About Calculator"
 FONT 8, "MS Sans Serif"
 BEGIN
     ICON            IDR_MAINFRAME,IDC_STATIC,11,17,20,20
-    LTEXT           "Calculator Version 1.3 by Jesper Grønning Mikkelsen",IDC_STATIC,40,10,193,8,SS_NOPREFIX
+    LTEXT           "Calculator Version 1.4 by Jesper Grønning Mikkelsen",IDC_STATIC,40,10,193,8,SS_NOPREFIX
     LTEXT           "Copyright (C) 2001",IDC_STATIC,40,25,119,8
     DEFPUSHBUTTON   "OK",IDOK,246,7,50,14,WS_GROUP
 END
 
-IDD_CALCULATOR_DIALOG DIALOGEX 0, 0, 322, 178
+IDR_MAINFRAME DIALOGEX 0, 0, 322, 178
 STYLE DS_SETFONT | DS_MODALFRAME | WS_MINIMIZEBOX | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_APPWINDOW
 CAPTION "Calculator"
 MENU IDR_MAINFRAME
 FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
-    CONTROL         "Hex",IDC_RADIOHEX,"Button",BS_AUTORADIOBUTTON | WS_GROUP,15,54,30,15
-    CONTROL         "Dec",IDC_RADIODEC,"Button",BS_AUTORADIOBUTTON,50,54,30,15
-    CONTROL         "Oct",IDC_RADIOOCT,"Button",BS_AUTORADIOBUTTON,85,54,30,15
-    CONTROL         "Bin",IDC_RADIOBIN,"Button",BS_AUTORADIOBUTTON,120,54,25,15
+    CONTROL         "Bin",IDC_RADIOBIN,"Button",BS_AUTORADIOBUTTON | WS_GROUP,15,54,25,15
+    CONTROL         "Oct",IDC_RADIOOCT,"Button",BS_AUTORADIOBUTTON,45,54,25,15
+    CONTROL         "Dec",IDC_RADIODEC,"Button",BS_AUTORADIOBUTTON,75,54,25,15
+    CONTROL         "Hex",IDC_RADIOHEX,"Button",BS_AUTORADIOBUTTON,105,54,25,15
     CONTROL         "Degrees",IDC_RADIODEGREES,"Button",BS_AUTORADIOBUTTON | WS_GROUP,167,55,48,12
     CONTROL         "Radians",IDC_RADIORADIANS,"Button",BS_AUTORADIOBUTTON,218,55,42,12
     CONTROL         "Grads",IDC_RADIOGRADS,"Button",BS_AUTORADIOBUTTON,267,55,31,12
@@ -365,16 +366,18 @@ BEGIN
     PUSHBUTTON      "E",IDC_BUTTONE,259,158,25,15,BS_BITMAP | NOT WS_TABSTOP
     PUSHBUTTON      "F",IDC_BUTTONF,285,158,25,15,BS_BITMAP | NOT WS_TABSTOP
     EDITTEXT        IDC_DISPLAY,7,10,305,37,ES_RIGHT | ES_MULTILINE | ES_AUTOVSCROLL | WS_VSCROLL,WS_EX_CLIENTEDGE | WS_EX_RIGHT
-    GROUPBOX        "",IDC_STATIC,159,48,153,23,WS_GROUP
-    GROUPBOX        "",IDC_STATIC,7,48,144,23,WS_GROUP
+    GROUPBOX        "",IDC_STATICTRIGOMODE,159,48,153,23,WS_GROUP
+    GROUPBOX        "",IDC_STATICRADIX,7,48,128,23,WS_GROUP
     GROUPBOX        "",IDC_STATIC,7,69,70,23
     CTEXT           "",IDC_PARANTHESLEVEL,84,76,18,16,SS_NOTIFY | SS_CENTERIMAGE | SS_SUNKEN,WS_EX_CLIENTEDGE
     CTEXT           "",IDC_MEMORYINDICATOR,111,76,18,16,SS_NOTIFY | SS_CENTERIMAGE | SS_SUNKEN,WS_EX_CLIENTEDGE
-    CONTROL         "Qword",IDC_RADIOQWORD,"Button",BS_AUTORADIOBUTTON | WS_GROUP,165,56,33,10
-    CONTROL         "Dword",IDC_RADIODWORD,"Button",BS_AUTORADIOBUTTON,204,56,34,10
-    CONTROL         "Word",IDC_RADIOWORD,"Button",BS_AUTORADIOBUTTON,244,56,29,10
-    CONTROL         "Byte",IDC_RADIOBYTE,"Button",BS_AUTORADIOBUTTON,280,56,26,10
+    CONTROL         "Byte",IDC_RADIOBYTE,"Button",BS_AUTORADIOBUTTON | WS_GROUP,152,56,25,10
+    CONTROL         "Word",IDC_RADIOWORD,"Button",BS_AUTORADIOBUTTON,179,56,29,10
+    CONTROL         "Dword",IDC_RADIODWORD,"Button",BS_AUTORADIOBUTTON,210,56,32,10
+    CONTROL         "Qword",IDC_RADIOQWORD,"Button",BS_AUTORADIOBUTTON,245,56,32,10
+    CONTROL         "Oword",IDC_RADIOOWORD,"Button",BS_AUTORADIOBUTTON,279,56,35,10
     LTEXT           "",IDC_INFO,4,94,46,14,NOT WS_VISIBLE,WS_EX_CLIENTEDGE
+    GROUPBOX        "",IDC_STATICOPSIZE,147,48,168,23,WS_GROUP
 END
 
 
@@ -402,7 +405,7 @@ BEGIN
         BOTTOMMARGIN, 48
     END
 
-    IDD_CALCULATOR_DIALOG, DIALOG
+    IDR_MAINFRAME, DIALOG
     BEGIN
     END
 END
@@ -415,8 +418,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,3,0,1
- PRODUCTVERSION 1,3,0,1
+ FILEVERSION 1,4,0,1
+ PRODUCTVERSION 1,4,0,1
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -432,18 +435,29 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "FileDescription", "Arbitrary precision calculator"
-            VALUE "FileVersion", "1, 3, 0, 1"
+            VALUE "FileVersion", "1, 4, 0, 1"
             VALUE "InternalName", "Calculator"
             VALUE "LegalCopyright", "Copyright (C) 2001"
             VALUE "OriginalFilename", "Calculator.EXE"
             VALUE "ProductName", "Calculator"
-            VALUE "ProductVersion", "1, 3, 0, 1"
+            VALUE "ProductVersion", "1, 4, 0, 1"
         END
     END
     BLOCK "VarFileInfo"
     BEGIN
         VALUE "Translation", 0x409, 1200
     END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDR_MAINFRAME AFX_DIALOG_LAYOUT
+BEGIN
+    0
 END
 
 
@@ -460,6 +474,14 @@ END
 STRINGTABLE
 BEGIN
     IDC_BUTTONCLEAR         "Clear display and cancel current calculation\r\n Key Esc"
+    IDC_BUTTONCE            "Delete the last entered number of the calculation.\r\nEnter a new number to continue the calculation\r\nKey delete"
+    IDC_BUTTONBACKSPACE     "Erase last entered digit\r\nKey backspace"
+    IDC_BUTTONAND           "Calculate bitwise AND of the number in display and the next entered number\r\nKey &&&"
+    IDC_BUTTONOR            "Calculate bitwise OR of the number in display and the next entered number\r\nKey |"
+    IDC_BUTTONXOR           "Calculate bitwise exclusive OR of the number in display and the next entered number\r\nKey ^"
+    IDC_BUTTONNOT           "Calculate bitwise NOT of the number in display\r\nKey ~"
+    IDC_BUTTONLSH           "Shift the number in display LEFT the number of times specified by the next entered number\r\nIf inv is active, shift RIGHT\r\nKey <"
+    IDC_BUTTONINT           "Truncate the number in display to an integer\r\nIf inv is active, remove the integer part, leaving decimals\r\nKey ;"
 END
 
 STRINGTABLE
@@ -472,66 +494,71 @@ BEGIN
     IDC_BUTTONF             "Hexadecimal F = decimal 15"
     IDC_BUTTONSIGN          "Change sign of number in display\r\nIf exponent to 10 in scientific notation is being entered (button EE has been pressed)\r\nthe sign of the exponent is changed\r\nKey F9"
     IDC_BUTTONCOMMA         "Decimal point.\r\nKey . or ,"
-    IDC_BUTTONDIV           "Division  \r\nKey /"
-    IDC_BUTTONMULT          "Multiplication  \r\nKey *"
-    IDC_BUTTONSUB           "Subtraction  \r\nKey -"
+    IDC_BUTTONEE            "Show number in scientific notation\r\nKey X"
 END
 
 STRINGTABLE
 BEGIN
     IDC_BUTTONADD           "Addition  \r\nKey +"
-    IDC_BUTTONCE            "Delete the last entered number of the calculation.\r\nEnter a new number to continue the calculation\r\nKey delete"
-    IDC_BUTTONBACKSPACE     "Erase last entered digit\r\nKey backspace"
+    IDC_BUTTONSUB           "Subtraction  \r\nKey -"
+    IDC_BUTTONMULT          "Multiplication  \r\nKey *"
+    IDC_BUTTONDIV           "Division  \r\nKey /"
+    IDC_BUTTONMOD           "Calculate the number in display modulus the next entered number\r\nKey %"
+    IDC_BUTTONRECIPROC      "Calculate reciprocal of number in display\r\nKey R"
+    IDC_BUTTONEQUAL         "Finalize the current calculation\r\nKey enter"
+    IDC_BUTTONSQUARE        "Calculate square of number in display\r\nIf inv is active, then square root\r\nKey Alt+2"
+    IDC_BUTTONPOW3          "Calculate the cube of number in display\r\nIf Inv is active, then cubic root\r\nKey Alt+3"
+    IDC_BUTTONPOW           "Calculate number in display raised to the power of the next number entered\r\nIf inv is active, then root function\r\nKey Y"
+END
+
+STRINGTABLE
+BEGIN
+    IDC_BUTTONLPAR          "Begin a new subexpression which will be calculated when ) is pressed\r\nmaking it possible to overrule the default precedence of the operators\r\nwhich is:\r\nx^y, shift, *,/,%, +,-, xor, and, or\r\nKey ("
+    IDC_BUTTONRPAR          "End and calculate a subexpression started with (\r\nKey )"
     IDC_BUTTONMC            "Clear memory register"
     IDC_BUTTONMR            "Recall value from memory register"
+END
+
+STRINGTABLE
+BEGIN
     IDC_BUTTONMS            "Store value current display value in memory register"
     IDC_BUTTONMADD          "Add current display value to memory register"
-    IDC_BUTTONMOD           "Calculate the number in display modulus the next entered number\r\nKey %"
-    IDC_BUTTONOR            "Calculate bitwise OR of the number in display and the next entered number\r\nKey |"
-    IDC_BUTTONLSH           "Shift the number in display LEFT the number of times specified by the next entered number\r\nIf inv is active, shift RIGHT\r\nKey <"
-    IDC_BUTTONEQUAL         "Finalize the current calculation\r\nKey enter"
-    IDC_BUTTONAND           "Calculate bitwise AND of the number in display and the next entered number\r\nKey &&&"
-    IDC_BUTTONXOR           "Calculate bitwise exclusive OR of the number in display and the next entered number\r\nKey ^"
-    IDC_BUTTONNOT           "Calculate bitwise NOT of the number in display\r\nKey ~"
-    IDC_BUTTONINT           "Truncate the number in display to an integer\r\nIf inv is active, remove the integer part, leaving decimals\r\nKey ;"
-    IDC_BUTTONPI            "3.141592654...\r\nKey P"
-END
-
-STRINGTABLE
-BEGIN
-    IDC_BUTTONRPAR          "End and calculate a subexpression started with (\r\nKey )"
-    IDC_BUTTONLPAR          "Begin a new subexpression which will be calculated when ) is pressed\r\nmaking it possible to overrule the default precedence of the operators\r\nwhich is:\r\nx^y, shift, *,/,%, +,-, xor, and, or\r\nKey ("
-    IDC_BUTTONEE            "Show number in scientific notation\r\nKey X"
-    IDC_BUTTONPOW           "Calculate number in display raised to the power of the next number entered\r\nIf inv is active, then root function\r\nKey Y"
-    IDC_BUTTONLN            "Calculate the natural logarithm (base e) of the number in display\r\nIf inv is active, then e raised to the power of the number in display\r\ne=2.71828182...\r\nKey N"
-    IDC_BUTTONLOG           "Calculate the logarithm base 10 of the number in display\r\nIf inc is active, then 10 raised to the power of the number in display\r\nKey L"
-    IDC_BUTTONFAC           "Calculate the factorial of the number in display\r\nEx. 4! = 4 x 3 x 2 x 1 = 24\r\nKey !"
-    IDC_BUTTONPOW3          "Calculate the cube of number in display\r\nIf Inv is active, then cubic root\r\nKey Alt+3"
-    IDC_BUTTONRECIPROC      "Calculate reciprocal of number in display\r\nKey R"
-    IDC_BUTTONSQUARE        "Calculate square of number in display\r\nIf inv is active, then square root\r\nKey Alt+2"
-    IDC_BUTTONSIN           "Calculate sine of number in display\r\nThis is either degree, radians, or grads\r\nIf inv is active, the inverse sine\r\nIf hyp is active, then hyperbolic sine/inv sine\r\nKey S"
-    IDC_BUTTONCOS           "Calculate cosine of number in display\r\nThis is either degree, radians, or grads\r\nIf inv is active, the inverse cosine\r\nIf hyp is active, then hyperbolic cosine/inv cosine\r\nKey O"
-    IDC_BUTTONTAN           "Calculate tangent of number in display\r\nThis is either degree, radians, or grads\r\nIf inv is active, the inverse tangent\r\nIf hyp is active, then hyperbolic tangent/inv tangent\r\nKey T"
-    IDC_BUTTONDMS           "Convert decimal number to minutes.seconds\r\nEx. dms(2.25) = 2.15\r\nIf inv is active, do the inverse conversion, that is minutes.seconds -> decimal\r\nKey M"
-    IDC_RADIODEGREES        "Argument to and result from invserse of sin,cos and tan are in degrees\r\nKey F2"
-    IDC_RADIORADIANS        "Argument to and result from invserse of sin,cos and tan are in radians\r\nKey F3"
-END
-
-STRINGTABLE
-BEGIN
-    IDC_RADIOGRADS          "Argument to and result from invserse of sin,cos and tan are in grads\r\nKey F4"
-    IDC_RADIOHEX            "Display and enter numbers as hexadecimal\r\nButtons 0-9 and A-F are enabled"
-    IDC_RADIODEC            "Display and enter numbers as decimal\r\nButtons 0-9 are enabled"
-    IDC_RADIOOCT            "Display and enter numbers as octal\r\nButtons 0-7 are enabled"
-    IDC_RADIOBIN            "Display and enter numbers as binary\r\nButtons 0-1 are enabled"
     IDC_CHECKINV            "Activate inverse mode\r\nApplies to x^y, x^2, x^3, ln, log, sin, cos, tan, dms, int, lsh\r\nKey I"
     IDC_CHECKHYP            "Activate hyperbolic mode\r\nApplies to sin, cos, tan\r\nKey H"
     IDC_PARANTHESLEVEL      "Indicate the number of unclosed parantheses"
     IDC_MEMORYINDICATOR     "Indicator for non zero memory"
-    IDC_RADIOQWORD          "All calculations are done using 8 bytes (64 bits)\r\nKey F12"
-    IDC_RADIODWORD          "All calculations are done using 4 bytes (32 bits)\r\nKey F2"
+END
+
+STRINGTABLE
+BEGIN
+    IDC_BUTTONLN            "Calculate the natural logarithm (base e) of the number in display\r\nIf inv is active, then e raised to the power of the number in display\r\ne=2.71828182...\r\nKey N"
+    IDC_BUTTONLOG           "Calculate the logarithm base 10 of the number in display\r\nIf inc is active, then 10 raised to the power of the number in display\r\nKey L"
+    IDC_BUTTONSIN           "Calculate sine of number in display\r\nThis is either degree, radians, or grads\r\nIf inv is active, the inverse sine\r\nIf hyp is active, then hyperbolic sine/inv sine\r\nKey S"
+    IDC_BUTTONCOS           "Calculate cosine of number in display\r\nThis is either degree, radians, or grads\r\nIf inv is active, the inverse cosine\r\nIf hyp is active, then hyperbolic cosine/inv cosine\r\nKey O"
+    IDC_BUTTONTAN           "Calculate tangent of number in display\r\nThis is either degree, radians, or grads\r\nIf inv is active, the inverse tangent\r\nIf hyp is active, then hyperbolic tangent/inv tangent\r\nKey T"
+    IDC_BUTTONPI            "3.141592654...\r\nKey P"
+    IDC_BUTTONFAC           "Calculate the factorial of the number in display\r\nEx. 4! = 4 x 3 x 2 x 1 = 24\r\nKey !"
+    IDC_BUTTONDMS           "Convert decimal number to minutes.seconds\r\nEx. dms(2.25) = 2.15\r\nIf inv is active, do the inverse conversion, that is minutes.seconds -> decimal\r\nKey M"
+END
+
+STRINGTABLE
+BEGIN
+    IDC_RADIORADIANS        "Argument to and result from invserse of sin,cos and tan are in radians\r\nKey F3"
+    IDC_RADIODEGREES        "Argument to and result from invserse of sin,cos and tan are in degrees\r\nKey F2"
+    IDC_RADIOGRADS          "Argument to and result from invserse of sin,cos and tan are in grads\r\nKey F4"
+    IDC_RADIOBIN            "Display and enter numbers as binary\r\nButtons 0-1 are enabled\r\nKey F5"
+    IDC_RADIOOCT            "Display and enter numbers as octal\r\nButtons 0-7 are enabled\r\nKey F6"
+    IDC_RADIODEC            "Display and enter numbers as decimal\r\nButtons 0-9 are enabled\r\nKey F7"
+    IDC_RADIOHEX            "Display and enter numbers as hexadecimal\r\nButtons 0-9 and A-F are enabled\r\nF8"
+    IDC_RADIOBYTE           "All calculations are done using 1 byte (8 bits)\r\nKey F2"
     IDC_RADIOWORD           "All calculations are done using 2 bytes (16 bits)\r\nKey F3"
-    IDC_RADIOBYTE           "All calculations are done using 1 byte (8 bits)\r\nKey F4"
+    IDC_RADIODWORD          "All calculations are done using 4 bytes (32 bits)\r\nKey F4"
+    IDC_RADIOQWORD          "All calculations are done using 8 bytes (64 bits)\r\nKey F12"
+END
+
+STRINGTABLE
+BEGIN
+    IDC_RADIOOWORD          "All calculations are done using 16 bytes (128 bits)\r\nKey Shift F12"
 END
 
 #endif    // English (United States) resources

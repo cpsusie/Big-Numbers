@@ -1,5 +1,5 @@
-// Microsoft Developer Studio generated Help ID include file.
-// Used by calculator.rc
+// Microsoft Visual C++ generated Help ID include file.
+// Used by CalculatorApp.rc
 //
-#define HIDC_BUTTON7                    0x806603ea    // IDD_CALCULATOR_DIALOG [English (U.S.)]
-#define HIDC_BUTTON8                    0x806603eb    // IDD_CALCULATOR_DIALOG [English (U.S.)]
+#define HIDC_BUTTON7                    0x806603ea    // IDR_MAINFRAME [English (United States)]
+#define HIDC_BUTTON8                    0x806603eb    // IDR_MAINFRAME [English (United States)]

@@ -126,39 +126,43 @@ BEGIN_MESSAGE_MAP(CCalculatorDlg, CDialog)
     ON_WM_CONTEXTMENU()
     ON_WM_CLOSE()
     ON_COMMAND(     ID_FILE_QUIT         , OnFileQuit          )
-    ON_BN_CLICKED(  IDC_RADIOHEX         , OnRadioHex          )
-    ON_BN_CLICKED(  IDC_RADIODEC         , OnRadioDec          )
-    ON_BN_CLICKED(  IDC_RADIOOCT         , OnRadioOct          )
-    ON_BN_CLICKED(  IDC_RADIOBIN         , OnRadioBin          )
-    ON_BN_CLICKED(  IDC_CHECKINV         , OnCheckInv          )
-    ON_BN_CLICKED(  IDC_CHECKHYP         , OnCheckHyp          )
-    ON_BN_CLICKED(  IDC_RADIODEGREES     , OnF2                )
-    ON_BN_CLICKED(  IDC_RADIORADIANS     , OnF3                )
-    ON_BN_CLICKED(  IDC_RADIOGRADS       , OnF4                )
-    ON_BN_CLICKED(  IDC_RADIOQWORD       , OnF12               )
-    ON_BN_CLICKED(  IDC_RADIODWORD       , OnF2                )
-    ON_BN_CLICKED(  IDC_RADIOWORD        , OnF3                )
-    ON_BN_CLICKED(  IDC_RADIOBYTE        , OnF4                )
-    ON_COMMAND(     ID_CONTROL_WHATSTHIS , OnControlWhatsthis  )
     ON_COMMAND(     ID_EDIT_COPY         , OnEditCopy          )
     ON_COMMAND(     ID_EDIT_PASTE        , OnEditPaste         )
-    ON_COMMAND(     ID_VIEW_HEX          , OnViewHex           )
-    ON_COMMAND(     ID_VIEW_DEC          , OnViewDec           )
-    ON_COMMAND(     ID_VIEW_OCT          , OnViewOct           )
     ON_COMMAND(     ID_VIEW_BIN          , OnViewBin           )
+    ON_COMMAND(     ID_VIEW_OCT          , OnViewOct           )
+    ON_COMMAND(     ID_VIEW_DEC          , OnViewDec           )
+    ON_COMMAND(     ID_VIEW_HEX          , OnViewHex           )
+    ON_COMMAND(     ID_VIEW_DEGREES      , OnF2                )
+    ON_COMMAND(     ID_VIEW_RADIANS      , OnF3                )
+    ON_COMMAND(     ID_VIEW_GRADS        , OnF4                )
+    ON_COMMAND(     ID_VIEW_BYTE         , OnF2                )
+    ON_COMMAND(     ID_VIEW_WORD         , OnF3                )
+    ON_COMMAND(     ID_VIEW_DWORD        , OnF4                )
+    ON_COMMAND(     ID_VIEW_QWORD        , OnF12               )
+    ON_COMMAND(     ID_VIEW_OWORD        , OnShftF12           )
     ON_COMMAND(     ID_VIEW_DIGITGROUPING, OnViewDigitGrouping )
     ON_COMMAND(     ID_VIEW_PRECISION    , OnViewPrecision     )
     ON_COMMAND(     ID_HELP_ABOUT        , OnHelpAbout         )
+    ON_COMMAND(     ID_CONTROL_WHATSTHIS , OnControlWhatsthis  )
     ON_EN_SETFOCUS( IDC_DISPLAY          , OnSetfocusDisplay   )
-    ON_COMMAND(     ID_DIV               , OnDiv               )
-    ON_COMMAND(     ID_POW               , OnPow               )
-    ON_COMMAND(     ID_ADD               , OnAdd               )
-    ON_COMMAND(     ID_COS               , OnCos               )
-    ON_COMMAND(     ID_MULT              , OnMult              )
-    ON_COMMAND(     ID_PI                , OnPi                )
-    ON_COMMAND(     ID_SIN               , OnSin               )
-    ON_COMMAND(     ID_SUB               , OnSub               )
-    ON_COMMAND(     ID_TAN               , OnTan               )
+    ON_BN_CLICKED(  IDC_CHECKINV         , OnCheckInv          )
+    ON_BN_CLICKED(  IDC_CHECKHYP         , OnCheckHyp          )
+    ON_BN_CLICKED(  IDC_RADIOBIN         , OnRadioBin          )
+    ON_BN_CLICKED(  IDC_RADIOOCT         , OnRadioOct          )
+    ON_BN_CLICKED(  IDC_RADIODEC         , OnRadioDec          )
+    ON_BN_CLICKED(  IDC_RADIOHEX         , OnRadioHex          )
+    ON_BN_CLICKED(  IDC_RADIODEGREES     , OnF2                )
+    ON_BN_CLICKED(  IDC_RADIORADIANS     , OnF3                )
+    ON_BN_CLICKED(  IDC_RADIOGRADS       , OnF4                )
+    ON_BN_CLICKED(  IDC_RADIOBYTE        , OnF2                )
+    ON_BN_CLICKED(  IDC_RADIOWORD        , OnF3                )
+    ON_BN_CLICKED(  IDC_RADIODWORD       , OnF4                )
+    ON_BN_CLICKED(  IDC_RADIOQWORD       , OnF12               )
+    ON_BN_CLICKED(  IDC_RADIOOWORD       , OnShftF12           )
+    ON_COMMAND(     ID_CE                , OnCe                )
+    ON_COMMAND(     ID_BACK              , OnBack              )
+    ON_COMMAND(     ID_CLEAR             , OnClear             )
+    ON_COMMAND(     ID_EQUAL             , OnEqual             )
     ON_COMMAND(     ID_NUMBER0           , OnNumber0           )
     ON_COMMAND(     ID_NUMBER1           , OnNumber1           )
     ON_COMMAND(     ID_NUMBER2           , OnNumber2           )
@@ -175,45 +179,42 @@ BEGIN_MESSAGE_MAP(CCalculatorDlg, CDialog)
     ON_COMMAND(     ID_NUMBERD           , OnNumberD           )
     ON_COMMAND(     ID_NUMBERE           , OnNumberE           )
     ON_COMMAND(     ID_NUMBERF           , OnNumberF           )
+    ON_COMMAND(     ID_COMMA             , OnComma             )
     ON_COMMAND(     ID_SIGN              , OnSign              )
-    ON_COMMAND(     ID_CE                , OnCe                )
-    ON_COMMAND(     ID_BACK              , OnBack              )
-    ON_COMMAND(     ID_CLEAR             , OnClear             )
-    ON_COMMAND(     ID_EQUAL             , OnEqual             )
-    ON_COMMAND(     ID_RECIPROC          , OnReciproc          )
     ON_COMMAND(     ID_EE                , OnEE                )
-    ON_COMMAND(     ID_LN                , OnLn                )
-    ON_COMMAND(     ID_LOG               , OnLog               )
+    ON_COMMAND(     ID_ADD               , OnAdd               )
+    ON_COMMAND(     ID_SUB               , OnSub               )
+    ON_COMMAND(     ID_MULT              , OnMult              )
+    ON_COMMAND(     ID_DIV               , OnDiv               )
+    ON_COMMAND(     ID_MOD               , OnMod               )
     ON_COMMAND(     ID_SQUARE            , OnSquare            )
     ON_COMMAND(     ID_POW3              , OnPow3              )
+    ON_COMMAND(     ID_POW               , OnPow               )
+    ON_COMMAND(     ID_LN                , OnLn                )
+    ON_COMMAND(     ID_LOG               , OnLog               )
+    ON_COMMAND(     ID_SIN               , OnSin               )
+    ON_COMMAND(     ID_COS               , OnCos               )
+    ON_COMMAND(     ID_TAN               , OnTan               )
+    ON_COMMAND(     ID_PI                , OnPi                )
+    ON_COMMAND(     ID_RECIPROC          , OnReciproc          )
     ON_COMMAND(     ID_FAC               , OnFac               )
-    ON_COMMAND(     ID_NOT               , OnNot               )
+    ON_COMMAND(     ID_DMS               , OnDMS               )
     ON_COMMAND(     ID_AND               , OnAnd               )
     ON_COMMAND(     ID_OR                , OnOr                )
-    ON_COMMAND(     ID_LSH               , OnLsh               )
     ON_COMMAND(     ID_XOR               , OnXor               )
+    ON_COMMAND(     ID_LSH               , OnLsh               )
+    ON_COMMAND(     ID_NOT               , OnNot               )
     ON_COMMAND(     ID_INT               , OnInt               )
-    ON_COMMAND(     ID_COMMA             , OnComma             )
-    ON_COMMAND(     ID_DMS               , OnDMS               )
-    ON_COMMAND(     ID_MOD               , OnMod               )
     ON_COMMAND(     IDIGNORE             , OnIgnore            )
     ON_COMMAND(     ID_LPAR              , OnLpar              )
     ON_COMMAND(     ID_RPAR              , OnRpar              )
     ON_COMMAND(     ID_SHOWINFO          , OnShowinfo          )
-    ON_COMMAND(     ID_VIEW_DEGREES      , OnF2                )
-    ON_COMMAND(     ID_VIEW_RADIANS      , OnF3                )
-    ON_COMMAND(     ID_VIEW_GRADS        , OnF4                )
-    ON_COMMAND(     ID_VIEW_QWORD        , OnF12               )
-    ON_COMMAND(     ID_VIEW_DWORD        , OnF2                )
-    ON_COMMAND(     ID_VIEW_WORD         , OnF3                )
-    ON_COMMAND(     ID_VIEW_BYTE         , OnF4                )
     ON_NOTIFY_EX_RANGE(TTN_NEEDTEXT, 0, 0xFFFF, OnToolTipNotify)
   //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 void CCalculatorDlg::OnHelpAbout() {
-  CAboutDlg dlg;
-  dlg.DoModal();
+  CAboutDlg().DoModal();
 }
 
 HCURSOR CCalculatorDlg::OnQueryDragIcon() {
@@ -323,20 +324,20 @@ BOOL CCalculatorDlg::OnInitDialog() {
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
   CMenu *pSysMenu = GetSystemMenu(FALSE);
-  if (pSysMenu != NULL) {
-  CString strAboutMenu;
-  strAboutMenu.LoadString(IDS_ABOUTBOX);
-  if (!strAboutMenu.IsEmpty()) {
-    pSysMenu->AppendMenu(MF_SEPARATOR);
-    pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, strAboutMenu);
-  }
+  if(pSysMenu != NULL) {
+    CString strAboutMenu;
+    strAboutMenu.LoadString(IDS_ABOUTBOX);
+    if(!strAboutMenu.IsEmpty()) {
+      pSysMenu->AppendMenu(MF_SEPARATOR);
+      pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, strAboutMenu);
+    }
   }
 
   SetIcon(m_hIcon, TRUE);			// Set big icon
   SetIcon(m_hIcon, FALSE);		// Set small icon
   setWindowCursor(GetDlgItem(IDC_DISPLAY    ),OCR_NORMAL);
 
-  m_accelTabel     = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDC_ACCELERATORTABEL));
+  m_accelTabel     = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_MAINFRAME));
   m_timerInterval  = 0;
   m_waitCursorOn   = false;
   m_selectedButton = NULL;
@@ -403,29 +404,11 @@ void CCalculatorDlg::OnPaint() {
 }
 
 void CCalculatorDlg::OnFileQuit() {
-  exit(0);	
+  EndDialog(IDOK);
 }
 
 void CCalculatorDlg::OnClose() {
-  exit(0);
-}
-
-void RemoveMenuItem(CMenu *Menu, UINT id) {
-  RemoveMenu(Menu->m_hMenu,id,MF_BYCOMMAND);
-}
-
-bool MenuItemExists(CMenu *Menu, UINT id) {
-  int count = Menu->GetMenuItemCount();
-  for(int i = 0; i < count; i++) {
-    CMenu *submenu = Menu->GetSubMenu(i);
-    int subcount = submenu->GetMenuItemCount();
-    for (int j = 0; j < subcount; j++) {
-      if(submenu->GetMenuItemID(j) == id) {
-        return true;
-      }
-    }
-  }
-  return false;
+  OnFileQuit();
 }
 
 void CCalculatorDlg::enableButton(int id, bool enabled) {
@@ -460,55 +443,59 @@ void CCalculatorDlg::setDecButtons() {
   enableButton(IDC_BUTTONPI    ,true);
   enableNumButtons(10);
 
-  GetDlgItem(IDC_RADIORADIANS)->EnableWindow(TRUE);
-  GetDlgItem(IDC_RADIODEGREES)->EnableWindow(TRUE);
-  GetDlgItem(IDC_RADIOGRADS  )->EnableWindow(TRUE);
-  GetDlgItem(IDC_RADIORADIANS)->ShowWindow(SW_SHOW);
-  GetDlgItem(IDC_RADIODEGREES)->ShowWindow(SW_SHOW);
-  GetDlgItem(IDC_RADIOGRADS  )->ShowWindow(SW_SHOW);
-  GetDlgItem(IDC_RADIOQWORD  )->ShowWindow(SW_HIDE);
-  GetDlgItem(IDC_RADIODWORD  )->ShowWindow(SW_HIDE);
-  GetDlgItem(IDC_RADIOWORD   )->ShowWindow(SW_HIDE);
-  GetDlgItem(IDC_RADIOBYTE   )->ShowWindow(SW_HIDE);
-  GetDlgItem(IDC_RADIOQWORD  )->EnableWindow(FALSE);
-  GetDlgItem(IDC_RADIODWORD  )->EnableWindow(FALSE);
-  GetDlgItem(IDC_RADIOWORD   )->EnableWindow(FALSE);
-  GetDlgItem(IDC_RADIOBYTE   )->EnableWindow(FALSE);
+  GetDlgItem(IDC_RADIORADIANS   )->EnableWindow(TRUE   );
+  GetDlgItem(IDC_RADIODEGREES   )->EnableWindow(TRUE   );
+  GetDlgItem(IDC_RADIOGRADS     )->EnableWindow(TRUE   );
+  GetDlgItem(IDC_RADIORADIANS   )->ShowWindow(  SW_SHOW);
+  GetDlgItem(IDC_RADIODEGREES   )->ShowWindow(  SW_SHOW);
+  GetDlgItem(IDC_RADIOGRADS     )->ShowWindow(  SW_SHOW);
+  GetDlgItem(IDC_STATICTRIGOMODE)->ShowWindow(  SW_SHOW);
 
-  CMenu *menu = GetMenu();
-  if(MenuItemExists(menu,ID_VIEW_QWORD)) {
-    menu->InsertMenu(ID_VIEW_QWORD,MF_BYCOMMAND,ID_VIEW_DEGREES,_T("D&egrees\tF2" ));
-    menu->InsertMenu(ID_VIEW_QWORD,MF_BYCOMMAND,ID_VIEW_RADIANS,_T("&Radians\tF3" ));
-    menu->InsertMenu(ID_VIEW_QWORD,MF_BYCOMMAND,ID_VIEW_GRADS  ,_T("&Grads\tF4"   ));
-    RemoveMenuItem(menu,ID_VIEW_QWORD);
-    RemoveMenuItem(menu,ID_VIEW_DWORD);
-    RemoveMenuItem(menu,ID_VIEW_WORD );
-    RemoveMenuItem(menu,ID_VIEW_BYTE );
+  GetDlgItem(IDC_RADIOBYTE      )->EnableWindow(FALSE  );
+  GetDlgItem(IDC_RADIOWORD      )->EnableWindow(FALSE  );
+  GetDlgItem(IDC_RADIODWORD     )->EnableWindow(FALSE  );
+  GetDlgItem(IDC_RADIOQWORD     )->EnableWindow(FALSE  );
+  GetDlgItem(IDC_RADIOOWORD     )->EnableWindow(FALSE  );
+  GetDlgItem(IDC_RADIOBYTE      )->ShowWindow(  SW_HIDE);
+  GetDlgItem(IDC_RADIOWORD      )->ShowWindow(  SW_HIDE);
+  GetDlgItem(IDC_RADIODWORD     )->ShowWindow(  SW_HIDE);
+  GetDlgItem(IDC_RADIOQWORD     )->ShowWindow(  SW_HIDE);
+  GetDlgItem(IDC_RADIOOWORD     )->ShowWindow(  SW_HIDE);
+  GetDlgItem(IDC_STATICOPSIZE   )->ShowWindow(  SW_HIDE);
+
+  if(menuItemExists(this,ID_VIEW_QWORD)) {
+    insertMenuItem(this,ID_VIEW_QWORD,0,_T("D&egrees\tF2" ),ID_VIEW_DEGREES);
+    insertMenuItem(this,ID_VIEW_QWORD,0,_T("&Radians\tF3" ),ID_VIEW_RADIANS);
+    insertMenuItem(this,ID_VIEW_QWORD,0,_T("&Grads\tF4"   ),ID_VIEW_GRADS  );
+    removeMenuItem(this,ID_VIEW_BYTE );
+    removeMenuItem(this,ID_VIEW_WORD );
+    removeMenuItem(this,ID_VIEW_DWORD);
+    removeMenuItem(this,ID_VIEW_QWORD);
+    removeMenuItem(this,ID_VIEW_OWORD);
   }
   checkTrigonometricBase(m_calc->getTrigonometricBase());
 }
 
 void CCalculatorDlg::checkTrigonometricBase(Trigonometric tm) {
-  CMenu *menu = GetMenu();
   CheckDlgButton(       IDC_RADIORADIANS, BST_UNCHECKED );
   CheckDlgButton(       IDC_RADIODEGREES, BST_UNCHECKED );
   CheckDlgButton(       IDC_RADIOGRADS  , BST_UNCHECKED );
-  menu->CheckMenuItem(  ID_VIEW_RADIANS , MF_UNCHECKED  );
-  menu->CheckMenuItem(  ID_VIEW_DEGREES , MF_UNCHECKED  );
-  menu->CheckMenuItem(  ID_VIEW_GRADS   , MF_UNCHECKED  );
+  checkMenuItem(  this, ID_VIEW_RADIANS , false         );
+  checkMenuItem(  this, ID_VIEW_DEGREES , false         );
+  checkMenuItem(  this, ID_VIEW_GRADS   , false         );
 
   switch(tm) {
   case TRIGO_RADIANS:
     CheckDlgButton(     IDC_RADIORADIANS, BST_CHECKED   );
-    menu->CheckMenuItem(ID_VIEW_RADIANS , MF_CHECKED    );
+    checkMenuItem(this, ID_VIEW_RADIANS , true          );
     break;
   case TRIGO_DEGREES:
     CheckDlgButton(     IDC_RADIODEGREES, BST_CHECKED   );
-    menu->CheckMenuItem(ID_VIEW_DEGREES , MF_CHECKED    );
+    checkMenuItem(this, ID_VIEW_DEGREES , true          );
     break;
   case TRIGO_GRADS  :
     CheckDlgButton(     IDC_RADIOGRADS  , BST_CHECKED   );
-    menu->CheckMenuItem(ID_VIEW_GRADS   , MF_CHECKED    );
+    checkMenuItem(this, ID_VIEW_GRADS   , true          );
     break;
   }
 }
@@ -522,62 +509,72 @@ void CCalculatorDlg::setByteButtons() {
   enableButton(IDC_BUTTONPI    ,false);
   enableNumButtons(m_calc->getRadix());
 
-  GetDlgItem(IDC_RADIORADIANS)->EnableWindow(FALSE);
-  GetDlgItem(IDC_RADIODEGREES)->EnableWindow(FALSE);
-  GetDlgItem(IDC_RADIOGRADS  )->EnableWindow(FALSE);
+  GetDlgItem(IDC_RADIORADIANS   )->EnableWindow(FALSE  );
+  GetDlgItem(IDC_RADIODEGREES   )->EnableWindow(FALSE  );
+  GetDlgItem(IDC_RADIOGRADS     )->EnableWindow(FALSE  );
 
-  GetDlgItem(IDC_RADIORADIANS)->ShowWindow(SW_HIDE);
-  GetDlgItem(IDC_RADIODEGREES)->ShowWindow(SW_HIDE);
-  GetDlgItem(IDC_RADIOGRADS  )->ShowWindow(SW_HIDE);
-  GetDlgItem(IDC_RADIOQWORD  )->ShowWindow(SW_SHOW);
-  GetDlgItem(IDC_RADIODWORD  )->ShowWindow(SW_SHOW);
-  GetDlgItem(IDC_RADIOWORD   )->ShowWindow(SW_SHOW);
-  GetDlgItem(IDC_RADIOBYTE   )->ShowWindow(SW_SHOW);
-  GetDlgItem(IDC_RADIOQWORD  )->EnableWindow();
-  GetDlgItem(IDC_RADIODWORD  )->EnableWindow();
-  GetDlgItem(IDC_RADIOWORD   )->EnableWindow();
-  GetDlgItem(IDC_RADIOBYTE   )->EnableWindow();
+  GetDlgItem(IDC_RADIORADIANS   )->ShowWindow(  SW_HIDE);
+  GetDlgItem(IDC_RADIODEGREES   )->ShowWindow(  SW_HIDE);
+  GetDlgItem(IDC_RADIOGRADS     )->ShowWindow(  SW_HIDE);
+  GetDlgItem(IDC_STATICTRIGOMODE)->ShowWindow(  SW_HIDE);
 
-  CMenu *menu = GetMenu();
-  if(MenuItemExists(menu,ID_VIEW_DEGREES)) {
-    menu->InsertMenu(ID_VIEW_DEGREES, MF_BYCOMMAND, ID_VIEW_QWORD, _T("&Qword\tF12"));
-    menu->InsertMenu(ID_VIEW_DEGREES, MF_BYCOMMAND, ID_VIEW_DWORD, _T("Dwo&rd\tF2" ));
-    menu->InsertMenu(ID_VIEW_DEGREES, MF_BYCOMMAND, ID_VIEW_WORD , _T("&Word\tF3"  ));
-    menu->InsertMenu(ID_VIEW_DEGREES, MF_BYCOMMAND, ID_VIEW_BYTE , _T("B&yte\tF4"  ));
+  GetDlgItem(IDC_RADIOBYTE      )->EnableWindow(TRUE   );
+  GetDlgItem(IDC_RADIOWORD      )->EnableWindow(TRUE   );
+  GetDlgItem(IDC_RADIODWORD     )->EnableWindow(TRUE   );
+  GetDlgItem(IDC_RADIOQWORD     )->EnableWindow(TRUE   );
+  GetDlgItem(IDC_RADIOOWORD     )->EnableWindow(TRUE   );
+  GetDlgItem(IDC_RADIOBYTE      )->ShowWindow(  SW_SHOW);
+  GetDlgItem(IDC_RADIOWORD      )->ShowWindow(  SW_SHOW);
+  GetDlgItem(IDC_RADIODWORD     )->ShowWindow(  SW_SHOW);
+  GetDlgItem(IDC_RADIOQWORD     )->ShowWindow(  SW_SHOW);
+  GetDlgItem(IDC_RADIOOWORD     )->ShowWindow(  SW_SHOW);
+  GetDlgItem(IDC_STATICOPSIZE   )->ShowWindow(  SW_SHOW);
 
-    RemoveMenuItem(menu, ID_VIEW_DEGREES);
-    RemoveMenuItem(menu, ID_VIEW_RADIANS);
-    RemoveMenuItem(menu, ID_VIEW_GRADS  );
+  if(menuItemExists(this,ID_VIEW_DEGREES)) {
+    insertMenuItem(this,ID_VIEW_DEGREES, 0, _T("B&yte\tF2"       ), ID_VIEW_BYTE );
+    insertMenuItem(this,ID_VIEW_DEGREES, 0, _T("&Word\tF3"       ), ID_VIEW_WORD );
+    insertMenuItem(this,ID_VIEW_DEGREES, 0, _T("Dwo&rd\tF4"      ), ID_VIEW_DWORD);
+    insertMenuItem(this,ID_VIEW_DEGREES, 0, _T("&Qword\tF12"     ), ID_VIEW_QWORD);
+    insertMenuItem(this,ID_VIEW_DEGREES, 0, _T("&Oword\tShft F12"), ID_VIEW_OWORD);
+
+    removeMenuItem(this,ID_VIEW_DEGREES);
+    removeMenuItem(this,ID_VIEW_RADIANS);
+    removeMenuItem(this,ID_VIEW_GRADS  );
   }
   checkOpeandSize(m_calc->getOperandSize());
 }
 
 void CCalculatorDlg::checkOpeandSize(OperandSize size) {
-  CMenu *menu = GetMenu();
-  CheckDlgButton(       IDC_RADIOQWORD, BST_UNCHECKED );
-  CheckDlgButton(       IDC_RADIODWORD, BST_UNCHECKED );
-  CheckDlgButton(       IDC_RADIOWORD , BST_UNCHECKED );
   CheckDlgButton(       IDC_RADIOBYTE , BST_UNCHECKED );
-  menu->CheckMenuItem(  ID_VIEW_BYTE  , MF_UNCHECKED  );
-  menu->CheckMenuItem(  ID_VIEW_WORD  , MF_UNCHECKED  );
-  menu->CheckMenuItem(  ID_VIEW_DWORD , MF_UNCHECKED  );
-  menu->CheckMenuItem(  ID_VIEW_QWORD , MF_UNCHECKED  );
+  CheckDlgButton(       IDC_RADIOWORD , BST_UNCHECKED );
+  CheckDlgButton(       IDC_RADIODWORD, BST_UNCHECKED );
+  CheckDlgButton(       IDC_RADIOQWORD, BST_UNCHECKED );
+  CheckDlgButton(       IDC_RADIOOWORD, BST_UNCHECKED );
+  checkMenuItem(  this, ID_VIEW_BYTE  , false         );
+  checkMenuItem(  this, ID_VIEW_WORD  , false         );
+  checkMenuItem(  this, ID_VIEW_DWORD , false         );
+  checkMenuItem(  this, ID_VIEW_QWORD , false         );
+  checkMenuItem(  this, ID_VIEW_OWORD , false         );
   switch(size) {
   case OPSIZE_BYTE :
     CheckDlgButton(     IDC_RADIOBYTE , BST_CHECKED );
-    menu->CheckMenuItem(ID_VIEW_BYTE  , MF_CHECKED  );
+    checkMenuItem(this, ID_VIEW_BYTE  , true        );
     break;
   case OPSIZE_WORD :
     CheckDlgButton(     IDC_RADIOWORD , BST_CHECKED );
-    menu->CheckMenuItem(ID_VIEW_WORD  , MF_CHECKED  );
+    checkMenuItem(this, ID_VIEW_WORD  , true        );
     break;
   case OPSIZE_DWORD:
     CheckDlgButton(     IDC_RADIODWORD, BST_CHECKED );
-    menu->CheckMenuItem(ID_VIEW_DWORD , MF_CHECKED  );
+    checkMenuItem(this, ID_VIEW_DWORD , true        );
     break;
   case OPSIZE_QWORD:
     CheckDlgButton(     IDC_RADIOQWORD, BST_CHECKED );
-    menu->CheckMenuItem(ID_VIEW_QWORD , MF_CHECKED  );
+    checkMenuItem(this, ID_VIEW_QWORD , true        );
+    break;
+  case OPSIZE_OWORD:
+    CheckDlgButton(     IDC_RADIOOWORD, BST_CHECKED );
+    checkMenuItem(this, ID_VIEW_OWORD , true        );
     break;
   }
 }
@@ -613,11 +610,7 @@ void CCalculatorDlg::showStatus() {
     CheckDlgButton(IDC_CHECKHYP, BST_UNCHECKED);
   }
 
-  if(m_calc->getDigitGrouping()) {
-    GetMenu()->CheckMenuItem(ID_VIEW_DIGITGROUPING, MF_CHECKED    );
-  } else {
-    GetMenu()->CheckMenuItem(ID_VIEW_DIGITGROUPING, MF_UNCHECKED  );
-  }
+  checkMenuItem(this, ID_VIEW_DIGITGROUPING, m_calc->getDigitGrouping());
 
   checkRadix(m_calc->getRadix());
   switch(m_calc->getRadix()) {
@@ -635,31 +628,30 @@ void CCalculatorDlg::showStatus() {
 }
 
 void CCalculatorDlg::checkRadix(int radix) {
-  CMenu *menu = GetMenu();
   CheckDlgButton(          IDC_RADIOBIN , BST_UNCHECKED );
   CheckDlgButton(          IDC_RADIOOCT , BST_UNCHECKED );
   CheckDlgButton(          IDC_RADIODEC , BST_UNCHECKED );
   CheckDlgButton(          IDC_RADIOHEX , BST_UNCHECKED );
-  menu->CheckMenuItem(     ID_VIEW_BIN  , MF_UNCHECKED  );
-  menu->CheckMenuItem(     ID_VIEW_OCT  , MF_UNCHECKED  );
-  menu->CheckMenuItem(     ID_VIEW_DEC  , MF_UNCHECKED  );
-  menu->CheckMenuItem(     ID_VIEW_HEX  , MF_UNCHECKED  );
+  checkMenuItem( this,     ID_VIEW_BIN  , false         );
+  checkMenuItem( this,     ID_VIEW_OCT  , false         );
+  checkMenuItem( this,     ID_VIEW_DEC  , false         );
+  checkMenuItem( this,     ID_VIEW_HEX  , false         );
   switch(radix) {
   case 2:
     CheckDlgButton(        IDC_RADIOBIN , BST_CHECKED   );
-    menu->CheckMenuItem(   ID_VIEW_BIN  , MF_CHECKED    );
+    checkMenuItem(this,    ID_VIEW_BIN  , true          );
     break;
   case 8:
     CheckDlgButton(        IDC_RADIOOCT , BST_CHECKED   );
-    menu->CheckMenuItem(   ID_VIEW_OCT  , MF_CHECKED    );
+    checkMenuItem(this,    ID_VIEW_OCT  , true          );
     break;
   case 10:
     CheckDlgButton(        IDC_RADIODEC , BST_CHECKED   );
-    menu->CheckMenuItem(   ID_VIEW_DEC  , MF_CHECKED    );
+    checkMenuItem(this,    ID_VIEW_DEC  , true          );
     break;
   case 16:
     CheckDlgButton(        IDC_RADIOHEX , BST_CHECKED   );
-    menu->CheckMenuItem(   ID_VIEW_HEX  , MF_CHECKED    );
+    checkMenuItem(this,    ID_VIEW_HEX  , true          );
     break;
   }
 }
@@ -704,7 +696,7 @@ void CCalculatorDlg::waitCursor(bool on) {
 }
 
 void CCalculatorDlg::OnTimer(UINT_PTR nIDEvent) {
-  if(m_calc->finished()) {
+  if(!m_calc->isBusy()) {
     waitCursor(false);
     showStatus();
     stopTimer();
@@ -718,7 +710,7 @@ void CCalculatorDlg::OnTimer(UINT_PTR nIDEvent) {
                               ,MB_YESNO + MB_ICONQUESTION);
       time(&m_enterTime);
       if(iresult == IDNO) {
-        m_calc->terminate();
+        m_calc->terminateCalculation();
         waitCursor(false);
         startTimer(10);
       } else {
@@ -833,7 +825,7 @@ void CCalculatorDlg::OnContextMenu(CWnd *pWnd, CPoint point) {
   if(helpid != 0) {
     m_helpid = helpid;
     CMenu menu;
-    if(!menu.LoadMenu(IDR_MENU2)) {
+    if(!menu.LoadMenu(IDR_MENUCONTEXTHELP)) {
       showWarning(_T("Loadmenu failed"));
       return;
     }
@@ -852,7 +844,7 @@ void CCalculatorDlg::OnEditCopy() {
 }
 
 void CCalculatorDlg::OnEditPaste() {
-  String tmp = getClipboardText();
+  const String tmp = getClipboardText();
   m_calc->setDisplayText(tmp);
   showStatus();
 }
@@ -869,7 +861,7 @@ void CCalculatorDlg::OnF2() {
   if(m_calc->getRadix() == 10) {
     activateButton(IDC_RADIODEGREES);
   } else {
-    activateButton(IDC_RADIODWORD);
+    activateButton(IDC_RADIOBYTE);
   }
 }
 
@@ -885,22 +877,23 @@ void CCalculatorDlg::OnF4() {
   if(m_calc->getRadix() == 10) {
     activateButton(IDC_RADIOGRADS);
   } else {
-    activateButton(IDC_RADIOBYTE);
+    activateButton(IDC_RADIODWORD);
   }
 }
 
 void CCalculatorDlg::OnCheckInv()          { activateButton(IDC_CHECKINV);          }
 void CCalculatorDlg::OnCheckHyp()          { activateButton(IDC_CHECKHYP);          }
-void CCalculatorDlg::OnRadioHex()          { activateButton(IDC_RADIOHEX);          }
-void CCalculatorDlg::OnRadioDec()          { activateButton(IDC_RADIODEC);          }
-void CCalculatorDlg::OnRadioOct()          { activateButton(IDC_RADIOOCT);          }
 void CCalculatorDlg::OnRadioBin()          { activateButton(IDC_RADIOBIN);          }
-void CCalculatorDlg::OnViewHex()           { activateButton(IDC_RADIOHEX);          }
-void CCalculatorDlg::OnViewDec()           { activateButton(IDC_RADIODEC);          }
-void CCalculatorDlg::OnViewOct()           { activateButton(IDC_RADIOOCT);          }
+void CCalculatorDlg::OnRadioOct()          { activateButton(IDC_RADIOOCT);          }
+void CCalculatorDlg::OnRadioDec()          { activateButton(IDC_RADIODEC);          }
+void CCalculatorDlg::OnRadioHex()          { activateButton(IDC_RADIOHEX);          }
 void CCalculatorDlg::OnViewBin()           { activateButton(IDC_RADIOBIN);          }
+void CCalculatorDlg::OnViewOct()           { activateButton(IDC_RADIOOCT);          }
+void CCalculatorDlg::OnViewDec()           { activateButton(IDC_RADIODEC);          }
+void CCalculatorDlg::OnViewHex()           { activateButton(IDC_RADIOHEX);          }
 void CCalculatorDlg::OnViewDigitGrouping() { activateButton(ID_VIEW_DIGITGROUPING); }
 void CCalculatorDlg::OnF12()               { activateButton(IDC_RADIOQWORD);        }
+void CCalculatorDlg::OnShftF12()           { activateButton(IDC_RADIOOWORD);        }
 void CCalculatorDlg::OnCe()                { activateButton(IDC_BUTTONCE);          }
 void CCalculatorDlg::OnBack()              { activateButton(IDC_BUTTONBACKSPACE);   }
 void CCalculatorDlg::OnClear()             { activateButton(IDC_BUTTONCLEAR);       }
@@ -954,7 +947,6 @@ void CCalculatorDlg::OnIgnore() {
   // do nothing
 }
 
-
 void CCalculatorDlg::OnShowinfo() {
   CWnd *w = GetDlgItem(IDC_INFO);
   w->ShowWindow(w->IsWindowVisible() ? SW_HIDE : SW_SHOW);
@@ -997,4 +989,3 @@ BOOL CCalculatorDlg::OnToolTipNotify(UINT id, NMHDR *pNMHDR, LRESULT *pResult) {
   }
   return FALSE;
 }
-

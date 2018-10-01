@@ -165,6 +165,7 @@ unsigned int Calculator::maxBigRealLen() const {
     case OPSIZE_WORD : return 16;
     case OPSIZE_DWORD: return 32;
     case OPSIZE_QWORD: return 64;
+    case OPSIZE_OWORD: return 128;
     }
   case 8 :
     switch(m_opsize) {
@@ -172,6 +173,7 @@ unsigned int Calculator::maxBigRealLen() const {
     case OPSIZE_WORD : return 5  + ((f == '1')?1:0);
     case OPSIZE_DWORD: return 10 + ((f <= '3')?1:0);
     case OPSIZE_QWORD: return 21 + ((f == '1')?1:0);
+    case OPSIZE_OWORD: return 42 + ((f <= '3')?1:0);
     }
   case 16:
     switch(m_opsize) {
@@ -179,6 +181,7 @@ unsigned int Calculator::maxBigRealLen() const {
     case OPSIZE_WORD : return 4;
     case OPSIZE_DWORD: return 8;
     case OPSIZE_QWORD: return 16;
+    case OPSIZE_OWORD: return 32;
     }
   }
   return 10;
@@ -332,64 +335,67 @@ void Calculator::handleBackspace() {
   ajourDisplay();
 }
 
-static unsigned __int64 sscanbin(const TCHAR *str) {
-  unsigned __int64 res = 0;
-  for(; *str; str++) {
-    res = (res << 1) | ((*str == '1') ? 1 : 0);
+static _uint128 decToBin(const BigReal &x) {
+  const int s = sign(x);
+  switch(sign(x)) {
+  case 0:
+    return 0;
+  case -1:
+    { BigReal tmp(x);
+      tmp.changeSign();
+      BigInt bi = floor(tmp);
+      if(bi > _I128_MAX) {
+        bi %= _I128_MAX;
+      }
+      return -getInt128(bi);
+    }
+  case 1:
+    { BigInt bi = floor(x);
+      if(bi > _UI128_MAX) {
+        bi %= _UI128_MAX;
+      }
+      return getUint128(bi);
+    }
   }
-  return res;
+  throwInvalidArgumentException(__TFUNCTION__,_T("x=%s"), x.toString().cstr());
+  return 0;
 }
 
-static String sprintbin(unsigned __int64 n) {
-  TCHAR str[70];
-
-  if(n == 0) {
-    _tcscpy(str,_T("0"));
-    return str;
+BigReal Calculator::binToDec(_int128 x) const {
+  switch(getOperandSize()) {
+  case OPSIZE_BYTE : return BigReal((char )(int)x);
+  case OPSIZE_WORD : return BigReal((short)(int)x);
+  case OPSIZE_DWORD: return BigReal(       (int)x);
+  case OPSIZE_QWORD: return BigReal(   (__int64)x);
+  case OPSIZE_OWORD: return BigReal(            x);
   }
-
-  TCHAR *s = str;
-  while(n != 0) {
-    *(s++) = '0' + (n & 1);
-    n >>= 1;
-  }
-  *s = '\0';
-  return _tcsrev(str);
+  return x;
 }
 
-unsigned __int64 Calculator::cutWord(unsigned __int64 b) const {
+_uint128 Calculator::cutWord(_uint128 b) const {
   switch(getOperandSize()) {
   case OPSIZE_BYTE : return b & 0xff;
   case OPSIZE_WORD : return b & 0xffff;
   case OPSIZE_DWORD: return b & 0xffffffff;
-  case OPSIZE_QWORD: return b;
+  case OPSIZE_QWORD: return b & 0xffffffffffffffffui64;
+  case OPSIZE_OWORD: return b;
   }
   return b;
 }
 
 BigReal Calculator::scanRadix(const String &str) const {
   BigReal x;
-  unsigned __int64 b;
-  String tmp;
-
   switch(m_radix) {
   case 2:
-    b = sscanbin(str.cstr());
-    x = cutWord(b);
-    break;
   case 8:
-    _stscanf(str.cstr(), _T("%I64o"), &b);
-    x = cutWord(b);
+  case 16:
+    x = binToDec(cutWord(_wcstoui128(str.cstr(),NULL,m_radix)));
     break;
   case 10:
-    { tmp = str;
+    { String tmp = str;
       tmp.replace(',', '.');
       x = BigReal(tmp.cstr());
     }
-    break;
-  case 16:
-    _stscanf(str.cstr(), _T("%I64x"), &b);
-    x = cutWord(b);
     break;
   }
   return x;
@@ -454,19 +460,17 @@ String Calculator::printRadix(const BigReal &x) const {
   String tmp;
   switch(m_radix) {
   case 2 :
-    tmp = sprintbin(cutWord(x.isNegative() ? getInt64(x) : getUint64(x)));
-    break;
   case 8 :
-    tmp = format(_T("%I64o"), cutWord(x.isNegative() ? getInt64(x) : getUint64(x)));
+  case 16:
+    { wchar_t buf[256];
+      tmp = _tcsupr(_ui128tow(cutWord(decToBin(x)),buf, m_radix));
+    }
     break;
   case 10:
     { BigRealStream stream(m_ndigits);
       stream << round(x, m_ndigits - BigReal::getExpo10(x));
       tmp = stream.replace('.', ',');
     }
-    break;
-  case 16:
-    tmp = format(_T("%I64X"), cutWord(x.isNegative() ? getInt64(x) : getUint64(x)));
     break;
   }
   return m_digitGrouping ? groupDigits(tmp) : tmp;
@@ -485,9 +489,9 @@ const BigReal &Calculator::getDisplay() const {
 void Calculator::setDisplay(const BigReal &x) {
   m_displayText = printRadix(x);
   if(m_radix == 10) {
-    m_display    = x;
+    m_display = x;
   } else {
-    m_display    = cutWord(x.isNegative() ? getInt64(x) : getUint64(x));
+    m_display = binToDec(cutWord(decToBin(x)));
   }
   m_inBigReal    = false;
   m_inExponent   = false;
@@ -512,21 +516,20 @@ void Calculator::handleRadix(int radix) {
   if(radix == m_radix) {
     return;
   }
-  BigReal n = getDisplay();
-  if(m_radix == 10 && n.isNegative()) {
-    const __int64 b = getInt64(n);
+  const BigReal x = getDisplay();
+  if(m_radix == 10) {
+    const _uint128 b = decToBin(x);
     m_radix = radix;
-    setDisplay(b);
+    setDisplay(binToDec(b));
   } else {
-    unsigned __int64 b = getUint64(n);
     m_radix = radix;
-    setDisplay(b);
+    setDisplay(x);
   }
 }
 
 void Calculator::handleOpSize(OperandSize size) {
   m_opsize = size;
-  setDisplay(cutWord(getDisplay().isNegative() ? getInt64(getDisplay()): getUint64(getDisplay())));
+  setDisplay(binToDec(cutWord(decToBin(getDisplay()))));
 }
 
 void Calculator::pushDisplay() {
@@ -568,20 +571,20 @@ void Calculator::doBinaryOp() {
   const int op = m_opStack.pop();
   switch(op) {
   case IDC_BUTTONAND      :
-    result = getInt64(leftOperand)  & getInt64(rightOperand);
+    result = getInt128(leftOperand)  & getInt128(rightOperand);
     break;
   case IDC_BUTTONXOR      :
-    result = getInt64(leftOperand)  ^ getInt64(rightOperand);
+    result = getInt128(leftOperand)  ^ getInt128(rightOperand);
     break;
   case IDC_BUTTONOR       :
-    result = getInt64(leftOperand)  | getInt64(rightOperand);
+    result = getInt128(leftOperand)  | getInt128(rightOperand);
     break;
   case IDC_BUTTONLSH      :
     if(m_inverse) {
-      result = getInt64(leftOperand) >> getInt64(rightOperand);
+      result = getInt128(leftOperand) >> getInt128(rightOperand);
       m_inverse = false;
     } else {
-      result = getInt64(leftOperand) << getInt64(rightOperand);
+      result = getInt128(leftOperand) << getInt128(rightOperand);
     }
     break;
   case IDC_BUTTONADD      :
@@ -828,7 +831,7 @@ void Calculator::setPrecision(int ndigits) {
 
 void Calculator::enterButton(int button) {
   BigReal::resumeCalculation();
-  if(m_gotError && button != IDC_BUTTONCLEAR && button != IDC_BUTTONCE) {
+  if(m_gotError && (button != IDC_BUTTONCLEAR) && (button != IDC_BUTTONCE)) {
     return;
   }
   switch(button) {
@@ -898,12 +901,12 @@ void Calculator::enterButton(int button) {
   case IDC_BUTTONEE          :
     handleEE();
     break;
-  case IDC_BUTTONPOW         :
-  case IDC_BUTTONDIV         :
-  case IDC_BUTTONMULT        :
-  case IDC_BUTTONSUB         :
   case IDC_BUTTONADD         :
+  case IDC_BUTTONSUB         :
+  case IDC_BUTTONMULT        :
+  case IDC_BUTTONDIV         :
   case IDC_BUTTONMOD         :
+  case IDC_BUTTONPOW         :
   case IDC_BUTTONAND         :
   case IDC_BUTTONOR          :
   case IDC_BUTTONXOR         :
@@ -935,9 +938,9 @@ void Calculator::enterButton(int button) {
     break;
   case IDC_BUTTONNOT         :
     if(m_radix == 10 && getDisplay().isNegative()) {
-      setDisplay(~getInt64(getDisplay()));
+      setDisplay(~getInt128(getDisplay()));
     } else {
-      setDisplay(~getUint64(getDisplay()));
+      setDisplay(~getUint128(getDisplay()));
     }
     break;
   case IDC_BUTTONPI          :
@@ -1025,29 +1028,32 @@ void Calculator::enterButton(int button) {
   case IDC_RADIOGRADS        :
     m_trigonometricBase = TRIGO_GRADS;
     break;
-  case IDC_RADIOHEX          :
-    handleRadix(16);
-    break;
-  case IDC_RADIODEC          :
-    handleRadix(10);
+  case IDC_RADIOBIN          :
+    handleRadix( 2);
     break;
   case IDC_RADIOOCT          :
     handleRadix( 8);
     break;
-  case IDC_RADIOBIN          :
-    handleRadix( 2);
+  case IDC_RADIODEC          :
+    handleRadix(10);
     break;
-  case IDC_RADIOQWORD        :
-    handleOpSize(OPSIZE_QWORD);
+  case IDC_RADIOHEX          :
+    handleRadix(16);
     break;
-  case IDC_RADIODWORD        :
-    handleOpSize(OPSIZE_DWORD);
+  case IDC_RADIOBYTE         :
+    handleOpSize(OPSIZE_BYTE );
     break;
   case IDC_RADIOWORD         :
     handleOpSize(OPSIZE_WORD );
     break;
-  case IDC_RADIOBYTE         :
-    handleOpSize(OPSIZE_BYTE );
+  case IDC_RADIODWORD        :
+    handleOpSize(OPSIZE_DWORD);
+    break;
+  case IDC_RADIOQWORD        :
+    handleOpSize(OPSIZE_QWORD);
+    break;
+  case IDC_RADIOOWORD        :
+    handleOpSize(OPSIZE_OWORD);
     break;
   case ID_VIEW_DIGITGROUPING :
     handleDigitGrouping();
@@ -1067,33 +1073,46 @@ void Calculator::enter(int button) {
   }
 }
 
+// ------------------------------------------------------------------
+
 CalculatorThread::CalculatorThread() : m_sem(0) {
-  m_finished = true;
+  setDeamon(true);
+  m_busy   = false;
+  m_killed = false;
   resume();
 }
 
+CalculatorThread::~CalculatorThread() {
+  m_killed = true;
+  if(isBusy()) {
+    terminateCalculation();
+  } else {
+    enter(0);
+  }
+  while(stillActive()) {
+    Sleep(100);
+  }
+}
+
 unsigned int CalculatorThread::run() {
-  for(;;) {
+  while(!m_killed) {
     m_sem.wait();
+    if(m_killed) break;
     Calculator::enter(m_buttonPressed);
-    m_finished = true;
+    m_busy = false;
   }
   return 0;
 }
 
 void CalculatorThread::enter(int button) {
-  if(!m_finished) {
+  if(isBusy()) {
     return;
   }
   m_buttonPressed = button;
-  m_finished      = false;
+  m_busy          = true;
   m_sem.signal();
 }
 
-bool CalculatorThread::finished() {
-  return m_finished;
-}
-
-void CalculatorThread::terminate() {
+void CalculatorThread::terminateCalculation() {
   BigReal::terminateCalculation();
 }

@@ -6,7 +6,7 @@
 #include <Semaphore.h>
 //typedef double BigReal;
 
-#define MAXPRECISION 100000
+#define MAXPRECISION 500000
 
 typedef enum {
   TRIGO_RADIANS, // 2*pi radians
@@ -15,10 +15,11 @@ typedef enum {
 } Trigonometric;
 
 typedef enum {
-  OPSIZE_BYTE,
-  OPSIZE_WORD,
-  OPSIZE_DWORD,
-  OPSIZE_QWORD
+  OPSIZE_BYTE
+ ,OPSIZE_WORD
+ ,OPSIZE_DWORD
+ ,OPSIZE_QWORD
+ ,OPSIZE_OWORD
 } OperandSize;
 
 class Calculator {
@@ -67,7 +68,8 @@ private:
   void             handleEqual();
   BigReal          scanRadix(  const String &str) const;
   String           groupDigits(const String &str) const;
-  unsigned __int64 cutWord(unsigned __int64 b) const;
+  _uint128         cutWord( _uint128 b) const;
+  BigReal          binToDec(_int128  b) const;
   String           printRadix(const BigReal &x) const;
   void             ajourDisplay();
   void             setDisplay(const BigReal &x);
@@ -99,13 +101,18 @@ BigReal dms(const BigReal &x, const BigReal &f);
 BigReal inversdms(const BigReal &x, const BigReal &f);
 
 class CalculatorThread : public Thread,  public Calculator {
+private:
   Semaphore m_sem;
-  int  m_buttonPressed;
-  bool m_finished;
+  int       m_buttonPressed;
+  bool      m_busy;
+  bool      m_killed;
   unsigned int run();
 public:
   CalculatorThread();
+ ~CalculatorThread();
   void enter(int button);
-  bool finished();
-  void terminate();
+  inline bool isBusy() const {
+    return m_busy;
+  }
+  void terminateCalculation();
 };
