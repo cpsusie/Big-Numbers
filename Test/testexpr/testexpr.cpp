@@ -44,8 +44,8 @@ static bool test(const String &expr, bool runCode) {
         case EXPR_RETURN_REAL:
           { const Real compiledResult     = compiledExpr.evaluate();
             const Real interpreterResult  = interpreterExpr.evaluate();
-            const bool compiledDefined    = !isNan(compiledResult);
-            const bool interpreterDefined = !isNan(interpreterResult);
+            const bool compiledDefined    = !isnan(compiledResult);
+            const bool interpreterDefined = !isnan(interpreterResult);
             if((compiledDefined != interpreterDefined) || (compiledDefined && fabs(compiledResult - interpreterResult) > 3e-15)) {
               OUTPUT(_T("Result(Compiled       ):%s.\n"), toString(compiledResult              ).cstr());
               OUTPUT(_T("Result(Interpreter    ):%s.\n"), toString(interpreterResult           ).cstr());

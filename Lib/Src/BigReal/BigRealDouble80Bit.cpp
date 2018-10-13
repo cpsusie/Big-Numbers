@@ -6,33 +6,48 @@ void BigReal::init(const Double80 &x) {
 
   init();
 
-  if (isNan(x)) {
-    throwBigRealInvalidArgumentException(method, _T("Double80 is Nan"));
+  if(!isnormal(x)) {
+    if(isnan(x)) {
+      setToNan();
+    } else if(isinf(x)) {
+      setToInf();
+      if(x.isNegative()) {
+        changeSign();
+      }
+    }
+    return;
   }
-  if(!x.isZero()) {
-    const int expo2 = getExpo2(x) - 63;
-    if(expo2 == 0) {
-      init(getSignificand(x));
-    } else {
-      DigitPool *pool = getDigitPool();
-      const BigReal significand(getSignificand(x), pool);
-      const bool isConstPool = pool->getId() == CONST_DIGITPOOL_ID;
-      if(isConstPool) ConstDigitPool::releaseInstance(); // unlock it or we will get a deadlock
-      const BigReal &p2 = pow2(expo2, CONVERSION_POW2DIGITCOUNT);
-      if(isConstPool) ConstDigitPool::requestInstance();
-      shortProductNoZeroCheck(significand, p2, 5).rRound(22);
-    }
-    if(x.isNegative()) {
-      m_negative = true;
-    }
+  // x is normal and != 0
+  const int expo2 = getExpo2(x) - 63;
+  if(expo2 == 0) {
+    init(getSignificand(x));
+  } else {
+    DigitPool *pool = getDigitPool();
+    const BigReal significand(getSignificand(x), pool);
+    const bool isConstPool = pool->getId() == CONST_DIGITPOOL_ID;
+    if(isConstPool) ConstDigitPool::releaseInstance(); // unlock it or we will get a deadlock
+    const BigReal &p2 = pow2(expo2, CONVERSION_POW2DIGITCOUNT);
+    if(isConstPool) ConstDigitPool::requestInstance();
+    shortProductNoZeroCheck(significand, p2, 5).rRound(22);
+  }
+  if(x.isNegative()) {
+    m_negative = true;
   }
 }
 
 Double80 getDouble80(const BigReal &x) {
   DEFINEMETHODNAME;
 
-  if(x.isZero()) {
-    return Double80::zero;
+  if(!isnormal(x)) {
+    if(x.isZero()) {
+      return Double80::zero;
+    } else if(isnan(x)) {
+      return DBL80_NAN;
+    } else if(isPInfinity(x)) {
+      return DBL80_PINF;
+    } else {
+      return DBL80_NINF;
+    }
   }
   if(compareAbs(x,ConstBigReal::_dbl80_max) > 0) {
     throwBigRealGetIntegralTypeOverflowException(method, x, toString(ConstBigReal::_dbl80_max));
@@ -56,12 +71,12 @@ Double80 BigReal::getDouble80NoLimitCheck() const {
   if(expo2 <= minExpo2) {
     e2 = Double80::pow2(minExpo2);
     e2Overflow = false;
-    xi.shortProduct(::cut(*this,21), pow2(minExpo2, CONVERSION_POW2DIGITCOUNT), BIGREAL_ZEROEXPO);  // BigReal multiplication
+    xi.shortProduct(::cut(*this,21), pow2(minExpo2, CONVERSION_POW2DIGITCOUNT), BIGREAL_ESCEXPO);  // BigReal multiplication
   } else if(expo2 >= maxExpo2) {
     e2  = Double80::pow2(maxExpo2);
     e2x = Double80::pow2((int)expo2 - maxExpo2);
     e2Overflow = true;
-    xi.shortProduct(::cut(*this,21), pow2((int)expo2, CONVERSION_POW2DIGITCOUNT), BIGREAL_ZEROEXPO);  // BigReal multiplication
+    xi.shortProduct(::cut(*this,21), pow2((int)expo2, CONVERSION_POW2DIGITCOUNT), BIGREAL_ESCEXPO);  // BigReal multiplication
   } else {
     e2 = Double80::pow2((int)expo2);
     e2Overflow = false;

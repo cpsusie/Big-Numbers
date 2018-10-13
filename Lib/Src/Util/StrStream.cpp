@@ -43,3 +43,15 @@ void StrStream::formatZero(String &result, streamsize precision, long flags, str
     }
   }
 }
+
+void StrStream::formatnan(String &result) { // static
+  result += _T("-nan(ind)");
+}
+
+void StrStream::formatpinf(String &result) { // static
+  result += _T("inf");
+}
+
+void StrStream::formatninf(String &result) { // static
+  result += _T("-inf");
+}

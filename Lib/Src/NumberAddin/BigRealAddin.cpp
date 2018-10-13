@@ -1,4 +1,5 @@
 #include "pch.h"
+#include <StrStream.h>
 
 #define TENE0  1
 #define TENE1  10
@@ -68,7 +69,7 @@ static int getDecimalDigitCount(UINT64 n) {
         if(n < TENE19) {                    // 1e17 <= n < 1e19
           return (n < TENE18) ? 18 : 19;    //
         } else {                            // 1e18 <= n <= 1e19
-          return 29;                        //
+          return 20;                        //
         }                                   //
       }                                     //
     }                                       //
@@ -88,7 +89,7 @@ static inline UINT64 pow10(UINT n) {
 }
 
 #define LOG10BASEx86  8
-#define ZEROEXPOx86   -900000000
+#define ESCEXPOx86   -900000000
 
 class Digitx86 {
 public:
@@ -110,7 +111,7 @@ public:
 // -------------------------------------------------------------------
 
 #define LOG10BASEx64  18
-#define ZEROEXPOx64   -900000000000000000
+#define ESCEXPOx64   -900000000000000000
 
 class Digitx64 {
 public:
@@ -129,6 +130,11 @@ public:
   QWORD          m_digitPool;
 };
 
+// Values for BigReal::m_low, if m_expo == BIGREAL_ESCEXPO
+#define BIGREAL_ZEROLOW    FP_ZERO
+#define BIGREAL_NANLOW     FP_NAN
+#define BIGREAL_INFLOW     FP_INFINITE // +/- infinite depending on m_negative
+
 template<class BigReal, class Digit> class BigRealAddIn {
 private:
   DEBUGHELPER *m_helper;
@@ -146,11 +152,29 @@ public:
   String toString(BigReal &n, INT64 zeroExpo, int log10Base, size_t maxResult) const;
 };
 
-template<class BigReal, class Digit> String BigRealAddIn<BigReal, Digit>::toString(BigReal &n, INT64 zeroExpo, int log10Base, size_t maxResult) const {
+template<class BigReal, class Digit> String BigRealAddIn<BigReal, Digit>::toString(BigReal &n, INT64 escExpo, int log10Base, size_t maxResult) const {
   const INT64 expo = n.m_expo;
+  String      result;
 
-  if(expo == zeroExpo) {
-    return _T("0");
+  if(expo == escExpo) {
+    switch(n.m_low) {
+    case BIGREAL_ZEROLOW:
+      StrStream::formatZero(result, 19, ios::fixed|ios::left, 21);
+      break;
+    case BIGREAL_NANLOW : 
+      StrStream::formatnan(result);
+      break;
+    case BIGREAL_INFLOW :
+      if(n.m_negative) {
+        StrStream::formatninf(result);
+      } else {
+        StrStream::formatpinf(result);
+      }
+      break;
+    default:
+      result = format(_T("Invalid state:expo:%I64, low:%I64d"), expo, (INT64)n.m_low);
+    }
+    return result;
   }
 
   Digit digit;
@@ -161,7 +185,6 @@ template<class BigReal, class Digit> String BigRealAddIn<BigReal, Digit>::toStri
   const UINT64 scaleE10        = pow10(scale);
   int          decimalsDone    = 0;
 
-  String result;
   if(n.m_negative) {
     result = _T("-");
   }
@@ -176,10 +199,14 @@ template<class BigReal, class Digit> String BigRealAddIn<BigReal, Digit>::toStri
   } else {
     Digit lastDigit;
     getDigit(lastDigit, n.m_last);
-    int lastDigitCount = log10Base;
-    for(UINT64 last = lastDigit.n; last % 10 == 0;) {
-      lastDigitCount--;
-      last /= 10;
+    int lastDigitCount;
+    if(lastDigit.n == 0) {
+      lastDigitCount = 0;
+    } else {
+      lastDigitCount = log10Base;
+      for(UINT64 last = lastDigit.n; last % 10 == 0; last /= 10) {
+        lastDigitCount--;
+      }
     }
     decimalDigits = (expo - n.m_low - 1) * log10Base + firstDigitCount + lastDigitCount;
   }
@@ -225,7 +252,7 @@ template<class BigReal, class Digit> String BigRealAddIn<BigReal, Digit>::toStri
     result += _T("...");
   } else if(hasDecimalPoint) { // remove trailing zeros after decimalpoint
     while(result.last() == _T('0')) result.removeLast();
-    if (result.last() == _T('.')) result.removeLast();
+    if(result.last() == _T('.')) result.removeLast();
   }
   result += expoStr;
   return result;
@@ -238,13 +265,13 @@ ADDIN_API HRESULT WINAPI AddIn_BigReal(DWORD dwAddress, DEBUGHELPER *pHelper, in
     case PRTYPE_X86:
       { BigRealx86 n;
         pHelper->getRealObject(&n, sizeof(n));
-        tmpStr = BigRealAddIn<BigRealx86, Digitx86>(pHelper).toString(n, ZEROEXPOx86, LOG10BASEx86, maxResult - 1);
+        tmpStr = BigRealAddIn<BigRealx86, Digitx86>(pHelper).toString(n, ESCEXPOx86, LOG10BASEx86, maxResult - 1);
       }
       break;
     case PRTYPE_X64:
       { BigRealx64 n;
         pHelper->getRealObject(&n, sizeof(n));
-        tmpStr = BigRealAddIn<BigRealx64, Digitx64>(pHelper).toString(n, ZEROEXPOx64, LOG10BASEx64, maxResult - 1);
+        tmpStr = BigRealAddIn<BigRealx64, Digitx64>(pHelper).toString(n, ESCEXPOx64, LOG10BASEx64, maxResult - 1);
       }
       break;
     }

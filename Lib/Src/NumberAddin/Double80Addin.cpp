@@ -5,10 +5,8 @@ ADDIN_API HRESULT WINAPI AddIn_Double80(DWORD dwAddress, DEBUGHELPER *pHelper, i
   try {
     Double80 d;
     pHelper->getRealObject(&d, sizeof(d));
-    const String s = D80ToDbgString(d);
-    USES_CONVERSION;
     char str[150];
-    strcpy(str,T2A(s.cstr()));
+    strCpy(str,D80ToDbgString(d).cstr());
     strncpy(pResult, str, maxResult);
   } catch(...) {
     strncpy(pResult, "", maxResult);

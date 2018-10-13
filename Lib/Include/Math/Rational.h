@@ -57,33 +57,15 @@ public:
   Rational &operator/=(const Rational &r);
   Rational &operator%=(const Rational &r);
 
+  // Assume isfinite(r1) && isfinite(r2)
   friend int rationalCmp(const Rational &r1, const Rational &r2);
-
-  inline bool operator< (const Rational &r) const {
-    return rationalCmp(*this, r) < 0;
-  }
-  inline bool operator> (const Rational &r) const {
-    return rationalCmp(*this, r) > 0;
-  }
-  inline bool operator<=(const Rational &r) const {
-    return rationalCmp(*this, r) <= 0;
-  }
-  inline bool operator>=(const Rational &r) const {
-    return rationalCmp(*this, r) >= 0;
-  }
-  inline bool operator==(const Rational &r) const {
-    return (m_numerator == r.m_numerator) && (m_denominator == r.m_denominator);
-  }
-  inline bool operator!=(const Rational &r) const {
-    return !(*this == r);
-  }
 
   friend Rational fabs(const Rational &r);
   friend Rational pow( const Rational &r, int e);
   friend Rational reciprocal(const Rational &r);
 
   inline bool isZero() const {
-    return m_numerator == 0;
+    return (m_numerator == 0) && (m_denominator == 1);
   }
   inline bool isNegative() const {
     return m_numerator < 0;
@@ -197,18 +179,52 @@ inline bool rationalExponentsMultiply(const Rational &r1, const Rational &r2) {
   return isAsymmetricExponent(r1) || isAsymmetricExponent(r2);
 }
 
-inline bool isNan(const Rational &r) {
-  return r.getDenominator() == 0;
+inline int fpclassify(const Rational &r) {
+  if(r.getDenominator()) return r.getNumerator() ? FP_NORMAL : FP_ZERO;
+  return r.getNumerator() ? FP_INFINITE : FP_NAN;
 }
-inline bool isInfinity(const Rational &r) {
-  return isNan(r) && (r.getNumerator() != 0);
+
+inline bool isfinite(const Rational &r) {
+  return fpclassify(r) <= 0;
+}
+inline bool isinf(const Rational &r) {
+  return fpclassify(r) == FP_INFINITE;
+}
+inline bool isnan(const Rational &r) {
+  return fpclassify(r) == FP_NAN;
+}
+inline bool isnormal(const Rational &r) {
+  return fpclassify(r) == FP_NORMAL;
+}
+inline bool isunordered(const Rational &x, const Rational &y) {
+  return isnan(x) || isnan(y);
 }
 inline bool isPInfinity(const Rational &r) {
-  return isInfinity(r) && r.isPositive();
+  return isinf(r) && r.isPositive();
 }
 inline bool isNInfinity(const Rational &r) {
-  return isInfinity(r) && r.isNegative();
+  return isinf(r) && r.isNegative();
 }
+
+inline bool operator< (const Rational &x, const Rational &y) {
+  return !isunordered(x,y) && (rationalCmp(x, y) < 0);
+}
+inline bool operator> (const Rational &x, const Rational &y) {
+  return !isunordered(x,y) && (rationalCmp(x, y) > 0);
+}
+inline bool operator<=(const Rational &x, const Rational &y) {
+  return !isunordered(x,y) && (rationalCmp(x, y) <= 0);
+}
+inline bool operator>=(const Rational &x, const Rational &y) {
+  return !isunordered(x,y) && (rationalCmp(x, y) >= 0);
+}
+inline bool operator==(const Rational &x, const Rational &y) {
+  return !isunordered(x,y) && ((x.getNumerator() == y.getNumerator()) && (x.getDenominator() == y.getDenominator()));
+}
+inline bool operator!=(const Rational &x, const Rational &y) {
+  return !isunordered(x,y) && ((x.getNumerator() != y.getNumerator()) || (x.getDenominator() != y.getDenominator()));
+}
+
 
 char    *rattoa(char    *dst, const Rational &r, int radix);
 wchar_t *rattow(wchar_t *dst, const Rational &r, int radix);

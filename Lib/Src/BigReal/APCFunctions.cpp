@@ -6,6 +6,8 @@ BigReal BigReal::apcSum(const char bias, const BigReal &x, const BigReal &y, Dig
   DEFINEMETHODNAME;
   DigitPool *pool = digitPool ? digitPool : x.getDigitPool();
 
+  HANDLE_INFBINARYOP(x,y,pool);
+
   if(x.isZero()) {
     return BigReal(y, pool);
   } else if(y.isZero()) {
@@ -20,6 +22,9 @@ BigReal BigReal::apcSum(const char bias, const BigReal &x, const BigReal &y, Dig
 BigReal BigReal::apcProd(const char bias, const BigReal &x, const BigReal &y, DigitPool *digitPool) {
   DEFINEMETHODNAME;
   DigitPool *pool = digitPool ? digitPool : x.getDigitPool();
+
+  HANDLE_INFBINARYOP(x,y,pool);
+
   if(x.isZero() || y.isZero()) {
     return pool->get0();
   }
@@ -34,6 +39,8 @@ BigReal BigReal::apcProd(const char bias, const BigReal &x, const BigReal &y, Di
 BigReal BigReal::apcQuot(const char bias, const BigReal &x, const BigReal &y, DigitPool *digitPool) {
   DEFINEMETHODNAME;
   DigitPool *pool = digitPool ? digitPool : x.getDigitPool();
+
+  HANDLE_INFBINARYOP(x,y,pool);
 
   if(x.isZero()) {
     return pool->get0();
@@ -64,6 +71,9 @@ BigReal BigReal::apcQuot(const char bias, const BigReal &x, const BigReal &y, Di
 BigReal BigReal::apcPow(const char bias, const BigReal &x, const BigInt &y, DigitPool *digitPool) {
   DEFINEMETHODNAME;
   DigitPool           *pool = digitPool ? digitPool : x.getDigitPool();
+
+  HANDLE_INFBINARYOP(x,y,pool);
+
   static const BigReal &c1  = BIGREAL_HALF;
 
   if(y.isZero()) {

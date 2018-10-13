@@ -206,10 +206,10 @@ namespace TestExpression {
                   const Real compiledResult     = compiledExpr.evaluate();
                   const Real reducedResult      = reducedExpr.evaluate();
                   const Real interpreterResult  = interpreterExpr.evaluate();
-                  const bool cppDefined         = !isNan(cppResult        );
-                  const bool compiledDefined    = !isNan(compiledResult   );
-                  const bool reducedDefined     = !isNan(reducedResult    );
-                  const bool interpreterDefined = !isNan(interpreterResult);
+                  const bool cppDefined         = !isnan(cppResult        );
+                  const bool compiledDefined    = !isnan(compiledResult   );
+                  const bool reducedDefined     = !isnan(reducedResult    );
+                  const bool interpreterDefined = !isnan(interpreterResult);
 
 #define LOGERROR()                                                                          \
 { LOG log;                                                                                  \
@@ -532,16 +532,16 @@ namespace TestExpression {
           verifyExprOk(interpreterDFDX);
           for(Real x = -2; x <= 2; x += 0.31) {
             const Real y = test.fr(x);
-            if(isNan(y)) continue;
+            if(isnan(y)) continue;
 
             compiledDFDX.setValue(   _T("x"), x);
             interpreterDFDX.setValue(_T("x"), x);
             const Real cppResult          = test.numDFDX(x);
             const Real compiledResult     = compiledDFDX.evaluate();
             const Real interpreterResult  = interpreterDFDX.evaluate();
-            const bool cppDefined         = !isNan(cppResult);
-            const bool interpreterDefined = !isNan(interpreterResult);
-            const bool compiledDefined    = !isNan(compiledResult);
+            const bool cppDefined         = !isnan(cppResult);
+            const bool interpreterDefined = !isnan(interpreterResult);
+            const bool compiledDefined    = !isnan(compiledResult);
             Real       relDiff            = 0;
 
 #define USE_ABSERROR

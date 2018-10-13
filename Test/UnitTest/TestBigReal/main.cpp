@@ -264,7 +264,11 @@ int _tmain(int argc, TCHAR **argv) {
   try {
     bool   highPriority = false;
     bool   specialTest  = false;
+#ifdef _DEBUG
+    int    threadCount  = getDebuggerPresent() ? 1 : 0;
+#else
     int    threadCount  = 0;
+#endif _DEBUG
     TCHAR *cp;
     for(argv++; *argv && *(cp = *argv) == '-'; argv++) {
       for(cp++; *cp; cp++) {

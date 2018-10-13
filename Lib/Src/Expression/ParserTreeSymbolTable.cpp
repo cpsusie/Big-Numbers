@@ -397,7 +397,7 @@ StringArray ParserTreeSymbolTable::getIndexedNameArray() const {
   int tmpCounter = 0;
   for(size_t i = 0; i < a.size(); i++) {
     if(a[i].isEmpty()) {
-      if(isNan(m_valueTable[i])) {
+      if(isnan(m_valueTable[i])) {
         a[i] = format(_T("$tmp%d"), tmpCounter++);
       } else {
         a[i] = ::toString(m_valueTable[i]);

@@ -24,7 +24,7 @@ Number::Number(const float &v) {
   if(Rational::isRational(v, &tmp)) {
     m_type     = NUMBERTYPE_RATIONAL;
     m_rational = new Rational(tmp); TRACE_NEW(m_rational);
-  } else if(isNan(v)) {
+  } else if(isnan(v)) {
     m_type     = NUMBERTYPE_UNDEFINED;
     m_rational = NULL;
   } else {
@@ -38,7 +38,7 @@ Number::Number(const double &v) {
   if(Rational::isRational(v, &tmp)) {
     m_type     = NUMBERTYPE_RATIONAL;
     m_rational = new Rational(tmp); TRACE_NEW(m_rational);
-  } else if(isNan(v)) {
+  } else if(isnan(v)) {
     m_type     = NUMBERTYPE_UNDEFINED;
     m_rational = NULL;
   } else {
@@ -52,7 +52,7 @@ Number::Number(const Double80 &v) {
   if(Rational::isRational(v, &tmp)) {
     m_type     = NUMBERTYPE_RATIONAL;
     m_rational = new Rational(tmp); TRACE_NEW(m_rational);
-  } else if(isNan(v)) {
+  } else if(isnan(v)) {
     m_type     = NUMBERTYPE_UNDEFINED;
     m_rational = NULL;
   } else {
@@ -157,7 +157,7 @@ Number &Number::operator=(const float &v) {
       setType(NUMBERTYPE_RATIONAL);
     }
     *m_rational = tmp;
-  } else if(isNan(v)) {
+  } else if(isnan(v)) {
     setType(NUMBERTYPE_UNDEFINED);
   } else {
     setType(NUMBERTYPE_FLOAT);
@@ -173,7 +173,7 @@ Number &Number::operator=(const double &v) {
       setType(NUMBERTYPE_RATIONAL);
     }
     *m_rational = tmp;
-  } else if(isNan(v)) {
+  } else if(isnan(v)) {
     setType(NUMBERTYPE_UNDEFINED);
   } else {
     setType(NUMBERTYPE_DOUBLE);
@@ -189,7 +189,7 @@ Number &Number::operator=(const Double80 &v) {
       setType(NUMBERTYPE_RATIONAL);
     }
     *m_rational = tmp;
-  } else if(isNan(v)) {
+  } else if(isnan(v)) {
     setType(NUMBERTYPE_UNDEFINED);
   } else {
     setType(NUMBERTYPE_DOUBLE80);

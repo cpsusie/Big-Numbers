@@ -207,7 +207,7 @@ Real Remes::findExtremum(const Real &l, const Real &m, const Real &r, int depth)
     x = l - 1;
   }
 
-  if(isNan(x)) {
+  if(isnan(x)) {
     return plot[0].m_x;
   }
   if(x < l || x > r) {

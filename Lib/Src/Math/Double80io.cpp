@@ -19,16 +19,6 @@ static TCHAR *findFirstDigit(TCHAR *str) {
 
 #define MAXPRECISION DBL80_DIG
 
-static void formatNan(String &result, const Double80 &x) {
-  if(!isInfinity(x)) {
-    result = _T("-nan(ind)");
-  } else if(isPInfinity(x)) {
-    result = _T("inf");
-  } else if(isNInfinity(x)) {
-    result = _T("-inf");
-  }
-}
-
 #define addDecimalPoint(s) { s += _T("."); }
 #define addExponentChar(s) { s += ((flags & ios::uppercase) ? _T("E") : _T("e")); }
 
@@ -171,8 +161,8 @@ StrStream &operator<<(StrStream &stream, const Double80 &x) {
   }
 
   String result;
-  if(isNan(x)) {
-    formatNan(result, x);
+  if(!isfinite(x)) {
+    result = StrStream::formatUndefined(x);
   } else { // x defined
     if(x.isNegative()) {
       result = _T("-");

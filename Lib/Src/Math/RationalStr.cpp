@@ -40,14 +40,8 @@ Rational wcstorat(const wchar_t *s, wchar_t **end, int radix) {
 }
 
 char *rattoa(char *dst, const Rational &r, int radix) {
-  if(isNan(r)) {
-    if(!isInfinity(r)) {
-      return strcpy(dst, "-nan(ind)");
-    } else if(isPInfinity(r)) {
-      return strcpy(dst, "inf");
-    } else if(isNInfinity(r)) {
-      return strcpy(dst, "-inf");
-    }
+  if(!isfinite(r)) {
+    return strCpy(dst,StrStream::formatUndefined(r).cstr());
   }
   _i64toa(r.getNumerator(), dst, radix);
   if(r.getDenominator() != 1) {
@@ -60,14 +54,8 @@ char *rattoa(char *dst, const Rational &r, int radix) {
 }
 
 wchar_t *rattow(wchar_t *dst, const Rational &r, int radix) {
-  if(isNan(r)) {
-    if(!isInfinity(r)) {
-      return wcscpy(dst, L"-nan(ind)");
-    } else if(isPInfinity(r)) {
-      return wcscpy(dst, L"inf");
-    } else if(isNInfinity(r)) {
-      return wcscpy(dst, L"-inf");
-    }
+  if(!isfinite(r)) {
+    return strCpy(dst, StrStream::formatUndefined(r).cstr());
   }
   _i64tow(r.getNumerator(), dst, radix);
   if(r.getDenominator() != 1) {

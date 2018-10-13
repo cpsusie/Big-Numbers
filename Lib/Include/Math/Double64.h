@@ -2,16 +2,31 @@
 
 #include <Math.h>
 
-int    getExpo10(         double x);
-bool   isNan(             double x);
-bool   isPInfinity(       double x);
-bool   isNInfinity(       double x);
-bool   isInfinity(        double x);
+int    getExpo10(   double x);
+inline bool   isnan(double x) {
+  return std::isnan(x);
+}
+inline bool   isinf(double x) {
+  return std::isinf(x);
+}
+bool   isPInfinity( double x);
+bool   isNInfinity( double x);
+
+inline bool   isnan(float x) {
+  return std::isnan(x);
+}
+inline bool   isinf(float  x) {
+  return std::isinf(x);
+}
+bool   isPInfinity( float  x);
+bool   isNInfinity( float  x);
 
 #define FLT_NAN  std::numeric_limits<float>::quiet_NaN()
 #define FLT_PINF std::numeric_limits<float>::infinity()
+#define FLT_NINF (-FLT_PINF)
 #define DBL_NAN  std::numeric_limits<double>::quiet_NaN()
 #define DBL_PINF std::numeric_limits<double>::infinity()
+#define DBL_NINF (-DBL_PINF)
 
 inline double dsign(double x) {
   return (x < 0) ? -1 : (x > 0) ? 1 : 0;
@@ -124,10 +139,17 @@ inline int getExpo2(float x) {
   return (int)((((*((ULONG*)(&(x)))) >> 23) & 0xff) - 0x7f);
 }
 
+inline BYTE getSign(float x) {
+  return (((BYTE*)(&x))[3]) & 0x80;
+}
 inline UINT64 getSignificand(double x) {
   return (((*((UINT64*)(&(x)))) & 0xfffffffffffffui64) | 0x10000000000000ui64);
 }
 
 inline int getExpo2(double x) {
   return ((int)((((*((UINT64*)(&(x)))) >> 52) & 0x7ff) - 0x3ff));
+}
+
+inline BYTE getSign(double x) {
+  return (((BYTE*)(&x))[7]) & 0x80;
 }

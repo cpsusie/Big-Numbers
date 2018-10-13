@@ -5,21 +5,17 @@
 int getExpo10(double x) {
   return (x == 0) ? 0 : (int)floor(log10(fabs(x)));
 }
-
-bool isNan(double x) {
-  return (_fpclass(x) & (_FPCLASS_SNAN | _FPCLASS_QNAN | _FPCLASS_NINF | _FPCLASS_PINF)) ? true : false;
-}
-
 bool isPInfinity(double x) {
   return _fpclass(x) == _FPCLASS_PINF;
 }
-
 bool isNInfinity(double x) {
   return _fpclass(x) == _FPCLASS_NINF;
 }
-
-bool isInfinity(double x) {
-  return (_fpclass(x) & (_FPCLASS_NINF | _FPCLASS_PINF)) ? true : false;
+bool isPInfinity(float x) {
+  return _fpclass(x) == _FPCLASS_PINF;
+}
+bool isNInfinity(float x) {
+  return _fpclass(x) == _FPCLASS_NINF;
 }
 
 double mypow(double x, double y) {

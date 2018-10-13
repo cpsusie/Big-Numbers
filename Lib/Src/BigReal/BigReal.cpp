@@ -502,12 +502,23 @@ static void throwAssertionException(_In_z_ _Printf_format_string_ const TCHAR *f
 }
 
 void BigReal ::assertIsValidBigReal() const {
-  if(m_expo == BIGREAL_ZEROEXPO) {
+  if(m_expo == BIGREAL_ESCEXPO) {
     if(m_first != NULL) {
-      throwAssertionException(_T("m_expo == BIGREAL_ZEROEXPO, but m_first != NULL"));
+      throwAssertionException(_T("m_expo == BIGREAL_ESCEXPO, but m_first != NULL"));
     }
     if(m_last != NULL) {
-      throwAssertionException(_T("m_expo == BIGREAL_ZEROEXPO, but m_last != NULL"));
+      throwAssertionException(_T("m_expo == BIGREAL_ESCEXPO, but m_last != NULL"));
+    }
+    switch(m_low) {
+    case BIGREAL_ZEROLOW:
+    case BIGREAL_NANLOW :
+    case BIGREAL_INFLOW :
+      break;
+    default             :
+      throwAssertionException(_T("m_expo == BIGREAL_ESCEXPO, m_low=%zd, valid value for m_low={%d,%d,%d}")
+                             ,m_low
+                             ,BIGREAL_ZEROLOW,BIGREAL_NANLOW,BIGREAL_INFLOW);
+
     }
     return;
   }

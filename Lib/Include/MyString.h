@@ -50,6 +50,12 @@ int   strnHashCmp(  const TCHAR * const &s1, const TCHAR * const &s2, size_t n1,
 ULONG strniHash(    const TCHAR * const &s                          , size_t n);
 int   strniHashCmp( const TCHAR * const &s1, const TCHAR * const &s2, size_t n1, size_t n2);
 
+template<class DstCharType, class SrcCharType> DstCharType *strCpy(DstCharType *dst, const SrcCharType *src) {
+  DstCharType *ret = dst;
+  while(*(dst++) = (DstCharType)(*(src++)));
+  return ret;
+}
+
 class String {
 private:
   size_t m_len, m_capacity;

@@ -46,12 +46,44 @@ String ConversionTest::toString() const {
                );
 }
 
+template<class T> static void testUndefined(const T fld, DigitPool *pool) {
+  const bool nan     = isnan(      fld);
+  const bool pinf    = isPInfinity(fld);
+  const bool ninf    = isNInfinity(fld);
+  const bool inf     = isinf(      fld);
+  const bool finite  = isfinite(   fld);
+  const bool isnorm  = isnormal(   fld);
+  const int  cls     = fpclassify( fld);
+
+  BigReal br(fld, pool);
+
+  const bool nan1    = isnan(      br );
+  const bool pinf1   = isPInfinity(br );
+  const bool ninf1   = isNInfinity(br );
+  const bool inf1    = isinf(      br );
+  const bool finite1 = isfinite(   br );
+  const bool isnorm1 = isnormal(   br );
+  const int  cls1    = fpclassify( br );
+
+  verify(nan    == nan1   );
+  verify(pinf   == pinf1  );
+  verify(ninf   == ninf1  );
+  verify(inf    == inf1   );
+  verify(finite == finite1);
+  verify(isnorm == isnorm1);
+  verify(cls    == cls1   );
+}
+
 static void testFloatConversion(TestStatistic &stat, int sign) {
-  DigitPool     *pool      = stat.getDigitPool();
-  const float    loopStart = sign * FLT_MIN;
-  const float    loopEnd   = sign * FLT_MAX / 2;
+  DigitPool     *pool       = stat.getDigitPool();
+  const float    loopStart  = sign * FLT_MIN;
+  const float    loopEnd    = sign * FLT_MAX / 2;
   const float    stepFactor = 1 + 0.0012345f / 2;
+  const float    fltnan     = FLT_NAN;
+  const float    fltpinf    = FLT_PINF;
+  const float    fltninf    = FLT_NINF;
   size_t         length;
+
   ConversionTest convTest(stat);
   stat.setTotalTestCount(284190);
 
@@ -68,6 +100,9 @@ static void testFloatConversion(TestStatistic &stat, int sign) {
       if(stat.isTimeToPrint()) stat.printLoopMessage(_T("%5.1lf%%"), stat.getPercentDone());
     }
   }
+  testUndefined( fltnan ,pool);
+  testUndefined( fltpinf,pool);
+  testUndefined( fltpinf,pool);
 }
 
 static void testDoubleConversion(TestStatistic &stat, int sign) {
@@ -75,6 +110,10 @@ static void testDoubleConversion(TestStatistic &stat, int sign) {
   const double   loopStart  = sign * DBL_MIN;
   const double   loopEnd    = sign * DBL_MAX / 2;
   const double   stepFactor = 1 + 0.00456789 / 2;
+  const double   dblnan     = DBL_NAN;
+  const double   dblpinf    = DBL_PINF;
+  const double   dblninf    = DBL_NINF;
+
   size_t         length;
   ConversionTest convTest(stat);
   stat.setTotalTestCount(621339);
@@ -92,6 +131,9 @@ static void testDoubleConversion(TestStatistic &stat, int sign) {
       if(stat.isTimeToPrint()) stat.printLoopMessage(_T("%5.1lf%%"), stat.getPercentDone());
     }
   }
+  testUndefined( dblnan ,pool);
+  testUndefined( dblpinf,pool);
+  testUndefined( dblpinf,pool);
 }
 
 static void testDouble80Conversion(TestStatistic &stat, int sign) {
@@ -99,6 +141,9 @@ static void testDouble80Conversion(TestStatistic &stat, int sign) {
   const Double80 loopStart  = DBL80_MIN * sign;
   const Double80 loopEnd    = DBL80_MAX / 2 * sign;
   const Double80 stepFactor = 1 + 0.012345/4;
+  const Double80 dblnan     = DBL80_NAN;
+  const Double80 dblpinf    = DBL80_PINF;
+  const Double80 dblninf    = DBL80_NINF;
   size_t         length;
   ConversionTest convTest(stat);
   stat.setTotalTestCount(7370108);
@@ -116,6 +161,10 @@ static void testDouble80Conversion(TestStatistic &stat, int sign) {
       if(stat.isTimeToPrint()) stat.printLoopMessage(_T("%5.1lf%%"), stat.getPercentDone());
     }
   }
+  testUndefined( dblnan ,pool);
+  testUndefined( dblpinf,pool);
+  testUndefined( dblpinf,pool);
+
 }
 
 void testPositiveFloatConversion(TestStatistic &stat) {
@@ -152,7 +201,7 @@ void testGetExpo2(TestStatistic &stat) {
   const String intervalString = format(_T("[%s..%s]"), toString(startValue).cstr(), toString(DBL80_MAX).cstr());
   const Double80 loopStart  = startValue;
   stat.out() << _T("Start:") << loopStart << _T(", Step:") << stepFactor << NEWLINE;
-  for(Double80 x = loopStart; !isNan(x); x *= stepFactor) {
+  for(Double80 x = loopStart; !isnan(x); x *= stepFactor) {
     convTest.test(getRelativeError80(x, pool));
 
     if(stat.isTimeToPrint()) {

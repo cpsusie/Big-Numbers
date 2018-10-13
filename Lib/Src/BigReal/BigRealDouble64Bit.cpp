@@ -5,31 +5,48 @@
 
 void BigReal::init(double x) {
   init();
+  if(!isnormal(x)) {
+    if(isnan(x)) {
+      setToNan();
+    } else if(isinf(x)) {
+      setToInf();
+      if(getSign(x) != 0) {
+        changeSign();
+      }
+    }
+    return;
+  }
 
-  if(x != 0) {
-    const int expo2 = getExpo2(x) - 52;
-    if(expo2 == 0) {
-      init(getSignificand(x));
-    } else {
-      DigitPool *pool = getDigitPool();
-      const BigReal significand(getSignificand(x), pool);
-      const bool isConstPool = pool->getId() == CONST_DIGITPOOL_ID;
-      if(isConstPool) ConstDigitPool::releaseInstance(); // unlock it or we will get a deadlock
-      const BigReal &p2 = pow2(expo2,CONVERSION_POW2DIGITCOUNT);
-      if(isConstPool) ConstDigitPool::requestInstance();
-      shortProductNoZeroCheck(significand, p2, 4).rRound(17);
-    }
-    if(x < 0) {
-      m_negative = true;
-    }
+  // x is normal and != 0
+  const int expo2 = getExpo2(x) - 52;
+  if(expo2 == 0) {
+    init(getSignificand(x));
+  } else {
+    DigitPool *pool = getDigitPool();
+    const BigReal significand(getSignificand(x), pool);
+    const bool isConstPool = pool->getId() == CONST_DIGITPOOL_ID;
+    if(isConstPool) ConstDigitPool::releaseInstance(); // unlock it or we will get a deadlock
+    const BigReal &p2 = pow2(expo2,CONVERSION_POW2DIGITCOUNT);
+    if(isConstPool) ConstDigitPool::requestInstance();
+    shortProductNoZeroCheck(significand, p2, 4).rRound(17);
+  }
+  if(x < 0) {
+    m_negative = true;
   }
 }
 
 double getDouble(const BigReal &x) {
   DEFINEMETHODNAME;
-
-  if(x.isZero()) {
-    return 0;
+  if(!isnormal(x)) {
+    if(x.isZero()) {
+      return 0;
+    } else if(isnan(x)) {
+      return DBL_NAN;
+    } else if(isPInfinity(x)) {
+      return DBL_PINF;
+    } else {
+      return DBL_NINF;
+    }
   }
   if(compareAbs(x,ConstBigReal::_dbl_max) > 0) {
     throwBigRealGetIntegralTypeOverflowException(method, x, toString(ConstBigReal::_dbl_max));

@@ -12,8 +12,8 @@ const Rational RAT_NINF(-1,0       );    // -infinity;         (-1/0)
 
 #define SAFEPROD(a,b) Rational::safeProd(a,b,__LINE__)
 
-#define CHECKNAN(f)                         \
-if(isNan(f)) {                              \
+#define CHECKISFINITE(f)                    \
+if(!isfinite(f)) {                          \
   if(isPInfinity(f))      *this = RAT_PINF; \
   else if(isNInfinity(f)) *this = RAT_NINF; \
   else                    *this = RAT_NAN;  \
@@ -23,7 +23,7 @@ if(isNan(f)) {                              \
 Rational::Rational(float f, UINT maxND) {
   DEFINEMETHODNAME;
   static const TCHAR *invalidFloatMsg = _T("Value %e cannot be contained in a Rational with maxND=%lu");
-  CHECKNAN(f)
+  CHECKISFINITE(f)
   bool   positive;
   float  fa;
   if(f > 0) {
@@ -81,7 +81,7 @@ Rational::Rational(double d, UINT maxND) {
   DEFINEMETHODNAME;
   static const TCHAR *invalidDoubleMsg = _T("Value %le cannot be contained in a Rational with maxND=%lu");
 
-  CHECKNAN(d)
+  CHECKISFINITE(d)
   bool   positive;
   double da;
   if(d > 0) {
@@ -135,7 +135,7 @@ Rational::Rational(const Double80 &d80, UINT64 maxND) {
   DEFINEMETHODNAME;
   static const TCHAR *invalidDoubleMsg = _T("Value %s cannot be contained in a Rational with maxND=%I64u");
 
-  CHECKNAN(d80)
+  CHECKISFINITE(d80)
   bool     positive;
   Double80 da;
   if(d80.isPositive()) {
@@ -219,7 +219,7 @@ void Rational::init(const INT64 &numerator, const INT64 &denominator) {
 }
 
 Rational operator+(const Rational &l, const Rational &r) {
-  if(isNan(l) || isNan(r)) return RAT_NAN;
+  if(!isfinite(l) || !isfinite(r)) return RAT_NAN;
   if(l.m_denominator == r.m_denominator) {                                                     // l.d == r.d. just add l.n and r.n
     return Rational(l.m_numerator + r.m_numerator, l.m_denominator);
   } else if((l.m_denominator > r.m_denominator) && (l.m_denominator % r.m_denominator == 0)) { // l.d = n * r.d. extend r with n and use l.d as denominator
@@ -234,7 +234,7 @@ Rational operator+(const Rational &l, const Rational &r) {
 }
 
 Rational operator-(const Rational &l, const Rational &r) {
-  if(isNan(l) || isNan(r)) return RAT_NAN;
+  if(!isfinite(l) || !isfinite(r)) return RAT_NAN;
   if(l.m_denominator == r.m_denominator) {                                                     // l.d == r.d. just subtract r.n from l.n
     return Rational(l.m_numerator - r.m_numerator, l.m_denominator);
   } else if((l.m_denominator > r.m_denominator) && (l.m_denominator % r.m_denominator == 0)) { // l.d = n * r.d. extend r with n and use l.d as denominator
@@ -249,11 +249,12 @@ Rational operator-(const Rational &l, const Rational &r) {
 }
 
 Rational operator-(const Rational &r) {
+  if(!isfinite(r)) return RAT_NAN;
   return Rational(-r.m_numerator, r.m_denominator);
 }
 
 Rational operator*(const Rational &l, const Rational &r) {
-  if(isNan(l) || isNan(r)) return RAT_NAN;
+  if(!isfinite(l) || !isfinite(r)) return RAT_NAN;
   return Rational(SAFEPROD(l.m_numerator,r.m_numerator), SAFEPROD(l.m_denominator,r.m_denominator));
 }
 
@@ -262,7 +263,7 @@ void Rational::throwDivisionByZeroException(const TCHAR *method) { // static
 }
 
 Rational operator/(const Rational &l, const Rational &r) {
-  if(isNan(l) || isNan(r)) return RAT_NAN;
+  if(!isfinite(l) || !isfinite(r)) return RAT_NAN;
   if(r.isZero()) {
     if(l.isZero()    ) return RAT_NAN;
     if(l.isNegative()) return RAT_NINF;
@@ -272,20 +273,24 @@ Rational operator/(const Rational &l, const Rational &r) {
 }
 
 Rational operator%(const Rational &l, const Rational &r) {
+  if(!isfinite(l) || !isfinite(r)) return RAT_NAN;
   if(r.isZero()) {
-    Rational::throwDivisionByZeroException(__TFUNCTION__);
+    if(l.isZero()    ) return RAT_NAN;
+    if(l.isNegative()) return RAT_NINF;
+    return RAT_PINF;
   }
   const Rational q = l / r;
-  const INT64  n = getInt64(q);
+  const INT64    n = getInt64(q);
   return l - r * n;
 }
 
 Rational &Rational::operator*=(const Rational &r) {
+  if(!isfinite(*this) || !isfinite(r)) return *this = RAT_NAN;
   return *this = Rational(SAFEPROD(m_numerator,r.m_numerator), SAFEPROD(m_denominator, r.m_denominator));
 }
 
 Rational &Rational::operator/=(const Rational &r) {
-  if(isNan(*this) || isNan(r)) return *this = RAT_NAN;
+  if(!isfinite(*this) || !isfinite(r)) return *this = RAT_NAN;
   if(r.isZero()) {
     if(isZero()    ) return *this = RAT_NAN;
     if(isNegative()) return *this = RAT_NINF;
@@ -295,14 +300,11 @@ Rational &Rational::operator/=(const Rational &r) {
 }
 
 Rational &Rational::operator%=(const Rational &r) {
-  if(r.isZero()) {
-    throwDivisionByZeroException(__TFUNCTION__);
-  }
   return *this = *this % r;
 }
 
 Rational fabs(const Rational &r) {
-  if(isNan(r)) return RAT_NAN;
+  if(!isfinite(r)) return RAT_NAN;
   Rational result;
   result.m_numerator   = abs(r.m_numerator);
   result.m_denominator = r.m_denominator;
@@ -324,12 +326,12 @@ INT64 Rational::pow(INT64 n, UINT y) {
 }
 
 Rational pow(const Rational &r, int e) {
-  DEFINEMETHODNAME;
+  if(!isfinite(r)) return RAT_NAN;
   if(e == 0) {
     return Rational(1);
   } else if(e < 0) {
     if(r.isZero()) {
-      throwInvalidArgumentException(method, _T("r == 0, e=%d"), e);
+      throwInvalidArgumentException(__TFUNCTION__, _T("r == 0, e=%d"), e);
     }
     return Rational(Rational::pow(r.m_denominator,-e), Rational::pow(r.m_numerator,-e));
   } else {
@@ -338,13 +340,19 @@ Rational pow(const Rational &r, int e) {
 }
 
 Rational reciprocal(const Rational &r) {
-  if(r.isZero()) {
-    Rational::throwDivisionByZeroException(__TFUNCTION__);
+  DEFINEMETHODNAME;
+  switch(fpclassify(r)) {
+  case FP_NORMAL   : return Rational(r.m_denominator, r.m_numerator);
+  case FP_ZERO     : Rational::throwDivisionByZeroException(method);
+  case FP_INFINITE : return 0;
+  case FP_NAN      : return r;
+  default          : throwException(_T("%s:Unknown value return from fpclassify:%d"), method, fpclassify(r));
+                     return 0;
   }
-  return Rational(r.m_denominator, r.m_numerator);
 }
 
 int rationalCmp(const Rational &r1, const Rational &r2) {
+  assert(isfinite(r1) && isfinite(r2));
   const int sign1 = sign(r1.m_numerator);
   const int c     = sign1 - sign(r2.m_numerator);
   if(c != 0) return c;
@@ -399,8 +407,8 @@ UINT64 Rational::findGCD(const UINT64 &a, const UINT64 &b) { // static
   return g*v;
 }
 
-#define CHECKNAN1(f)                       \
-if(isNan(f)) {                             \
+#define CHECKISFINITE1(f)                  \
+if(!isfinite(f)) {                         \
   if(r) {                                  \
     if(isPInfinity(f))      *r = RAT_PINF; \
     else if(isNInfinity(f)) *r = RAT_NINF; \
@@ -410,7 +418,7 @@ if(isNan(f)) {                             \
 }
 
 bool Rational::isRational(float x, Rational *r) { // static
-  CHECKNAN1(x);
+  CHECKISFINITE1(x);
   if(x == floor(x)) {
     if(fabs(x) > LLONG_MAX) {
       return false;
@@ -432,7 +440,7 @@ bool Rational::isRational(float x, Rational *r) { // static
 }
 
 bool Rational::isRational(double x, Rational *r) { // static
-  CHECKNAN1(x);
+  CHECKISFINITE1(x);
   if(x == floor(x)) {
     if(fabs(x) > LLONG_MAX) {
       return false;
@@ -454,7 +462,7 @@ bool Rational::isRational(double x, Rational *r) { // static
 }
 
 bool Rational::isRational(const Double80 &x, Rational *r) { // static
-  CHECKNAN1(x);
+  CHECKISFINITE1(x);
   if(x == floor(x)) {
     if(fabs(x) > LLONG_MAX) {
       return false;

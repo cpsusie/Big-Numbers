@@ -214,13 +214,13 @@ namespace TestRational {
     }
 
     template<class T> void verifyRationalNanTypes(const T &f) {
-      const bool fisNan  = isNan(      f);
-      const bool fisInf  = isInfinity( f);
+      const bool fisNan  = isnan(      f);
+      const bool fisInf  = isinf(      f);
       const bool fisPInf = isPInfinity(f);
       const bool fisNInf = isNInfinity(f);
       const Rational r(f);
-      verify(isNan(      r)  == fisNan );
-      verify(isInfinity( r)  == fisInf );
+      verify(isnan(      r)  == fisNan );
+      verify(isinf(      r)  == fisInf );
       verify(isPInfinity(r)  == fisPInf);
       verify(isNInfinity(r)  == fisNInf);
 
@@ -228,18 +228,18 @@ namespace TestRational {
       const double   d1  = getDouble(  r);
       const Double80 d80 = getDouble80(r);
 
-      verify(isNan(      f1 ) == fisNan );
-      verify(isInfinity( f1 ) == fisInf );
+      verify(isnan(      f1 ) == fisNan );
+      verify(isinf(      f1 ) == fisInf );
       verify(isPInfinity(f1 ) == fisPInf);
       verify(isNInfinity(f1 ) == fisNInf);
 
-      verify(isNan(      d1 ) == fisNan );
-      verify(isInfinity( d1 ) == fisInf );
+      verify(isnan(      d1 ) == fisNan );
+      verify(isinf(      d1 ) == fisInf );
       verify(isPInfinity(d1 ) == fisPInf);
       verify(isNInfinity(d1 ) == fisNInf);
 
-      verify(isNan(      d80) == fisNan );
-      verify(isInfinity( d80) == fisInf );
+      verify(isnan(      d80) == fisNan );
+      verify(isinf(      d80) == fisInf );
       verify(isPInfinity(d80) == fisPInf);
       verify(isNInfinity(d80) == fisNInf);
     }

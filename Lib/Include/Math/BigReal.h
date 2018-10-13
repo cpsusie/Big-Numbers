@@ -30,7 +30,7 @@
 #define LOG10_BIGREALBASE  8
 #define POWER10TABLESIZE   10
 
-#define BIGREAL_ZEROEXPO  -900000000
+#define BIGREAL_ESCEXPO  -900000000
 #define BIGREAL_MAXEXPO    99999999
 #define BIGREAL_MINEXPO   -99999999
 
@@ -43,7 +43,7 @@ typedef long  BRDigitDiffType;
 #define LOG10_BIGREALBASE  18
 #define POWER10TABLESIZE   20
 
-#define BIGREAL_ZEROEXPO  -900000000000000000
+#define BIGREAL_ESCEXPO  -900000000000000000
 #define BIGREAL_MAXEXPO    99999999999999999
 #define BIGREAL_MINEXPO   -99999999999999999
 
@@ -52,6 +52,11 @@ typedef INT64          BRExpoType;
 typedef INT64          BRDigitDiffType;
 
 #endif // IS32BIT
+
+// Values for BigReal::m_low, if m_expo == BIGREAL_ESCEXPO
+#define BIGREAL_ZEROLOW    FP_ZERO
+#define BIGREAL_NANLOW     FP_NAN
+#define BIGREAL_INFLOW     FP_INFINITE // +/- infinite depending on m_negative
 
 #define SP_OPT_NONE      0
 #define SP_OPT_BY_FPU    1
@@ -269,6 +274,8 @@ private:
   // = 0.5
   BigReal              *m_half;
 
+  BigReal              *m_nan, *m_pinf, *m_ninf; // nan, +infinity, -infinity
+
   static void addToCount(intptr_t n);
   DigitPool(           const DigitPool &src); // not implemented
   DigitPool &operator=(const DigitPool &src); // not implemented
@@ -326,6 +333,16 @@ public:
   inline const BigReal &getHalf() const {
     return *m_half;
   }
+  inline const BigReal &getnan() const {
+    return *m_nan;
+  }
+  inline const BigReal &getpinf() const {
+    return *m_pinf;
+  }
+  inline const BigReal &getninf() const {
+    return *m_ninf;
+  }
+
   static inline size_t getTotalAllocatedDigitCount() {
     return s_totalDigitCount;
   }
@@ -372,7 +389,16 @@ private:
   Digit                    *m_first;
   // Least significand digit
   Digit                    *m_last;
-  // if isZero() then (m_expo,m_low)=(BIGREAL_ZEROEXPO,0) else m_expo = m_low+getLength()-1
+  /* if(m_expo == BIGREAL_ESCEXPO) {
+       switch(m_low) {
+       case BIGERAL_ZEROLOW    : isZero() == true
+       case BIGREAL_NANLOW     : isnan()  == true
+       case BIGREAL_INFLOW     : ifInf()  == true +/- infinite depending on m_negative
+       }
+     } else {
+       m_expo = m_low+getLength()-1
+     }
+  */
   BRExpoType                m_expo, m_low;
   // True for x < 0. else false
   bool                      m_negative;
@@ -382,12 +408,18 @@ private:
   friend class MultiplierThread;
   friend class BigRealTestClass;
   friend class BigInt;
+  friend int fpclassify(const BigReal &x);
 
   // Construction helperfunctions
+  inline void copyFields(const BigReal &src) {
+    m_expo     = src.m_expo;
+    m_low      = src.m_low;
+    m_negative = src.m_negative;
+  }
   inline void init() {
     m_first    = m_last = NULL;
-    m_expo     = BIGREAL_ZEROEXPO;
-    m_low      = 0;
+    m_expo     = BIGREAL_ESCEXPO;
+    m_low      = BIGREAL_ZEROLOW;
     m_negative = false;
   }
   void init(int               n);
@@ -772,41 +804,71 @@ public:
   // compare(|x|,|y|). (Faster than compare(fabs(x),fabs(y)))
   friend int compareAbs(      const BigReal &x,  const BigReal &y);
 
+  // return true, if *this is a normal number != 0
+  inline bool _isnormal() const {
+    return m_expo != BIGREAL_ESCEXPO;
+  }
+  // return true, if *this == 0
   inline bool isZero() const {
-    return m_expo == BIGREAL_ZEROEXPO;
+    return !_isnormal() && (m_low == BIGREAL_ZEROLOW);
+  }
+  // return true, if *this is +/-INFINITE
+  inline bool _isinf() const {
+    return !_isnormal() && (m_low == BIGREAL_INFLOW);
+  }
+  // return true, if isnormal() || isZero()
+  inline bool _isfinite() const {
+    return _isnormal() || (m_low == BIGREAL_ZEROLOW);
+  }
+  // return true, if *this is NaN
+  inline bool _isnan() const {
+    return !_isnormal() && (m_low == BIGREAL_NANLOW);
   }
   inline void setToZero() {
     clearDigits();
     init();
   }
-
+  inline void setToNan() {
+    setToZero();
+    m_low = BIGREAL_NANLOW;
+  }
+  inline void setToInf() {
+    setToZero();
+    m_low = BIGREAL_INFLOW;
+  }
   inline BigReal &changeSign() {
-    if(!isZero()) { m_negative = !m_negative; }
+    if(_isnormal() || _isinf()) { m_negative = !m_negative; }
     return *this;
   }
 
   inline void setPositive() {
     m_negative = false;
   }
+  // Return !isZero() && !m_negative
   inline  bool isPositive() const {
-    return m_expo != BIGREAL_ZEROEXPO && !m_negative;
+    return !isZero() && !m_negative;
   }
 
+  // Return m_negative
   inline bool isNegative() const {
-    return m_expo != BIGREAL_ZEROEXPO && m_negative;
+    return m_negative;
   }
-  // Number of BASE digits. 0 has length 1
+  // For normal numbers:Number of BASE digits, 0 has length 1, inf,nan has length 0
   inline size_t getLength() const {
-    return isZero() ? 1 : (m_expo - m_low + 1);
+    return _isnormal() ? (m_expo - m_low + 1) : isZero() ? 1 : 0;
   }
-  // Number of decimal digits. 0 has length 1
+  // Assume isfinite(). Return number of decimal digits. 0 has length 1
   size_t getDecimalDigits()  const;
+
+  // Assume isfinite(). Return m_low
   inline BRExpoType getLow() const {
+    assert(_isfinite());
     return isZero() ? 0 : m_low;
   }
 
-  // x == 0 ? 0 : floor(log10(|x|))
+  // Assume isfinite(). Return x == 0 ? 0 : floor(log10(|x|))
   static inline BRExpoType getExpo10(const BigReal  &x) {
+    assert(x._isfinite());
     return x.isZero() ? 0 : (x.m_expo * LOG10_BIGREALBASE + getDecimalDigitCount(x.m_first->n) - 1);
   }
 
@@ -826,7 +888,7 @@ public:
     return s_power10Table[n];
 #endif
   }
-  // x == 0 ? 0 : approximately floor(log2(|x|))
+  // Assume isfinite(). Return x == 0 ? 0 : approximately floor(log2(|x|))
   friend BRExpoType getExpo2(   const BigReal  &x);
   static inline int getDecimalDigitCount(BRDigitType n) {
 #ifdef IS32BIT
@@ -868,8 +930,9 @@ public:
   // x * pow(10,n)
   friend BigReal e(        const BigReal &x, BRExpoType n   , DigitPool *digitPool = NULL);
 
-  // x < 0 ? -1 : x > 0 ? 1 : 0
+  // Assume isfinite(). x < 0 ? -1 : x > 0 ? 1 : 0
   friend inline int sign(  const BigReal &x) {
+    assert(x._isfinite());
     return x.isZero() ? 0 : x.isPositive() ? 1 : -1;
   }
 
@@ -900,12 +963,14 @@ public:
   // x*y with |error| < f. Used to multiply short numbers. Used by prod.
   static BigReal shortProd(    const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *digitPool);
 
-  // isZero() ? 0 : first BASE-digit.
+  // Assume isfinite(). isZero() ? 0 : first BASE-digit.
   inline BRDigitType getFirstDigit() const {
+    assert(_isfinite());
     return isZero() ? 0 : m_first->n;
   }
-  // isZero() ? 0 : last BASE-digit.
+  // Assume isfinite(). isZero() ? 0 : last BASE-digit.
   inline BRDigitType getLastDigit()  const {
+    assert(_isfinite());
     return isZero() ? 0 : m_last->n;
   }
 
@@ -1022,6 +1087,15 @@ public:
   static inline const BigReal &get05() {
     return s_instance.getHalf();
   }
+  static inline const BigReal &getNan() {
+    return s_instance.getnan();
+  }
+  static inline const BigReal &getPinf() {
+    return s_instance.getpinf();
+  }
+  static inline const BigReal &getninf() {
+    return s_instance.getninf();
+  }
 };
 
 #define REQUESTCONSTPOOL ConstDigitPool::requestInstance()
@@ -1107,23 +1181,49 @@ public:
 #define APCquot(bias, x, y, pool) BigReal::apcQuot(#@bias, x, y, pool)
 #define APCpow( bias, x, y, pool) BigReal::apcPow( #@bias, x, y, pool)
 
+inline int fpclassify(const BigReal &x) {
+  if(x._isnormal()) return FP_NORMAL;
+  return (int)x.m_low;
+}
+inline bool isfinite(const BigReal &x) {
+  return fpclassify(x) <= 0;
+}
+inline bool isinf(const BigReal &x) {
+  return fpclassify(x) == FP_INFINITE;
+}
+inline bool isnan(const BigReal &x) {
+  return fpclassify(x) == FP_NAN;
+}
+inline bool isnormal(const BigReal &x) {
+  return fpclassify(x) == FP_NORMAL;
+}
+inline bool isunordered(const BigReal &x, const BigReal &y) {
+  return isnan(x) || isnan(y);
+}
+inline bool isPInfinity(const BigReal &x) {
+  return isinf(x) && x.isPositive();
+}
+inline bool isNInfinity(const BigReal &x) {
+  return isinf(x) && x.isNegative();
+}
+
 inline bool operator==(const BigReal &x, const BigReal &y) {
-  return compare(x,y) == 0;
+  return isunordered(x,y) ? false : (compare(x,y) == 0);
 }
 inline bool operator!=(const BigReal &x, const BigReal &y) {
-  return compare(x,y) != 0;
+  return isunordered(x,y) ? false : (compare(x,y) != 0);
 }
 inline bool operator>=(const BigReal &x, const BigReal &y) {
-  return compare(x,y) >= 0;
+  return isunordered(x,y) ? false : (compare(x,y) >= 0);
 }
 inline bool operator<=(const BigReal &x, const BigReal &y) {
-  return compare(x,y) <= 0;
+  return isunordered(x,y) ? false : (compare(x,y) <= 0);
 }
 inline bool operator> (const BigReal &x, const BigReal &y) {
-  return compare(x,y) >  0;
+  return isunordered(x,y) ? false : (compare(x,y) >  0);
 }
 inline bool operator< (const BigReal &x, const BigReal &y) {
-  return compare(x,y) <  0;
+  return isunordered(x,y) ? false : (compare(x,y) <  0);
 }
 
 class BigRealStream : public StrStream { // Don't derive from standardclass strstream. Its slow!!! (at least in windows)
@@ -1213,6 +1313,9 @@ BigInt operator*(const BigInt &x, const BigInt &y);
 #define BIGREAL_1     ConstDigitPool::getOne()
 #define BIGREAL_2     ConstDigitPool::getTwo()
 #define BIGREAL_HALF  ConstDigitPool::get05()
+#define BIGREAL_NAN   ConstDigitPool::getNan();
+#define BIGREAL_PINF  ConstDigitPool::getPinf();
+#define BIGREAL_NINF  ConstDigitPool::getNinf();
 
 #ifdef LONGDOUBLE
 inline Real getReal(const BigReal &x) {

@@ -104,52 +104,47 @@ void BigReal::init(_uint128 n) {
 
 BigReal::BigReal(const BigReal &x, DigitPool *digitPool) : m_digitPool(digitPool?*digitPool:x.m_digitPool) {
   init();
-  m_expo     = x.m_expo;
-  m_low      = x.m_low;
-  m_negative = x.m_negative;
-  if(!x.isZero()) copyAllDigits(x);
+  if(x._isnormal()) copyAllDigits(x);
+  copyFields(x);
 }
 
 BigReal &BigReal::operator=(const BigReal &x) {
-  if(&x != this) {
-    if(x.isZero()) {
-      if(!isZero()) {
-        setToZero();
+  if(&x == this) {
+    return *this;
+  } else if(!x._isnormal()) {
+    clearDigits();
+    copyFields(x);
+    return *this;
+  } else if(isZero()) {      // x != 0
+    copyAllDigits(x);
+  } else {                   // x != 0 && *this != 0
+    const intptr_t missing = x.getLength() - getLength();
+    if(missing >= 0) {       // First copy all the digits, then append the rest if x.length > this.length
+      Digit *sd, *dd;
+      for(sd = x.m_first, dd = m_first; dd; sd = sd->next, dd = dd->next) {
+        dd->n = sd->n;
       }
-      return *this;
-    } else if(isZero()) {      // x != 0
-      copyAllDigits(x);
-    } else {                   // x != 0 && *this != 0
-      const intptr_t missing = x.getLength() - getLength();
-      if(missing >= 0) {       // First copy all the digits, then append the rest if x.length > this.length
-        Digit *sd, *dd;
-        for(sd = x.m_first, dd = m_first; dd; sd = sd->next, dd = dd->next) {
-          dd->n = sd->n;
+      if(sd) {               // We have more digits to copy
+        Digit *p;
+        for(p = m_last; sd; sd = sd->next, p = dd) {
+          (dd = newDigit())->prev = p;
+          dd->n   = sd->n;
+          p->next = dd;
         }
-        if(sd) {               // We have more digits to copy
-          Digit *p;
-          for(p = m_last; sd; sd = sd->next, p = dd) {
-            (dd = newDigit())->prev = p;
-            dd->n   = sd->n;
-            p->next = dd;
-          }
-          (m_last = p)->next = NULL;
-        }
-      } else {                 // Missing < 0. First copy and then delete excess digits
-        Digit *sd, *dd;
-        for(sd = x.m_first, dd = m_first; sd; sd = sd->next, dd = dd->next) {
-          dd->n = sd->n;
-        }
-        Digit *saveLast = m_last;
-        m_last = dd->prev;
-        m_last->next = NULL;
-        m_digitPool.deleteDigits(dd, saveLast);
+        (m_last = p)->next = NULL;
       }
+    } else {                 // Missing < 0. First copy and then delete excess digits
+      Digit *sd, *dd;
+      for(sd = x.m_first, dd = m_first; sd; sd = sd->next, dd = dd->next) {
+        dd->n = sd->n;
+      }
+      Digit *saveLast = m_last;
+      m_last = dd->prev;
+      m_last->next = NULL;
+      m_digitPool.deleteDigits(dd, saveLast);
     }
-    m_expo     = x.m_expo;
-    m_low      = x.m_low;
-    m_negative = x.m_negative;
   }
+  copyFields(x);
   return *this;
 }
 

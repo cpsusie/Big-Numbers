@@ -17,6 +17,7 @@ BRExpoType getExpo2(const BigReal &x) {
   static const double log2_10 = 3.321928094887362; // = ln(10)/ln(2).
                                                    // so expo10(x) * log2_10 is approximately ln(x)/ln(10) * ln(10)/ln(2)
                                                    // = ln(x)/ln(2) = ln2(x) approximately  expo2(x)
+  assert(isfinite(x));
   if(x.isZero()) {
     return 0;
   }
@@ -25,6 +26,7 @@ BRExpoType getExpo2(const BigReal &x) {
 }
 
 size_t BigReal::getDecimalDigits() const { // BigReal of decimal digits. 0 has length 1
+  assert(_isfinite());
   if(isZero()) {
     return 1;
   } else if(m_expo == m_low) {
@@ -74,9 +76,10 @@ BigInt floor(const BigReal &x) { // biggest integer <= x
 }
 
 BigInt ceil(const BigReal &x) { // smallest integer >= x
+  if(!isfinite(x)) return BigInt(x);
   DigitPool *pool = x.getDigitPool();
   if(x.isZero()) {
-    return pool->get0();;
+    return pool->get0();
   } else if(x.m_expo < 0) { // |x| < 1
     return x.isNegative() ? pool->get0() : pool->get1();
   } else if(isInteger(x)) { // x is a BigInt
@@ -95,6 +98,7 @@ BigInt ceil(const BigReal &x) { // smallest integer >= x
 }
 
 BigReal fraction(const BigReal &x) { // sign(x) * (|x| - floor(|x|))
+  if(!isfinite(x)) return x;
   BigReal result;
   x.fractionate(NULL, &result);
   return result;
@@ -115,6 +119,7 @@ BigReal fraction(const BigReal &x) { // sign(x) * (|x| - floor(|x|))
 }
 
 BigReal trunc(const BigReal &x, intptr_t prec) {  // sign(x) * ent(abs(x)*10^prec)*10^-prec
+  if(!isfinite(x)) return x;
   if(x.isZero()) {
     return x;
   }
@@ -129,6 +134,7 @@ BigReal trunc(const BigReal &x, intptr_t prec) {  // sign(x) * ent(abs(x)*10^pre
 }
 
 BigReal round(const BigReal &x, intptr_t prec) { // sign(x) * ent(abs(x)*10^prec+0.5)*10^-prec
+  if(!isfinite(x)) return x;
   if(x.isZero()) {
     return x;
   }
@@ -240,6 +246,7 @@ static BRDigitType roundInt(BRDigitType n, int prec) { // assume prec <= 0
 }
 
 BigReal cut(const BigReal &x, size_t digits, DigitPool *digitPool) { // x truncated to the specified number of significant decimal digits
+  if(!isfinite(x)) return x;
   DigitPool *pool = digitPool ? digitPool : x.getDigitPool();
   if(x.isZero() || (digits == 0)) {
     return pool->get0();
@@ -272,8 +279,8 @@ BigReal cut(const BigReal &x, size_t digits, DigitPool *digitPool) { // x trunca
 }
 
 BigReal &BigReal::copyrTrunc(const BigReal &src, size_t digits) { // decimal digits
-  if(src.isZero()) {
-    setToZero();
+  if(!isnormal(src)) {
+    *this = src;
     return *this;
   }
   const Digit   *sp = src.m_first;

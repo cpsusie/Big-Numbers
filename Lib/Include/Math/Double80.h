@@ -3374,17 +3374,18 @@ Double80 minMax(     const Double80 &x, const Double80 &x1, const Double80 &x2);
 inline int getExpo2(const Double80 &x) {
   return getExponent(x) - 0x3fff;
 }
-inline bool isNan(const Double80 &x) {
-  return getExponent(x) == 0x7fff;
+inline int fpclassify(const Double80 &x) {
+  if(getExponent(x) == 0x7fff) {
+    return (getSignificand(x) == 0x8000000000000000ui64) ? FP_INFINITE : FP_NAN;
+  }
+  return x.isZero() ? FP_ZERO : FP_NORMAL;
 }
-inline bool isInfinity(const Double80 &x) {
-  return isNan(x) && (getSignificand(x) == 0x8000000000000000ui64);
-}
+
 inline bool isPInfinity(const Double80 &x) {
-  return isInfinity(x) && x.isPositive();
+  return isinf(x) && x.isPositive();
 }
 inline bool isNInfinity(const Double80 &x) {
-  return isInfinity(x) && x.isNegative();
+  return isinf(x) && x.isNegative();
 }
 
 Double80 randDouble80(Random *rnd = NULL);

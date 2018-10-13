@@ -111,111 +111,6 @@ Double80 wcstod80(const wchar_t *s, wchar_t **end) {
 #define isEmpty(b)                     (getLength(b)==0)
 #define removeLast(b)                  b[--b##_length]
 
-template<class DstCharType> DstCharType *strCopy(DstCharType *dst, const char *src) {
-  DstCharType *ret = dst;
-  while(*(dst++) = *(src++));
-  return ret;
-}
-
-#define copy(dst,src) strCopy<CharType>(dst,src)
-//#define OLD_D80TOSTR
-#ifdef OLD_D80TOSTR
-template<class CharType> CharType *_d80tostr(CharType *dst, const Double80 &x) {
-  if(isNan(x)) {
-    if(!isInfinity(x)) {
-      return copy(dst, "Nan");
-    } else if(isPInfinity(x)) {
-      return copy(dst, "+Infinity");
-    } else if(isNInfinity(x)) {
-      return copy(dst, "-Infinity");
-    }
-  } else if(x.isZero()) {
-    return copy(dst, "0.00000000000000000e+000");
-  }
-
-  int expo10 = Double80::getExpo10(x);
-  BYTE bcd[10];
-
-#ifndef ASM_OPTIMIZED
-
-  const USHORT cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_ROUND);
-  Double80 m = (expo10 == 0) ? x : (x / exp10(expo10));
-  m = m * tenE18;
-  while(fabs(m) >= tenE18M1) {
-    m = m / ten;
-    expo10++;
-  }
-
-  // Assertion: 1 <= |m| < 1e18-1 and x = m * 10^(expo10-18)
-
-  D80ToBCD(bcd, m);
-
-  FPU::restoreControlWord(cwSave);
-
-#else // ASM_OPTIMIZED
-
-  D80ToBCDAutoScale(bcd, x, expo10);
-
-#endif // ASM_OPTIMIZED
-
-  declareAssignedBuffer(result, dst);
-
-  if(bcd[9] & 0x80) {
-    addChar(result,'-');
-  }
-  int  decimals;
-  const BYTE *p = bcd+8;
-  for(; (p >= bcd) && (*p==0); p--);
-  if((*p) & 0xf0) {
-    addDigit(result, (*p)>>4);
-    addChar( result, '.');
-    addDigit(result, (*p)&0x0f);
-    decimals = (int)(p-bcd) * 2 - 1;
-  } else {
-    addDigit(result, (*p)&0xf);
-    addChar( result, '.');
-    decimals = (int)(p-bcd) * 2 - 2;
-  }
-  for(p--; p >= bcd; p--) {
-    addDigit(result,(*p)>> 4);
-    addDigit(result,(*p)&0xf);
-  }
-  addChar(result,'e');
-  expo10 += decimals - 16;
-  if(expo10 < 0) {
-    addChar(result,'-');
-    expo10 = -expo10;
-  } else {
-    addChar(result,'+');
-    if(expo10 == 0) {
-      addChar(result,'0');
-      addChar(result,'0');
-      addChar(result,'0');
-      addChar(result,0);
-      return dst;
-    }
-  }
-
-  declareBuffer(exponentBuffer,10);
-
-  do {
-    const int ed = expo10 % 10;
-    expo10 /= 10;
-    addDigit(exponentBuffer,ed);
-  } while(expo10 != 0);
-  for(int i = getLength(exponentBuffer); i <= 2; i++) {
-    addChar(result,'0');
-  }
-  while(!isEmpty(exponentBuffer)) {
-    addChar(result,removeLast(exponentBuffer));
-  }
-  addChar(result,0);
-
-  return dst;
-}
-
-#else // !OLD_D80TOSTR
-
 // Assume x > 0
 static char *getDigitsStr(char *str, Double80 &x, int &e10) {
   const UINT64 tmp  = getUint64(x);
@@ -240,16 +135,10 @@ static char *getDigitsStr(char *str, Double80 &x, int &e10) {
 static const Double80 d80Maxui64q10(0x1999999999999999ui64); //  1.844.674.407.370.955.161
 
 template<class CharType> CharType *_d80tostr(CharType *dst, const Double80 &x) {
-  if(isNan(x)) {
-    if(!isInfinity(x)) {
-      return copy(dst, "-nan(ind)");
-    } else if(isPInfinity(x)) {
-      return copy(dst, "inf");
-    } else if(isNInfinity(x)) {
-      return copy(dst, "-inf");
-    }
+  if(!isfinite(x)) {
+    return strCpy(dst, StrStream::formatUndefined(x).cstr());
   } else if(x.isZero()) {
-    return copy(dst, "0.0000000000000000000e+000");
+    return strCpy(dst, "0.0000000000000000000e+000");
   }
 
   Double80 m      = x;
@@ -329,8 +218,6 @@ template<class CharType> CharType *_d80tostr(CharType *dst, const Double80 &x) {
   addChar(result,0);
   return dst;
 }
-
-#endif // OLD_D80TOSTR
 
 char *d80toa(char *dst, const Double80 &x) {
   return _d80tostr<char>(dst, x);

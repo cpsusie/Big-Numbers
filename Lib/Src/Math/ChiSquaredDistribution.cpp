@@ -52,7 +52,7 @@ static Real lnLowerIncGammaTaylor(const Real &a, const Real &x) {
       break;
     }
     p *= (x / ai++);
-    if(isInfinity(p)) {
+    if(isinf(p)) {
       return p;
     }
   }
@@ -65,7 +65,7 @@ Real chiSquaredDistribution(const Real &df, const Real &x) {
   }
   const Real df2    = (Real)df/2.0;
   const Real lnincG = lnLowerIncGammaTaylor(df2,x/2.0);
-  if(isInfinity(lnincG)) {
+  if(isinf(lnincG)) {
     return 1.0;
   }
   const Real lnG    = lnGamma(df2);

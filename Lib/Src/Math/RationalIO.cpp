@@ -14,7 +14,7 @@ StrStream &operator<<(StrStream &stream, const Rational &r) {
   const int  radix = StreamParameters::getRadix(flags);
   TCHAR tmp[150];
   String result = _rattot(tmp,r, radix);
-  if(!isNan(r) && (radix==10) && (flags & ios::showpos) && !r.isNegative()) {
+  if(isfinite(r) && (radix==10) && (flags & ios::showpos) && !r.isNegative()) {
     result = _T("+") + result;
   }
 

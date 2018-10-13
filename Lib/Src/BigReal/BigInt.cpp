@@ -7,22 +7,20 @@ DEFINECLASSNAME(BigInt);
 BigInt::BigInt(const BigReal &x, DigitPool *digitPool) : BigReal(digitPool ? digitPool : x.getDigitPool()) {
   DigitPool *pool = getDigitPool();
 
-  if(!x.isZero()) {
-    if(x.m_expo < 0) { // |x| < 1
-      *this = x.isNegative() ? -pool->get1() : pool->get0();
-    } else if(x.getLow() >= 0) { // x is an integer
-      m_expo     = x.m_expo;
-      m_low      = x.m_low;
-      m_negative = x.m_negative;
-      copyDigits(x, x.getLength());
-    } else { // |x| > 1 and x is not an integer
-      copyDigits(x, (m_expo = x.m_expo)+1);
-      m_low      = 0;
-      m_negative = x.m_negative;
-      trimZeroes();
-      if(m_negative) {
-        --(*this);
-      }
+  if(!isnormal(x)) {
+    copyFields(x);
+  } else if(x.m_expo < 0) { // |x| < 1
+    *this = x.isNegative() ? -pool->get1() : pool->get0();
+  } else if(x.getLow() >= 0) { // x is an integer
+    copyDigits(x, x.getLength());
+    copyFields(x);
+  } else { // |x| > 1 and x is not an integer
+    copyDigits(x, (m_expo = x.m_expo)+1);
+    m_low      = 0;
+    m_negative = x.m_negative;
+    trimZeroes();
+    if(m_negative) {
+      --(*this);
     }
   }
 }

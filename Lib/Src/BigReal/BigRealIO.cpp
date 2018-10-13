@@ -209,41 +209,44 @@ void BigReal::formatWithSpaceChar(String &result, TCHAR spaceChar) const {
 }
 
 BigRealStream &operator<<(BigRealStream &stream, const BigReal &x) {
-
-  streamsize precision = stream.getPrecision();
-  long       flags     = stream.getFlags();
-  TCHAR      spaceChar = stream.getSpaceChar();
+  streamsize  precision = stream.getPrecision();
+  const long  flags     = stream.getFlags();
+  const TCHAR spaceChar = stream.getSpaceChar();
 
   String result;
-  if(x.isNegative()) {
-    result += _T("-");
-  } else if(flags & ios::showpos) {
-    result += _T("+");
-  }
-
-  if(spaceChar != 0) {
-    x.formatWithSpaceChar(result,spaceChar);
+  if(!isfinite(x)) {
+    result = StrStream::formatUndefined(x);
   } else {
-    if(x.isZero()) {
-      StrStream::formatZero(result, precision, flags);
-    } else { // x defined && x != 0
-      if((flags & (ios::scientific|ios::fixed)) == ios::fixed) { // Use fixed format
-        x.formatFixed(result, precision, flags, false);
-      } else {
-        BRExpoType expo10 = BigReal::getExpo10(x);
-        if((flags & (ios::scientific|ios::fixed)) == ios::scientific) { // Use scientific format
-          x.formatScientific(result, precision, flags, expo10, false);
+    if(x.isNegative()) {
+      result += _T("-");
+    } else if(flags & ios::showpos) {
+      result += _T("+");
+    }
+
+    if(spaceChar != 0) {
+      x.formatWithSpaceChar(result,spaceChar);
+    } else {
+      if(x.isZero()) {
+        StrStream::formatZero(result, precision, flags);
+      } else { // x defined && x != 0
+        if((flags & (ios::scientific|ios::fixed)) == ios::fixed) { // Use fixed format
+          x.formatFixed(result, precision, flags, false);
         } else {
-          if(expo10 < -4 || expo10 > 14 || (expo10 > 0 && expo10 >= precision) || expo10 > precision) { // neither scientific nor fixed format (or both) are specified
-            precision = max(0,precision-1);
-            x.formatScientific(result, precision, flags, expo10, (flags & ios::showpoint) == 0);
+          BRExpoType expo10 = BigReal::getExpo10(x);
+          if((flags & (ios::scientific|ios::fixed)) == ios::scientific) { // Use scientific format
+            x.formatScientific(result, precision, flags, expo10, false);
           } else {
-            const intptr_t prec = (precision == 0) ? abs(expo10) : max(0,(intptr_t)precision-expo10-1);
-            x.formatFixed(result, prec, flags, ((flags & ios::showpoint) == 0) || precision <= 1);
+            if(expo10 < -4 || expo10 > 14 || (expo10 > 0 && expo10 >= precision) || expo10 > precision) { // neither scientific nor fixed format (or both) are specified
+              precision = max(0,precision-1);
+              x.formatScientific(result, precision, flags, expo10, (flags & ios::showpoint) == 0);
+            } else {
+              const intptr_t prec = (precision == 0) ? abs(expo10) : max(0,(intptr_t)precision-expo10-1);
+              x.formatFixed(result, prec, flags, ((flags & ios::showpoint) == 0) || precision <= 1);
+            }
           }
         }
-      }
-    } // x defined && x != 0
+      } // x defined && x != 0
+    }
   }
 
   const streamsize fillerLength = stream.getWidth() - (intptr_t)result.length();

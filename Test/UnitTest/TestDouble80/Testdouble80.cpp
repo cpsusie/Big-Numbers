@@ -420,7 +420,7 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
       const double startTime = getProcessTime();
       const Double80 stepFactor = 1.0012345;
       int count = 0;
-      for(Double80 x = DBL80_MIN; !isNan(x); x *= stepFactor) {
+      for(Double80 x = DBL80_MIN; isfinite(x); x *= stepFactor) {
         const int d = Double80::getExpo10(x);
         count++;
       }
@@ -522,7 +522,7 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
       const double startTime = getProcessTime();
       const Double80 stepFactor = 1.012345;
       int count = 0;
-      for(Double80 x = DBL80_MIN; !isNan(x); x *= stepFactor) {
+      for(Double80 x = DBL80_MIN; isfinite(x); x *= stepFactor) {
         TCHAR tmp[30];
         d80tot(tmp, x);
         count++;
@@ -849,30 +849,37 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
 
       FPU::adjustExceptionMask(0,FPU_DIVIDE_BY_ZERO_EXCEPTION);
 
+/*
+      Double80 zzz = Double80::zero / Double80::zero;
+      verify(isnan(       zzz));
+      verify(!isinf(      zzz));
+      verify(!isPInfinity(zzz));
+      verify(!isNInfinity(zzz));
+*/
       Double80 zzz = Double80::one / Double80::zero;
-      verify(isNan(       zzz));
-      verify(isInfinity(  zzz));
+      verify(!isnan(      zzz));
+      verify(isinf(       zzz));
       verify(isPInfinity( zzz));
       verify(!isNInfinity(zzz));
 
       zzz = (-Double80::one) / Double80::zero;
-      verify(isNan(       zzz));
-      verify(isInfinity(  zzz));
+      verify(!isnan(      zzz));
+      verify(isinf(       zzz));
       verify(!isPInfinity(zzz));
       verify(isNInfinity( zzz));
 
-      verify( isNan(      DBL80_NAN));
-      verify(!isInfinity( DBL80_NAN));
+      verify( isnan(      DBL80_NAN));
+      verify(!isinf(      DBL80_NAN));
       verify(!isPInfinity(DBL80_NAN));
       verify(!isNInfinity(DBL80_NAN));
 
-      verify( isNan(      DBL80_PINF));
-      verify( isInfinity( DBL80_PINF));
+      verify(!isnan(      DBL80_PINF));
+      verify( isinf(      DBL80_PINF));
       verify( isPInfinity(DBL80_PINF));
       verify(!isNInfinity(DBL80_PINF));
 
-      verify( isNan(      DBL80_NINF));
-      verify( isInfinity( DBL80_NINF));
+      verify(!isnan(      DBL80_NINF));
+      verify( isinf(      DBL80_NINF));
       verify(!isPInfinity(DBL80_NINF));
       verify( isNInfinity(DBL80_NINF));
 
@@ -880,8 +887,8 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
       FPU::adjustExceptionMask(FPU_DIVIDE_BY_ZERO_EXCEPTION,FPU_INVALID_OPERATION_EXCEPTION);
 
       zzz = sqrt(Double80(-1));
-      verify(isNan(zzz));
-      verify(!isInfinity(zzz));
+      verify(isnan(zzz));
+      verify(!isinf(zzz));
 
       FPU::clearStatusWord();
       FPU::adjustExceptionMask(FPU_INVALID_OPERATION_EXCEPTION,0);

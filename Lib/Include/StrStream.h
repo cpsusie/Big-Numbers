@@ -24,6 +24,24 @@ public:
   }
 
   static void formatZero(String &result, streamsize precision, long flags, streamsize maxPrecision = 0);
+  static void formatnan( String &result);
+  static void formatpinf(String &result);
+  static void formatninf(String &result);
+
+  // Assume !isfinite(x)
+  template<class T> static String formatUndefined(const T &x) {
+    String result;
+    if(isnan(x)) {
+      formatnan(result);
+    } else if(isPInfinity(x)) {
+      formatpinf(result);
+    } else if(isNInfinity(x)) {
+      formatninf(result);
+    } else {
+      return format(_T("%s:x not nan,pinf or ninf"), __TFUNCTION__);
+    }
+    return result;
+  }
 
   TCHAR unputc();
   inline StrStream &append(const String &str) { // append str to stream without using any format-specifiers
