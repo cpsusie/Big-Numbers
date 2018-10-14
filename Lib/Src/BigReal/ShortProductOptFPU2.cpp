@@ -12,12 +12,9 @@ BigReal &BigReal::shortProductNoZeroCheckDebug(const BigReal &x, const BigReal &
 BigReal &BigReal::shortProductNoZeroCheck(     const BigReal &x, const BigReal &y, int loopCount) { // return *this
 #endif
 
-  int                digitsAdded = 0;
-  Digit             *cd;
-  const UINT         BASE        = BIGREALBASE;
-
-  clearDigits();
-  (cd = m_first = newDigit())->n = 0;
+  int              digitsAdded = 0;
+  Digit           *cd          = clearDigits1();
+  const UINT       BASE        = BIGREALBASE;
   m_expo = m_low = x.m_expo + y.m_expo;
 
   unsigned short ctrlWord, saveCtrlWord;

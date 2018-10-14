@@ -17,7 +17,7 @@ BRExpoType getExpo2(const BigReal &x) {
   static const double log2_10 = 3.321928094887362; // = ln(10)/ln(2).
                                                    // so expo10(x) * log2_10 is approximately ln(x)/ln(10) * ln(10)/ln(2)
                                                    // = ln(x)/ln(2) = ln2(x) approximately  expo2(x)
-  assert(isfinite(x));
+  assert(x._isfinite());
   if(x.isZero()) {
     return 0;
   }
@@ -25,10 +25,10 @@ BRExpoType getExpo2(const BigReal &x) {
   return (expo10 > -4890) ? ((BRExpoType)(log2_10 * expo10)) : ((BRExpoType)(log2(x.getFirst32(9))) + (BRExpoType)(log2_10 * (expo10-9)));
 }
 
-size_t BigReal::getDecimalDigits() const { // BigReal of decimal digits. 0 has length 1
-  assert(_isfinite());
-  if(isZero()) {
-    return 1;
+// Return number of decimal digits. 0 has length 1. undefined (nan,+inf,-inf) has length 0
+size_t BigReal::getDecimalDigits() const {
+  if(!_isnormal()) {
+    return isZero() ? 1 : 0;
   } else if(m_expo == m_low) {
     return getDecimalDigitCount(m_first->n);
   } else {
@@ -76,11 +76,9 @@ BigInt floor(const BigReal &x) { // biggest integer <= x
 }
 
 BigInt ceil(const BigReal &x) { // smallest integer >= x
-  if(!isfinite(x)) return BigInt(x);
+  if(!isnormal(x)) return BigInt(x);
   DigitPool *pool = x.getDigitPool();
-  if(x.isZero()) {
-    return pool->get0();
-  } else if(x.m_expo < 0) { // |x| < 1
+  if(x.m_expo < 0) { // |x| < 1
     return x.isNegative() ? pool->get0() : pool->get1();
   } else if(isInteger(x)) { // x is a BigInt
     return (BigInt)x;
@@ -119,10 +117,7 @@ BigReal fraction(const BigReal &x) { // sign(x) * (|x| - floor(|x|))
 }
 
 BigReal trunc(const BigReal &x, intptr_t prec) {  // sign(x) * ent(abs(x)*10^prec)*10^-prec
-  if(!isfinite(x)) return x;
-  if(x.isZero()) {
-    return x;
-  }
+  if(!isnormal(x)) return x;
   BigReal result(x.getDigitPool());
   if(prec == 0) {
     result = (x.isNegative()) ? -floor(-x) : floor(x);
@@ -134,10 +129,7 @@ BigReal trunc(const BigReal &x, intptr_t prec) {  // sign(x) * ent(abs(x)*10^pre
 }
 
 BigReal round(const BigReal &x, intptr_t prec) { // sign(x) * ent(abs(x)*10^prec+0.5)*10^-prec
-  if(!isfinite(x)) return x;
-  if(x.isZero()) {
-    return x;
-  }
+  if(!isnormal(x)) return x;
   DigitPool *pool = x.getDigitPool();
   BigReal result(pool);
   if(prec == 0) {
@@ -347,8 +339,9 @@ BigReal &BigReal::copyrTrunc(const BigReal &src, size_t digits) { // decimal dig
 }
 
 
-// assume *this != 0 and digits > 0
+// assume _isnormal() and digits > 0
 BigReal &BigReal::rTrunc(size_t digits) {
+  assert(_isnormal());
   Digit    *first = m_first;
   const int k     = BigReal::getDecimalDigitCount(first->n);
 
@@ -392,6 +385,7 @@ BigReal &BigReal::rTrunc(size_t digits) {
 
 // Assume *this != 0 and digits > 0
 BigReal &BigReal::rRound(size_t digits) {
+  assert(_isnormal());
   Digit    *first = m_first;
   const int k     = BigReal::getDecimalDigitCount(first->n);
   if(digits < (UINT)k) {

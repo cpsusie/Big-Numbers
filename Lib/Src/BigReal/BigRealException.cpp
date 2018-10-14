@@ -12,6 +12,10 @@ void throwBigRealGetIntegralTypeUnderflowException(TCHAR const * const function,
   throwBigRealException(_T("%s(%s):Underflow. Min=%s"), function, toString(x).cstr(), minStr.cstr());
 }
 
+void throwBigRealGetIntegralTypeUndefinedException(TCHAR const * const function, const BigReal &x) {
+  throwBigRealInvalidArgumentException(function,_T("x=%s"), toString(x).cstr());
+}
+
 void throwBigRealInvalidArgumentException(const TCHAR *function, _In_z_ _Printf_format_string_ TCHAR const * const Format,...) {
   va_list argptr;
   va_start(argptr, Format);

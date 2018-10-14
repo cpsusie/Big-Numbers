@@ -106,8 +106,9 @@ BigReal &BigReal::shortProduct(const BigReal &x, const BigReal &y, BRExpoType fe
 #endif
 }
 
-// Assume a == b == 0. Dont care about sign of f
+// Assume a == b == 0 && _isfinite() && f._isfinite(). Dont care about sign of f
 void BigReal::split(BigReal &a, BigReal &b, size_t n, const BigReal &f) const {
+  assert(a.isZero() && b.isZero() && _isfinite() && f._isfinite());
   intptr_t i = n;
   const Digit *p;
   for(p = m_first; i-- && p; p = p->next) {

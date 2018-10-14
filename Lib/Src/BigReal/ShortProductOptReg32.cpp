@@ -19,11 +19,8 @@ BigReal &BigReal::shortProductNoZeroCheck(     const BigReal &x, const BigReal &
 #endif
 
   int              digitsAdded = 0;
-  Digit           *cd;
+  Digit           *cd          = clearDigits1();
   unsigned __int64 bigSum64;
-
-  clearDigits();
-  (cd = m_first = newDigit())->n = 0;
   m_expo = m_low = x.m_expo + y.m_expo;
 
   for(const Digit *xk = x.m_first, *yk = y.m_first;;) { // loopcondition at the end

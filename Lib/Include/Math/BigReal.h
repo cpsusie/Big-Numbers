@@ -370,6 +370,7 @@ void throwInvalidToleranceException(               TCHAR const * const function)
 void throwBigRealInvalidArgumentException(         TCHAR const * const function, _In_z_ _Printf_format_string_ TCHAR const * const format,...);
 void throwBigRealGetIntegralTypeOverflowException( TCHAR const * const function, const BigReal &x, const String &maxStr);
 void throwBigRealGetIntegralTypeUnderflowException(TCHAR const * const function, const BigReal &x, const String &minStr);
+void throwBigRealGetIntegralTypeUndefinedException(TCHAR const * const function, const BigReal &x);
 void throwBigRealException(_In_z_ _Printf_format_string_ TCHAR const * const format,...);
 
 class BigReal {
@@ -391,7 +392,7 @@ private:
   Digit                    *m_last;
   /* if(m_expo == BIGREAL_ESCEXPO) {
        switch(m_low) {
-       case BIGERAL_ZEROLOW    : isZero() == true
+       case BIGREAL_ZEROLOW    : isZero() == true
        case BIGREAL_NANLOW     : isnan()  == true
        case BIGREAL_INFLOW     : ifInf()  == true +/- infinite depending on m_negative
        }
@@ -526,12 +527,26 @@ private:
   void    addSubProduct(UINT64 n);
 
 #elif((SP_OPT_METHOD == SP_OPT_BY_REG32) || (SP_OPT_METHOD == SP_OPT_BY_REG64) || (SP_OPT_METHOD == SP_OPT_BY_FPU2))
+
+// Set digitChain to contain 1 digit (=0).
+// Should only be called from shortProductNoZeroCheck. m_last will not be touched
+// so invariant will be broken for af while, and reestablished at the end of shortProductNoZeroCheck,
+// when we clean up the chain head and end
+  inline Digit *clearDigits1() {
+    if(m_first == NULL) {
+      m_first = m_digitPool.newDigit();
+    } else if(m_first->next) {
+      m_digitPool.deleteDigits(m_first->next, m_last);
+    }
+    m_first->n = 0;
+    return m_first;
+  }
 // Assume last != NULL. new digit->n and ..->next are not initialized
 // Should only be called from shortProductNoZeroCheck. m_last will not be touched
 // so invariant will be broken for af while, and reestablished at the end of shortProductNoZeroCheck,
 // when we clean up the chain head and end
   inline Digit *fastAppendDigit(Digit *last) {
-    Digit *p = last->next = newDigit();
+    Digit *p = last->next = m_digitPool.newDigit();
     p->prev  = last;
     return p;
   }
@@ -559,12 +574,13 @@ private:
   static BigReal &product(  BigReal &result, const BigReal &x, const BigReal &y, const BigReal &f,              int level);
   static BigReal &productMT(BigReal &result, const BigReal &x, const BigReal &y, const BigReal &f, intptr_t  w, int level);
 
+  // Assume a == b == 0 && _isfinite() && f._isfinite(). Dont care about sign of f
   void    split(BigReal &a, BigReal &b, size_t n, const BigReal &f) const;
-  // Assume src != 0 && length <= src.getLength() && m_first == m_last == NULL
+  // Assume src._isnormal() && length <= src.getLength() && m_first == m_last == NULL
   void    copyDigits(   const BigReal &src, size_t length);
   // copy specified number of decimal digits, truncating result. return *this
   BigReal &copyrTrunc(  const BigReal &src, size_t digits);
-  // Assume src != 0 && m_first == m_last == NULL
+  // Assume src._isnormal() && m_first == m_last == NULL
   void    copyAllDigits(const BigReal &src);
   inline BigReal &setSignByProductRule(const BigReal &x, const BigReal &y) {
     m_negative = x.m_negative != y.m_negative;
@@ -572,10 +588,10 @@ private:
   }
 
   // cut of a number (!= 0) to the specified number of significant decimal digits, truncation toward zero
-  // assume *this != 0 and digits > 0 (digits is decimal digits). return *this
+  // Assume _isnormal() && digits > 0 (digits is decimal digits). return *this
   BigReal &rTrunc(size_t digits);
   // cut of a number (!= 0) to the specified number of significant decimal digits, rounding
-  // assume *this != 0 and digits > 0 (digits is decimal digits). return *this
+  // Assume isnormal() && digits > 0 (digits is decimal digits). return *this
   BigReal &rRound(size_t digits);
 
   // Division helperfunctions,
@@ -799,9 +815,9 @@ public:
   static bool hasPow2CacheFile();
   static bool pow2CacheChanged();
 
-  // sign(x-y)
+  // Assume x._isfinite() && y._isfinite(). Return sign(x-y)
   friend int compare(         const BigReal &x,  const BigReal &y);
-  // compare(|x|,|y|). (Faster than compare(fabs(x),fabs(y)))
+  // Assume x._isfinite() && y._isfinite(). compare(|x|,|y|). (Faster than compare(fabs(x),fabs(y)))
   friend int compareAbs(      const BigReal &x,  const BigReal &y);
 
   // return true, if *this is a normal number != 0
@@ -857,16 +873,16 @@ public:
   inline size_t getLength() const {
     return _isnormal() ? (m_expo - m_low + 1) : isZero() ? 1 : 0;
   }
-  // Assume isfinite(). Return number of decimal digits. 0 has length 1
+  // Return number of decimal digits. 0 has length 1. undefined (nan,+inf,-inf) has length 0
   size_t getDecimalDigits()  const;
 
-  // Assume isfinite(). Return m_low
+  // Assume _isfinite(). Return m_low
   inline BRExpoType getLow() const {
     assert(_isfinite());
     return isZero() ? 0 : m_low;
   }
 
-  // Assume isfinite(). Return x == 0 ? 0 : floor(log10(|x|))
+  // Assume x._isfinite(). Return x == 0 ? 0 : floor(log10(|x|))
   static inline BRExpoType getExpo10(const BigReal  &x) {
     assert(x._isfinite());
     return x.isZero() ? 0 : (x.m_expo * LOG10_BIGREALBASE + getDecimalDigitCount(x.m_first->n) - 1);
@@ -930,22 +946,22 @@ public:
   // x * pow(10,n)
   friend BigReal e(        const BigReal &x, BRExpoType n   , DigitPool *digitPool = NULL);
 
-  // Assume isfinite(). x < 0 ? -1 : x > 0 ? 1 : 0
+  // Assume x._isfinite(). Return x < 0 ? -1 : x > 0 ? 1 : 0
   friend inline int sign(  const BigReal &x) {
     assert(x._isfinite());
     return x.isZero() ? 0 : x.isPositive() ? 1 : -1;
   }
 
-  // x is an integer and x % 2 == 1
-  friend bool    odd(      const BigReal &x);
-  // x is an integer and x % 2 == 0
+  // Return true if x._isfinite() && isInteger(x) && x % 2 == 0
   friend bool    even(     const BigReal &x);
-  // fraction(x) == 0
+  //  Return true if x._isfinite() && isInteger(x) && x % 2 == 1
+  friend bool    odd(      const BigReal &x);
+  // Return true if x._isfinite() && (fraction(x) == 0)
   friend inline bool isInteger(const BigReal &x) {
-    return x.getLow() >= 0;
+    return x._isfinite() && x.getLow() >= 0;
   }
 
-  // Set to = from so |to-from| <= f. Return to
+  // Assume f._isfinite(). Set to = from so |to-from| <= f. Return to
   friend BigReal &copy(BigReal &to, const BigReal &from, const BigReal &f);
   // Set to = from so to.getlength() = min(length,from.getlength(). Return to
   friend BigReal &copy(BigReal &to, const BigReal &from, size_t    length);

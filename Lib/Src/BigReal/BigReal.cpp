@@ -30,26 +30,8 @@ void BigReal::insertDigit(BRDigitType n) {
   m_first = p;
 }
 
-//#define COUNT_CALLS
-
-#include <CallCounter.h>
-
-#ifdef COUNT_CALLS
-#define DECLARE_CALLCOUNTER static CallCounter _callCounter(__TFUNCTION__)
-#define COUNTKEYCALL(n)                        _callCounter.incr(n)
-#define COUNTCALL()                            _callCounter.incr()
-#else
-#define DECLARE_CALLCOUNTER
-#define COUNTKEYCALL(n)
-#define COUNTCALL()
-#endif
-
 // Assume *this != zero. ie m_first != NULL (and m_last != NULL)
 void BigReal::insertZeroDigits(size_t count) {
-  DECLARE_CALLCOUNTER;
-
-  COUNTKEYCALL(count);
-
   Digit *p;
   for(p = m_first; count--;) {
     Digit *q = newDigit();
@@ -63,10 +45,6 @@ void BigReal::insertZeroDigits(size_t count) {
 
 
 void BigReal::insertZeroDigitsAfter(Digit *p, size_t count) {
-  DECLARE_CALLCOUNTER;
-
-  COUNTKEYCALL(count);
-
   Digit *q = p->next;
   if(q) {                     // p has a tail => p != last
     while(count--) {          // Insert count digits just after p, making the new chain grow at the HEAD (=q)
@@ -90,10 +68,6 @@ void BigReal::insertZeroDigitsAfter(Digit *p, size_t count) {
 }
 
 void BigReal::insertBorrowDigitsAfter(Digit *p, size_t count) {
-  DECLARE_CALLCOUNTER;
-
-  COUNTKEYCALL(count);
-
   Digit *q = p->next;
   if(q) {                     // p has a tail => p != last
     while(count--) {          // Insert count digits just after p, making the new chain grow at the HEAD (=q)
@@ -143,12 +117,9 @@ void BigReal::trimTail() {
   (m_last = p)->next = NULL;
 }
 
-// Assume src != zero && length <= src.getLength() && m_first == m_last == NULL
+// Assume src._isnormal() && length <= src.getLength() && m_first == m_last == NULL
 void BigReal::copyDigits(const BigReal &src, size_t length) {
-  DECLARE_CALLCOUNTER;
-
-  COUNTKEYCALL(length);
-
+  assert(src._isnormal());
   if(length--) {
     const Digit *sd = src.m_first;
     (m_first = newDigit())->prev = NULL;
@@ -167,12 +138,9 @@ void BigReal::copyDigits(const BigReal &src, size_t length) {
   }
 }
 
-// Assume src != zero && m_first == m_last == NULL
+// Assume src._isnormal() && m_first == m_last == NULL
 void BigReal::copyAllDigits(const BigReal &src) {
-  DECLARE_CALLCOUNTER;
-
-  COUNTCALL();
-
+  assert(src._isnormal());
   const Digit *sd = src.m_first;
   Digit       *dd, *p;
   (m_first = p = newDigit())->prev = NULL;
@@ -187,7 +155,7 @@ void BigReal::copyAllDigits(const BigReal &src) {
 
 BigReal &BigReal::multPow10(BRExpoType exp) {
   DEFINEMETHODNAME;
-  if(isZero()) {
+  if(!_isnormal()) {
     return *this;
   }
   int m = exp % LOG10_BIGREALBASE;
@@ -238,7 +206,8 @@ BigReal &BigReal::multPow10(BRExpoType exp) {
 
 
 BigReal &copy(BigReal &to, const BigReal &from, const BigReal &f) {
-  if(!f.isPositive() || from.isZero()) {
+  assert(f._isfinite());
+  if(!f.isPositive() || !from._isnormal()) {
     to = from;
   } else if(f.m_expo < from.m_low) {
     to = from;
@@ -256,8 +225,9 @@ BigReal &copy(BigReal &to, const BigReal &from, const BigReal &f) {
 }
 
 BigReal &copy(BigReal &to, const BigReal &from, size_t length) {
-  if(from.isZero()) {
-    to.setToZero();
+  if(!from._isnormal()) {
+    to.clearDigits();
+    to.copyFields(from);
   } else {
     length = minMax(length, (size_t)1, from.getLength());
     to.m_low = (to.m_expo = from.m_expo) - length + 1;
@@ -270,6 +240,7 @@ BigReal &copy(BigReal &to, const BigReal &from, size_t length) {
 }
 
 int compare(const BigReal &x, const BigReal &y) {
+  assert(x._isfinite() && y._isfinite());
   if(&x == &y) {
     return 0;
   }
@@ -308,6 +279,7 @@ int compare(const BigReal &x, const BigReal &y) {
 }
 
 int compareAbs(const BigReal &x, const BigReal &y) {
+  assert(x._isfinite() && y._isfinite());
   if(&x == &y) {
     return 0;
   }
@@ -347,12 +319,18 @@ UINT getUint(const BigReal &x) {
   return (UINT)getUlong(x);
 }
 
+#define CHECKISNORMAL(x)                                      \
+if(!x._isnormal()) {                                          \
+  if(x.isZero()) {                                            \
+    return 0;                                                 \
+  } else {                                                    \
+    throwBigRealGetIntegralTypeUndefinedException(method, x); \
+  }                                                           \
+}
+
 long getLong(const BigReal &x) {
   DEFINEMETHODNAME;
-  if(x.isZero()) {
-    return 0;
-  }
-
+  CHECKISNORMAL(x)
   if(x > ConstBigReal::_long_max) {
     throwBigRealGetIntegralTypeOverflowException(method, x, toString(ConstBigReal::_long_max));
   }
@@ -372,10 +350,7 @@ long getLong(const BigReal &x) {
 
 ULONG getUlong(const BigReal &x) {
   DEFINEMETHODNAME;
-  if(x.isZero()) {
-    return 0;
-  }
-
+  CHECKISNORMAL(x)
   if(x.isNegative()) {
     throwBigRealGetIntegralTypeUnderflowException(method, x, _T("0"));
   }
@@ -395,10 +370,7 @@ ULONG getUlong(const BigReal &x) {
 
 INT64 getInt64(const BigReal &x) {
   DEFINEMETHODNAME;
-  if(x.isZero()) {
-    return 0;
-  }
-
+  CHECKISNORMAL(x)
   if(x > ConstBigReal::_i64_max) {
     throwBigRealGetIntegralTypeOverflowException(method, x, toString(ConstBigReal::_i64_max));
   }
@@ -417,10 +389,7 @@ INT64 getInt64(const BigReal &x) {
 
 UINT64 getUint64(const BigReal &x) {
   DEFINEMETHODNAME;
-  if(x.isZero()) {
-    return 0;
-  }
-
+  CHECKISNORMAL(x)
   if(x.isNegative()) {
     throwBigRealGetIntegralTypeUnderflowException(method, x, _T("0"));
   }
@@ -439,10 +408,7 @@ UINT64 getUint64(const BigReal &x) {
 
 _int128 getInt128(const BigReal &x) {
   DEFINEMETHODNAME;
-  if(x.isZero()) {
-    return 0;
-  }
-
+  CHECKISNORMAL(x)
   if(x > ConstBigReal::_i128_max) {
     throwBigRealGetIntegralTypeOverflowException(method, x, toString(ConstBigReal::_i128_max));
   }
@@ -461,10 +427,7 @@ _int128 getInt128(const BigReal &x) {
 
 _uint128 getUint128(const BigReal &x) {
   DEFINEMETHODNAME;
-  if(x.isZero()) {
-    return 0;
-  }
-
+  CHECKISNORMAL(x)
   if(x.isNegative()) {
     throwBigRealGetIntegralTypeUnderflowException(method, x, _T("0"));
   }
@@ -482,10 +445,14 @@ _uint128 getUint128(const BigReal &x) {
 }
 
 ULONG BigReal::hashCode() const {
-  size_t s = m_expo;
-  if(isZero()) {
-    return 0;
+  if(!_isnormal()) {
+    switch(m_low) {
+    case BIGREAL_ZEROLOW: return 0;
+    case BIGREAL_NANLOW : return 0xffffffff;
+    case BIGREAL_INFLOW : return m_negative ? 0xfffffffe : 0xfffffffd;
+    }
   }
+  size_t s = m_expo;
   if(m_negative) s = ~s;
   for(const Digit *p = m_first; p; p = p->next) {
     s = s * 17 + p->n;
