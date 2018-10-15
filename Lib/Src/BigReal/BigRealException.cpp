@@ -32,4 +32,3 @@ void throwBigRealException(_In_z_ _Printf_format_string_ TCHAR const * const For
   va_end(argptr);
   throw BigRealException(format(_T("BigReal::%s"), tmp.cstr()).cstr());
 }
-

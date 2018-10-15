@@ -1,7 +1,7 @@
 .DATA
 
 BASE      qword 1000000000000000000             ; BIGREALBASE (=1e18)
-MaxSum    qword 0DE0B6B3A763FFFeh               ; max highorder QWORD 
+MaxSum    qword 0DE0B6B3A763FFFeh               ; max highorder QWORD
 
 .CODE
 

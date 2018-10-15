@@ -262,7 +262,7 @@ private:
   static bool           s_dumpCountWhenDestroyed;
   size_t                m_digitCount;
   DigitPage            *m_firstPage;
-  Digit                *m_freeDigits;;
+  Digit                *m_freeDigits;
 
   // Some frequently used constants. exist in every pool
   // = 0
@@ -360,11 +360,13 @@ class BigRealStream;
 
 #define _SETDIGITPOOL() m_digitPool(digitPool?*digitPool:DEFAULT_DIGITPOOL)
 
+#ifdef IS32BIT
 #ifdef _DEBUG
 extern "C" {
 void insertDigitAndIncrExpo(BigReal &v, BRDigitType n);
 }
-#endif
+#endif // _DEBUG
+#endif // IS32BIT
 
 void throwInvalidToleranceException(               TCHAR const * const function);
 void throwBigRealInvalidArgumentException(         TCHAR const * const function, _In_z_ _Printf_format_string_ TCHAR const * const format,...);
@@ -455,17 +457,17 @@ private:
   inline void appendZero() {
     appendDigit(0);
   }
-  // Insert one digit=n after digit q.
-  // Assume q is a digit in digit-list of this
-  // Dont modify m_expo,m_low
-  void    insertAfter(            Digit *q, BRDigitType n);
   // Insert one digit=n at head of this.
   // Dont modify m_expo,m_low
   void    insertDigit(                      BRDigitType n);
-  // Insert count digits=0 at head of this
+  // Insert count zero-digits at head of this
   // Assume *this != zero. ie m_first != NULL (and m_last != NULL)
   void    insertZeroDigits(                 size_t count);
-  // Insert count digits=0 after digit p.
+  // Insert one digit=n after digit p.
+  // Assume p is a digit in digit-list of this
+  // Dont modify m_expo,m_low
+  void    insertAfter(            Digit *p, BRDigitType n);
+  // Insert count zero-digits after digit p.
   // Assume p is a digit in digit-list of this.
   // Dont modify m_expo,m_low
   void    insertZeroDigitsAfter(  Digit *p, size_t count);
@@ -482,11 +484,11 @@ private:
     }
   }
 
-  inline void    incrExpo() {
+  inline void incrExpo() {
     if(isZero()) m_expo = m_low = 0; else m_expo++;
   }
 
-  // Remove all 0-digits at the ends of digit-list, and check for overflow/underflow.
+  // Remove all zero-digits at both ends of digit-list, and check for overflow/underflow.
   // Adjust m_expo,m_low accordingly
   // Return *this
   inline BigReal &trimZeroes() {
@@ -597,18 +599,18 @@ private:
   // Division helperfunctions,
   // Approximately 1/x. Result.digitPool = x.digitPool
   static BigReal  reciprocal(const BigReal &x, DigitPool *digitPool = NULL);
-  // approximately x/y. Result.digitPool = x.digitPool
+  // Assume y._isnormal(). *this = approximately x/y.          Return *this
   BigReal &approxQuot32(     const BigReal &x, const BigReal           &y);
-  // approximately x/y. Result.digitPool = x.digitPool
+  // Assume y._isnormal(). *this = approximately x/y.          Return *this
   BigReal &approxQuot64(     const BigReal &x, const BigReal           &y);
-  // approximately x/e(y,scale). Result.digitPool = x.digitPool
+  // Assume y != 0.        *this = approximately x/e(y,scale). Return *this
   BigReal &approxQuot32Abs(  const BigReal &x, ULONG                    y, BRExpoType scale);
-  // approximately x/e(y,scale). Result.digitPool = x.digitPool
+  // Assume y != 0.        *this = approximately x/e(y,scale). Return *this
   BigReal &approxQuot64Abs(  const BigReal &x, const UINT64            &y, BRExpoType scale);
 #ifdef IS64BIT
-  // approximately x/y. Result.digitPool = x.digitPool
+  // Assume y._isnormal(). *this = approximately x/y.          Return *this
   BigReal &approxQuot128(    const BigReal &x, const BigReal           &y);
-  // approximately x/e(y,scale). Result.digitPool = x.digitPool
+  // Assume y != 0.        *this = approximately x/e(y,scale). Return *this
   BigReal &approxQuot128Abs( const BigReal &x, const _uint128          &y, BRExpoType scale);
 #endif // IS64BIT
   static double  estimateQuotNewtonTime(const BigReal &x, const BigReal &y, const BigReal &f);
@@ -820,7 +822,7 @@ public:
   // Assume x._isfinite() && y._isfinite(). compare(|x|,|y|). (Faster than compare(fabs(x),fabs(y)))
   friend int compareAbs(      const BigReal &x,  const BigReal &y);
 
-  // return true, if *this is a normal number != 0
+  // return true, if *this is a finite number != 0
   inline bool _isnormal() const {
     return m_expo != BIGREAL_ESCEXPO;
   }

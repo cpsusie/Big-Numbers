@@ -36,5 +36,4 @@ public:
     const BigReal &m     = (compareAbs(getFrom(),getTo()) > 0) ? getFrom() : getTo();
     return BigReal::getExpo10(m) - BigReal::getExpo10(length) + digits;
   }
-
 };

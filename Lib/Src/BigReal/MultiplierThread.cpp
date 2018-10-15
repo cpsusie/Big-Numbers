@@ -52,4 +52,3 @@ void MultiplierThread::multiply(BigReal &result, const BigReal &x, const BigReal
   m_level       = level;
   m_execute.signal();
 }
-

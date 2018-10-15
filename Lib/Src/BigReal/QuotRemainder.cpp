@@ -88,4 +88,3 @@ void quotRemainder(const BigReal &x,  const BigReal &y, BigInt *quotient, BigRea
     remainder->m_negative = x.m_negative; // sign(x % y) = sign(x), equivalent to build-in % operator
   }
 }
-

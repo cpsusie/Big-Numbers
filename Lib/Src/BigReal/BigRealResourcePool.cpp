@@ -150,7 +150,7 @@ void BigRealResourcePool::executeInParallel(CompactArray<Runnable*> &jobs) { // 
   if(jobs.size() == 0) return;
   BigRealResourcePool &instance = getInstance();
   instance.m_gate.wait();  // get exclusive access to BigRealResourcePool
-  CompactArray<BigRealThread*> threads(jobs.size());;
+  CompactArray<BigRealThread*> threads(jobs.size());
   for(size_t i = 0; i < jobs.size(); i++) {
     threads.add(instance.m_threadPool.fetchResource());
   }

@@ -31,4 +31,3 @@ BigInt powmod(const BigInt &a, const BigInt &r, const BigInt &n, bool verbose) {
   }
   return p;
 }
-

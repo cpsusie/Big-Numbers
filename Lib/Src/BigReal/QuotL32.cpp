@@ -57,15 +57,15 @@ BigReal BigReal::quotLinear32(const BigReal &x, const BigReal &y, const BigReal 
   }
 }
 
-// Assume x != 0 and y != 0
 BigReal &BigReal::approxQuot32(const BigReal &x, const BigReal &y) {
+  assert(y._isnormal());
   BRExpoType scale;
   const unsigned long yFirst = y.getFirst32(MAXDIGITS_DIVISOR32,&scale);
   return approxQuot32Abs(x, yFirst, scale).setSignByProductRule(x, y);
 }
 
-// Assume x != 0 and y != 0
 BigReal &BigReal::approxQuot32Abs(const BigReal &x, unsigned long y, BRExpoType scale) {
+  assert(y != 0);
   const unsigned long q = x.getFirst32(MAXDIGITS_INT32)/y;
   *this = q;
   return multPow10(getExpo10(x) - scale - MAXDIGITS_INT32);
@@ -100,7 +100,7 @@ unsigned long BigReal::getFirst32(const UINT k, BRExpoType *scale) const {
   BRExpoType    tmpScale = 0;
   BRDigitType   result   = p->n;
 
-  int           digits   = getDecimalDigitCount(result), firstDigits = digits;;
+  int           digits   = getDecimalDigitCount(result), firstDigits = digits;
   if((UINT)digits >= k) {
     result /= pow10(digits-k); // digits-k <= LOG10_BIGREALBASE, so pow10 will not fail
     if(scale) {
@@ -142,4 +142,3 @@ unsigned long BigReal::getFirst32(const UINT k, BRExpoType *scale) const {
   }
   return (unsigned long)result;
 }
-

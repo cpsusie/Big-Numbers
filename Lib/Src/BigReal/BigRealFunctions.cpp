@@ -332,7 +332,7 @@ BigReal &BigReal::copyrTrunc(const BigReal &src, size_t digits) { // decimal dig
       (m_last = dp->prev)->next = NULL;
       deleteDigits(dp, saveLast);
     }
-    m_low = (m_expo = src.m_expo) - newLength + 1;;
+    m_low = (m_expo = src.m_expo) - newLength + 1;
     if(m_last->n == 0) trimTail();
   }
   return *this;

@@ -2,20 +2,6 @@
 
 DEFINECLASSNAME(BigReal);
 
-void BigReal::insertAfter(Digit *q, BRDigitType n) {
-//  assert(n < BIGREALBASE);
-  Digit *p = newDigit();
-  p->n = n;
-  p->prev = q;
-  p->next = q->next;
-  if(q->next) {
-    q->next->prev = p;
-  } else {
-    m_last = p;
-  }
-  q->next = p;
-}
-
 void BigReal::insertDigit(BRDigitType n) {
 //  assert(n < BIGREALBASE);
   Digit *p = newDigit();
@@ -43,6 +29,20 @@ void BigReal::insertZeroDigits(size_t count) {
   (m_first = p)->prev = NULL;
 }
 
+
+void BigReal::insertAfter(Digit *p, BRDigitType n) {
+//  assert(n < BIGREALBASE);
+  Digit *q = newDigit();
+  q->n = n;
+  q->prev = p;
+  q->next = p->next;
+  if(p->next) {
+    p->next->prev = q;
+  } else {
+    m_last = q;
+  }
+  p->next = q;
+}
 
 void BigReal::insertZeroDigitsAfter(Digit *p, size_t count) {
   Digit *q = p->next;

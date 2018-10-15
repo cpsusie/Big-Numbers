@@ -16,4 +16,3 @@ BigRational inputRational(DigitPool &digitPool, _In_z_ _Printf_format_string_ TC
     }
   }
 }
-

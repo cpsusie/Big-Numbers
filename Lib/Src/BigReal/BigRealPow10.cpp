@@ -159,6 +159,5 @@ int BigReal::isPow10(size_t n) { // static
 }
 
 bool BigReal::isPow10(const BigReal &x) { // static
-  return !x.isZero() && (x.getLength() == 1) && (isPow10(x.getFirstDigit()) >= 0);
+  return x._isnormal() && (x.getLength() == 1) && (isPow10(x.getFirstDigit()) >= 0);
 }
-

@@ -60,16 +60,16 @@ BigReal BigReal::quotLinear128(const BigReal &x, const BigReal &y, const BigReal
   }
 }
 
-// Assume x != 0 and y != 0
 BigReal &BigReal::approxQuot128(const BigReal &x, const BigReal &y) {
+  assert(y._isnormal());
   BRExpoType scale;
   _uint128 yFirst;
   y.getFirst128(yFirst, MAXDIGITS_DIVISOR128, &scale);
   return approxQuot128Abs(x, yFirst, scale).setSignByProductRule(x,y);
 }
 
-// Assume x != 0 and y != 0
 BigReal &BigReal::approxQuot128Abs(const BigReal &x, const _uint128 &y, BRExpoType scale) {
+  assert(y != 0);
   _uint128 xFirst;
   const _uint128 q = x.getFirst128(xFirst, MAXDIGITS_INT128)/y;
   *this = q;
@@ -265,4 +265,4 @@ BigReal modulusOperator128(const BigReal &x, const BigReal &y) {
   return remainder;
 }
 
-#endif
+#endif // IS64BIT

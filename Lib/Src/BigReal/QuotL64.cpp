@@ -57,15 +57,15 @@ BigReal BigReal::quotLinear64(const BigReal &x, const BigReal &y, const BigReal 
   }
 }
 
-// Assume x != 0 and y != 0
 BigReal &BigReal::approxQuot64(const BigReal &x, const BigReal &y) {
+  assert(y._isnormal());
   BRExpoType scale;
   const unsigned __int64 yFirst = y.getFirst64(MAXDIGITS_DIVISOR64, &scale);
   return approxQuot64Abs(x, yFirst, scale).setSignByProductRule(x,y);
 }
 
-// Assume x != 0 and y != 0
 BigReal &BigReal::approxQuot64Abs(const BigReal &x, const unsigned __int64 &y, BRExpoType scale) {
+  assert(y != 0);
   const unsigned __int64 q = x.getFirst64(MAXDIGITS_INT64)/y;
   *this = q;
   return multPow10(getExpo10(x) - scale - MAXDIGITS_INT64);
@@ -257,4 +257,3 @@ BigReal modulusOperator64(const BigReal &x, const BigReal &y) {
   quotRemainder64(x,y, NULL, &remainder);
   return remainder;
 }
-

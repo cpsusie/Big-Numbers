@@ -41,4 +41,3 @@ BigReal BigReal::quotNewton(const BigReal &x, const BigReal &y, const BigReal &f
   }
   return prod(x,z+ prod(z,pool->get1() - prod(y, z, g*NC.c6, pool), u*g, pool), f*NC.c7, pool);
 }
-

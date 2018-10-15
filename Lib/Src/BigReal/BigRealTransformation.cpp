@@ -122,7 +122,7 @@ void BigRealRectangleTransformation::computeTransformation(const BigRealRectangl
   }
 }
 
-BigRealRectangleTransformation::BigRealRectangleTransformation(const BigRealIntervalTransformation &tx, const BigRealIntervalTransformation &ty, DigitPool *digitPool) 
+BigRealRectangleTransformation::BigRealRectangleTransformation(const BigRealIntervalTransformation &tx, const BigRealIntervalTransformation &ty, DigitPool *digitPool)
   : m_digitPool(digitPool?digitPool:tx.getDigitPool())
 {
   m_xtransform = tx.clone(getDigitPool());
