@@ -29,14 +29,13 @@ DECLARE_CALLCOUNTER(shortProdSumTooBig);
 
 // assume x != 0 and y != 0. and loopCount > 0
 BigReal &BigReal::shortProductNoZeroCheck(const BigReal &x, const BigReal &y, size_t loopCount) { // return *this
-  int              digitsAdded = 0;
+  intptr_t         loopCounter = loopCount;
   Digit           *cd          = clearDigits1();
   _uint128         bigSum128;
   m_expo = m_low = x.m_expo + y.m_expo;
 
   for(const Digit *xk = x.m_first, *yk = y.m_first;;) { // loopcondition at the end
     cd = fastAppendDigit(cd);
-    digitsAdded++;
 
     COUNTCALL(shortProdLoopTotal);
 
@@ -56,7 +55,7 @@ BigReal &BigReal::shortProductNoZeroCheck(const BigReal &x, const BigReal &y, si
       // dont call trimZeroes() !!;
     }
 
-    if(--loopCount <= 0) break;
+    if(--loopCounter <= 0) break;
     if(yk->next) {
       yk = yk->next;
     } else if(!(xk = xk->next)) {
@@ -64,6 +63,7 @@ BigReal &BigReal::shortProductNoZeroCheck(const BigReal &x, const BigReal &y, si
     }
   }
 
+  intptr_t digitsAdded = loopCount - loopCounter;
   if(cd->n == 0) { // Fixup both ends of digit chain, to reestablish invariant (See comments in assertIsValidBigReal)
     m_last = cd;
     for(digitsAdded--, cd = m_last->prev; cd->n == 0; cd = cd->prev, digitsAdded--);

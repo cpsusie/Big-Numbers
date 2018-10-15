@@ -71,9 +71,20 @@ BigReal &BigReal::approxQuot128(const BigReal &x, const BigReal &y) {
 BigReal &BigReal::approxQuot128Abs(const BigReal &x, const _uint128 &y, BRExpoType scale) {
   assert(y != 0);
   _uint128 xFirst;
-  const _uint128 q = x.getFirst128(xFirst, MAXDIGITS_INT128)/y;
-  *this = q;
+  *this = x.getFirst128(xFirst, MAXDIGITS_INT128)/y;
   return multPow10(getExpo10(x) - scale - MAXDIGITS_INT128);
+}
+
+#define ADJUSTSCALEMOD10(i128)                      \
+{ if(HI64(i128) == 0) {                             \
+    for(; LO64(i128) % 10 == 0; LO64(i128) /= 10) { \
+      tmpScale++;                                   \
+    }                                               \
+  } else {                                          \
+    for(; i128 % 10 == 0; i128 /= 10) {             \
+      tmpScale++;                                   \
+    }                                               \
+  }                                                 \
 }
 
 // Same as getFirst32, but k = [0..MAXDIGITS_INT128] = [0..38]
@@ -98,10 +109,7 @@ _uint128 &BigReal::getFirst128(_uint128 &dst, const UINT k, BRExpoType *scale) c
   if((UINT)digits >= k) {
     dst /= pow10(digits-k); // digits-k <= LOG10_BIGREALBASE, so pow10 will not fail
     if(scale) {
-      while(dst % 10 == 0) {
-        dst /= 10;
-        tmpScale++;
-      }
+      ADJUSTSCALEMOD10(dst);
     }
   } else { // digits < k
     if(scale) {
@@ -115,10 +123,7 @@ _uint128 &BigReal::getFirst128(_uint128 &dst, const UINT k, BRExpoType *scale) c
           break;
         }
       }
-      while(dst % 10 == 0) {
-        dst /= 10;
-        tmpScale++;
-      }
+      ADJUSTSCALEMOD10(dst);
     } else { // scale == NULL
       for(p = p->next; (UINT)digits < k; digits += LOG10_BIGREALBASE) {
         const BRDigitType p10 = pow10(min(LOG10_BIGREALBASE,k-digits));
