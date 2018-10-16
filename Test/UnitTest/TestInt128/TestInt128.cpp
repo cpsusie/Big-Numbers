@@ -81,16 +81,16 @@ namespace TestInt128 {
       i6--;
       verify(i6 < maxI64);
 
-      _uint128 ui17 = maxUI64;
-      verify(ui17 == maxUI64);
-      ui17++;
-      verify(ui17 > maxUI64);
-      ui17--;
-      verify(ui17 == maxUI64);
-      verify(ui17 <= maxUI64);
-      verify(ui17 >= maxUI64);
-      ui17--;
-      verify(ui17 < maxUI64);
+      _uint128 ui7 = maxUI64;
+      verify(ui7 == maxUI64);
+      ui7++;
+      verify(ui7 > maxUI64);
+      ui7--;
+      verify(ui7 == maxUI64);
+      verify(ui7 <= maxUI64);
+      verify(ui7 >= maxUI64);
+      ui7--;
+      verify(ui7 < maxUI64);
 
       _int128 i8 = 0;
       verify(i8 == 0);
