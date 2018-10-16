@@ -6,12 +6,7 @@ ADDIN_API HRESULT WINAPI AddIn__int128(DWORD dwAddress, DEBUGHELPER *pHelper, in
     _int128 x;
     pHelper->getRealObject(&x, sizeof(x));
     char tmp[150];
-    _i128toa(x, tmp, 10);
-/*
-    char baseStr[20];
-    sprintf(baseStr," base:%d", nBase);
-    strcat(strncpy(pResult, tmp, maxResult),baseStr);
-*/
+    _i128toa(x, tmp, nBase);
     strncpy(pResult, tmp, maxResult);
   } catch(...) {
     strcpy(pResult, "");
@@ -24,14 +19,8 @@ ADDIN_API HRESULT WINAPI AddIn__uint128(DWORD dwAddress, DEBUGHELPER *pHelper, i
     _uint128 x;
     pHelper->getRealObject(&x, sizeof(x));
     char tmp[150];
-    _ui128toa(x, tmp, 10);
-/*
-    char baseStr[20];
-    sprintf(baseStr," base:%d", nBase);
-    strcat(strncpy(pResult, tmp, maxResult),baseStr);
-*/
+    _ui128toa(x, tmp, nBase);
     strncpy(pResult, tmp, maxResult);
-    return S_OK;
   } catch(...) {
     strcpy(pResult, "");
   }
