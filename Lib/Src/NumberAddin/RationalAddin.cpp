@@ -6,7 +6,7 @@ ADDIN_API HRESULT WINAPI AddIn_Rational(DWORD dwAddress, DEBUGHELPER *pHelper, i
     Rational r;
     pHelper->getRealObject(&r, sizeof(r));
     char str[150];
-    rattoa(str, r, 10);
+    rattoa(str, r, nBase);
     strncpy(pResult, str, maxResult);
   } catch (...) {
     strncpy(pResult, "", maxResult);

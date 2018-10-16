@@ -39,15 +39,19 @@ namespace TestInt128 {
     public:
 
     TEST_METHOD(Int128Comparators) {
-      int              minI32   = _I32_MIN;
-      int              maxI32   = _I32_MAX;
-      UINT             maxUI32  = _UI32_MAX;
-      INT64            minI64   = _I64_MIN;
-      INT64            maxI64   = _I64_MAX;
-      UINT64           maxUI64  = _UI64_MAX;
-      _int128          minI128  = _I128_MIN;
-      _int128          maxI128  = _I128_MAX;
-      _uint128         maxUI128 = _UI128_MAX;
+      int              minI32    = _I32_MIN;
+      int              maxI32    = _I32_MAX;
+      UINT             maxUI32   = _UI32_MAX;
+      INT64            minI64    = _I64_MIN;
+      INT64            maxI64    = _I64_MAX;
+      UINT64           maxUI64   = _UI64_MAX;
+      _int128          minI128   = _I128_MIN;
+      _int128          maxI128   = _I128_MAX;
+      _uint128         maxUI128  = _UI128_MAX;
+      INT64            i64Zero   = 0;
+      UINT64           ui64Zero  = 0;
+      _int128          i128Zero  = 0;
+      _uint128         ui128Zero = 0;
 
       _int128 i1 = minI32;
       verify(i1 == minI32);
