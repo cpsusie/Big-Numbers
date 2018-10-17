@@ -18,7 +18,7 @@ typedef enum {
 static FILE     *traceFile        = stdout;
 static BitSet8   traceFlags;
 static TCHAR    *redirectFileName = NULL; // has to be a pointer, so it will not be deallocated before any
-                                         // destructors of static variables do som logging
+                                          // destructors of static variables do som logging
 static Semaphore gate;
 static BYTE      timeFormatCode   = 0;
 
@@ -66,19 +66,13 @@ void redirectDebugLog(bool append, const TCHAR *fileName) {
   } else {
     FileNameSplitter fileInfo(getModuleFileName());
 #ifdef UNICODE
-#ifdef _DEBUG
-    const String fname = _T("DebugUTrace_"  ) + fileInfo.getFileName();
+#define _CHARSET_ "U"
 #else
-    const String fname = _T("ReleaseUTrace_") + fileInfo.getFileName();
+#define _CHARSET_
 #endif
-#else
-
-#ifdef _DEBUG
-    const String fname = _T("DebugTrace_"  ) + fileInfo.getFileName();
-#else
-    const String fname = _T("ReleaseTrace_") + fileInfo.getFileName();
-#endif
-#endif
+    String fnamePrefix(_T("Trace" _PLATFORM_ _TMPREFIX_ _CONFIGURATION_ _CHARSET_));
+    fnamePrefix.replace('/',_T(""));
+    const String fname = fnamePrefix + fileInfo.getFileName();
 
     setRedirectFileName(fileInfo.setDrive(_T("C")).setDir(_T("\\temp")).setFileName(fname).setExtension(_T("txt")).getFullPath());
   }
