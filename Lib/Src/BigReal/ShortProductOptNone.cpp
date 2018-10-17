@@ -6,9 +6,13 @@
 
 #if(SP_OPT_METHOD == SP_OPT_NONE)
 
+#ifdef IS64BIT
+#error SP_OPT_BY_NONE cannot be used in x64-mode
+#endif
+
 #define expoBaseB2Baseb(n) (2*(n) + 1)
 
-static int expoBaseb2BaseB(int n) {
+static inline BRExpoType expoBaseb2BaseB(BRExpoType n) {
   return (n>=0) ? (n/2):((n-1)/2);
 }
 
@@ -45,8 +49,8 @@ BigReal &BigReal::baseB(const BigReal &x) {
 //_tprintf(_T("converter baseb:")); x.dump(); _tprintf(_T("\n"));
   const Digit *p = x.m_first;
 
-  unsigned long carry = 0;
-  for(int i = x.m_expo; p; i--, p = p->next) {
+  BRDigitType carry = 0;
+  for(BRExpoType i = x.m_expo; p; i--, p = p->next) {
     carry = carry * SQRT_BIGREALBASE + p->n;
     if(i % 2 == 0) {
       appendDigit(carry);
@@ -65,16 +69,14 @@ BigReal &BigReal::baseB(const BigReal &x) {
 }
 
 #ifdef _DEBUG
-BigReal &BigReal::shortProductNoZeroCheckDebug(const BigReal &x, const BigReal &y, int loopCount) { // return *this
+BigReal &BigReal::shortProductNoZeroCheckDebug(const BigReal &x, const BigReal &y, size_t loopCount) { // return *this
 #else
-BigReal &BigReal::shortProductNoZeroCheck(     const BigReal &x, const BigReal &y, int loopCount) { // return *this
+BigReal &BigReal::shortProductNoZeroCheck(     const BigReal &x, const BigReal &y, size_t loopCount) { // return *this
 #endif
   // loopCount assumes we multiply NUMBERDIGITS. Here we multiply only SQRT_NUMBERDIGITS (half size)
   // in each iteration, so we have to do twice as many iterations
 
-  const int xl = x.getLength();
-  const int yl = y.getLength();
-
+  const size_t xl = x.getLength(), yl = y.getLength();
   DigitPool *pool = getDigitPool();
   BigReal xb(pool), yb(pool);
 
@@ -95,25 +97,26 @@ BigReal &BigReal::shortProductNoZeroCheck(     const BigReal &x, const BigReal &
   total.m_expo = xb.m_expo + yb.m_expo;
   total.m_low = total.m_expo + 1;
 
+  intptr_t loopCounter = loopCount;
   for(Digit *xk = xb.m_first, *yk = yb.m_first;;) {
 
 #ifndef ASM_OPTIMIZED
-    unsigned __int64 tmp(0);
+    BR2DigitType tmp(0);
     for(Digit *xp = xk, *yp = yk; xp && yp; xp = xp->next, yp = yp->prev) {
 //      _tprintf(_T("    multiply %2d * %2d = %d\n"),xp->n,yp->n,xp->n*yp->n);
       tmp += xp->n * yp->n;
     }
 #else // ASM_OPTIMIZED
-    unsigned __int64 tmp;
+    BR2DigitType tmp;
     __asm {
       xor         eax, eax                // eax = 0
       xor         ebx, ebx                // ebx = 0
       mov         ecx, dword ptr [xk]     // xp = xk
       mov         edx, dword ptr [yk]     // yp = yk
 innerLoop:                                //
-      cmp         ecx, 0                  // while(xp && yp) {
+      or          ecx, ecx                // while(xp && yp) {
       je          exitLoop                //
-      cmp         edx, 0                  //
+      or          edx, edx                //
       je          exitLoop                //
       mov         esi, dword ptr [ecx]    //   esi =  xp->n
       imul        esi, dword ptr [edx]    //   esi *= yp->n
@@ -132,27 +135,27 @@ exitLoop:                                 //
     if(tmp) {
       total.addSubProduct(tmp);
     }
-    total.m_low--;
-    if(--loopCount < 0) break;
+    if(--loopCounter < 0) break;
     if(yk->next) {
       yk = yk->next;
     } else if(!(xk = xk->next)) {
       break; // we're done
     }
   }
+  total.m_low -= loopCount - loopCounter;
   total.trimZeroes().setSignByProductRule(x,y);
   return baseB(total).trimZeroes();
 }
 
-void BigReal::addSubProduct(unsigned __int64 n) {
-  unsigned long carry = 0;
+void BigReal::addSubProduct(BR2DigitType n) {
+  BRDigitType carry = 0;
   for(Digit *tp = m_last; n || carry;) {
     if(tp) {
-      carry += (unsigned long)(tp->n + n % SQRT_BIGREALBASE);
+      carry += tp->n + (BRDigitType)(n % SQRT_BIGREALBASE);
       tp->n = carry % SQRT_BIGREALBASE;
       tp = tp->prev;
     } else {
-      carry += (unsigned long)n % SQRT_BIGREALBASE;
+      carry += (BRDigitType)n % SQRT_BIGREALBASE;
       insertDigit(carry);
       m_expo++;
     }
@@ -164,6 +167,12 @@ void BigReal::addSubProduct(unsigned __int64 n) {
 
 #define SPLIT_LENGTH 100
 
-int BigReal::s_splitLength = SPLIT_LENGTH; // Value found by experiments with measureSplitFactor in testnumber.cpp
+size_t BigReal::s_splitLength = SPLIT_LENGTH; // Value found by experiments with measureSplitFactor in testnumber.cpp
+
+#define MAX_DIGITVALUE (SQRT_BIGREALBASE-1)
+
+UINT BigReal::getMaxSplitLength() { // static
+  return 600; // floor(_UI64_MAX / (MAX_DIGITVALUE * MAX_DIGITVALUE)) = 184504339760, which is much too much
+}
 
 #endif // SP_OPT_METHOD == SP_OPT_NONE

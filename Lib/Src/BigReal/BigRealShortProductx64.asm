@@ -1,7 +1,7 @@
 .DATA
 
 BASE      qword 1000000000000000000             ; BIGREALBASE (=1e18)
-MaxSum    qword 0DE0B6B3A763FFFeh               ; max highorder QWORD
+MaxSum    qword 0DE0B6B3A763FFFFh               ; max highorder QWORD = (0xffffffffffffffff * BASE) >> 64
 
 .CODE
 
@@ -20,7 +20,7 @@ BigRealMultiplyColumn PROC
       xor         rsi, rsi                        ;
       xor         rdi, rdi                        ; rsi:rdi accumulates sum. Init to 0
 MultiplyLoop:                                     ; do { ; we know that the first time both xp and yp are not NULL.
-      mov         rax, QWORD PTR[rbx]             ;   rax     =  xp->n
+      mov         rax, QWORD PTR[rbx]             ;   rax        = xp->n
       mul         QWORD PTR [rcx]                 ;   [rdx:rax] *= yp->n
       add         rdi, rax                        ;
       adc         rsi, rdx                        ;

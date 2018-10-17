@@ -2,17 +2,21 @@
 
 #if(SP_OPT_METHOD == SP_OPT_BY_FPU2)
 
+#ifdef IS64BIT
+#error SP_OPT_BY_FPU2 cannot be used in x64-mode
+#endif
+
 #if(BIGREALBASE != 100000000)
 #error For SP_OPT_METHOD == SP_OPT_BY_FPU2 BIGREALBASE must be 100000000
 #endif
 
 #ifdef _DEBUG
-BigReal &BigReal::shortProductNoZeroCheckDebug(const BigReal &x, const BigReal &y, int loopCount) { // return *this
+BigReal &BigReal::shortProductNoZeroCheckDebug(const BigReal &x, const BigReal &y, size_t loopCount) { // return *this
 #else
-BigReal &BigReal::shortProductNoZeroCheck(     const BigReal &x, const BigReal &y, int loopCount) { // return *this
+BigReal &BigReal::shortProductNoZeroCheck(     const BigReal &x, const BigReal &y, size_t loopCount) { // return *this
 #endif
 
-  int              digitsAdded = 0;
+  intptr_t         loopCounter = loopCount;
   Digit           *cd          = clearDigits1();
   const UINT       BASE        = BIGREALBASE;
   m_expo = m_low = x.m_expo + y.m_expo;
@@ -34,7 +38,6 @@ BigReal &BigReal::shortProductNoZeroCheck(     const BigReal &x, const BigReal &
 
   for(const Digit *xk = x.m_first, *yk = y.m_first;;) {
     cd = fastAppendDigit(cd);
-    digitsAdded++;
 
     __asm {
       mov         ebx, dword ptr [xk]       // xp = xk
@@ -44,10 +47,10 @@ MultiplyLoop:                               // do { First iteration both xp and 
       fild        dword ptr [ebx]           //   push xp->n
       fimul       dword ptr [ecx]           //   st(0) *= yp->n
       fadd                                  //   st(0) += st(1)
-      mov         ecx  , dword ptr [ecx+8]  //   yp = yp->prev
+      mov         ecx, dword ptr [ecx+8]    //   yp = yp->prev
       jecxz       AddSubProduct             //   if(yp == NULL) break
       mov         ebx, dword ptr [ebx+4]    //   xp = xp->next
-      cmp         ebx, 0                    //
+      or          ebx, ebx                  //
       jne         MultiplyLoop              // } while(xp)
 
 AddSubProduct:                              // Assume                         st0:Sum(xp*yp)         st1:BASE               st2:Carry=0            st3:0
@@ -108,7 +111,7 @@ NextDigit:
       fstp st(2)                            // Reset carry (st(0) is always zero at this point)
     }                                       // Assume:                        st0:BASE              st1:Carry=0             st2:0
 
-    if(--loopCount <= 0) break;
+    if(--loopCounter <= 0) break;
     if(yk->next) {
       yk = yk->next;
     } else if(!(xk = xk->next)) {
@@ -123,6 +126,7 @@ NextDigit:
     fldcw  saveCtrlWord                   // restore control word, leaving FPU as it was
   }
 
+  intptr_t digitsAdded = loopCount - loopCounter;
   if(cd->n == 0) {                        // Fixup both ends of digit chain, to reestablish invariant (See comments in assertIsValidBigReal)
     m_last = cd;
     for(digitsAdded--, cd = m_last->prev; cd->n == 0; cd = cd->prev, digitsAdded--);
@@ -142,15 +146,14 @@ NextDigit:
   return setSignByProductRule(x, y);
 }
 
-
 #define SPLIT_LENGTH 200
 
 #define MAX_DIGITVALUE (BIGREALBASE-1)
 
-int BigReal::s_splitLength = SPLIT_LENGTH; // Value found by experiments with measureSplitFactor in testnumber.cpp
+size_t BigReal::s_splitLength = SPLIT_LENGTH; // Value found by experiments with measureSplitFactor in testnumber.cpp
 
 UINT BigReal::getMaxSplitLength() { // static
-  return _UI64_MAX / ((unsigned __int64)MAX_DIGITVALUE * MAX_DIGITVALUE);
+  return _UI64_MAX / ((BR2DigitType)MAX_DIGITVALUE * MAX_DIGITVALUE);
 }
 
 #endif // SP_OPT_METHOD == SP_OPT_BY_FPU

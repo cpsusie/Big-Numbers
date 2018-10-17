@@ -34,9 +34,10 @@
 #define BIGREAL_MAXEXPO    99999999
 #define BIGREAL_MINEXPO   -99999999
 
-typedef ULONG BRDigitType;
-typedef long  BRExpoType;
-typedef long  BRDigitDiffType;
+typedef ULONG          BRDigitType;
+typedef UINT64         BR2DigitType;
+typedef long           BRExpoType;
+typedef long           BRDigitDiffType;
 
 #else // IS64BIT
 
@@ -48,6 +49,7 @@ typedef long  BRDigitDiffType;
 #define BIGREAL_MINEXPO   -99999999999999999
 
 typedef UINT64         BRDigitType;
+typedef _uint128       BR2DigitType;
 typedef INT64          BRExpoType;
 typedef INT64          BRDigitDiffType;
 
@@ -64,15 +66,15 @@ typedef INT64          BRDigitDiffType;
 #define SP_OPT_BY_REG32  3
 #define SP_OPT_BY_REG64  4
 
-// Define SP_OPT_METHOD to one of these, to select the desired optmization of shortProduct. My own favorite is SP_OPT_BY_REG32
-
-//#define SP_OPT_METHOD  SP_OPT_NONE
-//#define SP_OPT_METHOD  SP_OPT_BY_FPU
-//#define SP_OPT_METHOD  SP_OPT_BY_FPU2
+// Define SP_OPT_METHOD to one of these, to select the desired optmization of shortProduct.
+// Best performance in x86 is SP_OPT_BY_REG32. Best (and only) in x64-mode is SP_OPT_BY_REG64
 
 #ifdef IS64BIT
 #define SP_OPT_METHOD SP_OPT_BY_REG64
 #else
+//#define SP_OPT_METHOD  SP_OPT_NONE
+//#define SP_OPT_METHOD  SP_OPT_BY_FPU
+//#define SP_OPT_METHOD  SP_OPT_BY_FPU2
 #define SP_OPT_METHOD SP_OPT_BY_REG32
 #endif
 
@@ -521,12 +523,12 @@ private:
   void    baseb(const BigReal &x);
   void    baseb(const BigReal &x, int low);
   BigReal &baseB(const BigReal &x);                                                               // return this
-  void    addSubProduct(UINT64 n);
+  void    addSubProduct(BR2DigitType n);
 
 #elif(SP_OPT_METHOD == SP_OPT_BY_FPU)
 
   void    addFPUReg0();
-  void    addSubProduct(UINT64 n);
+  void    addSubProduct(BR2DigitType n);
 
 #elif((SP_OPT_METHOD == SP_OPT_BY_REG32) || (SP_OPT_METHOD == SP_OPT_BY_REG64) || (SP_OPT_METHOD == SP_OPT_BY_FPU2))
 
@@ -562,7 +564,7 @@ private:
   void    addSubProductReference1(UINT64 &n);
   void    addSubProductReference2(UINT64 &n);
   static  bool s_useShortProdReferenceVersion;
-  BigReal &shortProductNoZeroCheckDebug(    const BigReal &x, const BigReal &y, int loopCount);   // return this
+  BigReal &shortProductNoZeroCheckDebug(    const BigReal &x, const BigReal &y, size_t loopCount);   // return this
 public:
   static bool setUseShortProdRefenceVersion(bool useReferenceVersion) {
     bool oldValue = s_useShortProdReferenceVersion; s_useShortProdReferenceVersion = useReferenceVersion; return oldValue;

@@ -4,10 +4,14 @@
 
 #if(SP_OPT_METHOD == SP_OPT_BY_FPU)
 
+#ifdef IS64BIT
+#error SP_OPT_BY_FPU cannot be used in x64-mode
+#endif
+
 #ifdef _DEBUG
-BigReal &BigReal::shortProductNoZeroCheckDebug(const BigReal &x, const BigReal &y, int loopCount) { // return *this
+BigReal &BigReal::shortProductNoZeroCheckDebug(const BigReal &x, const BigReal &y, size_t loopCount) { // return *this
 #else
-BigReal &BigReal::shortProductNoZeroCheck(     const BigReal &x, const BigReal &y, int loopCount) { // return *this
+BigReal &BigReal::shortProductNoZeroCheck(     const BigReal &x, const BigReal &y, size_t loopCount) { // return *this
 #endif
 
   m_low = (m_expo = x.m_expo + y.m_expo) + 1;
@@ -21,7 +25,7 @@ BigReal &BigReal::shortProductNoZeroCheck(     const BigReal &x, const BigReal &
     mov    ctrlWord, ax
     fldcw  ctrlWord
   }
-
+  intptr_t loopCounter = loopCount;
   for(Digit *xk = x.m_first, *yk = y.m_first;;) {
 
 #ifndef ASM_OPTIMIZED
@@ -34,7 +38,6 @@ BigReal &BigReal::shortProductNoZeroCheck(     const BigReal &x, const BigReal &
     if(!tmp.isZero()) {
       addSubProduct(getUint64(tmp));
     }
-    m_low--;
 
 #else // ASM_OPTIMIZED
     bool resultIsZero = false;
@@ -47,52 +50,52 @@ InnerLoop:                                // do { // we know that the first time
       fimul       dword ptr [edx]         //   st(1) *= yp->n
       fadd                                //   st(0) += st(1)
       mov         edx, dword ptr [edx+8]  //   yp = yp->prev
-      cmp         edx, 0                  //
+      or          edx, edx                //
       je          ExitLoop                //   if(yp == NULL) break
       mov         ecx, dword ptr [ecx+4]  //   xp = xp->next
-      cmp         ecx, 0                  //
+      or          ecx, ecx                //
       jne         InnerLoop               // } while(xp)
 ExitLoop:
       fldz
-      fcomip st, st(1)
-	  jne End
-      fstp st(0) // pop st(0). No addition necessary
-      mov resultIsZero, 1
+      fcomip      st, st(1)
+      jne         End
+      fstp        st(0)                   // pop st(0). No addition necessary
+      mov         resultIsZero, 1
 End:
     }
     appendZero();
     if(!resultIsZero) {
       addFPUReg0();
     }
-    m_low--;
 #endif // ASM_OPTIMIZED
 
-    if(--loopCount <= 0) break;
+    if(--loopCounter <= 0) break;
     if(yk->next) {
       yk = yk->next;
     } else if(!(xk = xk->next)) {
       break; // we are done
     }
   }
+  m_low -= loopCount - loopCounter;
   return setSignByProductRule(x,y).trimZeroes();
 }
 
 #ifdef ASM_OPTIMIZED
 
 void BigReal::addFPUReg0() {
-  unsigned __int64 n;
-  unsigned long carry = 0;
+  BR2DigitType n;
+  BRDigitType  carry = 0;
   _asm {
     fistp n;
   }
 
   for(Digit *tp = m_last; n || carry;) {
     if(tp) {
-      carry += (unsigned long)(tp->n + n % BIGREALBASE);
+      carry += (BRDigitType)(tp->n + n % BIGREALBASE);
       tp->n = carry % BIGREALBASE;
       tp = tp->prev;
     } else {
-      carry += (unsigned long)n % BIGREALBASE;
+      carry += (BRDigitType)n % BIGREALBASE;
       insertDigit(carry);
       m_expo++;
     }
@@ -104,15 +107,15 @@ void BigReal::addFPUReg0() {
 
 #else // ASM_OPTIMIZED
 
-void BigReal::addSubProduct(unsigned __int64 n) {
-  unsigned long carry = 0;
+void BigReal::addSubProduct(BR2DigitType n) {
+  BRDigitType carry = 0;
   for(Digit *tp = m_last; n || carry;) {
     if(tp) {
-      carry += (unsigned long)(tp->n + n % BIGREALBASE);
+      carry += (BRDigitType)(tp->n + n % BIGREALBASE);
       tp->n = carry % BIGREALBASE;
       tp = tp->prev;
     } else {
-      carry += (unsigned long)n % BIGREALBASE;
+      carry += (BRDigitType)n % BIGREALBASE;
       insertDigit(carry);
       m_expo++;
     }
@@ -128,7 +131,7 @@ void BigReal::addSubProduct(unsigned __int64 n) {
 
 #define MAX_DIGITVALUE (BIGREALBASE-1)
 
-int BigReal::s_splitLength = SPLIT_LENGTH; // Value found by experiments with measureSplitFactor in testnumber.cpp
+size_t BigReal::s_splitLength = SPLIT_LENGTH; // Value found by experiments with measureSplitFactor in testnumber.cpp
 
 UINT BigReal::getMaxSplitLength() { // static
   return _UI64_MAX / ((unsigned __int64)MAX_DIGITVALUE * MAX_DIGITVALUE);
