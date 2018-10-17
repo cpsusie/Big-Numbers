@@ -1,25 +1,28 @@
 #pragma once
 
-#include "HashMap.h"
+//#include "HashMap.h"
 
 class CallCounter {
 private:
   const String             m_name;
-  IntHashMap<UINT>         m_map;
-  UINT                     m_callCount;
-  UINT                     m_maxInt;
-  double                   m_maxDouble;
+  ULONG                    m_callCount;
+//IntHashMap<UINT>         m_map;
+//UINT                     m_maxInt;
+//double                   m_maxDouble;
 public:
-  CallCounter(const String &name) : m_name(name), m_callCount(0), m_maxInt(0), m_maxDouble(0) {
+  CallCounter(const String &name) : m_name(name), m_callCount(0) {
   }
-  ~CallCounter();
-  void incr(int mapKey);
+//  CallCounter(const String &name) : m_name(name), m_callCount(0), m_maxInt(0), m_maxDouble(0) {
+//  }
+  virtual ~CallCounter();
+//  void incr(int mapKey);
   inline void incr() {
-    m_callCount++;
+    _InterlockedIncrement(&m_callCount);
   }
-  inline void count(UINT n) {
-    m_callCount += n;
+  inline void count(LONG n) {
+    _InlineInterlockedAdd((LONG*)&m_callCount, n);
   }
+/*
   inline void updateMax(UINT v) {
     m_callCount++;
     if(v > m_maxInt) m_maxInt = v;
@@ -29,4 +32,5 @@ public:
     if(v > m_maxDouble) m_maxDouble = v;
   }
   String mapToString();
+*/
 };

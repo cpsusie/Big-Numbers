@@ -2,6 +2,11 @@
 #include <CallCounter.h>
 
 CallCounter::~CallCounter() {
+  debugLog(_T("%-20s Calls:%14s\n")
+          ,m_name.cstr()
+          ,format1000(m_callCount).cstr()
+          );
+/*
   debugLog(_T("%-20s Calls:%14s MaxInt:%14s MaxDouble:%21.16le\n")
           ,m_name.cstr()
           ,format1000(m_callCount).cstr()
@@ -9,8 +14,10 @@ CallCounter::~CallCounter() {
           ,m_maxDouble
           );
   if(!m_map.isEmpty()) debugLog(_T("%s"), mapToString().cstr());
+*/
 }
 
+/*
 void CallCounter::incr(int mapKey) {
   m_callCount++;
   UINT *v = m_map.get(mapKey);
@@ -50,3 +57,4 @@ String CallCounter::mapToString() {
   }
   return result;
 }
+*/
