@@ -1,9 +1,6 @@
 #pragma once
 
 #include <Map.h>
-
-#pragma pack(push,1)
-
 #include "CompactHashSet.h"
 
 template <class K, class V> class MapEntry : public SetEntry<K> {
@@ -14,8 +11,6 @@ public:
   inline MapEntry(const K &key, const V &value) : SetEntry(key), m_value(value) {
   }
 };
-
-#pragma pack(pop)
 
 template <class K, class V> class CompactHashMap {
 private:

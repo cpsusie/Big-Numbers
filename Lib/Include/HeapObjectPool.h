@@ -70,12 +70,8 @@ public:
   }
 };
 
-#pragma pack(push,1)
-
 template <class T> class LinkObject {
 public:
   LinkObject *m_next;
   T           m_e;
 };
-
-#pragma pack(pop)

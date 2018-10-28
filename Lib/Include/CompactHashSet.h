@@ -1,9 +1,6 @@
 #pragma once
 
 #include <Set.h>
-
-#pragma pack(push,1)
-
 #include "CompactKeyType.h"
 #include "HeapObjectPool.h"
 
@@ -14,8 +11,6 @@ public:
   inline SetEntry(const K &key) : m_key(key) {
   }
 };
-
-#pragma pack(pop)
 
 // Assume K has public member-function ULONG hashCode() const...
 // and bool operator==(const K &) defined
@@ -51,7 +46,7 @@ private:
   }
 
 public:
-  CompactHashSet() {
+  inline CompactHashSet() {
     init(0);
   }
 
@@ -412,11 +407,11 @@ public:
 
   bool operator==(const CompactHashSet &set) const {
     if(this == &set) return true;
-    if (set.size() != size()) {
+    if(set.size() != size()) {
       return false;
     }
     for (Iterator<K> it = getIterator(); it.hasNext();) {
-      if (!set.contains(it.next())) {
+      if(!set.contains(it.next())) {
         return false;
       }
     }
@@ -438,15 +433,15 @@ public:
   }
 
   // Pure subset. return true if (*this <= set) && (size() < set.size())
-  bool operator<(const CompactHashSet &set) const {
+  inline bool operator<(const CompactHashSet &set) const {
     return (size() < set.size()) && (*this <= set);
   }
 
-  bool operator>=(const CompactHashSet &set) const {
+  inline bool operator>=(const CompactHashSet &set) const {
     return set <= *this;
   }
 
-  bool operator>(const CompactHashSet &set) const {
+  inline bool operator>(const CompactHashSet &set) const {
     return set < *this;
   }
 
@@ -470,7 +465,7 @@ public:
       s.putBytes((BYTE*)a.getBuffer(),sizeof(K)*a.size());
       wCount += a.size();
     }
-    if (wCount != count) {
+    if(wCount != count) {
       throwException(_T("%s:#written elements:%I64u. setSize:%I64u")
                     ,__TFUNCTION__, wCount, count);
     }
