@@ -95,9 +95,9 @@ void IsoSurfacePolygonizer::polygonize(const Point3D &start
   while(hasActiveCubes()) {
     while(hasActiveCubes()) { // process active cubes until none left
       const StackedCube cube = getActiveCube();
-#ifdef DEBUG_POLYGONNIZER
+#ifdef DEBUG_POLYGONIZER
       m_eval.markCurrentCube(cube);
-#endif // DEBUG_POLYGONNIZER
+#endif // DEBUG_POLYGONIZER
       const bool done = addSurfaceVertices(cube);
 
       if(cube.getLevel() == 0) {
@@ -392,20 +392,20 @@ void IsoSurfacePolygonizer::flushFaceBuffer() {
     m_vertexArray[f.m_i1].m_faceArray.add(findex);
     m_vertexArray[f.m_i2].m_faceArray.add(findex);
     m_vertexArray[f.m_i3].m_faceArray.add(findex);
-#ifdef DEBUG_POLYGONNIZER
+#ifdef DEBUG_POLYGONIZER
     m_eval.receiveFace(f);
-#endif // DEBUG_POLYGONNIZER
+#endif // DEBUG_POLYGONIZER
   }
   clearFaceBuffer();
 }
 
 void IsoSurfacePolygonizer::flushFaceArray() {
-#ifndef DEBUG_POLYGONNIZER
+#ifndef DEBUG_POLYGONIZER
   const size_t n = m_faceArray.size();
   for(size_t i = 0;i < n; i++) {
     m_eval.receiveFace(m_faceArray[i]);
   }
-#endif // DEBUG_POLYGONNIZER
+#endif // DEBUG_POLYGONIZER
 }
 
 #define MAXANGLE GRAD2RAD(20)

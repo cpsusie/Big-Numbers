@@ -135,12 +135,11 @@ public:
 //#define DUMP_FACEARRAY
 //#define VALIDATE_OPPOSITESIGN
 //#define VALIDATE_PUTFACE
-#define DEBUG_POLYGONNIZER
+//#define DEBUG_POLYGONIZER // shoud be defined in compile-options, to make it defined in D3FunctionPlotter too
 
 class CubeEdgeHashKey {
 private:
-  Point3DKey m_key1;
-  Point3DKey m_key2;
+  Point3DKey m_key1,m_key2;
   void checkAndSwap();
 public:
   inline CubeEdgeHashKey() {
@@ -257,10 +256,10 @@ public:
   virtual void   receiveFace(const Face3 &face) = 0;
   virtual void   receiveDebugVertices(int id,...) {
   };
-#ifdef DEBUG_POLYGONNIZER
+#ifdef DEBUG_POLYGONIZER
   virtual void   markCurrentCube(const StackedCube &cube) {
   }
-#endif // DEBUG_POLYGONNIZER
+#endif // DEBUG_POLYGONIZER
 };
 
 class PolygonizerStatistics {

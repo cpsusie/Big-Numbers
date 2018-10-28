@@ -1,5 +1,7 @@
 #pragma once
 
+#ifdef DEBUG_POLYGONIZER
+
 #ifndef _DEBUG
 #error "Must compile with _DEBUG"
 #endif
@@ -166,3 +168,5 @@ public:
   }
   SceneObjectWithMesh *createMeshObject() const;
 };
+
+#endif // DEBUG_POLYGONIZER

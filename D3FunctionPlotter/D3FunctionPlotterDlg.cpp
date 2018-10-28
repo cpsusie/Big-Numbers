@@ -12,20 +12,13 @@
 
 class CAboutDlg : public CDialog {
 public:
-  CAboutDlg();
+  CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
+  }
 
   enum { IDD = IDD_ABOUTBOX };
 
-  virtual void DoDataExchange(CDataExchange *pDX);
   DECLARE_MESSAGE_MAP()
 };
-
-CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
-}
-
-void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-  __super::DoDataExchange(pDX);
-}
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
@@ -33,11 +26,9 @@ END_MESSAGE_MAP()
 CD3FunctionPlotterDlg::CD3FunctionPlotterDlg(CWnd *pParent) : CDialog(CD3FunctionPlotterDlg::IDD, pParent) {
   m_hIcon                = theApp.LoadIcon(IDR_MAINFRAME);
   m_infoVisible          = false;
+#ifdef DEBUG_POLYGONIZER
   m_debugThread          = NULL;
-}
-
-void CD3FunctionPlotterDlg::DoDataExchange(CDataExchange *pDX) {
-  __super::DoDataExchange(pDX);
+#endif // DEBUG_POLYGONIZER
 }
 
 BEGIN_MESSAGE_MAP(CD3FunctionPlotterDlg, CDialog)
@@ -362,6 +353,17 @@ D3SceneObject *CD3FunctionPlotterDlg::getCalculatedObject() const {
   return NULL;
 }
 
+#ifndef DEBUG_POLYGONIZER
+void CD3FunctionPlotterDlg::startDebugging() {}
+void CD3FunctionPlotterDlg::stopDebugging() {}
+void CD3FunctionPlotterDlg::OnDebugGo() {}
+void CD3FunctionPlotterDlg::OnDebugSinglestep() {}
+void CD3FunctionPlotterDlg::OnDebugStepCube() {}
+void CD3FunctionPlotterDlg::OnDebugBreakOnNextLevel() {}
+LRESULT CD3FunctionPlotterDlg::OnMsgKillThread(   WPARAM wp, LPARAM lp) { return 0; }
+LRESULT CD3FunctionPlotterDlg::OnMsgThreadRunning(WPARAM wp, LPARAM lp) { return 0; }
+#else // DEBUG_POLYGONIZER
+
 void CD3FunctionPlotterDlg::startDebugging() {
   setCalculatedObject(NULL);
   startThread(true);
@@ -388,11 +390,6 @@ void CD3FunctionPlotterDlg::startThread(bool singleStep) {
 
 void CD3FunctionPlotterDlg::asyncKillThread() {
   PostMessage(ID_MSG_KILLTHREAD);
-}
-
-LRESULT CD3FunctionPlotterDlg::OnMsgKillThread(WPARAM wp, LPARAM lp) {
-  killThread(true);
-  return 0;
 }
 
 void CD3FunctionPlotterDlg::killThread(bool showCreateSurface) {
@@ -424,29 +421,6 @@ void CD3FunctionPlotterDlg::handlePropertyChanged(const PropertyContainer *sourc
     showError(_T("%s:Unknown property:%d"), __TFUNCTION__,id);
     break;
   }
-}
-
-LRESULT CD3FunctionPlotterDlg::OnMsgThreadRunning(WPARAM wp, LPARAM lp) {
-  try {
-    const bool newRunning = (lp != 0);
-    if(newRunning) {
-      D3SceneObject *obj = m_debugThread->getSceneObject();
-      if(obj) {
-        m_editor.setCurrentSceneObject(NULL);
-        m_scene.removeSceneObject(obj);
-      }
-    } else if(isThreadStopped()) {
-      D3SceneObject *obj = m_debugThread->getSceneObject();
-      m_scene.addSceneObject(obj);
-      m_editor.setCurrentSceneObject(obj);
-    } else if(isThreadFinished()) {
-      asyncKillThread();
-    }
-    ajourDebugMenuItems();
-  } catch(Exception e) {
-    showException(e);
-  }
-  return 0;
 }
 
 void CD3FunctionPlotterDlg::ajourDebugMenuItems() {
@@ -490,6 +464,35 @@ void CD3FunctionPlotterDlg::OnDebugBreakOnNextLevel() {
 bool CD3FunctionPlotterDlg::isBreakOnNextLevelChecked() const {
   return isMenuItemChecked(this, ID_DEBUG_BREAKONNEXTLEVEL);
 }
+
+LRESULT CD3FunctionPlotterDlg::OnMsgKillThread(WPARAM wp, LPARAM lp) {
+  killThread(true);
+  return 0;
+}
+LRESULT CD3FunctionPlotterDlg::OnMsgThreadRunning(WPARAM wp, LPARAM lp) {
+  try {
+    const bool newRunning = (lp != 0);
+    if(newRunning) {
+      D3SceneObject *obj = m_debugThread->getSceneObject();
+      if(obj) {
+        m_editor.setCurrentSceneObject(NULL);
+        m_scene.removeSceneObject(obj);
+      }
+    } else if(isThreadStopped()) {
+      D3SceneObject *obj = m_debugThread->getSceneObject();
+      m_scene.addSceneObject(obj);
+      m_editor.setCurrentSceneObject(obj);
+    } else if(isThreadFinished()) {
+      asyncKillThread();
+    }
+    ajourDebugMenuItems();
+  } catch(Exception e) {
+    showException(e);
+  }
+  return 0;
+}
+
+#endif // DEBUG_POLYGONIZER
 
 static const String stateFileName = _T("c:\\temp\\D3FunctionPlotter.dat");
 

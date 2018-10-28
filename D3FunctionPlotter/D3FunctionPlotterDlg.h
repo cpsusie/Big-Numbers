@@ -6,22 +6,33 @@
 #include <D3DGraphics/IsoSurface.h>
 #include "D3DGraphics/D3CoordinateSystem.h"
 #include "D3DGraphics/D3SceneEditor.h"
+
+#ifdef LOGMEMORY
 #include "MemoryLogThread.h"
+#endif // LOGMEMORY
+#ifdef DEBUG_POLYGONIZER
 #include "DebugThread.h"
+#endif // DEBUG_POLYGONIZER
 
-//#define LOGMEMORY
 
-class CD3FunctionPlotterDlg : public CDialog, public D3SceneContainer, public PropertyChangeListener {
+class CD3FunctionPlotterDlg : public CDialog
+                            , public D3SceneContainer
+#ifdef DEBUG_POLYGONIZER
+                            , public PropertyChangeListener
+#endif // DEBUG_POLYGONIZER
+{
 private:
     HICON                       m_hIcon;
     HACCEL                      m_accelTable;
     SimpleLayoutManager         m_layoutManager;
     D3Scene                     m_scene;
     D3SceneEditor               m_editor;
+#ifdef DEBUG_POLYGONIZER
     DebugThread                *m_debugThread;
+#endif // DEBUG_POLYGONIZER
 #ifdef LOGMEMORY
     MemoryLogThread             m_memlogThread;
-#endif
+#endif // LOGMEMORY
     Function2DSurfaceParameters m_function2DSurfaceParam;
     ParametricSurfaceParameters m_parametricSurfaceParam;
     IsoSurfaceParameters        m_isoSurfaceParam;
@@ -48,6 +59,8 @@ private:
 
   void startDebugging();
   void stopDebugging();
+
+#ifdef DEBUG_POLYGONIZER
   void startThread(bool singleStep=false);
   void killThread(bool showCreateSurface);
   void asyncKillThread();
@@ -64,8 +77,9 @@ private:
   inline bool isThreadFinished() const {
     return hasThread() && !m_debugThread->isRunning() && m_debugThread->isFinished();
   }
-
   void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
+
+#endif
 
 public:
     CD3FunctionPlotterDlg(CWnd *pParent = NULL);
@@ -99,7 +113,6 @@ public:
 
 protected:
     virtual BOOL PreTranslateMessage(MSG *pMsg);
-    virtual void DoDataExchange(CDataExchange *pDX);
     virtual BOOL OnInitDialog();
     afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
     afx_msg void OnPaint();
@@ -131,4 +144,3 @@ protected:
 
     DECLARE_MESSAGE_MAP()
 };
-

@@ -59,8 +59,12 @@ private:
 public:
   CIsoSurfaceDlg(const IsoSurfaceParameters &param, CWnd *pParent = NULL);
 
-  bool getDebugPolygonizer() const {
+  inline bool getDebugPolygonizer() const {
+#ifndef DEBUG_POLYGONIZER
+    return false;
+#else
     return m_debugPolygonizer ? true : false;
+#endif //  DEBUG_POLYGONIZER
   }
   enum { IDD = IDR_ISOSURFACE };
 

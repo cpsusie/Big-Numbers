@@ -74,6 +74,7 @@ LPD3DXMESH createMeshFrom2DFunction(AbstractMeshFactory &amf, Function2D &f, con
       face.addVertexNormalIndex(index  +ny, index  +ny);
     }
   }
+//  debugLog(_T("%s\n"), mb.toString().cstr());
   return mb.createMesh(amf, doubleSided);
 }
 

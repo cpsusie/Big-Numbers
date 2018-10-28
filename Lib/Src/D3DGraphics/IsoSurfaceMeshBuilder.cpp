@@ -142,7 +142,6 @@ LPD3DXMESH createMesh(AbstractMeshFactory &amf, IsoSurface &surface, Interruptab
     surface.createData(ir);
     return surface.getMeshbuilder().createMesh(amf, surface.getParam().m_doubleSided);
   } catch (...) {
-    int fisk = 1;
     throw;
   }
 }

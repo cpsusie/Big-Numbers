@@ -1,4 +1,7 @@
 #include "stdafx.h"
+
+#ifdef DEBUG_POLYGONIZER
+
 #include "DebugThread.h"
 #include "D3FunctionPlotterDlg.h"
 
@@ -336,3 +339,4 @@ D3SceneObject *DebugIsoSurface::createCubeObject() {
   return cube;
 }
 
+#endif // DEBUG_POLYGONIZER

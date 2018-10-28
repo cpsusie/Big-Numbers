@@ -160,6 +160,9 @@ void CIsoSurfaceDlg::enableTimeFields() {
   GetDlgItem(IDC_EDIT_TIMETO        )->EnableWindow(enable);
   GetDlgItem(IDC_EDIT_FRAMECOUNT    )->EnableWindow(enable);
   setWindowText(this, IDC_STATIC_FUNCTION, enable ? _T("&S(t,x,y,z) =") : _T("&S(x,y,z) ="));
+#ifndef DEBUG_POLYGONIZER
+  GetDlgItem(IDC_CHECK_DEBUGPOLYGONIZER)->EnableWindow(FALSE);
+#else
   GetDlgItem(IDC_CHECK_DEBUGPOLYGONIZER)->EnableWindow(!enable);
   if(enable) {
     if(m_debugPolygonizer) {
@@ -167,6 +170,7 @@ void CIsoSurfaceDlg::enableTimeFields() {
       CheckDlgButton(IDC_CHECK_DEBUGPOLYGONIZER,BST_UNCHECKED);
     }
   }
+#endif // DEBUG_POLYGONIZER
 }
 
 void CIsoSurfaceDlg::OnEditFindMatchingParentesis() {
