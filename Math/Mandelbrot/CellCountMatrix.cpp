@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include <Math/Double64.h>
-#include "PointSet.h"
 #include "CellCountMatrix.h"
 
 CellCountMatrix *CellCountMatrix::clone() const {

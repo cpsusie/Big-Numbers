@@ -712,6 +712,8 @@
     <ClCompile Include="PixRectRotate.cpp" />
     <ClCompile Include="PixRectScale.cpp" />
     <ClCompile Include="PixRectShapes.cpp" />
+    <ClCompile Include="PointSet.cpp" />
+    <ClCompile Include="PointToString.cpp" />
     <ClCompile Include="PolygonCurve.cpp" />
     <ClCompile Include="ProgressDlg.cpp" />
     <ClCompile Include="ProgressWindow.cpp" />
@@ -789,6 +791,7 @@
     <ClInclude Include="..\..\Include\MFCUtil\Picture.h" />
     <ClInclude Include="..\..\Include\MFCUtil\PixRect.h" />
     <ClInclude Include="..\..\Include\MFCUtil\Point2DP.h" />
+    <ClInclude Include="..\..\Include\MFCUtil\PointSet.h" />
     <ClInclude Include="..\..\Include\MFCUtil\PolygonCurve.h" />
     <ClInclude Include="..\..\Include\MFCUtil\PragmaLib.h" />
     <ClInclude Include="..\..\Include\MFCUtil\ProgressDlg.h" />

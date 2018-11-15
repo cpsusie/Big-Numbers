@@ -288,7 +288,6 @@
     <ClCompile Include="MBRealCalculator.cpp" />
     <ClCompile Include="MBCalculatorPool.cpp" />
     <ClCompile Include="MBFrameGenerator.cpp" />
-    <ClCompile Include="PointSet.cpp" />
     <ClCompile Include="ShowColorMapDlg.cpp" />
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -320,7 +319,6 @@
     <ClInclude Include="MBBigRealCalculator.h" />
     <ClInclude Include="MBCalculator.h" />
     <ClInclude Include="MBRealCalculator.h" />
-    <ClInclude Include="PointSet.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ShowColorMapDlg.h" />
     <ClInclude Include="StdAfx.h" />

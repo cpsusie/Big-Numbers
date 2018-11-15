@@ -2,6 +2,7 @@
 
 #include "ColorMap.h"
 #include <Math/Rectangle2D.h>
+#include <MFCUtil/PointSet.h>
 
 #define EMPTYCELLVALUE 0xffffffff
 

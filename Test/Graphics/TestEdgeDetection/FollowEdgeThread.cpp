@@ -124,8 +124,8 @@ void FollowEdgeThread::fillInnerArea(PointSet &innerSet) {
   const COLORREF         newColor = pa.getPixel(m_startPoint);
   const COLORREF         c0       = COMPLEMENTCOLOR(newColor);
 
-  for(Iterator<size_t> it = innerSet.getIterator(); it.hasNext();) {
-    const CPoint start = innerSet.next(it);
+  for(Iterator<CPoint> it = innerSet.getIterator(); it.hasNext();) {
+    const CPoint &start = it.next();
     if(!ISCOLORTOFILL(pa.getPixel(start))) {
       continue;
     }
@@ -194,15 +194,5 @@ String FillInfo::toString() const {
   result += format(_T("#Inner  points:%d\n"), m_innerSet.size() );
   result += format(_T("First edgePoints :(%s)\n"), m_edgeSet.toString().cstr());
   result += format(_T("First innerPoints:(%s)\n"), m_innerSet.toString().cstr());
-  return result;
-}
-
-String PointSet::toString() const {
-  String result;
-  Iterator<size_t> it = ((PointSet*)this)->getIterator();
-  for(int i = 0; (i < 20) && it.hasNext(); i++) {
-    const CPoint p = next(it);
-    result += format(_T("(%d,%d) "), p.x,p.y);
-  }
   return result;
 }

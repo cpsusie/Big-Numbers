@@ -255,7 +255,10 @@ void   notifyIconAdd(             HWND hwnd, UINT uID, HICON hicon, const String
 void   notifyIconDelete(          HWND hwnd, UINT uID);
 void   notifyIconSetToolTip(      HWND hwnd, UINT uID, const String &toolTip);
 
-inline CSize operator*(const CSize &s1, const CSize &s2) {
+String toString(const CPoint &p);
+String toString(const CSize  &s);
+
+  inline CSize operator*(const CSize &s1, const CSize &s2) {
   return CSize(s1.cx*s2.cx,s1.cy*s2.cy);
 }
 

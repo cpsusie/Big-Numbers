@@ -1,5 +1,7 @@
 #pragma once
 
+#include <MFCUtil\PointSet.h>
+
 typedef enum {
   S
  ,E
@@ -56,56 +58,23 @@ inline Direction turnAround(Direction dir) {
   return EdgeMatrix::oppositeDir[dir];
 }
 
-class PointSet : public BitSet {
-private:
-  CRect m_rect;
-  int   m_width;
-  static inline UINT getPixelCount(const CRect &r) {
-    return r.Width() * r.Height();
-  }
-  inline UINT getIndex(const CPoint &p) const {
-    return (p.y-m_rect.top) * m_width + (p.x-m_rect.left);
-  }
-  inline CPoint getPoint(size_t index) const {
-    return CPoint((int)(index % m_width + m_rect.left), (int)(index / m_width + m_rect.top));
-  }
-public:
-  PointSet(const CRect &r)
-    : BitSet(getPixelCount(r))
-    , m_rect(r)
-    , m_width(r.Width())
-  {
-  }
-  inline void add(const CPoint &p) {            // assume p is inside CRect
-    BitSet::add(getIndex(p));
-  }
-  inline bool contains(const CPoint &p) const { // assume p is inside CRect
-    return BitSet::contains(getIndex(p));
-  }
-  inline const CRect &getRect() const {
-    return m_rect;
-  }
-  inline CPoint next(Iterator<size_t> &it) const {
-    return getPoint(it.next());
-  }
-  String toString() const;
-};
-
 class FillInfo {
 private:
+  CRect    m_r;
   PointSet m_filledSet, m_edgeSet, m_innerSet;
 public:
   FillInfo(const CRect &r)
-    : m_filledSet(r)
-    , m_edgeSet( r)
-    , m_innerSet(r)
+    : m_r(        r)
+    , m_filledSet(r)
+    , m_edgeSet(  r)
+    , m_innerSet( r)
   {
   }
   inline void addFilled(const CPoint &p) {
     m_filledSet.add(p);
   }
   inline bool contains(const CPoint &p) const {
-    return m_filledSet.getRect().PtInRect(p) ? m_filledSet.contains(p) : false;
+    return m_r.PtInRect(p) ? m_filledSet.contains(p) : false;
   }
   void setEdgeAndInnerSet(const PointSet &edgeSet, const PointSet &innerSet) {
     m_edgeSet = edgeSet; m_innerSet = innerSet;
@@ -117,13 +86,13 @@ public:
     return m_innerSet;
   }
   void addEdgeSetToFilledSet() {
-    m_filledSet += m_edgeSet;
+    m_filledSet |= m_edgeSet;
   }
   CSize getSize() const {
-    return m_filledSet.getRect().Size();
+    return m_r.Size();
   }
   inline const CRect &getRect() const {
-    return m_filledSet.getRect();
+    return m_r;
   }
   void clear() {
     m_filledSet.clear(); m_edgeSet.clear(); m_innerSet.clear();

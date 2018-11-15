@@ -543,8 +543,8 @@ void CTestEdgeDetectionDlg::OnEditShowFillInfo() {
 }
 
 void CTestEdgeDetectionDlg::paintPointSet(const PointSet &ps, COLORREF color) {
-  for(Iterator<size_t> it = ((PointSet&)ps).getIterator(); it.hasNext();) {
-    const CPoint p = ps.next(it);
+  for(Iterator<CPoint> it = ps.getIterator(); it.hasNext();) {
+    const CPoint &p = it.next();
     setPixel(p, color);
   }
 }

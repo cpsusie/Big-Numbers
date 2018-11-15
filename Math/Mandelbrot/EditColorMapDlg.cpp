@@ -146,7 +146,7 @@ void CEditColorMapDlg::OnLButtonDown(UINT nFlags, CPoint point) {
   if(winRect.PtInRect(point)) {
     setSelectedInterpolationPoint(findInterpolationRect(point));
     if(m_selectedRectIndex >= 0) {
-      if((m_selectedRectIndex > 0) && (m_selectedRectIndex < m_interpolationRect.size()-1)) {
+      if((m_selectedRectIndex > 0) && (m_selectedRectIndex < (int)m_interpolationRect.size()-1)) {
         setState(MOVING_RECT);
       }
     } else {

@@ -208,14 +208,6 @@ String toString(const CRect &r) {
   return format(_T("(%3d,%3d,%3d,%3d)"), r.left,r.top,r.Width(),r.Height());
 }
 
-String toString(const CSize &s) {
-  return format(_T("(%3d,%3d)"), s.cx, s.cy);
-}
-
-String toString(const CPoint &p) {
-  return format(_T("(%3d,%3d)"), p.x, p.y);
-}
-
 void CTestPictureDlg::showInfo() {
   const PROCESS_MEMORY_COUNTERS memCounters = getProcessMemoryUsage();
   const ResourceCounters        resCounters = getProcessResources();

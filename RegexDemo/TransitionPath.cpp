@@ -98,10 +98,6 @@ void TransitionGrid::initGrid() {
   }
 }
 
-String toString(const CPoint &p) {
-  return format(_T("(%d,%d)"), p.x,p.y);
-}
-
 TransitionPath TransitionGrid::findShortestFreePath(const CPoint &from, const CPoint &to) {
   initGrid();
   CompactStack<CPoint> stack;

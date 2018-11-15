@@ -7,7 +7,6 @@
 #include <Math/Transformation.h>
 #include <Math/BigRealTransformation.h>
 #include "CellCountMatrix.h"
-#include "PointSet.h"
 #include "EdgeMatrix.h"
 
 #define ORBITCOLOR RGB(0,0,255)

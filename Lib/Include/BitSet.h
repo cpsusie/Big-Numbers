@@ -328,8 +328,12 @@ public:
 };
 
 class BitMatrix : private BitSet {
+  friend class BitMatrixIterator;
+  friend class BitMatrixRowIterator;
+  friend class BitMatrixColumnIterator;
 private:
   MatrixDimension m_dim;
+protected:
   inline size_t getIndex(size_t r, size_t c) const {
     return r*m_dim.columnCount + c;
   }
@@ -339,9 +343,6 @@ private:
   void checkSameDimension(const TCHAR *method, const BitMatrix &m) const;
   void checkValidRow(   const TCHAR *method, size_t r) const;
   void checkValidColumn(const TCHAR *method, size_t c) const;
-  friend class BitMatrixIterator;
-  friend class BitMatrixRowIterator;
-  friend class BitMatrixColumnIterator;
 
 public:
   BitMatrix(size_t rowCount, size_t columnCount)
@@ -355,7 +356,7 @@ public:
   {
   }
   BitMatrix &operator=(const BitMatrix &m) {
-    BitSet::operator=(m);
+    __super::operator=(m);
     m_dim = m.m_dim;
     return *this;
   }
@@ -370,10 +371,10 @@ public:
     return contains(getIndex(i.r,i.c));
   }
   inline void clear() {
-    BitSet::clear();
+    __super::clear();
   }
   inline void invert() {
-    BitSet::invert();
+    __super::invert();
   }
   inline size_t getRowCount() const {
     return m_dim.rowCount;
@@ -386,10 +387,10 @@ public:
   }
   BitMatrix &setDimension(const MatrixDimension &dim);
   inline size_t size() const {    // Number of true elements.
-    return BitSet::size();
+    return __super::size();
   }
   inline bool isEmpty() const {
-    return BitSet::isEmpty();
+    return __super::isEmpty();
   }
   BitSet &getRow(   size_t r, BitSet &s) const;
   BitSet &getColumn(size_t c, BitSet &s) const;
