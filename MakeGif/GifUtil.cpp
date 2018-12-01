@@ -1,6 +1,6 @@
 #define _GETOPT_H // dont need it
 #undef  _MSC_VER
-#define _MSC_VER 1914 // to include stdint.h
+#define _MSC_VER 1915 // to include stdint.h
 
 #include <stdio.h>
 
