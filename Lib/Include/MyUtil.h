@@ -16,12 +16,18 @@
 
 #define WINAPI_FAMILY WINAPI_FAMILY_DESKTOP_APP
 
+#define __ORDER_BIG_ENDIAN      0
+#define __ORDER_LITTLE_ENDIAN__ 1
+
+#define __BYTE_ORDER__ __ORDER_LITTLE_ENDIAN__
+
 #include <Windows.h>
 #include <WinUser.h>
 #include <WinBase.h>
 #include <stdio.h>
 #include <sys\stat.h>
 #include "MyString.h"
+#include "MathUtil.h"
 #include "MyAssert.h"
 #include "Comparator.h"
 #include "Exception.h"
@@ -240,26 +246,6 @@ GUID  *newGUID(GUID *guid);
 void quickSort(void *base, size_t nelem, size_t width, AbstractComparator &comparator);
 void quickSort(void *base, size_t nelem, size_t width, int (__cdecl *compare)(const void*, const void*));
 
-String sprintbin(char    c);
-String sprintbin(UCHAR   c);
-String sprintbin(short   s);
-String sprintbin(USHORT  s);
-String sprintbin(int     i);
-String sprintbin(UINT    i);
-String sprintbin(long    l);
-String sprintbin(ULONG   l);
-String sprintbin(INT64   i);
-String sprintbin(UINT64  i);
-
-inline const TCHAR *boolToStr(bool b) {
-  return b ? _T("true") : _T("false");
-}
-
-inline const TCHAR *boolToStr(BOOL b) {
-  return b ? _T("true") : _T("false");
-}
-
-bool strToBool(const TCHAR *s);
 
 inline int ordinal(bool b) {
   return b ? 1 : 0;
@@ -269,98 +255,6 @@ inline int boolCmp(bool b1, bool b2) {
   return ordinal(b1) - ordinal(b2);
 }
 
-inline bool isInt( int    v) { return true;         }
-inline bool isInt( UINT   v) { return v <= INT_MAX; }
-inline bool isInt( INT64  v) { return v == (int)v;  }
-inline bool isInt( UINT64 v) { return v == (int)v;  }
-inline bool isUint(int    v) { return v >= 0;       }
-inline bool isUint(UINT   v) { return true;         }
-inline bool isUint(INT64  v) { return v == (UINT)v; }
-inline bool isUint(UINT64 v) { return v == (UINT)v; }
-
-inline bool isPow2(int    v) { return (v & -v) == v;}
-inline bool isPow2(INT64  v) { return (v & -v) == v;}
-
-inline bool isOdd(  int    x) { return (x & 1) != 0; }
-inline bool isEven( int    x) { return (x & 1) == 0; }
-inline bool isOdd(  UINT   x) { return (x & 1) != 0; }
-inline bool isEven( UINT   x) { return (x & 1) == 0; }
-inline bool isOdd(  long   x) { return (x & 1) != 0; }
-inline bool isEven( long   x) { return (x & 1) == 0; }
-inline bool isOdd(  ULONG  x) { return (x & 1) != 0; }
-inline bool isEven( ULONG  x) { return (x & 1) == 0; }
-inline bool isOdd(  INT64  x) { return (x & 1) != 0; }
-inline bool isEven( INT64  x) { return (x & 1) == 0; }
-inline bool isOdd(  UINT64 x) { return (x & 1) != 0; }
-inline bool isEven( UINT64 x) { return (x & 1) == 0; }
-
-// 5-rounding
-double round(   double x, int dec);
-double trunc(   double x, int dec=0);
-double fraction(double x);
-float  fraction(float  x);
-
-// return (x > 0) ? +1 : (x < 0) ? -1 : 0
-inline int sign(int x) {
-  return x < 0 ? -1 : x > 0 ? 1 : 0;
-}
-
-// return (x > 0) ? +1 : (x < 0) ? -1 : 0
-inline int sign(const INT64 &x) {
-  return x < 0 ? -1 : x > 0 ? 1 : 0;
-}
-
-// return (x > 0) ? +1 : (x < 0) ? -1 : 0
-inline int sign(float x) {
-  return x < 0 ? -1 : x > 0 ? 1 : 0;
-}
-
-// return (x > 0) ? +1 : (x < 0) ? -1 : 0
-inline int sign(const double &x) {
-  return x < 0 ? -1 : x > 0 ? 1 : 0;
-}
-
-
-// return x*x
-inline UINT  sqr(int x) {
-  return x * x;
-}
-
-// return x*x
-inline float sqr(float x) {
-  return x * x;
-}
-
-// return x*x
-inline double sqr(const double &x) {
-  return x * x;
-}
-
-extern const double M_PI;
-extern const double M_E;
-
-#define RAD2GRAD(r) ((r) / M_PI * 180.0)
-#define GRAD2RAD(g) ((g) / 180.0 * M_PI)
-
-#define PERCENT( n,total) ((total)?((double)(n)*100 /(total)):100.0 )
-#define PERMILLE(n,total) ((total)?((double)(n)*1000/(total)):1000.0)
-
-#ifndef max
-#define max(x, y) ((x) > (y) ? (x) : (y))
-#endif
-#ifndef min
-#define min(x, y) ((x) < (y) ? (x) : (y))
-#endif
-
-// return x if x is in I = [min(x1, x2); max(x1, x2)] else the endpoint of I nearest to x
-short   minMax(short   x, short   x1, short   x2);
-USHORT  minMax(USHORT  x, USHORT  x1, USHORT  x2);
-int     minMax(int     x, int     x1, int     x2);
-UINT    minMax(UINT    x, UINT    x1, UINT    x2);
-INT64   minMax(INT64   x, INT64   x1, INT64   x2);
-UINT64  minMax(UINT64  x, UINT64  x1, UINT64  x2);
-float   minMax(float   x, float   x1, float   x2);
-double  minMax(double  x, double  x1, double  x2);
 
 // very common used hash- and comparefunctions
 inline ULONG shortHash(const short &n) {

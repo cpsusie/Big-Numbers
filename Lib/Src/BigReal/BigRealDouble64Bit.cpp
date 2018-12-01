@@ -35,6 +35,15 @@ void BigReal::init(double x) {
   }
 }
 
+bool isDouble(const BigReal &v) {
+  if(!isnormal(v)) return true;
+  if((compareAbs(v, ConstBigReal::_dbl_max) > 0) || (compareAbs(v, ConstBigReal::_dbl_min) < 0)) {
+    return false;
+  }
+  const double d = v.getDoubleNoLimitCheck();
+  return BigReal(d,v.getDigitPool()) == v;
+}
+
 double getDouble(const BigReal &x) {
   DEFINEMETHODNAME;
   if(!isnormal(x)) {
@@ -54,5 +63,5 @@ double getDouble(const BigReal &x) {
   if(compareAbs(x,ConstBigReal::_dbl_min) < 0) {
     throwBigRealGetIntegralTypeUnderflowException(method, x, toString(ConstBigReal::_dbl_min));
   }
-  return getDouble(x.getDouble80NoLimitCheck());
+  return x.getDoubleNoLimitCheck();
 }

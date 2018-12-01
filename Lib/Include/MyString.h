@@ -370,6 +370,26 @@ TCHAR *strToUpperCase(  TCHAR *s);
 TCHAR *strTabExpand(    TCHAR *dst, const TCHAR *src, int tabSize, TCHAR subst = _T(' '));
 int    findMatchingpParanthes(const TCHAR *str, int pos);
 
+String sprintbin(char    c);
+String sprintbin(UCHAR   c);
+String sprintbin(short   s);
+String sprintbin(USHORT  s);
+String sprintbin(int     i);
+String sprintbin(UINT    i);
+String sprintbin(long    l);
+String sprintbin(ULONG   l);
+String sprintbin(INT64   i);
+String sprintbin(UINT64  i);
+
+inline const TCHAR *boolToStr(bool b) {
+  return b ? _T("true") : _T("false");
+}
+
+inline const TCHAR *boolToStr(BOOL b) {
+  return b ? _T("true") : _T("false");
+}
+
+bool strToBool(const TCHAR *s);
 
 int    strtabcmp(      const TCHAR *s1, const TCHAR *s2,           const TCHAR translateTable[256]);
 int    strntabcmp(     const TCHAR *s1, const TCHAR *s2, size_t n, const TCHAR translateTable[256]);

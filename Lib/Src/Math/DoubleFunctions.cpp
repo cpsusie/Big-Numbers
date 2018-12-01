@@ -5,18 +5,6 @@
 int getExpo10(double x) {
   return (x == 0) ? 0 : (int)floor(log10(fabs(x)));
 }
-bool isPInfinity(double x) {
-  return _fpclass(x) == _FPCLASS_PINF;
-}
-bool isNInfinity(double x) {
-  return _fpclass(x) == _FPCLASS_NINF;
-}
-bool isPInfinity(float x) {
-  return _fpclass(x) == _FPCLASS_PINF;
-}
-bool isNInfinity(float x) {
-  return _fpclass(x) == _FPCLASS_NINF;
-}
 
 double mypow(double x, double y) {
   if(x < 0) {

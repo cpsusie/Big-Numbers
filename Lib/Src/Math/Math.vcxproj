@@ -1134,6 +1134,7 @@
     <ClCompile Include="DataFit.cpp" />
     <ClCompile Include="Double80.cpp" />
     <ClCompile Include="Double80IO.cpp" />
+    <ClCompile Include="Double80Packer.cpp" />
     <ClCompile Include="Double80Random.cpp" />
     <ClCompile Include="Double80Str.cpp" />
     <ClCompile Include="DoubleFunctions.cpp" />
@@ -1146,12 +1147,14 @@
     <ClCompile Include="GaussDistribution.cpp" />
     <ClCompile Include="Gradient.cpp" />
     <ClCompile Include="Int128IO.cpp" />
+    <ClCompile Include="Int128Packer.cpp" />
     <ClCompile Include="Int128Str.cpp" />
     <ClCompile Include="Int128ToString.cpp" />
     <ClCompile Include="Int128x86.cpp" />
     <ClCompile Include="Jacobi.cpp" />
     <ClCompile Include="LssdPolynomial.cpp" />
     <ClCompile Include="MathException.cpp" />
+    <ClCompile Include="RationalPacker.cpp" />
     <ClCompile Include="RealFunctions.cpp" />
     <ClCompile Include="Matrix.cpp" />
     <ClCompile Include="MatrixSvd.cpp" />
@@ -1221,6 +1224,7 @@
     <ClInclude Include="..\..\Include\Math\fft.h" />
     <ClInclude Include="..\..\Include\Math\FPU.h" />
     <ClInclude Include="..\..\Include\Math\Int128.h" />
+    <ClInclude Include="..\..\Include\Math\Int128Net.h" />
     <ClInclude Include="..\..\Include\Math\LUMatrixTemplate.h" />
     <ClInclude Include="..\..\Include\Math\MathException.h" />
     <ClInclude Include="..\..\Include\Math\MathLib.h" />

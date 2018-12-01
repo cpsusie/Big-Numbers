@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
+#include <ByteMemoryStream.h>
 #include <HashMap.h>
 #include <TreeMap.h>
 #include "MemBtree.h"
@@ -319,12 +320,25 @@ namespace TestBitSet {
     }
   }
 
+  static void sendReceive(Packer &dst, const Packer &src) {
+    ByteArray a;
+    src.write(ByteMemoryOutputStream(a));
+    dst.read( ByteMemoryInputStream(a));
+  }
+
   static void testCollectionStream(const Collection<Key> &c) {
     OUTPUT(_T("Testing Collection save/load"));
     const String fileName = _T("c:\\temp\\testCollection\\Collection.dat");
     c.save(ByteOutputFile(fileName));
     Collection<Key> tmp(c);
     tmp.load(ByteInputFile(fileName));
+    verify(tmp == c);
+
+    OUTPUT(_T("Testing Collection Packer"));
+    Packer psrc, pdst;
+    psrc << c;
+    sendReceive(pdst, psrc);
+    pdst >> tmp;
     verify(tmp == c);
   }
 
@@ -563,6 +577,14 @@ namespace TestBitSet {
     KeyElementMap tmp(m);
     tmp.load(ByteInputFile(fileName));
     verify(tmp == m);
+
+    OUTPUT(_T("Testing Map Packer"));
+    Packer psrc, pdst;
+    psrc << m;
+    sendReceive(pdst, psrc);
+    pdst >> tmp;
+    verify(tmp == m);
+
   }
 
   static void mapTestSuite(const TCHAR *name, KeyElementMap &map) {

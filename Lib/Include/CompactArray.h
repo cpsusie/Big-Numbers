@@ -589,9 +589,9 @@ public:
 };
 
 template<class S, class T, class D=StreamDelimiter> S &operator<<(S &out, const CompactArray<T> &a) {
-  const D delimiter;
-  const UINT elemSize = sizeof(T);
-  const UINT64 n = a.size();
+  const D      delimiter;
+  const UINT   elemSize = sizeof(T);
+  const size_t n        = a.size();
   out << elemSize << delimiter << n << delimiter;
   if(n) {
     const T *e = a.getBuffer();

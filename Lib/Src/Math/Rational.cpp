@@ -4,6 +4,8 @@
 #include <Math/Rational.h>
 #include <Math/PrimeFactors.h>
 
+const Rational Rational::zero(0,1);      // = 0
+const Rational Rational::one(1,1);       // = 1
 const Rational RAT_MIN(  1,_I64_MAX);    // Min positive value (=1/_I64_MAX)
 const Rational RAT_MAX(_I16_MAX    );    // Max value          (=_I64_MAX)
 const Rational RAT_NAN(  0,0       );    // nan (undefined)    ( 0/0)
@@ -12,9 +14,10 @@ const Rational RAT_NINF(-1,0       );    // -infinity;         (-1/0)
 
 #define SAFEPROD(a,b) Rational::safeProd(a,b,__LINE__)
 
-#define CHECKISFINITE(f)                    \
-if(!isfinite(f)) {                          \
-  if(isPInfinity(f))      *this = RAT_PINF; \
+#define CHECKISNORMAL(f)                    \
+if(!isnormal(f)) {                          \
+  if(isfinite(f))         *this = zero;     \
+  else if(isPInfinity(f)) *this = RAT_PINF; \
   else if(isNInfinity(f)) *this = RAT_NINF; \
   else                    *this = RAT_NAN;  \
   return;                                   \
@@ -23,19 +26,15 @@ if(!isfinite(f)) {                          \
 Rational::Rational(float f, UINT maxND) {
   DEFINEMETHODNAME;
   static const TCHAR *invalidFloatMsg = _T("Value %e cannot be contained in a Rational with maxND=%lu");
-  CHECKISFINITE(f)
+  CHECKISNORMAL(f)
   bool   positive;
   float  fa;
   if(f > 0) {
     positive = true;
     fa = f;
-  } else if(f < 0) {
+  } else {
     positive = false;
     fa = -f;
-  } else {
-    m_numerator   = 0;
-    m_denominator = 1;
-    return;
   }
 
   INT64 p0 = 1, q0 = 0;
@@ -81,19 +80,15 @@ Rational::Rational(double d, UINT maxND) {
   DEFINEMETHODNAME;
   static const TCHAR *invalidDoubleMsg = _T("Value %le cannot be contained in a Rational with maxND=%lu");
 
-  CHECKISFINITE(d)
+  CHECKISNORMAL(d)
   bool   positive;
   double da;
   if(d > 0) {
     positive = true;
     da = d;
-  } else if(d < 0) {
+  } else {
     positive = false;
     da = -d;
-  } else {
-    m_numerator   = 0;
-    m_denominator = 1;
-    return;
   }
 
   INT64 p0 = 1, q0 = 0;
@@ -135,19 +130,15 @@ Rational::Rational(const Double80 &d80, UINT64 maxND) {
   DEFINEMETHODNAME;
   static const TCHAR *invalidDoubleMsg = _T("Value %s cannot be contained in a Rational with maxND=%I64u");
 
-  CHECKISFINITE(d80)
+  CHECKISNORMAL(d80)
   bool     positive;
   Double80 da;
   if(d80.isPositive()) {
     positive = true;
     da = d80;
-  } else if(d80.isNegative()) {
+  } else {
     positive = false;
     da = -d80;
-  } else {
-    m_numerator   = 0;
-    m_denominator = 1;
-    return;
   }
 
   UINT64 p0 = 1, q0 = 0;
@@ -328,7 +319,7 @@ INT64 Rational::pow(INT64 n, UINT y) {
 Rational pow(const Rational &r, int e) {
   if(!isfinite(r)) return RAT_NAN;
   if(e == 0) {
-    return Rational(1);
+    return Rational::one;
   } else if(e < 0) {
     if(r.isZero()) {
       throwInvalidArgumentException(__TFUNCTION__, _T("r == 0, e=%d"), e);
@@ -344,10 +335,10 @@ Rational reciprocal(const Rational &r) {
   switch(fpclassify(r)) {
   case FP_NORMAL   : return Rational(r.m_denominator, r.m_numerator);
   case FP_ZERO     : Rational::throwDivisionByZeroException(method);
-  case FP_INFINITE : return 0;
+  case FP_INFINITE : return Rational::zero;
   case FP_NAN      : return r;
   default          : throwException(_T("%s:Unknown value return from fpclassify:%d"), method, fpclassify(r));
-                     return 0;
+                     return Rational::zero;
   }
 }
 

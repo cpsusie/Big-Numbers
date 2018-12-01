@@ -800,6 +800,9 @@
     <ClCompile Include="IntelCPU\OpcodeBitTest.cpp">
       <Filter>Source Files\IntelCPU</Filter>
     </ClCompile>
+    <ClCompile Include="BCDArray.cpp">
+      <Filter>Source Files\Math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\Array.h">
@@ -1120,6 +1123,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\Opcode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\MathUtil.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\BCDArray.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

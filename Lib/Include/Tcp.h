@@ -33,20 +33,20 @@ inline void throwLastWSAErrorText() {
 
 #ifndef _WINSOCK2API_
 
-#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+#if __BYTE_ORDER__ != __ORDER_BIG_ENDIAN__
 
-inline unsigned __int64 htonll(unsigned __int64 x) {
-  return ((unsigned __int64)htonl((u_long)((x) & 0xffffffff)) << 32) | htonl((u_long)((x) >> 32));
+inline unsigned __int64 htonll(unsigned __int64 hostlong) {
+  return ((unsigned __int64)htonl((u_long)((hostlong) & 0xffffffff)) << 32) | htonl((u_long)((hostlong) >> 32));
 }
 
-inline unsigned __int64 ntohll(unsigned __int64 x) {
-  return ((unsigned __int64)ntohl((u_long)((x) & 0xffffffff)) << 32) | ntohl((u_long)((x) >> 32));
+inline unsigned __int64 ntohll(unsigned __int64 netlong) {
+  return ((unsigned __int64)ntohl((u_long)((netlong) & 0xffffffff)) << 32) | ntohl((u_long)((netlong) >> 32));
 }
 
-#else // assume BIG_ENDIAN
+#else
 
-#define htonll(x) x
-#define ntohll(x) x
+#define htonll(hostlong) hostlong
+#define ntohll(netlong ) netlong
 
 #endif
 

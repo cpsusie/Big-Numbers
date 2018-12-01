@@ -1,66 +1,48 @@
 #include "pch.h"
-#include <tcp.h>
+#include <BCDArray.h>
 
-#define ZERO_FLAG     0x01
-#define NEGATIVE_FLAG 0x02
-
-typedef CompactArray<BRDigitType> CompactDigitArray;
-#ifdef IS32BIT
-#define BRPACKERTYPE Packer::E_LONG
-#define htonDigit    htonl
-#define ntohDigit    ntohl
-#else
-#define BRPACKERTYPE Packer::E_LONG_LONG
-#define htonDigit    htonll
-#define ntohDigit    ntohll
-#endif
-
-Packer &operator<<(Packer &p, const BigReal &n) {
-  BYTE b = 0;
-  if(n.isZero()) {
-    b = ZERO_FLAG;
-  } else if(n.isNegative()) {
-    b = NEGATIVE_FLAG;
-  }
-  p << b;
-  if(!n.isZero()) {
-    p << n.m_expo;
-    const size_t length = n.getLength();
-    CompactDigitArray digits(length);
-    p << length;
-    for(const Digit *d = n.m_first; d; d = d->next) {
-      digits.add(htonDigit(d->n));
-    }
-    p.addElement(BRPACKERTYPE, digits.getBuffer(), length * sizeof(BRDigitType));
+Packer &operator<<(Packer &p, const BigReal &v) {
+  if(isInt64(v)) {
+    p << getInt64(v);
+  } else if(isDouble80(v)) {
+    p << getDouble80(v);
+  } else {
+    BigRealStream stream;
+    stream << FullFormatBigReal(v);
+    p << BCDArray(stream);
   }
   return p;
 }
 
-Packer &operator>>(Packer &p, BigReal &n) {
-  BYTE b;
-  p >> b;
-  if(b & ZERO_FLAG) {
-    n.setToZero();
-  } else {
-    n.clearDigits();
-    n.m_negative = (b & NEGATIVE_FLAG) ? true : false;
-    p >> n.m_expo;
-    size_t length;
-    p >> length;
-    BRDigitType *da = NULL;
-    try {
-      da = new BRDigitType[length]; TRACE_NEW(da);
-      p.getElement(Packer::BRPACKERTYPE, da, length * sizeof(BRDigitType));
-      BRDigitType *d = da;
-      for(size_t i = length; i--;) {
-        n.appendDigit(ntohDigit(*(d++)));
-      }
-      n.m_low = n.m_expo - length + 1;
-      SAFEDELETEARRAY(da);
-    } catch(...) {
-      SAFEDELETEARRAY(da);
-      throw;
+Packer &operator>>(Packer &p, BigReal &v) {
+  switch(p.peekType()) {
+  case Packer::E_CHAR     :
+  case Packer::E_SHORT    :
+  case Packer::E_RESERVED :
+  case Packer::E_LONG     :
+  case Packer::E_LONG_LONG:
+    { INT64 i;
+      p >> i;
+      v = i;
     }
+    break;
+  case Packer::E_FLOAT    :
+  case Packer::E_DOUBLE   :
+  case Packer::E_DOUBLE80 :
+    { Double80 d;
+      p >> d;
+      v = d;
+    }
+    break;
+
+  case Packer::E_ARRAY    :
+    { BCDArray a;
+      p >> a;
+      v = BigReal(a.toString(),v.getDigitPool());
+    }
+    break;
+  default:
+    throwException(_T("%s:Invalid type:%d. Expected E_CHAR/SHORT/LONG/LONG_LONG/FLOAT/DOUBLE/DOUBLE80/ARRAY"), __TFUNCTION__, p.peekType());
   }
   return p;
 }

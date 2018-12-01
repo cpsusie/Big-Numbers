@@ -12,6 +12,9 @@ private:
   static void throwDivisionByZeroException(const TCHAR *method);
   static INT64 pow(INT64 n, UINT y);
 public:
+  static const Rational zero;          // = 0
+  static const Rational one;           // = 1
+
   inline Rational() : m_numerator(0), m_denominator(1) {
   }
   inline Rational(const INT64 &numerator, const INT64 &denominator) {
@@ -56,6 +59,23 @@ public:
   Rational &operator*=(const Rational &r);
   Rational &operator/=(const Rational &r);
   Rational &operator%=(const Rational &r);
+
+  inline Rational &operator++() {   // prefix-form
+    return *this += one;
+  }
+  inline Rational &operator--() {   // prefix-form
+    return *this -= one;
+  }
+  inline Rational operator++(int) { // postfix-form
+    const Rational result(*this);
+    ++(*this);
+    return result;
+  }
+  inline Rational operator--(int) { // postfix-form
+    const Rational result(*this);
+    --(*this);
+    return result;
+  }
 
   // Assume isfinite(r1) && isfinite(r2)
   friend int rationalCmp(const Rational &r1, const Rational &r2);
@@ -104,13 +124,6 @@ public:
   inline void load(ByteInputStream  &s) {
     s.getBytesForced((BYTE*)this, sizeof(Rational));
   }
-
-  friend inline Packer &operator<<(Packer &p, const Rational &r) {
-    return p << r.m_numerator << r.m_denominator;
-  }
-  friend inline Packer &operator>>(Packer &p, Rational &r) {
-    return p >> r.m_numerator >> r.m_denominator;
-  }
 };
 
 extern const Rational RAT_MIN;     // Min positive value (=1/_I64_MAX)
@@ -119,39 +132,31 @@ extern const Rational RAT_NAN;     // nan (undefined)    ( 0/0)
 extern const Rational RAT_PINF;    // +infinity;         ( 1/0)
 extern const Rational RAT_NINF;    // -infinity;         (-1/0)
 
-inline bool isInteger(const Rational &r) {
-  return r.getDenominator() == 1;
-}
-inline bool isInt(const Rational &r) {
-  return r.isInteger() && (_I32_MIN <= r.getNumerator()) && (r.getNumerator() <= _I32_MAX);
-}
-inline INT64    getInt64(   const Rational &r) {
-  return r.getNumerator() / r.getDenominator();
-}
-inline UINT64   getUint64(  const Rational &r) {
-  return (UINT64)r.getNumerator() / r.getDenominator();
-}
-inline int      getInt(     const Rational &r) {
-  return (int)getInt64(r);
-}
-inline UINT     getUint(    const Rational &r) {
-  return (UINT)getUint64(r);
-}
-inline long     getLong(    const Rational &r) {
-  return getInt(r);
-}
-inline ULONG    getUlong(   const Rational &r) {
-  return getUint(r);
-}
-inline float    getFloat(   const Rational &r) {
-  return (float)((double)r.getNumerator()/r.getDenominator());
-}
-inline double   getDouble(  const Rational &r) {
-  return (double)r.getNumerator()/r.getDenominator();
-}
-inline Double80 getDouble80(const Rational &r) {
-  return Double80(r.getNumerator())/r.getDenominator();
-}
+// Return true, if denominator == 1
+inline bool     isInteger(  const Rational &r) {  return r.getDenominator() == 1;                             }
+// Return true, if isInteger() && isShort(numerator)
+inline bool     isShort(    const Rational &r) { return r.isInteger() && isShort( r.getNumerator());          }
+// Return true, if isInteger() && isUshort(numerator)
+inline bool     isUshort(   const Rational &r) { return r.isInteger() && isUshort(r.getNumerator());          }
+// Return true, if isInteger() && isInt(numerator)
+inline bool     isInt(      const Rational &r) { return r.isInteger() && isInt(   r.getNumerator());          }
+// Return true, if isInteger() && isUint(numerator)
+inline bool     isUiInt(    const Rational &r) { return r.isInteger() && isUint(  r.getNumerator());          }
+// Return true, if isInteger() && isInt64(numerator)
+inline bool     isInt64(    const Rational &r) { return r.isInteger() && isInt64( r.getNumerator());          }
+// Return true, if isInteger() && isUint64(numerator)
+inline bool     isUint64(   const Rational &r) { return r.isInteger() && isUint64(r.getNumerator());          }
+inline INT64    getInt64(   const Rational &r) { return r.getNumerator() / r.getDenominator();                }
+inline UINT64   getUint64(  const Rational &r) { return (UINT64)r.getNumerator() / r.getDenominator();        }
+inline short    getShort(   const Rational &r) { return (short)getInt64(r);                                   }
+inline USHORT   getUshort(  const Rational &r) { return (USHORT)getUint64(r);                                 }
+inline int      getInt(     const Rational &r) { return (int)getInt64(r);                                     }
+inline UINT     getUint(    const Rational &r) { return (UINT)getUint64(r);                                   }
+inline long     getLong(    const Rational &r) { return getInt(r);                                            }
+inline ULONG    getUlong(   const Rational &r) { return getUint(r);                                           }
+inline float    getFloat(   const Rational &r) { return (float)((double)r.getNumerator()/r.getDenominator()); }
+inline double   getDouble(  const Rational &r) { return (double)r.getNumerator()/r.getDenominator();          }
+inline Double80 getDouble80(const Rational &r) { return Double80(r.getNumerator())/r.getDenominator();        }
 
 inline Real     getReal(    const Rational &r) {
 #ifdef LONGDOUBLE
@@ -251,5 +256,8 @@ ostream &operator<<(ostream &s, const Rational &r);
 
 std::wistream &operator>>(std::wistream &s,       Rational &r);
 std::wostream &operator<<(std::wostream &s, const Rational &r);
+
+Packer &operator<<(Packer &p, const Rational &r);
+Packer &operator>>(Packer &p,       Rational &r);
 
 StrStream &operator<<(StrStream &stream, const Rational &r);

@@ -29,33 +29,33 @@ static double pow10(int p) {
 }
 
 /*
-double round(double x) { // 5-rounding
-  return x < 0 ? -floor(0.5-x) : floor(0.5+x);
+double round(double v) { // 5-rounding
+  return v < 0 ? -floor(0.5-v) : floor(0.5+v);
 }
 */
 
-double round(double x, int dec) {
+double round(double v, int dec) {
   if(dec == 0) {
-    return x < 0 ? -floor(0.5-x) : floor(0.5+x);
+    return v < 0 ? -floor(0.5-v) : floor(0.5+v);
   } else {
     double p = pow10(dec);
     if(dec > 0) {
-      return x < 0 ? -floor(0.5-x*p)/p : floor(0.5+x*p)/p;
+      return v < 0 ? -floor(0.5-v*p)/p : floor(0.5+v*p)/p;
     } else { // dec < 0
-      return x < 0 ? -floor(0.5-x/p)*p : floor(0.5+x/p)*p;
+      return v < 0 ? -floor(0.5-v/p)*p : floor(0.5+v/p)*p;
     }
   }
 }
 
-double trunc(double x, int dec) {
+double trunc(double v, int dec) {
   if(dec == 0) {
-    return x < 0 ? -floor(-x) : floor(x);
+    return v < 0 ? -floor(-v) : floor(v);
   } else {
     double p = pow10(dec);
     if(dec > 0) {
-      return x < 0 ? -floor(-x*p)/p : floor(x*p)/p;
+      return v < 0 ? -floor(-v*p)/p : floor(v*p)/p;
     } else { // dec < 0
-      return x < 0 ? -floor(-x/p)*p : floor(x/p)*p;
+      return v < 0 ? -floor(-v/p)*p : floor(v/p)*p;
     }
   }
 }

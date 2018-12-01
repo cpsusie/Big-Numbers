@@ -35,6 +35,15 @@ void BigReal::init(const Double80 &x) {
   }
 }
 
+bool isDouble80(const BigReal &v) {
+  if(!isnormal(v)) return true;
+  if((compareAbs(v, ConstBigReal::_dbl80_max) > 0) || (compareAbs(v, ConstBigReal::_dbl80_min) < 0)) {
+    return false;
+  }
+  const Double80 d = v.getDouble80NoLimitCheck();
+  return BigReal(d,v.getDigitPool()) == v;
+}
+
 Double80 getDouble80(const BigReal &x) {
   DEFINEMETHODNAME;
 

@@ -12,7 +12,7 @@ public:
     E_BOOL
    ,E_CHAR
    ,E_SHORT
-   ,E_INT
+   ,E_RESERVED     // not used
    ,E_LONG
    ,E_FLOAT
    ,E_DOUBLE
@@ -20,6 +20,10 @@ public:
    ,E_WSTR
    ,E_VOID
    ,E_LONG_LONG
+   ,E_INT128       // defined in MathLib
+   ,E_DOUBLE80     // defined in MathLib
+   ,E_RATIONAL     // defined in MathLib
+   ,E_ARRAY
   };
   Packer();
   virtual ~Packer() {
@@ -39,34 +43,34 @@ public:
   Packer &getElement(ElementType et,       void *e, size_t size);
   Packer &operator<<(      bool            n) { return addElement(E_BOOL , &n, sizeof(n)); }
   Packer &operator<<(      char            n) { return addElement(E_CHAR , &n, sizeof(n)); }
-  Packer &operator<<(      BYTE            n) { return addElement(E_CHAR , &n, sizeof(n)); }
-  Packer &operator<<(      short           n) { return *this << (USHORT)n; }
+  Packer &operator<<(      UCHAR           n) { return addElement(E_CHAR , &n, sizeof(n)); }
+  Packer &operator<<(      short           n);
   Packer &operator<<(      USHORT          n);
-  Packer &operator<<(      int             n) { return *this << (UINT)n;   }
-  Packer &operator<<(      UINT            n);
-  Packer &operator<<(      long            n) { return *this << (ULONG)n;  }
+  Packer &operator<<(      long            n);
   Packer &operator<<(      ULONG           n);
-  Packer &operator<<(      INT64           n) { return *this << (UINT64)n; }
+  Packer &operator<<(      int             n) { return *this << (long  )n; }
+  Packer &operator<<(      UINT            n) { return *this << (ULONG )n; }
+  Packer &operator<<(      INT64           n);
   Packer &operator<<(      UINT64          n);
-  Packer &operator<<(      float           n) { return addElement(E_FLOAT , &n, sizeof(n)); }
-  Packer &operator<<(      double          n) { return addElement(E_DOUBLE, &n, sizeof(n)); }
+  Packer &operator<<(      float           n);
+  Packer &operator<<(      double          n);
   Packer &operator<<(const char    * const s);
   Packer &operator<<(const wchar_t * const s);
   Packer &operator<<(const String         &s);
   Packer &operator<<(const ByteArray      &a);
 
-  Packer &operator>>(      bool           &n) { return getElement(E_BOOL , &n, sizeof(bool)); }
-  Packer &operator>>(      char           &n) { return getElement(E_CHAR , &n, sizeof(char)); }
-  Packer &operator>>(      BYTE           &n) { return getElement(E_CHAR , &n, sizeof(BYTE)); }
-  Packer &operator>>(      short          &n) { return *this >> (USHORT&)n; }
+  Packer &operator>>(      bool           &n) { return getElement(E_BOOL , &n, sizeof(bool));  }
+  Packer &operator>>(      char           &n) { return getElement(E_CHAR , &n, sizeof(char));  }
+  Packer &operator>>(      UCHAR          &n) { return getElement(E_CHAR , &n, sizeof(UCHAR)); }
+  Packer &operator>>(      short          &n);
   Packer &operator>>(      USHORT         &n);
-  Packer &operator>>(      int            &n) { return *this >> (UINT&)n;   }
-  Packer &operator>>(      UINT           &n);
-  Packer &operator>>(      long           &n) { return *this >> (ULONG&)n;  }
+  Packer &operator>>(      long           &n);
   Packer &operator>>(      ULONG          &n);
-  Packer &operator>>(      INT64          &n) { return *this >> (UINT64&)n; }
+  Packer &operator>>(      int            &n) { return *this >> (long &)n; }
+  Packer &operator>>(      UINT           &n) { return *this >> (ULONG&)n; }
+  Packer &operator>>(      INT64          &n);
   Packer &operator>>(      UINT64         &n);
-  Packer &operator>>(      float          &n) { return getElement(E_FLOAT, &n, sizeof(float)); }
+  Packer &operator>>(      float          &n);
   Packer &operator>>(      double         &n);
   Packer &operator>>(      char           *s);
   Packer &operator>>(      wchar_t        *s);

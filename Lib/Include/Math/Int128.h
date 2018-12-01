@@ -89,23 +89,35 @@ public:
   }
 
   // type operators
-  operator unsigned __int64() const {
+  inline operator unsigned __int64() const {
     return LO64(*this);
   }
-  operator __int64() const {
+  inline operator __int64() const {
     return LO64(*this);
   }
-  operator unsigned long() const {
+  inline operator unsigned long() const {
     return (unsigned long)LO64(*this);
   }
-  operator long() const {
+  inline operator long() const {
     return (long)LO64(*this);
   }
-  operator unsigned int() const {
+  inline operator unsigned int() const {
     return (unsigned int)LO64(*this);
   }
-  operator int() const {
+  inline operator int() const {
     return (int)LO64(*this);
+  }
+  inline operator unsigned short() const {
+    return (unsigned short)LO64(*this);
+  }
+  inline operator short() const {
+    return (short)LO64(*this);
+  }
+  inline operator unsigned char() const {
+    return (unsigned char)LO64(*this);
+  }
+  inline operator char() const {
+    return (char)LO64(*this);
   }
   inline operator bool() const {
     return LO64(*this) || HI64(*this);
@@ -214,6 +226,18 @@ public:
   }
   inline operator int() const {
     return (int)LO64(*this);
+  }
+  inline operator unsigned short() const {
+    return (unsigned short)LO64(*this);
+  }
+  inline operator short() const {
+    return (short)LO64(*this);
+  }
+  inline operator unsigned char() const {
+    return (unsigned char)LO64(*this);
+  }
+  inline operator char() const {
+    return (char)LO64(*this);
   }
   inline operator bool() const {
     return LO64(*this) || HI64(*this);
@@ -1155,6 +1179,12 @@ inline bool operator==(const _int128 &lft, short rhs) {
 inline bool operator==(const _int128 &lft, unsigned short rhs) {
   return lft == _int128(rhs);
 }
+inline bool operator==(const _int128 &lft, char rhs) {
+  return lft == _int128(rhs);
+}
+inline bool operator==(const _int128 &lft, unsigned char rhs) {
+  return lft == _int128(rhs);
+}
 
 inline bool operator==(const _uint128 &lft, __int64 rhs) {
   return lft == _int128(rhs);
@@ -1178,6 +1208,12 @@ inline bool operator==(const _uint128 &lft, short rhs) {
   return lft == _int128(rhs);
 }
 inline bool operator==(const _uint128 &lft, unsigned short rhs) {
+  return lft == _uint128(rhs);
+}
+inline bool operator==(const _uint128 &lft, char rhs) {
+  return lft == _int128(rhs);
+}
+inline bool operator==(const _uint128 &lft, unsigned char rhs) {
   return lft == _uint128(rhs);
 }
 
@@ -1207,6 +1243,12 @@ inline bool operator!=(const _int128 &lft, short rhs) {
 inline bool operator!=(const _int128 &lft, unsigned short rhs) {
   return lft != _int128(rhs);
 }
+inline bool operator!=(const _int128 &lft, char rhs) {
+  return lft != _int128(rhs);
+}
+inline bool operator!=(const _int128 &lft, unsigned char rhs) {
+  return lft != _int128(rhs);
+}
 
 inline bool operator!=(const _uint128 &lft, __int64 rhs) {
   return lft != _int128(rhs);
@@ -1230,6 +1272,12 @@ inline bool operator!=(const _uint128 &lft, short rhs) {
   return lft != _int128(rhs);
 }
 inline bool operator!=(const _uint128 &lft, unsigned short rhs) {
+  return lft != _uint128(rhs);
+}
+inline bool operator!=(const _uint128 &lft, char rhs) {
+  return lft != _int128(rhs);
+}
+inline bool operator!=(const _uint128 &lft, unsigned char rhs) {
   return lft != _uint128(rhs);
 }
 
@@ -1259,6 +1307,12 @@ inline bool operator>(const _int128 &lft, short rhs) {
 inline bool operator>(const _int128 &lft, unsigned short rhs) {
   return lft > _uint128(rhs);
 }
+inline bool operator>(const _int128 &lft, char rhs) {
+  return lft > _int128(rhs);
+}
+inline bool operator>(const _int128 &lft, unsigned char rhs) {
+  return lft > _uint128(rhs);
+}
 
 inline bool operator>(const _uint128 &lft, __int64 rhs) {
   return lft > _int128(rhs);
@@ -1282,6 +1336,12 @@ inline bool operator>(const _uint128 &lft, short rhs) {
   return lft > _int128(rhs);
 }
 inline bool operator>(const _uint128 &lft, unsigned short rhs) {
+  return lft > _uint128(rhs);
+}
+inline bool operator>(const _uint128 &lft, char rhs) {
+  return lft > _int128(rhs);
+}
+inline bool operator>(const _uint128 &lft, unsigned char rhs) {
   return lft > _uint128(rhs);
 }
 
@@ -1311,6 +1371,12 @@ inline bool operator>=(const _int128 &lft, short rhs) {
 inline bool operator>=(const _int128 &lft, unsigned short rhs) {
   return lft >= _uint128(rhs);
 }
+inline bool operator>=(const _int128 &lft, char rhs) {
+  return lft >= _int128(rhs);
+}
+inline bool operator>=(const _int128 &lft, unsigned char rhs) {
+  return lft >= _uint128(rhs);
+}
 
 inline bool operator>=(const _uint128 &lft, __int64 rhs) {
   return lft >= _int128(rhs);
@@ -1334,6 +1400,12 @@ inline bool operator>=(const _uint128 &lft, short rhs) {
   return lft >= _int128(rhs);
 }
 inline bool operator>=(const _uint128 &lft, unsigned short rhs) {
+  return lft >= _uint128(rhs);
+}
+inline bool operator>=(const _uint128 &lft, char rhs) {
+  return lft >= _int128(rhs);
+}
+inline bool operator>=(const _uint128 &lft, unsigned char rhs) {
   return lft >= _uint128(rhs);
 }
 
@@ -1363,6 +1435,12 @@ inline bool operator<(const _int128 &lft, short rhs) {
 inline bool operator<(const _int128 &lft, unsigned short rhs) {
   return lft < _uint128(rhs);
 }
+inline bool operator<(const _int128 &lft, char rhs) {
+  return lft < _int128(rhs);
+}
+inline bool operator<(const _int128 &lft, unsigned char rhs) {
+  return lft < _uint128(rhs);
+}
 
 inline bool operator<(const _uint128 &lft, __int64 rhs) {
   return lft < _int128(rhs);
@@ -1386,6 +1464,12 @@ inline bool operator<(const _uint128 &lft, short rhs) {
   return lft < _int128(rhs);
 }
 inline bool operator<(const _uint128 &lft, unsigned short rhs) {
+  return lft < _uint128(rhs);
+}
+inline bool operator<(const _uint128 &lft, char rhs) {
+  return lft < _int128(rhs);
+}
+inline bool operator<(const _uint128 &lft, unsigned char rhs) {
   return lft < _uint128(rhs);
 }
 
@@ -1415,6 +1499,12 @@ inline bool operator<=(const _int128 &lft, short rhs) {
 inline bool operator<=(const _int128 &lft, unsigned short rhs) {
   return lft <= _uint128(rhs);
 }
+inline bool operator<=(const _int128 &lft, char rhs) {
+  return lft <= _int128(rhs);
+}
+inline bool operator<=(const _int128 &lft, unsigned char rhs) {
+  return lft <= _uint128(rhs);
+}
 
 inline bool operator<=(const _uint128 &lft, __int64 rhs) {
   return lft <= _int128(rhs);
@@ -1438,6 +1528,12 @@ inline bool operator<=(const _uint128 &lft, short rhs) {
   return lft <= _int128(rhs);
 }
 inline bool operator<=(const _uint128 &lft, unsigned short rhs) {
+  return lft <= _uint128(rhs);
+}
+inline bool operator<=(const _uint128 &lft, char rhs) {
+  return lft <= _int128(rhs);
+}
+inline bool operator<=(const _uint128 &lft, unsigned char rhs) {
   return lft <= _uint128(rhs);
 }
 
@@ -1935,3 +2031,25 @@ std::wostream &operator<<(std::wostream &s, const _uint128 &n);
 
 StrStream &operator<<(StrStream &stream   , const _int128  &n);
 StrStream &operator<<(StrStream &stream   , const _uint128 &n);
+
+Packer &operator<<(Packer &p, const _int128  &n);
+Packer &operator>>(Packer &p,       _int128  &n);
+Packer &operator<<(Packer &p, const _uint128 &n);
+Packer &operator>>(Packer &p,       _uint128 &n);
+
+inline bool   isChar(   _int128  v) { return v == (char  )v;  }
+inline bool   isChar(   _uint128 v) { return v == (char  )v;  }
+inline bool   isUchar(  _int128  v) { return v == (UCHAR )v;  }
+inline bool   isUchar(  _uint128 v) { return v == (UCHAR )v;  }
+inline bool   isShort(  _int128  v) { return v == (short )v;  }
+inline bool   isShort(  _uint128 v) { return v == (short )v;  }
+inline bool   isUshort( _int128  v) { return v == (USHORT)v;  }
+inline bool   isUshort( _uint128 v) { return v == (USHORT)v;  }
+inline bool   isInt(    _int128  v) { return v == (int   )v;  }
+inline bool   isInt(    _uint128 v) { return v == (int   )v;  }
+inline bool   isUint(   _int128  v) { return v == (UINT  )v;  }
+inline bool   isUint(   _uint128 v) { return v == (UINT  )v;  }
+inline bool   isInt64(  _int128  v) { return v == (INT64 )v;  }
+inline bool   isInt64(  _uint128 v) { return v == (INT64 )v;  }
+inline bool   isUint64( _int128  v) { return v == (UINT64)v;  }
+inline bool   isUint64( _uint128 v) { return v == (UINT64)v;  }

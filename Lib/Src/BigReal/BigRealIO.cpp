@@ -360,7 +360,7 @@ template <class IStreamType, class CharType> IStreamType &operator>>(IStreamType
   return in;
 }
 
-template <class IStreamType, class CharType> IStreamType &operator >> (IStreamType &in, BigInt &n) {
+template <class IStreamType, class CharType> IStreamType &operator>>(IStreamType &in, BigInt &n) {
   if(in.ipfx(0)) {
     String buf;
     TCHAR  ch;

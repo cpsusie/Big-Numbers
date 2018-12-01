@@ -1,6 +1,5 @@
 #pragma once
 
-#include "ByteStream.h"
 #include "ByteArray.h"
 
 typedef enum {

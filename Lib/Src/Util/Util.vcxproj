@@ -754,6 +754,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\Array.h" />
+    <ClInclude Include="..\..\Include\BCDArray.h" />
     <ClInclude Include="..\..\Include\BigArray.h" />
     <ClInclude Include="..\..\Include\BigEndianStream.h" />
     <ClInclude Include="..\..\Include\BitSet.h" />
@@ -797,6 +798,7 @@
     <ClInclude Include="..\..\Include\LRparser.h" />
     <ClInclude Include="..\..\Include\Map.h" />
     <ClInclude Include="..\..\Include\MarginFile.h" />
+    <ClInclude Include="..\..\Include\MathUtil.h" />
     <ClInclude Include="..\..\Include\MatrixDimension.h" />
     <ClInclude Include="..\..\Include\MatrixTemplate.h" />
     <ClInclude Include="..\..\Include\md5.h" />
@@ -872,6 +874,7 @@
     <ClCompile Include="ArgvExpand.cpp" />
     <ClCompile Include="ArrayImpl.cpp" />
     <ClCompile Include="ArraySort.cpp" />
+    <ClCompile Include="BCDArray.cpp" />
     <ClCompile Include="BigEndianStream.cpp" />
     <ClCompile Include="BitInputStream.cpp" />
     <ClCompile Include="BitMatrix.cpp" />

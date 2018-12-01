@@ -33,6 +33,15 @@ void BigReal::init(float x) {
   }
 }
 
+bool isFloat(const BigReal &v) {
+  if(!isnormal(v)) return true;
+  if((compareAbs(v, ConstBigReal::_flt_max) > 0) || (compareAbs(v, ConstBigReal::_flt_min) < 0)) {
+    return false;
+  }
+  const float f = v.getFloatNoLimitCheck();
+  return BigReal(f,v.getDigitPool()) == v;
+}
+
 float getFloat(const BigReal &x) {
   DEFINEMETHODNAME;
   if(!isnormal(x)) {
@@ -52,5 +61,5 @@ float getFloat(const BigReal &x) {
   if(compareAbs(x,ConstBigReal::_flt_min) < 0) {
     throwBigRealGetIntegralTypeUnderflowException(method, x, toString(ConstBigReal::_flt_min));
   }
-  return getFloat(x.getDouble80NoLimitCheck());
+  return x.getFloatNoLimitCheck();
 }

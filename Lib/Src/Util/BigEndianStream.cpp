@@ -4,7 +4,7 @@
 BigEndianOutputStream &BigEndianOutputStream::operator<<(const BitSet &s) {
   const UINT64 capacity = s.getCapacity();
   *this << capacity;
-#if __BYTE_ORDER__ != __ORDER_LITTLE_ENDIAN__
+#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
   m_out.putBytes((BYTE*)s.getFirstAtom(), s.getAtomCount() * sizeof(BitSet::Atom));
 #else
   BitSet::Atom buffer[4096], *dst = buffer, *endBuf = buffer+ARRAYSIZE(buffer);
@@ -29,7 +29,7 @@ BigEndianInputStream &BigEndianInputStream::operator>>(BitSet &s) {
   *this >> capacity;
   CHECKUINT64ISVALIDSIZET(capacity);
   s.setCapacity((size_t)capacity);
-#if __BYTE_ORDER__ != __ORDER_LITTLE_ENDIAN__
+#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
   m_in.getBytesForced((BYTE*)s.getFirstAtom(), s.getAtomCount() * sizeof(BitSet::Atom));
 #else
   BitSet::Atom       *first  = (BitSet::Atom*)(s.getFirstAtom());

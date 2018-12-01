@@ -2,6 +2,7 @@
 #include "CppUnitTest.h"
 #include <Random.h>
 #include <BitSet.h>
+#include <ByteMemoryStream.h>
 #include <ByteFile.h>
 #include <TimeMeasure.h>
 
@@ -540,9 +541,11 @@ namespace TestBitSet {
       double startTime = getThreadTime();
       for (size_t e = 0; e < capacity;) {
         bi.getIndex(e++);
-//        if ((e & 0x3ffff) == 0) {
-//          OUTPUT(_T("%.2lf%% Time/call:%.4lf msec"), 100.0*e / capacity, (getThreadTime() - startTime) / e);
-//        }
+#ifdef _DEBUG
+        if((e & 0x3ffff) == 0) {
+          OUTPUT(_T("%.2lf%% Time/call:%.4lf msec"), PERCENT(e,capacity), (getThreadTime() - startTime) / e);
+        }
+#endif
       }
       double biTime = getThreadTime() - startTime;
       OUTPUT(_T("BitSetIndexTime:%.3lf sec"), biTime / 1000000);
@@ -551,9 +554,33 @@ namespace TestBitSet {
       startTime = getThreadTime();
       for (size_t e = 0; e < capacity; e++) {
         const intptr_t index = s.getIndex(e);
+#ifdef _DEBUG
+        if((e & 0x3ffff) == 0) {
+          OUTPUT(_T("%.2lf%% Time/call:%.4lf msec"), PERCENT(e,capacity), (getThreadTime() - startTime) / e);
+        }
+#endif
       }
       double bitSetTime = getThreadTime() - startTime;
       OUTPUT(_T("BitSetTime     :%.3lf sec"), bitSetTime / 1000000);
+    }
+
+    static void sendReceive(Packer &dst, const Packer &src) {
+      ByteArray a;
+      src.write(ByteMemoryOutputStream(a));
+      dst.read( ByteMemoryInputStream(a));
+    }
+
+    TEST_METHOD(BitSetPacker) {
+      const size_t capacity = 3000000;
+      randomize();
+      BitSet set1(10);
+      genRandomSet(set1, capacity, capacity / 2);
+      Packer s,d;
+      d << set1;
+      sendReceive(d,s);
+      BitSet set2(10);
+      d >> set2;
+      verify(set1 == set2);
     }
 
     TEST_METHOD(BitSetMatrix) {

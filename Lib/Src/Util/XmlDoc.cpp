@@ -274,8 +274,7 @@ void XMLDoc::setValue(const XMLNodePtr     &node,     const TCHAR *tagName, int 
 }
 
 void XMLDoc::setValue(const XMLNodePtr     &node,     const TCHAR *tagName, UINT             value, bool force) {
-  const String s = format(_T("%u"), value);
-  setValue(node,tagName,s.cstr(),force);
+  setValue(node,tagName,format(_T("%u"), value).cstr(),force);
 }
 
 void XMLDoc::setValue(const XMLNodePtr     &node,     const TCHAR *tagName, long             value, bool force) {
@@ -287,23 +286,24 @@ void XMLDoc::setValue(const XMLNodePtr     &node,     const TCHAR *tagName, ULON
 }
 
 void XMLDoc::setValue(const XMLNodePtr     &node,     const TCHAR *tagName, INT64            value, bool force) {
-  const String s = format(_T("%I64d"), value);
-  setValue(node,tagName,s.cstr(),force);
+  setValue(node,tagName,format(_T("%I64d"), value).cstr(),force);
 }
 
 void XMLDoc::setValue(const XMLNodePtr     &node,     const TCHAR *tagName, UINT64           value, bool force) {
-  const String s = format(_T("%I64u"), value);
-  setValue(node,tagName,s.cstr(),force);
+  setValue(node,tagName,format(_T("%I64u"), value).cstr(),force);
 }
 
 void XMLDoc::setValue(const XMLNodePtr     &node,     const TCHAR *tagName, float            value, bool force) {
-  String s = toString(value,7,0,ios::scientific);
-  setValue(node,tagName,s.cstr(),force);
+  if(     isInt64( value)) setValue(node,tagName,getInt64( value),force);
+  else if(isUint64(value)) setValue(node,tagName,getUint64(value),force);
+  else                     setValue(node,tagName,toString( value,7,0,ios::scientific).cstr(),force);
 }
 
 void XMLDoc::setValue(const XMLNodePtr     &node,     const TCHAR *tagName, double           value, bool force) {
-  String s = toString(value,15,0,ios::scientific);
-  setValue(node,tagName,s.cstr(),force);
+  if(     isInt64( value)) setValue(node,tagName,getInt64( value),force);
+  else if(isUint64(value)) setValue(node,tagName,getUint64(value),force);
+  else if(isFloat( value)) setValue(node,tagName,getFloat( value),force);
+  else                     setValue(node,tagName,toString( value,15,0,ios::scientific).cstr(),force);
 }
 
 void XMLDoc::setValue(const XMLNodePtr     &node,     const TCHAR *tagName, const Date      &value, bool force) {

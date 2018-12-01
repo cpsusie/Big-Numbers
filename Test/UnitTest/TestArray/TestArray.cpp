@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
+#include <ByteMemoryStream.h>
 #include <CompressFilter.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
@@ -218,7 +219,14 @@ namespace TestArray {
       }
     }
 
+    static void sendReceive(Packer &dst, const Packer &src) {
+      ByteArray a;
+      src.write(ByteMemoryOutputStream(a));
+      dst.read( ByteMemoryInputStream(a));
+    }
+
     TEST_METHOD(ArrayStream) {
+      OUTPUT(_T("Testing Array save/load"));
       ArrayType a;
       for (int i = 0; i < 10000; i++) {
         a.add(randInt(1000000));
@@ -227,6 +235,12 @@ namespace TestArray {
       a.save(CompressFilter(ByteOutputFile(fileName)));
       ArrayType tmp;
       tmp.load(DecompressFilter(ByteInputFile(fileName)));
+      verify(tmp == a);
+      OUTPUT(_T("Testing Array Packer"));
+      Packer psrc, pdst;
+      psrc << a;
+      sendReceive(pdst, psrc);
+      pdst >> tmp;
       verify(tmp == a);
     }
 

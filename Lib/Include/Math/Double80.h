@@ -375,14 +375,6 @@ public:
     s.getBytesForced((BYTE*)m_value, sizeof(m_value));
   }
 
-  friend inline Packer &operator<<(Packer &p, const Double80 &d) {
-    return p.addElement(Packer::E_DOUBLE, d.m_value, sizeof(d.m_value));
-  }
-
-  friend inline Packer &operator>>(Packer &p, Double80 &d) {
-    return p.getElement(Packer::E_DOUBLE, d.m_value, sizeof(d.m_value));
-  }
-
   static const Double80 zero;          // = 0
   static const Double80 one;           // = 1
   static Double80       pow10(int p);
@@ -3223,21 +3215,6 @@ inline Double80 ceil(const Double80 &x) {
 
 #endif // IS64BIT
 
-inline short  getShort(const Double80 &x) {
-  return (short)getInt(x);
-}
-inline USHORT getUshort(const Double80 &x) {
-  return (USHORT)getInt(x);
-}
-
-inline long getLong(const Double80 &x) {
-  return getInt(x);
-}
-
-inline ULONG getUlong(const Double80 &x) {
-  return getUint(x);
-}
-
 inline bool operator==(short   x, const Double80 &y) {  return y == x; }
 inline bool operator==(USHORT  x, const Double80 &y) {  return y == x; }
 inline bool operator==(int     x, const Double80 &y) {  return y == x; }
@@ -3299,24 +3276,12 @@ inline bool operator> (UINT64  x, const Double80 &y) {  return y <  x; }
 inline bool operator> (float   x, const Double80 &y) {  return y <  x; }
 inline bool operator> (double  x, const Double80 &y) {  return y <  x; }
 
-inline bool isDouble(const Double80 &x) {
-  return x == getDouble(x);
-}
-inline bool isFloat(const Double80 &x) {
-  return x == getFloat(x);
-}
-inline bool isInt64(const Double80 &x) {
-  return x == getInt64(x);
-}
-inline bool isUint64(const Double80 &x) {
-  return x == getUint64(x);
-}
-inline bool isInt(const Double80 &x) {
-  return x == getInt(x);
-}
-inline bool isUint(const Double80 &x) {
-  return x == getUint(x);
-}
+inline char   getChar(  const Double80 &x) {  return (char  )getInt(x); }
+inline UCHAR  getUchar( const Double80 &x) {  return (UCHAR )getInt(x); }
+inline short  getShort( const Double80 &x) {  return (short )getInt(x); }
+inline USHORT getUshort(const Double80 &x) {  return (USHORT)getInt(x); }
+inline long   getLong(  const Double80 &x) {  return getInt(x);         }
+inline ULONG  getUlong( const Double80 &x) {  return getUint(x);        }
 
 inline Double80 cot(const Double80 &x) {
   return 1.0/tan(x);
@@ -3371,22 +3336,33 @@ inline Double80 dmin(const Double80 &x, const Double80 &y) {
 }
 Double80 minMax(     const Double80 &x, const Double80 &x1, const Double80 &x2);
 
-inline int getExpo2(const Double80 &x) {
-  return getExponent(x) - 0x3fff;
+inline int getExpo2(const Double80 &v) {
+  return getExponent(v) - 0x3fff;
 }
-inline int fpclassify(const Double80 &x) {
-  if(getExponent(x) == 0x7fff) {
-    return (getSignificand(x) == 0x8000000000000000ui64) ? FP_INFINITE : FP_NAN;
+inline int fpclassify(const Double80 &v) {
+  if(getExponent(v) == 0x7fff) {
+    return (getSignificand(v) == 0x8000000000000000ui64) ? FP_INFINITE : FP_NAN;
   }
-  return x.isZero() ? FP_ZERO : FP_NORMAL;
+  return v.isZero() ? FP_ZERO : FP_NORMAL;
 }
 
-inline bool isPInfinity(const Double80 &x) {
-  return isinf(x) && x.isPositive();
+inline bool isPInfinity(const Double80 &v) {
+  return isinf(v) && v.isPositive();
 }
-inline bool isNInfinity(const Double80 &x) {
-  return isinf(x) && x.isNegative();
+inline bool isNInfinity(const Double80 &v) {
+  return isinf(v) && v.isNegative();
 }
+
+inline bool   isChar(   const Double80 &v) {  return isfinite( v) && (v == getChar(  v)); }
+inline bool   isUchar(  const Double80 &v) {  return isfinite( v) && (v == getUchar( v)); }
+inline bool   isShort(  const Double80 &v) {  return isfinite( v) && (v == getShort( v)); }
+inline bool   isUshort( const Double80 &v) {  return isfinite( v) && (v == getUshort(v)); }
+inline bool   isInt(    const Double80 &v) {  return isfinite( v) && (v == getInt(   v)); }
+inline bool   isUint(   const Double80 &v) {  return isfinite( v) && (v == getUint(  v)); }
+inline bool   isInt64(  const Double80 &v) {  return isfinite( v) && (v == getInt64( v)); }
+inline bool   isUint64( const Double80 &v) {  return isfinite( v) && (v == getUint64(v)); }
+inline bool   isFloat(  const Double80 &v) {  return !isnormal(v) || (v == getFloat( v)); }
+inline bool   isDouble( const Double80 &v) {  return !isnormal(v) || (v == getDouble(v)); }
 
 Double80 randDouble80(Random *rnd = NULL);
 Double80 randDouble80(const Double80 &low, const Double80 &high, Random *rnd = NULL);
@@ -3420,3 +3396,6 @@ std::wistream &operator>>(std::wistream &s,       Double80 &x);
 std::wostream &operator<<(std::wostream &s, const Double80 &x);
 
 StrStream &operator<<(StrStream &stream, const Double80 &x);
+
+Packer &operator<<(Packer &p, const Double80 &x);
+Packer &operator>>(Packer &p,       Double80 &x);

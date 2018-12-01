@@ -621,6 +621,17 @@ private:
 
   // Misc
   BigReal  &adjustAPCResult(const char bias, const TCHAR *function); // return this
+
+  friend bool isFloat(   const BigReal &v);
+  friend bool isDouble(  const BigReal &v);
+  friend bool isDouble80(const BigReal &v);
+
+  inline float getFloatNoLimitCheck() const {
+    return getFloat(getDouble80NoLimitCheck());
+  }
+  inline double getDoubleNoLimitCheck() const {
+    return getDouble(getDouble80NoLimitCheck());
+  }
   Double80 getDouble80NoLimitCheck() const;
   void     formatFixed(        String &result, streamsize precision, long flags, bool removeTrailingZeroes) const;
   void     formatScientific(   String &result, streamsize precision, long flags, BRExpoType expo10, bool removeTrailingZeroes) const;
@@ -739,17 +750,21 @@ public:
 
   BigReal &operator=(const BigReal    &x);
 
-  friend int      getInt(     const BigReal  &x);
-  friend UINT     getUint(    const BigReal  &x);
-  friend long     getLong(    const BigReal  &x);
-  friend ULONG    getUlong(   const BigReal  &x);
-  friend INT64    getInt64(   const BigReal  &x);
-  friend UINT64   getUint64(  const BigReal  &x);
-  friend _int128  getInt128(  const BigReal  &x);
-  friend _uint128 getUint128( const BigReal  &x);
-  friend float    getFloat(   const BigReal  &x);
-  friend double   getDouble(  const BigReal  &x);
-  friend Double80 getDouble80(const BigReal  &x);
+  friend long       getLong(  const BigReal  &v);
+  friend ULONG      getUlong( const BigReal  &v);
+  friend inline int getInt(   const BigReal  &v) {
+    return (int)getLong(v);
+  }
+  friend inline UINT getUint( const BigReal  &v) {
+    return (UINT)getUlong(v);
+  }
+  friend INT64    getInt64(   const BigReal  &v);
+  friend UINT64   getUint64(  const BigReal  &v);
+  friend _int128  getInt128(  const BigReal  &v);
+  friend _uint128 getUint128( const BigReal  &v);
+  friend float    getFloat(   const BigReal  &v);
+  friend double   getDouble(  const BigReal  &v);
+  friend Double80 getDouble80(const BigReal  &v);
 
   // Result.digitPool = x.digitPool
   friend BigReal  operator+ (const BigReal &x, const BigReal &y);
@@ -1017,10 +1032,10 @@ public:
   void save(ByteOutputStream &s) const;
   void load(ByteInputStream  &s);
 
-  friend Packer &operator<<(Packer &p, const BigReal &n);
-  friend Packer &operator>>(Packer &p,       BigReal &n);
+  friend Packer &operator<<(Packer &p, const BigReal &v);
+  friend Packer &operator>>(Packer &p,       BigReal &v);
 
-  friend BigRealStream &operator<<(BigRealStream &stream, const BigReal &x);
+  friend BigRealStream &operator<<(BigRealStream &stream, const BigReal &v);
 
   static UINT getMaxSplitLength();
 
@@ -1466,6 +1481,13 @@ inline BigReal  dmax(const BigReal &x, const BigReal &y) {
 inline BigReal  dmin(const BigReal &x, const BigReal &y) {
   return (compare(x, y) <= 0) ? x : y;
 }
+
+int  isInt(     const BigReal &v);
+UINT isUint(    const BigReal &v);
+bool isInt64(   const BigReal &v);
+bool isUint64(  const BigReal &v);
+bool isInt128(  const BigReal &v);
+bool isUint128( const BigReal &v);
 
 // pow(a,r) mod n
 BigInt powmod(const BigInt &a, const BigInt &r, const BigInt &n, bool verbose = false);
