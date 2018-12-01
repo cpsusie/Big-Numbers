@@ -1,6 +1,5 @@
-<DiffEquation><interval><from>0.000000000000000e+00</from><to>2.000000000000000e+02</to></interval><eps>5.000000000000000e-01</eps><style>curve</style><trigo>radians</trigo><dim>1</dim><common>density = 0.807;
+<DiffEquation><interval><from>0</from><to>200</to></interval><eps>5.0000000e-01</eps><style>curve</style><trigo>radians</trigo><dim>1</dim><common>density = 0.807;
 bottomarea = 10;
 deltaT = 273.16 + 20 - 77.16;
-lambda = 0.038 * 0.01;
-</common><equations><eq0><name>m</name><expr>totalarea = if(m &lt;= 0,0,bottomarea + m/density/bottomarea);
--lambda * totalarea * deltaT</expr><attr><start>3.000000000000000e+02</start><color>00000000</color><visible>1</visible></attr></eq0></equations></DiffEquation>
+lambda = 0.038 * 0.01;</common><equations><eq0><name>m</name><expr>totalarea = if(m &lt;= 0,0,bottomarea + m/density/bottomarea);
+-lambda * totalarea * deltaT</expr><attr><start>300</start><color>00000000</color><visible>1</visible></attr></eq0></equations></DiffEquation>
