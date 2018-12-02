@@ -1,129 +1,89 @@
-////////////////////////////////////////////////////////////////////
-//
-// File:        GetCommandLine.cpp
-// Project:     cmdline
-//
-// Desc:        this is a sample program that shows how to
-//              get the command line for almost any process
-//              on the system for WinNT 4 and up.
-//
-// Revisions:   Created 12/02/99
-//
-// Copyright(C) 1999, Tomas Restrepo. All rights reserved
-//
-///////////////////////////////////////////////////////////////////
-
 #include "pch.h"
-
-//#define UNICODE
-//#define _UNICODE
-
-#include <stdlib.h>
-#include <tchar.h>
 #include <ProcessTools.h>
+#include <winternl.h>
 
 #pragma comment(lib, "advapi32.lib")
 
-// found by experimentation this is where the some
-// process data block is found in an NT machine.
-// On an Intel system, 0x00020000 is the 32
-// memory page. At offset 0x0498 is the process
-// current directory (or startup directory, not sure yet)
-// followed by the system's PATH. After that is the
-// process full command command line, followed by
-// the exe name and the window
-// station it's running on
-#define BLOCK_ADDRESS   (LPVOID)0x00020498
-// Additional comments:
-// From experimentation I've found
-// two notable exceptions where this doesn't seem to apply:
-// smss.exe : the page is reserved, but not commited
-//          which will get as an invalid memory address
-//          error
-// crss.exe : although we can read the memory, it's filled
-//            with 00 comepletely. No trace of command line
-//            information
+typedef NTSTATUS (*pNtQueryInformationProcess)(IN HANDLE           ProcessHandle
+                                              ,IN PROCESSINFOCLASS ProcessInformationClass
+                                              ,OUT PVOID           ProcessInformation
+                                              ,IN ULONG            ProcessInformationLength
+                                              ,OUT PULONG          ReturnLength
+                                              );
 
-
-// align pointer
-#define ALIGN_DWORD(x) ( (x & 0xFFFFFFFC) ? (x & 0xFFFFFFFC) + sizeof(DWORD) : x )
-
-////////////////////////////////////////////////////////////////////
-//
-// Function: GetProcessCmdLine()
-//
-// Added: 19/02/99
-//
-// Description: Gets the command line for the given process
-//              NOTE: hProcess should be opened with
-//              PROCESS_VM_READ , PROCESS_VM_OPERATION
-//              and PROCESS_QUERY_INFORMATION rights
-//
-///////////////////////////////////////////////////////////////////
-String getProcessCommandLine(HANDLE hProcess) {
-  if(hProcess == NULL) hProcess = GetCurrentProcess();
-  LPBYTE lpBuffer = NULL;
-
-  try {
-    // Get the system page size by using GetSystemInfo()
-    SYSTEM_INFO sysInfo;
-    GetSystemInfo(&sysInfo);
-    // allocate one on the heap to retrieve a full page
-    // of memory
-    lpBuffer = new BYTE[sysInfo.dwPageSize]; TRACE_NEW(lpBuffer);
-    if(lpBuffer == NULL) {
-      throwException(_T("Out of memory"));
-    }
-
-    // first of all, use VirtualQuery to get the start of the memory
-    // block
-    MEMORY_BASIC_INFORMATION mbi;
-
-    if(VirtualQueryEx(hProcess, BLOCK_ADDRESS, &mbi, sizeof(mbi)) == 0) {
-      throwLastErrorOnSysCallException(_T("VirtualQueryEx"));
-    }
-
-    // read memory begining at the start of the page
-    // after that, we know that the env strings block
-    // will be 0x498 bytes after the start of the page
-    SIZE_T dwBytesRead;
-    if(!ReadProcessMemory(hProcess, mbi.BaseAddress, (LPVOID)lpBuffer, sysInfo.dwPageSize, &dwBytesRead)) {
-      throwLastErrorOnSysCallException(_T("ReadProcessMemory"));
-    }
-
-    // now we've got the buffer on our side of the fence.
-    // first, lpPos points to a string containing the current directory
-    /// plus the path.
-    LPBYTE lpPos = lpBuffer + ((size_t)BLOCK_ADDRESS - (size_t)mbi.BaseAddress);
-    lpPos = lpPos + (wcslen ( (LPWSTR)lpPos ) + 1) * sizeof(WCHAR);
-    // now goes full path an filename, aligned on a DWORD boundary
-    // skip it
-    lpPos = (LPBYTE)ALIGN_DWORD((size_t)lpPos);
-    lpPos = lpPos + (wcslen ( (LPWSTR)lpPos ) + 1) * sizeof(WCHAR);
-    // hack: Sometimes, there will be another '\0' at this position
-    // if that's so, skip it
-    if (*lpPos == '\0') {
-      lpPos += sizeof(WCHAR);
-    }
-    WCHAR wCmdLine[MAX_PATH+1];
-    // now we have the actual command line
-    // copy it to the buffer
-    wcsncpy(wCmdLine, (LPWSTR)lpPos, MAX_PATH);
-    // make sure the path is null-terminted
-    wCmdLine[MAX_PATH-1] = L'\0';
-
-    char result[MAX_PATH+1], *dst = result;
-    for(int i = 0; wCmdLine[i]; i++) {
-      *(dst++) = (unsigned char)wCmdLine[i];
-    }
-    *dst = '\0';
-    SAFEDELETEARRAY(lpBuffer);
-    return result;
-  } catch(...) {
-    SAFEDELETEARRAY(lpBuffer);
-    throw;
+class NtDllLoader {
+private:
+  HMODULE                    m_module;
+  pNtQueryInformationProcess m_func;
+public:
+  NtDllLoader();
+ ~NtDllLoader();
+  inline NTSTATUS NtQueryInformationProcess( IN HANDLE           ProcessHandle
+                                           , IN PROCESSINFOCLASS ProcessInformationClass
+                                           , OUT PVOID           ProcessInformation
+                                           , IN ULONG            ProcessInformationLength
+                                           , OUT PULONG          ReturnLength
+                                           ) {
+    return m_func(ProcessHandle, ProcessInformationClass, ProcessInformation, ProcessInformationLength, ReturnLength);
   }
+};
+
+NtDllLoader::NtDllLoader() {
+  m_module = LoadLibrary(_T("ntdll.dll"));
+  m_func   = (pNtQueryInformationProcess)GetProcAddress(m_module, "NtQueryInformationProcess");
 }
+
+NtDllLoader::~NtDllLoader() {
+}
+
+String getProcessCommandLine(HANDLE hProcess) {
+  static NtDllLoader ntdll;
+  if(hProcess == NULL) hProcess = GetCurrentProcess();
+  PROCESS_BASIC_INFORMATION pinfo;
+  ULONG                     returnLength;
+  size_t                    bytesRead;
+  NTSTATUS status = ntdll.NtQueryInformationProcess(hProcess
+                                                   ,ProcessBasicInformation
+                                                   ,&pinfo
+                                                   ,sizeof(PROCESS_BASIC_INFORMATION)
+                                                   ,&returnLength);
+  PEB  peb;
+  BOOL result = ReadProcessMemory(hProcess
+                                 ,pinfo.PebBaseAddress
+                                 ,&peb
+                                 ,sizeof(PEB)
+                                 ,&bytesRead);
+
+  RTL_USER_PROCESS_PARAMETERS processParameters;
+  result = ReadProcessMemory(hProcess
+                            ,peb.ProcessParameters
+                            ,&processParameters
+                            ,sizeof(RTL_USER_PROCESS_PARAMETERS)
+                            ,&bytesRead);
+  USHORT  len =  processParameters.CommandLine.Length;
+  WCHAR  *str = MALLOC(WCHAR,len+1);
+  result = ReadProcessMemory(hProcess
+                            ,processParameters.CommandLine.Buffer
+                            ,str // command line goes here
+                            ,len
+                            ,&bytesRead);
+
+  str[len] = 0;
+  const String s = str;
+  FREE(str);
+  return s;
+}
+
+static DWORD getPreviousStatebufferSize(HANDLE token, BOOL disableAllPrivileges, TOKEN_PRIVILEGES newState) {
+  DWORD dwSize = 0;
+  TOKEN_PRIVILEGES previousState;
+  if(AdjustTokenPrivileges(token, disableAllPrivileges, &newState, 1, &previousState, &dwSize) == 0) {
+    return dwSize;
+  }
+  throwInvalidArgumentException(__TFUNCTION__,_T("token=%p"), token);
+  return 0;
+}
+
 
 ////////////////////////////////////////////////////////////////////
 //
@@ -138,10 +98,11 @@ void enableTokenPrivilege(LPCTSTR privilege, bool enable) {
   HANDLE token;        // process token
 
   // open the process token
-  if(OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES, &token) == 0) {
+  if(OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &token) == 0) {
     throwLastErrorOnSysCallException(_T("OpenProcessToken"));
   }
 
+  PTOKEN_PRIVILEGES previousState = NULL;
   try {
     // look up the privilege LUID and enable it
     TOKEN_PRIVILEGES tp;            // token provileges
@@ -155,16 +116,19 @@ void enableTokenPrivilege(LPCTSTR privilege, bool enable) {
     tp.Privileges[0].Attributes = enable ? SE_PRIVILEGE_ENABLED : 0;
 
     // adjust token privileges
-    DWORD dwSize;
-    if(AdjustTokenPrivileges(token, FALSE, &tp, 0, NULL, &dwSize) == 0) {
-      throwException(_T("AdjustTokenPrivileges(%s) failed. %s"), privilege, getLastErrorText().cstr());
+    DWORD dwSize = 0, bufferLength = getPreviousStatebufferSize(token, false, tp);
+    previousState = (PTOKEN_PRIVILEGES)new BYTE[bufferLength]; TRACE_NEW(previousState);
+    if(AdjustTokenPrivileges(token, FALSE, &tp, bufferLength, previousState, &dwSize) == 0) {
+      throwLastErrorOnSysCallException(_T("AdjustTokenPrivileges"));
     } else if(GetLastError() != ERROR_SUCCESS) {
-      throwException(_T("AdjustTokenPrivileges(%s) failed. %s"), privilege, getLastErrorText().cstr());
+      throwLastErrorOnSysCallException(_T("AdjustTokenPrivileges"));
     }
   } catch(...) {
+    SAFEDELETEARRAY(previousState);
     CloseHandle(token);
     throw;
   }
+  SAFEDELETEARRAY(previousState);
   CloseHandle(token);
 }
 

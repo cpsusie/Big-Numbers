@@ -27,11 +27,11 @@ public:
   ModuleInfo(const String &path, DWORD size) : m_path(path), m_size(size) {
   }
 
-  const String &getPath() const {
+  inline const String &getPath() const {
     return m_path;
   }
 
-  DWORD getSize() const {
+  inline DWORD getSize() const {
     return m_size;
   }
 };
@@ -44,17 +44,17 @@ private:
 public:
   ProcessInfo(DWORD processId);
 
-  DWORD getProcessId() const {
+  inline DWORD getProcessId() const {
     return m_processId;
   }
 
   String getExePath() const;
 
-  const String &getCommandLine() const {
+  inline const String &getCommandLine() const {
     return m_commandLine;
   }
 
-  const Array<ModuleInfo> &getModuleArray() const {
+  inline const Array<ModuleInfo> &getModuleArray() const {
     return m_moduleArray;
   }
 };

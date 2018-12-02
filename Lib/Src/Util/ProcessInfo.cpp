@@ -7,7 +7,11 @@ ProcessInfo::ProcessInfo(DWORD processId) {
   if(NULL == hProcess) {
     return;
   }
-  m_commandLine = getProcessCommandLine(hProcess);
+  try {
+    m_commandLine = getProcessCommandLine(hProcess);
+  } catch (Exception e) {
+    m_commandLine = e.what();
+  }
   try {
     CompactArray<HMODULE> moduleArray = getModules(hProcess);
     for(int i = 0; i < (int)moduleArray.size(); i++ ) {
