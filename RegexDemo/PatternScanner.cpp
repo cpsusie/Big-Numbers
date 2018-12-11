@@ -101,6 +101,8 @@ PatternToken PatternScanner::nextToken() {
       case _T('?' ) :
       case _T('+' ) :
       case _T('*' ) :
+      case _T('[' ) :
+      case _T(']' ) :
       case _T('\\') :
         setNormalChar(*m_current);
         advance();
