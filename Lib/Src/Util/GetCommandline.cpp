@@ -1,15 +1,19 @@
 #include "pch.h"
 #include <ProcessTools.h>
+
+#pragma warning(disable:4005)
+
+#include <ntstatus.h>
 #include <winternl.h>
 
 #pragma comment(lib, "advapi32.lib")
 
-typedef NTSTATUS (*pNtQueryInformationProcess)(IN HANDLE           ProcessHandle
-                                              ,IN PROCESSINFOCLASS ProcessInformationClass
-                                              ,OUT PVOID           ProcessInformation
-                                              ,IN ULONG            ProcessInformationLength
-                                              ,OUT PULONG          ReturnLength
-                                              );
+typedef __kernel_entry NTSTATUS (*pNtQueryInformationProcess)(IN HANDLE           ProcessHandle
+                                                             ,IN PROCESSINFOCLASS ProcessInformationClass
+                                                             ,OUT PVOID           ProcessInformation
+                                                             ,IN ULONG            ProcessInformationLength
+                                                             ,OUT PULONG          ReturnLength
+                                                             );
 
 class NtDllLoader {
 private:
@@ -30,48 +34,73 @@ public:
 
 NtDllLoader::NtDllLoader() {
   m_module = LoadLibrary(_T("ntdll.dll"));
-  m_func   = (pNtQueryInformationProcess)GetProcAddress(m_module, "NtQueryInformationProcess");
+  if(m_module == NULL) {
+    throwLastErrorOnSysCallException(__TFUNCTION__);
+  }
+  m_func = (pNtQueryInformationProcess)GetProcAddress(m_module, "NtQueryInformationProcess");
+  if(m_func == NULL) {
+    throwLastErrorOnSysCallException(__TFUNCTION__);
+  }
 }
 
 NtDllLoader::~NtDllLoader() {
 }
 
+static void checkBoolResult(const TCHAR *func, BOOL ok) {
+  if(ok != TRUE) {
+    throwLastErrorOnSysCallException(func);
+  }
+}
+
+#define V(result) checkBoolResult(_T(#result), result)
+
 String getProcessCommandLine(HANDLE hProcess) {
   static NtDllLoader ntdll;
   if(hProcess == NULL) hProcess = GetCurrentProcess();
-  PROCESS_BASIC_INFORMATION pinfo;
-  ULONG                     returnLength;
-  size_t                    bytesRead;
-  NTSTATUS status = ntdll.NtQueryInformationProcess(hProcess
-                                                   ,ProcessBasicInformation
-                                                   ,&pinfo
-                                                   ,sizeof(PROCESS_BASIC_INFORMATION)
-                                                   ,&returnLength);
-  PEB  peb;
-  BOOL result = ReadProcessMemory(hProcess
-                                 ,pinfo.PebBaseAddress
-                                 ,&peb
-                                 ,sizeof(PEB)
-                                 ,&bytesRead);
+  WCHAR *str = NULL;
+  try {
+    PROCESS_BASIC_INFORMATION pinfo;
+    ULONG                     returnLength;
+    NTSTATUS status = ntdll.NtQueryInformationProcess(hProcess
+                                                     ,ProcessBasicInformation
+                                                     ,&pinfo
+                                                     ,sizeof(PROCESS_BASIC_INFORMATION)
+                                                     ,&returnLength);
+    if(status != STATUS_SUCCESS) {
+      throwException(_T("NtQueryInformationProcess failed:return code:%#08x"), status);
+    }
+    PEB    peb;
+    SIZE_T bytesRead;
+    V(ReadProcessMemory(hProcess
+                       ,pinfo.PebBaseAddress
+                       ,&peb
+                       ,sizeof(PEB)
+                       ,&bytesRead));
 
-  RTL_USER_PROCESS_PARAMETERS processParameters;
-  result = ReadProcessMemory(hProcess
-                            ,peb.ProcessParameters
-                            ,&processParameters
-                            ,sizeof(RTL_USER_PROCESS_PARAMETERS)
-                            ,&bytesRead);
-  USHORT  len =  processParameters.CommandLine.Length;
-  WCHAR  *str = MALLOC(WCHAR,len+1);
-  result = ReadProcessMemory(hProcess
-                            ,processParameters.CommandLine.Buffer
-                            ,str // command line goes here
-                            ,len
-                            ,&bytesRead);
+    RTL_USER_PROCESS_PARAMETERS processParameters;
+    V(ReadProcessMemory(hProcess
+                       ,peb.ProcessParameters
+                       ,&processParameters
+                       ,sizeof(RTL_USER_PROCESS_PARAMETERS)
+                       ,&bytesRead));
+    const USHORT  len =  processParameters.CommandLine.Length;
+    str = MALLOC(WCHAR,len+1);
+    V(ReadProcessMemory(hProcess
+                       ,processParameters.CommandLine.Buffer
+                       ,str // command line goes here
+                       ,len
+                       ,&bytesRead));
 
-  str[len] = 0;
-  const String s = str;
-  FREE(str);
-  return s;
+    str[len] = 0;
+    const String s = str;
+    FREE(str);
+    return s;
+  } catch (...) {
+    if(str != NULL) {
+      FREE(str);
+    }
+    throw;
+  }
 }
 
 static DWORD getPreviousStatebufferSize(HANDLE token, BOOL disableAllPrivileges, TOKEN_PRIVILEGES newState) {
@@ -98,9 +127,7 @@ void enableTokenPrivilege(LPCTSTR privilege, bool enable) {
   HANDLE token;        // process token
 
   // open the process token
-  if(OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &token) == 0) {
-    throwLastErrorOnSysCallException(_T("OpenProcessToken"));
-  }
+  V(OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &token));
 
   PTOKEN_PRIVILEGES previousState = NULL;
   try {
@@ -109,9 +136,7 @@ void enableTokenPrivilege(LPCTSTR privilege, bool enable) {
     // initialize privilege structure
     ZeroMemory (&tp, sizeof (tp));
     tp.PrivilegeCount = 1;
-    if(LookupPrivilegeValue(NULL, privilege, &tp.Privileges[0].Luid) == 0) {
-      throwException(_T("LookupPrivilegeValue(%s) failed. %s"), privilege, getLastErrorText().cstr());
-    }
+    V(LookupPrivilegeValue(NULL, privilege, &tp.Privileges[0].Luid));
 
     tp.Privileges[0].Attributes = enable ? SE_PRIVILEGE_ENABLED : 0;
 
