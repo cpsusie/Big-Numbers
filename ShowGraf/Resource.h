@@ -129,7 +129,10 @@
 #define ID_GOTO_STYLE                   32909
 #define ID_GOTO_COMMON                  32910
 #define ID_GOTO_MAXERROR                32911
-#define ID_MSG_SEARCHINTERVAL           32930
+#define ID_MSG_SEARCHZEROESININTERVAL   32930
+#define ID_MSG_SEARCHMAXININTERVAL      32931
+#define ID_MSG_SEARCHMINININTERVAL      32932
+#define ID_MSG_SEARCHINTERSECTIONSININTERVAL 32933
 
 // Next default values for new objects
 // 

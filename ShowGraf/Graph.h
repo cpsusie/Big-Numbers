@@ -28,6 +28,55 @@ public:
   }
 };
 
+typedef enum {
+  EXTREMA_TYPE_MAX
+ ,EXTREMA_TYPE_MIN
+} ExtremaType;
+
+inline const TCHAR *extremaTypeToStr(ExtremaType type) {
+  return (type == EXTREMA_TYPE_MAX) ? _T("Maxima") : _T("Minima");
+}
+
+class GraphExtremaResult {
+public:
+  String             m_name;
+  const ExtremaType  m_extremaType;
+  Point2DArray       m_extrema;
+  GraphExtremaResult(const String &name, ExtremaType extremaType, const Point2DArray &extrema)
+    : m_name(name)
+    , m_extremaType(extremaType)
+    , m_extrema(extrema)
+  {
+  }
+  inline ExtremaType getExtremaType() const {
+    return m_extremaType;
+  }
+  inline const TCHAR *getExtremaTypeStr() const {
+    return extremaTypeToStr(getExtremaType());
+  }
+  String toString() const {
+    return format(_T("%s of %s:%s")
+                 ,getExtremaTypeStr(), m_name.cstr(), m_extrema.toString().cstr());
+  }
+};
+
+class GraphExtremaResultArray : public Array<GraphExtremaResult> {
+private:
+  const ExtremaType m_extremaType;
+public:
+  GraphExtremaResultArray(ExtremaType extremaType) : m_extremaType(extremaType) {
+  }
+  inline ExtremaType getExtremaType() const {
+    return m_extremaType;
+  }
+  inline const TCHAR *getExtremaTypeStr() const {
+    return extremaTypeToStr(getExtremaType());
+  }
+  String toString() const {
+    return isEmpty() ? format(_T("No %s found"), getExtremaTypeStr()) : __super::toString(_T("\n"));
+  }
+};
+
 class Graph : public CoordinateSystemObject {
 private:
   bool             m_visible;
@@ -45,6 +94,13 @@ protected:
     GraphZeroesResultArray result;
     if(!zeroes.isEmpty()) {
       result.add(GraphZeroesResult(getParam().getDisplayName(), zeroes));
+    }
+    return result;
+  }
+  GraphExtremaResultArray makeExtremaResult(ExtremaType extremaType, const Point2DArray &extrema) const {
+    GraphExtremaResultArray result(extremaType);
+    if(!extrema.isEmpty()) {
+      result.add(GraphExtremaResult(getParam().getDisplayName(), extremaType, extrema));
     }
     return result;
   }
@@ -84,12 +140,13 @@ public:
   virtual bool needRefresh() const {
     return false;
   }
-  virtual GraphZeroesResultArray findZeroes(const DoubleInterval &i) const = 0;
+  virtual GraphZeroesResultArray findZeroes(const DoubleInterval &interval) const = 0;
   // Find zero of line going through p1,p2
   // Assume y1 != y2
   static inline double inverseLinearInterpolate0(const Point2D &p1, const Point2D &p2) {
     return (p1.y*p2.x - p1.x*p2.y) / (p1.y-p2.y);
   }
+  virtual GraphExtremaResultArray findExtrema(const DoubleInterval &interval, ExtremaType extremaType) const = 0;
 };
 
 class PointGraph : public Graph {
@@ -130,5 +187,6 @@ public:
   inline bool isPointGraph() const {
     return true;
   }
-  GraphZeroesResultArray findZeroes(const DoubleInterval &i) const;
+  GraphZeroesResultArray  findZeroes( const DoubleInterval &interval) const;
+  GraphExtremaResultArray findExtrema(const DoubleInterval &interval, ExtremaType extremaType) const;
 };

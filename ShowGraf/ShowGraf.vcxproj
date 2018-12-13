@@ -447,6 +447,7 @@
     <ClCompile Include="IsoCurveGraphDlg.cpp" />
     <ClCompile Include="IsoCurveGraphParameters.cpp" />
     <ClCompile Include="MainFrm.cpp" />
+    <ClCompile Include="MouseTool.cpp" />
     <ClCompile Include="ParametricGraph.cpp" />
     <ClCompile Include="ParametricGraphDlg.cpp" />
     <ClCompile Include="ParametricGraphParameters.cpp" />
@@ -500,6 +501,7 @@
     <ClInclude Include="IsoCurveGraphDlg.h" />
     <ClInclude Include="IsoCurveGraphParameters.h" />
     <ClInclude Include="MainFrm.h" />
+    <ClInclude Include="MouseTool.h" />
     <ClInclude Include="ParametricGraph.h" />
     <ClInclude Include="ParametricGraphDlg.h" />
     <ClInclude Include="ParametricGraphParameters.h" />

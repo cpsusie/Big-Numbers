@@ -28,5 +28,6 @@ public:
   bool             isPointGraph() const {
     return false;
   }
-  GraphZeroesResultArray findZeroes(const DoubleInterval &i) const;
+  GraphZeroesResultArray  findZeroes( const DoubleInterval &interval) const;
+  GraphExtremaResultArray findExtrema(const DoubleInterval &interval, ExtremaType extremaType) const;
 };

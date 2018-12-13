@@ -14,6 +14,8 @@ private:
 
   void onFileMruFile(int index);
   void initMenuItems();
+  void showExtremaInInterval(WPARAM wp, LPARAM lp, ExtremaType extremaType);
+
 protected:
   DECLARE_DYNCREATE(CMainFrame)
 public:
@@ -130,6 +132,8 @@ protected:
   afx_msg void OnSelectMenuStyleCurve();
   afx_msg void OnSelectMenuStylePoint();
   afx_msg void OnSelectMenuStyleCross();
-  afx_msg LRESULT OnMsgSearchInterval(WPARAM wp, LPARAM lp);
+  afx_msg LRESULT OnMsgSearchZeroesInInterval(WPARAM wp, LPARAM lp);
+  afx_msg LRESULT OnMsgSearchMaxInInterval(   WPARAM wp, LPARAM lp);
+  afx_msg LRESULT OnMsgSearchMinInInterval(   WPARAM wp, LPARAM lp);
   DECLARE_MESSAGE_MAP()
 };

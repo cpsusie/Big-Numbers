@@ -15,6 +15,8 @@ BEGIN_MESSAGE_MAP(CShowGrafView, CFormView)
     ON_WM_MOUSEMOVE()
     ON_WM_MOUSEWHEEL()
     ON_WM_SIZE()
+    ON_WM_CREATE()
+    ON_WM_DESTROY()
     ON_COMMAND(ID_FILE_PRINT        , CFormView::OnFilePrint       )
     ON_COMMAND(ID_FILE_PRINT_DIRECT , CFormView::OnFilePrint       )
     ON_COMMAND(ID_FILE_PRINT_PREVIEW, CFormView::OnFilePrintPreview)
@@ -30,8 +32,19 @@ CShowGrafView::CShowGrafView() : CFormView(IDD) {
                           DEFAULT_PITCH | FF_MODERN,
                           _T("Arial") );
   m_firstDraw        = true;
-  m_mouseTool        = TOOL_DRAG;
-  m_dragging         = false;
+}
+
+int CShowGrafView::OnCreate(LPCREATESTRUCT lpCreateStruct) {
+  if(__super::OnCreate(lpCreateStruct) == -1) {
+    return -1;
+  }
+  pushMouseTool(DRAGTOOL);
+  return 0;
+}
+
+void CShowGrafView::OnDestroy() {
+  clearToolStack();
+  __super::OnDestroy();
 }
 
 CShowGrafView::~CShowGrafView() {
@@ -97,6 +110,39 @@ void CShowGrafView::addFunctionGraph(FunctionGraphParameters &param) {
   getDoc()->addFunctionGraph(param);
 }
 
+void CShowGrafView::pushMouseTool(MouseToolType toolType) {
+  switch(toolType) {
+  case DRAGTOOL            : m_toolStack.push(new DragTool(    this)); break;
+  case FINDZEROTOOL        : m_toolStack.push(new FindZeroTool(this)); break;
+  case FINDMAXTOOL         : m_toolStack.push(new FindMaxTool( this)); break;
+  case FINDMINTOOL         : m_toolStack.push(new FindMinTool( this)); break;
+  case FINDINTERSECTIONTOOL:
+  default                  :
+    errorMessage(_T("Invalid MouseTool:%d"), toolType);
+    break;
+  }
+  ajourToolsFindMenu();
+}
+
+void CShowGrafView::popMouseTool() {
+  MouseTool *mt = m_toolStack.pop();
+  delete mt;
+  ajourToolsFindMenu();
+}
+
+void CShowGrafView::clearToolStack() {
+  while(!hasMouseTool()) {
+    popMouseTool();
+  }
+}
+
+void CShowGrafView::ajourToolsFindMenu() {
+  if(hasMouseTool()) {
+    const bool enable = getCurrentTool().getType() == DRAGTOOL;
+    enableSubMenuContainingId(theApp.getMainWindow(), ID_FIND_ZEROES, enable);
+  }
+}
+
 void CShowGrafView::OnDraw(CDC *pDC) {
   try {
     if(m_firstDraw) {
@@ -144,109 +190,20 @@ void CShowGrafView::Dump(CDumpContext& dc) const {
 
 void CShowGrafView::OnLButtonDown(UINT nFlags, CPoint point) {
   __super::OnLButtonDown(nFlags, point);
-  switch(m_mouseTool) {
-  case TOOL_DRAG              :
-    if(getClientRect(this, IDC_SYSTEMPANEL).PtInRect(point)) {
-      lbuttonDownDragging(nFlags, point);
-    }
-    break;
-  case TOOL_FINDSEARCHINTERVAL:
-    if(getClientRect(this, IDC_SYSTEMPANEL).PtInRect(point)) {
-      lbuttonDownMarkInterval(nFlags, point);
-    }
-    break;
+  if(hasMouseTool() && getClientRect(this, IDC_SYSTEMPANEL).PtInRect(point)) {
+    getCurrentTool().OnLButtonDown(nFlags, point);
   }
 }
 
 void CShowGrafView::OnLButtonUp(UINT nFlags, CPoint point) {
   __super::OnLButtonUp(nFlags, point);
-  switch(m_mouseTool) {
-  case TOOL_DRAG              :
-    lbuttonUpDragging(nFlags, point);
-    break;
-  case TOOL_FINDSEARCHINTERVAL:
-    lbuttonUpMarkInterval(nFlags, point);
-    break;
-  }
+  if(hasMouseTool()) getCurrentTool().OnLButtonUp(nFlags, point);
 }
 
 void CShowGrafView::OnMouseMove(UINT nFlags, CPoint point) {
   __super::OnMouseMove(nFlags, point);
-  switch(m_mouseTool) {
-  case TOOL_DRAG              :
-    mouseMoveDragging(nFlags, point);
-    break;
-  case TOOL_FINDSEARCHINTERVAL:
-    mouseMoveMarkInterval(nFlags, point);
-    break;
-  }
+  if(hasMouseTool()) getCurrentTool().OnMouseMove(nFlags, point);
   theApp.getMainWindow()->showPosition(m_coordinateSystem.getTransformation().backwardTransform((Point2DP)point));
-}
-
-void CShowGrafView::lbuttonDownDragging(UINT nFlags, const CPoint &point) {
-  m_dragging           = true;
-  m_mouseDownPoint     = point;
-  m_mouseDownTransform = m_coordinateSystem.getTransformation();
-  CRect cr             = getClientRect(this, IDC_SYSTEMPANEL);
-  ClientToScreen(&cr);
-  ClipCursor(&cr);
-  setWindowCursor(this, MAKEINTRESOURCE(OCR_HAND));
-}
-
-void CShowGrafView::lbuttonUpDragging(UINT nFlags, const CPoint &point) {
-  m_dragging = false;
-  setWindowCursor(this, MAKEINTRESOURCE(OCR_NORMAL));
-  ClipCursor(NULL);
-}
-
-void CShowGrafView::mouseMoveDragging(UINT nFlags, const CPoint &point) {
-  if(m_dragging) {
-    if(nFlags && MK_LBUTTON) {
-      Rectangle2D   fr         = m_mouseDownTransform.getFromRectangle();
-      Point2D       startPoint = m_mouseDownTransform.backwardTransform((Point2DP)m_mouseDownPoint);
-      Point2D       newPoint   = m_mouseDownTransform.backwardTransform((Point2DP)point);
-      const Point2D dp         = newPoint - startPoint;
-      fr -= dp;
-      try {
-        m_coordinateSystem.getTransformation().setFromRectangle(fr);
-        Invalidate(FALSE);
-      } catch(Exception e) {
-        // ignore
-      }
-    }
-  }
-}
-
-void CShowGrafView::lbuttonDownMarkInterval(UINT nFlags, const CPoint &point) {
-  m_mouseDownPoint = point;
-  m_dragging       = true;
-  CRect cr   = getClientRect(this, IDC_SYSTEMPANEL);
-  m_dragRect = CRect(m_mouseDownPoint.x, cr.bottom, m_mouseDownPoint.x, cr.top);
-  ClientToScreen(&cr);
-  ClipCursor(&cr);
-  CClientDC(GetDlgItem(IDC_SYSTEMPANEL)).DrawDragRect(&m_dragRect, CSize(1,1), NULL, CSize(1,1));
-}
-
-void CShowGrafView::lbuttonUpMarkInterval(UINT nFlags, const CPoint &point) {
-  CClientDC(GetDlgItem(IDC_SYSTEMPANEL)).DrawDragRect(&m_dragRect, CSize(1,1), NULL, CSize(1,1));
-  m_dragging = false;
-  ClipCursor(NULL);
-  getMainFrame()->PostMessage(ID_MSG_SEARCHINTERVAL, m_dragRect.left,m_dragRect.right);
-}
-
-void CShowGrafView::mouseMoveMarkInterval(UINT nFlags, const CPoint &point) {
-  if(m_dragging) {
-    if(nFlags && MK_LBUTTON) {
-      const CRect cr      = getClientRect(this, IDC_SYSTEMPANEL);
-      const CRect newRect = CRect(m_mouseDownPoint.x, cr.bottom, point.x, cr.top);
-      CClientDC(GetDlgItem(IDC_SYSTEMPANEL)).DrawDragRect(&newRect, CSize(1,1), &m_dragRect, CSize(1,1));
-      m_dragRect = newRect;
-    } else {
-      CClientDC(GetDlgItem(IDC_SYSTEMPANEL)).DrawDragRect(&m_dragRect, CSize(1,1), NULL, CSize(1,1));
-      m_dragging = false;
-      ClipCursor(NULL);
-    }
-  }
 }
 
 void CShowGrafView::OnRButtonDown(UINT nFlags, CPoint point) {
@@ -291,6 +248,8 @@ void CShowGrafView::OnSize(UINT nType, int cx, int cy) {
 void CShowGrafView::clear() {
   initScale();
   Invalidate();
+  clearToolStack();
+  pushMouseTool(DRAGTOOL);
 }
 
 bool CShowGrafView::isMenuItemChecked(int id) {

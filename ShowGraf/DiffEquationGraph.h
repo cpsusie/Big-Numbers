@@ -35,5 +35,6 @@ public:
   }
   void   setStyle(GraphStyle style);
   void   setVisible(bool visible);
-  GraphZeroesResultArray findZeroes(const DoubleInterval &i) const;
+  GraphZeroesResultArray  findZeroes( const DoubleInterval &interval) const;
+  GraphExtremaResultArray findExtrema(const DoubleInterval &interval, ExtremaType extremaType) const;
 };

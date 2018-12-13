@@ -16,5 +16,6 @@ public:
   inline GraphType getType() const {
     return FUNCTIONGRAPH;
   }
-  GraphZeroesResultArray findZeroes(const DoubleInterval &i) const;
+  GraphZeroesResultArray  findZeroes( const DoubleInterval &interval) const;
+  GraphExtremaResultArray findExtrema(const DoubleInterval &interval, ExtremaType extremaType) const;
 };

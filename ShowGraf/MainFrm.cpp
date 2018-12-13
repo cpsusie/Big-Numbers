@@ -7,6 +7,7 @@
 #include "DiffEquationGraphDlg.h"
 #include "IntervalDlg.h"
 #include "RollAvgSizeDlg.h"
+#include "MouseTool.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -75,7 +76,9 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
   ON_COMMAND(ID_SELECTMENU_STYLE_CURVE         , OnSelectMenuStyleCurve        )
   ON_COMMAND(ID_SELECTMENU_STYLE_POINT         , OnSelectMenuStylePoint        )
   ON_COMMAND(ID_SELECTMENU_STYLE_CROSS         , OnSelectMenuStyleCross        )
-  ON_MESSAGE(ID_MSG_SEARCHINTERVAL             , OnMsgSearchInterval           )
+  ON_MESSAGE(ID_MSG_SEARCHZEROESININTERVAL     , OnMsgSearchZeroesInInterval   )
+  ON_MESSAGE(ID_MSG_SEARCHMAXININTERVAL        , OnMsgSearchMaxInInterval      )
+  ON_MESSAGE(ID_MSG_SEARCHMINININTERVAL        , OnMsgSearchMinInInterval      )
 END_MESSAGE_MAP()
 
 static UINT indicators[] = {
@@ -461,24 +464,30 @@ void CMainFrame::OnViewRefreshFiles() {
 }
 
 void CMainFrame::OnFindZeroes() {
-  getView()->setMouseTool(TOOL_FINDSEARCHINTERVAL);
+  getView()->pushMouseTool(FINDZEROTOOL);
 }
 
 void CMainFrame::OnFindMinimum() {
+  getView()->pushMouseTool(FINDMINTOOL);
 }
 
 void CMainFrame::OnFindMaximum() {
+  getView()->pushMouseTool(FINDMAXTOOL);
 }
 
 void CMainFrame::OnFindIntersection() {
 }
 
-LRESULT CMainFrame::OnMsgSearchInterval(WPARAM wp, LPARAM lp) {
+static DoubleInterval wplpToInterval(CShowGrafView *view, WPARAM wp, LPARAM lp) {
   int xFrom = (int)wp;
   int xTo   = (int)lp;
   if(xFrom > xTo) std::swap(xFrom,xTo);
-  const DoubleInterval xIinterval = getView()->getCoordinateSystem().getTransformation().getXTransformation().backwardTransform(DoubleInterval(xFrom,xTo));
-  const GraphArray    &ga         = getDoc()->getGraphArray();
+  return view->getCoordinateSystem().getTransformation().getXTransformation().backwardTransform(DoubleInterval(xFrom,xTo));
+}
+
+LRESULT CMainFrame::OnMsgSearchZeroesInInterval(WPARAM wp, LPARAM lp) {
+  const DoubleInterval   xIinterval = wplpToInterval(getView(), wp, lp);
+  const GraphArray      &ga         = getDoc()->getGraphArray();
   GraphZeroesResultArray result;
   for(size_t i = 0; i < ga.size(); i++) {
     if(ga[i].getGraph().isVisible()) {
@@ -486,7 +495,30 @@ LRESULT CMainFrame::OnMsgSearchInterval(WPARAM wp, LPARAM lp) {
     }
   }
   showInformation(result.toString().cstr());
-  getView()->setMouseTool(TOOL_DRAG);
+  getView()->popMouseTool();
+  return 0;
+}
+
+void CMainFrame::showExtremaInInterval(WPARAM wp, LPARAM lp, ExtremaType extremaType) {
+  const DoubleInterval    interval = wplpToInterval(getView(), wp, lp);
+  const GraphArray       &ga       = getDoc()->getGraphArray();
+  GraphExtremaResultArray result(extremaType);
+  for(size_t i = 0; i < ga.size(); i++) {
+    if(ga[i].getGraph().isVisible()) {
+      result.addAll(ga[i].getGraph().findExtrema(interval, extremaType));
+    }
+  }
+  showInformation(result.toString().cstr());
+  getView()->popMouseTool();
+}
+
+LRESULT CMainFrame::OnMsgSearchMaxInInterval(WPARAM wp, LPARAM lp) {
+  showExtremaInInterval(wp, lp, EXTREMA_TYPE_MAX);
+  return 0;
+}
+
+LRESULT CMainFrame::OnMsgSearchMinInInterval(WPARAM wp, LPARAM lp) {
+  showExtremaInInterval(wp, lp, EXTREMA_TYPE_MIN);
   return 0;
 }
 

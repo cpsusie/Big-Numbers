@@ -54,6 +54,12 @@ void FunctionGraph::paint(CCoordinateSystem &cs) {
 */
 }
 
-GraphZeroesResultArray FunctionGraph::findZeroes(const DoubleInterval &i) const {
-  return makeZeroesResult(::findZeroes(FunctionGraphFunction(this),i));
+GraphZeroesResultArray FunctionGraph::findZeroes(const DoubleInterval &interval) const {
+  return makeZeroesResult(::findZeroes(FunctionGraphFunction(this),interval));
+}
+
+GraphExtremaResultArray FunctionGraph::findExtrema(const DoubleInterval &interval, ExtremaType extremaType) const {
+  Point2DArray pa;
+  pa.add(findExtremum(FunctionGraphFunction(this), interval, extremaType==EXTREMA_TYPE_MAX));
+  return makeExtremaResult(extremaType, pa);
 }

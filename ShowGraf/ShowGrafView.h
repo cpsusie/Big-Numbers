@@ -1,16 +1,11 @@
 #pragma once
 
-#include <MFCUtil/Coordinatesystem/CoordinateSystem.h>
+#include "MouseTool.h"
 #include "ShowGrafDoc.h"
-
-typedef enum {
-  TOOL_DRAG
- ,TOOL_FINDSEARCHINTERVAL
-} MouseTool;
 
 class CMainFrame;
 
-class CShowGrafView : public CFormView, public FunctionPlotter {
+class CShowGrafView : public CFormView, public FunctionPlotter, public CoordinateSystemContainer {
 private:
   enum { IDD = IDD_SHOWGRAFVIEW };
 
@@ -18,24 +13,22 @@ private:
   bool                        m_firstDraw;
   CFont                       m_axisFont;
   CFont                       m_buttonFont;
-  MouseTool                   m_mouseTool;
-  bool                        m_dragging;
-  RectangleTransformation     m_mouseDownTransform;
-  CPoint                      m_mouseDownPoint;
-  CRect                       m_dragRect;
+  CompactStack<MouseTool*>    m_toolStack;
   void plotFunction(Function &f, const DoubleInterval &interval, COLORREF color);
   void plotFunction(Function &f, COLORREF color);
   bool paintAll(CDC &dc, const CRect &rect, CFont *axisFont, CFont *buttonFont);
   bool isMenuItemChecked(int id);
   void enableMenuItem(int id, bool enabled);
   void checkMenuItem( int id, bool checked);
+  void ajourToolsFindMenu();
+  inline bool hasMouseTool() const {
+    return !m_toolStack.isEmpty();
+  }
+  inline MouseTool &getCurrentTool() const {
+    return *m_toolStack.top();
+  }
+  void clearToolStack();
   CShowGrafDoc *getDoc();
-  void lbuttonDownDragging(    UINT nFlags, const CPoint &point);
-  void lbuttonUpDragging(      UINT nFlags, const CPoint &point);
-  void mouseMoveDragging(      UINT nFlags, const CPoint &point);
-  void lbuttonDownMarkInterval(UINT nFlags, const CPoint &point);
-  void lbuttonUpMarkInterval(  UINT nFlags, const CPoint &point);
-  void mouseMoveMarkInterval(  UINT nFlags, const CPoint &point);
 
   inline CMainFrame *getMainFrame() {
     return (CMainFrame*)GetParent();
@@ -54,6 +47,8 @@ protected: // create from serialization only
   afx_msg void OnMouseMove(  UINT nFlags, CPoint point);
   afx_msg BOOL OnMouseWheel( UINT nFlags, short zDelta, CPoint pt);
   afx_msg void OnSize(       UINT nType, int cx, int cy);
+  afx_msg int  OnCreate(LPCREATESTRUCT lpCreateStruct);
+  afx_msg void OnDestroy();
   DECLARE_MESSAGE_MAP()
 
 public:
@@ -62,8 +57,15 @@ public:
     void initScale();
     void clear();
 
+    // virtual functions that implements CoordinateSystemContainer interface
+    CWnd *getWin() {
+      return this;
+    }
     CCoordinateSystem &getCoordinateSystem() {
       return m_coordinateSystem;
+    }
+    void repaint() {
+      Invalidate();
     }
     void setAxisColor(COLORREF color) {
       getCoordinateSystem().setAxisColor(color);
@@ -96,9 +98,8 @@ public:
       getCoordinateSystem().setYAxisType(type);
     }
     void addFunctionGraph(FunctionGraphParameters &param);
-    void setMouseTool(MouseTool tool) {
-      m_mouseTool = tool;
-    }
+    void pushMouseTool(MouseToolType toolType);
+    void popMouseTool();
     virtual void OnDraw(CDC *pDC);  // overridden to draw this view
     virtual BOOL OnPreparePrinting(          CPrintInfo *pInfo);
     virtual void OnBeginPrinting(  CDC *pDC, CPrintInfo *pInfo);

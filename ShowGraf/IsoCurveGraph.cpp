@@ -250,6 +250,12 @@ public:
   }
 };
 
-GraphZeroesResultArray IsoCurveGraph::findZeroes(const DoubleInterval &i) const {
-  return makeZeroesResult(::findZeroes(IsoCurveY0Function(this), i));
+GraphZeroesResultArray IsoCurveGraph::findZeroes(const DoubleInterval &interval) const {
+  return makeZeroesResult(::findZeroes(IsoCurveY0Function(this), interval));
+}
+
+GraphExtremaResultArray IsoCurveGraph::findExtrema(const DoubleInterval &interval, ExtremaType extremaType) const {
+  Point2DArray pa;
+  pa.add(findExtremum(IsoCurveY0Function(this), interval, extremaType==EXTREMA_TYPE_MAX));
+  return makeExtremaResult(extremaType, pa);
 }

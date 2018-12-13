@@ -153,6 +153,9 @@
     <ClCompile Include="DiffEquationEdit.cpp">
       <Filter>Source Files\DiffEquationGraph</Filter>
     </ClCompile>
+    <ClCompile Include="MouseTool.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DegreeDlg.h">
@@ -262,6 +265,9 @@
     </ClInclude>
     <ClInclude Include="DiffEquationEdit.h">
       <Filter>Source Files\DiffEquationGraph\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="MouseTool.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

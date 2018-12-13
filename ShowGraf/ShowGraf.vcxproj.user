@@ -30,4 +30,7 @@
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerCommandArguments>'</LocalDebuggerCommandArguments>
   </PropertyGroup>
+  <PropertyGroup>
+    <RESOURCE_FILE>ShowGraf.rc</RESOURCE_FILE>
+  </PropertyGroup>
 </Project>

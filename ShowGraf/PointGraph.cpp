@@ -190,7 +190,7 @@ static int point2DcmpX(const Point2D &p1, const Point2D &p2) {
   return sign(p1.x-p2.x);
 }
 
-GraphZeroesResultArray PointGraph::findZeroes(const DoubleInterval &i) const {
+GraphZeroesResultArray PointGraph::findZeroes(const DoubleInterval &interval) const {
   Point2DArray       data = getProcessedData();
   CompactDoubleArray result;
   if(data.isEmpty()) {
@@ -200,7 +200,7 @@ GraphZeroesResultArray PointGraph::findZeroes(const DoubleInterval &i) const {
   const size_t n = data.size();
   if(n == 1) {
     const Point2D &p = data[0];
-    if((p.y == 0) && i.contains(p.x)) {
+    if((p.y == 0) && interval.contains(p.x)) {
       result.add(p.x);
     }
     return makeZeroesResult(result);
@@ -209,21 +209,21 @@ GraphZeroesResultArray PointGraph::findZeroes(const DoubleInterval &i) const {
     const Point2D &p1 = data[0];
     if(p0.y != p1.y) {
       const double x = inverseLinearInterpolate0(p0, p1);
-      if(i.contains(x)) {
+      if(interval.contains(x)) {
         result.add(x);
       }
     } else {
-      if((p0.y == 0) && i.contains(p0.x)) result.add(p0.x);
-      if((p1.y == 0) && i.contains(p1.x)) result.add(p1.x);
+      if((p0.y == 0) && interval.contains(p0.x)) result.add(p0.x);
+      if((p1.y == 0) && interval.contains(p1.x)) result.add(p1.x);
     }
     return makeZeroesResult(result);
   }
 
   const Point2D *lastp      = &data[0];
-  bool           lastInside = i.contains(lastp->x);
+  bool           lastInside = interval.contains(lastp->x);
   for(size_t t = 1; t < n; t++) {
     const Point2D &p       = data[t];
-    const bool     pinside = i.contains(p.x);
+    const bool     pinside = interval.contains(p.x);
     if(sign(lastp->y) * sign(p.y) != 1) {
       if(lastp->y == 0) {
         if(lastInside) {
@@ -232,7 +232,7 @@ GraphZeroesResultArray PointGraph::findZeroes(const DoubleInterval &i) const {
       } else if(lastInside || pinside) { // && lastp->y != 0
         if(p.y != 0) { // lastp->y != 0 && p.y != 0 => opposite sign
           const double x = inverseLinearInterpolate0(p, *lastp);
-          if(i.contains(x)) {
+          if(interval.contains(x)) {
             result.add(x);
           }
         }
@@ -249,4 +249,31 @@ GraphZeroesResultArray PointGraph::findZeroes(const DoubleInterval &i) const {
     result.add(lastp->x);
   }
   return makeZeroesResult(result);
+}
+
+static inline bool isMoreExtreme(double y0, double y1, ExtremaType extremaType) {
+  return (extremaType == EXTREMA_TYPE_MAX) ? (y1 > y0) : (y1 < y0);
+}
+
+GraphExtremaResultArray PointGraph::findExtrema(const DoubleInterval &interval, ExtremaType extremaType) const {
+  Point2DArray data = getProcessedData();
+  Point2DArray result;
+  const size_t n = data.size();
+  if(n != 0) {
+    data.sort(point2DcmpX);
+  }
+
+  const Point2D *bestPoint = NULL;
+  for(size_t t = 0; t < n; t++) {
+    const Point2D &p = data[t];
+    if(interval.contains(p.x)) {
+      if((bestPoint == NULL) || isMoreExtreme(bestPoint->y, p.y, extremaType)) {
+        bestPoint = &p;
+      }
+    }
+  }
+  if(bestPoint != NULL) {
+    result.add(*bestPoint);
+  }
+  return makeExtremaResult(extremaType, result);
 }

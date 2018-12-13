@@ -151,16 +151,34 @@ void DiffEquationGraph::setVisible(bool visible) {
   }
 }
 
-GraphZeroesResultArray DiffEquationGraph::findZeroes(const DoubleInterval &i) const {
+GraphZeroesResultArray DiffEquationGraph::findZeroes(const DoubleInterval &interval) const {
   GraphZeroesResultArray result;
   const size_t n = m_pointGraphArray.size();
   for(size_t t = 0; t < n; t++) {
     const PointGraph *g = m_pointGraphArray[t];
     if(g->isVisible()) {
-      result.addAll(g->findZeroes(i));
+      result.addAll(g->findZeroes(interval));
     }
   }
-  for (size_t g = 0; g < result.size(); g++) {
+  for(size_t g = 0; g < result.size(); g++) {
+    String &name = result[g].m_name;
+    name = format(_T("%s.%s")
+                 ,getParam().getDisplayName().cstr()
+                 ,name.cstr());
+  }
+  return result;
+}
+
+GraphExtremaResultArray DiffEquationGraph::findExtrema(const DoubleInterval &interval, ExtremaType extremaType) const {
+  GraphExtremaResultArray result(extremaType);
+  const size_t n = m_pointGraphArray.size();
+  for(size_t t = 0; t < n; t++) {
+    const PointGraph *g = m_pointGraphArray[t];
+    if(g->isVisible()) {
+      result.addAll(g->findExtrema(interval, extremaType));
+    }
+  }
+  for(size_t g = 0; g < result.size(); g++) {
     String &name = result[g].m_name;
     name = format(_T("%s.%s")
                  ,getParam().getDisplayName().cstr()
