@@ -232,6 +232,9 @@
     <ClCompile Include="RationalPacker.cpp">
       <Filter>Source Files\Number Types</Filter>
     </ClCompile>
+    <ClCompile Include="FindExtremum.cpp">
+      <Filter>Source Files\Misc</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="NatvisFile.natvis" />

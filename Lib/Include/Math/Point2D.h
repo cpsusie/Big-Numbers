@@ -341,6 +341,8 @@ typedef FunctionTemplate<Point2D, Point2D> Point2DFunction;
 typedef FunctionTemplate<Point2D, Real>    Function2D;
 
 
+RealPoint2D findExtremum(Function &f, const RealInterval &interval, bool maximum);
+
 //inline float fixedToFloat(const FIXED &x) {
 //  return (float)x.value + (float)x.fract / 0x10000u;
 //}

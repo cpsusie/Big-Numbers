@@ -40,11 +40,11 @@ static Real converge(Function &f, const Real &l, const Real &r) {
 }
 
 #define SEARCHCOUNT 1000
-CompactRealArray findZeroes(Function &f, const RealInterval &i) {
+CompactRealArray findZeroes(Function &f, const RealInterval &interval) {
   CompactRealArray result;
   RealPoint2DArray pointArray(SEARCHCOUNT);
-  Real             step = i.getLength() / (SEARCHCOUNT-1);
-  Real             x    = i.getFrom();
+  Real             step = interval.getLength() / (SEARCHCOUNT-1);
+  Real             x    = interval.getFrom();
   for(int t = 0; t < SEARCHCOUNT-1; t++, x += step) {
     try {
       pointArray.add(RealPoint2D(x,f(x)));
@@ -53,7 +53,7 @@ CompactRealArray findZeroes(Function &f, const RealInterval &i) {
     }
   }
   try {
-    pointArray.add(RealPoint2D(i.getTo(), f(i.getTo())));
+    pointArray.add(RealPoint2D(interval.getTo(), f(interval.getTo())));
   } catch (...) {
     // ignore
   }

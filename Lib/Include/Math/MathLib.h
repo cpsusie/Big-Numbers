@@ -12,4 +12,4 @@ typedef FunctionTemplate<Real,Real>         Function;
 #define verifyEqualsInt(   expected, value)            verify(value == expected)
 #define verifyAlmostEquals(expected, value,tolerance)  verify(fabs((expected)-(value)) <= (tolerance))
 
-CompactRealArray findZeroes(Function &f, const RealInterval &i);
+CompactRealArray findZeroes(  Function &f, const RealInterval &interval);
