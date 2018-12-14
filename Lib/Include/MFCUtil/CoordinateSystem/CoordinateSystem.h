@@ -52,8 +52,8 @@ private:
   friend class SystemPainter;
 
   CompactArray<CoordinateSystemObject*> m_objectArray;
-  DataRange findSmallestDataRange() const;
-  int    findObject(const CoordinateSystemObject *object) const;
+  DataRange   findSmallestDataRange() const;
+  int         findObject(const CoordinateSystemObject *object) const;
   PointArray &transformPoint2DArray(PointArray &dst, const Point2DArray &src) const;
 public:
 
