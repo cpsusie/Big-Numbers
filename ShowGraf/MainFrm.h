@@ -15,6 +15,7 @@ private:
   void onFileMruFile(int index);
   void initMenuItems();
   void showExtremaInInterval(WPARAM wp, LPARAM lp, ExtremaType extremaType);
+  DoubleInterval wlParamToInterval(WPARAM wp, LPARAM lp);
 
 protected:
   DECLARE_DYNCREATE(CMainFrame)

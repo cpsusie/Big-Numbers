@@ -602,7 +602,6 @@ IDR_MAINFRAME ACCELERATORS
 BEGIN
     "N",            ID_FILE_NEW,            VIRTKEY, CONTROL, NOINVERT
     "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL, NOINVERT
-    "Z",            ID_FIND_ZEROES,         VIRTKEY, CONTROL, NOINVERT
     "D",            ID_OPTIONS_DEGREES,     VIRTKEY, ALT, NOINVERT
     "A",            ID_OPTIONS_GRADS,       VIRTKEY, ALT, NOINVERT
     "E",            ID_OPTIONS_IGNOREERRORS, VIRTKEY, ALT, NOINVERT
@@ -759,13 +758,6 @@ BEGIN
         MENUITEM "I&mplicit defined curve...\tCtrl+M", ID_TOOLS_IMPLICITDEFINEDCURVE
         MENUITEM "Differential equations...\tCtrl+D", ID_TOOLS_DIFFERENTIALEQUATIONS
         MENUITEM "P&arametric curve...\tCtrl+A", ID_TOOLS_PARAMETRICCURVE
-        POPUP "&Find"
-        BEGIN
-            MENUITEM "&Zeroes\tCtrl+Z",             ID_FIND_ZEROES
-            MENUITEM "&Minimum",                    ID_FIND_MINIMUM
-            MENUITEM "Ma&ximum",                    ID_FIND_MAXIMUM
-            MENUITEM "Inter&section",               ID_FIND_INTERSECTION
-        END
         POPUP "&DataFitting"
         BEGIN
             MENUITEM "Polynomial",                  ID_TOOLS_FIT_POLYNOMIAL
@@ -792,8 +784,14 @@ IDR_MENUSELECTGRAF MENU
 BEGIN
     POPUP "selectmenu"
     BEGIN
-        MENUITEM "&Delete",                     ID_SELECTMENU_DELETE
         MENUITEM "&Edit",                       ID_SELECTMENU_EDIT
+        POPUP "&Find"
+        BEGIN
+            MENUITEM "Zeroes",                      ID_FIND_ZEROES
+            MENUITEM "&Minimum",                    ID_FIND_MINIMUM
+            MENUITEM "Ma&ximum",                    ID_FIND_MAXIMUM
+            MENUITEM "Inter&section",               ID_FIND_INTERSECTION
+        END
         MENUITEM "Hide",                        ID_SELECTMENU_HIDE
         MENUITEM "Show",                        ID_SELECTMENU_SHOW
         POPUP "Style"
@@ -802,6 +800,7 @@ BEGIN
             MENUITEM "Point",                       ID_SELECTMENU_STYLE_POINT
             MENUITEM "Cross",                       ID_SELECTMENU_STYLE_CROSS
         END
+        MENUITEM "&Delete",                     ID_SELECTMENU_DELETE
     END
 END
 

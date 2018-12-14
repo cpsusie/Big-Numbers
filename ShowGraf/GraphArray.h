@@ -4,9 +4,10 @@
 
 class GraphArray : public Array<GraphItem> {
 private:
-  intptr_t       m_selected;
-  mutable String m_error;
-  DataRange      m_dataRange;
+  intptr_t               m_selected;
+  mutable String         m_error;
+  DataRange              m_dataRange;
+  MoveablePointArray     m_pointArray;
 
   void findButtonPositions(CDC &dc, CFont &font, const CRect &buttonPanelRect) const;
   void calculateDataRange();
@@ -18,7 +19,8 @@ private:
   GraphItem &getItem(size_t index) {
     return (*this)[index];
   }
-
+  void removePoint(size_t index);
+  BitSet findPointsBelongingToGraph(const Graph *g) const;
 public:
   GraphArray() {
     m_selected = -1;
@@ -27,6 +29,8 @@ public:
   void unselect();
   void select(intptr_t i);
   void add(Graph *g);
+  void addPoint(MoveablePoint *p);
+  void addPointArray(const MoveablePointArray &pa);
   void remove(size_t index);
   void clear();
   void refresh();

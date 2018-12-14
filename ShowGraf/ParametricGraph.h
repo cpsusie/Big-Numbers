@@ -17,6 +17,6 @@ public:
     return PARAMETRICGRAPH;
   }
   GraphZeroesResultArray findZeroes(const DoubleInterval &i) const {
-    return GraphZeroesResultArray();
+    return GraphZeroesResultArray(*this);
   }
 };

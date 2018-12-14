@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <MFCUtil\ColorSpace.h>
 #include "GraphItem.h"
 
 GraphItem::GraphItem(Graph *g) {
@@ -41,6 +42,18 @@ void GraphItem::paint(CCoordinateSystem &cs, CFont &buttonFont, bool selected) c
   CDC &dc = *vp.getDC();
   dc.SelectObject(buttonFont);
   paintButton(dc, selected);
-
 }
 
+void MoveablePoint::paint(CCoordinateSystem &cs) {
+  Viewport2D &vp = cs.getViewport();
+  if(m_graph.isVisible()) {
+    vp.setClipping(true);
+    const Point2D p(m_range.getMinX(), m_range.getMinY());
+    const String text         = p.toString(5);
+    const CPoint textPosition = vp.forwardTransform(m_location);
+    CDC &dc = *vp.getDC();
+    CFont *font = cs.GetFont();
+    textOutTransparentBackground(dc, textPosition, text, *font, RED);
+    vp.setClipping(false);
+  }
+}

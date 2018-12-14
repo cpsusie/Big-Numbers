@@ -100,3 +100,88 @@ void getValue(XMLDoc &doc, XMLNodePtr n, TrigonometricMode &trigoMode) {
   doc.getValue(n, _T("trigo"), str);
   trigoMode = ExprGraphParameters::trigonometricModeFromString(str);
 }
+
+MoveablePointArray GraphZeroesResult::getMoveablePointArray() const {
+  const size_t n = m_zeroes.size();
+  MoveablePointArray result(n);
+  for(size_t i = 0; i < n; i++) {
+    result.add(new MoveablePoint(getGraph(), Point2D(m_zeroes[i],0)));
+  }
+  return result;
+}
+
+String GraphZeroesResult::toString(const TCHAR *name) const {
+  return format(_T("Zeroes of %s:%s")
+                ,name ? name : m_graph.getParam().getDisplayName().cstr()
+                ,m_zeroes.toStringBasicType().cstr()
+               );
+}
+
+MoveablePointArray GraphZeroesResultArray::getMoveablePointArray() const {
+  MoveablePointArray result;
+  for(size_t i = 0; i < size(); i++) {
+    result.addAll((*this)[i].getMoveablePointArray());
+  }
+  return result;
+}
+
+String GraphZeroesResultArray::toString() const {
+  if(isEmpty()) {
+    return _T("No zeroes found");
+  }
+  if(size() == 1) {
+    return __super::toString(_T("\n"));
+  }
+  StringArray result;
+  for(size_t i = 0; i < size(); i++) {
+    const GraphZeroesResult &zr   = (*this)[i];
+    const String             name = format(_T("%s.%s")
+                                          ,m_graph.getParam().getDisplayName().cstr()
+                                          ,zr.getGraph().getParam().getDisplayName().cstr());
+    result.add(zr.toString(name.cstr()));
+  }
+  return result.toString(_T("\n"));
+}
+
+MoveablePointArray GraphExtremaResult::getMoveablePointArray() const {
+  const size_t n = m_extrema.size();
+  MoveablePointArray result(n);
+  for(size_t i = 0; i < n; i++) {
+    result.add(new MoveablePoint(getGraph(), m_extrema[i]));
+  }
+  return result;
+}
+
+String GraphExtremaResult::toString(const TCHAR *name) const {
+  return format(_T("%s of %s:%s")
+                ,getExtremaTypeStr()
+                ,name ? name : m_graph.getParam().getDisplayName().cstr()
+                ,m_extrema.toString().cstr()
+               );
+}
+
+MoveablePointArray GraphExtremaResultArray::getMoveablePointArray() const {
+  MoveablePointArray result;
+  for(size_t i = 0; i < size(); i++) {
+    result.addAll((*this)[i].getMoveablePointArray());
+  }
+  return result;
+}
+
+String GraphExtremaResultArray::toString() const {
+  if(isEmpty()) {
+    return format(_T("No %s found"), getExtremaTypeStr());
+  }
+  if(size() == 1) {
+    return __super::toString(_T("\n"));
+  }
+  StringArray result;
+  for(size_t i = 0; i < size(); i++) {
+    const GraphExtremaResult &er   = (*this)[i];
+    const String             name = format(_T("%s.%s")
+                                          ,m_graph.getParam().getDisplayName().cstr()
+                                          ,er.getGraph().getParam().getDisplayName().cstr());
+    result.add(er.toString(name.cstr()));
+  }
+  return result.toString(_T("\n"));
+}

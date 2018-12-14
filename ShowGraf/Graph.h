@@ -6,26 +6,64 @@
 
 #define EMPTY_DISTANCE 1e40
 
-class GraphZeroesResult {
+class Graph;
+
+class MoveablePoint : public CoordinateSystemObject {
+private:
+  const Graph    &m_graph;
+  const DataRange m_range;
+  Point2D         m_location;
 public:
-  String             m_name;
-  CompactDoubleArray m_zeroes;
-  GraphZeroesResult(const String &name, const CompactDoubleArray &zeroes)
-    : m_name(name)
-    , m_zeroes(zeroes)
-  {
+  MoveablePoint(const Graph &graph, const Point2D &point)
+    : m_graph(graph)
+    , m_range(point)
+    , m_location(point) {
   }
-  String toString() const {
-    return format(_T("Zeroes of %s:%s")
-                 ,m_name.cstr(), m_zeroes.toStringBasicType().cstr());
+  inline const Graph &getGraph() const {
+    return m_graph;
+  }
+  inline void setLocation(const Point2D &p) {
+    m_location = p;
+  }
+  void paint(CCoordinateSystem &cs);
+  const DataRange &getDataRange() const {
+    return m_range;
   }
 };
 
-class GraphZeroesResultArray : public Array<GraphZeroesResult> {
+typedef CompactArray<MoveablePoint*> MoveablePointArray;
+
+class GraphZeroesResult {
+private:
+  const Graph             &m_graph;
+  const CompactDoubleArray m_zeroes;
 public:
-  String toString() const {
-    return isEmpty() ? _T("No zeroes found") : __super::toString(_T("\n"));
+  GraphZeroesResult(const Graph &graph, const CompactDoubleArray &zeroes)
+    : m_graph(graph)
+    , m_zeroes(zeroes)
+  {
   }
+  inline const Graph &getGraph() const {
+    return m_graph;
+  }
+  inline const CompactDoubleArray &getZeroes() const {
+    return m_zeroes;
+  }
+  MoveablePointArray getMoveablePointArray() const;
+  String toString(const TCHAR *name=NULL) const;
+};
+
+class GraphZeroesResultArray : public Array<GraphZeroesResult> {
+private:
+  const Graph &m_graph;
+public:
+  inline GraphZeroesResultArray(const Graph &graph) : m_graph(graph) {
+  }
+  inline const Graph &getGraph() const {
+    return m_graph;
+  }
+  MoveablePointArray getMoveablePointArray() const;
+  String toString() const;
 };
 
 typedef enum {
@@ -38,33 +76,45 @@ inline const TCHAR *extremaTypeToStr(ExtremaType type) {
 }
 
 class GraphExtremaResult {
-public:
-  String             m_name;
+private:
+  const Graph       &m_graph;
   const ExtremaType  m_extremaType;
-  Point2DArray       m_extrema;
-  GraphExtremaResult(const String &name, ExtremaType extremaType, const Point2DArray &extrema)
-    : m_name(name)
+  const Point2DArray m_extrema;
+public:
+  GraphExtremaResult(const Graph &graph, ExtremaType extremaType, const Point2DArray &extrema)
+    : m_graph(graph)
     , m_extremaType(extremaType)
     , m_extrema(extrema)
   {
   }
+  inline const Graph &getGraph() const {
+    return m_graph;
+  }
   inline ExtremaType getExtremaType() const {
     return m_extremaType;
   }
+  inline const Point2DArray &getExtrema() const {
+    return m_extrema;
+  }
+  MoveablePointArray getMoveablePointArray() const;
   inline const TCHAR *getExtremaTypeStr() const {
     return extremaTypeToStr(getExtremaType());
   }
-  String toString() const {
-    return format(_T("%s of %s:%s")
-                 ,getExtremaTypeStr(), m_name.cstr(), m_extrema.toString().cstr());
-  }
+  String toString(const TCHAR *name=NULL) const;
 };
 
 class GraphExtremaResultArray : public Array<GraphExtremaResult> {
 private:
+  const Graph      &m_graph;
   const ExtremaType m_extremaType;
 public:
-  GraphExtremaResultArray(ExtremaType extremaType) : m_extremaType(extremaType) {
+  inline GraphExtremaResultArray(const Graph &graph, ExtremaType extremaType)
+    : m_graph(graph)
+    , m_extremaType(extremaType)
+  {
+  }
+  inline const Graph &getGraph() const {
+    return m_graph;
   }
   inline ExtremaType getExtremaType() const {
     return m_extremaType;
@@ -72,9 +122,8 @@ public:
   inline const TCHAR *getExtremaTypeStr() const {
     return extremaTypeToStr(getExtremaType());
   }
-  String toString() const {
-    return isEmpty() ? format(_T("No %s found"), getExtremaTypeStr()) : __super::toString(_T("\n"));
-  }
+  MoveablePointArray getMoveablePointArray() const;
+  String toString() const;
 };
 
 class Graph : public CoordinateSystemObject {
@@ -91,16 +140,16 @@ protected:
     return _finite(p.x) && !_isnan(p.x) && _finite(p.y) && !_isnan(p.y);
   }
   GraphZeroesResultArray makeZeroesResult(const CompactDoubleArray &zeroes) const {
-    GraphZeroesResultArray result;
+    GraphZeroesResultArray result(*this);
     if(!zeroes.isEmpty()) {
-      result.add(GraphZeroesResult(getParam().getDisplayName(), zeroes));
+      result.add(GraphZeroesResult(*this, zeroes));
     }
     return result;
   }
   GraphExtremaResultArray makeExtremaResult(ExtremaType extremaType, const Point2DArray &extrema) const {
-    GraphExtremaResultArray result(extremaType);
+    GraphExtremaResultArray result(*this, extremaType);
     if(!extrema.isEmpty()) {
-      result.add(GraphExtremaResult(getParam().getDisplayName(), extremaType, extrema));
+      result.add(GraphExtremaResult(*this, extremaType, extrema));
     }
     return result;
   }

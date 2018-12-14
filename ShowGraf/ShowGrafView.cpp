@@ -121,25 +121,16 @@ void CShowGrafView::pushMouseTool(MouseToolType toolType) {
     errorMessage(_T("Invalid MouseTool:%d"), toolType);
     break;
   }
-  ajourToolsFindMenu();
 }
 
 void CShowGrafView::popMouseTool() {
   MouseTool *mt = m_toolStack.pop();
   delete mt;
-  ajourToolsFindMenu();
 }
 
 void CShowGrafView::clearToolStack() {
   while(!hasMouseTool()) {
     popMouseTool();
-  }
-}
-
-void CShowGrafView::ajourToolsFindMenu() {
-  if(hasMouseTool()) {
-    const bool enable = getCurrentTool().getType() == DRAGTOOL;
-    enableSubMenuContainingId(theApp.getMainWindow(), ID_FIND_ZEROES, enable);
   }
 }
 

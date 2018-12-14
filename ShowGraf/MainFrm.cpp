@@ -478,37 +478,43 @@ void CMainFrame::OnFindMaximum() {
 void CMainFrame::OnFindIntersection() {
 }
 
-static DoubleInterval wplpToInterval(CShowGrafView *view, WPARAM wp, LPARAM lp) {
+DoubleInterval CMainFrame::wlParamToInterval(WPARAM wp, LPARAM lp) {
   int xFrom = (int)wp;
   int xTo   = (int)lp;
   if(xFrom > xTo) std::swap(xFrom,xTo);
-  return view->getCoordinateSystem().getTransformation().getXTransformation().backwardTransform(DoubleInterval(xFrom,xTo));
+  return getView()->getCoordinateSystem().getTransformation().getXTransformation().backwardTransform(DoubleInterval(xFrom,xTo));
 }
 
 LRESULT CMainFrame::OnMsgSearchZeroesInInterval(WPARAM wp, LPARAM lp) {
-  const DoubleInterval   xIinterval = wplpToInterval(getView(), wp, lp);
-  const GraphArray      &ga         = getDoc()->getGraphArray();
-  GraphZeroesResultArray result;
-  for(size_t i = 0; i < ga.size(); i++) {
-    if(ga[i].getGraph().isVisible()) {
-      result.addAll(ga[i].getGraph().findZeroes(xIinterval));
+  const GraphItem *item = getDoc()->getGraphArray().getSelectedItem();
+  if(item != NULL) {
+    const DoubleInterval   interval = wlParamToInterval(wp, lp);
+    GraphZeroesResultArray result(item->getGraph());
+    result.addAll(item->getGraph().findZeroes(interval));
+    if(result.isEmpty()) {
+      showInformation(result.toString().cstr());
+    } else {
+      getDoc()->getGraphArray().addPointArray(result.getMoveablePointArray());
+      Invalidate(FALSE);
     }
   }
-  showInformation(result.toString().cstr());
   getView()->popMouseTool();
   return 0;
 }
 
 void CMainFrame::showExtremaInInterval(WPARAM wp, LPARAM lp, ExtremaType extremaType) {
-  const DoubleInterval    interval = wplpToInterval(getView(), wp, lp);
-  const GraphArray       &ga       = getDoc()->getGraphArray();
-  GraphExtremaResultArray result(extremaType);
-  for(size_t i = 0; i < ga.size(); i++) {
-    if(ga[i].getGraph().isVisible()) {
-      result.addAll(ga[i].getGraph().findExtrema(interval, extremaType));
+  const GraphItem *item = getDoc()->getGraphArray().getSelectedItem();
+  if(item != NULL) {
+    const DoubleInterval    interval = wlParamToInterval(wp, lp);
+    GraphExtremaResultArray result(item->getGraph(), extremaType);
+    result.addAll(item->getGraph().findExtrema(interval, extremaType));
+    if(result.isEmpty()) {
+      showInformation(result.toString().cstr());
+    } else {
+      getDoc()->getGraphArray().addPointArray(result.getMoveablePointArray());
+      Invalidate(FALSE);
     }
   }
-  showInformation(result.toString().cstr());
   getView()->popMouseTool();
 }
 
