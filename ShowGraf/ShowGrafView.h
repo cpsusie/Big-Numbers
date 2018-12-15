@@ -20,7 +20,6 @@ private:
   bool isMenuItemChecked(int id);
   void enableMenuItem(int id, bool enabled);
   void checkMenuItem( int id, bool checked);
-  void ajourToolsFindMenu();
   inline bool hasMouseTool() const {
     return !m_toolStack.isEmpty();
   }

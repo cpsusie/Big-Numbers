@@ -792,14 +792,14 @@ BEGIN
             MENUITEM "Ma&ximum",                    ID_FIND_MAXIMUM
             MENUITEM "Inter&section",               ID_FIND_INTERSECTION
         END
-        MENUITEM "Hide",                        ID_SELECTMENU_HIDE
-        MENUITEM "Show",                        ID_SELECTMENU_SHOW
         POPUP "Style"
         BEGIN
             MENUITEM "Curve",                       ID_SELECTMENU_STYLE_CURVE
             MENUITEM "Point",                       ID_SELECTMENU_STYLE_POINT
             MENUITEM "Cross",                       ID_SELECTMENU_STYLE_CROSS
         END
+        MENUITEM "Hide",                        ID_SELECTMENU_HIDE
+        MENUITEM "Show",                        ID_SELECTMENU_SHOW
         MENUITEM "&Delete",                     ID_SELECTMENU_DELETE
     END
 END
