@@ -168,6 +168,15 @@ void Viewport2D::FillSolidRect(const Rectangle2DR &r, COLORREF color) {
   m_dc->FillSolidRect(rect,color);
 }
 
+void Viewport2D::TextOut(const Point2DP &point, const String &text, COLORREF color) {
+  const int      oldMode  = m_dc->SetBkMode(TRANSPARENT);
+  const COLORREF oldColor = m_dc->SetTextColor(color);
+  CPoint         p = forwardTransform(point);
+  m_dc->TextOut(p.x, p.y, text.cstr(), (int)text.length());
+  m_dc->SetTextColor(oldColor);
+  m_dc->SetBkMode(   oldMode );
+}
+
 void Viewport2D::clear(COLORREF color) {
   FillSolidRect(m_tr->getFromRectangle(),color);
 }
@@ -178,6 +187,10 @@ CBitmap *Viewport2D::SelectObject(CBitmap *bitmap) {
 
 CPen *Viewport2D::SelectObject(CPen *pen) {
   return m_dc->SelectObject(pen);
+}
+
+CFont *Viewport2D::SelectObject(CFont *font) {
+  return m_dc->SelectObject(font);
 }
 
 CGdiObject *Viewport2D::SelectObject(CGdiObject *object) {

@@ -78,17 +78,16 @@ public:
   }
   // remove AND delete all objects
   void deleteAllObjects();
-  int    getObjectCount() const {
+  inline int getObjectCount() const {
     return (int)m_objectArray.size();
   }
-  CoordinateSystemObject &getObject(UINT index) {
+  inline CoordinateSystemObject &getObject(UINT index) {
     return *m_objectArray[index];
   }
 
   inline const RectangleTransformation &getTransformation() const {
     return m_vp.getTransformation();;
   }
-
   inline RectangleTransformation &getTransformation() {
     return m_vp.getTransformation();
   }
@@ -99,10 +98,10 @@ public:
   void setOccupiedConnectedPoints(const Point2DArray &pa);
 
   void setDC(CDC &dc);
-  Viewport2D &getViewport() {
+  inline Viewport2D &getViewport() {
     return m_vp;
   }
-  OccupationMap &getOccupationMap() {
+  inline OccupationMap &getOccupationMap() {
     return m_occupationMap;
   }
 
@@ -124,11 +123,10 @@ public:
     getTransformation().zoom(Point2DP(p), in, flags);
   }
 
-  void setGrid(bool grid) {
+  inline void setGrid(bool grid) {
     m_grid = grid;
   }
-
-  bool hasGrid() const {
+  inline bool hasGrid() const {
     return m_grid;
   }
 
@@ -136,41 +134,45 @@ public:
     m_autoScale = autoScale;
     m_autoSpace = makeSpace;
   }
-
-  bool getAutoScale() const {
+  inline bool getAutoScale() const {
     return m_autoScale;
   }
-  bool canRetainAspectRatio() const {
+
+  inline bool canRetainAspectRatio() const {
     return m_xAxisType == m_yAxisType;
   }
 
   void setRetainAspectRatio(bool retainAspectRatio);
 
-  bool isRetainingAspectRatio() const {
+  inline bool isRetainingAspectRatio() const {
     return canRetainAspectRatio() && m_retainAspectRatio;
   }
 
-  void setBackGroundColor(COLORREF color) {
+  inline void setBackGroundColor(COLORREF color) {
     m_backgroundColor = color;
   }
+  inline COLORREF getBackGroundColor() const {
+    return m_backgroundColor;
+  }
 
-  void setAxisColor(COLORREF color) {
+  inline void setAxisColor(COLORREF color) {
     m_axisColor = color;
   }
-
-  void setXAxisType(AxisType axisType) {
-    m_xAxisType = axisType;
+  inline COLORREF getAxisColor() const {
+    return m_axisColor;
   }
 
-  AxisType getXAxisType() const {
+  inline void setXAxisType(AxisType axisType) {
+    m_xAxisType = axisType;
+  }
+  inline AxisType getXAxisType() const {
     return m_xAxisType;
   }
 
-  void setYAxisType(AxisType axisType) {
+  inline void setYAxisType(AxisType axisType) {
     m_yAxisType = axisType;
   }
-
-  AxisType getYAxisType() const {
+  inline AxisType getYAxisType() const {
     return m_yAxisType;
   }
 

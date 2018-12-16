@@ -112,10 +112,12 @@ public:
   bool        Rectangle(const Rectangle2DR &r);
   bool        Rectangle(double x1, double y1, double x2, double y2);
   void        FillSolidRect(const Rectangle2DR &r, COLORREF color);
+  void        TextOut( const Point2DP &p, const String &text, COLORREF color); // transparent background
   void        clear(COLORREF color);
   CGdiObject *SelectObject(CGdiObject *object);
   CBitmap    *SelectObject(CBitmap    *bitmap);
   CPen       *SelectObject(CPen       *pen);
+  CFont      *SelectObject(CFont      *font);
 
   CGdiObject *SelectStockObject(int index);
   void paintDragRect(const Rectangle2D &rect, SIZE size, const Rectangle2D &lastRect, SIZE lastSize, CBrush *brush = NULL, CBrush *lastBrush = NULL);
