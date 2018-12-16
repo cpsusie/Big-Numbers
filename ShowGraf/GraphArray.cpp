@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "GraphArray.h"
 
-void GraphArray::paint(CCoordinateSystem &cs, CFont &buttonFont, const CRect &buttonPanelRect) const {
+void GraphArray::paintItems(CCoordinateSystem &cs, CFont &buttonFont, const CRect &buttonPanelRect) const {
   Viewport2D &vp = cs.getViewport();
   findButtonPositions(*vp.getDC(),buttonFont,buttonPanelRect);
   m_error = EMPTYSTRING;
@@ -14,9 +14,16 @@ void GraphArray::paint(CCoordinateSystem &cs, CFont &buttonFont, const CRect &bu
       }
     }
   }
+}
+
+void GraphArray::paintPointArray(CCoordinateSystem &cs, CFont &font) const {
+  if(m_pointArray.isEmpty()) return;
+  Viewport2D &vp = cs.getViewport();
+  CFont *oldFont = vp.SelectObject(&font);
   for(size_t i = 0; i < m_pointArray.size(); i++) {
     m_pointArray[i]->paint(cs);
   }
+  vp.SelectObject(oldFont);
 }
 
 void GraphArray::setTrigoMode(TrigonometricMode mode) {
@@ -34,7 +41,7 @@ void GraphArray::setStyle(GraphStyle style) {
   }
 }
 
-void GraphArray::setRollAvgSize(int rollAvgSize) {
+void GraphArray::setRollAvgSize(UINT rollAvgSize) {
   for(size_t i = 0; i < size(); i++) {
     getItem(i).getGraph().setRollAvgSize(rollAvgSize);
   }
@@ -77,7 +84,7 @@ bool GraphArray::OnLButtonDown(UINT nFlags, const CPoint &point, const Rectangle
 }
 
 int GraphArray::getMaxButtonWidth(CDC &dc, CFont &font) const {
-  dc.SelectObject(font);
+  CFont *oldFont = dc.SelectObject(&font);
   int result = 0;
   for(size_t i = 0; i < size(); i++) {
     const CSize cs = dc.GetTextExtent(getItem(i).getDisplayName().cstr());
@@ -85,13 +92,15 @@ int GraphArray::getMaxButtonWidth(CDC &dc, CFont &font) const {
       result = cs.cx;
     }
   }
+  dc.SelectObject(oldFont);
   return min(150, result + 8);
 }
 
 int GraphArray::getButtonHeight(CDC &dc, CFont &font) const {
-  dc.SelectObject(font);
+  CFont *oldFont = dc.SelectObject(&font);
   const CSize cs = dc.GetTextExtent(_T("T"), 1);
   return cs.cy + 8;
+  dc.SelectObject(oldFont);
 }
 
 void GraphArray::findButtonPositions(CDC &dc, CFont &font, const CRect &buttonPanelRect) const {

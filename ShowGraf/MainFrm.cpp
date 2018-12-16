@@ -547,9 +547,9 @@ void CMainFrame::OnToolsFitCustomFunction() {
 void CMainFrame::OnToolsPlotFunction() {
   try {
     FunctionGraphParameters &param = m_functionParam;
-    param.m_color             = randomColor();
-    param.m_trigonometricMode = getTrigoMode();
-    param.m_interval          = getView()->getCoordinateSystem().getDataRange().getXInterval();
+    param.setColor(randomColor());
+    param.setTrigonometricMode(getTrigoMode());
+    param.setInteval(getView()->getCoordinateSystem().getDataRange().getXInterval());
     CFunctionGraphDlg dlg(param);
     if(dlg.DoModal() == IDOK) {
       param = dlg.getData();
@@ -564,9 +564,9 @@ void CMainFrame::OnToolsPlotFunction() {
 void CMainFrame::OnToolsParametricCurve() {
   try {
     ParametricGraphParameters &param = m_parametricCurveParam;
-    param.m_color             = randomColor();
-    param.m_trigonometricMode = getTrigoMode();
-    param.m_interval          = getView()->getCoordinateSystem().getDataRange().getXInterval();
+    param.setColor(randomColor());
+    param.setTrigonometricMode(getTrigoMode());
+    param.setInteval(getView()->getCoordinateSystem().getDataRange().getXInterval());
     CParametricGraphDlg dlg(param);
     if(dlg.DoModal() == IDOK) {
       param = dlg.getData();
@@ -581,8 +581,8 @@ void CMainFrame::OnToolsParametricCurve() {
 void CMainFrame::OnToolsImplicitDefinedCurve() {
   try {
     IsoCurveGraphParameters &param = m_isoCurveParam;
-    param.m_color             = randomColor();
-    param.m_trigonometricMode = getTrigoMode();
+    param.setColor(randomColor());
+    param.setTrigonometricMode(getTrigoMode());
     const DoubleInterval xInterval = getView()->getCoordinateSystem().getDataRange().getXInterval();
     const DoubleInterval yInterval = getView()->getCoordinateSystem().getDataRange().getYInterval();
     CIsoCurveGraphDlg dlg(param);
@@ -599,7 +599,7 @@ void CMainFrame::OnToolsImplicitDefinedCurve() {
 void CMainFrame::OnToolsDifferentialEquations() {
   try {
     DiffEquationGraphParameters &param = m_diffEqParam;
-    param.m_trigonometricMode = getTrigoMode();
+    param.setTrigonometricMode(getTrigoMode());
     const DoubleInterval xInterval = getView()->getXInterval();
     CDiffEquationGraphDlg dlg(param);
     if(dlg.DoModal() == IDOK) {
@@ -700,9 +700,9 @@ void CMainFrame::makeExpoFit() {
   const double b = exp(poly.getCoef(1).re);
   FunctionGraphParameters param;
   param.setName(format(_T("Exponential fit of %s"), item->getDisplayName().cstr()));
-  param.m_color = getShiftedColor(item->getGraph().getParam().m_color);
-  param.m_expr  = format(_T("a = %lg;\r\nb = %lg;\r\na * b^x"), a, b);
-  param.m_interval = item->getGraph().getDataRange().getXInterval();
+  param.setColor(getShiftedColor(item->getGraph().getParam().getColor()));
+  param.setExprText(format(_T("a = %lg;\r\nb = %lg;\r\na * b^x"), a, b));
+  param.setInteval(item->getGraph().getDataRange().getXInterval());
   getDoc()->addFunctionGraph(param);
   Invalidate(TRUE);
 }
@@ -749,9 +749,9 @@ void CMainFrame::makePotensFit() {
   const double b = poly.getCoef(1).re;
   FunctionGraphParameters param;
   param.setName(format(_T("potens fit of %s"), item->getDisplayName().cstr()));
-  param.m_color = getShiftedColor(item->getGraph().getParam().m_color);
-  param.m_expr  = format(_T("a = %lg;\r\nb = %lg;\r\na * x^b"), a, b);
-  param.m_interval = item->getGraph().getDataRange().getXInterval();
+  param.setColor(getShiftedColor(item->getGraph().getParam().getColor()));
+  param.setExprText(format(_T("a = %lg;\r\nb = %lg;\r\na * x^b"), a, b));
+  param.setInteval(item->getGraph().getDataRange().getXInterval());
   getDoc()->addFunctionGraph(param);
   Invalidate(TRUE);
 }

@@ -7,7 +7,7 @@ class DataGraphParameters : public GraphParameters {
 private:
   String     m_fileName;
 public:
-  DataGraphParameters(const String &name, COLORREF color, bool onePerLine, bool ignoreErrors, bool xRelativeToFirst, bool yRelativeToFirst, DataReader &xReader, DataReader &yReader, int rollAvgSize, GraphStyle style);
+  DataGraphParameters(const String &name, COLORREF color, bool onePerLine, bool ignoreErrors, bool xRelativeToFirst, bool yRelativeToFirst, DataReader &xReader, DataReader &yReader, UINT rollAvgSize, GraphStyle style);
   const String &getFileName() const {
     return m_fileName;
   }

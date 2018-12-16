@@ -6,7 +6,7 @@ class FunctionGraphFunction : public ExpressionFunction {
 public:
   inline FunctionGraphFunction(const FunctionGraph *graph) {
     const FunctionGraphParameters &param = (FunctionGraphParameters&)graph->getParam();
-    compile(param.m_expr, _T("x"), param.m_trigonometricMode);
+    compile(param.getExprText(), _T("x"), param.getTrigonometricMode());
   }
 };
 
@@ -18,13 +18,13 @@ void FunctionGraph::calculate() {
   clear();
   FunctionGraphFunction          f(this);
   const FunctionGraphParameters &param     = (FunctionGraphParameters&)getParam();
-  const int                      stepCount = param.m_steps;
-  const double                   step      = param.m_interval.getLength() / stepCount;
-  Real                           x         = param.m_interval.getMin();
-  for(int i = 0; i <= stepCount; x += step, i++) {
+  const UINT                     stepCount = param.getSteps();
+  const double                   step      = fabs(param.getInterval().getLength() / stepCount);
+  Real                           x         = param.getInterval().getMin();
+  for(UINT i = 0; i <= stepCount; x += step, i++) {
     try {
       if(i == stepCount) {
-        x = param.m_interval.getMax();
+        x = param.getInterval().getMax();
       }
       addPoint(Point2D(x,f(x)));
     } catch(Exception e) {
@@ -36,8 +36,7 @@ void FunctionGraph::calculate() {
 
 void FunctionGraph::setTrigoMode(TrigonometricMode mode) {
   FunctionGraphParameters &param = (FunctionGraphParameters&)getParam();
-  if(mode != param.m_trigonometricMode) {
-    param.m_trigonometricMode = mode;
+  if(param.setTrigonometricMode(mode) != mode) {
     calculate();
   }
 }

@@ -46,21 +46,47 @@ void setValue(XMLDoc &doc, XMLNodePtr n, GraphStyle         style    );
 void getValue(XMLDoc &doc, XMLNodePtr n, GraphStyle        &style    );
 
 class GraphParameters : public PersistentData {
-public:
+private:
   COLORREF   m_color;
-  int        m_rollAvgSize;
+  UINT       m_rollAvgSize;
   GraphStyle m_style;
-  GraphParameters(const String &name, COLORREF color, int rollAvgSize, GraphStyle style);
+public:
+  GraphParameters(const String &name, COLORREF color, UINT rollAvgSize, GraphStyle style);
+  // return old color
+  inline COLORREF setColor(COLORREF color) {
+    const COLORREF oldColor = m_color; m_color = color; return oldColor;
+  }
+  inline COLORREF getColor() const {
+    return m_color;
+  }
+  // return old GraphStyle
+  inline GraphStyle setGraphStyle(GraphStyle graphStyle) {
+    const GraphStyle oldStyle = m_style; m_style = graphStyle; return oldStyle;
+  }
+  inline GraphStyle getGraphStyle() const {
+    return m_style;
+  }
+
+  // return old Rolling Average Size
+  inline UINT setRollAvgSize(UINT size) {
+    const UINT oldSize = m_rollAvgSize; m_rollAvgSize = size; return oldSize;
+  }
+  inline UINT getRollAvgSize() const {
+    return m_rollAvgSize;
+  }
 
   void putDataToDoc(  XMLDoc &doc);
   void getDataFromDoc(XMLDoc &doc);
-  static const TCHAR      *graphStyleToString(GraphStyle style);
+  static const TCHAR      *graphStyleToStr(GraphStyle style);
   static GraphStyle        graphStyleFromString(const String &s);
+  const TCHAR *getGraphStyleStr() const {
+    return graphStyleToStr(getGraphStyle());
+  }
 };
 
 class PointGraphParameters : public GraphParameters {
 public:
-  PointGraphParameters(const String &name, COLORREF color, int rollAvgSize, GraphStyle style)
+  PointGraphParameters(const String &name, COLORREF color, UINT rollAvgSize, GraphStyle style)
     : GraphParameters(name, color, rollAvgSize, style)
   {
   }
@@ -76,16 +102,25 @@ public:
 };
 
 class ExprGraphParameters : public GraphParameters {
-public:
+private:
   TrigonometricMode m_trigonometricMode;
-
-  ExprGraphParameters(const String &name, COLORREF color, int rollAvgSize, GraphStyle style, TrigonometricMode trigonometricMode)
+public:
+  ExprGraphParameters(const String &name, COLORREF color, UINT rollAvgSize, GraphStyle style, TrigonometricMode trigonometricMode)
     : GraphParameters(name, color, rollAvgSize, style)
     , m_trigonometricMode(trigonometricMode)
   {
   }
+  inline TrigonometricMode getTrigonometricMode() const {
+    return m_trigonometricMode;
+  }
+  inline TrigonometricMode setTrigonometricMode(TrigonometricMode mode) {
+    const TrigonometricMode oldMode = m_trigonometricMode; m_trigonometricMode = mode; return oldMode;
+  }
   void putDataToDoc(  XMLDoc &doc);
   void getDataFromDoc(XMLDoc &doc);
-  static const TCHAR      *trigonometricModeToString(TrigonometricMode mode);
+  static const TCHAR      *trigonometricModeToStr(TrigonometricMode mode);
   static TrigonometricMode trigonometricModeFromString(const String &str);
+  const TCHAR *getTrigonometricModeStr() const {
+    trigonometricModeToStr(getTrigonometricMode());
+  }
 };

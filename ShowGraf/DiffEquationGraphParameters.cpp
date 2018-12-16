@@ -31,11 +31,11 @@ void DiffEquationGraphParameters::putDataToDoc(XMLDoc &doc) {
   assert(dim == m_attrArray.size());
 
   XMLNodePtr root = doc.createRoot(_T("DiffEquation"));
-  setValue(doc, root, _T("interval" ), m_interval         );
-  doc.setValue( root, _T("eps"      ), m_eps              );
-  setValue(doc, root                 , m_style            );
-  setValue(doc, root                 , m_trigonometricMode);
-  doc.setValue( root, _T("dim"      ), dim                );
+  setValue(doc, root, _T("interval" ), m_interval              );
+  doc.setValue( root, _T("eps"      ), m_eps                   );
+  setValue(doc, root                 , getGraphStyle()         );
+  setValue(doc, root                 , getTrigonometricMode()  );
+  doc.setValue( root, _T("dim"      ), dim                     );
   doc.setValue( root, _T("common"   ), eqDescArray.m_commonText);
 
   XMLNodePtr eqListNode = doc.createNode(root,_T("equations"));
@@ -55,8 +55,12 @@ void DiffEquationGraphParameters::getDataFromDoc(XMLDoc &doc) {
   checkTag(     root, _T("DiffEquation"));
   getValue(doc, root, _T("interval" ), m_interval         );
   doc.getValue( root, _T("eps"      ), m_eps              );
-  getValue(doc, root                 , m_style            );
-  getValue(doc, root                 , m_trigonometricMode);
+  GraphStyle graphStyle;
+  getValue(doc, root                 , graphStyle         );
+  setGraphStyle(graphStyle);
+  TrigonometricMode trigonometricMode;
+  getValue(doc, root                 , trigonometricMode  );
+  setTrigonometricMode(trigonometricMode);
   doc.getValue( root, _T("dim"      ), dim                );
   if(doc.findChild(root, _T("common")) != NULL) {
     doc.getValueLF(root, _T("common"), m_equationsDescription.m_commonText);

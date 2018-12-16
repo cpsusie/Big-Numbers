@@ -101,8 +101,8 @@ void CIsoCurveGraphDlg::OnButtonHelp() {
 }
 
 void CIsoCurveGraphDlg::paramToWin(const IsoCurveGraphParameters &param) {
-  m_style    = GraphParameters::graphStyleToString(param.m_style);
-  getColorButton()->SetColor(param.m_color);
+  m_style    = param.getGraphStyleStr();
+  getColorButton()->SetColor(param.getColor());
   m_expr     = param.m_expr.cstr();
   m_xFrom    = param.m_boundingBox.getMinX();
   m_xTo      = param.m_boundingBox.getMaxX();
@@ -115,8 +115,8 @@ void CIsoCurveGraphDlg::paramToWin(const IsoCurveGraphParameters &param) {
 bool CIsoCurveGraphDlg::winToParam(IsoCurveGraphParameters &param) {
   if(!__super::winToParam(param)) return false;
   param.m_expr        = m_expr;
-  param.m_style       = (GraphStyle)getStyleCombo()->GetCurSel();
-  param.m_color       = getColorButton()->GetColor();
+  param.setGraphStyle((GraphStyle)getStyleCombo()->GetCurSel());
+  param.setColor(getColorButton()->GetColor());
   param.m_boundingBox = Rectangle2D(m_xFrom, m_yFrom, m_xTo-m_xFrom, m_yTo-m_yFrom);
   param.m_cellSize    = m_cellSize;
   return true;

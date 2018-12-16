@@ -54,9 +54,10 @@ public:
   double getSmallestPositiveY() const;
 
   bool OnLButtonDown(UINT nFlags, const CPoint &point, const RectangleTransformation &tr);
-  void paint(CCoordinateSystem &cs, CFont &buttonFont, const CRect &buttonPanelRect) const;
+  void paintItems(     CCoordinateSystem &cs, CFont &buttonFont, const CRect &buttonPanelRect) const;
+  void paintPointArray(CCoordinateSystem &cs, CFont &font) const;
   void setStyle(GraphStyle style);
-  void setRollAvgSize(int size);
+  void setRollAvgSize(UINT size);
   void setTrigoMode(TrigonometricMode mode);
 
   bool ok() const {

@@ -18,7 +18,7 @@ public:
 
 IsoCurveGraphEvaluator::IsoCurveGraphEvaluator(IsoCurveGraph *graph)
 : m_graph(*graph)
-, m_expr(((IsoCurveGraphParameters&)graph->getParam()).m_trigonometricMode) {
+, m_expr(((IsoCurveGraphParameters&)graph->getParam()).getTrigonometricMode()) {
 
   const IsoCurveGraphParameters &param = (IsoCurveGraphParameters&)m_graph.getParam();
   m_expr.compile(param.m_expr, true);
@@ -81,8 +81,7 @@ void IsoCurveGraph::findDataRange() {
 
 void IsoCurveGraph::setTrigoMode(TrigonometricMode mode) {
   IsoCurveGraphParameters &param = (IsoCurveGraphParameters&)getParam();
-  if(mode != param.m_trigonometricMode) {
-    param.m_trigonometricMode = mode;
+  if(param.setTrigonometricMode(mode) != mode) {
     calculate();
   }
 }
@@ -94,12 +93,12 @@ void IsoCurveGraph::paint(CCoordinateSystem &cs) {
   Viewport2D        &vp    = cs.getViewport();
   const LineSegment *lsp   = &m_lineArray[0];
   const LineSegment *end   = &m_lineArray.last();
-  const COLORREF     color = getParam().m_color;
-  switch(getParam().m_style) {
+  const COLORREF     color = getParam().getColor();
+  switch(getParam().getGraphStyle()) {
   case GSCURVE :
     { CPen pen;
       pen.CreatePen(PS_SOLID, 1, color);
-      vp.SelectObject(&pen);
+      CPen *oldPen = vp.SelectObject(&pen);
       for(;lsp <= end; lsp++) {
         const Point2D &p1 = m_pointArray[lsp->m_i1];
         const Point2D &p2 = m_pointArray[lsp->m_i2];
@@ -109,6 +108,7 @@ void IsoCurveGraph::paint(CCoordinateSystem &cs) {
           cs.setOccupiedLine(p1,p2);
         }
       }
+      vp.SelectObject(oldPen);
     }
     break;
   case GSPOINT :
@@ -146,7 +146,7 @@ void IsoCurveGraph::paint(CCoordinateSystem &cs) {
     }
     break;
   default:
-    throwException(_T("Invalid style:%d"), getParam().m_style);
+    throwException(_T("Invalid style:%d"), getParam().getGraphStyle());
   }
 }
 
@@ -165,7 +165,7 @@ double IsoCurveGraph::distance(const CPoint &p, const RectangleTransformation &t
   const size_t       n  = m_lineArray.size();
   const LineSegment *ls = &m_lineArray[0];
 
-  switch(getParam().m_style) {
+  switch(getParam().getGraphStyle()) {
   case GSCURVE:
     { double minDist = EMPTY_DISTANCE;
       for(size_t i = 0; i < n; i++, ls++) {
@@ -208,7 +208,7 @@ double IsoCurveGraph::distance(const CPoint &p, const RectangleTransformation &t
       return minDist;
     }
   default:
-    throwException(_T("Invalid style:%d"), getParam().m_style);
+    throwException(_T("Invalid style:%d"), getParam().getGraphStyle());
   }
   return 0;
 }

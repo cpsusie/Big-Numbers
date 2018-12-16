@@ -114,22 +114,21 @@ void CFunctionGraphDlg::OnButtonHelp() {
 }
 
 void CFunctionGraphDlg::paramToWin(const FunctionGraphParameters &param) {
-  m_style    = GraphParameters::graphStyleToString(param.m_style);
-  getColorButton()->SetColor(param.m_color);
-  m_expr     = param.m_expr.cstr();
-  m_xFrom    = param.m_interval.getMin();
-  m_xTo      = param.m_interval.getMax();
-  m_steps    = param.m_steps;
+  m_style    = param.getGraphStyleStr();
+  getColorButton()->SetColor(param.getColor());
+  m_expr     = param.getExprText().cstr();
+  m_xFrom    = param.getInterval().getMin();
+  m_xTo      = param.getInterval().getMax();
+  m_steps    = param.getSteps();
   __super::paramToWin(param);
 }
 
 bool CFunctionGraphDlg::winToParam(FunctionGraphParameters &param) {
   if(!__super::winToParam(param)) return false;
-  param.m_expr  = m_expr;
-  param.m_style = (GraphStyle)getStyleCombo()->GetCurSel();
-  param.m_color = getColorButton()->GetColor();
-  param.m_interval.setFrom(m_xFrom);
-  param.m_interval.setTo(m_xTo);
-  param.m_steps = m_steps;
+  param.setExprText((LPCTSTR)m_expr);
+  param.setGraphStyle((GraphStyle)getStyleCombo()->GetCurSel());
+  param.setColor(getColorButton()->GetColor());
+  param.setInteval(m_xFrom,m_xTo);
+  param.setSteps(m_steps);
   return true;
 }

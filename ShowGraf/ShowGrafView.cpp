@@ -89,7 +89,8 @@ bool CShowGrafView::paintAll(CDC &dc, const CRect &rect, CFont *axisFont, CFont 
     m_coordinateSystem.OnPaint();
     CClientDC dc(&m_coordinateSystem);
     m_coordinateSystem.setDC(dc);
-    ga.paint(m_coordinateSystem, *buttonFont, getRelativeClientRect(this,IDC_BUTTONPANEL));
+    ga.paintItems(m_coordinateSystem, *buttonFont, getRelativeClientRect(this,IDC_BUTTONPANEL));
+    ga.paintPointArray(m_coordinateSystem, m_axisFont);
 //    debugLog(_T("Cells Occupied:\n%s"), m_coordinateSystem.getOccupationMap().toString().cstr());
     return true;
   } catch(Exception e) {

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "GraphParameters.h"
 
-GraphParameters::GraphParameters(const String &name, COLORREF color, int rollAvgSize, GraphStyle style) {
+GraphParameters::GraphParameters(const String &name, COLORREF color, UINT rollAvgSize, GraphStyle style) {
   setName(name);
   m_color       = color;
   m_rollAvgSize = rollAvgSize;
@@ -25,7 +25,7 @@ void GraphParameters::getDataFromDoc(XMLDoc &doc) {
 }
 
 void setValue(XMLDoc &doc, XMLNodePtr n, GraphStyle style) {
-  String str = toLowerCase(GraphParameters::graphStyleToString(style));
+  String str = toLowerCase(GraphParameters::graphStyleToStr(style));
   doc.setValue(n, _T("style"), str);
 }
 
@@ -41,7 +41,7 @@ static const TCHAR *styleName[] = {
  ,_T("Cross")
 };
 
-const TCHAR *GraphParameters::graphStyleToString(GraphStyle style) {  // static
+const TCHAR *GraphParameters::graphStyleToStr(GraphStyle style) {  // static
   if(style < 0 || style > 2) {
     throwInvalidArgumentException(__TFUNCTION__, _T("style=%d. Must be [0..2]"), style);
   }
@@ -69,7 +69,7 @@ void ExprGraphParameters::getDataFromDoc(XMLDoc &doc) {
   __super::getDataFromDoc(doc);
 }
 
-const TCHAR *ExprGraphParameters::trigonometricModeToString(TrigonometricMode mode) {  // static
+const TCHAR *ExprGraphParameters::trigonometricModeToStr(TrigonometricMode mode) {  // static
   switch(mode) {
   case RADIANS : return _T("Radians");
   case DEGREES : return _T("Degrees");
@@ -91,7 +91,7 @@ TrigonometricMode ExprGraphParameters::trigonometricModeFromString(const String 
 }
 
 void setValue(XMLDoc &doc, XMLNodePtr n, TrigonometricMode trigoMode) {
-  String str = toLowerCase(ExprGraphParameters::trigonometricModeToString(trigoMode));
+  String str = toLowerCase(ExprGraphParameters::trigonometricModeToStr(trigoMode));
   doc.setValue(n, _T("trigo"), str);
 }
 

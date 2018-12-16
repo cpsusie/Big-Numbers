@@ -325,7 +325,7 @@ void CShowGrafDoc::setRollAvg(bool on) {
   m_graphArray.setRollAvgSize(on ? m_options.m_rollAvgSize : 0);
 }
 
-void CShowGrafDoc::setRollAvgSize(int size) {
+void CShowGrafDoc::setRollAvgSize(UINT size) {
   m_options.m_rollAvgSize = size;
   setRollAvg(true);
 }

@@ -2,7 +2,7 @@
 #include <XMLUtil.h>
 #include "FunctionGraph.h"
 
-FunctionGraphParameters::FunctionGraphParameters(const String &name, COLORREF color, int rollAvgSize, GraphStyle style, TrigonometricMode trigonometricMode)
+FunctionGraphParameters::FunctionGraphParameters(const String &name, COLORREF color, UINT rollAvgSize, GraphStyle style, TrigonometricMode trigonometricMode)
 : ExprGraphParameters(name,color,rollAvgSize,style,trigonometricMode) {
   m_interval          = DoubleInterval(0,1);
   m_steps             = 500;

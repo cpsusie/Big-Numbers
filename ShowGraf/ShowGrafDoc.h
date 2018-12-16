@@ -28,7 +28,7 @@ public:
   bool              m_rangeSpecified;
   DataRange         m_explicitRange;
   bool              m_rollAvg;
-  int               m_rollAvgSize;
+  UINT              m_rollAvgSize;
   InitialOptions();
 };
 
@@ -76,8 +76,8 @@ public:
   bool getRollAvg() const {
     return m_options.m_rollAvg;
   }
-  void setRollAvgSize(int value);
-  int  getRollAvgSize() const {
+  void setRollAvgSize(UINT value);
+  UINT  getRollAvgSize() const {
     return m_options.m_rollAvgSize;
   };
 

@@ -19,13 +19,13 @@ const Point2DArray &PointGraph::getProcessedData() const {
     return m_processedData;
   }
 
-  if(getParam().m_rollAvgSize <= 1) {
+  if(getParam().getRollAvgSize() <= 1) {
     m_processedData = m_pointArray;
   } else {
     m_processedData.clear();
     QueueList<double> queue;
     double sum = 0;
-    const size_t maxQueueSize = getParam().m_rollAvgSize;
+    const size_t maxQueueSize = getParam().getRollAvgSize();
     const size_t n            = m_pointArray.size();
     for(size_t i = 0; i < n; i++) {
       if(queue.size() == maxQueueSize) {
@@ -61,7 +61,7 @@ double PointGraph::distance(const CPoint &p, const RectangleTransformation &tr) 
   const Point2DP      tmpp(p);
   const Point2DArray &data = getProcessedData();
   const size_t        n    = data.size();
-  switch(getParam().m_style) {
+  switch(getParam().getGraphStyle()) {
   case GSCURVE:
     { double minDist = EMPTY_DISTANCE;
       for(size_t i = 1; i < n; i++) {
@@ -92,16 +92,15 @@ double PointGraph::distance(const CPoint &p, const RectangleTransformation &tr) 
       return minDist;
     }
   default:
-    throwException(_T("Invalid style:%d"), getParam().m_style);
+    throwException(_T("Invalid style:%d"), getParam().getGraphStyle());
   }
   return 0;
 }
 
-void PointGraph::setRollAvgSize(int size) {
-  if(size != getParam().m_rollAvgSize) {
+void PointGraph::setRollAvgSize(UINT size) {
+  if(getParam().setRollAvgSize(size) != size) {
     m_dataProcessed = false;
   }
-  getParam().m_rollAvgSize = size;
 }
 
 void PointGraph::paint(CCoordinateSystem &cs) {
@@ -110,15 +109,15 @@ void PointGraph::paint(CCoordinateSystem &cs) {
   const Point2D      *pp    = &data[0];
   const Point2D      *end   = &data.last();
   Viewport2D         &vp    = cs.getViewport();
-  const COLORREF      color = getParam().m_color;
+  const COLORREF      color = getParam().getColor();
   Point2DArray        tmp;
 
-  switch(getParam().m_style) {
+  switch(getParam().getGraphStyle()) {
   case GSCURVE :
     if(data.size() > 1) {
       CPen pen;
       pen.CreatePen(PS_SOLID, 1, color);
-      vp.SelectObject(&pen);
+      CPen *oldPen = vp.SelectObject(&pen);
       bool lastDefined = pointDefined(*pp);
       if(lastDefined) {
         vp.MoveTo(*pp);
@@ -140,6 +139,7 @@ void PointGraph::paint(CCoordinateSystem &cs) {
         }
         lastDefined = defined;
       }
+      vp.SelectObject(oldPen);
       cs.setOccupiedConnectedPoints(tmp);
     }
     break;
@@ -162,7 +162,7 @@ void PointGraph::paint(CCoordinateSystem &cs) {
     cs.setOccupiedPoints(tmp);
     break;
   default:
-    throwException(_T("Invalid style:%d"), getParam().m_style);
+    throwException(_T("Invalid style:%d"), getParam().getGraphStyle());
   }
 }
 

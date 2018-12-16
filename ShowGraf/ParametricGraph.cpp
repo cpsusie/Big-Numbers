@@ -9,15 +9,15 @@ ParametricGraph::ParametricGraph(const ParametricGraphParameters &param) : Point
 void ParametricGraph::calculate() {
   clear();
   const ParametricGraphParameters &param = (ParametricGraphParameters&)getParam();
-  ExpressionFunction Xt(param.m_commonText + param.m_exprX, _T("t"), param.m_trigonometricMode);
-  ExpressionFunction Yt(param.m_commonText + param.m_exprY, _T("t"), param.m_trigonometricMode);
-  const int          stepCount = param.m_steps;
-  double             step      = (param.m_interval.getMax() - param.m_interval.getMin()) / stepCount;
-  Real               t         = param.m_interval.getMin();
-  for(int i = 0; i <= stepCount; t += step, i++) {
+  ExpressionFunction Xt(param.getExprXText(true), _T("t"), param.getTrigonometricMode());
+  ExpressionFunction Yt(param.getExprYText(true), _T("t"), param.getTrigonometricMode());
+  const UINT         stepCount = param.getSteps();
+  double             step      = fabs(param.getInterval().getLength() / stepCount);
+  Real               t         = param.getInterval().getMin();
+  for(UINT i = 0; i <= stepCount; t += step, i++) {
     try {
       if(i == stepCount) {
-        t = param.m_interval.getMax();
+        t = param.getInterval().getMax();
       }
       addPoint(Point2D(Xt(t), Yt(t)));
     } catch(Exception e) {
@@ -29,8 +29,7 @@ void ParametricGraph::calculate() {
 
 void ParametricGraph::setTrigoMode(TrigonometricMode mode) {
   ParametricGraphParameters &param = (ParametricGraphParameters&)getParam();
-  if(mode != param.m_trigonometricMode) {
-    param.m_trigonometricMode = mode;
+  if(param.setTrigonometricMode(mode) != mode) {
     calculate();
   }
 }

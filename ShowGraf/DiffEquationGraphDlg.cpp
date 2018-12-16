@@ -275,7 +275,7 @@ void CDiffEquationGraphDlg::paramToWin(const DiffEquationGraphParameters &param)
   assert(param.m_equationsDescription.size() == param.m_attrArray.size());
   m_fullName   = param.getName();
   m_name       = param.getDisplayName().cstr();
-  m_style      = GraphParameters::graphStyleToString(param.m_style);
+  m_style      = param.getGraphStyleStr();
   m_commonText = param.m_equationsDescription.m_commonText.cstr();
   m_xFrom      = param.m_interval.getMin();
   m_xTo        = param.m_interval.getMax();
@@ -291,7 +291,7 @@ void CDiffEquationGraphDlg::winToParam(DiffEquationGraphParameters &param) {
     m_fullName = info.setFileName(m_name).getFullPath();
   }
   param.setName(m_fullName);
-  param.m_style = (GraphStyle)getStyleCombo()->GetCurSel();
+  param.setGraphStyle((GraphStyle)getStyleCombo()->GetCurSel());
   param.m_equationsDescription.m_commonText = m_commonText;
   param.m_interval.setFrom(m_xFrom);
   param.m_interval.setTo(m_xTo);

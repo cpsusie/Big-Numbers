@@ -36,10 +36,10 @@ BOOL CDataGraphDlg::OnInitDialog() {
   m_layoutManager.addControl(IDCANCEL    , RELATIVE_POSITION );
 
   const DataGraphParameters &param = (DataGraphParameters&)m_graph.getParam();
-  getColorButton()->SetColor(param.m_color);
+  getColorButton()->SetColor(param.getColor());
   m_fullName = param.getName();
   m_name     = param.getDisplayName().cstr();
-  m_style    = GraphParameters::graphStyleToString(param.m_style);
+  m_style    = param.getGraphStyleStr();
 
   UpdateData(FALSE);
   return FALSE;
@@ -54,8 +54,8 @@ void CDataGraphDlg::OnOK() {
   }
 
   m_graph.getParam().setName((LPCTSTR)m_name);
-  m_graph.getParam().m_style = (GraphStyle)getStyleCombo()->GetCurSel();
-  m_graph.getParam().m_color = getColorButton()->GetColor();
+  m_graph.getParam().setGraphStyle((GraphStyle)getStyleCombo()->GetCurSel());
+  m_graph.getParam().setColor(getColorButton()->GetColor());
   m_graph.setDataPoints(m_model.getData());
   __super::OnOK();
 }

@@ -71,7 +71,7 @@ void DiffEquationGraph::calculate() {
     const EquationAttributes      &attr  = param.m_attrArray[index];
     const DiffEquationDescription &desc  = param.m_equationsDescription[index];
     vectorGraphMap.add(index+1); // v[0] is x, so add 1 to get mapping right
-    m_pointGraphArray.add(new PointGraph(new PointGraphParameters(desc.m_name, attr.m_color, 1, param.m_style)));
+    m_pointGraphArray.add(new PointGraph(new PointGraphParameters(desc.m_name, attr.m_color, 1, param.getGraphStyle())));
     TRACE_NEW(m_pointGraphArray.last());
   }
   DiffEquationHandler handler(*this, vectorGraphMap);
@@ -84,8 +84,7 @@ void DiffEquationGraph::calculate() {
 
 void DiffEquationGraph::setTrigoMode(TrigonometricMode mode) {
   DiffEquationGraphParameters &param = (DiffEquationGraphParameters&)getParam();
-  if(mode != param.m_trigonometricMode) {
-    param.m_trigonometricMode = mode;
+  if(param.setTrigonometricMode(mode) != mode) {
     calculate();
   }
 }

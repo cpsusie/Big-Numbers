@@ -218,8 +218,8 @@ void CCustomFitThreadDlg::OnOK() {
   }
 
   m_param            = FunctionGraphParameters((LPCTSTR)m_name,getColor(),0,GSCURVE);
-  m_param.m_interval = getXInterval();
-  m_param.m_expr     = m_functionFitter->toString().cstr();
+  m_param.setInteval(getXInterval());
+  m_param.setExprText(m_functionFitter->toString());
 
   m_fp.addFunctionGraph(m_param);
 

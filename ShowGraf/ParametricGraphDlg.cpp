@@ -119,26 +119,25 @@ void CParametricGraphDlg::OnButtonHelpY() {
 }
 
 void CParametricGraphDlg::paramToWin(const ParametricGraphParameters &param) {
-  m_style      = GraphParameters::graphStyleToString(param.m_style);
-  getColorButton()->SetColor(param.m_color);
-  m_commonText = param.m_commonText.cstr();
-  m_exprX      = param.m_exprX.cstr();
-  m_exprY      = param.m_exprY.cstr();
-  m_tFrom      = param.m_interval.getMin();
-  m_tTo        = param.m_interval.getMax();
-  m_steps      = param.m_steps;
+  m_style      = param.getGraphStyleStr();
+  getColorButton()->SetColor(param.getColor());
+  m_commonText = param.getCommonText().cstr();
+  m_exprX      = param.getExprXText(false).cstr();
+  m_exprY      = param.getExprYText(false).cstr();
+  m_tFrom      = param.getInterval().getMin();
+  m_tTo        = param.getInterval().getMax();
+  m_steps      = param.getSteps();
   __super::paramToWin(param);
 }
 
 bool CParametricGraphDlg::winToParam(ParametricGraphParameters &param) {
   if(!__super::winToParam(param)) return false;
-  param.m_commonText = m_commonText;
-  param.m_exprX      = m_exprX;
-  param.m_exprY      = m_exprY;
-  param.m_style      = (GraphStyle)getStyleCombo()->GetCurSel();
-  param.m_color      = getColorButton()->GetColor();
-  param.m_interval.setFrom(m_tFrom);
-  param.m_interval.setTo(m_tTo);
-  param.m_steps      = m_steps;
+  param.setCommonText((LPCTSTR)m_commonText);
+  param.setExprXText((LPCTSTR)m_exprX);
+  param.setExprYText((LPCTSTR)m_exprY);
+  param.setGraphStyle((GraphStyle)getStyleCombo()->GetCurSel());
+  param.setColor(getColorButton()->GetColor());
+  param.setInteval(m_tFrom, m_tTo);
+  param.setSteps(m_steps);
   return true;
 }

@@ -13,10 +13,10 @@ COLORREF getComplementColor(COLORREF color) {
 
 void GraphItem::paintButton(CDC &dc, bool selected) const {
   const CString buttonText = m_graph->getParam().getDisplayName().cstr();
-  dc.FillSolidRect(&m_buttonRect,m_graph->getParam().m_color);
+  dc.FillSolidRect(&m_buttonRect,m_graph->getParam().getColor());
   CRect tr = m_buttonRect;
   tr.left += 5; tr.top += 4; tr.right -= 3; tr.bottom -= 3;
-  COLORREF color = m_graph->getParam().m_color;
+  COLORREF color = m_graph->getParam().getColor();
   dc.SetBkColor(color);
 //  CSize cs  = dc.GetTextExtent(buttonText.cstr());
   COLORREF textColor = getComplementColor(color);
@@ -40,20 +40,25 @@ void GraphItem::paint(CCoordinateSystem &cs, CFont &buttonFont, bool selected) c
     vp.setClipping(false);
   }
   CDC &dc = *vp.getDC();
-  dc.SelectObject(buttonFont);
+  CFont *oldFont = dc.SelectObject(&buttonFont);
   paintButton(dc, selected);
+  dc.SelectObject(oldFont);
 }
 
 void MoveablePoint::paint(CCoordinateSystem &cs) {
+  const int precision = 5;
   Viewport2D &vp = cs.getViewport();
   if(m_graph.isVisible()) {
     vp.setClipping(true);
     const Point2D p(m_range.getMinX(), m_range.getMinY());
-    const String text         = p.toString(5);
-    const CPoint textPosition = vp.forwardTransform(m_location);
-    CDC &dc = *vp.getDC();
-    CFont *font = cs.GetFont();
-    textOutTransparentBackground(dc, textPosition, text, *font, RED);
+    String text;
+    switch(m_showFlags) {
+    case SHOWXCOORDINATE    : text = ::toString(p.x, precision); break;
+    case SHOWYCOORDINATE    : text = ::toString(p.y, precision); break;
+    case SHOWBOTHCOORDINATES:
+    default                 : text = p.toString(precision);      break;
+    }
+    vp.TextOut(m_location, text, m_graph.getParam().getColor());
     vp.setClipping(false);
   }
 }

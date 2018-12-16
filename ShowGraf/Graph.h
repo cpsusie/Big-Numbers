@@ -8,15 +8,21 @@
 
 class Graph;
 
+#define SHOWXCOORDINATE 0x1
+#define SHOWYCOORDINATE 0x2
+#define SHOWBOTHCOORDINATES (SHOWXCOORDINATE|SHOWYCOORDINATE)
+
 class MoveablePoint : public CoordinateSystemObject {
 private:
   const Graph    &m_graph;
   const DataRange m_range;
+  const BYTE      m_showFlags;
   Point2D         m_location;
 public:
-  MoveablePoint(const Graph &graph, const Point2D &point)
+  MoveablePoint(const Graph &graph, const Point2D &point, BYTE showFlags = SHOWBOTHCOORDINATES)
     : m_graph(graph)
     , m_range(point)
+    , m_showFlags(showFlags)
     , m_location(point) {
   }
   inline const Graph &getGraph() const {
@@ -173,9 +179,9 @@ public:
   virtual double  getSmallestPositiveX() const = 0;
   virtual double  getSmallestPositiveY() const = 0;
   virtual void    setStyle(GraphStyle style) {
-    m_param->m_style = style;
+    m_param->setGraphStyle(style);
   }
-  virtual void setRollAvgSize(int size) {
+  virtual void setRollAvgSize(UINT size) {
   }
   virtual bool isPointGraph() const = 0;
   virtual void setVisible(bool visible) {
@@ -229,7 +235,7 @@ public:
     return m_pointArray;
   }
   void    setDataPoints(const Point2DArray &a);
-  void    setRollAvgSize(int size);
+  void    setRollAvgSize(UINT size);
   double  distance(const CPoint &p, const RectangleTransformation &tr) const;
   double  getSmallestPositiveX() const;
   double  getSmallestPositiveY() const;
