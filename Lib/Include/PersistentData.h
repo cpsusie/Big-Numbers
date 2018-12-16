@@ -6,7 +6,7 @@ class PersistentData {
 private:
   String m_name;
 protected:
-  static const TCHAR *s_defaultName;
+  static const TCHAR *s_defaultName; // = "Untitled"
 public:
   PersistentData() : m_name(s_defaultName) {
   }
