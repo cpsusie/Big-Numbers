@@ -116,19 +116,19 @@ void CDiffEquationEdit::DoDataExchange(CDataExchange *pDX) {
 }
 
 void CDiffEquationEdit::paramToWin(const DiffEquationDescription &desc, const EquationAttributes &attr) {
-  m_name         = desc.m_name.cstr();
-  m_expr         = desc.m_expr.cstr();
-  m_startValue   = attr.m_startValue;
-  m_visible      = attr.m_visible;
-  m_colorButton.SetColor(attr.m_color);
+  m_name         = desc.getName().cstr();
+  m_expr         = desc.getExprText().cstr();
+  m_startValue   = attr.getStartValue();
+  m_visible      = attr.isVisible();
+  m_colorButton.SetColor(attr.getColor());
 }
 
 void CDiffEquationEdit::winToParam(DiffEquationDescription &desc, EquationAttributes &attr) {
-  desc.m_name       = (LPCTSTR)m_name;
-  desc.m_expr       = (LPCTSTR)m_expr;
-  attr.m_startValue = m_startValue;
-  attr.m_visible    = m_visible ? true : false;
-  attr.m_color      = m_colorButton.GetColor();
+  desc.setName(     (LPCTSTR)m_name          );
+  desc.setExprText( (LPCTSTR)m_expr          );
+  attr.setStartValue(m_startValue            );
+  attr.setVisible(   m_visible ? true : false);
+  attr.setColor(     m_colorButton.GetColor());
 }
 
 bool CDiffEquationEdit::getVisibleChecked() {
@@ -293,24 +293,22 @@ void CDiffEquationEditArray::removeEquationFromLayoutManager(SimpleLayoutManager
 }
 
 void CDiffEquationEditArray::winToParam(DiffEquationGraphParameters &param) {
-  param.m_equationsDescription.clear();
-  param.m_attrArray.clear();
+  param.removeAllEquations();
   const size_t n = size();
   for(size_t i = 0; i < n; i++) {
     DiffEquationDescription desc;
     EquationAttributes      attr;
     (*this)[i]->winToParam(desc, attr);
-    param.m_equationsDescription.add(desc);
-    param.m_attrArray.add(attr);
+    param.addEquation(desc, attr);
   }
 }
 
 void CDiffEquationEditArray::paramToWin(const DiffEquationGraphParameters &param) {
   const size_t n = size();
   assert(n == param.getEquationCount());
-  for(size_t i = 0; i < n; i++) {
-    const DiffEquationDescription &desc = param.m_equationsDescription[i];
-    const EquationAttributes      &attr = param.m_attrArray[i];
+  for(UINT i = 0; i < n; i++) {
+    const DiffEquationDescription &desc = param.getEquationDescription(i);
+    const EquationAttributes      &attr = param.getEquationAttribute(  i);
     (*this)[i]->paramToWin(desc, attr);
   }
 }

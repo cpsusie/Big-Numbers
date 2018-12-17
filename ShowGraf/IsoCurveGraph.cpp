@@ -21,7 +21,7 @@ IsoCurveGraphEvaluator::IsoCurveGraphEvaluator(IsoCurveGraph *graph)
 , m_expr(((IsoCurveGraphParameters&)graph->getParam()).getTrigonometricMode()) {
 
   const IsoCurveGraphParameters &param = (IsoCurveGraphParameters&)m_graph.getParam();
-  m_expr.compile(param.m_expr, true);
+  m_expr.compile(param.getExprText(), true);
   const ExpressionVariable *xvp = m_expr.getVariable(_T("x"));
   const ExpressionVariable *yvp = m_expr.getVariable(_T("y"));
   m_x = xvp ? &m_expr.getValueRef(*xvp) : &m_dummyX;
@@ -60,7 +60,7 @@ void IsoCurveGraph::calculate() {
   IsoCurveFinder curveFinder(eval);
   eval.m_pointArray = &curveFinder.getPointArray();
   const IsoCurveGraphParameters &param = (IsoCurveGraphParameters&)getParam();
-  curveFinder.findCurve(param.m_cellSize, param.m_boundingBox);
+  curveFinder.findCurve(param.getCellSize(), param.getBoundingBox());
   findDataRange();
 }
 

@@ -10,7 +10,7 @@ private:
   DoubleInterval    m_interval;
   UINT              m_steps;
 public:
-  ParametricGraphParameters(const String &name=_T("Untitled"), COLORREF color=BLACK, UINT rollAvgSize=0, GraphStyle style=GSCURVE, TrigonometricMode trigonometricMode=RADIANS);
+  ParametricGraphParameters(const String &name=s_defaultName, COLORREF color=BLACK, UINT rollAvgSize=0, GraphStyle style=GSCURVE, TrigonometricMode trigonometricMode=RADIANS);
   void putDataToDoc(XMLDoc &doc);
   void getDataFromDoc(XMLDoc &doc);
   // return old Interval
@@ -33,16 +33,16 @@ public:
   }
 
   // return old m_exprX
-  inline String setExprXText(const String &text) {
-    const String oldText = m_exprX; m_exprX = text; return oldText;
+  inline String setExprXText(const String &exprX) {
+    const String oldExprX = m_exprX; m_exprX = exprX; return oldExprX;
   }
   inline String getExprXText(bool prefixCommon) const {
     return prefixCommon ? (m_commonText + m_exprX) : m_exprX;
   }
 
   // return old m_exprY
-  inline String setExprYText(const String &text) {
-    const String oldText = m_exprY; m_exprY = text; return oldText;
+  inline String setExprYText(const String &exprY) {
+    const String oldExprY = m_exprY; m_exprY = exprY; return oldExprY;
   }
   inline String getExprYText(bool prefixCommon) const {
     return prefixCommon ? (m_commonText + m_exprY) : m_exprY;

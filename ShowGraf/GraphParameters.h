@@ -113,6 +113,7 @@ public:
   inline TrigonometricMode getTrigonometricMode() const {
     return m_trigonometricMode;
   }
+  // Return old trigonometric mode
   inline TrigonometricMode setTrigonometricMode(TrigonometricMode mode) {
     const TrigonometricMode oldMode = m_trigonometricMode; m_trigonometricMode = mode; return oldMode;
   }

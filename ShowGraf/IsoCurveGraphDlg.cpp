@@ -103,21 +103,22 @@ void CIsoCurveGraphDlg::OnButtonHelp() {
 void CIsoCurveGraphDlg::paramToWin(const IsoCurveGraphParameters &param) {
   m_style    = param.getGraphStyleStr();
   getColorButton()->SetColor(param.getColor());
-  m_expr     = param.m_expr.cstr();
-  m_xFrom    = param.m_boundingBox.getMinX();
-  m_xTo      = param.m_boundingBox.getMaxX();
-  m_yFrom    = param.m_boundingBox.getMinY();
-  m_yTo      = param.m_boundingBox.getMaxY();
-  m_cellSize = param.m_cellSize;
+  m_expr     = param.getExprText().cstr();
+  const Rectangle2D &bb = param.getBoundingBox();
+  m_xFrom    = bb.getMinX();
+  m_xTo      = bb.getMaxX();
+  m_yFrom    = bb.getMinY();
+  m_yTo      = bb.getMaxY();
+  m_cellSize = param.getCellSize();
   __super::paramToWin(param);
 }
 
 bool CIsoCurveGraphDlg::winToParam(IsoCurveGraphParameters &param) {
   if(!__super::winToParam(param)) return false;
-  param.m_expr        = m_expr;
+  param.setExprText((LPCTSTR)m_expr);
   param.setGraphStyle((GraphStyle)getStyleCombo()->GetCurSel());
   param.setColor(getColorButton()->GetColor());
-  param.m_boundingBox = Rectangle2D(m_xFrom, m_yFrom, m_xTo-m_xFrom, m_yTo-m_yFrom);
-  param.m_cellSize    = m_cellSize;
+  param.setBoundingBox(Rectangle2D(m_xFrom, m_yFrom, m_xTo-m_xFrom, m_yTo-m_yFrom));
+  param.setCellSize(m_cellSize);
   return true;
 }

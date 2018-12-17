@@ -10,7 +10,7 @@ private:
   DoubleInterval    m_interval;
   UINT              m_steps;
 public:
-  FunctionGraphParameters(const String &name=_T("Untitled"), COLORREF color=BLACK, UINT rollAvgSize=0, GraphStyle style=GSCURVE, TrigonometricMode trigonometricMode=RADIANS);
+  FunctionGraphParameters(const String &name=s_defaultName, COLORREF color=BLACK, UINT rollAvgSize=0, GraphStyle style=GSCURVE, TrigonometricMode trigonometricMode=RADIANS);
   void putDataToDoc(XMLDoc &doc);
   void getDataFromDoc(XMLDoc &doc);
   // return old Interval
@@ -25,11 +25,11 @@ public:
     return m_interval;
   }
 
-  // return old m_expr
-  inline String setExprText(const String &text) {
-    const String oldText = m_expr; m_expr = text; return oldText;
+  // return old exprText
+  inline String setExprText(const String &expr) {
+    const String oldExpr = m_expr; m_expr = expr; return oldExpr;
   }
-  inline String getExprText() const {
+  inline const String &getExprText() const {
     return m_expr;
   }
 

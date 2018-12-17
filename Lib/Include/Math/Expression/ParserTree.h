@@ -421,7 +421,7 @@ public:
   // Error should be an element from StringArray returned by getErrors().
   // Will return textposition in expr, remove the textposition "(line,column)" from error
   // If no leading "(line,col):" an Exception is thrown
-  static inline int decodeErrorString(const String &expr, String &error) {
+  static inline UINT decodeErrorString(const String &expr, String &error) {
     return decodeErrorString(error).findCharIndex(expr);
   }
 

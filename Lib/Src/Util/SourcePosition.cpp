@@ -17,9 +17,9 @@ void SourcePosition::setLocation(int lineNumber, int column) {
   m_column     = column;
 }
 
-int SourcePosition::findCharIndex(const String &s) const {
+UINT SourcePosition::findCharIndex(const String &s) const {
   SourcePosition tmp;
-  int index = 0;
+  UINT index = 0;
   for(const TCHAR *t = s.cstr(); *t && (tmp < *this); index++) {
     if(*(t++) == _T('\n')) {
       tmp.incrLineNumber();

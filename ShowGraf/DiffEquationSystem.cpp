@@ -13,22 +13,22 @@ void DiffEquationSystem::cleanup() {
 }
 
 DiffEquationSystem::DiffEquationSystem(const DiffEquationSystem &src) {
-  m_equationSystemDescription = src.m_equationSystemDescription;
-  if (src.isCompiled()) {
+  m_equationDescriptionArray = src.m_equationDescriptionArray;
+  if(src.isCompiled()) {
     CompilerErrorList errorList;
     if(!compile(errorList)) errorList.throwFirstError();
   }
 }
 
 DiffEquationSystem &DiffEquationSystem::operator=(const DiffEquationSystem &src) {
-  const DiffEquationSystemDescription saveDesc = m_equationSystemDescription;
+  const DiffEquationDescriptionArray oldDesc = m_equationDescriptionArray;
   cleanup();
-  m_equationSystemDescription = src.m_equationSystemDescription;
+  m_equationDescriptionArray = src.m_equationDescriptionArray;
   if(src.isCompiled()) {
     CompilerErrorList errorList;
     if(!compile(errorList)) {
       cleanup();
-      m_equationSystemDescription = saveDesc;
+      m_equationDescriptionArray = oldDesc;
       errorList.throwFirstError();
     }
   }
@@ -39,31 +39,31 @@ bool DiffEquationSystem::compile(CompilerErrorList &errorList) {
   cleanup();
   errorList.clear();
   try {
-    for(UINT i = 0; i < m_equationSystemDescription.size(); i++) {
-      const DiffEquationDescription &desc = m_equationSystemDescription[i];
-      if(!DiffEquationDescription::isValidName(desc.m_name)) {
-        errorList.addError(i, ERROR_INNAME, _T("<%s> is not a valid function name"), desc.m_name.cstr());
+    for(UINT i = 0; i < m_equationDescriptionArray.size(); i++) {
+      const DiffEquationDescription &desc = m_equationDescriptionArray[i];
+      if(!DiffEquationDescription::isValidName(desc.getName())) {
+        errorList.addError(i, ERROR_INNAME, _T("<%s> is not a valid function name"), desc.getName().cstr());
       }
     }
-    for(UINT i = 1; i < m_equationSystemDescription.size(); i++) {
-      const String &name1 = m_equationSystemDescription[i].m_name;
+    for(UINT i = 1; i < m_equationDescriptionArray.size(); i++) {
+      const String &name1 = m_equationDescriptionArray[i].getName();
       for(UINT j = 0; j < i; j++) {
-        const String &name2 = m_equationSystemDescription[j].m_name;
+        const String &name2 = m_equationDescriptionArray[j].getName();
         if(name1 == name2) {
           errorList.addError(i, ERROR_INNAME, _T("Cannot have more than 1 definition of %s'"), name1.cstr());
         }
       }
     }
-    const String &commonText = m_equationSystemDescription.m_commonText;
-    for(UINT i = 0; i < m_equationSystemDescription.size(); i++) {
-      const DiffEquationDescription &desc = m_equationSystemDescription[i];
-      const String                   expr = commonText + desc.m_expr;
+    const String &commonText = m_equationDescriptionArray.getCommonText();
+    for(UINT i = 0; i < m_equationDescriptionArray.size(); i++) {
+      const DiffEquationDescription &desc = m_equationDescriptionArray[i];
+      const String                   expr = commonText + desc.getExprText();
       ExpressionWithInputVector     *e    = new ExpressionWithInputVector(); TRACE_NEW(e);
       e->compile(expr, true);
       if(e->isOk()) {
         m_exprArray.add(e);
       } else {
-        bool hasCommonErrors = errorList.addErrors(i, e->getErrors(), expr, (int)commonText.length());
+        bool hasCommonErrors = errorList.addErrors(i, e->getErrors(), expr, (UINT)commonText.length());
         SAFEDELETE(e);
         if(hasCommonErrors) {
           break;
@@ -71,23 +71,23 @@ bool DiffEquationSystem::compile(CompilerErrorList &errorList) {
       }
     }
     if(!errorList.isOk()) return false;
-    for (UINT i = 0; i < m_exprArray.size(); i++) {
+    for(UINT i = 0; i < m_exprArray.size(); i++) {
       ExpressionWithInputVector  *e  = m_exprArray[i];
       const ExpressionVariable   *vx = e->getVariable(_T("x"));
       if(vx) {
-        e->m_input.add(ExpressionInputIndex(0, &(e->getValueRef(*vx))));
+        e->addInputIndex(ExpressionInputIndex(0, &(e->getValueRef(*vx))));
         if (!vx->isInput()) {
           errorList.addError(i, ERROR_INEXPR, _T("Variable 'x' is not input in this equation"));
         }
       }
-      for(UINT j = 0; j < m_equationSystemDescription.size(); j++) {
-        const String             &namej = m_equationSystemDescription[j].m_name;
+      for(UINT j = 0; j < m_equationDescriptionArray.size(); j++) {
+        const String             &namej = m_equationDescriptionArray[j].getName();
         const ExpressionVariable *vj    = e->getVariable(namej);
         if(vj == NULL) continue;
         if (!vj->isInput()) {
           errorList.addError(i, ERROR_INEXPR, _T("Variable '%s' is not input in this equation"), namej.cstr());
         } else {
-          e->m_input.add(ExpressionInputIndex(j+1, &(e->getValueRef(*vj)))); // +1 because v[0] is variable "x"
+          e->addInputIndex(ExpressionInputIndex(j+1, &(e->getValueRef(*vj)))); // +1 because v[0] is variable "x"
         }
       }
     }
@@ -98,20 +98,20 @@ bool DiffEquationSystem::compile(CompilerErrorList &errorList) {
   return errorList.isOk();
 }
 
-bool DiffEquationSystem::compile(const DiffEquationSystemDescription &desc, CompilerErrorList &errorList) {
+bool DiffEquationSystem::compile(const DiffEquationDescriptionArray &desc, CompilerErrorList &errorList) {
   cleanup();
-  m_equationSystemDescription = desc;
+  m_equationDescriptionArray = desc;
   return compile(errorList);
 }
 
-void DiffEquationSystem::setDescription(const DiffEquationSystemDescription &desc) {
+void DiffEquationSystem::setDescription(const DiffEquationDescriptionArray &desc) {
   CompilerErrorList errorList;
   validate(desc, errorList);
   cleanup();
-  m_equationSystemDescription = desc;
+  m_equationDescriptionArray = desc;
 }
 
-bool DiffEquationSystem::validate(const DiffEquationSystemDescription &desc, CompilerErrorList &errorList) { // static
+bool DiffEquationSystem::validate(const DiffEquationDescriptionArray &desc, CompilerErrorList &errorList) { // static
   DiffEquationSystem s;
   return s.compile(desc, errorList);
 }
@@ -156,7 +156,7 @@ void CompilerErrorList::addError(UINT eqIndex, ErrorLocation loc, _In_z_ _Printf
   va_end(argptr);
 }
 
-bool CompilerErrorList::addErrors(UINT eqIndex, const StringArray &errors, const String &expr, int prefixLen) { // errors from Expression.compile()
+bool CompilerErrorList::addErrors(UINT eqIndex, const StringArray &errors, const String &expr, UINT prefixLen) { // errors from Expression.compile()
   bool result = false;
   for(size_t i = 0; i < errors.size(); i++) {
     const String &errorText = errors[i];
@@ -164,7 +164,7 @@ bool CompilerErrorList::addErrors(UINT eqIndex, const StringArray &errors, const
       addError(eqIndex, ERROR_INEXPR, _T("%s"), errorText.cstr());
     } else {
       String tmp = errorText;
-      const int index = ParserTree::decodeErrorString(expr, tmp);
+      const UINT index = ParserTree::decodeErrorString(expr, tmp);
       if(index < prefixLen) {
         addError(-1, ERROR_INCOMMON, _T("%s"), errorText.cstr());
         result = true;

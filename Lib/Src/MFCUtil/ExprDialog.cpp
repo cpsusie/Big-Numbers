@@ -85,16 +85,16 @@ bool CExprDialog::validateMinMax(int id, double min, double max) {
 
 void CExprDialog::showExprError(const String &msg, int id) {
   try {
-    String    errorMsg  = msg;
-    int       charIndex = ParserTree::decodeErrorString(getExprString(id), errorMsg);
-    const int prefixLen = (int)getCommonExprString().length();
+    String     errorMsg  = msg;
+    UINT       charIndex = ParserTree::decodeErrorString(getExprString(id), errorMsg);
+    const UINT prefixLen = (UINT)getCommonExprString().length();
     if(charIndex < prefixLen) {
       gotoExpr(getCommonExprFieldId());
-      getExprField(getCommonExprFieldId())->SetSel(charIndex, charIndex);
+      getExprField(getCommonExprFieldId())->SetSel((int)charIndex, (int)charIndex);
     } else {
       gotoExpr(id);
       charIndex -= prefixLen;
-      getExprField(id)->SetSel(charIndex, charIndex);
+      getExprField(id)->SetSel((int)charIndex, (int)charIndex);
     }
     showWarning(errorMsg);
   } catch(Exception) { // ignore Exception, and just show msg

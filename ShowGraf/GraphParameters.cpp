@@ -105,7 +105,7 @@ MoveablePointArray GraphZeroesResult::getMoveablePointArray() const {
   const size_t n = m_zeroes.size();
   MoveablePointArray result(n);
   for(size_t i = 0; i < n; i++) {
-    result.add(new MoveablePoint(getGraph(), Point2D(m_zeroes[i],0)));
+    result.add(new MoveablePoint(getGraph(), Point2D(m_zeroes[i],0), SHOWXCOORDINATE));
   }
   return result;
 }

@@ -7,6 +7,7 @@ IMPLEMENT_DYNAMIC(CDiffEquationGraphDlg, CDialog)
 CDiffEquationGraphDlg::CDiffEquationGraphDlg(DiffEquationGraphParameters &param, CWnd *pParent)
   : m_param(param)
   , CDialog(IDD, pParent)
+  , m_currentAdjustSet(32)
 {
 }
 
@@ -65,12 +66,12 @@ BOOL CDiffEquationGraphDlg::OnInitDialog() {
 
 void CDiffEquationGraphDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
-  DDX_Text(pDX, IDC_EDITNAME  , m_name);
-  DDX_Text(pDX, IDC_EDITCOMMON, m_commonText);
-  DDX_Text(pDX, IDC_EDITXFROM, m_xFrom);
-  DDX_Text(pDX, IDC_EDITXTO, m_xTo);
-  DDX_Text(pDX, IDC_EDITMAXERROR, m_maxError);
-  DDX_CBString(pDX, IDC_COMBOSTYLE, m_style);
+  DDX_Text(    pDX, IDC_EDITNAME    , m_name      );
+  DDX_Text(    pDX, IDC_EDITCOMMON  , m_commonText);
+  DDX_Text(    pDX, IDC_EDITXFROM   , m_xFrom     );
+  DDX_Text(    pDX, IDC_EDITXTO     , m_xTo       );
+  DDX_Text(    pDX, IDC_EDITMAXERROR, m_maxError  );
+  DDX_CBString(pDX, IDC_COMBOSTYLE  , m_style     );
 
   m_equationControlArray.DoDataExchange(pDX);
 }
@@ -78,7 +79,7 @@ void CDiffEquationGraphDlg::DoDataExchange(CDataExchange *pDX) {
 BEGIN_MESSAGE_MAP(CDiffEquationGraphDlg, CDialog)
   ON_WM_SIZE()
   ON_WM_DESTROY()
-  ON_BN_CLICKED(IDC_BUTTONADDEQ                                     , OnBnClickedButtonaddeq      )
+  ON_BN_CLICKED(IDC_BUTTONADDEQ                                                       , OnBnClickedButtonaddeq      )
   ON_CONTROL_RANGE(BN_CLICKED  , FIRST_DIFFEUQUATIONFIELDID, LAST_DIFFEUQUATIONFIELDID, OnBnClickedEquation         )
   ON_CONTROL_RANGE(EN_CHANGE   , FIRST_DIFFEUQUATIONFIELDID, LAST_DIFFEUQUATIONFIELDID, OnEditChangeEquation        )
   ON_CONTROL_RANGE(EN_SETFOCUS , FIRST_DIFFEUQUATIONFIELDID, LAST_DIFFEUQUATIONFIELDID, OnEditSetFocusEquation      )
@@ -131,7 +132,7 @@ bool CDiffEquationGraphDlg::validate() {
   }
   try {
     CompilerErrorList errorList;
-    if(!DiffEquationSystem::validate(param.m_equationsDescription, errorList)) {
+    if(!DiffEquationSystem::validate(param.getEquationDescriptionArray(), errorList)) {
       showErrors(errorList);
       return false;
     } else {
@@ -181,20 +182,20 @@ void CDiffEquationGraphDlg::gotoTextPosition(int ctrlId, const SourcePosition &p
 
 void CDiffEquationGraphDlg::gotoErrorPosition(int index) {
   const ErrorPosition &pos = m_errorPosArray[index];
-  CDiffEquationEdit       *eq  = NULL;
-  switch(pos.m_location) {
+  CDiffEquationEdit   *eq  = NULL;
+  switch(pos.getLocation()) {
   case ERROR_INNAME   :
-    if(eq = getEquationEdit(pos.m_eqIndex)) {
+    if(eq = getEquationEdit(pos.getEquationIndex())) {
       gotoEditBox(this, eq->getNameId());
     }
     break;
   case ERROR_INEXPR   :
-    if(eq = getEquationEdit(pos.m_eqIndex)) {
-      gotoTextPosition(eq->getExprId(), pos.m_pos);
+    if(eq = getEquationEdit(pos.getEquationIndex())) {
+      gotoTextPosition(eq->getExprId(), pos.getSourcePosition());
     }
     break;
   case ERROR_INCOMMON :
-    gotoTextPosition(IDC_EDITCOMMON, pos.m_pos);
+    gotoTextPosition(IDC_EDITCOMMON, pos.getSourcePosition());
     break;
   }
 }
@@ -272,14 +273,15 @@ void CDiffEquationGraphDlg::OnEditPreverror() {
 }
 
 void CDiffEquationGraphDlg::paramToWin(const DiffEquationGraphParameters &param) {
-  assert(param.m_equationsDescription.size() == param.m_attrArray.size());
+  assert(param.getEquationDescriptionArray().size() == param.getAttributeArray().size());
   m_fullName   = param.getName();
   m_name       = param.getDisplayName().cstr();
   m_style      = param.getGraphStyleStr();
-  m_commonText = param.m_equationsDescription.m_commonText.cstr();
-  m_xFrom      = param.m_interval.getMin();
-  m_xTo        = param.m_interval.getMax();
-  m_maxError   = param.m_eps;
+  m_commonText = param.getEquationDescriptionArray().getCommonText().cstr();
+  const DoubleInterval &interval = param.getInterval();
+  m_xFrom      = interval.getMin();
+  m_xTo        = interval.getMax();
+  m_maxError   = param.getMaxError();
   const size_t eqCount = param.getEquationCount();
   setEquationCount(eqCount);
   m_equationControlArray.paramToWin(param);
@@ -292,10 +294,9 @@ void CDiffEquationGraphDlg::winToParam(DiffEquationGraphParameters &param) {
   }
   param.setName(m_fullName);
   param.setGraphStyle((GraphStyle)getStyleCombo()->GetCurSel());
-  param.m_equationsDescription.m_commonText = m_commonText;
-  param.m_interval.setFrom(m_xFrom);
-  param.m_interval.setTo(m_xTo);
-  param.m_eps   = m_maxError;
+  param.getEquationDescriptionArray().setCommonText((LPCTSTR)m_commonText);
+  param.setInteval(m_xFrom, m_xTo);
+  param.setMaxError(m_maxError);
   m_equationControlArray.winToParam(param);
 }
 
@@ -565,10 +566,11 @@ void CDiffEquationGraphDlg::OnBnClickedEquation(UINT id) {
 
 void CDiffEquationGraphDlg::adjustErrorPositions(const String &s, int sel, int delta) {
   const SourcePosition sp(m_currentText, sel-delta);
-  for(UINT i = 0; i < m_currentAdjustSet.size(); i++) {
-    ErrorPosition &ep = m_errorPosArray[m_currentAdjustSet[i]];
-    if(ep.m_pos >= sp) {
-      ep.m_pos = SourcePosition(s, ep.m_pos.findCharIndex(m_currentText)+delta);
+  for(Iterator<size_t> it = m_currentAdjustSet.getIterator(); it.hasNext();) {
+    ErrorPosition        &ep  = m_errorPosArray[it.next()];
+    const SourcePosition &esp = ep.getSourcePosition();
+    if(esp >= sp) {
+      ep.setSourcePosition(SourcePosition(s, esp.findCharIndex(m_currentText)+delta));
     }
   }
 }
@@ -576,9 +578,9 @@ void CDiffEquationGraphDlg::adjustErrorPositions(const String &s, int sel, int d
 void CDiffEquationGraphDlg::traceCurrentAdjustSet() {
 #ifdef _DEBUG
   String str;
-  for (UINT i = 0; i < m_currentAdjustSet.size(); i++) {
-    const ErrorPosition &ep = m_errorPosArray[m_currentAdjustSet[i]];
-    str += ep.m_pos.toString();
+  for(Iterator<size_t> it = m_currentAdjustSet.getIterator(); it.hasNext();) {
+    const ErrorPosition &ep = m_errorPosArray[it.next()];
+    str += ep.getSourcePosition().toString();
   }
   setWindowText(this, IDC_STATICADJUSTSET, str);
 #endif
@@ -591,7 +593,7 @@ void CDiffEquationGraphDlg::setCurrentAdjustSet(UINT id) {
     if(id != IDC_EDITCOMMON) return;
     for(UINT i = 0; i < m_errorPosArray.size(); i++) {
       const ErrorPosition &ep = m_errorPosArray[i];
-      if(ep.m_location == ERROR_INCOMMON) {
+      if(ep.getLocation() == ERROR_INCOMMON) {
         m_currentAdjustSet.add(i);
       }
     }
@@ -605,7 +607,7 @@ void CDiffEquationGraphDlg::setCurrentAdjustSet(UINT id) {
     case EQ_NAME_EDIT:
       for(UINT i = 0; i < m_errorPosArray.size(); i++) {
         const ErrorPosition &ep = m_errorPosArray[i];
-        if((ep.m_eqIndex == eqIndex) && (ep.m_location == location)) {
+        if((ep.getEquationIndex() == eqIndex) && (ep.getLocation() == location)) {
           m_currentAdjustSet.add(i);
         }
       }
@@ -626,7 +628,7 @@ void CDiffEquationGraphDlg::OnEditKillFocusEquation(UINT id) {
 
 void CDiffEquationGraphDlg::OnEditChangeEquation(UINT id) {
   if(isCurrentAdjustSetEmpty()) return; // no need to update the positions
-  String text = getWindowText(this, id);
+  const String text = getWindowText(this, id);
   const int delta = (int)text.length() - (int)m_currentText.length();
   if(delta != 0) {
     int selStart, selEnd;

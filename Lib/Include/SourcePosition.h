@@ -17,7 +17,7 @@ public:
   void setLocation(int lineNumber, int column);
 
   // SourcePosition(s, index).findCharIndex(s) == index; index = [0..s.length()[
-  int findCharIndex(const String &s) const;
+  UINT findCharIndex(const String &s) const;
 
   inline int getLineNumber() const {
     return m_lineNumber;

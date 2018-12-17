@@ -17,7 +17,7 @@ private:
   String                      m_fullName;
   CDiffEquationEditArray      m_equationControlArray;
   CompactArray<ErrorPosition> m_errorPosArray;
-  CompactIntArray             m_currentAdjustSet;
+  BitSet                      m_currentAdjustSet;
   String                      m_currentText;
 
   CString   m_style;
@@ -68,7 +68,7 @@ private:
   void gotoErrorPosition(int index);
   void setCurrentAdjustSet(UINT id);
   inline void clearCurrentAdjustSet() {
-    m_currentAdjustSet.clear();
+    m_currentAdjustSet.clear().setCapacity(getErrorCount() + 1);
     traceCurrentAdjustSet();
   }
   inline bool isCurrentAdjustSetEmpty() const {

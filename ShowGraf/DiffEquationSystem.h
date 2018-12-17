@@ -6,21 +6,43 @@
 using namespace Expr;
 
 class DiffEquationDescription {
-public:
-  // name of the function;
+private:
+  // name of the function; exquation is assumed to look like the following: m_name' = m_expr
   String m_name;
   String m_expr;
-  DiffEquationDescription() {
+public:
+  inline DiffEquationDescription() {
   }
-  DiffEquationDescription(const String &name, const String &expr) : m_name(name), m_expr(expr) {
+  inline DiffEquationDescription(const String &name, const String &expr) : m_name(name), m_expr(expr) {
+  }
+  inline String setName(const String &name) {
+    const String oldName = m_name; m_name = name; return oldName;
+  }
+  inline const String &getName() const {
+    return m_name;
+  }
+  // return old exprText
+  inline String setExprText(const String &expr) {
+    const String oldExpr = m_expr; m_expr = expr; return oldExpr;
+  }
+  inline const String &getExprText() const {
+    return m_expr;
   }
   static bool isValidName(const String &name);
 };
 
-class DiffEquationSystemDescription : public Array<DiffEquationDescription> {
-public:
-  // prefixed to all expression
+class DiffEquationDescriptionArray : public Array<DiffEquationDescription> {
+private:
+  // Prefixed to all expressions in EquationSystem before compile
   String m_commonText;
+public:
+  // Prefixed to all expressions in EquationSystem
+  inline const String &getCommonText() const {
+    return m_commonText;
+  }
+  String setCommonText(const String &text) {
+    const String oldText = m_commonText; m_commonText = text; return oldText;
+  }
 };
 
 class ExpressionInputIndex {
@@ -34,8 +56,12 @@ public:
 };
 
 class ExpressionWithInputVector : public Expression {
-public:
+private:
   CompactArray<ExpressionInputIndex> m_input;
+public:
+  inline void addInputIndex(const ExpressionInputIndex &e) {
+    m_input.add(e);
+  }
   Real evaluate(const Vector &x);
 };
 
@@ -46,12 +72,26 @@ typedef enum {
 } ErrorLocation;
 
 class ErrorPosition {
-public:
+private:
   ErrorLocation  m_location;
-  int            m_eqIndex;
+  int            m_eqIndex; // == -1 if m_location == ERROR_INCOMMON
   SourcePosition m_pos;
+public:
   ErrorPosition(const String &error);
-  inline ErrorPosition() {}
+  inline ErrorPosition() {
+  }
+  inline ErrorLocation getLocation() const {
+    return m_location;
+  }
+  inline int getEquationIndex() const {
+    return m_eqIndex;
+  }
+  inline void setSourcePosition(const SourcePosition &pos) {
+    m_pos = pos;
+  }
+  inline const SourcePosition &getSourcePosition() const {
+    return m_pos;
+  }
 };
 
 class CompilerErrorList : public StringArray {
@@ -59,7 +99,7 @@ public:
   void vaddError(UINT eqIndex, ErrorLocation expr, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
   void addError( UINT eqIndex, ErrorLocation expr, _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
   // add errors from Expression.compile(). return true if any errors from common text
-  bool addErrors(UINT eqIndex, const StringArray &errors, const String &expr, int prefixLen);
+  bool addErrors(UINT eqIndex, const StringArray &errors, const String &expr, UINT prefixLen);
   bool isOk() const {
     return isEmpty();
   }
@@ -70,7 +110,7 @@ public:
 
 class DiffEquationSystem : public VectorFunction {
 private:
-  DiffEquationSystemDescription            m_equationSystemDescription;
+  DiffEquationDescriptionArray             m_equationDescriptionArray;
   CompactArray<ExpressionWithInputVector*> m_exprArray;
   void cleanup();
 public:
@@ -80,18 +120,18 @@ public:
   DiffEquationSystem(           const DiffEquationSystem &src);
   DiffEquationSystem &operator=(const DiffEquationSystem &src);
   bool        compile(CompilerErrorList &errorList);
-  bool        compile(        const DiffEquationSystemDescription &desc, CompilerErrorList &errorList);
+  bool        compile(        const DiffEquationDescriptionArray &desc, CompilerErrorList &errorList);
   // throw Exception if desc does not compile
-  void        setDescription( const DiffEquationSystemDescription &desc);
-  static bool validate(       const DiffEquationSystemDescription &desc, CompilerErrorList &errorList);
+  void        setDescription( const DiffEquationDescriptionArray &desc);
+  static bool validate(       const DiffEquationDescriptionArray &desc, CompilerErrorList &errorList);
   inline bool isCompiled() const {
     return m_exprArray.size() > 0;
   }
-  inline int getEquationCount() const {
-    return (int)m_equationSystemDescription.size();
+  inline UINT getEquationCount() const {
+    return (UINT)m_equationDescriptionArray.size();
   }
-  inline const DiffEquationSystemDescription &getEquationsystemDescription() const {
-    return m_equationSystemDescription;
+  inline const DiffEquationDescriptionArray &getEquationDescriptionArray() const {
+    return m_equationDescriptionArray;
   }
   Vector operator()(const Vector &x);
 };
