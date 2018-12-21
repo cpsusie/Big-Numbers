@@ -44,14 +44,15 @@
 #define IDC_BUTTONADDEQ                 1072
 #define IDC_COMBOSTYLE                  1073
 #define IDC_BUTTONCOLOR                 1074
-#define IDC_BUTTONRESTART               1075
-#define IDC_BUTTONSTEP                  1076
-#define IDC_BUTTONSOLVE                 1077
-#define IDC_BUTTONSTOP                  1078
-#define IDC_BUTTONPLOT                  1079
-#define IDC_DATALIST                    1080
-#define IDC_SPINDEGREE                  1081
-#define IDC_EDITDEGREE                  1082
+#define IDC_CHECKCREATELISTFILE         1075
+#define IDC_BUTTONRESTART               1076
+#define IDC_BUTTONSTEP                  1077
+#define IDC_BUTTONSOLVE                 1078
+#define IDC_BUTTONSTOP                  1079
+#define IDC_BUTTONPLOT                  1080
+#define IDC_DATALIST                    1081
+#define IDC_SPINDEGREE                  1082
+#define IDC_EDITDEGREE                  1083
 #define IDC_STATICCELLSIZE              1084
 #define IDC_STATICBOUNDINGBOX           1085
 #define IDC_LISTERRORS                  1093
@@ -141,7 +142,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        128
 #define _APS_NEXT_COMMAND_VALUE         32941
-#define _APS_NEXT_CONTROL_VALUE         1108
+#define _APS_NEXT_CONTROL_VALUE         1109
 #define _APS_NEXT_SYMED_VALUE           153
 #endif
 #endif

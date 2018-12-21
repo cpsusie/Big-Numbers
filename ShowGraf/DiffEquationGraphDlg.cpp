@@ -8,6 +8,7 @@ CDiffEquationGraphDlg::CDiffEquationGraphDlg(DiffEquationGraphParameters &param,
   : m_param(param)
   , CDialog(IDD, pParent)
   , m_currentAdjustSet(32)
+  , m_createListFile(FALSE)
 {
 }
 
@@ -66,15 +67,21 @@ BOOL CDiffEquationGraphDlg::OnInitDialog() {
 
 void CDiffEquationGraphDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
-  DDX_Text(    pDX, IDC_EDITNAME    , m_name      );
-  DDX_Text(    pDX, IDC_EDITCOMMON  , m_commonText);
-  DDX_Text(    pDX, IDC_EDITXFROM   , m_xFrom     );
-  DDX_Text(    pDX, IDC_EDITXTO     , m_xTo       );
-  DDX_Text(    pDX, IDC_EDITMAXERROR, m_maxError  );
-  DDX_CBString(pDX, IDC_COMBOSTYLE  , m_style     );
-
+  DDX_Text(    pDX, IDC_EDITNAME           , m_name          );
+  DDX_CBString(pDX, IDC_COMBOSTYLE         , m_style         );
+  DDX_Check(   pDX, IDC_CHECKCREATELISTFILE, m_createListFile);
+  DDX_Text(    pDX, IDC_EDITCOMMON         , m_commonText    );
+  DDX_Text(    pDX, IDC_EDITXFROM          , m_xFrom         );
+  DDX_Text(    pDX, IDC_EDITXTO            , m_xTo           );
+  DDX_Text(    pDX, IDC_EDITMAXERROR       , m_maxError      );
   m_equationControlArray.DoDataExchange(pDX);
 }
+
+String CDiffEquationGraphDlg::getListFileName(const DiffEquationGraphParameters &param) const {
+  if(!m_createListFile) return EMPTYSTRING;
+  return FileNameSplitter(param.getName()).setExtension(_T("lst")).getFullPath();
+}
+
 
 BEGIN_MESSAGE_MAP(CDiffEquationGraphDlg, CDialog)
   ON_WM_SIZE()
@@ -130,19 +137,28 @@ bool CDiffEquationGraphDlg::validate() {
     showWarning(_T("At least 1 function must be visible"));
     return false;
   }
+  bool  ok       = true;
+  FILE *listFile = NULL;
   try {
+    const String listFileName = getListFileName(param);
+    if(listFileName.length() > 0) {
+      listFile = MKFOPEN(listFileName, _T("w"));
+    }
     CompilerErrorList errorList;
-    if(!DiffEquationSystem::validate(param.getEquationDescriptionArray(), errorList)) {
+    if(!DiffEquationSystem::validate(param.getEquationDescriptionArray(), errorList, listFile)) {
       showErrors(errorList);
-      return false;
+      ok = false;
     } else {
       clearErrorList();
     }
-  } catch (Exception e) {
+  } catch(Exception e) {
     showException(e);
-    return false;
+    ok = false;
   }
-  return true;
+  if(listFile != NULL) {
+    fclose(listFile);
+  }
+  return ok;
 }
 
 void CDiffEquationGraphDlg::showErrors(const CompilerErrorList &errorList) {

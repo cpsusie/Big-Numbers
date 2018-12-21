@@ -3,6 +3,7 @@
 
 CParametricGraphDlg::CParametricGraphDlg(ParametricGraphParameters &param, CWnd *pParent)
 : SaveLoadExprDialog<ParametricGraphParameters>(IDD, pParent, param, _T("parametric curve"), _T("par"))
+, m_createListFile(FALSE)
 {
 }
 
@@ -11,14 +12,15 @@ CParametricGraphDlg::~CParametricGraphDlg() {
 
 void CParametricGraphDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
-  DDX_Text(pDX, IDC_EDITCOMMON, m_commonText);
-  DDX_Text(pDX, IDC_EDITEXPRX, m_exprX);
-  DDX_Text(pDX, IDC_EDITEXPRY, m_exprY);
-  DDX_Text(pDX, IDC_EDITTFROM, m_tFrom);
-  DDX_Text(pDX, IDC_EDITTTO  , m_tTo  );
-  DDX_Text(pDX, IDC_EDITSTEPS, m_steps);
+  DDX_CBString(  pDX, IDC_COMBOSTYLE         , m_style         );
+  DDX_Check(     pDX, IDC_CHECKCREATELISTFILE, m_createListFile);
+  DDX_Text(      pDX, IDC_EDITCOMMON         , m_commonText    );
+  DDX_Text(      pDX, IDC_EDITEXPRX          , m_exprX         );
+  DDX_Text(      pDX, IDC_EDITEXPRY          , m_exprY         );
+  DDX_Text(      pDX, IDC_EDITTFROM          , m_tFrom         );
+  DDX_Text(      pDX, IDC_EDITTTO            , m_tTo           );
+  DDX_Text(      pDX, IDC_EDITSTEPS          , m_steps         );
   DDV_MinMaxUInt(pDX, m_steps, 1, 10000);
-  DDX_CBString(pDX, IDC_COMBOSTYLE, m_style);
 }
 
 BEGIN_MESSAGE_MAP(CParametricGraphDlg, CDialog)
@@ -104,6 +106,11 @@ void CParametricGraphDlg::OnGotoStep() {
 
 void CParametricGraphDlg::addToRecent(const String &fileName) {
   theApp.AddToRecentFileList(fileName.cstr());
+}
+
+String CParametricGraphDlg::getListFileName() const {
+  if(!m_createListFile) return __super::getListFileName();
+  return FileNameSplitter(getData().getName()).setExtension(_T("lst")).getFullPath();
 }
 
 void CParametricGraphDlg::OnEditFindmatchingparentesis() {

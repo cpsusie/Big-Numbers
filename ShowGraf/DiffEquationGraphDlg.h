@@ -20,8 +20,9 @@ private:
   BitSet                      m_currentAdjustSet;
   String                      m_currentText;
 
-  CString   m_style;
   CString   m_name;
+  CString   m_style;
+  BOOL      m_createListFile;
   CString   m_commonText;
   double    m_maxError;
   double    m_xFrom;
@@ -122,7 +123,8 @@ private:
   }
   void ajourCommonEnabled();
   DECLARE_DYNAMIC(CDiffEquationGraphDlg)
-
+protected:
+  String getListFileName(const DiffEquationGraphParameters &param) const;
 public:
   CDiffEquationGraphDlg(DiffEquationGraphParameters &param, CWnd *pParent = NULL);
   virtual ~CDiffEquationGraphDlg();

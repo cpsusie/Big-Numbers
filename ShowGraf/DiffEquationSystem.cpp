@@ -35,7 +35,7 @@ DiffEquationSystem &DiffEquationSystem::operator=(const DiffEquationSystem &src)
   return *this;
 }
 
-bool DiffEquationSystem::compile(CompilerErrorList &errorList) {
+bool DiffEquationSystem::compile(CompilerErrorList &errorList, FILE *listFile) {
   cleanup();
   errorList.clear();
   try {
@@ -59,7 +59,10 @@ bool DiffEquationSystem::compile(CompilerErrorList &errorList) {
       const DiffEquationDescription &desc = m_equationDescriptionArray[i];
       const String                   expr = commonText + desc.getExprText();
       ExpressionWithInputVector     *e    = new ExpressionWithInputVector(); TRACE_NEW(e);
-      e->compile(expr, true);
+      if(listFile) {
+        _ftprintf(listFile,_T(";Expression for %s':\n"), desc.getName().cstr());
+      }
+      e->compile(expr, true, false, listFile);
       if(e->isOk()) {
         m_exprArray.add(e);
       } else {
@@ -98,22 +101,22 @@ bool DiffEquationSystem::compile(CompilerErrorList &errorList) {
   return errorList.isOk();
 }
 
-bool DiffEquationSystem::compile(const DiffEquationDescriptionArray &desc, CompilerErrorList &errorList) {
+bool DiffEquationSystem::compile(const DiffEquationDescriptionArray &desc, CompilerErrorList &errorList, FILE *listFile) {
   cleanup();
   m_equationDescriptionArray = desc;
-  return compile(errorList);
+  return compile(errorList, listFile);
 }
 
 void DiffEquationSystem::setDescription(const DiffEquationDescriptionArray &desc) {
   CompilerErrorList errorList;
-  validate(desc, errorList);
+  validate(desc, errorList, NULL);
   cleanup();
   m_equationDescriptionArray = desc;
 }
 
-bool DiffEquationSystem::validate(const DiffEquationDescriptionArray &desc, CompilerErrorList &errorList) { // static
+bool DiffEquationSystem::validate(const DiffEquationDescriptionArray &desc, CompilerErrorList &errorList, FILE *listFile) { // static
   DiffEquationSystem s;
-  return s.compile(desc, errorList);
+  return s.compile(desc, errorList, listFile);
 }
 
 bool DiffEquationDescription::isValidName(const String &s) {

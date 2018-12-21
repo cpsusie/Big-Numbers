@@ -6,6 +6,7 @@
 class CParametricGraphDlg : public SaveLoadExprDialog<ParametricGraphParameters> {
 private:
   CString  m_style;
+  BOOL     m_createListFile;
   CString  m_commonText;
   CString  m_exprX;
   CString  m_exprY;
@@ -23,7 +24,8 @@ private:
   void paramToWin(const ParametricGraphParameters &param);
   bool winToParam(      ParametricGraphParameters &param);
   void addToRecent(const String &fileName);
-
+protected:
+  String getListFileName() const;
 public:
   CParametricGraphDlg(ParametricGraphParameters &param, CWnd *pParent = NULL);
   virtual ~CParametricGraphDlg();

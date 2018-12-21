@@ -9,6 +9,7 @@
 class CFunctionGraphDlg : public SaveLoadExprDialog<FunctionGraphParameters> {
 private:
   CString             m_style;
+  BOOL                m_createListFile;
   CString             m_expr;
   double              m_xFrom;
   double              m_xTo;
@@ -25,6 +26,8 @@ private:
   void paramToWin(const FunctionGraphParameters &param);
   bool winToParam(      FunctionGraphParameters &param);
   void addToRecent(const String &fileName);
+protected:
+  String getListFileName() const;
 public:
   CFunctionGraphDlg(FunctionGraphParameters &param, int showFlags = SHOW_INTERVAL|SHOW_STEP, CWnd *pParent = NULL);   // standard constructor
   enum { IDD = IDR_FUNCTION };

@@ -21,18 +21,40 @@ void CExprDialog::setExprFont(int id) {
   getExprField(id)->SetFont(&m_exprFont, FALSE);
 }
 
-bool CExprDialog::validateAllExpr() {
-  for (Iterator<int> it = m_helpButtonMap.values().getIterator(); it.hasNext();) {
-    if(!validateExpr(it.next())) {
-      return false;
-    }
+void CExprDialog::openListFile() {
+  closeListFile();
+  const String fileName = getListFileName();
+  m_listFile = MKFOPEN(fileName, _T("w"));
+}
+
+void CExprDialog::closeListFile() {
+  if(isListFileOpen()) {
+    fclose(m_listFile);
+    m_listFile = NULL;
   }
-  return true;
+}
+
+bool CExprDialog::validateAllExpr() {
+  const bool genListFile = generateListFile();
+  if(genListFile) openListFile();
+  bool ok = true;
+  for(Iterator<int> it = m_helpButtonMap.values().getIterator(); ok && it.hasNext();) {
+    ok = validateExpr(it.next());
+  }
+  closeListFile();
+  return ok;
 }
 
 bool CExprDialog::validateExpr(int id) {
   ExpressionWrapper expr;
-  expr.compile(getExprString(id), false);
+  if(!generateListFile()) {
+    expr.compile(getExprText(id), false);
+  } else {
+    const bool lfWasOpen = isListFileOpen();
+    if(!lfWasOpen) openListFile();
+    expr.compile(getExprText(id), true, m_listFile);
+    if(!lfWasOpen) closeListFile();
+  }
   if(!expr.ok()) {
     showExprError(expr.getErrorMessage(),id);
     return false;
@@ -46,19 +68,9 @@ bool CExprDialog::validateExpr(int id) {
 }
 
 bool CExprDialog::validateInterval(int fromId, int toId) {
-  const String fromStr = getWindowText(this,fromId);
-  const String toStr   = getWindowText(this,toId  );
   double from,to;
-  if(_stscanf(fromStr.cstr(),_T("%le"), &from) != 1) {
-    gotoEditBox(this, fromId);
-    showWarning(_T("Expected number"));
-    return false;
-  }
-  if(_stscanf(toStr.cstr()  ,_T("%le"), &to  ) != 1) {
-    gotoEditBox(this, toId);
-    showWarning(_T("Expected number"));
-    return false;
-  }
+  if(!getWindowDouble(this, fromId, from)) return false;
+  if(!getWindowDouble(this, toId  , to  )) return false;
   if(from >= to) {
     gotoEditBox(this, fromId);
     showWarning(_T("Invalid interval"));
@@ -68,13 +80,8 @@ bool CExprDialog::validateInterval(int fromId, int toId) {
 }
 
 bool CExprDialog::validateMinMax(int id, double min, double max) {
-  const String str = getWindowText(this,id);
   double value;
-  if(_stscanf(str.cstr(),_T("%le"), &value) != 1) {
-    gotoEditBox(this, id);
-    showWarning(_T("Expected number"));
-    return false;
-  }
+  if(!getWindowDouble(this, id, value)) return false;
   if((value < min) || (value > max)) {
     gotoEditBox(this, id);
     showWarning(_T("Value must be in range [%lg..%lg]"), min, max);
@@ -86,8 +93,8 @@ bool CExprDialog::validateMinMax(int id, double min, double max) {
 void CExprDialog::showExprError(const String &msg, int id) {
   try {
     String     errorMsg  = msg;
-    UINT       charIndex = ParserTree::decodeErrorString(getExprString(id), errorMsg);
-    const UINT prefixLen = (UINT)getCommonExprString().length();
+    UINT       charIndex = ParserTree::decodeErrorString(getExprText(id), errorMsg);
+    const UINT prefixLen = (UINT)getCommonExprText().length();
     if(charIndex < prefixLen) {
       gotoExpr(getCommonExprFieldId());
       getExprField(getCommonExprFieldId())->SetSel((int)charIndex, (int)charIndex);
@@ -128,7 +135,7 @@ void CExprDialog::createExprHelpButton(int buttonId, int exprEditId) {
 
 void CExprDialog::handleExprHelpButtonClick(int buttonId) {
   const int *editId = m_helpButtonMap.get(buttonId);
-  if (editId) {
+  if(editId) {
     m_selectedExprId = *editId;
     showExprHelpMenu(buttonId);
   }
@@ -164,7 +171,7 @@ void CExprDialog::handleSelectedExprHelpId(int menuId, int ctrlId) {
 void CExprDialog::substituteSelectedText(int ctrlId, const String &s) {
   if(s.length() > 0) {
     CEdit *e = getExprField(ctrlId);
-    if (e == NULL) {
+    if(e == NULL) {
       showWarning(_T("No ctrlId %d in window"), ctrlId);
       return;
     }

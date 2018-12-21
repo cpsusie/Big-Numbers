@@ -119,11 +119,11 @@ public:
   ~DiffEquationSystem();
   DiffEquationSystem(           const DiffEquationSystem &src);
   DiffEquationSystem &operator=(const DiffEquationSystem &src);
-  bool        compile(CompilerErrorList &errorList);
-  bool        compile(        const DiffEquationDescriptionArray &desc, CompilerErrorList &errorList);
+  bool        compile(CompilerErrorList &errorList, FILE *listFile = NULL);
+  bool        compile(        const DiffEquationDescriptionArray &desc, CompilerErrorList &errorList, FILE *listFile = NULL);
   // throw Exception if desc does not compile
   void        setDescription( const DiffEquationDescriptionArray &desc);
-  static bool validate(       const DiffEquationDescriptionArray &desc, CompilerErrorList &errorList);
+  static bool validate(       const DiffEquationDescriptionArray &desc, CompilerErrorList &errorList, FILE *listFile);
   inline bool isCompiled() const {
     return m_exprArray.size() > 0;
   }

@@ -7,18 +7,20 @@
 
 CIsoCurveGraphDlg::CIsoCurveGraphDlg(IsoCurveGraphParameters &param, CWnd *pParent)
 : SaveLoadExprDialog<IsoCurveGraphParameters>(IDD, pParent, param, _T("iso curve"), _T("iso"))
+, m_createListFile(FALSE)
 {
 }
 
 void CIsoCurveGraphDlg::DoDataExchange(CDataExchange *pDX) {
-    __super::DoDataExchange(pDX);
-    DDX_CBString(pDX, IDC_COMBOSTYLE, m_style);
-    DDX_Text(pDX, IDC_EDITEXPR    , m_expr    );
-    DDX_Text(pDX, IDC_EDITCELLSIZE, m_cellSize);
-    DDX_Text(pDX, IDC_EDITXFROM   , m_xFrom   );
-    DDX_Text(pDX, IDC_EDITXTO     , m_xTo     );
-    DDX_Text(pDX, IDC_EDITYFROM   , m_yFrom   );
-    DDX_Text(pDX, IDC_EDITYTO     , m_yTo     );
+  __super::DoDataExchange(pDX);
+  DDX_CBString(  pDX, IDC_COMBOSTYLE         , m_style         );
+  DDX_Check(     pDX, IDC_CHECKCREATELISTFILE, m_createListFile);
+  DDX_Text(      pDX, IDC_EDITEXPR           , m_expr          );
+  DDX_Text(      pDX, IDC_EDITCELLSIZE       , m_cellSize      );
+  DDX_Text(      pDX, IDC_EDITXFROM          , m_xFrom         );
+  DDX_Text(      pDX, IDC_EDITXTO            , m_xTo           );
+  DDX_Text(      pDX, IDC_EDITYFROM          , m_yFrom         );
+  DDX_Text(      pDX, IDC_EDITYTO            , m_yTo           );
 }
 
 BEGIN_MESSAGE_MAP(CIsoCurveGraphDlg, CDialog)
@@ -90,6 +92,11 @@ void CIsoCurveGraphDlg::OnGotoCellSize() {
 
 void CIsoCurveGraphDlg::addToRecent(const String &fileName) {
   theApp.AddToRecentFileList(fileName.cstr());
+}
+
+String CIsoCurveGraphDlg::getListFileName() const {
+  if(!m_createListFile) return __super::getListFileName();
+  return FileNameSplitter(getData().getName()).setExtension(_T("lst")).getFullPath();
 }
 
 void CIsoCurveGraphDlg::OnEditFindmatchingparentesis() {

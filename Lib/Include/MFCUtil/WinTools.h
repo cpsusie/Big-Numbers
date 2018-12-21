@@ -119,6 +119,9 @@ void   gotoMatchingParanthes(      CWnd *wnd, int id);
 void   gotoMatchingParanthes(      CEdit     *edit);
 void   gotoMatchingParanthes(      CComboBox *cb);
 
+// assume id is CEdit
+bool   getWindowDouble(            CWnd *wnd, int id, double &d);
+
 CompactIntArray getTabOrder(CWnd *wnd);
 void            setTabOrder(CWnd *wnd, const CompactIntArray &tabOrderArray);
 

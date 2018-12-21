@@ -6,6 +6,7 @@
 class CIsoCurveGraphDlg : public SaveLoadExprDialog<IsoCurveGraphParameters> {
 private:
   CString  m_style;
+  BOOL     m_createListFile;
   CString  m_expr;
   double   m_cellSize;
   double   m_xFrom;
@@ -24,6 +25,8 @@ private:
   void paramToWin(const IsoCurveGraphParameters &param);
   bool winToParam(      IsoCurveGraphParameters &param);
   void addToRecent(const String &fileName);
+protected:
+  String getListFileName() const;
 public:
   CIsoCurveGraphDlg(IsoCurveGraphParameters &param, CWnd *pParent = NULL);
   enum { IDD = IDR_ISOCURVE };

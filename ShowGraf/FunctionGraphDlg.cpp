@@ -8,17 +8,19 @@
 CFunctionGraphDlg::CFunctionGraphDlg(FunctionGraphParameters &param, int showFlags, CWnd *pParent)
 : SaveLoadExprDialog<FunctionGraphParameters>(IDD, pParent, param, _T("expression"), _T("exp"))
 , m_showFlags(showFlags)
+, m_createListFile(FALSE)
 {
 }
 
 void CFunctionGraphDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
-  DDX_Text(pDX, IDC_EDITEXPR, m_expr);
-  DDX_Text(pDX, IDC_EDITXFROM, m_xFrom);
-  DDX_Text(pDX, IDC_EDITXTO, m_xTo);
-  DDX_Text(pDX, IDC_EDITSTEPS, m_steps);
+  DDX_CBString(  pDX, IDC_COMBOSTYLE         , m_style         );
+  DDX_Check(     pDX, IDC_CHECKCREATELISTFILE, m_createListFile);
+  DDX_Text(      pDX, IDC_EDITEXPR           , m_expr          );
+  DDX_Text(      pDX, IDC_EDITXFROM          , m_xFrom         );
+  DDX_Text(      pDX, IDC_EDITXTO            , m_xTo           );
+  DDX_Text(      pDX, IDC_EDITSTEPS          , m_steps         );
   DDV_MinMaxUInt(pDX, m_steps, 1, 10000);
-  DDX_CBString(pDX, IDC_COMBOSTYLE, m_style);
 }
 
 BEGIN_MESSAGE_MAP(CFunctionGraphDlg, CDialog)
@@ -103,6 +105,11 @@ void CFunctionGraphDlg::OnGotoStep() {
 
 void CFunctionGraphDlg::addToRecent(const String &fileName) {
   theApp.AddToRecentFileList(fileName.cstr());
+}
+
+String CFunctionGraphDlg::getListFileName() const {
+  if(!m_createListFile) return __super::getListFileName();
+  return FileNameSplitter(getData().getName()).setExtension(_T("lst")).getFullPath();
 }
 
 void CFunctionGraphDlg::OnEditFindmatchingparentesis() {

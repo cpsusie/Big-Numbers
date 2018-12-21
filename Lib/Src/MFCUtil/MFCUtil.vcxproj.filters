@@ -331,6 +331,9 @@
     <ClCompile Include="PointSet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="WinDouble.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\MFCUtil\Viewport2D.h">

@@ -15,6 +15,8 @@ private:
   int                    m_commonExprId;
   IntHashMap<int>        m_helpButtonMap;
   int                    m_selectedExprId;
+  FILE                  *m_listFile;
+
   void createExprFont();
   void setExprFont(int id);
   void createMenuExprHelp(CMenu &menu);
@@ -22,6 +24,11 @@ private:
   void showExprHelpMenu(int id);
   void handleSelectedExprHelpId(int menuId, int ctrlId);
   String getExprSyntax(int index);
+  void openListFile();
+  void closeListFile();
+  inline bool isListFileOpen() const {
+    return m_listFile != NULL;
+  }
   void substituteSelectedText(int ctrlId, const String &s);
 
 protected:
@@ -30,17 +37,16 @@ protected:
   CExprDialog(int resId, CWnd *pParent) : CDialog(resId, pParent) {
     m_helpButtonCount = 0;
     m_commonExprId    = -1;
+    m_listFile        = NULL;
   }
   void createExprHelpButton(int buttonId, int exprEditId);
   void handleExprHelpButtonClick(int buttonId);
   void gotoExpr(int id) {
     GetDlgItem(id)->SetFocus();
   }
-
   inline void   setCommonExprFieldId(int id) {
     m_commonExprId = id;
     if(id >= 0) setExprFont(id);
-
   }
   inline int    getCommonExprFieldId() const {
     return m_commonExprId;
@@ -48,14 +54,14 @@ protected:
   inline bool   hasCommonExprField() const {
     return m_commonExprId >= 0;
   }
-  inline String getCommonExprString() const {
+  inline String getCommonExprText() const {
     return hasCommonExprField() ? getWindowText(this, getCommonExprFieldId()) : EMPTYSTRING;
   }
   inline CEdit *getExprField(int id) {
     return (CEdit*)GetDlgItem(id);
   }
-  inline String getExprString(int id) const {
-    return getCommonExprString() + getWindowText(this, id);
+  inline String getExprText(int id) const {
+    return getCommonExprText() + getWindowText(this, id);
   }
   inline void gotoMatchingParentesis() {
     ::gotoMatchingParanthes(this, getFocusCtrlId(this));
@@ -66,6 +72,14 @@ protected:
   bool validateInterval(int fromId, int toId);
   bool validateMinMax(int id, double min, double max);
   virtual bool validate() = 0;
+  bool generateListFile() const {
+    return getListFileName().length() > 0;
+  }
+  // should return empty string, if listfile not needed. Returning a non-empty string, a file with the returned
+  // name will be created on successfull compilation
+  virtual String getListFileName() const {
+    return EMPTYSTRING;
+  }
   virtual void addToRecent(const String &fileName) {
   }
 
@@ -121,11 +135,17 @@ protected:
     UpdateData(FALSE);
   }
   virtual bool winToParam(T &param) {
-    if(!updateAndValidate()) return false;
+    const String oldName = param.getName();
     param.setName((LPCTSTR)m_name);
-    return true;
+    try {
+      const bool ok = updateAndValidate();
+      if(!ok) param.setName(oldName);
+      return ok;
+    } catch(...) {
+      param.setName(oldName);
+      throw;
+    }
   };
-
   SaveLoadExprDialog(int resId, CWnd *pParent, const T &param, const String &paramTypeName, const String &extension)
    : CExprDialog(    resId, pParent)
    , m_resId(        resId         )
