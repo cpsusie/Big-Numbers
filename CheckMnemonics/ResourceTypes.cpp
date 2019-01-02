@@ -238,8 +238,11 @@ static const TCHAR *vkSynonyms[] = { // leave no space between words. COMMA (,) 
  ,NULL
 };
 
+#define IGNORE_KEYTYPE         (~(ACC_VIRTKEY | ACC_ASCII))
+#define EQUAL_SCANFLAGS(f1,f2) (((f1)&IGNORE_KEYTYPE) == ((f2)&IGNORE_KEYTYPE))
+
 bool MenuHotKey::matchAccelerator(const Accelerator &acc) const {
-  if(m_flags != acc.getFlags()) {
+  if(!EQUAL_SCANFLAGS(m_flags,acc.getFlags())) {
     return false;
   }
   static const SynonymMap synonymTable(vkSynonyms);
