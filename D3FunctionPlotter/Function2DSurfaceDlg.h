@@ -12,16 +12,18 @@ private:
   double  m_yto;
   int     m_pointCount;
   BOOL    m_machineCode;
+  BOOL    m_createListFile;
   UINT    m_frameCount;
   double  m_timefrom;
   double  m_timeto;
   BOOL    m_includeTime;
   BOOL    m_doubleSided;
 
-  bool validate();
-  void paramToWin(const Function2DSurfaceParameters &param);
-  bool winToParam(      Function2DSurfaceParameters &param);
-  void enableTimeFields();
+  String getListFileName() const;
+  bool   validate();
+  void   paramToWin(const Function2DSurfaceParameters &param);
+  bool   winToParam(      Function2DSurfaceParameters &param);
+  void   enableTimeFields();
 public:
   CFunction2DSurfaceDlg(const Function2DSurfaceParameters &param, CWnd *pParent = NULL);
 
@@ -38,6 +40,7 @@ protected:
     afx_msg void OnGotoPointCount();
     afx_msg void OnGotoFrameCount();
     afx_msg void OnCheckIncludeTime();
+    afx_msg void OnCheckMachineCode();
     afx_msg void OnButtonHelp();
     DECLARE_MESSAGE_MAP()
 };

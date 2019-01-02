@@ -26,6 +26,7 @@ static char *blob3      = "s1=1/max(sqr(x+1)+sqr(y  )+sqr(z  ),0.00001);"
 
 CIsoSurfaceDlg::CIsoSurfaceDlg(const IsoSurfaceParameters &param, CWnd *pParent /*=NULL*/)
 : SaveLoadExprDialog<IsoSurfaceParameters>(IDD, pParent, param, _T("implicit surface"), _T("imp"))
+, m_createListFile(FALSE)
 {
 }
 
@@ -38,6 +39,7 @@ void CIsoSurfaceDlg::DoDataExchange(CDataExchange *pDX) {
   DDX_Check(pDX, IDC_CHECK_ADAPTIVECELLSIZE, m_adaptiveCellSize          );
   DDX_Check(pDX, IDC_CHECK_ORIGINOUTSIDE   , m_originOutside             );
   DDX_Check(pDX, IDC_CHECK_MACHINECODE     , m_machineCode               );
+  DDX_Check(pDX, IDC_CHECKCREATELISTFILE   , m_createListFile            );
   DDX_Check(pDX, IDC_CHECK_DEBUGPOLYGONIZER, m_debugPolygonizer          );
   DDX_Check(pDX, IDC_CHECK_DOUBLESIDED     , m_doubleSided               );
   DDX_Check(pDX, IDC_CHECK_INCLUDETIME     , m_includeTime               );
@@ -54,7 +56,7 @@ void CIsoSurfaceDlg::DoDataExchange(CDataExchange *pDX) {
 }
 
 BEGIN_MESSAGE_MAP(CIsoSurfaceDlg, CDialog)
-	  ON_WM_SIZE()
+    ON_WM_SIZE()
     ON_COMMAND(ID_FILE_OPEN                  , OnFileOpen                  )
     ON_COMMAND(ID_FILE_SAVE                  , OnFileSave                  )
     ON_COMMAND(ID_FILE_SAVE_AS               , OnFileSaveAs                )
@@ -66,10 +68,11 @@ BEGIN_MESSAGE_MAP(CIsoSurfaceDlg, CDialog)
     ON_COMMAND(ID_GOTO_ZINTERVAL             , OnGotoZInterval             )
     ON_COMMAND(ID_GOTO_TIMEINTERVAL          , OnGotoTimeInterval          )
     ON_COMMAND(ID_GOTO_FRAMECOUNT            , OnGotoFrameCount            )
-	  ON_BN_CLICKED(IDC_BUTTON_HELP            , OnButtonHelp                )
+    ON_BN_CLICKED(IDC_BUTTON_HELP            , OnButtonHelp                )
     ON_BN_CLICKED(IDC_CHECK_DOUBLESIDED      , OnCheckDoubleSided          )
     ON_BN_CLICKED(IDC_CHECK_INCLUDETIME      , OnCheckIncludeTime          )
     ON_BN_CLICKED(IDC_CHECK_TETRAHEDRAL      , OnCheckTetrahedral          )
+	ON_BN_CLICKED(IDC_CHECK_MACHINECODE      , OnCheckMachineCode          )
 END_MESSAGE_MAP()
 
 BOOL CIsoSurfaceDlg::OnInitDialog() {
@@ -89,6 +92,7 @@ BOOL CIsoSurfaceDlg::OnInitDialog() {
   m_layoutManager.addControl(IDC_CHECK_DOUBLESIDED     , RELATIVE_Y_POS         );
   m_layoutManager.addControl(IDC_CHECK_ORIGINOUTSIDE   , RELATIVE_Y_POS         );
   m_layoutManager.addControl(IDC_CHECK_MACHINECODE     , RELATIVE_Y_POS         );
+  m_layoutManager.addControl(IDC_CHECKCREATELISTFILE   , RELATIVE_Y_POS         );
   m_layoutManager.addControl(IDC_CHECK_DEBUGPOLYGONIZER, RELATIVE_Y_POS         );
   m_layoutManager.addControl(IDC_CHECK_INCLUDETIME     , RELATIVE_Y_POS         );
   m_layoutManager.addControl(IDC_CHECK_DOUBLESIDED     , RELATIVE_Y_POS         );
@@ -119,6 +123,11 @@ BOOL CIsoSurfaceDlg::OnInitDialog() {
 
 #define MAXFRAMECOUNT 300
 
+String CIsoSurfaceDlg::getListFileName() const {
+  if (!m_createListFile) return __super::getListFileName();
+  return FileNameSplitter(getData().getName()).setExtension(_T("lst")).getFullPath();
+}
+
 bool CIsoSurfaceDlg::validate() {
   if(!validateAllExpr()) {
     return false;
@@ -146,6 +155,10 @@ bool CIsoSurfaceDlg::validate() {
     }
   }
   return true;
+}
+
+void CIsoSurfaceDlg::OnCheckMachineCode() {
+  GetDlgItem(IDC_CHECKCREATELISTFILE)->EnableWindow(IsDlgButtonChecked(IDC_CHECK_MACHINECODE));
 }
 
 void CIsoSurfaceDlg::OnCheckIncludeTime() {

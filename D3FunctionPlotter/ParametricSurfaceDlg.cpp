@@ -5,6 +5,7 @@ CParametricSurfaceDlg::CParametricSurfaceDlg(const ParametricSurfaceParameters &
 : SaveLoadExprDialog<ParametricSurfaceParameters>(IDD, pParent, param,_T("Parametric Surface"), _T("par"))
 , m_sStepCount(0)
 , m_tStepCount(0)
+, m_createListFile(FALSE)
 {
 }
 
@@ -13,25 +14,26 @@ CParametricSurfaceDlg::~CParametricSurfaceDlg() {
 
 void CParametricSurfaceDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
-  DDX_Text(pDX, IDC_EDITCOMMON        , m_commonText );
-  DDX_Text(pDX, IDC_EDIT_EXPRX        , m_exprX      );
-  DDX_Text(pDX, IDC_EDIT_EXPRY        , m_exprY      );
-  DDX_Text(pDX, IDC_EDIT_EXPRZ        , m_exprZ      );
-  DDX_Text(pDX, IDC_EDIT_TFROM        , m_tfrom      );
-  DDX_Text(pDX, IDC_EDIT_TTO          , m_tto        );
-  DDX_Text(pDX, IDC_EDIT_SFROM        , m_sfrom      );
-  DDX_Text(pDX, IDC_EDIT_STO          , m_sto        );
-  DDX_Check(pDX, IDC_CHECK_INCLUDETIME, m_includeTime);
-  DDX_Check(pDX, IDC_CHECK_DOUBLESIDED, m_doubleSided);
-  DDX_Text(pDX, IDC_EDIT_TIMEFROM     , m_timefrom   );
-  DDX_Text(pDX, IDC_EDIT_TIMETO       , m_timeto     );
-  DDX_Text(pDX, IDC_EDIT_TSTEPCOUNT   , m_tStepCount );
-  DDV_MinMaxUInt(pDX, m_tStepCount    , 1, 200       );
-  DDX_Text(pDX, IDC_EDIT_SSTEPCOUNT   , m_sStepCount );
-  DDV_MinMaxUInt(pDX, m_sStepCount    , 1, 200       );
-  DDX_Text(pDX, IDC_EDIT_FRAMECOUNT   , m_frameCount );
-  DDV_MinMaxUInt(pDX, m_frameCount    , 1, 300       );
-  DDX_Check(pDX, IDC_CHECK_MACHINECODE, m_machineCode);
+  DDX_Text( pDX, IDC_EDITCOMMON         , m_commonText    );
+  DDX_Text( pDX, IDC_EDIT_EXPRX         , m_exprX         );
+  DDX_Text( pDX, IDC_EDIT_EXPRY         , m_exprY         );
+  DDX_Text( pDX, IDC_EDIT_EXPRZ         , m_exprZ         );
+  DDX_Text( pDX, IDC_EDIT_TFROM         , m_tfrom         );
+  DDX_Text( pDX, IDC_EDIT_TTO           , m_tto           );
+  DDX_Text( pDX, IDC_EDIT_SFROM         , m_sfrom         );
+  DDX_Text( pDX, IDC_EDIT_STO           , m_sto           );
+  DDX_Check(pDX, IDC_CHECK_INCLUDETIME  , m_includeTime   );
+  DDX_Check(pDX, IDC_CHECK_DOUBLESIDED  , m_doubleSided   );
+  DDX_Text( pDX, IDC_EDIT_TIMEFROM      , m_timefrom      );
+  DDX_Text( pDX, IDC_EDIT_TIMETO        , m_timeto        );
+  DDX_Text( pDX, IDC_EDIT_TSTEPCOUNT    , m_tStepCount    );
+  DDV_MinMaxUInt(pDX, m_tStepCount      , 1, 200          );
+  DDX_Text( pDX, IDC_EDIT_SSTEPCOUNT    , m_sStepCount    );
+  DDV_MinMaxUInt(pDX, m_sStepCount      , 1, 200          );
+  DDX_Text( pDX, IDC_EDIT_FRAMECOUNT    , m_frameCount    );
+  DDV_MinMaxUInt(pDX, m_frameCount      , 1, 300          );
+  DDX_Check(pDX, IDC_CHECK_MACHINECODE  , m_machineCode   );
+  DDX_Check(pDX, IDC_CHECKCREATELISTFILE, m_createListFile);
 }
 
 BEGIN_MESSAGE_MAP(CParametricSurfaceDlg, CDialog)
@@ -54,6 +56,7 @@ BEGIN_MESSAGE_MAP(CParametricSurfaceDlg, CDialog)
     ON_BN_CLICKED(IDC_BUTTON_HELPY           , OnButtonHelpY                    )
     ON_BN_CLICKED(IDC_BUTTON_HELPZ           , OnButtonHelpZ                    )
     ON_BN_CLICKED(IDC_CHECK_INCLUDETIME      , OnCheckIncludeTime               )
+    ON_BN_CLICKED(IDC_CHECK_MACHINECODE      , OnCheckMachineCode               )
 END_MESSAGE_MAP()
 
 BOOL CParametricSurfaceDlg::OnInitDialog() {
@@ -88,6 +91,7 @@ BOOL CParametricSurfaceDlg::OnInitDialog() {
   m_layoutManager.addControl(IDC_STATIC_SSTEPCOUNT   , RELATIVE_Y_POS       );
   m_layoutManager.addControl(IDC_EDIT_SSTEPCOUNT     , RELATIVE_Y_POS       );
   m_layoutManager.addControl(IDC_CHECK_MACHINECODE   , RELATIVE_Y_POS       );
+  m_layoutManager.addControl(IDC_CHECKCREATELISTFILE , RELATIVE_Y_POS       );
   m_layoutManager.addControl(IDC_CHECK_INCLUDETIME   , RELATIVE_Y_POS       );
   m_layoutManager.addControl(IDC_CHECK_DOUBLESIDED   , RELATIVE_Y_POS       );
   m_layoutManager.addControl(IDC_STATIC_TIMEINTERVAL , RELATIVE_Y_POS       );
@@ -101,6 +105,11 @@ BOOL CParametricSurfaceDlg::OnInitDialog() {
 
   gotoEditBox(this, IDC_EDIT_EXPRX);
   return FALSE;  // return TRUE  unless you set the focus to a control
+}
+
+String CParametricSurfaceDlg::getListFileName() const {
+  if (!m_createListFile) return __super::getListFileName();
+  return FileNameSplitter(getData().getName()).setExtension(_T("lst")).getFullPath();
 }
 
 #define MAXPOINTCOUNT 200
@@ -134,13 +143,17 @@ bool CParametricSurfaceDlg::validate() {
   return true;
 }
 
+void CParametricSurfaceDlg::OnCheckMachineCode() {
+  GetDlgItem(IDC_CHECKCREATELISTFILE)->EnableWindow(IsDlgButtonChecked(IDC_CHECK_MACHINECODE));
+}
+
 void CParametricSurfaceDlg::OnCheckIncludeTime() {
   UpdateData(TRUE);
   enableTimeFields();
 }
 
 void CParametricSurfaceDlg::enableTimeFields() {
-  BOOL enable = IsDlgButtonChecked(IDC_CHECK_INCLUDETIME);
+  const BOOL enable = IsDlgButtonChecked(IDC_CHECK_INCLUDETIME);
   GetDlgItem(IDC_STATIC_TIMEINTERVAL)->EnableWindow(enable);
   GetDlgItem(IDC_EDIT_TIMEFROM      )->EnableWindow(enable);
   GetDlgItem(IDC_EDIT_TIMETO        )->EnableWindow(enable);

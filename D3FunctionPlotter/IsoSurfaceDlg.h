@@ -13,6 +13,7 @@ private:
   BOOL    m_adaptiveCellSize;
   BOOL    m_originOutside;
   BOOL    m_machineCode;
+  BOOL    m_createListFile;
   BOOL    m_debugPolygonizer;
   BOOL    m_doubleSided;
   BOOL    m_includeTime;
@@ -26,6 +27,7 @@ private:
   double  m_zfrom;
   double  m_zto;
 
+  String getListFileName() const;
   bool validate();
   void paramToWin(const IsoSurfaceParameters &param);
   bool winToParam(      IsoSurfaceParameters &param);
@@ -81,6 +83,7 @@ protected:
     afx_msg void OnGotoFrameCount();
     afx_msg void OnCheckDoubleSided();
     afx_msg void OnCheckIncludeTime();
+    afx_msg void OnCheckMachineCode();
     afx_msg void OnCheckTetrahedral();
     afx_msg void OnButtonHelp();
     DECLARE_MESSAGE_MAP()

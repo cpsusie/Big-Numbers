@@ -21,12 +21,13 @@ private:
   double  m_timeto;
   UINT    m_frameCount;
   BOOL    m_machineCode;
+  BOOL    m_createListFile;
 
-  bool validate();
-  void paramToWin(const ParametricSurfaceParameters &param);
-  bool winToParam(      ParametricSurfaceParameters &param);
-
-  void enableTimeFields();
+  String getListFileName() const;
+  bool   validate();
+  void   paramToWin(const ParametricSurfaceParameters &param);
+  bool   winToParam(      ParametricSurfaceParameters &param);
+  void   enableTimeFields();
 
   void gotoExprX() {
     gotoExpr(IDC_EDIT_EXPRX);
@@ -59,6 +60,7 @@ protected:
     afx_msg void OnGotoTimeInterval();
     afx_msg void OnGotoFrameCount();
     afx_msg void OnCheckIncludeTime();
+    afx_msg void OnCheckMachineCode();
     afx_msg void OnButtonHelpX();
     afx_msg void OnButtonHelpY();
     afx_msg void OnButtonHelpZ();

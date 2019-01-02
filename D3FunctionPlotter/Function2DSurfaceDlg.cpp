@@ -6,25 +6,27 @@
 #endif
 
 CFunction2DSurfaceDlg::CFunction2DSurfaceDlg(const Function2DSurfaceParameters &param, CWnd *pParent)
-  : SaveLoadExprDialog<Function2DSurfaceParameters>(IDD, pParent, param, _T("expression"), _T("exp"))
+: SaveLoadExprDialog<Function2DSurfaceParameters>(IDD, pParent, param, _T("expression"), _T("exp"))
+, m_createListFile(FALSE)
 {
 }
 
 void CFunction2DSurfaceDlg::DoDataExchange(CDataExchange *pDX) {
     __super::DoDataExchange(pDX);
-    DDX_Text(pDX , IDC_EDIT_EXPR             , m_expr                      );
-    DDX_Text(pDX , IDC_EDIT_XFROM            , m_xfrom                     );
-    DDX_Text(pDX , IDC_EDIT_XTO              , m_xto                       );
-    DDX_Text(pDX , IDC_EDIT_YFROM            , m_yfrom                     );
-    DDX_Text(pDX , IDC_EDIT_YTO              , m_yto                       );
-    DDX_Text(pDX , IDC_EDIT_POINTS           , m_pointCount                );
+    DDX_Text( pDX, IDC_EDIT_EXPR             , m_expr                      );
+    DDX_Text( pDX, IDC_EDIT_XFROM            , m_xfrom                     );
+    DDX_Text( pDX, IDC_EDIT_XTO              , m_xto                       );
+    DDX_Text( pDX, IDC_EDIT_YFROM            , m_yfrom                     );
+    DDX_Text( pDX, IDC_EDIT_YTO              , m_yto                       );
+    DDX_Text( pDX, IDC_EDIT_POINTS           , m_pointCount                );
     DDX_Check(pDX, IDC_CHECK_MACHINECODE     , m_machineCode               );
+    DDX_Check(pDX, IDC_CHECKCREATELISTFILE   , m_createListFile            );
     DDX_Check(pDX, IDC_CHECK_DOUBLESIDED     , m_doubleSided               );
     DDX_Check(pDX, IDC_CHECK_INCLUDETIME     , m_includeTime               );
-    DDX_Text(pDX , IDC_EDIT_FRAMECOUNT       , m_frameCount                );
-    DDV_MinMaxUInt(pDX, m_frameCount, 1, 300            );
-    DDX_Text(pDX , IDC_EDIT_TIMEFROM         , m_timefrom                  );
-    DDX_Text(pDX , IDC_EDIT_TIMETO           , m_timeto                    );
+    DDX_Text( pDX, IDC_EDIT_FRAMECOUNT       , m_frameCount                );
+    DDV_MinMaxUInt(pDX, m_frameCount, 1, 300                               );
+    DDX_Text( pDX, IDC_EDIT_TIMEFROM         , m_timefrom                  );
+    DDX_Text( pDX, IDC_EDIT_TIMETO           , m_timeto                    );
 }
 
 BEGIN_MESSAGE_MAP(CFunction2DSurfaceDlg, CDialog)
@@ -41,6 +43,7 @@ BEGIN_MESSAGE_MAP(CFunction2DSurfaceDlg, CDialog)
     ON_COMMAND(ID_GOTO_FRAMECOUNT            , OnGotoFrameCount                 )
     ON_BN_CLICKED(IDC_BUTTON_HELP            , OnButtonHelp                     )
     ON_BN_CLICKED(IDC_CHECK_INCLUDETIME      , OnCheckIncludeTime               )
+    ON_BN_CLICKED(IDC_CHECK_MACHINECODE      , OnCheckMachineCode               )
 END_MESSAGE_MAP()
 
 BOOL CFunction2DSurfaceDlg::OnInitDialog() {
@@ -62,6 +65,7 @@ BOOL CFunction2DSurfaceDlg::OnInitDialog() {
   m_layoutManager.addControl(IDC_STATIC_POINTCOUNT   , RELATIVE_Y_POS       );
   m_layoutManager.addControl(IDC_EDIT_POINTS         , RELATIVE_Y_POS       );
   m_layoutManager.addControl(IDC_CHECK_MACHINECODE   , RELATIVE_Y_POS       );
+  m_layoutManager.addControl(IDC_CHECKCREATELISTFILE , RELATIVE_Y_POS       );
   m_layoutManager.addControl(IDC_CHECK_INCLUDETIME   , RELATIVE_Y_POS       );
   m_layoutManager.addControl(IDC_CHECK_DOUBLESIDED   , RELATIVE_Y_POS       );
   m_layoutManager.addControl(IDC_STATIC_TIMEINTERVAL , RELATIVE_Y_POS       );
@@ -75,6 +79,11 @@ BOOL CFunction2DSurfaceDlg::OnInitDialog() {
 
   gotoEditBox(this, IDC_EDIT_EXPR);
   return FALSE;  // return TRUE  unless you set the focus to a control
+}
+
+String CFunction2DSurfaceDlg::getListFileName() const {
+  if (!m_createListFile) return __super::getListFileName();
+  return FileNameSplitter(getData().getName()).setExtension(_T("lst")).getFullPath();
 }
 
 #define MAXPOINTCOUNT 200
@@ -103,6 +112,10 @@ bool CFunction2DSurfaceDlg::validate() {
     }
   }
   return true;
+}
+
+void CFunction2DSurfaceDlg::OnCheckMachineCode() {
+  GetDlgItem(IDC_CHECKCREATELISTFILE)->EnableWindow(IsDlgButtonChecked(IDC_CHECK_MACHINECODE));
 }
 
 void CFunction2DSurfaceDlg::OnCheckIncludeTime() {

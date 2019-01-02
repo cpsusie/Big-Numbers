@@ -7,10 +7,6 @@
 
 /* ---------------- Implicit surface polygonizer supportfunctions ------------------- */
 
-static String getListFileName(const IsoSurfaceParameters &param) {
-  return format(_T("c:\\temp\\3DPlot\\ISO\\%s.lst"), param.getDisplayName().cstr());
-}
-
 class IsoSurface : public IsoSurfaceEvaluator {
 private:
   IsoSurfaceParameters                  m_param;
@@ -29,7 +25,7 @@ private:
     }
   }
 public:
-  IsoSurface(const IsoSurfaceParameters &param, FILE *listFile = NULL);
+  IsoSurface(const IsoSurfaceParameters &param);
   void   createData(InterruptableRunnable *ir);
   double evaluate(const Point3D &p);
   void   receiveFace(const Face3 &face);
@@ -50,9 +46,9 @@ public:
   }
 };
 
-IsoSurface::IsoSurface(const IsoSurfaceParameters &param, FILE *listFile)
+IsoSurface::IsoSurface(const IsoSurfaceParameters &param)
 : m_param(param)
-, m_exprWrapper(param.m_expr,param.m_machineCode, listFile)
+, m_exprWrapper(param.m_expr,param.m_machineCode)
 , m_interruptable(NULL)
 {
   m_xp = m_exprWrapper.getVariableByName(_T("x"));
@@ -150,10 +146,7 @@ LPD3DXMESH createMesh(AbstractMeshFactory &amf, const IsoSurfaceParameters &para
   if(param.m_includeTime) {
     throwInvalidArgumentException(__TFUNCTION__, _T("param.includeTime=true"));
   }
-  FILE *listFile = MKFOPEN(getListFileName(param), _T("w"));
-  LPD3DXMESH result = createMesh(amf, IsoSurface(param, listFile), NULL);
-  fclose(listFile);
-  return result;
+  return createMesh(amf, IsoSurface(param), NULL);
 }
 
 class VariableIsoSurfaceMeshCreator : public AbstractVariableMeshCreator {
@@ -161,9 +154,9 @@ private:
   AbstractMeshFactory &m_amf;
   mutable IsoSurface   m_surface;
 public:
-  VariableIsoSurfaceMeshCreator(AbstractMeshFactory &amf, const IsoSurfaceParameters &param, FILE *listFile)
+  VariableIsoSurfaceMeshCreator(AbstractMeshFactory &amf, const IsoSurfaceParameters &param)
   : m_amf(amf)
-  , m_surface(param, listFile)
+  , m_surface(param)
   {
   }
   LPD3DXMESH createMesh(double time, InterruptableRunnable *ir) const;
@@ -183,12 +176,10 @@ class IsoSurfaceMeshArrayJobParameter : public AbstractMeshArrayJobParameter {
 private:
   AbstractMeshFactory        &m_amf;
   const IsoSurfaceParameters &m_param;
-  const String                m_fileName;
 public:
   IsoSurfaceMeshArrayJobParameter(AbstractMeshFactory &amf, const IsoSurfaceParameters &param)
     : m_amf(amf)
     , m_param(param)
-    , m_fileName(getListFileName(param))
   {
   }
   const DoubleInterval &getTimeInterval() const {
@@ -198,10 +189,7 @@ public:
     return m_param.m_frameCount;
   }
   AbstractVariableMeshCreator *fetchMeshCreator() const {
-    FILE *listFile = MKFOPEN(m_fileName, _T("w"));
-
-    VariableIsoSurfaceMeshCreator *result = new VariableIsoSurfaceMeshCreator(m_amf, m_param, listFile); TRACE_NEW(result);
-    fclose(listFile);
+    VariableIsoSurfaceMeshCreator *result = new VariableIsoSurfaceMeshCreator(m_amf, m_param); TRACE_NEW(result);
     return result;
   }
 };
