@@ -14,7 +14,7 @@ ExpressionVariable::ExpressionVariable(const String &name, bool constant, bool d
 
 String ExpressionVariable::toString(bool fillers) const {
   const TCHAR *formatStr = fillers
-                         ? _T("Variable:[Name:%-10s V.Index:%2d%-9s%-9s%-9s]")
+                         ? _T("Variable:[Name:%-10s V.Index:%2d%-9s%-9s%-10s]")
                          : _T("Variable:[Name:%s V.Index:%d%s%s%s]");
   return format(formatStr
                ,format(_T("<%s>"), m_name.cstr()).cstr()
