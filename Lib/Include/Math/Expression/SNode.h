@@ -101,7 +101,7 @@ private:
   SNode DPoly(    const String &name) const;
   SNode DStmtList(const String &name) const;
 
-  void               setReduced() const; // return *this
+  void               setReduced() const;
   SNode              reduceAssign() const;
   SNode              reduceBoolExp();
   SNode              reduceNot();
