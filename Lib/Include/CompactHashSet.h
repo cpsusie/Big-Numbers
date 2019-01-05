@@ -424,6 +424,7 @@ public:
 
   // Subset. Return true if all elements in *this are in set
   bool operator<=(const CompactHashSet &set) const {
+    if(size() > set.size()) return false;
     for(Iterator<K> it = getIterator(); it.hasNext();) {
       if(!set.contains(it.next())) {
         return false;
