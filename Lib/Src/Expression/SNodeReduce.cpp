@@ -46,7 +46,7 @@ SNode SNode::reduceAssign() const {
     setReduced();
     RETURNTHIS;
   }
-  return assignStmt(left(), Rr);
+  RETURNNODE(assignStmt(left(), Rr));
 }
 
 SNode SNode::reduceBoolExp() {
