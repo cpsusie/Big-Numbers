@@ -78,6 +78,8 @@ class FPUState {
   FPUSlot       m_slot[8];
   bool          m_changed;
 
+#define CHECKCONDITION(c) { if(!(c)) throwException(_T("%s(%d):%s:%s"), __TFILE__,__LINE__,__TFUNCTION__,_T(#c)); }
+
   inline BYTE getSlotIndex(BYTE index) const {
     return (m_bottom + index + 1 - m_height) & 7;
   }
@@ -89,33 +91,33 @@ class FPUState {
     return getHeight() == 0;
   }
   inline FPUSlot &ST(BYTE index) {
-    assert(index < getHeight());
+    CHECKCONDITION(index < getHeight());
     return m_slot[getSlotIndex(index)];
   }
   inline const FPUSlot &ST(BYTE index) const {
-    assert(index < getHeight());
+    CHECKCONDITION(index < getHeight());
     return m_slot[getSlotIndex(index)];
   }
   inline void push(UINT valueIndex) {
-    assert(getHeight() < 8);
+    CHECKCONDITION(getHeight() < 8);
     m_height++;
     ST(0).setValueIndex(valueIndex);
     m_changed = true;
   }
   inline void push(FPUSlotSymbol symbol) {
-    assert(getHeight() < 8);
+    CHECKCONDITION(getHeight() < 8);
     m_height++;
     ST(0).setSymbol(symbol);
     m_changed = true;
   }
   inline void push(const FPUSlot &st) {
-    assert(getHeight() < 8);
+    CHECKCONDITION(getHeight() < 8);
     m_height++;
     ST(0) = st;
     m_changed = true;
   }
   void pop(BYTE count = 1) {
-    assert(count <= getHeight());
+    CHECKCONDITION(count <= getHeight());
     m_height -= count;
     m_changed = true;
   }
@@ -131,7 +133,7 @@ class FPUState {
     m_changed = true;
   }
   void swapWith0(BYTE index) {
-    assert(index <= getHeight());
+    CHECKCONDITION(index <= getHeight());
     FPUSlot &st0 = ST(0), &sti = ST(index);
     const FPUSlot tmp = st0; st0 = sti; sti = tmp;
     m_changed = true;
