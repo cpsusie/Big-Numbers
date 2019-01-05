@@ -201,6 +201,9 @@ public:
   void vprintf(const TCHAR *format, va_list argptr) const;
   void flush();
   static void printComment(FILE *file, const TCHAR *format,...); // prefixes every line with ';'
+  static String makeSkillLineString(UINT length = 60) {
+    return spaceString(length, '-');
+  }
 };
 
 }; // namespace Expr

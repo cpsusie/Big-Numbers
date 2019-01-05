@@ -50,7 +50,7 @@ void ListFile::clear() {
 }
 
 static int listLineCmp(ListLine * const &l1, ListLine * const &l2) {
-  int c = (int)l1->m_pos - (int)l2->m_pos;
+  const int c = (int)l1->m_pos - (int)l2->m_pos;
   if(c) return c;
   return ordinal(l2->m_isLabel) - ordinal(l1->m_isLabel);
 }
@@ -58,7 +58,7 @@ static int listLineCmp(ListLine * const &l1, ListLine * const &l2) {
 void ListFile::flush() {
   if(!isOpen()) return;
   if(isTracing()) {
-    _ftprintf(m_f,_T("----------------------------------------------------\n"));
+    _ftprintf(m_f,_T("%s\n"), makeSkillLineString().cstr());
   }
   m_lineArray.sort(listLineCmp);
   const size_t n = m_lineArray.size();
@@ -76,10 +76,10 @@ void ListFile::vprintf(const TCHAR *format, va_list argptr) const {
 // prefixes every line with ';'
 void ListFile::printComment(FILE *file, const TCHAR *format,...) { // static
   va_list argptr;
-  va_start(argptr,format);
-  String str = vformat(format,argptr);
+  va_start(argptr, format);
+  const String str = vformat(format, argptr);
   va_end(argptr);
-  StringArray a(Tokenizer(str,_T("\n\r")));
+  const StringArray a(Tokenizer(str,_T("\n\r")));
   const size_t n = a.size();
   for(size_t i = 0; i < n; i++) {
     _ftprintf(file,_T(";%s\n"), trimRight(a[i]).cstr());
