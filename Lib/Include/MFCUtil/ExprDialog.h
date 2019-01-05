@@ -39,6 +39,9 @@ protected:
     m_commonExprId    = -1;
     m_listFile        = NULL;
   }
+  virtual ~CExprDialog() {
+    closeListFile();
+  }
   void createExprHelpButton(int buttonId, int exprEditId);
   void handleExprHelpButtonClick(int buttonId);
   void gotoExpr(int id) {
