@@ -212,8 +212,13 @@ void CodeGenerator::genExpression(SNode n DCL_DSTPARAM) {
 
   case PLUS  :
 #ifdef LONGDOUBLE
-    genExpression(n.left()  DST_FPU);
-    genExpression(n.right() DST_FPU);
+    if(n.left().getHeight() > n.right().getHeight()) {
+      genExpression(n.left()  DST_FPU);
+      genExpression(n.right() DST_FPU);
+    } else {
+      genExpression(n.right() DST_FPU);
+      genExpression(n.left()  DST_FPU);
+    }
     m_code->emit(FADD);
     break;
 #else // !LONGDOUBLE
@@ -224,8 +229,13 @@ void CodeGenerator::genExpression(SNode n DCL_DSTPARAM) {
       genExpression(n.left() DST_FPU);
       genFPUOpVal(FADD,n.right());
     } else {
-      genExpression(n.left()  DST_FPU);
-      genExpression(n.right() DST_FPU);
+      if(n.left().getHeight() > n.right().getHeight()) {
+        genExpression(n.left()  DST_FPU);
+        genExpression(n.right() DST_FPU);
+      } else {
+        genExpression(n.right() DST_FPU);
+        genExpression(n.left()  DST_FPU);
+      }
       m_code->emit(FADD);
     }
     break;
@@ -238,9 +248,15 @@ void CodeGenerator::genExpression(SNode n DCL_DSTPARAM) {
       break;
     }
 #ifdef LONGDOUBLE
-    genExpression(n.left()  DST_FPU);
-    genExpression(n.right() DST_FPU);
-    m_code->emit(FSUB);
+    if(n.left().getHeight() > n.right().getHeight()) {
+      genExpression(n.left()  DST_FPU);
+      genExpression(n.right() DST_FPU);
+      m_code->emit(FSUB);
+    } else {
+      genExpression(n.right() DST_FPU);
+      genExpression(n.left()  DST_FPU);
+      m_code->emit(FSUBR);
+    }
     break;
 #else // !LONGDOUBLE
     if(n.right().isNameOrNumber()) {
@@ -250,17 +266,28 @@ void CodeGenerator::genExpression(SNode n DCL_DSTPARAM) {
       genExpression(n.right() DST_FPU);
       genFPUOpVal(FSUBR,n.left());
     } else {
-      genExpression(n.left()  DST_FPU);
-      genExpression(n.right() DST_FPU);
-      m_code->emit(FSUB);
+      if(n.left().getHeight() > n.right().getHeight()) {
+        genExpression(n.left()  DST_FPU);
+        genExpression(n.right() DST_FPU);
+        m_code->emit(FSUB);
+      } else {
+        genExpression(n.right() DST_FPU);
+        genExpression(n.left()  DST_FPU);
+        m_code->emit(FSUBR);
+      }
     }
     break;
 #endif // LONGDOUBLE
 
   case PROD  :
 #ifdef LONGDOUBLE
-    genExpression(n.left()  DST_FPU);
-    genExpression(n.right() DST_FPU);
+    if(n.left().getHeight() > n.right().getHeight()) {
+      genExpression(n.left()  DST_FPU);
+      genExpression(n.right() DST_FPU);
+    } else {
+      genExpression(n.right() DST_FPU);
+      genExpression(n.left()  DST_FPU);
+    }
     m_code->emit(FMUL);
     break;
 #else // !LONGDOUBLE
@@ -271,8 +298,13 @@ void CodeGenerator::genExpression(SNode n DCL_DSTPARAM) {
       genExpression(n.left() DST_FPU);
       genFPUOpVal(FMUL,n.right());
     } else {
-      genExpression(n.left()  DST_FPU);
-      genExpression(n.right() DST_FPU);
+      if(n.left().getHeight() > n.right().getHeight()) {
+        genExpression(n.left()  DST_FPU);
+        genExpression(n.right() DST_FPU);
+      } else {
+        genExpression(n.right() DST_FPU);
+        genExpression(n.left()  DST_FPU);
+      }
       m_code->emit(FMUL);
     }
     break;
@@ -280,9 +312,15 @@ void CodeGenerator::genExpression(SNode n DCL_DSTPARAM) {
 
   case QUOT :
 #ifdef LONGDOUBLE
-    genExpression(n.left()  DST_FPU);
-    genExpression(n.right() DST_FPU);
-    m_code->emit(FDIV);
+    if(n.left().getHeight() > n.right().getHeight()) {
+      genExpression(n.left()  DST_FPU);
+      genExpression(n.right() DST_FPU);
+      m_code->emit(FDIV);
+    } else {
+      genExpression(n.right() DST_FPU);
+      genExpression(n.left()  DST_FPU);
+      m_code->emit(FDIVR);
+    }
     break;
 #else // !LONGDOUBLE
     if(n.right().isNameOrNumber()) {
@@ -292,9 +330,15 @@ void CodeGenerator::genExpression(SNode n DCL_DSTPARAM) {
       genExpression(n.right() DST_FPU);
       genFPUOpVal(FDIVR,n.left());
     } else {
-      genExpression(n.left()  DST_FPU);
-      genExpression(n.right() DST_FPU);
-      m_code->emit(FDIV);
+      if(n.left().getHeight() > n.right().getHeight()) {
+        genExpression(n.left()  DST_FPU);
+        genExpression(n.right() DST_FPU);
+        m_code->emit(FDIV);
+      } else {
+        genExpression(n.right() DST_FPU);
+        genExpression(n.left()  DST_FPU);
+        m_code->emit(FDIVR);
+      }
     }
     break;
 #endif // LONGDOUBLE
