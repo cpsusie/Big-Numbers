@@ -74,7 +74,7 @@ protected:
   inline const ExpressionNode *getParent(UINT i = 1) const {
     return (i < m_path.getHeight()) ? m_path.top(i) : NULL;
   }
-  inline int getLevel() const {
+  inline UINT getLevel() const {
     return m_path.getHeight();
   }
 public:
@@ -245,8 +245,8 @@ public:
   bool                               dependsOn(const String &name)  const;
   // If selector specified, only nodes where selector.select(n) is true will be counted.
   // If not specified, all nodes are counted
-  int                                getNodeCount(ExpressionNodeSelector *selector = NULL) const;
-  int                                getNodeCount(const ExpressionSymbolSet &validSymbolSet) const;
+  UINT                               getNodeCount(ExpressionNodeSelector *selector = NULL) const;
+  UINT                               getNodeCount(const ExpressionSymbolSet &validSymbolSet) const;
   bool                               containsFunctionCall()         const;
   Real                              &getValueRef()                  const;
 
@@ -262,7 +262,7 @@ public:
 
   String                             parenthesizedExpressionToString(const ExpressionNode  *parent)  const;
   bool                               needParentheses(                const ExpressionNode  *parent)  const;
-  int                                getMaxTreeDepth()                                               const;
+  UINT                               getMaxTreeDepth()                                               const;
 
 #ifdef CHECK_CONSISTENCY
   // Return nodes visited. or throw Exception if any nodes is insoncistent

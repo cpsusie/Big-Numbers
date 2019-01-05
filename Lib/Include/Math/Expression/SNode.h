@@ -233,7 +233,8 @@ public:
   bool                  evaluateBool()                         const;
   ExpressionNodeType    getNodeType()                          const;
   ExpressionReturnType  getReturnType()                        const;
-  int                   getNodeCount(const ExpressionSymbolSet &validSymbolSet) const;
+  UINT                  getNodeCount(const ExpressionSymbolSet &validSymbolSet) const;
+  UINT                  getHeight()                            const;
 
   String                toString()                             const;
 

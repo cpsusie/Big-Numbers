@@ -103,7 +103,7 @@ public:
 
 class NodeCounter : public ExpressionNodeHandler {
 private:
-  int                     m_count;
+  UINT                    m_count;
   ExpressionNodeSelector *m_selector;
 public:
   NodeCounter(ExpressionNodeSelector *selector) : m_selector(selector) {
@@ -113,7 +113,7 @@ public:
     if((m_selector == NULL) || m_selector->select(n)) m_count++;
     return true;
   }
-  int getCount() const {
+  inline UINT getCount() const {
     return m_count;
   }
 };
@@ -122,37 +122,37 @@ bool ExpressionNode::dependsOn(const String &name) const {
   return getNodeCount(&NameSelector(name)) > 0;
 }
 
-int ExpressionNode::getNodeCount(ExpressionNodeSelector *selector) const {
+UINT ExpressionNode::getNodeCount(ExpressionNodeSelector *selector) const {
   NodeCounter nodeCounter(selector);
   ((ExpressionNode*)this)->traverseExpression(nodeCounter);
   return nodeCounter.getCount();
 }
 
-int ExpressionNode::getNodeCount(const ExpressionSymbolSet &validSymbolSet) const {
+UINT ExpressionNode::getNodeCount(const ExpressionSymbolSet &validSymbolSet) const {
   return getNodeCount(&ExpressionNodeSymbolSelector(&validSymbolSet));
 }
 
 class MaxLevelFinder : public ExpressionNodeHandler {
 private:
-  int m_maxLevel;
+  UINT m_maxLevel;
 public:
   MaxLevelFinder() : m_maxLevel(0) {
   }
   bool handleNode(ExpressionNode *n);
-  int getMaxLevel() const {
+  UINT getMaxLevel() const {
     return m_maxLevel;
   }
 };
 
 bool MaxLevelFinder::handleNode(ExpressionNode *n) {
-  const int level = getLevel();
+  const UINT level = getLevel();
   if(level > m_maxLevel) {
     m_maxLevel = level;
   }
   return true;
 }
 
-int ExpressionNode::getMaxTreeDepth() const {
+UINT ExpressionNode::getMaxTreeDepth() const {
   MaxLevelFinder handler;
   ((ExpressionNode*)this)->traverseExpression(handler);
   return handler.getMaxLevel();

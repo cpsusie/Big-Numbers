@@ -228,7 +228,7 @@ void ParserTree::listErrors(const TCHAR *fname) const {
   }
 }
 
-int ParserTree::getNodeCount(ExpressionNodeSelector *selector) const {
+UINT ParserTree::getNodeCount(ExpressionNodeSelector *selector) const {
   if(getRoot() == NULL) {
     return 0;
   } else {
@@ -241,7 +241,7 @@ int ParserTree::getNodeCount(ExpressionNodeSelector *selector) const {
 }
 
 // if(validSymbolSet != NULL, only node with symbols contained in set will be counted
-int ParserTree::getNodeCount(bool ignoreMarked, const ExpressionSymbolSet *validSymbolSet) const {
+UINT ParserTree::getNodeCount(bool ignoreMarked, const ExpressionSymbolSet *validSymbolSet) const {
   if((validSymbolSet == NULL) && !ignoreMarked) {
     return getNodeCount();
   } else {
@@ -266,7 +266,7 @@ void ParserTree::markPow1Nodes() const {
   ((ParserTree*)this)->traverseTree(Pow1NodeMarker());
 }
 
-int ParserTree::getTreeDepth() const {
+UINT ParserTree::getTreeDepth() const {
   return getRoot() ? getRoot()->getMaxTreeDepth() : 0;
 }
 
@@ -474,8 +474,14 @@ ExpressionNode *ParserTree::constExpr(const String &name) {
 
 String ParserTree::treeToString() const {
   unmarkAll();
-  String result;
-  if(!isEmpty()) {
+  String result = format(_T("Mode:%-10s, State:%-14s, Reduceiteration:%3u\n")
+                        ,getTreeFormName().cstr()
+                        ,getStateName().cstr()
+                        ,getReduceIteration());
+
+  if (isEmpty()) {
+    result += _T("Root = NULL\n");
+  } else {
     getRoot()->dumpNode(result, 0);
   }
   result += getSymbolTable().toString();

@@ -175,8 +175,12 @@ ExpressionReturnType SNode::getReturnType() const {
   return m_node->getReturnType();
 }
 
-int SNode::getNodeCount(const ExpressionSymbolSet &validSymbolSet) const {
+UINT SNode::getNodeCount(const ExpressionSymbolSet &validSymbolSet) const {
   return isEmpty() ? 0 : m_node->getNodeCount(validSymbolSet);
+}
+
+UINT SNode::getHeight() const {
+  return isEmpty() ? 0 : m_node->getMaxTreeDepth();
 }
 
 String SNode::toString() const {

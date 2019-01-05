@@ -38,9 +38,9 @@ typedef enum {
 
 class ParserTreeComplexity {
 private:
-  int m_nodeCount;
-  int m_nameCount;
-  int m_treeDepth;
+  UINT m_nodeCount;
+  UINT m_nameCount;
+  UINT m_treeDepth;
   int compare(const ParserTreeComplexity &tc) const;
 public:
   ParserTreeComplexity(const ParserTree &tree);
@@ -62,11 +62,11 @@ public:
   inline bool operator>=(const ParserTreeComplexity &tc) const {
     return compare(tc) >= 0;
   }
-  inline int getNodeCount() const {
+  inline UINT getNodeCount() const {
     return m_nodeCount;
   }
   String toString() const {
-    return format(_T("#nodes:%3d, #names:%2d, treedepth:%d\n"), m_nodeCount, m_nameCount, m_treeDepth);
+    return format(_T("#nodes:%3u, #names:%2u, treedepth:%u\n"), m_nodeCount, m_nameCount, m_treeDepth);
   }
 };
 
@@ -435,10 +435,10 @@ public:
     return m_symbolTable.getVariable(name);
   }
 
-  int getNodeCount(ExpressionNodeSelector *selector = NULL) const;
+  UINT getNodeCount(ExpressionNodeSelector *selector = NULL) const;
   // if(validSymbolSet != NULL, only node with symbols contained in set will be counted
-  int getNodeCount(bool ignoreMarked, const ExpressionSymbolSet *validSymbolSet = NULL) const;
-  int getTreeDepth() const;
+  UINT getNodeCount(bool ignoreMarked, const ExpressionSymbolSet *validSymbolSet = NULL) const;
+  UINT getTreeDepth() const;
   ParserTreeComplexity getComplexity() const;
 #ifdef TRACE_REDUCTION_CALLSTACK
   inline ReductionStack &getReductionStack() {
