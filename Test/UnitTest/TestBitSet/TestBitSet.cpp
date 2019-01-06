@@ -2,6 +2,7 @@
 #include "CppUnitTest.h"
 #include <Random.h>
 #include <BitSet.h>
+#include <CompactHashSet.h>
 #include <ByteMemoryStream.h>
 #include <ByteFile.h>
 #include <TimeMeasure.h>
@@ -176,6 +177,107 @@ namespace TestBitSet {
   };
 #endif
 
+  class TesterSet {
+  private:
+    BitSet             m_bs;
+    CompactUIntHashSet m_hs;
+    bool               m_memberCheckEnabled;
+
+    void verifyMembers() const {
+      for(Iterator<CompactUIntKeyType> it = m_hs.getIterator(); it.hasNext();) {
+        const UINT k = it.next();
+        verify(m_bs.contains(k));
+      }
+    }
+  public:
+    TesterSet(UINT capacity) 
+      : m_bs(capacity)
+      , m_memberCheckEnabled(true)
+    {
+    }
+    inline void setMemberCheckEnabled(bool enable) {
+      m_memberCheckEnabled = enable;
+    }
+    void verifyConsistent() const {
+      verify(m_bs.size() == m_hs.size());
+      if (m_memberCheckEnabled) {
+        verifyMembers();
+      }
+    }
+    inline TesterSet &clear() {
+      m_bs.clear();
+      m_hs.clear();
+      verifyConsistent();
+      return *this;
+    }
+
+    inline TesterSet &add(UINT v) {
+      m_bs.add(v);
+      m_hs.add(v);
+      verifyConsistent();
+      return *this;
+    }
+    inline TesterSet &add(UINT a, UINT b) {
+      m_bs.add(a, b);
+      for(UINT i = a; i <= b; i++) m_hs.add(i);
+      verifyConsistent();
+      return *this;
+    }
+    inline TesterSet &remove(UINT a, UINT b) {
+      m_bs.remove(a, b);
+      for(UINT i = a; i <= b; i++) m_hs.remove(i);
+      verifyConsistent();
+      return *this;
+    }
+    inline TesterSet &remove(UINT v) {
+      m_bs.remove(v);
+      m_hs.remove(v);
+      verifyConsistent();
+      return *this;
+    }
+    inline TesterSet &operator+=(const TesterSet &s) {
+      m_bs += s.m_bs;
+      m_hs.addAll(s.m_hs);
+      verifyConsistent();
+      return *this;
+    }
+    TesterSet &operator-=(const TesterSet &s) {
+      m_bs -= s.m_bs;
+      m_hs.removeAll(s.m_hs);
+      verifyConsistent();
+      return *this;
+    }
+    TesterSet &operator&=(const TesterSet &s) {
+      m_bs &= s.m_bs;
+      m_hs.retainAll(s.m_hs);
+      verifyConsistent();
+      return *this;
+    }
+    TesterSet &operator^=(const TesterSet &s) {
+      m_bs ^= s.m_bs;
+      m_hs = m_hs ^ s.m_hs;
+      verifyConsistent();
+      return *this;
+    }
+    TesterSet &invert() {
+      m_bs.invert();
+      const size_t k = m_bs.getCapacity();
+      const CompactUIntHashSet tmp(m_hs);
+      for(UINT i = 0; i < k; i++) m_hs.add(i);
+      m_hs.removeAll(tmp);
+      verifyConsistent();
+      return *this;
+    }
+    void checkCompare(const TesterSet &s) const {
+      verify((m_bs == s.m_bs) == (m_hs == s.m_hs));
+      verify((m_bs != s.m_bs) == (m_hs != s.m_hs));
+      verify((m_bs <= s.m_bs) == (m_hs <= s.m_hs));
+      verify((m_bs <  s.m_bs) == (m_hs <  s.m_hs));
+      verify((m_bs >= s.m_bs) == (m_hs >= s.m_hs));
+      verify((m_bs >  s.m_bs) == (m_hs >  s.m_hs));
+    }
+  };
+
 	TEST_CLASS(TestBitSet) {
     public:
 
@@ -239,6 +341,59 @@ namespace TestBitSet {
       verify(!a.contains(33));
 
       verify(a.toString() == _T("(1,10,31,32)"));
+    }
+
+    void addEvenNumbers(TesterSet &s, int max) {
+      s.setMemberCheckEnabled(false);
+      max &= ~1;
+      for(int i = 0; i < max; i += 2) {
+        s.add(i);
+      }
+      s.setMemberCheckEnabled(true);
+      s.verifyConsistent();
+    }
+    void addOddNumbers(TesterSet &s, int max) {
+      s.setMemberCheckEnabled(false);
+      for(int i = 1; i < max; i += 2) {
+        s.add(i);
+      }
+      s.setMemberCheckEnabled(true);
+      s.verifyConsistent();
+    }
+
+
+    TEST_METHOD(BitSetTestCompare) {
+      for(int aCap = 5; aCap < 60; aCap++) {
+        for(int bCap = 5; bCap < 60; bCap++) {
+          TesterSet a(aCap), b(bCap);
+          addEvenNumbers(a, aCap); addEvenNumbers(b, bCap);
+          a.checkCompare(b);
+          a.add(1);
+          a.checkCompare(b);
+          a.remove(1);
+          a.checkCompare(b);
+          a.clear(); b.clear();
+          a.checkCompare(b);
+
+          addOddNumbers(a, aCap); addOddNumbers(b, bCap);
+          a.checkCompare(b);
+          a.add(2);
+          a.checkCompare(b);
+          a.remove(2);
+          a.checkCompare(b);
+          a.clear(); b.clear();
+          a.checkCompare(b);
+
+          addOddNumbers(a, aCap); addOddNumbers(b, bCap);
+          a ^= b;
+          a += b;
+          a.invert();
+          a += b;
+          a -= b;
+          a += b;
+          a ^= b;
+        }
+      }
     }
 
     TEST_METHOD(BitSetTestIterator)

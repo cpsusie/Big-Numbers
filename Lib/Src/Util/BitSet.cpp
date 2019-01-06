@@ -174,7 +174,7 @@ size_t BitSet::select() const {
 
 BitSet &BitSet::invert() {
   Atom *p = m_p;
-  for(size_t i = _BS_ATOMCOUNT(m_capacity); i--; p++) {
+  for(const Atom *endp = p + _BS_ATOMCOUNT(m_capacity); p < endp; p++) {
     *p = ~*p;
   }
 
@@ -211,8 +211,7 @@ const char BitSet::setBitsCount[256] = { // Number of set bits for each bytevalu
 
 size_t BitSet::size() const {
   size_t result = 0;
-  const Atom *last = getLastAtom();
-  for (const Atom *p = m_p; p <= last;) {
+  for(const Atom *p = m_p, *endp = p + _BS_ATOMCOUNT(m_capacity); p < endp;) {
     result += getPopCount(*(p++));
   }
   return result;
@@ -220,9 +219,9 @@ size_t BitSet::size() const {
 
 intptr_t BitSet::getIndex(size_t i) const {
   if(!contains(i)) return -1;
-  const Atom *p    = m_p, *last = p + _BS_ATOMINDEX(i);
+  const Atom *p    = m_p, *endp = p + _BS_ATOMINDEX(i);
   size_t result = 0;
-  while(p < last) {
+  while(p < endp) {
     result += getPopCount(*(p++));
   }
   const BYTE frac = i%_BS_BITSINATOM;
@@ -263,11 +262,11 @@ size_t BitSet::getCount(size_t from, size_t to) const {
 
 bool BitSet::isEmpty() const {
   const Atom *p = m_p;
-
 #ifndef BITSET_ASM_OPTIMIZED
-  const Atom *last = getLastAtom();
-  while(p <= last) {
-    if(*(p++)) return false;
+  for(const Atom *endp = p + _BS_ATOMCOUNT(m_capacity); p < endp;) {
+    if(*(p++)) {
+      return false;
+    }
   }
   return true;
 
@@ -300,54 +299,56 @@ end:
 }
 
 BitSet &BitSet::operator+=(const BitSet &rhs) { // this = this union rhs
-  const size_t ratomCount = _BS_ATOMCOUNT(rhs.m_capacity);
-
   if(m_capacity < rhs.m_capacity) {
     setCapacity(rhs.m_capacity);
   }
-  Atom *p        = m_p;
-  const Atom *rp = rhs.m_p;
-  for(size_t i = ratomCount; i--;) {
+  Atom *p = m_p;
+  for(const Atom *rp = rhs.m_p, *endp = rp + _BS_ATOMCOUNT(rhs.m_capacity); rp < endp;) {
     *(p++) |= *(rp++);
   }
   return *this;
 }
 
 BitSet &BitSet::operator-=(const BitSet &rhs) { // this = this - rhs
-  const size_t minCapacity  = min(m_capacity,rhs.m_capacity);
-  const size_t minAtomCount = _BS_ATOMCOUNT(minCapacity);
-
   Atom       *p  = m_p;
   const Atom *rp = rhs.m_p;
-  for(size_t i = minAtomCount; i--;) {
-    *(p++) &= ~*(rp++);
+  const size_t atomCount1 = _BS_ATOMCOUNT(m_capacity), atomCount2 = _BS_ATOMCOUNT(rhs.m_capacity);
+  if(atomCount1 <= atomCount2) {
+    for(const Atom *endp = p + atomCount1; p < endp;) {
+      *(p++) &= ~*(rp++);
+    }
+  } else {
+    for(const Atom *endp = rp + atomCount2; rp < endp;) {
+      *(p++) &= ~*(rp++);
+    }
   }
   return *this;
 }
 
 BitSet &BitSet::operator*=(const BitSet &rhs) { // this = this and rhs (intersection)
-  const size_t minCapacity  = min(m_capacity, rhs.m_capacity);
-  const size_t minAtomCount = _BS_ATOMCOUNT(minCapacity);
-  Atom *p  = m_p;
-  Atom *rp = rhs.m_p;
-  for(size_t i = minAtomCount; i--;) {
-    *(p++) &= *(rp++);
-  }
-  for(size_t i = _BS_ATOMCOUNT(m_capacity) - minAtomCount; i--;) {
-    *(p++) = 0;
+  Atom       *p  = m_p;
+  const Atom *rp = rhs.m_p;
+  const size_t atomCount1 = _BS_ATOMCOUNT(m_capacity), atomCount2 = _BS_ATOMCOUNT(rhs.m_capacity);
+  if(atomCount1 <= atomCount2) {
+    for(const Atom *endp = p + atomCount1; p < endp;) {
+      *(p++) &= *(rp++);
+    }
+  } else {
+    for(const Atom *endp = rp + atomCount2; rp < endp;) {
+      *(p++) &= *(rp++);
+    }
+    memset(p, 0, (m_p + atomCount1 - p) * sizeof(Atom));
   }
   return *this;
 }
 
 BitSet &BitSet::operator^=(const BitSet &rhs) { // this = this xor rhs
-  if(rhs.m_capacity > m_capacity) {
+  if(m_capacity < rhs.m_capacity) {
     setCapacity(rhs.m_capacity);
   }
 
-  const size_t atomCount = _BS_ATOMCOUNT(rhs.m_capacity);
-  Atom *p  = m_p;
-  Atom *rp = rhs.m_p;
-  for(size_t i = atomCount; i--;) {
+  Atom *p = m_p;
+  for(const Atom *rp = rhs.m_p, *endp = rp + _BS_ATOMCOUNT(rhs.m_capacity); rp < endp;) {
     *(p++) ^= *(rp++);
   }
   return *this;
@@ -391,23 +392,20 @@ BitSet operator^(const BitSet &lts, const BitSet &rhs) { // xor, ie symmetric di
 
 bool operator<=(const BitSet &lts, const BitSet &rhs) {
   if(lts.m_capacity <= rhs.m_capacity) {
-    const size_t atomCount = _BS_ATOMCOUNT(lts.m_capacity);
-    for(size_t i = 0; i < atomCount; i++) {
-      if((lts.m_p[i] & rhs.m_p[i]) != lts.m_p[i]) {
+    for(const BitSet::Atom *lp = lts.m_p, *rp = rhs.m_p, *endp = lp + _BS_ATOMCOUNT(lts.m_capacity); lp < endp; lp++) {
+      if((*lp & *(rp++)) != *lp) {
         return false;
       }
     }
   } else { // lts.m_capacity > rhs.m_capacity
-    size_t atomCount = _BS_ATOMCOUNT(rhs.m_capacity);
-    size_t i;
-    for(i = 0; i < atomCount; i++) {
-      if((lts.m_p[i] & rhs.m_p[i]) != lts.m_p[i]) {
+    const BitSet::Atom *lp = lts.m_p;
+    for(const BitSet::Atom *rp = rhs.m_p, *endp = rp + _BS_ATOMCOUNT(rhs.m_capacity); rp < endp; lp++) {
+      if((*lp & *(rp++)) != *lp) {
         return false;
       }
     }
-    atomCount = _BS_ATOMCOUNT(lts.m_capacity);
-    for(;i < atomCount; i++) {
-      if(lts.m_p[i]) {
+    for(const BitSet::Atom *endp = lts.m_p + _BS_ATOMCOUNT(lts.m_capacity); lp < endp;) {
+      if(*(lp++)) {
         return false;
       }
     }
@@ -417,8 +415,7 @@ bool operator<=(const BitSet &lts, const BitSet &rhs) {
 
 ULONG BitSet::hashCode() const {
   size_t v = m_capacity;
-  const Atom *p = m_p;
-  for(size_t i = _BS_ATOMCOUNT(m_capacity); i--;) {
+  for(const Atom *p = m_p, *endp = p + _BS_ATOMCOUNT(m_capacity); p < endp;) {
     v ^= *(p++);
   }
   return sizetHash(v);
@@ -428,19 +425,24 @@ int bitSetCmp(const BitSet &i1, const BitSet &i2) {
   const size_t atomcount1 = _BS_ATOMCOUNT(i1.m_capacity);
   const size_t atomcount2 = _BS_ATOMCOUNT(i2.m_capacity);
   if(atomcount1 == atomcount2) {
-    return memcmp(i1.m_p,i2.m_p,atomcount1 * sizeof(BitSet::Atom));
+    return memcmp(i1.m_p,i2.m_p, atomcount1 * sizeof(BitSet::Atom));
   } else {
-    const size_t minAtomCount = min(atomcount1,atomcount2);
-    const size_t maxAtomCount = max(atomcount1,atomcount2);
-    int c = memcmp(i1.m_p,i2.m_p,minAtomCount * sizeof(BitSet::Atom));
+    const int c = memcmp(i1.m_p,i2.m_p, min(atomcount1, atomcount2) * sizeof(BitSet::Atom));
     if(c) {
       return c;
     }
-    // the rest must be 0
-    const BitSet::Atom *p = (minAtomCount == atomcount1) ? i2.m_p+minAtomCount : i1.m_p+minAtomCount;
-    for(size_t i = maxAtomCount - minAtomCount; i--;) {
+    // the tail of the biggest set must be 0
+    const BitSet::Atom *p, *endp;
+    if(atomcount1 < atomcount2) {
+      p    = i2.m_p + atomcount1;
+      endp = i2.m_p + atomcount2;
+    } else {
+      p    = i1.m_p + atomcount2;
+      endp = i1.m_p + atomcount1;
+    }
+    while(p < endp) {
       if(*(p++)) {
-        return (minAtomCount == atomcount1) ? -1 : 1;
+        return (atomcount1 < atomcount2) ? -1 : 1;
       }
     }
   }
