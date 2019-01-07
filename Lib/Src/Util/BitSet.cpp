@@ -185,11 +185,6 @@ BitSet &BitSet::invert() {
   return *this;
 }
 
-BitSet compl(const BitSet &s) {
-  BitSet result(s);
-  return result.invert();
-}
-
 const char BitSet::setBitsCount[256] = { // Number of set bits for each bytevalue
   0,1,1,2,1,2,2,3,1,2,2,3,2,3,3,4,
   1,2,2,3,2,3,3,4,2,3,3,4,3,4,4,5,
@@ -352,42 +347,6 @@ BitSet &BitSet::operator^=(const BitSet &rhs) { // this = this xor rhs
     *(p++) ^= *(rp++);
   }
   return *this;
-}
-
-BitSet operator+(const BitSet &lts, const BitSet &rhs) { // union
-  if(lts.m_capacity >= rhs.m_capacity) {
-    BitSet result(lts);
-    result += rhs;
-    return result;
-  } else {
-    BitSet result(rhs);
-    result += lts;
-    return result;
-  }
-}
-
-BitSet operator*(const BitSet &lts, const BitSet &rhs) { // intersection
-  if(lts.m_capacity <= rhs.m_capacity) {
-    BitSet result(lts);
-    result *= rhs;
-    return result;
-  } else {
-    BitSet result(rhs);
-    result *= lts;
-    return result;
-  }
-}
-
-BitSet operator^(const BitSet &lts, const BitSet &rhs) { // xor, ie symmetric difference
-  if(lts.m_capacity >= rhs.m_capacity) {
-    BitSet result(lts);
-    result ^= rhs;
-    return result;
-  } else {
-    BitSet result(rhs);
-    result ^= lts;
-    return result;
-  }
 }
 
 bool operator<=(const BitSet &lts, const BitSet &rhs) {

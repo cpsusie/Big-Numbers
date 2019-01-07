@@ -55,26 +55,6 @@ public:
     SAFEDELETEARRAY(m_p);
   }
   BitSet &operator=(const BitSet &rhs);
-  // Union        = set containing all elements from lts and rhs
-  friend BitSet  operator+ (const BitSet &lts, const BitSet &rhs);
-  // Difference   = set containing elements from lts without the elements from rhs
-  friend inline BitSet operator- (const BitSet &lts, const BitSet &rhs) {
-    BitSet result(lts);
-    result -= rhs;
-    return result;
-  }
-  // Intersection = set containing elements contained in both lts and rhs
-  friend BitSet  operator* (const BitSet &lts, const BitSet &rhs);
-  // a^b = (a-b) | (b-a) (symmetric difference) = set containg elements that are in only lts or rhs, but not both
-  friend BitSet  operator^ (const BitSet &lts, const BitSet &rhs);
-  // Same as +
-  friend BitSet  operator| (const BitSet &lts, const BitSet &rhs) {
-    return lts + rhs;
-  }
-  // Same as *
-  friend BitSet  operator& (const BitSet &lts, const BitSet &rhs) {
-    return lts * rhs;
-  }
   // Add i to the set, if it's not already there
   inline BitSet &operator+=(size_t i) {
     return add(i);
@@ -102,7 +82,7 @@ public:
   // Subset. return true if all elements from lts are in rhs too
   friend bool    operator<=(const BitSet &lts, const BitSet &rhs);
   // Pure subset. Same as (lts < rhs) && (lts != rhs)
-  friend inline bool operator< (const BitSet &lts, const BitSet &rhs) {
+  friend inline bool operator<(const BitSet &lts, const BitSet &rhs) {
     return (lts <= rhs) && (lts != rhs);
   }
   // Same as rhs <= lts
@@ -110,7 +90,7 @@ public:
     return rhs <= lts;
   }
   // Same as rhs <  lts
-  friend inline bool operator> (const BitSet &lts, const BitSet &rhs) {
+  friend inline bool operator>(const BitSet &lts, const BitSet &rhs) {
     return rhs < lts;
   }
   // Equal. return true if the two sets contain the same elements
@@ -123,8 +103,6 @@ public:
   }
   // NB! NOT the same as relational operators subset,pure subset.
   friend int     bitSetCmp( const BitSet &i1, const BitSet &i2);
-  // Complementset
-  friend BitSet  compl(const BitSet &s);
   // Number of elements. fast version
   size_t         size() const;
   // Return true if set is empty
@@ -158,7 +136,7 @@ public:
   size_t   select() const;
   // Remove all elements from set
   inline BitSet &clear() {
-    memset(m_p, 0,getAtomCount() * sizeof(Atom));
+    memset(m_p, 0, getAtomCount() * sizeof(Atom));
     return *this;
   }
   // Complementset
@@ -213,6 +191,38 @@ public:
   size_t   oldGetCount(size_t from, size_t to) const;  // Return number of elements between from and to. both included.
 #endif
 };
+
+// Union        = set containing all elements from lts and rhs
+inline BitSet operator+(const BitSet &lts, const BitSet &rhs) { // union
+  return (lts.getCapacity() >= rhs.getCapacity()) ? (BitSet(lts) += rhs) : (BitSet(rhs) += lts);
+}
+
+// Intersection = set containing elements contained in both lts and rhs
+inline BitSet operator*(const BitSet &lts, const BitSet &rhs) { // intersection
+  return (lts.getCapacity() <= rhs.getCapacity()) ? (BitSet(lts) *= rhs) : (BitSet(rhs) *= lts);
+}
+
+// a^b = (a-b) | (b-a) (symmetric difference) = set containg elements that are in only lts or rhs, but not both
+inline BitSet operator^(const BitSet &lts, const BitSet &rhs) { // xor, ie symmetric difference
+  return (lts.getCapacity() >= rhs.getCapacity()) ? (BitSet(lts) ^= rhs) : (BitSet(rhs) ^= lts);
+}
+
+// Difference   = set containing elements from lts without the elements from rhs
+inline BitSet operator-(const BitSet &lts, const BitSet &rhs) {
+  return BitSet(lts) -= rhs;
+}
+// Same as +
+inline BitSet operator|(const BitSet &lts, const BitSet &rhs) {
+  return lts + rhs;
+}
+// Same as *
+inline BitSet operator&(const BitSet &lts, const BitSet &rhs) {
+  return lts * rhs;
+}
+
+inline BitSet  compl(const BitSet &s) {
+  return BitSet(s).invert();
+}
 
 class AbstractBitSetIterator : public AbstractIterator {
 protected:
