@@ -8,7 +8,36 @@
 Timestamp::Timestamp() {
   SYSTEMTIME st;
   GetLocalTime(&st);
-  m_factor = getFactor(Date(st.wDay, st.wMonth, st.wYear), Time(st.wHour, st.wMinute, st.wSecond, st.wMilliseconds));
+  *this = st;
+}
+
+Timestamp::operator SYSTEMTIME() const {
+  SYSTEMTIME st;
+  int day, month, year, hour, minute, second, ms;
+  getDMY(day, month, year);
+  getHMS(hour, minute, second, ms);
+  st.wYear         = year;
+  st.wMonth        = month;
+  st.wDay          = day;
+  st.wHour         = hour;
+  st.wMinute       = minute;
+  st.wSecond       = second;
+  st.wMilliseconds = ms;
+  st.wDayOfWeek = ((int)getWeekDay() + 1) % 7;
+  return st;
+}
+
+Timestamp::Timestamp(const FILETIME &ft) {
+  SYSTEMTIME st;
+  FileTimeToSystemTime(&ft, &st);
+  *this = st;
+}
+
+Timestamp::operator FILETIME() const {
+  const SYSTEMTIME st = *this;
+  FILETIME ft;
+  SystemTimeToFileTime(&st, &ft);
+  return ft;
 }
 
 void Timestamp::init(const TCHAR *src) {
@@ -27,6 +56,10 @@ Timestamp::Timestamp(double d) { // ie type DATE
   m_factor = getFactor(Date(d), Time(fraction(d) * Time::getMaxFactor()));
 }
 
+double Timestamp::getDATE() const {
+  return getDate().getDATE() + fraction((double)m_factor / Time::getMaxFactor());
+}
+
 time_t Timestamp::gettime_t() const {
   int day, month, year;
   int hour, minute, second, millisecond;
@@ -41,7 +74,7 @@ time_t Timestamp::gettime_t() const {
   tm.tm_min   = minute;
   tm.tm_sec   = second;
   tm.tm_isdst = -1; // then mktime will decide wether daylight saving is in effect
-  return mktime(&tm); // yyyymmddhhmmss2time(year, month, day, hour, minute, second);
+  return mktime(&tm);
 }
 
 String Timestamp::cctime() { // static
@@ -222,10 +255,6 @@ Timestamp &Timestamp::set(TimeComponent c, int value) {
   return *this = Timestamp(d, t);
 }
 
-double Timestamp::getDATE() const {
-  return getDate().getDATE() + fraction((double)m_factor / Time::getMaxFactor());
-}
-
 #define CASECH(ch, comp) case ch: {                         \
   int count = 1, scale = 10;                                \
   for(cp++; *cp == ch; cp++) {                              \
@@ -263,31 +292,18 @@ TCHAR *Timestamp::tostr(TCHAR *dst, const String &format) const {
   return dst;
 }
 
-Timestamp::Timestamp(const SYSTEMTIME &st) {
-  m_factor = getFactor(Date(st.wDay, st.wMonth, st.wYear), Time(st.wHour, st.wMinute, st.wSecond, st.wMilliseconds));
-  TIME_ZONE_INFORMATION timeZoneInfo;
-  DWORD ret = GetTimeZoneInformation(&timeZoneInfo);
-  add(TMINUTE, -timeZoneInfo.Bias-timeZoneInfo.DaylightBias);
+FILETIME Timestamp::time_tToFILETIME(time_t t) { // static
+  // Note that LONGLONG is a 64-bit value
+  const LONGLONG ll = Int32x32To64(t, 10000000) + 116444736000000000ui64;
+  FILETIME ft;
+  ft.dwLowDateTime = (DWORD)ll;
+  ft.dwHighDateTime = ll >> 32;
+  return ft;
 }
 
-Timestamp::operator SYSTEMTIME() const {
-  TIME_ZONE_INFORMATION timeZoneInfo;
-  DWORD ret = GetTimeZoneInformation(&timeZoneInfo);
-  Timestamp uts = *this;
-  uts.add(TMINUTE, timeZoneInfo.Bias+timeZoneInfo.DaylightBias);
-
-  SYSTEMTIME ust;
-  int day, month, year, hour, minute, second, ms;
-  uts.getDMY(day, month, year);
-  uts.getHMS(hour, minute, second, ms);
-  ust.wYear         = year;
-  ust.wMonth        = month;
-  ust.wDay          = day;
-  ust.wHour         = hour;
-  ust.wMinute       = minute;
-  ust.wSecond       = second;
-  ust.wMilliseconds = ms;
-  ust.wDayOfWeek    = ((int)uts.getWeekDay() + 1) % 7;
-
-  return ust;
+SYSTEMTIME Timestamp::time_tToSYSTEMTIME(time_t t) { // static
+  FILETIME   ft = time_tToFILETIME(t);
+  SYSTEMTIME st;
+  FileTimeToSystemTime(&ft, &st);
+  return st;
 }

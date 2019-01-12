@@ -305,7 +305,7 @@ public:
     return (__int64)d.m_factor * Time::getMaxFactor() + t.m_factor;
   }
 
-  Timestamp();
+  Timestamp(); // default constructor, set *this to value returned by GetLocalTime(SYSTEMTIME*)
   inline Timestamp(int day, int month, int year, int hour, int minute, int second = 0, int millisecond = 0) {
     m_factor = getFactor(Date(day, month, year), Time(hour, minute, second, millisecond));
   }
@@ -321,12 +321,19 @@ public:
   inline Timestamp(const Date &d) {
     m_factor = (INT64)d.m_factor * Time::getMaxFactor();
   }
-  Timestamp(const SYSTEMTIME &st);
+  inline Timestamp(const SYSTEMTIME &st) {
+    *this = Timestamp(st.wDay, st.wMonth, st.wYear, st.wHour, st.wMinute, st.wSecond, st.wMilliseconds);
+  }
+  operator SYSTEMTIME() const;
+  Timestamp(const FILETIME &ft);
+  operator FILETIME() const;
+
   inline explicit Timestamp(time_t t) {
     m_factor = getFactor(Date(t), Time(t));
   }
   explicit Timestamp(double d); // ie type DATE
   double getDATE() const;
+
   // Add count days
   Timestamp  operator+( int count) const;
   // Subtract count days
@@ -424,7 +431,8 @@ public:
   }
   time_t gettime_t() const;
 
-  operator SYSTEMTIME() const;
+  static FILETIME    time_tToFILETIME(  time_t t);
+  static SYSTEMTIME  time_tToSYSTEMTIME(time_t t);
 
   inline ULONG hashCode() const {
     return uint64Hash(m_factor);

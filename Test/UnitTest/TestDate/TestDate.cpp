@@ -507,17 +507,32 @@ namespace TestDate {
       }
     }
 
-    TEST_METHOD(DateConvertionSYSTEMTIME) {
+    TEST_METHOD(DateConversionSYSTEMTIME) {
       Timestamp ts;
       for (int i = 0; i < 1000; i++) {
-        SYSTEMTIME sysTime = ts;
-        Timestamp ts1 = sysTime;
+        SYSTEMTIME st  = ts;
+        Timestamp  ts1 = st;
         verify(ts1 == ts);
 /*          _tprintf(_T("ts=<%s>, ts1 = Timestamp(SYSTEMTIME(ts))=<%s>\n")
             , ts.toString(ddMMyyyyhhmmssSSS).cstr()
             , ts1.toString(ddMMyyyyhhmmssSSS).cstr()
           );
 */
+        ts.add(TDAYOFMONTH, 1).add(THOUR, 5).add(TMINUTE, 34).add(TSECOND, 17).add(TMILLISECOND, 389);
+      }
+    }
+
+    TEST_METHOD(DateConversionFILETIME) {
+      Timestamp ts;
+      for (int i = 0; i < 1000; i++) {
+        FILETIME ft = ts;
+        Timestamp ts1 = ft;
+        verify(ts1 == ts);
+        /*          _tprintf(_T("ts=<%s>, ts1 = Timestamp(SYSTEMTIME(ts))=<%s>\n")
+                    , ts.toString(ddMMyyyyhhmmssSSS).cstr()
+                    , ts1.toString(ddMMyyyyhhmmssSSS).cstr()
+                  );
+        */
         ts.add(TDAYOFMONTH, 1).add(THOUR, 5).add(TMINUTE, 34).add(TSECOND, 17).add(TMILLISECOND, 389);
       }
     }
