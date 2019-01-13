@@ -34,6 +34,7 @@ extern void throwMethodInvalidArgumentException(const TCHAR *className, const TC
 extern void throwErrNoOnNameException(const String &name);
 extern void throwErrNoOnSysCallException(const TCHAR *function);
 
+extern void throwLastErrorOnSysCallNameException(const String &name);
 extern void throwLastErrorOnSysCallException(const TCHAR *function);
 extern void throwMethodLastErrorOnSysCallException(const TCHAR *className, const TCHAR *method);
 

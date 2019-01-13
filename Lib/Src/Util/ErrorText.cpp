@@ -53,6 +53,10 @@ void checkResult(const TCHAR *fileName, int line, BOOL ok) {
   throwException(_T("%s.\nCall returned FALSE"), fileLineText(fileName, line).cstr());
 }
 
+void throwLastErrorOnSysCallNameException(const String &name) {
+  throwException(_T("%s:%s"), name.cstr(), getLastErrorText().cstr());
+}
+
 void throwLastErrorOnSysCallException(const TCHAR *function) {
   throwException(_T("%s failed. %s"), function, getLastErrorText().cstr());
 }

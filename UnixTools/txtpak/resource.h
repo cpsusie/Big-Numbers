@@ -1,4 +1,5 @@
-// Microsoft Developer Studio generated include file.
+//{{NO_DEPENDENCIES}}
+// Microsoft Visual C++ generated include file.
 // Used by txtpak.rc
 //
 
