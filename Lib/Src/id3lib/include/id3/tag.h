@@ -145,4 +145,3 @@ int32 ID3_C_EXPORT ID3_IsTagHeader(const uchar header[ID3_TAGHEADERSIZE]);
 #pragma comment(lib, LIB_VERSION "zlib.lib")
 
 #endif /* _ID3LIB_TAG_H_ */
-
