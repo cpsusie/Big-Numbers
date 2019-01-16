@@ -1,12 +1,34 @@
 #include "stdafx.h"
-#include "MediaDatabase.h"
-
-GenreMap MediaFile::s_genreMap;
+#include "Mediafile.h"
 
 GenreMap::GenreMap() {
   for(int i = 0; i < ID3_NR_OF_V1_GENRES; i++) {
     put(ID3_V1GENRE2DESCRIPTION(i),i);
   }
+}
+
+#define ISVALIDGENREINDEX(index) ((index >= 0) && (index < ID3_NR_OF_V1_GENRES))
+
+// if(isIndexStr(str, index) && ISVALIDGENREINDEX(index)) then return displaytext, else return str
+String GenreMap::getDisplayText(const String &str) const {
+  int index;
+  if(isIndexStr(str, index) && ISVALIDGENREINDEX(index)) {
+    return ID3_V1GENRE2DESCRIPTION(index);
+  } else {
+    return str;
+  }
+}
+
+// if(isIndexStr(str,index)) then return str;
+// else if((index = getIndex(str)) && ISVALIDGENREINDEX(index), then return "(<index>)", else return str
+String GenreMap::getPackedText(const String &str) const {
+  int index;
+  if(isIndexStr(str, index)) {
+    return str;
+  } else if((index = getIndex(str)) && ISVALIDGENREINDEX(index)) {
+    return format(_T("(%u)"), index);
+  }
+  return str;
 }
 
 String toString(ID3_FrameID id) {

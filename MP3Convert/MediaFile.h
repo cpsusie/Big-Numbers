@@ -12,12 +12,23 @@ String toString(ID3_FieldType type);
 String toString(ID3_TextEnc   enc );
 
 class GenreMap : public StringIHashMap<int> {
-public:
-  GenreMap();
-  inline int getIndex(const String &genre) const {
+private:
+  // return true, if str is in format "(<ddd>)", and set index=ddd; else return false;
+  static inline bool isIndexStr(const String &str, int &index) {
+    return _stscanf(str.cstr(), _T("(%u)"), &index) == 1;
+  }
+  // return index, if str exist as display text, comparing ignoring case. else return -1
+  inline int  getIndex(const String &genre) const {
     const int *result = __super::get(genre);
     return result ? *result : -1;
   }
+public:
+  GenreMap();
+  // if(isIndexStr(str, index) && ISVALIDGENREINDEX(index)) then return displaytext, else return str
+  String getDisplayText(const String &str) const;
+  // if(isIndexStr(str,index)) then return str;
+  // else if((index = getIndex(str)) && ISVALIDGENREINDEX(index), then return "(<index>)", else return str
+  String getPackedText( const String &str) const;
 };
 
 class StringField {
@@ -27,7 +38,7 @@ private:
   Array<EncodedString> m_esa;
 public:
   StringField(const ID3_Field *field);
-  StringField(const StringField &src) 
+  StringField(const StringField &src)
     : m_encoding(src.m_encoding)
     , m_esa(src.m_esa)
   {
@@ -111,17 +122,23 @@ public:
   inline size_t getFieldCount() const {
     return m_fieldArray.size();
   }
+  const FieldWithData *findFieldById(  ID3_FieldID   id)   const;
+  const FieldWithData *findFieldByType(ID3_FieldType type) const;
+
   String toString() const {
     return format(_T("Frame(Id=%d(%s), desc=%s)\n")
                  ,m_frameId, ::toString(getId()).cstr(), m_desc.cstr())
          + indentString(m_fieldArray.toString(_T("\n")),2);
   }
+  // return value of first field with getId == ID3FN_TEXT if any
+  String getTextField() const;
 };
 
 class Tag {
 private:
   Array<Frame> m_frameArray;
 public:
+  static const GenreMap s_genreMap;
   inline Tag() {
   }
   inline Tag(const ID3_Tag &tag) {
@@ -137,9 +154,12 @@ public:
   inline void clear() {
     m_frameArray.clear();
   }
-  inline String toString() const {
+  const Frame *getFrame(ID3_FrameID id) const;
+
+  inline String toStringAllTags() const {
     return String(_T("Tag:\n")) + indentString(m_frameArray.toString(_T("\n")), 2);
   }
+  String toStringMobileTags() const;
 };
 
 #define SELECT_READONLY  0x01
@@ -148,8 +168,6 @@ public:
 
 class MediaFile {
 private:
-  static GenreMap s_genreMap;
-
   String            m_sourceURL;
   Tag               m_tag;
   size_t            m_fileSize;
@@ -166,6 +184,9 @@ public:
   }
   inline const String &getSourceURL() const {
     return m_sourceURL;
+  }
+  inline const Tag &getTags() const {
+    return m_tag;
   }
 };
 

@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "MediaDatabase.h"
+#include "MediaFile.h"
 
 void MediaFile::clear() {
   m_sourceURL = EMPTYSTRING;
@@ -165,6 +165,7 @@ String FieldWithData::toString() const {
     result += format(_T(":v=%u"), getInt());
     break;
   case ID3FTY_BINARY    :
+    result += format(_T(":size=%zu"), getBinData().size());
     break;
   case ID3FTY_TEXTSTRING:
     { const StringField &f = getStringData();
@@ -196,6 +197,30 @@ Frame::Frame(const ID3_Frame &frame) {
   }
 };
 
+const FieldWithData *Frame::findFieldById(ID3_FieldID id) const {
+  const size_t n = m_fieldArray.size();
+  for(size_t i = 0; i < n; i++) {
+    const FieldWithData &f = m_fieldArray[i];
+    if(f.getId() == id) {
+      return &f;
+    }
+  }
+  return NULL;
+}
+
+const FieldWithData *Frame::findFieldByType(ID3_FieldType type) const {
+  const size_t n = m_fieldArray.size();
+  for(size_t i = 0; i < n; i++) {
+    const FieldWithData &f = m_fieldArray[i];
+    if(f.getType() == type) {
+      return &f;
+    }
+  }
+  return NULL;
+}
+
+const GenreMap Tag::s_genreMap;
+
 void Tag::load(const ID3_Tag &tag) {
   m_frameArray.clear();
   ID3_Tag::ConstIterator *tagIt = tag.CreateIterator();
@@ -205,6 +230,55 @@ void Tag::load(const ID3_Tag &tag) {
   }
 }
 
+const Frame *Tag::getFrame(ID3_FrameID id) const {
+  const size_t n = m_frameArray.size();
+  for(size_t i = 0; i < n; i++) {
+    const Frame &frame = m_frameArray[i];
+    if(frame.getId() == id) {
+      return &frame;
+    }
+  }
+  return NULL;
+}
+
+typedef struct {
+  ID3_FrameID m_id;
+  int         m_len;
+} FrameIdTextField;
+
+String Tag::toStringMobileTags() const {
+  static const FrameIdTextField frameIdArray[] = {
+    ID3FID_LEADARTIST  , 40
+   ,ID3FID_ALBUM       , 45
+   ,ID3FID_TRACKNUM    , 2
+   ,ID3FID_TITLE       , 35
+   ,ID3FID_YEAR        , 4
+   ,ID3FID_CONTENTTYPE , 15
+  };
+  String result;
+  const TCHAR *delim = NULL;
+  for(size_t i = 0; i < ARRAYSIZE(frameIdArray); i++) {
+    const FrameIdTextField &ftf = frameIdArray[i];
+    const Frame *frame = getFrame(ftf.m_id);
+    String text;
+    if(frame) {
+      const FieldWithData *field = frame->findFieldById(ID3FN_TEXT);
+      if(field && (field->getType() == ID3FTY_TEXTSTRING)) {
+        const StringField &sf = field->getStringData();
+        if(sf.getNumItems() == 1) {
+          text = sf.getStrings()[0].toString();
+          if((ftf.m_id == ID3FID_CONTENTTYPE)) {
+            text = s_genreMap.getDisplayText(text);
+          }
+        }
+      }
+    }
+    if(delim) result += delim; else delim = _T(",");
+    result += format(_T("%-*s"), ftf.m_len, text.cstr());
+  }
+  return result;
+}
+
 MediaFile::MediaFile(const String &sourceURL) : m_sourceURL(sourceURL) {
   ID3_Tag tag;
   USES_ACONVERSION;
@@ -212,7 +286,6 @@ MediaFile::MediaFile(const String &sourceURL) : m_sourceURL(sourceURL) {
   tag.Link(aname);
   m_fileSize = tag.GetFileSize();
   m_tag.load(tag);
-  _tprintf(_T("%s"), m_tag.toString().cstr());
 }
 
 bool operator==(const MediaFile &mf1,const MediaFile &mf2) {
