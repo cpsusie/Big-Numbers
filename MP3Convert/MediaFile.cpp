@@ -219,6 +219,17 @@ const FieldWithData *Frame::findFieldByType(ID3_FieldType type) const {
   return NULL;
 }
 
+String Frame::getTextFieldValue() const {
+  const FieldWithData *field = findFieldById(ID3FN_TEXT);
+  if(field && (field->getType() == ID3FTY_TEXTSTRING)) {
+    const StringField &sf = field->getStringData();
+    if(sf.getNumItems() == 1) {
+      return sf.getStrings()[0].toString();
+    }
+  }
+  return EMPTYSTRING;
+}
+
 const GenreMap Tag::s_genreMap;
 
 void Tag::load(const ID3_Tag &tag) {
@@ -239,44 +250,6 @@ const Frame *Tag::getFrame(ID3_FrameID id) const {
     }
   }
   return NULL;
-}
-
-typedef struct {
-  ID3_FrameID m_id;
-  int         m_len;
-} FrameIdTextField;
-
-String Tag::toStringMobileTags() const {
-  static const FrameIdTextField frameIdArray[] = {
-    ID3FID_LEADARTIST  , 40
-   ,ID3FID_ALBUM       , 45
-   ,ID3FID_TRACKNUM    , 2
-   ,ID3FID_TITLE       , 35
-   ,ID3FID_YEAR        , 4
-   ,ID3FID_CONTENTTYPE , 15
-  };
-  String result;
-  const TCHAR *delim = NULL;
-  for(size_t i = 0; i < ARRAYSIZE(frameIdArray); i++) {
-    const FrameIdTextField &ftf = frameIdArray[i];
-    const Frame *frame = getFrame(ftf.m_id);
-    String text;
-    if(frame) {
-      const FieldWithData *field = frame->findFieldById(ID3FN_TEXT);
-      if(field && (field->getType() == ID3FTY_TEXTSTRING)) {
-        const StringField &sf = field->getStringData();
-        if(sf.getNumItems() == 1) {
-          text = sf.getStrings()[0].toString();
-          if((ftf.m_id == ID3FID_CONTENTTYPE)) {
-            text = s_genreMap.getDisplayText(text);
-          }
-        }
-      }
-    }
-    if(delim) result += delim; else delim = _T(",");
-    result += format(_T("%-*s"), ftf.m_len, text.cstr());
-  }
-  return result;
 }
 
 MediaFile::MediaFile(const String &sourceURL) : m_sourceURL(sourceURL) {

@@ -2,4 +2,5 @@
 
 #include "targetver.h"
 
-#include <MyUtil.h>
+#include <MFCUtil/WinTools.h>
+#include <MFCUtil/Picture.h>

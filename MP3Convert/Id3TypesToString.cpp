@@ -19,13 +19,10 @@ String GenreMap::getDisplayText(const String &str) const {
   }
 }
 
-// if(isIndexStr(str,index)) then return str;
-// else if((index = getIndex(str)) && ISVALIDGENREINDEX(index), then return "(<index>)", else return str
+// if(isIndexStr(str,index) || ((index = getIndex(str)) && ISVALIDGENREINDEX(index)) then return "(<index>)", else return str;
 String GenreMap::getPackedText(const String &str) const {
   int index;
-  if(isIndexStr(str, index)) {
-    return str;
-  } else if((index = getIndex(str)) && ISVALIDGENREINDEX(index)) {
+  if(isIndexStr(str, index) || ((index = getIndex(str)) && ISVALIDGENREINDEX(index))) {
     return format(_T("(%u)"), index);
   }
   return str;

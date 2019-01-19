@@ -30,6 +30,9 @@
     <ClCompile Include="Id3TypesToString.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MobileMediaFile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StdAfx.h">

@@ -24,10 +24,9 @@ private:
   }
 public:
   GenreMap();
-  // if(isIndexStr(str, index) && ISVALIDGENREINDEX(index)) then return displaytext, else return str
+  // if(isIndexStr(str, index) && ISVALIDGENREINDEX(index)) then return ID3_V1GENRE2DESCRIPTION(index); else return str
   String getDisplayText(const String &str) const;
-  // if(isIndexStr(str,index)) then return str;
-  // else if((index = getIndex(str)) && ISVALIDGENREINDEX(index), then return "(<index>)", else return str
+  // if(isIndexStr(str, index) || ((index = getIndex(str)) && ISVALIDGENREINDEX(index)) then return "(<index>)"; else return str;
   String getPackedText( const String &str) const;
 };
 
@@ -130,8 +129,13 @@ public:
                  ,m_frameId, ::toString(getId()).cstr(), m_desc.cstr())
          + indentString(m_fieldArray.toString(_T("\n")),2);
   }
-  // return value of first field with getId == ID3FN_TEXT if any
-  String getTextField() const;
+  // return value of first field with getId == ID3FN_TEXT if any; else EMPTYSTRING
+  String getTextFieldValue() const;
+  // return value of first field with getType == ID3FTY_BINARY if any; else NULL
+  inline const ByteArray *getBinaryFieldValue() const {
+    const FieldWithData *field = findFieldByType(ID3FTY_BINARY);
+    return field ? &field->getBinData() : NULL;
+  }
 };
 
 class Tag {
@@ -156,10 +160,18 @@ public:
   }
   const Frame *getFrame(ID3_FrameID id) const;
 
-  inline String toStringAllTags() const {
-    return String(_T("Tag:\n")) + indentString(m_frameArray.toString(_T("\n")), 2);
+  inline String getFrameText(ID3_FrameID id) const {
+    const Frame *frame = getFrame(id);
+    return frame ? frame->getTextFieldValue() : EMPTYSTRING;
   }
-  String toStringMobileTags() const;
+  inline const ByteArray *getFrameBinary(ID3_FrameID id) const {
+    const Frame *frame = getFrame(id);
+    return frame ? frame->getBinaryFieldValue() : NULL;
+  }
+  inline String toString() const {
+    return String(_T("Tag:\n"))
+         + indentString(m_frameArray.toString(_T("\n")), 2);
+  }
 };
 
 #define SELECT_READONLY  0x01
@@ -191,3 +203,40 @@ public:
 };
 
 bool operator==(const MediaFile &f1,const MediaFile &f2);
+
+class MobileMediaFile {
+private:
+  String            m_sourceURL;
+  String            m_artist;
+  String            m_album;
+  UINT              m_track;
+  String            m_title;
+  UINT              m_year;
+  String            m_contentType;
+public:
+  MobileMediaFile(const MediaFile &mf);
+  const String &getSourceURL() const {
+    return m_sourceURL;
+  }
+  const String &getArtist() const {
+    return m_artist;
+  }
+  const String &getAlbum() const {
+    return m_album;
+  }
+  UINT getTrack() const {
+    return m_track;
+  }
+  const String &getTitle() const {
+    return m_title;
+  }
+  UINT getYear() const {
+    return m_year;
+  }
+  const String &getContentType() const {
+    return m_contentType;
+  }
+  String toString(bool addQuotes=true) const;
+};
+
+int mobileMediaFileCmp(const MobileMediaFile &f1, const MobileMediaFile &f2);
