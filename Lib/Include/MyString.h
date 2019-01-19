@@ -215,6 +215,14 @@ public:
     return strnHash(cstr(),length());
   }
 
+  inline bool isAscii() const {
+    for(const _TUCHAR *cp = m_buf, *endp = cp + m_len; cp < endp;) {
+      if(!isascii(*(cp++))) {
+        return false;
+      }
+    }
+    return true;
+  }
 
   // works only for characters [0..255]
   static const TCHAR  upperCaseTranslate[256];
