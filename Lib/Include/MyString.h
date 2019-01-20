@@ -182,8 +182,9 @@ public:
   // Return index of last occurrence of ch, -1 if not found
   intptr_t     rfind(TCHAR         ch                  ) const;
 
-  // Return length og String
+  // Return length of String
   inline size_t length()  const { return m_len; }
+  // Return true if length() == 0
   inline bool   isEmpty() const { return m_len == 0; }
 
   // Return substring "s[0]s[1]...s[len-1]".                          ex. left("abc"  ,2)   = "ab"
