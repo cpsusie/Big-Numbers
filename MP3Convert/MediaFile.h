@@ -200,6 +200,9 @@ public:
   inline const Tag &getTags() const {
     return m_tag;
   }
+  inline String toString() const {
+    return format(_T("%s\n%s"), getSourceURL().cstr(), getTags().toString().cstr());
+  }
 };
 
 bool operator==(const MediaFile &f1,const MediaFile &f2);
@@ -215,6 +218,7 @@ private:
   String            m_contentType;
 public:
   MobileMediaFile(const MediaFile &mf);
+  MobileMediaFile(const String &line);
   const String &getSourceURL() const {
     return m_sourceURL;
   }
