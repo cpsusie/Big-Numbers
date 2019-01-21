@@ -1,12 +1,30 @@
 #include "stdafx.h"
 #include "MediaFile.h"
 
-int mobileMediaFileCmp(const MobileMediaFile &f1, const MobileMediaFile &f2) {
-  int c = f1.getArtist().compareIgnoreCase(f2.getArtist()); if(c) return c;
-      c = f1.getAlbum().compareIgnoreCase( f2.getAlbum() ); if(c) return c;
-      c = (int)f1.getTrack() - (int)f2.getTrack();          if(c) return c;
-      c = f1.getTitle().compareIgnoreCase( f2.getTitle() ); if(c) return c;
-  return f1.getSourceURL().compare(f2.getSourceURL());
+void MobileMediaFileComparator::setDefault() {
+  clear();
+  addField(TAG_ARTIST);
+  addField(TAG_ALBUM );
+  addField(TAG_TRACK );
+  addField(TAG_TITLE );
+}
+
+int MobileMediaFileComparator::compare(const MobileMediaFile &f1, const MobileMediaFile &f2) {
+  const size_t n = m_compareOrder.size();
+  for(size_t i = 0; i < n; i++) {
+    int c;
+    switch(m_compareOrder[i]) {
+    case TAG_ARTIST      : c = f1.getArtist().compareIgnoreCase(f2.getArtist());           break;
+    case TAG_ALBUM       : c = f1.getAlbum().compareIgnoreCase(f2.getAlbum()  );           break;
+    case TAG_TRACK       : c = (int)f1.getTrack() - (int)f2.getTrack();                    break;
+    case TAG_TITLE       : c = f1.getTitle().compareIgnoreCase(f2.getTitle());             break;
+    case TAG_YEAR        : c = (int)f1.getYear() - (int)f2.getYear();                      break;
+    case TAG_CONTENTTYPE : c = f1.getContentType().compareIgnoreCase(f2.getContentType()); break;
+    default              : throwException(_T("Unknown compare-field:%d"), m_compareOrder);
+    }
+    if(c) return c;
+  }
+  return f1.getSourceURL().compareIgnoreCase(f2.getSourceURL());
 }
 
 static UINT strToUint(const String &s) {

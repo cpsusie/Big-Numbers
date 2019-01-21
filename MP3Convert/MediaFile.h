@@ -243,4 +243,31 @@ public:
   String toString(bool addQuotes=true) const;
 };
 
-int mobileMediaFileCmp(const MobileMediaFile &f1, const MobileMediaFile &f2);
+typedef enum {
+  TAG_ARTIST
+ ,TAG_ALBUM
+ ,TAG_TRACK
+ ,TAG_TITLE
+ ,TAG_YEAR
+ ,TAG_CONTENTTYPE
+} MobileMediaField;
+
+class MobileMediaFileComparator : public Comparator<MobileMediaFile> {
+private:
+  CompactArray<MobileMediaField> m_compareOrder;
+public:
+  void setDefault();
+  inline void clear() {
+    m_compareOrder.clear();
+  }
+  inline bool isEmpty() const {
+    return m_compareOrder.isEmpty();
+  }
+  inline void addField(MobileMediaField f) {
+    m_compareOrder.add(f);
+  }
+  int compare(const MobileMediaFile &e1, const MobileMediaFile &e2);
+  AbstractComparator *clone() const {
+    return new MobileMediaFileComparator(*this);
+  }
+};
