@@ -207,6 +207,18 @@ public:
 
 bool operator==(const MediaFile &f1,const MediaFile &f2);
 
+// -----------------------------------------------------------------------------------------
+
+typedef enum {
+  TAG_ARTIST
+ ,TAG_ALBUM
+ ,TAG_TRACK
+ ,TAG_TITLE
+ ,TAG_YEAR
+ ,TAG_CONTENTTYPE
+ ,TAG_LASTFIELD = TAG_CONTENTTYPE
+} MobileMediaField;
+
 class MobileMediaFile {
 private:
   String            m_sourceURL;
@@ -216,6 +228,7 @@ private:
   String            m_title;
   UINT              m_year;
   String            m_contentType;
+  static const UINT s_defaultColumnWidth[6];
 public:
   MobileMediaFile(const MediaFile &mf);
   MobileMediaFile(const String &line);
@@ -240,17 +253,12 @@ public:
   const String &getContentType() const {
     return m_contentType;
   }
-  String toString(bool addQuotes=true) const;
+  String toString(MobileMediaField field, bool addQuotes) const;
+  String toString(bool addQuotes=true, const UINT columnWidth[6] = s_defaultColumnWidth) const;
+  static const UINT *getDefaultColumnWidth() {
+    return s_defaultColumnWidth;
+  }
 };
-
-typedef enum {
-  TAG_ARTIST
- ,TAG_ALBUM
- ,TAG_TRACK
- ,TAG_TITLE
- ,TAG_YEAR
- ,TAG_CONTENTTYPE
-} MobileMediaField;
 
 class MobileMediaFileComparator : public Comparator<MobileMediaFile> {
 private:

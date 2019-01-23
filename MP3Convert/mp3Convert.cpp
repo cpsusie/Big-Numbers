@@ -9,7 +9,8 @@
 #define LIST_MOBILETAGS                  0x08
 #define LIST_SORT                        0x10
 #define LIST_QUOTED                      0x20
-#define VERBOSE                          0x40
+#define LIST_VERTICALALIGN               0x40
+#define VERBOSE                          0x80
 
 #define PROCESS_ALL          (PROCESS_NONCONVERTED | PROCESS_CONVERTED)
 #define LISTFLAG(flag)       ((flag)&(LIST_ALLTAGS|LIST_MOBILETAGS))
@@ -77,6 +78,9 @@ void MediaCollection::list(UINT flags) const {
 }
 
 class MobileMediaCollection : public Array<MobileMediaFile> {
+private:
+  UINT m_columnWidth[6];
+  void  findColumnWidth(UINT flags);
 public:
   MobileMediaCollection(const MediaCollection &mc);
   // if(filename == EMPTYSTRING) read from stdin
@@ -113,6 +117,20 @@ MobileMediaCollection::MobileMediaCollection(const String &fileName) {
   }
 }
 
+void MobileMediaCollection::findColumnWidth(UINT flags) {
+  memset(m_columnWidth, 0, sizeof(m_columnWidth));
+  const bool   addQuotes = (flags&LIST_QUOTED) != 0;
+  const size_t n         = size();
+  for(int f = 0; f <= TAG_LASTFIELD; f++) {
+    StringArray sa;
+    for(size_t i = 0; i < n; i++) {
+      MobileMediaFile &mmf = (*this)[i];
+      sa.add(mmf.toString((MobileMediaField)f, addQuotes));
+    }
+    m_columnWidth[f] = (UINT)sa.maxLength();
+  }
+}
+
 void MobileMediaCollection::list(UINT flags, MobileMediaFileComparator &cmp) {
   if(flags&LIST_ALLTAGS) {
     throwException(_T("Cannot list all tags from MobileMediaCollection"));
@@ -120,10 +138,14 @@ void MobileMediaCollection::list(UINT flags, MobileMediaFileComparator &cmp) {
   if(flags&LIST_SORT) {
     sort(cmp);
   }
-  const bool   addQuotes = (flags&LIST_QUOTED) != 0;
+  if(flags & LIST_VERTICALALIGN) {
+    findColumnWidth(flags);
+  }
+  const bool   addQuotes = (flags & LIST_QUOTED       ) != 0;
+  const UINT  *cw        = (flags & LIST_VERTICALALIGN) ? m_columnWidth : MobileMediaFile::getDefaultColumnWidth();
   const size_t n = size();
   for(size_t i = 0; i < n; i++) {
-    _tprintf(_T("%s\n"), (*this)[i].toString(addQuotes).cstr());
+    _tprintf(_T("%s\n"), (*this)[i].toString(addQuotes,cw).cstr());
   }
 }
 
@@ -240,10 +262,11 @@ static StringArray readFileNames(const String &fileName) {
 }
 
 static void usage() {
-  _ftprintf(stderr,_T("Usage:mp3Convert [-L[a]|-I] [-s[fields]] [-rv] [-p[c]] [-m[textfile]|-f[textfile]|files....]\n"
+  _ftprintf(stderr,_T("Usage:mp3Convert [-L[a|v]|-I] [-s[fields]] [-rv] [-p[c]] [-m[textfile]|-f[textfile]|files....]\n"
                       "      -L[a] : List tags.\n"
                       "         a  : list All tags.\n"
                       "              Default: List only mobile tags.\n"
+                      "         v  : Vertical align columns. Only aplicable without -a-option.\n"
                       "      -I    : Extract image if any. Image-files are saved in subDir images, with filename = sourcefile, extension .bmp\n"
                       "      -s[fields]: Sort list by artist,album,track,title,filename, before print to stdout. Only available for -L option.\n"
                       "              Sort order can be changed by specifying fields:[a=artist, l=album, n=trackno, t=title, y=year, g=genre].\n"
@@ -289,6 +312,9 @@ int _tmain(int argc, TCHAR **argv) {
         case 'a':
           flags &= ~LIST_MOBILETAGS;
           flags |= LIST_ALLTAGS;
+          break;
+        case 'v':
+          flags |= LIST_VERTICALALIGN;
           break;
         default : continue;
         }

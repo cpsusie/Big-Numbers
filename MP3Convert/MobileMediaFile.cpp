@@ -61,6 +61,7 @@ MobileMediaFile::MobileMediaFile(const MediaFile &mf) {
   m_contentType  = Tag::s_genreMap.getPackedText(mf.getTags().getFrameText(ID3FID_CONTENTTYPE          ));
 }
 
+
 MobileMediaFile::MobileMediaFile(const String &line) {
   const intptr_t colonPos = line.find(':');
   if(colonPos < 0) {
@@ -81,14 +82,36 @@ MobileMediaFile::MobileMediaFile(const String &line) {
 
 #define Q(f) addQuotes ? quoteString(f).cstr() : (f).cstr()
 
-String MobileMediaFile::toString(bool addQuotes) const {
-  return format(_T("%-30s:%-40s,%-45s,%2u,%-35s,%4u,%-15s")
+const UINT  MobileMediaFile::s_defaultColumnWidth[6] = {
+  40  // artist
+ ,45  // album
+ ,2   // track
+ ,35  // title
+ ,4   // year
+ ,15  // genre
+};
+
+String MobileMediaFile::toString(MobileMediaField field, bool addQuotes) const {
+  switch(field) {
+  case TAG_ARTIST     : return Q(m_artist              );
+  case TAG_ALBUM      : return Q(m_album               );
+  case TAG_TRACK      : return format(_T("%u"), m_track);
+  case TAG_TITLE      : return Q(m_title               );
+  case TAG_YEAR       : return format(_T("%u"), m_year );
+  case TAG_CONTENTTYPE: return Q(m_contentType         );
+  default             : throwInvalidArgumentException(__TFUNCTION__, _T("field=%d"), field);
+  }
+  return EMPTYSTRING;
+}
+
+String MobileMediaFile::toString(bool addQuotes, const UINT columnWidth[6]) const {
+  return format(_T("%-30s:%-*s,%-*s,%*u,%-*s,%*u,%-*s")
                ,getSourceURL().cstr()
-               ,Q(m_artist )
-               ,Q(m_album  )
-               ,m_track
-               ,Q(m_title  )
-               ,m_year
-               ,Q(m_contentType)
+               ,columnWidth[0],Q(m_artist     )
+               ,columnWidth[1],Q(m_album      )
+               ,columnWidth[2],m_track
+               ,columnWidth[3],Q(m_title      )
+               ,columnWidth[4],m_year
+               ,columnWidth[5],Q(m_contentType)
                );
 };
