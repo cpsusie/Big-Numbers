@@ -53,12 +53,12 @@ void Library::checkFirstLineIsInfoLine(const String &fileName) { // static
   }
 }
 
-LibType Library::getLibType(const String &libName) { // static
+LibType Library::getLibType(const String &libName, bool checkSubDirCount) { // static
   struct _stati64 st;
   STAT64(libName, st);
   if(st.st_mode & S_IFDIR) {
     const GuidNameMap map(createMapFileName(libName));
-    if(getSubDirCount(libName) == 0) {
+    if(!checkSubDirCount || (getSubDirCount(libName) == 0)) {
       return LT_DIRWITHMAP;
     }
   } else if(st.st_mode & S_IFREG) {
@@ -87,11 +87,11 @@ void Library::removeLib(const String &libName) { // static
   }
 }
 
-void Library::openLib(OpenMode mode) {
+void Library::openLib(OpenMode mode, bool checkSubDirCount) {
   DEFINEMETHODNAME;
   closeLib();
   if(getLibType() == LT_UNKNOWN) {
-    m_libType = getLibType(m_libName);
+    m_libType = getLibType(m_libName, checkSubDirCount);
   }
   switch(mode) {
   case READ_MODE:
@@ -139,7 +139,7 @@ void Library::closeLib() {
 }
 
 void Library::prepareArgvPattern(const TCHAR **argv) {
-  if(*argv == NULL) {
+  if((argv == NULL) || (*argv == NULL)) {
     m_matchAll = true;
   } else {
     m_matchAll = false;
@@ -235,6 +235,30 @@ void Library::list(const TCHAR **argv, bool sorting) {
   }
 }
 
+void Library::checkIntegrity() {
+  prepareArgvPattern(NULL);
+  openLib(READ_MODE, false);
+
+  Array<FileInfo> list;
+  bool            ok;
+  switch(getLibType()) {
+  case LT_TEXTFILE:
+    getInfoListFromTextFile(&list);
+    ok = checkIntegrityTextFile(list);
+    break;
+  case LT_DIRWITHMAP:
+    getInfoListFromDir(&list);
+    ok = checkIntegrityFromDir(list);
+    break;
+  default:
+    libTypeError(__TFUNCTION__);
+  }
+  closeLib();
+  if(ok) {
+    _tprintf(_T("All ok\n"));
+  }
+}
+
 // ---------------------------------------------------------------------------------------------------------------
 
 void Library::packToTextFile(const StringArray &names) {
@@ -305,6 +329,10 @@ void Library::unpackFromTextFile() {
   if(f) {
     closeFile(f, info);
   }
+}
+
+bool Library::checkIntegrityTextFile(const Array<FileInfo> &list) {
+  return true;
 }
 
 size_t Library::getInfoListFromTextFile(Array<FileInfo> *list) const {
@@ -387,6 +415,34 @@ void Library::unpackFromDir() {
   }
 }
 
+bool Library::checkIntegrityFromDir(const Array<FileInfo> &list) {
+  bool   ok           = true;
+  intptr_t missingCount = 0;
+  for(Iterator<Entry<String, FileInfo> > it = m_guidMap->entrySet().getIterator(); it.hasNext();) {
+    const Entry<String, FileInfo> &entry      = it.next();
+    const String                  &packedName = entry.getKey();
+    const FileInfo                &info       = entry.getValue();
+    const String                   srcName    = FileNameSplitter::getChildName(m_libName, packedName);
+    if(ACCESS(srcName,0) < 0) {
+      _tprintf(_T("Missing file for map-entry <%s>-><%s>\n"), packedName.cstr(), info.m_name.cstr());
+      missingCount++;
+      ok = false;
+    }
+  }
+  const intptr_t knownLibFileCount = m_guidMap->size() + 1 - missingCount;
+  const intptr_t unknownFileCount  = getAllFiles(m_libName).size() - knownLibFileCount;
+  if(unknownFileCount  != 0) {
+    _tprintf(_T("%zd unknonwn files exist in %s\n"), unknownFileCount, m_libName.cstr());
+    ok = false;
+  }
+  const size_t subDirCount = getSubDirCount(m_libName);
+  if(subDirCount != 0) {
+    _tprintf(_T("%zu sub directories exist in %s\n"), subDirCount, m_libName.cstr());
+    ok = false;
+  }
+  return ok;
+}
+
 size_t Library::getInfoListFromDir(Array<FileInfo> *list) const {
   if(list) list->clear();
   size_t count = 0;
@@ -394,7 +450,7 @@ size_t Library::getInfoListFromDir(Array<FileInfo> *list) const {
     const FileInfo &info = it.next();
     if(matchArgvPattern(info.m_name)) {
       count++;
-      if (list) list->add(info);
+      if(list) list->add(info);
     }
   }
   return count;

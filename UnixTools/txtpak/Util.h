@@ -6,6 +6,10 @@ inline String childName(const String &path, const String &fname) {
   return (path == _T(".")) ? fname : FileNameSplitter::getChildName(path, fname);
 }
 
+inline DirList getAllFiles(const String &dir) {
+  return scandir(childName(dir, _T("*.*")), SELECTFILE);
+}
+
 inline DirList getAllSubDir(const String &dir) {
   return scandir(childName(dir, _T("*.*")), SELECTSUBDIR);
 }

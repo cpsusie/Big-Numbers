@@ -14,6 +14,7 @@ typedef enum {
  ,CMD_UNPACK
  ,CMD_PACK
  ,CMD_LIST
+ ,CMD_CHECK
 } CommandType;
 
 static void recurseSubDir(const String &dir, const String &pattern, StringArray &result) {
@@ -65,6 +66,7 @@ static void usage() {
                "       txtpak e archive [modifiers] [files...]\n"
                "       txtpak l archive [modifiers] [files...]\n"
                "       txtpak d archdir [modifiers] [files...]\n"
+               "       txtpak c archdir\n"
                "Commands     a : Archive files.\n"
                "             e : Extract files.\n"
                "             l : List contents of archive.\n"
@@ -73,6 +75,7 @@ static void usage() {
                "                 and copied to archdir\\<guid>.ext. All types of files, including non-text files, can be copied with this command.\n"
                "                 Use command e to restore directory tree-structure from archdir, using filename-mapping in archdir\\archdir.txt\n"
                "                 to restore files original position and name\n"
+               "             c : Check integrity of library.\n"
                "Modifiers : -s : Sort files by name\n"
                "            -w : Overwrite files when unpacking. Default is ask for overwrite.\n"
                "            -b : Don't print banner.\n"
@@ -91,6 +94,7 @@ static void usage() {
 
 int _tmain(int argc, const TCHAR **argv) {
   const TCHAR *cp;
+  CommandType  command      = NO_COMMAND;
   bool         recurse      = false;
   bool         setTimestamp = true;
   bool         setMode      = true;
@@ -99,8 +103,6 @@ int _tmain(int argc, const TCHAR **argv) {
   bool         verbose      = false;
   LibType      libType      = LT_UNKNOWN;
   const TCHAR *fileName     = NULL;
-
-  CommandType command = NO_COMMAND;
 
   argv++;
   if(!*argv) {
@@ -111,6 +113,7 @@ int _tmain(int argc, const TCHAR **argv) {
   case 'e': command = CMD_UNPACK ; break;
   case 'l': command = CMD_LIST   ; break;
   case 'd': command = CMD_PACK   ; libType = LT_DIRWITHMAP;  break;
+  case 'c': command = CMD_CHECK; break;
   default : usage();
   }
   argv++;
@@ -162,7 +165,7 @@ int _tmain(int argc, const TCHAR **argv) {
         try {
           switch(libType) {
           case LT_TEXTFILE:
-            if (Library::getLibType(libName) == LT_DIRWITHMAP) {
+            if(Library::getLibType(libName) == LT_DIRWITHMAP) {
               Library::removeLib(libName);
             }
             break;
@@ -181,6 +184,9 @@ int _tmain(int argc, const TCHAR **argv) {
       break;
     case CMD_LIST   :
       library.list(argv, sorting);
+      break;
+    case CMD_CHECK  :
+      library.checkIntegrity();
       break;
     default         :
       usage();

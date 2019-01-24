@@ -23,17 +23,19 @@ private:
   WildCardRegex m_wc;
   bool          m_setTimestamp, m_setMode, m_verbose, m_matchAll;
 
-  void   openLib(OpenMode mode);
+  void   openLib(OpenMode mode, bool checkSubDirCount = true);
   void   closeLib();
 
   void   closeFile(FILE * &f, const FileInfo &info);
   void   packToTextFile(const StringArray &names);
   void   unpackFromTextFile();
+  bool   checkIntegrityTextFile(const Array<FileInfo> &list);
   size_t getInfoListFromTextFile(Array<FileInfo> *list) const; // list can be NULL. return number of elements in lib, matching argv
   size_t getUnpackCountTextFile() const;
 
   void   packToDir(const StringArray &names);
   void   unpackFromDir();
+  bool   checkIntegrityFromDir(const Array<FileInfo> &list);
   size_t getInfoListFromDir(Array<FileInfo> *list) const;  // list can be NULL. return number of elements in lib, matching argv
   size_t getUnpackCountDir() const;
 
@@ -54,10 +56,11 @@ public:
   void pack(const StringArray &names, bool verbose);
   void unpack(const TCHAR **argv, bool setTimestamp, bool setMode, bool verbose);
   void list(const TCHAR **argv, bool sorting);
+  void checkIntegrity();
   static void    removeLib(const String &libName);
   inline LibType getLibType() const {
     return m_libType;
   }
 
-  static LibType getLibType(const String &libName);
+  static LibType getLibType(const String &libName, bool checkSubDirCount = true);
 };
