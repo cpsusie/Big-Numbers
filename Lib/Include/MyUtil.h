@@ -234,10 +234,10 @@ double getThreadTime( HANDLE thread  = NULL);
 double getSystemTime();
 
 extern int UseSafeNew; // assign something to this, and we use safe new_handler, which throws Exception on out of memory
-String hexdumpString(const void *data, int size);
+String hexdumpString(const void *data, size_t size);
 // if f == NULL, use debugLog as output
-void   hexdump(      const void *data, int size, FILE *f = NULL);
-String bytesToString(const void *data, int size);
+void   hexdump(      const void *data, size_t size, FILE *f = NULL);
+String bytesToString(const void *data, size_t size);
 
 TCHAR *newGUID(TCHAR *dst);
 TCHAR *sprintGUID(TCHAR *dst, const GUID &guid);

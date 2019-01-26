@@ -5,8 +5,12 @@ CountedByteOutputStream::CountedByteOutputStream(ByteCounter &counter, ByteOutpu
 }
 
 void CountedByteOutputStream::putBytes(const BYTE *src, size_t n) {
+  const UINT maxChunkSize = m_counter.getMaxChunkSize();
+  if(maxChunkSize == 0) {
+    throwException(_T("maxChunkSize == 0"));
+  }
   while(n > 0) {
-    const size_t m = min(n, 500000);
+    const size_t m = min(n, maxChunkSize);
     m_dst.putBytes(src, m);
     m_counter.incrCount(m);
     n   -= m;

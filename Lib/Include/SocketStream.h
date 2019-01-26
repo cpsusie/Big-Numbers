@@ -44,11 +44,11 @@ public:
   BufferedSocket(int portNr, const TCHAR *hostName = NULL);
 
   void send() {
-    Packer::write(m_stream);
+    __super::write(m_stream);
     clear();
   }
 
   bool receive() {
-    return Packer::read(m_stream);
+    return __super::read(m_stream);
   }
 };
