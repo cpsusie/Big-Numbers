@@ -94,3 +94,31 @@ int MoveBase::getMaxStringLength(MoveStringFormat mf) { // static
   };
   return maxLength[mf];
 }
+
+Packer &operator<<(Packer &p, const MoveBase &m) {
+  p << (int)m.m_type
+    << m.m_from
+    << m.m_to
+    << m.m_dirIndex
+    << m.m_moveIndex
+    << m.m_promoteIndex
+    << (int)m.m_direction
+    << (int)m.m_annotation;
+  return p;
+}
+
+Packer &operator>>(Packer &p, MoveBase &m) {
+  int type, dir, anno;
+  p >> type
+    >> m.m_from
+    >> m.m_to
+    >> m.m_dirIndex
+    >> m.m_moveIndex
+    >> m.m_promoteIndex
+    >> dir
+    >> anno;
+  m.m_type       = (MoveType)type;
+  m.m_direction  = (MoveDirection )dir;
+  m.m_annotation = (MoveAnnotation)anno;
+  return p;
+}

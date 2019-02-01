@@ -24,7 +24,7 @@ EndGamePosIndex PackedIndexedMap::getCheckedIndex(EndGameKey key) const {
 
 #define GETELEMENT(key) m_statusArray.get(m_keydef.keyToIndex(key))
 
-#endif
+#endif // _DEBUG
 
 void PackedIndexedMap::rethrowException(Exception &e, EndGameKey key) const {
   throwException(_T("%s. key:[%s], index:%s, size:%s\n"), e.what()
@@ -115,4 +115,4 @@ EndGameResult PackedIndexedMap::getPositionResult(EndGameKey key) const {
   return EndGameResult((EndGamePositionStatus)(v&3), v >> 2);
 }
 
-#endif
+#endif // TABLEBASE_BUILDER

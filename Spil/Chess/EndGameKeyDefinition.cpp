@@ -356,7 +356,7 @@ void EndGameKeyDefinition::checkSameOwner(UINT index1, UINT index2, bool expecte
 
 EndGameKey EndGameKeyDefinition::getTransformedKey(EndGameKey key, SymmetricTransformation st) const {
   assert(st != TRANSFORM_SWAPPLAYERS);
-  if(st == 0) {
+  if(st == TRANSFORM_NONE) {
     return key;
   }
   switch(m_totalPieceCount) {
@@ -582,7 +582,7 @@ SymmetricTransformation EndGameKeyDefinition::getPlayTransformation(const Game &
   const PositionSignature gps = game.getPositionSignature();
   const PositionSignature kps = getPositionSignature();
   if(gps == kps) {
-    return 0;
+    return TRANSFORM_NONE;
   } else if(kps.swapPlayers() == gps) {
     return TRANSFORM_SWAPPLAYERS;
   }
@@ -614,7 +614,7 @@ void EndGameKeyDefinition::invalidPieceCountError(const TCHAR *method) const {
 #define SYM8DECISIONSWITCH(decideStatement)                                                                   \
 { switch(GETSQUARE(key.getWhiteKingPosition())) {                                                             \
   case LOWERLEFT_SQUARE :                                                                                     \
-    decideStatement(      IS_OFFMAINDIAG1, IS_ABOVEMAINDIAG1, TRANSFORM_MIRRORDIAG1, 0                    )   \
+    decideStatement(      IS_OFFMAINDIAG1, IS_ABOVEMAINDIAG1, TRANSFORM_MIRRORDIAG1, TRANSFORM_NONE       )   \
     break;                                                                                                    \
   case LOWERRIGHT_SQUARE:                                                                                     \
     decideStatement(      IS_OFFMAINDIAG2, IS_ABOVEMAINDIAG2, TRANSFORM_ROTATERIGHT, TRANSFORM_MIRRORCOL  )   \
@@ -926,24 +926,24 @@ SymmetricTransformation EndGameKeyDefinition::getPawnSymTransformation(EndGameKe
     { const UINT pi = s_pawnPosToIndex[key.getPosition(i)];                                                   \
       const UINT pj = s_pawnPosToIndex[MIRRORCOLUMN(key.getPosition(j))];                                     \
       if(pi != pj) {                                                                                          \
-        return (pi < pj) ? 0 : TRANSFORM_MIRRORCOL;                                                           \
+        return (pi < pj) ? TRANSFORM_NONE : TRANSFORM_MIRRORCOL;                                              \
       } else {                                                                                                \
-        return IS_QUEENSIDE(key.getWhiteKingPosition()) ? 0 : TRANSFORM_MIRRORCOL;                            \
+        return IS_QUEENSIDE(key.getWhiteKingPosition()) ? TRANSFORM_NONE : TRANSFORM_MIRRORCOL;               \
       }                                                                                                       \
     }                                                                                                         \
   case 2:                                                                                                     \
     { const UINT pi = s_pawnPosToIndex[MIRRORCOLUMN(key.getPosition(i))];                                     \
       const UINT pj = s_pawnPosToIndex[key.getPosition(j)];                                                   \
       if(pi != pj) {                                                                                          \
-        return (pj < pi) ? 0 : TRANSFORM_MIRRORCOL;                                                           \
+        return (pj < pi) ? TRANSFORM_NONE : TRANSFORM_MIRRORCOL;                                              \
       } else {                                                                                                \
-        return IS_QUEENSIDE(key.getWhiteKingPosition()) ? 0 : TRANSFORM_MIRRORCOL;                            \
+        return IS_QUEENSIDE(key.getWhiteKingPosition()) ? TRANSFORM_NONE : TRANSFORM_MIRRORCOL;               \
       }                                                                                                       \
     }                                                                                                         \
-  case 3: return 0;                                                                                           \
+  case 3: return TRANSFORM_NONE;                                                                              \
   default: pawnSymSwitchError(__LINE__);                                                                      \
   }                                                                                                           \
-  return 0;                                                                                                   \
+  return TRANSFORM_NONE;                                                                                      \
 }
 
 SymmetricTransformation EndGameKeyDefinition::get4Men2EqualPawnsSymTransformation(EndGameKey key) { // static
@@ -960,14 +960,14 @@ static SymmetricTransformation decidePawnTransform3EqualPawnsFlipi(EndGameKey ke
   const int pi = EndGameKeyDefinition::s_pawnPosToIndex[MIRRORCOLUMN(key.getPosition(i))];
   const int pj = EndGameKeyDefinition::s_pawnPosToIndex[key.getPosition(j)];
   const int pk = EndGameKeyDefinition::s_pawnPosToIndex[key.getPosition(k)];
-  return (pi > max(pj, pk)) ? TRANSFORM_MIRRORCOL : 0;
+  return (pi > max(pj, pk)) ? TRANSFORM_MIRRORCOL : TRANSFORM_NONE;
 }
 
 static SymmetricTransformation decidePawnTransform3EqualPawnsFlipij(EndGameKey key, int i, int j, int k) {
   const int pi = EndGameKeyDefinition::s_pawnPosToIndex[MIRRORCOLUMN(key.getPosition(i))];
   const int pj = EndGameKeyDefinition::s_pawnPosToIndex[MIRRORCOLUMN(key.getPosition(j))];
   const int pk = EndGameKeyDefinition::s_pawnPosToIndex[key.getPosition(k)];
-  return (max(pi, pj) >= pk) ? TRANSFORM_MIRRORCOL : 0;
+  return (max(pi, pj) >= pk) ? TRANSFORM_MIRRORCOL : TRANSFORM_NONE;
 }
 
 #define DECIDEPAWNSYMTRANSFORM3EQUALPAWNS_FLIPi( i, j, k) return decidePawnTransform3EqualPawnsFlipi( key, i, j, k)
@@ -980,7 +980,7 @@ static SymmetricTransformation decidePawnTransform3EqualPawnsFlipij(EndGameKey k
 { const int pi = s_pawnPosToIndex[MIRRORCOLUMN(key.getPosition(i))];                                          \
   const int pj = s_pawnPosToIndex[key.getPosition(j)];                                                        \
   const int pk = s_pawnPosToIndex[key.getPosition(k)];                                                        \
-  return (pi > max(pj, pk)) ? TRANSFORM_MIRRORCOL : 0;                                                        \
+  return (pi > max(pj, pk)) ? TRANSFORM_MIRRORCOL : TRANSFORM_NONE;                                           \
 }
 
 /* Assume p##i and p##j is on kingside. return (max(flip(pi), flip(pj)) >= pk) ? MIRRORCOL : 0 */
@@ -988,7 +988,7 @@ static SymmetricTransformation decidePawnTransform3EqualPawnsFlipij(EndGameKey k
 { const int pi = s_pawnPosToIndex[MIRRORCOLUMN(key.getPosition(i))];                                          \
   const int pj = s_pawnPosToIndex[MIRRORCOLUMN(key.getPosition(j))];                                          \
   const int pk = s_pawnPosToIndex[key.getPosition(k)];                                                        \
-  return (max(pi, pj) >= pk) ? TRANSFORM_MIRRORCOL : 0;                                                       \
+  return (max(pi, pj) >= pk) ? TRANSFORM_MIRRORCOL : TRANSFORM_NONE;                                          \
 }
 
 #endif // _DEBUG
@@ -1300,7 +1300,7 @@ void _set3EqualPawnsFlipij(EndGameKey &key, EndGamePosIndex &addr, EndGamePosInd
 
 SymmetricTransformation EndGameKeyDefinition::get5Men3EqualPawnsSymTransformation(EndGameKey key) { // static
   switch(KEYBOOL3MASK(key, IS_KINGSIDE, 2, 3, 4)) { // similar to DECIDESYM8TRANSFORM5MEN3EQUAL, case 7:kings on diag, 2,3,4 off diag
-  case 0 : return 0;                                                              /* 2,3,4 queenside */
+  case 0 : return TRANSFORM_NONE;                                                 /* 2,3,4 queenside */
   case 1 : DECIDEPAWNSYMTRANSFORM3EQUALPAWNS_FLIPi( 2, 3, 4);                     /*   3,4 queenside */
   case 2 : DECIDEPAWNSYMTRANSFORM3EQUALPAWNS_FLIPi( 3, 2, 4);                     /* 2,  4 queenside */
   case 3 : DECIDEPAWNSYMTRANSFORM3EQUALPAWNS_FLIPij(2, 3, 4);                     /*     4 queenside */
@@ -1312,7 +1312,7 @@ SymmetricTransformation EndGameKeyDefinition::get5Men3EqualPawnsSymTransformatio
   throwException(_T("%s:Unexpected mask:%d. Valid are [0..7]")
                 ,__TFUNCTION__
                 ,KEYBOOL3MASK(key, IS_KINGSIDE, 2, 3, 4));
-  return 0;
+  return TRANSFORM_NONE;
 }
 
 #ifdef TABLEBASE_BUILDER

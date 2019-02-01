@@ -1,0 +1,9 @@
+; ChessAddIn.def : Declares the module parameters for the DLL.
+
+LIBRARY
+
+EXPORTS
+    AddIn_MoveBase
+    AddIn_EndGameResult
+    AddIn_MoveWithResult
+    AddIn_MoveWithResult2

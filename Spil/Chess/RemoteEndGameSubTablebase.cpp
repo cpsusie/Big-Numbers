@@ -2,6 +2,7 @@
 #include <io.h>
 #include <process.h>
 #include <ByteMemoryStream.h>
+#include <SocketStream.h>
 #include <Random.h>
 #include <CompressFilter.h>
 #include "EndGameTablebase.h"
@@ -178,6 +179,14 @@ EndGameResult RemoteEndGameSubTablebase::getPositionResult(const Game &game, boo
   return pr;
 }
 
+MoveResultArray &RemoteEndGameSubTablebase::getAllMoves(const Game &game, bool swapPlayers, MoveResultArray &a) const {
+  RequestPositionInfo(REQUEST_ALLMOVES, game.getKey(), swapPlayers).write(m_socket);
+  Packer p;
+  p.read(SocketStream(m_socket));
+  p >> a;
+  return a;
+}
+
 void RemoteEndGameSubTablebase::unload() {
   if(m_socket != INVALID_SOCKET) {
     sendRequest(REQUEST_QUIT);
@@ -196,7 +205,7 @@ bool RemoteEndGameSubTablebase::allKeysFound() const {
   return result;
 }
 
-#endif
+#endif // TABLEBASE_BUILDER
 
 void RemoteEndGameSubTablebase::sendRequest(RemoteTablebaseRequest requestCode) {
   switch(requestCode) {
@@ -209,7 +218,7 @@ void RemoteEndGameSubTablebase::sendRequest(RemoteTablebaseRequest requestCode) 
     tcpWrite(m_socket, &requestCode, sizeof(requestCode));
     break;
 
-  case REQUEST_QUIT :
+  case REQUEST_QUIT      :
     tcpWrite(m_socket, &requestCode, sizeof(requestCode));
     tcpClose(m_socket);
     m_socket = INVALID_SOCKET;
@@ -282,7 +291,7 @@ void RemoteEndGameSubTablebase::remoteService(TCHAR **argv) { // static.
         tcpWrite(connection, &result, sizeof(result));
       }
       break;
-#endif
+#endif // TABLEBASE_BUILDER
     case REQUEST_POSITIONSTATUS   :
       { PositionInfoRequestParam param(connection);
         workGame = param.m_gameKey;
@@ -299,6 +308,13 @@ void RemoteEndGameSubTablebase::remoteService(TCHAR **argv) { // static.
       }
       break;
 
+    case REQUEST_ALLMOVES         :
+      { PositionInfoRequestParam param(connection);
+        workGame = param.m_gameKey;
+        MoveResultArray a;
+        (Packer() <<  tablebase.getAllMoves(workGame, param.m_swapPlayers, a)).write(SocketStream(connection));
+      }
+      break;
     case REQUEST_QUIT             :
       tablebase.unload();
       tcpClose(connection);

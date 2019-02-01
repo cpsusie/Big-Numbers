@@ -104,6 +104,14 @@ EndGameResult SubTablebasePositionInfo::getPositionResult(const Game &game) cons
   }
 }
 
+MoveResultArray &SubTablebasePositionInfo::getAllMoves(const Game &game, MoveResultArray &a) const {
+  if(m_tablebase != NULL) {
+    return m_tablebase->getAllMoves(game, m_swapPlayers, a);
+  } else {
+    return a.clear(game.getKey().getPlayerInTurn());
+  }
+}
+
 void SubTablebasePositionInfo::unload() {
   if(m_tablebase != NULL) {
     m_tablebase->unload();

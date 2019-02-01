@@ -893,6 +893,9 @@
       <Filter>Source Files\MoveFinders</Filter>
     </ClCompile>
     <ClCompile Include="StdAfx.cpp" />
+    <ClCompile Include="MoveResultArray.cpp">
+      <Filter>EndGames</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Chess.h">

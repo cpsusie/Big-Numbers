@@ -34,7 +34,7 @@ void MoveFinderEndGame::findBestMove(const RequestParamFindMove &param) {
       verbose(_T("Tablebase %s. Metric:%s\n"), m_tablebase->getName().cstr(), EndGameKeyDefinition::getMetricName(s_currentMetric));
     }
   }
-  MoveResultArray allMoves(m_game.getPlayerInTurn());
+  MoveResult2Array allMoves;
   const Options &options = getOptions();
   PrintableMove  result  = m_tablebase->findBestMove(m_game, allMoves, options.getEndGameDefendStrength());
   if(result.isMove()) {

@@ -733,6 +733,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="StdAfx.cpp" />
+    <ClCompile Include="..\Chess\MoveResultArray.cpp">
+      <Filter>EndGames</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\chess\FieldNames.h">
@@ -897,5 +900,8 @@
     <CustomBuild Include="..\Chess\FindRange2Equals.asm">
       <Filter>EndGames\EndGameKeyDefinitions\Asm Files</Filter>
     </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="NatvisFile.natvis" />
   </ItemGroup>
 </Project>

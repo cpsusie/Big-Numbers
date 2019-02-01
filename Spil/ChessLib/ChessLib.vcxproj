@@ -682,6 +682,7 @@
     <ClCompile Include="..\Chess\Move.cpp" />
     <ClCompile Include="..\Chess\MoveBase.cpp" />
     <ClCompile Include="..\Chess\MoveGenerator.cpp" />
+    <ClCompile Include="..\Chess\MoveResultArray.cpp" />
     <ClCompile Include="..\Chess\MoveTable.cpp" />
     <ClCompile Include="..\Chess\PackedIndexedMap.cpp" />
     <ClCompile Include="..\Chess\PawnMask.cpp" />
@@ -824,6 +825,9 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)FindRange2Equals.obj</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)FindRange2Equals.obj</Outputs>
     </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="NatvisFile.natvis" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+
+  <Type Name="MoveBase">
+    <DisplayString LegacyAddin="C:\mytools2015\Spil\ChessAddIn\Win32\Release\ChessAddIn.dll" Export="AddIn_MoveBase"></DisplayString>
+  </Type>
+  <Type Name="EndGameResult">
+    <DisplayString LegacyAddin="C:\mytools2015\Spil\ChessAddIn\Win32\Release\ChessAddIn.dll" Export="AddIn_EndGameResult"></DisplayString>
+  </Type>
+  <Type Name="MoveWithResult">
+    <DisplayString LegacyAddin="C:\mytools2015\Spil\ChessAddIn\Win32\Release\ChessAddIn.dll" Export="AddIn_MoveWithResult"></DisplayString>
+  </Type>
+  <Type Name="MoveWithResult2">
+    <DisplayString LegacyAddin="C:\mytools2015\Spil\ChessAddIn\Win32\Release\ChessAddIn.dll" Export="AddIn_MoveWithResult2"></DisplayString>
+  </Type>
+</AutoVisualizer>

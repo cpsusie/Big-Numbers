@@ -22,7 +22,7 @@ public:
 
   virtual EndGamePositionStatus getPositionStatus(const Game &game, bool swapPlayers) const = 0;
   virtual EndGameResult         getPositionResult(const Game &game, bool swapPlayers) const = 0;
-
+  virtual MoveResultArray      &getAllMoves(      const Game &game, bool swapPlayers, MoveResultArray &a) const = 0; // return a
 #ifdef TABLEBASE_BUILDER
   virtual String loadPacked() = 0;
   virtual bool allKeysFound() const = 0;
@@ -48,6 +48,7 @@ typedef enum {
  ,REQUEST_POSITIONSTATUS
  ,REQUEST_POSITIONRESULT
  ,REQUEST_ALLKEYSFOUND
+ ,REQUEST_ALLMOVES
  ,REQUEST_QUIT
 } RemoteTablebaseRequest;
 
@@ -79,6 +80,7 @@ public:
   }
   EndGamePositionStatus getPositionStatus(const Game &game, bool swapPlayers) const;
   EndGameResult         getPositionResult(const Game &game, bool swapPlayers) const;
+  MoveResultArray      &getAllMoves(      const Game &game, bool swapPlayers, MoveResultArray &a) const; // return a
 
 #ifdef TABLEBASE_BUILDER
   String loadPacked();
@@ -111,6 +113,7 @@ public:
   SubTablebasePositionInfo(const Game &game);
   EndGamePositionStatus getPositionStatus(const Game &game) const;
   EndGameResult         getPositionResult(const Game &game) const;
+  MoveResultArray      &getAllMoves(      const Game &game, MoveResultArray &a) const; // return a
   void unload();
   inline bool isRemote() const {
     return m_tablebase ? m_tablebase->isRemote() : false;
@@ -187,7 +190,11 @@ private:
   static  Semaphore                                                 s_loadGate;
 #endif
 
-  MoveResultArray getAllMoves(const GameKey &gameKey) const; // assume gameKey.positionSignature == keydef.positionSignature
+  MoveResultArray  &getAllMoves(  const GameKey &gameKey, MoveResultArray &a) const; // assume gameKey.positionSignature == keydef.positionSignature
+  MoveResultArray  &getAllMoves(  const GameKey &gameKey, bool swapPlayers, MoveResultArray &a) const;
+#ifndef TABLEBASE_BUILDER
+  MoveResult2Array &getAllMoves2(const GameKey &gameKey, MoveResult2Array &a) const; // assume gameKey.positionSignature == keydef.positionSignature
+#endif // TABLEBASE_BUILDER
 
   void           unloadSubTablebases();
   void           clear();
@@ -198,7 +205,7 @@ private:
   inline String  toString(const EndGameKey &key, bool initFormat=false) const {
     return key.toString(m_keydef, initFormat);
   }
-  EndGamePositionStatus isTerminalMove(const Game &game, const Move &m, UINT *pliesToEnd = NULL) const;
+  EndGamePositionStatus isTerminalMove(const Game &game, const Move &m, UINT *pliesToEnd = NULL, MoveResultArray *allMoves = NULL) const;
   EndGameResult         getKeyResult(  const EndGameKey  key) const;
   void                  statusError(EndGamePositionStatus status, const EndGameKey &key) const;           // throw Exception
   void                  statusError(EndGamePositionStatus status, const Game &game, const Move &m) const; // throw Exception
@@ -348,11 +355,21 @@ public:
   inline int            getLoadRefCount() const {
     return m_loadRefCount;
   }
+  // Never return EG_UNDEFINED. Possible return values are { EG_DRAW, EG_WHITEWIN. EG_BLACKWIN }
   EndGamePositionStatus getPositionStatus(const Game &game, bool swapPlayers) const;
+  // Never return EG_UNDEFINED i status. possible status for return value same as getPositionStatus()
+  // Values also encode { EGR_STALEMATE, EGR_BLACKISMATE, EGR_WHITEISMATE, EGR_DRAW
   EndGameResult         getPositionResult(const Game &game, bool swapPlayers) const;
+  MoveResultArray      &getAllMoves(      const Game &game, bool swapPlayers, MoveResultArray &a) const;
 
-  PrintableMove         findBestMove(const Game &game, MoveResultArray &allMoves, int defendStrength) const; // defendStrength = [0..100]
-  MoveResultArray       getAllMoves( const Game &game) const; // assume game.positionSignature.match(keydef.positionSignature)
+  PrintableMove         findBestMove(     const Game &game, MoveResultArray &allMoves, int defendStrength) const; // defendStrength = [0..100]
+  MoveResultArray      &getAllMoves(      const Game &game, MoveResultArray &a) const; // assume game.positionSignature.match(keydef.positionSignature)
+
+#ifndef TABLEBASE_BUILDER
+  PrintableMove         findBestMove(     const Game &game, MoveResult2Array &allMoves, int defendStrength) const; // defendStrength = [0..100]
+  MoveResult2Array     &getAllMoves2(     const Game &game, MoveResult2Array &a) const; // assume game.positionSignature.match(keydef.positionSignature)
+  MoveResult2Array     &getAllMoves2(     const Game &game, bool swapPlayers, MoveResult2Array &a) const;
+#endif //  TABLEBASE_BUILDER
 
   bool                  exist(TablebaseFileType recoverFile) const;
   String                getFileName(TablebaseFileType fileType) const;

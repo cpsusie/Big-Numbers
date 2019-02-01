@@ -284,7 +284,7 @@ GameKey GameKey::mirrorDiag2() const {
 
 GameKey GameKey::transform(SymmetricTransformation st) const {
   switch(st) {
-  case 0                    : return *this;
+  case TRANSFORM_NONE       : return *this;
   case TRANSFORM_SWAPPLAYERS: return swapPlayers();
   case TRANSFORM_ROTATE180  : return rotate180();
   case TRANSFORM_ROTATERIGHT: return rotateRight();
@@ -300,7 +300,7 @@ GameKey GameKey::transform(SymmetricTransformation st) const {
 
 int GameKey::transform(int pos, SymmetricTransformation st) { // static
   switch(st) {
-  case 0                    : return pos;
+  case TRANSFORM_NONE       : return pos;
   case TRANSFORM_SWAPPLAYERS: return MIRRORROW(   pos);
   case TRANSFORM_ROTATE180  : return ROTATE180(   pos);
   case TRANSFORM_ROTATERIGHT: return ROTATERIGHT( pos);

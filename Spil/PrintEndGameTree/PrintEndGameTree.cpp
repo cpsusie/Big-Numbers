@@ -79,7 +79,8 @@ MoveResultArray MoveFinder::getAllMoves(const Game &game) {
   if(!isLoaded() || !m_tablebase->getKeyDefinition().getPositionSignature().match(game.getPositionSignature(), swap)) {
     load(game);
   }
-  return m_tablebase->getAllMoves(game).sort();
+  MoveResultArray a;
+  return m_tablebase->getAllMoves(game,a).sort();
 }
 
 class MoveIndexWithReplies {
@@ -104,11 +105,11 @@ int MoveIndexWithReplies::getSum() const {
   if(m_defenceMoves.size() == 0) {
     return 0;
   } else {
-    const int maxMoves = m_defenceMoves[0].m_result.getMovesToEnd();
+    const int maxMoves = m_defenceMoves[0].getResult().getMovesToEnd();
 
     int sum   = 0;
     for(size_t i = 0; i < m_defenceMoves.size(); i++) {
-      const int moves = m_defenceMoves[i].m_result.getMovesToEnd();
+      const int moves = m_defenceMoves[i].getResult().getMovesToEnd();
       if(moves < maxMoves-5) {
         break;
       }
@@ -142,7 +143,7 @@ static int replyCmp(const MoveIndexWithReplies &r1, const MoveIndexWithReplies &
     return 1;
   }
   for(int i = 0; i < a1.size() && i < a2.size(); i++) {
-    const int d = (int)(a1[i].m_result.getPliesToEnd()) - (int)(a2[i].m_result.getPliesToEnd());
+    const int d = (int)(a1[i].getResult().getPliesToEnd()) - (int)(a2[i].getResult().getPliesToEnd());
     if(d) {
       return d;
     }
@@ -245,7 +246,7 @@ void GameTree::printTree() {
     printTree();
     m_game.unExecuteLastMove();
   } else { // many moves
-    const EndGameResult r0 = m0.m_result;
+    const EndGameResult r0 = m0.getResult();
     if(r0.isWinner() && (STATUSTOWINNER(r0.getStatus()) == m_game.getPlayerInTurn())) {
       const MoveWithResult &mb = a[findBestWinnerMove(a)];
       if(printMove(mb)) {
@@ -254,7 +255,7 @@ void GameTree::printTree() {
       m_game.executeMove(mb);
       printTree();
       m_game.unExecuteLastMove();
-    } else if(a[1].m_result != r0) { // only one best looser move
+    } else if(a[1].getResult() != r0) { // only one best looser move
       printMove(m0);
       m_game.executeMove(m0);
       printTree();
@@ -262,7 +263,7 @@ void GameTree::printTree() {
     } else {
       UINT n;
       for(n = 1; n < a.size(); n++) {
-        if(a[n].m_result != r0) {
+        if(a[n].getResult() != r0) {
           break;
         }
       }
@@ -291,9 +292,9 @@ void GameTree::printTree() {
 #define ISCAPTURE(move) (!m_game.isPositionEmpty(move.m_to))
 
 bool GameTree::printMove(const MoveWithResult &mr, PrintableMove *em) {
-  const PrintableMove move        = m_game.generateMove(mr.getFrom(), mr.getTo(), mr.getPromoteTo());
-  const bool           isTerminal = (ISCAPTURE(mr) || (mr.m_result.getPliesToEnd() == 1));
-  const int            no         = (m_game.getStartPosition().getPlayerInTurn() == WHITEPLAYER) ? PLIESTOMOVES(m_game.getPlyCount()+1) : PLIESTOMOVES(m_game.getPlyCount())+1;
+  const PrintableMove move       = m_game.generateMove(mr.getFrom(), mr.getTo(), mr.getPromoteTo());
+  const bool          isTerminal = (ISCAPTURE(mr) || (mr.getResult().getPliesToEnd() == 1));
+  const int           no         = (m_game.getStartPosition().getPlayerInTurn() == WHITEPLAYER) ? PLIESTOMOVES(m_game.getPlyCount()+1) : PLIESTOMOVES(m_game.getPlyCount())+1;
   bool nl;
 
   if(em) *em = move;
@@ -380,11 +381,11 @@ void GameTree::printMoveStack() const {
 
 int GameTree::findBestWinnerMove(const MoveResultArray &a) {
   BitSet candidates(a.size());
-  const int minPliesToEnd = a[0].m_result.getPliesToEnd();
+  const int minPliesToEnd = a[0].getResult().getPliesToEnd();
   candidates.add(0);
   int candidateCount = 1;
   for(size_t i = 1; i < a.size(); i++) {
-    if(a[i].m_result.getPliesToEnd() == minPliesToEnd) {
+    if(a[i].getResult().getPliesToEnd() == minPliesToEnd) {
       candidates.add(i);
       candidateCount++;
     } else {

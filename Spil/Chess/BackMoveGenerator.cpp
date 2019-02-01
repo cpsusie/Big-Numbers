@@ -47,7 +47,7 @@ void HelperFieldSets::init() {
 
 void HelperFieldSets::setPromoteFieldSet(Player kingOwner, SymmetricTransformation transformation) {
   switch(transformation) {
-  case 0                     :
+  case TRANSFORM_NONE        :
   case TRANSFORM_MIRRORCOL   : m_promoteFieldSet = (kingOwner==WHITEPLAYER)?&m_rank1:&m_rank8; break;
   case TRANSFORM_ROTATE180   :
   case TRANSFORM_MIRRORROW   : m_promoteFieldSet = (kingOwner==WHITEPLAYER)?&m_rank8:&m_rank1; break;

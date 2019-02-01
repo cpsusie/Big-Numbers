@@ -6,7 +6,7 @@
 
 const EngineOptionDescription EngineOptionDescription::debugOption(_T("name Debug type check default false"),999);
 
-EngineOptionDescription::EngineOptionDescription(String line, unsigned short index) : m_index(index) {
+EngineOptionDescription::EngineOptionDescription(String line, USHORT index) : m_index(index) {
   DEFINEMETHODNAME;
   m_min = m_max = m_defaultInt = 0;
   m_defaultBool = false;

@@ -118,8 +118,12 @@ TCHAR *EndGameResult::toStr(TCHAR *dst, bool ply) const {
 TCHAR *EndGameResult::toStr(TCHAR *dst, Player playerInTurn, bool ply) const {
   switch(getStatus()) {
   case EG_UNDEFINED:
+    return _tcscpy(dst, DRAW_STR     );
   case EG_DRAW     :
-    return _tcscpy(dst, DRAW_STR);
+    switch(getPliesToEnd()) {
+    case 0 : return _tcscpy(dst, STALEMATE_STR);
+    default: return _tcscpy(dst, DRAW_STR     );
+    }
   case EG_WHITEWIN:
   case EG_BLACKWIN:
     if(getPliesToEnd() == 0) {

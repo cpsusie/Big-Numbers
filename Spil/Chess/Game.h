@@ -141,6 +141,7 @@ typedef BYTE  SymmetricTransformation;
                                           // takes care of this situation, which handles any (legal) combination of the other flags too. fx.
                                           // KING_LD_ATTACKED_FROM_ROW | KING_LD_ATTACKED_FROM_DIAG1, which can occur in normal play as a doublecheck!
 
+#define TRANSFORM_NONE                      0
 #define TRANSFORM_SWAPPLAYERS               1
 #define TRANSFORM_ROTATE180                 2
 #define TRANSFORM_ROTATERIGHT               3
@@ -745,6 +746,9 @@ public:
   bool operator==(const MoveBase &m) const;
   bool operator!=(const MoveBase &m) const; // do
 };
+
+Packer &operator<<(Packer &p, const MoveBase &m);
+Packer &operator>>(Packer &p,       MoveBase &m);
 
 typedef CompactArray<MoveBase> MoveBaseArray;
 

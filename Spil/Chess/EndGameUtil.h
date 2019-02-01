@@ -82,6 +82,14 @@ public:
     return getStatus() >= EG_WHITEWIN;
   }
 
+  inline bool isStalemate() const {
+    return (getStatus() == EG_DRAW) && (getPliesToEnd() == 0);
+  }
+
+  inline bool isTerminalDraw() const {
+    return (getStatus() == EG_DRAW) && (getPliesToEnd() == 1);
+  }
+
   inline void setExist() {
     m_data |= (1<<11);
   }
@@ -148,6 +156,15 @@ public:
 
   String toString(bool ply = false) const;
   String toString(Player playerInTurn, bool ply = false) const;
+
+  friend inline Packer &operator<<(Packer &p, const EndGameResult &egr) {
+    p << egr.m_data;
+    return p;
+  }
+  friend inline Packer &operator>>(Packer &p, EndGameResult &egr) {
+    p >> egr.m_data;
+    return p;
+  }
 };
 
 #define EGR_STALEMATE    EndGameResult(EG_DRAW     , 0)
@@ -159,14 +176,24 @@ public:
 typedef Entry<EndGameKey, EndGameResult> EndGameEntry;
 
 class MoveWithResult : public MoveBase {
-public:
+private:
   EndGameResult m_result;
-  MoveWithResult() {
+public:
+  inline MoveWithResult() {
   }
-  MoveWithResult(const MoveBase &move, const EndGameResult &result) : MoveBase(move), m_result(result) {
+  inline MoveWithResult(const MoveBase &move, const EndGameResult &result) : MoveBase(move), m_result(result) {
   }
-  String toString() const {
+  inline EndGameResult getResult() const {
+    return m_result;
+  }
+  inline String toString() const {
     return format(_T("%8s - %s"), MoveBase::toString().cstr(), m_result.toString().cstr());
+  }
+  friend inline Packer &operator<<(Packer &p, const MoveWithResult &m) {
+    return p << (MoveBase&)m << m.m_result;
+  }
+  friend inline Packer &operator>>(Packer &p, MoveWithResult &m) {
+    return p >> (MoveBase&)m >> m.m_result;
   }
 };
 
@@ -174,17 +201,25 @@ class MoveResultArray : public CompactArray<MoveWithResult> {
 private:
   Player m_playerInTurn;
 public:
-  MoveResultArray(Player playerInTurn) : m_playerInTurn(playerInTurn) {
+  inline MoveResultArray() : m_playerInTurn((Player)(-1)) {
   }
-  MoveWithResult selectShortestWinnerMove() const {
+  MoveResultArray &clear(Player playerInTurn, intptr_t capacity = 0) {
+    __super::clear(capacity);
+    m_playerInTurn = playerInTurn;
+    return *this;
+  }
+  inline Player getPlayerInTurn() const {
+    return m_playerInTurn;
+  }
+  inline MoveWithResult selectShortestWinnerMove() const {
     return (*this)[findShortestWinnerMoves().select()];
   }
 
-  MoveWithResult selectLongestLoosingMove(int defendStrength) const { // defendStrength = [0..100]
+  inline MoveWithResult selectLongestLoosingMove(int defendStrength) const { // defendStrength = [0..100]
     return (*this)[findLongestLoosingMoves(defendStrength).select()];
   }
 
-  MoveWithResult selectDrawMove() const {
+  inline MoveWithResult selectDrawMove() const {
     return (*this)[findDrawMoves().select()];
   }
 
@@ -192,10 +227,157 @@ public:
   CompactIntArray findLongestLoosingMoves(int defendStrength) const; // defendStrength = [0..100]
   CompactIntArray findDrawMoves()                             const;
   MoveWithResult  selectBestMove(int defendStrength)          const; // defendStrength = [0..100]
-
+  BYTE            getCountWithStatus(EndGamePositionStatus st) const;
   MoveResultArray &sort();
+
+  friend Packer &operator<<(Packer &p, const MoveResultArray &a);
+  friend Packer &operator>>(Packer &p,       MoveResultArray &a);
+
   String toString(const Game &game, MoveStringFormat mf, bool depthInPlies);
 };
+
+class ReplyCount {
+private:
+  BYTE m_drawReplies;  // how many of possible moves from opponent will remain in draw zone
+  BYTE m_looseReplies; // how many of possible moves from opponent will he loose
+public:
+  inline ReplyCount() : m_drawReplies(0), m_looseReplies(0) {
+  }
+  inline ReplyCount(const MoveResultArray &replyArray)
+    : m_drawReplies( replyArray.getCountWithStatus(EG_DRAW))
+    , m_looseReplies(replyArray.getCountWithStatus((replyArray.getPlayerInTurn()==WHITEPLAYER)?EG_BLACKWIN:EG_WHITEWIN))
+  {
+#ifdef _DEBUG
+    if(m_drawReplies + m_looseReplies != replyArray.size()) {
+      throwInvalidArgumentException(__TFUNCTION__
+                                   ,_T("replyArray.size=%zu, drawReplies:%u, looseReplies:%u")
+                                   ,replyArray.size(), m_drawReplies, m_looseReplies);
+    }
+#endif _DEBUG
+  }
+  inline void clear() {
+    m_drawReplies = m_looseReplies = 0;
+  }
+  inline BYTE getDrawReplyCount() const {
+    return m_drawReplies;
+  }
+  inline BYTE getLooseReplyCount() const {
+    return m_looseReplies;
+  }
+  inline BYTE getTotalReplyCount() const {
+    return m_drawReplies + m_looseReplies;
+  }
+  inline double getDrawReplyPct() const {
+    return PERCENT(m_drawReplies, getTotalReplyCount());
+  }
+  inline double getLooseReplyPct() const {
+    return PERCENT(m_looseReplies, getTotalReplyCount());
+  }
+  String toString() const {
+    return format(_T(" Replies:(draw:%2d(%5.2lf%%), loose:%2d(%5.2lf%%)")
+                 ,m_drawReplies , getDrawReplyPct()
+                 ,m_looseReplies, getLooseReplyPct());
+  }
+};
+
+class MoveWithResult2 : public MoveWithResult {
+private:
+  ReplyCount m_replyCount;
+
+#ifdef _DEBUG
+  void checkIsConsistent(const TCHAR *method) const {
+    if(m_replyCount.getTotalReplyCount() == 0) {
+      if(getResult().isWinner() || getResult().isStalemate() || getResult().isTerminalDraw()) {
+        return;
+      }
+    } else if(m_replyCount.getDrawReplyCount() != 0) {
+      if(!getResult().isWinner()) {
+        return;
+      }
+    }
+    throwException(_T("%s:Inconsistency:(moveResult=%s, m_replyCount:%s")
+                  ,method
+                  ,__super::toString().cstr()
+                  ,m_replyCount.toString().cstr()
+                  );
+  }
+#define CHECKISCONSISTENT() checkIsConsistent(__TFUNCTION__)
+#else
+#define CHECKISCONSISTENT()
+#endif // _DEBUG
+public:
+  inline MoveWithResult2() {
+  }
+  inline MoveWithResult2(const MoveWithResult &m, const ReplyCount &replyCount)
+    : MoveWithResult(m)
+    , m_replyCount(replyCount)
+  {
+    CHECKISCONSISTENT();
+  }
+  inline MoveWithResult2(const MoveBase &move, const EndGameResult &result)
+    : MoveWithResult(move, result)
+  {
+    CHECKISCONSISTENT();
+  }
+  inline MoveWithResult2(const MoveBase &move, const EndGameResult &result, const MoveResultArray &replyArray)
+    : MoveWithResult(move, result)
+    , m_replyCount(replyArray)
+  {
+    CHECKISCONSISTENT();
+  }
+  inline ReplyCount getReplyCount() const {
+    return m_replyCount;
+  }
+  inline String replyToString() const {
+    return (getResult().isWinner() || getResult().isStalemate()) ?  EMPTYSTRING : m_replyCount.toString();
+  }
+  String toString() const {
+    return __super::toString() + replyToString();
+  }
+  String resultToString(Player playerInTurn, bool ply) const {
+    return getResult().toString(playerInTurn, ply) + replyToString();
+  }
+
+#ifdef _DEBUG
+#undef CHECKISCONSISTENT
+#endif
+};
+
+class MoveResult2Array : public CompactArray<MoveWithResult2> {
+private:
+  Player m_playerInTurn;
+  operator MoveResultArray() const;
+public:
+  inline MoveResult2Array() : m_playerInTurn((Player)(-1)) {
+  }
+  void clear(Player playerInTurn, intptr_t capacity = 0) {
+    __super::clear(capacity);
+    m_playerInTurn = playerInTurn;
+  }
+  inline Player getPlayerInTurn() const {
+    return m_playerInTurn;
+  }
+  inline MoveWithResult selectShortestWinnerMove() const {
+    return ((MoveResultArray)(*this)).selectShortestWinnerMove();
+  }
+  inline MoveWithResult selectLongestLoosingMove(int defendStrength) const { // defendStrength = [0..100]
+    return ((MoveResultArray)(*this)).selectLongestLoosingMove(defendStrength);
+  }
+  CompactIntArray findBestDrawMoves() const;
+
+  inline CompactIntArray findShortestWinnerMoves()            const {
+    return ((MoveResultArray)(*this)).findShortestWinnerMoves();
+  }
+  inline CompactIntArray findLongestLoosingMoves(int defendStrength) const { // defendStrength = [0..100]
+    return ((MoveResultArray)(*this)).findLongestLoosingMoves(defendStrength);
+  }
+
+  MoveWithResult  selectBestMove(int defendStrength) const; // defendStrength = [0..100]
+
+  MoveResult2Array &sort();
+  String toString(const Game &game, MoveStringFormat mf, bool depthInPlies);
+};
+
 
 class WrongVersionException : public Exception {
 public:

@@ -501,6 +501,7 @@
     <ClCompile Include="..\Chess\Move.cpp" />
     <ClCompile Include="..\Chess\MoveBase.cpp" />
     <ClCompile Include="..\Chess\MoveGenerator.cpp" />
+    <ClCompile Include="..\Chess\MoveResultArray.cpp" />
     <ClCompile Include="..\Chess\MoveTable.cpp" />
     <ClCompile Include="..\Chess\PackedIndexedMap.cpp" />
     <ClCompile Include="..\Chess\PawnMask.cpp" />

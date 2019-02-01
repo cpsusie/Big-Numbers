@@ -303,7 +303,7 @@ void EndGameTablebase::addInitPosition(EndGameKey key, bool allowTransform) {
 
     const SymmetricTransformation st = m_keydef.getSymTransformation(key);
 
-    if(st) {
+    if(st != TRANSFORM_NONE) {
       if(!allowTransform) {
         throwException(_T("Initial position[%s] needs symmetric transformation [%s] to be valid.")
                       ,toString(key, true).cstr()
@@ -1749,12 +1749,13 @@ bool EndGameTablebase::checkConsistency(UINT flags) {
                  ,toString(entry,true).cstr(), bestResult.toString(true).cstr());
 
           if(flags & CHECK_LIST_MOVES) {
-            const MoveResultArray allMoves = getAllMoves(m_workGame.getKey());
+            MoveResultArray allMoves;
+            getAllMoves(m_workGame.getKey(), allMoves);
             for(UINT i = 0; i < allMoves.size(); i++) {
               const MoveWithResult &mr = allMoves[i];
               verbose(_T("%-7s - %s\n")
                      ,PrintableMove(m_workGame,mr).toString(MOVE_SHORTFORMAT).cstr()
-                     ,mr.m_result.toString(true).cstr());
+                     ,mr.getResult().toString(true).cstr());
             }
           }
           if(flags & CHECK_RETURN_ON_ERROR) {
@@ -1780,12 +1781,13 @@ bool EndGameTablebase::checkConsistency(UINT flags) {
                 ,toString(entry,true).cstr(), bestResult.toString(true).cstr());
 
         if(flags & CHECK_LIST_MOVES) {
-          const MoveResultArray allMoves = getAllMoves(m_workGame.getKey());
+          MoveResultArray allMoves;
+          getAllMoves(m_workGame.getKey(), allMoves);
           for(UINT i = 0; i < allMoves.size(); i++) {
             const MoveWithResult &mr = allMoves[i];
             verbose(_T("%-7s - %s\n")
                    ,PrintableMove(m_workGame, mr).toString(MOVE_SHORTFORMAT).cstr()
-                   ,mr.m_result.toString(true).cstr());
+                   ,mr.getResult().toString(true).cstr());
           }
         }
         if(flags & CHECK_RETURN_ON_ERROR) {
