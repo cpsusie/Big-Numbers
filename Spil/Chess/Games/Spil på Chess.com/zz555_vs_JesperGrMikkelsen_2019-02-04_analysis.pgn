@@ -1,0 +1,15 @@
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2019.02.04"]
+[Round "?"]
+[White "zz555"]
+[Black "JesperGrMikkelsen"]
+[Result "0-1"]
+[TimeControl "600"]
+[WhiteElo "1264"]
+[BlackElo "1290"]
+[Termination "JesperGrMikkelsen won by resignation"]
+[ECO ""]
+[CurrentPosition "1k6/1b3pp1/p6p/8/P1rnP3/5P1P/6P1/R4K2 w - - 0 40"]
+
+1.e4 e5 2.Nf3 Nc6 3.d4 exd4 4.Bc4 { C44: Scotch Game: Scotch Gambit } 4...d6 5.Ng5 { (+0.83 → -0.34) Fejl. 5. Sxd4 var det bedste træk. } ( 5.Nxd4 5...Ne5 6.Bb3 6...c5 7.Nf3 7...Nxf3+ 8.Qxf3 8...Nf6 9.O-O 9...Be7 ) 5...Ne5 6.Qxd4 h6 7.Nf3 Nxc4 8.Qxc4 Be6 9.Qb4 { (+0.44 → -0.28) Unøjagtighed. 9. Db5+ var et bedre træk. } ( 9.Qb5+ 9...Bd7 10.Qxb7 10...Ne7 11.Qb3 11...g5 12.Bxg5 12...Bg7 13.Bxe7 13...Qxe7 ) 9...b6 10.h3 d5 11.Qb5+ Qd7 12.Qe2 d4 { (-0.80 → +0.76) Fejl. 12... dxe4 var det bedste træk. } ( 12...dxe4 13.Qxe4 13...Qd5 14.Qe2 14...O-O-O 15.Nc3 15...Qc4 16.O-O 16...Nf6 17.Qxc4 ) 13.O-O { (+1.12 → 0.00) Fejl. 13. Se5 var det bedste træk. } ( 13.Ne5 13...Qe7 14.O-O 14...Nf6 15.c3 15...c5 16.Rd1 16...Qc7 17.Bf4 17...Bd6 ) 13...c5 14.Rd1 Be7 15.c3 O-O-O { (+0.99 → +3.64) Fejl. 15... d3 var det bedste træk. } ( 15...d3 16.Rxd3 ) 16.Qa6+ { (+3.99 → +1.09) Brøler. 16. cxd4 var det bedste træk. } ( 16.cxd4 16...cxd4 ) 16...Kb8 { (+1.19 → +2.55) Unøjagtighed. 16... Db7 var et bedre træk. } ( 16...Qb7 17.Qxb7+ 17...Kxb7 18.cxd4 18...cxd4 19.Nxd4 19...Bf6 20.Be3 20...Ne7 21.Nc3 ) 17.Ne5 { (+2.80 → +0.49) Brøler. 17. cxd4 var det bedste træk. } ( 17.cxd4 ) 17...Qc7 { (+0.03 → +1.61) Fejl. 17... Db7 var det bedste træk. } ( 17...Qb7 ) 18.Bf4 Bd6 19.Nc4 { (+2.31 → -6.27) Brøler. 19. cxd4 var det bedste træk. } ( 19.cxd4 19...Ne7 20.Nc3 20...Qb7 21.Qxb7+ 21...Kxb7 22.d5 22...Bd7 23.Bh2 23...Bxe5 ) 19...Bc8 { (-6.67 → +0.33) Brøler. 19... Lxf4 var det bedste træk. } ( 19...Bxf4 20.Nbd2 20...dxc3 21.bxc3 21...Nf6 22.a4 22...Bxc4 23.Nxc4 23...Rxd1+ 24.Rxd1 ) 20.Bxd6 Rxd6 21.Qb5 a6 22.Qb3 Rg6 23.Kh1 { (+1.39 → -0.69) Fejl. 23. cxd4 var det bedste træk. } ( 23.cxd4 23...cxd4 ) 23...b5 { (-0.52 → +0.19) Unøjagtighed. 23... Sf6 var et bedre træk. } ( 23...Nf6 24.Nbd2 24...Bb7 25.cxd4 25...Nxe4 26.Nxe4 26...Bxe4 27.Ne3 27...c4 28.Qa3 ) 24.a4 Bb7 { (-0.86 → +1.24) Fejl. 24... Sf6 var det bedste træk. } ( 24...Nf6 ) 25.f3 { (+2.37 → -4.44) Brøler. 25. axb5 var det bedste træk. } ( 25.axb5 25...Bxe4 ) 25...bxc4 26.Qxc4 dxc3 { (-5.01 → -2.31) Brøler. 26... Sf6 var det bedste træk. } ( 26...Nf6 27.Nd2 ) 27.Nxc3 Nf6 28.b4 cxb4 29.Qxb4 Nh5 { (-2.34 → -0.97) Fejl. 29... Ka8 var det bedste træk. } ( 29...Ka8 ) 30.Ne2 { (-1.07 → -2.49) Unøjagtighed. 30. Sd5 var et bedre træk. } ( 30.Nd5 30...Qd6 31.Rab1 31...Qxb4 32.Rxb4 32...Ka8 33.g4 33...Ng3+ 34.Kg2 34...Bxd5 ) 30...Rc8 31.Rdc1 Rc6 32.Rd1 { (-2.51 → -3.89) Unøjagtighed. 32. Txc6 var et bedre træk. } ( 32.Rxc6 32...Qxc6 ) 32...Rc4 33.Qb3 Rc2 34.Re1 { (-4.07 → -8.27) Fejl. 34. Sd4 var det bedste træk. } ( 34.Nd4 34...Ng3+ ) 34...Rxe2 35.Rxe2 Ng3+ 36.Kg1 Nxe2+ 37.Kf1 Nd4 38.Qd3 Qc4 39.Qxc4 Rxc4  0-1
