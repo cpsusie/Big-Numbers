@@ -189,4 +189,18 @@ String toString(ID3_TextEnc enc) {
   CASESTR(ASCII       );
   default:return format(_T("Unknown encoding:%d"), enc);
   }
+#undef CASESTR
+}
+
+String toString(ID3_V2Spec spec) {
+#define CASESTR(spec) case spec: return _T(#spec)
+  switch(spec) {
+  CASESTR(ID3V2_UNKNOWN);
+  CASESTR(ID3V2_2_0    );
+  CASESTR(ID3V2_2_1    );
+  CASESTR(ID3V2_3_0    );
+  CASESTR(ID3V2_4_0    );
+  default:return format(_T("Unknown spec:%d"), spec);
+  }
+#undef CASESTR
 }

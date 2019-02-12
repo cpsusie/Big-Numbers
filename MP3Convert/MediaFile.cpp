@@ -71,23 +71,6 @@ StringField::StringField(const ID3_Field *field)
   }
 }
 
-String StringField::toString() const {
-  const size_t n = getNumItems();
-  switch(n) {
-  case 0: return EMPTYSTRING;
-  case 1:
-    return format(_T("\"%s\""), getStrings()[0].toString().cstr());
-  default:
-    { const Array<EncodedString> &ea = getStrings();
-      String result;
-      for(size_t i = 0; i < ea.size(); i++) {
-        result += format(_T("\"%s\"\n"), ea[i].toString().cstr());
-      }
-      return result;
-    }
-  }
-}
-
 void FieldWithData::allocate(const ID3_Field *field) {
   m_fieldId   = field->GetID();
   m_fieldType = field->GetType();
@@ -158,26 +141,25 @@ FieldWithData &FieldWithData::operator=(const FieldWithData &src) {
   return *this;
 }
 
-String FieldWithData::toString() const {
+String FieldWithData::toString(bool hexdump) const {
   String result = format(_T("%-15s:%-10s"), ::toString(getId()).cstr(), ::toString(getType()).cstr());
   switch(getType()) {
   case ID3FTY_INTEGER   :
     result += format(_T(":v=%u"), getInt());
     break;
   case ID3FTY_BINARY    :
-    result += format(_T(":size=%zu"), getBinData().size());
+    { const ByteArray &ba = getBinData();
+      result += format(_T(":size=%zu\n"), ba.size());
+      if(hexdump) {
+        result += format(_T("\n%s"), hexdumpString(ba.getData(), ba.size()).cstr());
+      }
+    }
     break;
   case ID3FTY_TEXTSTRING:
-    { const StringField &f = getStringData();
-      const size_t       n = f.getNumItems();
-      result += format(_T(", encoding:%s, n=%zu"), ::toString(f.getEncoding()).cstr(), n);
-      if(n <= 1) {
-        result += _T(", ");
-        result += f.toString();
-      } else {
-        result += _T("\n");
-        result += indentString(f.toString(), 10);
-      }
+    { const StringField          &f = getStringData();
+      const Array<EncodedString> &a = f.getStrings();
+      result += format(_T(", encoding:%s, n=%zu"), ::toString(f.getEncoding()).cstr(), a.size());
+      result += f.getStrings().toString(HexStringifier<EncodedString>(hexdump), _T(" \n"));
     }
     break;
   case ID3FTY_NUMTYPES  :
@@ -190,6 +172,7 @@ String FieldWithData::toString() const {
 Frame::Frame(const ID3_Frame &frame) {
   m_frameId = frame.GetID();
   m_desc    = frame.GetDescription();
+  m_spec    = frame.GetSpec();
   ID3_Frame::ConstIterator *it = frame.CreateIterator();
   const ID3_Field *field;
   while(field = it->GetNext()) {
@@ -224,7 +207,7 @@ String Frame::getTextFieldValue() const {
   if(field && (field->getType() == ID3FTY_TEXTSTRING)) {
     const StringField &sf = field->getStringData();
     if(sf.getNumItems() == 1) {
-      return sf.getStrings()[0].toString();
+      return sf.getStrings()[0].toString(false);
     }
   }
   return EMPTYSTRING;
@@ -252,15 +235,100 @@ const Frame *Tag::getFrame(ID3_FrameID id) const {
   return NULL;
 }
 
-MediaFile::MediaFile(const String &sourceURL) : m_sourceURL(sourceURL) {
+UINT Tag::getFrameCount(const String &sourceURL, flags_t flags) { // static
+  ID3_Tag tag;
+
+  USES_ACONVERSION;
+  char *aname = T2A(sourceURL.cstr());
+  tag.Link(aname, flags);
+  return tag.NumFrames();
+}
+
+MediaFile::MediaFile(const String &sourceURL, flags_t flags) : m_sourceURL(sourceURL) {
   ID3_Tag tag;
   USES_ACONVERSION;
   char *aname = T2A(m_sourceURL.cstr());
-  tag.Link(aname);
+  tag.Link(aname, flags);
   m_fileSize = tag.GetFileSize();
   m_tag.load(tag);
 }
 
 bool operator==(const MediaFile &mf1,const MediaFile &mf2) {
   return mf1.getSourceURL().equalsIgnoreCase(mf2.getSourceURL());
+}
+
+static void setTextFrameValue(ID3_Frame &frame, const EncodedString &es) {
+  ID3_Field *intfld = frame.GetField(ID3FN_TEXTENC);
+  intfld->Set((uint32)es.getEncoding());
+  ID3_Field *txtfld = frame.GetField(ID3FN_TEXT);
+  txtfld->SetEncoding(es.getEncoding());
+  ByteArray tmp(es);
+  tmp.appendZeroes(2);
+  if(es.getEncoding() == ID3TE_ISO8859_1) {
+    txtfld->Set((char*)tmp.getData());
+  } else {
+    txtfld->Set((unicode_t*)tmp.getData());
+  }
+}
+
+static void setTextField(ID3_Tag &tag, ID3_FrameID frameId, const String &s) {
+  if(s.isEmpty()) return;
+  const EncodedString es(s);
+  ID3_Frame *frame = new ID3_Frame(frameId);
+  tag.AttachFrame(frame);
+  setTextFrameValue(*frame, es);
+}
+
+MediaFile &MediaFile::removeAllFrames(flags_t flags) {
+  ID3_Tag tag;
+
+  USES_ACONVERSION;
+  char *aname = T2A(m_sourceURL.cstr());
+  tag.Link(aname, flags);
+  ID3_Tag::Iterator *tagIt = tag.CreateIterator();
+  const ID3_Frame *fr;
+  int removeCount = 0;
+  while(fr = tagIt->GetNext()) {
+    tag.RemoveFrame(fr);
+    removeCount++;
+  }
+  if(removeCount > 0) {
+    tag.Update(flags);
+  }
+  return *this;
+}
+
+void MediaFile::updateMobileFrames(const MobileMediaFile &mmf) {
+  const UINT frameCount = Tag::getFrameCount(m_sourceURL);
+  if(frameCount > 0) {
+    _ftprintf(stderr, _T("Skipping %s. Has %u frames\n"), m_sourceURL.cstr(), frameCount);
+    return;
+  }
+
+  USES_CONVERSION;
+  char *aname = T2A(m_sourceURL.cstr());
+  ID3_Tag tag;
+  tag.Link(aname, ID3TT_PREPENDED);
+//  tag.SetSpec()
+  // TPE1 */ ID3FID_LEADARTIST,        /**< Lead performer(s)/Soloist(s) */
+  // TALB */ ID3FID_ALBUM,             /**< Album/Movie/Show title */
+  // TRCK */ ID3FID_TRACKNUM,          /**< Track number/Position in set */
+  // TIT2 */ ID3FID_TITLE,             /**< Title/songname/content description */
+  // TYER */ ID3FID_YEAR,              /**< Year */
+  // TCON */ ID3FID_CONTENTTYPE,       /**< Content type */
+
+  setTextField(tag, ID3FID_LEADARTIST, mmf.getArtist());
+  setTextField(tag, ID3FID_ALBUM     , mmf.getAlbum() );
+  setTextField(tag, ID3FID_TITLE     , mmf.getTitle() );
+  const int track = mmf.getTrack();
+  if(track > 0) {
+    setTextField(tag, ID3FID_TRACKNUM, format(_T("%d"), track));
+  }
+  const int year = mmf.getYear();
+  if(year > 1900) {
+    setTextField(tag, ID3FID_YEAR    , format(_T("%d"), year));
+  }
+  const String contentType = Tag::s_genreMap.getPackedText(trim(mmf.getContentType()));
+  setTextField(tag, ID3FID_CONTENTTYPE, contentType);
+  tag.Update(ID3TT_PREPENDED);
 }

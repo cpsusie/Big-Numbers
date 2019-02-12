@@ -6,11 +6,6 @@
 #include "mp3tag.h"
 #include "EncodedString.h"
 
-String toString(ID3_FrameID   id  );
-String toString(ID3_FieldID   id  );
-String toString(ID3_FieldType type);
-String toString(ID3_TextEnc   enc );
-
 class GenreMap : public StringIHashMap<int> {
 private:
   // return true, if str is in format "(<ddd>)", and set index=ddd; else return false;
@@ -28,6 +23,17 @@ public:
   String getDisplayText(const String &str) const;
   // if(isIndexStr(str, index) || ((index = getIndex(str)) && ISVALIDGENREINDEX(index)) then return "(<index>)"; else return str;
   String getPackedText( const String &str) const;
+};
+
+template<class T> class HexStringifier : public AbstractStringifier<T> {
+private:
+  const bool m_hexdump;
+public:
+  HexStringifier(bool hexdump) : m_hexdump(hexdump) {
+  }
+  String toString(const T &e) {
+    return e.toString(m_hexdump);
+  };
 };
 
 class StringField {
@@ -51,7 +57,6 @@ public:
   inline size_t getNumItems() const {
     return m_esa.size();
   }
-  String toString() const;
 };
 
 class FieldWithData {
@@ -99,13 +104,14 @@ public:
     checkType(__TFUNCTION__, ID3FTY_TEXTSTRING);
     return *m_stringField;
   }
-  String toString() const;
+  String toString(bool hexdump) const;
 };
 
 class Frame {
 private:
   ID3_FrameID          m_frameId;
   String               m_desc;
+  ID3_V2Spec           m_spec;
   Array<FieldWithData> m_fieldArray;
 public:
   Frame(const ID3_Frame &frame);
@@ -114,6 +120,9 @@ public:
   }
   inline const String &getDescription() const {
     return m_desc;
+  }
+  inline ID3_V2Spec getSpec() const {
+    return m_spec;
   }
   inline const Array<FieldWithData> &getFieldArray() const {
     return m_fieldArray;
@@ -124,10 +133,10 @@ public:
   const FieldWithData *findFieldById(  ID3_FieldID   id)   const;
   const FieldWithData *findFieldByType(ID3_FieldType type) const;
 
-  String toString() const {
-    return format(_T("Frame(Id=%d(%s), desc=%s)\n")
-                 ,m_frameId, ::toString(getId()).cstr(), m_desc.cstr())
-         + indentString(m_fieldArray.toString(_T("\n")),2);
+  String toString(bool hexdump) const {
+    return format(_T("Frame(Id=%d(%s), desc=%s, spec=%s)\n")
+                 ,m_frameId, ::toString(getId()).cstr(), m_desc.cstr(), ::toString(m_spec).cstr())
+         + indentString(m_fieldArray.toString(HexStringifier<FieldWithData>(hexdump),_T("\n ")), 3);
   }
   // return value of first field with getId == ID3FN_TEXT if any; else EMPTYSTRING
   String getTextFieldValue() const;
@@ -141,11 +150,14 @@ public:
 class Tag {
 private:
   Array<Frame> m_frameArray;
+  ID3_V2Spec   m_spec;
+
 public:
   static const GenreMap s_genreMap;
   inline Tag() {
   }
   inline Tag(const ID3_Tag &tag) {
+    m_spec = tag.GetSpec();
     load(tag);
   }
   void load(const ID3_Tag &tag);
@@ -168,15 +180,18 @@ public:
     const Frame *frame = getFrame(id);
     return frame ? frame->getBinaryFieldValue() : NULL;
   }
-  inline String toString() const {
-    return String(_T("Tag:\n"))
-         + indentString(m_frameArray.toString(_T("\n")), 2);
+  static UINT getFrameCount(const String &sourceURL, flags_t flags = (flags_t)ID3TT_ALL);
+  inline String toString(bool hexdump) const {
+    return format(_T("Tag. Spec:%s\n"), ::toString(m_spec).cstr())
+         + indentString(m_frameArray.toString(HexStringifier<Frame>(hexdump),_T("\n ")), 3);
   }
 };
 
 #define SELECT_READONLY  0x01
 #define SELECT_READWRITE 0x02
 #define SELECT_EMPTY     0x04
+
+class MobileMediaFile;
 
 class MediaFile {
 private:
@@ -186,7 +201,7 @@ private:
   bool              m_protected;
 public:
   MediaFile();
-  MediaFile(const String &sourceURL);
+  MediaFile(const String &sourceURL, flags_t flags = (flags_t)ID3TT_ALL);
   inline size_t  getFileSize() const {
     return m_fileSize;
   }
@@ -200,9 +215,12 @@ public:
   inline const Tag &getTags() const {
     return m_tag;
   }
-  inline String toString() const {
-    return format(_T("%s\n%s"), getSourceURL().cstr(), getTags().toString().cstr());
+  inline String toString(bool hexdump) const {
+    return format(_T("%s\n%s"), getSourceURL().cstr(), getTags().toString(hexdump).cstr());
   }
+
+  MediaFile &removeAllFrames(flags_t flags = (flags_t)ID3TT_ALL);
+  void updateMobileFrames(const MobileMediaFile &mmf);
 };
 
 bool operator==(const MediaFile &f1,const MediaFile &f2);

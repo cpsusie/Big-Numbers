@@ -3,14 +3,15 @@
 #include <ByteMemoryStream.h>
 #include "MediaFile.h"
 
-#define PROCESS_NONCONVERTED             0x01
-#define PROCESS_CONVERTED                0x02
-#define LIST_ALLTAGS                     0x04
-#define LIST_MOBILETAGS                  0x08
-#define LIST_SORT                        0x10
-#define LIST_QUOTED                      0x20
-#define LIST_VERTICALALIGN               0x40
-#define VERBOSE                          0x80
+#define PROCESS_NONCONVERTED             0x0001
+#define PROCESS_CONVERTED                0x0002
+#define LIST_ALLTAGS                     0x0004
+#define LIST_MOBILETAGS                  0x0008
+#define LIST_SORT                        0x0010
+#define LIST_QUOTED                      0x0020
+#define LIST_VERTICALALIGN               0x0040
+#define LIST_HEXDUMP                     0x0080
+#define VERBOSE                          0x0100
 
 #define PROCESS_ALL          (PROCESS_NONCONVERTED | PROCESS_CONVERTED)
 #define LISTFLAG(flag)       ((flag)&(LIST_ALLTAGS|LIST_MOBILETAGS))
@@ -70,10 +71,11 @@ MediaCollection::MediaCollection(const StringArray &fileNames, UINT flags) : m_h
 }
 
 void MediaCollection::list(UINT flags) const {
+  const bool              hexdump = (flags & LIST_HEXDUMP) != 0;
   const Array<MediaFile> &a = getMediaFileArray();
   const size_t            n = a.size();
   for(size_t i = 0; i < n; i++) {
-    _tprintf(_T("%s"), a[i].toString().cstr());
+    _tprintf(_T("%s"), a[i].toString(hexdump).cstr());
   }
 }
 
@@ -85,7 +87,8 @@ public:
   MobileMediaCollection(const MediaCollection &mc);
   // if(filename == EMPTYSTRING) read from stdin
   MobileMediaCollection(const String &fileName);
-  void list(UINT flags, MobileMediaFileComparator &cmp);
+  void list(   UINT flags, MobileMediaFileComparator &cmp);
+  void putTags(UINT flags);
 };
 
 MobileMediaCollection::MobileMediaCollection(const MediaCollection &mc) {
@@ -149,6 +152,27 @@ void MobileMediaCollection::list(UINT flags, MobileMediaFileComparator &cmp) {
   }
 }
 
+void MobileMediaCollection::putTags(UINT flags) {
+  if(flags&LIST_ALLTAGS) {
+    throwException(_T("Cannot copy all tags to mp3-files"));
+  }
+  const size_t n = size();
+  for(size_t i = 0; i < n; i++) {
+    const MobileMediaFile &mmf = (*this)[i];
+    try {
+      if(flags & VERBOSE) {
+        _ftprintf(stderr, _T("Processing %s                               \r"), mmf.getSourceURL().cstr());
+      }
+      const String          &url      = mmf.getSourceURL();
+      const String           origName = FileNameSplitter(url).getFileName();
+      const String           newUrl   = FileNameSplitter(url).setFileName(origName+_T("-converted")).getFullPath();
+      MediaFile(newUrl).removeAllFrames().updateMobileFrames(mmf);
+    } catch(Exception e) {
+      _ftprintf(stderr, _T("%s:%s\n"), mmf.getSourceURL().cstr(), e.what());
+    }
+  }
+}
+
 static void listTags(const MediaCollection &mc, UINT flags, MobileMediaFileComparator &cmp) {
   switch(LISTFLAG(flags)) {
   case LIST_ALLTAGS   :
@@ -161,10 +185,6 @@ static void listTags(const MediaCollection &mc, UINT flags, MobileMediaFileCompa
   default             :
     throwException(_T("Unknown flags combination:%04X"), flags);
   }
-}
-
-static void copyTags(const StringArray &fileNames) {
-  throwException(_T("copyTags not implemented yet"));
 }
 
 static void extractImages(const MediaCollection &mc, UINT flags) {
@@ -193,7 +213,7 @@ static void extractImages(const MediaCollection &mc, UINT flags) {
 typedef enum {
   CMD_UNKNOWN
  ,CMD_LIST
- ,CMD_COPYTAGS
+ ,CMD_PUTTAGS
  ,CMD_EXTRACTIMAGE
 } Command;
 
@@ -251,6 +271,7 @@ static StringArray readFileNames(const String &fileName) {
       fclose(input);
       input = NULL;
     }
+    result.sort(alphasort);
     return result;
   } catch(...) {
     if(input && (input != stdin)) {
@@ -262,27 +283,30 @@ static StringArray readFileNames(const String &fileName) {
 }
 
 static void usage() {
-  _ftprintf(stderr,_T("Usage:mp3Convert [-L[a|v]|-I] [-s[fields]] [-rv] [-p[c]] [-m[textfile]|-f[textfile]|files....]\n"
-                      "      -L[a] : List tags.\n"
-                      "         a  : list All tags.\n"
-                      "              Default: List only mobile tags.\n"
-                      "         v  : Vertical align columns. Only aplicable without -a-option.\n"
-                      "      -I    : Extract image if any. Image-files are saved in subDir images, with filename = sourcefile, extension .bmp\n"
+  _ftprintf(stderr,_T("Usage:mp3Convert [-L[a|A|vq]|-I|-P] [-s[fields]] [-rv] [-p[c]] [-m[textfile]|-f[textfile]|files....]\n"
+                      "      -L[a|A]: List tags.\n"
+                      "         a   : List All tags.\n"
+                      "         A   : List All tags, wih hexdump of binary- and text fields"
+                      "               Default: List only mobile tags.\n"
+                      "         v   : Vertical align columns. Only aplicable without -a or -A-option.\n"
+                      "         q   : Strings are sourrounded by \"...\", and \" are escaped with \"\\\" (like C-strings).\n"
+                      "      -I     : Extract image if any. Image-files are saved in subDir images, with filename = sourcefile, extension .bmp\n"
+                      "      -P     : Put mobile-tags, read from input to corresponding mp3-file, with filename extended with \"-converted\" (assumed to exist).\n"
                       "      -s[fields]: Sort list by artist,album,track,title,filename, before print to stdout. Only available for -L option.\n"
-                      "              Sort order can be changed by specifying fields:[a=artist, l=album, n=trackno, t=title, y=year, g=genre].\n"
-                      "              The last field, to compare, if no other fields differ, is always fileName.\n"
-                      "      -q    : Strings are sourrounded by \"...\", and \" are escaped with \"\\\" (like C-strings).\n"
-                      "      -r    : Recurse subdirs.\n"
-                      "      -p[c] : Without 'c', then process all files.\n"
-                      "              If 'c' specified, process only converted.\n"
-                      "              Default: Process only non converted filed (ie. filenames not ending with \"-converted\".\n"
-                      "      -v    : Verbose\n"
+                      "               Sort order can be changed by specifying fields:[a=artist, l=album, n=trackno, t=title, y=year, g=genre].\n"
+                      "               The last field, to compare, if no other fields differ, is always fileName.\n"
+                      "               Only aplicable with -L option.\n"
+                      "      -r     : Recurse subdirs.\n"
+                      "      -p[c]  : Without 'c', then process all files.\n"
+                      "               If 'c' specified, process only converted.\n"
+                      "               Default: Process only non converted filed (ie. filenames not ending with \"-converted\".\n"
+                      "      -v     : Verbose\n"
                       "      -f[textfile]: File contains filenames to process.\n"
-                      "              If textfile if not specified, stdin is used. Input can be generated by grep -H or -h.\n"
-                      "              Ex: grep -hr ABBA names.txt | cut -d: -f1 | mp3Convert -L -f\n"
-                      "              will process all files, containing the text \"ABBA\", assuming that names.txt contains lines, with filename:.....ABBA\n"
+                      "               If textfile if not specified, stdin is used. Input can be generated by grep -H or -h.\n"
+                      "               Ex: grep -hr ABBA names.txt | cut -d: -f1 | mp3Convert -L -f\n"
+                      "               will process all files, containing the text \"ABBA\", assuming that names.txt contains lines, with filename:.....ABBA\n"
                       "      -m[textfile]: Read textfile, assumed to be generated with command mp3convert -L -q...\n"
-                      "              If textfile is not specified, stdin is used.\n"
+                      "               If textfile is not specified, stdin is used.\n"
                       )
            );
   exit(-1);
@@ -308,20 +332,33 @@ int _tmain(int argc, TCHAR **argv) {
       switch(*cp) {
       case 'L':
         SETCOMMAND(CMD_LIST);
-        switch(cp[1]) {
-        case 'a':
-          flags &= ~LIST_MOBILETAGS;
-          flags |= LIST_ALLTAGS;
+        for(cp++; *cp; cp++) {
+          switch(*cp) {
+          case 'A':
+            flags |= LIST_HEXDUMP;
+            // NB! continue case
+          case 'a':
+            flags &= ~LIST_MOBILETAGS;
+            flags |= LIST_ALLTAGS;
+            continue;
+          case 'v':
+            flags |= LIST_VERTICALALIGN;
+            continue;
+          case 'q':
+            flags |= LIST_QUOTED;
+            continue;
+          default :
+            usage();
+          }
           break;
-        case 'v':
-          flags |= LIST_VERTICALALIGN;
-          break;
-        default : continue;
         }
         break;
       case 'I':
         SETCOMMAND(CMD_EXTRACTIMAGE);
-        continue;
+        break;
+      case 'P':
+        SETCOMMAND(CMD_PUTTAGS);
+        break;
       case 'm':
         fileIsNamesOnly = false;
         fileName        = cp+1;
@@ -346,9 +383,6 @@ int _tmain(int argc, TCHAR **argv) {
           if(comparator.isEmpty()) comparator.setDefault();
         }
         break;
-      case 'q':
-        flags |= LIST_QUOTED;
-        continue;
       case 'p':
         switch(cp[1]) {
         case 'c':
@@ -371,6 +405,13 @@ int _tmain(int argc, TCHAR **argv) {
       break;
     }
   }
+  if((flags & LIST_ALLTAGS) && (flags & LIST_VERTICALALIGN)) {
+    usage();
+  }
+  if((cmd != CMD_LIST) && (flags & LIST_SORT)) {
+    usage();
+  }
+
   try {
 
     StringArray fileNames;
@@ -382,8 +423,11 @@ int _tmain(int argc, TCHAR **argv) {
     } else {
       MobileMediaCollection mmc(fileName);
       switch(cmd) {
-      case CMD_LIST:
+      case CMD_LIST   :
         mmc.list(flags, comparator);
+        break;
+      case CMD_PUTTAGS:
+        mmc.putTags(flags);
         break;
       default:
         usage();
@@ -394,9 +438,6 @@ int _tmain(int argc, TCHAR **argv) {
     if(!allDone) {
       MediaCollection mc(fileNames, flags);
       switch(cmd) {
-      case CMD_COPYTAGS    :
-        copyTags(fileNames);
-        break;
       case CMD_LIST        :
         listTags(mc, flags, comparator);
         break;

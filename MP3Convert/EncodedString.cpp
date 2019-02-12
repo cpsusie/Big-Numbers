@@ -28,7 +28,33 @@ String utf8_to_String(const char *b, size_t len) { // len in bytes
   return result;
 }
 
-String EncodedString::toString() const {
+static bool isAscii(const String &str) {
+  const size_t len = str.length();
+  if(len == 0) return true;
+  for(const TCHAR *cp = str.cstr(), *endp = cp + len; cp < endp;) {
+    if(*(cp++) > 0xff) {
+      return false;
+    }
+  }
+  return true;
+}
+EncodedString::EncodedString(const String &str) {
+  if(isAscii(str)) {
+    USES_ACONVERSION;
+    char *asciiText = T2A(str.cstr());
+    m_encoding = ID3TE_ISO8859_1;
+    setData((BYTE*)asciiText, str.length());
+  } else {
+    m_encoding = ID3TE_UTF16;
+    setData((BYTE*)str.cstr(), str.length() * sizeof(TCHAR));
+    const wchar_t *endp = (wchar_t*)(getData() + size());
+    for(wchar_t *cp = (wchar_t*)getData(); cp < endp; cp++) {
+      *cp = _byteswap_ushort(*cp);
+    }
+  }
+}
+
+String EncodedString::toString(bool hexdump) const {
   if(isEmpty()) {
     return EMPTYSTRING;
   }
@@ -39,8 +65,8 @@ String EncodedString::toString() const {
     break;
   case ID3TE_UTF16  :
     { ByteArray tmp(*this);
-      const USHORT *endp = (USHORT*)(tmp.getData() + tmp.size());
-      for(USHORT *cp = (USHORT*)tmp.getData(); cp < endp; cp++) {
+      const wchar_t *endp = (wchar_t*)(tmp.getData() + tmp.size());
+      for(wchar_t *cp = (wchar_t*)tmp.getData(); cp < endp; cp++) {
         *cp = _byteswap_ushort(*cp);
       }
       tmp.appendZeroes(2);
@@ -53,7 +79,7 @@ String EncodedString::toString() const {
     }
     break;
 //  case ID3TE_UTF16BE:
-  case ID3TE_ASCII:
+  case ID3TE_ISO8859_1:
     { const size_t len = size();
       char tmp[1024], *buf = (len < sizeof(tmp)) ? tmp : new char[len + 1];
       strncpy(buf, (char*)getData(), len); buf[len] = 0;
@@ -65,5 +91,11 @@ String EncodedString::toString() const {
     result = format(_T("Unknown encoding:%d"), m_encoding);
     break;
   }
-  return result;
+  if(!hexdump) {
+    return result;
+  } else {
+    return format(_T("\"%s\"\n%s")
+                 ,result.cstr()
+                 ,indentString(hexdumpString(getData(), size()),1).cstr());
+  }
 }
