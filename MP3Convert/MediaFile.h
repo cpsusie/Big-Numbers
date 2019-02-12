@@ -271,6 +271,7 @@ public:
   const String &getContentType() const {
     return m_contentType;
   }
+  String buildPath() const;
   String toString(MobileMediaField field, bool addQuotes) const;
   String toString(bool addQuotes=true, const UINT columnWidth[6] = s_defaultColumnWidth) const;
   static const UINT *getDefaultColumnWidth() {

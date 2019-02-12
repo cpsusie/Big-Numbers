@@ -115,3 +115,47 @@ String MobileMediaFile::toString(bool addQuotes, const UINT columnWidth[6]) cons
                ,columnWidth[5],Q(m_contentType)
                );
 };
+
+static String replaceIllegalNameChars(const String &s) {
+  String result = s;
+  result.replace('\\', ' ')
+    .replace('/', ' ')
+    .replace(':', '_')
+    .replace('.', '_')
+    .replace('|', '_')
+    .replace('*', '_')
+    .replace('?', '_')
+    .replace('"', _T(""))
+    .replace('<', '_')
+    .replace('>', '_');
+  for(size_t l = result.length();;) {
+    result.replace(_T("__"), '_').replace(_T("  "),_T(" "));
+    result.replace(_T("_ "), ' ').replace(_T(" _"), ' ');
+    result.trim();
+    if((result.length() > 0) && (result.last() == '_')) {
+      result.removeLast();
+    }
+    size_t nl = result.length();
+    if(nl == l) break;
+    l = nl;
+  }
+  return result;
+}
+
+String MobileMediaFile::buildPath() const {
+  const String artist = replaceIllegalNameChars(m_artist);
+  const String album  = replaceIllegalNameChars(m_album );
+  const String title  = replaceIllegalNameChars(m_title );
+  String result = artist;
+  if(result.isEmpty()) {
+    result = album;
+  } else if(!album.isEmpty()) {
+    result = FileNameSplitter::getChildName(result, album);
+  }
+  if(result.isEmpty()) {
+    result = title;
+  } else if(!title.isEmpty()) {
+    result = FileNameSplitter::getChildName(result, title);
+  }
+  return result;
+}

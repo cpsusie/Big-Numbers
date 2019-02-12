@@ -16,90 +16,130 @@
 #define PROCESS_ALL          (PROCESS_NONCONVERTED | PROCESS_CONVERTED)
 #define LISTFLAG(flag)       ((flag)&(LIST_ALLTAGS|LIST_MOBILETAGS))
 
-
-class MP3FileHandler {
-private:
-  const UINT       m_flags;
-  Array<MediaFile> m_mediaFileArray;
-  static bool isConvertedFileName(const String &name);
-public:
-  MP3FileHandler(UINT flags) : m_flags(flags) {
-  }
-  void handleFileName(const String &name);
-  inline const Array<MediaFile> &getMediaFileArray() const {
-    return m_mediaFileArray;
-  }
-};
-
-bool MP3FileHandler::isConvertedFileName(const String &fileName) { // static
+static bool isConvertedFileName(const String &name) {
+  const String        fileName = FileNameSplitter(name).getFileName();
   static const String conv(_T("-converted"));
   return right(fileName, conv.length()) == conv;
 }
 
-void MP3FileHandler::handleFileName(const String &name) {
-  try {
-    FileNameSplitter sp(name);
-    const String fileName = sp.getFileName();
-    const bool isConvName = isConvertedFileName(fileName);
-    if( isConvName && ((m_flags&PROCESS_CONVERTED   )==0)) return;
-    if(!isConvName && ((m_flags&PROCESS_NONCONVERTED)==0)) return;
-    if(m_flags & VERBOSE) {
-      _ftprintf(stderr, _T("Processing %s                               \r"), name.cstr());
-    }
-    m_mediaFileArray.add(MediaFile(name));
-  } catch(Exception e) {
-    _ftprintf(stderr, _T("%s:%s\n"), name.cstr(), e.what());
+static bool needToProcessName(const TCHAR *stageText, const String &name, UINT flags, size_t i, size_t total) {
+  const bool isConvName = isConvertedFileName(name);
+  if( isConvName && ((flags&PROCESS_CONVERTED   )==0)) return false;
+  if(!isConvName && ((flags&PROCESS_NONCONVERTED)==0)) return false;
+  if(flags & VERBOSE) {
+    _ftprintf(stderr, _T("%-10s:[%6.1lf%%] Processing %s                          \r"), stageText, PERCENT(i,total), name.cstr());
   }
+  return true;
 }
 
-class MediaCollection {
+static String makeConvertedFileName(const String &name) {
+  if(isConvertedFileName(name)) {
+    return name;
+  }
+  FileNameSplitter sp(name);
+  return sp.setFileName(sp.getFileName() +_T("-converted")).getFullPath();
+}
+
+class MediaCollection : public Array<MediaFile> {
 private:
-  MP3FileHandler m_handler;
+  const UINT m_flags;
 public:
   MediaCollection(const StringArray &fileNames, UINT flags);
-  inline const Array<MediaFile> &getMediaFileArray() const {
-    return m_handler.getMediaFileArray();
+  void list() const;
+  void extractImages() const;
+  inline UINT getFlags() const {
+    return m_flags;
   }
-  void list(UINT flags) const;
 };
 
-MediaCollection::MediaCollection(const StringArray &fileNames, UINT flags) : m_handler(flags) {
+MediaCollection::MediaCollection(const StringArray &fileNames, UINT flags) : m_flags(flags) {
   const size_t n = fileNames.size();
   for(size_t i = 0; i < n; i++) {
-    m_handler.handleFileName(fileNames[i]);
+    const String    &sourceName = fileNames[i];
+    if(!needToProcessName(_T("Loading"), sourceName, m_flags, i, n)) {
+      continue;
+    }
+    try {
+      add(MediaFile(sourceName));
+    } catch(Exception e) {
+      _ftprintf(stderr, _T("%s:%s\n"), sourceName.cstr(), e.what());
+    }
   }
 }
 
-void MediaCollection::list(UINT flags) const {
-  const bool              hexdump = (flags & LIST_HEXDUMP) != 0;
-  const Array<MediaFile> &a = getMediaFileArray();
-  const size_t            n = a.size();
+void MediaCollection::list() const {
+  const bool   hexdump = (m_flags & LIST_HEXDUMP) != 0;
+  const size_t n       = size();
   for(size_t i = 0; i < n; i++) {
-    _tprintf(_T("%s"), a[i].toString(hexdump).cstr());
+    const MediaFile &mmf = (*this)[i];
+    _tprintf(_T("%s"), mmf.toString(hexdump).cstr());
+  }
+}
+
+void MediaCollection::extractImages() const {
+  const size_t n = size();
+  for(size_t i = 0; i < n; i++) {
+    const MediaFile &mf         = (*this)[i];
+    const String    &sourceName = mf.getSourceURL();
+    if(!needToProcessName(_T("Extracting"), sourceName, m_flags, i, n)) {
+      continue;
+    }
+    const ByteArray *binData = mf.getTags().getFrameBinary(ID3FID_PICTURE);
+    if(binData && (binData->size() > 40)) {
+      try {
+        CPicture pic;
+        pic.load(ByteMemoryInputStream(*binData));
+        if(pic.isLoaded()) {
+          const String imageFilename = FileNameSplitter(sourceName).setDir(_T("images")).setExtension(_T("bmp")).getFullPath();
+          FILE *f = MKFOPEN(imageFilename, _T("w"));
+          fclose(f);
+          pic.saveAsBitmap(imageFilename);
+        }
+      } catch(Exception e) {
+        _ftprintf(stderr, _T("%s:%s\n"), sourceName.cstr(), e.what());
+      }
+    }
   }
 }
 
 class MobileMediaCollection : public Array<MobileMediaFile> {
 private:
-  UINT m_columnWidth[6];
-  void  findColumnWidth(UINT flags);
+  const UINT m_flags;
+  UINT       m_columnWidth[6];
+  void  findColumnWidth();
 public:
   MobileMediaCollection(const MediaCollection &mc);
+  MobileMediaCollection(const StringArray &fileNames, UINT flags);
   // if(filename == EMPTYSTRING) read from stdin
-  MobileMediaCollection(const String &fileName);
-  void list(   UINT flags, MobileMediaFileComparator &cmp);
-  void putTags(UINT flags);
+  MobileMediaCollection(const String &fileName, UINT flags);
+  void list(MobileMediaFileComparator &cmp);
+  void putTags();
+  void buildMusicDirTree(const String &dstDir) const;
 };
 
-MobileMediaCollection::MobileMediaCollection(const MediaCollection &mc) {
-  const Array<MediaFile> &a = mc.getMediaFileArray();
-  const size_t            n = a.size();
+MobileMediaCollection::MobileMediaCollection(const MediaCollection &mc) : m_flags(mc.getFlags()) {
+  const size_t n = mc.size();
   for(size_t i = 0; i < n; i++) {
-    add(MobileMediaFile(a[i]));
+    add(MobileMediaFile(mc[i]));
   }
 }
 
-MobileMediaCollection::MobileMediaCollection(const String &fileName) {
+MobileMediaCollection::MobileMediaCollection(const StringArray &fileNames, UINT flags) : m_flags(flags) {
+  const size_t n = fileNames.size();
+  for(size_t i = 0; i < n; i++) {
+    const String    &sourceName = fileNames[i];
+    if(!needToProcessName(_T("Loading"), sourceName, m_flags, i, n)) {
+      continue;
+    }
+    try {
+      add(MediaFile(sourceName));
+    } catch(Exception e) {
+      _ftprintf(stderr, _T("%s:%s\n"), sourceName.cstr(), e.what());
+    }
+  }
+}
+
+MobileMediaCollection::MobileMediaCollection(const String &fileName, UINT flags) : m_flags(flags) {
   FILE *input = NULL;
   try {
     input = fileName.isEmpty() ? stdin : FOPEN(fileName, _T("r"));
@@ -120,9 +160,9 @@ MobileMediaCollection::MobileMediaCollection(const String &fileName) {
   }
 }
 
-void MobileMediaCollection::findColumnWidth(UINT flags) {
+void MobileMediaCollection::findColumnWidth() {
   memset(m_columnWidth, 0, sizeof(m_columnWidth));
-  const bool   addQuotes = (flags&LIST_QUOTED) != 0;
+  const bool   addQuotes = (m_flags&LIST_QUOTED) != 0;
   const size_t n         = size();
   for(int f = 0; f <= TAG_LASTFIELD; f++) {
     StringArray sa;
@@ -134,78 +174,72 @@ void MobileMediaCollection::findColumnWidth(UINT flags) {
   }
 }
 
-void MobileMediaCollection::list(UINT flags, MobileMediaFileComparator &cmp) {
-  if(flags&LIST_ALLTAGS) {
+void MobileMediaCollection::list(MobileMediaFileComparator &cmp) {
+  if(m_flags & LIST_ALLTAGS) {
     throwException(_T("Cannot list all tags from MobileMediaCollection"));
   }
-  if(flags&LIST_SORT) {
+  if(m_flags & LIST_SORT) {
     sort(cmp);
   }
-  if(flags & LIST_VERTICALALIGN) {
-    findColumnWidth(flags);
+  if(m_flags & LIST_VERTICALALIGN) {
+    findColumnWidth();
   }
-  const bool   addQuotes = (flags & LIST_QUOTED       ) != 0;
-  const UINT  *cw        = (flags & LIST_VERTICALALIGN) ? m_columnWidth : MobileMediaFile::getDefaultColumnWidth();
+  const bool   addQuotes = (m_flags & LIST_QUOTED       ) != 0;
+  const UINT  *cw        = (m_flags & LIST_VERTICALALIGN) ? m_columnWidth : MobileMediaFile::getDefaultColumnWidth();
   const size_t n = size();
   for(size_t i = 0; i < n; i++) {
     _tprintf(_T("%s\n"), (*this)[i].toString(addQuotes,cw).cstr());
   }
 }
 
-void MobileMediaCollection::putTags(UINT flags) {
-  if(flags&LIST_ALLTAGS) {
-    throwException(_T("Cannot copy all tags to mp3-files"));
-  }
+void MobileMediaCollection::putTags() {
   const size_t n = size();
   for(size_t i = 0; i < n; i++) {
-    const MobileMediaFile &mmf = (*this)[i];
+    const MobileMediaFile &mmf        = (*this)[i];
+    const String          &sourceName = mmf.getSourceURL();
+    if(!needToProcessName(_T("Updating"), sourceName, m_flags, i, n)) {
+      continue;
+    }
     try {
-      if(flags & VERBOSE) {
-        _ftprintf(stderr, _T("Processing %s                               \r"), mmf.getSourceURL().cstr());
-      }
-      const String          &url      = mmf.getSourceURL();
-      const String           origName = FileNameSplitter(url).getFileName();
-      const String           newUrl   = FileNameSplitter(url).setFileName(origName+_T("-converted")).getFullPath();
+      const String newUrl = makeConvertedFileName(sourceName);
       MediaFile(newUrl).removeAllFrames().updateMobileFrames(mmf);
     } catch(Exception e) {
-      _ftprintf(stderr, _T("%s:%s\n"), mmf.getSourceURL().cstr(), e.what());
+      _ftprintf(stderr, _T("%s:%s\n"), sourceName.cstr(), e.what());
     }
   }
 }
 
-static void listTags(const MediaCollection &mc, UINT flags, MobileMediaFileComparator &cmp) {
-  switch(LISTFLAG(flags)) {
-  case LIST_ALLTAGS   :
-    mc.list(flags);
-    break;
-  case LIST_MOBILETAGS:
-    { MobileMediaCollection(mc).list(flags, cmp);
-      break;
-    }
-  default             :
-    throwException(_T("Unknown flags combination:%04X"), flags);
+static void copyFile(const String &srcName, const String &dstName) {
+  ByteOutputFile dst(dstName);
+  ByteInputFile  src(srcName);
+  BYTE buffer[4096];
+  intptr_t n;
+  while((n = src.getBytes(buffer, sizeof(buffer))) > 0) {
+    dst.putBytes(buffer, n);
   }
 }
 
-static void extractImages(const MediaCollection &mc, UINT flags) {
-  const Array<MediaFile> &a = mc.getMediaFileArray();
-  const size_t            n = a.size();
+void MobileMediaCollection::buildMusicDirTree(const String &dstDir) const {
+  const size_t n = size();
   for(size_t i = 0; i < n; i++) {
-    const MediaFile &mf = a[i];
-    const ByteArray *binData = mf.getTags().getFrameBinary(ID3FID_PICTURE);
-    if(binData && (binData->size() > 40)) {
-      try {
-        CPicture pic;
-        pic.load(ByteMemoryInputStream(*binData));
-        if(pic.isLoaded()) {
-          const String imageFilename = FileNameSplitter(mf.getSourceURL()).setDir(_T("images")).setExtension(_T("bmp")).getFullPath();
-          FILE *f = MKFOPEN(imageFilename, _T("w"));
-          fclose(f);
-          pic.saveAsBitmap(imageFilename);
-        }
-      } catch(Exception e) {
-        _ftprintf(stderr, _T("%s:%s\n"), mf.getSourceURL().cstr(), e.what());
+    const MobileMediaFile &mmf        = (*this)[i];
+    const String          &sourceName = mmf.getSourceURL();
+    if(!needToProcessName(_T("Copying"), sourceName, m_flags, i, n)) {
+      continue;
+    }
+    try {
+      const String pathAndName = mmf.buildPath();
+      if(pathAndName.isEmpty()) {
+        throwException(_T("No frames to build path"));
       }
+      const String dstPath = FileNameSplitter::getChildName(dstDir, pathAndName);
+      const String dstName = FileNameSplitter(dstName).setExtension(FileNameSplitter(sourceName).getExtension()).getFullPath();
+      if(ACCESS(dstName,0) == 0) {
+        throwException(_T("%s already exist"), dstName.cstr());
+      }
+      copyFile(sourceName, dstName);
+    } catch(Exception e) {
+      _ftprintf(stderr, _T("%s:%s\n"), sourceName.cstr(), e.what());
     }
   }
 }
@@ -214,6 +248,7 @@ typedef enum {
   CMD_UNKNOWN
  ,CMD_LIST
  ,CMD_PUTTAGS
+ ,CMD_MAKETREE
  ,CMD_EXTRACTIMAGE
 } Command;
 
@@ -283,7 +318,7 @@ static StringArray readFileNames(const String &fileName) {
 }
 
 static void usage() {
-  _ftprintf(stderr,_T("Usage:mp3Convert [-L[a|A|vq]|-I|-P] [-s[fields]] [-rv] [-p[c]] [-m[textfile]|-f[textfile]|files....]\n"
+  _ftprintf(stderr,_T("Usage:mp3Convert [-L[a|A|vq]|-I|-P|-Tdir] [-s[fields]] [-rv] [-p[c]] [-m[textfile]|-f[textfile]|files....]\n"
                       "      -L[a|A]: List tags.\n"
                       "         a   : List All tags.\n"
                       "         A   : List All tags, wih hexdump of binary- and text fields"
@@ -292,6 +327,7 @@ static void usage() {
                       "         q   : Strings are sourrounded by \"...\", and \" are escaped with \"\\\" (like C-strings).\n"
                       "      -I     : Extract image if any. Image-files are saved in subDir images, with filename = sourcefile, extension .bmp\n"
                       "      -P     : Put mobile-tags, read from input to corresponding mp3-file, with filename extended with \"-converted\" (assumed to exist).\n"
+
                       "      -s[fields]: Sort list by artist,album,track,title,filename, before print to stdout. Only available for -L option.\n"
                       "               Sort order can be changed by specifying fields:[a=artist, l=album, n=trackno, t=title, y=year, g=genre].\n"
                       "               The last field, to compare, if no other fields differ, is always fileName.\n"
@@ -319,6 +355,7 @@ int _tmain(int argc, TCHAR **argv) {
   bool                      recurse           = false;
   bool                      fileIsNamesOnly   = false;
   const TCHAR              *fileName          = NULL;
+  String                    dstDir;
   UINT                      flags             = PROCESS_NONCONVERTED | LIST_MOBILETAGS;
   MobileMediaFileComparator comparator;
 
@@ -358,6 +395,11 @@ int _tmain(int argc, TCHAR **argv) {
         break;
       case 'P':
         SETCOMMAND(CMD_PUTTAGS);
+        break;
+      case 'T':
+        SETCOMMAND(CMD_MAKETREE);
+        dstDir = cp+1;
+        if(dstDir.isEmpty()) usage();
         break;
       case 'm':
         fileIsNamesOnly = false;
@@ -421,13 +463,13 @@ int _tmain(int argc, TCHAR **argv) {
     } else if(fileIsNamesOnly) {
       fileNames = readFileNames(fileName);
     } else {
-      MobileMediaCollection mmc(fileName);
+      MobileMediaCollection mmc(fileName, flags);
       switch(cmd) {
       case CMD_LIST   :
-        mmc.list(flags, comparator);
+        mmc.list(comparator);
         break;
       case CMD_PUTTAGS:
-        mmc.putTags(flags);
+        mmc.putTags();
         break;
       default:
         usage();
@@ -436,19 +478,30 @@ int _tmain(int argc, TCHAR **argv) {
     }
 
     if(!allDone) {
-      MediaCollection mc(fileNames, flags);
       switch(cmd) {
       case CMD_LIST        :
-        listTags(mc, flags, comparator);
+        switch(LISTFLAG(flags)) {
+        case LIST_ALLTAGS   :
+          MediaCollection(fileNames, flags).list();
+          break;
+        case LIST_MOBILETAGS:
+          MobileMediaCollection(fileNames, flags).list(comparator);
+          break;
+        default             :
+          throwException(_T("Unknown flags combination:%04X"), flags);
+        }
         break;
       case CMD_EXTRACTIMAGE:
-        extractImages(mc, flags);
+        MediaCollection(fileNames, flags).extractImages();
+        break;
+      case CMD_MAKETREE    :
+        MobileMediaCollection(fileNames, flags).buildMusicDirTree(dstDir);
         break;
       default:
         usage();
       }
     }
-  } catch (Exception e) {
+  } catch(Exception e) {
     _ftprintf(stderr, _T("Exception:%s\n"), e.what());
     return -1;
   }
