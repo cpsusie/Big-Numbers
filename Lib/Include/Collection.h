@@ -266,7 +266,7 @@ public:
 
   String toString(AbstractStringifier<T> &sf, TCHAR *delimiter = _T(",")) const {
     String result = _T("(");
-    result += ((Collection<T>*)this)->getIterator().toString(sf, delim);
+    result += ((Collection<T>*)this)->getIterator().toString(sf, delimiter);
     result += _T(")");
     return result;
   }
