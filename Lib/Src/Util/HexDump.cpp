@@ -5,7 +5,7 @@
 #define LINESTRING()  (spaceString(60, _T('-'))+_T("\n"))
 
 String hexdumpString(const void *data, size_t size) {
-  String result = format(_T("hexdump(size=zu)\n"), size);
+  String result = format(_T("hexdump(size=%zu)\n"), size);
   const BYTE *p = (const BYTE*)data;
   result += LINESTRING();
   for(size_t i = 0; i < size; i += LINESIZE) {
