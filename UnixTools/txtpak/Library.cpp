@@ -15,6 +15,38 @@ void copyFile(const String &srcName, const String &dstName) {
   }
 }
 
+LibraryContent::LibraryContent(const Array<FileInfo> &list) {
+  const size_t n = list.size();
+  for(size_t i = 0; i < n; i++) {
+    const FileInfo &info = list[i];
+    put(info.m_name, info);
+  }
+}
+
+static void removeNamesWithLibPath(StringArray &names, const String &libName) {
+  const size_t n = names.size();
+  StringArray result;
+  for(size_t i = 0; i < n; i++) {
+    const String &name = names[i];
+    FileNameSplitter sp1(name), sp2(name);
+    sp2.setDir(libName);
+    if(!sp1.getAbsolutePath().equalsIgnoreCase(sp2.getAbsolutePath())) {
+      result.add(name);
+    }
+  }
+  names = result;
+}
+
+static void printAddCountMessage(size_t addCount) {
+  if(addCount == 0) {
+    printMessage(_T("No files added to library"));
+  } else if(addCount == 1) {
+    printMessage(_T("1 file added to library"));
+  } else {
+    printMessage(_T("%zu files added to library"), addCount);
+  }
+}
+
 // ---------------------------------------------------------------------------------------------------------------
 
 #define BUFSIZE 0x10000
@@ -122,6 +154,19 @@ void Library::openLib(OpenMode mode, bool checkSubDirCount) {
       libTypeError(method);
     }
     break;
+
+  case UPDATE_MODE:
+    switch(getLibType()) {
+    case LT_TEXTFILE:
+      m_libFile = FOPEN(m_libName, _T("a"));
+      break;
+    case LT_DIRWITHMAP:
+      m_guidMap = new GuidNameMap(createMapFileName(m_libName));
+      break;
+    default:
+      libTypeError(method);
+    }
+    break;
   default:
     throwInvalidArgumentException(method, _T("mode=%d"), mode);
   }
@@ -170,23 +215,69 @@ void Library::closeFile(FILE * &f, const FileInfo &info) {
   restoreTimesAndMode(info);
 }
 
+LibraryContent Library::getAllContent() {
+  prepareArgvPattern(NULL);
+  openLib(READ_MODE, false);
+  Array<FileInfo> list;
+  switch(getLibType()) {
+  case LT_TEXTFILE  :
+    getInfoListFromTextFile(&list);
+    break;
+  case LT_DIRWITHMAP:
+    getInfoListFromDir(&list);
+    break;
+  default           :
+    libTypeError(__TFILE__);
+  }
+  return LibraryContent(list);
+}
+
 // ---------------------------------------------------------------------------------------------------------------
 
 void Library::pack(const StringArray &names, bool verbose) {
   m_verbose = verbose;
   openLib(WRITE_MODE);
+  size_t addCount;
   switch(getLibType()) {
   case LT_TEXTFILE:
-    packToTextFile(names);
+    addCount = packToTextFile(names, NULL);
     break;
   case LT_DIRWITHMAP:
-    packToDir(names);
+    addCount = packToDir(names, NULL);
     break;
   default:
     libTypeError(__TFUNCTION__);
   }
+  if(m_verbose) {
+    printAddCountMessage(addCount);
+  }
   closeLib();
 }
+
+void Library::update(const StringArray &names, bool verbose) {
+  LibraryContent content = getAllContent();
+  m_verbose = verbose;
+  openLib(UPDATE_MODE);
+  size_t addCount;
+  switch(getLibType()) {
+  case LT_TEXTFILE:
+    addCount = packToTextFile(names, &content);
+    break;
+  case LT_DIRWITHMAP:
+    { StringArray names1 = names;
+      removeNamesWithLibPath(names1, getLibName());
+      addCount = packToDir(names1, &content);
+    }
+    break;
+  default:
+    libTypeError(__TFUNCTION__);
+  }
+  if(m_verbose) {
+    printAddCountMessage(addCount);
+  }
+  closeLib();
+}
+
 
 void Library::unpack(const TCHAR **argv, bool setTimestamp, bool setMode, bool verbose) {
   m_setTimestamp = setTimestamp;
@@ -261,27 +352,46 @@ void Library::checkIntegrity() {
 
 // ---------------------------------------------------------------------------------------------------------------
 
-void Library::packToTextFile(const StringArray &names) {
-  for(size_t i = 0; i < names.size(); i++) {
+size_t Library::packToTextFile(const StringArray &names, LibraryContent *content) {
+  const size_t n = names.size();
+  size_t addedCounter = 0;
+  for(size_t i = 0; i < n; i++) {
     try {
       const String &name = names[i];
       if(name.equalsIgnoreCase(m_libName)) {
         continue; // do not process library !!
       }
+      if(content && (content->get(name) != NULL)) {
+        continue;
+      }
       if(m_verbose) {
-        printMessage(_T("(%5zu/%5zu) Packing %s"), i + 1, names.size(), name.cstr());
+        printMessage(_T("(%5zu/%5zu) Packing %s"), i + 1, n, name.cstr());
       }
-      const FileInfo info(name);
-      FILE *f = FOPEN(name, _T("r"));
-      _ftprintf(m_libFile, _T("%s\n"), info.toString().cstr());
-      TCHAR line[10000];
-      while(FGETS(line, ARRAYSIZE(line), f)) {
-        _ftprintf(m_libFile, _T("%s\n"), line);
-      }
-      fclose(f);
+      addedCounter++;
+      addFileToTextFile(name);
     } catch(Exception e) {
       printException(e);
     }
+  }
+  return addedCounter;
+}
+
+void Library::addFileToTextFile(const String &name) {
+  FILE *f = NULL;
+  try {
+    const FileInfo info(name);
+    f = FOPEN(name, _T("r"));
+    _ftprintf(m_libFile, _T("%s\n"), info.toString().cstr());
+    String line;
+    while(readLine(f, line)) {
+      _ftprintf(m_libFile, _T("%s\n"), line.cstr());
+    }
+    fclose(f); f = NULL;
+  } catch(...) {
+    if(f) {
+      fclose(f); f = NULL;
+    }
+    throw;
   }
 }
 
@@ -359,29 +469,40 @@ size_t Library::getInfoListFromTextFile(Array<FileInfo> *list) const {
 
 // ---------------------------------------------------------------------------------------------------------------
 
-void Library::packToDir(const StringArray &names) {
-  for(size_t i = 0; i < names.size(); i++) {
+size_t Library::packToDir(const StringArray &names, LibraryContent *content) {
+  const size_t n = names.size();
+  size_t addedCounter = 0;
+  for(size_t i = 0; i < n; i++) {
     try {
       const String &name = names[i];
       if(name.equalsIgnoreCase(m_libName)) {
         continue; // do not process library !!
       }
-      if(m_verbose) {
-        printMessage(_T("(%5zu/%5zu) Packing %s"), i+1, names.size(), name.cstr());
+      if(content && (content->get(name) != NULL)) {
+        continue;
       }
-      const FileInfo info(name);
-      const String   extension = FileNameSplitter(name).getExtension();
-      TCHAR guid[100];
-      newGUID(guid);
-      const String packedName = FileNameSplitter(guid).setExtension(extension).getFullPath();
-      const String dstName    = FileNameSplitter::getChildName(m_libName, packedName);
-      copyFile(name, dstName);
-      m_guidMap->add(packedName, info);
+      if(m_verbose) {
+        printMessage(_T("(%5zu/%5zu) Packing %s"), i+1, n, name.cstr());
+      }
+      addedCounter++;
+      addFileToDir(name);
     } catch(Exception e) {
       printException(e);
     }
   }
   m_guidMap->save(createMapFileName(m_libName));
+  return addedCounter;
+}
+
+void Library::addFileToDir(const String &name) {
+  const FileInfo info(name);
+  const String   extension = FileNameSplitter(name).getExtension();
+  TCHAR guid[100];
+  newGUID(guid);
+  const String packedName = FileNameSplitter(guid).setExtension(extension).getFullPath();
+  const String dstName    = FileNameSplitter::getChildName(m_libName, packedName);
+  copyFile(name, dstName);
+  m_guidMap->add(packedName, info);
 }
 
 size_t Library::getUnpackCountDir() const {

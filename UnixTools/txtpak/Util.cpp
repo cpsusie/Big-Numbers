@@ -3,7 +3,7 @@
 
 bool overwriteAll = false;
 
-static int windowWidth = Console::getWindowSize().X;
+static int windowWidth = Console::getWindowSize(STD_ERROR_HANDLE).X;
 
 bool canOverWrite(const String &fname) {
   if(overwriteAll || ACCESS(fname, 0) < 0) {
