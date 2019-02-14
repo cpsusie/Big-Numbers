@@ -3,6 +3,8 @@
 #include <HashMap.h>
 #include "FileInfo.h"
 
+// mapping from <packed name> -> FileInfo
+// Packed name is generated as new guid + original files extension
 class GuidNameMap : public StringHashMap<FileInfo> {
 public:
   GuidNameMap() {

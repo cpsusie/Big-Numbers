@@ -14,12 +14,21 @@ inline DirList getAllSubDir(const String &dir) {
   return scandir(childName(dir, _T("*.*")), SELECTSUBDIR);
 }
 
+inline size_t getSubDirCount(const String &dir) {
+  return getAllSubDir(dir).size();
+}
+
 inline int alphasort(const String &s1, const String &s2) {
   return _tcsicmp(s1.cstr(), s2.cstr());
 }
 
 inline void libError(const String &line, size_t lineNumber) {
   throwException(_T("Illegal input line %zu:%s\n"), lineNumber, line.cstr());
+}
+
+inline String createMapFileName(const String &libName) {
+  return FileNameSplitter(FileNameSplitter::getChildName(libName
+       , FileNameSplitter(libName).getFileName())).setExtension(_T("txt")).getFullPath();
 }
 
 extern bool overwriteAll;
