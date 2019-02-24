@@ -105,8 +105,8 @@ CPoint CMainFrame::getMaxScroll() {
 void CMainFrame::scroll(int dx, int dy) {
   CPoint topLeft   = getView()->GetScrollPosition();
   CPoint maxScroll = getMaxScroll();
-  int newX = minMax(topLeft.x+dx,0,maxScroll.x);
-  int newY = minMax(topLeft.y+dy,0,maxScroll.y);
+  const int newX = minMax((int)topLeft.x+dx,0,(int)maxScroll.x);
+  const int newY = minMax((int)topLeft.y+dy,0,(int)maxScroll.y);
 
   getView()->ScrollToPosition(CPoint(newX,newY));
 }

@@ -1228,7 +1228,7 @@ void TextView::redrawBoth() {
 
 void TextView::setCaret(const MousePosition &p) {
   setCaretY(p.y);
-  setPreferredColumn(minMax(p.x + getLineOffset(), 0, getCurrentLineLength()));
+  setPreferredColumn(minMax((int)p.x + getLineOffset(), 0, getCurrentLineLength()));
 }
 
 void TextView::scrollDown(int count) {

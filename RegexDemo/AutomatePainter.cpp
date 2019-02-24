@@ -228,7 +228,7 @@ void AutomatePainter::paintLoopArrow(const CPoint &from, int radius, DirectionPa
   case DIR_N :
     textPos = origPos;
     textPos.x -= textSize.cx / 2;
-    textPos.x = minMax((int)textPos.x, 0, m_size.cx - textSize.cx);
+    textPos.x = minMax((int)textPos.x, 0, (int)(m_size.cx - textSize.cx));
     textPos.y -= textSize.cy;
     if(textPos.y < 0) {
       if(textPos.x < m_size.cx/2) { // Put text to the right
@@ -299,8 +299,8 @@ void AutomatePainter::paintLoopArrow(const CPoint &from, int radius, DirectionPa
     throwInvalidArgumentException(__TFUNCTION__, _T("direction="), dirPair.m_startDir);
   }
 
-  textPos.x = minMax((int)textPos.x, 1, m_size.cx - textSize.cx - 1);
-  textPos.y = minMax((int)textPos.y, 1, m_size.cy - textSize.cy - 1);
+  textPos.x = minMax((int)textPos.x, 1, (int)(m_size.cx - textSize.cx - 1));
+  textPos.y = minMax((int)textPos.y, 1, (int)(m_size.cy - textSize.cy - 1));
 
   textOutTransparentBackground(hdc, textPos, text, font, RGB(0,0,0));
 }

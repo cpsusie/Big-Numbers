@@ -6,3 +6,5 @@
 #include <Math.h>
 #include <Math/MathLib.h>
 #include <Math/Expression/Expression.h>
+
+using namespace Expr;

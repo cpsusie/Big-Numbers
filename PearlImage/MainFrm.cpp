@@ -542,8 +542,8 @@ void CMainFrame::ajourEnabling() {
 void CMainFrame::scroll(int dx, int dy) {
   const CPoint topLeft   = getView()->GetScrollPosition();
   const CPoint maxScroll = getMaxScroll();
-  const int    newX      = minMax(topLeft.x+dx,0,maxScroll.x);
-  const int    newY      = minMax(topLeft.y+dy,0,maxScroll.y);
+  const int    newX      = minMax((int)topLeft.x+dx,0,(int)maxScroll.x);
+  const int    newY      = minMax((int)topLeft.y+dy,0,(int)maxScroll.y);
   getView()->ScrollToPosition(CPoint(newX,newY));
 }
 

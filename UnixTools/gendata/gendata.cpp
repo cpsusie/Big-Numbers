@@ -98,7 +98,7 @@ int main(int argc, char **argv) {
   } else if(useExponentielSteps) {
     double t = dsign(xEnd-xStart);
     const double startMt = xStart-t;
-    const double stepFactor = root(fabs(xEnd-startMt),dmax(1,count-1)); // >= 0
+    const double stepFactor = root(fabs(xEnd-startMt),dmax(1,(int)count-1)); // >= 0
     for(UINT i = 1; i <= count; i++, t *= stepFactor) {
       printExpressionList((i<count)?(startMt+t):xEnd, expressionList);
     }
