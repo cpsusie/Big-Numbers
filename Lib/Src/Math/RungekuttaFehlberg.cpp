@@ -60,8 +60,8 @@ const Vector &RungeKuttaFehlberg::calculate(const Vector &start, Real v0end, Rea
     } else {
       s = pow(maxError * h / (2*error), 0.25);
     }
-    s = minMax(s    , 0.1 , 4.0 );
-    h = minMax(s * h, hmin, hmax);
+    s = minMax(s    , Real(0.1) , Real(4.0));
+    h = minMax(s * h, hmin      , hmax);
   }
   return m_y;
 }

@@ -173,14 +173,6 @@ extern const double M_E;
 #endif
 
 // return x if x is in I = [min(x1, x2); max(x1, x2)] else the endpoint of I nearest to x
-short   minMax(short   x, short   x1, short   x2);
-USHORT  minMax(USHORT  x, USHORT  x1, USHORT  x2);
-int     minMax(int     x, int     x1, int     x2);
-UINT    minMax(UINT    x, UINT    x1, UINT    x2);
-INT64   minMax(INT64   x, INT64   x1, INT64   x2);
-UINT64  minMax(UINT64  x, UINT64  x1, UINT64  x2);
-float   minMax(float   x, float   x1, float   x2);
-double  minMax(double  x, double  x1, double  x2);
 
 #define FLT_NAN  std::numeric_limits<float>::quiet_NaN()
 #define FLT_PINF std::numeric_limits<float>::infinity()
@@ -189,19 +181,26 @@ double  minMax(double  x, double  x1, double  x2);
 #define DBL_PINF std::numeric_limits<double>::infinity()
 #define DBL_NINF (-DBL_PINF)
 
-inline double dsign(double x           ) { return (x < 0) ? -1 : (x > 0) ? 1 : 0; }
-inline int    dmin(int    x1, int    x2) { return (x1 < x2) ? x1 : x2;}
-inline int    dmax(int    x1, int    x2) { return (x1 > x2) ? x1 : x2;}
-inline UINT   dmin(UINT   x1, UINT   x2) { return (x1 < x2) ? x1 : x2;}
-inline UINT   dmax(UINT   x1, UINT   x2) { return (x1 > x2) ? x1 : x2;}
-inline INT64  dmin(INT64  x1, INT64  x2) { return (x1 < x2) ? x1 : x2;}
-inline INT64  dmax(INT64  x1, INT64  x2) { return (x1 > x2) ? x1 : x2;}
-inline UINT64 dmin(UINT64 x1, UINT64 x2) { return (x1 < x2) ? x1 : x2;}
-inline UINT64 dmax(UINT64 x1, UINT64 x2) { return (x1 > x2) ? x1 : x2;}
-inline float  dmin(float  x1, float  x2) { return (x1 < x2) ? x1 : x2;}
-inline float  dmax(float  x1, float  x2) { return (x1 > x2) ? x1 : x2;}
-inline double dmin(double x1, double x2) { return (x1 < x2) ? x1 : x2;}
-inline double dmax(double x1, double x2) { return (x1 > x2) ? x1 : x2;}
+// assume MIN <= MAX
+template<class T> T minMax1(const T &x, const T &MIN, const T &MAX) {
+  return (x < MIN) ? MIN : (x > MAX) ? MAX : x;
+}
+
+template<class T> T minMax(T x, T x1, T x2) {
+  return (x1 <= x2) ? minMax1(x, x1, x2) : minMax1(x, x2, x1);
+}
+
+template<class T> T dsign(T x) {
+  return (x < 0) ? -1 : (x > 0) ? 1 : 0;
+}
+
+template<class T> T dmin(T x1, T x2) {
+  return (x1 < x2) ? x1 : x2;
+}
+
+template<class T> T dmax(T x1, T x2) {
+  return (x1 > x2) ? x1 : x2;
+}
 
 inline UINT   getSignificand(float  x) { return       (((*((UINT  *)(&(x))))  & 0x7fffff           ) | 0x800000);             }
 inline int    getExpo2(      float  x) { return (int)((((*((UINT  *)(&(x)))) >> 23) & 0xff ) - 0x7f);                         }

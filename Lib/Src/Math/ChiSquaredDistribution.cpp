@@ -71,5 +71,5 @@ Real chiSquaredDistribution(const Real &df, const Real &x) {
   const Real lnG    = lnGamma(df2);
   const Real diff   = lnincG - lnG;
   const Real result = (diff < -400) ? 0 : exp(diff);
-  return minMax(result, 0.0, 1.0);
+  return minMax(result, Real(0.0), Real(1.0));
 }

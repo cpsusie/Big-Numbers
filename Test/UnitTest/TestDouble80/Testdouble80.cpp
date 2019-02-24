@@ -37,7 +37,17 @@ namespace TestDouble80 {
     return expected.isZero() ? absError : absError / expected;
   }
 
-  static void testFunction(const String &name, Double80(*f80)(const Double80 &), double(*f64)(double), double low, double high) {
+  typedef double(  *D641ValFunc)(      double    );
+  typedef double(  *D642ValFunc)(      double    ,       double    );
+  typedef double(  *D641RefFunc)(const double   &);
+  typedef double(  *D642RefFunc)(const double   &, const double   &);
+
+  typedef Double80(*D801ValFunc)(      Double80  );
+  typedef Double80(*D802ValFunc)(      Double80  ,       Double80  );
+  typedef Double80(*D801RefFunc)(const Double80 &);
+  typedef Double80(*D802RefFunc)(const Double80 &, const Double80 &);
+
+  static void testFunction(const String &name, D801ValFunc f80, D641ValFunc f64, double low, double high) {
     double maxRelativeError = 0;
     const double step = (high - low) / 10;
     for(double x64 = low; x64 <= high; x64 += step) {
@@ -201,7 +211,7 @@ namespace TestDouble80 {
   testRelationD80(   r )
 
 
-static void testFunction(const String &name, Double80(*f80)(const Double80 &, const Double80 &), double(*f64)(double, double), double low1, double high1, double low2, double high2) {
+static void testFunction(const String &name, D802ValFunc f80, D642ValFunc f64, double low1, double high1, double low2, double high2) {
     double maxRelativeError = 0;
     const double step1 = (high1 - low1) / 10;
     const double step2 = (high2 - low2) / 10;
@@ -252,15 +262,52 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
     OUTPUT(_T("%-10s:Max relative error:%.16le"), name.cstr(), maxRelativeError);
   }
 
-  static double(*currentRefFunction)(const double &, const double &);
-  static double rf(double x, double y) {
-    return currentRefFunction(x, y);
+  static D641RefFunc _F64_1Arg;
+  static D642RefFunc _F64_2Arg;
+  static D801RefFunc _F80_1Arg;
+  static D802RefFunc _F80_2Arg;
+  static double f64_1Arg(double x) {
+    return _F64_1Arg(x);
+  }
+  static double f64_2Arg(double x, double y) {
+    return _F64_2Arg(x, y);
+  }
+  static Double80 f80_1Arg(Double80 x) {
+    return _F80_1Arg(x);
+  }
+  static Double80 f80_2Arg(Double80 x, Double80 y) {
+    return _F80_2Arg(x, y);
   }
 
-  static void testFunction(const String &name, Double80(*f80)(const Double80 &, const Double80 &), double(*f64)(const double &, const double &), double low1, double high1, double low2, double high2) {
-    currentRefFunction = f64;
-    testFunction(name, f80, rf, low1, high1, low2, high2);
+  static void testFunction(const String &name, D801ValFunc f80, D641RefFunc f64, double low, double high) {
+    _F64_1Arg = f64;
+    testFunction(name, f80, f64_1Arg, low, high);
   }
+  static void testFunction(const String &name, D801RefFunc f80, D641ValFunc f64, double low, double high) {
+    _F80_1Arg = f80;
+    testFunction(name, f80_1Arg, f64, low, high);
+  }
+  static void testFunction(const String &name, D801RefFunc f80, D641RefFunc f64, double low, double high) {
+    _F80_1Arg = f80;
+    _F64_1Arg = f64;
+    testFunction(name, f80_1Arg, f64_1Arg, low, high);
+  }
+
+  static void testFunction(const String &name, D802ValFunc f80, D642RefFunc f64, double low1, double high1, double low2, double high2) {
+    _F64_2Arg = f64;
+    testFunction(name, f80, f64_2Arg, low1, high1, low2, high2);
+  }
+  static void testFunction(const String &name, D802RefFunc f80, D642ValFunc f64, double low1, double high1, double low2, double high2) {
+    _F80_2Arg = f80;
+    testFunction(name, f80_2Arg, f64, low1, high1, low2, high2);
+  }
+  static void testFunction(const String &name, D802RefFunc f80, D642RefFunc f64, double low1, double high1, double low2, double high2) {
+    _F80_2Arg = f80;
+    _F64_2Arg = f64;
+    testFunction(name, f80_2Arg, f64_2Arg, low1, high1, low2, high2);
+  }
+
+#define TESTFUNC(f, ...) testFunction(_T(#f),f,f,__VA_ARGS__)
 
 	TEST_CLASS(TestDouble80) {
     public:
@@ -623,7 +670,7 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
       tofstream out(fileName);
       StreamParameters param(-1);
       size_t i;
-      Array<Double80> list;
+      CompactArray<Double80> list(count);
       for(i = 0; i < count; i++) {
         const Double80 x = randDouble80(-1, 1);
         out << param << x << endl;
@@ -813,35 +860,35 @@ static void testFunction(const String &name, Double80(*f80)(const Double80 &, co
       verify(d80 == 1000);
       for(d80 = 1000; d80 > -1000; d80--);
       verify(d80 == -1000);
-      testFunction("fmod"    , fmod   , fmod     , -60 , 60, 1.2, 10);
-      testFunction("fmod"    , fmod   , fmod     , -2.3, 2.7, -1.2, 1);
-      testFunction("fmod"    , fmod   , fmod     , -1.1e23, 1.1e23, 1.1e-10, 1.45e-6);
+      TESTFUNC(fmod     , -60    , 60     ,  1.2    , 10     );
+      TESTFUNC(fmod     , -2.3   , 2.7    , -1.2    , 1      );
+      TESTFUNC(fmod     , -1.1e23, 1.1e23 , 1.1e-10 , 1.45e-6);
 
-      testFunction("sqrt"    , sqrt   , sqrt     ,  0  ,  10);
-      testFunction("sin"     , sin    , sin      , -1  ,   1);
-      testFunction("cos"     , cos    , cos      , -1  ,   1);
-      testFunction("tan"     , tan    , tan      , -1  ,   1);
-      testFunction("asin"    , asin   , asin     , -1  ,   1);
-      testFunction("acos"    , acos   , acos     , -1  ,   1);
-      testFunction("atan"    , atan   , atan     , -1  ,   1);
-      testFunction("atan2"   , atan2  , atan2    , -2.3, 2.7, -1.2, 1);
-      testFunction("exp"     , exp    , exp      , -1, 1);
-      testFunction("exp10"   , exp10  , exp10    , -2.4,  12.2);
-      testFunction("exp2"    , exp2   , exp2     , -2.4,  12.2);
-      testFunction("log"     , log    , log      , 1e-3,   1e3);
-      testFunction("log10"   , log10  , log10    , 1e-3,   1e3);
-      testFunction("log2"    , log2   , log2     , 1e-3,   1e3);
-      testFunction("pow"     , pow    , pow      , 0.1 , 2.7e3, -2.1, 2);
+      TESTFUNC(sqrt     ,  0     ,  10    );
+      TESTFUNC(sin      , -1     ,   1    );
+      TESTFUNC(cos      , -1     ,   1    );
+      TESTFUNC(tan      , -1     ,   1    );
+      TESTFUNC(asin     , -1     ,   1    );
+      TESTFUNC(acos     , -1     ,   1    );
+      TESTFUNC(atan     , -1     ,   1    );
+      TESTFUNC(atan2    , -2.3   , 2.7    , -1.2, 1);
+      TESTFUNC(exp      , -1     ,   1    );
+      TESTFUNC(exp10    , -2.4   ,  12.2  );
+      TESTFUNC(exp2     , -2.4   ,  12.2  );
+      TESTFUNC(log      , 1e-3   ,   1e3  );
+      TESTFUNC(log10    , 1e-3   ,   1e3  );
+      TESTFUNC(log2     , 1e-3   ,   1e3  );
+      TESTFUNC(pow      , 0.1    ,   2.7e3, -2.1, 2);
       verify(pow(Double80::zero, Double80::one)  == Double80::zero);
       verify(pow(Double80::zero, Double80::zero) == Double80::one );
-      testFunction("root"    , root    , root    , 0.1 , 2.7e3, -2.1, 2);
-      testFunction("fraction", fraction, fraction, 1e-3, 1e3  );
-      testFunction("fraction", fraction, fraction, -1e3, -1e-3);
-      testFunction("floor"   , floor   , floor   , -2.3, 2.7  );
-      testFunction("ceil"    , ceil    , ceil    , -2.3, 2.7  );
-      testFunction("fabs"    , fabs    , fabs    , -1  , 1    );
-      testFunction("dmin"    , dmin    , dmin    , -2.3, 2.7, -1.2, 1);
-      testFunction("dmax"    , dmax    , dmax    , -2.3, 2.7, -1.2, 1);
+      TESTFUNC(root     , 0.1    ,   2.7e3, -2.1, 2);
+      TESTFUNC(fraction , 1e-3   ,   1e3  );
+      TESTFUNC(fraction ,-1e3    ,  -1e-3 );
+      TESTFUNC(floor    ,-2.3    ,   2.7  );
+      TESTFUNC(ceil     ,-2.3    ,   2.7  );
+      TESTFUNC(fabs     ,-1      ,   1    );
+      testFunction("dmin", dmin<Double80>    , dmin<double>, -2.3, 2.7, -1.2, 1);
+      testFunction("dmax", dmax<Double80>    , dmax<double>, -2.3, 2.7, -1.2, 1);
 
       verify(sign(Double80( 2)  ) ==  1);
       verify(sign(Double80(-2)  ) == -1);

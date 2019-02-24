@@ -7,10 +7,10 @@ namespace Expr {
 
 class CodeGenerator {
 private:
-  ParserTree             &m_tree;
-  MachineCode            *m_codeArray;
-  CodeGeneration         *m_code;
-  LabelGenerator          m_labelGen;
+  ParserTree     &m_tree;
+  MachineCode    *m_codeArray;
+  CodeGeneration *m_code;
+  LabelGenerator  m_labelGen;
 
   inline TrigonometricMode getTrigonometricMode() const {
     return m_tree.getTrigonometricMode();
@@ -30,8 +30,8 @@ private:
   void genExpression(          SNode n DCL_DSTPARAM);
   void genFLD(                 SNode n);
   void genReciprocal();
-  void genCall1Arg(            SNode arg                             , BuiltInFunction1    f, const String &name DCL_DSTPARAM);
-  void genCall1Arg(            SNode arg                             , BuiltInFunctionRef1 f, const String &name DCL_DSTPARAM);
+  void genCall1Arg(            SNode arg             , BuiltInFunction1    f, const String &name DCL_DSTPARAM);
+  void genCall1Arg(            SNode arg             , BuiltInFunctionRef1 f, const String &name DCL_DSTPARAM);
   void genCall2Arg(            SNode arg1, SNode arg2, BuiltInFunction2    f, const String &name DCL_DSTPARAM);
   void genCall2Arg(            SNode arg1, SNode arg2, BuiltInFunctionRef2 f, const String &name DCL_DSTPARAM);
 

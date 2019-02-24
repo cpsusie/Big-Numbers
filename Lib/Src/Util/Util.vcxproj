@@ -1014,7 +1014,6 @@
     <ClCompile Include="MersenneTwister32.cpp" />
     <ClCompile Include="MersenneTwister64.cpp" />
     <ClCompile Include="MessageBox.cpp" />
-    <ClCompile Include="MinMax.cpp" />
     <ClCompile Include="mkfopen.cpp" />
     <ClCompile Include="MP3Player.cpp" />
     <ClCompile Include="MyAssert.cpp" />

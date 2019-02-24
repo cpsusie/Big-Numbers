@@ -485,13 +485,6 @@ Double80 round(const Double80 &x, int dec) { // 5-rounding
   return x; // Should never come here
 }
 
-#define MINMAX1(x,MIN,MAX) (((x) < (MIN)) ? (MIN) : ((x) > (MAX)) ? (MAX) : (x))
-#define MINMAX(x,x1,x2) (((x1) <= (x2)) ? MINMAX1(x,x1,x2) : MINMAX1(x,x2,x1))
-
-Double80 minMax(const Double80 &x, const Double80 &x1, const Double80 &x2) {
-  return MINMAX(x, x1, x2);
-}
-
 ULONG Double80::hashCode() const {
   return *(ULONG*)m_value
        ^ *(ULONG*)(m_value+4)

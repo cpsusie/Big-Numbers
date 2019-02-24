@@ -448,9 +448,6 @@
     <ClCompile Include="StrStream.cpp">
       <Filter>Source Files\Stream</Filter>
     </ClCompile>
-    <ClCompile Include="MinMax.cpp">
-      <Filter>Source Files\Math</Filter>
-    </ClCompile>
     <ClCompile Include="Regex.cpp">
       <Filter>Source Files\String</Filter>
     </ClCompile>

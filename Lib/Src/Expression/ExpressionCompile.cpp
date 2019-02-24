@@ -456,9 +456,9 @@ void CodeGenerator::genExpression(SNode n DCL_DSTPARAM) {
   case PROBIT        :    GENCALL(     n, ::probitFunction        );
   case ERF           :    GENCALL(     n, ::errorFunction         );
   case INVERF        :    GENCALL(     n, ::inverseErrorFunction  );
-  case SIGN          :    GENCALL(     n, ::dsign                 );
-  case MAX           :    GENCALL(     n, ::dmax                  );
-  case MIN           :    GENCALL(     n, ::dmin                  );
+  case SIGN          :    GENCALL(     n, ::dsign<Real>           );
+  case MAX           :    GENCALL(     n, ::dmax<Real>            );
+  case MIN           :    GENCALL(     n, ::dmin<Real>            );
   case RAND          :    GENCALL(     n, ::randReal              );
   case NORMRAND      :    GENCALL(     n, ::randomGaussian        );
   case POLY          :    GENPOLY(     n);

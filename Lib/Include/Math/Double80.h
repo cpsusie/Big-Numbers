@@ -3308,10 +3308,10 @@ inline Double80 tanh(const Double80 &x) {
   return (e1 - e2)/(e1+e2);
 }
 inline Double80 acosh(const Double80 &x) {
-  return log(x + sqrt(x*x-1));
+  return log(x + sqrt(x*x-1.0));
 }
 inline Double80 asinh(const Double80 &x) {
-  return log(x + sqrt(x*x+1));
+  return log(x + sqrt(x*x+1.0));
 }
 inline Double80 atanh(const Double80 &x) {
   return log(sqrt((1.0+x)/(1.0-x)));
@@ -3322,19 +3322,10 @@ inline Double80 hypot(const Double80 &x, const Double80 &y) {
 Double80 fraction(   const Double80 &x);
 Double80 round(      const Double80 &x, int prec = 0);
 
-inline int sign(const Double80 &x) {
+inline int sign(const Double80 x) {
   return x.isZero() ? 0 : x.isNegative() ? -1 : 1;
 }
-inline Double80 dsign(const Double80 &x) {
-  return x.isZero() ? 0 : x.isNegative() ? -1 : 1;
-}
-inline Double80 dmax(const Double80 &x, const Double80 &y) {
-  return (x >= y) ? x : y;
-}
-inline Double80 dmin(const Double80 &x, const Double80 &y) {
-  return (x <= y) ? x : y;
-}
-Double80 minMax(     const Double80 &x, const Double80 &x1, const Double80 &x2);
+
 
 inline int getExpo2(const Double80 &v) {
   return getExponent(v) - 0x3fff;
