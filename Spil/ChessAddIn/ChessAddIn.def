@@ -3,6 +3,7 @@
 LIBRARY
 
 EXPORTS
+    AddIn_GameKey
     AddIn_MoveBase
     AddIn_EndGameResult
     AddIn_MoveWithResult

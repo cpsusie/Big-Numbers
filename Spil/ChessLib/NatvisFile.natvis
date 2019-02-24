@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?> 
 <AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
 
+  <Type Name="GameKey">
+    <DisplayString LegacyAddin="C:\mytools2015\Spil\ChessAddIn\Win32\Release\ChessAddIn.dll" Export="AddIn_GameKey"></DisplayString>
+  </Type>
   <Type Name="MoveBase">
     <DisplayString LegacyAddin="C:\mytools2015\Spil\ChessAddIn\Win32\Release\ChessAddIn.dll" Export="AddIn_MoveBase"></DisplayString>
   </Type>
