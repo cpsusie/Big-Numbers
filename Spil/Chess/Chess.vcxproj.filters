@@ -68,6 +68,9 @@
     <Filter Include="EndGames\6Men\6MenNoPawns">
       <UniqueIdentifier>{d404f8b8-9f12-4208-bbe8-9a466f440cac}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Dialogs\Editor">
+      <UniqueIdentifier>{a61f2bd5-8a1b-4591-a686-1fd102ad0406}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Chess.cpp">
@@ -89,9 +92,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Game.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GameEditHistory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GameHistory.cpp">
@@ -895,6 +895,12 @@
     <ClCompile Include="StdAfx.cpp" />
     <ClCompile Include="MoveResultArray.cpp">
       <Filter>EndGames</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEditor.cpp">
+      <Filter>Source Files\Dialogs\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEditHistory.cpp">
+      <Filter>Source Files\Dialogs\Editor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

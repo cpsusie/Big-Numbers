@@ -3,25 +3,42 @@
 class GameEditHistory {
 private:
   Game                  m_game;
-  GameKey               m_key0;
   CompactArray<GameKey> m_history;
-  int                   m_index; // Invariant: 0 <= m_index <= m_history.size()
+  size_t                m_index;
+  // Invariant: (0 < m_historySize()) && (0 <= m_index < m_history.size())
+  //        &&  m_history[i-1] != m_history[i], i = [1..m_history.size()-1]
+  // index < m_history.size()-1 => m_game.key() == m_history[m_index]
 
-  void resetHistory();
-
-  int getHistorySize() const {
-    return (int)m_history.size();
+  inline void resetHistory() {
+    m_history.clear();
+    m_index = 0;
   }
-
-  void removeLast();
-  void addKey();
-  bool canAddKey() const;
-  const GameKey &getHistoryKey(int i) const;
+  inline size_t getHistorySize() const {
+    return m_history.size();
+  }
+  inline bool isHistoryEmpty() const {
+    return m_history.isEmpty();
+  }
+  inline void removeLast() {
+    m_history.removeLast();
+  }
+  inline void addKey() {
+    m_history.add(m_game.getKey());
+  }
+  inline bool canAddKey() const {
+    return m_game.getKey() != getLastKey();
+  }
+  // 0 <= i < m_history.size(). return 
+  inline const GameKey &getKey(size_t i) const {
+    return m_history[i];
+  }
+  inline const GameKey &getLastKey() const {
+    return m_history.last();
+  }
   Game &setGame(const Game &game);
 
 #ifdef _DEBUG
-  void checkInvariant(int line) const;
-  void printState(const TCHAR *function) const;
+  void checkInvariant(const TCHAR *method, bool enter) const;
 #endif
 
 public:
@@ -30,7 +47,7 @@ public:
   Game &beginEdit(const Game &game);
   void endEdit();
 
-  Game &getGame() {
+  inline Game &getGame() {
     return m_game;
   }
 
@@ -42,4 +59,8 @@ public:
 
   bool canUndo() const;
   bool canRedo() const;
+
+#ifdef _DEBUG
+  void printState(const TCHAR *function) const;
+#endif
 };

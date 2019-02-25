@@ -99,6 +99,12 @@ private:
   void   enableRemoteGameItems();
   void   updateLevelItemsText();
   void   enableLevelItems();
+  inline void BEGINPAINT() {
+    m_graphics->beginPaint();
+  }
+  inline void ENDPAINT() {
+    m_graphics->endPaint();
+  }
   void   enableUndoRedo();
   void   enableEditBoardMenuItems(     bool startEdit, bool editEnabled);
   void   enableStartThinking();
@@ -181,6 +187,7 @@ private:
   void   OnLButtonDownEditMode( UINT nFlags, CPoint point);
   void   OnMouseMoveEditMode(   UINT nFlags, CPoint point);
   void   OnLButtonUpEditMode(   UINT nFlags, CPoint point);
+  void   OnContextMenuEditMode( CWnd *pWnd , CPoint point);
   void   OnLButtonDownDebugMode(UINT nFlags, CPoint point);
   void   OnMouseMoveDebugMode(  UINT nFlags, CPoint point);
   void   OnLButtonUpDebugMode(  UINT nFlags, CPoint point);

@@ -2,16 +2,17 @@
 #include "GameEditHistory.h"
 
 #ifdef _DEBUG
-#define CHECKINVARIANT    checkInvariant(__LINE__)
-#define TRACESTATE(label) printState(_T(#label))
-#define PRINTKEY0()       verbose(_T("key0  :%s\n"), m_key0.toString().replace('\n',EMPTYSTRING).cstr())
+#define CHECKINVARIANT(onEnter) checkInvariant(__TFUNCTION__,onEnter)
+#define TRACESTATE()            printState(__TFUNCTION__)
+#define ENTER true
+#define LEAVE false
 #else
-#define CHECKINVARIANT
-#define TRACESTATE(label)
-#define PRINTKEY0()
-#endif
+#define CHECKINVARIANT(onEnter)
+#define TRACESTATE()
+#endif // _DEBUG
 
 GameEditHistory::GameEditHistory() {
+  resetHistory();
 }
 
 Game &GameEditHistory::beginEdit(const Game &game) {
@@ -19,14 +20,12 @@ Game &GameEditHistory::beginEdit(const Game &game) {
     throwException(_T("%s:Alredy in editmode"), __TFUNCTION__);
   }
   resetHistory();
-  m_key0 = game.getKey();
-  m_game = m_key0;
+  m_history.add(game.getKey());
+  m_game = getKey(0);
   m_game.setName(game.getFileName());
-  PRINTKEY0();
-  TRACESTATE(beginEdit);
-  CHECKINVARIANT;
-
   m_game.beginSetup();
+  TRACESTATE();
+  CHECKINVARIANT(LEAVE);
   return m_game;
 }
 
@@ -34,132 +33,115 @@ void GameEditHistory::endEdit() {
   if(!m_game.isSetupMode()) {
     throwException(_T("%s:Not in editmode"), __TFUNCTION__);
   }
-  m_history.clear();
   m_game.newGame();
   m_game.endSetup();
-  m_index = 0;
+  resetHistory();
 }
 
 bool GameEditHistory::isModified() {
-  CHECKINVARIANT;
-
-  if(m_index == 0) {
-    return false;
-  }
+  CHECKINVARIANT(ENTER);
   m_game.initState();
-  return m_game.getKey() != m_key0;
+  return m_game.getKey() != getKey(0);
 }
 
 Game &GameEditHistory::setGame(const Game &game) {
-  CHECKINVARIANT;
+  CHECKINVARIANT(ENTER);
   m_game = game;
-  CHECKINVARIANT;
-
+  CHECKINVARIANT(LEAVE);
   return m_game;
 }
 
 Game &GameEditHistory::saveState() {
-  CHECKINVARIANT;
-
+  CHECKINVARIANT(ENTER);
   m_game.initState();
-
-  if(canAddKey()) {
-    while(canRedo()) {
-      removeLast();
-    }
-    addKey();
-    m_index = getHistorySize();
+  while(canRedo()) {
+    removeLast();
   }
-
-  CHECKINVARIANT;
-  TRACESTATE(saveState);
-
+  if(canAddKey()) {
+    addKey();
+    m_index = getHistorySize()-1;
+  }
+  TRACESTATE();
+  CHECKINVARIANT(LEAVE);
   return m_game;
 }
 
 void GameEditHistory::undo(bool all) {
-  CHECKINVARIANT;
-
+  CHECKINVARIANT(ENTER);
   if(canUndo()) {
-    if(!canRedo()) {
+    const size_t newIndex = all ? 0 : (m_index-1);
+    if(!canRedo() && canAddKey()) {
       addKey();
-      m_index = all ? 1 : max(getHistorySize() - 1,1);
     }
-    setGame(getHistoryKey(--m_index)).beginSetup();
+    setGame(getKey(m_index=newIndex)).beginSetup();
   }
-
-  TRACESTATE(undo);
-  CHECKINVARIANT;
+  TRACESTATE();
+  CHECKINVARIANT(LEAVE);
 }
 
 void GameEditHistory::redo() {
-  CHECKINVARIANT;
-
+  CHECKINVARIANT(ENTER);
   if(canRedo()) {
-    setGame(getHistoryKey(++m_index)).beginSetup();
+    setGame(getKey(++m_index)).beginSetup();
   }
-
-  TRACESTATE(redo);
-  CHECKINVARIANT;
+  TRACESTATE();
+  CHECKINVARIANT(LEAVE);
 }
 
 bool GameEditHistory::canUndo() const {
-  CHECKINVARIANT;
-
-  return (m_index > 0) && (m_game.getKey() != m_history[m_index-1]);
+  CHECKINVARIANT(ENTER);
+  return m_index > 0;
 }
 
 bool GameEditHistory::canRedo() const {
-  CHECKINVARIANT;
-
-  return (m_index < getHistorySize() - 1);
+  CHECKINVARIANT(ENTER);
+  return !isHistoryEmpty() && (m_index < getHistorySize() - 1);
 }
 
-// private
-
-void GameEditHistory::resetHistory() {
-  m_history.clear();
-  m_index = 0;
-}
-
-const GameKey &GameEditHistory::getHistoryKey(int i) const {
-  return i ? m_history[i] : m_key0;
-}
-
-bool GameEditHistory::canAddKey() const {
-  return m_history.isEmpty() || m_game.getKey() != m_history.last();
-}
-
-void GameEditHistory::addKey() {
-  if(canAddKey()) {
-    m_history.add(m_game.getKey());
-  }
-}
-
-void GameEditHistory::removeLast() {
-  m_history.removeLast();
-}
+// ------------------------------------------ private ------------------------------------------------
 
 #ifdef _DEBUG
-void GameEditHistory::checkInvariant(int line) const {
-  if(m_index < 0 || m_index > (int)m_history.size()) {
-    verbose(_T("Broken invariant in %s, line %d:index=%d, historySize=%d"),__FILE__,line,m_index,m_history.size());
+  // Invariant: (0 < m_historySize()) && (0 <= m_index < m_history.size())
+  //        &&  m_history[i-1] != m_history[i], i = [1..m_history.size()-1]
+  // index < m_history.size()-1 => m_game.key() == m_history[m_index]
+void GameEditHistory::checkInvariant(const TCHAR *method, bool enter) const {
+  if((m_index < 0) || (m_index >= m_history.size())
+   || (!enter && (m_index < m_history.size()-1) && (m_game.getKey() != getKey(m_index)))
+    ) {
+    showWarning(_T("Broken invariant in %s, %s:index=%zu, historySize=%zu\nm_game.key;%s\ngetKey(%zu);%s")
+               ,method, enter?_T("Enter"):_T("Leave")
+               ,m_index,m_history.size()
+               ,m_game.getKey().toFENString().cstr()
+               ,m_index,getKey(m_index).toFENString().cstr()
+               );
+  }
+  const size_t n = m_history.size();
+  for(size_t i = 1; i < n; i++) {
+    if(getKey(i-1) == getKey(i)) {
+      showWarning(_T("Broken invariant in %s, %s:key[%zu] == key[%zu]")
+                 ,method, enter?_T("Enter"):_T("Leave")
+                 ,i-1, i);
+      break;
+    }
   }
 }
 
-
 void GameEditHistory::printState(const TCHAR *function) const {
-  updateMessageField(_T("%s:history.size:%d, m_index:%d canundo:%s canredo:%s")
-         ,function
-         ,getHistorySize()
-         ,m_index
-         ,boolToStr(canUndo())
-         ,boolToStr(canRedo())
+  clearVerbose();
+  updateMessageField(_T("%s:history.size:%zu, index:%zu canundo:%s canredo:%s")
+                     ,function
+                     ,getHistorySize()
+                     ,m_index
+                     ,boolToStr(canUndo())
+                     ,boolToStr(canRedo())
    );
-   verbose(_T("m_game:%s\nlast  :%s\n")
-         ,m_game.getKey().toString().replace('\n',EMPTYSTRING).cstr()
-         ,(m_history.size() == 0)?_T("---") : m_history.last().toString().replace('\n',EMPTYSTRING).cstr()
-          );
+   
+   const size_t n = m_history.size();
+   for(size_t i = 0; i < n; i++) {
+     verbose(_T("his[%2zu] :%s%s"), i, m_history[i].toFENString().cstr()
+            ,(i==m_index) ? _T("<---\n") : _T("\n"));
+   }
+   verbose(_T("game    :%s\n"), m_game.getKey().toFENString().cstr());
 }
 
-#endif
+#endif // _DEBUG
