@@ -41,6 +41,8 @@ public:
 class CCoordinateSystem : public CStatic {
 private:
   DECLARECLASSNAME;
+  friend class SystemPainter;
+
   Viewport2D                            m_vp;
   OccupationMap                         m_occupationMap;
   COLORREF                              m_backgroundColor;
@@ -49,12 +51,14 @@ private:
   bool                                  m_grid;
   bool                                  m_retainAspectRatio;
   bool                                  m_autoScale, m_autoSpace;
-  friend class SystemPainter;
+  SystemPainter                        *m_systemPainter;
 
   CompactArray<CoordinateSystemObject*> m_objectArray;
   DataRange   findSmallestDataRange() const;
   int         findObject(const CoordinateSystemObject *object) const;
   PointArray &transformPoint2DArray(PointArray &dst, const Point2DArray &src) const;
+  void        createSystemPainter();
+  void        destroySystemPainter();
 public:
 
 public:
@@ -180,7 +184,9 @@ public:
     return getTransformation().backwardTransform(p.x, p.y);
   }
 
-	afx_msg void OnPaint();
+  String getPointText(const Point2D &p) const;
+
+  afx_msg void OnPaint();
 
   DECLARE_MESSAGE_MAP()
 };

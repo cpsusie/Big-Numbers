@@ -34,7 +34,6 @@ private:
 protected:
 
   virtual void init();
-  virtual String getText(double x);
   virtual const TCHAR *getDoubleFormat();
   virtual double next(double x) const;
   virtual AxisType getType() const = 0;
@@ -90,13 +89,14 @@ public:
   void paintAxisData();
   void paintAxis();
   virtual double getAxisPoint() const = 0;
+  virtual String getValueText(double v);
 
-  String getMaxText() {
-    return getText(m_max);
+  inline String getMaxValueText() {
+    return getValueText(m_max);
   };
 
-  String getMinText() {
-    return getText(m_min);
+  inline String getMinValueText() {
+    return getValueText(m_min);
   }
 
   int getMaxTextOffset() const {

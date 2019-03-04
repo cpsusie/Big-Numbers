@@ -24,7 +24,7 @@ public:
 
   CMainFrame();
   virtual ~CMainFrame();
-  void showPosition(const Point2DP &p);
+  void updatePositionText(const String &str);
   void activateInitialOptions();
   void              setRollAvg(bool on);
   void              setGrid(bool grid);

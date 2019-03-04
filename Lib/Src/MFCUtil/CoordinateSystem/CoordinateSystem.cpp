@@ -19,9 +19,20 @@ CCoordinateSystem::CCoordinateSystem() {
   m_backgroundColor   = WHITE;
   m_axisColor         = BLACK;
   m_autoScale         = m_autoSpace = true;
+  m_systemPainter     = NULL;
 }
 
 CCoordinateSystem::~CCoordinateSystem() {
+  destroySystemPainter();
+}
+
+void CCoordinateSystem::createSystemPainter() {
+  destroySystemPainter();
+  m_systemPainter = new SystemPainter(this); TRACE_NEW(m_systemPainter);
+}
+
+void CCoordinateSystem::destroySystemPainter() {
+  SAFEDELETE(m_systemPainter);
 }
 
 BEGIN_MESSAGE_MAP(CCoordinateSystem, CStatic)
@@ -100,8 +111,8 @@ void CCoordinateSystem::paint(CDC &dc) {
   }
   m_vp.setDC(&dc);
   m_vp.setClipping(true);
-  SystemPainter painter(this);
-  painter.paint();
+  createSystemPainter();
+  m_systemPainter->paint();
   for(size_t i = 0; i < m_objectArray.size(); i++) {
     m_objectArray[i]->paint(*this);
   }
@@ -275,4 +286,8 @@ void CCoordinateSystem::setRetainAspectRatio(bool retainAspectRatio) {
   if(m_retainAspectRatio && canRetainAspectRatio() || !m_retainAspectRatio) {
     m_vp.setRetainAspectRatio(m_retainAspectRatio);
   }
+}
+
+String CCoordinateSystem::getPointText(const Point2D &p) const {
+  return (m_systemPainter == NULL) ? EMPTYSTRING : m_systemPainter->getPointText(p);
 }

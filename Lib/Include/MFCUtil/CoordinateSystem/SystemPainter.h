@@ -26,6 +26,12 @@ public:
   bool              hasGrid() const;
   const CPoint     &getOrigin() const;
   CSize             getTextExtent(const String &str);
+  inline String     getValueText(bool xAxis, double value) const {
+    return xAxis ? m_xAxisPainter->getValueText(value) : m_yAxisPainter->getValueText(value);
+  }
+  inline String     getPointText(const Point2D &p) const {
+    return format(_T("%s,%s"), getValueText(true, p.x).cstr(), getValueText(false,p.y).cstr());
+  }
   void              setOccupiedRect(const CRect &r);
   void              setOccupiedLine(const CPoint &from, const CPoint &to);
 };

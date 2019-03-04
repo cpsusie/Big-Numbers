@@ -23,7 +23,7 @@ void LinearAxisPainter::paintXData() {
       t = 0;
     }
     const double xt  = transform(t);
-    const String tmp = getText(t);
+    const String tmp = getValueText(t);
     if(xTextPossible(xt, tmp)) {
       xTextOut(xt, tmp, 0);
       paintVerticalPin(xt, true);
@@ -45,7 +45,7 @@ void LinearAxisPainter::paintYData() {
       t = 0;
     }
     const double yt  = transform(t);
-    const String tmp = getText(t);
+    const String tmp = getValueText(t);
     if(yTextPossible(yt, tmp)) {
       yTextOut(yt, tmp, 0);
       paintHorizontalPin(yt, true);

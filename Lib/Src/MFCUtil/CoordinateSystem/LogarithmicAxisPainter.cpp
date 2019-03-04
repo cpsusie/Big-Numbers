@@ -79,7 +79,7 @@ void LogarithmicAxisPainter::paintXDataMultipleDecades() {
         z = cw.cy;
         tmp = getStartDecadeText(t);
       } else {
-        tmp = getText(i);
+        tmp = getValueText(i);
       }
       if(i == 1) {
         xTextOut(xt, tmp, z);
@@ -121,7 +121,7 @@ void LogarithmicAxisPainter::paintYDataMultipleDecades() {
         z = -cw.cx;
         tmp = getStartDecadeText(t);
       } else {
-        tmp = getText(i);
+        tmp = getValueText(i);
       }
       if(i == 1) {
         yTextOut(yt, tmp, z);

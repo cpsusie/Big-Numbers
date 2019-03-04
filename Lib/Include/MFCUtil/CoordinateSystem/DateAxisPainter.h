@@ -22,5 +22,5 @@ protected:
 public:
   DateAxisPainter(SystemPainter &systemPainter, bool xAxis);
   AxisType getType() const { return AXIS_DATE; }
-  String getText(double x);
+  String getValueText(double v);
 };

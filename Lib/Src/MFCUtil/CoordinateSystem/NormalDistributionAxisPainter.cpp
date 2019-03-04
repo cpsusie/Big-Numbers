@@ -22,14 +22,14 @@ double NormalDistributionAxisPainter::getAxisPoint() const {
   return getTransformation().getToInterval().getFrom();
 }
 
-String NormalDistributionAxisPainter::getText(double x) {
-  if(x == 0) {
+String NormalDistributionAxisPainter::getValueText(double v) {
+  if(v == 0) {
     return _T("0");
   }
-  const int decade = getDecade(x);
+  const int decade = getDecade(v);
   return fabs(decade) <= 2
-       ? format(getDoubleFormat(),x)
-       : format(startDecadeFormat.cstr(),x);
+       ? format(getDoubleFormat(),v)
+       : format(startDecadeFormat.cstr(),v);
 }
 
 const TCHAR *NormalDistributionAxisPainter::getDoubleFormat() {
@@ -74,7 +74,7 @@ void NormalDistributionAxisPainter::paintXDataMultipleDecades() {
       if(isPainting() && xt <= getOrigin().x) {
         continue;
       }
-      const String tmp = getText(t);
+      const String tmp = getValueText(t);
       if(xTextPossible(xt, tmp)) {
         xTextOut(xt, tmp, 0);
       }
@@ -99,7 +99,7 @@ void NormalDistributionAxisPainter::paintYDataMultipleDecades() {
       if(isPainting() && yt >= getOrigin().y) {
         continue;
       }
-      const String tmp = getText(t);
+      const String tmp = getValueText(t);
       if(yTextPossible(yt, tmp)) {
         yTextOut(yt, tmp, 0);
       }

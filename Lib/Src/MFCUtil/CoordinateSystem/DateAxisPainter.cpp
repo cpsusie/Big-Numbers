@@ -94,8 +94,8 @@ void DateAxisPainter::init() {
   }
 }
 
-String DateAxisPainter::getText(double x) {
-  Timestamp t(x);
+String DateAxisPainter::getValueText(double v) {
+  Timestamp t(v);
   if(m_timeComponent == TMILLISECOND) {
     return t.toString(_T("ss:SSS"));
   }

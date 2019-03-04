@@ -69,7 +69,7 @@ void SystemPainter::makeSpaceForText() {
   const int leftMargin   = m_yAxisPainter->getMaxTextOffset() + 2;
   const int rightMargin  = AbstractAxisPainter::ARROW_SIZE / 2;
   const int topMargin    = AbstractAxisPainter::ARROW_SIZE / 2;
-  const int bottomMargin = m_xAxisPainter->getMaxTextOffset() + getTextExtent(m_yAxisPainter->getMaxText()).cy + 1;
+  const int bottomMargin = m_xAxisPainter->getMaxTextOffset() + getTextExtent(m_yAxisPainter->getMaxValueText()).cy + 1;
 
   Rectangle2D fr = getViewport().getFromRectangle();
   const IntervalTransformation &xtr = getViewport().getXTransformation();
@@ -100,8 +100,8 @@ void SystemPainter::makeSpaceForText() {
 
   Point2D orig = innerRectangle.getProjection(Point2D(m_xAxisPainter->getAxisPoint(),m_yAxisPainter->getAxisPoint()));
 
-  const double dx = min(orig.x - innerRectangle.m_x, leftMargin   - getTextExtent(m_xAxisPainter->getMinText()).cx/2 - 1);
-  const double dy = min(innerRectangle.m_y - orig.y, bottomMargin - getTextExtent(m_yAxisPainter->getMinText()).cy/2 - 1);
+  const double dx = min(orig.x - innerRectangle.m_x, leftMargin   - getTextExtent(m_xAxisPainter->getMinValueText()).cx/2 - 1);
+  const double dy = min(innerRectangle.m_y - orig.y, bottomMargin - getTextExtent(m_yAxisPainter->getMinValueText()).cy/2 - 1);
 
   if(dx > 0) {
     innerRectangle.m_x -= dx;

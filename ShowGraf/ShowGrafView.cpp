@@ -195,7 +195,8 @@ void CShowGrafView::OnLButtonUp(UINT nFlags, CPoint point) {
 void CShowGrafView::OnMouseMove(UINT nFlags, CPoint point) {
   __super::OnMouseMove(nFlags, point);
   if(hasMouseTool()) getCurrentTool().OnMouseMove(nFlags, point);
-  theApp.getMainWindow()->showPosition(m_coordinateSystem.getTransformation().backwardTransform((Point2DP)point));
+  const Point2D p = m_coordinateSystem.getMouseToSystem(point);
+  theApp.getMainWindow()->updatePositionText(m_coordinateSystem.getPointText(p));
 }
 
 void CShowGrafView::OnRButtonDown(UINT nFlags, CPoint point) {

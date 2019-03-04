@@ -159,8 +159,8 @@ BOOL CMainFrame::PreTranslateMessage(MSG *pMsg) {
   return __super::PreTranslateMessage(pMsg);
 }
 
-void CMainFrame::showPosition(const Point2DP &p) {
-  m_wndStatusBar.SetPaneText(1,p.toString().cstr());
+void CMainFrame::updatePositionText(const String &str) {
+  m_wndStatusBar.SetPaneText(1,format(_T("(%s)"), str.cstr()).cstr());
 }
 
 void CMainFrame::activateInitialOptions() {

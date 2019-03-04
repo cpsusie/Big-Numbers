@@ -22,7 +22,6 @@ private:
 
 protected:
   void init();
-  String getText(double x);
   void paintXData();
   void paintYData();
 
@@ -30,5 +29,6 @@ public:
   NormalDistributionAxisPainter(SystemPainter &systemPainter, bool xAxis);
   AxisType getType() const { return AXIS_NORMAL_DISTRIBUTION; }
   double getAxisPoint() const;
+  String getValueText(double v);
   const TCHAR *getDoubleFormat();
 };

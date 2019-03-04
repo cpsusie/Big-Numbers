@@ -114,11 +114,11 @@ double AbstractAxisPainter::findNiceDecimalStep(double range) { // static
   return step;
 }
 
-String AbstractAxisPainter::getText(double d) {
-  if(d == 0) {
+String AbstractAxisPainter::getValueText(double v) {
+  if(v == 0) {
     return _T("0");
   }
-  return format(getDoubleFormat(),d);
+  return format(getDoubleFormat(),v);
 }
 
 void AbstractAxisPainter::setMinMaxStep(double min, double max, double step) {
@@ -184,7 +184,7 @@ void AbstractAxisPainter::paintXDataSingleDecade() {
     if(isPainting() && xt <= getOrigin().x) {
       continue;
     }
-    String tmp = getText(t);
+    const String tmp = getValueText(t);
     if(xTextPossible(xt, tmp)) {
       xTextOut(xt, tmp, 0);
     }
@@ -201,7 +201,7 @@ void AbstractAxisPainter::paintYDataSingleDecade() {
     if(isPainting() && yt >= getOrigin().y) {
       continue;
     }
-    String tmp = getText(t);
+    const String tmp = getValueText(t);
     if(yTextPossible(yt, tmp)) {
       yTextOut(yt, tmp, 0);
     }
