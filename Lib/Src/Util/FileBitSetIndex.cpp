@@ -5,6 +5,7 @@
 FileBitSetIndex::FileBitSetIndex(const String &fileName, UINT64 startOffset)
 : m_startOffset(startOffset)
 , m_f(fileName)
+, m_size(-1)
  {
   m_f.seek(startOffset);
   ByteCounter            byteCounter;
@@ -35,25 +36,39 @@ FileBitSetIndex::~FileBitSetIndex() {
 
 #define BYTESINATOM sizeof(m_bitSet->m_p[0])
 
-intptr_t FileBitSetIndex::getIndex(size_t i) const {
-  if(i >= m_bitSet->getCapacity()) {
-    return -1;
-  }
-  const intptr_t rangeIndex = m_rangeTable.binarySearchLE(i, int64HashCmp);
-
-  const size_t bitInterval = (rangeIndex < 0) ? 0 : (rangeIndex+1);
-  const size_t startBit    =  (size_t)(bitInterval ? m_rangeTable[rangeIndex] : 0);
+void FileBitSetIndex::loadBitRange(intptr_t rangeIndex, size_t &bitInterval, size_t &startBit) const {
+  bitInterval = (rangeIndex < 0) ? 0 : (rangeIndex+1);
+  startBit    = (size_t)(bitInterval ? m_rangeTable[rangeIndex] : 0);
   if(!m_loadedIntervals->contains(bitInterval)) {
-    const size_t lastBit     = (size_t)((bitInterval < m_rangeTable.size()) ? m_rangeTable[bitInterval] : (m_bitSet->getCapacity()-1));
+    const size_t lastBit     = (size_t)((bitInterval < m_rangeTable.size()) ? m_rangeTable[bitInterval] : (getCapacity()-1));
     const size_t startAtom   = m_bitSet->getAtomIndex(startBit);
     const size_t atomsToRead = m_bitSet->getAtomIndex(lastBit) - startAtom + 1;
     m_f.seek(m_bitsStartOffset + startAtom * BYTESINATOM);
     m_f.getBytesForced((BYTE*)(m_bitSet->m_p + startAtom), BYTESINATOM * atomsToRead);
     m_loadedIntervals->add(bitInterval);
   }
+}
+
+intptr_t FileBitSetIndex::getIndex(size_t i) const {
+  if(i >= m_bitSet->getCapacity()) {
+    return -1;
+  }
+  const intptr_t rangeIndex = m_rangeTable.binarySearchLE(i, int64HashCmp);
+
+  size_t bitInterval, startBit;
+  loadBitRange(rangeIndex, bitInterval, startBit);
 
   if(!m_bitSet->contains(i)) {
     return -1;
   }
   return (bitInterval << m_shift) + m_bitSet->getCount(startBit, i) - 1;
+}
+
+size_t FileBitSetIndex::size() const {
+  if(m_size == -1) {
+    size_t bitInterval, startBit;
+    loadBitRange(m_rangeTable.size()-1, bitInterval, startBit);
+    m_size = (bitInterval << m_shift) + m_bitSet->getCount(startBit, getCapacity());
+  }
+  return m_size;
 }

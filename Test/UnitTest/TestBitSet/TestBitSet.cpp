@@ -630,10 +630,17 @@ namespace TestBitSet {
       double startTime = getThreadTime();
       const TCHAR *fileName = _T("c:\\temp\\testBitSet\\fileBitSetIndex.dat");
 
+      const size_t ssize = s.size();
+
       BitSetIndex bi(s);
+      verify(bi.getCapacity() == capacity);
+      verify(bi.size()        == ssize   );
+
       bi.save(ByteOutputFile(fileName));
 
       FileBitSetIndex loaded(fileName, 0);
+      verify(loaded.getCapacity() == capacity);
+      verify(loaded.size()        == ssize   );
 
       double usedTime = (getThreadTime() - startTime) / 1000000;
 
@@ -641,12 +648,12 @@ namespace TestBitSet {
 
       startTime = getThreadTime();
       intptr_t expectedIndex = 0;
-      for (Iterator<size_t> it = s.getIterator(); it.hasNext(); expectedIndex++) {
+      for(Iterator<size_t> it = s.getIterator(); it.hasNext(); expectedIndex++) {
         const size_t e = it.next();
         //    if(expectedIndex % 1000 != 0) {
         //      continue;
         //    }
-        intptr_t index = loaded.getIndex(e);
+        const intptr_t index = loaded.getIndex(e);
 //        if (expectedIndex % 50000 == 0) {
 //          OUTPUT(_T("e:%s. index %s\r"), format1000(e).cstr(), format1000(index).cstr());
 //        }
@@ -666,16 +673,13 @@ namespace TestBitSet {
     }
 
     TEST_METHOD(FileBitSetIndexTest) {
-      /*
       {
-      for(double capacity = 10; capacity < 650000000; capacity *= 1.4) {
-      BitSet s(10);
-      genRandomSet(s, (int)capacity, -1);
-      BitSetIndex bi(s);
+        for(double capacity = 10; capacity < 650000; capacity *= 1.4) {
+          OUTPUT(_T("testAllFileBitSetIndices(%.0lf"), capacity);
+          testAllFileBitSetIndices(capacity);
+        }
+        return;
       }
-      return;
-      }
-      */
       /*
       for(;;) {
       const unsigned int capacity = inputInt(_T("Enter capacity:"));

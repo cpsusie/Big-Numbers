@@ -228,7 +228,7 @@ intptr_t BitSet::getIndex(size_t i) const {
 
 size_t BitSet::getCount(size_t from, size_t to) const {
   if(to >= m_capacity) {
-    to = m_capacity;
+    to = m_capacity - 1;
   }
   if(from > to) return 0;
   const Atom *first = m_p + _BS_ATOMINDEX(from);
