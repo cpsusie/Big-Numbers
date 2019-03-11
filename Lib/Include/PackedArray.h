@@ -5,6 +5,7 @@
 
 class PackedArray {
 private:
+  DECLARECLASSNAME;
   UINT               m_bitsPerItem;
   UINT               m_maxValue;
   CompactArray<UINT> m_data;
@@ -42,22 +43,22 @@ public:
   void addZeroes(UINT64 index, UINT64 count);
   void remove(   UINT64 index, UINT64 count = 1);
   PackedArray &clear();
-  bool isEmpty() const {
+  inline bool isEmpty() const {
     return m_firstFreeBit == 0;
   }
-  UINT64 size() const {
+  inline UINT64 size() const {
     return m_firstFreeBit / m_bitsPerItem;
   }
   void save(ByteOutputStream &s) const;
   void load(ByteInputStream  &s);
   bool operator==(const PackedArray &a) const;
-  bool operator!=(const PackedArray &a) const {
+  inline bool operator!=(const PackedArray &a) const {
     return !(*this == a);
   }
-  UINT getBitsPerItem() const {
+  inline UINT getBitsPerItem() const {
     return m_bitsPerItem;
   }
-  UINT getMaxValue() const {
+  inline UINT getMaxValue() const {
     return m_maxValue;
   }
 
@@ -71,7 +72,7 @@ public:
   void markBit(int bit) const;
 #endif
   String toString() const;
-  void checkInvariant() const;
+  void checkInvariant(const TCHAR *method) const;
 
   friend class PackedFileArray;
 };
@@ -80,30 +81,36 @@ class PackedFileArray { // Read-only packed array of integers accessed by seekin
                         // the whole array into memory. Slow, but save space
                         // Bytes starting at startOffset must be written by PackedArray.save
 private:
-  unsigned char          m_bitsPerItem;
+  DECLARECLASSNAME;
+  UINT                   m_bitsPerItem;
   UINT                   m_maxValue;
   CompactFileArray<UINT> m_data;
   UINT64                 m_firstFreeBit;
-
-#ifdef _DEBUG
-  void indexError(UINT64 index, const TCHAR *method=EMPTYSTRING) const {
+  UINT64                 m_size;
+  void indexError(UINT64 index, const TCHAR *method) const {
     throwInvalidArgumentException(method, _T("Index %I64u out of range. size=%I64u"), index, size());
   }
-#endif
+  void selectError() const {
+    throwException(_T("%s:Cannot select from empty array"), s_className);
+  }
+  void checkInvariant(const TCHAR *method) const;
 public:
   PackedFileArray(const String &fileName, UINT64 startOffset);
   UINT get(UINT64 index) const;
-  UINT select() const;
-  bool isEmpty() const {
-    return m_firstFreeBit == 0;
+  inline UINT select() const {
+    if(isEmpty()) selectError();
+    return get(randInt() % size());
   }
-  UINT64 size() const {
-    return m_firstFreeBit / m_bitsPerItem;
+  inline bool isEmpty() const {
+    return size() == 0;
   }
-  UINT getBitsPerItem() const {
+  inline UINT64 size() const {
+    return m_size;
+  }
+  inline UINT getBitsPerItem() const {
     return m_bitsPerItem;
   }
-  UINT getMaxValue() const {
+  inline UINT getMaxValue() const {
     return m_maxValue;
   }
 };

@@ -12,7 +12,9 @@
 
 #pragma warning(disable : 4244)
 
-PackedArray::PackedArray(unsigned char bitsPerItem) : m_bitsPerItem(bitsPerItem), m_maxValue((1<<bitsPerItem)-1) {
+DEFINECLASSNAME(PackedArray);
+
+PackedArray::PackedArray(BYTE bitsPerItem) : m_bitsPerItem(bitsPerItem), m_maxValue((1<<bitsPerItem)-1) {
   validateBitsPerItem(bitsPerItem);
   m_firstFreeBit = 0;
 }
@@ -76,7 +78,7 @@ static String printbin(UINT v) {
 
 #endif
 
-UINT PackedArray::get(unsigned __int64 index) const {
+UINT PackedArray::get(UINT64 index) const {
   CHECK_INDEX
 
   const UINT *p     = &m_data[(index * m_bitsPerItem) / 32];
@@ -99,7 +101,7 @@ UINT PackedArray::select() const {
   return get(randInt() % size());
 }
 
-void PackedArray::set(unsigned __int64 index, UINT v) {
+void PackedArray::set(UINT64 index, UINT v) {
   CHECK_INDEX_AND_VALUE
 
         UINT *p     = &m_data[(index * m_bitsPerItem) / 32];
@@ -115,7 +117,7 @@ void PackedArray::set(unsigned __int64 index, UINT v) {
   }
 }
 
-void PackedArray::or(unsigned __int64 index, UINT v) {
+void PackedArray::or(UINT64 index, UINT v) {
   CHECK_INDEX_AND_VALUE
 
         UINT *p     = &m_data[(index * m_bitsPerItem) / 32];
@@ -128,7 +130,7 @@ void PackedArray::or(unsigned __int64 index, UINT v) {
   }
 }
 
-void PackedArray::and(unsigned __int64 index, UINT v) {
+void PackedArray::and(UINT64 index, UINT v) {
   CHECK_INDEX_AND_VALUE
 
         UINT *p     = &m_data[(index * m_bitsPerItem) / 32];
@@ -141,7 +143,7 @@ void PackedArray::and(unsigned __int64 index, UINT v) {
   }
 }
 
-void PackedArray::xor(unsigned __int64 index, UINT v) {
+void PackedArray::xor(UINT64 index, UINT v) {
   CHECK_INDEX_AND_VALUE
 
         UINT *p     = &m_data[(index * m_bitsPerItem) / 32];
@@ -170,7 +172,7 @@ void PackedArray::add(UINT v) {
   }
 }
 
-void PackedArray::add(unsigned __int64 index, UINT v) {
+void PackedArray::add(UINT64 index, UINT v) {
   CHECK_VALUE
 
   addZeroes(index, 1);
@@ -179,7 +181,7 @@ void PackedArray::add(unsigned __int64 index, UINT v) {
 }
 
 // TODO works only for little-endian
-void PackedArray::addZeroes(unsigned __int64 index, unsigned __int64 count) {
+void PackedArray::addZeroes(UINT64 index, UINT64 count) {
 #ifdef _DEBUG
   if(index > size()) {
     indexError(index, _T("addZeroes"));
@@ -370,8 +372,8 @@ void PackedArray::addZeroes(unsigned __int64 index, unsigned __int64 count) {
 }
 
 // TODO works only for little-endian
-void PackedArray::remove(unsigned __int64 index, unsigned __int64 count) {
-  const UINT j = index + count;
+void PackedArray::remove(UINT64 index, UINT64 count) {
+  const UINT64 j = index + count;
 #ifdef _DEBUG
   if(j > size()) {
     indexError(j, format(_T("remove(%llu,%llu):"), index, count).cstr());
@@ -522,15 +524,17 @@ PackedArray &PackedArray::clear() {
   return *this;
 }
 
-void PackedArray::setCapacity(unsigned __int64 capacity) {
+void PackedArray::setCapacity(UINT64 capacity) {
   if(capacity < size()) {
     capacity = size();
   }
   if(capacity == 0) {
     return;
   }
-  unsigned __int64 bitCapacity = capacity * m_bitsPerItem;
-  UINT             intCapacity = (bitCapacity - 1) / 32 + 1;
+  const UINT64 bitCapacity   = capacity * m_bitsPerItem;
+  const UINT64 intCapacity64 = (bitCapacity - 1) / 32 + 1;
+  CHECKUINT64ISVALIDSIZET(intCapacity64);
+  const size_t intCapacity   = (size_t)intCapacity64;
   m_data.setCapacity(intCapacity);
 }
 
@@ -541,19 +545,25 @@ bool PackedArray::operator==(const PackedArray &a) const {
   return m_data == a.m_data;
 }
 
-void PackedArray::checkInvariant() const {
-  const int expectedSize = m_firstFreeBit ? ((m_firstFreeBit-1) / 32 + 1) : 0;
-  if(m_data.size() != expectedSize) {
-    throwException(_T("PackedArray:Bits/Item:%d. m_firstFreeBit:%s, m_data.size=%s, Should be %d")
+void PackedArray::checkInvariant(const TCHAR *method) const {
+  const UINT64 expectedDataSize64 = m_firstFreeBit ? ((m_firstFreeBit-1) / 32 + 1) : 0;
+  CHECKUINT64ISVALIDSIZET(expectedDataSize64);
+  const size_t expectedDataSize = (size_t)expectedDataSize64;
+  if(m_data.size() != expectedDataSize) {
+    throwException(_T("%s:%s:Bits/Item:%u. m_firstFreeBit:%s, m_data.size=%s, Should be %zu")
+                  ,method
+                  ,s_className
                   ,m_bitsPerItem
                   ,format1000(m_firstFreeBit).cstr()
                   ,format1000(m_data.size()).cstr()
-                  ,expectedSize);
+                  ,expectedDataSize);
   }
-  if(expectedSize > 0 && (m_firstFreeBit%32)) {
-    const UINT lastInt = m_data[expectedSize-1];
+  if((expectedDataSize > 0) && (m_firstFreeBit%32)) {
+    const UINT lastInt = m_data[expectedDataSize-1];
     if((lastInt & ~((1<<(m_firstFreeBit%32))-1)) != 0) {
-      throwException(_T("PackedArray:Bits/Item:%d. m_firstFreeBit:%s, m_data.size=%s, Garbagebits in last element:%08x")
+      throwException(_T("%s:%s:Bits/Item:%u. m_firstFreeBit:%s, m_data.size=%s, Garbagebits in last element:%08x")
+                    ,method
+                    ,s_className
                     ,m_bitsPerItem
                     ,format1000(m_firstFreeBit).cstr()
                     ,format1000(m_data.size()).cstr()

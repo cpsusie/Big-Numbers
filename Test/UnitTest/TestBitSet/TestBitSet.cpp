@@ -676,7 +676,7 @@ namespace TestBitSet {
       {
         for(double capacity = 10; capacity < 650000; capacity *= 1.4) {
           OUTPUT(_T("testAllFileBitSetIndices(%.0lf"), capacity);
-          testAllFileBitSetIndices(capacity);
+          testAllFileBitSetIndices((UINT)capacity);
         }
         return;
       }

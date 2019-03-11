@@ -159,7 +159,7 @@ namespace TestPackedArray {
 
   bool TestClass::checkEqual() const {
     if (m_pa.size() != m_a.size()) {
-      OUTPUT(_T("Size differs. Array.size=%d, PackedArray.size=%lld"), m_a.size(), m_pa.size());
+      OUTPUT(_T("Size differs. Array.size=%zd, PackedArray.size=%lld"), m_a.size(), m_pa.size());
       return false;
     }
     const size_t n = m_a.size();
@@ -173,7 +173,7 @@ namespace TestPackedArray {
     }
 
     try {
-      m_pa.checkInvariant();
+      m_pa.checkInvariant(__TFUNCTION__);
     } catch (Exception e) {
       OUTPUT(_T("%s"), e.what());
       return false;
@@ -375,6 +375,36 @@ namespace TestPackedArray {
 
       }
 #endif
+    }
+
+    TEST_METHOD(TestPackedFileArray) {
+      const static TCHAR *objectToTest = _T("PackedFileArray");
+      const String        fileName     = _T("c:\\temp\\testPackedArray\\PackedFileArray.dat");
+      for(UINT bitsPerItem = 3; bitsPerItem <= 31; bitsPerItem+=5) {
+        PackedArray pa(bitsPerItem);
+        const UINT   maxV  = pa.getMaxValue();
+        const UINT   count = randInt(10000);
+        for(size_t i = 0; i < count; i++) {
+          pa.add(randInt(maxV));
+        }
+        pa.save(ByteOutputFile(fileName));
+        PackedFileArray pfa(fileName,0);
+
+        verify(pfa.getBitsPerItem() == pa.getBitsPerItem());
+        verify(pfa.size() == pa.size());
+        for(size_t i = 0; i < count/10; i++) {
+          const size_t index = randInt(count);
+          const UINT pav = pa.get(index);
+          const UINT pfav = pfa.get(index);
+          verify(pav == pfav);
+        }
+        try {
+          pfa.get(count);
+          verify(false);
+        } catch(Exception e) {
+          // ignore. Expected
+        }
+      }
     }
   };
 }
