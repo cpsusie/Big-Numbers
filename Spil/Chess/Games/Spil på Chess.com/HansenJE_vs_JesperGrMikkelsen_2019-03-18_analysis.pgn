@@ -1,0 +1,15 @@
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2019.03.18"]
+[Round "?"]
+[White "HansenJE"]
+[Black "JesperGrMikkelsen"]
+[Result "0-1"]
+[TimeControl "1800"]
+[WhiteElo "705"]
+[BlackElo "1246"]
+[Termination "JesperGrMikkelsen won by checkmate"]
+[ECO ""]
+[CurrentPosition "r6k/1pp3pp/p7/3BpR2/6Pq/8/PPP1n1P1/7K w - - 1 26"]
+
+1.e4 e5 2.Nf3 Nc6 3.Nc3 { C46: Three Knights Opening } 3...Bc5 { (+0.49 → +1.51) Inaccuracy. A better move was 3... Nf6. } ( 3...Nf6 4.Bc4 4...Nxe4 5.Nxe4 5...d5 6.Bd3 6...Be7 7.O-O 7...O-O 8.Ng3 ) 4.d3 { (+1.49 → +0.52) Inaccuracy. A better move was 4. Nxe5. } ( 4.Nxe5 4...Nf6 5.Nf3 5...d5 6.exd5 6...Nxd5 7.Be2 7...Bb6 8.O-O 8...O-O ) 4...a6 5.Nd5 Nf6 { (0.00 → +0.58) Inaccuracy. A better move was 5... Nge7. } ( 5...Nge7 6.c3 6...O-O 7.Be2 7...Ba7 8.O-O 8...d6 9.Ne3 9...h6 10.h3 ) 6.Bg5 Be7 7.Nxe7 Qxe7 8.Bd2 O-O 9.Be2 d5 10.Bg5 { (+0.17 → -1.37) Mistake. The best move was 10. exd5. } ( 10.exd5 10...Nxd5 11.O-O 11...f6 12.c3 12...Rd8 13.Qc2 13...Bf5 14.Nh4 14...Bc8 ) 10...Rd8 11.O-O { (-0.71 → -1.87) Inaccuracy. A better move was 11. Nd2. } ( 11.Nd2 11...Nd4 ) 11...dxe4 12.Bxf6 Qxf6 13.Nd2 exd3 14.Bxd3 Qg5 15.h3 { (-1.72 → -3.09) Inaccuracy. A better move was 15. Re1. } ( 15.Re1 15...f5 16.Qe2 16...Re8 17.Bc4+ 17...Be6 18.Qd3 18...Kh8 19.Bxe6 19...Rxe6 ) 15...Bxh3 16.Be4 { (-3.03 → -7.46) Mistake. The best move was 16. Qf3. } ( 16.Qf3 16...Be6 17.Rfd1 17...Qh4 18.Qe4 18...Qh5 19.Qe3 19...f5 20.c3 20...Bd5 ) 16...Rxd2 17.Qf3 Bg4 18.Qg3 Nd4 19.Rae1 Re2 20.f3 Qe3+ 21.Kh1 f5 22.Bd5+ Kh8 23.fxg4 { (-7.19 → -28.56) Mistake. The best move was 23. Qh4. } ( 23.Qh4 23...c6 24.c3 24...Nc2 25.Rxe2 25...Qxe2 26.Qf2 26...Qxf2 27.Rxf2 27...cxd5 ) 23...Qxg3 24.Rxe2 Nxe2 { (♚ Mate in 2 → ♚ Mate in 3) Excellent. Faster mate A better move was 24... Qh4+. } ( 24...Qh4+ 25.Kg1 25...Nxe2# ) 25.Rxf5 Qh4#  0-1
