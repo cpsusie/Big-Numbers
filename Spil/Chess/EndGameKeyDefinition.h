@@ -204,6 +204,7 @@ public:
   }
 
   virtual EndGameKey getEndGameKey(      const GameKey    &gameKey) const = 0;
+  EndGameKey         transformGameKey(   const GameKey    &gameKey) const;
   EndGameKey         getTransformedKey(  EndGameKey key, SymmetricTransformation st) const;
   EndGameKey         getNormalizedKey(   EndGameKey key, EndGamePosIndex *index = NULL) const; // will return keys' index in index if != NULL
   void               validateKey(        EndGameKey key, const TCHAR *msg) const;

@@ -372,6 +372,13 @@ EndGameKey EndGameKeyDefinition::getTransformedKey(EndGameKey key, SymmetricTran
   return key;
 }
 
+EndGameKey EndGameKeyDefinition::transformGameKey(const GameKey &gameKey) const {
+  assert(gameKey.getPositionSignature() == getPositionSignature());
+  const EndGameKey              egk = getEndGameKey(gameKey);
+  const SymmetricTransformation st  = getSymTransformation(egk);
+  return (st == 0) ? egk : getTransformedKey(egk, st);
+}
+
 EndGameKey EndGameKeyDefinition::getNormalizedKey(EndGameKey key, EndGamePosIndex *index) const {
   static const TCHAR *msg = _T("Invalid EndGameKey:getNormalizedKey(%s):%s");
   const EndGamePosIndex ki = keyToIndex(key);
