@@ -531,6 +531,7 @@ public:
     return (m_playerSignature[WHITEPLAYER] != ps.m_playerSignature[WHITEPLAYER])
         || (m_playerSignature[BLACKPLAYER] != ps.m_playerSignature[BLACKPLAYER]);
   }
+  // return true, if(ps==*this || (ps==swapPlayers()). if(match(...), then swap = (ps==swapPlayers())
   bool match(const PositionSignature &ps, bool &swap) const;
 
   inline bool isEmpty() const {
@@ -735,6 +736,7 @@ public:
   PieceType getPromoteTo() const;
   // Return *this
   MoveBase &setNoMove();
+  MoveBase transform(const Game &game, bool swapPlayers) const;
 
 #ifdef TABLEBASE_BUILDER
   MoveBase &swapFromTo();
@@ -1481,6 +1483,9 @@ public:
   // These are used by MoveFinder, because they are faster than do-/undoMove
   bool tryMove(const Move &m);            // Assume the gamestate has been saved by pushState.
                                           // Return false if getPositionRepeats() > m_maxPositionRepeat or getMoveCountWithoutCaptureOrPawnMove() > 100
+  inline bool tryMove(const MoveBase &m) {
+    return tryMove(generateMove(m));
+  }
   void unTryMove();                       // Undo move done with tryMove and restores gamestate without popping it (should be done with popState)
 
 

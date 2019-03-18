@@ -63,6 +63,15 @@ MoveBase &MoveBase::swapFromTo() {
 }
 #endif
 
+MoveBase MoveBase::transform(const Game &game, bool swapPlayers) const {
+  if(!isMove() || !swapPlayers) {
+    return *this;
+  }
+  const int from = GameKey::transform(m_from, TRANSFORM_SWAPPLAYERS);
+  const int to   = GameKey::transform(m_to  , TRANSFORM_SWAPPLAYERS);
+  return game.generateMove(from, to, getPromoteTo());
+}
+
 String MoveBase::toString() const {
   return toStringFileFormat();
 }
