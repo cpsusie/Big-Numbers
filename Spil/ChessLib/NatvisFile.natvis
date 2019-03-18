@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?> 
 <AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
-
+  <Type Name="Game">
+    <DisplayString>{m_gameKey}</DisplayString>
+  </Type>
   <Type Name="GameKey">
     <DisplayString LegacyAddin="C:\mytools2015\Spil\ChessAddIn\Win32\Release\ChessAddIn.dll" Export="AddIn_GameKey"></DisplayString>
+  </Type>
+  <Type Name="PositionSignature">
+    <DisplayString LegacyAddin="C:\mytools2015\Spil\ChessAddIn\Win32\Release\ChessAddIn.dll" Export="AddIn_PositionSignature"></DisplayString>
   </Type>
   <Type Name="MoveBase">
     <DisplayString LegacyAddin="C:\mytools2015\Spil\ChessAddIn\Win32\Release\ChessAddIn.dll" Export="AddIn_MoveBase"></DisplayString>

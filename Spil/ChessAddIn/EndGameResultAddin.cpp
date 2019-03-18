@@ -6,7 +6,9 @@ ADDIN_API HRESULT WINAPI AddIn_EndGameResult(DWORD dwAddress, DEBUGHELPER *pHelp
     String str;
     EndGameResult egr;
     pHelper->getRealObject(&egr, sizeof(egr));
-    if(!egr.exists()) {
+    if(egr.isPrunedWinnerResult()) {
+      str = _T("Pruned winner");
+    } else if(!egr.exists()) {
       str = _T("Non existing");
     } else {
       const EndGamePositionStatus status     = egr.getStatus();
