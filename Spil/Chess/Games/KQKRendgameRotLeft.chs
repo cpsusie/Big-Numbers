@@ -1,6 +1,6 @@
-white:Kc2,Rc4;
-black:Ka3;
-PlayerInTurn:white;
+white:Ka1,Qh5;
+black:Ke4,Rc8;
+PlayerInTurn:black;
 History
 
 EndHistory

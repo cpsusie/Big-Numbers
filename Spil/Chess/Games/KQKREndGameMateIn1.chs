@@ -1,5 +1,5 @@
-white:Kc2,Rc4;
-black:Ka3;
+white:Kc1,Qb3;
+black:Ka1,Ra5;
 PlayerInTurn:white;
 History
 
