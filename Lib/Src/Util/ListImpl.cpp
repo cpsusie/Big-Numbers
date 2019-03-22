@@ -90,23 +90,17 @@ void ListImpl::clear() {
   m_updateCount++;
 }
 
-void ListImpl::throwOutOfRangeException(const TCHAR *method, size_t index) const {
-  throwInvalidArgumentException(method, _T("index %s out of range. size=%s")
-                               ,format1000(index).cstr()
-                               ,format1000(m_size).cstr());
+void ListImpl::indexError(const TCHAR *method, size_t index) const {
+  throwIndexOutOfRangeException(method, index, m_size);
 }
 
 void *ListImpl::getElement(size_t index) {
-  if(index >= m_size) {
-    throwOutOfRangeException(__TFUNCTION__, index);
-  }
+  if(index >= m_size) indexError(__TFUNCTION__, index);
   return (void*)findNode(index)->m_data;
 }
 
 const void *ListImpl::getElement(size_t index) const {
-  if(index >= m_size) {
-    throwOutOfRangeException(__TFUNCTION__, index);
-  }
+  if(index >= m_size) indexError(__TFUNCTION__, index);
   return findNode(index)->m_data;
 }
 
@@ -125,9 +119,7 @@ bool ListImpl::add(const void *e) {
 }
 
 bool ListImpl::add(size_t i, const void *e) {
-  if(i > m_size) {
-    throwOutOfRangeException(__TFUNCTION__, i);
-  }
+  if(i > m_size) indexError(__TFUNCTION__, i);
   ListNode *n = createNode(e);
   if(i == 0) {
     n->m_next = m_first;
@@ -193,9 +185,7 @@ void ListImpl::removeLast() {
 }
 
 void ListImpl::removeIndex(size_t i) {
-  if(i >= m_size) {
-    throwOutOfRangeException(__TFUNCTION__, i);
-  }
+  if(i >= m_size) indexError(__TFUNCTION__, i);
   removeNode((ListNode*)findNode(i));
 }
 

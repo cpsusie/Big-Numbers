@@ -90,9 +90,7 @@ ByteArray &ByteArray::insertConstant(size_t index, BYTE b, size_t count) {
   if(count == 0) {
     return *this;
   }
-  if(index > m_size) {
-    indexError(__TFUNCTION__, index);
-  }
+  if(index > m_size) indexError(__TFUNCTION__, index);
   const size_t newSize = m_size + count;
   if(newSize > m_capacity) {
     const size_t newCapacity = getCapacityCeil(2 * newSize);
@@ -137,45 +135,34 @@ ByteArray &ByteArray::setData(const BYTE *data, size_t size) {
 
 // return this. Assume index + count <= size
 ByteArray &ByteArray::setBytes(size_t index, const BYTE *data, size_t count) {
-  if(count == 0) {
-    return *this;
+  if(count > 0) {
+    if(index + count > m_size) indexError(__TFUNCTION__, index, count);
+    memcpy(m_data+index, data, count);
   }
-  if(index + count > m_size) {
-    throwException(_T("%s(%s,%s): Invalid index. size=%s")
-                  ,__TFUNCTION__
-                  ,format1000(index).cstr(), format1000(count).cstr()
-                  ,format1000(m_size).cstr());
-  }
-  memcpy(m_data+index, data, count);
   return *this;
 }
 
 ByteArray &ByteArray::remove(size_t index, size_t count) {
-  if(count == 0) {
-    return *this;
-  }
-  const size_t j = index+count;
-  if(j > m_size) {
-    throwException(_T("%s(%s,%s): Invalid index. size=%s")
-                  ,__TFUNCTION__
-                  ,format1000(index).cstr(), format1000(count).cstr()
-                  ,format1000(m_size).cstr());
-  }
-  if(j < m_size) {
-    memmove(m_data+index, m_data+j, (m_size-j));
-  }
-  m_size -= count;
-  if(m_size < m_capacity/4) {
-    setCapacity(m_size);
+  if(count > 0) {
+    const size_t j = index + count;
+    if(j > m_size) indexError(__TFUNCTION__, index, count);
+    if(j < m_size) {
+      memmove(m_data+index, m_data+j, (m_size-j));
+    }
+    m_size -= count;
+    if(m_size < m_capacity/4) {
+      setCapacity(m_size);
+    }
   }
   return *this;
 }
 
-void ByteArray::indexError(const TCHAR *method, size_t i) const {
-  throwException(_T("%s:Index %s out of range. size=%s")
-                ,method
-                ,format1000(i).cstr()
-                ,format1000(m_size).cstr());
+void ByteArray::indexError(const TCHAR *method, size_t index) const {
+  throwIndexOutOfRangeException(method, index, size());
+}
+
+void ByteArray::indexError(const TCHAR *method, size_t index, size_t count) const {
+  throwIndexOutOfRangeException(method, index, count, size());
 }
 
 void ByteArray::init() {

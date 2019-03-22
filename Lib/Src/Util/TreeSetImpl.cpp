@@ -17,7 +17,7 @@ TreeSetImpl::~TreeSetImpl() {
 }
 
 void TreeSetImpl::throwEmptySetException(const TCHAR *method) const {
-  throwException(_T("%s:Set is empty"), method);
+  throwSelectFromEmptyCollectionException(method);
 }
 
 AbstractCollection *TreeSetImpl::clone(bool cloneData) const {

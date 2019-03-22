@@ -107,13 +107,15 @@ void ArrayImpl::clear() {
 }
 
 void ArrayImpl::indexError(const TCHAR *method, size_t index) const {
-  throwInvalidArgumentException(method, _T("Index %s out of range. size=%s")
-                               ,format1000(index).cstr()
-                               ,format1000(m_size).cstr());
+  throwIndexOutOfRangeException(method, index, size());
 }
 
-void ArrayImpl::selectError() const {
-  throwException(_T("%s:Cannot select from empty array"), __TFUNCTION__);
+void ArrayImpl::indexError(const TCHAR *method, size_t index, size_t count) const {
+  throwIndexOutOfRangeException(method, index, count, size());
+}
+
+void ArrayImpl::selectError(const TCHAR *method) const {
+  throwSelectFromEmptyCollectionException(method);
 }
 
 void ArrayImpl::unsupportedOperationError(const TCHAR *method) const {
@@ -131,9 +133,7 @@ bool ArrayImpl::add(const void *e) {
 
 bool ArrayImpl::add(size_t i, const void *e, size_t count) {
   DEFINEMETHODNAME;
-  if(i > m_size) {
-    indexError(method, i);
-  }
+  if(i > m_size) indexError(method, i);
   if(count == 0) {
     return false;
   }
@@ -157,9 +157,7 @@ void ArrayImpl::removeIndex(size_t i, size_t count) {
     return;
   }
   const size_t j = i + count;
-  if(j > m_size) {
-    indexError(method,j);
-  }
+  if(j > m_size) indexError(method, i, count);
   for(size_t k = i; k < j; k++) {
     m_objectManager->deleteObject(m_elem[k]);
   }
@@ -181,12 +179,8 @@ bool ArrayImpl::remove(const void *e) {
 
 void ArrayImpl::swap(size_t i1, size_t i2) {
   DEFINEMETHODNAME;
-  if(i1 >= m_size) {
-    indexError(method, i1);
-  }
-  if(i2 >= m_size) {
-    indexError(method, i2);
-  }
+  if(i1 >= m_size) indexError(method, i1);
+  if(i2 >= m_size) indexError(method, i2);
   if(i1 != i2) {
     std::swap(m_elem[i1], m_elem[i2]);
   }
@@ -200,14 +194,14 @@ bool ArrayImpl::contains(const void *e) const {
 
 const void *ArrayImpl::select() const {
   if(m_size == 0) {
-    selectError();
+    selectError(__TFUNCTION__);
   }
   return m_elem[randSizet() % m_size];
 }
 
 void *ArrayImpl::select() {
   if(m_size == 0) {
-    selectError();
+    selectError(__TFUNCTION__);
   }
   return m_elem[randSizet(m_size)];
 }

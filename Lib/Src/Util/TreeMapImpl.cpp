@@ -107,9 +107,7 @@ const void *TreeMapImpl::get(const void *key) const {
 }
 
 AbstractEntry *TreeMapImpl::selectEntry() const {
-  if(size() == 0) {
-    throwException("TreeMap::select:Map is empty");
-  }
+  if(size() == 0) throwSelectFromEmptyCollectionException(__TFUNCTION__);
   return (TreeMapNode*)findNode(select());
 }
 

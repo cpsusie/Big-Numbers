@@ -20,8 +20,9 @@ private:
   intptr_t  linearSearch(const void *key, size_t from, size_t count, AbstractComparator &comparator) const;
   intptr_t  binarySearch(const void *key, intptr_t from, size_t count, AbstractComparator &comparator) const;
   intptr_t  binaryInsert(const void *e, AbstractComparator &comparator);
-  void      indexError(const TCHAR *method, size_t index) const;
-  void      selectError() const;
+  void      indexError( const TCHAR *method, size_t index) const;
+  void      indexError( const TCHAR *method, size_t index, size_t count) const;
+  void      selectError(const TCHAR *method) const;
   void      unsupportedOperationError(const TCHAR *method) const;
   friend class ArrayIterator;
 public:

@@ -168,7 +168,7 @@ size_t BitSet::select() const {
   for(Iterator<size_t> it = ((BitSet*)this)->getReverseIterator(i); it.hasNext();) {
     return it.next();
   }
-  throwException(_T("Cannot select from empty BitSet"));
+  throwSelectFromEmptyCollectionException(__TFUNCTION__);
   return -1;
 }
 

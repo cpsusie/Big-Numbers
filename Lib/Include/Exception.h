@@ -21,22 +21,24 @@ public:
   }
 };
 
-extern void exceptionTranslator(UINT u, EXCEPTION_POINTERS *pExp);
+void exceptionTranslator(UINT u, EXCEPTION_POINTERS *pExp);
 
-extern void throwException(_In_z_ _Printf_format_string_ TCHAR const * const format, ...);
-extern void throwException(const String &s);
-extern void throwInvalidArgumentException(const TCHAR *function, _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
-extern void throwUnsupportedOperationException(const TCHAR *method);
-extern void throwTimeoutException(_In_z_ _Printf_format_string_  const TCHAR *format, ...);
-extern void throwMethodException(const TCHAR *className, TCHAR const * const method, _In_z_ _Printf_format_string_ const TCHAR *format, ...);
-extern void throwMethodInvalidArgumentException(const TCHAR *className, const TCHAR *method, _In_z_ _Printf_format_string_ TCHAR const * const _Format, ...);
+void throwException(_In_z_ _Printf_format_string_ TCHAR const * const format, ...);
+void throwException(const String &s);
+void throwInvalidArgumentException(const TCHAR *method, _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
+void throwUnsupportedOperationException(const TCHAR *method);
+void throwTimeoutException(_In_z_ _Printf_format_string_  const TCHAR * const format, ...);
+void throwIndexOutOfRangeException(const TCHAR *method, UINT64 index, UINT64 size);
+void throwIndexOutOfRangeException(const TCHAR *method, UINT64 index, UINT64 count, UINT64 size);
+void throwSelectFromEmptyCollectionException(const TCHAR *method);
+void throwMethodException(const TCHAR *className, TCHAR const * const method, _In_z_ _Printf_format_string_ const TCHAR * const format, ...);
 
-extern void throwErrNoOnNameException(const String &name);
-extern void throwErrNoOnSysCallException(const TCHAR *function);
+void throwErrNoOnNameException(const String &name);
+void throwErrNoOnSysCallException(const TCHAR *method);
 
-extern void throwLastErrorOnSysCallNameException(const String &name);
-extern void throwLastErrorOnSysCallException(const TCHAR *function);
-extern void throwMethodLastErrorOnSysCallException(const TCHAR *className, const TCHAR *method);
+void throwLastErrorOnSysCallNameException(const String &name);
+void throwLastErrorOnSysCallException(const TCHAR *method);
+void throwMethodLastErrorOnSysCallException(const TCHAR *className, const TCHAR *method);
 
 #ifdef IS32BIT
 #define CHECKUINT64ISVALIDSIZET(size64)                         \

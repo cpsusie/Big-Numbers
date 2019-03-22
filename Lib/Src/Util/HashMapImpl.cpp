@@ -109,9 +109,7 @@ const void *HashMapImpl::get(const void *key) const {
 }
 
 AbstractEntry *HashMapImpl::selectEntry() const {
-  if(size() == 0) {
-    throwException(_T("%s:Cannot select from empty map"), __TFUNCTION__);
-  }
+  if(size() == 0) throwSelectFromEmptyCollectionException(__TFUNCTION__);
   return (HashMapNode*)findNode(select());
 }
 

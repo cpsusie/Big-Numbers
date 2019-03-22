@@ -128,9 +128,12 @@ private:
 
 #pragma warning( pop )
 
-  void indexError(size_t index) const {
-    throwException(_T("BigArray::Index %s out of range. size=%s, elementSize=%zu")
-                  ,format1000(index).cstr(), format1000(m_size).cstr(), sizeof(T));
+  void indexError(const TCHAR *method, size_t index) const {
+    throwIndexOutOfRangeException(method, index, m_size);
+  }
+
+  void indexError(const TCHAR *method, size_t index, size_t count) const {
+    throwIndexOutOfRangeException(method, index, count, m_size);
   }
 
   String getPageFileName() const {
@@ -379,9 +382,7 @@ public:
 
   T &operator[](size_t i) {
     CHECK_BIGARRAY_INVARIANT();
-    if(i >= m_size) {
-      indexError(i);
-    }
+    if(i >= m_size) indexError(__TFUNCTION__, i);
     size_t pageIndex;
     PageMapElement &pm = m_pageMap[pageIndex = getPageIndex(i)];
     if(!pm.m_loaded) {
@@ -395,9 +396,7 @@ public:
 
   const T &operator[](size_t i) const {
     CHECK_BIGARRAY_INVARIANT();
-    if(i >= m_size) {
-      indexError(i);
-    }
+    if(i >= m_size) indexError(__TFUNCTION__, i);
     size_t pageIndex;
     PageMapElement &pm = m_pageMap[pageIndex = getPageIndex(i)];
     if(!pm.m_loaded) {
@@ -411,9 +410,7 @@ public:
 
   void add(size_t i, const T &e) {
     CHECK_BIGARRAY_INVARIANT();
-    if(i > m_size) {
-      indexError(i);
-    }
+    if(i > m_size) indexError(__TFUNCTION__, i);
 
     incrementSize();
     for(size_t j = m_size-1; j > i; j--) {
@@ -433,12 +430,7 @@ public:
       return;
     }
     size_t j = i+count;
-    if(j > m_size) {
-      throwException(_T("BigArray::remove(%s,%s):Index %s out of range. size=%s, elementSize=%zu")
-                    ,format1000(i).cstr(), format1000(count).cstr()
-                    ,format1000(j).cstr(), format1000(m_size).cstr()
-                    ,sizeof(T));
-    }
+    if(j > m_size) indexError(__TFUNCTION__, i, count);
     while(j < m_size) {
       (*this)[i++] = (*this)[j++];
     }
@@ -447,10 +439,7 @@ public:
   }
 
   const T &select() const {
-    if(m_size == 0) {
-      throwException(_T("BigArray::Cannot select element from empty array"));
-    }
-
+    if(isEmpty()) throwSelectFromEmptyCollectionException(__TFUNCTION__);
     return (*this)[randSizet(m_size)];
   }
 

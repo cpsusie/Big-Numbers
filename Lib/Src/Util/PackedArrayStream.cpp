@@ -19,8 +19,6 @@ void PackedArray::load(ByteInputStream &s) {
   checkInvariant(__TFUNCTION__);
 }
 
-DEFINECLASSNAME(PackedFileArray);
-
 PackedFileArray::PackedFileArray(const String &fileName, UINT64 startOffset)
 : m_data(fileName, startOffset + sizeof(UINT) + sizeof(UINT64))
   // offset of ByteArray if startOffset + sizeof(m_bitsPerItem) + sizeof(PackedArray::m_firstFreeBit)
@@ -28,7 +26,7 @@ PackedFileArray::PackedFileArray(const String &fileName, UINT64 startOffset)
   ByteInputFile s(fileName);
   s.seek(startOffset);
   s.getBytesForced((BYTE*)&m_bitsPerItem , sizeof(m_bitsPerItem ));
-  PackedArray::validateBitsPerItem(m_bitsPerItem);
+  PackedArray::validateBitsPerItem(__TFUNCTION__, m_bitsPerItem);
 
   s.getBytesForced((BYTE*)&m_firstFreeBit, sizeof(m_firstFreeBit));
   m_maxValue = (1<<m_bitsPerItem)-1;
@@ -38,7 +36,7 @@ PackedFileArray::PackedFileArray(const String &fileName, UINT64 startOffset)
 
 // this is the same algorithm as in PackedArray::get
 UINT PackedFileArray::get(UINT64 index) const {
-  if(index >= size()) indexError(index, __TFUNCTION__);
+  if(index >= size()) indexError(__TFUNCTION__, index);
 
   const UINT p0Index = (index * m_bitsPerItem) / 32;
   const UINT offset  = (index * m_bitsPerItem) % 32;
@@ -58,9 +56,8 @@ void PackedFileArray::checkInvariant(const TCHAR *method) const {
   CHECKUINT64ISVALIDSIZET(expectedDataSize64);
   const size_t expectedDataSize = (size_t)expectedDataSize64;
   if(m_data.size() != expectedDataSize) {
-    throwException(_T("%s:%s:Bits/Item:%u. m_firstFreeBit:%s, m_data.size=%s, Should be %zu")
+    throwException(_T("%s:Bits/Item:%u. m_firstFreeBit:%s, m_data.size=%s, Should be %zu")
                   ,method
-                  ,s_className
                   ,m_bitsPerItem
                   ,format1000(m_firstFreeBit).cstr()
                   ,format1000(m_data.size()).cstr()
@@ -69,9 +66,8 @@ void PackedFileArray::checkInvariant(const TCHAR *method) const {
   if((expectedDataSize > 0) && (m_firstFreeBit%32)) {
     const UINT lastInt = m_data[expectedDataSize-1];
     if((lastInt & ~((1<<(m_firstFreeBit%32))-1)) != 0) {
-      throwException(_T("%s:%s:Bits/Item:%u. m_firstFreeBit:%s, m_data.size=%s, Garbagebits in last element:%08x")
+      throwException(_T("%s:Bits/Item:%u. m_firstFreeBit:%s, m_data.size=%s, Garbagebits in last element:%08x")
                     ,method
-                    ,s_className
                     ,m_bitsPerItem
                     ,format1000(m_firstFreeBit).cstr()
                     ,format1000(m_data.size()).cstr()

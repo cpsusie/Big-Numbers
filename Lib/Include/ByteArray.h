@@ -10,7 +10,8 @@ private:
   size_t        m_size;
 
   void cleanup();
-  void indexError(const TCHAR *method, size_t i) const;
+  void indexError(const TCHAR *method, size_t index) const;
+  void indexError(const TCHAR *method, size_t index, size_t count) const;
 protected:
   void init();
   virtual BYTE *allocateBytes( size_t size);

@@ -60,7 +60,7 @@ void HashSetTable::remove(HashSetNode *n) {
 
 const AbstractKey *HashSetTable::select() const {
   if(m_size == 0) {
-    throwException(_T("%s:Cannot select from empty set"), __TFUNCTION__);
+    throwSelectFromEmptyCollectionException(__TFUNCTION__);
   }
 
   if(randInt() % 2 == 0) {

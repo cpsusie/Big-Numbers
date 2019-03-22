@@ -21,7 +21,7 @@ private:
     return getSize((ULONG)i) + getSize((ULONG)(i>>32));
 #endif
   }
-  void throwIndexOutOfRange(const TCHAR *method, UINT i) const {
+  void indexError(const TCHAR *method, UINT i) const {
     throwInvalidArgumentException(method, _T("Value i=%u out of range, capacity=%u"), i, getCapacity());
   }
   void throwInvalidAB(const TCHAR *method, UINT a, UINT b) const {
@@ -48,7 +48,7 @@ public:
     return (i>=getCapacity()) ? false : ((m_bits & ((T)1<<i)) != 0);
   }
   inline void add(UINT i) {
-    if(i >= getCapacity()) throwIndexOutOfRange(__TFUNCTION__, i);
+    if(i >= getCapacity()) indexError(__TFUNCTION__, i);
     m_bits |= ((T)1<<i);
   }
   inline TinyBitSet &operator+=(UINT i) {
@@ -56,7 +56,7 @@ public:
     return *this;
   }
   inline void remove(UINT i) {
-    if(i >= getCapacity()) throwIndexOutOfRange(__TFUNCTION__, i);
+    if(i >= getCapacity()) indexError(__TFUNCTION__, i);
     m_bits &= ~((T)1<<i);
   }
   inline TinyBitSet &operator-=(UINT i) {
@@ -86,9 +86,7 @@ public:
     return getSize(m_bits);
   }
   UINT select() const {                     // Returns a random element from non empty set. throws Exception if set is empty
-    if(isEmpty()) {
-      throwException(_T("%s:Set is empty"), __TFUNCTION__);
-    }
+    if(isEmpty()) throwSelectFromEmptyCollectionException(__TFUNCTION__);
     CompactArray<BYTE> members(64);
     T bits = m_bits;
     for(BYTE i = 0; bits; i++, bits >>= 1) {

@@ -12,21 +12,17 @@
 
 #pragma warning(disable : 4244)
 
-DEFINECLASSNAME(PackedArray);
-
 PackedArray::PackedArray(BYTE bitsPerItem) : m_bitsPerItem(bitsPerItem), m_maxValue((1<<bitsPerItem)-1) {
-  validateBitsPerItem(bitsPerItem);
+  validateBitsPerItem(__TFUNCTION__, bitsPerItem);
   m_firstFreeBit = 0;
 }
 
-void PackedArray::validateBitsPerItem(UINT bitsPerItem) { // static
-  DEFINEMETHODNAME;
-
+void PackedArray::validateBitsPerItem(const TCHAR *method, UINT bitsPerItem) { // static
   if(bitsPerItem == 0) {
     throwInvalidArgumentException(method, _T("bitsPerItem=0"));
   }
   if(bitsPerItem > 31) {
-    throwInvalidArgumentException(method, _T("bitsPerItem=%d. max=31"), bitsPerItem);
+    throwInvalidArgumentException(method, _T("bitsPerItem=%u. max=31"), bitsPerItem);
   }
 }
 
@@ -55,13 +51,13 @@ static String printbin(UINT v) {
 
 #define CHECK_INDEX                      \
 { if(index >= size()) {                  \
-    indexError(index, __TFUNCTION__);    \
+    indexError(__TFUNCTION__, index);    \
   }                                      \
 }
 
 #define CHECK_VALUE                      \
 { if(v > m_maxValue) {                   \
-    valueError(v, __TFUNCTION__);        \
+    valueError(__TFUNCTION__, v);        \
   }                                      \
 }
 
@@ -93,11 +89,7 @@ UINT PackedArray::get(UINT64 index) const {
 }
 
 UINT PackedArray::select() const {
-#ifdef _DEBUG
-  if(isEmpty()) {
-   selectError();
- }
-#endif
+  if(isEmpty()) selectError(__TFUNCTION__);
   return get(randInt() % size());
 }
 
@@ -183,9 +175,7 @@ void PackedArray::add(UINT64 index, UINT v) {
 // TODO works only for little-endian
 void PackedArray::addZeroes(UINT64 index, UINT64 count) {
 #ifdef _DEBUG
-  if(index > size()) {
-    indexError(index, _T("addZeroes"));
-  }
+  if(index > size()) indexError(__TFUNCTION__, index);
 #endif
 
   DUMP();
@@ -374,11 +364,9 @@ void PackedArray::addZeroes(UINT64 index, UINT64 count) {
 // TODO works only for little-endian
 void PackedArray::remove(UINT64 index, UINT64 count) {
   const UINT64 j = index + count;
-#ifdef _DEBUG
   if(j > size()) {
-    indexError(j, format(_T("remove(%llu,%llu):"), index, count).cstr());
+    indexError(__TFUNCTION__, index, count);
   }
-#endif
 
   DUMP();
 
@@ -550,9 +538,8 @@ void PackedArray::checkInvariant(const TCHAR *method) const {
   CHECKUINT64ISVALIDSIZET(expectedDataSize64);
   const size_t expectedDataSize = (size_t)expectedDataSize64;
   if(m_data.size() != expectedDataSize) {
-    throwException(_T("%s:%s:Bits/Item:%u. m_firstFreeBit:%s, m_data.size=%s, Should be %zu")
+    throwException(_T("%s:Bits/Item:%u. m_firstFreeBit:%s, m_data.size=%s, Should be %zu")
                   ,method
-                  ,s_className
                   ,m_bitsPerItem
                   ,format1000(m_firstFreeBit).cstr()
                   ,format1000(m_data.size()).cstr()
@@ -561,9 +548,8 @@ void PackedArray::checkInvariant(const TCHAR *method) const {
   if((expectedDataSize > 0) && (m_firstFreeBit%32)) {
     const UINT lastInt = m_data[expectedDataSize-1];
     if((lastInt & ~((1<<(m_firstFreeBit%32))-1)) != 0) {
-      throwException(_T("%s:%s:Bits/Item:%u. m_firstFreeBit:%s, m_data.size=%s, Garbagebits in last element:%08x")
+      throwException(_T("%s:Bits/Item:%u. m_firstFreeBit:%s, m_data.size=%s, Garbagebits in last element:%08x")
                     ,method
-                    ,s_className
                     ,m_bitsPerItem
                     ,format1000(m_firstFreeBit).cstr()
                     ,format1000(m_data.size()).cstr()

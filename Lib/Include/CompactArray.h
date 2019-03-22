@@ -15,15 +15,12 @@ private:
   size_t  m_updateCount;
   T      *m_array;
 
-  void indexError(size_t index, const TCHAR *method) const {
-    throwException(_T("%s:Index %s out of range. size=%s")
-                  ,method
-                  ,format1000(index).cstr()
-                  ,format1000(m_size).cstr());
+  void indexError(const TCHAR *method, size_t index) const {
+    throwIndexOutOfRangeException(method, index, m_size);
   }
 
   void selectError(const TCHAR *method) const {
-    throwException(_T("%s:Cannot select from empty array"), method);
+    throwSelectFromEmptyCollectionException(method);
   }
 
   size_t getSortCount(size_t from, size_t count) const {
@@ -102,12 +99,12 @@ public:
   }
 
   inline T &operator[](size_t index) {
-    if(index >= m_size) indexError(index, __TFUNCTION__);
+    if(index >= m_size) indexError(__TFUNCTION__, index);
     return m_array[index];
   }
 
   inline const T &operator[](size_t index) const {
-    if(index >= m_size) indexError(index, __TFUNCTION__);
+    if(index >= m_size) indexError(__TFUNCTION__, index);
     return m_array[index];
   }
 
@@ -143,22 +140,22 @@ public:
   }
 
   inline T &first() {
-    if(m_size == 0) indexError(0, __TFUNCTION__);
+    if(m_size == 0) indexError(__TFUNCTION__, 0);
     return m_array[0];
   }
 
   inline const T &first() const {
-    if(m_size == 0) indexError(0, __TFUNCTION__);
+    if(m_size == 0) indexError(__TFUNCTION__, 0);
     return m_array[0];
   }
 
   inline T &last() {
-    if(m_size == 0) indexError(m_size, __TFUNCTION__);
+    if(m_size == 0) indexError(__TFUNCTION__, m_size);
     return m_array[m_size-1];
   }
 
   inline const T &last() const {
-    if(m_size == 0) indexError(m_size, __TFUNCTION__);
+    if(m_size == 0) indexError(__TFUNCTION__, m_size);
     return m_array[m_size-1];
   }
 
@@ -187,7 +184,7 @@ public:
   }
 
   void add(size_t index, const T &e, size_t count = 1) {
-    if(index > m_size) indexError(index, __TFUNCTION__);
+    if(index > m_size) indexError(__TFUNCTION__, index);
     if(count == 0) return;
     const size_t newSize = m_size + count;
     if(newSize > m_capacity) {
@@ -204,7 +201,7 @@ public:
   }
 
   void add(size_t index, const T *ep, size_t count) {
-    if(index > m_size) indexError(index, __TFUNCTION__);
+    if(index > m_size) indexError(__TFUNCTION__, index);
     if(count == 0) return;
     const size_t newSize = m_size + count;
     if(newSize > m_capacity) {
@@ -243,7 +240,7 @@ public:
       return;
     }
     const size_t j = index+count;
-    if(j > m_size) indexError(j, format(_T("%s(%s,%s)"), __TFUNCTION__,format1000(index).cstr(), format1000(count).cstr()).cstr());
+    if(j > m_size) indexError(format(_T("%s(%s,%s)"), __TFUNCTION__,format1000(index).cstr(), format1000(count).cstr()).cstr(),j);
     if(j < m_size) {
       memmove(m_array+index, m_array+j, (m_size-j) * sizeof(T));
     }
@@ -255,13 +252,13 @@ public:
   }
 
   void removeLast() {
-    if(m_size == 0) indexError(m_size, __TFUNCTION__);
+    if(m_size == 0) indexError(__TFUNCTION__, m_size);
     remove(m_size-1);
   }
 
   CompactArray<T> &swap(size_t i1, size_t i2) {
-    if(i1 >= m_size) indexError(i1, __TFUNCTION__);
-    if(i2 >= m_size) indexError(i2, __TFUNCTION__);
+    if(i1 >= m_size) indexError(__TFUNCTION__, i1);
+    if(i2 >= m_size) indexError(__TFUNCTION__, i2);
     const T tmp = m_array[i1];
     m_array[i1] = m_array[i2];
     m_array[i2] = tmp;
@@ -641,12 +638,8 @@ private:
   const UINT64           m_dataStartOffset;
   size_t                 m_size;
 
-  void indexError(size_t index, const TCHAR *method) const {
-    throwException(_T("%s:Index %s out of range. Size=%s, elementSize:%zu")
-                  ,method
-                  ,format1000(index).cstr()
-                  ,format1000(m_size).cstr()
-                  ,sizeof(T));
+  void indexError(const TCHAR *method, size_t index) const {
+    throwIndexOutOfRangeException(method, index, m_size);
   }
 
 public:
@@ -673,7 +666,7 @@ public:
   }
 
   T operator[](size_t index) const {
-    if(index >= m_size) indexError(index, __TFUNCTION__);
+    if(index >= m_size) indexError(__TFUNCTION__, index);
 
     m_f.seek(m_dataStartOffset + index * sizeof(T));
     T result;

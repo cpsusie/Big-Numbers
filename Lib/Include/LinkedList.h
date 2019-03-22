@@ -27,7 +27,7 @@ private:
   // assume index < size()
   const ListNode *findNode(size_t index) const;
   void removeNode(ListNode *n);
-  void throwOutOfRangeException(const TCHAR *method, size_t index) const;
+  void indexError(const TCHAR *method, size_t index) const;
   friend class ListIterator;
 public:
   ListImpl(AbstractObjectManager &objectManager);

@@ -5,7 +5,6 @@
 
 class PackedArray {
 private:
-  DECLARECLASSNAME;
   UINT               m_bitsPerItem;
   UINT               m_maxValue;
   CompactArray<UINT> m_data;
@@ -14,18 +13,21 @@ private:
     if(m_data.size() * 32 < m_firstFreeBit + m_bitsPerItem) m_data.add(0);
   }
 
-  static void validateBitsPerItem(UINT bitsPerItem);
+  static void validateBitsPerItem(const TCHAR *method, UINT bitsPerItem);
 #ifdef _DEBUG
-  void indexError(UINT64 index, const TCHAR *method=EMPTYSTRING) const {
-    throwInvalidArgumentException(method, _T("Index %I64u out of range. size=%I64u"), index, size());
+  void indexError(const TCHAR *method, UINT64 index) const {
+    throwIndexOutOfRangeException(method, index, size());
   }
-  void valueError(UINT v, const TCHAR *method=EMPTYSTRING) const {
+  void valueError(const TCHAR *method, UINT v) const {
     throwInvalidArgumentException(method, _T("v=%lu, maxValue=%lu"), v, m_maxValue);
   }
-  static void selectError() {
-    throwException(_T("%s:Cannot select from empty array"), __TFUNCTION__);
+#endif _DEBUG
+  void indexError(const TCHAR *method, UINT64 index, UINT64 count) const {
+    throwIndexOutOfRangeException(method, index, count, size());
   }
-#endif
+  void selectError(const TCHAR *method) const {
+    throwSelectFromEmptyCollectionException(method);
+  }
 
 public:
   explicit PackedArray(BYTE bitsPerItem);
@@ -81,24 +83,23 @@ class PackedFileArray { // Read-only packed array of integers accessed by seekin
                         // the whole array into memory. Slow, but save space
                         // Bytes starting at startOffset must be written by PackedArray.save
 private:
-  DECLARECLASSNAME;
   UINT                   m_bitsPerItem;
   UINT                   m_maxValue;
   CompactFileArray<UINT> m_data;
   UINT64                 m_firstFreeBit;
   UINT64                 m_size;
-  void indexError(UINT64 index, const TCHAR *method) const {
-    throwInvalidArgumentException(method, _T("Index %I64u out of range. size=%I64u"), index, size());
+  void indexError(const TCHAR *method, UINT64 index) const {
+    throwIndexOutOfRangeException(method, index, size());
   }
-  void selectError() const {
-    throwException(_T("%s:Cannot select from empty array"), s_className);
+  void selectError(const TCHAR *method) const {
+    throwSelectFromEmptyCollectionException(method);
   }
   void checkInvariant(const TCHAR *method) const;
 public:
   PackedFileArray(const String &fileName, UINT64 startOffset);
   UINT get(UINT64 index) const;
   inline UINT select() const {
-    if(isEmpty()) selectError();
+    if(isEmpty()) selectError(__TFUNCTION__);
     return get(randInt() % size());
   }
   inline bool isEmpty() const {

@@ -207,7 +207,7 @@ void *ValueCollection::select() {
 }
 
 void ValueCollection::selectError(const TCHAR *method) const {
-  throwException(_T("%s:Cannot select element from empty collection"), method);
+  throwSelectFromEmptyCollectionException(method);
 }
 
 // ------------------------------------ValueIterator-----------------------------------------------------
