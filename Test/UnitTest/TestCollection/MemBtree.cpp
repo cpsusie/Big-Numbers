@@ -887,7 +887,7 @@ bool BTreeMapImpl::remove(const void *key) {
 
 AbstractEntry *BTreeMapImpl::selectEntry() const {
   if(size() == 0) {
-    throwException(_T("BtreeMap::select:Cannot select element from empty map."));
+    throwSelectFromEmptyCollectionException(__TFUNCTION__);
   }
   return (AbstractEntry*)(BTreeMapPageItem*)findNode(select());
 }

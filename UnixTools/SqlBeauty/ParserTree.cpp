@@ -175,14 +175,14 @@ SyntaxNode::~SyntaxNode() {
 
 SyntaxNode *SyntaxNode::getChild(UINT i) {
   if(i >= m_childCount) {
-    throwException(_T("index(%d) out of range. Size=%d"), i, m_childCount);
+    throwIndexOutOfRangeException(__TFUNCTION__, i, m_childCount);
   }
   return m_children[i];
 }
 
 void SyntaxNode::setChild(UINT i, SyntaxNode *v) {
   if(i >= m_childCount) {
-    throwException(_T("index(%d) out of range. Size=%d"), i, m_childCount);
+    throwIndexOutOfRangeException(__TFUNCTION__, i, m_childCount);
   }
   m_children[i] = v;
 }
