@@ -1020,6 +1020,7 @@
     <ClCompile Include="MyString.cpp" />
     <ClCompile Include="MyStringA2W.cpp" />
     <ClCompile Include="PackedArray.cpp" />
+    <ClCompile Include="PackedArrayIterator.cpp" />
     <ClCompile Include="PackedArrayStream.cpp" />
     <ClCompile Include="Packer.cpp" />
     <ClCompile Include="PackerByteArray.cpp" />

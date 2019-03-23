@@ -800,6 +800,9 @@
     <ClCompile Include="BCDArray.cpp">
       <Filter>Source Files\Math</Filter>
     </ClCompile>
+    <ClCompile Include="PackedArrayIterator.cpp">
+      <Filter>Source Files\Collection</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\Array.h">

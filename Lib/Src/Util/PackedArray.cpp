@@ -1,20 +1,19 @@
 #include "pch.h"
 #include <MyUtil.h>
 #include <MyAssert.h>
-#ifdef _DEBUG
-#include <Console.h>
-#endif
-#include <PackedArray.h>
 
-#ifdef _DEBUG
-//#define TEST
-#endif
+#ifdef _DEBUG_PACKEDARRAY
+#include <Console.h>
+#endif // _DEBUG_PACKEDARRAY
+
+#include <PackedArray.h>
 
 #pragma warning(disable : 4244)
 
 PackedArray::PackedArray(BYTE bitsPerItem) : m_bitsPerItem(bitsPerItem), m_maxValue((1<<bitsPerItem)-1) {
   validateBitsPerItem(__TFUNCTION__, bitsPerItem);
   m_firstFreeBit = 0;
+  m_updateCount  = 0;
 }
 
 void PackedArray::validateBitsPerItem(const TCHAR *method, UINT bitsPerItem) { // static
@@ -26,53 +25,19 @@ void PackedArray::validateBitsPerItem(const TCHAR *method, UINT bitsPerItem) { /
   }
 }
 
-static TCHAR *sprintbin(TCHAR *s, UINT v) { // low-end bits first
-  TCHAR *t = s;
-  for(int i = 32; i--; v >>= 1) {
-    *(t++) = _T('0') + (v & 1);
-  }
-  *t = 0;
-  return s;
-}
-
-#ifdef TEST
-#define DUMP() if(trace) { dump(true); }
-
-static String printbin(UINT v) {
-  TCHAR tmp[100];
-  return sprintbin(tmp, v);
-}
-
-#else
+#ifdef _DEBUG_PACKEDARRAY
+#define DUMP() if(s_trace) { dump(true); }
+#else // _DEBUG_PACKEDARRAY
 #define DUMP()
-#endif
+#endif // _DEBUG_PACKEDARRAY
 
-#ifdef _DEBUG
-
-#define CHECK_INDEX                      \
-{ if(index >= size()) {                  \
-    indexError(__TFUNCTION__, index);    \
-  }                                      \
-}
-
-#define CHECK_VALUE                      \
-{ if(v > m_maxValue) {                   \
-    valueError(__TFUNCTION__, v);        \
-  }                                      \
-}
+#define CHECK_INDEX { if(index >= size()) indexError(__TFUNCTION__, index); }
+#define CHECK_VALUE { if(v > m_maxValue)  valueError(__TFUNCTION__, v);     }
 
 #define CHECK_INDEX_AND_VALUE            \
 { CHECK_INDEX                            \
   CHECK_VALUE                            \
 }
-
-#else
-
-#define CHECK_INDEX
-#define CHECK_VALUE
-#define CHECK_INDEX_AND_VALUE
-
-#endif
 
 UINT PackedArray::get(UINT64 index) const {
   CHECK_INDEX
@@ -162,32 +127,29 @@ void PackedArray::add(UINT v) {
   if(rest -= n) {
     p[1] |= (v>>n) & (m_maxValue >> (m_bitsPerItem - rest));
   }
+  m_updateCount++;
 }
 
 void PackedArray::add(UINT64 index, UINT v) {
   CHECK_VALUE
-
   addZeroes(index, 1);
-
   set(index, v);
 }
 
 // TODO works only for little-endian
 void PackedArray::addZeroes(UINT64 index, UINT64 count) {
-#ifdef _DEBUG
   if(index > size()) indexError(__TFUNCTION__, index);
-#endif
-
   DUMP();
 
+  m_updateCount++;
   const __int64 bitsToAdd  = count * m_bitsPerItem;
   const __int64 newFreeBit = m_firstFreeBit + bitsToAdd;
 
-#ifdef TEST
-  if(trace) {
+#ifdef _DEBUG_PACKEDARRAY
+  if(s_trace) {
     int fisk = 1;
   }
-#endif
+#endif // _DEBUG_PACKEDARRAY
 
   for(__int64 bitsNeeded = bitsToAdd - (m_data.size() * 32 - m_firstFreeBit); bitsNeeded > 0; bitsNeeded -= 32) {
     m_data.add(0);
@@ -200,9 +162,9 @@ void PackedArray::addZeroes(UINT64 index, UINT64 count) {
     UINT         *p0          = &m_data[0];
     UINT         *basep       = p0 + bitPos/32; // first integer to copy from
 
-#ifdef TEST
+#ifdef _DEBUG_PACKEDARRAY
     markPointer(basep, baseOffset);
-#endif
+#endif // _DEBUG_PACKEDARRAY
 
     switch(bitsToAdd % 32) {
     case  0:
@@ -217,12 +179,13 @@ void PackedArray::addZeroes(UINT64 index, UINT64 count) {
         char     *dst         = src + bitsToAdd/8; // bitsToAdd is a positive multiplum of 8 => dst > src
         const int bytesToMove = (((char*)p0) + m_firstFreeBit/8 + ((m_firstFreeBit%8)?1:0)) - src;
 
-#ifdef TEST
+#ifdef _DEBUG_PACKEDARRAY
         assert(bytesToMove > 0);
         markPointer(src);
         markPointer(dst);
         assert(((char*)basep <= src) && (src < dst) && (dst+bytesToMove <= (((char*)&m_data.last()) + sizeof(UINT))));
-#endif
+#endif // _DEBUG_PACKEDARRAY
+
         memmove(dst, src, bytesToMove);
         DUMP();
         const int offset = baseOffset % 8;
@@ -273,11 +236,11 @@ void PackedArray::addZeroes(UINT64 index, UINT64 count) {
         UINT              *dstp        = p0 + dstBitIndex/32; // lowest address to copy to
         int shiftL, shiftR;
 
-#ifdef TEST
+#ifdef _DEBUG_PACKEDARRAY
         markPointer(src, srcOffset);
         markPointer(dstp);
         markPointer(dst, dstOffset);
-#endif
+#endif // _DEBUG_PACKEDARRAY
 
         if(dstOffset <= srcOffset) {
           shiftR = srcOffset - dstOffset;
@@ -288,27 +251,27 @@ void PackedArray::addZeroes(UINT64 index, UINT64 count) {
         }
         if(dst == src) {
           for(;dst > dstp; dst--) {
-#ifdef TEST
+#ifdef _DEBUG_PACKEDARRAY
             markPointer(dst);
-#endif
+#endif // _DEBUG_PACKEDARRAY
             *dst = (*(dst-1) >> shiftR) | (*dst << shiftL);
             DUMP();
           }
         } else { // dst > src
           if(dstOffset <= srcOffset) {
-#ifdef TEST
+#ifdef _DEBUG_PACKEDARRAY
             markPointer(src);
             markPointer(dst);
-#endif
+#endif // _DEBUG_PACKEDARRAY
             *(dst--) = (*src >> shiftR);
             DUMP();
           }
           for(;dst > dstp; src--) {
             assert(src > basep);
-#ifdef TEST
+#ifdef _DEBUG_PACKEDARRAY
             markPointer(src);
             markPointer(dst);
-#endif
+#endif // _DEBUG_PACKEDARRAY
             *(dst--) = (*(src-1) >> shiftR) | (*src << shiftL);
             DUMP();
           }
@@ -316,14 +279,14 @@ void PackedArray::addZeroes(UINT64 index, UINT64 count) {
 
         dstOffset = dstBitIndex % 32;
 
-#ifdef TEST
-        if(trace) {
+#ifdef _DEBUG_PACKEDARRAY
+        if(s_trace) {
           markBit(bitPos);
           markPointer(dstp, dstOffset);
           markBit(dstBitIndex);
           markBit(newFreeBit);
         }
-#endif
+#endif // _DEBUG_PACKEDARRAY
 
         const UINT mask = (1<<baseOffset)-1;
         if(dstp == basep) {
@@ -355,9 +318,7 @@ void PackedArray::addZeroes(UINT64 index, UINT64 count) {
       break;
     }
   }
-
   m_firstFreeBit = newFreeBit;
-
   DUMP();
 }
 
@@ -367,17 +328,17 @@ void PackedArray::remove(UINT64 index, UINT64 count) {
   if(j > size()) {
     indexError(__TFUNCTION__, index, count);
   }
-
   DUMP();
 
+  m_updateCount++;
   const __int64 bitsToRemove = count * m_bitsPerItem;
   const __int64 newFreeBit   = m_firstFreeBit - bitsToRemove;
 
-#ifdef TEST
-  if(trace) {
+#ifdef _DEBUG_PACKEDARRAY
+  if(s_trace) {
     int fisk = 1;
   }
-#endif
+#endif // _DEBUG_PACKEDARRAY
 
   if(j < size()) {
     const __int64     bitPos     = index * m_bitsPerItem;
@@ -398,12 +359,14 @@ void PackedArray::remove(UINT64 index, UINT64 count) {
         char     *src         = dst + bitsToRemove/8; // bitsToRemove is a positive multiplum of 8 => src > dst
         const int bytesToMove = (((char*)p0) + m_firstFreeBit/8 + ((m_firstFreeBit%8)?1:0)) - src;
         const char oldDst     = *dst;
-#ifdef TEST
+
+#ifdef _DEBUG_PACKEDARRAY
         assert(bytesToMove > 0);
         markPointer(src);
         markPointer(dst);
         assert(((char*)basep <= dst) && (dst < src) && (src+bytesToMove <= (((char*)&m_data.last()) + sizeof(UINT))));
-#endif
+#endif // _DEBUG_PACKEDARRAY
+
         memmove(dst, src, bytesToMove);
         DUMP();
         const int offset = baseOffset % 8;
@@ -434,10 +397,11 @@ void PackedArray::remove(UINT64 index, UINT64 count) {
           shiftR = 32 - shiftL;
         }
 
-#ifdef TEST
+#ifdef _DEBUG_PACKEDARRAY
         markPointer(dst, dstOffset);
         markPointer(src, srcOffset);
-#endif
+#endif // _DEBUG_PACKEDARRAY
+
         const UINT mask = (1<<dstOffset)-1;
         if(dstOffset <= srcOffset) {
           *dst = (*dst & mask) | ((src[0] >> shiftR) & ~mask);
@@ -453,26 +417,26 @@ void PackedArray::remove(UINT64 index, UINT64 count) {
         DUMP();
         dst++;
 
-#ifdef TEST
+#ifdef _DEBUG_PACKEDARRAY
         markPointer(dst);
         markPointer(src);
         markPointer(lastp);
-#endif
+#endif // _DEBUG_PACKEDARRAY
         if(dst == src) {
           for(;dst < lastp; dst++) {
-#ifdef TEST
+#ifdef _DEBUG_PACKEDARRAY
             markPointer(dst);
-#endif
+#endif // _DEBUG_PACKEDARRAY
             *dst = (*dst >> shiftR) | (*(dst+1) << shiftL);
             DUMP();
           }
           src = dst;
         } else { // dst < src
           for(;src < lastp; src++) {
-#ifdef TEST
+#ifdef _DEBUG_PACKEDARRAY
             markPointer(dst);
             markPointer(src);
-#endif
+#endif // _DEBUG_PACKEDARRAY
             *(dst++) = (*src >> shiftR) | (*(src+1) << shiftL);
             DUMP();
           }
@@ -480,11 +444,11 @@ void PackedArray::remove(UINT64 index, UINT64 count) {
         assert(dst <= src);
 
         if(src <= lastp) {
-#ifdef TEST
+#ifdef _DEBUG_PACKEDARRAY
           markPointer(dst, dstOffset);
           markPointer(src, srcOffset);
           assert((basep <= dst) && (dst <= src) && (src <= lastp));
-#endif
+#endif // _DEBUG_PACKEDARRAY
           *dst = *src >> shiftR;
           DUMP();
         }
@@ -507,8 +471,11 @@ void PackedArray::remove(UINT64 index, UINT64 count) {
 }
 
 PackedArray &PackedArray::clear() {
-  m_data.clear();
-  m_firstFreeBit = 0;
+  if(!isEmpty()) {
+    m_updateCount++;
+    m_data.clear();
+    m_firstFreeBit = 0;
+  }
   return *this;
 }
 
@@ -558,7 +525,55 @@ void PackedArray::checkInvariant(const TCHAR *method) const {
   }
 }
 
-String PackedArray::toString() const {
+#ifdef _DEBUG_PACKEDARRAY
+
+bool PackedArray::s_trace = false;
+#define RECTTOP     50
+#define STRINGLINES 7
+#define RECTBOTTOM  (RECTTOP + STRINGLINES)
+
+void PackedArray::dump(bool fixedPos) const {
+  if(fixedPos) {
+    const COORD oldPos = Console::getCursorPos();
+    Console::clearRect(0,RECTTOP,Console::getWindowSize().X,RECTBOTTOM+1);
+    Console::setCursorPos(0,RECTTOP);
+    _tprintf(_T("%s\n"), toDebugString().cstr());
+    Console::setCursorPos(oldPos);
+  } else {
+    _tprintf(_T("%s\n"), toDebugString().cstr());
+  }
+}
+
+void PackedArray::markPointer(const void *p, int offset) const {
+  if(!s_trace) return;
+  if(!m_data.isEmpty()) {
+    markBit(((const char*)p - (const char*)&m_data[0]) * 8 + offset);
+  }
+}
+
+void PackedArray::markElement(int index) const {
+  if(!s_trace) return;
+  markBit(index * m_bitsPerItem);
+}
+
+void PackedArray::markBit(int bit) const {
+  if(!s_trace) return;
+  COORD oldPos = Console::getCursorPos();
+  Console::clearRect(0,RECTBOTTOM,Console::getWindowSize().X,RECTBOTTOM);
+  Console::printf(bit + (bit/32), RECTBOTTOM, _T("%c"), 24);
+  Console::setCursorPos(oldPos);
+}
+
+static TCHAR *sprintbin(TCHAR *dst, UINT v) { // low-end bits first
+  TCHAR *t = dst;
+  for(int i = 32; i--; v >>= 1) {
+    *(t++) = _T('0') + (v & 1);
+  }
+  *t = 0;
+  return dst;
+}
+
+String PackedArray::toDebugString() const {
   String result = format(_T("Packed Array:Bits/Item:%d, Size:%s, firstFreeBit:%s. m_data.size:%s\n")
                         ,m_bitsPerItem
                         ,format1000(size()).cstr()
@@ -629,43 +644,4 @@ String PackedArray::toString() const {
   }
   return result;
 }
-
-#ifdef _DEBUG
-
-bool PackedArray::trace = false;
-#define RECTTOP     50
-#define STRINGLINES 7
-#define RECTBOTTOM  (RECTTOP + STRINGLINES)
-
-void PackedArray::dump(bool fixedPos) const {
-  if(fixedPos) {
-    const COORD oldPos = Console::getCursorPos();
-    Console::clearRect(0,RECTTOP,Console::getWindowSize().X,RECTBOTTOM+1);
-    Console::setCursorPos(0,RECTTOP);
-    _tprintf(_T("%s\n"), toString().cstr());
-    Console::setCursorPos(oldPos);
-  } else {
-    _tprintf(_T("%s\n"), toString().cstr());
-  }
-}
-
-void PackedArray::markPointer(const void *p, int offset) const {
-  if(!trace) return;
-  if(!m_data.isEmpty()) {
-    markBit(((const char*)p - (const char*)&m_data[0]) * 8 + offset);
-  }
-}
-
-void PackedArray::markElement(int index) const {
-  if(!trace) return;
-  markBit(index * m_bitsPerItem);
-}
-
-void PackedArray::markBit(int bit) const {
-  if(!trace) return;
-  COORD oldPos = Console::getCursorPos();
-  Console::clearRect(0,RECTBOTTOM,Console::getWindowSize().X,RECTBOTTOM);
-  Console::printf(bit + (bit/32), RECTBOTTOM, _T("%c"), 24);
-  Console::setCursorPos(oldPos);
-}
-#endif
+#endif // _DEBUG_PACKEDARRAY
