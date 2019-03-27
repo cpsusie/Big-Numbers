@@ -42,6 +42,13 @@ static const double defaultTestValues[] = {
  ,1234567890123456
 };
 
+String getTestFileName(const String &fileName, const String extension = _T("dat")) {
+  const String testDir = _T("c:\\temp\\TestDir");
+  String fname = fileName;
+  fname.replace(_T(':'), _T('_'));
+  return FileNameSplitter(FileNameSplitter::getChildName(testDir, fname)).setExtension(extension).getFullPath();
+}
+
 class StringParametersIterator {
 private:
   size_t         m_nextValueIndex;
@@ -335,7 +342,8 @@ void testToString() {
   tcout << _T("Testing operator<<(ostream &stream, BigReal/Double80/double)") << endl;
 
   StringParametersIterator it1;
-  testToString(_T("c:\\temp\\toStringErrorsStd.log"), it1);
+  const String fileName = getTestFileName(__TFUNCTION__, _T("log"));
+  testToString(fileName, it1);
 
   CompactDoubleArray values;
   for(int i = 0; i < 32; i++) {

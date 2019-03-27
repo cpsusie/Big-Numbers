@@ -13,7 +13,7 @@ namespace TestByteArray {
   TEST_CLASS(TestByteArray)	{
 	public:
 		
-    static void testSaveLoad(const ByteArray &a, const TCHAR *fileName) {
+    static void testSaveLoad(const ByteArray &a, const String &fileName) {
       a.save(ByteOutputFile(fileName));
 
       ByteArray loaded;
@@ -26,10 +26,10 @@ namespace TestByteArray {
       ByteFileArray bfArray(fileName, 0);
       verify(bfArray.size() == loaded.size());
 
-      for (int i = 0; i < 1000; i++) {
-        const size_t index = randSizet(bfArray.size());
-        const BYTE bfElement = bfArray[index];
-        const BYTE element = loaded[index];
+      for(int i = 0; i < 1000; i++) {
+        const size_t index     = randSizet(bfArray.size());
+        const BYTE   bfElement = bfArray[index];
+        const BYTE   element   = loaded[index];
         verify(bfElement == element);
       }
     }
@@ -40,32 +40,32 @@ namespace TestByteArray {
       ByteArray a;
 
       BYTE data[200000];
-      for (unsigned int i = 0; i < ARRAYSIZE(data); i++) {
+      for(size_t i = 0; i < ARRAYSIZE(data); i++) {
         data[i] = i % 256;
       }
 
       a.setData(data, ARRAYSIZE(data));
       verify(a.size() == ARRAYSIZE(data));
 
-      for (unsigned int i = 0; i < a.size(); i++) {
+      for(size_t i = 0; i < a.size(); i++) {
         verify(a[i] == data[i]);
       }
 
       ByteArray b = a;
       verify(b.size() == ARRAYSIZE(data));
 
-      for (unsigned int i = 0; i < a.size(); i++) {
+      for(size_t i = 0; i < a.size(); i++) {
         verify(b[i] == data[i]);
       }
 
-      const TCHAR *fileName = _T("c:\\temp\\TestByteArray.tmp");
+      const String fileName = getTestFileName(__TFUNCTION__);
       testSaveLoad(a, fileName);
       unlink(fileName);
 
       b = b;
 
       verify(b.size() == ARRAYSIZE(data));
-      for (unsigned int i = 0; i < a.size(); i++) {
+      for(size_t i = 0; i < a.size(); i++) {
         verify(b[i] == data[i]);
       }
 
@@ -105,9 +105,9 @@ namespace TestByteArray {
       try {
         BYTE byte = c[0];
         verify(false);
-      }  catch (Exception e) {
+      }  catch(Exception e) {
         // ignore
       }
     }
-	};
+  };
 }

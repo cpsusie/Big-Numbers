@@ -83,7 +83,7 @@ namespace TestArray {
 
   void listArray(const TCHAR *name, ArrayType &a) {
     OUTPUT(_T("%s:"), name);
-    for (size_t i = 0; i < a.size(); i++) {
+    for(size_t i = 0; i < a.size(); i++) {
       OUTPUT(_T("%2d "), a[i].n);
     }
   }
@@ -104,7 +104,7 @@ namespace TestArray {
     m_counter++;
     String line;
     line += format(_T("%2d:"), m_counter);
-    for (size_t i = 0; i < a.size(); i++) {
+    for(size_t i = 0; i < a.size(); i++) {
       line += format(_T("%d "), a[i]);
     }
     OUTPUT(_T("%s"), line.cstr());
@@ -118,7 +118,7 @@ namespace TestArray {
     TEST_METHOD(ArrayPrimitiveOperations) {
       IntArray a;
 
-      for (int i = 0; i < 100; i++) {
+      for(int i = 0; i < 100; i++) {
         a.add(i);
         verify(a.last() == i);
         verify(a.size() == i + 1);
@@ -183,9 +183,9 @@ namespace TestArray {
       verify(a != b);
 
       a = b;
-      for (int i = 99; i >= 0; i--) {
+      for(int i = 99; i >= 0; i--) {
         verify(a.last() == i);
-        if (a.size() > 0) {
+        if(a.size() > 0) {
           verify(a[0] == 0);
         }
         a.removeLast();
@@ -194,7 +194,7 @@ namespace TestArray {
       a = b;
       verify(a.size() == b.size());
       a.sort(intReverseCompare);
-      for (size_t i = 0; i < a.size(); i++) {
+      for(size_t i = 0; i < a.size(); i++) {
         verify(a[i] == b[b.size() - i - 1]);
       }
       verify(a != b);
@@ -214,7 +214,7 @@ namespace TestArray {
       verify(a.remove(55));
 
       index = 0;
-      for (Iterator<int> it = a.getIterator(); it.hasNext() && index < 10; index++) {
+      for(Iterator<int> it = a.getIterator(); it.hasNext() && index < 10; index++) {
         verify(a.contains(it.next()));
       }
     }
@@ -228,10 +228,10 @@ namespace TestArray {
     TEST_METHOD(ArrayStream) {
       OUTPUT(_T("Testing Array save/load"));
       ArrayType a;
-      for (int i = 0; i < 10000; i++) {
+      for(int i = 0; i < 10000; i++) {
         a.add(randInt(1000000));
       }
-      const String fileName = _T("c:\\temp\\testCollection\\Array.dat");
+      const String fileName = getTestFileName(__TFUNCTION__);
       a.save(CompressFilter(ByteOutputFile(fileName)));
       ArrayType tmp;
       tmp.load(DecompressFilter(ByteInputFile(fileName)));
@@ -249,7 +249,7 @@ namespace TestArray {
 
       ArrayType a, b;
       double start;
-      for (int i = 0; i < size; i++) {
+      for(int i = 0; i < size; i++) {
         a.add(randInt(10 * size));
       }
 
@@ -264,7 +264,7 @@ namespace TestArray {
       ArrayType d = a;
       verify(d == c);
 
-      if (a.size() < 30) {
+      if(a.size() < 30) {
         listArray(_T("a"), a);
       }
 
@@ -278,13 +278,13 @@ namespace TestArray {
       c.sort(compare2);
       OUTPUT(_T("  sort(compare2)  :%.3lf"), (getProcessTime() - start) / 1000000);
 
-      for (size_t i = 1; i < a.size(); i++) {
+      for(size_t i = 1; i < a.size(); i++) {
         verify(comparator.compare(a[i - 1], a[i]) <= 0);
       }
 
-      if (a != b || a != c) {
+      if(a != b || a != c) {
         OUTPUT(_T("Not same ordering!!"));
-        if (a.size() < 30) {
+        if(a.size() < 30) {
           listArray(_T("a"), a);
           listArray(_T("b"), b);
           listArray(_T("c"), c);
@@ -304,7 +304,7 @@ namespace TestArray {
       verify(a.binaryInsert(tmp, compare2) >= 0);
 
       ArrayElement *ca = new ArrayElement[size];
-      for (int i = 0; i < size; i++) {
+      for(int i = 0; i < size; i++) {
         ca[i] = randInt(2 * size);
       }
 
@@ -314,7 +314,7 @@ namespace TestArray {
 
       OUTPUT(_T("  quickSort(compare3):%.3lf"), (getProcessTime() - start) / 1000000);
 
-      for (int i = 1; i < size; i++) {
+      for(int i = 1; i < size; i++) {
         verify(compare3(&ca[i - 1], &ca[i]) <= 0);
       }
       delete[] ca;
@@ -322,7 +322,7 @@ namespace TestArray {
 
     TEST_METHOD(ArrayPermuations) {
       IntArray a;
-      for (int i = 0; i < 4; i++) {
+      for(int i = 0; i < 4; i++) {
         a.add(i);
       }
       PrintIntArray permArray;

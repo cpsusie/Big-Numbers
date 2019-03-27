@@ -58,7 +58,7 @@ namespace TestStringPool {
       sp1 = sp;
       verify(sp1 == sp);
 
-      const TCHAR *fileName = _T("c:\\temp\\TestStringPool.tmp");
+      const String fileName = getTestFileName(__TFUNCTION__);
       sp.save(ByteOutputFile(fileName));
 
       StringPool loaded;

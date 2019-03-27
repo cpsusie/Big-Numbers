@@ -406,7 +406,7 @@ namespace TestPackedArray {
 
     TEST_METHOD(TestPackedFileArray) {
       const static TCHAR *objectToTest = _T("PackedFileArray");
-      const String        fileName     = _T("c:\\temp\\testPackedArray\\PackedFileArray.dat");
+      const String fileName = getTestFileName(__TFUNCTION__);
       for(UINT bitsPerItem = 3; bitsPerItem <= 31; bitsPerItem+=5) {
         PackedArray pa(bitsPerItem);
         const UINT   maxV  = pa.getMaxValue();

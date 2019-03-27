@@ -575,7 +575,7 @@ namespace TestBitSet {
     TEST_METHOD(TestFileBitSet) {
       const size_t capacity = 20000;
       const BitSet s(genRandomSet(capacity));
-      const TCHAR *fileName = _T("c:\\temp\\testBitSet\\fileBitSet.dat");
+      const String fileName = getTestFileName(__TFUNCTION__);
       s.save(ByteOutputFile(fileName));
       FileBitSet fs(fileName, 0);
       for (size_t i = 0; i < capacity; i++) {
@@ -628,7 +628,7 @@ namespace TestBitSet {
       genRandomSet(s, capacity, capacity / 3);
 
       double startTime = getThreadTime();
-      const TCHAR *fileName = _T("c:\\temp\\testBitSet\\fileBitSetIndex.dat");
+      const String fileName = getTestFileName(__TFUNCTION__);
 
       const size_t ssize = s.size();
 

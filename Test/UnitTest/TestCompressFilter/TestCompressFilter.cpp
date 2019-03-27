@@ -50,7 +50,7 @@ namespace TestCompressFilter {
     TEST_METHOD(CompressFilterPrimitiveOperations) {
       const double startTime = getProcessTime();
       bool ok = true;
-      const String fileName = _T("c:\\temp\\compressedData.dat");
+      const String fileName = getTestFileName(__TFUNCTION__);
       try {
         for (int i = 0; i < 10; i++) {
           ByteArray a = niceByteArray(100000) + randomByteArray(100000);

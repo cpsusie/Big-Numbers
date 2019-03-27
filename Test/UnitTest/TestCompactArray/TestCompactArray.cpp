@@ -86,7 +86,7 @@ namespace TestCompactArray {
   bool PrintCompactIntArray::handlePermutation(const CompactIntArray &a) {
     m_counter++;
     String line = format(_T("%2d:"), m_counter);
-    for (size_t i = 0; i < a.size(); i++) {
+    for(size_t i = 0; i < a.size(); i++) {
       line += format(_T("%d "), a[i]);
     }
     OUTPUT(_T("%s"), line.cstr());
@@ -108,11 +108,11 @@ namespace TestCompactArray {
       */
     }
 
-    static void testSaveLoad(const TCHAR *fileName) {
+    static void testSaveLoad(const String &fileName) {
       CompactArrayType a;
       int es = sizeof(CompactArrayElement);
       OUTPUT(_T("sizeof(CompactArrayElement):%d"), es);
-      for (int i = 0; i < 2000; i++) {
+      for(int i = 0; i < 2000; i++) {
         a.add(CompactArrayElement(randInt(100000)));
       }
       a.save(ByteOutputFile(fileName));
@@ -128,7 +128,7 @@ namespace TestCompactArray {
       CompactFileArray<CompactArrayElement> cfArray(fileName, 0);
       verify(cfArray.size() == loaded.size());
 
-      for (int i = 0; i < 1000; i++) {
+      for(int i = 0; i < 1000; i++) {
         const size_t index = randSizet(cfArray.size());
         const CompactArrayElement &cfElement = cfArray[index];
         const CompactArrayElement &element = loaded[index];
@@ -144,18 +144,18 @@ namespace TestCompactArray {
 #define SOURCE_SIZE   20
 #define SAMPLE_SIZE   5
 
-      for (int i = 0; i < SOURCE_SIZE; i++) {
+      for(int i = 0; i < SOURCE_SIZE; i++) {
         S.add(i);
         counters.add(0);
       }
-      for (int e = 0; e < SAMPLE_COUNT; e++) {
+      for(int e = 0; e < SAMPLE_COUNT; e++) {
         CompactIntArray sample = S.getRandomSample(SAMPLE_SIZE);
-        for (size_t j = 0; j < sample.size(); j++) {
+        for(size_t j = 0; j < sample.size(); j++) {
           counters[sample[j]]++;
         }
       }
       OUTPUT(_T("Random samples"));
-      for (int i = 0; i < SOURCE_SIZE; i++) {
+      for(int i = 0; i < SOURCE_SIZE; i++) {
         OUTPUT(_T("    Counters[%2d] = %.5lf"), i, (double)counters[i] / SAMPLE_COUNT);
       }
       /*
@@ -172,7 +172,7 @@ namespace TestCompactArray {
 
       CompactArrayType a, b;
       double start;
-      for (int i = 0; i < size; i++) {
+      for(int i = 0; i < size; i++) {
         a.add(randInt() % (10 * size));
       }
 
@@ -184,7 +184,7 @@ namespace TestCompactArray {
       CompactArrayType c = a;
       verify(c == a);
 
-      if (a.size() < 30) {
+      if(a.size() < 30) {
         listCompactArray(_T("a"), a);
       }
 
@@ -196,13 +196,13 @@ namespace TestCompactArray {
       OUTPUT(_T("  sort(compare1)  :%.3lf"), (getProcessTime() - start) / 1000000);
       start = getProcessTime();
 
-      for (size_t i = 1; i < a.size(); i++) {
+      for(size_t i = 1; i < a.size(); i++) {
         verify(comparator.compare(a[i - 1], a[i]) <= 0);
       }
 
-      if (a != b) {
+      if(a != b) {
         OUTPUT(_T("Not same ordering!!"));
-        if (a.size() < 30) {
+        if(a.size() < 30) {
           listCompactArray(_T("a"), a);
           listCompactArray(_T("b"), b);
         }
@@ -223,7 +223,7 @@ namespace TestCompactArray {
       */
 
       CompactArrayElement *ca = new CompactArrayElement[size];
-      for (int i = 0; i < size; i++) {
+      for(int i = 0; i < size; i++) {
         ca[i] = randInt() % (2 * size);
       }
 
@@ -233,7 +233,7 @@ namespace TestCompactArray {
 
       OUTPUT(_T("  quickSort(compare3):%.3lf"), (getProcessTime() - start) / 1000000);
 
-      for (int i = 1; i < size; i++) {
+      for(int i = 1; i < size; i++) {
         verify(compare3(&ca[i - 1], &ca[i]) <= 0);
       }
       delete[] ca;
@@ -244,8 +244,8 @@ namespace TestCompactArray {
     }
 
     static intptr_t linearSearchLE(const CompactIntArray &a, int e) {
-      for (size_t i = a.size(); i--;) {
-        if (a[i] <= e) {
+      for(size_t i = a.size(); i--;) {
+        if(a[i] <= e) {
           return i;
         }
       }
@@ -254,8 +254,8 @@ namespace TestCompactArray {
 
     static intptr_t linearSearchGE(const CompactIntArray &a, int e) {
       size_t i;
-      for (i = 0; i < a.size(); i++) {
-        if (a[i] >= e) {
+      for(i = 0; i < a.size(); i++) {
+        if(a[i] >= e) {
           return i;
         }
       }
@@ -264,12 +264,12 @@ namespace TestCompactArray {
 
     TEST_METHOD(CompactArrayBinarySearch) {
       CompactIntArray a;
-      for (int i = 0; i < 40; i++) {
+      for(int i = 0; i < 40; i++) {
         a.add(i / 3);
       }
       //  _tprintf(_T("a:%s\n"), a.toStringBasicType().cstr());
       const int maxValue = a.last();
-      for (int e = -1; e <= maxValue + 1; e++) {
+      for(int e = -1; e <= maxValue + 1; e++) {
         intptr_t indexB = a.binarySearchLE(e, intHashCmp);
         intptr_t indexL = linearSearchLE(a, e);
         verify(indexB == indexL);
@@ -280,12 +280,12 @@ namespace TestCompactArray {
       }
 
       a.clear();
-      for (int i = 0; i < 20; i++) {
+      for(int i = 0; i < 20; i++) {
         a.add(randInt() % 10000000);
       }
       a.sort(intHashCmp);
-      for (size_t i = a.size() - 1; i--;) {
-        if (a[i] == a[i + 1]) {
+      for(size_t i = a.size() - 1; i--;) {
+        if(a[i] == a[i + 1]) {
           a.remove(i);
         }
       }
@@ -294,7 +294,7 @@ namespace TestCompactArray {
       _tprintf(_T("%2d:%d\n"), i,a[i]);
       }
       */
-      for (size_t i = 0; i < a.size(); i++) {
+      for(size_t i = 0; i < a.size(); i++) {
         const int v = a[i];
         const intptr_t index = a.binarySearch(v, intHashCmp);
         verify(index == i);
@@ -307,8 +307,8 @@ namespace TestCompactArray {
 
     TEST_METHOD(CompactArrayPacking) {
       CompactArrayType a, b;
-      const String fileName = _T("c:\\temp\\testCompactArray\\compactArray.dat");
-      for (int i = 0; i < 1000; i++) {
+      const String fileName = getTestFileName(__TFUNCTION__);
+      for(int i = 0; i < 1000; i++) {
         a.add(randInt() % 1000000);
       }
       b = a;
@@ -323,7 +323,7 @@ namespace TestCompactArray {
 
     TEST_METHOD(CompactArrayPermutations) {
       CompactIntArray a;
-      for (int i = 0; i < 4; i++) {
+      for(int i = 0; i < 4; i++) {
         a.add(i);
       }
       PrintCompactIntArray permArray;
@@ -347,16 +347,16 @@ namespace TestCompactArray {
     TEST_METHOD(CompactArrayIterator) {
       CompactIntArray a;
 
-      for (int i = 0; i < 20; i++) {
+      for(int i = 0; i < 20; i++) {
         a.add(i);
       }
       Iterator<int> it;
-      for (it = a.getIterator(); it.hasNext();) {
+      for(it = a.getIterator(); it.hasNext();) {
         int v = it.next();
-        if (v & 1) it.remove();
+        if(v & 1) it.remove();
       }
       String line = _T("Iterator:");
-      for (it = a.getIterator(); it.hasNext();) {
+      for(it = a.getIterator(); it.hasNext();) {
         int v = it.next();
         line += format(_T(" %d"), v);
       }
@@ -374,7 +374,7 @@ namespace TestCompactArray {
     }
 
     TEST_METHOD(CompactArraySaveLoad) {
-      const TCHAR *fileName = _T("c:\\temp\\TestCompactArray.tmp");
+      const String fileName = getTestFileName(__TFUNCTION__);
       testSaveLoad(fileName);
       unlink(fileName);
     }
@@ -383,7 +383,7 @@ namespace TestCompactArray {
 
       CompactIntArray a;
 
-      for (int i = 0; i < 100; i++) {
+      for(int i = 0; i < 100; i++) {
         a.add(i);
         verify(a.last() == i);
         verify(a.size() == i + 1);
@@ -448,9 +448,9 @@ namespace TestCompactArray {
       verify(a != b);
 
       a = b;
-      for (int i = 99; i >= 0; i--) {
+      for(int i = 99; i >= 0; i--) {
         verify(a.last() == i);
-        if (a.size() > 0) {
+        if(a.size() > 0) {
           verify(a[0] == 0);
         }
         a.removeLast();
@@ -459,7 +459,7 @@ namespace TestCompactArray {
       a = b;
       verify(a.size() == b.size());
       a.sort(intReverseCompare);
-      for (size_t i = 0; i < a.size(); i++) {
+      for(size_t i = 0; i < a.size(); i++) {
         verify(a[i] == b[b.size() - i - 1]);
       }
       verify(a != b);
@@ -490,9 +490,9 @@ namespace TestCompactArray {
 
     TEST_METHOD(CompactArrayMeasureSort) {
       OUTPUT(_T("%7s SortTime (compare1)"), _T("Size"));
-      for (int size = 100; size < 300000; size *= 1.07) {
+      for(int size = 100; size < 300000; size *= 1.07) {
         CompactArrayType a;
-        for (int i = 0; i < size; i++) {
+        for(int i = 0; i < size; i++) {
           a.add(CompactArrayElement(randInt(2 * size)));
         }
 
@@ -500,8 +500,8 @@ namespace TestCompactArray {
         a.sort(compare1);
         OUTPUT(_T("%7d %.3lf"), size, (getProcessTime() - start) / 1000000);
 
-        for (size_t i = 1; i < a.size(); i++) {
-          if (comparator.compare(a[i-1], a[i]) > 0) {
+        for(size_t i = 1; i < a.size(); i++) {
+          if(comparator.compare(a[i-1], a[i]) > 0) {
             OUTPUT(_T("Array not sorted. a[%d] = %d, a[%d] = %d"), i - 1, a[i - 1].n, i, a[i].n);
             verify(false);
           }
@@ -509,9 +509,9 @@ namespace TestCompactArray {
       }
 
       OUTPUT(_T("%7s SortTime (quickSort(compare3)"), _T("Size"));
-      for (int size = 100; size < 300000; size *= 1.07) {
+      for(int size = 100; size < 300000; size *= 1.07) {
         CompactArrayElement *a = new CompactArrayElement[size];
-        for (int i = 0; i < size; i++) {
+        for(int i = 0; i < size; i++) {
           a[i] = randInt(2 * size);
         }
 
@@ -519,8 +519,8 @@ namespace TestCompactArray {
         quickSort(a, size, sizeof(a[0]), (int(__cdecl *)(const void*, const void*))compare3);
         OUTPUT(_T("%7d %.3lf"), size, (getProcessTime() - start) / 1000000);
 
-        for (int i = 1; i < size; i++) {
-          if (comparator.compare(a[i-1], a[i]) > 0) {
+        for(int i = 1; i < size; i++) {
+          if(comparator.compare(a[i-1], a[i]) > 0) {
             OUTPUT(_T("Array not sorted. a[%d] = %d, a[%d] = %d"), i - 1, a[i - 1].n, i, a[i].n);
             verify(false);
           }
