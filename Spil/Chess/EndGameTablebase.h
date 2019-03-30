@@ -156,17 +156,6 @@ typedef enum {
 #define VERBOSE_TIMER 2
 #endif
 
-typedef enum {
-#ifdef TABLEBASE_BUILDER
-  ALLFORWARDPOSITIONS  , // needed only in makeendgame
-  ALLRETROPOSITIONS    , // needed only in makeendgame
-  ALLTABLEBASE         , // needed only in makeendgame
-  UNDEFINEDKEYSLOG     ,
-#endif // TABLEBASE_BUILDER
-  DECOMPRESSEDTABLEBASE, // needed only in chess
-  COMPRESSEDTABLEBASE    // needed in both
-} TablebaseFileType;
-
 class EndGameTablebaseList : public CompactArray<EndGameTablebase*> {
 public:
   EndGameTablebaseList() : CompactArray<EndGameTablebase*>(143) {
@@ -190,26 +179,38 @@ private:
   static  Semaphore                                                 s_loadGate;
 #endif
 
-  MoveResultArray  &getAllMoves(  const GameKey &gameKey, MoveResultArray &a) const; // assume gameKey.positionSignature == keydef.positionSignature
-  MoveResultArray  &getAllMoves(  const GameKey &gameKey, bool swapPlayers, MoveResultArray &a) const;
+  // assume gameKey.positionSignature == keydef.positionSignature
+  MoveResultArray  &getAllMoves(const GameKey &gameKey, MoveResultArray &a) const;
 #ifndef TABLEBASE_BUILDER
-  MoveResult2Array &getAllMoves2(const GameKey &gameKey, MoveResult2Array &a) const; // assume gameKey.positionSignature == keydef.positionSignature
+  // assume gameKey.positionSignature == keydef.positionSignature
+  MoveResult2Array &getAllMoves(const GameKey &gameKey, MoveResult2Array &a) const;
 #endif // TABLEBASE_BUILDER
 
   void           unloadSubTablebases();
   void           clear();
 
-  EndGameKey     transformGameKey(   const GameKey    &key) const;
-  EndGameKey     transformEndGameKey(const EndGameKey &key, SymmetricTransformation st) const;
+  inline EndGameKey transformGameKey(   const GameKey    &gameKey) const {
+    return m_keydef.transformGameKey(gameKey);
+  }
+
+  inline EndGameKey transformEndGameKey(const EndGameKey &key, SymmetricTransformation st) const {
+    return (st == 0) ? key : m_keydef.getTransformedKey(key, st);
+  }
 
   inline String  toString(const EndGameKey &key, bool initFormat=false) const {
     return key.toString(m_keydef, initFormat);
   }
   EndGamePositionStatus isTerminalMove(const Game &game, const Move &m, UINT *pliesToEnd = NULL, MoveResultArray *allMoves = NULL) const;
   EndGameResult         getKeyResult(  const EndGameKey  key) const;
-  void                  statusError(EndGamePositionStatus status, const EndGameKey &key) const;           // throw Exception
-  void                  statusError(EndGamePositionStatus status, const Game &game, const Move &m) const; // throw Exception
-  void                  missingPositionError(const TCHAR *function, const EndGameKey key, EndGameResult &result);
+  // throw Exception
+  void                  statusError(EndGamePositionStatus status, const EndGameKey &key) const {
+    throwException(_T("Unknown positionstatus:%d. Position:[%s]"), status, toString(key).cstr());
+  }
+  // throw Exception
+  void                  statusError(EndGamePositionStatus status, const Game &game, const Move &m) const {
+    throwException(_T("Unknown positionstatus:%d, Position:[%s], Move:%s"), status, toString(game).cstr(), m.toString().cstr());
+  }
+  void                  missingPositionError(const TCHAR *method, const EndGameKey key, EndGameResult &result);
 
   void                  load(ByteInputStream &s);
 
@@ -312,18 +313,6 @@ private:
 
   CompactArray<PositionCount64> getWinnerPositionCountArray();
 
-  String getAllForwardPositionsFileName() const {
-    return EndGameKeyDefinition::getDbFileName(getName() + _T("AllForwardPositions.dat"));
-  }
-
-  String getAllRetroPositionsFileName() const {
-    return EndGameKeyDefinition::getDbFileName(getName() + _T("AllRetroPositions.dat"));
-  }
-
-  String getUndefinedKeyLogFileName() const {
-    return EndGameKeyDefinition::getDbFileName(getName() + _T("UndefinedKeys.txt"));
-  }
-
   String toString(           const EndGameEntry &entry, bool ply=false) const; // same default as EndGameResult::toString
   TCHAR *toStr(  TCHAR *dst, const EndGameEntry &entry, bool ply=false) const;
 
@@ -360,21 +349,55 @@ public:
   // Never return EG_UNDEFINED i status. possible status for return value same as getPositionStatus()
   // Values also encode { EGR_STALEMATE, EGR_BLACKISMATE, EGR_WHITEISMATE, EGR_DRAW
   EndGameResult         getPositionResult(const Game &game, bool swapPlayers) const;
-  MoveResultArray      &getAllMoves(      const Game &game, bool swapPlayers, MoveResultArray &a) const;
 
-  PrintableMove         findBestMove(     const Game &game, MoveResultArray &allMoves, int defendStrength) const; // defendStrength = [0..100]
-  MoveResultArray      &getAllMoves(      const Game &game, MoveResultArray &a) const; // assume game.positionSignature.match(keydef.positionSignature)
+  // assume game.positionSignature.match(keydef.positionSignature); ArrayType = MoveResultArray,MoveResult2Array
+  template<class ArrayType> ArrayType &getAllMoves(const Game &game, ArrayType &a) const {
+    return getAllMovesTemplate(game, m_keydef.getPlayTransformation(game) == TRANSFORM_SWAPPLAYERS, a);
+  }
+  template<class ArrayType> ArrayType &getAllMovesTemplate(const Game &game, bool swapPlayers, ArrayType &a) const {
+    if(!swapPlayers) {
+      getAllMoves(game.getKey(), a);
+    } else {
+      const GameKey trKey  = game.getKey().transform(TRANSFORM_SWAPPLAYERS);
+      ArrayType     trMoves;
+      getAllMoves(trKey, trMoves);
+      const size_t n = trMoves.size();
+      a.clear(game.getPlayerInTurn(), n);
+      for(size_t i = 0; i < n; i++) {
+        a.add(trMoves[i].transform(game, true));
+      }
+    }
+    return a;
+  }
+
+  MoveResultArray &getAllMoves(const Game &game, bool swapPlayers, MoveResultArray &a) const {
+    return getAllMovesTemplate(game, swapPlayers, a);
+  }
+  // defendStrength = [0..100]
+  template<class ArrayType> PrintableMove findBestMove(const Game &game, ArrayType &a, int defendStrength) const {
+    return getAllMoves(game, a).isEmpty()
+         ? PrintableMove()
+         : PrintableMove(game, a.selectBestMove(defendStrength));
+  }
 
 #ifndef TABLEBASE_BUILDER
-  PrintableMove         findBestMove(     const Game &game, MoveResult2Array &allMoves, int defendStrength) const; // defendStrength = [0..100]
-  MoveResult2Array     &getAllMoves2(     const Game &game, MoveResult2Array &a) const; // assume game.positionSignature.match(keydef.positionSignature)
-  MoveResult2Array     &getAllMoves2(     const Game &game, bool swapPlayers, MoveResult2Array &a) const;
+#ifdef NEWCOMPRESSION
+  friend class GameResultMap;
+#endif
 #endif //  TABLEBASE_BUILDER
 
-  bool                  exist(TablebaseFileType recoverFile) const;
-  String                getFileName(TablebaseFileType fileType) const;
-  __time64_t            getFileTime(TablebaseFileType fileType) const;
-  UINT64                getFileSize(TablebaseFileType fileType) const;
+  inline String         getTbFileName(TablebaseFileType fileType) const {
+    return m_keydef.getTbFileName(fileType);
+  }
+  inline bool           tbFileExist(      TablebaseFileType fileType) const {
+    return ACCESS(getTbFileName(fileType),0) == 0;
+  }
+  inline __time64_t     getTbFileTime(TablebaseFileType fileType) const {
+    return STAT(getTbFileName(fileType)).st_mtime;
+  }
+  inline UINT64         getTbFileSize(TablebaseFileType fileType) const {
+    return STAT64(getTbFileName(fileType)).st_size;
+  }
 
   inline bool isLoaded() const {
     return m_positionIndex.isAllocated();
@@ -388,7 +411,10 @@ public:
     return false;
   }
 
-  static void gameResultError(const Game &game);                       // throws Exception
+  // throws Exception
+  static void gameResultError(const Game &game) {
+    throwException(_T("Invalid gameResult for position [%s]:%d"), game.getPositionSignature().toString().cstr(), game.findGameResult());
+  }
 
   inline String toString(const Game &game) const {
     return m_keydef.getEndGameKey(game.getKey()).toString(m_keydef);
@@ -398,7 +424,7 @@ public:
   static       EndGameTablebaseList  getExistingEndGameTablebases();
   static       EndGameTablebase     &getInstanceByName(const String &name);
   static       EndGameTablebase     *getInstanceBySignature(const PositionSignature &signature, bool &swap);
-  inline IndexedMap &getIndex() {
+  inline const IndexedMap &getIndex() const {
     return m_positionIndex;
   }
 

@@ -79,7 +79,7 @@ void CurrentWork::update() {
   } else {
     updateMessageField(_T(" - Currently working on %s - metric:%s")
                       ,m_currentTablebase->getName().cstr()
-                      ,EndGameKeyDefinition::getMetricName()
+                      ,EndGameKeyDefinition::getMetricName().cstr()
                       );
   }
 }
@@ -91,7 +91,7 @@ static void processTablebase(EndGameTablebase &tablebase, int commands, int plie
       const bool recover = (commands & CMD_RECOVER) ? true : false;
       if(tablebase.needBuild(recover)) {
         if(commands & CMD_NOBUILD) {
-          _tprintf(_T("%s/%s needs build\n"), tablebase.getName().cstr(), EndGameKeyDefinition::getMetricName());
+          _tprintf(_T("%s/%s needs build\n"), tablebase.getName().cstr(), EndGameKeyDefinition::getMetricName().cstr());
           return;
         } else {
           tablebase.build(recover);
@@ -696,7 +696,7 @@ int _tmain(int argc, TCHAR **argv) {
         EndGameTablebase       &tb = *tablebaseList[it.next()];
         EndGameManualPositions &mp = amp.get(tb.getName());
         currentWork.setTablebase(&tb);
-        const String fileName = tb.getFileName(UNDEFINEDKEYSLOG);
+        const String fileName = tb.getTbFileName(UNDEFINEDKEYSLOG);
         const CompactArray<EndGameKey> keyArray = mp.readUndefinedKeysLog(fileName);
         int keysAdded = 0;
         for(size_t i = 0; i < keyArray.size(); i++) {

@@ -49,11 +49,11 @@ String EndGameTablebase::load(ByteCounter *byteCounter) {
   }
   String result;
 #ifdef TABLEBASE_BUILDER
-  if(!exist(ALLTABLEBASE)) {
+  if(!tbFileExist(ALLTABLEBASE)) {
     build(true);
   } else {
     try {
-      const String fileName = getFileName(ALLTABLEBASE);
+      const String fileName = getTbFileName(ALLTABLEBASE);
       load(fileName, byteCounter);
       return fileName;
     } catch(Exception e) {
@@ -61,12 +61,12 @@ String EndGameTablebase::load(ByteCounter *byteCounter) {
       build();
     }
   }
-  load(result = getFileName(ALLTABLEBASE), byteCounter);
+  load(result = getTbFileName(ALLTABLEBASE), byteCounter);
 #else
   if(needDecompress()) {
     decompress(byteCounter);
   }
-  result = getFileName(DECOMPRESSEDTABLEBASE);
+  result = getTbFileName(DECOMPRESSEDTABLEBASE);
   verbose(_T("Loading %s-tablebase from %s...\n"), getName().cstr(), result.cstr());
   load(ByteInputFile(result));
 #endif
@@ -86,42 +86,27 @@ void EndGameTablebase::unload() {
 }
 
 #ifndef TABLEBASE_BUILDER
-
 TablebaseInfo EndGameTablebase::getInfo() const {
   TablebaseInfo result;
-  if(exist(COMPRESSEDTABLEBASE)) {
-    result.load(DecompressFilter(ByteInputFile(getFileName(COMPRESSEDTABLEBASE))));
+  if(tbFileExist(COMPRESSEDTABLEBASE)) {
+    result.load(DecompressFilter(ByteInputFile(getTbFileName(COMPRESSEDTABLEBASE))));
   }
   return result;
 }
 
 void EndGameTablebase::decompress(ByteCounter *byteCounter) const {
-  const String fileName = getFileName(COMPRESSEDTABLEBASE);
+  const String fileName = getTbFileName(COMPRESSEDTABLEBASE);
   decompress(DecompressFilter(CountedByteInputStream(byteCounter?*byteCounter:(ByteCounter&)StreamProgress(fileName), ByteInputFile(fileName))));
 }
 
-#ifndef NEWCOMPRESSION
-
-void EndGameTablebase::decompress(ByteInputStream &s) const {
-  TablebaseInfo info;
-  info.load(s);
-  m_positionIndex.decompress(s, info);
+bool EndGameTablebase::needDecompress() const {
+  return !tbFileExist(DECOMPRESSEDTABLEBASE)
+      || (tbFileExist(COMPRESSEDTABLEBASE) && (getTbFileTime(DECOMPRESSEDTABLEBASE) < getTbFileTime(COMPRESSEDTABLEBASE)));
 }
-
-#else // NEWCOMPRESSION
-
-void EndGameTablebase::decompress(ByteInputStream &s) const {
-  BigEndianInputStream bes(s);
-  TablebaseInfo info;
-  info.load(bes);
-  m_positionIndex.decompress(bes, info);
-}
-#endif // NEWCOMPRESSION
 
 void EndGameTablebase::load(ByteInputStream &s) {
   m_positionIndex.load();
 }
-
 #endif // TABLEBASE_BUILDER
 
 void EndGameTablebase::clear() {
@@ -138,48 +123,6 @@ void EndGameTablebase::unloadSubTablebases() {
   }
   m_subTablebaseMap.clear();
   m_useRemoteSubTablebase = false;
-}
-
-static MoveBase transformMove(const Game &game, const MoveBase &m, bool swapPlayers) {
-  if(!m.isMove() || !swapPlayers) {
-    return m;
-  }
-  const int from = GameKey::transform(m.m_from, TRANSFORM_SWAPPLAYERS);
-  const int to   = GameKey::transform(m.m_to  , TRANSFORM_SWAPPLAYERS);
-  return game.generateMove(from, to, m.getPromoteTo());
-}
-
-static EndGamePositionStatus transformPositionStatus(EndGamePositionStatus status, bool swapPlayers) {
-  if(!swapPlayers) {
-    return status;
-  } else {
-    switch(status) {
-    case EG_UNDEFINED:
-    case EG_DRAW     : return status;
-    case EG_WHITEWIN : return EG_BLACKWIN;
-    case EG_BLACKWIN : return EG_WHITEWIN;
-    default          : throwInvalidArgumentException(__TFUNCTION__, _T("status=%d"), status);
-    }
-  }
-  return EG_UNDEFINED;
-}
-
-static EndGameResult transformEndGameResult(EndGameResult egr, bool swapPlayers) {
-  return swapPlayers ? EndGameResult(transformPositionStatus(egr.getStatus(), true), egr.getPliesToEnd()) : egr;
-}
-
-static MoveWithResult transformMove(const Game &game, const MoveWithResult &m, bool swapPlayers) {
-  return swapPlayers ? MoveWithResult(transformMove(game, (const MoveBase&)m, true), transformEndGameResult(m.getResult(), true)) : m;
-}
-
-static MoveWithResult2 transformMove(const Game &game, const MoveWithResult2 &m, bool swapPlayers) {
-  return swapPlayers ? MoveWithResult2(transformMove(game, (MoveWithResult&)m, swapPlayers), m.getReplyCount()) : m;
-}
-
-PrintableMove EndGameTablebase::findBestMove(const Game &game, MoveResultArray &allMoves, int defendStrength) const {
-  return getAllMoves(game, allMoves).isEmpty()
-       ? PrintableMove()
-       : PrintableMove(game, allMoves.selectBestMove(defendStrength));
 }
 
 EndGamePositionStatus EndGameTablebase::isTerminalMove(const Game &game, const Move &m, UINT *pliesToEnd, MoveResultArray *allMoves) const {
@@ -237,45 +180,6 @@ EndGamePositionStatus EndGameTablebase::isTerminalMove(const Game &game, const M
   }
 }
 
-EndGameKey EndGameTablebase::transformGameKey(const GameKey &gameKey) const {
-  assert(gameKey.getPositionSignature() == m_keydef.getPositionSignature());
-  const EndGameKey              egk = m_keydef.getEndGameKey(gameKey);
-  const SymmetricTransformation st  = m_keydef.getSymTransformation(egk);
-  return (st == 0) ? egk : m_keydef.getTransformedKey(egk, st);
-}
-
-EndGameKey EndGameTablebase::transformEndGameKey(const EndGameKey &egk, SymmetricTransformation st) const {
-  return (st == 0) ? egk : m_keydef.getTransformedKey(egk, st);
-}
-
-bool EndGameTablebase::exist(TablebaseFileType fileType) const {
-  return ACCESS(getFileName(fileType),0) == 0;
-}
-
-__time64_t EndGameTablebase::getFileTime(TablebaseFileType fileType) const {
-  return STAT(getFileName(fileType)).st_mtime;
-}
-
-UINT64 EndGameTablebase::getFileSize(TablebaseFileType fileType) const {
-  return STAT(getFileName(fileType)).st_size;
-}
-
-String EndGameTablebase::getFileName(TablebaseFileType fileType) const {
-  switch(fileType) {
-#ifdef TABLEBASE_BUILDER
-  case ALLFORWARDPOSITIONS  : return getAllForwardPositionsFileName();    // only available to makeEndGame
-  case ALLRETROPOSITIONS    : return getAllRetroPositionsFileName();      // only available to makeEndGame
-  case ALLTABLEBASE         : return m_keydef.getTablebaseFileName();     // only available to makeEndGame
-  case UNDEFINEDKEYSLOG     : return getUndefinedKeyLogFileName();        // only available to makeEndGame
-#else
-  case DECOMPRESSEDTABLEBASE: return m_keydef.getDecompressedFileName();  // only available for chess-program
-#endif
-  case COMPRESSEDTABLEBASE  : return m_keydef.getCompressedFileName();    // available to both makeEndGame and chess-program
-  default                   : throwInvalidArgumentException(__TFUNCTION__, _T("fileType=%d"), fileType);
-  }
-  return EMPTYSTRING;
-}
-
 void EndGameTablebase::capturedPieceTypeError(PieceType pieceType) const { // throws an Exception
   throwException(_T("%s:Unexpected piecetype for captured piece:%d (%s)")
                 ,getName().cstr()
@@ -291,216 +195,6 @@ void EndGameTablebase::moveTypeError(const Move &m) const {         // throws Ex
                 ,getMoveTypeName(m.getType()).cstr()
                 );
 }
-
-void EndGameTablebase::statusError(EndGamePositionStatus status, const EndGameKey &key) const {
-  throwException(_T("Unknown positionstatus:%d. Position:[%s]"), status, toString(key).cstr());
-}
-
-void EndGameTablebase::statusError(EndGamePositionStatus status, const Game &game, const Move &m) const {
-  throwException(_T("Unknown positionstatus:%d, Position:[%s], Move:%s"), status, toString(game).cstr(), m.toString().cstr());
-}
-
-void EndGameTablebase::gameResultError(const Game &game) { // static
-  throwException(_T("Invalid gameResult for position [%s]:%d"), game.getPositionSignature().toString().cstr(), game.findGameResult());
-}
-
-#ifndef TABLEBASE_BUILDER
-
-bool EndGameTablebase::needDecompress() const {
-  return !exist(DECOMPRESSEDTABLEBASE)
-      || (exist(COMPRESSEDTABLEBASE) && (getFileTime(DECOMPRESSEDTABLEBASE) < getFileTime(COMPRESSEDTABLEBASE)));
-}
-
-#endif //  TABLEBASE_BUILDER
-
-MoveResultArray &EndGameTablebase::getAllMoves(const Game &game, MoveResultArray &a) const {
-  return getAllMoves(game, m_keydef.getPlayTransformation(game) == TRANSFORM_SWAPPLAYERS, a);
-}
-
-MoveResultArray &EndGameTablebase::getAllMoves(const Game &game, bool swapPlayers, MoveResultArray &a) const {
-  if(!swapPlayers) {
-    return getAllMoves(game.getKey(), a);
-  } else {
-    const GameKey   trKey  = game.getKey().transform(TRANSFORM_SWAPPLAYERS);
-    MoveResultArray trMoves;
-    getAllMoves(trKey, trMoves);
-    const size_t n = trMoves.size();
-    a.clear(game.getPlayerInTurn(), n);
-    for(size_t i = 0; i < n; i++) {
-      a.add(transformMove(game, trMoves[i], true));
-    }
-    return a;
-  }
-}
-
-MoveResultArray &EndGameTablebase::getAllMoves(const GameKey &gameKey, MoveResultArray &a) const {
-  assert(gameKey.getPositionSignature() == m_keydef.getPositionSignature());
-
-  const Player playerInTurn = gameKey.getPlayerInTurn();
-
-  a.clear(playerInTurn);
-  Game            game = gameKey;
-  Move            m;
-  m.clearAnnotation();
-  const Piece    *skipNextPromotion = NULL;
-
-  MoveGenerator &mg = game.getMoveGenerator();
-  game.pushState();
-  for(bool more = mg.firstMove(m); more; game.unTryMove(), more = mg.nextMove(m)) {
-    game.tryMove(m);
-    if(skipNextPromotion) {
-      if(m.m_piece == skipNextPromotion) {
-        continue;
-      } else {
-        skipNextPromotion = NULL;
-      }
-    }
-    UINT pliesToEnd;
-    const EndGamePositionStatus status = isTerminalMove(game, m, &pliesToEnd);
-    switch(status) {
-    case EG_DRAW     :
-      a.add(MoveWithResult(m, EGR_TERMINALDRAW));
-      break;
-    case EG_WHITEWIN :
-    case EG_BLACKWIN :
-      { const EndGameResult succResult(status, pliesToEnd);
-        a.add(MoveWithResult(m, succResult));
-#ifndef TABLEBASE_BUILDER
-        if(m.getType() == PROMOTION) {
-          const EndGameResult keyResult = getKeyResult(transformGameKey(gameKey));
-          if(  (succResult.getStatus()         == keyResult.getStatus())
-            && (succResult.getPliesToEnd() + 1 == keyResult.getPliesToEnd())) {
-            skipNextPromotion = m.m_piece; // got the best promotion, no need to load the others, same trick as getBestResult
-          }
-        }
-#endif
-      }
-      break;
-    case EG_UNDEFINED:
-      if(game.getKey().getEPSquare() > 0) {
-        MoveResultArray allReplies;
-        const EndGameResult egr = getAllMoves(game.getKey(), allReplies).selectBestMove(100).getResult();
-        if(!egr.isWinner()) {
-          a.add(MoveWithResult(m, allReplies.isEmpty() ? EGR_STALEMATE : EGR_DRAW));
-        } else {
-          a.add(MoveWithResult(m, EndGameResult(egr.getStatus(), egr.getPliesToEnd()+1)));
-        }
-      } else {
-        const EndGameKey    succKey = transformGameKey(game.getKey());
-        const EndGameResult egr     = m_positionIndex.get(succKey);
-        if(!egr.isDefined()) {
-          a.add(MoveWithResult(m, EGR_DRAW));
-        } else {
-          a.add(MoveWithResult(m, egr));
-        }
-      }
-      break;
-    default:
-      statusError(status, game, m);
-    }
-  }
-  game.popState();
-  return a;
-}
-
-#ifndef TABLEBASE_BUILDER
-PrintableMove EndGameTablebase::findBestMove(const Game &game, MoveResult2Array &allMoves, int defendStrength) const {
-  return getAllMoves2(game, allMoves).isEmpty()
-       ? PrintableMove()
-       : PrintableMove(game, allMoves.selectBestMove(defendStrength));
-}
-
-MoveResult2Array &EndGameTablebase::getAllMoves2(const Game &game, MoveResult2Array &a) const {
-  return getAllMoves2(game, m_keydef.getPlayTransformation(game) == TRANSFORM_SWAPPLAYERS,a);
-}
-
-MoveResult2Array &EndGameTablebase::getAllMoves2(const Game &game, bool swapPlayers, MoveResult2Array &a) const {
-  if(!swapPlayers) {
-    getAllMoves2(game.getKey(), a);
-  } else {
-    const GameKey    trKey  = game.getKey().transform(TRANSFORM_SWAPPLAYERS);
-    MoveResult2Array trMoves;
-    getAllMoves2(trKey, trMoves);
-    const size_t n = trMoves.size();
-    a.clear(game.getPlayerInTurn(), n);
-    for(size_t i = 0; i < n; i++) {
-      a.add(transformMove(game, trMoves[i], true));
-    }
-  }
-  return a;
-}
-
-MoveResult2Array &EndGameTablebase::getAllMoves2(const GameKey &gameKey, MoveResult2Array &a) const {
-  assert(gameKey.getPositionSignature() == m_keydef.getPositionSignature());
-
-  const Player playerInTurn = gameKey.getPlayerInTurn();
-
-  a.clear(playerInTurn);
-  Game            game = gameKey;
-  Move            m;
-  m.clearAnnotation();
-  const Piece    *skipNextPromotion = NULL;
-
-  MoveGenerator &mg = game.getMoveGenerator();
-  game.pushState();
-  for(bool more = mg.firstMove(m); more; game.unTryMove(), more = mg.nextMove(m)) {
-    game.tryMove(m);
-    if(skipNextPromotion) {
-      if(m.m_piece == skipNextPromotion) {
-        continue;
-      } else {
-        skipNextPromotion = NULL;
-      }
-    }
-    UINT            pliesToEnd;
-    MoveResultArray allReplies;
-    const EndGamePositionStatus status = isTerminalMove(game, m, &pliesToEnd, &allReplies);
-    switch(status) {
-    case EG_DRAW     :
-      // cannot use pliesToEnd...it's always zero. check for allReplies.isEmpty() instead
-      a.add(MoveWithResult2(m, allReplies.isEmpty()?EGR_STALEMATE:EGR_DRAW, allReplies));
-      break;
-    case EG_WHITEWIN :
-    case EG_BLACKWIN :
-      { const EndGameResult succResult(status, pliesToEnd);
-        a.add(MoveWithResult2(m, succResult));
-        if(m.getType() == PROMOTION) {
-          const EndGameResult keyResult = getKeyResult(transformGameKey(gameKey));
-          if(  (succResult.getStatus()         == keyResult.getStatus())
-            && (succResult.getPliesToEnd() + 1 == keyResult.getPliesToEnd())) {
-            skipNextPromotion = m.m_piece; // got the best promotion, no need to load the others, same trick as getBestResult
-          }
-        }
-      }
-      break;
-    case EG_UNDEFINED:
-      if(game.getKey().getEPSquare() > 0) {
-        const EndGameResult egr = getAllMoves(game.getKey(), allReplies).selectBestMove(100).getResult();
-        if(!egr.isWinner()) {
-          a.add(MoveWithResult2(m, allReplies.isEmpty() ? EGR_STALEMATE : EGR_DRAW, allReplies));
-        } else {
-          a.add(MoveWithResult2(m, EndGameResult(egr.getStatus(), egr.getPliesToEnd()+1)));
-        }
-      } else {
-        const EndGameKey    succKey = transformGameKey(game.getKey());
-        const EndGameResult egr     = m_positionIndex.get(succKey);
-        if(!egr.isWinner()) {
-          getAllMoves(game.getKey(), allReplies);
-          a.add(MoveWithResult2(m, allReplies.isEmpty() ? EGR_STALEMATE : EGR_DRAW, allReplies));
-        } else {
-          a.add(MoveWithResult2(m, egr));
-        }
-      }
-      break;
-    default:
-      statusError(status, game, m);
-    }
-  }
-  game.popState();
-  return a;
-}
-
-#endif // TABLEBASE_BUILDER
 
 #ifdef TABLEBASE_BUILDER
 #define LOGUNDEFINEDKEY                                                       \
@@ -553,7 +247,7 @@ EndGameResult EndGameTablebase::getPositionResult(const Game &game, bool swapPla
     result = getKeyResult(mapKey);
 
   if(result.getStatus() != EG_UNDEFINED) {
-    return transformEndGameResult(result, swapPlayers);
+    return result.transform(swapPlayers);
   }
   const GameResult gameResult = game.findGameResult();
   switch(gameResult) {

@@ -48,12 +48,26 @@ const TCHAR *EndGameKeyDefinition::s_metricName[] = {
  ,_T("DTM")
 };
 
-String EndGameKeyDefinition::getDbFileName(const String &fileName) { // static
-  return FileNameSplitter::getChildName(getDbPath(), fileName);
-}
-
-String EndGameKeyDefinition::getFileMetricSuffix() { // static
-  return format(_T("%s.dat"), getMetricName());
+String EndGameKeyDefinition::getTbFileName(TablebaseFileType fileType) const {
+  switch(fileType) {
+#ifdef TABLEBASE_BUILDER
+  case ALLFORWARDPOSITIONS  : return getTbFileName(getName() + _T("AllForwardPositions.dat"));
+  case ALLRETROPOSITIONS    : return getTbFileName(getName() + _T("AllRetroPositions.dat"  ));
+  case ALLTABLEBASE         : return getTbFileName(getName() + _T("EndGame")        + getMetricFileSuffix());
+  case UNDEFINEDKEYSLOG     : return getTbFileName(getName() + _T("UndefinedKeys.txt"      ));
+#ifdef DEBUG_NEWCOMPRESSION
+  case COMPRESSEDDUMP       : return getTbFileName(getName() + _T("CompressedDump") + getMetricFileSuffix(_T(".txt")));
+#endif
+#else // !TABLEBASE_BUILDER
+  case DECOMPRESSEDTABLEBASE:
+    { FileNameSplitter info(getTbFileName(getName() + _T("Decompressed") + getMetricFileSuffix()));
+      return info.setDir(FileNameSplitter::getChildName(info.getDir(), _T("Decompressed"))).getFullPath();
+    }
+#endif  // !TABLEBASE_BUILDER
+  case COMPRESSEDTABLEBASE  : return getTbFileName(getName() + _T("Compressed")     + getMetricFileSuffix());
+  default                   : throwInvalidArgumentException(__TFUNCTION__, _T("fileType=%d"), fileType);
+  }
+  return EMPTYSTRING;
 }
 
 void EndGameKeyDefinition::addPropertyChangeListener(PropertyChangeListener *listener) { // static
@@ -63,24 +77,6 @@ void EndGameKeyDefinition::addPropertyChangeListener(PropertyChangeListener *lis
 void EndGameKeyDefinition::removePropertyChangeListener(PropertyChangeListener *listener) { // static
   s_globalProperties.removePropertyChangeListener(listener);
 }
-
-#ifdef TABLEBASE_BUILDER
-String EndGameKeyDefinition::getTablebaseFileName() const {
-  return getDbFileName(getName() + _T("EndGame") + getFileMetricSuffix());
-}
-
-#else
-
-String EndGameKeyDefinition::getDecompressedFileName() const {
-  FileNameSplitter info(getDbFileName(getName() + _T("Decompressed") + getFileMetricSuffix()));
-  return info.setDir(FileNameSplitter::getChildName(info.getDir(), _T("Decompressed"))).getFullPath();
-}
-#endif
-
-String EndGameKeyDefinition::getCompressedFileName() const {
-  return getDbFileName(getName() + _T("Compressed") + getFileMetricSuffix());
-}
-
 
 
 #ifdef IS32BIT

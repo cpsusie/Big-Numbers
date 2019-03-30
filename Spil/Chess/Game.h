@@ -285,9 +285,9 @@ bool           isValidPawnPosition(              int                      positi
 // Returns true if line = [0..7]
 bool           isValidLine(                      int line                               );
 // throws Exception if not valid.
-void           validatePosition(                 const TCHAR *function, int pos         );
+void           validatePosition(                 const TCHAR *method, int pos           );
 // throws Exception if not valid.
-void           validatePosition(                 const TCHAR *function, int row, int col);
+void           validatePosition(                 const TCHAR *method, int row, int col  );
 int            decodePosition(                   const String &s                        );
 // assume str at least 2 characters
 int            decodePosition(                   const TCHAR  *str                      );

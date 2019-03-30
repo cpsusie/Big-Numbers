@@ -5,12 +5,12 @@
 EndGameInfo::EndGameInfo(const EndGameTablebase &db) : TablebaseInfo(db.getInfo()) {
   m_name    = db.getName();
   try {
-    m_rawSize        = STAT64(db.getFileName(ALLTABLEBASE)).st_size;
+    m_rawSize        = db.getTbFileSize(ALLTABLEBASE);
   } catch(...) {
     m_rawSize        = 0;
   }
   try {
-    m_compressedSize = STAT64(db.getFileName(COMPRESSEDTABLEBASE)).st_size;
+    m_compressedSize = db.getTbFileSize(COMPRESSEDTABLEBASE);
   } catch(...) {
     m_compressedSize = 0;
   }
@@ -21,7 +21,7 @@ EndGameInfo::EndGameInfo(const EndGameTablebase &db) : TablebaseInfo(db.getInfo(
   }
 }
 
-unsigned int EndGameInfo::getMaxVariant() const {
+UINT EndGameInfo::getMaxVariant() const {
   return m_maxPlies.getMax();
 }
 
@@ -63,7 +63,7 @@ String EndGameInfo::toString(TablebaseInfoStringFormat f, bool plies) const {
   case TBIFORMAT_PRINT_COLUMNS1:
     return format(_T("%-*s%s%*s %*s %*s %-*s")
                  ,NAMEWIDTH     , m_name.cstr()
-                 ,TablebaseInfo::toString(f, plies).cstr()
+                 ,__super::toString(f, plies).cstr()
                  ,RAWSIZEWIDTH  , m_rawSize        ? format1000(m_rawSize        ).cstr()     : _T("-")
                  ,COMPSIZEWIDTH , m_compressedSize ? format1000(m_compressedSize ).cstr()     : _T("-")
                  ,COMPPCTWIDTH  , m_compressRatio  ? format(_T("%*.2lf"), COMPPCTWIDTH, m_compressRatio).cstr() : _T("-")
@@ -72,7 +72,7 @@ String EndGameInfo::toString(TablebaseInfoStringFormat f, bool plies) const {
   case TBIFORMAT_PRINT_COLUMNS2:
     return format(_T("%-*s%s%*s %*s %*s %-*s %-*s")
                  ,NAMEWIDTH     , m_name.cstr()
-                 ,TablebaseInfo::toString(f, plies).cstr()
+                 ,__super::toString(f, plies).cstr()
                  ,RAWSIZEWIDTH  , m_rawSize        ? format1000(m_rawSize        ).cstr()     : _T("-")
                  ,COMPSIZEWIDTH , m_compressedSize ? format1000(m_compressedSize ).cstr()     : _T("-")
                  ,COMPPCTWIDTH  , m_compressRatio  ? format(_T("%*.2lf"), COMPPCTWIDTH, m_compressRatio).cstr() : _T("-")
@@ -177,7 +177,7 @@ EndGameInfoList::EndGameInfoList(const EndGameTablebaseList &tablebaseList, IntA
   m_totalRawSize        = 0;
   m_totalCompressedSize = 0;
   for(Iterator<int> it = workSet.getIterator(); it.hasNext();) {
-    EndGameTablebase &db = *tablebaseList[it.next()];
+    const EndGameTablebase &db = *tablebaseList[it.next()];
     try {
       add(db);
     } catch(Exception e) {
@@ -187,7 +187,7 @@ EndGameInfoList::EndGameInfoList(const EndGameTablebaseList &tablebaseList, IntA
 }
 
 bool EndGameInfoList::add(const EndGameInfo &info) {
-  Array<EndGameInfo>::add(info);
+  __super::add(info);
   m_totalPositions      += info.m_totalPositions;
   m_totalRawSize        += info.m_rawSize;
   m_totalCompressedSize += info.m_compressedSize;
@@ -196,7 +196,7 @@ bool EndGameInfoList::add(const EndGameInfo &info) {
 
 EndGameInfoList &EndGameInfoList::sort(SortField sf, bool reverseSort) {
   if(sf != NOSORT) {
-    Array<EndGameInfo>::sort(InfoComparator(sf, reverseSort));
+    __super::sort(InfoComparator(sf, reverseSort));
   }
   return *this;
 }
@@ -207,7 +207,7 @@ String EndGameInfoList::toString(TablebaseInfoStringFormat f, bool includeErrors
 #define ADDLINE(s)  { result += s; result += _T("\n"); }
 #define ADDFILLER() ADDLINE(skillLine)
 
-  String result = format(_T("Metric:%s\n"), EndGameKeyDefinition::getMetricName());
+  String result = format(_T("Metric:%s\n"), EndGameKeyDefinition::getMetricName().cstr());
   result += getHeaderString(f);
   ADDFILLER();
   for(size_t i = 0; i < size(); i++) {

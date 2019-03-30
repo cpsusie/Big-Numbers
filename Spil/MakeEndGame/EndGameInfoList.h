@@ -11,7 +11,7 @@ public:
 
   EndGameInfo(const EndGameTablebase &db);
   String toString(TablebaseInfoStringFormat f, bool plies) const;
-  unsigned int getMaxVariant() const;
+  UINT   getMaxVariant() const;
 };
 
 

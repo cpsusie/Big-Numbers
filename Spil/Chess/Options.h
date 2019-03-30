@@ -154,7 +154,7 @@ public:
 class LevelTimeout {
 private:
   float                m_timeout[LEVELCOUNT];  // in seconds
-  void checkLevel(const TCHAR *function, int level) const;
+  void checkLevel(const TCHAR *method, int level) const;
 public:
   LevelTimeout();
   void setDefault();

@@ -28,7 +28,7 @@ String EndGameTablebase::loadPacked() {
   if(m_packedIndex != NULL) {
     return EMPTYSTRING;
   }
-  const String fileName = getFileName(ALLTABLEBASE);
+  const String fileName = getTbFileName(ALLTABLEBASE);
   loadPacked(fileName);
   return fileName;
 }
@@ -60,10 +60,10 @@ TablebaseInfo EndGameTablebase::getInfo() const {
     return m_info;
   }
   TablebaseInfo result;
-  if(exist(ALLTABLEBASE)) {
-    result.load(DecompressFilter(ByteInputFile(getFileName(ALLTABLEBASE))));
+  if(tbFileExist(ALLTABLEBASE)) {
+    result.load(DecompressFilter(ByteInputFile(getTbFileName(ALLTABLEBASE))));
   } else {
-    result.load(DecompressFilter(ByteInputFile(getFileName(COMPRESSEDTABLEBASE))));
+    result.load(DecompressFilter(ByteInputFile(getTbFileName(COMPRESSEDTABLEBASE))));
   }
   return result;
 }
@@ -91,15 +91,15 @@ void EndGameTablebase::metricError(const TCHAR *method) { // static
 BuildStep EndGameTablebase::getFirstBuildStep(bool recover) const {
   if(!recover) {
     return INSERT_INITIALPOSITIONS;
-  } else if(!exist(ALLFORWARDPOSITIONS)) {
+  } else if(!tbFileExist(ALLFORWARDPOSITIONS)) {
     return INSERT_INITIALPOSITIONS;
-  } else if(!exist(ALLRETROPOSITIONS) || (getFileTime(ALLFORWARDPOSITIONS) > getFileTime(ALLRETROPOSITIONS))) {
+  } else if(!tbFileExist(ALLRETROPOSITIONS) || (getTbFileTime(ALLFORWARDPOSITIONS) > getTbFileTime(ALLRETROPOSITIONS))) {
     return RECOVER_FROM_FORWARDPOSITIONS;
-  } else if(!exist(ALLTABLEBASE) || (getFileTime(ALLRETROPOSITIONS) > getFileTime(ALLTABLEBASE))) {
+  } else if(!tbFileExist(ALLTABLEBASE) || (getTbFileTime(ALLRETROPOSITIONS) > getTbFileTime(ALLTABLEBASE))) {
     return RECOVER_FROM_RETROPOSITIONS;
   } else if(!getInfo().isConsistent()) {
     return RECOVER_FROM_ALLPOSITIONS;
-  } else if(!exist(COMPRESSEDTABLEBASE) || (getFileTime(ALLTABLEBASE) > getFileTime(COMPRESSEDTABLEBASE))) {
+  } else if(!tbFileExist(COMPRESSEDTABLEBASE) || (getTbFileTime(ALLTABLEBASE) > getTbFileTime(COMPRESSEDTABLEBASE))) {
     return RECOVER_FROM_FIXED_POSITIONS;
   } else {
     return BUILD_DONE;
@@ -116,7 +116,7 @@ void EndGameTablebase::buildDTM() {
         break;
       } catch(MissingPositionException e) {
         verbose(_T("%s\n"), e.what());
-        UNLINK(getFileName(ALLRETROPOSITIONS));
+        UNLINK(getTbFileName(ALLRETROPOSITIONS));
         unload();
         EndGameKeyDefinition::setMetric(DEPTH_TO_CONVERSION);
         build(true);
@@ -142,7 +142,7 @@ void EndGameTablebase::build(bool recover) {
          ,recover ? _T("Recover build") : _T("Build")
          ,getName().cstr()
          ,format1000(m_keydef.getIndexSize()).cstr()
-         ,EndGameKeyDefinition::getMetricName()
+         ,EndGameKeyDefinition::getMetricName().cstr()
          );
 
   TimeUsagePrinter timeUsage(this, _T("Total time"));
@@ -751,7 +751,7 @@ void EndGameTablebase::findDTM() {
 
 #define UNRAVEL_VERBOSE(eosCh)                                  \
 { verbose(_T("%s:%3d %s %s New win:%s%c")                       \
-         ,EndGameKeyDefinition::getMetricName()                 \
+         ,EndGameKeyDefinition::getMetricName().cstr()          \
          ,pliesToEnd                                            \
          ,it.getProgressStr().cstr()                            \
          ,m_info.toString(TBIFORMAT_PRINT_NONTERMINALS).cstr()  \
@@ -862,7 +862,7 @@ bool EndGameTablebase::analyzeRetro(const EndGameEntry &entry, PositionCount64 &
 void EndGameTablebase::fixupBackup(bool force) {
   time_t now;
   time(&now);
-  if(force || (now - getFileTime(ALLTABLEBASE) > 3600)) { // save every hour
+  if(force || (now - getTbFileTime(ALLTABLEBASE) > 3600)) { // save every hour
     save();
   }
 }
@@ -1498,8 +1498,8 @@ EndGameResult &EndGameTablebase::changePliesToEnd(EndGameResult &dst, const EndG
   return changePliesToEnd(dst, result.getStatus(), result.getPliesToEnd());
 }
 
-void EndGameTablebase::missingPositionError(const TCHAR *function, const EndGameKey key, EndGameResult &result) {
-  throw MissingPositionException(format(_T("%s:missing position:[%s]"), function, key.toString(m_keydef).cstr()).cstr());
+void EndGameTablebase::missingPositionError(const TCHAR *method, const EndGameKey key, EndGameResult &result) {
+  throw MissingPositionException(format(_T("%s:missing position:[%s]"), method, key.toString(m_keydef).cstr()).cstr());
 }
 
 void EndGameTablebase::insertManualPositions() {
@@ -1556,7 +1556,7 @@ void EndGameTablebase::logPositionCount() const {
 }
 
 void EndGameTablebase::logUndefinedPosition(const EndGameKey &key) const {
-  FILE *f = MKFOPEN(getUndefinedKeyLogFileName(),_T("a"));
+  FILE *f = MKFOPEN(getTbFileName(UNDEFINEDKEYSLOG),_T("a"));
   _ftprintf(f,_T("    %s\n"), key.toString(m_keydef, true).cstr());
   fclose(f);
   m_allKeysFound = false;
@@ -1700,7 +1700,9 @@ void EndGameTablebase::list(FILE *f, EndGameEntryIterator &it) {
 
 void EndGameTablebase::listPositionCount(FILE *f) {
   const CompactArray<PositionCount64> wpTable = getWinnerPositionCountArray();
-  _ftprintf(f, _T("Positions sorted by plies to end for tablebase %s (%s)\n"), getName().cstr(), EndGameKeyDefinition::getMetricName());
+  _ftprintf(f, _T("Positions sorted by plies to end for tablebase %s (%s)\n")
+           ,getName().cstr()
+           ,EndGameKeyDefinition::getMetricName().cstr());
   _ftprintf(f,_T("Plies   White win   Black win\n"));
   PositionCount64 total;
   for(UINT plies = 0; plies < wpTable.size(); plies++) {
@@ -1931,18 +1933,18 @@ bool EndGameTablebase::allSubKeysFound() const {
 }
 
 String EndGameTablebase::save(bool convert) const {
-  return save(getFileName(ALLTABLEBASE), convert);
+  return save(getTbFileName(ALLTABLEBASE), convert);
 }
 
 String EndGameTablebase::saveAllForwardPositions(bool convert) {
   if(!convert) {
     m_info.m_buildTime = _time32(NULL);
   }
-  return save(getFileName(ALLFORWARDPOSITIONS), convert);
+  return save(getTbFileName(ALLFORWARDPOSITIONS), convert);
 }
 
 String EndGameTablebase::loadAllForwardPositions() {
-  const String fileName = getFileName(ALLFORWARDPOSITIONS);
+  const String fileName = getTbFileName(ALLFORWARDPOSITIONS);
   load(fileName);
   return fileName;
 }
@@ -1951,11 +1953,11 @@ String EndGameTablebase::saveAllRetroPositions(bool convert) {
   if(!convert) {
     m_info.m_buildTime = _time32(NULL);
   }
-  return save(getFileName(ALLRETROPOSITIONS), convert);
+  return save(getTbFileName(ALLRETROPOSITIONS), convert);
 }
 
 String EndGameTablebase::loadAllRetroPositions() {
-  const String fileName = getFileName(ALLRETROPOSITIONS);
+  const String fileName = getTbFileName(ALLRETROPOSITIONS);
   load(fileName);
   return fileName;
 }
@@ -1996,7 +1998,7 @@ void EndGameTablebase::save(ByteOutputStream &s) const {
 }
 
 String EndGameTablebase::compress(bool convert) {
-  String fileName = getFileName(COMPRESSEDTABLEBASE);
+  String fileName = getTbFileName(COMPRESSEDTABLEBASE);
   if(convert) {
     fileName = FileNameSplitter(fileName).setExtension(_T("new")).getFullPath();
   }
@@ -2016,24 +2018,17 @@ String EndGameTablebase::compress(bool convert) {
   }
 }
 
-#ifndef NEWCOMPRESSION
 void EndGameTablebase::compress(ByteOutputStream &s) {
   m_info.m_indexCapacity = m_positionIndex.size();
+#ifndef NEWCOMPRESSION
   m_info.save(s);
   m_positionIndex.saveCompressed(s, m_info);
-}
 #else // NEWCOMPRESSION
-void EndGameTablebase::compress(ByteOutputStream &s) {
-  m_info.m_indexCapacity        = m_positionIndex.size();
-  const PositionTypeCounters tc = m_positionIndex.countWinnerPositionTypes();
-  const NotPrunedFlags       np = tc.getBestNPFlags();
-  verbose(_T("TypeCounter:\n%sBest nonpruned:(%d,%d)\n"), tc.toString().cstr(),np>>1,np&1);
-  m_info.setNPFlags(np);
   BigEndianOutputStream bes(s);
   m_info.save(bes);
   m_positionIndex.saveCompressed(bes, m_info);
-}
 #endif // NEWCOMPRESSION
+}
 
 MaxVariantCount EndGameTablebase::findMaxPlies() const {
   int wmPlies = 0, bmPlies = 0;

@@ -49,9 +49,6 @@
     <Filter Include="EndGames\6Men\6MenNoPawns">
       <UniqueIdentifier>{e2d940f3-754f-47f8-8ee1-3592d152b029}</UniqueIdentifier>
     </Filter>
-    <Filter Include="EndGames\Compression">
-      <UniqueIdentifier>{456f3603-4212-4e2b-a723-d481994c2611}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Chess\FieldInfo.cpp">
@@ -696,21 +693,6 @@
     <ClCompile Include="..\Chess\PawnMask.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Test\Compress\AdaptiveHuffmanTree.cpp">
-      <Filter>EndGames\Compression</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Test\Compress\ArithmeticCoder.cpp">
-      <Filter>EndGames\Compression</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Test\Compress\Compressor.cpp">
-      <Filter>EndGames\Compression</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Test\Compress\ZLibCompressor.cpp">
-      <Filter>EndGames\Compression</Filter>
-    </ClCompile>
-    <ClCompile Include="IndexedMapCompressNew.cpp">
-      <Filter>EndGames\Compression</Filter>
-    </ClCompile>
     <ClCompile Include="..\Chess\TablebaseConversion.cpp">
       <Filter>EndGames</Filter>
     </ClCompile>
@@ -734,6 +716,18 @@
     </ClCompile>
     <ClCompile Include="StdAfx.cpp" />
     <ClCompile Include="..\Chess\MoveResultArray.cpp">
+      <Filter>EndGames</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Chess\EndgameTablebaseNewComp.cpp">
+      <Filter>EndGames</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Chess\EndgameTablebaseOldComp.cpp">
+      <Filter>EndGames</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Chess\IndexedMapNewComp.cpp">
+      <Filter>EndGames</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Chess\IndexedMapOldComp.cpp">
       <Filter>EndGames</Filter>
     </ClCompile>
   </ItemGroup>
@@ -788,24 +782,6 @@
     </ClInclude>
     <ClInclude Include="..\Chess\EndGame6MenNoPawns.h">
       <Filter>EndGames\6Men\6MenNoPawns</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Test\Compress\AdaptiveHuffmanTree.h">
-      <Filter>EndGames\Compression</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Test\Compress\ArithmeticCoder.h">
-      <Filter>EndGames\Compression</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Test\Compress\Compressor.h">
-      <Filter>EndGames\Compression</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Test\Compress\ZLibCompressor.h">
-      <Filter>EndGames\Compression</Filter>
-    </ClInclude>
-    <ClInclude Include="BitSetCompression.h">
-      <Filter>EndGames\Compression</Filter>
-    </ClInclude>
-    <ClInclude Include="PackedArrayCompression.h">
-      <Filter>EndGames\Compression</Filter>
     </ClInclude>
     <ClInclude Include="stdAfx.h" />
     <ClInclude Include="targetver.h" />

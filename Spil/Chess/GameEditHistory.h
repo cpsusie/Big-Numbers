@@ -61,6 +61,6 @@ public:
   bool canRedo() const;
 
 #ifdef _DEBUG
-  void printState(const TCHAR *function) const;
+  void printState(const TCHAR *method) const;
 #endif
 };

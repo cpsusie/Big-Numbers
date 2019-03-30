@@ -3,6 +3,12 @@
 #include <PropertyContainer.h>
 #include "EndGameKey.h"
 
+#ifdef _DEBUG
+#ifdef NEWCOMPRESSION
+#define DEBUG_NEWCOMPRESSION
+#endif
+#endif
+
 class PieceTypeWithIndex {
 private:
   unsigned char m_data;
@@ -54,6 +60,21 @@ public:
   }
 };
 
+typedef enum {
+#ifdef TABLEBASE_BUILDER
+  ALLFORWARDPOSITIONS,   // needed only in makeendgame
+  ALLRETROPOSITIONS  ,   // needed only in makeendgame
+  ALLTABLEBASE       ,   // needed only in makeendgame
+  UNDEFINEDKEYSLOG   ,   // needed only in makeendgame
+#ifdef DEBUG_NEWCOMPRESSION
+  COMPRESSEDDUMP     ,
+#endif
+#else // !TABLEBASE_BUILDER
+  DECOMPRESSEDTABLEBASE, // needed only in chess
+#endif // TABLEBASE_BUILDER
+  COMPRESSEDTABLEBASE    // needed in both
+} TablebaseFileType;
+
 typedef UINT64 EndGamePosIndex;
 
 #ifdef TABLEBASE_BUILDER
@@ -72,7 +93,6 @@ public:
   }
 };
 class SelfCheckStatusPrinter;
-
 #endif
 
 class EndGameKeyDefinition {
@@ -240,15 +260,13 @@ public:
   TCHAR *createKeyString(TCHAR *dst, EndGameKey key, bool initFormat) const;
   String createInitKeyString(EndGameKey key) const;
 
-  static String getFileMetricSuffix();
-
-  static String getDbFileName(const String &fileName);
-#ifdef TABLEBASE_BUILDER
-  String getTablebaseFileName() const;
-#else
-  String getDecompressedFileName() const;
-#endif
-  String getCompressedFileName() const;
+  static inline String getMetricFileSuffix(const TCHAR *ext = _T(".dat")) {
+    return getMetricName() + ext;
+  }
+  static inline String getTbFileName(const String &fileName) {
+    return FileNameSplitter::getChildName(getDbPath(), fileName);
+  }
+  String        getTbFileName(TablebaseFileType fileType) const;
 
   static void addPropertyChangeListener(   PropertyChangeListener *listener);
   static void removePropertyChangeListener(PropertyChangeListener *listener);
@@ -272,10 +290,10 @@ public:
   static inline bool isMetricDTC() {
     return getMetric() == DEPTH_TO_CONVERSION;
   }
-  static const TCHAR *getMetricName(TablebaseMetric m) {
+  static String getMetricName(TablebaseMetric m) {
     return s_metricName[m];
   }
-  static const TCHAR *getMetricName() {
+  static String getMetricName() {
     return getMetricName(getMetric());
   }
 };

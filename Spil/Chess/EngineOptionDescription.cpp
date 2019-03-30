@@ -43,7 +43,7 @@ EngineOptionDescription::EngineOptionDescription(String line, USHORT index) : m_
       } else if(typeStr == _T("string")) {
         m_type = OptionTypeString;
       } else {
-        throwInvalidArgumentException(method, _T("Invalid type:<%s>"), typeStr.cstr());
+        throwInvalidArgumentException(method, _T("typeStr=<%s>"), typeStr.cstr());
       }
       typeDefined = true;
     } else if(field == _T("min")) {
@@ -60,7 +60,7 @@ EngineOptionDescription::EngineOptionDescription(String line, USHORT index) : m_
     } else if(field == _T("var")) {
       m_comboValues.add(tok.next());
     } else {
-      throwInvalidArgumentException(method, _T("Invalid field:<%s>"), field.cstr());
+      throwInvalidArgumentException(method, _T("field:<%s>"), field.cstr());
     }
   }
   if(!typeDefined) {

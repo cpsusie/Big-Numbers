@@ -212,7 +212,7 @@ EndGameTablebaseList EndGameTablebase::getExistingEndGameTablebases() { // stati
   EndGameTablebaseList list = getRegisteredEndGameTablebases();
   for(int i = (int)list.size()-1; i >= 0; i--) {
     EndGameTablebase &db = *list[i];
-    if(!db.exist(COMPRESSEDTABLEBASE)) {
+    if(!db.tbFileExist(COMPRESSEDTABLEBASE)) {
       list.remove(i);
     }
   }

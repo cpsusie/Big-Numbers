@@ -2533,7 +2533,9 @@ void CChessDlg::setGameSettings() {
   getCurrentGame().setMaxPlyCountWithoutCaptureOrPawnMove(options.getMaxMovesWithoutCaptureOrPawnMove()*2);
 #endif
   EndGameKeyDefinition::setMetric(options.getEndGameTablebaseMetric());
+#ifndef NEWCOMPRESSION
   EndGameKeyDefinition::setDbPath(options.getEndGameTablebasePath());
+#endif
   checkMenuItem( this, ID_OPENINGLIBRARY_ENABLED  , options.isOpeningLibraryEnabled()  );
   checkMenuItem( this, ID_ENDGAMETABLEBASE_ENABLED, options.isEndGameTablebaseEnabled());
   enableMenuItem(this, ID_TABLEBASE_SETTINGS      , options.isEndGameTablebaseEnabled());

@@ -399,7 +399,7 @@ Move Game::getRandomMove() const {
 
 String getMoveTypeName(MoveType type) {
 
-#define caseMoveType(c) case c:return #c;
+#define caseMoveType(c) case c:return _T(#c);
 
   switch(type) {
   caseMoveType(NOMOVE       )
@@ -409,7 +409,7 @@ String getMoveTypeName(MoveType type) {
   caseMoveType(SHORTCASTLING)
   caseMoveType(LONGCASTLING )
   default:
-    return format(_T("getMoveTypeName::Unknown moveType:%d"),type);
+    return format(_T("%s:Unknown moveType:%d"),__TFUNCTION__, type);
   }
 }
 
@@ -431,7 +431,7 @@ MoveDirection getOppositeDirection(MoveDirection direction) {
 
 String getMoveDirectionName(MoveDirection direction) {
 
-#define caseMoveDirection(c) case MD_##c: return #c;
+#define caseMoveDirection(c) case MD_##c: return _T(#c);
 
   switch(direction) {
   caseMoveDirection(NONE);
@@ -444,13 +444,13 @@ String getMoveDirectionName(MoveDirection direction) {
   caseMoveDirection(DOWNDIAG2);
   caseMoveDirection(UPDIAG2);
   default:
-    return format(_T("getMoveDirectionName:Unknown direction:%d"), direction);
+    return format(_T("%s:Unknown direction:%d"), __TFUNCTION__, direction);
   }
 }
 
 String getSymmetricTransformationToString(SymmetricTransformation st) {
 
-#define caseTransformation(t) case TRANSFORM_##t: return #t;
+#define caseTransformation(t) case TRANSFORM_##t: return _T(#t);
 
   switch(st) {
   case 0: return _T("EMPTY");
@@ -463,7 +463,7 @@ String getSymmetricTransformationToString(SymmetricTransformation st) {
   caseTransformation(MIRRORDIAG1);
   caseTransformation(MIRRORDIAG2);
   default:
-    return format(_T("getSymmetricTransformationToString:Unknown symmetric transformation:%u"), st);
+    return format(_T("%s:Unknown symmetric transformation:%u"), __TFUNCTION__, st);
   }
 }
 
@@ -717,15 +717,15 @@ const TCHAR *getFieldName(int position) {
   return Game::s_fieldInfo[position].m_name;
 }
 
-void validatePosition(const TCHAR *function, int pos) {
+void validatePosition(const TCHAR *method, int pos) {
   if(!isValidPosition(pos)) {
-    throwInvalidArgumentException(function, _T("Position=%d. Must be [0..63]"), pos);
+    throwInvalidArgumentException(method, _T("Position=%d. Must be [0..63]"), pos);
   }
 }
 
-void validatePosition(const TCHAR *function, int row, int col) {
+void validatePosition(const TCHAR *method, int row, int col) {
   if(!isValidPosition(row,col)) {
-    throwInvalidArgumentException(function, _T("row=%d. col=%d"), row, col);
+    throwInvalidArgumentException(method, _T("row=%d. col=%d"), row, col);
   }
 }
 

@@ -694,9 +694,6 @@
     <ClCompile Include="BackMoveGenerator.cpp">
       <Filter>EndGames</Filter>
     </ClCompile>
-    <ClCompile Include="EndgameDecompress.cpp">
-      <Filter>EndGames</Filter>
-    </ClCompile>
     <ClCompile Include="EndGameKey.cpp">
       <Filter>EndGames</Filter>
     </ClCompile>
@@ -901,6 +898,21 @@
     </ClCompile>
     <ClCompile Include="GameEditHistory.cpp">
       <Filter>Source Files\Dialogs\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="EndgameTablebaseNewComp.cpp">
+      <Filter>EndGames</Filter>
+    </ClCompile>
+    <ClCompile Include="EndgameTablebaseOldComp.cpp">
+      <Filter>EndGames</Filter>
+    </ClCompile>
+    <ClCompile Include="IndexedMapNewComp.cpp">
+      <Filter>EndGames</Filter>
+    </ClCompile>
+    <ClCompile Include="IndexedMapOldComp.cpp">
+      <Filter>EndGames</Filter>
+    </ClCompile>
+    <ClCompile Include="EndgameDecompressAll.cpp">
+      <Filter>EndGames</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -611,7 +611,7 @@ EndGameTablebase *ChessPlayer::findMatchingTablebase(const Game &g) const {
   }
   bool swapPlayers;
   EndGameTablebase *db = EndGameTablebase::getInstanceBySignature(g.getPositionSignature(), swapPlayers);
-  return (db && (db->exist(DECOMPRESSEDTABLEBASE) || db->exist(COMPRESSEDTABLEBASE))) ? db : NULL;
+  return (db && (db->tbFileExist(DECOMPRESSEDTABLEBASE) || db->tbFileExist(COMPRESSEDTABLEBASE))) ? db : NULL;
 }
 
 void ChessPlayer::allocateRemoteMoveFinder() {

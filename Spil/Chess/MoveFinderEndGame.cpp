@@ -27,16 +27,16 @@ void MoveFinderEndGame::findBestMove(const RequestParamFindMove &param) {
     }
     s_currentDbPath = EndGameKeyDefinition::getDbPath();
     s_currentMetric = EndGameKeyDefinition::getMetric();
-//    verbose(_T("Loading tablebase %s. Metric:%s..."), m_tablebase->getName().cstr(), EndGameKeyDefinition::getMetricName(s_currentMetric));
+//    verbose(_T("Loading tablebase %s. Metric:%s..."), m_tablebase->getName().cstr(), EndGameKeyDefinition::getMetricName(s_currentMetric).cstr());
     m_tablebase->load();
   } else {
     if(isVerbose()) {
-      verbose(_T("Tablebase %s. Metric:%s\n"), m_tablebase->getName().cstr(), EndGameKeyDefinition::getMetricName(s_currentMetric));
+      verbose(_T("Tablebase %s. Metric:%s\n"), m_tablebase->getName().cstr(), EndGameKeyDefinition::getMetricName(s_currentMetric).cstr());
     }
   }
   MoveResult2Array allMoves;
-  const Options &options = getOptions();
-  PrintableMove  result  = m_tablebase->findBestMove(m_game, allMoves, options.getEndGameDefendStrength());
+  const Options  &options = getOptions();
+  PrintableMove   result  = m_tablebase->findBestMove(m_game, allMoves, options.getEndGameDefendStrength());
   if(result.isMove()) {
     if(isVerbose()) {
       verbose(_T("%s"), allMoves.toString(m_game, options.getMoveFormat(), options.getDepthInPlies()).cstr());
@@ -78,7 +78,7 @@ String MoveFinderEndGame::getStateString(bool detailed) {
     }
     result += format(_T("\n  LoadRefCount:%d"), m_tablebase->getLoadRefCount());
   }
-  result += format(_T("\n  Current metric:%s"), EndGameKeyDefinition::getMetricName());
+  result += format(_T("\n  Current metric:%s"), EndGameKeyDefinition::getMetricName().cstr());
   const EndGameTablebaseList list = EndGameTablebase::getExistingEndGameTablebases();
   String allLoadedString;
   for(size_t i = 0; i < list.size(); i++) {

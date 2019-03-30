@@ -16,7 +16,7 @@ public:
   }
   DecompressSingleJob(EndGameTablebase *tb)
     : m_tb(tb)
-    , m_compressedSize(tb->getFileSize(COMPRESSEDTABLEBASE))
+    , m_compressedSize(tb->getTbFileSize(COMPRESSEDTABLEBASE))
   {
   }
   inline const EndGameTablebase *getTablebase() const {
@@ -176,7 +176,7 @@ DecompressJob::DecompressJob(const EndGameTablebaseList &list) : m_jobQueue(list
   m_title = format(_T("%s - %s:%s")
                  ,loadString(IDS_DECOMPRESSALLTITLE).cstr()
                  ,loadString(IDS_METRIC).cstr()
-                 ,EndGameKeyDefinition::getMetricName()
+                 ,EndGameKeyDefinition::getMetricName().cstr()
                   );
 }
 
@@ -274,7 +274,7 @@ void EndGameTablebase::decompressAll() { // static
   } else {
     DecompressJob job(jobList);
     ProgressWindow(NULL, job, 0, 2000);
-    if (job.isInterrupted()) {
+    if(job.isInterrupted()) {
       AfxMessageBox(_IDS_INTERRUPTED_BY_USER, MB_ICONEXCLAMATION|MB_OK);
     } else {
       AfxMessageBox(IDS_ALLTABLEBASESDECOMPRESSED, MB_ICONINFORMATION|MB_OK);
@@ -282,4 +282,4 @@ void EndGameTablebase::decompressAll() { // static
   }
 }
 
-#endif
+#endif // TABLEBASE_BUILDER

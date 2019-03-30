@@ -6,7 +6,11 @@
 
 #define CHESSLIB_ROOT "C:/mytools2015/Spil/ChessLib/"
 
+#ifdef NEWCOMPRESSION
+#define CHESSLIB_CONFIG "NewComp" _CONFIGURATION_
+#else
 #define CHESSLIB_CONFIG "TablebaseBuilder" _CONFIGURATION_
+#endif
 
 #define CHESSLIB_VERSION CHESSLIB_ROOT _PLATFORM_ CHESSLIB_CONFIG
 

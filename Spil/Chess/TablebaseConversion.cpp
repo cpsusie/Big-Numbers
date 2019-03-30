@@ -29,7 +29,7 @@ void EndGameTablebase::convert() {
     load();
 //    f3Dst = save(true);
 
-    f4Src = getFileName(COMPRESSEDTABLEBASE);
+    f4Src = getTbFileName(COMPRESSEDTABLEBASE);
     f4Dst = compress(true);
     unload();
 
@@ -37,7 +37,7 @@ void EndGameTablebase::convert() {
     load();
 //    f5Dst = save(true);
 
-    f6Src = getFileName(COMPRESSEDTABLEBASE);
+    f6Src = getTbFileName(COMPRESSEDTABLEBASE);
     f6Dst = compress(true);
     unload();
 

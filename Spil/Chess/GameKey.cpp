@@ -293,7 +293,7 @@ GameKey GameKey::transform(SymmetricTransformation st) const {
   case TRANSFORM_MIRRORCOL  : return mirrorColumns();
   case TRANSFORM_MIRRORDIAG1: return mirrorDiag1();
   case TRANSFORM_MIRRORDIAG2: return mirrorDiag2();
-  default                   : throwException(_T("Unknown symmetric transformation:%u"), st);
+  default                   : throwInvalidArgumentException(__TFUNCTION__, _T("st=%u"), st);
                               return *this;
   }
 }
@@ -309,7 +309,7 @@ int GameKey::transform(int pos, SymmetricTransformation st) { // static
   case TRANSFORM_MIRRORCOL  : return MIRRORCOLUMN(pos);
   case TRANSFORM_MIRRORDIAG1: return MIRRORDIAG1( pos);
   case TRANSFORM_MIRRORDIAG2: return MIRRORDIAG2( pos);
-  default                   : throwException(_T("Unknown symmetric transformation:%u"), st);
+  default                   : throwInvalidArgumentException(__TFUNCTION__, _T("st=%u"), st);
                               return pos;
   }
 }

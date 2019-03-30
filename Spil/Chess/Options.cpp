@@ -154,9 +154,9 @@ void LevelTimeout::setDefault() {
   m_timeout[5]         = 45;
 }
 
-void LevelTimeout::checkLevel(const TCHAR *function, int level) const {
+void LevelTimeout::checkLevel(const TCHAR *method, int level) const {
   if(level < 1 || level > LEVELCOUNT) {
-    throwInvalidArgumentException(function, _T("level=%d. Must be [1..%d]"), level, LEVELCOUNT);
+    throwInvalidArgumentException(method, _T("level=%d. Must be [1..%d]"), level, LEVELCOUNT);
   }
 }
 
@@ -482,7 +482,7 @@ void Options::save() {
     key.setValue(OPENINGLIBRARYENABLED   , m_openingLibraryEnabled  );
     key.setValue(ENDGAMETABLEBASEENABLED , m_endGameTablebaseEnabled);
     key.setValue(ENDGAMETABLEBASEPATH    , m_endGameTablebasePath   );
-    key.setValue(ENDGAMETABLEBASEMETRIC  , String(EndGameKeyDefinition::getMetricName(m_endGameTablebaseMetric)));
+    key.setValue(ENDGAMETABLEBASEMETRIC  , EndGameKeyDefinition::getMetricName(m_endGameTablebaseMetric));
     key.setValue(ENDGAMEDEFENDSTRENGTH   , m_endGameDefendStrength  );
     key.setValue(MAXMOVESWITHOUTCAPTURE  , m_maxMovesWithoutCaptureOrPawnMove );
     key.setValue(HISTORYFORMAT           , m_moveFormat             );

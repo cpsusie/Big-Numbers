@@ -163,8 +163,46 @@ String TablebaseInfo::getColumnHeaders(TablebaseInfoStringFormat f, const String
   }
 }
 
+
 String TablebaseInfo::toString(TablebaseInfoStringFormat f, bool plies) const {
   switch(f) {
+  case TBIFORMAT_PRINT_ALL      :
+    { const String timestampFormat = _T("dd.MM.yy hh:mm");
+      return format(_T("Version                    :%s\n"
+                       "Index capacity             :%11s\n"
+                       "Total positions            :%11s\n"
+                       "Undefined positions        :%11s\n"
+                       "Stalemate positions        :%11s\n"
+                       "Draw positions             :%11s\n"
+                       "Checkmate positions        :%s\n"
+                       "Terminal winnerpositions   :%s\n"
+                       "Nonterminal winnerpositions:%s\n"
+                       "Winner positions           :%s\n"
+                       "Max variants (in %s)    :%s\n"
+                       "Can win                    :w=%s, b=%s\n"
+                       "Consistent                 :%s\n"
+                       "State flags                :%#02x\n"
+                       "Buildtime                  :%s\n"
+                       "ConsistencyChecked         :%s\n"
+                      )
+                   ,getVersion().cstr()
+                   ,format1000(m_indexCapacity     ).cstr()
+                   ,format1000(m_totalPositions    ).cstr()
+                   ,format1000(m_undefinedPositions).cstr()
+                   ,format1000(m_stalematePositions).cstr()
+                   ,format1000(m_drawPositions     ).cstr()
+                   ,m_checkMatePositions.toStringWithTotal(     _T('+'), 11).cstr()
+                   ,m_terminalWinPositions.toStringWithTotal(   _T('+'), 11).cstr()
+                   ,m_nonTerminalWinPositions.toStringWithTotal(_T('+'), 11).cstr()
+                   ,getWinnerPositionCount().toStringWithTotal( _T('+'), 11).cstr()
+                   ,plies?_T("plies"):_T("moves"), formatMaxVariants(plies).cstr()
+                   ,boolToStr(m_canWin[WHITEPLAYER]),boolToStr(m_canWin[BLACKPLAYER])
+                   ,boolToStr(isConsistent())
+                   ,m_stateFlags
+                   ,Timestamp((time_t)m_buildTime).toString(timestampFormat).cstr()
+                   ,Timestamp((time_t)m_consistencyCheckedTime).toString(timestampFormat).cstr()
+                   );
+    }
   case TBIFORMAT_PRINT_TERMINALS:
     return format(_T("Udef:%*s Checkmates:(%s) Stalemates:%*s Tm:(%s)")
                  ,POSITIONWIDTH, format1000(m_undefinedPositions      ).cstr()
@@ -265,19 +303,6 @@ UINT64 TablebaseInfo::getWinnerPositionCount(Player winner) const {
        + m_nonTerminalWinPositions.m_count[winner];
 }
 
-#ifdef NEWCOMPRESSION
-void TablebaseInfo::setNPFlags(BYTE npIndex) { // comes from PositionTypeCounters.getMinCounterIndex()
-  assert(npIndex < 4);
-  assert(isConsistent());
-  m_stateFlags &= TBISTATE_MASK;
-  m_stateFlags |= npIndex << 5;
-}
-
-BYTE TablebaseInfo::getNPFlags() const {
-  return (m_stateFlags >> 5) & 3;
-}
-#endif
-
 StreamProgress::StreamProgress(const EndGameTablebase *tb) : m_timer(1) {
   m_total     = sizeof(TablebaseInfo) + tb->getKeyDefinition().getIndexSize() * sizeof(EndGameResult);
   m_timer.startTimer(1500, *this, true);
@@ -318,23 +343,5 @@ void IntervalChecker::update(EndGamePosIndex v) {
     m_maxValue = v;
   }
 }
-
-#ifdef NEWCOMPRESSION
-NotPrunedFlags PositionTypeCounters::getBestNPFlags() const {
-  UINT64         currentMin = m_count[0][0];
-  NotPrunedFlags result     = NPFLAGS(0,0);
-  forEachPlayer(player) {
-    for(BYTE parity = 0; parity <= 1; parity++) {
-      const UINT64 v = m_count[player][parity];
-      if(v < currentMin) {
-        result = NPFLAGS(player, parity);
-        currentMin = v;
-      }
-    }
-  }
-  return result;
-}
-
-#endif // NEWCOMPRESSION
 
 #endif // TABLEBASE_BUILDER

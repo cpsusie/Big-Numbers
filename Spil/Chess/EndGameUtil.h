@@ -6,10 +6,11 @@
 #include <Timer.h>
 #include "EndGameKeyDefinition.h"
 
-// #define NEWCOMPRESSION
-
 #ifdef NEWCOMPRESSION
+#pragma message("Compiling with NEW COMPRESSION")
 #include <BigEndianStream.h>
+#else
+#pragma message("Compiling with OLD COMPRESSION")
 #endif
 
 typedef enum {
@@ -19,11 +20,19 @@ typedef enum {
  ,EG_BLACKWIN
 } EndGamePositionStatus;
 
+inline EndGamePositionStatus transformPositionStatus(EndGamePositionStatus status, bool swapPlayers) {
+  return (swapPlayers && (status >= EG_WHITEWIN)) ? (EndGamePositionStatus)(5-status) : status;
+}
+
 const TCHAR *positionStatusToString(EndGamePositionStatus state);
 
-#define STATUSTOWINNER(status) (((status) == EG_WHITEWIN) ? WHITEPLAYER : BLACKPLAYER)
-#define PLIESTOMOVES(plies)    (((plies)+1)/2)
-#define MOVESTOPLIES(moves)    ((moves)?((moves)*2-1):0)
+#define STATUSTOWINNER(status)     (((status) == EG_WHITEWIN) ? WHITEPLAYER : BLACKPLAYER)
+#define WINNERTOSTATUS(winner)     (((winner) == WHITEPLAYER) ? EG_WHITEWIN : EG_BLACKWIN)
+#define PLIESTOMOVES(plies)        (((plies)+1)/2)
+// assume this is a winnerposition for playerinturn or opponent.
+// pitWin is true if this is a winnerposition for playerInTurn, or else false
+#define MOVESTOPLIES(movesToEnd,pitWin) (2*(movesToEnd)+((pitWin)?0:1))
+//#define MOVESTOPLIES(moves,pitWin) ((moves)*2-((pitWin)?1:0))
 
 #define BOOL2MASK(b1, b2)     (((b1)?1:0) | ((b2)?2:0))
 #define BOOL3MASK(b1, b2, b3) (BOOL2MASK(b1, b2) | ((b3)?4:0))
@@ -34,7 +43,8 @@ const TCHAR *positionStatusToString(EndGamePositionStatus state);
 class EndGameResult {     // bit 0-8:pliesToEnd, bit 9-10:positionStatus, bit 11:exist, bit 12:visited, bit 13:changed, bit 14:marked
 private:                  // f e d c b a9     876543210
   USHORT m_data;          // - M C V E Status pliesToEnd
-
+  inline EndGameResult(USHORT data) : m_data(data) {
+  }
 public:
   inline EndGameResult() {
     m_data = 0;
@@ -49,6 +59,16 @@ public:
   EndGameResult &setResult(EndGamePositionStatus status, UINT pliesToEnd);
   EndGameResult &changePliesToEnd(UINT pliesToEnd);
 
+  static EndGameResult getPrunedWinnerResult() { // special code to indicate winner result.
+                                                 // which is pruned from compressed table
+                                                 // Does not occur in any tables
+                                                 // Dont use getStatus/getPliesToEnd on this
+    return EndGameResult(-1);
+  }
+  inline bool isPrunedWinnerResult() const {
+    return m_data == (USHORT)-1;
+  }
+
   inline UINT getPliesToEnd() const {
     return (m_data & 0x1ff);
   }
@@ -56,11 +76,7 @@ public:
   inline UINT getMovesToEnd() const {
     return PLIESTOMOVES(getPliesToEnd());
   }
-#ifdef NEWCOMPRESSION
-  inline void prunePliesToEnd() { // to be used with compression
-    m_data &= ~0x1ff;
-  }
-#endif
+
   inline EndGamePositionStatus getStatus() const {
     return (EndGamePositionStatus)((m_data>>9) & 0x3);
   }
@@ -151,6 +167,10 @@ public:
     return (m_data & 0x7ff) != (r.m_data & 0x7ff);
   }
 
+  inline EndGameResult transform(bool swapPlayers) const {
+    return swapPlayers ? EndGameResult(transformPositionStatus(getStatus(), true), getPliesToEnd()) : *this;
+  }
+
   TCHAR *toStr(TCHAR *dst, bool ply = false) const;
   TCHAR *toStr(TCHAR *dst, Player playerInTurn, bool ply = false) const;
 
@@ -167,11 +187,12 @@ public:
   }
 };
 
-#define EGR_STALEMATE    EndGameResult(EG_DRAW     , 0)
-#define EGR_TERMINALDRAW EndGameResult(EG_DRAW     , 1)
-#define EGR_DRAW         EndGameResult(EG_DRAW     , 2)
-#define EGR_WHITEISMATE  EndGameResult(EG_BLACKWIN , 0)
-#define EGR_BLACKISMATE  EndGameResult(EG_WHITEWIN , 0)
+#define EGR_STALEMATE                     EndGameResult(EG_DRAW     , 0)
+#define EGR_TERMINALDRAW                  EndGameResult(EG_DRAW     , 1)
+#define EGR_DRAW                          EndGameResult(EG_DRAW     , 2)
+#define EGR_WHITEISMATE                   EndGameResult(EG_BLACKWIN , 0)
+#define EGR_BLACKISMATE                   EndGameResult(EG_WHITEWIN , 0)
+#define EGR_WINNER(pit,winner,movesToEnd) EndGameResult(WINNERTOSTATUS(winner), MOVESTOPLIES(movesToEnd,(pit)==(winner)))
 
 typedef Entry<EndGameKey, EndGameResult> EndGameEntry;
 
@@ -185,6 +206,12 @@ public:
   }
   inline EndGameResult getResult() const {
     return m_result;
+  }
+  inline void setResult(const EndGameResult &result) {
+    m_result = result;
+  }
+  inline MoveWithResult transform(const Game &game, bool swapPlayers) const {
+    return swapPlayers ? MoveWithResult(__super::transform(game, true), getResult().transform(true)) : *this;
   }
   inline String toString() const {
     return format(_T("%8s - %s"), MoveBase::toString().cstr(), m_result.toString().cstr());
@@ -328,6 +355,9 @@ public:
   inline ReplyCount getReplyCount() const {
     return m_replyCount;
   }
+  inline MoveWithResult2 transform(const Game &game, bool swapPlayers) const {
+    return swapPlayers ? MoveWithResult2(__super::transform(game, true), getReplyCount()) : *this;
+  }
   inline String replyToString() const {
     return (getResult().isWinner() || getResult().isStalemate()) ?  EMPTYSTRING : m_replyCount.toString();
   }
@@ -424,6 +454,9 @@ public:
   String toString(TCHAR separator = _T(' '), int width = 11) const {
     return format(_T("%*s%c%*s"), width, format1000(m_count[0]).cstr(), separator, width, format1000(m_count[1]).cstr());
   }
+  String toStringWithTotal(TCHAR separator = _T('+'), int width = 11) const {
+    return format(_T("%*s = "), width, format1000(getTotal()).cstr()) + toString(separator, width);
+  }
   inline void incr(Player player) {
     m_count[player]++;
   }
@@ -478,16 +511,10 @@ public:
 #define BLACKCANWIN 0x02
 #define BOTHCANWIN  (WHITECANWIN|BLACKCANWIN)
 
-#ifdef NEWCOMPRESSION
-typedef BYTE NotPrunedFlags;
-#define NPFLAGS(player,parity) ((NotPrunedFlags)(((player)<<1) | (parity)))
-#define NPGETPLAYER(npf)       ((Player)(((npf)>>1)&1))
-#define NPGETPARITY(npf)       ((npf)&1)
-#endif // NEWCOMPRESSION
-
 #ifdef TABLEBASE_BUILDER
 typedef enum {
-  TBIFORMAT_PRINT_TERMINALS
+  TBIFORMAT_PRINT_ALL            // print 1 field a line, with newlines.
+ ,TBIFORMAT_PRINT_TERMINALS      // all other formats print as columns
  ,TBIFORMAT_PRINT_NONTERMINALS
  ,TBIFORMAT_PRINT_UNDEFANDWINS
  ,TBIFORMAT_PRINT_COLUMNS1
@@ -539,7 +566,7 @@ public:
 #ifdef NEWCOMPRESSION
   void save(BigEndianOutputStream &s) const;
   void load(BigEndianInputStream  &s);
-#endif
+#endif // NEWCOMPRESSION
 
   UINT64 getCheckMatePositions() const {
     return m_checkMatePositions.getTotal();
@@ -557,10 +584,6 @@ public:
   bool isConsistent() const {
     return (m_stateFlags & TBISTATE_CONSISTENT) != 0;
   }
-#ifdef NEWCOMPRESSION
-  void setNPFlags(NotPrunedFlags flags); // comes from PositionTypeCounters.getMinCounterIndex()
-  NotPrunedFlags getNPFlags() const;
-#endif
   inline BYTE getCanWinFlags() const {
     return (m_canWin[WHITEPLAYER]?WHITECANWIN:0)|(m_canWin[BLACKPLAYER]?BLACKCANWIN:0);
   }
@@ -638,28 +661,5 @@ public:
   ~IntervalChecker();
   void update(EndGamePosIndex v);
 };
-
-#ifdef NEWCOMPRESSION
-
-class PositionTypeCounters {
-public:
-  UINT64 m_count[2][2]; // indexed by playerInTurn, moveToEnd&1
-  inline PositionTypeCounters() {
-    m_count[0][0] = m_count[0][1] = m_count[1][0] = m_count[1][1] = 0;
-  }
-  inline void updateCount(const EndGameEntry &e) {
-    m_count[e.getKey().getPlayerInTurn()][e.getValue().getMovesToEnd()&1]++;
-  }
-  String toString() const {
-    return format(_T("  %14s  %14s\nW:%14s  %14s\nB:%14s  %14s\n")
-                 ,_T("Even par"), _T("Odd par")
-                 ,format1000(m_count[WHITEPLAYER][0]).cstr(),format1000(m_count[WHITEPLAYER][1]).cstr()
-                 ,format1000(m_count[BLACKPLAYER][0]).cstr(),format1000(m_count[BLACKPLAYER][1]).cstr()
-                 );
-  }
-  NotPrunedFlags getBestNPFlags() const; // bit 0:(0=even Parity,1=odd), bit 1:(0=WhiteToMove,1=BlacktoMove)
-};
-
-#endif // NEWCOMPRESSION
 
 #endif // TABLEBASE_BUILDER

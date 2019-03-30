@@ -82,6 +82,9 @@ static TCHAR *pliesToStr(TCHAR *dst, int pliesToEnd, bool ply) {
 }
 
 TCHAR *EndGameResult::toStr(TCHAR *dst, bool ply) const {
+  if(isPrunedWinnerResult()) {
+    return wcscpy(dst, _T("Pruned winner"));
+  }
   const int pliesToEnd = getPliesToEnd();
   TCHAR plyStr[40];
   switch(getStatus()) {
@@ -116,6 +119,9 @@ TCHAR *EndGameResult::toStr(TCHAR *dst, bool ply) const {
 }
 
 TCHAR *EndGameResult::toStr(TCHAR *dst, Player playerInTurn, bool ply) const {
+  if(isPrunedWinnerResult()) {
+    return wcscpy(dst, _T("Pruned winner"));
+  }
   switch(getStatus()) {
   case EG_UNDEFINED:
     return _tcscpy(dst, DRAW_STR     );

@@ -29,16 +29,16 @@ public:
 class IndexedMap : public CompactArray<EndGameResult> {
 private:
   const EndGameKeyDefinition &m_keydef;
-  const EndGamePosIndex       m_indexSize; // keydef.getIndexSize()
+  const EndGamePosIndex       m_indexSize; // = keydef.getIndexSize()
   void allocate();
   void rethrowException(Exception &e, EndGameKey key) const;
 #ifdef _DEBUG
   EndGamePosIndex getCheckedIndex(EndGameKey key) const;
 #endif
+#ifdef DEBUG_NEWCOMPRESSION
+  void            listCompressedContent(const TablebaseInfo &info, String fileName = EMPTYSTRING) const;
+#endif
 
-#ifdef NEWCOMPRESSION
-  void pruneAllPliesByNP(NotPrunedFlags np);
-#endif // NEWCOMPRESSION
 public:
   IndexedMap(const EndGameKeyDefinition &keydef);
 
@@ -53,9 +53,6 @@ public:
 
   EndGameResult &get(EndGameKey key);
   bool remove(EndGameKey key);
-#ifdef NEWCOMPRESSION
-  PositionTypeCounters countWinnerPositionTypes();
-#endif // NEWCOMPRESSION
   IndexedMap &clearAllVisited();
   IndexedMap &clearAllChanged();
   IndexedMap &clearAllMarked();
@@ -73,14 +70,11 @@ public:
   }
 
   void convertIndex();
-#ifdef NEWCOMPRESSION
-  void saveCompressed(   BigEndianOutputStream &out, const TablebaseInfo &info);
-  void saveCompressedNew(BigEndianOutputStream &out, const TablebaseInfo &info);
+#ifndef NEWCOMPRESSION
+  void saveCompressed(   ByteOutputStream      &s, const TablebaseInfo &info) const;
 #else // !NEWCOMPRESSION
-  void saveCompressed(   ByteOutputStream &s, const TablebaseInfo &info) const;
-  void saveCompressedNew(ByteOutputStream &s, const TablebaseInfo &info) const;
+  void saveCompressed(   BigEndianOutputStream &s, const TablebaseInfo &info) const;
 #endif // NEWCOMPRESSION
-
   EndGameKeyIterator   getKeyIterator();
   EndGameEntryIterator getEntryIterator();                                // All existing entries
   EndGameEntryIterator getIteratorUndefinedEntries();                     // All existing, undefined entries
@@ -162,10 +156,8 @@ class IndexedMap {
 private:
   const EndGameKeyDefinition &m_keydef;
   BYTE                        m_canWinFlags;
-  NotPrunedFlags              m_npFlags;
   FileBitSetIndex            *m_wpIndex;
-  FileBitSetIndex            *m_npIndex;
-  FileBitSet                 *m_whoWinSet;
+  FileBitSetIndex            *m_nzIndex;
   PackedFileArray            *m_infoArray;
   void init();
   IndexedMap(const IndexedMap &src);                                      // not defined
@@ -173,6 +165,9 @@ private:
 public:
   IndexedMap(const EndGameKeyDefinition &keydef);
   ~IndexedMap();
+  const EndGameKeyDefinition &getKeyDef() const {
+    return m_keydef;
+  }
   EndGameResult get(EndGameKey key) const;
   bool isAllocated() const {
     return m_wpIndex != NULL;
