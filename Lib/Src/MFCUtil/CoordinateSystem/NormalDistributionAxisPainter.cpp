@@ -4,7 +4,7 @@
 
 const String NormalDistributionAxisPainter::startDecadeFormat = _T("%0.8lg");
 
-NormalDistributionAxisPainter::NormalDistributionAxisPainter(SystemPainter &systemPainter, bool xAxis) : AbstractAxisPainter(systemPainter, xAxis) {
+NormalDistributionAxisPainter::NormalDistributionAxisPainter(SystemPainter &systemPainter, AxisIndex axis) : AbstractAxisPainter(systemPainter, axis) {
   doInvisiblePaint();
 }
 
@@ -22,7 +22,7 @@ double NormalDistributionAxisPainter::getAxisPoint() const {
   return getTransformation().getToInterval().getFrom();
 }
 
-String NormalDistributionAxisPainter::getValueText(double v) {
+String NormalDistributionAxisPainter::getValueText(double v) const {
   if(v == 0) {
     return _T("0");
   }
@@ -32,7 +32,7 @@ String NormalDistributionAxisPainter::getValueText(double v) {
        : format(startDecadeFormat.cstr(),v);
 }
 
-const TCHAR *NormalDistributionAxisPainter::getDoubleFormat() {
+const TCHAR *NormalDistributionAxisPainter::getDoubleFormat() const {
   if(m_doubleFormat.length() == 0) {
     if(useSuperAxisScale()) {
       m_doubleFormat = __super::getDoubleFormat();

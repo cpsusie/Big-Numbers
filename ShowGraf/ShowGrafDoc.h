@@ -10,20 +10,25 @@
 
 class CShowGrafView;
 
+class AxisOptions {
+public:
+  AxisType    m_type;
+  COLORREF    m_color;
+  bool        m_showValues;
+  bool        m_showValueMarks;
+  bool        m_showGridLines;
+  bool        m_relativeToFirst;
+  DataReader *m_reader;
+  AxisOptions();
+};
+
 class InitialOptions {
 public:
   COLORREF          m_backgroundColor;
-  COLORREF          m_axisColor;
+  AxisOptions       m_axisOptions[2];
   GraphStyle        m_graphStyle;
-  AxisType          m_XAxisType;
-  AxisType          m_YAxisType;
-  bool              m_xRelativeToFirst;
-  bool              m_yRelativeToFirst;
-  DataReader       *m_xReader;
-  DataReader       *m_yReader;
   TrigonometricMode m_trigoMode;
   bool              m_ignoreErrors;
-  bool              m_grid;
   bool              m_onePerLine;
   bool              m_rangeSpecified;
   DataRange         m_explicitRange;

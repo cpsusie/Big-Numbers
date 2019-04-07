@@ -46,9 +46,7 @@ private:
   Viewport2D                            m_vp;
   OccupationMap                         m_occupationMap;
   COLORREF                              m_backgroundColor;
-  COLORREF                              m_axisColor;
-  AxisType                              m_xAxisType, m_yAxisType;
-  bool                                  m_grid;
+  AxisAttribute                         m_axisAttr[2];
   bool                                  m_retainAspectRatio;
   bool                                  m_autoScale, m_autoSpace;
   SystemPainter                        *m_systemPainter;
@@ -79,6 +77,9 @@ public:
   // will not delete objects
   void   removeAllObjects() {
     m_objectArray.clear();
+  }
+  inline AxisAttribute &getAxisAttr(AxisIndex axis) {
+    return m_axisAttr[axis];
   }
   // remove AND delete all objects
   void deleteAllObjects();
@@ -127,13 +128,6 @@ public:
     getTransformation().zoom(Point2DP(p), in, flags);
   }
 
-  inline void setGrid(bool grid) {
-    m_grid = grid;
-  }
-  inline bool hasGrid() const {
-    return m_grid;
-  }
-
   void setAutoScale(bool autoScale, bool makeSpace) {
     m_autoScale = autoScale;
     m_autoSpace = makeSpace;
@@ -143,7 +137,7 @@ public:
   }
 
   inline bool canRetainAspectRatio() const {
-    return m_xAxisType == m_yAxisType;
+    return getAxisType(XAXIS_INDEX) == getAxisType(YAXIS_INDEX);
   }
 
   void setRetainAspectRatio(bool retainAspectRatio);
@@ -158,26 +152,46 @@ public:
   inline COLORREF getBackGroundColor() const {
     return m_backgroundColor;
   }
+  inline const AxisAttribute &getAxisAttr(AxisIndex axis) const {
+    return m_axisAttr[axis];
+  }
+  inline void setAxisType(AxisIndex axis, AxisType type) {
+    getAxisAttr(axis).setType(type);
+  }
+  inline AxisType getAxisType(AxisIndex axis) const {
+    return getAxisAttr(axis).getType();
+  }
+  inline void setAxisColor(AxisIndex axis, COLORREF color) {
+    getAxisAttr(axis).setColor(color);
+  }
+  inline COLORREF getAxisColor(AxisIndex axis) const {
+    return getAxisAttr(axis).getColor();
+  }
+  inline void setAxisFlags(AxisIndex axis, AxisFlags flags, bool set) {
+    getAxisAttr(axis).setFlags(set?flags:0, set?0:flags);
+  }
+  inline bool getAxisFlags(AxisIndex axis, AxisFlags flags) const {
+    return (getAxisAttr(axis).getFlags() & flags) != 0;
+  }
 
-  inline void setAxisColor(COLORREF color) {
-    m_axisColor = color;
+  inline void setShowAxisValues(AxisIndex axis, bool show) {
+    setAxisFlags(axis, AXIS_SHOW_VALUES, show);
   }
-  inline COLORREF getAxisColor() const {
-    return m_axisColor;
-  }
-
-  inline void setXAxisType(AxisType axisType) {
-    m_xAxisType = axisType;
-  }
-  inline AxisType getXAxisType() const {
-    return m_xAxisType;
+  inline bool hasAxisValues(AxisIndex axis) const {
+    return getAxisFlags(axis, AXIS_SHOW_VALUES);
   }
 
-  inline void setYAxisType(AxisType axisType) {
-    m_yAxisType = axisType;
+  inline void showAxisValueMarks(AxisIndex axis, bool show) {
+    setAxisFlags(axis, AXIS_SHOW_VALUEMARKS, show);
   }
-  inline AxisType getYAxisType() const {
-    return m_yAxisType;
+  inline bool hasAxisValueMarks(AxisIndex axis) const {
+    return getAxisFlags(axis, AXIS_SHOW_VALUEMARKS);
+  }
+  inline void showAxisGridLines(AxisIndex axis, bool show) {
+    setAxisFlags(axis, AXIS_SHOW_GRIDLINES, show);
+  }
+  inline bool hasAxisGridLines(AxisIndex axis) const {
+    return getAxisFlags(axis, AXIS_SHOW_GRIDLINES);
   }
 
   Point2D getMouseToSystem(const CPoint &p) {

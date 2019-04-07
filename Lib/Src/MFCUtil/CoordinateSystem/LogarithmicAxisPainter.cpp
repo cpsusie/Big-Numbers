@@ -4,7 +4,7 @@
 
 const String LogarithmicAxisPainter::startDecadeFormat = _T("%.0lg");
 
-LogarithmicAxisPainter::LogarithmicAxisPainter(SystemPainter &systemPainter, bool xAxis) : AbstractAxisPainter(systemPainter,xAxis) {
+LogarithmicAxisPainter::LogarithmicAxisPainter(SystemPainter &systemPainter, AxisIndex axis) : AbstractAxisPainter(systemPainter,axis) {
   doInvisiblePaint();
 }
 

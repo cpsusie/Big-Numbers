@@ -84,7 +84,11 @@ bool CShowGrafView::paintAll(CDC &dc, const CRect &rect, CFont *axisFont, CFont 
   buttonPanel->SetWindowPlacement(&wpl);
 
   m_coordinateSystem.SetFont(axisFont,FALSE);
-  m_coordinateSystem.setGrid(theApp.getMainWindow()->hasGrid());
+  FOR_BOTH_AXIS(i) {
+    m_coordinateSystem.setShowAxisValues( i, theApp.getMainWindow()->getShowValues(    i));
+    m_coordinateSystem.showAxisValueMarks(i, theApp.getMainWindow()->getShowValueMarks(i));
+    m_coordinateSystem.showAxisGridLines( i, theApp.getMainWindow()->getShowGridLines( i));
+  }
   try {
     m_coordinateSystem.OnPaint();
     CClientDC dc(&m_coordinateSystem);
@@ -146,13 +150,18 @@ void CShowGrafView::OnDraw(CDC *pDC) {
     if(paintAll(*pDC, rect, &m_axisFont, &m_buttonFont)) {
       DoubleInterval maxNormInterval(0,1);
       const DataRange dr = m_coordinateSystem.getDataRange();
-      enableMenuItem(ID_VIEW_SCALE_X_LOGARITHMIC       , dr.getMinX() > 0);
-      enableMenuItem(ID_VIEW_SCALE_Y_LOGARITHMIC       , dr.getMinY() > 0);
-      enableMenuItem(ID_VIEW_SCALE_X_NORMALDIST        , maxNormInterval.contains(dr.getXInterval()));
-      enableMenuItem(ID_VIEW_SCALE_Y_NORMALDIST        , maxNormInterval.contains(dr.getYInterval()));
-      checkMenuItem( ID_VIEW_RETAINASPECTRATIO         , m_coordinateSystem.isRetainingAspectRatio());
-      enableMenuItem(ID_VIEW_RETAINASPECTRATIO         , m_coordinateSystem.canRetainAspectRatio()  );
-      checkMenuItem( ID_VIEW_ROLLAVG                   , getDoc()->getRollAvg()                     );
+      const bool xlogEnabled = dr.getMinX() > 0, ylogEnabled = dr.getMinY() > 0;
+      enableMenuItem(ID_X_SCALE_LOGARITHMIC       , xlogEnabled);
+      enableMenuItem(ID_Y_SCALE_LOGARITHMIC       , ylogEnabled);
+      enableMenuItem(ID_BOTH_SCALE_LOGARITHMIC    , xlogEnabled && ylogEnabled);
+
+      const bool xnormDistEnabled = maxNormInterval.contains(dr.getXInterval()), ynormDistEnabled = maxNormInterval.contains(dr.getYInterval());
+      enableMenuItem(ID_X_SCALE_NORMALDIST        , xnormDistEnabled);
+      enableMenuItem(ID_Y_SCALE_NORMALDIST        , ynormDistEnabled);
+      enableMenuItem(ID_BOTH_SCALE_NORMALDIST     , xnormDistEnabled && ynormDistEnabled);
+      checkMenuItem( ID_VIEW_RETAINASPECTRATIO    , m_coordinateSystem.isRetainingAspectRatio());
+      enableMenuItem(ID_VIEW_RETAINASPECTRATIO    , m_coordinateSystem.canRetainAspectRatio()  );
+      checkMenuItem( ID_VIEW_ROLLAVG              , getDoc()->getRollAvg()                     );
     }
   } catch(Exception e) {
     showException(e);
@@ -265,8 +274,8 @@ void CShowGrafView::initScale() {
   const InitialOptions &options = getDoc()->getOptions();
   const GraphArray     &ga      = getDoc()->getGraphArray();
   DataRange             dr;
-  const AxisType        xt      = theApp.getMainWindow()->getXAxisType();
-  const AxisType        yt      = theApp.getMainWindow()->getYAxisType();
+  const AxisType        xt      = theApp.getMainWindow()->getAxisType(XAXIS_INDEX);
+  const AxisType        yt      = theApp.getMainWindow()->getAxisType(YAXIS_INDEX);
   if(options.m_rangeSpecified) {
     dr = options.m_explicitRange;
   } else if(ga.size() == 0) {
@@ -276,6 +285,6 @@ void CShowGrafView::initScale() {
   }
   int makeSpaceFlags = ((xt == AXIS_LINEAR) ? X_AXIS : 0) | ((yt == AXIS_LINEAR) ? Y_AXIS : 0);
   m_coordinateSystem.setFromRectangle(dr, makeSpaceFlags);
-  setXAxisType(xt);
-  setYAxisType(yt);
+  setAxisType(XAXIS_INDEX, xt);
+  setAxisType(YAXIS_INDEX, yt);
 }

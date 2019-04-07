@@ -1,7 +1,7 @@
 #include "pch.h"
 #include <MFCUtil/Coordinatesystem/LinearAxisPainter.h>
 
-LinearAxisPainter::LinearAxisPainter(SystemPainter &systemPainter, bool xAxis, bool initialize) : AbstractAxisPainter(systemPainter,xAxis) {
+LinearAxisPainter::LinearAxisPainter(SystemPainter &systemPainter, AxisIndex axis, bool initialize) : AbstractAxisPainter(systemPainter,axis) {
   if(initialize) {
     doInvisiblePaint();
   }

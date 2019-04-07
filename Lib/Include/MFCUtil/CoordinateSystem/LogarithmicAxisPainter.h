@@ -19,7 +19,7 @@ protected:
   void paintYData();
 
 public:
-  LogarithmicAxisPainter(SystemPainter &systemPainter, bool xAxis);
+  LogarithmicAxisPainter(SystemPainter &systemPainter, AxisIndex axis);
   AxisType getType() const { return AXIS_LOGARITHMIC; }
   double getAxisPoint() const;
   const TCHAR *getDoubleFormat();

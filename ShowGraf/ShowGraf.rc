@@ -615,7 +615,7 @@ BEGIN
     "M",            ID_TOOLS_IMPLICITDEFINEDCURVE, VIRTKEY, CONTROL, NOINVERT
     "A",            ID_TOOLS_PARAMETRICCURVE, VIRTKEY, CONTROL, NOINVERT
     "P",            ID_TOOLS_PLOTFUNCTION,  VIRTKEY, CONTROL, NOINVERT
-    "G",            ID_VIEW_GRID,           VIRTKEY, CONTROL, NOINVERT
+    "G",            ID_BOTH_SHOWGRIDLINES,  VIRTKEY, CONTROL, NOINVERT
     "I",            ID_VIEW_INTERVAL,       VIRTKEY, CONTROL, NOINVERT
     "R",            ID_VIEW_REFRESHFILES,   VIRTKEY, CONTROL, NOINVERT
     "C",            ID_VIEW_SCALE_RESETSCALE, VIRTKEY, ALT, NOINVERT
@@ -721,28 +721,52 @@ BEGIN
     END
     POPUP "&View"
     BEGIN
-        MENUITEM "&Grid\tCtrl+G",               ID_VIEW_GRID
         POPUP "St&yle"
         BEGIN
             MENUITEM "&Curve",                      ID_VIEW_STYLE_CURVE
             MENUITEM "&Point",                      ID_VIEW_STYLE_POINT
             MENUITEM "C&ross",                      ID_VIEW_STYLE_CROSS
         END
-        POPUP "S&cale"
+        POPUP "&Axis"
         BEGIN
+            POPUP "&Both"
+            BEGIN
+                POPUP "&Type"
+                BEGIN
+                    MENUITEM "&Linear",                     ID_BOTH_SCALE_LINEAR, CHECKED
+                    MENUITEM "L&ogarithmic",                ID_BOTH_SCALE_LOGARITHMIC
+                    MENUITEM "&Normal distribution",        ID_BOTH_SCALE_NORMALDIST
+                    MENUITEM "&Date/time",                  ID_BOTH_SCALE_DATETIME
+                END
+                MENUITEM "Show &values",                ID_BOTH_SHOWVALUES, CHECKED
+                MENUITEM "Show value &marks",           ID_BOTH_SHOWVALUEMARKS, CHECKED
+                MENUITEM "Show &grid lines\tCtrl+G",    ID_BOTH_SHOWGRIDLINES
+            END
             POPUP "&X"
             BEGIN
-                MENUITEM "&Linear",                     ID_VIEW_SCALE_X_LINEAR
-                MENUITEM "L&ogarithmic",                ID_VIEW_SCALE_X_LOGARITHMIC
-                MENUITEM "&Normal distribution",        ID_VIEW_SCALE_X_NORMALDIST
-                MENUITEM "&Date/time",                  ID_VIEW_SCALE_X_DATETIME
+                POPUP "&Type"
+                BEGIN
+                    MENUITEM "&Linear",                     ID_X_SCALE_LINEAR, CHECKED
+                    MENUITEM "L&ogarithmic",                ID_X_SCALE_LOGARITHMIC
+                    MENUITEM "&Normal distribution",        ID_X_SCALE_NORMALDIST
+                    MENUITEM "&Date/time",                  ID_X_SCALE_DATETIME
+                END
+                MENUITEM "Show &values",                ID_X_SHOWVALUES, CHECKED
+                MENUITEM "Show value &marks",           ID_X_SHOWVALUEMARKS, CHECKED
+                MENUITEM "Show &grid lines",            ID_X_SHOWGRIDLINES
             END
             POPUP "&Y"
             BEGIN
-                MENUITEM "&Linear",                     ID_VIEW_SCALE_Y_LINEAR
-                MENUITEM "L&ogarithmic",                ID_VIEW_SCALE_Y_LOGARITHMIC
-                MENUITEM "&Normal distribution",        ID_VIEW_SCALE_Y_NORMALDIST
-                MENUITEM "&Date/time",                  ID_VIEW_SCALE_Y_DATETIME
+                POPUP "&Type"
+                BEGIN
+                    MENUITEM "&Linear",                     ID_Y_SCALE_LINEAR, CHECKED
+                    MENUITEM "L&ogarithmic",                ID_Y_SCALE_LOGARITHMIC
+                    MENUITEM "&Normal distribution",        ID_Y_SCALE_NORMALDIST
+                    MENUITEM "&Date/time",                  ID_Y_SCALE_DATETIME
+                END
+                MENUITEM "Show &values",                ID_Y_SHOWVALUES, CHECKED
+                MENUITEM "Show value &marks",           ID_Y_SHOWVALUEMARKS, CHECKED
+                MENUITEM "Show &grid lines",            ID_Y_SHOWGRIDLINES
             END
             MENUITEM "Reset s&cale\tAlt+C",         ID_VIEW_SCALE_RESETSCALE
         END
@@ -1053,16 +1077,16 @@ END
 STRINGTABLE
 BEGIN
     ID_VIEW_INTERVAL        "Edit the interval of X- and Y-axes"
-END
-
-STRINGTABLE
-BEGIN
     ID_VIEW_REFRESHFILES    "Read datafiles again"
 END
 
 STRINGTABLE
 BEGIN
     ID_TOOLS_PLOTFUNCTION   "Enter function to plot"
+END
+
+STRINGTABLE
+BEGIN
     ID_OPTIONS_DEGREES      "Use degrees for trigonometric calculations"
     ID_OPTIONS_RADIANS      "Use radians for trigonometric calculations"
     ID_OPTIONS_GRADS        "Use grads for trigonometric calculations"
@@ -1070,14 +1094,10 @@ END
 
 STRINGTABLE
 BEGIN
-    ID_VIEW_SCALE_X_LINEAR  "Make X-axis linear scale"
-    ID_VIEW_SCALE_X_LOGARITHMIC "Make X-axis logarithmic scale"
-END
-
-STRINGTABLE
-BEGIN
-    ID_VIEW_SCALE_Y_LINEAR  "Make Y-axis linear scale"
-    ID_VIEW_SCALE_Y_LOGARITHMIC "Make Y-axis logarithmic scale"
+    ID_X_SCALE_LINEAR       "Make X-axis linear scale"
+    ID_X_SCALE_LOGARITHMIC  "Make X-axis logarithmic scale"
+    ID_Y_SCALE_LINEAR       "Make Y-axis linear scale"
+    ID_Y_SCALE_LOGARITHMIC  "Make Y-axis logarithmic scale"
 END
 
 STRINGTABLE
@@ -1087,7 +1107,11 @@ END
 
 STRINGTABLE
 BEGIN
-    ID_VIEW_GRID            "Paint grid in the coordinatesystem"
+    ID_BOTH_SHOWGRIDLINES   "Paint grid in the coordinatesystem"
+END
+
+STRINGTABLE
+BEGIN
     ID_VIEW_ROLLAVG         "Show rolling average of the data"
     ID_VIEW_SETROLLAVGSIZE  "Set size of the rolling average buffer"
 END

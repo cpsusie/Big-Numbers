@@ -12,12 +12,8 @@
 DEFINECLASSNAME(CCoordinateSystem);
 
 CCoordinateSystem::CCoordinateSystem() {
-  m_retainAspectRatio = m_vp.isRetainingAspectRatio();
-  m_grid              = false;
-  m_xAxisType         = AXIS_LINEAR;
-  m_yAxisType         = AXIS_LINEAR;
   m_backgroundColor   = WHITE;
-  m_axisColor         = BLACK;
+  m_retainAspectRatio = m_vp.isRetainingAspectRatio();
   m_autoScale         = m_autoSpace = true;
   m_systemPainter     = NULL;
 }

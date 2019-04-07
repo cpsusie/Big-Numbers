@@ -11,12 +11,27 @@ private:
   IsoCurveGraphParameters     m_isoCurveParam;
   DiffEquationGraphParameters m_diffEqParam;
   CCustomFitThread           *m_fitThread;
+  int                         m_flushLevel; // when reach 0 then Invalidate
 
+  void setXAxisType(AxisType type);
+  void setYAxisType(AxisType type);
+  void updateBothAxisType();
+  void setShowValues(    bool xAxis, bool yAxis);
+  void setShowValueMarks(bool xAxis, bool yAxis);
+  void setShowGridLines( bool xAxis, bool yAxis);
   void onFileMruFile(int index);
   void initMenuItems();
   void showExtremaInInterval(WPARAM wp, LPARAM lp, ExtremaType extremaType);
   DoubleInterval wlParamToInterval(WPARAM wp, LPARAM lp);
 
+  inline void pushLevel() {
+    m_flushLevel++;
+  }
+  inline void popLevel() {
+    if(--m_flushLevel == 0) {
+      Invalidate();
+    }
+  }
 protected:
   DECLARE_DYNCREATE(CMainFrame)
 public:
@@ -24,15 +39,14 @@ public:
 
   CMainFrame();
   virtual ~CMainFrame();
-  void updatePositionText(const String &str);
-  void activateInitialOptions();
+  void              updatePositionText(const String &str);
+  void              activateInitialOptions();
   void              setRollAvg(bool on);
-  void              setGrid(bool grid);
-  bool              hasGrid() const;
-  void              setXAxisType(  AxisType          type    );
-  void              setYAxisType(  AxisType          type    );
-  AxisType          getXAxisType() const;
-  AxisType          getYAxisType() const;
+  void              setAxisType(      AxisIndex axis, AxisType type);
+  AxisType          getAxisType(      AxisIndex axis) const;
+  bool              getShowValues(    AxisIndex axis) const;
+  bool              getShowValueMarks(AxisIndex axis) const;
+  bool              getShowGridLines( AxisIndex axis) const;
   void              setGraphStyle( GraphStyle        newStyle);
   GraphStyle        getGraphStyle() const;
   void              setTrigoMode(TrigonometricMode mode    );
@@ -92,15 +106,27 @@ protected:
   afx_msg void OnFileMruFile14();
   afx_msg void OnFileMruFile15();
   afx_msg void OnFileMruFile16();
-  afx_msg void OnViewGrid();
-  afx_msg void OnViewScaleXLinear();
-  afx_msg void OnViewScaleXLogarithmic();
-  afx_msg void OnViewScaleXNormaldistribution();
-  afx_msg void OnViewScaleYLinear();
-  afx_msg void OnViewScaleYLogarithmic();
-  afx_msg void OnViewScaleYNormaldistribution();
-  afx_msg void OnViewScaleYDatetime();
-  afx_msg void OnViewScaleXDatetime();
+  afx_msg void OnBothScaleLinear();
+  afx_msg void OnBothScaleLogarithmic();
+  afx_msg void OnBothScaleNormaldistribution();
+  afx_msg void OnBothScaleDatetime();
+  afx_msg void OnBothShowValues();
+  afx_msg void OnBothShowValueMarks();
+  afx_msg void OnBothShowGridLines();
+  afx_msg void OnXScaleLinear();
+  afx_msg void OnXScaleLogarithmic();
+  afx_msg void OnXScaleNormaldistribution();
+  afx_msg void OnXScaleDatetime();
+  afx_msg void OnXShowValues();
+  afx_msg void OnXShowValueMarks();
+  afx_msg void OnXShowGridLines();
+  afx_msg void OnYScaleLinear();
+  afx_msg void OnYScaleLogarithmic();
+  afx_msg void OnYScaleNormaldistribution();
+  afx_msg void OnYScaleDatetime();
+  afx_msg void OnYShowValues();
+  afx_msg void OnYShowValueMarks();
+  afx_msg void OnYShowGridLines();
   afx_msg void OnViewScaleResetScale();
   afx_msg void OnViewStyleCurve();
   afx_msg void OnViewStylePoint();

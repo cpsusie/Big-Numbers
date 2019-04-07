@@ -6,17 +6,17 @@
 const int AbstractAxisPainter::PIN_LENGTH = 3;
 const int AbstractAxisPainter::ARROW_SIZE = 7;
 
-AbstractAxisPainter::AbstractAxisPainter(SystemPainter &systemPainter, bool xAxis) : m_systemPainter(systemPainter) {
+AbstractAxisPainter::AbstractAxisPainter(SystemPainter &systemPainter, AxisIndex axis) : m_systemPainter(systemPainter), m_axisIndex(axis) {
   m_vp              = &systemPainter.getViewport();
-  m_xAxis           = xAxis;
   m_dataRange       = getTransformation().getFromInterval();
   if(m_dataRange.getLength() <= 0) {
-    throwException(_T("AbstractAxisPainter::DataRange:[%le;%le] on %s-axis has negative length."),m_dataRange.getFrom(),m_dataRange.getTo(), m_xAxis?_T("X"):_T("Y"));
+    throwException(_T("%s:DataRange:[%le;%le] on %s-axis has negative length.")
+                  ,__TFUNCTION__
+                  ,m_dataRange.getFrom(),m_dataRange.getTo(), (axis==XAXIS_INDEX)?_T("X"):_T("Y"));
   }
-  m_axisColor       = systemPainter.getAxisColor();
-  m_grid            = systemPainter.hasGrid();
-  m_solidPen.CreatePen(PS_SOLID,1,m_axisColor);
-  m_gridPen.CreatePen( PS_DOT  ,1,m_axisColor);
+  const COLORREF color = getAxisAttr().getColor();
+  m_solidPen.CreatePen(PS_SOLID,1,color);
+  m_gridPen.CreatePen( PS_DOT  ,1,color);
 }
 
 AbstractAxisPainter::~AbstractAxisPainter() {
@@ -24,8 +24,12 @@ AbstractAxisPainter::~AbstractAxisPainter() {
   m_gridPen.DeleteObject();
 }
 
+const AxisAttribute &AbstractAxisPainter::getAxisAttr() const {
+  return m_systemPainter.getAxisAttr(getAxisIndex());
+}
+
 const IntervalTransformation &AbstractAxisPainter::getTransformation() const {
-  return isXAxis() ? m_vp->getXTransformation() : m_vp->getYTransformation();
+  return (getAxisIndex() == XAXIS_INDEX) ? m_vp->getXTransformation() : m_vp->getYTransformation();
 }
 
 const CPoint &AbstractAxisPainter::getOrigin() const {
@@ -40,15 +44,11 @@ void AbstractAxisPainter::doInvisiblePaint() {
   m_isPainting = true;
 }
 
-bool AbstractAxisPainter::isXAxis() const {
-  return m_xAxis;
-}
-
 void AbstractAxisPainter::paintAxisData() {
   m_lastTextPos      = -1;
   m_xRectInterval    = m_vp->getXTransformation().getToInterval();
   m_yRectInterval    = m_vp->getYTransformation().getToInterval();
-  if(isXAxis()) {
+  if(getAxisIndex() == XAXIS_INDEX) {
     paintXData();
   } else {
     paintYData();
@@ -56,7 +56,7 @@ void AbstractAxisPainter::paintAxisData() {
 }
 
 void AbstractAxisPainter::paintAxis() {
-  if(isXAxis()) {
+  if(getAxisIndex() == XAXIS_INDEX) {
     paintXAxis();
   } else {
     paintYAxis();
@@ -73,7 +73,7 @@ void AbstractAxisPainter::init() {
     } else if(minimum < 0) {
       minimum *= 1.1;
       maximum /= 1.1;
-    }  else {
+    } else {
       minimum /= 1.1;
       maximum *= 1.1;
     }
@@ -114,7 +114,7 @@ double AbstractAxisPainter::findNiceDecimalStep(double range) { // static
   return step;
 }
 
-String AbstractAxisPainter::getValueText(double v) {
+String AbstractAxisPainter::getValueText(double v) const {
   if(v == 0) {
     return _T("0");
   }
@@ -131,7 +131,7 @@ double AbstractAxisPainter::next(double x) const {
   return x + m_step;
 }
 
-const TCHAR *AbstractAxisPainter::getDoubleFormat() {
+const TCHAR *AbstractAxisPainter::getDoubleFormat() const {
   if(m_doubleFormat.length() == 0) {
     double magnitude         = max(fabs(m_max),fabs(m_min));
     int    e                 = (int)floor(log10(magnitude));
@@ -142,8 +142,7 @@ const TCHAR *AbstractAxisPainter::getDoubleFormat() {
     } else {
       if(e < -4 || e > 5) {
         m_doubleFormat = format(_T("%%.%dle"),significantDigits);
-      }
-      else {
+      } else {
         m_doubleFormat = format(_T("%%.%dlf"),decimals);
       }
     }
@@ -155,9 +154,9 @@ void AbstractAxisPainter::paintXAxis() {
   if(!isPainting()) {
     return;
   }
-  double left  = m_xRectInterval.getMin();
-  double right = m_xRectInterval.getMax();
-  int origY = getOrigin().y;
+  const double left  = m_xRectInterval.getMin();
+  const double right = m_xRectInterval.getMax();
+  const int    origY = getOrigin().y;
   line(left , origY, right, origY, true);
   line(right, origY, right - ARROW_SIZE, origY - ARROW_SIZE / 2, false);
   line(right, origY, right - ARROW_SIZE, origY + ARROW_SIZE / 2, false);
@@ -167,9 +166,9 @@ void AbstractAxisPainter::paintYAxis() {
   if(!isPainting()) {
     return;
   }
-  double top    = m_yRectInterval.getMin();
-  double bottom = m_yRectInterval.getMax();
-  int origX = getOrigin().x;
+  const double top    = m_yRectInterval.getMin();
+  const double bottom = m_yRectInterval.getMax();
+  const int    origX  = getOrigin().x;
   line(origX, top, origX, bottom, true);
   line(origX, top, origX - ARROW_SIZE / 2, top + ARROW_SIZE, false);
   line(origX, top, origX + ARROW_SIZE / 2, top + ARROW_SIZE, false);
@@ -180,7 +179,7 @@ void AbstractAxisPainter::paintXDataSingleDecade() {
     if(!m_dataRange.contains(t)) {
       continue;
     }
-    int xt = (int)transform(t);
+    const int xt = (int)transform(t);
     if(isPainting() && xt <= getOrigin().x) {
       continue;
     }
@@ -197,7 +196,7 @@ void AbstractAxisPainter::paintYDataSingleDecade() {
     if(!m_dataRange.contains(t)) {
       continue;
     }
-    int yt = (int)transform(t);
+    const int yt = (int)transform(t);
     if(isPainting() && yt >= getOrigin().y) {
       continue;
     }
@@ -216,7 +215,7 @@ double AbstractAxisPainter::transform(double x) const {
 void AbstractAxisPainter::xTextOut(double x, const String &s, int yOffset) {
   const CPoint &origin = getOrigin();
   const CSize   dim    = getTextExtent(s);
-  const int     xp     = (int)x + ((((int)round(x) == origin.x || m_grid) && m_yRectInterval.getMax() > origin.y) ? 1 : -dim.cx/2);
+  const int     xp     = (int)x + ((((int)round(x) == origin.x || hasGridLines()) && m_yRectInterval.getMax() > origin.y) ? 1 : -dim.cx/2);
   yOffset += PIN_LENGTH + 3;
   const int     yp     = origin.y + yOffset;
   textOut(xp, yp, s, dim);
@@ -234,7 +233,7 @@ void AbstractAxisPainter::yTextOut(double y, const String &s, int xOffset) {
   const CSize   dim    = getTextExtent(s);
   xOffset -= dim.cx + PIN_LENGTH + 3;
   const int     xp     = origin.x + xOffset;
-  const int     yp     = (int)(y - ((((int)round(y) == origin.y || m_grid) && m_xRectInterval.getMin() < origin.x) ? dim.cy : dim.cy/2));
+  const int     yp     = (int)(y - ((((int)round(y) == origin.y || hasGridLines()) && m_xRectInterval.getMin() < origin.x) ? dim.cy : dim.cy/2));
   textOut(xp, yp, s, dim);
   if(!isPainting()) {
     const int m = (int)fabs(xOffset);
@@ -250,13 +249,14 @@ CSize AbstractAxisPainter::getTextExtent(const String &s) {
 }
 
 void AbstractAxisPainter::textOut(int x, int y, const String &txt, const CSize &textExtent) {
-  if(!isPainting()) {
+  const AxisFlags flags = getAxisFlags();
+  if(!isPainting() || ((flags & AXIS_SHOW_VALUES) == 0)) {
     return;
   } else {
     m_systemPainter.setOccupiedRect(CRect(CPoint(x,y), textExtent));
   }
   CDC *dc = m_vp->getDC();
-  dc->SetTextColor(m_axisColor);
+  dc->SetTextColor(getAxisAttr().getColor());
   dc->TextOut(x, y, txt.cstr());
 }
 
@@ -282,14 +282,15 @@ void AbstractAxisPainter::paintHorizontalPin(double y, bool big) {
   if(!isPainting()) {
     return;
   }
-  const CPoint &origin = getOrigin();
+  const AxisFlags flags  = getAxisFlags();
+  const CPoint   &origin = getOrigin();
   if(big) {
-    if(m_grid) {
+    if(flags & AXIS_SHOW_GRIDLINES) {
       horizontalGridLine(y);
-    } else {
+    } else if(flags & AXIS_SHOW_VALUEMARKS) {
       line(origin.x,y, origin.x - PIN_LENGTH*2,y, false);
     }
-  } else {
+  } else if(flags & AXIS_SHOW_VALUEMARKS) {
     line(origin.x,y, origin.x - PIN_LENGTH,y, false);
   }
 }
@@ -298,14 +299,15 @@ void AbstractAxisPainter::paintVerticalPin(double x, bool big) {
   if(!isPainting()) {
     return;
   }
-  const CPoint &origin = getOrigin();
+  const AxisFlags flags  = getAxisFlags();
+  const CPoint   &origin = getOrigin();
   if(big) {
-    if(m_grid) {
+    if(flags & AXIS_SHOW_GRIDLINES) {
       verticalGridLine(x);
-    } else {
+    } else if(flags & AXIS_SHOW_VALUEMARKS) {
       line(x,origin.y, x, origin.y + PIN_LENGTH*2, false);
     }
-  } else {
+  } else if(flags & AXIS_SHOW_VALUEMARKS) {
     line(x, origin.y, x, origin.y + PIN_LENGTH, false);
   }
 }
@@ -334,7 +336,7 @@ void AbstractAxisPainter::line(double x1, double y1, double x2, double y2, CPen 
   CPoint p1((int)round(x1), (int)round(y1)), p2((int)round(x2), (int)round(y2));
   dc->MoveTo(p1);
   dc->LineTo(p2);
-  if (setOccupied) {
+  if(setOccupied) {
     m_systemPainter.setOccupiedLine(p1,p2);
   }
 }

@@ -8,30 +8,28 @@ class CCoordinateSystem;
 class SystemPainter {
 private:
   CCoordinateSystem   &m_system;
-  AbstractAxisPainter *m_xAxisPainter;
-  AbstractAxisPainter *m_yAxisPainter;
+  AbstractAxisPainter *m_axisPainter[2];
   CPoint               m_origin; // Point inside vp.toRectangle where axes cross. Space is left for textdata to the axes
   CFont               *m_font, *m_oldFont;
 
   void  makeSpaceForText();
   CRect getToRectangle() const;
-  AbstractAxisPainter *createAxisPainter(bool xAxis, AxisType axisType);
+  AbstractAxisPainter *createAxisPainter(AxisIndex axis, const AxisType type);
 public:
   SystemPainter(CCoordinateSystem *system);
   ~SystemPainter();
-  void              paint();
-  Viewport2D       &getViewport();
-  const Viewport2D &getViewport() const;
-  COLORREF          getAxisColor() const;
-  bool              hasGrid() const;
-  const CPoint     &getOrigin() const;
-  CSize             getTextExtent(const String &str);
-  inline String     getValueText(bool xAxis, double value) const {
-    return xAxis ? m_xAxisPainter->getValueText(value) : m_yAxisPainter->getValueText(value);
+  void                 paint();
+  Viewport2D          &getViewport();
+  const Viewport2D    &getViewport() const;
+  const AxisAttribute &getAxisAttr(AxisIndex axis) const;
+  const CPoint        &getOrigin() const;
+  CSize                getTextExtent(const String &str);
+  inline String        getValueText(AxisIndex axis, double value) const {
+    return m_axisPainter[axis]->getValueText(value);
   }
-  inline String     getPointText(const Point2D &p) const {
-    return format(_T("%s,%s"), getValueText(true, p.x).cstr(), getValueText(false,p.y).cstr());
+  inline String        getPointText(const Point2D &p) const {
+    return format(_T("%s,%s"), getValueText(XAXIS_INDEX, p.x).cstr(), getValueText(YAXIS_INDEX,p.y).cstr());
   }
-  void              setOccupiedRect(const CRect &r);
-  void              setOccupiedLine(const CPoint &from, const CPoint &to);
+  void                 setOccupiedRect(const CRect &r);
+  void                 setOccupiedLine(const CPoint &from, const CPoint &to);
 };

@@ -4,7 +4,7 @@
 
 class NormalDistributionAxisPainter : public AbstractAxisPainter {
 private:
-  String m_doubleFormat;
+  mutable String m_doubleFormat;
   static const String startDecadeFormat;
 
   int getDecadeCount() const;
@@ -26,9 +26,9 @@ protected:
   void paintYData();
 
 public:
-  NormalDistributionAxisPainter(SystemPainter &systemPainter, bool xAxis);
+  NormalDistributionAxisPainter(SystemPainter &systemPainter, AxisIndex axis);
   AxisType getType() const { return AXIS_NORMAL_DISTRIBUTION; }
   double getAxisPoint() const;
-  String getValueText(double v);
-  const TCHAR *getDoubleFormat();
+  String getValueText(double v) const;
+  const TCHAR *getDoubleFormat() const;
 };

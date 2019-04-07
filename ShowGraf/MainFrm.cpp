@@ -35,15 +35,27 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
   ON_COMMAND(ID_FILE_MRU_FILE14                , OnFileMruFile14               )
   ON_COMMAND(ID_FILE_MRU_FILE15                , OnFileMruFile15               )
   ON_COMMAND(ID_FILE_MRU_FILE16                , OnFileMruFile16               )
-  ON_COMMAND(ID_VIEW_GRID                      , OnViewGrid                    )
-  ON_COMMAND(ID_VIEW_SCALE_X_LINEAR            , OnViewScaleXLinear            )
-  ON_COMMAND(ID_VIEW_SCALE_X_LOGARITHMIC       , OnViewScaleXLogarithmic       )
-  ON_COMMAND(ID_VIEW_SCALE_X_NORMALDIST        , OnViewScaleXNormaldistribution)
-  ON_COMMAND(ID_VIEW_SCALE_X_DATETIME          , OnViewScaleXDatetime          )
-  ON_COMMAND(ID_VIEW_SCALE_Y_LINEAR            , OnViewScaleYLinear            )
-  ON_COMMAND(ID_VIEW_SCALE_Y_LOGARITHMIC       , OnViewScaleYLogarithmic       )
-  ON_COMMAND(ID_VIEW_SCALE_Y_NORMALDIST        , OnViewScaleYNormaldistribution)
-  ON_COMMAND(ID_VIEW_SCALE_Y_DATETIME          , OnViewScaleYDatetime          )
+  ON_COMMAND(ID_BOTH_SCALE_LINEAR              , OnBothScaleLinear             )
+  ON_COMMAND(ID_BOTH_SCALE_LOGARITHMIC         , OnBothScaleLogarithmic        )
+  ON_COMMAND(ID_BOTH_SCALE_NORMALDIST          , OnBothScaleNormaldistribution )
+  ON_COMMAND(ID_BOTH_SCALE_DATETIME            , OnBothScaleDatetime           )
+  ON_COMMAND(ID_BOTH_SHOWVALUES                , OnBothShowValues              )
+  ON_COMMAND(ID_BOTH_SHOWVALUEMARKS            , OnBothShowValueMarks          )
+  ON_COMMAND(ID_BOTH_SHOWGRIDLINES             , OnBothShowGridLines           )
+  ON_COMMAND(ID_X_SCALE_LINEAR                 , OnXScaleLinear                )
+  ON_COMMAND(ID_X_SCALE_LOGARITHMIC            , OnXScaleLogarithmic           )
+  ON_COMMAND(ID_X_SCALE_NORMALDIST             , OnXScaleNormaldistribution    )
+  ON_COMMAND(ID_X_SCALE_DATETIME               , OnXScaleDatetime              )
+  ON_COMMAND(ID_X_SHOWVALUES                   , OnXShowValues                 )
+  ON_COMMAND(ID_X_SHOWVALUEMARKS               , OnXShowValueMarks             )
+  ON_COMMAND(ID_X_SHOWGRIDLINES                , OnXShowGridLines              )
+  ON_COMMAND(ID_Y_SCALE_LINEAR                 , OnYScaleLinear                )
+  ON_COMMAND(ID_Y_SCALE_LOGARITHMIC            , OnYScaleLogarithmic           )
+  ON_COMMAND(ID_Y_SCALE_NORMALDIST             , OnYScaleNormaldistribution    )
+  ON_COMMAND(ID_Y_SCALE_DATETIME               , OnYScaleDatetime              )
+  ON_COMMAND(ID_Y_SHOWVALUES                   , OnYShowValues                 )
+  ON_COMMAND(ID_Y_SHOWVALUEMARKS               , OnYShowValueMarks             )
+  ON_COMMAND(ID_Y_SHOWGRIDLINES                , OnYShowGridLines              )
   ON_COMMAND(ID_VIEW_SCALE_RESETSCALE          , OnViewScaleResetScale         )
   ON_COMMAND(ID_VIEW_STYLE_CURVE               , OnViewStyleCurve              )
   ON_COMMAND(ID_VIEW_STYLE_POINT               , OnViewStylePoint              )
@@ -88,6 +100,7 @@ static UINT indicators[] = {
 
 CMainFrame::CMainFrame() {
   m_fitThread = NULL;
+  m_flushLevel = 0;
 }
 
 CMainFrame::~CMainFrame() {
@@ -165,16 +178,21 @@ void CMainFrame::updatePositionText(const String &str) {
 
 void CMainFrame::activateInitialOptions() {
   const InitialOptions &options = getDoc()->getOptions();
+  pushLevel();
   getView()->setBackgroundColor(options.m_backgroundColor);
-  getView()->setAxisColor(      options.m_axisColor      );
   setGraphStyle(  options.m_graphStyle    );
-  setXAxisType(   options.m_XAxisType     );
-  setYAxisType(   options.m_YAxisType     );
-  setTrigoMode(   options.m_trigoMode     );
-  setIgnoreErrors(options.m_ignoreErrors  );
-  setGrid(        options.m_grid          );
-  setRollAvg(     options.m_rollAvg       );
+  FOR_BOTH_AXIS(i) {
+    setAxisType(            i, options.m_axisOptions[i].m_type );
+    getView()->setAxisColor(i, options.m_axisOptions[i].m_color);
+  }
+  setShowValues(    options.m_axisOptions[XAXIS_INDEX].m_showValues    , options.m_axisOptions[YAXIS_INDEX].m_showValues    );
+  setShowValueMarks(options.m_axisOptions[XAXIS_INDEX].m_showValueMarks, options.m_axisOptions[YAXIS_INDEX].m_showValueMarks);
+  setShowGridLines( options.m_axisOptions[XAXIS_INDEX].m_showGridLines , options.m_axisOptions[YAXIS_INDEX].m_showGridLines );
+  setTrigoMode(     options.m_trigoMode     );
+  setIgnoreErrors(  options.m_ignoreErrors  );
+  setRollAvg(       options.m_rollAvg       );
   getView()->initScale();
+  popLevel();
 }
 
 #ifdef _DEBUG
@@ -202,16 +220,17 @@ void CMainFrame::OnFileOpen() {
   if(dlg.DoModal() != IDOK || _tcslen(dlg.m_ofn.lpstrFile) == 0) {
     return;
   }
+  pushLevel();
   getDoc()->addGraphFromFile(dlg.m_ofn.lpstrFile);
   theApp.AddToRecentFileList(dlg.m_ofn.lpstrFile);
-
-  Invalidate();
+  popLevel();
 }
 
 void CMainFrame::onFileMruFile(int index) {
+  pushLevel();
   String fname = theApp.getRecentFile(index);
   getDoc()->addGraphFromFile(fname);
-  Invalidate();
+  popLevel();
 }
 
 void CMainFrame::OnFileMruFile1()  {  onFileMruFile( 0); }
@@ -231,49 +250,170 @@ void CMainFrame::OnFileMruFile14() {  onFileMruFile(13); }
 void CMainFrame::OnFileMruFile15() {  onFileMruFile(14); }
 void CMainFrame::OnFileMruFile16() {  onFileMruFile(15); }
 
-void CMainFrame::OnViewGrid() {
-  toggleMenuItem(this, ID_VIEW_GRID);
-  Invalidate(FALSE);
+void CMainFrame::OnBothScaleLinear() {
+  pushLevel();
+  FOR_BOTH_AXIS(i) {
+    setAxisType(i,AXIS_LINEAR);
+  }
+  popLevel();
 }
 
-void CMainFrame::OnViewScaleXLinear() {
-  setXAxisType(AXIS_LINEAR);
-  Invalidate();
+void CMainFrame::OnBothScaleLogarithmic() {
+  pushLevel();
+  FOR_BOTH_AXIS(i) {
+    setAxisType(i,AXIS_LOGARITHMIC);
+  }
+  popLevel();
 }
 
-void CMainFrame::OnViewScaleXLogarithmic() {
-  setXAxisType(AXIS_LOGARITHMIC);
-  Invalidate();
+void CMainFrame::OnBothScaleNormaldistribution() {
+  pushLevel();
+  FOR_BOTH_AXIS(i) {
+    setAxisType(i,AXIS_NORMAL_DISTRIBUTION);
+  }
+  popLevel();
 }
 
-void CMainFrame::OnViewScaleXNormaldistribution() {
-  setXAxisType(AXIS_NORMAL_DISTRIBUTION);
-  Invalidate();
+void CMainFrame::OnBothScaleDatetime() {
+  pushLevel();
+  FOR_BOTH_AXIS(i) {
+    setAxisType(i,AXIS_DATE);
+  }
+  popLevel();
 }
 
-void CMainFrame::OnViewScaleXDatetime() {
-  setXAxisType(AXIS_DATE);
-  Invalidate();
+void CMainFrame::OnBothShowValues() {
+  pushLevel();
+  const bool v = toggleMenuItem(this, ID_BOTH_SHOWVALUES);
+  setShowValues(v,v);
+  popLevel();
+}
+void CMainFrame::OnBothShowValueMarks() {
+  pushLevel();
+  const bool v = toggleMenuItem(this, ID_BOTH_SHOWVALUEMARKS);
+  setShowValueMarks(v,v);
+  popLevel();
+}
+void CMainFrame::OnBothShowGridLines() {
+  pushLevel();
+  const bool v = toggleMenuItem(this, ID_BOTH_SHOWGRIDLINES);
+  setShowGridLines(v, v);
+  popLevel();
 }
 
-void CMainFrame::OnViewScaleYLinear() {
-  setYAxisType(AXIS_LINEAR);
-  Invalidate();
+void CMainFrame::OnXScaleLinear() {
+  pushLevel();
+  setAxisType(XAXIS_INDEX, AXIS_LINEAR);
+  popLevel();
 }
 
-void CMainFrame::OnViewScaleYLogarithmic() {
-  setYAxisType(AXIS_LOGARITHMIC);
-  Invalidate();
+void CMainFrame::OnXScaleLogarithmic() {
+  pushLevel();
+  setAxisType(XAXIS_INDEX, AXIS_LOGARITHMIC);
+  popLevel();
 }
 
-void CMainFrame::OnViewScaleYNormaldistribution() {
-  setYAxisType(AXIS_NORMAL_DISTRIBUTION);
-  Invalidate();
+void CMainFrame::OnXScaleNormaldistribution() {
+  pushLevel();
+  setAxisType(XAXIS_INDEX, AXIS_NORMAL_DISTRIBUTION);
+  popLevel();
 }
 
-void CMainFrame::OnViewScaleYDatetime() {
-  setYAxisType(AXIS_DATE);
-  Invalidate();
+void CMainFrame::OnXScaleDatetime() {
+  pushLevel();
+  setAxisType(XAXIS_INDEX, AXIS_DATE);
+  popLevel();
+}
+
+void CMainFrame::OnXShowValues() {
+  pushLevel();
+  setShowValues(!getShowValues(XAXIS_INDEX), getShowValues(YAXIS_INDEX));
+  popLevel();
+}
+void CMainFrame::OnXShowValueMarks() {
+  pushLevel();
+  setShowValueMarks(!getShowValueMarks(XAXIS_INDEX), getShowValueMarks(YAXIS_INDEX));
+  popLevel();
+}
+void CMainFrame::OnXShowGridLines() {
+  pushLevel();
+  setShowGridLines(!getShowGridLines(XAXIS_INDEX), getShowGridLines(YAXIS_INDEX));
+  popLevel();
+}
+
+void CMainFrame::OnYScaleLinear() {
+  pushLevel();
+  setAxisType(YAXIS_INDEX, AXIS_LINEAR);
+  popLevel();
+}
+
+void CMainFrame::OnYScaleLogarithmic() {
+  pushLevel();
+  setAxisType(YAXIS_INDEX, AXIS_LOGARITHMIC);
+  popLevel();
+}
+
+void CMainFrame::OnYScaleNormaldistribution() {
+  pushLevel();
+  setAxisType(YAXIS_INDEX, AXIS_NORMAL_DISTRIBUTION);
+  popLevel();
+}
+
+void CMainFrame::OnYScaleDatetime() {
+  pushLevel();
+  setAxisType(YAXIS_INDEX, AXIS_DATE);
+  popLevel();
+}
+
+void CMainFrame::OnYShowValues() {
+  pushLevel();
+  setShowValues(getShowValues(XAXIS_INDEX), !getShowValues(YAXIS_INDEX));
+  popLevel();
+}
+void CMainFrame::OnYShowValueMarks() {
+  pushLevel();
+  setShowValueMarks(getShowValueMarks(XAXIS_INDEX), !getShowValueMarks(YAXIS_INDEX));
+  popLevel();
+}
+void CMainFrame::OnYShowGridLines() {
+  pushLevel();
+  setShowGridLines(getShowGridLines(XAXIS_INDEX), !getShowGridLines(YAXIS_INDEX));
+  popLevel();
+}
+
+void CMainFrame::setShowValues(bool xAxis, bool yAxis) {
+  pushLevel();
+  checkMenuItem(this, ID_X_SHOWVALUES       , xAxis       );
+  checkMenuItem(this, ID_Y_SHOWVALUES       , yAxis       );
+  checkMenuItem(this, ID_BOTH_SHOWVALUES    , xAxis&&yAxis);
+  popLevel();
+}
+bool CMainFrame::getShowValues(AxisIndex axis) const {
+  return isMenuItemChecked(this, (axis==XAXIS_INDEX) ? ID_X_SHOWVALUES : ID_Y_SHOWVALUES);
+}
+
+void CMainFrame::setShowValueMarks(bool xAxis, bool yAxis) {
+  pushLevel();
+  checkMenuItem(this, ID_X_SHOWVALUEMARKS   , xAxis       );
+  checkMenuItem(this, ID_Y_SHOWVALUEMARKS   , yAxis       );
+  checkMenuItem(this, ID_BOTH_SHOWVALUEMARKS, xAxis&&yAxis);
+  popLevel();
+}
+
+bool CMainFrame::getShowValueMarks(AxisIndex axis) const {
+  return isMenuItemChecked(this, (axis==XAXIS_INDEX) ? ID_X_SHOWVALUEMARKS : ID_Y_SHOWVALUEMARKS);
+}
+
+void CMainFrame::setShowGridLines( bool xAxis, bool yAxis) {
+  pushLevel();
+  checkMenuItem(this, ID_X_SHOWGRIDLINES    , xAxis       );
+  checkMenuItem(this, ID_Y_SHOWGRIDLINES    , yAxis       );
+  checkMenuItem(this, ID_BOTH_SHOWGRIDLINES , xAxis&&yAxis);
+  popLevel();
+}
+
+bool CMainFrame::getShowGridLines(AxisIndex axis) const {
+  return isMenuItemChecked(this, (axis==XAXIS_INDEX) ? ID_X_SHOWGRIDLINES : ID_Y_SHOWGRIDLINES);
 }
 
 template<class T> class RadioMenuItem {
@@ -282,15 +422,22 @@ public:
   const T   m_value;
 };
 
+template<class T> void uncheckAllRadioMenuItem(CWnd *wnd, const RadioMenuItem<T> *items, int n) {
+  for(int i = 0; i < n; i++) {
+    const RadioMenuItem<T> &item = items[i];
+    checkMenuItem(wnd, item.m_menuId, false);
+  }
+}
+
 template<class T> void checkRadioMenuItem(CWnd *wnd, T v, const RadioMenuItem<T> *items, int n) {
-  for (int i = 0; i < n; i++) {
+  for(int i = 0; i < n; i++) {
     const RadioMenuItem<T> &item = items[i];
     checkMenuItem(wnd, item.m_menuId, item.m_value == v);
   }
 }
 
 template<class T> T getRadioItemValue(const CWnd *wnd, const RadioMenuItem<T> *items, int n) {
-  for (int i = 0; i < n; i++) {
+  for(int i = 0; i < n; i++) {
     const RadioMenuItem<T> &item = items[i];
     if(isMenuItemChecked(wnd, item.m_menuId)) {
       return item.m_value;
@@ -300,17 +447,24 @@ template<class T> T getRadioItemValue(const CWnd *wnd, const RadioMenuItem<T> *i
 }
 
 static const RadioMenuItem<AxisType> XAxisTypeItems[] = {
-  ID_VIEW_SCALE_X_LINEAR      , AXIS_LINEAR
- ,ID_VIEW_SCALE_X_LOGARITHMIC , AXIS_LOGARITHMIC
- ,ID_VIEW_SCALE_X_NORMALDIST  , AXIS_NORMAL_DISTRIBUTION
- ,ID_VIEW_SCALE_X_DATETIME    , AXIS_DATE
+  ID_X_SCALE_LINEAR      , AXIS_LINEAR
+ ,ID_X_SCALE_LOGARITHMIC , AXIS_LOGARITHMIC
+ ,ID_X_SCALE_NORMALDIST  , AXIS_NORMAL_DISTRIBUTION
+ ,ID_X_SCALE_DATETIME    , AXIS_DATE
 };
 
 static const RadioMenuItem<AxisType> YAxisTypeItems[] = {
-  ID_VIEW_SCALE_Y_LINEAR      , AXIS_LINEAR
- ,ID_VIEW_SCALE_Y_LOGARITHMIC , AXIS_LOGARITHMIC
- ,ID_VIEW_SCALE_Y_NORMALDIST  , AXIS_NORMAL_DISTRIBUTION
- ,ID_VIEW_SCALE_Y_DATETIME    , AXIS_DATE
+  ID_Y_SCALE_LINEAR      , AXIS_LINEAR
+ ,ID_Y_SCALE_LOGARITHMIC , AXIS_LOGARITHMIC
+ ,ID_Y_SCALE_NORMALDIST  , AXIS_NORMAL_DISTRIBUTION
+ ,ID_Y_SCALE_DATETIME    , AXIS_DATE
+};
+
+static const RadioMenuItem<AxisType> BothAxisTypeItems[] = {
+  ID_BOTH_SCALE_LINEAR      , AXIS_LINEAR
+ ,ID_BOTH_SCALE_LOGARITHMIC , AXIS_LOGARITHMIC
+ ,ID_BOTH_SCALE_NORMALDIST  , AXIS_NORMAL_DISTRIBUTION
+ ,ID_BOTH_SCALE_DATETIME    , AXIS_DATE
 };
 
 static const RadioMenuItem<GraphStyle> graphStyleTypeItems[] = {
@@ -326,7 +480,9 @@ static const RadioMenuItem<TrigonometricMode> trigonometricItems[] = {
 };
 
 void CMainFrame::setXAxisType(AxisType type) {
+  pushLevel();
   checkRadioMenuItem(this, type, XAxisTypeItems, ARRAYSIZE(XAxisTypeItems));
+  updateBothAxisType();
   switch(type) {
   case AXIS_LINEAR              :
   case AXIS_NORMAL_DISTRIBUTION :
@@ -349,12 +505,14 @@ void CMainFrame::setXAxisType(AxisType type) {
     }
     break;
   }
-  getView()->setXAxisType(type);
-  Invalidate();
+  getView()->setAxisType(XAXIS_INDEX, type);
+  popLevel();
 }
 
 void CMainFrame::setYAxisType(AxisType type) {
+  pushLevel();
   checkRadioMenuItem(this, type, YAxisTypeItems, ARRAYSIZE(YAxisTypeItems));
+  updateBothAxisType();
   switch(type) {
   case AXIS_LINEAR              :
   case AXIS_NORMAL_DISTRIBUTION :
@@ -377,41 +535,64 @@ void CMainFrame::setYAxisType(AxisType type) {
     }
     break;
   }
-  getView()->setYAxisType(type);
-  Invalidate();
+  getView()->setAxisType(YAXIS_INDEX, type);
+  popLevel();
 }
 
-AxisType CMainFrame::getXAxisType() const {
-  return getRadioItemValue(this, XAxisTypeItems, ARRAYSIZE(XAxisTypeItems));
+void CMainFrame::updateBothAxisType() {
+  const AxisType xt = getAxisType(XAXIS_INDEX), yt = getAxisType(YAXIS_INDEX);
+  if(xt == yt) {
+    checkRadioMenuItem(this, xt,BothAxisTypeItems, ARRAYSIZE(BothAxisTypeItems));
+  } else {
+    uncheckAllRadioMenuItem(this, BothAxisTypeItems, ARRAYSIZE(BothAxisTypeItems));
+  }
 }
 
-AxisType CMainFrame::getYAxisType() const {
-  return getRadioItemValue(this, YAxisTypeItems, ARRAYSIZE(YAxisTypeItems));
+AxisType CMainFrame::getAxisType(AxisIndex axis) const {
+  return (axis == XAXIS_INDEX)
+       ? getRadioItemValue(this, XAxisTypeItems, ARRAYSIZE(XAxisTypeItems))
+       : getRadioItemValue(this, YAxisTypeItems, ARRAYSIZE(YAxisTypeItems));
+}
+
+void CMainFrame::setAxisType(AxisIndex axis, AxisType type) {
+  pushLevel();
+  if(axis == XAXIS_INDEX) {
+    setXAxisType(type);
+  } else {
+    setYAxisType(type);
+  }
+  popLevel();
 }
 
 void CMainFrame::OnViewScaleResetScale() {
+  pushLevel();
   getView()->initScale();
-  Invalidate();
+  popLevel();
 }
 
 void CMainFrame::OnViewStyleCurve() {
+  pushLevel();
   setGraphStyle(GSCURVE);
-  Invalidate(FALSE);
+  popLevel();
 }
 
 void CMainFrame::OnViewStylePoint() {
+  pushLevel();
   setGraphStyle(GSPOINT);
-  Invalidate(FALSE);
+  popLevel();
 }
 
 void CMainFrame::OnViewStyleCross() {
+  pushLevel();
   setGraphStyle(GSCROSS);
-  Invalidate(FALSE);
+  popLevel();
 }
 
 void CMainFrame::setGraphStyle(GraphStyle newStyle) {
+  pushLevel();
   checkRadioMenuItem(this, newStyle, graphStyleTypeItems, ARRAYSIZE(graphStyleTypeItems));
   getDoc()->getGraphArray().setStyle(newStyle);
+  popLevel();
 }
 
 GraphStyle CMainFrame::getGraphStyle() const {
@@ -422,38 +603,34 @@ void CMainFrame::OnViewInterval() {
   CCoordinateSystem &cs = getView()->getCoordinateSystem();
   CIntervalDlg dlg(cs.getTransformation());
   if(dlg.DoModal() == IDOK) {
+    pushLevel();
     cs.setDataRange(dlg.getDataRange(), false);
-    Invalidate();
+    popLevel();
   }
 }
 
 void CMainFrame::OnViewRetainAspectRatio() {
+  pushLevel();
   getView()->setRetainAspectRatio(toggleMenuItem(this, ID_VIEW_RETAINASPECTRATIO));
-  Invalidate();
+  popLevel();
 }
 
 void CMainFrame::setRollAvg(bool on) {
   checkMenuItem(this, ID_VIEW_ROLLAVG, on);
 }
 
-void CMainFrame::setGrid(bool grid) {
-  checkMenuItem(this, ID_VIEW_GRID, grid);
-}
-
-bool CMainFrame::hasGrid() const {
-  return isMenuItemChecked(this, ID_VIEW_GRID);
-}
-
 void CMainFrame::OnViewRollAvg() {
+  pushLevel();
   getDoc()->setRollAvg(toggleMenuItem(this, ID_VIEW_ROLLAVG));
-  Invalidate(FALSE);
+  popLevel();
 }
 
 void CMainFrame::OnViewSetRollAvgSize() {
   RollAvgSizeDlg dlg(getDoc()->getRollAvgSize());
   if(dlg.DoModal() == IDOK) {
+    pushLevel();
     getDoc()->setRollAvgSize(dlg.m_rollAvgSize);
-    Invalidate(FALSE);
+    popLevel();
   }
 }
 
@@ -552,9 +729,10 @@ void CMainFrame::OnToolsPlotFunction() {
     param.setInteval(getView()->getCoordinateSystem().getDataRange().getXInterval());
     CFunctionGraphDlg dlg(param);
     if(dlg.DoModal() == IDOK) {
+      pushLevel();
       param = dlg.getData();
       getDoc()->addFunctionGraph(param);
-      Invalidate(TRUE);
+      popLevel();
     }
   } catch(Exception e) {
     showException(e);
@@ -569,9 +747,10 @@ void CMainFrame::OnToolsParametricCurve() {
     param.setInteval(getView()->getCoordinateSystem().getDataRange().getXInterval());
     CParametricGraphDlg dlg(param);
     if(dlg.DoModal() == IDOK) {
+      pushLevel();
       param = dlg.getData();
       getDoc()->addParametricGraph(param);
-      Invalidate(TRUE);
+      popLevel();
     }
   } catch(Exception e) {
     showException(e);
@@ -587,9 +766,10 @@ void CMainFrame::OnToolsImplicitDefinedCurve() {
     const DoubleInterval yInterval = getView()->getCoordinateSystem().getDataRange().getYInterval();
     CIsoCurveGraphDlg dlg(param);
     if(dlg.DoModal() == IDOK) {
+      pushLevel();
       param = dlg.getData();
       getDoc()->addIsoCurveGraph(param);
-      Invalidate(TRUE);
+      popLevel();
     }
   } catch(Exception e) {
     showException(e);
@@ -600,11 +780,12 @@ void CMainFrame::OnToolsDifferentialEquations() {
   try {
     DiffEquationGraphParameters &param = m_diffEqParam;
     param.setTrigonometricMode(getTrigoMode());
-    const DoubleInterval xInterval = getView()->getXInterval();
+    const DoubleInterval xInterval = getView()->getAxisInterval(XAXIS_INDEX);
     CDiffEquationGraphDlg dlg(param);
     if(dlg.DoModal() == IDOK) {
+      pushLevel();
       getDoc()->addDiffEquationGraph(param);
-      Invalidate(TRUE);
+      popLevel();
     }
   } catch(Exception e) {
     showException(e);
@@ -612,8 +793,9 @@ void CMainFrame::OnToolsDifferentialEquations() {
 }
 
 void CMainFrame::OnOptionsIgnoreErrors() {
+  pushLevel();
   toggleMenuItem(this, ID_OPTIONS_IGNOREERRORS);
-  Invalidate(FALSE);
+  popLevel();
 }
 
 void CMainFrame::OnOptionsRadians() {  setTrigoMode(RADIANS); }
@@ -624,8 +806,9 @@ void CMainFrame::setTrigoMode(TrigonometricMode mode) {
   const bool changed = getTrigoMode() != mode;
   checkRadioMenuItem(this, mode, trigonometricItems, ARRAYSIZE(trigonometricItems));
   if(changed) {
+    pushLevel();
     getDoc()->setTrigoMode(mode);
-    Invalidate(FALSE);
+    popLevel();
   }
 }
 
@@ -766,106 +949,120 @@ void CMainFrame::stopFitThread() {
 void CMainFrame::OnSelectMenuDelete() {
   GraphArray &ga = getDoc()->getGraphArray();
   if(ga.getCurrentSelection() >= 0) {
+    pushLevel();
     ga.remove(ga.getCurrentSelection());
-    Invalidate();
+    popLevel();
   }
 }
 
 void CMainFrame::OnSelectMenuEdit() {
-  GraphArray &ga = getDoc()->getGraphArray();
-  if(ga.getCurrentSelection() >= 0) {
-    Graph &g = ga[ga.getCurrentSelection()].getGraph();
-    switch(g.getType()) {
-    case DATAGRAPH        :
-      { CDataGraphDlg dlg((DataGraph&)g);
-        dlg.DoModal();
-      }
-      break;
-
-    case FUNCTIONGRAPH  :
-      { FunctionGraphParameters &param = (FunctionGraphParameters&)g.getParam();
-        CFunctionGraphDlg dlg(param);
-        if(dlg.DoModal() == IDOK) {
-          param = dlg.getData();
-          g.calculate();
+  pushLevel();
+  try {
+    GraphArray &ga = getDoc()->getGraphArray();
+    if(ga.getCurrentSelection() >= 0) {
+      Graph &g = ga[ga.getCurrentSelection()].getGraph();
+      switch(g.getType()) {
+      case DATAGRAPH        :
+        { CDataGraphDlg dlg((DataGraph&)g);
+          dlg.DoModal();
         }
-      }
-      break;
+        break;
 
-    case PARAMETRICGRAPH:
-      { ParametricGraphParameters &param = (ParametricGraphParameters&)g.getParam();
-        CParametricGraphDlg dlg(param);
-        if(dlg.DoModal() == IDOK) {
-          param = dlg.getData();
-          g.calculate();
+      case FUNCTIONGRAPH  :
+        { FunctionGraphParameters &param = (FunctionGraphParameters&)g.getParam();
+          CFunctionGraphDlg dlg(param);
+          if(dlg.DoModal() == IDOK) {
+            param = dlg.getData();
+            g.calculate();
+          }
         }
-      }
-      break;
+        break;
 
-    case ISOCURVEGRAPH    :
-      { IsoCurveGraphParameters &param = (IsoCurveGraphParameters&)g.getParam();
-        CIsoCurveGraphDlg dlg(param);
-        if(dlg.DoModal() == IDOK) {
-          param = dlg.getData();
-          g.calculate();
+      case PARAMETRICGRAPH:
+        { ParametricGraphParameters &param = (ParametricGraphParameters&)g.getParam();
+          CParametricGraphDlg dlg(param);
+          if(dlg.DoModal() == IDOK) {
+            param = dlg.getData();
+            g.calculate();
+          }
         }
-      }
-      break;
+        break;
 
-    case DIFFEQUATIONGRAPH:
-      { DiffEquationGraphParameters *param = (DiffEquationGraphParameters*)&g.getParam();
-        CDiffEquationGraphDlg dlg(*param);
-        if(dlg.DoModal() == IDOK) {
-          g.calculate();
+      case ISOCURVEGRAPH    :
+        { IsoCurveGraphParameters &param = (IsoCurveGraphParameters&)g.getParam();
+          CIsoCurveGraphDlg dlg(param);
+          if(dlg.DoModal() == IDOK) {
+            param = dlg.getData();
+            g.calculate();
+          }
         }
-      }
-      break;
+        break;
 
-    default:
-      showWarning(_T("%s:Unknown graph type:%d"), __TFUNCTION__, g.getType());
-      return;
+      case DIFFEQUATIONGRAPH:
+        { DiffEquationGraphParameters *param = (DiffEquationGraphParameters*)&g.getParam();
+          CDiffEquationGraphDlg dlg(*param);
+          if(dlg.DoModal() == IDOK) {
+            g.calculate();
+          }
+        }
+        break;
+
+      default:
+        throwException(_T("%s:Unknown graph type:%d"), __TFUNCTION__, g.getType());
+      }
     }
-    Invalidate();
+    popLevel();
+  } catch(Exception e) {
+    popLevel();
+    showException(e);
+  } catch(...) {
+    popLevel();
+    throw;
   }
 }
 
 void CMainFrame::OnSelectMenuHide() {
   GraphArray &ga = getDoc()->getGraphArray();
   if(ga.getCurrentSelection() >= 0) {
+    pushLevel();
     ga.getSelectedItem()->getGraph().setVisible(false);
-    Invalidate();
+    popLevel();
   }
 }
 
 void CMainFrame::OnSelectMenuShow() {
   GraphArray &ga = getDoc()->getGraphArray();
   if(ga.getCurrentSelection() >= 0) {
+    pushLevel();
     ga.getSelectedItem()->getGraph().setVisible(true);
-    Invalidate();
+    popLevel();
   }
 }
 
 void CMainFrame::OnSelectMenuStyleCurve() {
   GraphArray &ga = getDoc()->getGraphArray();
   if(ga.getCurrentSelection() >= 0) {
+    pushLevel();
     ga.getSelectedItem()->getGraph().setStyle(GSCURVE);
-    Invalidate();
+    popLevel();
   }
 }
 
 void CMainFrame::OnSelectMenuStylePoint() {
   GraphArray &ga = getDoc()->getGraphArray();
   if(ga.getCurrentSelection() >= 0) {
+    pushLevel();
     ga.getSelectedItem()->getGraph().setStyle(GSPOINT);
-    Invalidate();
+    popLevel();
   }
 }
 
 void CMainFrame::OnSelectMenuStyleCross() {
   GraphArray &ga = getDoc()->getGraphArray();
   if(ga.getCurrentSelection() >= 0) {
+    pushLevel();
     ga.getSelectedItem()->getGraph().setStyle(GSCROSS);
-    Invalidate();
+    popLevel();
   }
 }
 

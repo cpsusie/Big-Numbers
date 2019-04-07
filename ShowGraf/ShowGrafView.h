@@ -5,6 +5,8 @@
 
 class CMainFrame;
 
+#define FOR_BOTH_AXIS(i) for(AxisIndex i = XAXIS_INDEX; i <= YAXIS_INDEX; ((int&)i)++)
+
 class CShowGrafView : public CFormView, public FunctionPlotter, public CoordinateSystemContainer {
 private:
   enum { IDD = IDD_SHOWGRAFVIEW };
@@ -66,9 +68,6 @@ public:
     void repaint() {
       Invalidate();
     }
-    void setAxisColor(COLORREF color) {
-      getCoordinateSystem().setAxisColor(color);
-    }
     void setBackgroundColor(COLORREF color) {
       getCoordinateSystem().setBackGroundColor(color);
     }
@@ -84,17 +83,14 @@ public:
     void setDataRange(const DataRange &dr, bool makeSpace) {
       getCoordinateSystem().setDataRange(dr, makeSpace);
     }
-    DoubleInterval getXInterval() {
-      return getDataRange().getXInterval();
+    DoubleInterval getAxisInterval(AxisIndex axis) {
+      return (axis == XAXIS_INDEX) ? getDataRange().getXInterval() : getDataRange().getYInterval();
     }
-    DoubleInterval getYInterval() {
-      return getDataRange().getYInterval();
+    void setAxisType(AxisIndex axis, AxisType type) {
+      getCoordinateSystem().setAxisType(axis, type);
     }
-    void setXAxisType(AxisType type) {
-      getCoordinateSystem().setXAxisType(type);
-    }
-    void setYAxisType(AxisType type) {
-      getCoordinateSystem().setYAxisType(type);
+    void setAxisColor(AxisIndex axis, COLORREF color) {
+      getCoordinateSystem().setAxisColor(axis, color);
     }
     void addFunctionGraph(FunctionGraphParameters &param);
     void pushMouseTool(MouseToolType toolType);

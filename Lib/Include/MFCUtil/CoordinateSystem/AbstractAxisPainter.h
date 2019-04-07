@@ -8,13 +8,11 @@ class SystemPainter;
 class AbstractAxisPainter {
 private:
   SystemPainter                &m_systemPainter;
+  const AxisIndex               m_axisIndex;     // is this X- or Y-axis
   bool                          m_isPainting;    // if false, all paint operations are invisible. Used to find maxTextOffset in constructor
-  bool                          m_xAxis;         // is this X- or Y-axis
   DoubleInterval                m_dataRange;     // X- or Y-interval in fromRectangle
   Viewport2D                   *m_vp;            // Not allocated locally
-  COLORREF                      m_axisColor;
-  bool                          m_grid;
-  String                        m_doubleFormat;
+  mutable String                m_doubleFormat;
   CPen                          m_solidPen, m_gridPen;
   DoubleInterval                m_xRectInterval; // X-interval in toRectangle
   DoubleInterval                m_yRectInterval; // Y-interval in toRectangle
@@ -34,10 +32,19 @@ private:
 protected:
 
   virtual void init();
-  virtual const TCHAR *getDoubleFormat();
+  virtual const TCHAR *getDoubleFormat() const;
   virtual double next(double x) const;
-  virtual AxisType getType() const = 0;
-  bool   isXAxis() const;
+  virtual AxisType  getType() const = 0;
+  inline  AxisIndex getAxisIndex() const {
+    return m_axisIndex;
+  }
+  const AxisAttribute &getAxisAttr() const;
+  inline AxisFlags getAxisFlags() const {
+    return getAxisAttr().getFlags();
+  }
+  inline bool hasGridLines() const {
+    return (getAxisFlags() & AXIS_SHOW_GRIDLINES) != 0;
+  }
   const  DoubleInterval &getDataRange() const {
     return m_dataRange;
   }
@@ -84,18 +91,18 @@ public:
   static const int PIN_LENGTH;
   static const int ARROW_SIZE;
 
-  AbstractAxisPainter(SystemPainter &systemPainter, bool xAxis);
+  AbstractAxisPainter(SystemPainter &systemPainter, AxisIndex Axis);
   virtual ~AbstractAxisPainter();
   void paintAxisData();
   void paintAxis();
   virtual double getAxisPoint() const = 0;
-  virtual String getValueText(double v);
+  virtual String getValueText(double v) const;
 
-  inline String getMaxValueText() {
+  inline String getMaxValueText() const {
     return getValueText(m_max);
   };
 
-  inline String getMinValueText() {
+  inline String getMinValueText() const {
     return getValueText(m_min);
   }
 

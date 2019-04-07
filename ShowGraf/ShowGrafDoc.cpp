@@ -23,19 +23,21 @@ void CShowGrafDoc::setTrigoMode(TrigonometricMode mode) {
   getGraphArray().setTrigoMode(mode);
 }
 
+AxisOptions::AxisOptions() {
+  m_type            = AXIS_LINEAR;
+  m_color           = BLACK;
+  m_showValues      = true;
+  m_showValueMarks  = true;
+  m_showGridLines   = false;
+  m_relativeToFirst = false;
+  m_reader          = &DataReader::LinearDataReader;
+}
+
 InitialOptions::InitialOptions() {
-  m_backgroundColor  = RGB(255,255,255);
-  m_axisColor        = RGB(0,0,0);
+  m_backgroundColor  = WHITE;
   m_graphStyle       = GSCURVE;
-  m_XAxisType        = AXIS_LINEAR;
-  m_YAxisType        = AXIS_LINEAR;
-  m_xRelativeToFirst = false;
-  m_yRelativeToFirst = false;
-  m_xReader          = &DataReader::LinearDataReader;
-  m_yReader          = &DataReader::LinearDataReader;
   m_trigoMode        = RADIANS;
   m_ignoreErrors     = false;
-  m_grid             = false;
   m_onePerLine       = false;
   m_rangeSpecified   = false;
   m_explicitRange.init(-10,10,-10,10);
@@ -48,8 +50,12 @@ void CShowGrafDoc::init() {
   int     argc       = __argc;
   argvExpand(argc,argv);
 
+#define AXISOPT(ch)         m_options.m_axisOptions[((#@ch)=='x')?XAXIS_INDEX:YAXIS_INDEX]
+#define SETBOTHAXISOPT(f,v) AXISOPT(x).f = AXISOPT(y).f = (v)
+
   for(argv++;*argv && *(cp = *argv) == '-'; argv++) {
     for(cp++;*cp;cp++) {
+      bool axisOptSet = false;
       switch(*cp) {
       case 'p':
         m_options.m_graphStyle   = GSPOINT; continue;
@@ -60,14 +66,22 @@ void CShowGrafDoc::init() {
       case '1':
         m_options.m_onePerLine   = true;    continue;
       case 'g':
-        m_options.m_grid         = true;    continue;
+        if(cp[1] == 'x') {
+          AXISOPT(x).m_showGridLines = true; cp++; axisOptSet = true;
+        }
+        if(cp[1] == 'y') {
+          AXISOPT(y).m_showGridLines = true; cp++; axisOptSet = true;
+        }
+        if(!axisOptSet) {
+          SETBOTHAXISOPT(m_showGridLines, true);
+        }
       case 'R':
         if(cp[1] == 'x') {
-          m_options.m_xRelativeToFirst = true;
+          AXISOPT(x).m_relativeToFirst = true;
           cp++;
         }
         if(cp[1] == 'y') {
-          m_options.m_yRelativeToFirst = true;
+          AXISOPT(y).m_relativeToFirst = true;
           cp++;
         };
         continue;
@@ -92,38 +106,44 @@ void CShowGrafDoc::init() {
         }
       case 'L':
         if(cp[1] == 'x') {
-          m_options.m_XAxisType = AXIS_LOGARITHMIC;
-          m_options.m_xReader   = &DataReader::LogarithmicDataReader;
+          AxisOptions &opt = AXISOPT(x);
+          opt.m_type   = AXIS_LOGARITHMIC;
+          opt.m_reader = &DataReader::LogarithmicDataReader;
           cp++;
         }
         if(cp[1] == 'y') {
-          m_options.m_YAxisType = AXIS_LOGARITHMIC;
-          m_options.m_yReader   = &DataReader::LogarithmicDataReader;
+          AxisOptions &opt = AXISOPT(y);
+          opt.m_type   = AXIS_LOGARITHMIC;
+          opt.m_reader = &DataReader::LogarithmicDataReader;
           cp++;
         };
         continue;
       case 'N':
         if(cp[1] == 'x') {
-          m_options.m_XAxisType = AXIS_NORMAL_DISTRIBUTION;
-          m_options.m_xReader   = &DataReader::NormalDistributionDataReader;
+          AxisOptions &opt = AXISOPT(x);
+          opt.m_type   = AXIS_NORMAL_DISTRIBUTION;
+          opt.m_reader = &DataReader::NormalDistributionDataReader;
           cp++;
         }
         if(cp[1] == 'y') {
-          m_options.m_YAxisType = AXIS_NORMAL_DISTRIBUTION;
-          m_options.m_yReader   = &DataReader::NormalDistributionDataReader;
+          AxisOptions &opt = AXISOPT(y);
+          opt.m_type   = AXIS_NORMAL_DISTRIBUTION;
+          opt.m_reader = &DataReader::NormalDistributionDataReader;
           cp++;
         };
         continue;
 
       case 'D':
         if(cp[1] == 'x') {
-          m_options.m_XAxisType = AXIS_DATE;
-          m_options.m_xReader   = &DataReader::DateTimeDataReader;
+          AxisOptions &opt = AXISOPT(x);
+          opt.m_type   = AXIS_DATE;
+          opt.m_reader = &DataReader::DateTimeDataReader;
           cp++;
         }
         if(cp[1] == 'y') {
-          m_options.m_YAxisType = AXIS_DATE;
-          m_options.m_yReader   = &DataReader::DateTimeDataReader;
+          AxisOptions &opt = AXISOPT(y);
+          opt.m_type   = AXIS_DATE;
+          opt.m_reader = &DataReader::DateTimeDataReader;
           cp++;
         };
         continue;
@@ -147,7 +167,7 @@ void CShowGrafDoc::init() {
             usage();
           }
           __assume(ac);
-          m_options.m_axisColor = ac->m_color;
+          SETBOTHAXISOPT(m_color, ac->m_color);
         }
         break;
 
@@ -176,10 +196,10 @@ bool CShowGrafDoc::addInitialDataGraph(const String &name, COLORREF color) {
                             ,color
                             ,m_options.m_onePerLine
                             ,m_options.m_ignoreErrors
-                            ,m_options.m_xRelativeToFirst
-                            ,m_options.m_yRelativeToFirst
-                            ,*m_options.m_xReader
-                            ,*m_options.m_yReader
+                            ,AXISOPT(x).m_relativeToFirst
+                            ,AXISOPT(y).m_relativeToFirst
+                            ,*AXISOPT(x).m_reader
+                            ,*AXISOPT(y).m_reader
                             ,m_options.m_rollAvg ? m_options.m_rollAvgSize : 0
                             ,m_options.m_graphStyle);
   Graph *g = new DataGraph(param); TRACE_NEW(g);

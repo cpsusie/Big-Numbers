@@ -20,7 +20,7 @@ protected:
   double next(double x) const;
 
 public:
-  DateAxisPainter(SystemPainter &systemPainter, bool xAxis);
+  DateAxisPainter(SystemPainter &systemPainter, AxisIndex axis);
   AxisType getType() const { return AXIS_DATE; }
-  String getValueText(double v);
+  String getValueText(double v) const;
 };

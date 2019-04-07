@@ -1,4 +1,5 @@
 #include "pch.h"
+#include <MFCUtil/ColorSpace.h>
 #include <MFCUtil/Viewport2D.h>
 
 Viewport2D::Viewport2D(bool retainAspectRatio) {
@@ -7,7 +8,7 @@ Viewport2D::Viewport2D(bool retainAspectRatio) {
   m_dc                = NULL;
   m_retainAspectRatio = retainAspectRatio;
   m_currentPenWidth   = 0;
-  setCurrentPen(PS_SOLID, 1, RGB(0,0,0));
+  setCurrentPen(PS_SOLID, 1, BLACK);
 }
 
 Viewport2D::Viewport2D(CDC &dc, const Rectangle2DR &from, const Rectangle2DR &to, bool retainAspectRatio) : m_dc(&dc) {
@@ -15,7 +16,7 @@ Viewport2D::Viewport2D(CDC &dc, const Rectangle2DR &from, const Rectangle2DR &to
   m_ownTransformation = true;
   m_currentPenWidth   = 0;
   m_retainAspectRatio = retainAspectRatio;
-  setCurrentPen(PS_SOLID, 1, RGB(0,0,0));
+  setCurrentPen(PS_SOLID, 1, BLACK);
   if(retainAspectRatio) {
     m_tr->adjustAspectRatio();
   }
@@ -25,7 +26,7 @@ Viewport2D::Viewport2D(CDC &dc, RectangleTransformation &tr, bool retainAspectRa
   m_tr                = &tr;
   m_ownTransformation = false;
   m_currentPenWidth   = 0;
-  setCurrentPen(PS_SOLID,1,RGB(0,0,0));
+  setCurrentPen(PS_SOLID, 1, BLACK);
   if(retainAspectRatio) {
     m_tr->adjustAspectRatio();
   }

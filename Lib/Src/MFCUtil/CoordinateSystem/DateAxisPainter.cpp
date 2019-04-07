@@ -1,7 +1,7 @@
 #include "pch.h"
 #include <MFCUtil/Coordinatesystem/DateAxisPainter.h>
 
-DateAxisPainter::DateAxisPainter(SystemPainter &systemPainter, bool xAxis) : LinearAxisPainter(systemPainter,xAxis, false) {
+DateAxisPainter::DateAxisPainter(SystemPainter &systemPainter, AxisIndex axis) : LinearAxisPainter(systemPainter,axis, false) {
   doInvisiblePaint();
 }
 
@@ -94,7 +94,7 @@ void DateAxisPainter::init() {
   }
 }
 
-String DateAxisPainter::getValueText(double v) {
+String DateAxisPainter::getValueText(double v) const {
   Timestamp t(v);
   if(m_timeComponent == TMILLISECOND) {
     return t.toString(_T("ss:SSS"));
