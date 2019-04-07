@@ -76,8 +76,9 @@ void   removeMenuItem(           const CWnd  *wnd,  const String &s);           
 bool   removeSubMenuContainingId(const CWnd  *wnd,  UINT          id        );
 bool   menuItemExists(           const CWnd  *wnd,  UINT          id        );
 String getMenuItemText(          const CWnd  *wnd,  UINT          id        );
-// returns old itemtext
+// Returns old itemtext
 String setMenuItemText(          const CWnd  *wnd,  UINT          id, const String &itemText);
+// Return true, if menuitem is checked, after toggle, else false
 bool   toggleMenuItem(           const CWnd  *wnd,  UINT          id        );
 
 
