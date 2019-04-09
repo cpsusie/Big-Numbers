@@ -1,0 +1,11 @@
+[Site "Chess.com"]
+[Date "2019.03.21"]
+[Event "Vs. Computer"]
+[Round "1"]
+[White "JesperGrMikkelsen"]
+[Black "Computer Level 6"]
+[Result "1-0"]
+[ECO "C01"]
+[CurrentPosition "8/4K3/8/P4Q2/1P1Bk3/2P5/5Q2/8 b - - 14 74"]
+
+1.e4 e6 2.d4 d5 3.exd5 exd5 4.Nf3 Nf6 5.Bg5 Bb4+ 6.c3 Ba5 7.Be2 c6 8.O-O O-O 9.Nbd2 Re8 10.Re1 Bf5 11.Nb3 Bc7 12.Bd3 Be4 13.Nc5 Bg6 14.Nxb7 Qd7 15.Nc5 Rxe1+ 16.Qxe1 Qd8 17.Qd2 Bb6 18.Re1 Nbd7 19.Nxd7 Qxd7 20.Bxf6 Bxd3 21.Bxg7 Bg6 22.Qh6 Bd8 23.Ne5 Qf5 24.Bf8 Bf6 25.Nxg6 Qxg6 26.Qxg6+ fxg6 27.Bc5 Rb8 28.b3 Kf7 29.Ra1 a6 30.g3 a5 31.f4 g5 32.f5 h5 33.h3 Ra8 34.g4 Re8 35.Kf2 Rh8 36.Re1 hxg4 37.hxg4 Rh6 38.Kg3 Rh4 39.Re6 Bd8 40.Rxc6 Bf6 41.Bb6 Rh6 42.Rc7+ Kf8 43.Bxa5 Rh8 44.Rc8+ Kf7 45.Rxh8 Bxh8 46.Bb6 Bg7 47.Bc5 Bf6 48.b4 Bd8 49.a4 Ke8 50.a5 Kd7 51.Kf3 Bf6 52.Ke3 Bg7 53.Kd3 Bxd4 54.Bxd4 Kc6 55.Bf6 Kd7 56.Bxg5 Ke8 57.Bf4 Kd7 58.Kd4 Ke8 59.Kxd5 Ke7 60.g5 Kf8 61.Ke6 Kg7 62.g6 Kh8 63.f6 Kg8 64.Ke7 Kh8 65.g7+ Kg8 66.Be5 Kh7 67.f7 Kg6 68.g8=Q+ Kf5 69.Qg7 Ke4 70.Bd4 Kf5 71.Qf6+ Ke4 72.f8=Q Kd3 73.Qf2 Ke4 74.Q8f5#  1-0
