@@ -436,7 +436,11 @@ UINT ExternEngine::run() {
             if(infoLine.isReady()) {
               verbose(_T("%s"), infoLine.toString(evf).cstr());
               if(evf.m_pv && (infoLine.m_pv.length() > 0)) {
-                updateMessageField(_T("%s"), getBeautifiedVariant(infoLine.m_pv).cstr());
+                String line;
+                if(evf.m_depth) line = format(_T("Depth:%2d:"), infoLine.m_depth);
+                line += getBeautifiedVariant(infoLine.m_pv, evf.m_pvVariantLength);
+                if(evf.m_score) line += _T("Score:"); line += infoLine.m_score;
+                updateMessageField(infoLine.m_multiPV, _T("%s"), line.cstr());
               }
               infoLine.reset();
             }
@@ -479,22 +483,23 @@ String ExternEngine::getLine(int timeout) {
 }
 
 // private
-String ExternEngine::getBeautifiedVariant(const String &pv) const {
+String ExternEngine::getBeautifiedVariant(const String &pv, UINT variantLength) const {
   const int startPly    = m_game.getPlyCount();
-  int       moveCounter = startPly/2 + 1;
+  UINT      moveCounter = startPly/2 + 1;
   String    result;
   bool      ok = true;
   if(m_game.getPlayerInTurn() == BLACKPLAYER) {
-    result = format(_T("%d. -"), moveCounter);
+    result = format(_T("%u. -"), moveCounter);
   }
   try {
+    const UINT lastMove = moveCounter + variantLength;
     for(Tokenizer tok(pv, _T(" ")); tok.hasNext() && ok;) {
       const PrintableMove m = m_game.generateMove(tok.next(), MOVE_UCIFORMAT);
       if(m_game.getPlayerInTurn() == WHITEPLAYER) {
-        result += format(_T("%d. %s"), moveCounter, m.toString().cstr());
+        result += format(_T("%u. %s"), moveCounter, m.toString().cstr());
       } else {
         result += format(_T(", %s "), m.toString().cstr());
-        moveCounter++;
+        if(++moveCounter >= lastMove) break;
       }
       m_game.doMove(m_game.generateMove(m));
     }

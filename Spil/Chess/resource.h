@@ -303,6 +303,8 @@
 #define IDC_CHECK_HASHFULL              1211
 #define IDC_CHECK_MULTIPV               1212
 #define IDC_CHECK_CPULOAD               1213
+#define IDC_EDIT_VARIANTLENGTH          1214
+#define IDC_STATIC_VARIANTLENGTH        1215
 #define ID_FILE_NEWGAME_YOUPLAYWHITE    32771
 #define ID_FILE_NEWGAME_YOUPLAYBLACK    32772
 #define ID_FILE_LOADGAME                32773
@@ -527,7 +529,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        427
 #define _APS_NEXT_COMMAND_VALUE         33310
-#define _APS_NEXT_CONTROL_VALUE         1205
+#define _APS_NEXT_CONTROL_VALUE         1216
 #define _APS_NEXT_SYMED_VALUE           117
 #endif
 #endif

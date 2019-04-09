@@ -161,7 +161,7 @@ private:
   void send(_In_z_ _Printf_format_string_ TCHAR const * const format,...) const;
 #endif
   void   setDebug(bool on);
-  String getBeautifiedVariant(const String &pv) const;
+  String getBeautifiedVariant(const String &pv, UINT variantLength) const;
   void   setParameterValue(const EngineOptionValue &v);
   void   debugMsg(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) const;
   bool   hasInput() const {

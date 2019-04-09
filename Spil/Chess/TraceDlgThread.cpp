@@ -68,9 +68,9 @@ void CTraceDlgThread::vprintf(const TCHAR *format, va_list argptr) {
   }
 }
 
-void CTraceDlgThread::vupdateMessageField(const TCHAR *format, va_list argptr) {
+void CTraceDlgThread::vupdateMessageField(UINT index, const TCHAR *format, va_list argptr) {
   if(isActive()) {
-    ((CTraceDlg*)m_pMainWnd)->updateMessageField(vformat(format, argptr));
+    ((CTraceDlg*)m_pMainWnd)->updateMessageField(index, vformat(format, argptr));
   }
 }
 

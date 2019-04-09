@@ -128,12 +128,13 @@ void GameEditHistory::checkInvariant(const TCHAR *method, bool enter) const {
 
 void GameEditHistory::printState(const TCHAR *method) const {
   clearVerbose();
-  updateMessageField(_T("%s:history.size:%zu, index:%zu canundo:%s canredo:%s")
-                     ,method
-                     ,getHistorySize()
-                     ,m_index
-                     ,boolToStr(canUndo())
-                     ,boolToStr(canRedo())
+  updateMessageField(0
+                    ,_T("%s:history.size:%zu, index:%zu canundo:%s canredo:%s")
+                    ,method
+                    ,getHistorySize()
+                    ,m_index
+                    ,boolToStr(canUndo())
+                    ,boolToStr(canRedo())
    );
    
    const size_t n = m_history.size();

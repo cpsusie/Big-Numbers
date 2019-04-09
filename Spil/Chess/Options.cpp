@@ -326,6 +326,7 @@ static const TCHAR *EVFSTRING                = _T("String");
 static const TCHAR *EVFHASHFULL              = _T("HashFull");
 static const TCHAR *EVFMULTIPV               = _T("MultiPV");
 static const TCHAR *EVFCPULOAD               = _T("CPULoad");
+static const TCHAR *PVVARIANTLENGTH          = _T("VariantLength");
 
 static void savePos(RegistryKey key, const CPoint &p) {
   key.setValue(_X , p.x);
@@ -398,60 +399,64 @@ EngineVerboseFields::EngineVerboseFields() {
 }
 
 void EngineVerboseFields::setDefault() {
-  m_depth    = true;
-  m_seldepth = false;
-  m_score    = true;
-  m_time     = false;
-  m_nodes    = true;
-  m_nodesps  = false;
-  m_pv       = false;
-  m_string   = false;
-  m_hashfull = false;
-  m_multipv  = false;
-  m_cpuLoad  = false;
+  m_depth           = true;
+  m_seldepth        = false;
+  m_score           = true;
+  m_time            = false;
+  m_nodes           = true;
+  m_nodesps         = false;
+  m_pv              = false;
+  m_string          = false;
+  m_hashfull        = false;
+  m_multipv         = false;
+  m_cpuLoad         = false;
+  m_pvVariantLength = 5;
 }
 
 bool EngineVerboseFields::operator==(const EngineVerboseFields &evf) const {
-  return m_depth     == evf.m_depth
-      && m_seldepth  == evf.m_seldepth
-      && m_score     == evf.m_score
-      && m_time      == evf.m_time
-      && m_nodes     == evf.m_nodes
-      && m_nodesps   == evf.m_nodesps
-      && m_pv        == evf.m_pv
-      && m_string    == evf.m_string
-      && m_hashfull  == evf.m_hashfull
-      && m_multipv   == evf.m_multipv
-      && m_cpuLoad   == evf.m_cpuLoad;
+  return m_depth           == evf.m_depth
+      && m_seldepth        == evf.m_seldepth
+      && m_score           == evf.m_score
+      && m_time            == evf.m_time
+      && m_nodes           == evf.m_nodes
+      && m_nodesps         == evf.m_nodesps
+      && m_pv              == evf.m_pv
+      && m_string          == evf.m_string
+      && m_hashfull        == evf.m_hashfull
+      && m_multipv         == evf.m_multipv
+      && m_cpuLoad         == evf.m_cpuLoad
+      && m_pvVariantLength == evf.m_pvVariantLength;
 }
 
 static void saveEngineVerboseFields(RegistryKey key, const EngineVerboseFields &evf) {
-  key.setValue(EVFDEPTH   , evf.m_depth   );
-  key.setValue(EVFSELDEPTH, evf.m_seldepth);
-  key.setValue(EVFSCORE   , evf.m_score   );
-  key.setValue(EVFTIME    , evf.m_time    );
-  key.setValue(EVFNODES   , evf.m_nodes   );
-  key.setValue(EVFNODESPS , evf.m_nodesps );
-  key.setValue(EVFPV      , evf.m_pv      );
-  key.setValue(EVFSTRING  , evf.m_string  );
-  key.setValue(EVFHASHFULL, evf.m_hashfull);
-  key.setValue(EVFMULTIPV , evf.m_multipv );
-  key.setValue(EVFCPULOAD , evf.m_cpuLoad );
+  key.setValue(EVFDEPTH       , evf.m_depth          );
+  key.setValue(EVFSELDEPTH    , evf.m_seldepth       );
+  key.setValue(EVFSCORE       , evf.m_score          );
+  key.setValue(EVFTIME        , evf.m_time           );
+  key.setValue(EVFNODES       , evf.m_nodes          );
+  key.setValue(EVFNODESPS     , evf.m_nodesps        );
+  key.setValue(EVFPV          , evf.m_pv             );
+  key.setValue(EVFSTRING      , evf.m_string         );
+  key.setValue(EVFHASHFULL    , evf.m_hashfull       );
+  key.setValue(EVFMULTIPV     , evf.m_multipv        );
+  key.setValue(EVFCPULOAD     , evf.m_cpuLoad        );
+  key.setValue(PVVARIANTLENGTH, evf.m_pvVariantLength);
 }
 
 static EngineVerboseFields loadEngineVerboseFields(RegistryKey key, const EngineVerboseFields &defaultValue) {
   EngineVerboseFields evf;
-  evf.m_depth    = key.getBool(EVFDEPTH   , defaultValue.m_depth   );
-  evf.m_seldepth = key.getBool(EVFSELDEPTH, defaultValue.m_seldepth);
-  evf.m_score    = key.getBool(EVFSCORE   , defaultValue.m_score   );
-  evf.m_time     = key.getBool(EVFTIME    , defaultValue.m_time    );
-  evf.m_nodes    = key.getBool(EVFNODES   , defaultValue.m_nodes   );
-  evf.m_nodesps  = key.getBool(EVFNODESPS , defaultValue.m_nodesps );
-  evf.m_pv       = key.getBool(EVFPV      , defaultValue.m_pv      );
-  evf.m_string   = key.getBool(EVFSTRING  , defaultValue.m_string  );
-  evf.m_hashfull = key.getBool(EVFHASHFULL, defaultValue.m_hashfull);
-  evf.m_multipv  = key.getBool(EVFMULTIPV , defaultValue.m_multipv );
-  evf.m_cpuLoad  = key.getBool(EVFCPULOAD , defaultValue.m_cpuLoad );
+  evf.m_depth           = key.getBool(EVFDEPTH       , defaultValue.m_depth          );
+  evf.m_seldepth        = key.getBool(EVFSELDEPTH    , defaultValue.m_seldepth       );
+  evf.m_score           = key.getBool(EVFSCORE       , defaultValue.m_score          );
+  evf.m_time            = key.getBool(EVFTIME        , defaultValue.m_time           );
+  evf.m_nodes           = key.getBool(EVFNODES       , defaultValue.m_nodes          );
+  evf.m_nodesps         = key.getBool(EVFNODESPS     , defaultValue.m_nodesps        );
+  evf.m_pv              = key.getBool(EVFPV          , defaultValue.m_pv             );
+  evf.m_string          = key.getBool(EVFSTRING      , defaultValue.m_string         );
+  evf.m_hashfull        = key.getBool(EVFHASHFULL    , defaultValue.m_hashfull       );
+  evf.m_multipv         = key.getBool(EVFMULTIPV     , defaultValue.m_multipv        );
+  evf.m_cpuLoad         = key.getBool(EVFCPULOAD     , defaultValue.m_cpuLoad        );
+  evf.m_pvVariantLength = key.getUint(PVVARIANTLENGTH, defaultValue.m_pvVariantLength);
   return evf;
 }
 

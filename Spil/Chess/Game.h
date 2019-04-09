@@ -323,8 +323,8 @@ String         createTempFileName();
 
 class VerboseReceiver {
 public:
-  virtual void vprintf(            _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
-  virtual void vupdateMessageField(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
+  virtual void vprintf(                        _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
+  virtual void vupdateMessageField(UINT index, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
   virtual void clear();
 };
 
@@ -332,12 +332,12 @@ extern VerboseReceiver *VERBOSENULL;
 
 void throwUserException(int id, ...);
 // log to stderr and logfile if opened with setVerboseLogging
-void verbose(            _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
-void updateMessageField( _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
+void verbose(                        _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
+void updateMessageField( UINT index, _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
 // same as verbose, Takes a va_list as argument.            Default writes to stderr
-void vverbose(           _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
+void vverbose(                       _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
 // same as updateMessageField. Takes a va_list as argument. Default writes to stderr
-void vupdateMessageField(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
+void vupdateMessageField(UINT index, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
 void clearVerbose();
 
 void redirectVerbose(VerboseReceiver *receiver);

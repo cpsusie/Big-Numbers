@@ -6,6 +6,7 @@ private:
     DECLARE_DYNAMIC(CSelectInfoFieldsDlg)
     void windowToData(      EngineVerboseFields &evf);
     void dataToWindow(const EngineVerboseFields &evf);
+    void enableFields();
 public:
     CSelectInfoFieldsDlg(CWnd *pParent = NULL);
     virtual ~CSelectInfoFieldsDlg();
@@ -22,10 +23,13 @@ public:
     BOOL m_hashfull;
     BOOL m_multipv ;
     BOOL m_cpuLoad ;
+    UINT m_variantLength;
 
 protected:
     virtual void DoDataExchange(CDataExchange *pDX);
     virtual BOOL OnInitDialog();
     virtual void OnOK();
     DECLARE_MESSAGE_MAP()
+public:
+  afx_msg void OnClickedCheckPv();
 };

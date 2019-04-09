@@ -9,7 +9,6 @@ typedef enum {
 class CTraceDlgThread : public CWinThread, public PropertyContainer, VerboseReceiver {
 private:
   friend class CTraceDlg;
-
   bool m_setActiveBusy, m_doModalActive, m_killed; // to prevent infinite recursion
   bool m_active;
   void setActiveProperty(bool value);
@@ -18,8 +17,8 @@ protected:
   CTraceDlgThread();
 
 public:
-  void vprintf(            const TCHAR *format, va_list argptr);
-  void vupdateMessageField(const TCHAR *format, va_list argptr);
+  void vprintf(                        const TCHAR *format, va_list argptr);
+  void vupdateMessageField(UINT index, const TCHAR *format, va_list argptr);
   void clear();
   void reposition();
   void setActive(bool active);
@@ -37,4 +36,3 @@ protected:
 
   DECLARE_MESSAGE_MAP()
 };
-

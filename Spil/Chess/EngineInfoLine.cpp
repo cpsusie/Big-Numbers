@@ -65,13 +65,13 @@ EngineInfoLine &EngineInfoLine::operator+=(Tokenizer &tok) {
       continue;
     }
     switch(*field) {
-    case ENGINE_DEPTH   :
+    case ENGINE_DEPTH     :
       m_depth = tok.getInt();
       break;
     case ENGINE_SELDEPTH   :
       m_seldepth = tok.getInt();
       break;
-    case ENGINE_SCORE   :
+    case ENGINE_SCORE      :
       { const String s = tok.next();
         if(s == _T("cp")) {
           m_score = _T("=") + tok.next();
@@ -85,50 +85,49 @@ EngineInfoLine &EngineInfoLine::operator+=(Tokenizer &tok) {
         }
       }
       break;
-    case ENGINE_LOWERBOUND:
+    case ENGINE_LOWERBOUND :
       if(m_score.length()) m_score[0] = _T('>');
       break;
-    case ENGINE_UPPERBOUND:
+    case ENGINE_UPPERBOUND :
       if(m_score.length()) m_score[0] = _T('<');
       break;
-    case ENGINE_TIME    :
+    case ENGINE_TIME       :
       m_time = tok.getInt();
       break;
-    case ENGINE_NODES   :
+    case ENGINE_NODES      :
       m_nodes = tok.getInt64();
       break;
-    case ENGINE_NODESPS :
+    case ENGINE_NODESPS    :
       m_nodesps = tok.getUint();
       break;
-    case ENGINE_PV      :
+    case ENGINE_PV         :
       m_pv = tok.getRemaining();
-      return *this;
-    case ENGINE_STRING:
+      goto Return;
+    case ENGINE_STRING     :
       m_string = tok.getRemaining();
       return *this;
-    case ENGINE_HASHFULL:
+    case ENGINE_HASHFULL   :
       m_hashFull = tok.getInt();
       break;
-    case ENGINE_MULTIPV :
+    case ENGINE_MULTIPV    :
       m_multiPV = tok.getInt();
       break;
-    case ENGINE_CPULOAD :
+    case ENGINE_CPULOAD    :
       m_cpuLoad = tok.getInt();
       break;
     }
   }
+Return:
   return *this;
 }
 
 String EngineInfoLine::toString(const EngineVerboseFields &evf) const {
   String result;
   if(m_score.length() > 0) {
-    if(evf.m_depth   ) result += format(_T("depth:%2d "     ), m_depth                     );
     if(evf.m_seldepth) result += format(_T("seldepth:%2d "  ), m_seldepth                  );
     if(evf.m_time    ) result += format(_T("time:%6.2lf "   ), (double)m_time/1000         );
     if(evf.m_nodes   ) result += format(_T("nodes:%13s "    ), format1000(m_nodes  ).cstr());
     if(evf.m_nodesps ) result += format(_T("nodes/sec:%10s "), format1000(m_nodesps).cstr());
-    if(evf.m_score   ) result += format(_T("score:%-6s "    ), m_score.cstr()              );
     if(evf.m_cpuLoad ) result += m_cpuLoad  ? format(_T("CPU:%4.1lf%% "     ), (double)m_cpuLoad/10.0) : _T("          ");
     if(evf.m_hashfull) result += m_hashFull ? format(_T("HashLoad:%4.1lf%% "), (double)m_hashFull/10.0) : _T("               ");
     if(result.length()) result += _T("\n");

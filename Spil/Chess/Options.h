@@ -115,6 +115,7 @@ public:
   bool m_hashfull;
   bool m_multipv ;
   bool m_cpuLoad ;
+  UINT m_pvVariantLength; // in moves
   bool operator==(const EngineVerboseFields &evf) const;
   inline bool operator!=(const EngineVerboseFields &evf) const {
     return !(*this == evf);

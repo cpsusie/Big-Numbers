@@ -12,6 +12,7 @@ private:
   bool                      m_initDone;
   UINT                      m_timerCount;
   SynchronizedQueue<String> m_textQueue;
+  StringArray               m_messageLineArray;
   CEdit                    *m_textBox;
   CEdit                    *m_messageField;
   CTraceDlgThread          &m_thread;
@@ -19,10 +20,12 @@ private:
   UINT                      m_caretPos;
   void scrollToBottom();
   void setFontSize(int pct, bool redraw);
+  void setMessageLine(UINT index, const String &s);
+  String getMessageText() const;
 public:
   CTraceDlg(CTraceDlgThread &thread);
   void print(const String &s);
-  void updateMessageField(const String &s);
+  void updateMessageField(UINT index, const String &s);
   void clear();
   void reposition();
 

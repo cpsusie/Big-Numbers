@@ -110,9 +110,9 @@ void CTraceDlg::print(const String &s) {
   SendMessage(ID_MSG_PRINTTEXT);
 }
 
-void CTraceDlg::updateMessageField(const String &s) {
+void CTraceDlg::updateMessageField(UINT index, const String &s) {
   m_textQueue.put(s);
-  SendMessage(ID_MSG_UPDATEMESSAGEFIELD);
+  SendMessage(ID_MSG_UPDATEMESSAGEFIELD, index);
 }
 
 void CTraceDlg::clear() {
@@ -150,11 +150,37 @@ LRESULT CTraceDlg::OnMsgPrintText(WPARAM wp, LPARAM lp) {
   return 0;
 }
 
+void CTraceDlg::setMessageLine(UINT index, const String &s) {
+  while(m_messageLineArray.size() <= index) {
+    m_messageLineArray.add(EMPTYSTRING);
+  }
+  m_messageLineArray[index] = s;
+}
+
+String CTraceDlg::getMessageText() const {
+  String result;
+  const TCHAR *delim = NULL;
+  const size_t n = m_messageLineArray.size();
+  for(size_t i = 0; i < n; i++) {
+    const String &line = m_messageLineArray[i];
+    if(line.length() == 0) continue;
+    if(delim) {
+      result += delim;
+    } else {
+      delim = _T("\r\n");
+    }
+    result += line;
+  }
+  return result;
+}
+
 LRESULT CTraceDlg::OnMsgUpdateMessageField(WPARAM wp, LPARAM lp) {
   if(m_textQueue.isEmpty()) {
     return 0;
   }
-  setWindowText(m_messageField, m_textQueue.get());
+  const UINT index = (UINT)wp;
+  setMessageLine(index, m_textQueue.get());
+  setWindowText(m_messageField, getMessageText().cstr());
   return 0;
 }
 
@@ -162,6 +188,7 @@ LRESULT CTraceDlg::OnMsgClearTrace(WPARAM wp, LPARAM lp) {
   m_textQueue.clear();
   m_textBox->SetWindowText(EMPTYSTRING);
   m_messageField->SetWindowText(EMPTYSTRING);
+  m_messageLineArray.clear();
   m_caretPos = 0;
   return 0;
 }

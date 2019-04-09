@@ -968,11 +968,9 @@ void setVerboseLogging(bool on) {
       }
       verboseLog = MKFOPEN(fileName, _T("w"));
     }
-  } else {
-    if(verboseLog != NULL) {
-      fclose(verboseLog);
-      verboseLog = NULL;
-    }
+  } else if(verboseLog != NULL) {
+    fclose(verboseLog);
+    verboseLog = NULL;
   }
 }
 
@@ -983,10 +981,10 @@ void verbose(_In_z_ _Printf_format_string_ TCHAR const * const format,...) {
   va_end(argptr);
 }
 
-void updateMessageField(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
+void updateMessageField(UINT index, _In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
   va_list argptr;
   va_start(argptr, format);
-  vupdateMessageField(format, argptr);
+  vupdateMessageField(index, format, argptr);
   va_end(argptr);
 }
 
@@ -1033,7 +1031,7 @@ void ConsoleTitleUpdater::setTitle(const String &s) {
   Console::setTitle(m_origTitle + s);
 }
 
-void VerboseReceiver::vupdateMessageField(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
+void VerboseReceiver::vupdateMessageField(UINT index, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
   static ConsoleTitleUpdater ctu;
   ctu.setTitle(vformat(format, argptr));
 }
@@ -1046,9 +1044,9 @@ static VerboseReceiver defaultVerboseReceiver, *currentVerboseReceiver = &defaul
 
 class VerboseSilent : public VerboseReceiver {
 public:
-  void vprintf(            _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
+  void vprintf(                        _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
   }
-  void vupdateMessageField(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
+  void vupdateMessageField(UINT index, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
   }
   void clear() {
   }
@@ -1061,8 +1059,8 @@ void vverbose(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list 
   currentVerboseReceiver->vprintf(format, argptr);
 }
 
-void vupdateMessageField(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
-  currentVerboseReceiver->vupdateMessageField(format, argptr);
+void vupdateMessageField(UINT index, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
+  currentVerboseReceiver->vupdateMessageField(index, format, argptr);
 }
 
 void clearVerbose() {
