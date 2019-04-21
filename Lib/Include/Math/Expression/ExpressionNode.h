@@ -274,10 +274,11 @@ public:
   static void checkReturnType(       const TCHAR *method, const ExpressionNode *n, ExpressionReturnType  expectedReturnType);
   static void checkSymbol(           const TCHAR *method, const ExpressionNode *n, ExpressionInputSymbol expectedSymbol    );
 
-  void throwInvalidSymbolForTreeMode(const TCHAR *method) const;
-  void throwUnknownSymbolException(  const TCHAR *method) const;
-  void throwUnknownNodeTypeException(const TCHAR *method) const;
-  void throwUnExpandableException()                       const;
+  void throwInvalidSymbolForTreeMode(  const TCHAR *method) const;
+  void throwUnknownSymbolException(    const TCHAR *method) const;
+  void throwUnknownNodeTypeException(  const TCHAR *method) const;
+  void throwUnknownReturnTypeException(const TCHAR *method) const;
+  void throwUnExpandableException()                         const;
 };
 
 // Should only be called in Canonical treeform

@@ -31,6 +31,7 @@ void ParserTree::pruneUnusedNodes() {
   traverseTree(SetMark(true));
 
   markSimpleConstants();
+  markNonRootNodes();
   deleteUnmarked();
   unmarkAll();
 #ifdef _DEBUG
@@ -44,6 +45,16 @@ void ParserTree::pruneUnusedNodes() {
 void ParserTree::markSimpleConstants() {
   MARKCONSTANT(m_false   );
   MARKCONSTANT(m_true    );
+}
+
+void ParserTree::addNonRootNode(ExpressionNode *n) {
+  m_nonRootNodes.add(n);
+}
+
+void ParserTree::markNonRootNodes() {
+  for(size_t i = 0; i < m_nonRootNodes.size(); i++) {
+    m_nonRootNodes[i]->traverseExpression(SetMark(true));
+  }
 }
 
 void ParserTree::unmarkAll() const {

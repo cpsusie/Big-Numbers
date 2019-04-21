@@ -30,11 +30,18 @@ ParserTree::ParserTree(TrigonometricMode mode) {
   m_ok     = false;
 }
 
-ParserTree::ParserTree(const ParserTree &src) {
+ParserTree::ParserTree(const ParserTree &src, const ExpressionNode *root) {
   CHECKTREE_ISCONSISTENT(src)
   init(src.getTrigonometricMode(), src.getState(), src.getReduceIteration());
   m_errors = src.m_errors;
-  m_root   = src.isEmpty() ? NULL : src.getRoot()->clone(this);
+  if(root == NULL) {
+    m_root   = src.isEmpty() ? NULL : src.getRoot()->clone(this);
+  } else {
+    if(&root->getTree() != &src) {
+      throwInvalidArgumentException(__TFUNCTION__, _T("root doesn't belong to src"));
+    }
+    m_root   = root->clone(this);
+  }
   m_ops    = src.m_ops;
   m_ok     = src.m_ok;
   CHECKTREE_ISCONSISTENT(*this);
@@ -140,6 +147,7 @@ void ParserTree::releaseAll() {
   setOk(false);
   m_errors.clear();
   m_nodeTable.clear();
+  m_nonRootNodes.clear();
   m_rationalConstantMap.clear();
   m_symbolTable.clear(NULL);
 }

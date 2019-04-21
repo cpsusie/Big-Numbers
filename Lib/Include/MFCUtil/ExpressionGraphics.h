@@ -56,7 +56,7 @@ public:
   inline int getChildCount() const {
     return (int)m_children.size();
   }
-  inline ExpressionRectangle &child(UINT index) {
+  inline ExpressionRectangle &child(size_t index) {
     return m_children[index];
   }
   inline bool hasParent() const {

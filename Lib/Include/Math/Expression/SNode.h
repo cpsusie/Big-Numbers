@@ -102,6 +102,7 @@ private:
   SNode DStmtList(const String &name) const;
 
   void               setReduced() const;
+  SNode              reduceStmtList();
   SNode              reduceAssign() const;
   SNode              reduceBoolExp();
   SNode              reduceNot();
@@ -311,10 +312,12 @@ public:
     // Differentiation
   SNode D(const String &name) const;
   SNode reduce();
+  static SNode beautify(SNode n);
 
-  void throwInvalidSymbolForTreeMode(const TCHAR *method) const;
-  void throwUnknownSymbolException(  const TCHAR *method) const;
-  void throwUnknownNodeTypeException(const TCHAR *method) const;
+  void throwInvalidSymbolForTreeMode(  const TCHAR *method) const;
+  void throwUnknownSymbolException(    const TCHAR *method) const;
+  void throwUnknownNodeTypeException(  const TCHAR *method) const;
+  void throwUnknownReturnTypeException(const TCHAR *method) const;
 
   friend SNode reciprocal(const SNode &x);
   friend SNode abs(       const SNode &x);

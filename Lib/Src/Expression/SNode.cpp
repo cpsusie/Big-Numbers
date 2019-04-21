@@ -420,6 +420,10 @@ void SNode::throwUnknownNodeTypeException(const TCHAR *method) const {
   m_node->throwUnknownNodeTypeException(method);
 }
 
+void SNode::throwUnknownReturnTypeException(const TCHAR *method) const {
+  m_node->throwUnknownReturnTypeException(method);
+}
+
 SNode reciprocal(const SNode &x) {
   return x.getTree().reciprocal(x.m_node);
 }

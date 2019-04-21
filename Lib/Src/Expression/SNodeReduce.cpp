@@ -5,7 +5,37 @@
 
 namespace Expr {
 
+SNode SNode::beautify(SNode n) { // static
+  if(n.isEmpty()) return n;
+  ParserTree &src = n.getTree(), tmp(src, n.node());
+  tmp.reduce();
+  ExpressionNode *result = tmp.getRoot()->clone(&src);
+  src.addNonRootNode(result);
+  return SNode(result);
+}
+
 SNode SNode::reduce() {
+  ENTERMETHOD();
+  if(isReduced()) RETURNTHIS;
+  switch(getNodeType()) {
+  case NT_STMTLIST  :
+    RETURNNODE(reduceStmtList());
+  case NT_ASSIGN    :
+    RETURNNODE(reduceAssign());
+  default            :
+    switch(getReturnType()) {
+    case EXPR_RETURN_REAL:
+      RETURNNODE(reduceRealExp());
+    case EXPR_RETURN_BOOL:
+      RETURNNODE(reduceBoolExp());
+    }
+    throwUnknownReturnTypeException(__TFUNCTION__);
+  }
+  throwUnknownNodeTypeException(__TFUNCTION__);
+  return NULL;
+}
+
+SNode SNode::reduceStmtList() {
   ENTERMETHOD();
   CHECKNODETYPE(*this,NT_STMTLIST);
   if(isReduced()) RETURNTHIS;
@@ -18,7 +48,7 @@ SNode SNode::reduce() {
     newStmtList.add(childArray[i].reduceAssign());
   }
   SNode last = childArray.last();
-  switch (last.getReturnType()) {
+  switch(last.getReturnType()) {
   case EXPR_RETURN_REAL:
     newStmtList.add(last.reduceRealExp());
     break;
@@ -88,7 +118,6 @@ SNode SNode::reduceRealExp() {
   if(isReduced()) RETURNTHIS;
   switch(getSymbol()) {
   case NUMBER         :
-  case BOOLCONST      :
   case NAME           :
     setReduced();
     RETURNTHIS;

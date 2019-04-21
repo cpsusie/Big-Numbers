@@ -128,17 +128,19 @@ typedef enum {
 class AlignedImage : public PixRect {
 private:
   int m_horizontalAlignment; // CenterLine from top. Default is height/2
-  int m_leftFiller;          // Empty space filled when concatenating images. Can be negative. Default=0
+  int m_leftFiller;          // Empty space (in pixels) filled when concatenating images. Can be negative. Default=0
   int m_fontSize;
 public:
   AlignedImage(PixRectDevice &device, int fontSize, const CSize &sz);
   AlignedImage(PixRectDevice &device, int fontSize, const CSize &sz, D3DCOLOR backgroundColor);
 
+  // Set centerLine (in pixels) from top. Default is height/2
   inline AlignedImage *setAlignment(int align) {
     m_horizontalAlignment = align;
     return this;
   }
 
+  // Set empty space (in pixels) filled when concatenating images. Can be negative. Default=0
   inline void setLeftFiller(int leftFiller) {
     m_leftFiller = leftFiller;
   }
@@ -367,7 +369,9 @@ PixRect *ExpressionPainter::paintExpression(int fontSize) {
   if(m_expression.getRoot() == NULL) {
     return getTextImage(_T("null"), true, fontSize, m_rectangle);
   }
-  return getImage(m_expression.getRoot(), fontSize, m_rectangle);
+  PixRect *pr = getImage(m_expression.getRoot(), fontSize, m_rectangle);
+  m_expression.pruneUnusedNodes();
+  return pr;
 }
 
 AlignedImage *ExpressionPainter::createImage(const CSize &size) {
@@ -941,23 +945,85 @@ AlignedImage *ExpressionPainter::getIndexedImage(SNode n, int fontSize, Expressi
   return concatImages(rect, leftImage, rightImage, NULL);
 }
 
+class ConditionExpression {
+public:
+  SNode m_cond;
+  SNode m_expr;
+  inline ConditionExpression() {
+  }
+  inline ConditionExpression(SNode cond, SNode expr) : m_cond(cond), m_expr(expr) {
+  }
+};
+
+class CondExpressionArray : public CompactArray<ConditionExpression> {
+private:
+  void addCondExpr(SNode cond, SNode expr);
+public:
+  CondExpressionArray(SNode n);
+};
+
+CondExpressionArray::CondExpressionArray(SNode n) {
+  addCondExpr( n.child(0), n.child(1));
+  addCondExpr(!n.child(0), n.child(2));
+  last().m_cond = SNode();
+  const size_t count = size();
+  for(size_t i = 0; i < count; i++) {
+    ConditionExpression &ce = (*this)[i];
+    ce.m_cond = SNode::beautify(ce.m_cond);
+  }
+}
+
+void CondExpressionArray::addCondExpr(SNode cond, SNode expr) {
+  if(expr.getSymbol() != IIF) {
+    add(ConditionExpression( cond, expr));
+  } else {
+    SNode exprCond = expr.child(0);
+    addCondExpr(cond &&  exprCond, expr.child(1));
+    addCondExpr(cond && !exprCond, expr.child(2));
+  }
+}
+
 AlignedImage *ExpressionPainter::getIfImage(SNode n, int fontSize, ExpressionRectangle &rect) {
-  ExpressionRectangle ifRect, commaRect, lpRect, rpRect, condRect, trueRect,falseRect;
+  CondExpressionArray a(n);
+  const size_t        rowCount = a.size();
+  Array<ImageArray>   imageMatrix(rowCount);
+  ExpressionRectangle rectMatrix;
+  int                 maxExprWidth = 0;
+  for(size_t i = 0; i < rowCount; i++) {
+    const ConditionExpression &ce = a[i];
+    ImageArray    line;
+    ExpressionRectangle exprRect, commaRect, condRect, lineRect;
+    AlignedImage *commaImage = getOpImage(COMMA, fontSize, commaRect);
+    line.add(getImage(ce.m_expr, fontSize, exprRect ));
+    line.add(commaImage);
+    if(ce.m_cond.isEmpty()) {
+      line.add(getTextImage(_T("else"), true, fontSize, condRect));
+    } else {
+      line.add(getImage(ce.m_cond, fontSize, condRect));
+    }
+    lineRect.addChild(exprRect).addChild(commaRect).addChild(condRect);
+    maxExprWidth = max(maxExprWidth, exprRect.Width());
+    imageMatrix.add(line);
+    rectMatrix.addChild(lineRect);
+  }
+  assert(imageMatrix.size() == rowCount);
+  assert(rectMatrix.getChildCount() == rowCount);
+  ImageArray lineArray(rowCount);
+  for(size_t i = 0; i < rowCount; i++) {
+    ImageArray          &line     = imageMatrix[i];
+    ExpressionRectangle &lineRect = rectMatrix.child(i);
+    const int missing = maxExprWidth - line[0]->getWidth();
+    if(missing > 0) {
+      ((AlignedImage*)line[1])->setLeftFiller(missing);
+    }
+    lineArray.add(concatImages(line, lineRect));
+  }
+  AlignedImage *condStack = stackImages(lineArray, rectMatrix);
 
-  ImageArray    result;
-  AlignedImage *commaImage = getOpImage(COMMA, fontSize, commaRect);
-  result.add(getOpImage(IIF      , fontSize, ifRect   ));
-  result.add(getOpImage(LPAR     , fontSize, lpRect   ));
-  result.add(getImage(n.child(0), fontSize, condRect ));
-  result.add(commaImage);
-  result.add(getImage(n.child(1), fontSize, trueRect ));
-  result.add(commaImage);
-  result.add(getImage(n.child(2), fontSize, falseRect));
-  result.add(getOpImage(RPAR     , fontSize, rpRect   ));
-  rect.addChild(ifRect).addChild(lpRect).addChild(condRect).addChild(commaRect)
-      .addChild(trueRect).addChild(commaRect).addChild(falseRect).addChild(rpRect);
-
-  return concatImages(result, rect);
+  ExpressionRectangle tuborgRect;
+  AlignedImage *tuborgImage = getTextImage(_T("{"), true, fontSize*((UINT)rowCount+1), tuborgRect);
+  rect.addChild(tuborgRect).addChild(rectMatrix);
+  return concatImages(rect, tuborgImage, condStack, NULL);
 }
 
 AlignedImage *ExpressionPainter::getStatementImages(SNode n, int fontSize, ExpressionRectangle &rect) {
@@ -1074,7 +1140,7 @@ AlignedImage *ExpressionPainter::concatImages(const ImageArray &imageList, Expre
   DEFINEMETHODNAME;
   if(imageList.size() != rect.getChildCount()) {
     throwInvalidArgumentException(method, _T("imageLIst.size()=%zu != rect.children.size()=%d")
-                                       ,imageList.size(), rect.getChildCount());
+                                        ,imageList.size(), rect.getChildCount());
   }
 
   int maxAlignment   = 0;

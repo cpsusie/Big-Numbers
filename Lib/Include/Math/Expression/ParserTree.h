@@ -132,7 +132,7 @@ public:
 class ParserTree : public PropertyContainer {
 private:
   ExpressionNode               *m_root;
-  CompactArray<ExpressionNode*> m_nodeTable;
+  CompactArray<ExpressionNode*> m_nodeTable, m_nonRootNodes;
   ParserTreeSymbolTable         m_symbolTable;
   StringArray                   m_errors;
   bool                          m_ok;
@@ -174,7 +174,8 @@ private:
 #endif // CHECK_CONSISTENCY
 protected:
   ParserTree(TrigonometricMode mode);
-  ParserTree(           const ParserTree &src);
+  // if root!=NULL, it must be a node in src. If root=NULL, then src.root is used
+  ParserTree(           const ParserTree &src, const ExpressionNode *root=NULL);
   ParserTree &operator=(const ParserTree &src);
   void setTrigonometricMode(TrigonometricMode mode) { // no notification from here.
     m_trigonometricMode = mode;
@@ -193,6 +194,8 @@ protected:
   void releaseAll();
   void pruneUnusedNodes();
   void markPow1Nodes() const;
+  void markNonRootNodes();
+  void addNonRootNode(ExpressionNode *n);
   void deleteUnmarked();
   void buildSymbolTable(const ExpressionVariableArray *oldVariables = NULL) {
     m_symbolTable.create(this, oldVariables);
@@ -214,9 +217,9 @@ protected:
     return result;
   }
 
-  ExpressionNodeName *fetchNameNode( const String               &name    );
+  ExpressionNodeName     *fetchNameNode(  const String               &name    );
   // terminate argumentlist with NULL
-  ExpressionNodeTree     *fetchTreeNode(     ExpressionInputSymbol     symbol, ...                );
+  ExpressionNodeTree     *fetchTreeNode(  ExpressionInputSymbol       symbol, ...                );
 
   inline ExpressionNodeNumber *numberExpr(const Rational &v) {
     return getRationalConstant(v);

@@ -413,6 +413,10 @@ void ExpressionNode::throwUnknownNodeTypeException(const TCHAR *method) const {
   throwException(_T("%s:Unexpected nodeType in expression tree:%d")
                 ,method, getNodeType());
 }
+void ExpressionNode::throwUnknownReturnTypeException(const TCHAR *method) const {
+  throwException(_T("%s:Unexpected returnType in expression tree:%d")
+                ,method, getReturnType());
+}
 
 void ExpressionNode::throwUnExpandableException() const {
   throwException(_T("Cannot expand expression %s"), toString().cstr());
