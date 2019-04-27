@@ -437,9 +437,9 @@ UINT ExternEngine::run() {
               verbose(_T("%s"), infoLine.toString(evf).cstr());
               if(evf.m_pv && (infoLine.m_pv.length() > 0)) {
                 String line;
-                if(evf.m_depth) line = format(_T("Depth:%2d:"), infoLine.m_depth);
-                line += getBeautifiedVariant(infoLine.m_pv, evf.m_pvVariantLength);
-                if(evf.m_score) line += _T("Score:"); line += infoLine.m_score;
+                if(evf.m_depth) line += format(_T("Depth:%2d "), infoLine.m_depth);
+                if(evf.m_score) line += format(_T("Score:%6s "), infoLine.m_score.cstr());
+                if(evf.m_pv   ) line += getBeautifiedVariant(infoLine.m_pv, evf.m_pvVariantLength);
                 updateMessageField(infoLine.m_multiPV, _T("%s"), line.cstr());
               }
               infoLine.reset();

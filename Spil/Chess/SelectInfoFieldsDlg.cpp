@@ -27,7 +27,7 @@ void CSelectInfoFieldsDlg::DoDataExchange(CDataExchange *pDX) {
   DDX_Check(pDX, IDC_CHECK_MULTIPV, m_multipv);
   DDX_Check(pDX, IDC_CHECK_CPULOAD, m_cpuLoad);
   DDX_Text( pDX, IDC_EDIT_VARIANTLENGTH, m_variantLength);
-  DDV_MinMaxUInt(pDX, m_variantLength, 1, 7);
+  DDV_MinMaxUInt(pDX, m_variantLength, 1, 999);
 }
 
 BEGIN_MESSAGE_MAP(CSelectInfoFieldsDlg, CDialog)
