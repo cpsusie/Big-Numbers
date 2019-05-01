@@ -2,7 +2,7 @@
 
 #define BITCOUNT(n) (sizeof(n)*8)
 #define SPRINTBIN(n)                                    \
-  TCHAR tmp[BITCOUNT(n)+1];                         \
+  TCHAR tmp[BITCOUNT(n)+1];                             \
   for(int index = BITCOUNT(n)-1; index >= 0; index--) { \
     tmp[index] = ((n) & 1) ? _T('1') : _T('0');         \
     n >>= 1;                                            \
