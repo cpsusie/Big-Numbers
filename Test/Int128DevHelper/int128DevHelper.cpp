@@ -94,8 +94,49 @@ template<class _itype> void loopItype(_itype (*inputItype)(const TCHAR *,...)) {
 #define loopSigned()   loopItype<_int128 >(inputInt128 )
 #define loopUnsigned() loopItype<_uint128>(inputUint128)
 
-int main(int argc, TCHAR **argv) {
+#define BITCOUNT(n) (sizeof(n)*8)
+#define SPRINTBIN(n)                                    \
+  TCHAR tmp[BITCOUNT(n)+1];                             \
+  for(int index = BITCOUNT(n)-1; index >= 0; index--) { \
+    tmp[index] = ((n) & 1) ? _T('1') : _T('0');         \
+    n >>= 1;                                            \
+  }                                                     \
+  tmp[BITCOUNT(n)] = '\0';                              \
+  return tmp;
 
+String sprintbin(_int128 i) {
+  SPRINTBIN(i);
+}
+
+String sprintbin(_uint128 i) {
+  SPRINTBIN(i);
+}
+
+static void testShift() {
+  const _int128  si0 = randInt128() & _I128_MAX;
+  const _int128  si1 = randInt128() | _I128_MIN;
+  const _uint128 ui0 = si0;
+  const _uint128 ui1 = si1;
+
+  for(int shft = 1; shft <= 128; shft++) {
+    tcout << format(_T("signed shift left:%3d           :%s\n"),shft, sprintbin(si0<<shft).cstr());
+  }
+  for(int shft = 1; shft <= 128; shft++) {
+    tcout << format(_T("signed shift right:%3d(0-bits)  :%s\n"),shft, sprintbin(si0>>shft).cstr());
+  }
+  for(int shft = 1; shft <= 128; shft++) {
+    tcout << format(_T("signed shift right:%3d(1-bits)  :%s\n"),shft, sprintbin(si1>>shft).cstr());
+  }
+  for(int shft = 1; shft <= 128; shft++) {
+    tcout << format(_T("unsigned shift right:%3d(0-bits):%s\n"),shft, sprintbin(ui0>>shft).cstr());
+  }
+  for(int shft = 1; shft <= 128; shft++) {
+    tcout << format(_T("unsigned shift right:%3d(1-bits):%s\n"),shft, sprintbin(ui1>>shft).cstr());
+  }
+}
+
+int main(int argc, TCHAR **argv) {
+  testShift();
   loopUnsigned();
   loopSigned();
   _uint128  x1(0xaaaaaaaabbbbbbbb, 0xfabcdef12345678);
