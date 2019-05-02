@@ -31,12 +31,12 @@ extern "C" {
   void int128neg( void *x);
   void int128inc( void *x);
   void int128dec( void *x);
-  void int128shr( void *x, int shft);
-  void int128shl( void *x, int shft);
+  void int128shr( int shft, void *x );
+  void int128shl( int shft, void *x );
   int  int128cmp( const void *x1, const void *x2);
   void uint128div(void *dst, const void *x);
   void uint128rem(void *dst, const void *x);
-  void uint128shr(void *x, int shft);
+  void uint128shr(int shft, void *x );
   int  uint128cmp(const void *x1, const void *x2);
 };
 
@@ -467,24 +467,24 @@ inline _uint128 operator~(const _uint128 &n) {
 // 2 version of operator>> (arithmetic shift for signed, logical shift for unsigned)
 inline _int128 operator>>(const _int128 &lft, const int shft) {
   _int128 copy(lft);
-  int128shr(&copy, shft);
+  int128shr(shft, &copy);
   return copy;
 }
 inline _uint128 operator>>(const _uint128 &lft, const int shft) {
   _uint128 copy(lft);
-  uint128shr(&copy, shft);
+  uint128shr(shft, &copy);
   return copy;
 }
 
 // 2 version of operator<< (dont care about signed/unsigned)
 inline _int128 operator<<(const _int128 &lft, const int shft) {
   _int128 copy(lft);
-  int128shl(&copy, shft);
+  int128shl(shft, &copy);
   return copy;
 }
 inline _int128 operator<<(const _uint128 &lft, const int shft) {
   _uint128 copy(lft);
-  int128shl(&copy, shft);
+  int128shl(shft, &copy);
   return copy;
 }
 
@@ -721,19 +721,19 @@ inline _uint128 &operator^=(_uint128 &lft, const _uint128 &rhs) {
 }
 
 inline _int128 &operator>>=(_int128 &lft, int shft) {
-  int128shr(&lft, shft);
+  int128shr(shft, &lft);
   return lft;
 }
 inline _uint128 &operator>>=(_uint128 &lft, int shft) {
-  uint128shr(&lft, shft);
+  uint128shr(shft, &lft);
   return lft;
 }
 inline _int128 &operator<<=(_int128 &lft, int shft) {
-  int128shl(&lft, shft);
+  int128shl(shft, &lft);
   return lft;
 }
 inline _uint128 &operator<<=(_uint128 &lft, int shft) {
-  int128shl(&lft, shft);
+  int128shl(shft, &lft);
   return lft;
 }
 

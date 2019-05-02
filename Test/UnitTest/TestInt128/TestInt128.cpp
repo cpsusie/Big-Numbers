@@ -727,6 +727,31 @@ namespace TestInt128 {
       _int128 symDif13 = b1mb3 | b3mb1;
       verify(x13 == symDif13);
 
+    } // Int128BitOperators
+
+    template<class I128Type> void testAllShifts(I128Type v0, I128Type (*op)(const I128Type&, int)) {
+      CompactArray<I128Type> singleShiftValue(129);
+      singleShiftValue.add(v0);
+      for(int i = 1; i <= 128; i++) {
+        singleShiftValue.add(op(singleShiftValue.last(), 1));
+      }
+      for(int i = 0; i <= 128; i++) {
+        const I128Type shftValue = op(v0, i);
+        verify(shftValue == singleShiftValue[i]);
+      }
+    }
+
+    TEST_METHOD(Int128ShiftOperators) {
+      const _int128  si0 = randInt128() & _I128_MAX;
+      const _int128  si1 = randInt128() | _I128_MIN;
+      const _uint128 ui0 = si0;
+      const _uint128 ui1 = si1;
+
+      testAllShifts(si0, operator<<);
+      testAllShifts(si0, operator>>);
+      testAllShifts(si1, operator>>);
+      testAllShifts(ui0, operator>>);
+      testAllShifts(ui1, operator>>);
     } // Int128ShiftOperators
 
     static inline UINT64 getRandInt64(UINT bits) {

@@ -134,19 +134,15 @@ void int128mul(void *dst, const void *x) {
   }
 }
 
-void int128shl(void *x, int shft) {
+void int128shl(int shft, void *x) {
   __asm {
     mov         ecx, shft                      ; ecx = shift count
-    mov         esi, x
-    cmp         cl, 128
-    jae         RetZero
-    cmp         cl, 96
-    jae         More96
+    mov         esi, x                         ; esi = x
     cmp         cl, 64
-    jae         More64
-    cmp         cl, 32
-    jae         More32
-    mov         eax, dword ptr[esi+8]
+    jae         GE64
+    cmp         cl, 32                         ; cl < 64
+    jae         _32_63
+    mov         eax, dword ptr[esi+8]          ; cl < 32
     shld        dword ptr[esi+12], eax, cl     ; shift s4.i[3] adding bits from s4.i[2]
     mov         eax, dword ptr[esi+4]
     shld        dword ptr[esi+8], eax, cl      ; shift s4.i[2] adding bits from s4.i[1]
@@ -155,7 +151,7 @@ void int128shl(void *x, int shft) {
     shl         dword ptr[esi], cl             ; shift s4.i[0]
     jmp         End
 
-More32 :                                       ; 32 <= cl < 64
+_32_63 :                                       ; 32 <= cl < 64
     and         cl, 1Fh                        ; cl %= 32
     mov         eax, dword ptr[esi+8]
     mov         dword ptr[esi+12], eax         ; s4.i[3] = s4.i[1]
@@ -170,8 +166,10 @@ More32 :                                       ; 32 <= cl < 64
     mov         dword ptr[esi], eax            ; s4.i[0] = 0
     jmp         End
 
-More64:                                        ; 64 <= cl < 96
-    and         cl, 1Fh                        ; cl %= 32
+GE64:                                          ; cl >= 64
+    cmp         cl, 96
+    jae         GE96
+    and         cl, 1Fh                        ; cl < 96; cl %= 32
     mov         eax, dword ptr[esi+4]
     mov         dword ptr[esi+12], eax         ; s4.i[3] = s4.i[1]
     mov         eax, dword ptr[esi]            ; eax = s4.i[0]
@@ -183,8 +181,10 @@ More64:                                        ; 64 <= cl < 96
     mov         dword ptr[esi+4], eax          ; s4.i[1] = 0
     jmp         End
 
-More96:                                        ; 96 <= cl < 128
-    and         cl, 1Fh                        ; cl %= 32
+GE96:                                          ; cl >= 96
+    cmp         cl, 128
+    jae         GE128
+    and         cl, 1Fh                        ; cl < 128; cl %= 32
     mov         eax, dword ptr[esi]
     shl         eax, cl
     mov         dword ptr[esi+12], eax         ; s4.i[3] = s4.i[0] << cl
@@ -194,7 +194,7 @@ More96:                                        ; 96 <= cl < 128
     mov         dword ptr[esi+8], eax          ; s4.i[2] = 0
     jmp         End
 
-RetZero:
+GE128:                                         ; cl >= 128
     xor         eax, eax                       ; return 0
     mov         dword ptr[esi   ], eax
     mov         dword ptr[esi+4 ], eax
@@ -204,18 +204,14 @@ RetZero:
 End:;
 }
 
-void int128shr(void *x, int shft) {            // signed shift right
+void int128shr(int shft, void *x) {            // signed shift right
   __asm {
     mov         ecx, shft                      ; ecx = shift count
-    mov         esi, x
-    cmp         cl, 128
-    jae         RetSign
-    cmp         cl, 96
-    jae         More96
+    mov         esi, x                         ; esi = x
     cmp         cl, 64
-    jae         More64
-    cmp         cl, 32
-    jae         More32
+    jae         GE64
+    cmp         cl, 32                         ; cl < 64
+    jae         _32_63
     mov         eax, dword ptr[esi+4]
     shrd        dword ptr[esi], eax, cl        ; shift s4[0] new bits from s4[1] (eax)
     mov         eax, dword ptr[esi+8]
@@ -225,17 +221,15 @@ void int128shr(void *x, int shft) {            // signed shift right
     sar         dword ptr[esi+12], cl          ; shift s4[3]
     jmp         End
 
-More32 :                                       ; 32 <= cl < 64
+_32_63 :                                       ; 32 <= cl < 64
     and         cl, 1Fh                        ; cl %= 32
     mov         eax, dword ptr[esi+4]
     mov         dword ptr[esi], eax            ; s4[0] = eax (old s4[1])
     mov         eax, dword ptr[esi+8]          ; eax = s4[2]
     shrd        dword ptr[esi], eax, cl        ; shift s[0] new bits from s4[2] (eax)
-
     mov         dword ptr[esi+4], eax          ; s4[1] = eax (old s4[2])
     mov         eax, dword ptr[esi+12]         ; eax = s4[3]
     shrd        dword ptr[esi+4], eax, cl      ; shift s4[1] new bits from eax (old s4[3])
-
     mov         dword ptr[esi+8], eax          ; s4[2] = eax (old s4[3])
     mov         eax, dword ptr[esi+12]         ; eax = s4[3]
     sar         eax, 1fh                       ; eax contain signbit in all bits
@@ -243,24 +237,25 @@ More32 :                                       ; 32 <= cl < 64
     mov         dword ptr[esi+12], eax         ; s4[3] = eax
     jmp         End
 
-More64:                                        ; 64 <= cl < 96
-    and         cl, 1Fh                        ; cl %= 32
-
+GE64:                                          ; cl >= 64
+    cmp         cl, 96
+    jae         GE96
+    and         cl, 1Fh                        ; cl < 96; cl %= 32
     mov         eax, dword ptr[esi+8]
     mov         dword ptr[esi], eax            ; s4[0] = s4[2]
     mov         eax, dword ptr[esi+12]         ; eax = s4[3]
     shrd        dword ptr[esi], eax, cl        ; shift s4[0] new bits from eax (old s4[3])
-
     sar         eax, cl                        ; eax contain sign bit in all bits
     mov         dword ptr[esi+4], eax          ; s4[1] = eax (old s4[3])
-
     sar         eax, 1fh
     mov         dword ptr[esi+8], eax          ; s4[2] = sign of s4[3]
     mov         dword ptr[esi+12], eax         ; s4[3] = sign of s4[3]
     jmp         End
 
-More96:                                        ; 96 <= cl < 128
-    and         cl, 1Fh                        ; cl %= 32
+GE96:                                          ; cl >= 96
+    cmp         cl, 128
+    jae         GE128
+    and         cl, 1Fh                        ; cl < 128; cl %= 32
     mov         eax, dword ptr[esi+12]
     sar         eax, cl
     mov         dword ptr[esi], eax            ; s4[0] = s4[3] >> cl (shift in signbit of s4[3])
@@ -270,7 +265,7 @@ More96:                                        ; 96 <= cl < 128
     mov         dword ptr[esi+12], eax         ; s4[3] = sign of s4[3]
     jmp         End
 
-RetSign:
+GE128:                                         ; cl >= 128
     mov         eax, dword ptr[esi+12]
     sar         eax,1Fh
     mov         dword ptr[esi   ], eax
@@ -281,18 +276,14 @@ RetSign:
 End:;
 }
 
-void uint128shr(void *x, int shft) { // unsigned shift right
+void uint128shr(int shft, void *x) { // unsigned shift right
   __asm {
     mov         ecx, shft                      ; ecx = shift count
     mov         esi, x
-    cmp         cl, 128
-    jae         RetZero
-    cmp         cl, 96
-    jae         More96
     cmp         cl, 64
-    jae         More64
-    cmp         cl, 32
-    jae         More32
+    jae         GE64
+    cmp         cl, 32                         ; cl < 64
+    jae         _32_63
     mov         eax, dword ptr[esi+4]
     shrd        dword ptr[esi], eax, cl       ; shift s4[0] new bits from s4[1] (eax)
     mov         eax, dword ptr[esi+8]
@@ -302,41 +293,40 @@ void uint128shr(void *x, int shft) { // unsigned shift right
     shr         dword ptr[esi+12], cl         ; shift s4[3]
     jmp         End
 
-More32 :                                      ; 32 <= cl < 64
+_32_63 :                                      ; 32 <= cl < 64
     and         cl, 1Fh                       ; cl %= 32
     mov         eax, dword ptr[esi+4]
     mov         dword ptr[esi], eax           ; s4[0] = eax (old s4[1])
     mov         eax, dword ptr[esi+8]         ; eax = s4[2]
     shrd        dword ptr[esi], eax, cl       ; shift s[0] new bits from s4[2] (eax)
-
     mov         dword ptr[esi+4], eax         ; s4[1] = eax (old s4[2])
     mov         eax, dword ptr[esi+12]        ; eax = s4[3]
     shrd        dword ptr[esi+4], eax, cl     ; shift s4[1] new bits from eax (old s4[3])
-
     shr         eax, cl
     mov         dword ptr[esi+8], eax         ; s4[2] = eax << cl
     xor         eax, eax
     mov         dword ptr[esi+12], eax        ; s4[3] = 0
     jmp         End
 
-More64:                                       ; 64 <= cl < 96
-    and         cl, 1Fh                       ; cl %= 32
-
+GE64:                                         ; cl >= 64
+    cmp         cl, 96
+    jae         GE96
+    and         cl, 1Fh                       ; cl < 96; cl %= 32
     mov         eax, dword ptr[esi+8]
     mov         dword ptr[esi], eax           ; s4[0] = s4[2]
     mov         eax, dword ptr[esi+12]        ; eax = s4[3]
     shrd        dword ptr[esi], eax, cl       ; shift s4[0] new bits from eax (old s4[3])
-
     shr         eax, cl
     mov         dword ptr[esi+4], eax         ; s4[1] = eax >> cl (old s4[3] >> cl)
-
     xor         eax, eax
     mov         dword ptr[esi+8], eax         ; s4[2] = 0
     mov         dword ptr[esi+12], eax        ; s4[3] = 0
     jmp         End
 
-More96:                                       ; 96 <= cl < 128
-    and         cl, 1Fh                       ; cl %= 32
+GE96:                                         ; cl >= 96
+    cmp         cl, 128
+    jae         GE128
+    and         cl, 1Fh                       ; cl < 128; cl %= 32
     mov         eax, dword ptr[esi+12]
     shr         eax, cl
     mov         dword ptr[esi], eax           ; s4[0] = s4[3] >> cl
@@ -346,8 +336,8 @@ More96:                                       ; 96 <= cl < 128
     mov         dword ptr[esi+12], eax        ; s4[3] = 0
     jmp         End
 
-RetZero:
-    xor         eax,eax
+GE128:                                        ; cl >= 128
+    xor         eax,eax                       ; return 0
     mov         dword ptr[esi   ], eax
     mov         dword ptr[esi+4 ], eax
     mov         dword ptr[esi+8 ], eax
@@ -531,12 +521,12 @@ static void unsignedQuotRemainder(const _uint128 &a, const _uint128 &y, _uint128
         case 1 :              break;
         default: p128 *= q32; break;
         }
-        if(shift) int128shl(&p128,shift);
+        if(shift) int128shl(shift, &p128);
       }
       if(quot) { // do we want the quot. If its NULL there's no need to do this
         if(count) {
           if(lastShift > shift) {
-            int128shl(quot, lastShift - shift);
+            int128shl(lastShift - shift, quot);
           }
           __asm {
             mov eax, q32
@@ -559,7 +549,7 @@ AddDone1:
     // rem < 0xffff
     if(quot) {
       if(lastShift) {
-        int128shl(quot, lastShift);
+        int128shl(lastShift, quot);
       }
       *quot += (UINT)rem / (UINT)y;
     }
@@ -590,12 +580,12 @@ AddDone1:
         case 1 :              break;
         default: p128 *= q32; break;
         }
-        if(shift) int128shl(&p128,shift);
+        if(shift) int128shl(shift, &p128);
       }
       if(quot) { // do we want the quot. If its NULL there's no need to do this
         if(count) {
           if(lastShift > shift) {
-            int128shl(quot, lastShift - shift);
+            int128shl(lastShift - shift, quot);
           }
           __asm {
             mov eax, q32
@@ -615,7 +605,7 @@ AddDone2:
       rem -= p128;
     }
     if(lastShift && quot) {
-      int128shl(quot, lastShift);
+      int128shl(lastShift, quot);
     }
   }
 }

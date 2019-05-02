@@ -259,54 +259,51 @@ int128dec PROC
     ret
 int128dec ENDP
 
-;void int128shr(_int128 &x, int shft); do assignop x >>= shft; (if(x<0) shift 1-bits in from left, else 0-bits)
+;void int128shr(int shft, _int128 &x); do assignop x >>= shft; (if(x<0) shift 1-bits in from left, else 0-bits)
 int128shr PROC
-    mov         rax, rcx                       ; rax = &x; need cl to the shift instruction
-    mov         rcx, rdx                       ; rcx = shift amount
-    mov         rdx, qword ptr[rax+8]          ; rdx = x.hi
-    cmp         cl, 80h
-    jae         RetSign
+    mov         rax, qword ptr[rdx+8]          ; rax = x.hi
     cmp         cl, 40h
-    jae         More64
-    shrd        qword ptr[rax], rdx, cl        ; shift x.lo taking new bits from x.hi (rdx)
-    sar         qword ptr[rax+8], cl           ; shift x.hi
+    jae         More64                         ; if(cl >= 64) goto More64;
+    sar         qword ptr[rdx+8], cl           ; shift x.hi
+    shrd        qword ptr[rdx], rax, cl        ; shift x.lo taking new bits from x.hi (rax)
     ret
-More64:
-    mov         qword ptr[rax], rdx
-    sar         qword ptr[rax+8], 3Fh
-    and         cl, 3Fh
-    sar         qword ptr[rax], cl
+More64:                                        ; assume rax = x.hi
+    cmp         cl, 80h
+    jae         RetSign                        ; if(cl >= 128) goto RetSign;
+    sar         qword ptr[rdx+8], 3Fh          ; set all bits in x.hi to sign-bit
+    and         cl, 3Fh                        ; cl %= 64
+    sar         rax, cl                        ; rax = x.hi >> cl
+    mov         qword ptr[rdx], rax            ; x.lo = rax
     ret
-RetSign:
-    sar         rdx,3Fh
-    mov         qword ptr[rax], rdx
-    mov         qword ptr[rax+8], rdx
+RetSign:                                       ; assume rax = x.hi
+    sar         rax,3Fh                        ; set all bits in rax to sign-bit
+    mov         qword ptr[rdx], rax
+    mov         qword ptr[rdx+8], rax
     ret
 int128shr ENDP
 
-;void int128shl(_int128 &x, int shft); do assignop x <<= shft;
+;void int128shl(int shft, _int128 &x); do assignop x <<= shft;
 int128shl PROC
-    mov         rax, rcx                       ; rax = &x; need cl to the shift instruction
-    mov         rcx, rdx                       ; rcx = shift amount
-    mov         rdx, qword ptr[rax]            ; rdx = x.lo
-    cmp         cl, 80h
-    jae         RetZero
     cmp         cl, 40h
-    jae         More64
-    shld        qword ptr[rax+8], rdx, cl      ; shift x.hi taking new bits from x.lo (rdx)
-    shl         qword ptr[rax], cl             ; shift x.lo
+    jae         More64                         ; if(cl >= 64) goto More64;
+    mov         rax, qword ptr[rdx]            ; rax = x.lo
+    shl         qword ptr[rdx], cl             ; shift x.lo
+    shld        qword ptr[rdx+8], rax, cl      ; shift x.hi taking new bits from x.lo (rax)
     ret
 More64:
+    cmp         cl, 80h
+    jae         RetZero                        ; if(cl >= 128) goto RetZero;
     and         cl, 3Fh                        ; cl %= 64
-    shl         rdx, cl                        ; shift rdx (x.lo)
-    mov         qword ptr[rax+8], rdx          ; x.hi = rdx
-    xor         rdx, rdx
-    mov         qword ptr[rax], rdx            ; x.lo = 0
+    mov         rax, qword ptr[rdx]            ; rax = x.lo
+    shl         rax, cl                        ; shift rax (x.lo)
+    mov         qword ptr[rdx+8], rax          ; x.hi = rax
+    xor         rax, rax
+    mov         qword ptr[rdx], rax            ; x.lo = 0
     ret
 RetZero:
-    xor         rdx, rdx                       ; return 0
-    mov         qword ptr[rax], rdx
-    mov         qword ptr[rax+8], rdx
+    xor         rax, rax                       ; return 0
+    mov         qword ptr[rdx], rax
+    mov         qword ptr[rdx+8], rax
     ret
 int128shl ENDP
 
@@ -444,29 +441,28 @@ L2:
      ret
 uint128rem ENDP
 
-;void uint128shr(void *x, int shft); do assignop x >>= shft. always shift 0-bits in from left
+;void uint128shr(int shft, void *x); do assignop x >>= shft. always shift 0-bits in from left
 uint128shr PROC
-    mov         rax, rcx                       ; rax = &x; need cl to the shift instruction
-    mov         rcx, rdx                       ; rcx = shift amount
-    mov         rdx, qword ptr[rax+8]          ; rdx = x.hi
-    cmp         cl, 80h
-    jae         RetZero
     cmp         cl, 40h
-    jae         More64
-    shrd        qword ptr[rax], rdx, cl        ; shift x.lo taking new bits from x.hi (rdx)
-    shr         qword ptr[rax+8], cl           ; shift x.hi
+    jae         More64                         ; if(cl >= 64) goto More64;
+    mov         rax, qword ptr[rdx+8]          ; rax = x.hi
+    shr         qword ptr[rdx+8], cl           ; shift x.hi
+    shrd        qword ptr[rdx], rax, cl        ; shift x.lo taking new bits from x.hi (rax)
     ret
 More64:
+    cmp         cl, 80h
+    jae         RetZero                        ; if(cl >= 128) goto RetZero;
     and         cl, 3Fh                        ; cl %= 64
-    shr         rdx, cl                        ; rdx >>= cl   (x.hi)
-    mov         qword ptr[rax], rdx            ; x.lo = rdx
-    xor         rdx, rdx
-    mov         qword ptr[rax+8], rdx          ; x.hi = 0
+    mov         rax, qword ptr[rdx+8]          ; rax = x.hi
+    shr         rax, cl                        ; rax >>= cl
+    mov         qword ptr[rdx], rax            ; x.lo = rax
+    xor         rax, rax
+    mov         qword ptr[rdx+8], rax          ; x.hi = 0
     ret
 RetZero:
-    xor         rdx, rdx                       ; return 0
-    mov         qword ptr[rax], rdx
-    mov         qword ptr[rax+8], rdx
+    xor         rax, rax                       ; return 0
+    mov         qword ptr[rdx], rax
+    mov         qword ptr[rdx+8], rax
     ret
 uint128shr ENDP
 
