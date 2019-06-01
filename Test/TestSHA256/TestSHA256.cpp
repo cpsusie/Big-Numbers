@@ -17,26 +17,67 @@ using namespace std;
 typedef unsigned char       BYTE;
 typedef unsigned int        UINT32;
 typedef unsigned long long  UINT64;
-typedef vector<UINT32>      UINT32Vector;
 
-class SHA256HashCode : public UINT32Vector {
+class Block512Bit {
+private:
+  UINT32 m_v[16];
 public:
-  SHA256HashCode() {
+  inline const UINT32 &operator[](int index) const {
+    return m_v[index];
   }
-  SHA256HashCode(const UINT32Vector &v) : UINT32Vector(v) {
+  inline UINT32 &operator[](int index) {
+    return m_v[index];
   }
-  string toString() const;
+};
+
+class SHA256HashCode {
+private:
+  UINT32 m_v[8];
+  inline void init(const UINT32 *v) {
+    memcpy(m_v, v, 8 * sizeof(m_v[0]));
+  }
+  inline void reset() {
+    memset(m_v, 0, 8 * sizeof(m_v[0]));
+  }
+public:
+  inline SHA256HashCode() {
+    reset();
+  }
+  inline SHA256HashCode(const SHA256HashCode &src) {
+    init(src.m_v);
+  }
+  inline SHA256HashCode(const UINT32 *v) {
+    init(v);
+  }
+  inline void clear(const UINT32 *v = NULL) {
+    if(v) init(v); else reset();
+  }
+  inline const UINT32 &operator[](int index) const {
+    return m_v[index];
+  }
+  inline UINT32 &operator[](int index) {
+    return m_v[index];
+  }
+  string toString(bool upper = true) const;
 };
 
 ostream &operator<<(ostream &out, const SHA256HashCode &code) {
-  for(int i = 0; i < 8;) {
-    out << hex << setw(8) << setfill('0') << code[i++];
+  const bool isuppercase = (out.flags() & ios_base::uppercase) != 0;
+  if(isuppercase) {
+    for(int i = 0; i < 8;) {
+      out << hex << setw(8) << setfill('0') << uppercase << code[i++];
+    }
+  } else {
+    for(int i = 0; i < 8;) {
+      out << hex << setw(8) << setfill('0') << code[i++];
+    }
   }
   return out;
 }
 
-string SHA256HashCode::toString() const {
+string SHA256HashCode::toString(bool upper) const {
   ostringstream ostr;
+  if(upper) ostr << uppercase;
   ostr << *this;
   return ostr.str();
 }
@@ -44,12 +85,11 @@ string SHA256HashCode::toString() const {
 class SHA256 {
 private:
   static const UINT32         s_K[64];         // Constants used in hash algorithm
-  static const SHA256HashCode s_hash0;         // Initial value of m_hashedMsg, before shuffling bits with 512-bit blocks (m_msg[0..N-1])
-
+  static const UINT32         s_hash0[8];      // Initial value of m_hashedMsg, before shuffling bits with 512-bit blocks (m_msg[0..N-1])
   vector<BYTE>                m_bytes;         // Plain and padded message bytes
-  vector<UINT32Vector>        m_msg;           // Message to be hashed
-  vector<SHA256HashCode>      m_hashedMsg;     // Hashed message
-  UINT64                      m_bitCount;             // Message length in bits
+  vector<Block512Bit>         m_msg;           // Message to be hashed
+  SHA256HashCode              m_hashedMsg;     // Hashed message
+  UINT64                      m_bitCount;      // Message length in bits
 
   void clear();                                // Clear all working vectors and variables.
   void storeHexBytes(   const string &hexStr);
@@ -79,8 +119,8 @@ const UINT32 SHA256::s_K[64] = {
  ,0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
 };
 
-const SHA256HashCode SHA256::s_hash0 = UINT32Vector(
-{ 0x6a09e667
+const UINT32 SHA256::s_hash0[] = {
+  0x6a09e667
  ,0xbb67ae85
  ,0x3c6ef372
  ,0xa54ff53a
@@ -88,7 +128,7 @@ const SHA256HashCode SHA256::s_hash0 = UINT32Vector(
  ,0x9b05688c
  ,0x1f83d9ab
  ,0x5be0cd19
-});
+};
 
 void SHA256::clear() {
   m_bytes.clear();
@@ -161,7 +201,7 @@ int SHA256::parseBytes() {
   m_msg.clear();
   const size_t count = m_bytes.size() / 64;
   for(int i = 0; n < count; n++) {
-    UINT32Vector block(16);
+    Block512Bit block;
     for(int j = 0; j < 16; j++) {
       UINT32 word = m_bytes[i++];
       for(int k = 3; k--;) {
@@ -175,10 +215,15 @@ int SHA256::parseBytes() {
   return n;
 }
 
+#define HASROTR
+#ifdef HASROTR
+#define ROTR(x,n) _rotr(x, n)
+#else
 // Rotate right function ROTR^n(x) in hash algorithm.
 inline UINT32 ROTR(UINT32 x, UINT32 n) {
   return (x >> n) | (x << (32 - n));
 }
+#endif
 
 // Right shift function SHR^n(x) in hash algorithm.
 inline UINT32 SHR(UINT32 x, UINT32 n) {
@@ -217,11 +262,10 @@ inline UINT32 ssigma1(UINT32 x) {
 
 const SHA256HashCode &SHA256::computeHash() {
   const int n = parseBytes();
-  m_hashedMsg.clear();
-  m_hashedMsg.push_back(s_hash0);
-  UINT32Vector hashBlock(8);
+  m_hashedMsg.clear(s_hash0);
+  SHA256HashCode &H = m_hashedMsg;
   for(int i = 0; i < n; i++) {
-    const UINT32Vector &Mi = m_msg[i];
+    const Block512Bit &Mi = m_msg[i];
     UINT32 W[64];
     // Prepare message schedule
     for(int t = 0; t < 16; t++) {
@@ -231,16 +275,15 @@ const SHA256HashCode &SHA256::computeHash() {
       W[t] = ssigma1(W[t-2]) + W[t-7] + ssigma0(W[t-15]) + W[t-16];
     }
 
-    UINT32Vector &Hi = m_hashedMsg[i];
     // Initialise working variables with previous hash value
-    UINT32 a = Hi[0];
-    UINT32 b = Hi[1];
-    UINT32 c = Hi[2];
-    UINT32 d = Hi[3];
-    UINT32 e = Hi[4];
-    UINT32 f = Hi[5];
-    UINT32 g = Hi[6];
-    UINT32 h = Hi[7];
+    UINT32 a = H[0];
+    UINT32 b = H[1];
+    UINT32 c = H[2];
+    UINT32 d = H[3];
+    UINT32 e = H[4];
+    UINT32 f = H[5];
+    UINT32 g = H[6];
+    UINT32 h = H[7];
 
     // Perform logical operations
     for(int t = 0; t < 64; t++) {
@@ -257,17 +300,16 @@ const SHA256HashCode &SHA256::computeHash() {
     }
 
     // Compute intermediate hash values by assigning them to hash^i
-    hashBlock[0] = a + Hi[0];
-    hashBlock[1] = b + Hi[1];
-    hashBlock[2] = c + Hi[2];
-    hashBlock[3] = d + Hi[3];
-    hashBlock[4] = e + Hi[4];
-    hashBlock[5] = f + Hi[5];
-    hashBlock[6] = g + Hi[6];
-    hashBlock[7] = h + Hi[7];
-    m_hashedMsg.push_back(hashBlock);
+    H[0] += a;
+    H[1] += b;
+    H[2] += c;
+    H[3] += d;
+    H[4] += e;
+    H[5] += f;
+    H[6] += g;
+    H[7] += h;
   }
-  return m_hashedMsg[n];
+  return m_hashedMsg;
 }
 
 SHA256HashCode &SHA256::getHashHexStr(SHA256HashCode &dst, const string &hexStr) {
@@ -311,7 +353,7 @@ static void testSuite() {
     for(string line; getline(input, line);) {
       lineCount++;
       SHA256HashCode code;
-      string hashCode = SHA256().getHashHexStr(code, line).toString();
+      const string hashCode = SHA256().getHashHexStr(code, line).toString(false);
       string expected;
       getline(answer, expected);
       if(hashCode != expected) {
@@ -333,6 +375,14 @@ typedef enum {
  ,CMD_HASHTEXT
 } Command;
 
+static void usage() {
+  fprintf(stderr, "usage: testSHA256 [-t|-f [name]]\n"
+                  "       -t:Run testsuite\n"
+                  "       -f name : read textfile with name, and generate SHA256-code. If name is omitted, then read text from stdin\n"
+         );
+  exit(-1);
+}
+
 int main(int argc, char **argv) {
   char *cp;
   Command cmd = CMD_UNKNOWN;
@@ -345,6 +395,8 @@ int main(int argc, char **argv) {
       case 'f':
         cmd = CMD_HASHTEXT;
         break;
+      default:
+        usage();
       }
       break;
     }
@@ -361,6 +413,8 @@ int main(int argc, char **argv) {
       cout << SHA256().getHashStr(code, fileContent) << endl;
     }
     break;
+  default:
+    usage();
   }
   return 0;
 }
