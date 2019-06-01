@@ -324,6 +324,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestExpr", "testexpr\testex
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Expression", "..\Lib\Src\Expression\Expression.vcxproj", "{20C38850-59EE-46E3-AD91-7327685B83D2}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestSHA256", "TestSHA256\TestSHA256.vcxproj", "{7C154D76-C9F7-42A0-B268-D77B1941F0B3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -2976,6 +2978,42 @@ Global
 		{20C38850-59EE-46E3-AD91-7327685B83D2}.TraceMemRelease|x64.Build.0 = TraceMemRelease|x64
 		{20C38850-59EE-46E3-AD91-7327685B83D2}.TraceMemRelease|x86.ActiveCfg = TraceMemRelease|Win32
 		{20C38850-59EE-46E3-AD91-7327685B83D2}.TraceMemRelease|x86.Build.0 = TraceMemRelease|Win32
+		{7C154D76-C9F7-42A0-B268-D77B1941F0B3}.Debug|x64.ActiveCfg = Debug|x64
+		{7C154D76-C9F7-42A0-B268-D77B1941F0B3}.Debug|x64.Build.0 = Debug|x64
+		{7C154D76-C9F7-42A0-B268-D77B1941F0B3}.Debug|x86.ActiveCfg = Debug|Win32
+		{7C154D76-C9F7-42A0-B268-D77B1941F0B3}.Debug|x86.Build.0 = Debug|Win32
+		{7C154D76-C9F7-42A0-B268-D77B1941F0B3}.LDDebug|x64.ActiveCfg = Debug|x64
+		{7C154D76-C9F7-42A0-B268-D77B1941F0B3}.LDDebug|x64.Build.0 = Debug|x64
+		{7C154D76-C9F7-42A0-B268-D77B1941F0B3}.LDDebug|x86.ActiveCfg = Debug|Win32
+		{7C154D76-C9F7-42A0-B268-D77B1941F0B3}.LDDebug|x86.Build.0 = Debug|Win32
+		{7C154D76-C9F7-42A0-B268-D77B1941F0B3}.LDRelease|x64.ActiveCfg = Release|x64
+		{7C154D76-C9F7-42A0-B268-D77B1941F0B3}.LDRelease|x64.Build.0 = Release|x64
+		{7C154D76-C9F7-42A0-B268-D77B1941F0B3}.LDRelease|x86.ActiveCfg = Release|Win32
+		{7C154D76-C9F7-42A0-B268-D77B1941F0B3}.LDRelease|x86.Build.0 = Release|Win32
+		{7C154D76-C9F7-42A0-B268-D77B1941F0B3}.Profilling|x64.ActiveCfg = Release|x64
+		{7C154D76-C9F7-42A0-B268-D77B1941F0B3}.Profilling|x64.Build.0 = Release|x64
+		{7C154D76-C9F7-42A0-B268-D77B1941F0B3}.Profilling|x86.ActiveCfg = Release|Win32
+		{7C154D76-C9F7-42A0-B268-D77B1941F0B3}.Profilling|x86.Build.0 = Release|Win32
+		{7C154D76-C9F7-42A0-B268-D77B1941F0B3}.Release|x64.ActiveCfg = Release|x64
+		{7C154D76-C9F7-42A0-B268-D77B1941F0B3}.Release|x64.Build.0 = Release|x64
+		{7C154D76-C9F7-42A0-B268-D77B1941F0B3}.Release|x86.ActiveCfg = Release|Win32
+		{7C154D76-C9F7-42A0-B268-D77B1941F0B3}.Release|x86.Build.0 = Release|Win32
+		{7C154D76-C9F7-42A0-B268-D77B1941F0B3}.TraceMemDebug|x64.ActiveCfg = Debug|x64
+		{7C154D76-C9F7-42A0-B268-D77B1941F0B3}.TraceMemDebug|x64.Build.0 = Debug|x64
+		{7C154D76-C9F7-42A0-B268-D77B1941F0B3}.TraceMemDebug|x86.ActiveCfg = Debug|Win32
+		{7C154D76-C9F7-42A0-B268-D77B1941F0B3}.TraceMemDebug|x86.Build.0 = Debug|Win32
+		{7C154D76-C9F7-42A0-B268-D77B1941F0B3}.TraceMemLDDebug|x64.ActiveCfg = Debug|x64
+		{7C154D76-C9F7-42A0-B268-D77B1941F0B3}.TraceMemLDDebug|x64.Build.0 = Debug|x64
+		{7C154D76-C9F7-42A0-B268-D77B1941F0B3}.TraceMemLDDebug|x86.ActiveCfg = Debug|Win32
+		{7C154D76-C9F7-42A0-B268-D77B1941F0B3}.TraceMemLDDebug|x86.Build.0 = Debug|Win32
+		{7C154D76-C9F7-42A0-B268-D77B1941F0B3}.TraceMemLDRelease|x64.ActiveCfg = Release|x64
+		{7C154D76-C9F7-42A0-B268-D77B1941F0B3}.TraceMemLDRelease|x64.Build.0 = Release|x64
+		{7C154D76-C9F7-42A0-B268-D77B1941F0B3}.TraceMemLDRelease|x86.ActiveCfg = Release|Win32
+		{7C154D76-C9F7-42A0-B268-D77B1941F0B3}.TraceMemLDRelease|x86.Build.0 = Release|Win32
+		{7C154D76-C9F7-42A0-B268-D77B1941F0B3}.TraceMemRelease|x64.ActiveCfg = Release|x64
+		{7C154D76-C9F7-42A0-B268-D77B1941F0B3}.TraceMemRelease|x64.Build.0 = Release|x64
+		{7C154D76-C9F7-42A0-B268-D77B1941F0B3}.TraceMemRelease|x86.ActiveCfg = Release|Win32
+		{7C154D76-C9F7-42A0-B268-D77B1941F0B3}.TraceMemRelease|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
