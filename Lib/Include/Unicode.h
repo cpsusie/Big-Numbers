@@ -32,7 +32,9 @@
 
 #define tstring std::wstring
 
-#else
+#define ttoi std::wcstol
+
+#else // !unicode
 
 #define tfilebuf    filebuf
 #define tistream    istream
@@ -56,7 +58,9 @@
 
 #define tstring std::string
 
-#endif
+#define ttoi std::stoi
+
+#endif // unicode
 
 #define EMPTYSTRING _T("")
 
