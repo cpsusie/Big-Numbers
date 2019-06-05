@@ -803,6 +803,9 @@
     <ClCompile Include="PackedArrayIterator.cpp">
       <Filter>Source Files\Collection</Filter>
     </ClCompile>
+    <ClCompile Include="SHA256.cpp">
+      <Filter>Source Files\Misc</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\Array.h">
@@ -1129,6 +1132,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\BCDArray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\SHA256.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

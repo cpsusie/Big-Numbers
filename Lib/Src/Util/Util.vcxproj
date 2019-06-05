@@ -830,6 +830,7 @@
     <ClInclude Include="..\..\Include\Scanner.h" />
     <ClInclude Include="..\..\Include\Semaphore.h" />
     <ClInclude Include="..\..\Include\Set.h" />
+    <ClInclude Include="..\..\Include\SHA256.h" />
     <ClInclude Include="..\..\Include\SocketStream.h" />
     <ClInclude Include="..\..\Include\SourcePosition.h" />
     <ClInclude Include="..\..\Include\Stack.h" />
@@ -1057,6 +1058,7 @@
     <ClCompile Include="searchenv.cpp" />
     <ClCompile Include="Semaphore.cpp" />
     <ClCompile Include="SetFileMode.cpp" />
+    <ClCompile Include="SHA256.cpp" />
     <ClCompile Include="Sleep.cpp" />
     <ClCompile Include="SocketErrorMessage.cpp" />
     <ClCompile Include="SocketStream.cpp" />
