@@ -1834,21 +1834,21 @@ CheckHeader:
 
     const UINT64 positionCount = m_positionIndex.getEntryIterator().getCount();
     if(m_info.m_totalPositions != positionCount) {
-      verbose(_T("\nHeader.total position count = %lu != calculated number of positions = %I64u\n")
+      verbose(_T("\nHeader.total position count = %llu != calculated number of positions = %llu\n")
              ,m_info.m_totalPositions
              ,positionCount);
       headerOk = false;
     }
     const UINT64 undefinedPositionCount = m_positionIndex.getIteratorUndefinedEntries().getCount();
     if(m_info.m_undefinedPositions != undefinedPositionCount) {
-      verbose(_T("\nHeader.undefined position count = %lu != calculated number undefined of positions = %I64u\n")
+      verbose(_T("\nHeader.undefined position count = %llu != calculated number undefined of positions = %llu\n")
              ,m_info.m_undefinedPositions
              ,undefinedPositionCount);
       headerOk = false;
     }
     const UINT64 stalematePositionCount = m_positionIndex.getIteratorStalemateEntries().getCount();
     if(m_info.m_stalematePositions != stalematePositionCount) {
-      verbose(_T("\nHeader.stalemate position count = %lu != calculated number of stalemate positions = %I64u\n")
+      verbose(_T("\nHeader.stalemate position count = %llu != calculated number of stalemate positions = %llu\n")
              ,m_info.m_stalematePositions
              ,stalematePositionCount);
       headerOk = false;
@@ -1856,7 +1856,7 @@ CheckHeader:
     const PositionCount64 headerWinPositions  = m_info.getWinnerPositionCount();
     const UINT64          winnerPositionCount = m_positionIndex.getIteratorAllWinnerEntries().getCount();
     if(headerWinPositions.getTotal() != winnerPositionCount) {
-      verbose(_T("\nHeader.total winner positioncount = %lu != calculated number of total winner positions = %lu\n")
+      verbose(_T("\nHeader.total winner positioncount = %llu != calculated number of total winner positions = %llu\n")
              ,headerWinPositions.getTotal()
              ,winnerPositionCount);
       headerOk = false;

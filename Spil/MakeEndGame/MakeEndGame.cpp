@@ -75,9 +75,10 @@ void CurrentWork::handlePropertyChanged(const PropertyContainer *source, int id,
 
 void CurrentWork::update() {
   if(m_currentTablebase == NULL) {
-    updateMessageField(EMPTYSTRING);
+    updateMessageField(0, EMPTYSTRING);
   } else {
-    updateMessageField(_T(" - Currently working on %s - metric:%s")
+    updateMessageField(0
+                      ,_T(" - Currently working on %s - metric:%s")
                       ,m_currentTablebase->getName().cstr()
                       ,EndGameKeyDefinition::getMetricName().cstr()
                       );
