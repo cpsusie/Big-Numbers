@@ -423,8 +423,16 @@ public:
   inline void getHMS(int &hour, int &minute, int &second, int &millisecond) const {
     getTime().getHMS(hour, minute, second, millisecond);
   }
+  inline Timestamp &setDate(const Date &d) {
+    m_factor = getFactor(d, getTime());
+    return *this;
+  }
   inline Date getDate() const {
     return Date((int)(m_factor/Time::getMaxFactor()));
+  }
+  inline Timestamp &setTime(const Time &t) {
+    m_factor = getFactor(getDate(), t);
+    return *this;
   }
   inline Time getTime() const {
     return Time((int)(m_factor % Time::getMaxFactor()));
