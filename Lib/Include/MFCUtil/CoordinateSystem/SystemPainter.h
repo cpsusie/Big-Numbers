@@ -11,10 +11,13 @@ private:
   AbstractAxisPainter *m_axisPainter[2];
   CPoint               m_origin; // Point inside vp.toRectangle where axes cross. Space is left for textdata to the axes
   CFont               *m_font, *m_oldFont;
-
+  bool                 m_mouseMode;
   void  makeSpaceForText();
   CRect getToRectangle() const;
   AbstractAxisPainter *createAxisPainter(AxisIndex axis, const AxisType type);
+  inline void setMouseMode(bool mouseMode) {
+    m_mouseMode = mouseMode;
+  }
 public:
   SystemPainter(CCoordinateSystem *system);
   ~SystemPainter();
@@ -26,6 +29,9 @@ public:
   CSize                getTextExtent(const String &str);
   inline String        getValueText(AxisIndex axis, double value) const {
     return m_axisPainter[axis]->getValueText(value);
+  }
+  inline bool isMouseMode() const {
+    return m_mouseMode;
   }
   inline String        getPointText(const Point2D &p) const {
     return format(_T("%s,%s"), getValueText(XAXIS_INDEX, p.x).cstr(), getValueText(YAXIS_INDEX,p.y).cstr());

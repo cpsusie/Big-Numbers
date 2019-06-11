@@ -12,7 +12,7 @@ private:
   bool                          m_isPainting;    // if false, all paint operations are invisible. Used to find maxTextOffset in constructor
   DoubleInterval                m_dataRange;     // X- or Y-interval in fromRectangle
   Viewport2D                   *m_vp;            // Not allocated locally
-  mutable String                m_doubleFormat;
+  mutable String                m_doubleFormatPaint, m_doubleFormatMouse;
   CPen                          m_solidPen, m_gridPen;
   DoubleInterval                m_xRectInterval; // X-interval in toRectangle
   DoubleInterval                m_yRectInterval; // Y-interval in toRectangle
@@ -52,19 +52,17 @@ protected:
   double getVisibleDataRangeLength() const {
     return m_max - m_min;
   }
-;
   double getMin()  const {
     return m_min;
   }
-
   double getMax()  const {
     return m_max;
   }
-
   double getStep() const {
     return m_step;
   }
 
+  bool isMouseMode() const;
   const  IntervalTransformation &getTransformation() const;
   virtual void paintXData() = 0;
   virtual void paintYData() = 0;

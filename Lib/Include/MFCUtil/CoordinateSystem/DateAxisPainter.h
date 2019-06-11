@@ -9,6 +9,7 @@ private:
   static double firstInSecond(double factor, int step);
   static double firstInMinute(double factor, int step);
   static double firstInHour(  double factor, int step);
+  static double firstInDay(   double factor, int step);
   static double firstInMonth( double factor, int step);
   static double firstInYear(  double factor, int step);
   TimeComponent m_timeComponent;

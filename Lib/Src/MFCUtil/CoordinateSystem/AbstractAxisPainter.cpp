@@ -28,6 +28,10 @@ const AxisAttribute &AbstractAxisPainter::getAxisAttr() const {
   return m_systemPainter.getAxisAttr(getAxisIndex());
 }
 
+bool AbstractAxisPainter::isMouseMode() const {
+  return m_systemPainter.isMouseMode();
+}
+
 const IntervalTransformation &AbstractAxisPainter::getTransformation() const {
   return (getAxisIndex() == XAXIS_INDEX) ? m_vp->getXTransformation() : m_vp->getYTransformation();
 }
@@ -132,22 +136,29 @@ double AbstractAxisPainter::next(double x) const {
 }
 
 const TCHAR *AbstractAxisPainter::getDoubleFormat() const {
-  if(m_doubleFormat.length() == 0) {
-    double magnitude         = max(fabs(m_max),fabs(m_min));
-    int    e                 = (int)floor(log10(magnitude));
-    int    significantDigits = (int)ceil(log10(magnitude/(m_max-m_min))) + 1;
-    int    decimals          = max(significantDigits - e + 1,0);
-    if(fabs(e) < 2 && significantDigits < 3) {
-      m_doubleFormat = _T("%lg");
+  if(m_doubleFormatPaint.length() == 0) {
+    const int e = getExpo10(getStep());
+
+//    double magnitude         = max(fabs(m_max),fabs(m_min));
+//    int    e                 = (int)floor(log10(magnitude));
+//    int    significantDigits = (int)ceil(log10(magnitude/(m_max-m_min))) + 1;
+//    int    decimals          = max(significantDigits - e + 1,0);
+//    if((fabs(e) < 2) && (significantDigits < 3)) {
+//      m_doubleFormatPaint = _T("%lg");
+//      m_doubleFormatMouse = m_doubleFormatPaint;
+//    } else
+    if((-4 <= e) && (e <= 0)) {
+      UINT decimals = -e;
+      m_doubleFormatPaint = format(_T("%%.%ulf"),decimals);
+      m_doubleFormatMouse = format(_T("%%.%ulf"),decimals+1);
     } else {
-      if(e < -4 || e > 5) {
-        m_doubleFormat = format(_T("%%.%dle"),significantDigits);
-      } else {
-        m_doubleFormat = format(_T("%%.%dlf"),decimals);
-      }
+      const double magnitude   = max(fabs(m_max),fabs(m_min));
+      const int    significantDigits = (int)ceil(log10(magnitude/(m_max-m_min)))+1;
+      m_doubleFormatPaint = format(_T("%%.%dle"),significantDigits);
+      m_doubleFormatMouse = format(_T("%%.%dle"),significantDigits+1);
     }
   }
-  return m_doubleFormat.cstr();
+  return isMouseMode() ? m_doubleFormatMouse.cstr() : m_doubleFormatPaint.cstr();
 }
 
 void AbstractAxisPainter::paintXAxis() {

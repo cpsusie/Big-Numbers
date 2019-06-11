@@ -4,8 +4,7 @@
 
 class NormalDistributionAxisPainter : public AbstractAxisPainter {
 private:
-  mutable String m_doubleFormat;
-  static const String startDecadeFormat;
+  static const String s_startDecadeFormat;
 
   int getDecadeCount() const;
 

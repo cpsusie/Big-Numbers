@@ -14,6 +14,7 @@ SystemPainter::SystemPainter(CCoordinateSystem *system)
 , m_font(          NULL  )
 , m_oldFont(       NULL  )
 , m_origin(0,0)
+, m_mouseMode(false)
 {
   m_axisPainter[0] = m_axisPainter[1] = NULL;
   getViewport().setScale(getScale(getAxisAttr(XAXIS_INDEX).getType()), X_AXIS);
@@ -44,12 +45,14 @@ void SystemPainter::paint() {
   dc->FillSolidRect(r, m_system.m_backgroundColor);
 //  dc->Rectangle(&r);
 
+  setMouseMode(false);
   FOR_BOTH_AXIS(i) {
     m_axisPainter[i]->paintAxisData();
   }
   FOR_BOTH_AXIS(i) {
     m_axisPainter[i]->paintAxis();
   }
+  setMouseMode(true);
 }
 
 Viewport2D &SystemPainter::getViewport() {

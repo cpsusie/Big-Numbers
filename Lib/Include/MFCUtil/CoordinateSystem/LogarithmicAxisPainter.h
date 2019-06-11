@@ -5,7 +5,7 @@
 class LogarithmicAxisPainter : public AbstractAxisPainter {
 private:
   String m_doubleFormat;
-  static const String startDecadeFormat;
+  static const String s_startDecadeFormat;
 
   String getStartDecadeText(double d);
   void paintXDataMultipleDecades();

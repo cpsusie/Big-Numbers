@@ -2,7 +2,7 @@
 #include <MFCUtil/Coordinatesystem/SystemPainter.h>
 #include <MFCUtil/Coordinatesystem/LogarithmicAxisPainter.h>
 
-const String LogarithmicAxisPainter::startDecadeFormat = _T("%.0lg");
+const String LogarithmicAxisPainter::s_startDecadeFormat = _T("%.0lg");
 
 LogarithmicAxisPainter::LogarithmicAxisPainter(SystemPainter &systemPainter, AxisIndex axis) : AbstractAxisPainter(systemPainter,axis) {
   doInvisiblePaint();
@@ -36,7 +36,7 @@ String LogarithmicAxisPainter::getStartDecadeText(double d) {
   if(fabs(log10(d)) < 5) {
     return format(getDoubleFormat(),d);
   } else {
-    return format(startDecadeFormat.cstr(),d);
+    return format(s_startDecadeFormat.cstr(),d);
   }
 }
 
@@ -79,7 +79,7 @@ void LogarithmicAxisPainter::paintXDataMultipleDecades() {
         z = cw.cy;
         tmp = getStartDecadeText(t);
       } else {
-        tmp = getValueText(i);
+        tmp = format(_T("%u"), i);
       }
       if(i == 1) {
         xTextOut(xt, tmp, z);
@@ -121,7 +121,7 @@ void LogarithmicAxisPainter::paintYDataMultipleDecades() {
         z = -cw.cx;
         tmp = getStartDecadeText(t);
       } else {
-        tmp = getValueText(i);
+        tmp = format(_T("%u"), i);
       }
       if(i == 1) {
         yTextOut(yt, tmp, z);

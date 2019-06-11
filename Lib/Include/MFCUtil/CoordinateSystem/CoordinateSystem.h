@@ -57,7 +57,6 @@ private:
   PointArray &transformPoint2DArray(PointArray &dst, const Point2DArray &src) const;
   void        createSystemPainter();
   void        destroySystemPainter();
-public:
 
 public:
   CCoordinateSystem();
@@ -193,7 +192,6 @@ public:
   inline bool hasAxisGridLines(AxisIndex axis) const {
     return getAxisFlags(axis, AXIS_SHOW_GRIDLINES);
   }
-
   Point2D getMouseToSystem(const CPoint &p) {
     return getTransformation().backwardTransform(p.x, p.y);
   }
