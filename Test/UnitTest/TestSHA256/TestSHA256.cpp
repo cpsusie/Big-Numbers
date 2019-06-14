@@ -7,14 +7,35 @@ namespace TestSHA256 {
 
 #include <UnitTestTraits.h>
 
+  static ByteArray convertToByteArray(const String &hexStr) {
+    const size_t n = hexStr.length();
+    ByteArray result(n/2);
+    for(size_t j = 0; j < n;) {
+      switch(n-j) {
+      case 1 :
+        { const BYTE byte = (BYTE)ttoi(substr(hexStr, j, 1).cstr(), nullptr, 16);
+          result.append(byte);
+          j++;
+        }
+        break;
+      default:
+        { const BYTE byte = (BYTE)ttoi(substr(hexStr, j, 2).cstr(), nullptr, 16);
+          result.append(byte);
+          j += 2;
+        }
+        break;
+      }
+    }
+    return result;
+  }
+
   TEST_CLASS(TesSHA256) {
 
     void TestHashCodes(const TCHAR *method, const char **inputLines, const char **expectedOutput, size_t n) {
-      for(int i = 0; i < n; i++) {
-        const String line = inputLines[i];
+      for(size_t i = 0; i < n; i++) {
+        const String line = inputLines[i], expected = expectedOutput[i];
         SHA256HashCode code;
-        const String hashCode = SHA256().getHashCode(code, line).toString(false);
-        String expected = expectedOutput[i];
+        const String hashCode = SHA256::getHashCode(code, convertToByteArray(line)).toString(false);
         if(hashCode != expected) {
           OUTPUT(_T("Error in %s. line:\"%s\". Gives hashcode:\"%s\". Expected \"%s\"."), method, line.cstr(), hashCode.cstr(), expected.cstr());
           verify(false);

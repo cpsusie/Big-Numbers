@@ -6,6 +6,7 @@
  */
 
 #include "CompactArray.h"
+#include <ByteMemoryStream.h>
 
 class Block512Bit {
 private:
@@ -15,7 +16,7 @@ public:
     assert(index < ARRAYSIZE(m_v));
     return m_v[index];
   }
-  inline UINT32 &operator[](int index) {
+  inline UINT32 &operator[](UINT index) {
     assert(index < ARRAYSIZE(m_v));
     return m_v[index];
   }
@@ -47,7 +48,7 @@ public:
     assert(index < ARRAYSIZE(m_v));
     return m_v[index];
   }
-  inline UINT32 &operator[](int index) {
+  inline UINT32 &operator[](UINT index) {
     assert(index < ARRAYSIZE(m_v));
     return m_v[index];
   }
@@ -59,26 +60,11 @@ std::wostream &operator<<(std::wostream &out, const SHA256HashCode &code);
 
 class SHA256 {
 private:
-  static const UINT32         s_K[64];         // Constants used in hash algorithm
-  static const UINT32         s_hash0[8];      // Initial value of m_hashedMsg, before shuffling bits with 512-bit blocks (m_msg[0..N-1])
-  ByteArray                   m_bytes;         // Plain and padded message bytes
-  CompactArray<Block512Bit>   m_msg;           // Message to be hashed
-  SHA256HashCode              m_hashedMsg;     // Hashed message
-  UINT64                      m_bitCount;      // Message length in bits
-
-  void clear();                                // Clear all working vectors and variables.
-  void storeHexStr(   const String    &hexStr);
-  void storeByteArray(const ByteArray &a     );
-
-  int    calcPadding() const;                  // Calculate the required padding of the message. Return the required padding.
-  void   padBytes();                           // Pad m_bytes according to the specification.
-  size_t parseBytes();                         // Parse m_bytes into 512-bit blocks split up into UINT32's. and return number of blocks
-  const SHA256HashCode &computeHash();         // Do the bit-shuffling
-
+  static const UINT32 s_K[64];    // Constants used in hash algorithm
+  static const UINT32 s_hash0[8]; // Initial value of m_hashedMsg, before shuffling bits with 512-bit blocks
 public:
-  SHA256() {
-    clear();
+  static SHA256HashCode &getHashCode(SHA256HashCode &dst, ByteInputStream &s);
+  static SHA256HashCode &getHashCode(SHA256HashCode &dst, const ByteArray &a) {
+    return getHashCode(dst, ByteMemoryInputStream(a));
   }
-  SHA256HashCode &getHashCode(SHA256HashCode &dst, const String    &hexStr);
-  SHA256HashCode &getHashCode(SHA256HashCode &dst, const ByteArray &a     );
 };
