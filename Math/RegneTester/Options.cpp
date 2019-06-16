@@ -91,5 +91,8 @@ void Options::load(ByteInputStream &s) {
 }
 
 String Options::getMD5Password() const {
-  return MD5Context().digest(m_password);
+  USES_CONVERSION;
+  char *apasswrd = T2A(m_password.cstr());
+  MD5HashCode code;
+  return MD5::getHashCode(code, ByteArray((BYTE*)apasswrd, strlen(apasswrd))).toString(false);
 }
