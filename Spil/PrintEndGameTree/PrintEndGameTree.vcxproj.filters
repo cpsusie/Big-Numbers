@@ -774,6 +774,18 @@
     <ClCompile Include="..\Chess\MoveResultArray.cpp">
       <Filter>Source Files\Game\EndGames</Filter>
     </ClCompile>
+    <ClCompile Include="..\Chess\IndexedMapNewComp.cpp">
+      <Filter>Source Files\Game\EndGames</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Chess\IndexedMapOldComp.cpp">
+      <Filter>Source Files\Game\EndGames</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Chess\EndgameTablebaseNewComp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Chess\EndgameTablebaseOldComp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\Chess\res\BlackMark.bmp">

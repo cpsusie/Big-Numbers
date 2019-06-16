@@ -441,7 +441,7 @@ int _tmain(int argc, TCHAR **argv) {
       throwException(_T("This is not an endgame"));
       break;
     case TABLEBASE_POSITION:
-      _tprintf(_T("Gametree for %s:[%s]\n"), fileName.cstr(), game.toFENString().cstr());
+      _tprintf(_T("Gametree for %s:[%s]\n"), fileName.cstr(), game.getKey().toFENString().cstr());
       GameTree tree(game, backReference, verbose);
       break;
     }

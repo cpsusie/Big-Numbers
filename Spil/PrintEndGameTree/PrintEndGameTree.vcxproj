@@ -477,6 +477,8 @@
     <ClCompile Include="..\Chess\EndGameKRRRK.cpp" />
     <ClCompile Include="..\Chess\EndGameResult.cpp" />
     <ClCompile Include="..\Chess\EndGameTablebase.cpp" />
+    <ClCompile Include="..\Chess\EndgameTablebaseNewComp.cpp" />
+    <ClCompile Include="..\Chess\EndgameTablebaseOldComp.cpp" />
     <ClCompile Include="..\Chess\EndGameTablebaseRegister.cpp" />
     <ClCompile Include="..\Chess\EndGameUtil.cpp" />
     <ClCompile Include="..\Chess\FieldInfo.cpp" />
@@ -491,6 +493,8 @@
     <ClCompile Include="..\Chess\GameUpdate.cpp" />
     <ClCompile Include="..\Chess\GameUtil.cpp" />
     <ClCompile Include="..\Chess\IndexedMap.cpp" />
+    <ClCompile Include="..\Chess\IndexedMapNewComp.cpp" />
+    <ClCompile Include="..\Chess\IndexedMapOldComp.cpp" />
     <ClCompile Include="..\Chess\LDABlock.cpp" />
     <ClCompile Include="..\Chess\LDAEnter.cpp" />
     <ClCompile Include="..\Chess\LDAEnterCapture.cpp" />
