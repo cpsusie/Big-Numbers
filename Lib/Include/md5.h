@@ -26,22 +26,48 @@
 #pragma once
 
 #include "MyString.h"
+#include <ByteMemoryStream.h>
 
-class MD5Context {
+class MD5HashCode {
 private:
-  unsigned long m_state[4];        // state (ABCD)
-  unsigned long m_count[2];        // number of bits, modulo 2^64 (lsb first)
-  unsigned char m_buffer[64];      // input buffer
-  char          m_strDigest[33];   // result-String
+  BYTE m_v[16];
+  inline void init(const BYTE *v) {
+    memcpy(m_v, v, sizeof(m_v));
+  }
+  inline void reset() {
+    memset(m_v, 0, sizeof(m_v));
+  }
 public:
-  MD5Context();
-  void init();
-  void update(const unsigned char *input, UINT inputLen);
-  void update(const          char *input, UINT inputLen) {
-    update((const unsigned char*)input, inputLen);
-  };
-  void final(unsigned char digest[16]);
-  char *strFinal(char *dst);       // Returns the digest result in a String containing hexadecimal digits
-  char *digest(const char *src);   // Digests a String (src) and returns the result
-  String digest(const String &s);
+  inline MD5HashCode() {
+    reset();
+  }
+  inline MD5HashCode(const MD5HashCode &src) {
+    init(src.m_v);
+  }
+  inline MD5HashCode(const BYTE *v) {
+    init(v);
+  }
+  inline void clear(const BYTE *v = NULL) {
+    if (v) init(v); else reset();
+  }
+  inline const BYTE &operator[](UINT index) const {
+    assert(index < ARRAYSIZE(m_v));
+    return m_v[index];
+  }
+  inline BYTE &operator[](UINT index) {
+    assert(index < ARRAYSIZE(m_v));
+    return m_v[index];
+  }
+  String toString(bool upper = true) const;
+};
+
+std::ostream  &operator<<(std::ostream  &out, const MD5HashCode &code);
+std::wostream &operator<<(std::wostream &out, const MD5HashCode &code);
+
+class MD5 {
+public:
+  static MD5HashCode &getHashCode(MD5HashCode &dst, ByteInputStream &s);
+  static MD5HashCode &getHashCode(MD5HashCode &dst, const ByteArray &a) {
+    return getHashCode(dst, ByteMemoryInputStream(a));
+  }
 };

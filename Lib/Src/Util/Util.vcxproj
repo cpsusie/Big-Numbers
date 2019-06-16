@@ -801,7 +801,7 @@
     <ClInclude Include="..\..\Include\MathUtil.h" />
     <ClInclude Include="..\..\Include\MatrixDimension.h" />
     <ClInclude Include="..\..\Include\MatrixTemplate.h" />
-    <ClInclude Include="..\..\Include\md5.h" />
+    <ClInclude Include="..\..\Include\MD5.h" />
     <ClInclude Include="..\..\Include\MedianCut.h" />
     <ClInclude Include="..\..\Include\MP3Player.h" />
     <ClInclude Include="..\..\Include\MyAssert.h" />
@@ -1009,7 +1009,7 @@
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="MarginFile.cpp" />
     <ClCompile Include="MatchParanthes.cpp" />
-    <ClCompile Include="md5c.cpp" />
+    <ClCompile Include="MD5.cpp" />
     <ClCompile Include="MedianCut.cpp" />
     <ClCompile Include="Menu.cpp" />
     <ClCompile Include="MersenneTwister32.cpp" />

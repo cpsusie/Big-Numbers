@@ -598,9 +598,6 @@
     <ClCompile Include="GetProcessMemoryCounters.cpp">
       <Filter>Source Files\Process</Filter>
     </ClCompile>
-    <ClCompile Include="md5c.cpp">
-      <Filter>Source Files\Misc</Filter>
-    </ClCompile>
     <ClCompile Include="Language.cpp">
       <Filter>Source Files\Process</Filter>
     </ClCompile>
@@ -804,6 +801,9 @@
       <Filter>Source Files\Collection</Filter>
     </ClCompile>
     <ClCompile Include="SHA256.cpp">
+      <Filter>Source Files\Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="MD5.cpp">
       <Filter>Source Files\Misc</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1042,9 +1042,6 @@
     <ClInclude Include="..\..\Include\MarginFile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\md5.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\NullOutputStream.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1135,6 +1132,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\SHA256.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\MD5.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

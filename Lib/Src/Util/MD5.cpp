@@ -23,16 +23,39 @@
 #include "pch.h"
 
 #include <md5.h>
-#include <String.h>
+
+using namespace std;
+
+ostream  &operator<<(ostream  &out, const MD5HashCode &code) {
+  USES_ACONVERSION;
+  const bool uppercase = (out.flags() & ios_base::uppercase) != 0;
+  const String tmp = code.toString(uppercase);
+
+  return out << TSTR2ASTR(tmp.cstr());
+}
+
+wostream &operator<<(wostream &out, const MD5HashCode &code) {
+  USES_WCONVERSION;
+  const bool uppercase = (out.flags() & ios_base::uppercase) != 0;
+  const String tmp = code.toString(uppercase);
+
+  return out << TSTR2WSTR(tmp.cstr());
+}
+
+String MD5HashCode::toString(bool upper) const {
+  const TCHAR *fstr = upper ? _T("%02X") : _T("%02x");
+  String result;
+  for (size_t i = 0; i < ARRAYSIZE(m_v); i++) {
+    result += format(fstr, m_v[i]);
+  }
+  return result;
+}
 
 /* POINTER defines a generic pointer type */
-typedef unsigned char *POINTER;
+typedef BYTE *POINTER;
 
-/* UINT2 defines a two byte word */
-typedef unsigned short int UINT2;
-
-/* UINT4 defines a four byte word */
-typedef unsigned long int UINT4;
+/* UINT16 defines a two byte word */
+typedef unsigned short UINT16;
 
 //#define USE_MD5_MEMCPY
 
@@ -64,32 +87,28 @@ static void *MD5_memset(POINTER output, int value, UINT length) {
 
 #endif
 
-// Encodes input (UINT4) into output (unsigned char). Assumes length is
-// a multiple of 4.
-static void Encode(unsigned char *output, UINT4 *input, UINT length) {
-  UINT i, j;
-
-  for (i = 0, j = 0; j < length; i++, j += 4) {
-    output[j  ] = (unsigned char)(input[i] & 0xff);
-    output[j+1] = (unsigned char)((input[i] >> 8) & 0xff);
-    output[j+2] = (unsigned char)((input[i] >> 16) & 0xff);
-    output[j+3] = (unsigned char)((input[i] >> 24) & 0xff);
+// Encodes input (UINT32) into output (BYTE). 
+// Assumes length is a multiple of 4.
+static void Encode(BYTE *output, UINT32 *input, UINT length) {
+  for(UINT i = 0, j = 0; j < length; i++, j += 4) {
+    output[j  ] = (BYTE)( input[i]        & 0xff);
+    output[j+1] = (BYTE)((input[i] >> 8 ) & 0xff);
+    output[j+2] = (BYTE)((input[i] >> 16) & 0xff);
+    output[j+3] = (BYTE)((input[i] >> 24) & 0xff);
   }
 }
 
-// Decodes input (unsigned char) into output (UINT4). Assumes length is
-// a multiple of 4.
-static void Decode(UINT4 *output, const unsigned char *input, UINT length) {
-  UINT i, j;
-
-  for (i = 0, j = 0; j < length; i++, j += 4)
-    output[i] =   ((UINT4)input[j  ])
-               | (((UINT4)input[j+1]) <<  8)
-               | (((UINT4)input[j+2]) << 16)
-               | (((UINT4)input[j+3]) << 24);
+// Decodes input (BYTE) into output (UINT32).
+// Assumes length is a multiple of 4.
+static void Decode(UINT32 *output, const BYTE *input, UINT length) {
+  for(UINT i = 0, j = 0; j < length; i++, j += 4)
+    output[i] =   ((UINT32)input[j  ])
+               | (((UINT32)input[j+1]) <<  8)
+               | (((UINT32)input[j+2]) << 16)
+               | (((UINT32)input[j+3]) << 24);
 }
 
-static unsigned char PADDING[64] = {
+static BYTE PADDING[64] = {
   0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
@@ -107,22 +126,22 @@ static unsigned char PADDING[64] = {
 // FF, GG, HH, and II transformations for rounds 1, 2, 3, and 4.
 // Rotation is separate from addition to prevent recomputation.
 #define FF(a, b, c, d, x, s, ac) { \
- (a) += F ((b), (c), (d)) + (x) + (UINT4)(ac); \
+ (a) += F ((b), (c), (d)) + (x) + (UINT32)(ac); \
  (a) = ROTATE_LEFT ((a), (s)); \
  (a) += (b); \
   }
 #define GG(a, b, c, d, x, s, ac) { \
- (a) += G ((b), (c), (d)) + (x) + (UINT4)(ac); \
+ (a) += G ((b), (c), (d)) + (x) + (UINT32)(ac); \
  (a) = ROTATE_LEFT ((a), (s)); \
  (a) += (b); \
   }
 #define HH(a, b, c, d, x, s, ac) { \
- (a) += H ((b), (c), (d)) + (x) + (UINT4)(ac); \
+ (a) += H ((b), (c), (d)) + (x) + (UINT32)(ac); \
  (a) = ROTATE_LEFT ((a), (s)); \
  (a) += (b); \
   }
 #define II(a, b, c, d, x, s, ac) { \
- (a) += I ((b), (c), (d)) + (x) + (UINT4)(ac); \
+ (a) += I ((b), (c), (d)) + (x) + (UINT32)(ac); \
  (a) = ROTATE_LEFT ((a), (s)); \
  (a) += (b); \
   }
@@ -146,8 +165,8 @@ static unsigned char PADDING[64] = {
 #define S44 21
 
 // MD5 basic transformation. Transforms state based on block
-static void MD5Transform(UINT4 state[4], const unsigned char block[64]) {
-  UINT4 a = state[0], b = state[1], c = state[2], d = state[3], x[16];
+static void MD5Transform(UINT32 state[4], const BYTE block[64]) {
+  UINT32 a = state[0], b = state[1], c = state[2], d = state[3], x[16];
 
   Decode(x, block, 64);
 
@@ -232,8 +251,18 @@ static void MD5Transform(UINT4 state[4], const unsigned char block[64]) {
   MD5_memset((POINTER)x, 0, sizeof(x));
 }
 
-// MD5 initialization. Begins an MD5 operation, writing a new context.
-void MD5Context::init() {
+class MD5Context {
+private:
+  UINT32 m_state[4];        // state (ABCD)
+  UINT32 m_count[2];        // number of bits, modulo 2^64 (lsb first)
+  BYTE   m_buffer[64];      // input buffer
+public:
+  MD5Context();
+  void update(const BYTE *input, UINT inputLen);
+  MD5HashCode &final(MD5HashCode &code);
+};
+
+MD5Context::MD5Context() {
   m_count[0] = m_count[1] = 0;
   // Load magic initialization constants.
   m_state[0] = 0x67452301;
@@ -242,38 +271,35 @@ void MD5Context::init() {
   m_state[3] = 0x10325476;
 }
 
-MD5Context::MD5Context() {
-  init();
-}
-
 // MD5 block update operation. Continues an MD5 message-digest
 // operation, processing another message block, and updating the
 // context.
-void MD5Context::update(const unsigned char *input, UINT inputLen) {
+void MD5Context::update(const BYTE *input, UINT inputLen) {
   UINT i, index, partLen;
 
   // Compute number of bytes mod 64
   index = (UINT)((m_count[0] >> 3) & 0x3F);
 
   // update number of bits
-  if((m_count[0] += ((UINT4)inputLen << 3)) < ((UINT4)inputLen << 3))
+  if((m_count[0] += ((UINT32)inputLen << 3)) < ((UINT32)inputLen << 3)) {
     m_count[1]++;
-  m_count[1] += ((UINT4)inputLen >> 29);
+  }
+  m_count[1] += ((UINT32)inputLen >> 29);
 
   partLen = 64 - index;
 
   // Transform as many times as possible.*/
-  if (inputLen >= partLen) {
+  if(inputLen >= partLen) {
     MD5_memcpy((POINTER)&m_buffer[index], (POINTER)input, partLen);
     MD5Transform(m_state, m_buffer);
 
-    for (i = partLen; i + 63 < inputLen; i += 64)
+    for(i = partLen; i + 63 < inputLen; i += 64) {
       MD5Transform(m_state, &input[i]);
-
+    }
     index = 0;
-  }
-  else
+  } else {
     i = 0;
+  }
 
   // Buffer remaining input
   MD5_memcpy((POINTER)&m_buffer[index], (POINTER)&input[i],inputLen-i);
@@ -281,8 +307,8 @@ void MD5Context::update(const unsigned char *input, UINT inputLen) {
 
 // MD5 finalization. Ends an MD5 message-digest operation, writing the
 // the message digest and zeroizing the context.
-void MD5Context::final(unsigned char digest[16]) {
-  unsigned char bits[8];
+MD5HashCode &MD5Context::final(MD5HashCode &code) {
+  BYTE bits[8];
   UINT index, padLen;
 
   // Save number of bits
@@ -297,38 +323,20 @@ void MD5Context::final(unsigned char digest[16]) {
   update(bits, 8);
 
   // Store state in digest
-  Encode(digest, m_state, 16);
+  Encode(&code[0], m_state, 16);
 
   // Zeroize sensitive information.
   MD5_memset((POINTER)this, 0, sizeof(MD5Context));
+  return code;
 }
 
-// End an MD5 message-digest operation, converting the message to a String
-// returned in str, containing hexadecimal digits
-char *MD5Context::strFinal(char *dst) {
-  unsigned char digest[16];
-  UINT i;
+MD5HashCode &MD5::getHashCode(MD5HashCode &dst, ByteInputStream &s) { // static
+  intptr_t len;
+  BYTE     buffer[1024];
 
-  final(digest);
-  for(i = 0; i < 16; i++)
-    sprintf(&dst[2*i],"%02x", digest[i]);
-  return dst;
-}
-
-/* Digests a String (src) and returns the result */
-char *MD5Context::digest(const char *src) {
-  init();
-  UINT length = (UINT)strlen(src);
-  update(src, length);
-  return strFinal(m_strDigest);
-}
-
-#include <comdef.h>
-#include <atlconv.h>
-
-String MD5Context::digest(const String &s) {
-  USES_CONVERSION;
-  const char *src = T2A(s.cstr());
-  char *result = digest(src);
-  return result;
+  MD5Context context;
+  while((len = s.getBytes(buffer, sizeof(buffer))) > 0) {
+    context.update(buffer, (UINT)len);
+  }
+  return context.final(dst);
 }
