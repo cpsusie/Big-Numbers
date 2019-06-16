@@ -25,7 +25,10 @@ void CPasswordDlg::OnOK() {
   UpdateData();
 
   try {
-    const String md5 = MD5Context().digest((LPCTSTR)m_password);
+    USES_CONVERSION;
+    char *apasswrd = T2A((LPCTSTR)m_password);
+    MD5HashCode md5code;
+    const String md5 = MD5::getHashCode(md5code, ByteArray((BYTE*)apasswrd, strlen(apasswrd))).toString(false);
     if(md5 == md5Password) {
       __super::OnOK();
     } else {
