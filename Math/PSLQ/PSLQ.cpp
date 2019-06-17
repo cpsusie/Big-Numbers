@@ -3,7 +3,7 @@
 #include <Console.h>
 #include <Math/BigRealMatrix.h>
 
-// Implementation of PLSQ algorithm described at the following site:
+// Implementation of PSLQ algorithm described at the following site:
 // http://arminstraub.com/downloads/math/pslq.pdf
 
 // #define TEST_ROTATION
