@@ -472,10 +472,17 @@ void CIRemesDlg::OnFileExit() {
   EndDialog(IDOK);
 }
 
+static void setGrid(CCoordinateSystem &s, bool on) {
+  AxisAttribute &xattr = s.getAxisAttr(XAXIS_INDEX);
+  AxisAttribute &yattr = s.getAxisAttr(YAXIS_INDEX);
+  if(on) xattr.setFlags(AXIS_SHOW_GRIDLINES, 0); else xattr.setFlags(0, AXIS_SHOW_GRIDLINES);
+  if(on) yattr.setFlags(AXIS_SHOW_GRIDLINES, 0); else yattr.setFlags(0, AXIS_SHOW_GRIDLINES);
+}
+
 void CIRemesDlg::OnViewGrid() {
   const bool showGrid = toggleMenuItem(this, ID_VIEW_GRID);
-  m_coorSystemError.setGrid(showGrid);
-  m_coorSystemSpline.setGrid(showGrid);
+  setGrid(m_coorSystemError , showGrid);
+  setGrid(m_coorSystemSpline, showGrid);
   Invalidate(FALSE);
 }
 
@@ -856,32 +863,32 @@ bool CIRemesDlg::validateInput() {
     showWarning(_T("Name cannot be empty"));
     return false;
   }
-  if (m_xFrom > 0 || m_xTo < 0) {
+  if(m_xFrom > 0 || m_xTo < 0) {
     gotoEditBox(this, IDC_EDITXFROM);
     showWarning(_T("Domain must contain 0"));
     return false;
   }
-  if (m_xFrom >= m_xTo) {
+  if(m_xFrom >= m_xTo) {
     gotoEditBox(this, IDC_EDITXFROM);
     showWarning(_T("Invalid interval. from must be < to"));
     return false;
   }
-  if (m_M < 1) {
+  if(m_M < 1) {
     gotoEditBox(this, IDC_EDITM);
     showWarning(_T("M must be >= 1"));
     return false;
   }
-  if (m_K < 0) {
+  if(m_K < 0) {
     gotoEditBox(this, IDC_EDITK);
     showWarning(_T("K must be >= 0"));
     return false;
   }
-  if (m_M > m_MTo) {
+  if(m_M > m_MTo) {
     gotoEditBox(this, IDC_EDITM);
     showWarning(_T("M start > M end"));
     return false;
   }
-  if (m_K > m_KTo) {
+  if(m_K > m_KTo) {
     gotoEditBox(this, IDC_EDITK);
     showWarning(_T("K start > K end"));
     return false;
@@ -907,9 +914,7 @@ void CIRemesDlg::destroyThread() {
   if(hasDebugThread()) {
     m_debugThread->kill();
     SAFEDELETE(m_debugThread);
-    m_debugThread = NULL;
     SAFEDELETE(m_remes);
-    m_remes = NULL;
   }
 }
 

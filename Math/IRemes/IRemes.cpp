@@ -16,14 +16,29 @@ CIRemesApp::CIRemesApp() {
 CIRemesApp theApp;
 
 BOOL CIRemesApp::InitInstance() {
-    AfxEnableControlContainer();
+#pragma warning(disable : 4101)
 
+  INITCOMMONCONTROLSEX InitCtrls;
+  InitCtrls.dwSize = sizeof(InitCtrls);
+  // Set this to include all the common control classes you want to use
+  // in your application.
+  InitCtrls.dwICC = ICC_WIN95_CLASSES;
+  InitCommonControlsEx(&InitCtrls);
+
+  __super::InitInstance();
+  AfxEnableControlContainer();
+
+  try {
     CIRemesDlg dlg;
     m_pMainWnd = &dlg;
     INT_PTR nResponse = dlg.DoModal();
     if(nResponse == IDOK) {
     } else if(nResponse == IDCANCEL) {
     }
+  }
+  catch (Exception e) {
+    showException(e);
+  }
 
-    return FALSE;
+  return FALSE;
 }

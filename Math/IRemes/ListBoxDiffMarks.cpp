@@ -201,6 +201,26 @@ void CListBoxDiffMarks::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct) {
   dc.Detach();
 }
 
+void CListBoxDiffMarks::MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct) {
+  lpMeasureItemStruct->itemHeight = 16;
+}
+
+int CListBoxDiffMarks::CompareItem(LPCOMPAREITEMSTRUCT lpCompareItemStruct) {
+  return 0;
+}
+
+void CListBoxDiffMarks::DeleteItem(LPDELETEITEMSTRUCT  lpDeleteItemStruct) {
+  int i = 0;
+}
+
+int CListBoxDiffMarks::VKeyToItem(UINT nKey, UINT nIndex) {
+  return nIndex;
+}
+
+int  CListBoxDiffMarks::CharToItem(UINT nKey, UINT nIndex) {
+  return nIndex;
+}
+
 void CListBoxDiffMarks::fillSolidRect(CDC &dc, size_t i1, size_t i2, LPDRAWITEMSTRUCT lpDrawItemStruct, COLORREF color) {
   const CRect &lineRect = lpDrawItemStruct->rcItem;
   const int leftPos  = (int)i1 * m_charSize.cx;
