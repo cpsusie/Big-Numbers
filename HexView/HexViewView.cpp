@@ -216,7 +216,7 @@ CRect CHexViewView::updateSettings(CDC *dc) {
   m_maxTopLine        = max(m_lineCount - m_pageSize.cy, 0);
   m_topLine           = min(m_topLine, m_maxTopLine);
   m_maxCaret          = CPoint(m_pageSize.cx, m_pageSize.cy - 1);
-  m_maxCaret.x        = minMax(m_maxCaret.x, 0, (int)min(m_docSize, m_lineSize));
+  m_maxCaret.x        = minMax(m_maxCaret.x, (LONG)0, (LONG)min(m_docSize, m_lineSize));
   if(m_maxCaret.y >= m_lineCount) {
     m_maxCaret.y = (int)m_lineCount - 1;
   }
@@ -703,8 +703,8 @@ void CHexViewView::showCaret() {
     ShowCaret();
     m_caretVisible = true;
   }
-  m_caret.y = minMax(m_caret.y, 0, m_maxCaret.y);
-  m_caret.x = minMax(m_caret.x, 0, m_maxCaret.x);
+  m_caret.y = minMax(m_caret.y, 0l, m_maxCaret.y);
+  m_caret.x = minMax(m_caret.x, 0l, m_maxCaret.x);
 
   bool redraw = false;
   if(m_lineCount && (m_lastLineSize < m_lineSize) && (m_topLine + m_caret.y == m_lineCount-1)) {
@@ -713,7 +713,7 @@ void CHexViewView::showCaret() {
       isNewSelection();
       redraw = true;
     } else {
-      m_caret.x = minMax(m_caret.x, 0, m_lastLineSize - m_lineOffset);
+      m_caret.x = minMax((int)m_caret.x, 0, m_lastLineSize - m_lineOffset);
       redraw = isNewSelection();
     }
   } else {

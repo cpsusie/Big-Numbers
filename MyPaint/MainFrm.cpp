@@ -592,7 +592,7 @@ void CMainFrame::popTool() {
 }
 
 void CMainFrame::pushTool(DrawTool *tool) {
-  if(hasDrawTool() && getCurrentDrawTool()->getType() == INSERTIMAGETOOL && tool->getType() == INSERTIMAGETOOL) {
+  if(hasDrawTool() && (getCurrentDrawTool()->getType() == INSERTIMAGETOOL) && (tool->getType() == INSERTIMAGETOOL)) {
     popTool();
   }
   TRACE_NEW(tool);
@@ -747,12 +747,9 @@ bool CMainFrame::checkSave() { // return true to continue user action
     return true;
   }
   switch(MessageBox( _T("       Save changes"),_T("Save"),MB_YESNOCANCEL | MB_ICONQUESTION)) {
-  case IDYES   :
-    return onFileSave();
-  case IDNO    :
-    return true;
-  case IDCANCEL:
-    return false;
+  case IDYES   : return onFileSave();
+  case IDNO    : return true;
+  case IDCANCEL: return false;
   }
   return false;
 }
@@ -769,8 +766,8 @@ void CMainFrame::ajourRedoUndo() {
 void CMainFrame::scroll(int dx, int dy) {
   const CPoint topLeft   = getView()->GetScrollPosition();
   const CPoint maxScroll = getMaxScroll();
-  const int newX = minMax(topLeft.x+dx,0,maxScroll.x);
-  const int newY = minMax(topLeft.y+dy,0,maxScroll.y);
+  const int newX = minMax(topLeft.x+dx,0l,maxScroll.x);
+  const int newY = minMax(topLeft.y+dy,0l,maxScroll.y);
   getView()->ScrollToPosition(CPoint(newX,newY));
 }
 

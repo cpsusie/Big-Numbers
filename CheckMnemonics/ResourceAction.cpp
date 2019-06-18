@@ -344,7 +344,7 @@ int ResourceParser::reduceAction(unsigned int prod) {
     break;
   case 472: /* number -> NUMBER */
 #line 851 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
-    { m_leftSide = newNode( getPos(1), NUMBER, ttoi(getText()));       }
+    { m_leftSide = newNode( getPos(1), NUMBER, _ttoi(getText()));      }
 #line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 473: /* identifier -> IDENTIFIER */
@@ -374,7 +374,7 @@ void ResourceParser::verror(const SourcePosition &pos, const TCHAR *format, va_l
   m_tree.vAddError(&pos,format,argptr);
 }
 
-int ResourceParser::ttoi(const TCHAR *s) { // static
+int ResourceParser::_ttoi(const TCHAR *s) { // static
   int result;
   if(_tcsncicmp(s,_T("0x"),2) == 0) {
     _stscanf(s+2,_T("%x"), &result);

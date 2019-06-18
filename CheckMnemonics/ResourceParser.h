@@ -11,11 +11,11 @@
 class ResourceParser : public LRparser {
 private:
   static const ParserTables *ResourceTables;
+  static int    _ttoi(const TCHAR *s);
+  static String stripQuotes(const String &s);
 public:
   ResourceParser(ParserTree &tree, ResourceLex *lex = NULL) : m_tree(tree), LRparser(*ResourceTables,lex) {}
   void  verror(const SourcePosition &pos, const TCHAR *format,va_list argptr);
-  static int    ttoi(const TCHAR *s);
-  static String stripQuotes(const String &s);
   static const ParserTables &getTables() {
     return *ResourceTables;
   }

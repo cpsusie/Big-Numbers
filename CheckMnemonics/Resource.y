@@ -7,11 +7,11 @@
 class ResourceParser : public LRparser {
 private:
   static const ParserTables *ResourceTables;
+  static int    _ttoi(const TCHAR *s);
+  static String stripQuotes(const String &s);
 public:
   ResourceParser(ParserTree &tree, ResourceLex *lex = NULL) : m_tree(tree), LRparser(*ResourceTables,lex) {}
   void  verror(const SourcePosition &pos, const TCHAR *format,va_list argptr);
-  static int    ttoi(const TCHAR *s);
-  static String stripQuotes(const String &s);
   static const ParserTables &getTables() {
     return *ResourceTables;
   }
@@ -808,10 +808,10 @@ typelibDefinition           : number TYPELIB fileName
                             ;
 
 afxDialogLayout             : resourceId AFX_DIALOG_LAYOUT BEGIN layoutInfo END
-							              ;
+				            ;
 
-layoutInfo					        : numberList
-							              ;
+layoutInfo			        : numberList
+			                ;
 
 fileName                    : string
                             | name
@@ -841,14 +841,14 @@ rectangleSpec               : number COMMA number COMMA number COMMA number
 sizeSpec                    : number COMMA number
                             ;
 
-resourceId					        : identifierOrNumber
-							              ;
+resourceId					: identifierOrNumber
+							;
 
 identifierOrNumber          : identifier
                             | number
                             ;
 
-number                      : NUMBER                                            { $$ = newNode( getPos(1), NUMBER, ttoi(getText()));       }
+number                      : NUMBER                                            { $$ = newNode( getPos(1), NUMBER, _ttoi(getText()));      }
                             ;
 
 identifier                  : IDENTIFIER                                        { $$ = newNode( getPos(1), IDENTIFIER, getText());         }
@@ -872,7 +872,7 @@ void ResourceParser::verror(const SourcePosition &pos, const TCHAR *format, va_l
   m_tree.vAddError(&pos,format,argptr);
 }
 
-int ResourceParser::ttoi(const TCHAR *s) { // static
+int ResourceParser::_ttoi(const TCHAR *s) { // static
   int result;
   if(_tcsncicmp(s,_T("0x"),2) == 0) {
     _stscanf(s+2,_T("%x"), &result);
