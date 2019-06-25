@@ -252,6 +252,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestSHA256", "TestSHA256\Te
 		{DA57B57F-CFF3-4620-87AE-69D3598B492D} = {DA57B57F-CFF3-4620-87AE-69D3598B492D}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestMD5", "TestMD5\TestMD5.vcxproj", "{35C2178F-86C4-4047-912D-978C94507A3F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DA57B57F-CFF3-4620-87AE-69D3598B492D} = {DA57B57F-CFF3-4620-87AE-69D3598B492D}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -1614,6 +1619,34 @@ Global
 		{6B1C3F48-00AB-4606-9798-D5DE2F7D66D7}.TraceMemRelease|x64.Build.0 = Release|x64
 		{6B1C3F48-00AB-4606-9798-D5DE2F7D66D7}.TraceMemRelease|x86.ActiveCfg = Release|Win32
 		{6B1C3F48-00AB-4606-9798-D5DE2F7D66D7}.TraceMemRelease|x86.Build.0 = Release|Win32
+		{35C2178F-86C4-4047-912D-978C94507A3F}.Debug|x64.ActiveCfg = Debug|x64
+		{35C2178F-86C4-4047-912D-978C94507A3F}.Debug|x64.Build.0 = Debug|x64
+		{35C2178F-86C4-4047-912D-978C94507A3F}.Debug|x86.ActiveCfg = Debug|Win32
+		{35C2178F-86C4-4047-912D-978C94507A3F}.Debug|x86.Build.0 = Debug|Win32
+		{35C2178F-86C4-4047-912D-978C94507A3F}.LDDebug|x64.ActiveCfg = Debug|x64
+		{35C2178F-86C4-4047-912D-978C94507A3F}.LDDebug|x64.Build.0 = Debug|x64
+		{35C2178F-86C4-4047-912D-978C94507A3F}.LDDebug|x86.ActiveCfg = Debug|Win32
+		{35C2178F-86C4-4047-912D-978C94507A3F}.LDDebug|x86.Build.0 = Debug|Win32
+		{35C2178F-86C4-4047-912D-978C94507A3F}.LDRelease|x64.ActiveCfg = Release|x64
+		{35C2178F-86C4-4047-912D-978C94507A3F}.LDRelease|x64.Build.0 = Release|x64
+		{35C2178F-86C4-4047-912D-978C94507A3F}.LDRelease|x86.ActiveCfg = Release|Win32
+		{35C2178F-86C4-4047-912D-978C94507A3F}.LDRelease|x86.Build.0 = Release|Win32
+		{35C2178F-86C4-4047-912D-978C94507A3F}.Profiling|x64.ActiveCfg = Profiling|x64
+		{35C2178F-86C4-4047-912D-978C94507A3F}.Profiling|x64.Build.0 = Profiling|x64
+		{35C2178F-86C4-4047-912D-978C94507A3F}.Profiling|x86.ActiveCfg = Profiling|Win32
+		{35C2178F-86C4-4047-912D-978C94507A3F}.Profiling|x86.Build.0 = Profiling|Win32
+		{35C2178F-86C4-4047-912D-978C94507A3F}.Release|x64.ActiveCfg = Release|x64
+		{35C2178F-86C4-4047-912D-978C94507A3F}.Release|x64.Build.0 = Release|x64
+		{35C2178F-86C4-4047-912D-978C94507A3F}.Release|x86.ActiveCfg = Release|Win32
+		{35C2178F-86C4-4047-912D-978C94507A3F}.Release|x86.Build.0 = Release|Win32
+		{35C2178F-86C4-4047-912D-978C94507A3F}.TraceMemLDRelease|x64.ActiveCfg = Release|x64
+		{35C2178F-86C4-4047-912D-978C94507A3F}.TraceMemLDRelease|x64.Build.0 = Release|x64
+		{35C2178F-86C4-4047-912D-978C94507A3F}.TraceMemLDRelease|x86.ActiveCfg = Release|Win32
+		{35C2178F-86C4-4047-912D-978C94507A3F}.TraceMemLDRelease|x86.Build.0 = Release|Win32
+		{35C2178F-86C4-4047-912D-978C94507A3F}.TraceMemRelease|x64.ActiveCfg = Release|x64
+		{35C2178F-86C4-4047-912D-978C94507A3F}.TraceMemRelease|x64.Build.0 = Release|x64
+		{35C2178F-86C4-4047-912D-978C94507A3F}.TraceMemRelease|x86.ActiveCfg = Release|Win32
+		{35C2178F-86C4-4047-912D-978C94507A3F}.TraceMemRelease|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
