@@ -197,6 +197,7 @@ public:
   }
 
   String getPointText(const Point2D &p) const;
+  String getValueText(AxisIndex axis, double value) const;
 
   afx_msg void OnPaint();
 

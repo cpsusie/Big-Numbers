@@ -287,3 +287,7 @@ void CCoordinateSystem::setRetainAspectRatio(bool retainAspectRatio) {
 String CCoordinateSystem::getPointText(const Point2D &p) const {
   return (m_systemPainter == NULL) ? EMPTYSTRING : m_systemPainter->getPointText(p);
 }
+
+String CCoordinateSystem::getValueText(AxisIndex axis, double value) const {
+  return (m_systemPainter == NULL) ? EMPTYSTRING : m_systemPainter->getValueText(axis, value);
+}
