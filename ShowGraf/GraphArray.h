@@ -19,8 +19,6 @@ private:
   GraphItem &getItem(size_t index) {
     return (*this)[index];
   }
-  void removePoint(size_t index);
-  BitSet findPointsBelongingToGraph(const Graph *g) const;
 public:
   GraphArray() {
     m_selected = -1;
@@ -30,7 +28,9 @@ public:
   void select(intptr_t i);
   void add(Graph *g);
   void addPoint(MoveablePoint *p);
-  void addPointArray(const MoveablePointArray &pa);
+  // if removeOldOfSameType, old points, belonging to same graph and with same type will be removed
+  // before the new points are added
+  void addPointArray(const MoveablePointArray &pa, bool removeOldOfSameType);
   void remove(size_t index);
   void clear();
   void refresh();

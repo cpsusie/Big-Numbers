@@ -131,12 +131,10 @@ void GraphArray::remove(size_t index) {
     unselect();
   }
   GraphItem &item = getItem(index);
-  BitSet pointIndexSet = findPointsBelongingToGraph(item.m_graph);
+  const BitSet pointIndexSet = m_pointArray.findPointsBelongingToGraph(item.m_graph);
   SAFEDELETE(item.m_graph);
   __super::removeIndex(index);
-  for(Iterator<size_t> it = pointIndexSet.getReverseIterator(); it.hasNext();) {
-    removePoint(it.next());
-  }
+  m_pointArray.removePointSet(pointIndexSet);
   calculateDataRange();
 
   if(index < size()) {
@@ -150,25 +148,8 @@ void GraphArray::addPoint(MoveablePoint *p) {
   m_pointArray.add(p);
 }
 
-void GraphArray::addPointArray(const MoveablePointArray &pa) {
-  m_pointArray.addAll(pa);
-}
-
-void GraphArray::removePoint(size_t index) {
-  MoveablePoint *p = m_pointArray[index];
-  m_pointArray.remove(index);
-  delete p;
-}
-
-BitSet GraphArray::findPointsBelongingToGraph(const Graph *g) const {
-  BitSet result(m_pointArray.size() + 1);
-  const size_t n = m_pointArray.size();
-  for(size_t i = 0; i < n; i++) {
-    if(&m_pointArray[i]->getGraph() == g) {
-      result.add(i);
-    }
-  }
-  return result;
+void GraphArray::addPointArray(const MoveablePointArray &pa, bool removeOldOfSameType) {
+  m_pointArray.addAll(pa, removeOldOfSameType);
 }
 
 void GraphArray::calculateDataRange() {
@@ -185,9 +166,6 @@ void GraphArray::clear() {
     SAFEDELETE(getItem(i).m_graph);
   }
   __super::clear();
-  for(size_t i = 0; i < m_pointArray.size(); i++) {
-    delete m_pointArray[i];
-  }
   m_pointArray.clear();
 }
 

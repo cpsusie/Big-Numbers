@@ -44,21 +44,3 @@ void GraphItem::paint(CCoordinateSystem &cs, CFont &buttonFont, bool selected) c
   paintButton(dc, selected);
   dc.SelectObject(oldFont);
 }
-
-void MoveablePoint::paint(CCoordinateSystem &cs) {
-  const int precision = 5;
-  Viewport2D &vp = cs.getViewport();
-  if(m_graph.isVisible()) {
-    vp.setClipping(true);
-    const Point2D p(m_range.getMinX(), m_range.getMinY());
-    String text;
-    switch(m_showFlags) {
-    case SHOWXCOORDINATE    : text = ::toString(p.x, precision); break;
-    case SHOWYCOORDINATE    : text = ::toString(p.y, precision); break;
-    case SHOWBOTHCOORDINATES:
-    default                 : text = p.toString(precision);      break;
-    }
-    vp.TextOut(m_location, text, m_graph.getParam().getColor());
-    vp.setClipping(false);
-  }
-}

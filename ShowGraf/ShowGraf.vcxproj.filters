@@ -156,6 +156,12 @@
     <ClCompile Include="MouseTool.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MoveablePoint.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MoveablePointArray.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DegreeDlg.h">
@@ -267,6 +273,12 @@
       <Filter>Source Files\DiffEquationGraph\Include</Filter>
     </ClInclude>
     <ClInclude Include="MouseTool.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MoveablePoint.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MoveablePointArray.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -105,7 +105,7 @@ MoveablePointArray GraphZeroesResult::getMoveablePointArray() const {
   const size_t n = m_zeroes.size();
   MoveablePointArray result(n);
   for(size_t i = 0; i < n; i++) {
-    result.add(new MoveablePoint(getGraph(), Point2D(m_zeroes[i],0), SHOWXCOORDINATE));
+    result.add(new MoveablePoint(&getGraph(), MPT_ROOT, Point2D(m_zeroes[i],0), SHOWXCOORDINATE));
   }
   return result;
 }
@@ -120,7 +120,7 @@ String GraphZeroesResult::toString(const TCHAR *name) const {
 MoveablePointArray GraphZeroesResultArray::getMoveablePointArray() const {
   MoveablePointArray result;
   for(size_t i = 0; i < size(); i++) {
-    result.addAll((*this)[i].getMoveablePointArray());
+    result.addAll((*this)[i].getMoveablePointArray(), false);
   }
   return result;
 }
@@ -146,15 +146,18 @@ String GraphZeroesResultArray::toString() const {
 MoveablePointArray GraphExtremaResult::getMoveablePointArray() const {
   const size_t n = m_extrema.size();
   MoveablePointArray result(n);
+  const MoveablePointType pointType = (getExtremaType() == EXTREMA_TYPE_MAX)
+                                    ? MPT_MAXIMUM
+                                    : MPT_MINIMUM;
   for(size_t i = 0; i < n; i++) {
-    result.add(new MoveablePoint(getGraph(), m_extrema[i]));
+    result.add(new MoveablePoint(&getGraph(), pointType, m_extrema[i]));
   }
   return result;
 }
 
 String GraphExtremaResult::toString(const TCHAR *name) const {
   return format(_T("%s of %s:%s")
-                ,getExtremaTypeStr()
+                ,getExtremaTypeName().cstr()
                 ,name ? name : m_graph.getParam().getDisplayName().cstr()
                 ,m_extrema.toString().cstr()
                );
@@ -163,14 +166,14 @@ String GraphExtremaResult::toString(const TCHAR *name) const {
 MoveablePointArray GraphExtremaResultArray::getMoveablePointArray() const {
   MoveablePointArray result;
   for(size_t i = 0; i < size(); i++) {
-    result.addAll((*this)[i].getMoveablePointArray());
+    result.addAll((*this)[i].getMoveablePointArray(), false);
   }
   return result;
 }
 
 String GraphExtremaResultArray::toString() const {
   if(isEmpty()) {
-    return format(_T("No %s found"), getExtremaTypeStr());
+    return format(_T("No %s found"), getExtremaTypeName().cstr());
   }
   if(size() == 1) {
     return __super::toString(_T("\n"));
@@ -178,7 +181,7 @@ String GraphExtremaResultArray::toString() const {
   StringArray result;
   for(size_t i = 0; i < size(); i++) {
     const GraphExtremaResult &er   = (*this)[i];
-    const String             name = format(_T("%s.%s")
+    const String              name = format(_T("%s.%s")
                                           ,m_graph.getParam().getDisplayName().cstr()
                                           ,er.getGraph().getParam().getDisplayName().cstr());
     result.add(er.toString(name.cstr()));

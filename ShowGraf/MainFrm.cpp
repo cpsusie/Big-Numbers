@@ -671,7 +671,7 @@ LRESULT CMainFrame::OnMsgSearchZeroesInInterval(WPARAM wp, LPARAM lp) {
     if(result.isEmpty()) {
       showInformation(result.toString().cstr());
     } else {
-      getDoc()->getGraphArray().addPointArray(result.getMoveablePointArray());
+      getDoc()->getGraphArray().addPointArray(result.getMoveablePointArray(), false);
       Invalidate(FALSE);
     }
   }
@@ -688,7 +688,7 @@ void CMainFrame::showExtremaInInterval(WPARAM wp, LPARAM lp, ExtremaType extrema
     if(result.isEmpty()) {
       showInformation(result.toString().cstr());
     } else {
-      getDoc()->getGraphArray().addPointArray(result.getMoveablePointArray());
+      getDoc()->getGraphArray().addPointArray(result.getMoveablePointArray(), true);
       Invalidate(FALSE);
     }
   }

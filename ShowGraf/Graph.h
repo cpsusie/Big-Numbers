@@ -1,43 +1,10 @@
 #pragma once
 
 #include <float.h>
-#include <MFCUtil/Coordinatesystem/Coordinatesystem.h>
 #include "GraphParameters.h"
+#include "MoveablePointArray.h"
 
 #define EMPTY_DISTANCE 1e40
-
-class Graph;
-
-#define SHOWXCOORDINATE 0x1
-#define SHOWYCOORDINATE 0x2
-#define SHOWBOTHCOORDINATES (SHOWXCOORDINATE|SHOWYCOORDINATE)
-
-class MoveablePoint : public CoordinateSystemObject {
-private:
-  const Graph    &m_graph;
-  const DataRange m_range;
-  const BYTE      m_showFlags;
-  Point2D         m_location;
-public:
-  MoveablePoint(const Graph &graph, const Point2D &point, BYTE showFlags = SHOWBOTHCOORDINATES)
-    : m_graph(graph)
-    , m_range(point)
-    , m_showFlags(showFlags)
-    , m_location(point) {
-  }
-  inline const Graph &getGraph() const {
-    return m_graph;
-  }
-  inline void setLocation(const Point2D &p) {
-    m_location = p;
-  }
-  void paint(CCoordinateSystem &cs);
-  const DataRange &getDataRange() const {
-    return m_range;
-  }
-};
-
-typedef CompactArray<MoveablePoint*> MoveablePointArray;
 
 class GraphZeroesResult {
 private:
@@ -77,7 +44,7 @@ typedef enum {
  ,EXTREMA_TYPE_MIN
 } ExtremaType;
 
-inline const TCHAR *extremaTypeToStr(ExtremaType type) {
+inline String toString(ExtremaType type) {
   return (type == EXTREMA_TYPE_MAX) ? _T("Maxima") : _T("Minima");
 }
 
@@ -103,8 +70,8 @@ public:
     return m_extrema;
   }
   MoveablePointArray getMoveablePointArray() const;
-  inline const TCHAR *getExtremaTypeStr() const {
-    return extremaTypeToStr(getExtremaType());
+  inline String getExtremaTypeName() const {
+    return ::toString(getExtremaType());
   }
   String toString(const TCHAR *name=NULL) const;
 };
@@ -125,8 +92,8 @@ public:
   inline ExtremaType getExtremaType() const {
     return m_extremaType;
   }
-  inline const TCHAR *getExtremaTypeStr() const {
-    return extremaTypeToStr(getExtremaType());
+  inline String getExtremaTypeName() const {
+    return ::toString(getExtremaType());
   }
   MoveablePointArray getMoveablePointArray() const;
   String toString() const;
