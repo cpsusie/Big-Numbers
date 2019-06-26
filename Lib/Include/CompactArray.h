@@ -494,7 +494,7 @@ public:
     if(m_size) {
       const T *p = m_array;
       result += (p++)->toString();
-      for(size_t i = m_size-1; i--;) {
+      for(const T *end = &last(); p <= end;) {
         result += delimiter;
         result += (p++)->toString();
       }
@@ -508,7 +508,7 @@ public:
     if(m_size) {
       const T *p = m_array;
       result += (*(p++))->toString();
-      for(size_t i = m_size-1; i--;) {
+      for(const T *end = &last(); p <= end;) {
         result += delimiter;
         result += (*(p++))->toString();
       }
@@ -522,7 +522,7 @@ public:
     if(m_size) {
       const T *p = m_array;
       result += ::toString(*(p++));
-      for(size_t i = m_size-1; i--;) {
+      for(const T *end = &last(); p <= end;) {
         result += delimiter;
         result += ::toString(*(p++));
       }
@@ -591,8 +591,7 @@ template<class S, class T, class D=StreamDelimiter> S &operator<<(S &out, const 
   const size_t n        = a.size();
   out << elemSize << delimiter << n << delimiter;
   if(n) {
-    const T *e = a.getBuffer();
-    for(size_t i = (size_t)n; i--;) {
+    for(const T *e = a.getBuffer(), *end = &a.last();  e <= end;) {
       out << *(e++) << delimiter;
     }
   }
