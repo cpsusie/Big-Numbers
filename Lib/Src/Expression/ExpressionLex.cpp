@@ -68,8 +68,8 @@ namespace Expr {
 // DFA State  19 [accepting, line  80 <return POW;>]
 // DFA State  20 [accepting, line  94 <return NE;>]
 // DFA State  21 [accepting, line  86 <return AND;>]
-// DFA State  22 [accepting, line  50 <{ int i;             const SourcePosition startpos>]
-// DFA State  23 [accepting, line  65 <{ int i;             while(i = input()) {         >]
+// DFA State  22 [accepting, line  50 <{ int i;   const SourcePosition startpos = getPos(>]
+// DFA State  23 [accepting, line  65 <{ int i;   while(i = input()) {     if(i < 0) {   >]
 // DFA State  24 [accepting, line  91 <return LE;>]
 // DFA State  25 [accepting, line  95 <return NE;>]
 // DFA State  26 [accepting, line  89 <return EQ;>]
@@ -361,32 +361,32 @@ int ExpressionLex::getNextLexeme() {
       case 22:
 #line 50 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
         { int i;
-                    const SourcePosition startpos = getPos();
-                    while(i = input()) {
-                      if(i < 0) {
-                        flushBuf();  /* Discard lexeme.     */
-                      } else if(i == '*' && look(1) == '/') {
-                        input();
-                        break;        /* Recognized comment. */
-                      }
-                    }
-                    if(i == 0) {
-                      error(startpos,_T("End of file in comment\n") );
-                    }
-                  }
+          const SourcePosition startpos = getPos();
+          while(i = input()) {
+            if(i < 0) {
+              flushBuf();  /* Discard lexeme.     */
+            } else if(i == '*' && look(1) == '/') {
+              input();
+              break;        /* Recognized comment. */
+            }
+          }
+          if(i == 0) {
+            error(startpos,_T("End of file in comment\n") );
+          }
+        }
 #line 94 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 23:
 #line 65 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
         { int i;
-                    while(i = input()) {
-                      if(i < 0) {
-                        flushBuf();  /* Discard lexeme. */
-                      } else if(i == '\n') {
-                        break;
-                      }
-                    }
-                  }
+          while(i = input()) {
+            if(i < 0) {
+              flushBuf();  /* Discard lexeme. */
+            } else if(i == '\n') {
+              break;
+            }
+          }
+        }
 #line 94 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 24:
@@ -444,67 +444,67 @@ typedef struct {
 } KeyWord;
 
 static const KeyWord keywordtable[] = {
- _T("ABS")       ,ABS
-,_T("ACOS")      ,ACOS
-,_T("ACOSH")     ,ACOSH
-,_T("ACOT")      ,ACOT
-,_T("ACSC")      ,ACSC
-,_T("AND")       ,AND
-,_T("ASEC")      ,ASEC
-,_T("ASIN")      ,ASIN
-,_T("ASINH")     ,ASINH
-,_T("ATAN")      ,ATAN
-,_T("ATAN2")     ,ATAN2
-,_T("ATANH")     ,ATANH
-,_T("BINOMIAL")  ,BINOMIAL
-,_T("CEIL")      ,CEIL
-,_T("CHI2DENS")  ,CHI2DENS
-,_T("CHI2DIST")  ,CHI2DIST
-,_T("LINCGAMMA") ,LINCGAMMA
-,_T("COS")       ,COS
-,_T("COSH")      ,COSH
-,_T("COT")       ,COT
-,_T("CSC")       ,CSC
-,_T("ERF")       ,ERF
-,_T("EXP")       ,EXP
-,_T("EXP10")     ,EXP10
-,_T("EXP2")      ,EXP2
-,_T("FAC")       ,FAC
-,_T("FLOOR")     ,FLOOR
-,_T("GAMMA")     ,GAMMA
-,_T("GAUSS")     ,GAUSS
-,_T("HYPOT")     ,HYPOT
-,_T("IF")        ,IIF
-,_T("INVERF")    ,INVERF
-,_T("LN")        ,LN
-,_T("LOG10")     ,LOG10
-,_T("LOG2")      ,LOG2
-,_T("MAX")       ,MAX
-,_T("MIN")       ,MIN
-,_T("MOD")       ,MOD
-,_T("NORM")      ,NORM
-,_T("NORMRAND")  ,NORMRAND
+ _T("ABS"       ),ABS
+,_T("ACOS"      ),ACOS
+,_T("ACOSH"     ),ACOSH
+,_T("ACOT"      ),ACOT
+,_T("ACSC"      ),ACSC
+,_T("AND"       ),AND
+,_T("ASEC"      ),ASEC
+,_T("ASIN"      ),ASIN
+,_T("ASINH"     ),ASINH
+,_T("ATAN"      ),ATAN
+,_T("ATAN2"     ),ATAN2
+,_T("ATANH"     ),ATANH
+,_T("BINOMIAL"  ),BINOMIAL
+,_T("CEIL"      ),CEIL
+,_T("CHI2DENS"  ),CHI2DENS
+,_T("CHI2DIST"  ),CHI2DIST
+,_T("LINCGAMMA" ),LINCGAMMA
+,_T("COS"       ),COS
+,_T("COSH"      ),COSH
+,_T("COT"       ),COT
+,_T("CSC"       ),CSC
+,_T("ERF"       ),ERF
+,_T("EXP"       ),EXP
+,_T("EXP10"     ),EXP10
+,_T("EXP2"      ),EXP2
+,_T("FAC"       ),FAC
+,_T("FLOOR"     ),FLOOR
+,_T("GAMMA"     ),GAMMA
+,_T("GAUSS"     ),GAUSS
+,_T("HYPOT"     ),HYPOT
+,_T("IF"        ),IIF
+,_T("INVERF"    ),INVERF
+,_T("LN"        ),LN
+,_T("LOG10"     ),LOG10
+,_T("LOG2"      ),LOG2
+,_T("MAX"       ),MAX
+,_T("MIN"       ),MIN
+,_T("MOD"       ),MOD
+,_T("NORM"      ),NORM
+,_T("NORMRAND"  ),NORMRAND
 ,_T("NORMRANDOM"),NORMRAND
-,_T("NORMRND")   ,NORMRAND
-,_T("NOT")       ,NOT
-,_T("OR")        ,OR
-,_T("POLY")      ,POLY
-,_T("PROBIT")    ,PROBIT
-,_T("PRODUCT")   ,INDEXEDPRODUCT
-,_T("RAND")      ,RAND
-,_T("RANDOM")    ,RAND
-,_T("ROOT")      ,ROOT
-,_T("RND")       ,RAND
-,_T("SEC")       ,SEC
-,_T("SIGN")      ,SIGN
-,_T("SIN")       ,SIN
-,_T("SINH")      ,SINH
-,_T("SQR")       ,SQR
-,_T("SQRT")      ,SQRT
-,_T("SUM")       ,INDEXEDSUM
-,_T("TAN")       ,TAN
-,_T("TANH")      ,TANH
-,_T("TO")        ,TO
+,_T("NORMRND"   ),NORMRAND
+,_T("NOT"       ),NOT
+,_T("OR"        ),OR
+,_T("POLY"      ),POLY
+,_T("PROBIT"    ),PROBIT
+,_T("PRODUCT"   ),INDEXEDPRODUCT
+,_T("RAND"      ),RAND
+,_T("RANDOM"    ),RAND
+,_T("ROOT"      ),ROOT
+,_T("RND"       ),RAND
+,_T("SEC"       ),SEC
+,_T("SIGN"      ),SIGN
+,_T("SIN"       ),SIN
+,_T("SINH"      ),SINH
+,_T("SQR"       ),SQR
+,_T("SQRT"      ),SQRT
+,_T("SUM"       ),INDEXEDSUM
+,_T("TAN"       ),TAN
+,_T("TANH"      ),TANH
+,_T("TO"        ),TO
 };
 
 typedef CompactStrIHashMap<ExpressionInputSymbol> HashMapType;

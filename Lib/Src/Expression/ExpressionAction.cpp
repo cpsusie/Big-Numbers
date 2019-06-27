@@ -96,9 +96,9 @@ int ExpressionParser::reduceAction(unsigned int prod) {
   case 27: /* unary -> LB boolExpr RB */
 #line 104 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.y"
     { m_leftSide = newNode( getPos(1), IIF
-                                                                    , getStackTop(1), newNode(getPos(1), NUMBER  , strtor("1",NULL))
-                                                                    , newNode(getPos(1), NUMBER  , strtor("0",NULL))
-                                                                    , NULL);                                      }
+        , getStackTop(1), newNode(getPos(1), NUMBER  , strtor("1",NULL))
+        , newNode(getPos(1), NUMBER  , strtor("0",NULL))
+        , NULL);                                      }
 #line 34 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
   case 28: /* conditionalExpr -> IIF LPAR boolExpr COMMA expr COMMA expr RPAR */
