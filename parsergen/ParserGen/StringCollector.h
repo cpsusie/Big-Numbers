@@ -23,11 +23,12 @@ public:
     ((String&)*this) = EMPTYSTRING;
   }
   void addChar(TCHAR ch);
-  inline TCHAR *getBuffer() {
+  inline const TCHAR *getBuffer() const {
     return cstr();
   }
   SourceText getSourceText(int lastSymbolLength);
   inline const SourcePositionWithName &getSourcePos() const {
     return m_startPos;
   }
+  static String trimIndent(const SourcePosition &startPos, const String &s);
 };

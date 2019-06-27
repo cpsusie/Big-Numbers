@@ -212,7 +212,7 @@ void GrammarParser::parseRightSide(int leftSide) {
     m_lex.collectEnd();
     SourceText tmp;
     m_lex.getCollected(tmp);
-    prod.m_actionBody.m_sourceText = trim(m_actionBody + tmp.m_sourceText);
+    prod.m_actionBody.m_sourceText = StringCollector::trimIndent(sourcePos, m_actionBody + tmp.m_sourceText);
     prod.m_actionBody.m_pos        = SourcePositionWithName(m_lex.getAbsoluteFileName(), sourcePos);
 /*
     printf("body:<%s> at line %d\n",

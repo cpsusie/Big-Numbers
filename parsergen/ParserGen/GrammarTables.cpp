@@ -200,15 +200,16 @@ void GrammarTables::print(MarginFile &output, Language language, bool useTableCo
 }
 
 ByteCount GrammarTables::printByteArray(MarginFile &output, const String &name, const ByteArray &ba, UINT bytesPerLine, const StringArray *linePrefix) const {
-  const UINT nBytes = (UINT)ba.size();
+  const UINT nBytes        = (UINT)ba.size();
+  const bool hasLinePrefix = (linePrefix != NULL);
   output.setLeftMargin(0);
   output.printf(_T("static const BYTE %s[%u] = {"), name.cstr(), nBytes);
   TCHAR *delim = _T(" ");
   output.setLeftMargin(2);
-  if(nBytes > bytesPerLine) {
+  if((nBytes > bytesPerLine) || !hasLinePrefix) {
     output.printf(_T("\n"));
   }
-  bool printLinePrefix = (linePrefix != NULL);
+  bool printLinePrefix = hasLinePrefix;
   size_t lineCount = 0;
   for(UINT i = 0; i < nBytes; i++, delim = _T(",")) {
     if(printLinePrefix && (lineCount < linePrefix->size())) {
@@ -218,7 +219,7 @@ ByteCount GrammarTables::printByteArray(MarginFile &output, const String &name, 
     output.printf(_T("%s0x%02x"),delim, ba[i]);
     if(((i % bytesPerLine) == (bytesPerLine-1)) && (i < (nBytes-1))) {
       output.printf(_T("\n"));
-      printLinePrefix = (linePrefix != NULL);
+      printLinePrefix = hasLinePrefix;
     }
   }
   output.setLeftMargin(0);

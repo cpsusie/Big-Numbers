@@ -355,7 +355,7 @@ AcceptAction *NFAparser::acceptString(int anchor) {
     m_lastAction = NULL;
   }
   action->m_pos        = m_scanner.getRulePosition();
-  action->m_sourceText = (TCHAR*)m_scanner.getInput();
+  action->m_sourceText = StringCollector::trimIndent(m_scanner.getInputPos(), (TCHAR*)m_scanner.getInput());
   action->m_anchor     = anchor;
 //  printf(_T("action:#line %d <%s>\n"), action->m_lineno, action->m_sourcetext.cstr());
   return action;

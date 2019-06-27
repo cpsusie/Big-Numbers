@@ -2,8 +2,10 @@
 #include <Math.h>
 #include "GrammarScanner.h"
 
-GrammarScanner::GrammarScanner(const String &fileName, int tabulatorSize) {
-  m_fileName         = fileName;
+GrammarScanner::GrammarScanner(const String &fileName, int tabSize)
+: m_fileName(fileName)
+, m_tabSize(tabSize)
+{
   m_absoluteFileName = FileNameSplitter(fileName).getAbsolutePath();
   m_input            = FOPEN(m_fileName, _T("r"));
   m_currentPos       = SourcePosition(0, 0);
@@ -12,7 +14,7 @@ GrammarScanner::GrammarScanner(const String &fileName, int tabulatorSize) {
   m_collecting       = false;
   m_debug            = false;
   m_ok               = true;
-  m_tabulatorSize    = tabulatorSize;
+
   nextLine();
 }
 
@@ -42,7 +44,7 @@ void GrammarScanner::advance() {
     if(*m_next != '\t') {
       m_currentPos.incrColumn();
     } else {
-      m_currentPos.incrColumn(m_tabulatorSize - m_currentPos.getColumn() % m_tabulatorSize);
+      m_currentPos.incrColumn(m_tabSize - m_currentPos.getColumn() % m_tabSize);
     }
     m_next++;
   }
@@ -85,22 +87,22 @@ done:
 
 Token GrammarScanner::parseName() {
   int i = 0;
-  TCHAR the_name[MAXNAMELEN + 1];
+  TCHAR name[MAXNAMELEN + 1];
 
-  while((isalnum(*m_next) || *m_next == '_') && i < ARRAYSIZE(the_name)) {
-    the_name[i++] = *m_next;
+  while((isalnum(*m_next) || *m_next == '_') && i < ARRAYSIZE(name)) {
+    name[i++] = *m_next;
     advance();
   }
-  if(i == ARRAYSIZE(the_name) ) {
+  if(i == ARRAYSIZE(name) ) {
     error(_T("Name too long. max:%d"), MAXNAMELEN);
     while(isalnum(*m_next) || *m_next == '_') {
       advance();
     }
     i--;
   }
-  the_name[i] = '\0';
+  name[i] = '\0';
 
-  return nameOrKeyWord(the_name);
+  return nameOrKeyWord(name);
 }
 
 void GrammarScanner::parseNumber() {

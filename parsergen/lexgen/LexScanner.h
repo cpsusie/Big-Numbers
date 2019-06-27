@@ -102,6 +102,9 @@ public:
   inline const _TUCHAR *getInput() const {
     return m_next;
   }
+  inline SourcePosition getInputPos() const {
+    return SourcePosition(m_ruleLineNo, (int)(m_next - m_collector.getBuffer()));
+  }
   inline UINT getLexeme() const {
     return m_lexeme;
   }

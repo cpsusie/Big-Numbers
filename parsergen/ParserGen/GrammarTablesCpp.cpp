@@ -115,7 +115,7 @@ void GrammarTables::printCpp(MarginFile &output, bool useTableCompression) const
   const ByteArray stateTypeMap = getCompressedStateSetAsByteArray();
 
   output.printf(comment1);
-  m_countTableBytes += printByteArray(output, _T("compressedSet"), stateTypeMap);
+  m_countTableBytes += printByteArray(output, _T("compressedSet"), stateTypeMap, 10);
   output.printf(_T("\n"));
 
   output.printf(comment2);

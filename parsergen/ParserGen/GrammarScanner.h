@@ -35,10 +35,11 @@ typedef enum {
 
 class GrammarScanner {
 private:
+  const String    m_fileName;
+  const int       m_tabSize;
   TCHAR           m_lineBuffer[256];
   StringCollector m_collector;
   bool            m_collecting;
-  String          m_fileName;
   String          m_absoluteFileName;
   SourcePosition  m_sourcePos;
   SourcePosition  m_currentPos;
@@ -50,7 +51,6 @@ private:
   FILE           *m_input;
   double          m_number;
   TCHAR           m_string[256];
-  int             m_tabulatorSize;
   void collectChar();
   void nextLine();
   void parseNumber();
@@ -58,10 +58,10 @@ private:
   void parseString();
   void advance();
 public:
-  GrammarScanner(const String &fileName, int tabulatorSize);
+  GrammarScanner(const String &fileName, int tabSize);
   virtual ~GrammarScanner();
   String getText();
-  double getNumber() const {
+  inline double getNumber() const {
     return m_number;
   }
   Token next();
@@ -70,23 +70,25 @@ public:
     m_collecting = false;
   }
   void getCollected(SourceText &sourceText);
-  unsigned int getLineNumber() const {
+  inline unsigned int getLineNumber() const {
     return m_sourcePos.getLineNumber();
   }
-  SourcePosition getSourcePos() const {
+  inline SourcePosition getSourcePos() const {
     return m_sourcePos;
   }
-  const String &getAbsoluteFileName() const {
+  inline const String &getAbsoluteFileName() const {
     return m_absoluteFileName;
+  }
+  inline int getTabSize() const {
+    return m_tabSize;
   }
   void error(_In_z_ _Printf_format_string_ TCHAR const * const format, ...);
   void error(const SourcePosition &pos, _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
   void warning(_In_z_ _Printf_format_string_ TCHAR const * const format, ...);
   void warning(const SourcePosition &pos, _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
-  bool ok() {
+  inline bool ok() {
     return m_ok;
   }
 };
 
 Token nameOrKeyWord(const TCHAR *name);
-
