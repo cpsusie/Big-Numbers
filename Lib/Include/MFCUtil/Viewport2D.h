@@ -112,7 +112,9 @@ public:
   bool        Rectangle(const Rectangle2DR &r);
   bool        Rectangle(double x1, double y1, double x2, double y2);
   void        FillSolidRect(const Rectangle2DR &r, COLORREF color);
-  void        TextOut( const Point2DP &p, const String &text, COLORREF color); // transparent background
+  // transparent background
+  // if boundsRect specified, the bound recangle of the written text is returned (can be used for selection)
+  void        TextOut( const Point2DP &p, const String &text, COLORREF color, CRect *boundsRect = NULL);
   void        clear(COLORREF color);
   CGdiObject *SelectObject(CGdiObject *object);
   CBitmap    *SelectObject(CBitmap    *bitmap);

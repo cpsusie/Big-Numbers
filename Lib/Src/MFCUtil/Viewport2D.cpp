@@ -169,13 +169,20 @@ void Viewport2D::FillSolidRect(const Rectangle2DR &r, COLORREF color) {
   m_dc->FillSolidRect(rect,color);
 }
 
-void Viewport2D::TextOut(const Point2DP &point, const String &text, COLORREF color) {
+void Viewport2D::TextOut(const Point2DP &point, const String &text, COLORREF color, CRect *boundsRect /* = NULL*/) {
   const int      oldMode  = m_dc->SetBkMode(TRANSPARENT);
   const COLORREF oldColor = m_dc->SetTextColor(color);
-  CPoint         p = forwardTransform(point);
+  const CPoint   p        = forwardTransform(point);
   m_dc->TextOut(p.x, p.y, text.cstr(), (int)text.length());
   m_dc->SetTextColor(oldColor);
   m_dc->SetBkMode(   oldMode );
+  if(boundsRect != NULL) {
+    const CSize size   = getTextExtent(*m_dc, text);
+    boundsRect->left   = p.x;
+    boundsRect->top    = p.y;
+    boundsRect->right  = boundsRect->left + size.cx;
+    boundsRect->bottom = boundsRect->top  + size.cy;
+  }
 }
 
 void Viewport2D::clear(COLORREF color) {
