@@ -11,15 +11,17 @@
 #define LIST_QUOTED                      0x0020
 #define LIST_VERTICALALIGN               0x0040
 #define LIST_HEXDUMP                     0x0080
-#define VERBOSE                          0x0100
+#define EXTENDNAME_WITH_CONVERTED        0x0100
+#define VERBOSE                          0x0200
 
 #define PROCESS_ALL          (PROCESS_NONCONVERTED | PROCESS_CONVERTED)
 #define LISTFLAG(flag)       ((flag)&(LIST_ALLTAGS|LIST_MOBILETAGS))
 
+static const String convStr(_T("-converted"));
+
 static bool isConvertedFileName(const String &name) {
   const String        fileName = FileNameSplitter(name).getFileName();
-  static const String conv(_T("-converted"));
-  return right(fileName, conv.length()) == conv;
+  return right(fileName, convStr.length()) == convStr;
 }
 
 static bool needToProcessName(const TCHAR *stageText, const String &name, UINT flags, size_t i, size_t total) {
@@ -37,7 +39,7 @@ static String makeConvertedFileName(const String &name) {
     return name;
   }
   FileNameSplitter sp(name);
-  return sp.setFileName(sp.getFileName() +_T("-converted")).getFullPath();
+  return sp.setFileName(sp.getFileName() +convStr).getFullPath();
 }
 
 class MediaCollection : public Array<MediaFile> {
@@ -127,7 +129,7 @@ MobileMediaCollection::MobileMediaCollection(const MediaCollection &mc) : m_flag
 MobileMediaCollection::MobileMediaCollection(const StringArray &fileNames, UINT flags) : m_flags(flags) {
   const size_t n = fileNames.size();
   for(size_t i = 0; i < n; i++) {
-    const String    &sourceName = fileNames[i];
+    const String &sourceName = fileNames[i];
     if(!needToProcessName(_T("Loading"), sourceName, m_flags, i, n)) {
       continue;
     }
@@ -201,7 +203,15 @@ void MobileMediaCollection::putTags() {
       continue;
     }
     try {
-      const String newUrl = makeConvertedFileName(sourceName);
+      String newUrl;
+      if((m_flags & EXTENDNAME_WITH_CONVERTED) && !isConvertedFileName(sourceName)) {
+        newUrl = makeConvertedFileName(sourceName);
+        if(ACCESS(newUrl, 0) < 0) {
+          newUrl = sourceName;
+        }
+      } else {
+        newUrl = sourceName;
+      }
       MediaFile(newUrl).removeAllFrames().updateMobileFrames(mmf);
     } catch(Exception e) {
       _ftprintf(stderr, _T("%s:%s\n"), sourceName.cstr(), e.what());
@@ -233,7 +243,7 @@ void MobileMediaCollection::buildMusicDirTree(const String &dstDir) const {
         throwException(_T("No frames to build path"));
       }
       const String dstPath = FileNameSplitter::getChildName(dstDir, pathAndName);
-      const String dstName = FileNameSplitter(dstName).setExtension(FileNameSplitter(sourceName).getExtension()).getFullPath();
+      const String dstName = FileNameSplitter(dstPath).setExtension(FileNameSplitter(sourceName).getExtension()).getFullPath();
       if(ACCESS(dstName,0) == 0) {
         throwException(_T("%s already exist"), dstName.cstr());
       }
@@ -318,7 +328,7 @@ static StringArray readFileNames(const String &fileName) {
 }
 
 static void usage() {
-  _ftprintf(stderr,_T("Usage:mp3Convert [-L[a|A|vq]|-I|-P|-Tdir] [-s[fields]] [-rv] [-p[c]] [-m[textfile]|-f[textfile]|files....]\n"
+  _ftprintf(stderr,_T("Usage:mp3Convert [-L[a|A|vq]|-C|-I|-P[c]|-Tdir] [-s[fields]] [-rv] [-p[c]] [-m[textfile]|-f[textfile]|files....]\n"
                       "      -L[a|A]: List tags.\n"
                       "         a   : List All tags.\n"
                       "         A   : List All tags, wih hexdump of binary- and text fields"
@@ -326,8 +336,9 @@ static void usage() {
                       "         v   : Vertical align columns. Only aplicable without -a or -A-option.\n"
                       "         q   : Strings are sourrounded by \"...\", and \" are escaped with \"\\\" (like C-strings).\n"
                       "      -I     : Extract image if any. Image-files are saved in subDir images, with filename = sourcefile, extension .bmp\n"
-                      "      -P     : Put mobile-tags, read from input to corresponding mp3-file, with filename extended with \"-converted\" (assumed to exist).\n"
-
+                      "      -P[c]  : Put mobile-tags, read from input to corresponding mp3-file.\n"
+                      "               If c-option specified, use corresponding mp3-file, with filename extended with \"-converted\", if it exist.\n"
+                      "      -Tdir  : Make tree structure, where files are put in path <dir>\\<artist>\\<album>\\<title>.ext"
                       "      -s[fields]: Sort list by artist,album,track,title,filename, before print to stdout. Only available for -L option.\n"
                       "               Sort order can be changed by specifying fields:[a=artist, l=album, n=trackno, t=title, y=year, g=genre].\n"
                       "               The last field, to compare, if no other fields differ, is always fileName.\n"
@@ -347,7 +358,6 @@ static void usage() {
            );
   exit(-1);
 }
-
 
 int _tmain(int argc, TCHAR **argv) {
   const TCHAR              *cp;
@@ -395,6 +405,16 @@ int _tmain(int argc, TCHAR **argv) {
         break;
       case 'P':
         SETCOMMAND(CMD_PUTTAGS);
+        for(cp++; *cp; cp++) {
+          switch (*cp) {
+          case 'c':
+            flags |= EXTENDNAME_WITH_CONVERTED;
+            continue;
+          default:
+            usage();
+          }
+          break;
+        }
         break;
       case 'T':
         SETCOMMAND(CMD_MAKETREE);
@@ -442,7 +462,8 @@ int _tmain(int argc, TCHAR **argv) {
       case 'r':
         recurse = true;
         continue;
-      default : usage();
+      default :
+        usage();
       }
       break;
     }
@@ -455,7 +476,6 @@ int _tmain(int argc, TCHAR **argv) {
   }
 
   try {
-
     StringArray fileNames;
     bool        allDone = false;
     if(fileName == NULL) {
@@ -479,7 +499,7 @@ int _tmain(int argc, TCHAR **argv) {
 
     if(!allDone) {
       switch(cmd) {
-      case CMD_LIST        :
+      case CMD_LIST         :
         switch(LISTFLAG(flags)) {
         case LIST_ALLTAGS   :
           MediaCollection(fileNames, flags).list();
@@ -491,13 +511,13 @@ int _tmain(int argc, TCHAR **argv) {
           throwException(_T("Unknown flags combination:%04X"), flags);
         }
         break;
-      case CMD_EXTRACTIMAGE:
+      case CMD_EXTRACTIMAGE :
         MediaCollection(fileNames, flags).extractImages();
         break;
-      case CMD_MAKETREE    :
+      case CMD_MAKETREE     :
         MobileMediaCollection(fileNames, flags).buildMusicDirTree(dstDir);
         break;
-      default:
+      default               :
         usage();
       }
     }
