@@ -35,35 +35,27 @@ BOOL CShowGrafApp::InitInstance() {
 
     LoadStdProfileSettings(16);
 
-    CSingleDocTemplate *pDocTemplate;
-    pDocTemplate = new CSingleDocTemplate(
-        IDR_MAINFRAME,
-        RUNTIME_CLASS(CShowGrafDoc),
-        RUNTIME_CLASS(CMainFrame),
-        RUNTIME_CLASS(CShowGrafView));
+    CSingleDocTemplate *pDocTemplate = new CSingleDocTemplate(IDR_MAINFRAME
+                                                             ,RUNTIME_CLASS(CShowGrafDoc)
+                                                             ,RUNTIME_CLASS(CMainFrame)
+                                                             ,RUNTIME_CLASS(CShowGrafView));
     AddDocTemplate(pDocTemplate);
 
     CCommandLineInfo cmdInfo;
-
     if(!ProcessShellCommand(cmdInfo)) {
       return FALSE;
     }
     m_pMainWnd->ShowWindow(SW_SHOW);
     m_pMainWnd->UpdateWindow();
-
-    if(getMainWindow()->getDoc()->isOK()) {
+    CShowGrafDoc *doc = getMainWindow()->getDoc();
+    doc->addArgvGraphs();
+    if(doc->isOK()) {
       getMainWindow()->activateInitialOptions();
     } else {
-      const String msg = getMainWindow()->getDoc()->getErrorMessage();
-      showWarning(msg);
+      showWarning(doc->getErrorMessage());
       PostMessage(*m_pMainWnd, WM_QUIT,0,0);
     }
     return TRUE;
-}
-
-int CShowGrafApp::ExitInstance() {
-  m_device.detach();
-  return __super::ExitInstance();
 }
 
 String CShowGrafApp::getRecentFile(int index) {

@@ -23,7 +23,7 @@ public:
     return m_graph->getParam().getDisplayName();
   }
 
-  void paint(CCoordinateSystem &cs, CFont &buttonFont, bool selected) const; // width in characters
+  void paint(CDC &dc, CFont &buttonFont, bool selected) const; // width in characters
 
   inline const CRect &getButtonRect() const {
     return m_buttonRect;
@@ -35,4 +35,3 @@ public:
 
   friend class GraphArray;
 };
-

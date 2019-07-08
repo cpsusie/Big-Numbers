@@ -2,7 +2,7 @@
 #include <QueueList.h>
 #include "Graph.h"
 
-PointGraph::PointGraph(GraphParameters *param) : Graph(param) {
+PointGraph::PointGraph(CCoordinateSystem &system, GraphParameters *param) : Graph(system, param) {
   m_dataProcessed = false;
 }
 
@@ -57,10 +57,11 @@ void PointGraph::clear() {
   m_dataProcessed = false;
 }
 
-double PointGraph::distance(const CPoint &p, const RectangleTransformation &tr) const {
-  const Point2DP      tmpp(p);
-  const Point2DArray &data = getProcessedData();
-  const size_t        n    = data.size();
+double PointGraph::distance(const CPoint &p) const {
+  const Point2DP                 tmpp(p);
+  const Point2DArray            &data = getProcessedData();
+  const size_t                   n    = data.size();
+  const RectangleTransformation &tr = getSystem().getTransformation();
   switch(getParam().getGraphStyle()) {
   case GSCURVE:
     { double minDist = EMPTY_DISTANCE;
@@ -103,66 +104,76 @@ void PointGraph::setRollAvgSize(UINT size) {
   }
 }
 
-void PointGraph::paint(CCoordinateSystem &cs) {
+void PointGraph::paint(CDC &dc) {
   const Point2DArray &data  = getProcessedData();
   if(data.isEmpty()) return;
-  const Point2D      *pp    = &data[0];
-  const Point2D      *end   = &data.last();
-  Viewport2D         &vp    = cs.getViewport();
-  const COLORREF      color = getParam().getColor();
+  const Point2D      *pp     = &data[0];
+  const Point2D      *end    = &data.last();
+  CCoordinateSystem  &system = getSystem();
+  Viewport2D         &vp     = system.getViewport();
+  CDC                *oldDC  = vp.setDC(&dc);
+  const COLORREF      color  = getParam().getColor();
   Point2DArray        tmp;
 
-  switch(getParam().getGraphStyle()) {
-  case GSCURVE :
-    if(data.size() > 1) {
-      CPen pen;
-      pen.CreatePen(PS_SOLID, 1, color);
-      CPen *oldPen = vp.SelectObject(&pen);
-      bool lastDefined = pointDefined(*pp);
-      if(lastDefined) {
-        vp.MoveTo(*pp);
-        tmp.add(*pp);
-      }
-      while(pp++ < end) {
-        const bool defined = pointDefined(*pp);
-        if(defined) {
-          if(lastDefined) {
-            vp.LineTo(*pp);
-            tmp.add(*pp);
-          } else {
-            vp.MoveTo(*pp);
-            tmp.add(*pp);
-          }
-        } else {
-          cs.setOccupiedConnectedPoints(tmp);
-          tmp.clear(-1);
+  try {
+    switch (getParam().getGraphStyle()) {
+    case GSCURVE:
+      if (data.size() > 1) {
+        CPen pen;
+        pen.CreatePen(PS_SOLID, 1, color);
+        CPen *oldPen = vp.SelectObject(&pen);
+        bool lastDefined = pointDefined(*pp);
+        if (lastDefined) {
+          vp.MoveTo(*pp);
+          tmp.add(*pp);
         }
-        lastDefined = defined;
+        while (pp++ < end) {
+          const bool defined = pointDefined(*pp);
+          if (defined) {
+            if (lastDefined) {
+              vp.LineTo(*pp);
+              tmp.add(*pp);
+            }
+            else {
+              vp.MoveTo(*pp);
+              tmp.add(*pp);
+            }
+          }
+          else {
+            system.setOccupiedConnectedPoints(tmp);
+            tmp.clear(-1);
+          }
+          lastDefined = defined;
+        }
+        vp.SelectObject(oldPen);
+        system.setOccupiedConnectedPoints(tmp);
       }
-      vp.SelectObject(oldPen);
-      cs.setOccupiedConnectedPoints(tmp);
-    }
-    break;
-  case GSPOINT :
-    for(;pp <= end; pp++) {
-      if(pointDefined(*pp)) {
-        vp.SetPixel(*pp, color);
-        tmp.add(*pp);
+      break;
+    case GSPOINT:
+      for (; pp <= end; pp++) {
+        if (pointDefined(*pp)) {
+          vp.SetPixel(*pp, color);
+          tmp.add(*pp);
+        }
       }
-    }
-    cs.setOccupiedPoints(tmp);
-    break;
-  case GSCROSS :
-    for(;pp <= end; pp++) {
-      if(pointDefined(*pp)) {
-        vp.paintCross(*pp, color, 6);
-        tmp.add(*pp);
+      system.setOccupiedPoints(tmp);
+      break;
+    case GSCROSS:
+      for (; pp <= end; pp++) {
+        if (pointDefined(*pp)) {
+          vp.paintCross(*pp, color, 6);
+          tmp.add(*pp);
+        }
       }
+      system.setOccupiedPoints(tmp);
+      break;
+    default:
+      throwException(_T("Invalid style:%d"), getParam().getGraphStyle());
     }
-    cs.setOccupiedPoints(tmp);
-    break;
-  default:
-    throwException(_T("Invalid style:%d"), getParam().getGraphStyle());
+    vp.setDC(oldDC);
+  } catch(...) {
+    vp.setDC(oldDC);
+    throw;
   }
 }
 
@@ -190,7 +201,7 @@ static int point2DcmpX(const Point2D &p1, const Point2D &p2) {
   return sign(p1.x-p2.x);
 }
 
-GraphZeroesResultArray PointGraph::findZeroes(const DoubleInterval &interval) const {
+GraphZeroesResultArray PointGraph::findZeroes(const DoubleInterval &interval) {
   Point2DArray       data = getProcessedData();
   CompactDoubleArray result;
   if(data.isEmpty()) {
@@ -255,7 +266,7 @@ static inline bool isMoreExtreme(double y0, double y1, ExtremaType extremaType) 
   return (extremaType == EXTREMA_TYPE_MAX) ? (y1 > y0) : (y1 < y0);
 }
 
-GraphExtremaResultArray PointGraph::findExtrema(const DoubleInterval &interval, ExtremaType extremaType) const {
+GraphExtremaResultArray PointGraph::findExtrema(const DoubleInterval &interval, ExtremaType extremaType) {
   Point2DArray data = getProcessedData();
   Point2DArray result;
   const size_t n = data.size();

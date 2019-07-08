@@ -13,7 +13,7 @@ private:
   void readData();
   void readData(FILE *f);
 public:
-  DataGraph(DataGraphParameters &param);
+  DataGraph(CCoordinateSystem &system, DataGraphParameters &param);
   void refreshData();
   bool needRefresh() const;
   GraphType getType() const {

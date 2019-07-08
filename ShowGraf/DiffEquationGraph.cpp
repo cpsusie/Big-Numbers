@@ -4,7 +4,9 @@
 #include "DiffEquationGraph.h"
 #include "DiffEquationSystem.h"
 
-DiffEquationGraph::DiffEquationGraph(const DiffEquationGraphParameters &param) : Graph(new DiffEquationGraphParameters(param)) {
+DiffEquationGraph::DiffEquationGraph(CCoordinateSystem &system, const DiffEquationGraphParameters &param)
+: Graph(system, new DiffEquationGraphParameters(param))
+{
   calculate();
 }
 
@@ -71,7 +73,7 @@ void DiffEquationGraph::calculate() {
     const EquationAttributes      &attr  = param.getEquationAttribute(  index);
     const DiffEquationDescription &desc  = param.getEquationDescription(index);
     vectorGraphMap.add(index+1); // v[0] is x, so add 1 to get mapping right
-    m_pointGraphArray.add(new PointGraph(new PointGraphParameters(desc.getName(), attr.getColor(), 1, param.getGraphStyle())));
+    m_pointGraphArray.add(new PointGraph(getSystem(), new PointGraphParameters(desc.getName(), attr.getColor(), 1, param.getGraphStyle())));
     TRACE_NEW(m_pointGraphArray.last());
   }
   DiffEquationHandler handler(*this, vectorGraphMap);
@@ -89,20 +91,20 @@ void DiffEquationGraph::setTrigoMode(TrigonometricMode mode) {
   }
 }
 
-void DiffEquationGraph::paint(CCoordinateSystem &cs) {
+void DiffEquationGraph::paint(CDC &dc) {
   for(size_t i = 0; i < m_pointGraphArray.size(); i++) {
-    m_pointGraphArray[i]->paint(cs);
+    m_pointGraphArray[i]->paint(dc);
   }
 }
 
-double DiffEquationGraph::distance(const CPoint &p, const RectangleTransformation &tr) const {
+double DiffEquationGraph::distance(const CPoint &p) const {
   if(isEmpty()) {
     return EMPTY_DISTANCE;
   }
   const size_t n    = m_pointGraphArray.size();
   double       mind = EMPTY_DISTANCE;
   for(size_t i = 0; i < n; i++) {
-    const double d = m_pointGraphArray[i]->distance(p, tr);
+    const double d = m_pointGraphArray[i]->distance(p);
     if((d >= 0) && (d < mind)) {
       mind = d;
     }
@@ -150,11 +152,11 @@ void DiffEquationGraph::setVisible(bool visible) {
   }
 }
 
-GraphZeroesResultArray DiffEquationGraph::findZeroes(const DoubleInterval &interval) const {
+GraphZeroesResultArray DiffEquationGraph::findZeroes(const DoubleInterval &interval) {
   GraphZeroesResultArray result(*this);
   const size_t n = m_pointGraphArray.size();
   for(size_t t = 0; t < n; t++) {
-    const PointGraph *g = m_pointGraphArray[t];
+    PointGraph *g = m_pointGraphArray[t];
     if(g->isVisible()) {
       result.addAll(g->findZeroes(interval));
     }
@@ -162,11 +164,11 @@ GraphZeroesResultArray DiffEquationGraph::findZeroes(const DoubleInterval &inter
   return result;
 }
 
-GraphExtremaResultArray DiffEquationGraph::findExtrema(const DoubleInterval &interval, ExtremaType extremaType) const {
+GraphExtremaResultArray DiffEquationGraph::findExtrema(const DoubleInterval &interval, ExtremaType extremaType) {
   GraphExtremaResultArray result(*this, extremaType);
   const size_t n = m_pointGraphArray.size();
   for(size_t t = 0; t < n; t++) {
-    const PointGraph *g = m_pointGraphArray[t];
+    PointGraph *g = m_pointGraphArray[t];
     if(g->isVisible()) {
       result.addAll(g->findExtrema(interval, extremaType));
     }

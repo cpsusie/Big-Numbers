@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "ShowGrafDoc.h"
 #include "ShowGrafView.h"
+#include "MouseTool.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -15,31 +16,21 @@ BEGIN_MESSAGE_MAP(CShowGrafView, CFormView)
     ON_WM_MOUSEMOVE()
     ON_WM_MOUSEWHEEL()
     ON_WM_SIZE()
-    ON_WM_CREATE()
     ON_WM_DESTROY()
-    ON_COMMAND(ID_FILE_PRINT        , CFormView::OnFilePrint       )
-    ON_COMMAND(ID_FILE_PRINT_DIRECT , CFormView::OnFilePrint       )
-    ON_COMMAND(ID_FILE_PRINT_PREVIEW, CFormView::OnFilePrintPreview)
+    ON_COMMAND(ID_FILE_PRINT        , __super::OnFilePrint       )
+    ON_COMMAND(ID_FILE_PRINT_DIRECT , __super::OnFilePrint       )
+    ON_COMMAND(ID_FILE_PRINT_PREVIEW, __super::OnFilePrintPreview)
 END_MESSAGE_MAP()
 
 CShowGrafView::CShowGrafView() : CFormView(IDD) {
-  m_buttonFont.CreateFont(10, 8, 0, 0, 400, FALSE, FALSE, 0, ANSI_CHARSET, OUT_DEFAULT_PRECIS,
-                          CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
-                          DEFAULT_PITCH | FF_MODERN,
-                          _T("Arial") );
-  m_axisFont.CreateFont(  10, 8, 0, 0, 400, FALSE, FALSE, 0, ANSI_CHARSET, OUT_DEFAULT_PRECIS,
-                          CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
-                          DEFAULT_PITCH | FF_MODERN,
-                          _T("Arial") );
-  m_firstDraw        = true;
-}
-
-int CShowGrafView::OnCreate(LPCREATESTRUCT lpCreateStruct) {
-  if(__super::OnCreate(lpCreateStruct) == -1) {
-    return -1;
-  }
-  pushMouseTool(DRAGTOOL);
-  return 0;
+  m_buttonFont.CreateFont(10, 8, 0, 0, 400, FALSE, FALSE, 0, ANSI_CHARSET, OUT_DEFAULT_PRECIS
+                         ,CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY
+                         ,DEFAULT_PITCH | FF_MODERN
+                         ,_T("Arial") );
+  m_axisFont.CreateFont(  10, 8, 0, 0, 400, FALSE, FALSE, 0, ANSI_CHARSET, OUT_DEFAULT_PRECIS
+                         ,CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY
+                         ,DEFAULT_PITCH | FF_MODERN
+                         ,_T("Arial") );
 }
 
 void CShowGrafView::OnDestroy() {
@@ -48,6 +39,13 @@ void CShowGrafView::OnDestroy() {
 }
 
 CShowGrafView::~CShowGrafView() {
+}
+
+void CShowGrafView::OnInitialUpdate() {
+  __super::OnInitialUpdate();
+
+  m_coordinateSystem.substituteControl(this, IDC_SYSTEMPANEL);
+  pushMouseTool(IDLETOOL);
 }
 
 bool CShowGrafView::paintAll(CDC &dc, const CRect &rect, CFont *axisFont, CFont *buttonFont) {
@@ -92,9 +90,8 @@ bool CShowGrafView::paintAll(CDC &dc, const CRect &rect, CFont *axisFont, CFont 
   try {
     m_coordinateSystem.OnPaint();
     CClientDC dc(&m_coordinateSystem);
-    m_coordinateSystem.setDC(dc);
-    ga.paintItems(m_coordinateSystem, *buttonFont, getRelativeClientRect(this,IDC_BUTTONPANEL));
-    ga.paintPointArray(m_coordinateSystem, m_axisFont);
+    ga.paintItems(dc, *buttonFont, getRelativeClientRect(this,IDC_BUTTONPANEL));
+    ga.paintPointArray(dc);
 //    debugLog(_T("Cells Occupied:\n%s"), m_coordinateSystem.getOccupationMap().toString().cstr());
     return true;
   } catch(Exception e) {
@@ -117,21 +114,35 @@ void CShowGrafView::addFunctionGraph(FunctionGraphParameters &param) {
 
 void CShowGrafView::pushMouseTool(MouseToolType toolType) {
   switch(toolType) {
-  case DRAGTOOL            : m_toolStack.push(new DragTool(    this)); break;
-  case FINDZEROTOOL        : m_toolStack.push(new FindZeroTool(this)); break;
-  case FINDMAXTOOL         : m_toolStack.push(new FindMaxTool( this)); break;
-  case FINDMINTOOL         : m_toolStack.push(new FindMinTool( this)); break;
+  case IDLETOOL            : m_toolStack.push(new IdleTool(      this)); break;
+  case DRAGTOOL            : m_toolStack.push(new DragTool(     *m_toolStack.top())); break;
+  case MOVEPOINTTOOL       : m_toolStack.push(new MovePointTool(*m_toolStack.top())); break;
+  case FINDZEROTOOL        : m_toolStack.push(new FindZeroTool(  this)); break;
+  case FINDMAXTOOL         : m_toolStack.push(new FindMaxTool(   this)); break;
+  case FINDMINTOOL         : m_toolStack.push(new FindMinTool(   this)); break;
   case FINDINTERSECTIONTOOL:
   default                  :
     errorMessage(_T("Invalid MouseTool:%d"), toolType);
     break;
   }
+  DUMPTOOLSTACK();
 }
 
 void CShowGrafView::popMouseTool() {
   MouseTool *mt = m_toolStack.pop();
   delete mt;
+  DUMPTOOLSTACK();
 }
+
+#ifdef _DEBUG
+void CShowGrafView::dumpToolStack() const {
+  String result;
+  for (int i = m_toolStack.getHeight(); i--;) {
+    result += toString(m_toolStack.top(i)->getType()) + _T(" ");
+  }
+  debugLog(_T("ToolStack:%s\n"), result.cstr());
+}
+#endif
 
 void CShowGrafView::clearToolStack() {
   while(!hasMouseTool()) {
@@ -141,10 +152,6 @@ void CShowGrafView::clearToolStack() {
 
 void CShowGrafView::OnDraw(CDC *pDC) {
   try {
-    if(m_firstDraw) {
-      m_coordinateSystem.substituteControl(this, IDC_SYSTEMPANEL);
-      m_firstDraw = false;
-    }
     const CRect rect = getClientRect(this);
 
     if(paintAll(*pDC, rect, &m_axisFont, &m_buttonFont)) {
@@ -191,7 +198,7 @@ void CShowGrafView::Dump(CDumpContext& dc) const {
 
 void CShowGrafView::OnLButtonDown(UINT nFlags, CPoint point) {
   __super::OnLButtonDown(nFlags, point);
-  if(hasMouseTool() && getClientRect(this, IDC_SYSTEMPANEL).PtInRect(point)) {
+  if(hasMouseTool() && ptInPanel(IDC_SYSTEMPANEL, point)) {
     getCurrentTool().OnLButtonDown(nFlags, point);
   }
 }
@@ -203,20 +210,35 @@ void CShowGrafView::OnLButtonUp(UINT nFlags, CPoint point) {
 
 void CShowGrafView::OnMouseMove(UINT nFlags, CPoint point) {
   __super::OnMouseMove(nFlags, point);
-  if(hasMouseTool()) getCurrentTool().OnMouseMove(nFlags, point);
-  const Point2D p = m_coordinateSystem.getMouseToSystem(point);
-  theApp.getMainWindow()->updatePositionText(m_coordinateSystem.getPointText(p));
+  if(!ptInPanel(IDC_SYSTEMPANEL, point)) {
+    theApp.getMainWindow()->updatePositionText(EMPTYSTRING);
+  } else  {
+    if (nFlags & MK_LBUTTON) {
+      int fisk = 1;
+    }
+    if(hasMouseTool()) {
+      getCurrentTool().OnMouseMove(nFlags, point);
+    }
+    const Point2D p = m_coordinateSystem.getMouseToSystem(point);
+    theApp.getMainWindow()->updatePositionText(format(_T("(%s)"), m_coordinateSystem.getPointText(p).cstr()));
+  }
 }
 
 void CShowGrafView::OnRButtonDown(UINT nFlags, CPoint point) {
   GraphArray &ga = getDoc()->getGraphArray();
-  if(ga.OnLButtonDown(nFlags, point, m_coordinateSystem.getTransformation())) {
+  if(ga.OnLButtonDown(nFlags, point)) {
     CMenu menu;
     if(!menu.LoadMenu(IDR_MENUSELECTGRAF)) {
       showWarning(_T("Loadmenu failed"));
       return;
     }
-    removeMenuItem(menu, ga.getSelectedItem()->getGraph().isVisible() ? ID_SELECTMENU_SHOW : ID_SELECTMENU_HIDE);
+    const GraphItem *gi = ga.getSelectedGraphItem();
+    if(gi) {
+      removeMenuItem(menu, gi->getGraph().isVisible() ? ID_SELECTMENU_SHOW : ID_SELECTMENU_HIDE);
+    } else {
+      removeMenuItem(menu, ID_SELECTMENU_SHOW);
+      removeMenuItem(menu, ID_SELECTMENU_HIDE);
+    }
     ClientToScreen(&point);
     menu.GetSubMenu(0)->TrackPopupMenu(TPM_LEFTALIGN|TPM_RIGHTBUTTON,point.x+10,point.y, theApp.getMainWindow());
   } else {
@@ -224,22 +246,25 @@ void CShowGrafView::OnRButtonDown(UINT nFlags, CPoint point) {
   }
 }
 
-BOOL CShowGrafView::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) {
+BOOL CShowGrafView::OnMouseWheel(UINT nFlags, short zDelta, CPoint point) {
+  CPoint pt = point;
   ScreenToClient(&pt);
-  const Point2DP tmppt(pt);
-  int zoomFlags = 0;
-  if(nFlags & MK_CONTROL) {
-    zoomFlags |= X_AXIS;
+  if(ptInPanel(IDC_SYSTEMPANEL, pt)) {
+    const Point2DP tmppt(pt);
+    int zoomFlags = 0;
+    if(nFlags & MK_CONTROL) {
+      zoomFlags |= X_AXIS;
+    }
+    if(nFlags & MK_SHIFT) {
+      zoomFlags |= Y_AXIS;
+    }
+    if(zoomFlags == 0) {
+      zoomFlags = X_AXIS | Y_AXIS;
+    }
+    m_coordinateSystem.getTransformation().zoom(tmppt, (zDelta < 0) ? -0.05 : 0.05, zoomFlags);
+    Invalidate(FALSE);
   }
-  if(nFlags & MK_SHIFT) {
-    zoomFlags |= Y_AXIS;
-  }
-  if(zoomFlags == 0) {
-    zoomFlags = X_AXIS | Y_AXIS;
-  }
-  m_coordinateSystem.getTransformation().zoom(tmppt,(zDelta < 0) ? -0.05 : 0.05,zoomFlags);
-  Invalidate(FALSE);
-  return __super::OnMouseWheel(nFlags, zDelta, pt);
+  return __super::OnMouseWheel(nFlags, zDelta, point);
 }
 
 void CShowGrafView::OnSize(UINT nType, int cx, int cy) {
@@ -251,7 +276,7 @@ void CShowGrafView::clear() {
   initScale();
   Invalidate();
   clearToolStack();
-  pushMouseTool(DRAGTOOL);
+  pushMouseTool(IDLETOOL);
 }
 
 bool CShowGrafView::isMenuItemChecked(int id) {

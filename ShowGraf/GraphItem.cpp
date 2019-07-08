@@ -32,14 +32,15 @@ void GraphItem::paintButton(CDC &dc, bool selected) const {
   }
 }
 
-void GraphItem::paint(CCoordinateSystem &cs, CFont &buttonFont, bool selected) const {
-  Viewport2D &vp = cs.getViewport();
+void GraphItem::paint(CDC &dc, CFont &buttonFont, bool selected) const {
+  const Viewport2D &vp = m_graph->getSystem().getViewport();
   if(m_graph->isVisible()) {
+    CDC *oldDC = vp.setDC(&dc);
     vp.setClipping(true);
-    m_graph->paint(cs);
+    m_graph->paint(dc);
     vp.setClipping(false);
+    vp.setDC(oldDC);
   }
-  CDC &dc = *vp.getDC();
   CFont *oldFont = dc.SelectObject(&buttonFont);
   paintButton(dc, selected);
   dc.SelectObject(oldFont);

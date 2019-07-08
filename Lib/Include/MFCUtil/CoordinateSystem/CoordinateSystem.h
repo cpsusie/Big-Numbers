@@ -10,11 +10,23 @@
 class CCoordinateSystem;
 
 class CoordinateSystemObject {
+private:
+  CCoordinateSystem &m_system;
+protected:
+  const Viewport2D &getViewport() const;
 public:
-  virtual void paint(CCoordinateSystem &cs) = 0;
-  virtual const DataRange &getDataRange() const = 0;
+  CoordinateSystemObject(CCoordinateSystem &system) : m_system(system) {
+  }
   virtual ~CoordinateSystemObject() {
   }
+  inline const CCoordinateSystem &getSystem() const {
+    return m_system;
+  }
+  inline CCoordinateSystem &getSystem() {
+    return m_system;
+  }
+  virtual void paint(CDC &dc) = 0;
+  virtual const DataRange &getDataRange() const = 0;
 };
 
 class OccupationMap : public BitMatrix {
@@ -93,16 +105,20 @@ public:
     return m_vp.getTransformation();;
   }
   inline RectangleTransformation &getTransformation() {
-    return m_vp.getTransformation();
+    return m_vp.getTransformation();;
   }
-
   void setOccupiedPoint(          const Point2D      &p );
   void setOccupiedLine(           const Point2D      &p1, const Point2D &p2);
   void setOccupiedPoints(         const Point2DArray &pa);
   void setOccupiedConnectedPoints(const Point2DArray &pa);
 
-  void setDC(CDC &dc);
+  inline CDC *setDC(CDC *dc) const {
+    return m_vp.setDC(dc);
+  }
   inline Viewport2D &getViewport() {
+    return m_vp;
+  }
+  inline const Viewport2D &getViewport() const {
     return m_vp;
   }
   inline OccupationMap &getOccupationMap() {

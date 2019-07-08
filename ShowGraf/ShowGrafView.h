@@ -1,9 +1,10 @@
 #pragma once
 
-#include "MouseTool.h"
 #include "ShowGrafDoc.h"
+#include "CoordinateSystemContainer.h"
 
 class CMainFrame;
+class MouseTool;
 
 #define FOR_BOTH_AXIS(i) for(AxisIndex i = XAXIS_INDEX; i <= YAXIS_INDEX; ((int&)i)++)
 
@@ -12,7 +13,6 @@ private:
   enum { IDD = IDD_SHOWGRAFVIEW };
 
   CCoordinateSystem           m_coordinateSystem;
-  bool                        m_firstDraw;
   CFont                       m_axisFont;
   CFont                       m_buttonFont;
   CompactStack<MouseTool*>    m_toolStack;
@@ -22,6 +22,9 @@ private:
   bool isMenuItemChecked(int id);
   void enableMenuItem(int id, bool enabled);
   void checkMenuItem( int id, bool checked);
+  inline bool ptInPanel(int id, const CPoint &point) const {
+    return getRelativeClientRect(this, id).PtInRect(point);
+  }
   inline bool hasMouseTool() const {
     return !m_toolStack.isEmpty();
   }
@@ -29,6 +32,12 @@ private:
     return *m_toolStack.top();
   }
   void clearToolStack();
+#ifdef _DEBUG
+  void dumpToolStack() const;
+#define DUMPTOOLSTACK() dumpToolStack()
+#else
+#define DUMPTOOLSTACK()
+#endif
   CShowGrafDoc *getDoc();
 
   inline CMainFrame *getMainFrame() {
@@ -48,7 +57,6 @@ protected: // create from serialization only
   afx_msg void OnMouseMove(  UINT nFlags, CPoint point);
   afx_msg BOOL OnMouseWheel( UINT nFlags, short zDelta, CPoint pt);
   afx_msg void OnSize(       UINT nType, int cx, int cy);
-  afx_msg int  OnCreate(LPCREATESTRUCT lpCreateStruct);
   afx_msg void OnDestroy();
   DECLARE_MESSAGE_MAP()
 
@@ -95,6 +103,7 @@ public:
     void addFunctionGraph(FunctionGraphParameters &param);
     void pushMouseTool(MouseToolType toolType);
     void popMouseTool();
+    virtual void OnInitialUpdate();
     virtual void OnDraw(CDC *pDC);  // overridden to draw this view
     virtual BOOL OnPreparePrinting(          CPrintInfo *pInfo);
     virtual void OnBeginPrinting(  CDC *pDC, CPrintInfo *pInfo);

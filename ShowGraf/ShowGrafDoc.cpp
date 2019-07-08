@@ -177,32 +177,37 @@ void CShowGrafDoc::init() {
       break;
     }
   }
+  m_argvFileNames = argv;
+}
+
+void CShowGrafDoc::addArgvGraphs() {
+  TCHAR **argv = m_argvFileNames;
   if(*argv == NULL) {
     addInitialDataGraph(_T("stdin"), getColor(0));
   } else {
     for(int colorIndex = 0; *argv && isOK(); argv++) {
-      if(addInitialDataGraph(*argv, getColor(colorIndex))) {
+      if (addInitialDataGraph(*argv, getColor(colorIndex))) {
         colorIndex++;
       }
     }
   }
   if(m_graphArray.size() == 1) {
-    m_graphArray.select(0);
+    m_graphArray.select(GRAPHSELECTED, 0);
   }
 }
 
 bool CShowGrafDoc::addInitialDataGraph(const String &name, COLORREF color) {
   DataGraphParameters param(name
-                            ,color
-                            ,m_options.m_onePerLine
-                            ,m_options.m_ignoreErrors
-                            ,AXISOPT(x).m_relativeToFirst
-                            ,AXISOPT(y).m_relativeToFirst
-                            ,*AXISOPT(x).m_reader
-                            ,*AXISOPT(y).m_reader
-                            ,m_options.m_rollAvg ? m_options.m_rollAvgSize : 0
-                            ,m_options.m_graphStyle);
-  Graph *g = new DataGraph(param); TRACE_NEW(g);
+                           ,color
+                           ,m_options.m_onePerLine
+                           ,m_options.m_ignoreErrors
+                           ,AXISOPT(x).m_relativeToFirst
+                           ,AXISOPT(y).m_relativeToFirst
+                           ,*AXISOPT(x).m_reader
+                           ,*AXISOPT(y).m_reader
+                           ,m_options.m_rollAvg ? m_options.m_rollAvgSize : 0
+                           ,m_options.m_graphStyle);
+  Graph *g = new DataGraph(getSystem(), param); TRACE_NEW(g);
   if(!g->isEmpty()) {
     m_graphArray.add(g);
     return true;
@@ -218,8 +223,12 @@ void CShowGrafDoc::initScaleIfSingleGraph() {
   }
 }
 
-CShowGrafView *CShowGrafDoc::getView() {
+CShowGrafView *CShowGrafDoc::getView() const {
   return theApp.getMainWindow()->getView();
+}
+
+CCoordinateSystem &CShowGrafDoc::getSystem() const {
+  return getView()->getCoordinateSystem();
 }
 
 CShowGrafDoc::~CShowGrafDoc() {
@@ -283,7 +292,7 @@ void CShowGrafDoc::readDataFile(const String &fileName) {
 void CShowGrafDoc::readFunctionFile(const String &fileName) {
   FunctionGraphParameters param;
   param.load(fileName);
-  Graph *g = new FunctionGraph(param); TRACE_NEW(g);
+  Graph *g = new FunctionGraph(getSystem(), param); TRACE_NEW(g);
   m_graphArray.add(g);
   initScaleIfSingleGraph();
 }
@@ -291,7 +300,7 @@ void CShowGrafDoc::readFunctionFile(const String &fileName) {
 void CShowGrafDoc::readParametricFile(const String &fileName) {
   ParametricGraphParameters param;
   param.load(fileName);
-  Graph *g = new ParametricGraph(param); TRACE_NEW(g);
+  Graph *g = new ParametricGraph(getSystem(), param); TRACE_NEW(g);
   m_graphArray.add(g);
   initScaleIfSingleGraph();
 }
@@ -299,7 +308,7 @@ void CShowGrafDoc::readParametricFile(const String &fileName) {
 void CShowGrafDoc::readIsoFile(const String &fileName) {
   IsoCurveGraphParameters param;
   param.load(fileName);
-  Graph *g = new IsoCurveGraph(param); TRACE_NEW(g);
+  Graph *g = new IsoCurveGraph(getSystem(), param); TRACE_NEW(g);
   m_graphArray.add(g);
   initScaleIfSingleGraph();
 }
@@ -307,36 +316,36 @@ void CShowGrafDoc::readIsoFile(const String &fileName) {
 void CShowGrafDoc::readDiffEqFile(const String &fileName) {
   DiffEquationGraphParameters param;
   param.load(fileName);
-  Graph *g = new DiffEquationGraph(param); TRACE_NEW(g);
+  Graph *g = new DiffEquationGraph(getSystem(), param); TRACE_NEW(g);
   m_graphArray.add(g);
   initScaleIfSingleGraph();
 }
 
 void CShowGrafDoc::addFunctionGraph(const FunctionGraphParameters &param) {
-  Graph *g = new FunctionGraph(param); TRACE_NEW(g);
+  Graph *g = new FunctionGraph(getSystem(), param); TRACE_NEW(g);
   m_graphArray.add(g);
-  m_graphArray.select(m_graphArray.size()-1);
+  m_graphArray.select(GRAPHSELECTED, m_graphArray.size()-1);
   initScaleIfSingleGraph();
 }
 
 void CShowGrafDoc::addParametricGraph(const ParametricGraphParameters &param) {
-  Graph *g = new ParametricGraph(param); TRACE_NEW(g);
+  Graph *g = new ParametricGraph(getSystem(), param); TRACE_NEW(g);
   m_graphArray.add(g);
-  m_graphArray.select(m_graphArray.size()-1);
+  m_graphArray.select(GRAPHSELECTED, m_graphArray.size()-1);
   initScaleIfSingleGraph();
 }
 
 void CShowGrafDoc::addIsoCurveGraph(const IsoCurveGraphParameters &param) {
-  Graph *g = new IsoCurveGraph(param); TRACE_NEW(g);
+  Graph *g = new IsoCurveGraph(getSystem(), param); TRACE_NEW(g);
   m_graphArray.add(g);
-  m_graphArray.select(m_graphArray.size()-1);
+  m_graphArray.select(GRAPHSELECTED, m_graphArray.size()-1);
   initScaleIfSingleGraph();
 }
 
 void CShowGrafDoc::addDiffEquationGraph(const DiffEquationGraphParameters &param) {
-  Graph *g = new DiffEquationGraph(param); TRACE_NEW(g);
+  Graph *g = new DiffEquationGraph(getSystem(), param); TRACE_NEW(g);
   m_graphArray.add(g);
-  m_graphArray.select(m_graphArray.size()-1);
+  m_graphArray.select(GRAPHSELECTED, m_graphArray.size()-1);
   initScaleIfSingleGraph();
 }
 

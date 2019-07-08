@@ -281,6 +281,9 @@
     <ClInclude Include="MoveablePointArray.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CoordinateSystemContainer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\bmpFitCustomFunction.bmp">

@@ -13,10 +13,10 @@ private:
   void updateDataRange();
   friend class DiffEquationHandler;
 public:
-  DiffEquationGraph(const DiffEquationGraphParameters &param);
+  DiffEquationGraph(CCoordinateSystem &system, const DiffEquationGraphParameters &param);
   ~DiffEquationGraph();
   void calculate();
-  void paint(CCoordinateSystem &cs);
+  void paint(CDC &dc);
   inline bool isEmpty() const {
     return m_pointGraphArray.isEmpty();
   }
@@ -27,7 +27,7 @@ public:
   const DataRange &getDataRange() const {
     return m_dataRange;
   }
-  double distance(const CPoint &p,const RectangleTransformation &tr) const;
+  double distance(const CPoint &p) const;
   double getSmallestPositiveX(void) const;
   double getSmallestPositiveY(void) const;
   bool   isPointGraph(void) const {
@@ -35,6 +35,6 @@ public:
   }
   void   setStyle(GraphStyle style);
   void   setVisible(bool visible);
-  GraphZeroesResultArray  findZeroes( const DoubleInterval &interval) const;
-  GraphExtremaResultArray findExtrema(const DoubleInterval &interval, ExtremaType extremaType) const;
+  GraphZeroesResultArray  findZeroes( const DoubleInterval &interval);
+  GraphExtremaResultArray findExtrema(const DoubleInterval &interval, ExtremaType extremaType);
 };

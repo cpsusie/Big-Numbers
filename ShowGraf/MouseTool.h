@@ -1,31 +1,18 @@
 #pragma once
 
-#include <MFCUtil/Coordinatesystem/CoordinateSystem.h>
-
-class CoordinateSystemContainer {
-public:
-  virtual CWnd              *getWin()                    = 0;
-  virtual CCoordinateSystem &getCoordinateSystem()       = 0;
-  virtual void               repaint()                   = 0;
-};
-
-typedef enum {
-  DRAGTOOL
- ,FINDZEROTOOL
- ,FINDMAXTOOL
- ,FINDMINTOOL
- ,FINDINTERSECTIONTOOL
-} MouseToolType;
+#include "CoordinateSystemContainer.h"
 
 class MouseTool {
-private:
+protected:
+  CoordinateSystemContainer *m_container;
   CRect                      m_dragRect;
   bool                       m_dragging;
   CPoint                     m_mouseDownPoint;
   RectangleTransformation    m_mouseDownTransform;
-protected:
-  CoordinateSystemContainer *m_container;
 
+  static void postMsg(int msg, WPARAM wp=0, LPARAM lp=0) {
+    theApp.getMainWindow()->PostMessage(msg,wp,lp);
+  }
   void repaint() {
     m_container->repaint();
   }
@@ -35,7 +22,9 @@ protected:
   inline CCoordinateSystem &getSystem() {
     return m_container->getCoordinateSystem();
   }
-
+  inline CShowGrafDoc *getDoc() {
+    return theApp.getMainWindow()->getDoc();
+  }
   inline void setSystemCursor(int cursor) {
     ::setWindowCursor(&getSystem(), MAKEINTRESOURCE(cursor));
   }
@@ -47,22 +36,22 @@ protected:
   CRect getSystemClientRect() const {
     return getClientRect(getWin(), IDC_SYSTEMPANEL);
   }
-  inline bool isDragging() const {
-    return m_dragging;
-  }
   const CRect &getDragRect() const {
     return m_dragRect;
   }
+  void clipCursor();
+  void unClipCursor();
   void beginDragRect(     UINT nFlags, const CPoint &point);
-  void endDragRect(       UINT nFlags, const CPoint &point);
-  void updateDragRect(    UINT nFlags, const CPoint &point);
   void beginMarkInterval( UINT nFlags, const CPoint &point);
-  void endMarkInterval(   UINT nFlags, const CPoint &point);
   void updateMarkInterval(UINT nFlags, const CPoint &point);
+  void endMarkInterval();
 
-public:
   MouseTool(CoordinateSystemContainer *container) : m_container(container), m_dragging(false) {
   }
+  MouseTool(MouseTool &prevTool) : m_container(prevTool.m_container), m_dragging(false) {
+  }
+
+public:
   virtual ~MouseTool() {
   }
   virtual void OnLButtonDown(  UINT nFlags, const CPoint &point) {
@@ -74,18 +63,65 @@ public:
   virtual void reset() {
   }
   virtual MouseToolType getType() const = 0;
+  inline bool isDragging() const {
+    return m_dragging;
+  }
+  void endDragRect();
+  inline const CPoint &getMouseDownPoint() const {
+    return m_mouseDownPoint;
+  }
+
+};
+
+class IdleTool : public MouseTool {
+public:
+  IdleTool(CoordinateSystemContainer *container) : MouseTool(container) { reset(); }
+
+  void OnLButtonDown(UINT nFlags, const CPoint &point);
+
+  MouseToolType getType() const {
+    return IDLETOOL;
+  }
 };
 
 class DragTool : public MouseTool {
+private:
+  void takeoverDrag(MouseTool &mdTool); // called, to take over dragging, after mdTool, that handled MouseDown-event
+  void updateDragRect(UINT nFlags, const CPoint &point);
 public:
-  DragTool(CoordinateSystemContainer *container) : MouseTool(container) { reset(); }
-
-  void OnLButtonDown(UINT nFlags, const CPoint &point) ;
+  DragTool(MouseTool &prevTool) : MouseTool(prevTool) {
+    reset();
+    takeoverDrag(prevTool);
+  }
   void OnMouseMove(  UINT nFlags, const CPoint &point);
   void OnLButtonUp(  UINT nFlags, const CPoint &point);
 
   MouseToolType getType() const {
     return DRAGTOOL;
+  }
+};
+
+
+class MovePointTool : public MouseTool {
+private:
+  GraphArray         *m_ga;
+  MoveablePoint      *m_mp;
+  CSize               m_offset;
+
+  void takeoverDrag(MouseTool &mdTool);
+  void beginMovePoint(const CPoint &point);
+  void movePoint(UINT nFlags, const CPoint &point);
+  void endMovePoint();
+public:
+  MovePointTool(MouseTool &prevTool) : MouseTool(prevTool) {
+    reset();
+    takeoverDrag(prevTool);
+  }
+  void OnMouseMove(  UINT nFlags, const CPoint &point);
+  void OnLButtonUp(  UINT nFlags, const CPoint &point);
+
+  MouseToolType getType() const {
+    return MOVEPOINTTOOL;
   }
 };
 

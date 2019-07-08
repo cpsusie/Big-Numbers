@@ -6,25 +6,34 @@
 
 class Viewport2D {
 private:
-  CDC                     *m_dc;
   RectangleTransformation *m_tr;
   bool                     m_ownTransformation;
   bool                     m_retainAspectRatio;
-  CRgn                     m_clipRgn;
 
-  CPen                     m_currentPen;
-  int                      m_currentPenStyle;
-  int                      m_currentPenWidth;
-  COLORREF                 m_currentPenColor;
+  mutable CDC             *m_dc;
+  mutable CRgn             m_clipRgn;
+  mutable CPen             m_currentPen;
+  mutable int              m_currentPenStyle;
+  mutable int              m_currentPenWidth;
+  mutable COLORREF         m_currentPenColor;
 
-  CPen &setCurrentPen(int penStyle, int width, COLORREF color);
-  void paintLine(int x1, int y1, int x2, int y2, int penStyle, COLORREF color);
-  void destroyClipRgn();
+  CPen &setCurrentPen(int penStyle, int width, COLORREF color) const;
+  inline void paintLine(int x1, int y1, int x2, int y2) const {
+    m_dc->MoveTo(x1, y1); m_dc->LineTo(x2, y2);
+  }
+  void destroyClipRgn() const;
   void destroyTransformation();
-  void destroyPen();
+  void destroyPen() const;
   inline bool hasDC() const {
     return m_dc && m_dc->m_hDC;
   }
+#ifdef _DEBUG
+  void noDCError(const TCHAR *method) const;
+#define CHECKHASDC() { if(!hasDC()) noDCError(__TFUNCTION__); }
+#else
+#define CHECKHASDC()
+#endif  // _DEBUG
+
 public:
   Viewport2D(bool retainAspectRatio = false);
   Viewport2D(CDC &dc, const Rectangle2DR &from, const Rectangle2DR &to, bool retainAspectRatio = false);
@@ -35,15 +44,14 @@ public:
     return m_dc;
   }
 
-  inline void setDC(CDC *dc) {
-    m_dc = dc;
-  }
-
-  inline RectangleTransformation &getTransformation() {
-    return *m_tr;
+  inline CDC *setDC(CDC *dc) const {
+    CDC *old = m_dc; m_dc = dc; return old;
   }
 
   inline const RectangleTransformation &getTransformation() const {
+    return *m_tr;
+  }
+  inline RectangleTransformation &getTransformation() {
     return *m_tr;
   }
 
@@ -99,28 +107,29 @@ public:
     return m_tr->backwardTransform(r);
   }
 
-  void        setClipping(bool clip);
-  void        MoveTo(      const Point2DP &p);
-  void        MoveTo(double x, double y);
-  void        LineTo(      const Point2DP &p);
-  void        LineTo(double x, double y);
-  void        SetPixel(    const Point2DP &p, COLORREF color);
-  void        SetPixel(double x, double y, COLORREF color);
-  void        paintCross(  const Point2DP &p, COLORREF color, int size=4);
-  COLORREF    GetPixel(const Point2DP &p);
-  COLORREF    GetPixel(double x, double y);
-  bool        Rectangle(const Rectangle2DR &r);
-  bool        Rectangle(double x1, double y1, double x2, double y2);
-  void        FillSolidRect(const Rectangle2DR &r, COLORREF color);
+  void        setClipping(bool         clip) const;
+  void        MoveTo(    const Point2DP  &p) const;
+  void        MoveTo(    double x, double y) const;
+  void        LineTo(    const Point2DP  &p) const;
+  void        LineTo(    double x, double y) const;
+  void        SetPixel(  const Point2DP  &p, COLORREF color) const;
+  void        SetPixel(  double x, double y, COLORREF color) const;
+  void        paintCross(const Point2DP  &p, COLORREF color, int size=4) const;
+  COLORREF    GetPixel(  const Point2DP  &p) const;
+  COLORREF    GetPixel(  double x, double y) const;
+  bool        Rectangle( const Rectangle2DR &r) const;
+  bool        Rectangle( double x1, double y1, double x2, double y2) const;
+  void        FillSolidRect(const Rectangle2DR &r, COLORREF color) const;
   // transparent background
-  // if boundsRect specified, the bound recangle of the written text is returned (can be used for selection)
-  void        TextOut( const Point2DP &p, const String &text, COLORREF color, CRect *boundsRect = NULL);
-  void        clear(COLORREF color);
-  CGdiObject *SelectObject(CGdiObject *object);
-  CBitmap    *SelectObject(CBitmap    *bitmap);
-  CPen       *SelectObject(CPen       *pen);
-  CFont      *SelectObject(CFont      *font);
+  // if boundsRect specified, the bounding recangle of the written text is returned (can be used for selection)
+  // If save is specified, the original pixels in the bounding rectangle containing the text, will be save, for later restore
+  void        TextOut( const Point2DP &p, const String &text, COLORREF color, CRect *boundsRect = NULL, CBitmap *saveBM = NULL) const;
+  void        clear(COLORREF color) const;
+  CGdiObject *SelectObject(CGdiObject *object) const;
+  CBitmap    *SelectObject(CBitmap    *bitmap) const;
+  CPen       *SelectObject(CPen       *pen   ) const;
+  CFont      *SelectObject(CFont      *font  ) const;
 
-  CGdiObject *SelectStockObject(int index);
-  void paintDragRect(const Rectangle2D &rect, SIZE size, const Rectangle2D &lastRect, SIZE lastSize, CBrush *brush = NULL, CBrush *lastBrush = NULL);
+  CGdiObject *SelectStockObject(   int index ) const;
+  void paintDragRect(const Rectangle2D &rect, SIZE size, const Rectangle2D &lastRect, SIZE lastSize, CBrush *brush = NULL, CBrush *lastBrush = NULL) const;
 };

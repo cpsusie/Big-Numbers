@@ -9,14 +9,14 @@ class ParametricGraph : public PointGraph {
 private:
 //  ExpressionImage m_image;
 public:
-  ParametricGraph(const ParametricGraphParameters &param);
+  ParametricGraph(CCoordinateSystem &system, const ParametricGraphParameters &param);
   void calculate();
-  void paint(CCoordinateSystem &cs);
+  void paint(CDC &dc);
   void setTrigoMode(TrigonometricMode mode);
   inline GraphType getType() const {
     return PARAMETRICGRAPH;
   }
-  GraphZeroesResultArray findZeroes(const DoubleInterval &i) const {
+  GraphZeroesResultArray findZeroes(const DoubleInterval &i) {
     return GraphZeroesResultArray(*this);
   }
 };

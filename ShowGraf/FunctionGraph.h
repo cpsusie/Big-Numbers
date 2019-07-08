@@ -9,13 +9,13 @@ class FunctionGraph : public PointGraph {
 private:
 //  ExpressionImage m_image;
 public:
-  FunctionGraph(const FunctionGraphParameters &param);
+  FunctionGraph(CCoordinateSystem &system, const FunctionGraphParameters &param);
   void calculate();
-  void paint(CCoordinateSystem &cs);
+  void paint(CDC &dc);
   void setTrigoMode(TrigonometricMode mode);
   inline GraphType getType() const {
     return FUNCTIONGRAPH;
   }
-  GraphZeroesResultArray  findZeroes( const DoubleInterval &interval) const;
-  GraphExtremaResultArray findExtrema(const DoubleInterval &interval, ExtremaType extremaType) const;
+  GraphZeroesResultArray  findZeroes( const DoubleInterval &interval);
+  GraphExtremaResultArray findExtrema(const DoubleInterval &interval, ExtremaType extremaType);
 };

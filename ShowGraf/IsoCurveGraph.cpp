@@ -44,7 +44,7 @@ void IsoCurveGraphEvaluator::receiveLineSegment(const LineSegment &line) {
   m_graph.m_lineArray.add(line);
 }
 
-IsoCurveGraph::IsoCurveGraph(const IsoCurveGraphParameters &param) : Graph(new IsoCurveGraphParameters(param)) {
+IsoCurveGraph::IsoCurveGraph(CCoordinateSystem &system, const IsoCurveGraphParameters &param) : Graph(system, new IsoCurveGraphParameters(param)) {
   calculate();
 }
 
@@ -86,67 +86,75 @@ void IsoCurveGraph::setTrigoMode(TrigonometricMode mode) {
   }
 }
 
-void IsoCurveGraph::paint(CCoordinateSystem &cs) {
+void IsoCurveGraph::paint(CDC &dc) {
   if(isEmpty()) {
     return;
   }
-  Viewport2D        &vp    = cs.getViewport();
-  const LineSegment *lsp   = &m_lineArray[0];
-  const LineSegment *end   = &m_lineArray.last();
-  const COLORREF     color = getParam().getColor();
-  switch(getParam().getGraphStyle()) {
-  case GSCURVE :
-    { CPen pen;
-      pen.CreatePen(PS_SOLID, 1, color);
-      CPen *oldPen = vp.SelectObject(&pen);
-      for(;lsp <= end; lsp++) {
-        const Point2D &p1 = m_pointArray[lsp->m_i1];
-        const Point2D &p2 = m_pointArray[lsp->m_i2];
-        if(pointDefined(p1) && pointDefined(p1)) {
-          vp.MoveTo(p1);
-          vp.LineTo(p2);
-          cs.setOccupiedLine(p1,p2);
+  CCoordinateSystem &system = getSystem();
+  const Viewport2D  &vp     = getViewport();
+  CDC               *oldDC  = vp.setDC(&dc);
+  try {
+    const LineSegment *lsp   = &m_lineArray[0];
+    const LineSegment *end   = &m_lineArray.last();
+    const COLORREF     color = getParam().getColor();
+    switch(getParam().getGraphStyle()) {
+    case GSCURVE:
+      { CPen pen;
+        pen.CreatePen(PS_SOLID, 1, color);
+        CPen *oldPen = vp.SelectObject(&pen);
+        for (; lsp <= end; lsp++) {
+          const Point2D &p1 = m_pointArray[lsp->m_i1];
+          const Point2D &p2 = m_pointArray[lsp->m_i2];
+          if (pointDefined(p1) && pointDefined(p1)) {
+            vp.MoveTo(p1);
+            vp.LineTo(p2);
+            system.setOccupiedLine(p1, p2);
+          }
         }
+        vp.SelectObject(oldPen);
       }
-      vp.SelectObject(oldPen);
-    }
-    break;
-  case GSPOINT :
-    { Point2DArray tmp(2*m_pointArray.size());
-      for(;lsp <= end; lsp++) {
-        const Point2D &p1 = m_pointArray[lsp->m_i1];
-        const Point2D &p2 = m_pointArray[lsp->m_i2];
-        if(pointDefined(p1)) {
-          vp.SetPixel(p1, color);
-          tmp.add(p1);
+      break;
+    case GSPOINT:
+      { Point2DArray tmp(2 * m_pointArray.size());
+        for (; lsp <= end; lsp++) {
+          const Point2D &p1 = m_pointArray[lsp->m_i1];
+          const Point2D &p2 = m_pointArray[lsp->m_i2];
+          if (pointDefined(p1)) {
+            vp.SetPixel(p1, color);
+            tmp.add(p1);
+          }
+          if (pointDefined(p2)) {
+            vp.SetPixel(p2, color);
+            tmp.add(p2);
+          }
         }
-        if(pointDefined(p2)) {
-          vp.SetPixel(p2, color);
-          tmp.add(p2);
-        }
+        system.setOccupiedPoints(tmp);
       }
-      cs.setOccupiedPoints(tmp);
-    }
-    break;
-  case GSCROSS :
-    { Point2DArray tmp(2*m_pointArray.size());
-      for(;lsp <= end; lsp++) {
-        const Point2D &p1 = m_pointArray[lsp->m_i1];
-        const Point2D &p2 = m_pointArray[lsp->m_i2];
-        if(pointDefined(p1)) {
-          vp.paintCross(p1, color, 6);
-          tmp.add(p1);
+      break;
+    case GSCROSS:
+      { Point2DArray tmp(2 * m_pointArray.size());
+        for (; lsp <= end; lsp++) {
+          const Point2D &p1 = m_pointArray[lsp->m_i1];
+          const Point2D &p2 = m_pointArray[lsp->m_i2];
+          if (pointDefined(p1)) {
+            vp.paintCross(p1, color, 6);
+            tmp.add(p1);
+          }
+          if (pointDefined(p2)) {
+            vp.paintCross(p2, color, 6);
+            tmp.add(p2);
+          }
         }
-        if(pointDefined(p2)) {
-          vp.paintCross(p2, color, 6);
-          tmp.add(p2);
-        }
+        system.setOccupiedPoints(tmp);
       }
-      cs.setOccupiedPoints(tmp);
+      break;
+    default:
+      throwException(_T("Invalid style:%d"), getParam().getGraphStyle());
     }
-    break;
-  default:
-    throwException(_T("Invalid style:%d"), getParam().getGraphStyle());
+    vp.setDC(oldDC);
+  } catch(...) {
+    vp.setDC(oldDC);
+    throw;
   }
 }
 
@@ -158,12 +166,13 @@ const DataRange &IsoCurveGraph::getDataRange() const {
   return m_range;
 }
 
-double IsoCurveGraph::distance(const CPoint &p, const RectangleTransformation &tr) const {
+double IsoCurveGraph::distance(const CPoint &p) const {
   if(isEmpty()) {
     return EMPTY_DISTANCE;
   }
-  const size_t       n  = m_lineArray.size();
-  const LineSegment *ls = &m_lineArray[0];
+  const RectangleTransformation &tr = getSystem().getTransformation();
+  const size_t                   n  = m_lineArray.size();
+  const LineSegment             *ls = &m_lineArray.first();
 
   switch(getParam().getGraphStyle()) {
   case GSCURVE:
@@ -250,11 +259,11 @@ public:
   }
 };
 
-GraphZeroesResultArray IsoCurveGraph::findZeroes(const DoubleInterval &interval) const {
+GraphZeroesResultArray IsoCurveGraph::findZeroes(const DoubleInterval &interval) {
   return makeZeroesResult(::findZeroes(IsoCurveY0Function(this), interval));
 }
 
-GraphExtremaResultArray IsoCurveGraph::findExtrema(const DoubleInterval &interval, ExtremaType extremaType) const {
+GraphExtremaResultArray IsoCurveGraph::findExtrema(const DoubleInterval &interval, ExtremaType extremaType) {
   Point2DArray pa;
   pa.add(findExtremum(IsoCurveY0Function(this), interval, extremaType==EXTREMA_TYPE_MAX));
   return makeExtremaResult(extremaType, pa);

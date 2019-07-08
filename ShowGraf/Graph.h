@@ -8,15 +8,15 @@
 
 class GraphZeroesResult {
 private:
-  const Graph             &m_graph;
+  Graph                   &m_graph;
   const CompactDoubleArray m_zeroes;
 public:
-  GraphZeroesResult(const Graph &graph, const CompactDoubleArray &zeroes)
+  GraphZeroesResult(Graph &graph, const CompactDoubleArray &zeroes)
     : m_graph(graph)
     , m_zeroes(zeroes)
   {
   }
-  inline const Graph &getGraph() const {
+  inline Graph &getGraph() const {
     return m_graph;
   }
   inline const CompactDoubleArray &getZeroes() const {
@@ -28,11 +28,11 @@ public:
 
 class GraphZeroesResultArray : public Array<GraphZeroesResult> {
 private:
-  const Graph &m_graph;
+  Graph &m_graph;
 public:
-  inline GraphZeroesResultArray(const Graph &graph) : m_graph(graph) {
+  inline GraphZeroesResultArray(Graph &graph) : m_graph(graph) {
   }
-  inline const Graph &getGraph() const {
+  inline Graph &getGraph() const {
     return m_graph;
   }
   MoveablePointArray getMoveablePointArray() const;
@@ -50,17 +50,17 @@ inline String toString(ExtremaType type) {
 
 class GraphExtremaResult {
 private:
-  const Graph       &m_graph;
+  Graph             &m_graph;
   const ExtremaType  m_extremaType;
   const Point2DArray m_extrema;
 public:
-  GraphExtremaResult(const Graph &graph, ExtremaType extremaType, const Point2DArray &extrema)
+  GraphExtremaResult(Graph &graph, ExtremaType extremaType, const Point2DArray &extrema)
     : m_graph(graph)
     , m_extremaType(extremaType)
     , m_extrema(extrema)
   {
   }
-  inline const Graph &getGraph() const {
+  inline Graph &getGraph() const {
     return m_graph;
   }
   inline ExtremaType getExtremaType() const {
@@ -78,15 +78,15 @@ public:
 
 class GraphExtremaResultArray : public Array<GraphExtremaResult> {
 private:
-  const Graph      &m_graph;
+  Graph            &m_graph;
   const ExtremaType m_extremaType;
 public:
-  inline GraphExtremaResultArray(const Graph &graph, ExtremaType extremaType)
+  inline GraphExtremaResultArray(Graph &graph, ExtremaType extremaType)
     : m_graph(graph)
     , m_extremaType(extremaType)
   {
   }
-  inline const Graph &getGraph() const {
+  inline Graph &getGraph() const {
     return m_graph;
   }
   inline ExtremaType getExtremaType() const {
@@ -106,20 +106,20 @@ private:
   Graph(const Graph &src);            // Not implemented
   Graph &operator=(const Graph &src); // Not implemented
 protected:
-  Graph(GraphParameters *param) {
+  Graph(CCoordinateSystem &system, GraphParameters *param) : CoordinateSystemObject(system) {
     m_param = param; TRACE_NEW(m_param);
   }
   static bool pointDefined(const Point2D &p) {
     return _finite(p.x) && !_isnan(p.x) && _finite(p.y) && !_isnan(p.y);
   }
-  GraphZeroesResultArray makeZeroesResult(const CompactDoubleArray &zeroes) const {
+  GraphZeroesResultArray makeZeroesResult(const CompactDoubleArray &zeroes) {
     GraphZeroesResultArray result(*this);
     if(!zeroes.isEmpty()) {
       result.add(GraphZeroesResult(*this, zeroes));
     }
     return result;
   }
-  GraphExtremaResultArray makeExtremaResult(ExtremaType extremaType, const Point2DArray &extrema) const {
+  GraphExtremaResultArray makeExtremaResult(ExtremaType extremaType, const Point2DArray &extrema) {
     GraphExtremaResultArray result(*this, extremaType);
     if(!extrema.isEmpty()) {
       result.add(GraphExtremaResult(*this, extremaType, extrema));
@@ -136,10 +136,7 @@ public:
   virtual void calculate() {}
   virtual bool isEmpty()      const = 0;
   virtual GraphType getType() const = 0;
-  virtual double  distance(const CPoint &p, const RectangleTransformation &tr) const = 0;
-  inline double  distance(const Point2DP &p) const {
-    return distance(p,RectangleTransformation::getId());
-  }
+  virtual double  distance(const CPoint &p) const = 0;
   static inline double getMinPositive(double x, double r) {
     return (x > 0 && (r == 0 || x < r)) ? x : r;
   }
@@ -162,13 +159,13 @@ public:
   virtual bool needRefresh() const {
     return false;
   }
-  virtual GraphZeroesResultArray findZeroes(const DoubleInterval &interval) const = 0;
+  virtual GraphZeroesResultArray findZeroes(const DoubleInterval &interval) = 0;
   // Find zero of line going through p1,p2
   // Assume y1 != y2
   static inline double inverseLinearInterpolate0(const Point2D &p1, const Point2D &p2) {
     return (p1.y*p2.x - p1.x*p2.y) / (p1.y-p2.y);
   }
-  virtual GraphExtremaResultArray findExtrema(const DoubleInterval &interval, ExtremaType extremaType) const = 0;
+  virtual GraphExtremaResultArray findExtrema(const DoubleInterval &interval, ExtremaType extremaType) = 0;
 };
 
 class PointGraph : public Graph {
@@ -179,8 +176,8 @@ private:
   DataRange            m_range;
 
 public:
-  PointGraph(GraphParameters *param);
-  void paint(CCoordinateSystem &cs);
+  PointGraph(CCoordinateSystem &system, GraphParameters *param);
+  void paint(CDC &dc);
 
   inline bool isEmpty() const {
     return m_pointArray.isEmpty();
@@ -203,12 +200,12 @@ public:
   }
   void    setDataPoints(const Point2DArray &a);
   void    setRollAvgSize(UINT size);
-  double  distance(const CPoint &p, const RectangleTransformation &tr) const;
+  double  distance(const CPoint &p) const;
   double  getSmallestPositiveX() const;
   double  getSmallestPositiveY() const;
   inline bool isPointGraph() const {
     return true;
   }
-  GraphZeroesResultArray  findZeroes( const DoubleInterval &interval) const;
-  GraphExtremaResultArray findExtrema(const DoubleInterval &interval, ExtremaType extremaType) const;
+  GraphZeroesResultArray  findZeroes( const DoubleInterval &interval);
+  GraphExtremaResultArray findExtrema(const DoubleInterval &interval, ExtremaType extremaType);
 };

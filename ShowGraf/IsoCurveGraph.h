@@ -13,12 +13,12 @@ private:
   void clear();
   void findDataRange();
 public:
-  IsoCurveGraph(const IsoCurveGraphParameters &param);
+  IsoCurveGraph(CCoordinateSystem &system, const IsoCurveGraphParameters &param);
   void             calculate();
-  void             paint(CCoordinateSystem &cs);
+  void             paint(CDC &dc);
   bool             isEmpty() const;
   const DataRange &getDataRange() const;
-  double           distance(const CPoint &p, const RectangleTransformation &tr) const;
+  double           distance(const CPoint &p) const;
   double           getSmallestPositiveX() const;
   double           getSmallestPositiveY() const;
   void             setTrigoMode(TrigonometricMode mode);
@@ -28,6 +28,6 @@ public:
   bool             isPointGraph() const {
     return false;
   }
-  GraphZeroesResultArray  findZeroes( const DoubleInterval &interval) const;
-  GraphExtremaResultArray findExtrema(const DoubleInterval &interval, ExtremaType extremaType) const;
+  GraphZeroesResultArray  findZeroes( const DoubleInterval &interval);
+  GraphExtremaResultArray findExtrema(const DoubleInterval &interval, ExtremaType extremaType);
 };

@@ -10,7 +10,7 @@ public:
   }
 };
 
-FunctionGraph::FunctionGraph(const FunctionGraphParameters &param) : PointGraph(new FunctionGraphParameters(param)) {
+FunctionGraph::FunctionGraph(CCoordinateSystem &system, const FunctionGraphParameters &param) : PointGraph(system, new FunctionGraphParameters(param)) {
   calculate();
 }
 
@@ -41,8 +41,8 @@ void FunctionGraph::setTrigoMode(TrigonometricMode mode) {
   }
 }
 
-void FunctionGraph::paint(CCoordinateSystem &cs) {
-  __super::paint(cs);
+void FunctionGraph::paint(CDC &dc) {
+  __super::paint(dc);
 /*
   if(m_image.isEmpty()) return;
   Viewport2D &vp = cs.getViewport();
@@ -53,11 +53,11 @@ void FunctionGraph::paint(CCoordinateSystem &cs) {
 */
 }
 
-GraphZeroesResultArray FunctionGraph::findZeroes(const DoubleInterval &interval) const {
+GraphZeroesResultArray FunctionGraph::findZeroes(const DoubleInterval &interval) {
   return makeZeroesResult(::findZeroes(FunctionGraphFunction(this),interval));
 }
 
-GraphExtremaResultArray FunctionGraph::findExtrema(const DoubleInterval &interval, ExtremaType extremaType) const {
+GraphExtremaResultArray FunctionGraph::findExtrema(const DoubleInterval &interval, ExtremaType extremaType) {
   Point2DArray pa;
   pa.add(findExtremum(FunctionGraphFunction(this), interval, extremaType==EXTREMA_TYPE_MAX));
   return makeExtremaResult(extremaType, pa);

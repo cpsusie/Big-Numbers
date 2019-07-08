@@ -38,7 +38,7 @@ Viewport2D::~Viewport2D() {
   destroyPen();
 }
 
-void Viewport2D::destroyClipRgn() {
+void Viewport2D::destroyClipRgn() const {
   if(hasDC()) {
     m_dc->SelectClipRgn(NULL);
   }
@@ -54,7 +54,7 @@ void Viewport2D::destroyTransformation() {
   m_tr = NULL;
 }
 
-void Viewport2D::destroyPen() {
+void Viewport2D::destroyPen() const {
   if(hasDC()) {
     m_dc->SelectObject((CPen*)NULL);
   }
@@ -63,7 +63,7 @@ void Viewport2D::destroyPen() {
   }
 }
 
-void Viewport2D::setClipping(bool clip) {
+void Viewport2D::setClipping(bool clip) const {
   destroyClipRgn();
   if(clip) {
     const CRect clipRect = getToRectangle();
@@ -74,7 +74,7 @@ void Viewport2D::setClipping(bool clip) {
   }
 }
 
-CPen &Viewport2D::setCurrentPen(int penStyle, int width, COLORREF color) {
+CPen &Viewport2D::setCurrentPen(int penStyle, int width, COLORREF color) const {
   if((penStyle != m_currentPenStyle) || (width != m_currentPenWidth) || (color != m_currentPenColor)) {
     destroyPen();
     m_currentPen.CreatePen(penStyle,width,color);
@@ -99,118 +99,155 @@ void Viewport2D::setRetainAspectRatio(bool retainAspectRatio) {
   }
 }
 
-void Viewport2D::MoveTo(const Point2DP &p) {
+#ifdef _DEBUG
+void Viewport2D::noDCError(const TCHAR *method) const {
+  throwException(_T("%s:m_dc is NULL"), method);
+}
+#endif
+
+void Viewport2D::MoveTo(const Point2DP &p) const {
+  CHECKHASDC();
   m_dc->MoveTo(forwardTransform(p));
 }
 
-void Viewport2D::MoveTo(double x, double y) {
+void Viewport2D::MoveTo(double x, double y) const {
+  CHECKHASDC();
   m_dc->MoveTo(forwardTransform(x,y));
 }
 
-void Viewport2D::LineTo(const Point2DP &p) {
+void Viewport2D::LineTo(const Point2DP &p) const {
+  CHECKHASDC();
   m_dc->LineTo(forwardTransform(p));
 }
 
-void Viewport2D::LineTo(double x, double y) {
+void Viewport2D::LineTo(double x, double y) const{
+  CHECKHASDC();
   m_dc->LineTo(forwardTransform(x,y));
 }
 
-void Viewport2D::SetPixel(const Point2DP &p, COLORREF color) {
+void Viewport2D::SetPixel(const Point2DP &p, COLORREF color) const {
+  CHECKHASDC();
   m_dc->SetPixel(forwardTransform(p),color);
 }
 
-void Viewport2D::SetPixel(double x, double y, COLORREF color) {
+void Viewport2D::SetPixel(double x, double y, COLORREF color) const {
+  CHECKHASDC();
   m_dc->SetPixel(forwardTransform(x,y),color);
 }
 
-COLORREF Viewport2D::GetPixel(const Point2DP &p) {
+COLORREF Viewport2D::GetPixel(const Point2DP &p) const {
+  CHECKHASDC();
   return m_dc->GetPixel(forwardTransform(p));
 }
 
-COLORREF Viewport2D::GetPixel(double x, double y) {
+COLORREF Viewport2D::GetPixel(double x, double y) const {
+  CHECKHASDC();
   return m_dc->GetPixel(forwardTransform(x,y));
 }
 
-void Viewport2D::paintLine(int x1, int y1, int x2, int y2, int penStyle, COLORREF color) {
-  CPen *origPen = m_dc->SelectObject(&setCurrentPen(penStyle,1,color));
-  m_dc->MoveTo(x1,y1);
-  m_dc->LineTo(x2,y2);
+void Viewport2D::paintCross(const Point2DP &point, COLORREF color, int size) const {
+  CHECKHASDC();
+  const CPoint p       = forwardTransform(point);
+  CPen        *origPen = m_dc->SelectObject(&setCurrentPen(PS_SOLID, 1, color));
+  if(size%2) {
+    const int d = size/2+1;
+    paintLine(p.x-d,p.y-d,p.x+d,p.y+d);
+    paintLine(p.x+d,p.y-d,p.x-d,p.y+d);
+  } else {
+    const int d = size/2, d1 = d+1;
+    paintLine(p.x-d,p.y-d,p.x+d1,p.y+d1);
+    paintLine(p.x+d,p.y-d,p.x-d1,p.y+d1);
+  }
   m_dc->SelectObject(origPen);
 }
 
-void Viewport2D::paintCross(const Point2DP &point, COLORREF color, int size) {
-  CPoint p = forwardTransform(point);
-  if(size%1) {
-    const int d = size/2+1;
-    paintLine(p.x-d,p.y-d,p.x+d,p.y+d,PS_SOLID,color);
-    paintLine(p.x+d,p.y-d,p.x-d,p.y+d,PS_SOLID,color);
-  } else {
-    const int d = size/2, d1 = d+1;
-    paintLine(p.x-d,p.y-d,p.x+d1,p.y+d1,PS_SOLID,color);
-    paintLine(p.x+d,p.y-d,p.x-d1,p.y+d1,PS_SOLID,color);
-  }
-}
-
-bool Viewport2D::Rectangle(const Rectangle2DR &r) {
-  CRect tmp = forwardTransform(r);
+bool Viewport2D::Rectangle(const Rectangle2DR &r) const {
+  CHECKHASDC();
+  const CRect tmp = forwardTransform(r);
   return m_dc->Rectangle(&tmp) ? true : false;
 }
 
-bool Viewport2D::Rectangle(double x1, double y1, double x2, double y2) {
-  int ix1 = (int)m_tr->getXTransformation().forwardTransform(x1);
-  int iy1 = (int)m_tr->getYTransformation().forwardTransform(y1);
-  int ix2 = (int)m_tr->getXTransformation().forwardTransform(x2);
-  int iy2 = (int)m_tr->getYTransformation().forwardTransform(y2);
+bool Viewport2D::Rectangle(double x1, double y1, double x2, double y2) const {
+  CHECKHASDC();
+  const int ix1 = (int)m_tr->getXTransformation().forwardTransform(x1);
+  const int iy1 = (int)m_tr->getYTransformation().forwardTransform(y1);
+  const int ix2 = (int)m_tr->getXTransformation().forwardTransform(x2);
+  const int iy2 = (int)m_tr->getYTransformation().forwardTransform(y2);
   return m_dc->Rectangle(ix1,iy1,ix2,iy2) ? true : false;
 }
 
-void Viewport2D::FillSolidRect(const Rectangle2DR &r, COLORREF color) {
-  CRect rect = forwardTransform(r);
+void Viewport2D::FillSolidRect(const Rectangle2DR &r, COLORREF color) const {
+  CHECKHASDC();
+  const CRect rect = forwardTransform(r);
   m_dc->FillSolidRect(rect,color);
 }
 
-void Viewport2D::TextOut(const Point2DP &point, const String &text, COLORREF color, CRect *boundsRect /* = NULL*/) {
+void Viewport2D::TextOut(const Point2DP &point, const String &text, COLORREF color, CRect *boundsRect /* = NULL*/, CBitmap *saveBM /* = NULL */) const {
+  CHECKHASDC();
   const int      oldMode  = m_dc->SetBkMode(TRANSPARENT);
   const COLORREF oldColor = m_dc->SetTextColor(color);
   const CPoint   p        = forwardTransform(point);
+  CRect          textRect;
+  if(boundsRect || saveBM) {
+    textRect = CRect(p, getTextExtent(*m_dc, text));
+    if(saveBM) {
+      if(saveBM->m_hObject) {
+        const CSize bmsz = getBitmapSize(*saveBM);
+        if(textRect.Size() != bmsz) {
+          saveBM->DeleteObject();
+        }
+      }
+      if(saveBM->m_hObject == NULL) {
+        saveBM->CreateBitmap(textRect.Width(), textRect.Height(), 1, 32, NULL);
+      }
+      CDC tmpDC;
+      tmpDC.CreateCompatibleDC(NULL);
+      CBitmap *oldBM = tmpDC.SelectObject(saveBM);
+      tmpDC.BitBlt(0,0,textRect.Width(),textRect.Height(), m_dc, p.x,p.y, SRCCOPY);
+      tmpDC.SelectObject(oldBM);
+      tmpDC.DeleteDC();
+    }
+    if(boundsRect) {
+      *boundsRect = textRect;
+    }
+  }
   m_dc->TextOut(p.x, p.y, text.cstr(), (int)text.length());
   m_dc->SetTextColor(oldColor);
   m_dc->SetBkMode(   oldMode );
-  if(boundsRect != NULL) {
-    const CSize size   = getTextExtent(*m_dc, text);
-    boundsRect->left   = p.x;
-    boundsRect->top    = p.y;
-    boundsRect->right  = boundsRect->left + size.cx;
-    boundsRect->bottom = boundsRect->top  + size.cy;
-  }
 }
 
-void Viewport2D::clear(COLORREF color) {
+void Viewport2D::clear(COLORREF color) const {
   FillSolidRect(m_tr->getFromRectangle(),color);
 }
 
-CBitmap *Viewport2D::SelectObject(CBitmap *bitmap) {
+CBitmap *Viewport2D::SelectObject(CBitmap *bitmap) const {
+  CHECKHASDC();
   return m_dc->SelectObject(bitmap);
 }
 
-CPen *Viewport2D::SelectObject(CPen *pen) {
+CPen *Viewport2D::SelectObject(CPen *pen) const {
+  CHECKHASDC();
   return m_dc->SelectObject(pen);
 }
 
-CFont *Viewport2D::SelectObject(CFont *font) {
+CFont *Viewport2D::SelectObject(CFont *font) const {
+  CHECKHASDC();
   return m_dc->SelectObject(font);
 }
 
-CGdiObject *Viewport2D::SelectObject(CGdiObject *object) {
+CGdiObject *Viewport2D::SelectObject(CGdiObject *object) const {
+  CHECKHASDC();
   return m_dc->SelectObject(object);
 }
 
-CGdiObject *Viewport2D::SelectStockObject(int index) {
+CGdiObject *Viewport2D::SelectStockObject(int index) const {
+  CHECKHASDC();
   return m_dc->SelectStockObject(index);
 }
 
-void Viewport2D::paintDragRect(const Rectangle2D &rect, SIZE size, const Rectangle2D &lastRect, SIZE lastSize, CBrush *brush, CBrush *lastBrush) {
-  CRect r     = forwardTransform(rect);
-  CRect lastr = forwardTransform(lastRect);
+void Viewport2D::paintDragRect(const Rectangle2D &rect, SIZE size, const Rectangle2D &lastRect, SIZE lastSize, CBrush *brush, CBrush *lastBrush) const {
+  CHECKHASDC();
+  const CRect r     = forwardTransform(rect);
+  const CRect lastr = forwardTransform(lastRect);
   m_dc->DrawDragRect(r,size,lastr,lastSize,brush,lastBrush);
 }

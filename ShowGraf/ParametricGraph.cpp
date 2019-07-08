@@ -2,7 +2,7 @@
 #include <Math/Expression/ExpressionFunction.h>
 #include "ParametricGraph.h"
 
-ParametricGraph::ParametricGraph(const ParametricGraphParameters &param) : PointGraph(new ParametricGraphParameters(param)) {
+ParametricGraph::ParametricGraph(CCoordinateSystem &system, const ParametricGraphParameters &param) : PointGraph(system, new ParametricGraphParameters(param)) {
   calculate();
 }
 
@@ -34,8 +34,8 @@ void ParametricGraph::setTrigoMode(TrigonometricMode mode) {
   }
 }
 
-void ParametricGraph::paint(CCoordinateSystem &cs) {
-  __super::paint(cs);
+void ParametricGraph::paint(CDC &dc) {
+  __super::paint(dc);
 /*
   if(m_image.isEmpty()) return;
   Viewport2D &vp = cs.getViewport();

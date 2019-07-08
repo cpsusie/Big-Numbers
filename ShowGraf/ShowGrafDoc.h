@@ -42,10 +42,12 @@ private:
   GraphArray     m_graphArray;
   InitialOptions m_options;
   String         m_errorMsg;
+  TCHAR        **m_argvFileNames;
   void init();
   void initScaleIfSingleGraph();
   bool addInitialDataGraph(const String &name, COLORREF color);
-  CShowGrafView *getView();
+  CShowGrafView *getView() const ;
+  CCoordinateSystem &getSystem() const;
 protected:
   CShowGrafDoc();
   DECLARE_DYNCREATE(CShowGrafDoc)
@@ -58,9 +60,11 @@ public:
     return m_graphArray;
   }
   const GraphItem *getSelectedGraphItem() const {
-    return m_graphArray.getSelectedItem();
+    return m_graphArray.getSelectedGraphItem();
   }
-
+  MoveablePoint *getSelectedPoint() const {
+    return m_graphArray.getSelectedPoint();
+  }
   DataRange getDataRange() const {
     return getGraphArray().getDataRange();
   }
@@ -85,7 +89,7 @@ public:
   UINT  getRollAvgSize() const {
     return m_options.m_rollAvgSize;
   };
-
+  void addArgvGraphs();
   void addGraphFromFile(    const String &fileName);
   void readDataFile(        const String &fileName);
   void readFunctionFile(    const String &fileName);

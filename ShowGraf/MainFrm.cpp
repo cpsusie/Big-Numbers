@@ -17,6 +17,7 @@ IMPLEMENT_DYNCREATE(CMainFrame, CFrameWnd)
 
 BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
   ON_WM_CREATE()
+  ON_WM_DESTROY()
   ON_COMMAND(ID_FILE_NEW                       , OnFileNew                     )
   ON_COMMAND(ID_FILE_OPEN                      , OnFileOpen                    )
   ON_COMMAND(ID_FILE_MRU_FILE1                 , OnFileMruFile1                )
@@ -88,6 +89,9 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
   ON_COMMAND(ID_SELECTMENU_STYLE_CURVE         , OnSelectMenuStyleCurve        )
   ON_COMMAND(ID_SELECTMENU_STYLE_POINT         , OnSelectMenuStylePoint        )
   ON_COMMAND(ID_SELECTMENU_STYLE_CROSS         , OnSelectMenuStyleCross        )
+  ON_MESSAGE(ID_MSG_PUSHDRAGTOOL               , OnMsgPushDragTool             )
+  ON_MESSAGE(ID_MSG_PUSHMOVEPOINTTOOL          , OnMsgPushMovePointTool        )
+  ON_MESSAGE(ID_MSG_POPMOUSETOOL               , OnMsgPopMouseTool             )
   ON_MESSAGE(ID_MSG_SEARCHZEROESININTERVAL     , OnMsgSearchZeroesInInterval   )
   ON_MESSAGE(ID_MSG_SEARCHMAXININTERVAL        , OnMsgSearchMaxInInterval      )
   ON_MESSAGE(ID_MSG_SEARCHMINININTERVAL        , OnMsgSearchMinInInterval      )
@@ -137,6 +141,12 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
   return 0;
 }
 
+
+void CMainFrame::OnDestroy() {
+  __super::OnDestroy();
+  theApp.m_device.detach();
+}
+
 typedef struct {
   int m_command;
   int m_bitmapId;
@@ -173,7 +183,7 @@ BOOL CMainFrame::PreTranslateMessage(MSG *pMsg) {
 }
 
 void CMainFrame::updatePositionText(const String &str) {
-  m_wndStatusBar.SetPaneText(1,format(_T("(%s)"), str.cstr()).cstr());
+  m_wndStatusBar.SetPaneText(1,str.cstr());
 }
 
 void CMainFrame::activateInitialOptions() {
@@ -655,15 +665,30 @@ void CMainFrame::OnFindMaximum() {
 void CMainFrame::OnFindIntersection() {
 }
 
-DoubleInterval CMainFrame::wlParamToInterval(WPARAM wp, LPARAM lp) {
+DoubleInterval CMainFrame::wlParamToInterval(WPARAM wp, LPARAM lp) const {
   int xFrom = (int)wp;
   int xTo   = (int)lp;
   if(xFrom > xTo) std::swap(xFrom,xTo);
   return getView()->getCoordinateSystem().getTransformation().getXTransformation().backwardTransform(DoubleInterval(xFrom,xTo));
 }
 
+LRESULT CMainFrame::OnMsgPushDragTool(WPARAM wp, LPARAM lp) {
+  getView()->pushMouseTool(DRAGTOOL);
+  return 0;
+}
+
+LRESULT CMainFrame::OnMsgPushMovePointTool(WPARAM wp, LPARAM lp) {
+  getView()->pushMouseTool(MOVEPOINTTOOL);
+  return 0;
+}
+
+LRESULT CMainFrame::OnMsgPopMouseTool(WPARAM wp, LPARAM lp) {
+  getView()->popMouseTool();
+  return 0;
+}
+
 LRESULT CMainFrame::OnMsgSearchZeroesInInterval(WPARAM wp, LPARAM lp) {
-  const GraphItem *item = getDoc()->getGraphArray().getSelectedItem();
+  const GraphItem *item = getDoc()->getGraphArray().getSelectedGraphItem();
   if(item != NULL) {
     const DoubleInterval   interval = wlParamToInterval(wp, lp);
     GraphZeroesResultArray result(item->getGraph());
@@ -675,12 +700,11 @@ LRESULT CMainFrame::OnMsgSearchZeroesInInterval(WPARAM wp, LPARAM lp) {
       Invalidate(FALSE);
     }
   }
-  getView()->popMouseTool();
   return 0;
 }
 
 void CMainFrame::showExtremaInInterval(WPARAM wp, LPARAM lp, ExtremaType extremaType) {
-  const GraphItem *item = getDoc()->getGraphArray().getSelectedItem();
+  const GraphItem *item = getDoc()->getGraphArray().getSelectedGraphItem();
   if(item != NULL) {
     const DoubleInterval    interval = wlParamToInterval(wp, lp);
     GraphExtremaResultArray result(item->getGraph(), extremaType);
@@ -692,7 +716,6 @@ void CMainFrame::showExtremaInInterval(WPARAM wp, LPARAM lp, ExtremaType extrema
       Invalidate(FALSE);
     }
   }
-  getView()->popMouseTool();
 }
 
 LRESULT CMainFrame::OnMsgSearchMaxInInterval(WPARAM wp, LPARAM lp) {
@@ -948,9 +971,9 @@ void CMainFrame::stopFitThread() {
 
 void CMainFrame::OnSelectMenuDelete() {
   GraphArray &ga = getDoc()->getGraphArray();
-  if(ga.getCurrentSelection() >= 0) {
+  if(ga.hasSelection()) {
     pushLevel();
-    ga.remove(ga.getCurrentSelection());
+    ga.removeCurrentSelection();
     popLevel();
   }
 }
@@ -959,8 +982,9 @@ void CMainFrame::OnSelectMenuEdit() {
   pushLevel();
   try {
     GraphArray &ga = getDoc()->getGraphArray();
-    if(ga.getCurrentSelection() >= 0) {
-      Graph &g = ga[ga.getCurrentSelection()].getGraph();
+    const GraphItem *gi = ga.getSelectedGraphItem();
+    if(gi) {
+      Graph &g = gi->getGraph();
       switch(g.getType()) {
       case DATAGRAPH        :
         { CDataGraphDlg dlg((DataGraph&)g);
@@ -1022,46 +1046,51 @@ void CMainFrame::OnSelectMenuEdit() {
 }
 
 void CMainFrame::OnSelectMenuHide() {
-  GraphArray &ga = getDoc()->getGraphArray();
-  if(ga.getCurrentSelection() >= 0) {
+  GraphArray      &ga = getDoc()->getGraphArray();
+  const GraphItem *gi = ga.getSelectedGraphItem();
+  if(gi) {
     pushLevel();
-    ga.getSelectedItem()->getGraph().setVisible(false);
+    gi->getGraph().setVisible(false);
     popLevel();
   }
 }
 
 void CMainFrame::OnSelectMenuShow() {
-  GraphArray &ga = getDoc()->getGraphArray();
-  if(ga.getCurrentSelection() >= 0) {
+  GraphArray      &ga = getDoc()->getGraphArray();
+  const GraphItem *gi = ga.getSelectedGraphItem();
+  if(gi) {
     pushLevel();
-    ga.getSelectedItem()->getGraph().setVisible(true);
+    gi->getGraph().setVisible(true);
     popLevel();
   }
 }
 
 void CMainFrame::OnSelectMenuStyleCurve() {
-  GraphArray &ga = getDoc()->getGraphArray();
-  if(ga.getCurrentSelection() >= 0) {
+  GraphArray      &ga = getDoc()->getGraphArray();
+  const GraphItem *gi = ga.getSelectedGraphItem();
+  if(gi) {
     pushLevel();
-    ga.getSelectedItem()->getGraph().setStyle(GSCURVE);
+    gi->getGraph().setStyle(GSCURVE);
     popLevel();
   }
 }
 
 void CMainFrame::OnSelectMenuStylePoint() {
-  GraphArray &ga = getDoc()->getGraphArray();
-  if(ga.getCurrentSelection() >= 0) {
+  GraphArray      &ga = getDoc()->getGraphArray();
+  const GraphItem *gi = ga.getSelectedGraphItem();
+  if(gi) {
     pushLevel();
-    ga.getSelectedItem()->getGraph().setStyle(GSPOINT);
+    gi->getGraph().setStyle(GSPOINT);
     popLevel();
   }
 }
 
 void CMainFrame::OnSelectMenuStyleCross() {
-  GraphArray &ga = getDoc()->getGraphArray();
-  if(ga.getCurrentSelection() >= 0) {
+  GraphArray      &ga = getDoc()->getGraphArray();
+  const GraphItem *gi = ga.getSelectedGraphItem();
+  if(gi) {
     pushLevel();
-    ga.getSelectedItem()->getGraph().setStyle(GSCROSS);
+    gi->getGraph().setStyle(GSCROSS);
     popLevel();
   }
 }

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "DataGraph.h"
 
-DataGraph::DataGraph(DataGraphParameters &param) : PointGraph(new DataGraphParameters(param)) {
+DataGraph::DataGraph(CCoordinateSystem &system, DataGraphParameters &param) : PointGraph(system , new DataGraphParameters(param)) {
   m_lastReadTime = 0;
   readData();
 }

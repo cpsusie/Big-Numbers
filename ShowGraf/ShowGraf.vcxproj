@@ -478,6 +478,7 @@
     <ResourceCompile Include="ShowGraf.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CoordinateSystemContainer.h" />
     <ClInclude Include="CustomFitThread.h" />
     <ClInclude Include="CustomFitThreadDlg.h" />
     <ClInclude Include="DataGraph.h" />

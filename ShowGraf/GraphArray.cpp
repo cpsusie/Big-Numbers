@@ -1,13 +1,14 @@
 #include "stdafx.h"
 #include "GraphArray.h"
 
-void GraphArray::paintItems(CCoordinateSystem &cs, CFont &buttonFont, const CRect &buttonPanelRect) const {
-  Viewport2D &vp = cs.getViewport();
-  findButtonPositions(*vp.getDC(),buttonFont,buttonPanelRect);
+void GraphArray::paintItems(CDC &dc, CFont &buttonFont, const CRect &buttonPanelRect) const {
+  findButtonPositions(dc,buttonFont,buttonPanelRect);
   m_error = EMPTYSTRING;
+  const SelectedData &sel                = getCurrentSelection();
+  const size_t        selectedGraphIndex = (sel.getType() == GRAPHSELECTED) ? sel.getIndex() : -1;
   for(size_t i = 0; i < size(); i++) {
     try {
-      getItem(i).paint(cs, buttonFont,(int)i==m_selected);
+      getItem(i).paint(dc, buttonFont,i == selectedGraphIndex);
     } catch(Exception e) {
       if(m_error.length() == 0) {
         m_error = e.what();
@@ -16,14 +17,12 @@ void GraphArray::paintItems(CCoordinateSystem &cs, CFont &buttonFont, const CRec
   }
 }
 
-void GraphArray::paintPointArray(CCoordinateSystem &cs, CFont &font) const {
-  if(m_pointArray.isEmpty()) return;
-  Viewport2D &vp = cs.getViewport();
-  CFont *oldFont = vp.SelectObject(&font);
-  for(size_t i = 0; i < m_pointArray.size(); i++) {
-    m_pointArray[i]->paint(cs);
-  }
-  vp.SelectObject(oldFont);
+void GraphArray::paintPointArray(CDC &dc) const {
+  m_pointArray.paint(dc);
+}
+
+void GraphArray::unpaintPointArray(CDC &dc) {
+  m_pointArray.unpaint(dc);
 }
 
 void GraphArray::setTrigoMode(TrigonometricMode mode) {
@@ -47,39 +46,38 @@ void GraphArray::setRollAvgSize(UINT rollAvgSize) {
   }
 }
 
-void GraphArray::unselect() {
-  m_selected = -1;
-}
-
-void GraphArray::select(intptr_t i) {
-  unselect();
-  m_selected = i;
-}
-
-bool GraphArray::OnLButtonDown(UINT nFlags, const CPoint &point, const RectangleTransformation &tr) {
+bool GraphArray::OnLButtonDown(UINT nFlags, const CPoint &point) {
   for(size_t i = 0; i < size(); i++) {
     if(getItem(i).getButtonRect().PtInRect(point)) {
-      select(i);
+      select(GRAPHSELECTED, i);
       return true;
     }
   }
+  for(size_t i = 0; i < m_pointArray.size(); i++) {
+    const MoveablePoint *p = m_pointArray[i];
+    if(p->getTextRect().PtInRect(point)) {
+      select(POINTSELECTED, i);
+      return true;
+    }
+  }
+  intptr_t bestIndex   = -1;
   double   minDistance = EMPTY_DISTANCE;
-  intptr_t selected    = -1;
   for(size_t i = 0; i < size(); i++) {
     const GraphItem &item = getItem(i);
     if(!item.getGraph().isVisible()) {
       continue;
     }
-    const double distance = item.getGraph().distance(point,tr);
+    const double distance = item.getGraph().distance(point);
     if((distance < 7) && (distance < minDistance)) {
-      selected    = i;
+      bestIndex   = i;
       minDistance = distance;
     }
   }
-  if(selected >= 0) {
-    select(selected);
+  if(bestIndex >= 0) {
+    select(GRAPHSELECTED, bestIndex);
     return true;
   }
+  unselect();
   return false;
 }
 
@@ -126,26 +124,36 @@ void GraphArray::add(Graph *g) {
   __super::add(GraphItem(g));
 }
 
-void GraphArray::remove(size_t index) {
-  if(index == m_selected) {
-    unselect();
+void GraphArray::removeCurrentSelection() {
+  const SelectedData &sel = getCurrentSelection();
+  switch(sel.getType()) {
+  case GRAPHSELECTED:
+    removeGraphItem(sel.getIndex());
+    break;
+  case POINTSELECTED:
+    removePoint(sel.getIndex());
+    break;
+  case NOSELECTION:
+    return;
   }
+  unselect();
+}
+
+void GraphArray::removeGraphItem(size_t index) {
   GraphItem &item = getItem(index);
   const BitSet pointIndexSet = m_pointArray.findPointsBelongingToGraph(item.m_graph);
   SAFEDELETE(item.m_graph);
   __super::removeIndex(index);
   m_pointArray.removePointSet(pointIndexSet);
   calculateDataRange();
-
-  if(index < size()) {
-    select(index);
-  } else if(size() > 0) {
-    select(size()-1);
-  }
 }
 
 void GraphArray::addPoint(MoveablePoint *p) {
   m_pointArray.add(p);
+}
+
+void GraphArray::removePoint(size_t index) {
+  m_pointArray.removePoint(index);
 }
 
 void GraphArray::addPointArray(const MoveablePointArray &pa, bool removeOldOfSameType) {
@@ -162,6 +170,7 @@ void GraphArray::calculateDataRange() {
 }
 
 void GraphArray::clear() {
+  unselect();
   for(size_t i = 0; i < size(); i++) {
     SAFEDELETE(getItem(i).m_graph);
   }

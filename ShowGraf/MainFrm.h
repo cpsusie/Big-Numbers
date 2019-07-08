@@ -5,6 +5,8 @@
 
 class CMainFrame : public CFrameWnd {
 private:
+  CToolBar                    m_wndToolBar;
+  CStatusBar                  m_wndStatusBar;
   HACCEL                      m_accelTable;
   FunctionGraphParameters     m_functionParam;
   ParametricGraphParameters   m_parametricCurveParam;
@@ -22,14 +24,14 @@ private:
   void onFileMruFile(int index);
   void initMenuItems();
   void showExtremaInInterval(WPARAM wp, LPARAM lp, ExtremaType extremaType);
-  DoubleInterval wlParamToInterval(WPARAM wp, LPARAM lp);
+  DoubleInterval wlParamToInterval(WPARAM wp, LPARAM lp) const;
 
   inline void pushLevel() {
     m_flushLevel++;
   }
   inline void popLevel() {
     if(--m_flushLevel == 0) {
-      Invalidate();
+      Invalidate(FALSE);
     }
   }
 protected:
@@ -59,7 +61,7 @@ public:
   void makeExpoFit();
   void makePotensFit();
 
-  CShowGrafView *getView() {
+  CShowGrafView *getView() const {
     return (CShowGrafView*)GetActiveView();
   }
   CShowGrafDoc *getDoc() {
@@ -84,10 +86,9 @@ public:
 #endif
 
 protected:
-  CToolBar    m_wndToolBar;
-  CStatusBar  m_wndStatusBar;
 
   afx_msg int  OnCreate(LPCREATESTRUCT lpCreateStruct);
+  afx_msg void OnDestroy();
   afx_msg void OnFileNew();
   afx_msg void OnFileOpen();
   afx_msg void OnFileMruFile1();
@@ -159,6 +160,9 @@ protected:
   afx_msg void OnSelectMenuStyleCurve();
   afx_msg void OnSelectMenuStylePoint();
   afx_msg void OnSelectMenuStyleCross();
+  afx_msg LRESULT OnMsgPushDragTool(          WPARAM wp, LPARAM lp);
+  afx_msg LRESULT OnMsgPushMovePointTool(     WPARAM wp, LPARAM lp);
+  afx_msg LRESULT OnMsgPopMouseTool(          WPARAM wp, LPARAM lp);
   afx_msg LRESULT OnMsgSearchZeroesInInterval(WPARAM wp, LPARAM lp);
   afx_msg LRESULT OnMsgSearchMaxInInterval(   WPARAM wp, LPARAM lp);
   afx_msg LRESULT OnMsgSearchMinInInterval(   WPARAM wp, LPARAM lp);
