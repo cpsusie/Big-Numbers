@@ -9,7 +9,6 @@ MoveablePoint::MoveablePoint(Graph *graph, MoveablePointType type, const Point2D
   , m_showFlags(showFlags)
   , m_location(point)
 {
-  initTextRect();
 }
 
 void MoveablePoint::paint(CDC &dc) {
@@ -31,19 +30,7 @@ void MoveablePoint::paint(CDC &dc) {
       text = getSystem().getPointText(p);
       break;
     }
-    vp.TextOut(getLocation(), text, g->getParam().getColor(), &m_textRect, &m_saveBM);
+    vp.TextOut(getLocation(), text, g->getParam().getColor(), &m_bckSave);
     vp.setDC(oldDC);
-  }
-}
-
-void MoveablePoint::unpaint(CDC &dc) {
-  if(hasTextRect()) {
-    CDC tmpDC;
-    tmpDC.CreateCompatibleDC(NULL);
-    CBitmap *oldBM = tmpDC.SelectObject(&m_saveBM);
-    dc.BitBlt(m_textRect.left, m_textRect.top, m_textRect.Width(), m_textRect.Height(), &tmpDC, 0,0, SRCCOPY);
-    tmpDC.SelectObject(oldBM);
-    tmpDC.DeleteDC();
-    initTextRect();
   }
 }

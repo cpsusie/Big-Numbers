@@ -156,6 +156,37 @@ BITMAPINFOHEADER getBitmapInfoHeader(        HBITMAP   bm);
 CSize            getBitmapSize(              HBITMAP   bm);
 CBitmap         *createFromHandle(           HBITMAP   bm);
 
+inline int getArea(const CSize &sz) {
+  return sz.cx * sz.cy;
+}
+
+inline int getArea(const CRect &r) {
+  return getArea(r.Size());
+}
+
+class BackgroundSaver {
+private:
+  CRect   m_rect;
+  CBitmap m_bm;
+  inline void initRect() {
+    m_rect.left = m_rect.top = m_rect.right = m_rect.bottom = 0;
+  }
+public:
+  inline BackgroundSaver() {
+    initRect();
+  }
+  virtual ~BackgroundSaver() {
+  }
+  void saveBackground(   HDC hdc, const CRect &r);
+  void restoreBackground(HDC hdc);
+  inline const CRect &getSavedRect() const {
+    return m_rect;
+  }
+  inline bool hasSavedRect() const {
+    return getArea(m_rect) != 0;
+  }
+};
+
 ICONINFO  getIconInfo(                       HICON     icon);
 CSize     getIconSize(                       HICON     icon);
 void      closeIconInfo(                     ICONINFO &info);
@@ -287,14 +318,6 @@ inline CSize operator/(const CSize &sz, double factor) {
 }
 
 #pragma warning(pop)
-
-inline int getArea(const CSize &sz) {
-  return sz.cx * sz.cy;
-}
-
-inline int getArea(const CRect &r) {
-  return getArea(r.Size());
-}
 
 CRect makePositiveRect(const CRect &r);
 

@@ -121,9 +121,9 @@ public:
   bool        Rectangle( double x1, double y1, double x2, double y2) const;
   void        FillSolidRect(const Rectangle2DR &r, COLORREF color) const;
   // transparent background
-  // if boundsRect specified, the bounding recangle of the written text is returned (can be used for selection)
-  // If save is specified, the original pixels in the bounding rectangle containing the text, will be save, for later restore
-  void        TextOut( const Point2DP &p, const String &text, COLORREF color, CRect *boundsRect = NULL, CBitmap *saveBM = NULL) const;
+  // If bckSave is specified, the bounding recangle of the written text is returned (can be used for selection)
+  // and the original pixels in the bounding rectangle containing the text, will be saved, for later restore
+  void        TextOut( const Point2DP &p, const String &text, COLORREF color, BackgroundSaver *bckSave = NULL) const;
   void        clear(COLORREF color) const;
   CGdiObject *SelectObject(CGdiObject *object) const;
   CBitmap    *SelectObject(CBitmap    *bitmap) const;

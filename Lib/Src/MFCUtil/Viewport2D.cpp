@@ -182,36 +182,15 @@ void Viewport2D::FillSolidRect(const Rectangle2DR &r, COLORREF color) const {
   m_dc->FillSolidRect(rect,color);
 }
 
-void Viewport2D::TextOut(const Point2DP &point, const String &text, COLORREF color, CRect *boundsRect /* = NULL*/, CBitmap *saveBM /* = NULL */) const {
+void Viewport2D::TextOut(const Point2DP &point, const String &text, COLORREF color, BackgroundSaver *bckSave /* = NULL*/) const {
   CHECKHASDC();
   const int      oldMode  = m_dc->SetBkMode(TRANSPARENT);
   const COLORREF oldColor = m_dc->SetTextColor(color);
   const CPoint   p        = forwardTransform(point);
-  CRect          textRect;
-  if(boundsRect || saveBM) {
-    textRect = CRect(p, getTextExtent(*m_dc, text));
-    if(saveBM) {
-      if(saveBM->m_hObject) {
-        const CSize bmsz = getBitmapSize(*saveBM);
-        if(textRect.Size() != bmsz) {
-          saveBM->DeleteObject();
-        }
-      }
-      if(saveBM->m_hObject == NULL) {
-        saveBM->CreateBitmap(textRect.Width(), textRect.Height(), 1, 32, NULL);
-      }
-      CDC tmpDC;
-      tmpDC.CreateCompatibleDC(NULL);
-      CBitmap *oldBM = tmpDC.SelectObject(saveBM);
-      tmpDC.BitBlt(0,0,textRect.Width(),textRect.Height(), m_dc, p.x,p.y, SRCCOPY);
-      tmpDC.SelectObject(oldBM);
-      tmpDC.DeleteDC();
-    }
-    if(boundsRect) {
-      *boundsRect = textRect;
-    }
+  if(bckSave != NULL) {
+    bckSave->saveBackground(*m_dc, CRect(p, getTextExtent(*m_dc, text)));
   }
-  m_dc->TextOut(p.x, p.y, text.cstr(), (int)text.length());
+  textOut(*m_dc, p, text);
   m_dc->SetTextColor(oldColor);
   m_dc->SetBkMode(   oldMode );
 }
