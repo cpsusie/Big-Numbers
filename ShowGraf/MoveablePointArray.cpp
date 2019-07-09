@@ -99,13 +99,13 @@ bool MoveablePointArray::addAll(const MoveablePointArray &a, bool removeOldOfSam
   return changed;
 }
 
-void MoveablePointArray::paint(CDC &dc) const {
+void MoveablePointArray::paint(CDC &dc, CFont &font) const {
   const size_t n = size();
   if(n == 0) return;
   CCoordinateSystem &system  = first()->getSystem();
   Viewport2D        &vp      = system.getViewport();
   CDC               *oldDC   = vp.setDC(&dc);
-  CFont             *oldFont = dc.SelectObject(system.GetFont());
+  CFont             *oldFont = dc.SelectObject(&font);
   vp.setClipping(true);
 
   for(size_t i = 0; i < n;) {

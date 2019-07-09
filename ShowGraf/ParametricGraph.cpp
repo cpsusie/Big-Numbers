@@ -2,7 +2,9 @@
 #include <Math/Expression/ExpressionFunction.h>
 #include "ParametricGraph.h"
 
-ParametricGraph::ParametricGraph(CCoordinateSystem &system, const ParametricGraphParameters &param) : PointGraph(system, new ParametricGraphParameters(param)) {
+ParametricGraph::ParametricGraph(CCoordinateSystem &system, const ParametricGraphParameters &param)
+: PointGraph(system, param.clone())
+{
   calculate();
 }
 

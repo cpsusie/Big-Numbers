@@ -1,8 +1,7 @@
 #pragma once
 
-#include <MFCUtil/Viewport2D.h>
 #include <MFCUtil/ExpressionGraphics.h>
-#include "Graph.h"
+#include "PointGraph.h"
 #include "DiffEquationGraphParameters.h"
 
 class DiffEquationGraph : public Graph {

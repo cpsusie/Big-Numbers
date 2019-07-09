@@ -20,7 +20,6 @@ void BackgroundSaver::saveBackground(HDC hdc, const CRect &r) {
   HGDIOBJ oldgdi = SelectObject(tmpDC, m_bm);
   BitBlt(tmpDC, 0, 0, rsz.cx, rsz.cy, hdc, r.left, r.top, SRCCOPY);
   SelectObject(tmpDC, oldgdi);
-  tmpDC.DeleteDC();
 }
 
 void BackgroundSaver::restoreBackground(HDC hdc) {
@@ -30,7 +29,6 @@ void BackgroundSaver::restoreBackground(HDC hdc) {
     HGDIOBJ oldgdi = SelectObject(tmpDC, m_bm);
     BitBlt(hdc, m_rect.left,m_rect.top,m_rect.Width(),m_rect.Height(), tmpDC, 0,0, SRCCOPY);
     SelectObject(tmpDC, oldgdi);
-    tmpDC.DeleteDC();
     initRect();
   }
 }

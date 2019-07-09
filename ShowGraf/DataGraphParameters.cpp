@@ -22,10 +22,11 @@ DataGraphParameters::DataGraphParameters(const String &name
 , m_yReader(yReader)
 {
   m_fileName         = name;
-  m_onePerLine       = onePerLine;
-  m_ignoreErrors     = ignoreErrors;
-  m_xRelativeToFirst = xRelativeToFirst;
-  m_yRelativeToFirst = yRelativeToFirst;
+  m_flags            = 0;
+  if(onePerLine      ) m_flags |= DGP_ONEPERLINE;
+  if(ignoreErrors    ) m_flags |= DGP_IGNOREERRORS;
+  if(xRelativeToFirst) m_flags |= DGP_RELATIVETOFIRSTX;
+  if(yRelativeToFirst) m_flags |= DGP_RELATIVETOFIRSTY;
 }
 
 DataReader::DataReader(StringConverter convert, double from, double to, int flags) : m_legalInterval(from,to) {

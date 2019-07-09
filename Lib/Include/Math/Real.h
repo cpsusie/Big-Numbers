@@ -25,6 +25,9 @@ typedef enum {
  ,GRADS
 } TrigonometricMode;
 
+String            toString(TrigonometricMode mode);
+TrigonometricMode getTrigonometricModeFromString(const String &str);
+
 Real csc(                 const Real &x);
 Real sec(                 const Real &x);
 Real acsc(                const Real &x);

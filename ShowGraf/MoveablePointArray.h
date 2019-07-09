@@ -21,6 +21,6 @@ public:
 
   BitSet findPointsBelongingToGraph(const Graph *g) const;
   BitSet findPointsBelongingToGraphWithType(const Graph *g, MoveablePointType type) const;
-  void paint(  CDC &dc) const;
+  void paint(  CDC &dc, CFont &font) const;
   void unpaint(CDC &dc) const;
 };

@@ -2,7 +2,9 @@
 #include <QueueList.h>
 #include "Graph.h"
 
-PointGraph::PointGraph(CCoordinateSystem &system, GraphParameters *param) : Graph(system, param) {
+PointGraph::PointGraph(CCoordinateSystem &system, GraphParameters *param)
+: Graph(system, param)
+{
   m_dataProcessed = false;
 }
 

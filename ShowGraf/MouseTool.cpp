@@ -167,7 +167,7 @@ void MovePointTool::movePoint(UINT nFlags, const CPoint &point) {
         CClientDC dc(&getSystem());
         m_ga->unpaintPointArray(dc);
         m_mp->setTrLocation(point - m_offset);
-        m_ga->paintPointArray(dc);
+        m_ga->paintPointArray(dc, getAxisFont());
       } catch (Exception e) {
         // ignore
       }

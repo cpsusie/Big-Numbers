@@ -18,7 +18,7 @@ private:
   CompactStack<MouseTool*>    m_toolStack;
   void plotFunction(Function &f, const DoubleInterval &interval, COLORREF color);
   void plotFunction(Function &f, COLORREF color);
-  bool paintAll(CDC &dc, const CRect &rect, CFont *axisFont, CFont *buttonFont);
+  bool paintAll(CDC &dc, const CRect &rect);
   bool isMenuItemChecked(int id);
   void enableMenuItem(int id, bool enabled);
   void checkMenuItem( int id, bool checked);
@@ -72,6 +72,12 @@ public:
     }
     CCoordinateSystem &getCoordinateSystem() {
       return m_coordinateSystem;
+    }
+    CFont &getAxisFont() {
+      return m_axisFont;
+    }
+    CFont &getButtonFont() {
+      return m_buttonFont;
     }
     void repaint() {
       Invalidate();

@@ -1,11 +1,12 @@
 #include "stdafx.h"
 #include <Math/Expression/Expression.h>
 #include <Math/RungekuttaFehlberg.h>
+#include "PointGraphParameters.h"
 #include "DiffEquationGraph.h"
 #include "DiffEquationSystem.h"
 
 DiffEquationGraph::DiffEquationGraph(CCoordinateSystem &system, const DiffEquationGraphParameters &param)
-: Graph(system, new DiffEquationGraphParameters(param))
+: Graph(system, param.clone())
 {
   calculate();
 }

@@ -44,7 +44,9 @@ void IsoCurveGraphEvaluator::receiveLineSegment(const LineSegment &line) {
   m_graph.m_lineArray.add(line);
 }
 
-IsoCurveGraph::IsoCurveGraph(CCoordinateSystem &system, const IsoCurveGraphParameters &param) : Graph(system, new IsoCurveGraphParameters(param)) {
+IsoCurveGraph::IsoCurveGraph(CCoordinateSystem &system, const IsoCurveGraphParameters &param)
+: Graph(system, param.clone())
+{
   calculate();
 }
 

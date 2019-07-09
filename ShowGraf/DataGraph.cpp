@@ -1,7 +1,9 @@
 #include "stdafx.h"
 #include "DataGraph.h"
 
-DataGraph::DataGraph(CCoordinateSystem &system, DataGraphParameters &param) : PointGraph(system , new DataGraphParameters(param)) {
+DataGraph::DataGraph(CCoordinateSystem &system, DataGraphParameters &param)
+: PointGraph(system , param.clone())
+{
   m_lastReadTime = 0;
   readData();
 }
@@ -43,35 +45,37 @@ void DataGraph::readData() {
 
 void DataGraph::readData(FILE *f) {
   const DataGraphParameters &param = (DataGraphParameters&)getParam();
-  int    lineCount = 0;
-  double currentX  = 1;
-  TCHAR  line[4000];
+  const bool onePerLine   = param.getOnePerLine();
+  const bool ignoreErrors = param.getIgnoreErrors();
+  UINT       lineCount    = 0;
+  double     currentX     = 1;
+  TCHAR      line[4000];
   clear();
   m_hasFirstDataPoint = false;
   while(FGETS(line,ARRAYSIZE(line),f)) {
     lineCount++;
     TCHAR sx[1024],sy[1024];
-    if(param.m_onePerLine) {
+    if(onePerLine) {
       if(_stscanf(line, _T("%s"), sy) != 1) {
-        if(param.m_ignoreErrors) {
+        if(ignoreErrors) {
           continue;
         }
-        throwException(_T("Invalid input in %s line %d:%s"), param.getFileName().cstr(), lineCount, line);
+        throwException(_T("Invalid input in %s line %u:%s"), param.getFileName().cstr(), lineCount, line);
       }
       _stprintf(sx,_T("%lg"), currentX++);
     } else if(_stscanf(line,_T("%s %s"), sx, sy) != 2) {
-      if(param.m_ignoreErrors) {
+      if(ignoreErrors) {
         continue;
       }
-      throwException(_T("Invalid input in %s line %d:%s"), param.getFileName().cstr(), lineCount, line);
+      throwException(_T("Invalid input in %s line %u:%s"), param.getFileName().cstr(), lineCount, line);
     }
     try {
-      addPoint(tr1(sx, sy));
+      addPoint(strToPoint(sx, sy, param));
     } catch(Exception e) {
-      if(param.m_ignoreErrors) {
+      if(ignoreErrors) {
         continue;
       }
-      throwException(_T("Invalid input in %s line %d:<%s>:\n\r%s\n"), param.getFileName().cstr(),lineCount,line,e.what());
+      throwException(_T("Invalid input in %s line %u:<%s>:\n\r%s\n"), param.getFileName().cstr(),lineCount,line,e.what());
     }
   }
   updateDataRange();
@@ -82,26 +86,26 @@ void DataGraph::readData(FILE *f) {
   }
 }
 
-Point2D DataGraph::tr1(const TCHAR *sx, const TCHAR *sy) {
-  const DataGraphParameters &param = (DataGraphParameters&)getParam();
-  Point2D                    result;
-  result.x = param.m_xReader.convertString(sx);
-  result.y = param.m_yReader.convertString(sy);
-  if(param.m_xRelativeToFirst || param.m_yRelativeToFirst) {
+Point2D DataGraph::strToPoint(const TCHAR *sx, const TCHAR *sy, const DataGraphParameters &param) {
+  const BYTE flags = param.getFlags();
+  Point2D result;
+  result.x = param.convertX(sx);
+  result.y = param.convertY(sy);
+  if(flags & (DGP_RELATIVETOFIRSTX | DGP_RELATIVETOFIRSTY)) {
     if(m_hasFirstDataPoint) {
-      if(param.m_xRelativeToFirst) {
+      if(flags & DGP_RELATIVETOFIRSTX) {
         result.x -= m_firstPoint.x;
       }
-      if(param.m_yRelativeToFirst) {
+      if(flags & DGP_RELATIVETOFIRSTY) {
         result.x -= m_firstPoint.y;
       }
     } else {
       m_firstPoint        = result;
       m_hasFirstDataPoint = true;
-      if(param.m_xRelativeToFirst) {
+      if(flags & DGP_RELATIVETOFIRSTX) {
         result.x = 0;
       }
-      if(param.m_yRelativeToFirst) {
+      if(flags & DGP_RELATIVETOFIRSTY) {
         result.y = 0;
       }
     }

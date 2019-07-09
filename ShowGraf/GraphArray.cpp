@@ -17,8 +17,8 @@ void GraphArray::paintItems(CDC &dc, CFont &buttonFont, const CRect &buttonPanel
   }
 }
 
-void GraphArray::paintPointArray(CDC &dc) const {
-  m_pointArray.paint(dc);
+void GraphArray::paintPointArray(CDC &dc, CFont &font) const {
+  m_pointArray.paint(dc, font);
 }
 
 void GraphArray::unpaintPointArray(CDC &dc) {

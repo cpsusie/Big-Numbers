@@ -48,15 +48,7 @@ void CShowGrafView::OnInitialUpdate() {
   pushMouseTool(IDLETOOL);
 }
 
-bool CShowGrafView::paintAll(CDC &dc, const CRect &rect, CFont *axisFont, CFont *buttonFont) {
-  if(axisFont == NULL) {
-    axisFont = &m_axisFont;
-  }
-
-  if(buttonFont == NULL) {
-    buttonFont = &m_buttonFont;
-  }
-
+bool CShowGrafView::paintAll(CDC &dc, const CRect &rect) {
   CWnd *systemPanel = GetDlgItem(IDC_SYSTEMPANEL);
   CWnd *buttonPanel = GetDlgItem(IDC_BUTTONPANEL);
 
@@ -66,7 +58,7 @@ bool CShowGrafView::paintAll(CDC &dc, const CRect &rect, CFont *axisFont, CFont 
   const GraphArray &ga = getDoc()->getGraphArray();
   WINDOWPLACEMENT wpl;
   systemPanel->GetWindowPlacement(&wpl);
-  int buttonPanelWidth = ga.getMaxButtonWidth(dc,*buttonFont) + 30;
+  int buttonPanelWidth = ga.getMaxButtonWidth(dc,m_buttonFont) + 30;
 
   wpl.rcNormalPosition.left   = 0;
   wpl.rcNormalPosition.top    = 0;
@@ -81,7 +73,7 @@ bool CShowGrafView::paintAll(CDC &dc, const CRect &rect, CFont *axisFont, CFont 
   wpl.rcNormalPosition.bottom = rect.bottom;
   buttonPanel->SetWindowPlacement(&wpl);
 
-  m_coordinateSystem.SetFont(axisFont,FALSE);
+  m_coordinateSystem.SetFont(&m_axisFont,FALSE);
   FOR_BOTH_AXIS(i) {
     m_coordinateSystem.setShowAxisValues( i, theApp.getMainWindow()->getShowValues(    i));
     m_coordinateSystem.showAxisValueMarks(i, theApp.getMainWindow()->getShowValueMarks(i));
@@ -90,8 +82,8 @@ bool CShowGrafView::paintAll(CDC &dc, const CRect &rect, CFont *axisFont, CFont 
   try {
     m_coordinateSystem.OnPaint();
     CClientDC dc(&m_coordinateSystem);
-    ga.paintItems(dc, *buttonFont, getRelativeClientRect(this,IDC_BUTTONPANEL));
-    ga.paintPointArray(dc);
+    ga.paintItems(dc, getButtonFont(), getRelativeClientRect(this,IDC_BUTTONPANEL));
+    ga.paintPointArray(dc, getAxisFont());
 //    debugLog(_T("Cells Occupied:\n%s"), m_coordinateSystem.getOccupationMap().toString().cstr());
     return true;
   } catch(Exception e) {
@@ -154,7 +146,7 @@ void CShowGrafView::OnDraw(CDC *pDC) {
   try {
     const CRect rect = getClientRect(this);
 
-    if(paintAll(*pDC, rect, &m_axisFont, &m_buttonFont)) {
+    if(paintAll(*pDC, rect)) {
       DoubleInterval maxNormInterval(0,1);
       const DataRange dr = m_coordinateSystem.getDataRange();
       const bool xlogEnabled = dr.getMinX() > 0, ylogEnabled = dr.getMinY() > 0;
@@ -213,14 +205,10 @@ void CShowGrafView::OnMouseMove(UINT nFlags, CPoint point) {
   if(!ptInPanel(IDC_SYSTEMPANEL, point)) {
     theApp.getMainWindow()->updatePositionText(EMPTYSTRING);
   } else  {
-    if (nFlags & MK_LBUTTON) {
-      int fisk = 1;
-    }
     if(hasMouseTool()) {
       getCurrentTool().OnMouseMove(nFlags, point);
     }
-    const Point2D p = m_coordinateSystem.getMouseToSystem(point);
-    theApp.getMainWindow()->updatePositionText(format(_T("(%s)"), m_coordinateSystem.getPointText(p).cstr()));
+    theApp.getMainWindow()->updatePositionText(m_coordinateSystem.getPointText(m_coordinateSystem.getMouseToSystem(point)));
   }
 }
 

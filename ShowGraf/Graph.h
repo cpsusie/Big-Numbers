@@ -2,102 +2,10 @@
 
 #include <float.h>
 #include "GraphParameters.h"
-#include "MoveablePointArray.h"
+#include "GraphZeroResult.h"
+#include "GraphExtremaResult.h"
 
 #define EMPTY_DISTANCE 1e40
-
-class GraphZeroesResult {
-private:
-  Graph                   &m_graph;
-  const CompactDoubleArray m_zeroes;
-public:
-  GraphZeroesResult(Graph &graph, const CompactDoubleArray &zeroes)
-    : m_graph(graph)
-    , m_zeroes(zeroes)
-  {
-  }
-  inline Graph &getGraph() const {
-    return m_graph;
-  }
-  inline const CompactDoubleArray &getZeroes() const {
-    return m_zeroes;
-  }
-  MoveablePointArray getMoveablePointArray() const;
-  String toString(const TCHAR *name=NULL) const;
-};
-
-class GraphZeroesResultArray : public Array<GraphZeroesResult> {
-private:
-  Graph &m_graph;
-public:
-  inline GraphZeroesResultArray(Graph &graph) : m_graph(graph) {
-  }
-  inline Graph &getGraph() const {
-    return m_graph;
-  }
-  MoveablePointArray getMoveablePointArray() const;
-  String toString() const;
-};
-
-typedef enum {
-  EXTREMA_TYPE_MAX
- ,EXTREMA_TYPE_MIN
-} ExtremaType;
-
-inline String toString(ExtremaType type) {
-  return (type == EXTREMA_TYPE_MAX) ? _T("Maxima") : _T("Minima");
-}
-
-class GraphExtremaResult {
-private:
-  Graph             &m_graph;
-  const ExtremaType  m_extremaType;
-  const Point2DArray m_extrema;
-public:
-  GraphExtremaResult(Graph &graph, ExtremaType extremaType, const Point2DArray &extrema)
-    : m_graph(graph)
-    , m_extremaType(extremaType)
-    , m_extrema(extrema)
-  {
-  }
-  inline Graph &getGraph() const {
-    return m_graph;
-  }
-  inline ExtremaType getExtremaType() const {
-    return m_extremaType;
-  }
-  inline const Point2DArray &getExtrema() const {
-    return m_extrema;
-  }
-  MoveablePointArray getMoveablePointArray() const;
-  inline String getExtremaTypeName() const {
-    return ::toString(getExtremaType());
-  }
-  String toString(const TCHAR *name=NULL) const;
-};
-
-class GraphExtremaResultArray : public Array<GraphExtremaResult> {
-private:
-  Graph            &m_graph;
-  const ExtremaType m_extremaType;
-public:
-  inline GraphExtremaResultArray(Graph &graph, ExtremaType extremaType)
-    : m_graph(graph)
-    , m_extremaType(extremaType)
-  {
-  }
-  inline Graph &getGraph() const {
-    return m_graph;
-  }
-  inline ExtremaType getExtremaType() const {
-    return m_extremaType;
-  }
-  inline String getExtremaTypeName() const {
-    return ::toString(getExtremaType());
-  }
-  MoveablePointArray getMoveablePointArray() const;
-  String toString() const;
-};
 
 class Graph : public CoordinateSystemObject {
 private:
@@ -166,46 +74,4 @@ public:
     return (p1.y*p2.x - p1.x*p2.y) / (p1.y-p2.y);
   }
   virtual GraphExtremaResultArray findExtrema(const DoubleInterval &interval, ExtremaType extremaType) = 0;
-};
-
-class PointGraph : public Graph {
-private:
-  Point2DArray         m_pointArray;
-  mutable Point2DArray m_processedData;
-  mutable bool         m_dataProcessed;
-  DataRange            m_range;
-
-public:
-  PointGraph(CCoordinateSystem &system, GraphParameters *param);
-  void paint(CDC &dc);
-
-  inline bool isEmpty() const {
-    return m_pointArray.isEmpty();
-  }
-  GraphType getType() const {
-    return POINTGRAPH;
-  }
-  void addPoint(const Point2D &p);
-  void clear();
-  void updateDataRange();
-
-  inline const DataRange &getDataRange() const {
-    return m_range;
-  }
-
-  const Point2DArray &getProcessedData() const;
-
-  inline const Point2DArray &getDataPoints() const {
-    return m_pointArray;
-  }
-  void    setDataPoints(const Point2DArray &a);
-  void    setRollAvgSize(UINT size);
-  double  distance(const CPoint &p) const;
-  double  getSmallestPositiveX() const;
-  double  getSmallestPositiveY() const;
-  inline bool isPointGraph() const {
-    return true;
-  }
-  GraphZeroesResultArray  findZeroes( const DoubleInterval &interval);
-  GraphExtremaResultArray findExtrema(const DoubleInterval &interval, ExtremaType extremaType);
 };

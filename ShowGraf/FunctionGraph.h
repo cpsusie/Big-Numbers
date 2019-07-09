@@ -1,8 +1,7 @@
 #pragma once
 
-#include <MFCUtil/Viewport2D.h>
 #include <MFCUtil/ExpressionGraphics.h>
-#include "Graph.h"
+#include "PointGraph.h"
 #include "FunctionGraphParameters.h"
 
 class FunctionGraph : public PointGraph {

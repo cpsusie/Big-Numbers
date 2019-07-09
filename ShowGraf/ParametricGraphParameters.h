@@ -1,8 +1,6 @@
 #pragma once
 
-#include <MFCUtil/Viewport2D.h>
-#include <Math/MathLib.h>
-#include "GraphParameters.h"
+#include "ExprGraphParameters.h"
 
 class ParametricGraphParameters : public ExprGraphParameters {
 private:
@@ -11,6 +9,9 @@ private:
   UINT              m_steps;
 public:
   ParametricGraphParameters(const String &name=s_defaultName, COLORREF color=BLACK, UINT rollAvgSize=0, GraphStyle style=GSCURVE, TrigonometricMode trigonometricMode=RADIANS);
+  virtual GraphParameters *clone() const {
+    return new ParametricGraphParameters(*this);
+  }
   void putDataToDoc(XMLDoc &doc);
   void getDataFromDoc(XMLDoc &doc);
   // return old Interval

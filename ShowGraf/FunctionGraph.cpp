@@ -10,7 +10,9 @@ public:
   }
 };
 
-FunctionGraph::FunctionGraph(CCoordinateSystem &system, const FunctionGraphParameters &param) : PointGraph(system, new FunctionGraphParameters(param)) {
+FunctionGraph::FunctionGraph(CCoordinateSystem &system, const FunctionGraphParameters &param)
+: PointGraph(system, param.clone())
+{
   calculate();
 }
 

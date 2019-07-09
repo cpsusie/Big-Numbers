@@ -1,12 +1,11 @@
 #pragma once
 
-#include <MFCUtil/Viewport2D.h>
-#include "Graph.h"
+#include "PointGraph.h"
 #include "DataGraphParameters.h"
 
 class DataGraph : public PointGraph {
 private:
-  Point2D tr1(const TCHAR *sx, const TCHAR *sy);
+  Point2D    strToPoint(const TCHAR *sx, const TCHAR *sy, const DataGraphParameters &param);
   __time64_t m_lastReadTime;
   bool       m_hasFirstDataPoint;
   Point2D    m_firstPoint;

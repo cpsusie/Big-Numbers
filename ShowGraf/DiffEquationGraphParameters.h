@@ -1,9 +1,8 @@
 #pragma once
 
-#include <MFCUtil/Viewport2D.h>
 #include <Math/MathLib.h>
 #include <TinyBitSet.h>
-#include "GraphParameters.h"
+#include "ExprGraphParameters.h"
 #include "DiffEquationsystem.h"
 
 typedef BitSet64 DiffEquationSet;
@@ -45,6 +44,9 @@ private:
   double                           m_maxError;
 public:
   DiffEquationGraphParameters(const String &name=s_defaultName, GraphStyle style=GSCURVE, TrigonometricMode trigonometricMode=RADIANS);
+  virtual GraphParameters *clone() const {
+    return new DiffEquationGraphParameters(*this);
+  }
   void addEquation(const DiffEquationDescription &desc, const EquationAttributes &attr) {
     m_equationDescArray.add(desc);
     m_attrArray.add(attr);

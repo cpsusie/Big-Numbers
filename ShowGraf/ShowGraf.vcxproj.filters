@@ -49,18 +49,27 @@
     <Filter Include="Source Files\CustomFit\Include">
       <UniqueIdentifier>{d6881b51-e9da-4dfd-9885-ef0f5ba7b90f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Graph">
+      <UniqueIdentifier>{e9ef6fb0-c036-4a77-99f9-f28189c779cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Graph\Include">
+      <UniqueIdentifier>{f5dbfbcb-0436-46b2-a07c-54dc14e8bffd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ExprGraph">
+      <UniqueIdentifier>{7e01722c-32db-49ab-aba4-0d217f7fe654}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ExprGraph\Include">
+      <UniqueIdentifier>{e0e5ff1a-81b0-4daf-91af-5a1892774869}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\PointGraph">
+      <UniqueIdentifier>{953dbb8f-ff14-47af-93a8-86fd6eef0d86}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\PointGraph\Include">
+      <UniqueIdentifier>{7b69405b-f029-4498-9a33-99a191aa9e5d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DegreeDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GraphArray.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GraphItem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GraphParameters.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="IntervalDlg.cpp">
@@ -147,36 +156,42 @@
     <ClCompile Include="RollAvgSizeDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PointGraph.cpp">
-      <Filter>Source Files\DataGraph</Filter>
-    </ClCompile>
     <ClCompile Include="DiffEquationEdit.cpp">
       <Filter>Source Files\DiffEquationGraph</Filter>
     </ClCompile>
     <ClCompile Include="MouseTool.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GraphArray.cpp">
+      <Filter>Source Files\Graph</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphItem.cpp">
+      <Filter>Source Files\Graph</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphParameters.cpp">
+      <Filter>Source Files\Graph</Filter>
+    </ClCompile>
     <ClCompile Include="MoveablePoint.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Graph</Filter>
     </ClCompile>
     <ClCompile Include="MoveablePointArray.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Graph</Filter>
+    </ClCompile>
+    <ClCompile Include="ExprGraphParameters.cpp">
+      <Filter>Source Files\ExprGraph</Filter>
+    </ClCompile>
+    <ClCompile Include="PointGraph.cpp">
+      <Filter>Source Files\PointGraph</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphZeroResult.cpp">
+      <Filter>Source Files\Graph</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphExtremaResult.cpp">
+      <Filter>Source Files\Graph</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DegreeDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Graph.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GraphArray.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GraphItem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GraphParameters.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="IntervalDlg.h">
@@ -275,14 +290,41 @@
     <ClInclude Include="MouseTool.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MoveablePoint.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MoveablePointArray.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="CoordinateSystemContainer.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Graph.h">
+      <Filter>Source Files\Graph\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphParameters.h">
+      <Filter>Source Files\Graph\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphArray.h">
+      <Filter>Source Files\Graph\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphItem.h">
+      <Filter>Source Files\Graph\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="MoveablePoint.h">
+      <Filter>Source Files\Graph\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="MoveablePointArray.h">
+      <Filter>Source Files\Graph\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="ExprGraphParameters.h">
+      <Filter>Source Files\ExprGraph\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="PointGraph.h">
+      <Filter>Source Files\PointGraph\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="PointGraphParameters.h">
+      <Filter>Source Files\PointGraph\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphZeroResult.h">
+      <Filter>Source Files\Graph\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphExtremaResult.h">
+      <Filter>Source Files\Graph\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

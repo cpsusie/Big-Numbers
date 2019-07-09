@@ -3,7 +3,7 @@
 #include <Math/MathLib.h>
 #include <Math/Rectangle2D.h>
 #include <Math/Expression/Expression.h>
-#include "GraphParameters.h"
+#include "ExprGraphParameters.h"
 
 class IsoCurveGraphParameters : public ExprGraphParameters {
 private:
@@ -12,6 +12,9 @@ private:
   double            m_cellSize;
 public:
   IsoCurveGraphParameters(const String &name=s_defaultName, COLORREF color=BLACK, GraphStyle style=GSCURVE, TrigonometricMode trigonometricMode=RADIANS);
+  virtual GraphParameters *clone() const {
+    return new IsoCurveGraphParameters(*this);
+  }
   void putDataToDoc(XMLDoc &doc);
   void getDataFromDoc(XMLDoc &doc);
   // return old exprText

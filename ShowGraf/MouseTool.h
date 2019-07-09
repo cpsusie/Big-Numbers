@@ -22,6 +22,9 @@ protected:
   inline CCoordinateSystem &getSystem() {
     return m_container->getCoordinateSystem();
   }
+  inline CFont &getAxisFont() const {
+    return m_container->getAxisFont();
+  }
   inline CShowGrafDoc *getDoc() {
     return theApp.getMainWindow()->getDoc();
   }

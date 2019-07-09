@@ -103,7 +103,7 @@ public:
 
   bool OnLButtonDown(UINT nFlags, const CPoint &point);
   void paintItems(       CDC &dc, CFont &buttonFont, const CRect &buttonPanelRect) const;
-  void paintPointArray(  CDC &dc) const;
+  void paintPointArray(  CDC &dc, CFont &font) const;
   void unpaintPointArray(CDC &dc);
   void setStyle(GraphStyle style);
   void setRollAvgSize(UINT size);
