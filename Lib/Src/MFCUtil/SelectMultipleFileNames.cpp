@@ -21,9 +21,9 @@ static StringArray getFileNames(const TCHAR *fileNames) {
 StringArray selectMultipleFileNames(const String      &title
                                    ,const TCHAR       *filter
                                    ,UINT               defaultExtensionIndex
+                                   ,UINT              *selectedExtensionIndex
                                    ,const String      &initialDir
                                    ,DWORD              flags
-                                   ,UINT              *selectedExtensionIndex
                                    )
 {
   TCHAR *nameBuffer = NULL;

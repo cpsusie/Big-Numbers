@@ -38,7 +38,7 @@ protected:
 StringArray selectMultipleFileNames(const String      &title
                                    ,const TCHAR       *extensions
                                    ,UINT               defaultExtensionIndex  = 0
+                                   ,UINT              *selectedExtensionIndex = NULL
                                    ,const String      &initialDir             = EMPTYSTRING
                                    ,DWORD              flags                  = OFN_ALLOWMULTISELECT | OFN_FILEMUSTEXIST | OFN_EXPLORER | OFN_ENABLESIZING
-                                   ,UINT              *selectedExtensionIndex = NULL
                                    );

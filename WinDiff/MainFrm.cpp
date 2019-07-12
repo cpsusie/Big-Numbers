@@ -2,6 +2,7 @@
 #include <io.h>
 #include <errno.h>
 #include <MFCUtil/Clipboard.h>
+#include <MFCUtil/SelectDirDlg.h>
 #include <Tokenizer.h>
 #include "MainFrm.h"
 #include "FindDlg.h"
@@ -668,12 +669,6 @@ static const String &getFileDialogExtension() {
   return result;
 }
 
-static void getFileNames(TCHAR *dst[2], TCHAR *filenames) {
-  dst[0] = filenames;
-  dst[1] = filenames + _tcsclen(filenames) + 1;
-  dst[2] = dst[1] + _tcsclen(dst[1]) + 1;
-}
-
 void CMainFrame::OnFileOpenPanel0() {
   OnFileOpen(0);
 }
@@ -683,37 +678,30 @@ void CMainFrame::OnFileOpenPanel1() {
 }
 
 void CMainFrame::OnFileOpen(int id) {
-  TextView   *view = getActiveTextView();
+  TextView *view = getActiveTextView();
   if(view == NULL) {
     showWarning(_T("No active view"));
     return;
   }
-  CFileDialog dlg(TRUE);
-  dlg.m_ofn.lpstrFilter  = getFileDialogExtension().cstr();
-  dlg.m_ofn.lpstrTitle   = _T("Open files");
-  dlg.m_ofn.nFilterIndex = getOptions().m_defaultExtensionIndex;
-  dlg.m_ofn.Flags |= OFN_ALLOWMULTISELECT | OFN_FILEMUSTEXIST;
-  TCHAR fileNames[1024];
-  fileNames[0]           = 0;
-  dlg.m_ofn.lpstrFile    = fileNames;
-  dlg.m_ofn.nMaxFile     = ARRAYSIZE(fileNames);
 
-  if((dlg.DoModal() != IDOK) || (_tcsclen(fileNames) == 0)) {
+  UINT selectedExtensionIndex;
+  const StringArray files = selectMultipleFileNames(_T("Open files")
+                                                   ,getFileDialogExtension().cstr()
+                                                   ,getOptions().m_defaultExtensionIndex
+                                                   ,&selectedExtensionIndex
+                                                   );
+
+  if(files.isEmpty()) {
     return;
   }
-  getOptions().m_defaultExtensionIndex = dlg.m_ofn.nFilterIndex;
-
-  TCHAR *files[3];
-  getFileNames(files,fileNames);
+  getOptions().m_defaultExtensionIndex = selectedExtensionIndex;
 
   CWinDiffDoc *doc = view->getDocument();
 
-  if(_tcsclen(files[1]) == 0) { // only one selected
+  if(files.size() == 1) {
     doc->setDoc(id, DIFFDOC_FILE, files[0]);
   } else {
-    const String f1 = FileNameSplitter::getChildName(files[0],files[1]);
-    const String f2 = FileNameSplitter::getChildName(files[0],files[2]);
-    doc->setDocs(f1, f2);
+    doc->setDocs(files[0], files[1]);
   }
   Invalidate(FALSE);
 }
