@@ -34,3 +34,11 @@ protected:
     afx_msg void OnDblclkDirTree(NMHDR *pNMHDR, LRESULT *pResult);
   DECLARE_MESSAGE_MAP()
 };
+
+StringArray selectMultipleFileNames(const String      &title
+                                   ,const TCHAR       *extensions
+                                   ,UINT               defaultExtensionIndex  = 0
+                                   ,const String      &initialDir             = EMPTYSTRING
+                                   ,DWORD              flags                  = OFN_ALLOWMULTISELECT | OFN_FILEMUSTEXIST | OFN_EXPLORER | OFN_ENABLESIZING
+                                   ,UINT              *selectedExtensionIndex = NULL
+                                   );

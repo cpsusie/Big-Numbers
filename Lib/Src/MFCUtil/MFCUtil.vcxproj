@@ -723,6 +723,7 @@
     <ClCompile Include="PropertyDlgThread.cpp" />
     <ClCompile Include="PropertyDialogMap.cpp" />
     <ClCompile Include="SelectDirDlg.cpp" />
+    <ClCompile Include="SelectMultipleFileNames.cpp" />
     <ClCompile Include="SetControlText.cpp" />
     <ClCompile Include="ShapeFunctions.cpp" />
     <ClCompile Include="ShowBitmap.cpp" />
