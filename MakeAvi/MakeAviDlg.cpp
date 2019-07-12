@@ -3,6 +3,7 @@
 #include <MFCUtil/PixRect.h>
 #include <MFCUtil/AviFile.h>
 #include <MFCUtil/ProgressWindow.h>
+#include <MFCUtil/SelectDirDlg.h>
 #include "MakeAvi.h"
 #include "MakeAviDlg.h"
 
@@ -152,23 +153,6 @@ void CMakeAviDlg::OnFileExit() {
   EndDialog(IDOK);
 }
 
-static StringArray getFileNames(const TCHAR *fileNames) {
-  StringArray result;
-  size_t len;
-  const TCHAR *dir = fileNames;
-  len = _tcslen(dir);
-  fileNames += len+1;
-  if(_tcslen(fileNames) == 0) { // only one selected
-    result.add(dir);
-  } else {
-    for(const TCHAR *cp = fileNames; *cp; cp += len+1) {
-      result.add(FileNameSplitter::getChildName(dir, cp));
-      len = _tcslen(cp);
-    }
-  }
-  return result;
-}
-
 static int stringCmp(const String &s1, const String &s2) {
   return _tcsicmp(s1.cstr(), s2.cstr());
 }
@@ -179,26 +163,18 @@ static const TCHAR *fileDialogExtensions = _T("JPG files\0*.jpg\0"
                                               "\0");
 
 void CMakeAviDlg::OnFileAddfFiles() {
-  CFileDialog dlg(TRUE);
-  dlg.m_ofn.lpstrFilter  = fileDialogExtensions;
-  dlg.m_ofn.lpstrTitle   = _T("Add files");
-  dlg.m_ofn.Flags |= OFN_ALLOWMULTISELECT | OFN_FILEMUSTEXIST;
-#define NAMEBUFFERLENGTH 500000
-  TCHAR *nameBuffer = new TCHAR[NAMEBUFFERLENGTH];
-  nameBuffer[0] = 0;
-  dlg.m_ofn.lpstrFile = nameBuffer;
-  dlg.m_ofn.nMaxFile  = NAMEBUFFERLENGTH;
+  const StringArray selected = selectMultipleFileNames(_T("Add files"), fileDialogExtensions);
 
-  if(dlg.DoModal() == IDOK) {
-    m_nameArray = getFileNames(nameBuffer);
-    m_nameArray.sort(stringCmp);
-    m_nameList.DeleteAllItems();
-    for(size_t i = 0; i < m_nameArray.size(); i++) {
-      addData(m_nameList, (int)i, 0, m_nameArray[i], true);
-    }
-    Invalidate();
+  if(selected.isEmpty()) {
+    return;
   }
-  delete[] nameBuffer;
+  m_nameArray = selected;
+  m_nameArray.sort(stringCmp);
+  m_nameList.DeleteAllItems();
+  for(size_t i = 0; i < m_nameArray.size(); i++) {
+    addData(m_nameList, (int)i, 0, m_nameArray[i], true);
+  }
+  Invalidate();
 }
 
 void CMakeAviDlg::OnEditDeleteSelected() {

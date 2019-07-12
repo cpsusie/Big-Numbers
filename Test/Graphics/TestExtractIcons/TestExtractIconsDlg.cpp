@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <MFCUtil/SelectDirDlg.h>
 #include <FileNameSplitter.h>
 #include "TestExtractIconsDlg.h"
 
@@ -124,45 +125,18 @@ HCURSOR CTestExtractIconsDlg::OnQueryDragIcon() {
   return (HCURSOR)m_hIcon;
 }
 
-static StringArray getFileNames(const TCHAR *fileNames) {
-  StringArray result;
-  const TCHAR *dir = fileNames;
-  if(*dir == 0) {
-    return result;
-  }
-  bool addCount = 0;
-  for(const TCHAR *cp = dir + _tcslen(dir)+1; *cp; cp += _tcslen(cp) + 1) {
-    result.add(FileNameSplitter::getChildName(dir, cp));
-    addCount++;
-  }
-  if(addCount == 0) {
-    result.add(dir);
-  }
-  return result;
-}
-
 void CTestExtractIconsDlg::OnButtonOpen() {
   static const TCHAR *loadFileDialogExtensions = _T("Image files\0*.exe;*.dll;*.ico;\0"
                                                     "EXE files\0*.exe;\0"
                                                     "DLL-Files (*.dll)\0*.dll;\0"
                                                     "ICO-files (*.ico)\0*.ico;\0"
                                                     "All files (*.*)\0*.*\0\0");
-  CFileDialog dlg(TRUE);
-  dlg.m_ofn.lpstrFilter = loadFileDialogExtensions;
-  dlg.m_ofn.lpstrTitle  = _T("Open file");
-  dlg.m_ofn.Flags |=  OFN_ALLOWMULTISELECT | OFN_FILEMUSTEXIST | OFN_EXPLORER | OFN_ENABLESIZING;
-  TCHAR fileNameBuffer[0x10000];
-  memset(fileNameBuffer,0,sizeof(fileNameBuffer));
-  fileNameBuffer[ARRAYSIZE(fileNameBuffer)-1] = 0;
-  dlg.m_ofn.lpstrFile = fileNameBuffer;
-  dlg.m_ofn.nMaxFile  = ARRAYSIZE(fileNameBuffer);
-
-  if((dlg.DoModal() != IDOK) || (_tcslen(fileNameBuffer) == 0) ) {
+  const StringArray fileNames = selectMultipleFileNames(_T("Open file"), loadFileDialogExtensions);
+  if(fileNames.isEmpty()) {
     return;
   }
   destroyAllIcons();
-  bool              anyAdded  = false;
-  const StringArray fileNames = getFileNames(fileNameBuffer);
+  bool anyAdded  = false;
   for(size_t i = 0; i < fileNames.size(); i++) {
     const String &name = fileNames[i];
     int n = ExtractIconEx(name.cstr(), -1, NULL, NULL, 0);
