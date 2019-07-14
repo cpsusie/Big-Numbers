@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <MFCUtil/SelectDirDlg.h>
 #include "PixRectArray.h"
 #include "SettingsDlg.h"
 #include "MainFrm.h"
@@ -11,7 +12,11 @@ IMPLEMENT_DYNCREATE(CMainFrame, CFrameWnd)
 
 BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
     ON_WM_CREATE()
+    ON_WM_DESTROY()
     ON_WM_SHOWWINDOW()
+    ON_WM_CLOSE()
+    ON_COMMAND(ID_APP_EXIT                  , OnAppExit                  )
+    ON_COMMAND(ID_FILE_NEW                  , OnFileNew                  )
     ON_COMMAND(ID_FILE_OPEN                 , OnFileOpen                 )
     ON_COMMAND(ID_FILE_CLOSE_GIFFILE        , OnFileCloseGiffile         )
     ON_COMMAND(ID_FILE_MRU_FILE1            , OnFileMruFile1             )
@@ -36,8 +41,6 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
     ON_COMMAND(ID_VIEW_SHOWRAWPICTURES      , OnViewShowRawPictures      )
     ON_COMMAND(ID_VIEW_SHOWSCALEDPICTURES   , OnViewShowScaledPictures   )
     ON_COMMAND(ID_VIEW_SHOWQUANTIZEDPICTURES, OnViewShowQuantizedPictures)
-    ON_WM_CLOSE()
-    ON_COMMAND(ID_APP_EXIT, OnAppExit)
 END_MESSAGE_MAP()
 
 static UINT indicators[] = {
@@ -48,13 +51,14 @@ static UINT indicators[] = {
 
 CMainFrame::CMainFrame() {
   m_registeredAsListener = false;
+  m_closePending         = false;
 }
 
 CMainFrame::~CMainFrame() {
 }
 
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
-  if(CFrameWnd::OnCreate(lpCreateStruct) == -1) {
+  if(__super::OnCreate(lpCreateStruct) == -1) {
     return -1;
   }
 
@@ -78,32 +82,37 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
   m_wndToolBar.EnableDocking(CBRS_ALIGN_ANY);
   EnableDocking(CBRS_ALIGN_ANY);
   DockControlBar(&m_wndToolBar);
-
+  theApp.m_device.attach(*this);
   setShowFormat(SHOW_RAW);
   return 0;
 }
 
-BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs) {
-  if(!CFrameWnd::PreCreateWindow(cs)) {
-    return FALSE;
-  }
-  return TRUE;
+void CMainFrame::OnDestroy() {
+  __super::OnDestroy();
+  theApp.m_device.detach();
 }
 
 #ifdef _DEBUG
 void CMainFrame::AssertValid() const {
-    CFrameWnd::AssertValid();
+  __super::AssertValid();
 }
 
 void CMainFrame::Dump(CDumpContext& dc) const {
-  CFrameWnd::Dump(dc);
+  __super::Dump(dc);
 }
 
 #endif //_DEBUG
 
 // -------------------------------------- File Menu -------------------------------------
 
+void CMainFrame::OnFileNew() {
+  if(!confirmDiscard()) return;
+  getDoc()->closeGif();
+  getDoc()->OnNewDocument();
+}
+
 void CMainFrame::OnFileOpen() {
+  if(!confirmDiscard()) return;
   CFileDialog dlg(TRUE);
   dlg.m_ofn.lpstrTitle      = _T("Load GIF");
   dlg.m_ofn.lpstrFilter     = _T("Gif files (*.gif)\0*.gif\0"
@@ -125,7 +134,10 @@ void CMainFrame::OnAppExit() {
 
 void CMainFrame::OnClose() {
   if(!confirmDiscard()) return;
-  CFrameWnd::OnClose();
+  m_closePending = true;
+  unregisterAsListener();
+  getDoc()->clear();
+  __super::OnClose();
 }
 
 bool CMainFrame::confirmDiscard() { // should return true if user does not want to save or save not needed
@@ -149,6 +161,7 @@ void CMainFrame::OnFileMruFile9()  { onFileMruFile(8);}
 void CMainFrame::OnFileMruFile10() { onFileMruFile(9);}
 
 void CMainFrame::onFileMruFile(int index) {
+  if(!confirmDiscard()) return;
   if(!load(theApp.getRecentFile(index))) {
     theApp.removeFromRecentFile(index);
   }
@@ -234,12 +247,26 @@ void CMainFrame::ajourMenuItems() {
 }
 
 void CMainFrame::OnShowWindow(BOOL bShow, UINT nStatus) {
-  CFrameWnd::OnShowWindow(bShow, nStatus);
-  setTitle();
-  if(!m_registeredAsListener) {
+  __super::OnShowWindow(bShow, nStatus);
+  if(bShow) {
+    setTitle();
+  }
+  registerAsListener();
+}
+
+void CMainFrame::registerAsListener() {
+  if(!m_registeredAsListener && !m_closePending) {
     getDoc()->addPropertyChangeListener(this);
     getView()->addPropertyChangeListener(this);
     m_registeredAsListener = true;
+  }
+}
+
+void CMainFrame::unregisterAsListener() {
+  if(m_registeredAsListener) {
+    getDoc()->removePropertyChangeListener(this);
+    getView()->removePropertyChangeListener(this);
+    m_registeredAsListener = false;
   }
 }
 
@@ -261,6 +288,8 @@ void CMainFrame::handlePropertyChanged(const PropertyContainer *source, int id, 
     }
   } else if(source == getView()) {
     switch(id) {
+    case CONTROL_UPDATE_TIME:
+      break;
     case GIFCTRL_STATUS:
       ajourMenuItems();
       break;
@@ -269,23 +298,6 @@ void CMainFrame::handlePropertyChanged(const PropertyContainer *source, int id, 
 }
 
 // -------------------------------------- Edit Menu -------------------------------------
-
-static StringArray getFileNames(const TCHAR *fileNames) {
-  StringArray result;
-  const TCHAR *dir = fileNames;
-  if(*dir == 0) {
-    return result;
-  }
-  bool addCount = 0;
-  for(const TCHAR *cp = dir + _tcslen(dir)+1; *cp; cp += _tcslen(cp) + 1) {
-    result.add(FileNameSplitter::getChildName(dir, cp));
-    addCount++;
-  }
-  if(addCount == 0) {
-    result.add(dir);
-  }
-  return result;
-}
 
 void CMainFrame::OnEditInserIimages() {
   static const TCHAR *loadFileDialogExtensions = _T("Picture files\0*.bmp;*.dib;*.jpg;*.emf;*.gif;*.ico;*.wmf;\0"
@@ -297,21 +309,13 @@ void CMainFrame::OnEditInserIimages() {
                                                     "ICO-files (*.ico)\0*.ico;\0"
                                                     "CUR-files (*.cur)\0*.cur;\0"
                                                     "All files (*.*)\0*.*\0\0");
-  CFileDialog dlg(TRUE);
-  dlg.m_ofn.lpstrFilter = loadFileDialogExtensions;
-  dlg.m_ofn.lpstrTitle  = _T("Open file");
-  dlg.m_ofn.Flags |=  OFN_ALLOWMULTISELECT | OFN_FILEMUSTEXIST | OFN_EXPLORER | OFN_ENABLESIZING;
-  TCHAR fileNameBuffer[4096];
-  memset(fileNameBuffer,' ',sizeof(fileNameBuffer));
-  fileNameBuffer[ARRAYSIZE(fileNameBuffer)-1] = 0;
-  dlg.m_ofn.lpstrFile = fileNameBuffer;
-  dlg.m_ofn.nMaxFile = ARRAYSIZE(fileNameBuffer);
 
-  if((dlg.DoModal() != IDOK) || (_tcslen(fileNameBuffer) == 0) ) {
+  const StringArray fileNames = selectMultipleFileNames(_T("Open files"), loadFileDialogExtensions);
+
+  if(fileNames.isEmpty()) {
     return;
   }
 
-  const StringArray fileNames = getFileNames(fileNameBuffer);
   StringArray errors;
   PixRectArray prArray(fileNames, errors);
   if(errors.size() > 0) {

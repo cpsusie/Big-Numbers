@@ -1,4 +1,4 @@
-//Microsoft Developer Studio generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
 
@@ -13,13 +13,11 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Danish resources
+// Danish (Denmark) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DAN)
-#ifdef _WIN32
 LANGUAGE LANG_DANISH, SUBLANG_DEFAULT
 #pragma code_page(1252)
-#endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -27,18 +25,18 @@ LANGUAGE LANG_DANISH, SUBLANG_DEFAULT
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE DISCARDABLE 
+1 TEXTINCLUDE 
 BEGIN
     "resource.h\0"
 END
 
-2 TEXTINCLUDE DISCARDABLE 
+2 TEXTINCLUDE 
 BEGIN
     "#include ""afxres.h""\r\n"
     "\0"
 END
 
-3 TEXTINCLUDE DISCARDABLE 
+3 TEXTINCLUDE 
 BEGIN
     "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
     "#define _AFX_NO_OLE_RESOURCES\r\n"
@@ -67,40 +65,39 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDR_MAINFRAME           ICON    DISCARDABLE     "res\\MakeGif.ico"
-IDR_MAKEGITYPE          ICON    DISCARDABLE     "res\\MakeGifDoc.ico"
+IDR_MAINFRAME           ICON                    "res\\MakeGif.ico"
+
+IDR_MAKEGITYPE          ICON                    "res\\MakeGifDoc.ico"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Bitmap
 //
 
-IDR_MAINFRAME           BITMAP  MOVEABLE PURE   "res\\Toolbar.bmp"
+IDR_MAINFRAME           BITMAP                  "res\\Toolbar.bmp"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Dialog
 //
 
-IDD_GIFVIEW DIALOG DISCARDABLE  0, 0, 658, 358
-STYLE WS_CHILD
+IDD_GIFVIEW DIALOG 0, 0, 658, 358
+STYLE DS_SETFONT | WS_CHILD
 FONT 8, "MS Sans Serif"
 BEGIN
-    CONTROL         "",IDC_IMAGEPANEL,"Static",SS_GRAYFRAME | SS_SUNKEN | 
-                    WS_BORDER,7,158,644,193
-    CONTROL         "",IDC_GIFPANEL,"Static",SS_GRAYFRAME | SS_SUNKEN,7,7,
-                    644,148
+    CONTROL         "",IDC_IMGPANEL,"Static",SS_GRAYFRAME | SS_SUNKEN | WS_BORDER,7,158,644,193
+    CONTROL         "",IDC_GIFPANEL,"Static",SS_GRAYFRAME | SS_SUNKEN,7,7,644,148
 END
 
-IDD_SETTINGS_DIALOG DIALOG DISCARDABLE  0, 0, 226, 104
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_SETTINGS_DIALOG DIALOG 0, 0, 226, 104
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Image conversions"
 FONT 8, "MS Sans Serif"
 BEGIN
-    EDITTEXT        IDC_EDIT_SCALEFACTOR,110,24,27,15,ES_AUTOHSCROLL | 
-                    ES_NUMBER
-    COMBOBOX        IDC_COMBO_COLORCOUNT,110,51,36,71,CBS_DROPDOWNLIST | 
-                    WS_VSCROLL | WS_TABSTOP
+    EDITTEXT        IDC_EDIT_SCALEFACTOR,110,24,27,15,ES_AUTOHSCROLL | ES_NUMBER
+    COMBOBOX        IDC_COMBO_COLORCOUNT,110,51,36,71,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     DEFPUSHBUTTON   "OK",IDOK,113,83,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,169,83,50,14
     LTEXT           "Number of colors",IDC_STATIC,19,51,84,14
@@ -108,8 +105,8 @@ BEGIN
     LTEXT           "%",IDC_STATIC,141,27,13,15
 END
 
-IDD_ABOUTBOX DIALOG DISCARDABLE  0, 0, 235, 55
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_ABOUTBOX DIALOG 0, 0, 235, 55
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About MakeGif"
 FONT 8, "MS Sans Serif"
 BEGIN
@@ -148,13 +145,14 @@ BEGIN
     0
 END
 
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // DESIGNINFO
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO DISCARDABLE 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_GIFVIEW, DIALOG
     BEGIN
@@ -188,7 +186,7 @@ END
 // Toolbar
 //
 
-IDR_MAINFRAME TOOLBAR DISCARDABLE  16, 15
+IDR_MAINFRAME TOOLBAR 16, 15
 BEGIN
     BUTTON      ID_FILE_NEW
     BUTTON      ID_FILE_OPEN
@@ -209,7 +207,7 @@ END
 // Menu
 //
 
-IDR_MAINFRAME MENU PRELOAD DISCARDABLE 
+IDR_MAINFRAME MENU
 BEGIN
     POPUP "&File"
     BEGIN
@@ -235,7 +233,7 @@ BEGIN
         MENUITEM "&Insert images...\tInsert",   ID_EDIT_INSERTIMAGES
         MENUITEM "Remove all images",           ID_EDIT_REMOVEALLIMAGES
         MENUITEM "Add quantized images to GIF\tNum +", ID_EDIT_ADDTOGIF
-        MENUITEM "Settinsgs\tAlt+F7",           ID_EDIT_SETTINSGS
+        MENUITEM "Settinsgs...\tAlt+F7",        ID_EDIT_SETTINSGS
     END
     POPUP "&View"
     BEGIN
@@ -246,12 +244,9 @@ BEGIN
         MENUITEM "&Stop\tAlt+S",                ID_VIEW_STOP
         MENUITEM "Show &all  GIF frames\tAlt+A", ID_VIEW_SHOWALLIMAGES
         MENUITEM SEPARATOR
-        MENUITEM "Show raw pictures\tF2",       ID_VIEW_SHOWRAWPICTURES
-        , CHECKED
+        MENUITEM "Show raw pictures\tF2",       ID_VIEW_SHOWRAWPICTURES, CHECKED
         MENUITEM "Show scaled pictures\tF3",    ID_VIEW_SHOWSCALEDPICTURES
-        MENUITEM "Show scaled and quantized pictures\tF4", 
-                                                ID_VIEW_SHOWQUANTIZEDPICTURES
-
+        MENUITEM "Show scaled and quantized pictures\tF4", ID_VIEW_SHOWQUANTIZEDPICTURES
     END
     POPUP "&Help"
     BEGIN
@@ -265,7 +260,7 @@ END
 // Accelerator
 //
 
-IDR_MAINFRAME ACCELERATORS PRELOAD MOVEABLE PURE 
+IDR_MAINFRAME ACCELERATORS
 BEGIN
     "A",            ID_VIEW_SHOWALLIMAGES,  VIRTKEY, ALT, NOINVERT
     "C",            ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
@@ -293,7 +288,6 @@ BEGIN
 END
 
 
-#ifndef _MAC
 /////////////////////////////////////////////////////////////////////////////
 //
 // Version
@@ -316,15 +310,13 @@ BEGIN
     BEGIN
         BLOCK "040904B0"
         BEGIN
-            VALUE "CompanyName", "\0"
-            VALUE "FileDescription", "MakeGif MFC Application\0"
-            VALUE "FileVersion", "1, 0, 0, 1\0"
-            VALUE "InternalName", "MakeGif\0"
-            VALUE "LegalCopyright", "Copyright (C) 2015\0"
-            VALUE "LegalTrademarks", "\0"
-            VALUE "OriginalFilename", "MakeGif.EXE\0"
-            VALUE "ProductName", "MakeGif Application\0"
-            VALUE "ProductVersion", "1, 0, 0, 1\0"
+            VALUE "FileDescription", "MakeGif MFC Application"
+            VALUE "FileVersion", "1, 0, 0, 1"
+            VALUE "InternalName", "MakeGif"
+            VALUE "LegalCopyright", "Copyright (C) 2015"
+            VALUE "OriginalFilename", "MakeGif.EXE"
+            VALUE "ProductName", "MakeGif Application"
+            VALUE "ProductVersion", "1, 0, 0, 1"
         END
     END
     BLOCK "VarFileInfo"
@@ -333,26 +325,24 @@ BEGIN
     END
 END
 
-#endif    // !_MAC
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // String Table
 //
 
-STRINGTABLE PRELOAD DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDR_MAINFRAME           "MakeGif\n\nMakeGi\n\n\nMakeGif.Document\nMakeGi Document"
 END
 
-STRINGTABLE PRELOAD DISCARDABLE 
+STRINGTABLE
 BEGIN
     AFX_IDS_APP_TITLE       "MakeGif"
     AFX_IDS_IDLEMESSAGE     "Ready"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     ID_INDICATOR_EXT        "EXT"
     ID_INDICATOR_CAPS       "CAP"
@@ -362,7 +352,7 @@ BEGIN
     ID_INDICATOR_REC        "REC"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     ID_FILE_NEW             "Create a new document\nNew"
     ID_FILE_OPEN            "Open an existing document\nOpen"
@@ -375,13 +365,13 @@ BEGIN
     ID_FILE_PRINT_PREVIEW   "Display full pages\nPrint Preview"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     ID_APP_ABOUT            "Display program information, version number and copyright\nAbout"
     ID_APP_EXIT             "Quit the application; prompts to save documents\nExit"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     ID_FILE_MRU_FILE1       "Open this document"
     ID_FILE_MRU_FILE2       "Open this document"
@@ -401,18 +391,18 @@ BEGIN
     ID_FILE_MRU_FILE16      "Open this document"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     ID_NEXT_PANE            "Switch to the next window pane\nNext Pane"
     ID_PREV_PANE            "Switch back to the previous window pane\nPrevious Pane"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     ID_WINDOW_SPLIT         "Split the active window into panes\nSplit"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     ID_EDIT_CLEAR           "Erase the selection\nErase"
     ID_EDIT_CLEAR_ALL       "Erase everything\nErase All"
@@ -427,13 +417,13 @@ BEGIN
     ID_EDIT_REDO            "Redo the previously undone action\nRedo"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     ID_VIEW_TOOLBAR         "Show or hide the toolbar\nToggle ToolBar"
     ID_VIEW_STATUS_BAR      "Show or hide the status bar\nToggle StatusBar"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     AFX_IDS_SCSIZE          "Change the window size"
     AFX_IDS_SCMOVE          "Change the window position"
@@ -444,18 +434,18 @@ BEGIN
     AFX_IDS_SCCLOSE         "Close the active window and prompts to save the documents"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     AFX_IDS_SCRESTORE       "Restore the window to normal size"
     AFX_IDS_SCTASKLIST      "Activate Task List"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     AFX_IDS_PREVIEW_CLOSE   "Close print preview mode\nCancel Preview"
 END
 
-#endif    // Danish resources
+#endif    // Danish (Denmark) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

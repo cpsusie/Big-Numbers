@@ -6,8 +6,11 @@
 
 class CMainFrame : public CFrameWnd, public PropertyChangeListener {
 private:
-  ShowFormat m_currentShowFormat;
-  bool       m_registeredAsListener;
+  CStatusBar  m_wndStatusBar;
+  CToolBar    m_wndToolBar;
+  ShowFormat  m_currentShowFormat;
+  bool        m_registeredAsListener;
+  bool        m_closePending;
   void onFileMruFile(int index);
   bool load(const String &name);
   void save(const String &name);
@@ -15,13 +18,11 @@ private:
   void setShowFormat(ShowFormat format);
   void showAllImages();
   bool confirmDiscard();
+  void registerAsListener();
+  void unregisterAsListener();
 protected:
-    CMainFrame();
-    DECLARE_DYNCREATE(CMainFrame)
-
-public:
-
-    virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
+  CMainFrame();
+  DECLARE_DYNCREATE(CMainFrame)
 
 public:
     virtual ~CMainFrame();
@@ -35,7 +36,7 @@ public:
 
     void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
     void ajourMenuItems();
-    ShowFormat getShowFormat() const {
+    inline ShowFormat getShowFormat() const {
       return m_currentShowFormat;
     }
 #ifdef _DEBUG
@@ -44,12 +45,12 @@ public:
 #endif
 
 protected:
-    CStatusBar  m_wndStatusBar;
-    CToolBar    m_wndToolBar;
-
-protected:
-    afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
+    afx_msg int  OnCreate(LPCREATESTRUCT lpCreateStruct);
+    afx_msg void OnDestroy();
     afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
+    afx_msg void OnClose();
+    afx_msg void OnAppExit();
+    afx_msg void OnFileNew();
     afx_msg void OnFileOpen();
     afx_msg void OnFileCloseGiffile();
     afx_msg void OnFileMruFile1();
@@ -74,8 +75,5 @@ protected:
     afx_msg void OnViewShowRawPictures();
     afx_msg void OnViewShowScaledPictures();
     afx_msg void OnViewShowQuantizedPictures();
-    afx_msg void OnClose();
-    afx_msg void OnAppExit();
     DECLARE_MESSAGE_MAP()
 };
-

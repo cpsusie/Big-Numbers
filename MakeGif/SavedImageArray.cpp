@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include <MedianCut.h>
-#include "PixRectArray.h"
+#include "SavedImageArray.h"
 
 #define MAXCOLORCOUNT 0x1000000
 
@@ -71,16 +71,16 @@ SavedImageArray::~SavedImageArray() {
   clear();
 }
 
-void SavedImageArray::clear() {
+void SavedImageArray::clear(intptr_t capacity) {
   for(size_t i = 0; i < size(); i++) {
     deallocateSavedImage((*this)[i]);
   }
-  CompactArray<SavedImage*>::clear();
+  __super::clear(capacity);
 }
 
 SavedImageArray::SavedImageArray(const PixRectArray &prArray, int maxColorCount) {
   if(maxColorCount > 256) {
-    throwInvalidArgumentException(_T("SavedImageArray"), _T("maxColorCount=%d. max=256"), maxColorCount);
+    throwInvalidArgumentException(__TFUNCTION__, _T("maxColorCount=%d. max=256"), maxColorCount);
   }
   const GifPixRect *pr          = NULL;
   PixelAccessor    *pa          = NULL;
@@ -110,7 +110,7 @@ SavedImageArray::SavedImageArray(const PixRectArray &prArray, int maxColorCount)
     DimPointWithIndexArray allPoints = colorArrayToPointArray(allColors);
     DimPointArray          mc        = medianCut(allPoints, colorCount);
 
-    bigColorMap = new BYTE[MAXCOLORCOUNT];
+    bigColorMap = new BYTE[MAXCOLORCOUNT]; TRACE_NEW(bigColorMap);
     memset(bigColorMap, 0, MAXCOLORCOUNT);
     for(intptr_t i = allPoints.size(); i--;) {
       bigColorMap[allColors[i]] = allPoints[i].m_index;
@@ -146,10 +146,10 @@ SavedImageArray::SavedImageArray(const PixRectArray &prArray, int maxColorCount)
       image->ImageDesc.Top  = pr->m_topLeft.y;
       setGCB(image, pr->m_gcb);
     }
-    delete[] bigColorMap; bigColorMap = NULL;
+    SAFEDELETEARRAY(bigColorMap);
   } catch(...) {
     if(pa)          { pr->releasePixelAccessor(); pa  = NULL; }
-    if(bigColorMap) { delete bigColorMap; bigColorMap = NULL; }
+    SAFEDELETEARRAY(bigColorMap);
     clear();
     throw;
   }

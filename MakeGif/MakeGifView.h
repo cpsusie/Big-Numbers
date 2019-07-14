@@ -11,10 +11,17 @@ typedef enum {
 } ShowFormat;
 
 typedef enum {
-  GIFCTRL_STATUS
- ,SHOW_MODE
- ,CONTROL_UPDATE_TIME
+  GIFCTRL_STATUS      // bool
+ ,CONTROL_UPDATE_TIME // Timestamp
 } ViewProperty;
+
+class PanelPoint {
+public:
+  const int    m_panelId;
+  const CPoint m_point;
+  inline PanelPoint(int id, const CPoint &point) : m_panelId(id), m_point(point) {
+  }
+};
 
 class CMakeGifView : public CFormView, public PropertyContainer, public PropertyChangeListener {
 protected:
@@ -26,10 +33,15 @@ private:
     CGifCtrlWithProperties m_gifCtrl;
     Timestamp              m_lastCtrlUpdate;
     SimpleLayoutManager    m_layoutManager;
-    void loadGifFileFromDoc();
-    void showPanelSize();
-    void drawImagePanel(const PixRectArray &prArray);
-    ShowFormat getShowFormat()  const;
+    CPoint                 m_currentMouse;
+    void                loadGifFileFromDoc();
+    void                showPanelSize();
+    void                drawImgPanel(const PixRectArray *prArray);
+    ShowFormat          getShowFormat() const;
+    const PixRectArray *getVisiblePrArray();
+    PanelPoint          getPanelPoint(const CPoint &viewPoint) const;
+    void OnRButtonDownGifPanel(UINT nFlags, CPoint point);
+    void OnRButtonDownImgPanel(UINT nFlags, CPoint point);
 public:
     CMakeGifDoc *GetDocument();
 
@@ -45,21 +57,20 @@ public:
     void showAll();
     void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
 
-public:
     virtual void OnDraw(CDC *pDC);
-    virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
-    virtual void DoDataExchange(CDataExchange *pDX);
     virtual void OnInitialUpdate();
-
+    virtual void OnFinalRelease();
     virtual ~CMakeGifView();
 #ifdef _DEBUG
     virtual void AssertValid() const;
-    virtual void Dump(CDumpContext& dc) const;
+    virtual void Dump(CDumpContext &dc) const;
 #endif
 
 protected:
-    afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
-    afx_msg void OnSize(UINT nType, int cx, int cy);
+    afx_msg void OnSize(       UINT nType, int cx, int cy);
+    afx_msg void OnMouseMove(  UINT nFlags, CPoint point);
+    afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
+    afx_msg BOOL OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult);
     DECLARE_MESSAGE_MAP()
 };
 
@@ -67,4 +78,3 @@ protected:
 inline CMakeGifDoc *CMakeGifView::GetDocument()
    { return (CMakeGifDoc*)m_pDocument; }
 #endif
-

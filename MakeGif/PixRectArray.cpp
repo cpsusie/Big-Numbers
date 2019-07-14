@@ -3,9 +3,7 @@
 #include <FileNameSplitter.h>
 #include <MFCUtil/AnimatedImage.h>
 #include <Math/Rectangle2D.h>
-#include "PixRectArray.h"
-
-#define ORIGIN CPoint(0,0)
+#include "SavedImageArray.h"
 
 PixRectArray::PixRectArray(const StringArray &fileNames, StringArray &errors) {
   USES_CONVERSION;
@@ -18,7 +16,8 @@ PixRectArray::PixRectArray(const StringArray &fileNames, StringArray &errors) {
         const char *namea = T2A(name.cstr());
         GifFileType *gifFile = DGifOpenFileName(namea, &error);
         if(gifFile == NULL) {
-          throwException(_T("%s"), GifErrorString(error));
+          const String msg = GifErrorString(error);
+          throwException(_T("%s"), msg.cstr());
         }
         if(DGifSlurp(gifFile) != GIF_OK) {
           const String msg = GifErrorString(gifFile->Error);
@@ -28,7 +27,8 @@ PixRectArray::PixRectArray(const StringArray &fileNames, StringArray &errors) {
         const int imageCount   = gifFile->ImageCount;
 
         for(int k = 0; k < imageCount; k++) {
-          add(new GifPixRect(gifFile, k));
+          GifPixRect *gp = new GifPixRect(gifFile, k); TRACE_NEW(gp);
+          add(gp);
         }
         DGifCloseFile(gifFile, &error);
       } else {
@@ -57,56 +57,81 @@ PixRectArray &PixRectArray::operator=(const PixRectArray &src) {
 }
 
 bool PixRectArray::needUpdate(const PixRectArray &src) const {
-  return (size() != src.size())
-      || (getUpdateCount() < src.getUpdateCount());
+  return (size() != src.size()) || (getUpdateCount() < src.getUpdateCount());
 }
 
 void PixRectArray::incrUpdateCount() {
-  unsigned int oldCounter = m_updateCounter;
-  m_updateCounter++;
-  notifyPropertyChanged(UPDATECOUNTER, &oldCounter, &m_updateCounter);
+  setProperty(UPDATECOUNTER, m_updateCounter, m_updateCounter+1);
 }
 
 PixRectArray &PixRectArray::scale(double scaleFactor) {
-  if(size() == 0) {
+  if(isEmpty()) {
     return *this;
   }
   for(size_t i = 0; i < size(); i++) {
     const GifPixRect *pr = (*this)[i];
     GifPixRect *copy = pr->clone(scaleFactor);
     (*this)[i] = copy;
-    delete pr;
+    SAFEDELETE(pr);
   }
   incrUpdateCount();
   return *this;
 }
 
+PixRectArray &PixRectArray::setAllToSize(const CSize &newSize) {
+  BitSet resizingSet = needsResize(newSize);
+  if(resizingSet.isEmpty()) {
+    return *this;
+  }
+  for(Iterator<size_t> it = resizingSet.getIterator(); it.hasNext();) {
+    const size_t i = it.next();
+    const GifPixRect *pr = (*this)[i];
+    GifPixRect *copy = pr->clone(newSize);
+    (*this)[i] = copy;
+    SAFEDELETE(pr);
+  }
+  incrUpdateCount();
+  return *this;
+}
+
+BitSet PixRectArray::needsResize(const CSize &newSize) const {
+  BitSet result(size() + 1);
+  for(size_t i = 0; i < size(); i++) {
+    const GifPixRect *pr = (*this)[i];
+    if(pr->getSize() != newSize) {
+      result += i;
+    }
+  }
+  return result;
+}
+
 PixRectArray &PixRectArray::quantize(int maxColorCount) {
-  if(size() == 0) {
+  if(isEmpty()) {
     return *this;
   }
   SavedImageArray tmp(*this, maxColorCount);
   clear();
   for(size_t i = 0; i < tmp.size(); i++) {
-    add(new GifPixRect(tmp[i], NULL));
+    GifPixRect *gp = new GifPixRect(tmp[i], NULL); TRACE_NEW(gp);
+    add(gp);
   }
   incrUpdateCount();
   return *this;
 }
 
-void PixRectArray::clear() {
-  if(size() == 0) {
+void PixRectArray::clear(intptr_t capacity) {
+  if(isEmpty()) {
     return;
   }
-  while(size() > 0) {
-    delete last();
-    removeLast();
+  for(size_t i = 0; i < size(); i++) {
+    SAFEDELETE((*this)[i]);
   }
+  __super::clear(capacity);
   incrUpdateCount();
 }
 
 void PixRectArray::append(const PixRectArray &a) {
-  if(a.size() == 0) {
+  if(a.isEmpty()) {
     return;
   }
   for(size_t i = 0; i < a.size(); i++) {
@@ -115,24 +140,25 @@ void PixRectArray::append(const PixRectArray &a) {
   incrUpdateCount();
 }
 
-void PixRectArray::remove(unsigned int index, unsigned int count) {
+void PixRectArray::remove(UINT index, UINT count) {
   if(count == 0) {
     return;
   }
   for(size_t i = 0; i < count; i++) {
     PixRect *pr = (*this)[index];
-    remove(index);
-    delete pr;
+    SAFEDELETE(pr);
   }
+  __super::remove(index, count);
   incrUpdateCount();
 }
 
 CSize PixRectArray::getMinSize() const {
-  if(size() == 0) {
+  const int n = (int)size();
+  if(n == 0) {
     return CSize(0,0);
   }
-  CSize result = (*this)[0]->getSize();
-  for(size_t i = 1; i < size(); i++) {
+  CSize result = first()->getSize();
+  for(size_t i = 1; i < n; i++) {
     const CSize sz = (*this)[i]->getSize();
     result.cx = min(result.cx, sz.cx);
     result.cy = min(result.cy, sz.cy);
@@ -141,11 +167,12 @@ CSize PixRectArray::getMinSize() const {
 }
 
 CSize PixRectArray::getMaxSize() const {
-  if(size() == 0) {
+  const int   n = (int)size();
+  if(n == 0) {
     return CSize(0,0);
   }
-  CSize result = (*this)[0]->getSize();
-  for(size_t i = 1; i < size(); i++) {
+  CSize result = first()->getSize();
+  for(size_t i = 1; i < n; i++) {
     const CSize sz = (*this)[i]->getSize();
     result.cx = max(result.cx, sz.cx);
     result.cy = max(result.cy, sz.cy);
@@ -154,32 +181,35 @@ CSize PixRectArray::getMaxSize() const {
 }
 
 void PixRectArray::paintAll(HDC dc, const CRect &rect) const {
-  const CSize rSize         = rect.Size();
-  const CSize maxSize       = getMaxSize();
-  const int   n             = (int)size();
-  int         availableArea = getArea(rSize);
+  const int   n = (int)size();
+  if(n == 0) {
+    return;
+  }
+  const CSize  rSize         = rect.Size();
+  const CSize  maxSize       = getMaxSize();
+  int          availableArea = getArea(rSize);
 
   double       scaleFactor;
   CSize        newSize;
   int          fpl;
-  unsigned int maxArea = 0;
+  UINT         maxArea = 0;
 
 //  m_comment = format(_T("imageCount:%2d  rSize:(%3d,%3d)\r\n"), n, rSize.cx, rSize.cy);
 
   for(int framesPerLine = n; framesPerLine >= 1; framesPerLine--) {
-    const unsigned int lineCount      = (n-1) / framesPerLine + 1;
-    const int          lastFrameCount = n%framesPerLine;
-    const unsigned int fullLines      = lineCount - (lastFrameCount?1:0);
+    const UINT lineCount      = (n-1) / framesPerLine + 1;
+    const int  lastFrameCount = n%framesPerLine;
+    const UINT fullLines      = lineCount - (lastFrameCount?1:0);
 
     assert((fullLines >= 1) && (lastFrameCount >= 0) && (fullLines * framesPerLine + lastFrameCount == n));
 
-    const double       sfx = min(1.0, (double)(rSize.cx-1) / ((maxSize.cx+1) * framesPerLine));
-    double             sfy = min(1.0, (double)(rSize.cy-1) / ((maxSize.cy+1) * lineCount    ));
-    double             sf  = min(sfx, sfy);
+    const double sfx = min(1.0, (double)(rSize.cx-1) / ((maxSize.cx+1) * framesPerLine));
+    double       sfy = min(1.0, (double)(rSize.cy-1) / ((maxSize.cy+1) * lineCount    ));
+    double       sf  = min(sfx, sfy);
 
-    const CSize        psz  = CSize((int)floor(sf * maxSize.cx) + 1, (int)floor(sf * maxSize.cy) + 1);
-    const unsigned int area = getArea(psz);;
-    const CSize        dstSz(framesPerLine * psz.cx-1, lineCount * psz.cy-1);
+    const CSize  psz  = CSize((int)floor(sf * maxSize.cx) + 1, (int)floor(sf * maxSize.cy) + 1);
+    const UINT   area = getArea(psz);;
+    const CSize  dstSz(framesPerLine * psz.cx-1, lineCount * psz.cy-1);
 /*
     const CSize rightWaste( rSize.cx - dstSz.cx             , fullLines * psz.cy  );
     const CSize bottomWaste(rSize.cx                        , rSize.cy - dstSz.cy );
@@ -205,7 +235,7 @@ void PixRectArray::paintAll(HDC dc, const CRect &rect) const {
 
   CPoint p = rect.TopLeft();
   for(int i = 0, lc = 0; i < n; i++) {
-    const GifPixRect *pr = (*this)[i];
+    GifPixRect *pr = (*this)[i];
     if(lc == fpl) {
       p.x = rect.left;
       p.y += newSize.cy;
@@ -214,12 +244,13 @@ void PixRectArray::paintAll(HDC dc, const CRect &rect) const {
 
     const CPoint topLeft = pr->m_topLeft;
     const CSize  sz      = pr->getSize();
-    CRect tmpRect = (scaleFactor == 1)
+    const CRect  tmpRect = (scaleFactor == 1)
                   ? CRect(p + topLeft, sz)
                   : CRect(CPoint((int)(p.x + scaleFactor * topLeft.x), (int)(p.y + scaleFactor * topLeft.y))
                          ,CSize((int)(scaleFactor * sz.cx), (int)(scaleFactor * sz.cy))
                          );
     paintPixRect(pr, dc, tmpRect);
+    pr->m_winRect = tmpRect;
     p.x += newSize.cx;
     lc++;
   }
@@ -236,88 +267,12 @@ void PixRectArray::paintPixRect(const PixRect *pr, HDC dc, const CRect &rect) { 
   }
 }
 
-
-GifPixRect::GifPixRect(const SavedImage *image, const ColorMapObject *globalColorMap)
-: PixRect(theApp.m_device, PIXRECT_PLAINSURFACE, image->ImageDesc.Width, image->ImageDesc.Height) {
-  copyRasterBits(image->RasterBits, image->ImageDesc.ColorMap ? image->ImageDesc.ColorMap->Colors : globalColorMap->Colors);
-  m_topLeft = CPoint(image->ImageDesc.Left, image->ImageDesc.Top);
-  m_gcb = getGCB(image);
-}
-
-GifPixRect::GifPixRect(const CSize &size) : PixRect(theApp.m_device, PIXRECT_PLAINSURFACE, size) {
-  m_topLeft = ORIGIN;
-  m_gcb     = getDefaultGCB();
-}
-
-GifPixRect::GifPixRect(int w, int h) : PixRect(theApp.m_device, PIXRECT_PLAINSURFACE, w, h) {
-  m_topLeft = ORIGIN;
-  m_gcb     = getDefaultGCB();
-}
-
-GifPixRect *GifPixRect::clone(double scaleFactor) const {
-  const CSize   rawSize = getSize();
-  const CSize   scaledSize((int)(scaleFactor * rawSize.cx), (int)(scaleFactor * rawSize.cy));
-  GifPixRect   *copy = new GifPixRect(scaledSize);
-  if(scaleFactor == 1) {
-    copy->copyImage(this);
-  } else {
-    HDC dc = copy->getDC();
-    bool highQuality = true;
-    SetStretchBltMode(dc, highQuality?HALFTONE:COLORONCOLOR);
-    PixRect::stretchBlt(dc, copy->getRect(), SRCCOPY, this, getRect());
-    copy->releaseDC(dc);
-  }
-  copy->m_topLeft = CPoint((int)(scaleFactor * m_topLeft.x), (int)(scaleFactor * m_topLeft.y));
-  copy->m_gcb     = m_gcb;
-  return copy;
-}
-
-static CSize getImageSize(const GifFileType *gifFile, int index) {
-  const SavedImage &image = gifFile->SavedImages[index];
-  return CSize(image.ImageDesc.Width, image.ImageDesc.Height);
-}
-
-GifPixRect::GifPixRect(GifFileType *gifFile, int i)
-: PixRect(theApp.m_device, PIXRECT_PLAINSURFACE, getImageSize(gifFile, i)) {
-  const SavedImage &image = gifFile->SavedImages[i];
-  copyRasterBits(image.RasterBits, image.ImageDesc.ColorMap ? image.ImageDesc.ColorMap->Colors : gifFile->SColorMap->Colors);
-  m_topLeft = CPoint(image.ImageDesc.Left, image.ImageDesc.Top);
-
-  if(DGifSavedExtensionToGCB(gifFile, i, &m_gcb) != GIF_OK) {
-    m_gcb = getDefaultGCB();
-  }
-}
-
-GifPixRect *GifPixRect::load(const String &fileName) { // static
-  PixRect *pr = PixRect::load(theApp.m_device, ByteInputFile(fileName));
-  GifPixRect *result = new GifPixRect(pr->getSize());
-  result->copyImage(pr);
-  delete pr;
-  return result;
-}
-
-void GifPixRect::copyImage(const PixRect *src) {
-  rop(CRect(0,0,getWidth(),getHeight()), SRCCOPY, src, src->getRect());
-}
-
-void GifPixRect::copyRasterBits(GifPixelType *rasterBits, const GifColorType *colorMap) {
-  const int w = getWidth();
-  const int h = getHeight();
-  PixelAccessor      *pa       = getPixelAccessor();
-  for(CPoint p(0,0); p.y < h; p.y++) {
-    for(p.x = 0; p.x < w; p.x++) {
-      const GifColorType &c = colorMap[*(rasterBits++)];
-      pa->setPixel(p, D3DCOLOR_ARGB(c.Red, c.Green, c.Blue, 0xff));
+int PixRectArray::findImageIndexByPoint(const CPoint &p) const {
+  for(UINT i = 0; i < size(); i++) {
+    const GifPixRect *gp = (*this)[i];
+    if(gp->m_winRect.PtInRect(p)) {
+      return i;
     }
   }
-  releasePixelAccessor();
-}
-
-GraphicsControlBlock GifPixRect::getDefaultGCB() { // static
-  GraphicsControlBlock gcb;
-  gcb.DelayTime        = 60;
-  gcb.DisposalMode     = DISPOSE_DO_NOT;
-  gcb.UserInputFlag    = false;
-  gcb.TransparentColor = NO_TRANSPARENT_COLOR;
-  return gcb;
+  return -1;
 }

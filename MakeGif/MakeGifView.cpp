@@ -9,13 +9,12 @@
 
 IMPLEMENT_DYNCREATE(CMakeGifView, CFormView)
 
-void CMakeGifView::DoDataExchange(CDataExchange *pDX) {
-    CFormView::DoDataExchange(pDX);
-}
-
 BEGIN_MESSAGE_MAP(CMakeGifView, CFormView)
-    ON_WM_CREATE()
-    ON_WM_SIZE()
+  ON_WM_SIZE()
+  ON_WM_MOUSEMOVE()
+  ON_WM_RBUTTONDOWN()
+  ON_NOTIFY_EX_RANGE(TTN_NEEDTEXTW, 0, 0xFFFF, OnTtnNeedText)
+  ON_NOTIFY_EX_RANGE(TTN_NEEDTEXTA, 0, 0xFFFF, OnTtnNeedText)
 END_MESSAGE_MAP()
 
 CMakeGifView::CMakeGifView() : CFormView(CMakeGifView::IDD) {
@@ -24,20 +23,24 @@ CMakeGifView::CMakeGifView() : CFormView(CMakeGifView::IDD) {
 CMakeGifView::~CMakeGifView() {
 }
 
-BOOL CMakeGifView::PreCreateWindow(CREATESTRUCT& cs) {
-  return CFormView::PreCreateWindow(cs);
+const PixRectArray *CMakeGifView::getVisiblePrArray() {
+  CMakeGifDoc *pDoc = GetDocument();
+  ASSERT_VALID(pDoc);
+  switch(getShowFormat()) {
+  case SHOW_RAW      : return &pDoc->getRawPrArray();
+  case SHOW_SCALED   : return &pDoc->getScaledPrArray();
+  case SHOW_QUANTIZED: return &pDoc->getQuantizedPrArray();
+  default            : return NULL;
+  }
 }
 
 void CMakeGifView::OnDraw(CDC *pDC) {
 //  showPanelSize();
-  CMakeGifDoc* pDoc = GetDocument();
-  ASSERT_VALID(pDoc);
 
   loadGifFileFromDoc();
-  switch(getShowFormat()) {
-  case SHOW_RAW       : drawImagePanel(pDoc->getRawPrArray());       break;
-  case SHOW_SCALED    : drawImagePanel(pDoc->getScaledPrArray());    break;
-  case SHOW_QUANTIZED : drawImagePanel(pDoc->getQuantizedPrArray()); break;
+  const PixRectArray *pra = getVisiblePrArray();
+  if(pra) {
+    drawImgPanel(pra);
   }
 }
 
@@ -45,37 +48,30 @@ ShowFormat CMakeGifView::getShowFormat()  const {
   return ((CMainFrame*)GetParent())->getShowFormat();
 }
 
-void CMakeGifView::drawImagePanel(const PixRectArray &prArray) {
-  CWnd       *imagePanel = GetDlgItem(IDC_IMAGEPANEL);
-  const CRect cl         = getClientRect(imagePanel);
-  CClientDC   dc(imagePanel);
-  prArray.paintAll(dc, cl);
+void CMakeGifView::drawImgPanel(const PixRectArray *prArray) {
+  CWnd       *imgPanel = GetDlgItem(IDC_IMGPANEL);
+  const CRect cl       = getClientRect(imgPanel);
+  CClientDC   dc(imgPanel);
+  prArray->paintAll(dc, cl);
 }
 
 #ifdef _DEBUG
 void CMakeGifView::AssertValid() const {
-    CFormView::AssertValid();
+  __super::AssertValid();
 }
 
 void CMakeGifView::Dump(CDumpContext& dc) const {
-    CFormView::Dump(dc);
+  __super::Dump(dc);
 }
 
 CMakeGifDoc* CMakeGifView::GetDocument() {
-    ASSERT(m_pDocument->IsKindOf(RUNTIME_CLASS(CMakeGifDoc)));
-    return (CMakeGifDoc*)m_pDocument;
+  ASSERT(m_pDocument->IsKindOf(RUNTIME_CLASS(CMakeGifDoc)));
+  return (CMakeGifDoc*)m_pDocument;
 }
 #endif //_DEBUG
 
-int CMakeGifView::OnCreate(LPCREATESTRUCT lpCreateStruct) {
-  if(CFormView::OnCreate(lpCreateStruct) == -1) {
-    return -1;
-  }
-  return 0;
-}
-
 void CMakeGifView::OnInitialUpdate() {
-  CFormView::OnInitialUpdate();
+  __super::OnInitialUpdate();
 
   CSize clSize = getClientRect(this).Size();
   clSize.cy -= 43;
@@ -85,16 +81,68 @@ void CMakeGifView::OnInitialUpdate() {
   const CRect gifPanelRect = getClientRect(gifPanel);
   m_gifCtrl.Create( EMPTYSTRING, WS_VISIBLE | WS_CHILD, gifPanelRect, gifPanel, IDC_GIFCTRL);
 
-  CWnd *imagePanel = GetDlgItem(IDC_IMAGEPANEL);
+  CWnd *imagePanel = GetDlgItem(IDC_IMGPANEL);
   setWindowRect(imagePanel, CRect(0,clSize.cy/2, clSize.cx, clSize.cy));
 
   m_layoutManager.OnInitDialog(this);
 //  m_layoutManager.addControl(IDC_GIFCTRL , RELATIVE_SIZE);
 
-  m_layoutManager.addControl(IDC_GIFPANEL  , RELATIVE_SIZE                  );
-  m_layoutManager.addControl(IDC_IMAGEPANEL, RELATIVE_WIDTH | RELATIVE_Y_POS);
+  m_layoutManager.addControl(IDC_GIFPANEL, RELATIVE_SIZE                  );
+  m_layoutManager.addControl(IDC_IMGPANEL, RELATIVE_WIDTH | RELATIVE_Y_POS);
 
   m_gifCtrl.addPropertyChangeListener(this);
+  EnableToolTips(TRUE);
+}
+
+void CMakeGifView::OnFinalRelease() {
+  m_gifCtrl.removePropertyChangeListener(this);
+  m_gifCtrl.unload();
+  __super::OnFinalRelease();
+}
+
+void CMakeGifView::OnRButtonDownGifPanel(UINT nFlags, CPoint point) {
+}
+
+void CMakeGifView::OnRButtonDownImgPanel(UINT nFlags, CPoint point) {
+  const PixRectArray *pra = getVisiblePrArray();
+  if(pra) {
+    const int index = pra->findImageIndexByPoint(point);
+    if(index >= 0) {
+      const CSize sz = (*pra)[index]->getSize();
+      showInformation(_T("size:(%d,%d)"), sz.cx, sz.cy);
+    }
+  }
+}
+
+PanelPoint CMakeGifView::getPanelPoint(const CPoint &viewPoint) const {
+  const CRect gifRect = getRelativeClientRect(this, IDC_GIFPANEL);
+  const CRect imgRect = getRelativeClientRect(this, IDC_IMGPANEL);
+  CPoint p  = viewPoint;
+  int    id = -1;
+  if(gifRect.PtInRect(p)) {
+    id = IDC_GIFPANEL;
+  } else if(imgRect.PtInRect(p)) {
+    id = IDC_IMGPANEL;
+  }
+  if(id >= 0) {
+    ClientToScreen(&p);
+    GetDlgItem(id)->ScreenToClient(&p);
+    return PanelPoint(id, p);
+  }
+  return PanelPoint(id, ORIGIN);
+}
+
+void CMakeGifView::OnRButtonDown(UINT nFlags, CPoint point) {
+  const PanelPoint pp = getPanelPoint(point);
+  switch(pp.m_panelId) {
+  case IDC_GIFPANEL:
+    OnRButtonDownGifPanel(nFlags, pp.m_point);
+    break;
+  case IDC_IMGPANEL:
+    OnRButtonDownImgPanel(nFlags, pp.m_point);
+    break;
+  }
+  __super::OnRButtonDown(nFlags, point);
 }
 
 void CMakeGifView::startPlay() {
@@ -143,39 +191,67 @@ void CMakeGifView::loadGifFileFromDoc() {
     } else {
       m_gifCtrl.unload();
     }
-    const Timestamp oldUpdate = m_lastCtrlUpdate;
-    m_lastCtrlUpdate = doc->getLastUpdate();
-    notifyPropertyChanged(CONTROL_UPDATE_TIME, &oldUpdate, &m_lastCtrlUpdate);
+    setProperty(CONTROL_UPDATE_TIME, m_lastCtrlUpdate, doc->getLastUpdate());
   }
 }
 
 void CMakeGifView::OnSize(UINT nType, int cx, int cy) {
-  CFormView::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
   m_layoutManager.OnSize(nType, cx, cy);
 
   if(m_layoutManager.isInitialized()) {
-    CWnd *gifPanel = GetDlgItem(IDC_GIFPANEL);
-
-    const CRect gifPanelRect = getClientRect(gifPanel);
-    setWindowSize(&m_gifCtrl, gifPanelRect.Size());
+    setWindowSize(&m_gifCtrl, getClientRect(GetDlgItem(IDC_GIFPANEL)).Size());
   }
 }
 
-String rectToString(const CRect &r) {
+String toString(const CRect &r) {
   return format(_T("(%d,%d,%d,%d)"), r.left,r.top,r.right,r.bottom);
 }
 
 void CMakeGifView::showPanelSize() {
   const CRect r1 = getWindowRect(this, IDC_GIFPANEL);
-  const CRect r2 = getWindowRect(this, IDC_IMAGEPANEL);
+  const CRect r2 = getWindowRect(this, IDC_IMGPANEL);
   const CRect cl = getClientRect(this);
   const CRect r3 = getWindowRect(&m_gifCtrl);
-  String msg = format(_T("CL:%s, GIFPANEL:%s, GIFCTRL:%s, IMAGE:%s")
-                     ,rectToString(cl).cstr()
-                     ,rectToString(r1).cstr()
-                     ,rectToString(r3).cstr()
-                     ,rectToString(r2).cstr());
+  const String msg = format(_T("CL:%s, GIFPANEL:%s, GIFCTRL:%s, IMAGE:%s")
+                           ,toString(cl).cstr()
+                           ,toString(r1).cstr()
+                           ,toString(r3).cstr()
+                           ,toString(r2).cstr());
 
-  CClientDC dc(GetDlgItem(IDC_IMAGEPANEL));
+  CClientDC dc(GetDlgItem(IDC_IMGPANEL));
   textOut(dc, 10,10, msg);
+}
+
+BOOL CMakeGifView::OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult) {
+  UNREFERENCED_PARAMETER(id);
+
+  NMTTDISPINFO *pTTT = (NMTTDISPINFO *)pNMHDR;
+  UINT_PTR nID = pNMHDR->idFrom;
+  BOOL bRet = FALSE;
+
+  if(pTTT->uFlags & TTF_IDISHWND) {
+    // idFrom is actually the HWND of the tool
+    const PanelPoint pp = getPanelPoint(m_currentMouse);
+    if(pp.m_panelId == IDC_IMGPANEL) {
+      const PixRectArray *pra = getVisiblePrArray();
+      if(pra) {
+        const int index = pra->findImageIndexByPoint(m_currentMouse);
+        if(index >= 0) {
+          const CSize sz = (*pra)[index]->getSize();
+          _stprintf_s(pTTT->szText, ARRAYSIZE(pTTT->szText),_T("size:(%d,%d)"), sz.cx, sz.cy);
+          pTTT->hinst = AfxGetResourceHandle();
+          bRet = TRUE;
+        }
+      }
+    }
+  }
+  *pResult = 0;
+  return bRet;
+}
+
+
+void CMakeGifView::OnMouseMove(UINT nFlags, CPoint point) {
+  m_currentMouse = point;
+  __super::OnMouseMove(nFlags, point);
 }

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include <BitSet.h>
 #include <MFCUtil/ColorSpace.h>
-#include "GifUtil.h"
+#include "SavedImageArray.h"
 #include "MakeGifDoc.h"
 
 #ifdef _DEBUG
@@ -13,7 +13,7 @@ IMPLEMENT_DYNCREATE(CMakeGifDoc, CDocument)
 BEGIN_MESSAGE_MAP(CMakeGifDoc, CDocument)
 END_MESSAGE_MAP()
 
-const TCHAR *defaultName = _T("Untitled");
+const TCHAR *CMakeGifDoc::s_defaultName = _T("Untitled");
 
 ImageSettings::ImageSettings() {
   m_imageScaleFactor = 1;
@@ -23,18 +23,21 @@ ImageSettings::ImageSettings() {
 CMakeGifDoc::CMakeGifDoc() {
   m_gif      = NULL;
   setDocName();
-  m_rawPrArray.addPropertyChangeListener(this);
-  m_scaledPrArray.addPropertyChangeListener(this);
+  m_rawPrArray.addPropertyChangeListener(      this);
+  m_scaledPrArray.addPropertyChangeListener(   this);
   m_quantizedPrArray.addPropertyChangeListener(this);
 }
 
 CMakeGifDoc::~CMakeGifDoc() {
+  m_quantizedPrArray.removePropertyChangeListener(this);
+  m_scaledPrArray.removePropertyChangeListener(   this);
+  m_rawPrArray.removePropertyChangeListener(      this);
   closeGif();
 }
 
 void CMakeGifDoc::setDocName(const String &name) {
   if(name.length() == 0) {
-    m_name     = defaultName;
+    m_name     = s_defaultName;
     m_fileSize = -1;
   } else {
     m_name     = name;
@@ -42,34 +45,8 @@ void CMakeGifDoc::setDocName(const String &name) {
   }
 }
 
-bool CMakeGifDoc::hasDefaultName() const {
-  return m_name == defaultName;
-}
-
-CSize CMakeGifDoc::getGifSize() const {
-  return hasGifFile() ? CSize(m_gif->SWidth, m_gif->SHeight) : CSize(0,0);
-}
-
-bool CMakeGifDoc::needSave() const {
-  return hasGifFile() ? (m_lastUpdate > m_lastSave) : false;
-}
-
-void CMakeGifDoc::updateTimestamp() {
-  const Timestamp &oldUpdate = m_lastUpdate;
-  m_lastUpdate = Timestamp();
-  notifyPropertyChanged(UPDATE_TIME, &oldUpdate, &m_lastUpdate);
-}
-
-void CMakeGifDoc::setSaveTime(const Timestamp &t) {
-  if(t != m_lastSave) {
-    const Timestamp oldSave = m_lastSave;
-    m_lastSave = t;
-    notifyPropertyChanged(SAVE_TIME, &oldSave, &m_lastSave);
-  }
-}
-
 BOOL CMakeGifDoc::OnNewDocument() {
-  if(!CDocument::OnNewDocument()) {
+  if(!__super::OnNewDocument()) {
     return FALSE;
   }
   setDocName();
@@ -85,11 +62,11 @@ void CMakeGifDoc::Serialize(CArchive& ar) {
 
 #ifdef _DEBUG
 void CMakeGifDoc::AssertValid() const {
-  CDocument::AssertValid();
+  __super::AssertValid();
 }
 
 void CMakeGifDoc::Dump(CDumpContext& dc) const {
-  CDocument::Dump(dc);
+  __super::Dump(dc);
 }
 #endif //_DEBUG
 
@@ -212,6 +189,13 @@ void CMakeGifDoc::closeGif() {
     setDocName();
     updateTimestamp();
   }
+}
+
+void CMakeGifDoc::clear() {
+  closeGif();
+  m_rawPrArray.clear();
+  m_scaledPrArray.clear();
+  m_quantizedPrArray.clear();
 }
 
 static void dumpPr(const PixRect *pr) {

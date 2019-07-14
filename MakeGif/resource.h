@@ -9,7 +9,7 @@
 #define IDD_SETTINGS_DIALOG             131
 #define IDC_GIFPANEL                    1000
 #define IDC_GIFCTRL                     1001
-#define IDC_IMAGEPANEL                  1002
+#define IDC_IMGPANEL                    1002
 #define IDC_COMBO_COLORCOUNT            1003
 #define IDC_EDIT_SCALEFACTOR            1004
 #define ID_FILE_CLOSE_GIFFILE           32771

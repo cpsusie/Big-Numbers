@@ -20,7 +20,7 @@ int CGifCtrlWithProperties::getStatusFlags() const {
 
 void CGifCtrlWithProperties::load(const String &fileName) {
   const int oldFlags = getStatusFlags();
-  CGifCtrl::load(fileName);
+  __super::load(fileName);
   notifyStatusChanged(oldFlags);
 }
 
@@ -45,37 +45,37 @@ void CGifCtrlWithProperties::notifyIfFlagChange(int oldFlags, int newFlags, int 
 
 void CGifCtrlWithProperties::loadFromGifFile(const GifFileType *gifFile) {
   const int oldFlags = getStatusFlags();
-  CGifCtrl::loadFromGifFile(gifFile);
+  __super::loadFromGifFile(gifFile);
   notifyStatusChanged(oldFlags);
 }
 
 void CGifCtrlWithProperties::unload() {
   const int oldFlags = getStatusFlags();
-  CGifCtrl::unload();
+  __super::unload();
   notifyStatusChanged(oldFlags);
 }
 
 void CGifCtrlWithProperties::play(bool force) {
   const int oldFlags = getStatusFlags();
-  CGifCtrl::play(force);
+  __super::play(force);
   notifyStatusChanged(oldFlags);
 }
 
 void CGifCtrlWithProperties::stop() {
   const int oldFlags = getStatusFlags();
-  CGifCtrl::stop();
+  __super::stop();
   notifyStatusChanged(oldFlags);
 }
 
 void CGifCtrlWithProperties::paintAllFrames() {
   const int oldFlags = getStatusFlags();
-  CGifCtrl::paintAllFrames();
+  __super::paintAllFrames();
   notifyStatusChanged(oldFlags);
 }
 
 void CGifCtrlWithProperties::hide() {
   const int oldFlags = getStatusFlags();
-  CGifCtrl::hide();
+  __super::hide();
   notifyStatusChanged(oldFlags);
 }
 

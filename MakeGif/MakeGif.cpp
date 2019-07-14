@@ -34,12 +34,10 @@ BOOL CMakeGifApp::InitInstance() {
 
   LoadStdProfileSettings(16);
 
-  CSingleDocTemplate* pDocTemplate;
-  pDocTemplate = new CSingleDocTemplate(
-      IDR_MAINFRAME,
-      RUNTIME_CLASS(CMakeGifDoc),
-      RUNTIME_CLASS(CMainFrame),       // main SDI frame window
-      RUNTIME_CLASS(CMakeGifView));
+  CSingleDocTemplate *pDocTemplate = new CSingleDocTemplate(IDR_MAINFRAME
+                                                           ,RUNTIME_CLASS(CMakeGifDoc)
+                                                           ,RUNTIME_CLASS(CMainFrame)       // main SDI frame window
+                                                           ,RUNTIME_CLASS(CMakeGifView));
   AddDocTemplate(pDocTemplate);
 
   CCommandLineInfo cmdInfo;
@@ -53,7 +51,6 @@ BOOL CMakeGifApp::InitInstance() {
 
   return TRUE;
 }
-
 
 class CAboutDlg : public CDialog {
 public:
@@ -76,8 +73,7 @@ BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
 void CMakeGifApp::OnAppAbout() {
-  CAboutDlg aboutDlg;
-  aboutDlg.DoModal();
+  CAboutDlg().DoModal();
 }
 
 String CMakeGifApp::getRecentFile(int index) {
@@ -85,8 +81,7 @@ String CMakeGifApp::getRecentFile(int index) {
   if(index >= list.GetSize()) {
     return EMPTYSTRING;
   }
-  CString name = list[index];
-  return name.GetBuffer(name.GetLength());
+  return (LPCTSTR)list[index];
 }
 
 void CMakeGifApp::removeFromRecentFile(int index) {

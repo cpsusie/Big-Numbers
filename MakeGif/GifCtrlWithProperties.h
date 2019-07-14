@@ -4,12 +4,11 @@
 #include <MFCUtil/GifCtrl.h>
 
 typedef enum {
-  GIF_LOADSTATUS
- ,GIF_PLAYSTATUS
- ,GIF_SHOWALLSTATUS
- ,GIF_VISIBLESTATUS
+  GIF_LOADSTATUS      // bool
+ ,GIF_PLAYSTATUS      // bool
+ ,GIF_SHOWALLSTATUS   // bool
+ ,GIF_VISIBLESTATUS   // bool
 } GifCtrlProperty;
-
 
 class CGifCtrlWithProperties : public CGifCtrl, public PropertyContainer {
 private:
@@ -23,7 +22,6 @@ public:
   void unload();
   void play(bool force = false);
   void stop();
-  void paintFrame(unsigned int index);
   void paintAllFrames();
   void hide();
 };
