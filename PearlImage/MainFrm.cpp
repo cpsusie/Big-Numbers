@@ -99,7 +99,9 @@ BOOL CMainFrame::PreTranslateMessage(MSG *pMsg) {
 bool CMainFrame::loadFile(const String &fileName) {
   try {
     CPearlImageDoc *doc = getDocument();
-    doc->OnOpenDocument(fileName.cstr());
+    if(!doc->OnOpenDocument(fileName.cstr())) {
+      return false;
+    }
     updateTitle();
     getView()->clear();
     if(m_gridDlgThread->isDialogVisible()) {
