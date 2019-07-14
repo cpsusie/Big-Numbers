@@ -10,7 +10,7 @@ namespace TestCompactHashMap {
 
   template<class K, class V> void testMapStream(const CompactHashMap<K,V> &m) {
     OUTPUT(_T("Testing save/load"));
-    const String fileName = _T("c:\\temp\\testCollection\\CompactHashMap.dat");
+    const String fileName = getTestFileName(__TFUNCTION__);
     m.save(ByteOutputFile(fileName));
     CompactHashMap<K,V> tmp;
     tmp.load(ByteInputFile(fileName));

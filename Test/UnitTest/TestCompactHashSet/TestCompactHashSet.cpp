@@ -42,7 +42,7 @@ namespace TestCompactHashSet {
 
   template<class KeyType> void testCollectionStream(const CompactHashSet<KeyType> &set) {
     OUTPUT(_T("Testing save/load"));
-    const String fileName = _T("c:\\temp\\testCollection\\CompactHashSet.dat");
+    const String fileName = getTestFileName(__TFUNCTION__);
     set.save(ByteOutputFile(fileName));
     CompactHashSet<KeyType> tmp;;
     tmp.load(ByteInputFile(fileName));

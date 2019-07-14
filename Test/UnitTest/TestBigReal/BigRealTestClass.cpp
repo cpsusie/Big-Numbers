@@ -635,6 +635,13 @@ void BigRealTestClass::testGetDouble() {
   }
 }
 
+String getTestFileName(const String &fileName, const String extension = _T("dat")) {
+  const String testDir = _T("c:\\temp\\TestDir");
+  String fname = fileName;
+  fname.replace(_T(':'), _T('_'));
+  return FileNameSplitter(FileNameSplitter::getChildName(testDir, fname)).setExtension(extension).getFullPath();
+}
+
 void BigRealTestClass::testBigRealStream() {
   Array<BigReal> a;
   for(int i = 0; i < 10; i++) {
@@ -642,7 +649,7 @@ void BigRealTestClass::testBigRealStream() {
   }
   a.add(0);
 
-  const String fileName = _T("c:\\temp\\testnumberStream.dat");
+  const String fileName = getTestFileName(__TFUNCTION__);
   a.save(ByteOutputFile(fileName));
   Array<BigReal> b;
   b.load(ByteInputFile(fileName));

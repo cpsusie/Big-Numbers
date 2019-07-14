@@ -13,7 +13,7 @@ namespace TestRandom {
 #include <UnitTestTraits.h>
 
   static String getDirName(bool is64Bit) {
-    return format(_T("c:\\temp\\TestRandom\\%s"), is64Bit?_T("64"):_T("32"));
+    return format(_T("c:\\temp\\TestDir\\TestRandom\\%s"), is64Bit?_T("64"):_T("32"));
   }
 
   static void dumpAllPValues(const TCHAR *method, const TCHAR *generatorName, bool is64Bit, const CompactDoubleArray &a) {
