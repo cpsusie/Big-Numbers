@@ -223,11 +223,7 @@ const _DFARegexMatchState &DebugThread::getDFAMatchState() const {
 }
 
 void DebugThread::setPropRunning(bool value) {
-  const bool oldValue = m_running;
-  m_running = value;
-  if(m_running != oldValue) {
-    notifyPropertyChanged(THREAD_RUNNING, &oldValue, &m_running);
-  }
+  setProperty(THREAD_RUNNING, m_running, value);
 }
 
 static const TCHAR *regexTypeName[] = {

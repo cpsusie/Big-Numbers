@@ -28,18 +28,12 @@ BOOL CLinePrinterThread::InitInstance() {
   m_pMainWnd    = &dlg;
   m_pActiveWnd  = &dlg;
   dlg.DoModal();
-  const bool oldValue = m_windowTerminated;
-  m_windowTerminated = true;
-  notifyPropertyChanged(LINEPRINTER_TERMINATED, &oldValue, &m_windowTerminated);
+  setProperty(LINEPRINTER_TERMINATED, m_windowTerminated, true);
   return TRUE;
 }
 
 void CLinePrinterThread::setVisible(bool visible) {
-  const bool oldValue = m_visible;
-  m_visible = visible;
-  if(m_visible != oldValue) {
-    notifyPropertyChanged(LINEPRINTER_VISIBLE, &oldValue, &m_visible);
-  }
+  setProperty(LINEPRINTER_VISIBLE, m_visible, visible);
 }
 
 void CLinePrinterThread::terminate() {
