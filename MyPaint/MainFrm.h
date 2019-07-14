@@ -8,6 +8,8 @@ class CMainFrame : public CFrameWnd {
 private:
   static const TCHAR *s_saveFileDialogExtensions;
   static const TCHAR *s_loadFileDialogExtensions;
+  CStatusBar       m_wndStatusBar;
+  CToolBar         m_wndToolBar;
   HACCEL           m_accelTable;
   bool             m_created;
   double           m_currentDegree;
@@ -44,8 +46,6 @@ private:
 
 protected:
   CMainFrame();
-  CStatusBar  m_wndStatusBar;
-  CToolBar    m_wndToolBar;
   DECLARE_DYNCREATE(CMainFrame)
 
 public:
@@ -87,7 +87,7 @@ public:
 #endif
 
 protected:
-    afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
+    afx_msg int  OnCreate(LPCREATESTRUCT lpCreateStruct);
     afx_msg void OnDestroy();
     afx_msg void OnSize(UINT nType, int cx, int cy);
     afx_msg void OnClose();

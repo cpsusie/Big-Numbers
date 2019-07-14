@@ -214,7 +214,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
 void CMainFrame::OnDestroy() {
   clearToolStack();
   __super::OnDestroy();
-
+  theApp.m_device.detach();
 }
 
 void CMainFrame::OnSize(UINT nType, int cx, int cy) {

@@ -62,11 +62,6 @@ BOOL CMyPaintApp::InitInstance() {
   return TRUE;
 }
 
-int CMyPaintApp::ExitInstance() {
-  m_device.detach();
-  return __super::ExitInstance();
-}
-
 String CMyPaintApp::getRecentFile(int index) {
   CRecentFileList &list = *m_pRecentFileList;
   if(index >= list.GetSize()) {
