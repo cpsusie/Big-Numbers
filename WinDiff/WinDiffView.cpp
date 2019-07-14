@@ -11,10 +11,6 @@
 
 IMPLEMENT_DYNCREATE(CWinDiffView, CFormView)
 
-void CWinDiffView::DoDataExchange(CDataExchange *pDX) {
-  CFormView::DoDataExchange(pDX);
-}
-
 BEGIN_MESSAGE_MAP(CWinDiffView, CFormView)
     ON_WM_SIZE()
     ON_WM_CREATE()
@@ -23,9 +19,9 @@ BEGIN_MESSAGE_MAP(CWinDiffView, CFormView)
     ON_WM_DROPFILES()
     ON_WM_DESTROY()
     ON_WM_TIMER()
-    ON_COMMAND(ID_FILE_PRINT        , CView::OnFilePrint       )
-    ON_COMMAND(ID_FILE_PRINT_DIRECT , CView::OnFilePrint       )
-    ON_COMMAND(ID_FILE_PRINT_PREVIEW, CView::OnFilePrintPreview)
+    ON_COMMAND(ID_FILE_PRINT        , OnFilePrint       )
+    ON_COMMAND(ID_FILE_PRINT_DIRECT , OnFilePrint       )
+    ON_COMMAND(ID_FILE_PRINT_PREVIEW, OnFilePrintPreview)
 END_MESSAGE_MAP()
 
 #define SC_WIDTH 16
@@ -56,11 +52,11 @@ void CWinDiffView::OnEndPrinting(CDC* /*pDC*/, CPrintInfo* /*pInfo*/) {
 
 #ifdef _DEBUG
 void CWinDiffView::AssertValid() const {
-  CView::AssertValid();
+  __super::AssertValid();
 }
 
 void CWinDiffView::Dump(CDumpContext& dc) const {
-  CView::Dump(dc);
+  __super::Dump(dc);
 }
 
 CWinDiffDoc* CWinDiffView::GetDocument() { // non-debug version is inline
@@ -182,7 +178,7 @@ CWinDiffView *CWinDiffView::getPartner() {
 }
 
 void CWinDiffView::OnSize(UINT nType, int cx, int cy) {
-  CFormView::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
 
   if(!IsWindowVisible()) {
     return;
@@ -285,7 +281,7 @@ void CWinDiffView::setNameFontSizePct(int pct, bool updatePartner) {
 }
 
 int CWinDiffView::OnCreate(LPCREATESTRUCT lpCreateStruct) {
-  if(CFormView::OnCreate(lpCreateStruct) == -1) {
+  if(__super::OnCreate(lpCreateStruct) == -1) {
     return -1;
   }
   RECT r;
@@ -304,7 +300,7 @@ void CWinDiffView::OnDestroy() {
   if(partner) {
     partner->m_textView.setActive(true);
   }
-  CFormView::OnDestroy();
+  __super::OnDestroy();
 }
 
 void CWinDiffView::handleAnchor() {
@@ -354,7 +350,7 @@ void CWinDiffView::OnTimer(UINT_PTR nIDEvent) {
   }
   m_textView.setCaret(m_mousePos);
   m_textView.displayCaret();
-  CView::OnTimer(nIDEvent);
+  __super::OnTimer(nIDEvent);
 }
 
 BOOL CWinDiffView::PreTranslateMessage(MSG *pMsg) {
@@ -416,7 +412,7 @@ BOOL CWinDiffView::PreTranslateMessage(MSG *pMsg) {
     }
     break;
   }
-  return CFormView::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 void CWinDiffView::setScrollPos() {
@@ -447,7 +443,7 @@ void CWinDiffView::setScrollRange(bool redraw) {
 }
 
 void CWinDiffView::OnInitialUpdate() {
-  CFormView::OnInitialUpdate();
+  __super::OnInitialUpdate();
   setNameFontSizePct(getOptions().m_nameFontSizePct, false);
   DragAcceptFiles(true);
   setScrollRange(false);
@@ -483,7 +479,7 @@ void CWinDiffView::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar) {
   case SB_TOP           :
     break;
   }
-  CFormView::OnVScroll(nSBCode, nPos, pScrollBar);
+  __super::OnVScroll(nSBCode, nPos, pScrollBar);
 }
 
 void CWinDiffView::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar) {
@@ -516,7 +512,7 @@ void CWinDiffView::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar) {
   case SB_TOP           :
     break;
   }
-  CFormView::OnHScroll(nSBCode, nPos, pScrollBar);
+  __super::OnHScroll(nSBCode, nPos, pScrollBar);
 }
 
 void CWinDiffView::OnDropFiles(HDROP hDropInfo) {
@@ -536,5 +532,5 @@ void CWinDiffView::OnDropFiles(HDROP hDropInfo) {
 
   doc->recompare();
   m_textView.refreshBoth();
-  CFormView::OnDropFiles(hDropInfo);
+  __super::OnDropFiles(hDropInfo);
 }

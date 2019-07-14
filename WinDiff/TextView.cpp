@@ -8,9 +8,9 @@ BEGIN_MESSAGE_MAP(TextView, CView)
     ON_WM_SIZE()
     ON_WM_DESTROY()
 // Standard printing commands
-    ON_COMMAND(ID_FILE_PRINT        , CView::OnFilePrint       )
-    ON_COMMAND(ID_FILE_PRINT_DIRECT , CView::OnFilePrint       )
-    ON_COMMAND(ID_FILE_PRINT_PREVIEW, CView::OnFilePrintPreview)
+    ON_COMMAND(ID_FILE_PRINT        , OnFilePrint       )
+    ON_COMMAND(ID_FILE_PRINT_DIRECT , OnFilePrint       )
+    ON_COMMAND(ID_FILE_PRINT_PREVIEW, OnFilePrintPreview)
 END_MESSAGE_MAP()
 
 #define SELECTFONT(dc) (dc).SelectObject(&m_font)
@@ -35,13 +35,13 @@ void TextView::init() {
 
 void TextView::Create(const CRect &r, CWnd *parent, Diff &diff) {
   m_diff = &diff;
-  if(CView::Create(NULL, NULL, AFX_WS_DEFAULT_VIEW ,r, parent, 0) == -1) {
+  if(__super::Create(NULL, NULL, AFX_WS_DEFAULT_VIEW ,r, parent, 0) == -1) {
     throwException(_T("TextView::Create failed"));
   }
 }
 
 int TextView::OnCreate(LPCREATESTRUCT lpCreateStruct) {
-  if(CView::OnCreate(lpCreateStruct) == -1) {
+  if(__super::OnCreate(lpCreateStruct) == -1) {
     return -1;
   }
   setFlagValue(VIEW_ISCREATED, true);
@@ -49,7 +49,7 @@ int TextView::OnCreate(LPCREATESTRUCT lpCreateStruct) {
 }
 
 void TextView::OnDestroy() {
-  CView::OnDestroy();
+  __super::OnDestroy();
   setFlagValue(VIEW_ISCREATED, false);
 }
 
@@ -60,7 +60,7 @@ void TextView::OnDraw(CDC *pDC) {
 }
 
 void TextView::OnInitialUpdate() {
-  CView::OnInitialUpdate();
+  __super::OnInitialUpdate();
   setFont(getOptions().m_logFont, false);
   m_state.init(getDiffView().getId());
 

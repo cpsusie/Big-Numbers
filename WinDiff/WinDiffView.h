@@ -61,7 +61,6 @@ public:
 protected:
   virtual void OnDraw(           CDC *pDC);  // overridden to draw this view
   virtual BOOL PreCreateWindow(  CREATESTRUCT &cs);
-  virtual void DoDataExchange(CDataExchange *pDX);
   virtual BOOL PreTranslateMessage(MSG *pMsg);
   virtual void OnInitialUpdate();
   virtual BOOL OnPreparePrinting(CPrintInfo *pInfo);
