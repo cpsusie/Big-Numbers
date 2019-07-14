@@ -136,7 +136,7 @@ void CGridDlg::OnClickedCalculate() {
 }
 
 void CGridDlg::calculate() {
-  if (!validate()) return;
+  if(!validate()) return;
 
   setNotifyEnabled(false);
   windowToValue();

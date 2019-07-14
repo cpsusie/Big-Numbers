@@ -200,6 +200,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
 void CMainFrame::OnDestroy() {
   destroyGridDlg();
   __super::OnDestroy();
+  theApp.m_device.detach();
 }
 
 void CMainFrame::OnClose() {

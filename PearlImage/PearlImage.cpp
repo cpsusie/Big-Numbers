@@ -35,12 +35,10 @@ BOOL CPearlImageApp::InitInstance() {
 
   LoadStdProfileSettings(16);  // Load standard INI file options (including MRU)
 
-  CSingleDocTemplate *pDocTemplate;
-  pDocTemplate = new CSingleDocTemplate(
-      IDR_MAINFRAME,
-      RUNTIME_CLASS(CPearlImageDoc),
-      RUNTIME_CLASS(CMainFrame),       // main SDI frame window
-      RUNTIME_CLASS(CPearlImageView));
+  CSingleDocTemplate *pDocTemplate = new CSingleDocTemplate(IDR_MAINFRAME
+                                                           ,RUNTIME_CLASS(CPearlImageDoc)
+                                                           ,RUNTIME_CLASS(CMainFrame)       // main SDI frame window
+                                                           ,RUNTIME_CLASS(CPearlImageView));
   AddDocTemplate(pDocTemplate);
 
   CCommandLineInfo cmdInfo;
@@ -60,11 +58,6 @@ BOOL CPearlImageApp::InitInstance() {
   m_pMainWnd->UpdateWindow();
 
   return TRUE;
-}
-
-int CPearlImageApp::ExitInstance() {
-  m_device.detach();
-  return __super::ExitInstance();
 }
 
 String CPearlImageApp::getRecentFile(int index) {

@@ -40,10 +40,10 @@ private:
   bool getDoubleValue(int id, double &value);
   CSize getImageSize() const;
 public:
-    CGridDlg(CWnd *pParent = NULL);
-    virtual ~CGridDlg();
+  CGridDlg(CWnd *pParent = NULL);
+  virtual ~CGridDlg();
 
-    enum { IDD = IDR_PEARLGRID };
+  enum { IDD = IDR_PEARLGRID };
   const GridParameters &getParam() const {
     return getCurrentValue();
   }

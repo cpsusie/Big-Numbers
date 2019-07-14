@@ -8,6 +8,8 @@ class CMainFrame : public CFrameWnd, public PropertyChangeListener {
 private:
   static const TCHAR *s_saveFileDialogExtensions;
   static const TCHAR *s_loadFileDialogExtensions;
+  CStatusBar          m_wndStatusBar;
+  CToolBar            m_wndToolBar;
   HACCEL              m_accelTable;
   bool                m_created;
   double              m_currentDegree;
@@ -43,8 +45,6 @@ private:
 
 protected:
   CMainFrame();
-  CStatusBar  m_wndStatusBar;
-  CToolBar    m_wndToolBar;
   DECLARE_DYNCREATE(CMainFrame)
 
 public:
