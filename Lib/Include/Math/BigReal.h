@@ -24,6 +24,30 @@
 // Can be repeated as long as you want
 // #define USE_X32SERVERCHECK
 
+// If this is not defined, all digit-allocations/deallocations will be done with new/delete,
+// which will slow down the program (testBigReal) by a factor 20!!
+#define USE_DIGITPOOL_FREELIST
+
+// If this is defined, releaseDigitPool will check, that all used digits in the pool are released
+//#define CHECKALLDIGITS_RELEASED
+
+// If this is defined, it will be checked, that the same thread that called ConstDigitPool::requestInstance() is the same
+// thread that calls releaseInstance
+//#define CHECKCONSTPOOLTHREAD
+
+// If this is defined, product wil trace recursive calls for when multiplying long BigReals
+// which will slow down the program (testBigReal) by a factor 20!!
+//#define TRACEPRODUCTRECURSION
+
+// If this is defined, load/save/the number of requests and cache-hits to pow2Cache will be logged
+// and written to debugLog when program exit
+//#define TRACEPOW2CACHE
+
+// If this is defined, the number of requests and cache-hits to pow2Cache will be logged
+// and written to debugLog when program exit
+//#define TRACEPOW2CACHEHIT
+
+
 // Basic definitions depends on registersize. 32- og 64-bit
 #ifdef IS32BIT
 
@@ -181,40 +205,29 @@ public:
   }
   inline Pow2ArgumentKey(int n, size_t digits) : m_n(n), m_digits(digits) {
   }
-  inline Pow2ArgumentKey(ByteInputStream &s) {
-    load(s);
-  }
   inline ULONG hashCode() const {
-#ifdef IS32BIT
-    return m_n * 23 + m_digits;
-#else
-    return m_n * 23 + uint64Hash(m_digits);
-#endif
+    return m_n * 23 + sizetHash(m_digits);
   }
   inline bool operator==(const Pow2ArgumentKey &k) const {
     return (m_n == k.m_n) && (m_digits == k.m_digits);
   }
-  void save(ByteOutputStream &s) const {
-    s.putBytes((BYTE*)this, sizeof(Pow2ArgumentKey));
-  }
-
-  void load(ByteInputStream &s) {
-    s.getBytesForced((BYTE*)this, sizeof(Pow2ArgumentKey));
+  String toString() const {
+    return format(_T("(%6d,%3zu)"), m_n, m_digits);
   }
 };
 
 #define CACHE_LOADING 0x1
 #define CACHE_LOADED  0x2
-#define CACHE_EMPTY   0x4
+#define CACHE_SAVING  0x4
+#define CACHE_EMPTY   0x8
 
 class Pow2Cache : public CompactHashMap<Pow2ArgumentKey, BigReal*> {
 private:
-  DECLARECLASSNAME;
-  Semaphore     m_gate;
-  unsigned char m_state;
-  size_t        m_updateCount, m_savedCount;
+  mutable Semaphore m_gate;
+  BYTE              m_state;
+  size_t            m_updateCount, m_savedCount;
 
-  void save(const String &fileName);
+  void save(const String &fileName) const;
   void load(const String &fileName);
   void save(ByteOutputStream &s) const;
   void load(ByteInputStream  &s);
@@ -226,20 +239,17 @@ private:
     return (m_state & CACHE_LOADING) ? true : false;
   }
 public:
-#ifdef _DEBUG
-  static size_t s_cacheHitCount, s_cacheRequestCount;
-#endif
-
   Pow2Cache();
   ~Pow2Cache();
   bool put(const Pow2ArgumentKey &key, BigReal * const &v);
-  BigReal **get(const Pow2ArgumentKey &key);
+  BigReal **get(const Pow2ArgumentKey &key) const;
   inline bool isChanged() const {
     return m_updateCount != m_savedCount;
   }
   bool hasCacheFile() const;
   void load();
   void save();
+  void dump() const;
 };
 
 class BigRealResource : public IdentifiedResource {
@@ -253,13 +263,8 @@ public:
 #define PI_DIGITPOOL_ID      -3
 #define LN_DIGITPOOL_ID      -4
 
-// If this is not defined, all digit-allocations/deallocations will be done with new/delete,
-// which will slow down the program (testBigReal) by a factor 20!!
-#define USE_DIGITPOOL_FREELIST
-
 class DigitPool : public BigRealResource {
 private:
-  DECLARECLASSNAME;
   static size_t         s_totalDigitCount;
   static bool           s_dumpCountWhenDestroyed;
   size_t                m_digitCount;
@@ -378,9 +383,6 @@ void throwBigRealGetIntegralTypeUndefinedException(TCHAR const * const function,
 void throwBigRealException(_In_z_ _Printf_format_string_ TCHAR const * const format,...);
 
 class BigReal {
-private:
-  DECLARECLASSNAME;
-
 private:
   static Pow2Cache          s_pow2Cache;
   static const BRDigitType  s_power10Table[POWER10TABLESIZE];
@@ -622,9 +624,9 @@ private:
   // Misc
   BigReal  &adjustAPCResult(const char bias, const TCHAR *function); // return this
 
-  friend bool isFloat(   const BigReal &v);
-  friend bool isDouble(  const BigReal &v);
-  friend bool isDouble80(const BigReal &v);
+  friend bool isFloat(   const BigReal &v, float    *flt = NULL);
+  friend bool isDouble(  const BigReal &v, double   *dbl = NULL);
+  friend bool isDouble80(const BigReal &v, Double80 *d80 = NULL);
 
   inline float getFloatNoLimitCheck() const {
     return getFloat(getDouble80NoLimitCheck());
@@ -636,6 +638,14 @@ private:
   void     formatFixed(        String &result, streamsize precision, long flags, bool removeTrailingZeroes) const;
   void     formatScientific(   String &result, streamsize precision, long flags, BRExpoType expo10, bool removeTrailingZeroes) const;
   void     formatWithSpaceChar(String &result, TCHAR spaceChar) const;
+
+protected:
+  inline void releaseDigits() { // should only be called from destructor
+    if(m_first) {
+      m_digitPool.deleteDigits(m_first, m_last);
+      m_first = NULL;
+    }
+  }
 
 public:
   inline BigReal(                  DigitPool *digitPool = NULL) : _SETDIGITPOOL() {
@@ -698,7 +708,7 @@ public:
   }
 
   virtual ~BigReal() {
-    clearDigits();
+    releaseDigits();
   }
 
   inline BigReal &operator=(int              n) {
@@ -829,10 +839,11 @@ public:
   // 2^n, with the specified number of digits. if digits = 0, then full precision. Results are cached
   static const BigReal &pow2(int n, size_t digits = 0);
 
-  static void loadPow2Cache();
-  static void savePow2Cache();
-  static bool hasPow2CacheFile();
+  static void pow2CacheLoad();
+  static void pow2CacheSave();
+  static bool pow2CacheHasFile();
   static bool pow2CacheChanged();
+  static void pow2CacheDump();
 
   // Assume x._isfinite() && y._isfinite(). Return sign(x-y)
   friend int compare(         const BigReal &x,  const BigReal &y);
@@ -858,6 +869,9 @@ public:
   // return true, if *this is NaN
   inline bool _isnan() const {
     return !_isnormal() && (m_low == BIGREAL_NANLOW);
+  }
+  inline bool isConst() const {
+    return getPoolId() == CONST_DIGITPOOL_ID;
   }
   inline void setToZero() {
     clearDigits();
@@ -1067,46 +1081,42 @@ public:
 
 class ConstDigitPool : private DigitPool {
 private:
-  DECLARECLASSNAME;
   Semaphore  m_gate;
   int        m_requestCount;
-#ifdef _DEBUG
+#ifdef CHECKCONSTPOOLTHREAD
   int        m_ownerThreadId;
-#endif
+#endif // CHECKCONSTPOOLTHREAD
 
   static ConstDigitPool s_instance;
 
 public:
   ConstDigitPool() : DigitPool(CONST_DIGITPOOL_ID), m_requestCount(0) {
-#ifdef _DEBUG
+#ifdef CHECKCONSTPOOLTHREAD
     m_ownerThreadId = -1;
-#endif
+#endif // CHECKCONSTPOOLTHREAD
   }
 
   static inline DigitPool *requestInstance() {
-    DEFINEMETHODNAME;
-#ifdef _DEBUG
+#ifdef CHECKCONSTPOOLTHREAD
     const DWORD thrId = GetCurrentThreadId();
-#endif
+#endif // CHECKCONSTPOOLTHREAD
     s_instance.m_gate.wait();
     s_instance.m_requestCount++;
-#ifdef _DEBUG
+#ifdef CHECKCONSTPOOLTHREAD
     s_instance.m_ownerThreadId = thrId;
-#endif
+#endif // CHECKCONSTPOOLTHREAD
     return &s_instance;
   }
 
   static inline void releaseInstance() {
-#ifdef _DEBUG
-    DEFINEMETHODNAME;
+#ifdef CHECKCONSTPOOLTHREAD
     const DWORD thrId = GetCurrentThreadId();
-    if (thrId != s_instance.m_ownerThreadId) {
-      throwException(
-        _T("%s:Thread callling releaseInstance (=%d) is not the ownerthread (=%d)")
-        , method, thrId, s_instance.m_ownerThreadId);
+    if(thrId != s_instance.m_ownerThreadId) {
+      throwException(_T("%s: Calling thread =%d, is not the ownerthread (=%d)")
+                    ,__TFUNCTION__, thrId, s_instance.m_ownerThreadId);
     }
     s_instance.m_ownerThreadId = -1;
-#endif
+#endif // CHECKCONSTPOOLTHREAD
     s_instance.m_gate.signal();
   }
 
@@ -1190,7 +1200,7 @@ public:
 
   ~ConstBigReal() {
     REQUESTCONSTPOOL;
-    setToZero();
+    releaseDigits();
     RELEASECONSTPOOL;
   }
 
@@ -1209,6 +1219,7 @@ public:
   static const ConstBigReal _dbl_max;
   static const ConstBigReal _dbl80_min;
   static const ConstBigReal _dbl80_max;
+  static const ConstBigReal _C1third;
 };
 
 #define APCsum( bias, x, y, pool) BigReal::apcSum( #@bias, x, y, pool)
@@ -1275,7 +1286,7 @@ public:
     m_spaceChar = 0;
   }
   BigRealStream &operator<<(const StreamParameters &param) {
-    StrStream::operator<<(param);
+    __super::operator<<(param);
     return *this;
   }
 
@@ -1286,16 +1297,13 @@ public:
 };
 
 class FullFormatBigReal : public BigReal {
-private:
-  DECLARECLASSNAME;
-
 public:
   FullFormatBigReal(const BigReal &n, DigitPool *digitPool = NULL) : BigReal(n, digitPool) {
   }
   FullFormatBigReal(DigitPool *digitPool = NULL) : BigReal(digitPool) {
   }
   FullFormatBigReal &operator=(const BigReal &x) {
-    BigReal::operator=(x);
+    __super::operator=(x);
     return *this;
   }
   void print(FILE *f = stdout, bool spacing = false) const;
@@ -1303,8 +1311,6 @@ public:
 };
 
 class BigInt : public BigReal {
-private:
-  DECLARECLASSNAME;
 public:
   BigInt(DigitPool *digitPool = NULL) : BigReal(digitPool) {
   }
@@ -1360,11 +1366,9 @@ inline Real getReal(const BigReal &x) {
 inline Real getReal(const BigReal &x) {
   return getDouble(x);
 }
-#endif
+#endif // LONGDOUBLE
 
 class ConstBigInt : public BigInt {
-private:
-  DECLARECLASSNAME;
 public:
   explicit ConstBigInt(const BigReal &x) : BigInt(x, REQUESTCONSTPOOL) {
     RELEASECONSTPOOL;
@@ -1405,7 +1409,7 @@ public:
 
   ~ConstBigInt() {
     REQUESTCONSTPOOL;
-    setToZero();
+    releaseDigits();
     RELEASECONSTPOOL;
   }
 };
@@ -1415,7 +1419,6 @@ public:
 
 class BigRational {
 private:
-  DECLARECLASSNAME;
   BigInt m_numerator, m_denominator;
   static BigInt findGCD(const BigInt &a, const BigInt &b);
   void init(const BigInt &numerator, const BigInt &denominator);
@@ -1657,7 +1660,6 @@ public:
   }
 };
 
-//#define CHECKALLDIGITS_RELEASED
 #ifdef CHECKALLDIGITS_RELEASED
 class DigitPoolWithCheck : public DigitPool {
 public:
@@ -1665,14 +1667,10 @@ public:
   DigitPoolWithCheck(int id, UINT intialDigitcount = 0) : DigitPool(id, intialDigitcount) {
   }
 };
-
 typedef DigitPoolWithCheck MTDigitPoolType;
-
 #else
-
 typedef DigitPool MTDigitPoolType;
-
-#endif
+#endif // CHECKALLDIGITS_RELEASED
 
 template <class T> class BigRealThreadPool : public ResourcePool<T> {
 private:
@@ -1716,7 +1714,6 @@ public:
     return m_disablePriorityBoost;
   }
 };
-
 
 typedef CompactArray<Runnable*> BigRealJobArray;
 
@@ -1763,13 +1760,12 @@ public:
   static BigRealResourcePool &getInstance();
 };
 
-void traceRecursion(int level, _In_z_ _Printf_format_string_ const TCHAR *format,...);
-
-#ifdef _DEBUG
-#define TRACERECURSION(...) traceRecursion(__VA_ARGS__)
+#ifdef TRACEPRODUCTRECURSION
+void logProductRecursion(UINT level, const TCHAR *method, _In_z_ _Printf_format_string_ const TCHAR * const format, ...);
+#define LOGPRODUCTRECURSION(...) logProductRecursion(level, __TFUNCTION__, __VA_ARGS__)
 #else
-#define TRACERECURSION(...)
-#endif _DEBUG
+#define LOGPRODUCTRECURSION(...)
+#endif TRACEPRODUCTRECURSION
 
 // Old version sign(x) * (|x| - floor(|x|))
 BigReal oldFraction(const BigReal &x);

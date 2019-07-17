@@ -35,13 +35,25 @@ void BigReal::init(double x) {
   }
 }
 
-bool isDouble(const BigReal &v) {
-  if(!isnormal(v)) return true;
-  if((compareAbs(v, ConstBigReal::_dbl_max) > 0) || (compareAbs(v, ConstBigReal::_dbl_min) < 0)) {
+bool isDouble(const BigReal &v, double *dbl /*=NULL*/) {
+  if(!isnormal(v)) {
+    if(dbl) {
+      *dbl = getDouble(v);
+    }
+    return true;
+  }
+  if((compareAbs(v, ConstBigReal::_dbl_max) > 0) || (compareAbs(v, ConstBigReal::_dbl_min) < 0) || (v.getDecimalDigits() > DBL_DIG)) {
     return false;
   }
-  const double d = v.getDoubleNoLimitCheck();
-  return BigReal(d,v.getDigitPool()) == v;
+  const double d   = v.getDoubleNoLimitCheck();
+  const bool   ret = v.isConst() ? (ConstBigReal(d) == v) : (BigReal(d, v.getDigitPool()) == v);
+  if(ret) {
+    if(dbl) {
+      *dbl = d;
+    }
+    return true;
+  }
+  return false;
 }
 
 double getDouble(const BigReal &x) {

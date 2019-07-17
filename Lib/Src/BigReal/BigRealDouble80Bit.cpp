@@ -35,13 +35,25 @@ void BigReal::init(const Double80 &x) {
   }
 }
 
-bool isDouble80(const BigReal &v) {
-  if(!isnormal(v)) return true;
-  if((compareAbs(v, ConstBigReal::_dbl80_max) > 0) || (compareAbs(v, ConstBigReal::_dbl80_min) < 0)) {
+bool isDouble80(const BigReal &v, Double80 *d80 /*=NULL*/) {
+  if(!isnormal(v)) {
+    if(d80) {
+      *d80 = getDouble80(v);
+    }
+    return true;
+  }
+  if((compareAbs(v, ConstBigReal::_dbl80_max) > 0) || (compareAbs(v, ConstBigReal::_dbl80_min) < 0) || (v.getDecimalDigits() > DBL80_DIG)) {
     return false;
   }
-  const Double80 d = v.getDouble80NoLimitCheck();
-  return BigReal(d,v.getDigitPool()) == v;
+  const Double80 d   = v.getDouble80NoLimitCheck();
+  const bool     ret = v.isConst() ? (ConstBigReal(d) == v) : (BigReal(d, v.getDigitPool()) == v);
+  if(ret) {
+    if(d80) {
+      *d80 = d;
+    }
+    return true;
+  }
+  return false;
 }
 
 Double80 getDouble80(const BigReal &x) {

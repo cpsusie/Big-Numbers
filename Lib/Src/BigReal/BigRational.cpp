@@ -2,8 +2,6 @@
 #include <float.h>
 #include <ctype.h>
 
-DEFINECLASSNAME(BigRational);
-
 BigRational::BigRational(DigitPool *digitPool) : m_numerator(digitPool), m_denominator(digitPool) {
   init(digitPool->get0(), digitPool->get1());
 }

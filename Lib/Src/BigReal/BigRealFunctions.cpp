@@ -29,16 +29,16 @@ BRExpoType getExpo2(const BigReal &x) {
 size_t BigReal::getDecimalDigits() const {
   if(!_isnormal()) {
     return isZero() ? 1 : 0;
-  } else if(m_expo == m_low) {
-    return getDecimalDigitCount(m_first->n);
-  } else {
-    int lastDigitCount = LOG10_BIGREALBASE;
-    for(BRDigitType last = m_last->n; last % 10 == 0;) {
-      lastDigitCount--;
-      last /= 10;
-    }
-    return (m_expo - m_low - 1) * LOG10_BIGREALBASE + getDecimalDigitCount(m_first->n) + lastDigitCount;
   }
+  int lastDigitCount = LOG10_BIGREALBASE;
+  for(BRDigitType last = m_last->n; last % 10 == 0;) {
+    lastDigitCount--;
+    last /= 10;
+  }
+  const BRExpoType len = m_expo - m_low;
+  return len
+       ? (len - 1) * LOG10_BIGREALBASE + getDecimalDigitCount(m_first->n) + lastDigitCount
+       : lastDigitCount;
 }
 
 BigReal e( const BigReal &x, BRExpoType n, DigitPool *pool) { // x * pow(10,n)

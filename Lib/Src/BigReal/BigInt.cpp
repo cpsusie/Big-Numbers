@@ -2,8 +2,6 @@
 #include <float.h>
 #include <ctype.h>
 
-DEFINECLASSNAME(BigInt);
-
 BigInt::BigInt(const BigReal &x, DigitPool *digitPool) : BigReal(digitPool ? digitPool : x.getDigitPool()) {
   DigitPool *pool = getDigitPool();
 

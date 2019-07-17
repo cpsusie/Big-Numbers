@@ -1,7 +1,5 @@
 #include "pch.h"
 
-DEFINECLASSNAME(BigReal);
-
 void BigReal::insertDigit(BRDigitType n) {
 //  assert(n < BIGREALBASE);
   Digit *p = newDigit();

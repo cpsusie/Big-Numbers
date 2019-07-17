@@ -252,18 +252,21 @@ void SpecialTestClass::runTest() {
 }
 
 static void usage() {
-  _ftprintf(stderr, _T("Usage:TestBigReal [-s] [-p] [-tThreadCount]\n"
+  _ftprintf(stderr, _T("Usage:TestBigReal [-s] [-p] [-tThreadCount] [-d]\n"
                        "   -s: Run special test. Default is standard numbertest.\n"
                        "   -p: Set all threads priority to ABOVE_NORMAL.\n"
-                       "   -tThreadcount: run testnumber with the specified number of threads. Default is the number of cores in the CPU\n.")
+                       "   -tThreadcount: run testnumber with the specified number of threads. Default is the number of cores in the CPU\n."
+                       "   -d: Dump pow2Cache, either at load time, or at end, after all tests have filled the cache.\n")
            );
   exit(-1);
 }
 
 int _tmain(int argc, TCHAR **argv) {
   try {
-    bool   highPriority = false;
-    bool   specialTest  = false;
+    bool   highPriority  = false;
+    bool   specialTest   = false;
+    bool   dumpPow2Cache = false;
+
 #ifdef _DEBUG
     int    threadCount  = getDebuggerPresent() ? 1 : 0;
 #else
@@ -273,9 +276,11 @@ int _tmain(int argc, TCHAR **argv) {
     for(argv++; *argv && *(cp = *argv) == '-'; argv++) {
       for(cp++; *cp; cp++) {
         switch(*cp) {
-        case 'p': highPriority = true;
+        case 'p': highPriority  = true;
                   continue;
-        case 's': specialTest  = true;
+        case 's': specialTest   = true;
+                  continue;
+        case 'd': dumpPow2Cache = true;
                   continue;
         case 't': if((_stscanf(cp+1, _T("%lu"), &threadCount) != 1) || (threadCount == 0)) {
                     usage();
@@ -301,8 +306,12 @@ int _tmain(int argc, TCHAR **argv) {
         throwLastErrorOnSysCallException(_T("SetThreadPriorityBoost"));
       }
     }
-    if(BigReal::hasPow2CacheFile()) {
-      BigReal::loadPow2Cache();
+    if(BigReal::pow2CacheHasFile()) {
+      BigReal::pow2CacheLoad();
+      if(dumpPow2Cache) {
+        BigReal::pow2CacheDump();
+        dumpPow2Cache = false; // dont dump at end
+      }
     }
     if(specialTest) {
       SpecialTestClass stc;
@@ -311,7 +320,10 @@ int _tmain(int argc, TCHAR **argv) {
       testBigReal(threadCount);
     }
     if(BigReal::pow2CacheChanged()) {
-      BigReal::savePow2Cache();
+      BigReal::pow2CacheSave();
+      if(dumpPow2Cache) {
+        BigReal::pow2CacheDump();
+      }
     }
   } catch(Exception e) {
     tcout << _T("\nException:") << e.what() << _T("\n");

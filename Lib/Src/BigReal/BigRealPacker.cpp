@@ -1,11 +1,14 @@
 #include "pch.h"
 #include <BCDArray.h>
 
+// Don't use floating point to save space here. These functions are use
+// in Pow2Cache::load/save and will cause deadlock if used
 Packer &operator<<(Packer &p, const BigReal &v) {
-  if(isInt64(v)) {
+  if(!isnormal(v)) {
+    const float f = getFloat(v);
+    p << f;
+  } else if(isInt64(v)) {
     p << getInt64(v);
-  } else if(isDouble80(v)) {
-    p << getDouble80(v);
   } else {
     BigRealStream stream;
     stream << FullFormatBigReal(v);
@@ -27,14 +30,11 @@ Packer &operator>>(Packer &p, BigReal &v) {
     }
     break;
   case Packer::E_FLOAT    :
-  case Packer::E_DOUBLE   :
-  case Packer::E_DOUBLE80 :
-    { Double80 d;
-      p >> d;
-      v = d;
+    { float f;
+      p >> f; // isnormal(f) == false
+      v = f;
     }
     break;
-
   case Packer::E_ARRAY    :
     { BCDArray a;
       p >> a;
@@ -42,7 +42,7 @@ Packer &operator>>(Packer &p, BigReal &v) {
     }
     break;
   default:
-    throwException(_T("%s:Invalid type:%d. Expected E_CHAR/SHORT/LONG/LONG_LONG/FLOAT/DOUBLE/DOUBLE80/ARRAY"), __TFUNCTION__, p.peekType());
+    throwException(_T("%s:Invalid type:%d. Expected E_CHAR/SHORT/LONG/LONG_LONG/FLOAT/ARRAY"), __TFUNCTION__, p.peekType());
   }
   return p;
 }

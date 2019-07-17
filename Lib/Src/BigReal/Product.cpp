@@ -48,16 +48,14 @@ BigReal &MultiplyServer::mult(BigReal &dst, const BigReal &x, const BigReal &y, 
 
 #endif // USE_X32SERVERCHECK
 
-#ifdef _DEBUG
-void traceRecursion(int level, _In_z_ _Printf_format_string_ TCHAR const * const format,...) {
-  const String spaces = spaceString(level);
+#ifdef TRACEPRODUCTRECURSION
+void logProductRecursion(UINT level, const TCHAR *method, _In_z_ _Printf_format_string_ TCHAR const * const format,...) {
   va_list argptr;
-  va_start(argptr,format);
-  String msg = vformat(format, argptr);
+  va_start(argptr, format);
+  debugLog(_T("%*.*s%2u:%s(%s)\n"), level,level, _T(""), level, method, vformat(format,argptr).cstr());
   va_end(argptr);
-  debugLog(_T("%s%2d:%s\n"), spaces.cstr(), level, msg.cstr());
 }
-#endif // _DEBUG
+#endif // TRACEPRODUCTRECURSION
 
 BigReal BigReal::shortProd(const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *pool) { // static
   BigReal result(pool);
@@ -86,7 +84,7 @@ BigReal &BigReal::shortProduct(const BigReal &x, const BigReal &y, BRExpoType fe
   static bool firstTime = true;
   static MultiplyServer s_multiplyServer;
 
-  if (firstTime) {
+  if(firstTime) {
     firstTime = false;
     s_multiplyServer.startup();
   }
@@ -97,7 +95,7 @@ BigReal &BigReal::shortProduct(const BigReal &x, const BigReal &y, BRExpoType fe
 
   shortProductNoZeroCheck(x, y, loopCount);
   error = serverResult - *this;
-  if (compareAbs(error, ff) > 0) {
+  if(compareAbs(error, ff) > 0) {
     shortProductNoZeroCheck(x, y, loopCount);
   }
   return *this;
@@ -136,8 +134,6 @@ void BigReal::split(BigReal &a, BigReal &b, size_t n, const BigReal &f) const {
   a.trimZeroes();                  // dont trim zeroes from a before b has been generated!
 }
 
-static const ConstBigReal C1third = 0.33333333333;
-
 bool BigReal::s_continueCalculation = true;
 
 BigReal &BigReal::product(BigReal &result, const BigReal &x, const BigReal &y, const BigReal &f, int level) { // static
@@ -158,8 +154,7 @@ BigReal &BigReal::product(BigReal &result, const BigReal &x, const BigReal &y, c
     w = min(w2, w1);
   }
 
-//  TRACERECURSION(level, "product(result.pool:%2d, x.len,y.len,w:(%4d,%4d,%4d))"
-//                 ,pool->getId(), XLength,YLength, w);
+  LOGPRODUCTRECURSION(_T("result.pool:%2d, x.len,y.len,w:(%4d,%4d,%4d)"),pool->getId(), XLength,YLength, w);
 
   if(YLength <= s_splitLength || w <= (intptr_t)s_splitLength) {
 //    _tprintf(_T("shortProd X.length:%3d Y.length:%3d w:%d\n"),Y.length(),w);
@@ -169,7 +164,7 @@ BigReal &BigReal::product(BigReal &result, const BigReal &x, const BigReal &y, c
     return productMT(result, X, Y, f, w, level+1);
   }
 
-  const BigReal g = APCprod(#, C1third, f, pool);
+  const BigReal g = APCprod(#, ConstBigReal::_C1third, f, pool);
   BigReal gpm10(g);
   gpm10.multPow10(-10);
   const intptr_t n = min((intptr_t)XLength, w)/2;

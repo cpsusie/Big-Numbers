@@ -33,13 +33,25 @@ void BigReal::init(float x) {
   }
 }
 
-bool isFloat(const BigReal &v) {
-  if(!isnormal(v)) return true;
-  if((compareAbs(v, ConstBigReal::_flt_max) > 0) || (compareAbs(v, ConstBigReal::_flt_min) < 0)) {
+bool isFloat(const BigReal &v, float *flt /*=NULL*/) {
+  if(!isnormal(v)) {
+    if(flt) {
+      *flt = getFloat(v);
+    }
+    return true;
+  }
+  if((compareAbs(v, ConstBigReal::_flt_max) > 0) || (compareAbs(v, ConstBigReal::_flt_min) < 0) || (v.getDecimalDigits() > FLT_DIG)) {
     return false;
   }
-  const float f = v.getFloatNoLimitCheck();
-  return BigReal(f,v.getDigitPool()) == v;
+  const float f   = v.getFloatNoLimitCheck();
+  const bool  ret = v.isConst() ? (ConstBigReal(f) == v) : (BigReal(f, v.getDigitPool()) == v);
+  if(ret) {
+    if(flt) {
+      *flt = f;
+    }
+    return true;
+  }
+  return false;
 }
 
 float getFloat(const BigReal &x) {

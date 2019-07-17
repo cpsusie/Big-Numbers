@@ -2,20 +2,28 @@
 #include <ByteFile.h>
 #include <CompressFilter.h>
 
-DEFINECLASSNAME(Pow2Cache);
-
-#ifdef _DEBUG
-size_t Pow2Cache::s_cacheHitCount     = 0;
-size_t Pow2Cache::s_cacheRequestCount = 0;
-#endif
-
-#ifdef IS32BIT
-#define CACHEFILENAME _T("c:\\temp\\Pow2Cachex86.dat")
+#ifdef TRACEPOW2CACHE
+#define LOGPOW2CACHE(...) debugLog(__VA_ARGS__)
 #else
-#define CACHEFILENAME _T("c:\\temp\\Pow2Cachex64.dat")
-#endif
+#define LOGPOW2CACHE(...)
+#endif // TRACEPOW2CACHE
 
-#define BITPERBRDIGIT (sizeof(BRDigitType)*8)
+#ifdef TRACEPOW2CACHEHIT
+#include <CallCounter.h>
+static CallCounter pow2CacheHits(    _T("pow2CacheHits"    ));
+static CallCounter pow2CacheRequests(_T("pow2CacheRequests"));
+#define ADDCACHEHIT() pow2CacheHits.incr()
+#define ADDCACJEREQ() pow2CacheRequests.incr()
+#else
+#define ADDCACHEHIT()
+#define ADDCACHEREQ()
+#endif // TRACEPOW2CACHEHIT
+
+#define CACHEFILENAME _T("c:\\temp\\Pow2Cache.dat")
+
+#define SETSTATEFLAG(f) m_state |=  (f)
+#define CLRSTATEFLAG(f) m_state &= ~(f)
+
 
 Pow2Cache::Pow2Cache() {
   m_state       = CACHE_EMPTY;
@@ -48,15 +56,62 @@ void Pow2Cache::load() {
 void Pow2Cache::save() {
   if(isChanged()) {
     m_gate.wait();
+    SETSTATEFLAG(CACHE_SAVING);
     save(CACHEFILENAME);
     m_savedCount = m_updateCount;
+    CLRSTATEFLAG(CACHE_SAVING);
     m_gate.signal();
   }
 }
 
+typedef Entry<Pow2ArgumentKey, BigReal*> CacheEntry;
+
+class ArrayEntry : public Pow2ArgumentKey {
+private:
+  const BigReal *m_v;
+public:
+  ArrayEntry() : m_v(NULL) {
+  }
+  ArrayEntry(const CacheEntry &e) : Pow2ArgumentKey(e.getKey()), m_v(e.getValue()) {
+  }
+  String toString() const {
+    return format(_T("%s:%s"), __super::toString().cstr(), FullFormatBigReal(*m_v).toString().cstr());
+  }
+};
+
+class CacheArray : public CompactArray<ArrayEntry> {
+public:
+  CacheArray(const Pow2Cache *cache);
+};
+
+CacheArray::CacheArray(const Pow2Cache *cache) : CompactArray<ArrayEntry>(cache->size()) {
+  for(Iterator<CacheEntry> it = ((Pow2Cache*)cache)->getEntryIterator(); it.hasNext();) {
+    const CacheEntry &e = it.next();
+    add(e);
+  }
+}
+
+static int entryCmp(const ArrayEntry &e1, const ArrayEntry &e2) {
+  const int c = e1.m_n - e2.m_n;
+  if(c) return c;
+  return sign((intptr_t)e1.m_digits - (intptr_t)e2.m_digits);
+}
+
+void Pow2Cache::dump() const {
+  m_gate.wait();
+  CacheArray a(this);
+  a.sort(entryCmp);
+  redirectDebugLog();
+  for(Iterator<ArrayEntry> it = a.getIterator(); it.hasNext();) {
+    debugLog(_T("%s\n"), it.next().toString().cstr());
+  }
+  a.clear();
+  m_gate.signal();
+}
+
 void Pow2Cache::clear() {
   m_gate.wait();
-  for(Iterator<Entry<Pow2ArgumentKey, BigReal*> > it = getEntryIterator(); it.hasNext();) {
+  for(Iterator<CacheEntry> it = getEntryIterator(); it.hasNext();) {
     BigReal *v = it.next().getValue();
     SAFEDELETE(v);
   }
@@ -69,16 +124,18 @@ void Pow2Cache::clear() {
 bool Pow2Cache::put(const Pow2ArgumentKey &key, BigReal * const &v) {
   DEFINEMETHODNAME;
   bool ret;
-  if(m_state & (CACHE_LOADED|CACHE_LOADING)) {
-    if(isLoaded()) {
-      throwException(_T("%s:Not allowed when cache is loaded from file"), method);
+  if(m_state & (CACHE_LOADED|CACHE_LOADING|CACHE_SAVING)) {
+    if(m_state & (CACHE_LOADED | CACHE_SAVING)) {
+      throwException(_T("%s:Not allowed when cache is loaded from file or saving to file"), method);
     }
-    m_state &= ~CACHE_EMPTY;
-    ret = __super::put(key, v);
+    if(ret = __super::put(key, v)) {
+      CLRSTATEFLAG(CACHE_EMPTY);
+    }
   } else {
     m_gate.wait();
-    m_state &= ~CACHE_EMPTY;
-    ret = __super::put(key, v);
+    if(ret = __super::put(key, v)) {
+      CLRSTATEFLAG(CACHE_EMPTY);
+    }
     m_gate.signal();
   }
   if(ret) {
@@ -90,8 +147,8 @@ bool Pow2Cache::put(const Pow2ArgumentKey &key, BigReal * const &v) {
   return ret;
 }
 
-BigReal **Pow2Cache::get(const Pow2ArgumentKey &key) {
-  if(isLoaded()) {
+BigReal **Pow2Cache::get(const Pow2ArgumentKey &key) const {
+  if(m_state & (CACHE_LOADED | CACHE_SAVING)) {
     return __super::get(key);
   }
   m_gate.wait();
@@ -100,7 +157,7 @@ BigReal **Pow2Cache::get(const Pow2ArgumentKey &key) {
   return result;
 }
 
-void Pow2Cache::save(const String &fileName) {
+void Pow2Cache::save(const String &fileName) const {
   save(CompressFilter(ByteOutputFile(fileName)));
 }
 
@@ -108,59 +165,58 @@ void Pow2Cache::load(const String &fileName) {
   load(DecompressFilter(ByteInputFile(fileName)));
 }
 
+static inline Packer &operator<<(Packer &p, const Pow2ArgumentKey &key) {
+  return p << key.m_n << key.m_digits;
+}
+
+static inline Packer &operator>>(Packer &p, Pow2ArgumentKey &key) {
+  return p >> key.m_n >> key.m_digits;
+}
+
 void Pow2Cache::save(ByteOutputStream &s) const {
   const UINT capacity = (UINT)getCapacity();
   const UINT n        = (UINT)size();
-#ifdef _DEBUG
-  debugLog(_T("Saving Pow2Cache to %s. size:%lu, capacity:%lu\n"), CACHEFILENAME, n, capacity);
-#endif
-  const BYTE signaturByte = BITPERBRDIGIT;
-  s.putByte(signaturByte);
-  s.putBytes((BYTE*)&capacity, sizeof(capacity));
-  s.putBytes((BYTE*)&n       , sizeof(n));
-  for(Iterator<Entry<Pow2ArgumentKey, BigReal*> > it = getEntryIterator(); it.hasNext();) {
-    const Entry<Pow2ArgumentKey, BigReal*> &e = it.next();
-    e.getKey().save(s);
-    e.getValue()->save(s);
+  LOGPOW2CACHE(_T("Saving Pow2Cache to %s. size:%lu, capacity:%lu\n"), CACHEFILENAME, n, capacity);
+  Packer p;
+  p << capacity << n;
+  for(Iterator<CacheEntry> it = getEntryIterator(); it.hasNext();) {
+    const CacheEntry &e = it.next();
+    p << e.getKey() << *e.getValue();
   }
-#ifdef _DEBUG
-  debugLog(_T("Pow2Cache saved to %s\n"), CACHEFILENAME);
-#endif
+  p.write(s);
+  p.writeEos(s);
+  LOGPOW2CACHE(_T("Pow2Cache saved to %s\n"), CACHEFILENAME);
 }
 
 void Pow2Cache::load(ByteInputStream &s) {
   UINT capacity;
   UINT n;
-  const BYTE signaturByte = s.getByte();
-  if(signaturByte != BITPERBRDIGIT) {
-    throwException(_T("Wrong bits/Digit in cache-file. Expected %zu, got %d bits"), BITPERBRDIGIT, signaturByte);
-  }
-  s.getBytesForced((BYTE*)&capacity, sizeof(capacity));
-  s.getBytesForced((BYTE*)&n       , sizeof(n));
+  Packer p;
+  p.read(s);
+  p >> capacity >> n;
 
-#ifdef _DEBUG
-  debugLog(_T("Loading Pow2Cache. size:%lu, capacity:%lu...\n"), n, capacity);
-#endif
+  LOGPOW2CACHE(_T("Loading Pow2Cache. size:%lu, capacity:%lu...\n"), n, capacity);
   setCapacity(capacity);
-  m_state |= CACHE_LOADING;
+  SETSTATEFLAG(CACHE_LOADING);
   for(UINT i = 0; i < n; i++) {
-    const Pow2ArgumentKey key(s);
-    put(key, new BigReal(s, &DEFAULT_DIGITPOOL));
+    Pow2ArgumentKey key;
+    BigReal *v = new ConstBigReal(0);
+    p >> key >> *v;
+    put(key, v);
   }
-  m_state = CACHE_LOADED;
-#ifdef _DEBUG
-  debugLog(_T("Pow2Cache loaded from %s\n"), CACHEFILENAME);
-#endif
+  CLRSTATEFLAG(CACHE_LOADING);
+  SETSTATEFLAG(CACHE_LOADED);
+  LOGPOW2CACHE(_T("Pow2Cache loaded from %s\n"), CACHEFILENAME);
 }
 
 const BigReal &BigReal::pow2(int n, size_t digits) { // static
   const Pow2ArgumentKey key(n, digits);
-#ifdef _DEBUG
-  Pow2Cache::s_cacheRequestCount++;
-#endif
 
+  ADDCACHEREQ();
   BigReal **result = s_pow2Cache.get(key);
-  if(result == NULL) {
+  if(result != NULL) {
+    ADDCACHEHIT();
+  } else {
     if(digits != 0) {
       result = s_pow2Cache.get(Pow2ArgumentKey(n,0));
     }
@@ -177,26 +233,26 @@ const BigReal &BigReal::pow2(int n, size_t digits) { // static
       s_pow2Cache.put(key, new ConstBigReal((digits == 0) ? pow2(n-1,digits) * BIGREAL_2   : rProd(pow2(n-1,digits),BIGREAL_2   , digits)));
     }
     result = s_pow2Cache.get(key);
-  } else {
-#ifdef _DEBUG
-    Pow2Cache::s_cacheHitCount++;
-#endif
   }
   return **result;
 }
 
-void BigReal::loadPow2Cache() {
+void BigReal::pow2CacheLoad() { // static
   s_pow2Cache.load();
 }
 
-void BigReal::savePow2Cache() {
+void BigReal::pow2CacheSave() { // static
   s_pow2Cache.save();
 }
 
-bool BigReal::hasPow2CacheFile() {
+bool BigReal::pow2CacheHasFile() { // static
   return s_pow2Cache.hasCacheFile();
 }
 
-bool BigReal::pow2CacheChanged() {
+bool BigReal::pow2CacheChanged() { // static
   return s_pow2Cache.isChanged();
+}
+
+void BigReal::pow2CacheDump() { // static
+  return s_pow2Cache.dump();
 }

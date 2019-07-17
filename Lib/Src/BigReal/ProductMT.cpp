@@ -1,14 +1,12 @@
 #include "pch.h"
 
-static const ConstBigReal C1third = 0.33333333333;
-
 BigReal &BigReal::productMT(BigReal &result, const BigReal &x, const BigReal &y, const BigReal &f, intptr_t w, int level) { // static
   const size_t XLength = x.getLength();
   const size_t YLength = y.getLength();
   DigitPool    *pool   = result.getDigitPool();
 
-  TRACERECURSION(level, _T("productMT(result.pool:%2d, x.len,y.len,w:(%4s,%4s,%4s))")
-                 ,pool->getId(), format1000(XLength).cstr(),format1000(YLength).cstr(), format1000(w).cstr());
+  LOGPRODUCTRECURSION(_T("result.pool:%2d, x.len,y.len,w:(%4s,%4s,%4s)")
+                     ,pool->getId(), format1000(XLength).cstr(),format1000(YLength).cstr(), format1000(w).cstr());
 
   if(YLength <= s_splitLength || w <= (intptr_t)s_splitLength) {
 //    _tprintf(_T("shortProd x.length:%3d y.length:%3d w:%d\n"),y.length(),w);
@@ -16,7 +14,7 @@ BigReal &BigReal::productMT(BigReal &result, const BigReal &x, const BigReal &y,
   }
 
 
-  const BigReal g = APCprod(#,C1third,f,pool);
+  const BigReal g = APCprod(#, ConstBigReal::_C1third,f,pool);
   BigReal gpm10(g);
   gpm10.multPow10(-10);
   const intptr_t n = min((intptr_t)XLength, w)/2;
