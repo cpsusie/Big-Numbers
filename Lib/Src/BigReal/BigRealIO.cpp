@@ -262,25 +262,27 @@ BigRealStream &operator<<(BigRealStream &stream, const BigReal &x) {
 }
 
 BigRealStream &operator<<(BigRealStream &out, const FullFormatBigReal &n) {
-  BRExpoType e = BigReal::getExpo10(n);
-  intptr_t   precision;
-  if(e < 0) {
-    precision = n.getLength() * LOG10_BIGREALBASE;
-    if(e % LOG10_BIGREALBASE == 0) {
-      precision -= LOG10_BIGREALBASE;
+  if(isfinite(n)) {
+    BRExpoType e = BigReal::getExpo10(n);
+    intptr_t   precision;
+    if(e < 0) {
+      precision = n.getLength() * LOG10_BIGREALBASE;
+      if(e % LOG10_BIGREALBASE == 0) {
+        precision -= LOG10_BIGREALBASE;
+      } else {
+        precision -= -e % LOG10_BIGREALBASE;
+      }
     } else {
-      precision -= -e % LOG10_BIGREALBASE;
+      precision = (n.getLength() - 1) * LOG10_BIGREALBASE + (e % LOG10_BIGREALBASE);
     }
-  } else {
-    precision = (n.getLength() - 1) * LOG10_BIGREALBASE + (e % LOG10_BIGREALBASE);
-  }
 
-  if(n.getLength() > 1) {
-    for(BRDigitType last = n.getLastDigit(); last % 10 == 0; last /= 10) precision--;
+    if (n.getLength() > 1) {
+      for (BRDigitType last = n.getLastDigit(); last % 10 == 0; last /= 10) precision--;
+    }
+    out.setFlags((out.getFlags() | ios::scientific) & ~ios::fixed);
+    out.setPrecision(precision);
   }
-  out.setFlags((out.getFlags() | ios::scientific) & ~ios::fixed);
-  out.setPrecision(precision);
-  out << (BigReal)n;
+  out << (const BigReal&)n;
   return out;
 }
 
@@ -294,7 +296,7 @@ String FullFormatBigReal::toString(bool spacing) const {
 BigRealStream &operator<<(BigRealStream &out, const BigInt &n) {
   out.setFlags((out.getFlags() | ios::fixed) & ~ios::scientific);
   out.setPrecision(0);
-  out << (BigReal)n;
+  out << (const BigReal&)n;
   return out;
 }
 
@@ -304,10 +306,10 @@ BigRealStream &operator<<(BigRealStream &out, const BigInt &n) {
 template <class IStreamType, class CharType> void eatWhite(IStreamType &in) {
   CharType ch;
   for(;;in >> ch) {
-	  peekChar(in, ch);
-	  if(!_istspace(ch)) {
-	    return;
-	  }
+    peekChar(in, ch);
+    if(!_istspace(ch)) {
+      return;
+    }
   }
 }
 
@@ -440,7 +442,7 @@ tostream &operator<<(tostream &out, const BigInt &n) {
 }
 
 tostream &operator<<(tostream &out, const FullFormatBigReal &x) {
-	return ::operator<< <tostream>(out, x);
+  return ::operator<< <tostream>(out, x);
 }
 
 void BigReal::print(FILE *f, bool spacing) const {

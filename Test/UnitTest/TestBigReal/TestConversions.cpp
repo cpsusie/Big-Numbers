@@ -200,7 +200,7 @@ void testGetExpo2(TestStatistic &stat) {
 
   const String intervalString = format(_T("[%s..%s]"), toString(startValue).cstr(), toString(DBL80_MAX).cstr());
   const Double80 loopStart  = startValue;
-  stat.out() << _T("Start:") << loopStart << _T(", Step:") << stepFactor << NEWLINE;
+  stat.out() << _T("Start:") << loopStart << _T(", Step:") << stepFactor << endl;
   for(Double80 x = loopStart; !isnan(x); x *= stepFactor) {
     convTest.test(getRelativeError80(x, pool));
 

@@ -41,18 +41,18 @@ void testAPCSum(TestStatistic &stat) {
             case '#': ok = error <= tolerance;           break;
             case '>': ok = error <= tolerance && d >= 0; break;
             default :
-              stat.out() << _T("Invalid bias:'") << bias << _T("'") << NEWLINE;
+              stat.out() << _T("Invalid bias:'") << bias << _T("'") << endl;
               throwException(_T("Invalid bias: =%c"), bias);
             }
             if(!ok) {
-              ERRLOG << _T("Error in APCsum")                                                           << NEWLINE
-                     << _T("x:")                                      << FullFormatBigReal(x)           << NEWLINE
-                     << _T("y:")                                      << FullFormatBigReal(y)           << NEWLINE
-                     << _T("ExactResult = x + y:")                    << FullFormatBigReal(exactResult) << NEWLINE
-                     << _T("Bias:'") << bias << _T("'")                                                 << NEWLINE
-                     << _T("Result = APCsum(bias,x,y):")              << FullFormatBigReal(APCResult)   << NEWLINE
-                     << _T("Difference=fabs(APCResult-exactResult):") << FullFormatBigReal(error)       << NEWLINE
-                     << _T("Tolerance:")                              << tolerance                      << NEWLINE;
+              ERRLOG << _T("Error in APCsum")                                                           << endl
+                     << _T("x:")                                      << FullFormatBigReal(x)           << endl
+                     << _T("y:")                                      << FullFormatBigReal(y)           << endl
+                     << _T("ExactResult = x + y:")                    << FullFormatBigReal(exactResult) << endl
+                     << _T("Bias:'") << bias << _T("'")                                                 << endl
+                     << _T("Result = APCsum(bias,x,y):")              << FullFormatBigReal(APCResult)   << endl
+                     << _T("Difference=fabs(APCResult-exactResult):") << FullFormatBigReal(error)       << endl
+                     << _T("Tolerance:")                              << tolerance                      << endl;
 
               throwException(_T("Error in APCSum"));
             } else {
@@ -86,7 +86,7 @@ static bool checkBiasedExpr(const BigReal &APCresult, const BigReal &x0, const c
     quotient = fabs(rQuot(x0, APCresult, 15));
     return (BIGREAL_1 <= quotient) && (quotient <= maxTolerance);
   default:
-    tcout << _T("Invalid bias:'") << bias << _T("'") << NEWLINE;
+    tcout << _T("Invalid bias:'") << bias << _T("'") << endl;
     throwException(_T("Invalid bias: =%c"), bias);
     return false;
   }
@@ -122,13 +122,13 @@ void testAPCProd(TestStatistic &stat) {
             BigReal       quotient(pool);
 
             if(!checkBiasedExpr(APCResult, exactResult, bias, quotient)) {
-              ERRLOG << _T("Error in APCprod")                                                 << NEWLINE
-                     << _T("x:")                             << FullFormatBigReal(x)           << NEWLINE
-                     << _T("y:")                             << FullFormatBigReal(y)           << NEWLINE
-                     << _T("Exactresult = x * y:")           << FullFormatBigReal(exactResult) << NEWLINE
-                     << _T("Bias:'") << bias << _T("'")                                        << NEWLINE
-                     << _T("APCResult = APCprod(bias,x,y):") << FullFormatBigReal(APCResult)   << NEWLINE
-                     << _T("Quotient:")                      << FullFormatBigReal(quotient)    << NEWLINE;
+              ERRLOG << _T("Error in APCprod")                                                 << endl
+                     << _T("x:")                             << FullFormatBigReal(x)           << endl
+                     << _T("y:")                             << FullFormatBigReal(y)           << endl
+                     << _T("Exactresult = x * y:")           << FullFormatBigReal(exactResult) << endl
+                     << _T("Bias:'") << bias << _T("'")                                        << endl
+                     << _T("APCResult = APCprod(bias,x,y):") << FullFormatBigReal(APCResult)   << endl
+                     << _T("Quotient:")                      << FullFormatBigReal(quotient)    << endl;
               throwException(_T("Error in APCprod"));
             } else {
               stat.update(fabs(quotient-BIGREAL_1));
@@ -171,13 +171,13 @@ void testAPCQuot(TestStatistic &stat) {
             BigReal       quotient(pool);
 
             if(!checkBiasedExpr(APCResult, exactResult, bias, quotient)) {
-              ERRLOG << _T("Error in APCquot")                                                 << NEWLINE
-                     << _T("x:")                             << FullFormatBigReal(x)           << NEWLINE
-                     << _T("y:")                             << FullFormatBigReal(y)           << NEWLINE
-                     << _T("ExactResult = rQuot(x,y,20):")   << FullFormatBigReal(exactResult) << NEWLINE
-                     << _T("Bias:'") << bias << _T("'")                                            << NEWLINE
-                     << _T("APCResult = APCquot(bias,x,y):") << FullFormatBigReal(APCResult)   << NEWLINE
-                     << _T("Quotient:")                      << FullFormatBigReal(quotient)    << NEWLINE;
+              ERRLOG << _T("Error in APCquot")                                                 << endl
+                     << _T("x:")                             << FullFormatBigReal(x)           << endl
+                     << _T("y:")                             << FullFormatBigReal(y)           << endl
+                     << _T("ExactResult = rQuot(x,y,20):")   << FullFormatBigReal(exactResult) << endl
+                     << _T("Bias:'") << bias << _T("'")                                        << endl
+                     << _T("APCResult = APCquot(bias,x,y):") << FullFormatBigReal(APCResult)   << endl
+                     << _T("Quotient:")                      << FullFormatBigReal(quotient)    << endl;
               throwException(_T("Error in APCquot"));
             } else {
               stat.update(fabs(quotient-BIGREAL_1));
@@ -220,13 +220,13 @@ void testAPCPow(TestStatistic &stat) {
           if(len > maxLength) maxLength = len;
           BigReal       quotient(pool);
           if(!checkBiasedExpr(APCResult, exactResult, bias, quotient)) {
-            ERRLOG << _T("Error in APCpow")                                                 << NEWLINE
-                   << _T("x:")                            << FullFormatBigReal(x)           << NEWLINE
-                   << _T("y:")                            << FullFormatBigReal(y)           << NEWLINE
-                   << _T("ExactResult = rPow(x,y,20):")   << FullFormatBigReal(exactResult) << NEWLINE
-                   << _T("Bias:'") << bias << _T("'")                                       << NEWLINE
-                   << _T("APCResult = APCpow(bias,x,y):") << FullFormatBigReal(APCResult)   << NEWLINE
-                   << _T("Quotient:")                     << FullFormatBigReal(quotient)    << NEWLINE;
+            ERRLOG << _T("Error in APCpow")                                                 << endl
+                   << _T("x:")                            << FullFormatBigReal(x)           << endl
+                   << _T("y:")                            << FullFormatBigReal(y)           << endl
+                   << _T("ExactResult = rPow(x,y,20):")   << FullFormatBigReal(exactResult) << endl
+                   << _T("Bias:'") << bias << _T("'")                                       << endl
+                   << _T("APCResult = APCpow(bias,x,y):") << FullFormatBigReal(APCResult)   << endl
+                   << _T("Quotient:")                     << FullFormatBigReal(quotient)    << endl;
             throwException(_T("Error in APCpow"));
           } else {
             stat.update(fabs(quotient-BIGREAL_1));

@@ -222,8 +222,8 @@ void BigRealTestClass::measureQuot() {
                            "MTime128(L) ETime128(L) q128(l)=M32/M128 "
                            "MTime(N)    ETime(N)    q(N)   =MT/ET    ");
 
-  tcout     << header << NEWLINE;
-  dataFile  << header << NEWLINE;
+  tcout     << header << endl;
+  dataFile  << header << endl;
 
   const BigReal yStep1 = e(BigReal(165),-2);
   const BigReal yStep2 = BigReal(3);
@@ -297,7 +297,7 @@ void BigRealTestClass::measureQuot() {
                << ta[1].m_method << _T("/")
                << ta[2].m_method << _T("/")
                << ta[3].m_method
-               << NEWLINE;
+               << endl;
       dataFile.flush();
 
       tcout    << iparam(12)  << resultDigits                           << _T(" ")
@@ -318,7 +318,7 @@ void BigRealTestClass::measureQuot() {
                << ta[1].m_method << _T("/")
                << ta[2].m_method << _T("/")
                << ta[3].m_method
-               << NEWLINE;
+               << endl;
       tcout.flush();
 
     }
@@ -334,7 +334,7 @@ void BigRealTestClass::measureQuotRemainder() {
 
   const String header = _T("Length     Old Mod  Mod64    Mod128");
 
-  tcout    << header << NEWLINE;
+  tcout    << header << endl;
 
   const BigReal yStep1 = e(BigReal(_T("165")),-2);
   const BigReal yStep2 = BigReal(_T("2.1234567891"));
@@ -366,16 +366,16 @@ void BigRealTestClass::measureQuotRemainder() {
 
     oldDataFile    << iparam(10)  << y.getLength()  << _T(" ")
                    << udparam(4)  << QRTime[0]
-                   << NEWLINE;
+                   << endl;
 
     newData64File  << iparam(10)  << y.getLength()  << _T(" ")
                    << udparam(4)  << QRTime[1]
-                   << NEWLINE;
+                   << endl;
 
 #ifdef IS64BIT
-    newData128File << iparam(10)  << y.getLength()        << _T(" ")
+    newData128File << iparam(10)  << y.getLength()  << _T(" ")
                    << udparam(4)  << QRTime[2]
-                   << NEWLINE;
+                   << endl;
 #endif
 
     int fastestIndex = 0;
@@ -389,7 +389,7 @@ void BigRealTestClass::measureQuotRemainder() {
                 << udparam(8)  << QRTime[1]             << _T(" ")
                 << udparam(8)  << QRTime[2]             << _T(" ")
                 << iparam(5)   << fastestIndex          << _T(" ")
-                << NEWLINE;
+                << endl;
     tcout.flush();
 
   }
@@ -568,13 +568,13 @@ void BigRealTestClass::testLnEstimate() {
     const BigReal lnStd(log(i));
     const BigReal lnNum(BigReal::lnEstimate( i));
 //    const BigReal lnD64(BigReal::lnEstimateD(i));
-    sStd << i << _T(" ") << lnStd << NEWLINE;
-    sNum << i << _T(" ") << lnNum << NEWLINE;
-//    sD64 << i << _T(" ") << lnD64 << NEWLINE;
+    sStd << i << _T(" ") << lnStd << endl;
+    sNum << i << _T(" ") << lnNum << endl;
+//    sD64 << i << _T(" ") << lnD64 << endl;
     const BigReal errNum(lnNum - lnStd);
 //    const BigReal errD64(lnD64 - lnStd);
-    sNumDiff << i << _T(" ") << errNum << NEWLINE;
-//    sD64Diff << i << _T(" ") << errD64 << NEWLINE;
+    sNumDiff << i << _T(" ") << errNum << endl;
+//    sD64Diff << i << _T(" ") << errD64 << endl;
   }
   sStd.close();
   sNum.close();
@@ -633,13 +633,6 @@ void BigRealTestClass::testGetDouble() {
       tcout << _T("BigReal(x.getDouble()) != x\n");
     }
   }
-}
-
-String getTestFileName(const String &fileName, const String extension = _T("dat")) {
-  const String testDir = _T("c:\\temp\\TestDir");
-  String fname = fileName;
-  fname.replace(_T(':'), _T('_'));
-  return FileNameSplitter(FileNameSplitter::getChildName(testDir, fname)).setExtension(extension).getFullPath();
 }
 
 void BigRealTestClass::testBigRealStream() {

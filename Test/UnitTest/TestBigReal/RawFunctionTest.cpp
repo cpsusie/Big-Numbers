@@ -32,8 +32,8 @@ void testGetDecimalDigitCount(TestStatistic &stat) {
     int ddc1 = myGetDecimalDigitCount(i);
     int ddc2 = BigReal::getDecimalDigitCount(i);
     if(ddc1 != ddc2) {
-      ERRLOG << _T("Error in getDecimalDigitCount")                                                            << NEWLINE
-             << _T("Failed for i = ") << iparam(12) << i << _T(", ddc1 = ") << ddc1 << _T(", ddc2 = ") << ddc2 << NEWLINE;
+      ERRLOG << _T("Error in getDecimalDigitCount")                                                            << endl
+             << _T("Failed for i = ") << iparam(12) << i << _T(", ddc1 = ") << ddc1 << _T(", ddc2 = ") << ddc2 << endl;
       throwException(_T("Error in getDecimalDigitCount"));
     }
   }
@@ -43,7 +43,7 @@ void testGetDecimalDigitCount(TestStatistic &stat) {
 void testGetDecimalDigits(TestStatistic &stat) {
   DigitPool *pool = stat.getDigitPool();
   for(FullFormatBigReal x(1,pool); x < 200; x *= 1.1) {
-    stat.out() << _T("getDecimalDigits(") << x << _T(") = ") << x.getDecimalDigits() << NEWLINE;
+    stat.out() << _T("getDecimalDigits(") << x << _T(") = ") << x.getDecimalDigits() << endl;
   }
 }
 
@@ -73,11 +73,11 @@ void testMultPow10(TestStatistic &stat) {
 //      x.print(); _tprintf(_T(" %3d "),i); y.print(); _tprintf(_T("\n"));
       FullFormatBigReal z = x*e(pool->get1(),i);
       if(y != z) {
-        ERRLOG << _T("Error in multPow10")    << NEWLINE
-               << _T("x:") << x               << NEWLINE
-               << _T("i:") << iparam(12) << i << NEWLINE
-               << _T("y:") << y               << NEWLINE
-               << _T("z:") << z               << NEWLINE;
+        ERRLOG << _T("Error in multPow10")    << endl
+               << _T("x:") << x               << endl
+               << _T("i:") << iparam(12) << i << endl
+               << _T("y:") << y               << endl
+               << _T("z:") << z               << endl;
         throwException(_T("Error in testMultPow10"));
       }
     }

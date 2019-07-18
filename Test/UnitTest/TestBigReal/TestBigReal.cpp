@@ -322,7 +322,7 @@ static double getPiTimeEstimate(int decimals) {
 
 void testBigReal(int threadCount) {
 #ifdef _DEBUG
-  tcout << _T("debuggerPresent:") << getDebuggerPresent() << NEWLINE;
+  tcout << _T("debuggerPresent:") << getDebuggerPresent() << endl;
 #endif
   int winW, winH;
   CONSOLE_FONT_INFOEX info = Console::getFont();
@@ -336,7 +336,7 @@ void testBigReal(int threadCount) {
 
   Console::clear();
 
-  tcout << _T("Testing BigReal.") << NEWLINE;
+  tcout << _T("Testing BigReal.") << endl;
 
   log(_T("Begin test %s"), getCompileArchitectureSignatureString().cstr());
 
@@ -425,8 +425,8 @@ void testBigReal(int threadCount) {
   TestStatistic::screenlog(TesterJob::allOk() ? _T("BigReal ok.") : _T("BigReal failed."));
 
   log(_T("Total time usage:%s Total allocated Digits:%s")
-        ,timeUsage.toString(MMSS).cstr()
-        ,format1000(DigitPool::getTotalAllocatedDigitCount()).cstr()
-        );
+     ,timeUsage.toString(MMSS).cstr()
+     ,format1000(DigitPool::getTotalAllocatedDigitCount()).cstr()
+     );
   log(_T("End test %s"), getCompileArchitectureSignatureString().cstr());
 }

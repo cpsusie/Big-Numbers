@@ -123,7 +123,7 @@ tostream &TestStatistic::getErrorLog(bool logTime) { // static
     s_errorLogStream = new tofstream(fileName.cstr(), ios::out | ios::app | ios::unitbuf); TRACE_NEW(s_errorLogStream);
   }
   if(logTime) {
-    *s_errorLogStream << Timestamp().toString() << NEWLINE;
+    *s_errorLogStream << Timestamp().toString() << endl;
   }
   s_gate.signal();
   return *s_errorLogStream;
@@ -308,9 +308,9 @@ void TestStatistic::markError(const BigReal &x, const BigReal &tolerance, const 
            ,getParamStr(_T("x"), x).cstr()
            ,getErrorStr(exactResult, result, tolerance).cstr()
            );
-  ERRLOG << getErrorHeader()                            << NEWLINE
-         << getParamStr(_T("x"), x)                     << NEWLINE
-         << getErrorStr(exactResult, result, tolerance) << NEWLINE;
+  ERRLOG << getErrorHeader()                            << endl
+         << getParamStr(_T("x"), x)                     << endl
+         << getErrorStr(exactResult, result, tolerance) << endl;
 }
 
 void TestStatistic::markError(const BigReal &x, const BigReal &y, const BigReal &tolerance, const BigReal &exactResult, const BigReal &result) {
@@ -320,10 +320,10 @@ void TestStatistic::markError(const BigReal &x, const BigReal &y, const BigReal 
            ,getParamStr(_T("y"), y).cstr()
            ,getErrorStr(exactResult, result, tolerance).cstr()
            );
-  ERRLOG << getErrorHeader()                            << NEWLINE
-         << getParamStr(_T("x"), x)                     << NEWLINE
-         << getParamStr(_T("y"), y)                     << NEWLINE
-         << getErrorStr(exactResult, result, tolerance) << NEWLINE;
+  ERRLOG << getErrorHeader()                            << endl
+         << getParamStr(_T("x"), x)                     << endl
+         << getParamStr(_T("y"), y)                     << endl
+         << getErrorStr(exactResult, result, tolerance) << endl;
 }
 
 void TestStatistic::markError(const BigReal &x, int digits, const BigReal &tolerance, const BigReal &exactResult, const BigReal &result) {
@@ -333,10 +333,10 @@ void TestStatistic::markError(const BigReal &x, int digits, const BigReal &toler
            ,getDigitsStr(digits).cstr()
            ,getRelativeErrorStr(exactResult, result, tolerance).cstr()
            );
-  ERRLOG << getErrorHeader()                            << NEWLINE
-         << getParamStr(_T("x"), x)                     << NEWLINE
-         << getDigitsStr(digits)                        << NEWLINE
-         << getErrorStr(exactResult, result, tolerance) << NEWLINE;
+  ERRLOG << getErrorHeader()                            << endl
+         << getParamStr(_T("x"), x)                     << endl
+         << getDigitsStr(digits)                        << endl
+         << getErrorStr(exactResult, result, tolerance) << endl;
 }
 
 void TestStatistic::markError(const BigReal &x, const BigReal &y, int digits, const BigReal &tolerance, const BigReal &exactResult, const BigReal &result) {
@@ -347,11 +347,11 @@ void TestStatistic::markError(const BigReal &x, const BigReal &y, int digits, co
            ,getDigitsStr(digits).cstr()
            ,getRelativeErrorStr(exactResult, result, tolerance).cstr()
            );
-  ERRLOG << getErrorHeader()                            << NEWLINE
-         << getParamStr(_T("x"), x)                     << NEWLINE
-         << getParamStr(_T("y"), y)                     << NEWLINE
-         << getDigitsStr(digits)                        << NEWLINE
-         << getErrorStr(exactResult, result, tolerance) << NEWLINE;
+  ERRLOG << getErrorHeader()                            << endl
+         << getParamStr(_T("x"), x)                     << endl
+         << getParamStr(_T("y"), y)                     << endl
+         << getDigitsStr(digits)                        << endl
+         << getErrorStr(exactResult, result, tolerance) << endl;
 }
 
 String TestStatistic::getErrorHeader() const {
@@ -463,12 +463,12 @@ void checkBigRealDouble64(const String &functionName, DoubleFunction1 f64, const
   const double maxRelativetiveError = 1e-12;
 
   if(error > maxRelativetiveError) {
-    ERRLOG << _T("Error in ") << functionName << _T(" (double)")                                             << NEWLINE
-           << _T("x        :")                                       << FullFormatBigReal(x)                 << NEWLINE
-           << functionName << _T("(x,almost exact)")                 << FullFormatBigReal(exactResult)       << NEWLINE
-           << functionName << _T("(getDouble(x)):")                  << dparam( 15) << result                << NEWLINE
-           << _T("Relative error:")                                  << udparam(15) << error                 << NEWLINE
-           << _T("Max acceptable relative error:")                   << udparam(15) << maxRelativetiveError  << NEWLINE;
+    ERRLOG << _T("Error in ") << functionName << _T(" (double)")                                             << endl
+           << _T("x        :")                                       << FullFormatBigReal(x)                 << endl
+           << functionName << _T("(x,almost exact)")                 << FullFormatBigReal(exactResult)       << endl
+           << functionName << _T("(getDouble(x)):")                  << dparam( 15) << result                << endl
+           << _T("Relative error:")                                  << udparam(15) << error                 << endl
+           << _T("Max acceptable relative error:")                   << udparam(15) << maxRelativetiveError  << endl;
     throwException(_T("Error in %s"), functionName.cstr());
   }
 }
@@ -479,13 +479,13 @@ void checkBigRealDouble64(const String &functionName, DoubleFunction2 f64, const
   const double maxRelativetiveError = 1e-12;
 
   if(error > maxRelativetiveError) {
-    ERRLOG << _T("Error in ") << functionName << _T(" (double,double)")                                      << NEWLINE
-           << _T("x        :")                                       << FullFormatBigReal(x)                 << NEWLINE
-           << _T("y        :")                                       << FullFormatBigReal(y)                 << NEWLINE
-           << functionName << _T("(x,almost exact)")                 << FullFormatBigReal(exactResult)       << NEWLINE
-           << functionName << _T("(getDouble(x),getDouble(y)):")     << dparam( 15) << result                << NEWLINE
-           << _T("Relative error:")                                  << udparam(15) << error                 << NEWLINE
-           << _T("Max acceptable relative error:")                   << udparam(15) << maxRelativetiveError  << NEWLINE;
+    ERRLOG << _T("Error in ") << functionName << _T(" (double,double)")                                      << endl
+           << _T("x        :")                                       << FullFormatBigReal(x)                 << endl
+           << _T("y        :")                                       << FullFormatBigReal(y)                 << endl
+           << functionName << _T("(x,almost exact)")                 << FullFormatBigReal(exactResult)       << endl
+           << functionName << _T("(getDouble(x),getDouble(y)):")     << dparam( 15) << result                << endl
+           << _T("Relative error:")                                  << udparam(15) << error                 << endl
+           << _T("Max acceptable relative error:")                   << udparam(15) << maxRelativetiveError  << endl;
     throwException(_T("Error in %s"), functionName.cstr());
   }
 }
@@ -495,12 +495,12 @@ void checkBigRealDouble80(const String &functionName, Double80Function1 f80, con
   const Double80 error                = getRelativeError(result,exactResult);
   const double   maxRelativetiveError = 1e-15;
   if(error > maxRelativetiveError) {
-    ERRLOG << _T("Error in ") << functionName << _T(" (Double80)")                                           << NEWLINE
-           << _T("x        :")                                       << FullFormatBigReal(x)                 << NEWLINE
-           << functionName << _T("(x,almost exact)")                 << FullFormatBigReal(exactResult)       << NEWLINE
-           << functionName << _T("(getDouble(x)):")                  << dparam( 15) << result                << NEWLINE
-           << _T("Relative error:")                                  << udparam(15) << error                 << NEWLINE
-           << _T("Max acceptable relative error:")                   << udparam(15) << maxRelativetiveError  << NEWLINE;
+    ERRLOG << _T("Error in ") << functionName << _T(" (Double80)")                                           << endl
+           << _T("x        :")                                       << FullFormatBigReal(x)                 << endl
+           << functionName << _T("(x,almost exact)")                 << FullFormatBigReal(exactResult)       << endl
+           << functionName << _T("(getDouble(x)):")                  << dparam( 15) << result                << endl
+           << _T("Relative error:")                                  << udparam(15) << error                 << endl
+           << _T("Max acceptable relative error:")                   << udparam(15) << maxRelativetiveError  << endl;
     throwException(_T("Error in %s"), functionName.cstr());
   }
 }
@@ -510,13 +510,13 @@ void checkBigRealDouble80(const String &functionName, Double80Function2 f80, con
   const Double80 error                = getRelativeError(result,exactResult);
   const double   maxRelativetiveError = 1e-15;
   if(error > maxRelativetiveError) {
-    ERRLOG << _T("Error in ") << functionName << _T(" (Double80,Double80)")                                  << NEWLINE
-           << _T("x        :")                                       << FullFormatBigReal(x)                 << NEWLINE
-           << _T("y        :")                                       << FullFormatBigReal(y)                 << NEWLINE
-           << functionName << _T("(x,y,almost exact)")               << FullFormatBigReal(exactResult)       << NEWLINE
-           << functionName << _T("(getDouble80(x),getDouble80(y)):") << dparam( 15) << result                << NEWLINE
-           << _T("Relative error:")                                  << udparam(15) << error                 << NEWLINE
-           << _T("Max acceptable relative error:")                   << udparam(15) << maxRelativetiveError  << NEWLINE;
+    ERRLOG << _T("Error in ") << functionName << _T(" (Double80,Double80)")                                  << endl
+           << _T("x        :")                                       << FullFormatBigReal(x)                 << endl
+           << _T("y        :")                                       << FullFormatBigReal(y)                 << endl
+           << functionName << _T("(x,y,almost exact)")               << FullFormatBigReal(exactResult)       << endl
+           << functionName << _T("(getDouble80(x),getDouble80(y)):") << dparam( 15) << result                << endl
+           << _T("Relative error:")                                  << udparam(15) << error                 << endl
+           << _T("Max acceptable relative error:")                   << udparam(15) << maxRelativetiveError  << endl;
     throwException(_T("Error in %s"), functionName.cstr());
   }
 }

@@ -90,10 +90,10 @@ void ExactBinaryOperatorTest::runTest(int threadId, DigitPool *pool) {
                                  );
           }
           if(!m_check(x, y, result)) {
-            ERRLOG << _T("Error in ") << m_functionName            << NEWLINE
-                   << _T("x:"       ) << FullFormatBigReal(x)      << NEWLINE
-                   << _T("y:"       ) << FullFormatBigReal(y)      << NEWLINE
-                   << _T("result:"  ) << FullFormatBigReal(result) << NEWLINE;
+            ERRLOG << _T("Error in ") << m_functionName            << endl
+                   << _T("x:"       ) << FullFormatBigReal(x)      << endl
+                   << _T("y:"       ) << FullFormatBigReal(y)      << endl
+                   << _T("result:"  ) << FullFormatBigReal(result) << endl;
             throwException(_T("Error in %s"), m_functionName.cstr());
           }
         }
@@ -279,16 +279,16 @@ void testQuot3(TestStatistic &stat) {
         const BigReal ql64      = BigReal::quotLinear64(x, y, tolerance, pool);
 
         if(fabs(qn - ql32) > tolerance || fabs(qn - ql64) > tolerance || fabs(ql32 - ql64) > tolerance) {
-          ERRLOG << _T("Error in ") << quot                                                              << NEWLINE
-                 << _T("x        :")                                   << FullFormatBigReal(x)           << NEWLINE
-                 << _T("y        :")                                   << FullFormatBigReal(y)           << NEWLINE
-                 << _T("Tolerance:")                                   << tolerance                      << NEWLINE
-                 << _T("quotNewton(x,y,tolerance)  :")                 << FullFormatBigReal(qn)          << NEWLINE
-                 << _T("quotLinear32(x,y,tolerance):")                 << FullFormatBigReal(ql32)        << NEWLINE
-                 << _T("quotLinear64(x,y,tolerance):")                 << FullFormatBigReal(ql64)        << NEWLINE
-                 << _T("quotNewton - quotLinear32  :")                 << FullFormatBigReal(qn - ql32)   << NEWLINE
-                 << _T("quotNewton - quotLinear64  :")                 << FullFormatBigReal(qn - ql64)   << NEWLINE
-                 << _T("quotLinear32 - quotLinear64:")                 << FullFormatBigReal(ql32 - ql64) << NEWLINE;
+          ERRLOG << _T("Error in ") << quot                                                              << endl
+                 << _T("x        :")                                   << FullFormatBigReal(x)           << endl
+                 << _T("y        :")                                   << FullFormatBigReal(y)           << endl
+                 << _T("Tolerance:")                                   << tolerance                      << endl
+                 << _T("quotNewton(x,y,tolerance)  :")                 << FullFormatBigReal(qn)          << endl
+                 << _T("quotLinear32(x,y,tolerance):")                 << FullFormatBigReal(ql32)        << endl
+                 << _T("quotLinear64(x,y,tolerance):")                 << FullFormatBigReal(ql64)        << endl
+                 << _T("quotNewton - quotLinear32  :")                 << FullFormatBigReal(qn - ql32)   << endl
+                 << _T("quotNewton - quotLinear64  :")                 << FullFormatBigReal(qn - ql64)   << endl
+                 << _T("quotLinear32 - quotLinear64:")                 << FullFormatBigReal(ql32 - ql64) << endl;
           throwException(_T("Error in testQuot3"));
         }
       }
@@ -335,10 +335,10 @@ void testPi(TestStatistic &stat) {
     const FullFormatBigReal error = fabs(result-pi2000);
     if(error > tolerance) {
       Console::setCursorPos(1,5);
-      ERRLOG << _T("Error in pi"   )                                              << NEWLINE
-             << _T("Tolerance    :") << tolerance                                 << NEWLINE
-             << _T("pi(tolerance):") << FullFormatBigReal(result)                 << NEWLINE
-             << _T("Difference = fabs(pi(tolerance)-pi2000):") << nparam << error << NEWLINE;
+      ERRLOG << _T("Error in pi"   )                                              << endl
+             << _T("Tolerance    :") << tolerance                                 << endl
+             << _T("pi(tolerance):") << FullFormatBigReal(result)                 << endl
+             << _T("Difference = fabs(pi(tolerance)-pi2000):") << nparam << error << endl;
       throwException(_T("Error in pi"));
     } else {
       stat.update(error, tolerance);
@@ -364,11 +364,11 @@ void testModulus(TestStatistic &stat) {
       BigInt Z = X % Y;
       __int64 Z64 = getInt64(Z);
       if(Z64 != z64) {
-        ERRLOG << _T("Error in modulus") << NEWLINE
-               << _T("X      :") << X    << NEWLINE
-               << _T("Y      :") << Y    << NEWLINE
-               << _T("Z = X%Y:") << Z    << NEWLINE
-               << _T("x64%y64:") << z64  << NEWLINE;
+        ERRLOG << _T("Error in modulus") << endl
+               << _T("X      :") << X    << endl
+               << _T("Y      :") << Y    << endl
+               << _T("Z = X%Y:") << Z    << endl
+               << _T("x64%y64:") << z64  << endl;
         throwException(_T("Error in testModulus"));
       }
     }
@@ -394,11 +394,11 @@ void testIntegerDivision(TestStatistic &stat) { // tester BigInt-division
       BigInt Z = X / Y;
       __int64 Z64 = getInt64(Z);
       if(Z64 != z64) {
-        ERRLOG << _T("Error in integer division") << NEWLINE
-               << _T("X      :") << X             << NEWLINE
-               << _T("Y      :") << Y             << NEWLINE
-               << _T("Z = X/Y:") << Z             << NEWLINE
-               << _T("x64/y64:") << z64           << NEWLINE;
+        ERRLOG << _T("Error in integer division") << endl
+               << _T("X      :") << X             << endl
+               << _T("Y      :") << Y             << endl
+               << _T("Z = X/Y:") << Z             << endl
+               << _T("x64/y64:") << z64           << endl;
         throwException(_T("Error in APCpow"));
       }
     }
@@ -497,8 +497,8 @@ void testGetFirst(TestStatistic &stat) {
         const int missing = k - len;
         String expected = substr(str + spaceString(missing,_T('0')),0,k);
         if(result != expected) {
-          ERRLOG << _T("getFirst(") << X << _T(",") << k << _T(")=") << result << NEWLINE
-                 << _T("Expected:") << expected                                << NEWLINE;
+          ERRLOG << _T("getFirst(") << X << _T(",") << k << _T(")=") << result << endl
+                 << _T("Expected:") << expected                                << endl;
           throwException(_T("Error in getFirst32"));
         }
       }
@@ -508,74 +508,93 @@ void testGetFirst(TestStatistic &stat) {
 }
 
 void testReadWriteBigReal(TestStatistic &stat) {
-  const TCHAR   *fileName = _T("numbers.dat");
-  const int      count    = 500;
-  tofstream      out(fileName);
-  size_t         i;
+  const String   fileName = getTestFileName(__TFUNCTION__);
+  const size_t   count    = 500;
+  DigitPool     *pool     = stat.getDigitPool();
   Array<BigReal> list;
-  DigitPool     *pool = stat.getDigitPool();
 
-  for(i = 0; i < count; i++) {
-    int          xlen  = rand() % 6000 + 500;
+/*
+  list.add(pool->getnan());
+  list.add(pool->getpinf());
+  list.add(pool->getninf());
+*/
+  for(size_t i = 0; i < count; i++) {
+    int          xlen = rand() % 6000 + 500;
     int          xexpo = rand() % 3000 - 1500;
-    const BigReal x     = stat.getRandom(xlen, xexpo);
-
-    out << FullFormatBigReal(x) << NEWLINE;
+    const BigReal x = stat.getRandom(xlen, xexpo);
     list.add(x);
+  }
+
+  tofstream out(fileName.cstr());
+  for(size_t i = 0; i < list.size(); i++) {
+    const BigReal &x = list[i];
+    out << FullFormatBigReal(x) << endl;
   }
   out.close();
 
-  tifstream in(fileName);
-  for(i = 0; i < list.size(); i++) {
+  tifstream in(fileName.cstr());
+  for(size_t i = 0; i < list.size(); i++) {
     const BigReal &expected = list[i];
-    BigReal x(pool);
-    in >> x;
+    BigReal data(pool);
+    in >> data;
     if(in.bad()) {
-      stat.out() << _T("Read number line ") << i << _T(" failed") << NEWLINE;
+      stat.out() << _T("Read number line ") << i << _T(" failed") << endl;
       throwException(_T("Error in testReadWriteBigReal"));
     }
-    if(x != expected) {
-      ERRLOG << _T("Read BigReal at line ") << i << _T("(=") << FullFormatBigReal(x) << _T(") != exptected (=") << FullFormatBigReal(expected) << _T(")") << NEWLINE;
-      throwException(_T("Error in testReadWriteBigReal"));
+    if(isnormal(data) || data.isZero()) {
+      if(data != expected) {
+        ERRLOG << _T("Read BigReal at line ") << i << _T("(=") << FullFormatBigReal(data) << _T(") != exptected (=") << FullFormatBigReal(expected) << _T(")") << endl;
+        throwException(_T("Error in testReadWriteBigReal"));
+        verify(data == expected);
+      }
+    } else if (isPInfinity(data)) {
+      verify(isPInfinity(expected));
+    } else if (isNInfinity(data)) {
+      verify(isNInfinity(expected));
+    } else if (isnan(data)) {
+      verify(isnan(expected));
+    } else {
+      throwException(_T("Unknown BigReal-classification for a[%zu]:%s"), i, data.toString().cstr());
     }
   }
   in.close();
-  UNLINK(fileName);
   stat.setEndMessageToOk();
 }
 
 void testReadWriteInteger(TestStatistic &stat) {
-  const TCHAR   *fileName = _T("integers.dat");
-  const int      count    = 500;
-  tofstream      out(fileName);
-  size_t         i;
+  const String   fileName = getTestFileName(__TFUNCTION__);
+  const size_t   count    = 500;
+  DigitPool     *pool     = stat.getDigitPool();
   Array<BigInt>  list;
-  DigitPool     *pool = stat.getDigitPool();
 
-  for(i = 0; i < count; i++) {
+  for(size_t i = 0; i < count; i++) {
     int xlen = rand() % 6000 + 500;
     BigInt x(randBigInt(xlen, &stat.getRandomGenerator(), pool));
-    out << x << NEWLINE;
     list.add(x);
+  }
+
+  tofstream out(fileName.cstr());
+  for (size_t i = 0; i < list.size(); i++) {
+    const BigInt &x = list[i];
+    out << x << endl;
   }
   out.close();
 
-  tifstream in(fileName);
-  for(i = 0; i < list.size(); i++) {
+  tifstream in(fileName.cstr());
+  for(size_t i = 0; i < list.size(); i++) {
     const BigInt &expected = list[i];
     BigInt x(pool);
     in >> x;
     if(in.bad()) {
-      stat.out() << _T("Read integer line ") << i << _T(" failed") << NEWLINE;
+      stat.out() << _T("Read integer line ") << i << _T(" failed") << endl;
       throwException(_T("Error in testReadWriteInteger"));
     }
     if(x != expected) {
-      ERRLOG << _T("Read BigReal at line ") << i << _T("(=") << FullFormatBigReal(x) << _T(") != exptected (=") << FullFormatBigReal(expected) << _T(")") << NEWLINE;
+      ERRLOG << _T("Read BigReal at line ") << i << _T("(=") << FullFormatBigReal(x) << _T(") != exptected (=") << FullFormatBigReal(expected) << _T(")") << endl;
       throwException(_T("Error in testReadWriteInteger"));
     }
   }
   in.close();
-  UNLINK(fileName);
   stat.setEndMessageToOk();
 }
 

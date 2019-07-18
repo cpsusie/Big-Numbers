@@ -28,8 +28,6 @@ double   getRelativeError(  const double   &x, const BigReal &x0);
 Double80 getRelativeError(  const Double80 &x, const BigReal &x0);
 BigReal  getRelativeError(  const BigReal  &x, const BigReal &x0);
 
-#define NEWLINE _T("\n")
-
 void log(_In_z_ _Printf_format_string_ TCHAR const * const format,...);
 void clearLine();
 
@@ -38,3 +36,5 @@ const String &getArchitecture();
 const String &getCompileMode();
 const String getCompileArchitectureSignatureString();
 const String getSignatureSubDir();
+
+String getTestFileName(const String &fileName, const String extension = _T("dat"));
