@@ -53,6 +53,9 @@ String EscapedAsciiFormater::toString(const size_t &_ch) {
   return result;
 }
 
+#pragma warning(disable : 4073)
+#pragma init_seg(lib)
+
 static StdAsciiFormater      _stdAsciiFormater;
 static ExtendedAsciiFormater _extendedAsciiFormater;
 static EscapedAsciiFormater  _octalEscapedAsciiFormater(      127, false);
