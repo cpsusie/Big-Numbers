@@ -513,7 +513,7 @@ void testReadWriteBigReal(TestStatistic &stat) {
   DigitPool     *pool     = stat.getDigitPool();
   Array<BigReal> list;
 
-/*
+/* TODO
   list.add(pool->getnan());
   list.add(pool->getpinf());
   list.add(pool->getninf());

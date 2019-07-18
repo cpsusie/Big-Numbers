@@ -275,7 +275,7 @@ namespace TestPacker {
       }
     }
 
-     TEST_METHOD(PackerFloat) {
+    TEST_METHOD(PackerFloat) {
       try {
         Packer s,d;
         CompactFloatArray a;
@@ -320,7 +320,7 @@ namespace TestPacker {
       }
     }
 
-     TEST_METHOD(PackerDouble) {
+    TEST_METHOD(PackerDouble) {
       try {
         Packer s,d;
         CompactDoubleArray a;
@@ -365,7 +365,7 @@ namespace TestPacker {
       }
     }
 
-     TEST_METHOD(PackerDouble80) {
+    TEST_METHOD(PackerDouble80) {
       try {
         Packer s,d;
         CompactArray<Double80> a;

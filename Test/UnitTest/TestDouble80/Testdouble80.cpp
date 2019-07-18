@@ -662,41 +662,57 @@ static void testFunction(const String &name, D802ValFunc f80, D642ValFunc f64, d
     }
 
     TEST_METHOD(Double80TestReadWrite) {
-      const char *fileName = "double80.dat";
+      const String fileName = getTestFileName(__TFUNCTION__);
 
 //      debugLog(_T("%s\n%s\n"), __TFUNCTION__, FPU::getState().toString().cstr());
 
       const size_t count = 500;
-      tofstream out(fileName);
       StreamParameters param(-1);
-      size_t i;
       CompactArray<Double80> list(count);
-      for(i = 0; i < count; i++) {
+
+/* TODO
+      list.add(DBL80_NAN );
+      list.add(DBL80_PINF);
+      list.add(DBL80_NINF);
+*/
+      for(size_t i = 0; i < count; i++) {
         const Double80 x = randDouble80(-1, 1);
-        out << param << x << endl;
         list.add(x);
+      }
+      tofstream out(fileName.cstr());
+      for(size_t i = 0; i < list.size(); i++) {
+        out << param << list[i] << endl;
       }
       out.close();
 
-      tifstream in(fileName);
+      tifstream in(fileName.cstr());
       const Double80 maxTolerance = 6e-17;
-      for(i = 0; i < list.size(); i++) {
-        const Double80  &expected = list[i];
-        Double80 x;
-        in >> x;
+      for(size_t i = 0; i < list.size(); i++) {
+        const Double80 &expected = list[i];
+        Double80 data;
+        in >> data;
         if(in.bad()) {
-          OUTPUT(_T("Read Double80 line %d failed"), i);
+          OUTPUT(_T("Read Double80 line %zu failed"), i);
           verify(false);
         }
-        const Double80 relError = getRelativeError(x, expected);
-        if(relError > maxTolerance) {
-          OUTPUT(_T("Read Double80 at line %d = %s != expected (= %s"), i, toString(x, 18).cstr(), toString(expected, 18).cstr());
-          OUTPUT(_T("Relative error:%s"), toString(relError).cstr());
-          verify(false);
+        if(isnormal(data) || data.isZero()) {
+          const Double80 relError = getRelativeError(data, expected);
+          if(relError > maxTolerance) {
+            OUTPUT(_T("Read Double80 at line %d = %s != expected (=%s"), i, toString(data, 18).cstr(), toString(expected, 18).cstr());
+            OUTPUT(_T("Relative error:%s"), toString(relError).cstr());
+            verify(false);
+          }
+        } else if (isPInfinity(data)) {
+          verify(isPInfinity(expected));
+        } else if (isNInfinity(data)) {
+          verify(isNInfinity(expected));
+        } else if (isnan(data)) {
+          verify(isnan(expected));
+        } else {
+          throwException(_T("Unknown BigReal-classification for a[%zu]:%s"), i, toString(data).cstr());
         }
       }
       in.close();
-      UNLINK(fileName);
     }
 
     TEST_METHOD(Double80TestSinCos) {
