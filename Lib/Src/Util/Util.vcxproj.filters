@@ -50,6 +50,42 @@
     <Filter Include="Source Files\IntelCPU">
       <UniqueIdentifier>{296026c7-dc19-46c5-a753-4a1cc57b7dad}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Collection">
+      <UniqueIdentifier>{695c9a81-c290-448a-8b2a-a4dbfff2f5cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\String">
+      <UniqueIdentifier>{347398a0-2f13-4519-b036-608681b005ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Process">
+      <UniqueIdentifier>{7175abf6-b77c-4faf-903b-1e9085a93af7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Stream">
+      <UniqueIdentifier>{397f1e8b-6bb4-4e94-8954-a0e4d87957ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Date">
+      <UniqueIdentifier>{cf90b95d-187f-4913-91b5-26d65c1819a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Debugging and Exceptions">
+      <UniqueIdentifier>{01b03c48-85a7-46f3-b224-85c9ca8217f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Math">
+      <UniqueIdentifier>{9697e00a-7758-488d-a4bf-fe26d8fcfb46}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\TcpIp">
+      <UniqueIdentifier>{4c862c7f-8141-408d-af04-a9fcf7e247c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Misc">
+      <UniqueIdentifier>{f73b4ed6-e466-4735-8131-b1f5d0669adf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Console">
+      <UniqueIdentifier>{1db01a40-19b8-4ac0-ba67-1112d6d1777f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\System">
+      <UniqueIdentifier>{dd7e2fb9-1bc0-4bd9-831d-547133032af5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\IntelCPU">
+      <UniqueIdentifier>{623104d4-f11b-449a-b6fa-27c09e0d74b7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="access.cpp">
@@ -402,9 +438,6 @@
     </ClCompile>
     <ClCompile Include="Pause.cpp">
       <Filter>Source Files\Debugging and Exceptions</Filter>
-    </ClCompile>
-    <ClCompile Include="ExecutableByteArray.cpp">
-      <Filter>Source Files\Collection</Filter>
     </ClCompile>
     <ClCompile Include="Semaphore.cpp">
       <Filter>Source Files\Process</Filter>
@@ -806,310 +839,13 @@
     <ClCompile Include="MD5.cpp">
       <Filter>Source Files\Misc</Filter>
     </ClCompile>
+    <ClCompile Include="ExecutableByteArray.cpp">
+      <Filter>Source Files\IntelCPU</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Include\Array.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\BigArray.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\BitSet.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\BitStream.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\ByteArray.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\ByteFile.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\ByteMemoryStream.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\ByteStream.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\CallCounter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Collection.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\CompactArray.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\CompactHashMap.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\CompactHashSet.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\CompactKeyType.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\CompactStack.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Comparator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\CompressFilter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Console.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\CountedByteStream.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\CPUInfo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Date.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Exception.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\FileContent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\FileNameSplitter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\FileTreeWalker.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\HashMap.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\HashSet.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Iterator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\LineTracer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\LinkedList.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\LRparser.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Map.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\MyAssert.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\MyString.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\MyUtil.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\NumberInterval.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\ObjectManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\PackedArray.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Packer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\PragmaLib.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\PriorityQueue.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\ProcessTools.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\QueueList.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Random.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Regex.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Registry.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Runnable.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Scandir.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Scanner.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Semaphore.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Set.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Stack.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\StreamParameters.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\StringPool.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\StrStream.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\SynchronizedQueue.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Tcp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\TextRect.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\TextWin.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Thread.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\TimeMeasure.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Timer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\TinyBitSet.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Tokenizer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\TreeMap.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\TreeSet.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Unicode.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\WildCardRegex.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\XmlDoc.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\MatrixDimension.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\MatrixTemplate.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\VectorTemplate.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\BMAutomate.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Bpn.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\FileVersion.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\KMPAutomate.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Language.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\MarginFile.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\NullOutputStream.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\TeeOutputStream.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\TextFormatDetecter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\ExternProcess.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\InputThread.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\NatvisAddInHelper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\PropertyContainer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\BigEndianStream.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\TimeEstimator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\InterruptableRunnable.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="pch.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="..\..\Include\SocketStream.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\XMLUtil.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\UnitTestTraits.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\RefCountedObject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\MemSwap.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\StringSearchAlgorithm.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\MP3Player.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\PersistentData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\MedianCut.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\SourcePosition.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\HeapObjectPool.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Registers.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="IntelCPU\InstructionBuilder.h">
       <Filter>Source Files\IntelCPU</Filter>
     </ClInclude>
@@ -1119,23 +855,323 @@
     <ClInclude Include="IntelCPU\pch.h">
       <Filter>Source Files\IntelCPU</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\ExecutableByteArray.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\Include\BCDArray.h">
+      <Filter>Header Files\Math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\Opcode.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\Include\Bpn.h">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\MedianCut.h">
+      <Filter>Header Files\Math</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\MathUtil.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\BCDArray.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\Include\Registers.h">
+      <Filter>Header Files\IntelCPU</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Opcode.h">
+      <Filter>Header Files\IntelCPU</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Array.h">
+      <Filter>Header Files\Collection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\BitSet.h">
+      <Filter>Header Files\Collection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\ByteArray.h">
+      <Filter>Header Files\Collection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\CompactArray.h">
+      <Filter>Header Files\Collection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\CompactHashMap.h">
+      <Filter>Header Files\Collection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\CompactHashSet.h">
+      <Filter>Header Files\Collection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\CompactKeyType.h">
+      <Filter>Header Files\Collection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\ExecutableByteArray.h">
+      <Filter>Header Files\IntelCPU</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\HashMap.h">
+      <Filter>Header Files\Collection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\HashSet.h">
+      <Filter>Header Files\Collection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Map.h">
+      <Filter>Header Files\Collection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\ObjectManager.h">
+      <Filter>Header Files\Collection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\PackedArray.h">
+      <Filter>Header Files\Collection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\QueueList.h">
+      <Filter>Header Files\Collection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Set.h">
+      <Filter>Header Files\Collection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\TreeMap.h">
+      <Filter>Header Files\Collection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\TreeSet.h">
+      <Filter>Header Files\Collection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\NumberInterval.h">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Collection.h">
+      <Filter>Header Files\Collection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Date.h">
+      <Filter>Header Files\Date</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\TinyBitSet.h">
+      <Filter>Header Files\Collection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\BigEndianStream.h">
+      <Filter>Header Files\Stream</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\BitStream.h">
+      <Filter>Header Files\Stream</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\ByteFile.h">
+      <Filter>Header Files\Stream</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\ByteMemoryStream.h">
+      <Filter>Header Files\Stream</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\ByteStream.h">
+      <Filter>Header Files\Stream</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\CompressFilter.h">
+      <Filter>Header Files\Stream</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\CountedByteStream.h">
+      <Filter>Header Files\Stream</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\MarginFile.h">
+      <Filter>Header Files\Stream</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\SocketStream.h">
+      <Filter>Header Files\Stream</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\StreamParameters.h">
+      <Filter>Header Files\Stream</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\StrStream.h">
+      <Filter>Header Files\Stream</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\TeeOutputStream.h">
+      <Filter>Header Files\Stream</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\BigArray.h">
+      <Filter>Header Files\Collection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\LineTracer.h">
+      <Filter>Header Files\Debugging and Exceptions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Exception.h">
+      <Filter>Header Files\Debugging and Exceptions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\CallCounter.h">
+      <Filter>Header Files\Debugging and Exceptions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\NatvisAddInHelper.h">
+      <Filter>Header Files\Debugging and Exceptions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Scanner.h">
+      <Filter>Header Files\Stream</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\LRparser.h">
+      <Filter>Header Files\Stream</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Stack.h">
+      <Filter>Header Files\Collection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\CompactStack.h">
+      <Filter>Header Files\Collection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Iterator.h">
+      <Filter>Header Files\Collection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Random.h">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\ExternProcess.h">
+      <Filter>Header Files\Process</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\InputThread.h">
+      <Filter>Header Files\Process</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\ProcessTools.h">
+      <Filter>Header Files\Process</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Runnable.h">
+      <Filter>Header Files\Process</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Semaphore.h">
+      <Filter>Header Files\Process</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Thread.h">
+      <Filter>Header Files\Process</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Timer.h">
+      <Filter>Header Files\Process</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\LinkedList.h">
+      <Filter>Header Files\Collection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\PriorityQueue.h">
+      <Filter>Header Files\Collection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\InterruptableRunnable.h">
+      <Filter>Header Files\Process</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\HeapObjectPool.h">
+      <Filter>Header Files\Collection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\MyString.h">
+      <Filter>Header Files\String</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Packer.h">
+      <Filter>Header Files\Stream</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\SourcePosition.h">
+      <Filter>Header Files\Stream</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Tokenizer.h">
+      <Filter>Header Files\String</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\StringPool.h">
+      <Filter>Header Files\String</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Regex.h">
+      <Filter>Header Files\String</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Unicode.h">
+      <Filter>Header Files\String</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\XmlDoc.h">
+      <Filter>Header Files\String</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\XMLUtil.h">
+      <Filter>Header Files\String</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\KMPAutomate.h">
+      <Filter>Header Files\String</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\BMAutomate.h">
+      <Filter>Header Files\String</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\FileNameSplitter.h">
+      <Filter>Header Files\System</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\FileTreeWalker.h">
+      <Filter>Header Files\System</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Registry.h">
+      <Filter>Header Files\System</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Scandir.h">
+      <Filter>Header Files\System</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\WildCardRegex.h">
+      <Filter>Header Files\System</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\NullOutputStream.h">
+      <Filter>Header Files\Stream</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\PropertyContainer.h">
+      <Filter>Header Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\RefCountedObject.h">
+      <Filter>Header Files\Misc</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\SHA256.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Misc</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\MD5.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\MP3Player.h">
+      <Filter>Header Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\PersistentData.h">
+      <Filter>Header Files\String</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\SynchronizedQueue.h">
+      <Filter>Header Files\Process</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\StringSearchAlgorithm.h">
+      <Filter>Header Files\String</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\MyAssert.h">
+      <Filter>Header Files\Debugging and Exceptions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\MatrixTemplate.h">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\MatrixDimension.h">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\VectorTemplate.h">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\TextFormatDetecter.h">
+      <Filter>Header Files\Stream</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Console.h">
+      <Filter>Header Files\Console</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\TextRect.h">
+      <Filter>Header Files\Console</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\TextWin.h">
+      <Filter>Header Files\Console</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\UnitTestTraits.h">
+      <Filter>Header Files\Debugging and Exceptions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Tcp.h">
+      <Filter>Header Files\TcpIp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\TimeEstimator.h">
+      <Filter>Header Files\Process</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\CPUInfo.h">
+      <Filter>Header Files\System</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\FileVersion.h">
+      <Filter>Header Files\System</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\TimeMeasure.h">
+      <Filter>Header Files\Process</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Comparator.h">
+      <Filter>Header Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Language.h">
+      <Filter>Header Files\System</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\MemSwap.h">
+      <Filter>Header Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\MyUtil.h">
+      <Filter>Header Files\System</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\FileContent.h">
+      <Filter>Header Files\System</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\PragmaLib.h">
+      <Filter>Header Files\Misc</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
