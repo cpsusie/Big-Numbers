@@ -33,7 +33,7 @@ static StringArray findFiles(const TCHAR **argv, bool recurse) {
   StringArray result;
   if(!recurse) {
     for(;*argv; argv++) {
-      const DirList list = scandir(*argv);
+      const DirList list = scandir(*argv, SELECTFILE);
       for(size_t i = 0; i < list.size(); i++) {
         result.add(list[i].name);
       }
