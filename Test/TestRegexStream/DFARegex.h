@@ -1,0 +1,66 @@
+#pragma once
+
+class DFATables {
+private:
+  void init();
+  void copy(const DFATables &src);
+public:
+  size_t      m_stateCount;
+  // number of rows in m_transitionMatrix. maybe != m_stateCount
+  size_t      m_rowCount;
+  // width of each row in m_transisitonMatrix
+  size_t      m_columnCount;
+  // size = MAX_CHARS
+  short      *m_charMap;
+  // size = m_stateCount
+  short      *m_stateMap;
+  // size = m_rowCount * m_columnCount
+  short      *m_transitionMatrix;
+  // size = m_stateCount
+  short      *m_acceptStates; // if m_acceptState[i]>=0, then state i is an accepting state, and the returnvalue is the indexed element
+  DFATables() {
+    init();
+  }
+  DFATables(const DFATables &src);
+  DFATables &operator=(const DFATables &src);
+  virtual ~DFATables();
+
+  void allocate(size_t stateCount);
+  void allocateMatrix(size_t rowCount, size_t columnCount);
+  void clear();
+  inline bool isEmpty() const {
+    return m_stateCount == 0;
+  }
+  inline short &transition(UINT r, UINT c) {
+    return m_transitionMatrix[m_columnCount*r+c];
+  }
+  inline const short &transition(UINT r, UINT c) const {
+    return m_transitionMatrix[m_columnCount*r+c];
+  }
+  inline int nextState(int state, _TUCHAR c) const {
+    return transition(m_stateMap[state], m_charMap[c]);
+  }
+  inline bool isAcceptState(UINT state) const {
+    return m_acceptStates[state] >= 0;
+  }
+  inline int getAcceptValue(UINT state) const {
+    return m_acceptStates[state];
+  }
+#ifdef _DEBUG
+  String acceptStatesToString() const;
+  String toString() const;
+#endif _DEBUG
+};
+
+class DFARegex {
+private:
+  DFATables  m_tables;
+  const bool m_ignoreCase;
+  void compilePattern(const StringArray &pattern);
+public:
+  DFARegex(const StringArray &pattern, bool ignoreCase);
+  // return index of the regular expression in compiled StringArray, that matched the input, -1 if none
+  // if matchedString is specified, it will contain the inputtext read from input if a match occurs
+  // and will remain untouched if no match
+  int match(std::istream &in, String *matchedString) const;
+};
