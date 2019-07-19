@@ -130,5 +130,3 @@ inline Real getRealNaN() {
 #else
 #define _tcstor strtor
 #endif // _UNICODE
-
-#include "PragmaLib.h"
