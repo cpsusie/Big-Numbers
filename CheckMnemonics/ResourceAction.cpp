@@ -20,9 +20,9 @@ int ResourceParser::reduceAction(unsigned int prod) {
   case 2: /* resourceDefinitionList -> resourceDefinitionList resourceDefinition */
 #line 131 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = (getStackTop(1)&&getStackTop(0))
-                                                                                                   ? newNode(getPos(2), COMMA, getStackTop(1), getStackTop(0), NULL)
-                                                                                                   : getStackTop(1)? getStackTop(1): getStackTop(0);
-                                                                                            }
+           ? newNode(getPos(2), COMMA, getStackTop(1), getStackTop(0), NULL)
+           : getStackTop(1)? getStackTop(1): getStackTop(0);
+    }
 #line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 4: /* resourceDefinition -> bitmapDefinition */
@@ -93,9 +93,9 @@ int ResourceParser::reduceAction(unsigned int prod) {
   case 26: /* dialogSpecList -> dialogSpecList dialogSpec */
 #line 177 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = (getStackTop(1)&&getStackTop(0))
-                                                                                                   ? newNode(getPos(2), COMMA, getStackTop(1), getStackTop(0), NULL)
-                                                                                                   : getStackTop(1)? getStackTop(1): getStackTop(0);
-                                                                                            }
+           ? newNode(getPos(2), COMMA, getStackTop(1), getStackTop(0), NULL)
+           : getStackTop(1)? getStackTop(1): getStackTop(0);
+    }
 #line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 28: /* dialogSpec -> STYLE dialogStyleExpr */
@@ -121,9 +121,9 @@ int ResourceParser::reduceAction(unsigned int prod) {
   case 32: /* extendedDialogSpecList -> extendedDialogSpecList extendedDialogSpec */
 #line 191 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = (getStackTop(1)&&getStackTop(0))
-                                                                                                   ? newNode(getPos(2), COMMA, getStackTop(1), getStackTop(0), NULL)
-                                                                                                   : getStackTop(1)? getStackTop(1): getStackTop(0);
-                                                                                            }
+           ? newNode(getPos(2), COMMA, getStackTop(1), getStackTop(0), NULL)
+           : getStackTop(1)? getStackTop(1): getStackTop(0);
+    }
 #line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 34: /* extendedDialogSpec -> STYLE dialogStyleExpr */
@@ -164,9 +164,9 @@ int ResourceParser::reduceAction(unsigned int prod) {
   case 52: /* dialogControlSpecList -> dialogControlSpecList dialogControlSpec */
 #line 232 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = (getStackTop(1)&&getStackTop(0))
-                                                                                                 ? newNode(getPos(2), COMMA, getStackTop(1), getStackTop(0), NULL)
-                                                                                                 : getStackTop(1)? getStackTop(1): getStackTop(0);
-                                                                                            }
+         ? newNode(getPos(2), COMMA, getStackTop(1), getStackTop(0), NULL)
+         : getStackTop(1)? getStackTop(1): getStackTop(0);
+    }
 #line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 55: /* dialogControlSpec -> editSpec */
@@ -237,9 +237,9 @@ int ResourceParser::reduceAction(unsigned int prod) {
   case 364: /* menuSpecList -> menuSpecList menuSpec */
 #line 649 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
     { m_leftSide = (getStackTop(1)&&getStackTop(0))
-                                                                                                     ? newNode(getPos(2), COMMA, getStackTop(1), getStackTop(0), NULL)
-                                                                                                     : getStackTop(1)? getStackTop(1): getStackTop(0);
-                                                                                                }
+         ? newNode(getPos(2), COMMA, getStackTop(1), getStackTop(0), NULL)
+         : getStackTop(1)? getStackTop(1): getStackTop(0);
+    }
 #line 34 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
     break;
   case 368: /* popupMenu -> POPUP string menuItemModifierList menuBody */

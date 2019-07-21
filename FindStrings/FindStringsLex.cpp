@@ -37,8 +37,8 @@
 // DFA State   3 [accepting, line  41 <return OLDSTRING;>]
 //   goto 29 on \x00\x01\x02\x03\x04\x05\x06\x07\b\t\n\x0b\r\s
 //   goto 30 on "
-// DFA State   4 [accepting, line  54 <{ int i;                  const SourcePosition sta>]
-// DFA State   5 [accepting, line  69 <{ int i;                  while(i = input()) {    >]
+// DFA State   4 [accepting, line  54 <{ int i;   const SourcePosition startpos = getPos(>]
+// DFA State   5 [accepting, line  69 <{ int i;   while(i = input()) {     if(i < 0) {   >]
 // DFA State   6 [accepting, line  43 <return OLDCHAR;>]
 // DFA State   7 [accepting, line  46 <return NEWSTRING;>]
 //   goto 38 on \x00\x01\x02\x03\x04\x05\x06\x07\b\t\n\x0b\r\s
@@ -488,32 +488,32 @@ int FindStringsLex::getNextLexeme() {
       case 4:
 #line 54 "C:\\mytools2015\\FindStrings\\FindStrings.lex"
         { int i;
-                         const SourcePosition startpos = getPos();
-                         while(i = input()) {
-                           if(i < 0) {
-                             flushBuf();  /* Discard lexeme.    */
-                           } else if(i == '*' && look(1) == '/') {
-                            input();
-                            break;        /* Recognized comment.*/
-                           }
-                         }
-                         if(i == 0) {
-                           error( startpos,_T("End of file in comment\n") );
-                         }
-                       }
+          const SourcePosition startpos = getPos();
+          while(i = input()) {
+            if(i < 0) {
+              flushBuf();  /* Discard lexeme.    */
+            } else if(i == '*' && look(1) == '/') {
+             input();
+             break;        /* Recognized comment.*/
+            }
+          }
+          if(i == 0) {
+            error( startpos,_T("End of file in comment\n") );
+          }
+        }
 #line 94 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 5:
 #line 69 "C:\\mytools2015\\FindStrings\\FindStrings.lex"
         { int i;
-                         while(i = input()) {
-                           if(i < 0) {
-                             flushBuf();  /* Discard lexeme. */
-                           } else if(i == '\n') {
-                             break;
-                           }
-                         }
-                       }
+          while(i = input()) {
+            if(i < 0) {
+              flushBuf();  /* Discard lexeme. */
+            } else if(i == '\n') {
+              break;
+            }
+          }
+        }
 #line 94 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 6:

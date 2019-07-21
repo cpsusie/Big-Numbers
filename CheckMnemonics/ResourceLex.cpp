@@ -230,50 +230,50 @@ int ResourceLex::getNextLexeme() {
       case 12:
 #line 86 "C:\\mytools2015\\CheckMnemonics\\Resource.lex"
         { int i;
-                                  while(i = input()) { // skip until end of line ie handle as a comment
-                                    if(i < 0) {
-                                      flushBuf();  /* Discard lexeme. */
-                                    } else if(i == '\\' && (look(1) == '\n' || look(1) == '\r')) {
-                                      flushBuf();
-                                      if(input() == '\r') { // eat '\r' and '\n' and skip next line too
-                                        input();
-                                      }
-                                    } else if(i == '\n') {
-                                      break;
-                                    }
-                                  }
-                                }
+          while(i = input()) { // skip until end of line ie handle as a comment
+            if(i < 0) {
+              flushBuf();  /* Discard lexeme. */
+            } else if(i == '\\' && (look(1) == '\n' || look(1) == '\r')) {
+              flushBuf();
+              if(input() == '\r') { // eat '\r' and '\n' and skip next line too
+                input();
+              }
+            } else if(i == '\n') {
+              break;
+            }
+          }
+        }
 #line 94 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 13:
 #line 71 "C:\\mytools2015\\CheckMnemonics\\Resource.lex"
         { int i;
-                                  SourcePosition startpos = getPos();
-                                  while(i = input()) {
-                                    if(i < 0) {
-                                      flushBuf();  /* Discard lexeme. */
-                                    } else if(i == '*' && look(1) == '/') {
-                                      input();
-                                      break;       /* Recognized comment.*/
-                                    }
-                                  }
-                                  if(i == 0) {
-                                    error( startpos,_T("End of file in comment\n") );
-                                  }
-                                }
+          SourcePosition startpos = getPos();
+          while(i = input()) {
+            if(i < 0) {
+              flushBuf();  /* Discard lexeme. */
+            } else if(i == '*' && look(1) == '/') {
+              input();
+              break;       /* Recognized comment.*/
+            }
+          }
+          if(i == 0) {
+            error( startpos,_T("End of file in comment\n") );
+          }
+        }
 #line 94 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
       case 14:
 #line 61 "C:\\mytools2015\\CheckMnemonics\\Resource.lex"
         { int i;
-                                  while(i = input()) {
-                                    if(i < 0) {
-                                      flushBuf();  /* Discard lexeme. */
-                                    } else if(i == '\n') {
-                                      break;
-                                    }
-                                  }
-                                }
+          while(i = input()) {
+            if(i < 0) {
+              flushBuf();  /* Discard lexeme. */
+            } else if(i == '\n') {
+              break;
+            }
+          }
+        }
 #line 94 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
         break;
 
