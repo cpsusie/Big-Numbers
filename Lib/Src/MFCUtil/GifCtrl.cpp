@@ -16,9 +16,9 @@ CGifCtrl::~CGifCtrl() {
 
 BEGIN_MESSAGE_MAP(CGifCtrl, CStatic)
   ON_WM_PAINT()
-	ON_WM_DESTROY()
-	ON_WM_SHOWWINDOW()
-	ON_WM_SIZE()
+  ON_WM_DESTROY()
+  ON_WM_SHOWWINDOW()
+  ON_WM_SIZE()
 END_MESSAGE_MAP()
 
 void CGifCtrl::substituteControl(CWnd *wnd, int id) {
@@ -55,7 +55,7 @@ void CGifCtrl::OnPaint() {
 }
 
 void CGifCtrl::OnShowWindow(BOOL bShow, UINT nStatus) {
-  CStatic::OnShowWindow(bShow, nStatus);
+  __super::OnShowWindow(bShow, nStatus);
 	
   if(bShow) {
     if(isSuspended()) {
@@ -83,7 +83,7 @@ void CGifCtrl::OnDestroy() {
     m_image.stopAnimation();
   }
   unload();
-  CStatic::OnDestroy();
+  __super::OnDestroy();
 }
 
 void CGifCtrl::load(const String &fileName) {
@@ -165,5 +165,5 @@ void CGifCtrl::OnSize(UINT nType, int cx, int cy) {
       suspend();
     }
   }
-  CStatic::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
 }
