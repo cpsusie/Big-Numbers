@@ -14,12 +14,11 @@ public:
   const DimPoint               &m_scale;
   mutable PointDimensionType    m_longestSideLength;
   Block(DimPointWithIndex **points, UINT pointCount, const DimPoint &scale);
-  int longestSideIndex() const;
-
-  PointDimensionType longestSideLength() const;
-  DimPoint getAveragePoint() const;
-  void setIndexOnAllPoints(UINT index);
-  String toString() const;
+  int                getLongestSideIndex()  const;
+  PointDimensionType getLongestSideLength() const;
+  DimPoint           getAveragePoint()   const;
+  void               setIndexOnAllPoints(UINT index) const;
+  String             toString() const;
 };
 
 Block::Block(DimPointWithIndex **points, UINT pointCount, const DimPoint &scale) : m_scale(scale) {
@@ -35,14 +34,13 @@ void Block::findMinMaxCorner(DimPointWithIndex **points, UINT pointCount, DimPoi
       minCorner.m_x[j] = maxCorner.m_x[j] = 0;
     }
   } else {
-    DimPointWithIndex **p = points;
+    DimPointWithIndex **p = points, **endp = p + pointCount;
     PointDimensionType *minx = minCorner.m_x, *maxx = maxCorner.m_x;
 
     for(int j = POINTDIMENSIONCOUNT; j--;) {
       minx[j] = maxx[j] = (*p)->m_x[j];
     }
-    p++;
-    for(int i = pointCount-1; i--; p++) {
+    for(p++; p < endp; p++) {
       const PointDimensionType *x = (*p)->m_x;
       for(int j = 0; j < POINTDIMENSIONCOUNT; j++, x++) {
         if(*x < minx[j]) {
@@ -55,9 +53,8 @@ void Block::findMinMaxCorner(DimPointWithIndex **points, UINT pointCount, DimPoi
   }
 }
 
-void Block::setIndexOnAllPoints(UINT index) {
-  DimPointWithIndex **p = m_points;
-  for(int i = m_pointCount; i--;) {
+void Block::setIndexOnAllPoints(UINT index) const {
+  for(DimPointWithIndex **p = m_points, **endp = p + m_pointCount; p < endp;) {
     (*(p++))->m_index = index;
   }
 }
@@ -74,8 +71,7 @@ DimPoint Block::getAveragePoint() const {
     for(int j = POINTDIMENSIONCOUNT; j--;) {
       sum[j] = 0;
     }
-    DimPointWithIndex **p = m_points;
-    for(int i = m_pointCount; i--; p++) {
+    for(DimPointWithIndex **p = m_points, **endp = p + m_pointCount; p < endp; p++) {
       for(int j = POINTDIMENSIONCOUNT; j--;) {
         sum[j] += (*p)->m_x[j];
       }
@@ -93,7 +89,7 @@ PointDimensionType Block::getSideLength(int dimension) const {
   return (scale == 0) ? d : d / scale;
 }
 
-int Block::longestSideIndex() const {
+int Block::getLongestSideIndex() const {
   PointDimensionType m = getSideLength(0);
   int maxIndex = 0;
   for(int j = 1; j < POINTDIMENSIONCOUNT; j++) {
@@ -106,22 +102,22 @@ int Block::longestSideIndex() const {
   return maxIndex;
 }
 
-PointDimensionType Block::longestSideLength() const {
+PointDimensionType Block::getLongestSideLength() const {
   if(m_longestSideLength < 0) {
-    const int j = longestSideIndex();
+    const int j = getLongestSideIndex();
     m_longestSideLength = getSideLength(j);
   }
   return m_longestSideLength;
 }
 
 String Block::toString() const {
-  return format(_T("%.0f"), longestSideLength());
+  return format(_T("%.0f"), getLongestSideLength());
 }
 
 class BlockComparator : public Comparator<Block> {
 public:
   int compare(const Block &b1, const Block &b2) {
-    return sign(b2.longestSideLength() - b1.longestSideLength());
+    return sign(b2.getLongestSideLength() - b1.getLongestSideLength());
   }
   AbstractComparator *clone() const {
     return new BlockComparator();
@@ -187,7 +183,7 @@ DimPointArray medianCut(DimPointWithIndexArray &points, UINT desiredSize) {
     DimPointWithIndex **begin  = longestBlock.m_points;
     DimPointWithIndex **median = longestBlock.m_points + (longestBlock.m_pointCount+1)/2;
     DimPointWithIndex **end    = longestBlock.m_points + longestBlock.m_pointCount;
-    const int longestSideIndex = longestBlock.longestSideIndex();
+    const int longestSideIndex = longestBlock.getLongestSideIndex();
     switch(longestSideIndex) {
     case 0 :
       std::nth_element(begin, median, end, CoordinatePointComparatorFast<0>());
