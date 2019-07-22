@@ -94,23 +94,31 @@ void GifPixRect::copyImage(const PixRect *src) {
 }
 
 void GifPixRect::copyRasterBits(GifPixelType *rasterBits, const GifColorType *colorMap) {
-  const int w = getWidth();
-  const int h = getHeight();
-  PixelAccessor      *pa = getPixelAccessor();
-  for (CPoint p(0, 0); p.y < h; p.y++) {
-    for (p.x = 0; p.x < w; p.x++) {
-      const GifColorType &c = colorMap[*(rasterBits++)];
-      pa->setPixel(p, D3DCOLOR_ARGB(c.Red, c.Green, c.Blue, 0xff));
+  const int      w  = getWidth();
+  const int      h  = getHeight();
+  PixelAccessor *pa = NULL;
+  try {
+    PixelAccessor *pa = getPixelAccessor();
+    for (CPoint p(0, 0); p.y < h; p.y++) {
+      for (p.x = 0; p.x < w; p.x++) {
+        const GifColorType &gc = colorMap[*(rasterBits++)];
+        pa->setPixel(p, GCTOD3DCOLOR(gc));
+      }
     }
+    releasePixelAccessor();
+  } catch(...) {
+    if(pa) {
+      releasePixelAccessor();
+    }
+    throw;
   }
-  releasePixelAccessor();
 }
 
 GraphicsControlBlock GifPixRect::getDefaultGCB() { // static
   GraphicsControlBlock gcb;
-  gcb.DelayTime = 60;
-  gcb.DisposalMode = DISPOSE_DO_NOT;
-  gcb.UserInputFlag = false;
+  gcb.DelayTime        = 60;
+  gcb.DisposalMode     = DISPOSE_DO_NOT;
+  gcb.UserInputFlag    = false;
   gcb.TransparentColor = NO_TRANSPARENT_COLOR;
   return gcb;
 }

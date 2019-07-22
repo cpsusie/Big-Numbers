@@ -2,6 +2,22 @@
 
 #include "GifUtil.h"
 
+// Conversion between D3DCOLOR <-> DimPoint
+#define D3DCOLORTODP(dp,d3c) {            \
+  (dp).m_x[0] = (BYTE)ARGB_GETRED(  d3c); \
+  (dp).m_x[1] = (BYTE)ARGB_GETGREEN(d3c); \
+  (dp).m_x[2] = (BYTE)ARGB_GETBLUE( d3c); \
+}
+#define DPTOD3DCOLOR(dp) D3DCOLOR_XRGB((BYTE)((dp).m_x[0]),(BYTE)((dp).m_x[1]),(BYTE)((dp).m_x[2]))
+
+// Conversion between D3DCOLOR <-> GifColorType
+#define D3DCOLORTOGC(gc,d3c) {            \
+  (gc).Red    = ARGB_GETRED(  d3c);       \
+  (gc).Green  = ARGB_GETGREEN(d3c);       \
+  (gc).Blue   = ARGB_GETBLUE( d3c);       \
+}
+#define GCTOD3DCOLOR(gc) D3DCOLOR_XRGB((gc).Red, (gc).Green, (gc).Blue)
+
 class GifPixRect : public PixRect {
 private:
   void copyImage(const PixRect *src);

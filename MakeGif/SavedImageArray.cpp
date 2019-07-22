@@ -78,78 +78,95 @@ void SavedImageArray::clear(intptr_t capacity) {
   __super::clear(capacity);
 }
 
+class ReducedRasterMap {
+private:
+  CompactArray<GifColorType> m_colorMap;
+  CompactArray<GifPixelType> m_rasterBits;
+public:
+  ReducedRasterMap(PixRect *pr, UINT colorCount);
+  const CompactArray<GifColorType> &getColorMap() const {
+    return m_colorMap;
+  }
+  const CompactArray<GifPixelType> &getRasterBits() const {
+    return m_rasterBits;
+  }
+};
+
+ReducedRasterMap::ReducedRasterMap(PixRect *pr, UINT colorCount) {
+  const CSize            size = pr->getSize();
+  const size_t           pixelCount = getArea(size);
+  DimPointWithIndexArray a(pixelCount);
+  PixelAccessor         *pa = NULL;
+  try {
+    pa = pr->getPixelAccessor();
+    CPoint p;
+    for(p.y = 0; p.y < size.cy; p.y++) {
+      for (p.x = 0; p.x < size.cx; p.x++) {
+        const D3DCOLOR c = pa->getPixel(p);
+        DimPoint dp;
+        D3DCOLORTODP(dp,c);
+        a.add(dp);
+      }
+    }
+    pr->releasePixelAccessor(); pa = NULL;
+  } catch(...) {
+    if(pa) {
+      pr->releasePixelAccessor(); pa = NULL;
+      throw;
+    }
+  }
+  DimPointArray dpa = medianCut(a, colorCount);
+
+  m_rasterBits.setCapacity(pixelCount);
+  int counter = 0;
+  CPoint p;
+  for(p.y = 0; p.y < size.cy; p.y++) {
+    for(p.x = 0; p.x < size.cx; p.x++, counter++) {
+      m_rasterBits.add(a[counter].m_index);
+    }
+  }
+  m_colorMap.setCapacity(colorCount);
+  for(size_t i = 0; i < dpa.size(); i++) {
+    const DimPoint &dp = dpa[i];
+    const D3DCOLOR  c = DPTOD3DCOLOR(dp);
+    GifColorType    gc;
+    D3DCOLORTOGC(gc, c);
+    m_colorMap.add(gc);
+  }
+}
+
 SavedImageArray::SavedImageArray(const PixRectArray &prArray, int maxColorCount) {
   if(maxColorCount > 256) {
     throwInvalidArgumentException(__TFUNCTION__, _T("maxColorCount=%d. max=256"), maxColorCount);
   }
-  const GifPixRect *pr          = NULL;
-  PixelAccessor    *pa          = NULL;
-  BYTE             *bigColorMap = NULL;
   try {
-    BitSet usedColors(MAXCOLORCOUNT);
-    for(size_t i = 0; i < prArray.size(); i++) {
-      pr = prArray[i];
-      pa = pr->getPixelAccessor();
-      const int w = pr->getWidth();
-      const int h = pr->getHeight();
-      for(CPoint p(0,0); p.y < h; p.y++) {
-        for(p.x = 0; p.x < w; p.x++) {
-          usedColors.add(pa->getPixel(p) & 0xffffff);
-        }
-      }
-      pr->releasePixelAccessor(); pa = NULL;
-    }
-    CompactArray<D3DCOLOR> allColors;
-    for(Iterator<size_t> it = usedColors.getIterator(); it.hasNext();) {
-      const UINT c = (UINT)it.next();
-      allColors.add(c);
-    }
+    const size_t n = prArray.size();
+    for(size_t i = 0; i < n; i++) {
+      GifPixRect    *pr   = prArray[i];
+      const CSize    size = pr->getSize();
 
-    const int colorCount = min((int)allColors.size(), maxColorCount);
-
-    DimPointWithIndexArray allPoints = colorArrayToPointArray(allColors);
-    DimPointArray          mc        = medianCut(allPoints, colorCount);
-
-    bigColorMap = new BYTE[MAXCOLORCOUNT]; TRACE_NEW(bigColorMap);
-    memset(bigColorMap, 0, MAXCOLORCOUNT);
-    for(intptr_t i = allPoints.size(); i--;) {
-      bigColorMap[allColors[i]] = allPoints[i].m_index;
-    }
-
-    for(size_t i = 0; i < prArray.size(); i++) {
-      pr = prArray[i];
-      const int w = pr->getWidth();
-      const int h = pr->getHeight();
-
-      SavedImage *image = allocateSavedImage(w, h, colorCount);
+      const ReducedRasterMap reducedMap(pr, maxColorCount);
+      SavedImage *image = allocateSavedImage(size.cx, size.cy, maxColorCount);
       add(image);
 
-      pa = pr->getPixelAccessor();
-      GifPixelType  *gifPixel = image->RasterBits;
-      for(CPoint p(0,0); p.y < h; p.y++) {
-        for(p.x = 0; p.x < w; p.x++) {
-          const UINT srcPixel = pa->getPixel(p) & 0xffffff;
-          *(gifPixel++) = bigColorMap[srcPixel];
-        }
+      GifPixelType                    *gifPixel     = image->RasterBits;
+      const CompactArray<GifPixelType> &rasterBits  = reducedMap.getRasterBits();
+      const size_t                      totalPixels = rasterBits.size();
+      for(size_t i = 0; i < totalPixels; i++) {
+        gifPixel[i] = rasterBits[i];
       }
-      pr->releasePixelAccessor(); pa = NULL;
 
-      CompactArray<D3DCOLOR> newColors = pointArrayToColorArray(mc);
-      GifColorType          *gifColor  = image->ImageDesc.ColorMap->Colors;
-      const D3DCOLOR        *cp        = &newColors[0];
-      for(int j = colorCount; j--; gifColor++, cp++) {
-        gifColor->Red   = ARGB_GETRED(  *cp);
-        gifColor->Green = ARGB_GETGREEN(*cp);
-        gifColor->Blue  = ARGB_GETBLUE( *cp);
+      const CompactArray<GifColorType> &colorMap    = reducedMap.getColorMap();
+      GifColorType                     *gifColor    = image->ImageDesc.ColorMap->Colors;
+      const size_t                      totalColors = colorMap.size();
+      for(size_t i = 0; i < totalColors; i++) {
+        gifColor[i] = colorMap[i];
       }
       image->ImageDesc.Left = pr->m_topLeft.x;
       image->ImageDesc.Top  = pr->m_topLeft.y;
       setGCB(image, pr->m_gcb);
     }
-    SAFEDELETEARRAY(bigColorMap);
   } catch(...) {
-    if(pa)          { pr->releasePixelAccessor(); pa  = NULL; }
-    SAFEDELETEARRAY(bigColorMap);
     clear();
     throw;
   }

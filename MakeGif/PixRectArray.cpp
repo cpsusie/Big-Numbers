@@ -261,8 +261,8 @@ void PixRectArray::paintPixRect(const PixRect *pr, HDC dc, const CRect &rect) { 
   if(sz == rect.Size()) {
     PixRect::bitBlt(dc, rect.TopLeft(), sz, SRCCOPY, pr, CPoint(0,0));
   } else {
-    const bool highQuality = false;
-    SetStretchBltMode(dc, highQuality ? HALFTONE : COLORONCOLOR);
+//    const bool highQuality = false;
+//    SetStretchBltMode(dc, highQuality ? HALFTONE : COLORONCOLOR);
     PixRect::stretchBlt(dc, rect, SRCCOPY, pr, pr->getRect());
   }
 }
