@@ -41,7 +41,7 @@ static void reduceColors(PixRect &image, int colorCount, PearlDiagram *diagram) 
   }
   const CSize    size = image.getSize();
   PixelAccessor *pa   = image.getPixelAccessor();
-  DimPointWithIndexArray a(size.cx*size.cy);
+  DimPointWithIndexArray a(getArea(size));
   CPoint p;
   for(p.y = 0; p.y < size.cy; p.y++) {
     for(p.x = 0; p.x < size.cx; p.x++) {
