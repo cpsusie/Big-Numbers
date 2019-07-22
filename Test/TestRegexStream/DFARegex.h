@@ -2,6 +2,7 @@
 
 class DFATables {
 private:
+  size_t      m_memoryUsage; // in bytes
   void init();
   void copy(const DFATables &src);
   String acceptStatesToString() const;
@@ -32,6 +33,9 @@ public:
   inline bool isEmpty() const {
     return m_stateCount == 0;
   }
+  inline size_t getMemoryUsage() const {
+    return m_memoryUsage;
+  }
   inline short &transition(UINT r, UINT c) {
     return m_transitionMatrix[m_columnCount*r+c];
   }
@@ -60,7 +64,8 @@ public:
   // return index of the regular expression in compiled StringArray, that matched the input, -1 if none
   // if matchedString is specified, it will contain the inputtext read from input if a match occurs
   // and will remain untouched if no match
-  int match(std::istream &in, String *matchedString) const;
+  int match(std::istream  &in, String *matchedString) const;
+  int match(std::wistream &in, String *matchedString) const;
   inline bool getIgnoreCase() const {
     return m_ignoreCase;
   }

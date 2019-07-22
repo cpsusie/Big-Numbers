@@ -17,6 +17,7 @@ DFATables::~DFATables() {
 }
 
 void DFATables::init() {
+  m_memoryUsage      = sizeof(DFATables);
   m_stateCount       = 0;
   m_rowCount         = 0;
   m_columnCount      = 0;
@@ -28,6 +29,7 @@ void DFATables::init() {
 
 void DFATables::copy(const DFATables &src) {
   if(src.m_stateCount) {
+    m_memoryUsage = src.m_memoryUsage;
     allocate(      src.m_stateCount);
     allocateMatrix(src.m_rowCount, src.m_columnCount);
     memcpy(m_charMap         , src.m_charMap         , MAX_CHARS                     * sizeof(m_charMap[0])         );
@@ -43,12 +45,17 @@ void DFATables::allocate(size_t stateCount) {
   m_charMap      = new short[MAX_CHARS  ]; TRACE_NEW(m_charMap     );
   m_stateMap     = new short[stateCount ]; TRACE_NEW(m_stateMap    );
   m_acceptStates = new short[stateCount ]; TRACE_NEW(m_acceptStates);
+  m_memoryUsage += MAX_CHARS * sizeof(m_charMap[0])
+                + stateCount * sizeof(m_stateMap[0])
+                + stateCount * sizeof(m_acceptStates[0]);
 }
 
 void DFATables::allocateMatrix(size_t rowCount, size_t columnCount) {
   m_rowCount         = rowCount;
   m_columnCount      = columnCount;
-  m_transitionMatrix = new short[m_rowCount * m_columnCount]; TRACE_NEW(m_transitionMatrix);
+  const size_t elemCount = m_rowCount * m_columnCount;
+  m_transitionMatrix = new short[elemCount]; TRACE_NEW(m_transitionMatrix);
+  m_memoryUsage += elemCount * sizeof(m_transitionMatrix[0]);
 }
 
 void DFATables::clear() {
@@ -111,6 +118,19 @@ template<class T> String thinMapToString(const T *a, size_t size) {
   return tmp.toString();
 }
 
+#define KB 1024
+#define MB (KB*KB)
+
+static String byteCountToString(size_t byteCount) {
+  if(byteCount < KB) {
+    return format(_T("%zu bytes"), byteCount);
+  } else if(byteCount < MB) {
+    return format(_T("%.2lfKb"), (double)byteCount / KB);
+  } else {
+    return format(_T("%.2lfMb"), (double)byteCount / MB);
+  }
+}
+
 String DFATables::toString() const {
   if(isEmpty()) {
     return EMPTYSTRING;
@@ -134,7 +154,10 @@ String DFATables::toString() const {
   result += indentString(matStr, 2);
   result += NEWLINE;
   result += format(_T("Accept states:\n%s"), indentString(acceptStatesToString(),2).cstr());
-  return format(_T("DFATables(stateCount:%zu):\n%s\n"), m_stateCount, indentString(result, 2).cstr());
+  return format(_T("DFATables(stateCount:%zu, memoryUsage:%s):\n%s\n")
+               ,m_stateCount
+               ,byteCountToString(getMemoryUsage()).cstr()
+               ,indentString(result, 2).cstr());
 }
 
 String DFATables::acceptStatesToString() const {

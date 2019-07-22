@@ -45,9 +45,9 @@ public:
   }
 };
 
-class MyDoubleIstream {
+template<class IStreamType, class CharType> class DoubleIstreamT {
 private:
-  istream &m_in;
+  IStreamType &m_in;
   void parseOnFail(double &x) const {
     m_in.clear();
     const int index = UndefFloatingValueStreamScanner::getInstance().match(m_in);
@@ -66,10 +66,10 @@ private:
   }
 
 public:
-  MyDoubleIstream(istream &in) : m_in(in) {
+  DoubleIstreamT(IStreamType &in) : m_in(in) {
   }
-  MyDoubleIstream &operator>>(double &x) {
-    char c = 0;
+  DoubleIstreamT &operator>>(double &x) {
+    CharType c = 0;
     if(!m_in.good()) {
       return *this;
     }
@@ -87,19 +87,27 @@ public:
 };
 
 
-class MyDoubleinManip {
+template<class IStreamType, class CharType> class DoubleManipT {
 public:
-  mutable istream  *m_in;
-  const MyDoubleinManip &operator>>(double &x) const {
-    MyDoubleIstream(*m_in) >> x;
+  mutable IStreamType *m_in;
+  const DoubleManipT &operator>>(double &x) const {
+    DoubleIstreamT<IStreamType, CharType>(*m_in) >> x;
     return *this;
   }
-  inline istream &operator>>(const MyDoubleinManip &) const {
+  inline IStreamType &operator>>(const DoubleManipT &) const {
     return *m_in;
   }
 };
 
-inline const MyDoubleinManip &operator>>(istream &in, const MyDoubleinManip &dm) {
+typedef DoubleManipT<istream, char    > charDoubleManip;
+typedef DoubleManipT<wistream, wchar_t> wcharDoubleManip;
+
+inline charDoubleManip &operator>>(istream &in, charDoubleManip &dm) {
+  dm.m_in = &in;
+  return dm;
+}
+
+inline wcharDoubleManip &operator>>(wistream &in, wcharDoubleManip &dm) {
   dm.m_in = &in;
   return dm;
 }
@@ -123,15 +131,15 @@ static void TestMyExample() {
   testData.add(dnsnan);
   testData.add(dvalue);
 
-  stringstream input;
+  wstringstream input;
   for(size_t i = 0; i < testData.size(); i++) {
     input << testData[i] << endl;
   }
-  cout << "TestData:" << endl << input.str() << endl;
-  stringstream iss(input.str());
+  wcout << "TestData:" << endl << input.str() << endl;
+  wstringstream iss(input.str());
   for(size_t index = 0; !iss.eof(); index++) {
     double x;
-    iss >> MyDoubleinManip() >> x;
+    iss >> wcharDoubleManip() >> x;
     if(index >= testData.size()) {
       cout << "Too many data read. expected only " << testData.size() << " elements" << endl;
       break;
@@ -169,6 +177,7 @@ int main(int argc, char **argv) {
       }
     }
   }
+  cout << UndefFloatingValueStreamScanner::getInstance().toString();
   try {
     switch(cmd) {
     case CMD_TESTINTERNETEXAMPLE :
