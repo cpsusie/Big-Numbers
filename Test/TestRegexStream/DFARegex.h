@@ -4,6 +4,7 @@ class DFATables {
 private:
   void init();
   void copy(const DFATables &src);
+  String acceptStatesToString() const;
 public:
   size_t      m_stateCount;
   // number of rows in m_transitionMatrix. maybe != m_stateCount
@@ -46,10 +47,7 @@ public:
   inline int getAcceptValue(UINT state) const {
     return m_acceptStates[state];
   }
-#ifdef _DEBUG
-  String acceptStatesToString() const;
   String toString() const;
-#endif _DEBUG
 };
 
 class DFARegex {
@@ -63,4 +61,13 @@ public:
   // if matchedString is specified, it will contain the inputtext read from input if a match occurs
   // and will remain untouched if no match
   int match(std::istream &in, String *matchedString) const;
+  inline bool getIgnoreCase() const {
+    return m_ignoreCase;
+  }
+  String toString() const {
+    return format(_T("IgnoreCase:%s\n:%s")
+                 ,boolToStr(m_ignoreCase)
+                 ,m_tables.toString().cstr()
+                 );
+  }
 };

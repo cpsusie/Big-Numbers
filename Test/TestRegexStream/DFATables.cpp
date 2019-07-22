@@ -59,7 +59,6 @@ void DFATables::clear() {
   init();
 }
 
-#ifdef _DEBUG
 template<class T> int countNonZeroes(const T *a, size_t size) {
   int count = 0;
   while(size--) {
@@ -156,4 +155,3 @@ String DFATables::acceptStatesToString() const {
   }
   return format(_T("%s\n%s\n"), s1.cstr(), s2.cstr());
 }
-#endif // _DEBUG

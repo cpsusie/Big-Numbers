@@ -18,5 +18,9 @@ public:
   virtual ~RegexIStream() {
     cleanup();
   }
+  inline bool isEmpty() const {
+    return m_regex == NULL;
+  }
   int match(std::istream &in, String *matchedString = NULL) const;
+  String toString() const;
 };

@@ -2,121 +2,141 @@
 #include <Math/Double64.h>
 #include "RegexIStream.h"
 
+using namespace std;
 static void TestInternetExample() {
-  std::stringstream iss("1.0 -NaN inf Inf nan -inf NaN 1.2 inf");
+  stringstream iss("1.0 -NaN inf Inf nan -inf NaN 1.2 inf");
   double u, v, w, x, y, z, a, b, fail_double;
-  std::string fail_string;
+  string fail_string;
   iss >> DoubleinManip()
       >> u >> v >> w >> x >> y >> z >> a >> b
       >> DoubleinManip()
       >> fail_double;
-   std::cout << u << " " << v << " " << w << " "
-             << x << " " << y << " " << z << " " << a << " " << b << std::endl;
+   cout << u << " " << v << " " << w << " "
+             << x << " " << y << " " << z << " " << a << " " << b << endl;
    if (iss.fail()) {
      iss.clear();
      iss >> fail_string;
-     std::cout << fail_string << std::endl;
+     cout << fail_string << endl;
      
   } else {
-    std::cout << "TEST FAILED" << std::endl;
+    cout << "TEST FAILED" << endl;
   }
 }
 
 // ----------------------------------------------------------------------
 
+#define POSITIVE_INFINITY  0
+#define NEGATIVE_INFINITY  1
+#define POSITIVE_NAN       2
+#define NEGATIVE_SIGNALNAN 3
+#define NEGATIVE_QUUET_NAN 4
+
+class UndefFloatingValueStreamScanner : public RegexIStream {
+private:
+  static StringArray getRegExprLines() {
+    return StringArray(Tokenizer(_T("inf\n-inf\nnan\n-nan\n-nan(ind)?"), _T("\n")));
+  }
+  UndefFloatingValueStreamScanner() : RegexIStream(getRegExprLines(), true) {
+  }
+public:
+  static const UndefFloatingValueStreamScanner &getInstance() {
+    static UndefFloatingValueStreamScanner s_instance;
+    return s_instance;
+  }
+};
+
 class MyDoubleIstream {
 private:
-  static const RegexIStream s_undefstream;
-  std::istream &m_in;
-
-  void parseOnFail(double &x, bool neg) const {
+  istream &m_in;
+  void parseOnFail(double &x) const {
     m_in.clear();
-    const int index = s_undefstream.match(m_in);
+    const int index = UndefFloatingValueStreamScanner::getInstance().match(m_in);
     if(index < 0) {
-      m_in.setstate(std::ios_base::failbit);
+      m_in.setstate(ios_base::failbit);
     } else {
       m_in.clear();
       switch(index) {
-      case 1:
-        neg = true;
-        // continue case
-      case 0:
-        x = std::numeric_limits<double>::infinity();
-        break;
-      case 3:
-        neg = true;
-        // continue case
-      case 2:
-        x = std::numeric_limits<double>::quiet_NaN();
-        break;
+      case POSITIVE_INFINITY  : x =  numeric_limits<double>::infinity();      break;
+      case NEGATIVE_INFINITY  : x = -numeric_limits<double>::infinity();      break;
+      case POSITIVE_NAN       : x =  numeric_limits<double>::quiet_NaN();     break;
+      case NEGATIVE_SIGNALNAN : x = -numeric_limits<double>::signaling_NaN(); break;
+      case NEGATIVE_QUUET_NAN : x = -numeric_limits<double>::quiet_NaN();     break;
       }
-      if(neg) x = -x;
     }
   }
 
 public:
-  MyDoubleIstream(std::istream &in) : m_in(in) {
+  MyDoubleIstream(istream &in) : m_in(in) {
   }
   MyDoubleIstream &operator>>(double &x) {
-    char c;
-
-    if (!m_in.good()) {
+    char c = 0;
+    if(!m_in.good()) {
       return *this;
     }
     while(iswspace(c = m_in.peek())) {
       m_in.get();
     }
-    bool neg = false;
-    if(c == '-') {
-      neg = true;
-    }
     m_in >> x;
     if(m_in.fail()) {
-      parseOnFail(x, neg);
+      m_in.clear();
+      if(c == '-') m_in.putback(c);
+      parseOnFail(x);
     }
     return *this;
   }
 };
 
-static StringArray getRegExprLines() {
-  return StringArray(Tokenizer(_T("inf\n-inf\nnan\\((ind)\\)?\n-nan\\((ind)\\)?"), _T("\n")));
-}
-
-const RegexIStream MyDoubleIstream::s_undefstream(getRegExprLines(), true);
 
 class MyDoubleinManip {
 public:
-  mutable std::istream  *m_in;
+  mutable istream  *m_in;
   const MyDoubleinManip &operator>>(double &x) const {
     MyDoubleIstream(*m_in) >> x;
     return *this;
   }
-  inline std::istream &operator>>(const MyDoubleinManip &) const {
+  inline istream &operator>>(const MyDoubleinManip &) const {
     return *m_in;
   }
 };
 
-inline const MyDoubleinManip &operator>>(std::istream &in, const MyDoubleinManip &dm) {
+inline const MyDoubleinManip &operator>>(istream &in, const MyDoubleinManip &dm) {
   dm.m_in = &in;
   return dm;
 }
 
 static void TestMyExample() {
-  std::stringstream iss("1.0 -NaN inf Inf nan -inf NaN 1.2 inf");
-  double u, v, w, x, y, z, a, b, fail_double;
-  std::string fail_string;
-  iss >> MyDoubleinManip()
-      >> u >> v >> w >> x >> y >> z >> a >> b
-      >> MyDoubleinManip()
-      >> fail_double;
-  std::cout << u << " " << v << " " << w << " "
-            << x << " " << y << " " << z << " " << a << " " << b << std::endl;
-  if(iss.fail()) {
-    iss.clear();
-    iss >> fail_string;
-    std::cout << fail_string << std::endl;
-  } else {
-    std::cout << "TEST FAILED" << std::endl;
+  CompactArray<double> testData;
+
+  const double dpinf  = numeric_limits<double>::infinity();
+  const double dpqnan = numeric_limits<double>::quiet_NaN();
+  const double dpsnan = numeric_limits<double>::signaling_NaN();
+  const double dninf  = -dpinf;
+  const double dnqnan = -dpqnan;
+  const double dnsnan = -dpsnan;
+  const double dvalue = M_PI;
+
+  testData.add(dpinf);
+  testData.add(dpqnan);
+  testData.add(dpsnan);
+  testData.add(dninf);
+  testData.add(dnqnan);
+  testData.add(dnsnan);
+  testData.add(dvalue);
+
+  stringstream input;
+  for(size_t i = 0; i < testData.size(); i++) {
+    input << testData[i] << endl;
+  }
+  cout << "TestData:" << endl << input.str() << endl;
+  stringstream iss(input.str());
+  for(size_t index = 0; !iss.eof(); index++) {
+    double x;
+    iss >> MyDoubleinManip() >> x;
+    if(index >= testData.size()) {
+      cout << "Too many data read. expected only " << testData.size() << " elements" << endl;
+      break;
+    }
+    cout << "Read:" << x << ",    expeced:" << testData[index] << endl;
   }
 }
 
@@ -128,6 +148,8 @@ static void usage() {
            );
   exit(-1);
 }
+
+using namespace std;
 
 typedef enum {
   CMD_TESTINTERNETEXAMPLE

@@ -12,8 +12,12 @@ void RegexIStream::cleanup() {
 }
 
 int RegexIStream::match(std::istream &in, String *matchedString) const {
-  if(m_regex == NULL) {
+  if(isEmpty()) {
     throwException(_T("%s:No regular expression to match"), __TFUNCTION__);
   }
   return m_regex->match(in, matchedString);
+}
+
+String RegexIStream::toString() const {
+  return isEmpty() ? EMPTYSTRING : m_regex->toString();
 }

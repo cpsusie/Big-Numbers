@@ -16,9 +16,6 @@ void DFA::getDFATables(DFATables &tables) const {
 
   getTransitionMatrix(tables, rowSave, columnSave);
   getAcceptTable(tables);
-#ifdef _DEBUG
-  debugLog(_T("%s"), tables.toString().cstr());
-#endif
 }
 
 // Return true if two columns in transitionmatrix are equal, else return false
