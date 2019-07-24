@@ -878,7 +878,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
-    <ClInclude Include="targetver.h" />
     <ClInclude Include="IntelCPU\InstructionBuilder.h">
       <Filter>Source Files\IntelCPU</Filter>
     </ClInclude>
@@ -1259,6 +1258,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\BuiltInArrayUtil.h">
       <Filter>Header Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\targetver.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

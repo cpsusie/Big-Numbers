@@ -1,7 +1,5 @@
 #include "pch.h"
-#include <MyUtil.h>
 #include <Random.h>
-
 #include <Array.h>
 
 /* DEBUG_ARRAYIMPL-klasse til optælling af kald til ArrayImpl */

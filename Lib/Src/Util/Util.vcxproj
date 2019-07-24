@@ -850,6 +850,7 @@
     <ClInclude Include="..\..\Include\StrStream.h" />
     <ClInclude Include="..\..\Include\MemSwap.h" />
     <ClInclude Include="..\..\Include\SynchronizedQueue.h" />
+    <ClInclude Include="..\..\Include\targetver.h" />
     <ClInclude Include="..\..\Include\Tcp.h" />
     <ClInclude Include="..\..\Include\TeeOutputStream.h" />
     <ClInclude Include="..\..\Include\TextFormatDetecter.h" />
@@ -884,7 +885,6 @@
     <ClInclude Include="RegexIStream\PatternScanner.h" />
     <ClInclude Include="RegexIStream\pch.h" />
     <ClInclude Include="RegexIStream\SubNFA.h" />
-    <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AbstractIterator.cpp" />

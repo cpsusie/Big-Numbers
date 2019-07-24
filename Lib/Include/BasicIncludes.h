@@ -1,7 +1,5 @@
 #pragma once
 
-#include "targetver.h"
-
 #include "Config.h"
 #include <Windows.h>
 #include <WinUser.h>

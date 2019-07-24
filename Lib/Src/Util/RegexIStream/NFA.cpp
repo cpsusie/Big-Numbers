@@ -1,5 +1,4 @@
 #include "pch.h"
-#include <MyUtil.h>
 #include "NFA.h"
 
 NFA::NFA(NFAStatePool &statePool, NFAState *start) : m_statePool(statePool) {
