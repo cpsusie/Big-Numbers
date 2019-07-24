@@ -2,7 +2,10 @@
 #include <fcntl.h>
 #include <io.h>
 #include <process.h>
+#include <MyUtil.h>
+#include <DebugLog.h>
 #include <Semaphore.h>
+#include <FileNameSplitter.h>
 #include <ExternProcess.h>
 
 #define READ_FD  0

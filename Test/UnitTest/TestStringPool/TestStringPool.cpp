@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "CppUnitTest.h"
 #include <StringPool.h>
 #include <CompactArray.h>
 #include <ByteFile.h>

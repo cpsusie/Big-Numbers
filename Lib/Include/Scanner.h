@@ -1,8 +1,8 @@
 #pragma once
 
-#include "MyUtil.h"
-#include "SourcePosition.h"
 #include <ctype.h>
+#include "ByteArray.h"
+#include "SourcePosition.h"
 
 // Abstract class (interface) for inputstreams
 class LexStream {

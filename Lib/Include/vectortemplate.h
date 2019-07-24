@@ -1,7 +1,8 @@
 #pragma once
 
-#include "MyUtil.h"
 #include <Math.h>
+#include "Array.h"
+#include "Exception.h"
 #include "StreamParameters.h"
 
 template <class T> class VectorTemplate {
@@ -9,28 +10,28 @@ private:
   T     *m_e;
   size_t m_dim;
 
-  static void throwVectorException(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
+  static void throwVectorException(const TCHAR *method, _In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
     va_list argptr;
     va_start(argptr, format);
-    throwException(_T("VectorTemplate:%s."), vformat(format, argptr).cstr());
+    const String msg = vformat(format, argptr);
     va_end(argptr);
+    throwException(_T("%s:%s."), method, msg.cstr());
+  }
+  void throwIndexError(const TCHAR *method, const size_t index) const {
+    throwVectorException(method,_T("Index %s out of range. %s")
+                              ,format1000(index).cstr(), getDimensionString().cstr());
   }
 
-  void checkIndex(size_t index) const {
-    if(index >= m_dim) {
-      throwVectorException(_T("Index %s out of range. %s")
-                          ,format1000(index).cstr(), getDimensionString().cstr());
-    }
-  }
+#define CHECKVECTORTEMPLATEINDEX(index) if((index) >= m_dim) throwIndexError(__TFUNCTION__, index)
 
-  static void throwOperatorException(const TCHAR *op, size_t dim1, size_t dim2) {
-    throwException(_T("operator%s(VectorTemplate, VectorTemplate):Invalid dimension. Left.dimension=%s. Right.dimension=%s")
-                  , op, format1000(dim1).cstr(), format1000(dim2).cstr());
+  static void throwOperatorException(const TCHAR *method, size_t dim1, size_t dim2) {
+    throwVectorException(method,_T("Invalid dimension. Left.dimension=%s. Right.dimension=%s")
+                               ,format1000(dim1).cstr(), format1000(dim2).cstr());
   }
 
   static T *allocate(size_t dim, bool initialize) {
     if(dim == 0) {
-      throwVectorException(_T("allocate:Dimension=0"));
+      throwVectorException(__TFUNCTION__, _T("dim=0"));
     }
     T *v = new T[dim]; TRACE_NEW(v);
     if(initialize) {
@@ -137,7 +138,7 @@ public:
     const size_t n = lts.m_dim;
 
     if(n != rhs.m_dim) {
-      throwOperatorException(_T("+"), n, rhs.m_dim);
+      throwOperatorException(__TFUNCTION__, n, rhs.m_dim);
     }
 
     VectorTemplate<T> result(n);
@@ -151,7 +152,7 @@ public:
     const size_t n = lts.m_dim;
 
     if(n != rhs.m_dim) {
-      throwOperatorException(_T("-"), n, rhs.m_dim);
+      throwOperatorException(__TFUNCTION__, n, rhs.m_dim);
     }
 
     VectorTemplate<T> result(n);
@@ -175,7 +176,7 @@ public:
     const size_t n = lts.m_dim;
 
     if(n != rhs.m_dim) {
-      throwOperatorException(_T("*"), n, rhs.m_dim);
+      throwOperatorException(__TFUNCTION__, n, rhs.m_dim);
     }
 
     T sum = 0;
@@ -203,7 +204,7 @@ public:
 
   VectorTemplate<T> &operator+=(const VectorTemplate<T> &rhs) {
     if(m_dim != rhs.m_dim) {
-      throwOperatorException(_T("+="), m_dim, rhs.m_dim);
+      throwOperatorException(__TFUNCTION__, m_dim, rhs.m_dim);
     }
     for(size_t i = 0; i < m_dim; i++) {
       m_e[i] += rhs.m_e[i];
@@ -213,7 +214,7 @@ public:
 
   VectorTemplate<T> &operator-=(const VectorTemplate<T> &rhs) {
     if(m_dim != rhs.m_dim) {
-      throwOperatorException(_T("-="), m_dim, rhs.m_dim);
+      throwOperatorException(__TFUNCTION__, m_dim, rhs.m_dim);
     }
     for(size_t i = 0; i < m_dim; i++) {
       m_e[i] -= rhs.m_e[i];
@@ -222,22 +223,22 @@ public:
   }
 
   inline T &operator[](size_t n) {
-    checkIndex(n);
+    CHECKVECTORTEMPLATEINDEX(n);
     return m_e[n];
   }
 
   inline const T &operator[](size_t n) const {
-    checkIndex(n);
+    CHECKVECTORTEMPLATEINDEX(n);
     return m_e[n];
   }
 
   inline T &operator()(size_t n) {
-    checkIndex(n);
+    CHECKVECTORTEMPLATEINDEX(n);
     return m_e[n];
   }
 
   inline const T &operator()(size_t n) const {
-    checkIndex(n);
+    CHECKVECTORTEMPLATEINDEX(n);
     return m_e[n];
   }
 

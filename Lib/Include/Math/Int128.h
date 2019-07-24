@@ -1,6 +1,7 @@
 #pragma once
 
 #include <StrStream.h>
+#include <CommonHashFunctions.h>
 #include "PragmaLib.h"
 
 typedef struct {

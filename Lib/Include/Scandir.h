@@ -1,7 +1,9 @@
 #pragma once
 
-#include "MyUtil.h"
 #include <io.h>
+#include "Array.h"
+#include "CompactArray.h"
+#include "Comparator.h"
 
 typedef _tfinddata64_t DirListEntry;
 

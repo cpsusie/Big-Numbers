@@ -1,7 +1,10 @@
 #include "pch.h"
+#include <MyUtil.h>
+#include <FileNameSplitter.h>
 #include <TinyBitSet.h>
 #include <Date.h>
 #include <Semaphore.h>
+#include <DebugLog.h>
 
 typedef enum {
   FLAG_REDIDRECT

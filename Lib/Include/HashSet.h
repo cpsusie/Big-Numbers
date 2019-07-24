@@ -1,7 +1,7 @@
 #pragma once
 
-#include "MyUtil.h"
-#include <CompactArray.h>
+#include "CompactArray.h"
+#include "CommonHashFunctions.h"
 #include "Set.h"
 
 class HashSetNode : public AbstractKey {

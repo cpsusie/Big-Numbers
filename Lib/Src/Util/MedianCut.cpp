@@ -1,6 +1,7 @@
 #include "pch.h"
 #include <PriorityQueue.h>
 #include <algorithm>
+#include <MathUtil.h>
 #include <MedianCut.h>
 
 class Block {

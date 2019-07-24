@@ -61,3 +61,6 @@ public:
     return new FunctionComparator<T>(*this);
   }
 };
+
+void quickSort(void *base, size_t nelem, size_t width, AbstractComparator &comparator);
+void quickSort(void *base, size_t nelem, size_t width, int(__cdecl *compare)(const void*, const void*));

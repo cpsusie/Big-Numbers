@@ -1,7 +1,5 @@
 #pragma once
 
-#include "MyUtil.h"
-
 template <class T> class NumberInterval {
 private:
   T m_from, m_to;

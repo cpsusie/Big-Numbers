@@ -10,6 +10,7 @@
 
 #include "pch.h"
 #include <Random.h>
+#include <DebugLog.h>
 #include <TinyBitSet.h>
 #include <MFCUtil/ColorSpace.h>
 #include <D3DGraphics/IsoSurfacePolygonizer.h>

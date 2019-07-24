@@ -1,5 +1,6 @@
 #include "pch.h"
 #include <Vfw.h>
+#include <FileNameSplitter.h>
 #include <MP3Player.h>
 
 MP3Exception::MP3Exception(MCIERROR error, const TCHAR *text) : Exception(text) {

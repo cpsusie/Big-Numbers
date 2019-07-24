@@ -1,6 +1,8 @@
 #pragma once
 
-#include <MyUtil.h>
+#include <BasicIncludes.h>
+#include <ByteStream.h>
+#include <Packer.h>
 #include <StrStream.h>
 #include <Random.h>
 #include "PragmaLib.h"

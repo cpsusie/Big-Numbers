@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ByteStream.h"
+#include "ByteArray.h"
 
 class ByteMemoryInputStream : public ByteInputStream {
 private:

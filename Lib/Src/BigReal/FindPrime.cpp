@@ -1,6 +1,7 @@
 #include "pch.h"
 #include <BitSet.h>
 #include <CPUInfo.h>
+#include <DebugLog.h>
 #include <SynchronizedQueue.h>
 #include <Math/MRisprime.h>
 

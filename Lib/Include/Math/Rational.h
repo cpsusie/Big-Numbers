@@ -1,8 +1,9 @@
 #pragma once
 
 #include <StrStream.h>
-#include <Math/Double80.h>
-#include <Math/Real.h>
+#include <CommonHashFunctions.h>
+#include "Double80.h"
+#include "Real.h"
 
 class Rational {
 private:

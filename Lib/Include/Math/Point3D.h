@@ -2,7 +2,7 @@
 
 #include <math.h>
 #include "MathLib.h"
-#include <Math/Double80.h>
+#include "Double80.h"
 
 // A point in 3-dimensional space
 template<class T> class Point3DTemplate {

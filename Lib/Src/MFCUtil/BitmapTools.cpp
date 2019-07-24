@@ -1,4 +1,5 @@
 #include "pch.h"
+#include <MyUtil.h>
 
 BITMAP getBitmapInfo(HBITMAP bm) {
   BITMAP info;

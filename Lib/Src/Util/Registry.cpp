@@ -1,7 +1,7 @@
 #include "pch.h"
 #include <winsock.h>
+#include <MyUtil.h>
 #include <Tokenizer.h>
-#include <Exception.h>
 #include <Registry.h>
 
 #pragma comment(lib,"wsock32.lib")
@@ -871,6 +871,15 @@ RegistryValue::operator StringArray() const {
     throwException(_T("%s:Illegal type=%d for value <%s>. Must be {REG_MULTI_SZ,REG_SZ,REG_EXPAND_SZ}")
                   ,__TFUNCTION__
                   ,m_type, m_name.cstr());
+  }
+  return result;
+}
+
+String RegistryValue::bytesToString(const void *data, size_t size) { // static
+  BYTE *p = (BYTE*)data;
+  String result;
+  for (size_t i = 0; i < size; i++) {
+    result += format(_T("%02x "), p[i]);
   }
   return result;
 }

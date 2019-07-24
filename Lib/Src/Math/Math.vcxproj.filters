@@ -235,9 +235,6 @@
     <ClCompile Include="FindExtremum.cpp">
       <Filter>Source Files\Misc</Filter>
     </ClCompile>
-    <ClCompile Include="UndefIStream.cpp">
-      <Filter>Source Files\Number Types</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="NatvisFile.natvis" />

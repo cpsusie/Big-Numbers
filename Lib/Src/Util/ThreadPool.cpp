@@ -1,5 +1,6 @@
 #include "pch.h"
 #include <CPUInfo.h>
+#include <DebugLog.h>
 #include <Thread.h>
 
 ThreadPool::ThreadPool() {

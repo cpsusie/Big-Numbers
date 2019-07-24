@@ -1,6 +1,5 @@
 #pragma once
 
-#include "MyString.h"
 #include "Collection.h"
 #include "Comparator.h"
 #include "HeapObjectPool.h"

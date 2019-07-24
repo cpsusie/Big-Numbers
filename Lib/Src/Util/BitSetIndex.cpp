@@ -1,5 +1,6 @@
 #include "pch.h"
 #include <Math.h>
+#include <CommonHashFunctions.h>
 #include <BitSet.h>
 
 BitSetIndex::BitSetIndex(const BitSet &src) : m_bitSet(src) {

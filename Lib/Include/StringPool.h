@@ -1,6 +1,7 @@
 #pragma once
 
-#include "MyUtil.h"
+#include "CompactArray.h"
+#include "Iterator.h"
 #include "ByteStream.h"
 
 class StringPoolNode {

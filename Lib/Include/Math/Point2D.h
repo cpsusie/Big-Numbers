@@ -2,8 +2,8 @@
 
 #include "MyUtil.h"         // MFC core and standard components
 #include <Math.h>
-#include <Math/MathLib.h>
-#include <Math/Double80.h>
+#include "MathLib.h"
+#include "Double80.h"
 
 template<class T> class Size2DTemplate {
 public:

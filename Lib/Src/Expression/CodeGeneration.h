@@ -1,7 +1,9 @@
 #pragma once
 
 #include <OpCode.h>
+#include <CompactArray.h>
 #include <CompactHashMap.h>
+#include <StringArray.h>
 #include <Math/MathLib.h>
 #include <Math/Expression/MachineCode.h>
 #include "ListFile.h"

@@ -1,6 +1,8 @@
 #include "pch.h"
+#include <MyUtil.h>
 #include <WildCardRegex.h>
 #include <HashMap.h>
+#include <FileNameSplitter.h>
 #include <FileTreeWalker.h>
 
 static void traverseDir(const String &path, FileNameHandler &nameHandler, WildCardRegex *filter, bool recurse) {

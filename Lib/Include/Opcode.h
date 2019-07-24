@@ -1,7 +1,5 @@
 #pragma once
 
-#include <MyUtil.h>
-#include <MyAssert.h>
 #include "Registers.h"
 
 inline bool isByte( int    v) { return v == (char)v;  }

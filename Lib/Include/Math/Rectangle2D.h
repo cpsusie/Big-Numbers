@@ -1,6 +1,6 @@
 #pragma once
 
-#include <MyUtil.h>
+#include <MathUtil.h>
 #include <NumberInterval.h>
 #include "Point2D.h"
 

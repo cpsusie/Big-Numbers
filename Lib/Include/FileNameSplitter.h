@@ -1,7 +1,6 @@
 #pragma once
 
-#include "MyString.h"
-#include "Array.h"
+#include "StringArray.h"
 
 class DirComponents : public StringArray {
 private:

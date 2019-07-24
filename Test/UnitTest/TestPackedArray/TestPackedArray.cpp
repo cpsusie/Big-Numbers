@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "CppUnitTest.h"
 #include <Random.h>
 #include <PackedArray.h>
 #include <Console.h>

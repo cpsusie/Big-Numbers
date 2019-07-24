@@ -1,7 +1,5 @@
 #pragma once
 
-#include "MyUtil.h"
-
 #define TR_ATEXT 01 // text is treated as char
 #define TR_WTEXT 02 // text is treated as wchar_t
 #define TR_ATTR  04

@@ -1,4 +1,7 @@
 #include "pch.h"
+#include <MyUtil.h>
+#include <FileNameSplitter.h>
+
 /*
 void Message(_In_z_ _Printf_format_string_ TCHAR const * const format,... ) {
   va_list argptr;

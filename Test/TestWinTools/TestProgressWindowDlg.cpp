@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <Math.h>
+#include <MyUtil.h>
 #include <MFCUtil/ProgressWindow.h>
 #include "TestProgressWindowDlg.h"
 

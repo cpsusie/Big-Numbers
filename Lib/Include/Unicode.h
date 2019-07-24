@@ -62,8 +62,6 @@
 
 #endif // unicode
 
-#define EMPTYSTRING _T("")
-
 class StreamDelimiter {
 public:
 };

@@ -1,4 +1,5 @@
 #include "pch.h"
+#include <FileNameSplitter.h>
 #include <PersistentData.h>
 
 const TCHAR *PersistentData::s_defaultName = _T("Untitled");

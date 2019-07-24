@@ -1,4 +1,5 @@
 #include "pch.h"
+#include <DebugLog.h>
 #include <ByteFile.h>
 #include <CompressFilter.h>
 

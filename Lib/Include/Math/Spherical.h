@@ -1,5 +1,6 @@
 #pragma once
 
+#include <MathUtil.h>
 #include "Point3D.h"
 
 template<class T> class SphericalTemplate {

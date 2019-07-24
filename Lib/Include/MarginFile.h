@@ -1,6 +1,5 @@
 #pragma once
 
-#include "MyUtil.h"
 #include <stdarg.h>
 
 class MarginFile { // print to file, with control of leftmargin

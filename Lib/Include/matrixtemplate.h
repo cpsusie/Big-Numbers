@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Exception.h"
-#include "MyString.h"
 #include "StreamParameters.h"
 #include "VectorTemplate.h"
 #include "MatrixDimension.h"

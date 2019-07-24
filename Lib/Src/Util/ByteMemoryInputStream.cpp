@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "ByteMemoryStream.h"
-#include <MyAssert.h>
+
 
 ByteMemoryInputStream::ByteMemoryInputStream(const BYTE *src) {
   assert(src != NULL);

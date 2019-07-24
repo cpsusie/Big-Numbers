@@ -1,9 +1,9 @@
 #pragma once
 
-#include "MyUtil.h"
 #include "Packer.h"
 #include "ByteFile.h"
 #include "Comparator.h"
+#include "Iterator.h"
 #include "Random.h"
 
 extern const TCHAR *_compactArrayIteratorClassName;

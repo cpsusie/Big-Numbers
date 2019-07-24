@@ -14,35 +14,9 @@ extern "C" {
   double exp10(double x);
 };
 
-// see http://ideone.com/qIFVo
-
-class DoubleinManip {
-public:
-  mutable std::istream  *m_in;
-  const DoubleinManip &operator>>(double &x) const;
-
-  inline std::istream &operator>>(const DoubleinManip &) const {
-    return *m_in;
-  }
-};
-
-class DoublewinManip {
-public:
-  mutable std::wistream *m_in;
-  const DoublewinManip &operator>>(double &x) const;
-
-  inline std::wistream &operator>>(const DoublewinManip &) const {
-    return *m_in;
-  }
-};
-
-inline const DoubleinManip &operator>>(std::istream &in, const DoubleinManip &dm) {
-  dm.m_in = &in;
-  return dm;
-}
-
-inline const DoublewinManip &operator>>(std::wistream &in, const DoublewinManip &dm) {
-  dm.m_in = &in;
-  return dm;
-}
-
+#define FLT_NAN  std::numeric_limits<float>::quiet_NaN()
+#define FLT_PINF std::numeric_limits<float>::infinity()
+#define FLT_NINF (-FLT_PINF)
+#define DBL_NAN  std::numeric_limits<double>::quiet_NaN()
+#define DBL_PINF std::numeric_limits<double>::infinity()
+#define DBL_NINF (-DBL_PINF)

@@ -1,4 +1,6 @@
 #include "pch.h"
+#include <MyUtil.h>
+#include <DebugLog.h>
 #include <MFCUtil/EditListNumericEditor.h>
 #include <MFCUtil/EditListStringEditor.h>
 #include <MFCUtil/EditListStringCombo.h>

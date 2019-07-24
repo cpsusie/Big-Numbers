@@ -1,4 +1,6 @@
 #include "pch.h"
+#include <MyUtil.h>
+#include <DebugLog.h>
 #include <InputThread.h>
 
 DEFINECLASSNAME(InputThread);

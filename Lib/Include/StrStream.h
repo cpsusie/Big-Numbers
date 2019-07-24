@@ -1,6 +1,5 @@
 #pragma once
 
-#include "MyString.h"
 #include "StreamParameters.h"
 
 // Used instead of standardclass strstream, which is slow!!! (at least in windows)

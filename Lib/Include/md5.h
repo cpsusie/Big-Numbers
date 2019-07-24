@@ -25,7 +25,6 @@
 
 #pragma once
 
-#include "MyString.h"
 #include <ByteMemoryStream.h>
 
 class MD5HashCode {

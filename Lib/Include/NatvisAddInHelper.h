@@ -9,7 +9,7 @@
 #error NatvisAddin should only bbe compiled in release mode. not debug
 #endif
 
-#include <MyUtil.h>
+#include "MyUtil.h"
 #include <comdef.h>
 #include <atlconv.h>
 

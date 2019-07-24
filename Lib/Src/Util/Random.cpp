@@ -1,5 +1,7 @@
 #include "pch.h"
 #include <Math.h>
+#include <MathUtil.h>
+#include <Random.h>
 
 UINT64 Random::next64(UINT bits) {
   const UINT n = min(bits,32);

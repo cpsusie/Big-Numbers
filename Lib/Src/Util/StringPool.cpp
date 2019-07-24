@@ -227,6 +227,9 @@ void StringPool::load(ByteInputStream &s) {
 }
 
 #ifdef _DEBUG
+
+#include <DebugLog.h>
+
 void StringPool::dump() const {
   debugLog(_T("Stringpool\n"));
   for (Iterator<const TCHAR*> it = getIterator(); it.hasNext();) {

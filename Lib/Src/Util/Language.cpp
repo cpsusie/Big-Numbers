@@ -1,4 +1,5 @@
 #include "pch.h"
+#include <MyUtil.h>
 #include <FileVersion.h>
 #include <Semaphore.h>
 #include <Language.h>

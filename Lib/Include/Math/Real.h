@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Unicode.h>
+#include <CompactArray.h>
 #include <NumberInterval.h>
 
 //#define LONGDOUBLE // defined in configurations "Debug long double" and "Release long double"

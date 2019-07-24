@@ -1,4 +1,6 @@
 #include "pch.h"
+#include <MyUtil.h>
+#include <FileNameSplitter.h>
 #include <MarginFile.h>
 
 MarginFile::MarginFile(const String &name) {

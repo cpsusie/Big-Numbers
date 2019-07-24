@@ -53,6 +53,8 @@
 //
 
 #include "pch.h"
+#include <MyUtil.h>
+#include <FileNameSplitter.h>
 #include <FileContent.h>
 #include <TinyBitSet.h>
 #include <wtypes.h>

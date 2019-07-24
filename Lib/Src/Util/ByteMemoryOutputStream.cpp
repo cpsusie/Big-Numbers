@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "ByteMemoryStream.h"
-#include <MyAssert.h>
 
 ByteMemoryOutputStream::ByteMemoryOutputStream(BYTE *dst) {
   assert(dst != NULL);

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "MyUtil.h"
 #include "CompactStack.h"
+#include "CommonHashFunctions.h"
 #include "Set.h"
 
 class TreeSetNode : public AbstractKey {

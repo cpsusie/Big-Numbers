@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "CppUnitTest.h"
 #include <Math/Spherical.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;

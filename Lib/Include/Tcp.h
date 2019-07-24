@@ -2,7 +2,6 @@
 
 #include <winsock.h>
 #include "PragmaLib.h"
-#include "Exception.h"
 
 SOCKET tcpOpen(   unsigned short portnr, const char *hostName = NULL);
 SOCKET tcpCreate( unsigned short portnr);

@@ -1,4 +1,5 @@
 #include "pch.h"
+#include <FileNameSplitter.h>
 #include <ExternProcess.h>
 #include <D3DGraphics/MeshBuilder.h>
 

@@ -1,6 +1,7 @@
 #include "pch.h"
-#include <BitSet.h>
 #include <CountedByteStream.h>
+#include <CommonHashFunctions.h>
+#include <BitSet.h>
 
 FileBitSetIndex::FileBitSetIndex(const String &fileName, UINT64 startOffset)
 : m_startOffset(startOffset)

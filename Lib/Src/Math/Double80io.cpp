@@ -235,8 +235,14 @@ template <class IStreamType, class CharType> IStreamType &operator>>(IStreamType
     }
     if(!gotDigits) {
       in.putback(ch);
-      in.clear(ios::failbit);
-      in.isfx();
+      double tmp;
+      in >> tmp;
+      if(!isfinite(tmp)) {
+        x = tmp;
+      } else {
+        in.clear(ios::failbit);
+        in.isfx();
+      }
       return in;
     }
     if((ch == 'e') || (ch == 'E')) {

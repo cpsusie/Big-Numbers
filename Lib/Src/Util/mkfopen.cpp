@@ -1,5 +1,6 @@
 #include "pch.h"
 #include <direct.h>
+#include <MyUtil.h>
 
 static void xmkdir(TCHAR *name) {
   for(TCHAR *sl = _tcschr(name, _T('\\')); sl; sl = _tcschr(sl+1, _T('\\'))) {

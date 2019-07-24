@@ -1,6 +1,6 @@
 #pragma once
 
-#include <MyUtil.h>
+#include <DebugLog.h>
 #include <CompactStack.h>
 #include <CompactHashMap.h>
 #include <Scanner.h>

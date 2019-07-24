@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "CppUnitTest.h"
 #include <limits.h>
 #include <Random.h>
 #include <Math/MathLib.h>

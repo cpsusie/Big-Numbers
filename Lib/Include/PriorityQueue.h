@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Array.h"
-#include "Exception.h"
 #include "Comparator.h"
 
 template <class T> class PriorityQueue {

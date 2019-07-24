@@ -1,4 +1,5 @@
 #include "pch.h"
+#include <MyUtil.h>
 
 void pause() {
   pause(_T("Tryk enter..."));

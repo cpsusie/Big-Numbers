@@ -1,5 +1,6 @@
 #include "pch.h"
 #include <io.h>
+#include <FileNameSplitter.h>
 #include <Tokenizer.h>
 
 TCHAR *searchenv(TCHAR *dst, const TCHAR *fileName, const TCHAR *envName) {

@@ -1,6 +1,7 @@
 #pragma once
 
-#include <MyUtil.h>
+#include "CompactArray.h"
+#include "StringArray.h"
 
 class ArgArray : public CompactArray<const TCHAR*> {
 public:

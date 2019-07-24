@@ -1,7 +1,5 @@
 #pragma once
 
-#include "MyUtil.h"
-
 class Semaphore {
 private:
   HANDLE m_sem;

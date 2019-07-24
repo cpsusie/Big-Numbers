@@ -1,6 +1,7 @@
 #pragma once
 
-#include <MyUtil.h>
+#include "Array.h"
+#include "StringArray.h"
 #include "TextRect.h"
 #include "TextWin.h"
 #include "QueueList.h"

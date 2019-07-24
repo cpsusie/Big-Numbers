@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <Math.h>
+#include <FileNameSplitter.h>
 #include "GrammarScanner.h"
 
 GrammarScanner::GrammarScanner(const String &fileName, int tabSize)

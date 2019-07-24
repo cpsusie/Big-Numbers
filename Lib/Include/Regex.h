@@ -1,6 +1,5 @@
 #pragma once
 
-#include "MyUtil.h"
 #include "ByteArray.h"
 #include "BitSet.h"
 #include <Stack.h>

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MyUtil.h"
+#include "StringArray.h"
 #include "Iterator.h"
 
 #ifdef DEBUG_REGISTRY
@@ -56,6 +56,7 @@ public :
   }
 
   static String typeAsString(ULONG type);
+  static String bytesToString(const void *data, size_t size);
 
   RegistryValue();
   RegistryValue(const String &name, const BYTE      *bytes, ULONG size, ULONG type = REG_BINARY);

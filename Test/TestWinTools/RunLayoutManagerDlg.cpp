@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <DebugLog.h>
 #include "RunLayoutManagerDlg.h"
 
 #include "resource.h"

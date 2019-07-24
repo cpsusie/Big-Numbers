@@ -1,6 +1,7 @@
 #pragma once
 
-#include "MyUtil.h"
+#include "ByteStream.h"
+#include "Packer.h"
 #include "tcp.h"
 
 class SocketStream : public ByteInputOutputStream {

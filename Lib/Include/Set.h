@@ -4,7 +4,6 @@
 #include "Comparator.h"
 #include "Collection.h"
 #include "Array.h"
-#include "MyString.h"
 
 class AbstractKey {
 public:

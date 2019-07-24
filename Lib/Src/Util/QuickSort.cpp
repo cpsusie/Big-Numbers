@@ -1,7 +1,6 @@
 #include "pch.h"
-#include <Thread.h>
-#include <SynchronizedQueue.h>
 #include <MemSwap.h>
+#include <Comparator.h>
 
 #define swap(p1, p2,w) memSwap(p1,p2,w)
 

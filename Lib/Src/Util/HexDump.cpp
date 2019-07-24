@@ -1,4 +1,6 @@
 #include "pch.h"
+#include <DebugLog.h>
+#include <HexDump.h>
 
 #define LINESIZE 16
 
@@ -34,13 +36,4 @@ void hexdump(const void *data, size_t size, FILE *f) {
   } else {
     debugLog(_T("%s"), str.cstr());
   }
-}
-
-String bytesToString(const void *data, size_t size) {
-  BYTE *p = (BYTE*)data;
-  String result;
-  for(size_t i = 0; i < size; i++) {
-    result += format(_T("%02x "), p[i]);
-  }
-  return result;
 }

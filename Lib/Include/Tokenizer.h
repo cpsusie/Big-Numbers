@@ -1,6 +1,5 @@
 #pragma once
 
-#include "MyUtil.h"
 #include "BitSet.h"
 
 #define TOK_INVERTSET        0x01  // set this flag to use complement of delimiterset

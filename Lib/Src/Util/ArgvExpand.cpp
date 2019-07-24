@@ -1,4 +1,6 @@
 #include "pch.h"
+#include <MyUtil.h>
+#include <CompactArray.h>
 #include <String.h>
 #include <io.h>
 

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "MyUtil.h"
-#include "Packer.h"
 #include <time.h>
+#include "Packer.h"
+#include "CommonHashFunctions.h"
 
 typedef enum {
   MONDAY

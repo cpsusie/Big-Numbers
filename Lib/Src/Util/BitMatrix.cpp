@@ -1,5 +1,5 @@
 #include "pch.h"
-#include <BitSet.h>
+#include <BitSetMatrix.h>
 
 void BitMatrix::set(size_t r, size_t c, bool v) {
   if(!m_dim.isLegalIndex(r, c)) return;

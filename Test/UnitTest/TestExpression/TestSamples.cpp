@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "CppUnitTest.h"
 #include "TestSamples.h"
 
 bool ExpressionTest::s_evaluateTestStarted = false;

@@ -1,7 +1,5 @@
 #pragma once
 
-#include "MyUtil.h"
-
 class SourcePosition {
 private:
   int    m_lineNumber;

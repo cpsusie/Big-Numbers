@@ -1,7 +1,5 @@
 #pragma once
 
-#include "MyString.h"
-
 class Exception {
 private:
   String m_msg;

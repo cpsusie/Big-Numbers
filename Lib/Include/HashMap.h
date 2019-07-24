@@ -2,7 +2,6 @@
 
 #include "Array.h"
 #include "CompactArray.h"
-#include "MyString.h"
 #include "HashSet.h"
 #include "Map.h"
 

@@ -3,6 +3,7 @@
 #include <io.h>
 #include "DFA.h"
 #include "Wizard.h"
+#include <FileNameSplitter.h>
 #include <TemplateWriter.h>
 
 class ActionsWriter : public KeywordHandler {

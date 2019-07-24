@@ -1,4 +1,5 @@
 #include "pch.h"
+#include <MathUtil.h>
 #include <Scandir.h>
 
 CompoundFindDataComparator::CompoundFindDataComparator(FindDataField field, ...) {

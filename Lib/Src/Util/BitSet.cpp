@@ -1,7 +1,8 @@
 #include "pch.h"
 #include <String.h>
-#include <BitSet.h>
 #include <Random.h>
+#include <CommonHashFunctions.h>
+#include <BitSet.h>
 
 #ifdef IS64BIT
 #ifdef BITSET_ASM_OPTIMIZED

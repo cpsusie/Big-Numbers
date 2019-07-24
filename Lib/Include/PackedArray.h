@@ -1,7 +1,6 @@
 #pragma once
 
-#include <MyUtil.h>
-#include <CompactArray.h>
+#include "CompactArray.h"
 
 class PackedArray {
 private:

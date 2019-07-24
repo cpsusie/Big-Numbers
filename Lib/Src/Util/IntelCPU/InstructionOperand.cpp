@@ -1,4 +1,6 @@
 #include "pch.h"
+#include <CommonHashFunctions.h>
+#include <MathUtil.h>
 #include <OpCode.h>
 
 String toString(OperandType type) {

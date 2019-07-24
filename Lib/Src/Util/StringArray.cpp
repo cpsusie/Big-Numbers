@@ -1,4 +1,5 @@
 #include "pch.h"
+#include <StringArray.h>
 
 StringArray::StringArray(const char **strArray) { // terminate with NULL-pointer
   while(*strArray) {

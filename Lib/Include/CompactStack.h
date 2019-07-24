@@ -1,8 +1,6 @@
 #pragma once
 
-#include "MyString.h"
 #include "CompactArray.h"
-#include "Exception.h"
 
 template <class T> class CompactStack : private CompactArray<T> {
 public:

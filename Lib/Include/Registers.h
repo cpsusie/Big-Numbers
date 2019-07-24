@@ -1,6 +1,7 @@
 #pragma once
 
-#include <TinyBitSet.h>
+#include "TinyBitSet.h"
+#include "DebugLog.h"
 
 typedef enum {
   REGTYPE_NONE

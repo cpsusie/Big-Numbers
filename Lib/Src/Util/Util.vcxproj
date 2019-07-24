@@ -754,20 +754,26 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\Array.h" />
+    <ClInclude Include="..\..\Include\BasicIncludes.h" />
     <ClInclude Include="..\..\Include\BCDArray.h" />
     <ClInclude Include="..\..\Include\BigArray.h" />
     <ClInclude Include="..\..\Include\BigEndianStream.h" />
     <ClInclude Include="..\..\Include\BitSet.h" />
+    <ClInclude Include="..\..\Include\BitSetMatrix.h" />
     <ClInclude Include="..\..\Include\BitStream.h" />
     <ClInclude Include="..\..\Include\BMAutomate.h" />
     <ClInclude Include="..\..\Include\Bpn.h" />
+    <ClInclude Include="..\..\Include\BuiltInArrayUtil.h" />
     <ClInclude Include="..\..\Include\ByteArray.h" />
     <ClInclude Include="..\..\Include\ByteFile.h" />
     <ClInclude Include="..\..\Include\ByteMemoryStream.h" />
     <ClInclude Include="..\..\Include\ByteStream.h" />
     <ClInclude Include="..\..\Include\CallCounter.h" />
     <ClInclude Include="..\..\Include\Collection.h" />
+    <ClInclude Include="..\..\Include\CommonHashFunctions.h" />
     <ClInclude Include="..\..\Include\CompactArray.h" />
+    <ClInclude Include="..\..\Include\Config.h" />
+    <ClInclude Include="..\..\Include\DebugLog.h" />
     <ClInclude Include="..\..\Include\ExecutableByteArray.h" />
     <ClInclude Include="..\..\Include\HeapObjectPool.h" />
     <ClInclude Include="..\..\Include\CompactHashMap.h" />
@@ -788,6 +794,7 @@
     <ClInclude Include="..\..\Include\FileVersion.h" />
     <ClInclude Include="..\..\Include\HashMap.h" />
     <ClInclude Include="..\..\Include\HashSet.h" />
+    <ClInclude Include="..\..\Include\HexDump.h" />
     <ClInclude Include="..\..\Include\InputThread.h" />
     <ClInclude Include="..\..\Include\InterruptableRunnable.h" />
     <ClInclude Include="..\..\Include\Iterator.h" />
@@ -803,6 +810,7 @@
     <ClInclude Include="..\..\Include\MatrixTemplate.h" />
     <ClInclude Include="..\..\Include\MD5.h" />
     <ClInclude Include="..\..\Include\MedianCut.h" />
+    <ClInclude Include="..\..\Include\MemoryTrace.h" />
     <ClInclude Include="..\..\Include\MP3Player.h" />
     <ClInclude Include="..\..\Include\MyAssert.h" />
     <ClInclude Include="..\..\Include\MyString.h" />
@@ -823,6 +831,7 @@
     <ClInclude Include="..\..\Include\Random.h" />
     <ClInclude Include="..\..\Include\RefCountedObject.h" />
     <ClInclude Include="..\..\Include\Regex.h" />
+    <ClInclude Include="..\..\Include\RegexIStream.h" />
     <ClInclude Include="..\..\Include\Registers.h" />
     <ClInclude Include="..\..\Include\Registry.h" />
     <ClInclude Include="..\..\Include\Runnable.h" />
@@ -835,6 +844,7 @@
     <ClInclude Include="..\..\Include\SourcePosition.h" />
     <ClInclude Include="..\..\Include\Stack.h" />
     <ClInclude Include="..\..\Include\StreamParameters.h" />
+    <ClInclude Include="..\..\Include\StringArray.h" />
     <ClInclude Include="..\..\Include\StringPool.h" />
     <ClInclude Include="..\..\Include\StringSearchAlgorithm.h" />
     <ClInclude Include="..\..\Include\StrStream.h" />
@@ -866,6 +876,14 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">false</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="RegexIStream\DFA.h" />
+    <ClInclude Include="RegexIStream\DFARegex.h" />
+    <ClInclude Include="RegexIStream\NFA.h" />
+    <ClInclude Include="RegexIStream\NFAState.h" />
+    <ClInclude Include="RegexIStream\PatternParser.h" />
+    <ClInclude Include="RegexIStream\PatternScanner.h" />
+    <ClInclude Include="RegexIStream\pch.h" />
+    <ClInclude Include="RegexIStream\SubNFA.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
@@ -1047,6 +1065,16 @@
     <ClCompile Include="RefCountedObject.cpp" />
     <ClCompile Include="Regex.cpp" />
     <ClCompile Include="RegexHelp.cpp" />
+    <ClCompile Include="RegexIStream\DFA.cpp" />
+    <ClCompile Include="RegexIStream\DFACode.cpp" />
+    <ClCompile Include="RegexIStream\DFARegex.cpp" />
+    <ClCompile Include="RegexIStream\DFATables.cpp" />
+    <ClCompile Include="RegexIStream\NFA.cpp" />
+    <ClCompile Include="RegexIStream\NFAState.cpp" />
+    <ClCompile Include="RegexIStream\PatternParser.cpp" />
+    <ClCompile Include="RegexIStream\PatternScanner.cpp" />
+    <ClCompile Include="RegexIStream\RegexIStream.cpp" />
+    <ClCompile Include="RegexIStream\SubNFA.cpp" />
     <ClCompile Include="Registry.cpp" />
     <ClCompile Include="Rename.cpp" />
     <ClCompile Include="rmdir.cpp" />

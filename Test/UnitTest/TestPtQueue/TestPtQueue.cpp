@@ -1,6 +1,6 @@
 #include "stdafx.h"
-#include "CppUnitTest.h"
 #include <PriorityQueue.h>
+#include <MathUtil.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 

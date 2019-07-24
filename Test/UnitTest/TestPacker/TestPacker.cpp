@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "CppUnitTest.h"
 #include <Math/Int128.h>
 #include <Math/Double80.h>
 #include <Math/BigReal.h>

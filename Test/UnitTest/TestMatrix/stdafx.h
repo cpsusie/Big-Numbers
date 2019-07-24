@@ -6,4 +6,6 @@
 
 #include <MyUtil.h>
 #include <Math.h>
+#include <DebugLog.h>
+#include <FileNameSplitter.h>
 #include <Math/Matrix.h>

@@ -14,3 +14,9 @@ void xassert(const TCHAR *fileName, int line, const TCHAR *exp);
 #endif
 
 #define verify(exp) (void)( (exp) || (xverify(__TFILE__, __LINE__, _T(#exp)), 0) )
+
+#ifdef DEBUG
+#define NODEFAULT   assert(0)
+#else
+#define NODEFAULT   __assume(0)
+#endif

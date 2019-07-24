@@ -1,6 +1,7 @@
 #pragma once
 
-#include <ByteArray.h>
+#include "ByteArray.h"
+#include "Packer.h"
 
 class BCDArray : public ByteArray {
 public:

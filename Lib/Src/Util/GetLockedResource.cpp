@@ -1,4 +1,5 @@
 #include "pch.h"
+#include <MyUtil.h>
 #include <WinUser.h>
 #include <ByteArray.h>
 

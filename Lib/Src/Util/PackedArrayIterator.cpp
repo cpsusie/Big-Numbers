@@ -1,6 +1,4 @@
 #include "pch.h"
-#include <MyUtil.h>
-#include <MyAssert.h>
 #include <PackedArray.h>
 
 class PackedArrayIterator : public AbstractIterator {

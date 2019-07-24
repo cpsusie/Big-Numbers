@@ -1,6 +1,5 @@
 #pragma once
 
-#include "MyString.h"
 #include "Iterator.h"
 
 template<class T> class TinyBitSet {

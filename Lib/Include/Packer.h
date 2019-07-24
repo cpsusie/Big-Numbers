@@ -1,6 +1,5 @@
 #pragma once
 
-#include "MyString.h"
 #include "ByteArray.h"
 
 class Packer {

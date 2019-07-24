@@ -2,6 +2,7 @@
 
 #include <StrStream.h>
 #include <MatrixTemplate.h>
+#include <MathUtil.h>
 #include "MathLib.h"
 #include "Point2D.h"
 

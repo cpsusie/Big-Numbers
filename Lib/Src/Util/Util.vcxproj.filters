@@ -86,6 +86,9 @@
     <Filter Include="Header Files\IntelCPU">
       <UniqueIdentifier>{623104d4-f11b-449a-b6fa-27c09e0d74b7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Stream\RegexIStream">
+      <UniqueIdentifier>{e245533d-91a4-4fbb-8cc5-da720882740f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="access.cpp">
@@ -842,6 +845,36 @@
     <ClCompile Include="ExecutableByteArray.cpp">
       <Filter>Source Files\IntelCPU</Filter>
     </ClCompile>
+    <ClCompile Include="RegexIStream\DFA.cpp">
+      <Filter>Source Files\Stream\RegexIStream</Filter>
+    </ClCompile>
+    <ClCompile Include="RegexIStream\DFACode.cpp">
+      <Filter>Source Files\Stream\RegexIStream</Filter>
+    </ClCompile>
+    <ClCompile Include="RegexIStream\DFARegex.cpp">
+      <Filter>Source Files\Stream\RegexIStream</Filter>
+    </ClCompile>
+    <ClCompile Include="RegexIStream\DFATables.cpp">
+      <Filter>Source Files\Stream\RegexIStream</Filter>
+    </ClCompile>
+    <ClCompile Include="RegexIStream\NFA.cpp">
+      <Filter>Source Files\Stream\RegexIStream</Filter>
+    </ClCompile>
+    <ClCompile Include="RegexIStream\NFAState.cpp">
+      <Filter>Source Files\Stream\RegexIStream</Filter>
+    </ClCompile>
+    <ClCompile Include="RegexIStream\PatternParser.cpp">
+      <Filter>Source Files\Stream\RegexIStream</Filter>
+    </ClCompile>
+    <ClCompile Include="RegexIStream\PatternScanner.cpp">
+      <Filter>Source Files\Stream\RegexIStream</Filter>
+    </ClCompile>
+    <ClCompile Include="RegexIStream\RegexIStream.cpp">
+      <Filter>Source Files\Stream\RegexIStream</Filter>
+    </ClCompile>
+    <ClCompile Include="RegexIStream\SubNFA.cpp">
+      <Filter>Source Files\Stream\RegexIStream</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -1171,6 +1204,60 @@
       <Filter>Header Files\System</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\PragmaLib.h">
+      <Filter>Header Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\RegexIStream.h">
+      <Filter>Header Files\Stream</Filter>
+    </ClInclude>
+    <ClInclude Include="RegexIStream\DFA.h">
+      <Filter>Source Files\Stream\RegexIStream</Filter>
+    </ClInclude>
+    <ClInclude Include="RegexIStream\DFARegex.h">
+      <Filter>Source Files\Stream\RegexIStream</Filter>
+    </ClInclude>
+    <ClInclude Include="RegexIStream\NFA.h">
+      <Filter>Source Files\Stream\RegexIStream</Filter>
+    </ClInclude>
+    <ClInclude Include="RegexIStream\NFAState.h">
+      <Filter>Source Files\Stream\RegexIStream</Filter>
+    </ClInclude>
+    <ClInclude Include="RegexIStream\PatternParser.h">
+      <Filter>Source Files\Stream\RegexIStream</Filter>
+    </ClInclude>
+    <ClInclude Include="RegexIStream\PatternScanner.h">
+      <Filter>Source Files\Stream\RegexIStream</Filter>
+    </ClInclude>
+    <ClInclude Include="RegexIStream\pch.h">
+      <Filter>Source Files\Stream\RegexIStream</Filter>
+    </ClInclude>
+    <ClInclude Include="RegexIStream\SubNFA.h">
+      <Filter>Source Files\Stream\RegexIStream</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\CommonHashFunctions.h">
+      <Filter>Header Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\BitSetMatrix.h">
+      <Filter>Header Files\Collection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\StringArray.h">
+      <Filter>Header Files\String</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Config.h">
+      <Filter>Header Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\DebugLog.h">
+      <Filter>Header Files\Debugging and Exceptions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\HexDump.h">
+      <Filter>Header Files\Debugging and Exceptions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\MemoryTrace.h">
+      <Filter>Header Files\Debugging and Exceptions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\BasicIncludes.h">
+      <Filter>Header Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\BuiltInArrayUtil.h">
       <Filter>Header Files\Misc</Filter>
     </ClInclude>
   </ItemGroup>

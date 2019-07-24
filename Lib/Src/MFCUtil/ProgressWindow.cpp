@@ -1,4 +1,6 @@
 #include "pch.h"
+#include <MyUtil.h>
+#include <FileNameSplitter.h>
 #include <Thread.h>
 #include <Date.h>
 #include <MFCUtil/ProgressWindow.h>

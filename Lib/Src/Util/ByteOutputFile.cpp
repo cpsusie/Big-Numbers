@@ -1,5 +1,6 @@
 #include "pch.h"
 #include <fcntl.h>
+#include <MyUtil.h>
 #include "ByteFile.h"
 
 void ByteOutputFile::init(const String &name) {
@@ -59,6 +60,11 @@ void ByteOutputFile::putBytes(const BYTE *src, size_t n) {
   FWRITE(src, 1, n, m_file);
 }
 
+inline __int64 ByteOutputFile::getPos() {
+  return GETPOS(m_file);
+}
+
 void ByteOutputFile::seek(__int64 pos) {
   FSEEK(m_file, pos);
 }
+

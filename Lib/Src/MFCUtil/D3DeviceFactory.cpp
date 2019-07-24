@@ -1,4 +1,5 @@
 #include "pch.h"
+#include <MyUtil.h>
 #include <MFCUtil/D3DeviceFactory.h>
 
 LPDIRECT3D D3DeviceFactory::s_direct3D = NULL;

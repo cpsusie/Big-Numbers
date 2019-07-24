@@ -2,6 +2,8 @@
 
 #include "ByteStream.h"
 #include "Tcp.h"
+#include "BitSet.h"
+
 
 #if __BYTE_ORDER__ != __ORDER_BIG_ENDIAN__
 
@@ -91,14 +93,14 @@ public:
 #if __BYTE_ORDER__ != __ORDER_BIG_ENDIAN__
     writeItemArrayBE<ULONGLONG, BELongLong>(m_out, buf, n);
 #else
-    m_out.putBytes((BYTE*)buf, n*sizeof(ULIONGLONG));
+    m_out.putBytes((BYTE*)buf, n*sizeof(ULONGLONG));
 #endif
   }
   inline void putLongLongs(LONGLONG *buf, size_t n) {
 #if __BYTE_ORDER__ != __ORDER_BIG_ENDIAN__
     writeItemArrayBE<LONGLONG, BELongLong>(m_out, buf, n);
 #else
-    m_out.putBytes((BYTE*)buf, n*sizeof(LIONGLONG));
+    m_out.putBytes((BYTE*)buf, n*sizeof(LONGLONG));
 #endif
   }
 

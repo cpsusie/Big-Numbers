@@ -1,4 +1,5 @@
 #include "pch.h"
+#include <MyUtil.h>
 
 INT64 inputInt64(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
   for(;;) {

@@ -1,7 +1,5 @@
 #pragma once
 
-#include "MyUtil.h"
-
 class MeasurableFunction {
 public:
   virtual void f() = 0;

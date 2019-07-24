@@ -1,8 +1,6 @@
 #pragma once
 
-#include "MyString.h"
 #include "Array.h"
-#include "Exception.h"
 
 template <class T> class Stack : private Array<T> {
 public:

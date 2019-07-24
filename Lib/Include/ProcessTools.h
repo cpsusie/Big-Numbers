@@ -1,6 +1,7 @@
 #pragma once
 
-#include "MyUtil.h"
+#include "Array.h"
+#include "CompactArray.h"
 #include <psapi.h>
 
 HANDLE                  getProcessHandle(     DWORD processID = -1);

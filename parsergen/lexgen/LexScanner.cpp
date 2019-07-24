@@ -2,6 +2,7 @@
 #include <String.h>
 #include <assert.h>
 #include <ctype.h>
+#include <FileNameSplitter.h>
 #include "LexScanner.h"
 
 bool LexScanner::nextLine() {

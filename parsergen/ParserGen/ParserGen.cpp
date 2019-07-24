@@ -1,6 +1,7 @@
 #include "stdafx.h"
-#include <Tokenizer.h>
 #include <io.h>
+#include <Tokenizer.h>
+#include <FileNameSplitter.h>
 #include "GrammarParser.h"
 #include "GrammarCode.h"
 #include "Wizard.h"
@@ -70,7 +71,7 @@ int _tmain(int argc, TCHAR **argv) {
   int       tabSize         = 4;
   String    first1File;
 
-  redirectDebugLog();
+//  redirectDebugLog();
   try {
     for(argv++; *argv && *(cp = *argv) == '-'; argv++) {
       for(cp++; *cp; cp++) {

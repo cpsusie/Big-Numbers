@@ -1,6 +1,6 @@
 #pragma once
 
-#include <BitSet.h>
+#include <BitSetMatrix.h>
 
 class PointSet : private BitMatrix {
 private:

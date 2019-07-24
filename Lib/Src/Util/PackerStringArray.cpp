@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "Packer.h"
+#include <StringArray.h>
 
 Packer &operator<<(Packer &p, const StringArray &strings) {
   p << (UINT64)strings.size();

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Mmsystem.h>
-#include "Exception.h"
 
 class MP3Exception : public Exception {
 public:

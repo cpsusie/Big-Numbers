@@ -1,5 +1,6 @@
 #include "pch.h"
 #include <fcntl.h>
+#include <MyUtil.h>
 #include <Scanner.h>
 
 DEFINECLASSNAME(LexFileStream);

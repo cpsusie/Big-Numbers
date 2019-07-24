@@ -1,4 +1,5 @@
 #include "pch.h"
+#include <FileNameSplitter.h>
 #include <MFCUtil/SelectDirDlg.h>
 
 static StringArray getFileNames(const TCHAR *fileNames) {

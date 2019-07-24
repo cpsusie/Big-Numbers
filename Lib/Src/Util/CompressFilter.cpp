@@ -1,5 +1,6 @@
 #include "pch.h"
 #include <zlib.h>
+#include <MyUtil.h>
 #include <CompressFilter.h>
 
 #pragma comment(lib, LIB_VERSION "zlib.lib")

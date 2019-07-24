@@ -2,6 +2,9 @@
 #include <RefCountedObject.h>
 
 #ifdef _DEBUG
+
+#include <DebugLog.h>
+
 void RefCountedObject::logCreate() {
   debugLog(_T("REFCNT:create:%p:refCount=%d\n"), this, m_refCount);
 }
@@ -13,4 +16,4 @@ void RefCountedObject::logDestroy() {
 void RefCountedObject::logRefCount() {
   debugLog(_T("REFCNT:change:%p:refCount=%d\n"), this, m_refCount);
 }
-#endif
+#endif // _DEBUG

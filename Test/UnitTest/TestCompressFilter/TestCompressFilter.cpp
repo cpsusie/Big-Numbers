@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "CppUnitTest.h"
 #include <ByteFile.h>
 #include <CompressFilter.h>
 #include <Random.h>

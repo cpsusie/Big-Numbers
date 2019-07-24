@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Random.h"
+
 class MatrixIndex {
 public:
   size_t r, c;

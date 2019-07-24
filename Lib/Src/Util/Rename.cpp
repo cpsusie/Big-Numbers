@@ -1,4 +1,5 @@
 #include "pch.h"
+#include <MyUtil.h>
 
 int rename(const String &oldName, const String &newName) {
   return _trename(oldName.cstr(), newName.cstr());

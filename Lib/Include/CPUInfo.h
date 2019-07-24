@@ -1,7 +1,5 @@
 #pragma once
 
-#include "MyString.h"
-
 typedef struct {
   UINT brandIndex    : 8;
   UINT clflush       : 8;

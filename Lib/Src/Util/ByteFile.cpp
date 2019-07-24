@@ -1,5 +1,6 @@
 #include "pch.h"
 #include <fcntl.h>
+#include <MyUtil.h>
 #include "ByteFile.h"
 
 ByteFile::ByteFile() {
@@ -93,6 +94,10 @@ intptr_t ByteFile::getBytes(BYTE *dst, size_t n) {
 
 void ByteFile::reset() {
   seek(m_startPos);
+}
+
+inline __int64 ByteFile::getPos() {
+  return GETPOS(m_file);
 }
 
 void ByteFile::seek(__int64 pos) {

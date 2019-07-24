@@ -1,4 +1,5 @@
 #include "pch.h"
+#include <MyUtil.h>
 #include <ByteArray.h>
 
 ByteFileArray::ByteFileArray(const String &fileName, size_t startOffset) : m_startOffset(startOffset) {

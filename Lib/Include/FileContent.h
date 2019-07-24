@@ -1,6 +1,5 @@
 #pragma once
 
-#include "MyUtil.h"
 #include "ByteArray.h"
 
 class FileContent : public ByteArray {

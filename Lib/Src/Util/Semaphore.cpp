@@ -1,4 +1,5 @@
 #include "pch.h"
+#include <MyUtil.h>
 #include <Semaphore.h>
 
 Semaphore::Semaphore(int initialCount, int maxWait) {

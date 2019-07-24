@@ -1,4 +1,5 @@
 #include "pch.h"
+#include <MyUtil.h>
 
 void FSEEK(FILE *f, __int64 offset) {
   if(fsetpos(f, &offset) != 0 ) {

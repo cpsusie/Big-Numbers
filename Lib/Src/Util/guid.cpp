@@ -1,5 +1,6 @@
 #include "pch.h"
 #include <objbase.h>
+#include <MyUtil.h>
 
 #pragma comment(lib, "ole32.lib")
 

@@ -2,6 +2,7 @@
 #include <Process.h>
 #include <processthreadsapi.h>
 #include <io.h>
+#include <MyUtil.h>
 #include <Thread.h>
 #include <HashSet.h>
 #include <eh.h>

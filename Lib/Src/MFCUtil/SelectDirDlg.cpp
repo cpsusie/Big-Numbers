@@ -1,4 +1,6 @@
 #include "pch.h"
+#include <MyUtil.h>
+#include <FileNameSplitter.h>
 #include <Scandir.h>
 #include <Direct.h>
 #include <Tokenizer.h>

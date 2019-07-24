@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MyUtil.h"
+#include <stdio.h>
 #include "ByteStream.h"
 
 class ByteInputFile : public ResetableByteInputStream {
@@ -22,7 +22,7 @@ public:
   void open(const String &name);
   virtual void close();
 
-  const String &getName() const {
+  inline const String &getName() const {
     return m_name;
   }
 
@@ -30,13 +30,11 @@ public:
   intptr_t getBytes(BYTE *dst, size_t n);
   void reset();
 
-  inline __int64 getPos() {
-    return GETPOS(m_file);
-  }
+  __int64 getPos();
 
   void seek(__int64 pos);
 
-  bool isOpen() const {
+  inline bool isOpen() const {
     return m_file != NULL;
   }
 };
@@ -59,20 +57,18 @@ public:
   void open(const String &name);
   virtual void close();
 
-  const String &getName() const {
+  inline const String &getName() const {
     return m_name;
   }
 
   void putByte(BYTE c);
   void putBytes(const BYTE *src, size_t n);
 
-  inline __int64 getPos() {
-    return GETPOS(m_file);
-  }
+  __int64 getPos();
 
   void seek(__int64 pos);
 
-  bool isOpen() const {
+  inline bool isOpen() const {
     return m_file != NULL;
   }
 };
@@ -110,17 +106,15 @@ public:
   intptr_t getBytes(BYTE *dst, size_t n);
   void reset();
 
-  inline __int64 getPos() {
-    return GETPOS(m_file);
-  }
+  inline __int64 getPos();
 
   void seek(__int64 pos);
 
-  bool isOpen() const {
+  inline bool isOpen() const {
     return m_file != NULL;
   }
 
-  FileMode getMode() const {
+  inline FileMode getMode() const {
     return m_mode;
   }
 };

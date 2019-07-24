@@ -20,7 +20,7 @@ Expression &Expression::operator=(const Expression &src) {
   }
 
   clear();
-  ParserTree::operator=(src);
+  __super::operator=(src);
   setTrigonometricMode(src.getTrigonometricMode());
   buildSymbolTable(   &src.getSymbolTable().getAllVariables());
   setMachineCode(      src.isMachineCode());
@@ -51,21 +51,37 @@ void Expression::compile(const String &expr, bool machineCode, bool optimize, FI
     return;
   }
   setReturnType(getRoot()->getReturnType());
-  if(optimize) {
-    reduce();
-  }
   try {
-    if(machineCode && (listFile!=NULL)) {
-      m_listFile = listFile;
+    m_listFile = listFile;
+    if(m_listFile) {
       ListFile::printComment(m_listFile, _T("%s\n\n"), expr.cstr());
       ListFile::printComment(m_listFile, _T("%s\n\n"), getSymbolTable().toString().cstr());
+      ListFile::printComment(m_listFile, _T("%s\n"  ), treeToString().cstr());
     }
+    if(optimize) {
+      reduce();
+      if(m_listFile) {
+        ListFile::printComment(m_listFile, _T("Reduced\n"));
+        ListFile::printComment(m_listFile, _T("%s\n\n"), getSymbolTable().toString().cstr());
+        ListFile::printComment(m_listFile, _T("%s\n"), treeToString().cstr());
+      }
+    }
+    if(machineCode) {
+/*
+      setTreeForm(TREEFORM_NUMERIC );
+      setTreeForm(TREEFORM_STANDARD);
+      if(m_listFile) {
+        ListFile::printComment(m_listFile, _T("Optimized\n"));
+        ListFile::printComment(m_listFile, _T("%s\n"), toString().cstr());
+        ListFile::printComment(m_listFile, _T("%s\n\n"), getSymbolTable().toString().cstr());
+      }
+*/
+      setMachineCode(true);
 
-    setMachineCode(machineCode);
-
-    if(m_listFile) {
-      ListFile::printComment(m_listFile, _T("----------------------------------------------------\n"));
-      m_listFile = NULL;
+      if(m_listFile) {
+        ListFile::printComment(m_listFile, _T("%s\n"), ListFile::makeSkillLineString().cstr());
+        m_listFile = NULL;
+      }
     }
   } catch(Exception e) {
     addError(_T("%s"), e.what());

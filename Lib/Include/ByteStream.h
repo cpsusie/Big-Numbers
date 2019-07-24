@@ -1,7 +1,5 @@
 #pragma once
 
-#include "MyUtil.h"
-
 class ByteInputStream {
 public:
   // Must return the actual number of bytes read.
@@ -33,4 +31,3 @@ public:
 
 class ResetableByteInputOutputStream : public ResetableByteInputStream, public ByteOutputStream {
 };
-

@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "CppUnitTest.h"
 #include <Math.h>
 #include <Math/MathLib.h>
 #include <Math/Simplex.h>

@@ -4,6 +4,8 @@
 #include <comdef.h>
 #include <atlconv.h>
 
+#pragma warning(disable:4192)
+
 #import <msxml6.dll> named_guids
 
 typedef MSXML2::IXMLDOMDocumentPtr   XMLDocPtr;

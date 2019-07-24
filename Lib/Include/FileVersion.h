@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Array.h"
+
 class VarFileInfoTranslation {
 public:
   LANGID         languageID;

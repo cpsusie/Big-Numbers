@@ -1,7 +1,5 @@
 #pragma once
 
-#include "MyString.h"
-
 using namespace std;
 
 class StreamParameters {

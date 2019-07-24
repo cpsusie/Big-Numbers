@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <FileNameSplitter.h>
 #include "GrammarCode.h"
 
 GrammarCoder::GrammarCoder(const String &templateName

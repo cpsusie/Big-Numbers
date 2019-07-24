@@ -1,5 +1,7 @@
 #include "pch.h"
 
+#include <Iterator.h>
+
 void AbstractIterator::noNextElementError(const TCHAR *className) const {
   throwMethodException(className, _T("next"), _T("No such element"));
 }
