@@ -267,16 +267,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="DFA.cpp" />
-    <ClCompile Include="DFACode.cpp" />
-    <ClCompile Include="DFARegex.cpp" />
-    <ClCompile Include="DFATables.cpp" />
-    <ClCompile Include="NFA.cpp" />
-    <ClCompile Include="NFAState.cpp" />
-    <ClCompile Include="PatternParser.cpp" />
-    <ClCompile Include="PatternScanner.cpp" />
-    <ClCompile Include="RegexIStream.cpp" />
-    <ClCompile Include="SubNFA.cpp" />
     <ClCompile Include="TestRegexStream.cpp" />
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -290,15 +280,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="DFA.h" />
-    <ClInclude Include="DFARegex.h" />
-    <ClInclude Include="NFA.h" />
-    <ClInclude Include="NFAState.h" />
-    <ClInclude Include="PatternParser.h" />
-    <ClInclude Include="PatternScanner.h" />
-    <ClInclude Include="RegexIStream.h" />
     <ClInclude Include="StdAfx.h" />
-    <ClInclude Include="SubNFA.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

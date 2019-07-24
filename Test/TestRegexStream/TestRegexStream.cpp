@@ -1,15 +1,14 @@
 #include "stdafx.h"
-#include <Math/Double64.h>
-#include "RegexIStream.h"
+#include <MathUtil.h>
 
 using namespace std;
 static void TestInternetExample() {
   stringstream iss("1.0 -NaN inf Inf nan -inf NaN 1.2 inf");
   double u, v, w, x, y, z, a, b, fail_double;
   string fail_string;
-  iss >> DoubleinManip()
+  iss >> charDoubleManip()
       >> u >> v >> w >> x >> y >> z >> a >> b
-      >> DoubleinManip()
+      >> charDoubleManip()
       >> fail_double;
    cout << u << " " << v << " " << w << " "
              << x << " " << y << " " << z << " " << a << " " << b << endl;
@@ -25,92 +24,6 @@ static void TestInternetExample() {
 
 // ----------------------------------------------------------------------
 
-#define POSITIVE_INFINITY  0
-#define NEGATIVE_INFINITY  1
-#define POSITIVE_NAN       2
-#define NEGATIVE_SIGNALNAN 3
-#define NEGATIVE_QUUET_NAN 4
-
-class UndefFloatingValueStreamScanner : public RegexIStream {
-private:
-  static StringArray getRegExprLines() {
-    return StringArray(Tokenizer(_T("inf\n-inf\nnan\n-nan\n-nan(ind)?"), _T("\n")));
-  }
-  UndefFloatingValueStreamScanner() : RegexIStream(getRegExprLines(), true) {
-  }
-public:
-  static const UndefFloatingValueStreamScanner &getInstance() {
-    static UndefFloatingValueStreamScanner s_instance;
-    return s_instance;
-  }
-};
-
-template<class IStreamType, class CharType> class DoubleIstreamT {
-private:
-  IStreamType &m_in;
-  void parseOnFail(double &x) const {
-    m_in.clear();
-    const int index = UndefFloatingValueStreamScanner::getInstance().match(m_in);
-    if(index < 0) {
-      m_in.setstate(ios_base::failbit);
-    } else {
-      m_in.clear();
-      switch(index) {
-      case POSITIVE_INFINITY  : x =  numeric_limits<double>::infinity();      break;
-      case NEGATIVE_INFINITY  : x = -numeric_limits<double>::infinity();      break;
-      case POSITIVE_NAN       : x =  numeric_limits<double>::quiet_NaN();     break;
-      case NEGATIVE_SIGNALNAN : x = -numeric_limits<double>::signaling_NaN(); break;
-      case NEGATIVE_QUUET_NAN : x = -numeric_limits<double>::quiet_NaN();     break;
-      }
-    }
-  }
-
-public:
-  DoubleIstreamT(IStreamType &in) : m_in(in) {
-  }
-  DoubleIstreamT &operator>>(double &x) {
-    CharType c = 0;
-    if(!m_in.good()) {
-      return *this;
-    }
-    while(iswspace(c = m_in.peek())) {
-      m_in.get();
-    }
-    m_in >> x;
-    if(m_in.fail()) {
-      m_in.clear();
-      if(c == '-') m_in.putback(c);
-      parseOnFail(x);
-    }
-    return *this;
-  }
-};
-
-
-template<class IStreamType, class CharType> class DoubleManipT {
-public:
-  mutable IStreamType *m_in;
-  const DoubleManipT &operator>>(double &x) const {
-    DoubleIstreamT<IStreamType, CharType>(*m_in) >> x;
-    return *this;
-  }
-  inline IStreamType &operator>>(const DoubleManipT &) const {
-    return *m_in;
-  }
-};
-
-typedef DoubleManipT<istream, char    > charDoubleManip;
-typedef DoubleManipT<wistream, wchar_t> wcharDoubleManip;
-
-inline charDoubleManip &operator>>(istream &in, charDoubleManip &dm) {
-  dm.m_in = &in;
-  return dm;
-}
-
-inline wcharDoubleManip &operator>>(wistream &in, wcharDoubleManip &dm) {
-  dm.m_in = &in;
-  return dm;
-}
 
 static void TestMyExample() {
   CompactArray<double> testData;

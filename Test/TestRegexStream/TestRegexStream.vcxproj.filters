@@ -21,63 +21,9 @@
     <ClCompile Include="StdAfx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DFA.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DFACode.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DFARegex.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="NFA.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="NFAState.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PatternParser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PatternScanner.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RegexIStream.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DFATables.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SubNFA.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StdAfx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DFA.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DFARegex.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="NFA.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PatternParser.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RegexIStream.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="NFAState.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SubNFA.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PatternScanner.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
