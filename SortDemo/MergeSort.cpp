@@ -1,5 +1,11 @@
 #include "stdafx.h"
 
+// #define DUMPLISTALLOCATOR
+
+#ifdef DUMPLISTALLOCATOR
+#include <MyUtil.h>
+#endif // DUMPLISTALLOCATOR
+
 #pragma check_stack(off)
 
 class MergeList {
@@ -9,7 +15,7 @@ public:
 
   MergeList(size_t capacity) {
     m_used = false;
-    m_buffer = new ByteArray(capacity);
+    m_buffer = new ByteArray(capacity); TRACE_NEW(m_buffer);
   }
   inline void release() {
     m_used = false;
@@ -20,7 +26,9 @@ class ListAllocator {
 private:
   const size_t     m_elementSize;
   Array<MergeList> m_bufferArray;
+#ifdef DUMPLISTALLOCATOR
   void dumpArray();
+#endif // DUMPLISTALLOCATOR
 public:
   ListAllocator(const ListAllocator &src);            // not defined
   ListAllocator &operator=(const ListAllocator &src); // not defined
@@ -32,13 +40,16 @@ public:
 };
 
 ListAllocator::~ListAllocator() {
-//  dumpArray();
+#ifdef DUMPLISTALLOCATOR
+  dumpArray();
+#endif // DUMPLISTALLOCATOR
   for(size_t i = 0; i < m_bufferArray.size(); i++) {
-    delete m_bufferArray[i].m_buffer;
+    SAFEDELETE(m_bufferArray[i].m_buffer);
   }
   m_bufferArray.clear();
 }
 
+#ifdef DUMPLISTALLOCATOR
 void ListAllocator::dumpArray() {
   FILE *f = FOPEN(_T("c:\\temp\\ListAllocator.txt"), _T("w"));
   for(size_t i = 0; i < m_bufferArray.size(); i++) {
@@ -46,6 +57,7 @@ void ListAllocator::dumpArray() {
   }
   fclose(f);
 }
+#endif // DUMPLISTALLOCATOR
 
 MergeList &ListAllocator::fetchList(size_t minSize) {
   const size_t neededCapacity = minSize * m_elementSize;

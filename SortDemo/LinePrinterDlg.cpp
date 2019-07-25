@@ -1,4 +1,6 @@
 #include "stdafx.h"
+#include <MyUtil.h>
+#include <FileNameSplitter.h>
 #include <MFCUtil/Clipboard.h>
 #include "LinePrinterDlg.h"
 #include "LinePrinterThread.h"

@@ -97,7 +97,6 @@ BOOL CSortDemoDlg::OnInitDialog() {
       pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, strAboutMenu);
     }
   }
-  redirectDebugLog();
 
   SetIcon(m_hIcon, TRUE);       // Set big icon
   SetIcon(m_hIcon, FALSE);      // Set small icon

@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include <Math.h>
+#include <MyUtil.h>
+#include <MathUtil.h>
 #include <Random.h>
 
 DataArray &DataArray::operator=(const DataArray &src) {
