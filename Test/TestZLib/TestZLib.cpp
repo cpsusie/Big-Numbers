@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include <MyUtil.h>
 #include <ByteFile.h>
 #include <FileContent.h>
 #include <comdef.h>

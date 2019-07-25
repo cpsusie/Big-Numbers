@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#define SIZE 20
+#define SIZE 16
 
 static int  row[SIZE];
 static bool col[SIZE];
@@ -21,7 +21,7 @@ static UINT  trycount = 0;
 
 static void printsolution() {
   int r,c;
-  Console::clear();
+//  Console::clear();
   Console::setCursorPos(0,0);
   _tprintf(_T(" "));
   for(c = 0; c < SIZE; c++) {
@@ -43,29 +43,28 @@ static void printsolution() {
 
   _tprintf(_T("\nLøsning %s. gennemgået %s kombinationer\n")
           ,format1000(solutioncounter).cstr(),format1000(trycount).cstr());
-  pause();
+//  pause();
 }
 
 #define DIAG1(r,c) diag1[r+c]
 #define DIAG2(r,c) diag2[r-c+SIZE-1]
 
+static const bool *colend = col + SIZE;
+
 static void tryrow(int r) {
   trycount++;
   if(r == SIZE) {
-    solutioncounter++;
-    if(solutioncounter % 1000 == 0)
+    if(++solutioncounter % 5000 == 0) {
       printsolution();
+    }
   } else {
-    for(int c = 0; c < SIZE; c++) {
-      if(!col[c] && !DIAG1(r,c) && !DIAG2(r,c)) {
-        col[c]     = true;
-        DIAG1(r,c) = true;
-        DIAG2(r,c) = true;
-        row[r] = c;
+    bool *d1 = &DIAG1(r, 0), *d2 = &DIAG2(r,0);
+    for(bool *cp = col; cp < colend; cp++, d1++, d2--) {
+      if(!*cp && !*d1 && !*d2) {
+        *cp = *d1 = *d2 = true;
+        row[r] = (int)(cp - col);
         tryrow(r+1);
-        col[c]     = false;
-        DIAG1(r,c) = false;
-        DIAG2(r,c) = false;
+        *cp = *d1 = *d2 = false;
       }
     }
   }
