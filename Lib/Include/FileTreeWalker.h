@@ -1,5 +1,6 @@
 #pragma once
 
+#include "StringArray.h"
 #include "Scandir.h"
 
 class FileNameHandler {
