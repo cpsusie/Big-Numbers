@@ -2,7 +2,12 @@
 
 #include "targetver.h"
 #include <MFCUtil/WinTools.h>
+#include <MyUtil.h>
 #include "WinDiff.h"
+
+#ifdef _DEBUG
+#include <DebugLog.h>
+#endif _DEBUG
 
 //#define MEASURE_STEPTIME
 

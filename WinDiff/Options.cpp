@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <MathUtil.h>
 #include "Options.h"
 
 const TCHAR *Options::rootPath =  _T("JGMData\\WinDiff");

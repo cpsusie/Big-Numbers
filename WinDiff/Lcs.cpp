@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include <Math.h>
 #include "Lcs.h"
-
 LineArray::LineArray() : m_ownStringPool(true) {
   m_stringPool = new StringPool(); TRACE_NEW(m_stringPool);
 }

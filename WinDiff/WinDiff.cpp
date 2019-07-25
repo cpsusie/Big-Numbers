@@ -12,9 +12,9 @@
 #endif
 
 BEGIN_MESSAGE_MAP(CWinDiffApp, CWinApp)
-  ON_COMMAND(ID_APP_ABOUT, OnAppAbout)
-  ON_COMMAND(ID_FILE_OPEN, CWinApp::OnFileOpen)
-  ON_COMMAND(ID_FILE_PRINT_SETUP, CWinApp::OnFilePrintSetup)
+  ON_COMMAND(ID_APP_ABOUT       , OnAppAbout      )
+  ON_COMMAND(ID_FILE_OPEN       , OnFileOpen      )
+  ON_COMMAND(ID_FILE_PRINT_SETUP, OnFilePrintSetup)
 END_MESSAGE_MAP()
 
 CWinDiffApp::CWinDiffApp() {
@@ -24,41 +24,39 @@ CWinDiffApp::CWinDiffApp() {
 CWinDiffApp theApp;
 
 BOOL CWinDiffApp::InitInstance() {
-    // InitCommonControlsEx() is required on Windows XP if an application
-    // manifest specifies use of ComCtl32.dll version 6 or later to enable
-    // visual styles.  Otherwise, any window creation will fail.
-    INITCOMMONCONTROLSEX InitCtrls;
-    InitCtrls.dwSize = sizeof(InitCtrls);
-    // Set this to include all the common control classes you want to use
-    // in your application.
-    InitCtrls.dwICC = ICC_WIN95_CLASSES;
-    InitCommonControlsEx(&InitCtrls);
+  // InitCommonControlsEx() is required on Windows XP if an application
+  // manifest specifies use of ComCtl32.dll version 6 or later to enable
+  // visual styles.  Otherwise, any window creation will fail.
+  INITCOMMONCONTROLSEX InitCtrls;
+  InitCtrls.dwSize = sizeof(InitCtrls);
+  // Set this to include all the common control classes you want to use
+  // in your application.
+  InitCtrls.dwICC = ICC_WIN95_CLASSES;
+  InitCommonControlsEx(&InitCtrls);
 
-    __super::InitInstance();
+  __super::InitInstance();
 
-    // Initialize OLE libraries
-    if(!AfxOleInit()) {
-      AfxMessageBox(IDP_OLE_INIT_FAILED);
-      return FALSE;
-    }
+  // Initialize OLE libraries
+  if(!AfxOleInit()) {
+    AfxMessageBox(IDP_OLE_INIT_FAILED);
+    return FALSE;
+  }
 
-    AfxEnableControlContainer();
-    EnableTaskbarInteraction(FALSE);
+  AfxEnableControlContainer();
+  EnableTaskbarInteraction(FALSE);
 
   SetRegistryKey(_T("JGMData"));
 
   m_options = Options::getDefaultOptions();
   LoadStdProfileSettings(_AFX_MRU_MAX_COUNT);  // Load standard INI file options (including MRU)
 
-    // Register the application's document templates.  Document templates
-    //  serve as the connection between documents, frame windows and views.
+  // Register the application's document templates. Document templates
+  // serve as the connection between documents, frame windows and views.
 
-  CSingleDocTemplate *pDocTemplate;
-  pDocTemplate = new CSingleDocTemplate(
-      IDR_MAINFRAME,
-      RUNTIME_CLASS(CWinDiffDoc),
-      RUNTIME_CLASS(CMainFrame),       // main SDI frame window
-      RUNTIME_CLASS(CWinDiffView));
+  CSingleDocTemplate *pDocTemplate = new CSingleDocTemplate(IDR_MAINFRAME
+                                                           ,RUNTIME_CLASS(CWinDiffDoc)
+                                                           ,RUNTIME_CLASS(CMainFrame)       // main SDI frame window
+                                                           ,RUNTIME_CLASS(CWinDiffView));
   AddDocTemplate(pDocTemplate);
 
   // Parse command line for standard shell commands, DDE, file open
@@ -91,7 +89,7 @@ BOOL CWinDiffApp::InitInstance() {
     f2 = *argv;
   }
 
-  theApp.GetMainWnd()->SetWindowText(format(_T("Differences between %s and %s"),f1,f2).cstr());
+  setWindowText(theApp.GetMainWnd(), format(_T("Differences between %s and %s"),f1,f2));
   HICON icon = LoadIcon(IDR_MAINFRAME);
   m_pMainWnd->SetIcon(icon,false);
   return TRUE;
@@ -101,7 +99,7 @@ int CWinDiffApp::ExitInstance() {
   m_options.m_ignoreRegex   = false;
   m_options.m_ignoreColumns = false;
   m_options.setAsDefault();
-  return CWinApp::ExitInstance();
+  return __super::ExitInstance();
 }
 
 class CAboutDlg : public CDialog {
@@ -134,10 +132,12 @@ void CWinDiffApp::addToRecentFileList(LPCTSTR lpszPathName) {
   try {
     // Call the base class
     __super::AddToRecentFileList(lpszPathName);
-  } catch (CException * e) {
+  } catch (CException *e) {
+#ifdef _DEBUG
     TCHAR strCause[1000];
     e->GetErrorMessage(strCause, ARRAYSIZE(strCause));
     debugLog(_T("Exception in %s: %s.  -- Ignoring\n"), __TFUNCTION__, strCause);
+#endif
     e->Delete();
   }
 }
@@ -147,8 +147,7 @@ String CWinDiffApp::getRecentFile(int index) {
   if(index >= list.GetSize()) {
     return EMPTYSTRING;
   }
-  CString name = list[index];
-  return name.GetBuffer(name.GetLength());
+  return (LPCTSTR)list[index];
 }
 
 void CWinDiffApp::removeFromRecentFiles(int index) {

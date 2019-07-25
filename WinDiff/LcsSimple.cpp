@@ -251,7 +251,7 @@ dumpMatchList();
 #ifdef _DEBUG
 void LcsSimple::dumpMatchList() const {
   redirectDebugLog();
-  debugLog(_T("MathList:\n"));
+  debugLog(_T("MatchList:\n"));
   for(size_t i = 1; i <= m_n; i++) {
     MatchArray &m = *m_matchList[i];
     const size_t ms = m.size();

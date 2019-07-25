@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <FileNameSplitter.h>
 #include "MainFrm.h"
 #include <MFCUtil/ProgressWindow.h>
 #include "WinDiff.h"
