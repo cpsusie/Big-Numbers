@@ -1,7 +1,6 @@
 #include "stdafx.h"
-#include <MyAssert.h>
-#include <String.h>
-#include <stdarg.h>
+#include <MyUtil.h>
+#include <FileNameSplitter.h>
 #include "ParserTree.h"
 #include "ResourceParser.h"
 
@@ -101,7 +100,7 @@ void ParserTree::addNodesToTable(const SyntaxNode *n) {
 
 void ParserTree::releaseAll() {
   for(size_t i = 0; i < m_nodetable.size(); i++) {
-    delete m_nodetable[i];
+    SAFEDELETE(m_nodetable[i]);
   }
   m_nodetable.clear();
   m_ok       = true;
@@ -121,16 +120,16 @@ SyntaxNode *ParserTree::vFetchNode(const SourcePosition &pos, int symbol, va_lis
   SyntaxNode *result;
   switch(symbol) {
   case NUMBER:
-    result = new NumberSyntaxNode(pos,va_arg(argptr,int));
+    result = new NumberSyntaxNode(pos, va_arg(argptr, int)); TRACE_NEW(result);
     break;
   case IDENTIFIER  :
-    result = new NameSyntaxNode(pos, va_arg(argptr,TCHAR*));
+    result = new NameSyntaxNode(pos, va_arg(argptr,TCHAR*)); TRACE_NEW(result);
     break;
   case STRING:
-    result = new StringSyntaxNode(pos, va_arg(argptr,TCHAR*));
+    result = new StringSyntaxNode(pos, va_arg(argptr,TCHAR*)); TRACE_NEW(result);
     break;
   default    :
-    result = new ResourceNodeTree(pos, symbol, argptr);
+    result = new ResourceNodeTree(pos, symbol, argptr); TRACE_NEW(result);
     break;
   }
   m_nodetable.add(result);

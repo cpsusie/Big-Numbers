@@ -285,8 +285,8 @@ PopupMenu::PopupMenu(const SyntaxNode *n) : MenuItem(MENU_POPUP) {
     for(size_t i = 0; i < itemNodes.size(); i++) {
       const SyntaxNode *child = itemNodes[i];
       switch(child->getSymbol()) {
-      case POPUP    : m_items.add(new PopupMenu(child)); break;
-      case _MENUITEM: m_items.add(new MenuTextItem(child)); break;
+      case POPUP    : m_items.add(new PopupMenu(   child)); TRACE_NEW(m_items.last());  break;
+      case _MENUITEM: m_items.add(new MenuTextItem(child)); TRACE_NEW(m_items.last()); break;
       }
     }
   }
@@ -294,7 +294,7 @@ PopupMenu::PopupMenu(const SyntaxNode *n) : MenuItem(MENU_POPUP) {
 
 PopupMenu::~PopupMenu() {
   for(size_t i = 0; i < m_items.size(); i++) {
-    delete m_items[i];
+    SAFEDELETE(m_items[i]);
   }
   m_items.clear();
 }
@@ -334,8 +334,8 @@ MenuDefinition::MenuDefinition(const SyntaxNode *n, const ResourceFile *rf)
   for(size_t i = 0; i < nodes.size(); i++) {
     const SyntaxNode *child = nodes[i];
     switch(child->getSymbol()) {
-    case POPUP    : m_items.add(new PopupMenu(   child)); break;
-    case _MENUITEM: m_items.add(new MenuTextItem(child)); break;
+    case POPUP    : m_items.add(new PopupMenu(   child)); TRACE_NEW(m_items.last()); break;
+    case _MENUITEM: m_items.add(new MenuTextItem(child)); TRACE_NEW(m_items.last()); break;
     default       : _tprintf(_T("unknown menutype:\n"));
                     ParserTree::dumpSyntaxTree(child);
                     break;
@@ -346,7 +346,7 @@ MenuDefinition::MenuDefinition(const SyntaxNode *n, const ResourceFile *rf)
 
 MenuDefinition::~MenuDefinition() {
   for(size_t i = 0; i < m_items.size(); i++) {
-    delete m_items[i];
+    SAFEDELETE(m_items[i]);
   }
   m_items.clear();
 }

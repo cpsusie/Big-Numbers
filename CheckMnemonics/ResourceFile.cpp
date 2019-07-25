@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <FileNameSplitter.h>
 #include "ResourceFile.h"
 
 //#define DUMPTREE
@@ -63,14 +64,14 @@ ResourceFile::ResourceFile(const String &fileName) {
 }
 
 LanguageSection *ResourceFile::newSection() {
-  LanguageSection *result = new LanguageSection(this);
+  LanguageSection *result = new LanguageSection(this); TRACE_NEW(result);
   m_sections.add(result);
   return result;
 }
 
 ResourceFile::~ResourceFile() {
   for(size_t i = 0; i < m_sections.size(); i++) {
-    delete m_sections[i];
+    SAFEDELETE(m_sections[i]);
   }
   m_sections.clear();
 }
@@ -78,7 +79,7 @@ ResourceFile::~ResourceFile() {
 void ResourceFile::pruneEmptySection() {
   for(intptr_t i = m_sections.size()-1; i >= 0; i--) {
     if(m_sections[i]->isEmpty()) {
-      delete m_sections[i];
+      SAFEDELETE(m_sections[i]);
       m_sections.remove(i);
     }
   }

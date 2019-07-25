@@ -79,7 +79,7 @@ ResourceNodeTree::ResourceNodeTree(const SourcePosition &pos, int symbol, va_lis
     count++;
   }
   m_childCount = count;
-  m_child = new SyntaxNode*[count];
+  m_child = new SyntaxNode*[count]; TRACE_NEW(m_child);
   for(count = 0,tmp = argptr, p = va_arg(tmp,SyntaxNode*); p; p = va_arg(tmp,SyntaxNode*)) {
     m_child[count++] = p;
   }
@@ -87,21 +87,22 @@ ResourceNodeTree::ResourceNodeTree(const SourcePosition &pos, int symbol, va_lis
 
 ResourceNodeTree::ResourceNodeTree(const ResourceNodeTree *src) : SyntaxNode(src->getPos(), src->getSymbol()) {
   m_childCount = src->getChildCount();
-  m_child = new SyntaxNode*[m_childCount];
+  m_child = new SyntaxNode*[m_childCount]; TRACE_NEW(m_child);
   for(int i = 0; i < m_childCount; i++) {
     m_child[i] = src->getChild(i)->clone();
   }
 }
 
 ResourceNodeTree::~ResourceNodeTree() {
-  delete[] m_child;
+  SAFEDELETEARRAY(m_child);
 }
 
 SyntaxNode *ResourceNodeTree::clone() const {
-  return new ResourceNodeTree(this);
+  SyntaxNode *copy = new ResourceNodeTree(this); TRACE_NEW(copy);
+  return copy;
 }
 
-SyntaxNode *ResourceNodeTree::getChild(unsigned int i) const {
+SyntaxNode *ResourceNodeTree::getChild(UINT i) const {
   if(i >= m_childCount) {
     ParserTree::dumpSyntaxTree(this);
     throwException(_T("Cannot get child %u from treenode. ChildCount=%d"), i, m_childCount);

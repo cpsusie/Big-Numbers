@@ -55,7 +55,7 @@ public:
   }
 
   SyntaxNode  *clone() const {
-    return new NumberSyntaxNode(getPos(), m_value);
+    SyntaxNode  *copy = new NumberSyntaxNode(getPos(), m_value); TRACE_NEW(copy); return copy;
   }
 
   String toString() const {
@@ -81,7 +81,7 @@ public:
   }
 
   SyntaxNode *clone() const {
-    return new NameSyntaxNode(getPos(), m_name);
+    SyntaxNode *copy = new NameSyntaxNode(getPos(), m_name); TRACE_NEW(copy); return copy;
   }
 
   String toString() const {
@@ -107,7 +107,7 @@ public:
   }
 
   SyntaxNode *clone() const {
-    return new StringSyntaxNode(getPos(), m_str);
+    SyntaxNode *copy = new StringSyntaxNode(getPos(), m_str); TRACE_NEW(copy); return copy;
   }
 
   String toString() const {
@@ -124,7 +124,7 @@ public:
   ResourceNodeTree(const ResourceNodeTree *src);
   ~ResourceNodeTree();
 
-  SyntaxNode *getChild(unsigned int i) const;
+  SyntaxNode *getChild(UINT i) const;
 
   int getChildCount() const {
     return m_childCount;

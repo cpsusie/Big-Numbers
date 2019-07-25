@@ -189,7 +189,7 @@ private:
   String m_command;
 public:
   MenuTextItem(const SyntaxNode *n);
-  MenuItem *clone() const { return new MenuTextItem(*this); }
+  MenuItem *clone() const { MenuItem *copy = new MenuTextItem(*this); TRACE_NEW(copy); return copy; }
   const String &getCommand() const {
     return m_command;
   }
@@ -211,7 +211,7 @@ public:
   }
   String toString(int level=0) const;
   MenuItem *clone() const {
-    return new PopupMenu(*this);
+    MenuItem *copy = new PopupMenu(*this); TRACE_NEW(copy); return copy;
   }
 };
 
