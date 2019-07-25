@@ -1,9 +1,9 @@
 #include "stdafx.h"
-#include "Spectrum.h"
-#include "SpectrumDlg.h"
-#include <assert.h>
 #include <Math/FFT.h>
 #include <Thread.h>
+#include <DebugLog.h>
+#include "Spectrum.h"
+#include "SpectrumDlg.h"
 #include "FrequenceDlg.h"
 
 #ifdef _DEBUG
@@ -257,6 +257,7 @@ LRESULT CSpectrumDlg::captureWaveStreamCallback(MMCapture &capture, WAVEHDR *aud
   m_waveSystem.paint(wdc);
 
   Viewport2D *vp = &m_waveSystem.getViewport();
+  CDC *oldDC = vp->setDC(&wdc);
   vp->setClipping(true);
   double t = 0, tStep = maxTime / (sampleCount-1);
   vp->MoveTo(0,waveResult[0]);
@@ -265,10 +266,12 @@ LRESULT CSpectrumDlg::captureWaveStreamCallback(MMCapture &capture, WAVEHDR *aud
     vp->LineTo(t,waveResult[i++]);
   }
   vp->setClipping(false);
+  vp->setDC(oldDC);
 
   CClientDC fdc(&m_frequenceSystem);
   m_frequenceSystem.paint(fdc);
   vp = &m_frequenceSystem.getViewport();
+  oldDC = vp->setDC(&fdc);
   vp->setClipping(true);
   double f = 0, fStep = maxFrequence / (amplitudeCount-1);
   vp->MoveTo(f,frequenceResult[0]);
@@ -276,6 +279,7 @@ LRESULT CSpectrumDlg::captureWaveStreamCallback(MMCapture &capture, WAVEHDR *aud
     vp->LineTo(f, frequenceResult[i++]);
   }
   vp->setClipping(false);
+  vp->setDC(oldDC);
   m_sampleDone.signal();
   return 0;
 }
