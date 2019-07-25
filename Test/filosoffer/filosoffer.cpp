@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <Thread.h>
+#include <MathUtil.h>
 #include <Random.h>
 #include <Console.h>
 
@@ -10,6 +11,16 @@ public:
   ScreenPoint(int x, int y) { m_x = x, m_y = y; }
   ScreenPoint() { m_x = m_y = 0; }
 };
+
+double interpolate(double x1, double x2, double factor) {
+  return x1 * (1.0 - factor) + x2 * factor;
+}
+
+ScreenPoint interpolate(const ScreenPoint &p1, const ScreenPoint &p2, double factor) {
+  return ScreenPoint((int)interpolate(p1.m_x, p2.m_x, factor),
+                     (int)interpolate(p1.m_y, p2.m_y, factor)
+  );
+}
 
 class DinnerTable;
 
@@ -33,6 +44,7 @@ class Spoon {
   void clearCurrentPosition();
   void drawMyId();
 public:
+  Spoon() {}
   Spoon(const DinnerTable &table, int id);
   void useby(const Philosof &filo);
   void release();
@@ -40,8 +52,8 @@ public:
 };
 
 class DinnerTable {
-  Array<Spoon>             m_spoonArray;
-  Array<Philosof*>         m_PhilosofArray;
+  CompactArray<Spoon>      m_spoonArray;
+  CompactArray<Philosof*>  m_PhilosofArray;
   Semaphore                m_gate;
   int                      m_count;
 public:
@@ -52,18 +64,6 @@ public:
   void releaseSpoon(int spoonIndex);
   int size() const { return m_count; }
 };
-
-#define PI 3.1415926
-
-double interpolate(double x1, double x2, double factor) {
-  return x1 * (1.0-factor) + x2 * factor;
-}
-
-ScreenPoint interpolate(const ScreenPoint &p1, const ScreenPoint &p2, double factor) {
-  return ScreenPoint((int)interpolate(p1.m_x,p2.m_x,factor),
-                     (int)interpolate(p1.m_y,p2.m_y,factor)
-                    );
-}
 
 void Spoon::clearCurrentPosition() {
   Console::printf(m_currentPosition.m_x,m_currentPosition.m_y,_T("  "));
@@ -89,8 +89,8 @@ void Spoon::release() {
 
 Spoon::Spoon(const DinnerTable &table, int id) {
   m_id = id;
-  m_releasedPosition.m_x = (int)(5.0 * cos((double)(id-0.5) / table.size() * 2 * PI) + table.m_center.m_x);
-  m_releasedPosition.m_y = (int)(3.0 * sin((double)(id-0.5) / table.size() * 2 * PI) + table.m_center.m_y);
+  m_releasedPosition.m_x = (int)(5.0 * cos((double)(id-0.5) / table.size() * 2 * M_PI) + table.m_center.m_x);
+  m_releasedPosition.m_y = (int)(3.0 * sin((double)(id-0.5) / table.size() * 2 * M_PI) + table.m_center.m_y);
   m_currentPosition = m_releasedPosition;
   drawMyId();
   m_inuse = false;
@@ -101,8 +101,8 @@ Spoon::Spoon(const DinnerTable &table, int id) {
 Philosof::Philosof(DinnerTable &table, int id ) : m_table(table) {
   m_id = id;
   m_count = 0;
-  m_position.m_x = (int)(30.0 * cos((double)id / m_table.size() * 2 * PI) + m_table.m_center.m_x);
-  m_position.m_y = (int)(10.0 * sin((double)id / m_table.size() * 2 * PI) + m_table.m_center.m_y);
+  m_position.m_x = (int)(30.0 * cos((double)id / m_table.size() * 2 * M_PI) + m_table.m_center.m_x);
+  m_position.m_y = (int)(10.0 * sin((double)id / m_table.size() * 2 * M_PI) + m_table.m_center.m_y);
   resume();
 };
 
@@ -145,7 +145,7 @@ unsigned int Philosof::run() {
 
 void Philosof::drawMyState(const TCHAR *status) {
   const String tmpstr = format(_T("%d %s (%d)"), m_id, status, m_count);
-  Console::printf((m_position.m_x - (int)tmpstr.length())/2,m_position.m_y,tmpstr.cstr());
+  Console::printf(m_position.m_x - (int)tmpstr.length()/2,m_position.m_y,tmpstr.cstr());
 }
 
 // ----------------------------------------------------
