@@ -1,7 +1,9 @@
 #include "stdafx.h"
-#include <MFCUtil/ColorSpace.h>
+#include <FileNameSplitter.h>
 #include <ByteFile.h>
 #include <ProcessTools.h>
+#include <DebugLog.h>
+#include <MFCUtil/ColorSpace.h>
 #include "TestPicture.h"
 #include "TestPictureDlg.h"
 

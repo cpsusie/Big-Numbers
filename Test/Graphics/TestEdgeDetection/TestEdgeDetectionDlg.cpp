@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <DebugLog.h>
 #include <MFCUtil/Point2DP.h>
 #include "TestEdgeDetectionDlg.h"
 

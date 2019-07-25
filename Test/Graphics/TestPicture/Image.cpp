@@ -72,8 +72,8 @@ bool Image::zoom(const CPoint &point, bool in, double step) {
 bool Image::setOffset(const CPoint &p) {
   const CPoint oldOffset = m_offset;
   const CPoint maxOffset = getMaxOffset();
-  m_offset.x = minMax(p.x, 0, maxOffset.x);
-  m_offset.y = minMax(p.y, 0, maxOffset.y);
+  m_offset.x = minMax(p.x, 0L, maxOffset.x);
+  m_offset.y = minMax(p.y, 0L, maxOffset.y);
   return (m_offset != oldOffset) ? true : false;
 }
 

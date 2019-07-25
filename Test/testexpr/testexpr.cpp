@@ -77,7 +77,7 @@ static bool test(const String &expr, bool runCode) {
 int main() {
   bool runCode = true;
   for(;;) {
-    const String str = inputString(_T("\nEnter expression:"));
+    const String str = inputString(_T("\nEnter expression('?'=list all samples,'-'=disable runmode,'+'=enable runmode,'*'=run all samples,':10'=run sample 10, expr):"));
     String expr;
     if(str.isEmpty()) continue;
     switch(str[0]) {
