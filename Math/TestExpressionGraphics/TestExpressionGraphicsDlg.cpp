@@ -218,8 +218,7 @@ BOOL CTestExpressionGraphicsDlg::PreTranslateMessage(MSG *pMsg) {
 }
 
 void CTestExpressionGraphicsDlg::buildSamplesMenu() {
-  int index;
-  HMENU samplesMenu    = findMenuContainingId(*GetMenu(), ID_SAMPLES_RUNALL, index);
+  HMENU samplesMenu    = findMenuContainingId(*GetMenu(), ID_SAMPLES_RUNALL);
   HMENU currentSubMenu = NULL;
   int   subMenuCount   = 0, itemsInSubMenu;
   const size_t count = ExpressionSamples::getCount();

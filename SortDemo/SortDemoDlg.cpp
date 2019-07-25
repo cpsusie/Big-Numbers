@@ -126,8 +126,7 @@ BOOL CSortDemoDlg::OnInitDialog() {
 }
 
 void CSortDemoDlg::buildSortMethodMenu() {
-  int index;
-  HMENU methodMenu = findMenuContainingId(*GetMenu(), ID_SORT_FIRSTMETHOD, index);
+  HMENU methodMenu = findMenuContainingId(*GetMenu(), ID_SORT_FIRSTMETHOD);
   removeAllMenuItems(methodMenu); // remove dummy item
   const int n = SortMethodId::getMethodCount();
   int i;

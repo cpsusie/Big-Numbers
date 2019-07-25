@@ -425,8 +425,7 @@ void CChessDlg::detachAllPropertyContainers() {
 #define ID_SETTINGS_LANGUAGE(i) (ID_SETTINGS_LANGUAGE0+i)
 void CChessDlg::buildAndMarkLanguageMenu() {
   const Array<Language> &spla = Language::getSupportedLanguages();
-  int index;
-  HMENU languageMenu = findMenuContainingId(*GetMenu(), ID_LANGUAGE_DUMMY, index);
+  HMENU languageMenu = findMenuContainingId(*GetMenu(), ID_LANGUAGE_DUMMY);
   removeAllMenuItems(languageMenu); // remove dummy item
   for(int i = 0; i < (int)spla.size(); i++) {
     insertMenuItem(languageMenu,i, spla[i].getLanguageName(),  ID_SETTINGS_LANGUAGE(i));
@@ -2392,11 +2391,10 @@ void CChessDlg::enginePrintState(Player player) {
 }
 
 void CChessDlg::buildEngineMenues() {
-  int index;
   try {
     const Options &options = getOptions();
-    addEnginesToMenu(findMenuContainingId(*GetMenu(), ID_WHITE_ENGINE_GETSTATE, index), ID_WHITE_EXTERNENGINE0);
-    addEnginesToMenu(findMenuContainingId(*GetMenu(), ID_BLACK_ENGINE_GETSTATE, index), ID_BLACK_EXTERNENGINE0);
+    addEnginesToMenu(findMenuContainingId(*GetMenu(), ID_WHITE_ENGINE_GETSTATE), ID_WHITE_EXTERNENGINE0);
+    addEnginesToMenu(findMenuContainingId(*GetMenu(), ID_BLACK_ENGINE_GETSTATE), ID_BLACK_EXTERNENGINE0);
     setWhiteExternEngine(options.getCurrentEngineIndex(WHITEPLAYER));
     setBlackExternEngine(options.getCurrentEngineIndex(BLACKPLAYER));
   } catch(Exception e) {

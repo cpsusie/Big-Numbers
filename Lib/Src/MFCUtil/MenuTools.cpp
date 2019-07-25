@@ -37,13 +37,13 @@ static MENUITEMINFO getMenuItemInfo(HMENU menu, UINT pos, int mask) {
   return info;
 }
 
-static HMENU findMenuContainingId(const CWnd *wnd, UINT id, int &index) {
+static HMENU findMenuContainingId(const CWnd *wnd, UINT id, int *index=NULL) {
   CMenu *m = wnd->GetMenu();
   if(m == NULL) return NULL;
   return findMenuContainingId(*m, id, index);
 }
 
-static HMENU findMenuByString(const CWnd *wnd, const String &s, int &index) {
+static HMENU findMenuByString(const CWnd *wnd, const String &s, int *index=NULL) {
   CMenu *m = wnd->GetMenu();
   if(m == NULL) return NULL;
   return findMenuByString(*m, s, index);
@@ -76,27 +76,30 @@ int getMenuItemType(HMENU menu, UINT pos) {
   return info.fType;
 }
 
-HMENU findMenuByString(HMENU menu, const String &s, int &index) {
+HMENU findMenuByString(HMENU menu, const String &s, int *index) {
   if(menu == NULL) return NULL;
   for(Tokenizer tok(s,_T("/")); menu != NULL && tok.hasNext();) {
     String str = tok.next();
-    index = findMenuItemIndexByString(menu, str);
-    if(index < 0) {
-      if((_stscanf(str.cstr(), _T("%d"), &index) != 1) || (index < 0)) {
+    int tmpIndex = findMenuItemIndexByString(menu, str);
+    if(tmpIndex < 0) {
+      if((_stscanf(str.cstr(), _T("%d"), &tmpIndex) != 1) || (tmpIndex < 0)) {
         return NULL;
       }
     }
 
     if(tok.hasNext()) {
-      menu = GetSubMenu(menu, index);
+      menu = GetSubMenu(menu, tmpIndex);
     } else {
+      if(index) {
+        *index = tmpIndex;
+      }
       return menu;
     }
   }
   return NULL;
 }
 
-HMENU findMenuContainingId(HMENU menu, UINT id, int &index) {
+HMENU findMenuContainingId(HMENU menu, UINT id, int *index) {
   if(menu == NULL) return NULL;
   const int count = GetMenuItemCount(menu);
   for(int i = 0; i < count; i++) {
@@ -107,7 +110,9 @@ HMENU findMenuContainingId(HMENU menu, UINT id, int &index) {
         return sm;
       }
     } else if(GetMenuItemID(menu, i) == id) {
-      index = i;
+      if(index) {
+        *index = i;
+      }
       return menu;
     }
   }
@@ -211,8 +216,7 @@ bool removeSubMenuContainingId(HMENU menu, UINT id) {
 }
 
 bool menuItemExists(HMENU menu,  UINT id) {
-  int index;
-  return findMenuContainingId(menu, id, index) != NULL;
+  return findMenuContainingId(menu, id) != NULL;
 }
 
 String getMenuItemText(HMENU menu, int pos) {
@@ -224,7 +228,7 @@ String getMenuItemText(HMENU menu, int pos) {
 
 String setMenuItemText(HMENU menu, UINT id , const String &itemText) {
   int index;
-  menu = findMenuContainingId(menu, id, index);
+  menu = findMenuContainingId(menu, id, &index);
   if(menu == NULL) {
     return EMPTYSTRING;
   } else {
@@ -234,7 +238,7 @@ String setMenuItemText(HMENU menu, UINT id , const String &itemText) {
 
 HMENU getSubMenu(HMENU menu, const String &s) {
   int index;
-  menu = findMenuByString(menu, s, index);
+  menu = findMenuByString(menu, s, &index);
   if(menu) {
     return GetSubMenu(menu, index);
   } else {
@@ -267,7 +271,7 @@ void enableMenuItem(const CWnd *wnd, UINT id, bool enabled) {
 
 void enableMenuItem(const CWnd *wnd, const String &s, bool enabled) {
   int index;
-  HMENU menu = findMenuByString(wnd, s, index);
+  HMENU menu = findMenuByString(wnd, s, &index);
   if(menu != NULL) {
     bool done = EnableMenuItem(menu, index, MF_BYPOSITION | (enabled ? MF_ENABLED : MF_GRAYED)) != -1;
   }
@@ -293,16 +297,14 @@ bool isMenuItemChecked(const CWnd *wnd, UINT id) {
 
 // flags = 0,MF_SEPARATOR
 void insertMenuItem(const CWnd *wnd, UINT afterId, int flags, const String &itemText, UINT commandId) {
-  int index;
-  HMENU menu = findMenuContainingId(wnd, afterId, index);
+  HMENU menu = findMenuContainingId(wnd, afterId);
   if(menu) {
     bool done = InsertMenu(menu, afterId, MF_BYCOMMAND | (flags & MF_SEPARATOR), commandId, itemText.cstr()) != 0;
   }
 }
 
 void removeMenuItem(const CWnd *wnd, UINT id) {
-  int index;
-  HMENU menu = findMenuContainingId(wnd, id, index);
+  HMENU menu = findMenuContainingId(wnd, id);
   if(menu != NULL) {
     removeMenuItem(menu, id);
   }
@@ -311,7 +313,7 @@ void removeMenuItem(const CWnd *wnd, UINT id) {
 void removeMenuItem(const CWnd *wnd, const String &s) {
   int index;
   bool done = false;
-  HMENU menu = findMenuByString(wnd, s, index);
+  HMENU menu = findMenuByString(wnd, s, &index);
   if(menu != NULL) {
     done = RemoveMenu(menu, index, MF_BYPOSITION) != 0;
   }
@@ -324,20 +326,19 @@ bool removeSubMenuContainingId(const CWnd *wnd,  UINT id) {
 }
 
 bool menuItemExists(const CWnd *wnd, UINT id) {
-  int index;
-  return findMenuContainingId(wnd, id, index) != NULL;
+  return findMenuContainingId(wnd, id) != NULL;
 }
 
 String getMenuItemText(const CWnd *wnd, UINT id) {
   int index;
-  HMENU menu = findMenuContainingId(wnd, id, index);
+  HMENU menu = findMenuContainingId(wnd, id, &index);
   if(menu == NULL) return EMPTYSTRING;
   return getMenuItemText(menu, index);
 }
 
 String setMenuItemText(const CWnd *wnd, UINT id, const String &itemText) {
   int index;
-  HMENU menu = findMenuContainingId(wnd, id, index);
+  HMENU menu = findMenuContainingId(wnd, id, &index);
   if(menu == NULL) return EMPTYSTRING;
   return setItemText(menu, index, itemText);
 }

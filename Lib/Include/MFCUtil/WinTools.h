@@ -42,8 +42,8 @@
 
 // ex. if s == "0/2", this will enable/disable the third menuitem in first pulldown-menu of the windows menu
 int    getMenuItemType(                HMENU menu,  UINT          pos);
-HMENU  findMenuByString(               HMENU menu,  const String &s , int &index);  // see comment at enableMenuItem
-HMENU  findMenuContainingId(           HMENU menu,  UINT          id, int &index);
+HMENU  findMenuByString(               HMENU menu,  const String &s , int *index = NULL);  // see comment at enableMenuItem
+HMENU  findMenuContainingId(           HMENU menu,  UINT          id, int *index = NULL);
 void   enableMenuItem(                 HMENU menu,  UINT          id, bool enabled);
 void   checkMenuItem(                  HMENU menu,  UINT          id, bool checked);
 bool   enableSubMenuContainingId(      HMENU menu,  UINT          id, bool enabled); // do

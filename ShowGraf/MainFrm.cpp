@@ -165,9 +165,9 @@ void CMainFrame::initMenuItems() {
     bitmap[i].LoadBitmap(item.m_bitmapId);
     GetMenu()->SetMenuItemBitmaps(item.m_command, MF_BYCOMMAND, &bitmap[i], &bitmap[i]);
   }
-/*    int index;
-
-    HMENU menu = findMenuContainingId(*GetMenu(), item.m_command, index);
+/* 
+    int index;
+    HMENU menu = findMenuContainingId(*GetMenu(), item.m_command, &index);
     menu
     removeMenuItem(this, item.m_command);
     InsertMenu(menu, index, MF_BYPOSITION | MF_BITMAP, item.m_command, (char*)(HBITMAP)bitmap[i].m_hObject);
