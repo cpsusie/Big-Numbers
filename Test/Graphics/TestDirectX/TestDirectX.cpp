@@ -20,13 +20,9 @@ BOOL CTestDirectXApp::InitInstance() {
 //  AfxEnableControlContainer();
 //DEBUGTRACE;
 
-DEBUGTRACE;
     CTestDirectXDlg dlg;
-DEBUGTRACE;
     m_pMainWnd = &dlg;
-DEBUGTRACE;
     INT_PTR nResponse = dlg.DoModal();
-DEBUGTRACE;
     if (nResponse == IDOK) {
     } else if (nResponse == IDCANCEL) {
     }

@@ -27,9 +27,7 @@ BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
 CTestDirectXDlg::CTestDirectXDlg(CWnd *pParent /*=NULL*/) : CDialog(CTestDirectXDlg::IDD, pParent) {
-  DEBUGTRACE;
-
-    m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
+  m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
 }
 
 void CTestDirectXDlg::DoDataExchange(CDataExchange *pDX) {
@@ -46,7 +44,6 @@ BEGIN_MESSAGE_MAP(CTestDirectXDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CTestDirectXDlg::OnInitDialog() {
-DEBUGTRACE;
   __super::OnInitDialog();
 
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
@@ -64,9 +61,7 @@ DEBUGTRACE;
 
   theApp.m_device.attach(m_hWnd);
 
-DEBUGTRACE;
   m_image = PixRect::load(theApp.m_device, ByteInputFile(_T("c:\\mytools2015\\spil\\chess\\res\\board.jpg")));
-DEBUGTRACE;
 
   setClientRectSize(this, m_image->getSize());
 
@@ -104,19 +99,14 @@ void CTestDirectXDlg::OnPaint() {
       __super::OnPaint();
       CClientDC dc(this);
       CRect cr = getClientRect(this);
-DEBUGTRACE;
 static       PixRect             *screen = new PixRect(theApp.m_device);
-DEBUGTRACE;
 static       PixRect             *tmp = new PixRect(theApp.m_device, PIXRECT_PLAINSURFACE, getScreenSize());
 //static const Array<DDSURFACEDESC2> displayModes = screen->getDisplayModes();
 //             DDCAPS               driverCaps   = PixRect::getDriverCaps();
 //             DDCAPS               emulCaps     = PixRect::getEmulatorCaps();
 
-DEBUGTRACE;
       tmp->rop(cr, SRCCOPY, m_image, CRect(ORIGIN, m_image->getSize()));
-DEBUGTRACE;
       PixRect::bitBlt(dc, ORIGIN, cr.Size(), SRCCOPY, tmp, ORIGIN);
-DEBUGTRACE;
 /*
       for(int i = 0; i < displayModes.size(); i++) {
         const DDSURFACEDESC2 &sd = displayModes[i];
