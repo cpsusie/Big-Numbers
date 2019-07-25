@@ -1,4 +1,4 @@
-//Microsoft Developer Studio generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
 
@@ -13,13 +13,11 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// English (U.S.) resources
+// English (United States) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-#ifdef _WIN32
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
-#endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -27,18 +25,18 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE DISCARDABLE 
+1 TEXTINCLUDE 
 BEGIN
     "resource.h\0"
 END
 
-2 TEXTINCLUDE DISCARDABLE 
+2 TEXTINCLUDE 
 BEGIN
     "#include ""afxres.h""\r\n"
     "\0"
 END
 
-3 TEXTINCLUDE DISCARDABLE 
+3 TEXTINCLUDE 
 BEGIN
     "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
     "#define _AFX_NO_OLE_RESOURCES\r\n"
@@ -58,6 +56,7 @@ END
 
 #endif    // APSTUDIO_INVOKED
 
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // Icon
@@ -65,14 +64,15 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDR_MAINFRAME           ICON    DISCARDABLE     "res\\testbin.ico"
+IDR_MAINFRAME           ICON                    "res\\testbin.ico"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Menu
 //
 
-IDR_MENU1 MENU DISCARDABLE 
+IDR_MENU1 MENU
 BEGIN
     POPUP "&File"
     BEGIN
@@ -90,18 +90,19 @@ END
 // Accelerator
 //
 
-IDR_ACCELERATOR1 ACCELERATORS DISCARDABLE 
+IDR_ACCELERATOR1 ACCELERATORS
 BEGIN
     "T",            ID_VIEW_TIMER,          VIRTKEY, CONTROL, NOINVERT
 END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Dialog
 //
 
-IDD_DIALOGTIMER DIALOG DISCARDABLE  0, 0, 186, 95
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_DIALOGTIMER DIALOG 0, 0, 186, 95
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Timerinterval"
 FONT 8, "MS Sans Serif"
 BEGIN
@@ -111,8 +112,8 @@ BEGIN
     LTEXT           "msec.",IDC_STATIC,82,47,27,8
 END
 
-IDD_ABOUTBOX DIALOG DISCARDABLE  0, 0, 235, 55
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_ABOUTBOX DIALOG 0, 0, 235, 55
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About testbin"
 FONT 8, "MS Sans Serif"
 BEGIN
@@ -123,17 +124,19 @@ BEGIN
 END
 
 IDD_TESTBIN_DIALOG DIALOGEX 0, 0, 513, 201
-STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_APPWINDOW
 CAPTION "testbin"
 MENU IDR_MENU1
 FONT 10, "Courier", 0, 0, 0x1
 BEGIN
-    LTEXT           "",IDC_STATICTEXT,7,90,499,8,SS_SUNKEN
     PUSHBUTTON      "St&art",IDC_STARTBUTTON,78,31,42,14
-    PUSHBUTTON      "St&op",IDC_STOPBUTTON,133,31,42,14
-    PUSHBUTTON      "St&ep",IDC_STEPBUTTON,188,31,42,14
-    PUSHBUTTON      "&Reset",IDC_RESETBUTTON,243,31,42,14
+    PUSHBUTTON      "St&op",IDC_STOPBUTTON,132,30,42,14
+    PUSHBUTTON      "St&ep",IDC_STEPBUTTON,186,30,42,14
+    PUSHBUTTON      "&Reset",IDC_RESETBUTTON,240,30,42,14
+    PUSHBUTTON      "E&dit",IDC_EDITBUTTON,294,30,42,14
+    LTEXT           "",IDC_STATICTEXT,7,89,403,14,SS_SUNKEN
+    EDITTEXT        IDC_EDITHEX,332,90,64,12,ES_UPPERCASE | NOT WS_VISIBLE | NOT WS_BORDER
 END
 
 
@@ -142,13 +145,8 @@ END
 // DESIGNINFO
 //
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// DESIGNINFO
-//
-
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO DISCARDABLE 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_DIALOGTIMER, DIALOG
     BEGIN
@@ -157,6 +155,7 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 88
     END
+
     IDD_ABOUTBOX, DIALOG
     BEGIN
         LEFTMARGIN, 7
@@ -176,7 +175,6 @@ END
 #endif    // APSTUDIO_INVOKED
 
 
-#ifndef _MAC
 /////////////////////////////////////////////////////////////////////////////
 //
 // Version
@@ -199,15 +197,13 @@ BEGIN
     BEGIN
         BLOCK "040904B0"
         BEGIN
-            VALUE "CompanyName", "\0"
-            VALUE "FileDescription", "testbin MFC Application\0"
-            VALUE "FileVersion", "1, 0, 0, 1\0"
-            VALUE "InternalName", "testbin\0"
-            VALUE "LegalCopyright", "Copyright (C) 2006\0"
-            VALUE "LegalTrademarks", "\0"
-            VALUE "OriginalFilename", "testbin.EXE\0"
-            VALUE "ProductName", "testbin Application\0"
-            VALUE "ProductVersion", "1, 0, 0, 1\0"
+            VALUE "FileDescription", "testbin MFC Application"
+            VALUE "FileVersion", "1, 0, 0, 1"
+            VALUE "InternalName", "testbin"
+            VALUE "LegalCopyright", "Copyright (C) 2006"
+            VALUE "OriginalFilename", "testbin.EXE"
+            VALUE "ProductName", "testbin Application"
+            VALUE "ProductVersion", "1, 0, 0, 1"
         END
     END
     BLOCK "VarFileInfo"
@@ -216,7 +212,16 @@ BEGIN
     END
 END
 
-#endif    // !_MAC
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_TESTBIN_DIALOG AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -224,13 +229,14 @@ END
 // String Table
 //
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDS_ABOUTBOX            "&About testbin..."
 END
 
-#endif    // English (U.S.) resources
+#endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
+
 
 
 #ifndef APSTUDIO_INVOKED

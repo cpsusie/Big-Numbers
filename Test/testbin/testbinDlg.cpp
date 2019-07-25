@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <MyUtil.h>
 #include "TestBin.h"
 #include "TestBinDlg.h"
 #include "TimerDlg.h"
@@ -9,73 +10,78 @@
 
 class CAboutDlg : public CDialog {
 public:
-    CAboutDlg();
+  CAboutDlg();
 
-    enum { IDD = IDD_ABOUTBOX };
+  enum { IDD = IDD_ABOUTBOX };
 
 protected:
-    virtual void DoDataExchange(CDataExchange *pDX);
-    DECLARE_MESSAGE_MAP()
+  virtual void DoDataExchange(CDataExchange *pDX);
+  DECLARE_MESSAGE_MAP()
 };
 
 CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
 void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-    __super::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
-CTestbinDlg::CTestbinDlg(CWnd *pParent) : CDialog(CTestbinDlg::IDD, pParent) {
-    m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
+CTestbinDlg::CTestbinDlg(CWnd *pParent) : CDialog(CTestbinDlg::IDD, pParent), m_hexString(_T("")) {
+  m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
 }
 
 void CTestbinDlg::DoDataExchange(CDataExchange *pDX) {
-    __super::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
+  DDX_Text(pDX, IDC_EDITHEX, m_hexString);
+  DDV_MaxChars(pDX, m_hexString, 16);
 }
 
 BEGIN_MESSAGE_MAP(CTestbinDlg, CDialog)
-    ON_WM_SYSCOMMAND()
-    ON_WM_PAINT()
-    ON_WM_QUERYDRAGICON()
-    ON_BN_CLICKED(IDC_STARTBUTTON, OnStartButton)
-    ON_BN_CLICKED(IDC_STOPBUTTON, OnStopbutton)
-    ON_WM_TIMER()
-    ON_COMMAND(ID_FILE_EXIT, OnFileExit)
-    ON_COMMAND(ID_VIEW_TIMER, OnViewTimer)
-    ON_BN_CLICKED(IDC_STEPBUTTON, OnStepbutton)
-    ON_BN_CLICKED(IDC_RESETBUTTON, OnResetbutton)
-    ON_WM_CLOSE()
+  ON_WM_SYSCOMMAND()
+  ON_WM_PAINT()
+  ON_WM_QUERYDRAGICON()
+  ON_WM_TIMER()
+  ON_WM_CLOSE()
+  ON_BN_CLICKED(IDC_STARTBUTTON, OnStartButton )
+  ON_BN_CLICKED(IDC_STOPBUTTON , OnStopButton  )
+  ON_BN_CLICKED(IDC_STEPBUTTON , OnStepButton  )
+  ON_BN_CLICKED(IDC_RESETBUTTON, OnResetButton )
+  ON_BN_CLICKED(IDC_EDITBUTTON , OnEditButton  )
+  ON_COMMAND(ID_FILE_EXIT      , OnFileExit    )
+  ON_COMMAND(ID_VIEW_TIMER     , OnViewTimer   )
 END_MESSAGE_MAP()
 
 
 BOOL CTestbinDlg::OnInitDialog() {
-    __super::OnInitDialog();
+  __super::OnInitDialog();
 
-    ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
-    ASSERT(IDM_ABOUTBOX < 0xF000);
+  ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
+  ASSERT(IDM_ABOUTBOX < 0xF000);
 
-    CMenu *pSysMenu = GetSystemMenu(FALSE);
-    if (pSysMenu != NULL) {
-      CString strAboutMenu;
-      strAboutMenu.LoadString(IDS_ABOUTBOX);
-      if (!strAboutMenu.IsEmpty()) {
-        pSysMenu->AppendMenu(MF_SEPARATOR);
-        pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, strAboutMenu);
-      }
+  CMenu *pSysMenu = GetSystemMenu(FALSE);
+  if(pSysMenu != NULL) {
+    CString strAboutMenu;
+    strAboutMenu.LoadString(IDS_ABOUTBOX);
+    if(!strAboutMenu.IsEmpty()) {
+      pSysMenu->AppendMenu(MF_SEPARATOR);
+      pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, strAboutMenu);
     }
+  }
 
-    SetIcon(m_hIcon, TRUE);         // Set big icon
-    SetIcon(m_hIcon, FALSE);        // Set small icon
+  SetIcon(m_hIcon, TRUE);         // Set big icon
+  SetIcon(m_hIcon, FALSE);        // Set small icon
 
-    m_counterThread  = new CounterThread(*this);
-    m_timerIsRunning = false;
-    m_timerInterval  = 500;
-    m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATOR1));
-    showCounter();
-    return TRUE;  // return TRUE  unless you set the focus to a control
+  m_counterThread  = new CounterThread(*this);
+  m_timerIsRunning = false;
+  m_timerInterval  = 500;
+  m_editMode       = false;
+  m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATOR1));
+  showCounter();
+  ajourEnabling();
+  return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
 void CTestbinDlg::OnSysCommand(UINT nID, LPARAM lParam) {
@@ -126,6 +132,28 @@ void CTestbinDlg::OnClose() {
 }
 
 BOOL CTestbinDlg::PreTranslateMessage(MSG *pMsg) {
+  if(m_editMode) {
+    switch(pMsg->message) {
+    case WM_KEYDOWN:
+      { const wchar_t ch = toAscii((UINT)pMsg->wParam);
+        if(keyPressed(VK_CONTROL) || !isxdigit(ch)) break;
+        CEdit *editBox = (CEdit*)GetDlgItem(IDC_EDITHEX);
+        int start, end;
+        editBox->GetSel(start, end);
+        m_hexString.Delete(start);
+        const wchar_t upperCaseChar = iswlower(ch) ? towupper(ch) : ch;
+        m_hexString.Insert(start, upperCaseChar);
+        UpdateData(FALSE);
+        if(start < 15) {
+          start++; end++;
+        }
+        editBox->SetSel(start, end);
+        showCounter(hexStringToInt());
+        return true;
+      }
+      break;
+    }
+  }
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     return true;
   }
@@ -161,34 +189,103 @@ UINT CounterThread::run() {
   return 0;
 }
 
-void CTestbinDlg::showCounter() {
-  TCHAR tmp1[100],tmp2[256];
-  UINT64 n = m_counterThread->getCounter();
-  _stprintf(tmp2,_T("%s:%016I64X"), sprintbin(tmp1,n),n);
-  GetDlgItem(IDC_STATICTEXT)->SetWindowText(tmp2);
+void CTestbinDlg::showCounter(UINT64 n) {
+  TCHAR tmp[100];
+  if(m_editMode) {
+    setWindowText(this, IDC_STATICTEXT, format(_T("%s:"), sprintbin(tmp, n)));
+  } else {
+    setWindowText(this, IDC_STATICTEXT, format(_T("%s:%016I64X"), sprintbin(tmp, n), n));
+  }
+}
+
+void CTestbinDlg::ajourEnabling() {
+  if(m_editMode) {
+    GetDlgItem(IDC_STARTBUTTON)->EnableWindow(FALSE);
+    GetDlgItem(IDC_STOPBUTTON )->EnableWindow(FALSE);
+    GetDlgItem(IDC_STEPBUTTON )->EnableWindow(FALSE);
+    GetDlgItem(IDC_RESETBUTTON)->EnableWindow(FALSE);
+    GetDlgItem(IDC_EDITBUTTON )->EnableWindow(TRUE );
+  } else if(m_timerIsRunning) {
+    GetDlgItem(IDC_STARTBUTTON)->EnableWindow(FALSE);
+    GetDlgItem(IDC_STOPBUTTON )->EnableWindow(TRUE );
+    GetDlgItem(IDC_STEPBUTTON )->EnableWindow(FALSE);
+    GetDlgItem(IDC_RESETBUTTON)->EnableWindow(FALSE);
+    GetDlgItem(IDC_EDITBUTTON )->EnableWindow(FALSE);
+  } else {
+    GetDlgItem(IDC_STARTBUTTON)->EnableWindow(TRUE );
+    GetDlgItem(IDC_STOPBUTTON )->EnableWindow(FALSE);
+    GetDlgItem(IDC_STEPBUTTON )->EnableWindow(TRUE );
+    GetDlgItem(IDC_RESETBUTTON)->EnableWindow(TRUE );
+    GetDlgItem(IDC_EDITBUTTON )->EnableWindow(TRUE );
+  }
 }
 
 void CTestbinDlg::OnStartButton() {
+  if(m_timerIsRunning) return;
   m_counterThread->resume();
   startTimer();
+  ajourEnabling();
 }
 
-void CTestbinDlg::OnStopbutton() {
+void CTestbinDlg::OnStopButton() {
+  if(!m_timerIsRunning) return;
   m_counterThread->suspend();
   stopTimer();
   showCounter();
+  ajourEnabling();
 }
 
-void CTestbinDlg::OnStepbutton() {
+void CTestbinDlg::OnStepButton() {
+  if(m_timerIsRunning) {
+    OnStopButton();
+  }
   m_counterThread->step();
   showCounter();
 }
 
-void CTestbinDlg::OnResetbutton() {
+void CTestbinDlg::OnResetButton() {
   stopTimer();
   m_counterThread->suspend();
   m_counterThread->reset();
   showCounter();
+  ajourEnabling();
+}
+
+void CTestbinDlg::OnEditButton() {
+  if(m_timerIsRunning) return;
+  if(m_editMode) {
+    leaveEditMode();
+    showCounter();
+  } else {
+    enterEditMode();
+  }
+  ajourEnabling();
+}
+
+void CTestbinDlg::enterEditMode() {
+  if(m_editMode) return;
+  GetDlgItem(IDC_EDITHEX)->ShowWindow(SW_SHOW);
+  UINT64 n = m_counterThread->getCounter();
+  TCHAR tmp[100];
+  _stprintf(tmp, _T("%016I64X"), n);
+  m_hexString = tmp;
+  UpdateData(FALSE);
+  GetDlgItem(IDC_EDITHEX)->SetFocus();
+  m_staticTextWinSize = getWindowSize(    this, IDC_STATICTEXT);
+  CPoint editPos      = getWindowPosition(this, IDC_EDITHEX   );
+  CPoint staticPos    = getWindowPosition(this, IDC_STATICTEXT);
+  setWindowSize(this, IDC_STATICTEXT, CSize(editPos.x - staticPos.x - 2, m_staticTextWinSize.cy));
+  m_editMode = true;
+}
+
+void CTestbinDlg::leaveEditMode() {
+  if(!m_editMode) return;
+
+  UpdateData();
+  m_counterThread->setCounter(hexStringToInt());
+  GetDlgItem(IDC_EDITHEX)->ShowWindow(SW_HIDE);
+  setWindowSize(this, IDC_STATICTEXT, m_staticTextWinSize);
+  m_editMode = false;
 }
 
 void CTestbinDlg::OnTimer(UINT_PTR nIDEvent) {
