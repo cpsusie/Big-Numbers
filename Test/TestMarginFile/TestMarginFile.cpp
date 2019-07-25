@@ -16,7 +16,7 @@ int main(int argc, char **argv) {
   for(int i = 0; i < 10; i++) {
     tostdout->setLeftMargin(i);
     fprintf(tostdout,_T("%s\n123456\n"),_T("jesper"));
-    fprintf(tostdout,_T("sdfgs%s%c"),randstr(str,rand()%(sizeof(str)-1)),(rand()%2)?'\n':' ');
+    fprintf(tostdout,_T("sdfgs%s%c"),randstr(str,rand()%(ARRAYSIZE(str)-1)),(rand()%2)?'\n':' ');
   }
   return 0;
 }
