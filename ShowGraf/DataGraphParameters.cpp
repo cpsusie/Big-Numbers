@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <float.h>
+#include <FileNameSplitter.h>
 #include <Date.h>
 #include "DataGraphParameters.h"
 
