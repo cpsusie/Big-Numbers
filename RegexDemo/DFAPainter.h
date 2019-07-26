@@ -1,10 +1,11 @@
 #pragma once
 
 #include <CompactStack.h>
+#include <MatrixTemplate.h>
+#include <TinyBitSet.h>
+#include <BitSetMatrix.h>
 #include <Math/Point2D.h>
 #include <Math/Transformation.h>
-#include <TinyBitSet.h>
-#include <MatrixTemplate.h>
 #include "AutomatePainter.h"
 #include "DFA.h"
 

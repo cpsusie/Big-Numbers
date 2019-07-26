@@ -1,5 +1,6 @@
 #pragma once
 
+#include <BitSetMatrix.h>
 #include "NFA.h"
 #include "AutomatePainter.h"
 

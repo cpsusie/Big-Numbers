@@ -4,6 +4,21 @@
 #include <Math/sigmoidIterator.h>
 #include "NFAPainter.h"
 
+#ifdef TESTGRIDMATRIX
+
+#include <DebugLog.h>
+
+static void dumpGridMatrix(const String &label, const BitMatrix &m) {
+  debugLog(_T("%s:\n%s\n"), label.cstr(), m.toString().cstr());
+}
+#define DUMPGRIDMATRIX(label, m) dumpGridMatrix(label, m)
+
+#else // TESTGRIDMATRIX
+
+#define DUMPGRIDMATRIX(label, m)
+
+#endif // TESTGRIDMATRIX
+
 // ----------------------------------------- NFAStatePoint ----------------------------------------
 
 BYTE NFAStatePoint::createAttributes(const NFAState *s) { // static
@@ -59,10 +74,6 @@ BitMatrix NFAPainter::createGridMatrix(const CSize &gridSize) const {
     result.set(sp->m_gridY, sp->m_gridX, true);
   }
   return result;
-}
-
-static void dumpGridMatrix(const String &label, const BitMatrix &m) {
-  debugLog(_T("%s:\n%s\n"), label.cstr(), m.toString().cstr());
 }
 
 void NFAPainter::calculateAllPositions() {
@@ -210,7 +221,7 @@ void NFAPainter::setPositions(size_t subNFACount) {
 
   if(gridSize.cx > 5) { // adjust positions
 
-//    dumpGridMatrix(_T("Before adjust position"), createGridMatrix(gridSize));
+    DUMPGRIDMATRIX(_T("Before adjust position"), createGridMatrix(gridSize));
 
     Array<CompactShortArray> rowIndices;
     for(int r = 0; r < gridSize.cy; r++) {
@@ -239,7 +250,7 @@ void NFAPainter::setPositions(size_t subNFACount) {
     }
     gridSize.cy += rowsAdded;
 
-//    dumpGridMatrix(_T("After adjust position"), createGridMatrix(gridSize));
+    DUMPGRIDMATRIX(_T("After adjust position"), createGridMatrix(gridSize));
 
   }
 
@@ -265,7 +276,7 @@ void NFAPainter::setPositions(size_t subNFACount) {
     }
   }
 
-//  dumpGridMatrix(_T("Final Grid"), createGridMatrix(gridSize));
+  DUMPGRIDMATRIX(_T("Final Grid"), createGridMatrix(gridSize));
 
   for(size_t i = 0; i < m_nfaPoints.size(); i++) {
     NFAStatePoint *sp = m_nfaPoints[i];
