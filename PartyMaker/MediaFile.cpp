@@ -1,4 +1,6 @@
 #include "stdafx.h"
+#include <MyUtil.h>
+#include <FileNameSplitter.h>
 #include "mp3tag.h"
 
 GenreMap MediaFile::m_genreMap;

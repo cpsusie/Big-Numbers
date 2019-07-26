@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <FileNameSplitter.h>
 #include "MediaFile.h"
 
 void MobileMediaFileComparator::setDefault() {

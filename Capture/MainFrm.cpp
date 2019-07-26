@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include <io.h>
-#include <process.h>
+#include <Process.h>
+#include <FileNameSplitter.h>
 #include <MFCUtil/Clipboard.h>
 #include "CaptureView.h"
 #include "CaptureAreaDialog.h"

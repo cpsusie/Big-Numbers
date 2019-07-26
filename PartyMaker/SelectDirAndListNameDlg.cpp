@@ -1,9 +1,10 @@
 #include "stdafx.h"
-#include <MFCUtil/SelectDirDlg.h>
-#include "PartyMaker.h"
+#include <FileNameSplitter.h>
 #include <Scandir.h>
 #include <Direct.h>
 #include <Tokenizer.h>
+#include <MFCUtil/SelectDirDlg.h>
+#include "PartyMaker.h"
 #include "SelectDirAndListNameDlg.h"
 
 #ifdef _DEBUG

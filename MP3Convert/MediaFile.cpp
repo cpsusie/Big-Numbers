@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <HexDump.h>
 #include "MediaFile.h"
 
 void MediaFile::clear() {

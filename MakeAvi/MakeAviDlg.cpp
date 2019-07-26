@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <io.h>
+#include <FileNameSplitter.h>
 #include <MFCUtil/PixRect.h>
 #include <MFCUtil/AviFile.h>
 #include <MFCUtil/ProgressWindow.h>

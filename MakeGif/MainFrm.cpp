@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <FileNameSplitter.h>
 #include <MFCUtil/SelectDirDlg.h>
 #include "PixRectArray.h"
 #include "SettingsDlg.h"

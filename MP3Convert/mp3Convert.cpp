@@ -1,4 +1,6 @@
 #include "stdafx.h"
+#include <MyUtil.h>
+#include <FileNameSplitter.h>
 #include <FileTreeWalker.h>
 #include <ByteMemoryStream.h>
 #include "MediaFile.h"

@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <MathUtil.h>
 #include "AvlTreeWndDlg.h"
 #include "GetIntDlg.h"
 

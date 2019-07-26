@@ -2,6 +2,7 @@
 #include "afxwinappex.h"
 #include "afxdialogex.h"
 #include <Process.h>
+#include <FileNameSplitter.h>
 #include "MainFrm.h"
 #include "CaptureDoc.h"
 #include "CaptureView.h"

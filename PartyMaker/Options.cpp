@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include <Registry.h>
-#include "Options.h"
 #include <MD5.h>
+#include "Options.h"
 
 static const TCHAR *registryEntry = _T("Software\\JGMData\\PartyMaker");
 
@@ -87,15 +87,22 @@ RegistryKey Options::getKey() { // static
   return RegistryKey(HKEY_CURRENT_USER,registryEntry).createOrOpenKey(_T("Settings"));
 }
 
+static String passwordToHashCode(const String &password) {
+  USES_CONVERSION;
+  char *str = T2A(password.cstr());
+
+  MD5HashCode hashCode;
+  return MD5::getHashCode(hashCode, ByteArray((BYTE*)str, strlen(str))).toString();
+}
+
 bool Options::validatePassword(const String &password) { // static
   Options options;
   options.load();
   if(options.m_md5password.length() == 0) {
     return password.length() == 0;
   } else {
-    MD5Context md5;
-    const String coded = md5.digest(password);
-    return coded == options.m_md5password;
+    const String md5password = passwordToHashCode(password);
+    return md5password == options.m_md5password;
   }
 }
 
@@ -104,14 +111,13 @@ void Options::setPassword(const String &oldPassword, const String &newPassword) 
     throwException(_T("Forkert password"));
   }
 
-  String newMD5Password;
+  String newMD5password;
   if(newPassword.length() == 0) {
-    newMD5Password = EMPTYSTRING;
+    newMD5password = EMPTYSTRING;
   } else {
-    MD5Context md5;
-    newMD5Password = md5.digest(newPassword);
+    newMD5password = passwordToHashCode(newPassword);
   }
-  getKey().setValue(_T("password"),newMD5Password);
+  getKey().setValue(_T("password"),newMD5password);
 }
 
 void Options::setDirList(const String &dirList) {

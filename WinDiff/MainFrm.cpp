@@ -249,7 +249,7 @@ void CMainFrame::updateLoadOptionsMenu() {
   const StringArray optionNames = Options::getExistingNames();
   const String saveOptionsMenuPath = _T("3/11");
   int index;
-  HMENU optionsMenu = findMenuByString(m_hMenuDefault, saveOptionsMenuPath, index);
+  HMENU optionsMenu = findMenuByString(m_hMenuDefault, saveOptionsMenuPath, &index);
   HMENU loadMenu    = (optionsMenu && (index >= 0)) ? getSubMenu(optionsMenu, _T("load options")) : NULL;
 
   if(loadMenu == NULL) {

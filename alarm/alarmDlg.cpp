@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <MyUtil.h>
 #include <Date.h>
 #include <Registry.h>
 #include "AlarmDlg.h"

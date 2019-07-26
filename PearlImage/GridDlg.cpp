@@ -1,6 +1,7 @@
 #include "stdafx.h"
-#include <MFCUtil/resource.h>
+#include <FileNameSplitter.h>
 #include <ExternProcess.h>
+#include <MFCUtil/resource.h>
 #include "GridDlg.h"
 
 IMPLEMENT_DYNAMIC(CGridDlg, CDialog)

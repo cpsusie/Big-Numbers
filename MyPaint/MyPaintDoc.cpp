@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <FileNameSplitter.h>
 #include "MyPaintDoc.h"
 
 #ifdef _DEBUG

@@ -8,12 +8,12 @@
 BEGIN_MESSAGE_MAP(CHexViewApp, CWinApp)
   ON_COMMAND(ID_APP_ABOUT, OnAppAbout)
   // Standard file based document commands
-  ON_COMMAND(ID_FILE_OPEN, CWinApp::OnFileOpen)
+  ON_COMMAND(ID_FILE_OPEN, OnFileOpen)
   // Standard print setup command
 END_MESSAGE_MAP()
 
 CHexViewApp::CHexViewApp() {
-    SetAppID(_T("HexView version 2.001"));
+  SetAppID(_T("HexView version 2.001"));
 }
 
 CHexViewApp theApp;
@@ -80,7 +80,7 @@ void CHexViewApp::addToRecentFileList(const String &name) {
   } catch (CException * e) {
     TCHAR strCause[1000];
     e->GetErrorMessage(strCause, ARRAYSIZE(strCause));
-    debugLog(_T("Exception in %s: %s.  -- Ignoring\n"), __TFUNCTION__, strCause);
+//    debugLog(_T("Exception in %s: %s.  -- Ignoring\n"), __TFUNCTION__, strCause);
     e->Delete();
   }
 }

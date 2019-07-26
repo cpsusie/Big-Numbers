@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <FileNameSplitter.h>
 #include "MainFrm.h"
 #include "Degreedlg.h"
 #include "ScaleDlg.h"

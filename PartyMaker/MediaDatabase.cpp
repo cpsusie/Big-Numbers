@@ -1,4 +1,6 @@
 #include "stdafx.h"
+#include <MyUtil.h>
+#include <FileNameSplitter.h>
 #include <Tokenizer.h>
 #include <ByteFile.h>
 #include <CompressFilter.h>
@@ -486,7 +488,7 @@ void LoadableMediaArray::initFileName() {
 bool LoadableMediaArray::add(const MediaFile &mf) {
   try {
     if(mf.getProtected()) {
-      debugLog(_T("rm \"%s\"\n"), mf.getSourceURL());
+//      debugLog(_T("rm \"%s\"\n"), mf.getSourceURL());
       return true;
     }
     wait();

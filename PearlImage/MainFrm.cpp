@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <FileNameSplitter.h>
 #include <MFCUtil/ColorSpace.h>
 #include "MainFrm.h"
 #include "Degreedlg.h"

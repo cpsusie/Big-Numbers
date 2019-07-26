@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <MyUtil.h>
 #include <Direct.h>
 #include "resource.h"
 #include "ShowDirAndArg.h"
