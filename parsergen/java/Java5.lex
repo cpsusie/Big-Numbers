@@ -25,103 +25,103 @@ static int nameOrKeyWord(const TCHAR *lexeme);
 
 %}
 
-letter			[_a-zA-Z\x80-\xff]		/* Letter									*/
-letterordigit	[_a-zA-Z\x80-\xff0-9]	/* Alphanumeric character					*/
-white			[\f\s\t\n\r]			/* White space:								*/
-d				[0-9]					/* Decimal digit							*/
-h				[0-9a-fA-F]				/* Hexadecimal digit						*/
-o				[0-7]                   /* Octal digit                              */
+letter                        [_a-zA-Z\x80-\xff]            /* Letter                                                                                 */
+letterordigit                 [_a-zA-Z\x80-\xff0-9]         /* Alphanumeric character                                             */
+white                         [\f\s\t\n\r]                  /* White space:                                                                           */
+d                             [0-9]                         /* Decimal digit                                                                */
+h                             [0-9a-fA-F]                   /* Hexadecimal digit                                                            */
+o                             [0-7]                         /* Octal digit                              */
 
 %%
 
-{d}+[lL]?					|
-0{o}+[lL]?				|
-0[xX]{h}+[lL]?		return INTEGERLITERAL;
+{d}+[lL]?                     |
+0{o}+[lL]?                    |
+0[xX]{h}+[lL]?                return INTEGERLITERAL;
 
 ({d}|{d}+\.{d}*|{d}*\.{d}+)([eE][\-+]?{d}+)?[fFdD]? return FLOATLITERAL;
 
-\"(\\.|[^\\\"])*\"			return STRINGLITERAL;
+\"(\\.|[^\\\"])*\"                                  return STRINGLITERAL;
 
-'([^'\\]|\\.)'				return CHARACTERLITERAL;
+'([^'\\]|\\.)'                                      return CHARACTERLITERAL;
 
 
-{letter}{letterordigit}*	return nameOrKeyWord(getText());
+{letter}{letterordigit}*                            return nameOrKeyWord(getText());
 
-"/*"						{ int i;
-							  SourcePosition startpos = getPos();
-							  while(i = input()) {
-							    if(i < 0) {
-							      flushBuf();  /* Discard lexeme. */
-							    } else if(i == '*' && look(1) == '/') {
-							     input();
-							     break;       /* Recognized comment.*/
-							    }
-							  }
-							  if(i == 0) {
-							    error( startpos,_T("End of file in comment\n") );
-                              }
-							}
+"/*"                                                { int i;
+                                                      SourcePosition startpos = getPos();
+                                                      while(i = input()) {
+                                                        if(i < 0) {
+                                                          flushBuf();  /* Discard lexeme. */
+                                                        } else if(i == '*' && look(1) == '/') {
+                                                         input();
+                                                         break;       /* Recognized comment.*/
+                                                        }
+                                                      }
+                                                      if(i == 0) {
+                                                        error( startpos,_T("End of file in comment\n") );
+                                                      }
+                                                    }
 
-"//"						{ int i;
-							  while(i = input()) {
-							    if(i < 0) {
-							      flushBuf();  /* Discard lexeme. */
-							    } else if(i == '\n') {
-							      break;
-							    }
-                              }
-							}
+"//"                                                { int i;
+                                                      while(i = input()) {
+                                                        if(i < 0) {
+                                                          flushBuf();  /* Discard lexeme. */
+                                                        } else if(i == '\n') {
+                                                          break;
+                                                        }
+                                                      }
+                                                    }
 
-"("		return LPAR;
-")"		return RPAR;
-"{"		return LC;
-"}"		return RC;
-"["		return LB;
-"]"		return RB;
-";"		return SEMICOLON;
-","		return COMMA;
-"."		return DOT;
-"="		return ASSIGN;
-"<"		return LT;
-">"		return GT;
-"!"		return NOT;
-"~"		return COMPLEMENT;
-"?"		return QUESTION;
-":"		return COLON;
-"..."	return ELLIPSIS;
-"@"		return AT;
-"=="	return EQ;
-"<="	return LE;
-">="	return GE;
-"!="	return NEQ;
-"&&"	return ANDAND;
-"||"	return OROR;
-"++"	return PLUSPLUS;
-"--"	return MINUSMINUS;
-"+"		return PLUS;
-"-"		return MINUS;
-"*"		return STAR;
-"/"		return DIV;
-"&"		return AND;
-"|"		return OR;
-"^"		return XOR;
-"%"		return MOD;
-"<<"	return SHL;
-">>"	return SSHR;
-">>>"	return USHR;
-"+="	return PLUSASSIGN;
-"-="	return MINUSASSIGN;
-"*="	return STARASSIGN;
-"/="	return DIVASSIGN;
-"&="	return ANDASSIGN;
-"|="	return ORASSIGN;
-"^="	return XORASSIGN;
-"%="	return MODASSIGN;
-"<<="	return SHLASSIGN;
-">>="	return SSHRASSIGN;
-">>>="	return USHRASSIGN;
+"("                 return LPAR;
+")"                 return RPAR;
+"{"                 return LC;
+"}"                 return RC;
+"["                 return LB;
+"]"                 return RB;
+";"                 return SEMICOLON;
+","                 return COMMA;
+"."                 return DOT;
+"="                 return ASSIGN;
+"<"                 return LT;
+">"                 return GT;
+"!"                 return NOT;
+"~"                 return COMPLEMENT;
+"?"                 return QUESTION;
+":"                 return COLON;
+"..."               return ELLIPSIS;
+"@"                 return AT;
+"=="                return EQ;
+"<="                return LE;
+">="                return GE;
+"!="                return NEQ;
+"&&"                return ANDAND;
+"||"                return OROR;
+"++"                return PLUSPLUS;
+"--"                return MINUSMINUS;
+"+"                 return PLUS;
+"-"                 return MINUS;
+"*"                 return STAR;
+"/"                 return DIV;
+"&"                 return AND;
+"|"                 return OR;
+"^"                 return XOR;
+"%"                 return MOD;
+"<<"                return SHL;
+">>"                return SSHR;
+">>>"               return USHR;
+"+="                return PLUSASSIGN;
+"-="                return MINUSASSIGN;
+"*="                return STARASSIGN;
+"/="                return DIVASSIGN;
+"&="                return ANDASSIGN;
+"|="                return ORASSIGN;
+"^="                return XORASSIGN;
+"%="                return MODASSIGN;
+"<<="               return SHLASSIGN;
+">>="               return SSHRASSIGN;
+">>>="              return USHRASSIGN;
 
-{white}+	;
+{white}+  ;
 
 %%
 
@@ -191,7 +191,7 @@ public:
   ReservedWordMap(int capacity) : HashMapType(capacity) {
     for(int i = 0; i < ARRAYSIZE(wordTable); i++) {
       put(wordTable[i].m_name,wordTable[i].m_token);
-	}
+    }
   }
 };
 
@@ -207,22 +207,22 @@ void Java5Lex::findBestHashMapSize() {
   int bestCapacity;
   for(int capacity = 3; capacity < 2000; capacity++) {
     ReservedWordMap ht(capacity);
-	cl.put((int)ht.getCapacity(), ht.getLength());
-	if(ht.getMaxChainLength() == 1) {
-	  bestCapacity = capacity;
-	  break;
-	}
+    cl.put((int)ht.getCapacity(), ht.getLength());
+    if(ht.getMaxChainLength() == 1) {
+      bestCapacity = capacity;
+      break;
+    }
   }
 
   for(Iterator<Entry<int, CompactIntArray> > it = cl.entrySet().getIterator(); it.hasNext();) {
     Entry<int, CompactIntArray> &e = it.next();
     int capacity = e.getKey();
-	const CompactIntArray &chainLength = e.getValue();
-	printf("Capacity %4d:",capacity);
-	for(size_t l = 0; l < chainLength.size(); l++) {
-	  printf(" (%d,%3d)",(int)l,chainLength[l]);
-	}
-	printf("\n");
+    const CompactIntArray &chainLength = e.getValue();
+    printf("Capacity %4d:",capacity);
+    for(size_t l = 0; l < chainLength.size(); l++) {
+      printf(" (%d,%3d)",(int)l,chainLength[l]);
+    }
+    printf("\n");
   }
   printf("Capacity:%d gives best hashmap\n",bestCapacity);
 }

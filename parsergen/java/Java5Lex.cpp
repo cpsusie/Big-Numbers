@@ -137,8 +137,8 @@ static int nameOrKeyWord(const TCHAR *lexeme);
 //   goto 59 on Fd
 //   goto 69 on e
 //   goto 59 on f
-// DFA State  40 [accepting, line  50 <{ int i;          SourcePosition startpos = getPos>]
-// DFA State  41 [accepting, line  65 <{ int i;          while(i = input()) {            >]
+// DFA State  40 [accepting, line  50 <{ int i;   SourcePosition startpos = getPos();   w>]
+// DFA State  41 [accepting, line  65 <{ int i;   while(i = input()) {     if(i < 0) {   >]
 // DFA State  42 [accepting, line 115 <return DIVASSIGN;>]
 // DFA State  43 [accepting, line 109 <return SHL;>]
 //   goto 53 on =
@@ -624,32 +624,32 @@ int Java5Lex::getNextLexeme() {
       case 40:
 #line 50 "C:\\mytools2015\\ParserGen\\java\\Java5.lex"
         { int i;
-        							  SourcePosition startpos = getPos();
-        							  while(i = input()) {
-        							    if(i < 0) {
-        							      flushBuf();  /* Discard lexeme. */
-        							    } else if(i == '*' && look(1) == '/') {
-        							     input();
-        							     break;       /* Recognized comment.*/
-        							    }
-        							  }
-        							  if(i == 0) {
-        							    error( startpos,_T("End of file in comment\n") );
-                                      }
-        							}
+          SourcePosition startpos = getPos();
+          while(i = input()) {
+            if(i < 0) {
+              flushBuf();  /* Discard lexeme. */
+            } else if(i == '*' && look(1) == '/') {
+             input();
+             break;       /* Recognized comment.*/
+            }
+          }
+          if(i == 0) {
+            error( startpos,_T("End of file in comment\n") );
+          }
+        }
 #line 94 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 41:
 #line 65 "C:\\mytools2015\\ParserGen\\java\\Java5.lex"
         { int i;
-        							  while(i = input()) {
-        							    if(i < 0) {
-        							      flushBuf();  /* Discard lexeme. */
-        							    } else if(i == '\n') {
-        							      break;
-        							    }
-                                      }
-        							}
+          while(i = input()) {
+            if(i < 0) {
+              flushBuf();  /* Discard lexeme. */
+            } else if(i == '\n') {
+              break;
+            }
+          }
+        }
 #line 94 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 42:
@@ -815,7 +815,7 @@ public:
   ReservedWordMap(int capacity) : HashMapType(capacity) {
     for(int i = 0; i < ARRAYSIZE(wordTable); i++) {
       put(wordTable[i].m_name,wordTable[i].m_token);
-	}
+    }
   }
 };
 
@@ -831,22 +831,22 @@ void Java5Lex::findBestHashMapSize() {
   int bestCapacity;
   for(int capacity = 3; capacity < 2000; capacity++) {
     ReservedWordMap ht(capacity);
-	cl.put((int)ht.getCapacity(), ht.getLength());
-	if(ht.getMaxChainLength() == 1) {
-	  bestCapacity = capacity;
-	  break;
-	}
+    cl.put((int)ht.getCapacity(), ht.getLength());
+    if(ht.getMaxChainLength() == 1) {
+      bestCapacity = capacity;
+      break;
+    }
   }
 
   for(Iterator<Entry<int, CompactIntArray> > it = cl.entrySet().getIterator(); it.hasNext();) {
     Entry<int, CompactIntArray> &e = it.next();
     int capacity = e.getKey();
-	const CompactIntArray &chainLength = e.getValue();
-	printf("Capacity %4d:",capacity);
-	for(size_t l = 0; l < chainLength.size(); l++) {
-	  printf(" (%d,%3d)",(int)l,chainLength[l]);
-	}
-	printf("\n");
+    const CompactIntArray &chainLength = e.getValue();
+    printf("Capacity %4d:",capacity);
+    for(size_t l = 0; l < chainLength.size(); l++) {
+      printf(" (%d,%3d)",(int)l,chainLength[l]);
+    }
+    printf("\n");
   }
   printf("Capacity:%d gives best hashmap\n",bestCapacity);
 }

@@ -15,7 +15,8 @@ typedef char TableType;
 * interpret the entry in the action-table                                    *
 * Number of bytes in bitset = (statecount-1)/8+1                             *
 \****************************************************************************/
-static const BYTE compressedSet[3] = { 0xda,0xf6,0x1f
+static const BYTE compressedSet[3] = {
+   0xda,0xf6,0x1f
 }; // Size of table:4(x86)/8(x64) bytes.
 
 /****************************************************************************\
