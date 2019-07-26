@@ -1,5 +1,7 @@
 #pragma once
 
+#include "BasicIncludes.h"
+
 typedef enum {
     TF_ASCII8
   , TF_ASCII16_BE

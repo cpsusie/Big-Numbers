@@ -1,5 +1,7 @@
 #pragma once
 
+#include "BasicIncludes.h"
+
 class ByteInputStream {
 public:
   // Must return the actual number of bytes read.
