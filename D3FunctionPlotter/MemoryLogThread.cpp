@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <ProcessTools.h>
+#include <DebugLog.h>
 #include <Date.h>
 #include "MemoryLogThread.h"
 

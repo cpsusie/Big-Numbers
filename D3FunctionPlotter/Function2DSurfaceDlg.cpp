@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <FileNameSplitter.h>
 #include "Function2DSurfaceDlg.h"
 
 #ifdef _DEBUG

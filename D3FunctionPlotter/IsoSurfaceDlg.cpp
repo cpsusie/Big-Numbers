@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <FileNameSplitter.h>
 #include "IsoSurfaceDlg.h"
 
 #ifdef _DEBUG

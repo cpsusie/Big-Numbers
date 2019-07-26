@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <FileNameSplitter.h>
 #include "ProfileDlg.h"
 #include "ProfilePainter.h"
 //#include "SelectGlyphDialog.h"
