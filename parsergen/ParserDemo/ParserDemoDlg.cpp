@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "ParserDemoDlg.h"
+#include <MyUtil.h>
 #include "ErrorsDlg.h"
 #include "SelectBreakProductionsDlg.h"
 #include "SelectBreakStatesDlg.h"
@@ -9,6 +9,7 @@
 #include "ShowStateDlg.h"
 #include "GotoDlg.h"
 #include "ShowStateThread.h"
+#include "ParserDemoDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -118,46 +119,25 @@ BEGIN_MESSAGE_MAP(CParserDemoDlg, CDialog)
 END_MESSAGE_MAP()
 
 static int findCharacterPosition(const TCHAR *s, const SourcePosition &pos) {
-  int lineCount = 1;
-  int col       = 0;
-  int i;
-  for(i = 0; *s; i++, s++) {
-    if(lineCount == pos.getLineNumber() && col == pos.getColumn() ) {
-      break;
-    }
-    if(*s == '\n') {
-      lineCount++;
-      col = 0;
-    } else {
-      col++;
-    }
-  }
-  return i;
+  return SourcePosition(pos.getLineNumber()-1,pos.getColumn()).findCharIndex(s);
 }
 
 static SourcePosition findSourcePosition(const TCHAR *s, int index) {
-  SourcePosition pos(1, 0);
-  for(int i = 0; i < index && *s; i++, s++) {
-    if(*s == '\n') {
-      pos.incrLineNumber();
-    } else {
-      pos.incrColumn();
-    }
-  }
-  return pos;
+  const SourcePosition tmp(s, index);
+  return SourcePosition(tmp.getLineNumber() + 1, tmp.getColumn());
 }
 
-static bool isIdentifierChar(unsigned char ch) {
+static bool isIdentifierChar(BYTE ch) {
   return _istalpha(ch) || ch == '_';
 }
 
 class CharacterClass {
 public:
-  static unsigned char charClass[256];
+  static BYTE charClass[256];
   CharacterClass();
 };
 
-unsigned char CharacterClass::charClass[256];
+BYTE CharacterClass::charClass[256];
 
 CharacterClass::CharacterClass() {
   for(int i = 0; i < ARRAYSIZE(charClass); i++) {
@@ -188,10 +168,10 @@ String getWord(const TCHAR *s, int pos) {
   if(_istspace(ch)) {
     return EMPTYSTRING;
   } else {
-    while((start > 0) && (CharacterClass::charClass[(unsigned char)(s[start-1])] == chClass)) {
+    while((start > 0) && (CharacterClass::charClass[(BYTE)(s[start-1])] == chClass)) {
       start--;
     }
-    while(CharacterClass::charClass[(unsigned char)(s[end+1])] == chClass) {
+    while(CharacterClass::charClass[(BYTE)(s[end+1])] == chClass) {
       end++;
     }
   }
@@ -642,7 +622,7 @@ void CParserDemoDlg::gotoTextPosition(const SourcePosition &pos) {
 }
 
 void CParserDemoDlg::gotoTextPosition(int id, const Array<SourcePosition> &list, const SourcePosition &pos) {
-  int index = findSourcePositionIndex(list, pos);
+  const int index = findSourcePositionIndex(list, pos);
   if(index >= 0) {
     ((CListBox*)GetDlgItem(id))->SetCurSel(index);
   }
@@ -799,8 +779,7 @@ void CParserDemoDlg::OnOptionsStackSize() {
 }
 
 void CParserDemoDlg::OnHelpAboutParserDemo() {
-  CAboutDlg dlg;
-  dlg.DoModal();
+  CAboutDlg().DoModal();
 }
 
 void CParserDemoDlg::OnSize(UINT nType, int cx, int cy) {
@@ -817,8 +796,7 @@ void CParserDemoDlg::OnSize(UINT nType, int cx, int cy) {
 void CParserDemoDlg::OnLButtonDblClk(UINT nFlags, CPoint point) {
   const int index = findStackElement(point);
   if(index > 0 && index < (int)m_parser.getStackHeight()) {
-    TreeDlg dlg(m_parser.getStackTop(m_parser.getStackHeight() - index - 1));
-    dlg.DoModal();
+    TreeDlg(m_parser.getStackTop(m_parser.getStackHeight() - index - 1)).DoModal();
   }
   __super::OnLButtonDblClk(nFlags, point);
 }
@@ -917,10 +895,10 @@ void CParserDemoDlg::OnCheckBreakOnState() {
 
 void CParserDemoDlg::OnCheckBreakOnSymbol() {
   UpdateData();
-  if(m_breakOnSymbol && m_breakSymbols->size() == 0) {
+  if(m_breakOnSymbol && m_breakSymbols->isEmpty()) {
     OnEditSelectSymbolsToBreakOn();
   }
-  if(m_breakSymbols->size() == 0) {
+  if(m_breakSymbols->isEmpty()) {
     m_breakOnSymbol = false;
     CheckDlgButton(IDC_CHECKBREAKONSYMBOL, BST_UNCHECKED);
   }
@@ -940,8 +918,7 @@ void CParserDemoDlg::OnEditBreakOnTextPosition() {
 
 void CParserDemoDlg::OnEditFind() {
   m_findParam.m_findWhat = getCurrentWord();
-  FindDlg dlg(m_findParam, *this);
-  if(dlg.DoModal() == IDOK) {
+  if(FindDlg(m_findParam, *this).DoModal() == IDOK) {
     find(m_findParam);
   }
 }
@@ -999,6 +976,5 @@ TextPositionPair CParserDemoDlg::searchText(const FindParameter &param) {
 }
 
 void CParserDemoDlg::OnEditDerivationTree() {
-  TreeDlg dlg(m_parser.getRoot());
-  dlg.DoModal();
+  TreeDlg(m_parser.getRoot()).DoModal();
 }
