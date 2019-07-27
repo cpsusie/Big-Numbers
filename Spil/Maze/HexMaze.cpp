@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <MathUtil.h>
 #include <Random.h>
 #include <Math.h>
 #include "HexMaze.h"

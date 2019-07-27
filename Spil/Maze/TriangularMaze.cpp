@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include <MathUtil.h>
 #include "TriangularMaze.h"
 #include "TriangularTurtle.h"
 

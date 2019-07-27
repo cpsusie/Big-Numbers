@@ -31,6 +31,9 @@
 #include <Timer.h>
 #include <FileVersion.h>
 #include <Tokenizer.h>
+#ifndef _DEBUG
+#include <DebugLog.h>
+#endif
 #include "Board.h"
 
 static int    maxTime       = 5*60*1000; // Time left in milliseconds to do maxMoves moves. default 5 minutes
