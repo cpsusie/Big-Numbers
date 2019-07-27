@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include <Random.h>
 #include <BitSet.h>
-#include <BitSetMatrix.h>
+#include <BitMatrix.h>
 #include <CompactHashSet.h>
 #include <ByteMemoryStream.h>
 #include <ByteFile.h>

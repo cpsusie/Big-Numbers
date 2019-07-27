@@ -3,7 +3,7 @@
 #include <CompactStack.h>
 #include <MatrixTemplate.h>
 #include <TinyBitSet.h>
-#include <BitSetMatrix.h>
+#include <BitMatrix.h>
 #include <Math/Point2D.h>
 #include <Math/Transformation.h>
 #include "AutomatePainter.h"

@@ -759,7 +759,7 @@
     <ClInclude Include="..\..\Include\BigArray.h" />
     <ClInclude Include="..\..\Include\BigEndianStream.h" />
     <ClInclude Include="..\..\Include\BitSet.h" />
-    <ClInclude Include="..\..\Include\BitSetMatrix.h" />
+    <ClInclude Include="..\..\Include\BitMatrix.h" />
     <ClInclude Include="..\..\Include\BitStream.h" />
     <ClInclude Include="..\..\Include\BMAutomate.h" />
     <ClInclude Include="..\..\Include\Bpn.h" />
@@ -794,7 +794,6 @@
     <ClInclude Include="..\..\Include\FileVersion.h" />
     <ClInclude Include="..\..\Include\HashMap.h" />
     <ClInclude Include="..\..\Include\HashSet.h" />
-    <ClInclude Include="..\..\Include\HexDump.h" />
     <ClInclude Include="..\..\Include\InputThread.h" />
     <ClInclude Include="..\..\Include\InterruptableRunnable.h" />
     <ClInclude Include="..\..\Include\Iterator.h" />

@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <DebugLog.h>
 
 void checkGifError(const char *file, int line, int errorCode) {
   if(errorCode == GIF_OK) {

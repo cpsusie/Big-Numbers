@@ -3,7 +3,6 @@
 #include <float.h>
 #include <limits.h>
 #include <Date.h>
-#include <HexDump.h>
 #include <Math/Double64.h>
 #include <Math/Double80.h>
 #include <Math/FPU.h>

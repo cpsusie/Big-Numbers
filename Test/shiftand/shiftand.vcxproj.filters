@@ -18,7 +18,7 @@
     <ClCompile Include="StdAfx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ShifAand.cpp">
+    <ClCompile Include="ShiftAnd.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

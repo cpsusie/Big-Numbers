@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <MathUtil.h>
 #include <Math/Double80.h>
 
 #define FSZ(n) format1000(n).cstr()

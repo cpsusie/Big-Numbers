@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <MyUtil.h>
+#include <DebugLog.h>
 
 void *operator new(size_t size, const TCHAR *file, int line, const TCHAR *method) {
   void *p = ::operator new(size);

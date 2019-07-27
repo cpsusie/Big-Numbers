@@ -1,6 +1,6 @@
 #pragma once
 
-#include <BitSetMatrix.h>
+#include <BitMatrix.h>
 #include <Math/MathLib.h>
 #include <MFCUtil/WinTools.h>
 #include <MFCUtil/Viewport2D.h>

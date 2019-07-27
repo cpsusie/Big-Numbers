@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <Array.h>
 #include <Tcp.h>
 
 static int findclientindex(Array<SOCKET> &clientsockets,fd_set &fds) {

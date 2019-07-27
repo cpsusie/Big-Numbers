@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <DebugLog.h>
 
 typedef struct {
   int    m_format;

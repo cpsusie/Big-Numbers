@@ -1,6 +1,5 @@
 #include "pch.h"
 #include <DebugLog.h>
-#include <HexDump.h>
 
 #define LINESIZE 16
 

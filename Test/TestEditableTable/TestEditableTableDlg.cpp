@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <DebugLog.h>
 #include "TestEditableTable.h"
 #include "TestEditableTableDlg.h"
 #include "EditModelSchemaDlg.h"

@@ -1,5 +1,5 @@
 #include "StdAfx.h"
-#include <HexDump.h>
+#include <DebugLog.h>
 #include <codecvt>
 #include <locale>
 #include <string>

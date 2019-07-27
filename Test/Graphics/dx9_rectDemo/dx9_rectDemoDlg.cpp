@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <FileNameSplitter.h>
 #include "dx9_rectDemo.h"
 #include "dx9_rectDemoDlg.h"
 #include "afxdialogex.h"

@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include <HexDump.h>
+#include <DebugLog.h>
 #include "MediaFile.h"
 
 void MediaFile::clear() {

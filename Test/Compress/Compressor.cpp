@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <MathUtil.h>
 #include "Compressor.h"
 
 const int Compressor::endOfStream = 256;

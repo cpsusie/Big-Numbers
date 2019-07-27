@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <Array.h>
 #include <Tokenizer.h>
 
 String scrambleAll(const String &s) {

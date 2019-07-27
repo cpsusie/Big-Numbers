@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <FileNameSplitter.h>
 
 static void usage() {
   _ftprintf(stderr, _T("Usage:FindAlphaBlend p01 p02 p1 p2\n"));
