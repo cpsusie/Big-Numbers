@@ -23,6 +23,7 @@ AttackSetInfo::AttackSetInfo(const FieldInfo &info) {
   setBits(m_pawnAttacks[1], info.m_blackPawnAttacks );
 }
 
+#ifdef _DEBUG
 static void dumpFieldSet(const String &name, const FieldSet &set) {
   debugLog(_T("%s:\n"), name.cstr());
   set.dump();
@@ -44,6 +45,7 @@ void AttackSetInfo::dump() const {
   DUMPSET(pawnAttacks[0]             );
   DUMPSET(pawnAttacks[1]             );
 }
+#endif // _DEBUG
 
 AttackSetInfo AttackSetInfo::s_bitBoards[64];
 

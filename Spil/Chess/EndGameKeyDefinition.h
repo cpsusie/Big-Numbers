@@ -1,6 +1,7 @@
 #pragma once
 
 #include <PropertyContainer.h>
+#include <FileNameSplitter.h>
 #include "EndGameKey.h"
 
 #ifdef _DEBUG

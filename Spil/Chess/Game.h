@@ -1,6 +1,7 @@
 #pragma once
 
 #include <MyAssert.h>
+#include <Array.h>
 #include <Tokenizer.h>
 #include "FieldSet.h"
 #include "FieldNames.h"
@@ -1014,7 +1015,9 @@ public:
 //FieldSet m_attackingWhitePawnPositions, m_attackingBlackPawnPositions;
   AttackSetInfo() {}
   AttackSetInfo(const FieldInfo &info);
+#ifdef _DEBUG
   void dump() const;
+#endif // _DEBUG
   static void initArray();
   static AttackSetInfo s_bitBoards[64];
 };

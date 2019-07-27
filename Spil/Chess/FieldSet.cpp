@@ -1,4 +1,7 @@
 #include "stdafx.h"
+#ifdef _DEBUG
+#include <DebugLog.h>
+#endif _DEBUG
 
 FieldSet::FieldSet(int f,...) {
   clear();
@@ -21,6 +24,7 @@ String FieldSet::toString() const {
   return BitSet64::toString(&FieldStringifier());
 }
 
+#ifdef _DEBUG
 void FieldSet::dump() const {
   if(isEmpty()) {
     debugLog(_T("empty\n"));
@@ -37,3 +41,4 @@ void FieldSet::dump() const {
   str += _T("  abcdefgh  \n");
   debugLog(_T("%s\n%s"), toString().cstr(), str.cstr());
 }
+#endif _DEBUG

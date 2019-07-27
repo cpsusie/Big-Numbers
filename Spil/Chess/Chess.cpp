@@ -62,7 +62,6 @@ BOOL CChessApp::InitInstance() {
     if(argument == _T("-install")) {
       createFileAssociation();
     } else if(argument == _T("-R")) {
-      redirectDebugLog(true);
       RemoteEndGameSubTablebase::remoteService(argv);
     } else {
       setCurrentLanguage(m_options.getLangID());
