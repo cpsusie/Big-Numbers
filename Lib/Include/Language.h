@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Array.h>
+
 class Language {
 public:
   LANGID m_langID;
