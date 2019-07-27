@@ -244,6 +244,7 @@ namespace TestRational {
     }
 
 #pragma warning(disable : 4723) // Potential divide by 0
+#pragma warning(disable : 4756) // overflow in constant arithmetic
 
     template<class T> void rationalNanTest(const T m) {
       T f = (T)sqrt(-1);
