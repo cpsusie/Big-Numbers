@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <StringArray.h>
 #include <Tokenizer.h>
 #include <io.h>
 

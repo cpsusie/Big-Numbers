@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include <windows.h>
+#include <MyUtil.h>
 #include "GetResourcesDlg.h"
 
 #ifdef _DEBUG

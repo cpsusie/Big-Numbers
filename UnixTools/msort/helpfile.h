@@ -1,5 +1,7 @@
 #pragma once
 
+#include <ByteFile.h>
+
 #define BUF_SIZE  0x40000
 
 inline void writeLine(FILE *f, const String &s) {

@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <MyUtil.h>
+#include <FileNameSplitter.h>
 #include <Tokenizer.h>
 #include <io.h>
 

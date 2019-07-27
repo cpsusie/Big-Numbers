@@ -34,7 +34,7 @@ void vprintMessage(BYTE flags, _In_z_ _Printf_format_string_ TCHAR const * const
   static int lastLength = 0;
   String msg = vformat(Format, argptr).trimRight();
   if(flags & PR_1LINE) {
-    if(msg.length() > windowWidth) {
+    if((int)msg.length() > windowWidth) {
       msg = format(_T("%-*.*s..."), windowWidth - 3, windowWidth - 3, msg.cstr());
     }
     _ftprintf(stderr, _T("\r%s"), msg.cstr());

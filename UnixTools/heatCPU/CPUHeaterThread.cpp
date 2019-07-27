@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <DebugLog.h>
 #include "CPUHeaterThread.h"
 
 #define BUFFERSIZE (1024*1024)

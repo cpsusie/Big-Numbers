@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <process.h>
+#include <FileNameSplitter.h>
 #include "heatCPUDlg.h"
 #include <ByteFile.h>
 

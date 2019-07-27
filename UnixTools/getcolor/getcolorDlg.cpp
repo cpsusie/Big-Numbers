@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <MyUtil.h>
 #include "GetColorDlg.h"
 
 #ifdef _DEBUG

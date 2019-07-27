@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include <MyUtil.h>
+#include <Array.h>
 #include <math.h>
 #include <Random.h>
 

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <MyUtil.h>
+#include <StringArray.h>
 #include "HelpFile.h"
 
 typedef Comparator<String> StringComparator;

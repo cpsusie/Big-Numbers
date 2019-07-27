@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Scandir.h>
+#include <FileNameSplitter.h>
 
 inline String childName(const String &path, const String &fname) {
   return (path == _T(".")) ? fname : FileNameSplitter::getChildName(path, fname);
