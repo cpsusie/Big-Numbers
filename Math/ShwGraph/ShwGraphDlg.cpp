@@ -142,23 +142,27 @@ void CShwGraphDlg::OnPaint() {
     const int   y      = (rect.Height() - cyIcon + 1) / 2;
     dc.DrawIcon(x, y, m_hIcon);
   } else {
-    CPaintDC dc(&m_cs);
-    m_cs.paint(dc);
-    m_cs.setDC(dc);
-    Viewport2D &vp = m_cs.getViewport();
-    vp.setClipping(true);
-    for(size_t i = 0; i < m_points.size(); i++) {
-      vp.paintCross(m_points[i],BLACK);
-    }
-    solve();
-    m_dataFit.setDegree(m_preferredDegree);
+    m_cs.OnPaint();
+    CPaintDC    dc(&m_cs);
+    Viewport2D &vp    = m_cs.getViewport();
+    CDC        *oldDC = vp.setDC(&dc);
     try {
+      vp.setClipping(true);
+      for(size_t i = 0; i < m_points.size(); i++) {
+        vp.paintCross(m_points[i],BLACK);
+      }
+      solve();
+      m_dataFit.setDegree(m_preferredDegree);
       if(showFunctionIsChecked()) drawDerived(vp,0);
       if(showD1IsChecked())       drawDerived(vp,1);
       if(showD2IsChecked())       drawDerived(vp,2);
       if(showD3IsChecked())       drawDerived(vp,3);
       if(showCoefIsChecked())     showCoef();
+      vp.setClipping(false);
+      vp.setDC(oldDC);
     } catch(Exception e) {
+      vp.setClipping(false);
+      vp.setDC(oldDC);
       m_canDraw = false;
       showException(e);
     }
@@ -220,14 +224,15 @@ void CShwGraphDlg::removePoint(intptr_t index) {
 }
 
 void CShwGraphDlg::movePoint(intptr_t index, const CPoint &point) {
-  CClientDC dc(&m_cs);
-  m_cs.setDC(dc);
-  Viewport2D &vp = m_cs.getViewport();
+  CClientDC   dc(&m_cs);
+  CDC        *oldDC = m_cs.setDC(&dc);
+  Viewport2D &vp    = m_cs.getViewport();
   vp.paintCross(m_points[index],WHITE);
   m_points[index] = getTr().backwardTransform(Point2DP(point));
   vp.paintCross(m_points[index],BLACK);
   m_needUpdateRange = true;
   m_needSolve       = true;
+  m_cs.setDC(oldDC);
   if(autoUpdateScreen()) {
     Invalidate(FALSE);
   }
@@ -420,7 +425,9 @@ void CShwGraphDlg::OnToolsSetinterval() {
 }
 
 void CShwGraphDlg::OnToolsGrid() {
-  m_cs.setGrid(toggleMenuItem(this, ID_TOOLS_GRID));
+  const bool gridOn = toggleMenuItem(this, ID_TOOLS_GRID);
+  m_cs.showAxisGridLines(XAXIS_INDEX, gridOn);
+  m_cs.showAxisGridLines(YAXIS_INDEX, gridOn);
   Invalidate(FALSE);
 }
 
@@ -468,12 +475,13 @@ void CShwGraphDlg::OnMouseMove(UINT nFlags, CPoint point) {
       setState(STATE_MOVEPOINT);
       movePoint(m_movePoint, point);
     } else {
-      CClientDC dc(&m_cs);
-      m_cs.setDC(dc);
-      Viewport2D &vp = m_cs.getViewport();
+      CClientDC  dc(&m_cs);
+      CDC       *oldDC = m_cs.setDC(&dc);
+      Viewport2D &vp   = m_cs.getViewport();
       addPoint(getTr().backwardTransform(Point2DP(point)));
       vp.paintCross(m_points.last(),BLACK);
       m_movePoint = m_points.size()-1;
+      m_cs.setDC(oldDC);
       setState(STATE_MOVEPOINT);
       if(autoUpdateScreen()) Invalidate(FALSE);
     }
@@ -502,11 +510,12 @@ void CShwGraphDlg::OnLButtonUp(UINT nFlags, CPoint point) {
   point = mouseToCS(point);
   switch(m_state) {
   case STATE_LBUTTONDOWN:
-    { CClientDC dc(&m_cs);
-      m_cs.setDC(dc);
-      Viewport2D &vp = m_cs.getViewport();
+    { CClientDC   dc(&m_cs);
+      CDC        *oldDC = m_cs.setDC(&dc);
+      Viewport2D &vp    = m_cs.getViewport();
       addPoint(vp.backwardTransform(point));
       vp.paintCross(m_points.last(),BLACK);
+      m_cs.setDC(oldDC);
       if(autoUpdateScreen()) Invalidate(FALSE);
       setState(STATE_IDLE);
     }
@@ -536,11 +545,12 @@ void CShwGraphDlg::OnRButtonDown(UINT nFlags, CPoint point) {
   case STATE_IDLE:
     { const intptr_t index = findDataPoint(point);
       if(index >= 0) {
-        CClientDC dc(&m_cs);
-        m_cs.setDC(dc);
-        Viewport2D &vp = m_cs.getViewport();
+        CClientDC  dc(&m_cs);
+        CDC       *oldDC = m_cs.setDC(&dc);
+        Viewport2D &vp   = m_cs.getViewport();
         vp.paintCross(m_points[index],WHITE);
         removePoint(index);
+        m_cs.setDC(oldDC);
         if(autoUpdateScreen()) Invalidate(FALSE);
       }
       break;

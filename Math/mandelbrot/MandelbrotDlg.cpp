@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include <ByteFile.h>
 #include <Random.h>
+#include <FileNameSplitter.h>
+#include <DebugLog.h>
 #include "MandelbrotDlg.h"
 #include "MaxCountDlg.h"
 #include "JuliaDlg.h"

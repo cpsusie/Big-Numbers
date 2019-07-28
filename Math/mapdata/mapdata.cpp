@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <Math.h>
+#include <MathUtil.h>
 
 class rectcoor {
 public:

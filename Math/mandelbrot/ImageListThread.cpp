@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <FileNameSplitter.h>
 #include "ImageListThread.h"
 
 ImageListThread::ImageListThread(FrameGenerator *frameGenerator) : m_frameGenerator(*frameGenerator) {

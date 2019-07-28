@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include <FileNameSplitter.h>
 #include "ColorMap.h"
 
 ColorMapInterpolationPoint::ColorMapInterpolationPoint(const String &str) {

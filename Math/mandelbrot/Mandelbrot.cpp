@@ -28,7 +28,7 @@ BOOL CMandelbrotApp::InitInstance() {
 
   __super::InitInstance();
   AfxEnableControlContainer();
-  BigReal::loadPow2Cache();
+  BigReal::pow2CacheLoad();
   DigitPool *digitPool = BigRealResourcePool::getInstance().fetchDigitPool();
   try {
     CMandelbrotDlg dlg(digitPool);
