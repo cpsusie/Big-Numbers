@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <fileNameSplitter.h>
 #include <Math/Polynomial.h>
 
 // Return the N+2 extrema (incl. endpoints) of the Chebyshev polynomial of degree N+1, scaled to the x-interval [m_left;m_right], where N=M+K

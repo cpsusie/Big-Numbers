@@ -422,7 +422,7 @@ void CIRemesDlg::setRunMenuState(RunMenuState menuState) {
   if(menuState == m_runMenuState) return;
   m_runMenuState = menuState;
   int index;
-  HMENU mainMenu = findMenuByString(*GetMenu(), _T("Run"), index);
+  HMENU mainMenu = findMenuByString(*GetMenu(), _T("Run"), &index);
 
   HMENU runMenu = GetSubMenu(mainMenu, index);
   if(runMenu == 0) return;
