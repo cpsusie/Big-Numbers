@@ -2,6 +2,7 @@
 
 #include "MyUtil.h"         // MFC core and standard components
 #include <Math.h>
+#include <MathUtil.h>
 #include "MathLib.h"
 #include "Double80.h"
 

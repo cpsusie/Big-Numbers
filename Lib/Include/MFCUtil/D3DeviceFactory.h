@@ -2,6 +2,7 @@
 
 #include <D3D9.h>
 #include <D3DX9.h>
+#include <CompactArray.h>
 
 typedef LPDIRECT3D9EX           LPDIRECT3D;
 typedef LPDIRECT3DDEVICE9EX     LPDIRECT3DDEVICE;
