@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Math/Point2D.h>
-#include <MFCUtil/WinTools.h>
 
 typedef Point2D Point2d;
 #define norm() length()
