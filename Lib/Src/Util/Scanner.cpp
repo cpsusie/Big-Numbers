@@ -213,7 +213,7 @@ int Scanner::flush(bool force) { // protected
     }
 
     const intptr_t copyAmount = m_endBuf - leftEdge;
-    MEMMOVE(m_inputBuffer, leftEdge, copyAmount);
+    TMEMMOVE(m_inputBuffer, leftEdge, copyAmount);
 
     if(!fillBuf(m_inputBuffer + copyAmount)) {
       throwException(_T("%s:INTERNAL ERROR: Buffer full, can't read"), __TFUNCTION__);

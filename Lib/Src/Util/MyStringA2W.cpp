@@ -33,7 +33,7 @@ String &String::operator+=(const char *rhs) {
   if(m_capacity < newLength + 1) {
     TCHAR *old = m_buf;
     m_buf = new TCHAR[m_capacity = (newLength + 1) * 3];
-    MEMCPY(m_buf, old, m_len);
+    TMEMCPY(m_buf, old, m_len);
     _tcsncpy(m_buf + m_len, mrhs, length);
     m_buf[m_len = newLength] = '\0';
     delete[] old; // Dont delete old before now, rhs and old might overlap

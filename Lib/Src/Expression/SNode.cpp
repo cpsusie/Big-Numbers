@@ -184,7 +184,7 @@ UINT SNode::getHeight() const {
 }
 
 String SNode::toString() const {
-  return isEmpty() ? _T("") : m_node->toString();
+  return isEmpty() ? EMPTYSTRING : m_node->toString();
 }
 
 bool SNode::isName() const {

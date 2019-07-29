@@ -157,7 +157,7 @@ public:
   // HKEY_DYN_DATA
   explicit RegistryKey(HKEY key);
   RegistryKey(const String &remoteMachine, HKEY key);
-  RegistryKey(HKEY key, const String &subKey, REGSAM samDesired = KEY_ALL_ACCESS, const String &remoteMachine=_T(""));
+  RegistryKey(HKEY key, const String &subKey, REGSAM samDesired = KEY_ALL_ACCESS, const String &remoteMachine=EMPTYSTRING);
   RegistryKey(const RegistryKey &src);
   ~RegistryKey();
 
@@ -166,21 +166,21 @@ public:
   RegistryKey openKey(const String &subKey, REGSAM samDesired = KEY_ALL_ACCESS) const;
 
   RegistryKey createKey(        const String         &subKey
-                               ,const String         &keyClass           = _T("")
+                               ,const String         &keyClass           = EMPTYSTRING
                                ,ULONG                 options            = REG_OPTION_NON_VOLATILE
                                ,REGSAM                samDesired         = KEY_ALL_ACCESS
                                ,SECURITY_ATTRIBUTES  *securityAttributes = NULL) const;
 
   RegistryKey createOrOpenKey(  const String         &subKey
                                ,ULONG                *disposition        = NULL
-                               ,const String         &keyClass           = _T("")
+                               ,const String         &keyClass           = EMPTYSTRING
                                ,ULONG                 options            = REG_OPTION_NON_VOLATILE
                                ,REGSAM                samDesired         = KEY_ALL_ACCESS
                                ,SECURITY_ATTRIBUTES  *securityAttributes = NULL) const;
 
   RegistryKey createOrOpenPath( const String         &path
                                ,ULONG                *disposition        = NULL
-                               ,const String         &keyClass           = _T("")
+                               ,const String         &keyClass           = EMPTYSTRING
                                ,ULONG                 options            = REG_OPTION_NON_VOLATILE
                                ,REGSAM                samDesired         = KEY_ALL_ACCESS
                                ,SECURITY_ATTRIBUTES  *securityAttributes = NULL) const;

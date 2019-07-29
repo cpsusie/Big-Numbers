@@ -171,8 +171,12 @@ public:
     return tostr(tmp, format);
   }
   friend class Timestamp;
-  friend Packer &operator<<(Packer &p, const Date &d);
-  friend Packer &operator>>(Packer &p,       Date &d);
+  friend inline Packer &operator<<(Packer &p, const Date &d) {
+    return p << d.m_factor;
+  }
+  friend inline Packer &operator>>(Packer &p, Date &d) {
+    return p >> d.m_factor;
+  }
 };
 
 class Time {
@@ -291,8 +295,12 @@ public:
     return tostr(tmp, format);
   }
   friend class Timestamp;
-  friend Packer &operator<<(Packer &p, const Time &t);
-  friend Packer &operator>>(Packer &p,       Time &t);
+  friend inline Packer &operator<<(Packer &p, const Time &t) {
+    return p << t.m_factor;
+  }
+  friend inline Packer &operator>>(Packer &p, Time &t) {
+    return p >> t.m_factor;
+  }
 };
 
 class Timestamp {
@@ -335,9 +343,9 @@ public:
   double getDATE() const;
 
   // Add count days
-  Timestamp  operator+( int count) const;
+  Timestamp  operator+(int count) const;
   // Subtract count days
-  Timestamp  operator-( int count) const;
+  Timestamp  operator-(int count) const;
   // Add count days
   inline Timestamp &operator+=(int count) {
     return *this = *this + count;
@@ -428,7 +436,7 @@ public:
     return *this;
   }
   inline Date getDate() const {
-    return Date((int)(m_factor/Time::getMaxFactor()));
+    return Date((int)(m_factor / Time::getMaxFactor()));
   }
   inline Timestamp &setTime(const Time &t) {
     m_factor = getFactor(getDate(), t);
@@ -439,7 +447,7 @@ public:
   }
   time_t gettime_t() const;
 
-  static FILETIME    time_tToFILETIME(  time_t t);
+  static FILETIME    time_tToFILETIME(time_t t);
   static SYSTEMTIME  time_tToSYSTEMTIME(time_t t);
 
   inline ULONG hashCode() const {
@@ -465,6 +473,10 @@ public:
   static String cctime(); // cctime(getSystemTime());
   static String cctime(time_t tt);
   static time_t getSystemTime();
-  friend Packer &operator<<(Packer &p, const Timestamp &ts);
-  friend Packer &operator>>(Packer &p,       Timestamp &ts);
+  friend inline Packer &operator<<(Packer &p, const Timestamp &ts) {
+    return p << ts.m_factor;
+  }
+  friend inline Packer &operator>>(Packer &p, Timestamp &ts) {
+    return p >> ts.m_factor;
+  }
 };

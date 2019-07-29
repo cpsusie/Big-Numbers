@@ -50,7 +50,7 @@ private:
   int getOptionIndex(const String &optionName) const;
   String m_engineName;
 public:
-  EngineOptionValueArray(const String &engineName=_T("")) : m_engineName(engineName) {
+  EngineOptionValueArray(const String &engineName=EMPTYSTRING) : m_engineName(engineName) {
   }
   const String &getEngineName() const {
     return m_engineName;

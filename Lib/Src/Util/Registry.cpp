@@ -755,7 +755,7 @@ static TCHAR *stringArrayToCharPointer(const StringArray &strings, ULONG &charCo
     charCount++;
   }
   TCHAR *result = new TCHAR[charCount]; TRACE_NEW(result);
-  MEMSET(result,0,charCount);
+  TMEMSET(result,0,charCount);
   TCHAR *cp = result;;
   for(int i = 0; i < (int)strings.size(); i++) {
     _tcscpy(cp,strings[i].cstr());
@@ -763,7 +763,7 @@ static TCHAR *stringArrayToCharPointer(const StringArray &strings, ULONG &charCo
   }
   *(cp++) = 0;
   if(cp < result + charCount) {
-    MEMSET(cp, 0, (result+charCount)-cp);
+    TMEMSET(cp, 0, (result+charCount)-cp);
   }
   return result;
 }

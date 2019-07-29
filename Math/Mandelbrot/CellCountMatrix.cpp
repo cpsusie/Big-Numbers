@@ -66,7 +66,7 @@ const CellCountHistogram &CellCountMatrix::getHistogram() const {
 }
 
 String CellCountMatrix::getPixelInfo(const CPoint &p) const {
-  if(!contains(p)) return _T("");
+  if(!contains(p)) return EMPTYSTRING;
   const UINT count = getCount(p);
   if(count == EMPTYCELLVALUE) {
     return _T("undefined");

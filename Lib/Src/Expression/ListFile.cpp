@@ -160,7 +160,7 @@ String ListLine::formatOpAndComment(const String &opstr, const TCHAR *comment, b
 
 String ListLine::toString() const {
   return format(_T("%*s%-*d: ")
-               ,LF_MARGIN, _T("")
+               ,LF_MARGIN, EMPTYSTRING
                ,LF_POSLEN, m_pos);
 }
 
@@ -290,8 +290,8 @@ String ListLineLabel::toString() const {
   const int    fillerLength2 = LF_COMLEN + 1;
   return format(_T("%s:%*s;%*s")
                , labelStr.cstr()
-               , fillerLength1, _T("")
-               , fillerLength2, _T("")
+               , fillerLength1, EMPTYSTRING
+               , fillerLength2, EMPTYSTRING
                )
                + getFPUComment();
 }

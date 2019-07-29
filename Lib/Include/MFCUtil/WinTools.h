@@ -287,7 +287,7 @@ int    confirmDialogBox(const String &message, const String &caption, bool &show
 bool   moveFileToTrashCan(        HWND hwnd, const String      &fileName , bool confirm = true);
 bool   moveFilesToTrashCan(       HWND hwnd, const StringArray &fileNames, bool confirm = true);
 
-void   notifyIconAdd(             HWND hwnd, UINT uID, HICON hicon, const String &toolTip = _T(""), int callbackMessage = WM_LBUTTONDOWN);
+void   notifyIconAdd(             HWND hwnd, UINT uID, HICON hicon, const String &toolTip = EMPTYSTRING, int callbackMessage = WM_LBUTTONDOWN);
 void   notifyIconDelete(          HWND hwnd, UINT uID);
 void   notifyIconSetToolTip(      HWND hwnd, UINT uID, const String &toolTip);
 

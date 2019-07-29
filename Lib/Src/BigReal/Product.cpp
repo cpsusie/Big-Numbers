@@ -52,7 +52,7 @@ BigReal &MultiplyServer::mult(BigReal &dst, const BigReal &x, const BigReal &y, 
 void logProductRecursion(UINT level, const TCHAR *method, _In_z_ _Printf_format_string_ TCHAR const * const format,...) {
   va_list argptr;
   va_start(argptr, format);
-  debugLog(_T("%*.*s%2u:%s(%s)\n"), level,level, _T(""), level, method, vformat(format,argptr).cstr());
+  debugLog(_T("%*.*s%2u:%s(%s)\n"), level,level, EMPTYSTRING, level, method, vformat(format,argptr).cstr());
   va_end(argptr);
 }
 #endif // TRACEPRODUCTRECURSION

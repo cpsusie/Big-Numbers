@@ -29,7 +29,7 @@ END_MESSAGE_MAP()
 
 CBigTextDlg::CBigTextDlg(CWnd* pParent /*=NULL*/)
   : CDialogEx(IDD_BIGTEXT_DIALOG, pParent)
-  , m_text(_T(""))
+  , m_text(EMPTYSTRING)
 {
   m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }

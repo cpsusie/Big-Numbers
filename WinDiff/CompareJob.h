@@ -20,7 +20,7 @@ public:
   }
 #endif
 
-  _ProgressStep() : m_timeUnits(0), m_msg(_T("")) {
+  _ProgressStep() : m_timeUnits(0), m_msg(EMPTYSTRING) {
   }
   _ProgressStep(double CPUUnits, const TCHAR *msg) : m_timeUnits(CPUUnits), m_msg(msg) {
   }

@@ -28,7 +28,7 @@ namespace TestBigArray {
   BigElement::BigElement(int value) {
     m_value = value;
     const String s = format(_T("Element initieret med %d"), value);
-    MEMSET(m_str, _T('0') + (value % 10), ARRAYSIZE(m_str));
+    TMEMSET(m_str, _T('0') + (value % 10), ARRAYSIZE(m_str));
     _tcscpy(m_str + ARRAYSIZE(m_str) - s.length() - 1, s.cstr());
   }
 

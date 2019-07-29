@@ -434,7 +434,7 @@ void TextRect::rectangle(int left, int top, int right, int bottom, FrameType typ
   const FrameChars &f   = FrameChars::getFrameChars(type);
   TCHAR             lineStr[4096], charStr[2];
   const int         len = min(ARRAYSIZE(lineStr)-2,right-left-1);
-  MEMSET(lineStr, f.m_horz, len);
+  TMEMSET(lineStr, f.m_horz, len);
   lineStr[len] = 0;
   charStr[1]   = 0;
 

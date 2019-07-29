@@ -96,7 +96,7 @@ private:
 
   void play();
 public:
-  Whist3Player(const String &name, Whist3PlayerCallback *callback, const String &dealerName = _T("")); // if dealerName = "" I am the dealer
+  Whist3Player(const String &name, Whist3PlayerCallback *callback, const String &dealerName = EMPTYSTRING); // if dealerName = "" I am the dealer
   UINT run();
 
   void markUnmarkCard(UINT index);

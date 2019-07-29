@@ -28,7 +28,7 @@
   m_callLevel += 2;                              \
 }
 
-#define ENTERFUNC() ENTERFUNCPARAM(_T(""))
+#define ENTERFUNC() ENTERFUNCPARAM(EMPTYSTRING)
 
 #define LEAVEFUNC() {                            \
   m_callLevel -=  2;                             \

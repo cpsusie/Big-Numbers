@@ -303,9 +303,9 @@ public:
 
 #define MENU(m)             StaticMenuItem m[]
 #define MENUPOPUP(text)     StaticMenuItem(MENUITEMPOPUP    , text  , 0   )
-#define MENUSEPARATOR       StaticMenuItem(MENUITEMSEPARATOR, _T(""), 0   )
+#define MENUSEPARATOR       StaticMenuItem(MENUITEMSEPARATOR, EMPTYSTRING, 0   )
 #define MENUITEM(text, cmd) StaticMenuItem(MENUITEMTEXT     , text  , cmd )
-#define MENUEND             StaticMenuItem(MENUITEMEND      , _T(""), 0   )
+#define MENUEND             StaticMenuItem(MENUITEMEND      , EMPTYSTRING, 0   )
 
 int  showMenu(int left, int top, StaticMenuItem *items);
 
@@ -758,14 +758,14 @@ public:
   virtual bool eventHandler(int event);
   int domodal();
 
-  void addIntField(    int id, int left, int top, int length    , const String &label = _T(""));
-  void addShortField(  int id, int left, int top, int length    , const String &label = _T(""));
-  void addDoubleField( int id, int left, int top, int length    , const String &label = _T(""));
-  void addStringField( int id, int left, int top, int length    , const String &label = _T(""));
-  void addBoolField(   int id, int left, int top, int length = 1, const String &label = _T(""));
-  void addComboBox(    int id, int left, int top, int length    , const String &label = _T(""));
+  void addIntField(    int id, int left, int top, int length           , const String &label = EMPTYSTRING);
+  void addShortField(  int id, int left, int top, int length           , const String &label = EMPTYSTRING);
+  void addDoubleField( int id, int left, int top, int length           , const String &label = EMPTYSTRING);
+  void addStringField( int id, int left, int top, int length           , const String &label = EMPTYSTRING);
+  void addBoolField(   int id, int left, int top, int length = 1       , const String &label = EMPTYSTRING);
+  void addComboBox(    int id, int left, int top, int length           , const String &label = EMPTYSTRING);
   void addButton(      int id, int left, int top, int width, int height, const String &label);
-  void addListBox(     int id, int left, int top, int width, int height, const String &label = _T(""));
+  void addListBox(     int id, int left, int top, int width, int height, const String &label = EMPTYSTRING);
   void addControl(DialogControl *control);
   void setMenu(Menu *m);
   Menu *getMenu();

@@ -29,7 +29,7 @@ void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
-CTestbinDlg::CTestbinDlg(CWnd *pParent) : CDialog(CTestbinDlg::IDD, pParent), m_hexString(_T("")) {
+CTestbinDlg::CTestbinDlg(CWnd *pParent) : CDialog(CTestbinDlg::IDD, pParent), m_hexString(EMPTYSTRING) {
   m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
 }
 

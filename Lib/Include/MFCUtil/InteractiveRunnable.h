@@ -46,7 +46,7 @@ public:
     return 0;                                          // Should return an integer in the range [0..100]
   }
   virtual String getProgressMessage(UINT index=0) {
-    return _T("");
+    return EMPTYSTRING;
   }
   virtual String getTitle() {                          // Title of progress-window
     return _T("Progress");

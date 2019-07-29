@@ -12,7 +12,7 @@ intptr_t LexStringStream::getChars(_TUCHAR *dst, size_t n) {
   if((intptr_t)n > rest) {
     n = rest;
   }
-  MEMCPY(dst, m_string.cstr()+m_pos, n);
+  TMEMCPY(dst, m_string.cstr()+m_pos, n);
   m_pos += n;
   return n;
 }

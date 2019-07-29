@@ -19,7 +19,7 @@ void Message(_In_z_ _Printf_format_string_ TCHAR const * const format,... ) {
 
 int vshowMessageBox(int flags, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
   String msg = vformat(format, argptr)
-              .replace(_T('\r'),_T(""))
+              .replace(_T('\r'),EMPTYSTRING)
               .replace(_T('\n'), _T("\n\r"));
   return MessageBox(NULL
                    ,msg.cstr()

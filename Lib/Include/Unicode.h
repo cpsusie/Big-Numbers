@@ -25,10 +25,10 @@
 #define tcerr       std::wcerr
 #define tclog       std::wclog
 
-#define MEMSET( dst, v  , count)             wmemset( dst, v  , count)
-#define MEMCPY( dst, src, count)             wmemcpy( dst, src, count)
-#define MEMMOVE(dst, src, count)             wmemmove(dst, src, count)
-#define MEMCMP( s1 , s2 , count)             wmemcmp( s1 , s2 , count)
+#define TMEMSET( dst, v  , count)             wmemset( dst, v  , count)
+#define TMEMCPY( dst, src, count)             wmemcpy( dst, src, count)
+#define TMEMMOVE(dst, src, count)             wmemmove(dst, src, count)
+#define TMEMCMP( s1 , s2 , count)             wmemcmp( s1 , s2 , count)
 
 #define tstring std::wstring
 
@@ -51,10 +51,10 @@
 #define tcerr     cerr
 #define tclog     clog
 
-#define MEMSET( dst, v  , count)             memset( dst, v  , count)
-#define MEMCPY( dst, src, count)             memcpy( dst, src, count)
-#define MEMMOVE(dst, src, count)             memmove(dst, src, count)
-#define MEMCMP( s1 , s2 , count)             memcmp( s1 , s2 , count)
+#define TMEMSET( dst, v  , count)             memset( dst, v  , count)
+#define TMEMCPY( dst, src, count)             memcpy( dst, src, count)
+#define TMEMMOVE(dst, src, count)             memmove(dst, src, count)
+#define TMEMCMP( s1 , s2 , count)             memcmp( s1 , s2 , count)
 
 #define tstring std::string
 

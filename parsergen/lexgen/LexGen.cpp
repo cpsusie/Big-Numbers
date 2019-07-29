@@ -102,8 +102,8 @@ static void printOutputFiles(const String    &templateName
     writer.addMacro(       _T("PUSHNAMESPACE"      ), format(_T("namespace %s {"    ), nameSpace.cstr()));
     writer.addMacro(       _T("POPNAMESPACE"       ), format(_T("}; // namespace %s"), nameSpace.cstr()));
   } else {
-    writer.addMacro(       _T("PUSHNAMESPACE"      ), _T(""));
-    writer.addMacro(       _T("POPNAMESPACE"       ), _T(""));
+    writer.addMacro(       _T("PUSHNAMESPACE"      ), EMPTYSTRING);
+    writer.addMacro(       _T("POPNAMESPACE"       ), EMPTYSTRING);
   }
   writer.generateOutput();
 }

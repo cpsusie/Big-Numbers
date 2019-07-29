@@ -132,7 +132,7 @@ private:
   inline const TCHAR *getComment(size_t index) const {
     if(index == m_minIndex) return _T("<-- Min");
     if(index == m_maxIndex) return _T("<-- Max");
-    return _T("");
+    return EMPTYSTRING;
   }
 
 public:

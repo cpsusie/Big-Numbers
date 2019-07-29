@@ -44,7 +44,7 @@ public:
 
   SearchMachine();
 
-  void prepareSearch(bool forwardSearch, __int64 startPosition = -1, const String &findWhat = _T(""), ByteContainer *byteContainer = NULL);
+  void prepareSearch(bool forwardSearch, __int64 startPosition = -1, const String &findWhat = EMPTYSTRING, ByteContainer *byteContainer = NULL);
   // by using default-values for parameter 2,3,4, searchMachine will use the same values as last call. And Exception is thrown if
   // byteContainer isn't specified in this or previous calls
 

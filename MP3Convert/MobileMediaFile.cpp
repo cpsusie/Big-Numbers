@@ -126,7 +126,7 @@ static String replaceIllegalNameChars(const String &s) {
     .replace('|', '_')
     .replace('*', '_')
     .replace('?', '_')
-    .replace('"', _T(""))
+    .replace('"', EMPTYSTRING)
     .replace('<', '_')
     .replace('>', '_');
   for(size_t l = result.length();;) {

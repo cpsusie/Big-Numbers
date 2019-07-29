@@ -9,8 +9,8 @@
 CAfstandDlg::CAfstandDlg(CWnd *pParent /*=NULL*/)
   : CDialog(CAfstandDlg::IDD, pParent) {
   m_afstand = 0;
-  m_dag1 = _T("");
-  m_dag2 = _T("");
+  m_dag1    = EMPTYSTRING;
+  m_dag2    = EMPTYSTRING;
 }
 
 void CAfstandDlg::DoDataExchange(CDataExchange *pDX) {

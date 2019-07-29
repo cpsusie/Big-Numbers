@@ -51,7 +51,7 @@ const TCHAR *typeToStr(EdgeMarkType type) {
 
 String EdgeMark::toString() const {
   if(!isVisible()) {
-    return format(_T("%s:Invisible%18s"), typeToStr(getType()),_T(""));
+    return format(_T("%s:Invisible%18s"), typeToStr(getType()),EMPTYSTRING);
   } else {
     return format(_T("%s:Visible  :(%3d,%3d,%3d,%3d)")
                  ,typeToStr(getType())

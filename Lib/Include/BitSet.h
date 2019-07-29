@@ -23,7 +23,7 @@ public:
 
 #ifdef _DEBUG
 #define BS_CHECKINDEX(i) \
-  if(i >= m_capacity) throwIndexOutOfRange(__TFUNCTION__, i, _T(""))
+  if(i >= m_capacity) throwIndexOutOfRange(__TFUNCTION__, i, EMPTYSTRING)
 #else
 #define BS_CHECKINDEX(i)
 #endif

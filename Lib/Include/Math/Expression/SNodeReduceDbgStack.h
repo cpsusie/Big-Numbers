@@ -101,7 +101,7 @@ public:
 #define _GETSTACK()             getTree().getReductionStack()
 #define _PUSH(...)             _GETSTACK().push(_func,__VA_ARGS__)
 #define _POP()                 _GETSTACK().pop(_func)
-#define _REDSTR(n)             ((n).isReduced()?_T("(R)"):_T(""))
+#define _REDSTR(n)             ((n).isReduced()?_T("(R)"):EMPTYSTRING)
 
 #define ENTERMETHOD()          DEFFUNC; _PUSH(format(_T("n:<%s>%s"), toString().cstr(),_REDSTR(*this)),node())
 #define ENTERMETHOD1(v)        DEFFUNC; _PUSH(format(_T("%s:<%s>"), _T(#v), (v).toString().cstr()))

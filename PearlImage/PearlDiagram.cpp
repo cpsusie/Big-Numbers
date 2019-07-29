@@ -65,7 +65,7 @@ String PearlDiagram::toString() const {
       }
       hRulerStr += format(_T("%*d"), cellLen, x/10);
     }
-    hRulerStr += format(_T("\n%*s"),vRulerW1+1,_T(""));
+    hRulerStr += format(_T("\n%*s"),vRulerW1+1,EMPTYSTRING);
   }
   for(UINT x = 0; x < dim.columnCount; x++) {
     hRulerStr += format(_T("%*d"), cellLen, x%10);

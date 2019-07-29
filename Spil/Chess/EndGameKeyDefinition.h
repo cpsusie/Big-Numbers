@@ -315,7 +315,7 @@ public:
   for(UINT i = 0; i < _size; i++) {                                                       \
     _tprintf(_T("%2d:%14s (%11s)\n"), i                                                   \
             ,format1000(table[i]).cstr()                                                  \
-            ,(i<_size-1)?format1000(table[i+1]-table[i]).cstr():_T(""));                  \
+            ,(i<_size-1)?format1000(table[i+1]-table[i]).cstr():EMPTYSTRING);             \
   }                                                                                       \
 }
 

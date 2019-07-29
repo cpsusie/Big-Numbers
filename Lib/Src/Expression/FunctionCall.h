@@ -13,7 +13,7 @@ typedef Real (*BuiltInFunction2)(Real x, Real y);
 
 class FunctionCall {
   static String &removeColons(String &name) {
-    return name.replace(_T(':'),_T(""));
+    return name.replace(_T(':'),EMPTYSTRING);
   }
   static String makeSignatureString(const String &name, const TCHAR *param) {
     String tmp(name);
@@ -22,7 +22,7 @@ class FunctionCall {
 public:
   const BuiltInFunction m_fp;
   const String          m_signature;
-  inline FunctionCall() : m_fp(NULL), m_signature(_T("")) {
+  inline FunctionCall() : m_fp(NULL), m_signature(EMPTYSTRING) {
   }
   inline FunctionCall(const BuiltInFunction fp, const String &name, const TCHAR *paramStr)
     : m_fp(fp)

@@ -928,7 +928,6 @@
     <ClCompile Include="CountedByteOutputStream.cpp" />
     <ClCompile Include="CPUInfo.cpp" />
     <ClCompile Include="Date.cpp" />
-    <ClCompile Include="DatePacker.cpp" />
     <ClCompile Include="DebugLog.cpp" />
     <ClCompile Include="DecompressFilter.cpp" />
     <ClCompile Include="Dialog.cpp" />
@@ -1131,10 +1130,8 @@
     <ClCompile Include="Time.cpp" />
     <ClCompile Include="TimeEstimator.cpp" />
     <ClCompile Include="TimeMeasure.cpp" />
-    <ClCompile Include="TimePacker.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="Timestamp.cpp" />
-    <ClCompile Include="TimestampPacker.cpp" />
     <ClCompile Include="ToAscii.cpp" />
     <ClCompile Include="Tokenizer.cpp" />
     <ClCompile Include="pch.cpp">

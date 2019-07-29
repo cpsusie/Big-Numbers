@@ -17,7 +17,7 @@ void MP3Player::checkResult(MCIERROR ret) {
 
 String MP3Player::sendString(_In_z_ _Printf_format_string_ TCHAR const * const format,...) {
   TCHAR result[1024];
-  MEMSET(result,0,ARRAYSIZE(result));
+  TMEMSET(result,0,ARRAYSIZE(result));
   va_list argptr;
   va_start(argptr,format);
   const String tmp = vformat(format, argptr);

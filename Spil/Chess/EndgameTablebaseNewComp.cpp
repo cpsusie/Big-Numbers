@@ -51,10 +51,10 @@ EndGameResult GameResultMap::lookupGamePosition(EndGameKey *egkp) const {
   return rp ? *rp : m_positionIndex.get(egk);
 }
 
-#define RETURN(egr) { saveResult(m_game, egr); debugLog(_T("%*.*s(%d):%s\n"), level,level,_T(""), level, (egr).toString().cstr()); return egr; }
+#define RETURN(egr) { saveResult(m_game, egr); debugLog(_T("%*.*s(%d):%s\n"), level,level,EMPTYSTRING, level, (egr).toString().cstr()); return egr; }
 
 EndGameResult GameResultMap::findResult(UINT level, const MoveBase &lastMove) {
-  debugLog(_T("%*.*s(%d):%6s:findResult(%s,%s)\n"), level, level, _T(""), level, lastMove.toString().cstr(), m_tb.getName().cstr(), m_game.toFENString().cstr());
+  debugLog(_T("%*.*s(%d):%6s:findResult(%s,%s)\n"), level, level, EMPTYSTRING, level, lastMove.toString().cstr(), m_tb.getName().cstr(), m_game.toFENString().cstr());
   switch(m_game.findGameResult()) {
   case NORESULT                  : break;
   case WHITE_CHECKMATE           : RETURN(EGR_WHITEISMATE);

@@ -178,7 +178,7 @@ String ByteQueue::getConvertedString(size_t count) {
       for(size_t i = 0; (i < count) && !isEmpty();) {
         const size_t rest       = count - i; // in bytes
         const size_t tcharCount = min(rest / sizeof(TCHAR), bufferSize - 1); // in TCHAR's
-        MEMCPY(buffer, (const TCHAR*)getData(), tcharCount);
+        TMEMCPY(buffer, (const TCHAR*)getData(), tcharCount);
         buffer[tcharCount] = 0;
         result += buffer;
         const size_t byteCount = tcharCount * sizeof(TCHAR);
@@ -229,7 +229,7 @@ DEFINECLASSNAME(CharQueue);
 
 intptr_t CharQueue::get(_TUCHAR *dst, size_t n) {
   n = min(length(), n);
-  MEMCPY(dst, cstr(), n);
+  TMEMCPY(dst, cstr(), n);
   remove(0, (int)n);
   return n;
 }

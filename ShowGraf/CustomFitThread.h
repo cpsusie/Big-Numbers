@@ -26,4 +26,4 @@ public:
   DECLARE_MESSAGE_MAP()
 };
 
-CCustomFitThread *startFitThread(FitThreadType type, const DoubleInterval &range, const Point2DArray &pointArray, FunctionPlotter &fp, const CString &expr = _T(""));
+CCustomFitThread *startFitThread(FitThreadType type, const DoubleInterval &range, const Point2DArray &pointArray, FunctionPlotter &fp, const CString &expr = EMPTYSTRING);

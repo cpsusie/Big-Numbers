@@ -49,7 +49,7 @@ private:
 #ifdef _DEBUG
     String toString() const {
       String result;
-      const TCHAR *del = _T("");
+      const TCHAR *del = EMPTYSTRING;
       for(int i = 0; i < _ELEMENTS_PER_PAGE; i++, del = _T(",")) {
         result += format(_T("%s%s"), del, m_element[i].toString().cstr());
       }

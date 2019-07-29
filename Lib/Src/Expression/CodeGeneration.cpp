@@ -451,7 +451,7 @@ void CodeGeneration::listFixupTable() const {
     list(_T(";Jump table:\n"));
     for(size_t i = 0; i < m_jumpFixups.size(); i++) {
       list(_T(";%*s%s\n")
-          ,LF_MARGIN,_T("")
+          ,LF_MARGIN,EMPTYSTRING
           ,m_jumpFixups[i].toString().cstr());
     }
     list(_T("\n"));
@@ -463,7 +463,7 @@ void CodeGeneration::listCallTable() const {
     list(_T(";Call table:\n"));
     for(size_t i = 0; i < m_callTable.size(); i++) {
       list(_T(";%*s%s\n")
-          ,LF_MARGIN,_T("")
+          ,LF_MARGIN,EMPTYSTRING
           ,m_callTable[i].toString().cstr());
     }
     list(_T("\n"));
@@ -487,7 +487,7 @@ String JumpFixup::toString() const {
                ,m_jmpTo
                ,m_isShortJump?_T("short"):_T("near")
                ,m_instructionSize
-               ,m_fixed?_T(""):_T("<----- Need fixup")
+               ,m_fixed?EMPTYSTRING:_T("<----- Need fixup")
                );
 }
 

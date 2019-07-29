@@ -16,7 +16,7 @@ String::String() {
 String::String(const String &s) {
   m_len = s.m_len;
   m_buf = new TCHAR[m_capacity = m_len+1];
-  MEMCPY(m_buf, s.m_buf, m_capacity); // handles 0-characters in s
+  TMEMCPY(m_buf, s.m_buf, m_capacity); // handles 0-characters in s
 }
 
 String::String(const wchar_t *s) {
@@ -96,11 +96,11 @@ String::~String() {
 String &String::operator=(const String &rhs) {
   if(this != &rhs) {
     if(!needReallocate(rhs.m_len)) {
-      MEMCPY(m_buf, rhs.m_buf, (m_len=rhs.m_len)+1);
+      TMEMCPY(m_buf, rhs.m_buf, (m_len=rhs.m_len)+1);
     } else {
       delete[] m_buf;
       m_buf = new TCHAR[m_capacity = (m_len = rhs.m_len)+1];
-      MEMCPY(m_buf, rhs.m_buf, m_capacity); // handles 0-characters in rhs
+      TMEMCPY(m_buf, rhs.m_buf, m_capacity); // handles 0-characters in rhs
     }
   }
   return *this;
@@ -133,10 +133,10 @@ String &String::operator+=(const String &rhs) {
     if(m_capacity < newLength + 1) {
       TCHAR *old = m_buf;
       m_buf = new TCHAR[m_capacity = (newLength + 1) * 3];
-      MEMCPY(m_buf, old, m_len);
+      TMEMCPY(m_buf, old, m_len);
       delete[] old;
     }
-    MEMCPY(m_buf + m_len, rhs.m_buf, rhs.m_len+1);  // handles 0-characters in rhs
+    TMEMCPY(m_buf + m_len, rhs.m_buf, rhs.m_len+1);  // handles 0-characters in rhs
     m_len = newLength;
   }
   return *this;
@@ -153,7 +153,7 @@ String &String::operator+=(const wchar_t *rhs) {
   if(m_capacity < newLength + 1) {
     TCHAR *old = m_buf;
     m_buf = new TCHAR[m_capacity = (newLength + 1) * 3];
-    MEMCPY(m_buf, old, m_len);
+    TMEMCPY(m_buf, old, m_len);
     _tcsncpy(m_buf + m_len, mrhs, length);
     m_buf[m_len = newLength] = '\0';
     delete[] old; // Dont delete old before now, rhs and old might overlap
@@ -170,8 +170,8 @@ String operator+(const String &lhs, const String &rhs) {
   result.m_len = lhs.m_len + rhs.m_len;
   result.m_capacity = result.m_len + 1;
   result.m_buf = new TCHAR[result.m_capacity];
-  MEMCPY(result.m_buf, lhs.m_buf, lhs.m_len);             // handles 0-characters in lhs
-  MEMCPY(result.m_buf+lhs.m_len, rhs.m_buf, rhs.m_len);   // and rhs
+  TMEMCPY(result.m_buf, lhs.m_buf, lhs.m_len);             // handles 0-characters in lhs
+  TMEMCPY(result.m_buf+lhs.m_len, rhs.m_buf, rhs.m_len);   // and rhs
   result.m_buf[result.m_len] = 0;
   return result;
 }
@@ -205,13 +205,13 @@ String &String::insert(size_t pos, TCHAR ch) {
     if(m_capacity < m_len + 2) {
       m_capacity = (m_len + 2) * 2;
       TCHAR *tmp = new TCHAR[m_capacity];
-      MEMCPY(tmp, m_buf, pos);
+      TMEMCPY(tmp, m_buf, pos);
       tmp[pos] = ch;
-      MEMCPY(tmp + pos + 1, m_buf + pos, m_len++ - pos + 1);
+      TMEMCPY(tmp + pos + 1, m_buf + pos, m_len++ - pos + 1);
       delete[] m_buf;
       m_buf = tmp;
     } else {
-      MEMMOVE(m_buf + pos + 1, m_buf + pos, m_len++ - pos + 1); // remember '\0'
+      TMEMMOVE(m_buf + pos + 1, m_buf + pos, m_len++ - pos + 1); // remember '\0'
       m_buf[pos] = ch;
     }
   }
@@ -223,16 +223,16 @@ String &String::insert(size_t pos, const String &s) {
     if(m_capacity < m_len + s.m_len + 1) {
       TCHAR *tmp = new TCHAR[m_capacity = (m_len + s.m_len + 1) * 2];
       if(pos) {
-        MEMCPY(tmp, m_buf, pos);
+        TMEMCPY(tmp, m_buf, pos);
       }
-      MEMCPY(tmp + pos, s.m_buf, s.m_len);
-      MEMCPY(tmp + pos + s.m_len, m_buf + pos, m_len - pos + 1);
+      TMEMCPY(tmp + pos, s.m_buf, s.m_len);
+      TMEMCPY(tmp + pos + s.m_len, m_buf + pos, m_len - pos + 1);
       m_len += s.m_len;
       delete[] m_buf;
       m_buf = tmp;
     } else {
-      MEMMOVE(m_buf + pos + s.m_len, m_buf + pos, m_len - pos + 1); // remember '\0'
-      MEMCPY(m_buf + pos, s.m_buf, s.m_len);
+      TMEMMOVE(m_buf + pos + s.m_len, m_buf + pos, m_len - pos + 1); // remember '\0'
+      TMEMCPY(m_buf + pos, s.m_buf, s.m_len);
       m_len += s.m_len;
     }
   }
@@ -247,7 +247,7 @@ String &String::remove(size_t pos, size_t count) {
       count = j - pos;
     }
     if(j < m_len) {
-      MEMMOVE(m_buf + pos, m_buf + j, m_len - j);
+      TMEMMOVE(m_buf + pos, m_buf + j, m_len - j);
     }
     m_len -= count;
     m_buf[m_len] = 0;
@@ -291,7 +291,7 @@ String &String::replace(const String &from, TCHAR to) {
   TCHAR       *newBuf      = new TCHAR[newCapacity];
   TCHAR       *s, *d;
   for(s = m_buf, d = newBuf; s <= last;) {
-    if(MEMCMP(s, from.m_buf, fromLength)) {
+    if(TMEMCMP(s, from.m_buf, fromLength)) {
       *(d++) = *(s++);
     } else { // replace
       *(d++) = to;
@@ -300,7 +300,7 @@ String &String::replace(const String &from, TCHAR to) {
   }
   const intptr_t rest = m_len - (s - m_buf);
   if(rest > 0) {
-    MEMCPY(d, s, rest);
+    TMEMCPY(d, s, rest);
     d += rest;
   }
 
@@ -350,7 +350,7 @@ String &String::replace(TCHAR from, const String &to) {
     if(*s != from) {
       *(dst++) = *(s++);
     } else {
-      MEMCPY(dst, to.m_buf, toLength);
+      TMEMCPY(dst, to.m_buf, toLength);
       dst += toLength;
       s++;
     }
@@ -379,7 +379,7 @@ String &String::replace(const String &from, const String &to) {
   int count = 0;
   const TCHAR *last = m_buf + m_len - fromLength;
   for(const TCHAR *t = m_buf; t <= last;) { // count all occurrences of from in this
-    if(MEMCMP(t, from.m_buf, fromLength) == 0) {
+    if(TMEMCMP(t, from.m_buf, fromLength) == 0) {
       count++;
       t += fromLength;
     } else {
@@ -396,11 +396,11 @@ String &String::replace(const String &from, const String &to) {
   TCHAR *newBuf = new TCHAR[m_capacity];
   TCHAR *s, *d;
   for(s = m_buf, d = newBuf; s <= last;) {
-    if(MEMCMP(s, from.m_buf, fromLength)) {
+    if(TMEMCMP(s, from.m_buf, fromLength)) {
       *(d++) = *(s++);
     } else { // replace
       if(toLength) {
-        MEMCPY(d, to.m_buf, toLength);
+        TMEMCPY(d, to.m_buf, toLength);
         d += toLength;
       }
       s += fromLength;
@@ -408,7 +408,7 @@ String &String::replace(const String &from, const String &to) {
   }
   const intptr_t tail = m_len - (d - newBuf);
   if(tail > 0) {
-    MEMCPY(d, s, tail);
+    TMEMCPY(d, s, tail);
     d += tail;
   }
   *d = 0;
@@ -439,7 +439,7 @@ String spaceString(std::streamsize length, TCHAR ch) {
   String result;
   delete[] result.m_buf;
   result.m_buf = new TCHAR[result.m_capacity = (result.m_len = (size_t)length) + 1];
-  MEMSET(result.m_buf, ch, (size_t)length);
+  TMEMSET(result.m_buf, ch, (size_t)length);
   result.m_buf[length] = 0;
   return result;
 }
@@ -535,7 +535,7 @@ String &String::vprintf(_In_z_ _Printf_format_string_ TCHAR const * const format
         delete[] m_buf;
         m_buf = new TCHAR[m_capacity = written + 1];
       }
-      MEMCPY(m_buf, tmp, (m_len = written)+1);
+      TMEMCPY(m_buf, tmp, (m_len = written)+1);
       if(tmp != buffer) {
         delete[] tmp;
       }

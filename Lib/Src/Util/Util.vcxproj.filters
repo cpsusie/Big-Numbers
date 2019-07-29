@@ -412,16 +412,10 @@
     <ClCompile Include="Date.cpp">
       <Filter>Source Files\Date</Filter>
     </ClCompile>
-    <ClCompile Include="DatePacker.cpp">
-      <Filter>Source Files\Date</Filter>
-    </ClCompile>
     <ClCompile Include="Time.cpp">
       <Filter>Source Files\Date</Filter>
     </ClCompile>
     <ClCompile Include="Timestamp.cpp">
-      <Filter>Source Files\Date</Filter>
-    </ClCompile>
-    <ClCompile Include="TimestampPacker.cpp">
       <Filter>Source Files\Date</Filter>
     </ClCompile>
     <ClCompile Include="CallCounter.cpp">
@@ -627,9 +621,6 @@
     </ClCompile>
     <ClCompile Include="ectype.cpp">
       <Filter>Source Files\String</Filter>
-    </ClCompile>
-    <ClCompile Include="TimePacker.cpp">
-      <Filter>Source Files\Date</Filter>
     </ClCompile>
     <ClCompile Include="GetProcessMemoryCounters.cpp">
       <Filter>Source Files\Process</Filter>

@@ -74,7 +74,7 @@ void redirectDebugLog(bool append, const TCHAR *fileName) {
 #define _CHARSET_
 #endif
     String fnamePrefix(_T("Trace" _PLATFORM_ _TMPREFIX_ _CONFIGURATION_ _CHARSET_));
-    fnamePrefix.replace('/',_T(""));
+    fnamePrefix.replace('/',EMPTYSTRING);
     const String fname = fnamePrefix + fileInfo.getFileName();
 
     setRedirectFileName(fileInfo.setDrive(_T("C")).setDir(_T("\\temp")).setFileName(fname).setExtension(_T("txt")).getFullPath());

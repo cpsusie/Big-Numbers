@@ -1387,7 +1387,7 @@ private:
   void updateLinks();
   inline void checkSetupMode(bool assumedMode) const {
     if(m_setupMode != assumedMode) {
-      throwException(_T("Game is %sin setupMode."), m_setupMode ? _T("") : _T("not "));
+      throwException(_T("Game is %sin setupMode."), m_setupMode ? EMPTYSTRING : _T("not "));
     }
   }
 
@@ -1419,7 +1419,7 @@ public:
   Game &save(FILE *f);
   Game &load(FILE *f);
   String toString() const;
-  Game &newGame(const String &name = _T(""));
+  Game &newGame(const String &name = EMPTYSTRING);
   Game &clearBoard();
   void initState(bool validate=false, const GameKey *key=NULL);
   inline Game &beginSetup() {                // return *this

@@ -229,8 +229,8 @@ void GrammarCoder::generateParser() {
     writer.addMacro(       _T("PUSHNAMESPACE"      ), format(_T("namespace %s {"    ), m_nameSpace.cstr()));
     writer.addMacro(       _T("POPNAMESPACE"       ), format(_T("}; // namespace %s"), m_nameSpace.cstr()));
   } else {
-    writer.addMacro(       _T("PUSHNAMESPACE"      ), _T(""));
-    writer.addMacro(       _T("POPNAMESPACE"       ), _T(""));
+    writer.addMacro(       _T("PUSHNAMESPACE"      ), EMPTYSTRING);
+    writer.addMacro(       _T("POPNAMESPACE"       ), EMPTYSTRING);
   }
 
   writer.generateOutput();
