@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <Array.h>
 #include <ByteMemoryStream.h>
 #include <CompressFilter.h>
 

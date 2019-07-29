@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <FileNameSplitter.h>
 #include <Math/FPU.h>
 #include "TestSamples.h"
 
@@ -35,13 +36,13 @@ namespace TestExpression {
     OUTPUT(_T("%s"),vformat(format,argptr).cstr());
   }
 
-  String makeFileName(int testCase, const String dirComp1, const String &dirComponent = EMPTYSTRING) {
+  String makeFileName(int testCase, const String &dirComp1, const String &dirComponent = EMPTYSTRING) {
     const String fileName = Expression::getDefaultListFileName();
     FileNameSplitter fs(fileName);
     DirComponents dc = fs.getDirComponents();
-    dc.add(2,dirComp1);
+    dc.add(3,dirComp1);
     if(dirComponent.length() > 0) {
-      dc.add(3,dirComponent);
+      dc.add(4,dirComponent);
     }
     fs.setDir(dc);
     fs.setFileName(format(_T("testCase%04d"), testCase));

@@ -1,6 +1,7 @@
 #include "pch.h"
 #include <Math/Expression/Expression.h>
 #include "ExpressionCompile.h"
+#include <FileNameSplitter.h>
 
 namespace Expr {
 
@@ -196,22 +197,13 @@ void Expression::print(FILE *f) const {
 }
 
 String Expression::getDefaultListFileName() { // static
-#ifdef IS32BIT
-#define PFSTR "x86\\"
-#else // IS64BIT
-#define PFSTR "x64\\"
-#endif // IS64BIT
-#ifdef _DEBUG
-#define CONFSTR "Debug\\"
-#else
-#define CONFSTR "Release\\"
-#endif // _DEBUG
 #ifdef LONGDOUBLE
-#define REALSTR "TB\\"
+#define _REALSTR_ "TB/"
 #else
-#define REALSTR "QW\\"
+#define _REALSTR_ "QW/"
 #endif // LONGDOUBLE
-  return _T("c:\\temp\\ExprList\\" PFSTR CONFSTR REALSTR "expr.lst");
+  FileNameSplitter info(getTestFileName(_T("expr"), _T("lst")));
+  return info.setDir(FileNameSplitter::getChildName(info.getDir(), _T("ExprList/" _PLATFORM_ _CONFIGURATION_ _REALSTR_))).getAbsolutePath();
 }
 
 }; // namespace Expr

@@ -1,6 +1,7 @@
 #pragma once
 
-#include "Iterator.h"
+#include "CompactArray.h"
+#include <intrin.h>
 
 template<class T> class TinyBitSet {
 private:

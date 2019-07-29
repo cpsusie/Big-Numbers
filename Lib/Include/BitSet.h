@@ -2,7 +2,6 @@
 
 #include <intrin.h>
 #include "CompactArray.h"
-#include "Iterator.h"
 
 #ifdef IS32BIT
 #define BITSET_ASM_OPTIMIZED

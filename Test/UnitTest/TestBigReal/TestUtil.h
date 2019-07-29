@@ -36,5 +36,3 @@ const String &getArchitecture();
 const String &getCompileMode();
 const String getCompileArchitectureSignatureString();
 const String getSignatureSubDir();
-
-String getTestFileName(const String &fileName, const String extension = _T("dat"));

@@ -866,6 +866,9 @@
     <ClCompile Include="RegexIStream\SubNFA.cpp">
       <Filter>Source Files\Stream\RegexIStream</Filter>
     </ClCompile>
+    <ClCompile Include="GetTestFileName.cpp">
+      <Filter>Source Files\Debugging and Exceptions</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />

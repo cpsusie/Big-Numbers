@@ -42,13 +42,6 @@ static const double defaultTestValues[] = {
  ,1234567890123456
 };
 
-String getTestFileName(const String &fileName, const String extension = _T("dat")) {
-  const String testDir = _T("c:\\temp\\TestDir");
-  String fname = fileName;
-  fname.replace(_T(':'), _T('_'));
-  return FileNameSplitter(FileNameSplitter::getChildName(testDir, fname)).setExtension(extension).getFullPath();
-}
-
 class StringParametersIterator {
 private:
   size_t         m_nextValueIndex;

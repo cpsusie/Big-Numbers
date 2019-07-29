@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <FileNameSplitter.h>
 #include <HashSet.h>
 #include <Date.h>
 #include <ExecutableByteArray.h>
@@ -495,9 +496,10 @@ void TestMachineCode::initAllOperands() {
 #else // IS64BIT
 #define NAMEPREFIX _T("x64")
 #endif // IS64BIT
-  const String logName = format(_T("c:\\temp\\emitLogs\\%s%s.log")
-                               ,NAMEPREFIX
-                               ,Timestamp().toString(_T("yyyyMMddhhmmss")).cstr());
+  const String rawFileName = NAMEPREFIX + Timestamp().toString(_T("yyyyMMddhhmmss"));
+  FileNameSplitter info(getTestFileName(rawFileName, _T("log")));
+  info.setDir(FileNameSplitter::getChildName(info.getDir(), _T("EmitLogs")));
+  const String logName = info.getAbsolutePath();
   m_emitCountLog = MKFOPEN(logName,_T("w"));
   _ftprintf(m_emitCountLog, _T("Operands:%3zu. void Operands:%3zu\n")
            ,m_allOperands.size()

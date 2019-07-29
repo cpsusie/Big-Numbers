@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <StringArray.h>
 #include <Tokenizer.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
@@ -11,7 +12,7 @@ namespace TestTokenizer {
   private:
     void testTokenizer(int testid, const TCHAR *str, TCHAR *del, TCHAR tq, int flags, ...) {
       va_list argptr;
-      Array<String> expected;
+      StringArray expected;
       TCHAR *ex;
       for (va_start(argptr, flags), ex = va_arg(argptr, TCHAR*); ex; ex = va_arg(argptr, TCHAR*)) {
         expected.add(ex);
@@ -28,34 +29,34 @@ namespace TestTokenizer {
         const String assignStr = assignTok.next();
         const String copyConstStr = copyConstTok.next();
 
-        if (i >= expected.size()) {
+        if(i >= expected.size()) {
           OUTPUT(_T("Test %d. Too many field in String(%s). expected %d. got %s number %d\n"), testid, str, expected.size(), nextStr.cstr(), i);
           verify(false);
         }
         else {
-          if (nextStr != expected[i]) {
+          if(nextStr != expected[i]) {
             OUTPUT(_T("Test %d. Wrong field in String(%s). field %d =<%s>. expected <%s>\n"), testid, str, i, nextStr.cstr(), expected[i].cstr());
             verify(false);
           }
-          if (assignStr != nextStr) {
+          if(assignStr != nextStr) {
             OUTPUT(_T("Test %d. Wrong field in assignStr(%s). field %d =<%s>. expected <%s>\n"), testid, str, i, assignStr.cstr(), expected[i].cstr());
             verify(false);
           }
-          if (copyConstStr != nextStr) {
+          if(copyConstStr != nextStr) {
             OUTPUT(_T("Test %d. Wrong field in copyConstStr(%s). field %d =<%s>. expected <%s>\n"), testid, str, i, copyConstStr.cstr(), expected[i].cstr());
             verify(false);
           }
         }
-        if (assignTok.hasNext() != tok.hasNext()) {
+        if(assignTok.hasNext() != tok.hasNext()) {
           OUTPUT(_T("Test %d. assignTok.hasNext()(=%s) != tok.hasNext()(=%s)\n"), testid, boolToStr(assignTok.hasNext()), boolToStr(tok.hasNext()));
           verify(false);
         }
-        if (copyConstTok.hasNext() != tok.hasNext()) {
+        if(copyConstTok.hasNext() != tok.hasNext()) {
           OUTPUT(_T("Test %d. copyConstStr.hasNext()(=%s) != tok.hasNext()(=%s)\n"), testid, boolToStr(copyConstTok.hasNext()), boolToStr(tok.hasNext()));
           verify(false);
         }
       }
-      if (i != expected.size()) {
+      if(i != expected.size()) {
         OUTPUT(_T("Test %d. Too few fields in String(%s). Got %d expected %d\n"), testid, str, i, expected.size());
         verify(false);
       }
