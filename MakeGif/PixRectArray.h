@@ -11,7 +11,7 @@ class PixRectArray : public CompactArray<GifPixRect*>, public PropertyContainer 
 private:
   size_t m_updateCounter;
   void incrUpdateCount();
-  PixRectArray(const PixRectArray &src); // not defined
+  PixRectArray(const PixRectArray &src); // Not defined. Class not cloneable
 public:
   PixRectArray() {
     m_updateCounter = 0;

@@ -324,6 +324,9 @@ private:
     LPDIRECT3DTEXTURE m_texture;
   };
 
+  PixRect(const PixRect &src);            // Not defined. Class not cloneable
+  PixRect &operator=(const PixRect &src); // Not defined. Class not cloneable
+
   inline void initSurfaces() {
     m_surface = m_DCSurface = NULL;
     m_pixelAccessor = NULL;
@@ -354,9 +357,6 @@ private:
 public:
   static void reOpenDirectX();
   PixRect(PixRectDevice &device);         // create a PixRect to draw directly on the screen
-
-  PixRect(const PixRect &src);            // not defined
-  PixRect &operator=(const PixRect &src); // do
 
   PixRect(PixRectDevice &device, PixRectType type, UINT width, UINT height, D3DPOOL pool = D3DPOOL_FORCE_DWORD, D3DFORMAT pixelFormat = D3DFMT_FORCE_DWORD);
   PixRect(PixRectDevice &device, PixRectType type, const CSize &size,       D3DPOOL pool = D3DPOOL_FORCE_DWORD, D3DFORMAT pixelFormat = D3DFMT_FORCE_DWORD);

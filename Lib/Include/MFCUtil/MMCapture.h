@@ -107,6 +107,9 @@ private:
   friend LRESULT CALLBACK captureControlCallback(    HWND captureWindow, int state);
   friend void    CALLBACK captureWaveOutCallback(    HWAVEOUT hWaveOut, UINT uMsg, DWORD_PTR dwInstance, DWORD_PTR dwParam1, DWORD_PTR dwParam2);
 
+  MMCapture(const MMCapture &capture);        // Not defined. Class not cloneable
+  MMCapture &operator=(const MMCapture &src); // Not defined. Class not cloneable
+
   bool saveVideoFrame(VIDEOHDR *videoHeader);
   void saveAudioFrame(const WAVEHDR  *audioHeader);
   friend class AudioPlayerThread;
@@ -114,8 +117,6 @@ private:
 public:
   MMCapture(BYTE captureWhat, CaptureReceiver &receiver, UINT framesPerSecond = 15, bool playAudio=true, UINT audioBufferSize=0);
   virtual ~MMCapture();
-  MMCapture(const MMCapture &capture);        // not defined
-  MMCapture &operator=(const MMCapture &src); // not defined
   void startCapture();
   void stopCapture();
   inline bool captureVideo() const {

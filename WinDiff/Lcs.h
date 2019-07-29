@@ -178,6 +178,9 @@ public:
 class Lcs {
 private:
   HeapObjectPool<Link>   m_linkPool;
+
+  Lcs(const Lcs &src);                  // Not defined. Class not cloneable
+  Lcs &operator=(const Lcs &src);       // Not defined. Class not cloneable
 protected:
   size_t                 m_n;           // Number of elements in longest input-Array
   bool                   m_seqReversed; // true if b (parameter to constructor) is longest, and a and b are swapped
@@ -200,9 +203,6 @@ protected:
 #endif // _DEBUG
 public:
   Lcs(LcsComparator &cmp, CompareJob *job);
-  Lcs(const Lcs &src);            // not defined
-  Lcs &operator=(const Lcs &src); // not defined
-
   virtual ~Lcs();
   virtual void findLcs(ElementPairArray &p) = 0;
 };

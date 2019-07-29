@@ -10,8 +10,8 @@ private:
   static Real s_dummy;
   Expr::Expression *m_expr; // real expression-evaluater
   Real *m_xp, *m_yp, *m_zp, *m_tp;
-  ExpressionWrapper(const ExpressionWrapper &src);            // not defined
-  ExpressionWrapper &operator=(const ExpressionWrapper &src); // not defined
+  ExpressionWrapper(const ExpressionWrapper &src);            // Not defined. Class not cloneable
+  ExpressionWrapper &operator=(const ExpressionWrapper &src); // Not defined. Class not cloneable
 public:
   ExpressionWrapper();
   ExpressionWrapper(const String &text, bool machineCode, FILE *listFile = NULL); // throws exception on error

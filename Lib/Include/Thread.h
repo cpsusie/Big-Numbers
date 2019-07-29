@@ -52,13 +52,13 @@ private:
   UncaughtExceptionHandler *m_uncaughtExceptionHandler;
   bool                      m_isDeamon;
 
+  Thread(const Thread &src);                                               // Not defined. Class not cloneable
+  Thread &operator=(const Thread &src);                                    // Not defined. Class not cloneable
   void handleUncaughtException(Exception &e);
   void init(Runnable *target, const String &name, size_t stackSize);
 public:
   Thread(Runnable &target, const String &name = "", size_t stackSize = 0); // stacksize = 0, makes createThread use the default stacksize
   Thread(const String &name = "", size_t stackSize = 0);                   // do
-  Thread(const Thread &src);                                               // Not defined. Thread not cloneable
-  Thread &operator=(const Thread &src);                                    // Not defined. Thread not cloneable
 
   virtual ~Thread();
   void setPriority(int priority);
@@ -208,15 +208,15 @@ private:
   int  m_threadPriority;
   bool m_disablePriorityBoost;
 
-  Thread &get(UINT index) {
+  Thread &get(size_t index) {
     return *((Thread*)((*this)[index]));
   }
 
 protected:
   void allocateNewResources(size_t count) {
-    const UINT oldSize = (UINT)size();
+    const size_t oldSize = size();
     __super::allocateNewResources(count);
-    for(UINT i = oldSize; i < size(); i++) {
+    for(size_t i = oldSize; i < size(); i++) {
       Thread &thr = get(i);
       thr.setPriority(m_threadPriority);
       thr.setPriorityBoost(m_disablePriorityBoost);
@@ -232,7 +232,7 @@ public:
       return;
     }
     m_threadPriority = priority;
-    for(UINT i = 0; i < size(); i++) {
+    for(size_t i = 0; i < size(); i++) {
       get(i).setPriority(priority);
     }
   }
@@ -244,7 +244,7 @@ public:
       return;
     }
     m_disablePriorityBoost = disablePriorityBoost;
-    for(UINT i = 0; i < size(); i++) {
+    for(size_t i = 0; i < size(); i++) {
       get(i).setPriorityBoost(disablePriorityBoost);
     }
   }

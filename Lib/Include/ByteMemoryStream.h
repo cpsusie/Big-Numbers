@@ -8,12 +8,12 @@ private:
   const BYTE *m_p;
   size_t      m_size;
   size_t      m_pos;
+
+  ByteMemoryInputStream(const ByteMemoryInputStream &src);            // Not defined. Class not cloneable
+  ByteMemoryInputStream &operator=(const ByteMemoryInputStream &src); // Not defined. Class not cloneable
 public:
   ByteMemoryInputStream(const BYTE *src);
   ByteMemoryInputStream(const ByteArray &src);
-
-  ByteMemoryInputStream(const ByteMemoryInputStream &src);            // not defined. ByteMemoryInputStream not cloneable
-  ByteMemoryInputStream &operator=(const ByteMemoryInputStream &src); // not defined. ByteMemoryInputStream not cloneable
 
   intptr_t getBytes(BYTE *dst, size_t n);
   int getByte();
@@ -24,12 +24,12 @@ private:
   BYTE      *m_p;
   size_t     m_pos;
   ByteArray *m_dstArray;
+
+  ByteMemoryOutputStream(const ByteMemoryOutputStream &src);            // Not defined. Class not cloneable
+  ByteMemoryOutputStream &operator=(const ByteMemoryOutputStream &src); // Not defined. Class not cloneable
 public:
   ByteMemoryOutputStream(BYTE *dst);
   ByteMemoryOutputStream(ByteArray &dst);
-
-  ByteMemoryOutputStream(const ByteMemoryOutputStream &src);            // not defined. ByteMemoryOutputStream not cloneable
-  ByteMemoryOutputStream &operator=(const ByteMemoryOutputStream &src); // not defined. ByteMemoryOutputStream not cloneable
 
   void putBytes(const BYTE *src, size_t n);
   void putByte(BYTE b);

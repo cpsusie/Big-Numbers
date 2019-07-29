@@ -61,6 +61,10 @@ private:
   FILE           *m_input;
   Token           m_token;       // current token  (almost = tokmap[m_lexeme])
   unsigned int    m_lexeme;      // current lexeme (character read)
+
+  LexScanner(const LexScanner &src);            // Not defined. Class not cloneable
+  LexScanner &operator=(const LexScanner &src); // Not defined. Class not cloneable
+
   bool nextLine();
   void nextChar();
   void nextInput() {
@@ -82,10 +86,6 @@ private:
   MacroDefinition &parseMacro();
 public:
   LexScanner(const String &fname);
-  // not defined
-  LexScanner(const LexScanner &src);
-  // not defined
-  LexScanner &operator=(const LexScanner &src);
   virtual ~LexScanner();
   TCHAR *getfname() {
     return m_fileName.cstr();

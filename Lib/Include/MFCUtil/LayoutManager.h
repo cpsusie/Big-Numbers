@@ -165,8 +165,9 @@ private:
   CFont *m_font;
   double m_currentFontScale;
   void setFont(CFont *font);
-  LayoutManager(const LayoutManager &src);                            // not defined. LayoutManager is not cloneable
-  LayoutManager &operator=(const LayoutManager &src);             // not defined. LayoutManager is not cloneable
+
+  LayoutManager(const LayoutManager &src);                        // Not defined. Class not cloneable
+  LayoutManager &operator=(const LayoutManager &src);             // Not defined. Class not cloneable
 protected:
   void setFontScale(double scale, bool resizeWindow, bool redraw);
   void resetWinStartSize();
@@ -208,8 +209,10 @@ class SimpleLayoutManager : public LayoutManager {
 private:
   CompactArray<LayoutAttribute*> m_attributes;
   bool                           m_arrayModified;
-  SimpleLayoutManager(const SimpleLayoutManager &src);                // not defined. SimpleLayoutManager is not cloneable
-  SimpleLayoutManager &operator=(const SimpleLayoutManager &src); // not defined. SimpleLayoutManager is not cloneable
+
+  SimpleLayoutManager(const SimpleLayoutManager &src);            // Not defined. Class not cloneable
+  SimpleLayoutManager &operator=(const SimpleLayoutManager &src); // Not defined. Class not cloneable
+
   void updateFontScale(LayoutAttribute &attr, double scale, bool redraw, const CSize &currentSize);
   void updateChildRect(LayoutAttribute &attr, const CSize &currentSize);
   bool isAnyChildrenChanged() const;

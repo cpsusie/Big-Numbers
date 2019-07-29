@@ -109,9 +109,9 @@ private:
   void createUMatrix();
   void trace();
 
-  QRMatrix(const QRMatrix &src);            // not defined
-  QRMatrix &operator=(const QRMatrix &src); // not defined
-  void setDimension(int rows, int columns); // not defined
+  QRMatrix(const QRMatrix &src);            // Not defined. Class not cloneable
+  QRMatrix &operator=(const QRMatrix &src); // Not defined. Class not cloneable
+  void setDimension(int rows, int columns); // Not defined
 public:
   QRMatrix(QRTracer *tracer = NULL);
   QRMatrix(const Matrix &a, QRTracer *tracer = NULL);

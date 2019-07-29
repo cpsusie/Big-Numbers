@@ -18,6 +18,9 @@ private:
   bool                         m_verbose;
   mutable short                m_level;
 
+  ExternProcess(const ExternProcess &src);             // Not defined. Class not cloneable
+  ExternProcess &operator=(const ExternProcess &src);  // Not defined. Class not cloneable
+
   // No wait. Can communicate with process' stdin/stdout by send/receive
   void startSpawn(             const String &program, const TCHAR * const *argv);
   // No wait. Can communicate with process' stdin/stdout by send/receive
@@ -48,8 +51,6 @@ protected:
 public:
   // If verbose, functioncalls will be traced with debugLog
   ExternProcess(bool verbose = false);
-  ExternProcess(const ExternProcess &src);             // not defined. ExternProcess not cloneable
-  ExternProcess &operator=(const ExternProcess &src);  // do
   virtual ~ExternProcess();
 
   // No wait. Can communicate with process' stdin/stdout by send/receive

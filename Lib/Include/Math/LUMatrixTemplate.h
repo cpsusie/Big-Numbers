@@ -90,9 +90,9 @@ private:
     }
   }
 
-  LUMatrixTemplate(const LUMatrixTemplate<T> &src);               // not defined
-  LUMatrixTemplate<T> &operator=(const LUMatrixTemplate<T> &src); // not defined
-  void setDimension(size_t rows, size_t columns);                 // not defined
+  LUMatrixTemplate(const LUMatrixTemplate<T> &src);               // Not defined. Class not cloneable
+  LUMatrixTemplate<T> &operator=(const LUMatrixTemplate<T> &src); // Not defined. Class not cloneable
+  void setDimension(size_t rows, size_t columns);                 // Not defined
 public:
   LUMatrixTemplate() : MatrixTemplate<T>(one(1)) {
     allocPermut();

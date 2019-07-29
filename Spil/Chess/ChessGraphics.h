@@ -107,14 +107,15 @@ private:
   static Image       *s_selectionFrameImage, *s_playerIndicator;
   static CFont        s_boardTextFont, s_debugInfoFont;
   AnimatedImage       m_hourGlassImage;
+
+  ChessResources(const ChessResources &src);            // Not defined. Class not cloneable
+  ChessResources &operator=(const ChessResources &src); // Not defined. Class not cloneable
 public:
   ChessResources();
   ~ChessResources();
   void load();
   void unload();
   void reload();
-  ChessResources(const ChessResources &src);            // not defined
-  ChessResources &operator=(const ChessResources &src); // not defined
 
   void setClientRectSize(const CSize &size);
   inline const Point2D &getScale() const {

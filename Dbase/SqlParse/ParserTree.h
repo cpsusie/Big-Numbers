@@ -33,6 +33,7 @@ private:
     int               m_likeoperatorindex;
     SyntaxNodeData   *m_data;
   } m_userattributes;
+  SyntaxNode &operator=(const SyntaxNode &src); // Not defined. Class not cloneable
   void init(int token);
 public:
   SyntaxNode(const SyntaxNode *src);
@@ -44,7 +45,6 @@ public:
   SyntaxNode(const Timestamp &d);
   SyntaxNode(int token, va_list argptr);
   ~SyntaxNode();
-  SyntaxNode &operator=(const SyntaxNode &src); // not defined.  just to be sure we wont call it
   int    token()                          const { return m_token;  }
   SourcePosition pos()                    const { return m_pos;    }
   void setpos(const SourcePosition &pos)        { m_pos = pos;     }
@@ -77,12 +77,12 @@ private:
   SyntaxNodeArray     m_nodetable;
   bool                m_ok;
   String              m_filename;
+  ParserTree(const ParserTree &src);            // Not defined. Class not cloneable
   SyntaxNode *fetchSyntaxNodeWithChildren(int token, va_list argptr);
 public:
   SyntaxNode  *m_root;
   StringArray  m_errmsg;
   ParserTree(TCHAR *filename = EMPTYSTRING);
-  ParserTree(const ParserTree &src);            // not defined. just to be sure we wont call it
   ParserTree &operator=(const ParserTree &rhs); // do
   virtual ~ParserTree();
   SyntaxNode *vFetchTokenNode(int token,va_list argptr);

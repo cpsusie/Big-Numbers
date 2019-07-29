@@ -13,14 +13,15 @@ private:
   TCHAR     *m_formatBuffer;
   int        m_formatBufferSize;
 
+  MarginFile(const MarginFile &src);             // Not defined. Class not cloneable
+  MarginFile &operator=(const MarginFile &src);  // Not defined. Class not cloneable
+
   void  init();
   void  open(FILE *file, const String &name, const String &absolutName, bool openedByMe);
   void  indent();
   void  flushLine();
 public:
   MarginFile(const String &name = EMPTYSTRING);
-  MarginFile(const MarginFile &src);             // not defined
-  MarginFile &operator=(const MarginFile &src);  // not defined
   virtual ~MarginFile();
   void open(const String &name);
   void close();

@@ -26,13 +26,14 @@ class ListAllocator {
 private:
   const size_t     m_elementSize;
   Array<MergeList> m_bufferArray;
+
+  ListAllocator(const ListAllocator &src);            // Not defined. Class not cloneable
+  ListAllocator &operator=(const ListAllocator &src); // Not defined. Class not cloneable
+
 #ifdef DUMPLISTALLOCATOR
   void dumpArray();
 #endif // DUMPLISTALLOCATOR
 public:
-  ListAllocator(const ListAllocator &src);            // not defined
-  ListAllocator &operator=(const ListAllocator &src); // not defined
-
   ListAllocator(size_t elementSize) : m_elementSize(elementSize) {
   }
   ~ListAllocator();

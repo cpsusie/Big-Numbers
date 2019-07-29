@@ -16,14 +16,16 @@ private:
   NodeArray       m_nodetable;
   StringArray     m_errors;
   String          m_absolutFileName;
+
+  ParserTree(const ParserTree &src);             // Not defined. Class not cloneable
+  ParserTree &operator=(const ParserTree &rhs);  // Not defined. Class not cloneable
+
   void addNodesToTable(const SyntaxNode *n);
 
 protected:
   void releaseAll();
 public:
   ParserTree(const String &fileName);
-  ParserTree(const ParserTree &src);             // not defined
-  ParserTree &operator=(const ParserTree &rhs);  // not defined
   virtual ~ParserTree();
   const SyntaxNode *getRoot() const {
     return m_root;

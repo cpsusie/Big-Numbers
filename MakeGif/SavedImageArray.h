@@ -4,8 +4,8 @@
 
 class SavedImageArray : public CompactArray<SavedImage*> {
 private:
-  SavedImageArray(const SavedImageArray &src);            // not defined
-  SavedImageArray &operator=(const SavedImageArray &src); // not defined
+  SavedImageArray(const SavedImageArray &src);            // Not defined. Class not cloneable
+  SavedImageArray &operator=(const SavedImageArray &src); // Not defined. Class not cloneable
 public:
   SavedImageArray(const PixRectArray &prArray, int maxColorCount);
   ~SavedImageArray();

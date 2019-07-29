@@ -105,10 +105,10 @@ private:
   size_t        m_size;
   const size_t  m_startOffset;
 
+  ByteFileArray(const ByteFileArray &src);            // Not defined. Class not cloneable
+  ByteFileArray &operator=(const ByteFileArray &src); // Not defined. Class not cloneable
 public:
   ByteFileArray(const String &fileName, size_t startOffset);
-  ByteFileArray(const ByteFileArray &src);            // not defined
-  ByteFileArray &operator=(const ByteFileArray &src); // not defined
   ~ByteFileArray();
 
   inline size_t size() const {

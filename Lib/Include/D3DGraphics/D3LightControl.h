@@ -16,6 +16,9 @@ private:
   D3DXHANDLE    m_worldViewProjectionHandle;
   D3DXHANDLE    m_worldHandle;
 
+  D3LightControl(           const D3LightControl &src); // Not defined. Class not cloneable
+  D3LightControl &operator=(const D3LightControl &src); // Not defined. Class not cloneable
+
   void createEffect();
   void createMaterial();
   void setMaterialColors() const;
@@ -38,8 +41,6 @@ protected:
   }
 public:
   D3LightControl(D3Scene &scene, int lightIndex);
-  D3LightControl(           const D3LightControl &src); // not defined
-  D3LightControl &operator=(const D3LightControl &src); // not defined
   ~D3LightControl();
 
   SceneObjectType getType() const {

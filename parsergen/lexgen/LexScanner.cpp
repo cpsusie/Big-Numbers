@@ -5,6 +5,24 @@
 #include <FileNameSplitter.h>
 #include "LexScanner.h"
 
+LexScanner::LexScanner(const String &fname) : m_macros(101) {
+  m_fileName = fname;
+  m_absoluteFileName = FileNameSplitter(m_fileName).getAbsolutePath();
+  m_input = FOPEN(m_fileName, _T("r"));
+  m_lineNo = 0;
+  m_text = m_lineBuffer;
+  m_length = 0;
+  m_collecting = false;
+  m_debug = false;
+  m_inQuote = false;
+  m_ruleSection = false;
+  nextLine();
+}
+
+LexScanner::~LexScanner() {
+  fclose(m_input);
+}
+
 bool LexScanner::nextLine() {
   bool ret = true;
   if(_fgetts(m_lineBuffer, ARRAYSIZE(m_lineBuffer), m_input) == NULL) {
@@ -418,22 +436,4 @@ void LexScanner::warning(_In_z_ _Printf_format_string_ TCHAR const * const forma
   tmp.replace('\n', ' ');
   va_end(argptr);
   ::warning(m_absoluteFileName.cstr(), m_ruleSection ? m_ruleLineNo:m_lineNo, _T("%s"), tmp.cstr());
-}
-
-LexScanner::LexScanner(const String &fname) : m_macros(101) {
-  m_fileName          = fname;
-  m_absoluteFileName  = FileNameSplitter(m_fileName).getAbsolutePath();
-  m_input             = FOPEN(m_fileName, _T("r"));
-  m_lineNo            = 0;
-  m_text              = m_lineBuffer;
-  m_length            = 0;
-  m_collecting        = false;
-  m_debug             = false;
-  m_inQuote           = false;
-  m_ruleSection       = false;
-  nextLine();
-}
-
-LexScanner::~LexScanner() {
-  fclose(m_input);
 }

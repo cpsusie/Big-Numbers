@@ -219,10 +219,12 @@ private:
   bool                 m_busy;
   String               m_dir;
   TCHAR                m_currentFileName[MAX_PATH];
+
+  LoadableMediaArray(const LoadableMediaArray &src); // Not defined. Class not cloneable
+
   void initFileName();
 public:
   LoadableMediaArray();
-  LoadableMediaArray(const LoadableMediaArray &src); // not defined
   bool add(const MediaFile &f);
   void rescan(const String &dir, bool recurse = true);
   void handleFileName(const TCHAR *name, DirListEntry &info);

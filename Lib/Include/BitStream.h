@@ -8,11 +8,11 @@ private:
   BYTE              m_mask;
   signed int        m_rack;
   void flush();
+  BitOutputStream(const BitOutputStream &src);            // Not defined. Class not cloneable
+  BitOutputStream &operator=(const BitOutputStream &src); // Not defined. Class not cloneable
 public:
   BitOutputStream(ByteOutputStream &dst);
   ~BitOutputStream();
-  BitOutputStream(const BitOutputStream &src);            // not defined. BitOutputStream not cloneable
-  BitOutputStream &operator=(const BitOutputStream &src); // not defined. BitOutputStream not cloneable
   void putBits(ULONG code, int count);
   inline void putBit(int bit) {
     if(bit) m_rack |= m_mask;
@@ -29,6 +29,10 @@ private:
   ByteInputStream &m_src;
   BYTE             m_mask;
   signed int       m_rack;
+
+  BitInputStream(const BitInputStream &src);              // Not defined. Class not cloneable
+  BitInputStream &operator=(const BitInputStream &src);   // Not defined. Class not cloneable
+
   inline void nextByte() {
     if((m_rack = m_src.getByte()) == EOF) {
       throwException(_T("BitInputStream:Unexpected end of input"));
@@ -39,9 +43,6 @@ public:
     m_rack = 0;
     m_mask = 0x80;
   }
-
-  BitInputStream(const BitInputStream &src);              // not defined. BitInputStream not cloneable
-  BitInputStream &operator=(const BitInputStream &src);   // not defined. BitInputStream not cloneable
 
   inline int getBit() {                                   // throws Exception if not enough bytes
     if(m_mask == 0x80) nextByte();

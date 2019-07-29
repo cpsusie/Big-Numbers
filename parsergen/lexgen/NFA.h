@@ -44,13 +44,14 @@ public:
 };
 
 class NFA : public Array<NFAstate*> {
+private:
+  NFA(const NFA &src);      // Not defined. Class not cloneable
+  NFA &operator=(NFA &src); // Not defined. Class not cloneable
+
 public:
   SourceText m_header, m_driverHead, m_driverTail;
-  NFA() {};
-  // not defined
-  NFA(const NFA &src);
-  // not defined
-  NFA &operator=(NFA &src);
+  NFA() {
+  }
 };
 
 class NFAparser {
@@ -60,6 +61,9 @@ private:
   int           m_idCounter;
   int           m_recurseLevel;
   NFA          &m_NFA;
+
+  NFAparser(NFAparser &src);                  // Not defined. Class not cloneable
+  NFAparser &operator=(const NFAparser &src); // Not defined. Class not cloneable
 
   void parseHeadBody(SourceText &source);
   void readHead();
@@ -99,10 +103,6 @@ private:
 
 public:
   NFAparser(const String &fname, NFA &nfa);
-  // not defined
-  NFAparser(NFAparser &src);                 
-  // not defined
-  NFAparser &operator=(const NFAparser &src);
   void thompsonConstruction();
 };
 

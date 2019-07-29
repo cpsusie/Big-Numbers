@@ -7,8 +7,8 @@ class DFARegex;
 class RegexIStream {
 private:
   DFARegex *m_regex;
-  RegexIStream(const RegexIStream &);            // not defined
-  RegexIStream &operator=(const RegexIStream &); // not defined
+  RegexIStream(const RegexIStream &);            // Not defined. Class not cloneable
+  RegexIStream &operator=(const RegexIStream &); // Not defined. Class not cloneable
   void cleanup();
 public:
   RegexIStream() : m_regex(NULL) {

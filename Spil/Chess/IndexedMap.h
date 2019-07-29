@@ -135,10 +135,11 @@ private:
   FileBitSetIndex            *m_positionIndex;
   PackedFileArray            *m_infoArray;
 
+  IndexedMap(const IndexedMap &src);               // Not defined. Class not cloneable
+  IndexedMap &operator=(const IndexedMap &src);    // Not defined. Class not cloneable
+
 public:
   IndexedMap(const EndGameKeyDefinition &keydef);
-  IndexedMap(const IndexedMap &src);                                      // not defined
-  IndexedMap &operator=(const IndexedMap &src);                           // not defined
   ~IndexedMap();
   EndGameResult get(EndGameKey key) const;
   bool isAllocated() const {
@@ -160,8 +161,8 @@ private:
   FileBitSetIndex            *m_nzIndex;
   PackedFileArray            *m_infoArray;
   void init();
-  IndexedMap(const IndexedMap &src);                                      // not defined
-  IndexedMap &operator=(const IndexedMap &src);                           // not defined
+  IndexedMap(const IndexedMap &src);               // Not defined. Class not cloneable
+  IndexedMap &operator=(const IndexedMap &src);    // Not defined. Class not cloneable
 public:
   IndexedMap(const EndGameKeyDefinition &keydef);
   ~IndexedMap();

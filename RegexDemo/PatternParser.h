@@ -117,6 +117,9 @@ private:
   }
 #endif
 
+  PatternParser(PatternParser &src);                  // Not defined. Class not cloneable
+  PatternParser &operator=(const PatternParser &src); // Not defined. Class not cloneable
+
   NFAState *compilePattern();
   SubNFA exprList();
   SubNFA factor();
@@ -150,7 +153,5 @@ private:
   void verror(intptr_t index, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
 public:
   PatternParser(const String &pattern, NFA &nfa, const TCHAR *translateTable = NULL);
-  PatternParser(PatternParser &src);                  // not defined
-  PatternParser &operator=(const PatternParser &src); // not defined
   void thompsonConstruction();
 };

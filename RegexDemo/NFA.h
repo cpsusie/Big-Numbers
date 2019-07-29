@@ -82,7 +82,9 @@ private:
   bool          m_marked     :  1; // Only true inside NFA constructor
   int           m_edge;            // Label for outgoing edge: character (>=0), EDGE_CHCLASS or EDGE_EPSILON
   CharacterSet *m_charClass;       // Characterclass when m_edge = EDGE_CHCLASS
-  NFAState(const NFAState &src);   // not defined
+
+  NFAState(const NFAState &src);   // Not defined. Class not cloneable
+
   inline void setMark(bool value) {
     m_marked = value;
   }
@@ -223,6 +225,10 @@ public:
 class NFA : public CompactArray<NFAState*> {
 private:
   int m_idCounter;
+
+  NFA(const NFA &src);      // Not defined. Class not cloneable
+  NFA &operator=(NFA &src); // Not defined. Class not cloneable
+
   void        addIfNotMarked(NFAState *s);
   static void unmarkAll(     NFAState *s);
 public:
@@ -234,8 +240,6 @@ public:
   NFA() {
   }
 #endif
-  NFA(const NFA &src);      // not defined
-  NFA &operator=(NFA &src); // not defined
   NFA(NFAState *start);
   void create(NFAState *start);
   ~NFA(); // All elements in array will be released

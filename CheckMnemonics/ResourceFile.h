@@ -201,10 +201,10 @@ public:
 class PopupMenu : public MenuItem {
 private:
   CompactArray<MenuItem*> m_items;
+  PopupMenu &operator=(const PopupMenu &m); // Not defined. Class not cloneable
 public:
   PopupMenu(const SyntaxNode *n);
   PopupMenu(const PopupMenu &m);
-  PopupMenu &operator=(const PopupMenu &m); // not defined
   ~PopupMenu();
   const CompactArray<MenuItem*> &getItems() const {
     return m_items;
@@ -218,10 +218,10 @@ public:
 class MenuDefinition : public ResourceDefinition {
 private:
   CompactArray<MenuItem*> m_items;
+  MenuDefinition &operator=(const MenuDefinition &src); // Not defined. Class not cloneable
 public:
   MenuDefinition(const SyntaxNode *n, const ResourceFile *rf);
   MenuDefinition(const MenuDefinition &src);
-  MenuDefinition &operator=(const MenuDefinition &src); // not defined
  ~MenuDefinition();
   const CompactArray<MenuItem*> &getItems() const {
     return m_items;
@@ -317,6 +317,10 @@ private:
   mutable StringArray            m_errors;
   CompactArray<LanguageSection*> m_sections;       // all sections defined in the file
   mutable const LanguageSection *m_currentSection; // section being analyzed
+
+  ResourceFile(const ResourceFile &src);      // Not defined. Class not cloneable
+  ResourceFile &operator=(ResourceFile &src); // Not defined. Class not cloneable
+
   LanguageSection *newSection();
   void checkHasSection(LanguageSection *&section, const SyntaxNode *n);
   void pruneEmptySection();
@@ -333,8 +337,6 @@ private:
   friend class LanguageSection;
 public:
   ResourceFile(const String &fileName);
-  ResourceFile(const ResourceFile &src);      // not defined
-  ResourceFile &operator=(ResourceFile &src); // not defined
   ~ResourceFile();
   const String &getFileName() const {
     return m_fileName;

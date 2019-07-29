@@ -33,10 +33,10 @@ class QueryOperator : public Thread {
 private:
   VirtualMachine      m_vm;
   int                 m_entrypoint;
+  QueryOperator(const QueryOperator &src);            // Not defined. Class not cloneable
+  QueryOperator &operator=(const QueryOperator &src); // Not defined. Class not cloneable
 public:
   QueryOperator(DbEngine &engine, int entrypoint = 0);
-  QueryOperator(const QueryOperator &src);            // not defined !!
-  QueryOperator &operator=(const QueryOperator &src); // not defined !!
   UINT run();
 };
 
@@ -45,6 +45,8 @@ private:
   Tuple *m_buffer;
   int m_head,m_tail,m_count;
   Semaphore m_gate,m_fullsem,m_emptysem;
+  PipeLine(const PipeLine &pipe);                     // Not defined. Class not cloneable
+  PipeLine &operator=(const PipeLine &src);           // Not defined. Class not cloneable
 public:
   PipeLine();
   ~PipeLine();
@@ -55,8 +57,6 @@ public:
   bool isEmpty() const {
     return m_count == 0;
   }
-  PipeLine(const PipeLine &pipe);                     // not defined !!
-  PipeLine &operator=(const PipeLine &src);           // not defined !!
 };
 
 class PipeLineArray : public Array<PipeLine*> {

@@ -24,6 +24,10 @@ private:
   ByteArray         m_outputBuffer;
   BYTE             *m_buffer;   // Temporary buffer to receeive the compressed data
   void             *m_zStreamp; // Actually z_stream*. Need zlib.h to get definition right. See CompressFilter.cpp
+
+  CompressFilter(const CompressFilter &src);            // Not defined. Class not cloneable
+  CompressFilter &operator=(const CompressFilter &src); // Not defined. Class not cloneable
+
   void flushInput();
   void flushOutput();
   void getCompressedData();
@@ -32,8 +36,6 @@ private:
 public:
   CompressFilter(ByteOutputStream &dst, CompressionLevel level = DEFAULT_COMPRESSION);
   virtual ~CompressFilter();
-  CompressFilter(const CompressFilter &src);            // not defined. CompressFilter not cloneable
-  CompressFilter &operator=(const CompressFilter &src); // not defined. CompressFilter not cloneable
 
   void putBytes(const BYTE *src, size_t n);
   void putByte(BYTE b);
@@ -51,6 +53,9 @@ private:
   void             *m_zStreamp; // Actually z_stream*. Need zlib.h to get definition right. See DecompressFilter.cpp
   bool              m_eos, m_eoz;
 
+  DecompressFilter(const DecompressFilter &src);            // Not defined. Class not cloneable
+  DecompressFilter &operator=(const DecompressFilter &src); // Not defined. Class not cloneable
+
   void fillInputBuffer();
   void fillOutputBuffer();
   void setAvailableOut();
@@ -59,8 +64,6 @@ private:
 public:
   DecompressFilter(ByteInputStream &src);
   virtual ~DecompressFilter();
-  DecompressFilter(const DecompressFilter &src);            // not defined. DecompressFilter not cloneable
-  DecompressFilter &operator=(const DecompressFilter &src); // not defined. DecompressFilter not cloneable
   intptr_t getBytes(BYTE *dst, size_t n);
   int getByte();
 };

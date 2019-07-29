@@ -44,7 +44,9 @@ private:
   int           m_edge;            // Label for outgoing edge: character (>=0), EDGE_CHCLASS or EDGE_EPSILON
   CharacterSet *m_charClass;       // Characterclass when m_edge = EDGE_CHCLASS
   int           m_acceptIndex;     // if < 0, not acceptstate
-  NFAState(const NFAState &src);   // not defined
+
+  NFAState(const NFAState &src);   // Not defined. Class not cloneable
+
   inline void setMark(bool value) {
     m_marked = value;
   }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stdio.h>
+#include "BasicIncludes.h"
 #include "ByteStream.h"
 
 class ByteInputFile : public ResetableByteInputStream {
@@ -10,6 +10,8 @@ private:
   int              m_oldMode;
   String           m_name;
 
+  ByteInputFile(const ByteInputFile &src);            // Not defined. Class not cloneable
+  ByteInputFile &operator=(const ByteInputFile &src); // Not defined. Class not cloneable
   void init(const String &name);
 public:
   ByteInputFile();
@@ -17,8 +19,6 @@ public:
   ByteInputFile(FILE *f);
   virtual ~ByteInputFile();
 
-  ByteInputFile(const ByteInputFile &src);            // not defined. ByteInputFile not cloneable
-  ByteInputFile &operator=(const ByteInputFile &src); // not defined. ByteInputFile not cloneable
   void open(const String &name);
   virtual void close();
 
@@ -44,6 +44,9 @@ private:
   FILE  *m_file;
   int    m_oldMode;
   String m_name;
+
+  ByteOutputFile(const ByteOutputFile &src);            // Not defined. Class not cloneable
+  ByteOutputFile &operator=(const ByteOutputFile &src); // Not defined. Class not cloneable
   void init(const String &name);
 public:
   ByteOutputFile();
@@ -51,8 +54,6 @@ public:
   ByteOutputFile(FILE *f);
   virtual ~ByteOutputFile();
 
-  ByteOutputFile(const ByteOutputFile &src);            // not defined. ByteOutputFile not cloneable
-  ByteOutputFile &operator=(const ByteOutputFile &src); // not defined. ByteOutputFile not cloneable
 
   void open(const String &name);
   virtual void close();
@@ -86,15 +87,15 @@ private:
   String           m_name;
   FileMode         m_mode;
 
+  ByteFile(const ByteFile &src);            // Not defined. Class not cloneable
+  ByteFile &operator=(const ByteFile &src); // Not defined. Class not cloneable
+
   void init(const String &name, FileMode mode);
 public:
   ByteFile();
   ByteFile(const String &name, FileMode mode);
   ByteFile(FILE *f, FileMode mode);
   virtual ~ByteFile();
-
-  ByteFile(const ByteFile &src);            // not defined. ByteFile not cloneable
-  ByteFile &operator=(const ByteFile &src); // not defined. ByteFile not cloneable
 
   void open(const String &name, FileMode mode);
   virtual void close();
