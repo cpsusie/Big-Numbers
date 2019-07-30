@@ -19,6 +19,12 @@
     <Filter Include="Source Files\CoordinateSystem">
       <UniqueIdentifier>{e6b67019-3e20-40e3-aa37-5b82862ad560}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\EditListCtrl">
+      <UniqueIdentifier>{f180d240-65ec-4637-aaf3-aaceb3ebb44c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\EditListCtrl">
+      <UniqueIdentifier>{5ebfe9d4-c309-475d-8ac8-0584259ee417}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Viewport2D.cpp">
@@ -228,21 +234,6 @@
     <ClCompile Include="DeleteButton.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="EditListBooleanEditor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="EditListCtrl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="EditListNumericEditor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="EditListStringCombo.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="EditListStringEditor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="TableModel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -339,6 +330,21 @@
     </ClCompile>
     <ClCompile Include="SelectMultipleFileNames.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EditListBooleanEditor.cpp">
+      <Filter>Source Files\EditListCtrl</Filter>
+    </ClCompile>
+    <ClCompile Include="EditListCtrl.cpp">
+      <Filter>Source Files\EditListCtrl</Filter>
+    </ClCompile>
+    <ClCompile Include="EditListNumericEditor.cpp">
+      <Filter>Source Files\EditListCtrl</Filter>
+    </ClCompile>
+    <ClCompile Include="EditListStringCombo.cpp">
+      <Filter>Source Files\EditListCtrl</Filter>
+    </ClCompile>
+    <ClCompile Include="EditListStringEditor.cpp">
+      <Filter>Source Files\EditListCtrl</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -447,24 +453,6 @@
     <ClInclude Include="..\..\Include\MFCUtil\DeleteButton.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\MFCUtil\EditListBooleanEditor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\MFCUtil\EditListCtrl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\MFCUtil\EditListNumericEditor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\MFCUtil\EditListStringCombo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\MFCUtil\EditListStringEditor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\MFCUtil\ListCtrlChildTrait.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\MFCUtil\MMCapture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -529,6 +517,24 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\MFCUtil\PointSet.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\MFCUtil\EditListStringEditor.h">
+      <Filter>Header Files\EditListCtrl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\MFCUtil\EditListStringCombo.h">
+      <Filter>Header Files\EditListCtrl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\MFCUtil\EditListNumericEditor.h">
+      <Filter>Header Files\EditListCtrl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\MFCUtil\EditListCtrl.h">
+      <Filter>Header Files\EditListCtrl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\MFCUtil\EditListBooleanEditor.h">
+      <Filter>Header Files\EditListCtrl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\MFCUtil\ListCtrlChildTrait.h">
+      <Filter>Header Files\EditListCtrl</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
