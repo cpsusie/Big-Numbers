@@ -63,7 +63,7 @@ Double80 getDouble80(const BigReal &x) {
     if(x.isZero()) {
       return Double80::zero;
     } else if(isnan(x)) {
-      return DBL80_NAN;
+      return DBL80_QNAN;
     } else if(isPInfinity(x)) {
       return DBL80_PINF;
     } else {

@@ -79,7 +79,7 @@ template<class CharType> Double80 _strtod80(const CharType *s, CharType **end) {
       result  = DBL80_MIN;
       errno   = ERANGE;
     } else {
-      result  = DBL80_NAN;
+      result  = DBL80_QNAN;
     }
   } catch(...) {
     FPU::clearExceptionsNoWait();
@@ -143,11 +143,8 @@ template<class CharType> CharType *_d80tostr(CharType *dst, const Double80 &x) {
 
   Double80 m      = x;
   bool     negative;
-  if(m.isNegative()) {
+  if(negative = m.isNegative()) {
     m = -m;
-    negative = true;
-  } else {
-    negative = false;
   }
 
   // Assertion: (m > 0) && (x = (negative?-1:1) * m)

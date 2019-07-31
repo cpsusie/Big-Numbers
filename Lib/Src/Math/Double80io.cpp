@@ -23,8 +23,8 @@ static TCHAR *findFirstDigit(TCHAR *str) {
 #define addExponentChar(s) { s += ((flags & ios::uppercase) ? _T("E") : _T("e")); }
 
 static void formatFixed(String &result, const Double80 &x, streamsize precision, long flags, int expo10, bool removeTrailingZeroes) {
-  TCHAR tmp[30];
-  d80tot(tmp, (precision >= DBL80_DIG) ? x : round(x,(int)precision));
+  TCHAR tmp[50];
+  d80tot(tmp, (precision >= MAXPRECISION) ? x : round(x,(int)precision));
   const TCHAR  *mantissa  = findFirstDigit(tmp);
   TCHAR        *comma     = _tcschr(tmp,_T('.'));
   TCHAR        *decimals  = NULL;

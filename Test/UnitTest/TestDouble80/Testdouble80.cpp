@@ -427,7 +427,7 @@ static void testFunction(const String &name, D802ValFunc f80, D642ValFunc f64, d
       const Double80 end   = Double80::pow10( 4930);
       Double80 maxRelError = 0;
       for(Double80 p = start; p < end; p *= step) {
-        char str[40];
+        char str[50];
         Double80 d80 = randDouble80(0,p);
         d80toa(str,d80);
         Double80 d80a = strtod80(str, NULL);
@@ -436,12 +436,13 @@ static void testFunction(const String &name, D802ValFunc f80, D642ValFunc f64, d
           maxRelError = err;
         }
         if(err > 3e-19) {
-          TCHAR errstr[30], diffstr[40];
-          OUTPUT(_T("Fejl for d80=%s: Relative error:%s, diff=%s"), str, d80tot(errstr, err), d80tot(diffstr,d80a-d80));
+          TCHAR errstr[50], diffstr[50];
+          String s = str;
+          OUTPUT(_T("Fejl for d80=%s: Relative error:%s, diff=%s"), s.cstr(), d80tot(errstr, err), d80tot(diffstr,d80a-d80));
           verify(false);
         }
       }
-      TCHAR maxstr[30];
+      TCHAR maxstr[50];
       OUTPUT(_T("Max relative Error:%s"), d80tot(maxstr, maxRelError));
     }
 
@@ -568,8 +569,9 @@ static void testFunction(const String &name, D802ValFunc f80, D642ValFunc f64, d
       const double startTime = getProcessTime();
       const Double80 stepFactor = 1.012345;
       int count = 0;
+      TCHAR tmp[50];
+      TMEMSET(tmp, 0, ARRAYSIZE(tmp));
       for(Double80 x = DBL80_MIN; isfinite(x); x *= stepFactor) {
-        TCHAR tmp[30];
         d80tot(tmp, x);
         count++;
       }
@@ -639,7 +641,7 @@ static void testFunction(const String &name, D802ValFunc f80, D642ValFunc f64, d
       UINT64       testSignificand  = SIGNIFICAND(eps);
       int          testExponent     = getExpo2(eps);
       bool         epsPositive      = eps.isPositive();
-      TCHAR        tmpStr[30];
+      TCHAR        tmpStr[50];
       OUTPUT(_T("Eps:%s"), d80tot(tmpStr, eps));
 
       const Double80 sum = Double80::one + eps;
@@ -653,7 +655,7 @@ static void testFunction(const String &name, D802ValFunc f80, D642ValFunc f64, d
     }
 
     TEST_METHOD(Double80FindMax) {
-      TCHAR tmpStr[30];
+      TCHAR tmpStr[50];
       OUTPUT(_T("DBL80_MAX:%s"), d80tot(tmpStr, DBL80_MAX));
       char buffer[10];
       memcpy(buffer, &DBL80_MAX, sizeof(buffer));
@@ -670,7 +672,7 @@ static void testFunction(const String &name, D802ValFunc f80, D642ValFunc f64, d
       CompactArray<Double80> list(count);
 
 /* TODO
-      list.add(DBL80_NAN );
+      list.add(DBL80_QNAN );
       list.add(DBL80_PINF);
       list.add(DBL80_NINF);
 */
@@ -930,10 +932,15 @@ static void testFunction(const String &name, D802ValFunc f80, D642ValFunc f64, d
       verify(!isPInfinity(zzz));
       verify(isNInfinity( zzz));
 
-      verify( isnan(      DBL80_NAN));
-      verify(!isinf(      DBL80_NAN));
-      verify(!isPInfinity(DBL80_NAN));
-      verify(!isNInfinity(DBL80_NAN));
+      verify( isnan(      DBL80_QNAN));
+      verify(!isinf(      DBL80_QNAN));
+      verify(!isPInfinity(DBL80_QNAN));
+      verify(!isNInfinity(DBL80_QNAN));
+
+      verify( isnan(      DBL80_SNAN));
+      verify(!isinf(      DBL80_SNAN));
+      verify(!isPInfinity(DBL80_SNAN));
+      verify(!isNInfinity(DBL80_SNAN));
 
       verify(!isnan(      DBL80_PINF));
       verify( isinf(      DBL80_PINF));

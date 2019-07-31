@@ -369,7 +369,8 @@ namespace TestPacker {
         Packer s,d;
         CompactArray<Double80> a;
         Double80 i;
-        a.add(DBL80_NAN);
+        a.add(DBL80_QNAN);
+        a.add(DBL80_SNAN);
         a.add(DBL80_PINF);
         a.add(DBL80_NINF);
         for(i = SHRT_MIN; i <= SHRT_MAX; i++) {

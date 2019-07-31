@@ -18,7 +18,11 @@ String D80ToDbgString(const Double80 &d80) {
   const int expo10 = Double80::getExpo10(d80);
   if(expo10 < -4 || (expo10 >= 18)) {
     TCHAR str[50];
-    return d80tot(str, d80);
+    d80tot(str, d80);
+    if(_fpclass(d80) & (_FPCLASS_PD | _FPCLASS_ND)) { // denormalized
+      wcscat(str, _T("#DEN"));
+    }
+    return str;
   } else {
     return toString(d80, 19-expo10,21,ios::fixed|ios::left);
   }
