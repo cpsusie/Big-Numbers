@@ -253,7 +253,7 @@ template<class BigReal, class Digit> String BigRealAddIn<BigReal, Digit>::toStri
     }
     result += _T("...");
   } else if(hasDecimalPoint) { // remove trailing zeros after decimalpoint
-    while(result.last() == _T('0')) result.removeLast();
+    while(result.last() == '0') result.removeLast();
     if(result.last() == _T('.')) result.removeLast();
   }
   result += expoStr;
