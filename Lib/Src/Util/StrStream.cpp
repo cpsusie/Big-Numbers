@@ -23,7 +23,7 @@ void StrStream::formatZero(String &result, StreamSize precision, FormatFlags fla
     if((flags & ios::showpoint) || (precision > 0)) {
       addDecimalPoint(result);
       if(precision > 0) {
-        result += spaceString((size_t)((maxPrecision<=0) ? precision : min(precision,maxPrecision)),_T('0'));
+        result += spaceString((maxPrecision<=0) ? precision : min(precision,maxPrecision),'0');
       }
     }
     addExponentChar(result);
@@ -33,7 +33,7 @@ void StrStream::formatZero(String &result, StreamSize precision, FormatFlags fla
     if((flags & ios::showpoint) || (precision > 0)) {
       addDecimalPoint(result);
       if(precision > 0) {
-        result += spaceString((size_t)precision,_T('0'));
+        result += spaceString(precision,'0');
       }
     }
   } else { // neither scientific nor fixed format is specified
@@ -41,7 +41,7 @@ void StrStream::formatZero(String &result, StreamSize precision, FormatFlags fla
     if(flags & ios::showpoint) {
       addDecimalPoint(result);
       precision = max(precision,1);
-      result += spaceString((size_t)precision,_T('0'));
+      result += spaceString(precision,'0');
     }
   }
 }
@@ -60,4 +60,16 @@ void StrStream::formatpinf(String &result) { // static
 
 void StrStream::formatninf(String &result) { // static
   result += _T("-inf");
+}
+
+StrStream &StrStream::appendFilledField(const String &str, FormatFlags flags) {
+  const intptr_t fillerLength = (intptr_t)getWidth() - (intptr_t)str.length();
+  if(fillerLength <= 0) {
+    append(str);
+  } else if((flags & (ios::left | ios::right)) == ios::left) { // adjust left iff only ios::left is set
+    append(str).append(spaceString(fillerLength));
+  } else { // right align
+    append(spaceString(fillerLength)).append(str);
+  }
+  return *this;
 }

@@ -22,6 +22,10 @@ public:
     return last();
   }
 
+  // append str, left or right aligned, width spaces added/inserted if getWidth() > str.length()
+  // return *this
+  StrStream &appendFilledField(const String &str, FormatFlags flags);
+
   static void formatZero(String &result, StreamSize precision, FormatFlags flags, StreamSize maxPrecision = 0);
   static void formatqnan(String &result);
   static void formatsnan(String &result);
