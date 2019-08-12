@@ -319,10 +319,10 @@ static void testToString(const String &errorName, StringParametersIterator &it) 
 
   tcout << spaceString(60) << endl;
   tcout << _T("Total Count                 :") << iparam(8) << totalCounter << _T(".") << endl;
-  tcout << _T("Format mismatch for Double80:") << iparam(8) << mismatchDouble80       << _T(" ") << ufparam(2) << ((double)mismatchDouble80      / totalCounter * 100) << _T("%.") << endl;
-  tcout << _T("Format mismatch for BigReal :") << iparam(8) << mismatchBigReal        << _T(" ") << ufparam(2) << ((double)mismatchBigReal       / totalCounter * 100) << _T("%.") << endl;
-  tcout << _T("Length mismatch for Double80:") << iparam(8) << lengthMismatchDouble80 << _T(" ") << ufparam(2) << ((double)lengthMismatchDouble80/ totalCounter * 100) << _T("%.") << endl;
-  tcout << _T("Length mismatch for BigReal :") << iparam(8) << lengthMismatchBigReal  << _T(" ") << ufparam(2) << ((double)lengthMismatchBigReal / totalCounter * 100) << _T("%.") << endl;
+  tcout << _T("Format mismatch for Double80:") << iparam(8) << mismatchDouble80       << _T(" ") << ufparam(2) << PERCENT(mismatchDouble80      , totalCounter) << _T("%.") << endl;
+  tcout << _T("Format mismatch for BigReal :") << iparam(8) << mismatchBigReal        << _T(" ") << ufparam(2) << PERCENT(mismatchBigReal       , totalCounter) << _T("%.") << endl;
+  tcout << _T("Length mismatch for Double80:") << iparam(8) << lengthMismatchDouble80 << _T(" ") << ufparam(2) << PERCENT(lengthMismatchDouble80, totalCounter) << _T("%.") << endl;
+  tcout << _T("Length mismatch for BigReal :") << iparam(8) << lengthMismatchBigReal  << _T(" ") << ufparam(2) << PERCENT(lengthMismatchBigReal , totalCounter) << _T("%.") << endl;
 }
 
 static int doubleCompare(const double &d1, const double &d2) {
