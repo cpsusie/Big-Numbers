@@ -16,15 +16,7 @@ StrStream &operator<<(StrStream &stream, const Rational &r) {
     result = _T("+") + result;
   }
 
-  const intptr_t fillerLength = (intptr_t)stream.getWidth() - (intptr_t)result.length();
-  if(fillerLength <= 0) {
-    stream.append(result);
-  } else if(flags & ios::left) {
-    stream.append(result).append(spaceString(fillerLength));
-  } else {// right align
-    stream.append(spaceString(fillerLength)).append(result);
-  }
-  return stream;
+  return stream.appendFilledField(result, flags);
 }
 
 #include "IStreamUtil.h"

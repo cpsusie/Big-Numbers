@@ -45,12 +45,12 @@ static void formatFixed(String &result, const Double80 &x, StreamSize precision,
   }
   if(exponent >= 0) {
     if(exponent >= (int)ciphers.length()) {
-      result += ciphers + spaceString(exponent - (int)ciphers.length() + 1,_T('0'));
+      result += ciphers + spaceString(exponent - (int)ciphers.length() + 1,'0');
       if(flags & ios::showpoint || precision > 0) {
         addDecimalPoint(result);
       }
       if((precision > 0) && (flags & ios::fixed)) {
-        result += spaceString((size_t)precision,_T('0'));
+        result += spaceString(precision,'0');
       }
     } else { // 0 <= exponent < ciphers.length()
       const int dotPosition = exponent+1;
@@ -59,11 +59,11 @@ static void formatFixed(String &result, const Double80 &x, StreamSize precision,
       String decimals = substr(ciphers,dotPosition,(intptr_t)precision);
       if(precision > 0) {
         if(removeTrailingZeroes) {
-          for(int i = (int)decimals.length()-1; i >= 0 && decimals[i] == _T('0');) { // remove trailing zeroes from decimals
-            decimals.remove(i--);
+          while((decimals.length()>0) && (decimals.last() == '0')) { // remove trailing zeroes from decimals
+            decimals.removeLast();
           }
         } else { // add zeroes to specified precisionision
-          decimals += spaceString((size_t)(precision - (ciphers.length() - dotPosition)),_T('0'));
+          decimals += spaceString(precision - ((int)ciphers.length() - dotPosition),'0');
         }
       }
 
@@ -77,14 +77,14 @@ static void formatFixed(String &result, const Double80 &x, StreamSize precision,
     leadingZeroes = min(leadingZeroes,(intptr_t)precision);
     result += _T("0");
     addDecimalPoint(result);
-    result += spaceString(leadingZeroes,_T('0'));
+    result += spaceString(leadingZeroes,'0');
     result += substr(ciphers, 0, (intptr_t)precision - leadingZeroes);
     if(removeTrailingZeroes) {
-      for(int i = (int)result.length()-1; i >= 0 && result[i] == _T('0');) { // remove trailing zeroes from result
+      for(int i = (int)result.length()-1; i >= 0 && result[i] == '0';) { // remove trailing zeroes from result
         result.remove(i--);
       }
     } else {
-      result += spaceString((size_t)(precision - leadingZeroes - ciphers.length()),_T('0'));
+      result += spaceString(precision - leadingZeroes - (int)ciphers.length(),'0');
     }
   }
 }
@@ -110,7 +110,7 @@ static void formatScientific(String &result, const Double80 &x, StreamSize preci
     if(precision+1 < (intptr_t)decimals.length()) {
       decimals = substr(decimals,0,(intptr_t)precision+1);
       if(decimals[(intptr_t)precision] >= _T('5')) {
-        decimals[(intptr_t)precision] = _T('0');
+        decimals[(intptr_t)precision] = '0';
         intptr_t i;
         for(i = (intptr_t)precision-1; i >= 0; i--) {
           TCHAR &digit = decimals[i];
@@ -118,7 +118,7 @@ static void formatScientific(String &result, const Double80 &x, StreamSize preci
             digit++;
             break;
           } else {
-            digit = _T('0');
+            digit = '0';
           }
         }
         if(i < 0) {
@@ -135,8 +135,8 @@ static void formatScientific(String &result, const Double80 &x, StreamSize preci
 
   result += mantissa;
 
-  if(removeTrailingZeroes && precision < (intptr_t)decimals.length()) {
-    for(; precision > 0 && decimals[(intptr_t)precision-1] == _T('0'); precision--) { // remove trailing zeroes from decimals
+  if(removeTrailingZeroes && (precision < (intptr_t)decimals.length())) {
+    for(; precision > 0 && decimals[(intptr_t)precision-1] == '0'; precision--) { // remove trailing zeroes from decimals
       decimals.remove((intptr_t)precision-1);
     }
   }
@@ -181,21 +181,13 @@ StrStream &operator<<(StrStream &stream, const Double80 &x) {
         precision = max(0,precision-1);
         formatScientific(result, x, precision, flags, (flags & ios::showpoint) == 0);
       } else {
-        const intptr_t prec = (precision == 0) ? abs(expo10) : max(0,(intptr_t)precision-expo10-1);
+        const StreamSize prec = (precision == 0) ? abs(expo10) : max(0,precision-expo10-1);
         formatFixed(result, x, prec, flags, expo10, ((flags & ios::showpoint) == 0) || precision <= 1);
       }
     } // x defined && x != 0
   } // end x defined
 
-  const int fillerLength = (int)stream.getWidth() - (int)result.length();
-  if(fillerLength <= 0) {
-    stream.append(result);
-  } else if((flags & (ios::left|ios::right)) == ios::left) { // adjust left iff only ios::left is set
-    stream.append(result).append(spaceString(fillerLength));
-  } else {// right align
-    stream.append(spaceString(fillerLength)).append(result);
-  }
-  return stream;
+  return stream.appendFilledField(result, flags);
 }
 
 template <class OStreamType> OStreamType &operator<<(OStreamType &out, const Double80 &x) {

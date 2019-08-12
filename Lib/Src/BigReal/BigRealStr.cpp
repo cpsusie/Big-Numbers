@@ -259,18 +259,7 @@ BigRealStream &operator<<(BigRealStream &stream, const BigReal &x) {
       } // x defined && x != 0
     }
   }
-
-  const intptr_t fillerLength = (intptr_t)stream.getWidth() - (intptr_t)result.length();
-  if (fillerLength <= 0) {
-    stream.append(result);
-  }
-  else if ((flags & (ios::left | ios::right)) == ios::left) { // adjust left iff only ios::left is set
-    stream.append(result).append(spaceString(fillerLength));
-  }
-  else { // right align
-    stream.append(spaceString(fillerLength)).append(result);
-  }
-
+  stream.appendFilledField(result, flags);
   return stream;
 }
 

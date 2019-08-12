@@ -7,7 +7,16 @@
 #pragma init_seg(lib)
 
 // define this, to get a dump of all possible values returned by Double80::pow10
+// will be disabled when compile for Win32, release, as it is used in NumberAddin, where we dont want this to be done!!
 #define _DUMPPOW10
+
+#ifdef IS32BIT
+#ifndef _DEBUG
+#ifdef _DUMPPOW10
+#undef _DUMPPOW10
+#endif
+#endif
+#endif
 
 class InitDouble80 {
 public:
@@ -635,14 +644,12 @@ ULONG Double80::hashCode() const {
 Double80 Pow10Cache::pow10(int p) const {
   Double80 d1 = m_c1.pow10(p);
   const Double80 d2 = m_c2.pow10(p);
-  if(d1 == d2) {
+  const UINT64 sig1 = *((UINT64*)&d1);
+  const UINT64 sig2 = *((UINT64*)&d2);
+  if(sig1 == sig2) {
     return d1;
   }
-  const UINT64 s1 = getSignificand(d1);
-  const UINT64 s2 = getSignificand(d2);
-
-  UINT64 avg = (s1 & 0xffffffff00000000) + (((s1 & 0xffffffff) + (s2 & 0xffffffff))>>1);
-  (*(UINT64*)&d1) = avg;
+  (*(UINT64*)&d1) = (sig1 & 0xffffffff00000000) + (((sig1 & 0xffffffff) + (sig2 & 0xffffffff)) >> 1);
   return d1;
 }
 
