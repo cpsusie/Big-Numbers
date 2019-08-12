@@ -11,8 +11,6 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 using namespace std;
 
-#define endl _T("\n")
-
 static const double EPS = 3e-14;
 
 namespace TestDouble80 {		
@@ -45,6 +43,8 @@ namespace TestDouble80 {
   typedef Double80(*D802ValFunc)(      Double80  ,       Double80  );
   typedef Double80(*D801RefFunc)(const Double80 &);
   typedef Double80(*D802RefFunc)(const Double80 &, const Double80 &);
+
+#define endl _T("\n")
 
   static void testFunction(const String &name, D801ValFunc f80, D641ValFunc f64, double low, double high) {
     double maxRelativeError = 0;
@@ -405,10 +405,29 @@ static void testFunction(const String &name, D802ValFunc f80, D642ValFunc f64, d
     }
 
     TEST_METHOD(Double80TestStrToD80) {
+      Double80 diff;
+      TCHAR charBuf[100], *endp;
+
       const Double80 pi = DBL80_PI;
 
-      const Double80 diff = pi - strtod80("3.14159265358979324", NULL);
-      verify(fabs(diff) < 1e-17);
+      const String piStr = d80tot(charBuf, pi);
+      diff = pi - wcstod80(piStr.cstr(), &endp);
+      verify(diff == 0);
+      verify(endp == piStr.cstr() + piStr.length());
+
+      const String maxStr = d80tot(charBuf, DBL80_MAX);
+      diff = DBL80_MAX - wcstod80(maxStr.cstr(), &endp);
+      verify((diff == 0) && (errno == 0));
+      verify(endp == maxStr.cstr() + maxStr.length());
+
+      const String minStr = d80tot(charBuf, DBL80_MIN);
+      diff = DBL80_MIN - wcstod80(minStr.cstr(), NULL);
+      verify((diff == 0) && (errno == 0));
+
+      const Double80 tmin = numeric_limits<Double80>::denorm_min();
+      const String tminStr = d80tot(charBuf, tmin);
+      diff = tmin - wcstod80(tminStr.cstr(), NULL);
+      verify((diff == 0) && (errno == 0));
 
       Double80 tmp1 = strtod80("1.18973149535723237e+4932", NULL);
       verify((tmp1 == DBL80_MAX) && (errno == ERANGE));
@@ -416,34 +435,48 @@ static void testFunction(const String &name, D802ValFunc f80, D642ValFunc f64, d
       tmp1 = strtod80("-1.18973149535723237e+4932", NULL);
       verify((tmp1 == -DBL80_MAX) && (errno == ERANGE));
 
-      tmp1 = strtod80("3.36210314311209109e-4932", NULL);
-      verify((tmp1 == DBL80_MIN) && (errno == ERANGE));
-
-      tmp1 = strtod80("-3.36210314311209109e-4932", NULL);
-      verify((tmp1 == -DBL80_MIN) && (errno == ERANGE));
+      for(Double80 d = DBL80_MIN; d != 0; d /= 2) {
+        const String dpStr = d80tot(charBuf, d);
+        Double80 tmp = wcstod80(dpStr.cstr(), NULL);
+        verify((tmp == d) && (errno == 0));
+        const Double80 dm = -d;
+        const String dmStr = d80tot(charBuf, dm);
+        tmp = wcstod80(dmStr.cstr(), NULL);
+        verify((tmp == dm) && (errno == 0));
+      }
 
       const Double80 step  = 1.0237432;
       const Double80 start = Double80::pow10(-4927);
       const Double80 end   = Double80::pow10( 4930);
       Double80 maxRelError = 0;
+      UINT     nonZeroErrorCount = 0, zeroErrorCount = 0;
       for(Double80 p = start; p < end; p *= step) {
         char str[50];
         Double80 d80 = randDouble80(0,p);
         d80toa(str,d80);
         Double80 d80a = strtod80(str, NULL);
         const Double80 err = getRelativeError(d80a, d80);
-        if(err > maxRelError) {
-          maxRelError = err;
-        }
-        if(err > 3e-19) {
-          TCHAR errstr[50], diffstr[50];
-          String s = str;
-          OUTPUT(_T("Fejl for d80=%s: Relative error:%s, diff=%s"), s.cstr(), d80tot(errstr, err), d80tot(diffstr,d80a-d80));
-          verify(false);
+        if(err.isZero()) {
+          zeroErrorCount++;
+        } else {
+          nonZeroErrorCount++;
+          if(err > maxRelError) {
+            maxRelError = err;
+            if(err > 3e-19) {
+              TCHAR errstr[50], diffstr[50];
+              String s = str;
+              OUTPUT(_T("Fejl for d80=%s: Relative error:%s, diff=%s"), s.cstr(), d80tot(errstr, err), d80tot(diffstr,d80a-d80));
+              verify(false);
+            }
+          }
         }
       }
       TCHAR maxstr[50];
       OUTPUT(_T("Max relative Error:%s"), d80tot(maxstr, maxRelError));
+      const UINT totalCompares = zeroErrorCount + nonZeroErrorCount;
+      OUTPUT(_T("Total cconversions:%s, Non-zero errors:%.02lf%%")
+            ,format1000(totalCompares).cstr()
+            ,PERCENT(nonZeroErrorCount, totalCompares));
     }
 
     static double testRound(double x64, int dec) {
@@ -637,16 +670,16 @@ static void testFunction(const String &name, D802ValFunc f80, D642ValFunc f64, d
       UINT64       epsP1Significand = SIGNIFICAND(epsP1);
       int          epsP1Exponent    = getExpo2(epsP1);
 
-      Double80     eps              = epsP1 - Double80::one;
+      Double80     eps              = epsP1 - Double80::_1;
       UINT64       testSignificand  = SIGNIFICAND(eps);
       int          testExponent     = getExpo2(eps);
       bool         epsPositive      = eps.isPositive();
       TCHAR        tmpStr[50];
       OUTPUT(_T("Eps:%s"), d80tot(tmpStr, eps));
 
-      const Double80 sum = Double80::one + eps;
+      const Double80 sum = Double80::_1 + eps;
       verify(sum == epsP1);
-      const Double80 diff = sum - Double80::one;
+      const Double80 diff = sum - Double80::_1;
       verify(diff == eps);
 
       char buffer[10];
@@ -662,58 +695,88 @@ static void testFunction(const String &name, D802ValFunc f80, D642ValFunc f64, d
       hexdump(buffer, sizeof(buffer), stdout);
     }
 
-    TEST_METHOD(Double80TestReadWrite) {
-      const String fileName = getTestFileName(__TFUNCTION__);
+#undef min
+#undef max
+
+    static double unitRand64() {
+      return randDouble(-1, 1);
+    }
+    static Double80 unitRand80() {
+      return randDouble80(-1, 1);
+    }
+
+#undef endl
+
+    template<class DType> void _testReadWrite(DType      (*unitRand)()
+                                             ,const DType &maxTolerance
+                                             ,const char  *dtypeName
+                                             ) {
+      const String fileName = getTestFileName(String(__TFUNCTION__) + String(dtypeName));
 
 //      debugLog(_T("%s\n%s\n"), __TFUNCTION__, FPU::getState().toString().cstr());
 
       const size_t count = 500;
-      StreamParameters param(-1);
-      CompactArray<Double80> list(count);
+      StreamParameters param(numeric_limits<DType>::max_digits10);
+      CompactArray<DType> list(count);
 
-/* TODO
-      list.add(DBL80_QNAN );
-      list.add(DBL80_PINF);
-      list.add(DBL80_NINF);
+/*
+      list.add(numeric_limits<DType>::lowest()        );
+      list.add( numeric_limits<DType>::max()          );
+      list.add(numeric_limits<DType>::epsilon()       );
+      for(DType x = numeric_limits<DType>::min();;x /= 2) {
+        list.add(x);
+        if(x == 0) {
+          break;
+        }
+      }
 */
+      list.add(-numeric_limits<DType>::infinity()     );
+      list.add( numeric_limits<DType>::infinity()     );
+      list.add( numeric_limits<DType>::quiet_NaN()    );
+      list.add( numeric_limits<DType>::signaling_NaN());
+
       for(size_t i = 0; i < count; i++) {
-        const Double80 x = randDouble80(-1, 1);
+        const DType x = unitRand();
         list.add(x);
       }
-      tofstream out(fileName.cstr());
+      ofstream out(fileName.cstr());
       for(size_t i = 0; i < list.size(); i++) {
         out << param << list[i] << endl;
       }
       out.close();
 
-      tifstream in(fileName.cstr());
-      const Double80 maxTolerance = 6e-17;
+      ifstream in(fileName.cstr());
       for(size_t i = 0; i < list.size(); i++) {
-        const Double80 &expected = list[i];
-        Double80 data;
-        in >> data;
+        const DType &expected = list[i];
+        DType data;
+        in >> CharManip<DType> >> data;
         if(in.bad()) {
-          OUTPUT(_T("Read Double80 line %zu failed"), i);
+          OUTPUT(_T("Read %s line %zu failed"), dtypeName, i);
           verify(false);
         }
-        if(isnormal(data) || data.isZero()) {
-          const Double80 relError = getRelativeError(data, expected);
+        if(isfinite(data)) {
+          const DType relError = getRelativeError(data, expected);
           if(relError > maxTolerance) {
-            OUTPUT(_T("Read Double80 at line %d = %s != expected (=%s"), i, toString(data, 18).cstr(), toString(expected, 18).cstr());
+            OUTPUT(_T("Read %s at line %d = %s != expected (=%s"), dtypeName, i, toString(data, 18).cstr(), toString(expected, 18).cstr());
             OUTPUT(_T("Relative error:%s"), toString(relError).cstr());
             verify(false);
           }
-        } else if (isPInfinity(data)) {
+        } else if(isPInfinity(data)) {
           verify(isPInfinity(expected));
-        } else if (isNInfinity(data)) {
+        } else if(isNInfinity(data)) {
           verify(isNInfinity(expected));
-        } else if (isnan(data)) {
+        } else if(isnan(data)) {
           verify(isnan(expected));
         } else {
-          throwException(_T("Unknown BigReal-classification for a[%zu]:%s"), i, toString(data).cstr());
+          throwException(_T("Unknown classification for a[%zu]:%s"), i, toString(data).cstr());
         }
       }
       in.close();
+    }
+
+    TEST_METHOD(TestReadWrite) {
+      _testReadWrite<Double80>( unitRand80, 6e-17, "Double80");
+      _testReadWrite<double  >(unitRand64, 6e-14, "double");
     }
 
     TEST_METHOD(Double80TestSinCos) {
@@ -763,15 +826,16 @@ static void testFunction(const String &name, D802ValFunc f80, D642ValFunc f64, d
 //      debugLog(_T("%s\n%s\n"), __TFUNCTION__, FPU::getState().toString().cstr());
       FPU::clearExceptions();
 
-      const FPUControlWord cwSave = FPU::getControlWord();
+      const FPUControlWord ctrlSave = FPU::getControlWord();
 
-      FPU::setPrecisionMode(FPU_HIGH_PRECISION);
-      FPU::adjustExceptionMask(FPU_INVALID_OPERATION_EXCEPTION
-                             | FPU_DENORMALIZED_EXCEPTION
-                             | FPU_DIVIDE_BY_ZERO_EXCEPTION
-                             | FPU_OVERFLOW_EXCEPTION
-                             | FPU_UNDERFLOW_EXCEPTION
-                              ,0);
+      FPUControlWord ctrlWord = ctrlSave;
+      FPU::setControlWord(ctrlWord.setPrecisionMode(FPU_HIGH_PRECISION)
+                                  .adjustExceptionMask(FPU_INVALID_OPERATION_EXCEPTION
+                                                     | FPU_DENORMALIZED_EXCEPTION
+                                                     | FPU_DIVIDE_BY_ZERO_EXCEPTION
+                                                     | FPU_OVERFLOW_EXCEPTION
+                                                     | FPU_UNDERFLOW_EXCEPTION
+                                                     , 0));
 
       const FPUStatusWord sw1 = FPU::getStatusWord();
 
@@ -896,8 +960,8 @@ static void testFunction(const String &name, D802ValFunc f80, D642ValFunc f64, d
       TESTFUNC(log10    , 1e-3   ,   1e3  );
       TESTFUNC(log2     , 1e-3   ,   1e3  );
       TESTFUNC(pow      , 0.1    ,   2.7e3, -2.1, 2);
-      verify(pow(Double80::zero, Double80::one)  == Double80::zero);
-      verify(pow(Double80::zero, Double80::zero) == Double80::one );
+      verify(pow(Double80::_0, Double80::_1)  == Double80::_0);
+      verify(pow(Double80::_0, Double80::_0) == Double80::_1 );
       TESTFUNC(root     , 0.1    ,   2.7e3, -2.1, 2);
       TESTFUNC(fraction , 1e-3   ,   1e3  );
       TESTFUNC(fraction ,-1e3    ,  -1e-3 );
@@ -909,38 +973,43 @@ static void testFunction(const String &name, D802ValFunc f80, D642ValFunc f64, d
 
       verify(sign(Double80( 2)  ) ==  1);
       verify(sign(Double80(-2)  ) == -1);
-      verify(sign(Double80::zero) ==  0);
+      verify(sign(Double80::_0  ) ==  0);
 
       FPU::adjustExceptionMask(0,FPU_DIVIDE_BY_ZERO_EXCEPTION);
 
 /*
-      Double80 zzz = Double80::zero / Double80::zero;
+      Double80 zzz = Double80::_0 / Double80::_0;
       verify(isnan(       zzz));
       verify(!isinf(      zzz));
       verify(!isPInfinity(zzz));
       verify(!isNInfinity(zzz));
 */
-      Double80 zzz = Double80::one / Double80::zero;
+      Double80 zzz = Double80::_1 / Double80::_0;
       verify(!isnan(      zzz));
       verify(isinf(       zzz));
       verify(isPInfinity( zzz));
       verify(!isNInfinity(zzz));
 
-      zzz = (-Double80::one) / Double80::zero;
+      zzz = (-Double80::_1) / Double80::_0;
       verify(!isnan(      zzz));
       verify(isinf(       zzz));
       verify(!isPInfinity(zzz));
       verify(isNInfinity( zzz));
 
-      verify( isnan(      DBL80_QNAN));
-      verify(!isinf(      DBL80_QNAN));
-      verify(!isPInfinity(DBL80_QNAN));
-      verify(!isNInfinity(DBL80_QNAN));
+      verify( isnan(      numeric_limits<Double80>::quiet_NaN()));
+      verify(!isinf(      numeric_limits<Double80>::quiet_NaN()));
+      verify(!isPInfinity(numeric_limits<Double80>::quiet_NaN()));
+      verify(!isNInfinity(numeric_limits<Double80>::quiet_NaN()));
 
-      verify( isnan(      DBL80_SNAN));
-      verify(!isinf(      DBL80_SNAN));
-      verify(!isPInfinity(DBL80_SNAN));
-      verify(!isNInfinity(DBL80_SNAN));
+      verify( isnan(      numeric_limits<Double80>::signaling_NaN()));
+      verify(!isinf(      numeric_limits<Double80>::signaling_NaN()));
+      verify(!isPInfinity(numeric_limits<Double80>::signaling_NaN()));
+      verify(!isNInfinity(numeric_limits<Double80>::signaling_NaN()));
+
+      verify( isnan(      DBL80_NAN ));
+      verify(!isinf(      DBL80_NAN ));
+      verify(!isPInfinity(DBL80_NAN ));
+      verify(!isNInfinity(DBL80_NAN ));
 
       verify(!isnan(      DBL80_PINF));
       verify( isinf(      DBL80_PINF));
@@ -1017,7 +1086,7 @@ static void testFunction(const String &name, D802ValFunc f80, D642ValFunc f64, d
       const FPUControlWord cwb = FPU::getControlWord();
       const FPUControlWord cwc = FPU::adjustExceptionMask(0, excep);
       const FPUControlWord cwd = FPU::getControlWord();
-      const USHORT         cwDiff = cwb.m_data ^ cwd.m_data;
+      const USHORT         cwDiff = cwb ^ cwd;
       verify(cwDiff == excep);
 
       FPU::clearStatusWord();
@@ -1030,7 +1099,7 @@ static void testFunction(const String &name, D802ValFunc f80, D642ValFunc f64, d
       const Double80 e80(buffer);
       verify(e80 == d80);
 
-      FPU::restoreControlWord(cwSave);
+      FPU::restoreControlWord(ctrlSave);
     }
   };
 }

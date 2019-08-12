@@ -5,6 +5,7 @@
 #include <Math/Rational.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+using namespace std;
 
 #define VERIFYOP(op, maxError) {                                                                     \
   const Rational rBinResult = (r1) op (r2);                                                          \

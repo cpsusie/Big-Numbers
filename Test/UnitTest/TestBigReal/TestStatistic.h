@@ -5,6 +5,8 @@
 #include <Timer.h>
 #include "AllTime.h"
 
+using namespace std;
+
 #define LOOPXPOS        93
 #define THREADYPOS(id) (id)
 
@@ -21,9 +23,9 @@ typedef enum {
 #define nameparam StreamParameters(0,7,ios::left)
 #define nparam    StreamParameters(20,28,ios::scientific | ios::left | ios::showpos | ios::unitbuf)
 
-void checkBigRealDouble64(const String &functionName, DoubleFunction1   f64, const BigReal &x,                  const BigReal &exactResult);
+void checkBigRealDouble64(const String &functionName, DoubleFunction1   f64, const BigReal &x,                   const BigReal &exactResult);
 void checkBigRealDouble64(const String &functionName, DoubleFunction2   f64, const BigReal &x, const BigReal &y, const BigReal &exactResult);
-void checkBigRealDouble80(const String &functionName, Double80Function1 f80, const BigReal &x,                  const BigReal &exactResult);
+void checkBigRealDouble80(const String &functionName, Double80Function1 f80, const BigReal &x,                   const BigReal &exactResult);
 void checkBigRealDouble80(const String &functionName, Double80Function2 f80, const BigReal &x, const BigReal &y, const BigReal &exactResult);
 
 class TestStatistic {

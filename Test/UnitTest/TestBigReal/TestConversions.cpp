@@ -141,7 +141,7 @@ static void testDouble80Conversion(TestStatistic &stat, int sign) {
   const Double80 loopStart  = DBL80_MIN * sign;
   const Double80 loopEnd    = DBL80_MAX / 2 * sign;
   const Double80 stepFactor = 1 + 0.012345/4;
-  const Double80 dblnan     = DBL80_QNAN;
+  const Double80 dblnan     = DBL80_NAN;
   const Double80 dblpinf    = DBL80_PINF;
   const Double80 dblninf    = DBL80_NINF;
   size_t         length;

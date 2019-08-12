@@ -369,15 +369,16 @@ namespace TestPacker {
         Packer s,d;
         CompactArray<Double80> a;
         Double80 i;
-        a.add(DBL80_QNAN);
-        a.add(DBL80_SNAN);
+        a.add(std::numeric_limits<Double80>::quiet_NaN());
+        a.add(std::numeric_limits<Double80>::signaling_NaN());
+        a.add(DBL80_NAN);
         a.add(DBL80_PINF);
         a.add(DBL80_NINF);
         for(i = SHRT_MIN; i <= SHRT_MAX; i++) {
           a.add(i);
           a.add(-i);
-          a.add(Double80::one/i);
-          a.add(-Double80::one/i);
+          a.add(Double80::_1/i);
+          a.add(-Double80::_1/i);
         }
         while(!isinf(i)) {
           a.add(i);
