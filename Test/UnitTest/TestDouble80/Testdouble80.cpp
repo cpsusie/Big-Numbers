@@ -709,7 +709,7 @@ static void testFunction(const String &name, D802ValFunc f80, D642ValFunc f64, d
 
     template<class DType> void _testReadWrite(DType      (*unitRand)()
                                              ,const DType &maxTolerance
-                                             ,const char  *dtypeName
+                                             ,const TCHAR *dtypeName
                                              ) {
       const String fileName = getTestFileName(String(__TFUNCTION__) + String(dtypeName));
 
@@ -719,7 +719,6 @@ static void testFunction(const String &name, D802ValFunc f80, D642ValFunc f64, d
       StreamParameters param(numeric_limits<DType>::max_digits10);
       CompactArray<DType> list(count);
 
-/*
       list.add(numeric_limits<DType>::lowest()        );
       list.add( numeric_limits<DType>::max()          );
       list.add(numeric_limits<DType>::epsilon()       );
@@ -729,7 +728,7 @@ static void testFunction(const String &name, D802ValFunc f80, D642ValFunc f64, d
           break;
         }
       }
-*/
+
       list.add(-numeric_limits<DType>::infinity()     );
       list.add( numeric_limits<DType>::infinity()     );
       list.add( numeric_limits<DType>::quiet_NaN()    );
@@ -745,19 +744,23 @@ static void testFunction(const String &name, D802ValFunc f80, D642ValFunc f64, d
       }
       out.close();
 
+      DType detectedMaxRelError = 0;
       ifstream in(fileName.cstr());
       for(size_t i = 0; i < list.size(); i++) {
         const DType &expected = list[i];
         DType data;
         in >> CharManip<DType> >> data;
-        if(in.bad()) {
-          OUTPUT(_T("Read %s line %zu failed"), dtypeName, i);
+        if(in.bad() || in.fail()) {
+          OUTPUT(_T("Read %s line %zu failed"), __TFUNCTION__, i);
           verify(false);
         }
         if(isfinite(data)) {
           const DType relError = getRelativeError(data, expected);
+          if(relError > detectedMaxRelError) {
+            detectedMaxRelError = relError;
+          }
           if(relError > maxTolerance) {
-            OUTPUT(_T("Read %s at line %d = %s != expected (=%s"), dtypeName, i, toString(data, 18).cstr(), toString(expected, 18).cstr());
+            OUTPUT(_T("%s:Read %s at line %d = %s != expected (=%s"), __TFUNCTION__, dtypeName, i, toString(data, 18).cstr(), toString(expected, 18).cstr());
             OUTPUT(_T("Relative error:%s"), toString(relError).cstr());
             verify(false);
           }
@@ -768,15 +771,16 @@ static void testFunction(const String &name, D802ValFunc f80, D642ValFunc f64, d
         } else if(isnan(data)) {
           verify(isnan(expected));
         } else {
-          throwException(_T("Unknown classification for a[%zu]:%s"), i, toString(data).cstr());
+          throwException(_T("%s:Unknown classification for a[%zu]:%s"), __TFUNCTION__, i, toString(data).cstr());
         }
       }
       in.close();
+      OUTPUT(_T("%s:Detected max. relative error:%s"), __TFUNCTION__, toString(detectedMaxRelError).cstr());
     }
 
     TEST_METHOD(TestReadWrite) {
-      _testReadWrite<Double80>( unitRand80, 6e-17, "Double80");
-      _testReadWrite<double  >(unitRand64, 6e-14, "double");
+      _testReadWrite<Double80>( unitRand80, 2e-19, _T("Double80"));
+      _testReadWrite<double  >( unitRand64, 0    , _T("double")  );
     }
 
     TEST_METHOD(Double80TestSinCos) {
