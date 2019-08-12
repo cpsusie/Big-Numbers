@@ -233,6 +233,11 @@ public:
   static const TCHAR  upperCaseAccentTranslate[256];
 };
 
+std::ostream  &operator<<(std::ostream  &out, const String &str);
+std::istream  &operator>>(std::istream  &in,        String &str);
+std::wostream &operator<<(std::wostream &out, const String &str);
+std::wistream &operator>>(std::wistream &in,        String &str);
+
 inline bool operator==(const String &lhs, const String &rhs) {
   return lhs.compare(rhs) == 0;
 }
@@ -312,23 +317,6 @@ inline String vformat(_In_z_ _Printf_format_string_ TCHAR const * const format, 
 
 // Same arguments as printf,sprintf
 String format(_In_z_ _Printf_format_string_ TCHAR const * const Format, ...);
-
-String toString(char             ch, int width = 0, int flags = 0  );
-String toString(SHORT            n , int precision = 0, int width = 0, int flags = 0);
-String toString(USHORT           n , int precision = 0, int width = 0, int flags = 0);
-String toString(INT              n , int precision = 0, int width = 0, int flags = 0);
-String toString(UINT             n , int precision = 0, int width = 0, int flags = 0);
-String toString(LONG             n , int precision = 0, int width = 0, int flags = 0);
-String toString(ULONG            n , int precision = 0, int width = 0, int flags = 0);
-String toString(INT64            n , int precision = 0, int width = 0, int flags = 0);
-String toString(UINT64           n , int precision = 0, int width = 0, int flags = 0);
-String toString(float            x , int precision = 6, int width = 0, int flags = 0);
-String toString(double           x , int precision = 6, int width = 0, int flags = 0);
-
-std::ostream  &operator<<(std::ostream  &out, const String &str);
-std::istream  &operator>>(std::istream  &in ,       String &str);
-std::wostream &operator<<(std::wostream &out, const String &str);
-std::wistream &operator>>(std::wistream &in ,       String &str);
 
 template<class T> class AbstractStringifier {
 public:

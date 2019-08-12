@@ -21,7 +21,7 @@ int RegexIStream::match(istream &in, String *matchedString) const {
 }
 
 int RegexIStream::match(wistream &in, String *matchedString) const {
-  if (isEmpty()) {
+  if(isEmpty()) {
     throwException(_T("%s:No regular expression to match"), __TFUNCTION__);
   }
   return m_regex->match(in, matchedString);

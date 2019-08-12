@@ -6,6 +6,9 @@
 #pragma warning(disable : 4073)
 #pragma init_seg(lib)
 
+// define this, to get a dump of all possible values returned by Double80::pow10
+#define _DUMPPOW10
+
 class InitDouble80 {
 public:
   inline InitDouble80() {
@@ -24,18 +27,18 @@ void Double80::initClass() {
 
 static InitDouble80 initDouble80;
 
-const Double80 Double80::zero(0);
-const Double80 Double80::one( 1);
-const Double80 DBL80_PI      ((BYTE*)"\x35\xc2\x68\x21\xa2\xda\x0f\xc9\x00\x40"); // pi
-const Double80 DBL80_PI_05   ((BYTE*)"\x35\xc2\x68\x21\xa2\xda\x0f\xc9\xff\x3f"); // pi/2
-const Double80 DBL80_EPSILON ((BYTE*)"\x00\x00\x00\x00\x00\x00\x00\x80\xc0\x3f"); // 1.08420217248550443e-019;
-const Double80 DBL80_MIN     ((BYTE*)"\x00\x00\x00\x00\x00\x00\x00\x80\x01\x00"); // 3.36210314311209209e-4932;
-const Double80 DBL80_MAX     ((BYTE*)"\xff\xff\xff\xff\xff\xff\xff\xff\xfe\x7f"); // 1.18973149535723227e+4932
-const Double80 DBL80_QNAN    ((BYTE*)"\x00\x00\x00\x00\x00\x00\x00\x00\xff\x7f"); // quiet NaN
-const Double80 DBL80_SNAN    ((BYTE*)"\x00\x08\x00\x00\x00\x00\x00\xc0\xff\x7f"); // signaling NaN
-const Double80 DBL80_PINF    ((BYTE*)"\x00\x00\x00\x00\x00\x00\x00\x80\xff\x7f"); // +infinity;
-const Double80 DBL80_NINF    ((BYTE*)"\x00\x00\x00\x00\x00\x00\x00\x80\xff\xff"); // -infinity;
-const Double80 DBL80_TRUE_MIN((BYTE*)"\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00"); // -infinity;
+const Double80 Double80::_0( 0  );
+const Double80 Double80::_05(0.5);
+const Double80 Double80::_1(1);
+const Double80 Double80::_DBL80_EPSILON ((BYTE*)"\x00\x00\x00\x00\x00\x00\x00\x80\xc0\x3f"); // 1.08420217248550443e-019;
+const Double80 Double80::_DBL80_MIN     ((BYTE*)"\x00\x00\x00\x00\x00\x00\x00\x80\x01\x00"); // 3.36210314311209209e-4932;
+const Double80 Double80::_DBL80_MAX     ((BYTE*)"\xff\xff\xff\xff\xff\xff\xff\xff\xfe\x7f"); // 1.18973149535723227e+4932
+const Double80 Double80::_DBL80_QNAN    ((BYTE*)"\x00\x00\x00\x00\x00\x00\x00\xc0\xff\xff"); // quiet NaN
+const Double80 Double80::_DBL80_SNAN    ((BYTE*)"\x00\x08\x00\x00\x00\x00\x00\x80\xff\xff"); // signaling NaN
+const Double80 Double80::_DBL80_PINF    ((BYTE*)"\x00\x00\x00\x00\x00\x00\x00\x80\xff\x7f"); // +infinity;
+const Double80 Double80::_DBL80_TRUE_MIN((BYTE*)"\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00"); // denormalized minimal positive value
+const Double80            DBL80_PI(      (BYTE*)"\x35\xc2\x68\x21\xa2\xda\x0f\xc9\x00\x40"); // pi
+const Double80            DBL80_PI_05(   (BYTE*)"\x35\xc2\x68\x21\xa2\xda\x0f\xc9\xff\x3f"); // pi/2
 
 int _fpclass(const Double80 &x) {
   switch(getExponent(x)) {
@@ -48,30 +51,97 @@ int _fpclass(const Double80 &x) {
       }
     }
   case 0x7fff: // NaN -> INFINITY and INDEFINITE
-    { if(getSignificand(x) == 0x8000000000000000ui64) { // +/-INFINITY
+    { const UINT64 s = getSignificand(x);
+      if(s == (1ui64 << 63)) { // +/-INFINITY
         return x.isPositive() ? _FPCLASS_PINF: _FPCLASS_NINF;
-      } else {
-        return (*((UINT64*)&x) == 0xc000000000000000) ? _FPCLASS_QNAN : _FPCLASS_SNAN;
-      }
+      } // either snan or qnan. snan if signbit=1 and f0=1, f1=0 and at least one of {f2..f63} = 1
+      return (((s>>62) == 2) && (s & 0x3fffffffffffffffui64) && getSign(x)) ? _FPCLASS_SNAN : _FPCLASS_QNAN;
     }
   }
   return x.isPositive() ? _FPCLASS_PN : _FPCLASS_NN;
 }
 
+int fpclassify(const Double80 &v) {
+  switch(getExponent(v)) {
+  case 0x7fff:
+    return (getSignificand(v) == (1ui64<<63)) ? FP_INFINITE : FP_NAN;
+  case 0:
+    return (getSignificand(v) == 0) ? FP_ZERO : FP_SUBNORMAL;
+  default:
+    return FP_NORMAL;
+  }
+}
+
+#define MINPOW10 -4932
 #define MAXPOW10 4932
+template<int lowSize> class RawPow10Cache {
+private:
+  Double80 m_pow10L[lowSize], m_pow10H[MAXPOW10 / lowSize + 1];
+public:
+  RawPow10Cache() {
+    Double80 p = 1;
+    const FPUControlWord oldcw = FPU::getControlWord();
+    FPUControlWord       newcw = oldcw;
+    newcw.adjustExceptionMask(0, -1)
+         .setRoundMode(FPU_ROUNDCONTROL_ROUND)
+         .setPrecisionMode(FPU_HIGH_PRECISION);
+    FPU::setControlWord(newcw);
+
+    for(int i = 0; i < ARRAYSIZE(m_pow10L); i++, p *= 10) {
+      m_pow10L[i] = p;
+    }
+    Double80 p1 = 1;
+    for(int i = 0; i < ARRAYSIZE(m_pow10H); i++, p1 *= p) {
+      m_pow10H[i] = p1;
+    }
+    FPU::clearExceptionsNoWait();
+    FPU::restoreControlWord(oldcw);
+  }
+
+  Double80 pow10(int p) const {
+    if(p < 0) {
+      return Double80::_1 / pow10(-p);
+    } else {
+      const int l = p % ARRAYSIZE(m_pow10L), h = p / ARRAYSIZE(m_pow10L);
+      if(h) {
+        if(h >= ARRAYSIZE(m_pow10H)) {
+          return DBL80_MAX;
+        }
+        return l ? (m_pow10H[h] * m_pow10L[l]) : m_pow10H[h];
+      } else { // h == 0
+        return m_pow10L[l];
+      }
+    }
+    throwInvalidArgumentException(__TFUNCTION__, _T("p=%d"), p);
+    return 0;
+  }
+};
+
 class Pow10Cache {
 private:
-  Double80 m_pow10e16[309], m_pow10[16];
+  RawPow10Cache<16> m_c1;
+  RawPow10Cache<26> m_c2;
+
 public:
-  Pow10Cache();
   Double80 pow10(int p) const;
+
+#ifdef _DUMPPOW10
+  void dumpAll() const;
+#endif _DUMPPOW10
 };
 
 static const Double80     tenE18(  1e18    );
 static const Double80     tenE18M1(tenE18-1);
 
 Double80 Double80::pow10(int p) {
-  static Pow10Cache p10Cache;
+  static const Pow10Cache p10Cache;
+#ifdef _DUMPPOW10
+  static bool s_isDumping = false;
+  if(!s_isDumping) {
+    s_isDumping = true; // to prevent infinite recursion
+    p10Cache.dumpAll();
+  }
+#endif _DUMPPOW10
   return p10Cache.pow10(p);
 }
 
@@ -277,7 +347,7 @@ Double80 exp(const Double80 &x) {
 
 Double80 exp10(const Double80 &x) {
   if(x.isZero()) {
-    return Double80::one;
+    return Double80::_1;
   }
 
   Double80 result;
@@ -302,7 +372,7 @@ Double80 exp10(const Double80 &x) {
 
 Double80 exp2(const Double80 &x) {
   if(x.isZero()) {
-    return Double80::one;
+    return Double80::_1;
   }
   const FPUControlWord cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_ROUNDDOWN);
   Double80 result;
@@ -326,10 +396,10 @@ Double80 exp2(const Double80 &x) {
 
 Double80 pow(const Double80 &x, const Double80 &y) {
   if(y.isZero()) {
-    return Double80::one;
+    return Double80::_1;
   }
   if(x.isZero()) {
-    return y.isNegative() ? (Double80::one / Double80::zero) : Double80::zero;
+    return y.isNegative() ? (Double80::_1 / Double80::_0) : Double80::_0;
   }
 
   Double80 result;
@@ -431,8 +501,56 @@ void D80ToBCDAutoScale(BYTE bcd[10], const Double80 &x, int &expo10) {
   }
   FPU::restoreControlWord(cwSave);
 }
+
 #endif // IS32BIT
 
+Double80::Double80(float x) {
+  switch (_fpclass(x)) {
+  case _FPCLASS_QNAN:
+    *this = std::numeric_limits<Double80>::quiet_NaN();
+    break;
+  case _FPCLASS_SNAN:
+    *this = std::numeric_limits<Double80>::signaling_NaN();
+    break;
+  default:
+    D80FromFlt(*this, x);
+  }
+}
+
+Double80::Double80(double x) {
+  switch (_fpclass(x)) {
+  case _FPCLASS_QNAN:
+    *this = std::numeric_limits<Double80>::quiet_NaN();
+    break;
+  case _FPCLASS_SNAN:
+    *this = std::numeric_limits<Double80>::signaling_NaN();
+    break;
+  default:
+    D80FromDbl(*this, x);
+  }
+}
+
+float  getFloat(const Double80 &x) {
+  switch (_fpclass(x)) {
+  case _FPCLASS_QNAN:
+    return std::numeric_limits<float>::quiet_NaN();
+  case _FPCLASS_SNAN:
+    return std::numeric_limits<float>::signaling_NaN();
+  default:
+    return D80ToFlt(x);
+  }
+}
+
+double getDouble(const Double80 &x) {
+  switch (_fpclass(x)) {
+  case _FPCLASS_QNAN:
+    return std::numeric_limits<double>::quiet_NaN();
+  case _FPCLASS_SNAN:
+    return std::numeric_limits<double>::signaling_NaN();
+  default:
+    return D80ToDbl(x);
+  }
+}
 
 Double80 asin(const Double80 &x) {
   if(x == 1) {
@@ -480,7 +598,7 @@ Double80 round(const Double80 &x, int dec) { // 5-rounding
   const int sx = sign(x);
   switch(sx) {
   case 0:
-    return Double80::zero;
+    return Double80::_0;
   case  1:
   case -1:
     switch(sign(dec)) {
@@ -514,34 +632,37 @@ ULONG Double80::hashCode() const {
        ^ *(USHORT*)(m_value+8);
 }
 
-
-Pow10Cache::Pow10Cache() {
-  Double80 p = 1;
-  FPUControlWord cw = FPU::adjustExceptionMask(0,-1);
-  for(int i = 0; i < ARRAYSIZE(m_pow10); i++, p *= 10) {
-    m_pow10[i] = p;
-  }
-  Double80 p1 = 1;
-  for(int i = 0; i < ARRAYSIZE(m_pow10e16); i++, p1 *= p) {
-    m_pow10e16[i] = p1;
-  }
-  FPU::clearExceptionsNoWait();
-  FPU::restoreControlWord(cw);
-}
-
 Double80 Pow10Cache::pow10(int p) const {
-  if(p < 0) {
-    return Double80::one / pow10(-p);
-  } else {
-    const int index10E16 = p>>4;
-    const int index10    = p&0xf;
-    if(index10E16) {
-      if(index10E16 >= ARRAYSIZE(m_pow10e16)) return DBL80_MAX;
-      return index10 ? (m_pow10e16[index10E16] * m_pow10[index10]) : m_pow10e16[index10E16];
-    } else { // index10E16 == 0
-      return m_pow10[index10];
-    }
+  Double80 d1 = m_c1.pow10(p);
+  const Double80 d2 = m_c2.pow10(p);
+  if(d1 == d2) {
+    return d1;
   }
-  throwInvalidArgumentException(__TFUNCTION__, _T("p=%d"), p);
-  return 0;
+  const UINT64 s1 = getSignificand(d1);
+  const UINT64 s2 = getSignificand(d2);
+
+  UINT64 avg = (s1 & 0xffffffff00000000) + (((s1 & 0xffffffff) + (s2 & 0xffffffff))>>1);
+  (*(UINT64*)&d1) = avg;
+  return d1;
 }
+
+#ifdef _DUMPPOW10
+#include <DebugLog.h>
+
+static String d80ToHexDumpFormat(const Double80 &v) {
+  const UINT64 sig   = getSignificand(v);
+  const UINT   expo  = getExponent(   v);
+  const UINT   expo2 = getExpo2(      v);
+  TCHAR tmpStr[100];
+  return format(_T("%-29s[%#18I64x %#6x] expo2:%+6d"), d80tot(tmpStr, v), sig, expo, expo2);
+}
+
+void Pow10Cache::dumpAll() const {
+  redirectDebugLog();
+  debugLog(_T("Double80::pow10-values\n"));
+  for(int i = MINPOW10; i <= MAXPOW10; i++) {
+    debugLog(_T("pow10(%+5d):%s\n"), i, d80ToHexDumpFormat(pow10(i)).cstr());
+  }
+  debugLog(_T("End Double80::pow10-values\n"));
+}
+#endif // _DUMPPOW10

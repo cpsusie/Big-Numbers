@@ -1,12 +1,13 @@
 #pragma once
 
-using namespace std;
+typedef int FormatFlags; // std::_Iosb<int>::_Fmtflags
+typedef std::streamsize            StreamSize;
 
 class StreamParameters {
 private:
-  streamsize m_precision, m_width;
-  int        m_flags;
-  TCHAR      m_filler;
+  StreamSize  m_precision, m_width;
+  FormatFlags m_flags;
+  TCHAR       m_filler;
   TCHAR  *addModifier(      TCHAR *dst)                     const;
   TCHAR  *addWidth(         TCHAR *dst)                     const;
   TCHAR  *addPrecision(     TCHAR *dst)                     const;
@@ -14,24 +15,24 @@ private:
   TCHAR  *addIntSpecifier(  TCHAR *dst, bool isSigned)      const;
   TCHAR  *addFloatSpecifier(TCHAR *dst)                     const;
 public:
-  StreamParameters(streamsize precision=6, streamsize width=0, int flags=0, TCHAR filler = _T(' '));
+  StreamParameters(StreamSize precision=6, StreamSize width=0, FormatFlags flags = 0, TCHAR filler = _T(' '));
 
-  StreamParameters(const ostream  &stream);
-  StreamParameters(const wostream &stream);
-  friend ostream  &operator<<(ostream  &out, const StreamParameters &p);
-  friend wostream &operator<<(wostream &out, const StreamParameters &p);
+  StreamParameters(const std::ostream  &stream);
+  StreamParameters(const std::wostream &stream);
+  friend std::ostream  &operator<<(std::ostream  &out, const StreamParameters &p);
+  friend std::wostream &operator<<(std::wostream &out, const StreamParameters &p);
 
-  inline void setPrecision(streamsize precision) { m_precision = precision; }
-  inline void setWidth(    streamsize width    ) { m_width     = width;     }
-  inline void setFlags(    int      flags      ) { m_flags     = flags;     }
-  inline void setFiller(   TCHAR    filler     ) { m_filler    = filler;    }
+  inline void setPrecision(StreamSize  precision) { m_precision = precision; }
+  inline void setWidth(    StreamSize  width    ) { m_width     = width;     }
+  inline void setFlags(    FormatFlags flags    ) { m_flags     = flags;     }
+  inline void setFiller(   TCHAR       filler   ) { m_filler    = filler;    }
 
-  inline streamsize getPrecision() const         { return m_precision;      }
-  inline streamsize getWidth()     const         { return m_width;          }
-  inline int        getFlags()     const         { return m_flags;          }
-  inline TCHAR      getFiller()    const         { return m_filler;         }
-  static int getRadix(int flags);
-  inline int        getRadix() const {
+  inline StreamSize  getPrecision() const { return m_precision;      }
+  inline StreamSize  getWidth()     const { return m_width;          }
+  inline FormatFlags getFlags()     const { return m_flags;          }
+  inline TCHAR       getFiller()    const { return m_filler;         }
+  static int         getRadix(FormatFlags flags);
+  inline int         getRadix() const {
     return getRadix(m_flags);
   }
 

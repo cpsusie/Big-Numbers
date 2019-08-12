@@ -1,4 +1,4 @@
-#include "pch.h"
+ #include "pch.h"
 #include "PatternScanner.h"
 
 PatternScanner::PatternScanner(const StringArray &sourceLines, bool ignoreCase)

@@ -65,7 +65,7 @@ public:
   operator Point2D() const {
     return Point2D(getDouble(r*cos(theta)), getDouble(r*sin(theta)));
   }
-  inline String toString(int dec = 1, bool rad = false) const {
+  inline String toString(StreamSize dec = 1, bool rad = false) const {
     return format(_T("(%s, %s)"), ::toString(r, dec).cstr(), ::toString(rad ? theta : RAD2GRAD(theta), dec).cstr());
   }
 };
@@ -146,7 +146,7 @@ Complex atan(const Complex &c);
 
 void setToRandom(Complex &c);
 
-String toString(const Complex &c, int precision=6, int width=0, int flags=0);
+String toString(const Complex &c, StreamSize precision=6, StreamSize width=0, FormatFlags flags=0);
 
 Complex strtoc(const char    *s, char    **end);
 Complex wcstoc(const wchar_t *s, wchar_t **end);
@@ -157,10 +157,10 @@ Complex wcstoc(const wchar_t *s, wchar_t **end);
 #define _tcstoc strtoc
 #endif // _UNICODE
 
-istream &operator>>(istream &in , Complex &c);
-ostream &operator<<(ostream &out, const Complex &c);
+std::istream &operator>>(std::istream &in ,       Complex &c);
+std::ostream &operator<<(std::ostream &out, const Complex &c);
 
-std::wistream &operator>>(std::wistream &in , Complex &c);
+std::wistream &operator>>(std::wistream &in ,       Complex &c);
 std::wostream &operator<<(std::wostream &out, const Complex &c);
 
 StrStream &operator<<(StrStream &stream, const Complex &c);

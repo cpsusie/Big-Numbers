@@ -5,13 +5,13 @@
 // Used instead of standardclass strstream, which is slow!!! (at least in windows)
 class StrStream : public StreamParameters, public String {
 public:
-  inline StrStream(streamsize precision = 6, streamsize width = 0, int flags = 0) : StreamParameters(precision, width, flags) {
+  inline StrStream(StreamSize precision = 6, StreamSize width = 0, FormatFlags flags = 0) : StreamParameters(precision, width, flags) {
   }
   inline StrStream(const StreamParameters &param) : StreamParameters(param) {
   }
-  inline StrStream(ostream &stream) : StreamParameters(stream) {
+  inline StrStream(std::ostream &stream) : StreamParameters(stream) {
   }
-  inline StrStream(wostream &stream) : StreamParameters(stream) {
+  inline StrStream(std::wostream &stream) : StreamParameters(stream) {
   }
 
   inline void clear() {
@@ -22,8 +22,9 @@ public:
     return last();
   }
 
-  static void formatZero(String &result, streamsize precision, long flags, streamsize maxPrecision = 0);
-  static void formatnan( String &result);
+  static void formatZero(String &result, StreamSize precision, FormatFlags flags, StreamSize maxPrecision = 0);
+  static void formatqnan(String &result);
+  static void formatsnan(String &result);
   static void formatpinf(String &result);
   static void formatninf(String &result);
 
@@ -31,7 +32,11 @@ public:
   template<class T> static String formatUndefined(const T &x) {
     String result;
     if(isnan(x)) {
-      formatnan(result);
+      if(_fpclass(x) == _FPCLASS_SNAN) {
+        formatsnan(result);
+      } else {
+        formatqnan(result);
+      }
     } else if(isPInfinity(x)) {
       formatpinf(result);
     } else if(isNInfinity(x)) {

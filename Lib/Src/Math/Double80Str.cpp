@@ -4,9 +4,9 @@
 
 template<class CharType> Double80 _strtod80(const CharType *s, CharType **end) {
   errno=0;
-  bool     isNegative = false;
-  bool     gotDigit   = false;
-  Double80 result     = 0;
+  bool     isNegative     = false;
+  bool     gotDigit       = false;
+  Double80 result         = 0;
   while(iswspace(*s)) s++;
   if(*s == '-') {
     isNegative = true;
@@ -17,55 +17,80 @@ template<class CharType> Double80 _strtod80(const CharType *s, CharType **end) {
 
   _se_translator_function prevTranslator = FPU::setExceptionTranslator(FPUexceptionTranslator);
   FPU::clearExceptions();
-  const FPUControlWord oldcw = FPU::adjustExceptionMask(FPU_OVERFLOW_EXCEPTION | FPU_UNDERFLOW_EXCEPTION,0);
-  FPU::setRoundMode(FPU_ROUNDCONTROL_ROUND);
+  FPUControlWord oldcw = FPU::getControlWord(), ctrlWord = oldcw;
+  FPU::setControlWord(ctrlWord.adjustExceptionMask(FPU_OVERFLOW_EXCEPTION, FPU_UNDERFLOW_EXCEPTION | FPU_DENORMALIZED_EXCEPTION)
+                              .setRoundMode(FPU_ROUNDCONTROL_ROUND));
   try {
     if(iswdigit(*s)) {
       gotDigit = true;
-      result = (int)(*(s++) - '0');
+#define TCHARTODECIMAL(ch) ((int)((ch) - '0'))
+      result   = TCHARTODECIMAL(*(s++));
       while(iswdigit(*s)) {
         result *= 10;
-        result += (int)(*(s++) - '0');
+        result += TCHARTODECIMAL(*(s++));
       }
     }
+    bool     hasFraction    = false;
+    Double80 fraction       = 0;
+    UINT     fractionLength = 0;
     if(*s == '.' && iswdigit(s[1])) {
       s++;
-      Double80 decimals = 0, p = 10;
-      for(;iswdigit(*s); p *= 10, decimals *= 10) {
-        decimals += (int)(*(s++) - '0');
+      gotDigit = true;
+      fraction = TCHARTODECIMAL(*(s++));
+      for(fractionLength++; iswdigit(*s); fractionLength++) {
+        fraction *= 10;
+        fraction += TCHARTODECIMAL(*(s++));
       }
-      result += decimals/p;
+      if(fraction != 0) {
+        hasFraction = true;
+      }
     }
-    if(*s == 'e' || *s == 'E') {
+    if((*s != 'e') && (*s != 'E')) {
+      if(hasFraction) fraction /= Double80::pow10(fractionLength);
+    } else {
       const CharType *epos = s++;
-      int expoSign = 1;
+      bool expPositive = true;
+      int  exponent    = 0;
       if(*s == '-') {
-        expoSign = -1;
+        expPositive = false;
         s++;
       } else if(*s == '+') {
         s++;
       }
-      int exponent = 0;
       bool gotExpoDigits = false;
-      while(iswdigit(*s)) {
-        exponent = exponent * 10 + (*(s++) - '0');
+      if(iswdigit(*s)) {
+        exponent = TCHARTODECIMAL(*(s++));
         gotExpoDigits = true;
+        while(iswdigit(*s)) {
+          exponent *= 10;
+          exponent += TCHARTODECIMAL(*(s++));
+        }
       }
       if(!gotExpoDigits) {
         s = epos;
-      } else {
-        exponent *= expoSign;
-        if(exponent < -4900) {
+        if(hasFraction) fraction /= Double80::pow10(fractionLength);
+      } else if(exponent == 0) {
+        if(hasFraction) fraction /= Double80::pow10(fractionLength);
+      } else if(expPositive) {
+        result *= Double80::pow10(exponent);
+        if(hasFraction) fraction *= Double80::pow10(exponent - fractionLength);
+      } else { // exponent < 0
+        if(exponent > 4900) {
+          if(hasFraction) { // finalize fraction
+            result += fraction / Double80::pow10(fractionLength);
+            hasFraction = false;
+          }
           result /= Double80::pow10(4900);
-          exponent += 4900;
-          result /= Double80::pow10(-exponent);
-        } else {
-          result *= Double80::pow10(exponent);
+          exponent -= 4900;
         }
+        result   /= Double80::pow10(exponent);
+        if(hasFraction) fraction /= Double80::pow10(exponent + fractionLength);
       }
     }
     if(!gotDigit) {
       return 0;
+    } else if(hasFraction) {
+      result += fraction;
     }
     if(end) {
       *end = (CharType*)s;
@@ -79,7 +104,7 @@ template<class CharType> Double80 _strtod80(const CharType *s, CharType **end) {
       result  = DBL80_MIN;
       errno   = ERANGE;
     } else {
-      result  = DBL80_QNAN;
+      result  = DBL80_NAN;
     }
   } catch(...) {
     FPU::clearExceptionsNoWait();
@@ -178,6 +203,11 @@ template<class CharType> CharType *_d80tostr(CharType *dst, const Double80 &x) {
       expo10--;
     }
     // Assertion: _UI64_MAX/10 < m <= _UI64_MAX and x = (negative?-1:1) * m * 10^(expo10-DBL80_DIG)
+#ifdef _DEBUG
+    if((m <= d80Maxui64q10) || (m > _UI64_MAX)) {
+      int fisk = 1;
+    }
+#endif
     getDigitsStr(digits, m, expo10);
     expo10--;
     FPU::restoreControlWord(cwSave);

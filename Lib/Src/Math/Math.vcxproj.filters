@@ -235,6 +235,9 @@
     <ClCompile Include="FindExtremum.cpp">
       <Filter>Source Files\Misc</Filter>
     </ClCompile>
+    <ClCompile Include="FPUString.cpp">
+      <Filter>Source Files\Misc</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="NatvisFile.natvis" />
@@ -369,6 +372,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\Math\Int128Net.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IStreamUtil.h">
+      <Filter>Source Files\Number Types</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

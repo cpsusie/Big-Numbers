@@ -190,6 +190,8 @@ inline int fpclassify(const Rational &r) {
   return r.getNumerator() ? FP_INFINITE : FP_NAN;
 }
 
+int _fpclass(const Rational &r);
+
 inline bool isfinite(const Rational &r) {
   return fpclassify(r) <= 0;
 }
@@ -241,7 +243,7 @@ wchar_t *rattow(wchar_t *dst, const Rational &r, int radix);
 #define _rattot rattoa
 #endif
 
-String toString(const Rational &r, int precision=0, int width=0, int flags=0);
+String toString(const Rational &r, StreamSize precision=0, StreamSize width=0, FormatFlags flags=0);
 
 Rational strtorat(const char *s   , char    **end, int radix);
 Rational wcstorat(const wchar_t *s, wchar_t **end, int radix);
@@ -252,8 +254,8 @@ Rational wcstorat(const wchar_t *s, wchar_t **end, int radix);
 #define _tcstorat strtorat
 #endif // _UNICODE
 
-istream &operator>>(istream &s,       Rational &r);
-ostream &operator<<(ostream &s, const Rational &r);
+std::istream &operator>>(std::istream &s,       Rational &r);
+std::ostream &operator<<(std::ostream &s, const Rational &r);
 
 std::wistream &operator>>(std::wistream &s,       Rational &r);
 std::wostream &operator<<(std::wostream &s, const Rational &r);

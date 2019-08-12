@@ -42,10 +42,9 @@ FPUgetControlWord PROC
     ret
 FPUgetControlWord ENDP
 
-;void FPUsetControlWord(WORD flags);
+;void FPUsetControlWord(WORD *cw);
 FPUsetControlWord PROC
-    mov DWORD PTR[rsp-4], ecx
-    fldcw WORD PTR[rsp-4]
+    fldcw WORD PTR[rcx]
     ret
 FPUsetControlWord ENDP
 

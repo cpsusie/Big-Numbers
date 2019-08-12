@@ -309,6 +309,21 @@ int compareAbs(const BigReal &x, const BigReal &y) {
   return xp ? 1 : yp ? -1 : 0;
 }
 
+int _fpclass(const BigReal &x) {
+  switch(fpclassify(x)) {
+  case FP_NORMAL:
+    return x.isNegative() ? _FPCLASS_NN : _FPCLASS_PN;
+  case FP_ZERO:
+    return x.isNegative() ? _FPCLASS_NZ : _FPCLASS_PZ;
+  case FP_INFINITE:
+    return x.isNegative() ? _FPCLASS_NINF : _FPCLASS_PINF;
+  case FP_NAN:
+    return _FPCLASS_QNAN;
+  default:
+    return _FPCLASS_SNAN;
+  }
+}
+
 #define CHECKISNORMAL(x)                                      \
 if(!x._isnormal()) {                                          \
   if(x.isZero()) {                                            \

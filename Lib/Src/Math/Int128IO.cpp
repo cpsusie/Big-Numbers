@@ -83,7 +83,7 @@ template<class Ctype> Int128Stream<Ctype> &Int128Stream<Ctype>::addResult(const 
   const streamsize resultWidth = strlen(buf) + prefix.length();
   StringTemplate<Ctype> result;
   if(wantedWidth > resultWidth) {
-    const streamsize fillerLength = wantedWidth - resultWidth;
+    const intptr_t fillerLength = (intptr_t)wantedWidth - (intptr_t)resultWidth;
     switch(getFlags() & ios::adjustfield) {
     case ios::left:
       result =  prefix;

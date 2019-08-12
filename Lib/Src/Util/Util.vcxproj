@@ -823,6 +823,7 @@
     <ClInclude Include="..\..\Include\Packer.h" />
     <ClInclude Include="..\..\Include\PersistentData.h" />
     <ClInclude Include="..\..\Include\PragmaLib.h" />
+    <ClInclude Include="..\..\Include\PrimitiveToString.h" />
     <ClInclude Include="..\..\Include\PriorityQueue.h" />
     <ClInclude Include="..\..\Include\ProcessTools.h" />
     <ClInclude Include="..\..\Include\PropertyContainer.h" />
@@ -948,6 +949,7 @@
     <ClCompile Include="FileVersion.cpp" />
     <ClCompile Include="FindDataComp.cpp" />
     <ClCompile Include="FindDataCompCommon.cpp" />
+    <ClCompile Include="FloatRegex.cpp" />
     <ClCompile Include="fopen.cpp" />
     <ClCompile Include="format1000.cpp" />
     <ClCompile Include="FormatSize.cpp" />
@@ -989,6 +991,7 @@
     <ClCompile Include="InputThread.cpp" />
     <ClCompile Include="InputUint.cpp" />
     <ClCompile Include="InputUint64.cpp" />
+    <ClCompile Include="IntegerRegex.cpp" />
     <ClCompile Include="IntelCPU\InstructionBase.cpp" />
     <ClCompile Include="IntelCPU\InstructionBuilder.cpp" />
     <ClCompile Include="IntelCPU\InstructionOperand.cpp" />
@@ -1090,6 +1093,7 @@
     <ClCompile Include="SocketErrorMessage.cpp" />
     <ClCompile Include="SocketStream.cpp" />
     <ClCompile Include="SourcePosition.cpp" />
+    <ClCompile Include="SpaceString.cpp" />
     <ClCompile Include="sprintbin.cpp" />
     <ClCompile Include="Stat.cpp" />
     <ClCompile Include="stat64.cpp" />
@@ -1098,10 +1102,19 @@
     <ClCompile Include="StrHash.cpp" />
     <ClCompile Include="StrIHash.cpp" />
     <ClCompile Include="StringArray.cpp" />
+    <ClCompile Include="StringExpConstructors.cpp" />
+    <ClCompile Include="StringFind.cpp" />
+    <ClCompile Include="StringFormat.cpp" />
     <ClCompile Include="StringHash.cpp" />
     <ClCompile Include="StringIHash.cpp" />
+    <ClCompile Include="StringInsert.cpp" />
     <ClCompile Include="StringIO.cpp" />
     <ClCompile Include="StringPool.cpp" />
+    <ClCompile Include="StringRemove.cpp" />
+    <ClCompile Include="StringReplace.cpp" />
+    <ClCompile Include="StringRev.cpp" />
+    <ClCompile Include="StringSubStr.cpp" />
+    <ClCompile Include="StringTrim.cpp" />
     <ClCompile Include="StrnHash.cpp" />
     <ClCompile Include="StrniHash.cpp" />
     <ClCompile Include="StrRemove.cpp" />
@@ -1152,6 +1165,7 @@
     <ClCompile Include="TreeMapImpl.cpp" />
     <ClCompile Include="TreeSetImpl.cpp" />
     <ClCompile Include="TreeSetIterator.cpp" />
+    <ClCompile Include="UndefFloatRegex.cpp" />
     <ClCompile Include="Unlink.cpp" />
     <ClCompile Include="WildCardRegex.cpp" />
     <ClCompile Include="xfree.cpp" />

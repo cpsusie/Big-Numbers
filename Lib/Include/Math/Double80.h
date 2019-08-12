@@ -132,7 +132,44 @@ class Double80 {
 private:
   BYTE m_value[10]; // Must be the first field in the class
 
+#ifdef IS32BIT
+  static inline void D80FromFlt(Double80 &s, float x) {
+    __asm {
+      fld x
+      mov eax, s
+      fstp TBYTE PTR[eax]
+    }
+  }
+
+  static inline void D80FromDbl(Double80 &s, double x) {
+    __asm {
+      fld x
+      mov eax, s
+      fstp TBYTE PTR[eax]
+    }
+  }
+
+#endif // // IS32BIT
+
 public:
+  inline Double80() {
+  }
+
+  inline Double80(long x) {
+    *this = (Double80)(int)(x);
+  }
+
+  inline Double80(ULONG x) {
+    *this = (Double80)(UINT)(x);
+  }
+
+  explicit inline Double80(const BYTE *bytes) {
+    memcpy(&m_value, bytes, sizeof(m_value));
+  }
+
+  Double80(float  x);
+  Double80(double x);
+
 #ifdef IS32BIT
   // Assume x > _I16_MAX
   static inline void loadBigUINT16(USHORT x) {
@@ -226,47 +263,7 @@ public:
       }
     }
   }
-  inline Double80(float x) {
-    __asm {
-      fld x
-      mov eax, this
-      fstp TBYTE PTR [eax]
-    }
-  }
-  inline Double80(double x) {
-    __asm {
-      fld x
-      mov eax, this
-      fstp TBYTE PTR [eax]
-    }
-  }
-#else // IS64BIT
-  inline Double80(short  x) { D80FromI16(  *this, x); }
-  inline Double80(USHORT x) { D80FromUI16( *this, x); }
-  inline Double80(int    x) { D80FromI32(  *this, x); }
-  inline Double80(UINT   x) { D80FromUI32( *this, x); }
-  inline Double80(INT64  x) { D80FromI64(  *this, x); }
-  inline Double80(UINT64 x) { D80FromUI64( *this, x); }
-  inline Double80(float  x) { D80FromFlt(  *this, x); }
-  inline Double80(double x) { D80FromDbl(  *this, x); }
-#endif // IS64BIT
 
-  inline Double80() {
-  }
-
-  inline Double80(long x) {
-    *this = (Double80)(int)(x);
-  }
-
-  inline Double80(ULONG x) {
-    *this = (Double80)(UINT)(x);
-  }
-
-  explicit inline Double80(const BYTE *bytes) {
-    memcpy(&m_value,bytes,sizeof(m_value));
-  }
-
-#ifdef IS32BIT
   // x == 0 ? 0 : floor(log10(|x|))
   static int    getExpo10(const Double80 &x);
 
@@ -344,7 +341,14 @@ public:
 
 #else // IS64BIT
 
-  // x == 0 ? 0 : floor(log10(|x|))
+  inline Double80(short  x) { D80FromI16( *this, x); }
+  inline Double80(USHORT x) { D80FromUI16(*this, x); }
+  inline Double80(int    x) { D80FromI32( *this, x); }
+  inline Double80(UINT   x) { D80FromUI32(*this, x); }
+  inline Double80(INT64  x) { D80FromI64( *this, x); }
+  inline Double80(UINT64 x) { D80FromUI64(*this, x); }
+
+// x == 0 ? 0 : floor(log10(|x|))
   static inline int getExpo10(const Double80 &x) { return D80getExpo10(x); }
   // prefix-form
   inline Double80 &operator++()   {  D80inc(*this);    return *this;  }
@@ -358,11 +362,14 @@ public:
 
 #endif // IS64BIT
 
-  friend inline UINT64 getSignificand(const Double80 &x) {
+  friend inline UINT64 getSignificand( const Double80 &x) {
     return *((UINT64*)x.m_value);
   }
-  friend inline UINT   getExponent(const Double80 &x) {
+  friend inline UINT   getExponent(    const Double80 &x) {
     return (*(UINT*)(x.m_value+8)) & 0x7fff;
+  }
+  friend inline BYTE   getSign(        const Double80 &x) {
+    return x.m_value[9] & 0x80;
   }
 
   inline bool isPositive() const { return (m_value[9] & 0x80) == 0; }
@@ -391,34 +398,26 @@ public:
     s.getBytesForced((BYTE*)m_value, sizeof(m_value));
   }
 
-  static const Double80 zero;          // = 0
-  static const Double80 one;           // = 1
   static Double80       pow10(int p);
+
+  static const Double80 _0;                               // = 0
+  static const Double80 _05;                              // 0.5
+  static const Double80 _1;                               // = 1
+  static const Double80 _DBL80_EPSILON;                   // Smallest such that 1.0+DBL80_EPSILON != 1.0 (=1.08420217248550443e-019)
+  static const Double80 _DBL80_MIN;                       // Min positive value (=3.36210314311209209e-4932)
+  static const Double80 _DBL80_MAX;                       // Max value          (=1.18973149535723227e+4932)
+  static const Double80 _DBL80_QNAN;                      // non-signaling NaN (quiet NaN)
+  static const Double80 _DBL80_SNAN;                      // signaling NaN
+  static const Double80 _DBL80_PINF;                      // +infinity;
+  static const Double80 _DBL80_NINF;                      // -infinity;
+  static const Double80 _DBL80_TRUE_MIN;                  // min positive value (3.64519953188247460325e-4951)
 
   static void initClass();
 };
 
 extern const Double80 DBL80_PI;                        // = 3.1415926535897932384626433
 extern const Double80 DBL80_PI_05;                     // pi/2
-extern const Double80 DBL80_EPSILON;                   // Smallest such that 1.0+DBL80_EPSILON != 1.0 (=1.08420217248550443e-019)
-extern const Double80 DBL80_MIN;                       // Min positive value (=3.36210314311209209e-4932)
-extern const Double80 DBL80_MAX;                       // Max value          (=1.18973149535723227e+4932)
-extern const Double80 DBL80_QNAN;                      // non-signaling NaN (quiet NaN)
-extern const Double80 DBL80_SNAN;                      // signaling NaN
-extern const Double80 DBL80_PINF;                      // +infinity;
-extern const Double80 DBL80_NINF;                      // -infinity;
-extern const Double80 DBL80_TRUE_MIN;                  // min positive value (3.64519953188247460325e-4951)
 
-
-#define DBL80_DECIMAL_DIG     20                       // # of decimal digits of rounding precision
-#define DBL80_DIG             19                       // # of decimal digits of precision
-#define DB80L_HAS_SUBNORM      1                       // type does support subnormal numbers
-#define DBL80_MANT_DIG        64                       // # of bits in mantissa
-#define DBL80_MAX_10_EXP    4932                       // max decimal exponent
-#define DBL80_MAX_EXP      16384                       // max binary exponent
-#define DBL80_MIN_10_EXP  (-4932)                      // min decimal exponent
-#define DBL80_MIN_EXP    (-16382)                      // min binary exponent
-#define _DBL80_RADIX           2                       // exponent radix
 
 #ifdef IS32BIT
 
@@ -443,33 +442,26 @@ inline INT64 getInt64(const Double80 &x) {
 }
 
 UINT64 getUint64( const Double80 &x);
-inline float getFloat(const Double80 &x) {
+
+inline float D80ToFlt(const Double80 &x) { // assume !isnan(x)
   float result;
   __asm {
     mov eax, x
-    fld TBYTE PTR [eax]
+    fld TBYTE PTR[eax]
     fstp result
   }
   return result;
 }
 
-
-
-
-
-
-
-inline double getDouble(const Double80 &x) {
+inline double D80ToDbl(const Double80 &x) { // assume !isnan(x)
   double result;
   __asm {
     mov eax, x
-    fld TBYTE PTR [eax]
+    fld TBYTE PTR[eax]
     fstp result
   }
   return result;
 }
-
-
 
 
 
@@ -2944,8 +2936,6 @@ inline int    getInt(    const Double80 &x) { return D80ToI32(  x); }
 inline UINT   getUint(   const Double80 &x) { return D80ToUI32( x); }
 inline INT64  getInt64(  const Double80 &x) { return D80ToI64(  x); }
 inline UINT64 getUint64( const Double80 &x) { return D80ToUI64( x); }
-inline float  getFloat(  const Double80 &x) { return D80ToFlt(  x); }
-inline double getDouble( const Double80 &x) { return D80ToDbl(  x); }
 
 inline Double80 operator+(const Double80 &x, const short    &y) { Double80 t(x); D80addI16(    t, y); return t;}
 inline Double80 operator-(const Double80 &x, const short    &y) { Double80 t(x); D80subI16(    t, y); return t;}
@@ -3242,6 +3232,9 @@ inline Double80 ceil(const Double80 &x) {
 
 #endif // IS64BIT
 
+float  getFloat( const Double80 &x);
+double getDouble(const Double80 &x);
+
 inline bool operator==(short   x, const Double80 &y) {  return y == x; }
 inline bool operator==(USHORT  x, const Double80 &y) {  return y == x; }
 inline bool operator==(int     x, const Double80 &y) {  return y == x; }
@@ -3358,12 +3351,7 @@ inline int getExpo2(const Double80 &v) {
   return getExponent(v) - 0x3fff;
 }
 
-inline int fpclassify(const Double80 &v) {
-  if(getExponent(v) == 0x7fff) {
-    return (getSignificand(v) == 0x8000000000000000ui64) ? FP_INFINITE : FP_NAN;
-  }
-  return v.isZero() ? FP_ZERO : FP_NORMAL;
-}
+int fpclassify(const Double80 &v);
 
 inline bool isPInfinity(const Double80 &v) {
   return isinf(v) && v.isPositive();
@@ -3397,7 +3385,7 @@ wchar_t *d80tow(wchar_t *dst, const Double80 &x);
 #define d80tot d80toa
 #endif
 
-String toString(      const Double80 &x, int precision=6, int width=0, int flags=0);
+String toString(const Double80 &x, StreamSize precision=6, StreamSize width=0, FormatFlags flags=0);
 
 Double80 strtod80(const char    *s, char    **end);
 Double80 wcstod80(const wchar_t *s, wchar_t **end);
@@ -3408,8 +3396,8 @@ Double80 wcstod80(const wchar_t *s, wchar_t **end);
 #define _tcstod80 strtod80
 #endif
 
-istream &operator>>(istream &s,       Double80 &x);
-ostream &operator<<(ostream &s, const Double80 &x);
+std::istream &operator>>(std::istream &s,       Double80 &x);
+std::ostream &operator<<(std::ostream &s, const Double80 &x);
 
 std::wistream &operator>>(std::wistream &s,       Double80 &x);
 std::wostream &operator<<(std::wostream &s, const Double80 &x);
@@ -3421,18 +3409,18 @@ Packer &operator>>(Packer &p,       Double80 &x);
 
 
 // CLASS numeric_limits<Double80>
-template<> class numeric_limits<Double80>
+template<> class std::numeric_limits<Double80>
     : public _Num_float_base
 {	// limits for type Double80
 public:
   _NODISCARD static Double80 (min)() noexcept
   {	// return minimum value
-    return DBL80_MIN;
+    return Double80::_DBL80_MIN;
   }
 
   _NODISCARD static Double80 (max)() noexcept
   {	// return maximum value
-    return DBL80_MAX;
+    return Double80::_DBL80_MAX;
   }
 
   _NODISCARD static Double80 lowest() noexcept
@@ -3442,39 +3430,59 @@ public:
 
   _NODISCARD static Double80 epsilon() noexcept
   {	// return smallest effective increment from 1.0
-    return DBL80_EPSILON;
+    return Double80::_DBL80_EPSILON;
   }
 
   _NODISCARD static Double80 round_error() noexcept
   {	// return largest rounding error
-    return 0.5;
+    return Double80::_05;
   }
 
   _NODISCARD static Double80 denorm_min() noexcept
   {	// return minimum denormalized value
-    return DBL80_TRUE_MIN;
+    return Double80::_DBL80_TRUE_MIN;
   }
 
   _NODISCARD static Double80 infinity() noexcept
   {	// return positive infinity
-    return DBL80_PINF;
+    return Double80::_DBL80_PINF;
   }
 
   _NODISCARD static Double80 quiet_NaN() noexcept
   {	// return non-signaling NaN
-    return DBL80_QNAN;
+    return Double80::_DBL80_QNAN;
   }
 
   _NODISCARD static Double80 signaling_NaN() noexcept
   {	// return signaling NaN
-    return DBL80_SNAN;
+    return Double80::_DBL80_SNAN;
   }
 
-  static constexpr int digits         = DBL80_MANT_DIG;
-  static constexpr int digits10       = DBL80_DIG;
-  static constexpr int max_digits10   = DBL80_DECIMAL_DIG;
-  static constexpr int max_exponent   = DBL80_MAX_EXP;
-  static constexpr int max_exponent10 = DBL80_MAX_10_EXP;
-  static constexpr int min_exponent   = DBL80_MIN_EXP;
-  static constexpr int min_exponent10 = DBL80_MIN_10_EXP;
+  static constexpr int digits         =  64;                             // # of bits in mantissa
+  static constexpr int digits10       =  19;                             // # of decimal digits of precision
+  static constexpr int max_digits10   =  20;                             // # of decimal digits of rounding precision
+  static constexpr int max_exponent   =  16384;                          // max binary exponent
+  static constexpr int max_exponent10 =  4932;                           // max decimal exponent
+  static constexpr int min_exponent   = -16382;                          // min binary exponent
+  static constexpr int min_exponent10 = -4932;                           // min decimal exponent
 };
+
+#define DBL80_HAS_SUBNORM      1                                         // type does support subnormal numbers
+#define _DBL80_RADIX           2                                         // exponent radix
+
+
+#define DBL80_NAN          Double80::_DBL80_QNAN
+#define DBL80_PINF         Double80::_DBL80_PINF
+#define DBL80_NINF        (-DBL80_PINF)
+
+#define DBL80_DECIMAL_DIG  std::numeric_limits<Double80>::max_digits10   // # of decimal digits of rounding precision
+#define DBL80_DIG          std::numeric_limits<Double80>::digits10       // # of decimal digits of precision
+#define DBL80_EPSILON      Double80::_DBL80_EPSILON                      // smallest such that 1.0+DBL_EPSILON != 1.0
+#define DBL80_MANT_DIG     std::numeric_limits<Double80>::digits         // # of bits in mantissa
+#define DBL80_MAX          Double80::_DBL80_MAX                          // max value
+#define DBL80_MAX_10_EXP   std::numeric_limits<Double80>::max_exponent10 // max decimal exponent
+#define DBL80_MAX_EXP      std::numeric_limits<Double80>::max_exponent   // max binary exponent
+#define DBL80_MIN          Double80::_DBL80_MIN                          // min positive value
+#define DBL80_MIN_10_EXP   std::numeric_limits<Double80>::min_exponent10 // min decimal exponent
+#define DBL80_MIN_EXP      std::numeric_limits<Double80>::min_exponent   // min binary exponent
+#define DBL80_TRUE_MIN     Double80::_DBL80_TRUE_MIN                     // min positive value

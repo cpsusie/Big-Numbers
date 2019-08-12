@@ -29,6 +29,7 @@ static CallCounter pow2CacheRequests(_T("pow2CacheRequests"));
 Pow2Cache::Pow2Cache() {
   m_state       = CACHE_EMPTY;
   m_updateCount = m_savedCount = 0;
+  load();
 }
 
 Pow2Cache::~Pow2Cache() {

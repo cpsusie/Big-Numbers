@@ -59,7 +59,7 @@ Complex wcstoc(const wchar_t *s, wchar_t **end) {
   return _strtoc<wchar_t>(s, end, wcstor);
 }
 
-String toString(const Complex &c, int precision, int width, int flags) {
+String toString(const Complex &c, StreamSize precision, StreamSize width, FormatFlags flags) {
   StrStream stream(precision,width,flags);
   stream << c;
   return stream;

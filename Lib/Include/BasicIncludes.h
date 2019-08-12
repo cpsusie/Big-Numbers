@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <sys\stat.h>
 #include "BuiltInArrayUtil.h"
-#include "MyString.h"
+#include <PrimitiveToString.h>
 #include "MemoryTrace.h"
 #include "MyAssert.h"
 #include "Exception.h"

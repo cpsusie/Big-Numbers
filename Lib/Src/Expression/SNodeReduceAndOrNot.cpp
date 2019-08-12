@@ -2,6 +2,8 @@
 #include <Math/Expression/ParserTree.h>
 #include <Math/Expression/SNodeReduceDbgStack.h>
 
+using namespace std;
+
 namespace Expr {
 
 typedef enum {

@@ -1964,8 +1964,8 @@ char     *_ui128toa(  _uint128  value, char    *str , int radix);
 wchar_t  *_i128tow(   _int128   value, wchar_t *str , int radix);
 wchar_t  *_ui128tow(  _uint128  value, wchar_t *str , int radix);
 
-String toString(const _int128  &n , int precision = 0, int width = 0, int flags = 0);
-String toString(const _uint128 &n , int precision = 0, int width = 0, int flags = 0);
+String toString(const _int128  &n , StreamSize precision = 0, StreamSize width = 0, FormatFlags flags = 0);
+String toString(const _uint128 &n , StreamSize precision = 0, StreamSize width = 0, FormatFlags flags = 0);
 
 #ifdef _UNICODE
 #define _tcstoi128  _wcstoi128

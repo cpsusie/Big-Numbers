@@ -1,5 +1,7 @@
 #include "pch.h"
 
+using namespace std;
+
 // Calculates a^r mod n
 BigInt powmod(const BigInt &a, const BigInt &r, const BigInt &n, bool verbose) {
   DigitPool *pool = a.getDigitPool();

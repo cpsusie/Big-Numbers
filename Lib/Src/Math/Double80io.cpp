@@ -4,7 +4,7 @@
 
 using namespace std;
 
-String toString(const Double80 &x, int precision, int width, int flags) {
+String toString(const Double80 &x, StreamSize precision, StreamSize width, FormatFlags flags) {
   StrStream stream(precision,width,flags);
   stream << x;
   return (String)stream;
@@ -22,7 +22,7 @@ static TCHAR *findFirstDigit(TCHAR *str) {
 #define addDecimalPoint(s) { s += _T("."); }
 #define addExponentChar(s) { s += ((flags & ios::uppercase) ? _T("E") : _T("e")); }
 
-static void formatFixed(String &result, const Double80 &x, streamsize precision, long flags, int expo10, bool removeTrailingZeroes) {
+static void formatFixed(String &result, const Double80 &x, StreamSize precision, FormatFlags flags, int expo10, bool removeTrailingZeroes) {
   TCHAR tmp[50];
   d80tot(tmp, (precision >= MAXPRECISION) ? x : round(x,(int)precision));
   const TCHAR  *mantissa  = findFirstDigit(tmp);
@@ -50,7 +50,7 @@ static void formatFixed(String &result, const Double80 &x, streamsize precision,
         addDecimalPoint(result);
       }
       if((precision > 0) && (flags & ios::fixed)) {
-        result += spaceString(precision,_T('0'));
+        result += spaceString((size_t)precision,_T('0'));
       }
     } else { // 0 <= exponent < ciphers.length()
       const int dotPosition = exponent+1;
@@ -63,7 +63,7 @@ static void formatFixed(String &result, const Double80 &x, streamsize precision,
             decimals.remove(i--);
           }
         } else { // add zeroes to specified precisionision
-          decimals += spaceString(precision - (ciphers.length() - dotPosition),_T('0'));
+          decimals += spaceString((size_t)(precision - (ciphers.length() - dotPosition)),_T('0'));
         }
       }
 
@@ -84,12 +84,12 @@ static void formatFixed(String &result, const Double80 &x, streamsize precision,
         result.remove(i--);
       }
     } else {
-      result += spaceString(precision - leadingZeroes - ciphers.length(),_T('0'));
+      result += spaceString((size_t)(precision - leadingZeroes - ciphers.length()),_T('0'));
     }
   }
 }
 
-static void formatScientific(String &result, const Double80 &x, streamsize precision, long flags, bool removeTrailingZeroes) {
+static void formatScientific(String &result, const Double80 &x, StreamSize precision, FormatFlags flags, bool removeTrailingZeroes) {
   TCHAR tmp[50];
   d80tot( tmp, x);
   TCHAR  *mantissa  = findFirstDigit(tmp);
@@ -153,8 +153,8 @@ static void formatScientific(String &result, const Double80 &x, streamsize preci
 }
 
 StrStream &operator<<(StrStream &stream, const Double80 &x) {
-  streamsize precision  = stream.getPrecision();
-  const long flags      = stream.getFlags();
+  StreamSize        precision  = stream.getPrecision();
+  const FormatFlags flags      = stream.getFlags();
 
   if(precision < 0) {
     precision = MAXPRECISION;
@@ -187,7 +187,7 @@ StrStream &operator<<(StrStream &stream, const Double80 &x) {
     } // x defined && x != 0
   } // end x defined
 
-  const streamsize fillerLength = stream.getWidth() - (int)result.length();
+  const int fillerLength = (int)stream.getWidth() - (int)result.length();
   if(fillerLength <= 0) {
     stream.append(result);
   } else if((flags & (ios::left|ios::right)) == ios::left) { // adjust left iff only ios::left is set
@@ -198,85 +198,37 @@ StrStream &operator<<(StrStream &stream, const Double80 &x) {
   return stream;
 }
 
-#define peekChar(in,ch)          { ch = in.peek(); if(ch == EOF) in >> ch; }
-#define appendCharGetNext(in,ch) { in >> ch; buf += ch; peekChar(in,ch);   }
-
-template <class IStreamType, class CharType> void eatWhite(IStreamType &in) {
-  CharType ch;
-  for(;;in >> ch) {
-    peekChar(in, ch);
-    if(!iswspace(ch)) {
-      return;
-    }
-  }
-}
-
-template <class IStreamType, class CharType> IStreamType &operator>>(IStreamType &in, Double80 &x) {
-  if(in.ipfx(0)) {
-    String   buf;
-    CharType ch;
-    bool     gotDigits = false;
-
-    eatWhite<IStreamType, CharType>(in);
-    peekChar(in, ch);
-    if((ch == '-') || (ch == '+')) {
-      appendCharGetNext(in, ch);
-    }
-    while(iswdigit(ch)) {
-      appendCharGetNext(in, ch);
-      gotDigits = true;
-    }
-    if(ch == '.') {
-      appendCharGetNext(in, ch);
-      while(iswdigit(ch)) {
-        appendCharGetNext(in, ch);
-        gotDigits = true;
-      }
-    }
-    if(!gotDigits) {
-      in.putback(ch);
-      double tmp;
-      in >> tmp;
-      if(!isfinite(tmp)) {
-        x = tmp;
-      } else {
-        in.clear(ios::failbit);
-        in.isfx();
-      }
-      return in;
-    }
-    if((ch == 'e') || (ch == 'E')) {
-      appendCharGetNext(in, ch);
-      if((ch == '-') || (ch == '+')) {
-        appendCharGetNext(in, ch);
-      }
-      while(iswdigit(ch)) {
-        appendCharGetNext(in, ch);
-      }
-    }
-    try {
-      x = _tcstod80(buf.cstr(),NULL);
-    } catch(...) {
-      in.clear(ios::failbit);
-      in.isfx();
-      throw;
-    }
-    in.isfx();
-  }
-  return in;
-}
-
 template <class OStreamType> OStreamType &operator<<(OStreamType &out, const Double80 &x) {
-  if(out.opfx()) {
-    StrStream stream(out);
-    stream << x;
-    out << stream.cstr();
-    if(out.flags() & ios::unitbuf) {
-      out.flush();
-    }
-    out.osfx();
+  StrStream stream(out);
+  stream << x;
+  USES_ACONVERSION;
+  out << T2A(stream.cstr());
+  if (out.flags() & ios::unitbuf) {
+    out.flush();
   }
   return out;
+}
+
+#include "IStreamUtil.h"
+
+template <class IStreamType, class CharType> IStreamType &operator>>(IStreamType &in, Double80 &x) {
+  SETUPISTREAM(in)
+
+  if(FloatingValueStreamScanner::getInstance().match(in, &buf) < 0) {
+    ungetbuf(in);
+    RESTOREISTREAM(in);
+    in.setstate(ios::failbit);
+    return in;
+  }
+  try {
+    x = _tcstod80(buf.cstr(),NULL);
+  } catch(...) {
+    RESTOREISTREAM(in);
+    in.setstate(ios::failbit);
+    throw;
+  }
+  RESTOREISTREAM(in);
+  return in;
 }
 
 istream &operator>>(istream &in, Double80 &x) {

@@ -1,7 +1,9 @@
 #include "pch.h"
 #include <StreamParameters.h>
 
-StreamParameters::StreamParameters(streamsize precision, streamsize width, int flags, TCHAR filler) {
+using namespace std;
+
+StreamParameters::StreamParameters(StreamSize precision, StreamSize width, FormatFlags flags, TCHAR filler) {
   m_precision = precision;
   m_width     = width;
   m_flags     = flags;
@@ -23,18 +25,18 @@ StreamParameters::StreamParameters(const wostream &stream) {
 }
 
 ostream &operator<<(ostream &out, const StreamParameters &p) {
-  out.precision(p.m_precision);
-  out.width(p.m_width);
-  out.flags(p.m_flags);
+  out.precision(p.m_precision );
+  out.width(p.m_width         );
+  out.flags(p.m_flags         );
   out.fill((char)p.getFiller());
   return out;
 }
 
 wostream &operator<<(wostream &out, const StreamParameters &p) {
   out.precision(p.m_precision);
-  out.width(p.m_width);
-  out.flags(p.m_flags);
-  out.fill(p.getFiller());
+  out.width(    p.m_width    );
+  out.flags(    p.m_flags    );
+  out.fill(     p.getFiller());
   return out;
 }
 
@@ -96,7 +98,7 @@ TCHAR *StreamParameters::addIntSpecifier(TCHAR *dst, bool isSigned) const {
   return dst;
 }
 
-int StreamParameters::getRadix(int flags) { // static
+int StreamParameters::getRadix(FormatFlags flags) { // static
   switch(flags & ios::basefield) {
   case ios::dec:return 10;
   case ios::oct:return 8;

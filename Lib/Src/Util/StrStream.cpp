@@ -2,6 +2,8 @@
 #include <String.h>
 #include <StrStream.h>
 
+using namespace std;
+
 TCHAR StrStream::unputc() {
   TCHAR ch = 0;
   const size_t l = length();
@@ -13,39 +15,43 @@ TCHAR StrStream::unputc() {
 }
 
 #define addDecimalPoint(s) { s += _T("."); }
-#define addExponentChar(s) { s += ((flags & std::ios::uppercase) ? _T("E") : _T("e")); }
+#define addExponentChar(s) { s += ((flags & ios::uppercase) ? _T("E") : _T("e")); }
 
-void StrStream::formatZero(String &result, streamsize precision, long flags, streamsize maxPrecision) { // static
-  if((flags & (std::ios::scientific|std::ios::fixed)) == std::ios::scientific) {
+void StrStream::formatZero(String &result, StreamSize precision, FormatFlags flags, StreamSize maxPrecision) { // static
+  if((flags & (ios::scientific|ios::fixed)) == ios::scientific) {
     result += _T("0");
-    if((flags & std::ios::showpoint) || (precision > 0)) {
+    if((flags & ios::showpoint) || (precision > 0)) {
       addDecimalPoint(result);
       if(precision > 0) {
-        result += spaceString((maxPrecision<=0) ? precision : min(precision,maxPrecision),_T('0'));
+        result += spaceString((size_t)((maxPrecision<=0) ? precision : min(precision,maxPrecision)),_T('0'));
       }
     }
     addExponentChar(result);
     result += _T("+00");
-  } else if((flags & (std::ios::scientific|std::ios::fixed)) == std::ios::fixed) {
+  } else if((flags & (ios::scientific|ios::fixed)) == ios::fixed) {
     result += _T("0");
-    if((flags & std::ios::showpoint) || (precision > 0)) {
+    if((flags & ios::showpoint) || (precision > 0)) {
       addDecimalPoint(result);
       if(precision > 0) {
-        result += spaceString(precision,_T('0'));
+        result += spaceString((size_t)precision,_T('0'));
       }
     }
   } else { // neither scientific nor fixed format is specified
     result += _T("0");
-    if(flags & std::ios::showpoint) {
+    if(flags & ios::showpoint) {
       addDecimalPoint(result);
       precision = max(precision,1);
-      result += spaceString(precision,_T('0'));
+      result += spaceString((size_t)precision,_T('0'));
     }
   }
 }
 
-void StrStream::formatnan(String &result) { // static
+void StrStream::formatqnan(String &result) { // static
   result += _T("-nan(ind)");
+}
+
+void StrStream::formatsnan(String &result) { // static
+  result += _T("nan");
 }
 
 void StrStream::formatpinf(String &result) { // static

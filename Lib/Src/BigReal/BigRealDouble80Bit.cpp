@@ -61,9 +61,9 @@ Double80 getDouble80(const BigReal &x) {
 
   if(!isnormal(x)) {
     if(x.isZero()) {
-      return Double80::zero;
+      return Double80::_0;
     } else if(isnan(x)) {
-      return DBL80_QNAN;
+      return DBL80_NAN;
     } else if(isPInfinity(x)) {
       return DBL80_PINF;
     } else {
@@ -105,7 +105,7 @@ Double80 BigReal::getDouble80NoLimitCheck() const {
   }
   const Digit *p = xi.m_first;
   if(p == NULL) {
-    return Double80::zero;
+    return Double80::_0;
   }
   Double80 result     = (INT64)p->n;
   int      digitCount = LOG10_BIGREALBASE;

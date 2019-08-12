@@ -24,11 +24,16 @@ typedef enum {
 
 #define FPU_ALL_EXCEPTIONS              0x3f
 
-#pragma pack(push,1)
+#ifdef _DEBUG
+#pragma runtime_checks( "", off )
+#endif _DEBUG
 
-typedef struct {
+#pragma pack(push,1)
+class FPUControlWord {
+  friend class FPU;
+private:
   union {
-    WORD m_data;
+    WORD m_cw;
     struct {
       UINT m_im     : 1;   // Invalid operation Mask
       UINT m_dm     : 1;   // Denormalized operand Mask
@@ -43,8 +48,38 @@ typedef struct {
       UINT m_ic     : 1;   // Infinity Control
     };
   };
+  inline FPUControlWord(USHORT cw) : m_cw(cw) {
+  }
+public:
+  inline FPUControlWord() {
+  }
+  inline FPUControlWord &setPrecisionMode(FPUPrecisionMode p) {
+    m_pc = (UINT)p;
+    return *this;
+  }
+  inline FPUPrecisionMode getPrecisionMode() const {
+    return (FPUPrecisionMode)m_pc;
+  }
+  inline FPUControlWord   &setRoundMode(FPURoundMode mode) {
+    m_rc = mode;
+    return *this;
+  }
+  inline FPURoundMode     getRoundMode() const {
+    return (FPURoundMode)m_rc;
+  }
+  inline FPUControlWord   &adjustExceptionMask(USHORT enable, USHORT disable) {
+    m_cw &= ~(enable & FPU_ALL_EXCEPTIONS); // 0-bit ENABLES the interrupt
+    m_cw |= (disable & FPU_ALL_EXCEPTIONS); // 1-bit DISABLES it
+    return *this;
+  }
+  inline USHORT            getExceptionMask() const {
+    return m_cw & FPU_ALL_EXCEPTIONS;
+  }
+  inline operator USHORT() const {
+    return m_cw;
+  }
   String toString() const;
-} FPUControlWord;
+};
 
 typedef struct {
   union {
@@ -129,7 +164,7 @@ extern "C" {
 void FPUinit();
 WORD FPUgetStatusWord();
 WORD FPUgetControlWord();
-void FPUsetControlWord(WORD cw);
+void FPUsetControlWord(const WORD *cw);
 void FPUgetEnvironment(void *env);
 void FPUgetState(      void *state);
 void FPUclearExceptions();
@@ -160,9 +195,10 @@ private:
     }
     return cw;
   }
-  static inline void      FPUsetControlWord(WORD cw) {
+  static inline void      FPUsetControlWord(const WORD *cw) {
     __asm {
-      fldcw cw
+      mov eax, DWORD PTR cw
+      fldcw WORD PTR[eax]
     }
   }
   static inline void      FPUgetEnvironment(void *env) {
@@ -201,12 +237,10 @@ public:
     return sw;
   }
   static inline FPUControlWord   getControlWord() {
-    FPUControlWord cw;
-    cw.m_data = FPUgetControlWord();
-    return cw;
+    return FPUControlWord(FPUgetControlWord());
   }
-  static inline void             setControlWord(FPUControlWord cw) {
-    FPUsetControlWord(cw.m_data);
+  static inline void             setControlWord(const FPUControlWord &cw) {
+    FPUsetControlWord(&cw.m_cw);
   }
   static inline FPUEnvironment   getEnvironment() {
     FPUEnvironment env;
@@ -230,35 +264,37 @@ public:
     FPUclearExceptionsNoWait();
   }
   static inline void             clearStatusWord() {
-    const FPUControlWord cw = getControlWord();
+    const FPUControlWord cw(FPUgetControlWord());
     init();
-    setControlWord(cw);
+    FPUsetControlWord(&cw.m_cw);
   }
 
   // returns current FPU controlword
   static inline FPUControlWord   setPrecisionMode(FPUPrecisionMode p) {
-    FPUControlWord cw = getControlWord(), old = cw;
-    cw.m_pc = (UINT)p;
-    setControlWord(cw);
+    FPUControlWord cw(FPUgetControlWord()), old = cw;
+    FPUsetControlWord(&cw.setPrecisionMode(p).m_cw);
     return old;
   }
   static inline FPUPrecisionMode getPrecisionMode() {
-    return (FPUPrecisionMode)getControlWord().m_pc;
+    return getControlWord().getPrecisionMode();
   }
   // returns current FPU controlword
   static inline FPUControlWord   setRoundMode(FPURoundMode mode) {
-    FPUControlWord cw = getControlWord(), old = cw;
-    cw.m_rc = mode;
-    setControlWord(cw);
+    FPUControlWord cw(FPUgetControlWord()), old = cw;
+    FPUsetControlWord(&cw.setRoundMode(mode).m_cw);
     return old;
   }
   static inline FPURoundMode     getRoundMode() {
-    return (FPURoundMode)getControlWord().m_rc;
+    return getControlWord().getRoundMode();
   }
   // returns current FPU controlword
-  static FPUControlWord          adjustExceptionMask(USHORT enable, USHORT disable);
-  static inline void             restoreControlWord(FPUControlWord cw) {
-    setControlWord(cw);
+  static FPUControlWord          adjustExceptionMask(USHORT enable, USHORT disable) {
+    FPUControlWord cw(getControlWord()), old = cw;
+    FPUsetControlWord(&cw.adjustExceptionMask(enable, disable).m_cw);
+    return old;
+  }
+  static inline void             restoreControlWord(const FPUControlWord &cw) {
+    FPUsetControlWord(&cw.m_cw);
   }
   static inline int              getStackHeight() {
     const int TOP = getStatusWord().m_top;
@@ -275,6 +311,10 @@ public:
   }
   static _se_translator_function setExceptionTranslator(_se_translator_function f);
 };
+
+#ifdef _DEBUG
+#pragma runtime_checks( "", restore )
+#endif _DEBUG
 
 class FPUException {
 public:

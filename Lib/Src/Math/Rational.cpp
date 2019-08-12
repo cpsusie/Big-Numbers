@@ -14,6 +14,22 @@ const Rational RAT_NINF(-1,0       );    // -infinity;         (-1/0)
 
 #define SAFEPROD(a,b) Rational::safeProd(a,b,__LINE__)
 
+int _fpclass(const Rational &r) {
+  switch (fpclassify(r)) {
+  case FP_NORMAL:
+    return r.isNegative() ? _FPCLASS_NN : _FPCLASS_PN;
+  case FP_ZERO:
+    return r.isNegative() ? _FPCLASS_NZ : _FPCLASS_PZ;
+  case FP_INFINITE:
+    return r.isNegative() ? _FPCLASS_NINF : _FPCLASS_PINF;
+  case FP_NAN:
+    return _FPCLASS_QNAN;
+  default:
+    return _FPCLASS_SNAN;
+  }
+}
+
+
 #define CHECKISNORMAL(f)                    \
 if(!isnormal(f)) {                          \
   if(isfinite(f))         *this = zero;     \
@@ -148,7 +164,7 @@ Rational::Rational(const Double80 &d80, UINT64 maxND) {
 
   Double80 frac = da - p1;
   while(!frac.isZero()) {
-    frac = Double80::one / frac;
+    frac = Double80::_1 / frac;
     const Double80 next = floor(frac);
     p2 = getInt64(next * p1 + p0);
     q2 = getInt64(next * q1 + q0);
@@ -165,7 +181,7 @@ Rational::Rational(const Double80 &d80, UINT64 maxND) {
     frac -= next;
   }
 
-  if((da > maxND) || (da < Double80::one / maxND)) { // hard upper and lower bounds for ratio
+  if((da > maxND) || (da < Double80::_1 / maxND)) { // hard upper and lower bounds for ratio
     throwInvalidArgumentException(method, invalidDoubleMsg, toString(d80).cstr(), maxND);
   }
 

@@ -869,6 +869,45 @@
     <ClCompile Include="GetTestFileName.cpp">
       <Filter>Source Files\Debugging and Exceptions</Filter>
     </ClCompile>
+    <ClCompile Include="FloatRegex.cpp">
+      <Filter>Source Files\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="UndefFloatRegex.cpp">
+      <Filter>Source Files\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="IntegerRegex.cpp">
+      <Filter>Source Files\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="SpaceString.cpp">
+      <Filter>Source Files\String</Filter>
+    </ClCompile>
+    <ClCompile Include="StringFind.cpp">
+      <Filter>Source Files\String</Filter>
+    </ClCompile>
+    <ClCompile Include="StringReplace.cpp">
+      <Filter>Source Files\String</Filter>
+    </ClCompile>
+    <ClCompile Include="StringTrim.cpp">
+      <Filter>Source Files\String</Filter>
+    </ClCompile>
+    <ClCompile Include="StringRev.cpp">
+      <Filter>Source Files\String</Filter>
+    </ClCompile>
+    <ClCompile Include="StringExpConstructors.cpp">
+      <Filter>Source Files\String</Filter>
+    </ClCompile>
+    <ClCompile Include="StringFormat.cpp">
+      <Filter>Source Files\String</Filter>
+    </ClCompile>
+    <ClCompile Include="StringSubStr.cpp">
+      <Filter>Source Files\String</Filter>
+    </ClCompile>
+    <ClCompile Include="StringInsert.cpp">
+      <Filter>Source Files\String</Filter>
+    </ClCompile>
+    <ClCompile Include="StringRemove.cpp">
+      <Filter>Source Files\String</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -1252,6 +1291,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\BitMatrix.h">
       <Filter>Header Files\Collection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\PrimitiveToString.h">
+      <Filter>Header Files\String</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

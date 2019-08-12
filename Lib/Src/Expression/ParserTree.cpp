@@ -3,6 +3,8 @@
 
 namespace Expr {
 
+using namespace std;
+
 #ifdef CHECK_CONSISTENCY
 void ParserTree::checkIsConsistent() const {
   try {

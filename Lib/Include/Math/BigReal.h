@@ -416,7 +416,7 @@ private:
   friend class BigRealTestClass;
   friend class BigInt;
   friend int fpclassify(const BigReal &x);
-
+  friend int _fpclass(  const BigReal &x);
   // Construction helperfunctions
   inline void copyFields(const BigReal &src) {
     m_expo     = src.m_expo;
@@ -635,8 +635,8 @@ private:
     return getDouble(getDouble80NoLimitCheck());
   }
   Double80 getDouble80NoLimitCheck() const;
-  void     formatFixed(        String &result, streamsize precision, long flags, bool removeTrailingZeroes) const;
-  void     formatScientific(   String &result, streamsize precision, long flags, BRExpoType expo10, bool removeTrailingZeroes) const;
+  void     formatFixed(        String &result, StreamSize precision, FormatFlags flags, bool removeTrailingZeroes) const;
+  void     formatScientific(   String &result, StreamSize precision, FormatFlags flags, BRExpoType expo10, bool removeTrailingZeroes) const;
   void     formatWithSpaceChar(String &result, TCHAR spaceChar) const;
 
 protected:
@@ -1276,7 +1276,7 @@ class BigRealStream : public StrStream { // Don't derive from standardclass strs
 private:
   TCHAR m_spaceChar;
 public:
-  BigRealStream(streamsize precision = 6, streamsize width = 0, int flags = 0) : StrStream(precision, width, flags) {
+  BigRealStream(StreamSize precision = 6, StreamSize width = 0, FormatFlags flags = 0) : StrStream(precision, width, flags) {
     m_spaceChar = 0;
   }
   BigRealStream(const StreamParameters &param) : StrStream(param) {
@@ -1463,7 +1463,7 @@ tostream     &operator<<(tostream     &out, const FullFormatBigReal &x);
 BigRealStream &operator<<(BigRealStream &out, const FullFormatBigReal &n);
 BigRealStream &operator<<(BigRealStream &out, const BigInt &n);
 
-String      toString(const BigReal &n, streamsize precision=20, streamsize width=0, int flags=0);
+String      toString(const BigReal &n, StreamSize precision=20, StreamSize width=0, FormatFlags flags = 0);
 BigReal     inputBigReal( DigitPool &digitPool, _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
 BigInt      inputBigInt(  DigitPool &digitPool, _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
 BigRational inputRational(DigitPool &digitPool, _In_z_ _Printf_format_string_ TCHAR const * const format, ...);

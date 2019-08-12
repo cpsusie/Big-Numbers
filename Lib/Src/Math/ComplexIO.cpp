@@ -1,6 +1,8 @@
 #include "pch.h"
 #include <Math/Complex.h>
 
+using namespace std;
+
 StrStream &operator<<(StrStream &stream, const Complex &c) {
   if(c.im == 0) {
     stream << c.re;
@@ -14,69 +16,54 @@ StrStream &operator<<(StrStream &stream, const Complex &c) {
   return stream;
 }
 
-#define peekChar(in,ch) { ch = in.peek(); if(ch == EOF) in >> ch; }
+#include "IStreamUtil.h"
 
-template <class IStreamType, class CharType> void eatWhite(IStreamType &in) {
-  CharType ch;
-  for(;;in >> ch) {
-    peekChar(in, ch);
-    if(!_istspace(ch)) {
-      return;
-    }
-  }
-}
-
-#define EATWHITE(stream) eatWhite<IStreamType, CharType>(stream);
-
+/* inputformat for Complex;
+    re
+    (re)
+    (re,im)
+*/
 template <class IStreamType, class CharType> IStreamType &operator>>(IStreamType &in, Complex &c) {
-  /* inputformat for Complex;
-      re
-      (re)
-      (re,im)
-  */
-
-  if(in.ipfx(0)) {
-    Real re = 0, im = 0;
-    CharType ch = 0;
-    EATWHITE(in);
-    peekChar(in, ch);
-    if(ch == '(') {
-      in >> ch;
-      EATWHITE(in);
-      in >> re;
-      EATWHITE(in);
-      peekChar(in, ch);
-      if(ch == ',')  {
-        in >> ch;
-        EATWHITE(in);
-        in >> im;
-        eatWhite<IStreamType, CharType>(in);
-      }
-      peekChar(in, ch);
-      if(ch == ')') {
-        in >> ch;
-      } else {
-        in.clear(std::ios::badbit);
-      }
+  SETUPISTREAM(in)
+  Real re, im;
+  if(ch != '(') {
+    in >> re;
+    im = 0;
+  } else {
+    nextchar(in);
+    skipSpace(in);
+    in >> re;
+    if(!in) goto Fail;
+    skipLeadingspace(in);
+    if(ch == ',')  {
+      nextchar(in);
+      skipSpace(in);
+      in >> im;
+      if(!in) goto Fail;
+      skipLeadingspace(in);
+    }
+    if(ch == ')') {
+      nextchar(in);
     } else {
-      in >> re;
+      goto Fail;
     }
-    if(in) {
-      c = Complex(re,im);
-    }
-    in.isfx();
   }
+  if(in) {
+    c = Complex(re,im);
+    RESTOREISTREAM(in);
+    return in;
+  }
+Fail:
+  ungetbuf(in);
+  RESTOREISTREAM(in);
+  in.setstate(ios::failbit);
   return in;
 }
 
-
 template <class OStreamType> OStreamType &operator<<(OStreamType &out, const Complex &c) {
-  if(out.opfx()) {
-    StrStream stream(out);
-    stream << c;
-    out << stream.cstr();
-    out.osfx();
-  }
+  StrStream stream(out);
+  stream << c;
+  out << stream.cstr();
   return out;
 }
 
@@ -88,10 +75,10 @@ ostream &operator<<(ostream &out, const Complex &c) {
   return ::operator<< <ostream>(out, c);
 }
 
-std::wistream &operator>>(std::wistream &in, Complex &c) {
-  return ::operator>> <std::wistream, wchar_t>(in, c);
+wistream &operator>>(wistream &in, Complex &c) {
+  return ::operator>> <wistream, wchar_t>(in, c);
 }
 
-std::wostream &operator<<(std::wostream &out, const Complex &c) {
-  return ::operator<< <std::wostream>(out, c);
+wostream &operator<<(wostream &out, const Complex &c) {
+  return ::operator<< <wostream>(out, c);
 }

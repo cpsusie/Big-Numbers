@@ -7,6 +7,8 @@
 
 namespace Expr {
 
+using namespace std;
+
 String numberFormatToString(NumberFormat nf) {
   switch(nf) {
   case SCIENTIFIC_NOTATION : return _T("scientific" );

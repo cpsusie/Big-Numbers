@@ -1,10 +1,6 @@
 #include "pch.h"
 #include "NFA.h"
 
-NFA::NFA(NFAStatePool &statePool, NFAState *start) : m_statePool(statePool) {
-  create(start);
-}
-
 void NFA::create(NFAState *start) {
   clear();
   m_idCounter = 0;

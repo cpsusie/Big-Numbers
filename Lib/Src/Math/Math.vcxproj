@@ -1142,6 +1142,7 @@
     <ClCompile Include="FindExtremum.cpp" />
     <ClCompile Include="FindZeroes.cpp" />
     <ClCompile Include="FPU.cpp" />
+    <ClCompile Include="FPUString.cpp" />
     <ClCompile Include="FritschCarlsonSpline.cpp" />
     <ClCompile Include="gammaR.cpp" />
     <ClCompile Include="GammaStirling.cpp" />
@@ -1249,6 +1250,7 @@
     <ClInclude Include="..\..\Include\Math\Statistic.h" />
     <ClInclude Include="..\..\Include\Math\Transformation.h" />
     <ClInclude Include="..\..\Include\Math\Triangle\Triangle.h" />
+    <ClInclude Include="IStreamUtil.h" />
     <ClInclude Include="MemoryPool.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="targetver.h" />

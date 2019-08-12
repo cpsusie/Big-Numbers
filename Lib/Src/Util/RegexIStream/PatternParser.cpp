@@ -3,15 +3,8 @@
 #include "PatternParser.h"
 
 static const TCHAR *unexpectedEndMsg    = _T("Unexpected end of regular expression");
-static const TCHAR *minMaxRepeatMsg     = _T("Max repeatcount must be >= min repeatcount");
-static const TCHAR *maxRepeatIsZeroMsg  = _T("Max repeatcount is zero");
-static const TCHAR *regnoNotDefined     = _T("Register %d not defined at the specified point of the pattern. %s");
-static const TCHAR *expectedNumberMsg   = _T("Expected number");
-static const TCHAR *expectedRCurlMsg    = _T("Expected '}'");
 static const TCHAR *unmatchedLPMsg      = _T("Unmatched \\(");
 static const TCHAR *unmatchedRPMsg      = _T("Unmatched \\)");
-static const TCHAR *tooManyCountersMsg  = _T("Too many counters in use. Max=%d");
-static const TCHAR *illegalJumpMsg      = _T("Regex::first(%d,%d):Jump to a previous address (=%d) not legal");
 static const TCHAR *missingRBMsg        = _T("Missing ] in character class");
 
 PatternParser::PatternParser(const StringArray &pattern, NFA &nfa, bool ignoreCase)
@@ -139,11 +132,6 @@ SubNFA PatternParser::factor() {
   //                     | term ?
   //                     | term +
   //                     | term *
-  //                     | term { range }
-  //
-  // range              -> number , number
-  //                     | number ,
-
   SubNFA s = term();
   if(isClosureToken(m_token)) {
     switch(m_token) {

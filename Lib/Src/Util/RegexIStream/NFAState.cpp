@@ -62,7 +62,6 @@ void NFAState::cleanup() {
   if(m_charClass) {
     assert(m_edge == EDGE_CHCLASS);
     SAFEDELETE(m_charClass);
-    m_charClass = NULL;
   } else {
     assert(m_edge != EDGE_CHCLASS);
   }
@@ -78,7 +77,6 @@ void NFAState::setEdge(int edge) {
   if(edge != m_edge) {
     if(m_edge == EDGE_CHCLASS) {
       SAFEDELETE(m_charClass);
-      m_charClass = NULL;
     }
   }
   m_edge = edge;

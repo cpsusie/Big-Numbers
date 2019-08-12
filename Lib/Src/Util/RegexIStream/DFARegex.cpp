@@ -17,7 +17,7 @@ void DFARegex::compilePattern(const StringArray &pattern) {
     DFA           dfa(nfa);
     dfa.getDFATables(m_tables);
     if((!m_tables.isEmpty()) && m_tables.isAcceptState(0)) {
-      throwInvalidArgumentException(__TFUNCTION__, _T("Pattern %s will accept empty string"), pattern);
+      throwInvalidArgumentException(__TFUNCTION__, _T("Pattern %s will accept empty string"), pattern.toString().cstr());
     }
     nfa.clear();
     statePool.releaseAll();
@@ -28,21 +28,19 @@ void DFARegex::compilePattern(const StringArray &pattern) {
   }
 }
 
-static const TCHAR *noRegExpressionMsg  = _T("No regular expression specified");
-
 // --------------------------------------- match --------------------------------------
 
 using namespace std;
 
 template<class IStreamType, class CharType> class DFARegexT {
 private:
-  _TUCHAR nextChar(IStreamType &in) const {
-    if(in.eof()) {
-      return 0;
-    }
+  static CharType nextChar(IStreamType &in) {
     CharType ch;
-    in >> ch;
-    return (_TUCHAR)ch;
+    if(in.get(ch).eof()) {
+      in.clear(ios::eofbit);
+      ch = 0;
+    }
+    return ch;
   }
 
 public:
@@ -50,51 +48,29 @@ public:
     const int oldFlags = in.flags();
     in.unsetf(ios::skipws);
 
-    String  stringBuffer;
-    int     currentState = 0, lastAcceptState = -1; // Most recently seen accept state
-    _TUCHAR ch, lookahead;                          // Lookahead character
-    while(ch = nextChar(in)) {
+    String  tmpStr, &stringBuffer = matchedString ? *matchedString : tmpStr;
+    size_t  lastAcceptCount = stringBuffer.length();
+    int     currentState = 0, lastAcceptState = -1;
+    for(CharType ch = nextChar(in); ch; ch = nextChar(in)) {
       stringBuffer += ch;
       int nextState;
-      for(;;) {
-        if(lookahead = TRANSLATE(ch, ignoreCase)) {
-          nextState = tables.nextState(currentState, lookahead);
-          break;
-        } else if(lastAcceptState >= 0) {
-          nextState = -1;
-          break;
-        } else {
-          goto NoMatch;
-        }
-      }
-      if(nextState != -1) {
+      const CharType lookahead = TRANSLATE(ch, ignoreCase);
+      if(lookahead && ((nextState = tables.nextState(currentState, lookahead))!=-1)) {
         if(tables.isAcceptState(nextState)) { // Is this an accept state
           lastAcceptState = nextState;
+          lastAcceptCount = stringBuffer.length();
         }
         currentState = nextState;
-      } else if(lastAcceptState < 0) {
-        goto NoMatch;
       } else {
         break; // found it
       }
     }
-    if(ch) {
-      in.putback((CharType)stringBuffer.last());
-      stringBuffer.removeLast();
-    }
-    if(matchedString != NULL) {
-      *matchedString = stringBuffer;
-    }
-    in.flags(oldFlags);
-    return tables.getAcceptValue(lastAcceptState);
-
-  NoMatch:
-    while(!stringBuffer.isEmpty()) {
-      in.putback((CharType)stringBuffer.last());
+    while(stringBuffer.length() > lastAcceptCount) {
+      in.unget();
       stringBuffer.removeLast();
     }
     in.flags(oldFlags);
-    return -1;
+    return (lastAcceptState<0) ? -1 : tables.getAcceptValue(lastAcceptState);
   }
 };
 
@@ -109,8 +85,5 @@ int DFARegex::match(wistream &in, String *matchedString) const {
 }
 
 String DFARegex::toString() const {
-  return format(_T("IgnoreCase:%s\n:%s")
-    , boolToStr(m_ignoreCase)
-    , m_tables.toString().cstr()
-  );
+  return format(_T("IgnoreCase:%s\n:%s"), boolToStr(m_ignoreCase), m_tables.toString().cstr());
 }

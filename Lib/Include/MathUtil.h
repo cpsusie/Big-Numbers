@@ -194,25 +194,56 @@ template<class T> T dmax(T x1, T x2) {
   return (x1 > x2) ? x1 : x2;
 }
 
-inline UINT   getSignificand(float  x) { return       (((*((UINT  *)(&(x))))  & 0x7fffff           ) | 0x800000);             }
-inline int    getExpo2(      float  x) { return (int)((((*((UINT  *)(&(x)))) >> 23) & 0xff ) - 0x7f);                         }
-inline BYTE   getSign(       float  x) { return          (((BYTE  *)(&x))[3]) & 0x80;                                         }
-inline UINT64 getSignificand(double x) { return       (((*((UINT64*)(&(x))))  & 0xfffffffffffffui64) | 0x10000000000000ui64); }
-inline int    getExpo2(      double x) { return (int)((((*((UINT64*)(&(x)))) >> 52) & 0x7ff) - 0x3ff);                        }
-inline BYTE   getSign(       double x) { return          (((BYTE  *)(&x))[7]) & 0x80;                                         }
+// 23 fraction bits exlcusive leading 1-bit
+inline UINT   getSignificandField(float  x) {
+  return ((*(UINT  *)&x) & 0x7fffff);
+}
+// 24 bit significand inlcusive leading 1-bit
+inline UINT   getSignificand(float  x) {
+  return getSignificandField(x) | (1 << 23);
+}
 
-#define POSITIVE_INFINITY  0
-#define NEGATIVE_INFINITY  1
-#define POSITIVE_NAN       2
-#define NEGATIVE_SIGNALNAN 3
-#define NEGATIVE_QUUET_NAN 4
+// 52 fraction bits exclusive leading 1-bit
+inline UINT64 getSignificandField(double x) {
+  return ((*(UINT64*)&x) & 0xfffffffffffffui64);
+}
+// 53 bit significand inlcusive leading 1-bit
+inline UINT64 getSignificand(double  x) {
+  return getSignificandField(x) | (1ui64 << 52);
+}
+
+// 8 bit exponent field
+inline UINT   getExponent(   float  x) {
+  return ((*(UINT  *)&x) >> 23) & 0xff;
+}
+
+// 11 bit exponent field
+inline UINT   getExponent(   double x) {
+  return ((*(UINT64*)&x) >> 52) & 0x7ff;
+}
+
+// real integer power of 2
+inline int    getExpo2(      float  x) {
+  return (int)getExponent(x) - 0x7f;
+}
+
+// real integer power of 2
+inline int    getExpo2(      double x) {
+  return (int)getExponent(x) - 0x3ff;
+}
+
+inline BYTE   getSign(       float  x) {
+  return (((BYTE  *)&x)[3]) & 0x80;
+}
+
+inline BYTE   getSign(       double x) {
+  return (((BYTE  *)&x)[7]) & 0x80;
+}
 
 class UndefFloatingValueStreamScanner : public RegexIStream {
 private:
-  static StringArray getRegExprLines() {
-    return StringArray(Tokenizer(_T("inf\n-inf\nnan\n-nan\n-nan(ind)?"), _T("\n")));
-  }
-  UndefFloatingValueStreamScanner() : RegexIStream(getRegExprLines(), true) {
+  static StringArray getRegexLines();
+  UndefFloatingValueStreamScanner() : RegexIStream(getRegexLines(), true) {
   }
 public:
   static const UndefFloatingValueStreamScanner &getInstance() {
@@ -221,69 +252,108 @@ public:
   }
 };
 
-template<class IStreamType, class CharType> class DoubleIstreamT {
+class FloatingValueStreamScanner : public RegexIStream {
+private:
+  static StringArray getRegexLines();
+  FloatingValueStreamScanner() : RegexIStream(getRegexLines(), true) {
+}
+public:
+  static const FloatingValueStreamScanner &getInstance() {
+    static FloatingValueStreamScanner s_instance;
+    return s_instance;
+  }
+};
+
+class IntegerValueStreamScanner : public RegexIStream {
+private:
+  static StringArray getRegexLines();
+  IntegerValueStreamScanner() : RegexIStream(getRegexLines(), true) {
+  }
+public:
+  static const IntegerValueStreamScanner &getInstance() {
+    static IntegerValueStreamScanner s_instance;
+    return s_instance;
+  }
+};
+
+
+typedef enum {
+   _UNDEFREG_PINF
+  ,_UNDEFREG_NINF
+  ,_UNDEFREG_SNAN
+  ,_UNDEFREG_QNAN
+} _UndefFloatValue;
+
+template<class IStreamType, class CharType, class FloatType> class FloatIstreamT {
 private:
   IStreamType &m_in;
-  void parseOnFail(double &x) const {
-    m_in.clear();
-    const int index = UndefFloatingValueStreamScanner::getInstance().match(m_in);
-    if(index < 0) {
-      m_in.setstate(ios_base::failbit);
-    } else {
-      m_in.clear();
-      switch(index) {
-      case POSITIVE_INFINITY  : x =  numeric_limits<double>::infinity();      break;
-      case NEGATIVE_INFINITY  : x = -numeric_limits<double>::infinity();      break;
-      case POSITIVE_NAN       : x =  numeric_limits<double>::quiet_NaN();     break;
-      case NEGATIVE_SIGNALNAN : x = -numeric_limits<double>::signaling_NaN(); break;
-      case NEGATIVE_QUUET_NAN : x = -numeric_limits<double>::quiet_NaN();     break;
+  void parseOnFail(FloatType &x, bool neg) const {
+    const _UndefFloatValue index = (_UndefFloatValue)UndefFloatingValueStreamScanner::getInstance().match(m_in);
+    switch(index) {
+    case _UNDEFREG_PINF    :
+      if(!neg) {
+        x = numeric_limits<FloatType>::infinity();
+        break;
       }
+      // NB continue case
+    case _UNDEFREG_NINF    :
+      x = -numeric_limits<FloatType>::infinity();
+      break;
+    case _UNDEFREG_SNAN    :
+      x =  numeric_limits<FloatType>::signaling_NaN();
+      break;
+    case _UNDEFREG_QNAN    :
+      x =  numeric_limits<FloatType>::quiet_NaN();
+      break;
+    default                :
+      m_in.setstate(ios_base::failbit);
+      break;
     }
   }
 
 public:
-  DoubleIstreamT(IStreamType &in) : m_in(in) {
+  inline FloatIstreamT(IStreamType &in) : m_in(in) {
   }
-  DoubleIstreamT &operator>>(double &x) {
-    CharType c = 0;
-    if(!m_in.good()) {
-      return *this;
-    }
-    while(iswspace(c = m_in.peek())) {
-      m_in.get();
-    }
-    m_in >> x;
-    if(m_in.fail()) {
-      m_in.clear();
-      if(c == '-') m_in.putback(c);
-      parseOnFail(x);
+  FloatIstreamT &operator>>(FloatType &x) {
+    if(m_in.good()) {
+      CharType c = 0;
+      while(iswspace(c = m_in.peek())) {
+        m_in.get();
+      }
+      m_in >> x;
+      if(m_in.fail()) {
+        m_in.clear();
+        parseOnFail(x, c=='-');
+      }
     }
     return *this;
   }
 };
 
 
-template<class IStreamType, class CharType> class DoubleManipT {
+template<class IStreamType, class CharType, class FloatType> class FloatManipT {
 public:
   mutable IStreamType *m_in;
-  const DoubleManipT &operator>>(double &x) const {
-    DoubleIstreamT<IStreamType, CharType>(*m_in) >> x;
+  inline const FloatManipT &operator>>(FloatType &x) const {
+    FloatIstreamT<IStreamType, CharType, FloatType>(*m_in) >> x;
     return *this;
   }
-  inline IStreamType &operator>>(const DoubleManipT &) const {
+  inline IStreamType &operator>>(const FloatManipT &) const {
     return *m_in;
   }
 };
 
-typedef DoubleManipT<std::istream, char    > charDoubleManip;
-typedef DoubleManipT<std::wistream, wchar_t> wcharDoubleManip;
+template<class FloatType> FloatManipT<std::istream, char, FloatType> CharManip {
+};
+template<class FloatType> FloatManipT<std::wistream, wchar_t, FloatType> WcharManip {
+};
 
-inline charDoubleManip &operator>>(std::istream &in, charDoubleManip &dm) {
+template<class FloatType> FloatManipT<std::istream,char,FloatType> &operator>>(std::istream &in, FloatManipT<std::istream, char, FloatType> &dm) {
   dm.m_in = &in;
   return dm;
 }
 
-inline wcharDoubleManip &operator>>(std::wistream &in, wcharDoubleManip &dm) {
+template<class FloatType> FloatManipT<std::wistream, wchar_t, FloatType> &operator>>(std::wistream &in, FloatManipT<std::wistream, wchar_t, FloatType> &dm) {
   dm.m_in = &in;
   return dm;
 }

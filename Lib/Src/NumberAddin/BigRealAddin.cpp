@@ -1,6 +1,8 @@
 #include "pch.h"
 #include <StrStream.h>
 
+using namespace std;
+
 #define TENE0  1
 #define TENE1  10
 #define TENE2  100
@@ -162,7 +164,7 @@ template<class BigReal, class Digit> String BigRealAddIn<BigReal, Digit>::toStri
       StrStream::formatZero(result, 19, ios::fixed|ios::left, 21);
       break;
     case BIGREAL_NANLOW : 
-      StrStream::formatnan(result);
+      StrStream::formatqnan(result);
       break;
     case BIGREAL_INFLOW :
       if(n.m_negative) {

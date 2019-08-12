@@ -21,13 +21,13 @@ StrStream &operator<<(StrStream &stream, const _uint128 &n) {
   return stream;
 }
 
-String toString(const _int128  &n, int precision, int width, int flags) {
+String toString(const _int128  &n, StreamSize precision, StreamSize width, FormatFlags flags) {
   StrStream stream(precision,width,flags);
   stream << n;
   return stream;
 }
 
-String toString(const _uint128 &n, int precision, int width, int flags) {
+String toString(const _uint128 &n, StreamSize precision, StreamSize width, FormatFlags flags) {
   StrStream stream(precision,width,flags);
   stream << n;
   return stream;

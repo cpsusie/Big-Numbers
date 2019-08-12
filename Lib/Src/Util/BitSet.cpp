@@ -409,10 +409,6 @@ int bitSetCmp(const BitSet &i1, const BitSet &i2) {
   return 0;
 }
 
-tostream& operator<<(tostream &s, const BitSet &rhs) {
-  return s << rhs.toString();
-}
-
 String BitSet::toString(AbstractStringifier<size_t> *sf, const TCHAR *delim) const {
   String result = _T("(");
   Iterator<size_t> it = ((BitSet*)this)->getIterator();
@@ -435,23 +431,15 @@ static TCHAR *sprintbin(TCHAR *s, BitSet::Atom p) {
   return s; // strrev(tmp);
 }
 
-tostream &BitSet::dump(tostream &s) const {
+String BitSet::toBitString() const {
   const Atom *p = m_p;
-  TCHAR tmp[_BS_BITSINATOM+1];
-  for(size_t i = _BS_ATOMCOUNT(m_capacity); i--;) {
-    s << sprintbin(tmp, *(p++)) << _T(" ");
+  String result;
+  TCHAR tmp[_BS_BITSINATOM + 1], *delim = NULL;
+  for(const Atom *p = m_p, *endp = p + _BS_ATOMCOUNT(m_capacity); p < endp;) {
+    if(delim) result += delim; else delim = _T(":");
+    result += sprintbin(tmp, *(p++));
   }
-  s.flush();
-  return s;
-}
-
-void BitSet::dump(FILE *f) const {
-  const Atom *p = m_p;
-  TCHAR tmp[_BS_BITSINATOM+1];
-  for(size_t i = _BS_ATOMCOUNT(m_capacity); i--;) {
-    _ftprintf(f,_T("%s "),sprintbin(tmp, *(p++)));
-  }
-  _ftprintf(f,_T("\n"));
+  return result;
 }
 
 void BitSet::getRangeTable(CompactInt64Array &rangeTable, BYTE shift) const {
@@ -470,73 +458,3 @@ void BitSet::getRangeTable(CompactInt64Array &rangeTable, BYTE shift) const {
     }
   }
 }
-
-#ifdef __NEVER__
-#define BYTECOUNT(size) (((size)-1) / 8 + 1)
-#define BYTEINDEX(i)    ((i)/8)
-
-
-size_t BitSet::oldSize() const {
-  const BYTE *p = (const BYTE*)m_p;
-  size_t result = 0;
-  for(size_t i = BYTECOUNT(m_capacity); i--;) {
-    result += setBitsCount[*(p++)];
-  }
-  return result;
-}
-
-intptr_t BitSet::oldGetIndex(size_t i) const {
-  if(!contains(i)) {
-    return -1;
-  }
-  const BYTE *p = (const BYTE*)m_p;
-  const bool frac = (i%8) ? true : false;
-  long result = 0;
-  for(size_t j = BYTEINDEX(i)+(frac?1:0); j--;) {
-    result += setBitsCount[*(p++)];
-   }
-  if(frac) {
-    p--;
-    result -= setBitsCount[*p & ~((1 << (i%8))-1)];
-  }
-  return result;
-}
-
-size_t BitSet::oldGetCount(size_t from, size_t to) const {
-  if(to >= m_capacity) {
-    to = m_capacity;
-  }
-  if(from > to) {
-    return 0;
-  }
-  size_t fromIndex = BYTEINDEX(from);
-  size_t toIndex   = BYTEINDEX(to  );
-  const BYTE *p = (const BYTE*)m_p;
-
-  if(fromIndex < toIndex) {
-    size_t result;
-    if(from % 8) {
-      result = setBitsCount[p[fromIndex] & ~_BS_MASKATOM(from%8)];
-      fromIndex++;
-    } else {
-      result = 0;
-    }
-
-    if((to+1) % 8) {
-      result += setBitsCount[p[toIndex] & _BS_MASKATOM(to%8+1)];
-      toIndex--;
-    }
-
-    intptr_t j = toIndex - fromIndex + 1;
-    if(j > 0) {
-      for(p += fromIndex; j--;) {
-        result += setBitsCount[*(p++)];
-      }
-    }
-    return result;
-  } else {
-    return setBitsCount[p[fromIndex] & (~_BS_MASKATOM(from%8) & _BS_MASKATOM(to%8+1))];
-  }
-}
-
-#endif // __NVER__
