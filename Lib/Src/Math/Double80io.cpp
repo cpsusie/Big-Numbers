@@ -24,6 +24,9 @@ static TCHAR *findFirstDigit(TCHAR *str) {
 
 static void formatFixed(String &result, const Double80 &x, StreamSize precision, FormatFlags flags, int expo10, bool removeTrailingZeroes) {
   TCHAR tmp[50];
+#ifdef _DEBUG
+  memset(tmp, 0, sizeof(tmp));
+#endif
   d80tot(tmp, (precision >= MAXPRECISION) ? x : round(x,(int)precision));
   const TCHAR  *mantissa  = findFirstDigit(tmp);
   TCHAR        *comma     = _tcschr(tmp,_T('.'));
@@ -91,6 +94,9 @@ static void formatFixed(String &result, const Double80 &x, StreamSize precision,
 
 static void formatScientific(String &result, const Double80 &x, StreamSize precision, FormatFlags flags, bool removeTrailingZeroes) {
   TCHAR tmp[50];
+#ifdef _DEBUG
+  memset(tmp, 0, sizeof(tmp));
+#endif
   d80tot( tmp, x);
   TCHAR  *mantissa  = findFirstDigit(tmp);
   String  decimals;
