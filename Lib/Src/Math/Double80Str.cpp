@@ -157,7 +157,47 @@ static char *getDigitsStr(char *str, Double80 &x, int &e10) {
   }
 }
 
+// floor(MAX_UINT64 / 10)
 static const Double80 d80Maxui64q10(0x1999999999999999ui64); //  1.844.674.407.370.955.161
+
+#define MINEXPO10 -4910
+
+// Assume m > 0, and expo10 approx = expo10(m)
+// normalize m, so _UI64_MAX/10 < m <= _UI64_MAX and x = (negative?-1:1) * m * 10^(expo10-DBL80_DIG)
+static void normalizeValue(Double80 &m, int &expo10) {
+  if(expo10 > 0) {
+    const Double80 tmp = m / Double80::pow10(expo10);
+    if(tmp >= d80Maxui64q10) {
+      m = tmp;
+    } else {
+      expo10--;
+      m /= Double80::pow10(expo10);
+    }
+  } else if(expo10 < 0) {
+    if(expo10 >= MINEXPO10) { // take care of denormalized numbers
+      const Double80 tmp = m * Double80::pow10(-expo10);
+      if(tmp >= d80Maxui64q10) {
+        m = tmp;
+      } else {
+        expo10--;
+        m *= Double80::pow10(-expo10);
+      }
+    } else {              // use 2 steps to prevent overflow
+      m *= Double80::pow10(-MINEXPO10);
+      const Double80 tmp = m * Double80::pow10(MINEXPO10 - expo10);
+      if(tmp >= d80Maxui64q10) {
+        m = tmp;
+      } else {
+        expo10--;
+        m *= Double80::pow10(MINEXPO10 - expo10);
+      }
+    }
+  }
+  if(m < d80Maxui64q10) {
+    m *= 10;
+    expo10--;
+  }
+}
 
 template<class CharType> CharType *_d80tostr(CharType *dst, const Double80 &x) {
   if(!isfinite(x)) {
@@ -188,20 +228,7 @@ template<class CharType> CharType *_d80tostr(CharType *dst, const Double80 &x) {
   } else {
     const FPUControlWord cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_ROUND);
     expo10 = Double80::getExpo10(x) - DBL80_DIG + 1;
-    if(expo10 < 0) {
-      if(expo10 >= -4900) { // take care of extreme small numbers
-        m *= Double80::pow10(-expo10);
-      } else {              // use 2 steps to prevent overflow
-        m *= Double80::pow10(4900);
-        m *= Double80::pow10(-expo10 - 4900);
-      }
-    } else if(expo10 > 0) {
-      m /= Double80::pow10(expo10);
-    }
-    if(m < d80Maxui64q10) {
-      m *= 10;
-      expo10--;
-    }
+    normalizeValue(m, expo10);
     // Assertion: _UI64_MAX/10 < m <= _UI64_MAX and x = (negative?-1:1) * m * 10^(expo10-DBL80_DIG)
 #ifdef _DEBUG
     if((m <= d80Maxui64q10) || (m > _UI64_MAX)) {

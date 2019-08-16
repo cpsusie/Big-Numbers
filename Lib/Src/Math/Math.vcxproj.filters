@@ -238,6 +238,9 @@
     <ClCompile Include="FPUString.cpp">
       <Filter>Source Files\Misc</Filter>
     </ClCompile>
+    <ClCompile Include="Double80Pow10.cpp">
+      <Filter>Source Files\Number Types</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="NatvisFile.natvis" />

@@ -6,18 +6,6 @@
 #pragma warning(disable : 4073)
 #pragma init_seg(lib)
 
-// define this, to get a dump of all possible values returned by Double80::pow10
-// will be disabled when compile for Win32, release, as it is used in NumberAddin, where we dont want this to be done!!
-#define _DUMPPOW10
-
-#ifdef IS32BIT
-#ifndef _DEBUG
-#ifdef _DUMPPOW10
-#undef _DUMPPOW10
-#endif
-#endif
-#endif
-
 class InitDouble80 {
 public:
   inline InitDouble80() {
@@ -81,78 +69,8 @@ int fpclassify(const Double80 &v) {
   }
 }
 
-#define MINPOW10 -4932
-#define MAXPOW10 4932
-template<int lowSize> class RawPow10Cache {
-private:
-  Double80 m_pow10L[lowSize], m_pow10H[MAXPOW10 / lowSize + 1];
-public:
-  RawPow10Cache() {
-    Double80 p = 1;
-    const FPUControlWord oldcw = FPU::getControlWord();
-    FPUControlWord       newcw = oldcw;
-    newcw.adjustExceptionMask(0, -1)
-         .setRoundMode(FPU_ROUNDCONTROL_ROUND)
-         .setPrecisionMode(FPU_HIGH_PRECISION);
-    FPU::setControlWord(newcw);
-
-    for(int i = 0; i < ARRAYSIZE(m_pow10L); i++, p *= 10) {
-      m_pow10L[i] = p;
-    }
-    Double80 p1 = 1;
-    for(int i = 0; i < ARRAYSIZE(m_pow10H); i++, p1 *= p) {
-      m_pow10H[i] = p1;
-    }
-    FPU::clearExceptionsNoWait();
-    FPU::restoreControlWord(oldcw);
-  }
-
-  Double80 pow10(int p) const {
-    if(p < 0) {
-      return Double80::_1 / pow10(-p);
-    } else {
-      const int l = p % ARRAYSIZE(m_pow10L), h = p / ARRAYSIZE(m_pow10L);
-      if(h) {
-        if(h >= ARRAYSIZE(m_pow10H)) {
-          return DBL80_MAX;
-        }
-        return l ? (m_pow10H[h] * m_pow10L[l]) : m_pow10H[h];
-      } else { // h == 0
-        return m_pow10L[l];
-      }
-    }
-    throwInvalidArgumentException(__TFUNCTION__, _T("p=%d"), p);
-    return 0;
-  }
-};
-
-class Pow10Cache {
-private:
-  RawPow10Cache<16> m_c1;
-  RawPow10Cache<26> m_c2;
-
-public:
-  Double80 pow10(int p) const;
-
-#ifdef _DUMPPOW10
-  void dumpAll() const;
-#endif _DUMPPOW10
-};
-
 static const Double80     tenE18(  1e18    );
 static const Double80     tenE18M1(tenE18-1);
-
-Double80 Double80::pow10(int p) {
-  static const Pow10Cache p10Cache;
-#ifdef _DUMPPOW10
-  static bool s_isDumping = false;
-  if(!s_isDumping) {
-    s_isDumping = true; // to prevent infinite recursion
-    p10Cache.dumpAll();
-  }
-#endif _DUMPPOW10
-  return p10Cache.pow10(p);
-}
 
 #ifdef IS32BIT
 static const float ten(10.0f);
@@ -640,36 +558,3 @@ ULONG Double80::hashCode() const {
        ^ *(ULONG*)(m_value+4)
        ^ *(USHORT*)(m_value+8);
 }
-
-Double80 Pow10Cache::pow10(int p) const {
-  Double80 d1 = m_c1.pow10(p);
-  const Double80 d2 = m_c2.pow10(p);
-  const UINT64 sig1 = *((UINT64*)&d1);
-  const UINT64 sig2 = *((UINT64*)&d2);
-  if(sig1 == sig2) {
-    return d1;
-  }
-  (*(UINT64*)&d1) = (sig1 & 0xffffffff00000000) + (((sig1 & 0xffffffff) + (sig2 & 0xffffffff)) >> 1);
-  return d1;
-}
-
-#ifdef _DUMPPOW10
-#include <DebugLog.h>
-
-static String d80ToHexDumpFormat(const Double80 &v) {
-  const UINT64 sig   = getSignificand(v);
-  const UINT   expo  = getExponent(   v);
-  const UINT   expo2 = getExpo2(      v);
-  TCHAR tmpStr[100];
-  return format(_T("%-29s[%#18I64x %#6x] expo2:%+6d"), d80tot(tmpStr, v), sig, expo, expo2);
-}
-
-void Pow10Cache::dumpAll() const {
-  redirectDebugLog();
-  debugLog(_T("Double80::pow10-values\n"));
-  for(int i = MINPOW10; i <= MAXPOW10; i++) {
-    debugLog(_T("pow10(%+5d):%s\n"), i, d80ToHexDumpFormat(pow10(i)).cstr());
-  }
-  debugLog(_T("End Double80::pow10-values\n"));
-}
-#endif // _DUMPPOW10

@@ -1135,6 +1135,7 @@
     <ClCompile Include="Double80.cpp" />
     <ClCompile Include="Double80IO.cpp" />
     <ClCompile Include="Double80Packer.cpp" />
+    <ClCompile Include="Double80Pow10.cpp" />
     <ClCompile Include="Double80Random.cpp" />
     <ClCompile Include="Double80Str.cpp" />
     <ClCompile Include="DoubleFunctions.cpp" />

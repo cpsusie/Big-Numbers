@@ -128,9 +128,19 @@ extern const double   _Dmaxi32P1;
 extern const Double80 _D80maxi64P1;
 #endif // IS32BIT
 
+class Pow10Calculator {
+public:
+  virtual Double80 pow10(int p) const = 0;
+#ifdef _DEBUG
+  void dumpAll() const;
+#endif // _DEBUG
+};
+
 class Double80 {
 private:
   BYTE m_value[10]; // Must be the first field in the class
+
+  static Pow10Calculator *s_p10Calculator;
 
 #ifdef IS32BIT
   static inline void D80FromFlt(Double80 &s, float x) {
@@ -398,8 +408,17 @@ public:
     s.getBytesForced((BYTE*)m_value, sizeof(m_value));
   }
 
-  static Double80       pow10(int p);
-
+  static inline Double80       pow10(int p) {
+    return s_p10Calculator->pow10(p);
+  }
+  static inline Pow10Calculator *getPow10Calculator() {
+    return s_p10Calculator;
+  }
+  static inline Pow10Calculator *setPow10Calculator(Pow10Calculator *newValue) {
+    Pow10Calculator *oldValue = s_p10Calculator;
+    s_p10Calculator = newValue;
+    return oldValue;
+  }
   static const Double80 _0;                               // = 0
   static const Double80 _05;                              // 0.5
   static const Double80 _1;                               // = 1
@@ -3458,15 +3477,14 @@ public:
     return Double80::_DBL80_SNAN;
   }
 
-  static constexpr int digits         =  64;                             // # of bits in mantissa
-  static constexpr int digits10       =  19;                             // # of decimal digits of precision
-  static constexpr int max_digits10   =  20;                             // # of decimal digits of rounding precision
+  static constexpr int digits         =     64;                             // # of bits in mantissa
+  static constexpr int digits10       =     19;                             // # of decimal digits of precision
+  static constexpr int max_digits10   =     20;                             // # of decimal digits of rounding precision
   static constexpr int max_exponent   =  16384;                          // max binary exponent
-  static constexpr int max_exponent10 =  4932;                           // max decimal exponent
+  static constexpr int max_exponent10 =   4932;                           // max decimal exponent
   static constexpr int min_exponent   = -16382;                          // min binary exponent
-  static constexpr int min_exponent10 = -4932;                           // min decimal exponent
+  static constexpr int min_exponent10 =  -4932;                           // min decimal exponent
 };
-
 #define DBL80_HAS_SUBNORM      1                                         // type does support subnormal numbers
 #define _DBL80_RADIX           2                                         // exponent radix
 
