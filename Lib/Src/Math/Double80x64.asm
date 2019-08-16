@@ -208,7 +208,7 @@ D80ToDbl PROC
     ret
 D80ToDbl ENDP
 
-; ---------------------- Binary operators +,-,*,- (and unary minus) -----------------
+; ---------------------- Binary operators +,-,*,/ (and unary minus) -----------------
 ; ---------------------- assign operators ++,--,-------------------------------------
 
 ;void D80addI16(Double80 &dst, const short &x);
