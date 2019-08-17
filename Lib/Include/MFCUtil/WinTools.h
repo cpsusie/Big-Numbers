@@ -119,6 +119,9 @@ void   gotoEditBox(                CWnd *wnd, int id);
 // assume id is CEdit
 void   gotoMatchingParanthes(      CWnd *wnd, int id);
 void   gotoMatchingParanthes(      CEdit     *edit);
+void   setCaretPos(                CEdit     *edit, int pos);
+int    getCaretPos(                CEdit     *edit);
+void   moveCaret(                  CEdit     *edit, int amount=1);
 void   gotoMatchingParanthes(      CComboBox *cb);
 
 // assume id is CEdit

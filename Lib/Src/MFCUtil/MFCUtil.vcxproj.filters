@@ -346,6 +346,9 @@
     <ClCompile Include="EditListStringEditor.cpp">
       <Filter>Source Files\EditListCtrl</Filter>
     </ClCompile>
+    <ClCompile Include="CEditCaretPos.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\MFCUtil\Viewport2D.h">

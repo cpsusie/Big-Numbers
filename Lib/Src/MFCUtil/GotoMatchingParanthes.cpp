@@ -10,7 +10,7 @@ void gotoMatchingParanthes(CEdit *edit) {
   const String str = getWindowText(edit);
   const int    m   = findMatchingpParanthes(str.cstr(), cursorPos);
   if(m >= 0) {
-    edit->SetSel(m, m);
+    setCaretPos(edit, m);
   }
 }
 

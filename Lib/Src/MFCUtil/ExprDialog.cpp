@@ -97,11 +97,10 @@ void CExprDialog::showExprError(const String &msg, int id) {
     const UINT prefixLen = (UINT)getCommonExprText().length();
     if(charIndex < prefixLen) {
       gotoExpr(getCommonExprFieldId());
-      getExprField(getCommonExprFieldId())->SetSel((int)charIndex, (int)charIndex);
+      setCaretPos(getExprField(getCommonExprFieldId()), charIndex);
     } else {
       gotoExpr(id);
-      charIndex -= prefixLen;
-      getExprField(id)->SetSel((int)charIndex, (int)charIndex);
+      setCaretPos(getExprField(id), charIndex - prefixLen);
     }
     showWarning(errorMsg);
   } catch(Exception) { // ignore Exception, and just show msg
@@ -184,8 +183,7 @@ void CExprDialog::substituteSelectedText(int ctrlId, const String &s) {
     }
     text.insert(startIndex, s);
     setWindowText(e, text);
-    int newSel = (int)(startIndex + s.length());
-    e->SetSel(newSel, newSel);
+    setCaretPos(e, (int)(startIndex + s.length()));
     gotoExpr(ctrlId);
   }
 }

@@ -645,6 +645,7 @@
     <ClCompile Include="BitmapCodecBMP.cpp" />
     <ClCompile Include="BitmapToByteArray.cpp" />
     <ClCompile Include="BitmapTools.cpp" />
+    <ClCompile Include="CEditCaretPos.cpp" />
     <ClCompile Include="CIEColorSpace.cpp" />
     <ClCompile Include="ClipboardBitmap.cpp" />
     <ClCompile Include="ClipboardDropFiles.cpp" />
