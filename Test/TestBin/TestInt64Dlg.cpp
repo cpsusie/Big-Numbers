@@ -1,61 +1,58 @@
 #include "stdafx.h"
-#include <MyUtil.h>
 #include "TestBin.h"
-#include "TestBinDlg.h"
+#include "TestInt64Dlg.h"
 #include "TimerDlg.h"
+#include "TestFloatDlg.h"
+#include "HexEditOverwrite.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
 
+using namespace std;
+
 class CAboutDlg : public CDialog {
 public:
-  CAboutDlg();
-
   enum { IDD = IDD_ABOUTBOX };
-
+  CAboutDlg() : CDialog(CAboutDlg::IDD) {
+  }
 protected:
-  virtual void DoDataExchange(CDataExchange *pDX);
   DECLARE_MESSAGE_MAP()
 };
-
-CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
-}
-
-void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-  __super::DoDataExchange(pDX);
-}
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
-CTestbinDlg::CTestbinDlg(CWnd *pParent) : CDialog(CTestbinDlg::IDD, pParent), m_hexString(EMPTYSTRING) {
+CTestInt64Dlg::CTestInt64Dlg(CWnd *pParent)
+: CDialog(CTestInt64Dlg::IDD, pParent)
+, m_hexString(EMPTYSTRING)
+{
   m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
 }
 
-void CTestbinDlg::DoDataExchange(CDataExchange *pDX) {
+void CTestInt64Dlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
-  DDX_Text(pDX, IDC_EDITHEX, m_hexString);
+  DDX_Text(pDX, IDC_EDITHEX          , m_hexString            );
   DDV_MaxChars(pDX, m_hexString, 16);
 }
 
-BEGIN_MESSAGE_MAP(CTestbinDlg, CDialog)
+BEGIN_MESSAGE_MAP(CTestInt64Dlg, CDialog)
   ON_WM_SYSCOMMAND()
   ON_WM_PAINT()
   ON_WM_QUERYDRAGICON()
   ON_WM_TIMER()
   ON_WM_CLOSE()
-  ON_BN_CLICKED(IDC_STARTBUTTON, OnStartButton )
-  ON_BN_CLICKED(IDC_STOPBUTTON , OnStopButton  )
-  ON_BN_CLICKED(IDC_STEPBUTTON , OnStepButton  )
-  ON_BN_CLICKED(IDC_RESETBUTTON, OnResetButton )
-  ON_BN_CLICKED(IDC_EDITBUTTON , OnEditButton  )
-  ON_COMMAND(ID_FILE_EXIT      , OnFileExit    )
-  ON_COMMAND(ID_VIEW_TIMER     , OnViewTimer   )
+  ON_COMMAND(      ID_FILE_TESTFLOATS    , OnFileTestFloats            )
+  ON_COMMAND(      ID_FILE_EXIT          , OnFileExit                  )
+  ON_COMMAND(      ID_VIEW_TIMER         , OnViewTimer                 )
+  ON_BN_CLICKED(   IDC_STARTBUTTON       , OnStartButton               )
+  ON_BN_CLICKED(   IDC_STOPBUTTON        , OnStopButton                )
+  ON_BN_CLICKED(   IDC_STEPBUTTON        , OnStepButton                )
+  ON_BN_CLICKED(   IDC_RESETBUTTON       , OnResetButton               )
+  ON_BN_CLICKED(   IDC_EDITBUTTON        , OnEditButton                )
 END_MESSAGE_MAP()
 
-
-BOOL CTestbinDlg::OnInitDialog() {
+BOOL CTestInt64Dlg::OnInitDialog() {
   __super::OnInitDialog();
 
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
@@ -78,13 +75,14 @@ BOOL CTestbinDlg::OnInitDialog() {
   m_timerIsRunning = false;
   m_timerInterval  = 500;
   m_editMode       = false;
-  m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATOR1));
+  m_accelTable     = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_MAINFRAME));
   showCounter();
   ajourEnabling();
+
   return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
-void CTestbinDlg::OnSysCommand(UINT nID, LPARAM lParam) {
+void CTestInt64Dlg::OnSysCommand(UINT nID, LPARAM lParam) {
   if((nID & 0xFFF0) == IDM_ABOUTBOX) {
     CAboutDlg().DoModal();
   } else {
@@ -92,7 +90,7 @@ void CTestbinDlg::OnSysCommand(UINT nID, LPARAM lParam) {
   }
 }
 
-void CTestbinDlg::OnPaint() {
+void CTestInt64Dlg::OnPaint() {
   if(IsIconic()) {
     CPaintDC dc(this);
 
@@ -113,60 +111,54 @@ void CTestbinDlg::OnPaint() {
   }
 }
 
-HCURSOR CTestbinDlg::OnQueryDragIcon() {
+HCURSOR CTestInt64Dlg::OnQueryDragIcon() {
   return (HCURSOR)m_hIcon;
 }
 
-void CTestbinDlg::OnFileExit() {
+void CTestInt64Dlg::OnFileTestFloats() {
+  CTestFloatDlg().DoModal();
+}
+
+void CTestInt64Dlg::OnFileExit() {
   EndDialog(IDOK);
 }
 
-void CTestbinDlg::OnOK() {
+void CTestInt64Dlg::OnOK() {
 }
 
-void CTestbinDlg::OnCancel() {
+void CTestInt64Dlg::OnCancel() {
 }
 
-void CTestbinDlg::OnClose() {
+void CTestInt64Dlg::OnClose() {
   OnFileExit();
 }
 
-BOOL CTestbinDlg::PreTranslateMessage(MSG *pMsg) {
+BOOL CTestInt64Dlg::PreTranslateMessage(MSG *pMsg) {
   if(m_editMode) {
-    switch(pMsg->message) {
-    case WM_KEYDOWN:
-      { const wchar_t ch = toAscii((UINT)pMsg->wParam);
-        if(keyPressed(VK_CONTROL) || !isxdigit(ch)) break;
-        CEdit *editBox = (CEdit*)GetDlgItem(IDC_EDITHEX);
-        int start, end;
-        editBox->GetSel(start, end);
-        m_hexString.Delete(start);
-        const wchar_t upperCaseChar = iswlower(ch) ? towupper(ch) : ch;
-        m_hexString.Insert(start, upperCaseChar);
-        UpdateData(FALSE);
-        if(start < 15) {
-          start++; end++;
-        }
-        editBox->SetSel(start, end);
-        showCounter(hexStringToInt());
-        return true;
-      }
-      break;
+    if(isOverwriteCurrentHexChar(this, pMsg)) {
+      UpdateData();
+      showCounter(hexStringToInt());
+      return true;
     }
   }
-  if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
+  try {
+    if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
+      return true;
+    }
+    return __super::PreTranslateMessage(pMsg);
+  } catch(Exception e) {
+    showWarning(_T("%s"), e.what());
     return true;
   }
-  return __super::PreTranslateMessage(pMsg);
 }
 
-void CTestbinDlg::startTimer() {
+void CTestInt64Dlg::startTimer() {
   if(!m_timerIsRunning && SetTimer(1,m_timerInterval,NULL)) {
     m_timerIsRunning = true;
   }
 }
 
-void CTestbinDlg::stopTimer() {
+void CTestInt64Dlg::stopTimer() {
   if(m_timerIsRunning) {
     KillTimer(1);
     m_timerIsRunning = false;
@@ -189,7 +181,7 @@ UINT CounterThread::run() {
   return 0;
 }
 
-void CTestbinDlg::showCounter(UINT64 n) {
+void CTestInt64Dlg::showCounter(UINT64 n) {
   TCHAR tmp[100];
   if(m_editMode) {
     setWindowText(this, IDC_STATICTEXT, format(_T("%s:"), sprintbin(tmp, n)));
@@ -198,7 +190,7 @@ void CTestbinDlg::showCounter(UINT64 n) {
   }
 }
 
-void CTestbinDlg::ajourEnabling() {
+void CTestInt64Dlg::ajourEnabling() {
   if(m_editMode) {
     GetDlgItem(IDC_STARTBUTTON)->EnableWindow(FALSE);
     GetDlgItem(IDC_STOPBUTTON )->EnableWindow(FALSE);
@@ -220,14 +212,14 @@ void CTestbinDlg::ajourEnabling() {
   }
 }
 
-void CTestbinDlg::OnStartButton() {
+void CTestInt64Dlg::OnStartButton() {
   if(m_timerIsRunning) return;
   m_counterThread->resume();
   startTimer();
   ajourEnabling();
 }
 
-void CTestbinDlg::OnStopButton() {
+void CTestInt64Dlg::OnStopButton() {
   if(!m_timerIsRunning) return;
   m_counterThread->suspend();
   stopTimer();
@@ -235,7 +227,7 @@ void CTestbinDlg::OnStopButton() {
   ajourEnabling();
 }
 
-void CTestbinDlg::OnStepButton() {
+void CTestInt64Dlg::OnStepButton() {
   if(m_timerIsRunning) {
     OnStopButton();
   }
@@ -243,7 +235,7 @@ void CTestbinDlg::OnStepButton() {
   showCounter();
 }
 
-void CTestbinDlg::OnResetButton() {
+void CTestInt64Dlg::OnResetButton() {
   stopTimer();
   m_counterThread->suspend();
   m_counterThread->reset();
@@ -251,7 +243,7 @@ void CTestbinDlg::OnResetButton() {
   ajourEnabling();
 }
 
-void CTestbinDlg::OnEditButton() {
+void CTestInt64Dlg::OnEditButton() {
   if(m_timerIsRunning) return;
   if(m_editMode) {
     leaveEditMode();
@@ -262,7 +254,7 @@ void CTestbinDlg::OnEditButton() {
   ajourEnabling();
 }
 
-void CTestbinDlg::enterEditMode() {
+void CTestInt64Dlg::enterEditMode() {
   if(m_editMode) return;
   GetDlgItem(IDC_EDITHEX)->ShowWindow(SW_SHOW);
   UINT64 n = m_counterThread->getCounter();
@@ -278,7 +270,7 @@ void CTestbinDlg::enterEditMode() {
   m_editMode = true;
 }
 
-void CTestbinDlg::leaveEditMode() {
+void CTestInt64Dlg::leaveEditMode() {
   if(!m_editMode) return;
 
   UpdateData();
@@ -288,12 +280,12 @@ void CTestbinDlg::leaveEditMode() {
   m_editMode = false;
 }
 
-void CTestbinDlg::OnTimer(UINT_PTR nIDEvent) {
+void CTestInt64Dlg::OnTimer(UINT_PTR nIDEvent) {
   showCounter();
   __super::OnTimer(nIDEvent);
 }
 
-void CTestbinDlg::OnViewTimer() {
+void CTestInt64Dlg::OnViewTimer() {
   CTimerDlg dlg(m_timerInterval);
   if(dlg.DoModal() == IDOK) {
     m_timerInterval = dlg.m_timerInterval;

@@ -24,7 +24,16 @@
     <ClCompile Include="TestBin.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TestBinDlg.cpp">
+    <ClCompile Include="FloatFields.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TestInt64Dlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TestFloatDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HexEditOverwrite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -44,7 +53,16 @@
     <ClInclude Include="TestBin.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TestBinDlg.h">
+    <ClInclude Include="FloatFields.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TestInt64Dlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TestFloatDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HexEditOverwrite.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

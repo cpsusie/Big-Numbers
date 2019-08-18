@@ -6,9 +6,9 @@
 
 #include "resource.h"       // main symbols
 
-class CTestbinApp : public CWinApp {
+class CTestBinApp : public CWinApp {
 public:
-    CTestbinApp();
+    CTestBinApp();
 
 public:
     virtual BOOL InitInstance();
@@ -16,5 +16,5 @@ public:
     DECLARE_MESSAGE_MAP()
 };
 
-extern CTestbinApp theApp;
+extern CTestBinApp theApp;
 

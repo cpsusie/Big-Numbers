@@ -1,29 +1,29 @@
 #include "stdafx.h"
-#include "testbin.h"
-#include "testbinDlg.h"
+#include "TestBin.h"
+#include "TestInt64Dlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
 
-BEGIN_MESSAGE_MAP(CTestbinApp, CWinApp)
+BEGIN_MESSAGE_MAP(CTestBinApp, CWinApp)
     ON_COMMAND(ID_HELP, CWinApp::OnHelp)
 END_MESSAGE_MAP()
 
-CTestbinApp::CTestbinApp() {
+CTestBinApp::CTestBinApp() {
 }
 
-CTestbinApp theApp;
+CTestBinApp theApp;
 
-BOOL CTestbinApp::InitInstance() {
-    AfxEnableControlContainer();
+BOOL CTestBinApp::InitInstance() {
+  AfxEnableControlContainer();
 
-    CTestbinDlg dlg;
-    m_pMainWnd = &dlg;
-    INT_PTR nResponse = dlg.DoModal();
-    if (nResponse == IDOK) {
-    } else if (nResponse == IDCANCEL) {
-    }
+  CTestInt64Dlg dlg;
+  m_pMainWnd = &dlg;
+  INT_PTR nResponse = dlg.DoModal();
+  if(nResponse == IDOK) {
+  } else if (nResponse == IDCANCEL) {
+  }
 
-    return FALSE;
+  return FALSE;
 }
