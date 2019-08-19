@@ -23,6 +23,25 @@ static void removeTralingZeroDigits(String &str) {
   }
 }
 
+static TCHAR *digitToStr(TCHAR *dst, BRDigitType n, UINT width = 0) {
+  TCHAR tmp[50], *d = width ? tmp : dst;
+#ifdef IS64BIT
+  _i64tot(n, d, 10);
+#else
+  _itot(n, d, 10);
+#endif // IS53BIT
+  if(width) {
+    const int zeroCount = (int)width - (int)_tcslen(tmp);
+    if(zeroCount <= 0) {
+      _tcscpy(dst, d);
+    } else { // zeroCount > 0
+      TMEMSET(dst, _T('0'), zeroCount);
+      _tcscpy(dst + zeroCount, d);
+    }
+  }
+  return dst;
+}
+
 void BigReal::formatFixed(String &result, StreamSize precision, FormatFlags flags, bool removeTrailingZeroes) const {
   bool decimalPointAdded = false;
 
@@ -32,25 +51,18 @@ void BigReal::formatFixed(String &result, StreamSize precision, FormatFlags flag
     return;
   }
 
-  const      Digit *digit = nn.m_first;
-  BRExpoType d = getExpo10(nn);
-  int        decimalsDone = 0;
+  const      Digit *digit        = nn.m_first;
+  BRExpoType        d            = getExpo10(nn);
+  int               decimalsDone = 0;
+  TCHAR             digStr[100];
 
   if(d < 0) { // first handle integerpart
     result += _T("0");
   } else {
-#ifdef IS32BIT
-    result += format(_T("%lu"), digit->n);
-#else
-    result += format(_T("%llu"), digit->n);
-#endif
+    result += digitToStr(digStr, digit->n);
     d -= BigReal::getDecimalDigitCount(digit->n);
     for(digit = digit->next; digit != NULL && (d >= 0); d -= LOG10_BIGREALBASE, digit = digit->next) {
-#ifdef IS32BIT
-      result += format(_T("%0*.*lu"), LOG10_BIGREALBASE, LOG10_BIGREALBASE, digit->n);
-#else
-      result += format(_T("%0*.*llu"), LOG10_BIGREALBASE, LOG10_BIGREALBASE, digit->n);
-#endif
+      result += digitToStr(digStr, digit->n, LOG10_BIGREALBASE);
     }
     addZeroes(result,d + 1);
     d = -1;
@@ -63,26 +75,22 @@ void BigReal::formatFixed(String &result, StreamSize precision, FormatFlags flag
     if(precision > 0) {
       for(int i = 0; (i - LOG10_BIGREALBASE > d) && (decimalsDone < precision); i -= LOG10_BIGREALBASE) {
         int      partLength = LOG10_BIGREALBASE;
-        intptr_t rest = (intptr_t)(precision - decimalsDone);
+        intptr_t rest       = (intptr_t)(precision - decimalsDone);
         if(rest < LOG10_BIGREALBASE) {
           partLength = (int)rest;
         }
-        result += format(_T("%0*.*lu"), partLength, partLength, 0);
+        result += digitToStr(digStr, 0, partLength);
         decimalsDone += partLength;
       }
       for(; digit && (decimalsDone < precision); digit = digit->next) {
-        BRDigitType part = digit->n;
+        BRDigitType part       = digit->n;
         int         partLength = LOG10_BIGREALBASE;
-        intptr_t    rest = (intptr_t)(precision - decimalsDone);
+        intptr_t    rest       = (intptr_t)(precision - decimalsDone);
         if(rest < LOG10_BIGREALBASE) {
           partLength = (int)rest;
           part /= BigReal::pow10(LOG10_BIGREALBASE - (int)rest);
         }
-#ifdef IS32BIT
-        result += format(_T("%0*.*lu"), partLength, partLength, part);
-#else
-        result += format(_T("%0*.*llu"), partLength, partLength, part);
-#endif
+        result += digitToStr(digStr, part, partLength);
         decimalsDone += partLength;
       }
       if(!removeTrailingZeroes && (precision > decimalsDone)) {
@@ -105,11 +113,8 @@ void BigReal::formatScientific(String &result, StreamSize precision, FormatFlags
   int          scale = getDecimalDigitCount(digit->n) - 1;
   BRDigitType  scaleE10 = pow10(scale);
 
-#ifdef IS32BIT
-  result += format(_T("%lu"), digit->n / scaleE10);
-#else
-  result += format(_T("%llu"), digit->n / scaleE10);
-#endif
+  TCHAR digStr[100];
+  result += digitToStr(digStr, digit->n / scaleE10);
   if((flags & ios::showpoint) || precision > 0) {
     addDecimalPoint(result);
 
@@ -118,16 +123,11 @@ void BigReal::formatScientific(String &result, StreamSize precision, FormatFlags
       if(precision < scale) {
         fraction /= pow10((int)(scale - precision));
         decimalsDone = (int)precision; // precision < scale < LOG10_BIGREALBASE
+      } else {
+        decimalsDone = (int)scale;     // scale < LOG10_BIGREALBASE
       }
-      else {
-        decimalsDone = (int)scale; // scale < LOG10_BIGREALBASE
-      }
-      if(decimalsDone > 0) {
-#ifdef IS32BIT
-        result += format(_T("%0*.*lu"), decimalsDone, decimalsDone, fraction);
-#else
-        result += format(_T("%0*.*llu"), decimalsDone, decimalsDone, fraction);
-#endif
+      if(decimalsDone > 0) {           // decimalsDone < LOG10_BIGREALBASE
+        result += digitToStr(digStr, fraction, decimalsDone);
       }
       for(digit = digit->next; digit != NULL && decimalsDone < precision; digit = digit->next) { // now handle tail
         BRDigitType part = digit->n;
@@ -137,11 +137,7 @@ void BigReal::formatScientific(String &result, StreamSize precision, FormatFlags
           partLength = (int)rest;
           part /= pow10(LOG10_BIGREALBASE - (int)rest);
         }
-#ifdef IS32BIT
-        result += format(_T("%0*.*lu"), partLength, partLength, part);
-#else
-        result += format(_T("%0*.*llu"), partLength, partLength, part);
-#endif
+        result += digitToStr(digStr, part, partLength);
         decimalsDone += partLength;
       }
       if(!removeTrailingZeroes && decimalsDone < precision) {
