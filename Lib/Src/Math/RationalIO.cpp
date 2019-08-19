@@ -4,7 +4,7 @@
 using namespace std;
 
 String toString(const Rational &r, StreamSize precision, StreamSize width, FormatFlags flags) {
-  return (StrStream(precision, width, flags) << r).toString();
+  return (StrStream(precision, width, flags) << r);
 }
 
 StrStream &operator<<(StrStream &stream, const Rational &r) {

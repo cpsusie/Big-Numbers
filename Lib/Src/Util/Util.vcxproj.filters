@@ -908,6 +908,9 @@
     <ClCompile Include="StringRemove.cpp">
       <Filter>Source Files\String</Filter>
     </ClCompile>
+    <ClCompile Include="StreamParametersStr.cpp">
+      <Filter>Source Files\Stream</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />

@@ -49,6 +49,9 @@ public:
   String getUInt64Format() const;
   String getFloatFormat()  const;
   String getDoubleFormat() const;
+
+  static String flagsToString(FormatFlags flags);
+  String toString() const;
 };
 
 #define iparam(width) StreamParameters(0   ,  width  , std::ios::fixed      | std::ios::unitbuf)

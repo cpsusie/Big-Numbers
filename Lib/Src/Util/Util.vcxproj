@@ -1100,6 +1100,7 @@
     <ClCompile Include="stat64.cpp" />
     <ClCompile Include="straccent.cpp" />
     <ClCompile Include="StreamParameters.cpp" />
+    <ClCompile Include="StreamParametersStr.cpp" />
     <ClCompile Include="StrHash.cpp" />
     <ClCompile Include="StrIHash.cpp" />
     <ClCompile Include="StringArray.cpp" />
