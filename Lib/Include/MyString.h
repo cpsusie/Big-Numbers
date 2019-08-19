@@ -115,6 +115,9 @@ public:
   // Insert ch into String at position pos. return *this
   String &insert(size_t pos, TCHAR ch);
 
+  // Insert count occurrences of ch into String at position pos. return *this
+  String &insert(size_t pos, size_t count, TCHAR ch);
+
   // Insert s into String at position pos. return *this
   String &insert(size_t pos, const String &s);
 
