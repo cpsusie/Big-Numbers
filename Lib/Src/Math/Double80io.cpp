@@ -19,8 +19,9 @@ static TCHAR *findFirstDigit(TCHAR *str) {
 
 #define MAXPRECISION DBL80_DIG
 
-#define addDecimalPoint(s) { s += _T("."); }
-#define addExponentChar(s) { s += ((flags & ios::uppercase) ? _T("E") : _T("e")); }
+#define addDecimalPoint(s)        { s += _T("."); }
+#define addExponentChar(s)        { s += ((flags & ios::uppercase) ? _T("E") : _T("e")); }
+#define addZeroes(      s, count) { s.insert(s.length(), (count), '0'); }
 
 // Assume str consists of characters [0-9]
 // return carry, 0 or 1
@@ -82,7 +83,7 @@ static void formatFixed(String &result, const Double80 &x, intptr_t precision, F
   intptr_t lastResultDigitPos = commaPos + precision - 1;
   if(commaPos <= 0) { // leading zeroes
     const intptr_t zeroCount = 1-commaPos;
-    ciphers.insert(0, spaceString(zeroCount, '0'));
+    ciphers.insert(0, zeroCount, '0');
     commaPos           += zeroCount;
     lastResultDigitPos += zeroCount;
     commaPos += round5DigitString(ciphers, lastResultDigitPos);
@@ -97,11 +98,11 @@ static void formatFixed(String &result, const Double80 &x, intptr_t precision, F
   } else if(commaPos > (intptr_t)ciphers.length()) {
     const intptr_t zeroCount = commaPos - (intptr_t)ciphers.length();
     result += ciphers;
-    result += spaceString(zeroCount, '0');
+    addZeroes(result, zeroCount);
     if((flags & ios::showpoint) || (precision > 0)) {
       addDecimalPoint(result);
       if(!removeTrailingZeroes && (precision > 0)) {
-        result += spaceString(precision, '0');
+        addZeroes(result, precision);
       }
     }
   } else { // 0 < commaPos <= ciphers.length()
@@ -116,7 +117,7 @@ static void formatFixed(String &result, const Double80 &x, intptr_t precision, F
         } else {
           const intptr_t zeroCount = precision - ((intptr_t)ciphers.length() - commaPos);
           if(zeroCount > 0) {
-            result += spaceString(zeroCount, '0');
+            addZeroes(result, zeroCount);
           }
         }
       }
