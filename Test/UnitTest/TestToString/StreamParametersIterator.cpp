@@ -9,9 +9,13 @@ const AllFormatFlagsArray AbstractStreamParametersIterator::s_flagArray;
 const size_t              AbstractStreamParametersIterator::s_maxFlagIndex = AbstractStreamParametersIterator::s_flagArray.size()-1;
 
 AbstractStreamParametersIterator::AbstractStreamParametersIterator(StreamSize maxWidth, StreamSize maxPrecision)
-: m_maxWidth(maxWidth)
-, m_maxPrecision(maxPrecision)
+: m_maxWidth((size_t)maxWidth)
+, m_maxPrecision((size_t)maxPrecision)
 {
+  reset();
+}
+
+void AbstractStreamParametersIterator::reset() {
   resetWidth();
   resetPrecision();
   resetFlagIndex();
@@ -37,21 +41,6 @@ void *AbstractStreamParametersIterator::next() {
     }
   }
   return &m_value;
-}
-
-String toString1(FormatFlags flags) {
-  String result;
-  result =  (flags & ios::showpos   ) ? "+" : " ";
-  result += (flags & ios::showpoint ) ? "." : " ";
-  result += (flags & ios::left      ) ? "l" : " ";
-  result += (flags & ios::right     ) ? "r" : " ";
-  result += (flags & ios::scientific) ? (flags & ios::uppercase) ? "E" : "e" : " ";
-  result += (flags & ios::fixed     ) ? "f" : " ";
-  return result;
-}
-
-String toString(const StreamParameters &param) {
- return toString1(param.getFlags()) + format(_T(" %2d.%2d"), param.getWidth(), param.getPrecision());
 }
 
 AllFormatFlagsArray::AllFormatFlagsArray() {

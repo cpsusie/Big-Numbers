@@ -3,8 +3,17 @@
 
 DEFINECLASSNAME(AbstractTestElementIterator);
 
-Iterator<TestElement> TestDataArray::getIterator(StreamSize maxWidth, StreamSize maxPrecision) {
-  return Iterator<TestElement>(new AbstractTestElementIterator(*this, maxWidth, maxPrecision));
+TestIterator::TestIterator(TestDataArray *array, StreamSize maxWidth, StreamSize maxPrecision)
+: Iterator<TestElement>(new AbstractTestElementIterator(*array, maxWidth, maxPrecision))
+{
+}
+
+size_t TestIterator::getMaxIterationCount() const {
+  return ((AbstractTestElementIterator*)m_it)->getMaxIterationCount();
+}
+
+TestIterator TestDataArray::getIterator(StreamSize maxWidth, StreamSize maxPrecision) {
+  return TestIterator(this, maxWidth, maxPrecision);
 }
 
 AbstractTestElementIterator::AbstractTestElementIterator(TestValueArray &a, StreamSize maxWidth, StreamSize maxPrecision) 
@@ -23,7 +32,7 @@ AbstractTestElementIterator::AbstractTestElementIterator(TestValueArray &a, Stre
 
 void AbstractTestElementIterator::nextValue() {
   m_next.m_values  = &m_valueIterator.next();
-  m_paramIterator  = createStreamParametersIterator(m_maxWidth, m_maxPrecision);
+  m_paramIterator.reset();
   m_next.m_param   = m_paramIterator.next();
   m_hasNext        = true;
 }

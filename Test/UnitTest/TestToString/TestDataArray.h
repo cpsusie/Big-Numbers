@@ -8,8 +8,16 @@ public:
   const TestValueArrayElement *m_values;
   StreamParameters             m_param;
   String toString() const {
-    return ::toString(m_param) + format(_T(" v=%20.16le"), m_values->getDouble());
+    return m_param.toString() + format(_T(" v=%20.16le"), m_values->getDouble());
   }
+};
+
+class TestDataArray;
+
+class TestIterator : public Iterator<TestElement> {
+public:
+  TestIterator(TestDataArray *array, StreamSize maxWidth, StreamSize maxPrecision);
+  size_t getMaxIterationCount() const;
 };
 
 class TestDataArray : public TestValueArray {
@@ -21,7 +29,7 @@ public:
     : TestValueArray(testValues)
   {}
 
-  Iterator<TestElement> getIterator(StreamSize maxWidth = 24, StreamSize maxPrecision = 14);
+  TestIterator getIterator(StreamSize maxWidth = 24, StreamSize maxPrecision = 14);
 };
 
 class AbstractTestElementIterator : public AbstractIterator {
@@ -30,7 +38,7 @@ private:
   TestValueArray                  &m_valueArray;
   const StreamSize                 m_maxWidth, m_maxPrecision;
   Iterator<TestValueArrayElement>  m_valueIterator;
-  Iterator<StreamParameters>       m_paramIterator;
+  StreamParametersIterator         m_paramIterator;
   TestElement                      m_buf, m_next;
   bool                             m_hasNext;
   void nextValue();
@@ -45,5 +53,8 @@ public:
   void *next();
   void remove() {
     unsupportedOperationError(__TFUNCTION__);
+  }
+  inline size_t getMaxIterationCount() const {
+    return m_valueArray.size() * m_paramIterator.getMaxIterationCount();
   }
 };

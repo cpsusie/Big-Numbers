@@ -60,12 +60,13 @@ int getLastMantissaDigit(const char *s) {
     return -2;
 }
 
-static void testToString(const String &errorName, Iterator<TestElement> &it) {
-  UINT totalCounter      = 0;
+static void testToString(const String &errorName, TestIterator &it) {
+  UINT testCounter      = 0;
   UINT mismatchD80       = 0;
   UINT mismatchBR        = 0;
   UINT lengthMismatchD80 = 0;
   UINT lengthMismatchBR  = 0;
+  const UINT totalTestCount = (UINT)it.getMaxIterationCount();
 
   FileNameSplitter spl(errorName);
   const String rawFileName = spl.getFileName();
@@ -76,9 +77,13 @@ static void testToString(const String &errorName, Iterator<TestElement> &it) {
     TestElement element = it.next();
     tostrstream sD64,sD80,sBR;
 
-    if(++totalCounter % 10000 == 0) {
-      tcout << _T("Count:") << totalCounter << _T(" ") << element.toString() << _T("          \r");
-      tcout.flush();
+    if(++testCounter % 10000 == 0) {
+      tcout << format(_T("Count:%9s/%-9s:%s %6.2lf%%\r")
+                     ,format1000(testCounter).cstr()
+                     ,format1000(totalTestCount).cstr()
+                     ,element.toString().cstr()
+                     ,PERCENT(testCounter, totalTestCount)
+                     );
     }
     sD64 << element.m_param << element.m_values->getDouble();
     sD80 << element.m_param << element.m_values->getDouble80();
@@ -109,11 +114,11 @@ static void testToString(const String &errorName, Iterator<TestElement> &it) {
   }
 
   tcout << spaceString(60) << endl;
-  tcout << _T("Total Count                 :") << iparam(8) << totalCounter      << _T(".") << endl;
-  tcout << _T("Format mismatch for Double80:") << iparam(8) << mismatchD80       << _T(" ") << ufparam(2) << PERCENT(mismatchD80      , totalCounter) << _T("%.") << endl;
-  tcout << _T("Format mismatch for BigReal :") << iparam(8) << mismatchBR        << _T(" ") << ufparam(2) << PERCENT(mismatchBR       , totalCounter) << _T("%.") << endl;
-  tcout << _T("Length mismatch for Double80:") << iparam(8) << lengthMismatchD80 << _T(" ") << ufparam(2) << PERCENT(lengthMismatchD80, totalCounter) << _T("%.") << endl;
-  tcout << _T("Length mismatch for BigReal :") << iparam(8) << lengthMismatchBR  << _T(" ") << ufparam(2) << PERCENT(lengthMismatchBR , totalCounter) << _T("%.") << endl;
+  tcout << _T("Total Count                 :") << iparam(8) << testCounter       << _T(".") << endl;
+  tcout << _T("Format mismatch for Double80:") << iparam(8) << mismatchD80       << _T(" ") << ufparam(2) << PERCENT(mismatchD80      , testCounter) << _T("%.") << endl;
+  tcout << _T("Format mismatch for BigReal :") << iparam(8) << mismatchBR        << _T(" ") << ufparam(2) << PERCENT(mismatchBR       , testCounter) << _T("%.") << endl;
+  tcout << _T("Length mismatch for Double80:") << iparam(8) << lengthMismatchD80 << _T(" ") << ufparam(2) << PERCENT(lengthMismatchD80, testCounter) << _T("%.") << endl;
+  tcout << _T("Length mismatch for BigReal :") << iparam(8) << lengthMismatchBR  << _T(" ") << ufparam(2) << PERCENT(lengthMismatchBR , testCounter) << _T("%.") << endl;
 }
 
 static int doubleCompare(const double &d1, const double &d2) {
