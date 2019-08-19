@@ -638,10 +638,10 @@ D80isZero PROC
     sahf
     fstp    st(0)                              ; pop x
     je      IsZero                             ; if(x == 0) goto IsZero
-    xor     rax, rax                           ; rax = 0 (false)
+    xor     eax, eax                           ; eax = 0 (false)
     ret
 IsZero:
-    mov     rax, 1                             ; rax = 1 (true)
+    mov     eax, 1                             ; eax = 1 (true)
     ret
 D80isZero ENDP
 ;int D80cmpI16(const Double80 &x, const short &y);
@@ -652,13 +652,13 @@ D80cmpI16 PROC
     sahf
     ja      XAboveY
     jb      XBelowY
-    xor     rax,rax
+    xor     eax,eax
     ret
 XAboveY:
-    mov     rax, 1
+    mov     eax, 1
     ret
 XBelowY:
-    mov     rax, -1
+    mov     eax, -1
     ret
 D80cmpI16 ENDP
 ;int D80cmpUI16(const Double80 &x, USHORT y);
@@ -668,16 +668,16 @@ D80cmpUI16 PROC
     fcomip  st, st(1)                          ; st(0)=x, st(1)=y
     ja      XAboveY
     jb      XBelowY
-    xor     rax,rax
+    xor     eax,eax
     fstp    st(0)
     ret
 XAboveY:
     fstp    st(0)
-    mov     rax, 1
+    mov     eax, 1
     ret
 XBelowY:
     fstp    st(0)
-    mov     rax, -1
+    mov     eax, -1
     ret
 D80cmpUI16 ENDP
 ;int D80cmpI32(const Double80 &x, const int &y);
@@ -688,13 +688,13 @@ D80cmpI32 PROC
     sahf
     ja      XAboveY
     jb      XBelowY
-    xor     rax,rax
+    xor     eax,eax
     ret
 XAboveY:
-    mov     rax, 1
+    mov     eax, 1
     ret
 XBelowY:
-    mov     rax, -1
+    mov     eax, -1
     ret
 D80cmpI32 ENDP
 ;int D80cmpUI32(const Double80 &x, UINT y);
@@ -704,16 +704,16 @@ D80cmpUI32 PROC
     fcomip  st, st(1)                          ; st(0)=x, st(1)=y
     ja      XAboveY
     jb      XBelowY
-    xor     rax,rax
+    xor     eax,eax
     fstp    st(0)
     ret
 XAboveY:
     fstp    st(0)
-    mov     rax, 1
+    mov     eax, 1
     ret
 XBelowY:
     fstp    st(0)
-    mov     rax, -1
+    mov     eax, -1
     ret
 D80cmpUI32 ENDP
 ;int D80cmpI64(const Double80 &x, const INT64 &y);
@@ -723,16 +723,16 @@ D80cmpI64 PROC
     fcomip  st, st(1)                          ; st(0)=x, st(1)=y
     ja      XAboveY
     jb      XBelowY
-    xor     rax,rax
+    xor     eax,eax
     fstp    st(0)
     ret
 XAboveY:
     fstp    st(0)
-    mov     rax, 1
+    mov     eax, 1
     ret
 XBelowY:
     fstp    st(0)
-    mov     rax, -1
+    mov     eax, -1
     ret
 D80cmpI64 ENDP
 ;int D80cmpUI64(const Double80 &x, UINT64 y);
@@ -742,16 +742,16 @@ D80cmpUI64 PROC
     fcomip  st, st(1)                          ; st(0)=x, st(1)=y
     ja      XAboveY
     jb      XBelowY
-    xor     rax,rax
+    xor     eax,eax
     fstp    st(0)
     ret
 XAboveY:
     fstp    st(0)
-    mov     rax, 1
+    mov     eax, 1
     ret
 XBelowY:
     fstp    st(0)
-    mov     rax, -1
+    mov     eax, -1
     ret
 D80cmpUI64 ENDP
 ;int D80cmpFlt(const Double80 &x, const float &y);
@@ -762,13 +762,13 @@ D80cmpFlt PROC
     sahf
     ja      XAboveY
     jb      XBelowY
-    xor     rax,rax
+    xor     eax,eax
     ret
 XAboveY:
-    mov     rax, 1
+    mov     eax, 1
     ret
 XBelowY:
-    mov     rax, -1
+    mov     eax, -1
     ret
 D80cmpFlt ENDP
 ;int D80cmpDbl(const Double80 &x, const double &y);
@@ -779,13 +779,13 @@ D80cmpDbl PROC
     sahf
     ja      XAboveY
     jb      XBelowY
-    xor     rax,rax
+    xor     eax,eax
     ret
 XAboveY:
-    mov     rax, 1
+    mov     eax, 1
     ret
 XBelowY:
-    mov     rax, -1
+    mov     eax, -1
     ret
 D80cmpDbl ENDP
 ;int D80cmpD80(const Double80 &x, const Double80 &y);
@@ -795,16 +795,16 @@ D80cmpD80 PROC
     fcomip  st, st(1)                          ; st(0)=x, st(1)=y
     ja      XAboveY
     jb      XBelowY
-    xor     rax,rax
+    xor     eax,eax
     fstp    st(0)
     ret
 XAboveY:
     fstp    st(0)
-    mov     rax, 1
+    mov     eax, 1
     ret
 XBelowY:
     fstp    st(0)
-    mov     rax, -1
+    mov     eax, -1
     ret
 D80cmpD80 ENDP
 
@@ -821,13 +821,13 @@ D80getExpo10 PROC
     fxch    st(1)                              ; st0 = |x|     , st1 = log10(2)=ln(2)/ln(10)
     fyl2x                                      ; st0 = st1*log2(st0) = ln(2)/ln(10)*ln(x)/ln(2) = log10(|x|)
     pushRoundMode ROUNDDOWN
-    fistp   QWORD PTR[rsp-8]
-    mov     rax, QWORD PTR[rsp-8]
+    fistp   DWORD PTR[rsp-4]
+    mov     eax, DWORD PTR[rsp-4]
     popRoundMode
     ret
 xIsZero:
     fstp    st(0)                              ; pop x
-    xor     rax, rax                           ; x == 0 => result = 0
+    xor     eax, eax                           ; x == 0 => result = 0
     ret
 D80getExpo10 ENDP
 
