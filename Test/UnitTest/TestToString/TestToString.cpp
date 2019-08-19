@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include <Random.h>
+#include <FileNameSplitter.h>
 #include <Math/MathLib.h>
-#include <Math/Double80.h>
-#include <Math/BigReal.h>
 #include "TestToString.h"
+#include "TestDataArray.h"
 
 #define FSZ(n) format1000(n).cstr()
 
@@ -42,209 +42,6 @@ static const double defaultTestValues[] = {
  ,1234567890123456
 };
 
-class StringParametersIterator {
-private:
-  size_t         m_nextValueIndex;
-  size_t         m_nextFlagIndex;
-  int            m_nextPrecision;
-  int            m_nextWidth;
-
-  bool               m_hasNext;
-  double             m_currentValue;
-  long               m_currentFlags;
-  size_t             m_currentValueIndex,m_currentFlagIndex;
-  int                m_currentPrecision, m_currentWidth;
-  CompactDoubleArray m_values;
-  CompactLongArray   m_flagCombinations;
-  StringArray        m_flagString;
-  size_t             m_maxValueIndex;
-  size_t             m_maxFlagIndex;
-
-  void resetValueIndex()         { m_nextValueIndex = 0; }
-  void resetFlagIndex()          { m_nextFlagIndex  = 0; }
-  void resetPrecision()          { m_nextPrecision  = 1; }
-  void resetWidth()              { m_nextWidth      = 0; }
-
-  void nextValueIndex()          { m_nextValueIndex++;   }
-  void nextFlagIndex()           { m_nextFlagIndex++;    }
-  void nextPrecision()           { m_nextPrecision++;    }
-  void nextWidth()               { m_nextWidth++;        }
-
-  bool hasNextValueIndex() const { return m_nextValueIndex < m_maxValueIndex; }
-  bool hasNextFlagIndex()  const { return m_nextFlagIndex  < m_maxFlagIndex;  }
-  bool hasNextPrecision()  const { return m_nextPrecision  < 15;              }
-  bool hasNextWidth()      const { return m_nextWidth      < 25;              }
-
-  void setValueAndFlags();
-  void init(const CompactDoubleArray &values);
-  void initFlagCombinations();
-  String getFlagString(long flags) const;
-public:
-  StringParametersIterator();
-  StringParametersIterator(const CompactDoubleArray &values);
-  void next();
-
-  inline bool hasNext() const {
-    return m_hasNext;
-  }
-
-  inline int getWidth() const {
-    return m_currentWidth;
-  }
-
-  inline int getPrecision() const {
-    return m_currentPrecision;
-  }
-
-  inline long getFlags()                 const { return m_currentFlags; }
-  inline const double &getValue64()      const { return m_currentValue; }
-  inline Double80      getValue80()      const { return m_currentValue; }
-  inline BigReal       getValueBigReal() const { return m_currentValue; }
-  String               toString()        const;
-  inline operator StreamParameters() const {
-    return StreamParameters(getPrecision(), getWidth(), getFlags());
-  }
-};
-
-StringParametersIterator::StringParametersIterator() {
-  CompactDoubleArray tmp;
-  for(int i = 0; i < ARRAYSIZE(defaultTestValues); i++) {
-    tmp.add(defaultTestValues[i]);
-  }
-  init(tmp);
-}
-
-StringParametersIterator::StringParametersIterator(const CompactDoubleArray &values) {
-  init(values);
-}
-
-void StringParametersIterator::init(const CompactDoubleArray &values) {
-  if(values.size() >= 256) {
-    throwException(_T("Too many values (=%s). max is 255"), FSZ(values.size()));
-  }
-  m_values = values;
-
-  for(size_t i = 0; i < values.size(); i++) {
-    const double   d64  = values[i];
-    const Double80 d80  = values[i];
-    const BigReal  n    = values[i];
-    const int d64expo10 = getExpo10(d64);
-    const int d80expo10 = Double80::getExpo10(d80);
-    const int nexpo10   = (int)BigReal::getExpo10(n);
-    if(d80expo10 != d64expo10 || nexpo10 != d64expo10) {
-      throwException(_T("getExpo10(%20.14le) mismatch. (double):%3d, (Double80):%3d, (BigReal):%3d")
-                    ,d64,d64expo10,d80expo10,nexpo10);
-    }
-  }
-
-  m_maxValueIndex = m_values.size()-1;
-  initFlagCombinations();
-
-  resetValueIndex();
-  resetFlagIndex();
-  resetPrecision();
-  resetWidth();
-
-  m_hasNext = true;
-}
-
-void StringParametersIterator::initFlagCombinations() {
-  m_flagCombinations.add(0);
-  m_flagString.add(getFlagString(0));
-
-  for(long flags = 0;;) {
-    if(!(flags & ios::uppercase)) {
-      flags |= ios::uppercase;
-    } else {
-      flags &= ~ios::uppercase;
-      if(!(flags & ios::floatfield)) {
-        flags |= ios::fixed;
-      } else {
-        if(flags & ios::fixed) {
-          flags &= ~ios::fixed;
-          flags |= ios::scientific;
-        } else {
-          flags &= ~ios::scientific;
-          if(!(flags & ios::left)) {
-            flags |= ios::left;
-          } else {
-            flags &= ~ios::left;
-            if(!(flags & ios::right)) {
-              flags |= ios::right;
-            } else {
-              flags &= ~ios::right;
-              if(!(flags & ios::showpoint)) {
-                flags |= ios::showpoint;
-              } else {
-                flags &= ~ios::showpoint;
-                if(!(flags & ios::showpos)) {
-                  flags |= ios::showpos;
-                } else {
-                  break;
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-    m_flagCombinations.add(flags);
-    m_flagString.add(getFlagString(flags));
-  }
-  m_maxFlagIndex = m_flagCombinations.size() - 1;
-}
-
-void StringParametersIterator::setValueAndFlags() {
-  m_currentValueIndex = m_nextValueIndex;
-  m_currentFlagIndex  = m_nextFlagIndex;
-  m_currentValue      = m_values[m_currentValueIndex];
-  m_currentFlags      = m_flagCombinations[m_currentFlagIndex];
-  m_currentWidth      = m_nextWidth;
-  m_currentPrecision  = m_nextPrecision;
-}
-
-void StringParametersIterator::next() {
-  if(!m_hasNext)
-    return;
-
-  setValueAndFlags();
-
-  if(hasNextValueIndex()) {
-    nextValueIndex();
-  } else {
-    resetValueIndex();
-    if(hasNextFlagIndex()) {
-      nextFlagIndex();
-    } else {
-      resetFlagIndex();
-      if(hasNextPrecision()) {
-        nextPrecision();
-      } else {
-        resetPrecision();
-        if(hasNextWidth()) {
-          nextWidth();
-        } else {
-          m_hasNext = false;
-        }
-      }
-    }
-  }
-}
-
-String StringParametersIterator::getFlagString(long flags) const {
-  String result;
-  result =  (flags & ios::showpos   ) ? "+" : " ";
-  result += (flags & ios::showpoint ) ? "." : " ";
-  result += (flags & ios::left      ) ? "l" : " ";
-  result += (flags & ios::right     ) ? "r" : " ";
-  result += (flags & ios::scientific) ? (flags & ios::uppercase) ? "E" : "e" : " ";
-  result += (flags & ios::fixed     ) ? "f" : " ";
-  return result;
-}
-
-String StringParametersIterator::toString() const {
-  return m_flagString[m_currentFlagIndex] + format(_T(" %2d.%2d %20.16le"),getWidth(),getPrecision(),getValue64());
-}
 
 // ---------------------------------------------------------------------------
 
@@ -263,66 +60,60 @@ int getLastMantissaDigit(const char *s) {
     return -2;
 }
 
-static void testToString(const String &errorName, StringParametersIterator &it) {
-  UINT totalCounter           = 0;
-  UINT mismatchDouble80       = 0;
-  UINT mismatchBigReal        = 0;
-  UINT lengthMismatchDouble80 = 0;
-  UINT lengthMismatchBigReal  = 0;
+static void testToString(const String &errorName, Iterator<TestElement> &it) {
+  UINT totalCounter      = 0;
+  UINT mismatchD80       = 0;
+  UINT mismatchBR        = 0;
+  UINT lengthMismatchD80 = 0;
+  UINT lengthMismatchBR  = 0;
 
-  tofstream errorLog(errorName.cstr());
+  FileNameSplitter spl(errorName);
+  const String rawFileName = spl.getFileName();
+  tofstream errorLogD80(spl.setFileName(rawFileName + _T("D80"    )).getFullPath().cstr());
+  tofstream errorLogBR( spl.setFileName(rawFileName + _T("BigReal")).getFullPath().cstr());
 
   while(it.hasNext()) {
-    it.next();
-    tostrstream s64,s80,sN;
-
-/*
-    if(((it.getFlags() & (ios::fixed|ios::scientific)) == ios::fixed) && it.getPrecision() + Double80::getExpo10(it.getValue80()) > 26) {
-      continue; // Skip this check and get an uncatchable "access-violation"-Exception from ostrstream << it.getValue64() !!!
-    }
-*/
+    TestElement element = it.next();
+    tostrstream sD64,sD80,sBR;
 
     if(++totalCounter % 10000 == 0) {
-      tcout << _T("Count:") << totalCounter << _T(" ") << it.toString() << _T("          \r");
+      tcout << _T("Count:") << totalCounter << _T(" ") << element.toString() << _T("          \r");
       tcout.flush();
     }
-    const double d64 = it.getValue64();
-    s64 << it << d64;
-    s80 << it << it.getValue80();
-    sN  << it << it.getValueBigReal();
+    sD64 << element.m_param << element.m_values->getDouble();
+    sD80 << element.m_param << element.m_values->getDouble80();
+    sBR  << element.m_param << element.m_values->getBigReal();
 
-    tstring buf64 = s64.str();
-    tstring buf80 = s80.str();
-    tstring bufN  = sN.str();
+    tstring bufD64 = sD64.str();
+    tstring bufD80 = sD80.str();
+    tstring bufBR  = sBR.str();
 
-    const bool equal80 = buf80 == buf64;
-    const bool equalN = bufN == buf64;
+    const bool equalD80 = bufD80 == bufD64;
+    const bool equalBR  = bufBR  == bufD64;
 
-    if(!equal80 || !equalN) {
-      errorLog << it.toString() << _T("\tbuf64:<") << buf64 << _T(">\tbuf80:<") << buf80 << _T(">\tbufN:<") << bufN << _T(">") << endl;
-
-      if(!equal80) {
-        mismatchDouble80++;
-        if(buf80.length() != buf64.length()) {
-          lengthMismatchDouble80++;
-        }
+    if(!equalD80) {
+      errorLogD80 << element.toString() << _T("\tbufD64:<") << bufD64 << _T(">\tbuf80:<") << bufD80 << _T(">") << endl;
+      mismatchD80++;
+      if(bufD80.length() != bufD64.length()) {
+        lengthMismatchD80++;
       }
+    }
 
-      if(!equalN) {
-        mismatchBigReal++;
-        if(bufN.length() != buf64.length()) {
-          lengthMismatchBigReal++;
-        }
+    if(!equalBR) {
+      errorLogBR << element.toString() << _T("\tbufD64:<") << bufD64 << _T(">\tbufBr:<") << bufBR << _T(">") << endl;
+      mismatchBR++;
+      if(bufBR.length() != bufD64.length()) {
+        lengthMismatchBR++;
       }
     }
   }
 
   tcout << spaceString(60) << endl;
-  tcout << _T("Total Count                 :") << iparam(8) << totalCounter << _T(".") << endl;
-  tcout << _T("Format mismatch for Double80:") << iparam(8) << mismatchDouble80       << _T(" ") << ufparam(2) << PERCENT(mismatchDouble80      , totalCounter) << _T("%.") << endl;
-  tcout << _T("Format mismatch for BigReal :") << iparam(8) << mismatchBigReal        << _T(" ") << ufparam(2) << PERCENT(mismatchBigReal       , totalCounter) << _T("%.") << endl;
-  tcout << _T("Length mismatch for Double80:") << iparam(8) << lengthMismatchDouble80 << _T(" ") << ufparam(2) << PERCENT(lengthMismatchDouble80, totalCounter) << _T("%.") << endl;
-  tcout << _T("Length mismatch for BigReal :") << iparam(8) << lengthMismatchBigReal  << _T(" ") << ufparam(2) << PERCENT(lengthMismatchBigReal , totalCounter) << _T("%.") << endl;
+  tcout << _T("Total Count                 :") << iparam(8) << totalCounter      << _T(".") << endl;
+  tcout << _T("Format mismatch for Double80:") << iparam(8) << mismatchD80       << _T(" ") << ufparam(2) << PERCENT(mismatchD80      , totalCounter) << _T("%.") << endl;
+  tcout << _T("Format mismatch for BigReal :") << iparam(8) << mismatchBR        << _T(" ") << ufparam(2) << PERCENT(mismatchBR       , totalCounter) << _T("%.") << endl;
+  tcout << _T("Length mismatch for Double80:") << iparam(8) << lengthMismatchD80 << _T(" ") << ufparam(2) << PERCENT(lengthMismatchD80, totalCounter) << _T("%.") << endl;
+  tcout << _T("Length mismatch for BigReal :") << iparam(8) << lengthMismatchBR  << _T(" ") << ufparam(2) << PERCENT(lengthMismatchBR , totalCounter) << _T("%.") << endl;
 }
 
 static int doubleCompare(const double &d1, const double &d2) {
@@ -330,13 +121,12 @@ static int doubleCompare(const double &d1, const double &d2) {
 }
 
 void testToString() {
-
   const double startTime = getProcessTime();
   tcout << _T("Testing operator<<(ostream &stream, BigReal/Double80/double)") << endl;
 
-  StringParametersIterator it1;
-  const String fileName = getTestFileName(__TFUNCTION__, _T("log"));
-  testToString(fileName, it1);
+  TestDataArray a1(defaultTestValues, ARRAYSIZE(defaultTestValues));
+  const String fileName1 = getTestFileName(__TFUNCTION__, _T("log"));
+  testToString(fileName1, a1.getIterator());
 
   CompactDoubleArray values;
   for(int i = 0; i < 32; i++) {
@@ -350,11 +140,11 @@ void testToString() {
 //    printf("value[%2d]:%23.16le\n",i,values[i]);
 //  }
 
-  StringParametersIterator it2(values);
-  testToString(_T("c:\\temp\\toStringErrorsRnd.log"), it2);
+  TestDataArray rndArray(values);
+  const String fileName2 = getTestFileName(_T("toStringErrorsRnd"), _T("log"));
+  testToString(fileName2, rndArray.getIterator());
 
   const double timeUsage = getProcessTime() - startTime;
 
   tcout << _T("Total time usage:") << ufparam(3) << ((getProcessTime() - startTime) / 1e6) << _T(" sec.") << endl;
-
 }
