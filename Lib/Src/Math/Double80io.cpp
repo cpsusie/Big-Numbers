@@ -22,17 +22,48 @@ static TCHAR *findFirstDigit(TCHAR *str) {
 #define addDecimalPoint(s) { s += _T("."); }
 #define addExponentChar(s) { s += ((flags & ios::uppercase) ? _T("E") : _T("e")); }
 
-static void formatFixed(String &result, const Double80 &x, StreamSize precision, FormatFlags flags, int expo10, bool removeTrailingZeroes) {
+// Assume str consists of characters [0-9]
+// return carry, 0 or 1
+static UINT round5DigitString(String &str, intptr_t lastDigitPos) {
+  if((lastDigitPos < (intptr_t)str.length()-1) && (str[lastDigitPos+1] >= '5')) {
+    TCHAR *first = str.cstr(), *dp = first + lastDigitPos;
+    for(; dp >= first; dp--) {
+      if(*dp < _T('9')) {
+        (*dp)++;
+        break;
+      } else {
+        *dp = '0';
+      }
+    }
+    if(dp < first) {
+      str.insert(0, '1'); // carry propagated all the way the the start
+      return 1;
+    }
+  }
+  return 0;
+}
+
+static void removeTralingZeroDigits(String &str) {
+  while(str.last() == '0') {
+    str.removeLast();
+  }
+  if(str.last() == '.') {
+    str.removeLast();
+  }
+}
+
+// ignore sign
+static void formatFixed(String &result, const Double80 &x, intptr_t precision, FormatFlags flags, int expo10, bool removeTrailingZeroes) {
   TCHAR tmp[50];
 #ifdef _DEBUG
   memset(tmp, 0, sizeof(tmp));
 #endif
-  d80tot(tmp, (precision >= MAXPRECISION) ? x : round(x,(int)precision));
+  d80tot(tmp, x);
   const TCHAR  *mantissa  = findFirstDigit(tmp);
   TCHAR        *comma     = _tcschr(tmp,_T('.'));
   TCHAR        *decimals  = NULL;
   TCHAR        *estr      = _tcschr(tmp,_T('e'));
-  int           exponent  = 0;
+  int           e10       = 0;
 
   if(comma != NULL) {
     decimals = comma + 1;
@@ -40,59 +71,61 @@ static void formatFixed(String &result, const Double80 &x, StreamSize precision,
   }
   if(estr != NULL) {
     *(estr++) = 0;
-    exponent = _ttoi(estr);
+    e10 = _ttoi(estr);
   }
-  String ciphers = mantissa;
+  String   ciphers  = mantissa;
+  intptr_t commaPos = ciphers.length();
   if(decimals != NULL) {
     ciphers += decimals;
   }
-  if(exponent >= 0) {
-    if(exponent >= (int)ciphers.length()) {
-      result += ciphers + spaceString(exponent - (int)ciphers.length() + 1,'0');
-      if(flags & ios::showpoint || precision > 0) {
-        addDecimalPoint(result);
-      }
-      if((precision > 0) && (flags & ios::fixed)) {
-        result += spaceString(precision,'0');
-      }
-    } else { // 0 <= exponent < ciphers.length()
-      const int dotPosition = exponent+1;
-      result += substr(ciphers,0,dotPosition);
-
-      String decimals = substr(ciphers,dotPosition,(intptr_t)precision);
+  commaPos += e10;
+  intptr_t lastResultDigitPos = commaPos + precision - 1;
+  if(commaPos <= 0) { // leading zeroes
+    const intptr_t zeroCount = 1-commaPos;
+    ciphers.insert(0, spaceString(zeroCount, '0'));
+    commaPos           += zeroCount;
+    lastResultDigitPos += zeroCount;
+    commaPos += round5DigitString(ciphers, lastResultDigitPos);
+    result += substr(ciphers, 0, commaPos);
+    if((flags & ios::showpoint) || (precision > 0)) {
+      addDecimalPoint(result);
       if(precision > 0) {
-        if(removeTrailingZeroes) {
-          while((decimals.length()>0) && (decimals.last() == '0')) { // remove trailing zeroes from decimals
-            decimals.removeLast();
-          }
-        } else { // add zeroes to specified precisionision
-          decimals += spaceString(precision - ((int)ciphers.length() - dotPosition),'0');
-        }
+        result += substr(ciphers, commaPos, precision);
       }
-
-      if((flags & ios::showpoint) || decimals.length() > 0) {
-        addDecimalPoint(result);
-        result += decimals;
+      if(removeTrailingZeroes) removeTralingZeroDigits(result);
+    }
+  } else if(commaPos > (intptr_t)ciphers.length()) {
+    const intptr_t zeroCount = commaPos - (intptr_t)ciphers.length();
+    result += ciphers;
+    result += spaceString(zeroCount, '0');
+    if((flags & ios::showpoint) || (precision > 0)) {
+      addDecimalPoint(result);
+      if(!removeTrailingZeroes && (precision > 0)) {
+        result += spaceString(precision, '0');
       }
     }
-  } else { // exponent < 0
-    intptr_t leadingZeroes = -1 - exponent;
-    leadingZeroes = min(leadingZeroes,(intptr_t)precision);
-    result += _T("0");
-    addDecimalPoint(result);
-    result += spaceString(leadingZeroes,'0');
-    result += substr(ciphers, 0, (intptr_t)precision - leadingZeroes);
-    if(removeTrailingZeroes) {
-      for(int i = (int)result.length()-1; i >= 0 && result[i] == '0';) { // remove trailing zeroes from result
-        result.remove(i--);
+  } else { // 0 < commaPos <= ciphers.length()
+    commaPos += round5DigitString(ciphers, lastResultDigitPos);
+    result += substr(ciphers, 0, commaPos);
+    if((flags & ios::showpoint) || (precision > 0)) {
+      addDecimalPoint(result);
+      if(precision > 0) {
+        result += substr(ciphers, commaPos, (intptr_t)precision);
+        if(removeTrailingZeroes) {
+          removeTralingZeroDigits(result);
+        } else {
+          const intptr_t zeroCount = precision - ((intptr_t)ciphers.length() - commaPos);
+          if(zeroCount > 0) {
+            result += spaceString(zeroCount, '0');
+          }
+        }
       }
-    } else {
-      result += spaceString(precision - leadingZeroes - (int)ciphers.length(),'0');
     }
   }
 }
 
-static void formatScientific(String &result, const Double80 &x, StreamSize precision, FormatFlags flags, bool removeTrailingZeroes) {
+// ignore sign
+static void formatScientific(String &result, const Double80 &x, intptr_t precision, FormatFlags flags, bool removeTrailingZeroes) {
   TCHAR tmp[50];
 #ifdef _DEBUG
   memset(tmp, 0, sizeof(tmp));
@@ -114,9 +147,9 @@ static void formatScientific(String &result, const Double80 &x, StreamSize preci
     decimals = comma + 1;
     *comma = 0;
     if(precision+1 < (intptr_t)decimals.length()) {
-      decimals = substr(decimals,0,(intptr_t)precision+1);
-      if(decimals[(intptr_t)precision] >= _T('5')) {
-        decimals[(intptr_t)precision] = '0';
+      decimals = substr(decimals,0,precision+1);
+      if(decimals[precision] >= _T('5')) {
+        decimals[precision] = '0';
         intptr_t i;
         for(i = (intptr_t)precision-1; i >= 0; i--) {
           TCHAR &digit = decimals[i];
@@ -143,14 +176,14 @@ static void formatScientific(String &result, const Double80 &x, StreamSize preci
 
   if(removeTrailingZeroes && (precision < (intptr_t)decimals.length())) {
     for(; precision > 0 && decimals[(intptr_t)precision-1] == '0'; precision--) { // remove trailing zeroes from decimals
-      decimals.remove((intptr_t)precision-1);
+      decimals.remove(precision-1);
     }
   }
 
   if((flags & ios::showpoint) || (precision > 0)) {
     addDecimalPoint(result);
     if(precision > 0) {
-      result += substr(decimals,0,(intptr_t)precision);
+      result += substr(decimals,0,precision);
     }
   }
 
@@ -159,7 +192,7 @@ static void formatScientific(String &result, const Double80 &x, StreamSize preci
 }
 
 StrStream &operator<<(StrStream &stream, const Double80 &x) {
-  StreamSize        precision  = stream.getPrecision();
+  intptr_t          precision  = (intptr_t)stream.getPrecision();
   const FormatFlags flags      = stream.getFlags();
 
   if(precision < 0) {
@@ -187,7 +220,7 @@ StrStream &operator<<(StrStream &stream, const Double80 &x) {
         precision = max(0,precision-1);
         formatScientific(result, x, precision, flags, (flags & ios::showpoint) == 0);
       } else {
-        const StreamSize prec = (precision == 0) ? abs(expo10) : max(0,precision-expo10-1);
+        const intptr_t prec = (precision == 0) ? abs(expo10) : max(0,precision-expo10-1);
         formatFixed(result, x, prec, flags, expo10, ((flags & ios::showpoint) == 0) || precision <= 1);
       }
     } // x defined && x != 0
