@@ -85,5 +85,7 @@ protected:
   afx_msg void OnBnClickedCheckMaxPrecision();
   afx_msg void OnBnClickedButtonStreamOut();
   afx_msg void OnBnClickedButtonStreamIn();
+  afx_msg void OnBnClickedCheckIosFlag();
   DECLARE_MESSAGE_MAP()
+public:
 };

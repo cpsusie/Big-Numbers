@@ -66,6 +66,8 @@
 #define IDC_BUTTONSTREAMOUT             1094
 #define IDC_EDITFLOATASSTRING           1095
 #define IDC_STATICSTREAMINSTATUS        1096
+#define IDC_STATICSTREAMFLAGSLABEL      1097
+#define IDC_STATICSTREAMFLAGSVALUE      1098
 #define IDC_EDITWIDTH                   1100
 #define IDC_EDITPREC                    1101
 #define IDC_CHECK_MAXPRECISION          1102

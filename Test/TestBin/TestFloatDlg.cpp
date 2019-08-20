@@ -31,47 +31,65 @@ void CTestFloatDlg::DoDataExchange(CDataExchange *pDX) {
 
 BEGIN_MESSAGE_MAP(CTestFloatDlg, CDialog)
   ON_WM_CLOSE()
-  ON_CBN_SELCHANGE(IDC_COMBOFLOATTYPE    , OnSelChangeComboFloatType   )
-  ON_BN_CLICKED(   IDC_CHECKSIGNBIT      , OnClickedCheckSignBit       )
-  ON_EN_CHANGE(    IDC_EDITEXPOFIELD     , OnChangeEditExpoField       )
-  ON_EN_CHANGE(    IDC_EDITSIGNIFICAND   , OnChangeEditSigField        )
-  ON_EN_SETFOCUS(  IDC_EDITEXPOFIELD     , OnEnSetFocusEditExpoField   )
-  ON_EN_SETFOCUS(  IDC_EDITSIGNIFICAND   , OnEnSetFocusEditSignificand )
-  ON_BN_CLICKED(   IDC_BUTTONTOFLOAT     , OnBnClickedButtonToFloat    )
-  ON_BN_CLICKED(   IDC_BUTTONTODOUBLE    , OnBnClickedButtonToDouble   )
-  ON_BN_CLICKED(   IDC_BUTTONTODOUBLE80  , OnBnClickedButtonToDouble80 )
-  ON_BN_CLICKED(   IDC_BUTTONSAVE        , OnBnClickedButtonSave       )
-  ON_BN_CLICKED(   IDC_BUTTONLOAD        , OnBnClickedButtonLoad       )
-  ON_BN_CLICKED(   IDC_BUTTONRESETMEM    , OnBnClickedButtonResetMem   )
-  ON_BN_CLICKED(   IDC_BUTTONSWAPACCMEM  , OnBnClickedButtonSwapAccMem )
-  ON_BN_CLICKED(   IDC_BUTTONADD         , OnBnClickedButtonAdd        )
-  ON_BN_CLICKED(   IDC_BUTTONSUB         , OnBnClickedButtonSub        )
-  ON_BN_CLICKED(   IDC_BUTTONMULT        , OnBnClickedButtonMult       )
-  ON_BN_CLICKED(   IDC_BUTTONDIV         , OnBnClickedButtonDiv        )
-  ON_BN_CLICKED(   IDC_BUTTONFMOD        , OnBnClickedButtonFmod       )
-  ON_BN_CLICKED(   IDC_BUTTONSQR         , OnBnClickedButtonSqr        )
-  ON_BN_CLICKED(   IDC_BUTTONSQRT        , OnBnClickedButtonSqrt       )
-  ON_BN_CLICKED(   IDC_BUTTONSETZERO     , OnBnClickedButtonSetZero    )
-  ON_BN_CLICKED(   IDC_BUTTONSETTRUEMIN  , OnBnClickedButtonSetTrueMin )
-  ON_BN_CLICKED(   IDC_BUTTONSETMIN      , OnBnClickedButtonSetMin     )
-  ON_BN_CLICKED(   IDC_BUTTONSETEPS      , OnBnClickedButtonSetEps     )
-  ON_BN_CLICKED(   IDC_BUTTONSETONE      , OnBnClickedButtonSetOne     )
-  ON_BN_CLICKED(   IDC_BUTTONSETMAX      , OnBnClickedButtonSetMax     )
-  ON_BN_CLICKED(   IDC_BUTTONSETPINF     , OnBnClickedButtonSetPInf    )
-  ON_BN_CLICKED(   IDC_BUTTONSETQNAN     , OnBnClickedButtonSetQNaN    )
-  ON_BN_CLICKED(   IDC_BUTTONSETSNAN     , OnBnClickedButtonSetSNaN    )
-  ON_NOTIFY(UDN_DELTAPOS, IDC_SPINPWIDTH   , OnDeltaPosSpinpWidth      )
-  ON_NOTIFY(UDN_DELTAPOS, IDC_SPINPRECISION, OnDeltaPosSpinPrecision   )
-  ON_BN_CLICKED(   IDC_CHECK_MAXPRECISION, OnBnClickedCheckMaxPrecision)
-  ON_BN_CLICKED(   IDC_BUTTONSTREAMOUT   , OnBnClickedButtonStreamOut  )
-  ON_BN_CLICKED(   IDC_BUTTONSTREAMIN    , OnBnClickedButtonStreamIn   )
+  ON_CBN_SELCHANGE(IDC_COMBOFLOATTYPE      , OnSelChangeComboFloatType   )
+  ON_BN_CLICKED(   IDC_CHECKSIGNBIT        , OnClickedCheckSignBit       )
+  ON_EN_CHANGE(    IDC_EDITEXPOFIELD       , OnChangeEditExpoField       )
+  ON_EN_CHANGE(    IDC_EDITSIGNIFICAND     , OnChangeEditSigField        )
+  ON_EN_SETFOCUS(  IDC_EDITEXPOFIELD       , OnEnSetFocusEditExpoField   )
+  ON_EN_SETFOCUS(  IDC_EDITSIGNIFICAND     , OnEnSetFocusEditSignificand )
+  ON_BN_CLICKED(   IDC_BUTTONTOFLOAT       , OnBnClickedButtonToFloat    )
+  ON_BN_CLICKED(   IDC_BUTTONTODOUBLE      , OnBnClickedButtonToDouble   )
+  ON_BN_CLICKED(   IDC_BUTTONTODOUBLE80    , OnBnClickedButtonToDouble80 )
+  ON_BN_CLICKED(   IDC_BUTTONSAVE          , OnBnClickedButtonSave       )
+  ON_BN_CLICKED(   IDC_BUTTONLOAD          , OnBnClickedButtonLoad       )
+  ON_BN_CLICKED(   IDC_BUTTONRESETMEM      , OnBnClickedButtonResetMem   )
+  ON_BN_CLICKED(   IDC_BUTTONSWAPACCMEM    , OnBnClickedButtonSwapAccMem )
+  ON_BN_CLICKED(   IDC_BUTTONADD           , OnBnClickedButtonAdd        )
+  ON_BN_CLICKED(   IDC_BUTTONSUB           , OnBnClickedButtonSub        )
+  ON_BN_CLICKED(   IDC_BUTTONMULT          , OnBnClickedButtonMult       )
+  ON_BN_CLICKED(   IDC_BUTTONDIV           , OnBnClickedButtonDiv        )
+  ON_BN_CLICKED(   IDC_BUTTONFMOD          , OnBnClickedButtonFmod       )
+  ON_BN_CLICKED(   IDC_BUTTONSQR           , OnBnClickedButtonSqr        )
+  ON_BN_CLICKED(   IDC_BUTTONSQRT          , OnBnClickedButtonSqrt       )
+  ON_BN_CLICKED(   IDC_BUTTONSETZERO       , OnBnClickedButtonSetZero    )
+  ON_BN_CLICKED(   IDC_BUTTONSETTRUEMIN    , OnBnClickedButtonSetTrueMin )
+  ON_BN_CLICKED(   IDC_BUTTONSETMIN        , OnBnClickedButtonSetMin     )
+  ON_BN_CLICKED(   IDC_BUTTONSETEPS        , OnBnClickedButtonSetEps     )
+  ON_BN_CLICKED(   IDC_BUTTONSETONE        , OnBnClickedButtonSetOne     )
+  ON_BN_CLICKED(   IDC_BUTTONSETMAX        , OnBnClickedButtonSetMax     )
+  ON_BN_CLICKED(   IDC_BUTTONSETPINF       , OnBnClickedButtonSetPInf    )
+  ON_BN_CLICKED(   IDC_BUTTONSETQNAN       , OnBnClickedButtonSetQNaN    )
+  ON_BN_CLICKED(   IDC_BUTTONSETSNAN       , OnBnClickedButtonSetSNaN    )
+  ON_NOTIFY(UDN_DELTAPOS, IDC_SPINPWIDTH   , OnDeltaPosSpinpWidth        )
+  ON_NOTIFY(UDN_DELTAPOS, IDC_SPINPRECISION, OnDeltaPosSpinPrecision     )
+  ON_BN_CLICKED(   IDC_CHECK_MAXPRECISION  , OnBnClickedCheckMaxPrecision)
+  ON_BN_CLICKED(   IDC_BUTTONSTREAMOUT     , OnBnClickedButtonStreamOut  )
+  ON_BN_CLICKED(   IDC_BUTTONSTREAMIN      , OnBnClickedButtonStreamIn   )
+  ON_BN_CLICKED(   IDC_CHECK_IOS_UNITBUF   , OnBnClickedCheckIosFlag     )
+  ON_BN_CLICKED(   IDC_CHECK_IOS_UPPERCASE , OnBnClickedCheckIosFlag     )
+  ON_BN_CLICKED(   IDC_CHECK_IOS_SHOWBASE  , OnBnClickedCheckIosFlag     )
+  ON_BN_CLICKED(   IDC_CHECK_IOS_SHOWPOINT , OnBnClickedCheckIosFlag     )
+  ON_BN_CLICKED(   IDC_CHECK_IOS_SHOWPOS   , OnBnClickedCheckIosFlag     )
+  ON_BN_CLICKED(   IDC_CHECK_IOS_LEFT      , OnBnClickedCheckIosFlag     )
+  ON_BN_CLICKED(   IDC_CHECK_IOS_RIGHT     , OnBnClickedCheckIosFlag     )
+  ON_BN_CLICKED(   IDC_CHECK_IOS_INTERNAL  , OnBnClickedCheckIosFlag     )
+  ON_BN_CLICKED(   IDC_CHECK_IOS_DEC       , OnBnClickedCheckIosFlag     )
+  ON_BN_CLICKED(   IDC_CHECK_IOS_OCT       , OnBnClickedCheckIosFlag     )
+  ON_BN_CLICKED(   IDC_CHECK_IOS_HEX       , OnBnClickedCheckIosFlag     )
+  ON_BN_CLICKED(   IDC_CHECK_IOS_SCIENTIFIC, OnBnClickedCheckIosFlag     )
+  ON_BN_CLICKED(   IDC_CHECK_IOS_FIXED     , OnBnClickedCheckIosFlag     )
+  ON_BN_CLICKED(   IDC_CHECK_IOS_HEXFLOAT  , OnBnClickedCheckIosFlag     )
+  ON_BN_CLICKED(   IDC_CHECK_IOS_BOOLALPHA , OnBnClickedCheckIosFlag     )
+  ON_BN_CLICKED(   IDC_CHECK_IOS_STDIO     , OnBnClickedCheckIosFlag     )
 END_MESSAGE_MAP()
 
 BOOL CTestFloatDlg::OnInitDialog() {
   __super::OnInitDialog();
   showFloatFieldsValue(m_accumulator, false);
   showFloatFieldsValue(m_memory     , true );
-  return TRUE;  // return TRUE  unless you set the focus to a control
+  OnBnClickedCheckIosFlag();
+  GetDlgItem(IDC_EDITEXPOFIELD)->SetFocus();
+  return FALSE;
 }
 
 void CTestFloatDlg::OnOK() {
@@ -212,6 +230,11 @@ void CTestFloatDlg::OnBnClickedButtonStreamOut() {
 void CTestFloatDlg::OnBnClickedButtonStreamIn() {
   UpdateData();
   streamInSelectedOp(m_floatingPointAsString);
+}
+
+void CTestFloatDlg::OnBnClickedCheckIosFlag() {
+  const FormatFlags flags = getStreamOutFormatFlags();
+  setWindowText(this, IDC_STATICSTREAMFLAGSVALUE, format(_T("%08X"), flags));
 }
 
 // -------------------------------------------------------------------------------------
