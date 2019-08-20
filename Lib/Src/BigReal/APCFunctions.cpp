@@ -1,35 +1,33 @@
 #include "pch.h"
 
-#define _1 pool->get1()
-
 BigReal BigReal::apcSum(const char bias, const BigReal &x, const BigReal &y, DigitPool *digitPool) {
   DEFINEMETHODNAME;
-  DigitPool *pool = digitPool ? digitPool : x.getDigitPool();
+  if(digitPool == NULL) digitPool = x.getDigitPool();
 
-  HANDLE_INFBINARYOP(x,y,pool);
+  HANDLE_INFBINARYOP(x,y,digitPool);
 
   if(x.isZero()) {
-    return BigReal(y, pool);
+    return BigReal(y, digitPool);
   } else if(y.isZero()) {
-    return digitPool ? BigReal(x, digitPool) : x;
+    return BigReal(x, digitPool);
   }
 
   const BRExpoType xe = getExpo10(x);
   const BRExpoType ye = getExpo10(y);
-  return sum(x, y, e(_1, max(xe, ye) - APC_DIGITS - 2), pool).rRound(APC_DIGITS+2).adjustAPCResult(bias, method);
+  return sum(x, y, e(digitPool->get1(), max(xe, ye) - APC_DIGITS - 2), digitPool).rRound(APC_DIGITS+2).adjustAPCResult(bias, method);
 }
 
 BigReal BigReal::apcProd(const char bias, const BigReal &x, const BigReal &y, DigitPool *digitPool) {
   DEFINEMETHODNAME;
-  DigitPool *pool = digitPool ? digitPool : x.getDigitPool();
+  if(digitPool == NULL) digitPool = x.getDigitPool();
 
-  HANDLE_INFBINARYOP(x,y,pool);
+  HANDLE_INFBINARYOP(x,y,digitPool);
 
   if(x.isZero() || y.isZero()) {
-    return pool->get0();
+    return digitPool->get0();
   }
 
-  BigReal result(pool);
+  BigReal result(digitPool);
   return result.shortProduct(x, y, x.m_expo + y.m_expo).rTrunc(APC_DIGITS+2).adjustAPCResult(bias, method);
 }
 
@@ -38,24 +36,24 @@ BigReal BigReal::apcProd(const char bias, const BigReal &x, const BigReal &y, Di
 
 BigReal BigReal::apcQuot(const char bias, const BigReal &x, const BigReal &y, DigitPool *digitPool) {
   DEFINEMETHODNAME;
-  DigitPool *pool = digitPool ? digitPool : x.getDigitPool();
+  if(digitPool == NULL) digitPool = x.getDigitPool();
 
-  HANDLE_INFBINARYOP(x,y,pool);
+  HANDLE_INFBINARYOP(x,y,digitPool);
 
   if(x.isZero()) {
-    return pool->get0();
+    return digitPool->get0();
   }
 
   const bool yNegative = y.isNegative();
   ((BigReal&)y).setPositive(); // cheating. We set it back agin
 
-  BigReal z(pool);
+  BigReal z(digitPool);
   z.copyrTrunc(x, MAXDIGITS_INT64).setPositive();
 
   BRExpoType scale;
   const __int64 yFirst = y.getFirst64(MAXDIGITS_DIVISOR64, &scale);
 
-  BigReal result(pool), tmp(pool), t(pool);
+  BigReal result(digitPool), tmp(digitPool), t(digitPool);
   for(int i = 0;; i++) {
     t.approxQuot64Abs(z, yFirst, scale).m_negative = z.m_negative;
     result += t;
@@ -70,22 +68,22 @@ BigReal BigReal::apcQuot(const char bias, const BigReal &x, const BigReal &y, Di
 
 BigReal BigReal::apcPow(const char bias, const BigReal &x, const BigInt &y, DigitPool *digitPool) {
   DEFINEMETHODNAME;
-  DigitPool           *pool = digitPool ? digitPool : x.getDigitPool();
+  if(digitPool == NULL) digitPool = x.getDigitPool();
 
-  HANDLE_INFBINARYOP(x,y,pool);
+  HANDLE_INFBINARYOP(x,y,digitPool);
 
   static const BigReal &c1  = BIGREAL_HALF;
 
   if(y.isZero()) {
-    return _1;
+    return digitPool->get1();
   } else if(x.isZero()) {
     if(y.isNegative()) {
       throwBigRealInvalidArgumentException(method, _T("x = 0 and y < 0"));
     }
-    return pool->get0();
+    return digitPool->get0();
   } else {
-    BigReal result = _1;
-    BigReal tmpX(x,pool), tmp(pool);
+    BigReal result = digitPool->get1();
+    BigReal tmpX(x,digitPool), tmp(digitPool);
 
 #define SHORTPROD(a,b) tmp.shortProductNoZeroCheck(a,b,4)
 
@@ -107,7 +105,7 @@ BigReal BigReal::apcPow(const char bias, const BigReal &x, const BigInt &y, Digi
         }
       }
     } else {                                                // use BigInt all the way down. guess this will almost never happen
-      BigReal tmpY(y, pool);
+      BigReal tmpY(y, digitPool);
       if(yNegative) tmpY.changeSign();
       while(!tmpY.isZero()) {
         if(odd(tmpY)) {
@@ -118,7 +116,7 @@ BigReal BigReal::apcPow(const char bias, const BigReal &x, const BigInt &y, Digi
       }
     }
     if(yNegative) {
-      return apcQuot(bias, _1, result, pool);
+      return apcQuot(bias, digitPool->get1(), result);
     } else {
       return result.rTrunc(APC_DIGITS+2).adjustAPCResult(bias, method);
     }

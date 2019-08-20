@@ -49,7 +49,7 @@ static const PiConstants PIC;
 
 BigReal pi(const BigReal &f, DigitPool *digitPool) {
   VALIDATETOLERANCE(f)
-  DigitPool *pool = digitPool ? digitPool : f.getDigitPool();
+  if(digitPool == NULL) digitPool = f.getDigitPool();
   pi_gate.wait();
 
   try {
@@ -85,9 +85,9 @@ BigReal pi(const BigReal &f, DigitPool *digitPool) {
 
       pi_gate.signal();
 
-      return BigReal(piValue, pool);
+      return BigReal(piValue, digitPool);
     }
-    BigReal tmp(pool);
+    BigReal tmp(digitPool);
     copy(tmp, piValue,APCprod(<,PIC.c15, f,PIP));
 
     pi_gate.signal();

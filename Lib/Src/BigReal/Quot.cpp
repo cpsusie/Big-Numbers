@@ -20,14 +20,14 @@ BigReal quot(const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *di
   if(y.isZero()) {
     throwBigRealInvalidArgumentException(method, _T("Division by zero"));
   }
-  DigitPool *pool = digitPool ? digitPool : x.getDigitPool();
+  if(digitPool == NULL) digitPool = x.getDigitPool();
 
   if(x.isZero()) {
-    return pool->get0();
+    return digitPool->get0();
   }
 
   if(BigReal::isPow10(y)) {
-    BigReal result(x, pool);
+    BigReal result(x, digitPool);
     if(y.isNegative()) {
       result.changeSign();
     }
@@ -35,16 +35,16 @@ BigReal quot(const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *di
   }
 
   if(compareAbs(x,y) == 0) {
-    return BigReal(sign(x) * sign(y), pool);
+    return BigReal(sign(x) * sign(y), digitPool);
   }
 #ifdef IS32BIT
-  return BigReal::quotLinear64(x,y,f, pool);
+  return BigReal::quotLinear64(x,y,f, digitPool);
 #else
-  return BigReal::quotLinear128(x,y,f, pool);
+  return BigReal::quotLinear128(x,y,f, digitPool);
 #endif
 
-//  return BigReal::quotNewton(x,y,f, pool);
-//  return BigReal::chooseQuotNewton(x,y,f,pool) ? BigReal::quotNewton(x,y,f,pool) : BigReal::quotLinear32(x,y,f,pool);
+//  return BigReal::quotNewton(x,y,f, digitPool);
+//  return BigReal::chooseQuotNewton(x,y,f,digitPool) ? BigReal::quotNewton(x,y,f,digitPool) : BigReal::quotLinear32(x,y,f,digitPool);
 }
 
 

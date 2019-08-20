@@ -3,12 +3,12 @@
 #include <ctype.h>
 
 BigInt::BigInt(const BigReal &x, DigitPool *digitPool) : BigReal(digitPool ? digitPool : x.getDigitPool()) {
-  DigitPool *pool = getDigitPool();
+  digitPool = getDigitPool();
 
   if(!isnormal(x)) {
     copyFields(x);
   } else if(x.m_expo < 0) { // |x| < 1
-    *this = x.isNegative() ? -pool->get1() : pool->get0();
+    *this = x.isNegative() ? -digitPool->get1() : digitPool->get0();
   } else if(x.getLow() >= 0) { // x is an integer
     copyDigits(x, x.getLength());
     copyFields(x);

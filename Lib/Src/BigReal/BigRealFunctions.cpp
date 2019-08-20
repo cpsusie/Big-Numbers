@@ -239,11 +239,11 @@ static BRDigitType roundInt(BRDigitType n, int prec) { // assume prec <= 0
 
 BigReal cut(const BigReal &x, size_t digits, DigitPool *digitPool) { // x truncated to the specified number of significant decimal digits
   if(!isfinite(x)) return x;
-  DigitPool *pool = digitPool ? digitPool : x.getDigitPool();
+  if(digitPool == NULL) digitPool = x.getDigitPool();
   if(x.isZero() || (digits == 0)) {
-    return pool->get0();
+    return digitPool->get0();
   }
-  BigReal result(pool);
+  BigReal result(digitPool);
   int k = BigReal::getDecimalDigitCount(x.m_first->n);
   if(digits < (UINT)k) {
     result.appendDigit(truncInt(x.m_first->n, (int)digits - k));
