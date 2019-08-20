@@ -3,18 +3,18 @@
 #include <Random.h>
 
 /* DEBUG-klasse til optælling af kald til ListImpl */
-#ifdef DEBUG
+//#define DEBUG_LISTIMPL
+#ifdef DEBUG_LISTIMPL
 
 class AutoCounter {
 public:
   TCHAR *m_name;
   int    m_counter;
   AutoCounter(TCHAR *name) { m_name = name; m_counter = 0; }
-  ~AutoCounter() { _tprintf(_T("count(%s):%d\n"), m_name, m_counter); }
+  ~AutoCounter() { _tprintf(_T("%s:count(%s):%d\n"), __TFILE__, m_name, m_counter); }
   AutoCounter &operator++(int k) { m_counter++; return *this;}
 };
 
-static AutoCounter resizecounter(_T("resize"    ));
 static AutoCounter descounter(   _T("destructor"));
 static AutoCounter initcounter(  _T("init"      ));
 
@@ -29,7 +29,7 @@ void ListImpl::init(AbstractObjectManager &objectManager) {
   m_first         = m_last = NULL;
   m_size          = 0;
   m_updateCount   = 0;
-#ifdef DEBUG
+#ifdef DEBUG_LISTIMPL
   initcounter++;
 #endif
 }
@@ -38,7 +38,7 @@ ListImpl::~ListImpl() {
   clear();
   m_nodePool.releaseAll();
   SAFEDELETE(m_objectManager);
-#ifdef DEBUG
+#ifdef DEBUG_LISTIMPL
   descounter++;
 #endif
 }

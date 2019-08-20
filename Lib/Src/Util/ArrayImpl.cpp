@@ -11,7 +11,7 @@ public:
   TCHAR *m_name;
   int        m_counter;
   AutoCounter(TCHAR *name) { m_name = name; m_counter = 0; }
-  ~AutoCounter() { _tprintf(_T("count(%s):%d\n"),m_name,m_counter); }
+  ~AutoCounter() { _tprintf(_T("%s:count(%s):%d\n"),__TFILE__, m_name,m_counter); }
   AutoCounter &operator++(int k) { m_counter++; return *this;}
 };
 
