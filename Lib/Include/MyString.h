@@ -100,6 +100,7 @@ public:
     if(index >= m_len) indexError(index);
     return m_buf[index];
   }
+  // Returns the last character in *this. _T('\0') is isEmpty()
   inline TCHAR        last() const { return m_len ? m_buf[m_len-1] : 0; }
   inline TCHAR       *cstr()       { return m_buf; }
   inline const TCHAR *cstr() const { return m_buf; }
