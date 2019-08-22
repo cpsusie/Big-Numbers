@@ -8,14 +8,18 @@ class ResourceChecker : public FileNameHandler {
 private:
   bool m_ok;
   bool m_verbose;
+  UINT m_fileCheckCount;
 public:
-  ResourceChecker(bool verbose) : m_verbose(verbose) {
+  ResourceChecker(bool verbose) : m_verbose(verbose), m_fileCheckCount(0) {
     m_ok = true;
   }
   void checkResources(const String &fileName);
   void handleFileName(const TCHAR *name, DirListEntry &info);
-  bool isOk() const {
+  inline bool isOk() const {
     return m_ok;
+  }
+  inline UINT getFilesChecked() const {
+    return m_fileCheckCount;
   }
 };
 
@@ -29,9 +33,10 @@ void ResourceChecker::checkResources(const String &fileName) {
 #ifdef DUMPSYMBOLS
     log = MKFOPEN(_T("c:\\temp\\checkMnemonics.txt"), _T("w"));
 #endif
-    if (m_verbose) {
+    if(m_verbose) {
       _ftprintf(stderr, _T("Analyzing %s                                                      \r"), fileName.cstr());
     }
+    m_fileCheckCount++;
     ResourceFile rf(fileName);
     if(!rf.isOk()) {
       rf.listErrors();
@@ -96,23 +101,23 @@ int main(int argc, const char **argv) {
   }
 
   try {
-    if (!*argv) {
+    if(!*argv) {
       _ftprintf(stderr, _T("No argument\n"));
       return -1;
-    }
-    else {
+    } else {
       ResourceChecker checker(verbose);
       FileTreeWalker::traverseArgv(argv, checker, recurse);
-      if (checker.isOk()) {
-        _tprintf(_T("No errors found\n"));
+      if(checker.getFilesChecked() == 0) {
+        _ftprintf(stderr, _T("No files checked\n"));
+        return -1;
+      } else if(checker.isOk()) {
+        _ftprintf(stderr, _T("No errors found\n"));
         return 0;
-      }
-      else {
+      } else {
         return -1;
       }
     }
-  }
-  catch (Exception e) {
+  } catch (Exception e) {
     _ftprintf(stderr, _T("Exception:%s\n"), e.what());
     return -1;
   }
