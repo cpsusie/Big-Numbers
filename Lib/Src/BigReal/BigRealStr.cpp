@@ -11,17 +11,6 @@ TCHAR BigRealStream::setSpaceChar(TCHAR value) {
 }
 
 #define addDecimalPoint(s)       { if(!decimalPointAdded) { s += _T("."); decimalPointAdded = true; } }
-#define addExponentChar(s)       { s += ((flags & ios::uppercase) ? _T("E") : _T("e"));               }
-#define addZeroes(      s,count) { s.insert(s.length(),(count), '0');                                 }
-
-static void removeTralingZeroDigits(String &str) {
-  while(str.last() == '0') {
-    str.removeLast();
-  }
-  if(str.last() == '.') {
-    str.removeLast();
-  }
-}
 
 static TCHAR *digitToStr(TCHAR *dst, BRDigitType n, UINT width = 0) {
   TCHAR tmp[50], *d = width ? tmp : dst;
@@ -57,14 +46,14 @@ void BigReal::formatFixed(String &result, StreamSize precision, FormatFlags flag
   TCHAR             digStr[100];
 
   if(d < 0) { // first handle integerpart
-    result += _T("0");
+    result += _T('0');
   } else {
     result += digitToStr(digStr, digit->n);
     d -= BigReal::getDecimalDigitCount(digit->n);
     for(digit = digit->next; digit != NULL && (d >= 0); d -= LOG10_BIGREALBASE, digit = digit->next) {
       result += digitToStr(digStr, digit->n, LOG10_BIGREALBASE);
     }
-    addZeroes(result,d + 1);
+    StrStream::addZeroes(result,d + 1);
     d = -1;
   }
 
@@ -94,10 +83,10 @@ void BigReal::formatFixed(String &result, StreamSize precision, FormatFlags flag
         decimalsDone += partLength;
       }
       if(!removeTrailingZeroes && (precision > decimalsDone)) {
-        addZeroes(result,precision - decimalsDone);
+        StrStream::addZeroes(result,precision - decimalsDone);
       }
       if(removeTrailingZeroes) {
-        removeTralingZeroDigits(result);
+        StrStream::removeTralingZeroDigits(result);
       }
     }
   }
@@ -141,14 +130,14 @@ void BigReal::formatScientific(String &result, StreamSize precision, FormatFlags
         decimalsDone += partLength;
       }
       if(!removeTrailingZeroes && decimalsDone < precision) {
-        addZeroes(result, precision - decimalsDone);
+        StrStream::addZeroes(result, precision - decimalsDone);
       }
       if(removeTrailingZeroes) {
-        removeTralingZeroDigits(result);
+        StrStream::removeTralingZeroDigits(result);
       }
     }
   }
-  addExponentChar(result);
+  StrStream::addExponentChar(result, flags);
 #ifdef IS32BIT
   result += format(_T("%+03d"), BigReal::getExpo10(nn));
 #else
@@ -158,12 +147,12 @@ void BigReal::formatScientific(String &result, StreamSize precision, FormatFlags
 
 void BigReal::formatWithSpaceChar(String &result, TCHAR spaceChar) const {
   if(isZero()) {
-    result += _T("0");
+    result += _T('0');
   } else {
     bool decimalPointAdded = false;
     BRExpoType d = m_expo;
     if(d < 0) {
-      result += _T("0");
+      result += _T('0');
       addDecimalPoint(result);
       for(int i = -1; i > d; i--) {
         result += format(_T("%0*.*lu%c"), LOG10_BIGREALBASE, LOG10_BIGREALBASE, 0, spaceChar);
@@ -210,12 +199,12 @@ BigRealStream &operator<<(BigRealStream &stream, const BigReal &x) {
 
   String result;
   if(!isfinite(x)) {
-    result = StrStream::formatUndefined(x);
+    result = StrStream::formatUndefined(x, (flags & ios::uppercase));
   } else {
     if(x.isNegative()) {
-      result += _T("-");
+      result += _T('-');
     } else if(flags & ios::showpos) {
-      result += _T("+");
+      result += _T('+');
     }
 
     if(spaceChar != 0) {
@@ -224,22 +213,27 @@ BigRealStream &operator<<(BigRealStream &stream, const BigReal &x) {
       if(x.isZero()) {
         StrStream::formatZero(result, precision, flags);
       } else { // x defined && x != 0
-        if((flags & ios::floatfield) == ios::fixed) { // Use fixed format
+        switch(flags & ios::floatfield) {
+        case ios::fixed : // Use fixed format
           x.formatFixed(result, precision, flags, false);
-        } else {
-          BRExpoType expo10 = BigReal::getExpo10(x);
-          if((flags & ios::floatfield) == ios::scientific) { // Use scientific format
-            x.formatScientific(result, precision, flags, expo10, false);
-          } else if(expo10 < -4 || expo10 > 14 || (expo10 > 0 && expo10 >= precision) || expo10 > precision) { // neither scientific nor fixed format (or both) are specified
-            precision = max(0, precision - 1);
-            x.formatScientific(result, precision, flags, expo10, (flags & ios::showpoint) == 0);
-          } else {
-            const intptr_t prec = (precision == 0) ? abs(expo10) : max(0, precision - expo10 - 1);
-            x.formatFixed(result, prec, flags, ((flags & ios::showpoint) == 0) || precision <= 1);
+          break;
+        case ios::scientific:  // Use scientific format
+          x.formatScientific(result, precision, flags, BigReal::getExpo10(x), false);
+          break;
+        default:  // neither scientific nor fixed format (or both) are specified
+          { BRExpoType expo10 = BigReal::getExpo10(x);
+            if((expo10 < -4) || (expo10 > 14) || ((expo10 > 0) && (expo10 >= precision)) || (expo10 > precision)) {
+              precision = max(0, precision - 1);
+              x.formatScientific(result, precision, flags, expo10, (flags & ios::showpoint) == 0);
+            } else {
+              const intptr_t prec = (precision == 0) ? abs(expo10) : max(0, precision - expo10 - 1);
+              x.formatFixed(result, prec, flags, ((flags & ios::showpoint) == 0) || precision <= 1);
+            }
           }
-        }
+          break;
+        } // switch
       } // x defined && x != 0
-    }
+    } // spaceChar == 0
   }
   stream.appendFilledField(result, flags);
   return stream;

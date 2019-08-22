@@ -8,6 +8,7 @@
 class AllFormatFlagsArray : public CompactArray<FormatFlags> {
 public:
   AllFormatFlagsArray();
+  void dumpAllFormats() const;
 };
 
 class AbstractStreamParametersIterator : public AbstractIterator {
@@ -47,6 +48,9 @@ public:
   inline size_t getMaxIterationCount() const {
     return (m_maxWidth+1) * m_maxPrecision * (s_maxFlagIndex+1);
   }
+  static void dumpAllFormats() {
+    s_flagArray.dumpAllFormats();
+  }
 };
 
 class StreamParametersIterator : public Iterator<StreamParameters> {
@@ -60,6 +64,9 @@ public:
   }
   inline size_t getMaxIterationCount() const {
     return ((AbstractStreamParametersIterator*)m_it)->getMaxIterationCount();
+  }
+  static void dumpAllformats() {
+    AbstractStreamParametersIterator::dumpAllFormats();
   }
 };
 

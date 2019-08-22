@@ -19,41 +19,30 @@ static TCHAR *findFirstDigit(TCHAR *str) {
 
 #define MAXPRECISION DBL80_DIG
 
-#define addDecimalPoint(s)        { s += _T("."); }
-#define addExponentChar(s)        { s += ((flags & ios::uppercase) ? _T("E") : _T("e")); }
-#define addZeroes(      s, count) { s.insert(s.length(), (count), '0'); }
-
 // Assume str consists of characters [0-9]
-// return carry, 0 or 1
-static UINT round5DigitString(String &str, intptr_t lastDigitPos) {
-  if((lastDigitPos < (intptr_t)str.length()-1) && (str[lastDigitPos+1] >= '5')) {
-    TCHAR *first = str.cstr(), *dp = first + lastDigitPos;
-    for(; dp >= first; dp--) {
-      if(*dp < _T('9')) {
-        (*dp)++;
-        break;
-      } else {
-        *dp = '0';
+// return true if carry, false if no carry, ie. str=='9995" and lastDigitPos==2, will turn str into "000" and return true
+static bool round5DigitString(String &str, intptr_t lastDigitPos) {
+  bool         carry        = false;
+  const size_t wantedLength = lastDigitPos + 1;
+  if(wantedLength < str.length()) {
+    if(str[wantedLength] >= '5') {
+      TCHAR *first = str.cstr(), *dp = first + lastDigitPos;
+      for(; dp >= first; dp--) {
+        if(*dp < _T('9')) {
+          (*dp)++;
+          break;
+        } else {
+          *dp = '0';
+        }
       }
+      carry = (dp < first);
     }
-    if(dp < first) {
-      str.insert(0, '1'); // carry propagated all the way the the start
-      return 1;
-    }
+    str.remove(wantedLength, str.length() - wantedLength);
   }
-  return 0;
+  return carry;
 }
 
-static void removeTralingZeroDigits(String &str) {
-  while(str.last() == '0') {
-    str.removeLast();
-  }
-  if(str.last() == '.') {
-    str.removeLast();
-  }
-}
-
-// ignore sign
+// Assume x != 0 and finite. ignore sign of x
 static void formatFixed(String &result, const Double80 &x, intptr_t precision, FormatFlags flags, int expo10, bool removeTrailingZeroes) {
   TCHAR tmp[50];
 #ifdef _DEBUG
@@ -67,8 +56,8 @@ static void formatFixed(String &result, const Double80 &x, intptr_t precision, F
   int           e10       = 0;
 
   if(comma != NULL) {
-    decimals = comma + 1;
-    *comma = 0;
+    *(comma++) = 0;
+    decimals = comma;
   }
   if(estr != NULL) {
     *(estr++) = 0;
@@ -86,38 +75,44 @@ static void formatFixed(String &result, const Double80 &x, intptr_t precision, F
     ciphers.insert(0, zeroCount, '0');
     commaPos           += zeroCount;
     lastResultDigitPos += zeroCount;
-    commaPos += round5DigitString(ciphers, lastResultDigitPos);
+    if(round5DigitString(ciphers, lastResultDigitPos)) {
+      ciphers.insert(0, '1'); // carry propagated all the way up
+      commaPos++;
+    }
     result += substr(ciphers, 0, commaPos);
     if((flags & ios::showpoint) || (precision > 0)) {
-      addDecimalPoint(result);
+      StrStream::addDecimalPoint(result);
       if(precision > 0) {
         result += substr(ciphers, commaPos, precision);
       }
-      if(removeTrailingZeroes) removeTralingZeroDigits(result);
+      if(removeTrailingZeroes) StrStream::removeTralingZeroDigits(result);
     }
   } else if(commaPos > (intptr_t)ciphers.length()) {
     const intptr_t zeroCount = commaPos - (intptr_t)ciphers.length();
     result += ciphers;
-    addZeroes(result, zeroCount);
+    StrStream::addZeroes(result, zeroCount);
     if((flags & ios::showpoint) || (precision > 0)) {
-      addDecimalPoint(result);
+      StrStream::addDecimalPoint(result);
       if(!removeTrailingZeroes && (precision > 0)) {
-        addZeroes(result, precision);
+        StrStream::addZeroes(result, precision);
       }
     }
   } else { // 0 < commaPos <= ciphers.length()
-    commaPos += round5DigitString(ciphers, lastResultDigitPos);
+    if(round5DigitString(ciphers, lastResultDigitPos)) {
+      ciphers.insert(0, '1'); // carry propagated all the way up
+      commaPos++;
+    }
     result += substr(ciphers, 0, commaPos);
     if((flags & ios::showpoint) || (precision > 0)) {
-      addDecimalPoint(result);
+      StrStream::addDecimalPoint(result);
       if(precision > 0) {
         result += substr(ciphers, commaPos, (intptr_t)precision);
         if(removeTrailingZeroes) {
-          removeTralingZeroDigits(result);
+          StrStream::removeTralingZeroDigits(result);
         } else {
           const intptr_t zeroCount = precision - ((intptr_t)ciphers.length() - commaPos);
           if(zeroCount > 0) {
-            addZeroes(result, zeroCount);
+            StrStream::addZeroes(result, zeroCount);
           }
         }
       }
@@ -125,7 +120,7 @@ static void formatFixed(String &result, const Double80 &x, intptr_t precision, F
   }
 }
 
-// ignore sign
+// Assume x != 0 and finite. ignore sign of x
 static void formatScientific(String &result, const Double80 &x, intptr_t precision, FormatFlags flags, bool removeTrailingZeroes) {
   TCHAR tmp[50];
 #ifdef _DEBUG
@@ -140,56 +135,92 @@ static void formatScientific(String &result, const Double80 &x, intptr_t precisi
   bool    exponentCharAdded = false;
 
   if(estr != NULL) {
-    exponent = _ttoi(estr+1);
-    *estr = 0;
+    *(estr++) = 0;
+    exponent = _ttoi(estr);
   }
 
   if(comma != NULL) {
-    decimals = comma + 1;
-    *comma = 0;
+    *(comma++) = 0;
+    decimals = comma;
     if(precision+1 < (intptr_t)decimals.length()) {
-      decimals = substr(decimals,0,precision+1);
-      if(decimals[precision] >= _T('5')) {
-        decimals[precision] = '0';
-        intptr_t i;
-        for(i = (intptr_t)precision-1; i >= 0; i--) {
-          TCHAR &digit = decimals[i];
-          if(digit < _T('9')) {
-            digit++;
-            break;
-          } else {
-            digit = '0';
-          }
-        }
-        if(i < 0) {
-          if(mantissa[0] < _T('9')) {
-            mantissa[0]++;
-          } else {
-            mantissa[0] = _T('1');
-            exponent++;
-          }
+      if(round5DigitString(decimals, precision-1)) {
+        if(mantissa[0] < _T('9')) {
+          mantissa[0]++;
+        } else {
+          mantissa[0] = _T('1');
+          exponent++;
         }
       }
     }
+    if(removeTrailingZeroes) {
+      StrStream::removeTralingZeroDigits(decimals);
+    } else {
+      const intptr_t zeroCount = precision - decimals.length();
+      if(zeroCount > 0) StrStream::addZeroes(decimals, zeroCount);
+    }
   }
-
   result += mantissa;
 
-  if(removeTrailingZeroes && (precision < (intptr_t)decimals.length())) {
-    for(; precision > 0 && decimals[(intptr_t)precision-1] == '0'; precision--) { // remove trailing zeroes from decimals
-      decimals.remove(precision-1);
+  if((flags & ios::showpoint) || (decimals.length() > 0)) {
+    StrStream::addDecimalPoint(result);
+    if(decimals.length() > 0) {
+      result += decimals;
     }
   }
-
-  if((flags & ios::showpoint) || (precision > 0)) {
-    addDecimalPoint(result);
-    if(precision > 0) {
-      result += substr(decimals,0,precision);
-    }
-  }
-
-  addExponentChar(result);
+  StrStream::addExponentChar(result, flags);
   result += format(_T("%+03d"), exponent);
+}
+
+// Assume x != 0 and finite. ignore sign of x
+static void formatHex(String &result, const Double80 &x, UINT precision, FormatFlags flags) {
+  if(precision == 0) {
+    precision = 6;
+  }
+  int e2;
+  if(x.isZero()) {
+    e2 = 0;
+  } else {
+    e2 = getExpo2(x);
+    if(e2 < numeric_limits<Double80>::min_exponent) {
+      e2 = numeric_limits<Double80>::min_exponent;
+    }
+  }
+  // precision >= 1!!
+  UINT64 sig       = getSignificand(x);
+  UINT   intPart   = sig >> 63;
+  UINT   zeroCount = 0;
+  TCHAR  fractionStr[100];
+  sig <<= 1; // to get the fraction part only
+  if(precision >= 16) {
+    _stprintf(fractionStr, _T("%016I64x"), sig);
+    zeroCount = precision - 16;
+  } else { // 0 < precision < 16.    => do rounding
+    const UINT shift = (15 - precision) * 4;
+    if(shift) sig >>= shift;
+    const BYTE lastDigit = sig & 0xf;
+    sig >>= 4;
+    if(lastDigit > 8) { // round up
+      sig++;
+      const UINT64 intPartMask = 1ui64 << (60 - shift);
+      if(sig & intPartMask) {
+        intPart++;
+        sig &= ~intPartMask;
+      }
+    }
+    _stprintf(fractionStr, _T("%0*I64x"), precision, sig);
+  }
+  if(flags&ios::uppercase) {
+    strToUpperCase(fractionStr);
+  }
+  StrStream::addHexPrefix(result, flags);
+  result += (_T('0') + intPart);
+  StrStream::addDecimalPoint(result);
+  result += fractionStr;
+  if(zeroCount) {
+    StrStream::addZeroes(result, zeroCount);
+  }
+  StrStream::addHexExponentChar(result, flags);
+  result += format(_T("%+d"), e2);
 }
 
 StrStream &operator<<(StrStream &stream, const Double80 &x) {
@@ -202,7 +233,7 @@ StrStream &operator<<(StrStream &stream, const Double80 &x) {
 
   String result;
   if(!isfinite(x)) {
-    result = StrStream::formatUndefined(x);
+    result = StrStream::formatUndefined(x, (flags & ios::uppercase));
   } else { // x defined
     if(x.isNegative()) {
       result = _T("-");
@@ -213,16 +244,25 @@ StrStream &operator<<(StrStream &stream, const Double80 &x) {
       StrStream::formatZero(result, precision, flags, MAXPRECISION);
     } else { // x defined && x != 0
       const int expo10 = Double80::getExpo10(x);
-      if((flags & ios::floatfield) == ios::fixed) {             // Use fixed format
-        formatFixed(result, x, precision, flags, expo10, false);
-      } else if((flags & ios::floatfield) == ios::scientific) { // Use scientific format
+      switch(flags & ios::floatfield) {
+      case 0              : // No float-format is specified. Format depends on e10 and precision
+        if((expo10 < -4) || (expo10 > 14) || ((expo10 > 0) && (expo10 >= precision)) || (expo10 > precision)) {
+          precision = max(0,precision-1);
+          formatScientific(result, x, precision, flags, (flags & ios::showpoint) == 0);
+        } else {
+          const intptr_t prec = (precision == 0) ? abs(expo10) : max(0,precision-expo10-1);
+          formatFixed(result, x, prec, flags, expo10, ((flags & ios::showpoint) == 0) || precision <= 1);
+        }
+        break;
+      case ios::scientific: // Use scientific format
         formatScientific(result, x, precision, flags, false);
-      } else if((expo10 < -4) || (expo10 > 14) || (expo10 > 0 && expo10 >= precision) || (expo10 > precision)) { // neither scientific nor fixed format is specified
-        precision = max(0,precision-1);
-        formatScientific(result, x, precision, flags, (flags & ios::showpoint) == 0);
-      } else {
-        const intptr_t prec = (precision == 0) ? abs(expo10) : max(0,precision-expo10-1);
-        formatFixed(result, x, prec, flags, expo10, ((flags & ios::showpoint) == 0) || precision <= 1);
+        break;
+      case ios::fixed     : // Use fixed format
+        formatFixed(result, x, precision, flags, expo10, false);
+        break;
+      case ios::hexfloat  :
+        formatHex(result, x, (UINT)max(0,precision), flags);
+        break;
       }
     } // x defined && x != 0
   } // end x defined
@@ -235,7 +275,7 @@ template <class OStreamType> OStreamType &operator<<(OStreamType &out, const Dou
   stream << x;
   USES_ACONVERSION;
   out << T2A(stream.cstr());
-  if (out.flags() & ios::unitbuf) {
+  if(out.flags() & ios::unitbuf) {
     out.flush();
   }
   return out;

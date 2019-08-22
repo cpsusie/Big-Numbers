@@ -50,14 +50,14 @@ AllFormatFlagsArray::AllFormatFlagsArray() {
       flags |= ios::uppercase;
     } else {
       flags &= ~ios::uppercase;
-      if(!(flags & ios::floatfield)) {
-        flags |= ios::fixed;
+      if(!(flags & ios::scientific)) {
+        flags |= ios::scientific;
       } else {
-        if(flags & ios::fixed) {
-          flags &= ~ios::fixed;
-          flags |= ios::scientific;
+        flags &= ~ios::scientific;
+        if(!(flags & ios::fixed)) {
+          flags |= ios::fixed;
         } else {
-          flags &= ~ios::scientific;
+          flags &= ~ios::fixed;
           if(!(flags & ios::left)) {
             flags |= ios::left;
           } else {
@@ -82,5 +82,13 @@ AllFormatFlagsArray::AllFormatFlagsArray() {
       }
     }
     add(flags);
+  }
+}
+
+void AllFormatFlagsArray::dumpAllFormats() const {
+  const size_t n = size();
+  debugLog(_T("%s\n"), __TFUNCTION__);
+  for(size_t i = 0; i < n; i++) {
+    debugLog(_T("%5zu:[%6s]\n"), i, StreamParameters::flagsToString((*this)[i]).cstr());
   }
 }

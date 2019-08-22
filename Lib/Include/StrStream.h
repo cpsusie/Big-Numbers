@@ -5,6 +5,11 @@
 // Used instead of standardclass strstream, which is slow!!! (at least in windows)
 class StrStream : public StreamParameters, public String {
 public:
+  static constexpr TCHAR s_decimalPointChar = _T('.');
+  static const     TCHAR *s_infStr;
+  static const     TCHAR *s_qNaNStr;
+  static const     TCHAR *s_sNaNStr;
+
   inline StrStream(StreamSize precision = 6, StreamSize width = 0, FormatFlags flags = 0) : StreamParameters(precision, width, flags) {
   }
   inline StrStream(const StreamParameters &param) : StreamParameters(param) {
@@ -22,29 +27,51 @@ public:
     return last();
   }
 
+  // helper functions when formating various numbertypes
+  static inline void addDecimalPoint(String &s) {
+    s += s_decimalPointChar;
+  }
+  static inline void addExponentChar(String &s, FormatFlags flags) {
+    s += ((flags & std::ios::uppercase) ? _T('E') : _T('e'));
+  }
+  static inline void addHexExponentChar(String &s, FormatFlags flags) {
+    s += ((flags & std::ios::uppercase) ? _T('P') : _T('p'));
+  }
+  static inline void addZeroes(String &s, size_t count) {
+    s.insert(s.length(), count, '0');
+  }
+  static void removeTralingZeroDigits(String &s) {
+    while(s.last() == '0') s.removeLast();
+    if(s.last() == s_decimalPointChar) s.removeLast();
+  }
+
+  static inline void addHexPrefix(String &s, FormatFlags flags) {
+    s += ((flags & std::ios::uppercase) ? _T("0X") : _T("0x"));
+  }
+
   // append str, left or right aligned, width spaces added/inserted if getWidth() > str.length()
   // return *this
   StrStream &appendFilledField(const String &str, FormatFlags flags);
 
   static void formatZero(String &result, StreamSize precision, FormatFlags flags, StreamSize maxPrecision = 0);
-  static void formatqnan(String &result);
-  static void formatsnan(String &result);
-  static void formatpinf(String &result);
-  static void formatninf(String &result);
+  static void formatqnan(String &result, bool uppercase = false);
+  static void formatsnan(String &result, bool uppercase = false);
+  static void formatpinf(String &result, bool uppercase = false);
+  static void formatninf(String &result, bool uppercase = false);
 
   // Assume !isfinite(x)
-  template<class T> static String formatUndefined(const T &x) {
+  template<class T> static String formatUndefined(const T &x, bool uppercase=false) {
     String result;
     if(isnan(x)) {
       if(_fpclass(x) == _FPCLASS_SNAN) {
-        formatsnan(result);
+        formatsnan(result, uppercase);
       } else {
-        formatqnan(result);
+        formatqnan(result, uppercase);
       }
     } else if(isPInfinity(x)) {
-      formatpinf(result);
+      formatpinf(result, uppercase);
     } else if(isNInfinity(x)) {
-      formatninf(result);
+      formatninf(result, uppercase);
     } else {
       return format(_T("%s:x not nan,pinf or ninf"), __TFUNCTION__);
     }
