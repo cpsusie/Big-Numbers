@@ -29,8 +29,10 @@ private:
   void           setSignField(bool v);
   bool           getSignField();
   void           setExpoField(UINT v, FloatType type);
+  void           setExpoField(UINT v);
   UINT           getExpoField();
   void           setSigField(UINT64 v, FloatType type);
+  void           setSigField(UINT64 v);
   UINT64         getSigField();
   void           updatePrecision();
   bool           useFloatManip();
@@ -85,8 +87,10 @@ protected:
   afx_msg void OnBnClickedButtonSetInf();
   afx_msg void OnBnClickedButtonSetQNaN();
   afx_msg void OnBnClickedButtonSetSNaN();
-  afx_msg void OnDeltaPosSpinpWidth(NMHDR *pNMHDR, LRESULT *pResult);
-  afx_msg void OnDeltaPosSpinPrecision(NMHDR *pNMHDR, LRESULT *pResult);
+  afx_msg void OnDeltaPosSpinExpo(       NMHDR *pNMHDR, LRESULT *pResult);
+  afx_msg void OnDeltaPosSpinSignificand(NMHDR *pNMHDR, LRESULT *pResult);
+  afx_msg void OnDeltaPosSpinPrecision(  NMHDR *pNMHDR, LRESULT *pResult);
+  afx_msg void OnDeltaPosSpinWidth(      NMHDR *pNMHDR, LRESULT *pResult);
   afx_msg void OnBnClickedCheckMaxPrecision();
   afx_msg void OnBnClickedButtonStreamOut();
   afx_msg void OnBnClickedButtonStreamIn();

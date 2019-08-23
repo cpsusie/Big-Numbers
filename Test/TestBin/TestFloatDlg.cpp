@@ -64,8 +64,10 @@ BEGIN_MESSAGE_MAP(CTestFloatDlg, CDialog)
   ON_BN_CLICKED(   IDC_BUTTONSETINF        , OnBnClickedButtonSetInf     )
   ON_BN_CLICKED(   IDC_BUTTONSETQNAN       , OnBnClickedButtonSetQNaN    )
   ON_BN_CLICKED(   IDC_BUTTONSETSNAN       , OnBnClickedButtonSetSNaN    )
-  ON_NOTIFY(UDN_DELTAPOS, IDC_SPINPWIDTH   , OnDeltaPosSpinpWidth        )
-  ON_NOTIFY(UDN_DELTAPOS, IDC_SPINPRECISION, OnDeltaPosSpinPrecision     )
+  ON_NOTIFY(UDN_DELTAPOS, IDC_SPINEXPO       , OnDeltaPosSpinExpo        )
+  ON_NOTIFY(UDN_DELTAPOS, IDC_SPINSIGNIFICAND, OnDeltaPosSpinSignificand )
+  ON_NOTIFY(UDN_DELTAPOS, IDC_SPINPRECISION  , OnDeltaPosSpinPrecision   )
+  ON_NOTIFY(UDN_DELTAPOS, IDC_SPINWIDTH      , OnDeltaPosSpinWidth       )
   ON_BN_CLICKED(   IDC_CHECK_MAXPRECISION  , OnBnClickedCheckMaxPrecision)
   ON_BN_CLICKED(   IDC_BUTTONSTREAMOUT     , OnBnClickedButtonStreamOut  )
   ON_BN_CLICKED(   IDC_BUTTONSTREAMIN      , OnBnClickedButtonStreamIn   )
@@ -154,75 +156,64 @@ void CTestFloatDlg::OnEnSetFocusEditSignificand() { setCaretPos((CEdit*)GetDlgIt
 void CTestFloatDlg::OnBnClickedButtonToFloat()    { setAccFloatType(FT_FLOAT   );                            }
 void CTestFloatDlg::OnBnClickedButtonToDouble()   { setAccFloatType(FT_DOUBLE  );                            }
 void CTestFloatDlg::OnBnClickedButtonToDouble80() { setAccFloatType(FT_DOUBLE80);                            }
-void CTestFloatDlg::updateAccumulator()           { showFloatFieldsValue(editFieldToFloatFields(), false);   }
-void CTestFloatDlg::OnBnClickedButtonSave()       { showFloatFieldsValue(m_accumulator, true );              }
-void CTestFloatDlg::OnBnClickedButtonLoad()       { showFloatFieldsValue(m_memory     , false);              }
-void CTestFloatDlg::OnBnClickedButtonAdd()        { showFloatFieldsValue(m_accumulator + m_memory, false);   }
-void CTestFloatDlg::OnBnClickedButtonSub()        { showFloatFieldsValue(m_accumulator - m_memory, false);   }
-void CTestFloatDlg::OnBnClickedButtonMult()       { showFloatFieldsValue(m_accumulator * m_memory, false);   }
-void CTestFloatDlg::OnBnClickedButtonDiv()        { showFloatFieldsValue(m_accumulator / m_memory, false);   }
-void CTestFloatDlg::OnBnClickedButtonFmod()       { showFloatFieldsValue(m_accumulator % m_memory, false);   }
-void CTestFloatDlg::OnBnClickedButtonReciproc()   { showFloatFieldsValue(reciproc(m_accumulator) , false);   }
-void CTestFloatDlg::OnBnClickedButtonSqr()        { showFloatFieldsValue(sqr( m_accumulator)      ,false);   }
-void CTestFloatDlg::OnBnClickedButtonSqrt()       { showFloatFieldsValue(sqrt(m_accumulator)      ,false);   }
-
-void CTestFloatDlg::OnBnClickedButtonResetMem() {
-  FloatFields ff = m_memory;
-  showFloatFieldsValue(ff.setZero(), true);
-}
+void CTestFloatDlg::updateAccumulator()           { showFloatFieldsValue(editFieldToFloatFields()               , false); }
+void CTestFloatDlg::OnBnClickedButtonSave()       { showFloatFieldsValue(m_accumulator                          , true ); }
+void CTestFloatDlg::OnBnClickedButtonLoad()       { showFloatFieldsValue(m_memory                               , false); }
+void CTestFloatDlg::OnBnClickedButtonAdd()        { showFloatFieldsValue(m_accumulator + m_memory               , false); }
+void CTestFloatDlg::OnBnClickedButtonSub()        { showFloatFieldsValue(m_accumulator - m_memory               , false); }
+void CTestFloatDlg::OnBnClickedButtonMult()       { showFloatFieldsValue(m_accumulator * m_memory               , false); }
+void CTestFloatDlg::OnBnClickedButtonDiv()        { showFloatFieldsValue(m_accumulator / m_memory               , false); }
+void CTestFloatDlg::OnBnClickedButtonFmod()       { showFloatFieldsValue(m_accumulator % m_memory               , false); }
+void CTestFloatDlg::OnBnClickedButtonReciproc()   { showFloatFieldsValue(reciproc(m_accumulator)                , false); }
+void CTestFloatDlg::OnBnClickedButtonSqr()        { showFloatFieldsValue(sqr( m_accumulator)                    , false); }
+void CTestFloatDlg::OnBnClickedButtonSqrt()       { showFloatFieldsValue(sqrt(m_accumulator)                    , false); }
+void CTestFloatDlg::OnBnClickedButtonResetMem()   { showFloatFieldsValue(FloatFields(m_memory     ).setZero()   , true ); }
+void CTestFloatDlg::OnBnClickedButtonSetZero()    { showFloatFieldsValue(FloatFields(m_accumulator).setZero()   , false); }
+void CTestFloatDlg::OnBnClickedButtonSetTrueMin() { showFloatFieldsValue(FloatFields(m_accumulator).setTrueMin(), false); }
+void CTestFloatDlg::OnBnClickedButtonSetMin()     { showFloatFieldsValue(FloatFields(m_accumulator).setMin()    , false); }
+void CTestFloatDlg::OnBnClickedButtonSetEps()     { showFloatFieldsValue(FloatFields(m_accumulator).setEps()    , false); }
+void CTestFloatDlg::OnBnClickedButtonSetRnd()     { showFloatFieldsValue(FloatFields(m_accumulator).setRnd()    , false); }
+void CTestFloatDlg::OnBnClickedButtonSetOne()     { showFloatFieldsValue(FloatFields(m_accumulator).setOne()    , false); }
+void CTestFloatDlg::OnBnClickedButtonSetMax()     { showFloatFieldsValue(FloatFields(m_accumulator).setMax()    , false); }
+void CTestFloatDlg::OnBnClickedButtonSetInf()     { showFloatFieldsValue(FloatFields(m_accumulator).setPInf()   , false); }
+void CTestFloatDlg::OnBnClickedButtonSetQNaN()    { showFloatFieldsValue(FloatFields(m_accumulator).setQNaN()   , false); }
+void CTestFloatDlg::OnBnClickedButtonSetSNaN()    { showFloatFieldsValue(FloatFields(m_accumulator).setSNaN()   , false); }
 
 void CTestFloatDlg::OnBnClickedButtonSwapAccMem() {
-  FloatFields mem = m_memory, acc = m_accumulator;
+  const FloatFields mem = m_memory, acc = m_accumulator;
   showFloatFieldsValue(mem, false);
   showFloatFieldsValue(acc, true );
-}
-
-void CTestFloatDlg::OnBnClickedButtonSetZero() {
-  FloatFields ff = m_accumulator;
-  showFloatFieldsValue(ff.setZero(), false);
-}
-void CTestFloatDlg::OnBnClickedButtonSetTrueMin() {
-  FloatFields ff = m_accumulator;
-  showFloatFieldsValue(ff.setTrueMin(), false);
-}
-void CTestFloatDlg::OnBnClickedButtonSetMin() {
-  FloatFields ff = m_accumulator;
-  showFloatFieldsValue(ff.setMin(), false);
-}
-void CTestFloatDlg::OnBnClickedButtonSetEps() {
-  FloatFields ff = m_accumulator;
-  showFloatFieldsValue(ff.setEps(), false);
-}
-void CTestFloatDlg::OnBnClickedButtonSetRnd() {
-  FloatFields ff = m_accumulator;
-  showFloatFieldsValue(ff.setRnd(), false);
-}
-void CTestFloatDlg::OnBnClickedButtonSetOne() {
-  FloatFields ff = m_accumulator;
-  showFloatFieldsValue(ff.setOne(), false);
-}
-void CTestFloatDlg::OnBnClickedButtonSetMax() {
-  FloatFields ff = m_accumulator;
-  showFloatFieldsValue(ff.setMax(), false);
-}
-void CTestFloatDlg::OnBnClickedButtonSetInf() {
-  FloatFields ff = m_accumulator;
-  showFloatFieldsValue(ff.setPInf(), false);
-}
-void CTestFloatDlg::OnBnClickedButtonSetQNaN() {
-  FloatFields ff = m_accumulator;
-  showFloatFieldsValue(ff.setQNaN(), false);
-}
-void CTestFloatDlg::OnBnClickedButtonSetSNaN() {
-  FloatFields ff = m_accumulator;
-  showFloatFieldsValue(ff.setSNaN(), false);
 }
 
 
 void CTestFloatDlg::OnBnClickedCheckMaxPrecision() {
   updatePrecision();
 }
-void CTestFloatDlg::OnDeltaPosSpinpWidth(NMHDR *pNMHDR, LRESULT *pResult) {
+void CTestFloatDlg::OnDeltaPosSpinExpo(NMHDR *pNMHDR, LRESULT *pResult) {
+  LPNMUPDOWN pNMUpDown = reinterpret_cast<LPNMUPDOWN>(pNMHDR);
+  const UINT oldValue  = getExpoField();
+  const UINT maxValue  = m_accumulator.getMaxExpoValue();
+  const int  add       = -pNMUpDown->iDelta;
+  if(((add < 0) && (-add > oldValue)) || ((add > 0) && (oldValue + add > maxValue))) {
+    return;
+  }
+  setExpoField(oldValue + add);
+  *pResult = 0;
+}
+void CTestFloatDlg::OnDeltaPosSpinSignificand(NMHDR *pNMHDR, LRESULT *pResult) {
+  LPNMUPDOWN   pNMUpDown = reinterpret_cast<LPNMUPDOWN>(pNMHDR);
+  const UINT64 oldValue  = getSigField();
+  const UINT64 maxValue  = m_accumulator.getMaxSigValue();
+  const int    add       = -pNMUpDown->iDelta;
+  if(((add < 0) && (-add > oldValue)) || ((add > 0) && (oldValue + add < oldValue))
+                                      || ((add > 0) && (oldValue + add > maxValue))
+     ) {
+    return;
+  }
+  setSigField(oldValue + add);
+  *pResult = 0;
+}
+void CTestFloatDlg::OnDeltaPosSpinWidth(NMHDR *pNMHDR, LRESULT *pResult) {
   LPNMUPDOWN pNMUpDown = reinterpret_cast<LPNMUPDOWN>(pNMHDR);
   UpdateData();
   const int newValue = max(m_width - pNMUpDown->iDelta, 0);
@@ -258,6 +249,7 @@ void CTestFloatDlg::OnBnClickedButtonCopyOutToIn() {
 void CTestFloatDlg::OnBnClickedCheckIosFlag() {
   const FormatFlags flags = getStreamOutFormatFlags();
   setWindowText(this, IDC_STATICSTREAMFLAGSVALUE, format(_T("%08X"), flags));
+  updatePrecision();
 }
 
 // -------------------------------------------------------------------------------------
@@ -286,10 +278,13 @@ void CTestFloatDlg::setWinFloatType(FloatType type) {
 void CTestFloatDlg::updatePrecision() {
   const bool maxIsChecked = IsDlgButtonChecked(IDC_CHECK_MAXPRECISION) == BST_CHECKED;
   if(maxIsChecked) {
-    m_precision = FloatFields::getMaxDigits10(getWinFloatType());
+    const int maxPrecision = ((getStreamOutFormatFlags() & ios::floatfield) == ios::hexfloat)
+                           ? FloatFields::getSigHexDigitCount(getWinFloatType())
+                           : FloatFields::getMaxDigits10(getWinFloatType());
+    m_precision = maxPrecision;
     UpdateData(FALSE);
   }
-  GetDlgItem(IDC_EDITPREC)->EnableWindow(maxIsChecked?FALSE:TRUE);
+  GetDlgItem(IDC_EDITPREC     )->EnableWindow(maxIsChecked ? FALSE : TRUE);
   GetDlgItem(IDC_SPINPRECISION)->EnableWindow(maxIsChecked ? FALSE : TRUE);
 }
 
@@ -349,6 +344,9 @@ void CTestFloatDlg::setExpoField(UINT v, FloatType type) {
   setWindowText(this, IDC_EDITEXPOFIELD, format(_T("%0*X"), FloatFields::getExpoHexDigitCount(type), v));
   expo2ToWin();
 }
+void CTestFloatDlg::setExpoField(UINT v) {
+  setExpoField(v, getWinFloatType());
+}
 void CTestFloatDlg::expo2ToWin() {
   const FloatType type      = getWinFloatType();
   const int       expo2     = FloatFields::expoFieldToExpo2(type, getExpoField());
@@ -364,6 +362,10 @@ UINT CTestFloatDlg::getExpoField() {
 void CTestFloatDlg::setSigField(UINT64 v, FloatType type) {
   setWindowText(this, IDC_EDITSIGNIFICAND, format(_T("%0*I64X"), FloatFields::getSigHexDigitCount(type), v));
 }
+void CTestFloatDlg::setSigField(UINT64 v) {
+  setSigField(v, getWinFloatType());
+}
+
 UINT64 CTestFloatDlg::getSigField() {
   UINT64 v;
   _stscanf(getWindowText(this, IDC_EDITSIGNIFICAND).cstr(), _T("%I64X"), &v);
