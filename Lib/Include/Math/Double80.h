@@ -3480,13 +3480,13 @@ public:
   static constexpr int digits         =     64;                             // # of bits in mantissa
   static constexpr int digits10       =     19;                             // # of decimal digits of precision
   static constexpr int max_digits10   =     20;                             // # of decimal digits of rounding precision
-  static constexpr int max_exponent   =  16384;                          // max binary exponent
-  static constexpr int max_exponent10 =   4932;                           // max decimal exponent
-  static constexpr int min_exponent   = -16382;                          // min binary exponent
-  static constexpr int min_exponent10 =  -4932;                           // min decimal exponent
+  static constexpr int max_exponent   =  16384;                             // max binary exponent
+  static constexpr int max_exponent10 =   4932;                             // max decimal exponent
+  static constexpr int min_exponent   = -16382;                             // min binary exponent
+  static constexpr int min_exponent10 =  -4932;                             // min decimal exponent
 };
-#define DBL80_HAS_SUBNORM      1                                         // type does support subnormal numbers
-#define _DBL80_RADIX           2                                         // exponent radix
+#define DBL80_HAS_SUBNORM      1                                            // type does support subnormal numbers
+#define _DBL80_RADIX           2                                            // exponent radix
 
 
 #define DBL80_NAN          Double80::_DBL80_QNAN
