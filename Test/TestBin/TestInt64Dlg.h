@@ -22,11 +22,12 @@ class CTestInt64Dlg : public CDialog {
 private:
   HICON          m_hIcon;
   HACCEL         m_accelTable;
+  const bool     m_testFloat;
   CString        m_hexString;
   bool           m_editMode;
   CSize          m_staticTextWinSize;
 public:
-  CTestInt64Dlg(CWnd *pParent = NULL);
+  CTestInt64Dlg(bool testFloat, CWnd *pParent = NULL);
   bool           m_timerIsRunning;
   UINT           m_timerInterval;
   CounterThread *m_counterThread;

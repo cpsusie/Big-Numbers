@@ -11,7 +11,8 @@ using namespace std;
 
 CTestFloatDlg::CTestFloatDlg(CWnd *pParent)
 : CDialog(CTestFloatDlg::IDD, pParent)
-, m_floatingPointAsString(_T(""))
+, m_streamOutString(_T(""))
+, m_streamInString(_T(""))
 , m_width(6)
 , m_precision(2)
 , m_fillString(_T(" "))
@@ -22,10 +23,11 @@ CTestFloatDlg::CTestFloatDlg(CWnd *pParent)
 
 void CTestFloatDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
-  DDX_Text(pDX, IDC_EDITFLOATASSTRING, m_floatingPointAsString);
-  DDX_Text(pDX, IDC_EDITWIDTH        , m_width                );
-  DDX_Text(pDX, IDC_EDITPREC         , m_precision            );
-  DDX_Text(pDX, IDC_EDITFILL         , m_fillString           );
+  DDX_Text(pDX, IDC_EDITSTREAMOUTSTRING, m_streamOutString      );
+  DDX_Text(pDX, IDC_EDITSTREAMINSTRING , m_streamInString       );
+  DDX_Text(pDX, IDC_EDITWIDTH          , m_width                );
+  DDX_Text(pDX, IDC_EDITPREC           , m_precision            );
+  DDX_Text(pDX, IDC_EDITFILL           , m_fillString           );
   DDV_MaxChars(pDX, m_fillString, 1);
 }
 
@@ -49,15 +51,17 @@ BEGIN_MESSAGE_MAP(CTestFloatDlg, CDialog)
   ON_BN_CLICKED(   IDC_BUTTONMULT          , OnBnClickedButtonMult       )
   ON_BN_CLICKED(   IDC_BUTTONDIV           , OnBnClickedButtonDiv        )
   ON_BN_CLICKED(   IDC_BUTTONFMOD          , OnBnClickedButtonFmod       )
+  ON_BN_CLICKED(   IDC_BUTTONRECIPROC      , OnBnClickedButtonReciproc   )
   ON_BN_CLICKED(   IDC_BUTTONSQR           , OnBnClickedButtonSqr        )
   ON_BN_CLICKED(   IDC_BUTTONSQRT          , OnBnClickedButtonSqrt       )
   ON_BN_CLICKED(   IDC_BUTTONSETZERO       , OnBnClickedButtonSetZero    )
   ON_BN_CLICKED(   IDC_BUTTONSETTRUEMIN    , OnBnClickedButtonSetTrueMin )
   ON_BN_CLICKED(   IDC_BUTTONSETMIN        , OnBnClickedButtonSetMin     )
   ON_BN_CLICKED(   IDC_BUTTONSETEPS        , OnBnClickedButtonSetEps     )
+  ON_BN_CLICKED(   IDC_BUTTONSETRND        , OnBnClickedButtonSetRnd     )
   ON_BN_CLICKED(   IDC_BUTTONSETONE        , OnBnClickedButtonSetOne     )
   ON_BN_CLICKED(   IDC_BUTTONSETMAX        , OnBnClickedButtonSetMax     )
-  ON_BN_CLICKED(   IDC_BUTTONSETPINF       , OnBnClickedButtonSetPInf    )
+  ON_BN_CLICKED(   IDC_BUTTONSETINF        , OnBnClickedButtonSetInf     )
   ON_BN_CLICKED(   IDC_BUTTONSETQNAN       , OnBnClickedButtonSetQNaN    )
   ON_BN_CLICKED(   IDC_BUTTONSETSNAN       , OnBnClickedButtonSetSNaN    )
   ON_NOTIFY(UDN_DELTAPOS, IDC_SPINPWIDTH   , OnDeltaPosSpinpWidth        )
@@ -65,6 +69,7 @@ BEGIN_MESSAGE_MAP(CTestFloatDlg, CDialog)
   ON_BN_CLICKED(   IDC_CHECK_MAXPRECISION  , OnBnClickedCheckMaxPrecision)
   ON_BN_CLICKED(   IDC_BUTTONSTREAMOUT     , OnBnClickedButtonStreamOut  )
   ON_BN_CLICKED(   IDC_BUTTONSTREAMIN      , OnBnClickedButtonStreamIn   )
+  ON_BN_CLICKED(   IDC_BUTTONCOPYOUTTOIN   , OnBnClickedButtonCopyOutToIn)
   ON_BN_CLICKED(   IDC_CHECK_IOS_UNITBUF   , OnBnClickedCheckIosFlag     )
   ON_BN_CLICKED(   IDC_CHECK_IOS_UPPERCASE , OnBnClickedCheckIosFlag     )
   ON_BN_CLICKED(   IDC_CHECK_IOS_SHOWBASE  , OnBnClickedCheckIosFlag     )
@@ -87,7 +92,14 @@ BOOL CTestFloatDlg::OnInitDialog() {
   __super::OnInitDialog();
   showFloatFieldsValue(m_accumulator, false);
   showFloatFieldsValue(m_memory     , true );
+
+  CButton *oldButton = ((CButton*)GetDlgItem(IDC_BUTTONCOPYOUTTOIN));
+  CPoint p = getWindowPosition(this, IDC_BUTTONCOPYOUTTOIN);
+  oldButton->DestroyWindow();
+  m_copyOutToInButton.Create(this, OBMIMAGE(DNARROW), p, IDC_BUTTONCOPYOUTTOIN);
+  
   OnBnClickedCheckIosFlag();
+  CheckDlgButton(IDC_RADIOOPACCUMULATOR, BST_CHECKED);
   GetDlgItem(IDC_EDITEXPOFIELD)->SetFocus();
   return FALSE;
 }
@@ -150,6 +162,7 @@ void CTestFloatDlg::OnBnClickedButtonSub()        { showFloatFieldsValue(m_accum
 void CTestFloatDlg::OnBnClickedButtonMult()       { showFloatFieldsValue(m_accumulator * m_memory, false);   }
 void CTestFloatDlg::OnBnClickedButtonDiv()        { showFloatFieldsValue(m_accumulator / m_memory, false);   }
 void CTestFloatDlg::OnBnClickedButtonFmod()       { showFloatFieldsValue(m_accumulator % m_memory, false);   }
+void CTestFloatDlg::OnBnClickedButtonReciproc()   { showFloatFieldsValue(reciproc(m_accumulator) , false);   }
 void CTestFloatDlg::OnBnClickedButtonSqr()        { showFloatFieldsValue(sqr( m_accumulator)      ,false);   }
 void CTestFloatDlg::OnBnClickedButtonSqrt()       { showFloatFieldsValue(sqrt(m_accumulator)      ,false);   }
 
@@ -180,6 +193,10 @@ void CTestFloatDlg::OnBnClickedButtonSetEps() {
   FloatFields ff = m_accumulator;
   showFloatFieldsValue(ff.setEps(), false);
 }
+void CTestFloatDlg::OnBnClickedButtonSetRnd() {
+  FloatFields ff = m_accumulator;
+  showFloatFieldsValue(ff.setRnd(), false);
+}
 void CTestFloatDlg::OnBnClickedButtonSetOne() {
   FloatFields ff = m_accumulator;
   showFloatFieldsValue(ff.setOne(), false);
@@ -188,17 +205,17 @@ void CTestFloatDlg::OnBnClickedButtonSetMax() {
   FloatFields ff = m_accumulator;
   showFloatFieldsValue(ff.setMax(), false);
 }
-void CTestFloatDlg::OnBnClickedButtonSetPInf() {
+void CTestFloatDlg::OnBnClickedButtonSetInf() {
   FloatFields ff = m_accumulator;
   showFloatFieldsValue(ff.setPInf(), false);
-}
-void CTestFloatDlg::OnBnClickedButtonSetSNaN() {
-  FloatFields ff = m_accumulator;
-  showFloatFieldsValue(ff.setSNaN(), false);
 }
 void CTestFloatDlg::OnBnClickedButtonSetQNaN() {
   FloatFields ff = m_accumulator;
   showFloatFieldsValue(ff.setQNaN(), false);
+}
+void CTestFloatDlg::OnBnClickedButtonSetSNaN() {
+  FloatFields ff = m_accumulator;
+  showFloatFieldsValue(ff.setSNaN(), false);
 }
 
 
@@ -223,13 +240,19 @@ void CTestFloatDlg::OnDeltaPosSpinPrecision(NMHDR *pNMHDR, LRESULT *pResult) {
 }
 void CTestFloatDlg::OnBnClickedButtonStreamOut() {
   UpdateData();
-  m_floatingPointAsString = streamOutSelectedOp();
+  m_streamOutString = streamOutSelectedOp();
   UpdateData(FALSE);
 }
 
 void CTestFloatDlg::OnBnClickedButtonStreamIn() {
   UpdateData();
-  streamInSelectedOp(m_floatingPointAsString);
+  streamInSelectedOp(m_streamInString);
+}
+
+void CTestFloatDlg::OnBnClickedButtonCopyOutToIn() {
+  UpdateData();
+  m_streamInString = m_streamOutString;
+  UpdateData(FALSE);
 }
 
 void CTestFloatDlg::OnBnClickedCheckIosFlag() {
@@ -240,7 +263,7 @@ void CTestFloatDlg::OnBnClickedCheckIosFlag() {
 // -------------------------------------------------------------------------------------
 
 void CTestFloatDlg::setAccFloatType(FloatType type) {
-  if (m_setAccTypeActive || (type == getAccFloatType())) {
+  if(m_setAccTypeActive || (type == getAccFloatType())) {
     return;
   }
   m_setAccTypeActive = true;
@@ -352,7 +375,7 @@ bool CTestFloatDlg::useFloatManip() {
 }
 
 bool CTestFloatDlg::streamOperandIsMemory() {
-  return IsDlgButtonChecked(IDC_CHECKDSTMEM) == BST_CHECKED;
+  return IsDlgButtonChecked(IDC_RADIOOPMEMORY) == BST_CHECKED;
 }
 
 struct ButtunIdFlag {

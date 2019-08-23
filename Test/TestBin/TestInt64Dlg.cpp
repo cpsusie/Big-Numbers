@@ -23,8 +23,9 @@ protected:
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
-CTestInt64Dlg::CTestInt64Dlg(CWnd *pParent)
-: CDialog(CTestInt64Dlg::IDD, pParent)
+CTestInt64Dlg::CTestInt64Dlg(bool testFloat, CWnd *pParent)
+: m_testFloat(testFloat)
+, CDialog(CTestInt64Dlg::IDD, pParent)
 , m_hexString(EMPTYSTRING)
 {
   m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
@@ -32,8 +33,8 @@ CTestInt64Dlg::CTestInt64Dlg(CWnd *pParent)
 
 void CTestInt64Dlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
-  DDX_Text(pDX, IDC_EDITHEX          , m_hexString            );
-  DDV_MaxChars(pDX, m_hexString, 16);
+  DDX_Text(    pDX, IDC_EDITHEX, m_hexString    );
+  DDV_MaxChars(pDX             , m_hexString, 16);
 }
 
 BEGIN_MESSAGE_MAP(CTestInt64Dlg, CDialog)
@@ -79,6 +80,10 @@ BOOL CTestInt64Dlg::OnInitDialog() {
   showCounter();
   ajourEnabling();
 
+  if(m_testFloat) {
+    OnFileTestFloats();
+    OnClose();
+  }
   return TRUE;  // return TRUE  unless you set the focus to a control
 }
 

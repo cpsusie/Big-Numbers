@@ -1,11 +1,14 @@
 #pragma once
 
+#include <MFCUtil/OBMButton.h>
 #include "FloatFields.h"
 
 class CTestFloatDlg : public CDialog {
 private:
+  OBMButton      m_copyOutToInButton;
   FloatFields    m_accumulator, m_memory;
-  CString        m_floatingPointAsString;
+  CString        m_streamOutString;
+  CString        m_streamInString;
   int            m_width;
   int            m_precision;
   CString        m_fillString;
@@ -69,15 +72,17 @@ protected:
   afx_msg void OnBnClickedButtonMult();
   afx_msg void OnBnClickedButtonDiv();
   afx_msg void OnBnClickedButtonFmod();
+  afx_msg void OnBnClickedButtonReciproc();
   afx_msg void OnBnClickedButtonSqr();
   afx_msg void OnBnClickedButtonSqrt();
   afx_msg void OnBnClickedButtonSetZero();
   afx_msg void OnBnClickedButtonSetTrueMin();
   afx_msg void OnBnClickedButtonSetMin();
   afx_msg void OnBnClickedButtonSetEps();
+  afx_msg void OnBnClickedButtonSetRnd();
   afx_msg void OnBnClickedButtonSetOne();
   afx_msg void OnBnClickedButtonSetMax();
-  afx_msg void OnBnClickedButtonSetPInf();
+  afx_msg void OnBnClickedButtonSetInf();
   afx_msg void OnBnClickedButtonSetQNaN();
   afx_msg void OnBnClickedButtonSetSNaN();
   afx_msg void OnDeltaPosSpinpWidth(NMHDR *pNMHDR, LRESULT *pResult);
@@ -85,7 +90,7 @@ protected:
   afx_msg void OnBnClickedCheckMaxPrecision();
   afx_msg void OnBnClickedButtonStreamOut();
   afx_msg void OnBnClickedButtonStreamIn();
+  afx_msg void OnBnClickedButtonCopyOutToIn();
   afx_msg void OnBnClickedCheckIosFlag();
   DECLARE_MESSAGE_MAP()
-public:
 };

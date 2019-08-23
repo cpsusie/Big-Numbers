@@ -5,7 +5,7 @@
 String createStringByOverwriteCurrent(CEdit *e, TCHAR ch) {
   String text = getWindowText(e);
   int pos = getCaretPos(e);
-  if (pos < text.length()) {
+  if(pos < text.length()) {
     text[pos] = ch;
   }
   return text;

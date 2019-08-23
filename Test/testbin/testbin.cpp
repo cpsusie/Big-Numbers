@@ -18,12 +18,17 @@ CTestBinApp theApp;
 BOOL CTestBinApp::InitInstance() {
   AfxEnableControlContainer();
 
-  CTestInt64Dlg dlg;
+  bool testFloat = false;
+  TCHAR **argv = __targv;
+  argv++;
+  if(*argv) {
+    String option = *argv;
+    if(option == _T("float")) {
+      testFloat = true;
+    }
+  }
+  CTestInt64Dlg dlg(testFloat);
   m_pMainWnd = &dlg;
   INT_PTR nResponse = dlg.DoModal();
-  if(nResponse == IDOK) {
-  } else if (nResponse == IDCANCEL) {
-  }
-
   return FALSE;
 }

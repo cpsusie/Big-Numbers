@@ -305,6 +305,7 @@
     <ClInclude Include="TimerDlg.h" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="res\bitmap1.bmp" />
     <Image Include="res\TestBin.ico" />
   </ItemGroup>
   <ItemGroup>

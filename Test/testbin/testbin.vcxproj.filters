@@ -75,6 +75,9 @@
     <Image Include="res\TestBin.ico">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="res\bitmap1.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="res\TestBin.rc2">

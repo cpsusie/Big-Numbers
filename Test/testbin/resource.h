@@ -48,26 +48,28 @@
 #define IDC_BUTTONMULT                  1072
 #define IDC_BUTTONDIV                   1073
 #define IDC_BUTTONFMOD                  1074
-#define IDC_BUTTONSQR                   1075
-#define IDC_BUTTONSQRT                  1076
+#define IDC_BUTTONRECIPROC              1075
+#define IDC_BUTTONSQR                   1076
+#define IDC_BUTTONSQRT                  1077
 #define IDC_BUTTONSETZERO               1080
 #define IDC_BUTTONSETTRUEMIN            1081
 #define IDC_BUTTONSETMIN                1082
 #define IDC_BUTTONSETEPS                1083
-#define IDC_BUTTONSETONE                1084
-#define IDC_BUTTONSETMAX                1085
-#define IDC_BUTTONSETPINF               1086
-#define IDC_BUTTONSETQNAN               1087
-#define IDC_BUTTONSETSNAN               1088
+#define IDC_BUTTONSETRND                1084
+#define IDC_BUTTONSETONE                1085
+#define IDC_BUTTONSETMAX                1086
+#define IDC_BUTTONSETINF                1087
+#define IDC_BUTTONSETQNAN               1088
+#define IDC_BUTTONSETSNAN               1089
 #define IDC_STATICSTREAMFRAME           1090
-#define IDC_CHECKDSTMEM                 1091
 #define IDC_CHECKSTREAMINMANIP          1092
-#define IDC_BUTTONSTREAMIN              1093
-#define IDC_BUTTONSTREAMOUT             1094
-#define IDC_EDITFLOATASSTRING           1095
-#define IDC_STATICSTREAMINSTATUS        1096
+#define IDC_BUTTONSTREAMOUT             1093
+#define IDC_BUTTONSTREAMIN              1094
+#define IDC_EDITSTREAMOUTSTRING         1095
+#define IDC_EDITSTREAMINSTRING          1096
 #define IDC_STATICSTREAMFLAGSLABEL      1097
 #define IDC_STATICSTREAMFLAGSVALUE      1098
+#define IDC_STATICSTREAMINSTATUS        1099
 #define IDC_EDITWIDTH                   1100
 #define IDC_EDITPREC                    1101
 #define IDC_CHECK_MAXPRECISION          1102
@@ -90,6 +92,9 @@
 #define IDC_CHECK_IOS_STDIO             1125
 #define IDC_SPINPRECISION               1131
 #define IDC_SPINPWIDTH                  1132
+#define IDC_RADIOOPACCUMULATOR          1133
+#define IDC_RADIOOPMEMORY               1134
+#define IDC_BUTTONCOPYOUTTOIN           1135
 #define ID_FILE_EXIT                    32771
 #define ID_VIEW_TIMER                   32772
 #define ID_FILE_TESTFLOATS              32773
@@ -98,9 +103,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        137
+#define _APS_NEXT_RESOURCE_VALUE        138
 #define _APS_NEXT_COMMAND_VALUE         32776
-#define _APS_NEXT_CONTROL_VALUE         1132
+#define _APS_NEXT_CONTROL_VALUE         1136
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
