@@ -57,6 +57,7 @@ public:
   FloatFields &setTrueMin();
   FloatFields &setMin();
   FloatFields &setEps();
+  FloatFields &setRnd();
   FloatFields &setOne();
   FloatFields &setMax();
   FloatFields &setPInf();
@@ -68,19 +69,19 @@ public:
   FloatFields &operator*=(const FloatFields &rhs);
   FloatFields &operator/=(const FloatFields &rhs);
   FloatFields &operator%=(const FloatFields &rhs);
-  inline FloatFields operator+(const FloatFields &rhs) {
+  inline FloatFields operator+(const FloatFields &rhs) const {
     return FloatFields(*this) += rhs;
   }
-  inline FloatFields operator-(const FloatFields &rhs) {
+  inline FloatFields operator-(const FloatFields &rhs) const {
     return FloatFields(*this) -= rhs;
   }
-  inline FloatFields operator*(const FloatFields &rhs) {
+  inline FloatFields operator*(const FloatFields &rhs) const {
     return FloatFields(*this) *= rhs;
   }
-  inline FloatFields operator/(const FloatFields &rhs) {
+  inline FloatFields operator/(const FloatFields &rhs) const {
     return FloatFields(*this) /= rhs;
   }
-  inline FloatFields operator%(const FloatFields &rhs) {
+  inline FloatFields operator%(const FloatFields &rhs) const {
     return FloatFields(*this) %= rhs;
   }
 
@@ -168,5 +169,6 @@ public:
   }
 };
 
-FloatFields sqr( const FloatFields &ff);
-FloatFields sqrt(const FloatFields &ff);
+FloatFields reciproc(const FloatFields &ff);
+FloatFields sqr(     const FloatFields &ff);
+FloatFields sqrt(    const FloatFields &ff);

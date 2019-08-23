@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "FloatFields.h"
+#include <Random.h>
 
 void FloatFields::checkType(const TCHAR *method, FloatType expected) const {
   if(getType() != expected) {
@@ -111,6 +112,16 @@ FloatFields &FloatFields::setEps() {
   case FT_FLOAT   : *this = std::numeric_limits<float   >::epsilon();  break;
   case FT_DOUBLE  : *this = std::numeric_limits<double  >::epsilon();  break;
   case FT_DOUBLE80: *this = std::numeric_limits<Double80>::epsilon();  break;
+  DEFAULT_WRONGTYPE(getType());
+  }
+  return *this;
+}
+
+FloatFields &FloatFields::setRnd() {
+  switch(getType()) {
+  case FT_FLOAT   : *this = randFloat();    break;
+  case FT_DOUBLE  : *this = randDouble();   break;
+  case FT_DOUBLE80: *this = randDouble80(); break;
   DEFAULT_WRONGTYPE(getType());
   }
   return *this;
@@ -337,22 +348,13 @@ String toString(FloatType type) {
 }
 
 FloatFields sqr(const FloatFields &ff) {
-  switch(ff.getType()) {
-  case FT_FLOAT:
-    { const float f = ff.getFloat();
-      return FloatFields((float)f*f);
-    }
-  case FT_DOUBLE  :
-    { const double d = ff.getDouble();
-      return FloatFields(d*d);
-    }
-  case FT_DOUBLE80:
-    { const Double80 d80 = ff.getDouble80();
-      return FloatFields(d80*d80);
-    }
-  DEFAULT_WRONGTYPE(ff.getType());
-  }
-  return ff;
+  return ff * ff;
+}
+
+FloatFields reciproc(const FloatFields &ff) {
+  FloatFields tmp(ff);
+  tmp.setOne();
+  return tmp / ff;
 }
 
 FloatFields sqrt(const FloatFields &ff) {
