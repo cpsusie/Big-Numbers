@@ -23,9 +23,10 @@ private:
   void           setAccFloatType(FloatType type);
   void           floatFieldsToEditFields(const FloatFields &ff);
   void           expo2ToWin();
+  void           markLabel(int id, bool marked);
   FloatFields    editFieldToFloatFields();
   void           showFloatFieldsValue(const FloatFields &ff, bool mem);
-  void           updateAccumulator();
+  void           updateAcc();
   void           setSignField(bool v);
   bool           getSignField();
   void           setExpoField(UINT v, FloatType type);
@@ -36,12 +37,13 @@ private:
   UINT64         getSigField();
   void           updatePrecision();
   bool           useFloatManip();
-  bool           streamOperandIsMemory();
-  FloatFields   &getSelectedOperand() {
-    return streamOperandIsMemory() ? m_memory : m_accumulator;
+  bool           getStreamOpIsMem();
+  void           setStreamOpIsMem(bool v);
+  FloatFields   &getSelectedStreamOp() {
+    return getStreamOpIsMem() ? m_memory : m_accumulator;
   }
-  FormatFlags    getStreamOutFormatFlags();
-  wchar_t        getFillChar();
+  FormatFlags    getStreamFormatFlags();
+  wchar_t        getStreamFillChar();
   CString        streamOutSelectedOp();
   void           streamInSelectedOp(const CString &str);
 public:
@@ -58,10 +60,10 @@ protected:
   afx_msg void OnClose();
   afx_msg void OnSelChangeComboFloatType();
   afx_msg void OnClickedCheckSignBit();
-  afx_msg void OnChangeEditExpoField();
-  afx_msg void OnChangeEditSigField();
-  afx_msg void OnEnSetFocusEditExpoField();
-  afx_msg void OnEnSetFocusEditSignificand();
+  afx_msg void OnChangeEditExpoValue();
+  afx_msg void OnChangeEditSigValue();
+  afx_msg void OnEnSetFocusEditExpoValue();
+  afx_msg void OnEnSetFocusEditSigValue();
   afx_msg void OnBnClickedButtonToFloat();
   afx_msg void OnBnClickedButtonToDouble();
   afx_msg void OnBnClickedButtonToDouble80();
@@ -87,11 +89,13 @@ protected:
   afx_msg void OnBnClickedButtonSetInf();
   afx_msg void OnBnClickedButtonSetQNaN();
   afx_msg void OnBnClickedButtonSetSNaN();
-  afx_msg void OnDeltaPosSpinExpo(       NMHDR *pNMHDR, LRESULT *pResult);
-  afx_msg void OnDeltaPosSpinSignificand(NMHDR *pNMHDR, LRESULT *pResult);
-  afx_msg void OnDeltaPosSpinPrecision(  NMHDR *pNMHDR, LRESULT *pResult);
-  afx_msg void OnDeltaPosSpinWidth(      NMHDR *pNMHDR, LRESULT *pResult);
-  afx_msg void OnBnClickedCheckMaxPrecision();
+  afx_msg void OnDeltaPosSpinExpoValue(  NMHDR *pNMHDR, LRESULT *pResult);
+  afx_msg void OnDeltaPosSpinSigValue(   NMHDR *pNMHDR, LRESULT *pResult);
+  afx_msg void OnDeltaPosSpinPrecValue(  NMHDR *pNMHDR, LRESULT *pResult);
+  afx_msg void OnDeltaPosSpinWidthValue( NMHDR *pNMHDR, LRESULT *pResult);
+  afx_msg void OnBnClickedCheckMaxPrec();
+  afx_msg void OnBnClickedRadioOpAcc();
+  afx_msg void OnBnClickedRadioOpMem();
   afx_msg void OnBnClickedButtonStreamOut();
   afx_msg void OnBnClickedButtonStreamIn();
   afx_msg void OnBnClickedButtonCopyOutToIn();

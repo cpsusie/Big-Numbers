@@ -72,6 +72,9 @@ public:
   inline FloatFields operator+(const FloatFields &rhs) const {
     return FloatFields(*this) += rhs;
   }
+  inline FloatFields operator-() const {
+    return FloatFields(*this).setZero() - *this;
+  }
   inline FloatFields operator-(const FloatFields &rhs) const {
     return FloatFields(*this) -= rhs;
   }
@@ -172,3 +175,6 @@ public:
 FloatFields reciproc(const FloatFields &ff);
 FloatFields sqr(     const FloatFields &ff);
 FloatFields sqrt(    const FloatFields &ff);
+
+std::wostream &operator<<(std::wostream &s, const FloatFields &ff);
+std::wistream &operator>>(std::wistream &s,       FloatFields &ff);

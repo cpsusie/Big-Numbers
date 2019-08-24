@@ -375,3 +375,23 @@ FloatFields sqrt(const FloatFields &ff) {
   }
   return ff;
 }
+
+using namespace std;
+
+wostream &operator<<(wostream &s, const FloatFields &ff) {
+  switch(ff.getType()) {
+  case FT_FLOAT   : s << ff.getFloat();    break;
+  case FT_DOUBLE  : s << ff.getDouble();   break;
+  case FT_DOUBLE80: s << ff.getDouble80(); break;
+  }
+  return s;
+}
+
+wistream &operator>>(wistream &s, FloatFields &ff) {
+  switch(ff.getType()) {
+  case FT_FLOAT   : { float    v; s >> v; ff = v; break; }
+  case FT_DOUBLE  : { double   v; s >> v; ff = v; break; }
+  case FT_DOUBLE80: { Double80 v; s >> v; ff = v; break; }
+  }
+  return s;
+}
