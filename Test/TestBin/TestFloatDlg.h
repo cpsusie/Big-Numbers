@@ -3,49 +3,54 @@
 #include <MFCUtil/OBMButton.h>
 #include "FloatFields.h"
 
+using namespace std;
+
 class CTestFloatDlg : public CDialog {
 private:
   OBMButton      m_copyOutToInButton;
   FloatFields    m_accumulator, m_memory;
-  CString        m_streamOutString;
-  CString        m_streamInString;
+  CString        m_streamInString, m_streamOutString;
+  CString        m_streamState;
+  FloatType      m_winFloatType;
   int            m_width;
   int            m_precision;
   CString        m_fillString;
   TCHAR          m_fill;
+  BOOL           m_manipStreamIn;
+  BOOL           m_autoUpdateStreamOut;
   bool           m_showffActive, m_setAccTypeActive;
 
-  void           setWinFloatType(FloatType type);
-  FloatType      getWinFloatType();
-  FloatType      getAccFloatType() const {
-    return m_accumulator.getType();
+  void             setWinFloatType(FloatType type);
+  inline FloatType getWinFloatType() const { return m_winFloatType; }
+  void             setAccFloatType(FloatType type);
+  inline FloatType getAccFloatType() const { return m_accumulator.getType(); }
+  void             floatFieldsToEditFields(const FloatFields &ff);
+  FloatFields      editFieldToFloatFields() {
+    return FloatFields(getWinFloatType(), getSignField(), getExpoField(), getSigField());
   }
-  void           setAccFloatType(FloatType type);
-  void           floatFieldsToEditFields(const FloatFields &ff);
-  void           expo2ToWin();
-  void           markLabel(int id, bool marked);
-  FloatFields    editFieldToFloatFields();
-  void           showFloatFieldsValue(const FloatFields &ff, bool mem);
-  void           updateAcc();
-  void           setSignField(bool v);
-  bool           getSignField();
-  void           setExpoField(UINT v, FloatType type);
-  void           setExpoField(UINT v);
-  UINT           getExpoField();
-  void           setSigField(UINT64 v, FloatType type);
-  void           setSigField(UINT64 v);
-  UINT64         getSigField();
-  void           updatePrecision();
-  bool           useFloatManip();
-  bool           getStreamOpIsMem();
-  void           setStreamOpIsMem(bool v);
-  FloatFields   &getSelectedStreamOp() {
-    return getStreamOpIsMem() ? m_memory : m_accumulator;
-  }
-  FormatFlags    getStreamFormatFlags();
-  wchar_t        getStreamFillChar();
-  CString        streamOutSelectedOp();
-  void           streamInSelectedOp(const CString &str);
+  void             showFloatFieldsValue(const FloatFields &ff, bool mem);
+  void             setSignField(bool v);
+  bool             getSignField();
+  void             setExpoField(UINT  v, FloatType type);
+  inline void      setExpoField(UINT  v) { setExpoField(v, getWinFloatType()); }
+  UINT             getExpoField();
+  void             setSigField(UINT64 v, FloatType type);
+  inline void      setSigField(UINT64 v) { setSigField( v, getWinFloatType()); }
+  UINT64           getSigField();
+  void             setStreamOpIsMem(bool v);
+  bool             getStreamOpIsMem();
+  FloatFields     &getSelectedStreamOp() { return getStreamOpIsMem() ? m_memory : m_accumulator; }
+  wstringstream   &setParameters(wstringstream &stream);
+  FormatFlags      getStreamFormatFlags();
+  wchar_t          getStreamFillChar();
+  static CString   streamStateToString(wstringstream &sream);
+  void             updateAcc();
+  void             setWidth(    int prec);
+  void             setPrecision(int width);
+  void             updatePrecision();
+  void             autoClickStreamOut();
+  void             expo2ToWin();
+  void             markLabel(int id, bool marked);
 public:
   CTestFloatDlg(CWnd *pParent = NULL);
   enum { IDD = IDD_TESTFLOAT_DIALOG };
@@ -58,15 +63,14 @@ protected:
   virtual BOOL OnInitDialog();
 
   afx_msg void OnClose();
-  afx_msg void OnSelChangeComboFloatType();
+  afx_msg void OnBnClickedRadioTypeFloat();
+  afx_msg void OnBnClickedRadioTypeDouble64();
+  afx_msg void OnBnClickedRadioTypeDouble80();
   afx_msg void OnClickedCheckSignBit();
   afx_msg void OnChangeEditExpoValue();
   afx_msg void OnChangeEditSigValue();
   afx_msg void OnEnSetFocusEditExpoValue();
   afx_msg void OnEnSetFocusEditSigValue();
-  afx_msg void OnBnClickedButtonToFloat();
-  afx_msg void OnBnClickedButtonToDouble();
-  afx_msg void OnBnClickedButtonToDouble80();
   afx_msg void OnBnClickedButtonSave();
   afx_msg void OnBnClickedButtonLoad();
   afx_msg void OnBnClickedButtonResetMem();
@@ -96,9 +100,15 @@ protected:
   afx_msg void OnBnClickedCheckMaxPrec();
   afx_msg void OnBnClickedRadioOpAcc();
   afx_msg void OnBnClickedRadioOpMem();
-  afx_msg void OnBnClickedButtonStreamOut();
   afx_msg void OnBnClickedButtonStreamIn();
+  afx_msg void OnBnClickedButtonStreamOut();
   afx_msg void OnBnClickedButtonCopyOutToIn();
+  afx_msg void OnBnClickedCheckAutoUpdateStreamOut();
   afx_msg void OnBnClickedCheckIosFlag();
+  afx_msg void OnEnChangeEditWidthValue();
+  afx_msg void OnEnChangeEditPrecValue();
+  afx_msg void OnEnUpdateEditWidthValue();
+  afx_msg void OnEnUpdateEditPrecValue();
+  afx_msg void OnEnChangeEditFillValue();
   DECLARE_MESSAGE_MAP()
 };

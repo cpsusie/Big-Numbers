@@ -395,3 +395,28 @@ wistream &operator>>(wistream &s, FloatFields &ff) {
   }
   return s;
 }
+
+wistream &FloatFields::input(wistream &in, bool manip) {
+  float    f;
+  double   d;
+  Double80 d80;
+  if(manip) {
+    switch(getType()) {
+    case FT_FLOAT   : in >> WcharManip<float >   >> f  ; break;
+    case FT_DOUBLE  : in >> WcharManip<double>   >> d  ; break;
+    case FT_DOUBLE80: in >> WcharManip<Double80> >> d80; break;
+    }
+  } else {
+    switch(getType()) {
+    case FT_FLOAT   : in >> f  ; break;
+    case FT_DOUBLE  : in >> d  ; break;
+    case FT_DOUBLE80: in >> d80; break;
+    }
+  }
+  switch(getType()) {
+  case FT_FLOAT   : *this = f  ; break;
+  case FT_DOUBLE  : *this = d  ; break;
+  case FT_DOUBLE80: *this = d80; break;
+  }
+  return in;
+}

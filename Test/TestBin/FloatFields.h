@@ -170,6 +170,8 @@ public:
   inline String getFpclassName() const {
     return fpclassToString(getFpClass());
   }
+
+  std::wistream &input(std::wistream &in, bool manip);
 };
 
 FloatFields reciproc(const FloatFields &ff);
@@ -177,4 +179,3 @@ FloatFields sqr(     const FloatFields &ff);
 FloatFields sqrt(    const FloatFields &ff);
 
 std::wostream &operator<<(std::wostream &s, const FloatFields &ff);
-std::wistream &operator>>(std::wistream &s,       FloatFields &ff);
