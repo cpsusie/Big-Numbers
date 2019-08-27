@@ -101,10 +101,6 @@ template<class T> int pointerHashCmp(const T * const &p1, const T * const &p2) {
   return sizetHashCmp((size_t)p1, size_t(p2));
 }
 
-inline int ordinal(bool b) {
-  return b ? 1 : 0;
-}
-
 inline int boolCmp(bool b1, bool b2) {
   return ordinal(b1) - ordinal(b2);
 }
