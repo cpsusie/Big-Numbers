@@ -1,5 +1,7 @@
 #pragma once
 
+#include "MemoryTrace.h"
+
 class AbstractIterator {
 protected:
   void noNextElementError(         const TCHAR *className) const;
