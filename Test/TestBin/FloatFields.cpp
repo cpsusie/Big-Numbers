@@ -311,7 +311,7 @@ String FloatFields::toHexString() const {
 
 int FloatFields::getFpClass() const {
   switch(getType()) {
-  case FT_FLOAT   : return _fpclass((double)getFloat());
+  case FT_FLOAT   : return _fpclassf(getFloat());
   case FT_DOUBLE  : return _fpclass(getDouble());
   case FT_DOUBLE80: return _fpclass(getDouble80());
   DEFAULT_WRONGTYPE(getType());
