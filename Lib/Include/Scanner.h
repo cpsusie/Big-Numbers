@@ -141,7 +141,7 @@ class Scanner {
 
 private:
   // Input source
-  LexStream      *m_inputStream;                
+  LexStream      *m_inputStream;
    // Input buffer
   _TUCHAR         m_inputBuffer[SCANNERBUFSIZE];
   // Just past last TCHAR

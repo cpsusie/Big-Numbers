@@ -330,7 +330,7 @@ SNode SNode::reduceSum() const {
   BitSet   rationalAddentSet(tmp.size());
   // then replace all rational constants, added together in rationalAcc
   // if only 1 rational exist, then reuse it
-  for(size_t i = 0; i < tmp.size(); i++) { 
+  for(size_t i = 0; i < tmp.size(); i++) {
     SNode e = tmp[i], c = e.left();
     Rational r;
     if(c.isRational()) {

@@ -168,10 +168,10 @@ DEFNAME(Opcode2Arg       ,  CMOVS ,0x0F48 ,0,CMOV_FLAGS ); // Move       if sign
 DEFNAME(Opcode2Arg       ,  CMOVNS,0x0F49 ,0,CMOV_FLAGS ); // Move       if not sign                                 (SF==0 )
 DEFNAME(Opcode2Arg       ,  CMOVP ,0x0F4A ,0,CMOV_FLAGS ); // Move       if parity even                              (PF==1 )
 DEFNAME(Opcode2Arg       ,  CMOVNP,0x0F4B ,0,CMOV_FLAGS ); // Move       if parity odd                               (PF==0 )
-DEFNAME(Opcode2Arg       ,  CMOVL ,0x0F4C ,0,CMOV_FLAGS ); // Move       if less                 (signed  )          (SF!=OF)          
-DEFNAME(Opcode2Arg       ,  CMOVGE,0x0F4D ,0,CMOV_FLAGS ); // Move       if greater or equal     (signed  )          (SF==OF)          
-DEFNAME(Opcode2Arg       ,  CMOVLE,0x0F4E ,0,CMOV_FLAGS ); // Move       if less or equal        (signed  )          (ZF==1 || SF!=OF) 
-DEFNAME(Opcode2Arg       ,  CMOVG ,0x0F4F ,0,CMOV_FLAGS ); // Move       if greater              (signed  )          (ZF==0 && SF==OF) 
+DEFNAME(Opcode2Arg       ,  CMOVL ,0x0F4C ,0,CMOV_FLAGS ); // Move       if less                 (signed  )          (SF!=OF)
+DEFNAME(Opcode2Arg       ,  CMOVGE,0x0F4D ,0,CMOV_FLAGS ); // Move       if greater or equal     (signed  )          (SF==OF)
+DEFNAME(Opcode2Arg       ,  CMOVLE,0x0F4E ,0,CMOV_FLAGS ); // Move       if less or equal        (signed  )          (ZF==1 || SF!=OF)
+DEFNAME(Opcode2Arg       ,  CMOVG ,0x0F4F ,0,CMOV_FLAGS ); // Move       if greater              (signed  )          (ZF==0 && SF==OF)
 
 
 

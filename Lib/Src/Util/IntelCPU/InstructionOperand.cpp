@@ -237,8 +237,8 @@ String InstructionOperand::toString() const {
     return m_reg ? m_reg->getName() : _T("Unknown operand");
   case IMMEDIATEVALUE:
     switch(getSize()) {
-    case REGSIZE_BYTE : 
-    case REGSIZE_WORD : 
+    case REGSIZE_BYTE :
+    case REGSIZE_WORD :
     case REGSIZE_DWORD: return formatHexValue(getImmUint32());
     case REGSIZE_QWORD: return formatHexValue(getImmUint64());
     default           : throwUnknownSize(__TFUNCTION__);

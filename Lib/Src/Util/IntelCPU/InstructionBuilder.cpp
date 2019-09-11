@@ -119,7 +119,7 @@ InstructionBuilder &InstructionBuilder::addrBase(const IndexRegister &base, int 
     if(offset == 0) {
       setModeBits(MR_SIB(DP_0BYTE)).add(0x24);                        // ptr[esp]
     } else if(isByte(offset)) {
-      setModeBits(MR_SIB(DP_1BYTE)).add(0x24).add((char)offset);      // ptr[esp+1 byte offset] 
+      setModeBits(MR_SIB(DP_1BYTE)).add(0x24).add((char)offset);      // ptr[esp+1 byte offset]
     } else {
       setModeBits(MR_SIB(DP_4BYTE)).add(0x24).add(&offset, 4);        // ptr[esp+4 byte offset]
     }

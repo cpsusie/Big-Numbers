@@ -18,7 +18,7 @@ public:
     , m_rtf(maxX, maxY, maxZ)
   {
   }
-  inline Cube3DTemplate(const NumberInterval<V> &xInterval, const NumberInterval<V> &yInterval, const NumberInterval<V> &zInterval) 
+  inline Cube3DTemplate(const NumberInterval<V> &xInterval, const NumberInterval<V> &yInterval, const NumberInterval<V> &zInterval)
     : m_lbn(xInterval.getMin(), yInterval.getMin(), zInterval.getMin())
     , m_rtf(xInterval.getMax(), yInterval.getMax(), zInterval.getMax())
   {
@@ -93,10 +93,10 @@ public:
     return NumberInterval<V>(getMinZ(), getMaxZ());
   }
   inline void setMin(const C &p) {
-    m_lbn = p; 
+    m_lbn = p;
   }
   inline void setMax(const C &p) {
-    m_rtf = p; 
+    m_rtf = p;
   }
   inline const C &getMin() const {
     return m_lbn;

@@ -22,7 +22,7 @@
 #define BCDBUF_FILL(   name)   { name##_byte = BCDBUF_EOS(name) ? ENDEND : *(name##_bp++); \
                                  name##_head=2;                                            \
                                }
-                             
+
 #define BCDBUF_GET(name,ch)    { if(BCDBUF_ISEMPTY(name)) BCDBUF_FILL(name);               \
                                  if(--name##_head) {                                       \
                                    ch = name##_byte>>4;                                    \

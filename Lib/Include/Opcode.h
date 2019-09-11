@@ -1371,7 +1371,7 @@ extern Opcode0Arg        CQO;                              // Convert qword to o
 //#define OUTS_BYTE                              B1INS(0x6E)
 
 extern StringInstruction MOVSB;                            // Move byte from string to string; if(DF==0) *(byte*)DI++ = *(byte*)SI++; else *(byte*)DI-- = *(byte*)SI--;
-extern StringInstruction CMPSB;                            // Compare bytes in memory; if(DF==0) Compares ES:[DI++] with DS:[SI++] else Compares ES:[DI--] with DS:[SI--] 
+extern StringInstruction CMPSB;                            // Compare bytes in memory; if(DF==0) Compares ES:[DI++] with DS:[SI++] else Compares ES:[DI--] with DS:[SI--]
 extern StringInstruction STOSB;                            // Store byte in string; if(DF==0) *ES:DI++ = AL; else *ES:DI-- = AL;
 extern StringInstruction LODSB;                            // Load string byte; if(DF==0) AL = *SI++; else AL = *SI--;
 extern StringInstruction SCASB;                            // Compare byte string; if(DF==0) Compares ES:[DI++] with AL else Compares ES:[DI--] with AL

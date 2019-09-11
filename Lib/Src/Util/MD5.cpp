@@ -87,7 +87,7 @@ static void *MD5_memset(POINTER output, int value, UINT length) {
 
 #endif
 
-// Encodes input (UINT32) into output (BYTE). 
+// Encodes input (UINT32) into output (BYTE).
 // Assumes length is a multiple of 4.
 static void Encode(BYTE *output, UINT32 *input, UINT length) {
   for(UINT i = 0, j = 0; j < length; i++, j += 4) {

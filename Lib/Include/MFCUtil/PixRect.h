@@ -109,7 +109,7 @@ public:
   // After that call __super::setPixRect(pr); m_result = m_pixRect, m_resultPA = m_pa;
   void setPixRect(PixRect *pr);
   // returns default CRect(0, 0, m_pixRrect->getWidth(), m_pixRect->getHeight())
-  virtual CRect getRect() const; 
+  virtual CRect getRect() const;
 };
 
 class SetColor : public PixRectOperator {

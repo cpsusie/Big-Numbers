@@ -14,7 +14,7 @@ Tokenizer::Tokenizer(const TCHAR *str, const TCHAR *delimiters, TCHAR textQualif
   init(str,delimiters,textQualifier);
 }
 
-Tokenizer::Tokenizer(const String &str, const String &delimiters, TCHAR textQualifier, UINT flags) 
+Tokenizer::Tokenizer(const String &str, const String &delimiters, TCHAR textQualifier, UINT flags)
 : m_delimiterSet(MAXCHARVALUE)
 , m_flags(flags)
 {
